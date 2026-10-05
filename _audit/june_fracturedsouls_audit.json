@@ -1,0 +1,113 @@
+{
+  "category": "fracturedsouls",
+  "entries": {
+    "fs_core_emerald": {
+      "verdict": "rename",
+      "rating": 77,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "I know GREEN is the color we see for the picker but it brings it out dark pink so should it maybe say SOUL CORE EMERALD - PINK FLASH?",
+      "ts": 1781302403404
+    },
+    "fs_core_violet": {
+      "verdict": "rename",
+      "rating": 78,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "Probably SOUL CORE VIOLET - YELLOW GOLD FLASH",
+      "ts": 1781302509540
+    },
+    "fs_core_abyss": {
+      "verdict": "rebuild",
+      "rating": 68,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "This one for some reason not as dramatic as some of the others?",
+      "ts": 1781302569660
+    },
+    "fs_core_aurum": {
+      "verdict": "rename",
+      "rating": 75,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "SOUL CORE AURUM - PURPLE FLASH",
+      "ts": 1781302620995
+    },
+    "fs_core_crimson": {
+      "verdict": "rebuild",
+      "rating": 47,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "This one hardly flashes color at all? What's the difference? ",
+      "ts": 1781302668374
+    },
+    "fs_ember_drift": {
+      "verdict": "rebuild",
+      "rating": 35,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "Very lazy - need COLOR even if it's crushed in the paint channel too. And the pattern design is way too big, very lazy. Very disappointing. We have a mandate to hit. This won't cut it",
+      "ts": 1781303500970
+    },
+    "fs_carnival_night": {
+      "verdict": "rebuild",
+      "rating": 31,
+      "ai_rating": 50,
+      "reasons": [
+        "Too flat / boring",
+        "Not enough fine detail",
+        "No depth",
+        "Weak spec colors",
+        "Low effort / lazy"
+      ],
+      "notes": "Another one where barely anything is going on - no COLOR to the paint channel or pattern design on the paint channel. Everything about this is totally boring. ",
+      "ts": 1781303593599
+    },
+    "fs_blood_marble": {
+      "verdict": "rebuild",
+      "rating": 75,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "I submitted a SHOKKERRECIPE file that should be used after I made some tweaks to the original design",
+      "ts": 1781303703606
+    },
+    "fs_wraith_veil": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781305320089
+    },
+    "fs_howl": {
+      "verdict": "rebuild",
+      "rating": 36,
+      "ai_rating": 50,
+      "reasons": [
+        "No depth",
+        "Too flat / boring",
+        "Not enough fine detail",
+        "Low effort / lazy"
+      ],
+      "notes": "Coloring is right but good lord this is WEAK SAUCE on the pattern on the paint and on the spec. FINE DETAILS, FINE DETAILS, FINE DETAILS. WHAT KIND OF GATE ARE YOU MEASURING THESE AGAINST AGAIN? THEY MUST HAVE MUCH MORE DETAIL. NEEDS ABOUT 25X MORE DETAIL AND THAT DESIGN DOESN'T LOOK LIKE CLAW MARKS AT ALL. ",
+      "ts": 1781305454513
+    },
+    "fs_moth_dust": {
+      "verdict": "keep",
+      "rating": 75,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781308476553
+    },
+    "fs_aurora_threads": {
+      "verdict": "keep",
+      "rating": 79,
+      "ai_rating": 49,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781358449955
+    }
+  },
+  "updated": 1781360580
+}

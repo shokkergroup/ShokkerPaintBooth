@@ -1,0 +1,22 @@
+{
+  "status": "PRIVATE_RUNTIME_GUIDE_PASS",
+  "done": true,
+  "result": {
+    "sourceSelfHelp": "b860c0acc0ab442f7b6477853c4438ab0b9e74e94fd87904e356768d2f97f7b2",
+    "proAIPrivatePatch": "adee9a752dbc2b9aa0b9d92a343cddfbc6f4d33b61125f9de3a9cc1fae3bd10e",
+    "text": "**How do I use the Chat mode / AI panel**\n1. In the full editor, click the AI button at the bottom right to open the Shokker AI panel.\n2. Type your question or change in “Tell me what you want...” and press Enter; Shift+Enter adds a line.\n3. Each answer has Undo. Common requests work without a key; connecting an AI is optional for open-ended design help.\nExact controls: Shokker AI panel (Pro / Chat > bottom right); Tell me what you want... box (Shokker AI panel).\nDid that get you there, or is there something else you are trying to do?\nNEXT: I’m still stuck",
+    "queue": 0,
+    "mode": "fx-off",
+    "aliasLeak": false,
+    "zonesExact": true,
+    "paintExact": true,
+    "specExact": true,
+    "layerRevExact": true,
+    "attempts": 0,
+    "scope": "Actual native helper routing; experimental reload; UI button path/cold page not tested"
+  },
+  "limits": [
+    "Experimental reload; no UI-button/cold-page acceptance.",
+    "Previews settled before standalone guide; no edit queue; all compared live output/state remained exact."
+  ]
+}

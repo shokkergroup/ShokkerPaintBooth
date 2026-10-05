@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "paint_label": "stockcars chevymontecarlo87/car_num_852159.tga",
+  "inspection_records": "_smart_tga_runs/cycle142_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle142_route_pressure_v1/stockcars_chevymontecarlo87_car_num_852159/component_records.json",
+  "review_scope": "Cycle 143 review of accepted subcomponent candidate on Tide Monte Carlo 87: this accepted submask is true side-number 17 content.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 8,
+      "expected_bbox": [311, 217, 110, 163],
+      "target_layer": "numbers",
+      "label": "true_number_17_submask",
+      "note": "Large side-number 17 piece embedded in a Sponsor-routed component."
+    }
+  ]
+}

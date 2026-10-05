@@ -1,0 +1,546 @@
+[
+{
+"struct": "linear",
+"k": 3
+},
+{
+"struct": "linear.terr",
+"k": 3
+},
+{
+"struct": "linear.chev",
+"k": 3
+},
+{
+"struct": "linear.scale",
+"k": 3
+},
+{
+"struct": "linear.weave",
+"k": 3
+},
+{
+"struct": "linear.hex",
+"k": 3
+},
+{
+"struct": "linear.grain",
+"k": 3
+},
+{
+"struct": "plaid",
+"k": 3
+},
+{
+"struct": "plaid.hex",
+"k": 3
+},
+{
+"struct": "aurora.terr",
+"k": 3
+},
+{
+"struct": "ribbon",
+"k": 3
+},
+{
+"struct": "ribbon.chev",
+"k": 3
+},
+{
+"struct": "streak.chev",
+"k": 3
+},
+{
+"struct": "triangles.chev",
+"k": 3
+},
+{
+"struct": "drip",
+"k": 3
+},
+{
+"struct": "drip.chev",
+"k": 3
+},
+{
+"struct": "brush",
+"k": 3
+},
+{
+"struct": "herring",
+"k": 3
+},
+{
+"struct": "herring.chev",
+"k": 3
+},
+{
+"struct": "shards.grain",
+"k": 3
+},
+{
+"struct": "quilt.chev",
+"k": 3
+},
+{
+"struct": "wovenrib",
+"k": 3
+},
+{
+"struct": "wovenrib.chev",
+"k": 3
+},
+{
+"struct": "wovenrib.hex",
+"k": 3
+},
+{
+"struct": "linearXsplinter",
+"k": 3
+},
+{
+"struct": "linearXwovenrib",
+"k": 3
+},
+{
+"struct": "plaidXdrip",
+"k": 3
+},
+{
+"struct": "plaidXbrush",
+"k": 3
+},
+{
+"struct": "plaidXherring",
+"k": 3
+},
+{
+"struct": "plaidXflux",
+"k": 3
+},
+{
+"struct": "plaidXquilt",
+"k": 3
+},
+{
+"struct": "auroraXstreak",
+"k": 3
+},
+{
+"struct": "crossflowXwavefold",
+"k": 3
+},
+{
+"struct": "dripXwisp",
+"k": 3
+},
+{
+"struct": "linear",
+"k": 5
+},
+{
+"struct": "linear.terr",
+"k": 5
+},
+{
+"struct": "linear.chev",
+"k": 5
+},
+{
+"struct": "linear.scale",
+"k": 5
+},
+{
+"struct": "linear.weave",
+"k": 5
+},
+{
+"struct": "linear.hex",
+"k": 5
+},
+{
+"struct": "linear.grain",
+"k": 5
+},
+{
+"struct": "plaid",
+"k": 5
+},
+{
+"struct": "plaid.hex",
+"k": 5
+},
+{
+"struct": "aurora.terr",
+"k": 5
+},
+{
+"struct": "ribbon",
+"k": 5
+},
+{
+"struct": "ribbon.chev",
+"k": 5
+},
+{
+"struct": "streak.chev",
+"k": 5
+},
+{
+"struct": "triangles.chev",
+"k": 5
+},
+{
+"struct": "drip",
+"k": 5
+},
+{
+"struct": "drip.chev",
+"k": 5
+},
+{
+"struct": "brush",
+"k": 5
+},
+{
+"struct": "herring",
+"k": 5
+},
+{
+"struct": "herring.chev",
+"k": 5
+},
+{
+"struct": "shards.grain",
+"k": 5
+},
+{
+"struct": "quilt.chev",
+"k": 5
+},
+{
+"struct": "wovenrib",
+"k": 5
+},
+{
+"struct": "wovenrib.chev",
+"k": 5
+},
+{
+"struct": "wovenrib.hex",
+"k": 5
+},
+{
+"struct": "linearXsplinter",
+"k": 5
+},
+{
+"struct": "linearXwovenrib",
+"k": 5
+},
+{
+"struct": "plaidXdrip",
+"k": 5
+},
+{
+"struct": "plaidXbrush",
+"k": 5
+},
+{
+"struct": "plaidXherring",
+"k": 5
+},
+{
+"struct": "plaidXflux",
+"k": 5
+},
+{
+"struct": "plaidXquilt",
+"k": 5
+},
+{
+"struct": "auroraXstreak",
+"k": 5
+},
+{
+"struct": "crossflowXwavefold",
+"k": 5
+},
+{
+"struct": "dripXwisp",
+"k": 5
+},
+{
+"struct": "linear",
+"k": 2
+},
+{
+"struct": "linear.terr",
+"k": 2
+},
+{
+"struct": "linear.chev",
+"k": 2
+},
+{
+"struct": "linear.scale",
+"k": 2
+},
+{
+"struct": "linear.weave",
+"k": 2
+},
+{
+"struct": "linear.hex",
+"k": 2
+},
+{
+"struct": "linear.grain",
+"k": 2
+},
+{
+"struct": "plaid",
+"k": 2
+},
+{
+"struct": "plaid.hex",
+"k": 2
+},
+{
+"struct": "aurora.terr",
+"k": 2
+},
+{
+"struct": "ribbon",
+"k": 2
+},
+{
+"struct": "ribbon.chev",
+"k": 2
+},
+{
+"struct": "streak.chev",
+"k": 2
+},
+{
+"struct": "triangles.chev",
+"k": 2
+},
+{
+"struct": "drip",
+"k": 2
+},
+{
+"struct": "drip.chev",
+"k": 2
+},
+{
+"struct": "brush",
+"k": 2
+},
+{
+"struct": "herring",
+"k": 2
+},
+{
+"struct": "herring.chev",
+"k": 2
+},
+{
+"struct": "shards.grain",
+"k": 2
+},
+{
+"struct": "quilt.chev",
+"k": 2
+},
+{
+"struct": "wovenrib",
+"k": 2
+},
+{
+"struct": "wovenrib.chev",
+"k": 2
+},
+{
+"struct": "wovenrib.hex",
+"k": 2
+},
+{
+"struct": "linearXsplinter",
+"k": 2
+},
+{
+"struct": "linearXwovenrib",
+"k": 2
+},
+{
+"struct": "plaidXdrip",
+"k": 2
+},
+{
+"struct": "plaidXbrush",
+"k": 2
+},
+{
+"struct": "plaidXherring",
+"k": 2
+},
+{
+"struct": "plaidXflux",
+"k": 2
+},
+{
+"struct": "plaidXquilt",
+"k": 2
+},
+{
+"struct": "auroraXstreak",
+"k": 2
+},
+{
+"struct": "crossflowXwavefold",
+"k": 2
+},
+{
+"struct": "dripXwisp",
+"k": 2
+},
+{
+"struct": "linear",
+"k": 4
+},
+{
+"struct": "linear.terr",
+"k": 4
+},
+{
+"struct": "linear.chev",
+"k": 4
+},
+{
+"struct": "linear.scale",
+"k": 4
+},
+{
+"struct": "linear.weave",
+"k": 4
+},
+{
+"struct": "linear.hex",
+"k": 4
+},
+{
+"struct": "linear.grain",
+"k": 4
+},
+{
+"struct": "plaid",
+"k": 4
+},
+{
+"struct": "plaid.hex",
+"k": 4
+},
+{
+"struct": "aurora.terr",
+"k": 4
+},
+{
+"struct": "ribbon",
+"k": 4
+},
+{
+"struct": "ribbon.chev",
+"k": 4
+},
+{
+"struct": "streak.chev",
+"k": 4
+},
+{
+"struct": "triangles.chev",
+"k": 4
+},
+{
+"struct": "drip",
+"k": 4
+},
+{
+"struct": "drip.chev",
+"k": 4
+},
+{
+"struct": "brush",
+"k": 4
+},
+{
+"struct": "herring",
+"k": 4
+},
+{
+"struct": "herring.chev",
+"k": 4
+},
+{
+"struct": "shards.grain",
+"k": 4
+},
+{
+"struct": "quilt.chev",
+"k": 4
+},
+{
+"struct": "wovenrib",
+"k": 4
+},
+{
+"struct": "wovenrib.chev",
+"k": 4
+},
+{
+"struct": "wovenrib.hex",
+"k": 4
+},
+{
+"struct": "linearXsplinter",
+"k": 4
+},
+{
+"struct": "linearXwovenrib",
+"k": 4
+},
+{
+"struct": "plaidXdrip",
+"k": 4
+},
+{
+"struct": "plaidXbrush",
+"k": 4
+},
+{
+"struct": "plaidXherring",
+"k": 4
+},
+{
+"struct": "plaidXflux",
+"k": 4
+},
+{
+"struct": "plaidXquilt",
+"k": 4
+},
+{
+"struct": "auroraXstreak",
+"k": 4
+},
+{
+"struct": "crossflowXwavefold",
+"k": 4
+},
+{
+"struct": "dripXwisp",
+"k": 4
+}
+]

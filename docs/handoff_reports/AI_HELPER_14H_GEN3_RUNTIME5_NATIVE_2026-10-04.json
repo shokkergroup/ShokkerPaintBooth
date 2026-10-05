@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-04",
+  "status": "PASS_WITH_OPEN_GATES",
+  "runtime": "Private immutable Runtime5 http://localhost:59886",
+  "sourceFreeze": "_easy_claude_work/ai14h_generation3_runtime5/source-freeze.json",
+  "nativeSession": "4f9dd632ccbd",
+  "acceptance": {
+    "PSD": "Actual _doPSDImport on original8.3MB fixture, W83 immutable snapshot backend, W81 matched import/raster receipts, full strong SHA,11layers2048square.",
+    "authoredColor": "Actual D/E/controller/apply selects current green roof despite source green,29873 paint preview pixels changed all inside currentroof,Chrome/spec preview/layer metadata exact.",
+    "project": "Actual saveSpbProject normal name dialog+Save/Open API wrote2.98MB.spbproj with1durable record; loadSpbProject returnedtrue, paint/spec preview +11layer metadata exact. First follow-up afterOpen revalidated pendingrecord and queued sameUUID proof-bearing colour edit; actualfinish changed29873insideonly,Chrome/spec/layer metadata exact.",
+    "Undo": "Actual _undoLast returnedtrue; paint/spec previews and layer metadata exactrestored, sameUUID/mask/Chrome.",
+    "layerPixels": "Additional actual native SHA256 of all11live layer image pixelbuffers: exactafterloadSpbProject, scopedblue-to-green apply, and actualAIUndo. Sequential CPUcanvas reads, rawpixelsneverreturned.",
+    "MCP": "Actual isolated HTTP transport: internallease heldstatusrefused; bridge OFF/ON realcontroller release then list_tools20022tools/edit_zone stableUUID green200/undo200, previews restoredexact, spec+11layerpixelhashes exact. BridgeOFFafteracceptance.",
+    "failedSource": "Actual missingPSD404 keeps priorpaint/spec/zones/layerPIXexact; scoped authored-blue followupq0 with noDone. Source transaction rolls back to retainedloadedsource and advances committed generation; rejection came from stale owner/source proof, not a claimisCommittedfalse."
+  },
+  "openGates": [
+    "W96 actualSavebeforehydration dropspendingrecord; private repairactive",
+    "W92 passive/quote/new-context preflight independentfailures; repairactive",
+    "W97 freshowned roof finish-only keep-paint keyalias usabilitygap; repairassigned",
+    "W90/W84 final native guidance/scope notinRuntime5"
+  ],
+  "excluded": [
+    "Initial snapshothelper missingglobal ReferenceError: no mutation/acceptance credit.",
+    "OldRuntime3transfer roof/layout differs currentmap afterrealprojectopen; rebind correctly refuses. Not credited as successfulfollow-up.",
+    "Native previews1024square; no exported2048imageclaim.",
+    "PSB actualroute unsupported; no PSB importclaim."
+  ],
+  "providerCalls": 0,
+  "providerAttempts": 0,
+  "installed": false,
+  "liveBackendRestarted": false,
+  "projectStorage": "_easy_claude_work/ai14h_generation3_audit/runtime5-projects",
+  "mcpInitialLeaseProbe": {
+    "http": 200,
+    "ok": false,
+    "result": "Correctly refused external status while internal editing held2minutelease",
+    "paidCalls": 0
+  }
+}

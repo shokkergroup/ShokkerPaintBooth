@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "paint_label": "streetstock streetstock2/car_num_573363.tga",
+  "inspection_records": "_smart_tga_runs/cycle145_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle145_route_pressure_v1/streetstock_streetstock2_car_num_573363/component_records.json",
+  "review_scope": "Cycle 145 review of fresh accepted Sponsor-routed number candidates on street stock 573363: keep the true 72 body and reject mascot/logo/SD sponsor confusers.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 0,
+      "expected_bbox": [576, 240, 123, 129],
+      "target_layer": "sponsors",
+      "label": "mascot_logo_panel_false_number",
+      "note": "Busy mascot/sponsor graphic panel; should stay Sponsors, not Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 1,
+      "expected_bbox": [413, 269, 154, 113],
+      "target_layer": "numbers",
+      "label": "true_number_72_body",
+      "note": "Large gray 72 car-number body routed to Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 2,
+      "expected_bbox": [54, 273, 90, 57],
+      "target_layer": "sponsors",
+      "label": "sd_sponsor_logo_false_number",
+      "note": "Repeated SD sponsor/logo mark; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 5,
+      "expected_bbox": [744, 358, 79, 51],
+      "target_layer": "sponsors",
+      "label": "sd_sponsor_logo_false_number",
+      "note": "Repeated SD sponsor/logo mark; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 6,
+      "expected_bbox": [84, 513, 123, 115],
+      "target_layer": "sponsors",
+      "label": "mascot_logo_panel_false_number",
+      "note": "Busy mascot/sponsor graphic panel; should stay Sponsors, not Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 9,
+      "expected_bbox": [895, 644, 76, 99],
+      "target_layer": "sponsors",
+      "label": "mascot_logo_88_false_number",
+      "note": "Mascot/sponsor logo with embedded digits; not the car number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 17,
+      "expected_bbox": [756, 846, 79, 50],
+      "target_layer": "sponsors",
+      "label": "sd_sponsor_logo_false_number",
+      "note": "Repeated SD sponsor/logo mark; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 20,
+      "expected_bbox": [46, 914, 91, 57],
+      "target_layer": "sponsors",
+      "label": "sd_sponsor_logo_false_number",
+      "note": "Repeated SD sponsor/logo mark; should stay Sponsors."
+    }
+  ]
+}

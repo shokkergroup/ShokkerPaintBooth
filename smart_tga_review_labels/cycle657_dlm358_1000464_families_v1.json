@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_1000464.tga",
+  "inspection_records": "_smart_tga_runs/cycle657_dlm_crosspaint_embeddings/inspection_records.json",
+  "review_scope": "Cycle 657 manual source and all-owner sheet review of every suspect; production emitted zero Number components for true 47.",
+  "component_labels": [
+    {"layer":"sponsors","component_index":32,"expected_bbox":[358,720,97,86],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:47_five_six_style"},
+    {"layer":"sponsors","component_index":19,"expected_bbox":[78,303,50,38],"target_layer":"sponsors","label":"sponsor_logo","family_id":"logo:fat_boy_club"},
+    {"layer":"sponsors","component_index":33,"expected_bbox":[76,724,48,42],"target_layer":"sponsors","label":"sponsor_logo","family_id":"logo:fat_boy_club"},
+    {"layer":"sponsors","component_index":38,"expected_bbox":[366,758,15,21],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:47_five_six_style"},
+    {"layer":"paint","component_index":42,"expected_bbox":[367,745,18,4],"target_layer":"numbers","label":"true_number_edge_fragment","family_id":"number:47_five_six_style"}
+  ]
+}

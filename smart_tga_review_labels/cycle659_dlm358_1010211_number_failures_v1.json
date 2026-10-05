@@ -1,0 +1,31 @@
+{
+  "version":1,
+  "paint_label":"dirtlatemodel 358/car_num_1010211.tga",
+  "inspection_records":"_smart_tga_runs/cycle659_dlm_foreground_instances/inspection_records.json",
+  "review_scope":"Cycle 659 manual source plus all owner and suspect-sheet review.",
+  "component_labels":[
+    {"layer":"numbers","component_index":0,"expected_bbox":[133,5,157,69],"target_layer":"template","label":"template_panel_false_number"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[30,14,93,45],"target_layer":"template","label":"template_panel_false_number"},
+    {"layer":"numbers","component_index":2,"expected_bbox":[319,34,157,81],"target_layer":"template","label":"template_hardware_false_number"},
+    {"layer":"numbers","component_index":3,"expected_bbox":[953,115,45,35],"target_layer":"template","label":"template_hardware_false_number"},
+    {"layer":"numbers","component_index":4,"expected_bbox":[820,120,44,37],"target_layer":"template","label":"template_hardware_false_number"},
+    {"layer":"numbers","component_index":5,"expected_bbox":[932,233,61,16],"target_layer":"template","label":"template_hardware_false_number"},
+    {"layer":"numbers","component_index":6,"expected_bbox":[718,704,131,57],"target_layer":"template","label":"template_hardware_false_number"},
+    {"layer":"numbers","component_index":7,"expected_bbox":[275,723,55,37],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:225_sweet_victory_style"},
+    {"layer":"numbers","component_index":8,"expected_bbox":[387,722,54,38],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:225_sweet_victory_style"},
+    {"layer":"numbers","component_index":9,"expected_bbox":[347,764,57,45],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:225_sweet_victory_style"},
+    {"layer":"numbers","component_index":10,"expected_bbox":[457,781,135,54],"target_layer":"sponsors","label":"hoosier_sponsor_panel_false_number","family_id":"logo:hoosier_panel"},
+    {"layer":"numbers","component_index":11,"expected_bbox":[986,803,6,8],"target_layer":"template","label":"tiny_template_false_number"},
+    {"layer":"numbers","component_index":12,"expected_bbox":[976,806,7,8],"target_layer":"template","label":"tiny_template_false_number"},
+    {"layer":"numbers","component_index":13,"expected_bbox":[796,817,56,61],"target_layer":"numbers","label":"true_rear_number_fragment","family_id":"number:225_sweet_victory_style"},
+    {"layer":"numbers","component_index":14,"expected_bbox":[868,895,55,79],"target_layer":"numbers","label":"true_rear_number_fragment","family_id":"number:225_sweet_victory_style"},
+    {"layer":"unassigned","component_index":null,"expected_bbox":[300,232,172,102],"target_layer":"numbers","label":"missed_true_side_number","family_id":"number:225_sweet_victory_style"},
+    {"layer":"sponsors","component_index":7,"expected_bbox":[1000,117,24,591],"target_layer":"template","label":"template_edge_stripe_false_sponsor"},
+    {"layer":"paint","component_index":4,"expected_bbox":[702,998,56,26],"target_layer":"paint","label":"livery_geometry"},
+    {"layer":"paint","component_index":3,"expected_bbox":[646,976,34,26],"target_layer":"paint","label":"livery_geometry"},
+    {"layer":"paint","component_index":null,"expected_bbox":[141,939,3,40],"target_layer":"paint","label":"livery_geometry"},
+    {"layer":"paint","component_index":null,"expected_bbox":[676,543,4,24],"target_layer":"paint","label":"livery_geometry"},
+    {"layer":"paint","component_index":null,"expected_bbox":[677,518,3,24],"target_layer":"paint","label":"livery_geometry"},
+    {"layer":"paint","component_index":null,"expected_bbox":[98,291,3,8],"target_layer":"uncertain","label":"uncertain_micro_fragment"}
+  ]
+}

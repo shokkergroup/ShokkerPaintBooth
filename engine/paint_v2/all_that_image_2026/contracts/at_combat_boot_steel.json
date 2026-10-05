@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_combat_boot_steel",
+  "display_name": "Flannel: Safety Pin Chrome",
+  "promise": "Tiny multidirectional punk safety-pin spring coils, loop and clasp fragments, bright silver on black",
+  "carrier_grammar": "Tiny multidirectional punk safety-pin spring coils, loop and clasp fragments, bright silver on black; single full-canvas image, no duplicated quadrants. Fine features: silver spring pin wire, black pin interstices, tarnished clasp seams, rolled clasp shoulders, fine wire scratching, burnished pin crests",
+  "spec_grammar": "Feature-specific selectors partition silver spring pin wire, black pin interstices, tarnished clasp seams, rolled clasp shoulders, fine wire scratching, burnished pin crests. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "silver spring pin wire",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "black pin interstices",
+      "role": "Material feature selected from artwork by g:<:0.24"
+    },
+    {
+      "name": "tarnished clasp seams",
+      "role": "Material feature selected from artwork by detail:<:0.29"
+    },
+    {
+      "name": "rolled clasp shoulders",
+      "role": "Material feature selected from artwork by edge:>:0.62"
+    },
+    {
+      "name": "fine wire scratching",
+      "role": "Material feature selected from artwork by fine:>:0.76"
+    },
+    {
+      "name": "burnished pin crests",
+      "role": "Material feature selected from artwork by g:>:0.85"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "silver spring pin wire",
+      "black pin interstices",
+      "tarnished clasp seams",
+      "rolled clasp shoulders",
+      "fine wire scratching",
+      "burnished pin crests"
+    ],
+    "R": [
+      "silver spring pin wire",
+      "black pin interstices",
+      "tarnished clasp seams",
+      "rolled clasp shoulders",
+      "fine wire scratching",
+      "burnished pin crests"
+    ],
+    "Cc": [
+      "silver spring pin wire",
+      "black pin interstices",
+      "tarnished clasp seams",
+      "rolled clasp shoulders",
+      "fine wire scratching",
+      "burnished pin crests"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "silver spring pin wire",
+      "range": [
+        [
+          240,
+          0,
+          16
+        ],
+        [
+          255,
+          32,
+          90
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "black pin interstices",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "tarnished clasp seams",
+      "range": [
+        [
+          65,
+          110,
+          125
+        ],
+        [
+          185,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "rolled clasp shoulders",
+      "range": [
+        [
+          240,
+          0,
+          170
+        ],
+        [
+          255,
+          30,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine wire scratching",
+      "range": [
+        [
+          180,
+          30,
+          25
+        ],
+        [
+          240,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "burnished pin crests",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_band_tee_crack",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_basement_amp",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "silver spring pin wire",
+      "black pin interstices",
+      "tarnished clasp seams",
+      "rolled clasp shoulders",
+      "fine wire scratching",
+      "burnished pin crests"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_combat_boot_steel / Tiny multidirectional punk safety-pin spring coils, loop and clasp fragments, bright silver on black",
+  "spec_key": "at_combat_boot_steel / silver spring pin wire all; black pin interstices g:<:0.24; tarnished clasp seams detail:<:0.29; rolled clasp shoulders edge:>:0.62; fine wire scratching fine:>:0.76; burnished pin crests g:>:0.85",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

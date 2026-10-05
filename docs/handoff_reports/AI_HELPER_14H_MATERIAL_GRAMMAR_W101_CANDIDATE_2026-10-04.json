@@ -1,0 +1,250 @@
+{
+  "status": "PASS",
+  "task": "W101 isolated material grammar candidate",
+  "installed": false,
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w101_review/fresh_oracle.json",
+    "sha256": "E4A84B29C4C9B2A00B25F3777E635B70A37529463F5F5E448BFF19AD532FBCAA",
+    "count": 18,
+    "frozenBeforeCandidateBehaviorInspection": true
+  },
+  "sources": {
+    "runtime5MaterialControls": {
+      "path": "_easy_claude_work/ai14h_generation3_runtime5/js/spb-ai-material-controls.js",
+      "sha256": "A6F50C22C2D3A4F6F9707505D66C6C30B9D2CC0E04D78F00F0D103F38A49919D"
+    },
+    "runtime5Controller": {
+      "path": "_easy_claude_work/ai14h_generation3_runtime5/js/spb-pro-ai.js",
+      "sha256": "60AE271C62D697AB31B9F2EED47B841A6038755DB8F319507E38D03185EE3A21"
+    },
+    "isolatedControllerRoutingCandidate": {
+      "path": "_easy_claude_work/ai14h_w101_review/spb-pro-ai.candidate.js",
+      "sha256": "D05FD03D8E50151F7888D7E32C0D92AC661864EB989A3B7F9F9541C7692AE4E2",
+      "change": "Adds standalone metallic to the offlineMaterialPlan ownership prefilter so the parser-supported “roof metallic” form reaches the existing material route."
+    },
+    "candidateMaterialControls": {
+      "path": "_easy_claude_work/ai14h_w101_review/spb-ai-material-controls.candidate.js",
+      "sha256": "30B18516A3F13DD7854F6EF36FDF5EB7A37985537E63C4C6405FEFA690C6BAEC"
+    }
+  },
+  "baselineGap": {
+    "cases": [
+      {
+        "id": "pos-roof-clearcoat-after-target",
+        "kind": "clarify",
+        "reason": "missing-or-unsupported-channel"
+      },
+      {
+        "id": "pos-hood-roughness-after-target",
+        "kind": "clarify",
+        "reason": "missing-or-unsupported-channel"
+      },
+      {
+        "id": "pos-roof-metallic-after-target",
+        "kind": "clarify",
+        "reason": "missing-or-unsupported-channel"
+      }
+    ],
+    "canonicalControls": [
+      {
+        "id": "pos-channel-before-target-cc",
+        "kind": "edit",
+        "part": "roof",
+        "channel": "clearcoat"
+      },
+      {
+        "id": "pos-channel-before-target-r",
+        "kind": "edit",
+        "part": "hood",
+        "channel": "roughness"
+      }
+    ],
+    "note": "Pinned parser did not recognize the frozen channel-after-target positive requests; existing channel-first behavior remains the positive control."
+  },
+  "results": [
+    {
+      "id": "pos-roof-clearcoat-after-target",
+      "pass": true,
+      "parser": "edit",
+      "route": "one exact queue edit",
+      "channel": "clearcoat",
+      "part": "roof",
+      "delta": 20
+    },
+    {
+      "id": "pos-hood-roughness-after-target",
+      "pass": true,
+      "parser": "edit",
+      "route": "one exact queue edit",
+      "channel": "roughness",
+      "part": "hood",
+      "delta": -12
+    },
+    {
+      "id": "pos-roof-metallic-after-target",
+      "pass": true,
+      "parser": "edit",
+      "route": "one exact queue edit",
+      "channel": "metalness",
+      "part": "roof",
+      "delta": 7
+    },
+    {
+      "id": "pos-channel-before-target-cc",
+      "pass": true,
+      "parser": "edit",
+      "route": "one exact queue edit",
+      "channel": "clearcoat",
+      "part": "roof",
+      "delta": 20
+    },
+    {
+      "id": "pos-channel-before-target-r",
+      "pass": true,
+      "parser": "edit",
+      "route": "one exact queue edit",
+      "channel": "roughness",
+      "part": "hood",
+      "delta": -8
+    },
+    {
+      "id": "pos-negative-explicit",
+      "pass": true,
+      "parser": "edit",
+      "route": "one exact queue edit",
+      "channel": "clearcoat",
+      "part": "roof",
+      "delta": -15
+    },
+    {
+      "id": "pos-current-value-and-delta",
+      "pass": true,
+      "parser": "clarify",
+      "route": "actual material clarification; no queue",
+      "reason": "unsupported-relative-shorthand",
+      "reply": "Nothing was changed. Name one channel, one exact part, and a relative change in points."
+    },
+    {
+      "id": "preservation-cc-only",
+      "pass": true,
+      "parser": "edit",
+      "route": "one exact queue edit",
+      "channel": "clearcoat",
+      "part": "roof",
+      "delta": 20
+    },
+    {
+      "id": "preservation-roughness-only",
+      "pass": true,
+      "parser": "edit",
+      "route": "one exact queue edit",
+      "channel": "roughness",
+      "part": "hood",
+      "delta": -10
+    },
+    {
+      "id": "clarify-no-unit",
+      "pass": true,
+      "parser": "clarify",
+      "route": "actual material clarification; no queue",
+      "reason": "missing-or-unsupported-channel",
+      "reply": "Which channel should change: metalness, roughness, or clearcoat?"
+    },
+    {
+      "id": "clarify-no-amount",
+      "pass": true,
+      "parser": "clarify",
+      "route": "actual material clarification; no queue",
+      "reason": "missing-relative-amount",
+      "reply": "Nothing was changed. Please give the relative change in points, such as “by 20 points”."
+    },
+    {
+      "id": "reject-percent",
+      "pass": true,
+      "parser": "clarify",
+      "route": "actual material clarification; no queue",
+      "reason": "relative-amount-needs-points",
+      "reply": "Please give a relative amount in points, such as “by 20 points”."
+    },
+    {
+      "id": "reject-absolute",
+      "pass": true,
+      "parser": "clarify",
+      "route": "actual material clarification; no queue",
+      "reason": "absolute-level-is-not-a-relative-shift",
+      "reply": "Which exact part and material channel should I adjust? I can change only metalness, roughness, or clearcoat."
+    },
+    {
+      "id": "reject-unknown-channel",
+      "pass": true,
+      "parser": "clarify",
+      "route": "not claimed as a material edit; no queue",
+      "reason": "missing-or-unsupported-channel",
+      "reply": null
+    },
+    {
+      "id": "reject-mixed-channels",
+      "pass": true,
+      "parser": "clarify",
+      "route": "actual material clarification; no queue",
+      "reason": "missing-or-unsupported-channel",
+      "reply": "Which channel should change: metalness, roughness, or clearcoat?"
+    },
+    {
+      "id": "reject-conflicting-direction",
+      "pass": true,
+      "parser": "clarify",
+      "route": "actual material clarification; no queue",
+      "reason": "missing-or-unsupported-channel",
+      "reply": "Which channel should change: metalness, roughness, or clearcoat?"
+    },
+    {
+      "id": "reject-prohibition",
+      "pass": true,
+      "parser": "delegate",
+      "route": "actual material clarification; no queue",
+      "reason": "negative-or-prohibition",
+      "reply": "Nothing was changed. I will leave that material channel alone."
+    },
+    {
+      "id": "positive-ordinary-guidance-unaffected",
+      "pass": true,
+      "parser": "delegate",
+      "route": "not claimed as a material edit; no queue",
+      "reason": "question-or-howto",
+      "reply": null
+    },
+    {
+      "id": "supplemental-bare-metallic-look",
+      "pass": true,
+      "parser": "delegate",
+      "route": "not claimed as material edit; no queue"
+    },
+    {
+      "id": "supplemental-compact-percent-refused",
+      "pass": true,
+      "parser": "clarify",
+      "route": "actual material clarification; no queue"
+    }
+  ],
+  "counts": {
+    "passed": 20,
+    "total": 20,
+    "frozenOraclePassed": 18,
+    "supplementalControlsPassed": 2,
+    "parseAndBuild": 8,
+    "actualOfflineAskCases": 8,
+    "offlineMaterialPlanCases": 20,
+    "queuedPositiveEdits": 8,
+    "clarificationOrGuidanceNoQueue": 12,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "serverCalls": 0,
+    "paintApplications": 0
+  },
+  "limits": [
+    "Uses actual pinned Runtime5 material parser, buildEdit and controller offlineMaterialPlan/offlineMaterialAsk/offlineAsk function bodies in a VM; the current-part owner registry match, E-plan, warmup and edit_zone sink are explicit controlled fixtures.",
+    "Verifies parse, build plan and queue construction only. No paint application, native UI, provider, server, or live files were invoked.",
+    "Candidate broadens material grammar for the alternate part-then-channel wording and two pre-frozen single-channel relative shorthands. A one-token private controller prefilter extension is needed for standalone “metallic” to reach the parser. All ownership callbacks stay unchanged; edits remain exact-part, one-channel, points-only relative shifts with the existing clamp."
+  ]
+}

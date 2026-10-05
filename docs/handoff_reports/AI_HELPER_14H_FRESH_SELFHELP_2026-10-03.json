@@ -1,0 +1,345 @@
+{
+  "schema": "spb-self-help-fresh-probes/1",
+  "frozen_before_inspecting_new_source": true,
+  "baseline_loaded_page": "68a46a643f41; spb-self-help-20261003push2",
+  "interpretation": "Fresh phrasing; expected guidance anchored to knowledge topics. Once shown to implementation workers, subsequent results are regression evidence.",
+  "items": [
+    {
+      "id": "H01",
+      "q": "When I reopen tomorrow, how can I carry on with these zones?",
+      "expected_cites": [
+        "hdi.save_project"
+      ],
+      "state": "psd",
+      "expected": "help"
+    },
+    {
+      "id": "H02",
+      "q": "Could you walk me through bringing a layered Photoshop file in?",
+      "expected_cites": [
+        "hdi.load_psd"
+      ],
+      "state": "none",
+      "expected": "help"
+    },
+    {
+      "id": "H03",
+      "q": "Which button lets me bring in a flattened Targa paint?",
+      "expected_cites": [
+        "hdi.load_flat"
+      ],
+      "state": "none",
+      "expected": "help"
+    },
+    {
+      "id": "H04",
+      "q": "Can you explain how I start with an empty square to paint on?",
+      "expected_cites": [
+        "hdi.blank_canvas"
+      ],
+      "state": "none",
+      "expected": "help"
+    },
+    {
+      "id": "H05",
+      "q": "Where can I get rid of the grid-looking template lines?",
+      "expected_cites": [
+        "hdi.template_layers_off"
+      ],
+      "state": "psd",
+      "expected": "help"
+    },
+    {
+      "id": "H06",
+      "q": "How would I add my sponsor picture as a separate layer?",
+      "expected_cites": [
+        "hdi.add_logo"
+      ],
+      "state": "psd",
+      "expected": "help"
+    },
+    {
+      "id": "H07",
+      "q": "How can I make my logo half transparent?",
+      "expected_cites": [
+        "hdi.layer_opacity"
+      ],
+      "state": "psd",
+      "expected": "help"
+    },
+    {
+      "id": "H08",
+      "q": "What are the steps to squish or enlarge the number artwork?",
+      "expected_cites": [
+        "hdi.move_logo"
+      ],
+      "state": "psd",
+      "expected": "help"
+    },
+    {
+      "id": "H09",
+      "q": "Could you explain how to hide a layer without deleting it?",
+      "expected_cites": [
+        "hdi.layer_visibility"
+      ],
+      "state": "psd",
+      "expected": "help"
+    },
+    {
+      "id": "H10",
+      "q": "How do I track down Sponsors in a PSD with tons of layers?",
+      "expected_cites": [
+        "hdi.find_layer"
+      ],
+      "state": "psd",
+      "expected": "help"
+    },
+    {
+      "id": "H11",
+      "q": "How can I put just the hood in a separate finish area?",
+      "expected_cites": [
+        "hdi.finish_one_part",
+        "hdi.make_zone"
+      ],
+      "state": "flat",
+      "expected": "help"
+    },
+    {
+      "id": "H12",
+      "q": "Could you walk me through selecting all the blue paint?",
+      "expected_cites": [
+        "hdi.select_by_colour",
+        "hdi.change_one_colour"
+      ],
+      "state": "flat",
+      "expected": "help"
+    },
+    {
+      "id": "H13",
+      "q": "How can I keep my livery colours but make them more reflective?",
+      "expected_cites": [
+        "hdi.spec_only_shine"
+      ],
+      "state": "flat",
+      "expected": "help"
+    },
+    {
+      "id": "H14",
+      "q": "Can you explain how I make two colours fade into each other?",
+      "expected_cites": [
+        "hdi.gradient"
+      ],
+      "state": "flat",
+      "expected": "help"
+    },
+    {
+      "id": "H15",
+      "q": "Where do I adjust how tiny the carbon weave is?",
+      "expected_cites": [
+        "hdi.pattern_finer",
+        "hdi.what_base_scale"
+      ],
+      "state": "flat",
+      "expected": "help"
+    },
+    {
+      "id": "H16",
+      "q": "How can I turn a texture sideways?",
+      "expected_cites": [
+        "hdi.rotate_pattern"
+      ],
+      "state": "flat",
+      "expected": "help"
+    },
+    {
+      "id": "H17",
+      "q": "How would I take the flame pattern off this zone?",
+      "expected_cites": [
+        "hdi.remove_pattern"
+      ],
+      "state": "flat",
+      "expected": "help"
+    },
+    {
+      "id": "H18",
+      "q": "Could you explain the way to layer one finish over another?",
+      "expected_cites": [
+        "hdi.second_base"
+      ],
+      "state": "flat",
+      "expected": "help"
+    },
+    {
+      "id": "H19",
+      "q": "How can I back off the finish effect so more of my paint shows?",
+      "expected_cites": [
+        "hdi.finish_less_strong"
+      ],
+      "state": "flat",
+      "expected": "help"
+    },
+    {
+      "id": "H20",
+      "q": "Where would I change which zone takes precedence?",
+      "expected_cites": [
+        "hdi.zone_order"
+      ],
+      "state": "flat",
+      "expected": "help"
+    },
+    {
+      "id": "H21",
+      "q": "How do I mark where the race numbers actually are?",
+      "expected_cites": [
+        "hdi.teach_numbers"
+      ],
+      "state": "flat",
+      "expected": "help"
+    },
+    {
+      "id": "H22",
+      "q": "What are the steps to show the app which panel is the roof?",
+      "expected_cites": [
+        "hdi.teach_parts"
+      ],
+      "state": "flat",
+      "expected": "help"
+    },
+    {
+      "id": "H23",
+      "q": "How can I get the beginner tutorial back?",
+      "expected_cites": [
+        "hdi.tutorial"
+      ],
+      "state": "none",
+      "expected": "help"
+    },
+    {
+      "id": "H24",
+      "q": "Which button takes me from Easy to Pro?",
+      "expected_cites": [
+        "hdi.switch_mode"
+      ],
+      "state": "flat",
+      "expected": "help"
+    },
+    {
+      "id": "H25",
+      "q": "What does it mean when a paint is flattened instead of layered?",
+      "expected_cites": [
+        "tga",
+        "layers_panel",
+        "hdi.what_are_layers"
+      ],
+      "state": "flat",
+      "expected": "help"
+    },
+    {
+      "id": "H26",
+      "q": "Can you explain how I make chrome without wiping out my paint colours?",
+      "expected_cites": [
+        "hdi.make_chrome",
+        "hdi.spec_only_shine"
+      ],
+      "state": "flat",
+      "expected": "help"
+    },
+    {
+      "id": "H27",
+      "q": "How do I stop the wire and mandatory guides showing in my exported paint?",
+      "expected_cites": [
+        "hdi.template_layers_off"
+      ],
+      "state": "psd",
+      "expected": "help"
+    },
+    {
+      "id": "H28",
+      "q": "How would I change just the race number colour?",
+      "expected_cites": [
+        "hdi.recolour_numbers"
+      ],
+      "state": "psd",
+      "expected": "help"
+    },
+    {
+      "id": "H29",
+      "q": "How can I make the effect on my number shapes metallic?",
+      "expected_cites": [
+        "hdi.finish_numbers"
+      ],
+      "state": "psd",
+      "expected": "help"
+    },
+    {
+      "id": "H30",
+      "q": "What should a total beginner do after opening this app?",
+      "expected_cites": [
+        "hdi.what_now",
+        "stuck"
+      ],
+      "state": "none",
+      "expected": "help"
+    },
+    {
+      "id": "G01",
+      "q": "Make only the roof chrome and keep everything else as it is",
+      "expected": "delegate"
+    },
+    {
+      "id": "G02",
+      "q": "Can you make the numbers white for me?",
+      "expected": "delegate"
+    },
+    {
+      "id": "G03",
+      "q": "Hide the Wire layer",
+      "expected": "delegate"
+    },
+    {
+      "id": "G04",
+      "q": "Please save this project now",
+      "expected": "delegate"
+    },
+    {
+      "id": "G05",
+      "q": "I want silver sponsors over a red matte body",
+      "expected": "delegate"
+    },
+    {
+      "id": "G06",
+      "q": "What finish would suit the hood?",
+      "expected": "delegate"
+    },
+    {
+      "id": "G07",
+      "q": "Show me some carbon finishes",
+      "expected": "delegate"
+    },
+    {
+      "id": "G08",
+      "q": "Could you make the pattern finer?",
+      "expected": "delegate"
+    },
+    {
+      "id": "G09",
+      "q": "Undo my last change",
+      "expected": "delegate"
+    },
+    {
+      "id": "G10",
+      "q": "Put a logo onto the door",
+      "expected": "delegate"
+    },
+    {
+      "id": "G11",
+      "q": "Try four vintage colour schemes",
+      "expected": "delegate"
+    },
+    {
+      "id": "G12",
+      "q": "Make the black paint satin",
+      "expected": "delegate"
+    }
+  ]
+}

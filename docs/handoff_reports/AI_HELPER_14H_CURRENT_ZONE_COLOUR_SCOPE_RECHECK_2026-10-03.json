@@ -1,0 +1,893 @@
+{
+  "title": "W27 same-oracle current zone-colour scope recheck",
+  "generated_at": "2026-10-04T06:06:15.517Z",
+  "mode": "same 14-case W23 replay only; no new fresh coverage credit; frozen source helper audit with mocked queue/apply callbacks; no provider/browser/native pixels",
+  "frozen_scenarios_sha256": "9936629743ffa9c6ae0760fd40498215a4c62f3eb1d02dc555386017cfd57270",
+  "frozen_scenario_count": 14,
+  "pinned_source_hashes": {
+    "spb-pro-ai.js": "92c247c9ed08617e86d44c48fcbb22dcfb1db61de045bb5e98007899e2c7be51",
+    "spb-pro-edit.js": "5e8cc8bb52825b4ebac672a991d6d927b0e5c1906c6d54e80970fb79e18ac456",
+    "spb-pro-design.js": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8"
+  },
+  "baseline_w23_failure_record": {
+    "report": "docs/handoff_reports/AI_HELPER_14H_CURRENT_ZONE_COLOUR_SCOPE_REVIEW_2026-10-03.json",
+    "sha256": "daf2060420db29468bda205d5da12e882bd59f84ea495e208270493b780744d1",
+    "source_edit_sha256": "868e698dd0dc6a3424d5bcb2612bc0f8f21dc7c6ca3ffa6ea2524193cd76078e",
+    "no_rewrite": true,
+    "fresh_credit": false
+  },
+  "runtime_snapshot_scope": {
+    "parent_reported_hot2_loaded_prefixes": {
+      "pro_ai": "65ad",
+      "pro_edit": "5e8c"
+    },
+    "recheck_snapshot_prefixes": {
+      "pro_ai": "92c2",
+      "pro_edit": "5e8c"
+    },
+    "limitation": "The replay evaluates frozen current source bytes only. Parent reports hot2 loaded E 5e8c with older proAI 65ad; this frozen recheck uses proAI 92c2 and does not certify that loaded native route or live rendering."
+  },
+  "actual_functions_exercised": {
+    "pro_ai_zoneLayerNames": "671fedd22b6d8d431fe025fed1b1e472ee264641df53049a3d285e52bb956c05",
+    "pro_ai_zoneColours": "6c06381c9b7d155c9aa26c20f2281573e27c251b9a76c78a6d40eb053c8ba789",
+    "pro_ai_shownShares": "13e2e8b64e0a21857db691483472571328657bf48934726c1bd520b651847586",
+    "pro_ai_queueEditZones": "d4ccd69a90022a26ffca719ce63c6ea5770c06c48df85009355a3451fd725066",
+    "pro_ai_applyQueue": "e54a505318d1bd663f8654407964b06e314bb7e10635ef62ba4ce1c639889ed9",
+    "offline_edit_ask": "fbd5ad2cbfab0a945357739ae451d269ad6b022acb676d2bc13ce74eac9bec69",
+    "offline_ask": "3dad811d9a8d41b7b7d36310cadaf983fdffa47bcc9a90c0c5bce30bc07ae8c2",
+    "edit_plan_and_compile": "executed directly from pinned spb-pro-edit.js. queueEditZones/applyQueue and offlineEditAsk/offlineAsk were extracted and source-checked, but none of the current scoped cases passes the clarification guard, so no W27 case entered a zone-edit batch and no whole UI flow was invoked."
+  },
+  "findings": {
+    "part_scope_guard": "Compared with baseline E 868e, current E 5e8c now asks “which also covers other places” when a part-scoped color target has a matching zone color but no matching source-palette color. The 11 frozen same-oracle scoped/mixed cases asserted below have no committed mutation batch. This is fail-closed behavior, but it also asks on ZC01 even though the fixture labels the unique owner as an exact roof zone: proAI.zoneColours() still does not transmit verifiable part/mask provenance to E.",
+    "baseline_hazards_not_recredited": "The original W23 report/hash is preserved. Cases that previously edited whole-body, overlapping, hidden, duplicate, or manually named owners now produce clarification/no batch in this source replay; those observations are regression comparison only, not fresh prompt coverage.",
+    "source_present_and_other_routes": "With the fixture mask-probe stub, source blue hidden by a red roof owner has shown_pct 0 and ZC12 clarifies rather than adding an overlay. ZC11 compiles a Numbers-layer region. ZC09 is represented as an object target, with no paint zone. ZC10 creates an earlier component before a later scope clarification, but offlineEditAsk checks cm.ask/missing before queueEditZones, so the combined plan is rejected atomically before mutation.",
+    "remaining_design_need": "Safe reuse needs a proof-bearing zoneColours record: exact canonical part/portion selector plus current mask/layout identity, active/unmuted state, unique UUID/owner and helper-owned registry provenance. If exact owner proof is missing, overlapping, hidden, duplicate, or manual, clarify. For explicit whole-car color requests, intentional edits to visible matching manual zones may remain allowed with unique active target IDs. Keep source paint colors separate from colors currently painted by zones; never adopt an unrelated source-color zone to satisfy a current-color request."
+  },
+  "historical_w22_context": "W22 tested the newer current source and a synthetic fresh owner row. Its conditional E compiler capability is not native generation-2 acceptance and does not show that loaded generation-2 code contained the owner-color pathway.",
+  "acceptance_limits": [
+    "The no-queue scoped cases assert that no committed mutation batch is produced. Queue/apply callbacks were not reached by the current W27 cases because they fail closed earlier.",
+    "Zone fixture region scopes are scenario labels only: production zoneColours still omits region/part proof. Thus ZC01 is expected to fail closed pending a proof hook.",
+    "No native app, live paint, or post-freeze source was read or tested; current-live acceptance is not claimed.",
+    "The identical W23 oracle is replayed for regression comparison only; no producer 9/10 tail-positive result or prompt gets fresh credit."
+  ],
+  "outcomes": [
+    {
+      "id": "ZC01",
+      "ask": "Change the blue on the roof to pale pink.",
+      "setup": "unique exact owned roof-blue zone",
+      "oracle": "one edit to same UUID; roof region unchanged",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "roof-blue",
+          "zone": "Roof repaint",
+          "index": 0,
+          "share_pct": 18,
+          "selects_pct": 18,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof to pale pink",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "pink",
+              "hex": "#ff7eb6",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": "The blue there is painted by your zone “Roof repaint”, which also covers other places, so I did not change it. Say “make all the blue pink” to change it everywhere.",
+        "missing": [
+          {
+            "why": "zonescope",
+            "word": "blue"
+          }
+        ],
+        "objects": [],
+        "zones": []
+      }
+    },
+    {
+      "id": "ZC02",
+      "ask": "Change only the pink on the roof to pale red.",
+      "setup": "whole-body pink owner plus source pink elsewhere",
+      "oracle": "must not edit whole-body owner for roof-only request",
+      "ownerRecords": [
+        {
+          "hex": "#ff3fa4",
+          "zone_id": "pink-body",
+          "zone": "Pink body",
+          "index": 0,
+          "share_pct": 78,
+          "selects_pct": 78,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change only the pink on the roof to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "pink",
+              "hex": "#ff7eb6",
+              "qual": null,
+              "at": 17,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 42,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": "The pink there is painted by your zone “Pink body”, which also covers other places, so I did not change it. Say “make all the pink red” to change it everywhere.",
+        "missing": [
+          {
+            "why": "zonescope",
+            "word": "pink"
+          }
+        ],
+        "objects": [],
+        "zones": []
+      }
+    },
+    {
+      "id": "ZC03",
+      "ask": "Change the blue on the roof and body to pale red.",
+      "setup": "same color on roof owner and body owner",
+      "oracle": "resolve both only if request explicitly names both complete scopes",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "blue-roof",
+          "zone": "Blue roof",
+          "index": 0,
+          "share_pct": 16,
+          "selects_pct": 16,
+          "finish": "",
+          "layers": []
+        },
+        {
+          "hex": "#1450b4",
+          "zone_id": "blue-body",
+          "zone": "Blue body",
+          "index": 1,
+          "share_pct": 78,
+          "selects_pct": 78,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof and body to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 14,
+              "qual": "pale",
+              "exact": false
+            }
+          },
+          {
+            "target": {
+              "kind": "body",
+              "at": 1
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 14,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": "The blue there is painted by your zones “Blue roof”, “Blue body”, which also covers other places, so I did not change it. Say “make all the blue red” to change it everywhere.",
+        "missing": [
+          {
+            "why": "zonescope",
+            "word": "blue"
+          }
+        ],
+        "objects": [],
+        "zones": []
+      }
+    },
+    {
+      "id": "ZC04",
+      "ask": "Change the blue on the roof and left side to pale red.",
+      "setup": "same color on roof and side helper owners",
+      "oracle": "edit each uniquely owned requested region only",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "blue-roof",
+          "zone": "Blue roof",
+          "index": 0,
+          "share_pct": 16,
+          "selects_pct": 16,
+          "finish": "",
+          "layers": []
+        },
+        {
+          "hex": "#1450b4",
+          "zone_id": "blue-side",
+          "zone": "Blue left side",
+          "index": 1,
+          "share_pct": 24,
+          "selects_pct": 24,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof and left side to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof",
+                "left side"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 19,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": "The blue there is painted by your zones “Blue roof”, “Blue left side”, which also covers other places, so I did not change it. Say “make all the blue red” to change it everywhere.",
+        "missing": [
+          {
+            "why": "zonescope",
+            "word": "blue"
+          }
+        ],
+        "objects": [],
+        "zones": []
+      }
+    },
+    {
+      "id": "ZC05",
+      "ask": "Change the pink on the roof to pale red.",
+      "setup": "overlapping whole-body and roof pink owners",
+      "oracle": "clarify; never guess between overlapping owners",
+      "ownerRecords": [
+        {
+          "hex": "#ff3fa4",
+          "zone_id": "pink-body",
+          "zone": "Pink body",
+          "index": 0,
+          "share_pct": 78,
+          "selects_pct": 78,
+          "finish": "",
+          "layers": []
+        },
+        {
+          "hex": "#ff3fa4",
+          "zone_id": "pink-roof",
+          "zone": "Pink roof",
+          "index": 1,
+          "share_pct": 16,
+          "selects_pct": 16,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the pink on the roof to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "pink",
+              "hex": "#ff7eb6",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": "The pink there is painted by your zones “Pink body”, “Pink roof”, which also covers other places, so I did not change it. Say “make all the pink red” to change it everywhere.",
+        "missing": [
+          {
+            "why": "zonescope",
+            "word": "pink"
+          }
+        ],
+        "objects": [],
+        "zones": []
+      }
+    },
+    {
+      "id": "ZC06",
+      "ask": "Change the blue on the roof to pale red.",
+      "setup": "only matching owner is muted",
+      "oracle": "do not adopt or edit muted zone; clarify/source-target safely",
+      "ownerRecords": [],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": "I do not see any blue on this car, but I do see cyan (27% of the car). Is that the one? Otherwise tell me which: black (42%), cyan (27%), white (11%), sand (6%), green (2%).",
+        "missing": [
+          {
+            "why": "colour",
+            "word": "blue"
+          }
+        ],
+        "objects": [],
+        "zones": []
+      }
+    },
+    {
+      "id": "ZC07",
+      "ask": "Change the blue on the roof to pale red.",
+      "setup": "matching owner has zero/currently hidden footprint",
+      "oracle": "do not treat hidden owner color as visible current roof paint",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "hidden-blue",
+          "zone": "Hidden blue roof",
+          "index": 0,
+          "share_pct": 0,
+          "selects_pct": 18,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": "The blue there is painted by your zone “Hidden blue roof”, which also covers other places, so I did not change it. Say “make all the blue red” to change it everywhere.",
+        "missing": [
+          {
+            "why": "zonescope",
+            "word": "blue"
+          }
+        ],
+        "objects": [],
+        "zones": []
+      }
+    },
+    {
+      "id": "ZC08",
+      "ask": "Change the blue on the roof to pale red.",
+      "setup": "duplicate UUID/clone with same color-selector provenance",
+      "oracle": "ambiguous ownership must clarify",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "clone-blue",
+          "zone": "Cloned blue roof",
+          "index": 0,
+          "share_pct": 16,
+          "selects_pct": 16,
+          "finish": "",
+          "layers": []
+        },
+        {
+          "hex": "#1450b4",
+          "zone_id": "clone-blue",
+          "zone": "Cloned blue roof copy",
+          "index": 1,
+          "share_pct": 16,
+          "selects_pct": 16,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": "The blue there is painted by your zones “Cloned blue roof”, “Cloned blue roof copy”, which also covers other places, so I did not change it. Say “make all the blue red” to change it everywhere.",
+        "missing": [
+          {
+            "why": "zonescope",
+            "word": "blue"
+          }
+        ],
+        "objects": [],
+        "zones": []
+      }
+    },
+    {
+      "id": "ZC09",
+      "ask": "Change the blue on the moon panel to pale red.",
+      "setup": "unknown named part",
+      "oracle": "no whole-body fallback or arbitrary matching-zone edit",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "body-blue",
+          "zone": "Blue body",
+          "index": 0,
+          "share_pct": 78,
+          "selects_pct": 78,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the moon panel to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": null,
+              "object": "moon panel"
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 43,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": null,
+        "missing": [],
+        "objects": [
+          {
+            "object": "moon panel",
+            "word": "blue",
+            "hexes": [
+              "#1450b4"
+            ],
+            "layers": null,
+            "action": "red",
+            "colour": {
+              "name": "red",
+              "hex": "#e88797"
+            },
+            "look": null
+          }
+        ],
+        "zones": []
+      }
+    },
+    {
+      "id": "ZC10",
+      "ask": "Change the blue on the car and only the red on the roof to pale pink.",
+      "setup": "whole-body plus named-part constraints",
+      "oracle": "whole-body and roof constraints remain distinct and complete",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "blue-body",
+          "zone": "Blue body",
+          "index": 0,
+          "share_pct": 78,
+          "selects_pct": 78,
+          "finish": "",
+          "layers": []
+        },
+        {
+          "hex": "#c8102e",
+          "zone_id": "red-roof",
+          "zone": "Red roof",
+          "index": 1,
+          "share_pct": 16,
+          "selects_pct": 16,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the car and only the red on the roof to pale pink",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": null
+            },
+            "colour": {
+              "name": "pink",
+              "hex": "#ff7eb6",
+              "at": 34,
+              "qual": "pale",
+              "exact": false
+            }
+          },
+          {
+            "target": {
+              "kind": "colour",
+              "word": "red",
+              "hex": "#c8102e",
+              "qual": null,
+              "at": 10,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "pink",
+              "hex": "#ff7eb6",
+              "at": 34,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": "The red there is painted by your zone “Red roof”, which also covers other places, so I did not change it. Say “make all the red pink” to change it everywhere.",
+        "missing": [
+          {
+            "why": "zonescope",
+            "word": "red"
+          }
+        ],
+        "objects": [],
+        "zones": [
+          {
+            "name": "Blue body",
+            "color": "#f28bb8",
+            "zoneEdit": {
+              "zone_id": "blue-body",
+              "zone": "Blue body",
+              "hex": "#1450b4"
+            },
+            "parts": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "ZC11",
+      "ask": "Change the blue numbers to pale red.",
+      "setup": "whole-body owner linked to a source layer",
+      "oracle": "layer-linked whole region is not adopted as numbers-only owner",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "blue-layer",
+          "zone": "Blue layer zone",
+          "index": 0,
+          "share_pct": 28,
+          "selects_pct": 28,
+          "finish": "",
+          "layers": [
+            "Numbers"
+          ]
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue numbers to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "numbers",
+              "at": 17
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 33,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": null,
+        "missing": [],
+        "objects": [],
+        "zones": [
+          {
+            "name": "Numbers recoloured pink",
+            "color": "#e88797",
+            "finish": "base::gloss",
+            "region": {
+              "layers": [
+                "Numbers"
+              ]
+            },
+            "parts": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "ZC12",
+      "ask": "Change the blue on the roof to pale red.",
+      "setup": "requested blue exists only in source paint; helper owner is different color",
+      "oracle": "do not confuse source and currently painted colors",
+      "ownerRecords": [
+        {
+          "hex": "#c8102e",
+          "zone_id": "red-roof",
+          "zone": "Red roof",
+          "index": 0,
+          "share_pct": 16,
+          "selects_pct": 16,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": "Nothing was changed: I only see a little blue on this car (about under 1% of the paint) and none of your zones paints blue. Should I change just those few spots? Otherwise tell me which colour you mean: black (42%), cyan (27%), white (11%), sand (6%), green (2%), blue (3%).",
+        "missing": [
+          {
+            "why": "small",
+            "word": "blue"
+          }
+        ],
+        "objects": [],
+        "zones": []
+      }
+    },
+    {
+      "id": "ZC13",
+      "ask": "Change the blue on the roof to pale red.",
+      "setup": "blue absent from source and no visible owned-blue roof zone",
+      "oracle": "clarify/no queue",
+      "ownerRecords": [],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": "I do not see any blue on this car, but I do see cyan (27% of the car). Is that the one? Otherwise tell me which: black (42%), cyan (27%), white (11%), sand (6%), green (2%).",
+        "missing": [
+          {
+            "why": "colour",
+            "word": "blue"
+          }
+        ],
+        "objects": [],
+        "zones": []
+      }
+    },
+    {
+      "id": "ZC14",
+      "ask": "Change the blue on the roof to pale pink.",
+      "setup": "unique owner name changed but same selector still exists",
+      "oracle": "renamed/manual/uncertain owner must not be adopted implicitly",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "manual-blue",
+          "zone": "Renamed blue body",
+          "index": 0,
+          "share_pct": 78,
+          "selects_pct": 78,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof to pale pink",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "pink",
+              "hex": "#ff7eb6",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": "The blue there is painted by your zone “Renamed blue body”, which also covers other places, so I did not change it. Say “make all the blue pink” to change it everywhere.",
+        "missing": [
+          {
+            "why": "zonescope",
+            "word": "blue"
+          }
+        ],
+        "objects": [],
+        "zones": []
+      }
+    }
+  ]
+}

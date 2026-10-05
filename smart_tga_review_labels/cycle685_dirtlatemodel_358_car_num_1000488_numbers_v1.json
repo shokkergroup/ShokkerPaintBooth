@@ -1,0 +1,4 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_1000488.tga","inspection_records":"_smart_tga_runs/cycle685_dlm_raw_recall_review/inspection_records.json","review_scope":"Cycle 685 source plus complete owner sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[286,246,181,88],"target_layer":"numbers","label":"true_upper_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[4,904,196,108],"target_layer":"template","label":"hardware_map_false_number"}
+]}

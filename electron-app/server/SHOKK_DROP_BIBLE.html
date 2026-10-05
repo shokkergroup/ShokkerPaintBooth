@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHOKK DROP BIBLE — Shokker Paint Booth</title>
+<style>
+  :root {
+    --bg: #07090d;
+    --panel: #10161e;
+    --panel-2: #141c26;
+    --line: #2b3645;
+    --text: #eaf0f8;
+    --muted: #9ba8b8;
+    --accent: #f0c040;
+    --cyan: #62d7ff;
+    --good: #8fd8a0;
+    --warn: #f0c878;
+    --bad: #f0a8a8;
+    --link: #62d7ff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
+    font-family: system-ui, "Segoe UI", sans-serif; font-size: 14px; line-height: 1.55; }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  header.sticky {
+    position: sticky; top: 0; z-index: 100; background: #080b10;
+    border-bottom: 1px solid var(--line); padding: 14px 24px;
+    display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  }
+  header.sticky h1 { margin: 0; font-size: 22px; font-weight: 800; color: var(--accent); letter-spacing: 0.06em; }
+  header.sticky .meta { font-size: 12px; color: var(--muted); }
+  .layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 56px); }
+  nav.toc {
+    position: sticky; top: 56px; align-self: start; height: calc(100vh - 56px); overflow-y: auto;
+    background: #080c12; border-right: 1px solid var(--line); padding: 18px 14px; font-size: 12px;
+  }
+  nav.toc h2 { margin: 0 0 10px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  nav.toc ol { list-style: none; padding: 0; margin: 0; }
+  nav.toc li { margin: 3px 0; }
+  nav.toc a { display: block; padding: 5px 8px; border-radius: 5px; border-left: 2px solid transparent; color: var(--text); }
+  nav.toc a:hover { background: var(--panel); border-left-color: var(--accent); text-decoration: none; }
+  main { padding: 28px 40px 72px; max-width: 980px; }
+  section { margin-bottom: 48px; scroll-margin-top: 72px; }
+  section h2 {
+    margin: 0 0 14px; font-size: 17px; font-weight: 700; color: var(--accent);
+    border-bottom: 1px solid var(--line); padding-bottom: 8px;
+  }
+  section h3 { margin: 20px 0 8px; font-size: 13px; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.05em; }
+  p { margin: 0 0 12px; }
+  .lead { font-size: 15px; color: #c8d4e4; max-width: 72ch; }
+  .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill {
+    font-size: 11px; font-weight: 650; padding: 4px 10px; border-radius: 20px;
+    border: 1px solid var(--line); background: var(--panel);
+  }
+  .pill.good { border-color: #2a6b3a; color: var(--good); }
+  .pill.warn { border-color: #6b5a2a; color: var(--warn); }
+  .pill.cyan { border-color: #2a4a6b; color: var(--cyan); }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 14px 0; }
+  .card {
+    border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 12px 14px;
+  }
+  .card strong { display: block; font-size: 12px; color: var(--accent); margin-bottom: 6px; }
+  .card span { font-size: 11px; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 12px 0; }
+  th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--panel-2); color: var(--muted); font-weight: 650; font-size: 10px; text-transform: uppercase; }
+  code, .mono { font-family: ui-monospace, Consolas, monospace; font-size: 11px; color: #b8d0e8; }
+  .flow {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 16px 18px; font-family: ui-monospace, Consolas, monospace; font-size: 11px;
+    line-height: 1.65; overflow-x: auto; white-space: pre;
+  }
+  .diagram {
+    display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px; margin: 16px 0;
+  }
+  .diagram .node {
+    flex: 1; min-width: 140px; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--panel); padding: 10px 12px; text-align: center;
+  }
+  .diagram .node b { display: block; font-size: 11px; color: var(--accent); margin-bottom: 4px; }
+  .diagram .node small { font-size: 10px; color: var(--muted); }
+  .diagram .arrow { align-self: center; color: var(--cyan); font-size: 18px; font-weight: 700; }
+  .tier { border-left: 3px solid var(--line); padding-left: 14px; margin: 16px 0; }
+  .tier.p0 { border-left-color: var(--good); }
+  .tier.p1 { border-left-color: var(--cyan); }
+  .tier.p2 { border-left-color: var(--accent); }
+  .tier.p3 { border-left-color: var(--muted); }
+  ul { margin: 8px 0 12px; padding-left: 20px; }
+  li { margin: 4px 0; }
+  .gap { background: #1a1010; border: 1px solid #4a2a2a; border-radius: 8px; padding: 12px 14px; margin: 12px 0; }
+  .gap h4 { margin: 0 0 8px; color: var(--bad); font-size: 12px; }
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--line); }
+    main { padding: 20px 16px 48px; }
+  }
+</style>
+</head>
+<body>
+<header class="sticky">
+  <div>
+    <h1>SHOKK DROP BIBLE</h1>
+    <div class="meta">Shokker Paint Booth · Product architecture &amp; roadmap · <strong>SPB-109</strong> · Audited 2026-05-28</div>
+  </div>
+  <div class="meta">
+    <a href="shokk-drop.html">Open Lab →</a> ·
+    <a href="/">Paint Booth</a> ·
+    <a href="https://linear.app/shokker-poster-engine-gold/issue/SPB-109">Linear SPB-109</a>
+  </div>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Table of contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#vision">Vision</a></li>
+    <li><a href="#today">How it works today</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#dna">Import DNA</a></li>
+    <li><a href="#creativity-audit">Viva/Grunge audit</a></li>
+    <li><a href="#paint-aware">Paint-aware DNA (proposal)</a></li>
+    <li><a href="#packs">.spbdrop packs</a></li>
+    <li><a href="#integration">SPB integration</a></li>
+    <li><a href="#gaps">Bolt-on gaps</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#api">API map</a></li>
+    <li><a href="#files">File map</a></li>
+    <li><a href="#demo">5-minute demo</a></li>
+  </ol>
+</nav>
+<main>
+
+<section id="vision">
+  <h2>Vision — first-class pillar, not a bolt-on</h2>
+  <p class="lead">
+    <strong>SHOKK DROP</strong> is SPB's <em>finish-from-any-art</em> lane: drop a PNG/JPG/WebP (or a friend's pack),
+    get a Viva-grade spec map via <strong>Import DNA</strong>, commit to your local library, and use the finish immediately
+    in zones — same picker, same render pipeline, same Finish Viewer as shipped catalog finishes.
+  </p>
+  <div class="pill-row">
+    <span class="pill good">Shipped: Lab + DNA + packs + gallery</span>
+    <span class="pill cyan">Internal API: <code>/api/user-imports</code></span>
+    <span class="pill">Picker group: <strong>SHOKK DROP</strong></span>
+    <span class="pill warn">Next: in-booth drop zone + car preview</span>
+  </div>
+  <h3>Cousin products</h3>
+  <div class="card-grid">
+    <div class="card"><strong>.SHOKK</strong><span>Full session — zones, layers, decals, baked paint/spec state. Heavy, complete design.</span></div>
+    <div class="card"><strong>.spbdrop</strong><span>Lightweight finish pack — paint plate + spec + manifest. Share one finish, not a whole car.</span></div>
+    <div class="card"><strong>SPB-71 Spec Sculpt</strong><span>Future deep spec builder from existing livery paint. Complements Drop (art → spec) vs Sculpt (paint → spec).</span></div>
+    <div class="card"><strong>Guest Designer</strong><span>Curated drops merged into same picker family (Lyons Designs, etc.).</span></div>
+  </div>
+</section>
+
+<section id="today">
+  <h2>How it works today</h2>
+  <h3>User journey (paint finish)</h3>
+  <div class="diagram">
+    <div class="node"><b>1. Art in</b><small>PNG/JPG/WebP · sidebar drag or file picker</small></div>
+    <span class="arrow">→</span>
+    <div class="node"><b>2. Preview</b><small>POST /preview · Import DNA analyzes image</small></div>
+    <span class="arrow">→</span>
+    <div class="node"><b>3. Gauntlet</b><small>Up to 5 passes · M/R/CC σ &amp; range</small></div>
+    <span class="arrow">→</span>
+    <div class="node"><b>4. Commit</b><small>2048² paint + spec on disk</small></div>
+    <span class="arrow">→</span>
+    <div class="node"><b>5. Use</b><small>Specials → SHOKK DROP in booth</small></div>
+  </div>
+  <h3>Three drop kinds</h3>
+  <table>
+    <thead><tr><th>Kind</th><th>Input</th><th>Output</th><th>Picker</th></tr></thead>
+    <tbody>
+      <tr><td><code>paint_monolithic</code></td><td>Any art plate</td><td>Normalized paint + DNA-baked spec</td><td>MONOLITHICS → SHOKK DROP</td></tr>
+      <tr><td><code>pattern</code></td><td>Tile-friendly art</td><td>Pattern registry entry</td><td>PATTERNS → SHOKK DROP Patterns</td></tr>
+      <tr><td><code>spec_overlay</code></td><td>RGB spec plate (R=M, G=R, B=CC)</td><td>Overlay with per-channel strength</td><td>SPEC_PATTERNS → SHOKK DROP</td></tr>
+    </tbody>
+  </table>
+  <h3>Lab UI (<code>shokk-drop.html</code>)</h3>
+  <ul>
+    <li><strong>Sidebar</strong> — import controls, DNA style override, vibe ref, spec channel sliders, commit, compact library list (row names click through to the full channel preview). DNA style + vibe rows only appear for Types whose import actually uses them (Paint, Car template)</li>
+    <li><strong>Main gallery</strong> — search (<kbd>/</kbd> focuses, <kbd>Esc</kbd> clears) + kind filter + sort (Library / Newest / Name), cards with thumb, gauntlet badge, <strong>Use in Booth</strong> (stages the drop via <code>?stagedMono=</code>), .spbdrop export, copy share link, pipeline render, Re-DNA, View on Ball, <strong>Delete</strong> (confirm-protected). Loading + error/Retry states when the server is unreachable</li>
+    <li><strong>Pack drop zone</strong> — drag <code>.spbdrop</code> (legacy <code>.spbshokk</code>) → import → toast → auto-select new card. Dropping plain images here toasts a pointer to the sidebar instead of silently doing nothing</li>
+    <li><strong>Preview panels</strong> — upload + spec ALL + split R/G/B channel education (left=your art, right=channel)</li>
+    <li><strong>Onboarding guide</strong> — collapsible/dismissible intro; the header <strong>Guide</strong> button brings it back after "Got it"</li>
+    <li><strong>Inbox</strong> — batch-imports every image in <code>%APPDATA%\ShokkerPaintBooth\user_imports\inbox</code> (processed files move to <code>inbox\done</code>); toasts the imported count or "inbox empty"</li>
+    <li><strong>SHOKK THE WORLD overlay</strong> — <kbd>Esc</kbd> closes it; a slot that fails to bake gets its own <strong>↻ Retry</strong> button instead of requiring a full re-run</li>
+  </ul>
+  <h3>Overnight loop (ticks 1–10)</h3>
+  <p>See <code>docs/SHOKK_DROP_LOOP_LOG.md</code> — gallery preview, Finish Viewer human names, search/filter, pack toasts, sidebar drag-drop, share links, gauntlet badges; tick 10 (2026-08-08) = owner-directed ease-of-use sweep (thumbnail re-download fix, booth stub-name upgrade, feedback everywhere).</p>
+</section>
+
+<section id="architecture">
+  <h2>Architecture</h2>
+  <div class="flow">┌─────────────────────────────────────────────────────────────────────────┐
+│                         shokk-drop.html (Lab)                            │
+│  user-import-gallery.js · user-import-drop-preview.js · user-imports.js   │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │ fetch /api/user-imports/*
+                                ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│              server_routes/user_import_routes.py (Flask)                 │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │
+        ┌───────────────────────┼───────────────────────┐
+        ▼                       ▼                       ▼
+ user_imports_ingest.py   user_imports_spec_dna.py   user_imports_engine_preview.py
+ (normalize, commit,      (analyze → style → bake    (full renderer UV thumb)
+  zip packs)               → gauntlet loop)
+        │
+        ▼
+ %APPDATA%/ShokkerPaintBooth/user_imports/
+   manifest.json · ui_*.png · ui_*_spec.png · previews/
+        │
+        ▼ sync_registry()
+ MONOLITHIC_REGISTRY + PATTERN_REGISTRY  ←── paint-booth loads on boot
+        │
+        ▼ _mergeIntoPicker() in user-imports.js
+ SPECIALS tab: group "SHOKK DROP" (ids ui_*)</div>
+  <p>Storage root override: env <code>SPB_USER_IMPORTS_DIR</code>. IDs always prefixed <code>ui_</code>.</p>
+</section>
+
+<section id="dna">
+  <h2>Import DNA</h2>
+  <p>Engine: <code>engine/paint_v2/user_imports_spec_dna.py</code>. Routes image statistics to procedural personalities (Viva Mexico builder under the hood), not generic noise blobs.</p>
+  <h3>DNA styles (10)</h3>
+  <table>
+    <thead><tr><th>Style ID</th><th>Personality</th></tr></thead>
+    <tbody>
+      <tr><td>halftone_hex</td><td>Fine hex halftone — comic screen-tone shimmer</td></tr>
+      <tr><td>casino_neon</td><td>Neon glass — high metallic pops, glossy CC corridors</td></tr>
+      <tr><td>grunge_scratch</td><td>Scratched distress — worn edges, roughness ridges</td></tr>
+      <tr><td>abstract_gradient</td><td>Smooth gradient flow — gallery-art friendly</td></tr>
+      <tr><td>punk_checker</td><td>Bold contrast blocks + micro scratch fill</td></tr>
+      <tr><td>worn_rust</td><td>Deep roughness, low metallic, aged patina</td></tr>
+      <tr><td>disco_glitter</td><td>Holo glitter flecks + mirror CC peaks</td></tr>
+      <tr><td>comic_pop</td><td>Thick edge lines, halftone accents</td></tr>
+      <tr><td>acid_wash</td><td>Swirling micro-variation, psychedelic CC/M mix</td></tr>
+      <tr><td>metal_flake</td><td>Anisotropic grain, automotive sparkle</td></tr>
+    </tbody>
+  </table>
+  <h3>Gauntlet (quality gate)</h3>
+  <ul>
+    <li>Per channel: <strong>σ ≥ 20</strong>, <strong>range ≥ 150</strong> on [0,255]</li>
+    <li>Up to <strong>5 boost passes</strong> with escalating flake/line/metal/rough/clear deltas</li>
+    <li>Gallery + library show PASS/FAIL badge; aligns with SPB-105 / owner spec-channel doctrine</li>
+    <li><strong>vibe_ref</strong> — optional shipped finish id to bias DNA personality</li>
+  </ul>
+  <p><strong>Owner mandate:</strong> fine 8–32px features at 2048², many distinct spec shades — DNA iterations must chase eye, not lazy macro blobs (see AGENTS.md).</p>
+</section>
+
+<section id="creativity-audit">
+  <h2>Viva / Grunge logic — holes in the current stack</h2>
+  <p class="lead">Import DNA calls <code>build_cultural_viva_mexico.make_spec_plate(paint, …)</code> with Grunge hooks swapped in. The plate <em>is</em> read for luma/hue/sat/edges — but <strong>creativity is still mostly procedural wallpaper keyed on filename + style id</strong>, not on what the image actually depicts.</p>
+
+  <h3>What actually uses the paint plate today</h3>
+  <table>
+    <thead><tr><th>Signal from paint</th><th>Used for</th><th>Limitation</th></tr></thead>
+    <tbody>
+      <tr><td>Luma, hue, sat, val, Sobel edge, Laplacian, blur bands</td><td>Weights in <code>metal_energy</code> / <code>rough_energy</code> / <code>clear_energy</code></td><td>Global fields — no “this blob is scales”</td></tr>
+      <tr><td><code>warm</code> / <code>cool</code> from hue</td><td>Extra metallic/clear on warm/cool regions</td><td>Not “electric red on dragon”; just warm bias</td></tr>
+      <tr><td><code>contour</code> / <code>trace</code> from edges</td><td>Ridge metallic + gloss corridors</td><td>All edges treated similarly (+28 M in edge_lock)</td></tr>
+      <tr><td>Procedural <code>x, y</code> grids (2048²)</td><td>Silk, ridges, spark, micro_mosaic at fixed frequencies</td><td><strong>Not aligned to art geometry</strong> — 64px ridge on car = mirror-sized on body</td></tr>
+    </tbody>
+  </table>
+
+  <h3>What does NOT use the paint plate (critical gaps)</h3>
+  <div class="gap">
+    <h4>1. Name/style keyword routing</h4>
+    <p><code>semantic_masks()</code> and <code>grunge_hidden_motif()</code> branch on <code>"{name} {style}"</code> text — e.g. <code>"calavera"</code>, <code>"hexagon"</code>. User drops <code>dragon_scales.png</code> → name is <code>dragon_scales</code>, style is <code>metal_flake</code> → <strong>no scale motif path</strong>.</p>
+  </div>
+  <div class="gap">
+    <h4>2. Classifier is global statistics @ 512²</h4>
+    <p><code>classify_style_from_image</code> sees edge density, saturation, halftone energy — not periodic scale texture, feather barbs, or segmented subject. Cannot pick “trace scales in electric red.”</p>
+  </div>
+  <div class="gap">
+    <h4>3. Material hints are coarse buckets</h4>
+    <p>carbon / chrome_holo / leather only nudge <code>metal_base</code>, <code>flake</code>, etc. — not per-region chromatic spec palettes.</p>
+  </div>
+  <div class="gap">
+    <h4>4. Single-tier edge boost</h4>
+    <p><code>edge_lock_spec_plate</code> adds one corridor: <code>+28 M, +22 CC</code> on all edges. Owner wants <strong>8+ distinct spec shades per feature</strong> — not uniform rim light.</p>
+  </div>
+  <div class="gap">
+    <h4>5. micro_flake is paint-blind</h4>
+    <p>Random 10px tile sparkles everywhere at 0.78 threshold — not “46 pink/orange/blue CC tiers on each scale cell.”</p>
+  </div>
+  <div class="gap">
+    <h4>6. Gauntlet = contrast meter, not art fidelity</h4>
+    <p>Passes when σ and range hit thresholds. A spec can PASS while ignoring dragon scales entirely (procedural noise fills the gap).</p>
+  </div>
+  <div class="gap">
+    <h4>7. SHOKK THE WORLD = 10 recipes × remix</h4>
+    <p>Twenty variants rotate <em>personalities</em>, not <em>detected motifs</em>. Same dragon might get acid_wash turbo #17 with no scale tracing.</p>
+  </div>
+
+  <h3>Flow diagram (today)</h3>
+  <div class="flow">User PNG ──► normalize 2048 paint
+                    │
+                    ├─► 512² stats ──► style id (10 choices) + material_hint
+                    │
+                    └─► make_spec_plate(paint)  ◄── paint edges/hue modulate energies
+                              │
+                              ├─ semantic_masks(name, style)  ◄── TEXT keywords only
+                              ├─ hidden_motif(name, style)      ◄── TEXT keywords only
+                              ├─ procedural x,y ridges (fixed periods)
+                              └─► M/R/CC float fields ──► gauntlet boost loop
+                                        │
+                                        ├─ edge_lock (+uniform M/CC on edges)
+                                        └─ micro_flake (global random)</div>
+</section>
+
+<section id="paint-aware">
+  <h2>Paint-aware DNA — proposals (dragon scales example)</h2>
+  <p><strong>Goal:</strong> Trace elements that exist in the art; fill smartly; let <em>which colors/styles</em> vary per DNA style / World variant — e.g. scales outlined in <strong>electric red metallic</strong> with <strong>46 distinct CC/M tiers</strong> per cell for wild sun-angle shimmer.</p>
+
+  <h3>Track A — Motif detection layer (recommended first)</h3>
+  <p>New module <code>engine/paint_v2/import_paint_motifs.py</code> runs before bake, outputs masks @ 2048:</p>
+  <table>
+    <thead><tr><th>Detector</th><th>Mask</th><th>Dragon scales use</th></tr></thead>
+    <tbody>
+      <tr><td>Multi-scale edge + periodicity (FFT/autocorr on 8–32px bands)</td><td><code>scale_lattice</code></td><td>Hex/scale repetition → trace each cell boundary</td></tr>
+      <tr><td>Closed contour / watershed on edge</td><td><code>region_cells</code></td><td>Per-scale ID for per-cell palettes</td></tr>
+      <tr><td>High-frequency Laplacian peaks</td><td><code>fine_detail</code></td><td>Micro sparkle only on texture, not flat fill</td></tr>
+      <tr><td>Hue clustering (k=6–12)</td><td><code>chroma_zone_*</code></td><td>Red body vs gold trim → different spec stories</td></tr>
+      <tr><td>Subject silhouette (alpha or saliency)</td><td><code>subject</code></td><td>Background stays matte; dragon gets spec love</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Track B — Chroma spec paint (the “46 shades” engine)</h3>
+  <p>Replace uniform edge boost with <strong>quantized palette stamping</strong> per mask ID:</p>
+  <ul>
+    <li>Build tier list per style: <code>M_tiers = [0.18, 0.28, …, 0.92]</code> × style accent (electric red → M biased high on R channel of spec preview, but stored as M value variety)</li>
+    <li>For each scale cell <code>i</code>: <code>M[i] = M_tiers[hash(i, seed) % 8]</code>, <code>CC[i] = CC_tiers[…]</code> with <strong>hue-dependent tint</strong> from paint chroma at cell centroid (pink/orange/blue shifts in CC and secondary M bumps)</li>
+    <li><strong>Angle story:</strong> alternate tiers on checkerboard or along scale direction so sun sweep changes which cells flash — reads as iridescent on car</li>
+  </ul>
+
+  <h3>Track C — Style-specific trace recipes (extend DNA beyond 10)</h3>
+  <table>
+    <thead><tr><th>New style id</th><th>Behavior</th></tr></thead>
+    <tbody>
+      <tr><td><code>scale_armor_trace</code></td><td>Follow <code>scale_lattice</code>; rim M hot (electric palette); cell interiors get 6–12 CC shades from paint hue</td></tr>
+      <tr><td><code>feather_barb</code></td><td>Anisotropic along detected stroke direction field</td></tr>
+      <tr><td><code>neon_ink_outline</code></td><td>Outer contour only; interior flat matte (comic)</td></tr>
+      <tr><td><code>holo_film_grain</code></td><td>Fine diagonal grain locked to subject mask</td></tr>
+      <tr><td><code>enamel_pool</code></td><td>Fill closed regions; high CC variance, low R variance</td></tr>
+    </tbody>
+  </table>
+  <p>SHOKK THE WORLD planner maps detected motifs → these styles first (not only the static 10).</p>
+
+  <h3>Track D — Image-driven hidden motif (fix Grunge hook)</h3>
+  <p>Replace <code>grunge_hidden_motif(name, style, …)</code> keyword checks with:</p>
+  <pre class="flow">import_hidden_motif(motif_masks, style, index, hue, sat, val, edge)
+  if motif_masks.scale_lattice.any():
+      motif = trace_mask(scale_lattice, period_px=12, accent=style_palette.accent_M)
+  elif motif_masks.halftone_energy > threshold:
+      …</pre>
+
+  <h3>Track E — Post passes that respect regions</h3>
+  <ul>
+    <li><strong>edge_lock_v2:</strong> per-edge tier from local paint hue + style accent color (red dragon → M 200–255 on rim, G 40–90 in groove)</li>
+    <li><strong>micro_flake_v2:</strong> sparkle only where <code>fine_detail ∧ subject</code>; tier CC from 8-color palette per cell</li>
+    <li><strong>void_flatten:</strong> borrow Viva <code>_post_adjust</code> — dark non-edge interiors → kill stray metallic (already in masterclass)</li>
+  </ul>
+
+  <h3>Dragon scales — target read in sim</h3>
+  <div class="card-grid">
+    <div class="card"><strong>Trace</strong><span>Scale boundaries = high M ridge (~12px), style accent hue bias (electric red)</span></div>
+    <div class="card"><strong>Fill</strong><span>Each cell = pseudo-random tier from 8 M + 8 CC + 6 R palettes tied to paint color under cell</span></div>
+    <div class="card"><strong>Motion</strong><span>Neighboring cells differ tier → sun angle changes which scales “light up”</span></div>
+    <div class="card"><strong>Background</strong><span>Outside subject mask → low M, high R (matte void)</span></div>
+  </div>
+
+  <h3>Suggested build order (SPB-109 / SPB-71)</h3>
+  <ol>
+    <li><strong>Motif masks</strong> + debug overlay in Shokk Drop preview (toggle lattice/cells)</li>
+    <li><strong>chroma_spec_stamp()</strong> post-pass on baked spec (fast win before rewriting make_spec_plate)</li>
+    <li><strong>scale_armor_trace</strong> style + World planner hook</li>
+    <li><strong>image-driven hidden_motif</strong> inside Import DNA bake path</li>
+    <li>Deep refactor: pass <code>motif_masks</code> into <code>make_spec_plate</code> (shared with Spec Sculpt)</li>
+  </ol>
+  <p>Reference doctrine: <code>VIVA_MEXICO_SPEC_PIPELINE_MASTERCLASS.md</code> §5 — triplet variation + paint-ground-truth masks (already proven on shipped cultural finishes; Import DNA never got the full mask graph).</p>
+</section>
+
+<section id="packs">
+  <h2>.spbdrop packs</h2>
+  <p>Zip bundle: manifest JSON + paint PNG + spec PNG (+ metadata). Share via download or copy export URL.</p>
+  <ul>
+    <li><code>GET /api/user-imports/export/&lt;id&gt;</code> — single pack</li>
+    <li><code>GET /api/user-imports/export-all</code> — full library archive</li>
+    <li><code>POST /api/user-imports/import-pack</code> — gallery/main drop zone</li>
+  </ul>
+  <p>Trading-paint mental model: friend drops pack in gallery → instant library merge → both use same <code>ui_*</code> id in picker.</p>
+</section>
+
+<section id="integration">
+  <h2>SPB integration points</h2>
+  <table>
+    <thead><tr><th>Surface</th><th>Entry</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Header command</td><td><code>openShokkDropLab()</code> · Ctrl+Shift+D (Electron)</td><td class="pill good">Live</td></tr>
+      <tr><td>Web command palette</td><td><code>runWebCommand('shokk-drop')</code></td><td>Live</td></tr>
+      <tr><td>Settings panel</td><td>Open Shokk Drop Lab</td><td>Live</td></tr>
+      <tr><td>Finish library</td><td>Specials → SHOKK DROP group</td><td>Live</td></tr>
+      <tr><td>Finish Viewer</td><td>Human names for <code>ui_*</code></td><td>Live</td></tr>
+      <tr><td>Filter controls</td><td>Tags: user-import, shokk-drop, spec-overlay</td><td>Live</td></tr>
+      <tr><td>In-booth import modal</td><td>Partial (gallery modal exists)</td><td>Weak</td></tr>
+      <tr><td>Zone apply + live preview</td><td>Uses same finish ids</td><td>Works but no Drop-branded flow</td></tr>
+      <tr><td>Car preview on import</td><td><code>user-import-car-preview.js</code></td><td>Loaded in booth, not in Lab</td></tr>
+      <tr><td>M7 workbook per drop</td><td>Not automated</td><td>Gap</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="gaps">
+  <h2>Why it still feels like a bolt-on</h2>
+  <div class="gap">
+    <h4>Separation anxiety</h4>
+    <p>Primary UX lives on a separate page/window. Paint Booth treats it as a header button, not a phase of the paint workflow (compare: loading source paint → zones → finishes).</p>
+  </div>
+  <div class="gap">
+    <h4>No "drop on car" moment</h4>
+    <p>Users commit in the Lab, then context-switch to booth to apply. Missing: drag art onto canvas OR current livery → preview on car → one-click apply to active zone.</p>
+  </div>
+  <div class="gap">
+    <h4>Quality story is invisible in booth</h4>
+    <p>Gauntlet PASS/FAIL only in Lab gallery. Picker swatches don't telegraph spec richness or M7 score.</p>
+  </div>
+  <div class="gap">
+    <h4>Spec Sculpt (SPB-71) not linked</h4>
+    <p>Two spec-creation stories without bridge: Drop (external art) vs Sculpt (existing livery). Should feel like one "Spec Workshop" family.</p>
+  </div>
+  <div class="gap">
+    <h4>Naming split brain</h4>
+    <p>User-facing: SHOKK DROP. Code: user_imports everywhere. Fine for devs, confusing in docs/tickets without this bible.</p>
+  </div>
+</section>
+
+<section id="roadmap">
+  <h2>Roadmap — make it REALLY cool</h2>
+
+  <div class="tier p0">
+    <h3>P0 — Feel native in Paint Booth (1–2 sessions)</h3>
+    <ul>
+      <li><strong>In-booth Drop strip</strong> — collapsible right-rail or bottom dock: mini gallery of last 8 drops + drag PNG → preview without leaving booth</li>
+      <li><strong>Apply to active zone</strong> — one click from preview: set monolithic finish on selected zone + trigger live preview</li>
+      <li><strong>Gauntlet chip in picker</strong> — ✓/! on swatch tooltip with M/R/C σ summary</li>
+      <li><strong>Link Lab ↔ booth state</strong> — deep link <code>?apply=ui_foo&zone=2</code> after commit</li>
+      <li><strong>Rename trail</strong> — inline edit display name in gallery + library (manifest patch)</li>
+    </ul>
+  </div>
+
+  <div class="tier p1">
+    <h3>P1 — Social &amp; creative power</h3>
+    <ul>
+      <li><strong>Drop Collections</strong> — user-defined folders (Race Night, Neon Pack) + filter in gallery</li>
+      <li><strong>Batch inbox</strong> — polish <code>process-inbox</code> UX: folder watch, batch DNA with progress bar</li>
+      <li><strong>Before/after car reel</strong> — use car preview: Trading Paints livery → apply drop → side-by-side export PNG</li>
+      <li><strong>DNA remix slider</strong> — blend two styles or vibe_ref A↔B interactively before commit</li>
+      <li><strong>Community hash</strong> — optional short code on export (like share id) for Discord/forum drops</li>
+      <li><strong>Compare mode</strong> — select 2 gallery cards → split spec channel diff view</li>
+    </ul>
+  </div>
+
+  <div class="tier p2">
+    <h3>P2 — Pro quality &amp; workshop integration</h3>
+    <ul>
+      <li><strong>M7 on commit</strong> — auto-run workbook for paint drops; block commit if &lt;85 unless owner override</li>
+      <li><strong>Upgrade to .SHOKK</strong> — "Package as full design" from current booth session + active drop spec</li>
+      <li><strong>Spec Workshop hub</strong> — unified nav: SHOKK DROP | Spec Sculpt (SPB-71) | Import Spec Map</li>
+      <li><strong>AI brief field</strong> — one-line prompt stored in manifest; future style routing</li>
+      <li><strong>Reference texture attach</strong> — optional PNG alongside DNA for hybrid Viva-style enhancement</li>
+      <li><strong>Trading Paints import</strong> — paste TP id → pull livery → Drop DNA on it (Spectrum Shift pitch)</li>
+    </ul>
+  </div>
+
+  <div class="tier p3">
+    <h3>P3 — Platform &amp; monetization-ready</h3>
+    <ul>
+      <li><strong>Guest Designer pipeline</strong> — signed packs, verified badge, featured carousel in Lab</li>
+      <li><strong>Drop Store stub</strong> — browse remote packs (CDN manifest) — local import only at first</li>
+      <li><strong>Versioned pack schema v2</strong> — thumbnails, tags, author, min SPB version</li>
+      <li><strong>Collaboration</strong> — export pack with edit notes; import merges with conflict UI</li>
+    </ul>
+  </div>
+</section>
+
+<section id="api">
+  <h2>API map</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Route</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/api/user-imports</code></td><td>List library entries</td></tr>
+      <tr><td>GET</td><td><code>/api/user-imports/dna-styles</code></td><td>Style catalog for picker</td></tr>
+      <tr><td>POST</td><td><code>/api/user-imports/preview</code></td><td>Preview without commit</td></tr>
+      <tr><td>POST</td><td><code>/api/user-imports/import</code></td><td>Commit paint/pattern/spec overlay</td></tr>
+      <tr><td>POST</td><td><code>/api/user-imports/import-pack</code></td><td>Import .spbdrop zip</td></tr>
+      <tr><td>POST</td><td><code>/api/user-imports/rebake-dna</code></td><td>Re-run DNA on existing paint drop</td></tr>
+      <tr><td>POST</td><td><code>/api/user-imports/update-spec-channels</code></td><td>Live M/R/CC strength on spec overlay</td></tr>
+      <tr><td>GET</td><td><code>/api/user-imports/preview-detail/&lt;id&gt;</code></td><td>Full channel panel URLs</td></tr>
+      <tr><td>GET</td><td><code>/api/user-imports/engine-preview/&lt;id&gt;</code></td><td>Renderer UV preview</td></tr>
+      <tr><td>GET</td><td><code>/api/user-imports/export/&lt;id&gt;</code></td><td>Download .spbdrop</td></tr>
+      <tr><td>POST</td><td><code>/api/user-imports/process-inbox</code></td><td>Batch process inbox folder</td></tr>
+      <tr><td>POST</td><td><code>/api/user-imports/delete</code></td><td>Remove entry</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="files">
+  <h2>File map (canonical — edit root copies; mirror to electron server per three-copy rule where applicable)</h2>
+  <table>
+    <thead><tr><th>Path</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td><code>shokk-drop.html</code></td><td>Lab shell UI</td></tr>
+      <tr><td><code>js/finishes/user-imports.js</code></td><td>Picker merge, import/preview/commit flows</td></tr>
+      <tr><td><code>js/finishes/user-import-gallery.js</code></td><td>Pack drop zone, modal gallery</td></tr>
+      <tr><td><code>js/finishes/user-import-drop-preview.js</code></td><td>Multi-panel preview renderer</td></tr>
+      <tr><td><code>js/finishes/user-import-car-preview.js</code></td><td>Car preview (booth)</td></tr>
+      <tr><td><code>server_routes/user_import_routes.py</code></td><td>HTTP API</td></tr>
+      <tr><td><code>engine/paint_v2/user_imports_ingest.py</code></td><td>Ingest + packs</td></tr>
+      <tr><td><code>engine/paint_v2/user_imports_spec_dna.py</code></td><td>Import DNA + gauntlet</td></tr>
+      <tr><td><code>engine/paint_v2/user_imports_paths.py</code></td><td>Storage paths + constants</td></tr>
+      <tr><td><code>docs/USER_IMPORTS_OVERNIGHT.md</code></td><td>Shipped feature tracker</td></tr>
+      <tr><td><code>docs/SHOKK_DROP_LOOP_LOG.md</code></td><td>Autonomous tick log</td></tr>
+      <tr><td><code>paint-booth-6-ui-boot.js</code></td><td><code>openShokkDropLab()</code></td></tr>
+      <tr><td><code>electron-app/main.js</code></td><td>Dedicated Drop window</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="demo">
+  <h2>5-minute sell demo</h2>
+  <ol>
+    <li>Generate art externally (Midjourney, Photoshop, etc.)</li>
+    <li>Open <strong>Shokk Drop</strong> (header or Ctrl+Shift+D) → drag PNG to sidebar → <strong>Import &amp; preview</strong></li>
+    <li>Review upload + spec ALL + R/G/B panels → note gauntlet PASS → <strong>Commit drop</strong></li>
+    <li>Click gallery card → <strong>Pipeline render</strong> thumb → <strong>Copy link</strong> for friend</li>
+    <li>Paint Booth → load livery → Specials → <strong>SHOKK DROP</strong> → apply to zone → Full Render</li>
+    <li>Finish Viewer → drop shows <strong>human name</strong>, not <code>ui_slug</code></li>
+  </ol>
+  <p style="margin-top:20px;font-size:11px;color:var(--muted);">
+    Maintained under Linear <a href="https://linear.app/shokker-poster-engine-gold/issue/SPB-109">SPB-109</a>.
+    Post bible/roadmap changes there and in <code>CHANGELOG.md</code> when shipping tiers.
+  </p>
+</section>
+
+</main>
+</div>
+</body>
+</html>

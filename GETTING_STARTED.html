@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shokker Paint Booth — Getting Started</title>
+<style>
+  :root{
+    --bg:#0a0c11; --panel:#141823; --panel2:#1a1f2b; --line:#262d3a;
+    --txt:#e9ecf3; --dim:#9aa3b5; --gold:#e8c050; --gold2:#f3d77a;
+    --blue:#4a6ed0; --green:#3dbb6e; --red:#d24a5a; --violet:#9a7ce0; --teal:#3dd6c4;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font:16px/1.6 "Segoe UI",system-ui,-apple-system,sans-serif;}
+  a{color:var(--gold2);}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 22px;}
+
+  /* sticky beta strip */
+  .betabar{position:sticky;top:0;z-index:50;background:linear-gradient(90deg,#7a1f2e,#a8341f);
+    color:#fff;text-align:center;font-weight:700;letter-spacing:.4px;font-size:13.5px;
+    padding:8px 14px;border-bottom:1px solid #00000040;box-shadow:0 2px 14px #0008;}
+  .betabar b{color:#ffe1a8;}
+
+  /* hero with a slow color-shift, because of course it shifts */
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+    background:linear-gradient(120deg,#1c0f33,#0c1e30,#301021,#0c2e22,#241033);
+    background-size:420% 420%;animation:shift 22s ease infinite;}
+  @keyframes shift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  .hero .wrap{padding:56px 22px 48px;}
+  .kicker{color:var(--gold);font-weight:800;letter-spacing:3px;font-size:12px;text-transform:uppercase;}
+  .hero h1{font-size:46px;line-height:1.05;margin:10px 0 8px;font-weight:800;
+    text-shadow:0 2px 30px #0009;}
+  .hero h1 .shk{background:linear-gradient(90deg,#ff5b8a,#ffb13b,#ffe93b,#3dff8e,#3dd6ff,#9a7ce0,#ff5bd6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p{font-size:18px;color:#e9ecf3cc;max-width:680px;margin:0;}
+  .heropills{margin-top:18px;display:flex;gap:8px;flex-wrap:wrap;}
+  .pill{background:#0008;border:1px solid #ffffff22;border-radius:20px;padding:6px 14px;font-size:13px;color:#fff;}
+
+  section{padding:42px 0;border-bottom:1px solid var(--line);}
+  h2{font-size:28px;margin:0 0 6px;letter-spacing:.3px;}
+  h2 .em{color:var(--gold);}
+  .lead{color:var(--dim);font-size:16px;margin:0 0 22px;max-width:760px;}
+  h3{font-size:18px;margin:26px 0 8px;color:var(--gold2);}
+  p{margin:0 0 14px;}
+  ul{margin:0 0 14px;padding-left:20px;} li{margin:5px 0;}
+  .quip{color:var(--dim);font-style:italic;font-size:14.5px;border-left:2px solid var(--gold);
+    padding:2px 0 2px 14px;margin:14px 0;}
+
+  /* step flow */
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin:8px 0 4px;}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 14px;position:relative;}
+  .step .n{width:30px;height:30px;border-radius:50%;background:var(--gold);color:#15110a;
+    font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+  .step b{display:block;margin-bottom:4px;}
+  .step span{color:var(--dim);font-size:14px;}
+
+  /* spec channel cards */
+  .channels{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+  .ch{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .ch .bar{height:8px;}
+  .ch.m .bar{background:linear-gradient(90deg,#d24a5a,#ff8a96);}
+  .ch.r .bar{background:linear-gradient(90deg,#3dbb6e,#9fe9bf);}
+  .ch.c .bar{background:linear-gradient(90deg,#4a6ed0,#9fb8ff);}
+  .ch .in{padding:16px;}
+  .ch .tag{font-weight:800;font-size:13px;letter-spacing:1px;}
+  .ch.m .tag{color:#ff8a96;} .ch.r .tag{color:#9fe9bf;} .ch.c .tag{color:#9fb8ff;}
+  .ch h4{margin:4px 0 8px;font-size:18px;}
+  .ch p{color:var(--dim);font-size:14px;margin:0;}
+
+  /* callout boxes */
+  .box{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--gold);
+    border-radius:10px;padding:16px 18px;margin:16px 0;}
+  .box.beta{border-left-color:var(--red);background:#1c1216;}
+  .box.tip{border-left-color:var(--teal);}
+  .box h4{margin:0 0 6px;font-size:15px;}
+  .box.beta h4{color:#ff9aa6;}
+
+  /* FRACTURED feature */
+  .fractured{background:radial-gradient(1200px 400px at 20% -10%,#2a103a55,transparent),
+              radial-gradient(900px 380px at 90% 0%,#0c2e3a55,transparent),var(--bg);}
+  .spectrum{height:16px;border-radius:9px;margin:6px 0 22px;
+    background:linear-gradient(90deg,#ff3b6b,#ff8a3b,#ffe93b,#3dff7a,#3dd6ff,#7c5bff,#ff3bd6,#ff3b6b);
+    background-size:200% 100%;animation:slide 9s linear infinite;box-shadow:0 0 26px #ffffff14;}
+  @keyframes slide{0%{background-position:0 0}100%{background-position:200% 0}}
+  .recipe{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0;}
+  .rstep{background:#0d1018;border:1px solid var(--line);border-radius:11px;padding:14px;}
+  .rstep .em{color:var(--gold);font-weight:800;font-size:12px;letter-spacing:1px;}
+  .rstep b{display:block;margin:6px 0 2px;}
+  .rstep span{color:var(--dim);font-size:13.5px;}
+  .famrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:8px;}
+  .fam{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;}
+  .fam .ico{font-size:24px;} .fam b{display:block;margin:6px 0 4px;font-size:16px;}
+  .fam span{color:var(--dim);font-size:14px;}
+
+  /* category chips */
+  .cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;}
+  .cat{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);
+    border-radius:9px;padding:9px 12px;font-size:14px;}
+  .cat .dot{width:14px;height:14px;border-radius:4px;flex:0 0 auto;}
+
+  /* two-col compare */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:720px){.compare{grid-template-columns:1fr;}.hero h1{font-size:34px;}}
+  .col{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;}
+  .col.best{border-color:var(--gold);box-shadow:0 0 0 1px #e8c05033;}
+  .col h4{margin:0 0 4px;} .col .lbl{font-size:11px;letter-spacing:1.5px;font-weight:800;}
+  .col.best .lbl{color:var(--gold);} .col .lbl.alt{color:var(--dim);}
+
+  footer{padding:40px 0 60px;color:var(--dim);}
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
+  .toc a{background:#0008;border:1px solid #ffffff1f;border-radius:18px;padding:5px 13px;font-size:13px;text-decoration:none;color:#fff;}
+  .big{font-size:21px;color:var(--txt);font-weight:700;}
+
+  /* ---- PDF / print: force colors, keep cards whole, drop the nav chips ---- */
+  @media print{
+    @page{ margin:12mm 11mm; }
+    *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+    body{ font-size:12.5px; }
+    .betabar{ position:static; }
+    .hero,.spectrum{ animation:none !important; }
+    .toc{ display:none !important; }
+    section{ padding:26px 0; }
+    .hero .wrap{ padding:34px 22px 30px; }
+    h2,h3{ break-after:avoid; page-break-after:avoid; }
+    .step,.ch,.fam,.rstep,.col,.box,.cat,.channels,.flow,.recipe,.famrow,.compare,.cats{
+      break-inside:avoid; page-break-inside:avoid; }
+  }
+</style></head>
+<body>
+
+<div class="betabar">🧪 THIS IS A <b>BETA</b> — it's powerful, it's unfinished, and the rough edges are real. Found one? Hit <b>Report a Problem</b>. We read every single one.</div>
+
+<div class="hero"><div class="wrap">
+  <div class="kicker">Welcome to the booth</div>
+  <h1>Shokker <span class="shk">Paint Booth</span></h1>
+  <p>The fastest way to build iRacing liveries that actually react to light — chrome that blinds, candy that glows, and color-shift finishes that flat-out shouldn't be possible in a sim. You pick the finish. We write the physics.</p>
+  <div class="heropills">
+    <span class="pill">🎨 Spec-map designer for iRacing</span>
+    <span class="pill">🧠 The FRACTURED color-shift series</span>
+    <span class="pill">🤝 Share recipes &amp; Shokk Drops</span>
+  </div>
+  <div class="toc">
+    <a href="#quick">Quick Start</a>
+    <a href="#spec">The Spec Map</a>
+    <a href="#fractured">FRACTURED ⭐</a>
+    <a href="#share">Share Everything</a>
+    <a href="#depth">In Depth</a>
+  </div>
+</div></div>
+
+<div class="wrap">
+
+<!-- INTRO -->
+<section>
+  <h2>First, what this thing <span class="em">is</span></h2>
+  <p class="lead">Shokker Paint Booth makes <b>iRacing spec-map liveries</b>. Every car in iRacing reads a paint file (the colors) and a <b>spec map</b> (the instructions for how light behaves on the surface — what's chrome, what's matte, what's candy, what catches fire when you roll past a corner worker). SPB builds both, automatically, from the finishes you choose.</p>
+  <p>Three honest things, so we start on the same page:</p>
+  <ul>
+    <li><b>It's a spec-map tool, not a painting app.</b> You're not airbrushing flames pixel by pixel — you're telling light what to do. Think material designer, not Photoshop.</li>
+    <li><b>There's no spinning 3D car preview.</b> We can't render iRacing's cars and we won't fake it. You design here, render, and look at it <i>in iRacing</i>, where it counts.</li>
+    <li><b>Your car has no "shininess" slider in real life either.</b> Light just <i>does stuff</i> to chrome that it doesn't do to suede. The spec map is how you boss the light around. That's the whole trick.</li>
+  </ul>
+  <div class="box beta"><h4>Beta, reminder #1</h4>This is an early build. We shipped it because the only way to find the weird stuff is to let real painters drive it. Expect updates often — that's a feature of beta, not a bug in it.</div>
+</section>
+
+<!-- QUICK START -->
+<section id="quick">
+  <h2>Quick Start <span class="em">— a real finish in five minutes</span></h2>
+  <p class="lead">The short version. Everything after this is how to make it <i>good</i>.</p>
+  <div class="flow">
+    <div class="step"><div class="n">1</div><b>Set up iRacing</b><span>Enter your iRacing Customer ID and point SPB at your car's paint <i>folder</i> (not a file). Pick <b>Custom Number</b> or <b>Sim-Stamped Number</b> (see below).</span></div>
+    <div class="step"><div class="n">2</div><b>Bring in your car</b><span>Load your paint <b>TGA</b>, or better, <b>Import a PSD</b> so your layers map to zones (see below — this is the power move).</span></div>
+    <div class="step"><div class="n">3</div><b>Make a zone</b><span>Add a zone, click a color on the car. Everything that color becomes the zone. Nudge <b>Tolerance</b> if it grabs too much.</span></div>
+    <div class="step"><div class="n">4</div><b>Drop a finish</b><span>Click the zone's <b>Base</b> swatch and pick something. Try Candy &amp; Pearl or Chrome &amp; Mirror for instant gratification.</span></div>
+    <div class="step"><div class="n">5</div><b>Render → iRacing</b><span>Hit <b>RENDER</b>, flip to iRacing and press <b>Ctrl+R</b>. The files land in your car folder and your car's wearing the new look.</span></div>
+  </div>
+  <p class="quip">I made a zone. Then I made another zone. Now I have two zones. The system works.</p>
+</section>
+
+<!-- TRAINING WHEELS -->
+<section id="wheels">
+  <h2>New here? <span class="em">Training Wheels</span> teach the app while you use it</h2>
+  <p class="lead">Not a separate simple mode — a coach that rides along inside the real app and points at the real buttons.</p>
+  <div class="flow">
+    <div class="step"><div class="n">1</div><b>The next-move chip</b><span>Bottom-right corner, always one obvious next step: <i>"Next: Drop a finish"</i> — hit <b>🔍 Show me</b> and a gold ring spotlights the exact control.</span></div>
+    <div class="step"><div class="n">2</div><b>10 quests, you do the clicking</b><span>Load → zone → finish → render is the Core Loop. Then patterns, spec channels, overlays, touch-up and saving unlock. Each quest auto-checks when you actually do it — no quizzes.</span></div>
+    <div class="step"><div class="n">3</div><b>Advanced stuff tucks itself away</b><span>While you learn the loop, the deep tool menus and the zone panel's advanced sections stay collapsed. Click anything to peek — it remembers. Your first render opens everything for good.</span></div>
+    <div class="step"><div class="n">4</div><b>Graduate</b><span>Finish the Core Loop and SPB offers to take the wheels off. It's a switch, not a commitment — flip them back on any time from the <b>🎓 TUTORIAL</b> button or <b>Settings → 🎓 Training Wheels</b>.</span></div>
+  </div>
+  <p class="quip">The demo car that loads on first run? It's already 3 quests deep. You're one RENDER from your first win.</p>
+</section>
+
+<!-- SPEC MAP -->
+<section id="spec">
+  <h2>The one idea that makes everything click: <span class="em">the spec map</span></h2>
+  <p class="lead">iRacing lights your car using three channels. You never hand-edit them — you pick a finish and SPB writes all three. But knowing they exist explains <i>why</i> a finish looks the way it does.</p>
+  <div class="channels">
+    <div class="ch m"><div class="bar"></div><div class="in"><div class="tag">M · RED CHANNEL</div><h4>Metallic</h4><p>Is this surface metal or not? Cranks the difference between a flake-loaded chrome and a flat painted panel.</p></div></div>
+    <div class="ch r"><div class="bar"></div><div class="in"><div class="tag">R · GREEN CHANNEL</div><h4>Roughness</h4><p>Mirror-smooth to dead matte and everything between. Low roughness = that wet, glassy look. High = it eats light.</p></div></div>
+    <div class="ch c"><div class="bar"></div><div class="in"><div class="tag">CC · BLUE CHANNEL</div><h4>Clearcoat</h4><p>The glossy coat on top. It's where the magic lives — carve a pattern into the clearcoat and the car flashes by angle.</p></div></div>
+  </div>
+  <p style="margin-top:18px">When two finishes look different on the same color, the spec map is the reason. That's it. That's the secret the whole app is built around.</p>
+</section>
+
+<!-- FRACTURED -->
+<section id="fractured" class="fractured">
+  <div class="kicker" style="color:var(--violet)">★ The flagship</div>
+  <h2>The <span class="em">FRACTURED</span> Series</h2>
+  <div class="spectrum"></div>
+  <p class="lead big">This is the reason painters are going to lose their minds.</p>
+  <p>For years, "color-shift" paint — the kind that flips teal-to-gold as the car rolls past you — was a thing you bought as a $400 spray can in real life, or faked badly in Photoshop. In a <i>sim</i>? Forget it. Nobody had it.</p>
+  <p>Then we found something. Carve a crack-network into the <b>clearcoat only</b>, crush the base color down near black, and iRacing's own environment lighting starts doing the work for you — the surface <b>flashes real, shifting color by viewing angle</b>. We called the recipe <b>Ghost Fracture</b>, and we couldn't stop building on it. It grew into a whole family with its own tuned physics.</p>
+
+  <h3>And here's the part we're proud of: we're not gatekeeping it.</h3>
+  <p>We could have locked these behind a premium tier and charged a ransom. We didn't. <b>Every FRACTURED finish is right there in the booth for everyone</b>, and getting the effect is three clicks, not a PhD in channel math. The wildest thing in sim-racing paint should be the <i>easiest</i> thing to use. That's the whole point.</p>
+
+  <h3>How to fire one off</h3>
+  <div class="recipe">
+    <div class="rstep"><div class="em">STEP 1</div><b>Assign as a Base</b><span>Pick a FRACTURED finish and drop it on a zone as the Base.</span></div>
+    <div class="rstep"><div class="em">STEP 2</div><b>Pick a color</b><span>Choose your hue — it's the seed the shift plays off of.</span></div>
+    <div class="rstep"><div class="em">STEP 3</div><b>Crush the brightness near black</b><span>Drag Brightness way down. Counterintuitive, totally correct — dark is where the flash lives.</span></div>
+    <div class="rstep"><div class="em">STEP 4</div><b>Run a daytime track</b><span>Bright environment = more light to bend. Now drive past someone and watch their head turn.</span></div>
+  </div>
+
+  <h3>The family</h3>
+  <div class="famrow">
+    <div class="fam"><span class="ico">🧠</span><b>FRACTURED MINDS</b><span>The flagship color-shift bases — carved cells that flash sky-teal and sun-gold by angle, with flakes and slashes firing from inside the pattern.</span></div>
+    <div class="fam"><span class="ico">💀</span><b>FRACTURED SOULS</b><span>Drag-and-drop color-shift finishes — same soul-physics, textured and tuned, built to just work the moment you drop them on.</span></div>
+    <div class="fam"><span class="ico">👻</span><b>GHOST LAB</b><span>The single-variable Ghost Fracture experiments — for when you want to see exactly which knob does what.</span></div>
+  </div>
+  <p class="quip" style="border-color:var(--violet)">You can find them sitting right at the top of the finish library, where the flagships belong.</p>
+</section>
+
+<!-- SHARE -->
+<section id="share">
+  <h2>Share <span class="em">everything</span></h2>
+  <p class="lead">Here's the future we actually want: a community trading its most unhinged finish combos back and forth, where your "wait, what did you DO to get that" becomes someone else's starting point. SPB is built to make that one click.</p>
+  <div class="compare">
+    <div class="col best"><div class="lbl">RECIPE FILES (.shokkerrecipe)</div><h4>Hand someone your whole build</h4><p style="color:var(--dim);margin:0">Export a full livery setup — every zone, base, pattern, and spec layer — to one file. Send it to a friend, they Import Recipe, and they're standing exactly where you were. Remix it, ship it back.</p></div>
+    <div class="col best"><div class="lbl">SHOKK DROP (.spbdrop packs)</div><h4>Share finishes &amp; your own art</h4><p style="color:var(--dim);margin:0">Import your own artwork or a DNA spec, and bundle finishes into Shokk Drop packs to pass around. It's how guest art and community finishes move from one booth to the next.</p></div>
+  </div>
+  <div class="box tip"><h4>The vibe we're going for</h4>Nobody hoards the good stuff. You found an insane chrome-over-fracture combo at 2am? Drop it. Somebody's going to one-up you, and that's the whole game.</div>
+</section>
+
+<!-- IN DEPTH -->
+<section id="depth">
+  <h2>In Depth</h2>
+  <p class="lead">Everything above, with the lid off.</p>
+
+  <h3>The workspace</h3>
+  <ul>
+    <li><b>Header / top bar:</b> your iRacing ID + folder, plus <b>Finish Viewer</b>, <b>Spec Sculpt</b>, <b>Shokk Drop</b>, <b>Import Recipe</b>, and <b>Commands</b> (Settings, Spec Channels, About, Shortcuts…).</li>
+    <li><b>Center canvas:</b> your car, live. When a spec map is loaded you also get a <b>Spec Channels</b> dock to inspect M/R/CC separately.</li>
+    <li><b>Zone Manager (left):</b> the list of zones you've made.</li>
+    <li><b>Zone Popout (right):</b> the per-zone editor — Base, Pattern, Spec Patterns, and the HSB sliders. This is your home.</li>
+  </ul>
+  <p style="color:var(--dim);font-size:14.5px">There are pixel-level editing tools on the canvas for touch-ups too. They work, but they aren't the point, and they're still maturing in beta — the power is in the finish-and-spec system.</p>
+
+  <h3>Setting up iRacing (the part everyone fumbles once)</h3>
+  <ul>
+    <li><b>User ID</b> — your iRacing <b>Customer ID</b> (helmet icon in iRacing → Profile): the number iRacing puts in custom-paint filenames. It is not your car number; iRacing only loads files that carry your own ID.</li>
+    <li><b>Car folder</b> — the <i>folder</i> for that specific car's paints, e.g. <code>…\iRacing\paint\porsche911cup\</code>. Not a file. If you paste a path ending in <code>car_12345.tga</code>, SPB will try to sort it out, but give it the folder and we'll both be happier.</li>
+    <li><b>Custom Number / Sim-Stamped Number</b> — decides whether SPB writes <code>car_num_&lt;id&gt;.tga</code> (your paint carries its own number; iRacing loads it only with <b>Settings → Graphics → Hide Car Numbers</b> ON) or <code>car_&lt;id&gt;.tga</code> (iRacing stamps your number on; Hide Car Numbers OFF). They must match, or iRacing quietly shows your paint-shop colours. Not sure? Render once in each mode.</li>
+  </ul>
+  <p>SPB writes two files per render: the <b>paint</b> and the <b>spec map</b> (<code>car_spec_&lt;id&gt;.tga</code>). Both go in that folder.</p>
+
+  <h3>PSD vs TGA — how much control you get</h3>
+  <div class="compare">
+    <div class="col best"><div class="lbl">IMPORT A PSD — the power move</div><h4>Layers map to zones</h4><p style="color:var(--dim);margin:0">Bring in a layered Photoshop template and each layer ties to its own zone. That means a finish you put on the body <b>won't bleed onto your sponsor layer</b>, your numbers stay your numbers, and a spec effect on one piece leaves the others alone. Maximum control, clean separation, no cross-contamination.</p></div>
+    <div class="col"><div class="lbl alt">JUST A TGA — still totally fine</div><h4>Zone by color</h4><p style="color:var(--dim);margin:0">No PSD? No problem. Load your flat TGA and carve zones by color instead. You can do everything — you just have a little less separation between elements, since it's one baked image rather than tidy layers.</p></div>
+  </div>
+
+  <h3>Zones — telling SPB <i>where</i></h3>
+  <p>A zone is a region of the car defined by color. Point at a color, SPB grabs everything that matches, and now you can dress that region however you like.</p>
+  <ul>
+    <li><b>Tolerance</b> — how fuzzy the match is. Low = that exact shade. High = the whole neighborhood. Fixes 90% of "it grabbed the wrong stuff."</li>
+    <li><b>Hard Edge</b> — crisp boundaries instead of soft blends.</li>
+    <li><b>Multi-color zones</b> — stack several source colors into one zone when they should wear the same finish.</li>
+  </ul>
+
+  <h3>Bases — the finish on the surface</h3>
+  <p>Click a zone's <b>Base</b> swatch to open the Finish Picker. A taste of the shelf:</p>
+  <div class="cats">
+    <div class="cat"><span class="dot" style="background:#9aa3b5"></span>Foundation &amp; ★ Enhanced</div>
+    <div class="cat"><span class="dot" style="background:#c0392b"></span>Candy &amp; Pearl</div>
+    <div class="cat"><span class="dot" style="background:#d7dbe0"></span>Chrome &amp; Mirror</div>
+    <div class="cat"><span class="dot" style="background:#b8862b"></span>Exotic Metal</div>
+    <div class="cat"><span class="dot" style="background:#2b2f36"></span>Carbon &amp; Composite</div>
+    <div class="cat"><span class="dot" style="background:#3aa6a0"></span>Ceramic &amp; Glass</div>
+    <div class="cat"><span class="dot" style="background:#3ad65b"></span>Tactical &amp; Cyberpunk</div>
+    <div class="cat"><span class="dot" style="background:#ff5b2e"></span>Flames</div>
+    <div class="cat"><span class="dot" style="background:#6b4f8a"></span>Marble &amp; Onyx</div>
+    <div class="cat"><span class="dot" style="background:#ff6f91"></span>Sock Hop &amp; Groovy Vibes</div>
+    <div class="cat"><span class="dot" style="background:linear-gradient(90deg,#ff3b6b,#3dd6ff)"></span>★ OPTIC LAB</div>
+    <div class="cat"><span class="dot" style="background:linear-gradient(90deg,#7c5bff,#3dff8e)"></span>★ PRISM FORGE</div>
+    <div class="cat"><span class="dot" style="background:linear-gradient(90deg,#ff5bd6,#ffe93b)"></span>🧠 FRACTURED ⭐</div>
+  </div>
+  <p style="margin-top:14px">Once assigned, shape it: <b>Base color mode</b> (use the source paint, a solid color, or a gradient), <b>HSB</b> (Hue / Saturation / Brightness — small moves turn one finish into ten), and a <b>Lock</b> to pin a zone so it survives if you go randomizing elsewhere.</p>
+  <div class="box beta"><h4>Beta, reminder #2</h4>The catalog is huge and we're actively rebuilding chunks of it. If a finish looks half-baked, it might genuinely be one we're mid-redo on. Flag it — that's exactly what beta is for.</div>
+
+  <h3>Patterns — texture and shape</h3>
+  <p>Click the <b>Pattern</b> swatch to lay a pattern over a zone (Abstract/Fractal, Tech/Carbon, Geometry/Deco, Nature, Cultural, the Decades kits, Reactive accents, and more). Scale, rotate, offset it; fit it to the zone or fill the canvas. A note: patterns are built to sit on the car in <i>any</i> orientation, because every car lays its template out differently. Treat a pattern as a <b>material</b>, not an upright decal.</p>
+
+  <h3>Spec Patterns — the secret sauce</h3>
+  <p>This is what makes an SPB livery an SPB livery. The <b>Spec Patterns</b> section layers detail directly onto the M, R, and CC channels — independently, up to five stacked. It's how a finish stays calm head-on and then <b>ignites</b> when light hits it at the right angle: sparkle, optical interference, brushed-metal direction, carbon weave, clearcoat coatings, structural geometry. You don't need the physics. You need to know the spec layer is <b>why a great livery looks alive in the corners</b> and a flat one looks like a sticker. Spend time here.</p>
+
+  <h3>Render &amp; see it in iRacing</h3>
+  <ul>
+    <li><b>RENDER</b> builds the final paint + spec TGAs and drops them in your car folder (set the folder once and every render lands there).</li>
+    <li>In iRacing press <b>Alt+Tab → Ctrl+R</b> (Reload Car Textures): tweak → render → reload → tweak again. (<b>Auto-Deploy</b> in Settings only matters when no car folder is set.)</li>
+    <li>Not showing up? Open the chat and say <b>it does not show up in iRacing</b>: the built-in helper checks your ID, number setting, folder and files and tells you which step is off.</li>
+  </ul>
+  <p style="color:var(--dim);font-size:14.5px">Rendering should be quick. If a particular finish takes its sweet time, that's worth reporting — we hold ourselves to a "fast, or it's a bug" standard.</p>
+
+  <h3>More tools worth knowing</h3>
+  <ul>
+    <li><b>Spec Sculpt Lab</b> — a full-page workshop for building a spec map from a paint image on its own, when you want to dial light behavior precisely outside the zone flow.</li>
+    <li><b>Shokk Drop</b> — import your own artwork or a DNA spec, and share finishes as <code>.spbdrop</code> packs.</li>
+    <li><b>Import / Export Recipe</b> (<code>.shokkerrecipe</code>) — save or restore an entire livery setup in one file.</li>
+    <li><b>Finish Viewer</b> — window-shop the whole library as thumbnails.</li>
+    <li><b>Spec Channels</b> — pop open the raw M/R/CC channels of your current spec map to see exactly what SPB wrote.</li>
+  </ul>
+
+  <h3>Settings, license &amp; updates</h3>
+  <ul>
+    <li><b>License / Activation</b> — paste your key, hit Activate. There's a Deactivate if you're moving machines.</li>
+    <li><b>Auto-Update</b> — a banner appears up top when a new build is out; it downloads, then offers Install &amp; Restart. During beta, expect these often. That's the point.</li>
+    <li><b>Report a Problem</b> — builds a copy-paste diagnostics bundle (recent errors, logs, what the app was doing). It <b>never</b> includes your license key or passwords. When something's weird, this is the single most useful thing you can send us.</li>
+  </ul>
+
+  <h3>Gotchas, in one place</h3>
+  <ul>
+    <li>The iRacing field wants the <b>folder</b>, not the file.</li>
+    <li><b>PSD</b> = clean layer-to-zone separation; <b>TGA</b> = works great, just less separation.</li>
+    <li><b>Tolerance</b> fixes most zone-selection headaches.</li>
+    <li>The <b>spec layer</b> is what separates a flat livery from a living one.</li>
+    <li>For FRACTURED: assign as Base, pick a color, <b>crush the brightness</b>, daytime track.</li>
+    <li>If a render is slow or a finish looks off — <b>Report a Problem</b>. Seriously.</li>
+  </ul>
+</section>
+
+<footer><div>
+  <p class="big">One more time, because we mean it: this is a <span style="color:#ff9aa6">BETA</span>.</p>
+  <p>It's good enough that we wanted you to have it, and unfinished enough that you'll find things we didn't. We'd rather hear about a rough edge from you today than pretend it isn't there. Break it, tell us how, and we'll make it better — that's the deal, and you're holding up your end just by being here.</p>
+  <p>Now go build something that makes the person behind you on the grid a little jealous. Welcome to the booth. 🏁</p>
+</div></footer>
+
+</div>
+</body></html>

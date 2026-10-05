@@ -1,0 +1,83 @@
+/* SPB PRO AI — floating copilot panel (Pro Mode only; Easy has its own bar). SPB-AI 2026-09-30 (rebuilt: draggable, resizable, onboarding, receipts) */
+.spb-pai-fab { position: fixed; right: 18px; bottom: 18px; z-index: 9400; padding: 9px 16px; border-radius: 999px; cursor: pointer; font: 800 13px/1 'Rajdhani', 'Segoe UI', sans-serif; letter-spacing: .06em; color: #fff; border: 1px solid #d21ec0; background: linear-gradient(135deg, #7a1a96, #1a6a8a); box-shadow: 0 6px 24px rgba(210,30,192,0.4); }
+.spb-pai-fab:hover { filter: brightness(1.15); } .spb-pai-fab.open { box-shadow: 0 0 0 3px rgba(210,30,192,0.4), 0 6px 24px rgba(210,30,192,0.5); }
+.spb-pai-fab.fresh { animation: spbPaiPulse 2s ease-in-out infinite; }
+@keyframes spbPaiPulse { 0%, 100% { box-shadow: 0 6px 24px rgba(210,30,192,0.4), 0 0 0 0 rgba(210,30,192,0.6); } 50% { box-shadow: 0 6px 24px rgba(210,30,192,0.5), 0 0 0 10px rgba(210,30,192,0); } }
+.spb-pai-fab[hidden], .spb-pai[hidden] { display: none !important; }
+/* default place: a right-hand drawer under the top bar (over the layers column, not the preview); the buyer can drag / resize and it remembers */
+.spb-pai { position: fixed; right: 14px; top: 96px; z-index: 9401; width: 392px; height: calc(100vh - 170px); min-width: 320px; min-height: 220px; max-width: 96vw; max-height: 96vh; resize: both; display: flex; flex-direction: column; box-sizing: border-box; border-radius: 16px; overflow: hidden; color: #eef0f8; font-size: 13px; line-height: 1.42;
+    border: 1.5px solid transparent; background: linear-gradient(180deg, rgba(14,17,32,0.985), rgba(9,11,22,0.985)) padding-box, linear-gradient(120deg, #ff7a18, #d21ec0 55%, #1fc4e8) border-box; box-shadow: 0 18px 60px rgba(0,0,0,0.65); }
+.spb-pai *, .spb-pai *::before, .spb-pai *::after { box-sizing: border-box; min-width: 0; }
+.spb-pai.min { height: auto !important; min-height: 0; resize: none; } .spb-pai.min .spb-pai-log, .spb-pai.min .spb-pai-bar, .spb-pai.min .spb-pai-set { display: none; }
+.spb-pai-head { display: flex; align-items: center; gap: 6px; padding: 9px 10px 9px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: move; user-select: none; flex: 0 0 auto; } .spb-pai-head b { font-size: 14px; } .spb-pai-sp { flex: 1; }
+.spb-pai-x { width: 26px; height: 26px; border-radius: 8px; cursor: pointer; color: #cfd2e6; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.05); font-size: 13px; line-height: 1; padding: 0; } .spb-pai-x:hover { border-color: #d21ec0; color: #fff; }
+.spb-pai-set { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.1); max-height: 55%; overflow: auto; flex: 0 0 auto; }
+.spb-pai-log { flex: 1 1 auto; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 9px; scrollbar-width: thin; }
+.spb-pai-hello { color: #c9cde2; padding: 9px 11px; border-radius: 10px; background: rgba(255,255,255,0.045); }
+.spb-pai-chips { display: flex; flex-wrap: wrap; gap: 6px; } .spb-pai-chip { padding: 6px 12px; border-radius: 999px; cursor: pointer; font: inherit; font-size: 12px; font-weight: 600; color: #fff; text-align: left; border: 1px solid rgba(210,30,192,0.55); background: rgba(210,30,192,0.13); } .spb-pai-chip:hover { border-color: #ff7a18; background: rgba(255,122,24,0.22); }
+.spb-pai-setup { padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); color: #d5d8ea; } .spb-pai-setup b { font-size: 14px; color: #fff; } .spb-pai-setup p { margin: 6px 0 8px; } .spb-pai-setup ol { margin: 0 0 8px; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; } .spb-pai-setup a { color: #6fdcff; font-weight: 700; }
+.spb-pai-keyrow { display: flex; gap: 6px; margin-top: 6px; } .spb-pai-key { flex: 1; padding: 7px 10px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.25); background: rgba(0,0,0,0.45); color: #fff; font: inherit; } .spb-pai-key:focus { outline: none; border-color: #d21ec0; } .spb-pai-keyrow .spb-pai-send { padding: 0 12px; white-space: nowrap; }
+.spb-pai-keyout { min-height: 16px; margin-top: 4px; font-size: 12px; color: #9be29b; } .spb-pai-keyout.bad { color: #ffb0a0; }
+.spb-pai-note { align-self: center; font-size: 11.5px; color: #9aa0bd; text-align: center; }
+.spb-pai-msg { max-width: 94%; padding: 8px 11px; border-radius: 12px; word-wrap: break-word; }
+.spb-pai-msg.user { align-self: flex-end; background: rgba(255,122,24,0.20); border: 1px solid rgba(255,122,24,0.5); }
+.spb-pai-msg.ai { align-self: flex-start; background: rgba(210,30,192,0.10); border: 1px solid rgba(210,30,192,0.4); } .spb-pai-msg.ai.nochange { border-style: dashed; }
+.spb-pai-msg.err { align-self: flex-start; background: rgba(230,90,60,0.12); border: 1px solid rgba(230,90,60,0.55); color: #ffcdbd; }
+.spb-pai-msg.busy { display: flex; align-items: center; gap: 9px; color: #d9dcee; } .spb-pai-msg.busy .spb-ai-btn { margin-left: auto; }
+.spb-pai-lines, .spb-pai-warns { display: flex; flex-direction: column; gap: 2px; margin-top: 6px; font-size: 12px; } .spb-pai-lines { color: #a9f0b9; } .spb-pai-warns { color: #ffd28a; }
+.spb-pai-acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; } .spb-pai-act { padding: 4px 10px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; color: #f1e9ff; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.07); } .spb-pai-act:hover { border-color: #ff7a18; background: rgba(255,122,24,0.2); }
+.spb-pai-det { margin-top: 7px; font-size: 12px; } .spb-pai-det summary { cursor: pointer; color: #a9f0b9; font-weight: 700; } .spb-pai-det .spb-pai-lines { margin-top: 4px; color: #b9c9be; }
+.spb-pai-next { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; } .spb-pai-next .spb-pai-chip { font-size: 11.5px; padding: 4px 10px; }
+.spb-pai-meta { margin-top: 5px; font-size: 10.5px; color: #8e93ad; letter-spacing: .03em; }
+.spb-pai-opts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; } .spb-pai-opt { padding: 4px 11px; border-radius: 999px; cursor: pointer; font: inherit; font-size: 12px; font-weight: 600; color: #fff; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.07); } .spb-pai-opt:hover { border-color: #ff7a18; background: rgba(255,122,24,0.2); }
+.spb-pai-bar { display: flex; gap: 8px; padding: 10px; border-top: 1px solid rgba(255,255,255,0.1); flex: 0 0 auto; } .spb-pai-bar[hidden] { display: none; }
+.spb-pai-input { flex: 1; resize: none; padding: 8px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.4); color: #fff; font: inherit; } .spb-pai-input:focus { outline: none; border-color: #d21ec0; } .spb-pai-input:disabled { opacity: .55; }
+.spb-pai-send { padding: 0 16px; border-radius: 10px; cursor: pointer; font: 800 13px/1 inherit; letter-spacing: .04em; color: #1a0d03; border: 0; background: linear-gradient(135deg, #ffb060, #ff7a18); }
+.spb-pai .spb-tell-dots { display: inline-flex; gap: 4px; } .spb-pai .spb-tell-dots i { width: 8px; height: 8px; border-radius: 50%; background: #d21ec0; animation: spbTellDot 1s ease-in-out infinite; } .spb-pai .spb-tell-dots i:nth-child(2) { animation-delay: .15s; background: #ff7a18; } .spb-pai .spb-tell-dots i:nth-child(3) { animation-delay: .3s; background: #1fe0ff; }
+@keyframes spbTellDot { 0%, 80%, 100% { transform: scale(.6); opacity: .4; } 40% { transform: scale(1.15); opacity: 1; } }
+/* the shared settings panel restyled for the light-on-dark drawer */
+.spb-pai .spb-ai-panel { border: 0; background: transparent; padding: 0; }
+@media (max-width: 1250px) { .spb-pai { top: 84px; width: min(392px, 92vw); } }
+
+/* panel picker + option cards (2026-09-30) */
+.spb-pai-pick { margin-top: 8px; } .spb-pai-pickcv { width: 100%; max-width: 360px; aspect-ratio: 1 / 1; border-radius: 10px; border: 1px solid rgba(255,255,255,0.25); background: #15151c; display: block; }
+.spb-pai-pickfront { margin-top: 8px; font-size: 12px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.spb-pai-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-top: 8px; }
+.spb-pai-card { display: flex; flex-direction: column; gap: 4px; padding: 6px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.05); } .spb-pai-card.chosen { border-color: #2fd36b; }
+.spb-pai-card img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 7px; background: #15151c; } .spb-pai-nothumb { aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #8e93ad; background: #15151c; border-radius: 7px; }
+.spb-pai-card b { font-size: 12.5px; } .spb-pai-card span { font-size: 11.5px; color: #b9bdd6; line-height: 1.3; } .spb-pai-card .spb-pai-act { margin-top: auto; }
+
+/* 2026-10-01: inline preview thumbnail, car line, upgrade card */
+.spb-pai-thumb { display: block; width: 100%; max-width: 330px; margin-top: 8px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.22); background: #15151c; }
+.spb-pai-carline { font-size: 12px; color: #c9cde2; padding: 7px 10px; border-radius: 9px; background: rgba(255,255,255,0.04); border: 1px dashed rgba(255,255,255,0.18); } .spb-pai-carline.ok { color: #bff0c7; border-color: rgba(120,220,150,0.45); background: rgba(80,200,120,0.07); }
+.spb-pai-upgrade { margin-top: 4px; font-size: 12px; color: #c9cde2; } .spb-pai-upgrade > summary { cursor: pointer; font-weight: 700; color: #ffd28a; }
+
+/* support checklist card (2026-10-02) */
+.spb-pai-diag { padding-bottom: 9px; } .spb-pai-chk-intro { margin: 4px 0 6px; color: #cdd1e6; } .spb-pai-chk-list { display: flex; flex-direction: column; gap: 7px; margin: 6px 0; }
+.spb-pai-chk { display: flex; gap: 9px; padding: 7px 9px; border-radius: 9px; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.1); }
+.spb-pai-chk-ic { flex: 0 0 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; background: #3a3f5c; color: #fff; }
+.spb-pai-chk.ok .spb-pai-chk-ic { background: #1f9d55; } .spb-pai-chk.bad .spb-pai-chk-ic { background: #d6342c; } .spb-pai-chk.warn .spb-pai-chk-ic { background: #d98a12; } .spb-pai-chk.unk .spb-pai-chk-ic { background: #5a6285; }
+.spb-pai-chk.bad { border-color: rgba(214,52,44,0.55); background: rgba(214,52,44,0.09); } .spb-pai-chk.warn { border-color: rgba(217,138,18,0.5); }
+.spb-pai-chk-body { min-width: 0; } .spb-pai-chk-d { margin-top: 2px; font-size: 12.5px; color: #b9bdd6; line-height: 1.4; } .spb-pai-chk-s { margin: 5px 0 4px 18px; padding: 0; font-size: 12.5px; line-height: 1.45; } .spb-pai-chk-s li { margin: 2px 0; }
+.spb-pai-chk-outro { margin-top: 6px; color: #cdd1e6; }
+
+/* reference picture card (2026-10-02): mark the side view, then match the design */
+.spb-pai-pic .spb-pai-picwrap { position: relative; margin: 8px 0; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.18); cursor: crosshair; user-select: none; line-height: 0; } .spb-pai-pic .spb-pai-picwrap img { width: 100%; display: block; }
+.spb-pai-pic .spb-pai-picbox { position: absolute; border: 2px solid #ff9d4d; background: rgba(255,157,77,0.18); box-shadow: 0 0 0 9999px rgba(0,0,0,0.38); pointer-events: none; } .spb-pai-pic .spb-pai-picbox[hidden] { display: none; }
+.spb-pai-pic .spb-pai-act.on { border-color: #ff9d4d; color: #fff; background: rgba(255,157,77,0.22); } .spb-pai-pic .spb-pai-picbtns { margin: 8px 0; display: flex; gap: 6px; flex-wrap: wrap; }
+.spb-pai-attach { margin-right: 4px; flex: 0 0 auto; align-self: flex-end; width: 34px; height: 34px; }
+/* FINISH ADVISOR cards (2026-10-02): real catalogue finishes with a swatch, a one-line reason and a one-click apply */
+.spb-pai-fcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(138px, 1fr)); gap: 8px; margin-top: 8px; }
+.spb-pai-fc { display: flex; flex-direction: column; gap: 3px; padding: 6px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.05); min-width: 0; }
+.spb-pai-fcimg { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 7px; background: #15151c; }
+.spb-pai-fc b { font-size: 12.5px; line-height: 1.2; } .spb-pai-fc i { font-style: normal; font-size: 10.5px; color: #8fd0a0; line-height: 1.2; }
+.spb-pai-fc em { font-style: normal; font-size: 10.5px; color: #9aa0c0; line-height: 1.2; }
+.spb-pai-fc em.warn { color: #f2b866; }
+.spb-pai-fc span { font-size: 11.5px; color: #b9bdd6; line-height: 1.3; overflow-wrap: anywhere; }
+.spb-pai-fcbtns { margin-top: auto; display: flex; flex-direction: column; gap: 4px; padding-top: 4px; } .spb-pai-fcbtns .spb-pai-act { width: 100%; white-space: normal; line-height: 1.2; }
+/* FINISH KITS (2026-10-03): body + stripes + numbers (+ hero) chosen together, applied in one step */
+.spb-pai-kits { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.spb-pai-kit { padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 6px; }
+.spb-pai-kit > b { font-size: 13px; } .spb-pai-kitwhy { font-size: 11.5px; color: #b9bdd6; line-height: 1.3; }
+.spb-pai-kitrow { display: flex; gap: 8px; flex-wrap: wrap; } .spb-pai-kititem { width: 72px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.spb-pai-kititem img { width: 72px; height: 72px; object-fit: cover; border-radius: 7px; background: #15151c; } .spb-pai-kititem i { font-style: normal; font-size: 10px; color: #8fd0a0; } .spb-pai-kititem b { font-size: 11px; line-height: 1.15; overflow-wrap: anywhere; }

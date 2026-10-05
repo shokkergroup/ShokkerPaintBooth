@@ -1,0 +1,191 @@
+{
+  "version": 1,
+  "paint_label": "1Shokker Paint Car Examples/bloomq0.tga",
+  "inspection_records": "_smart_tga_runs/cycle184_sponsor_retainer_crosscar_routes_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle184_sponsor_retainer_crosscar_routes_v1/1Shokker_Paint_Car_Examples_bloomq0/component_records.json",
+  "review_scope": "Cycle 189 reviewed Sponsor-retainer fixture pack from Cycle 185-188 offline rules and Cycle 188 contact-sheet visual review. Runtime Smart TGA masks are unchanged.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 9,
+      "expected_bbox": [
+        540,
+        239,
+        42,
+        19
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_small_neutral_contingency_fragment",
+      "note": "Visually reviewed small sponsor/contingency decal fragment from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers or Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 13,
+      "expected_bbox": [
+        520,
+        248,
+        16,
+        6
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_small_neutral_contingency_fragment",
+      "note": "Visually reviewed small sponsor/contingency decal fragment from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers or Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 15,
+      "expected_bbox": [
+        128,
+        259,
+        27,
+        10
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_small_neutral_contingency_fragment",
+      "note": "Visually reviewed small sponsor/contingency decal fragment from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers or Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 18,
+      "expected_bbox": [
+        18,
+        264,
+        33,
+        10
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_small_neutral_contingency_fragment",
+      "note": "Visually reviewed small sponsor/contingency decal fragment from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers or Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 21,
+      "expected_bbox": [
+        101,
+        276,
+        21,
+        10
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_small_neutral_contingency_fragment",
+      "note": "Visually reviewed small sponsor/contingency decal fragment from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers or Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 22,
+      "expected_bbox": [
+        133,
+        276,
+        20,
+        8
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_small_neutral_contingency_fragment",
+      "note": "Visually reviewed small sponsor/contingency decal fragment from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers or Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 31,
+      "expected_bbox": [
+        132,
+        291,
+        24,
+        10
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_small_neutral_contingency_fragment",
+      "note": "Visually reviewed small sponsor/contingency decal fragment from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers or Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 32,
+      "expected_bbox": [
+        104,
+        292,
+        17,
+        10
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_small_neutral_contingency_fragment",
+      "note": "Visually reviewed small sponsor/contingency decal fragment from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers or Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 33,
+      "expected_bbox": [
+        22,
+        294,
+        29,
+        12
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_small_neutral_contingency_fragment",
+      "note": "Visually reviewed small sponsor/contingency decal fragment from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers or Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 56,
+      "expected_bbox": [
+        519,
+        541,
+        17,
+        107
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_vertical_wordmark",
+      "note": "Visually reviewed narrow vertical sponsor wordmark/text from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 65,
+      "expected_bbox": [
+        191,
+        728,
+        17,
+        7
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_small_neutral_contingency_fragment",
+      "note": "Visually reviewed small sponsor/contingency decal fragment from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers or Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 76,
+      "expected_bbox": [
+        540,
+        786,
+        41,
+        20
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_small_neutral_contingency_fragment",
+      "note": "Visually reviewed small sponsor/contingency decal fragment from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers or Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 77,
+      "expected_bbox": [
+        520,
+        793,
+        16,
+        6
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_small_neutral_contingency_fragment",
+      "note": "Visually reviewed small sponsor/contingency decal fragment from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers or Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 84,
+      "expected_bbox": [
+        29,
+        813,
+        24,
+        8
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_small_neutral_contingency_fragment",
+      "note": "Visually reviewed small sponsor/contingency decal fragment from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers or Template."
+    }
+  ]
+}

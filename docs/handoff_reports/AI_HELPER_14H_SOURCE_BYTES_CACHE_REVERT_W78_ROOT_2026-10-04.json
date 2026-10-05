@@ -1,0 +1,17 @@
+{
+  "racedHttp": 409,
+  "restoredRetryHttp": 200,
+  "digestMatchesRestoredA": true,
+  "returnedPixel": [
+    15,
+    180,
+    90
+  ],
+  "expectedRestoredPixel": [
+    200,
+    10,
+    20
+  ],
+  "cachePoisonReproduced": true,
+  "productionWrites": 0
+}

@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_cabinet_side_art",
+  "display_name": "Arcade: Cabinet Side Art",
+  "promise": "Layered red, cyan and yellow screenprint lightning with scuffed vinyl edges.",
+  "carrier_grammar": "Layered red, cyan and yellow screenprint lightning with scuffed vinyl edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for red vinyl print, cyan spear ink, yellow offset borders, ultramarine overprint, cream vinyl abrasion is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Layered red, cyan and yellow screenprint lightning with scuffed vinyl edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_cabinet_side_art.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "red vinyl print",
+      "role": "Actual shared paint and spec geometry: red vinyl print"
+    },
+    {
+      "name": "cyan spear ink",
+      "role": "Actual shared paint and spec geometry: cyan spear ink"
+    },
+    {
+      "name": "yellow offset borders",
+      "role": "Actual shared paint and spec geometry: yellow offset borders"
+    },
+    {
+      "name": "ultramarine overprint",
+      "role": "Actual shared paint and spec geometry: ultramarine overprint"
+    },
+    {
+      "name": "cream vinyl abrasion",
+      "role": "Actual shared paint and spec geometry: cream vinyl abrasion"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "red vinyl print",
+      "cyan spear ink",
+      "yellow offset borders",
+      "ultramarine overprint",
+      "cream vinyl abrasion"
+    ],
+    "R": [
+      "red vinyl print",
+      "cyan spear ink",
+      "yellow offset borders",
+      "ultramarine overprint",
+      "cream vinyl abrasion"
+    ],
+    "Cc": [
+      "red vinyl print",
+      "cyan spear ink",
+      "yellow offset borders",
+      "ultramarine overprint",
+      "cream vinyl abrasion"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_skate_deck",
+      "difference": "This finish uses 1983 cabinet-side screenprint material: very small angular red lightning teeth, cyan spear splinters, warm yellow offset borders, ultramarine stippled ink and cream worn vinyl chips. Dense interlocking graphic fragments, crisp flat print with tiny abrasion, no large picture or readable design.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "at_snowboard_graphic",
+      "difference": "This finish uses 1983 cabinet-side screenprint material: very small angular red lightning teeth, cyan spear splinters, warm yellow offset borders, ultramarine stippled ink and cream worn vinyl chips. Dense interlocking graphic fragments, crisp flat print with tiny abrasion, no large picture or readable design.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "red vinyl print is visible in the authored geometry",
+      "cyan spear ink is visible in the authored geometry",
+      "yellow offset borders is visible in the authored geometry",
+      "ultramarine overprint is visible in the authored geometry",
+      "cream vinyl abrasion is visible in the authored geometry"
+    ],
+    "source_sha256": "41606db5c21bf477840f6f1bb9283c80fc638e1153611bcb8478d919542c131d",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_cabinet_side_art-authored-Layered red, cyan and yellow screenprint lightning with scuffed vinyl edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_cabinet_side_art-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 62.1,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "57710710cdc6f309102117fd1bf281acc634dd5085a9a078954b59675f099d77"
+}

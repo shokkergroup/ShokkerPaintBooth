@@ -1,0 +1,452 @@
+{
+ "ffl_flashpoint": {
+  "name": "Flashpoint",
+  "desc": "The instant it catches — a ragged burn front with the first embers already thrown clear.",
+  "swatch": "#BB4728",
+  "chapter": "ignition"
+ },
+ "ffl_char_creep": {
+  "name": "Char Creep",
+  "desc": "Blackening crawls across the surface along the grain, carbon dendrites trailing behind it.",
+  "swatch": "#934738",
+  "chapter": "ignition"
+ },
+ "ffl_tinder_bloom": {
+  "name": "Tinder Bloom",
+  "desc": "Dry fibre catching all at once: hundreds of thin bright threads opening out of a rough front.",
+  "swatch": "#A3300B",
+  "chapter": "ignition"
+ },
+ "ffl_match_head": {
+  "name": "Match Head",
+  "desc": "Crimson strontium flare — the chemical head burning ahead of the wood.",
+  "swatch": "#A24216",
+  "chapter": "ignition"
+ },
+ "ffl_smoulder_bed": {
+  "name": "Smoulder Bed",
+  "desc": "Heat travelling underground through a packed bed, glowing only where it found air.",
+  "swatch": "#D1694E",
+  "chapter": "ignition"
+ },
+ "ffl_fuse_line": {
+  "name": "Fuse Line",
+  "desc": "Lilac potassium running along a powder trail, spitting as it goes.",
+  "swatch": "#72311A",
+  "chapter": "ignition"
+ },
+ "ffl_kindle_lattice": {
+  "name": "Kindle Lattice",
+  "desc": "Stacked kindling seen from above, each cell lighting on its own schedule.",
+  "swatch": "#D3500A",
+  "chapter": "ignition"
+ },
+ "ffl_spark_shower": {
+  "name": "Spark Shower",
+  "desc": "White-gold thermite spray, every particle burning out along its own arc.",
+  "swatch": "#885B24",
+  "chapter": "ignition"
+ },
+ "ffl_ember_catch": {
+  "name": "Ember Catch",
+  "desc": "A landed ember taking hold — bright cores spreading into the cold bed around them.",
+  "swatch": "#D86E54",
+  "chapter": "ignition"
+ },
+ "ffl_pilot_ring": {
+  "name": "Pilot Ring",
+  "desc": "The blue pilot crown: cool methane braids holding a steady standing flame.",
+  "swatch": "#BA7544",
+  "chapter": "ignition"
+ },
+ "ffl_autoignition": {
+  "name": "Autoignition",
+  "desc": "No spark needed — the whole surface reaches temperature at once and creases as it goes.",
+  "swatch": "#DF7B13",
+  "chapter": "ignition"
+ },
+ "ffl_firebrand_scatter": {
+  "name": "Firebrand Scatter",
+  "desc": "Burning debris carried downwind, each brand starting a new small front where it lands.",
+  "swatch": "#984E15",
+  "chapter": "ignition"
+ },
+ "ffl_scorch_front": {
+  "name": "Scorch Front",
+  "desc": "The dark boundary between what has burned and what has not, creased by its own heat.",
+  "swatch": "#C65872",
+  "chapter": "ignition"
+ },
+ "ffl_ignition_delay": {
+  "name": "Ignition Delay",
+  "desc": "Fuel and air mixed but not yet lit — pale sulfur blue drifting over a cold bed.",
+  "swatch": "#BE6C50",
+  "chapter": "ignition"
+ },
+ "ffl_touchpaper": {
+  "name": "Touchpaper",
+  "desc": "Amber sodium creeping through treated paper along every fibre at once.",
+  "swatch": "#7F3215",
+  "chapter": "ignition"
+ },
+ "ffl_diffusion_sheet": {
+  "name": "Diffusion Sheet",
+  "desc": "Where fuel meets air the burn is a SURFACE, not a volume — a shoal of thin reaction sheets.",
+  "swatch": "#9D4D14",
+  "chapter": "flame"
+ },
+ "ffl_wrinkled_front": {
+  "name": "Wrinkled Front",
+  "desc": "Michelson-Sivashinsky cusping: a flame front unstable to its own curvature, creasing everywhere.",
+  "swatch": "#D29B1E",
+  "chapter": "flame"
+ },
+ "ffl_darrieus_cell": {
+  "name": "Darrieus Cell",
+  "desc": "Darrieus-Landau cellular instability — a premixed flame breaking into its own honeycomb.",
+  "swatch": "#CE662A",
+  "chapter": "flame"
+ },
+ "ffl_turbulent_braid": {
+  "name": "Turbulent Braid",
+  "desc": "Shear at the flame edge rolling into braid after braid, never one big billow.",
+  "swatch": "#B06F4F",
+  "chapter": "flame"
+ },
+ "ffl_flamelet_storm": {
+  "name": "Flamelet Storm",
+  "desc": "Turbulence tears the front into thousands of independent flamelets, each burning on its own.",
+  "swatch": "#A15513",
+  "chapter": "flame"
+ },
+ "ffl_buoyant_fingers": {
+  "name": "Buoyant Fingers",
+  "desc": "Rayleigh-Taylor: hot gas punching up through cold in a hundred small fingers.",
+  "swatch": "#BC9A18",
+  "chapter": "flame"
+ },
+ "ffl_shear_tongue": {
+  "name": "Shear Tongue",
+  "desc": "Amber tongues leaning off a shear layer, licked into ribbons by the crossflow.",
+  "swatch": "#DA4D1E",
+  "chapter": "flame"
+ },
+ "ffl_pool_puff": {
+  "name": "Pool Puff",
+  "desc": "A pool fire breathing — the periodic puff of a buoyant plume, resolved into cells.",
+  "swatch": "#B97442",
+  "chapter": "flame"
+ },
+ "ffl_candle_cone": {
+  "name": "Candle Cone",
+  "desc": "The quiet laminar burn of a wick, all its structure in the fine creases of the sheath.",
+  "swatch": "#B0832A",
+  "chapter": "flame"
+ },
+ "ffl_blowtorch": {
+  "name": "Blowtorch",
+  "desc": "Forced-air blue: the flame stretched thin and fast, streaks running with the jet.",
+  "swatch": "#C79826",
+  "chapter": "flame"
+ },
+ "ffl_backdraft_wrinkle": {
+  "name": "Backdraft Wrinkle",
+  "desc": "Starved, then fed — the front folds back on itself the instant the air arrives.",
+  "swatch": "#E57E17",
+  "chapter": "flame"
+ },
+ "ffl_fire_whirl_grain": {
+  "name": "Fire Whirl Grain",
+  "desc": "Rotation stretches every filament into the same handedness — a whirl written in grain, not in a spiral.",
+  "swatch": "#B07151",
+  "chapter": "flame"
+ },
+ "ffl_laminar_ladder": {
+  "name": "Laminar Ladder",
+  "desc": "An orderly premixed burn: rungs of blue at a fixed spacing, cells filling between them.",
+  "swatch": "#B0893C",
+  "chapter": "flame"
+ },
+ "ffl_crown_fire": {
+  "name": "Crown Fire",
+  "desc": "Fire in the canopy — it stops running along the ground and starts leaping between crowns.",
+  "swatch": "#B05A0A",
+  "chapter": "flame"
+ },
+ "ffl_stoichiometric_seam": {
+  "name": "Stoichiometric Seam",
+  "desc": "Emerald boron marking the exact ratio line where fuel and oxidiser are perfectly matched.",
+  "swatch": "#8D2E13",
+  "chapter": "flame"
+ },
+ "ffl_arc_filament": {
+  "name": "Arc Filament",
+  "desc": "Past burning: an ionised channel that carries current, not fuel.",
+  "swatch": "#442F25",
+  "chapter": "plasma"
+ },
+ "ffl_ionised_braid": {
+  "name": "Ionised Braid",
+  "desc": "Current and field braiding around each other down the length of the column.",
+  "swatch": "#BE7A67",
+  "chapter": "plasma"
+ },
+ "ffl_magnetised_jet": {
+  "name": "Magnetised Jet",
+  "desc": "Copper-blue plasma collimated by its own magnetic field into a single hard direction.",
+  "swatch": "#B16F4D",
+  "chapter": "plasma"
+ },
+ "ffl_corona_grain": {
+  "name": "Corona Grain",
+  "desc": "The violet haze at the edge of a charged surface, grainy right down to the pixel.",
+  "swatch": "#4D2E1F",
+  "chapter": "plasma"
+ },
+ "ffl_streamer_web": {
+  "name": "Streamer Web",
+  "desc": "Streamers branching ahead of the main channel, each looking for the easiest path.",
+  "swatch": "#84310F",
+  "chapter": "plasma"
+ },
+ "ffl_townsend_cascade": {
+  "name": "Townsend Cascade",
+  "desc": "One electron becomes two, two become four — avalanche until the whole gap conducts.",
+  "swatch": "#B05F46",
+  "chapter": "plasma"
+ },
+ "ffl_pinch_instability": {
+  "name": "Pinch Instability",
+  "desc": "The column squeezes itself, necks, and tears — sausage instability written across the surface.",
+  "swatch": "#C7A890",
+  "chapter": "plasma"
+ },
+ "ffl_cathode_spot": {
+  "name": "Cathode Spot",
+  "desc": "Blinding white attachment points skittering across the electrode surface.",
+  "swatch": "#906B52",
+  "chapter": "plasma"
+ },
+ "ffl_glow_discharge": {
+  "name": "Glow Discharge",
+  "desc": "Low pressure, low current — an even green glow with visible striations in it.",
+  "swatch": "#BF9D1C",
+  "chapter": "plasma"
+ },
+ "ffl_lichtenberg_burn": {
+  "name": "Lichtenberg Burn",
+  "desc": "The fractal scar a discharge leaves behind, branching at every scale it can find.",
+  "swatch": "#81411C",
+  "chapter": "plasma"
+ },
+ "ffl_plasma_sheath": {
+  "name": "Plasma Sheath",
+  "desc": "The thin charged skin that forms wherever plasma meets a solid wall.",
+  "swatch": "#B48667",
+  "chapter": "plasma"
+ },
+ "ffl_spectral_line": {
+  "name": "Spectral Line",
+  "desc": "Apple-green barium emitting on one narrow line and nothing else.",
+  "swatch": "#87381B",
+  "chapter": "plasma"
+ },
+ "ffl_electron_avalanche": {
+  "name": "Electron Avalanche",
+  "desc": "Every track a carrier multiplying as it runs; the surface saturates from the leading edge back.",
+  "swatch": "#754A20",
+  "chapter": "plasma"
+ },
+ "ffl_tokamak_ripple": {
+  "name": "Tokamak Ripple",
+  "desc": "Confined and stable — nested flux surfaces rippling in step.",
+  "swatch": "#C07555",
+  "chapter": "plasma"
+ },
+ "ffl_aurora_column": {
+  "name": "Aurora Column",
+  "desc": "Charged particles following field lines down — curtains of green standing on end.",
+  "swatch": "#D24D0B",
+  "chapter": "plasma"
+ },
+ "ffl_pahoehoe_skin": {
+  "name": "Pahoehoe Skin",
+  "desc": "The ropy skin of slow lava, folding over itself as the crust drags on the flow beneath.",
+  "swatch": "#C88031",
+  "chapter": "molten"
+ },
+ "ffl_slag_crust": {
+  "name": "Slag Crust",
+  "desc": "Waste glass floating on the melt, cracked into plates with heat still showing through the seams.",
+  "swatch": "#C6823D",
+  "chapter": "molten"
+ },
+ "ffl_lava_cell": {
+  "name": "Lava Cell",
+  "desc": "Convection cells on an open melt — dark crust above, orange shear at every boundary.",
+  "swatch": "#BD5F36",
+  "chapter": "molten"
+ },
+ "ffl_quench_craze": {
+  "name": "Quench Craze",
+  "desc": "Hot glass into cold water: a craze network that keeps sub-dividing its own biggest fragments.",
+  "swatch": "#959344",
+  "chapter": "molten"
+ },
+ "ffl_vitrified_glaze": {
+  "name": "Vitrified Glaze",
+  "desc": "Ash fused to a glassy skin, then cooled until it crazed — kiln chemistry, not paint.",
+  "swatch": "#A16744",
+  "chapter": "molten"
+ },
+ "ffl_weld_pool": {
+  "name": "Weld Pool",
+  "desc": "The frozen ripple record of a moving arc, each crescent one pulse of the weld.",
+  "swatch": "#C27D37",
+  "chapter": "molten"
+ },
+ "ffl_molten_drip": {
+  "name": "Molten Drip",
+  "desc": "White-hot metal running and freezing on the way down, in hundreds of fine rivulets.",
+  "swatch": "#906229",
+  "chapter": "molten"
+ },
+ "ffl_crucible_skin": {
+  "name": "Crucible Skin",
+  "desc": "Oxide plates lifting off the wall of a crucible, each curled at the edge and lit underneath.",
+  "swatch": "#BD982F",
+  "chapter": "molten"
+ },
+ "ffl_basalt_column": {
+  "name": "Basalt Column",
+  "desc": "Cooling contraction cracking a flow into columns — the same physics as mud, at 1200 degrees.",
+  "swatch": "#8F6C52",
+  "chapter": "molten"
+ },
+ "ffl_obsidian_chill": {
+  "name": "Obsidian Chill",
+  "desc": "Cooled too fast to crystallise: black glass with conchoidal fracture running through it.",
+  "swatch": "#906363",
+  "chapter": "molten"
+ },
+ "ffl_foundry_spatter": {
+  "name": "Foundry Spatter",
+  "desc": "Thrown metal freezing where it lands, pocking the plate it lands on.",
+  "swatch": "#A05F3D",
+  "chapter": "molten"
+ },
+ "ffl_tuyere_glow": {
+  "name": "Tuyere Glow",
+  "desc": "Looking in through the blast port: the hottest zone of the furnace, seen through moving gas.",
+  "swatch": "#AD7C21",
+  "chapter": "molten"
+ },
+ "ffl_slumped_glass": {
+  "name": "Slumped Glass",
+  "desc": "Glass gone soft and taken the shape it was resting on, the flow still legible in the surface.",
+  "swatch": "#A47F5A",
+  "chapter": "molten"
+ },
+ "ffl_magma_vesicle": {
+  "name": "Magma Vesicle",
+  "desc": "Gas coming out of solution — bubbles frozen at the instant the melt stopped moving.",
+  "swatch": "#B97648",
+  "chapter": "molten"
+ },
+ "ffl_ropy_flow": {
+  "name": "Ropy Flow",
+  "desc": "Fast pahoehoe: the skin dragged into tight parallel ropes by the flow under it.",
+  "swatch": "#C1653E",
+  "chapter": "molten"
+ },
+ "ffl_ember_bed": {
+  "name": "Ember Bed",
+  "desc": "What is left when the flame goes: a bed that is all heat and no light, breathing where air reaches it.",
+  "swatch": "#BF704E",
+  "chapter": "cinder"
+ },
+ "ffl_ash_fall": {
+  "name": "Ash Fall",
+  "desc": "Fine grey settling out of the air and building up wherever the wind lets it.",
+  "swatch": "#773B17",
+  "chapter": "cinder"
+ },
+ "ffl_soot_bloom": {
+  "name": "Soot Bloom",
+  "desc": "Carbon inception: dendrites branching out of nothing, the deadest material in the catalog.",
+  "swatch": "#682319",
+  "chapter": "cinder"
+ },
+ "ffl_char_scale": {
+  "name": "Char Scale",
+  "desc": "Burnt skin gone to alligator scale, every plate lifted a little at its edge.",
+  "swatch": "#87816E",
+  "chapter": "cinder"
+ },
+ "ffl_cinder_lattice": {
+  "name": "Cinder Lattice",
+  "desc": "The connected skeleton that survived — only the paths that stayed lit are still there.",
+  "swatch": "#BE6E4B",
+  "chapter": "cinder"
+ },
+ "ffl_fly_ash": {
+  "name": "Fly Ash",
+  "desc": "Spent particles too light to fall, drifting until they cool to nothing.",
+  "swatch": "#78401D",
+  "chapter": "cinder"
+ },
+ "ffl_coke_cell": {
+  "name": "Coke Cell",
+  "desc": "Coal cooked without air until only the carbon cell wall is left standing.",
+  "swatch": "#CB5B3A",
+  "chapter": "cinder"
+ },
+ "ffl_clinker_crust": {
+  "name": "Clinker Crust",
+  "desc": "Fused ash that went hard and vitreous in the grate — the stuff you have to break out.",
+  "swatch": "#8E7F67",
+  "chapter": "cinder"
+ },
+ "ffl_ash_glaze": {
+  "name": "Ash Glaze",
+  "desc": "Wood ash melted onto the pot by its own kiln and crazed as it cooled.",
+  "swatch": "#B0554C",
+  "chapter": "cinder"
+ },
+ "ffl_dying_coal": {
+  "name": "Dying Coal",
+  "desc": "The last of the heat retreating into the middle of each lump.",
+  "swatch": "#CD8B1B",
+  "chapter": "cinder"
+ },
+ "ffl_grey_front": {
+  "name": "Grey Front",
+  "desc": "Ash advancing over ember — the moment a fire stops being orange.",
+  "swatch": "#A53B39",
+  "chapter": "cinder"
+ },
+ "ffl_retained_heat": {
+  "name": "Retained Heat",
+  "desc": "Cold on the outside, still dangerous in the core; convection barely moving above it.",
+  "swatch": "#AE6123",
+  "chapter": "cinder"
+ },
+ "ffl_powder_burn": {
+  "name": "Powder Burn",
+  "desc": "Residue of a fast burn: scorched powder with a few grains that never went off.",
+  "swatch": "#482625",
+  "chapter": "cinder"
+ },
+ "ffl_spall_field": {
+  "name": "Spall Field",
+  "desc": "Thermal shock popping flakes off the surface, each leaving a paler crater.",
+  "swatch": "#7BA04E",
+  "chapter": "cinder"
+ },
+ "ffl_cold_ash": {
+  "name": "Cold Ash",
+  "desc": "Completely out. Fine grey powder holding the shape of what it used to be.",
+  "swatch": "#6D251B",
+  "chapter": "cinder"
+ }
+}

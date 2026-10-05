@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_rebar_skeleton",
+  "display_name": "Sprawl: Copper Reinforcement",
+  "promise": "Tiny ribbed copper struts cross turquoise ceramic grit and fuchsia resin collars.",
+  "carrier_grammar": "Tiny ribbed copper struts cross turquoise ceramic grit and fuchsia resin collars. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for copper ribbed struts, turquoise ceramic grit, fuchsia resin collars, silver rubbed tips, dark porous gaps is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny ribbed copper struts cross turquoise ceramic grit and fuchsia resin collars. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_rebar_skeleton.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "copper ribbed struts",
+      "role": "Actual shared paint and spec geometry: copper ribbed struts"
+    },
+    {
+      "name": "turquoise ceramic grit",
+      "role": "Actual shared paint and spec geometry: turquoise ceramic grit"
+    },
+    {
+      "name": "fuchsia resin collars",
+      "role": "Actual shared paint and spec geometry: fuchsia resin collars"
+    },
+    {
+      "name": "silver rubbed tips",
+      "role": "Actual shared paint and spec geometry: silver rubbed tips"
+    },
+    {
+      "name": "dark porous gaps",
+      "role": "Actual shared paint and spec geometry: dark porous gaps"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "copper ribbed struts",
+      "turquoise ceramic grit",
+      "fuchsia resin collars",
+      "silver rubbed tips",
+      "dark porous gaps"
+    ],
+    "R": [
+      "copper ribbed struts",
+      "turquoise ceramic grit",
+      "fuchsia resin collars",
+      "silver rubbed tips",
+      "dark porous gaps"
+    ],
+    "Cc": [
+      "copper ribbed struts",
+      "turquoise ceramic grit",
+      "fuchsia resin collars",
+      "silver rubbed tips",
+      "dark porous gaps"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_titanium_rib",
+      "difference": "This finish uses Dense microscopic short ribbed copper reinforcement struts, turquoise ceramic grit, fuchsia resin collars, silver rubbed rib tips and dark porous gaps. Short knurled rod fragments all directions, no skeleton or building rebar, no long beams or gray concrete.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_scrap_weld",
+      "difference": "This finish uses Dense microscopic short ribbed copper reinforcement struts, turquoise ceramic grit, fuchsia resin collars, silver rubbed rib tips and dark porous gaps. Short knurled rod fragments all directions, no skeleton or building rebar, no long beams or gray concrete.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "copper ribbed struts is visible in the authored geometry",
+      "turquoise ceramic grit is visible in the authored geometry",
+      "fuchsia resin collars is visible in the authored geometry",
+      "silver rubbed tips is visible in the authored geometry",
+      "dark porous gaps is visible in the authored geometry"
+    ],
+    "source_sha256": "0a5b9c7ef2868fa8e01232c88a3917f529e8bbd8711c37536c59f2a6ef207027",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_rebar_skeleton-authored-Tiny ribbed copper struts cross turquoise ceramic grit and fuchsia resin collars. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_rebar_skeleton-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 80.4,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "ad178082a147d3471961e79bd697e1897af96ae8bc5c2abb555616b78fa73766"
+}

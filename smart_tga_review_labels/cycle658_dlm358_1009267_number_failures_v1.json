@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_1009267.tga",
+  "inspection_records": "_smart_tga_runs/cycle658_dlm_palette_roles/inspection_records.json",
+  "review_scope": "Cycle 658 manual source, Number, Sponsor, Template, Paint, all-owner, and suspect-sheet review.",
+  "component_labels": [
+    {"layer":"numbers","component_index":0,"expected_bbox":[21,716,163,60],"target_layer":"sponsors","label":"bobby_tucker_wordmark_false_number","family_id":"logo:bobby_tucker_grading"},
+    {"layer":"paint","component_index":null,"expected_bbox":[317,338,36,3],"target_layer":"uncertain","label":"uncertain_thin_text_or_trim"},
+    {"layer":"unassigned","component_index":null,"expected_bbox":[286,226,198,108],"target_layer":"numbers","label":"missed_true_side_number","family_id":"number:9_holland_style"},
+    {"layer":"unassigned","component_index":null,"expected_bbox":[286,720,200,104],"target_layer":"numbers","label":"missed_true_side_number","family_id":"number:9_holland_style"},
+    {"layer":"unassigned","component_index":null,"expected_bbox":[829,828,124,118],"target_layer":"numbers","label":"missed_true_rear_number","family_id":"number:9_holland_style"}
+  ]
+}

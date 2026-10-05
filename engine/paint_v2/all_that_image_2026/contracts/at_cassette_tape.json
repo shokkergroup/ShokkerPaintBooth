@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_cassette_tape",
+  "display_name": "Flannel: Cassette Tape",
+  "promise": "Dark brown magnetic tape ribbon fragments interwoven with tiny clear plastic and colored label-ink slivers, no cassette or writing",
+  "carrier_grammar": "Dark brown magnetic tape ribbon fragments interwoven with tiny clear plastic and colored label-ink slivers, no cassette or writing; single full-canvas image, no duplicated quadrants. Fine features: amber magnetic ribbon, smoked cassette polymer, silver guide pin rings, bright leader tape, folded magnetic tape edges, rubbed magnetic coating",
+  "spec_grammar": "Feature-specific selectors partition amber magnetic ribbon, smoked cassette polymer, silver guide pin rings, bright leader tape, folded magnetic tape edges, rubbed magnetic coating. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "amber magnetic ribbon",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "smoked cassette polymer",
+      "role": "Material feature selected from artwork by s:<:0.24&g:<:0.5"
+    },
+    {
+      "name": "silver guide pin rings",
+      "role": "Material feature selected from artwork by s:<:0.2&g:>:0.64"
+    },
+    {
+      "name": "bright leader tape",
+      "role": "Material feature selected from artwork by s:>:0.55"
+    },
+    {
+      "name": "folded magnetic tape edges",
+      "role": "Material feature selected from artwork by edge:>:0.68"
+    },
+    {
+      "name": "rubbed magnetic coating",
+      "role": "Material feature selected from artwork by fine:>:0.79"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "amber magnetic ribbon",
+      "smoked cassette polymer",
+      "silver guide pin rings",
+      "bright leader tape",
+      "folded magnetic tape edges",
+      "rubbed magnetic coating"
+    ],
+    "R": [
+      "amber magnetic ribbon",
+      "smoked cassette polymer",
+      "silver guide pin rings",
+      "bright leader tape",
+      "folded magnetic tape edges",
+      "rubbed magnetic coating"
+    ],
+    "Cc": [
+      "amber magnetic ribbon",
+      "smoked cassette polymer",
+      "silver guide pin rings",
+      "bright leader tape",
+      "folded magnetic tape edges",
+      "rubbed magnetic coating"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "amber magnetic ribbon",
+      "range": [
+        [
+          110,
+          45,
+          40
+        ],
+        [
+          230,
+          155,
+          180
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "smoked cassette polymer",
+      "range": [
+        [
+          0,
+          45,
+          25
+        ],
+        [
+          15,
+          125,
+          140
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "silver guide pin rings",
+      "range": [
+        [
+          240,
+          0,
+          16
+        ],
+        [
+          255,
+          32,
+          90
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "bright leader tape",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "folded magnetic tape edges",
+      "range": [
+        [
+          240,
+          0,
+          170
+        ],
+        [
+          255,
+          30,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "rubbed magnetic coating",
+      "range": [
+        [
+          65,
+          110,
+          125
+        ],
+        [
+          185,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_band_tee_crack",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_basement_amp",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "amber magnetic ribbon",
+      "smoked cassette polymer",
+      "silver guide pin rings",
+      "bright leader tape",
+      "folded magnetic tape edges",
+      "rubbed magnetic coating"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_cassette_tape / Dark brown magnetic tape ribbon fragments interwoven with tiny clear plastic and colored label-ink slivers, no cassette or writing",
+  "spec_key": "at_cassette_tape / amber magnetic ribbon all; smoked cassette polymer s:<:0.24&g:<:0.5; silver guide pin rings s:<:0.2&g:>:0.64; bright leader tape s:>:0.55; folded magnetic tape edges edge:>:0.68; rubbed magnetic coating fine:>:0.79",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

@@ -1,0 +1,363 @@
+/* ============================================================================
+   [SPB-DECLUTTER2 2026-08-29] CLEAN PROFESSIONAL DEFAULT — owner mandate:
+   "the BASE LOOK should be very tame, very clean, very professional. RENDER
+   should be a different color for sure but... tone everything down. Also look
+   at the small artifacting in places and the little vertical lines in the top
+   bar all very distracting... make it look more professional. NOT ALL OF THEM."
+
+   LOADED LAST (after css/spb-iracing-coexistence.css, before </head>) so its
+   !important declarations win cascade ties against BOTH in-head style blocks.
+
+   SCOPE: every rule is prefixed body:not(.spb-gallery-look). After the
+   2026-08-29 LOOKS retirement, data-look can only be 'classic' or a gallery id
+   (gallery ids always carry body.spb-gallery-look via __spbSyncGalleryClass),
+   so this skin covers exactly classic/default and never touches an opt-in Look.
+
+   KEEP LIST — deliberately NO rules for these (functional color, owner "NOT
+   ALL OF THEM"): #btnRender/.btn-render (RENDER stays the loud one),
+   #eyedropperExcludeBtn + destructive reds, zone identity colors
+   (ZONE_OVERLAY_COLORS, #zoneQuickViewBar chips, zone-number badges), layer
+   color swatches, canvas/preview/spec-channel content, progress bars,
+   #liveLinkBadge, green "SPEC MAP loaded" check text, #settingsGearBtn gold
+   (owner asked for it to be hard to miss — flagged, not muted).
+   ============================================================================ */
+
+body:not(.spb-gallery-look) {
+  --clean-bg: #0f1218;
+  --clean-bg-raised: #161b24;
+  --clean-border: rgba(148, 163, 184, 0.16);
+  --clean-border-soft: rgba(148, 163, 184, 0.09);
+  --clean-text: #e8ecf2;
+  --clean-text-dim: #8893a6;
+  --clean-accent: #ff7a18;           /* the ONE chrome accent (brand orange) */
+  --clean-accent-soft: rgba(255, 122, 24, 0.13);
+  --clean-accent-text: #ffc99a;
+}
+
+/* ---------------------------------------------------------------- header bar */
+/* EKG spikes, rainbow pinstripes, smiley coin, pulse pill = the "artifacting" */
+body:not(.spb-gallery-look) .header::before,
+body:not(.spb-gallery-look) .header::after,
+body:not(.spb-gallery-look) .header-brand::before,
+body:not(.spb-gallery-look) .header-brand::after {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+}
+body:not(.spb-gallery-look) .header {
+  background: var(--clean-bg-raised) !important;
+  border-bottom: 1px solid var(--clean-border) !important;
+  box-shadow: none !important;
+}
+/* uniform quiet field boxes — no per-box orange/cyan identities, no glow */
+body:not(.spb-gallery-look) .header-field,
+body:not(.spb-gallery-look) .header-field.field-id {
+  border: 1px solid var(--clean-border) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+body:not(.spb-gallery-look) .header-field:hover,
+body:not(.spb-gallery-look) .header-field:focus-within {
+  border-color: rgba(148, 163, 184, 0.30) !important;
+  box-shadow: none !important;
+}
+/* the 3px vertical rainbow strip on every box — the "little vertical lines" */
+body:not(.spb-gallery-look) .header-field::before {
+  content: none !important;
+  display: none !important;
+}
+body:not(.spb-gallery-look) .header-field label,
+body:not(.spb-gallery-look) .header-field.field-id label {
+  color: var(--clean-text-dim) !important;
+  text-shadow: none !important;
+}
+body:not(.spb-gallery-look) .header-field input[type="text"],
+body:not(.spb-gallery-look) .header-field input[type="number"] {
+  border-color: var(--clean-border) !important;
+  background: rgba(0, 0, 0, 0.30) !important;
+  color: var(--clean-text) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+body:not(.spb-gallery-look) .header-field input[type="text"]:focus,
+body:not(.spb-gallery-look) .header-field input[type="number"]:focus {
+  border-color: var(--clean-accent) !important;
+  box-shadow: none !important;
+}
+body:not(.spb-gallery-look) #liveBuildBadge.version-badge {
+  color: var(--clean-text-dim) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: var(--clean-border) !important;
+  text-shadow: none !important;
+}
+/* one language for the header command pills (Tutorial etc.) */
+body:not(.spb-gallery-look) .header-command-btn,
+body:not(.spb-gallery-look) .header-command-btn.primary {
+  background: var(--clean-bg-raised) !important;
+  border: 1px solid var(--clean-border) !important;
+  color: var(--clean-text) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+body:not(.spb-gallery-look) .header-command-btn:hover {
+  border-color: rgba(148, 163, 184, 0.34) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* -------------------------------------------------------------- top toolbar */
+body:not(.spb-gallery-look) .spb-tb-sep {
+  background: var(--clean-border-soft) !important;
+  height: 22px !important;
+}
+body:not(.spb-gallery-look) .spb-tb-pop-sep {
+  background: var(--clean-border-soft) !important;
+}
+body:not(.spb-gallery-look) .spb-top-toolbar {
+  background: var(--clean-bg) !important;
+  border-bottom: 1px solid var(--clean-border) !important;
+  box-shadow: none !important;
+}
+body:not(.spb-gallery-look) .vtool-btn {
+  border-color: var(--clean-border) !important;
+  background: var(--clean-bg-raised) !important;
+  color: var(--clean-text-dim) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+body:not(.spb-gallery-look) .vtool-btn:hover {
+  border-color: rgba(148, 163, 184, 0.34) !important;
+  color: var(--clean-text) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+body:not(.spb-gallery-look) .vtool-btn.active {
+  background: var(--clean-accent-soft) !important;
+  border-color: var(--clean-accent) !important;
+  color: var(--clean-accent-text) !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+/* emoji glyphs cannot be recolored — desaturate the rainbow instead */
+body:not(.spb-gallery-look) .spb-ti-ico,
+body:not(.spb-gallery-look) .spb-mi-ico {
+  filter: saturate(0.45) !important;
+}
+/* ZONE / LAYER pill: JS rewrites element.style greens every toggle, but it also
+   maintains aria-pressed — hook that, and !important beats element.style */
+body:not(.spb-gallery-look) #toolbarEditModeGroup .btn {
+  border-color: var(--clean-border) !important;
+  background: var(--clean-bg-raised) !important;
+  color: var(--clean-text-dim) !important;
+  box-shadow: none !important;
+}
+body:not(.spb-gallery-look) #toolbarEditModeGroup .btn[aria-pressed="true"] {
+  border-color: var(--clean-accent) !important;
+  color: var(--clean-accent-text) !important;
+  background: var(--clean-accent-soft) !important;
+}
+body:not(.spb-gallery-look) #spbRenderHistMenu .btn-sm {
+  border-color: var(--clean-border) !important;
+  color: var(--clean-text-dim) !important;
+}
+/* global status bar: retire the orange/cyan gradient + rainbow top line */
+body:not(.spb-gallery-look) #globalStatusBar.global-status-bar {
+  background: var(--clean-bg-raised) !important;
+  border-top: 1px solid var(--clean-border) !important;
+  box-shadow: none !important;
+}
+body:not(.spb-gallery-look) #globalStatusBar.global-status-bar::after {
+  content: none !important;
+}
+body:not(.spb-gallery-look) .status-chip,
+body:not(.spb-gallery-look) .status-brand-chip {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: var(--clean-border) !important;
+  color: var(--clean-text-dim) !important;
+  box-shadow: none !important;
+}
+
+/* ---------------------------------------------- middle column: dock + strip */
+body:not(.spb-gallery-look) #layerActiveDock {
+  background: var(--clean-bg-raised) !important;
+  border-bottom: 1px solid var(--clean-border) !important;
+  box-shadow: none !important;
+}
+body:not(.spb-gallery-look) #layerActiveDock > span:first-child {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--clean-border) !important;
+  color: var(--clean-text) !important;
+}
+body:not(.spb-gallery-look) #layerDockLockZone,
+body:not(.spb-gallery-look) #layerDockZoneStatus,
+body:not(.spb-gallery-look) #layerDockFxPill {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--clean-border) !important;
+  color: var(--clean-text) !important;
+}
+body:not(.spb-gallery-look) #layerDockPick {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: var(--clean-border) !important;
+  color: var(--clean-text-dim) !important;
+}
+body:not(.spb-gallery-look) #statusActiveLayer {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--clean-border) !important;
+  color: var(--clean-text) !important;
+}
+/* eyedropper cluster: one accent primary, no pulse; Exclude red UNTOUCHED */
+body:not(.spb-gallery-look) #previewBottomBar #eyedropperAddColorBtn {
+  animation: none !important;
+  background: var(--clean-accent) !important;
+  border-color: var(--clean-accent) !important;
+  color: #14100b !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+body:not(.spb-gallery-look) #useRegionBtn {
+  border-color: var(--clean-border) !important;
+  color: var(--clean-text-dim) !important;
+}
+body:not(.spb-gallery-look) #eyedropperHex {
+  color: var(--clean-text) !important;
+}
+body:not(.spb-gallery-look) .eyedropper-dock-top #eyedropperInfo {
+  border-left-color: var(--clean-border) !important;
+}
+body:not(.spb-gallery-look) .zoom-btn:hover {
+  border-color: var(--clean-accent) !important;
+  color: var(--clean-accent) !important;
+}
+/* RENDER stays hot; only the float's cyan/orange halo goes */
+body:not(.spb-gallery-look) #renderFloat.render-float {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* --------------------------------------------- zone popout section headers */
+body:not(.spb-gallery-look) .zone-editor-float .section-header::before,
+body:not(.spb-gallery-look) .zone-editor-float .section-header::after,
+body:not(.spb-gallery-look) .zone-editor-float .section-collapsible > .section-header::before,
+body:not(.spb-gallery-look) .zone-editor-float .section-collapsible > .section-header::after {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+}
+body:not(.spb-gallery-look) .zone-editor-float .section-header,
+body:not(.spb-gallery-look) .zone-editor-float .section-collapsible > .section-header {
+  background: rgba(255, 255, 255, 0.035) !important;
+  border-left: 2px solid var(--clean-border) !important;
+  box-shadow: none !important;
+}
+body:not(.spb-gallery-look) .zone-editor-float .section-header-label,
+body:not(.spb-gallery-look) .zone-editor-float .section-header h3 {
+  color: var(--clean-text) !important;
+  text-shadow: none !important;
+}
+body:not(.spb-gallery-look) .section-header-label::before { content: none !important; }
+body:not(.spb-gallery-look) .settings-section-title::after { content: none !important; }
+body:not(.spb-gallery-look) .zone-editor-float .section-collapsible {
+  --section-rail: var(--clean-border);
+  --section-rail-soft: transparent;
+}
+/* selected zone card: keep a selection rail, one color, no animated rainbow */
+body:not(.spb-gallery-look) #zoneList .zone-card.selected::after {
+  animation: none !important;
+  background: var(--clean-accent) !important;
+  box-shadow: none !important;
+}
+
+/* ------------------------------------------------------------- right panel */
+body:not(.spb-gallery-look) .rp-tab {
+  color: var(--clean-text-dim) !important;
+  border-bottom-color: transparent !important;
+  background: transparent !important;
+}
+body:not(.spb-gallery-look) .rp-tab.active,
+body:not(.spb-gallery-look) .rp-tab[aria-selected="true"] {
+  color: var(--clean-text) !important;
+  border-bottom: 2px solid var(--clean-accent) !important;
+  animation: none !important;
+}
+body:not(.spb-gallery-look) #rpLayersContent .right-panel-primary-action,
+body:not(.spb-gallery-look) #rpLayersContent .right-panel-secondary-action {
+  border-color: var(--clean-border) !important;
+  color: var(--clean-text) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none !important;
+}
+body:not(.spb-gallery-look) #zoneMoreMenu button {
+  color: var(--clean-text) !important;
+}
+/* SPEC-loaded banners: mute the green box, keep the green check text (semantic) */
+body:not(.spb-gallery-look) #specFromShokkBanner,
+body:not(.spb-gallery-look) #specCanvasBanner {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: var(--clean-border) !important;
+}
+
+/* ======================= [SPB-DECLUTTER3 2026-08-29] round 3 ======================= */
+/* owner: the per-zone pill chips "we can just get rid of actually" */
+body:not(.spb-gallery-look) #zoneQuickViewBar { display: none !important; }
+/* the teal SHOKK ZONES pseudo-box was pure decoration (no handler) - the ZONES header remains */
+body:not(.spb-gallery-look) #zoneList::before { content: none !important; display: none !important; }
+body:not(.spb-gallery-look) #zoneList { background: transparent !important; }
+/* owner: "The ZONES are gradient" - flat cards; the ::before zone-color bar stays (identity) */
+body:not(.spb-gallery-look) #zoneList .zone-card {
+  background: var(--clean-bg-raised) !important;
+  border: 1px solid var(--clean-border) !important;
+  box-shadow: none !important;
+}
+body:not(.spb-gallery-look) #zoneList .zone-card.selected {
+  background: #1a2130 !important;
+  border-color: var(--clean-accent) !important;
+}
+/* owner: "Remove those boxes and that ugly BLUE to ORANGE gradient outline around it" */
+body:not(.spb-gallery-look) .split-view-container {
+  border: none !important;
+  box-shadow: none !important;
+}
+body:not(.spb-gallery-look) .split-view-container::before,
+body:not(.spb-gallery-look) .split-view-container::after {
+  content: none !important;
+  display: none !important;
+}
+body:not(.spb-gallery-look) .split-pane::after { content: none !important; }
+/* reclaim the dead vertical room (20260509 forced gap/padding 12px) */
+body:not(.spb-gallery-look) .split-view-container.spb-unified { gap: 3px !important; padding: 4px !important; }
+/* channel strip + cells borderless (beats the in-head MODERN PASS re-box - this file loads last) */
+body:not(.spb-gallery-look) .spb-unified #previewTopStrip {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body:not(.spb-gallery-look) .spb-unified #previewTopStrip .spec-channel-dock-cell {
+  border: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+body:not(.spb-gallery-look) .spb-unified #previewTopStrip .spec-channel-dock-label {
+  background: transparent !important;
+  border-bottom: none !important;
+}
+
+/* ================= [SPB-DECLUTTER5 2026-08-29] round 5 ================= */
+/* zone action strips on every card: quiet, no cyan/orange gradient */
+body:not(.spb-gallery-look) #zoneList .zone-card-header .zone-card-actions {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-top-color: var(--clean-border) !important;
+}
+/* owner: the zone-target dropdown is redundant — +Add Color always targets the selected zone
+   (the select stays in the DOM: addEyedropperColorToZone reads it, and every renderZones()
+   repopulates it with the selected zone preselected, so hiding it = always-current-zone) */
+#eyedropperZoneSelect { display: none !important; }
+/* owner: "The LOCK box under BASE COLOR is not a true BOX shape" */
+body:not(.spb-gallery-look) .zone-editor-float input[type="checkbox"] {
+  appearance: auto !important;
+  width: 12px !important;
+  height: 12px !important;
+  min-width: 12px !important;
+  flex: 0 0 12px;
+  padding: 0 !important;
+  border-radius: 3px;
+  accent-color: var(--clean-accent);
+}

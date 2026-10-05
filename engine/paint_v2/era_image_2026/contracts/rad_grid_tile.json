@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_grid_tile",
+  "display_name": "Memphis: Ceramic Mosaic",
+  "promise": "Tiny coral, teal and mustard ceramic tiles with fine grout and chipped glaze.",
+  "carrier_grammar": "Tiny coral, teal and mustard ceramic tiles with fine grout and chipped glaze. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for coral ceramic glaze, teal glazed tesserae, mustard tile faces, cream exposed ceramic, charcoal grout is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny coral, teal and mustard ceramic tiles with fine grout and chipped glaze. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_grid_tile.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "coral ceramic glaze",
+      "role": "Actual shared paint and spec geometry: coral ceramic glaze"
+    },
+    {
+      "name": "teal glazed tesserae",
+      "role": "Actual shared paint and spec geometry: teal glazed tesserae"
+    },
+    {
+      "name": "mustard tile faces",
+      "role": "Actual shared paint and spec geometry: mustard tile faces"
+    },
+    {
+      "name": "cream exposed ceramic",
+      "role": "Actual shared paint and spec geometry: cream exposed ceramic"
+    },
+    {
+      "name": "charcoal grout",
+      "role": "Actual shared paint and spec geometry: charcoal grout"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "coral ceramic glaze",
+      "teal glazed tesserae",
+      "mustard tile faces",
+      "cream exposed ceramic",
+      "charcoal grout"
+    ],
+    "R": [
+      "coral ceramic glaze",
+      "teal glazed tesserae",
+      "mustard tile faces",
+      "cream exposed ceramic",
+      "charcoal grout"
+    ],
+    "Cc": [
+      "coral ceramic glaze",
+      "teal glazed tesserae",
+      "mustard tile faces",
+      "cream exposed ceramic",
+      "charcoal grout"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_grid_floor",
+      "difference": "This finish uses Microscopic irregular rectangular and triangular ceramic tesserae in coral teal mustard cream and cobalt, each subtly crazed, with very narrow charcoal grout and minute glaze chips. Tiny tile cuts, no big grid squares, no perspective, independently rotated small clusters.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_terrazzo_chip",
+      "difference": "This finish uses Microscopic irregular rectangular and triangular ceramic tesserae in coral teal mustard cream and cobalt, each subtly crazed, with very narrow charcoal grout and minute glaze chips. Tiny tile cuts, no big grid squares, no perspective, independently rotated small clusters.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "coral ceramic glaze is visible in the authored geometry",
+      "teal glazed tesserae is visible in the authored geometry",
+      "mustard tile faces is visible in the authored geometry",
+      "cream exposed ceramic is visible in the authored geometry",
+      "charcoal grout is visible in the authored geometry"
+    ],
+    "source_sha256": "79ad5a487c4f02e7ba878ba2abab07186fa576250e1da202df71a9378eefc3d7",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_grid_tile-authored-Tiny coral, teal and mustard ceramic tiles with fine grout and chipped glaze. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_grid_tile-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 61.9,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "ab19c4b5503bf536611e1930ecc3159782252014482a21fcde9aaa2d4cbeb0f3"
+}

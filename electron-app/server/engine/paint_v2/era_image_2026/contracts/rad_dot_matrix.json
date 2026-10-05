@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_dot_matrix",
+  "display_name": "Arcade: Dot Matrix",
+  "promise": "RGB phosphor triads and tiny dark shadow-mask slots beneath violet-tinted glass.",
+  "carrier_grammar": "RGB phosphor triads and tiny dark shadow-mask slots beneath violet-tinted glass. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for violet face glass, red phosphor dots, green phosphor dots, blue phosphor dots, shadow mask slots is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "RGB phosphor triads and tiny dark shadow-mask slots beneath violet-tinted glass. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_dot_matrix.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "violet face glass",
+      "role": "Actual shared paint and spec geometry: violet face glass"
+    },
+    {
+      "name": "red phosphor dots",
+      "role": "Actual shared paint and spec geometry: red phosphor dots"
+    },
+    {
+      "name": "green phosphor dots",
+      "role": "Actual shared paint and spec geometry: green phosphor dots"
+    },
+    {
+      "name": "blue phosphor dots",
+      "role": "Actual shared paint and spec geometry: blue phosphor dots"
+    },
+    {
+      "name": "shadow mask slots",
+      "role": "Actual shared paint and spec geometry: shadow mask slots"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "violet face glass",
+      "red phosphor dots",
+      "green phosphor dots",
+      "blue phosphor dots",
+      "shadow mask slots"
+    ],
+    "R": [
+      "violet face glass",
+      "red phosphor dots",
+      "green phosphor dots",
+      "blue phosphor dots",
+      "shadow mask slots"
+    ],
+    "Cc": [
+      "violet face glass",
+      "red phosphor dots",
+      "green phosphor dots",
+      "blue phosphor dots",
+      "shadow mask slots"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_amber_terminal",
+      "difference": "This finish uses Extreme fine CRT shadow mask, dense precise individual red green blue phosphor triads grouped into short differently angled arrays; violet glass, tiny amber interference freckles. Color comes from dots, not a flat gray mesh; 100-plus triads across width, no large blocks.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_screen_burn",
+      "difference": "This finish uses Extreme fine CRT shadow mask, dense precise individual red green blue phosphor triads grouped into short differently angled arrays; violet glass, tiny amber interference freckles. Color comes from dots, not a flat gray mesh; 100-plus triads across width, no large blocks.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "violet face glass is visible in the authored geometry",
+      "red phosphor dots is visible in the authored geometry",
+      "green phosphor dots is visible in the authored geometry",
+      "blue phosphor dots is visible in the authored geometry",
+      "shadow mask slots is visible in the authored geometry"
+    ],
+    "source_sha256": "3983eed3dd046c41b622af06854dd2d152e70afe8369c8c2063eb2527840f3ac",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_dot_matrix-authored-RGB phosphor triads and tiny dark shadow-mask slots beneath violet-tinted glass. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_dot_matrix-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 78.1,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "8601dc7b0c7014b819449c3f47ff2586b2ac0b6e83608f50aae4a8129d0e2f5e"
+}

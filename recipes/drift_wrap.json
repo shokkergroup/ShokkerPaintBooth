@@ -2,7 +2,7 @@
   "name": "Drift Wrap",
   "description": "Cut-vinyl drift car vibe: matte wrap body, bold graphic stripes, and matte sticker decals. Built to look like it was assembled in a shop, not a paint booth.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "any chassis, best on street/drift/time-attack builds",
   "notes": "Vinyl wrap bases have a slightly different reflectivity than paint - this is intentional. Layer multiple stripe zones with distinct pickerColors to build multi-color graphic kits.",
   "zones": [

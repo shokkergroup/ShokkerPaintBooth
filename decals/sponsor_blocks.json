@@ -1,5 +1,5 @@
 {
-  "version": "6.2.0",
+  "version": "6.3.0",
   "description": "Common sponsor block layout presets — the rectangular zones reserved on a livery for primary sponsor branding. SPB uses these to suggest aspect ratios and placement bounds.",
   "schema": {
     "id": "string — unique key",

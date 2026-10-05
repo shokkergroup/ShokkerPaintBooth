@@ -1,0 +1,3360 @@
+{
+ "domain": "zones",
+ "version": 1,
+ "articles": [
+  {
+   "id": "zones.what_is_a_zone",
+   "title": "What a zone is",
+   "domain": "zones",
+   "summary": "A zone is two things together: which pixels of your paint it covers, and what look those pixels get. Zones are how you decide what your car looks like.",
+   "what": "Your paint is a flat picture of the whole car. A zone points at part of it, by colour, by layer, by a drawn shape or by a named car part, and gives that part a finish: a base material such as gloss, matte, satin, chrome, candy, pearl or metallic, or a complete special look. A zone can also carry a colour setting, a pattern on top, spec patterns that change shine and roughness, an optional second base blended over the first, and strength sliders. Every zone is a card in the ZONES column on the left. Click a card to open its ZONE POPOUT PANEL, where all of that is edited. A new zone does nothing until it has both a way to pick pixels and a finish.",
+   "when": [
+    "You are starting out and want the one idea that everything else hangs on.",
+    "A buyer says \"I changed the finish but nothing happened\"."
+   ],
+   "how": [
+    "1. Press + Add Zone in the ZONES column.",
+    "2. Click the new card to open its popout panel.",
+    "3. In COLOR, say which pixels it owns, for example PICK COLOR FROM CAR and click the red stripe.",
+    "4. In BASE, open Base Material and pick a finish.",
+    "5. Watch LIVE PREVIEW. Press RENDER when you are happy."
+   ],
+   "controls": [
+    {
+     "label": "+ Add Zone",
+     "range": "",
+     "default": "",
+     "effect": "Adds an empty zone at the top.",
+     "inv": "pro.zones.add_zone"
+    },
+    {
+     "label": "Reset All Zones",
+     "range": "",
+     "default": "",
+     "effect": "Resets to the default set of zones (confirmed, undoable).",
+     "inv": "pro.zones.reset_all_zones"
+    },
+    {
+     "label": "More",
+     "range": "",
+     "default": "",
+     "effect": "Opens the More menu (presets, randomise, apply to all, library, templates, SHOKK files, channel PNG export).",
+     "inv": "pro.zones.more"
+    }
+   ],
+   "tips": [
+    "Most cars need only two or three zones.",
+    "The card shows a hint when something is missing, for example \"Pick a base finish AND a color\"."
+   ],
+   "pitfalls": [
+    "+ Add Zone puts the new card at the bottom of the list, below Everything Else. Everything Else takes every pixel not claimed above it, so drag the new card above it (or press Ctrl+Up) or it gets nothing.",
+    "A zone with no colour, layer or region set covers nothing.",
+    "A zone with a colour but no finish shows your paint unchanged."
+   ],
+   "related": [
+    "zones.how_pixels_picked",
+    "zones.priority",
+    "zones.everything_else",
+    "zones.popout_panel",
+    "zones.not_showing"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.zones.add_zone"
+    }
+   ],
+   "figures": [
+    "g06_zone_selectors"
+   ],
+   "covers": [
+    "doc.01.the_big_idea_paint_file_in_zones_decide_the_look",
+    "doc.01.what_a_zone_is",
+    "doc.01.the_unwrapped_paint_reality",
+    "pro.zones.add_zone",
+    "pro.zones.reset_all_zones",
+    "pro.zones.more"
+   ],
+   "sources": [
+    "docs/ai_knowledge/01_how_pro_works.md:6",
+    "js/zones/workflow-controls.js:82",
+    "docs/ai_knowledge/01_how_pro_works.md:3",
+    "docs/ai_knowledge/01_how_pro_works.md:32",
+    "paint-booth-v2.html:2639",
+    "paint-booth-2-state-zones.js:4105",
+    "paint-booth-v2.html:2636",
+    "paint-booth-2-state-zones.js:4098",
+    "paint-booth-2-state-zones.js:1170",
+    "paint-booth-2-state-zones.js:1182",
+    "paint-booth-2-state-zones.js:1186",
+    "paint-booth-2-state-zones.js:4104",
+    "paint-booth-2-state-zones.js:4110",
+    "js/spb-support-answers.js:57",
+    "shokker_engine_v2.py:18518",
+    "paint-booth-2-state-zones.js:2076",
+    "paint-booth-2-state-zones.js:2084",
+    "paint-booth-2-state-zones.js:2092",
+    "paint-booth-2-state-zones.js:2098",
+    "paint-booth-2-state-zones.js:2158",
+    "paint-booth-2-state-zones.js:1910",
+    "paint-booth-0-finish-data.js:6363",
+    "js/zones/workflow-controls.js:69"
+   ],
+   "aliases": [
+    "add a zone",
+    "how do zones work",
+    "new zone",
+    "what is a zone",
+    "zone",
+    "zone does nothing",
+    "zones",
+    "zone meaning",
+    "what are zones"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "What every new session starts with",
+     "body": "Shokker opens with five zones: Zone 1 to Zone 4 are empty slots and Everything Else sits at the bottom. Zones 1 and 2 start with a colour match of plus or minus 40, Zone 3 with 35 and Zone 4 with 30. Zone 4 also starts at intensity 80, and Everything Else is a gloss base at intensity 50. Each empty slot carries a hint, such as click your PRIMARY body color, until you use it."
+    },
+    {
+     "heading": "Two halves: which pixels, and what look",
+     "body": "A zone is only finished when it has both. Pixel choice can be a picked colour, a layer, a drawn box or lasso, or the Remaining catch-all. The look starts with Base Material, which always supplies the shine map (metal, roughness, clearcoat). Under Base Color you choose where the colour comes from: Use finish's own color, Use source paint (spec only), Use solid color, From special, or Custom gradient."
+    },
+    {
+     "heading": "The sliders a zone carries",
+     "body": "In BASE you get Hue Shift (-180 to 180), Saturation (-100 to 100), Brightness (-100 to 200), Base Strength and Spec Strength (both 0 to 100 percent in steps of 5, starting at 100). R Metal, G Rough and B Coat each shift that channel from -127 to 127 in steps of 5. Intensity on the card runs 10 to 100 percent in tens."
+    },
+    {
+     "heading": "How many zones you can really use",
+     "body": "The app stops you at 50 zones and warns once you reach 30. The practical ceiling is lower: about 20 zones that have their own painted area (a box, a layer or a part) before the preview or render runs out of memory. Zones that only pick a colour are cheaper. Merge zones that share one look."
+    },
+    {
+     "heading": "What happens to pixels no zone touches",
+     "body": "Pixels that no zone claims keep your source paint and get the plain default shine: metallic 5, roughness 100, clearcoat 16, mask 255. That is why Everything Else exists. It guarantees every pixel has a deliberate finish instead of the default."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Two-colour car in the starting zones",
+     "goal": "Give a red body and a white stripe different finishes using only the zones you already have.",
+     "settings": {
+      "Zone 1 > COLOR": "PICK COLOR FROM CAR, click the red body",
+      "Zone 1 > Base Material": "Metallic",
+      "Zone 2 > COLOR": "PICK COLOR FROM CAR, click the white stripe",
+      "Zone 2 > Base Material": "Satin",
+      "Everything Else > Base Material": "Gloss (leave as is)"
+     },
+     "result": "The red body gets a metallic shine, the stripe a soft satin one, and every other pixel keeps the plain gloss from Everything Else."
+    },
+    {
+     "title": "Change only the shine, keep the livery colours",
+     "goal": "Give the whole car a flat, low-sheen look without repainting any colour.",
+     "settings": {
+      "Everything Else > Base Material": "Powder Coat (a Foundation finish)",
+      "Everything Else > Base Color": "Use source paint (spec only)",
+      "Zones 1 to 4": "delete or leave empty"
+     },
+     "result": "The colours stay exactly as painted. Only the shine map changes, so the car reads as eggshell powder-coat paint instead of gloss."
+    },
+    {
+     "title": "Fade a finish without losing it",
+     "goal": "Let the original paint show through a chrome zone.",
+     "settings": {
+      "Zone 1 > Base Material": "Chrome",
+      "Zone 1 > Base Strength": "60%",
+      "Zone 1 > Spec Strength": "100%"
+     },
+     "result": "The chrome shine stays fully reflective but the base colour is only 60 percent replaced, so some of your original paint shows through."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.priority",
+     "why": "Two zones that want the same pixel are settled by list order. Learn priority right after you understand what a zone is."
+    },
+    {
+     "with": "zones.everything_else",
+     "why": "The bottom zone is the safety net that makes sure no pixel is left on the default shine."
+    },
+    {
+     "with": "zones.not_showing",
+     "why": "Most the zone does nothing complaints come from a missing half: no finish, or no way to pick pixels."
+    }
+   ],
+   "faq": [
+    {
+     "q": "How many zones should I use?",
+     "a": "Two or three cover most cars: body, trim or stripes, and numbers. The app starts you with four open slots plus Everything Else on purpose."
+    },
+    {
+     "q": "Is there a maximum number of zones?",
+     "a": "50 is the hard stop and you get a warning at 30. The real limit is about 20 zones that each have their own painted area, because the preview and render run out of memory beyond that."
+    },
+    {
+     "q": "Does a zone change my original paint file?",
+     "a": "No. Zones are instructions applied when you render. Your source paint is untouched, and Reset Zone or Reset All Zones puts the instructions back."
+    },
+    {
+     "q": "Why does my new zone do nothing?",
+     "a": "A new zone has no colour, layer or box and no finish. It needs both a way to pick pixels and a Base Material. The dot on the card turns green and says Will render only when both are set."
+    },
+    {
+     "q": "What is the difference between a zone and a layer?",
+     "a": "A layer is a piece of your PSD artwork. A zone is a finish instruction. A zone can be tied to a layer with RESTRICT TO LAYERS, but they are separate things."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You picked a finish and the car looks identical",
+     "cause": "The zone has a finish but no colour, layer or box, so it covers no pixels.",
+     "fix": "Open COLOR and press PICK COLOR FROM CAR, then click the area on the canvas."
+    },
+    {
+     "symptom": "You picked a colour and nothing changes",
+     "cause": "The zone has pixels but no Base Material.",
+     "fix": "Open BASE, press Base Material and choose a finish. The card shows No finish assigned until you do."
+    },
+    {
+     "symptom": "Preview or render fails after adding lots of zones",
+     "cause": "More than about 20 zones with their own painted area exhausts the memory the render uses for masks.",
+     "fix": "Merge zones that share a look, or drop boxes and layers you no longer need, then press F5."
+    }
+   ],
+   "protips": [
+    "A zone can be seen as its coloured dot: green means Will render, orange means it has no finish or no pixels, red means its layer is missing, grey means muted or empty.",
+    "Pick Use source paint (spec only) as the Base Color when you only want a different shine. The Base Material still supplies the shine map, and your colours stay put."
+   ],
+   "screens": [
+    "flow_step2_zone_added",
+    "pair_zone_added",
+    "pair_zone_priority",
+    "ui_zone_card",
+    "ui_zone_empty_message",
+    "ui_zones_column"
+   ]
+  },
+  {
+   "id": "zones.how_pixels_picked",
+   "title": "How a zone picks its pixels: colour, layer, region and part",
+   "domain": "zones",
+   "summary": "A zone can find its pixels four ways: by colour, by layer, by a drawn shape, or by a named car part. You can combine them: all must match.",
+   "what": "By colour: pick one or several colours and a tolerance; every pixel near those colours belongs to the zone. By layer: restrict the zone to pixels on chosen PSD layers such as Numbers, Sponsors or Car Paint. By region: draw a box, a lasso shape or a brush area and the zone only affects what is inside. By part: say \"the hood\" or \"the left side\" and the helper uses the car's named parts (this is how Chat and the AI copilot aim a zone). One quick chip, Remaining, covers every pixel that no higher zone claimed. Combined rules narrow the zone: colour plus layer means that colour, but only on that layer.",
+   "when": [
+    "You want \"only the red parts\" or \"only the numbers\".",
+    "A colour also appears on logos and bleeds into them."
+   ],
+   "how": [
+    "1. For a colour, use PICK COLOR FROM CAR and click it on the canvas.",
+    "2. For a layer, tick it under RESTRICT TO LAYERS.",
+    "3. For a shape, use Draw box or Lasso under APPLY AREA.",
+    "4. Combine them if the colour shows in too many places."
+   ],
+   "controls": [
+    {
+     "label": "COLOR (section)",
+     "range": "see SCHEMA: part names come from get_car_map; band 0-1 fractions (height = roof-line to rocker, length = front to rear); rect/cells only for details under ~12% of the sheet",
+     "default": "none = 'nothing selected yet'",
+     "effect": "Decides WHICH PIXELS of the paint this zone owns: by clicked colour, by PSD layer, or as catch-all (Remaining).",
+     "inv": "zone.section_color"
+    },
+    {
+     "label": "PICK COLOR FROM CAR",
+     "range": "tolerance 6-100 (kit) / 0-100 (UI per colour); default 40",
+     "default": "40",
+     "effect": "Arms an eyedropper: click a colour on the car and this zone grabs every pixel of that colour. Each further click ADDS another colour.",
+     "inv": "zone.pick_color_from_car"
+    },
+    {
+     "label": "RESTRICT TO LAYERS (checkboxes per PSD layer)",
+     "range": "see SCHEMA: part names come from get_car_map; band 0-1 fractions (height = roof-line to rocker, length = front to rear); rect/cells only for details under ~12% of the sheet",
+     "default": "none = 'nothing selected yet'",
+     "effect": "Tick a layer (Car Paint, Sponsors, Numbers, Tape ...) and the zone only covers pixels that exist on that layer.",
+     "inv": "zone.restrict_layers"
+    },
+    {
+     "label": "Draw box",
+     "range": "see SCHEMA: part names come from get_car_map; band 0-1 fractions (height = roof-line to rocker, length = front to rear); rect/cells only for details under ~12% of the sheet",
+     "default": "none = 'nothing selected yet'",
+     "effect": "Click, then drag a rectangle on the paint; the zone only affects what is inside it.",
+     "inv": "zone.draw_box"
+    },
+    {
+     "label": "Lasso (apply area)",
+     "range": "see SCHEMA: part names come from get_car_map; band 0-1 fractions (height = roof-line to rocker, length = front to rear); rect/cells only for details under ~12% of the sheet",
+     "default": "none = 'nothing selected yet'",
+     "effect": "Draw a free-hand outline; the zone only affects what is inside.",
+     "inv": "zone.lasso"
+    },
+    {
+     "label": "Remaining",
+     "range": "0..n-1 (0 = top)",
+     "default": "new zones go to the TOP via the kit",
+     "effect": "Makes this zone the catch-all: it gets every pixel no zone above it claims.",
+     "inv": "zone.remaining"
+    }
+   ],
+   "tips": [
+    "For logos and numbers, prefer picking by layer: it is exact and cannot bleed.",
+    "Colour matching is best for big flat colours like the body and stripes."
+   ],
+   "pitfalls": [
+    "The paint is flat, so a box may cover several car panels. The hood and roof are different rectangles."
+   ],
+   "related": [
+    "zones.add_pick_colour",
+    "zones.tolerance",
+    "zones.regions",
+    "zones.restrict_layers",
+    "zones.named_parts"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.pick_color_from_car"
+    }
+   ],
+   "figures": [
+    "g06_zone_selectors"
+   ],
+   "covers": [
+    "zones.selectors",
+    "doc.01.which_pixels_a_zone_covers_the_region",
+    "zone.section_color",
+    "zone.pick_color_from_car",
+    "zone.restrict_layers",
+    "zone.draw_box",
+    "zone.lasso",
+    "zone.remaining"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:4325",
+    "docs/ai_knowledge/01_how_pro_works.md:9",
+    "paint-booth-2-state-zones.js:1656",
+    "shokker_engine_v2.py:1688",
+    "shokker_engine_v2.py:1697",
+    "shokker_engine_v2.py:1698",
+    "shokker_engine_v2.py:18230",
+    "shokker_engine_v2.py:18369",
+    "shokker_engine_v2.py:18376",
+    "paint-booth-2-state-zones.js:1485",
+    "docs/ai_knowledge/09_field_playbook.md:16",
+    "js/spb-pro-carmap.js:8",
+    "paint-booth-0-finish-data.js:6359",
+    "docs/ZONE_OWNERSHIP.md:29"
+   ],
+   "aliases": [
+    "colour plus layer",
+    "combine selectors",
+    "how does a zone choose pixels",
+    "select by colour",
+    "select by layer",
+    "select by part",
+    "zone selectors",
+    "which pixels a zone gets",
+    "pixel picking"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "The four pickers narrow each other",
+     "body": "Colour, layer, drawn area and the Exclude and Include brushes all stack as AND. A pixel must pass every test you have set. The zone first takes the drawn box or lasso, multiplies it by the colour match, applies the brushes, then limits it to the ticked layers. Adding a rule can only shrink a zone, never grow it."
+    },
+    {
+     "heading": "Several colours add up instead",
+     "body": "Each further click with PICK COLOR FROM CAR adds another colour chip. The chips work as OR: a pixel belongs to the zone if it is close to any one of them, and it takes the strongest match. Every chip has its own Exact to Loose slider, shown as plus or minus a number, so a stripe colour can be tight while the body colour is loose."
+    },
+    {
+     "heading": "How close is close enough",
+     "body": "Closeness is measured on a 0 to 255 scale, but not equally in every colour: green differences count most (weight 0.59), red next (0.30), blue least (0.11). A pixel at the exact picked colour gets full strength, and strength falls in a straight line to nothing at the tolerance. With Hard Edge on, every pixel with any match at all becomes fully owned. With Hard Edge off, matches below about 15 percent strength fade out."
+    },
+    {
+     "heading": "With a layer ticked, the colour is read from that layer",
+     "body": "If the zone is restricted to a layer, the colour match is made on that layer's own pixels, not on the finished picture with everything stacked on top. This fixes semi-transparent art, where the visible colour is a blend and does not match the layer's real colour. Pick the colour while that layer is visible and you get the match you expect."
+    },
+    {
+     "heading": "Quick chips and the part route",
+     "body": "Remaining is the only catch-all chip: it takes whatever no other zone measured. Naming a part like the hood is a Chat and Shokker AI route. It turns the name into an exact mask of that panel, optionally a portion such as the rear half. Plain Pro uses colour, layer, box and lasso."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Yellow on the body only, not on the logo",
+     "goal": "Give the yellow body panels a pearl finish and leave the yellow logo alone.",
+     "settings": {
+      "COLOR > PICK COLOR FROM CAR": "click the yellow body",
+      "Color Match slider": "Exact to Loose set to 35",
+      "RESTRICT TO LAYERS": "tick the body layer only",
+      "Base Material": "Pearl"
+     },
+     "result": "Only yellow that sits on the body layer is caught. The yellow in the logo layer keeps its original look."
+    },
+    {
+     "title": "Number fill without the outline",
+     "goal": "Chrome only the dark fill of the numbers, keeping the white and black outlines.",
+     "settings": {
+      "RESTRICT TO LAYERS": "tick Numbers",
+      "PICK COLOR FROM CAR": "click the dark fill",
+      "Color Match slider": "Exact to Loose set to 12",
+      "Base Material": "Chrome"
+     },
+     "result": "A tight match of about 10 to 16 on the numbers layer takes the fill and leaves both strokes. Dark fills are often close to a black stroke, so keep it tight."
+    },
+    {
+     "title": "Two stripe shades in one zone",
+     "goal": "One finish for a red stripe that has a darker red edge.",
+     "settings": {
+      "PICK COLOR FROM CAR": "click the red, then click the darker red",
+      "Color Match sliders": "40 for the main red, 25 for the dark edge",
+      "Hard Edge": "on"
+     },
+     "result": "Both shades belong to one zone and use one finish, each with its own reach."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.tolerance",
+     "why": "Tolerance decides how wide each colour chip reaches, which is the main reason a colour pick catches too much or too little."
+    },
+    {
+     "with": "zones.restrict_layers",
+     "why": "A layer is the exact way to stop a colour bleeding into logos that share the colour."
+    },
+    {
+     "with": "zones.regions",
+     "why": "A box or lasso is the way to split two panels that are the same colour on the flat sheet."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can I mix colour and layer rules?",
+     "a": "Yes. They combine as AND, so colour plus layer means that colour, but only on that layer."
+    },
+    {
+     "q": "Do I have to pick a colour at all?",
+     "a": "No. A zone can be only a layer (MAKE ZONE on the layer card), only a box or lasso, or the Remaining catch-all."
+    },
+    {
+     "q": "How do I add a second colour to the same zone?",
+     "a": "Press PICK COLOR FROM CAR and click another colour. Each click adds a chip. Pressing Set in the Color tool bar replaces everything with one colour instead."
+    },
+    {
+     "q": "Why does a colour I picked catch the edge of other colours too?",
+     "a": "Edge pixels are blends of two colours, so they land inside your tolerance. Lower that chip's Color Match slider or restrict the zone to a layer."
+    },
+    {
+     "q": "Is the left or right side of the car the left or right of the sheet?",
+     "a": "Not necessarily. Parts are named for the car, and one side may sit upside down on the flat sheet."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A numbers zone also changes sponsor logos",
+     "cause": "The same colour exists on both and the zone only has a colour rule.",
+     "fix": "Tick the Numbers layer under RESTRICT TO LAYERS so the zone cannot reach other art."
+    },
+    {
+     "symptom": "A colour zone turns into a ragged speckle",
+     "cause": "The tolerance is too tight for a shaded or anti-aliased area.",
+     "fix": "Slide that chip toward Loose in steps of about 10 and watch the overlay until the area fills in."
+    },
+    {
+     "symptom": "Adding a box made the zone cover less than before",
+     "cause": "Rules combine as AND, so a box can only shrink a colour zone.",
+     "fix": "Clear the box, or draw it large enough to include everything you want."
+    }
+   ],
+   "protips": [
+    "Pick the colour while the layer you restrict to is visible. The match is made on that layer's own pixels, so a picture of the stacked result can mislead you.",
+    "Give every chip its own reach. A body colour can be loose enough to cover shading while a stripe next to it stays tight."
+   ],
+   "screens": [
+    "ui_zone_apply_area",
+    "ui_zone_popout_color"
+   ]
+  },
+  {
+   "id": "zones.priority",
+   "title": "Zone priority: the top zone wins",
+   "domain": "zones",
+   "summary": "Zones are a stack. Where two zones want the same pixel, the zone higher in the list gets it.",
+   "what": "The first zone in the list has the highest priority. A lower zone only gets the pixels the zones above it did not claim. So a new zone that must show on pixels another zone already owns has to sit above it. Drag the handle on a zone card to reorder, or press Ctrl+Up and Ctrl+Down with the zone selected. The catch-all zone, Everything Else, belongs at the bottom. A zone you add with + Add Zone lands below it, so move it up. If a zone \"does nothing\", the usual reason is that a zone above it already claims those pixels.",
+   "when": [
+    "A zone is not showing.",
+    "Two zones overlap and the wrong one wins."
+   ],
+   "how": [
+    "1. Look at the ZONES list: top is highest priority.",
+    "2. Drag the zone you want to win above the other one, or select it and press Ctrl+Up.",
+    "3. Watch the preview update.",
+    "4. Keep Everything Else at the bottom, and drag any zone you just added above it."
+   ],
+   "controls": [
+    {
+     "label": "Zone order (drag handle and priority)",
+     "range": "0..n-1 (0 = top)",
+     "default": "+ Add Zone puts it at the bottom; Chat and the AI copilot put new zones at the top",
+     "effect": "Top zone wins where two zones select the same pixels.",
+     "inv": "zone.order"
+    }
+   ],
+   "tips": [
+    "Alt+1 to Alt+9 select a zone; Up and Down arrows move the selection through the list.",
+    "Specific zones (numbers, stripes) go above general ones (body)."
+   ],
+   "pitfalls": [
+    "\"Remaining\" zones belong at the bottom. Higher zones win overlaps.",
+    "Muting a zone with the eye icon is a quick test for \"is something above it?\"."
+   ],
+   "related": [
+    "zones.everything_else",
+    "zones.not_showing",
+    "zones.card_controls"
+   ],
+   "actions": [],
+   "figures": [
+    "g05_zone_priority"
+   ],
+   "covers": [
+    "zones.priority",
+    "doc.01.priority_the_top_zone_wins",
+    "zone.order"
+   ],
+   "sources": [
+    "js/spb-pro-zone-kit.js:211",
+    "paint-booth-6-ui-boot.js:3865",
+    "docs/ai_knowledge/01_how_pro_works.md:15",
+    "paint-booth-2-state-zones.js:1656",
+    "shokker_engine_v2.py:18461",
+    "shokker_engine_v2.py:18420",
+    "paint-booth-2-state-zones.js:4114",
+    "paint-booth-2-state-zones.js:4270",
+    "paint-booth-2-state-zones.js:3169",
+    "paint-booth-2-state-zones.js:1358",
+    "paint-booth-6-ui-boot.js:3810",
+    "paint-booth-6-ui-boot.js:3864",
+    "docs/ZONE_OWNERSHIP.md:29",
+    "js/spb-pro-zone-kit.js:47",
+    "paint-booth-3-canvas.js:2119",
+    "paint-booth-2-state-zones.js:4269",
+    "shokker_engine_v2.py:18413"
+   ],
+   "aliases": [
+    "lower index wins",
+    "overlapping zones",
+    "reorder zones",
+    "top zone wins",
+    "which zone wins",
+    "zone above",
+    "zone order",
+    "zone priority",
+    "move a zone up",
+    "raise a zone",
+    "priority"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "First come, first served",
+     "body": "Shokker walks down the list from the top. Each zone measures what it can catch, and pixels already taken by zones above are not given again. Zone 1 has first pick, then Zone 2, and so on. The order of the list is the priority setting, and there is no number to type. One exception: a zone that picks by colour or layer, has no box or lasso, and has green Include brush marks wins those marked pixels even over zones above it."
+    },
+    {
+     "heading": "Remaining is measured last",
+     "body": "A Remaining zone such as Everything Else is not worked out in its list position. The render first measures every colour, layer and area zone, then gives Remaining whatever none of them caught. So Remaining can never take pixels from a zone below it. Keep it at the bottom anyway: that is where it reads naturally."
+    },
+    {
+     "heading": "Layer zones are decided by what you can see",
+     "body": "A zone tied to a layer owns the pixels where that layer is really visible: at least half opaque after layer opacity, and not covered by artwork above it. Artwork on top of a body layer is therefore never claimed by the body zone. List order still settles overlaps between zones that cover the same pixels."
+    },
+    {
+     "heading": "Where a new zone lands",
+     "body": "+ Add Zone puts the new card at the bottom of the list, below Everything Else, selects it and scrolls down to it. Presets and Chat are different: Chat places new zones at the top. If a new zone must beat existing ones, move it up yourself."
+    },
+    {
+     "heading": "Ways to move and find zones",
+     "body": "Drag the three-line handle on a card. Or select a zone and press Ctrl+Up or Ctrl+Down to move it one place. Up and Down arrows only move the selection. Alt+1 to Alt+9 jump straight to zone 1 to 9. Every move refreshes the live preview, so you see the winner immediately."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Numbers lost to the body zone",
+     "goal": "The car number should be chrome but it keeps showing the body finish.",
+     "settings": {
+      "Select": "the Numbers zone card",
+      "Key": "Ctrl+Up until it is above the body zone",
+      "Final list": "Numbers, Body, Everything Else"
+     },
+     "result": "The numbers zone now has first pick of its pixels, so the chrome shows. The body zone keeps the rest."
+    },
+    {
+     "title": "Stripe on top of a similar body colour",
+     "goal": "A red stripe sits on a dark red body and both zones catch the stripe.",
+     "settings": {
+      "Zone 1": "Stripe colour, Color Match 25, Satin",
+      "Zone 2": "Body colour, Color Match 40, Gloss",
+      "Zone 3": "Everything Else, Gloss"
+     },
+     "result": "The tight stripe zone wins where the colours overlap and the looser body zone takes everything else."
+    },
+    {
+     "title": "Find which zone is hiding yours",
+     "goal": "Your zone shows nothing and you do not know why.",
+     "settings": {
+      "Step 1": "Click the eye icon on each zone above yours, one at a time",
+      "Step 2": "Watch LIVE PREVIEW after each click",
+      "Step 3": "When your zone appears, drag it above that one"
+     },
+     "result": "The zone whose mute makes yours appear is the one holding your pixels."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.not_showing",
+     "why": "A zone above is the most common reason a zone shows nothing, so check order first."
+    },
+    {
+     "with": "zones.everything_else",
+     "why": "The catch-all belongs at the bottom and never competes with the zones above."
+    },
+    {
+     "with": "zones.restrict_layers",
+     "why": "Layer zones are decided by visibility, so art on top stays with its own zone."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which zone wins when two zones want the same pixel?",
+     "a": "The one higher in the list. The top card has the highest priority."
+    },
+    {
+     "q": "Does Remaining need to be last?",
+     "a": "It is worked out after every other zone anyway, so it cannot steal pixels. The bottom is still the right place and the one the app expects."
+    },
+    {
+     "q": "Do Chat and the AI copilot put zones at the top?",
+     "a": "Yes. They place new zones at the top by default, so a new look wins over older zones."
+    },
+    {
+     "q": "Can I give two zones the same pixels on purpose?",
+     "a": "The upper one takes them. To layer a second look on the same pixels, use the zone's second base overlay or a pattern instead."
+    },
+    {
+     "q": "Does the eye icon change priority?",
+     "a": "No. It only hides the zone from the render and preview so you can test what is underneath. Click it again to bring the zone back."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A new zone does nothing because the old body zone already took everything",
+     "cause": "+ Add Zone puts the new card at the bottom, so every zone above it wins.",
+     "fix": "Drag the new card above the body zone, or select it and press Ctrl+Up."
+    },
+    {
+     "symptom": "Ctrl+Up does nothing",
+     "cause": "The zone is already at the top, or the focus is inside a text box.",
+     "fix": "Click the zone card first, not a field, then press the keys again."
+    },
+    {
+     "symptom": "You reordered but the preview looks the same",
+     "cause": "The two zones cover different pixels, so order made no difference there.",
+     "fix": "Order only matters where zones overlap. Mute one zone to see which pixels they share."
+    }
+   ],
+   "protips": [
+    "Specific zones go above general ones: numbers and stripes above the body, the body above Everything Else.",
+    "The eye icon is the quickest priority test. If a zone appears the moment you hide another, you have found the one in the way."
+   ],
+   "screens": [
+    "pair_zone_added",
+    "pair_zone_priority",
+    "ui_zone_card",
+    "ui_zone_overlays",
+    "ui_zones_column"
+   ]
+  },
+  {
+   "id": "zones.everything_else",
+   "title": "Everything Else: the safety net zone",
+   "domain": "zones",
+   "summary": "Everything Else is the catch-all zone at the bottom of the list. It gives a base finish to every pixel no other zone claimed.",
+   "what": "A fresh Shokker session starts with four open zones and one Everything Else zone. Everything Else catches whatever the zones above it left alone, so nothing on the car is ever left without a finish. By default it uses a gloss base at 50 percent intensity. It works because it is last: any zone above it wins overlaps. If you move it up, it can swallow pixels meant for zones below.",
+   "when": [
+    "You want the whole body to have a base shine without picking its colours.",
+    "Parts of the car you did not select look wrong or unfinished."
+   ],
+   "how": [
+    "1. Find Everything Else at the bottom of the ZONES list and click it.",
+    "2. In BASE, choose the finish you want for the leftovers.",
+    "3. Leave it at the bottom of the list."
+   ],
+   "controls": [
+    {
+     "label": "Remaining",
+     "range": "0..n-1 (0 = top)",
+     "default": "new zones go to the TOP via the kit",
+     "effect": "Makes this zone the catch-all: it gets every pixel no zone above it claims.",
+     "inv": "zone.remaining"
+    }
+   ],
+   "tips": [
+    "A \"Remaining\" colour chip on any zone makes it a catch-all too. Use only one at the bottom."
+   ],
+   "pitfalls": [
+    "If Everything Else sits above other zones, those zones can lose pixels."
+   ],
+   "related": [
+    "zones.priority",
+    "zones.how_pixels_picked",
+    "zones.not_showing"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "zones.everything",
+    "zone.remaining"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:1167",
+    "paint-booth-2-state-zones.js:4325",
+    "paint-booth-2-state-zones.js:1656",
+    "paint-booth-2-state-zones.js:1186",
+    "paint-booth-0-finish-data.js:724",
+    "paint-booth-0-finish-data.js:6380",
+    "shokker_engine_v2.py:18420",
+    "shokker_engine_v2.py:1865",
+    "shokker_engine_v2.py:18518",
+    "shokker_engine_v2.py:18453",
+    "docs/ZONE_OWNERSHIP.md:29",
+    "paint-booth-2-state-zones.js:3137"
+   ],
+   "aliases": [
+    "catch all zone",
+    "default zone",
+    "everything else",
+    "leftover pixels",
+    "remaining",
+    "safety net",
+    "everything else zone",
+    "safety net zone"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "What its factory settings mean",
+     "body": "Everything Else starts as the Remaining catch-all with the Gloss base at intensity 50. Gloss is a standard glossy body with metal 0, roughness 30 and clearcoat 16, described in the app as the safe default under sponsors and numbers. Intensity 50 applies the spec, paint and brightness effects at half strength, so the leftovers stay close to your original paint."
+    },
+    {
+     "heading": "It is measured after everything else",
+     "body": "The render first measures every colour, layer and area zone. Only then does Remaining take the pixels that none of them caught. With Hard Edge on, which is the default, the catch-all has no feathered edge, so there are no halos or outlines around logos and numbers. Pixels inside lettering, such as the hole of a zero, fall to Everything Else too, unless a zone claims them."
+    },
+    {
+     "heading": "Inside a layer, Remaining means what is left of that layer",
+     "body": "If a Remaining zone is tied to a layer, for example Numbers, it takes only what is left inside that layer after earlier zones restricted to the same layer. Earlier zones that cover the whole car do not erase it. This lets you give one zone to the number's fill and a Remaining zone to the rest of the number."
+    },
+    {
+     "heading": "Without it, the default shine applies",
+     "body": "If you delete Everything Else, untouched pixels keep your source paint and get the plain default shine of metal 5, roughness 100, clearcoat 16. The app will let you delete it, but you lose the guarantee that every pixel is finished on purpose."
+    },
+    {
+     "heading": "You can have more than one",
+     "body": "Any zone can be made Remaining with the Remaining chip under COLOR. A second Remaining zone only sees what the first one left, which is nothing unless it is restricted to a layer. Use a layer to split the leftovers, such as body versus sponsor art."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Keep sponsors readable, finish everything else",
+     "goal": "Chrome stripes, everything else in a quiet gloss.",
+     "settings": {
+      "Zone 1 > COLOR": "PICK COLOR FROM CAR on the stripes",
+      "Zone 1 > Base Material": "Chrome",
+      "Everything Else > Base Material": "Gloss",
+      "Everything Else > intensity": "50 (leave as is)"
+     },
+     "result": "The stripes mirror, and every other pixel, including sponsors, stays a calm gloss close to the original paint."
+    },
+    {
+     "title": "Flat low-sheen car with one shiny part",
+     "goal": "Low sheen everywhere except the hood.",
+     "settings": {
+      "Zone 1 > APPLY AREA": "Draw box over the hood",
+      "Zone 1 > Base Material": "Candy",
+      "Everything Else > Base Material": "Powder Coat",
+      "Everything Else > Base Color": "Use source paint (spec only)"
+     },
+     "result": "The hood is candy and the rest gets the eggshell powder-coat shine with colours untouched."
+    },
+    {
+     "title": "Different finish for the body and for what is left of the numbers",
+     "goal": "Give the number fill chrome and the rest of the number layer matte.",
+     "settings": {
+      "Zone 1 > RESTRICT TO LAYERS": "Numbers",
+      "Zone 1 > PICK COLOR FROM CAR": "the number fill, Color Match 12",
+      "Zone 1 > Base Material": "Chrome",
+      "Zone 2 > RESTRICT TO LAYERS": "Numbers",
+      "Zone 2 > COLOR": "Remaining",
+      "Zone 2 > Base Material": "Powder Coat"
+     },
+     "result": "Zone 1 takes the fill, and Zone 2 takes the outline pixels left on the Numbers layer."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.priority",
+     "why": "Everything Else sits last, so every zone above gets first pick."
+    },
+    {
+     "with": "zones.restrict_layers",
+     "why": "Pairing a layer with Remaining splits a layer between two zones."
+    },
+    {
+     "with": "finishes.foundation_shine_only",
+     "why": "A Foundation finish with Use source paint on the catch-all changes only the shine and keeps every colour."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can I delete Everything Else?",
+     "a": "Yes, as long as one zone remains. Then untouched pixels keep your paint with the plain default shine instead of a deliberate finish."
+    },
+    {
+     "q": "Why did my logo change when I only edited Everything Else?",
+     "a": "No zone claimed the logo, so the catch-all did. Give the logo its own zone, or keep the catch-all to Gloss with Use source paint."
+    },
+    {
+     "q": "Is Everything Else the same as Remaining?",
+     "a": "Yes. Everything Else is a zone whose colour is set to the Remaining chip. Any zone can use the chip."
+    },
+    {
+     "q": "Can I move it to the top?",
+     "a": "You can, and it still only gets what no other zone caught, because it is measured last. The bottom is the clearer place."
+    },
+    {
+     "q": "Can Everything Else paint over a zone I set up?",
+     "a": "No. Zones with their own pixels are measured first and the catch-all only gets what is left. If your zone looks weak, check its Color Match and its place in the list."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The whole car turned chrome",
+     "cause": "Everything Else was given Chrome with a solid colour, so every unclaimed pixel changed.",
+     "fix": "Set the catch-all back to Gloss, or switch its Base Color to Use source paint (spec only)."
+    },
+    {
+     "symptom": "A thin line around numbers has a different shine",
+     "cause": "The edge pixels were claimed by neither the number zone nor the body zone, so Everything Else took them.",
+     "fix": "Raise the number zone's Color Match a little, or tie it to the Numbers layer, so it covers its own edge."
+    },
+    {
+     "symptom": "Two catch-all zones and the second one shows nothing",
+     "cause": "The first Remaining zone already took every leftover pixel.",
+     "fix": "Restrict the second Remaining zone to a layer, or delete it."
+    }
+   ],
+   "protips": [
+    "Leave Everything Else gentle. Gloss at intensity 50 is chosen to sit under sponsors and numbers without changing how they read.",
+    "A catch-all with Use source paint (spec only) is the cleanest way to change the shine of a whole livery without touching a colour."
+   ],
+   "screens": [
+    "ui_zones_column"
+   ]
+  },
+  {
+   "id": "zones.card_controls",
+   "title": "Zone card controls: mute, lock, reset, duplicate, delete",
+   "domain": "zones",
+   "summary": "Each zone card has small controls: an eye to hide it, a copy icon, an x to delete, a lock on the BASE row that protects it from Randomize, a drag handle, plus keyboard shortcuts.",
+   "what": "The eye hides a zone for testing, so you can see the car without it. The copy icon duplicates the zone to reuse its look. The x deletes the zone, and Ctrl+Z brings it back. A small lock icon on the BASE row stops Randomize from changing the base. That is a different thing from LOCK ZONE on a layer card (Ctrl+L), which ties the zone to one layer, and from the lock on a layer row, which stops that layer being painted. The drag handle reorders zones. Inside the popout panel, Reset Zone puts that one zone back to its defaults, while Reset All Zones in the left column resets every zone to the starting set (it asks to confirm, and is undoable). Keyboard: Shift+N new zone, Shift+D duplicate, Shift+R randomise, Shift+Delete delete the selected zone, Alt+1 to 9 select a zone.",
+   "when": [
+    "You want to test the car without one zone.",
+    "You want to copy a look to a similar area.",
+    "A zone is a mess and needs a clean start."
+   ],
+   "how": [
+    "1. To hide a zone, click its eye icon. Click again to show it.",
+    "2. To copy it, click the copy icon (or press Shift+D).",
+    "3. To clean one zone, open its popout panel, press Reset Zone and confirm the question.",
+    "4. To lock its base from Randomize, click the lock icon on the BASE row."
+   ],
+   "controls": [
+    {
+     "label": "Zone eye / duplicate / link / x icons on each zone card",
+     "range": "true|false",
+     "default": "False",
+     "effect": "Eye hides a zone for testing, the copy icon duplicates, the x deletes it.",
+     "inv": "zone.mute"
+    },
+    {
+     "label": "Reset Zone",
+     "range": "",
+     "default": "",
+     "effect": "Puts this one zone back to its defaults (finish, colour, patterns, sliders).",
+     "inv": "zone.reset"
+    },
+    {
+     "label": "Reset All Zones",
+     "range": "",
+     "default": "",
+     "effect": "Resets to the default set of zones (confirmed, undoable).",
+     "inv": "pro.zones.reset_all_zones"
+    },
+    {
+     "label": "Lock (Base Color lock)",
+     "range": "",
+     "default": "",
+     "effect": "When on, switching finish keeps your zone colour instead of auto-adopting the finish's default colour.",
+     "inv": "zone.lock_base_color"
+    },
+    {
+     "label": "Zone order (drag handle and priority)",
+     "range": "0..n-1 (0 = top)",
+     "default": "+ Add Zone puts it at the bottom; Chat and the AI copilot put new zones at the top",
+     "effect": "Top zone wins where two zones select the same pixels.",
+     "inv": "zone.order"
+    }
+   ],
+   "tips": [
+    "Mute is the fastest way to find out which zone is hiding something."
+   ],
+   "pitfalls": [
+    "There are three different locks: the BASE row lock (Randomize skips the base), LOCK ZONE on a layer card (the zone only acts on that layer) and the lock on a layer row (the layer cannot be changed). They do not affect each other.",
+    "Reset Zone resets one zone. Reset All Zones resets the whole car.",
+    "The x deletes the zone. Undo with Ctrl+Z if that was a mistake."
+   ],
+   "related": [
+    "zones.priority",
+    "zones.popout_panel",
+    "zones.presets_templates",
+    "ui_shell.zones_more_menu"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.reset"
+    },
+    {
+     "do": "control",
+     "id": "pro.zones.reset_all_zones"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "zones.lock",
+    "zone.mute",
+    "zone.reset",
+    "pro.zones.reset_all_zones",
+    "zone.lock_base_color",
+    "zone.order"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:1860",
+    "paint-booth-2-state-zones.js:17485",
+    "paint-booth-6-ui-boot.js:3825",
+    "paint-booth-2-state-zones.js:1656",
+    "paint-booth-v2.html:2636",
+    "paint-booth-2-state-zones.js:4098",
+    "paint-booth-2-state-zones.js:1366",
+    "paint-booth-2-state-zones.js:1367",
+    "paint-booth-2-state-zones.js:1373",
+    "paint-booth-2-state-zones.js:3137",
+    "paint-booth-2-state-zones.js:4277",
+    "paint-booth-2-state-zones.js:4300",
+    "paint-booth-2-state-zones.js:7734",
+    "paint-booth-2-state-zones.js:7802",
+    "paint-booth-6-ui-boot.js:2130",
+    "paint-booth-6-ui-boot.js:2157",
+    "paint-booth-6-ui-boot.js:2157",
+    "paint-booth-6-ui-boot.js:3819",
+    "paint-booth-6-ui-boot.js:3901",
+    "paint-booth-v2.html:2681",
+    "js/zones/workflow-controls.js:84",
+    "js/zones/workflow-controls.js:112",
+    "paint-booth-2-state-zones.js:1903",
+    "paint-booth-6-ui-boot.js:3887",
+    "paint-booth-2-state-zones.js:373",
+    "paint-booth-6-ui-boot.js:2133",
+    "paint-booth-6-ui-boot.js:2171",
+    "js/zones/workflow-controls.js:436"
+   ],
+   "aliases": [
+    "copy a zone",
+    "delete a zone",
+    "duplicate a zone",
+    "hide a zone",
+    "lock zone",
+    "mute a zone",
+    "reset zone",
+    "zone eye icon",
+    "zone lock",
+    "mute zone",
+    "disable a zone",
+    "zone buttons",
+    "zone card"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Every icon on a card, and what it really does",
+     "body": "The eye mutes the zone: it is left out of the preview and the render, but kept. The overlapping-squares icon duplicates. The chain icon links two zones. The x deletes. The three-line handle drags to reorder. The padlock next to the BASE row only protects the base from the randomise buttons. There is no up and down arrow on the card any more; use the handle or Ctrl+Up and Ctrl+Down."
+    },
+    {
+     "heading": "Duplicate copies everything, including drawn areas",
+     "body": "Duplicate puts a copy right under the original and names it with (copy) on the end. The copy keeps the finish, colours, sliders and any box, lasso or brush area you drew. Shift+D or Ctrl+Shift+D does the same for the selected zone. Ctrl+Shift+C and Ctrl+Shift+V copy a zone and paste it as another zone, so a good look can be reused."
+    },
+    {
+     "heading": "Delete asks first, and has limits",
+     "body": "If the zone has a finish, a colour or a drawn area, you get a question naming what would be lost. The last remaining zone cannot be deleted. After a delete, Ctrl+Z brings it back. Pressing Delete alone is reserved for pixel selections and shows a hint; Shift+Delete removes the selected zone."
+    },
+    {
+     "heading": "Randomise is bolder than it looks",
+     "body": "Rand Current Zone, Rand All Zones and Shift+R pick a new base and pattern and a new intensity from 10 to 100 percent. They also clear the zone's special finish even when the base is locked. Rand Current Zone and Shift+R clear the zone's stack of extra patterns as well; Rand All Zones leaves each zone's pattern stack alone. With Smart Randomize ticked, which is the default, 8 times in 10 the pick comes from a list of combinations known to look good, and the rest avoids known bad ones. If either lock is on, smart mode steps aside."
+    },
+    {
+     "heading": "Link keeps two zones the same look",
+     "body": "Press the chain icon and type the number of the zone to link with. Their finish settings are copied across and later finish changes on either one are passed to the other. Click the chain again to unlink. It is ideal for a left-side and right-side zone that should always match."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Find what is hiding your zone",
+     "goal": "Test which zone is covering another.",
+     "settings": {
+      "Eye icon": "click it on the zone above yours",
+      "LIVE PREVIEW": "watch the car",
+      "Eye icon again": "click to bring it back"
+     },
+     "result": "If your zone appears when the other is muted, the muted zone owns those pixels. Move yours above it."
+    },
+    {
+     "title": "Keep your base, try new patterns",
+     "goal": "Shuffle looks but protect the base finish you like.",
+     "settings": {
+      "Padlock on the BASE row": "click to lock",
+      "More > Smart Randomize": "ticked",
+      "Shift+R": "press repeatedly"
+     },
+     "result": "The base stays. The pattern and intensity change, and each press can be undone with Ctrl+Z."
+    },
+    {
+     "title": "Two sides that always match",
+     "goal": "Left and right side zones share one finish.",
+     "settings": {
+      "Chain icon on Left Side": "click and type the number of the Right Side zone",
+      "Base Material on Left Side": "Pearl"
+     },
+     "result": "Both zones now show Pearl. Change either finish later and the other follows."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.priority",
+     "why": "The eye icon and the drag handle are your two tools for finding and fixing priority problems."
+    },
+    {
+     "with": "zones.popout_panel",
+     "why": "Reset Zone lives in the popout panel, and the card icons are the quick actions on the left."
+    },
+    {
+     "with": "ui_shell.zones_more_menu",
+     "why": "Randomise, Apply Finish to All, templates and presets live in the More menu beside these card controls."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does muting a zone delete it?",
+     "a": "No. A muted zone keeps every setting and is only skipped in the preview and render. The card shows Muted (excluded from render)."
+    },
+    {
+     "q": "I deleted a zone by accident. Can I get it back?",
+     "a": "Yes, press Ctrl+Z straight away. Deleted zones are on the undo list."
+    },
+    {
+     "q": "What does Apply Finish to All do?",
+     "a": "After you confirm, it copies the selected zone's base, pattern, finish, intensity, scale and pattern stack to every other zone. Colours and drawn areas are not copied."
+    },
+    {
+     "q": "Why did my chrome finish vanish after I randomised?",
+     "a": "Randomise clears a zone's special finish even if the base is locked. Undo with Ctrl+Z to get it back."
+    },
+    {
+     "q": "What is the difference between the two locks?",
+     "a": "The padlock on the BASE row protects the base from randomise. The Lock checkbox beside Base Color keeps your colour when you change the finish, so you can swap a base purely for its shine."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You locked the base but the finish still changed",
+     "cause": "The lock protects only the base material. A special finish is cleared by every randomise, and the pattern stack by Rand Current Zone and Shift+R.",
+     "fix": "Undo with Ctrl+Z, then pick the look again by hand. Do not randomise zones that use a special finish."
+    },
+    {
+     "symptom": "Shift+Delete or Delete does nothing",
+     "cause": "Delete alone is reserved for pixel selections, and a text box may have focus.",
+     "fix": "Click the zone card, then press Shift+Delete, or use the x on the card."
+    },
+    {
+     "symptom": "All your zones vanished and the list is back to the starting five",
+     "cause": "Reset All Zones replaces the whole list with Zone 1 to 4 plus Everything Else.",
+     "fix": "Press Ctrl+Z straight away. The confirm box warns you first, so read it before pressing OK."
+    }
+   ],
+   "protips": [
+    "Reset Zone returns one zone to factory settings, while Reset All Zones returns the whole list to the starting five. Both can be undone.",
+    "Zone undo remembers the last 15 steps, so after a long shuffle or a few deletes the earliest changes can no longer be undone. Save a template before big experiments.",
+    "Randomise with Smart Randomize on is a fast way to audition combinations. Undo is one keypress, so try ten before you decide."
+   ],
+   "screens": [
+    "pair_zone_priority",
+    "ui_zone_card",
+    "ui_zone_empty_message",
+    "ui_zones_column"
+   ]
+  },
+  {
+   "id": "zones.add_pick_colour",
+   "title": "Add a zone and pick a colour from the car",
+   "domain": "zones",
+   "summary": "The fastest way to make a zone: add it, press PICK COLOR FROM CAR, and click the colour you want on the paint.",
+   "what": "PICK COLOR FROM CAR arms an eyedropper. Click a colour on the canvas and the zone grabs every pixel of that colour. Each further click adds another colour. You can also type a hex colour and press Apply, or use the colour wheel, which applies live. Typing a hex colour chooses which paint pixels to catch; it does not recolour them. To recolour, use BASE > Base Color > Use solid color. The Color tool in the toolbar (P) does the same job with extra buttons: + Add Color, Set and Exclude.",
+   "when": [
+    "You want a finish on \"the red stripe\" or \"the green body\".",
+    "You know the exact colour of the area."
+   ],
+   "how": [
+    "1. Press + Add Zone, then click the new card.",
+    "2. In COLOR press PICK COLOR FROM CAR.",
+    "3. Click the colour on the canvas. Click again to add shades.",
+    "4. If edges are left over, raise the colour tolerance.",
+    "5. In BASE, pick a finish."
+   ],
+   "controls": [
+    {
+     "label": "PICK COLOR FROM CAR",
+     "range": "tolerance 6-100 (kit) / 0-100 (UI per colour); default 40",
+     "default": "40",
+     "effect": "Arms an eyedropper: click a colour on the car and this zone grabs every pixel of that colour. Each further click ADDS another colour.",
+     "inv": "zone.pick_color_from_car"
+    },
+    {
+     "label": "HEX (colour box and colour wheel) + Apply",
+     "range": "tolerance 6-100 (kit) / 0-100 (UI per colour); default 40",
+     "default": "40",
+     "effect": "Type or pick a colour to select by (with Apply), or use the wheel which applies live.",
+     "inv": "zone.hex"
+    },
+    {
+     "label": "+ Add Zone",
+     "range": "",
+     "default": "",
+     "effect": "Adds an empty zone at the top.",
+     "inv": "pro.zones.add_zone"
+    },
+    {
+     "label": "Remaining",
+     "range": "0..n-1 (0 = top)",
+     "default": "new zones go to the TOP via the kit",
+     "effect": "Makes this zone the catch-all: it gets every pixel no zone above it claims.",
+     "inv": "zone.remaining"
+    }
+   ],
+   "tips": [
+    "The pick tool works on the source paint, so hide the zone overlay if it covers the colour."
+   ],
+   "pitfalls": [
+    "Colours that also appear on logos need a layer or box restriction.",
+    "Anti-aliased edges need some tolerance to be caught."
+   ],
+   "related": [
+    "zones.tolerance",
+    "zones.exclude_set_use_region",
+    "tools.eyedropper_pick",
+    "zones.restrict_layers"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.pick_color_from_car"
+    },
+    {
+     "do": "control",
+     "id": "zone.hex"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "zone.pick_color_from_car",
+    "zone.hex",
+    "pro.zones.add_zone",
+    "zone.remaining"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:1656",
+    "paint-booth-v2.html:2639",
+    "paint-booth-2-state-zones.js:4105",
+    "paint-booth-3-canvas.js:9385",
+    "paint-booth-3-canvas.js:4519",
+    "paint-booth-3-canvas.js:4503",
+    "paint-booth-2-state-zones.js:1536",
+    "paint-booth-2-state-zones.js:1541",
+    "paint-booth-2-state-zones.js:4490",
+    "paint-booth-2-state-zones.js:1170",
+    "paint-booth-2-state-zones.js:1182",
+    "paint-booth-2-state-zones.js:1485",
+    "paint-booth-2-state-zones.js:1911",
+    "paint-booth-2-state-zones.js:1912",
+    "docs/ZONE_OWNERSHIP.md:29"
+   ],
+   "aliases": [
+    "add color to zone",
+    "eyedropper for zone",
+    "hex",
+    "only the red parts",
+    "pick color from car",
+    "pick colour from car",
+    "select a colour",
+    "pick colour for zone"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Every click lands in the selected zone",
+     "body": "A pick always goes into the zone whose card is highlighted at that moment, even if you launched the picker from another zone. Check the selected card before you click. Each pick becomes a colour chip showing its hex code, a small Exact to Loose slider and a red x to remove it. The toast tells you how many colours are now stacked, for example Added #C8102E to Zone 1 (2 colors stacked)."
+    },
+    {
+     "heading": "New chips copy the zone's tolerance",
+     "body": "A fresh chip starts at the zone's own tolerance: plus or minus 40 for Zone 1, Zone 2 and Everything Else, 35 for Zone 3 and 30 for Zone 4. The same colour cannot be added twice. If you pick one the zone already has, you get a message that it is already there and no new chip appears. Remove a chip with its x, which can be undone."
+    },
+    {
+     "heading": "Hex box, wheel and Apply",
+     "body": "Type six hex digits, with or without the hash, then press Apply. A wrong code shows Enter a valid hex code like #FF3366. In a zone that already has several colours, Apply adds another chip. In a zone with none, it sets one. The colour wheel applies live as you drag. Either way this chooses which pixels are caught. It never recolours them."
+    },
+    {
+     "heading": "To actually change the colour",
+     "body": "Open BASE and set Base Color to Use solid color, then choose a colour or type a hex. Or pick a finish that brings its own colour. Colour match decides where; Base Color decides what comes out. Mixing these two up is the most common colour mistake."
+    },
+    {
+     "heading": "What the click reads",
+     "body": "The picker reads the colour of your source paint under the cursor, not the finished preview. Hide the zone overlay if it covers the colour you want, so you can see what you are picking. Edge pixels are blends of two colours, so click the middle of a flat area."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Catch a stripe with two shades",
+     "goal": "One zone for a red stripe that has a darker red shadow edge.",
+     "settings": {
+      "Zone card": "Zone 2 selected",
+      "COLOR > PICK COLOR FROM CAR": "click the bright red, then click the dark red",
+      "Color Match chips": "40 for bright red, 25 for dark red"
+     },
+     "result": "Both shades are in one zone. The chip list shows two hex codes and the toast says 2 colors stacked."
+    },
+    {
+     "title": "Catch a brand colour by its code",
+     "goal": "Select a sponsor blue you know is #0057B8.",
+     "settings": {
+      "HEX box": "0057B8",
+      "Apply": "press",
+      "Color Match": "30"
+     },
+     "result": "All pixels near that blue join the zone. Nothing is recoloured yet. Add a finish in BASE."
+    },
+    {
+     "title": "Recolour what you caught",
+     "goal": "Turn the caught red stripe into gold.",
+     "settings": {
+      "BASE > Base Material": "Metallic",
+      "BASE > Base Color": "Use solid color",
+      "Color": "#D4A017"
+     },
+     "result": "The stripe pixels you picked now render as metallic gold. The picker chip still shows the original red, which is correct."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.tolerance",
+     "why": "After picking, the Exact to Loose slider on each chip is what removes fringes or stops a colour spilling."
+    },
+    {
+     "with": "tools.eyedropper_pick",
+     "why": "The same pick can come from the Color tool in the toolbar, which adds Set, + Add Color and Exclude buttons."
+    },
+    {
+     "with": "zones.exclude_set_use_region",
+     "why": "When a colour also appears where it should not, Exclude paints those places out of the match."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does typing a hex colour recolour my paint?",
+     "a": "No. It only chooses which pixels belong to the zone. To recolour, set BASE > Base Color to Use solid color."
+    },
+    {
+     "q": "How many colours can one zone hold?",
+     "a": "As many as you need. Each pick adds a chip. Keep the list short so the zone stays easy to read."
+    },
+    {
+     "q": "Why did my click not add a colour?",
+     "a": "That exact colour is already in the zone, or no paint is loaded yet. You will see a message saying so."
+    },
+    {
+     "q": "Can I take back a pick?",
+     "a": "Yes. Press Ctrl+Z, or click the red x on that colour chip. Both are undoable."
+    },
+    {
+     "q": "Which zone does the click go to?",
+     "a": "The one currently selected on the left. Click a card first, then pick."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The colour went into the wrong zone",
+     "cause": "A different card was selected when you clicked the canvas.",
+     "fix": "Undo, select the correct zone card, and pick again. The selected card is always the target."
+    },
+    {
+     "symptom": "Only half the stripe is caught",
+     "cause": "Shaded and anti-aliased pixels sit outside the plus or minus 40 reach of one shade.",
+     "fix": "Click a second, darker shade on the same stripe, or slide the chip toward Loose."
+    },
+    {
+     "symptom": "Typed a hex and the colour on the car did not change",
+     "cause": "The hex box selects pixels. It does not apply colour.",
+     "fix": "Open BASE and choose Use solid color to paint a new colour."
+    }
+   ],
+   "protips": [
+    "Click near the middle of a flat area. Edge pixels are blends of two colours and make a poor starting point.",
+    "Pick a colour on a layer and the app warns you if that colour sits outside the zone's layer restriction, naming the layer it really lives on."
+   ],
+   "screens": [
+    "ui_render_bar",
+    "ui_toolbar_tools",
+    "ui_zone_popout_color"
+   ]
+  },
+  {
+   "id": "zones.tolerance",
+   "title": "Colour tolerance and refining a colour",
+   "domain": "zones",
+   "summary": "Tolerance says how close a pixel must be to the picked colour to belong to the zone. Too low leaves fringes, too high grabs neighbours.",
+   "what": "The tolerance slider runs from 0 (Exact) to 100 (Loose) and shows the value as plus or minus a number. Around 30 to 50 is normal and 6 is about the exact shade only. Zone 1 and Zone 2 start at 40, Zone 3 at 35, Zone 4 at 30, and zones you add start at 40. Do not leave it at 0: a value of 0 is read as 40 when the preview and render are built. Raise it when the edges of an area look chewed or lettering has a fringe. Lower it when neighbouring colours get caught. Hard Edge cuts the zone edge sharp instead of softly anti-aliased, which suits crisp lettering and thin lines. Refine color keeps the colour selection but lets you paint a green brush to limit it to places you choose.",
+   "when": [
+    "The edges of the selected area look rough.",
+    "Neighbouring colours get caught in the zone."
+   ],
+   "how": [
+    "1. Select the zone and find the tolerance slider next to its colour chip.",
+    "2. Drag it up if you see leftover fringe, down if too much is caught.",
+    "3. Turn on Hard Edge for crisp lettering.",
+    "4. Use Refine color to paint away the places where the colour should not apply."
+   ],
+   "controls": [
+    {
+     "label": "Colour tolerance (sliders next to the colour chips)",
+     "range": "tolerance 6-100 (kit) / 0-100 (UI per colour); default 40",
+     "default": "40",
+     "effect": "How close a pixel must be to the picked colour to belong to the zone (about 30-50 normal; 6 = exact shade, 100 = loose).",
+     "inv": "zone.tolerance"
+    },
+    {
+     "label": "Hard Edge",
+     "range": "",
+     "default": "",
+     "effect": "Cuts the zone edge sharp instead of softly anti-aliased.",
+     "inv": "zone.hard_edge"
+    },
+    {
+     "label": "Refine color",
+     "range": "",
+     "default": "",
+     "effect": "Keeps the colour selection but lets you paint a green brush to limit it to places you choose.",
+     "inv": "zone.refine_color"
+    }
+   ],
+   "tips": [
+    "Watch the overlay on the canvas while you drag the slider."
+   ],
+   "pitfalls": [
+    "A tolerance of 0 does not mean exact: it is treated as 40.",
+    "Hard edges can look jagged on diagonal lines.",
+    "Refine color needs a colour already set on the zone."
+   ],
+   "related": [
+    "zones.add_pick_colour",
+    "zones.regions",
+    "zones.exclude_set_use_region"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.tolerance"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "zone.tolerance",
+    "zone.hard_edge",
+    "zone.refine_color"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:1656",
+    "paint-booth-2-state-zones.js:1171",
+    "paint-booth-2-state-zones.js:1485",
+    "paint-booth-2-state-zones.js:1488",
+    "paint-booth-2-state-zones.js:1786",
+    "paint-booth-2-state-zones.js:1204",
+    "paint-booth-2-state-zones.js:4458",
+    "paint-booth-5-api-render.js:3829",
+    "paint-booth-5-api-render.js:3836",
+    "shokker_engine_v2.py:1688",
+    "shokker_engine_v2.py:1697",
+    "shokker_engine_v2.py:18369",
+    "shokker_engine_v2.py:18376",
+    "docs/ai_knowledge/09_field_playbook.md:16",
+    "docs/ai_knowledge/01_how_pro_works.md:9"
+   ],
+   "aliases": [
+    "color tolerance",
+    "colour tolerance",
+    "edges look chewed",
+    "fringe around lettering",
+    "hard edge",
+    "refine color",
+    "tolerance",
+    "zone catches too much",
+    "zone grabs too much",
+    "zone takes too many colours"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "One slider per colour, not per zone",
+     "body": "Each colour chip has its own slider running from Exact on the left to Loose on the right, with a plus or minus number beside it from 0 to 100. The old single slider for the whole zone is gone. New chips start at the zone's setting, which is 40 for most zones. The helper line under the chips explains it: Exact grabs only that colour, Loose also grabs its nearby shades such as shadows, highlights and gradients."
+    },
+    {
+     "heading": "What the number measures",
+     "body": "The number is a distance on a 0 to 255 scale, but colours are not weighed equally: green counts most (0.59), red next (0.30) and blue least (0.11). At plus or minus 40 a pixel can differ from your pick by up to about 52 levels in pure green, 73 in pure red or 121 in pure blue. So a wide blue shift is forgiven long before a green one. At 12 those limits are 16, 22 and 36."
+    },
+    {
+     "heading": "A ramp, not a switch",
+     "body": "A pixel exactly on your colour is caught at full strength, and strength falls in a straight line to zero at the tolerance. Hard Edge, which is on by default in every zone, then turns any pixel with a trace of strength into a fully owned pixel, so the edge is crisp. With Hard Edge off, pixels below about 15 percent strength are softened instead, which blends the zone's edge into its neighbours."
+    },
+    {
+     "heading": "Zero does not mean exact",
+     "body": "A tolerance of 0 is treated as the default of 40 when the picture is built, because an empty value falls back to 40. For a truly tight match use 5. The slider shows what you set, but the render uses 40 at 0, so do not rely on the far left end."
+    },
+    {
+     "heading": "Refine color for what tolerance cannot fix",
+     "body": "Tolerance is about colour only. When two areas share one colour, narrowing the slider will not separate them. Use Refine color, which lets you paint a green brush over the places the colour should apply, or add a layer or area limit."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Lettering with a fringe",
+     "goal": "Catch white sponsor text including its soft edge.",
+     "settings": {
+      "PICK COLOR FROM CAR": "click inside a white letter",
+      "Color Match": "45",
+      "Hard Edge": "on"
+     },
+     "result": "The soft edge pixels fall inside the reach and the lettering gets a clean, fully owned edge."
+    },
+    {
+     "title": "Number fill only",
+     "goal": "Take the dark fill and leave the black outline.",
+     "settings": {
+      "RESTRICT TO LAYERS": "Numbers",
+      "PICK COLOR FROM CAR": "click the dark fill",
+      "Color Match": "12"
+     },
+     "result": "A tight match of 10 to 16 on the numbers layer keeps the outline. Dark fills sit close to black, so wide settings leak into the stroke."
+    },
+    {
+     "title": "Shaded body panel",
+     "goal": "Cover a body colour that darkens at the edges.",
+     "settings": {
+      "PICK COLOR FROM CAR": "click the main body colour, then a shadowed spot",
+      "Color Match": "40 and 40"
+     },
+     "result": "Two chips cover the light and dark parts of the panel. Two medium chips beat one very loose chip, which would also grab neighbouring colours."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.add_pick_colour",
+     "why": "Every new pick creates a chip with its own slider, so picking and tolerance are one workflow."
+    },
+    {
+     "with": "zones.exclude_set_use_region",
+     "why": "Exclude paints away places a loose match caught by mistake."
+    },
+    {
+     "with": "zones.restrict_layers",
+     "why": "A layer limit lets you use a tight match on the right art without bleeding into other art."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What number should I use?",
+     "a": "About 30 to 50 for big flat colours. 10 to 16 for dark fills next to black strokes. Start at the default 40 and adjust while watching the overlay."
+    },
+    {
+     "q": "Is it the same slider for the whole zone?",
+     "a": "No. Each colour chip has its own. A zone with two colours has two sliders."
+    },
+    {
+     "q": "Why does a bright blue grab more than a bright red at the same number?",
+     "a": "Blue differences count least in the match, so a larger blue shift still fits inside the same number."
+    },
+    {
+     "q": "What does Hard Edge do to tolerance?",
+     "a": "Nothing to the reach. It makes the edge crisp: any pixel inside the reach becomes fully owned instead of fading."
+    },
+    {
+     "q": "I set the slider to 0 and the zone still catches a lot.",
+     "a": "Zero falls back to 40 in the render. Use 5 for the tightest real setting."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Sponsor text looks chewed or has coloured fringes",
+     "cause": "The tolerance is too tight for anti-aliased edge pixels.",
+     "fix": "Move that chip toward Loose in steps of about 10 until the fringe is covered, with Hard Edge left on."
+    },
+    {
+     "symptom": "A zone leaks onto the neighbouring colour",
+     "cause": "The tolerance is too loose, or the two colours are close in green.",
+     "fix": "Lower the slider and watch the overlay. Green differences count most, so similar greens need the tightest settings."
+    },
+    {
+     "symptom": "Exact at 0 behaves like 40",
+     "cause": "A zero tolerance is replaced by the default when the picture is built.",
+     "fix": "Use 5 for an almost exact match."
+    }
+   ],
+   "protips": [
+    "Green carries more weight than blue, so two blues that look different may still be inside one tolerance while two close greens may not be.",
+    "Watch the overlay on the canvas while you drag the slider. The edge of the selection moves with it, so you can stop the moment the fringe is covered."
+   ],
+   "screens": [
+    "ui_zone_popout_color"
+   ]
+  },
+  {
+   "id": "zones.regions",
+   "title": "Draw box, lasso and region: limiting a zone to an area",
+   "domain": "zones",
+   "summary": "APPLY AREA limits a zone to a drawn box or lasso shape, on top of its colour or layer choice. Use it for \"only the hood\" or \"only the bottom half\".",
+   "what": "Draw box lets you click and drag a rectangle on the paint; the zone only affects what is inside. Lasso draws a free-hand outline for areas that are not rectangles; close it by returning near the start. Both are on the flat unwrapped sheet, so one box may cover several car panels. Clear removes the area, Activate turns a stored area back on, and Refine color paints a brush mask inside the colour selection. You can also give a zone the selection you made with the Rect, Lasso or Wand tools by pressing Use Region.",
+   "when": [
+    "A colour appears in more than one place and you want only one.",
+    "You want a finish on a single panel."
+   ],
+   "how": [
+    "1. Select the zone and open APPLY AREA.",
+    "2. Press Draw box and drag a rectangle over the area, or press Lasso and trace around it.",
+    "3. Check the overlay on the canvas shows only the area you meant.",
+    "4. Press Clear if you drew it by mistake."
+   ],
+   "controls": [
+    {
+     "label": "APPLY AREA (section)",
+     "range": "see SCHEMA: part names come from get_car_map; band 0-1 fractions (height = roof-line to rocker, length = front to rear); rect/cells only for details under ~12% of the sheet",
+     "default": "none = 'nothing selected yet'",
+     "effect": "Limits the zone to a drawn shape (box or lasso) or a refined colour area, on top of the colour/layer choice.",
+     "inv": "zone.section_apply_area"
+    },
+    {
+     "label": "Draw box",
+     "range": "see SCHEMA: part names come from get_car_map; band 0-1 fractions (height = roof-line to rocker, length = front to rear); rect/cells only for details under ~12% of the sheet",
+     "default": "none = 'nothing selected yet'",
+     "effect": "Click, then drag a rectangle on the paint; the zone only affects what is inside it.",
+     "inv": "zone.draw_box"
+    },
+    {
+     "label": "Lasso (apply area)",
+     "range": "see SCHEMA: part names come from get_car_map; band 0-1 fractions (height = roof-line to rocker, length = front to rear); rect/cells only for details under ~12% of the sheet",
+     "default": "none = 'nothing selected yet'",
+     "effect": "Draw a free-hand outline; the zone only affects what is inside.",
+     "inv": "zone.lasso"
+    },
+    {
+     "label": "Refine color",
+     "range": "",
+     "default": "",
+     "effect": "Keeps the colour selection but lets you paint a green brush to limit it to places you choose.",
+     "inv": "zone.refine_color"
+    },
+    {
+     "label": "Activate (apply area)",
+     "range": "",
+     "default": "",
+     "effect": "Turns the stored apply area on again after you cleared or paused it.",
+     "inv": "zone.activate_area"
+    },
+    {
+     "label": "Clear (apply area)",
+     "range": "",
+     "default": "",
+     "effect": "Removes the drawn box / lasso so the zone is back to colour/layer only.",
+     "inv": "zone.clear_area"
+    },
+    {
+     "label": "Use Region",
+     "range": "",
+     "default": "",
+     "effect": "Use Region: gives the current selection (rect / lasso / brush) to the zone selected on the left.",
+     "inv": "useRegionBtn"
+    }
+   ],
+   "tips": [
+    "Colour plus box means \"that colour, only inside the box\"."
+   ],
+   "pitfalls": [
+    "The hood and roof are separate rectangles on the sheet, not one.",
+    "A zone that seems limited to a stray box needs Clear."
+   ],
+   "related": [
+    "zones.exclude_set_use_region",
+    "zones.named_parts",
+    "tools.select_shapes",
+    "ui_shell.selection_bar"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.draw_box"
+    },
+    {
+     "do": "control",
+     "id": "zone.lasso"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "zone.section_apply_area",
+    "zone.draw_box",
+    "zone.lasso",
+    "zone.refine_color",
+    "zone.activate_area",
+    "zone.clear_area",
+    "useRegionBtn"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:1656",
+    "paint-booth-v2.html:3805",
+    "paint-booth-3-canvas.js:9447",
+    "paint-booth-3-canvas.js:5123",
+    "paint-booth-3-canvas.js:5125",
+    "paint-booth-3-canvas.js:4846",
+    "paint-booth-3-canvas.js:8646",
+    "paint-booth-6-ui-boot.js:3842",
+    "paint-booth-6-ui-boot.js:3842",
+    "paint-booth-6-ui-boot.js:3849",
+    "shokker_engine_v2.py:18193",
+    "shokker_engine_v2.py:18206",
+    "paint-booth-6-ui-boot.js:2834",
+    "paint-booth-2-state-zones.js:4277",
+    "paint-booth-3-canvas.js:9444",
+    "paint-booth-3-canvas.js:34533",
+    "paint-booth-v2.html:2334"
+   ],
+   "aliases": [
+    "apply area",
+    "draw a region",
+    "draw box",
+    "limit a zone to a box",
+    "only the bottom half",
+    "only the hood",
+    "region",
+    "draw a box for a zone",
+    "lasso a zone area"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "A drawn area is an extra filter, not a replacement",
+     "body": "The box or lasso is multiplied with the zone's colour match, so the zone covers only pixels that pass both: the colour, and inside the shape. If the zone has no colour at all, the shape alone is the zone. That makes a box with a colour the easiest way to say red hood, not the red stripe on the side."
+    },
+    {
+     "heading": "Include and Exclude brushes sit on top",
+     "body": "After the shape and the colour, the green Include and red Exclude brushes are applied. Anything painted red is removed. If you painted any green at all, the zone is limited to the green areas only. So one stroke of green can shrink a zone to a small patch, which surprises people who meant to add to it."
+    },
+    {
+     "heading": "Drawing the shapes",
+     "body": "For a box, drag it out. Shift makes a square, Alt grows it from the centre and Esc cancels. For a lasso, drag freehand and let go to close it, or click polygon points and finish with a double-click or Enter. Backspace removes the last point. Clicking near the first point also closes it. A lasso needs at least 3 points or you get a message asking for a wider loop."
+    },
+    {
+     "heading": "Nudge instead of redrawing",
+     "body": "Pick the Move Selection Border tool in the toolbar. Then an arrow key moves the zone's drawn area 1 pixel, and Shift plus an arrow key moves it 10 pixels. You can also drag inside it. Only the border moves; the paint pixels stay where they are. This is how you line up a box edge to a panel edge without starting over."
+    },
+    {
+     "heading": "What copies and what does not",
+     "body": "Duplicating a zone copies its drawn area. Saving a template does not: templates keep finishes, colours, tolerances, pattern, intensity, scale and locks, but not boxes, lassos or layer limits. After loading a template, redraw the areas."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Hood only, same colour as the roof",
+     "goal": "Candy finish on the red hood, nothing on the red roof.",
+     "settings": {
+      "COLOR > PICK COLOR FROM CAR": "click the red",
+      "APPLY AREA > Draw box": "drag a rectangle over the hood island only",
+      "BASE > Base Material": "Candy"
+     },
+     "result": "The finish shows only where red and the box overlap. The roof, also red, is untouched because it sits outside the box."
+    },
+    {
+     "title": "Curved stripe with a lasso",
+     "goal": "Limit a zone to a swooping graphic.",
+     "settings": {
+      "APPLY AREA > Lasso": "click polygon points around the graphic",
+      "Finish drawing": "double-click or press Enter",
+      "Backspace": "remove a wrong point"
+     },
+     "result": "The zone covers only pixels inside the shape. Add a colour pick to restrict it further."
+    },
+    {
+     "title": "Move a box 12 pixels",
+     "goal": "Shift an existing box right by 12.",
+     "settings": {
+      "Toolbar": "Move Selection Border",
+      "Shift+Right": "press once (10 pixels)",
+      "Right": "press twice (2 pixels)"
+     },
+     "result": "The area moves 12 pixels right with no redraw."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.named_parts",
+     "why": "Naming a part gives an exact mask of the panel, which is cleaner than a box when the car is known."
+    },
+    {
+     "with": "zones.exclude_set_use_region",
+     "why": "Use Region hands a selection to a zone, and Exclude trims it afterwards."
+    },
+    {
+     "with": "tools.select_shapes",
+     "why": "The Rect and Lasso tools make the same shapes and Use Region gives them to a zone."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Is a box one rectangle on the car?",
+     "a": "It is one rectangle on the flat sheet. The hood and roof are separate islands, so one box can cover parts of both."
+    },
+    {
+     "q": "How do I remove a box?",
+     "a": "Press Clear in APPLY AREA. Activate turns a stored area back on."
+    },
+    {
+     "q": "Can I save a box in a template?",
+     "a": "No. Templates keep finishes and colours, not drawn areas or layer limits."
+    },
+    {
+     "q": "My lasso did nothing.",
+     "a": "It needs 3 or more points, and a freehand loop must be wide enough. The app tells you which."
+    },
+    {
+     "q": "Does a box cut through the colour or add to it?",
+     "a": "It cuts. Colour and shape both must match, so a box can only make the zone smaller."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The zone covers a stray rectangle you forgot about",
+     "cause": "An old box is still stored on the zone.",
+     "fix": "Open APPLY AREA and press Clear."
+    },
+    {
+     "symptom": "Paint with the green brush and most of the zone vanished",
+     "cause": "Once any green is painted, the zone is limited to green areas only.",
+     "fix": "Undo, or Clear the area and paint Exclude in red for places you want removed instead."
+    },
+    {
+     "symptom": "After loading a template, the hood zone covers the whole car",
+     "cause": "Templates do not store drawn areas, so the box is gone and only the colour rule is left.",
+     "fix": "Open APPLY AREA on that zone and draw the box again, or tie it to a layer."
+    }
+   ],
+   "protips": [
+    "Combine a box with a colour for precision: red plus the hood box catches only the hood's red.",
+    "Use the Move Selection Border tool, not undo and redraw, to line an edge up to a panel edge. One arrow press is exactly 1 pixel on the 2048 sheet."
+   ],
+   "screens": [
+    "ui_chat_car_parts",
+    "ui_zone_apply_area"
+   ]
+  },
+  {
+   "id": "zones.exclude_set_use_region",
+   "title": "Exclude, Set and Use Region",
+   "domain": "zones",
+   "summary": "Exclude, Set and Use Region are the Color tool's buttons for fine-tuning what a zone catches.",
+   "what": "With the Color tool active, a small bar appears. + Add Color adds the clicked colour to the chosen zone. Set replaces the zone's colour with just this one colour. Exclude removes areas from the zone's colour match, shown red on the canvas. Use Region gives the zone the shape you just selected (box, lasso or brush) instead of a colour. On the selection bar, Include paints areas to keep (green) and Exclude paints areas to remove (red).",
+   "when": [
+    "A zone catches a spot you do not want.",
+    "You want to select by shape instead of by colour."
+   ],
+   "how": [
+    "1. Pick the Color tool (P) and choose the zone from the dropdown in its bar.",
+    "2. Click + Add Color to add a shade, or Set to start over with one colour.",
+    "3. Press Exclude, then paint over the places to remove.",
+    "4. Or make a selection with Rect or Lasso and press Use Region."
+   ],
+   "controls": [
+    {
+     "label": "Choose zone to assign picked color",
+     "range": "",
+     "default": "",
+     "effect": "Choose which zone to add this color to",
+     "inv": "eyedropperZoneSelect"
+    },
+    {
+     "label": "+ Add Color",
+     "range": "",
+     "default": "",
+     "effect": "+ Add Color: adds the clicked colour to the chosen zone.",
+     "inv": "eyedropperAddColorBtn"
+    },
+    {
+     "label": "Set",
+     "range": "",
+     "default": "",
+     "effect": "Set: replaces the zone's colour with this single colour.",
+     "inv": "eyedropperSetBtn"
+    },
+    {
+     "label": "Exclude",
+     "range": "",
+     "default": "",
+     "effect": "paint areas on the car to REMOVE from this zone's color match (red overlay)",
+     "inv": "eyedropperExcludeBtn"
+    },
+    {
+     "label": "Use Region",
+     "range": "",
+     "default": "",
+     "effect": "Use Region: gives the current selection (rect / lasso / brush) to the zone selected on the left.",
+     "inv": "useRegionBtn"
+    },
+    {
+     "label": "Excl",
+     "range": "",
+     "default": "",
+     "effect": "paint areas on the car to REMOVE from this zone's color match (red overlay)",
+     "inv": "vtModeSpatialExcludeTop"
+    },
+    {
+     "label": "Include",
+     "range": "",
+     "default": "",
+     "effect": "paint areas to KEEP in zone's color match (green overlay)",
+     "inv": "pro.selection_bar.include"
+    },
+    {
+     "label": "Exclude",
+     "range": "",
+     "default": "",
+     "effect": "paint areas to REMOVE from zone's color match (red overlay)",
+     "inv": "pro.selection_bar.exclude"
+    }
+   ],
+   "tips": [
+    "Red on the canvas means removed, green means kept."
+   ],
+   "pitfalls": [
+    "Set replaces the zone's colours. Use + Add Color to keep the old ones."
+   ],
+   "related": [
+    "zones.add_pick_colour",
+    "zones.regions",
+    "tools.eyedropper_pick",
+    "ui_shell.selection_bar"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "eyedropperAddColorBtn"
+    },
+    {
+     "do": "control",
+     "id": "eyedropperSetBtn"
+    },
+    {
+     "do": "control",
+     "id": "eyedropperExcludeBtn"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "eyedropperZoneSelect",
+    "eyedropperAddColorBtn",
+    "eyedropperSetBtn",
+    "eyedropperExcludeBtn",
+    "useRegionBtn",
+    "vtModeSpatialExcludeTop",
+    "pro.selection_bar.include",
+    "pro.selection_bar.exclude"
+   ],
+   "sources": [
+    "paint-booth-v2.html:3783",
+    "paint-booth-2-state-zones.js:18000",
+    "paint-booth-3-canvas.js:9248",
+    "paint-booth-v2.html:3789",
+    "paint-booth-3-canvas.js:9385",
+    "paint-booth-v2.html:3799",
+    "paint-booth-3-canvas.js:9362",
+    "paint-booth-v2.html:3795",
+    "paint-booth-3-canvas.js:9445",
+    "paint-booth-3-canvas.js:9452",
+    "paint-booth-3-canvas.js:9435",
+    "shokker_engine_v2.py:18206",
+    "shokker_engine_v2.py:18330",
+    "paint-booth-2-state-zones.js:4479"
+   ],
+   "aliases": [
+    "exclude",
+    "remove an area from a zone",
+    "set colour"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Four buttons, four different jobs",
+     "body": "+ Add Color stacks the colour you last clicked into the chosen zone as one more chip. Set throws away every chip and makes that one colour the zone's only colour. Exclude switches to a red brush that removes places from the colour match. Use Region gives the zone your current Rect, Lasso, Brush or Wand selection with no colour needed. The small zone box beside them chooses which zone receives the colour."
+    },
+    {
+     "heading": "Exclude removes, Include limits",
+     "body": "Red from Exclude is subtracted from the zone. Green from Include works the other way: once any green exists, the zone is limited to the green. The two brushes are applied after the colour and any drawn shape, so they refine without replacing anything. Both are saved with the zone and are copied when you duplicate it."
+    },
+    {
+     "heading": "What Set really does",
+     "body": "Set puts the zone into single-colour mode using the zone's own tolerance, usually 40, and clears the stack. The toast says set to the hex code (single color). In single-colour mode the zone may not show its own Color Match slider. If you miss it, click the same colour and press + Add Color: the app answers that the colour is ready and the Color Match controls are restored."
+    },
+    {
+     "heading": "Use Region and its fallbacks",
+     "body": "Use Region sends the selection to the zone selected on the left. If that zone has no selection yet, it uses the first zone that has one. If no zone has a selection, it tells you to draw a region first with Rect, Lasso, Brush or Wand. On success the toast reports how many pixels and what percent of the sheet the region covers."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Keep a logo out of a red zone",
+     "goal": "The red body zone is also catching red in a sponsor logo.",
+     "settings": {
+      "Toolbar": "Color tool (P)",
+      "Zone box": "the body zone",
+      "Exclude": "press, then paint over the logo",
+      "Overlay": "red marks removed places"
+     },
+     "result": "The logo stays with its own zone or Everything Else. The body zone keeps the rest of the red."
+    },
+    {
+     "title": "Start over with one colour",
+     "goal": "Throw away all stacked shades and use a single new colour.",
+     "settings": {
+      "Color tool (P)": "click the new colour on the paint",
+      "Zone box": "choose the zone",
+      "Set": "press"
+     },
+     "result": "The zone has only that colour. Earlier chips are gone."
+    },
+    {
+     "title": "Zone from a drawn shape with no colour",
+     "goal": "Give a freehand patch its own finish.",
+     "settings": {
+      "Rect or Lasso tool": "draw the patch",
+      "Selected zone on the left": "the zone to receive it",
+      "Use Region": "press"
+     },
+     "result": "The toast shows the pixel count and percent. Now choose a Base Material for the zone."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.add_pick_colour",
+     "why": "+ Add Color from the Color tool does the same stacking as PICK COLOR FROM CAR."
+    },
+    {
+     "with": "zones.regions",
+     "why": "Use Region and the drawn box share one stored area on the zone."
+    },
+    {
+     "with": "tools.refine_selection",
+     "why": "Refine tools shape a selection before you hand it over with Use Region."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What is the difference between Set and + Add Color?",
+     "a": "Set replaces everything with one colour. + Add Color keeps the old colours and adds one more."
+    },
+    {
+     "q": "Red or green on the canvas, which is which?",
+     "a": "Red is removed from the zone. Green is kept. The selection bar buttons Include and Exclude paint those."
+    },
+    {
+     "q": "Does Use Region need a colour?",
+     "a": "No. A zone can be only a region."
+    },
+    {
+     "q": "Can I undo an Exclude stroke?",
+     "a": "Yes, with Ctrl+Z. Set and Use Region are undoable too."
+    },
+    {
+     "q": "Why does Use Region say draw a region first?",
+     "a": "No zone has a stored selection yet. Draw one with Rect, Lasso, Brush or Wand, then press it again."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Pressing Set wiped a carefully built colour list",
+     "cause": "Set replaces the stack with one colour by design.",
+     "fix": "Undo with Ctrl+Z, and use + Add Color to add shades without losing the old ones."
+    },
+    {
+     "symptom": "One stroke of green shrank the zone to a patch",
+     "cause": "Include limits the zone to the green areas once any exist.",
+     "fix": "Undo, or use Exclude to remove places instead of Include."
+    },
+    {
+     "symptom": "Use Region applied to the wrong zone",
+     "cause": "The zone highlighted on the left was not the one you meant.",
+     "fix": "Undo, click the right zone card, and press Use Region again."
+    }
+   ],
+   "protips": [
+    "The toast after Use Region tells you how many pixels and what percent of the sheet you gave the zone. A tiny percent means a tiny shape.",
+    "Use Region needs no colour, so a hand-drawn patch can carry its own finish without any colour match at all."
+   ],
+   "screens": [
+    "ui_menu_mask",
+    "ui_render_bar"
+   ]
+  },
+  {
+   "id": "zones.restrict_layers",
+   "title": "Restricting a zone to layers",
+   "domain": "zones",
+   "summary": "RESTRICT TO LAYERS makes a zone cover only the pixels on the layers you tick. It is the exact way to aim at numbers, sponsors or tape.",
+   "what": "With a layered PSD template, tick a layer such as Car Paint, Sponsors, Numbers or Tape and the zone covers only the pixels that show on that layer. There is no colour bleed. A zone restricted to a layer owns the pixels where that layer is really what you see: at least half opaque and not covered by artwork above it. Art above belongs to its own zone, or to Everything Else. Unticking everything (All layers) removes the restriction. MAKE ZONE on a layer card makes a zone restricted to that layer in one click, and Lock Zone (Ctrl+L) restricts the zone you already have.",
+   "when": [
+    "\"Make the numbers chrome.\"",
+    "You want the body finish without touching sponsors."
+   ],
+   "how": [
+    "1. Load a layered template (PSD/XCF/ORA).",
+    "2. Select the zone, open COLOR and tick the layer under RESTRICT TO LAYERS.",
+    "3. Or click MAKE ZONE on the layer card.",
+    "4. Give the zone a finish in BASE."
+   ],
+   "controls": [
+    {
+     "label": "RESTRICT TO LAYERS (checkboxes per PSD layer)",
+     "range": "see SCHEMA: part names come from get_car_map; band 0-1 fractions (height = roof-line to rocker, length = front to rear); rect/cells only for details under ~12% of the sheet",
+     "default": "none = 'nothing selected yet'",
+     "effect": "Tick a layer (Car Paint, Sponsors, Numbers, Tape ...) and the zone only covers pixels that exist on that layer.",
+     "inv": "zone.restrict_layers"
+    },
+    {
+     "label": "Create a zone restricted to this layer",
+     "range": "",
+     "default": "",
+     "effect": "One click makes a zone that only covers this layer's pixels; then give it a finish.",
+     "inv": "layer.make_zone"
+    },
+    {
+     "label": "Lock the active zone to this layer (Ctrl+L)",
+     "range": "",
+     "default": "",
+     "effect": "Restricts the currently selected zone to this layer.",
+     "inv": "layer.lock_zone"
+    }
+   ],
+   "tips": [
+    "To change just the body, restrict the zone to the body layer so numbers and sponsors stay as they are."
+   ],
+   "pitfalls": [
+    "Do not restrict to Mask, Wire or Car_Mandatory template layers.",
+    "A zone restricted to a missing layer will not render. Rebind it to a layer that exists or clear the restriction."
+   ],
+   "related": [
+    "layers.lock_zone_to_layer",
+    "layers.roles",
+    "zones.how_pixels_picked",
+    "zones.priority"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.restrict_layers"
+    },
+    {
+     "do": "control",
+     "id": "layer.make_zone"
+    }
+   ],
+   "figures": [
+    "g06_zone_selectors"
+   ],
+   "covers": [
+    "zone.restrict_layers",
+    "layer.make_zone",
+    "layer.lock_zone"
+   ],
+   "sources": [
+    "docs/ZONE_OWNERSHIP.md:29",
+    "js/zones/workflow-controls.js:82",
+    "paint-booth-2-state-zones.js:1656",
+    "paint-booth-3-canvas.js:23329",
+    "docs/ZONE_OWNERSHIP.md:54",
+    "docs/ZONE_OWNERSHIP.md:63",
+    "docs/ZONE_OWNERSHIP.md:70",
+    "docs/ZONE_OWNERSHIP.md:91",
+    "paint-booth-3-canvas.js:22873",
+    "paint-booth-3-canvas.js:22885",
+    "paint-booth-3-canvas.js:22891",
+    "paint-booth-3-canvas.js:22421",
+    "paint-booth-3-canvas.js:23690",
+    "js/zones/workflow-controls.js:69",
+    "paint-booth-v2.html:5259"
+   ],
+   "aliases": [
+    "make zone from layer",
+    "only the body paint",
+    "only the numbers",
+    "only the sponsors",
+    "restrict to layers",
+    "zone bound to layer",
+    "zone on a layer",
+    "zone to layers",
+    "restrict zone"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "What owning a pixel means",
+     "body": "A zone tied to a layer owns a pixel only when that layer is really what you see there: the layer is at least 50 percent opaque after its own opacity, and the artwork above it is less than 50 percent opaque. There is no halfway. Each pixel belongs to exactly one winner, so you never get halos, outlines or half-painted edges around logos."
+    },
+    {
+     "heading": "Layer opacity counts",
+     "body": "A fully solid pixel on a layer set to 40 percent opacity counts as only about 40 percent opaque and does not own the pixel. At 50 percent it does. The same goes for clipping and for visible effects such as a stroke or glow. If a layer looks faint on the car, a zone tied to it may own nothing."
+    },
+    {
+     "heading": "Art on top keeps its own zone",
+     "body": "If a number sits on the body layer, the body zone does not paint under the number. The number's pixels go to the zone tied to the Numbers layer, or to Everything Else if there is none. This is how a body-only finish leaves sponsors and numbers exactly as drawn."
+    },
+    {
+     "heading": "Mask, Wire and hidden layers",
+     "body": "Template helper layers named Mask or Wire are ignored completely. Car Mandatory is real art and is not ignored. If a zone is tied to a hidden layer, or to several layers that are all hidden, it paints nothing and shows a one-time message saying why, rather than painting over the wrong thing. Tie a zone to several layers and the result is the union of them."
+    },
+    {
+     "heading": "MAKE ZONE and Lock Zone",
+     "body": "MAKE ZONE on a layer card creates a zone named after the layer plus the word zone, tied to that layer, with Hard Edge on. It is added at the bottom of the list and selected, and a message asks you to pick a Base Material. Lock Zone (Ctrl+L) ties the zone you already have to the active layer instead."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Body finish, numbers and sponsors untouched",
+     "goal": "A pearl body that leaves every decal exactly as drawn.",
+     "settings": {
+      "Layer card of the body layer": "MAKE ZONE",
+      "New zone > Base Material": "Pearl",
+      "New zone > Base Color": "Use source paint (spec only)"
+     },
+     "result": "Only pixels where the body layer is visible get the pearl shine. Numbers and sponsors keep their own look."
+    },
+    {
+     "title": "Chrome numbers by layer",
+     "goal": "Mirror-chrome the numbers, nothing else.",
+     "settings": {
+      "Layer card Numbers": "MAKE ZONE",
+      "New zone > Base Material": "Chrome",
+      "New zone > Base Color": "Use finish's own color"
+     },
+     "result": "All visible number pixels become chrome. No colour matching is involved, so nothing else is caught."
+    },
+    {
+     "title": "Satin tape, gloss body",
+     "goal": "Two layers, two looks.",
+     "settings": {
+      "Zone A": "MAKE ZONE on Tape, Base Material Satin",
+      "Zone B": "MAKE ZONE on the body layer, Base Material Gloss",
+      "Everything Else": "stays at the bottom"
+     },
+     "result": "Tape gets satin, the body gets gloss, and anything else is picked up by Everything Else."
+    }
+   ],
+   "combos": [
+    {
+     "with": "layers.lock_zone_to_layer",
+     "why": "Lock Zone is the same restriction applied to a zone you already built."
+    },
+    {
+     "with": "zones.everything_else",
+     "why": "Art with no zone of its own falls to the catch-all."
+    },
+    {
+     "with": "layers.wire_mask_mandatory",
+     "why": "Mask and Wire are ignored by zones, but Car Mandatory is real art that can own pixels."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does a layer zone paint under my decals?",
+     "a": "No. It owns only the pixels where its layer is what you see. Decals on top belong to their own zone or to Everything Else."
+    },
+    {
+     "q": "What if my art has soft edges?",
+     "a": "Edge pixels split at the halfway line. Where the art is more than half solid it owns the pixel, otherwise the layer below does."
+    },
+    {
+     "q": "Why does my layer zone paint nothing?",
+     "a": "Its layer is hidden, was deleted, or sits below 50 percent opacity. A deleted layer shows a red dot on the card and a hidden one gives a one-time message."
+    },
+    {
+     "q": "Can I tick more than one layer?",
+     "a": "Yes. The zone owns the union of what each ticked layer owns."
+    },
+    {
+     "q": "Can I combine a layer with a colour?",
+     "a": "Yes. The colour is matched on that layer's own pixels, which is exact for art."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A body zone repaints the grill and headlights",
+     "cause": "Car Mandatory holds real artwork. While it is hidden it covers nothing, so the body layer below owns those pixels again.",
+     "fix": "Keep Car Mandatory visible while you work and give it its own zone or leave it to Everything Else."
+    },
+    {
+     "symptom": "Zone shows a red dot and renders nothing",
+     "cause": "It is tied to a layer that no longer exists or is hidden.",
+     "fix": "Show the layer, rebind the zone to a layer that exists, or clear the restriction."
+    },
+    {
+     "symptom": "A pale sponsor layer owns nothing",
+     "cause": "The layer opacity is under 50 percent, so it never reaches the ownership line.",
+     "fix": "Raise the layer opacity to at least 50 percent, or give that art a colour match instead."
+    }
+   ],
+   "protips": [
+    "Eyedropping a colour that lives on a layer the zone is not tied to makes the app warn you and name the layer that owns it.",
+    "Build body, trim and number zones from layer cards with MAKE ZONE first. It is faster and more exact than colour picking, and nothing bleeds."
+   ],
+   "screens": [
+    "ui_zone_popout_color"
+   ]
+  },
+  {
+   "id": "zones.named_parts",
+   "title": "Named car parts: left side, hood, roof and more",
+   "domain": "zones",
+   "summary": "Shokker knows the named parts of many cars, so Chat and the AI copilot can aim a zone at \"the hood\" or \"the rear half of the left side\".",
+   "what": "The paint is the car cut open and laid flat, so each part is a separate island on the sheet. Shokker knows part names such as left side, right side, hood, roof, trunk, bed, front bumper, rear bumper, spoiler, windshield and rear window, with everyday synonyms like driver side, bonnet or nose. For many cars the layout comes from a built-in car library. For a car it does not know, it asks once: tap a panel or drag a box around each part, and it remembers that layout. A part can be narrowed to a portion, for example the rear half, or to a band, for example a stripe from the roof-line down. In plain Pro you aim a zone with a colour, layer, box or lasso instead.",
+   "when": [
+    "You say \"make the hood matte\" in Chat.",
+    "Shokker asks you to show it the parts of your car."
+   ],
+   "how": [
+    "1. In CHAT (or the AI copilot panel) say what you want on which part, for example \"carbon fibre on the roof\".",
+    "2. If it asks, tap the panel it names on the canvas once, or drag a box around it.",
+    "3. Check the preview. The name is remembered for this car."
+   ],
+   "controls": [],
+   "tips": [
+    "Parts names also work as \"driver side\" for left and \"passenger side\" for right."
+   ],
+   "pitfalls": [
+    "Parts are not guessed from a picture. If the car is unknown, you will be asked.",
+    "Left and right are about the car, not the flat sheet. One side may sit upside down on the sheet."
+   ],
+   "related": [
+    "zones.how_pixels_picked",
+    "zones.regions",
+    "ui_shell.mode_pill"
+   ],
+   "actions": [],
+   "figures": [
+    "g08_uv_sheet_parts"
+   ],
+   "covers": [
+    "zones.parts",
+    "doc.06.the_car_s_panels_uv_islands"
+   ],
+   "sources": [
+    "js/spb-pro-carmap.js:299",
+    "js/spb-pro-carmap.js:8",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:7",
+    "js/spb-pro-carmap.js:699",
+    "js/spb-car-atlas-data.js:2",
+    "docs/ai_knowledge/09_field_playbook.md:10"
+   ],
+   "aliases": [
+    "bumper",
+    "car map",
+    "driver side",
+    "hood",
+    "left side",
+    "named parts",
+    "parts of the car",
+    "passenger side",
+    "right side",
+    "roof",
+    "spoiler",
+    "trunk",
+    "paint the hood only",
+    "paint the roof only",
+    "bumper only",
+    "car parts"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Where the names come from",
+     "body": "Names come from two places, never from guessing at your picture. First is a built-in library of 38 hand-checked car layouts, matched by the shape of the paintable area or by your iRacing car folder. Second is what you teach: tap a panel or drag a box around it once, and Shokker remembers that layout. In a test of five vision models on flat sheets, the best got 9 of 22 boxes right, which is why names are never guessed."
+    },
+    {
+     "heading": "The names it knows",
+     "body": "Left side, right side, hood, roof, trunk, bed, front bumper, rear bumper, spoiler, windshield and rear window. Everyday words map onto them: driver side means left side, passenger side means right side, bonnet means hood, nose or front fascia means front bumper, tail means rear bumper, wing means spoiler, deck lid means trunk, truck bed means bed."
+    },
+    {
+     "heading": "Parts, portions and bands",
+     "body": "A part can be narrowed to a portion, such as the rear half of the left side. Or to a band measured across the part: height runs from 0 at the roof-line down to 1 at the rocker, length runs from 0 at the front to 1 at the rear. A stripe from 55 to 80 percent of the way down is a lower-door stripe, and length 0 to 0.3 is the front 30 percent. Several parts can be used at once, such as both sides."
+    },
+    {
+     "heading": "Why left and right are about the car",
+     "body": "On the flat sheet one side is often upside down. In the built-in layout for the NASCAR Gen 6 Camaro, the left side has its roof-line at the top of its island and the right side has it at the bottom. So the lower part of the door is the bottom on one island and the top on the other. Saying lower on both sides works only because Shokker knows each island's direction."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Carbon on the roof",
+     "goal": "Put carbon fibre only on the roof.",
+     "settings": {
+      "CHAT": "carbon fibre on the roof",
+      "If asked": "tap the roof panel once on the canvas",
+      "Then": "check LIVE PREVIEW"
+     },
+     "result": "A zone limited to the roof island is made. The name is remembered for this car."
+    },
+    {
+     "title": "Lower-door stripe on both sides",
+     "goal": "A stripe low on both doors, ignoring which sheet side is flipped.",
+     "settings": {
+      "CHAT": "a red stripe low on both sides, from the roof-line 55% to 80% down",
+      "Parts": "left side and right side"
+     },
+     "result": "Each side gets the same stripe measured from its own roof-line, so they match on the car."
+    },
+    {
+     "title": "Rear half of a side",
+     "goal": "Satin only on the back half of the driver side.",
+     "settings": {
+      "CHAT": "satin on the rear half of the driver side"
+     },
+     "result": "A zone covers the left side's rear half, front and rear decided from the taught or built-in direction."
+    }
+   ],
+   "combos": [
+    {
+     "with": "cars.teach_parts",
+     "why": "Teaching parts is how an unknown car gets names. It is asked once per layout."
+    },
+    {
+     "with": "zones.regions",
+     "why": "In plain Pro you draw the same areas with a box or lasso. Named parts are the exact version for Chat."
+    },
+    {
+     "with": "ai_copilot.car_learning",
+     "why": "The car library and your teaching feed the same memory that Chat and the AI copilot use."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which cars have built-in part names?",
+     "a": "38 layouts are built in, including NASCAR Cup, ARCA, trucks, late models and street stocks. Others are learned from you once."
+    },
+    {
+     "q": "Can it find the hood by looking at my paint?",
+     "a": "No. It never guesses from the picture. If your car is not in the library it asks you to tap each panel once."
+    },
+    {
+     "q": "Does the name stay after I close Shokker?",
+     "a": "Yes. The taught layout is remembered for that car's layout."
+    },
+    {
+     "q": "Is the left side the left of the sheet?",
+     "a": "No. Left and right mean the car's left and right. One of them may be upside down on the sheet."
+    },
+    {
+     "q": "What if I name something not on the list?",
+     "a": "Unknown parts are not guessed. The helper asks you to show it, and boxes over about 12 percent of the sheet are refused."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The stripe landed at the top of one side and the bottom of the other",
+     "cause": "A box was drawn on the flat sheet, and one side is upside down there.",
+     "fix": "Use named parts and a band from the roof-line, so each side is measured from its own roof-line."
+    },
+    {
+     "symptom": "Chat keeps asking you to tap panels",
+     "cause": "Your car is not in the library and no layout was taught for it.",
+     "fix": "Tap each named panel once. The layout is remembered after that."
+    },
+    {
+     "symptom": "A named zone covers the wrong panel",
+     "cause": "The wrong panel was tapped when teaching.",
+     "fix": "Teach that part again by tapping the correct panel."
+    }
+   ],
+   "protips": [
+    "Say both sides at once. The same band is measured from each side's own roof-line, which is exactly what a flipped sheet needs.",
+    "Driver side, passenger side, bonnet and nose all work as everyday names, so you do not have to learn the official ones."
+   ],
+   "screens": [
+    "ui_chat_car_parts"
+   ]
+  },
+  {
+   "id": "zones.popout_panel",
+   "title": "The zone popout panel",
+   "domain": "zones",
+   "summary": "The ZONE POPOUT PANEL is where one zone is edited. It floats beside the canvas and opens when you click a zone card.",
+   "what": "The panel has sections: COLOR (which pixels the zone owns), APPLY AREA (box or lasso), BASE (finish, colour source, strengths, scale, rotation and spec sliders), SPEC OVERLAYS, PATTERN and OVERLAYS (second to fifth base). A tab on the left of the canvas shows or hides the panel, and so does Shift+E. Reset Zone at the top returns that one zone to defaults.",
+   "when": [
+    "You need to change a zone's colour, area or finish.",
+    "The zone controls vanished or are in the way."
+   ],
+   "how": [
+    "1. Click a zone card in the ZONES column. The panel opens.",
+    "2. Work down through COLOR, APPLY AREA and BASE.",
+    "3. To hide the panel, click the zone editor tab or press Shift+E. Press again to bring it back."
+   ],
+   "controls": [
+    {
+     "label": "Zone editor tab (E)",
+     "range": "",
+     "default": "",
+     "effect": "Shows or hides the floating zone popout panel. The key is Shift+E.",
+     "inv": "zoneFloatExpandTab"
+    },
+    {
+     "label": "Reset Zone",
+     "range": "",
+     "default": "",
+     "effect": "Puts this one zone back to its defaults (finish, colour, patterns, sliders).",
+     "inv": "zone.reset"
+    },
+    {
+     "label": "COLOR (section)",
+     "range": "see SCHEMA: part names come from get_car_map; band 0-1 fractions (height = roof-line to rocker, length = front to rear); rect/cells only for details under ~12% of the sheet",
+     "default": "none = 'nothing selected yet'",
+     "effect": "Decides WHICH PIXELS of the paint this zone owns: by clicked colour, by PSD layer, or as catch-all (Remaining).",
+     "inv": "zone.section_color"
+    },
+    {
+     "label": "APPLY AREA (section)",
+     "range": "see SCHEMA: part names come from get_car_map; band 0-1 fractions (height = roof-line to rocker, length = front to rear); rect/cells only for details under ~12% of the sheet",
+     "default": "none = 'nothing selected yet'",
+     "effect": "Limits the zone to a drawn shape (box or lasso) or a refined colour area, on top of the colour/layer choice.",
+     "inv": "zone.section_apply_area"
+    },
+    {
+     "label": "BASE (section)",
+     "range": "",
+     "default": "",
+     "effect": "Everything about the surface look: finish, colour source, hue / saturation / brightness, strengths, scale, rotation, spec sliders.",
+     "inv": "zone.section_base"
+    },
+    {
+     "label": "Base Material (finish picker button)",
+     "range": "",
+     "default": "",
+     "effect": "Opens the finish picker popup: bases (gloss, matte, satin, chrome, candy, pearl, metallic ...) and special looks. Shows the current finish name.",
+     "inv": "zone.base_material"
+    },
+    {
+     "label": "Collapse arrow (left column)",
+     "range": "",
+     "default": "",
+     "effect": "Collapses or expands the ZONES column.",
+     "inv": "leftCollapseBtn"
+    }
+   ],
+   "tips": [
+    "Collapse the left column too if you need the widest possible canvas."
+   ],
+   "pitfalls": [
+    "The editor tab and Shift+E only toggle the panel. They do not change the zone."
+   ],
+   "related": [
+    "zones.what_is_a_zone",
+    "zones.card_controls",
+    "ui_shell.window_tour"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zoneFloatExpandTab"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "zoneFloatExpandTab",
+    "zone.reset",
+    "zone.section_color",
+    "zone.section_apply_area",
+    "zone.section_base",
+    "zone.base_material",
+    "leftCollapseBtn"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:3048",
+    "paint-booth-6-ui-boot.js:3825",
+    "paint-booth-2-state-zones.js:1656",
+    "paint-booth-3-canvas.js:30365",
+    "paint-booth-2-state-zones.js:1636",
+    "paint-booth-2-state-zones.js:1737",
+    "paint-booth-2-state-zones.js:1842",
+    "paint-booth-2-state-zones.js:1953",
+    "paint-booth-2-state-zones.js:2259",
+    "paint-booth-2-state-zones.js:2472",
+    "paint-booth-2-state-zones.js:3054",
+    "paint-booth-6-ui-boot.js:3824",
+    "paint-booth-v2.html:2766",
+    "paint-booth-2-state-zones.js:373",
+    "paint-booth-2-state-zones.js:1821"
+   ],
+   "aliases": [
+    "floating panel",
+    "where are the zone controls",
+    "zone controls vanished",
+    "zone editor",
+    "zone panel",
+    "zone popout"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The panel grows as you work",
+     "body": "With a brand-new zone the panel is short: COLOR, APPLY AREA and the Base Material button. The Hue Shift, Saturation, Brightness, Base Strength and Spec Strength sliders, the R Metal, G Rough and B Coat shifts, and the spec overlay stack only appear after you choose a Base Material or a finish. If a slider you expect is missing, pick a finish first."
+    },
+    {
+     "heading": "What each section is for",
+     "body": "COLOR decides which pixels the zone owns. The RESTRICT TO LAYERS box appears at the top of COLOR only when a layered template is loaded. APPLY AREA limits it to a drawn shape. BASE holds the finish, Base Color, strengths and fine tuning. PATTERN adds a pattern on top with its own opacity, strength, scale and rotation. OVERLAYS is a stack of up to five base finishes blended over each other. Click a section header to fold it away."
+    },
+    {
+     "heading": "Showing and hiding the panel",
+     "body": "The panel floats beside the canvas and opens on a zone click. Click the small zone editor tab on the left edge of the canvas to hide it, and again to bring it back. Shift+E does the same, but only while the panel is open. The tab tooltip says E, but a bare E is the eraser tool, so use Shift+E."
+    },
+    {
+     "heading": "Edits are live and undoable",
+     "body": "Sliders update LIVE PREVIEW as you drag. Zone undo keeps the last 15 steps, with a dragged slider counted as one step. Reset Zone at the top returns just this zone to factory settings, and nothing else changes."
+    }
+   ],
+   "examples": [
+    {
+     "title": "A clean top-to-bottom zone build",
+     "goal": "Set up a zone without hunting for controls.",
+     "settings": {
+      "1 COLOR": "PICK COLOR FROM CAR on the target",
+      "2 APPLY AREA": "leave empty, or Draw box",
+      "3 BASE > Base Material": "pick a finish",
+      "4 BASE sliders": "now visible: tune Brightness and Base Strength",
+      "5 PATTERN": "optional"
+     },
+     "result": "Controls appear in the order you need them, and each step shows in LIVE PREVIEW."
+    },
+    {
+     "title": "Widest possible canvas",
+     "goal": "See as much of the car as possible while judging a finish.",
+     "settings": {
+      "Collapse arrow (left column)": "click to collapse ZONES",
+      "Shift+E": "press to hide the popout panel"
+     },
+     "result": "The canvas has the full width. Press Shift+E again to bring the panel back."
+    },
+    {
+     "title": "Start one zone over",
+     "goal": "Throw away experiments on one zone only.",
+     "settings": {
+      "Reset Zone": "press at the top of the panel"
+     },
+     "result": "Finish, colours, patterns and sliders of that zone go back to defaults. Other zones are untouched."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.card_controls",
+     "why": "The cards do quick actions like mute and duplicate; the panel does the detailed editing."
+    },
+    {
+     "with": "zones.how_pixels_picked",
+     "why": "COLOR and APPLY AREA inside the panel are where every pixel rule lives."
+    },
+    {
+     "with": "finishes.base_colour_tuning",
+     "why": "The Hue Shift, Saturation and Brightness sliders in BASE are explained there."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Where did my sliders go?",
+     "a": "They appear only after a Base Material or finish is chosen for the zone. Pick one in BASE."
+    },
+    {
+     "q": "How do I hide the panel?",
+     "a": "Click the zone editor tab on the left of the canvas, or press Shift+E while the panel is open."
+    },
+    {
+     "q": "Does hiding the panel change the zone?",
+     "a": "No. It only hides or shows the panel."
+    },
+    {
+     "q": "What does Reset Zone reset?",
+     "a": "Only the open zone: its finish, colours, patterns and sliders. Reset All Zones in the left column resets every zone."
+    },
+    {
+     "q": "Why is there no RESTRICT TO LAYERS box?",
+     "a": "It only shows when a layered template such as a PSD is loaded."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Pressing E does not open the panel",
+     "cause": "A bare E is the eraser tool. The shortcut is Shift+E.",
+     "fix": "Use Shift+E, or click the zone editor tab on the left of the canvas."
+    },
+    {
+     "symptom": "The panel is open but you cannot find Brightness",
+     "cause": "The zone has no Base Material yet, so the BASE sliders are not built.",
+     "fix": "Press Base Material and choose a finish."
+    },
+    {
+     "symptom": "Shift+E does nothing",
+     "cause": "The panel has never been opened, because the shortcut only works while the panel is open.",
+     "fix": "Click a zone card first, then press Shift+E."
+    }
+   ],
+   "protips": [
+    "Fold sections you are finished with by clicking their header. A long panel gets short again.",
+    "A messy zone does not need Reset All Zones: open that zone and press Reset Zone at the top of its panel. Every other zone keeps its settings."
+   ],
+   "screens": [
+    "flow_step2_zone_added",
+    "pair_base_strength",
+    "ui_zone_apply_area",
+    "ui_zone_base_material",
+    "ui_zone_popout_color",
+    "ui_zone_sections_overview"
+   ]
+  },
+  {
+   "id": "zones.presets_templates",
+   "title": "Zone presets and templates",
+   "domain": "zones",
+   "summary": "Presets give you a ready-made zone layout, and templates save your own layout so you can reuse it on another paint.",
+   "what": "Presets Gallery (Zones > More) shows ready-made layouts; click one to load it. Each swatch shows the zone finishes. Save as Template stores your current zone layout under a name you choose, up to 60 characters; Load Template brings it back on another paint, and Shift+T opens the template library.",
+   "when": [
+    "You want a quick starting look.",
+    "You have a layout you will use on several cars.",
+    "You want the same zone layout on several cars of a team."
+   ],
+   "how": [
+    "1. Open More above the zone list and press Presets Gallery. Click a preset.",
+    "2. To save your own, press Save as Template, type a name and press Save.",
+    "3. To reuse it, pick it from the Load Template dropdown on the new paint."
+   ],
+   "controls": [
+    {
+     "label": "Presets Gallery",
+     "range": "",
+     "default": "",
+     "effect": "Browse ready-made zone layouts / looks and apply one.",
+     "inv": "pro.zones_more.presets_gallery"
+    },
+    {
+     "label": "Save as Template",
+     "range": "",
+     "default": "",
+     "effect": "Saves the current zone layout as a named template.",
+     "inv": "pro.zones_more.save_as_template"
+    },
+    {
+     "label": "Load Template... dropdown",
+     "range": "",
+     "default": "",
+     "effect": "Dropdown of your saved zone templates; choosing one loads it.",
+     "inv": "templateSelect"
+    },
+    {
+     "label": "e.g. My 3-Color Layout (max 60 chars)",
+     "range": "",
+     "default": "",
+     "effect": "use a descriptive name you'll recognize later",
+     "inv": "tmplNameInput"
+    }
+   ],
+   "tips": [
+    "Use a descriptive template name, such as \"3-colour layout\"."
+   ],
+   "pitfalls": [
+    "A template stores zone layouts, not your paint."
+   ],
+   "related": [
+    "ui_shell.zones_more_menu",
+    "ui_shell.save_open_projects",
+    "zones.recipe_split_car"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.zones_more.presets_gallery"
+    },
+    {
+     "do": "control",
+     "id": "templateSelect"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.zones_more.presets_gallery",
+    "pro.zones_more.save_as_template",
+    "templateSelect",
+    "tmplNameInput"
+   ],
+   "sources": [
+    "paint-booth-v2.html:4258",
+    "paint-booth-6-ui-boot.js:3930",
+    "paint-booth-v2.html:2648",
+    "paint-booth-6-ui-boot.js:1309",
+    "paint-booth-v2.html:2660",
+    "paint-booth-6-ui-boot.js:2820",
+    "paint-booth-v2.html:2662",
+    "paint-booth-6-ui-boot.js:2885",
+    "paint-booth-0-finish-data.js:6393",
+    "paint-booth-6-ui-boot.js:1326",
+    "paint-booth-6-ui-boot.js:1356",
+    "paint-booth-2-state-zones.js:15807",
+    "paint-booth-2-state-zones.js:15835",
+    "paint-booth-6-ui-boot.js:923",
+    "paint-booth-6-ui-boot.js:1043",
+    "paint-booth-6-ui-boot.js:1075",
+    "paint-booth-6-ui-boot.js:1086",
+    "paint-booth-6-ui-boot.js:2830",
+    "paint-booth-6-ui-boot.js:2862",
+    "paint-booth-6-ui-boot.js:2866",
+    "paint-booth-v2.html:4385",
+    "paint-booth-0-finish-data.js:6351",
+    "paint-booth-0-finish-data.js:6352"
+   ],
+   "aliases": [
+    "preset gallery",
+    "presets",
+    "zone template",
+    "zone presets",
+    "zone templates",
+    "reuse zone setup",
+    "presets templates"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Three different libraries",
+     "body": "Presets Gallery holds 23 ready-made zone layouts in five groups: Show Car (4), Clean (2), Aggressive (6), Special Effect (6) and Themed (5). The Shokker Library, also opened with Shift+T, holds 12 livery templates such as Racing Stripe, Two-Tone Split, GT3 Livery and NASCAR Cup. Save as Template and the Load Template dropdown are your own saved layouts, kept on this computer."
+    },
+    {
+     "heading": "Presets replace your zones at once",
+     "body": "Clicking a preset card swaps in its zones straight away, with no confirm box, and the toast reads Loaded preset. A preset leaves most colours empty on purpose: you click your own colours with the eyedropper afterwards. Only the quick colours are set, such as White for sponsors, Dark for dark areas and Remaining for the safety net. Save your own layout first if you want it back."
+    },
+    {
+     "heading": "Livery templates ask before replacing",
+     "body": "Applying a livery template asks to confirm when your zones already hold a finish or colour, saying your current zones will be replaced. It can be undone with Ctrl+Z. The library header reminds you to paint region masks with the brush after loading, because templates bring finishes, not areas."
+    },
+    {
+     "heading": "What your own template remembers",
+     "body": "A saved template keeps each zone's name, colour choices and tolerances, base, pattern, special finish, intensity, scale, locks and pattern stack. It does not keep drawn boxes, lassos, brush areas or layer limits. Names run up to 60 characters, and saving under the same name overwrites the old one. Loading a template can be undone."
+    },
+    {
+     "heading": "A template is a layout, not a paint",
+     "body": "Because colour picks are stored, a template made on one car often fits another car with the same colours, but a different livery needs new picks. When none of the loaded zones has a finish, the toast adds that you should now assign finishes."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Start from a preset and make it yours",
+     "goal": "Use Multi-Color Show Car as a skeleton.",
+     "settings": {
+      "More > Presets Gallery": "click Multi-Color Show Car",
+      "Result": "8 zones: Body Color 1 to 4, Car Number, Sponsors / Logos, Dark Areas, Everything Else",
+      "Next": "pick each body colour with PICK COLOR FROM CAR; delete unused zones"
+     },
+     "result": "A full set of finishes is ready and only your colours are missing."
+    },
+    {
+     "title": "Save a reusable layout",
+     "goal": "Keep a 3-colour setup for the next car.",
+     "settings": {
+      "More > Save as Template": "type 3-colour sponsor layout",
+      "Save": "press"
+     },
+     "result": "The name appears in the Load Template dropdown. Draw any boxes again after loading."
+    },
+    {
+     "title": "Try a livery template safely",
+     "goal": "Preview NASCAR Cup zones without losing your work.",
+     "settings": {
+      "Shift+T": "open the Shokker Library",
+      "Card": "NASCAR Cup",
+      "Confirm box": "OK"
+     },
+     "result": "Your zones are replaced by the template's four zones. Press Ctrl+Z to return."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.recipe_split_car",
+     "why": "The recipe shows how to build by hand the same plan that presets and templates give you in one click."
+    },
+    {
+     "with": "ui_shell.zones_more_menu",
+     "why": "Presets Gallery, Save as Template, Shokker Library and Undo History all sit in the More menu."
+    },
+    {
+     "with": "ui_shell.save_open_projects",
+     "why": "A template is only zones. Save SHOKK also keeps your paint and finishes in one file."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can I undo a preset?",
+     "a": "A preset swaps in immediately and shows no confirm box. Save your zones as a template first if you may want them back."
+    },
+    {
+     "q": "Where are my templates stored?",
+     "a": "On this computer, inside the app. They are not in your paint file and do not travel to another PC."
+    },
+    {
+     "q": "Why did a loaded template cover the whole car?",
+     "a": "Templates do not store drawn areas. The zone kept its colour rule only. Draw its area again."
+    },
+    {
+     "q": "What is the difference between a preset and a template?",
+     "a": "Presets are built-in layouts. Templates are either the 12 livery templates in the Shokker Library or your own saved ones."
+    },
+    {
+     "q": "Is there a limit on the template name?",
+     "a": "60 characters. Use a name you will recognise, like 3-colour layout."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You clicked a preset and lost your zones",
+     "cause": "Presets replace the whole zone list immediately.",
+     "fix": "Save as Template before you open the Presets Gallery, so your list can be loaded back from the Load Template dropdown."
+    },
+    {
+     "symptom": "A preset shows no colour change on the car",
+     "cause": "Most preset zones start without a colour pick and cover nothing yet.",
+     "fix": "Select each zone and use PICK COLOR FROM CAR on the matching colour."
+    },
+    {
+     "symptom": "Saved template did not remember a layer limit",
+     "cause": "Templates store finishes and colours, not layer restrictions or drawn areas.",
+     "fix": "Use MAKE ZONE on the layer cards again after loading."
+    }
+   ],
+   "protips": [
+    "Name templates by job, such as 2-colour with chrome numbers, not by car. The layout is what carries over.",
+    "The Shokker Library header tells you to paint region masks after loading. Treat library templates as a finish plan, not a finished livery."
+   ],
+   "screens": [
+    "ui_presets_gallery",
+    "ui_template_library",
+    "ui_zones_more_menu"
+   ]
+  },
+  {
+   "id": "zones.not_showing",
+   "title": "Why my zone does not show",
+   "domain": "zones",
+   "summary": "A zone that does nothing almost always has one of a few simple causes: no finish, no way to pick pixels, a zone above it, a mute, or a layer that is missing.",
+   "what": "Shokker tells you on the zone card. The messages are: \"Zone is muted. Click the eye icon to unmute\", \"Empty zone: pick a base finish AND a color (or draw a region)\", \"No finish assigned: pick a base material\", \"No color or region defined: this zone will not affect any pixels\", and a warning when the zone is restricted to a layer that no longer exists. If the card says \"ready to render\" and you still see nothing, a zone higher in the list is probably claiming the same pixels. Check the colour tolerance too: if it is too tight the zone catches almost nothing.",
+   "when": [
+    "You set a finish and the car looks the same.",
+    "A zone works in the overlay but not in the preview."
+   ],
+   "how": [
+    "1. Read the message on the zone card.",
+    "2. Click the eye icon to make sure the zone is not muted.",
+    "3. Give it a finish in BASE if none is set, and a colour, layer or box if none is set.",
+    "4. Drag the zone above others that overlap, or mute the others to test.",
+    "5. Raise the colour tolerance if the area is caught only in part."
+   ],
+   "controls": [
+    {
+     "label": "Zone eye / duplicate / link / x icons on each zone card",
+     "range": "true|false",
+     "default": "False",
+     "effect": "Eye hides a zone for testing, the copy icon duplicates, the x deletes it.",
+     "inv": "zone.mute"
+    },
+    {
+     "label": "Colour tolerance (sliders next to the colour chips)",
+     "range": "tolerance 6-100 (kit) / 0-100 (UI per colour); default 40",
+     "default": "40",
+     "effect": "How close a pixel must be to the picked colour to belong to the zone (about 30-50 normal; 6 = exact shade, 100 = loose).",
+     "inv": "zone.tolerance"
+    },
+    {
+     "label": "Base Material (finish picker button)",
+     "range": "",
+     "default": "",
+     "effect": "Opens the finish picker popup: bases (gloss, matte, satin, chrome, candy, pearl, metallic ...) and special looks. Shows the current finish name.",
+     "inv": "zone.base_material"
+    }
+   ],
+   "tips": [
+    "Foundation finishes change only the shine when the colour is \"Use source paint\". They do not repaint, so the car can look the same colour."
+   ],
+   "pitfalls": [
+    "Base Strength 0 makes a zone add nothing even when it is set up correctly."
+   ],
+   "related": [
+    "zones.priority",
+    "zones.tolerance",
+    "zones.card_controls",
+    "zones.what_is_a_zone"
+   ],
+   "actions": [],
+   "figures": [
+    "g05_zone_priority"
+   ],
+   "covers": [
+    "zone.mute",
+    "zone.tolerance",
+    "zone.base_material"
+   ],
+   "sources": [
+    "js/zones/workflow-controls.js:82",
+    "docs/ai_knowledge/01_how_pro_works.md:15",
+    "js/spb-pro-zone-kit.js:211",
+    "paint-booth-2-state-zones.js:1656",
+    "js/zones/workflow-controls.js:56",
+    "js/zones/workflow-controls.js:69",
+    "js/zones/workflow-controls.js:84",
+    "js/zones/workflow-controls.js:89",
+    "paint-booth-2-state-zones.js:1860",
+    "js/spb-support-answers.js:145",
+    "js/spb-support-answers.js:154",
+    "js/spb-support-answers.js:155",
+    "paint-booth-6-ui-boot.js:3785",
+    "docs/ZONE_OWNERSHIP.md:63",
+    "paint-booth-3-canvas.js:12044",
+    "paint-booth-2-state-zones.js:2098"
+   ],
+   "aliases": [
+    "finish not showing",
+    "my zone has no effect",
+    "nothing changes",
+    "visible ownership",
+    "why is my zone hidden",
+    "zone not showing",
+    "zone not working",
+    "zone not visible"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The card checks these in a fixed order",
+     "body": "The card tests, in this order: muted, then tied to a missing layer, then completely empty, then no finish, then no colour or area, and finally ready. Only the first problem is shown. The small dot beside the name follows the same order: green is Will render, red is a missing layer, orange is a missing finish or missing pixels, grey is muted or empty. Fix the first message, look again, and a second one may appear."
+    },
+    {
+     "heading": "Ready to render does not prove it shows",
+     "body": "The check only looks at what the zone has set. It cannot see that a zone above already owns the same pixels, that a Color Match is too tight, or that the layer you tied it to is under 50 percent opaque. All of those leave the card green. The fastest test is to mute zones above yours one at a time and watch LIVE PREVIEW."
+    },
+    {
+     "heading": "Settings that make a good zone look like nothing",
+     "body": "A Foundation finish with Base Color set to Use source paint (spec only) changes only the shine, so colours stay identical. A Base Strength or Spec Strength of 0 removes the effect. A zone whose finish matches what is already there, such as gloss over gloss, changes nothing visible. To prove a zone catches the right pixels, set it to Chrome for a moment, then switch it back."
+    },
+    {
+     "heading": "When the preview is the problem",
+     "body": "If the preview cannot finish it keeps showing the last good picture, and your newest change appears to do nothing. The red bar says so. Press F5 to rebuild. The usual cause of repeated failure is too many zones that have their own painted area, about 20 or more. A render with no valid zone is refused with a message asking for a zone with a colour and a finish, and muted zones are skipped."
+    },
+    {
+     "heading": "Layer zones fail on purpose",
+     "body": "A zone tied to a hidden or missing layer paints nothing, deliberately, so it cannot spill onto other art. A hidden layer gives a one-time message. A deleted layer gives the red dot. A layer set below 50 percent opacity never owns its pixels."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Full walk-through for a silent zone",
+     "goal": "Find out why a chrome stripe zone does nothing.",
+     "settings": {
+      "Step 1": "read the card message",
+      "Step 2": "click the eye on each zone above it, one by one",
+      "Step 3": "BASE > Base Material: Chrome, Base Color: Use finish's own color",
+      "Step 4": "raise the stripe's Color Match from 25 to 40"
+     },
+     "result": "One of these steps reveals the cause: an upper zone, a missing finish, a shine-only setting, or a too-tight match."
+    },
+    {
+     "title": "Prove the zone catches the right pixels",
+     "goal": "Check a zone before polishing its finish.",
+     "settings": {
+      "Temporarily set Base Material": "Chrome",
+      "Base Color": "Use finish's own color",
+      "Watch": "LIVE PREVIEW"
+     },
+     "result": "Everything the zone owns goes mirror-bright. Undo or switch back when you have seen its footprint."
+    },
+    {
+     "title": "A layer zone that paints nothing",
+     "goal": "Fix a numbers zone tied to the Numbers layer.",
+     "settings": {
+      "Layers panel": "make sure the Numbers eye is on",
+      "Layer opacity": "50% or higher",
+      "RESTRICT TO LAYERS": "Numbers ticked"
+     },
+     "result": "The numbers show the finish. A hidden layer or one below 50 percent opacity never owns pixels."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.priority",
+     "why": "A zone above is the most common reason a green card shows nothing."
+    },
+    {
+     "with": "zones.tolerance",
+     "why": "A too-tight Color Match catches almost nothing and the card cannot warn you."
+    },
+    {
+     "with": "support.zone_no_show",
+     "why": "The support answer follows the same checks from the helper's side."
+    }
+   ],
+   "faq": [
+    {
+     "q": "The card says Zone is ready to render, but I see nothing. Why?",
+     "a": "Something outside the zone is in the way: a zone above, a tight Color Match, a layer under 50 percent opacity, or a shine-only setting."
+    },
+    {
+     "q": "What does the orange dot mean?",
+     "a": "Either the zone has no finish or it has no colour, layer or area. The card message says which."
+    },
+    {
+     "q": "Why does a Foundation zone not change my colour?",
+     "a": "With Use source paint (spec only) it changes only the shine map. That is its job."
+    },
+    {
+     "q": "My preview does not update.",
+     "a": "The preview may have failed and is showing the last good picture. Press F5, or click the red bar."
+    },
+    {
+     "q": "Is a muted zone deleted?",
+     "a": "No. Click its eye icon to turn it back on."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You picked a colour and finish but the zone card is still orange",
+     "cause": "One of the two is missing: the card checks both.",
+     "fix": "Read the card text. It names the missing half, either a finish or a colour, layer or area."
+    },
+    {
+     "symptom": "RENDER refuses with a message about no zones",
+     "cause": "No active zone has both a colour and a finish. Muted zones are skipped.",
+     "fix": "Pick a colour on the paint for at least one zone, give it a Base Material, and unmute it if its eye is crossed out."
+    },
+    {
+     "symptom": "Zone vanished after you tied it to a layer",
+     "cause": "The layer is hidden or below 50 percent opacity, so the zone owns no pixels.",
+     "fix": "Show the layer, raise its opacity to at least 50 percent, or clear the restriction."
+    }
+   ],
+   "protips": [
+    "Set a suspect zone to Chrome with Use finish's own color for ten seconds. If nothing turns mirror-bright, the problem is its pixel rules, not its finish.",
+    "A render with no valid zone is refused with a clear message. Muted zones are skipped, so an all-muted list also counts as no zones."
+   ],
+   "screens": [
+    "ui_zone_empty_message"
+   ]
+  },
+  {
+   "id": "zones.recipe_split_car",
+   "title": "Recipe: split a car into body, hood, roof and trim",
+   "domain": "zones",
+   "summary": "A clean starting plan: one zone for the body colour, one each for hood, roof and trim, and Everything Else at the bottom as the safety net.",
+   "what": "This is the same plan a typical livery needs. Shokker starts you with four open zones plus Everything Else, so you only need to fill them in. Aim the specific zones first (trim and numbers by layer, hood and roof by box or part), and let the body colour zone and Everything Else take the rest.",
+   "when": [
+    "You have a finished livery and want different finishes on its main parts."
+   ],
+   "how": [
+    "1. Load your paint. Use a layered template if you can.",
+    "2. Zone 1, trim or stripes: PICK COLOR FROM CAR on the stripe colour; BASE > a finish such as satin.",
+    "3. Zone 2, hood: under APPLY AREA press Draw box over the hood; give it a finish.",
+    "4. Zone 3, roof: Draw box over the roof; finish.",
+    "5. Zone 4, body: PICK COLOR FROM CAR on the body colour; finish.",
+    "6. Leave Everything Else at the bottom for the rest, then check the preview and RENDER."
+   ],
+   "controls": [
+    {
+     "label": "+ Add Zone",
+     "range": "",
+     "default": "",
+     "effect": "Adds an empty zone at the top.",
+     "inv": "pro.zones.add_zone"
+    },
+    {
+     "label": "PICK COLOR FROM CAR",
+     "range": "tolerance 6-100 (kit) / 0-100 (UI per colour); default 40",
+     "default": "40",
+     "effect": "Arms an eyedropper: click a colour on the car and this zone grabs every pixel of that colour. Each further click ADDS another colour.",
+     "inv": "zone.pick_color_from_car"
+    },
+    {
+     "label": "Draw box",
+     "range": "see SCHEMA: part names come from get_car_map; band 0-1 fractions (height = roof-line to rocker, length = front to rear); rect/cells only for details under ~12% of the sheet",
+     "default": "none = 'nothing selected yet'",
+     "effect": "Click, then drag a rectangle on the paint; the zone only affects what is inside it.",
+     "inv": "zone.draw_box"
+    },
+    {
+     "label": "Base Material (finish picker button)",
+     "range": "",
+     "default": "",
+     "effect": "Opens the finish picker popup: bases (gloss, matte, satin, chrome, candy, pearl, metallic ...) and special looks. Shows the current finish name.",
+     "inv": "zone.base_material"
+    }
+   ],
+   "tips": [
+    "In Chat you can say \"matte black hood, carbon roof\" and refine from there.",
+    "Put the most specific zones at the top of the list."
+   ],
+   "pitfalls": [
+    "The hood and roof boxes are on the flat sheet. One box that spans both would catch both.",
+    "If a numbers zone is below the body zone it will lose its pixels. Put it above."
+   ],
+   "related": [
+    "zones.priority",
+    "zones.regions",
+    "zones.restrict_layers",
+    "zones.everything_else",
+    "zones.named_parts"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.zones.add_zone"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.zones.add_zone",
+    "zone.pick_color_from_car",
+    "zone.draw_box",
+    "zone.base_material"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:1167",
+    "docs/ai_knowledge/01_how_pro_works.md:9",
+    "paint-booth-v2.html:2639",
+    "paint-booth-2-state-zones.js:4105",
+    "paint-booth-2-state-zones.js:1656",
+    "paint-booth-2-state-zones.js:1170",
+    "paint-booth-2-state-zones.js:1186",
+    "engine/base_registry_data.py:383",
+    "engine/base_registry_data.py:399",
+    "engine/base_registry_data.py:471",
+    "engine/base_registry_data.py:473",
+    "engine/base_registry_data.py:502",
+    "engine/base_registry_data.py:581",
+    "shokker_engine_v2.py:18461",
+    "docs/ai_knowledge/09_field_playbook.md:16",
+    "docs/ai_knowledge/01_how_pro_works.md:15"
+   ],
+   "aliases": [
+    "body hood roof trim",
+    "how many zones do i need",
+    "livery zones",
+    "set up zones",
+    "split the car into zones",
+    "zone recipe",
+    "split the car into parts",
+    "split the car"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Why this order works",
+     "body": "Each zone gets first pick of the pixels it matches, then the next zone, and Everything Else takes what is left. So the narrowest rules go first: trim by colour or layer, then hood and roof by box, then the body colour, then Everything Else. Hood and roof must sit above the body zone. If the body zone were higher it would claim the red on the hood before the hood zone could."
+    },
+    {
+     "heading": "Box plus colour, or box alone",
+     "body": "A hood zone with a colour and a box catches only that colour inside the box, which keeps hood graphics and decals out of the finish. A hood zone with only a box covers everything on that island, graphics included. Pick colour plus box when the hood carries artwork you want left alone."
+    },
+    {
+     "heading": "A shine ladder for the four zones",
+     "body": "The base finishes form a ladder from dull to bright: Matte is metal 0, roughness 200, clearcoat 160. Satin is 0, 95, 70. Gloss is 0, 30, 16. Metallic is 200, 50, 16. Candy is 200, 15, 16. In the spec map the middle number is roughness, so a lower number means a smoother, brighter reflection, and clearcoat 16 is the maximum gloss. Use two or three steps apart, not neighbours, so zones read as different on the car."
+    },
+    {
+     "heading": "Reach by role",
+     "body": "Numbers by layer need no colour. If you pick the fill, 10 to 16 keeps the outline out. Stripes and trim work at 25 to 35 because they are flat colours. Large body colours at 40 handle shading. Looser than 50 starts to grab neighbours."
+    },
+    {
+     "heading": "Checking the result",
+     "body": "After each zone, glance at LIVE PREVIEW before adding the next. If a zone shows nothing, click its eye on the zones above yours. When you are happy, press RENDER once. Fewer than six zones keeps the preview quick."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Classic race car in four zones",
+     "goal": "Body, hood, roof and trim, each with its own shine.",
+     "settings": {
+      "Zone 1 Trim > PICK COLOR FROM CAR": "stripe colour, Color Match 30",
+      "Zone 1 > Base Material": "Satin",
+      "Zone 2 Hood > PICK COLOR FROM CAR + Draw box": "body colour, box over hood",
+      "Zone 2 > Base Material": "Candy",
+      "Zone 3 Roof > PICK COLOR FROM CAR + Draw box": "body colour, box over roof",
+      "Zone 3 > Base Material": "Pearl",
+      "Zone 4 Body > PICK COLOR FROM CAR": "body colour, Color Match 40",
+      "Zone 4 > Base Material": "Metallic",
+      "Everything Else": "Gloss, bottom"
+     },
+     "result": "The trim is soft satin, hood candy, roof pearl, and the rest of the body metallic, with gloss under everything else."
+    },
+    {
+     "title": "Two-tone with a matte roof",
+     "goal": "Gloss car, flat roof.",
+     "settings": {
+      "Zone 1 > Draw box": "over the roof island",
+      "Zone 1 > Base Material": "Matte",
+      "Zone 2 > PICK COLOR FROM CAR": "body colour",
+      "Zone 2 > Base Material": "Gloss"
+     },
+     "result": "Matte roof against a gloss body. The roof zone is first, so it takes its island before the body zone."
+    },
+    {
+     "title": "Numbers in chrome by layer",
+     "goal": "Chrome numbers without touching anything else.",
+     "settings": {
+      "Zone 1 > RESTRICT TO LAYERS": "Numbers",
+      "Zone 1 > Base Material": "Chrome",
+      "Zone 1 position": "top of the list"
+     },
+     "result": "All visible number pixels are chrome. Every other zone carries on as before."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.priority",
+     "why": "The recipe only works because specific zones sit above general ones."
+    },
+    {
+     "with": "zones.regions",
+     "why": "The hood and roof boxes in the recipe are drawn here."
+    },
+    {
+     "with": "zones.restrict_layers",
+     "why": "Numbers and sponsors are best aimed by layer, never by colour."
+    }
+   ],
+   "faq": [
+    {
+     "q": "How many zones does a typical car need?",
+     "a": "Two or three. The recipe's four plus Everything Else is a full plan."
+    },
+    {
+     "q": "Why not one zone per colour?",
+     "a": "You can, but shared looks should share a zone, because every extra zone adds work to the render."
+    },
+    {
+     "q": "Should the hood box include the whole island?",
+     "a": "Yes, or slightly more. The hood and roof are different rectangles on the flat sheet, so draw each separately."
+    },
+    {
+     "q": "Can I do this by talking instead?",
+     "a": "Yes. Chat understands matte black hood, carbon roof and builds the same zones for you."
+    },
+    {
+     "q": "What if the body colour is also on the roof?",
+     "a": "That is the case the box handles: the roof zone is above the body zone and takes its island first."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The hood shows the body finish instead of its own",
+     "cause": "The body zone sits above the hood zone and claimed the hood's colour first.",
+     "fix": "Drag the hood zone above the body zone."
+    },
+    {
+     "symptom": "Hood and roof both changed from one zone",
+     "cause": "One box spanned both islands on the flat sheet.",
+     "fix": "Draw a separate box for each, in separate zones."
+    },
+    {
+     "symptom": "Numbers lost their finish",
+     "cause": "The numbers zone sits below the body zone.",
+     "fix": "Move the numbers zone to the top of the list."
+    }
+   ],
+   "protips": [
+    "Separate finishes by at least two steps on the matte, satin, gloss ladder. Neighbouring steps look the same from a distance.",
+    "Build with MAKE ZONE from layer cards when you have a layered template. It skips colour picking and cannot bleed."
+   ],
+   "screens": [
+    "flow_step2_zone_added",
+    "pair_zone_added",
+    "ui_zone_apply_area",
+    "ui_zones_column"
+   ]
+  }
+ ]
+}

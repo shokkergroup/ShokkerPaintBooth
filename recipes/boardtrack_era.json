@@ -2,7 +2,7 @@
   "name": "Boardtrack Era",
   "description": "1920s wooden board-track racer aesthetic. Cream/off-white enamel body, hand-painted black number circle, dark green thin pinstripes, faded brass-tone trim, and single red accent ribbon. Feels hand-built in a barn in 1923.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "pre-war board-track specials, vintage indy roadsters, early motorcycle builds",
   "notes": "Keep ALL specStrengths low (0.6-0.75) — period paint didn't have modern clearcoat. Enamel base already de-glosses; don't fight it. Number roundel should feel brush-painted, not decal-sharp.",
   "zones": [

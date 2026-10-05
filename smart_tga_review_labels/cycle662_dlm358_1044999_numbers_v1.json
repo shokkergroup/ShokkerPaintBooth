@@ -1,0 +1,16 @@
+{
+  "version":1,
+  "paint_label":"dirtlatemodel 358/car_num_1044999.tga",
+  "inspection_records":"_smart_tga_runs/cycle662_dlm_group_features_holdout/inspection_records.json",
+  "review_scope":"Cycle 662 source plus all owner/combined sheets, suspects, position cues, and physical-group review.",
+  "component_labels":[
+    {"layer":"numbers","component_index":0,"expected_bbox":[959,29,32,39],"target_layer":"template","label":"fixed_upper_template_shape_false_number"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[991,29,27,42],"target_layer":"template","label":"fixed_upper_template_shape_false_number"},
+    {"layer":"numbers","component_index":2,"expected_bbox":[953,114,45,37],"target_layer":"template","label":"fixed_upper_template_shape_false_number"},
+    {"layer":"numbers","component_index":3,"expected_bbox":[932,233,62,17],"target_layer":"template","label":"fixed_upper_template_shape_false_number"},
+    {"layer":"sponsors","component_index":30,"expected_bbox":[667,313,27,3],"target_layer":"paint","label":"white_yellow_livery_stripe_false_sponsor"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[285,225,205,125],"target_layer":"numbers","label":"missed_true_upper_number","family_id":"number:24"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[270,705,220,125],"target_layer":"numbers","label":"missed_true_lower_number","family_id":"number:24"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[805,825,175,135],"target_layer":"numbers","label":"missed_true_rear_number","family_id":"number:24"}
+  ]
+}

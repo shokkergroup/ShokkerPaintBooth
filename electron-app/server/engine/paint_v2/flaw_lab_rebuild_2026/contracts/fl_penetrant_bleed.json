@@ -1,0 +1,104 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "fl_penetrant_bleed",
+  "display_name": "Penetrant Bleed \u2014 rebuilt inspection finish",
+  "promise": "branched fatigue fissures with capillary dye reservoirs",
+  "carrier_grammar": "branched fatigue fissures with capillary dye reservoirs; independently rotated, varied sites with edge-wrapped geometry.",
+  "spec_grammar": "Named developer wash, wicking halos, open fissures, dye reservoirs, satellite indications carry independent metallic lips, rough interiors and continuous coat shoulders; no unrelated material overlay.",
+  "reference_physics": {
+    "mechanism": "branched fatigue fissures with capillary dye reservoirs interpreted as a colored inspection visualization, not a literal photograph.",
+    "sources": [
+      "engine/paint_v2/flaw_lab_2026.py",
+      "SPB_WIKI.html#spec_guide",
+      "https://www.nasa.gov/glenn/research/flow-field-diagnostics/"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "composition_span_px": [
+    150,
+    384
+  ],
+  "mark_types": [
+    {
+      "name": "developer wash",
+      "role": "Visible developer wash geometry with its own local material transition."
+    },
+    {
+      "name": "wicking halos",
+      "role": "Visible wicking halos geometry with its own local material transition."
+    },
+    {
+      "name": "open fissures",
+      "role": "Visible open fissures geometry with its own local material transition."
+    },
+    {
+      "name": "dye reservoirs",
+      "role": "Visible dye reservoirs geometry with its own local material transition."
+    },
+    {
+      "name": "satellite indications",
+      "role": "Visible satellite indications geometry with its own local material transition."
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "developer wash",
+      "wicking halos",
+      "open fissures",
+      "dye reservoirs",
+      "satellite indications"
+    ],
+    "R": [
+      "developer wash",
+      "wicking halos",
+      "open fissures",
+      "dye reservoirs",
+      "satellite indications"
+    ],
+    "Cc": [
+      "developer wash",
+      "wicking halos",
+      "open fissures",
+      "dye reservoirs",
+      "satellite indications"
+    ]
+  },
+  "material_tiers": [
+    "recess substrate",
+    "rough interior",
+    "satin shoulder",
+    "polished lip",
+    "fractured edge",
+    "gloss face",
+    "coat transition",
+    "bright inclusion"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "fl_brittle_lacquer",
+      "difference": "branched fatigue fissures with capillary dye reservoirs differs in topology from ranked tensile crack combs with arrested tips and lifted lacquer lips"
+    },
+    {
+      "finish_id": "fl_macro_etch",
+      "difference": "branched fatigue fissures with capillary dye reservoirs differs in topology from bent forging grain ribbons flowing around die bosses"
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "developer wash is explicitly constructed as part of branched fatigue fissures with capillary dye reservoirs",
+      "wicking halos is explicitly constructed as part of branched fatigue fissures with capillary dye reservoirs",
+      "open fissures is explicitly constructed as part of branched fatigue fissures with capillary dye reservoirs"
+    ],
+    "review_status": "Rendered paint/spec pairs visually reviewed together at picker scale on 2026-09-18; live output verified against the reviewed assets."
+  },
+  "construction_key": "flaw-r1-penetrant_bleed-branched-fatigue-fissures-with-capillary-dye-reservoirs",
+  "spec_key": "flaw-r1-material-penetrant_bleed-developer wash-wicking halos-open fissures-dye reservoirs-satellite indications",
+  "fine_detail_scale_px": [
+    1,
+    32
+  ]
+}

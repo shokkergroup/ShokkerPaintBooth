@@ -1,0 +1,5 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_1133783.tga","inspection_records":"_smart_tga_runs/cycle669_dlm_proposal_capture_review/inspection_records.json","review_scope":"Cycle 669 source and complete Number/Sponsor/Template/Paint/group sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[875,28,149,293],"target_layer":"template","label":"fixed_upper_control_hardware"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[120,307,35,39],"target_layer":"sponsors","label":"castrol_logo_fragment"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[787,814,183,151],"target_layer":"numbers","label":"true_rear_number","family_id":"number:56"}
+]}

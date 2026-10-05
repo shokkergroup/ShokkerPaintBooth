@@ -1,0 +1,73 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "task": "W83 transient parser-input ABA repair candidate",
+  "date": "2026-10-04",
+  "candidate": {
+    "installed": false,
+    "base": "W78 private candidate",
+    "server": {
+      "path": "_easy_claude_work/ai14h_w83_review/candidate/server.py",
+      "sha256": "a845f7ee1cd96b9f87fe1af85d42a1b86dd2059e2a5893e47006a08d773ac2ce"
+    },
+    "routes": {
+      "path": "_easy_claude_work/ai14h_w83_review/candidate/server_routes/psd_import_routes.py",
+      "sha256": "6a0fce336fc5ef54eb80ef92a220abc0d81e5b22107b2bf3a4e3b0872f51a95d"
+    },
+    "patch": {
+      "path": "_easy_claude_work/ai14h_w83_review/W83.patch",
+      "sha256": "a40f8ba2ee603aafaacd56a33b820d95233f558ab988dbf94d0df8b0e2f867f6"
+    },
+    "basePins": {
+      "server.py": "1b094f80d81582416b03b0c63f1814665fb78969f2bb1675e5219e710c522294",
+      "server_routes/psd_import_routes.py": "faf99df7eddeed1623342efda2479bbd23fb1d763b5f7759df8068f63ee0d902"
+    },
+    "compatibilityPins": {
+      "ora_import_py": "189b2943e584c960ae984b45e4318e675e20bb840710d814bf25a66fd0eacf4e",
+      "xcf_import_py": "5a6b2b01be492611b153badd71b44bc47307031e34023e2093c14f95b168c3fe"
+    }
+  },
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w83_review/fresh-oracle.json",
+    "sha256": "0459d030991d4eb15b5ab0f1da9beed79438a23481ca5c01f3ffbd3f449a4bca",
+    "frozenBeforeCandidatePatch": true,
+    "cases": 8
+  },
+  "test": {
+    "path": "tests/ai_source_bytes_transient_aba_w83_contract.py",
+    "sha256": "ff278bb7ce2ba9c11b197b36495d43259378f485a3e7ed7ab2ac9d54b98b968d",
+    "result": "PASS_WITH_LIMITS",
+    "cases": 6,
+    "command": "python tests/ai_source_bytes_transient_aba_w83_contract.py"
+  },
+  "repair": {
+    "summary": "For digest-aware PSD cache misses, hash and copy the parser input in one 1 MiB streaming loop into an 8 MiB SpooledTemporaryFile. Parse only that snapshot; require its SHA-256 to equal the route's expected digest. If one snapshot mismatches, retry once to accommodate a transient A->B->A replacement; if it still mismatches, raise a marked error that both import and raster routes return as HTTP 409 and invalidate. Keep the snapshot attached to the parsed PSD for lazy channel reads and active callers through cache eviction.",
+    "legacy": "No-digest parser callers retain mtime-based behavior. Legacy callers reading a digest-backed four-field cache entry still receive the parsed PSD object, not its spool handle.",
+    "formats": "ORA and XCF keep their original path-based parser dispatch for compatibility. They do not receive the new immutable-snapshot ABA guarantee: ORA lazily reopens ZipFile(path), and XCF requires a path. Strong byte-attestation for those formats remains a known limitation."
+  },
+  "verification": {
+    "transientABA": "Actual Flask /api/psd-import handler and real psd-tools PSD: source starts A; test switches the open source to B and restores A at the same path and mtime while the snapshot is being read. Candidate retries, then returns HTTP 200 with A digest and A visible pixel [200,10,20]. Root's original W78 path parser returned HTTP 200 with digest A but B pixel [15,180,90].",
+    "otherCases": [
+      "Stable cache hit returns A/A.",
+      "Hidden-layer byte changes alter SHA-256 while visible composite remains equal.",
+      "If B remains after both bounded snapshot attempts, route returns 409 and leaves no parser cache entry.",
+      "Legacy no-digest calls reuse the parser object; no-digest caller after a digest-backed load receives PSDImage, not SpooledTemporaryFile.",
+      "Real OpenRaster fixture still opens and composites through the legacy path; XCF path dispatch remains present.",
+      "Real 19.6 MB noisy PSD rolls to disk past the 8 MiB threshold. Snapshot remains open while parsed PSD owns it after cache eviction and releases after the parser object is dropped."
+    ],
+    "syntax": "py_compile passed for candidate server.py, candidate import routes, and the contract test."
+  },
+  "costsAndLimits": [
+    "Cold digest-aware PSD parsing now copies and hashes the entire file once before parsing. The import route still hashes before and after; this adds one streaming read plus temporary storage writes and parser reads. Stable in-memory cache hits do not snapshot again.",
+    "SpooledTemporaryFile keeps inputs up to 8 MiB in memory and rolls larger documents to the temporary disk area. Up to three cache entries retain their snapshots; active parsers retain their own snapshot reference if an entry is evicted.",
+    "Only .psd gets immutable parser-input verification. ORA/XCF format compatibility is preserved, but digest-aware ABA protection for these formats is not claimed.",
+    "Private actual-handler tests only. No live backend edit/restart, native app, provider, browser, raw source transfer or production write occurred."
+  ],
+  "effects": {
+    "productionFiles": 0,
+    "serverRestarts": 0,
+    "native": 0,
+    "providers": 0,
+    "browser": 0,
+    "rawSourceTransfers": 0
+  }
+}

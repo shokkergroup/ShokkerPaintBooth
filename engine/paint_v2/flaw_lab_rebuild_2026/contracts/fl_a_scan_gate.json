@@ -1,0 +1,104 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "fl_a_scan_gate",
+  "display_name": "A-Scan Gate \u2014 rebuilt inspection finish",
+  "promise": "stacked oscilloscope echo trains enclosed by independent gate cursors",
+  "carrier_grammar": "stacked oscilloscope echo trains enclosed by independent gate cursors; independently rotated, varied sites with edge-wrapped geometry.",
+  "spec_grammar": "Named trace baselines, entry pulses, backwall echoes, gate brackets, ringdown ripples carry independent metallic lips, rough interiors and continuous coat shoulders; no unrelated material overlay.",
+  "reference_physics": {
+    "mechanism": "stacked oscilloscope echo trains enclosed by independent gate cursors interpreted as a colored inspection visualization, not a literal photograph.",
+    "sources": [
+      "engine/paint_v2/flaw_lab_2026.py",
+      "SPB_WIKI.html#spec_guide",
+      "https://www.nasa.gov/glenn/research/flow-field-diagnostics/"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "composition_span_px": [
+    150,
+    384
+  ],
+  "mark_types": [
+    {
+      "name": "trace baselines",
+      "role": "Visible trace baselines geometry with its own local material transition."
+    },
+    {
+      "name": "entry pulses",
+      "role": "Visible entry pulses geometry with its own local material transition."
+    },
+    {
+      "name": "backwall echoes",
+      "role": "Visible backwall echoes geometry with its own local material transition."
+    },
+    {
+      "name": "gate brackets",
+      "role": "Visible gate brackets geometry with its own local material transition."
+    },
+    {
+      "name": "ringdown ripples",
+      "role": "Visible ringdown ripples geometry with its own local material transition."
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "trace baselines",
+      "entry pulses",
+      "backwall echoes",
+      "gate brackets",
+      "ringdown ripples"
+    ],
+    "R": [
+      "trace baselines",
+      "entry pulses",
+      "backwall echoes",
+      "gate brackets",
+      "ringdown ripples"
+    ],
+    "Cc": [
+      "trace baselines",
+      "entry pulses",
+      "backwall echoes",
+      "gate brackets",
+      "ringdown ripples"
+    ]
+  },
+  "material_tiers": [
+    "recess substrate",
+    "rough interior",
+    "satin shoulder",
+    "polished lip",
+    "fractured edge",
+    "gloss face",
+    "coat transition",
+    "bright inclusion"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "fl_penetrant_bleed",
+      "difference": "stacked oscilloscope echo trains enclosed by independent gate cursors differs in topology from branched fatigue fissures with capillary dye reservoirs"
+    },
+    {
+      "finish_id": "fl_brittle_lacquer",
+      "difference": "stacked oscilloscope echo trains enclosed by independent gate cursors differs in topology from ranked tensile crack combs with arrested tips and lifted lacquer lips"
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "trace baselines is explicitly constructed as part of stacked oscilloscope echo trains enclosed by independent gate cursors",
+      "entry pulses is explicitly constructed as part of stacked oscilloscope echo trains enclosed by independent gate cursors",
+      "backwall echoes is explicitly constructed as part of stacked oscilloscope echo trains enclosed by independent gate cursors"
+    ],
+    "review_status": "Rendered paint/spec pairs visually reviewed together at picker scale on 2026-09-18; live output verified against the reviewed assets."
+  },
+  "construction_key": "flaw-r1-a_scan_gate-stacked-oscilloscope-echo-trains-enclosed-by-independent-gate-cursors",
+  "spec_key": "flaw-r1-material-a_scan_gate-trace baselines-entry pulses-backwall echoes-gate brackets-ringdown ripples",
+  "fine_detail_scale_px": [
+    1,
+    32
+  ]
+}

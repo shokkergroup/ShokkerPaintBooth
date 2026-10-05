@@ -1,0 +1,173 @@
+{
+  "purpose": "independent semantic scope holdout; authoring frozen before source inspection",
+  "cases": [
+    {
+      "id": "P01",
+      "ask": "Paint just the hood gold and add a tight hex weave there; leave the rest of the car unchanged.",
+      "expected": "part-only",
+      "part": "hood"
+    },
+    {
+      "id": "P02",
+      "ask": "Only the roof should get a blue pearl finish with tiny snake scales.",
+      "expected": "part-only",
+      "part": "roof"
+    },
+    {
+      "id": "P03",
+      "ask": "Exclusively recolor the hood matte black; keep every other panel as it is.",
+      "expected": "part-only",
+      "part": "hood"
+    },
+    {
+      "id": "P04",
+      "ask": "Put a fine carbon pattern on the roof only, in deep blue.",
+      "expected": "part-only",
+      "part": "roof"
+    },
+    {
+      "id": "P05",
+      "ask": "Make only my hood pearl white with a small hex texture.",
+      "expected": "part-only",
+      "part": "hood"
+    },
+    {
+      "id": "P06",
+      "ask": "Add gold snake skin to just the roof and preserve all other paint.",
+      "expected": "part-only",
+      "part": "roof"
+    },
+    {
+      "id": "P07",
+      "ask": "Change the hood to blue and nothing else on the body.",
+      "expected": "part-only",
+      "part": "hood"
+    },
+    {
+      "id": "P08",
+      "ask": "Give the roof a matte gold carbon look, exclusively on that panel.",
+      "expected": "part-only",
+      "part": "roof"
+    },
+    {
+      "id": "P09",
+      "ask": "Set the hood to #1247A8 with a subtle pearl sheen; leave the remaining panels alone.",
+      "expected": "part-only",
+      "part": "hood"
+    },
+    {
+      "id": "P10",
+      "ask": "Just apply #C9A227 and a fine snake pattern to the roof.",
+      "expected": "part-only",
+      "part": "roof"
+    },
+    {
+      "id": "P11",
+      "ask": "Carbon-fiber the hood in matte blue only; do not touch the roof or sides.",
+      "expected": "part-only",
+      "part": "hood"
+    },
+    {
+      "id": "P12",
+      "ask": "Only the roof gets a pearl gold base and little hex cells.",
+      "expected": "part-only",
+      "part": "roof"
+    },
+    {
+      "id": "P13",
+      "ask": "Start with the hood only: make it matte blue with a fine carbon weave.",
+      "expected": "part-only",
+      "part": "hood"
+    },
+    {
+      "id": "P14",
+      "ask": "Finish everything on the roof in pearl gold, and leave the rest unchanged.",
+      "expected": "part-only",
+      "part": "roof"
+    },
+    {
+      "id": "P15",
+      "ask": "Make the whole car blue, then layer a gold snake pattern on the hood only.",
+      "expected": "body+part",
+      "part": "hood"
+    },
+    {
+      "id": "P16",
+      "ask": "Set a matte black base across the entire body and put pearl white hexes on just the roof.",
+      "expected": "body+part",
+      "part": "roof"
+    },
+    {
+      "id": "P17",
+      "ask": "Paint the whole car #163A72; exclusively on the hood add a fine gold carbon layer.",
+      "expected": "body+part",
+      "part": "hood"
+    },
+    {
+      "id": "P18",
+      "ask": "Give every panel a pearl gold base, then add blue snake scales only on the roof.",
+      "expected": "body+part",
+      "part": "roof"
+    },
+    {
+      "id": "P19",
+      "ask": "First coat the body in matte blue, then put a gold hex overlay on the hood alone.",
+      "expected": "body+part",
+      "part": "hood"
+    },
+    {
+      "id": "P20",
+      "ask": "Make the full car pearl white and add carbon weave to the roof only, leaving other parts at the base.",
+      "expected": "body+part",
+      "part": "roof"
+    },
+    {
+      "id": "P21",
+      "ask": "Color all body panels matte gold and add a blue pearl layer exclusively to the hood.",
+      "expected": "body+part",
+      "part": "hood"
+    },
+    {
+      "id": "P22",
+      "ask": "Start with a whole-car #C9A227 base; last, place fine snake scales on only the roof.",
+      "expected": "body+part",
+      "part": "roof"
+    },
+    {
+      "id": "P23",
+      "ask": "Apply blue pearl paint over the entire car, then carbon-fiber the hood only.",
+      "expected": "body+part",
+      "part": "hood"
+    },
+    {
+      "id": "P24",
+      "ask": "Paint the whole body matte black and put a gold hex layer on the roof alone.",
+      "expected": "body+part",
+      "part": "roof"
+    },
+    {
+      "id": "P25",
+      "ask": "Set the whole-car base to pearl blue; keep that base, then add matte gold to the hood only.",
+      "expected": "body+part",
+      "part": "hood"
+    },
+    {
+      "id": "P26",
+      "ask": "Make the entire car gold, then put a blue snake pattern exclusively on the roof.",
+      "expected": "body+part",
+      "part": "roof"
+    },
+    {
+      "id": "P27",
+      "ask": "Set the whole-car base color to #1247A8, then use the hood layer controls to add a pearl hex effect only there.",
+      "expected": "body+part",
+      "part": "hood"
+    },
+    {
+      "id": "P28",
+      "ask": "Keep a matte gold base on the full vehicle and use the roof layer controls for a blue carbon overlay just on the roof.",
+      "expected": "body+part",
+      "part": "roof"
+    }
+  ]
+}

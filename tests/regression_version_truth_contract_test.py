@@ -1,11 +1,13 @@
 def _assert_same_truth(status_payload, build_payload, info_payload):
-    assert status_payload["version"] == "6.2.0-alpha"
-    assert build_payload["version"] == "6.2.0-alpha"
-    assert info_payload["version"] == "6.2.0-alpha"
+    from config import CFG
 
-    assert status_payload["build"] == "Boil the Ocean"
-    assert build_payload["build"] == "Boil the Ocean"
-    assert info_payload["build"] == "Boil the Ocean"
+    assert status_payload["version"] == CFG.VERSION
+    assert build_payload["version"] == CFG.VERSION
+    assert info_payload["version"] == CFG.VERSION
+
+    assert status_payload["build"] == CFG.BUILD_TAG
+    assert build_payload["build"] == CFG.BUILD_TAG
+    assert info_payload["build"] == CFG.BUILD_TAG
 
     assert int(status_payload["port"]) == int(build_payload["port"])
     assert int(info_payload["port"]) == int(build_payload["port"])
@@ -37,7 +39,8 @@ def test_v5_version_truth_surfaces_agree():
 
 def test_client_version_constant_matches_canonical_server_version():
     from pathlib import Path
+    from config import CFG
 
     source = Path("paint-booth-5-api-render.js").read_text(encoding="utf-8")
 
-    assert "const CLIENT_VERSION = '6.2.0-alpha';" in source
+    assert f"const CLIENT_VERSION = '{CFG.VERSION}';" in source

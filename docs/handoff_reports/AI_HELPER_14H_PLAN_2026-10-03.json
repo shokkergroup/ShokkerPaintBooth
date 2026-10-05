@@ -1,0 +1,408 @@
+{
+  "schema": "spb-ai-helper-sprint/1",
+  "status": "superseded_by_owner_mcp_focus",
+  "started_utc": "2026-10-04T00:29:14Z",
+  "deadline_utc": "2026-10-05T04:57:58Z",
+  "deadline_local": "2026-10-04 21:29:55 America/New_York",
+  "objective": "Improve AI and offline helpers with safe scope, useful guidance and actual app outcomes.",
+  "orchestration": {
+    "planner": "gpt-6.1-sol xhigh",
+    "workers": "gpt-6-luna",
+    "max_concurrent_workers": 3,
+    "rotation": "bounded implementation then independent review; parent owns MCP/shared integration"
+  },
+  "provider_policy": "offline/local first; no DeepSeek/OpenRouter calls unless genuinely necessary",
+  "phases": [
+    {
+      "hours": "0-4",
+      "focus": "Offline self-help accuracy; compound scope; evidence and independent review"
+    },
+    {
+      "hours": "4-8",
+      "focus": "Element guidance, confirmation/teach recovery and real fixture quality"
+    },
+    {
+      "hours": "8-12.5",
+      "focus": "Cross-car workflow, routing/context usability and fresh regression probes"
+    },
+    {
+      "hours": "12.5-14",
+      "focus": "Integration freeze, live MCP checks, runtime parity and handoff"
+    }
+  ],
+  "baseline": "docs/handoff_reports/CODEX_LUNA_FIXES_2026-10-03.json",
+  "live_mcp": {
+    "session": "68a46a643f41",
+    "backend": "http://localhost:59876/",
+    "private_document": true,
+    "provider_forced_offline_in_private_document": true,
+    "verification_scope": "Read-only helper smoke and exact unchanged canvas/metadata; native mutating acceptance uses existing isolated audit backend59879."
+  },
+  "acceptance": [
+    "Focused nonempty regression suites and fresh frozen probes",
+    "No unintended scope mutation or stale-document actions",
+    "Actual app controller/UI checks through SPB MCP",
+    "Source/runtime mirrors and loaded script tokens agree",
+    "Honest distinction between recommendations, plans and applied output"
+  ],
+  "next_actions": [
+    "Finish Stack-v3 exact silver-flake/material guard and independent review",
+    "Intentionally merge W121 guidance plus separate negation guard; independent complete-module replay",
+    "Combine reviewed composition/hidden-layer/material/source candidates while preserving concurrent owner FT edits",
+    "Actual private SPB MCP modern and legacy native acceptance including full-scope pixels, Undo, material and online bridge actions",
+    "Promote only accepted candidate, verify both runtime copies and loaded source, continue useful scenarios until fixed deadline",
+    "At deadline finish current safe operation, final handoff and pause this heartbeat"
+  ],
+  "completed": [
+    {
+      "milestone": "strategic review",
+      "report": "AI_HELPER_14H_STRATEGY_2026-10-03.json"
+    },
+    {
+      "milestone": "fresh pre-sprint baseline",
+      "help_strict": "13/30",
+      "help_semantic_review": "15/30",
+      "delegation": "12/12",
+      "provider_attempts": 0
+    },
+    {
+      "milestone": "typed guidance MCP smoke",
+      "result": "save, flattened-v-layered and chrome help answered without zone/pixel/metadata changes; actual UI confirmed",
+      "limitation": "flattened definition currently gives flatten/merge instructions"
+    },
+    {
+      "milestone": "W1 independent directional scope and element lifecycle gates",
+      "status": "PASS components; whole-router gaps separate"
+    },
+    {
+      "milestone": "Same-part actual ZoneKit source gate",
+      "status": "PASS in-session component; native cross-route FAIL"
+    },
+    {
+      "milestone": "MCP completion publishing source fix",
+      "status": "Real handler VM contract PASS success/failure/ownership/UI-error; native MCP write was correctly rejected with bridge disabled, so post-promotion external-write UI acceptance remains pending"
+    },
+    {
+      "milestone": "Local fallback clarity",
+      "status": "Optional provider phrasing shared by direct ask and send; safe-edit clarification retained; focused guards PASS"
+    },
+    {
+      "milestone": "Native same-roof paint/spec change",
+      "status": "One stable roof zone; paint preview identical, spec changed, full-size mask confined to roof; Undo previews identical; provider attempts zero. Post-Undo retry clarification remains queued for W5."
+    },
+    {
+      "milestone": "Native protected-panel safe scope",
+      "status": "Actual current source asks no-queue clarification for three hood-preservation variants; metadata unchanged; zero provider attempts."
+    },
+    {
+      "milestone": "W3 stale-action independent review",
+      "status": "15/15 source contract after clone/async repairs; real native moved-target UI button PASS and fixture restored"
+    },
+    {
+      "milestone": "W4 helper semantic followup",
+      "status": "Previously fresh24 misses repaired 24/24; separate independent fresh12 PASS topical citations and edit delegation; frozen42 remains28/30strict12/12delegate"
+    },
+    {
+      "milestone": "W3 preservation wholepipeline review",
+      "status": "Fresh real router gates PASS: protection prior to compound/refine, source-colour correction, coordinated body+panel positive exceptions, atomic no-partial apply for missing finish"
+    },
+    {
+      "milestone": "W5 native Undo retry",
+      "status": "Actual same-roof chrome, Undo render restoration and chrome retry PASS; N03 Now recolour still gives generic manual answer, assigned W7"
+    },
+    {
+      "milestone": "Gen3 cold Runtime1 actual scoped-color/material and saved-part reopen",
+      "status": "PASS_WITH_LIMITS",
+      "report": "AI_HELPER_14H_GEN3_RUNTIME1_NATIVE_2026-10-04.json",
+      "provider_attempts": 0
+    },
+    {
+      "milestone": "Gen3 Runtime2 cold first saved-reopen scoped request",
+      "status": "PASS_WITH_LIMITS",
+      "report": "AI_HELPER_14H_GEN3_RUNTIME2_NATIVE_2026-10-04.json",
+      "provider_attempts": 0
+    },
+    {
+      "milestone": "Runtime3 actual full-byte identity/MCP/manual-safe Undo/material output",
+      "status": "CORE_PASS_WITH_EXPLICIT_GAPS",
+      "report": "AI_HELPER_14H_GEN3_RUNTIME3_NATIVE_2026-10-04.json",
+      "material_report": "AI_HELPER_14H_GEN3_RUNTIME3_NATIVE_MATERIAL_2026-10-04.json",
+      "provider_attempts": 0
+    },
+    {
+      "milestone": "Spec-only current-root installation and selected PSD import completion",
+      "status": "INSTALLED_SPEC_ONLY_PASS_AND_10_PSD_IMPORTS",
+      "checkpointUTC": "2026-10-04T18:52:58.784848+00:00",
+      "broaderAIInstalled": false
+    }
+  ],
+  "baseline_sha256": {
+    "js/spb-ai-atlas-data.js": "bc9736361ed991745828da6bef14b55f8a8cbf6909a52e25b84a005dd94836e8",
+    "js/spb-car-atlas-data.js": "7db4aded317b8fa678fb3a6f800eaf078e146f367062ea0886acfbc40fd29476",
+    "js/spb-car-edge-data.js": "9a6bea3164177b99c8aeda81be0f0dd6066f5f08e2b260f033eac18e49eea358",
+    "js/spb-car-edge.js": "74b895ec0419df17e482b506eb52eb11a9ca4c3d532f7869979a8d856ed39384",
+    "js/spb-car-islands-data.js": "e356dfc616662c3c0bd34132677306339276953386dc37b04a5fc315b948a579",
+    "js/spb-ai-atlas.js": "68aab458fb74fbd70836271ef7ddc93821b7a6bbe67dc53cdd6e054a83d69633",
+    "js/spb-ai-cards-data.js": "134082b15b089c5c4a63134503202c03c84fb3c5ccc9a0e538595a83b0f197f2",
+    "js/spb-ai-cards.js": "96935f47182e8b533a403b6f4f5e61094f61179c8d8c7486bd562cf8dfde77a0",
+    "js/spb-ai-knowledge.js": "e2a1647af707d2bfe5ea09ed64adabad1bf3db341df8d7b61dc8c01508774c97",
+    "js/spb-colours-ext.js": "af642bf2b2f2405aec8ca01438767e6f4981cbe86cd2c1242019a8a8e2ed304d",
+    "js/spb-intent-data.js": "4db3a36743554c7b769e2c2119cc086e8f375a2b1ec5ad8b645d8eca3e7aeacb",
+    "js/spb-intent.js": "bde8b935b71c9e176b559e89df6b36d6edc2444c0efa6edd16fc89251eab91df",
+    "js/spb-lexicon-ext.js": "410df33c7455cdbaaf7f022dcd5fb0fc9e3a7b18344b93338a79d0f7f1e6eb01",
+    "js/spb-lsa-data.js": "1b669a9c779f59d687f29932ab411aeab804e5993c10abdc227e61ce75c3dea3",
+    "js/spb-pro-advisor.js": "e63f01463d349051d57f78a8fc2a1144ce68dfd8b0bcf58774ea3a265cc4f5d8",
+    "js/spb-pro-design.js": "8f74b76b78c05ecc2c6a5811315649cbbb98062b1a55bc9476342cde2c95f80b",
+    "js/spb-pro-edit.js": "78ce952c1501bc1f523b79fb568c3fa35be61d4f2b0425a7e6b8648229a10aa0",
+    "js/spb-elements-model.js": "0bb21484fea028bf495c8559259928911891a5f4533e90a6c2f7088b32b65e18",
+    "js/spb-pro-elements.js": "1d9ab00234211db989dd6251485bb47755560fc65aee3a0cd896460c18f5f8fc",
+    "js/spb-pro-zone-kit.js": "692f8307dd3262816fa6940c70dfadd31bd3f2ea97f8fbdb18447866001c792b",
+    "js/spb-pro-ai.js": "98de2bd733a41275679c1c329d3dc0a1d68c68b4c80bfe9145e0059fc861a5bf",
+    "js/spb-self-help.js": "d5b2011b6ff9941d51ae4d6dbd677cddbb4c1d428a9bb4ac7dd881de73d1e256",
+    "js/spb-pro-rank.js": "255d38adf099818cd5cb64f93af399dc03e8d32115a7f1c2ac3299540e2929cd",
+    "mcp/server/index.js": "3937e7d63fc0e1f40dfed7988f6ed0520da2f840405849d1b05a18a01c736860",
+    "mcp/server/tools.json": "fe5d3de9b88c1c932af8c71b84c808c9c86581941208cdd8ee2288dcab0046ea",
+    "paint-booth-v2.html": "2f88c3c7c6c671b4b92dc35e43d6418c9daec708f45fe3904c8e2e6fbe701350",
+    "paint-booth-3-canvas.js": "f55880174d7aff86f44f8ee5b0c28aff31cddcde6491386d558ec16a27b98f56",
+    "js/spb-pro-carmap.js": "4e2d851c7a43b072db10874b52c988f1deab6e0c9dfca0f541db0c6827c955d4",
+    "server_routes/ai_car_routes.py": "ca6296edd2421936f9e751f84bc9f7863e71fa8269eaf8cfe824fe631f0a1ec5"
+  },
+  "heartbeat_id": "spb-ai-offline-helper-14-hour-sprint",
+  "confirmed_gaps": [
+    "Current CHAT Studio is reported as pro by selfhelp state; invisible Pro controls are named without a Full editor handoff",
+    "Directask API differed from typedhelp routing; root patch pendingreview",
+    "Samepart followups deliberately do not merge and can lose prior recolor",
+    "FreshS10leftonly widenedto bothsides; repairawaitingindependentrerun",
+    "Samepart guard usednonexistentactualzone.region; independentrealZ.add testblocks firstrepair",
+    "Selfhelp DoIt actions useonlyindex: stale doc/removal/reorder/missingpaint produceswrong action orfalse Done; executable4failuregate queuedW3"
+  ],
+  "current_wave": "Spec-only installed; broader Gen3 HOLD; reviewed material/negation/guidance integration with preserved owner FT work",
+  "audit_mcp": {
+    "session": "6b4fae0aab57",
+    "backend": "http://localhost:59879/",
+    "private_document": true,
+    "provider_guards": true
+  },
+  "last_checkpoint_utc": "2026-10-04T18:52:58.784848+00:00",
+  "open_gaps": [
+    "Broad Gen3 remains uninstalled; Runtime12 actual conflicts/prohibition HOLD",
+    "Exact silver flakes must not compile gold_flake",
+    "Strict door geometry and generic sticker/graphic placement",
+    "Same-target complete instruction ownership across owner FT partial route",
+    "Combined candidate independent and actual modern/legacy MCP acceptance"
+  ],
+  "native_audit_sessions": [
+    "6b4fae0aab57",
+    "4e06e064fcb3",
+    "b4d03aa67f3b",
+    "a95315f5c001",
+    "1eae5becd8e6",
+    "0b020fbdf3b3",
+    "b61566a2e65c"
+  ],
+  "provider_usage": {
+    "actualProviderCalls": 0,
+    "blockedRootOptionalVisionSetupAttempts": 1,
+    "fixtureImportNewAttempts": 0
+  },
+  "queued_followups": [
+    {
+      "lane": "self-help W3",
+      "work": "Bind Do-it actions to current document and target; Chat-aware guidance and visible Full editor handoff; independent lifecycle/mode red gates + real MCP moved-zone repro."
+    },
+    {
+      "lane": "coverage audit correction",
+      "work": "Fix generic part-only target oracle and include legacy offlinePart candidates before coverage conclusions; whole router only; no provider calls."
+    },
+    {
+      "lane": "car-map identity audit",
+      "work": "Read-only audit same-dimension/layer metadata collision, warm-up timing, loaded paint vs output folder, and offline ensure() label attempts. No production teaching or provider calls."
+    },
+    {
+      "lane": "spec-only composition audit",
+      "work": "Read-only isolate actual shared renderer/source-color restore after broad repaint; assess safe helper dispatch or material-only route without finish/catalog edits."
+    },
+    {
+      "lane": "lease/cancel recovery",
+      "work": "Delayed reply/preview, stop, takeover and current-document ownership; no stale writes or stranded composer."
+    }
+  ],
+  "coverage_integration_gate": {
+    "status": "source-pass-native-pending",
+    "design_sha256": "0f5a99f5ecca374c955df54ae31e6b1e4f4b5ea559284c396c84bf0c38bb2d7b",
+    "helper_checks": "23+33 pass; three new punctuation cases pass, summary-tail extra retained/rejected",
+    "remaining": "Generation2 cold native paint/spec/mask/Undo acceptance"
+  },
+  "latest_native_report": "docs/handoff_reports/AI_HELPER_14H_W7_NATIVE_CHECKPOINT_2026-10-03.json",
+  "car_identity_gate": {
+    "audit": "12 frozen actual-function scenarios, fake I/O only",
+    "source_sha256": "4e2d851c7a43b072db10874b52c988f1deab6e0c9dfca0f541db0c6827c955d4",
+    "measured_gap": "Pending ensure publication is not bound to source; pending default ensure may be returned by ensure(false)",
+    "repair_lane": "W13 source/pending descriptor only; preserve public geometry signature and intentional teaching reuse",
+    "status": "source-pass-independent-review-active"
+  },
+  "lifecycle_gate": {
+    "baseline": "7/10 lifecycle review, fake provider/controller effects",
+    "design": "AI_HELPER_14H_W10_LIFECYCLE_DESIGN_2026-10-03.json",
+    "primitive": "js/spb-ai-operation.js; independent review active; not installed",
+    "status": "preparing"
+  },
+  "concurrent_source_coordination": {
+    "file": "js/spb-pro-ai.js",
+    "frozen_sha256": "115f602d49e465b6f49530b07a4c2e4b81e8d6089c2d8204bcae9d57807690d4",
+    "observed_later_sha256": [
+      "98c794745e62b53badeb07e9b7f7f80b6c52d1d36c137abe94afd2c48ceeecfc",
+      "470f2a25c39fdada2ef618e184d5c03046a99f53350f4b68792e6bdc356e878a"
+    ],
+    "scope": "COPILOT-FIX progress/model tally/postcheck edits outside root/subagents; preserved",
+    "status": "Shared lifecycle edits paused; optional owner coordination question pending; independent lanes continue",
+    "native_session_pinned": "f6e712ef218a",
+    "generation2_snapshot": "_easy_claude_work/ai14h_generation2_sources"
+  },
+  "generation2_promotion": {
+    "token": "20261003ai14h2",
+    "files": 10,
+    "scoped_mirror_check": "30/30 PASS at04:26 before later concurrent proAI writes",
+    "main_manifest_count": 906,
+    "native_status": "in progress; simple chrome retains red/sameUUID6, extended keep-red wording added unwanted Cross Colors layer and was undone"
+  },
+  "checkpoint_0506_utc": {
+    "native_generation2": "docs/handoff_reports/AI_HELPER_14H_GENERATION2_NATIVE_CHECKPOINT_2026-10-03.json",
+    "stack_recheck": "unchanged W14 oracle;3complete/12safe ask/0unsafe; proAI snapshot115f; D0533 E a328; final native effects mocked",
+    "project_ownership": "static source audit confirms omission; cross-reload ownership not claimed",
+    "material": "roughness native spec changes/paint and Undo exact; negative CC floor hypothesis being checked",
+    "coordination": "external copilot writer preserved; parent lifecycle integration parked; other lanes active",
+    "audit_integrity": "W19 preserves invalid all24-provider rerun and repairs missing helper dependency; no provider call",
+    "paid_provider_calls": 0
+  },
+  "checkpoint_0532_utc": {
+    "W16_route": "3complete/12safe/0unsafe unchangedoracle",
+    "W21_route": "5completewithmockedapplyUndo/3safe/0gaps; oldproAI115f+D0f5 withsnapshotE3019",
+    "W19": "24diagnostic observations17localclaims/7provider-ward; realmaterialdependency fixed; historicalinvalidreport preserved",
+    "W20": "aliasesremovedfromhumananswer whileindexretained; modespecificguide; testonlynocoldnativeyet",
+    "W22": "gen2nativeowned-bluegapold115f/d4cd; currentexternal93bf zoneColours newfeature present, scopeauditW23 beforeacceptance",
+    "W10_candidate": {
+      "path": "_easy_claude_work/ai14h_w10_candidate/js/spb-pro-ai.js",
+      "sha256": "ca049670c26c7e24960a81b7d4ac6402362c4c2e4db954dbe5774aabb0011200",
+      "installed": false,
+      "reviewed_snapshot_in_progress": "d042c12ab692d2c657048e2e61c56ff9393463b77f153009dc457a9ca83fd27a",
+      "remaining": "legacy async/UI/MCP ownership hooks and independent route/native"
+    },
+    "coordination": "external writer also editsE place/objectscope aswellasproAI; preserve changes and usefrozenexactsource reviews",
+    "paid_calls": 0
+  },
+  "checkpoint_0557_utc": {
+    "W24": "original16 cases pass ca049; mocked native/provider",
+    "W28": "unguarded delayed support/refine/teach/card/kit findings, repaired isolated50c4 awaiting review",
+    "W27": "14 unchanged oracle observations:11 scoped/mixed rejected; exact owned roof gap remains",
+    "W29": "new comment swallows Undo assignments; native experimental symptom and current-source confirmation; candidate609b uninstalled, independent review active",
+    "W31": "precise registered/current-mask scoped colour bridge candidate in progress",
+    "W26_W30": "part memory pure module18 cases passes; independent proof review active; project integration/native pending",
+    "provider_attempts": 0,
+    "coordination": "External proAI/E writer preserved; scoped exact-byte snapshots; no current root sync acceptance claimed"
+  },
+  "checkpoint_0628_utc": {
+    "W29": "root609b bookkeeping repair +independent4/4 +private native actualUndo zones/paint/spec exact",
+    "W20": "private native actualroute guide noaliases; zones/paint/spec/layerRev exact; coldUI notclaimed",
+    "W34_W37": "concrete nativepartialCarbon fallback; Undo recovered; dispatchguard12cases candidate underindependentreview",
+    "W31_W35": "scopeproofcandidate8cases; queue/applytime revalidation missing, reviewactive",
+    "W38": "staged project metadata/persisted owner source proof prototypeactive",
+    "lifecycle": "rootrebasedphase4 353 original16oracle pass, actualnative/provider effects mocked; phase5 sourceboundrecipe/snapshot controls uninstalled",
+    "W36": "generationlease candidate only; rootfinish/MCP callers requiretokenization; corewrapper notneeded",
+    "provider_attempts": 0
+  },
+  "checkpoint_0643_utc": {
+    "timestamp": "2026-10-04T06:44:12.857868+00:00",
+    "external_controller": "7986424f preserved; isolated lifecycle5ecb rebased",
+    "W35_W40": "independent1/12 desired outcomes; proof drops before apply; repair active",
+    "W37_W43": "Make guarded; Put bypasses; preservation alias gap; repair active",
+    "W38": "10 serializer mock roundtrips candidate pass; committed/pending source API needed",
+    "W41": "new Undo/Redo review active",
+    "provider_attempts": 0
+  },
+  "checkpoint_utc": "2026-10-04T14:16:10.373348+00:00",
+  "current_runtime": {
+    "version": "Runtime12",
+    "installed": false,
+    "coreActualNativePassed": true,
+    "fileByteIdentityAndTgaColdReopenPassed": true,
+    "actualChatGPTMCP22EditUndoPassed": true,
+    "installationHeld": true,
+    "reasons": [
+      "Actual public ask conflict roof matte and chrome queues unintended body chrome",
+      "Actual prohibition plus explain queues a history toggle"
+    ],
+    "next": "Runtime13 private independently reviewed corrections then actual modern/legacy MCP gates",
+    "additionalReviewGaps": [
+      "Unsupported tails/current-color assertion compiled-plan review",
+      "Implicit-body safety retained; complete legitimate layered intent pending"
+    ]
+  },
+  "lastCheckpointUTC": "2026-10-04T17:50:40.295324+00:00",
+  "currentIndependentGates": {
+    "W119Help": "49 passive native questions preserve state; fresh W121 broader semantics repair under review",
+    "DurableMemory": "strict fb63 VM17 controls and actual saved PSD/TGA cold source identity pass",
+    "TgaCache": "00bd immutable bytes/cache lock independent15 controls +actual same-path/same-size/same-mtime replacement native pass",
+    "TgaConsumer": "d02 VM and all12 source file SHA native pass",
+    "SolidModifier": "successor valid mixed-clause tests pass; same-part conflicting finish existingP1 reproducednative; held",
+    "MCPBridge": "hidden-layer7BD successor independently27 assertions pass; native pending, old schema finding corrected as test stub falsepositive",
+    "MaterialWording": "C279 range guard independent48 assertions pass; realized builder clamp repair active",
+    "SpecPreview": "5019 imported-path preview hash candidate10-case pass; independent/native pending"
+  },
+  "next": [
+    "Finish minimal Runtime13 prohibition/conflicting finish/guidance/material/spec freshness repairs and independent reviews",
+    "Freeze exact sources; actual modern/legacy offline, ChatGPT MCP, varied PSD/TGA and visual spec gates",
+    "Guarded source+scoped Electron mirror install; native recheck installed sources and required smoke/picker checks",
+    "Continue fresh useful scenarios through owner deadline2026-10-05T01:29:55Z"
+  ],
+  "deadline_history": [
+    {
+      "superseded_deadline_utc": "2026-10-04T14:29:14Z",
+      "owner_extension_received_utc": "2026-10-04T13:29:55Z",
+      "duration_hours": 12
+    }
+  ],
+  "fixture_roots": [
+    "C:\\1Shokker Paint Car Examples",
+    "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint"
+  ],
+  "fixture_progress": {
+    "inventoryPSDs": 10,
+    "inventoryTGAs": 12,
+    "actualNativePSDs": 6,
+    "actualNativeTGAs": 12,
+    "originalsUnchanged": 22,
+    "report": "docs/handoff_reports/AI_HELPER_14H_CUSTOMER_NATIVE_FIXTURES_2026-10-04.json",
+    "next": "Actual raw-TGA byte identity, cache reload, paired paint/spec, Save/Open and legacy fallback in Runtime12",
+    "sourceByteNativeTGAs": 12,
+    "privateTgaReplacementAndColdSaveOpen": "PASS exact full2048 pixels+fileSHA; customeroriginals untouched",
+    "specMapsUIImports": 3,
+    "specVisual": "Not accepted yet: active import path changed but spec preview unchanged; freshness/overlay pipeline verification active"
+  },
+  "heartbeat_interval_minutes": 10,
+  "heartbeat_policy": "Owner explicitly requested ten-minute recovery; continue active work between checks until fixed deadline.",
+  "spec_import_checkpoint": {
+    "stateCA27": "independent16 PASS; actual same-path B\u2192A expected preview, paint/source exact, provider0",
+    "state20DA": "root8 PASS; independent/native project-null restore pending",
+    "unused882": "Loaded module never installed; not native acceptance",
+    "rawReport": "_easy_claude_work/ai14h_generation3_audit/active-spec-visual-native-records.json"
+  },
+  "worker_recovery": "Inspect collaboration statuses; explicitly followup_task useful interrupted assignments; no message-only resume assumption",
+  "current_native_sessions": [],
+  "latest_spec_only_install": {
+    "status": "INSTALLED_SOURCE_AND_MIRROR_PASS",
+    "report": "AI_HELPER_SPEC_ONLY_INSTALL_2026-10-04.json",
+    "native": "AI_HELPER_SPEC_ONLY_NATIVE_2026-10-04.json",
+    "activation": "next reload/new document; owner document/backend not restarted"
+  },
+  "selected_fixture_acceptance": {
+    "psd_actual_imports": 10,
+    "psd_selected": 10,
+    "tga_actual_native_cold_reopens": 12,
+    "tga_selected": 12,
+    "additional_psd_report": "AI_HELPER_ADDITIONAL_PSD_NATIVE_2026-10-04.json",
+    "limits": "selected diversity, not all car types or Photoshop-equivalent layer-feature fidelity"
+  },
+  "supersededUTC": "2026-10-04T19:01:28.313261+00:00",
+  "successor": "AI_HELPER_MCP_10H_PLAN_2026-10-04.json"
+}

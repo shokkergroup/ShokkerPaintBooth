@@ -1,0 +1,96 @@
+{
+  "review": "W37 independent complete-instruction guard review",
+  "date": "2026-10-04",
+  "status": "BLOCKED",
+  "frozen_inputs": {
+    "candidate_guard": {
+      "path": "_easy_claude_work/ai14h_w37_frozen/js/spb-ai-complete-instruction-guard.js",
+      "sha256": "9931DA531D064B8F32F2CF4B1BFA7F03D0A42DC6E0CAD698DBD6B9E94CE02C84"
+    },
+    "candidate_pro_ai": {
+      "path": "_easy_claude_work/ai14h_w37_frozen/js/spb-pro-ai.js",
+      "sha256": "39FBB9A1CBB421347763BA78B6D8E3E0307B082A2DB42B09DE0D8AC705BEAF9A"
+    },
+    "planner_inputs": {
+      "pro_design_sha256": "0533393FF5F2170236F60D4ED489C7AE52F98805E12B0764DA67A967F756F2E8",
+      "pro_edit_sha256": "D940E6688B3ED5E8FA0514C8774E73A4A2B564AD723E507166248E3E97AC75D0"
+    }
+  },
+  "fresh_oracle": {
+    "path": "tests/ai_offline_atomic_constraints_review_contract.cjs",
+    "count": 12,
+    "sha256": "5ED699B9AFD0833874F30E9B6ECF3ABE19DAFFE49A032BECDC7BD227A3BEF42E",
+    "results": {
+      "expected_atomic_clarifications": 2,
+      "guarded": 1,
+      "missed": 1,
+      "positive_or_help_prompts_not_blocked_by_guard": 10
+    }
+  },
+  "blockers": [
+    {
+      "priority": "P1",
+      "case": "finish-stack-keep-current",
+      "request": "Put a matte black base and gold carbon overlay on only the roof; keep its current paint color.",
+      "observed": "Guard inspect() returned null. The source-extracted ask() with configured=true and the actual offlineCanHandle() continued past preflight to the controlled askCore/provider boundary.",
+      "why": "This is an unresolved color-preservation versus layered repaint request. Continuing to a model route permits the exact partial/contradictory behavior this guard is meant to stop.",
+      "source": "_easy_claude_work/ai14h_w37_frozen/js/spb-ai-complete-instruction-guard.js:6,12-13",
+      "cause": "CHANGE omits the imperative verb 'put'; the overlay branch only runs when CHANGE matches the request after preservation text is stripped.",
+      "route": "_easy_claude_work/ai14h_w37_frozen/js/spb-pro-ai.js:1865-1871,2364-2382"
+    },
+    {
+      "priority": "P1 integration caveat",
+      "case": "native-current-source",
+      "request": "Make the roof matte black with a gold carbon overlay, but keep its current paint color.",
+      "observed": "The frozen W34 candidate guard itself returns a clarify result. This review did not exercise the installed native app; the parent separately observed that the currently loaded live fallback applied through a legacy look route.",
+      "why": "The candidate is not installed. Its passing guard response cannot close the live-route containment finding until the integration path is installed and native acceptance repeats this exact request."
+    }
+  ],
+  "positive_and_conservative_results": [
+    {
+      "case": "chrome-finish-keep-red",
+      "result": "Guard passes. The real edit parser yields one roof/chrome operation with color null, no unknown clauses, exactPart true. This is correct finish-only planning; no queue application was performed."
+    },
+    {
+      "case": "chrome-finish-keep-navy",
+      "result": "Guard passes, but the real edit parser emits the hood/chrome op plus a global navy color target and unknown clause 'leave current alone'. Do not claim correct finish-only completion from the guard pass; downstream compile/apply was not run."
+    },
+    {
+      "case": "roof-red-keep-sponsors",
+      "result": "Guard passes and the actual router delegates to part-coverage handling. Only the handler boundary was mocked; no paint queue was applied."
+    },
+    {
+      "case": "quoted-preservation-phrase",
+      "result": "Guard passes, but the edit parser treats the quoted hood wording as a protected part and asks with an empty queue. Safe but over-conservative, outside the guard itself."
+    },
+    {
+      "case": "separate-part-color-facets",
+      "result": "Guard passes, but the edit parser treats 'keep the hood navy' as preservation and asks before changing the roof. Safe no-queue, not completed."
+    },
+    {
+      "case": "explicit-unrelated-instruction",
+      "result": "Guard passes, but the edit parser produces an extra sponsors operation with unknown 'keep unchanged' alongside roof red. The route harness captured the plan only; real compilation is unverified."
+    },
+    {
+      "case": "help/advice prompts",
+      "result": "Guard does not block the how-to or advice questions. Test help ownership was stubbed to avoid help-catalog or provider calls."
+    }
+  ],
+  "route_checks": {
+    "command": "node tests/ai_offline_atomic_constraints_review_contract.cjs",
+    "result": "BLOCKED as expected: one fresh safety formulation bypasses the guard; exact Make formulation stopped at four extracted real route boundaries (offlineAskCore, ask configured=true, send, offlineLookAsk), with queue length 0 and calls 0.",
+    "configured_false_and_true": "Both exercised at actual ask/send boundaries. The missed 'put' case crossed ask() to a controlled provider stub; no real provider was called.",
+    "route_harness_limit": "Candidate proAI boundary functions and actual W34 D/E planners were evaluated. offlineEditAsk and part-coverage application were stubbed for positive dispatch observations; no queued paint was applied.",
+    "external_calls": {
+      "provider": 0,
+      "native": 0,
+      "browser": 0
+    }
+  },
+  "limits": [
+    "This is candidate review, not native/MCP acceptance and not proof of installed containment.",
+    "Only the guard and candidate proAI were byte-frozen for this lane; planner D/E were separately hash-pinned W34 fixtures.",
+    "A guard pass means delegation only. Positive parse plans with global targets, unknown clauses, or protected-part asks were not credited as completed.",
+    "The narrow guard correctly avoids blocking tested finish-only red, sponsors-unchanged, quote/help/advice, and separate-part formulations at its own preflight; downstream conservative asks and parse defects remain separately reported."
+  ]
+}

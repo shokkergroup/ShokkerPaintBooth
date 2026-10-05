@@ -1,0 +1,109 @@
+{
+ "mined": 801,
+ "pair_ground_truth": [
+  {
+   "src": "dlm350",
+   "id": "1155350",
+   "skipped": "delta_frac=0.72567 > 0.10 (revision drift)"
+  },
+  {
+   "src": "dlm350",
+   "id": "1171722",
+   "skipped": "delta_frac=0.66178 > 0.10 (revision drift)"
+  },
+  {
+   "src": "dlm350",
+   "id": "23371",
+   "gt_boxes": 3,
+   "pred_boxes": 52,
+   "gt_hit": 1
+  },
+  {
+   "src": "dlm350",
+   "id": "397873",
+   "skipped": "delta_frac=0.81067 > 0.10 (revision drift)"
+  },
+  {
+   "src": "dlm350",
+   "id": "451797",
+   "skipped": "delta_frac=0.90328 > 0.10 (revision drift)"
+  },
+  {
+   "src": "dlm350",
+   "id": "767079",
+   "skipped": "delta_frac=0.47312 > 0.10 (revision drift)"
+  },
+  {
+   "src": "dlm350",
+   "id": "845708",
+   "skipped": "delta_frac=0.99811 > 0.10 (revision drift)"
+  },
+  {
+   "src": "dlm358",
+   "id": "1016010",
+   "skipped": "delta_frac=0.9603 > 0.10 (revision drift)"
+  },
+  {
+   "src": "dlm358",
+   "id": "1157074",
+   "skipped": "delta_frac=0.81871 > 0.10 (revision drift)"
+  },
+  {
+   "src": "dlm358",
+   "id": "1249179",
+   "skipped": "delta_frac=0.95263 > 0.10 (revision drift)"
+  },
+  {
+   "src": "dlm358",
+   "id": "23371",
+   "gt_boxes": 3,
+   "pred_boxes": 52,
+   "gt_hit": 1
+  },
+  {
+   "src": "dlm358",
+   "id": "233946",
+   "skipped": "delta_frac=0.80347 > 0.10 (revision drift)"
+  },
+  {
+   "src": "dlm358",
+   "id": "589408",
+   "skipped": "delta_frac=0.41315 > 0.10 (revision drift)"
+  },
+  {
+   "src": "dlm358",
+   "id": "673526",
+   "skipped": "delta_frac=0.87497 > 0.10 (revision drift)"
+  }
+ ],
+ "number_block_census": {
+  "roof_number": {
+   "liveries": 801,
+   "num_owned": 258,
+   "spon_owned": 241,
+   "both": 64,
+   "empty": 238
+  },
+  "door_number_upper_side": {
+   "liveries": 801,
+   "num_owned": 268,
+   "spon_owned": 292,
+   "both": 125,
+   "empty": 116
+  },
+  "door_number_lower_side": {
+   "liveries": 801,
+   "num_owned": 221,
+   "spon_owned": 364,
+   "both": 98,
+   "empty": 118
+  },
+  "nose_number_small": {
+   "liveries": 801,
+   "num_owned": 3,
+   "spon_owned": 362,
+   "both": 1,
+   "empty": 435
+  }
+ }
+}

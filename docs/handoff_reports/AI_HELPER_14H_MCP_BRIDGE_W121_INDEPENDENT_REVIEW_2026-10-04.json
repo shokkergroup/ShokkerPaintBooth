@@ -1,0 +1,71 @@
+{
+  "workItem": "Independent MCP bridge successor review",
+  "createdUTC": "2026-10-04",
+  "status": "PASS_WITH_LIMITS",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_mcp_bridge_independent_review/own-oracle.json",
+    "sha256": "6A2F7E9F99C2F14183005AD36469D1AE446F0CA0073104BA1CA7CD6584228D77",
+    "frozenBeforeCandidateInspectionOrExecution": true,
+    "cases": 20
+  },
+  "candidatePins": {
+    "controller": "7BD14D472E65A4C52A723B21413CA7D4A7A41D7902FC54791F51159A2E15BA21",
+    "serverIndex": "AA87F918030CFC6B51E1949C369B15DAB430558792C15D541CA355B35486F7C0",
+    "tools": "E6D52D6824D526536CDDBB67DE980C99531A6FD14D3E7712DB2D6D2AC6A103D2",
+    "pageBridge": "687A34025D594DF81EF0A2B95BCA4FAC567B48B646B6653008D0CEBAA75848E6",
+    "zoneKitSchemaSource": "6968963FC8D382E3ECDA629089A71A73A519270C0B577E98DF03D9F7D48D68D0",
+    "operation": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6",
+    "lease": "DE276372A763310EC051DB141FCB1D601E11DBF193843E2B21A405226F782134",
+    "route": "B1B469DB429D4F65F36023E4D0AA8F5DF44C9119561D9F1A845BAE50FBBB4E69"
+  },
+  "test": {
+    "path": "tests/ai_mcp_bridge_independent_successor_review.cjs",
+    "sha256": "972DC80E99218806A7BACC3D5AB34AAA9B6A7D13677E5BBFF79B799A44E1F9EA",
+    "executedRows": 27,
+    "result": "PASS"
+  },
+  "observations": [
+    {
+      "area": "stable-targeting",
+      "result": "PASS",
+      "evidence": "Unique zone ID dispatched to matching queue target; absent/duplicate IDs, duplicate name-only resolution, stale index/name, and mismatched ID/name refused without additional queue writes. Explicit ID still resolved despite duplicate display name."
+    },
+    {
+      "area": "layer-state",
+      "result": "PASS_WITH_SAFE_REFUSAL",
+      "evidence": "Visible exact layer accepted. Hidden-layer material/opacity edit refused; explicit show accepted for unlocked hidden layer. Locked edit and locked hidden show both refused without queue writes."
+    },
+    {
+      "area": "source-and-revision",
+      "result": "PASS_IN_CONTROLLED_RUNTIME",
+      "evidence": "Generation/fingerprint changes before or during handler validation refused before applyQueue. A supplied stale scoped proof also refused."
+    },
+    {
+      "area": "cold-weak-memory",
+      "result": "PASS_FAIL_CLOSED_STUBBED_PROOF",
+      "evidence": "Caller-supplied scoped owner data is rejected when current proof callbacks return missing/false; this does not exercise the real persisted-memory runtime or CAR mask implementation."
+    },
+    {
+      "area": "read-only-and-errors",
+      "result": "PASS",
+      "evidence": "Actual page get_help bridge response posted once; preview had no apply; unsupported operation had no fallback; forced applyQueue failure reported zero applied and one failed."
+    },
+    {
+      "area": "schema-and-annotations",
+      "result": "PASS",
+      "evidence": "Harness loaded actual ZoneKit SCHEMA literal (19 keys), actual specProps/list_tools, actual bundled MCP allTools/callTool dispatcher and alias map. Runtime/bundle payload fields matched. Read-only tools are annotated readOnly; for write tools destructiveHint true matched replacing/editing operations and false matched additive operations."
+    }
+  ],
+  "annotationSemantics": "MCP tool hints are descriptive client-facing metadata, not authorization. readOnlyHint=true declares no environment changes; destructiveHint=true warns the tool may perform destructive updates; destructiveHint=false indicates an additive-only write. These hints do not replace dispatcher validation or access control.",
+  "limits": [
+    "In-memory VM and applyQueue stubs only; no real MCP transport process/server, renderer, browser, native app, or paint mutation.",
+    "CAR and current part-owner proof callbacks were controlled stubs. The observed weak-memory refusal establishes fail-closed behavior when proof is missing, not successful proof hydration or live mask correctness.",
+    "The locked hidden-layer show oracle allowed visibility-only restoration if lock remained intact; implementation refused it, which is safe but less permissive."
+  ],
+  "effects": {
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "backendCalls": 0,
+    "customerFilesTouched": false
+  }
+}

@@ -1,156 +1,217 @@
 # SPB Release Process
 
-> How to ship a tagged release.
+Status: current release contract for the 10.x line. The executable release workflow is
+`spb_release.ps1`; this document explains the gates around it.
 
-This is the checklist the Release Agent runs. If you're cutting a release manually, follow it step-by-step.
+Release identity covers `VERSION.txt`, `electron-app/package.json`, `config.py`
+(`VERSION` and `BUILD_TAG`), and the browser `CLIENT_VERSION` in
+`paint-booth-5-api-render.js`. `node scripts/spb_current_state.js --check-version`
+is the fast non-mutating check, and the release preflight runs it automatically.
 
----
+> **Executed walkthrough:** `docs/RELEASE_HANDOFF_CODEX_2026-09-09.md` — every step as actually run for 10.0.1 and 10.0.2, the helpers in `scripts/release/`, and the traps in the order they bite. Read it before your first release.
 
-## Release Cadence
+## Non-negotiable rule
 
-- **Patch releases** (`6.1.1`, `6.1.2`): as needed for bug fixes, usually weekly during Gold-to-Platinum.
-- **Minor releases** (`6.1.0`, `6.2.0`): every 3–4 weeks; new features bundled.
-- **Major releases** (`7.0.0`): reserved for breaking changes or Platinum GA.
+A release command verifies a prepared candidate and its version identity. It never repairs, synchronizes,
+re-baselines, or silently accepts the candidate while building it.
 
-Version numbers follow **SemVer** even during the pre-1.0-equivalent Gold-to-Platinum phase.
+## Candidate requirements and identity
 
----
+Before `spb_release.ps1 -Phase build`:
 
-## Pre-Release Checklist
+- Use the canonical workspace from `WORKSPACE_LOCATION.md`.
+- Choose a new SemVer version. Never reuse a version whose installer/feed was
+  already staged or published.
+- Keep `electron-app/package.json`, `config.py`, and `VERSION.txt` consistent.
+- Root is the hand-edited source; `electron-app/server/` is the only runtime
+  mirror. The deleted PyInstaller `_internal` tree must not be recreated.
+- Run root-to-mirror synchronization deliberately, review what changed, then
+  require `node scripts/sync-runtime-copies.js --check` to pass.
+- Resolve every P0 in the current release lane or explicitly scope it out in the
+  dated gauntlet with owner approval.
+- Use canonical fixture `spb-chevy-truck-2048-v1` exactly as pinned (including
+  SHA-256 and five-zone setup) in `docs/SPB_RELEASE_GAUNTLET.md`.
 
-### T-minus 1 week
-- [ ] Merge all targeted PRs to `main`.
-- [ ] Verify CI is green (if configured).
-- [ ] Update `PRIORITIES.md` to reflect what made it in vs. slipped.
-- [ ] Tag candidate Discord testers for a beta flight.
+For a compact, machine-readable snapshot of version identity, critical source
+hashes, dirty-source count, mirror state, manifest pins, gates, and blockers:
 
-### T-minus 3 days
-- [ ] Run `pytest tests/` — must be green.
-- [ ] Run `benchmark_finishes.py` — compare against prior release; flag regressions.
-- [ ] Smoke-test: render 10 liveries across 10 different finishes.
-- [ ] Verify 3-copy sync on all modified Python/JS files.
-- [ ] Draft `CHANGELOG.md` entry (let release agent own, but review).
-- [ ] Draft `SPB_RELEASE_NOTES.md` entry (user-facing; let docs agent own).
-
-### T-minus 1 day
-- [ ] Update version in `electron-app/package.json`.
-- [ ] Update version in `README.md` (Top 10 Features if relevant).
-- [ ] Update version in `SPB_FEATURES.md` header.
-- [ ] Final review of `CHANGELOG.md`.
-- [ ] Build a test installer via `npm run build`.
-- [ ] Install on a clean VM and run the [BUILD.md verification steps](BUILD.md#verifying-the-build).
-
----
-
-## Cutting the Release
-
-### 1. Tag
-```bash
-git tag -a v6.2.0 -m "v6.2.0 — Boil the Ocean"
-git push origin v6.2.0
+```powershell
+node scripts/spb_current_state.js
 ```
 
-### 2. Build
-```bash
-cd electron-app
-npm run build
+This command is read-only. Its `release.eligible` field stays false until the
+isolated suites, dated gauntlet, and packaged-smoke evidence exist; a green
+manifest check alone is never reported as a suite run.
+
+## Required gates and phase boundary
+
+The preflight is non-mutating and phase-aware:
+
+```powershell
+node scripts/spb_release_preflight.js --mode=prebuild
+node scripts/spb_release_preflight.js --mode=prestage
+node scripts/spb_release_preflight.js --mode=activate
+node scripts/spb_release_gate_status.js
 ```
 
-### 3. Verify
-- Run installer on a fresh Windows VM.
-- Check file size is reasonable (<250 MB).
-- Launch and render a test livery.
+Every mode checks version identity, context integrity, pinned Layer/Easy plans,
+featured-Easy quality, the canonical fixture, two-copy sync, file budgets, and
+generated drift. `prebuild` requires source/isolated/gauntlet evidence but does
+not require an installer or packaged smoke. `prestage` requires the built
+distributable/feed hashes but not packaged smoke; `activate` requires the full
+clean-machine record as well. The manifest and isolated proof must match
+the current Git HEAD, with no tracked, staged, or non-ignored untracked changes.
+Ignored build/evidence outputs do not make the candidate dirty.
 
-### 4. Upload to GitHub Release
-- Create release on GitHub using tag `v6.2.0`.
-- Title: `v6.2.0 — Boil the Ocean` (or whatever codename).
-- Body: paste `SPB_RELEASE_NOTES.md` contents for that version.
-- Attach `Shokker Paint Booth Setup 6.2.0.exe`.
-- Mark as latest release (uncheck pre-release).
+Also require:
 
-### 5. Upload to PayHip
-- Log into PayHip admin.
-- Upload new installer to the SPB product.
-- Update changelog on the product page.
-- Notify existing customers via PayHip email automation.
+- syntax checks for every changed Python/JS file;
+- focused tests for every defect, demonstrated failing against the old behavior;
+- standing Layer and Easy suites from an isolated matching backend/profile;
+- a dated PASS in `docs/SPB_RELEASE_GAUNTLET.md`;
+- a packaged install/smoke on a clean Windows environment.
 
-### 6. Announce
-- Post to Discord `#announcements` channel.
-- Use template from `SPB_DISCORD_ANNOUNCEMENT.md`.
-- Post to Trading Paints if release is notable.
-- Tweet / BlueSky (if Shokker social handles are active).
+Focused suite totals are pinned. A missing or duplicate check is a broken suite,
+not a smaller green denominator.
 
----
+Run the real app from a disposable server and Chrome profile without touching
+the standing `:59876` process:
 
-## Post-Release
+```powershell
+node scripts/spb_isolated_verify.js --suite all
+```
 
-- [ ] Bump `main` branch version to next patch (`6.2.1-dev`) — optional, depends on team pref.
-- [ ] Close related GitHub issues and milestones.
-- [ ] Start fresh `CHANGELOG.md` "Unreleased" section.
-- [ ] Monitor Discord + email for regression reports for ~48h.
-- [ ] Update `PRIORITIES.md` with rollover items.
-- [ ] Update `memory/heartbeats_history.md` with a release-day summary.
+This writes a hashed `isolated-proof.json`, logs, and screenshots under
+`_release_evidence/<config-version>/isolated-<timestamp>/`. After the manual
+five-zone gauntlet passes, create schema-2
+`_release_evidence/<VERSION.txt>/release-evidence.json` with `version`,
+`sourceHash`, `gitHead`, isolated-proof path/SHA-256, and the dated gauntlet
+PASS/fixture/record path/SHA-256. That source evidence is sufficient for build.
 
----
+After building, add:
 
-## Hotfix Process
+- exactly three `distributables`: `updaterPackage` (`channels: ["r2"]`),
+  `webInstaller` (`channels: ["r2", "payhip"]`), and `payhipBundle`
+  (`channels: ["payhip"]`), each with root-relative `path`, `bytes`, and SHA-256;
+- `latestYml` with its own path/bytes/SHA-256 and mappings
+  `filesUrl -> webInstaller`, `path -> webInstaller`,
+  `packagesX64Path -> updaterPackage`, and
+  `packagesX64File -> updaterPackage`. That is the `prestage` contract.
 
-If a critical bug is found post-release:
+After staging, run the staged installer on the clean machine and add
+`packagedSmoke`: PASS, UTC `completedAt`, `cleanMachine: true`, hashed record,
+and `artifactRoles: ["webInstaller", "updaterPackage"]`. Only this full contract
+can activate.
 
-1. Branch from the release tag: `git checkout -b hotfix/v6.2.1 v6.2.0`.
-2. Apply minimal fix.
-3. Bump version to `6.2.1`.
-4. Re-run the full Cutting the Release flow.
-5. Merge hotfix branch back to `main` (`git merge --no-ff hotfix/v6.2.1`).
+The gate also recomputes both SHA-512 values and the package size embedded in
+`latest.yml`; a feed that names different local bytes is rejected.
+Use UTC ISO-8601 timestamps (for example, `2026-08-22T23:15:00Z`) for every
+`completedAt` field.
 
-Hotfix timelines should be hours, not days. If it takes longer than a day, it's not a hotfix — it's a patch release.
+`node scripts/spb_release_evidence_gate.js` re-hashes every referenced file and
+requires an exact passing Layer+Easy isolated run with the security kill switch
+active. A handwritten PASS label alone cannot satisfy the release preflight.
 
----
+## Owner scope-outs (added 2026-09-05)
 
-## Versioning Rules
+A standing suite can be scoped out of one release only by the owner, only in the evidence manifest,
+and never silently. `evidence.scopeOuts.easySuite = { approvedBy: "owner", approvedAt: <UTC ISO>, reason: <>= 40 chars> }`
+lets `scripts/spb_release_evidence_gate.js` accept an isolated all-suite proof whose ONLY failing suite is
+Easy; the Layer suite must still pass, the Easy logs and screenshots must still be present and hashed,
+and the gate prints `SCOPE-OUT ...` every time it runs. First use: 10.0.1 - the 2026-08-22 Easy shot plan
+predates the owner's 2026-09-02 stripped-shell first-run decision and has never been green since; it is
+being modernized separately (see the 10.0.1 run record). Remove the scope-out as soon as the plan is green.
 
-| Change type | Bump |
-|---|---|
-| Bug fix, no API change | PATCH (`6.2.0` → `6.2.1`) |
-| New feature, backward-compatible | MINOR (`6.2.0` → `6.3.0`) |
-| Breaking change to `.spb` file format | MAJOR (`6.x.y` → `7.0.0`) |
-| Breaking change to server API | MAJOR |
-| New finish | MINOR (usually grouped) |
-| Docs-only change | No version bump |
+## Lessons from 10.0.1 (2026-09-05)
 
----
+- Check `electron-app/package.json` `build.compression` before building: an uncommitted `"store"` made a 7 GB payload out of a 4.1 GB one.
+- The Easy runner pins the plan file's exact bytes; `git checkout` with autocrlf rewrites LF to CRLF and the runner aborts before any screenshot. Restore plan bytes from the blob, not via checkout.
+- The proof binds Git HEAD and harness hashes: no repo edits (and no editing agents) between commit and activation; park concurrent shared-doc edits with `git stash` for the gate window.
+- The build's copy-server-assets step dirties the mirror (scripts, _copy-manifest.json, 2048-only textures); revert + `sync --write` after every build before running a gate.
+- Windows Sandbox needs `<MemoryInMB>` (24 GB used) and `<vGpu>Enable</vGpu>` or the engine hits MemoryError on first render.
+- Never launch a background worker with DETACHED_PROCESS from the server; use CREATE_NO_WINDOW or its children pop consoles over the app.
 
-## Release Codenames
+## Build, smoke, stage, and activate
 
-Each major/minor release gets a codename. Recent history:
+```powershell
+.\spb_release.ps1 -Phase build
+```
 
-- `6.0.0` — "Major Engine Overhaul"
-- `6.0.1` — "Deep Audit"
-- `6.0.2` — "Quality Pass"
-- `6.1.0` — "Finish Mixer"
-- `6.1.1` — "Pattern Strength Zones"
-- `6.2.0` — "Boil the Ocean"
+The build phase runs only the source/prebuild preflight, builds with
+`SPB_BUNDLE_ALL=1`, enforces the payload-size floor, and prepares the
+sandbox/PayHip kit. It performs sync **checks only**. Record the three built
+distributables plus `latest.yml` in schema-2 evidence, then run:
 
-Pick codenames that capture the spirit of the release. Two to four words. Evocative.
+To upload without activating the public update feed:
 
----
+```powershell
+.\spb_release.ps1 -Phase stage
+```
+
+`stage` never builds. It runs `prestage`, uploads the exact evidence-listed
+payload and web installer with `spb-sha256` object metadata, and requires
+authenticated R2 HEAD checks to match both SHA-256 metadata and byte size. It
+does not upload `latest.yml`.
+
+For an offline check of the identical local contract (no credentials/client):
+
+```powershell
+py -3 deploy_r2.py electron-app\dist --hold-latest --check-release-contract
+```
+
+Now install the staged web installer in the clean Windows environment, hash its
+smoke record into `packagedSmoke`, and activate separately:
+
+```powershell
+.\spb_release.ps1 -Phase activate
+```
+
+Activation never builds or restages. It reruns the full preflight immediately
+before `GO`, revalidates both staged R2 objects against the local evidence, then
+uploads and HEAD-verifies the exact evidence-listed `latest.yml`. Public
+confirmation compares the downloaded feed's SHA-256 with the local file; retry
+exhaustion is a hard failure. `-Phase deploy` is the explicit combined
+stage/human-pause/activate workflow. `-Phase all` and `-SkipBuild` are retired and
+abort without building or uploading.
+
+`-Phase verify` is also fail-closed: it exits nonzero when the public feed cannot
+be read, has no parseable top-level version, or does not match the local package
+version. It exits zero only for an exact version match.
+
+`spb-sha256` is client-asserted S3 metadata, not an independent server-side byte
+rehash. Missing or mismatched metadata always blocks activation; a streamed GET
+hash or verified R2-native checksum would be required for independent remote-byte
+proof.
+
+## Final proof record
+
+Record for every candidate:
+
+- version and build tag;
+- Git HEAD, canonical source hash, and clean-candidate result;
+- UI/server hash, PID/start time, port, and restart status;
+- focused/standing suite manifests and totals;
+- release-gauntlet result;
+- runtime-sync result;
+- updater payload, web installer, PayHip bundle, and `latest.yml` SHA-256/bytes;
+- authenticated staged-object SHA metadata checks and exact feed mapping;
+- clean-install smoke result;
+- known limitations and owner-approved scope-outs.
 
 ## Rollback
 
-If a release goes catastrophically wrong:
+If a release is unsafe:
 
-1. **Unlist** on GitHub Releases (don't delete — users may have downloaded).
-2. **Disable** on PayHip.
-3. **Post** pinned Discord message with workaround or downgrade steps.
-4. **Investigate**, patch, and ship a hotfix.
+1. Stop activation or remove it from the latest feed; do not delete evidence.
+2. Disable the affected PayHip download and post a clear customer notice.
+3. Restore the previous known-good feed/artifact.
+4. Fix from the exact released source, issue a new patch version, and rerun every
+   release gate. Never replace an artifact under the same version.
 
-Rollback is rare. Prevention (pre-release checklist) is much cheaper.
+## References
 
----
-
-## See Also
-
-- [BUILD.md](BUILD.md) — producing the installer
-- [../CHANGELOG.md](../CHANGELOG.md) — historical release record
-- [../SPB_RELEASE_NOTES.md](../SPB_RELEASE_NOTES.md) — user-facing release notes
-- [../SPB_DISCORD_ANNOUNCEMENT.md](../SPB_DISCORD_ANNOUNCEMENT.md) — announcement template
+- `docs/SPB_ALPHA_RELEASE_PLAN.md`
+- `docs/SPB_RELEASE_GAUNTLET.md`
+- `scripts/spb_release_preflight.js`
+- `spb_release.ps1`
+- `CHANGELOG.md`

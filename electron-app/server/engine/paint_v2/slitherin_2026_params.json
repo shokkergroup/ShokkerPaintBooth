@@ -1,0 +1,22 @@
+{
+ "chosen": {
+  "slt_albino_translucent": 1,
+  "slt_anaconda_oval": 1,
+  "slt_boa_saddle": 6,
+  "slt_cobra_hood": 5,
+  "slt_corn_blotch": 2,
+  "slt_cycloid_gloss": 5,
+  "slt_diamondback": 8,
+  "slt_gaboon_geometric": 1,
+  "slt_keeled_viper": 6,
+  "slt_milk_band": 4,
+  "slt_reticulated": 2,
+  "slt_shed_ecdysis": 2,
+  "slt_sidewinder_micro": 9,
+  "slt_sunbeam_iris": 9,
+  "slt_ventral_scute": 2,
+  "slt_wart_tubercle": 1
+ },
+ "n_variants": 10,
+ "res": 1024
+}

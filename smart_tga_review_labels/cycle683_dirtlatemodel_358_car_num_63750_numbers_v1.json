@@ -1,0 +1,6 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_63750.tga","inspection_records":"_smart_tga_runs/cycle683_dlm_owner_evidence_review/inspection_records.json","review_scope":"Cycle 683 source plus complete owner sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[654,45,36,25],"target_layer":"sponsors","label":"mac_tools_logo_false_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[100,274,34,18],"target_layer":"sponsors","label":"small_wordmark_false_number"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[808,836,143,104],"target_layer":"numbers","family_id":"number:37","label":"true_custom_number_37"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[54,902,148,110],"target_layer":"template","label":"template_hardware_false_number"}
+]}

@@ -1,0 +1,53 @@
+{
+  "schema": "smart-tga-frozen-holdout-family-outcomes-v1",
+  "cycle": 736,
+  "paint": "dirtlatemodel 358/car_num_1000464.tga",
+  "purpose": "Current exact-candidate outcome review created only after Cycle736 frozen predictions were persisted. Clean single-owner masks receive a semantic label; visibly mixed Number-plus-Sponsor/Paint/Template masks abstain as uncertain.",
+  "prediction_file_opened_before_outcomes": "_smart_tga_runs/cycle736_holdout_1000464_frozen_committee_v1/frozen_predictions.json",
+  "prediction_tuned_after_outcomes": false,
+  "classification_count": 70,
+  "outcomes": {
+    "Number": [
+      {"candidate_index": 0, "complete_copy": false},
+      {"candidate_index": 4, "complete_copy": true},
+      {"candidate_index": 5, "complete_copy": false},
+      {"candidate_index": 7, "complete_copy": true},
+      {"candidate_index": 8, "complete_copy": true},
+      {"candidate_index": 9, "complete_copy": false},
+      {"candidate_index": 10, "complete_copy": false},
+      {"candidate_index": 11, "complete_copy": false},
+      {"candidate_index": 13, "complete_copy": true},
+      {"candidate_index": 14, "complete_copy": false},
+      {"candidate_index": 15, "complete_copy": true},
+      {"candidate_index": 18, "complete_copy": false},
+      {"candidate_index": 21, "complete_copy": false}
+    ],
+    "Sponsor": [19, 20, 22, 66, 90],
+    "Paint": [75, 77],
+    "Template": [],
+    "uncertain": [
+      24, 25, 27, 32, 34, 35, 36, 37, 39, 41, 48, 50, 51, 53,
+      54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 65, 67, 68, 69,
+      70, 71, 72, 73, 74, 76, 78, 79, 80, 81, 82, 84, 85, 86,
+      87, 88, 89, 91, 92, 93, 94, 95
+    ]
+  },
+  "review_evidence": {
+    "source": "_smart_tga_runs/cycle657_dlm_crosspaint_embeddings/dirtlatemodel_358_car_num_1000464/source_1024.png",
+    "number_sheet": "_smart_tga_runs/cycle657_dlm_crosspaint_embeddings/dirtlatemodel_358_car_num_1000464/numbers_components.png",
+    "sponsor_sheet": "_smart_tga_runs/cycle657_dlm_crosspaint_embeddings/dirtlatemodel_358_car_num_1000464/sponsors_components.png",
+    "template_sheet": "_smart_tga_runs/cycle657_dlm_crosspaint_embeddings/dirtlatemodel_358_car_num_1000464/template_components.png",
+    "paint_sheet": "_smart_tga_runs/cycle657_dlm_crosspaint_embeddings/dirtlatemodel_358_car_num_1000464/paint_components.png",
+    "exact_mask_pages": "_smart_tga_runs/cycle736_holdout_1000464_frozen_committee_v1/review_sheets/direct_review_checker_00.png through direct_review_checker_05.png",
+    "historical_family_boxes_used_for_review_not_features": "smart_tga_review_labels/cycle685_missed_number_instances_v1.json"
+  },
+  "safety": {
+    "historical_review_data_consumed_by_model": false,
+    "current_exact_candidate_truth_consumed_before_prediction": false,
+    "runtime_integrated": false,
+    "ownership_authority": false,
+    "apply_locked": true,
+    "exact_reconstruction_affected": false,
+    "ocr_changed": false
+  }
+}

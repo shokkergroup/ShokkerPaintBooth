@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "paint_label": "protrucks pro4truck/car_num_1007551.tga",
+  "inspection_records": "_smart_tga_runs/cycle146_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle146_route_pressure_v1/protrucks_pro4truck_car_num_1007551/component_records.json",
+  "review_scope": "Cycle 151 Protruck 1007551 source-Numbers cleanup: keep true flag-filled 199 pieces and dark counters as Numbers, while moving DIXON/BANNK sponsor-logo panels out of Numbers.",
+  "component_labels": [
+    {
+      "layer": "numbers",
+      "component_index": 0,
+      "expected_bbox": [472, 40, 81, 70],
+      "target_layer": "numbers",
+      "label": "true_flag_filled_199_top_digit",
+      "note": "Top upside-down flag-filled 199 digit fragment; should remain editable Numbers."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 1,
+      "expected_bbox": [553, 41, 80, 70],
+      "target_layer": "numbers",
+      "label": "true_flag_filled_199_top_digit",
+      "note": "Second top flag-filled 199 digit fragment; current classifier demotes it to Sponsors."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 2,
+      "expected_bbox": [686, 109, 37, 37],
+      "target_layer": "numbers",
+      "label": "true_dark_199_counter_top",
+      "note": "Black counter/stroke inside the top flag-filled number, not paint."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 3,
+      "expected_bbox": [683, 389, 37, 37],
+      "target_layer": "numbers",
+      "label": "true_dark_199_counter_side",
+      "note": "Black counter/stroke inside the side flag-filled 199 placement."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 4,
+      "expected_bbox": [830, 389, 87, 192],
+      "target_layer": "sponsors",
+      "label": "dixxon_vertical_sponsor_panel",
+      "note": "Vertical DIXON/Dixxon sponsor panel incorrectly sourced from Numbers."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 5,
+      "expected_bbox": [403, 399, 196, 207],
+      "target_layer": "sponsors",
+      "label": "bannk_199_sponsor_logo_panel",
+      "note": "Connected BANNK/199 sponsor-logo block; not a clean race-number body for the Numbers layer."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 6,
+      "expected_bbox": [830, 463, 12, 37],
+      "target_layer": "sponsors",
+      "label": "dixxon_black_sponsor_panel_edge",
+      "note": "Black edge/stroke of the adjacent DIXON sponsor panel, not a 199 counter."
+    }
+  ]
+}

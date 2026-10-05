@@ -1,0 +1,15 @@
+{
+ "lfr_rockets_red_glare": "PERF paint 3.15s; FINENESS char 18.6; RESTRAINT hotM=0.0% hotC=0.8%",
+ "lfr_amber_waves": "PERF paint 2.30s; FINENESS char 16.0",
+ "lfr_sparkler_dusk": "PERF paint 2.56s; FINENESS char 19.3",
+ "moth_luna": "MARRIAGE 0.22 (M-0.14 Cc-0.22)",
+ "anime_comic_halftone": "mip 0.27",
+ "neon_electric_blue": "MARRIAGE 0.25 (M+0.16 Cc+0.25)",
+ "neon_blacklight": "MARRIAGE 0.27 (M+0.27 Cc+0.23)",
+ "neon_red_alert": "MARRIAGE 0.25 (M+0.25 Cc-0.05)",
+ "prizm_galaxy_dust": "flat channel (range 16) needs hand ignition",
+ "prizm_phoenix": "MARRIAGE 0.09 (M-0.08 Cc+0.09); RESTRAINT hotM=0.0% hotC=0.0% | flat channel (range 7) needs hand ignition",
+ "prizm_titanium": "flat channel (range 0) needs hand ignition",
+ "lfr_distressed_flag": "PERF 2.97s",
+ "lfr_liberty_filigree": "PERF 2.58s"
+}

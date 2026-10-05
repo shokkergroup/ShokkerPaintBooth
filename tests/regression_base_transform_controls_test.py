@@ -240,8 +240,10 @@ def test_monolithic_transform_uses_source_safe_seed_not_template_pixels():
 
 def test_preview_and_export_preserve_base_transform_payloads():
     src = Path("server.py").read_text(encoding="utf-8", errors="ignore")
+    psd_export = Path("server_routes/psd_layer_export_routes.py").read_text(
+        encoding="utf-8", errors="ignore"
+    )
     preview = src.split("@app.route('/preview-render'", 1)[1].split("@app.route('/render'", 1)[0]
-    export = src.split("@app.route('/export-psd-layers'", 1)[1]
 
     for field in (
         '"base_scale"',
@@ -252,7 +254,7 @@ def test_preview_and_export_preserve_base_transform_payloads():
         '"base_flip_v"',
     ):
         assert field in preview
-        assert field in export
+        assert field in psd_export
 
 
 def test_engine_passes_full_base_transform_to_generic_finish_renderer():

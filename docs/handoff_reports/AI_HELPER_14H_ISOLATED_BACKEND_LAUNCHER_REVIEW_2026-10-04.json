@@ -1,0 +1,25 @@
+{
+  "review": "Static read-only isolation review of private frozen-backend launcher",
+  "path": "_easy_claude_work/ai14h_generation3_audit/launch_isolated_frozen_backend.py",
+  "sha256": "AAE963E42EF896995464C57A94E2D14AB9F3F4B975A4C17E9BDC04129F0D9324",
+  "decision": "PASS_STATIC_ISOLATION_WITH_DISCLOSED_READS",
+  "checks": [
+    "Launcher compiles with Python compile() without producing bytecode or launching a server.",
+    "Requires runtime path to resolve beneath _easy_claude_work and validates exact frozen SHA-256 pins for server.py plus PSD-import and render-file route modules before import.",
+    "Rejects the live port 59876 and validates a private profile path; verifies a local port is available before startup.",
+    "Sets SPB_NO_LIVE_LINK and SPB_ISOLATED_OUTPUT_DIR plus private project, MCP, user-import, APPDATA and LOCALAPPDATA roots before importing config or application modules.",
+    "Sets sys.dont_write_bytecode before project imports, avoiding shared Python bytecode-cache writes during private startup.",
+    "Config singleton is redirected to private config before importing/registering frozen server routes; the config-route registration wrapper redirects the actual server module CONFIG_FILE global and verifies load/save closures share that module before route registration.",
+    "Project directory resolver is overridden to the private output tree; launcher records before/after owner-file digests and asserts they did not change.",
+    "V5 app runs without importing or executing __main__; SHOKKER_NO_CLEAN=1 and SPB_NO_BOOT_SWATCH_WARM=1 are set."
+  ],
+  "disclosures": [
+    "The launcher reads root shokker_config.json and .server_port bytes only to compute pre/post SHA-256 integrity pins. It does not parse/load them as app configuration or write them. Thus the source comment 'No owner-config read' is imprecise if interpreted as zero filesystem reads.",
+    "The source initializes config.CFG.CONFIG_FILE to its normal root pathname before immediately redirecting the singleton; bounded source inspection shows config singleton construction creates only OUTPUT_DIR under the isolated environment and does not itself load CONFIG_FILE. Application server globals are redirected before config routes are registered.",
+    "Free-port check closes its probe socket before Flask binds, so a normal local port race remains possible. The requested port cannot equal live port 59876; no server was launched to test actual bind behavior."
+  ],
+  "limits": [
+    "Static/source review only; launcher was not executed and no backend process was started.",
+    "No owner config was parsed or modified; no native app, provider, customer file, live endpoint or external service was used."
+  ]
+}

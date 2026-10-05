@@ -1,0 +1,12 @@
+{
+  "status": "REPRODUCED",
+  "http": 200,
+  "digestMatchesCurrentA": true,
+  "pixel": [
+    15,
+    180,
+    90
+  ],
+  "actualPSD": true,
+  "productionWrites": 0
+}

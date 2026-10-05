@@ -1,0 +1,194 @@
+{
+  "schema": "spb-neon-oil-slick-pilot-audit/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_splatter",
+  "seed": 2954305574,
+  "builder_elapsed_seconds": 1.98131,
+  "native_paint_spec_elapsed_seconds": 2.036008,
+  "repeat_elapsed_seconds": 2.589927,
+  "deterministic": true,
+  "paint_sha256": "7048e44fb5dd506721bd5295755b4a1b8c220da6545a3effd90de8aa3216848d",
+  "spec_sha256": "1f09940e032e95415c97afb30ecdd6693805e67c61acdbebab22062a05cd80dc",
+  "material_stats_native": {
+    "std": {
+      "M": 82.789627,
+      "R": 83.269073,
+      "Cc": 83.260742
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": -0.229043,
+      "M_Cc": 0.150894,
+      "R_Cc": -0.126403
+    }
+  },
+  "geometry_stats": {
+    "family_count": 10,
+    "families": {
+      "angular oxide beads": 656,
+      "black thermal-ceramic facets": 5776,
+      "chipped attached ejecta": 981,
+      "collapsed crater wedges": 641,
+      "cyan temper pinpoints": 529,
+      "flattened hot-metal impact plates": 3987,
+      "magenta recoil shadows": 1979,
+      "orange molten lips": 1086,
+      "quenched impact centers": 644,
+      "single short fracture stubs": 804
+    },
+    "width_native_min": 8.001,
+    "width_native_median": 17.843,
+    "width_native_p90": 25.364,
+    "width_native_max": 28.997,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "black thermal-ceramic facets": 0.355334,
+    "flattened hot-metal impact plates": 0.248258,
+    "orange molten lips": 0.041035,
+    "magenta recoil shadows": 0.072223,
+    "cyan temper pinpoints": 0.008687,
+    "chipped attached ejecta": 0.015215,
+    "collapsed crater wedges": 0.015002,
+    "angular oxide beads": 0.012418,
+    "quenched impact centers": 0.017311,
+    "single short fracture stubs": 0.031751
+  },
+  "max_unmarked_void_native_px": 21.581,
+  "seam_ratios_vs_local_neighbor_change": {
+    "paint_x_to_local_ratio": 1.454661,
+    "paint_y_to_local_ratio": 1.528743,
+    "M_x_to_local_ratio": 1.29432,
+    "M_y_to_local_ratio": 1.167907,
+    "R_x_to_local_ratio": 1.29389,
+    "R_y_to_local_ratio": 1.27427,
+    "Cc_x_to_local_ratio": 1.093348,
+    "Cc_y_to_local_ratio": 0.978339
+  },
+  "picker_luma_std": {
+    "64": 12.573231,
+    "128": 19.48312
+  },
+  "checks": {
+    "deterministic": true,
+    "native_paint_spec_under_3_seconds": true,
+    "repeat_under_3_seconds": true,
+    "ten_attached_families": true,
+    "all_dimensions_8_32_native": true,
+    "eight_tiers_each_channel": true,
+    "std_at_least_30_each_channel": true,
+    "channels_not_copied_or_inverse": true,
+    "full_canvas_no_void_over_64px": true,
+    "picker_64_survives": true,
+    "picker_128_survives": true,
+    "periodic_seams_below_3x_local_change": true
+  },
+  "all_mechanical_checks_green": true,
+  "catalog_m7": "PENDING isolated official workbook harness",
+  "mapped_car": "PENDING; three-position material light proxy supplied for owner screening",
+  "manifest": {
+    "schema": "spb-neon-oil-slick-pilot/1",
+    "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+    "finish_id": "neon2_splatter",
+    "display_name": "Burner Impact",
+    "carrier": "black thermal ceramic struck by flattened hot-metal impact plates",
+    "material_story": {
+      "M": "intact hot-metal plates, molten lips, cyan temper points, and oxide beads lead while crater collapse stays low",
+      "R": "attached ejecta, collapsed wedges, single fracture stubs, oxide beads, and quenched centers rise independently",
+      "Cc": "intact black ceramic and quenched centers retain clear while molten and fractured impact anatomy interrupts it"
+    },
+    "vetoes": [
+      "paint splatter, blob, droplet, or liquid-spill illustration",
+      "star, starburst, flower, radial packet, or bullet-hole icon",
+      "long ray, spoke field, repeated circle, or ring",
+      "floating confetti or unrelated colored chips",
+      "generic noise or unrelated texture underlay"
+    ],
+    "native_size": [
+      2048,
+      2048
+    ],
+    "builder_elapsed_seconds": 1.98131,
+    "material_stats": {
+      "std": {
+        "M": 82.789627,
+        "R": 83.269073,
+        "Cc": 83.260742
+      },
+      "range": {
+        "M": [
+          7,
+          253
+        ],
+        "R": [
+          8,
+          251
+        ],
+        "Cc": [
+          6,
+          254
+        ]
+      },
+      "tier_count": {
+        "M": 8,
+        "R": 8,
+        "Cc": 8
+      },
+      "correlation": {
+        "M_R": -0.229043,
+        "M_Cc": 0.150894,
+        "R_Cc": -0.126403
+      }
+    },
+    "geometry_stats": {
+      "family_count": 10,
+      "families": {
+        "angular oxide beads": 656,
+        "black thermal-ceramic facets": 5776,
+        "chipped attached ejecta": 981,
+        "collapsed crater wedges": 641,
+        "cyan temper pinpoints": 529,
+        "flattened hot-metal impact plates": 3987,
+        "magenta recoil shadows": 1979,
+        "orange molten lips": 1086,
+        "quenched impact centers": 644,
+        "single short fracture stubs": 804
+      },
+      "width_native_min": 8.001,
+      "width_native_median": 17.843,
+      "width_native_p90": 25.364,
+      "width_native_max": 28.997,
+      "fine_8_32_fraction": 1.0
+    },
+    "causal_mask_coverage": {
+      "black thermal-ceramic facets": 0.355334,
+      "flattened hot-metal impact plates": 0.248258,
+      "orange molten lips": 0.041035,
+      "magenta recoil shadows": 0.072223,
+      "cyan temper pinpoints": 0.008687,
+      "chipped attached ejecta": 0.015215,
+      "collapsed crater wedges": 0.015002,
+      "angular oxide beads": 0.012418,
+      "quenched impact centers": 0.017311,
+      "single short fracture stubs": 0.031751
+    }
+  }
+}

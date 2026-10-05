@@ -1,0 +1,69 @@
+{
+  "work_item": "W106 independent W101 material grammar and controller-route review",
+  "date": "2026-10-04",
+  "status": "PARTIAL_PASS_WITH_SAFE_GRAMMAR_GAPS",
+  "frozen_oracle": {
+    "path": "_easy_claude_work/ai14h_w106_review/fresh-oracle.json",
+    "sha256": "75f2f276159db73956fed6431570b3a036736f82a78bf8bab1fef6554a54ddc4",
+    "cases": 16,
+    "frozen_before_w101_report_or_candidate_inspection": true
+  },
+  "source_pins": {
+    "material_controls_candidate": {
+      "path": "_easy_claude_work/ai14h_w101_review/spb-ai-material-controls.candidate.js",
+      "sha256": "30b18516a3f13dd7854f6ef36fdf5eb7a37985537e63c4c6405feafa690c6baec"
+    },
+    "controller_route_candidate": {
+      "path": "_easy_claude_work/ai14h_w101_review/spb-pro-ai.candidate.js",
+      "sha256": "d05fd03d8e50151f7888d7e32c0d92ac661864eb989a3b7f9f9541c7692ae4e2"
+    },
+    "self_help_used_for_passive_route": {
+      "path": "_easy_claude_work/ai14h_generation3_runtime5/js/spb-self-help.js",
+      "sha256": "a25febd091b6d13ee2b3aaf3713f21a2fa720c0f240a6b042cd6defd023cf783"
+    },
+    "producer_report": "docs/handoff_reports/AI_HELPER_14H_MATERIAL_GRAMMAR_W101_CANDIDATE_2026-10-04.json"
+  },
+  "results": {
+    "cases": 16,
+    "passed": 13,
+    "failed": 3,
+    "failures": [
+      {
+        "id": "W106-02",
+        "text": "On the roof, raise the clearcoat channel 20 points.",
+        "observed": "clarify / zero queue: 'Name one channel, one exact part, and a relative change in points.'",
+        "assessment": "Safe but misses the frozen alternate word order; the parser expects a verb-first command shape and does not consume this target-first phrasing."
+      },
+      {
+        "id": "W106-03",
+        "text": "Shift roof clearcoat up by 20 points.",
+        "observed": "clarify / zero queue: 'Name one channel, one exact part, and a relative change in points.'",
+        "assessment": "Safe but 'shift ... up' is not a recognized explicit relative verb form."
+      },
+      {
+        "id": "W106-15",
+        "text": "How do I increase clearcoat on the roof by 20 points?",
+        "observed": "Controller returns an edit clarification ('To request an edit, name one material channel and part...'), zero queue.",
+        "assessment": "The parser delegates this question, but offlineMaterialPlan converts it to an edit clarification. The pinned self-help classifier returns generic how_do_i without W66/W74, so offlineAsk does not hand it to the help answer. It is safe but does not answer the question."
+      }
+    ],
+    "safe_positive_edits": [
+      {"id":"W106-01","channel":"clearcoat","part":"roof","delta":20,"route":"one exact edit_zone queue; only B/clearcoat changed; metal and roughness preserved"},
+      {"id":"W106-04","channel":"clearcoat","part":"roof","delta":-20,"route":"one exact edit_zone queue; only B/clearcoat changed; metal and roughness preserved"}
+    ],
+    "safe_fallbacks": "Missing/unitless amounts, spelled-out amounts, percent values, negative amounts, conflicting/multiple actions, absolute set requests, mixed incomplete channels, unsupported target, and metallic-plus-points all clarify with zero queued edits. Bare 'Make the roof metallic' is delegated by material controls and offlineMaterialPlan returns null, leaving the normal look/finish planner available.",
+    "passive_help": "'What does the clearcoat channel do?' bypasses material editing and reaches the actual pinned self-help route with zero queue. The answer gives adjustment steps and cautions about the B/COAT offset but does not directly define what the channel does."
+  },
+  "tests": {
+    "contract": "tests/ai_material_grammar_w106_review_contract.cjs",
+    "contract_sha256": "88b56d41db18a83aa478a3eb060c27a5c661e601849f91aeb30ccda3905dec38",
+    "syntax": "node --check passed",
+    "execution": "16 actual parser/controller-route cases replayed. Expected grammar-gap cases return process exit 1; all 16 have zero provider/native/server/paint-application effects.",
+    "limits": [
+      "Uses actual candidate parser/build APIs and actual offlineMaterialPlan/offlineMaterialAsk/offlineAsk/selfHelpResult function bodies in a VM. Current zone owner, operation ticket, warmup, rendering, and edit_zone are controlled test fixtures.",
+      "The edit sink captures actual queued arguments; it does not execute the paint application, verify pixels, call a native app, provider, or server. Root owns those acceptance checks.",
+      "Bare metallic was verified to leave material ownership (plan=null); the downstream ordinary finish planner was not executed in this test."
+    ]
+  },
+  "effects": {"production_files_changed":0,"provider_calls":0,"native_calls":0,"server_calls":0,"paint_applications":0}
+}

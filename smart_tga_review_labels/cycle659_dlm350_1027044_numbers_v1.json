@@ -1,0 +1,15 @@
+{
+  "version":1,
+  "paint_label":"dirtlatemodel 350/car_num_1027044.tga",
+  "inspection_records":"_smart_tga_runs/cycle659_dlm_foreground_instances/inspection_records.json",
+  "review_scope":"Cycle 659 manual source plus Number/Sponsor/Template/Paint/combined-owner review.",
+  "component_labels":[
+    {"layer":"numbers","component_index":0,"expected_bbox":[311,237,129,106],"target_layer":"numbers","label":"true_side_number","family_id":"number:1_myers_style"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[321,714,120,104],"target_layer":"numbers","label":"true_side_number","family_id":"number:1_myers_style"},
+    {"layer":"numbers","component_index":2,"expected_bbox":[813,802,144,172],"target_layer":"numbers","label":"true_rear_number","family_id":"number:1_myers_style"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[686,469,22,34],"target_layer":"sponsors","label":"nose_sponsor_false_number_proposal"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[687,560,21,34],"target_layer":"sponsors","label":"nose_sponsor_false_number_proposal"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[684,598,24,33],"target_layer":"sponsors","label":"nose_sponsor_false_number_proposal"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[288,808,14,12],"target_layer":"numbers","label":"true_number_ink_sponsor_proposal","family_id":"number:1_myers_style"}
+  ]
+}

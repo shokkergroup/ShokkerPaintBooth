@@ -2,7 +2,7 @@
   "name": "Rat Rod Patina",
   "description": "Intentionally ugly-beautiful rat rod. Flat black body with exposed red oxide primer patches, surface rust bloom, weathered matte chrome, and faded hand-painted numbers. Looks abandoned, drives like a rocket.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "pre-war coupes, model A, model T, hot rod builds, chopped trucks",
   "notes": "Rat rod lives in the imperfection. rally_mud stands in for surface rust bloom; keep intensity 70-85 so it reads as natural aging, not caked mud. Don't over-polish — patina should feel earned.",
   "zones": [

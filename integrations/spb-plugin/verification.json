@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-04",
+  "scope": "Private local pilot; protocol and optional read-only status",
+  "checks": {
+    "exact_source_snapshots": "pass",
+    "official_schemas": "2 pass at build time",
+    "initialize": "pass",
+    "tool_discovery": {
+      "result": "pass",
+      "count": 27,
+      "names": [
+        "spb_status",
+        "spb_get_zones",
+        "spb_preview",
+        "spb_request_parts",
+        "spb_undo",
+        "spb_edit_layer",
+        "spb_design_recipes",
+        "spb_apply_scheme",
+        "spb_add_graphic",
+        "spb_get_state",
+        "spb_manual",
+        "spb_find_finishes",
+        "spb_browse_catalog",
+        "spb_finish_details",
+        "spb_compare_finishes",
+        "spb_find_spec_patterns",
+        "spb_find_patterns",
+        "spb_get_car_map",
+        "spb_edit_zone",
+        "spb_add_zone",
+        "spb_duplicate_zone",
+        "spb_check_setup",
+        "spb_suggest_finishes",
+        "spb_describe_paint",
+        "spb_refinish",
+        "spb_mark_elements",
+        "spb_look_at_paint"
+      ]
+    },
+    "prompt_discovery": {
+      "result": "pass",
+      "count": 2
+    },
+    "ping": "pass",
+    "ui_resources": "None; embedded UI is not implemented"
+  },
+  "native_host_installation": "unverified",
+  "painting_acceptance": "not run",
+  "live_status": {
+    "result": "pass",
+    "response_received": true,
+    "paint_mutation": false
+  },
+  "result": "package protocol pass"
+}

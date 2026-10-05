@@ -1,5 +1,5 @@
 {
-  "version": "6.2.0",
+  "version": "6.3.0",
   "description": "Generic metadata for racing series identifiers. No trademark content — descriptions only. SPB uses these entries to suggest placement zones and color palettes for series-specific branding.",
   "schema": {
     "id": "string — unique key",

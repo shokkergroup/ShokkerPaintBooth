@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "paint_label": "dirtsprint winged 360/car_num_20588.tga",
+  "inspection_records": "_smart_tga_runs/cycle142_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle142_route_pressure_v1/dirtsprint_winged_360_car_num_20588/component_records.json",
+  "review_scope": "Cycle 143 review of accepted subcomponent candidates on sprint car 20588: keep true 60 number pieces, reject small sponsor/name glyphs and logo marks.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 1,
+      "expected_bbox": [952, 62, 21, 24],
+      "target_layer": "sponsors",
+      "label": "tiny_vertical_sponsor_glyph_false_number",
+      "note": "Small vertical sponsor/name glyph on the right edge; not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 3,
+      "expected_bbox": [952, 86, 21, 23],
+      "target_layer": "sponsors",
+      "label": "tiny_vertical_sponsor_glyph_false_number",
+      "note": "Second small vertical sponsor/name glyph; not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 11,
+      "expected_bbox": [508, 524, 72, 49],
+      "target_layer": "numbers",
+      "label": "true_number_60_fragment",
+      "note": "White/gray interior piece of the large 60 race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 18,
+      "expected_bbox": [653, 703, 90, 100],
+      "target_layer": "numbers",
+      "label": "true_number_60_body",
+      "note": "Large white/purple 6 body from the 60 race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 23,
+      "expected_bbox": [849, 738, 39, 67],
+      "target_layer": "sponsors",
+      "label": "narrow_sponsor_logo_mark_false_number",
+      "note": "Narrow sponsor/logo mark near the CASE decal, not part of the 60."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 30,
+      "expected_bbox": [856, 868, 156, 102],
+      "target_layer": "numbers",
+      "label": "true_number_60_body",
+      "note": "Full white/purple 60 race-number body routed to Sponsors."
+    }
+  ]
+}

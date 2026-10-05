@@ -1,0 +1,19 @@
+{
+  "version":1,
+  "paint_label":"dirtlatemodel 350/car_num_1080505.tga",
+  "inspection_records":"_smart_tga_runs/cycle662_dlm_group_features_holdout/inspection_records.json",
+  "review_scope":"Cycle 662 source plus all owner/combined sheets, suspects, position cues, and physical-group review.",
+  "component_labels":[
+    {"layer":"numbers","component_index":0,"expected_bbox":[875,28,149,293],"target_layer":"template","label":"fixed_white_template_block_false_number"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[59,236,39,14],"target_layer":"sponsors","label":"small_sponsor_mark_false_number"},
+    {"layer":"numbers","component_index":2,"expected_bbox":[261,249,61,31],"target_layer":"paint","label":"livery_stripe_false_number"},
+    {"layer":"numbers","component_index":3,"expected_bbox":[283,255,101,89],"target_layer":"numbers","label":"true_upper_number_digit_zero","family_id":"number:40"},
+    {"layer":"numbers","component_index":4,"expected_bbox":[551,440,155,157],"target_layer":"sponsors","label":"large_graphic_panel_false_number"},
+    {"layer":"sponsors","component_index":null,"expected_bbox":[761,428,65,179],"target_layer":"sponsors","label":"position_cue_true_vertical_sponsor"},
+    {"layer":"candidate_group","component_index":null,"expected_bbox":[261,248,299,99],"target_layer":"uncertain","label":"mixed_true_number_and_sponsor_panel","family_id":"number:40","group_id":"pdg:50436fb9c4bf8434"},
+    {"layer":"candidate_group","component_index":null,"expected_bbox":[277,717,283,97],"target_layer":"uncertain","label":"mixed_true_number_and_sponsor_panel","family_id":"number:40","group_id":"pdg:f02e851e399409ba"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[250,235,325,120],"target_layer":"numbers","label":"partially_missed_true_upper_number","family_id":"number:40"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[270,705,305,120],"target_layer":"numbers","label":"missed_true_lower_number","family_id":"number:40"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[790,820,190,140],"target_layer":"numbers","label":"missed_true_rear_number","family_id":"number:40"}
+  ]
+}

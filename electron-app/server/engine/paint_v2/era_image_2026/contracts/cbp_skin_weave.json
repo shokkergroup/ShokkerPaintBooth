@@ -1,0 +1,120 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_skin_weave",
+  "display_name": "Chrome: Signal Weave",
+  "promise": "Coral synthetic fibers cross turquoise conductive threads and tiny gold stitch nodes.",
+  "carrier_grammar": "Coral synthetic fibers cross turquoise conductive threads and tiny gold stitch nodes. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "Dielectric coral synthetic yarn and rough violet elastic cross metallic turquoise conductive threads and polished gold nodes. Pale fiber fuzz and dark gaps remain matte; fiber shoulders and thread grooves carry independent continuous roughness/coating states.",
+  "reference_physics": {
+    "mechanism": "Coral synthetic fibers cross turquoise conductive threads and tiny gold stitch nodes. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_skin_weave.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "coral synthetic fibers",
+      "role": "Actual shared paint and spec geometry: coral synthetic fibers"
+    },
+    {
+      "name": "turquoise conductor threads",
+      "role": "Actual shared paint and spec geometry: turquoise conductor threads"
+    },
+    {
+      "name": "gold stitch nodes",
+      "role": "Actual shared paint and spec geometry: gold stitch nodes"
+    },
+    {
+      "name": "violet elastic loops",
+      "role": "Actual shared paint and spec geometry: violet elastic loops"
+    },
+    {
+      "name": "pale fiber fuzz",
+      "role": "Actual shared paint and spec geometry: pale fiber fuzz"
+    },
+    {
+      "name": "dark weave gaps",
+      "role": "Actual shared paint and spec geometry: dark weave gaps"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "coral synthetic fibers",
+      "turquoise conductor threads",
+      "gold stitch nodes",
+      "violet elastic loops",
+      "pale fiber fuzz",
+      "dark weave gaps"
+    ],
+    "R": [
+      "coral synthetic fibers",
+      "turquoise conductor threads",
+      "gold stitch nodes",
+      "violet elastic loops",
+      "pale fiber fuzz",
+      "dark weave gaps"
+    ],
+    "Cc": [
+      "coral synthetic fibers",
+      "turquoise conductor threads",
+      "gold stitch nodes",
+      "violet elastic loops",
+      "pale fiber fuzz",
+      "dark weave gaps"
+    ]
+  },
+  "material_tiers": [
+    "coral dielectric satin fibers",
+    "turquoise metallic conductors",
+    "polished gold stitch nodes",
+    "rough violet elastic",
+    "matte pale fiber fuzz",
+    "dull weave gaps",
+    "conductive ridge glints"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_carbon_limb",
+      "difference": "This finish uses Fine coral synthetic filament weave with tiny turquoise conductive stitches, gold node grains, violet elastic loops, pale fiber fuzz and dark weave gaps. Many short interlaced filament bundles, technical textile not skin, no flesh or anatomy, no broad regular carbon checker.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_neon_spandex",
+      "difference": "This finish uses Fine coral synthetic filament weave with tiny turquoise conductive stitches, gold node grains, violet elastic loops, pale fiber fuzz and dark weave gaps. Many short interlaced filament bundles, technical textile not skin, no flesh or anatomy, no broad regular carbon checker.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "coral synthetic fibers is visible in the authored geometry",
+      "turquoise conductor threads is visible in the authored geometry",
+      "gold stitch nodes is visible in the authored geometry",
+      "violet elastic loops is visible in the authored geometry",
+      "pale fiber fuzz is visible in the authored geometry",
+      "dark weave gaps is visible in the authored geometry"
+    ],
+    "source_sha256": "65732bc8a12dc9fe207d19ac8c027228260f633d13d31d119e414f45c26a3279",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_skin_weave-authored-Coral synthetic fibers cross turquoise conductive threads and tiny gold stitch nodes. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_skin_weave-dielectric-fiber-conductive-yarn-gold-node-v1",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 82.9,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "0c104642848e0df81f73fd183161501bbca62feb297504a1a7751f4784114b9b"
+}

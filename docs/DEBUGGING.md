@@ -73,7 +73,7 @@ Likely missing from `PATTERN_REGISTRY` in Python. The UI shows it (because `PATT
 
 ### Symptom: "Chrome looks matte"
 
-Spec map's B (clearcoat) channel is inverted from intuition. Chrome wants **B=16** (max gloss). If you set B=255 thinking "max shine" you'll get dull. See [../SPB_SPEC_MAP_GUIDE.md](../SPB_SPEC_MAP_GUIDE.md).
+Spec map's B (clearcoat) channel is inverted from intuition. Chrome wants **B=16** (maximum active clearcoat). If you set B=255 thinking "max shine," you instead suppress clearcoat reflectivity. See the [Living Wiki RGB Spec Finish Encyclopedia](../SPB_WIKI.html#spec_guide).
 
 ### Symptom: "App won't start after install"
 

@@ -1,5 +1,5 @@
 {
-  "version": "6.2.0",
+  "version": "6.3.0",
   "description": "Mandatory safety and regulatory decals required by most sanctioning bodies. SPB warns the user if any of these zones are missing on a finished livery.",
   "schema": {
     "id": "string — unique key",

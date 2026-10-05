@@ -1,0 +1,263 @@
+{
+  "schema": "spb-fresh-scope-probes/1",
+  "frozen_before_reviewing_w1_source": true,
+  "items": [
+    {
+      "id": "S01",
+      "q": "Only the roof should get candy red over silver flake; leave the body alone.",
+      "target_scopes": [
+        "roof"
+      ],
+      "must_preserve_parts": [],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S02",
+      "q": "Put carbon with a purple pearl dusting on the hood exclusively, no changes elsewhere.",
+      "target_scopes": [
+        "hood"
+      ],
+      "must_preserve_parts": [],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S03",
+      "q": "Just on both side panels, gloss emerald with fine gold flakes.",
+      "target_scopes": [
+        "left side",
+        "right side"
+      ],
+      "must_preserve_parts": [],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S04",
+      "q": "The bonnet only: satin black plus tiny metallic specks.",
+      "target_scopes": [
+        "hood"
+      ],
+      "must_preserve_parts": [],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S05",
+      "q": "Give the full vehicle matte green, with the roof in bright chrome.",
+      "target_scopes": [
+        "body",
+        "roof"
+      ],
+      "must_preserve_parts": [],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S06",
+      "q": "Every panel should be ruby candy and the hood should be carbon.",
+      "target_scopes": [
+        "body",
+        "hood"
+      ],
+      "must_preserve_parts": [],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S07",
+      "q": "Keep all body paint unchanged while making only the roof copper pearl.",
+      "target_scopes": [
+        "roof"
+      ],
+      "must_preserve_parts": [],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S08",
+      "q": "Make only the hood cobalt blue; leave the numbers and sponsors intact.",
+      "target_scopes": [
+        "hood"
+      ],
+      "must_preserve_parts": [],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S09",
+      "q": "Carbon roof with a candy gold glaze, just the roof please.",
+      "target_scopes": [
+        "roof"
+      ],
+      "must_preserve_parts": [],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S10",
+      "q": "On the left side only, pink ghost camo under fine snake-skin texture.",
+      "target_scopes": [
+        "left side"
+      ],
+      "must_preserve_parts": [],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S11",
+      "q": "The roof needs soft silver pearl and both sides should be midnight blue.",
+      "target_scopes": [
+        "roof",
+        "left side",
+        "right side"
+      ],
+      "must_preserve_parts": [],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S12",
+      "q": "White body, red roof, blue hood.",
+      "target_scopes": [
+        "body",
+        "roof",
+        "hood"
+      ],
+      "must_preserve_parts": [],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S13",
+      "q": "Keep the roof as-is; make the rest of the car satin maroon.",
+      "target_scopes": [
+        "body"
+      ],
+      "must_preserve_parts": [
+        "roof"
+      ],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S14",
+      "q": "Make the entire car teal metallic except the hood, leave that unchanged.",
+      "target_scopes": [
+        "body"
+      ],
+      "must_preserve_parts": [
+        "hood"
+      ],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S15",
+      "q": "Full vehicle chrome, but do not touch the left side.",
+      "target_scopes": [
+        "body"
+      ],
+      "must_preserve_parts": [
+        "left side"
+      ],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S16",
+      "q": "Every panel matte black but preserve both sides as they are.",
+      "target_scopes": [
+        "body"
+      ],
+      "must_preserve_parts": [
+        "left side",
+        "right side"
+      ],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S17",
+      "q": "Make all paint crimson; keep the roof and the hood untouched.",
+      "target_scopes": [
+        "body"
+      ],
+      "must_preserve_parts": [
+        "roof",
+        "hood"
+      ],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S18",
+      "q": "Leave the hood carbon and turn only the roof bright gold.",
+      "target_scopes": [
+        "roof"
+      ],
+      "must_preserve_parts": [
+        "hood"
+      ],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S19",
+      "q": "What would go well with the carbon already on my hood?",
+      "target_scopes": [],
+      "must_preserve_parts": [],
+      "guidance_or_advice": true,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S20",
+      "q": "How do I use carbon on only the roof without changing my body paint?",
+      "target_scopes": [],
+      "must_preserve_parts": [],
+      "guidance_or_advice": true,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S21",
+      "q": "I do not want a gold body; only the hood should be silver.",
+      "target_scopes": [
+        "hood"
+      ],
+      "must_preserve_parts": [],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S22",
+      "q": "Can you explain where I choose pearl for the hood?",
+      "target_scopes": [],
+      "must_preserve_parts": [],
+      "guidance_or_advice": true,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S23",
+      "q": "Only the hood blue and only the roof orange.",
+      "target_scopes": [
+        "hood",
+        "roof"
+      ],
+      "must_preserve_parts": [],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    },
+    {
+      "id": "S24",
+      "q": "Keep my original number colour; make only the sides matte purple.",
+      "target_scopes": [
+        "left side",
+        "right side"
+      ],
+      "must_preserve_parts": [],
+      "guidance_or_advice": false,
+      "policy": "Clarification/refusal is safe but not completed output; preservation needs executable native mask exclusion, not just stripped text."
+    }
+  ]
+}

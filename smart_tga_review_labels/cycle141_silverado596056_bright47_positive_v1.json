@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "paint_label": "trucks silverado2019/car_num_596056.tga",
+  "inspection_records": "_smart_tga_runs/cycle141_bright_gate_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle141_bright_gate_route_pressure_v1/trucks_silverado2019_car_num_596056/component_records.json",
+  "review_scope": "Cycle 141 fresh Silverado review: protect the bright sponsor-routed 47 piece as true Number content while keeping tiny contingency pieces out of Numbers.",
+  "component_labels": [
+    {
+      "layer": "numbers",
+      "component_index": 0,
+      "expected_bbox": [428, 107, 39, 21],
+      "target_layer": "sponsors",
+      "label": "contingency_panel_false_number",
+      "note": "Small Simpson/AIP contingency panel; not a race number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 1,
+      "expected_bbox": [611, 275, 42, 19],
+      "target_layer": "sponsors",
+      "label": "contingency_panel_false_number",
+      "note": "Small contingency panel; not a race number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 2,
+      "expected_bbox": [413, 539, 155, 77],
+      "target_layer": "numbers",
+      "label": "true_large_number_47",
+      "note": "Large white/gray race-number 47."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 3,
+      "expected_bbox": [427, 881, 100, 79],
+      "target_layer": "numbers",
+      "label": "true_large_number_47",
+      "note": "Large white/gray race-number 47."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 4,
+      "expected_bbox": [484, 204, 98, 79],
+      "target_layer": "numbers",
+      "label": "missed_bright_number_47_piece",
+      "note": "Bright white/gray race-number 47 piece was routed to Sponsors; should be rescued into Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 18,
+      "expected_bbox": [614, 862, 40, 15],
+      "target_layer": "sponsors",
+      "label": "small_sponsor_wordmark",
+      "note": "Small sponsor textline near the lower side; not a number."
+    }
+  ]
+}

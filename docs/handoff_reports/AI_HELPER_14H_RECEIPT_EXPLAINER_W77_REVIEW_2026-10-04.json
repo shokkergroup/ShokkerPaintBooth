@@ -1,0 +1,64 @@
+{
+  "review": "W77 receipt explainer and finish hook integration",
+  "status": "PASS_WITH_LIMITS",
+  "reviewed_at": "2026-10-04",
+  "fresh_oracle": {
+    "path": "_easy_claude_work/ai14h_w77_review_fresh_oracle.json",
+    "sha256": "2EAE9C329200F6923A5FBD22EDE792498C218596D5AF1C569098F22D473A5888",
+    "case_count": 12,
+    "frozen_before_candidate_source_inspection": true
+  },
+  "pins": {
+    "controller": {
+      "path": "_easy_claude_work/ai14h_generation3_candidate/integration9/js/spb-pro-ai.js",
+      "sha256": "AAE99CDD02B00BDD78D1F02FED85C18BC72B82CAB9A66CEB7E0E3590EC3E8790"
+    },
+    "explainer": {
+      "path": "_easy_claude_work/ai14h_generation3_candidate/integration9/js/spb-ai-receipt-explainer.js",
+      "sha256": "25ABA5EE85E9C9FB7EFE3603FCE22B140CCB09D2CBD09A9303AC6AB00530EAC3"
+    },
+    "frozen_operation_manager": {
+      "path": "_easy_claude_work/ai14h_w77_review/frozen_runtime3/spb-ai-operation.js",
+      "sha256": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6"
+    },
+    "frozen_lease": {
+      "path": "_easy_claude_work/ai14h_w77_review/frozen_runtime3/spb-ai-lease.js",
+      "sha256": "DE276372A763310EC051DB141FCB1D601E11DBF193843E2B21A405226F782134"
+    }
+  },
+  "findings": [
+    "Receipt eligibility is based on a real logged action entry, same source/document identity, and exact current operation revision. Generic Done text without applied lines is not used to infer an edit.",
+    "The finishCore apply path publishes synchronously through operationPublish. The review replay made the apply effect increment the source revision; operationPublish refreshed the publishing ticket to that post-apply revision, and the action-specific receipt remained explainable.",
+    "A later failed-only attempt is logged after the prior success and is the newest eligible entry. The explainer reported the failed attempt and did not reuse the earlier roof-finish success as the latest change.",
+    "Undo/replace flags and manual zone-revision changes refuse stale explanations. Source generation replacement also refuses to describe the prior-source receipt.",
+    "Mixed action-and-explanation phrasing is not consumed by the read-only receipt handler; the full action wording reaches the regular ask route without applying an extra mutation in this controlled test."
+  ],
+  "verification": {
+    "existing_actual_route_contract": {
+      "command": "node tests/ai_receipt_explainer_w77_contract.cjs _easy_claude_work/ai14h_generation3_candidate/integration9/js/spb-pro-ai.js _easy_claude_work/ai14h_generation3_candidate/integration9/js/spb-ai-receipt-explainer.js",
+      "status": "PASS",
+      "coverage": "Phrase classification plus applied, partial, failed, undone, superseded, generic draft, stale source, manual revision, mixed-action, and guidance routes."
+    },
+    "independent_review_contract": {
+      "command": "node tests/ai_receipt_explainer_w77_review_contract.cjs",
+      "status": "PASS_WITH_LIMITS",
+      "fresh_dynamic_cases": 3,
+      "checks": [
+        "revision-changing finishCore apply updates the publishing receipt ticket",
+        "newer failed-only attempt supersedes older successful action in explanation",
+        "mixed action remains on the regular action route"
+      ]
+    },
+    "provider_calls": 0,
+    "native_or_live_server_calls": 0
+  },
+  "limits": [
+    "The controller harness uses controlled document/revision and applyQueue stubs; it proves route logic, not native paint output or browser installation.",
+    "Undo/refusal paths are exercised with harness state flags and revision changes, not a native Undo gesture.",
+    "No production files were modified."
+  ],
+  "artifacts": [
+    "tests/ai_receipt_explainer_w77_review_contract.cjs",
+    "tests/ai_receipt_explainer_w77_contract.cjs"
+  ]
+}

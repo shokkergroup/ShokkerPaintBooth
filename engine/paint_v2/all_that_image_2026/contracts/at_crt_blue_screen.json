@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_crt_blue_screen",
+  "display_name": "Cdrom: CRT Blue Screen",
+  "promise": "Cobalt blue CRT phosphor, abstract electronic texture with no writing",
+  "carrier_grammar": "Cobalt blue CRT phosphor, abstract electronic texture with no writing; single full-canvas image, no duplicated quadrants. Fine features: blue phosphor glass, black subpixel trenches, cyan signal pulses, white raster bursts, etched raster edges, fine glass scuffs",
+  "spec_grammar": "Feature-specific selectors partition blue phosphor glass, black subpixel trenches, cyan signal pulses, white raster bursts, etched raster edges, fine glass scuffs. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "blue phosphor glass",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "black subpixel trenches",
+      "role": "Material feature selected from artwork by g:<:0.29"
+    },
+    {
+      "name": "cyan signal pulses",
+      "role": "Material feature selected from artwork by h:<:205&s:>:0.5"
+    },
+    {
+      "name": "white raster bursts",
+      "role": "Material feature selected from artwork by g:>:0.76"
+    },
+    {
+      "name": "etched raster edges",
+      "role": "Material feature selected from artwork by edge:>:0.67"
+    },
+    {
+      "name": "fine glass scuffs",
+      "role": "Material feature selected from artwork by fine:>:0.88&g:>:0.5"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "blue phosphor glass",
+      "black subpixel trenches",
+      "cyan signal pulses",
+      "white raster bursts",
+      "etched raster edges",
+      "fine glass scuffs"
+    ],
+    "R": [
+      "blue phosphor glass",
+      "black subpixel trenches",
+      "cyan signal pulses",
+      "white raster bursts",
+      "etched raster edges",
+      "fine glass scuffs"
+    ],
+    "Cc": [
+      "blue phosphor glass",
+      "black subpixel trenches",
+      "cyan signal pulses",
+      "white raster bursts",
+      "etched raster edges",
+      "fine glass scuffs"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "blue phosphor glass",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "black subpixel trenches",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cyan signal pulses",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "white raster bursts",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "etched raster edges",
+      "range": [
+        [
+          0,
+          95,
+          85
+        ],
+        [
+          20,
+          205,
+          220
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine glass scuffs",
+      "range": [
+        [
+          0,
+          130,
+          110
+        ],
+        [
+          22,
+          235,
+          245
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_beige_box",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_corrupt_jpeg",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "blue phosphor glass",
+      "black subpixel trenches",
+      "cyan signal pulses",
+      "white raster bursts",
+      "etched raster edges",
+      "fine glass scuffs"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_crt_blue_screen / Cobalt blue CRT phosphor, abstract electronic texture with no writing",
+  "spec_key": "at_crt_blue_screen / blue phosphor glass all; black subpixel trenches g:<:0.29; cyan signal pulses h:<:205&s:>:0.5; white raster bursts g:>:0.76; etched raster edges edge:>:0.67; fine glass scuffs fine:>:0.88&g:>:0.5",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

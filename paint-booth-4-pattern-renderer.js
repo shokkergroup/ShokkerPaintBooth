@@ -55,6 +55,9 @@ function renderImagePatternSwatch(ctx, w, h, imageUrl) {
     img.crossOrigin = 'anonymous';
     img.onload = function () {
         _imagePatternCache[fullUrl] = img;
+        // 2026-06-28 OOM fix: bound this cache (each entry is a decoded image, 1-4MB) — drop oldest over 80.
+        var _ik = Object.keys(_imagePatternCache);
+        if (_ik.length > 80) delete _imagePatternCache[_ik[0]];
         ctx.drawImage(img, 0, 0, w, h);
     };
     img.onerror = function () {
@@ -8004,6 +8007,9 @@ function renderFinishSwatch(canvas, finishId) {
         renderPatternPreview(ctx, canvas.width, canvas.height, finishId);
         if (!isImageSwatch) {
             _previewCache[cacheKey] = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            // 2026-06-28 OOM fix: bound the swatch cache — drop oldest over 400 entries.
+            var _pk = Object.keys(_previewCache);
+            if (_pk.length > 400) delete _previewCache[_pk[0]];
         }
     } catch (err) {
         console.warn('[SWATCH] renderFinishSwatch failed for ' + finishId + ': ' + (err && err.message ? err.message : err));

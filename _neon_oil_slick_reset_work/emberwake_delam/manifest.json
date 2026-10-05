@@ -1,0 +1,96 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_emberwake_delam",
+  "display_name": "Emberwake Delam",
+  "carrier": "heat-delaminated fluorescent foil in smoked black clear",
+  "material_story": {
+    "M": "exposed clean foil nicks and the hottest lifted peel lips rise above oxidized foil",
+    "R": "soot fissures, char microflakes, and snap-back damage rise while clean hot foil falls",
+    "Cc": "intact foil, faceted adhesive pockets, and cooled shoulders retain coat while rupture loses it"
+  },
+  "vetoes": [
+    "flames",
+    "fire icons",
+    "waves",
+    "floating ribbons",
+    "repeated hook wallpaper",
+    "macro panels",
+    "circles or adhesive bubble rings",
+    "generic noise underlays"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 1.811356,
+  "material_stats": {
+    "std": {
+      "M": 82.789642,
+      "R": 83.299179,
+      "Cc": 83.260788
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": -0.2082,
+      "M_Cc": 0.219038,
+      "R_Cc": -0.554084
+    }
+  },
+  "geometry_stats": {
+    "family_count": 16,
+    "families": {
+      "broken colony peel bevels": 369,
+      "broken peel bevels": 646,
+      "char microflakes": 794,
+      "cooled magenta/violet shoulders": 862,
+      "exposed foil nicks": 321,
+      "faceted adhesive blisters": 536,
+      "fluorescent foil plates": 1988,
+      "isolated foil scales": 5209,
+      "isolated oxide shards": 639,
+      "isolated snap-back scars": 1294,
+      "oxide beads/shards": 809,
+      "quench freckles": 638,
+      "snap-back scars": 648,
+      "soot fissure shards": 628,
+      "soot fissures": 819,
+      "torn edge chips": 643
+    },
+    "width_native_min": 8.001,
+    "width_native_median": 15.768,
+    "width_native_p90": 23.812,
+    "width_native_max": 31.997,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "fluorescent foil plates": 0.262226,
+    "broken peel lips": 0.042651,
+    "snap-back scars": 0.050494,
+    "soot fissures": 0.056099,
+    "faceted adhesive blisters": 0.020474,
+    "oxide beads/shards": 0.023302,
+    "char microflakes": 0.016673,
+    "exposed foil nicks": 0.037065,
+    "cooled magenta/violet shoulders": 0.051437,
+    "intact foil/adhesive pockets": 0.098394
+  }
+}

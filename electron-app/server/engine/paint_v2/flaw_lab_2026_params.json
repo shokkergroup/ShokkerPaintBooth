@@ -1,0 +1,31 @@
+{
+ "chosen": {
+  "fl_a_scan_gate": 6,
+  "fl_acoustic_emission": 1,
+  "fl_barkhausen": 2,
+  "fl_brittle_lacquer": 5,
+  "fl_c_scan": 1,
+  "fl_chladni": 6,
+  "fl_crack_tip": 9,
+  "fl_ct_slice": 5,
+  "fl_eddy_impedance": 5,
+  "fl_hardness_indent": 5,
+  "fl_holo_interfero": 9,
+  "fl_isoclinic_dark": 9,
+  "fl_macro_etch": 2,
+  "fl_magnetic_particle": 2,
+  "fl_moire_deflect": 2,
+  "fl_penetrant_bleed": 6,
+  "fl_phased_array": 9,
+  "fl_photoelastic_iso": 9,
+  "fl_pulse_thermo": 7,
+  "fl_radiograph_weld": 5,
+  "fl_schlieren": 1,
+  "fl_shadowgraph": 2,
+  "fl_shearography": 5,
+  "fl_strain_rosette": 1,
+  "fl_tsa_stress": 7
+ },
+ "n_variants": 10,
+ "res": 1024
+}

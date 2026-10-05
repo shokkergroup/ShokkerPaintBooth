@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SHOKKER FORGE — Reference to Editable PSD</title>
+  <link rel="stylesheet" href="forge-page.css?v=forge-app-v6-evidence-requests-20260716">
+</head>
+<body>
+  <header class="forge-header">
+    <a class="back" href="/" aria-label="Back to Paint Booth">← PAINT BOOTH</a>
+    <div>
+      <p class="eyebrow">SHOKKER PAINT BOOTH</p>
+      <h1>SHOKKER <span>FORGE</span></h1>
+      <p class="subtitle">Reference images → measured UV reconstruction → editable PSD</p>
+    </div>
+    <div id="connectionPill" class="pill pending">CONNECTING</div>
+  </header>
+
+  <main>
+    <section class="promise">
+      <div><strong>GUIDED FORGE / TIER 1</strong><span>Uses direct evidence. Flags what it cannot prove.</span></div>
+      <ol class="stage-rail" aria-label="Forge stages">
+        <li data-stage="intake" class="active">1 Intake</li><li data-stage="geometry">2 Geometry</li><li data-stage="projection">3 Projection</li><li data-stage="semantics">4 Layers</li><li data-stage="qa">5 QA</li><li data-stage="import">6 Import</li>
+      </ol>
+    </section>
+
+    <section class="panel setup-panel">
+      <div class="section-copy">
+        <p class="step">STEP 1</p>
+        <h2>Choose the car template</h2>
+        <p>The adapter contains body surfaces, UV direction, seams, keepouts, and confidence rules—not livery-specific placements.</p>
+      </div>
+      <label class="template-card">
+        <input type="radio" name="adapter" value="iracing.dirt_late_model" checked>
+        <span class="template-mark">DLM</span>
+        <span><b>iRacing Dirt Late Model</b><small id="adapterVersion">Loading adapter…</small></span>
+        <span id="adapterStatus" class="status-tag">CHECKING</span>
+      </label>
+    </section>
+
+    <section class="panel">
+      <div class="section-copy">
+        <p class="step">STEP 2</p>
+        <h2>Give Forge direct views</h2>
+        <p>Use the clearest available image for each physical view. More evidence means less guessing. Duplicate bytes are rejected as duplicate evidence.</p>
+      </div>
+      <div class="coverage" aria-live="polite">
+        <div><span id="coverageNumber">0/5</span><small id="coverageDetail">required views selected</small></div>
+        <div class="coverage-track"><i id="coverageBar"></i></div>
+        <strong id="coverageLabel">NEEDS INPUT</strong>
+      </div>
+      <div class="view-grid" id="viewGrid">
+        <label class="view-slot" data-role="left"><span>DRIVER SIDE</span><b>Left profile</b><small>Square-on side preferred</small><input type="file" accept="image/*,.tga"><em>Choose image</em></label>
+        <label class="view-slot" data-role="right"><span>PASSENGER SIDE</span><b>Right profile</b><small>Never inferred when supplied</small><input type="file" accept="image/*,.tga"><em>Choose image</em></label>
+        <label class="view-slot" data-role="top"><span>TOP</span><b>Hood / roof / deck</b><small>Orthographic or high angle</small><input type="file" accept="image/*,.tga"><em>Choose image</em></label>
+        <label class="view-slot" data-role="front"><span>FRONT</span><b>Nose / valance</b><small>Direct view prevents duplicates</small><input type="file" accept="image/*,.tga"><em>Choose image</em></label>
+        <label class="view-slot" data-role="rear"><span>REAR</span><b>Deck / spoiler faces</b><small>Center-on if possible</small><input type="file" accept="image/*,.tga"><em>Choose image</em></label>
+      </div>
+      <div class="optional-row">
+        <label class="optional-slot">Optional extra views / clean assets<input id="optionalFiles" type="file" accept="image/*,.tga" multiple><span id="optionalLabel">Choose files</span></label>
+      </div>
+    </section>
+
+    <section class="panel action-panel">
+      <div>
+        <p class="step">STEP 3</p>
+        <h2>Hash, copy, and qualify the pack</h2>
+        <p>Originals stay untouched. Forge creates a resumable local job and reports missing or duplicated evidence before reconstruction.</p>
+      </div>
+      <button id="qualifyButton" class="forge-button" disabled>CREATE JOB &amp; QUALIFY REFERENCES</button>
+    </section>
+
+    <section id="jobPanel" class="panel job-panel" hidden>
+      <div class="job-title"><div><p class="step">LOCAL JOB</p><h2 id="jobState">COLLECTING</h2></div><code id="jobId"></code></div>
+      <div id="jobMessage" class="job-message">Preparing local Forge job…</div>
+      <div id="qualificationGrid" class="qualification-grid"></div>
+      <div id="pipelineGrid" class="pipeline-grid" aria-label="Pipeline stage status"></div>
+      <div id="surfaceExecutionPanel" class="surface-execution-panel" hidden>
+        <strong>AUTHORITY-HASHED UV SURFACE EVIDENCE</strong>
+        <p>These are direct source pixels clipped to official adapter masks. A missing, unsupported, or hash-mismatched surface abstains instead of guessing.</p>
+        <div id="surfaceExecutionGrid" class="surface-execution-grid"></div>
+      </div>
+      <div id="anchorProposalPanel" class="anchor-proposal-panel" hidden>
+        <strong>MEASURED CAR-SPACE ANCHORS</strong>
+        <p>Green fields cleared the automatic evidence gate. Yellow fields are proposals only: inspect them before confirmation. Red fields need new evidence and cannot be guessed.</p>
+        <div id="anchorProposalGrid" class="anchor-proposal-grid"></div>
+      </div>
+      <div id="correctionPanel" class="correction-panel" hidden>
+        <strong>FORGE NEEDS MEASURED CORRECTIONS</strong>
+        <p>These are proof requirements, not generated guesses. The job remains resumable and PSD import stays locked.</p>
+        <ul id="correctionList"></ul>
+      </div>
+      <div id="surfaceReadinessPanel" class="surface-readiness-panel" hidden>
+        <header><div><strong>SPECIALIZED-SURFACE READINESS</strong><p>One resumable checklist for direct photos, attestation, reviewed faces, and Forge-only projector blockers.</p></div><button id="exportReadinessButton" class="secondary-button" type="button">EXPORT CORRECTION JSON</button></header>
+        <div id="surfaceReadinessGrid" class="surface-readiness-grid"></div>
+        <small id="surfaceReadinessSummary"></small>
+      </div>
+      <div id="evidenceRequestPanel" class="evidence-request-panel" hidden>
+        <strong>OPTIONAL DIRECT EVIDENCE REQUESTS</strong>
+        <p>These uploads target a specific unseen physical face. Forge rejects generic-view substitutions and byte duplicates instead of pretending they complete the surface.</p>
+        <div id="evidenceRequestGrid" class="evidence-request-grid"></div>
+      </div>
+      <div class="job-actions">
+        <button id="runButton" class="forge-button" disabled>RUN RECONSTRUCTION</button>
+        <button id="importButton" class="secondary-button" disabled>OPEN PSD IN PAINT BOOTH</button>
+      </div>
+      <p class="gate-note">The PSD buttons unlock only from persisted gates—never from a process exit alone.</p>
+    </section>
+  </main>
+  <dialog id="anchorEditorDialog" class="anchor-editor-dialog" aria-labelledby="anchorEditorTitle">
+    <div class="anchor-editor-shell">
+      <header>
+        <div><p class="step">MEASURED SOURCE REVIEW</p><h2 id="anchorEditorTitle">EDIT ANCHORS</h2></div>
+        <button id="anchorEditorClose" class="anchor-editor-close" type="button" aria-label="Close anchor editor">CLOSE</button>
+      </header>
+      <p id="anchorEditorHelp" class="anchor-editor-help">Drag the yellow handles on the supplied reference. Forge saves normalized coordinates only after validation.</p>
+      <div class="anchor-editor-layout">
+        <div id="anchorEditorStage" class="anchor-editor-stage">
+          <img id="anchorEditorImage" alt="Supplied reference with measured anchor overlay">
+          <svg id="anchorEditorOverlay" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-label="Editable anchor overlay"></svg>
+        </div>
+        <aside>
+          <strong>FIELDS ON THIS SOURCE</strong>
+          <div id="anchorEditorFields" class="anchor-editor-fields"></div>
+          <div id="anchorEditorValidation" class="anchor-editor-validation" aria-live="polite"></div>
+          <p id="anchorEditorAbstention" class="anchor-editor-abstention" hidden></p>
+        </aside>
+      </div>
+      <footer>
+        <button id="anchorEditorCancel" class="secondary-button" type="button">CANCEL</button>
+        <button id="anchorEditorSave" class="forge-button" type="button" disabled>CONFIRM MEASURED ANCHORS</button>
+      </footer>
+    </div>
+  </dialog>
+  <script src="forge-anchor-editor.js?v=forge-app-v5-surface-evidence-review-20260716"></script>
+  <script src="forge-page.js?v=forge-app-v7-surface-evidence-review-20260716"></script>
+</body>
+</html>

@@ -2,7 +2,7 @@
   "name": "JDM Import Tuner",
   "description": "Modern Japanese tuner aesthetic. Pearl white body with bright red Type-R style accents, carbon fiber hood, electric blue graphics, piano black window trim, chrome badging, and neon pink underglow accent. Spoon/Nismo energy.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "civic type r, s2000, gt-r, silvia, evo, sti, modern JDM tuners",
   "notes": "Pearl white is the hero — don't let graphics overwhelm it. Carbon hood reads darker than flat_black in sun; if carbon looks muddy, bump pickerTolerance to 35. Pink underglow is optional flavor.",
   "zones": [

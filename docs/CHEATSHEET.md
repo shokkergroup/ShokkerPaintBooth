@@ -115,14 +115,17 @@ Defaults — not yet fully remappable, planned for 6.3.0.
 | R | Metallic | Dielectric | Metallic |
 | G | Roughness | Mirror | Matte |
 | **B** | **Clearcoat** | **None** (0-15) / **Max gloss** (16) | **Dull** |
-| A | Specular mask | Reserved | Reserved |
+| A | Specular / lighting mask | Response off | Full response |
 
 Key presets:
 
-- Chrome: R255 / G0 / B16
-- Metallic: R255 / G85 / B0
-- Matte: R0 / G220 / B15
+- Chrome: R255 / G2 / B16
+- Metallic: R200 / G50 / B16
+- Matte: R0 / G200 / B160
+- Clear Matte: R0 / G220 / B210
 - Gloss Black: R0 / G20 / B16
+
+Full guide: [Living Wiki RGB Spec Finish Encyclopedia](../SPB_WIKI.html#spec_guide).
 
 ---
 

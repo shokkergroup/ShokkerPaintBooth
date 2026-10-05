@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 350/car_num_275289.tga",
+  "inspection_records": "_smart_tga_runs/cycle711_fresh_dlm_active_pool/inspection_records.json",
+  "review_scope": "Untouched Cycle 712 holdout; source, owner sheets, context crops, and isolated proposal masks reviewed after model freeze.",
+  "evaluation_role": "untouched_cross_owner_holdout",
+  "component_labels": [
+    {"layer":"sponsors","component_index":78,"expected_bbox":[780,465,57,119],"target_layer":"sponsors","label":"sponsor_fox_logo_false_number"},
+    {"layer":"sponsors","component_index":74,"expected_bbox":[838,378,39,78],"target_layer":"template","label":"taillight_hardware_false_number"},
+    {"layer":"sponsors","component_index":18,"expected_bbox":[2,159,263,134],"target_layer":"paint","label":"connected_livery_sponsor_false_number"},
+    {"layer":"sponsors","component_index":90,"expected_bbox":[836,585,38,76],"target_layer":"template","label":"taillight_hardware_false_number"},
+    {"layer":"paint","component_index":0,"expected_bbox":[0,0,1024,1024],"target_layer":"paint","label":"whole_paint_false_number"},
+    {"layer":"sponsors","component_index":42,"expected_bbox":[315,286,45,51],"target_layer":"sponsors","label":"sponsor_wre_logo_false_number"}
+  ]
+}

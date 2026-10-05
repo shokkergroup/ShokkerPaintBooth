@@ -1,0 +1,129 @@
+{
+  "$schema": "shokk-forge.dlm-surface-authority/v1",
+  "template_id": "iracing-dirt-late-model-350-358-438-official",
+  "livery_agnostic": true,
+  "coordinate_space": [1024, 1024],
+  "sources": {
+    "official_template_psd": {
+      "path": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/Dirt Late Model PSDs/DIRT LATE MODEL TEMPLATE PSD.psd",
+      "sha256": "f99e1c89e67f82ac3cd5e0abc09777f218f29a12dd4753eddd691dd6f067e6d7",
+      "group": "Paintable Area",
+      "authority": "official editable type labels plus official Wire layer"
+    },
+    "panel_map": "_dlm_dossier/panel_map.json"
+  },
+  "rules": {
+    "coverage": "paint fields cover every assigned official wire region, not only readable safe areas",
+    "readable_art": "semantic artwork stays inside its assigned surface safe mask",
+    "front": "HOOD NOSE is one physical artwork authority; top/front evidence may form one declared seam split but may not create two independent copies",
+    "unknown": "official regions without a surface envelope remain unassigned and abstain from readable art"
+  },
+  "surfaces": {
+    "left_side": {
+      "family": "side",
+      "side": "left",
+      "upright_rotation_deg": 180,
+      "legacy_surface_members": ["left_strip"],
+      "official_label": "LEFT SIDE",
+      "label_seed_bbox": [335, 243, 567, 293],
+      "envelope_bbox": [0, 148, 690, 353],
+      "stored_orientation": "rot180",
+      "readable_direction": "pre-rotate 180; never mirror"
+    },
+    "right_side": {
+      "family": "side",
+      "side": "right",
+      "upright_rotation_deg": 0,
+      "legacy_surface_members": ["right_strip"],
+      "official_label": "RIGHT SIDE",
+      "label_seed_bbox": [302, 749, 581, 803],
+      "envelope_bbox": [0, 698, 640, 903],
+      "stored_orientation": "normal",
+      "readable_direction": "normal; never mirror"
+    },
+    "left_front_fender": {
+      "family": "front_fender",
+      "side": "left",
+      "upright_rotation_deg": 180,
+      "legacy_surface_members": ["left_front_fender"],
+      "official_label": "LEFT FRONT FENDER",
+      "label_seed_bbox": [730, 216, 852, 356],
+      "envelope_bbox": [700, 155, 863, 380],
+      "stored_orientation": "rot180_tilted"
+    },
+    "right_front_fender": {
+      "family": "front_fender",
+      "side": "right",
+      "upright_rotation_deg": 0,
+      "legacy_surface_members": ["right_front_fender"],
+      "official_label": "RIGHT FRONT FENDER",
+      "label_seed_bbox": [610, 746, 764, 874],
+      "envelope_bbox": [590, 710, 774, 915],
+      "stored_orientation": "normal_tilted"
+    },
+    "rear_deck_lid": {
+      "family": "top",
+      "side": "center",
+      "upright_rotation_deg": 90,
+      "legacy_surface_members": ["rear_deck_lid"],
+      "official_label": "REAR DECKLID",
+      "label_seed_bbox": [84, 379, 193, 662],
+      "envelope_bbox": [10, 350, 280, 710],
+      "stored_orientation": "rot90_cw"
+    },
+    "tub": {
+      "family": "interior",
+      "side": "center",
+      "upright_rotation_deg": 270,
+      "legacy_surface_members": ["tub_windshield"],
+      "semantic_safe_policy": "empty_until_direct_top_evidence",
+      "official_label": "TUB",
+      "label_seed_bbox": [443, 424, 535, 637],
+      "envelope_bbox": [280, 350, 610, 710],
+      "stored_orientation": "rot90_ccw"
+    },
+    "hood_nose": {
+      "family": "front",
+      "side": "center",
+      "upright_rotation_deg": 270,
+      "legacy_surface_members": ["hood", "nose"],
+      "official_label": "HOOD NOSE",
+      "label_seed_bbox": [691, 429, 936, 627],
+      "envelope_bbox": [540, 360, 945, 695],
+      "stored_orientation": "rot90_ccw",
+      "physical_assembly_id": "front_hood_nose",
+      "semantic_authority_cardinality": 1,
+      "cross_view_policy": "one declared cross_surface_split only"
+    },
+    "roof": {
+      "family": "top",
+      "side": "center",
+      "upright_rotation_deg": 0,
+      "legacy_surface_members": ["roof"],
+      "official_label": "ROOF",
+      "label_seed_bbox": [804, 849, 973, 903],
+      "envelope_bbox": [770, 765, 985, 1015],
+      "stored_orientation": "upright"
+    },
+    "spoiler_inside": {
+      "family": "rear_aero",
+      "side": "rear",
+      "upright_rotation_deg": 180,
+      "legacy_surface_members": ["spoiler_inside"],
+      "official_label": "SPOILER INSIDE",
+      "label_seed_bbox": [312, 919, 528, 949],
+      "envelope_bbox": [248, 900, 593, 950],
+      "stored_orientation": "rot180"
+    },
+    "spoiler_outside": {
+      "family": "rear_aero",
+      "side": "rear",
+      "upright_rotation_deg": 0,
+      "legacy_surface_members": ["spoiler_outside"],
+      "official_label": "SPOILER OUTSIDE",
+      "label_seed_bbox": [295, 967, 537, 997],
+      "envelope_bbox": [248, 950, 593, 1000],
+      "stored_orientation": "normal"
+    }
+  }
+}

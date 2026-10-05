@@ -1,0 +1,83 @@
+{
+  "work_item": "W87 independent review of W83 parser-input snapshot candidate",
+  "date": "2026-10-04",
+  "status": "APPROVE_WITH_LIMITS_PRIVATE_CANDIDATE",
+  "scope": "Independent audit only. The candidate remains isolated; no production source/server, live filesystem source, renderer, browser, native app, or provider was changed or used.",
+  "fresh_oracle": {
+    "path": "_easy_claude_work/ai14h_w87_review/fresh-oracle.json",
+    "sha256": "E2328825B6864DBB86FA2E8B7FA27196835116FFF3AD57CA33799A99BD75C025",
+    "case_count": 8,
+    "frozen_before_candidate_source_inspection": true
+  },
+  "candidate_pins": {
+    "server": {
+      "path": "_easy_claude_work/ai14h_w83_review/candidate/server.py",
+      "sha256": "A845F7EE1CD96B9F87FE1AF85D42A1B86DD2059E2A5893E47006A08D773AC2CE"
+    },
+    "psd_routes": {
+      "path": "_easy_claude_work/ai14h_w83_review/candidate/server_routes/psd_import_routes.py",
+      "sha256": "6A0FCE336FC5EF54EB80EF92A220ABC0D81E5B22107B2BF3A4E3B0872F51A95D"
+    },
+    "candidate_patch": {
+      "path": "_easy_claude_work/ai14h_w83_review/W83.patch",
+      "sha256": "A40F8BA2EE603AAFAACD56A33B820D95233F558AB988DBF94D0DF8B0E2F867F6"
+    },
+    "base_server": "1B094F80D81582416B03B0C63F1814665FB78969F2BB1675E5219E710C522294",
+    "base_psd_routes": "FAF99DF7EDDEED1623342EFDA2479BBD23FB1D763B5F7759DF8068F63EE0D902"
+  },
+  "producer_contract_replay": {
+    "path": "tests/ai_source_bytes_transient_aba_w83_contract.py",
+    "command": "python tests/ai_source_bytes_transient_aba_w83_contract.py",
+    "result": "PASS_WITH_LIMITS",
+    "actual_rows": 6,
+    "frozen_oracle_denominator": 8,
+    "exact_interpretation": "Six emitted runtime rows passed. The frozen eight-case oracle denominator is not eight executed passing cases.",
+    "observed": [
+      "A→B→A same-path/same-mtime actual Flask import returns digest and parsed visible pixel from A.",
+      "Persistent B mismatch returns HTTP 409 and leaves no parser cache entry.",
+      "Subsequent stable request hits the cache with A output; distinct hidden-layer bytes change the digest while visible output stays equal.",
+      "Digest-backed parser cache returns the parsed PSD object to legacy no-digest callers.",
+      "19,647,178-byte real PSD rolls the SpooledTemporaryFile to disk and keeps it alive through cache eviction while the parsed PSD owns it; it releases after the parser owner is dropped.",
+      "Real ORA fixture still opens/composites. XCF loader dispatch/path call is structurally retained; no actual XCF raster fixture was run."
+    ],
+    "syntax": "Producer report states py_compile passed for candidate server, import route and producer contract."
+  },
+  "independent_route_contract": {
+    "path": "tests/ai_source_snapshot_w87_review_contract.py",
+    "sha256": "7E87D978CC1ECF2C067E06F0038F91A4B92A55A44950235C15D86BE9052FC875",
+    "result": "PASS_WITH_LIMITS",
+    "additional_actual_flask_trials": 3,
+    "observed": [
+      "Real PSD import followed by /api/psd-rasterize-all with the import digest returns HTTP 200, the same digest and the expected [30,160,220] layer pixel; cache holds the parsed PSD object.",
+      "Replacing the selected path bytes after import and rasterizing with the earlier digest returns HTTP 409.",
+      "Controlled parser failure returns HTTP 500, closes the observed snapshot spool and leaves parser cache empty. This is explicit failure injection."
+    ]
+  },
+  "compatibility_pins": {
+    "ora_loader": "189B2943E584C960AE984B45E4318E675E20BB840710D814BF25A66FD0EACF4E",
+    "xcf_loader": "5A6B2B01BE492611B153BADD71B44BC47307031E34023E2093C14F95B168C3FE"
+  },
+  "review_findings": {
+    "approved_behavior": [
+      "Digest-aware PSD path fingerprints are not treated as proof of parser input: the parser receives the exact digest-attested spool snapshot.",
+      "A persistent snapshot digest mismatch closes the attempt, retries only once, surfaces a conflict, and is not cached.",
+      "Cache eviction does not prematurely close a spool while a parsed PSD still owns it; the ownership-based lifetime was observed with a disk-rolled PSD.",
+      "Import and raster routes bind the client-facing raster response to the import's selected-byte digest.",
+      "Parse failure cleanup is robust in the controlled failure trial."
+    ],
+    "limits": [
+      "No new immutable snapshot guarantee is provided for ORA/XCF: ORA lazily reads ZipFile(path), XCF requires a path. Compatibility is preserved, not byte-attested against ABA.",
+      "XCF compatibility was a structural dispatch assertion only; no real XCF dependency or fixture was available.",
+      "The W83 producer's six actual rows are fewer than its eight frozen oracle cases. This review does not relabel missing executions as passes.",
+      "The isolated code was not installed or exercised through the desktop app/live server; backend promotion requires the parent integration's own checks."
+    ]
+  },
+  "effects": {
+    "production_files_changed": 0,
+    "server_restarts": 0,
+    "native_calls": 0,
+    "provider_calls": 0,
+    "browser_calls": 0,
+    "heavy_psd_jobs": 1
+  }
+}

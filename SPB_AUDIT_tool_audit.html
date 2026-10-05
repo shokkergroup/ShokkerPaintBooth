@@ -1,0 +1,176 @@
+<!doctype html><html><head><meta charset="utf-8"><title>SPB Toolbar Tool Audit</title>
+<style>
+body{background:#0d0e12;color:#e8e8ee;font:15px/1.55 -apple-system,Segoe UI,Roboto,sans-serif;margin:0;padding:0 0 80px}
+.wrap{max-width:1240px;margin:0 auto;padding:24px}
+h1{font-size:29px;margin:.2em 0} h2{font-size:21px;border-bottom:2px solid #2a2b34;padding-bottom:6px;margin-top:40px}
+.lead{color:#b9b9c6;font-size:16px}
+.kpis{display:flex;gap:14px;flex-wrap:wrap;margin:18px 0}
+.kpi{background:#16171d;border:1px solid #24252e;border-radius:10px;padding:13px 18px;flex:1;min-width:130px}
+.kpi b{display:block;font-size:25px;color:#fff} .kpi span{color:#8a8a99;font-size:12px}
+.box{background:#14151b;border:1px solid #24252e;border-radius:10px;padding:16px 20px;margin:16px 0}
+.box.accent{border-left:4px solid #ff7a2f}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid #20212a;vertical-align:top}
+th{color:#8a8a99} td.nm{font-weight:600;color:#fff;white-space:nowrap} .ctx{font-size:11px;color:#6da8ff;font-weight:400}
+.sev{display:inline-block;padding:2px 8px;border-radius:10px;color:#0d0e12;font-weight:700;font-size:11px;text-transform:uppercase}
+td.fix{color:#bfe3cf} td.ev code{font-size:11px;color:#7f8aa0;word-break:break-word}
+.fixed{color:#38d39f;font-weight:700} .wip{color:#e0a13a;font-weight:700} .todo{color:#8a8a99}
+ul{color:#c5c5d2} li{margin:5px 0}
+.imp{background:#16171d;border:1px solid #24252e;border-radius:8px;padding:12px 16px;margin:8px 0}
+.imp-h{display:flex;justify-content:space-between;gap:10px;align-items:center} .imp-r{color:#9b9baa;font-size:13px;margin-top:5px}
+.tag{font-size:11px;border:1px solid;border-radius:10px;padding:1px 9px;white-space:nowrap}
+code{background:#1c1d25;padding:1px 5px;border-radius:4px}
+</style></head><body><div class="wrap">
+<h1>Shokker Paint Booth — Toolbar Tool Audit</h1>
+<p class="lead">Deep functional audit of every Zone &amp; Layer tool: do they work exactly as intended? Plus a roadmap to use the toolbar to its full potential. Generated 2026-06-20 00:15 via a 46-agent workflow.</p>
+<div class="kpis">
+  <div class="kpi"><b>71</b><span>total findings</span></div>
+  <div class="kpi"><b>38</b><span>claimed defects</span></div>
+  <div class="kpi"><b>27</b><span>confirmed real (adversarially verified)</span></div>
+  <div class="kpi"><b>12</b><span>tools verified working</span></div>
+  <div class="kpi"><b>10</b><span>improvement ideas</span></div>
+</div>
+<div class="box accent"><b>Bottom line.</b> The toolbar is fundamentally healthy: every selection and paint tool produces correct output for normal drag-based use (rect, lasso, wand, select-all, ellipse, gradient fill, fill bucket, smudge, pencil, dodge, recolor all do the right thing on the pixels). The problems are not &quot;tool is broken,&quot; they&#x27;re broken PROMISES — keybindings that conflict (M, I), tooltips that advertise behavior the code doesn&#x27;t deliver (Edge Detect &quot;finds boundaries&quot; but fills interiors; rect &quot;click again to commit&quot; is unreachable; Pick Item &quot;(I)&quot; never fires), a feather slider shown for 6 tools that nothing reads, and zone-vs-layer parity gaps where the same tool behaves differently or worse on a layer. Two genuine data-loss/visual bugs need attention: a tiny Replace-mode ellipse wipes the whole selection before its size guard, and colorbrush on a layer uses a richer engine on the first dab than on the drag (plus a transparent-pixel alpha miss on that first dab). The biggest opportunity is a &quot;make tooltips true&quot; pass plus a keybinding cleanup, then closing the zone/layer parity gaps so the painter gets identical behavior in both modes. None of these crash; all are fixable with localized edits.</div>
+
+<h2>🔝 Top recommendations (in order)</h2>
+<div class="box"><ol><li>Fix the two data-loss/visual bugs first: guard the tiny-Replace ellipse before it wipes the selection (move the size check above the mask-clear/undo), and unify the colorbrush layer engine + set alpha on the first dab so layer strokes are consistent and visible.</li><li>Run a &#x27;make every tooltip true&#x27; pass — reconcile Edge Detect&#x27;s name/intent, the rect two-click claim, Pick Item (I), Surprise-me (R), and layer gradient types — so the UI stops advertising behavior the code doesn&#x27;t deliver.</li><li>Build a single keybinding registry that owns all shortcuts and detects collisions at load, fixing the M (mute vs marquee) and I (pencil vs pick-item) conflicts at the root.</li><li>Wire the auto-feather slider (shared post-commit step for all six selection tools) so the control that&#x27;s already shown everywhere actually works.</li><li>Close zone/layer parity gaps: match the fill tolerance metric, and either implement or hide the non-linear gradient types on layers.</li><li>Fix the gradient preview line zoom math (drop the double `* zoom`) so painters can aim gradients at any zoom level.</li><li>Add an on-canvas mode HUD plus toasts for silent no-ops/locked-layer/too-small cases to surface hidden capability and stop &#x27;is it broken?&#x27; confusion.</li><li>Make destructive tools (dodge/recolor/smudge) clip to the active selection and honor stylus pressure family-wide.</li></ol></div>
+
+<h2>🐛 Confirmed bugs (15) — verified against the code</h2>
+<table>
+  <tr><th>Sev</th><th>Tool</th><th>Problem</th><th>Fix</th><th>Evidence</th><th>Status</th></tr>
+  <tr>
+      <td><span class="sev" style="background:#e0a13a">medium</span></td>
+      <td class="nm">ellipse-marquee<br><span class="ctx">zone</span></td>
+      <td>A tiny or accidental ellipse drag in Replace mode silently destroys the existing selection. commitEllipseSelection clears the region mask (and pushes an undo) BEFORE it checks whether the ellipse is too small to draw. So a near-zero drag wipes the prior selection and then early-returns drawing nothing — the selection is gone with no toast, only recoverable via undo the user may not know to use.</td>
+      <td class="fix">Move the degenerate-size guard `if (rx &lt; 1 || ry &lt; 1) return;` ABOVE the mask-clear/pushUndo lines so a too-small ellipse never pushes undo or wipes the mask. Add a &#x27;Selection too small&#x27; toast for the no-op case.</td>
+      <td class="ev"><code>paint-booth-3-canvas.js:16640 `if (!zone.regionMask || selMode === &#x27;replace&#x27;) { zone.regionMask = new Uint8Array(w * h); }` runs before 16649 `if (rx &lt; 1 || ry &lt; 1) return;`; pushUndo at 16637.</code></td>
+      <td><span class="fixed">✓ FIXED</span></td>
+    </tr><tr>
+      <td><span class="sev" style="background:#e0a13a">medium</span></td>
+      <td class="nm">ellipse-marquee<br><span class="ctx">zone</span></td>
+      <td>The advertised &#x27;M&#x27; keyboard shortcut for the Elliptical Marquee never works — pressing M mutes the selected zone instead. Two document keydown listeners both handle &#x27;m&#x27;; state-zones.js (m = mute zone) loads before 3-canvas.js (m = ellipse-marquee) and calls preventDefault, so the marquee handler bails on defaultPrevented. The tool itself works fine via drag; only the shortcut is dead.</td>
+      <td class="fix">Resolve the M collision with a single owner: rebind zone-mute to e.g. Shift+M so plain M activates the marquee as advertised, or rebind the marquee and update its tooltip/help card. Make the surviving handler the single source of truth.</td>
+      <td class="ev"><code>paint-booth-2-state-zones.js:17174 (`e.key === &#x27;m&#x27; ... e.preventDefault(); toggleZoneMute(...)`) shadows paint-booth-3-canvas.js:14869 (`key === &#x27;m&#x27; -&gt; setCanvasMode(&#x27;ellipse-marquee&#x27;)`); load order v2.html:3099 before 3102; bail at 14859 `if (e.defaultPrevented) return`.</code></td>
+      <td><span class="fixed">✓ FIXED</span></td>
+    </tr><tr>
+      <td><span class="sev" style="background:#e0a13a">medium</span></td>
+      <td class="nm">wand/selectall/rect/lasso/ellipse-marquee/edge<br><span class="ctx">zone</span></td>
+      <td>The &#x27;Auto-feather selection edges (px)&#x27; slider shown for all six selection tools does nothing. setCanvasMode reveals the control for every selection tool, but no commit function reads the input&#x27;s value — all six write hard 0/255 masks. The only code reference is to the LABEL element, never the input. Feathering is only available through the separate manual &#x27;Soften&#x27; button, so the advertised auto-feather is a no-op everywhere.</td>
+      <td class="fix">After each selection commit, read `const fpx = parseInt(document.getElementById(&#x27;selectionFeather&#x27;)?.value)||0; if (fpx&gt;0) featherRegionMask(fpx);` via a shared post-commit step in magicWandFill/selectAllColor/edgeDetectFill/closeLasso/commitRectSelection/commitEllipseSelection. Alternatively hide the input until it is wired so the UI stops advertising a no-op.</td>
+      <td class="ev"><code>v2.html:1974 `&lt;input id=&quot;selectionFeather&quot; ... title=&quot;Auto-feather selection edges (px)&quot;&gt;`; only reference is paint-booth-3-canvas.js:4303 `document.getElementById(&#x27;selectionFeatherLabel&#x27;)` (the label, not the value).</code></td>
+      <td><span class="fixed">✓ FIXED</span></td>
+    </tr><tr>
+      <td><span class="sev" style="background:#e0a13a">medium</span></td>
+      <td class="nm">colorbrush<br><span class="ctx">layer</span></td>
+      <td>A colorbrush stroke on a PSD layer looks different at its start than along the drag. The first (mousedown) dab runs paintColorBrush with full dynamics — brush shape, pattern brush, symmetry, Gaussian falloff — but the drag dabs detect the active layer canvas and switch to _paintOnLayerAt, a plain radial arc with no shape/pattern/symmetry. So non-round shapes, pattern brushes, and mirror modes appear on the single click dab and silently vanish as soon as you drag.</td>
+      <td class="fix">In the colorbrush drag branch, when _activeLayerCanvas is set keep calling paintColorBrush() (it writes paintImageData and _flushPaintImageDataToCurrentSurface mirrors it into _activeLayerCtx at line 19760) instead of _paintOnLayerAt, so layer strokes use the same engine as zone strokes start-to-finish.</td>
+      <td class="ev"><code>paint-booth-3-canvas.js:2671-2675 `_paintOnLayerAt(...)` on drag vs mousedown 3435 `paintColorBrush(pos.x, pos.y)`.</code></td>
+      <td><span class="fixed">✓ FIXED</span></td>
+    </tr><tr>
+      <td><span class="sev" style="background:#e0a13a">medium</span></td>
+      <td class="nm">colorbrush<br><span class="ctx">layer</span></td>
+      <td>The first colorbrush dab is invisible when painting onto a transparent area of a layer. _paintColorBrushAt writes only RGB and never sets the alpha byte, so on an alpha-0 pixel the color goes in but the pixel stays transparent. The drag dabs (via _paintOnLayerAt, a canvas fill) do set alpha, producing a confusing &#x27;click does nothing, drag works&#x27; result on empty layer regions. (No issue on the opaque composite where alpha is already 255.)</td>
+      <td class="fix">In _paintColorBrushAt set alpha toward opaque like pencil does: `data[idx+3] = Math.max(data[idx+3], Math.round(255*alpha));` so color brushed onto transparent layer pixels becomes visible on every path. (Pairs naturally with the colorbrush drag-engine fix above.)</td>
+      <td class="ev"><code>paint-booth-3-canvas.js:15256-15258 sets only RGB, no `data[idx+3]` assignment; contrast paintPencil 15546 `d[idx+3] = Math.max(d[idx+3], alphaByte);`.</code></td>
+      <td><span class="fixed">✓ FIXED</span></td>
+    </tr><tr>
+      <td><span class="sev" style="background:#e0a13a">medium</span></td>
+      <td class="nm">recolor<br><span class="ctx">both</span></td>
+      <td>Recolor replaces the BACKGROUND color with the FOREGROUND color, which matches its tooltip literally but is a usability trap: it never samples the pixel under the cursor. The user must manually set BG to the exact color they want gone, unlike every standard color-replacement brush. Because BG defaults to #000000 and most pixels under the brush aren&#x27;t black, painters get &#x27;nothing happens&#x27;. Also inconsistent: the mousedown dab calls paintRecolor directly with no symmetry while the drag wraps it in _applyWithSymmetry, so the first dab ignores mirror modes.</td>
+      <td class="fix">On recolor mousedown, auto-sample the pixel under the cursor as the target color (e.g. set _backgroundColor = getColorAt(x,y) or use a stroke-local target) so it behaves like a real Color Replacement brush; keep manual BG override as an option. Route the mousedown dab through _applyWithSymmetry for parity with the drag path.</td>
+      <td class="ev"><code>paint-booth-3-canvas.js:15383-15386 target taken from `_backgroundColor`, never sampled from canvas; mousedown 3458 (no symmetry) vs drag 2712 (`_applyWithSymmetry`).</code></td>
+      <td><span class="fixed">✓ FIXED</span></td>
+    </tr><tr>
+      <td><span class="sev" style="background:#e0a13a">medium</span></td>
+      <td class="nm">gradient<br><span class="ctx">zone</span></td>
+      <td>The live gradient preview line and end-dots are drawn in the wrong place at any zoom other than 100%. The preview multiplies coordinates by zoom, but the region overlay buffer is full canvas resolution and zoom is applied only via CSS scaling — so the guide is effectively scaled by zoom twice and lands far from the cursor. The actual gradient FILL is computed at raw coords and is correct; only the on-screen guide lies, which makes aiming a gradient at non-100% zoom guesswork. (This shared preview path also affects layer-mode gradient dragging.)</td>
+      <td class="fix">Remove the `* zoom` factors in the preview: `rctx.moveTo(gs.x, gs.y); rctx.lineTo(gpos.x, gpos.y);` and draw the dots at raw coords (`rctx.arc(gs.x, gs.y, 5, ...)`). Optionally divide the dot radius by zoom to keep it screen-constant.</td>
+      <td class="ev"><code>paint-booth-3-canvas.js:2608 `rctx.moveTo(gs.x * zoom, gs.y * zoom);`, 2609 `rctx.lineTo(gpos.x * zoom, gpos.y * zoom);` vs raw-res buffer (applyZoom 8992 scales via CSS only; _fastOverlayArc 1556 draws raw).</code></td>
+      <td><span class="fixed">✓ FIXED</span></td>
+    </tr><tr>
+      <td><span class="sev" style="background:#5fb0ff">low</span></td>
+      <td class="nm">edge<br><span class="ctx">zone</span></td>
+      <td>Edge Detect works but its name and tooltip describe the opposite of what it does. It does NOT &#x27;find/select boundaries between colors&#x27; — it floods the INTERIOR of a region from the clicked pixel and stops at Sobel edges, i.e. a &#x27;fill within edges&#x27; tool. Clicking on an edge bails with a hint. Useful behavior, dishonest label, and the tolerance-&gt;edge-sensitivity multiplier is hidden.</td>
+      <td class="fix">Reconcile name and behavior: rename/retooltip to &#x27;Smart Region Fill (edge-bounded)&#x27; to match what it produces, OR add a real boundary mode that selects pixels where isEdge()===true within tolerance. Expose the hardcoded `edgeThreshold = tolerance*1.5` so the slider&#x27;s effect on edge sensitivity is visible.</td>
+      <td class="ev"><code>paint-booth-3-canvas.js:5690 `if (!isEdge(nx, ny)) { stack.push(npos); }` (floods interiors) vs tooltip v2.html:1217 `title=&quot;Edge Detect — find boundaries between colors&quot;`.</code></td>
+      <td><span class="fixed">✓ FIXED</span></td>
+    </tr><tr>
+      <td><span class="sev" style="background:#5fb0ff">low</span></td>
+      <td class="nm">rect<br><span class="ctx">zone</span></td>
+      <td>The &#x27;click again to commit&#x27; rectangle path advertised in the tooltip is unreachable with a normal mouse. The second-click commit branch only runs if a second mousedown arrives while still drawing, but the first mouseup always commits and nulls rectStart/isDrawing — so after any normal click-release the two-click path can never fire. Drag/release works perfectly; only the advertised alternate commit is dead.</td>
+      <td class="fix">If two-click commit is wanted, make the first mouseup NOT commit on a ~zero-distance drag (treat as &#x27;first corner placed&#x27;) and keep rectStart/isDrawing alive for the second mousedown to commit. Otherwise drop &#x27;click again to commit&#x27; from the tooltip.</td>
+      <td class="ev"><code>paint-booth-3-canvas.js:3663 second-click branch unreachable after commitRectSelection:23865 `rectStart = null;` and _rectDocUp:4010 `isDrawing = false;`.</code></td>
+      <td><span class="fixed">✓ FIXED</span></td>
+    </tr><tr>
+      <td><span class="sev" style="background:#5fb0ff">low</span></td>
+      <td class="nm">fill<br><span class="ctx">layer</span></td>
+      <td>Fill Bucket works on a layer but uses a different tolerance metric than the zone fill/wand, so the same slider value selects a noticeably different region in Layer mode vs Zone mode — feels arbitrary to the painter. Layer fill uses L1/Manhattan distance; zone fill/wand use Euclidean-squared.</td>
+      <td class="fix">Switch fillBucketOnLayer to the Euclidean-squared metric the zone fill/wand use so the tolerance slider behaves identically in both modes: `const tolSq = tol*tol*3; ... if (dr*dr+dg*dg+db*db &gt; tolSq) continue;` (drop alpha to match zone exactly).</td>
+      <td class="ev"><code>paint-booth-3-canvas.js:2095 `if (dr + dg + db + da &gt; tol * 4) continue;` (layer, L1) vs 2240 `const tolSq = tolerance * tolerance * 3;` / 2210 Euclidean² (zone).</code></td>
+      <td><span class="fixed">✓ FIXED</span></td>
+    </tr><tr>
+      <td><span class="sev" style="background:#5fb0ff">low</span></td>
+      <td class="nm">gradient<br><span class="ctx">layer</span></td>
+      <td>On a layer, only &#x27;linear&#x27; and &#x27;radial&#x27; gradient types are honored — angular, diamond, reflected, spiral, and conical all silently fall through to linear, even though they work correctly in Zone mode. The dropdown therefore lies about what it will do on a layer.</td>
+      <td class="fix">Either hide/disable the non-linear/non-radial gradientType options when in Layer mode, or implement them for layers (per-pixel t via fillGradientMask-style math blended into the layer ImageData) so the dropdown is honest.</td>
+      <td class="ev"><code>paint-booth-3-canvas.js:1980 `if (gradientType === &#x27;radial&#x27;) {...} else { grad = tctx.createLinearGradient(...) }` — no angular/diamond/reflected/spiral/conical handling.</code></td>
+      <td><span class="fixed">✓ FIXED</span></td>
+    </tr><tr>
+      <td><span class="sev" style="background:#5fb0ff">low</span></td>
+      <td class="nm">pencil<br><span class="ctx">both</span></td>
+      <td>Two pencil issues. (1) The &#x27;right-click paints BG&#x27; behavior in the in-code spec is dead: the e.button===2 flag is passed in but canvas.onmousedown bails on button 2 at the top for pan/context-menu, so it&#x27;s never true; the drag path hardcodes false anyway. (2) The pencil drag path does not call brush-spacing/interpolation, so a &#x27;precise&#x27; tool leaves gaps on fast strokes.</td>
+      <td class="fix">Either remove the right-click-BG claim from the spec, or special-case pencil before the button-2 pan bail (`if (e.button===2 &amp;&amp; canvasMode===&#x27;pencil&#x27;){ paintPencil(pos.x,pos.y,true); e.preventDefault(); return; }`) and suppress its context menu. Add 1px-step line interpolation to the pencil drag for true precision.</td>
+      <td class="ev"><code>paint-booth-3-canvas.js:3506 `paintPencil(pos.x, pos.y, e.button === 2)` unreachable for button 2 due to 2866 `if (spaceHeld || e.button === 1 || e.button === 2 || isPanning) return;`; drag path 2748-2764 has no _checkBrushSpacing.</code></td>
+      <td><span class="fixed">✓ FIXED</span></td>
+    </tr><tr>
+      <td><span class="sev" style="background:#5fb0ff">low</span></td>
+      <td class="nm">pencil<br><span class="ctx">n/a</span></td>
+      <td>Keybinding tooltips that don&#x27;t match reality. &#x27;I&#x27; maps to Pencil, but the Pick Item button tooltip also claims &#x27;(I)&#x27; and nothing maps I to pick-item — so Pick Item&#x27;s advertised hotkey is a lie (pressing I always selects Pencil). Separately, a &#x27;Surprise me (R)&#x27; button advertises (R) but that R only fires inside the swatch-picker focus context, while on the canvas R = recolor — two tooltips advertise hotkeys the global canvas handler doesn&#x27;t grant.</td>
+      <td class="fix">Give Pick Item a real unused key (e.g. &#x27;v&#x27; or &#x27;y&#x27;), wire it in the 9199-9216 keydown handler, and update its tooltip; or drop &#x27;(I)&#x27; from the Pick Item tooltip. Clarify the &#x27;Surprise me (R)&#x27; tooltip to note it applies only while the finish picker is focused, so it doesn&#x27;t read as a global canvas hotkey.</td>
+      <td class="ev"><code>paint-booth-3-canvas.js:9216 `else if (key === &#x27;i&#x27;) { setCanvasMode(&#x27;pencil&#x27;); ... }` vs paint-booth-v2.html:1170 `title=&quot;Pick Item (I) ...&quot;`; &#x27;Surprise me (R)&#x27; v2.html:3173 honored only at state-zones.js:6435.</code></td>
+      <td><span class="fixed">✓ FIXED</span></td>
+    </tr><tr>
+      <td><span class="sev" style="background:#5fb0ff">low</span></td>
+      <td class="nm">smudge<br><span class="ctx">both</span></td>
+      <td>Changing brush size mid-smudge-stroke produces garbage or clipped smearing. The smudge buffer is allocated to the radius at stroke start, but later calls re-read brushSize fresh and index against the current radius. Growing the brush reads past the typed array (those pixels get skipped — smear clips); shrinking it desyncs the row stride so picked-up color maps to wrong pixels. No crash, just wrong output. Normal fixed-size strokes are fine.</td>
+      <td class="fix">Capture the radius once when seeding _smudgeBuffer (store it alongside the buffer) and use that captured radius for all subsequent indexing in the same stroke; ignore live brushSize changes until the stroke ends (or call resetSmudge on size change).</td>
+      <td class="ev"><code>paint-booth-3-canvas.js:15458 `_smudgeBuffer = new Float32Array(radius * 2 * radius * 2 * 4);` (start-radius) then 15478 loop uses freshly re-read radius.</code></td>
+      <td><span class="fixed">✓ FIXED</span></td>
+    </tr><tr>
+      <td><span class="sev" style="background:#5fb0ff">low</span></td>
+      <td class="nm">dodge<br><span class="ctx">zone</span></td>
+      <td>Two gaps. (1) Dodge ignores any active marquee/regionMask selection — it lightens every pixel under the brush even outside the selection, unlike Photoshop (shared family gap with recolor/smudge). (2) The pressure-modulated radius/opacity computed in the drag block are dead: paintDodge re-reads brushSize/opacity/flow from the DOM itself, so stylus pressure never reaches dodge. The lighten math itself is correct and bounds/alpha-safe.</td>
+      <td class="fix">(1) Add a selection guard: if zones[selectedZoneIndex].regionMask exists, skip pixels where mask===0. (2) Pass the pre-computed _bRadius/_effOpacity into paintDodge (or have it accept overrides) so stylus pressure dynamics actually apply. Consider applying the selection guard family-wide to recolor/smudge too.</td>
+      <td class="ev"><code>paint-booth-3-canvas.js:15583 lighten math correct; dead pressure vars 2776-2779 `_bRadius=...; _effOpacity=...` never passed to paintDodge at 2781 `_applyWithSymmetry(_dbFn, finalPos.x, finalPos.y)`.</code></td>
+      <td><span class="fixed">✓ FIXED</span></td>
+    </tr>
+</table>
+
+<h2>🚀 Improvement roadmap — use the toolbar to its full potential</h2>
+<div class="imp"><div class="imp-h"><b>Run a &#x27;make every tooltip true&#x27; pass: audit all toolbar/help-card tooltips against the actual keydown handler and commit code, and fix whichever side is wrong (Edge Detect intent, rect two-click, Pick Item (I), Surprise-me (R), layer gradient types, the dead feather slider).</b>
+      <span class="tag" style="border-color:#38d39f;color:#38d39f">high impact · M</span></div>
+      <div class="imp-r">The single biggest source of confirmed defects is broken promises, not broken code. Every tool basically works; users lose trust and time chasing behavior the UI advertised but doesn&#x27;t deliver. Truthful tooltips are the cheapest credibility win.</div></div><div class="imp"><div class="imp-h"><b>Build one central keybinding registry/table that owns every canvas+zone shortcut, detects collisions at load, and is the single source of truth (replacing the two competing document keydown listeners).</b>
+      <span class="tag" style="border-color:#38d39f;color:#38d39f">high impact · M</span></div>
+      <div class="imp-r">M and I collisions are symptoms of two files each grabbing keys independently with no arbitration. A single registry kills the whole class of &#x27;shortcut silently shadowed&#x27; bug and makes future tools safe to add.</div></div><div class="imp"><div class="imp-h"><b>Close zone/layer parity gaps so a tool behaves identically in both contexts: unify the colorbrush layer engine with the zone engine, match the fill tolerance metric, and implement (or hide) the non-linear gradient types on layers.</b>
+      <span class="tag" style="border-color:#38d39f;color:#38d39f">high impact · M</span></div>
+      <div class="imp-r">Painters switch between zone and layer constantly; tools that look or select differently depending on context feel arbitrary and erode the &#x27;it just works&#x27; feel. Parity makes the toolbar predictable.</div></div><div class="imp"><div class="imp-h"><b>Make destructive selection tools respect an existing selection family-wide: dodge/recolor/smudge should clip to the active regionMask, with a clear &#x27;painting outside selection&#x27; affordance when none exists.</b>
+      <span class="tag" style="border-color:#e0a13a;color:#e0a13a">medium impact · M</span></div>
+      <div class="imp-r">This is standard Photoshop behavior every painter expects; right now these tools spill outside the selection. One shared selection-clip helper fixes all three and prevents accidental edits.</div></div><div class="imp"><div class="imp-h"><b>Add a stroke-start auto-sample to Recolor (sample the pixel under the cursor as the target) so it works like a real Color Replacement brush, keeping manual BG as an override.</b>
+      <span class="tag" style="border-color:#e0a13a;color:#e0a13a">medium impact · S</span></div>
+      <div class="imp-r">As shipped, most users get &#x27;nothing happens&#x27; because BG defaults to black. Auto-sampling turns a confusing trap into the obvious, expected behavior with a tiny code change.</div></div><div class="imp"><div class="imp-h"><b>Wire the stylus pressure pipeline through to every brush-family tool (dodge already computes pressure-modulated radius/opacity but discards them; verify recolor/smudge/colorbrush too), and surface a pressure-dynamics toggle.</b>
+      <span class="tag" style="border-color:#e0a13a;color:#e0a13a">medium impact · M</span></div>
+      <div class="imp-r">Pressure is computed and thrown away for dodge — a wasted feature. Honoring it across the brush family unlocks the tablet workflow that serious painters expect, for little extra code.</div></div><div class="imp"><div class="imp-h"><b>Add a lightweight on-canvas mode HUD / status chip showing the active tool, its modifier hints (Shift/Alt), and live tolerance/feather values, plus a one-key cheat-sheet overlay.</b>
+      <span class="tag" style="border-color:#38d39f;color:#38d39f">high impact · M</span></div>
+      <div class="imp-r">Discoverability is the second-biggest theme: feather, selection modifiers, edge-bounded fill, and gradient types are all powerful but hidden. A persistent HUD turns hidden capability into used capability and reduces &#x27;is it broken?&#x27; confusion.</div></div><div class="imp"><div class="imp-h"><b>Wire and standardize the auto-feather slider as a shared post-commit step for all six selection tools, with a live preview of the feathered edge.</b>
+      <span class="tag" style="border-color:#e0a13a;color:#e0a13a">medium impact · S</span></div>
+      <div class="imp-r">The control already exists and is shown everywhere — it just isn&#x27;t read. Connecting it (one shared helper) instantly upgrades every selection tool with soft edges, a feature painters use constantly for blending finishes.</div></div><div class="imp"><div class="imp-h"><b>Add safety rails to commit paths: guard degenerate-size selections before any mask-clear/undo push, and show a non-blocking toast (&#x27;Selection too small&#x27;, &#x27;Painting on locked layer&#x27;, &#x27;Nothing under brush matched&#x27;) instead of silent no-ops.</b>
+      <span class="tag" style="border-color:#e0a13a;color:#e0a13a">medium impact · S</span></div>
+      <div class="imp-r">Silent destructive failures (tiny Replace ellipse wiping the selection) and silent no-ops are the worst UX — the user can&#x27;t tell whether the tool is broken or they did something wrong. Cheap toasts make the toolbar feel responsive and trustworthy.</div></div><div class="imp"><div class="imp-h"><b>Add the missing-but-expected selection accelerators: Invert Selection, Grow/Shrink by N px, Select Similar across the whole canvas, and a &#x27;commit selection as new layer&#x27; shortcut.</b>
+      <span class="tag" style="border-color:#e0a13a;color:#e0a13a">medium impact · L</span></div>
+      <div class="imp-r">These are table-stakes selection operations any painter coming from Photoshop reaches for; their absence forces tedious manual re-selection. They build directly on the existing regionMask plumbing.</div></div>
+
+<h2>✅ Verified working as intended</h2>
+<div class="box"><ul><li>Rectangle Select (zone) — drag/release commits correctly: caches overlay, honors selection mode + Shift-square + Alt, fires overlay/preview, undoable.</li><li>Lasso (zone) — closeLasso commits a freehand selection into the region mask as intended.</li><li>Magic Wand (zone) — color-tolerance flood fill writes the region mask correctly (Euclidean² metric).</li><li>Select All by Color (zone) — selects all matching pixels into the mask as advertised.</li><li>Elliptical Marquee (zone) — drag commit works: rasterizes the ellipse with optional Shift-circle, honors selection mode, undoable (only the M shortcut and the tiny-Replace edge case are buggy).</li><li>Gradient fill (zone) — fillGradientMask applies all gradient types correctly at raw coords, undoable, refreshes overlay/preview (only the on-screen preview line is mis-positioned at non-100% zoom).</li><li>Gradient (layer) — paints FG-&gt;BG / FG-&gt;transparent honoring opacity/reverse, refuses on locked layer, undoable (limited to linear/radial types).</li><li>Fill Bucket (layer) — refuses locked layers, floods in layer-local coords, opacity-blends toward FG, commits with layer undo (only the tolerance metric differs from zone).</li><li>Smudge (both) — consistent engine on mousedown and drag, color travels via the smudge buffer, hardness falloff, undoable (only mid-stroke size changes misbehave); Q keybind is conflict-free.</li><li>Pencil (both) — hard-edged FG footprint, forces opaque alpha, correct pencil semantics, honors brushSize/opacity (right-click-BG and fast-stroke interpolation are the gaps).</li><li>Dodge (zone) — correct screen-toward-white lighten math, bounds- and alpha-safe, brush spacing/stabilizer/symmetry on drag (selection-clip and stylus pressure are the gaps).</li><li>Recolor (both) — replaces target with FG color blended by opacity/flow/falloff/match-closeness exactly per its literal tooltip (the UX trap is no auto-sampling, not incorrect math).</li></ul></div>
+
+<p class="lead" style="margin-top:28px">Fixes are being applied surgically and synced to both trees; the Status column updates as each lands. None of these are crashes — every tool produces correct output for normal use; the work is making the promises true and closing zone/layer parity gaps.</p>
+</div></body></html>

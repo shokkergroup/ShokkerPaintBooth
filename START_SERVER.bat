@@ -1,26 +1,38 @@
 @echo off
-title Shokker Paint Booth V5 Server
-
-echo ============================================================
-echo   SHOKKER PAINT BOOTH V5 — LIVE SERVER
-echo   Double-click to run! Keeping terminal open to read errors.
-echo ============================================================
+setlocal
+title Shokker Paint Booth Server Control
 
 cd /d "%~dp0"
-echo [Startup] Stopping any existing SPB server processes from this folder...
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='SilentlyContinue'; $root=(Resolve-Path '.').Path; $rootRe=[regex]::Escape($root); $targets=Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -and $_.CommandLine -match 'python' -and $_.CommandLine -match 'server(_v5)?\.py' -and $_.CommandLine -match $rootRe }; foreach ($p in $targets) { Write-Host ('[Startup] Stopping SPB server PID ' + $p.ProcessId + ' from this folder'); Stop-Process -Id $p.ProcessId -Force }; $cons=Get-NetTCPConnection -LocalPort 59876 -State Listen; foreach ($c in $cons) { $p=Get-CimInstance Win32_Process -Filter ('ProcessId=' + $c.OwningProcess); if ($p -and $p.CommandLine -match 'server(_v5)?\.py') { Write-Host ('[Startup] Stopping stale SPB listener PID ' + $p.ProcessId + ' on port 59876'); Stop-Process -Id $p.ProcessId -Force } elseif ($p) { Write-Host ('[Startup] Port 59876 is owned by non-SPB process PID ' + $p.ProcessId + ': ' + $p.Name) } }"
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='SilentlyContinue'; $ports=@(59876,59877,59878,59879,60876,60877,60878,60879,61876,62876); foreach ($port in $ports) { $cons=Get-NetTCPConnection -LocalPort $port -State Listen; foreach ($c in $cons) { $p=Get-CimInstance Win32_Process -Filter ('ProcessId=' + $c.OwningProcess); if ($p -and ($p.CommandLine -match 'server(_v5)?\.py' -or $p.CommandLine -match 'paint-booth|pyserver|Shokker Paint Booth')) { Write-Host ('[Startup] Stopping stale SPB listener PID ' + $p.ProcessId + ' on port ' + $port); Stop-Process -Id $p.ProcessId -Force } } }"
 
-set SHOKKER_PORT=59876
+echo ============================================================
+echo   SHOKKER PAINT BOOTH - SUPERVISED BACKEND
+echo ============================================================
+echo   Action: start or confirm the managed backend
+echo   This window stays open and shows LIVE server + restart logs.
+echo   Closing this window detaches logs only; the backend keeps running.
+echo   Unexpected exits restart automatically.
+echo.
+echo   Manual stop: SPB_STOP_SERVER.bat
+echo   Clean refresh: SPB_REFRESH_SERVER.bat
+echo   Status:        SPB_SERVER_STATUS.bat
+echo   Logs only:     SPB_SERVER_LOGS.bat
+echo ============================================================
+echo.
 
-:: Use Python 3.13 for GPU acceleration (CuPy requires 3.13+)
-:: Falls back to system python if 3.13 not found
-if exist "C:\Python313\python.exe" (
-    C:\Python313\python.exe server_v5.py
-) else (
-    python server_v5.py
+set "SPB_PYTHON=C:\Python313\python.exe"
+if not exist "%SPB_PYTHON%" set "SPB_PYTHON=python"
+set PYTHONHASHSEED=0
+set SPB_NO_BOOT_SWATCH_WARM=1
+
+"%SPB_PYTHON%" "%~dp0spb_server_supervisor.py" start --follow
+set "SPB_RC=%ERRORLEVEL%"
+
+if not "%SPB_RC%"=="0" (
+    echo.
+    echo [ERROR] SPB server control failed with exit code %SPB_RC%.
+    echo         See .spb_supervisor\lifecycle.log for details.
+    echo.
+    pause
 )
 
-echo.
-echo Server has closed, hit an error, or the port was already in use!
-pause
+endlocal & exit /b %SPB_RC%

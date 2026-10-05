@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "shokker-paint-booth": {
+      "command": "node",
+      "args": ["${PLUGIN_ROOT}/server/index.js"]
+    }
+  }
+}

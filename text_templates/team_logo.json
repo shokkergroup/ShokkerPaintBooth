@@ -2,7 +2,7 @@
   "name": "Team Logo Text",
   "description": "Stylized team name used as a logo mark. Heavier weight, tighter tracking, more aggressive stroke. This is the brand identity text for the racing team itself, not a sponsor — usually placed on the nose, C-pillar, or as a repeated accent across the livery.",
   "category": "Branding",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "template": {
     "text": "SHOKKER RACING",
     "font_family": "Impact, Arial Black, sans-serif",

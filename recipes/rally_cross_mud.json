@@ -2,7 +2,7 @@
   "name": "Rally Cross Mud",
   "description": "Heavy rally-cross weathering with realistic mud splatter, rally graphics, reflective numbers, and weathered satin body. Looks like it just finished a Group B stage.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "rally_hatch, subaru_impreza, lancia_delta, any WRC-style chassis",
   "notes": "For tarmac rally feel, drop Heavy Mud Splatter intensity to 30 and increase baseSpecStrength on Body. For full gravel mode, bump Splatter to 100 and add a second pass at lower tolerance.",
   "zones": [

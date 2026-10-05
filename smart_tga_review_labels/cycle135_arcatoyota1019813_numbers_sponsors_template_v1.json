@@ -1,0 +1,295 @@
+{
+  "version": 1,
+  "paint_label": "stockcars2 arcatoyota25/car_1019813.tga",
+  "inspection_records": "_smart_tga_runs/cycle134_fresh_unreviewed_route_fixtures_v1/inspection_records.json",
+  "review_scope": "Cycle 135 manual visual review of fresh ARCA Toyota car_1019813: protect true side-number 18 material, clean current Number-layer contingency decals, and hard-label nearby sponsor/template confusers.",
+  "component_labels": [
+    {
+      "layer": "numbers",
+      "component_index": 0,
+      "expected_bbox": [577, 272, 52, 17],
+      "target_layer": "sponsors",
+      "label": "contingency_fragment",
+      "note": "Stacked contingency decals incorrectly routed as Numbers; not race-number content."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 1,
+      "expected_bbox": [177, 928, 43, 75],
+      "target_layer": "numbers",
+      "label": "true_number_digit_body",
+      "note": "Left digit/body of the lower side race-number 18."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 2,
+      "expected_bbox": [219, 932, 60, 70],
+      "target_layer": "numbers",
+      "label": "true_number_digit_body",
+      "note": "Dark body of the lower side race-number 8."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 1,
+      "expected_bbox": [160, 0, 204, 55],
+      "target_layer": "template",
+      "label": "front_template_detail",
+      "note": "Front grille/headlight/Toyota-nose detail, not a race number or sponsor layer."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 3,
+      "expected_bbox": [518, 0, 356, 96],
+      "target_layer": "sponsors",
+      "label": "large_sponsor_panel",
+      "note": "Large Doublemint hood/front sponsor panel."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 4,
+      "expected_bbox": [41, 41, 138, 38],
+      "target_layer": "template",
+      "label": "headlight_template_detail",
+      "note": "Left headlight assembly routed through Sponsors; car template detail."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 5,
+      "expected_bbox": [346, 40, 138, 39],
+      "target_layer": "template",
+      "label": "headlight_template_detail",
+      "note": "Right headlight assembly routed through Sponsors; car template detail."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 6,
+      "expected_bbox": [242, 63, 41, 28],
+      "target_layer": "template",
+      "label": "manufacturer_badge_template_detail",
+      "note": "Toyota grille badge; car identity/template detail, not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 16,
+      "expected_bbox": [652, 118, 87, 19],
+      "target_layer": "sponsors",
+      "label": "manufacturer_wordmark",
+      "note": "Toyota wordmark/body marking; a non-number sponsor/manufacturer mark."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 17,
+      "expected_bbox": [738, 118, 19, 19],
+      "target_layer": "sponsors",
+      "label": "manufacturer_mark_fragment",
+      "note": "Small Toyota mark fragment; not a race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 18,
+      "expected_bbox": [160, 195, 131, 47],
+      "target_layer": "template",
+      "label": "headlight_template_detail",
+      "note": "Front lamp/grille texture, not sponsor art and not number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 19,
+      "expected_bbox": [578, 237, 51, 18],
+      "target_layer": "sponsors",
+      "label": "contingency_fragment",
+      "note": "NASCAR/contingency decal strip fragment."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 20,
+      "expected_bbox": [160, 249, 129, 50],
+      "target_layer": "template",
+      "label": "headlight_template_detail",
+      "note": "Lower front lamp/grille texture, not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 21,
+      "expected_bbox": [8, 250, 117, 88],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo_panel",
+      "note": "Toyota/interstate sponsor area on the side, not a race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 22,
+      "expected_bbox": [313, 263, 76, 42],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo_panel",
+      "note": "Interstate Batteries sponsor panel, not a race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 24,
+      "expected_bbox": [367, 303, 247, 165],
+      "target_layer": "paint",
+      "label": "paint_livery_panel",
+      "note": "Broad geometric livery/body panel with no clear sponsor or number target."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 27,
+      "expected_bbox": [793, 431, 142, 353],
+      "target_layer": "sponsors",
+      "label": "large_sponsor_panel",
+      "note": "Vertical Doublemint sponsor panel, not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 30,
+      "expected_bbox": [678, 507, 34, 183],
+      "target_layer": "template",
+      "label": "side_template_trim",
+      "note": "Tall dark side/window/trim piece; template detail, not number or sponsor content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 31,
+      "expected_bbox": [639, 545, 19, 67],
+      "target_layer": "sponsors",
+      "label": "vertical_sponsor_text_fragment",
+      "note": "Small vertical sponsor/wordmark fragment beside side trim."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 32,
+      "expected_bbox": [640, 616, 18, 48],
+      "target_layer": "sponsors",
+      "label": "vertical_sponsor_text_fragment",
+      "note": "Small vertical sponsor/wordmark fragment beside side trim."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 35,
+      "expected_bbox": [641, 772, 42, 29],
+      "target_layer": "sponsors",
+      "label": "small_sponsor_logo",
+      "note": "Lower-body small sponsor/logo mark, not number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 36,
+      "expected_bbox": [12, 778, 374, 120],
+      "target_layer": "sponsors",
+      "label": "large_sponsor_panel",
+      "note": "Large lower-side Doublemint sponsor panel."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 37,
+      "expected_bbox": [583, 854, 49, 26],
+      "target_layer": "sponsors",
+      "label": "small_sponsor_logo",
+      "note": "Lower-body Sprite/Cup/contingency mark, not a race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 38,
+      "expected_bbox": [673, 866, 9, 15],
+      "target_layer": "sponsors",
+      "label": "contingency_fragment",
+      "note": "Tiny contingency stack fragment."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 39,
+      "expected_bbox": [685, 866, 7, 7],
+      "target_layer": "sponsors",
+      "label": "contingency_fragment",
+      "note": "Tiny 3M/contingency stack fragment."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 40,
+      "expected_bbox": [696, 868, 19, 6],
+      "target_layer": "sponsors",
+      "label": "contingency_fragment",
+      "note": "Tiny 3M/contingency stack fragment."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 42,
+      "expected_bbox": [684, 897, 37, 22],
+      "target_layer": "sponsors",
+      "label": "contingency_stack",
+      "note": "Lower-side contingency/3M stack, not number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 43,
+      "expected_bbox": [591, 902, 45, 20],
+      "target_layer": "sponsors",
+      "label": "small_sponsor_logo",
+      "note": "Lower-side Auto Meter/JEGS/contingency area."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 44,
+      "expected_bbox": [316, 905, 78, 46],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo_panel",
+      "note": "Interstate Batteries sponsor logo, not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 45,
+      "expected_bbox": [168, 915, 126, 109],
+      "review_bbox": [168, 915, 126, 109],
+      "foreground": {
+        "mode": "hsv_union",
+        "conditions": [
+          {
+            "value_max": 0.34
+          },
+          {
+            "saturation_max": 0.16,
+            "value_min": 0.68
+          }
+        ],
+        "close": 1,
+        "min_area": 40
+      },
+      "target_layer": "numbers",
+      "label": "true_number_submask",
+      "note": "Foreground-only lower side race-number 18 material; avoid moving the connected green body paint with it."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 46,
+      "expected_bbox": [61, 930, 76, 41],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo_panel",
+      "note": "Interstate Batteries sponsor logo, not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 47,
+      "expected_bbox": [237, 940, 16, 19],
+      "target_layer": "numbers",
+      "label": "true_number_interior_highlight",
+      "note": "White interior/highlight piece inside the lower side race-number 8."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 48,
+      "expected_bbox": [585, 942, 53, 20],
+      "target_layer": "sponsors",
+      "label": "contingency_stack",
+      "note": "JEGS/Edelbrock/Flowmaster contingency strip, not a race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 49,
+      "expected_bbox": [245, 975, 17, 20],
+      "target_layer": "numbers",
+      "label": "true_number_interior_highlight",
+      "note": "White interior/highlight piece inside the lower side race-number 8."
+    }
+  ]
+}

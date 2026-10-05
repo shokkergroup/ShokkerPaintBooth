@@ -72,6 +72,7 @@ the sRGB gamma downstream.
 from __future__ import annotations
 
 import logging
+from collections import OrderedDict
 from typing import Callable, Tuple
 
 import numpy as np
@@ -100,6 +101,37 @@ _GRAIN_AMPLITUDE: float = 0.025
 
 SpecTriple = Tuple[np.ndarray, np.ndarray, np.ndarray]
 SpecFn = Callable[[Tuple[int, int], int, float, float, float], SpecTriple]
+_GRID_CACHE: "OrderedDict[Tuple[int, int], Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]]" = OrderedDict()
+_GRID_CACHE_MAX = 8
+
+
+def _enh_grid(h: int, w: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    # SPB paint-finish perf loop tick 2026-05-31 09:08; owner: "Speed is king in this app."
+    # Exact grid/xn/yn reuse only: current 8-base overlap 41.464s -> 36.915s; paint/spec std drift 0.
+    key = (int(h), int(w))
+    cached = _GRID_CACHE.get(key)
+    if cached is not None:
+        _GRID_CACHE.move_to_end(key)
+        return cached
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    xn = x / max(w - 1, 1)
+    yn = y / max(h - 1, 1)
+    value = (y, x, xn, yn)
+    _GRID_CACHE[key] = value
+    _GRID_CACHE.move_to_end(key)
+    while len(_GRID_CACHE) > _GRID_CACHE_MAX:
+        _GRID_CACHE.popitem(last=False)
+    return value
+
+
+def _center_scaled(field: np.ndarray, base: float, scale: float) -> np.ndarray:
+    # SPB paint-finish perf loop tick 2026-05-31 09:23; owner: "Speed is king in this app."
+    # Same centered-channel math with fewer NumPy temporaries: six enhanced-base overlap 28.515s -> 25.784s; std drift 0.
+    out = field.astype(np.float32, copy=True)
+    out -= 0.5
+    out *= scale
+    out += float(base)
+    return out
 
 
 # ============================================================================
@@ -208,15 +240,16 @@ def _subtle_grain(paint: np.ndarray, shape, mask: np.ndarray, seed,
     h, w = _hw(shape)
     s = _safe_seed(seed)
 
-    # Two-octave grain: coarse body + fine micro-texture.
-    coarse = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], s + 500)
-    fine = multi_scale_noise((h, w), [64, 128], [0.5, 0.5], s + 501)
-    grain = (coarse * 0.6 + fine * 0.4) * _GRAIN_AMPLITUDE * pm
+    # SPB-91 tick 53: removed the multi_scale_noise grain pass. Owner critique
+    # 2026-05-15: "All of the enhancements on the paint side of it was just
+    # flipping around diagonal lines." That was the coarse+fine grain at
+    # scales 16/32/64 and 64/128. Enhanced Foundation is spec_driven; paint
+    # belongs on the spec channel per the 2026-04-21 painter mandate. Kept
+    # the warmth/cool/desat color shifts below — those are mean-shift only,
+    # no spatial variation, doctrine-compatible.
 
     result = paint  # already a defensive copy
     m3 = mask[:, :, np.newaxis]
-    result[:, :, :3] = np.clip(result[:, :, :3] + grain[:, :, np.newaxis] * m3,
-                               0.0, 1.0)
 
     if warmth > 0:
         w_amt = warmth * pm * mask
@@ -238,64 +271,249 @@ def _subtle_grain(paint: np.ndarray, shape, mask: np.ndarray, seed,
 
 
 # ============================================================================
-# SPEC FACTORY
+# ENHANCED SPEC — creative spatial variation (SPB owner mandate 2026-05-27)
+# Enhanced Foundation = Foundation sibling turned up 100× on the spec channel.
+# Fine features 8–32 px; many distinct M/R/CC shades per finish signature.
 # ============================================================================
 
-def _make_spec(base_m: float, base_r: float, base_cc: float,
-               seed_offset: int, m_var: float = 15.0, r_var: float = 15.0,
-               cc_var: float = 8.0, chrome_allowed: bool = False) -> SpecFn:
-    """Factory: produces a FLAT spec function for a Foundation Base.
+def _norm01(arr: np.ndarray) -> np.ndarray:
+    # SPB paint-finish perf loop tick 2026-05-31 08:53; owner: "Speed is king in this app."
+    # Same normalization math with fewer temporaries: 8 Enhanced Foundation overlap 39.0s -> 37.9s; paint/spec std drift 0.
+    a = arr.astype(np.float32, copy=False)
+    lo, hi = float(a.min()), float(a.max())
+    out = a.copy()
+    out -= lo
+    out /= (hi - lo + EPS)
+    return out
 
-    2026-04-21 painter report: Foundation Bases were adding visible noise
-    texture to the spec map via `multi_scale_noise * (m_var/r_var/cc_var)`.
-    The painter's report: "NONE of the foundation bases are supposed to
-    do ANYTHING other than change the texture/look of the color it's
-    affecting. [...] The FOUNDATION FUCKING BASES are supposed to be
-    vanilla." So Metallic foundation should output FLAT M=200, R=45,
-    CC=16 — not noisy values sweeping through m_var=30.
 
-    The m_var / r_var / cc_var arguments are kept in the signature for
-    backward-compat with existing call sites (e.g. `_make_spec(200, 45,
-    16, 6030, m_var=30, r_var=15, cc_var=14)`), but are now IGNORED. The
-    HARDMODE loop that tuned those variances for "visible dM/dR/dCC"
-    was working to the wrong design intent.
+def _creative_field(h: int, w: int, seed: int, mode: str) -> Tuple[np.ndarray, np.ndarray]:
+    """Return (primary, secondary) normalized 0-1 fields for enhanced spec signatures."""
+    s = _safe_seed(seed)
+    y, x, xn, yn = _enh_grid(h, w)
 
-    Args:
-        base_m:         Base metallic channel value (0-255) — FLAT.
-        base_r:         Base roughness channel value (0-255) — FLAT.
-        base_cc:        Base clearcoat channel value (16-255) — FLAT.
-        seed_offset:    Unused (kept for signature compat).
-        m_var:          IGNORED (kept for signature compat).
-        r_var:          IGNORED.
-        cc_var:         IGNORED.
-        chrome_allowed: If True, ``R < 15`` is kept where ``M >= 240``.
+    def _fine(off: int = 0) -> np.ndarray:
+        return multi_scale_noise((h, w), [2, 5, 11, 23], [0.36, 0.30, 0.22, 0.12], s + off)
 
-    Returns:
-        Callable ``spec_fn(shape, seed, sm, base_m, base_r)`` that returns
-        flat M/R/CC arrays of constant value.
-    """
-    def spec_fn(shape, seed, sm, bm, br):  # bm/br unused — baked into closure
+    def _body(off: int = 0) -> np.ndarray:
+        return multi_scale_noise((h, w), [8, 16, 32, 64], [0.30, 0.32, 0.24, 0.14], s + off)
+
+    if mode == "wet_caustic":
+        ripple = np.sin((xn * 34.0 + yn * 14.0 + _body(1) * 3.2) * np.pi)
+        caustic = np.exp(-np.abs(ripple) * 2.4)
+        return _norm01(caustic * 0.68 + _fine(2) * 0.32), _norm01(ripple * 0.5 + 0.5)
+
+    if mode == "velvet_pore":
+        cell = _norm01(_body(3) + _fine(4) * 0.45)
+        pore = np.clip((cell - 0.42) * 4.2, 0, 1)
+        return pore, cell
+
+    if mode == "satin_streak":
+        streak = np.sin((xn * 22.0 + _body(5) * 2.8) * np.pi) * 0.5 + 0.5
+        return _norm01(streak * 0.72 + _fine(6) * 0.28), _norm01(_body(7))
+
+    if mode == "flake_burst":
+        burst = np.clip((_fine(8) - 0.52) * 7.0, 0, 1)
+        cloud = _norm01(_body(9))
+        return burst, cloud
+
+    if mode == "nacre_shift":
+        plate = np.sin((xn * 18.0 - yn * 12.0 + _body(10) * 4.0) * np.pi) * 0.5 + 0.5
+        mica = np.clip((_fine(11) - 0.48) * 5.5, 0, 1)
+        return _norm01(plate * 0.62 + mica * 0.38), mica
+
+    if mode == "mirror_pit":
+        pit = _norm01(_fine(12) * 0.55 + _body(13) * 0.45)
+        return pit, _norm01(np.abs(np.sin((xn * 40.0 + yn * 8.0) * np.pi)))
+
+    if mode == "brush_chrome":
+        brush = np.sin((xn * 48.0 + _fine(14) * 1.8) * np.pi) * 0.5 + 0.5
+        return _norm01(brush * 0.75 + _body(15) * 0.25), brush
+
+    if mode == "anod_hex":
+        cell = max(h // 256, 6)
+        row = (y // cell).astype(np.int32) % 2
+        sx = (x + row * (cell * 0.5)) % cell
+        sy = y % cell
+        dist = np.sqrt((sx - cell * 0.5) ** 2 + (sy - cell * 0.5) ** 2)
+        hex_f = np.clip(dist / (cell * 0.5), 0, 1)
+        ring = np.clip(1.0 - np.abs(hex_f - 0.78) * 7.0, 0, 1)
+        return ring, _norm01(_body(16) + ring * 0.35)
+
+    if mode == "enamel_peel":
+        peel = np.sin((xn * 26.0 + yn * 26.0 + _body(17) * 2.2) * np.pi) * 0.5 + 0.5
+        dimple = np.clip((_fine(18) - 0.44) * 4.8, 0, 1)
+        return _norm01(peel * 0.55 + dimple * 0.45), dimple
+
+    if mode == "scratch_corridor":
+        scratch = np.maximum(
+            np.sin((xn * 56.0 + _body(19) * 1.5) * np.pi) * 0.5 + 0.5,
+            np.sin((yn * 4.0 + xn * 12.0) * np.pi) * 0.5 + 0.5,
+        )
+        return _norm01(scratch * 0.7 + _fine(20) * 0.3), scratch
+
+    if mode == "twill_weave":
+        tow = max(h // 256, 2)
+        ty = (y // tow).astype(np.int32)
+        tx = (x // tow).astype(np.int32)
+        twill = ((ty + tx) % 4 < 2).astype(np.float32)
+        resin = _norm01(_fine(21) + twill * 0.25)
+        return twill, resin
+
+    if mode == "ice_dendrite":
+        dend = np.abs(np.sin((x * 0.09 + y * 0.06 + _body(22) * 3.5) * np.pi))
+        frost = _norm01(_fine(23) * 0.5 + dend * 0.5)
+        return frost, dend
+
+    if mode == "gel_pool":
+        pool = np.exp(-((xn - 0.5) ** 2 + (yn - 0.5) ** 2) * 18.0)
+        flow = _norm01(np.sin((xn * 16.0 - yn * 9.0 + _body(24) * 2.0) * np.pi) * 0.5 + 0.5)
+        return _norm01(pool * 0.35 + flow * 0.65), flow
+
+    if mode == "powder_peel":
+        peel = np.sin((xn * 30.0 + yn * 30.0) * np.pi) * 0.5 + 0.5
+        grain = _norm01(_fine(25) * 0.6 + peel * 0.4)
+        return grain, peel
+
+    if mode == "vinyl_stretch":
+        stretch = np.sin((xn * 20.0 + yn * 6.0 + _body(26) * 2.5) * np.pi) * 0.5 + 0.5
+        wrinkle = _norm01(_fine(27) * 0.55 + stretch * 0.45)
+        return wrinkle, stretch
+
+    if mode == "warm_pool":
+        pool = np.exp(-np.abs(np.sin((xn * 12.0 + yn * 8.0) * np.pi)) * 4.5)
+        return _norm01(pool * 0.6 + _body(28) * 0.4), pool
+
+    if mode == "velvet_fiber":
+        fiber = np.sin((xn * 38.0 + _fine(29) * 2.0) * np.pi) * 0.5 + 0.5
+        return _norm01(fiber * 0.65 + _body(30) * 0.35), fiber
+
+    if mode == "ceramic_crackle":
+        crack = np.maximum(
+            np.abs(np.sin((xn * 44.0 + _body(31) * 1.2) * np.pi)),
+            np.abs(np.sin((yn * 44.0 - _body(32) * 1.2) * np.pi)),
+        )
+        return _norm01(crack * 0.55 + _fine(33) * 0.45), crack
+
+    if mode == "glaze_depth":
+        ring = np.sin(np.sqrt((xn - 0.5) ** 2 + (yn - 0.5) ** 2) * 48.0 * np.pi) * 0.5 + 0.5
+        return _norm01(ring * 0.62 + _body(34) * 0.38), ring
+
+    if mode == "silk_fiber":
+        sheen = np.sin((xn * 32.0 + yn * 4.0 + _fine(35) * 1.6) * np.pi) * 0.5 + 0.5
+        return _norm01(sheen * 0.72 + _body(36) * 0.28), sheen
+
+    if mode == "eggshell_bump":
+        bump = np.clip((_fine(37) - 0.46) * 5.0, 0, 1)
+        peel = np.sin((xn * 24.0 + yn * 24.0) * np.pi) * 0.5 + 0.5
+        return _norm01(bump * 0.5 + peel * 0.5), bump
+
+    if mode == "primer_grit":
+        grit = np.clip((_fine(38) - 0.50) * 8.0, 0, 1)
+        return grit, _norm01(_body(39) + grit * 0.4)
+
+    if mode == "matte_haze":
+        haze = _norm01(_body(40) * 0.65 + _fine(41) * 0.35)
+        scatter = np.clip((_fine(42) - 0.55) * 6.0, 0, 1)
+        return haze, scatter
+
+    if mode == "semi_ripple":
+        ripple = np.sin((xn * 18.0 + yn * 10.0 + _body(43)) * np.pi) * 0.5 + 0.5
+        return _norm01(ripple * 0.68 + _fine(44) * 0.32), ripple
+
+    if mode == "wet_clarity":
+        clarity = np.exp(-np.abs(np.sin((xn * 14.0 + _body(45) * 2.0) * np.pi)) * 3.8)
+        depth = _norm01(_fine(46) * 0.4 + clarity * 0.6)
+        return depth, clarity
+
+    if mode == "lacquer_flow":
+        flow = np.sin((xn * 8.0 + yn * 22.0 + _body(47) * 1.8) * np.pi) * 0.5 + 0.5
+        return _norm01(flow * 0.7 + _fine(48) * 0.3), flow
+
+    if mode == "bio_pore":
+        organic = _norm01(_body(49) + np.sin((xn * 11.0 + yn * 17.0) * np.pi) * 0.22)
+        pore = np.clip((organic - 0.38) * 3.8, 0, 1)
+        return pore, organic
+
+    if mode == "cal_grain":
+        grain = _norm01(_fine(50) * 0.55 + _body(51) * 0.45)
+        return grain, grain
+
+    if mode == "clear_satin_peel":
+        peel = np.sin((xn * 22.0 + yn * 22.0 + _body(52)) * np.pi) * 0.5 + 0.5
+        return _norm01(peel * 0.6 + _fine(53) * 0.4), peel
+
+    if mode == "dead_absorb":
+        pit = np.clip((_fine(54) - 0.54) * 7.0, 0, 1)
+        return pit, _norm01(_body(55) * 0.5 + pit * 0.5)
+
+    body = _norm01(_body(0))
+    return body, body
+
+
+def _make_enhanced_spec(
+    base_m: float,
+    base_r: float,
+    base_cc: float,
+    seed_offset: int,
+    mode: str,
+    m_var: float = 18.0,
+    r_var: float = 22.0,
+    cc_var: float = 14.0,
+    chrome_allowed: bool = False,
+    m_extra: float = 0.0,
+    r_extra: float = 0.0,
+    cc_extra: float = 0.0,
+) -> SpecFn:
+    """Factory: rich spatial spec for Enhanced Foundation (not flat vanilla)."""
+
+    def spec_fn(shape, seed, sm, bm, br):  # noqa: ARG001
         try:
             h, w = _hw(shape)
-            # FLAT output: every pixel gets the same M/R/CC. No noise,
-            # no variance, no per-pixel modulation. `sm` also ignored —
-            # Foundation intensity is the painter's base_strength slider,
-            # not a pattern-variation scalar.
-            M = np.full((h, w), float(base_m), dtype=np.float32)
-            R = np.full((h, w), float(base_r), dtype=np.float32)
-            CC = np.full((h, w), float(base_cc), dtype=np.float32)
+            s = _safe_seed(seed) + seed_offset
+            f1, f2 = _creative_field(h, w, s, mode)
+            sm = float(np.clip(sm, 0.0, 1.5))
+            M = _center_scaled(f1, base_m, 2.0 * m_var * sm)
+            R = _center_scaled(f2, base_r, 2.0 * r_var * sm)
+            CC = _center_scaled(f1, base_cc, 2.0 * cc_var * sm)
+            if m_extra:
+                M += (f2 - 0.5) * m_extra * sm
+            if r_extra:
+                R += (f1 - 0.5) * r_extra * sm
+            if cc_extra:
+                CC += (f2 - 0.5) * cc_extra * sm
+            if mode == "flake_burst":
+                sparkle = np.clip((_creative_field(h, w, s + 99, "flake_burst")[0]), 0, 1)
+                M = M + sparkle * 52.0 * sm
+                R = R - sparkle * 18.0 * sm
+            if mode == "mirror_pit" or mode == "brush_chrome":
+                M = M + f1 * 12.0 * sm
+            if mode == "wet_clarity":
+                R = R - f2 * 28.0 * sm
+                CC = CC + f2 * 22.0 * sm
+            if mode == "ice_dendrite":
+                M = M + f2 * 38.0 * sm
+                CC = CC + f1 * 32.0 * sm
             return _enforce_iron(M, R, CC, chrome_allowed=chrome_allowed)
         except Exception as exc:  # noqa: BLE001
-            logger.error("spec factory (offset=%d) failed: %s", seed_offset, exc)
+            logger.error("enhanced spec mode=%s failed: %s", mode, exc)
             return _neutral_spec(shape, base_m, base_r, base_cc)
 
-    spec_fn.__name__ = f"spec_enh_factory_{seed_offset}"
-    spec_fn.__doc__ = (
-        f"Foundation Base spec function (flat M={base_m}, R={base_r}, "
-        f"CC={base_cc}, chrome={chrome_allowed}). NO noise — Foundation "
-        f"Bases must output flat material properties."
-    )
+    spec_fn.__name__ = f"spec_enh_{mode}"
     return spec_fn
+
+
+# Legacy alias — flat factory retired for Enhanced Foundation siblings.
+def _make_spec(base_m: float, base_r: float, base_cc: float,
+               seed_offset: int, m_var: float = 15.0, r_var: float = 15.0,
+               cc_var: float = 8.0, chrome_allowed: bool = False,
+               mode: str = "cal_grain") -> SpecFn:
+    """Deprecated flat factory — delegates to :func:`_make_enhanced_spec`."""
+    return _make_enhanced_spec(
+        base_m, base_r, base_cc, seed_offset, mode,
+        m_var=max(m_var, 12.0), r_var=max(r_var, 12.0), cc_var=max(cc_var, 8.0),
+        chrome_allowed=chrome_allowed,
+    )
 
 
 # ============================================================================
@@ -324,7 +542,7 @@ def paint_enh_gloss(paint: np.ndarray, shape, mask: np.ndarray, seed,
 # micro-ripple shimmer" but r_var=4 cc_var=3 produced dR=7 dCC=3 — no
 # visible ripple. Widen r_var 4→22 and cc_var 3→12 for real wet-ripple
 # micro-variation, sibling pattern to AUTO-LOOP-1..4.
-spec_enh_gloss = _make_spec(0, 18, 16, 6000, m_var=5, r_var=22, cc_var=12)
+spec_enh_gloss = _make_enhanced_spec(0, 18, 16, 6000, "wet_caustic", m_var=6, r_var=38, cc_var=32)
 
 
 # ============================================================================
@@ -340,7 +558,7 @@ def paint_enh_matte(paint: np.ndarray, shape, mask: np.ndarray, seed,
     return _subtle_grain(paint, shape, mask, seed, pm, bb, desat=0.3)
 
 
-spec_enh_matte = _make_spec(0, 200, 170, 6010, m_var=5, r_var=20, cc_var=15)
+spec_enh_matte = _make_enhanced_spec(0, 200, 170, 6010, "velvet_pore", m_var=8, r_var=42, cc_var=38)
 
 
 # ============================================================================
@@ -353,7 +571,7 @@ def paint_enh_satin(paint: np.ndarray, shape, mask: np.ndarray, seed,
     return _subtle_grain(paint, shape, mask, seed, pm, bb, warmth=0.3)
 
 
-spec_enh_satin = _make_spec(15, 90, 55, 6020, m_var=10, r_var=18, cc_var=10)
+spec_enh_satin = _make_enhanced_spec(15, 90, 55, 6020, "satin_streak", m_var=22, r_var=36, cc_var=28)
 
 
 # ============================================================================
@@ -384,7 +602,7 @@ def paint_enh_metallic(paint: np.ndarray, shape, mask: np.ndarray, seed,
 # 2026-04-20 HEENAN AUTO-LOOP-30 — enh_metallic desc "visible flake
 # sparkle and depth variation". cc_var=4 meant depth was flat. Widen
 # cc_var 4→14 (dM=60 dR=30 already strong).
-spec_enh_metallic = _make_spec(200, 45, 16, 6030, m_var=30, r_var=15, cc_var=14)
+spec_enh_metallic = _make_enhanced_spec(200, 45, 16, 6030, "flake_burst", m_var=48, r_var=38, cc_var=24)
 
 
 # ============================================================================
@@ -422,7 +640,7 @@ def paint_enh_pearl(paint: np.ndarray, shape, mask: np.ndarray, seed,
 # 2026-04-20 HEENAN AUTO-LOOP-29 — enh_pearl desc "iridescent micro-
 # shift shimmer" but cc_var=4 meant pearl-nacre thickness didn't vary
 # visibly. Widen cc_var 4→16 (dM and dR already strong).
-spec_enh_pearl = _make_spec(100, 35, 16, 6040, m_var=25, r_var=12, cc_var=16)
+spec_enh_pearl = _make_enhanced_spec(100, 35, 16, 6040, "nacre_shift", m_var=42, r_var=32, cc_var=36)
 
 
 # ============================================================================
@@ -448,15 +666,15 @@ def paint_enh_chrome(paint: np.ndarray, shape, mask: np.ndarray, seed,
 
 
 def spec_enh_chrome(shape, seed, sm: float, base_m: float, base_r: float) -> SpecTriple:
-    """Enhanced Chrome spec — FLAT mirror chrome. 2026-04-21 painter fix:
-    previously added `disp`/`micro` noise on top of M/R/CC. Foundation
-    Bases must be flat; chrome LOOK comes from the spec values, not
-    from surface texture noise."""
+    """Enhanced Chrome — mirror pit distortion corridors (SPB 2026-05-27)."""
     try:
         h, w = _hw(shape)
-        M = np.full((h, w), 250.0, dtype=np.float32)
-        R = np.full((h, w), 2.0, dtype=np.float32)
-        CC = np.full((h, w), float(CC_MIN), dtype=np.float32)
+        s = _safe_seed(seed) + 6050
+        f1, f2 = _creative_field(h, w, s, "mirror_pit")
+        sm = float(np.clip(sm, 0.0, 1.5))
+        M = 250.0 + f1 * 5.0 * sm + f2 * 3.0 * sm
+        R = 2.0 + (1.0 - f1) * 8.0 * sm + f2 * 4.0 * sm
+        CC = 16.0 + f2 * 18.0 * sm
         return _enforce_iron(M, R, CC, chrome_allowed=True)
     except Exception as exc:  # noqa: BLE001
         logger.error("spec_enh_chrome failed: %s", exc)
@@ -477,16 +695,15 @@ def paint_enh_satin_chrome(paint: np.ndarray, shape, mask: np.ndarray, seed,
 
 
 def spec_enh_satin_chrome(shape, seed, sm: float, base_m: float, base_r: float) -> SpecTriple:
-    """Enhanced Satin Chrome spec — FLAT. 2026-04-21 painter fix:
-    previously applied a `brush` multi_scale_noise pattern to create
-    directional grain. A Foundation Base must be flat; painters who
-    want a brushed grain look should add a brushed Spec Pattern
-    Overlay on top, not bake it into the Foundation."""
+    """Enhanced Satin Chrome — directional brush corridors on mirror metal (SPB 2026-05-27)."""
     try:
         h, w = _hw(shape)
-        M = np.full((h, w), 248.0, dtype=np.float32)
-        R = np.full((h, w), 45.0, dtype=np.float32)
-        CC = np.full((h, w), 40.0, dtype=np.float32)
+        s = _safe_seed(seed) + 6060
+        f1, f2 = _creative_field(h, w, s, "brush_chrome")
+        sm = float(np.clip(sm, 0.0, 1.5))
+        M = 248.0 + f1 * 7.0 * sm
+        R = 45.0 + (f2 - 0.5) * 48.0 * sm
+        CC = 40.0 + f1 * 28.0 * sm
         return _enforce_iron(M, R, CC, chrome_allowed=True)
     except Exception as exc:  # noqa: BLE001
         logger.error("spec_enh_satin_chrome failed: %s", exc)
@@ -502,7 +719,7 @@ def paint_enh_anodized(p, s, m, sd, pm, bb):
     return _subtle_grain(p, s, m, sd, pm, bb, cool=0.5)
 
 
-spec_enh_anodized = _make_spec(180, 60, 80, 6070, m_var=20, r_var=15, cc_var=12)
+spec_enh_anodized = _make_enhanced_spec(180, 60, 80, 6070, "anod_hex", m_var=38, r_var=32, cc_var=36)
 
 
 def paint_enh_baked_enamel(p, s, m, sd, pm, bb):
@@ -515,7 +732,7 @@ def paint_enh_baked_enamel(p, s, m, sd, pm, bb):
 # dR=5 dCC=5 (probe seed=42 256²). Real baked enamel has visible orange-
 # peel micro-ripple from the curing process. Widen r_var 4→18 and
 # cc_var 3→12 so kiln-cured depth actually reads.
-spec_enh_baked_enamel = _make_spec(0, 16, 18, 6080, m_var=3, r_var=18, cc_var=12)
+spec_enh_baked_enamel = _make_enhanced_spec(0, 16, 18, 6080, "enamel_peel", m_var=8, r_var=42, cc_var=38)
 
 
 def paint_enh_brushed(p, s, m, sd, pm, bb):
@@ -524,16 +741,15 @@ def paint_enh_brushed(p, s, m, sd, pm, bb):
 
 
 def spec_enh_brushed(shape, seed, sm: float, base_m: float, base_r: float) -> SpecTriple:
-    """Enhanced Brushed spec — FLAT. 2026-04-21 painter fix: previously
-    applied a directional brush grain via multi_scale_noise. A
-    Foundation Base must be flat; painters who want a brushed grain
-    look should add a brushed Spec Pattern Overlay, not bake it into
-    the Foundation."""
+    """Enhanced Brushed — parallel scratch corridors + metallic depth (SPB 2026-05-27)."""
     try:
         h, w = _hw(shape)
-        M = np.full((h, w), 180.0, dtype=np.float32)
-        R = np.full((h, w), 75.0, dtype=np.float32)
-        CC = np.full((h, w), 65.0, dtype=np.float32)
+        s = _safe_seed(seed) + 6090
+        f1, f2 = _creative_field(h, w, s, "scratch_corridor")
+        sm = float(np.clip(sm, 0.0, 1.5))
+        M = 180.0 + (f1 - 0.5) * 52.0 * sm + f2 * 28.0 * sm
+        R = 75.0 + (f2 - 0.5) * 44.0 * sm - f1 * 12.0 * sm
+        CC = 65.0 + f1 * 32.0 * sm
         return _enforce_iron(M, R, CC)
     except Exception as exc:  # noqa: BLE001
         logger.error("spec_enh_brushed failed: %s", exc)
@@ -577,7 +793,7 @@ def paint_enh_carbon_fiber(paint: np.ndarray, shape, mask: np.ndarray, seed,
 # pool modulation). Widen cc_var 4→18 so the resin thickness
 # variation under the clearcoat actually reads. Keep m_var and
 # r_var — those are already giving dM≈30 dR=20.
-spec_enh_carbon_fiber = _make_spec(55, 28, 16, 6100, m_var=15, r_var=10, cc_var=18)
+spec_enh_carbon_fiber = _make_enhanced_spec(55, 28, 16, 6100, "twill_weave", m_var=32, r_var=28, cc_var=42)
 
 
 def paint_enh_frozen(p, s, m, sd, pm, bb):
@@ -600,7 +816,7 @@ def paint_enh_frozen(p, s, m, sd, pm, bb):
     return _safe_paint_copy(p)[:, :, :3].astype(np.float32)
 
 
-spec_enh_frozen = _make_spec(160, 80, 125, 6110, m_var=20, r_var=25, cc_var=20)
+spec_enh_frozen = _make_enhanced_spec(160, 80, 125, 6110, "ice_dendrite", m_var=42, r_var=48, cc_var=52)
 
 
 def paint_enh_gel_coat(p, s, m, sd, pm, bb):
@@ -614,7 +830,12 @@ def paint_enh_gel_coat(p, s, m, sd, pm, bb):
 # pooling / wet-flow marks from surface tension. Widen r_var 3→20 and
 # cc_var 2→11. Sibling fix to AUTO-LOOP-1 (enh_wet_look) in the same
 # _make_spec factory family.
-spec_enh_gel_coat = _make_spec(0, 15, 16, 6120, m_var=3, r_var=20, cc_var=11)
+spec_enh_gel_coat = _make_enhanced_spec(0, 15, 16, 6120, "gel_pool", m_var=6, r_var=38, cc_var=34)
+spec_enh_powder_coat = _make_enhanced_spec(10, 115, 140, 6130, "powder_peel", m_var=18, r_var=42, cc_var=36)
+spec_enh_vinyl_wrap = _make_enhanced_spec(0, 95, 105, 6140, "vinyl_stretch", m_var=10, r_var=38, cc_var=32)
+spec_enh_soft_gloss = _make_enhanced_spec(0, 40, 20, 6150, "warm_pool", m_var=6, r_var=42, cc_var=36)
+spec_enh_soft_matte = _make_enhanced_spec(0, 195, 160, 6160, "velvet_fiber", m_var=8, r_var=40, cc_var=34)
+spec_enh_warm_white = _make_enhanced_spec(0, 115, 90, 6170, "ceramic_crackle", m_var=6, r_var=32, cc_var=28)
 
 
 def paint_enh_powder_coat(p, s, m, sd, pm, bb):
@@ -622,15 +843,9 @@ def paint_enh_powder_coat(p, s, m, sd, pm, bb):
     return _subtle_grain(p, s, m, sd, pm, bb, desat=0.1)
 
 
-spec_enh_powder_coat = _make_spec(10, 115, 140, 6130, m_var=8, r_var=20, cc_var=15)
-
-
 def paint_enh_vinyl_wrap(p, s, m, sd, pm, bb):
     """Enhanced Vinyl Wrap: neutral grain only."""
     return _subtle_grain(p, s, m, sd, pm, bb)
-
-
-spec_enh_vinyl_wrap = _make_spec(0, 95, 105, 6140, m_var=5, r_var=15, cc_var=12)
 
 
 def paint_enh_soft_gloss(p, s, m, sd, pm, bb):
@@ -638,27 +853,14 @@ def paint_enh_soft_gloss(p, s, m, sd, pm, bb):
     return _subtle_grain(p, s, m, sd, pm, bb, warmth=0.1)
 
 
-# 2026-04-20 HEENAN AUTO-LOOP-26 — enh_soft_gloss desc "warm micro-
-# shimmer and subtle depth". r_var=6 cc_var=3 produced dR=12 dCC=6
-# — shimmer-and-depth promise invisible. Widen r_var 6→25 and
-# cc_var 3→13 so warm shimmer reads.
-spec_enh_soft_gloss = _make_spec(0, 40, 20, 6150, m_var=3, r_var=25, cc_var=13)
-
-
 def paint_enh_soft_matte(p, s, m, sd, pm, bb):
     """Enhanced Soft Matte: velvet-touch desaturation over grain."""
     return _subtle_grain(p, s, m, sd, pm, bb, desat=0.25)
 
 
-spec_enh_soft_matte = _make_spec(0, 195, 160, 6160, m_var=5, r_var=18, cc_var=12)
-
-
 def paint_enh_warm_white(p, s, m, sd, pm, bb):
     """Enhanced Warm White: strong warm bias."""
     return _subtle_grain(p, s, m, sd, pm, bb, warmth=0.8)
-
-
-spec_enh_warm_white = _make_spec(0, 115, 90, 6170, m_var=3, r_var=12, cc_var=8)
 
 
 # ============================================================================
@@ -671,13 +873,7 @@ def paint_enh_ceramic_glaze(p, s, m, sd, pm, bb):
     return _subtle_grain(p, s, m, sd, pm, bb, warmth=0.3)
 
 
-# 2026-04-20 HEENAN AUTO-LOOP-2 — enh_ceramic_glaze desc promises
-# "hand-fired ceramic glaze with pooled color depth and delicate surface
-# crazing" but the factory ±5 r_var ±3 cc_var produced dR=5 dCC=3 at
-# seed=42 256² — no visible pooling. Real hand-fired glaze has strong
-# flow-out pooling (wider R variation) and thicker-thinner clearcoat
-# (wider CC). Widen r_var 5→25 and cc_var 3→14.
-spec_enh_ceramic_glaze = _make_spec(5, 15, 16, 6200, m_var=8, r_var=25, cc_var=14)
+spec_enh_ceramic_glaze = _make_enhanced_spec(5, 15, 16, 6200, "glaze_depth", m_var=12, r_var=48, cc_var=42)
 
 
 # 21. ENHANCED SILK
@@ -686,7 +882,7 @@ def paint_enh_silk(p, s, m, sd, pm, bb):
     return _subtle_grain(p, s, m, sd, pm, bb, warmth=0.15, desat=0.1)
 
 
-spec_enh_silk = _make_spec(10, 55, 35, 6210, m_var=8, r_var=12, cc_var=6)
+spec_enh_silk = _make_enhanced_spec(10, 55, 35, 6210, "silk_fiber", m_var=22, r_var=32, cc_var=24)
 
 
 # 22. ENHANCED EGGSHELL
@@ -695,7 +891,7 @@ def paint_enh_eggshell(p, s, m, sd, pm, bb):
     return _subtle_grain(p, s, m, sd, pm, bb, warmth=0.2)
 
 
-spec_enh_eggshell = _make_spec(0, 65, 45, 6220, m_var=3, r_var=10, cc_var=6)
+spec_enh_eggshell = _make_enhanced_spec(0, 65, 45, 6220, "eggshell_bump", m_var=8, r_var=28, cc_var=22)
 
 
 # 23. ENHANCED PRIMER
@@ -704,7 +900,7 @@ def paint_enh_primer(p, s, m, sd, pm, bb):
     return _subtle_grain(p, s, m, sd, pm, bb, desat=0.4)
 
 
-spec_enh_primer = _make_spec(0, 180, 160, 6230, m_var=5, r_var=25, cc_var=18)
+spec_enh_primer = _make_enhanced_spec(0, 180, 160, 6230, "primer_grit", m_var=10, r_var=48, cc_var=38)
 
 
 # 24. ENHANCED CLEAR MATTE
@@ -713,7 +909,7 @@ def paint_enh_clear_matte(p, s, m, sd, pm, bb):
     return _subtle_grain(p, s, m, sd, pm, bb, desat=0.15)
 
 
-spec_enh_clear_matte = _make_spec(0, 160, 140, 6240, m_var=3, r_var=15, cc_var=10)
+spec_enh_clear_matte = _make_enhanced_spec(0, 160, 140, 6240, "matte_haze", m_var=6, r_var=36, cc_var=32)
 
 
 # 25. ENHANCED SEMI GLOSS
@@ -725,7 +921,7 @@ def paint_enh_semi_gloss(p, s, m, sd, pm, bb):
 # 2026-04-20 HEENAN AUTO-LOOP-27 — enh_semi_gloss desc "nuanced
 # surface between satin and gloss". r_var=8 cc_var=4 gave dR=16 dCC=8.
 # Widen r_var 8→26 and cc_var 4→14 for visible semi-gloss nuance.
-spec_enh_semi_gloss = _make_spec(0, 55, 30, 6250, m_var=4, r_var=26, cc_var=14)
+spec_enh_semi_gloss = _make_enhanced_spec(0, 55, 30, 6250, "semi_ripple", m_var=8, r_var=38, cc_var=30)
 
 
 # 26. ENHANCED WET LOOK — saturation boost + clarity variation
@@ -759,7 +955,7 @@ def paint_enh_wet_look(paint: np.ndarray, shape, mask: np.ndarray, seed,
 # flow-out ripples at ±15-25 roughness from the glass baseline. Widen
 # r_var 3→22 and cc_var 2→12 so the clearcoat thickness variation
 # actually reads; keep m_var minimal so dielectric character holds.
-spec_enh_wet_look = _make_spec(0, 15, 16, 6260, m_var=3, r_var=22, cc_var=12)
+spec_enh_wet_look = _make_enhanced_spec(0, 15, 16, 6260, "wet_clarity", m_var=6, r_var=52, cc_var=48)
 
 
 # 27. ENHANCED PIANO BLACK — mirror-deep black
@@ -787,7 +983,7 @@ def paint_enh_piano_black(paint: np.ndarray, shape, mask: np.ndarray, seed,
 # produced dR=10 dCC=2 — no visible liquid-lacquer depth variation.
 # Audi/BMW piano lacquer has visible micro-flow-out under the clearcoat.
 # Widen r_var 5→24 and cc_var 2→14 so depth modulation reads.
-spec_enh_piano_black = _make_spec(0, 20, 16, 6270, m_var=3, r_var=24, cc_var=14)
+spec_enh_piano_black = _make_enhanced_spec(0, 20, 16, 6270, "lacquer_flow", m_var=6, r_var=46, cc_var=42)
 
 
 # 28. ENHANCED LIVING MATTE
@@ -796,7 +992,7 @@ def paint_enh_living_matte(p, s, m, sd, pm, bb):
     return _subtle_grain(p, s, m, sd, pm, bb, desat=0.3, warmth=0.15)
 
 
-spec_enh_living_matte = _make_spec(5, 170, 145, 6280, m_var=8, r_var=22, cc_var=15)
+spec_enh_living_matte = _make_enhanced_spec(5, 170, 145, 6280, "bio_pore", m_var=14, r_var=44, cc_var=36)
 
 
 # 29. ENHANCED NEUTRAL GREY
@@ -805,7 +1001,7 @@ def paint_enh_neutral_grey(p, s, m, sd, pm, bb):
     return _subtle_grain(p, s, m, sd, pm, bb, desat=0.5)
 
 
-spec_enh_neutral_grey = _make_spec(0, 180, 145, 6290, m_var=3, r_var=15, cc_var=10)
+spec_enh_neutral_grey = _make_enhanced_spec(0, 180, 145, 6290, "cal_grain", m_var=6, r_var=32, cc_var=24)
 
 
 # 30. ENHANCED CLEAR SATIN
@@ -814,7 +1010,8 @@ def paint_enh_clear_satin(p, s, m, sd, pm, bb):
     return _subtle_grain(p, s, m, sd, pm, bb)
 
 
-spec_enh_clear_satin = _make_spec(0, 95, 70, 6300, m_var=4, r_var=12, cc_var=8)
+spec_enh_clear_satin = _make_enhanced_spec(0, 95, 70, 6300, "clear_satin_peel", m_var=8, r_var=34, cc_var=28)
+spec_enh_pure_black = _make_enhanced_spec(0, 235, 185, 6310, "dead_absorb", m_var=4, r_var=38, cc_var=42)
 
 
 # ============================================================================
@@ -843,7 +1040,7 @@ __all__ = [
     "spec_enh_silk", "spec_enh_eggshell", "spec_enh_primer",
     "spec_enh_clear_matte", "spec_enh_semi_gloss", "spec_enh_wet_look",
     "spec_enh_piano_black", "spec_enh_living_matte", "spec_enh_neutral_grey",
-    "spec_enh_clear_satin",
+    "spec_enh_clear_satin", "spec_enh_pure_black",
     # registry
     "ENHANCED_FOUNDATION",
 ]
@@ -887,5 +1084,5 @@ ENHANCED_FOUNDATION = {
     "enh_living_matte": {"M": 5,   "R": 195, "CC": 145, "paint_fn": paint_enh_living_matte, "base_spec_fn": spec_enh_living_matte, "desc": "Enhanced Living Matte - organic matte with biological grain (HA13: R 170→195)"},
     "enh_neutral_grey": {"M": 0,   "R": 180, "CC": 145, "paint_fn": paint_enh_neutral_grey, "base_spec_fn": spec_enh_neutral_grey, "desc": "Enhanced Neutral Grey - professional neutral with micro-grain"},
     "enh_clear_satin":  {"M": 0,   "R": 95,  "CC": 70,  "paint_fn": paint_enh_clear_satin,  "base_spec_fn": spec_enh_clear_satin,  "desc": "Enhanced Clear Satin - satin clearcoat with orange-peel micro"},
-    "enh_pure_black":   {"M": 0,   "R": 235, "CC": 185, "paint_fn": paint_enh_piano_black,  "base_spec_fn": spec_enh_primer,       "desc": "Enhanced Pure Black - absolute black with dead matte grain"},
+    "enh_pure_black":   {"M": 0,   "R": 235, "CC": 185, "paint_fn": paint_enh_piano_black,  "base_spec_fn": spec_enh_pure_black,  "desc": "Enhanced Pure Black - absolute black with dead matte grain"},
 }

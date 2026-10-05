@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 350/car_num_1155350.tga",
+  "inspection_records": "_smart_tga_runs/cycle142_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle142_route_pressure_v1/dirtlatemodel_350_car_num_1155350/component_records.json",
+  "review_scope": "Cycle 142 focused dirt late model review: current Numbers are gray body/livery panels, while the true green 17 number bodies are Sponsor-routed saturated components. Keep nearby green sponsor wordmarks out of Numbers.",
+  "component_labels": [
+    {
+      "layer": "numbers",
+      "component_index": 0,
+      "expected_bbox": [783, 705, 56, 27],
+      "target_layer": "paint",
+      "label": "gray_livery_panel_false_number",
+      "note": "Gray body/livery panel fragment, not race-number content."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 1,
+      "expected_bbox": [719, 739, 101, 22],
+      "target_layer": "paint",
+      "label": "gray_livery_panel_false_number",
+      "note": "Gray body/livery panel strip; should not create an editable Number layer."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 2,
+      "expected_bbox": [609, 35, 113, 91],
+      "target_layer": "paint",
+      "label": "gray_livery_panel_false_number_rescue",
+      "note": "Gray livery/body panel accepted by low-saturation whole-component rescue; should stay Paint."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 4,
+      "expected_bbox": [615, 137, 111, 92],
+      "target_layer": "paint",
+      "label": "gray_livery_panel_false_number_rescue",
+      "note": "Mirrored gray livery/body panel accepted by low-saturation whole-component rescue; should stay Paint."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 7,
+      "expected_bbox": [283, 254, 186, 83],
+      "target_layer": "numbers",
+      "label": "true_colored_number_17",
+      "note": "Large green race-number 17 body routed to Sponsors; should become editable Number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 16,
+      "expected_bbox": [438, 717, 152, 54],
+      "target_layer": "sponsors",
+      "label": "hoker_trucking_sponsor_wordmark",
+      "note": "Green/white Hoker Trucking sponsor wordmark; not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 20,
+      "expected_bbox": [321, 723, 145, 72],
+      "target_layer": "numbers",
+      "label": "true_colored_number_17",
+      "note": "Second green race-number 17 body routed to Sponsors; should become editable Number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 23,
+      "expected_bbox": [50, 768, 87, 37],
+      "target_layer": "sponsors",
+      "label": "green_sponsor_wordmark_hard_negative",
+      "note": "Green sponsor wordmark fragment, not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 24,
+      "expected_bbox": [491, 780, 92, 30],
+      "target_layer": "sponsors",
+      "label": "combat_machining_sponsor_wordmark",
+      "note": "Combat Machining sponsor wordmark; not a number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 25,
+      "expected_bbox": [174, 804, 90, 42],
+      "target_layer": "sponsors",
+      "label": "dark_sponsor_panel_hard_negative",
+      "note": "Dark sponsor/livery mark; not race-number content."
+    }
+  ]
+}

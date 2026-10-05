@@ -1,0 +1,548 @@
+{
+  "build": "1.0.0-demo.13",
+  "ok": true,
+  "red": "#F10414",
+  "color_lab": "off and enabled with neutral effects; PNG/TGA exact",
+  "checks": [
+    {
+      "finish": "f_chrome",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "gloss",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "f_frozen",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "f_powder_coat",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "f_metallic",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "efx_holographic_drift",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "fo_lava_lamp",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "cherry_polka",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "tac_frozen_bank",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "elm_tsunami",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "elm_black_ice",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "ffo_haz_bloom",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "fmo_chrysina_gold",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "dkc_hematite",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "fab_glass_slipper",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "fab_woodcut_block",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "beetle_ground",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "butterfly_swallowtail",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "cs_chocolate_mint",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "xlab_shatter_royale",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "xlab_stained_circuit",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "grad_neon_rush",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "grad_fire_fade_h",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "aurora_black_rainbow",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "fm_herringbone",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "ff_wovencell",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "ffl_foundry_spatter",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "ff_truchet_glass",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "impossible_cinder_pulse",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "fs_core_emerald",
+      "size": 1024,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "f_chrome",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "gloss",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "f_frozen",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "f_powder_coat",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "f_metallic",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "efx_holographic_drift",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "fo_lava_lamp",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "cherry_polka",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "tac_frozen_bank",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "elm_tsunami",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "elm_black_ice",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "ffo_haz_bloom",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "fmo_chrysina_gold",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "dkc_hematite",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "fab_glass_slipper",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "fab_woodcut_block",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "beetle_ground",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "butterfly_swallowtail",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "cs_chocolate_mint",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "xlab_shatter_royale",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "xlab_stained_circuit",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "grad_neon_rush",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "grad_fire_fade_h",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "aurora_black_rainbow",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "fm_herringbone",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "ff_wovencell",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "ffl_foundry_spatter",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "ff_truchet_glass",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "impossible_cinder_pulse",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    },
+    {
+      "finish": "fs_core_emerald",
+      "size": 2048,
+      "max_rgb_error": {
+        "solid": 0,
+        "finish": 0,
+        "special": 0
+      }
+    }
+  ]
+}

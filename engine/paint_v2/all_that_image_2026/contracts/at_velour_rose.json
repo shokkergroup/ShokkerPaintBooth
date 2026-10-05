@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_velour_rose",
+  "display_name": "Fresh: Velour Rose",
+  "promise": "Rose-pink crushed velour with tiny richly varied nap facets, no petals or large folds",
+  "carrier_grammar": "Rose-pink crushed velour with tiny richly varied nap facets, no petals or large folds; single full-canvas image, no duplicated quadrants. Fine features: rose velour pile, compressed velvet ridges, dark pile valleys, pale nap tips, fine raised tufts, brushed directional nap",
+  "spec_grammar": "Feature-specific selectors partition rose velour pile, compressed velvet ridges, dark pile valleys, pale nap tips, fine raised tufts, brushed directional nap. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "rose velour pile",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "compressed velvet ridges",
+      "role": "Material feature selected from artwork by detail:>:0.6"
+    },
+    {
+      "name": "dark pile valleys",
+      "role": "Material feature selected from artwork by g:<:0.25"
+    },
+    {
+      "name": "pale nap tips",
+      "role": "Material feature selected from artwork by g:>:0.75"
+    },
+    {
+      "name": "fine raised tufts",
+      "role": "Material feature selected from artwork by fine:>:0.74"
+    },
+    {
+      "name": "brushed directional nap",
+      "role": "Material feature selected from artwork by x:>:0.74"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "rose velour pile",
+      "compressed velvet ridges",
+      "dark pile valleys",
+      "pale nap tips",
+      "fine raised tufts",
+      "brushed directional nap"
+    ],
+    "R": [
+      "rose velour pile",
+      "compressed velvet ridges",
+      "dark pile valleys",
+      "pale nap tips",
+      "fine raised tufts",
+      "brushed directional nap"
+    ],
+    "Cc": [
+      "rose velour pile",
+      "compressed velvet ridges",
+      "dark pile valleys",
+      "pale nap tips",
+      "fine raised tufts",
+      "brushed directional nap"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "rose velour pile",
+      "range": [
+        [
+          0,
+          175,
+          190
+        ],
+        [
+          8,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "compressed velvet ridges",
+      "range": [
+        [
+          0,
+          40,
+          45
+        ],
+        [
+          18,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dark pile valleys",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "pale nap tips",
+      "range": [
+        [
+          0,
+          100,
+          130
+        ],
+        [
+          12,
+          195,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine raised tufts",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "brushed directional nap",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_airbrush_tee",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_boombox_chrome",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "rose velour pile",
+      "compressed velvet ridges",
+      "dark pile valleys",
+      "pale nap tips",
+      "fine raised tufts",
+      "brushed directional nap"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_velour_rose / Rose-pink crushed velour with tiny richly varied nap facets, no petals or large folds",
+  "spec_key": "at_velour_rose / rose velour pile all; compressed velvet ridges detail:>:0.6; dark pile valleys g:<:0.25; pale nap tips g:>:0.75; fine raised tufts fine:>:0.74; brushed directional nap x:>:0.74",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

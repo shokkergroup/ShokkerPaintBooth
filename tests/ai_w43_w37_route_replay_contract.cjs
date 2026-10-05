@@ -1,0 +1,195 @@
+/* W43 replay of unchanged W37 frozen oracle. Keep expected outcomes separate
+   from the producer's W34 fixtures. The harness below must use frozen candidate bytes. */
+'use strict';
+const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+
+const ROOT = path.resolve(__dirname, '..');
+const FROZEN = path.join(ROOT, '_easy_claude_work', 'ai14h_w43_candidate', 'js');
+const ORACLE = Object.freeze([
+  { id: 'matte-black-carbon-keep-paint', request: 'Make the roof matte black with gold carbon overlay, but keep its current paint color.', expected: 'ask_no_queue' },
+  { id: 'chrome-finish-keep-red', request: 'Make only the roof chrome and keep its current red paint color.', expected: 'execute_roof_finish_only' },
+  { id: 'chrome-finish-keep-navy', request: 'Make the hood chrome but leave its current navy paint alone.', expected: 'execute_hood_finish_only' },
+  { id: 'roof-red-keep-sponsors', request: 'Make the roof red and keep the sponsors unchanged.', expected: 'execute_roof_only' },
+  { id: 'quoted-preservation-phrase', request: 'My notes say “keep the hood unchanged”; paint the roof red.', expected: 'execute_roof_only' },
+  { id: 'howto-question', request: 'How do I keep the hood unchanged while painting the roof red?', expected: 'help_no_queue' },
+  { id: 'separate-part-color-facets', request: 'Make the roof gold and keep the hood navy.', expected: 'execute_roof_gold_and_hood_navy' },
+  { id: 'finish-stack-keep-current', request: 'Put a matte black base and gold carbon overlay on only the roof; keep its current paint color.', expected: 'ask_no_queue' },
+  { id: 'finish-stack-no-contradiction', request: 'Make only the roof matte black with a gold carbon overlay.', expected: 'execute_roof_base_and_overlay' },
+  { id: 'single-part-preserve-other', request: 'Paint the roof gold and leave the hood color as it is.', expected: 'execute_roof_only' },
+  { id: 'advice-not-application', request: 'Would a gold carbon overlay work over the roof’s existing red paint?', expected: 'help_no_queue' },
+  { id: 'explicit-unrelated-instruction', request: 'Keep all sponsor decals unchanged, then make only the roof deep red.', expected: 'execute_roof_only' }
+]);
+const ORACLE_SHA256 = '5ED699B9AFD0833874F30E9B6ECF3ABE19DAFFE49A032BECDC7BD227A3BEF42E';
+const actualOracleHash = crypto.createHash('sha256').update(JSON.stringify(ORACLE) + '\n').digest('hex').toUpperCase();
+if (actualOracleHash !== ORACLE_SHA256) throw new Error('W37 oracle changed: ' + actualOracleHash);
+
+const INPUT_HASHES = Object.freeze({
+  guard: 'BA0AF1F9E217695ED733DDE81C8DEC1A735DD1F052E8C06B3098866D392A551C',
+  proAI: 'CBDC3BF8F8A843C8B3B0B0A3E143206F711C919691CA525E1101F3C552386DFC',
+  design: '0533393FF5F2170236F60D4ED489C7AE52F98805E12B0764DA67A967F756F2E8',
+  edit: '8571FCE490F65C6C0C888F6D632860FCA5A05C63834978A4EB262EF9B30C3B0C'
+});
+function readPinned(file, expected) {
+  const b = fs.readFileSync(file), got = crypto.createHash('sha256').update(b).digest('hex').toUpperCase();
+  assert.equal(got, expected, path.basename(file) + ' frozen input changed'); return b.toString('utf8');
+}
+function extractFunction(src, name) {
+  const start = src.indexOf(`function ${name}(`); assert(start >= 0, 'missing actual function ' + name);
+  const brace = src.indexOf('{', start); let depth = 0, quote = null, line = false, block = false, esc = false;
+  for (let i = brace; i < src.length; i++) {
+    const c = src[i], n = src[i + 1];
+    if (line) { if (c === '\n') line = false; continue; }
+    if (block) { if (c === '*' && n === '/') { block = false; i++; } continue; }
+    if (quote) { if (esc) { esc = false; continue; } if (c === '\\') { esc = true; continue; } if (c === quote) quote = null; continue; }
+    if (c === '/' && n === '/') { line = true; i++; continue; }
+    if (c === '/' && n === '*') { block = true; i++; continue; }
+    if (c === '"' || c === "'" || c === '`') { quote = c; continue; }
+    if (c === '{') depth++;
+    if (c === '}' && --depth === 0) return src.slice(start, i + 1);
+  }
+  throw new Error('unterminated function ' + name);
+}
+function frozenRoute() {
+  const dir = path.join(ROOT, '_easy_claude_work', 'ai14h_w43_candidate', 'js');
+  const candidateAI = readPinned(path.join(FROZEN, 'spb-pro-ai.js'), INPUT_HASHES.proAI);
+  const guard = readPinned(path.join(FROZEN, 'spb-ai-complete-instruction-guard.js'), INPUT_HASHES.guard);
+  const design = readPinned(path.join(dir, 'spb-pro-design.js'), INPUT_HASHES.design);
+  const edit = readPinned(path.join(dir, 'spb-pro-edit.js'), INPUT_HASHES.edit);
+  const w = { console, Promise, document: {} }; w.window = w; vm.createContext(w);
+  vm.runInContext(design, w, { filename: 'frozen W34 designer' });
+  vm.runInContext(edit, w, { filename: 'frozen W34 edit planner' });
+  vm.runInContext(guard, w, { filename: 'frozen W34 guard' });
+  const D = w.SpbProDesign, E = w.SpbProEdit;
+  const env = { palette: [{ hex: '#141416', share_pct: 52 }, { hex: '#f2c500', share_pct: 22 }, { hex: '#f1f1ee', share_pct: 14 }, { hex: '#1347a8', share_pct: 5 }], layers: [] };
+  const route = {
+    window: w, console, Promise, D, E, AI: { cached: () => ({ configured: false }) },
+    _busy: false, _skipParts: true, _absent: {}, CAR: null, _offlineLast: null, _advLast: null,
+    _advRejected: [], _advDislikes: [], _forcedIdeaCols: null, _reqText: '', _specOnlyReq: false,
+    _beforeImg: null, _progress: '', _editReg: {}, _editRegPendingBefore: {}, _editRegSig: 'car',
+    zones: [], _log: [], _progAI: false, _progT0: 0, _progK: 0, _progEnd: 0, _panel: null,
+    elementRunCurrent: () => true, elementPaintChangedResult: () => ({ cancelled: true }),
+    editPlan: text => E.plan(text, env), offlineFirst: () => true, selfHelpClaim: text => (/^(How do I|How can|Would a gold)/i.test(text) ? { intent: 'help' } : null),
+    selfHelpResult: value => ({ offline: true, text: 'help', queue: [], answer: value.intent }),
+    offlineCanHandle: () => true, offlineGaveUp: () => false, logMiss() {}, render() {},
+    askCore(text) { route.providerBoundaryCalls++; return Promise.resolve({ error: { message: 'provider stub only' }, queue: [] }); },
+    offlineAskCore() { route.coreCalls++; return Promise.resolve({ offline: true, text: 'provider boundary', queue: [{ kind: 'should-not-run' }] }); },
+    offlineInstructionPreflight: null, _preflightFallbackCalls: 0, coreCalls: 0, fallbackCalls: 0,
+    finish(r, text) { route.finished = { r, text }; },
+    offlineEditAsk(text, ed) { route.editCalls.push({ text, ed }); return Promise.resolve({ offline: true, text: 'captured local edit route', queue: [], editPlan: ed }); },
+    offlineCoveredPartAsk(text, proof) { route.coveredCalls.push({ text, proof }); return Promise.resolve({ offline: true, text: 'captured part route', queue: [], proof }); },
+    offlineElementAsk(text, intent) { route.elementCalls.push({ text, intent }); return Promise.resolve({ offline: true, text: 'captured element route', queue: [] }); },
+    offlinePartAsk(text, intent) { route.partCalls.push({ text, intent }); return Promise.resolve({ offline: true, text: 'captured part fallback', queue: [] }); },
+    offlineSpecAsk(text, intent) { route.specCalls.push({ text, intent }); return Promise.resolve({ offline: true, text: 'captured spec fallback', queue: [] }); },
+    offlineScopeReply: () => ({ offline: true, text: 'scope ask', queue: [] }),
+    warm: () => Promise.resolve(),
+    makeTools(queue) { return [{ name: 'add_zone', handler(args) { queue.push({ kind: 'add', spec: JSON.parse(JSON.stringify(args)) }); return { ok: true }; } }]; },
+    markPartFollowupQueue() {}, friendlyZoneError: x => String(x || ''),
+    editReply(text, chips, extra) { route.askReplies.push({ text, chips, extra }); return { offline: true, text, queue: extra && extra.queue || [] }; }, askReplies: [],
+    offlineHowto: () => null, offlineStartOver: () => ({ queue: [] }), offlineUndo: () => ({ queue: [] }),
+    captureOriginal() {}, intentSpecOnly: () => false, advisorOwns: () => false,
+    elemCurrentCard: () => null, elementPaintSig: () => '', elementRunIdentity: () => null,
+    elemReplyAction: () => null, runElemAction: () => false, complaintChip: () => false,
+    complaintOf: () => null, offlineComplaint: () => null, selfHelpSig: () => '',
+    offlineMaterialPlan: () => null, advisorIntent: () => null, layerVisRequest: () => null,
+    offlineCannot: () => null, NUM_FIX_RE: /$a/, NOT_ELEM_RE: /$a/, TEACH_RE: /$a/,
+    QUESTION_RE: /^how\b/i, CHECK_AGAIN_RE: /$a/, START_OVER_RE: /^$a/, CANT_RE: /^$a/,
+    SMALL_HELLO_RE: /$a/, SMALL_THANKS_RE: /$a/, editCalls: [], coveredCalls: [], elementCalls: [], partCalls: [], specCalls: [], providerBoundaryCalls: 0,
+    AI_cachedConfigured: false
+  };
+  Object.assign(w, route); w.window = w; vm.createContext(route);
+  for (const name of ['offlineInstructionPreflight', 'offlineAsk', 'offlineAskCore', 'offlineLookAsk', 'offlineElementAsk', 'editYieldsToStack', 'offlineCanHandle', 'ask']) {
+    vm.runInContext(extractFunction(candidateAI, name), route, { filename: 'W34 candidate proAI#' + name });
+  }
+  const actualEditAsk = extractFunction(candidateAI, 'offlineEditAsk').replace('function offlineEditAsk(', 'function actualOfflineEditAsk(');
+  vm.runInContext(actualEditAsk + '\n', route, { filename: 'W43 actual unknown/clarification response branch' });
+  const captureEditAsk = route.offlineEditAsk;
+  route.offlineEditAsk = function (text, ed, o) {
+    if (ed && (ed.kind === 'ask' || (ed.kind === 'ops' && ed.unknown && ed.unknown.length))) return route.actualOfflineEditAsk(text, ed, o);
+    return captureEditAsk(text, ed, o);
+  };
+  const sendStart = candidateAI.indexOf('function send(text, o) {');
+  const sendGuard = candidateAI.indexOf("var guarded = offlineInstructionPreflight(text); if (guarded) { finish(guarded, text, 'ask'); return; }", sendStart);
+  assert(sendStart >= 0 && sendGuard > sendStart, 'actual send() preflight hook missing');
+  vm.runInContext(candidateAI.slice(sendStart, sendGuard) + "var guarded = offlineInstructionPreflight(text); if (guarded) { finish(guarded, text, 'ask'); return; }\n}", route, { filename: 'W34 candidate proAI#send-through-preflight' });
+  return { w, route, D, E, env, candidateAI };
+}
+
+async function main() {
+  const { w, route, E } = frozenRoute();
+  const guarded = new Set(['matte-black-carbon-keep-paint', 'finish-stack-keep-current']);
+  const decisions = ORACLE.map(c => ({ id: c.id, decision: w.SpbAICompleteGuard.inspect(c.request), expected: c.expected }));
+  const guardMismatches = decisions.filter(row => !!row.decision !== guarded.has(row.id));
+  const actualResults = [];
+  async function resultFrom(fn) { const r = await fn(); assert(r && Array.isArray(r.queue), 'route did not return a queue'); return r; }
+  // Guarded requests stop at actual route boundaries with both configuration states.
+  route.AI.cached = () => ({ configured: false });
+  actualResults.push({ route: 'offlineAskCore/config-off', id: ORACLE[0].id, result: await resultFrom(() => route.offlineAskCore(ORACLE[0].request, {})) });
+  route.AI.cached = () => ({ configured: true });
+  actualResults.push({ route: 'ask/config-on', id: ORACLE[0].id, result: await resultFrom(() => route.ask(ORACLE[0].request, {})) });
+  route.AI.cached = () => ({ configured: false });
+  actualResults.push({ route: 'send/config-off', id: ORACLE[0].id, result: (route.send(ORACLE[0].request, {}), route.finished.r) });
+  route.AI.cached = () => ({ configured: true });
+  actualResults.push({ route: 'offlineLookAsk/config-on', id: ORACLE[0].id, result: await resultFrom(() => route.offlineLookAsk(ORACLE[0].request, { query: 'gold carbon overlay' }, {})) });
+  for (const row of actualResults) { assert.equal(row.result.queue.length, 0, row.route + ' queued guarded request'); assert.equal(row.result.instructionGuard, 'preserved-paint-with-overlay'); }
+  assert.equal(route.coreCalls, 0, 'guarded ask leaked to provider/core boundary');
+  const putPlace = [
+    { id: 'supplemental-place', text: 'Place a matte black base and gold carbon overlay on only the roof; keep its current paint color.' },
+    { id: 'supplemental-put', text: 'Put a matte black base with a gold carbon overlay only on the roof; keep its current paint color.' }
+  ];
+  const putPlaceRoutes = [];
+  for (const c of putPlace) {
+    route.AI.cached = () => ({ configured: false });
+    const off = await resultFrom(() => route.offlineAskCore(c.text, {}));
+    route.AI.cached = () => ({ configured: true });
+    const on = await resultFrom(() => route.ask(c.text, {}));
+    for (const [name, r] of [['offlineAskCore/config-off', off], ['ask/config-on', on]]) {
+      assert.equal(r.queue.length, 0, c.id + '/' + name + ' queued unresolved work');
+      assert.equal(r.instructionGuard, 'preserved-paint-with-overlay', c.id + '/' + name + ' missed the contradiction guard');
+    }
+    putPlaceRoutes.push({ id: c.id, offlineAskCore: { queue: off.queue.length, guard: off.instructionGuard }, ask: { queue: on.queue.length, guard: on.instructionGuard } });
+  }
+
+  // Safe ordinary requests must pass the guard and reach the real typed edit planner.
+  const positiveIds = ['chrome-finish-keep-red', 'chrome-finish-keep-navy', 'roof-red-keep-sponsors', 'quoted-preservation-phrase', 'separate-part-color-facets', 'finish-stack-no-contradiction', 'single-part-preserve-other', 'explicit-unrelated-instruction'];
+  const positives = [];
+  for (const id of positiveIds) {
+    const c = ORACLE.find(x => x.id === id); route.AI.cached = () => ({ configured: false }); route._busy = false; route.editCalls.length = 0; route.coveredCalls.length = 0;
+    const pre = route.offlineInstructionPreflight(c.request); assert.equal(pre, null, id + ' was blocked by guard');
+    const r = await route.ask(c.request, {});
+    positives.push({ id, result: r, edit: route.editCalls[0] && route.editCalls[0].ed, covered: route.coveredCalls[0] && route.coveredCalls[0].proof, answer: r && { text: r.text || null, queueLength: r.queue && r.queue.length, error: r.error && r.error.message, model: r.model } });
+  }
+  const roofFinish = positives.find(x => x.id === 'chrome-finish-keep-red');
+  assert(roofFinish.edit && roofFinish.edit.kind === 'ops', 'roof finish-only phrase did not reach part edit owner');
+  assert.equal(roofFinish.edit.ops[0].target.part, 'roof'); assert.equal(roofFinish.edit.ops[0].colour, null); assert.equal(roofFinish.edit.unknown.length, 0);
+  const hoodFinish = positives.find(x => x.id === 'chrome-finish-keep-navy');
+  assert(hoodFinish.edit && hoodFinish.edit.kind === 'ops', 'hood finish-only phrase did not reach part edit owner');
+  // Mark safety/coverage honestly: an ask/no-queue is safe, but is not a completed supported edit.
+  const outcomes = positives.map(x => ({ id: x.id, queueLength: x.result && x.result.queue ? x.result.queue.length : null, editKind: x.edit && x.edit.kind || null,
+    unknown: x.edit && x.edit.unknown || null, protectedParts: x.edit && x.edit.protected_parts || null,
+    planOps: x.edit && x.edit.ops ? x.edit.ops.map(op => ({ target: op.target, color: op.colour, finish: op.look && op.look.id, exclude: op.exclude })) : null,
+    coverage: x.covered ? x.covered.status || x.covered.complete : null, answer: x.answer }));
+  // Verify the concrete ask boundary for the guarded put/overlay formulation.
+  route.AI.cached = () => ({ configured: true });
+  const blocked = await route.ask(ORACLE[7].request, {});
+  assert.equal(blocked.instructionGuard, 'preserved-paint-with-overlay', 'put/overlay conflict was not stopped at the ask boundary');
+  assert.equal(blocked.queue.length, 0, 'guarded put/overlay request queued work');
+  assert.equal(route.providerBoundaryCalls, 0, 'guarded compound request reached the controlled provider boundary');
+  const partFacets = positives.find(x => x.id === 'separate-part-color-facets');
+  const partFacetZones = (partFacets && partFacets.result.queue || []).map(q => ({ part: q.spec && q.spec.region && q.spec.region.part, color: q.spec && q.spec.color }));
+  const stackPositive = positives.find(x => x.id === 'finish-stack-no-contradiction');
+  const stackZones = (stackPositive && stackPositive.result.queue || []).map(q => ({ part: q.spec && q.spec.region && q.spec.region.part, color: q.spec && q.spec.color, finish: q.spec && q.spec.finish, pattern: q.spec && q.spec.pattern && q.spec.pattern.id }));
+  const directUnknowns = positives.filter(x => x.edit && x.edit.kind === 'ops' && x.edit.unknown && x.edit.unknown.length).map(x => ({ id: x.id, unknown: x.edit.unknown }));
+  const partFacetsComplete = partFacetZones.length === 2 && partFacetZones.some(z => z.part === 'roof' && z.color === '#d7a72b') && partFacetZones.some(z => z.part === 'hood' && z.color === '#0b2350');
+  const stackComplete = stackZones.length === 1 && stackZones[0].part === 'roof' && stackZones[0].color === '#111113' && stackZones[0].pattern === 'carbon_fiber';
+  const safeClarification = positives.find(x => x.id === 'single-part-preserve-other');
+  const safeClarificationShown = !!(safeClarification && safeClarification.answer && safeClarification.answer.queueLength === 0 && /nothing was changed|clarif/i.test(safeClarification.answer.text || ''));
+  const unsafeOrIncomplete = guardMismatches.length > 0 || directUnknowns.length > 0 || !partFacetsComplete || !stackComplete || !safeClarificationShown;
+  const routeStatus = unsafeOrIncomplete ? 'BLOCKED' : 'PASS_WITH_LIMITS';
+  console.log(JSON.stringify({ ok: !unsafeOrIncomplete, status: routeStatus, oracleSha256: ORACLE_SHA256, cases: ORACLE.length, guardMismatches: guardMismatches.map(x => ({ id: x.id, expectedGuard: guarded.has(x.id), actualGuard: !!x.decision, decision: x.decision })), guardClassifications: decisions.map(x => ({ id: x.id, blocked: !!x.decision, reason: x.decision && x.decision.reason || null })), routes: actualResults.map(x => ({ route: x.route, id: x.id, queue: x.result.queue.length, calls: x.result.calls, model: x.result.model, guard: x.result.instructionGuard })), supplementalPutPlaceRoutes: putPlaceRoutes, positiveRoutes: outcomes, downstreamProofs: { partFacetsComplete, partFacetZones, stackComplete, stackZones, safeClarificationShown, directUnknowns }, guardedCompoundBoundary: { id: ORACLE[7].id, queue: blocked.queue.length, instructionGuard: blocked.instructionGuard, crossedProviderStub: route.providerBoundaryCalls !== 0, note: 'ask(), send(), offlineAskCore(), offlineLookAsk(), offlineElementAsk(), and offlineCanHandle() are source-extracted; provider/core/apply effects are controlled stubs, not live calls' }, providerOrCoreCalls: route.coreCalls, limits: ['The explicit roof-red request with a protected hood takes a truthful ask/no-queue path rather than the frozen oracle’s preferred roof-only completion.', 'Exact-part E edits and the covered-sponsor route stop at controlled edit/coverage seams; this confirms planner ownership, not a native committed edit.', 'Compound part facets and roof base-plus-carbon stack go through the production offlineElementAsk and produce correctly scoped mocked add_zone queue specs; no paint mutation was run.'], hashes: INPUT_HASHES }, null, 2));
+  if (unsafeOrIncomplete) process.exitCode = 1;
+}
+main().catch(e => { console.error(e.stack || e); process.exitCode = 1; });

@@ -1,0 +1,765 @@
+{
+  "review": "W16 parent unchanged W14-oracle replay against gen2 proAI snapshot and repaired D/current E",
+  "date": "2026-10-04",
+  "status": "MIXED_SAFE_INCOMPLETE",
+  "frozen_oracle": {
+    "hash": "D2A450C9A2C4107583998EEA05B9020A5E8CDA7E45B0115C914A84EFF9D3769A",
+    "fresh_cases": 14,
+    "separately_kept_known_case": "W14-KNOWN",
+    "cases": [
+      {
+        "id": "W14-01",
+        "text": "Put a matte black base on only the hood, then layer silver pearl flakes over it.",
+        "expected": "complete hood stack: matte black base plus silver pearl-flake overlay; no other part"
+      },
+      {
+        "id": "W14-02",
+        "text": "On the roof, apply a navy metallic base and a fine silver flake layer above it.",
+        "expected": "complete roof stack: navy metallic base plus silver-flake overlay"
+      },
+      {
+        "id": "W14-03",
+        "text": "Make the left side gloss red and put a subtle pearl-flake effect over the red.",
+        "expected": "complete left-side stack: gloss red base plus pearl-flake overlay"
+      },
+      {
+        "id": "W14-04",
+        "text": "Make both sides satin blue with silver flake, leaving the hood and roof unchanged.",
+        "expected": "complete left+right side stacks with satin blue and silver flake; hood and roof untouched, or ask without mutation"
+      },
+      {
+        "id": "W14-05",
+        "text": "Recolor only the hood green, keeping its current chrome finish.",
+        "expected": "hood color-only update; preserve current chrome finish"
+      },
+      {
+        "id": "W14-06",
+        "text": "Keep the roof's current navy color; change only its finish to satin.",
+        "expected": "roof finish-only update; preserve current navy color"
+      },
+      {
+        "id": "W14-07",
+        "text": "Make the hood blue matte, the roof gold gloss, and keep every other panel untouched.",
+        "expected": "two separate scoped jobs; no body zone; ask rather than partial if safe ownership cannot be proven"
+      },
+      {
+        "id": "W14-08",
+        "text": "Apply black matte paint to the entire body, except keep the roof's existing carbon finish.",
+        "expected": "clarify or prove explicit body-minus-roof selection; never silently repaint roof"
+      },
+      {
+        "id": "W14-09",
+        "text": "Change the whole car to gloss red while leaving the hood exactly as it is.",
+        "expected": "clarify or prove explicit whole-body exclusion for hood; no implicit whole-car zone"
+      },
+      {
+        "id": "W14-10",
+        "text": "Add pearl flakes to the existing hood without changing its color or finish.",
+        "expected": "texture-only overlay on hood if supported; otherwise truthful ask and no queue"
+      },
+      {
+        "id": "W14-11",
+        "text": "Make the roof matte black with a gold carbon-weave overlay, but keep its current paint color.",
+        "expected": "clarify conflicting matte-black base and keep-current-color constraints; no partial queue"
+      },
+      {
+        "id": "W14-12",
+        "text": "Make only the right side blue and add a silver stripe across the hood.",
+        "expected": "complete independent side recolor and hood stripe, or ask without partially applying either action"
+      },
+      {
+        "id": "W14-13",
+        "text": "Give the hood a satin gold base with pearl flakes, and add a chrome pinstripe along the roof.",
+        "expected": "complete hood stack plus roof pinstripe, or ask without dropping a requested action"
+      },
+      {
+        "id": "W14-14",
+        "text": "Add a gloss clearcoat to the current matte black roof while keeping the black paint.",
+        "expected": "roof clearcoat/material-channel operation preserving black base, or truthful ask with no queue"
+      },
+      {
+        "id": "W14-KNOWN",
+        "text": "Make only the hood matte black base with silver pearl flakes on top.",
+        "expected": "complete hood matte-black base plus silver pearl-flake overlay, or truthful ask without applying only the base"
+      }
+    ]
+  },
+  "production_freeze": {
+    "requested_frozen_hashes": {
+      "js/spb-pro-ai.js": "115F602D49E465B6F49530B07A4C2E4B81E8D6089C2D8204BCAE9D57807690D4",
+      "js/spb-pro-edit.js": "D4CDD87EFC9A0FFAB5AA923134C13BCBA722E68FB91F1F4899EA16D61B204F0C",
+      "js/spb-pro-design.js": "0F5A99F5ECCA374C955DF54AE31E6B1E4F4B5EA559284C396C84BF0C38BB2D7B"
+    },
+    "observed_during_review": {
+      "js/spb-pro-ai.js": "115F602D49E465B6F49530B07A4C2E4B81E8D6089C2D8204BCAE9D57807690D4",
+      "js/spb-pro-edit.js": "A328A1EF5D8293E2F8CFC8A27F3E0C868A04842A07EE39243CBD0BD34513BDA7",
+      "js/spb-pro-design.js": "0533393FF5F2170236F60D4ED489C7AE52F98805E12B0764DA67A967F756F2E8"
+    },
+    "source_path": "_easy_claude_work/ai14h_generation2_sources/js/spb-pro-ai.js",
+    "drift": "Parent intentionally replayed unchanged W14 oracle against frozen gen2 proAI115f and current repaired D0533/Ea328; no moving proAI used."
+  },
+  "production_hashes_sha256": {
+    "js/spb-pro-ai.js": "115F602D49E465B6F49530B07A4C2E4B81E8D6089C2D8204BCAE9D57807690D4",
+    "js/spb-pro-edit.js": "A328A1EF5D8293E2F8CFC8A27F3E0C868A04842A07EE39243CBD0BD34513BDA7",
+    "js/spb-pro-design.js": "0533393FF5F2170236F60D4ED489C7AE52F98805E12B0764DA67A967F756F2E8"
+  },
+  "counts": {
+    "total": 15,
+    "full_executable_requests": 3,
+    "conservative_asks_or_no_queue": 12,
+    "unsafe_partial_applications": 0,
+    "errors": 0
+  },
+  "results": [
+    {
+      "id": "W14-01",
+      "text": "Put a matte black base on only the hood, then layer silver pearl flakes over it.",
+      "expected": "complete hood stack: matte black base plus silver pearl-flake overlay; no other part",
+      "compound": {
+        "kind": "compound",
+        "exactPart": false,
+        "unknown": [],
+        "text": "",
+        "zones": [
+          {
+            "part": "hood",
+            "color": "#111113",
+            "finish": "base::matte",
+            "materialKeys": [
+              "spec_patterns"
+            ],
+            "materialText": [
+              "pearl",
+              "flake",
+              "pearl"
+            ]
+          }
+        ]
+      },
+      "edit": {
+        "kind": "ask",
+        "exactPart": false,
+        "unknown": [],
+        "text": "I cannot find a layer called “then” in this file. This paint has no layers.",
+        "zones": []
+      },
+      "compiled": null,
+      "route": "edit",
+      "parts": [
+        "hood"
+      ],
+      "duplicateParts": false,
+      "exactPartSet": true,
+      "queuedCount": 1,
+      "reply": "Done — added a layered look (base and texture together on hood) on the hood. Your numbers and sponsors are untouched.\nNEXT: Make it thinner | Make it a different colour | Undo",
+      "error": "",
+      "preservationAsk": false,
+      "full": true,
+      "unsafe": false,
+      "rawQueue": [
+        {
+          "kind": "add",
+          "spec": {
+            "name": "Matte black pearl flakes hood",
+            "finish": "base::matte",
+            "color": "#111113",
+            "region": {
+              "part": "hood"
+            },
+            "spec_patterns": [
+              {
+                "id": "pearl_micro",
+                "opacity": 70,
+                "scale": 1
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "W14-02",
+      "text": "On the roof, apply a navy metallic base and a fine silver flake layer above it.",
+      "expected": "complete roof stack: navy metallic base plus silver-flake overlay",
+      "compound": null,
+      "edit": {
+        "kind": "ask",
+        "exactPart": false,
+        "unknown": [],
+        "text": "I cannot find a layer called “flake” in this file. This paint has no layers.",
+        "zones": []
+      },
+      "compiled": null,
+      "route": "ask",
+      "parts": [],
+      "duplicateParts": false,
+      "exactPartSet": false,
+      "queuedCount": 0,
+      "reply": "I cannot find a layer called “flake” in this file. This paint has no layers.",
+      "error": "",
+      "preservationAsk": true,
+      "full": false,
+      "unsafe": false,
+      "rawQueue": []
+    },
+    {
+      "id": "W14-03",
+      "text": "Make the left side gloss red and put a subtle pearl-flake effect over the red.",
+      "expected": "complete left-side stack: gloss red base plus pearl-flake overlay",
+      "compound": null,
+      "edit": {
+        "kind": "ops",
+        "exactPart": false,
+        "unknown": [],
+        "text": "make the left side gloss red and put a subtle pearl flake effect over the red",
+        "zones": [
+          {
+            "part": "left side",
+            "color": "#c8102e",
+            "finish": "gloss",
+            "materialKeys": [],
+            "materialText": [
+              "clearcoat"
+            ]
+          },
+          {
+            "part": "red",
+            "color": null,
+            "finish": "metallic",
+            "materialKeys": [],
+            "materialText": [
+              "flake",
+              "flake",
+              "flake",
+              "clearcoat"
+            ]
+          }
+        ]
+      },
+      "compiled": {
+        "kind": null,
+        "exactPart": false,
+        "unknown": [],
+        "text": "",
+        "zones": [
+          {
+            "part": "left side",
+            "color": "#c8102e",
+            "finish": "base::f_soft_gloss",
+            "materialKeys": [],
+            "materialText": []
+          }
+        ]
+      },
+      "route": "ask",
+      "parts": [],
+      "duplicateParts": false,
+      "exactPartSet": false,
+      "queuedCount": 0,
+      "reply": "Nothing was changed. I do not see any red on this car. What I can see: black (52%), yellow (22%), white (14%), royal blue (5%). Which one do you mean?",
+      "error": "",
+      "preservationAsk": true,
+      "full": false,
+      "unsafe": false,
+      "rawQueue": []
+    },
+    {
+      "id": "W14-04",
+      "text": "Make both sides satin blue with silver flake, leaving the hood and roof unchanged.",
+      "expected": "complete left+right side stacks with satin blue and silver flake; hood and roof untouched, or ask without mutation",
+      "compound": null,
+      "edit": {
+        "kind": "ask",
+        "exactPart": false,
+        "unknown": [],
+        "text": "Nothing was changed. I can’t yet guarantee this combined request leaves the hood and the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "zones": []
+      },
+      "compiled": null,
+      "route": "ask",
+      "parts": [],
+      "duplicateParts": false,
+      "exactPartSet": false,
+      "queuedCount": 0,
+      "reply": "Nothing was changed. I can’t yet guarantee this combined request leaves the hood and the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+      "error": "",
+      "preservationAsk": true,
+      "full": false,
+      "unsafe": false,
+      "rawQueue": []
+    },
+    {
+      "id": "W14-05",
+      "text": "Recolor only the hood green, keeping its current chrome finish.",
+      "expected": "hood color-only update; preserve current chrome finish",
+      "compound": null,
+      "edit": null,
+      "compiled": null,
+      "route": "ask",
+      "parts": [],
+      "duplicateParts": false,
+      "exactPartSet": false,
+      "queuedCount": 0,
+      "reply": "I could not turn that request into a safe built-in edit, so nothing was changed. Try naming the part and the change, such as “make only the hood matte blue”, or ask how to use a tool. A connected external assistant can help with a broader brief; setting up an AI provider is optional.",
+      "error": "",
+      "preservationAsk": true,
+      "full": false,
+      "unsafe": false,
+      "rawQueue": []
+    },
+    {
+      "id": "W14-06",
+      "text": "Keep the roof's current navy color; change only its finish to satin.",
+      "expected": "roof finish-only update; preserve current navy color",
+      "compound": null,
+      "edit": {
+        "kind": "ask",
+        "exactPart": false,
+        "unknown": [],
+        "text": "Nothing was changed. I can’t yet guarantee this combined request leaves the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "zones": []
+      },
+      "compiled": null,
+      "route": "ask",
+      "parts": [],
+      "duplicateParts": false,
+      "exactPartSet": false,
+      "queuedCount": 0,
+      "reply": "Nothing was changed. I can’t yet guarantee this combined request leaves the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+      "error": "",
+      "preservationAsk": true,
+      "full": false,
+      "unsafe": false,
+      "rawQueue": []
+    },
+    {
+      "id": "W14-07",
+      "text": "Make the hood blue matte, the roof gold gloss, and keep every other panel untouched.",
+      "expected": "two separate scoped jobs; no body zone; ask rather than partial if safe ownership cannot be proven",
+      "compound": {
+        "kind": "compound",
+        "exactPart": false,
+        "unknown": [],
+        "text": "",
+        "zones": [
+          {
+            "part": "hood",
+            "color": "#1450b4",
+            "finish": "base::matte",
+            "materialKeys": [],
+            "materialText": []
+          },
+          {
+            "part": "roof",
+            "color": "#d7a72b",
+            "finish": "base::gloss",
+            "materialKeys": [],
+            "materialText": []
+          }
+        ]
+      },
+      "edit": null,
+      "compiled": null,
+      "route": "edit",
+      "parts": [
+        "hood",
+        "roof"
+      ],
+      "duplicateParts": false,
+      "exactPartSet": true,
+      "queuedCount": 2,
+      "reply": "Done — added a layered look (bottom to top: matte blue hood, then gloss gold roof) on the hood and the roof. Your numbers and sponsors are untouched.\nNEXT: Make it thinner | Make it a different colour | Undo",
+      "error": "",
+      "preservationAsk": false,
+      "full": true,
+      "unsafe": false,
+      "rawQueue": [
+        {
+          "kind": "add",
+          "spec": {
+            "name": "Matte blue hood",
+            "finish": "base::matte",
+            "color": "#1450b4",
+            "region": {
+              "part": "hood"
+            }
+          }
+        },
+        {
+          "kind": "add",
+          "spec": {
+            "name": "Gloss gold roof",
+            "finish": "base::gloss",
+            "color": "#d7a72b",
+            "region": {
+              "part": "roof"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "W14-08",
+      "text": "Apply black matte paint to the entire body, except keep the roof's existing carbon finish.",
+      "expected": "clarify or prove explicit body-minus-roof selection; never silently repaint roof",
+      "compound": null,
+      "edit": {
+        "kind": "ask",
+        "exactPart": false,
+        "unknown": [],
+        "text": "Nothing was changed. I can’t yet guarantee this combined request leaves the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "zones": []
+      },
+      "compiled": null,
+      "route": "ask",
+      "parts": [],
+      "duplicateParts": false,
+      "exactPartSet": false,
+      "queuedCount": 0,
+      "reply": "Nothing was changed. I can’t yet guarantee this combined request leaves the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+      "error": "",
+      "preservationAsk": true,
+      "full": false,
+      "unsafe": false,
+      "rawQueue": []
+    },
+    {
+      "id": "W14-09",
+      "text": "Change the whole car to gloss red while leaving the hood exactly as it is.",
+      "expected": "clarify or prove explicit whole-body exclusion for hood; no implicit whole-car zone",
+      "compound": null,
+      "edit": {
+        "kind": "ask",
+        "exactPart": false,
+        "unknown": [],
+        "text": "Nothing was changed. I can’t yet guarantee this combined request leaves the hood unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "zones": []
+      },
+      "compiled": null,
+      "route": "ask",
+      "parts": [],
+      "duplicateParts": false,
+      "exactPartSet": false,
+      "queuedCount": 0,
+      "reply": "Nothing was changed. I can’t yet guarantee this combined request leaves the hood unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+      "error": "",
+      "preservationAsk": true,
+      "full": false,
+      "unsafe": false,
+      "rawQueue": []
+    },
+    {
+      "id": "W14-10",
+      "text": "Add pearl flakes to the existing hood without changing its color or finish.",
+      "expected": "texture-only overlay on hood if supported; otherwise truthful ask and no queue",
+      "compound": null,
+      "edit": null,
+      "compiled": null,
+      "route": "ask",
+      "parts": [],
+      "duplicateParts": false,
+      "exactPartSet": false,
+      "queuedCount": 0,
+      "reply": "I do not know a look called “pearl flakes existing without changing color or” without the AI. I can do colours, stripes, themes (try “Mexican flag”, “Gulf style”), shine looks (chrome, matte, satin, candy, pearl, metal flake) and finishes like carbon fiber, camo, flames, galaxy or holographic.",
+      "error": "",
+      "preservationAsk": true,
+      "full": false,
+      "unsafe": false,
+      "rawQueue": []
+    },
+    {
+      "id": "W14-11",
+      "text": "Make the roof matte black with a gold carbon-weave overlay, but keep its current paint color.",
+      "expected": "clarify conflicting matte-black base and keep-current-color constraints; no partial queue",
+      "compound": null,
+      "edit": null,
+      "compiled": null,
+      "route": "ask",
+      "parts": [],
+      "duplicateParts": false,
+      "exactPartSet": false,
+      "queuedCount": 0,
+      "reply": "I do not know a look called “carbon weave overlay but keep current color” without the AI. I can do colours, stripes, themes (try “Mexican flag”, “Gulf style”), shine looks (chrome, matte, satin, candy, pearl, metal flake) and finishes like carbon fiber, camo, flames, galaxy or holographic.",
+      "error": "",
+      "preservationAsk": true,
+      "full": false,
+      "unsafe": false,
+      "rawQueue": []
+    },
+    {
+      "id": "W14-12",
+      "text": "Make only the right side blue and add a silver stripe across the hood.",
+      "expected": "complete independent side recolor and hood stripe, or ask without partially applying either action",
+      "compound": null,
+      "edit": {
+        "kind": "ops",
+        "exactPart": false,
+        "unknown": [
+          "across"
+        ],
+        "text": "make only the right side blue and add a silver stripes across the hood",
+        "zones": [
+          {
+            "part": "right side",
+            "color": "#1450b4",
+            "finish": null,
+            "materialKeys": [],
+            "materialText": []
+          },
+          {
+            "part": "stripes",
+            "color": "#c3c7cc",
+            "finish": null,
+            "materialKeys": [],
+            "materialText": []
+          }
+        ]
+      },
+      "compiled": {
+        "kind": null,
+        "exactPart": false,
+        "unknown": [],
+        "text": "",
+        "zones": [
+          {
+            "part": "right side",
+            "color": "#1450b4",
+            "finish": "base::gloss",
+            "materialKeys": [],
+            "materialText": []
+          }
+        ]
+      },
+      "route": "ask",
+      "parts": [],
+      "duplicateParts": false,
+      "exactPartSet": false,
+      "queuedCount": 0,
+      "reply": "Nothing was changed. Which colour are the stripes? I can see black (52%), yellow (22%), white (14%), royal blue (5%).",
+      "error": "",
+      "preservationAsk": true,
+      "full": false,
+      "unsafe": false,
+      "rawQueue": []
+    },
+    {
+      "id": "W14-13",
+      "text": "Give the hood a satin gold base with pearl flakes, and add a chrome pinstripe along the roof.",
+      "expected": "complete hood stack plus roof pinstripe, or ask without dropping a requested action",
+      "compound": null,
+      "edit": {
+        "kind": "ops",
+        "exactPart": false,
+        "unknown": [],
+        "text": "give the hood a satin gold base with pearl flake and add a chrome pinstripe along the roof",
+        "zones": [
+          {
+            "part": "hood",
+            "color": "#d7a72b",
+            "finish": "metallic",
+            "materialKeys": [],
+            "materialText": [
+              "flake",
+              "flake",
+              "flake",
+              "clearcoat"
+            ]
+          },
+          {
+            "part": "pinstripe",
+            "color": null,
+            "finish": "chrome",
+            "materialKeys": [],
+            "materialText": [
+              "pinstripe"
+            ]
+          }
+        ]
+      },
+      "compiled": {
+        "kind": null,
+        "exactPart": false,
+        "unknown": [],
+        "text": "",
+        "zones": [
+          {
+            "part": "hood",
+            "color": "#d7a72b",
+            "finish": "base::f_metallic",
+            "materialKeys": [],
+            "materialText": [
+              "clearcoat"
+            ]
+          }
+        ]
+      },
+      "route": "ask",
+      "parts": [],
+      "duplicateParts": false,
+      "exactPartSet": false,
+      "queuedCount": 0,
+      "reply": "Nothing was changed. Which colour are the pinstripe? I can see black (52%), yellow (22%), white (14%), royal blue (5%).",
+      "error": "",
+      "preservationAsk": true,
+      "full": false,
+      "unsafe": false,
+      "rawQueue": []
+    },
+    {
+      "id": "W14-14",
+      "text": "Add a gloss clearcoat to the current matte black roof while keeping the black paint.",
+      "expected": "roof clearcoat/material-channel operation preserving black base, or truthful ask with no queue",
+      "compound": null,
+      "edit": {
+        "kind": "ops",
+        "exactPart": false,
+        "unknown": [
+          "keeping"
+        ],
+        "text": "add a gloss clearcoat to the current matte black roof while keeping the black paint",
+        "zones": [
+          {
+            "part": "roof",
+            "color": null,
+            "finish": "matte",
+            "materialKeys": [],
+            "materialText": [
+              "clearcoat"
+            ]
+          },
+          {
+            "part": "black",
+            "color": null,
+            "finish": null,
+            "materialKeys": [],
+            "materialText": []
+          }
+        ]
+      },
+      "compiled": {
+        "kind": null,
+        "exactPart": false,
+        "unknown": [],
+        "text": "",
+        "zones": [
+          {
+            "part": "roof",
+            "color": "source",
+            "finish": "base::f_soft_matte",
+            "materialKeys": [],
+            "materialText": [
+              "clearcoat"
+            ]
+          }
+        ]
+      },
+      "route": "ask",
+      "parts": [],
+      "duplicateParts": false,
+      "exactPartSet": false,
+      "queuedCount": 0,
+      "reply": "Nothing was changed. I do not know a look called “keeping”. Here is what I can do to the black (52% of the car):",
+      "error": "",
+      "preservationAsk": true,
+      "full": false,
+      "unsafe": false,
+      "rawQueue": []
+    },
+    {
+      "id": "W14-KNOWN",
+      "text": "Make only the hood matte black base with silver pearl flakes on top.",
+      "expected": "complete hood matte-black base plus silver pearl-flake overlay, or truthful ask without applying only the base",
+      "compound": {
+        "kind": "compound",
+        "exactPart": false,
+        "unknown": [],
+        "text": "",
+        "zones": [
+          {
+            "part": "hood",
+            "color": "#111113",
+            "finish": "base::matte",
+            "materialKeys": [
+              "spec_patterns"
+            ],
+            "materialText": [
+              "pearl",
+              "flake",
+              "pearl"
+            ]
+          }
+        ]
+      },
+      "edit": null,
+      "compiled": null,
+      "route": "edit",
+      "parts": [
+        "hood"
+      ],
+      "duplicateParts": false,
+      "exactPartSet": true,
+      "queuedCount": 1,
+      "reply": "Done — added a layered look (base and texture together on hood) on the hood. Your numbers and sponsors are untouched.\nNEXT: Make it thinner | Make it a different colour | Undo",
+      "error": "",
+      "preservationAsk": false,
+      "full": true,
+      "unsafe": false,
+      "rawQueue": [
+        {
+          "kind": "add",
+          "spec": {
+            "name": "Matte black pearl flakes hood",
+            "finish": "base::matte",
+            "color": "#111113",
+            "region": {
+              "part": "hood"
+            },
+            "spec_patterns": [
+              {
+                "id": "pearl_micro",
+                "opacity": 70,
+                "scale": 1
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "source_hotspots": [
+    {
+      "file": "js/spb-pro-design.js",
+      "line": 280,
+      "note": "offlineSpec recognizes spec-only looks; it relies on compoundPlan(text) to decline compound requests before making a spec-only plan."
+    },
+    {
+      "file": "js/spb-pro-design.js",
+      "line": 678,
+      "note": "compoundPlan returns null for W14-11 even though it contains multiple/conflicting paint/material instructions."
+    },
+    {
+      "file": "js/spb-pro-ai.js",
+      "line": 985,
+      "note": "offlineSpecAsk applies each parsed spec zone; W14-11 reaches this path with only the matte look extracted and the black/carbon-weave/preserve-color clauses omitted."
+    },
+    {
+      "file": "js/spb-pro-ai.js",
+      "line": 1904,
+      "note": "offlineAskCore falls through to the compound/edit/looks routes after the compound planner misses W14-11."
+    }
+  ],
+  "external_post_freeze_observation": {
+    "credit": "Parent-reported native gen2 case only; not part of the frozen oracle and not executed by this reviewer.",
+    "request": "Make only the roof chrome and keep its red paint color.",
+    "observed_by_parent": "Added a Chrome Cross Colors roof zone with a Cross Colors pattern (7 total zones and a new UUID) instead of editing the existing six-zone/UUID owner with chrome only.",
+    "expected": "Reuse the existing roof owner; preserve red paint and add only chrome finish, with no new pattern or zone."
+  },
+  "next_fixes": [
+    "Current-finish roof/hood color-only requests should remain editable while preserving the owned finish; record preservation in the edit rather than broadening to a repaint."
+  ],
+  "limits": [
+    "No renderer, provider, native application, or browser was run. The real planner, editor compiler, and offline route were invoked; queue handlers are mocks, so route queue output is not a rendered or applied paint.",
+    "A safe ask/no queue is recorded as incomplete support, not as successful stack accuracy.",
+    "Unknown arbitrary graphic artwork is not considered complete unless the actual queue fully represents every requested action."
+  ]
+}

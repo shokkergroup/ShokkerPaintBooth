@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_1157262.tga",
+  "inspection_records": "_smart_tga_runs/cycle711_fresh_dlm_active_pool/inspection_records.json",
+  "review_scope": "Untouched Cycle 712 holdout; source, complete owner sheets, and proposal crops reviewed after model freeze.",
+  "evaluation_role": "untouched_cross_owner_holdout",
+  "component_labels": [
+    {"layer":"numbers","component_index":5,"expected_bbox":[692,506,96,138],"target_layer":"paint","label":"valvoline_livery_false_number"},
+    {"layer":"numbers","component_index":6,"expected_bbox":[319,768,72,46],"target_layer":"numbers","label":"true_number_5_copy"},
+    {"layer":"numbers","component_index":7,"expected_bbox":[809,793,52,73],"target_layer":"numbers","label":"true_number_5_rotated_copy"},
+    {"layer":"sponsors","component_index":8,"expected_bbox":[345,240,77,48],"target_layer":"numbers","label":"true_number_5_copy"},
+    {"layer":"sponsors","component_index":33,"expected_bbox":[792,913,69,73],"target_layer":"sponsors","label":"sponsor_bradshaw_logo_false_number"},
+    {"layer":"sponsors","component_index":35,"expected_bbox":[907,949,35,36],"target_layer":"sponsors","label":"sponsor_lion_logo_false_number"}
+  ]
+}

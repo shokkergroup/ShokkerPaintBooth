@@ -48,6 +48,63 @@ def _lru_put(cache, key, value, max_size):
         cache.popitem(last=False)
 
 
+def _opaque_pattern_photo_like(lum: np.ndarray, abs_path: str) -> bool:
+    """Detect continuous-tone / photo-style opaque art (surf/skate collages, scans).
+
+    Those assets need a **gentle** mask curve. Sparse ink-on-black masks need the
+    aggressive POP hardening path instead. Transparent PNGs bypass this entirely.
+    """
+    ext = os.path.splitext(abs_path)[1].lower()
+    if ext in (".jpg", ".jpeg"):
+        return True
+    x = np.asarray(lum, dtype=np.float64).ravel()
+    if x.size < 256:
+        return False
+    p05, p95 = np.percentile(x, (5.0, 95.0))
+    spread = float(p95 - p05) + 1e-9
+    lo, hi = p05 + 0.12 * spread, p95 - 0.12 * spread
+    central = float(np.mean((x >= lo) & (x <= hi)))
+    # Photos: wide tonal spread with lots of interior values; line-art masks sit on
+    # near-black plate with thin bright strokes → low ``central``.
+    return bool(spread > 0.30 and central > 0.26)
+
+
+def _pattern_light_bg(lum: np.ndarray):
+    """Detect a dark-on-LIGHT pattern plate and return ``(bg_lum, is_light_bg)``.
+
+    ``is_light_bg`` is True when the art is line-art / a stencil drawn on a light (white-ish)
+    background — the case the engine's "light ink on a BLACK plate" convention inverts.
+    Signals combined (all must hold), chosen to fire on dense stencils (mosaic, fleur-de-lis)
+    yet stay quiet on photos and on the dark-plate art that already renders correctly:
+
+      * a bright reference level (95th-pct luma) above 0.60 — there is real "paper",
+      * the bright extreme dominates the dark extreme (more paper than ink),
+      * the border frame is predominantly light — the background, not the subject.
+
+    ``bg_lum`` is that bright reference, used by callers as the key-out level so the DESIGN
+    (darker ink) becomes the opaque, overlay-fillable mask. Dark-background plates return
+    ``is_light_bg=False`` and are left on the original luminance path untouched.
+
+    Pattern transparency fix (2026-05-31): see ``_load_color_image_pattern`` /
+    ``_load_image_pattern``. Dark-on-white plates were filling the whole zone with their
+    background while the design read blank.
+    """
+    if lum.ndim != 2 or lum.size < 256:
+        return 1.0, False
+    bg_lum = float(np.percentile(lum, 95.0))
+    frac_hi = float(np.mean(lum > 0.80))
+    frac_lo = float(np.mean(lum < 0.20))
+    border = np.concatenate([lum[0, :], lum[-1, :], lum[:, 0], lum[:, -1]])
+    border_light_frac = float(np.mean(border > 0.55))
+    is_light_bg = (
+        bg_lum > 0.60
+        and frac_hi >= 0.12
+        and frac_hi > frac_lo
+        and border_light_frac >= 0.55
+    )
+    return bg_lum, is_light_bg
+
+
 def _resize_image_pattern(arr, target_h, target_w):
     """Resize pattern array to target size using LANCZOS for better car-render quality."""
     if arr.shape[0] == target_h and arr.shape[1] == target_w:
@@ -59,6 +116,18 @@ def _resize_image_pattern(arr, target_h, target_w):
     resized = img.resize((target_w, target_h), Image.LANCZOS)
     out = np.array(resized).astype(np.float32) / 255.0
     return (out * rng + mn).astype(np.float32)
+
+
+def _open_pattern_rgba(abs_path, target_h, target_w):
+    """Open a pattern image, using decoder downsampling when the source is huge."""
+    img = Image.open(abs_path)
+    try:
+        src_w, src_h = img.size
+        if src_w >= target_w and src_h >= target_h and (src_w > target_w * 2 or src_h > target_h * 2):
+            img.draft("RGBA", (target_w, target_h))
+    except Exception:
+        pass
+    return img.convert("RGBA")
 
 
 def _get_pattern_root():
@@ -78,8 +147,9 @@ def _load_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
     If missing, falls back to assets/patterns/_placeholders/<stem>_placeholder.png.
     Two-tier cache: Tier 1 caches raw decoded array (avoids disk I/O); Tier 2 caches
     transformed result keyed by (abs_path, h, w, scale, rot). Returns None on failure.
-    Opaque images with low luminance spread get a contrast boost so Pattern-Reactive
-    (and pattern_vivid) show clear diversity, like patterns that have transparency."""
+    Opaque **mask-style** PNGs (sparse ink on black) get contrast hardening for Pattern POP.
+    Opaque **photo-like** JPEG/PNG collages use a gentler curve (see ``_opaque_pattern_photo_like``).
+    """
     if not image_path or not isinstance(shape, (tuple, list)) or len(shape) < 2:
         return None
     root = _get_pattern_root()
@@ -108,11 +178,18 @@ def _load_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
         # Tier 1 check — raw decoded float32 array (avoids disk I/O and PIL decode) (LRU)
         raw_key = (abs_path,)
         cached_t1 = _lru_get(_image_pattern_cache_raw, raw_key)
+        opaque_photo_like = False
         if cached_t1 is not None:
-            arr, has_transparency = cached_t1
+            if len(cached_t1) == 3:
+                arr, has_transparency, opaque_photo_like = cached_t1
+            else:
+                arr, has_transparency = cached_t1
+                opaque_photo_like = (not has_transparency) and _opaque_pattern_photo_like(
+                    arr, abs_path
+                )
             arr = arr.copy()  # Don't mutate cached raw
         else:
-            img_rgba = Image.open(abs_path).convert("RGBA")
+            img_rgba = _open_pattern_rgba(abs_path, h, w)
             rgba = np.array(img_rgba, dtype=np.float32) / 255.0
             rgb = rgba[:, :, :3]
             alpha = rgba[:, :, 3]
@@ -124,11 +201,25 @@ def _load_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
             if has_transparency:
                 arr = np.clip(np.maximum(lum, alpha), 0.0, 1.0).astype(np.float32)
             else:
-                arr = lum
+                # Opaque plate: coverage = luminance assumes a BLACK background (light ink ->
+                # high coverage). For DARK-on-WHITE stencils that inverts (the white bg fills
+                # the zone). Detect a dominant light flat background and flip so the design
+                # carries the coverage. Mirrors _load_color_image_pattern's alpha fix (2026-05-31).
+                _bg_lum, _is_light_bg = _pattern_light_bg(lum)
+                if _is_light_bg:
+                    arr = np.clip((_bg_lum - lum) * (1.0 / max(_bg_lum, 1e-3)), 0.0, 1.0).astype(np.float32)
+                else:
+                    arr = lum
             if arr.ndim != 2:
                 return None
+            opaque_photo_like = (not has_transparency) and _opaque_pattern_photo_like(arr, abs_path)
             # Store raw decoded array in Tier 1 cache (LRU)
-            _lru_put(_image_pattern_cache_raw, raw_key, (arr, has_transparency), _IMAGE_CACHE_MAX_TIER1)
+            _lru_put(
+                _image_pattern_cache_raw,
+                raw_key,
+                (arr, has_transparency, opaque_photo_like),
+                _IMAGE_CACHE_MAX_TIER1,
+            )
             arr = arr.copy()  # Work on a copy from here on
 
         ih, iw = arr.shape[0], arr.shape[1]
@@ -168,16 +259,20 @@ def _load_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
             arr = (arr - pmin) / (pmax - pmin)
         else:
             arr = np.zeros_like(arr)
-        # For opaque images (no alpha): harden mask so dark background -> 0, light pattern -> 1,
-        # matching transparent PNGs (Biomechanical-style). Ensures PATTERN POP + HARDEN only color the pattern.
+        # For opaque images (no alpha): mask-style art gets hard POP hardening; photos / collages
+        # get a gentle path so surf-skate JPEGs are not posterized into "clown camo".
         if not has_transparency:
-            arr = np.clip((arr.astype(np.float32) - 0.25) / 0.5, 0.0, 1.0).astype(np.float32)
-        # For opaque images with low luminance spread, boost contrast so Pattern-Reactive
-        # gets clear light/dark areas (like Biomechanical/Optical Illusion with transparency).
-        if not has_transparency:
-            std = float(np.std(arr))
-            if std < 0.28:
-                arr = np.clip((arr - 0.5) * 1.8 + 0.5, 0.0, 1.0).astype(np.float32)
+            if opaque_photo_like:
+                std = float(np.std(arr))
+                if std < 0.20:
+                    arr = np.clip((arr.astype(np.float32) - 0.5) * 1.28 + 0.5, 0.0, 1.0).astype(
+                        np.float32
+                    )
+            else:
+                arr = np.clip((arr.astype(np.float32) - 0.25) / 0.5, 0.0, 1.0).astype(np.float32)
+                std = float(np.std(arr))
+                if std < 0.28:
+                    arr = np.clip((arr - 0.5) * 1.8 + 0.5, 0.0, 1.0).astype(np.float32)
         # Store in Tier 2 cache (LRU)
         result = arr.astype(np.float32)
         _lru_put(_image_pattern_cache, cache_key, result, _IMAGE_CACHE_MAX_TIER2)
@@ -185,7 +280,7 @@ def _load_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
     except Exception:
         return None
 
-def _load_color_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
+def _load_color_image_pattern(image_path, shape, scale=1.0, rotation=0.0, preserve_alpha=False):
     """Load PNG/JPG pattern from image_path and retain RGB colors. Returns (H,W,4) float32 0-1 RGBA array."""
     if not image_path or not isinstance(shape, (tuple, list)) or len(shape) < 2:
         return None
@@ -197,13 +292,13 @@ def _load_color_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
     h, w = int(shape[0]), int(shape[1])
     use_scale = max(0.1, min(10.0, float(scale)))
     use_rot = float(rotation) % 360.0
-    cache_key = (abs_path, h, w, use_scale, use_rot, "color")
+    cache_key = (abs_path, h, w, use_scale, use_rot, "color", bool(preserve_alpha))
     cached_color = _lru_get(_image_pattern_cache, cache_key)
     if cached_color is not None:
         return cached_color
         
     try:
-        img_rgba = Image.open(abs_path).convert("RGBA")
+        img_rgba = _open_pattern_rgba(abs_path, h, w)
         rgba = np.array(img_rgba, dtype=np.float32) / 255.0
 
         ih, iw = rgba.shape[0], rgba.shape[1]
@@ -242,9 +337,14 @@ def _load_color_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
             rgba = cv2.resize(rgba, (w, h), interpolation=cv2.INTER_LINEAR)
         
         if abs(use_rot) > 0.5:
-            from engine.core import _rotate_single_array
-            for ch in range(4):
-                rgba[:, :, ch] = _rotate_single_array(rgba[:, :, ch], use_rot, (h, w))
+            if preserve_alpha:
+                matrix = cv2.getRotationMatrix2D((w / 2., h / 2.), use_rot, 1.)
+                rgba = cv2.warpAffine(rgba, matrix, (w, h), flags=cv2.INTER_LINEAR,
+                                      borderMode=cv2.BORDER_WRAP)
+            else:
+                from engine.core import _rotate_single_array
+                for ch in range(4):
+                    rgba[:, :, ch] = _rotate_single_array(rgba[:, :, ch], use_rot, (h, w))
         
         # Alpha handling for image patterns:
         # - If fully opaque source: synthesize alpha from luminance (black -> transparent).
@@ -252,8 +352,20 @@ def _load_color_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
         #   so dark baked backgrounds (e.g. Biomechanical-style plates) don't sit on top of the base.
         alpha = rgba[:, :, 3]
         lum = 0.299 * rgba[:, :, 0] + 0.587 * rgba[:, :, 1] + 0.114 * rgba[:, :, 2]
-        if float(alpha.min()) > 0.999:  # No transparency in image
-            rgba[:, :, 3] = np.clip(lum * 1.5, 0, 1)
+        if preserve_alpha:
+            pass  # Authored RGBA for full paint overlays; never erase dark/light ink.
+        elif float(alpha.min()) > 0.999:  # No transparency in image -> synthesize alpha
+            # Original convention: light ink on a BLACK plate (black -> transparent via lum).
+            # Pattern transparency fix (2026-05-31): many cultural/geometric plates (e.g.
+            # aztec_alt1.jpg) are drawn DARK-on-WHITE. Under the black-plate assumption their
+            # white background went fully opaque (zone fills with white, design reads blank).
+            # Detect a dominant LIGHT flat background and key it out so the DESIGN becomes the
+            # opaque, overlay-fillable mask. Dark-background plates are untouched.
+            bg_lum, is_light_bg = _pattern_light_bg(lum)
+            if is_light_bg:
+                rgba[:, :, 3] = np.clip((bg_lum - lum) * (1.5 / max(bg_lum, 1e-3)), 0.0, 1.0)
+            else:
+                rgba[:, :, 3] = np.clip(lum * 1.5, 0, 1)
         elif "patternexamples" in image_path.replace("\\", "/").lower():
             # Soft black-key: keep details, but remove deep black backing.
             dark_key = np.clip((lum - 0.08) / 0.35, 0.0, 1.0).astype(np.float32)
@@ -298,12 +410,23 @@ def _get_grad_direction(finish_id):
 
 
 def _generic_grad_spec(shape, mask, seed, sm):
-    """Generic gradient spec: moderate metallic, low roughness, clearcoat."""
-    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
-    spec[:, :, 0] = np.clip(80 * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(40 * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = 16
-    spec[:, :, 3] = 255
+    """Generic gradient spec with fine interference detail for extended gradients."""
+    h, w = shape
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    xf = x / max(w - 1, 1)
+    yf = y / max(h - 1, 1)
+    phase = (int(seed) % 997) * 0.017
+    silk = (
+        np.sin((xf * 37.0 + yf * 23.0 + phase) * np.pi) * 0.45
+        + np.sin((xf * 91.0 - yf * 67.0 + phase * 1.7) * np.pi) * 0.30
+        + np.sin((xf * 173.0 + yf * 151.0 + phase * 0.6) * np.pi) * 0.15
+    )
+    ridge = np.clip(1.0 - np.abs(np.sin((xf * 51.0 - yf * 39.0 + phase) * np.pi)) * 28.0, 0.0, 1.0)
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    spec[:, :, 0] = np.clip((88 + silk * 34 + ridge * 56) * mask * sm + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip((46 - ridge * 18 + silk * 8) * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip((16 + ridge * 14 + (silk + 1.0) * 4) * mask, 16, 255).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 
@@ -334,11 +457,42 @@ def _generic_solid_spec_fn(shape, mask, seed, sm, mat_key):
     return spec
 
 
-def _apply_generic_gradient(paint, shape, mask, c1, c2, direction, seed, pm, bb, mirror=False, rotation=0):
-    """Apply a 2-color gradient to paint. Zone-aware: maps gradient to zone bbox."""
+def _generic_transformed_uv(xf, yf, base_scale=1.0, base_offset_x=0.5, base_offset_y=0.5, base_flip_h=False, base_flip_v=False):
+    use_scale = max(0.01, min(10.0, float(base_scale if base_scale is not None else 1.0)))
+    ox = max(0.0, min(1.0, float(base_offset_x if base_offset_x is not None else 0.5)))
+    oy = max(0.0, min(1.0, float(base_offset_y if base_offset_y is not None else 0.5)))
+    xft = 1.0 - xf if base_flip_h else xf
+    yft = 1.0 - yf if base_flip_v else yf
+    xft = (xft - ox) * use_scale + 0.5
+    yft = (yft - oy) * use_scale + 0.5
+    return xft.astype(np.float32, copy=False), yft.astype(np.float32, copy=False), use_scale
+
+
+def _generic_direction_t(xf, yf, direction, rotation):
+    if direction == 'horizontal':
+        base_angle = 90.0
+    elif direction == 'diagonal':
+        base_angle = 45.0
+    else:
+        base_angle = 0.0
+    total_angle = base_angle + float(rotation)
+    rad = np.deg2rad(total_angle)
+    cs = float(np.cos(rad))
+    sn = float(np.sin(rad))
+    span = max(1e-6, abs(cs) + abs(sn))
+    t = (cs * (yf - 0.5) + sn * (xf - 0.5)) / span + 0.5
+    return t.astype(np.float32, copy=False)
+
+
+def _apply_generic_gradient(
+    paint, shape, mask, c1, c2, direction, seed, pm, bb, mirror=False,
+    rotation=0, base_scale=1.0, base_offset_x=0.5, base_offset_y=0.5,
+    base_flip_h=False, base_flip_v=False,
+):
+    """Apply a 2-color gradient to paint. Zone-aware with fine interference detail."""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    blend = 0.85 * pm
+    blend = 0.90 * pm
     y, x = np.mgrid[0:h, 0:w]
     rows_active = np.any(mask > 0.1, axis=1)
     cols_active = np.any(mask > 0.1, axis=0)
@@ -352,40 +506,47 @@ def _apply_generic_gradient(paint, shape, mask, c1, c2, direction, seed, pm, bb,
         bbox_h, bbox_w = h, w
     yf = (y.astype(np.float32) - r_min) / max(bbox_h - 1, 1)
     xf = (x.astype(np.float32) - c_min) / max(bbox_w - 1, 1)
+    xf_s, yf_s, use_scale = _generic_transformed_uv(
+        xf, yf, base_scale, base_offset_x, base_offset_y, base_flip_h, base_flip_v
+    )
+    phase = (int(seed) % 1543) * 0.013
+    warp = (
+        np.sin((xf_s * 9.0 + yf_s * 5.0 + phase) * np.pi) * 0.035
+        + np.sin((xf_s * 31.0 - yf_s * 17.0 + phase * 1.7) * np.pi) * 0.020
+        + np.sin((xf_s * 89.0 + yf_s * 71.0 + phase * 0.6) * np.pi) * 0.010
+    ).astype(np.float32)
     if direction == 'radial':
         cx, cy = 0.5, 0.5
-        dist = np.sqrt((xf - cx) ** 2 + (yf - cy) ** 2) * 1.414
-        t = np.clip(dist, 0, 1)
+        dist = np.sqrt((xf_s - cx) ** 2 + (yf_s - cy) ** 2) * 1.414
+        angle = np.arctan2(yf_s - cy, xf_s - cx)
+        spiral = np.sin((dist * 16.0 + angle * 2.8 + phase) * np.pi) * 0.055
+        t = np.clip(dist + spiral + warp, 0, 1)
     else:
-        if direction == 'horizontal':
-            base_angle = 90.0
-        elif direction == 'diagonal':
-            base_angle = 45.0
-        else:
-            base_angle = 0.0
-        total_angle = base_angle + float(rotation)
-        rad = np.deg2rad(total_angle)
-        t = np.cos(rad) * yf + np.sin(rad) * xf
-        t_min, t_max = t.min(), t.max()
-        if t_max - t_min > 1e-6:
-            t = (t - t_min) / (t_max - t_min)
-        else:
-            t = np.zeros_like(t)
+        t = _generic_direction_t(xf_s, yf_s, direction, rotation)
+        contour = np.sin((t * 34.0 + xf_s * 2.0 - yf_s * 1.4 + phase) * np.pi) * 0.030
+        t = np.clip(t + warp + contour, 0, 1)
     if mirror:
         t = np.where(t < 0.5, t * 2, (1 - t) * 2)
+    ribbon = np.clip(1.0 - np.abs(np.sin((t * 22.0 + xf_s * 3.0 - yf_s * 2.0 + phase) * np.pi)) * 34.0, 0.0, 1.0)
+    micro = np.sin((xf_s * 157.0 - yf_s * 131.0 + phase * 2.1) * np.pi) * 0.018
     r = c1[0] + (c2[0] - c1[0]) * t
     g = c1[1] + (c2[1] - c1[1]) * t
     b = c1[2] + (c2[2] - c1[2]) * t
-    r += bb
-    g += bb
-    b += bb
+    highlight = ribbon * 0.105 + micro
+    r = r + bb + highlight
+    g = g + bb + highlight * 0.90
+    b = b + bb + highlight * 1.08
     paint[:, :, 0] = np.clip(paint[:, :, 0] * (1 - mask * blend) + r * mask * blend, 0, 1)
     paint[:, :, 1] = np.clip(paint[:, :, 1] * (1 - mask * blend) + g * mask * blend, 0, 1)
     paint[:, :, 2] = np.clip(paint[:, :, 2] * (1 - mask * blend) + b * mask * blend, 0, 1)
     return paint
 
 
-def _apply_generic_3color_gradient(paint, shape, mask, c1, c2, c3, direction, seed, pm, bb, rotation=0):
+def _apply_generic_3color_gradient(
+    paint, shape, mask, c1, c2, c3, direction, seed, pm, bb,
+    rotation=0, base_scale=1.0, base_offset_x=0.5, base_offset_y=0.5,
+    base_flip_h=False, base_flip_v=False,
+):
     """Apply a 3-color gradient (c1 -> c2 -> c3). Zone-aware: maps to zone bbox."""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
@@ -403,20 +564,10 @@ def _apply_generic_3color_gradient(paint, shape, mask, c1, c2, c3, direction, se
         bbox_h, bbox_w = h, w
     yf = (y.astype(np.float32) - r_min) / max(bbox_h - 1, 1)
     xf = (x.astype(np.float32) - c_min) / max(bbox_w - 1, 1)
-    if direction == 'horizontal':
-        base_angle = 90.0
-    elif direction == 'diagonal':
-        base_angle = 45.0
-    else:
-        base_angle = 0.0
-    total_angle = base_angle + float(rotation)
-    rad = np.deg2rad(total_angle)
-    t = np.cos(rad) * yf + np.sin(rad) * xf
-    t_min, t_max = t.min(), t.max()
-    if t_max - t_min > 1e-6:
-        t = (t - t_min) / (t_max - t_min)
-    else:
-        t = np.zeros_like(t)
+    xf_s, yf_s, _use_scale = _generic_transformed_uv(
+        xf, yf, base_scale, base_offset_x, base_offset_y, base_flip_h, base_flip_v
+    )
+    t = np.clip(_generic_direction_t(xf_s, yf_s, direction, rotation), 0, 1)
     seg1 = t < 0.5
     t1 = np.clip(t * 2, 0, 1)
     t2 = np.clip((t - 0.5) * 2, 0, 1)
@@ -475,7 +626,11 @@ def _apply_generic_solid(paint, shape, mask, c1, seed, pm, bb):
     return paint
 
 
-def render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed, sm, pm, bb, rotation=0):
+def render_generic_finish(
+    finish_name, zone, paint, shape, zone_mask, seed, sm, pm, bb,
+    rotation=0, base_scale=1.0, base_offset_x=0.5, base_offset_y=0.5,
+    base_flip_h=False, base_flip_v=False,
+):
     """Generic fallback renderer. Returns (zone_spec, paint) or (None, paint) if can't handle.
     Handles grad_*, gradm_*, grad3_*, ghostg_*, cs_duo_*, clr_*, mc_*.
     """
@@ -489,16 +644,16 @@ def render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed, sm, 
 
     if finish_name.startswith('gradm_'):
         zone_spec = _generic_grad_spec(shape, zone_mask, seed, sm)
-        paint = _apply_generic_gradient(paint, shape, zone_mask, c1, c2, direction, seed, pm, bb, mirror=True, rotation=rotation)
+        paint = _apply_generic_gradient(paint, shape, zone_mask, c1, c2, direction, seed, pm, bb, mirror=True, rotation=rotation, base_scale=base_scale, base_offset_x=base_offset_x, base_offset_y=base_offset_y, base_flip_h=base_flip_h, base_flip_v=base_flip_v)
     elif finish_name.startswith('grad3_'):
         zone_spec = _generic_grad_spec(shape, zone_mask, seed, sm)
         if c3:
-            paint = _apply_generic_3color_gradient(paint, shape, zone_mask, c1, c2, c3, direction, seed, pm, bb, rotation=rotation)
+            paint = _apply_generic_3color_gradient(paint, shape, zone_mask, c1, c2, c3, direction, seed, pm, bb, rotation=rotation, base_scale=base_scale, base_offset_x=base_offset_x, base_offset_y=base_offset_y, base_flip_h=base_flip_h, base_flip_v=base_flip_v)
         else:
-            paint = _apply_generic_gradient(paint, shape, zone_mask, c1, c2, direction, seed, pm, bb, rotation=rotation)
+            paint = _apply_generic_gradient(paint, shape, zone_mask, c1, c2, direction, seed, pm, bb, rotation=rotation, base_scale=base_scale, base_offset_x=base_offset_x, base_offset_y=base_offset_y, base_flip_h=base_flip_h, base_flip_v=base_flip_v)
     elif finish_name.startswith('ghostg_'):
         zone_spec = _generic_grad_spec(shape, zone_mask, seed, sm)
-        paint = _apply_generic_gradient(paint, shape, zone_mask, c1, c2, 'vertical', seed, pm, bb, rotation=rotation)
+        paint = _apply_generic_gradient(paint, shape, zone_mask, c1, c2, 'vertical', seed, pm, bb, rotation=rotation, base_scale=base_scale, base_offset_x=base_offset_x, base_offset_y=base_offset_y, base_flip_h=base_flip_h, base_flip_v=base_flip_v)
         ghost_pat = fc.get("ghost") if fc else None
         applied = False
         if ghost_pat:
@@ -541,7 +696,7 @@ def render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed, sm, 
         paint = _apply_generic_colorshift(paint, shape, zone_mask, c1, c2, seed, pm, bb)
     elif finish_name.startswith('grad_'):
         zone_spec = _generic_grad_spec(shape, zone_mask, seed, sm)
-        paint = _apply_generic_gradient(paint, shape, zone_mask, c1, c2, direction, seed, pm, bb, rotation=rotation)
+        paint = _apply_generic_gradient(paint, shape, zone_mask, c1, c2, direction, seed, pm, bb, rotation=rotation, base_scale=base_scale, base_offset_x=base_offset_x, base_offset_y=base_offset_y, base_flip_h=base_flip_h, base_flip_v=base_flip_v)
     elif finish_name.startswith('clr_'):
         parts = finish_name.split('_')
         mat_key = parts[-1] if len(parts) >= 3 else 'gloss'
@@ -550,12 +705,12 @@ def render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed, sm, 
     elif finish_name.startswith('mc_'):
         zone_spec = _generic_grad_spec(shape, zone_mask, seed, sm)
         if c3:
-            paint = _apply_generic_3color_gradient(paint, shape, zone_mask, c1, c2, c3, direction, seed, pm, bb, rotation=rotation)
+            paint = _apply_generic_3color_gradient(paint, shape, zone_mask, c1, c2, c3, direction, seed, pm, bb, rotation=rotation, base_scale=base_scale, base_offset_x=base_offset_x, base_offset_y=base_offset_y, base_flip_h=base_flip_h, base_flip_v=base_flip_v)
         else:
-            paint = _apply_generic_gradient(paint, shape, zone_mask, c1, c2, direction, seed, pm, bb, rotation=rotation)
+            paint = _apply_generic_gradient(paint, shape, zone_mask, c1, c2, direction, seed, pm, bb, rotation=rotation, base_scale=base_scale, base_offset_x=base_offset_x, base_offset_y=base_offset_y, base_flip_h=base_flip_h, base_flip_v=base_flip_v)
     else:
         zone_spec = _generic_grad_spec(shape, zone_mask, seed, sm)
-        paint = _apply_generic_gradient(paint, shape, zone_mask, c1, c2, direction, seed, pm, bb)
+        paint = _apply_generic_gradient(paint, shape, zone_mask, c1, c2, direction, seed, pm, bb, rotation=rotation, base_scale=base_scale, base_offset_x=base_offset_x, base_offset_y=base_offset_y, base_flip_h=base_flip_h, base_flip_v=base_flip_v)
 
     return zone_spec, paint
 

@@ -1,0 +1,1145 @@
+﻿key,name,groups,evidence,hue_families,M_median,M_span,Rough_median,Rough_span,Cc_median,Cc_span,legacy_m7,protected,fingerprint
+base:astra_janus_blades,Janus Blades,ASTRA,actual HTTP faithful picker response,4,102.0,126.0,136.0,97.0,143.0,195.0,85.9,False,d143a630b4f6
+base:astra_scarlet_undertow,Chromatic Undertow,ASTRA,actual HTTP faithful picker response,6,89.0,138.0,131.0,95.17,145.0,186.0,85.9,False,073624414d3b
+base:astra_cobalt_guillotine,Spectrum Guillotine,ASTRA,actual HTTP faithful picker response,3,169.0,70.0,97.0,92.0,144.0,200.0,85.6,False,c6b185b3d743
+base:astra_chromatic_switchyard,Chromatic Switchyard,ASTRA,actual HTTP faithful picker response,5,125.0,137.0,117.0,111.0,146.0,192.0,85.3,False,80f8bbaa0e7f
+base:astra_ruby_blue_cyclone,Bipolar Cyclone,ASTRA,actual HTTP faithful picker response,2,134.0,109.0,112.0,94.0,152.0,194.0,89.6,False,c5f9e1647143
+base:astra_prism_rebellion,Prism Rebellion,ASTRA,actual HTTP faithful picker response,6,125.0,179.17,117.0,127.0,141.0,197.0,87.5,False,195837eac2e5
+base:astra_redshift_rivets,Dichroic Rivets,ASTRA,actual HTTP faithful picker response,4,130.0,153.0,102.0,132.0,145.0,188.0,86.3,False,729b02da3ddf
+base:astra_blueblood_chevron,Switchblade Chevron,ASTRA,actual HTTP faithful picker response,3,101.0,147.0,133.0,135.17,136.0,201.0,85.9,False,04621290b51f
+base:astra_duality_scales,Duality Scales,ASTRA,actual HTTP faithful picker response,1,130.0,162.0,120.0,151.0,150.0,192.0,84.8,False,720d5bebc060
+base:astra_polarity_lace,Polarity Lace,ASTRA,actual HTTP faithful picker response,2,133.0,146.0,113.0,110.0,147.0,185.0,85.4,False,c4bd6120a8bb
+base:astra_pipeline_royale,Pipeline Royale,ASTRA,actual HTTP faithful picker response,2,84.0,152.0,160.0,166.0,128.0,187.0,91.8,False,d6d26a88333d
+base:astra_reef_cathedral,Reef Cathedral,ASTRA,actual HTTP faithful picker response,3,60.0,127.0,181.0,131.0,148.0,182.0,90.9,False,65753d1f0ec4
+base:astra_tidal_lace,Tidal Lacework,ASTRA,actual HTTP faithful picker response,2,100.0,158.0,92.0,155.0,141.0,183.0,90.1,False,3f0f73a86ec8
+base:astra_surf_wax_ritual,Surf Wax Ritual,ASTRA,actual HTTP faithful picker response,2,146.0,82.17,103.0,144.0,138.0,185.0,89.8,False,7d9af3edaf77
+base:astra_wipeout_paisley,Wipeout Paisley,ASTRA,actual HTTP faithful picker response,4,90.0,157.0,141.0,137.0,121.0,189.0,89.1,False,a62afc0e1a47
+base:astra_kelp_couture,Kelp Couture,ASTRA,actual HTTP faithful picker response,3,136.0,144.0,136.0,137.0,135.0,186.0,90.3,False,68078218b209
+base:astra_boardwalk_pinlines,Boardwalk Pinlines,ASTRA,actual HTTP faithful picker response,3,113.0,115.0,122.0,158.0,144.0,187.0,90.2,False,6bd2be32f783
+base:astra_volcanic_break,Volcanic Break,ASTRA,actual HTTP faithful picker response,3,156.0,142.0,150.0,150.0,133.0,182.0,90.7,False,8fbdd69bb133
+base:astra_abyssal_lanterns,Abyssal Lanterns,ASTRA,actual HTTP faithful picker response,2,90.0,143.0,168.0,175.0,138.0,187.0,90.5,False,b328a9bd7752
+base:astra_sea_glass_confessional,Sea Glass Confessional,ASTRA,actual HTTP faithful picker response,4,110.0,183.0,114.0,165.0,135.0,181.0,88.5,False,521e922c674e
+base:astra_cytokinesis_candy,Cytokinesis Candy,ASTRA,actual HTTP faithful picker response,12,127.0,104.0,141.0,89.0,138.0,105.0,90.2,False,3f03e81dbad1
+base:astra_quantum_petri,Quantum Petri Carnival,ASTRA,actual HTTP faithful picker response,12,129.0,123.0,137.0,85.0,132.0,121.0,90.1,False,f76ed06aca1a
+base:astra_chromosome_riot,Chromosome Riot,ASTRA,actual HTTP faithful picker response,12,126.0,74.0,140.0,75.0,141.0,98.0,90.9,False,3c83d6ee84a8
+base:astra_plasma_sutures,Plasma Sutures,ASTRA,actual HTTP faithful picker response,12,128.0,62.17,139.0,105.0,131.0,81.0,90.4,False,67bc9a0f765d
+base:astra_bismuth_delirium,Bismuth Delirium,ASTRA,actual HTTP faithful picker response,12,138.0,132.17,129.0,106.0,131.0,110.0,89.8,False,73262ab0f206
+base:astra_strange_attractor,Strange Attractor,ASTRA,actual HTTP faithful picker response,9,119.0,70.0,140.0,66.0,128.0,78.0,91.5,False,70f4080ce7ef
+base:astra_neuron_carnival,Neuron Carnival,ASTRA,actual HTTP faithful picker response,12,127.0,96.0,138.0,65.0,132.0,83.0,90.9,False,95300a5b5888
+base:astra_xenobot_orchard,Xenobot Orchard,ASTRA,actual HTTP faithful picker response,12,125.0,110.0,140.0,101.0,145.0,108.0,89.8,False,bf423424bc9b
+base:astra_fermion_foundry,Fermion Foundry,ASTRA,actual HTTP faithful picker response,12,141.0,111.0,129.0,85.0,141.0,100.0,90.4,False,c8fb76165d1a
+base:astra_chromatic_centrifuge,Chromatic Centrifuge,ASTRA,actual HTTP faithful picker response,12,129.0,65.0,137.0,105.0,131.0,89.0,90.8,False,45778d0203cf
+base:astra_causal_origami,Causal Origami,ASTRA,actual HTTP faithful picker response,4,129.0,131.0,134.0,149.0,138.0,190.0,89.5,False,0aa3790f95f1
+base:astra_photonic_switchboard,Photonic Switchboard,ASTRA,actual HTTP faithful picker response,4,100.0,130.0,164.0,148.0,146.0,182.0,93.3,False,66eac2f14d2a
+base:astra_negative_space_engine,Negative Space Engine,ASTRA,actual HTTP faithful picker response,2,133.0,174.0,126.0,176.0,133.0,184.0,92.1,False,442714395904
+base:astra_temporal_braille,Temporal Braille,ASTRA,actual HTTP faithful picker response,5,124.0,110.0,137.0,158.0,138.0,189.0,90.5,False,ab2aeaf29ff4
+base:astra_klein_circuit,Klein Circuit,ASTRA,actual HTTP faithful picker response,4,116.0,132.0,144.0,146.0,133.0,192.0,90.7,False,0cf87e742d2d
+base:astra_auxetic_exoskin,Auxetic Exoskin,ASTRA,actual HTTP faithful picker response,2,120.0,138.0,130.0,145.0,138.0,193.0,90.9,False,9eb56a218fa7
+base:astra_memory_metal_zipper,Memory Metal Zipper,ASTRA,actual HTTP faithful picker response,2,143.0,73.0,123.0,115.0,136.0,184.0,91.8,False,69800b2dd082
+base:astra_orbitless_navigation,Orbitless Navigation,ASTRA,actual HTTP faithful picker response,2,102.0,156.0,147.0,170.0,135.0,183.0,90.8,False,bb3e77c70fa2
+base:astra_tachyon_feather,Tachyon Feather,ASTRA,actual HTTP faithful picker response,2,125.0,140.0,131.0,150.0,139.0,185.0,90.7,False,f5e7d5c42071
+base:astra_programmable_matter,Programmable Matter,ASTRA,actual HTTP faithful picker response,1,147.0,137.0,113.0,154.0,140.0,191.0,89.8,False,8336fe8342e3
+base:astra_event_horizon,Event Horizon,ASTRA,actual HTTP faithful picker response,4,94.0,158.0,150.0,146.0,157.0,130.17,82.4,False,89c1c9be3b37
+base:astra_quasicrystal_crown,Quasicrystal Crown,ASTRA,actual HTTP faithful picker response,0,137.0,106.0,126.0,98.0,128.0,188.0,96.1,False,bb974601ddc6
+base:astra_gravity_loom,Gravity Loom,ASTRA,actual HTTP faithful picker response,5,115.0,135.0,91.0,103.0,126.0,137.0,95.5,False,b6ab71660be2
+base:astra_phoenix_ceramic,Phoenix Ceramic,ASTRA,actual HTTP faithful picker response,5,83.0,136.0,142.0,103.0,116.0,123.0,94.8,False,4bf6eae4dfe2
+base:astra_sovereign_nacre,Sovereign Nacre,ASTRA,actual HTTP faithful picker response,0,125.0,92.0,107.0,94.0,99.0,108.0,82.4,False,02c5727b518b
+base:astra_magnetic_regalia,Magnetic Regalia,ASTRA,actual HTTP faithful picker response,3,81.0,110.0,176.0,86.0,140.0,90.0,85.1,False,4bcfa9183743
+base:astra_meteorite_royal,Meteorite Royal,ASTRA,actual HTTP faithful picker response,1,150.0,93.0,128.0,81.17,140.0,139.17,97.8,False,f969c3315164
+base:astra_cryogenic_bloom,Cryogenic Bloom,ASTRA,actual HTTP faithful picker response,1,69.0,134.0,156.0,126.0,158.0,124.0,92.1,False,b2149a17f128
+base:astra_chronograph_gold,Chronograph Gold,ASTRA,actual HTTP faithful picker response,2,166.0,98.0,115.0,84.0,139.0,95.0,81.5,False,a3fbd08ca9e2
+base:astra_velvet_supernova,Velvet Supernova,ASTRA,actual HTTP faithful picker response,3,67.0,85.17,189.0,87.0,203.0,114.0,97.0,False,58f2023d8422
+base:slt_reticulated,Reticulated Python,🐍 SLITHERIN,actual HTTP faithful picker response,1,69.0,90.0,124.0,52.0,66.0,29.0,,False,e920725b3e0a
+base:slt_diamondback,Diamondback,🐍 SLITHERIN,actual HTTP faithful picker response,1,144.0,91.0,114.0,58.0,61.0,32.0,,False,4f3182083b68
+base:slt_boa_saddle,Boa Saddle,🐍 SLITHERIN,actual HTTP faithful picker response,1,115.0,52.17,101.0,34.0,55.0,18.17,,False,2417c7333388
+base:slt_corn_blotch,Corn Snake Blotch,🐍 SLITHERIN,actual HTTP faithful picker response,2,88.0,99.0,131.0,61.0,66.0,31.0,,False,a3800721cd97
+base:slt_anaconda_oval,Anaconda Oval,🐍 SLITHERIN,actual HTTP faithful picker response,1,106.0,66.0,129.0,45.0,63.0,22.0,,False,81cef412d66c
+base:slt_milk_band,Milk Snake Band,🐍 SLITHERIN,actual HTTP faithful picker response,1,112.0,144.0,98.0,104.0,66.0,60.0,,False,1d91dad445ed
+base:slt_gaboon_geometric,Gaboon Geometric,🐍 SLITHERIN,actual HTTP faithful picker response,1,119.0,148.0,126.0,96.0,63.0,50.0,,False,1896e6244f6b
+base:slt_keeled_viper,Keeled Viper,🐍 SLITHERIN,actual HTTP faithful picker response,1,103.0,47.0,137.0,28.0,56.0,10.0,,False,9084aded95c6
+base:slt_cycloid_gloss,Sea Snake Gloss,🐍 SLITHERIN,actual HTTP faithful picker response,2,78.0,57.0,45.0,20.0,25.0,5.0,,False,07a44838ff24
+base:slt_cobra_hood,Cobra Hood,🐍 SLITHERIN,actual HTTP faithful picker response,1,98.0,52.0,107.0,27.0,58.0,14.0,,False,17bb22ccb603
+base:slt_ventral_scute,Ventral Scute,🐍 SLITHERIN,actual HTTP faithful picker response,0,101.0,77.0,74.0,67.0,48.0,36.0,,False,fbd89713a036
+base:slt_sidewinder_micro,Sidewinder Micro,🐍 SLITHERIN,actual HTTP faithful picker response,1,84.0,24.0,164.0,18.0,77.0,8.0,,False,5d2dd05f781e
+base:slt_wart_tubercle,Wart Snake,🐍 SLITHERIN,actual HTTP faithful picker response,0,38.0,30.0,192.0,30.0,94.0,16.0,,False,b939c2382766
+base:slt_sunbeam_iris,Sunbeam Iridescence,🐍 SLITHERIN,actual HTTP faithful picker response,2,168.0,65.0,70.0,21.0,39.0,9.0,,False,5580d71c496f
+base:slt_shed_ecdysis,Shed Skin,🐍 SLITHERIN,actual HTTP faithful picker response,0,50.0,16.0,139.0,21.0,102.0,19.0,,False,ab407a1a5787
+base:slt_albino_translucent,Albino,🐍 SLITHERIN,actual HTTP faithful picker response,0,51.5,20.0,52.0,22.0,31.0,14.0,,False,8f2dcdc49a45
+base:lsk_return_stroke,Return Stroke,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,0,53.0,184.0,155.0,80.0,84.0,47.0,,False,d02683bbd09e
+base:lsk_lichtenberg,Lichtenberg Burn,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,1,18.0,207.0,120.0,70.0,55.0,30.0,,False,7c7a04ba0db3
+base:lsk_spider_crawl,Spider Crawl,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,1,42.0,184.0,70.0,17.0,66.0,30.0,,False,654847522ed1
+base:lsk_bead,Bead Lightning,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,1,50.0,126.0,75.0,26.0,62.0,18.0,,False,144f0e8779bc
+base:lsk_tesla_streamer,Tesla Streamer,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,2,92.0,135.0,79.0,29.0,63.0,18.0,,False,8449b21fe29a
+base:lsk_plasma_globe,Plasma Globe,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,1,60.0,175.0,80.0,47.0,58.0,25.0,,False,f5232b3e4dc2
+base:lsk_st_elmo,St Elmo's Fire,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,1,22.0,174.0,95.0,41.0,64.0,21.0,,False,22cb13778834
+base:lsk_corona_ring,Corona Ring,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,2,109.0,141.0,78.0,31.0,65.0,16.0,,False,1fd88e5b80d2
+base:lsk_streamer_front,Streamer Front,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,1,45.0,122.0,102.0,33.0,45.0,14.0,,False,ff92bb0d37f0
+base:lsk_sprite,Red Sprite,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,2,50.0,143.0,122.0,46.0,58.0,22.0,,False,2063f1dea8b6
+base:lsk_static_creep,Static Creep,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,1,14.0,177.0,160.0,81.0,70.0,32.0,,False,ddc827475af7
+base:lsk_spark_gap,Spark Gap,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,0,120.0,28.0,70.0,6.0,54.0,4.0,,False,2fb3769061ff
+base:lsk_jacobs_ladder,Jacob's Ladder,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,1,87.0,115.0,58.0,20.0,50.0,16.0,,False,08fd69b30a50
+base:lsk_arc_weld,Arc Weld,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,1,103.0,63.0,135.0,29.0,68.0,12.0,,False,92c3daf29c55
+base:lsk_carbon_track,Carbon Track,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,1,17.0,145.0,185.0,46.0,107.0,48.0,,False,50ce2911cde1
+base:lsk_fulgurite,Fulgurite,⚡ LIGHTNING SHOKK,actual HTTP faithful picker response,0,43.0,60.0,144.0,62.0,76.0,30.0,,False,1613a952e5c2
+base:mul_erlkonig_swirl,Erlkonig Swirl,🕵️ MULE,actual HTTP faithful picker response,0,65.5,88.0,94.0,70.0,56.0,46.0,,False,aadecc9862c8
+base:mul_confusion_blob,Confusion Blob,🕵️ MULE,actual HTTP faithful picker response,0,118.0,148.0,115.0,110.0,63.0,66.0,,False,8e05e4d06bb2
+base:mul_pixel_break,Pixel Break,🕵️ MULE,actual HTTP faithful picker response,0,144.0,152.0,95.0,90.0,69.0,54.0,,False,67ff7126012e
+base:mul_qr_scramble,QR Scramble,🕵️ MULE,actual HTTP faithful picker response,0,111.0,124.0,106.0,104.0,65.0,54.0,,False,0980092088d6
+base:mul_moire_defeat,Moire Defeat,🕵️ MULE,actual HTTP faithful picker response,0,85.0,53.0,87.0,35.0,41.0,20.0,,False,fe405bd5051b
+base:mul_countershade,Countershade,🕵️ MULE,actual HTTP faithful picker response,0,82.0,65.0,79.0,77.0,45.0,56.0,,False,fee86614924b
+base:mul_false_shadow,False Shadow,🕵️ MULE,actual HTTP faithful picker response,0,45.0,24.0,129.0,18.0,74.0,16.0,,False,0ede0cfbcac8
+base:mul_edge_chamfer,Edge Chamfer,🕵️ MULE,actual HTTP faithful picker response,0,63.0,34.0,107.0,31.0,64.0,18.0,,False,f9f42afc8d62
+base:mul_shutline_fake,Fake Shutline,🕵️ MULE,actual HTTP faithful picker response,0,86.0,31.0,81.0,28.0,45.0,19.0,,False,98c0073337b2
+base:mul_wireframe,Wireframe Print,🕵️ MULE,actual HTTP faithful picker response,0,118.0,101.0,111.0,51.0,67.0,34.0,,False,a39b22157dbf
+base:mul_decoy_blackout,Decoy Blackout,🕵️ MULE,actual HTTP faithful picker response,0,44.0,41.0,146.0,58.0,102.0,48.0,,False,75f15c74773f
+base:mul_foam_clad,Foam Cladding,🕵️ MULE,actual HTTP faithful picker response,0,48.0,26.0,166.0,34.0,98.0,33.0,,False,18fca57a8c13
+base:mul_bubble_clad,Bubble Cladding,🕵️ MULE,actual HTTP faithful picker response,0,39.0,42.0,96.0,42.0,84.0,33.0,,False,3273a49c3687
+base:mul_tape_seam,Tape Seam,🕵️ MULE,actual HTTP faithful picker response,0,51.0,45.0,171.0,57.0,98.0,42.0,,False,752c9379ac14
+base:mul_matte_cover,Matte Cover,🕵️ MULE,actual HTTP faithful picker response,0,31.0,20.0,191.0,24.0,140.0,20.0,,False,0b6e17b25bcb
+base:mul_retro_patch,Retro Patch,🕵️ MULE,actual HTTP faithful picker response,0,30.0,56.0,180.0,24.0,90.0,11.0,,False,f051662b3f22
+base:bth_fisheye,Fisheye,🎨 THE BOOTH,actual HTTP faithful picker response,0,75.0,63.0,42.0,93.0,25.0,56.0,,False,13a4442d32a8
+base:bth_solvent_pop,Solvent Pop,🎨 THE BOOTH,actual HTTP faithful picker response,0,65.0,52.0,85.0,139.0,40.0,103.0,,False,975de26e79dd
+base:bth_sag_curtain,Sag Curtain,🎨 THE BOOTH,actual HTTP faithful picker response,0,96.0,44.0,24.0,42.0,30.0,53.0,,False,662541dbb16b
+base:bth_dry_spray,Dry Spray,🎨 THE BOOTH,actual HTTP faithful picker response,0,51.0,60.0,179.0,70.0,100.0,45.0,,False,95919425bab5
+base:bth_mottling,Mottling,🎨 THE BOOTH,actual HTTP faithful picker response,0,185.0,165.0,77.0,41.0,42.0,22.0,,False,916c79e7c6cd
+base:bth_tiger_stripe,Tiger Stripe,🎨 THE BOOTH,actual HTTP faithful picker response,0,193.0,158.0,81.0,18.0,42.0,12.0,,False,149f04b65913
+base:bth_die_back,Die-Back,🎨 THE BOOTH,actual HTTP faithful picker response,0,30.0,22.0,89.0,113.0,113.0,141.0,,False,8f5834e1b2dd
+base:bth_blush,Blush,🎨 THE BOOTH,actual HTTP faithful picker response,0,30.0,20.0,113.0,93.17,107.0,100.0,,False,5cf3867220dd
+base:bth_lifting,Lifting,🎨 THE BOOTH,actual HTTP faithful picker response,0,87.0,34.0,135.0,61.0,72.0,50.0,,False,f755df9c3fcd
+base:bth_sand_scratch,Sand Scratch,🎨 THE BOOTH,actual HTTP faithful picker response,0,89.0,38.0,134.0,44.0,70.0,18.0,,False,238dc23380e0
+base:bth_dirt_nib,Dirt Nib,🎨 THE BOOTH,actual HTTP faithful picker response,0,136.0,35.0,80.0,76.17,28.0,42.0,,False,453f51a23c0b
+base:bth_edge_map,Edge Map,🎨 THE BOOTH,actual HTTP faithful picker response,0,100.0,26.0,41.0,26.0,59.0,18.0,,False,8f4fa20af5ef
+base:bth_buff_hologram,Buff Hologram,🎨 THE BOOTH,actual HTTP faithful picker response,0,184.0,66.0,49.0,16.0,34.0,9.0,,False,46e488f99bce
+base:bth_mask_bleed,Mask Bleed,🎨 THE BOOTH,actual HTTP faithful picker response,0,108.0,46.0,74.0,55.0,42.0,39.0,,False,0759beadaa44
+base:bth_tape_ridge,Tape Ridge,🎨 THE BOOTH,actual HTTP faithful picker response,0,74.0,39.0,116.0,40.0,83.0,30.0,,False,18c9dae5bda5
+base:bth_water_spot,Water Spot,🎨 THE BOOTH,actual HTTP faithful picker response,0,40.0,24.0,92.0,74.0,90.0,70.0,,False,566360dabe78
+base:fl_penetrant_bleed,Penetrant Bleed,🔬 FLAW LAB,actual HTTP faithful picker response,6,12.0,15.0,97.0,95.0,136.0,86.17,69.9,False,02f76afbeb26
+base:fl_magnetic_particle,Magnetic Particle,🔬 FLAW LAB,fingerprint-matched existing master; no GET or bake,0,180.0,137.0,184.0,159.0,155.0,217.0,,True,950afd9ed683
+base:fl_brittle_lacquer,Brittle Lacquer,🔬 FLAW LAB,actual HTTP faithful picker response,6,66.0,118.0,67.0,78.0,103.0,127.0,66.0,False,70ca4f8bb27e
+base:fl_macro_etch,Macro Etch,🔬 FLAW LAB,actual HTTP faithful picker response,2,173.0,127.0,72.0,55.0,141.0,52.0,63.3,False,c7f2918a58bf
+base:fl_hardness_indent,Hardness Indent,🔬 FLAW LAB,actual HTTP faithful picker response,4,133.0,158.0,70.0,111.0,124.0,146.0,77.6,False,8ffa9d357f5d
+base:fl_crack_tip,Crack Tip Field,🔬 FLAW LAB,actual HTTP faithful picker response,7,64.0,118.0,63.0,51.0,142.0,94.0,69.6,False,ec6035e2ee5e
+base:fl_strain_rosette,Strain Rosette,🔬 FLAW LAB,actual HTTP faithful picker response,3,85.0,88.0,82.0,86.0,129.0,70.17,68.5,False,786c4dc87503
+base:fl_chladni,Chladni Figure,🔬 FLAW LAB,actual HTTP faithful picker response,7,13.0,43.0,74.0,117.0,124.0,70.0,73.7,False,56c8cdbefc76
+base:fl_photoelastic_iso,Isochromatic Fringe,🔬 FLAW LAB,fingerprint-matched existing master; no GET or bake,8,30.0,18.0,35.0,11.0,32.0,21.0,,True,b5df628934d1
+base:fl_isoclinic_dark,Isoclinic Band,🔬 FLAW LAB,fingerprint-matched existing master; no GET or bake,0,45.0,129.0,105.0,82.0,113.0,107.0,,True,ab7a4a51143f
+base:fl_holo_interfero,Holographic Interferogram,🔬 FLAW LAB,actual HTTP faithful picker response,4,102.0,158.0,62.0,45.0,138.0,52.17,62.9,False,cb8e47150e16
+base:fl_moire_deflect,Moire Deflectometry,🔬 FLAW LAB,actual HTTP faithful picker response,3,92.0,111.0,80.0,56.0,151.0,62.0,70.7,False,1335e9e27d65
+base:fl_shearography,Shearography,🔬 FLAW LAB,actual HTTP faithful picker response,5,53.0,90.0,65.0,56.0,139.0,68.0,72.0,False,37e88528d295
+base:fl_schlieren,Schlieren,🔬 FLAW LAB,actual HTTP faithful picker response,3,97.0,138.0,72.0,50.17,163.0,84.0,63.0,False,726974a3840f
+base:fl_shadowgraph,Shadowgraph,🔬 FLAW LAB,actual HTTP faithful picker response,4,50.0,121.0,69.0,75.0,132.0,76.0,76.9,False,341637316dba
+base:fl_barkhausen,Barkhausen Noise,🔬 FLAW LAB,actual HTTP faithful picker response,6,157.0,109.0,70.0,92.0,160.0,101.0,72.8,False,d8d2c96cde1e
+base:fl_eddy_impedance,Eddy Current,🔬 FLAW LAB,fingerprint-matched existing master; no GET or bake,2,153.0,74.0,52.0,27.0,33.0,44.0,,True,3bd62d432045
+base:fl_c_scan,Ultrasonic C-Scan,🔬 FLAW LAB,actual HTTP faithful picker response,6,135.0,161.0,92.0,71.0,162.0,135.17,79.1,False,1e3020c9bc3b
+base:fl_a_scan_gate,A-Scan Gate,🔬 FLAW LAB,actual HTTP faithful picker response,6,38.0,139.0,68.0,89.0,122.0,67.0,70.0,False,995ee2cdd7eb
+base:fl_phased_array,Phased Array,🔬 FLAW LAB,actual HTTP faithful picker response,6,135.0,165.0,72.0,79.0,175.0,118.0,73.5,False,7f218f74f8b4
+base:fl_radiograph_weld,Weld Radiograph,🔬 FLAW LAB,actual HTTP faithful picker response,5,140.0,114.0,101.0,81.0,135.0,108.0,72.6,False,1d0a83db3853
+base:fl_ct_slice,CT Slice,🔬 FLAW LAB,actual HTTP faithful picker response,5,71.0,127.0,76.0,97.0,142.0,98.0,73.1,False,e30941ed26a1
+base:fl_tsa_stress,Thermoelastic Stress,🔬 FLAW LAB,actual HTTP faithful picker response,7,42.0,86.0,97.0,103.0,138.0,122.0,69.5,False,27f331cf8d9e
+base:fl_pulse_thermo,Pulse Thermography,🔬 FLAW LAB,actual HTTP faithful picker response,8,72.0,214.0,106.0,142.0,137.0,148.0,70.1,False,c8840247fe37
+base:fl_acoustic_emission,Acoustic Emission,🔬 FLAW LAB,actual HTTP faithful picker response,3,45.0,89.0,60.0,53.0,123.0,37.0,78.4,False,506a61748a9c
+base:wrap_hex_ppf,Hex PPF,WRAP SHOP,actual HTTP faithful picker response,0,75.0,58.0,56.0,20.0,30.0,9.0,,False,e14c9cb65fbf
+base:wrap_twill_film,Twill Film,WRAP SHOP,actual HTTP faithful picker response,0,127.0,94.0,82.0,50.0,39.0,27.0,,False,a500fea7ed6d
+base:wrap_truchet_knurl,Truchet Knurl,WRAP SHOP,actual HTTP faithful picker response,0,127.0,44.0,99.0,21.0,42.0,9.0,,False,88558062898f
+base:wrap_craze_net,Craze Net,WRAP SHOP,actual HTTP faithful picker response,0,34.0,52.17,54.0,84.0,30.0,57.0,,False,abcc93b033a1
+base:wrap_lens_array,Lens Array,WRAP SHOP,actual HTTP faithful picker response,0,92.0,134.0,97.0,80.0,45.0,32.0,,False,d3e89b9ac1ce
+base:wrap_flow_wrapline,Flow Line,WRAP SHOP,actual HTTP faithful picker response,0,127.0,86.0,84.0,47.0,39.0,14.0,,False,84ac3872cc08
+base:wrap_spiral_burnish,Spiral Burnish,WRAP SHOP,actual HTTP faithful picker response,0,169.0,87.17,46.0,18.0,39.0,10.0,,False,ddcbfc57fcc6
+base:wrap_overlap_ghost,Overlap Ghost,WRAP SHOP,actual HTTP faithful picker response,0,75.0,56.0,100.0,41.0,64.0,103.0,,False,bcfb72aa15ad
+base:wrap_panel_seam,Panel Seam,WRAP SHOP,actual HTTP faithful picker response,0,88.0,125.0,41.0,47.0,20.0,24.0,,False,7b082e55ec2b
+base:wrap_squeegee,Squeegee Sweep,WRAP SHOP,actual HTTP faithful picker response,0,100.0,44.0,58.0,17.0,36.0,9.0,,False,7dd4dc531824
+base:wrap_knife_edge,Knife Edge,WRAP SHOP,actual HTTP faithful picker response,0,136.0,165.0,66.0,98.0,38.0,50.17,,False,b67d9da4386e
+base:wrap_layered_cut,Layered Cut,WRAP SHOP,actual HTTP faithful picker response,0,117.0,166.0,78.0,108.0,51.0,80.0,,False,36e8b51e6d22
+base:wrap_lift_curl,Lift Curl,WRAP SHOP,actual HTTP faithful picker response,0,24.0,79.0,58.0,28.0,20.0,10.0,,False,cacd44799be7
+base:wrap_microbubble,Micro-Bubble,WRAP SHOP,actual HTTP faithful picker response,0,25.0,174.0,86.0,62.0,45.0,26.0,,False,529a0a55aa60
+base:wrap_creases,Creases,WRAP SHOP,actual HTTP faithful picker response,0,27.0,138.0,85.0,52.0,30.0,11.0,,False,0c965ac52fb6
+base:wrap_heat_gun,Heat Gun,WRAP SHOP,actual HTTP faithful picker response,2,149.0,72.0,46.0,36.0,42.0,11.0,,False,d085930383b3
+base:wrap_wet_apply,Wet Apply,WRAP SHOP,actual HTTP faithful picker response,0,34.0,7.17,30.0,47.0,18.0,30.0,,False,6f0f1b4ccd45
+base:wrap_air_release,Air Release,WRAP SHOP,actual HTTP faithful picker response,0,101.0,31.0,97.0,31.0,49.0,12.0,,False,13a3b5101644
+base:wrap_perf_window,Perf Window,WRAP SHOP,actual HTTP faithful picker response,0,52.0,39.0,77.0,158.0,57.0,146.0,,False,580ae57e6bdf
+base:wrap_laminate,Laminate Gloss,WRAP SHOP,actual HTTP faithful picker response,0,65.0,25.0,35.0,10.0,21.0,6.0,,False,d23dc47c64c4
+base:wrap_print_band,Print Banding,WRAP SHOP,actual HTTP faithful picker response,1,97.0,97.0,105.0,77.0,52.0,43.0,,False,9e85d271950d
+base:wrap_brushed_film,Brushed Film,WRAP SHOP,actual HTTP faithful picker response,0,220.0,52.0,72.0,15.0,43.0,6.0,,False,e2612904138f
+base:wrap_holographic,Holographic,WRAP SHOP,actual HTTP faithful picker response,2,216.0,75.0,50.0,37.0,16.0,0.0,,False,aefff6213226
+base:wrap_roll_memory,Roll Memory,WRAP SHOP,actual HTTP faithful picker response,0,73.0,80.0,72.0,47.0,35.0,32.0,,False,5cffb02b783c
+base:wrap_ceramic_coat,Ceramic Coat,WRAP SHOP,actual HTTP faithful picker response,0,49.0,28.0,29.0,5.0,19.0,5.0,,False,2608fea44639
+base:fo_boogie_neon,Disco: Boogie Neon,🪩 FAR OUT,actual HTTP faithful picker response,6,0.0,230.17,221.0,230.0,195.0,174.17,,False,25d41a94d573
+base:fo_discotheque_haze,Disco: Discotheque Haze,🪩 FAR OUT,actual HTTP faithful picker response,2,0.0,0.0,79.0,151.0,64.0,159.0,,False,e0c8a7c7bdae
+base:fo_glitter_ball_rain,Disco: Glitter Ball Rain,🪩 FAR OUT,actual HTTP faithful picker response,0,147.0,186.0,84.0,157.0,81.0,135.0,,False,291b990dd2ec
+base:fo_hustle_teal,Disco: Hustle Teal,🪩 FAR OUT,actual HTTP faithful picker response,1,0.0,0.0,66.0,55.0,53.0,63.0,,False,ff3fd32ad5e1
+base:fo_lighted_floor,Disco: Lighted Floor,🪩 FAR OUT,actual HTTP faithful picker response,6,57.0,149.0,41.0,39.0,79.0,146.0,,False,86493440d153
+base:fo_lurex_gold,Disco: Lurex Gold,🪩 FAR OUT,actual HTTP faithful picker response,1,180.0,169.0,40.0,63.0,48.0,60.0,,False,d15eb8453d55
+base:fo_lurex_rose,Disco: Lurex Rose,🪩 FAR OUT,actual HTTP faithful picker response,2,6.0,232.17,93.0,107.0,68.0,70.0,,False,356c05bbbe25
+base:fo_mirror_ball,Disco: Mirror Ball,🪩 FAR OUT,actual HTTP faithful picker response,0,246.0,198.0,12.0,39.17,28.0,46.0,,False,1b6140e81661
+base:fo_platform_patent,Disco: Platform Patent,🪩 FAR OUT,actual HTTP faithful picker response,2,102.0,222.0,17.0,20.0,22.0,37.0,,False,3289fb0d9d2b
+base:fo_roller_rink,Disco: Roller Rink,🪩 FAR OUT,actual HTTP faithful picker response,3,60.0,138.0,36.0,105.0,93.0,145.17,,False,0aec4bddd20e
+base:fo_saturday_chrome,Disco: Saturday Chrome,🪩 FAR OUT,actual HTTP faithful picker response,0,235.0,54.0,27.0,54.0,20.0,15.0,,False,d516ae63c9c2
+base:fo_sequin_sheet,Disco: Sequin Sheet,🪩 FAR OUT,actual HTTP faithful picker response,2,38.0,243.0,41.0,48.0,31.0,22.0,,False,46579e7b21ca
+base:fo_studio_gold,Disco: Studio Gold,🪩 FAR OUT,actual HTTP faithful picker response,2,129.0,173.0,73.0,83.0,91.0,73.0,,False,0d18da405b19
+base:fo_velvet_rope,Disco: Velvet Rope,🪩 FAR OUT,actual HTTP faithful picker response,4,39.0,166.0,213.0,167.17,216.0,96.0,,False,a4335cf947db
+base:fo_vinyl_groove,Disco: Vinyl Groove,🪩 FAR OUT,actual HTTP faithful picker response,0,52.0,31.0,66.0,84.0,66.0,104.0,,False,e9fa1ea6101e
+base:fo_conversation_pit,Shag: Conversation Pit,🪩 FAR OUT,actual HTTP faithful picker response,1,2.0,6.0,117.0,124.0,112.0,129.17,,False,e5385f4a3c9d
+base:fo_corduroy_brown,Shag: Corduroy Brown,🪩 FAR OUT,actual HTTP faithful picker response,1,1.0,6.0,118.0,88.0,105.0,68.0,,False,1deb2d5d19d4
+base:fo_fondue_copper,Shag: Fondue Copper,🪩 FAR OUT,actual HTTP faithful picker response,1,203.0,78.0,36.0,61.0,67.0,56.0,,False,2a397b827589
+base:fo_formica_boomerang,Shag: Formica Boomerang,🪩 FAR OUT,actual HTTP faithful picker response,2,0.0,189.17,198.0,142.0,157.0,113.0,,False,d3423f2206b1
+base:fo_lava_lamp,Shag: Lava Lamp,🪩 FAR OUT,actual HTTP faithful picker response,2,47.0,200.0,35.0,40.0,27.0,23.0,,False,5ea7f911cf11
+base:fo_linoleum_teal,Shag: Linoleum Teal,🪩 FAR OUT,actual HTTP faithful picker response,2,0.0,8.0,44.0,80.0,31.0,91.0,,False,893045c60926
+base:fo_macrame_hang,Shag: Macramé Hang,🪩 FAR OUT,actual HTTP faithful picker response,1,24.0,93.0,152.0,88.0,144.0,72.0,,False,946a5fbcbf2d
+base:fo_popcorn_ceiling,Shag: Popcorn Ceiling,🪩 FAR OUT,actual HTTP faithful picker response,1,74.0,136.0,152.0,150.0,141.0,152.0,,False,f94097c69173
+base:fo_rattan_weave,Shag: Rattan Weave,🪩 FAR OUT,actual HTTP faithful picker response,1,55.0,87.0,134.0,41.0,133.0,25.0,,False,e59c1bb92c37
+base:fo_shag_avocado,Shag: Shag Avocado,🪩 FAR OUT,actual HTTP faithful picker response,1,2.0,5.0,99.0,61.0,89.0,73.0,,False,a86d5be9d72d
+base:fo_shag_harvest,Shag: Shag Harvest,🪩 FAR OUT,actual HTTP faithful picker response,1,3.0,4.0,123.0,22.0,106.0,26.0,,False,5ff8d47d9bc7
+base:fo_smoked_glass,Shag: Smoked Glass,🪩 FAR OUT,actual HTTP faithful picker response,2,55.0,151.0,30.0,40.0,18.0,24.0,,False,e988c562761c
+base:fo_tab_curtain,Shag: Tab Curtain,🪩 FAR OUT,actual HTTP faithful picker response,1,1.0,9.0,109.0,126.0,92.0,112.0,,False,25fa3aee3e0d
+base:fo_terrazzo_kitchen,Shag: Terrazzo Kitchen,🪩 FAR OUT,actual HTTP faithful picker response,1,3.0,6.0,74.0,122.0,56.0,99.0,,False,e1e34e4cf585
+base:fo_wood_panel,Shag: Wood Panel,🪩 FAR OUT,actual HTTP faithful picker response,2,0.0,3.0,45.0,29.0,31.0,23.17,,False,bc4639cda404
+base:fo_barbed_wire,Outlaw: Barbed Wire,🪩 FAR OUT,actual HTTP faithful picker response,0,104.0,140.0,108.0,78.0,117.0,113.0,,False,8f96a807f0c5
+base:fo_basket_stamp,Outlaw: Basket Stamp,🪩 FAR OUT,actual HTTP faithful picker response,2,15.0,43.0,113.0,40.0,112.0,42.17,,False,12fdecda4630
+base:fo_black_hat,Outlaw: Black Hat,🪩 FAR OUT,actual HTTP faithful picker response,0,0.0,1.0,182.0,133.0,154.0,122.0,,False,c56f08a39d8a
+base:fo_concho_row,Outlaw: Concho Row,🪩 FAR OUT,actual HTTP faithful picker response,0,180.0,58.0,69.0,57.0,16.0,30.0,,False,1db738745418
+base:fo_longhorn_hide,Outlaw: Longhorn Hide,🪩 FAR OUT,actual HTTP faithful picker response,2,2.0,6.0,105.0,49.0,95.0,54.0,,False,716af8351903
+base:fo_mesa_sunset,Outlaw: Mesa Sunset,🪩 FAR OUT,actual HTTP faithful picker response,2,26.0,61.0,122.0,134.0,129.0,118.0,,False,7ddd1adc59b4
+base:fo_outlaw_chrome,Outlaw: Outlaw Chrome,🪩 FAR OUT,actual HTTP faithful picker response,0,226.0,58.0,35.0,43.0,31.0,44.0,,False,f0f72457b889
+base:fo_prairie_denim,Outlaw: Prairie Denim,🪩 FAR OUT,actual HTTP faithful picker response,1,43.0,107.0,147.0,103.0,128.0,102.0,,False,34628bcf7690
+base:fo_raw_denim,Outlaw: Raw Denim,🪩 FAR OUT,actual HTTP faithful picker response,1,57.0,82.17,152.0,43.0,137.0,25.0,,False,a3829567020d
+base:fo_rhinestone_suit,Outlaw: Rhinestone Suit,🪩 FAR OUT,actual HTTP faithful picker response,0,71.0,222.0,51.0,85.0,38.0,53.0,,False,5f804e82a323
+base:fo_rodeo_dust,Outlaw: Rodeo Dust,🪩 FAR OUT,actual HTTP faithful picker response,1,23.0,123.0,148.0,90.0,145.0,93.0,,False,40c79a603564
+base:fo_silver_buckle,Outlaw: Silver Buckle,🪩 FAR OUT,actual HTTP faithful picker response,0,230.0,75.0,33.0,67.0,35.0,47.0,,False,8405a7d75d70
+base:fo_snakeskin_boot,Outlaw: Snakeskin Boot,🪩 FAR OUT,actual HTTP faithful picker response,2,94.0,176.0,18.0,14.0,25.0,23.0,,False,d75a47670e6e
+base:fo_tooled_saddle,Outlaw: Tooled Saddle,🪩 FAR OUT,actual HTTP faithful picker response,2,10.0,63.0,175.0,93.0,153.0,45.17,,False,e7b4d644893d
+base:fo_turquoise_silver,Outlaw: Turquoise Silver,🪩 FAR OUT,actual HTTP faithful picker response,2,173.0,254.0,51.0,197.0,29.0,146.0,,False,eb15692c9ed8
+base:fo_airbrush_mural,Van: Airbrush Mural,🪩 FAR OUT,actual HTTP faithful picker response,4,126.0,188.0,29.0,72.0,21.0,44.0,,False,355addf60d91
+base:fo_cb_static,Van: CB Static,🪩 FAR OUT,actual HTTP faithful picker response,1,113.0,124.0,57.0,79.0,44.0,96.0,,False,5ad2fb36262d
+base:fo_candy_apple,Van: Candy Apple,🪩 FAR OUT,actual HTTP faithful picker response,2,190.0,98.0,30.0,25.0,27.0,16.0,,False,f0795908b2c2
+base:fo_desert_scene,Van: Desert Scene,🪩 FAR OUT,actual HTTP faithful picker response,2,3.0,9.0,93.0,158.0,83.0,137.0,,False,d74c7663396d
+base:fo_eagle_gold,Van: Eagle Gold,🪩 FAR OUT,actual HTTP faithful picker response,1,237.0,20.0,23.0,27.0,49.0,48.0,,False,a1ebc82b1f7e
+base:fo_flame_job,Van: Flame Job,🪩 FAR OUT,actual HTTP faithful picker response,2,47.0,237.0,84.0,179.0,136.0,181.0,,False,f78c5ab9f69d
+base:fo_ghost_mural,Van: Ghost Mural,🪩 FAR OUT,actual HTTP faithful picker response,6,32.0,95.0,44.0,54.0,26.0,52.0,,False,cc2e67df8f90
+base:fo_metalflake_blue,Van: Metalflake Blue,🪩 FAR OUT,actual HTTP faithful picker response,1,80.0,206.0,20.0,19.0,16.0,1.0,,False,638233a7b535
+base:fo_metalflake_red,Van: Metalflake Red,🪩 FAR OUT,actual HTTP faithful picker response,2,103.0,193.0,23.0,20.0,16.0,1.0,,False,c1d2ac141424
+base:fo_pinstripe_kit,Van: Pinstripe Kit,🪩 FAR OUT,actual HTTP faithful picker response,1,7.0,29.0,58.0,175.17,45.0,137.0,,False,4ada2324f5f7
+base:fo_porthole_chrome,Van: Porthole Chrome,🪩 FAR OUT,actual HTTP faithful picker response,1,0.0,247.0,54.0,43.0,29.0,17.0,,False,2733dfcbecbc
+base:fo_shag_interior,Van: Shag Interior,🪩 FAR OUT,actual HTTP faithful picker response,1,2.0,5.0,120.0,113.0,114.0,126.0,,False,0febce44139b
+base:fo_sunset_stripe,Van: Sunset Stripe,🪩 FAR OUT,actual HTTP faithful picker response,2,86.0,244.0,20.0,39.0,17.0,22.0,,False,cf7771fce623
+base:fo_tailgate_sunburst,Van: Tailgate Sunburst,🪩 FAR OUT,actual HTTP faithful picker response,1,31.0,220.0,59.0,177.0,94.0,150.0,,False,7e4c5f3028bb
+base:fo_wheel_well_rust,Van: Wheel Well Rust,🪩 FAR OUT,actual HTTP faithful picker response,2,160.0,145.0,113.0,110.0,123.0,103.0,,False,e28f535f9f60
+base:rad_amber_terminal,Arcade: Amber Terminal,⚡ BAD & RAD,actual HTTP faithful picker response,2,37.0,128.0,130.0,157.0,111.0,158.0,87.1,False,dad75b2a4d85
+base:rad_attract_mode,Arcade: Attract Mode,⚡ BAD & RAD,actual HTTP faithful picker response,7,32.0,232.0,138.0,186.0,132.0,170.0,83.0,False,123c12004bfa
+base:rad_bezel_black,Arcade: Neon Bezel Inlay,⚡ BAD & RAD,actual HTTP faithful picker response,5,37.0,236.0,103.0,150.0,132.0,150.0,86.3,False,6b4a60819be3
+base:rad_cabinet_side_art,Arcade: Cabinet Side Art,⚡ BAD & RAD,actual HTTP faithful picker response,8,23.0,252.0,95.0,187.0,156.0,167.0,72.2,False,4a763e326453
+base:rad_dot_matrix,Arcade: Dot Matrix,⚡ BAD & RAD,actual HTTP faithful picker response,9,221.0,205.17,46.0,125.0,134.0,111.0,76.3,False,ed163e82b013
+base:rad_high_score,Arcade: High Score Confetti,⚡ BAD & RAD,actual HTTP faithful picker response,8,41.0,214.0,113.0,161.0,112.0,143.0,80.6,False,46c91b8f5e16
+base:rad_insert_coin,Arcade: Coin Return Glow,⚡ BAD & RAD,actual HTTP faithful picker response,7,92.0,237.0,46.0,138.0,134.0,166.0,83.8,False,730a6da72273
+base:rad_joystick_ball,Arcade: Cherry Resin,⚡ BAD & RAD,actual HTTP faithful picker response,6,24.0,213.0,95.0,151.0,128.0,142.0,85.5,False,cb1ce4afb688
+base:rad_marquee_bulb,Arcade: Marquee Chase,⚡ BAD & RAD,actual HTTP faithful picker response,4,86.0,224.17,88.0,166.0,131.0,151.0,82.8,False,866c676b2a80
+base:rad_phosphor_green,Arcade: Phosphor Green,⚡ BAD & RAD,actual HTTP faithful picker response,3,76.0,217.0,105.0,169.0,116.0,164.17,81.2,False,9a99e6a541b5
+base:rad_quarter_slot,Arcade: Token Jackpot,⚡ BAD & RAD,actual HTTP faithful picker response,5,170.0,222.0,41.0,130.0,104.0,146.0,82.8,False,a905fbde9ec0
+base:rad_screen_burn,Arcade: Screen Burn Echo,⚡ BAD & RAD,actual HTTP faithful picker response,7,33.0,199.17,137.0,179.0,128.0,166.0,81.7,False,b799f0a82545
+base:rad_sprite_sheet,Arcade: Sprite Mosaic,⚡ BAD & RAD,actual HTTP faithful picker response,7,42.0,221.0,108.0,170.0,113.0,148.0,82.5,False,f990aa7f9ed2
+base:rad_trackball_wear,Arcade: Trackball Swirl,⚡ BAD & RAD,actual HTTP faithful picker response,7,85.0,232.0,93.0,178.0,103.0,164.0,79.9,False,643bb98de3b0
+base:rad_vector_glow,Arcade: Vector Glow,⚡ BAD & RAD,actual HTTP faithful picker response,4,117.0,232.0,49.0,160.0,120.0,157.17,76.0,False,a2927347824d
+base:rad_boombox_grille,Grid: Equalizer Grille,⚡ BAD & RAD,actual HTTP faithful picker response,6,23.0,171.0,109.0,132.0,167.0,111.0,79.6,False,d123c8683bef
+base:rad_cassette_shell,Grid: Mixtape Candy,⚡ BAD & RAD,actual HTTP faithful picker response,6,27.0,218.0,90.0,165.0,125.0,186.0,75.7,False,c8a13697b73c
+base:rad_chrome_type,Grid: Chrome Bevel,⚡ BAD & RAD,actual HTTP faithful picker response,5,99.0,201.0,100.0,124.0,116.0,123.0,49.2,False,99230523c6a4
+base:rad_digital_sunrise,Grid: Digital Sunrise,⚡ BAD & RAD,actual HTTP faithful picker response,8,45.0,237.0,95.0,184.0,156.0,172.0,78.8,False,75845916b61c
+base:rad_grid_floor,Grid: Laser Tile,⚡ BAD & RAD,actual HTTP faithful picker response,5,36.0,244.0,95.0,162.0,150.0,163.0,84.1,False,67f4ff4751a3
+base:rad_laser_grid,Grid: Laser Crossfire,⚡ BAD & RAD,actual HTTP faithful picker response,9,149.0,234.0,40.0,132.17,129.0,165.0,84.9,False,52a36c6cb975
+base:rad_laserdisc_rainbow,Grid: Laserdisc Prism,⚡ BAD & RAD,actual HTTP faithful picker response,10,144.0,235.0,73.0,154.0,122.0,144.0,77.1,False,c6d23d0f8c23
+base:rad_miami_pastel,Grid: Miami Pastel,⚡ BAD & RAD,actual HTTP faithful picker response,4,36.0,233.0,166.0,180.0,158.0,185.0,80.2,False,5c35de4abcde
+base:rad_neon_tube,Grid: Neon Candy Glass,⚡ BAD & RAD,actual HTTP faithful picker response,7,30.0,216.0,101.0,175.0,141.0,152.0,71.6,False,0421a16f3140
+base:rad_outrun_stripe,Grid: Outrun Stripe,⚡ BAD & RAD,actual HTTP faithful picker response,6,50.0,240.0,79.0,154.0,123.0,166.0,81.7,False,cf0464a60988
+base:rad_static_snow,Grid: Chromatic Static,⚡ BAD & RAD,actual HTTP faithful picker response,12,26.0,214.0,112.0,162.0,111.0,167.0,84.0,False,b1616ca2fd31
+base:rad_sunset_bars,Grid: Sunset Arcs,⚡ BAD & RAD,actual HTTP faithful picker response,5,40.0,237.0,137.0,180.0,142.0,169.0,81.0,False,ad7c41d1fef7
+base:rad_synth_key,Grid: Synth Sequencer,⚡ BAD & RAD,actual HTTP faithful picker response,6,47.0,244.0,114.0,184.0,123.0,189.0,83.5,False,476d8c2258f5
+base:rad_vhs_tracking,Grid: VHS Tracking,⚡ BAD & RAD,actual HTTP faithful picker response,7,47.0,245.0,127.0,188.0,164.0,190.0,66.7,False,e884b354a689
+base:rad_vector_horizon,Grid: Vector Terrain,⚡ BAD & RAD,actual HTTP faithful picker response,4,49.0,235.0,54.0,122.0,149.0,134.0,85.4,False,b29ce51b306f
+base:rad_anodised_trim,Memphis: Anodised Trim,⚡ BAD & RAD,actual HTTP faithful picker response,3,105.0,234.0,77.0,176.0,111.0,165.0,84.3,False,4ea05559b82a
+base:rad_bacterio_print,Memphis: Bacterio Pop,⚡ BAD & RAD,actual HTTP faithful picker response,5,29.0,135.17,98.0,129.0,197.0,138.0,85.9,False,12b9420d9ab9
+base:rad_confetti_laminate,Memphis: Confetti Laminate,⚡ BAD & RAD,actual HTTP faithful picker response,7,26.0,174.17,91.0,168.0,173.0,182.0,75.2,False,5ad8fb7306fb
+base:rad_glass_block,Memphis: Candy Glass Flute,⚡ BAD & RAD,actual HTTP faithful picker response,5,38.0,239.0,90.0,161.0,127.0,167.0,89.5,False,7b86ea6e3311
+base:rad_grid_tile,Memphis: Ceramic Mosaic,⚡ BAD & RAD,actual HTTP faithful picker response,5,33.0,244.0,100.0,179.0,134.0,197.0,79.5,False,4e412e84aa2c
+base:rad_jazz_cup,Memphis: Electric Brush,⚡ BAD & RAD,actual HTTP faithful picker response,5,19.0,219.0,184.0,200.0,212.0,183.0,80.3,False,2b14a91d8c8c
+base:rad_lacquer_cabinet,Memphis: Primary Lacquer,⚡ BAD & RAD,actual HTTP faithful picker response,4,36.0,249.0,77.0,167.0,132.0,192.0,77.9,False,71c1143f06be
+base:rad_milano_squiggle,Memphis: Milano Squiggle,⚡ BAD & RAD,actual HTTP faithful picker response,8,36.0,85.0,93.0,131.0,172.5,162.0,83.4,False,cb7abb1473b7
+base:rad_neon_wire_chair,Memphis: Neon Wire Weave,⚡ BAD & RAD,actual HTTP faithful picker response,10,159.0,244.0,45.0,166.0,131.0,183.0,87.6,False,cc79b4e661e2
+base:rad_pastel_mint,Memphis: Mint Inlay,⚡ BAD & RAD,actual HTTP faithful picker response,3,30.0,232.0,117.0,155.0,146.0,169.0,80.0,False,9ad7b5bc7a31
+base:rad_peach_fuzz,Memphis: Peach Fuzz,⚡ BAD & RAD,actual HTTP faithful picker response,3,7.0,4.0,222.0,26.0,213.0,25.0,64.8,False,da08137f47f8
+base:rad_speckle_wall,Memphis: Party Speckle,⚡ BAD & RAD,actual HTTP faithful picker response,5,32.0,122.0,184.0,126.0,184.0,144.0,76.3,False,b8ef8ae2d3f0
+base:rad_sponge_paint,Memphis: Tropical Sponge,⚡ BAD & RAD,actual HTTP faithful picker response,6,131.0,232.0,79.0,169.0,138.0,182.0,75.1,False,0ce833e87a81
+base:rad_terrazzo_chip,Memphis: Candy Terrazzo,⚡ BAD & RAD,actual HTTP faithful picker response,8,52.0,227.0,139.0,176.0,154.0,197.0,78.6,False,11bbed34d517
+base:rad_zigzag_runner,Memphis: Zigzag Runner,⚡ BAD & RAD,actual HTTP faithful picker response,5,5.0,8.0,216.0,70.0,205.0,91.0,61.3,False,e584210de9da
+base:rad_aerobics_gym,Radical: Aerobics Stripe,⚡ BAD & RAD,actual HTTP faithful picker response,7,8.0,6.0,182.0,92.0,165.0,106.0,70.8,False,71c58736a940
+base:rad_airbrush_portrait,Radical: Airbrush Flare,⚡ BAD & RAD,actual HTTP faithful picker response,7,18.0,244.17,181.0,202.0,206.0,199.0,68.2,False,6e3edb4edbd5
+base:rad_big_hair_chrome,Radical: Glam Lightning Foil,⚡ BAD & RAD,actual HTTP faithful picker response,6,193.0,238.0,29.0,170.0,123.0,181.0,82.8,False,fe76e5c6779c
+base:rad_hair_metal,Radical: Stage Glitter,⚡ BAD & RAD,actual HTTP faithful picker response,5,185.0,181.0,47.0,74.0,147.0,111.0,67.5,False,105b292a8e45
+base:rad_hypercolour,Radical: Heatwave Dye,⚡ BAD & RAD,actual HTTP faithful picker response,7,8.0,5.0,213.0,69.0,210.0,71.0,66.4,False,01286ddb5979
+base:rad_neon_grip,Radical: Neon Grip,⚡ BAD & RAD,actual HTTP faithful picker response,6,31.0,103.0,179.0,119.0,176.0,135.17,89.5,False,18235bf37bb1
+base:rad_neon_spandex,Radical: Neon Spandex,⚡ BAD & RAD,actual HTTP faithful picker response,7,4.0,7.0,134.0,133.0,145.0,154.0,65.3,False,0dfbdcef25dc
+base:rad_puffy_paint,Radical: Puffy Paint,⚡ BAD & RAD,actual HTTP faithful picker response,9,6.0,9.0,148.0,209.0,155.0,172.0,83.7,False,69e2ad4aeca8
+base:rad_rad_splatter_deck,Radical: Rad Splatter Deck,⚡ BAD & RAD,actual HTTP faithful picker response,8,64.0,244.0,76.0,159.0,146.0,166.0,75.0,False,c55f0f483e17
+base:rad_skate_deck,Radical: Deck Ripper,⚡ BAD & RAD,actual HTTP faithful picker response,6,26.0,244.17,101.0,162.0,137.0,177.0,85.2,False,1133e8453a99
+base:rad_slap_bracelet,Radical: Sweatband Stripe,⚡ BAD & RAD,actual HTTP faithful picker response,7,15.0,20.0,188.0,57.0,209.0,86.0,64.6,False,7e5d42930c0a
+base:rad_splatter_tee,Radical: Splatter Tee,⚡ BAD & RAD,actual HTTP faithful picker response,3,7.0,5.0,230.0,80.0,232.0,93.0,67.0,False,9e20db12ab78
+base:rad_tiger_stripe,Radical: Tiger Stripe,⚡ BAD & RAD,actual HTTP faithful picker response,2,26.0,99.0,98.0,125.0,182.0,131.0,85.0,False,03652e383446
+base:rad_trapper_sticker,Radical: Trapper Sticker,⚡ BAD & RAD,actual HTTP faithful picker response,9,73.0,232.0,114.0,186.0,123.0,197.17,79.4,False,6b0a052e2075
+base:rad_zebra_wrap,Radical: Neon Zebra Wrap,⚡ BAD & RAD,actual HTTP faithful picker response,4,60.0,184.0,87.0,94.0,135.0,175.0,67.9,False,1e18b7fae704
+base:at_beige_box,Cdrom: Beige Box,💿 ALL THAT,actual HTTP faithful picker response,0,9.0,3.0,65.0,121.0,113.0,77.0,,False,d92f230324d4
+base:at_crt_blue_screen,Cdrom: CRT Blue Screen,💿 ALL THAT,actual HTTP faithful picker response,1,9.0,27.17,187.0,114.0,175.0,87.0,,False,330c57ba2e90
+base:at_corrupt_jpeg,Cdrom: Corrupt JPEG,💿 ALL THAT,actual HTTP faithful picker response,7,19.0,224.0,156.0,152.0,198.0,77.0,,False,6f873462fe56
+base:at_cyber_café,Cdrom: Cyber Café,💿 ALL THAT,actual HTTP faithful picker response,1,194.0,157.17,74.0,110.0,174.0,93.0,,False,9950ca538cef
+base:at_dial_up_green,Cdrom: Dial-Up Green,💿 ALL THAT,actual HTTP faithful picker response,2,7.0,13.0,106.0,67.0,98.0,57.0,,False,605c42635f94
+base:at_disc_rainbow,Cdrom: Disc Rainbow,💿 ALL THAT,actual HTTP faithful picker response,5,179.0,102.0,83.0,96.0,126.0,110.0,,False,ab6217d794e2
+base:at_floppy_black,Cdrom: Floppy Black,💿 ALL THAT,actual HTTP faithful picker response,0,8.0,190.0,83.5,103.0,86.0,91.0,,False,00ce0c7db646
+base:at_frosted_shell,Cdrom: Frosted Shell,💿 ALL THAT,actual HTTP faithful picker response,2,6.0,8.0,130.0,102.0,124.0,104.0,,False,d342f212c7c1
+base:at_holo_sticker,Cdrom: Holo Sticker,💿 ALL THAT,actual HTTP faithful picker response,5,169.0,77.0,106.0,77.17,150.0,80.0,,False,18b38704215e
+base:at_iridescent_cd_r,Cdrom: Iridescent CD-R,💿 ALL THAT,actual HTTP faithful picker response,4,182.0,77.0,83.0,91.17,157.0,64.0,,False,edc9b0955fa4
+base:at_mouse_ball_grime,Cdrom: Arcade Token Foil,💿 ALL THAT,actual HTTP faithful picker response,1,179.0,120.0,92.0,128.0,153.0,126.0,,False,55d44f0fa24c
+base:at_pipes_screensaver,Cdrom: Pipes Screensaver,💿 ALL THAT,actual HTTP faithful picker response,11,74.0,216.0,107.0,156.0,112.0,145.0,,False,6a00bd29da7c
+base:at_windows_teal,Cdrom: LAN Party Circuit,💿 ALL THAT,actual HTTP faithful picker response,6,26.0,179.0,88.0,66.0,119.0,80.0,,False,0871a4405493
+base:at_y2k_chrome,Cdrom: Y2K Chrome,💿 ALL THAT,actual HTTP faithful picker response,0,216.0,137.0,45.0,146.0,108.0,207.0,,False,d3a8bb297226
+base:at_zip_disk,Cdrom: Zip Disk,💿 ALL THAT,actual HTTP faithful picker response,1,8.0,3.0,76.0,89.0,82.0,76.0,,False,dab6079c5ecf
+base:at_anodised_peg,Extreme: Anodised Peg,💿 ALL THAT,actual HTTP faithful picker response,3,146.0,61.0,125.0,71.0,144.0,76.0,,False,0aecdfc66adb
+base:at_bmx_dirt,Extreme: BMX Dirt,💿 ALL THAT,actual HTTP faithful picker response,1,29.0,33.0,168.0,59.0,182.0,93.0,,False,ab5a1d68b2d7
+base:at_big_dog_print,Extreme: Big Dog Print,💿 ALL THAT,actual HTTP faithful picker response,5,8.0,26.0,163.0,119.17,191.0,170.0,,False,c19bd9dfb86c
+base:at_bungee_cord,Extreme: Bungee Cord,💿 ALL THAT,actual HTTP faithful picker response,3,7.0,6.0,165.0,132.0,171.0,125.0,,False,41e988a3a7a6
+base:at_chain_link,Extreme: Chain Link,💿 ALL THAT,actual HTTP faithful picker response,0,157.0,152.17,107.0,112.0,124.0,98.0,,False,a834ef2ef7f1
+base:at_dew_green,Extreme: Dew Green,💿 ALL THAT,actual HTTP faithful picker response,2,32.0,66.0,44.0,55.0,66.0,55.0,,False,cd5405c93945
+base:at_grip_tape,Extreme: Grip Tape,💿 ALL THAT,actual HTTP faithful picker response,0,43.0,102.0,123.0,74.0,132.0,88.0,,False,5636484d376c
+base:at_half_pipe_ply,Extreme: Half Pipe Ply,💿 ALL THAT,actual HTTP faithful picker response,2,10.0,5.0,147.0,118.0,164.0,93.0,,False,69808e5a0736
+base:at_mountain_topo,Extreme: Mountain Topo,💿 ALL THAT,actual HTTP faithful picker response,1,32.0,70.0,120.0,119.0,142.0,125.0,,False,97d111dda897
+base:at_neon_wetsuit,Extreme: Neon Wetsuit,💿 ALL THAT,actual HTTP faithful picker response,3,3.0,8.0,155.0,113.0,195.0,128.0,,False,9d57ceb73c7d
+base:at_roller_blade,Extreme: Roller Blade,💿 ALL THAT,actual HTTP faithful picker response,4,9.0,3.0,51.0,101.0,66.0,81.0,,False,f22a505fbb1b
+base:at_skatepark_concrete,Extreme: Skate Deck Shred,💿 ALL THAT,actual HTTP faithful picker response,4,16.0,145.17,124.0,129.0,136.0,140.0,,False,2a6d3ebe0fb0
+base:at_snowboard_graphic,Extreme: Snowboard Graphic,💿 ALL THAT,actual HTTP faithful picker response,8,34.0,197.0,90.0,119.0,130.0,144.0,,False,f0417b437af3
+base:at_surf_wax,Extreme: Surf Wax,💿 ALL THAT,actual HTTP faithful picker response,2,9.0,6.0,117.0,87.0,116.0,95.0,,False,234d9a94b4f9
+base:at_windbreaker_block,Extreme: Windbreaker Block,💿 ALL THAT,actual HTTP faithful picker response,8,9.0,23.0,89.0,100.0,88.0,105.0,,False,529426973ded
+base:at_airbrush_tee,Fresh: Airbrush Tee,💿 ALL THAT,actual HTTP faithful picker response,3,6.0,23.0,191.0,131.0,214.0,167.0,,False,7267d5ee685f
+base:at_boombox_chrome,Fresh: Boombox Chrome,💿 ALL THAT,actual HTTP faithful picker response,0,212.0,235.0,54.0,181.0,93.0,162.0,,False,a75cada38776
+base:at_bucket_hat,Fresh: Bucket Hat,💿 ALL THAT,actual HTTP faithful picker response,1,5.0,5.0,185.0,37.0,208.0,37.0,,False,e8493b8f1ed0
+base:at_cross_colour_block,Fresh: Cross Colour Block,💿 ALL THAT,actual HTTP faithful picker response,8,4.0,6.0,193.0,79.0,214.0,82.0,,False,31ad09b425bb
+base:at_denim_baggy,Fresh: Denim Baggy,💿 ALL THAT,actual HTTP faithful picker response,1,5.0,4.0,191.0,28.0,211.0,31.0,,False,521b23fb0a28
+base:at_fresh_kicks,Fresh: Fresh Kicks,💿 ALL THAT,actual HTTP faithful picker response,0,12.0,4.0,83.0,105.0,86.0,74.0,,False,5c04872d6b26
+base:at_gold_rope,Fresh: Gold Rope,💿 ALL THAT,actual HTTP faithful picker response,1,201.0,139.0,68.0,120.0,151.0,70.0,,False,6665af0b5055
+base:at_graffiti_fill,Fresh: Graffiti Fill,💿 ALL THAT,actual HTTP faithful picker response,7,33.0,210.0,92.0,131.0,139.0,155.0,,False,0b68b829cc40
+base:at_grill_chrome,Fresh: Grill Chrome,💿 ALL THAT,actual HTTP faithful picker response,0,215.0,133.0,59.0,109.17,100.0,105.0,,False,bb87e6283745
+base:at_kangol_felt,Fresh: Kangol Felt,💿 ALL THAT,actual HTTP faithful picker response,1,6.0,3.0,198.0,21.0,209.0,31.0,,False,2e9dfdb83c46
+base:at_nameplate_gold,Fresh: Neon Sneaker Sole,💿 ALL THAT,actual HTTP faithful picker response,7,10.0,10.0,156.0,131.0,139.0,109.0,,False,39f5a25846fa
+base:at_starter_jacket,Fresh: Starter Jacket,💿 ALL THAT,actual HTTP faithful picker response,5,4.0,6.0,157.0,93.0,182.0,101.0,,False,a9b166bb3e16
+base:at_velour_rose,Fresh: Velour Rose,💿 ALL THAT,actual HTTP faithful picker response,1,6.0,4.0,189.0,44.0,198.0,39.0,,False,2cab14393814
+base:at_velour_tracksuit,Fresh: Velour Tracksuit,💿 ALL THAT,actual HTTP faithful picker response,2,6.0,2.0,202.0,26.0,199.0,21.0,,False,c9a48ea0c024
+base:at_vinyl_crate,Fresh: Vinyl Crate,💿 ALL THAT,actual HTTP faithful picker response,1,13.0,30.0,108.0,169.0,114.0,171.0,,False,9e06b4a1852a
+base:at_band_tee_crack,Flannel: Band Tee Crack,💿 ALL THAT,actual HTTP faithful picker response,2,4.0,7.0,187.0,23.0,210.0,40.0,,False,e6edf61889d5
+base:at_basement_amp,Flannel: Basement Amp,💿 ALL THAT,actual HTTP faithful picker response,1,10.0,43.0,177.0,52.0,170.0,47.0,,False,a092570116b7
+base:at_cassette_tape,Flannel: Cassette Tape,💿 ALL THAT,actual HTTP faithful picker response,1,84.0,169.0,79.0,42.0,83.0,77.0,,False,c19a578b7520
+base:at_chipped_nail,Flannel: Mosh Pit Flyers,💿 ALL THAT,actual HTTP faithful picker response,4,17.0,194.0,150.0,171.17,160.0,152.0,,False,5d04b666a3af
+base:at_combat_boot_steel,Flannel: Safety Pin Chrome,💿 ALL THAT,actual HTTP faithful picker response,0,81.0,199.0,150.0,116.0,169.0,71.0,,False,cee3f43de113
+base:at_corduroy_olive,Flannel: Corduroy Olive,💿 ALL THAT,actual HTTP faithful picker response,2,5.0,4.0,185.0,32.0,206.0,30.0,,False,c67d8a934af0
+base:at_distressed_denim,Flannel: Distressed Denim,💿 ALL THAT,actual HTTP faithful picker response,2,5.0,5.0,186.0,40.0,202.0,34.0,,False,99f210e6a5cd
+base:at_doc_marten,Flannel: Doc Marten,💿 ALL THAT,actual HTTP faithful picker response,1,7.0,5.0,175.0,57.0,176.0,61.0,,False,2d55622fdfba
+base:at_flannel_forest,Flannel: Flannel Forest,💿 ALL THAT,actual HTTP faithful picker response,2,2.0,4.0,207.0,30.0,224.0,12.0,,False,72719a4197ee
+base:at_flannel_red,Flannel: Flannel Red,💿 ALL THAT,actual HTTP faithful picker response,1,6.0,6.0,193.0,38.0,213.0,17.0,,False,04439c1fd9ba
+base:at_moss_sidewalk,Flannel: Moss Sidewalk,💿 ALL THAT,actual HTTP faithful picker response,2,5.0,14.0,135.0,148.0,150.0,149.0,,False,2d0d95658e84
+base:at_overcast_grey,Flannel: Blacklight Gig,💿 ALL THAT,actual HTTP faithful picker response,7,41.0,211.0,107.0,133.0,148.0,146.0,,False,1f388ec017ef
+base:at_seattle_rain,Flannel: Seattle Rain,💿 ALL THAT,actual HTTP faithful picker response,1,22.0,50.0,51.0,117.0,68.0,112.17,,False,69b38ab6fb66
+base:at_sharpie_ink,Flannel: Sharpie Ink,💿 ALL THAT,actual HTTP faithful picker response,0,8.0,6.0,171.0,37.0,207.0,51.0,,False,9f534f6fd141
+base:at_thrift_cardigan,Flannel: Thrift Cardigan,💿 ALL THAT,actual HTTP faithful picker response,1,6.0,3.0,181.0,45.0,199.0,38.0,,False,39ac34fbe414
+base:tac_break_up_bark,Camo: Break-Up Bark,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,2,30.0,34.0,128.0,43.0,132.0,38.0,,False,d9b95e120ddd
+base:tac_brushstroke_field,Camo: Brushstroke Field,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,3,16.0,43.0,137.0,80.0,128.0,61.0,,False,293ed4ad5487
+base:tac_chocolate_chip,Camo: Chocolate Chip,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,16.0,89.0,128.0,59.0,136.0,39.0,,False,088413e1faf4
+base:tac_desert_dpm,Camo: Desert DPM,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,10.0,121.0,194.0,79.0,158.0,35.0,,False,bdd58df70f93
+base:tac_duck_blind,Camo: Duck Blind,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,2.0,9.0,99.0,149.0,94.5,133.0,,False,df65ef40d17e
+base:tac_flecktarn,Camo: Flecktarn,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,3,5.0,7.0,128.0,129.0,125.0,111.0,,False,51f995ab209c
+base:tac_frog_skin,Camo: Frog Skin,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,3,0.0,0.0,78.0,86.0,61.0,90.0,,False,ad3dfce4cad1
+base:tac_m81_woodland,Camo: M81 Woodland,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,3,17.0,48.0,132.0,132.0,131.0,109.0,,False,a8a754c69640
+base:tac_marpat_digital,Camo: MARPAT Digital,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,2,8.0,19.0,118.0,127.0,119.0,102.0,,False,8b834d004b71
+base:tac_multicam_transition,Camo: Multicam Transition,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,3.0,7.0,139.0,140.0,122.0,138.0,,False,7abd3f3912bf
+base:tac_rain_pattern,Camo: Rain Pattern,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,5.0,29.0,169.0,164.0,148.0,126.0,,False,582677844a04
+base:tac_snow_overwhite,Camo: Snow Overwhite,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,23.5,85.0,110.0,129.0,90.0,134.0,,False,c90b77f86ddb
+base:tac_tiger_stripe,Camo: Tiger Stripe,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,3,2.0,6.0,100.0,65.0,93.0,65.0,,False,58616ddb6413
+base:tac_tigerstripe_night,Camo: Tigerstripe Night,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,23.0,42.0,159.0,147.0,152.0,122.0,,False,e54d0a307495
+base:tac_urban_grey_digital,Camo: Urban Grey Digital,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,14.0,23.0,123.0,146.0,101.0,115.0,,False,8c923608e64e
+base:tac_anodised_hard,Hardware: Anodised Hard,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,175.0,152.0,72.0,111.17,72.0,112.0,,False,4fe4205013ef
+base:tac_battle_worn,Hardware: Battle Worn,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,21.0,184.0,129.0,134.0,143.0,128.0,,False,292127f09f12
+base:tac_carbon_handguard,Hardware: Carbon Handguard,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,26.0,27.0,33.0,34.0,30.0,36.0,,False,9066f9350be9
+base:tac_cerakote_grey,Hardware: Cerakote Grey,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,79.0,173.0,119.0,109.0,101.0,101.0,,False,5cc5a84c6bb7
+base:tac_fde_polymer,Hardware: FDE Polymer,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,8.0,3.0,134.0,29.0,138.0,21.0,,False,5e75ca1ecf1d
+base:tac_gun_blue,Hardware: Gun Blue,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,179.0,177.0,31.0,22.0,20.0,21.0,,False,7594aaaf0407
+base:tac_kydex_sheet,Hardware: Kydex Sheet,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,0.0,0.0,73.0,27.0,63.0,46.0,,False,eecad0f83a68
+base:tac_nitride_black,Hardware: Nitride Black,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,93.0,227.0,127.0,231.0,139.0,197.0,,False,8f7430bfe6dc
+base:tac_optic_glass,Hardware: Optic Glass,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,3.0,170.0,49.0,33.0,35.0,19.0,,False,f57368ca9e13
+base:tac_parkerised,Hardware: Parkerised,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,144.0,152.17,75.0,53.0,62.0,92.0,,False,a39a56fe2911
+base:tac_rail_section,Hardware: Rail Section,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,177.0,33.0,72.0,26.0,69.0,119.0,,False,8bec91f65a99
+base:tac_sling_webbing,Hardware: Sling Webbing,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,9.0,20.0,87.0,123.0,72.0,100.0,,False,e91bc8448a35
+base:tac_stippled_grip,Hardware: Stippled Grip,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,7.0,38.0,156.0,153.0,137.0,114.0,,False,d5d663a3a24e
+base:tac_suppressor_heat,Hardware: Suppressor Heat,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,187.0,87.0,60.0,58.0,73.0,86.0,,False,d9f1ffd3733b
+base:tac_titanium_bead,Hardware: Titanium Bead,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,169.0,93.0,95.0,84.0,56.0,88.0,,False,44865b19e17b
+base:tac_autumn_brush,Field: Autumn Brush,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,2,3.0,9.0,121.0,95.0,113.0,82.0,,False,11274b0b3594
+base:tac_bird_dog_tick,Field: Bird Dog Tick,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,3.0,5.0,141.0,62.0,127.0,39.0,,False,649f7233114f
+base:tac_blaze_cap,Field: Blaze Cap,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,112.0,154.0,83.0,56.0,166.0,114.0,,False,84acf5ab589b
+base:tac_blaze_orange,Field: Blaze Orange,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,2,0.0,210.17,50.0,27.0,40.0,184.17,,False,f7efc5617f10
+base:tac_canvas_duck,Field: Canvas Duck,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,25.0,41.0,110.0,82.0,109.0,74.0,,False,b4b64cfc34da
+base:tac_cedar_decoy,Field: Cedar Decoy,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,38.0,101.0,127.0,51.0,119.0,51.17,,False,11e234f27e54
+base:tac_creel_wicker,Field: Creel Wicker,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,9.0,38.0,118.0,136.0,110.0,119.0,,False,156c29a4f18a
+base:tac_fly_line,Field: Fly Line,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,31.0,153.17,47.0,56.0,74.0,155.0,,False,d943dab8e0bf
+base:tac_frozen_bank,Field: Frozen Bank,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,75.0,177.0,52.0,37.0,39.0,77.0,,False,b7a94e33c3c4
+base:tac_marsh_reed,Field: Marsh Reed,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,1.0,8.0,173.0,105.0,163.0,103.0,,False,cd0010180008
+base:tac_neoprene_wader,Field: Neoprene Wader,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,0.0,0.0,97.0,89.0,82.0,80.0,,False,b4a687476d98
+base:tac_river_stone,Field: River Stone,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,0.0,0.0,40.0,39.0,28.0,23.0,,False,fd3a2c69fcb7
+base:tac_topo_sheet,Field: Topo Sheet,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,6.0,14.0,115.0,126.0,95.0,130.0,,False,170bc35a486d
+base:tac_trout_flank,Field: Trout Flank,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,138.0,99.0,28.0,15.0,19.0,8.0,,False,812dc9c41ef0
+base:tac_wet_waxed_cotton,Field: Wet Waxed Cotton,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,0.0,0.0,54.0,73.0,40.0,55.0,,False,642570130ffa
+base:tac_ambush_green,Night: Ambush Green,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,145.0,191.0,94.0,120.0,208.0,74.0,,False,e3f7be0999c8
+base:tac_blackout_curtain,Night: Blackout Curtain,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,36.0,173.0,218.0,171.0,218.0,95.0,,False,62df98a03d58
+base:tac_chem_light,Night: Chem Light,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,3,0.0,236.0,54.0,45.0,29.0,40.0,,False,b149d36ee3b8
+base:tac_cold_steel_night,Night: Cold Steel Night,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,226.0,38.0,60.0,87.0,55.0,54.0,,False,11ea94bda7d7
+base:tac_frost_breath,Night: Frost Breath,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,11.0,132.0,196.0,173.0,190.0,174.0,,False,aedbb2a36c55
+base:tac_ir_flat,Night: IR Flat,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,16.0,32.0,179.0,130.0,162.0,98.0,,False,09db42f950ab
+base:tac_moonlit_snow,Night: Moonlit Snow,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,2,49.0,155.0,89.0,167.0,73.0,176.0,,False,02d48bab1c7c
+base:tac_muzzle_flash,Night: Muzzle Flash,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,2,46.0,242.0,180.0,239.0,171.0,223.0,,False,dbaa5f848157
+base:tac_night_vision,Night: Night Vision,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,84.0,246.0,76.0,228.0,157.0,173.0,,False,962b4d0a26f8
+base:tac_red_lens,Night: Red Lens,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,3,81.0,150.0,30.0,25.0,22.0,13.0,,False,94398f2c8e50
+base:tac_signal_mirror,Night: Signal Mirror,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,250.0,9.0,19.0,39.0,31.0,25.0,,False,b60e3277b709
+base:tac_starlight_scope,Night: Starlight Scope,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,1,22.0,42.0,157.0,183.0,145.0,159.0,,False,3d06cfe94757
+base:tac_thermal_black_hot,Night: Thermal Black Hot,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,0,16.0,49.0,135.0,211.0,124.0,212.0,,False,098c4f94ed96
+base:tac_thermal_white_hot,Night: Thermal White Hot,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,6,7.0,22.0,120.0,207.0,103.0,192.0,,False,8c62929a46b9
+base:tac_tracer_arc,Night: Tracer Arc,🎯 TACTICAL & FIELD,actual HTTP faithful picker response,2,16.0,224.17,234.0,224.0,220.0,169.0,,False,21ce99d674f8
+base:cbp_acid_rain,Street: Acid Rain,🌃 CYBERPUNK,actual HTTP faithful picker response,6,19.0,163.0,131.0,133.0,108.0,136.0,90.1,False,7feca4fa1324
+base:cbp_holo_advert,Street: Holo Advert Foil,🌃 CYBERPUNK,actual HTTP faithful picker response,9,173.0,224.0,70.0,100.0,155.0,177.0,78.2,False,bb3c6b85f201
+base:cbp_kanji_signage,Street: Neon Sign Enamel,🌃 CYBERPUNK,actual HTTP faithful picker response,8,79.0,239.0,77.0,174.0,129.0,175.0,83.5,False,a1818fd2ae01
+base:cbp_night_market,Street: Night Market Vinyl,🌃 CYBERPUNK,actual HTTP faithful picker response,7,50.0,236.0,82.0,154.0,143.0,167.0,86.6,False,a7580de13486
+base:cbp_overpass_sodium,Street: Sodium Rivet,🌃 CYBERPUNK,actual HTTP faithful picker response,4,193.0,230.0,41.0,141.0,108.0,138.0,79.8,False,37ae68f5dd37
+base:cbp_puddle_neon,Street: Puddle Neon,🌃 CYBERPUNK,actual HTTP faithful picker response,7,67.0,199.0,92.0,169.0,96.0,144.0,87.6,False,16031c763a46
+base:cbp_rain_screen,Street: Rain Screen,🌃 CYBERPUNK,actual HTTP faithful picker response,7,39.0,213.0,83.0,139.0,131.0,138.0,54.3,False,08ac389d07bb
+base:cbp_shutter_tag,Street: Shutter Tag,🌃 CYBERPUNK,actual HTTP faithful picker response,4,19.0,204.0,106.0,187.17,140.0,159.0,79.8,False,36b83ab9805c
+base:cbp_sodium_fog,Street: Vapor Dye,🌃 CYBERPUNK,actual HTTP faithful picker response,7,196.0,245.0,39.0,177.0,130.0,176.0,86.6,False,601a3f35f75f
+base:cbp_sodium_vapour,Street: Amber Discharge,🌃 CYBERPUNK,actual HTTP faithful picker response,6,13.0,192.17,95.0,165.0,201.0,148.0,81.1,False,4805e3620c73
+base:cbp_steam_grate,Street: Thermal Vent,🌃 CYBERPUNK,actual HTTP faithful picker response,8,156.0,227.0,67.0,145.0,110.0,123.0,79.8,False,e0c50a71e3ef
+base:cbp_taxi_panel,Street: Taxi Signal Enamel,🌃 CYBERPUNK,actual HTTP faithful picker response,5,34.0,225.0,98.0,165.0,137.0,168.0,80.8,False,0c17d663538f
+base:cbp_vending_glow,Street: Vending Glow,🌃 CYBERPUNK,actual HTTP faithful picker response,7,62.0,229.0,83.0,162.0,121.0,167.0,79.9,False,3883a51d6aa2
+base:cbp_wet_asphalt,Street: Neon Aggregate,🌃 CYBERPUNK,actual HTTP faithful picker response,6,181.0,232.17,35.0,157.0,149.0,161.0,83.9,False,3eec0711015c
+base:cbp_neon_tube,Street: Neon Capillary,🌃 CYBERPUNK,actual HTTP faithful picker response,9,31.0,190.0,106.0,158.0,116.0,142.0,90.2,False,3cee7033ce62
+base:cbp_carbon_limb,Chrome: Conductive Carbon,🌃 CYBERPUNK,actual HTTP faithful picker response,6,70.0,235.0,110.0,179.0,123.0,182.0,67.3,False,00ac09fee7a7
+base:cbp_ceramic_limb,Chrome: Ceramic Microarmor,🌃 CYBERPUNK,actual HTTP faithful picker response,5,229.0,171.0,43.0,111.0,124.0,109.17,69.1,False,f3363f31727e
+base:cbp_chrome_spine,Chrome: Articulated Chrome,🌃 CYBERPUNK,actual HTTP faithful picker response,3,198.0,235.0,71.0,163.0,117.0,154.0,76.1,False,a7a30cf3db8f
+base:cbp_gold_contact,Chrome: Gold Contact,🌃 CYBERPUNK,actual HTTP faithful picker response,5,184.0,239.17,82.0,158.0,129.0,160.0,86.7,False,307968e6e543
+base:cbp_gunmetal_aug,Chrome: Anodized Servo,🌃 CYBERPUNK,actual HTTP faithful picker response,6,181.0,224.0,38.0,146.0,96.0,139.0,78.3,False,92e336824a29
+base:cbp_mirror_shades,Chrome: Spectral Lens,🌃 CYBERPUNK,actual HTTP faithful picker response,9,171.0,232.0,35.0,161.17,95.0,171.0,77.8,False,7c0ec6ea97b7
+base:cbp_neural_port,Chrome: Neural Port,🌃 CYBERPUNK,actual HTTP faithful picker response,6,189.5,233.0,66.0,151.0,112.0,118.0,77.0,False,5752de150466
+base:cbp_optic_implant,Chrome: Optic Iris,🌃 CYBERPUNK,actual HTTP faithful picker response,8,128.0,233.0,63.0,154.0,112.0,151.0,83.2,False,d31aa3f97de4
+base:cbp_porcelain_face,Chrome: Opal Ceramic,🌃 CYBERPUNK,actual HTTP faithful picker response,5,34.0,220.0,96.0,130.0,125.0,160.0,86.5,False,4acd3da978f5
+base:cbp_ripperdoc_steel,Chrome: Laser-Etched Alloy,🌃 CYBERPUNK,actual HTTP faithful picker response,7,189.0,224.0,42.0,146.0,113.0,130.0,79.2,False,105e22c2dd59
+base:cbp_servo_housing,Chrome: Servo Honeycomb,🌃 CYBERPUNK,actual HTTP faithful picker response,7,25.0,191.17,104.0,143.0,154.0,151.0,83.7,False,7bf857928325
+base:cbp_skin_weave,Chrome: Signal Weave,🌃 CYBERPUNK,actual HTTP faithful picker response,8,8.0,190.0,163.0,146.0,167.0,128.0,83.9,False,a9889d31cd39
+base:cbp_subdermal_plate,Chrome: Microplate Inlay,🌃 CYBERPUNK,actual HTTP faithful picker response,11,127.0,233.0,54.0,170.0,128.0,174.0,78.3,False,1b3fc372943f
+base:cbp_titanium_rib,Chrome: Titanium Ribbon,🌃 CYBERPUNK,actual HTTP faithful picker response,8,93.0,236.17,103.0,171.0,123.0,151.0,71.6,False,d2b7c753f5cb
+base:cbp_wetware_membrane,Chrome: Wetware Gel,🌃 CYBERPUNK,actual HTTP faithful picker response,5,28.0,239.0,80.0,146.0,160.0,157.0,84.4,False,7ef68083d39c
+base:cbp_black_ice,Netrun: Black Ice,🌃 CYBERPUNK,actual HTTP faithful picker response,6,134.0,236.0,74.0,165.0,134.0,139.0,54.1,False,4cbec272528e
+base:cbp_corrupt_memory,Netrun: Corrupt Memory,🌃 CYBERPUNK,actual HTTP faithful picker response,8,104.0,219.0,84.0,161.0,95.0,143.0,80.8,False,410189ef4ac8
+base:cbp_daemon_red,Netrun: Daemon Red,🌃 CYBERPUNK,actual HTTP faithful picker response,4,23.0,196.0,124.0,171.0,139.0,144.0,85.1,False,5ed6605d71bb
+base:cbp_datastream,Netrun: Data Braid,🌃 CYBERPUNK,actual HTTP faithful picker response,7,65.0,216.17,102.0,174.0,99.0,159.0,83.8,False,68be6e0bff76
+base:cbp_deep_archive,Netrun: Archive Foil,🌃 CYBERPUNK,actual HTTP faithful picker response,5,202.0,236.0,55.0,165.0,122.0,146.0,85.4,False,7ef9eae832d3
+base:cbp_encryption_lattice,Netrun: Encryption Lattice,🌃 CYBERPUNK,actual HTTP faithful picker response,6,36.0,231.0,85.0,148.0,127.0,149.0,84.8,False,eed0aee4d122
+base:cbp_firewall_grid,Netrun: Firewall Ceramic,🌃 CYBERPUNK,actual HTTP faithful picker response,9,40.0,230.0,90.0,153.0,124.0,168.0,84.1,False,4d3b00370bec
+base:cbp_ghost_protocol,Netrun: Ghost Protocol,🌃 CYBERPUNK,actual HTTP faithful picker response,4,117.0,185.0,53.0,109.0,213.0,74.0,47.1,False,eaec7655225e
+base:cbp_ice_wall,Netrun: Cryo Prism,🌃 CYBERPUNK,actual HTTP faithful picker response,6,138.0,166.0,78.0,143.0,191.0,100.0,73.2,False,a8f2fad7009a
+base:cbp_neural_static,Netrun: Neural Static,🌃 CYBERPUNK,actual HTTP faithful picker response,8,27.0,226.0,84.0,142.17,116.0,160.0,88.7,False,4c361fc2cff9
+base:cbp_packet_loss,Netrun: Packet Loss,🌃 CYBERPUNK,actual HTTP faithful picker response,7,162.0,234.0,27.0,168.0,70.0,152.0,82.5,False,da75299fc55f
+base:cbp_quantum_violet,Netrun: Quantum Violet,🌃 CYBERPUNK,actual HTTP faithful picker response,6,144.0,244.0,52.0,181.0,145.0,179.0,84.3,False,e48e813a8058
+base:cbp_root_access,Netrun: Root Access,🌃 CYBERPUNK,actual HTTP faithful picker response,7,46.0,247.0,81.0,153.0,148.0,148.0,83.1,False,3ad23c7b2330
+base:cbp_trace_route,Netrun: Trace Route,🌃 CYBERPUNK,actual HTTP faithful picker response,5,22.0,210.0,99.0,157.0,136.0,151.0,81.3,False,efbd2882a746
+base:cbp_worm_trail,Netrun: Worm Trail,🌃 CYBERPUNK,actual HTTP faithful picker response,11,26.0,203.0,92.0,139.17,136.0,139.17,79.7,False,d5b221776441
+base:cbp_ash_fall,Sprawl: Ember Fallout,🌃 CYBERPUNK,actual HTTP faithful picker response,8,78.0,236.0,90.0,172.0,113.0,146.0,79.5,False,6ddf04430324
+base:cbp_biohazard_bloom,Sprawl: Biohazard Bloom,🌃 CYBERPUNK,actual HTTP faithful picker response,8,38.0,217.0,101.0,155.0,135.0,143.0,82.1,False,12e77e901ea3
+base:cbp_concrete_rot,Sprawl: Reclaim Mosaic,🌃 CYBERPUNK,actual HTTP faithful picker response,6,21.0,227.0,86.0,136.0,132.0,137.0,81.7,False,284d9a860bb6
+base:cbp_corp_glass,Sprawl: Corporate Dichroic,🌃 CYBERPUNK,actual HTTP faithful picker response,10,52.0,178.0,88.0,120.0,122.0,148.0,82.0,False,65c81f9a540c
+base:cbp_corp_grey,Sprawl: Security Foil,🌃 CYBERPUNK,actual HTTP faithful picker response,5,24.0,221.0,95.0,155.0,133.0,164.0,85.1,False,9f904fb705e3
+base:cbp_cracked_solar,Sprawl: Solar Fracture,🌃 CYBERPUNK,actual HTTP faithful picker response,4,63.0,117.0,104.0,135.0,178.0,134.0,73.4,False,b742c8c9899b
+base:cbp_duct_grime,Sprawl: Coolant Capillary,🌃 CYBERPUNK,actual HTTP faithful picker response,10,66.0,215.0,126.0,169.0,139.0,167.0,82.8,False,ddf04659ed4b
+base:cbp_hazard_stripe,Sprawl: Hazard Microprint,🌃 CYBERPUNK,actual HTTP faithful picker response,8,34.0,239.0,98.0,170.0,160.0,159.0,84.5,False,e8f88643d215
+base:cbp_oil_slick_puddle,Sprawl: Oil Interference,🌃 CYBERPUNK,actual HTTP faithful picker response,9,29.0,211.0,110.0,139.0,104.0,154.0,90.4,False,55741de16c28
+base:cbp_rad_warning,Sprawl: Reactor Enamel,🌃 CYBERPUNK,actual HTTP faithful picker response,7,33.0,235.17,94.0,150.0,123.0,143.0,83.4,False,1189b70f2cbf
+base:cbp_rebar_skeleton,Sprawl: Copper Reinforcement,🌃 CYBERPUNK,actual HTTP faithful picker response,6,123.0,225.0,103.0,161.0,121.0,145.0,83.3,False,75abaaad46ed
+base:cbp_scav_rust,Sprawl: Salvage Patina,🌃 CYBERPUNK,actual HTTP faithful picker response,6,44.0,220.0,142.0,185.0,116.0,188.17,83.2,False,b94f888fb2b4
+base:cbp_scrap_weld,Sprawl: Weld Spectrum,🌃 CYBERPUNK,actual HTTP faithful picker response,8,205.0,232.0,58.0,155.0,117.0,129.0,80.0,False,f90af811c35a
+base:cbp_sewer_bloom,Sprawl: Algae Circuit,🌃 CYBERPUNK,actual HTTP faithful picker response,12,39.0,186.0,95.0,151.0,125.0,139.0,79.7,False,b5cad6a11767
+base:cbp_static_screen,Sprawl: Signal Shatter,🌃 CYBERPUNK,actual HTTP faithful picker response,6,55.0,232.0,86.0,99.0,116.0,139.0,77.2,False,fc575b6adf7e
+base:p_superfluid,Absolute Zero Superfluid (PARADIGM),,actual HTTP faithful picker response,2,26.0,59.0,79.0,209.0,50.0,44.17,43.3,False,0c181519af5a
+base:p_coronal,Coronal Mass Ejection (PARADIGM),,actual HTTP faithful picker response,3,164.0,104.0,151.0,194.0,178.0,164.0,44.3,False,db8205b04e3c
+base:p_seismic,Seismic Faultline (PARADIGM),,actual HTTP faithful picker response,1,20.0,170.0,249.0,195.0,250.0,211.0,40.9,False,184aa4baab08
+base:p_hypercane,Category 5 Hypercane (PARADIGM),,actual HTTP faithful picker response,1,40.0,128.0,140.0,146.0,32.0,238.0,47.2,False,fdd870eeab6b
+base:p_geomagnetic,Geomagnetic Storm (PARADIGM),,actual HTTP faithful picker response,1,95.0,92.0,109.0,85.0,92.0,93.0,43.0,False,723dd83b1a12
+base:p_non_euclidean,Non-Euclidean Hypercube (PARADIGM),,actual HTTP faithful picker response,12,111.0,119.0,143.0,122.0,109.0,75.0,47.1,False,9e092e1e9096
+base:p_time_reversed,Time-Reversed Entropy (PARADIGM),,actual HTTP faithful picker response,1,24.0,162.0,255.0,124.17,252.0,146.0,40.6,False,a6966933918b
+base:p_programmable,Programmable Utility Fog (PARADIGM),,actual HTTP faithful picker response,1,6.0,77.0,255.0,68.17,255.0,88.0,54.9,False,4ba3ff60291e
+base:p_erised,Negative Normal Mirror (PARADIGM),,actual HTTP faithful picker response,9,134.0,82.0,132.0,177.0,108.0,121.0,39.4,False,aba131ab0b94
+base:p_schrodinger,Schrodinger's Dust (PARADIGM),,actual HTTP faithful picker response,3,113.0,145.0,134.0,180.0,66.0,191.0,40.4,False,049c1078986a
+base:acid_rain,Acid Rain,,actual HTTP faithful picker response,1,99.0,21.0,137.0,12.0,62.0,7.0,55.9,False,d691caaed333
+base:ambulance_white,Ambulance White,,actual HTTP faithful picker response,0,3.0,0.0,33.0,4.0,18.0,0.0,86.1,False,b8aa4157bf9e
+base:anodized,Anodized,,actual HTTP faithful picker response,2,115.0,9.0,99.0,7.0,29.0,4.0,44.4,False,68500ba1c0d3
+base:anime_cel_shade_chrome,Anime Cel Terminator,,actual HTTP faithful picker response,2,92.0,204.0,131.0,193.0,132.0,209.0,85.1,False,5cceb08c5c03
+base:anime_comic_halftone,Anime Screentone Moire,,actual HTTP faithful picker response,4,101.0,209.0,124.0,165.17,97.0,135.0,66.0,False,c898830fb201
+base:anime_crystal_facet,Anime Crystal Shards,,actual HTTP faithful picker response,9,186.0,217.0,58.0,57.0,98.0,119.17,72.0,False,97483e1292a4
+base:anime_energy_aura,Anime Ki Corona,,actual HTTP faithful picker response,3,85.0,227.0,146.0,191.0,169.0,210.0,74.8,False,4920a834e716
+base:anime_gradient_hair,Anime Ink-Brush Strands,,actual HTTP faithful picker response,3,50.0,91.0,192.0,98.0,201.0,127.0,68.0,False,ef61c477ed3a
+base:anime_mecha_plate,Anime Mecha Greeble,,actual HTTP faithful picker response,3,172.0,211.0,90.0,149.0,56.0,153.0,89.7,False,499f365e3f99
+base:anime_neon_outline,Anime Neo-Tokyo Glow,,actual HTTP faithful picker response,6,34.0,67.0,202.0,150.0,222.0,150.0,65.6,False,bd8ef2836c18
+base:anime_sakura_scatter,Anime Sakura Hurricane,,actual HTTP faithful picker response,3,71.0,98.0,161.0,131.17,146.0,145.0,73.0,False,83350cabc60c
+base:anime_sparkle_burst,Anime Shoujo Sparkle,,actual HTTP faithful picker response,3,87.0,161.0,145.0,113.0,102.0,128.0,74.7,False,e9c08872c838
+base:anime_speed_lines,Anime Speed-Line Storm,,actual HTTP faithful picker response,5,68.0,178.0,168.0,126.0,169.0,137.0,93.5,False,ce8812af3ed5
+base:antique_chrome,Antique Chrome,,actual HTTP faithful picker response,0,153.0,25.0,97.0,19.0,36.0,14.0,53.7,False,1324f1645d50
+base:aramid,Aramid,,actual HTTP faithful picker response,1,68.0,26.0,68.0,18.0,40.0,1.0,79.8,False,86ebae0f6cf6
+base:armor_plate,Armor Plate,,actual HTTP faithful picker response,0,72.0,147.0,157.0,98.0,130.0,2.0,59.2,False,a6b49741d16a
+base:asphalt_grind,Asphalt Grind,,actual HTTP faithful picker response,0,50.0,20.0,183.0,34.0,162.0,8.17,44.5,False,f305d101ead4
+base:barn_find,Barn Find,,actual HTTP faithful picker response,2,32.0,22.0,205.0,30.0,111.0,27.0,52.5,False,4cec13dd291e
+base:battleship_gray,Battleship Gray,,actual HTTP faithful picker response,0,23.0,25.0,180.0,61.0,121.0,7.0,59.9,False,318c288127eb
+base:bentley_silver,Bentley Silver,,actual HTTP faithful picker response,0,187.0,9.0,36.0,3.0,37.0,4.0,66.2,False,ec090409edc5
+base:beetle_jewel,Beetle Jewel,Iridescent Insects,actual HTTP faithful picker response,10,62.0,154.0,100.0,48.0,100.0,68.0,43.6,False,cc897920c7af
+base:beetle_rainbow,Beetle Rainbow,Iridescent Insects,actual HTTP faithful picker response,0,51.0,121.0,79.0,8.0,162.0,132.0,55.8,False,e37ccf7a8bb2
+base:beetle_tortoise,Tortoise Glass,Iridescent Insects,actual HTTP faithful picker response,2,229.0,100.0,69.0,98.17,111.0,156.17,,False,8de62cbeaf8c
+base:beetle_tiger,Tiger Beetle Velocity,Iridescent Insects,actual HTTP faithful picker response,2,150.0,109.0,67.0,65.0,56.0,87.0,,False,1d0d8dff52b5
+base:beetle_rose_chafer,Rose Chafer Velvet,Iridescent Insects,actual HTTP faithful picker response,2,231.0,85.0,125.0,98.0,158.0,113.0,,False,83732f1c4eda
+base:beetle_buprestid,Buprestid Furnace,Iridescent Insects,actual HTTP faithful picker response,12,115.0,71.0,54.0,61.0,65.0,95.0,,False,3f943f961b18
+base:beetle_ground,Ground Beetle Obsidian,Iridescent Insects,actual HTTP faithful picker response,3,242.0,24.0,111.0,46.0,117.0,33.0,,False,860d362d1117
+base:beetle_stag,Stag Carapace,Iridescent Insects,actual HTTP faithful picker response,2,146.0,159.0,188.0,43.0,46.0,81.0,45.6,False,64ec99612c5a
+base:beetle_longhorn,Longhorn Filament,Iridescent Insects,actual HTTP faithful picker response,6,244.0,75.0,119.0,85.0,135.0,87.0,,False,6033b0fe588e
+base:beetle_click,Click Beetle Plasma,Iridescent Insects,actual HTTP faithful picker response,2,231.0,13.0,128.0,19.0,107.0,78.0,,False,7405fc7b4a48
+base:butterfly_emperor,Emperor Eyelet,Iridescent Insects,actual HTTP faithful picker response,3,223.0,36.0,130.0,43.0,118.0,33.0,,False,6d854aa01954
+base:butterfly_swallowtail,Swallowtail Prism,Iridescent Insects,actual HTTP faithful picker response,7,126.0,215.0,69.0,139.0,70.0,97.0,,False,2fe6f9414cd7
+base:butterfly_glasswing,Glasswing Lattice,Iridescent Insects,actual HTTP faithful picker response,1,48.0,99.0,35.0,76.0,45.0,201.0,,False,0e93c8928d6a
+base:butterfly_peacock,Peacock Scale Furnace,Iridescent Insects,actual HTTP faithful picker response,5,210.0,24.0,114.0,35.0,101.0,39.0,,False,72feffeac072
+base:bioluminescent,Bioluminescent,,actual HTTP faithful picker response,2,44.0,222.17,71.0,224.0,58.0,210.0,40.6,False,44753c42ebcb
+base:black_chrome,Black Chrome,,actual HTTP faithful picker response,2,212.0,10.0,43.0,5.0,19.0,5.0,52.8,False,c141520d7c35
+base:blackout,Blackout,,actual HTTP faithful picker response,0,7.0,14.0,24.0,6.0,200.0,7.0,59.8,False,e77b5cb8fecb
+base:blue_chrome,Blue Chrome,,actual HTTP faithful picker response,1,218.0,11.0,38.0,6.0,20.0,7.0,58.2,False,dcfc0a08e137
+base:brushed_aluminum,Brushed Aluminum,,actual HTTP faithful picker response,0,178.0,9.0,39.0,3.0,27.0,3.0,32.8,False,25f3e5daa3cb
+base:brushed_titanium,Brushed Titanium,,actual HTTP faithful picker response,0,159.0,8.0,45.0,3.0,35.0,4.0,32.9,False,2d510f2e1e7d
+base:brushed_wrap,Brushed Wrap,,actual HTTP faithful picker response,0,255.0,3.0,67.0,10.0,34.0,2.0,55.6,False,bc3d6c2d3e66
+base:bugatti_blue,Bugatti Blue,,actual HTTP faithful picker response,1,126.0,25.0,29.0,7.0,49.0,9.0,54.5,False,7472552465a8
+base:burnt_headers,Burnt Headers,,actual HTTP faithful picker response,5,80.0,194.0,65.0,220.0,142.0,228.0,77.9,False,83978e1b9e48
+base:butterfly_monarch,Monarch Mosaic,Iridescent Insects,actual HTTP faithful picker response,2,68.0,213.0,147.0,52.0,28.0,8.0,53.3,False,29a944963cf0
+base:butterfly_morpho,Butterfly Morpho,Iridescent Insects,actual HTTP faithful picker response,3,36.0,27.0,170.0,28.0,70.0,58.0,44.4,False,32739bc1223d
+base:candy,Candy,,actual HTTP faithful picker response,1,190.0,22.0,59.0,19.0,85.0,36.0,59.1,False,2d892854864e
+base:candy_apple,Satan's Apple,,actual HTTP faithful picker response,1,160.0,47.0,95.0,44.0,107.0,71.0,65.9,False,76ae1f2a5d5a
+base:candy_burgundy,Coagulated Blood,,actual HTTP faithful picker response,1,127.0,27.0,46.0,9.0,16.0,1.0,61.2,False,cbeba0f1b531
+base:candy_chrome,Candy Chrome,,actual HTTP faithful picker response,1,221.0,12.0,45.0,5.0,19.0,7.0,51.5,False,f50335630409
+base:candy_cobalt,Mariana Trench Resin,,actual HTTP faithful picker response,1,127.0,27.0,46.0,9.0,16.0,1.0,44.9,False,e7547aa1b55a
+base:candy_emerald,Radioactive Glass,,actual HTTP faithful picker response,2,128.0,26.0,46.0,10.0,16.0,1.0,61.1,False,25b501aa8605
+base:carbon_base,Carbon Base,,actual HTTP faithful picker response,0,173.0,82.0,37.0,18.0,16.0,0.0,30.5,False,d0a06ea5d7a4
+base:carbon_3k_fine,Carbon 3K Fine,,actual HTTP faithful picker response,0,175.0,36.0,37.0,16.0,16.0,0.0,,False,48c3f1b2b6e7
+base:carbon_satin,Carbon Satin,,actual HTTP faithful picker response,0,137.0,61.0,107.0,18.0,120.0,1.0,,False,9fe57524174a
+base:carbon_red,Carbon Red,,actual HTTP faithful picker response,1,173.0,83.0,36.0,17.0,16.0,0.0,,False,913b47686925
+base:carbon_blue,Carbon Blue,,actual HTTP faithful picker response,1,173.0,83.0,36.0,17.0,16.0,0.0,,False,18d860fb9f93
+base:spread_tow,Spread-Tow Carbon,,actual HTTP faithful picker response,0,229.0,60.0,33.0,14.0,16.0,0.0,,False,de13b2509a27
+base:forged_blue,Forged Blue,,actual HTTP faithful picker response,1,148.0,56.0,50.0,18.0,16.0,0.0,,False,6db014ef9bf0
+base:nomex_honeycomb,Nomex Honeycomb,,actual HTTP faithful picker response,1,60.0,46.0,88.0,22.0,70.0,1.0,,False,bdd3569a3003
+base:kevlar_red,Kevlar Red Hybrid,,actual HTTP faithful picker response,2,138.0,68.0,54.0,18.0,16.0,0.0,,False,7840c2b1d13c
+base:basalt_weave,Basalt Weave,,actual HTTP faithful picker response,2,140.0,60.0,55.0,20.0,40.0,1.0,,False,461e3f05631d
+base:dyneema_white,Dyneema White,,actual HTTP faithful picker response,0,23.0,10.0,106.0,23.0,110.0,1.0,,False,e651994718b0
+base:carbon_ceramic,Carbon Ceramic,,actual HTTP faithful picker response,0,120.0,41.0,93.0,27.0,90.0,1.0,31.0,False,c8c403b046fe
+base:cerakote,Cerakote,,actual HTTP faithful picker response,0,36.0,36.0,96.0,105.0,103.0,36.0,81.9,False,5e49fe808376
+base:ceramic,Ceramic,,actual HTTP faithful picker response,0,0.0,0.0,22.0,6.0,16.0,0.0,90.0,False,77ef619b4ea1
+base:cathedral_glass,Cathedral Glass,,actual HTTP faithful picker response,1,0.0,0.0,19.0,17.0,16.0,0.0,,False,46d18c5f5bad
+base:sea_glass,Sea Glass,,actual HTTP faithful picker response,0,0.0,0.0,84.0,12.0,40.0,1.0,,False,0368a4b85929
+base:sapphire_glass,Sapphire Glass,,actual HTTP faithful picker response,1,0.0,0.0,18.0,4.0,16.0,0.0,,False,f35bd991f9f5
+base:ruby_glass,Ruby Glass,,actual HTTP faithful picker response,1,0.0,0.0,18.0,4.0,16.0,0.0,,False,8e6498eebbb4
+base:emerald_glass,Emerald Glass,,actual HTTP faithful picker response,1,0.0,0.0,18.0,4.0,16.0,0.0,,False,f93dbfedb721
+base:amber_glass,Amber Glass,,actual HTTP faithful picker response,1,0.0,0.0,18.0,3.0,16.0,0.0,,False,e6728f94b26e
+base:smoked_glass,Smoked Glass,,actual HTTP faithful picker response,0,0.0,0.0,18.0,4.0,16.0,0.0,,False,8d0da543f94b
+base:milk_glass,Milk Glass,,actual HTTP faithful picker response,0,0.0,0.0,66.0,9.0,30.0,1.0,,False,3d52ba0973a2
+base:mercury_glass,Mercury Glass,,actual HTTP faithful picker response,0,79.0,237.0,24.0,6.0,16.0,0.0,,False,695e16c278a8
+base:crackle_glaze,Raku Crackle,,actual HTTP faithful picker response,1,0.0,0.0,25.0,63.0,16.0,0.0,,False,beec1ac61f27
+base:liquid_glaze,Liquid Glaze,,actual HTTP faithful picker response,1,0.0,0.0,16.0,2.0,16.0,0.0,,False,65dcefff5efa
+base:terracotta_glaze,Terracotta Glaze,,actual HTTP faithful picker response,1,0.0,0.0,29.0,16.0,16.0,0.0,,False,445fdaa40947
+base:ceramic_matte,Ceramic Matte,,actual HTTP faithful picker response,0,5.0,7.0,146.0,20.0,90.0,5.0,65.4,False,33a86f94116d
+base:chalky_base,Chalked Paint,Foundation EFX,actual HTTP faithful picker response,0,0.0,8.0,149.0,156.0,120.0,160.0,100.0,False,3bdef7748893
+base:chameleon,Orchid Shift Pearl,Foundation,actual HTTP faithful picker response,5,233.0,68.0,58.0,17.0,16.0,1.0,51.7,False,f2ae5584620a
+base:champagne,Champagne,,actual HTTP faithful picker response,0,169.0,120.0,18.0,6.0,17.0,3.0,60.4,False,74e8e2c2374f
+base:checkered_chrome,Checkered Chrome,,actual HTTP faithful picker response,0,188.0,60.0,23.0,10.0,40.0,24.0,40.6,False,a899d565430f
+base:chrome,Chrome,,actual HTTP faithful picker response,0,222.0,17.0,28.0,5.0,19.0,6.0,54.1,False,31c8807a6789
+base:chrome_wrap,Chrome Wrap,,actual HTTP faithful picker response,0,255.0,1.0,25.0,10.0,16.0,2.0,48.9,False,fbbd85c40f6a
+base:clear_matte,Clear Matte,,actual HTTP faithful picker response,0,0.0,0.0,215.0,33.0,201.0,42.0,100.0,False,116b56140b10
+base:cobalt_metal,Cobalt Metal,,actual HTTP faithful picker response,1,200.0,31.0,64.0,16.0,42.0,10.0,45.5,False,1a886a96987f
+base:color_flip_wrap,Angle Flip Wrap,,actual HTTP faithful picker response,4,150.0,140.0,48.0,226.0,163.0,176.0,46.4,False,1bf69658926b
+base:copper,Copper,,actual HTTP faithful picker response,1,221.0,49.0,34.0,22.0,22.0,13.0,71.0,False,ee605fd9bed5
+base:crystal_clear,Lucid Dream Water,,actual HTTP faithful picker response,0,5.0,7.0,24.0,4.0,17.0,2.0,52.0,False,9a63d3824a3f
+base:crumbling_clear,Crumbling Clear,,actual HTTP faithful picker response,1,60.0,15.0,208.0,11.0,89.0,12.0,73.7,False,6641360fe340
+base:dark_chrome,Abyssal Tungsten,,actual HTTP faithful picker response,3,219.0,16.0,29.0,14.0,19.0,6.0,54.9,False,8485a99ae78b
+base:dark_matter,Void Reveal,,actual HTTP faithful picker response,1,15.0,225.0,53.0,161.0,38.0,174.0,40.8,False,afe06e1ec42a
+base:dealer_pearl,Dealer Pearl,,actual HTTP faithful picker response,0,39.0,25.17,21.0,1.0,28.0,4.0,73.9,False,1c33f37b2cc1
+base:desert_worn,Desert Worn,,actual HTTP faithful picker response,1,53.0,18.0,199.0,18.0,96.0,10.0,45.7,False,0fa50a85948f
+base:destroyed_coat,Destroyed Coat,,actual HTTP faithful picker response,0,30.0,16.0,225.0,8.0,75.0,10.0,79.6,False,bd81f961a9df
+base:diamond_coat,Diamond Coat,,actual HTTP faithful picker response,0,87.0,13.0,32.0,4.0,52.0,5.0,43.4,False,7d91a2d080a9
+base:drag_strip_gloss,Drag Strip Gloss,,actual HTTP faithful picker response,1,89.0,28.0,24.0,5.0,34.0,11.0,48.4,False,10e575588ba8
+base:dragonfly_wing,Dragonfly Resilin,Iridescent Insects,actual HTTP faithful picker response,2,33.0,91.0,120.0,51.0,77.0,147.0,51.3,False,b66b249ee730
+base:dragonfly_emerald,Emerald Skimmer,Iridescent Insects,actual HTTP faithful picker response,2,97.0,139.0,80.0,47.0,56.0,92.0,,False,8a0f9efa5ae4
+base:damselfly_cobalt,Damselfly Cobalt,Iridescent Insects,actual HTTP faithful picker response,1,92.0,138.0,82.0,41.0,33.0,48.0,,False,fe9d50408f10
+base:cicada_membrane,Cicada Window,Iridescent Insects,actual HTTP faithful picker response,3,74.0,136.0,60.0,70.0,37.0,64.0,,False,dc1ee6d6dc6e
+base:lacewing_aurora,Lacewing Aurora,Iridescent Insects,actual HTTP faithful picker response,5,50.0,124.0,67.0,60.0,56.0,81.0,,False,d752b67051f8
+base:mayfly_silver,Mayfly Silverstream,Iridescent Insects,actual HTTP faithful picker response,1,63.0,117.0,44.0,57.0,48.0,84.0,,False,60ff6f742c42
+base:bee_honeycomb,Bee Venturi,Iridescent Insects,actual HTTP faithful picker response,2,156.0,185.0,87.0,146.0,113.0,155.0,,False,2b5b112ac23c
+base:bumble_velvet,Bumble Velvet,Iridescent Insects,actual HTTP faithful picker response,2,142.0,84.17,56.0,69.0,45.0,53.0,,False,892afe20b267
+base:hoverfly_mirror,Hoverfly Mirror,Iridescent Insects,actual HTTP faithful picker response,4,49.0,179.0,129.0,140.0,16.0,162.0,,False,13c4d047ece8
+base:firefly_lantern,Firefly Lantern,Iridescent Insects,actual HTTP faithful picker response,3,73.0,150.0,79.0,85.0,42.0,123.17,,False,3c3e541c03dd
+base:firefly_ember,Firefly Emberglass,Iridescent Insects,actual HTTP faithful picker response,2,98.0,155.17,150.0,111.0,132.0,172.0,,False,374597c6e99e
+base:ant_velvet,Velvet Ant Armor,Iridescent Insects,actual HTTP faithful picker response,1,80.0,135.0,94.0,166.0,118.0,179.0,,False,7930e35537dd
+base:mantis_orchid,Orchid Mantis Silk,Iridescent Insects,actual HTTP faithful picker response,2,41.0,138.0,84.0,188.0,112.0,207.0,,False,ae685fd00275
+base:mantis_leaf,Leaf Mantis Patina,Iridescent Insects,actual HTTP faithful picker response,3,117.0,192.0,71.0,151.0,48.0,193.0,,False,a7914771c8e4
+base:katydid_leafglass,Katydid Leafglass,Iridescent Insects,actual HTTP faithful picker response,3,22.0,129.17,33.0,172.0,73.0,231.0,,False,da18001e1394
+base:stick_insect_bark,Stick Insect Bark,Iridescent Insects,actual HTTP faithful picker response,3,60.0,140.17,73.0,146.0,52.0,143.0,,False,0919f386a886
+base:cockroach_onyx,Roach Onyx Armor,Iridescent Insects,actual HTTP faithful picker response,6,167.0,131.0,213.0,65.0,176.0,133.0,,False,015083864e52
+base:weevil_opal,Weevil Opal Mosaic,Iridescent Insects,actual HTTP faithful picker response,5,190.0,98.0,236.0,66.0,171.0,119.0,,False,f4bfe6ba499b
+base:weevil_gilded,Gilded Weevil Striae,Iridescent Insects,actual HTTP faithful picker response,2,169.0,133.0,206.0,68.0,163.0,137.0,,False,27d97d1a051b
+base:scarab_sunplate,Scarab Sunplate,Iridescent Insects,actual HTTP faithful picker response,2,228.0,64.0,160.0,98.0,178.0,114.0,,False,d634ceed709f
+base:scarab_night,Scarab Nightshift,Iridescent Insects,actual HTTP faithful picker response,2,72.0,111.0,246.0,30.0,24.0,91.17,,False,399f38244f85
+base:jewel_spider,Jewel Spider Cuticle,Iridescent Insects,actual HTTP faithful picker response,3,176.0,181.0,250.0,93.0,43.0,164.0,,False,c2ca30ef20fc
+base:orb_weaver_silk,Orb Weaver Silk,Iridescent Insects,actual HTTP faithful picker response,5,110.0,146.17,250.0,117.0,45.0,225.0,,False,94bcd465f747
+base:praying_mantis_verdigris,Mantis Verdigris,Iridescent Insects,actual HTTP faithful picker response,4,162.0,197.0,250.0,37.0,88.0,155.0,,False,d2808ef32a8a
+base:hornet_titanium,Hornet Titanium,Iridescent Insects,actual HTTP faithful picker response,3,103.0,164.0,250.0,30.0,45.0,146.0,,False,0d9d6e21a377
+base:leafcutter_copper,Leafcutter Copper,Iridescent Insects,actual HTTP faithful picker response,4,76.0,193.0,250.0,29.0,51.0,213.0,,False,155d50bb658a
+base:dung_beetle_oil,Dung Beetle Oilglass,Iridescent Insects,actual HTTP faithful picker response,7,218.0,163.0,245.0,37.0,170.0,184.0,,False,b9ceafbc22bc
+base:bluebottle_mercury,Bluebottle Mercury,Iridescent Insects,actual HTTP faithful picker response,3,187.0,151.0,250.0,50.0,183.0,177.0,,False,e534e56e545b
+base:caddiscase_river,Caddiscase Riverstone,Iridescent Insects,actual HTTP faithful picker response,4,79.0,176.0,240.0,126.0,93.0,182.0,,False,851ec71c5eff
+base:duracoat,Duracoat,,actual HTTP faithful picker response,0,18.0,30.0,142.0,99.0,106.0,33.0,81.4,False,7f0111a43a2d
+base:eggshell,Eggshell,Foundation,actual HTTP faithful picker response,0,0.0,0.0,140.0,23.0,95.0,24.0,100.0,False,dc40ac76400f
+base:electric_ice,Electric Ice,,actual HTTP faithful picker response,1,121.0,129.0,111.0,56.17,94.0,27.0,72.4,False,6f613040f451
+base:enamel,Enamel,,actual HTTP faithful picker response,0,5.0,8.0,27.0,6.0,16.0,2.0,59.0,False,80deb3d8afe3
+base:endurance_ceramic,Apollo Shield Char,,actual HTTP faithful picker response,1,34.0,20.0,133.0,21.0,65.0,9.0,62.9,False,53cb35566b90
+base:factory_basecoat,Factory Basecoat,,actual HTTP faithful picker response,0,83.0,2.0,34.0,1.0,18.0,0.0,83.5,False,f20447a3ac09
+base:ferrari_rosso,Magma Core,,actual HTTP faithful picker response,1,159.0,34.0,26.0,8.0,58.0,12.0,68.2,False,2d7c93ab76a1
+base:firefly_glow,Firefly Glow,,actual HTTP faithful picker response,2,76.0,129.0,130.0,34.0,27.0,104.0,56.1,False,c5144e8164dc
+base:fiberglass,Fiberglass,,actual HTTP faithful picker response,0,24.0,11.0,51.0,22.0,16.0,0.0,31.2,False,6f0f85b0b6ca
+base:fire_engine,Fire Engine,,actual HTTP faithful picker response,1,5.0,2.0,20.0,6.0,26.0,5.0,74.3,False,485f61b8c618
+base:flat_black,Flat Black,Foundation,actual HTTP faithful picker response,0,0.0,0.0,248.0,26.0,253.0,29.0,100.0,False,1b890741675b
+base:f_pure_white,Pure White,,actual HTTP faithful picker response,0,0.0,0.0,139.0,22.0,100.0,24.0,100.0,False,31baa7a7324c
+base:f_pure_black,Pure Black,,actual HTTP faithful picker response,0,0.0,0.0,215.0,32.0,201.0,40.0,100.0,False,116b56140b10
+base:f_neutral_grey,Neutral Grey,,actual HTTP faithful picker response,0,0.0,0.0,201.0,30.0,160.0,33.0,100.0,False,8ab02c7d6b29
+base:f_soft_gloss,Soft Gloss,,actual HTTP faithful picker response,0,0.0,0.0,30.0,8.0,16.0,4.0,90.0,False,b857c6c96cd8
+base:f_soft_matte,Soft Matte,,actual HTTP faithful picker response,0,0.0,0.0,200.0,30.0,159.0,34.0,100.0,False,8ab02c7d6b29
+base:f_clear_satin,Clear Satin,,actual HTTP faithful picker response,0,0.0,0.0,95.0,16.0,70.0,18.0,100.0,False,2d32ac0c053d
+base:f_warm_white,Warm White,,actual HTTP faithful picker response,0,0.0,0.0,140.0,22.0,100.0,25.0,90.0,False,31baa7a7324c
+base:f_chrome,Chrome,Foundation,actual HTTP faithful picker response,0,253.0,7.0,2.0,2.0,17.0,4.0,86.7,False,495031d052b7
+base:f_satin_chrome,Satin Chrome,Foundation,actual HTTP faithful picker response,0,250.0,8.0,45.0,7.0,39.0,12.0,86.7,False,d04f717abb9a
+base:f_metallic,Metallic,Foundation,actual HTTP faithful picker response,0,200.0,9.0,50.0,10.0,16.0,4.0,80.0,False,d1cdec75a96b
+base:f_pearl,Pearl,Foundation,actual HTTP faithful picker response,0,100.0,5.0,40.0,9.0,16.0,4.0,80.0,False,b3fc90089698
+base:f_carbon_fiber,Carbon Fiber,,actual HTTP faithful picker response,0,55.0,0.0,30.0,0.0,16.0,0.0,86.7,False,e5b5e4aff841
+base:f_brushed,Brushed,Foundation,actual HTTP faithful picker response,0,180.0,7.0,75.0,10.0,65.0,16.0,80.0,False,3058fd0ca1a0
+base:f_frozen,Frozen,Foundation,actual HTTP faithful picker response,0,160.0,7.0,85.0,15.0,131.0,30.0,100.0,False,ed66313d344f
+base:f_powder_coat,Powder Coat,Foundation,actual HTTP faithful picker response,1,10.0,0.0,120.0,19.0,145.0,30.0,100.0,False,58e7307f5f14
+base:f_anodized,Anodized,,actual HTTP faithful picker response,1,180.0,7.0,74.0,10.0,65.0,17.0,100.0,False,3058fd0ca1a0
+base:f_vinyl_wrap,Vinyl Wrap,,actual HTTP faithful picker response,0,0.0,0.0,94.0,16.0,70.0,18.0,90.0,False,2d32ac0c053d
+base:f_gel_coat,Gel Coat,,actual HTTP faithful picker response,1,0.0,0.0,16.0,3.0,16.0,4.0,100.0,False,3474d9bee981
+base:f_baked_enamel,Baked Enamel,,actual HTTP faithful picker response,1,0.0,0.0,30.0,7.0,16.0,4.0,90.0,False,b857c6c96cd8
+base:f_candy,Candy,Foundation,actual HTTP faithful picker response,1,200.0,9.0,16.0,3.0,16.0,4.0,,False,2c2b072ca49e
+base:f_bead_blast,Bead Blast,Foundation,actual HTTP faithful picker response,0,180.0,8.0,161.0,24.0,141.0,31.0,,False,839ab59daab2
+base:f_satin_pearl,Satin Pearl,Foundation,actual HTTP faithful picker response,0,100.0,5.0,90.0,15.0,61.0,17.0,,False,ed9360dfaf2e
+base:f_matte_metallic,Matte Metallic,Foundation,actual HTTP faithful picker response,0,225.0,8.0,139.0,17.0,100.0,23.0,,False,a47fa11ff348
+base:f_dark_chrome,Dark Chrome,Foundation,actual HTTP faithful picker response,0,250.0,9.0,15.0,5.0,40.0,13.0,,False,bdf68de41197
+base:fleet_white,Hyper-Bleach Alabaster,,actual HTTP faithful picker response,0,6.0,2.0,82.0,15.0,20.0,3.0,85.3,False,a97ed2bd6eea
+base:forged_composite,Forged Composite,,actual HTTP faithful picker response,0,131.0,46.0,72.0,18.0,60.0,1.0,34.6,False,cd231fcfceb1
+base:frozen,Frozen,,actual HTTP faithful picker response,0,130.0,9.0,129.0,7.0,27.0,4.0,54.6,False,61d8658f94d3
+base:frozen_matte,Frozen Matte,,actual HTTP faithful picker response,0,94.0,32.0,199.0,12.0,204.0,2.0,59.2,False,74b6fff1cca5
+base:galvanized,Galvanized,,actual HTTP faithful picker response,0,255.0,1.0,94.0,60.0,17.0,15.0,78.7,False,e432d0dd96ce
+base:gloss,Gloss,Foundation,actual HTTP faithful picker response,1,0.0,0.0,30.0,8.0,16.0,4.0,90.0,False,b857c6c96cd8
+base:gloss_wrap,Gloss Wrap,,actual HTTP faithful picker response,2,82.0,35.0,31.0,14.0,16.0,4.0,48.3,False,773de60a78ab
+base:graphene,Graphene,,actual HTTP faithful picker response,0,157.0,35.0,32.0,11.0,16.0,0.0,23.0,False,c44248ed2ebe
+base:gunmetal,Gunmetal,,actual HTTP faithful picker response,1,206.0,35.0,22.0,28.0,16.0,4.0,74.2,False,1241c8a8bccd
+base:gunship_gray,Gunship Gray,,actual HTTP faithful picker response,0,12.0,23.0,34.0,29.0,17.0,3.0,61.3,False,18d02915bebc
+base:heat_treated,Heat Treated,,actual HTTP faithful picker response,6,255.0,1.0,71.0,40.0,17.0,9.0,37.3,False,fa74316e6542
+base:holographic_base,Holographic Base,,actual HTTP faithful picker response,10,119.0,162.0,109.0,156.0,101.0,159.0,65.4,False,b86648ff0011
+base:hybrid_weave,Hybrid Weave,,actual HTTP faithful picker response,1,150.0,76.0,49.0,20.0,16.0,0.0,83.2,False,15c2e6749121
+base:iridescent,Abalone Nacre,,actual HTTP faithful picker response,2,171.0,141.0,36.0,14.0,16.0,1.0,35.2,False,31c08e106842
+base:jelly_pearl,Jelly Pearl,,actual HTTP faithful picker response,1,128.0,26.0,46.0,9.0,16.0,1.0,44.7,False,ae19d858a106
+base:kevlar_base,Kevlar Base,,actual HTTP faithful picker response,1,51.0,23.0,110.0,22.0,120.0,1.0,33.4,False,2da08ef0a141
+base:koenigsegg_clear,Koenigsegg Clear,,actual HTTP faithful picker response,1,95.0,18.0,33.0,5.0,53.0,7.0,46.2,False,3afbe113599f
+base:lamborghini_verde,Lambo Verde,,actual HTTP faithful picker response,2,156.0,31.0,27.0,8.0,50.0,10.0,67.3,False,ffd2ebba4ed9
+base:liquid_titanium,Liquid Titanium,,actual HTTP faithful picker response,3,228.0,41.0,21.0,6.0,46.0,14.0,34.8,False,c977efd81636
+base:liquid_wrap,Liquid Wrap,,actual HTTP faithful picker response,4,255.0,1.0,35.0,14.0,16.0,2.0,44.5,False,1c700200aeaa
+base:pf_event_horizon_spectra,PF: Event Horizon Spectra,★ PRISM FORGE,actual HTTP faithful picker response,5,143.0,121.0,118.0,49.0,101.0,25.0,,False,b9769ad9a0c0
+base:pf_chromatic_storm,PF: Chromatic Storm,★ PRISM FORGE,actual HTTP faithful picker response,5,226.0,211.0,106.0,57.0,74.0,65.0,,False,ce4eea0c186a
+base:pf_neon_nova,PF: Neon Nova,★ PRISM FORGE,actual HTTP faithful picker response,3,75.0,49.0,134.0,52.0,125.0,7.0,,False,9882e8d2464f
+base:pf_molten_aurora,PF: Molten Aurora,★ PRISM FORGE,actual HTTP faithful picker response,3,168.0,218.0,123.0,47.0,102.0,50.0,,False,ccd81aa5bae0
+base:pf_void_pearl,PF: Void Pearl,★ PRISM FORGE,actual HTTP faithful picker response,0,48.0,169.0,125.0,51.0,124.0,25.0,,False,c46f850d805b
+base:pf_ion_trap,PF: Ion Trap,★ PRISM FORGE,actual HTTP faithful picker response,1,100.0,204.17,129.0,53.0,104.0,38.0,,False,ad5420db2922
+base:pf_sapphire_blood,PF: Sapphire Blood,★ PRISM FORGE,actual HTTP faithful picker response,5,160.0,176.0,125.0,48.0,97.0,45.0,,False,9cdcb68f6520
+base:pf_emerald_inferno,PF: Emerald Inferno,★ PRISM FORGE,actual HTTP faithful picker response,3,90.0,91.0,129.5,53.0,115.0,11.0,,False,1b74b780e192
+base:pf_violet_sunrise,PF: Violet Sunrise,★ PRISM FORGE,actual HTTP faithful picker response,5,99.0,146.0,127.0,50.0,112.0,32.0,,False,88d8683915dc
+base:pf_copper_moon,PF: Copper Moon,★ PRISM FORGE,actual HTTP faithful picker response,2,176.0,100.0,128.0,52.0,94.0,21.0,,False,5389cb6c3bf1
+base:pf_toxic_horizon,PF: Toxic Horizon,★ PRISM FORGE,actual HTTP faithful picker response,2,189.0,213.0,124.0,53.0,91.0,63.0,,False,79da79deab7c
+base:pf_glacial_burn,PF: Glacial Burn,★ PRISM FORGE,actual HTTP faithful picker response,7,235.0,155.17,105.0,55.0,67.0,43.0,,False,11e74bc13560
+base:pf_oil_nebula,PF: Oil Nebula,★ PRISM FORGE,actual HTTP faithful picker response,4,136.0,130.0,116.0,55.0,105.0,22.0,,False,b6d27076d16d
+base:pf_rose_quantum,PF: Rose Quantum,★ PRISM FORGE,actual HTTP faithful picker response,4,154.0,182.0,127.0,53.0,105.0,36.0,,False,7f160a7cc3b7
+base:pf_cobalt_fire,PF: Cobalt Fire,★ PRISM FORGE,actual HTTP faithful picker response,6,161.0,164.0,120.0,46.0,101.0,35.0,,False,14e13310a4e0
+base:pf_midnight_prism,PF: Midnight Prism,★ PRISM FORGE,actual HTTP faithful picker response,2,65.0,220.0,134.0,51.0,99.0,62.17,,False,f143be08242c
+base:pf_hyperwave,PF: Hyperwave,★ PRISM FORGE,actual HTTP faithful picker response,4,223.0,157.0,116.0,51.0,80.0,52.0,,False,ce4eea0c186a
+base:pf_crystal_fade,PF: Crystal Fade,★ PRISM FORGE,actual HTTP faithful picker response,2,203.0,116.0,120.0,50.0,83.0,29.0,,False,4153b6ce53ed
+base:pf_dark_matter_halo,PF: Dark Matter Halo,★ PRISM FORGE,actual HTTP faithful picker response,2,233.0,58.0,116.0,46.0,55.0,29.0,,False,85f7cca21636
+base:pf_apex_spectrum,PF: Apex Spectrum,★ PRISM FORGE,actual HTTP faithful picker response,8,225.0,184.0,114.0,52.0,81.0,62.0,,False,41db1b52b9f5
+base:pf_cluster_tar_eclipse,PF: Cluster Tar Eclipse,★ PRISM FORGE,actual HTTP faithful picker response,4,232.0,221.0,125.0,55.0,63.0,74.0,,False,ce4eea0c186a
+base:pf_cluster_bitumen_aurora,PF: Cluster Bitumen Aurora,★ PRISM FORGE,actual HTTP faithful picker response,2,80.0,66.0,130.0,49.0,119.0,14.0,,False,e4b183e6b252
+base:pf_cluster_obsidian_gild,PF: Cluster Obsidian Gild,★ PRISM FORGE,actual HTTP faithful picker response,4,175.0,166.0,124.0,53.0,89.0,42.0,,False,a6b02bb46b74
+base:pf_cluster_coal_starfield,PF: Cluster Coal Starfield,★ PRISM FORGE,actual HTTP faithful picker response,1,124.0,123.0,121.0,52.0,116.0,25.0,,False,f5873b1cc6d6
+base:pf_cluster_void_islands,PF: Cluster Void Islands,★ PRISM FORGE,actual HTTP faithful picker response,2,156.0,157.0,121.0,48.0,108.0,41.0,,False,1b74b780e192
+base:pf_bright_solar_daffodil,PF: Bright Solar Daffodil,★ PRISM FORGE,actual HTTP faithful picker response,1,193.0,137.0,134.0,53.0,84.0,36.0,,False,200be4bff30c
+base:pf_bright_hyperpink,PF: Bright Hyperpink,★ PRISM FORGE,actual HTTP faithful picker response,2,69.0,91.0,126.0,53.0,124.0,15.0,,False,79da79deab7c
+base:pf_bright_seafoam_bolt,PF: Bright Seafoam Bolt,★ PRISM FORGE,actual HTTP faithful picker response,0,132.5,210.0,125.0,56.0,99.0,74.0,,False,544d054cc0e3
+base:pf_bright_cerulean_pop,PF: Bright Cerulean Pop,★ PRISM FORGE,actual HTTP faithful picker response,1,183.0,154.0,135.0,47.0,91.0,33.0,,False,fafa7a0c011e
+base:pf_bright_canary_glass,PF: Bright Canary Glass,★ PRISM FORGE,actual HTTP faithful picker response,1,110.0,213.0,130.0,53.0,93.0,62.0,,False,fbbd718e9cff
+base:pf_bright_magenta_arc,PF: Bright Magenta Arc,★ PRISM FORGE,actual HTTP faithful picker response,1,173.0,94.0,112.0,52.17,89.0,19.0,,False,14e13310a4e0
+base:pf_bright_lime_voltage,PF: Bright Lime Voltage,★ PRISM FORGE,actual HTTP faithful picker response,1,161.0,209.0,138.0,47.0,102.0,49.0,,False,a232798f2bdf
+base:pf_bright_peach_fizz,PF: Bright Peach Fizz,★ PRISM FORGE,actual HTTP faithful picker response,1,114.0,121.0,127.5,53.0,114.0,24.0,,False,165ab28eec1e
+base:pf_bright_neon_ice_stream,PF: Bright Neon Ice Stream,★ PRISM FORGE,actual HTTP faithful picker response,2,178.0,122.17,118.0,48.0,90.0,26.0,,False,11e74bc13560
+base:pf_bright_orchid_pulse,PF: Bright Orchid Pulse,★ PRISM FORGE,actual HTTP faithful picker response,2,120.0,208.0,122.0,49.0,101.0,55.0,,False,27ad228064d1
+base:pf_blend_triad_mist,PF: Blend Triad Mist,★ PRISM FORGE,actual HTTP faithful picker response,8,137.0,205.0,128.0,48.0,104.0,48.0,,False,db28274bd70e
+base:pf_blend_quad_weave,PF: Blend Quad Weave,★ PRISM FORGE,actual HTTP faithful picker response,8,109.0,187.0,122.0,47.0,108.0,35.0,,False,9eb76aaaaf4b
+base:pf_spectrum_chaos_crown,PF: Spectrum Chaos Crown,★ PRISM FORGE,actual HTTP faithful picker response,9,189.0,150.0,130.0,51.0,83.0,36.0,,False,3618be282c45
+base:pf_prismatic_void_madness,PF: Prismatic Void Madness,★ PRISM FORGE,actual HTTP faithful picker response,12,135.0,211.0,118.0,48.0,98.0,61.0,,False,fbe1b4880e35
+base:pf_white_castle_of_fear,PF: White Castle of Fear,★ PRISM FORGE,actual HTTP faithful picker response,2,48.0,216.0,128.0,58.0,109.0,49.0,,False,bbfc3f5de32e
+base:pf_gradient_venetian_veil,PF: Gradient Venetian Veil,★ PRISM FORGE,actual HTTP faithful picker response,2,131.0,188.0,147.0,52.0,87.0,51.0,,False,4709f70abfa4
+base:pf_tri_crimson_cyan_mage,PF: Tri Crimson Cyan Mage,★ PRISM FORGE,actual HTTP faithful picker response,8,99.0,204.0,134.0,53.0,114.0,40.0,,False,ce4eea0c186a
+base:pf_quad_jade_violet_gold_slate,PF: Quad Jade Violet Gold Slate,★ PRISM FORGE,actual HTTP faithful picker response,5,101.0,198.0,122.0,49.0,118.0,31.0,,False,fe210aaf5308
+base:pf_fade_copper_teal_sunset,PF: Fade Copper Teal Sunset,★ PRISM FORGE,actual HTTP faithful picker response,6,144.0,199.0,121.0,56.0,96.0,46.17,,False,4fa26cec0e8b
+base:pf_blend_ocean_peach_ivory,PF: Blend Ocean Peach Ivory,★ PRISM FORGE,actual HTTP faithful picker response,4,70.0,188.0,137.0,42.0,102.0,51.0,,False,4153b6ce53ed
+base:pf_iris_velvet_crossfade,PF: Iris Velvet Crossfade,★ PRISM FORGE,actual HTTP faithful picker response,2,193.0,124.0,119.0,52.0,80.0,32.0,,False,4b795bd4aaa3
+base:pf_spectral_tidepool_wash,PF: Spectral Tidepool Wash,★ PRISM FORGE,actual HTTP faithful picker response,2,223.0,161.0,111.0,46.0,83.0,45.0,,False,db28274bd70e
+base:pf_midnight_coral_ember,PF: Midnight Coral Ember,★ PRISM FORGE,actual HTTP faithful picker response,3,24.0,209.17,102.0,52.0,114.0,39.0,,False,161a9226cbf4
+base:pf_emerald_orchid_storm,PF: Emerald Orchid Storm,★ PRISM FORGE,actual HTTP faithful picker response,5,180.0,108.0,125.0,49.17,89.5,27.0,,False,9eb76aaaaf4b
+base:pf_golden_ultraviolet_fog,PF: Golden Ultraviolet Fog,★ PRISM FORGE,actual HTTP faithful picker response,6,91.0,208.0,129.0,55.0,111.0,47.17,,False,f5873b1cc6d6
+base:living_matte,Living Matte,,actual HTTP faithful picker response,0,0.0,0.0,199.0,30.0,161.0,35.0,92.0,False,8ab02c7d6b29
+base:matte,Matte,Foundation,actual HTTP faithful picker response,0,0.0,0.0,200.0,32.0,160.0,34.0,100.0,False,8ab02c7d6b29
+base:matte_wrap,Matte Wrap,,actual HTTP faithful picker response,0,66.0,31.0,209.0,12.0,216.0,2.0,90.2,False,605bb7af2a24
+base:maybach_two_tone,Maybach Two-Tone,,actual HTTP faithful picker response,1,130.0,41.17,26.0,11.0,55.0,15.0,52.4,False,e999158dbc2c
+base:mclaren_orange,McLaren Orange,,actual HTTP faithful picker response,1,143.0,34.0,26.0,9.0,51.0,12.0,67.1,False,95e1b7e45e25
+base:mercury,Mercury,,actual HTTP faithful picker response,0,201.0,196.0,109.0,52.0,80.0,62.0,78.1,False,e8348a476606
+base:metal_flake_base,Metal Flake,,actual HTTP faithful picker response,0,192.0,36.17,18.0,2.0,16.0,2.0,40.2,False,72b82cb0bc4c
+base:original_metal_flake,Supernova Flake,,actual HTTP faithful picker response,0,232.0,50.0,21.5,11.0,18.0,5.0,65.1,False,7a85e3304d1c
+base:champagne_flake,Midas Touch Gold,,actual HTTP faithful picker response,0,172.0,40.0,18.0,1.0,17.0,2.0,59.4,False,de2e66a155d6
+base:fine_silver_flake,Starlight Mica Resin,,actual HTTP faithful picker response,0,186.0,27.0,18.0,1.0,16.0,1.0,45.5,False,74786c33630f
+base:blue_ice_flake,Permafrost Crystalline,,actual HTTP faithful picker response,1,184.0,63.0,22.0,12.0,18.0,4.0,64.2,False,3d15b41afae2
+base:bronze_flake,Antediluvian Brass,,actual HTTP faithful picker response,1,195.0,62.0,29.0,25.0,19.0,6.0,65.8,False,8a00792a25a3
+base:gunmetal_flake,Bismuth Crystal Flake,,actual HTTP faithful picker response,7,185.0,66.0,21.0,13.0,19.0,5.0,48.1,False,31b77f5e7cab
+base:green_flake,Kryptonite Shards,,actual HTTP faithful picker response,1,179.0,59.0,30.0,20.0,27.0,14.0,60.4,False,d992bc46d75d
+base:fire_flake,Solar Flare Ejecta,,actual HTTP faithful picker response,2,180.0,67.0,19.0,10.0,19.0,6.0,68.5,False,948fe0da2ee7
+base:metallic,Metallic,,actual HTTP faithful picker response,0,211.0,59.0,43.0,34.0,25.0,17.0,58.9,False,6ecb80900d6f
+base:midnight_pearl,Midnight Pearl,,actual HTTP faithful picker response,0,99.0,116.0,34.0,19.0,19.0,9.0,63.5,False,bb62f2878067
+base:mil_spec_od,Mil-Spec OD,,actual HTTP faithful picker response,2,9.0,18.0,187.0,107.0,195.0,6.0,45.6,False,f743104aac06
+base:multicam,Multicam,,actual HTTP faithful picker response,2,8.0,0.0,165.0,21.0,115.0,1.0,,False,b85f879d46b8
+base:marpat_woodland,MARPAT Digital,,actual HTTP faithful picker response,1,8.0,0.0,175.0,22.0,125.0,1.0,,False,34a3c4b0153f
+base:tiger_stripe,Tiger Stripe,,actual HTTP faithful picker response,2,8.0,0.0,168.0,21.0,118.0,1.0,,False,8e1726496fd6
+base:kryptek_typhon,Kryptek Typhon,,actual HTTP faithful picker response,0,8.0,0.0,160.0,21.0,110.0,1.0,,False,dce3e10c07b6
+base:m81_woodland,M81 Woodland,,actual HTTP faithful picker response,2,8.0,0.0,175.0,21.0,125.0,1.0,,False,25ec70373f92
+base:desert_dpm,Desert DPM,,actual HTTP faithful picker response,1,8.0,0.0,175.0,21.0,125.0,1.0,,False,aaf7cce6a1ca
+base:urban_digital,Urban Digital,,actual HTTP faithful picker response,0,8.0,0.0,170.0,21.0,120.0,1.0,,False,b8a5404c245c
+base:od_drab,OD Green,,actual HTTP faithful picker response,1,8.0,0.0,185.0,14.0,140.0,1.0,,False,ab55c932259f
+base:coyote_fde,Coyote FDE,,actual HTTP faithful picker response,1,8.0,0.0,185.0,14.0,140.0,1.0,,False,d3012dc4a27b
+base:blackout_ops,Blackout Ops,,actual HTTP faithful picker response,0,4.0,0.0,205.0,18.0,200.0,1.0,,False,fac8dddbdbec
+base:neon_circuit,Neon Circuit,,actual HTTP faithful picker response,5,0.0,0.0,91.0,76.0,30.0,1.0,,False,ac21b56d42c5
+base:tron_grid,Tron Grid,,actual HTTP faithful picker response,1,0.0,0.0,99.0,95.0,30.0,1.0,,False,6f583a6c7259
+base:synthwave,Synthwave,,actual HTTP faithful picker response,5,0.0,0.0,58.0,37.0,24.0,0.0,,False,8a0f9779325d
+base:data_rain,Data Rain,,actual HTTP faithful picker response,1,0.0,0.0,125.0,40.0,80.0,1.0,,False,cd9ed6d45af5
+base:glitch_rgb,RGB Glitch,,actual HTTP faithful picker response,10,0.0,0.0,113.0,104.0,40.0,1.0,,False,22853e318e8f
+base:hex_tech,Hex Tech,,actual HTTP faithful picker response,1,0.0,0.0,77.0,28.0,30.0,1.0,,False,c124ea6aee76
+base:holo_vapor,Holo Vapor,,actual HTTP faithful picker response,6,0.0,0.0,24.0,14.0,20.0,0.0,,False,cb14ebfe294b
+base:chrome_neon,Chrome Neon,,actual HTTP faithful picker response,5,121.0,227.0,26.0,11.0,16.0,0.0,,False,384448dd2594
+base:plasma_pulse,Plasma Pulse,,actual HTTP faithful picker response,1,0.0,0.0,62.0,36.0,24.0,0.0,,False,dc719a030dd3
+base:cyber_camo,Cyber Camo,,actual HTTP faithful picker response,4,0.0,0.0,90.0,19.0,24.0,0.0,,False,661d44f4bc62
+base:labradorite,Labradorite,,actual HTTP faithful picker response,4,84.0,185.0,121.0,152.0,69.0,198.0,,False,aa27d7ec68ac
+base:spectrolite,Spectrolite,,actual HTTP faithful picker response,12,93.0,229.0,96.0,86.0,84.0,147.0,,False,e1ad01a50a6b
+base:ammolite,Ammolite,,actual HTTP faithful picker response,6,254.0,118.17,115.0,134.0,110.0,199.0,,False,5302138242bc
+base:tiger_eye,Tiger's Eye,,actual HTTP faithful picker response,1,156.0,48.0,119.0,127.0,79.0,124.0,,False,460f1d3fa967
+base:dichroic_glass,Dichroic Glass,,actual HTTP faithful picker response,12,215.0,169.0,107.0,170.0,120.0,188.17,,False,51675ef48b47
+base:fire_agate,Fire Agate,,actual HTTP faithful picker response,1,57.0,193.0,110.0,103.0,104.0,153.0,,False,3367ae046d7c
+base:malachite,Malachite,,actual HTTP faithful picker response,1,147.0,170.0,87.0,54.0,88.0,150.17,,False,e0c443f36472
+base:azurite,Azurite,,actual HTTP faithful picker response,1,102.0,72.0,140.0,79.0,112.0,199.0,,False,e02b99ce81e1
+base:black_opal,Black Opal,,actual HTTP faithful picker response,0,110.0,114.0,125.0,87.0,118.0,102.0,,False,be35e3ac684a
+base:sunstone,Sunstone,,actual HTTP faithful picker response,1,153.0,52.0,105.0,106.17,118.0,124.0,,False,75bd91a53d79
+base:retroreflective_silver,Retro Silver,,actual HTTP faithful picker response,0,255.0,1.0,107.0,118.0,96.0,42.0,,False,a755b184973f
+base:hi_vis_lime,Hi-Vis Lime,,actual HTTP faithful picker response,1,253.0,5.0,113.0,81.0,122.0,193.0,,False,b8af22b8487d
+base:cats_eye_beaded,Cat's Eye,,actual HTTP faithful picker response,1,240.0,245.0,94.0,115.0,83.0,154.0,,False,3fc0377210cf
+base:diamond_grade,Diamond Grade,,actual HTTP faithful picker response,0,218.0,50.0,133.0,96.0,99.0,149.0,,False,a9c7b041b80a
+base:ghost_graphic,Ghost Graphic,,actual HTTP faithful picker response,0,46.0,254.0,115.0,113.0,123.0,126.0,,False,67dabb7be840
+base:amber_hazard,Amber Hazard,,actual HTTP faithful picker response,2,140.0,230.0,96.0,168.17,91.0,144.0,,False,3f0435a970d6
+base:tribal_blaze,Tribal Blaze,,actual HTTP faithful picker response,1,26.0,245.0,98.0,116.0,103.0,101.0,,False,930ec4555c64
+base:big_kahuna,Big Kahuna,,actual HTTP faithful picker response,4,35.0,203.0,94.0,113.0,87.0,143.0,,False,b36c89a7c046
+base:chevron_blaze,Battenburg,,actual HTTP faithful picker response,3,161.0,215.0,91.0,116.0,104.0,98.0,,False,784699eb0368
+base:starfield_reflective,Starfield,,actual HTTP faithful picker response,2,79.0,196.0,100.0,92.0,101.0,109.0,,False,13febf7bb5b2
+base:twoface_blue_copper,Two-Face Blue/Copper,,actual HTTP faithful picker response,6,130.0,126.17,96.0,94.0,151.0,187.0,,False,e2c46d4f1858
+base:twoface_purple_gold,Two-Face Purple/Gold,,actual HTTP faithful picker response,5,129.0,255.0,90.0,68.0,214.0,221.0,,False,f1d1b43f55ce
+base:twoface_green_magenta,Two-Face Green/Magenta,,actual HTTP faithful picker response,3,131.0,244.17,89.0,88.0,117.0,179.0,,False,715c8877c7df
+base:twoface_teal_orange,Two-Face Teal/Orange,,actual HTTP faithful picker response,6,141.0,255.0,89.0,70.0,115.0,190.0,,False,48b5ca897630
+base:twoface_red_cyan,Two-Face Red/Cyan,,actual HTTP faithful picker response,2,138.0,255.0,70.0,101.0,101.0,218.0,,False,a59f90160395
+base:twoface_silver_void,Two-Face Silver/Void,,actual HTTP faithful picker response,0,132.0,202.0,73.0,108.0,130.0,184.0,,False,f33551bd5a2b
+base:twoface_pink_teal,Two-Face Pink/Teal,,actual HTTP faithful picker response,5,151.0,255.0,89.0,140.0,20.0,150.0,,False,874b9719b125
+base:twoface_gold_emerald,Two-Face Gold/Emerald,,actual HTTP faithful picker response,4,133.0,255.0,56.0,85.0,143.0,215.0,,False,c997e8d5bdba
+base:twoface_violet_lime,Two-Face Violet/Lime,,actual HTTP faithful picker response,3,73.0,201.0,103.0,44.0,94.0,152.17,,False,5a46c0aad2cf
+base:twoface_crimson_navy,Two-Face Crimson/Navy,,actual HTTP faithful picker response,5,84.5,255.0,92.0,86.0,126.0,200.17,,False,712c96b3c334
+base:pour_ocean,Ocean Pour,,actual HTTP faithful picker response,4,176.0,136.0,151.0,223.0,229.0,139.0,,False,ee0d2ad09ee3
+base:pour_lava,Lava Pour,,actual HTTP faithful picker response,2,67.0,228.0,154.0,128.0,170.0,187.0,,False,5099239d19f9
+base:pour_galaxy,Galaxy Pour,,actual HTTP faithful picker response,4,175.0,230.0,15.0,114.0,188.0,158.0,,False,35a68fc3d2fd
+base:pour_gold_marble,Gold Marble Pour,,actual HTTP faithful picker response,1,79.0,235.0,128.0,176.0,184.0,188.0,,False,a44be4ff712f
+base:pour_tropical,Tropical Pour,,actual HTTP faithful picker response,4,97.5,220.0,123.0,139.0,167.0,239.0,,False,9a06f9a44bfe
+base:pour_rose,Rose Pour,,actual HTTP faithful picker response,2,65.0,228.0,116.0,165.0,188.0,166.0,,False,61121ae48991
+base:ink_emerald,Emerald Ink,,actual HTTP faithful picker response,1,108.0,230.0,184.0,132.0,163.0,238.0,,False,1b119efa808a
+base:ink_copper,Copper Ink,,actual HTTP faithful picker response,4,25.0,230.0,233.0,207.0,234.0,152.0,,False,2f00e2c8d953
+base:pour_monochrome,Mono Pour,,actual HTTP faithful picker response,0,122.0,232.0,81.0,132.0,132.0,196.0,,False,c9b65dbffb9e
+base:pour_neon,Neon Pour,,actual HTTP faithful picker response,12,199.0,215.0,120.0,178.0,220.0,211.17,,False,903567730c05
+base:sequin_silver,Silver Sequin,,actual HTTP faithful picker response,0,86.0,239.0,129.0,100.0,67.0,155.0,,False,a016e34a9526
+base:sequin_gold,Gold Sequin,,actual HTTP faithful picker response,3,107.0,255.0,148.0,130.0,67.0,149.0,,False,631d9517003d
+base:sequin_rose,Rose Sequin,,actual HTTP faithful picker response,3,61.0,209.0,141.0,96.0,40.0,150.0,,False,4a1eb002d701
+base:sequin_emerald,Emerald Sequin,,actual HTTP faithful picker response,3,87.0,233.0,121.0,116.17,64.0,162.0,,False,12374c5c7f48
+base:sequin_copper,Copper Sequin,,actual HTTP faithful picker response,2,108.0,124.0,101.0,42.0,132.0,89.0,,False,4851f3ced5fa
+base:sequin_ice,Ice Sequin,,actual HTTP faithful picker response,4,78.0,222.0,122.0,124.0,103.0,168.0,,False,d098c0f4032b
+base:sequin_rainbow,Rainbow Sequin,,actual HTTP faithful picker response,12,62.0,237.0,146.0,114.0,80.0,155.0,,False,bef38934bf4c
+base:sequin_holographic,Holo Sequin,,actual HTTP faithful picker response,12,107.0,203.0,134.0,94.0,99.0,175.17,,False,f9b21648b0fc
+base:disco_black_diamond,Disco Black Diamond,,actual HTTP faithful picker response,5,93.5,199.0,105.0,76.0,125.0,121.0,,False,ac9418a157e4
+base:sequin_mardi_gras,Mardi Gras,,actual HTTP faithful picker response,5,58.0,227.0,131.0,99.0,71.0,162.0,,False,4beaf74c589e
+base:flame_hotrod,Hot Rod Flames,Flames,actual HTTP faithful picker response,2,74.0,255.0,92.0,162.0,128.0,231.0,,False,92269313a19d
+base:flame_true_fire,True Fire,Flames,actual HTTP faithful picker response,2,104.0,86.0,150.0,63.17,110.0,192.0,,False,fd9beaa7ad40
+base:flame_blue,Blue Flame,Flames,actual HTTP faithful picker response,2,121.0,211.0,129.0,196.17,147.0,170.0,,False,228903e6df51
+base:flame_green,Green Fire,Flames,actual HTTP faithful picker response,2,164.0,201.0,131.0,177.0,123.0,142.0,,False,e834b8701deb
+base:flame_purple,Purple Flame,Flames,actual HTTP faithful picker response,1,153.0,249.0,134.0,180.0,137.0,188.0,,False,61315834cd23
+base:flame_ghost,Ghost Flames,Flames,actual HTTP faithful picker response,0,98.0,221.0,137.0,123.0,124.0,208.0,,False,4d2ff6e473d2
+base:flame_inferno,Inferno,Flames,actual HTTP faithful picker response,1,119.0,249.0,103.0,201.0,143.0,203.0,,False,9bd414d55268
+base:flame_white_hot,White Hot,Flames,actual HTTP faithful picker response,2,121.0,185.34,151.0,111.0,123.0,171.17,,False,abf2198278b5
+base:flame_rainbow,Rainbow Fire,Flames,actual HTTP faithful picker response,7,108.0,189.0,142.0,240.0,117.0,181.0,,False,10139f602bad
+base:flame_ember,Ember Coals,Flames,actual HTTP faithful picker response,1,118.0,113.0,136.0,135.0,129.0,156.0,,False,e3a21e5606e7
+base:flame_candy,Candy Flame,Flames,actual HTTP faithful picker response,2,148.0,175.17,111.0,185.0,128.0,200.0,,False,fc771d7ac682
+base:flame_plasma,Plasma Fire,Flames,actual HTTP faithful picker response,4,186.0,238.0,125.0,224.0,133.0,168.0,,False,e571d5eb2374
+base:flame_cold,Cold Fire,Flames,actual HTTP faithful picker response,2,99.0,255.0,130.0,214.0,121.0,181.0,,False,f0c940ce44cd
+base:flame_lava,Lava Flame,Flames,actual HTTP faithful picker response,1,101.0,236.0,136.0,147.0,127.0,154.0,,False,b8b784846245
+base:flame_phoenix,Phoenix,Flames,actual HTTP faithful picker response,2,117.0,198.0,133.0,161.0,125.0,196.0,,False,31fb27d41be6
+base:flame_toxic,Toxic Flame,Flames,actual HTTP faithful picker response,1,135.0,255.0,138.0,188.0,121.0,185.0,,False,4582a288b2da
+base:flame_pink,Pink Flame,Flames,actual HTTP faithful picker response,4,133.0,175.0,138.0,196.0,127.0,162.0,,False,3584e861d7e1
+base:flame_smoke,Smoke & Fire,Flames,actual HTTP faithful picker response,1,153.0,97.0,110.0,163.0,143.0,210.0,,False,b25eb5baee35
+base:flame_tribal,Tribal Flame,Flames,actual HTTP faithful picker response,2,45.0,246.0,142.0,162.0,115.0,212.0,,False,68c5bf1228db
+base:flame_dragon,Dragon Breath,Flames,actual HTTP faithful picker response,3,114.0,197.0,145.0,135.0,135.0,223.0,,False,d33d089da16e
+base:marble_carrara,Carrara Marble,,actual HTTP faithful picker response,0,69.0,221.0,15.0,140.0,107.0,219.0,,False,95e6ed24a815
+base:marble_calacatta,Calacatta Gold,,actual HTTP faithful picker response,1,117.0,255.0,15.0,38.0,106.0,239.0,,False,13a5b3cbdca6
+base:marble_nero,Nero Marquina,,actual HTTP faithful picker response,0,70.0,241.0,15.0,145.17,91.0,195.0,,False,d757c66a9661
+base:marble_portoro,Portoro,,actual HTTP faithful picker response,1,58.0,215.0,15.0,14.0,64.0,200.0,,False,e5bacdb53a9e
+base:marble_statuario,Statuario,,actual HTTP faithful picker response,0,48.0,255.0,16.0,3.0,134.0,239.0,,False,627b37070c81
+base:marble_bardiglio,Bardiglio Grey,,actual HTTP faithful picker response,0,113.0,255.0,50.0,18.0,43.0,238.0,,False,9f2bdd162c02
+base:marble_rose,Rose Marble,,actual HTTP faithful picker response,1,119.0,255.0,164.0,236.0,91.0,239.0,,False,f7ae5c937d35
+base:marble_rosso,Rosso Levanto,,actual HTTP faithful picker response,2,0.0,255.0,15.0,153.17,91.0,191.0,,False,6b7fe05cd771
+base:marble_verde_alpi,Verde Alpi,,actual HTTP faithful picker response,1,77.0,235.0,15.0,76.0,56.0,172.0,,False,3d542b60fc7d
+base:marble_fusion,Fusion Marble,,actual HTTP faithful picker response,7,1.0,166.17,38.0,94.0,68.0,176.0,,False,294c4f126e4c
+base:travertine,Travertine,,actual HTTP faithful picker response,1,32.0,171.0,73.0,169.0,77.0,139.0,,False,50913099ef81
+base:obsidian_gold,Obsidian Gold,,actual HTTP faithful picker response,1,0.0,92.0,108.0,179.0,119.0,192.0,,False,ab53a30f5d11
+base:onyx_emerald,Emerald Onyx,,actual HTTP faithful picker response,1,4.0,222.0,94.0,201.0,130.5,196.0,,False,ed22d4e4a9c4
+base:onyx_honey,Honey Onyx,,actual HTTP faithful picker response,1,8.0,209.0,97.0,205.0,16.0,88.0,,False,3080fa97d305
+base:onyx_pink,Pink Onyx,,actual HTTP faithful picker response,1,0.0,144.0,101.0,213.0,89.0,212.0,,False,cfcaee1fc8d3
+base:onyx_white,White Onyx,,actual HTTP faithful picker response,0,4.0,174.0,87.0,194.0,66.0,105.0,,False,788513ab6b1b
+base:agate_blue,Blue Agate,,actual HTTP faithful picker response,1,2.0,121.0,103.0,215.0,133.0,239.0,,False,70486f459ec7
+base:lapis_lazuli,Lapis Lazuli,,actual HTTP faithful picker response,1,56.0,255.0,56.0,43.0,44.0,239.0,,False,13207f60bf2f
+base:amethyst,Amethyst,,actual HTTP faithful picker response,1,32.0,151.0,15.0,63.0,72.0,154.0,,False,fa4b2ddaffeb
+base:tiger_iron,Tiger Iron,,actual HTTP faithful picker response,3,74.0,255.0,19.0,240.0,55.0,149.0,,False,a359fd1074c3
+base:diner_checker,Diner Checkerboard,Sock Hop,actual HTTP faithful picker response,4,139.0,115.0,74.0,126.0,154.0,126.0,,False,e4a64f065ba8
+base:soda_check,Soda Fountain Check,Sock Hop,actual HTTP faithful picker response,2,52.0,172.0,194.0,148.17,49.0,177.0,,False,a243c090c9ba
+base:cherry_polka,Cherry Polka,Sock Hop,actual HTTP faithful picker response,2,51.0,136.0,205.0,106.0,55.0,107.0,,False,64f9b107a7d5
+base:lemon_polka,Lemon Polka,Sock Hop,actual HTTP faithful picker response,2,51.0,138.0,197.0,134.0,80.0,160.0,,False,06608ab1b9fd
+base:bubblegum_dot,Bubblegum Dots,Sock Hop,actual HTTP faithful picker response,2,75.0,164.0,236.0,129.0,16.0,109.0,,False,319bb0e4519b
+base:mint_stripe,Mint Candy Stripe,Sock Hop,actual HTTP faithful picker response,1,130.0,185.0,192.0,102.0,79.0,91.0,,False,830c06c39edf
+base:coral_stripe,Coral Stripe,Sock Hop,actual HTTP faithful picker response,4,77.0,179.0,174.0,70.0,63.0,72.0,,False,ad7f7d309414
+base:gingham_red,Red Gingham,Sock Hop,actual HTTP faithful picker response,2,111.0,170.0,173.0,134.0,97.0,172.0,,False,f707151ca1d0
+base:atomic_starburst,Atomic Starburst,Sock Hop,actual HTTP faithful picker response,2,49.0,111.0,192.0,95.0,57.0,103.0,,False,edfbcdd382ba
+base:atomic_charcoal,Atomic Charcoal,Sock Hop,actual HTTP faithful picker response,4,146.0,255.0,180.0,224.0,255.0,238.0,,False,7c8badb8eb5c
+base:googie_orbit,Googie Orbit,Sock Hop,actual HTTP faithful picker response,3,57.0,109.0,198.0,93.0,44.0,76.0,,False,d9a8b9713b9b
+base:vinyl_groove,Vinyl Record,Sock Hop,actual HTTP faithful picker response,5,101.0,89.0,164.0,71.0,119.0,93.0,,False,fc4862406035
+base:harlequin,Harlequin,Sock Hop,actual HTTP faithful picker response,3,121.0,255.0,213.0,218.0,57.0,239.0,,False,ae273a9a245f
+base:argyle_pastel,Pastel Argyle,Sock Hop,actual HTTP faithful picker response,7,54.0,167.0,221.0,94.0,34.0,98.0,,False,a268aa2f269e
+base:terrazzo_cream,Terrazzo,Sock Hop,actual HTTP faithful picker response,5,110.0,255.0,195.0,228.0,150.0,239.0,,False,0065977c8a0e
+base:formica_boomerang,Formica Boomerang,Sock Hop,actual HTTP faithful picker response,4,70.0,100.0,175.0,101.0,65.0,105.17,,False,6279bedb146e
+base:jukebox_neon,Jukebox Neon,Sock Hop,actual HTTP faithful picker response,7,93.0,210.0,170.0,193.0,90.0,212.0,,False,18c7c6091677
+base:pink_fleck,Pink Metalflake,Sock Hop,actual HTTP faithful picker response,2,207.0,141.0,64.0,177.0,232.0,118.0,,False,1df67e151cd8
+base:turquoise_fleck,Turquoise Metalflake,Sock Hop,actual HTTP faithful picker response,2,107.0,171.0,165.0,164.0,120.0,174.0,,False,3c40f49d0a51
+base:chrome_diner,Diner Chrome,Sock Hop,actual HTTP faithful picker response,0,148.0,181.0,163.0,162.0,174.0,149.0,,False,a73b457e7c40
+base:tie_dye_spiral,Tie-Dye Spiral,Groovy Vibes,actual HTTP faithful picker response,4,197.0,217.0,153.0,112.0,96.0,149.0,,False,a2c0aac64a11
+base:tie_dye_crumple,Crumple Tie-Dye,Groovy Vibes,actual HTTP faithful picker response,10,145.0,85.0,131.0,78.0,167.0,76.0,,False,b14f1009c55b
+base:peace_tie_dye,Peace Tie-Dye,Groovy Vibes,actual HTTP faithful picker response,12,186.0,180.0,220.0,169.0,58.0,144.0,,False,51e40a9213c3
+base:psychedelic_swirl,Psychedelic Swirl,Groovy Vibes,actual HTTP faithful picker response,12,160.0,78.0,127.0,69.0,171.0,75.0,,False,438537add5c3
+base:acid_swirl,Acid Swirl,Groovy Vibes,actual HTTP faithful picker response,5,89.0,78.0,145.0,55.0,104.0,79.0,,False,fff4ef5e9978
+base:melting_rainbow,Melting Rainbow,Groovy Vibes,actual HTTP faithful picker response,8,70.0,126.0,191.0,123.0,72.0,134.0,,False,2b68e059c11d
+base:hippie_rainbow,Hippie Rainbow,Groovy Vibes,actual HTTP faithful picker response,8,111.0,221.0,158.0,198.0,114.0,231.0,,False,11f462164471
+base:sunburst_60s,60s Sunburst,Groovy Vibes,actual HTTP faithful picker response,2,84.0,51.0,175.0,37.0,83.0,27.17,,False,af88eb69e3fa
+base:groovy_zigzag,Groovy Zigzag,Groovy Vibes,actual HTTP faithful picker response,9,95.0,103.0,173.0,105.0,94.0,70.0,,False,5d08521c0d64
+base:kaleido_rings,Kaleidoscope,Groovy Vibes,actual HTTP faithful picker response,2,105.0,125.17,126.0,82.0,52.0,66.17,,False,daf41a0dd9d5
+base:trippy_concentric,Trippy Rings,Groovy Vibes,actual HTTP faithful picker response,10,221.0,194.0,135.0,179.0,43.0,175.0,,False,1d80a63a28dd
+base:warp_op,Warp Op-Art,Groovy Vibes,actual HTTP faithful picker response,10,212.0,181.0,130.0,176.0,47.0,170.0,,False,7b980c33596e
+base:oil_slick_groove,Oil Slick,Groovy Vibes,actual HTTP faithful picker response,8,89.0,210.0,165.0,187.0,97.0,218.0,,False,d78ab53a070e
+base:groovy_marble,Groovy Marble,Groovy Vibes,actual HTTP faithful picker response,5,157.0,131.0,160.0,100.0,138.0,120.0,,False,68d8cd3ba0bb
+base:liquid_light,Liquid Light Show,Groovy Vibes,actual HTTP faithful picker response,6,225.0,169.0,160.0,189.0,85.0,180.17,,False,ef528dd4706b
+base:flower_power,Flower Power,Groovy Vibes,actual HTTP faithful picker response,4,81.0,76.0,174.0,81.0,82.0,52.0,,False,2ea1bcf8d5ec
+base:lava_lamp_purple,Lava Lamp Purple,Groovy Vibes,actual HTTP faithful picker response,2,166.0,189.0,83.0,150.0,94.0,118.0,,False,01f527df93a3
+base:lava_lamp_groovy,Lava Lamp Groovy,Groovy Vibes,actual HTTP faithful picker response,3,101.0,133.0,99.0,144.0,35.0,193.0,,False,d317fda2a50d
+base:mushroom_fade,Mushroom Fade,Groovy Vibes,actual HTTP faithful picker response,2,136.0,207.0,141.0,135.0,74.0,125.0,,False,d21fac03ec7b
+base:neon_acid_blob,Neon Acid,Groovy Vibes,actual HTTP faithful picker response,5,105.5,197.0,72.0,128.0,116.0,183.0,,False,497e1dc06edc
+base:mil_spec_tan,Martian Regolith Dust,,actual HTTP faithful picker response,1,3.0,5.0,221.0,57.0,200.0,2.0,38.7,False,4744abe11eb7
+base:mirror_gold,Mirror Gold,,actual HTTP faithful picker response,1,225.0,15.0,32.0,10.0,21.0,8.0,34.7,False,6c541401e601
+base:moonstone,Moonstone,Foundation,actual HTTP faithful picker response,3,74.0,153.0,70.0,22.0,16.0,1.0,47.3,False,7ab10945f91d
+base:moth_luna,Luna Silk,Iridescent Insects,actual HTTP faithful picker response,4,28.0,38.0,159.0,15.0,49.0,24.0,59.8,False,b2f262862dec
+base:moth_tiger,Tiger Moth Ember,Iridescent Insects,actual HTTP faithful picker response,2,119.0,205.0,66.0,84.0,64.0,98.0,,False,7fe63d3e556f
+base:moth_hummingbird,Hummingbird Blur,Iridescent Insects,actual HTTP faithful picker response,6,89.0,137.0,67.0,79.0,60.0,76.0,,False,458ec1470fcf
+base:moth_owl,Owl Moth Sable,Iridescent Insects,actual HTTP faithful picker response,1,99.0,150.0,53.0,77.0,47.0,74.0,,False,4501f8cc180d
+base:neutron_star,Accretion Ring,,actual HTTP faithful picker response,1,55.0,222.0,184.0,171.17,93.0,209.0,42.4,False,8053155193d1
+base:obsidian,Obsidian,,actual HTTP faithful picker response,0,56.0,240.0,55.0,169.0,109.0,215.0,63.3,False,6b94d4b13686
+base:opal,Dragon's Pearl Scale,Foundation,actual HTTP faithful picker response,7,96.0,213.0,89.0,42.0,16.0,1.0,34.5,False,e3f7ae7d4b73
+base:orange_peel_gloss,Candy Tangerine,,actual HTTP faithful picker response,1,128.0,25.0,46.0,10.0,16.0,5.0,31.7,False,b3c3f1e5242d
+base:organic_metal,Organic Metal,,actual HTTP faithful picker response,2,139.0,10.0,78.0,7.0,37.0,4.0,47.5,False,adc667e80907
+base:oxidized_copper,Oxidized Copper,,actual HTTP faithful picker response,1,201.5,19.0,138.0,11.0,60.0,6.0,45.5,False,622f89601751
+base:pace_car_pearl,Pace Car Pearl,,actual HTTP faithful picker response,1,137.0,25.0,26.0,6.0,47.0,9.0,54.1,False,c8b81ba70be8
+base:pagani_tricolore,Tricolore,,actual HTTP faithful picker response,4,126.0,141.0,167.0,131.0,135.0,152.0,61.4,False,9bd6f5b86fec
+base:patina_bronze,Patina Bronze,,actual HTTP faithful picker response,2,242.0,16.0,120.0,12.0,50.0,6.0,30.0,False,d79d6d69156c
+base:pearl,Pearl,,actual HTTP faithful picker response,0,69.0,152.0,41.0,81.0,17.0,11.0,54.9,False,4ec0bac9981d
+base:pearlescent_white,Pearl White,,actual HTTP faithful picker response,0,84.0,109.0,18.0,1.0,16.0,3.0,77.8,False,a2903ad3e1e0
+base:pewter,Necromantic Lead,,actual HTTP faithful picker response,0,122.0,87.0,26.0,16.0,20.0,3.0,73.4,False,d600463bddaa
+base:piano_black,Piano Black (Vortex Depth),,actual HTTP faithful picker response,0,8.0,0.0,16.0,2.0,16.0,0.0,100.0,False,c1b4ccdcfa22
+base:plasma_core,Plasma Core,,actual HTTP faithful picker response,3,38.0,244.0,23.0,170.0,17.0,224.0,49.4,False,4cfdeaba5fd1
+base:plasma_metal,Alien Smart-Material,,actual HTTP faithful picker response,5,98.0,210.0,114.0,44.0,109.0,41.0,65.7,False,38496e336d10
+base:platinum,Platinum,,actual HTTP faithful picker response,0,233.0,31.0,23.0,6.0,53.0,11.0,44.3,False,fa6d5702f356
+base:police_black,Police Black,,actual HTTP faithful picker response,0,14.0,7.0,35.0,8.0,22.0,3.0,85.7,False,1d91ac833e85
+base:porcelain,Shattered Bone Marrow,,actual HTTP faithful picker response,0,5.0,7.0,28.0,40.0,16.0,2.0,59.4,False,85630eb0ac61
+base:porsche_pts,Porsche PTS,,actual HTTP faithful picker response,2,37.0,9.0,33.0,3.0,51.0,4.0,68.6,False,25d36749f81a
+base:powder_coat,Powder Coat,,actual HTTP faithful picker response,1,13.0,30.0,148.0,49.0,17.0,5.0,60.4,False,2259d66a2600
+base:primer,Primer,Foundation,actual HTTP faithful picker response,0,0.0,0.0,215.0,32.0,200.0,42.0,100.0,False,116b56140b10
+base:quantum_black,Quantum Black,,actual HTTP faithful picker response,0,36.0,201.0,48.0,186.0,32.0,210.34,37.2,False,8961b5b61f9d
+base:race_day_gloss,Hyper-Ceramic Shell,,actual HTTP faithful picker response,2,81.0,34.0,23.0,5.0,37.0,13.0,64.2,False,8c8a06e09ec0
+base:rally_mud,Rally Mud,,actual HTTP faithful picker response,1,29.0,32.0,198.0,47.17,84.0,12.0,66.4,False,5774fd5dcd90
+base:raw_aluminum,Raw Aluminum,,actual HTTP faithful picker response,0,165.0,9.0,89.0,6.0,23.0,4.0,40.3,False,c4776b78ea3d
+base:red_chrome,Vampire Chrome,,actual HTTP faithful picker response,2,241.0,29.0,23.0,11.0,17.0,2.0,51.9,False,ca4dc752c3f4
+base:rose_gold,Synthesized Biomech Flesh,,actual HTTP faithful picker response,1,181.0,9.17,39.0,3.0,37.0,4.0,36.1,False,678ca8fec622
+base:rugged,Rugged,,actual HTTP faithful picker response,0,88.0,13.0,205.0,29.0,81.0,17.0,57.6,False,f9e223874548
+base:salt_corroded,Salt Corroded,,actual HTTP faithful picker response,0,117.0,13.0,174.0,14.0,77.0,8.0,81.2,False,c257125a8de8
+base:sandblasted,Sandblasted,,actual HTTP faithful picker response,0,98.0,9.0,93.0,3.0,38.0,2.0,60.9,False,53523712959f
+base:scarab_gold,Scarab Gold,,actual HTTP faithful picker response,1,64.0,126.17,92.0,10.0,36.0,75.0,56.8,False,69c9a1320b1e
+base:satin,Satin,Foundation,actual HTTP faithful picker response,0,0.0,0.0,95.0,16.0,70.0,19.0,100.0,False,2d32ac0c053d
+base:satin_chrome,Satin Chrome,,actual HTTP faithful picker response,0,237.0,37.0,31.0,29.0,17.0,5.0,54.3,False,3f781c6ca2b6
+base:satin_gold,Satin Gold,,actual HTTP faithful picker response,1,141.0,8.0,92.0,4.0,31.0,3.0,59.7,False,33e77ee7bc81
+base:satin_metal,Satin Metal,,actual HTTP faithful picker response,1,246.0,50.0,99.0,62.0,25.0,21.0,72.8,False,8674ebd89b21
+base:satin_wrap,Satin Wrap,,actual HTTP faithful picker response,0,177.0,23.0,89.0,8.0,52.0,2.0,46.9,False,11847ebd4a47
+base:scuffed_satin,Scuffed Satin,,actual HTTP faithful picker response,0,0.0,0.0,140.0,22.0,101.0,22.0,100.0,False,31baa7a7324c
+base:school_bus,Hazard Synthetics,,actual HTTP faithful picker response,1,4.0,0.0,20.0,6.0,25.0,4.0,98.7,False,f2f1df56db7b
+base:semi_gloss,Semi-Gloss,Foundation,actual HTTP faithful picker response,1,0.0,0.0,60.0,12.0,16.0,4.0,90.0,False,d4928ecd680a
+base:shokk_blood,SHOKK Blood,,actual HTTP faithful picker response,1,128.0,163.0,124.0,50.0,102.0,32.0,60.0,False,ea4d0ddfa9fa
+base:shokk_pulse,SHOKK Pulse,,actual HTTP faithful picker response,3,119.0,127.0,125.0,54.0,94.0,30.0,43.6,False,c1efce1a12a3
+base:shokk_static,SHOKK Static,,actual HTTP faithful picker response,0,32.0,210.0,120.0,56.0,107.0,56.0,51.0,False,46eebee80782
+base:shokk_venom,SHOKK Venom,,actual HTTP faithful picker response,4,66.0,221.0,37.0,213.0,26.0,177.0,50.7,False,5f90c4428f86
+base:shokk_void,SHOKK Void,,actual HTTP faithful picker response,2,194.0,163.0,131.0,55.0,87.0,37.0,50.3,False,d1bec0cbabfb
+base:shokk_flux,SHOKK Flux,,actual HTTP faithful picker response,3,59.0,125.0,125.0,50.0,115.0,22.0,41.4,False,02d94c8ea1f1
+base:shokk_phase,SHOKK Phase,,actual HTTP faithful picker response,3,133.0,205.0,125.0,49.0,113.0,48.0,41.9,False,04a9b7340d9a
+base:shokk_dual,SHOKK Dual,,actual HTTP faithful picker response,7,94.0,204.0,109.0,50.0,108.0,44.0,54.3,False,3ecc131c7e25
+base:shokk_spectrum,SHOKK Spectrum,,actual HTTP faithful picker response,7,125.0,132.0,136.0,50.0,92.0,30.0,41.8,False,ef53e4c8aa9c
+base:shokk_aurora,SHOKK Aurora,,actual HTTP faithful picker response,4,108.0,216.0,127.0,53.0,104.0,56.0,49.9,False,2d0fcb956b59
+base:shokk_helix,SHOKK Helix,,actual HTTP faithful picker response,3,7.0,231.0,76.0,193.0,16.0,220.0,46.0,False,220e7cd80ae8
+base:shokk_catalyst,SHOKK Catalyst,,actual HTTP faithful picker response,5,204.0,219.0,122.0,52.0,87.0,57.0,44.8,False,b549fd2dc620
+base:shokk_mirage,SHOKK Mirage,,actual HTTP faithful picker response,5,182.0,120.0,112.0,51.0,88.0,27.0,41.4,False,0547ccbe4364
+base:shokk_polarity,SHOKK Polarity,,actual HTTP faithful picker response,6,156.0,213.0,102.0,52.0,98.0,47.0,44.2,False,ea4d0ddfa9fa
+base:shokk_reactor,SHOKK Reactor,,actual HTTP faithful picker response,3,50.0,179.0,147.0,47.0,113.0,34.0,46.5,False,6f482fa9f8e6
+base:shokk_prism,SHOKK Prism,,actual HTTP faithful picker response,8,145.0,159.17,115.0,51.0,92.0,36.0,41.0,False,21a4c3344eba
+base:shokk_wraith,SHOKK Wraith,,actual HTTP faithful picker response,2,116.0,132.0,128.0,50.0,93.0,28.0,47.1,False,f1cda5b77fec
+base:shokk_tesseract_v2,SHOKK Tesseract,,actual HTTP faithful picker response,4,40.0,211.0,124.0,211.0,65.0,185.0,45.6,False,1553be7a4131
+base:shokk_fusion_base,SHOKK Fusion,,actual HTTP faithful picker response,3,72.0,172.0,123.0,49.0,121.0,28.0,45.0,False,282d5d414201
+base:shokk_rift,SHOKK Rift,,actual HTTP faithful picker response,3,121.0,218.0,114.0,55.0,102.0,62.0,46.5,False,5f666b5db100
+base:shokk_vortex,SHOKK Vortex,,actual HTTP faithful picker response,6,92.0,127.0,112.0,55.0,111.0,20.0,48.5,False,49200aa542e7
+base:shokk_surge,SHOKK Surge,,actual HTTP faithful picker response,2,151.0,159.0,115.0,50.0,95.0,33.0,45.7,False,b2a0b6cdcddf
+base:shokk_cipher,SHOKK Cipher,,actual HTTP faithful picker response,2,8.0,244.0,33.0,158.0,36.0,200.0,48.8,False,44b69747215e
+base:shokk_inferno,SHOKK Inferno,,actual HTTP faithful picker response,2,141.0,199.0,120.0,51.0,94.0,52.0,42.5,False,a5f5c1fa1a76
+base:shokk_apex,SHOKK Apex,,actual HTTP faithful picker response,6,135.0,149.0,122.0,56.0,87.0,38.0,41.1,False,29c7c718f389
+base:showroom_clear,Bioluminescent Slime,,actual HTTP faithful picker response,0,26.0,5.0,25.0,4.0,47.0,7.0,87.9,False,bfe6dc1b67e0
+base:silk,Silk,,actual HTTP faithful picker response,0,0.0,0.0,95.0,16.0,70.0,17.0,100.0,False,2d32ac0c053d
+base:smoked,Demon's Breath Particle Shift,,actual HTTP faithful picker response,0,35.0,27.0,45.0,20.0,48.0,15.0,83.1,False,fdf73e08fe8a
+base:solar_panel,Solar Panel,,actual HTTP faithful picker response,3,38.0,171.0,69.5,168.0,186.0,182.0,35.3,False,328450de9f90
+base:spectraflame,Sentient Polycarbonate,Foundation,actual HTTP faithful picker response,2,236.0,21.0,40.0,16.0,17.0,3.0,52.6,False,694afded5ac2
+base:bullseye_chrome,Liquid Gallium,,actual HTTP faithful picker response,0,215.0,63.0,22.0,9.0,40.0,24.0,63.6,False,3af8776775c5
+base:stealth_wrap,Active Camo Mesh,,actual HTTP faithful picker response,0,118.0,31.0,169.0,10.0,130.0,2.0,85.9,False,9a4dc5d3483e
+base:stock_car_enamel,Stock Car Enamel,,actual HTTP faithful picker response,1,58.0,23.0,26.0,6.0,43.0,9.0,63.8,False,79e2a230f535
+base:submarine_black,Sub Black,,actual HTTP faithful picker response,0,11.0,24.0,246.0,36.0,210.0,6.0,67.8,False,ed27738b11df
+base:sun_baked,Sun Baked,,actual HTTP faithful picker response,0,40.0,16.0,227.0,29.0,79.0,19.0,53.6,False,f6ff901f21fa
+base:sun_fade,Sun Fade,,actual HTTP faithful picker response,0,36.0,15.0,215.0,31.0,90.0,19.0,76.1,False,809d9f97fa10
+base:superconductor,Absolute Zero Cryo-Frost,,actual HTTP faithful picker response,2,36.0,239.0,180.0,227.0,196.0,167.0,35.5,False,820869421ff6
+base:surgical_steel,Adamantium Plate,,actual HTTP faithful picker response,0,177.0,21.0,23.0,6.0,23.0,15.0,61.0,False,beb1d666ded2
+base:taxi_yellow,Brimstone Exudate,,actual HTTP faithful picker response,1,12.0,8.0,54.0,24.0,23.0,5.0,81.4,False,94544989e458
+base:tempered_glass,Tempered Glass,,actual HTTP faithful picker response,0,5.0,8.0,26.0,13.0,16.0,2.0,49.8,False,21b6936a9f88
+base:textured_wrap,Textured Wrap,,actual HTTP faithful picker response,0,150.0,26.0,143.0,9.0,92.0,1.0,49.0,False,67d98d844e63
+base:tinted_clear,Tinted Clear,,actual HTTP faithful picker response,2,5.0,8.0,40.0,6.0,16.0,2.0,63.0,False,3f16d050c1dd
+base:titanium_raw,Titanium Raw,,actual HTTP faithful picker response,0,202.0,31.0,60.0,15.0,56.0,10.0,36.4,False,6015c8062321
+base:tri_coat_pearl,Tri-Coat Pearl,,actual HTTP faithful picker response,0,168.0,145.0,33.0,14.0,16.0,1.0,39.4,False,7c172aa337ac
+base:tungsten,Tungsten,,actual HTTP faithful picker response,0,213.0,17.0,77.0,10.0,45.0,5.0,43.1,False,b21a5557bbc5
+base:vantablack,Vantablack,,actual HTTP faithful picker response,0,28.0,87.0,50.0,92.0,37.0,99.0,46.3,False,00534780cc93
+base:victory_lane,Victory Lane,,actual HTTP faithful picker response,1,170.0,29.17,25.0,6.0,44.0,11.0,68.2,False,dab1be9b2c82
+base:vintage_chrome,Vintage Chrome,,actual HTTP faithful picker response,0,255.0,1.0,40.0,13.0,18.0,1.0,61.4,False,42e59dffa6ca
+base:volcanic,Volcanic,,actual HTTP faithful picker response,1,125.0,208.0,125.0,55.17,106.0,44.0,75.0,False,237c6890b228
+base:wasp_warning,Wasp Signal,Iridescent Insects,actual HTTP faithful picker response,1,39.0,126.17,111.0,38.0,24.0,10.0,34.5,False,ff6af7bbff14
+base:wet_look,Wet Look,Foundation,actual HTTP faithful picker response,1,0.0,0.0,16.0,3.0,16.0,4.0,100.0,False,3474d9bee981
+base:efx_holographic_drift,Holographic Drift,Foundation EFX,actual HTTP faithful picker response,0,184.0,62.0,66.0,43.0,107.0,119.0,,False,b48331ecfedb
+base:efx_cathedral_veil,Cathedral Veil,Foundation EFX,actual HTTP faithful picker response,1,105.0,225.0,25.0,37.0,30.0,49.0,,False,274ae4b96eee
+base:efx_frost_fractal,Frost Fractal,Foundation EFX,actual HTTP faithful picker response,0,93.0,51.0,149.0,47.0,85.0,54.0,,False,cf1e82432aa3
+base:efx_kintsugi_bloom,Kintsugi Bloom,Foundation EFX,actual HTTP faithful picker response,1,14.0,199.0,155.0,162.0,127.0,127.0,,False,1af6678be9c9
+base:efx_quicksilver_pool,Quicksilver Pool,Foundation EFX,actual HTTP faithful picker response,0,94.0,254.0,82.0,202.0,67.0,146.0,,False,3d9d395cc13a
+base:efx_volcanic_obsidian,Volcanic Obsidian,Foundation EFX,actual HTTP faithful picker response,1,24.0,207.0,58.0,237.0,56.0,224.0,,False,9edc1d1c70fe
+base:efx_aurora_skin,Aurora Skin,Foundation EFX,actual HTTP faithful picker response,12,170.0,252.0,33.0,67.0,41.0,78.0,,False,e5a4ca659578
+base:efx_lace_filament,Lace Filament,Foundation EFX,actual HTTP faithful picker response,0,8.0,179.0,121.0,73.0,92.0,54.0,,False,9b0e42d8c1cb
+base:efx_tempered_spectrum,Tempered Spectrum,Foundation EFX,actual HTTP faithful picker response,1,185.0,64.0,53.0,56.0,97.0,88.0,,False,a6e4c2aa0edf
+base:efx_damascus_fold,Damascus Fold,Foundation EFX,actual HTTP faithful picker response,0,205.0,91.0,51.0,62.0,56.0,86.0,,False,f3c3cee9ae9a
+base:efx_stardust_coat,Stardust Coat,Foundation EFX,actual HTTP faithful picker response,1,50.0,186.0,83.0,168.0,68.0,145.0,,False,84e309217bc0
+base:efx_spectral_edge,Prism Edge,Foundation EFX,actual HTTP faithful picker response,0,190.0,170.0,14.0,7.0,23.0,35.0,,False,3bd1dd04cd16
+base:efx_frost_mercury_duo,Frost Mercury Duo,Foundation EFX,actual HTTP faithful picker response,0,149.0,91.0,81.0,106.0,56.0,62.0,,False,52cc11bc61d1
+base:efx_holo_flake,Holo Flake,Foundation EFX,actual HTTP faithful picker response,2,216.0,91.0,10.0,10.0,21.0,19.0,,False,59f3d746d430
+base:efx_holo_prism_cells,Holo Prism Cells,Foundation EFX,actual HTTP faithful picker response,5,236.0,211.0,19.0,24.0,75.0,117.0,,False,61169fff1291
+base:efx_holo_scan,Holo Scanline,Foundation EFX,actual HTTP faithful picker response,0,140.0,138.0,35.0,24.17,37.0,37.0,,False,82c112bb74fb
+base:efx_micro_glitter,Micro Glitter,Foundation EFX,actual HTTP faithful picker response,0,10.0,177.0,19.0,10.0,16.0,7.0,,False,7b4690f13077
+base:efx_chunky_flake,Chunky Metalflake,Foundation EFX,actual HTTP faithful picker response,1,190.0,187.17,16.0,22.0,16.0,1.0,,False,e7189f4798e7
+base:efx_glass_flake,Glass Flake,Foundation EFX,actual HTTP faithful picker response,0,40.0,100.0,32.0,15.0,32.0,33.0,,False,ee999ed280a8
+base:efx_gold_leaf,Gold Leaf,Foundation EFX,actual HTTP faithful picker response,1,176.0,237.0,37.0,100.0,43.0,58.17,,False,d072bbc28ff4
+base:efx_surface_rust,Surface Rust,Foundation EFX,actual HTTP faithful picker response,1,90.0,189.0,133.0,107.0,105.0,107.0,,False,554f314b4d91
+base:efx_rust_through,Rust-Through,Foundation EFX,actual HTTP faithful picker response,1,152.0,235.0,99.0,182.0,101.0,167.0,,False,5ca7cf6026a1
+base:efx_peeling_clear,Peeling Clear,Foundation EFX,actual HTTP faithful picker response,0,0.0,0.0,120.0,156.0,108.0,144.0,,False,59ac8dc856c8
+base:efx_sun_faded,Sun Faded,Foundation EFX,actual HTTP faithful picker response,0,0.0,11.0,158.0,188.0,132.0,145.0,,False,75a2b74f407b
+base:efx_galvanized_spangle,Galvanized Spangle,Foundation EFX,actual HTTP faithful picker response,0,213.0,104.0,62.0,127.0,84.0,171.0,,False,2e3ec9d39985
+base:efx_verdigris,Verdigris,Foundation EFX,actual HTTP faithful picker response,2,130.0,212.17,104.0,167.0,116.0,96.0,,False,6e94bdbe7e2c
+base:efx_soot_wash,Soot Wash,Foundation EFX,actual HTTP faithful picker response,0,0.0,0.0,92.0,148.17,67.0,139.0,,False,8328b867f748
+base:efx_salt_bloom,Salt Bloom,Foundation EFX,actual HTTP faithful picker response,0,0.0,2.17,185.0,145.0,149.0,126.0,,False,df5859079b74
+base:efx_hammered,Hammered,Foundation EFX,actual HTTP faithful picker response,0,228.0,82.0,33.0,57.0,33.0,124.0,,False,476764cd9846
+base:efx_cast_iron,Cast Iron,Foundation EFX,actual HTTP faithful picker response,0,168.0,192.0,124.0,186.0,112.0,155.0,,False,e219dac5963e
+base:efx_knurled,Knurled,Foundation EFX,actual HTTP faithful picker response,0,227.0,48.17,37.0,32.0,33.0,19.0,,False,5013f76dbc56
+base:efx_engine_turned,Engine Turned,Foundation EFX,actual HTTP faithful picker response,0,239.0,47.0,40.0,45.0,57.0,99.0,,False,191ae8279f4c
+base:efx_sandblasted,Sandblasted,Foundation EFX,actual HTTP faithful picker response,0,240.0,57.0,60.0,29.0,123.0,141.17,,False,6c1a8c86514d
+base:efx_wire_brushed,Wire Brushed,Foundation EFX,actual HTTP faithful picker response,0,219.0,195.0,46.0,130.0,67.0,95.0,,False,477268e6189e
+base:efx_mill_scale,Mill Scale,Foundation EFX,actual HTTP faithful picker response,0,137.5,218.0,110.0,182.0,125.0,176.0,,False,ec02b3d2093c
+base:efx_orange_peel,Orange Peel,Foundation EFX,actual HTTP faithful picker response,1,40.0,187.0,30.0,31.0,19.0,13.0,,False,eb083db52d9b
+base:efx_crackle_lacquer,Crackle Lacquer,Foundation EFX,actual HTTP faithful picker response,1,8.0,21.0,109.0,123.17,88.0,112.17,,False,4facf17b72c3
+base:efx_wrinkle_coat,Wrinkle Coat,Foundation EFX,actual HTTP faithful picker response,0,8.0,188.0,115.0,114.0,127.0,53.0,,False,d5c9523b55d5
+base:efx_raku_glaze,Raku Glaze,Foundation EFX,actual HTTP faithful picker response,1,179.0,234.0,39.0,101.0,65.0,82.0,,False,8f4362f58f04
+base:efx_powder_texture,Textured Powder,Foundation EFX,actual HTTP faithful picker response,0,67.0,182.0,114.0,98.0,121.0,60.0,,False,9b93a8c55021
+base:efx_terrazzo,Terrazzo,Foundation EFX,actual HTTP faithful picker response,0,0.0,6.0,178.0,134.0,154.0,119.0,,False,c34fd26960e3
+base:efx_leather_grain,Leather Grain,Foundation EFX,actual HTTP faithful picker response,1,30.0,131.0,64.0,45.0,59.0,69.0,,False,8b007b1c5d45
+base:efx_rain_beads,Rain Beads,Foundation EFX,actual HTTP faithful picker response,1,111.0,241.0,18.0,30.0,23.0,36.17,,False,ffaa526d48c9
+base:efx_snow_crust,Snow Crust,Foundation EFX,actual HTTP faithful picker response,0,103.0,209.0,139.0,173.17,130.0,120.0,,False,1f90038c91bf
+base:efx_nacre,Nacre,Foundation EFX,actual HTTP faithful picker response,0,104.0,187.0,43.0,31.0,42.0,57.0,,False,79d305c1bbc8
+base:singularity,Event Horizon,,actual HTTP faithful picker response,5,202.0,247.0,234.0,213.17,31.0,97.0,69.8,False,c740c5e00e3c
+base:liquid_obsidian,Liquid Obsidian,,actual HTTP faithful picker response,2,82.0,106.0,156.0,173.0,77.0,138.0,39.7,False,7e1cf935490b
+base:prismatic,Boundary Logic,,actual HTTP faithful picker response,12,177.0,193.0,176.0,176.0,182.0,201.0,56.4,False,5ca2b14d4429
+base:p_mercury,Mercury (PARADIGM),,actual HTTP faithful picker response,0,248.0,1.0,7.0,15.0,16.0,0.0,41.6,False,d23dd8829332
+base:p_phantom,Phantom (PARADIGM),,actual HTTP faithful picker response,0,1.0,96.17,138.0,97.0,60.0,60.0,51.4,False,b568e393da9b
+base:p_volcanic,Volcanic (PARADIGM),,actual HTTP faithful picker response,1,36.0,91.0,238.0,89.0,177.0,87.0,44.4,False,cdb4aaf3441b
+base:arctic_ice,Arctic Ice,,actual HTTP faithful picker response,1,0.0,91.0,17.0,67.0,23.0,57.0,29.0,False,386d77ca3a3e
+base:carbon_weave,Carbon Weave,,actual HTTP faithful picker response,0,168.0,88.0,40.0,17.0,16.0,0.0,31.1,False,c49ec670d240
+base:nebula,Stellar Dust,,actual HTTP faithful picker response,1,60.0,21.0,55.0,11.0,16.0,0.0,66.3,False,0045f41074bf
+base:quantum_foam,Quantum Foam (PARADIGM),,actual HTTP faithful picker response,0,127.0,44.0,135.0,40.0,135.0,40.0,63.6,False,81ef7a6623a2
+base:infinite_finish,Infinite Finish (PARADIGM),,actual HTTP faithful picker response,2,254.0,186.0,243.0,193.0,31.0,107.0,63.1,False,ad6560be7e26
+base:chromaflair,ChromaFlair Light Shift,,actual HTTP faithful picker response,10,225.0,35.0,23.0,7.0,47.0,12.0,54.4,False,3bef8648fd0a
+base:xirallic,Xirallic Crystal Flake,,actual HTTP faithful picker response,2,159.0,17.0,29.0,4.0,40.0,6.0,53.6,False,b1f923032cae
+base:anodized_exotic,Anodized,,actual HTTP faithful picker response,5,138.0,9.0,91.0,7.0,47.0,4.0,45.6,False,c48091c6d15e
+base:alubeam,Alubeam Liquid Mirror,,actual HTTP faithful picker response,0,227.0,16.0,37.0,10.0,18.0,5.0,75.0,False,bdcd21033b4b
+base:satin_candy,Satin Candy,,actual HTTP faithful picker response,1,113.0,18.0,104.0,11.0,58.0,1.0,51.1,False,1335ce23d608
+base:velvet_floc,Velvet / Suede Floc,,actual HTTP faithful picker response,0,8.0,17.0,253.0,9.0,17.0,4.0,60.0,False,351fdd5c7904
+base:deep_pearl,Deep Pearl (Type III),,actual HTTP faithful picker response,2,176.0,153.0,35.0,14.0,16.0,1.0,44.9,False,87f2dae85fcc
+base:candy_gold,Candy Gold,,actual HTTP faithful picker response,1,147.0,24.0,44.0,9.0,16.0,0.0,,False,0ff226b435ce
+base:candy_lime,Candy Lime,,actual HTTP faithful picker response,1,127.0,24.17,44.0,9.0,16.0,0.0,,False,9927f9b0b51f
+base:candy_aqua,Candy Aqua,,actual HTTP faithful picker response,1,127.0,27.0,44.0,9.0,16.0,0.0,,False,6e5da7d60cdb
+base:copper_pearl,Copper Pearl,,actual HTTP faithful picker response,1,183.0,141.0,34.0,14.0,16.0,0.0,,False,e87ebb5cebc3
+base:coral_pearl,Coral Pearl,,actual HTTP faithful picker response,1,157.0,148.0,38.0,14.0,16.0,0.0,,False,46dd7f2d7d41
+base:gunmetal_satin,Gunmetal Satin Industrial,,actual HTTP faithful picker response,0,191.0,37.0,132.0,36.0,20.0,10.0,79.5,False,fc7018b62f6a
+base:forged_carbon_vis,Forged Carbon Visible,,actual HTTP faithful picker response,0,157.0,59.0,48.0,18.0,16.0,0.0,33.9,False,96bb2127cc78
+base:electroplated_gold,Electroplated Gold / Rose Gold,,actual HTTP faithful picker response,1,217.0,23.0,38.0,18.0,20.0,6.0,57.8,False,be04a9b099c9
+base:cerakote_pvd,Cerakote / PVD Hard Coat,,actual HTTP faithful picker response,0,162.0,62.0,164.0,46.17,16.0,4.0,61.4,False,914d674a4a01
+base:hypershift_spectral,Black Diamond Candy,Foundation,actual HTTP faithful picker response,11,125.0,225.0,54.0,40.0,16.0,1.0,52.5,False,cba31d57e27b
+base:cx_inferno,COLORSHOXX Inferno Flip,,actual HTTP faithful picker response,0,223.0,137.17,84.0,54.0,42.0,59.0,58.0,False,a633e0f92be9
+base:cx_arctic,COLORSHOXX Arctic Mirage,,actual HTTP faithful picker response,1,234.0,136.0,102.0,64.0,91.0,80.0,41.8,False,96450d90b224
+base:cx_venom,COLORSHOXX Venom Shift,,actual HTTP faithful picker response,0,167.0,191.0,140.0,47.0,51.0,52.0,65.2,False,2833d4b3246c
+base:cx_solar,COLORSHOXX Solar Flare,,actual HTTP faithful picker response,2,237.0,142.0,82.0,65.17,62.0,75.0,54.1,False,f6068bb9aa55
+base:cx_phantom,COLORSHOXX Phantom Violet,,actual HTTP faithful picker response,1,90.0,171.0,113.0,46.0,49.0,61.0,56.7,False,dc78ad241456
+base:cx_chrome_void,CX Chrome Void,,actual HTTP faithful picker response,0,118.0,194.0,126.0,72.0,97.0,66.0,49.8,False,31194158264c
+base:cx_blood_mercury,CX Blood Mercury,,actual HTTP faithful picker response,1,12.0,199.17,126.0,54.0,26.0,53.17,40.7,False,c5dd043a9146
+base:cx_neon_abyss,CX Neon Abyss,,actual HTTP faithful picker response,0,86.0,184.0,127.0,47.0,62.0,61.0,62.5,False,4c2307dbbea9
+base:cx_glacier_fire,CX Glacier Fire,,actual HTTP faithful picker response,0,67.0,224.0,117.0,61.17,29.0,60.0,46.9,False,56a939745b3b
+base:cx_obsidian_gold,CX Obsidian Gold,,actual HTTP faithful picker response,1,12.0,186.0,143.0,56.0,29.0,81.0,67.9,False,f3c4b0741d07
+base:cx_electric_storm,CX Electric Storm,,actual HTTP faithful picker response,3,207.0,147.17,105.0,58.17,157.0,70.0,66.7,False,dcc3ee6e560c
+base:cx_rose_chrome,CX Rose Chrome,,actual HTTP faithful picker response,1,185.0,223.0,98.0,58.0,47.0,60.0,49.3,False,4801af8ff4b2
+base:cx_toxic_chrome,CX Toxic Chrome,,actual HTTP faithful picker response,1,120.0,201.0,152.0,51.0,38.0,57.17,62.0,False,64fde440a1de
+base:cx_midnight_chrome,CX Midnight Chrome,,actual HTTP faithful picker response,2,122.0,188.0,134.0,75.0,108.0,66.0,62.8,False,3f180dc9e0c1
+base:cx_white_lightning,CX White Lightning,,actual HTTP faithful picker response,1,236.0,72.0,106.0,42.0,85.0,75.0,59.5,False,96ec7c6d9e50
+base:cx_aurora_borealis,CX Aurora Borealis,,actual HTTP faithful picker response,2,151.5,118.17,69.0,11.0,80.0,37.0,60.8,False,41a867e268c2
+base:cx_dragon_scale,CX Dragon Scale,,actual HTTP faithful picker response,1,254.0,47.0,73.0,25.0,116.0,47.0,62.8,False,52e75fd87663
+base:cx_frozen_nebula,CX Frozen Nebula,,actual HTTP faithful picker response,2,154.0,222.0,65.0,30.0,48.0,55.0,56.8,False,ac3af17b49d1
+base:cx_hellfire,CX Hellfire,,actual HTTP faithful picker response,1,252.0,56.0,76.0,23.0,106.0,33.0,73.1,False,b4d29bffb6c4
+base:cx_ocean_trench,CX Ocean Trench,,actual HTTP faithful picker response,1,82.0,56.0,168.0,22.0,167.0,12.0,66.0,False,a31e69fa5119
+base:cx_supernova,CX Supernova,,actual HTTP faithful picker response,4,252.0,48.0,91.0,57.0,135.0,81.0,76.8,False,de7445904573
+base:cx_prism_shatter,CX Prism Shatter,,actual HTTP faithful picker response,3,133.0,236.0,69.0,29.0,45.0,56.0,68.1,False,f5ebcb95cd48
+base:cx_acid_rain,CX Acid Rain,,actual HTTP faithful picker response,2,198.0,156.0,88.0,11.0,69.0,36.17,73.0,False,7f1ba446548b
+base:cx_royal_spectrum,CX Royal Spectrum,,actual HTTP faithful picker response,5,252.0,43.0,71.0,45.0,98.0,56.0,85.5,False,62e9b02f99f2
+base:cx_apocalypse,CX Apocalypse,,actual HTTP faithful picker response,2,222.0,213.0,87.0,34.0,112.0,80.0,78.7,False,ab0ba7893d05
+base:ms_acid_veil_ambush,MS Acid Veil Ambush,,actual HTTP faithful picker response,4,129.0,239.0,171.0,218.0,213.0,215.17,52.5,False,9544360e8be0
+base:ms_blood_empress,MS Blood Empress,,actual HTTP faithful picker response,3,194.0,245.0,88.0,227.0,65.0,198.0,50.7,False,1b6748b23148
+base:ms_bone_sonata,MS Bone Sonata,,actual HTTP faithful picker response,4,165.0,222.0,70.0,168.0,49.0,139.0,50.7,False,05506ae1fc0a
+base:ms_chainburst_inferno,MS Chainburst Inferno,,actual HTTP faithful picker response,2,143.0,240.0,141.0,220.0,192.0,208.0,53.3,False,84396ca04ae8
+base:ms_cinder_spiral,MS Cinder Spiral,,actual HTTP faithful picker response,2,146.0,246.0,150.0,217.0,163.0,194.0,60.5,False,08634a45f283
+base:ms_crimson_dragon,MS Crimson Dragon,,actual HTTP faithful picker response,2,180.0,229.0,105.0,215.0,81.0,187.0,69.3,False,f20ab65136b5
+base:ms_cryo_shard,MS Cryo Shard,,actual HTTP faithful picker response,2,16.0,255.0,55.0,173.0,40.0,138.0,71.2,False,7b992f42614d
+base:ms_crystal_onslaught,MS Crystal Onslaught,,actual HTTP faithful picker response,2,146.0,224.0,62.0,172.0,42.0,137.0,65.4,False,ada2a90ee6f0
+base:ms_dragon_ascent,MS Dragon Ascent,,actual HTTP faithful picker response,3,196.0,244.17,97.0,227.0,175.0,213.0,65.4,False,3e5b6ae9ea4f
+base:ms_dragon_soul,MS Dragon Soul,,actual HTTP faithful picker response,3,184.0,224.0,108.0,214.0,202.0,221.0,65.4,False,80af01fa9b96
+base:ms_emerald_scale_mirage,MS Emerald Scale Mirage,,actual HTTP faithful picker response,5,204.0,138.0,76.0,88.0,81.0,101.17,56.7,False,a9e31122d3f7
+base:ms_fang_cataclysm,MS Fang Cataclysm,,actual HTTP faithful picker response,9,135.0,242.0,143.0,211.0,126.0,208.0,68.9,False,909b9a2bab18
+base:ms_frost_sentinel,MS Frost Sentinel,,actual HTTP faithful picker response,2,156.0,222.0,47.0,94.0,36.0,66.0,57.6,False,ec2c2925b04c
+base:ms_frozen_inferno,MS Frozen Inferno,,actual HTTP faithful picker response,6,150.0,226.0,99.0,167.0,107.0,223.0,50.9,False,cd21571d4c36
+base:ms_lotus_ascention,MS Lotus Ascention,,actual HTTP faithful picker response,3,163.0,213.0,48.0,168.0,36.0,133.0,50.5,False,d3eac37aa25b
+base:ms_molten_sting,MS Molten Sting,,actual HTTP faithful picker response,3,138.0,244.0,145.0,226.0,202.0,216.0,50.4,False,38b4e6869043
+base:ms_porcelain_cipher,MS Porcelain Cipher,,actual HTTP faithful picker response,3,150.0,214.0,54.0,90.0,58.0,99.0,66.3,False,2ffed33f1a69
+base:ms_serpent_haze_strike,MS Serpent Haze Strike,,actual HTTP faithful picker response,6,134.0,238.0,163.0,228.0,210.0,224.0,70.2,False,6655bb640c3c
+base:ms_shadow_wraith,MS Shadow Wraith,,actual HTTP faithful picker response,2,96.0,251.0,205.0,209.0,221.0,200.0,66.3,False,d343ca83150c
+base:ms_soul_forge,MS Soul Forge,,actual HTTP faithful picker response,6,219.0,86.0,84.0,100.0,146.0,177.0,65.5,False,a403b23e5c27
+base:ms_tempest_crown,MS Tempest Crown,,actual HTTP faithful picker response,5,184.0,234.0,96.0,210.0,117.0,223.0,63.4,False,675f51f13d61
+base:ms_thunder_mandala,MS Thunder Mandala,,actual HTTP faithful picker response,3,230.0,177.17,61.0,181.0,71.0,159.0,64.6,False,51a06c97ee14
+base:ms_toxic_labyrinth,MS Toxic Labyrinth,,actual HTTP faithful picker response,5,112.0,245.0,169.0,227.0,157.0,211.0,65.4,False,de67183bc6d2
+base:ms_venom_eclipse,MS Venom Eclipse,,actual HTTP faithful picker response,8,130.0,243.0,161.0,216.0,170.0,171.0,61.7,False,431ab4af2b68
+base:ms_venom_veil,MS Venom Veil,,actual HTTP faithful picker response,5,116.0,248.0,171.0,228.0,207.0,210.0,66.9,False,9270d188e051
+base:ms_zero_hour,MS Zero Hour,,actual HTTP faithful picker response,2,252.0,241.0,93.0,225.0,155.0,215.0,52.4,False,1bb0dba26d4b
+base:msh_canary_coffin,MSH: Canary Coffin,,actual HTTP faithful picker response,1,170.0,217.0,106.0,55.0,114.0,51.0,,False,f0a0d78996c7
+base:msh_magenta_widow,MSH: Magenta Widow,,actual HTTP faithful picker response,2,106.0,217.0,114.0,52.0,115.0,54.0,,False,f0a0d78996c7
+base:msh_cerulean_cobra,MSH: Cerulean Cobra,,actual HTTP faithful picker response,2,151.0,211.0,100.0,54.0,113.0,61.0,,False,f0a0d78996c7
+base:msh_lime_scorpion,MSH: Lime Scorpion,,actual HTTP faithful picker response,1,167.0,194.17,105.0,53.0,113.0,52.0,,False,f0a0d78996c7
+base:msh_hyperpink_torii,MSH: Hyperpink Torii,,actual HTTP faithful picker response,1,100.0,208.0,122.0,56.0,130.0,44.0,,False,f0a0d78996c7
+base:msh_seafoam_piranha,MSH: Seafoam Piranha,,actual HTTP faithful picker response,4,196.0,79.0,116.0,55.0,89.0,21.0,,False,f0a0d78996c7
+base:msh_orchid_kintsugi,MSH: Orchid Kintsugi,,actual HTTP faithful picker response,2,190.0,154.0,106.0,47.0,114.0,44.17,,False,f0a0d78996c7
+base:msh_peach_jellyshock,MSH: Peach Jellyshock,,actual HTTP faithful picker response,2,114.0,192.17,133.0,51.0,125.0,32.0,,False,f0a0d78996c7
+base:msh_daffodil_bayou,MSH: Daffodil Bayou,,actual HTTP faithful picker response,2,83.0,68.0,110.0,49.0,135.0,15.0,,False,f0a0d78996c7
+base:msh_neonice_rising,MSH: Neon Ice Rising,,actual HTTP faithful picker response,1,179.0,123.0,113.0,47.0,104.0,27.17,,False,f0a0d78996c7
+base:mshc_tigerblood_voltage,MSHC: Tigerblood Voltage,,actual HTTP faithful picker response,2,91.0,209.0,115.0,50.0,123.0,37.0,,False,f0a0d78996c7
+base:mshc_oxblood_seigaiha,MSHC: Oxblood Seigaiha,,actual HTTP faithful picker response,3,21.0,142.17,118.0,52.0,148.0,24.0,,False,f0a0d78996c7
+base:mshc_emerald_sharkbite,MSHC: Emerald Sharkbite,,actual HTTP faithful picker response,1,174.0,177.0,111.0,52.0,102.0,41.0,,False,f0a0d78996c7
+base:mshc_amber_panther,MSHC: Amber Panther,,actual HTTP faithful picker response,2,97.0,209.0,112.0,54.0,121.0,53.0,,False,f0a0d78996c7
+base:mshc_violet_kyoto,MSHC: Violet Kyoto,,actual HTTP faithful picker response,6,203.0,223.0,93.0,49.0,109.0,73.0,,False,f0a0d78996c7
+base:mshc_acid_hornet,MSHC: Acid Hornet,,actual HTTP faithful picker response,2,199.0,192.0,96.0,55.0,88.0,62.0,,False,f0a0d78996c7
+base:mshc_oni_orchid_glass,MSHC: Oni Orchid Glass,,actual HTTP faithful picker response,3,135.0,144.0,94.0,56.0,115.0,34.0,,False,f0a0d78996c7
+base:mshc_copper_jubilee,MSHC: Copper Jubilee,,actual HTTP faithful picker response,2,67.0,179.0,106.0,51.0,134.0,43.0,,False,f0a0d78996c7
+base:mshc_canary_widow_redux,MSHC: Canary Widow Redux,,actual HTTP faithful picker response,2,58.0,143.0,117.0,53.0,142.0,24.0,,False,f0a0d78996c7
+base:mshc_rosethorn_bonsai,MSHC: Rosethorn Bonsai,,actual HTTP faithful picker response,5,53.0,207.0,124.0,49.0,141.0,37.0,,False,f0a0d78996c7
+base:msha_canary_gris_gris,MSHA: Canary Gris-Gris,,actual HTTP faithful picker response,1,232.0,205.0,97.0,54.0,88.0,69.0,,False,f0a0d78996c7
+base:msha_emerald_brocade,MSHA: Emerald Brocade,,actual HTTP faithful picker response,5,134.0,199.0,103.0,50.0,102.0,55.0,,False,f0a0d78996c7
+base:msha_fuji_neon_crest,MSHA: Fuji Neon Crest,,actual HTTP faithful picker response,2,111.0,79.0,108.0,52.0,122.0,21.0,,False,f0a0d78996c7
+base:msha_volcanic_croc,MSHA: Volcanic Croc,,actual HTTP faithful picker response,3,217.0,151.0,88.0,51.0,86.0,59.0,,False,f0a0d78996c7
+base:msha_cherry_blossom_flux,MSHA: Cherry Blossom Flux,,actual HTTP faithful picker response,1,71.0,190.0,123.0,51.0,135.0,38.0,,False,f0a0d78996c7
+base:msha_waxen_voodoo,MSHA: Waxen Voodoo,,actual HTTP faithful picker response,1,25.0,214.17,109.0,47.0,131.0,42.0,,False,f0a0d78996c7
+base:msha_hyperpink_threads,MSHA: Hyperpink Threads,,actual HTTP faithful picker response,1,21.0,213.0,113.0,53.0,125.0,55.0,,False,f0a0d78996c7
+base:msha_peach_burlap,MSHA: Peach Burlap,,actual HTTP faithful picker response,2,231.0,210.0,104.0,53.0,93.0,68.0,,False,f0a0d78996c7
+base:msha_seafoam_charm,MSHA: Seafoam Charm,,actual HTTP faithful picker response,1,176.0,224.0,93.0,49.0,104.0,64.0,,False,f0a0d78996c7
+base:msha_solar_moss,MSHA: Solar Moss,,actual HTTP faithful picker response,3,33.0,219.0,99.0,56.17,123.0,50.0,,False,f0a0d78996c7
+base:mshx_blueprint_jackpot,MSHX: Blueprint Jackpot V2,,actual HTTP faithful picker response,3,142.0,214.0,119.0,52.0,123.0,52.0,,False,f0a0d78996c7
+base:mshx_venom_cashmere,MSHX: Venom Cashmere V2,,actual HTTP faithful picker response,3,81.0,218.0,107.0,56.0,115.0,61.0,,False,f0a0d78996c7
+base:mshx_glacier_pinkslip,MSHX: Glacier Pinkslip V2,,actual HTTP faithful picker response,2,188.0,142.17,104.0,53.0,113.0,49.0,,False,f0a0d78996c7
+base:mshx_lime_afterburner,MSHX: Lime Afterburner V2,,actual HTTP faithful picker response,2,72.0,132.0,111.0,54.0,134.0,23.0,,False,f0a0d78996c7
+base:mshx_miami_blacklight,MSHX: Miami Blacklight V2,,actual HTTP faithful picker response,4,183.0,143.0,99.0,51.0,100.0,30.0,,False,f0a0d78996c7
+base:mshx_royal_sunstroke,MSHX: Royal Sunstroke V2,,actual HTTP faithful picker response,6,113.0,218.0,128.0,53.0,105.0,70.0,,False,f0a0d78996c7
+base:mshx_kintsugi_ransom,MSHX: Kintsugi Ransom,,actual HTTP faithful picker response,0,187.0,136.0,97.0,53.0,100.0,32.0,,False,f0a0d78996c7
+base:mshx_coral_sharkskin,MSHX: Coral Sharkskin V2,,actual HTTP faithful picker response,5,220.0,157.17,100.0,56.0,98.0,51.0,,False,f0a0d78996c7
+base:mshx_dover_jackpot,MSHX: Dover Jackpot V2,,actual HTTP faithful picker response,0,196.0,153.0,102.0,50.0,103.0,39.0,,False,f0a0d78996c7
+base:mshx_prism_tipjar,MSHX: Prism Tipjar,,actual HTTP faithful picker response,7,171.0,172.0,120.0,49.0,110.0,43.0,,False,f0a0d78996c7
+base:neon_pink_blaze,Import Royalty,,actual HTTP faithful picker response,7,75.0,244.0,80.0,122.0,123.0,210.0,90.7,False,6ee314b5649e
+base:neon_toxic_green,Toxic Overdrive,,actual HTTP faithful picker response,2,32.0,162.0,55.0,62.0,191.0,147.0,86.9,False,48ca8671a99d
+base:neon_electric_blue,Neon Underglow,,actual HTTP faithful picker response,5,50.0,156.0,55.0,131.0,105.0,200.0,87.3,False,5ab078efc5b2
+base:neon_blacklight,Blacklight Garage,,actual HTTP faithful picker response,5,11.0,136.0,136.0,233.0,134.0,223.0,87.8,False,4a5d0f1b2dc5
+base:neon_orange_hazard,Burnout Ember,,actual HTTP faithful picker response,2,31.0,209.0,134.0,213.0,125.0,222.0,86.3,False,65158b813301
+base:neon_red_alert,Redline Rush,,actual HTTP faithful picker response,3,132.0,179.0,38.0,48.0,47.0,190.0,87.1,False,0f46a21ee109
+base:neon_cyber_yellow,Tunnel Vision,,actual HTTP faithful picker response,6,53.0,241.0,62.0,219.0,105.0,173.0,74.2,False,f86a3527c590
+base:neon_ice_white,Nitro Purge,,actual HTTP faithful picker response,2,41.0,226.17,67.0,149.0,162.0,158.0,88.7,False,a8ef32d46104
+base:neon_dual_glow,Split Underglow,,actual HTTP faithful picker response,5,33.0,200.0,139.0,178.0,252.0,186.0,87.3,False,5589f7fd0701
+base:neon_rainbow_tube,Afterburn Chrome,,actual HTTP faithful picker response,10,157.0,189.0,53.0,130.0,176.0,170.0,72.2,False,da241b0bd3f4

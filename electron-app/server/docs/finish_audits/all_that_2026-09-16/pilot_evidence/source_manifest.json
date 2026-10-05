@@ -1,0 +1,100 @@
+{
+  "schema": "spb-all-that-pilot-sources/1",
+  "generated_master_dimensions": [
+    1254,
+    1254
+  ],
+  "output_dimensions": [
+    2048,
+    2048
+  ],
+  "generated_sources": {
+    "airbrush_tee.png": {
+      "path": "_all_that_pilot_work/sources/airbrush_tee.png",
+      "sha256": "0e724adb4faccf45cee5c2f13f0b37df705fdd0056961a2d93b8a4155efb466c",
+      "bytes": 3412738
+    },
+    "airbrush_tee_v1.png": {
+      "path": "_all_that_pilot_work/sources/airbrush_tee_v1.png",
+      "sha256": "da4c42ab27fdbe140beb181eac2181e26f8d3048d491702c7b91265421f05665",
+      "bytes": 3455213
+    },
+    "flannel_red.png": {
+      "path": "_all_that_pilot_work/sources/flannel_red.png",
+      "sha256": "7cc36a80f3e6a61b0d8f7334db2b05bdc417cd01ada156180a1cf1fc84a6cae1",
+      "bytes": 3271967
+    },
+    "holo_sticker.png": {
+      "path": "_all_that_pilot_work/sources/holo_sticker.png",
+      "sha256": "424ef25007d8478554a267403a26af92fbd5fbd01ff56125eea626f05693a5d7",
+      "bytes": 4042009
+    },
+    "holo_sticker_v1.png": {
+      "path": "_all_that_pilot_work/sources/holo_sticker_v1.png",
+      "sha256": "aeeda6f2b34d9ff6ebed92afbdd255d771a167424ff886a5b84e2c7ca503ad85",
+      "bytes": 4282140
+    }
+  },
+  "assets": {
+    "atp_airbrush_tee_code_paint.png": {
+      "path": "engine/paint_v2/all_that_pilot/assets/atp_airbrush_tee_code_paint.png",
+      "sha256": "ad8edab081f2f181091c7e5cba07cb4b9237ee445c2c8aee7efd5df014331817",
+      "bytes": 7803578
+    },
+    "atp_airbrush_tee_code_spec.png": {
+      "path": "engine/paint_v2/all_that_pilot/assets/atp_airbrush_tee_code_spec.png",
+      "sha256": "6b8ba50f7cfbf8172f13b435d685b7eb4f3d2bd0471aad1a1f5666b89a5a207c",
+      "bytes": 5803564
+    },
+    "atp_airbrush_tee_image_paint.png": {
+      "path": "engine/paint_v2/all_that_pilot/assets/atp_airbrush_tee_image_paint.png",
+      "sha256": "506a0a9cbb6a632ef862ce68314c66f16040d1ba2813f79f7dcc9c6fed058240",
+      "bytes": 9890976
+    },
+    "atp_airbrush_tee_image_spec.png": {
+      "path": "engine/paint_v2/all_that_pilot/assets/atp_airbrush_tee_image_spec.png",
+      "sha256": "dcee00b521622241238b7c1e5deb979892fac04d402a242cce24b4590d88cc42",
+      "bytes": 6471641
+    },
+    "atp_flannel_red_code_paint.png": {
+      "path": "engine/paint_v2/all_that_pilot/assets/atp_flannel_red_code_paint.png",
+      "sha256": "60c4d3b544ee78154673707a37b9e9ae7c1216d4c595a5654cccc03ff8ba2dbc",
+      "bytes": 7149363
+    },
+    "atp_flannel_red_code_spec.png": {
+      "path": "engine/paint_v2/all_that_pilot/assets/atp_flannel_red_code_spec.png",
+      "sha256": "cb43b3f85cf7931ed1f2e0008f749dda3b5921ed734f75b8b96437461e7fb296",
+      "bytes": 2540212
+    },
+    "atp_flannel_red_image_paint.png": {
+      "path": "engine/paint_v2/all_that_pilot/assets/atp_flannel_red_image_paint.png",
+      "sha256": "9d8869a291a54573e26247ba13e4fb7194cc4418670b575b7382ad3487b3e16a",
+      "bytes": 8436950
+    },
+    "atp_flannel_red_image_spec.png": {
+      "path": "engine/paint_v2/all_that_pilot/assets/atp_flannel_red_image_spec.png",
+      "sha256": "a8273f5f2bab06be6aea871b22d739e5fc0dede36b99e9c4c912b1ce456e3377",
+      "bytes": 5837253
+    },
+    "atp_holo_sticker_code_paint.png": {
+      "path": "engine/paint_v2/all_that_pilot/assets/atp_holo_sticker_code_paint.png",
+      "sha256": "8cf603917a872b9166be24b124480eef82adab5c948642b1771bef47d338f726",
+      "bytes": 7819798
+    },
+    "atp_holo_sticker_code_spec.png": {
+      "path": "engine/paint_v2/all_that_pilot/assets/atp_holo_sticker_code_spec.png",
+      "sha256": "23732930535c2658e3436138577913de4c0127b79e9840109ebbd1b7c16bc3a4",
+      "bytes": 7693881
+    },
+    "atp_holo_sticker_image_paint.png": {
+      "path": "engine/paint_v2/all_that_pilot/assets/atp_holo_sticker_image_paint.png",
+      "sha256": "38e91470eadafc3d6113f6a79ae64ef083013e8bfe13a3937d376c72bc2bc646",
+      "bytes": 11508954
+    },
+    "atp_holo_sticker_image_spec.png": {
+      "path": "engine/paint_v2/all_that_pilot/assets/atp_holo_sticker_image_spec.png",
+      "sha256": "4e541d4bf302957d071ac3439d349e05dcef4685e411541bff72754d3172274c",
+      "bytes": 8499072
+    }
+  }
+}

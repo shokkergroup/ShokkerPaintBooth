@@ -1,0 +1,10 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_1308069.tga","inspection_records":"_smart_tga_runs/cycle675_dlm_subtype_review/inspection_records.json","review_scope":"Cycle 675 source plus complete Number/Sponsor/Template/Paint sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[133,5,157,146],"target_layer":"template","label":"hardware_panel_false_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[320,33,190,84],"target_layer":"template","label":"hardware_cluster_false_number"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[635,46,55,26],"target_layer":"sponsors","label":"wordmark_false_number"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[298,248,133,88],"target_layer":"numbers","label":"true_custom_number"},
+ {"layer":"numbers","component_index":4,"expected_bbox":[604,276,60,27],"target_layer":"sponsors","label":"watermark_wordmark_false_number"},
+ {"layer":"numbers","component_index":5,"expected_bbox":[306,725,61,77],"target_layer":"numbers","label":"true_custom_number"},
+ {"layer":"numbers","component_index":6,"expected_bbox":[372,726,60,77],"target_layer":"numbers","label":"true_custom_number"},
+ {"layer":"numbers","component_index":7,"expected_bbox":[741,791,249,202],"target_layer":"numbers","label":"true_custom_number"}
+]}

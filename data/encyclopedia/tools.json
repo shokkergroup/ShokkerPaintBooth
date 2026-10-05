@@ -1,0 +1,4039 @@
+{
+ "domain": "tools",
+ "version": 1,
+ "articles": [
+  {
+   "id": "tools.brush_eraser",
+   "title": "Brush and eraser: size, hardness, opacity, smoothing",
+   "domain": "tools",
+   "summary": "The Brush (B) and Eraser (E) paint or remove pixels on a layer, or paint a zone mask in ZONE mode. A handful of sliders control how the stroke feels.",
+   "what": "In ZONE mode the brush paints a mask that says where a zone applies. In LAYER mode it paints the selected layer's pixels. Size runs 1 to 300 px (default 20). Opacity is how see-through the paint is, 1 to 100% (default 100). Hardness is 0 for a soft feathered edge up to 100 for a hard edge. Flow is how fast paint builds up per pass. Spacing is the distance between dabs as a percent of brush size. Smoothing averages out hand jitter (default 10%). Stabilizer makes the tip trail the pointer like a lazy mouse, 0 to 200 px. Brush shape can be round, square, diamond, slash or noise, and Pattern Brush paints with a texture instead of a solid colour. The Eraser has three modes: Soft (brush), Hard (square block) or Clear Current Target.",
+   "when": [
+    "You want to hand-draw where a zone applies.",
+    "You are fixing artwork on a layer.",
+    "You overpainted and need to erase."
+   ],
+   "how": [
+    "1. Pick Brush (B) or Erase (E) in the tool row.",
+    "2. Check the ZONE | LAYER switch: ZONE paints a mask, LAYER paints pixels.",
+    "3. Set Size, Hardness and Opacity in the tool options bar. Use [ and ] to change size and { and } to change hardness.",
+    "4. Drag on the canvas. Press X to swap the paint colour with the background colour.",
+    "5. Switch the Eraser mode dropdown to Soft, Hard or Clear Current Target as needed."
+   ],
+   "controls": [
+    {
+     "label": "Brush",
+     "range": "",
+     "default": "",
+     "effect": "Brush (B): paint the zone's mask, or the selected layer's pixels.",
+     "inv": "vtModeBrush"
+    },
+    {
+     "label": "Erase",
+     "range": "",
+     "default": "",
+     "effect": "Eraser (E): erase zone mask or layer pixels.",
+     "inv": "vtModeErase"
+    },
+    {
+     "label": "Brush size in pixels",
+     "range": "1-300",
+     "default": "20",
+     "effect": "Brush / eraser size in pixels (1-300); [ and ] keys change it.",
+     "inv": "brushSize"
+    },
+    {
+     "label": "Active paint tool opacity percent",
+     "range": "1-100",
+     "default": "100",
+     "effect": "Active paint tool opacity: 100% (range 1-100%). Press 1-9 keys for quick opacity (1=10%, 5=50%, 0=100%).",
+     "inv": "brushOpacity"
+    },
+    {
+     "label": "Brush hardness percent",
+     "range": "0-100",
+     "default": "100",
+     "effect": "Brush hardness: 100% (range 0-100%, 0=soft feather, 100=hard edge). Use { } keys to adjust.",
+     "inv": "brushHardness"
+    },
+    {
+     "label": "Brush flow percent",
+     "range": "1-100",
+     "default": "100",
+     "effect": "how fast paint builds up per pass (1-100%)",
+     "inv": "brushFlow"
+    },
+    {
+     "label": "Brush spacing percent of brush size",
+     "range": "1-200",
+     "default": "25",
+     "effect": "distance between dabs (% of brush size)",
+     "inv": "brushSpacing"
+    },
+    {
+     "label": "Brush stroke smoothing percent",
+     "range": "0-100",
+     "default": "10",
+     "effect": "averages pointer jitter (0-100%). 10% is the natural default.",
+     "inv": "brushSmoothing"
+    },
+    {
+     "label": "Brush stabilizer distance in pixels",
+     "range": "0-200",
+     "default": "0",
+     "effect": "Lazy-mouse stabilizer rope in source pixels (0-200px). Higher values make the brush tip trail the pointer.",
+     "inv": "brushStabilizer"
+    },
+    {
+     "label": "Brush shape dropdown",
+     "range": "",
+     "default": "",
+     "effect": "Shape of the brush tip: round, square, diamond, slash, noise.",
+     "inv": "brushShape"
+    },
+    {
+     "label": "Pattern Brush — paint with a texture instead of solid color",
+     "range": "",
+     "default": "",
+     "effect": "Paint with a texture instead of a solid colour.",
+     "inv": "patternBrushSelect"
+    },
+    {
+     "label": "Eraser mode — soft brush, hard square block, or clear the current Layer / Zone mask",
+     "range": "",
+     "default": "",
+     "effect": "Eraser style: soft brush, hard block, or clear the whole layer / zone mask.",
+     "inv": "eraserMode"
+    },
+    {
+     "label": "Spatial brush size",
+     "range": "3-80",
+     "default": "15",
+     "effect": "Spatial brush size",
+     "inv": "spatialBrushSize"
+    },
+    {
+     "label": "Fg Color Picker",
+     "range": "",
+     "default": "#000000",
+     "effect": "Foreground (paint) colour for brushes and fills; X swaps with background.",
+     "inv": "fgColorPicker"
+    },
+    {
+     "label": "#hex",
+     "range": "",
+     "default": "#000000",
+     "effect": "Foreground hex color",
+     "inv": "fgHexInput"
+    },
+    {
+     "label": "Swap foreground and background colors",
+     "range": "",
+     "default": "",
+     "effect": "swap foreground and background colors",
+     "inv": "pro.tool_options.swap_foreground_and_background_colors"
+    },
+    {
+     "label": "Reset foreground and background colors",
+     "range": "",
+     "default": "",
+     "effect": "Reset foreground/background colors to default black/white (button only — D is Dodge)",
+     "inv": "pro.tool_options.reset_foreground_and_background_colors"
+    },
+    {
+     "label": "Save Swatch",
+     "range": "",
+     "default": "",
+     "effect": "save foreground color to swatches",
+     "inv": "pro.tool_options.x"
+    }
+   ],
+   "tips": [
+    "Number keys 1 to 9 set tool opacity to 10 to 90 percent, and 0 sets 100 percent.",
+    "Raise Smoothing or Stabilizer for long, steady lines.",
+    "The Spatial brush has its own size slider, 3 to 80 px."
+   ],
+   "pitfalls": [
+    "Block and Clear Target eraser modes are always full strength. Only Soft listens to opacity.",
+    "If the brush seems to do nothing, check you are in the right mode (ZONE or LAYER) and that a layer is selected."
+   ],
+   "related": [
+    "tools.mask_vs_layer",
+    "tools.undo_redo",
+    "tools.retouch",
+    "ui_shell.tool_options_bar"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "brushSize"
+    },
+    {
+     "do": "control",
+     "id": "eraserMode"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "vtModeBrush",
+    "vtModeErase",
+    "brushSize",
+    "brushOpacity",
+    "brushHardness",
+    "brushFlow",
+    "brushSpacing",
+    "brushSmoothing",
+    "brushStabilizer",
+    "brushShape",
+    "patternBrushSelect",
+    "eraserMode",
+    "spatialBrushSize",
+    "fgColorPicker",
+    "fgHexInput",
+    "pro.tool_options.swap_foreground_and_background_colors",
+    "pro.tool_options.reset_foreground_and_background_colors",
+    "pro.tool_options.x"
+   ],
+   "sources": [
+    "paint-booth-3-canvas.js:12717",
+    "paint-booth-3-canvas.js:12744",
+    "paint-booth-3-canvas.js:12795",
+    "paint-booth-v2.html:2304",
+    "paint-booth-3-canvas.js:5040",
+    "paint-booth-v2.html:2308",
+    "paint-booth-v2.html:2858",
+    "paint-booth-3-canvas.js:1901",
+    "paint-booth-3-canvas.js:12478",
+    "paint-booth-3-canvas.js:12801",
+    "paint-booth-3-canvas.js:12743",
+    "paint-booth-3-canvas.js:28562",
+    "paint-booth-3-canvas.js:33333",
+    "paint-booth-3-canvas.js:33376",
+    "paint-booth-3-canvas.js:2342",
+    "paint-booth-3-canvas.js:5909",
+    "paint-booth-3-canvas.js:4616",
+    "paint-booth-v2.html:2949",
+    "paint-booth-v2.html:2958",
+    "paint-booth-v2.html:2975",
+    "paint-booth-v2.html:2934",
+    "paint-booth-v2.html:2941",
+    "paint-booth-v2.html:2919",
+    "paint-booth-v2.html:2926"
+   ],
+   "aliases": [
+    "brush",
+    "brush hardness",
+    "brush opacity",
+    "brush shape",
+    "brush size",
+    "eraser",
+    "flow",
+    "hard edge brush",
+    "how do i erase",
+    "pattern brush",
+    "smoothing",
+    "soft brush",
+    "spacing",
+    "stabilizer",
+    "eraser size",
+    "brush tool"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "How a stroke is built",
+     "body": "The brush does not draw a line. It stamps round dabs along your path. Spacing sets the gap between dabs as a percent of brush size (1 to 200, default 25), so a low number gives a smooth solid line and a high number gives a dotted one. Each dab is as strong as Opacity times Flow, so 50% Opacity with 50% Flow lands at about 25% strength per dab."
+    },
+    {
+     "heading": "Smooth versus Stab",
+     "body": "Smooth (0 to 100, default 10) blends the pointer position with the average of your last 8 pointer samples. At 0 the tip follows your hand exactly. At 100 it sits on the average, which rounds wobble but also rounds corners. Stab (0 to 200 px, default 0) works like a rope: the tip stays put until the pointer is farther away than the rope length, then it is dragged behind. Use Smooth for natural lines and Stab for ruler-straight ones."
+    },
+    {
+     "heading": "What the Eraser changes",
+     "body": "The Eraser has three modes in its dropdown. Soft (Brush) behaves like the brush and listens to Size, Opacity, Hard, Flow, Spacing, Smooth and Stab. Hard (Block) is a square that is always 100% opaque, so Opacity, Hard and Flow are hidden. Clear Current Target is a one-click command that wipes the whole zone mask or the whole selected layer, so it hides every brush control."
+    },
+    {
+     "heading": "Keys that change the brush while you paint",
+     "body": "The [ key makes the brush 5 px smaller and ] makes it 5 px bigger, within the 1 to 300 range. Shift+[ and Shift+] (the { and } keys) change Hard by 10 at a time. Number keys 1 to 9 set Opacity to 10 through 90 percent and 0 sets 100. Hard-edge and Clear Target erasers ignore the number keys and the Hard keys, and the app shows a short message instead."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Feathered edge for a zone mask",
+     "goal": "Paint where a zone applies with a soft fade at the border",
+     "settings": {
+      "Mode switch": "ZONE",
+      "Tool": "Brush (B)",
+      "Size": "60",
+      "Opacity": "100%",
+      "Hard": "20%",
+      "Flow": "100%",
+      "Spacing": "25%"
+     },
+     "result": "The zone fades out over a wide soft rim instead of ending on a sharp line."
+    },
+    {
+     "title": "Steady pinstripe on a layer",
+     "goal": "Draw a long thin line without wobble",
+     "settings": {
+      "Mode switch": "LAYER",
+      "Tool": "Brush (B)",
+      "Size": "6",
+      "Hard": "100%",
+      "Smooth": "60%",
+      "Stab": "40 px",
+      "Spacing": "10%"
+     },
+     "result": "A clean thin stripe. Click once, then Shift+click the far end to run a straight line from the last stroke."
+    },
+    {
+     "title": "Gentle cleanup of a halo",
+     "goal": "Fade away a ragged edge without cutting a hole",
+     "settings": {
+      "Tool": "Erase (E)",
+      "Eraser mode": "Soft (Brush)",
+      "Size": "30",
+      "Opacity": "30%",
+      "Hard": "40%",
+      "Flow": "100%"
+     },
+     "result": "Each pass removes about a third of what is there, so you can sneak up on the edge instead of cutting it."
+    },
+    {
+     "title": "Texture painting",
+     "goal": "Paint a carbon look straight onto a layer",
+     "settings": {
+      "Mode switch": "LAYER",
+      "Tool": "Brush (B)",
+      "Pattern Brush": "Carbon Fiber",
+      "Size": "120",
+      "Opacity": "100%",
+      "Spacing": "15%"
+     },
+     "result": "The stroke is filled with the carbon texture instead of one flat colour."
+    }
+   ],
+   "combos": [
+    {
+     "with": "tools.mask_vs_layer",
+     "why": "The same brush paints a mask in ZONE mode and pixels in LAYER mode, so decide the mode first."
+    },
+    {
+     "with": "tools.undo_redo",
+     "why": "Strokes can be stepped back, so you can try a wide soft brush and undo it if it is wrong."
+    },
+    {
+     "with": "ui_shell.tool_options_bar",
+     "why": "Every slider named here lives in the tool options bar, and which ones show depends on the tool and eraser mode."
+    },
+    {
+     "with": "tools.retouch",
+     "why": "Use the brush for fresh paint and the retouch tools to fix or blend what is already on the layer."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why do I not see Hard or Flow when I pick the eraser?",
+     "a": "Those sliders hide in the modes that ignore them. Hard (Block) hides Opacity, Hard and Flow. Clear Current Target hides almost everything. Switch the dropdown to Soft (Brush) to get them back."
+    },
+    {
+     "q": "Do Opacity and Flow do the same thing?",
+     "a": "No, they multiply. Opacity is how strong each dab is and Flow scales it again, so 50% Opacity with 50% Flow lands at about 25% per dab. Lower Flow is good for airbrush build-up."
+    },
+    {
+     "q": "How do I draw a straight line?",
+     "a": "Click once to start, then hold Shift and click where it should end. The line runs from the end of your last stroke on the same layer or zone."
+    },
+    {
+     "q": "How big can the brush get?",
+     "a": "Size runs 1 to 300 px. The spatial region brush has its own smaller slider from 3 to 80 px."
+    },
+    {
+     "q": "What does the X key do?",
+     "a": "It swaps the foreground and background colours so you can flip between two paint colours without opening a picker."
+    },
+    {
+     "q": "The number keys did nothing on the eraser. Why?",
+     "a": "Hard (Block) is always 100% opaque and Clear Current Target has no opacity at all. Choose Soft (Brush) and the number keys work again."
+    },
+    {
+     "q": "Is there a way to paint with a texture?",
+     "a": "Yes. Pick a Pattern Brush from the dropdown: Carbon Fiber, Metal Flake, Crosshatch, Brushed Metal, Canvas Weave or Random Noise. Solid Color goes back to plain paint."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The brush seems to do nothing",
+     "cause": "You are in the wrong mode, or LAYER mode has no layer selected.",
+     "fix": "Look at the ZONE | LAYER switch. In LAYER mode click a layer first. If none can be painted, add a blank layer."
+    },
+    {
+     "symptom": "My line looks dotted",
+     "cause": "Spacing is set high, so the dabs are placed far apart.",
+     "fix": "Bring Spacing back toward the default 25 percent, or lower for thin lines."
+    },
+    {
+     "symptom": "Long lines have rounded corners and lag",
+     "cause": "Smooth or Stab is very high. Both pull the tip away from the pointer.",
+     "fix": "Lower them for detail work, and raise them only for long straight or gentle curves."
+    },
+    {
+     "symptom": "The eraser removed everything in one click",
+     "cause": "Clear Current Target is a wipe command, not a brush.",
+     "fix": "Press Ctrl+Z to undo, then change the Eraser mode dropdown to Soft (Brush)."
+    }
+   ],
+   "protips": [
+    "Press X to swap colours, [ and ] to resize, and the number keys for opacity, so your hand never leaves the canvas.",
+    "For a ruler-straight stripe use Stab around 40 px instead of a shaky Shift+click retry: the tip lags behind your pointer and straightens the path.",
+    "Shift+click lines work for several paint tools, not just the brush, so you can chain straight segments by clicking corner to corner."
+   ],
+   "screens": [
+    "ui_menu_retouch",
+    "ui_tool_options",
+    "ui_toolbar_tools"
+   ]
+  },
+  {
+   "id": "tools.fill_bucket",
+   "title": "Fill bucket",
+   "domain": "tools",
+   "summary": "The Fill bucket (K) fills a closed region of a zone mask or a layer in one click.",
+   "what": "In ZONE mode it fills a region of the zone's mask. In LAYER mode it fills pixels on the selected layer, using either a solid colour or a baked Special finish, chosen with the Layer Brush / Fill paint source dropdown. Number keys set its opacity on layers. Two keyboard fills work on a selection: Alt+Backspace fills with the foreground colour and Ctrl+Backspace with the background colour.",
+   "when": [
+    "You need to fill a closed shape with colour.",
+    "You want a layer area to carry a finish look instead of flat colour."
+   ],
+   "how": [
+    "1. Pick Fill (K) in the tool row.",
+    "2. Choose the colour with the foreground colour box, or switch the paint source to Special (Baked) and press Choose Special.",
+    "3. Click inside the closed area you want to fill.",
+    "4. Press Ctrl+Z if it filled more than you wanted."
+   ],
+   "controls": [
+    {
+     "label": "Fill",
+     "range": "",
+     "default": "",
+     "effect": "Fill bucket (K): fill a region of the zone mask or the layer.",
+     "inv": "vtModeFill"
+    },
+    {
+     "label": "Layer Brush / Fill paint source",
+     "range": "",
+     "default": "",
+     "effect": "Brush / Fill source on a layer: solid colour or a baked Special finish.",
+     "inv": "layerPaintSourceMode"
+    },
+    {
+     "label": "Choose Special...",
+     "range": "",
+     "default": "",
+     "effect": "Choose a baked Special finish for layer fill / brush",
+     "inv": "layerSpecialPickerBtn"
+    },
+    {
+     "label": "Choose Special...",
+     "range": "",
+     "default": "",
+     "effect": "Current baked Special source",
+     "inv": "layerSpecialPreviewChip"
+    },
+    {
+     "label": "Gradient shape used by the active Layer or Zone",
+     "range": "",
+     "default": "",
+     "effect": "Shape of the gradient tool: linear, reflected, radial, angular, diamond.",
+     "inv": "gradientType"
+    },
+    {
+     "label": "Gradient Reverse",
+     "range": "",
+     "default": "",
+     "effect": "Flips the gradient direction.",
+     "inv": "gradientReverse"
+    },
+    {
+     "label": "Gradient Fg To Transparent",
+     "range": "",
+     "default": "",
+     "effect": "Fade the foreground colour to transparent instead of to the background colour.",
+     "inv": "gradientFgToTransparent"
+    }
+   ],
+   "tips": [
+    "Make a selection first, then use Alt+Backspace for a quick fill of just that selection."
+   ],
+   "pitfalls": [
+    "The Fill button in the selection bar is a different thing: it closes holes inside a selection.",
+    "Fill is meant for closed areas, so check the outline has no gaps before you click."
+   ],
+   "related": [
+    "tools.mask_vs_layer",
+    "tools.refine_selection",
+    "tools.brush_eraser"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "vtModeFill"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.selection_bar.fill",
+    "vtModeFill",
+    "layerPaintSourceMode",
+    "layerSpecialPickerBtn",
+    "layerSpecialPreviewChip",
+    "gradientType",
+    "gradientReverse",
+    "gradientFgToTransparent"
+   ],
+   "sources": [
+    "paint-booth-3-canvas.js:12728",
+    "paint-booth-v2.html:2305",
+    "paint-booth-3-canvas.js:5040",
+    "paint-booth-v2.html:3107",
+    "paint-booth-3-canvas.js:19162",
+    "paint-booth-3-canvas.js:19191",
+    "paint-booth-v2.html:3113",
+    "paint-booth-3-canvas.js:19165",
+    "paint-booth-3-canvas.js:2918",
+    "paint-booth-3-canvas.js:2986",
+    "paint-booth-3-canvas.js:2755",
+    "paint-booth-3-canvas.js:2977",
+    "paint-booth-3-canvas.js:5331",
+    "paint-booth-v2.html:3159",
+    "paint-booth-v2.html:3168",
+    "paint-booth-v2.html:3170",
+    "paint-booth-v2.html:2846",
+    "paint-booth-v2.html:3106",
+    "paint-booth-v2.html:3173"
+   ],
+   "aliases": [
+    "fill bucket",
+    "fill selection",
+    "fill tool",
+    "fill with color",
+    "fill with colour",
+    "gradient tool",
+    "paint bucket",
+    "bucket"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "What counts as the same colour",
+     "body": "The bucket looks at the pixel you click, then floods outward to every pixel whose red, green and blue are close to it. Closeness is measured as straight-line distance in colour, not per channel. Tolerance runs 0 to 255 with a default of 32, and a tolerance of 32 allows roughly 55 points of total colour distance. At 0 only the exact same colour is taken, which is right for flat artwork. Raise it for photos, gradients and anti-aliased edges."
+    },
+    {
+     "heading": "Contiguous and Sample",
+     "body": "Contiguous is on by default and keeps the fill to pixels that touch the one you clicked. Turn it off and the bucket grabs every matching pixel on the whole sheet, even in islands you cannot see touching. Beside it the bar shows what is being matched: Sample: Active Layer in LAYER mode, Sample: Composite in ZONE mode, where it reads the visible source paint underneath your zones."
+    },
+    {
+     "heading": "Zone fill versus layer fill",
+     "body": "In ZONE mode the bucket writes into the selected zone's mask, and the Selection Mode dropdown decides how: Add keeps what was there, Replace starts the mask over, Subtract removes the matched area. If the result would change nothing, the app says the fill was skipped. In LAYER mode it paints real pixels on the layer, using Solid Color or Special (Baked) from the paint source dropdown, and the Opacity slider controls how strongly."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Grab one painted panel into a zone",
+     "goal": "Select a single flat-coloured panel for a zone without drawing around it",
+     "settings": {
+      "Mode switch": "ZONE",
+      "Tool": "Fill (K)",
+      "Tolerance": "32",
+      "Contiguous": "on",
+      "Selection Mode": "Mode: Add (+)"
+     },
+     "result": "Only the connected panel of that colour joins the zone mask."
+    },
+    {
+     "title": "Every pixel of one colour on the sheet",
+     "goal": "Catch a colour that appears in several separate places",
+     "settings": {
+      "Mode switch": "ZONE",
+      "Tool": "Fill (K)",
+      "Tolerance": "20",
+      "Contiguous": "off",
+      "Selection Mode": "Mode: Add (+)"
+     },
+     "result": "All matching pixels across the car are added at once, including separate islands."
+    },
+    {
+     "title": "Start the mask over",
+     "goal": "Replace a messy mask with a clean new region",
+     "settings": {
+      "Tool": "Fill (K)",
+      "Tolerance": "32",
+      "Selection Mode": "Mode: Replace"
+     },
+     "result": "The old mask is cleared and only the newly clicked region is kept."
+    },
+    {
+     "title": "Texture fill on a layer",
+     "goal": "Fill an artwork shape with a baked finish look instead of flat colour",
+     "settings": {
+      "Mode switch": "LAYER",
+      "Tool": "Fill (K)",
+      "Layer Brush / Fill paint source": "Special (Baked)",
+      "Opacity": "100%",
+      "Tolerance": "0"
+     },
+     "result": "The exact-colour shape is filled with the chosen Special; press Choose Special first if none is set."
+    }
+   ],
+   "combos": [
+    {
+     "with": "tools.selection_modes",
+     "why": "The Add, Replace and Subtract dropdown controls how the bucket changes a zone mask, just like the wand and marquee."
+    },
+    {
+     "with": "tools.refine_selection",
+     "why": "After a bucket fill, grow, shrink or feather the result to close hairline gaps."
+    },
+    {
+     "with": "zones.tolerance",
+     "why": "The fill tolerance works on the same colour-distance idea as zone colour tolerance, so what grabs cleanly in one grabs cleanly in the other."
+    },
+    {
+     "with": "tools.mask_vs_layer",
+     "why": "Check the ZONE | LAYER switch first: the bucket edits a mask in one and real pixels in the other."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why did the bucket fill the whole car?",
+     "a": "Tolerance is too high for the area, or Contiguous is off. Drop Tolerance toward 10 to 32 and tick Contiguous."
+    },
+    {
+     "q": "Why did it leave a rim around my shape?",
+     "a": "Edges are anti-aliased, so the rim pixels are a blend of two colours outside the tolerance. Raise Tolerance a little or grow the result by a pixel or two."
+    },
+    {
+     "q": "What does the Fill button in the selection bar do?",
+     "a": "It is a different thing. It closes holes inside a selection. The bucket tool floods a colour region."
+    },
+    {
+     "q": "Can I fill with a finish, not just a colour?",
+     "a": "On a layer, yes. Change the paint source dropdown to Special (Baked), press Choose Special, then click."
+    },
+    {
+     "q": "I clicked and nothing happened.",
+     "a": "The fill would not change anything, or the layer is locked or not selected. A short message tells you which. Pick a different spot or unlock the layer."
+    },
+    {
+     "q": "How do I fill a selection without clicking?",
+     "a": "Make a selection, then press Alt+Backspace to fill with the foreground colour or Ctrl+Backspace for the background colour."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The fill leaks across the whole panel",
+     "cause": "There is a gap in the outline, or Tolerance is so high that the border colour counts as a match.",
+     "fix": "Undo with Ctrl+Z, lower Tolerance, and close the gap with the brush before filling again."
+    },
+    {
+     "symptom": "Only a speckled part of the area is filled",
+     "cause": "Tolerance is too low for noisy or gradient artwork.",
+     "fix": "Raise Tolerance in steps of 10 until the whole area is taken."
+    },
+    {
+     "symptom": "A zone fill adds to the old mask instead of replacing it",
+     "cause": "Selection Mode is on Mode: Add (+), the default.",
+     "fix": "Switch the dropdown to Mode: Replace before clicking."
+    },
+    {
+     "symptom": "The same colour on a logo got caught too",
+     "cause": "Contiguous is off, or the logo touches the body at the same colour.",
+     "fix": "Turn Contiguous on, and restrict the zone to a layer or box if the colours truly touch."
+    }
+   ],
+   "protips": [
+    "Tolerance 0 plus Contiguous on is a perfect picker for flat vector-style artwork, and anything else you click stays untouched.",
+    "The bucket matches against the colour of the exact pixel you click, so click in the middle of a flat area, not on an anti-aliased edge.",
+    "Switch Selection Mode to Mode: Subtract and click to carve a matching colour back out of a zone mask."
+   ],
+   "screens": [
+    "ui_toolbar_tools"
+   ]
+  },
+  {
+   "id": "tools.eyedropper_pick",
+   "title": "Eyedropper (Color) and Pick Item",
+   "domain": "tools",
+   "summary": "The Color tool (P) picks a colour from your paint and gives it to a zone. Pick Item (Y) picks one logo or number inside a layer so you can move it on its own.",
+   "what": "Color is a selection tool: click a colour on the paint and the selected zone grabs every pixel of that colour. In zone mode the bar offers a zone dropdown, + Add Color (adds the clicked colour to the zone), Set (replaces the zone's colour with this one colour), Exclude (removes areas from the match, shown red) and Use Region (gives the zone your current box, lasso or brush selection instead of a colour). Pick Item works on layers: it isolates a single sponsor or number inside a layer so you can move or rotate it independently. Alt+click samples a colour temporarily while using other tools.",
+   "when": [
+    "You want a zone to catch one colour on the paint.",
+    "You need to move just one logo on a layer with many."
+   ],
+   "how": [
+    "1. Select the zone in the left column.",
+    "2. Pick Color (P) in the tool row.",
+    "3. Click the colour on the canvas. Click again on other colours with + Add Color to add shades.",
+    "4. Use Set to replace the colour, or Exclude to carve out places you do not want.",
+    "5. For layers, switch to LAYER mode, pick Pick Item (Y) and click the one logo or number."
+   ],
+   "controls": [
+    {
+     "label": "Color",
+     "range": "",
+     "default": "",
+     "effect": "Color (P): click a colour on the paint to select by it. In Pro zone mode it feeds the selected zone's colour list.",
+     "inv": "vtModeEyedropper"
+    },
+    {
+     "label": "Choose zone to assign picked color",
+     "range": "",
+     "default": "",
+     "effect": "Choose which zone to add this color to",
+     "inv": "eyedropperZoneSelect"
+    },
+    {
+     "label": "+ Add Color",
+     "range": "",
+     "default": "",
+     "effect": "+ Add Color: adds the clicked colour to the chosen zone.",
+     "inv": "eyedropperAddColorBtn"
+    },
+    {
+     "label": "Exclude",
+     "range": "",
+     "default": "",
+     "effect": "paint areas on the car to REMOVE from this zone's color match (red overlay)",
+     "inv": "eyedropperExcludeBtn"
+    },
+    {
+     "label": "Set",
+     "range": "",
+     "default": "",
+     "effect": "Set: replaces the zone's colour with this single colour.",
+     "inv": "eyedropperSetBtn"
+    },
+    {
+     "label": "Use Region",
+     "range": "",
+     "default": "",
+     "effect": "Use Region: gives the current selection (rect / lasso / brush) to the zone selected on the left.",
+     "inv": "useRegionBtn"
+    },
+    {
+     "label": "Pick",
+     "range": "",
+     "default": "",
+     "effect": "Pick Item (Y): pick one sponsor / number inside a layer for independent move / rotate.",
+     "inv": "vtModePickItem"
+    },
+    {
+     "label": "Pick Layer Element",
+     "range": "",
+     "default": "",
+     "effect": "always force isolation of one sponsor/number/shape inside the layer for its own tight transform box",
+     "inv": "vtModeLayerPick"
+    },
+    {
+     "label": "Zone Pick",
+     "range": "",
+     "default": "",
+     "effect": "Zone Pick: click a spec pattern / base piece to move, rotate and resize it independently.",
+     "inv": "vtModeZonePick"
+    }
+   ],
+   "tips": [
+    "If edges are left over after picking, raise the zone's colour tolerance."
+   ],
+   "pitfalls": [
+    "A colour used on both the body and a logo needs a layer or box restriction as well."
+   ],
+   "related": [
+    "zones.add_pick_colour",
+    "zones.tolerance",
+    "tools.select_shapes",
+    "tools.move_transform"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "vtModeEyedropper"
+    },
+    {
+     "do": "control",
+     "id": "vtModePickItem"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "vtModeEyedropper",
+    "eyedropperZoneSelect",
+    "eyedropperAddColorBtn",
+    "eyedropperExcludeBtn",
+    "eyedropperSetBtn",
+    "useRegionBtn",
+    "vtModePickItem",
+    "vtModeLayerPick",
+    "vtModeZonePick"
+   ],
+   "sources": [
+    "paint-booth-3-canvas.js:12722",
+    "paint-booth-3-canvas.js:17446",
+    "paint-booth-v2.html:2294",
+    "paint-booth-3-canvas.js:5040",
+    "paint-booth-v2.html:3783",
+    "paint-booth-2-state-zones.js:18000",
+    "paint-booth-3-canvas.js:9248",
+    "paint-booth-v2.html:3789",
+    "paint-booth-3-canvas.js:9362",
+    "paint-booth-3-canvas.js:9385",
+    "paint-booth-3-canvas.js:9396",
+    "paint-booth-3-canvas.js:4189",
+    "paint-booth-3-canvas.js:4430",
+    "paint-booth-3-canvas.js:1856",
+    "paint-booth-3-canvas.js:9371",
+    "paint-booth-v2.html:3173",
+    "paint-booth-v2.html:3788",
+    "paint-booth-v2.html:3798",
+    "paint-booth-v2.html:2281"
+   ],
+   "aliases": [
+    "add color",
+    "color picker tool",
+    "colour picker",
+    "eyedropper",
+    "pick a colour from the car",
+    "pick item",
+    "sample color",
+    "use region",
+    "colour picker tool",
+    "pick colour from paint"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "What a click does",
+     "body": "With the Color tool armed, a click reads the colour under the cursor. The Sample dropdown in the bar decides how many pixels are averaged: Point Sample, 3x3 Average (the default), 5x5 Average or 11x11 Average. If a zone is ready to receive it, that colour is stacked straight into the selected zone, and each picked colour starts with a tolerance of 40. Otherwise it only sets your swatch colour."
+    },
+    {
+     "heading": "Add Color, Set and the colour stack",
+     "body": "+ Add Color stacks the last picked colour onto the zone, so one zone can hold several shades of the same paint. A colour already in the zone is refused with a message. Set does the opposite: it replaces everything with this single colour and clears the stack. Each stacked colour carries its own tolerance, so a loose shade and an exact shade can live in one zone."
+    },
+    {
+     "heading": "Alt and Shift while sampling",
+     "body": "Holding Alt and clicking with most tools grabs the colour under the cursor as your foreground colour, adds it to recent colours and shows Sampled with the hex value. Tools that use Alt for something else, such as Clone, Healing, Shape, Pen and the marquees, keep their own Alt behaviour. With the Color tool, Shift+click samples only the active layer instead of the whole picture, which ignores whatever sits above it."
+    },
+    {
+     "heading": "Pick Item is not a colour tool",
+     "body": "Pick Item (Y) picks a thing, not a colour. In LAYER mode it draws a tight box around one sponsor, number or shape inside a layer so you can move or rotate just that piece. In ZONE mode it picks a spec pattern piece to move on its own."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Catch two shades of one paint colour",
+     "goal": "One zone that follows a body colour with a slightly lighter highlight",
+     "settings": {
+      "Mode switch": "ZONE",
+      "Tool": "Color (P)",
+      "Sample": "3x3 Average",
+      "Pick 1": "click the base shade",
+      "Pick 2": "click the highlight then press + Add Color"
+     },
+     "result": "The zone holds two colours, each with its own tolerance, and both areas receive the finish."
+    },
+    {
+     "title": "One exact colour only",
+     "goal": "Make the zone follow a single flat colour and nothing else",
+     "settings": {
+      "Tool": "Color (P)",
+      "Sample": "Point Sample",
+      "Action": "click the colour, then press Set"
+     },
+     "result": "Any stacked colours are cleared and only this colour is matched."
+    },
+    {
+     "title": "Grab a colour from your artwork layer",
+     "goal": "Match a brush colour to a logo colour without the paint underneath interfering",
+     "settings": {
+      "Mode switch": "LAYER",
+      "Tool": "Color (P)",
+      "Click style": "Shift+click on the logo"
+     },
+     "result": "The swatch takes the logo layer colour only, and a message names the layer and the sample size."
+    },
+    {
+     "title": "Move one number inside a layer",
+     "goal": "Nudge a single number without dragging the whole sponsor layer",
+     "settings": {
+      "Mode switch": "LAYER",
+      "Tool": "Pick (Y)",
+      "Action": "click the number, then drag or rotate its box"
+     },
+     "result": "Only that element moves and rotates."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.add_pick_colour",
+     "why": "This tool is how colours get into a zone; that article covers the zone side of the same stack."
+    },
+    {
+     "with": "zones.tolerance",
+     "why": "Every picked colour carries a tolerance you can loosen or tighten per colour after you pick it."
+    },
+    {
+     "with": "tools.move_transform",
+     "why": "Pick Item isolates one element so Move and Transform act on just that piece."
+    },
+    {
+     "with": "tools.select_shapes",
+     "why": "Use Use Region after a box or lasso selection when a zone should follow a place, not a colour."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What starting tolerance does a picked colour get?",
+     "a": "40, unless the zone already has its own picker tolerance. You can change it per colour in the zone."
+    },
+    {
+     "q": "Why does it say a colour is already in the zone?",
+     "a": "Colours are compared by exact hex value and a repeat is refused. Pick a slightly different shade or raise the tolerance on the existing colour."
+    },
+    {
+     "q": "What is the difference between + Add Color and Set?",
+     "a": "+ Add Color stacks another colour on the zone. Set swaps the whole list for this one colour."
+    },
+    {
+     "q": "How do I grab a colour without leaving my brush?",
+     "a": "Hold Alt and click. The colour becomes your foreground colour and joins the recent colours. It does not work with tools that use Alt for other jobs, such as Clone and Healing."
+    },
+    {
+     "q": "Can I sample only one layer?",
+     "a": "Yes. Select the layer, use the Color tool and Shift+click. It ignores the paint and other layers around it."
+    },
+    {
+     "q": "Pick Item grabbed the whole layer. Why?",
+     "a": "Pick Item isolates one connected piece of artwork. If a number touches a stripe in the same layer they count as one piece, so cut them onto separate layers first."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The zone grabs the logo as well as the body",
+     "cause": "Both use the same colour, and a colour pick has no sense of place.",
+     "fix": "Add a box, lasso or layer restriction to the zone, or use Exclude to paint the logo out of the match."
+    },
+    {
+     "symptom": "Edges stay unpainted around the shape",
+     "cause": "Anti-aliased edge pixels are blends that sit outside the tolerance.",
+     "fix": "Raise the colour tolerance, or add the edge shade with + Add Color."
+    },
+    {
+     "symptom": "I clicked and the zone did not change",
+     "cause": "No zone was selected, or the colour was already in it.",
+     "fix": "Select a zone in the left column first, then click again. A duplicate is refused on purpose."
+    }
+   ],
+   "protips": [
+    "Alt+click works as a temporary eyedropper from almost any painting tool, so you can match colours without switching tools.",
+    "Use the Sample dropdown on 5x5 or 11x11 for noisy or speckled paint so one stray pixel does not become your colour.",
+    "Shift+click lets you pull a clean colour from one layer even when other layers cover it on screen."
+   ],
+   "screens": [
+    "ui_shortcuts_dialog",
+    "ui_toolbar_tools"
+   ]
+  },
+  {
+   "id": "tools.retouch",
+   "title": "Retouch tools: Color Brush, Recolor, Healing, Smudge, Burn",
+   "domain": "tools",
+   "summary": "The RETOUCH menu holds five pixel tools for fixing and painting artwork on a layer.",
+   "what": "Color Brush (C) paints a solid colour or pattern brush onto the selected layer. Recolor (R) paints a new hue over a sampled colour. Healing Brush (Shift+J) takes clean texture from a source you pick with Alt+click, then paints it into the target. Smudge (Q) smears layer pixels in the drag direction. Burn (J) darkens the pixels under the brush. They work on layer pixels, so they need LAYER mode and a layer to paint on; the menu is greyed out until a blank layer exists, which the \"+ Add blank for Color Brush\" button creates.",
+   "when": [
+    "You need to touch up a sponsor, number or decal.",
+    "The Color Brush is greyed out."
+   ],
+   "how": [
+    "1. Switch to LAYER mode and select the layer you want to fix.",
+    "2. Open RETOUCH in the toolbar. If it is greyed, press \"+ Add blank for Color Brush\" first.",
+    "3. Pick the tool. Set its size and strength in the tool options bar.",
+    "4. For Healing, press Set source and click a clean area (Alt+click also picks it), then paint over the flaw.",
+    "5. Undo with Ctrl+Z if you do not like it."
+   ],
+   "controls": [
+    {
+     "label": "Retouch",
+     "range": "",
+     "default": "",
+     "effect": "RETOUCH menu: Color Brush, Recolor, Healing Brush, Smudge, Burn - pixel retouching on the selected layer.",
+     "inv": "pro.toolbar.retouch"
+    },
+    {
+     "label": "＋ Add blank for Color Brush",
+     "range": "",
+     "default": "",
+     "effect": "Adds a blank layer so the Color Brush has somewhere to paint.",
+     "inv": "pro.toolbar.add_blank_for_color_brush"
+    },
+    {
+     "label": "Color Brush",
+     "range": "",
+     "default": "",
+     "effect": "Color Brush (C): paint solid colour or a pattern brush onto the selected layer.",
+     "inv": "vtModeColorBrush"
+    },
+    {
+     "label": "Recolor",
+     "range": "",
+     "default": "",
+     "effect": "Recolor (R): paint a new hue over a sampled colour on the selected layer.",
+     "inv": "vtModeRecolor"
+    },
+    {
+     "label": "Healing Brush",
+     "range": "",
+     "default": "",
+     "effect": "Alt+click clean texture on the selected Layer, then paint to blend its detail into the target",
+     "inv": "vtModeHealing"
+    },
+    {
+     "label": "Smudge",
+     "range": "",
+     "default": "",
+     "effect": "smear selected Layer pixels in the drag direction",
+     "inv": "vtModeSmudge"
+    },
+    {
+     "label": "Burn",
+     "range": "",
+     "default": "",
+     "effect": "darken selected Layer pixels under the brush",
+     "inv": "vtModeBurn"
+    },
+    {
+     "label": "Smudge strength percent",
+     "range": "1-100",
+     "default": "50",
+     "effect": "Smudge strength: how firmly each dab carries picked-up pixels (1-100%).",
+     "inv": "smudgeStrength"
+    },
+    {
+     "label": "Dodge and Burn tonal range",
+     "range": "",
+     "default": "",
+     "effect": "Choose which tones Dodge or Burn affects most",
+     "inv": "dodgeBurnRange"
+    },
+    {
+     "label": "Dodge and Burn exposure percent",
+     "range": "1-100",
+     "default": "20",
+     "effect": "Dodge/Burn exposure: strength built up by each pass (1-100%). Number keys set exposure.",
+     "inv": "dodgeBurnExposure"
+    },
+    {
+     "label": "Blur and Sharpen strength percent",
+     "range": "1-100",
+     "default": "50",
+     "effect": "Blur/Sharpen strength: effect built up by each pass (1-100%). Number keys set strength.",
+     "inv": "blurSharpenStrength"
+    },
+    {
+     "label": "Set source",
+     "range": "",
+     "default": "",
+     "effect": "Arm source picking, then click a clean area on the canvas",
+     "inv": "pro.tool_options.set_source"
+    },
+    {
+     "label": "Healing Aligned",
+     "range": "",
+     "default": "on",
+     "effect": "Aligned healing source.",
+     "inv": "healingAligned"
+    },
+    {
+     "label": "Clear source",
+     "range": "",
+     "default": "",
+     "effect": "Forget the current Healing source",
+     "inv": "pro.tool_options.clear_source"
+    },
+    {
+     "label": "Adjust",
+     "range": "",
+     "default": "",
+     "effect": "ADJUST menu: Brightness/Contrast, Hue/Saturation, Color Replace, Invert, Grayscale, Gradient Map, Vibrance, Color Temperature.",
+     "inv": "pro.toolbar.adjust"
+    },
+    {
+     "label": "Hue / Saturation",
+     "range": "",
+     "default": "",
+     "effect": "Shifts hue and saturation of the selected layer or paint.",
+     "inv": "pro.toolbar.hue_saturation"
+    },
+    {
+     "label": "Color Replace",
+     "range": "",
+     "default": "",
+     "effect": "Replaces one colour with another everywhere on the layer or paint.",
+     "inv": "pro.toolbar.color_replace"
+    },
+    {
+     "label": "Brightness / Contrast",
+     "range": "",
+     "default": "",
+     "effect": "adjust image brightness and contrast",
+     "inv": "pro.toolbar.brightness_contrast"
+    },
+    {
+     "label": "Invert Colors",
+     "range": "",
+     "default": "",
+     "effect": "negate all pixel colors",
+     "inv": "pro.toolbar.invert_colors"
+    },
+    {
+     "label": "Grayscale",
+     "range": "",
+     "default": "",
+     "effect": "convert to black and white",
+     "inv": "pro.toolbar.grayscale"
+    },
+    {
+     "label": "Gradient Map",
+     "range": "",
+     "default": "",
+     "effect": "map a color gradient to luminosity",
+     "inv": "pro.toolbar.gradient_map"
+    },
+    {
+     "label": "Vibrance",
+     "range": "",
+     "default": "",
+     "effect": "boost muted colours without over-saturating already-vivid ones",
+     "inv": "pro.toolbar.vibrance"
+    },
+    {
+     "label": "Color Temperature",
+     "range": "",
+     "default": "",
+     "effect": "warm or cool the image (Kelvin shift)",
+     "inv": "pro.toolbar.color_temperature"
+    }
+   ],
+   "tips": [
+    "Smudge strength is 1 to 100 percent (default 50). Burn and Dodge have a tonal range (Shadows, Midtones, Highlights) and an exposure of 1 to 100 percent (default 20).",
+    "For colour changes that affect the whole layer, the ADJUST menu is faster: Hue / Saturation, Color Replace and more."
+   ],
+   "pitfalls": [
+    "These tools change the actual pixels. Finishes and zone Hue Shift are render settings, not pixel edits.",
+    "Retouch tools edit layer pixels, not zone masks."
+   ],
+   "related": [
+    "tools.brush_eraser",
+    "tools.mask_vs_layer",
+    "layers.panel"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "vtModeColorBrush"
+    },
+    {
+     "do": "control",
+     "id": "pro.toolbar.add_blank_for_color_brush"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "html.retouch.2339",
+    "html.adjust.2415",
+    "pro.toolbar.retouch",
+    "pro.toolbar.add_blank_for_color_brush",
+    "vtModeColorBrush",
+    "vtModeRecolor",
+    "vtModeHealing",
+    "vtModeSmudge",
+    "vtModeBurn",
+    "smudgeStrength",
+    "dodgeBurnRange",
+    "dodgeBurnExposure",
+    "blurSharpenStrength",
+    "pro.tool_options.set_source",
+    "healingAligned",
+    "pro.tool_options.clear_source",
+    "pro.toolbar.adjust",
+    "pro.toolbar.hue_saturation",
+    "pro.toolbar.color_replace",
+    "pro.toolbar.brightness_contrast",
+    "pro.toolbar.invert_colors",
+    "pro.toolbar.grayscale",
+    "pro.toolbar.gradient_map",
+    "pro.toolbar.vibrance",
+    "pro.toolbar.color_temperature"
+   ],
+   "sources": [
+    "paint-booth-3-canvas.js:12731",
+    "paint-booth-v2.html:2337",
+    "paint-booth-v2.html:2413",
+    "paint-booth-v2.html:856",
+    "paint-booth-v2.html:2351",
+    "paint-booth-v2.html:2354",
+    "paint-booth-3-canvas.js:5040",
+    "paint-booth-v2.html:2359",
+    "paint-booth-3-canvas.js:19411",
+    "paint-booth-3-canvas.js:19423",
+    "paint-booth-3-canvas.js:19688",
+    "paint-booth-3-canvas.js:19696",
+    "paint-booth-3-canvas.js:19715",
+    "paint-booth-3-canvas.js:19731",
+    "paint-booth-v2.html:2874",
+    "paint-booth-v2.html:2885",
+    "paint-booth-v2.html:2893",
+    "paint-booth-v2.html:3149",
+    "paint-booth-v2.html:3147",
+    "paint-booth-v2.html:2341",
+    "paint-booth-v2.html:2351"
+   ],
+   "aliases": [
+    "adjust menu",
+    "burn",
+    "color brush",
+    "color brush greyed out",
+    "dodge",
+    "fix a logo",
+    "healing brush",
+    "hue saturation",
+    "recolor",
+    "retouch",
+    "smudge",
+    "touch up",
+    "recolor brush",
+    "smudge tool",
+    "burn tool"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Recolor changes hue, not light",
+     "body": "Recolor samples the colour under the cursor when you start a stroke. Only pixels within Tolerance of that sampled colour are touched (Tolerance defaults to 32 and is the same slider the wand uses). They are pushed toward your foreground colour while keeping their own lightness, so shading, scratches and texture survive. Pixels near the edge of the tolerance get a weaker change, which gives a soft transition instead of a hard cut."
+    },
+    {
+     "heading": "Burn builds up slowly on purpose",
+     "body": "Burn darkens a little with every dab. Exposure runs 1 to 100 percent with a default of 20, and the tonal range dropdown picks Shadows, Midtones (the default) or Highlights, which decides which pixels react most. Each dab also multiplies by Flow and by the brush edge falloff, so at the defaults one pass is a gentle nudge. Pixels that are fully transparent are skipped, and black can never go darker."
+    },
+    {
+     "heading": "Smudge and Healing",
+     "body": "Smudge picks up the colour under the brush and drags it along your stroke. Its Strength runs 1 to 100 percent with a default of 50, and the dab is also scaled by Flow. Healing Brush copies texture from a source point you set with Alt+click or the Set source button. With Aligned on (the default) the source follows your cursor across strokes. With Aligned off every new stroke starts again from the point you sampled."
+    },
+    {
+     "heading": "Selections protect the rest of the layer",
+     "body": "If a pixel selection is active, Color Brush, Recolor, Smudge and Burn all stay inside it. A selection with a soft edge gives your retouch a soft edge too."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Change a sponsor colour, keep its shading",
+     "goal": "Turn a red logo blue without flattening it",
+     "settings": {
+      "Mode switch": "LAYER",
+      "Tool": "Recolor (R)",
+      "Foreground colour": "your blue",
+      "Tolerance": "32",
+      "Opacity": "100%",
+      "Hard": "50%"
+     },
+     "result": "Red areas move to blue while highlights and shadows stay, so the logo still looks lit."
+    },
+    {
+     "title": "Darken the edge of a number",
+     "goal": "Add a subtle shadow side to a flat number",
+     "settings": {
+      "Tool": "Burn (J)",
+      "Range": "Midtones",
+      "Exposure": "20%",
+      "Size": "40",
+      "Hard": "20%"
+     },
+     "result": "Each pass adds a soft darkening. Go over it three or four times for a deeper shade."
+    },
+    {
+     "title": "Remove a speck from a decal",
+     "goal": "Hide dust or an artifact without touching the rest",
+     "settings": {
+      "Tool": "Healing Brush (Shift+J)",
+      "Source": "Alt+click a clean spot",
+      "Aligned": "on",
+      "Size": "15",
+      "Hard": "50%"
+     },
+     "result": "The flaw is covered with matching texture taken from the clean spot."
+    },
+    {
+     "title": "Soften a hard seam",
+     "goal": "Blend where two colours meet on a layer",
+     "settings": {
+      "Tool": "Smudge (Q)",
+      "Strength": "50%",
+      "Size": "25"
+     },
+     "result": "Pixels drag across the border for a smooth blend. Drag in the direction you want the colour to travel."
+    }
+   ],
+   "combos": [
+    {
+     "with": "tools.brush_eraser",
+     "why": "Retouch tools use the same Size, Hard, Flow and Smooth controls and the same bracket keys."
+    },
+    {
+     "with": "tools.select_shapes",
+     "why": "Make a selection first and Recolor, Smudge and Burn stay inside it."
+    },
+    {
+     "with": "layers.panel",
+     "why": "These tools only work on the selected layer, so the layer list decides where your edit lands."
+    },
+    {
+     "with": "tools.mask_vs_layer",
+     "why": "They are LAYER mode tools; zone masks are not touched."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why is the whole Retouch menu greyed out?",
+     "a": "These brushes paint on a layer. A flat car image has none, so press + Add blank for Color Brush or open a layered file."
+    },
+    {
+     "q": "What is the difference between Color Brush and Recolor?",
+     "a": "Color Brush paints a flat colour or a pattern on top. Recolor swaps the hue of existing colour and keeps the lightness and texture."
+    },
+    {
+     "q": "Why does Recolor miss some pixels?",
+     "a": "Only pixels near the colour you first clicked change. Raise Tolerance to include more shades."
+    },
+    {
+     "q": "How do I set the healing source?",
+     "a": "Alt+click a clean spot, or press Set source and then click. The bar shows Source not set until you do, and Clear source resets it."
+    },
+    {
+     "q": "Can I use Burn on the whole car paint?",
+     "a": "No. Burn works on layer pixels. Use zone finishes and base settings for car-wide darkening."
+    },
+    {
+     "q": "Do the number keys work here?",
+     "a": "Yes. They set the strength of the active tool, such as Smudge strength or Burn exposure."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Recolor turned everything muddy",
+     "cause": "Tolerance is very high, so far-off colours are pulled in too.",
+     "fix": "Undo with Ctrl+Z, lower Tolerance, and sample a cleaner starting colour."
+    },
+    {
+     "symptom": "Burn does almost nothing",
+     "cause": "Exposure is low and the tone range does not match the pixels you are painting.",
+     "fix": "Raise Exposure or pick the tonal range that matches the area, then do a few passes."
+    },
+    {
+     "symptom": "The healing patch shows a visible copy",
+     "cause": "The source sits next to a different tone, or Aligned is off.",
+     "fix": "Pick a source with similar tone and keep Aligned on for long strokes."
+    },
+    {
+     "symptom": "Nothing happens at all with these tools",
+     "cause": "No layer is selected, or it is locked.",
+     "fix": "Select an unlocked layer in LAYER mode. Press + Add blank for Color Brush if you have none."
+    }
+   ],
+   "protips": [
+    "Recolor keeps lightness, so it is the right tool to restyle a logo without losing its 3D look; a Color Brush stroke would flatten it.",
+    "Burn is deliberately weak per pass. Treat it like an airbrush and build shadow with several light passes.",
+    "A feathered selection around the area you want to fix gives the retouch a soft edge for free."
+   ],
+   "screens": [
+    "ui_menu_adjust",
+    "ui_menu_retouch",
+    "ui_toolbar_menus"
+   ]
+  },
+  {
+   "id": "tools.select_shapes",
+   "title": "Marquee, Lasso, Magic Wand and other selection tools",
+   "domain": "tools",
+   "summary": "Selection tools decide which pixels you are about to work on. Pick the one that fits the shape: box, circle, free-hand, colour or edge.",
+   "what": "Rect (O) drags a box selection and the Elliptical Marquee (M) drags an oval, with Shift for a circle and Alt to draw from the centre. Lasso (L) draws a free-hand outline; press Enter or return near the start to close it. The Magic Wand (W) selects similar colours. Select All Color (A) selects every pixel of a sampled colour across the whole paint. Grab Object (G) selects a whole number or logo outline with one click. Smart Region Fill selects an area bounded by edges, and Edge Preview shows the detected boundaries in red so you can adjust tolerance first.",
+   "when": [
+    "You want a zone to cover one panel or an odd shape.",
+    "You want to select a stripe, number or logo."
+   ],
+   "how": [
+    "1. Pick a tool in the tool row or the SELECT menu.",
+    "2. For the wand, set Tolerance (0 to 255, default 32). Higher grabs more colours. Contiguous on selects only touching pixels.",
+    "3. Click or drag on the canvas. Shift adds to the selection and Alt subtracts.",
+    "4. Refine the edge with Grow, Shrink, Feather or Smooth.",
+    "5. Press Use Region (Color tool bar) to give the selection to the selected zone."
+   ],
+   "controls": [
+    {
+     "label": "Rect",
+     "range": "",
+     "default": "",
+     "effect": "Rectangle select (O): drag a box selection.",
+     "inv": "vtModeRect"
+    },
+    {
+     "label": "Elliptical Marquee",
+     "range": "",
+     "default": "",
+     "effect": "drag a Zone selection; Shift makes a circle, Alt draws from center, Esc cancels",
+     "inv": "vtModeEllipseMarquee"
+    },
+    {
+     "label": "Lasso",
+     "range": "",
+     "default": "",
+     "effect": "Lasso (L): draw a free-hand selection.",
+     "inv": "vtModeLasso"
+    },
+    {
+     "label": "Wand",
+     "range": "",
+     "default": "",
+     "effect": "Magic Wand (W): click to select similar colour; Shift adds, Alt subtracts; Tolerance sets how similar.",
+     "inv": "vtModeWand"
+    },
+    {
+     "label": "Color difference allowed (higher = more colors included)",
+     "range": "0-255",
+     "default": "32",
+     "effect": "How different a colour can be and still get picked (higher = more colours).",
+     "inv": "wandTolerance"
+    },
+    {
+     "label": "Wand Contiguous",
+     "range": "",
+     "default": "on",
+     "effect": "Contiguous: only select touching pixels of that colour (off = everywhere).",
+     "inv": "wandContiguous"
+    },
+    {
+     "label": "Sample area — averages color under cursor for more forgiving selection",
+     "range": "",
+     "default": "",
+     "effect": "Sample area for the wand: single point or an average of 3x3 / 5x5 / 11x11 pixels.",
+     "inv": "wandSampleSize"
+    },
+    {
+     "label": "Wand Anti Alias",
+     "range": "",
+     "default": "on",
+     "effect": "Smooths the wand selection edge.",
+     "inv": "wandAntiAlias"
+    },
+    {
+     "label": "Select All Color",
+     "range": "",
+     "default": "",
+     "effect": "Select All Color (A): select every pixel of the sampled colour across the whole paint.",
+     "inv": "vtModeSelectAll"
+    },
+    {
+     "label": "Grab Object",
+     "range": "",
+     "default": "",
+     "effect": "Grab Object (G): click inside a number or logo and its whole outline is selected.",
+     "inv": "vtModeGrabObject"
+    },
+    {
+     "label": "Smart Region Fill",
+     "range": "",
+     "default": "",
+     "effect": "Smart Region Fill: click inside an edge-bounded area to select it.",
+     "inv": "vtModeEdge"
+    },
+    {
+     "label": "Edge Preview",
+     "range": "",
+     "default": "",
+     "effect": "shows detected boundaries in red so you can adjust tolerance before clicking",
+     "inv": "edgePreviewBtn"
+    },
+    {
+     "label": "Select",
+     "range": "",
+     "default": "",
+     "effect": "SELECT menu: Select All Color, Grab Object, Smart Region Fill, Move Selection Border, Pick Layer Element, Zone Pick, Elliptical Marquee.",
+     "inv": "pro.toolbar.select"
+    },
+    {
+     "label": "PathSelection",
+     "range": "",
+     "default": "",
+     "effect": "Close any open path and convert it to the active Zone selection",
+     "inv": "penPathToSelection"
+    },
+    {
+     "label": "Clear Path",
+     "range": "",
+     "default": "",
+     "effect": "Clear current path without changing selection history",
+     "inv": "pro.tool_options.clear_path"
+    }
+   ],
+   "tips": [
+    "Sample area set to 3x3, 5x5 or 11x11 average helps the wand on noisy paint.",
+    "Wand Anti Alias smooths the selection edge."
+   ],
+   "pitfalls": [
+    "The wand grabs far-away bits when Contiguous is off.",
+    "Grab Object works best on clear solid shapes.",
+    "The shortcut overlay lists M as Marquee Select. In the app, M is the Elliptical Marquee and Rect is O."
+   ],
+   "related": [
+    "tools.selection_modes",
+    "tools.refine_selection",
+    "zones.regions",
+    "tools.eyedropper_pick"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "vtModeWand"
+    },
+    {
+     "do": "control",
+     "id": "vtModeLasso"
+    },
+    {
+     "do": "control",
+     "id": "vtModeRect"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "html.select.2325",
+    "vtModeRect",
+    "vtModeEllipseMarquee",
+    "vtModeLasso",
+    "vtModeWand",
+    "wandTolerance",
+    "wandContiguous",
+    "wandSampleSize",
+    "wandAntiAlias",
+    "vtModeSelectAll",
+    "vtModeGrabObject",
+    "vtModeEdge",
+    "edgePreviewBtn",
+    "pro.toolbar.select",
+    "penPathToSelection",
+    "pro.tool_options.clear_path"
+   ],
+   "sources": [
+    "paint-booth-3-canvas.js:18738",
+    "paint-booth-3-canvas.js:12720",
+    "paint-booth-v2.html:2323",
+    "paint-booth-v2.html:2298",
+    "paint-booth-3-canvas.js:5040",
+    "paint-booth-v2.html:2337",
+    "paint-booth-v2.html:2297",
+    "paint-booth-v2.html:2296",
+    "paint-booth-3-canvas.js:7236",
+    "paint-booth-3-canvas.js:7241",
+    "paint-booth-3-canvas.js:7303",
+    "paint-booth-3-canvas.js:7284",
+    "paint-booth-3-canvas.js:5125",
+    "paint-booth-3-canvas.js:21312",
+    "js/canvas/zone/wand-selection.js:34",
+    "js/canvas/zone/wand-selection.js:49",
+    "js/canvas/zone/wand-selection.js:90",
+    "paint-booth-v2.html:2296",
+    "paint-booth-v2.html:2297",
+    "paint-booth-v2.html:3173"
+   ],
+   "aliases": [
+    "edge preview",
+    "elliptical marquee",
+    "grab object",
+    "lasso",
+    "magic wand",
+    "marquee",
+    "rectangle select",
+    "select all color",
+    "smart region fill",
+    "wand",
+    "wand picks too little",
+    "wand picks too much",
+    "wand tolerance",
+    "selection tools",
+    "selection tool"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Selections belong to the selected zone",
+     "body": "In ZONE mode every selection tool writes into the mask of the zone selected on the left, so pick the zone first. With none selected the tool says to select a zone and does nothing. Each successful selection is one undo step, and a selection that would change nothing is skipped with a message instead of cluttering your history."
+    },
+    {
+     "heading": "How the Wand measures closeness",
+     "body": "The Wand takes the colour under your click, averaged over the Sample area: Point Sample, 3x3 Average (the default), 5x5 Average or 11x11 Average. A pixel matches when none of its red, green, blue or transparency values is further from that sample than Tolerance, which runs 0 to 255 and defaults to 32. This is a per-channel limit, so it is stricter than the Fill bucket, which measures colour distance in a straight line."
+    },
+    {
+     "heading": "Contiguous, Select All Color and Anti Alias",
+     "body": "With Contiguous on, the Wand only spreads to touching pixels. Select All Color is the same idea with Contiguous forced off, so it collects every matching pixel anywhere on the sheet. Anti Alias adds a soft rim of partly selected pixels just outside the tolerance, a band of 4 to 32 levels wide that grows with Tolerance, so edges are not jagged."
+    },
+    {
+     "heading": "Shape tools and their modifier keys",
+     "body": "Rect (O) drags a box: Shift makes a square, Alt draws from the centre, Esc cancels. Elliptical Marquee (M) does the same for ovals, with Shift for a circle. Lasso (L) either drags freehand and closes on release, or you click polygon points and press Enter or double-click to close, with Backspace removing the last point. For the Wand, Select All Color, Grab Object and Smart Region Fill, Shift adds to the selection and Alt subtracts."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Select a flat racing number",
+     "goal": "Grab a solid-colour number without the background",
+     "settings": {
+      "Tool": "Wand (W)",
+      "Tolerance": "32",
+      "Contiguous": "on",
+      "Sample": "3x3 Average",
+      "Anti Alias": "on",
+      "Selection Mode": "Mode: Replace"
+     },
+     "result": "Only the connected number area is selected with a soft one-pixel rim."
+    },
+    {
+     "title": "Every stripe of one colour",
+     "goal": "Select all white stripes at once",
+     "settings": {
+      "Tool": "Select All Color (A)",
+      "Tolerance": "20",
+      "Click": "one white stripe"
+     },
+     "result": "Every pixel near that white across the whole sheet joins the selection, including separate stripes."
+    },
+    {
+     "title": "Round headlight area",
+     "goal": "Draw a perfect circle selection",
+     "settings": {
+      "Tool": "Elliptical Marquee (M)",
+      "Drag": "hold Shift for a circle, hold Alt to grow from the centre"
+     },
+     "result": "A circle centred where you started the drag."
+    },
+    {
+     "title": "Awkward panel outline",
+     "goal": "Select a shape with straight and curved edges",
+     "settings": {
+      "Tool": "Lasso (L)",
+      "Click": "polygon points around the shape",
+      "Finish": "press Enter",
+      "Fix": "Backspace removes the last point"
+     },
+     "result": "A closed outline selection around the shape you traced."
+    }
+   ],
+   "combos": [
+    {
+     "with": "tools.selection_modes",
+     "why": "Add, Replace and Subtract decide how each new selection combines with the one you already have."
+    },
+    {
+     "with": "tools.refine_selection",
+     "why": "Grow, Shrink and Feather clean up wand edges that came out too tight or too jagged."
+    },
+    {
+     "with": "zones.regions",
+     "why": "The selection you make is stored as the zone's region, so it limits where the finish applies."
+    },
+    {
+     "with": "tools.eyedropper_pick",
+     "why": "Use Color (P) when a zone should follow a colour and a selection tool when it should follow a place."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does the Wand say to select a zone?",
+     "a": "Selections are saved into a zone's mask. Click a zone in the left column first."
+    },
+    {
+     "q": "What is the difference between Wand and Select All Color?",
+     "a": "The Wand follows touching pixels when Contiguous is on. Select All Color always ignores contact and picks matching pixels everywhere."
+    },
+    {
+     "q": "How do I add to a selection without changing the mode dropdown?",
+     "a": "Hold Shift while you click or drag. Hold Alt to subtract."
+    },
+    {
+     "q": "What does Grab Object do?",
+     "a": "Click inside a solid part of a number or logo and it selects the whole shape including its outline and shadow. Hide wire or template guide layers first if they split the artwork."
+    },
+    {
+     "q": "What is Smart Region Fill?",
+     "a": "It selects an area bounded by detected edges. Tolerance changes how sensitive the boundary detection is, and Edge Preview shows the boundaries in red."
+    },
+    {
+     "q": "M is Marquee Select in the shortcut list. Which is right?",
+     "a": "In the app M is the Elliptical Marquee and the rectangle tool is O."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The Wand selected half the car",
+     "cause": "Contiguous is off, or Tolerance is too high for the colours around it.",
+     "fix": "Undo, tick Contiguous and lower Tolerance toward 10 to 32."
+    },
+    {
+     "symptom": "The selection edge looks jagged",
+     "cause": "Anti Alias is off or the area is noisy.",
+     "fix": "Turn Anti Alias on and use 5x5 Average for noisy paint, or feather the result a few pixels."
+    },
+    {
+     "symptom": "Grab Object grabbed only part of the number",
+     "cause": "A hidden guide layer or the wire view is cutting the artwork.",
+     "fix": "Hide the Wire, Mask and Car_Mandatory layers before clicking."
+    },
+    {
+     "symptom": "My lasso line will not close",
+     "cause": "The outline is still open.",
+     "fix": "Press Enter or double-click, and use Backspace to remove a misplaced point."
+    }
+   ],
+   "protips": [
+    "Shift+click and Alt+click override whatever Selection Mode is set to, so you can add or subtract on the fly.",
+    "Wand Tolerance counts the transparency value too, so a semi-transparent edge is judged on both colour and see-through level.",
+    "The SELECT menu has Move Selection Border: arrow keys nudge the outline 1 px (10 px with Shift) and the pixels underneath do not move, so you can line a selection up exactly."
+   ],
+   "screens": [
+    "ui_menu_select",
+    "ui_selection_bar",
+    "ui_toolbar_tools"
+   ]
+  },
+  {
+   "id": "tools.selection_modes",
+   "title": "Selection modes: Add, Replace, Subtract",
+   "domain": "tools",
+   "summary": "The Selection mode dropdown decides whether a new selection adds to, replaces or removes from the one you already have.",
+   "what": "Add (+) joins the new area to the existing selection. Replace throws the old selection away and keeps only the new one. Subtract (-) cuts the new area out of the existing selection. With the wand you can also hold Shift to add and Alt to subtract without opening the dropdown.",
+   "when": [
+    "The wand or lasso added when you wanted to replace.",
+    "You want to carve a hole out of a selection."
+   ],
+   "how": [
+    "1. Pick a selection tool.",
+    "2. Open the Selection mode dropdown in the tool options bar.",
+    "3. Choose Add, Replace or Subtract.",
+    "4. Make your next selection. Or hold Shift (add) or Alt (subtract) while you click with the wand."
+   ],
+   "controls": [
+    {
+     "label": "Selection mode dropdown (Add / Replace / Subtract)",
+     "range": "",
+     "default": "",
+     "effect": "How a new selection combines with the existing one: Add (+), Replace, Subtract.",
+     "inv": "selectionMode"
+    }
+   ],
+   "tips": [
+    "Use Subtract with a lasso to cut out a window or a number from a big selection."
+   ],
+   "pitfalls": [
+    "If every new selection seems to pile onto the last one, the mode is on Add. Switch to Replace."
+   ],
+   "related": [
+    "tools.select_shapes",
+    "tools.refine_selection"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "selectionMode"
+    }
+   ],
+   "figures": [
+    "g20_selection_modes"
+   ],
+   "covers": [
+    "selectionMode"
+   ],
+   "sources": [
+    "paint-booth-v2.html:2844",
+    "paint-booth-3-canvas.js:2435",
+    "paint-booth-3-canvas.js:5382",
+    "paint-booth-3-canvas.js:5377",
+    "paint-booth-3-canvas.js:5396",
+    "paint-booth-3-canvas.js:8681",
+    "js/canvas/zone/wand-selection.js:49",
+    "paint-booth-v2.html:2846",
+    "paint-booth-v2.html:2849",
+    "paint-booth-3-canvas.js:18904",
+    "paint-booth-3-canvas.js:5112"
+   ],
+   "aliases": [
+    "add replace subtract",
+    "add to selection",
+    "replace selection",
+    "selection keeps adding",
+    "selection mode",
+    "subtract from selection",
+    "subtract selection"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The mode resets when you switch tools",
+     "body": "The dropdown offers Mode: Add (+), Mode: Replace and Mode: Subtract (-). Each time you pick Lasso, Pen, Rect, Elliptical Marquee, Wand, Select All Color or Smart Region Fill, the app sets it back to Replace. A mode you chose for one tool does not follow you to the next. Fill and Gradient in ZONE mode also use this dropdown, but they do not reset it, so they act on whatever is showing."
+    },
+    {
+     "heading": "Shift and Alt are one-gesture overrides",
+     "body": "For Wand, Select All Color, Smart Region Fill and Lasso, holding Shift while you click adds and holding Alt subtracts, whatever the dropdown says. The Pen is different: Shift snaps a segment to 45 degrees and Alt breaks the handles, and the finished path follows only the dropdown. Rect and Elliptical Marquee are different: there Shift means square or circle, Alt means draw from the centre and Esc cancels, so use the dropdown for add and subtract. A hint line next to the dropdown always shows the keys for the active tool."
+    },
+    {
+     "heading": "What each mode does to the mask",
+     "body": "Add merges the new shape into the zone's current region. Replace swaps the whole region for the new shape, and Ctrl+Z gives the old region back. Subtract removes the new shape from the region, and if nothing in the region overlaps the app says no matching pixels and changes nothing."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Big area minus the windows",
+     "goal": "Select the body but not the glass",
+     "settings": {
+      "Tool 1": "Rect (O), Selection Mode: Mode: Replace",
+      "Tool 2": "Lasso (L), Selection Mode: Mode: Subtract (-)",
+      "Action": "drag a box over the body, then trace around each window"
+     },
+     "result": "The zone covers the body with clean holes where the windows are."
+    },
+    {
+     "title": "Build a selection from three pieces",
+     "goal": "Select the hood, roof and trunk together",
+     "settings": {
+      "Tool": "Rect (O)",
+      "Selection Mode": "Mode: Add (+)",
+      "Action": "drag one box over each piece"
+     },
+     "result": "All three boxes become one region."
+    },
+    {
+     "title": "Fix a wand miss on the fly",
+     "goal": "Add a patch the wand left out",
+     "settings": {
+      "Tool": "Wand (W)",
+      "Selection Mode": "Mode: Replace",
+      "Action": "hold Shift and click the missed patch"
+     },
+     "result": "The patch joins the existing selection without touching the dropdown."
+    },
+    {
+     "title": "Start over cleanly",
+     "goal": "Drop a messy region and keep only a new one",
+     "settings": {
+      "Selection Mode": "Mode: Replace",
+      "Action": "make the new selection"
+     },
+     "result": "The old region is gone, and Ctrl+Z restores it if you change your mind."
+    }
+   ],
+   "combos": [
+    {
+     "with": "tools.select_shapes",
+     "why": "Every selection tool obeys this dropdown; that article explains how each tool picks its pixels."
+    },
+    {
+     "with": "tools.refine_selection",
+     "why": "Build the region with modes first, then grow, shrink or feather the finished shape."
+    },
+    {
+     "with": "tools.fill_bucket",
+     "why": "The bucket in ZONE mode also adds, replaces or subtracts according to this dropdown."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why did my mode jump back to Replace?",
+     "a": "Choosing a selection tool resets the dropdown to Replace. Set Add or Subtract after you pick the tool."
+    },
+    {
+     "q": "Shift makes a square with Rect. How do I add then?",
+     "a": "Use the dropdown. On Rect and Elliptical Marquee, Shift and Alt are for shape, not for add and subtract."
+    },
+    {
+     "q": "How do I remove a bit from a selection?",
+     "a": "Pick Mode: Subtract (-) and draw over the part to remove. With the Wand or Lasso you can just hold Alt."
+    },
+    {
+     "q": "Can I undo a Replace?",
+     "a": "Yes. The old region is saved first, so Ctrl+Z brings it back."
+    },
+    {
+     "q": "Do these modes affect layers too?",
+     "a": "The modes shape a zone's region. In LAYER mode a pixel selection controls where your brush and retouch tools work."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Every new selection piles onto the last one",
+     "cause": "The dropdown is on Mode: Add (+), or you are using Fill or Gradient, which keep the current mode.",
+     "fix": "Choose Mode: Replace before you select."
+    },
+    {
+     "symptom": "A selection disappeared when I made a new one",
+     "cause": "Mode: Replace discards the old region.",
+     "fix": "Press Ctrl+Z, then switch to Mode: Add (+)."
+    },
+    {
+     "symptom": "Subtract did nothing",
+     "cause": "The shape you drew does not overlap the current region.",
+     "fix": "Draw over the part that is already selected."
+    }
+   ],
+   "protips": [
+    "Holding Shift or Alt overrides the dropdown only for that one click, so you can keep Replace as your safe default and add on demand.",
+    "Fill and Gradient follow this dropdown too, which means you can subtract a gradient from a region the same way you subtract a lasso."
+   ],
+   "screens": [
+    "ui_menu_select",
+    "ui_selection_bar"
+   ]
+  },
+  {
+   "id": "tools.refine_selection",
+   "title": "Grow, shrink, feather, invert and mirror a selection",
+   "domain": "tools",
+   "summary": "Once you have a selection or zone mask, a few buttons clean up the edge: grow, shrink, fill holes, feather, smooth, invert, copy and mirror.",
+   "what": "These are in the MASK menu and in the selection bar under the canvas. Grow and Shrink move the edge by 1 or 2 px. Fill Holes includes empty islands completely enclosed by the selection. Feather 2 px softens the edge. Smooth Edges removes jagged boundaries. Invert Mask swaps selected and unselected areas. Copy Mask sends this zone's mask to another zone, and Mirror Mask flips it horizontally. The Auto-feather box (0 to 50 px, default 0) softens the edge of the next selection you commit so the finish fades in at the border. Move Selection Border shifts the outline without moving pixels: Arrow moves 1 px and Shift+Arrow 10 px.",
+   "when": [
+    "A zone edge is jagged, has pinholes or leaves a fringe of the old colour.",
+    "You want the finish to fade out at the edge instead of cutting off."
+   ],
+   "how": [
+    "1. Make a selection with any selection tool.",
+    "2. Open the MASK menu (or use the selection bar) and press Grow 2 px to add a safety edge around lettering.",
+    "3. Press Fill Holes if small islands inside the selection are missing.",
+    "4. Press Smooth Edges or Feather 2 px to soften.",
+    "5. Use Invert Mask to select everything else."
+   ],
+   "controls": [
+    {
+     "label": "Mask",
+     "range": "",
+     "default": "",
+     "effect": "MASK menu: Grow / Shrink / Fill Holes / Feather / Smooth / Invert / Copy / Mirror a zone's area, plus Include / Exclude Region.",
+     "inv": "pro.toolbar.mask"
+    },
+    {
+     "label": "＋ Grow 1 px",
+     "range": "",
+     "default": "",
+     "effect": "expand the active Zone selection by one pixel",
+     "inv": "pro.toolbar.grow_1_px"
+    },
+    {
+     "label": "＋ Grow 2 px",
+     "range": "",
+     "default": "",
+     "effect": "add edge safety around an active Zone selection",
+     "inv": "pro.toolbar.grow_2_px"
+    },
+    {
+     "label": "Shrink 1 px",
+     "range": "",
+     "default": "",
+     "effect": "contract the active Zone selection by one pixel",
+     "inv": "pro.toolbar.shrink_1_px"
+    },
+    {
+     "label": "Shrink 2 px",
+     "range": "",
+     "default": "",
+     "effect": "pull the active Zone selection inward",
+     "inv": "pro.toolbar.shrink_2_px"
+    },
+    {
+     "label": "Fill Holes",
+     "range": "",
+     "default": "",
+     "effect": "include empty islands fully enclosed by the active selection",
+     "inv": "pro.toolbar.fill_holes"
+    },
+    {
+     "label": "Feather 2 px",
+     "range": "",
+     "default": "",
+     "effect": "soften the active Zone selection edge",
+     "inv": "pro.toolbar.feather_2_px"
+    },
+    {
+     "label": "Smooth Edges",
+     "range": "",
+     "default": "",
+     "effect": "smooth jagged mask boundaries",
+     "inv": "pro.toolbar.smooth_edges"
+    },
+    {
+     "label": "Invert Mask",
+     "range": "",
+     "default": "",
+     "effect": "swap selected and unselected areas",
+     "inv": "pro.toolbar.invert_mask"
+    },
+    {
+     "label": "Copy Mask",
+     "range": "",
+     "default": "",
+     "effect": "copy this zone's mask to another zone",
+     "inv": "pro.toolbar.copy_mask"
+    },
+    {
+     "label": "Mirror Mask",
+     "range": "",
+     "default": "",
+     "effect": "flip mask horizontally",
+     "inv": "pro.toolbar.mirror_mask"
+    },
+    {
+     "label": "Include Region",
+     "range": "",
+     "default": "",
+     "effect": "paint areas to keep in zone color match",
+     "inv": "vtModeSpatialInclude"
+    },
+    {
+     "label": "Exclude Region",
+     "range": "",
+     "default": "",
+     "effect": "paint areas to remove from zone color match",
+     "inv": "vtModeSpatialExclude"
+    },
+    {
+     "label": "Erase Spatial",
+     "range": "",
+     "default": "",
+     "effect": "remove include/exclude paint",
+     "inv": "vtModeSpatialErase"
+    },
+    {
+     "label": "Auto-feather selection edges (px). 0 = off (hard edge). Any value softens the edge of the NEXT selection you commit (marquee / lasso / wand ",
+     "range": "0-50",
+     "default": "0",
+     "effect": "Auto-feather selection edges (px). 0 = off (hard edge). Any value softens the edge of the NEXT selection you commit (marquee / lasso / wand / pen / smart-fill), so the finish fades in at the border. One Undo reverts the whole selection.",
+     "inv": "selectionFeather"
+    },
+    {
+     "label": "Move Selection Border",
+     "range": "",
+     "default": "",
+     "effect": "Arrow moves 1px, Shift+Arrow moves 10px; drag inside to move freely; pixels do not move",
+     "inv": "vtModeSelectionMove"
+    }
+   ],
+   "tips": [
+    "Ctrl+D deselects and Ctrl+Shift+I inverts the selection.",
+    "With the Move Selection Border tool armed, Arrow nudges the zone's drawn border 1 px and Shift+Arrow 10 px.",
+    "One Undo reverts the whole auto-feathered selection."
+   ],
+   "pitfalls": [
+    "Grow and Shrink change the selection edge only. They do not recolour anything."
+   ],
+   "related": [
+    "ui_shell.selection_bar",
+    "tools.mirror_symmetry",
+    "tools.selection_modes"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "selectionFeather"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.toolbar.mask",
+    "pro.toolbar.grow_1_px",
+    "pro.toolbar.grow_2_px",
+    "pro.toolbar.shrink_1_px",
+    "pro.toolbar.shrink_2_px",
+    "pro.toolbar.fill_holes",
+    "pro.toolbar.feather_2_px",
+    "pro.toolbar.smooth_edges",
+    "pro.toolbar.invert_mask",
+    "pro.toolbar.copy_mask",
+    "pro.toolbar.mirror_mask",
+    "vtModeSpatialInclude",
+    "vtModeSpatialExclude",
+    "vtModeSpatialErase",
+    "selectionFeather",
+    "vtModeSelectionMove"
+   ],
+   "sources": [
+    "paint-booth-6-ui-boot.js:3842",
+    "paint-booth-v2.html:1926",
+    "paint-booth-v2.html:2367",
+    "paint-booth-3-canvas.js:8262",
+    "paint-booth-v2.html:2368",
+    "paint-booth-v2.html:2373",
+    "paint-booth-3-canvas.js:8279",
+    "paint-booth-v2.html:2374",
+    "paint-booth-3-canvas.js:8312",
+    "paint-booth-3-canvas.js:8329",
+    "paint-booth-3-canvas.js:12622",
+    "js/canvas/zone/selection-refine.js:233",
+    "js/canvas/zone/selection-refine.js:213",
+    "paint-booth-v2.html:2380",
+    "paint-booth-v2.html:2382",
+    "paint-booth-v2.html:3181",
+    "paint-booth-3-canvas.js:34533"
+   ],
+   "aliases": [
+    "auto feather",
+    "copy mask",
+    "feather",
+    "fill holes",
+    "grow a selection",
+    "invert mask",
+    "jagged zone edge",
+    "move selection border",
+    "shrink a selection",
+    "smooth edges",
+    "zone edge too harsh",
+    "refine selection"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Grow and Shrink are pixel moves",
+     "body": "The buttons move the whole edge of the zone region by exactly 1 or 2 pixels, one pixel step at a time. Pressing a button twice is the same as moving 2 px. Grow stops at the canvas border and Shrink on an empty region says so. Nothing is recoloured; only the mask changes, and each press is one undo step."
+    },
+    {
+     "heading": "Smooth Edges is a shrink then a grow",
+     "body": "Smooth Edges shrinks the region by 1 px and grows it back by 1 px. That erases hairline spurs and single-pixel specks and rounds tiny jagged steps, but it also removes any feature thinner than about 2 px, so thin pinstripes can vanish. Fill Holes does the opposite job: it fills empty islands completely enclosed by the region."
+    },
+    {
+     "heading": "Feather is a blur of the mask",
+     "body": "Feather 2 px blurs the edge so the finish fades instead of ending on a line. Because a blur spreads both ways, the old hard edge ends up at about half strength, with fully strong coverage pulling back inside. If you need full strength right up to the original edge, press Grow 2 px first, then Feather 2 px. The Auto-feather box in the selection bar (0 to 50 px, default 0) does the same to the next selection you commit, and one undo reverts the whole selection."
+    },
+    {
+     "heading": "Invert, copy and move",
+     "body": "Invert Mask swaps selected and unselected pixels. Ctrl+Shift+I inverts from the keyboard. Move Selection Border nudges the outline: Arrow moves 1 px and Shift+Arrow 10 px, and the pixels do not move."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Safety edge around lettering",
+     "goal": "Stop a finish from stopping short of the edge of a number",
+     "settings": {
+      "Mask menu step 1": "Grow 2 px",
+      "Mask menu step 2": "Fill Holes",
+      "Mask menu step 3": "Feather 2 px"
+     },
+     "result": "The region sits two pixels outside the artwork with a soft rim and no holes in the middle of letters."
+    },
+    {
+     "title": "Clean up a noisy wand selection",
+     "goal": "Remove specks and jagged steps",
+     "settings": {
+      "Mask menu step 1": "Smooth Edges",
+      "Mask menu step 2": "Fill Holes"
+     },
+     "result": "A tidier region with no stray dots and no pinholes."
+    },
+    {
+     "title": "Soft fade at the border",
+     "goal": "Let a finish melt into the base paint",
+     "settings": {
+      "Auto-feather": "12",
+      "Tool": "Rect (O) or Lasso (L)",
+      "Action": "make the selection as usual"
+     },
+     "result": "The selection is committed with a soft 12 px edge in one step."
+    },
+    {
+     "title": "Everything except the numbers",
+     "goal": "Apply a finish to the whole body but not the numbers",
+     "settings": {
+      "Step 1": "Select the numbers with Wand (W)",
+      "Step 2": "Mask menu, Invert Mask"
+     },
+     "result": "The region covers all the rest of the sheet; the numbers are left out."
+    }
+   ],
+   "combos": [
+    {
+     "with": "ui_shell.selection_bar",
+     "why": "The same refine buttons and the Auto-feather box live in the bar under the canvas."
+    },
+    {
+     "with": "tools.selection_modes",
+     "why": "Build the region with Add and Subtract first, then refine it as one shape."
+    },
+    {
+     "with": "tools.mirror_symmetry",
+     "why": "Refine one side, then copy or mirror the mask to the other side."
+    },
+    {
+     "with": "tools.select_shapes",
+     "why": "The wand produces the rough edges that Grow, Smooth Edges and Fill Holes then clean up."
+    }
+   ],
+   "faq": [
+    {
+     "q": "How far can I grow a selection?",
+     "a": "The Grow 1 px and Grow 2 px buttons add that much per press. Press them repeatedly to go further."
+    },
+    {
+     "q": "Why did Smooth Edges delete my thin stripe?",
+     "a": "It shrinks by one pixel then grows back, so anything under about 2 px wide disappears. Skip Smooth Edges for fine lines."
+    },
+    {
+     "q": "How do I fade a finish into the paint?",
+     "a": "Use Feather 2 px on an existing region, or set the Auto-feather box before you make the selection."
+    },
+    {
+     "q": "What does Fill Holes fill?",
+     "a": "Only empty areas completely surrounded by the selection. Gaps that touch the outside edge are not holes."
+    },
+    {
+     "q": "Can I undo a refine?",
+     "a": "Yes, each button press is one undo step with Ctrl+Z."
+    },
+    {
+     "q": "Does feathering shrink my selection?",
+     "a": "It softens it. The old edge ends up at about half strength and the solid core pulls in slightly. Grow first if you want full strength at the old edge."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The finish does not reach the edge of a number",
+     "cause": "The region stops at the artwork edge and anti-aliased pixels fall outside it.",
+     "fix": "Press Grow 2 px, then Feather 2 px."
+    },
+    {
+     "symptom": "Pinstripes disappeared after cleanup",
+     "cause": "Smooth Edges removes anything about 2 px wide or thinner.",
+     "fix": "Undo and use Fill Holes only, or do the cleanup before adding the stripes."
+    },
+    {
+     "symptom": "Nothing happens when I press Grow",
+     "cause": "The zone has no region yet, or you are in LAYER mode.",
+     "fix": "Select a zone and draw a region first. The buttons act on zone regions, not layer pixels."
+    }
+   ],
+   "protips": [
+    "Order matters: Grow, then Fill Holes, then Feather gives the cleanest soft edge.",
+    "The Auto-feather box applies to the next selection only, and a single undo removes the whole feathered selection.",
+    "Use Invert Mask when it is easier to select the small thing you do not want than the large thing you do."
+   ],
+   "screens": [
+    "ui_menu_mask",
+    "ui_menu_mask_refine",
+    "ui_menu_select",
+    "ui_selection_bar",
+    "ui_toolbar_menus"
+   ]
+  },
+  {
+   "id": "tools.mask_vs_layer",
+   "title": "ZONE mode and LAYER mode: zone mask and layer",
+   "domain": "tools",
+   "summary": "The ZONE | LAYER switch changes what every tool edits: where a finish applies (ZONE) or the artwork pixels (LAYER).",
+   "what": "A zone mask is the shape that says which pixels a zone owns. Painting or selecting in ZONE mode changes that shape; it never changes your artwork. A layer is real artwork (body paint, numbers, sponsors, tape). In LAYER mode, Brush, Erase, Move and the retouch tools change those pixels. The same tool does different things in the two modes: Brush paints a mask in ZONE mode and pixels in LAYER mode, and Transform moves the zone's pattern or base in ZONE mode but the selected artwork in LAYER mode.",
+   "when": [
+    "A tool seems to do nothing.",
+    "You are not sure whether you are changing the finish area or the artwork."
+   ],
+   "how": [
+    "1. Find the ZONE | LAYER switch in the toolbar.",
+    "2. Click ZONE to edit where finishes apply, or LAYER to edit artwork.",
+    "3. Then pick your tool.",
+    "4. To aim a zone at a layer, press MAKE ZONE on the layer card or Lock Zone (Ctrl+L)."
+   ],
+   "controls": [
+    {
+     "label": "ZONE",
+     "range": "",
+     "default": "",
+     "effect": "ZONE mode: toolbar tools edit zones and masks.",
+     "inv": "btnToolbarModeZone"
+    },
+    {
+     "label": "LAYER",
+     "range": "",
+     "default": "",
+     "effect": "LAYER mode: toolbar tools edit the selected layer's pixels.",
+     "inv": "btnToolbarModeLayer"
+    }
+   ],
+   "tips": [
+    "ZONE mode never harms your artwork, so it is the safe place to experiment."
+   ],
+   "pitfalls": [
+    "Move only works on a layer, so switch to LAYER first.",
+    "Layers named Mask, Wire or Car_Mandatory are template guides, not artwork to paint on."
+   ],
+   "related": [
+    "layers.lock_zone_to_layer",
+    "tools.brush_eraser",
+    "tools.move_transform",
+    "zones.restrict_layers"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "btnToolbarModeZone"
+    },
+    {
+     "do": "control",
+     "id": "btnToolbarModeLayer"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "html.mask.2364",
+    "btnToolbarModeZone",
+    "btnToolbarModeLayer"
+   ],
+   "sources": [
+    "paint-booth-v2.html:2470",
+    "paint-booth-v2.html:2362",
+    "paint-booth-3-canvas.js:28614",
+    "paint-booth-3-canvas.js:28663",
+    "paint-booth-v2.html:2471",
+    "paint-booth-3-canvas.js:28615",
+    "paint-booth-v2.html:2470",
+    "paint-booth-v2.html:2476",
+    "paint-booth-3-canvas.js:28531",
+    "paint-booth-3-canvas.js:28638",
+    "paint-booth-3-canvas.js:28687",
+    "paint-booth-3-canvas.js:28709",
+    "paint-booth-3-canvas.js:4667",
+    "paint-booth-3-canvas.js:4675",
+    "js/canvas/dispatch.js:27",
+    "paint-booth-3-canvas.js:17473"
+   ],
+   "aliases": [
+    "layer mode",
+    "switch to layer mode",
+    "tool does nothing",
+    "zone mask",
+    "zone mode",
+    "zone vs layer",
+    "zone mode layer mode",
+    "what is a mask",
+    "what is the zone mask",
+    "mask meaning"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Two switches, one toolbar",
+     "body": "The ZONE and LAYER buttons sit at the top of the toolbar. The tooltips say it plainly: in ZONE mode toolbar tools edit zones and masks only, and in LAYER mode they edit the selected layer only. ZONE is the starting mode. The active button glows green. When you switch, a short message names what the tools will now touch, such as the zone name or the selected layer."
+    },
+    {
+     "heading": "What a zone mask is",
+     "body": "A zone mask is a map of pixels the zone owns. A finish is painted wherever the mask says. Brushing, selecting, filling or growing a mask never changes your source artwork, which is why ZONE mode is safe to experiment in. Pixel tools in LAYER mode are the opposite: they rewrite real pixels on a layer, and only Ctrl+Z gets them back."
+    },
+    {
+     "heading": "Wrong-mode warnings",
+     "body": "Some tools only make sense in one mode. Text and Shape create a new layer, so they warn that they only work in LAYER mode. Fill, Retouch, Healing and similar pixel tools say they only edit layers in LAYER mode. Zone tools such as the zone Wand say they are zone tools and ask you to switch to ZONE. If you are in LAYER mode with no editable layer selected, the tool tells you why instead of silently doing nothing."
+    },
+    {
+     "heading": "Same tool, different job",
+     "body": "Brush and Erase paint the mask in ZONE mode and pixels in LAYER mode. Fill floods a mask region in ZONE mode and fills layer pixels with colour or a baked Special in LAYER mode. Transform moves the zone's pattern or base in ZONE mode but the selected artwork in LAYER mode. Rect and Lasso make a zone region in ZONE mode and a pixel selection in LAYER mode."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Aim a finish at a stripe",
+     "goal": "Make a zone follow a hand-drawn stripe shape",
+     "settings": {
+      "Mode switch": "ZONE",
+      "Tool": "Brush (B)",
+      "Size": "40",
+      "Hard": "100%",
+      "Zone": "select the zone in the left column first"
+     },
+     "result": "The finish appears only where you painted, and the source artwork is untouched."
+    },
+    {
+     "title": "Fix a smudge in a number",
+     "goal": "Repair artwork without touching any zone",
+     "settings": {
+      "Mode switch": "LAYER",
+      "Layer": "select the number layer in the layer list",
+      "Tool": "Erase (E)",
+      "Eraser mode": "Soft (Brush)"
+     },
+     "result": "Pixels of that layer are erased. The zone masks stay as they were."
+    },
+    {
+     "title": "Move a sponsor",
+     "goal": "Slide a decal to a new spot",
+     "settings": {
+      "Mode switch": "LAYER",
+      "Tool": "Move (V)",
+      "Layer": "the sponsor layer"
+     },
+     "result": "The sponsor moves; in ZONE mode the same drag would have moved a pattern instead."
+    },
+    {
+     "title": "Trial a look safely",
+     "goal": "Experiment without risking the artwork",
+     "settings": {
+      "Mode switch": "ZONE",
+      "Action": "try regions, fills and finishes freely"
+     },
+     "result": "Nothing in the source paint changes, so you can discard the zone at any time."
+    }
+   ],
+   "combos": [
+    {
+     "with": "layers.lock_zone_to_layer",
+     "why": "After you finish artwork in LAYER mode, lock a zone to that layer so a finish follows the artwork exactly."
+    },
+    {
+     "with": "zones.restrict_layers",
+     "why": "A zone can be limited to certain layers, which links the two worlds without mixing them."
+    },
+    {
+     "with": "tools.move_transform",
+     "why": "Move and Transform change meaning with the mode, so check the switch before you drag."
+    },
+    {
+     "with": "tools.brush_eraser",
+     "why": "The Brush and Eraser are the clearest example of one tool doing two jobs."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which mode am I in?",
+     "a": "The active button, ZONE or LAYER, glows green at the top of the toolbar, and the tool options bar changes with it."
+    },
+    {
+     "q": "I painted but my artwork did not change.",
+     "a": "You were in ZONE mode, so you painted a mask. Switch to LAYER and select a layer to paint pixels."
+    },
+    {
+     "q": "I painted and now the finish looks wrong.",
+     "a": "In LAYER mode you changed pixels, not a zone. Press Ctrl+Z, then use ZONE mode to change where a finish applies."
+    },
+    {
+     "q": "Why does Move not work?",
+     "a": "Move needs a selected layer. Switch to LAYER, select the layer, then drag."
+    },
+    {
+     "q": "Which mode should a beginner stay in?",
+     "a": "ZONE. It only edits where finishes apply and never damages your artwork."
+    },
+    {
+     "q": "Can the same selection be used in both modes?",
+     "a": "A selection made in ZONE mode becomes the zone's region. In LAYER mode a pixel selection limits where brush and retouch tools work."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A tool shows a warning and nothing changes",
+     "cause": "The tool belongs to the other mode.",
+     "fix": "Click ZONE or LAYER as the message says and try again."
+    },
+    {
+     "symptom": "I cannot paint in LAYER mode",
+     "cause": "No editable layer is selected, the layer is locked, or the file is a flat image with no layers.",
+     "fix": "Select an unlocked layer. For a flat file add a blank layer first."
+    },
+    {
+     "symptom": "I edited a template guide",
+     "cause": "Layers named Mask, Wire or Car_Mandatory are guides, not artwork.",
+     "fix": "Undo and select the real artwork layer instead."
+    }
+   ],
+   "protips": [
+    "Ctrl+L locks a zone to the selected layer, which is the quickest way to move from fixing artwork to styling it.",
+    "Hover the glowing button: the tooltip states exactly which kind of thing the toolbar will edit in that mode.",
+    "When something looks wrong after painting, check the mode first. It explains most surprises."
+   ],
+   "screens": [
+    "ui_menu_mask",
+    "ui_toolbar_menus"
+   ]
+  },
+  {
+   "id": "tools.move_transform",
+   "title": "Move and Transform",
+   "domain": "tools",
+   "summary": "Move (V) drags artwork, and Transform (Ctrl+T) resizes and rotates it. Both work on a layer, and Transform can also move the pattern or base of a zone.",
+   "what": "In LAYER mode, click a sponsor or number with Move and drag it. Alt forces the whole layer to move. Pick (Y) isolates a single item inside a layer. Xform and the Transform menu open a free transform: drag the handles to resize, drag outside the box to rotate, press Enter to commit or Esc to cancel. The transform bar offers 90 degree turns each way, 180 degrees and Apply. Fit Layer to Zone Selection scales the selected artwork to sit inside the active zone mask. In ZONE mode Transform works on the zone's current pattern or base. Zone Pick lets you move, rotate and resize one pattern piece on its own.",
+   "when": [
+    "A number or logo is the wrong size or in the wrong spot.",
+    "A pattern needs to be bigger, smaller or turned."
+   ],
+   "how": [
+    "1. Switch to LAYER mode and select the layer.",
+    "2. Pick Move (V) and drag the artwork, or press Xform / Ctrl+T.",
+    "3. Drag the handles to resize, or drag outside the box to rotate.",
+    "4. Press Enter to commit, or Esc to cancel.",
+    "5. Use Fit Layer to Zone Selection to size art to a zone shape automatically."
+   ],
+   "controls": [
+    {
+     "label": "Move",
+     "range": "",
+     "default": "",
+     "effect": "Move tool (V): in Layer mode click a sponsor / number to drag it; Alt forces the whole layer.",
+     "inv": "vtModeLayerMove"
+    },
+    {
+     "label": "Pick",
+     "range": "",
+     "default": "",
+     "effect": "Pick Item (Y): pick one sponsor / number inside a layer for independent move / rotate.",
+     "inv": "vtModePickItem"
+    },
+    {
+     "label": "Xform",
+     "range": "",
+     "default": "",
+     "effect": "Layer mode: selected artwork or selection. Zone mode: current pattern or base.",
+     "inv": "vtModeLayerTransform"
+    },
+    {
+     "label": "Transform",
+     "range": "",
+     "default": "",
+     "effect": "TRANSFORM menu: Transform (Ctrl+T) and Fit Layer to Zone Selection.",
+     "inv": "pro.toolbar.transform"
+    },
+    {
+     "label": "Fit Layer to Zone Selection",
+     "range": "",
+     "default": "",
+     "effect": "proportionally fit the selected artwork Layer inside the active Zone mask, then Enter applies or Esc cancels",
+     "inv": "pro.toolbar.fit_layer_to_zone_selection"
+    },
+    {
+     "label": "90°",
+     "range": "",
+     "default": "",
+     "effect": "Rotate active transform 90 degrees counter-clockwise",
+     "inv": "pro.transform.90"
+    },
+    {
+     "label": "+90°",
+     "range": "",
+     "default": "",
+     "effect": "Rotate active transform 90 degrees clockwise",
+     "inv": "pro.transform.90~2"
+    },
+    {
+     "label": "180°",
+     "range": "",
+     "default": "",
+     "effect": "Rotate active transform 180 degrees",
+     "inv": "pro.transform.180"
+    },
+    {
+     "label": "Apply",
+     "range": "",
+     "default": "",
+     "effect": "Apply active transform",
+     "inv": "pro.transform.apply"
+    },
+    {
+     "label": "Cancel active transform session",
+     "range": "",
+     "default": "",
+     "effect": "Cancel active transform session",
+     "inv": "html.cancel_active_transform_session.3465"
+    }
+   ],
+   "tips": [
+    "In a zone transform, Arrow keys move and Alt+Arrow rotates. Switching tools mid-transform commits it.",
+    "The layer card has MOVE, XFORM, PAN and FIT buttons too."
+   ],
+   "pitfalls": [
+    "Move does nothing in ZONE mode. Switch to LAYER first.",
+    "Dropping a file on the canvas replaces the paint. Use + Layer for logos."
+   ],
+   "related": [
+    "tools.mask_vs_layer",
+    "tools.mirror_symmetry",
+    "layers.card_buttons",
+    "ui_shell.placement_overlay"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "vtModeLayerMove"
+    },
+    {
+     "do": "control",
+     "id": "vtModeLayerTransform"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "html.transform.2406",
+    "vtModeLayerMove",
+    "vtModePickItem",
+    "vtModeLayerTransform",
+    "pro.toolbar.transform",
+    "pro.toolbar.fit_layer_to_zone_selection",
+    "pro.transform.90",
+    "pro.transform.90~2",
+    "pro.transform.180",
+    "pro.transform.apply",
+    "html.cancel_active_transform_session.3465"
+   ],
+   "sources": [
+    "paint-booth-3-canvas.js:15315",
+    "paint-booth-3-canvas.js:18736",
+    "paint-booth-v2.html:2406",
+    "paint-booth-v2.html:2281",
+    "paint-booth-3-canvas.js:5040",
+    "paint-booth-v2.html:2282",
+    "paint-booth-v2.html:2283",
+    "paint-booth-3-canvas.js:14723",
+    "paint-booth-3-canvas.js:17117",
+    "paint-booth-3-canvas.js:17067",
+    "paint-booth-3-canvas.js:17233",
+    "paint-booth-3-canvas.js:17235",
+    "paint-booth-3-canvas.js:17227",
+    "paint-booth-3-canvas.js:15317",
+    "paint-booth-3-canvas.js:14950"
+   ],
+   "aliases": [
+    "ctrl t",
+    "fit layer to zone",
+    "free transform",
+    "move a sponsor",
+    "move tool",
+    "resize my number",
+    "rotate a logo",
+    "transform",
+    "xform",
+    "resize",
+    "transform tool"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Move picks a piece, not the whole layer",
+     "body": "In LAYER mode, clicking a sponsor, number or shape with Move (V) isolates just that piece with a tight box so you can move, rotate and scale it on its own. Hold Alt to force the whole layer to move instead. Outside LAYER mode, Ctrl+drag moves the layer. Pick (Y) does the same isolation without any dragging side effects."
+    },
+    {
+     "heading": "Resize and rotate with the handles",
+     "body": "Xform (Ctrl+T) opens a transform box. Drag a corner handle to resize. Hold Shift on a corner to keep the proportions, or use the aspect lock so proportions stay locked without holding a key. Hold Alt on a corner to scale from the centre. Drag outside the box to rotate, and hold Shift to snap to 15 degree steps; on a single number or sponsor the snap also prefers 0, 90, 180 and 270 so text stays upright."
+    },
+    {
+     "heading": "Keyboard fine control",
+     "body": "While a transform is open, the arrow keys move it 1 px, or 8 px with Shift. Alt+Arrow rotates 1 degree, or 5 degrees with Shift. Press R, S or X and Y to type an exact rotation, scale or position. Enter commits, Esc cancels, and in a zone transform a double-click applies it. Picking another tool mid-transform commits what you have."
+    },
+    {
+     "heading": "Zone transform moves a finish, not artwork",
+     "body": "In ZONE mode Xform acts on the zone's current pattern or base, so you can resize and rotate how a pattern sits on the car. Zone Pick (in the SELECT menu) lets you grab one spec pattern piece or base and give it its own move, rotate and proportional resize."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Straighten a leaning number",
+     "goal": "Rotate one number a small, exact amount",
+     "settings": {
+      "Mode switch": "LAYER",
+      "Tool": "Pick (Y)",
+      "Action": "click the number, press Ctrl+T, then Alt+Left or Alt+Right to rotate 1 degree per press"
+     },
+     "result": "Only that number rotates, one degree at a time."
+    },
+    {
+     "title": "Make a logo a precise size",
+     "goal": "Scale proportionally from the middle",
+     "settings": {
+      "Mode switch": "LAYER",
+      "Tool": "Xform (Ctrl+T)",
+      "Corner drag": "hold Shift and Alt together",
+      "Commit": "Enter"
+     },
+     "result": "The logo grows or shrinks around its centre without distorting."
+    },
+    {
+     "title": "Turn a decal exactly 90 degrees",
+     "goal": "Rotate without eyeballing",
+     "settings": {
+      "Mode switch": "LAYER",
+      "Tool": "Xform (Ctrl+T)",
+      "Buttons": "90 degree turn, then Apply"
+     },
+     "result": "A clean quarter turn."
+    },
+    {
+     "title": "Rotate a pattern on the car",
+     "goal": "Change the angle of a zone's pattern",
+     "settings": {
+      "Mode switch": "ZONE",
+      "Tool": "Xform (Ctrl+T)",
+      "Drag": "outside the box with Shift held for 15 degree steps"
+     },
+     "result": "The pattern angle changes while the artwork stays put."
+    }
+   ],
+   "combos": [
+    {
+     "with": "tools.mask_vs_layer",
+     "why": "The mode switch decides whether Xform moves a pattern or artwork, so check it first."
+    },
+    {
+     "with": "layers.card_buttons",
+     "why": "MOVE, XFORM, PAN and FIT are also on each layer card."
+    },
+    {
+     "with": "ui_shell.placement_overlay",
+     "why": "The placement overlay is the on-canvas helper for positioning a pattern with live numbers."
+    },
+    {
+     "with": "tools.mirror_symmetry",
+     "why": "Move and mirror a graphic to get matching left and right sides."
+    }
+   ],
+   "faq": [
+    {
+     "q": "How do I keep proportions while resizing?",
+     "a": "Drag a corner handle while holding Shift, or turn on the aspect lock so it stays on."
+    },
+    {
+     "q": "How do I rotate in exact steps?",
+     "a": "Hold Shift while rotating to snap to 15 degrees, or press Alt+Arrow to nudge 1 degree (5 with Shift)."
+    },
+    {
+     "q": "How do I type exact numbers?",
+     "a": "With a transform open press R for rotation, S for scale, or X and Y for position, then enter the value."
+    },
+    {
+     "q": "Move grabbed the whole layer. How do I pick one item?",
+     "a": "Use Pick (Y), or click without holding Alt. Alt forces the whole layer on purpose."
+    },
+    {
+     "q": "How do I undo a transform?",
+     "a": "Press Esc before committing, or Ctrl+Z after."
+    },
+    {
+     "q": "Why does dropping a file on the canvas replace my paint?",
+     "a": "A dropped file loads as the new source paint. To add a logo as artwork use + Layer instead."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Move does nothing",
+     "cause": "You are in ZONE mode, or no layer is selected.",
+     "fix": "Switch to LAYER and select a layer first."
+    },
+    {
+     "symptom": "The logo got squashed",
+     "cause": "A side handle or an unlocked corner stretched one direction.",
+     "fix": "Press Esc to cancel and drag a corner with Shift held, or switch on the aspect lock."
+    },
+    {
+     "symptom": "I changed tools and my transform vanished",
+     "cause": "Switching tools mid-transform commits it.",
+     "fix": "Press Ctrl+Z to undo the commit and reopen the transform."
+    }
+   ],
+   "protips": [
+    "Alt+Arrow rotation nudges work for both layers and zone patterns, so you can fix a one-degree lean without touching the mouse.",
+    "With the aspect lock on, corner handles stay proportional for the whole session without a held key.",
+    "On Numbers layers the Shift rotation snap prefers upright angles, so numbers do not end up tilted by 3 degrees."
+   ],
+   "screens": [
+    "ui_menu_transform",
+    "ui_toolbar_tools"
+   ]
+  },
+  {
+   "id": "tools.mirror_symmetry",
+   "title": "Mirror Mask, Mirror Clone and symmetry",
+   "domain": "tools",
+   "summary": "Mirror tools copy your work to the other side. Mirror Mask flips a zone's area; Mirror Clone on a layer makes a flipped copy for the opposite side of the car.",
+   "what": "Mirror Mask (in the MASK menu and the selection bar) flips the active zone mask horizontally (left to right). On a layer card, MIRROR duplicates the layer and flips it to the opposite side of the car, which is the quick way to make a matching sponsor on the other door. FLIP H and FLIP V flip a layer in place, and ROT 90 turns it. Because the paint is the car laid flat, one side of the car can sit upside down on the sheet, so always check the result on the preview.",
+   "when": [
+    "You drew a sponsor or stripe on one side and want it on the other.",
+    "A zone area should be the same on both halves."
+   ],
+   "how": [
+    "1. For a layer: click MIRROR on its layer card, then use FLIP or ROT 90 if the copy lands upside down.",
+    "2. For a zone area: select the zone and press Mirror in the selection bar, or Mirror Mask in the MASK menu.",
+    "3. Check the CAR view to confirm the copy is on the right side."
+   ],
+   "controls": [
+    {
+     "label": "Mirror Mask",
+     "range": "",
+     "default": "",
+     "effect": "flip mask horizontally",
+     "inv": "pro.toolbar.mirror_mask"
+    },
+    {
+     "label": "Mirror",
+     "range": "",
+     "default": "",
+     "effect": "Mirror mask horizontally (flip leftright)",
+     "inv": "pro.selection_bar.mirror"
+    },
+    {
+     "label": "MIRROR",
+     "range": "",
+     "default": "",
+     "effect": "Mirror Clone — duplicate + flip to opposite side of car (iRacing essential)",
+     "inv": "layer.btn.mirror"
+    },
+    {
+     "label": "FLIP H",
+     "range": "",
+     "default": "",
+     "effect": "Flip this layer horizontally",
+     "inv": "layer.btn.flip_h"
+    },
+    {
+     "label": "FLIP V",
+     "range": "",
+     "default": "",
+     "effect": "Flip this layer vertically",
+     "inv": "layer.btn.flip_v"
+    },
+    {
+     "label": "ROT 90",
+     "range": "",
+     "default": "",
+     "effect": "Rotate this layer 90° clockwise",
+     "inv": "layer.btn.rot_90"
+    },
+    {
+     "label": "Flip Placement H",
+     "range": "",
+     "default": "",
+     "effect": "flip the placement target (base/pattern/overlay) horizontally",
+     "inv": "pro.placement.flip_placement_h"
+    },
+    {
+     "label": "Flip Placement V",
+     "range": "",
+     "default": "",
+     "effect": "flip the placement target (base/pattern/overlay) vertically",
+     "inv": "pro.placement.flip_placement_v"
+    }
+   ],
+   "tips": [
+    "Use SPLIT view (Shift+V) to compare while you adjust."
+   ],
+   "pitfalls": [
+    "The flip is a plain left-right flip of the flat sheet, so check where the copy lands.",
+    "Text on other parts of the sheet is often mirrored or rotated by design."
+   ],
+   "related": [
+    "ui_shell.selection_bar",
+    "tools.refine_selection",
+    "layers.card_buttons"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.toolbar.mirror_mask"
+    },
+    {
+     "do": "control",
+     "id": "layer.make_zone",
+     "label": "Create a zone restricted to this layer button"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.toolbar.mirror_mask",
+    "pro.selection_bar.mirror",
+    "layer.btn.mirror",
+    "layer.btn.flip_h",
+    "layer.btn.flip_v",
+    "layer.btn.rot_90",
+    "pro.placement.flip_placement_h",
+    "pro.placement.flip_placement_v"
+   ],
+   "sources": [
+    "paint-booth-3-canvas.js:23680",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:7",
+    "paint-booth-v2.html:2382",
+    "paint-booth-3-canvas.js:8478",
+    "paint-booth-v2.html:3288",
+    "paint-booth-3-canvas.js:23697",
+    "paint-booth-3-canvas.js:23698",
+    "paint-booth-3-canvas.js:23699",
+    "paint-booth-3-canvas.js:8459",
+    "paint-booth-3-canvas.js:8490",
+    "paint-booth-3-canvas.js:24521",
+    "paint-booth-3-canvas.js:24534",
+    "paint-booth-3-canvas.js:24543",
+    "paint-booth-3-canvas.js:24545",
+    "paint-booth-v2.html:3400",
+    "paint-booth-v2.html:3401",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:8",
+    "paint-booth-v2.html:2955"
+   ],
+   "aliases": [
+    "copy to the other side",
+    "flip horizontally",
+    "flip layer",
+    "mirror a sponsor to the other side",
+    "mirror clone",
+    "mirror mask",
+    "symmetry",
+    "mirror tool"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Everything mirrors around the middle of the sheet",
+     "body": "Both mirror tools flip across the vertical centre line of the whole 2048 pixel sheet, not around the middle of the thing you selected. Mirror Mask swaps every pixel with the one in the same row on the opposite side of the sheet. Mirror on a layer card copies the layer and places the flipped copy at the mirrored position, so something at the far left lands at the far right. A graphic that sits near the middle of the sheet barely moves."
+    },
+    {
+     "heading": "Mirror Mask versus Copy Mask",
+     "body": "Mirror Mask flips the selected zone's own mask in place, and the app tells you if the mask is already symmetric and nothing changed. Copy Mask is different: it sends the selected zone's mask to another zone, replacing that zone's mask, and says so if both are already identical. Use Copy Mask first, then Mirror Mask on the copy, to make a left-right pair of zones."
+    },
+    {
+     "heading": "What Mirror Clone makes",
+     "body": "The MIRROR button on a layer card makes a new layer named after the original with (mirror) added. The copy is a horizontal flip with the same opacity, blend mode, visibility and clipping as the original, and it is a separate layer you can reorder, move or delete. Text flipped this way reads backwards, so retype or flip it back for lettering that must read correctly."
+    },
+    {
+     "heading": "Flat sheet means odd results",
+     "body": "The sheet is the car laid flat, and one side of the car is often stored upside down. A plain left-right flip therefore sometimes puts the copy on the right panel but upside down. Fix it with FLIP V or ROT 90 on the layer card. ROT 90 turns the layer 90 degrees clockwise each press."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Matching door number",
+     "goal": "Put the same number on the other door",
+     "settings": {
+      "Mode switch": "LAYER",
+      "Layer card button": "MIRROR",
+      "Then if upside down": "FLIP V, or ROT 90 twice"
+     },
+     "result": "A new layer named with (mirror) sits on the opposite side panel."
+    },
+    {
+     "title": "Symmetric zone pair",
+     "goal": "Give the left and right sides the same zone shape",
+     "settings": {
+      "Step 1": "Select the zone with the finished mask",
+      "Step 2": "Mask menu, Copy Mask, choose the second zone",
+      "Step 3": "select the second zone, Mask menu, Mirror Mask"
+     },
+     "result": "The second zone owns the mirrored shape of the first."
+    },
+    {
+     "title": "Flip a graphic in place",
+     "goal": "Turn a logo to face the other way without moving it",
+     "settings": {
+      "Mode switch": "LAYER",
+      "Layer card button": "FLIP H"
+     },
+     "result": "The logo flips inside the layer, keeping its position."
+    },
+    {
+     "title": "Check a mirrored result",
+     "goal": "Be sure the copy landed correctly",
+     "settings": {
+      "View": "SPLIT (Shift+V)",
+      "Look at": "the CAR view of the opposite side"
+     },
+     "result": "You see the copy on the real car shape before you export."
+    }
+   ],
+   "combos": [
+    {
+     "with": "layers.card_buttons",
+     "why": "MIRROR, FLIP H, FLIP V and ROT 90 are all layer card buttons."
+    },
+    {
+     "with": "tools.refine_selection",
+     "why": "Mirror Mask lives with Grow, Shrink and Feather in the same menu and bar."
+    },
+    {
+     "with": "ui_shell.selection_bar",
+     "why": "The selection bar has a Mirror button that does the same as Mirror Mask."
+    },
+    {
+     "with": "tools.move_transform",
+     "why": "After a mirror clone, use Move to nudge the copy exactly into place."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why is my mirrored sponsor upside down?",
+     "a": "One side of the car is stored upside down on the sheet. Press FLIP V or ROT 90 on the copy until it reads correctly on the car."
+    },
+    {
+     "q": "Does Mirror Mask flip around my zone or the whole sheet?",
+     "a": "The whole sheet. A zone on the left side lands on the right side at the matching height."
+    },
+    {
+     "q": "What is the difference between FLIP H and MIRROR?",
+     "a": "FLIP H flips the layer in place. MIRROR makes a new flipped copy at the opposite side of the sheet and keeps the original."
+    },
+    {
+     "q": "Can I mirror a pattern placement?",
+     "a": "Yes. Flip Placement H and Flip Placement V flip the placement target of a base, pattern or overlay."
+    },
+    {
+     "q": "Is there a live symmetry brush?",
+     "a": "Not in this version. Paint one side, then use Copy Mask and Mirror Mask or MIRROR on a layer."
+    },
+    {
+     "q": "The app says the mask is already symmetric.",
+     "a": "Nothing would change, so it skipped the flip and added no undo step."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The copy landed on the wrong part of the car",
+     "cause": "The flip is around the sheet centre, and the panels are laid out unevenly.",
+     "fix": "Move the copy with Move (V), then check the CAR view."
+    },
+    {
+     "symptom": "Lettering on the mirrored layer reads backwards",
+     "cause": "A mirror reverses text.",
+     "fix": "Use FLIP H again on the copy, or retype the text on its own layer."
+    },
+    {
+     "symptom": "Mirror Mask changed a different zone",
+     "cause": "Mirror Mask acts on the selected zone, which may not be the one you meant.",
+     "fix": "Undo with Ctrl+Z, select the right zone in the left column, and run it again."
+    }
+   ],
+   "protips": [
+    "Copy Mask then Mirror Mask is the quick recipe for a perfect left and right zone pair.",
+    "Mirror Clone keeps blend mode and opacity, so a styled sponsor stays styled on the other side.",
+    "Use SPLIT view (Shift+V) to compare the flat sheet and the car while you tune the copy."
+   ],
+   "screens": [
+    "ui_menu_transform"
+   ]
+  },
+  {
+   "id": "tools.undo_redo",
+   "title": "Undo, redo and history",
+   "domain": "tools",
+   "summary": "Ctrl+Z undoes, Ctrl+Y redoes. For a longer trail, open Undo History and step back several actions.",
+   "what": "Undo takes back the last stroke, transform or layer action. Redo (Ctrl+Y or Ctrl+Shift+Z) puts it back. The HISTORY menu in the toolbar also has Undo, Redo and Undo History, which shows the recent actions with what each one was; you step back with Undo. Every answer from the AI copilot is one undo step for the zones it changed (plus one per layer it changed), and the Undo button under its answer reverses all of it. RENDER HISTORY is separate: it keeps thumbnails of past renders you can rebuild.",
+   "when": [
+    "You made a mistake.",
+    "You want to compare an earlier look."
+   ],
+   "how": [
+    "1. Press Ctrl+Z to undo the last action.",
+    "2. Press Ctrl+Y (or Ctrl+Shift+Z) to redo.",
+    "3. For many steps, open HISTORY > Undo History and keep pressing Undo.",
+    "4. To go back to an earlier render, open RENDER HISTORY and click its thumbnail."
+   ],
+   "controls": [
+    {
+     "label": "History",
+     "range": "",
+     "default": "",
+     "effect": "HISTORY menu: Undo, Redo, Undo History.",
+     "inv": "pro.toolbar.history"
+    },
+    {
+     "label": "Undo Ctrl+Z",
+     "range": "",
+     "default": "",
+     "effect": "Undo the last stroke, transform or layer action (Ctrl+Z).",
+     "inv": "pro.toolbar.undo_ctrl_z"
+    },
+    {
+     "label": "Redo Ctrl+Y",
+     "range": "",
+     "default": "",
+     "effect": "Redo (Ctrl+Y or Ctrl+Shift+Z).",
+     "inv": "pro.toolbar.redo_ctrl_y"
+    },
+    {
+     "label": "Undo History…",
+     "range": "",
+     "default": "",
+     "effect": "Opens the recent-actions list so you can see what each step was; step back with Undo.",
+     "inv": "pro.toolbar.undo_history"
+    },
+    {
+     "label": "RENDER HISTORY",
+     "range": "",
+     "default": "",
+     "effect": "click a thumbnail to rebuild it fully",
+     "inv": "pro.toolbar.render_history"
+    },
+    {
+     "label": "Gallery",
+     "range": "",
+     "default": "",
+     "effect": "view all past renders in a grid, search + compare",
+     "inv": "pro.toolbar.gallery"
+    },
+    {
+     "label": "Recent",
+     "range": "",
+     "default": "",
+     "effect": "Recent Renders: recall one of your last 10 saved renders and restore its recipe.",
+     "inv": "pro.toolbar.recent"
+    }
+   ],
+   "tips": [
+    "The selection bar has its own Undo for the last stroke."
+   ],
+   "pitfalls": [
+    "Clear in Undo History wipes the list and cannot be undone."
+   ],
+   "related": [
+    "history.panel",
+    "ui_shell.render_results_panel"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.toolbar.undo_ctrl_z"
+    },
+    {
+     "do": "control",
+     "id": "pro.toolbar.redo_ctrl_y"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "doc.06.undo",
+    "pro.toolbar.history",
+    "pro.toolbar.undo_ctrl_z",
+    "pro.toolbar.redo_ctrl_y",
+    "pro.toolbar.undo_history",
+    "pro.toolbar.render_history",
+    "pro.toolbar.gallery",
+    "pro.toolbar.recent"
+   ],
+   "sources": [
+    "docs/ai_knowledge/06_layers_panels_and_export.md:13",
+    "paint-booth-v2.html:873",
+    "paint-booth-v2.html:2317",
+    "paint-booth-3-canvas.js:6939",
+    "paint-booth-v2.html:2318",
+    "paint-booth-3-canvas.js:7096",
+    "paint-booth-v2.html:2319",
+    "paint-booth-2-state-zones.js:8558",
+    "paint-booth-2-state-zones.js:368",
+    "paint-booth-2-state-zones.js:373",
+    "paint-booth-3-canvas.js:6876",
+    "paint-booth-3-canvas.js:27381",
+    "paint-booth-3-canvas.js:27382",
+    "paint-booth-3-canvas.js:27383",
+    "paint-booth-3-canvas.js:1673",
+    "paint-booth-3-canvas.js:6612",
+    "paint-booth-v2.html:2322"
+   ],
+   "aliases": [
+    "ctrl z",
+    "go back",
+    "redo",
+    "render history",
+    "take back",
+    "undo",
+    "undo last change"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "One trail, four memories",
+     "body": "Ctrl+Z walks back through one list of actions, but the app keeps four different memories behind it, each with its own depth. Where a zone's painted area is concerned it keeps the last 60 steps. Zone settings (base, pattern, intensity, adding or deleting a zone) keep the last 15. Pixel painting on the source image keeps only the last 6, because each step is a full 2048 by 2048 picture. Layer edits keep between 5 and 30 steps, depending on how much memory their snapshots take, with a budget of about 96 MB."
+    },
+    {
+     "heading": "What shows in Undo History",
+     "body": "HISTORY, Undo History opens a side panel listing recent actions from all four memories in the order you did them. The list is capped at 200 entries. Each entry carries a short label such as Zone 2 edit or a named layer action, so you can see what you are about to step back through."
+    },
+    {
+     "heading": "Redo disappears when you do something new",
+     "body": "Redo is Ctrl+Y or Ctrl+Shift+Z. The moment you make a fresh change after undoing, the redo trail is cleared, as in most editors. Redoing step by step keeps the remaining redo steps alive. So if you undo three times and want to look, redo them all before you touch anything."
+    },
+    {
+     "heading": "Undo versus Render History",
+     "body": "Undo reverses edits to your zones, masks and layers. RENDER HISTORY is a separate list of past renders shown as thumbnails you can rebuild from. Clearing Undo History empties the list and cannot itself be undone."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Step back through a bad session",
+     "goal": "Return to the version you liked",
+     "settings": {
+      "Menu": "HISTORY, Undo History",
+      "Action": "watch the list, then press Undo repeatedly until the entry you like is the last one"
+     },
+     "result": "The paint returns to that point."
+    },
+    {
+     "title": "Try a look and compare",
+     "goal": "See two versions without losing either",
+     "settings": {
+      "Step 1": "Ctrl+Z to go back",
+      "Step 2": "look at the preview",
+      "Step 3": "Ctrl+Y to come forward"
+     },
+     "result": "You flip between before and after, as long as you make no new edit in between."
+    },
+    {
+     "title": "Recover a render",
+     "goal": "Go back to a render from earlier in the day",
+     "settings": {
+      "Menu": "RENDER HISTORY",
+      "Action": "click the thumbnail you want"
+     },
+     "result": "That render is rebuilt, even if the undo list no longer reaches that far back."
+    },
+    {
+     "title": "Undo only the last sweep of the brush",
+     "goal": "Remove one bad stroke while keeping earlier work",
+     "settings": {
+      "Shortcut": "Ctrl+Z once",
+      "Alternative": "the Undo button in the selection bar"
+     },
+     "result": "Only the last action is reversed."
+    }
+   ],
+   "combos": [
+    {
+     "with": "history.panel",
+     "why": "The History panel is where you review renders and jump between them, while this article covers editing undo."
+    },
+    {
+     "with": "ui_shell.render_results_panel",
+     "why": "Renders have their own list, so a render is not lost when the undo list moves on."
+    },
+    {
+     "with": "tools.brush_eraser",
+     "why": "Painting is the most common reason to undo; a pixel stroke has only 6 steps so work in meaningful bursts."
+    },
+    {
+     "with": "ui_shell.selection_bar",
+     "why": "The selection bar has its own Undo button for the last stroke, handy while you are working on a selection."
+    }
+   ],
+   "faq": [
+    {
+     "q": "How many undos do I get?",
+     "a": "It depends on what you did. Zone area edits keep 60 steps, zone settings 15, pixel painting 6, and layer edits between 5 and 30."
+    },
+    {
+     "q": "Why can I not undo further after painting a lot?",
+     "a": "Pixel painting on the source image keeps only the 6 most recent steps because each one is a whole-picture snapshot. Work on a layer or use zones when you need a deep history."
+    },
+    {
+     "q": "Where is the redo shortcut?",
+     "a": "Ctrl+Y, or Ctrl+Shift+Z. The HISTORY menu and right-click menu also have Redo."
+    },
+    {
+     "q": "Did the AI copilot change my zones and can I reverse it?",
+     "a": "Yes. Each answer counts as one undo step for the zones it changed, plus one per layer. The Undo button under its answer reverses all of it at once."
+    },
+    {
+     "q": "Can I undo Clear in Undo History?",
+     "a": "No. Clear wipes the list and that action itself cannot be undone."
+    },
+    {
+     "q": "Is Render History the same as Undo?",
+     "a": "No. Render History keeps thumbnails of past renders; Undo steps back your edits."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Redo is greyed out",
+     "cause": "You made a new change after undoing, which clears the redo trail.",
+     "fix": "Redo before making any new edit. Once cleared it cannot be recovered."
+    },
+    {
+     "symptom": "Ctrl+Z did not undo a field I typed into",
+     "cause": "The keyboard focus is in a text box, which handles its own undo.",
+     "fix": "Click on the canvas first, then press Ctrl+Z."
+    },
+    {
+     "symptom": "I cannot go back far enough on source-image painting",
+     "cause": "Pixel painting keeps only 6 steps.",
+     "fix": "Paint on a layer instead, or save a project copy before big experiments."
+    }
+   ],
+   "protips": [
+    "Undo History shows labels, so you can read what each step was before you step back through it.",
+    "Right-click on the canvas also offers Undo and Redo.",
+    "Because source-image pixel painting keeps only 6 steps, save the project before a long retouching session."
+   ],
+   "screens": [
+    "ui_menu_history",
+    "ui_shortcuts_dialog",
+    "ui_toolbar_menus",
+    "ui_undo_history",
+    "ui_undo_history"
+   ]
+  },
+  {
+   "id": "tools.zoom_pan",
+   "title": "Zoom and pan",
+   "domain": "tools",
+   "summary": "Scroll to zoom, hold Space and drag to pan, and use FIT or 1:1 to jump to a standard view.",
+   "what": "The mouse wheel always zooms the canvas. Hold Space and drag to pan. The buttons under the canvas zoom out and in, FIT the whole paint in the window, or show 1:1 (100 percent, one screen pixel per paint pixel). Ctrl+= zooms in, Ctrl+- zooms out and Ctrl+0 fits to the window. When no paint tool is active, the 0, 1 and 2 keys fit, 100 percent and 200 percent. Zoom in the selection bar fits the view to the current zone. Edit Big hides the live preview so the source canvas is larger, and Compare shows a before and after slider.",
+   "when": [
+    "You need to see fine detail on a number or edge.",
+    "You are lost and want the whole car back."
+   ],
+   "how": [
+    "1. Scroll the wheel over the canvas to zoom.",
+    "2. Hold Space and drag to pan.",
+    "3. Press FIT to see the whole paint, or 1:1 for real pixels.",
+    "4. Use the layer card FIT or PAN buttons to jump to one layer."
+   ],
+   "controls": [
+    {
+     "label": "Zoom out canvas",
+     "range": "",
+     "default": "",
+     "effect": "Zoom Out (Ctrl+Minus) — decrease canvas zoom",
+     "inv": "html.zoom_out_canvas.3582"
+    },
+    {
+     "label": "Zoom in canvas",
+     "range": "",
+     "default": "",
+     "effect": "Zoom In (Ctrl+Plus) — increase canvas zoom",
+     "inv": "html.zoom_in_canvas.3584"
+    },
+    {
+     "label": "FIT",
+     "range": "",
+     "default": "",
+     "effect": "fit canvas in viewport",
+     "inv": "pro.center.fit"
+    },
+    {
+     "label": "1:1",
+     "range": "",
+     "default": "",
+     "effect": "100% zoom (1:1 pixels)",
+     "inv": "pro.center.1_1"
+    },
+    {
+     "label": "Edit Big",
+     "range": "",
+     "default": "",
+     "effect": "Edit Big: hide the live preview and edit the source canvas larger.",
+     "inv": "btnSourceFocus"
+    },
+    {
+     "label": "Compare",
+     "range": "",
+     "default": "",
+     "effect": "before/after comparison slider",
+     "inv": "btnCompare"
+    },
+    {
+     "label": "Zoom",
+     "range": "",
+     "default": "",
+     "effect": "Zoom viewport to fit current zone's selection",
+     "inv": "pro.selection_bar.zoom"
+    }
+   ],
+   "tips": [
+    "Edit Big gives you the largest working area for precise selection work."
+   ],
+   "pitfalls": [
+    "The UI size buttons in the header scale the buttons and panels, not the canvas."
+   ],
+   "related": [
+    "ui_shell.panels_and_ui_size",
+    "ui_shell.canvas_overlays"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.center.fit"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "html.zoom_out_canvas.3582",
+    "html.zoom_in_canvas.3584",
+    "pro.center.fit",
+    "pro.center.1_1",
+    "btnSourceFocus",
+    "btnCompare",
+    "pro.selection_bar.zoom"
+   ],
+   "sources": [
+    "paint-booth-3-canvas.js:12874",
+    "paint-booth-3-canvas.js:12507",
+    "paint-booth-3-canvas.js:12336",
+    "paint-booth-v2.html:3586",
+    "paint-booth-v2.html:3584",
+    "paint-booth-v2.html:3585",
+    "paint-booth-v2.html:3587",
+    "paint-booth-v2.html:3593",
+    "paint-booth-3-canvas.js:12175",
+    "paint-booth-3-canvas.js:12355",
+    "paint-booth-3-canvas.js:12882",
+    "paint-booth-3-canvas.js:12780",
+    "paint-booth-3-canvas.js:13061",
+    "paint-booth-v2.html:3586",
+    "paint-booth-v2.html:3595"
+   ],
+   "aliases": [
+    "1 1",
+    "fit to window",
+    "move the canvas around",
+    "pan",
+    "scroll to zoom",
+    "zoom",
+    "zoom in",
+    "zoom out",
+    "zoom in on canvas",
+    "pan around"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Zoom steps and limits",
+     "body": "The wheel and the plus and minus buttons move through fixed steps: 10, 15, 20, 25, 33, 50, 67, 75, 100, 125, 150, 200, 300 and 400 percent. The zoom readout beside the buttons shows where you are. FIT scales the paint to the window but never goes above 100 percent or below 10 percent, so a small window still shows a visible canvas. 1:1 is exactly 100 percent, one screen pixel per paint pixel."
+    },
+    {
+     "heading": "Wheel zoom follows the pointer",
+     "body": "Zoom keeps the spot under your pointer in place, so you can aim the wheel at a detail and dive straight in. One exception catches people out: when a zone is selected and a placement target (base, pattern or overlay) is active, the wheel scales that placement by 5 percent per tick instead of zooming the canvas. If scrolling suddenly resizes your pattern, leave placement mode or use Ctrl+= and Ctrl+- to zoom."
+    },
+    {
+     "heading": "Three ways to pan",
+     "body": "Hold Space and drag with the left button. Or drag with the middle mouse button, which pans immediately without holding anything. The scrollbars also work. Panning never changes the artwork."
+    },
+    {
+     "heading": "The number keys and layers",
+     "body": "With no paint tool active, 0 fits, 1 shows 100 percent and 2 shows 200 percent. In LAYER mode with a layer selected, the same number keys set that layer's opacity instead (1 is 10 percent, 0 is 100 percent). If the number keys change opacity when you wanted zoom, use Ctrl+0 to fit or the buttons under the canvas."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Inspect pixels on a sponsor",
+     "goal": "See the real pixels of a small logo",
+     "settings": {
+      "Wheel": "scroll over the logo to about 300%",
+      "Pan": "hold Space and drag, or drag with the middle mouse button"
+     },
+     "result": "The logo fills more of the window and you can edit its edges accurately."
+    },
+    {
+     "title": "See the whole sheet",
+     "goal": "Get an overview before choosing what to edit",
+     "settings": {
+      "Button": "FIT",
+      "Alternative": "Ctrl+0"
+     },
+     "result": "The whole 2048 pixel sheet fits the window."
+    },
+    {
+     "title": "True size check",
+     "goal": "Judge whether detail will survive at actual pixel size",
+     "settings": {
+      "Button": "1:1",
+      "Alternative": "press 1 with no tool active"
+     },
+     "result": "One paint pixel is one screen pixel; what you see is what will be exported."
+    },
+    {
+     "title": "Maximum working room",
+     "goal": "Make precise selections with more space",
+     "settings": {
+      "Button": "Edit Big",
+      "Exit": "click it again"
+     },
+     "result": "The live preview hides and the source canvas takes the room."
+    }
+   ],
+   "combos": [
+    {
+     "with": "ui_shell.canvas_overlays",
+     "why": "Overlays such as guides and wire draw on the canvas you are zooming, so zoom in to judge their alignment."
+    },
+    {
+     "with": "ui_shell.panels_and_ui_size",
+     "why": "UI size scales the buttons and panels, not the canvas, so use zoom for the picture and UI size for the controls."
+    },
+    {
+     "with": "tools.select_shapes",
+     "why": "Zoom in before a precise Lasso or Wand click; at 400 percent each paint pixel is four screen pixels."
+    },
+    {
+     "with": "tools.move_transform",
+     "why": "Arrow-key nudges in a transform are in paint pixels, so a high zoom shows exactly what a 1 px nudge does."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What is the maximum zoom?",
+     "a": "400 percent. The smallest step is 10 percent."
+    },
+    {
+     "q": "Why did my pattern resize when I scrolled?",
+     "a": "A placement target was active with a zone selected, so the wheel scaled the placement by 5 percent per tick. Leave placement mode or use Ctrl+= and Ctrl+- to zoom."
+    },
+    {
+     "q": "How do I pan without holding Space?",
+     "a": "Drag with the middle mouse button."
+    },
+    {
+     "q": "What does FIT do on a big monitor?",
+     "a": "It fits the paint to the window but stops at 100 percent, so it never blows the paint up past actual size."
+    },
+    {
+     "q": "Why do the 1 and 2 keys change my layer opacity?",
+     "a": "In LAYER mode with a layer selected, number keys set layer opacity. Use the 1:1 button instead."
+    },
+    {
+     "q": "What does Edit Big do?",
+     "a": "It hides the live preview so the source canvas can use the whole area. Click it again to bring the preview back."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The canvas vanished or is tiny",
+     "cause": "The window was collapsed or resized while zoomed.",
+     "fix": "Press FIT or Ctrl+0; FIT never drops below 10 percent."
+    },
+    {
+     "symptom": "Scrolling scales my pattern, not the view",
+     "cause": "A placement target is active on the selected zone.",
+     "fix": "Close the placement overlay or zoom with Ctrl+= and Ctrl+-."
+    },
+    {
+     "symptom": "Zooming does not seem to change the painted size",
+     "cause": "Zoom only changes the view. Brush Size is in paint pixels.",
+     "fix": "Zoom in for fine work and keep Brush Size small; it stays the same paint size."
+    }
+   ],
+   "protips": [
+    "Zoom is anchored at your pointer, so aim before you scroll.",
+    "Wheel steps are not even: 100, 125, 150, 200, 300, 400, so pixel work lands on clean multiples at 200 and 300.",
+    "Press the layer card FIT or PAN button to jump the view straight to one layer's artwork."
+   ],
+   "screens": [
+    "ui_render_bar"
+   ]
+  },
+  {
+   "id": "tools.shortcuts_quick",
+   "title": "Keyboard shortcuts: the ones worth learning",
+   "domain": "tools",
+   "summary": "A short list of keys covers most of the work, and the question-mark key shows the full list inside the app.",
+   "what": "Tools: V Move, P Color (eyedropper), W Wand, L Lasso, O Rect, M Elliptical Marquee, B Brush, K Fill, E Erase, C Color Brush, R Recolor, Q Smudge, J Burn, Shift+J Healing, Y Pick Item, A Select All Color. Edit: Ctrl+Z undo, Ctrl+Y redo, Ctrl+D deselect, Ctrl+Shift+I invert, Ctrl+T transform. Brush: [ ] size, { } hardness, 1 to 9 opacity, X swap colours. View: scroll zoom, Space+drag pan, Ctrl+0 fit, Shift+V split view. Zones: Shift+N new, Shift+D duplicate, Shift+R randomise, Shift+E show or hide the zone panel, Alt+1 to 9 select a zone, Ctrl+Up / Down change priority. Render: Ctrl+R.",
+   "when": [
+    "You want to work faster.",
+    "Someone says \"press K\" and you want to know what that is."
+   ],
+   "how": [
+    "1. Press ? to open the shortcut overlay.",
+    "2. Learn the tool keys first (B, E, W, L, V).",
+    "3. Add Ctrl+Z, Ctrl+D and Ctrl+R.",
+    "4. Press ? or Esc to close the overlay."
+   ],
+   "controls": [
+    {
+     "label": "Keyboard Shortcuts",
+     "range": "",
+     "default": "",
+     "effect": "Show all keyboard shortcuts (press ?)",
+     "inv": "pro.settings.keyboard_shortcuts"
+    }
+   ],
+   "tips": [
+    "The full table is on the Keyboard shortcuts reference page."
+   ],
+   "pitfalls": [
+    "Letter keys do nothing while you are typing in a text box.",
+    "Shift+E toggles the zone panel. E alone is the Eraser."
+   ],
+   "related": [
+    "shortcuts.table",
+    "tools.zoom_pan",
+    "tools.undo_redo"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.settings.keyboard_shortcuts"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.settings.keyboard_shortcuts"
+   ],
+   "sources": [
+    "paint-booth-3-canvas.js:12717",
+    "paint-booth-6-ui-boot.js:3825",
+    "paint-booth-v2.html:2235",
+    "paint-booth-1-data.js:20",
+    "paint-booth-3-canvas.js:12617",
+    "paint-booth-3-canvas.js:12622",
+    "paint-booth-3-canvas.js:12651",
+    "paint-booth-3-canvas.js:12661",
+    "paint-booth-3-canvas.js:12698",
+    "paint-booth-3-canvas.js:12780",
+    "paint-booth-3-canvas.js:12730",
+    "paint-booth-3-canvas.js:17460",
+    "paint-booth-3-canvas.js:17465",
+    "paint-booth-6-ui-boot.js:3810",
+    "paint-booth-6-ui-boot.js:3817",
+    "paint-booth-6-ui-boot.js:4357",
+    "paint-booth-6-ui-boot.js:4360",
+    "paint-booth-6-ui-boot.js:4375",
+    "paint-booth-v2.html:5219",
+    "paint-booth-6-ui-boot.js:3770"
+   ],
+   "aliases": [
+    "hotkeys",
+    "keyboard shortcuts",
+    "keys",
+    "shortcut keys",
+    "what does k do",
+    "which key is the brush",
+    "what keys do what",
+    "useful shortcuts"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Keys that depend on the mode",
+     "body": "Several keys are smart about what is selected. Ctrl+Shift+I inverts the zone mask in ZONE mode, but in LAYER mode it only tells you to switch to ZONE. Ctrl+E merges the selected layer down, and it works only in LAYER mode. The number keys set brush opacity when a paint tool is active, set layer opacity when a layer is selected in LAYER mode, and zoom (0 fit, 1 for 100 percent, 2 for 200 percent) when neither applies."
+    },
+    {
+     "heading": "Shortcuts most people miss",
+     "body": "Ctrl+C, Ctrl+X and Ctrl+V copy, cut and paste pixels, and Ctrl+Shift+V pastes in place. Ctrl+J makes a new layer from a copy of the selection and Ctrl+Shift+J from a cut. Delete removes selected pixels. Alt+Backspace fills the selection with your foreground colour and Ctrl+Backspace with the background colour. Ctrl+Shift+N adds a blank layer, Ctrl+Shift+E merges all visible layers, and Ctrl+Shift+R reloads the last paint file. Ctrl+[ and Ctrl+] move a layer down or up, with Shift they send it to the bottom or top."
+    },
+    {
+     "heading": "Zone keys and the cheat sheet",
+     "body": "Alt+1 to 9 select zone 1 to 9. Shift+N adds a zone, Shift+D duplicates, Shift+R randomises the selected zone, Shift+E shows or hides the zone panel, and Ctrl+Up and Ctrl+Down reorder zone priority. Up and Down cycle zones. Shift+H opens the History gallery and Shift+T the Template library. Ctrl+R renders, Ctrl+S saves a local autosave snapshot, F5 refreshes the preview, and F1 or ? shows the cheat sheet."
+    },
+    {
+     "heading": "Keys that were retired",
+     "body": "The old keys for Pencil (I), Clone (S), Dodge (D), Blur (F), Sharpen (H), Gradient (G), Text (T), Shape (U) and Pen (N) no longer arm those tools, because the toolbar buttons were removed. Do not expect them to work. The Retouch menu now holds Color Brush, Recolor, Healing, Smudge and Burn."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Fast mask routine",
+     "goal": "Build a zone mask without touching the toolbar",
+     "settings": {
+      "Keys": "Alt+2 selects zone 2, W picks the wand, click, Shift+click to add, Ctrl+Shift+I to invert, Ctrl+D to deselect"
+     },
+     "result": "A cleaned-up region for zone 2 using only the keyboard and a few clicks."
+    },
+    {
+     "title": "Copy a sponsor to a new layer",
+     "goal": "Duplicate part of a layer onto its own layer",
+     "settings": {
+      "Mode switch": "LAYER",
+      "Keys": "make a selection, Ctrl+J, then V and drag"
+     },
+     "result": "A new layer holding a copy of the selected pixels that you can move."
+    },
+    {
+     "title": "Quick colour fill",
+     "goal": "Fill a selection with your paint colour",
+     "settings": {
+      "Keys": "make a selection, then Alt+Backspace (foreground) or Ctrl+Backspace (background)"
+     },
+     "result": "The selection is filled in one keystroke."
+    },
+    {
+     "title": "Look, compare and render",
+     "goal": "Preview and render without the mouse",
+     "settings": {
+      "Keys": "F5 refreshes the preview, Shift+V toggles split view, Ctrl+R renders"
+     },
+     "result": "You see the current look side by side and start the render."
+    }
+   ],
+   "combos": [
+    {
+     "with": "shortcuts.table",
+     "why": "The full keyboard reference table lists every key, including less common ones."
+    },
+    {
+     "with": "tools.zoom_pan",
+     "why": "Zoom and pan keys, plus how number keys switch between zoom and opacity."
+    },
+    {
+     "with": "tools.undo_redo",
+     "why": "Ctrl+Z and Ctrl+Y are the safety net that makes trying other shortcuts risk-free."
+    },
+    {
+     "with": "tools.brush_eraser",
+     "why": "Brush size, hardness and opacity all have keys so you can adjust without leaving the canvas."
+    }
+   ],
+   "faq": [
+    {
+     "q": "How do I see all shortcuts?",
+     "a": "Press F1 or the question mark key for the cheat sheet. The full table is also in the Keyboard shortcuts reference page."
+    },
+    {
+     "q": "Why do the number keys sometimes zoom and sometimes change opacity?",
+     "a": "With a paint tool or a selected layer in LAYER mode they set opacity. With neither, 0 fits, 1 is 100 percent and 2 is 200 percent."
+    },
+    {
+     "q": "Why does nothing happen when I press a letter?",
+     "a": "You are typing in a text box. Click the canvas first. Letter keys only work when no text field has focus."
+    },
+    {
+     "q": "What is the difference between E and Shift+E?",
+     "a": "E is the Eraser. Shift+E shows or hides the zone panel."
+    },
+    {
+     "q": "Is there a key to start a render?",
+     "a": "Ctrl+R renders when the render server is online."
+    },
+    {
+     "q": "Older guides list I, S and G as tool keys. Do they work?",
+     "a": "No. Those tools were removed from the toolbar and their keys retired. Trust the tool tooltips and the F1 cheat sheet."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Ctrl+Shift+I does nothing",
+     "cause": "You are in LAYER mode, where it only prompts you to switch to ZONE.",
+     "fix": "Click ZONE, then press it again."
+    },
+    {
+     "symptom": "Ctrl+E did not merge",
+     "cause": "It only merges a layer while in LAYER mode.",
+     "fix": "Switch to LAYER and select the layer first."
+    },
+    {
+     "symptom": "A key press changed layer opacity by accident",
+     "cause": "A layer was selected in LAYER mode, so number keys set its opacity.",
+     "fix": "Press Ctrl+Z and select a paint tool or use the zoom buttons instead."
+    }
+   ],
+   "protips": [
+    "Alt+1 to 9 jumps straight to a zone, which is much faster than scrolling the zone list on a 12-zone livery.",
+    "Shift+R randomises the selected zone, a quick way to find a look when you are out of ideas.",
+    "Alt+click is a temporary eyedropper from almost any paint tool, so you never need to swap tools to match a colour."
+   ],
+   "screens": [
+    "ui_shortcuts_dialog"
+   ]
+  },
+  {
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-05",
+   "controls": [],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "id": "tools.editing_limits",
+   "title": "Clipping masks, clone stamp, flip, rotate, scale, crop and how many undos",
+   "domain": "tools",
+   "level": "intermediate",
+   "summary": "Shokker edits one layer or zone at a time: Transform (Ctrl+T) moves, scales and rotates a layer, Flip H / Flip V mirror it, and Restrict to Layers is the nearest thing to a clipping mask. There is no crop or whole-design flip, and undo keeps 60 selection, up to 30 layer, 15 zone and 6 brush steps.",
+   "what": "Shokker is a paint booth, not a full photo editor. Artwork lives on layers: Transform (Ctrl+T) resizes and rotates the selected layer (with 90 and 180 degree buttons), the layer card has FLIP H and FLIP V, and the transform tools have Flip H and Flip V. There is no button that flips, rotates, scales or crops the whole paint at once (the right-click menu's Flip View H / Flip View V only mirror how you see the canvas, to check symmetry, and change no pixels), because the paint must stay the car's own 2048 x 2048 template layout. There is no clipping mask either: to keep a look inside one piece of artwork, restrict the zone to that layer. The Clone Stamp was taken out of the RETOUCH menu; the Healing Brush (Alt+click a clean spot, then paint) is the nearest tool. Undo depth differs by kind of change: 60 steps for selections and masks, up to 30 for layer edits (fewer, down to 5, when the edits are large, because layer history has a memory budget), 15 for zone settings and 6 for brush strokes.",
+   "when": [
+    "You look for a Photoshop tool such as clipping mask, clone stamp or crop.",
+    "You want to flip, rotate or resize artwork.",
+    "You undid too far or want to know how far back you can go."
+   ],
+   "how": [
+    "1. Select the layer in the LAYERS column and switch the toolbar to LAYER.",
+    "2. Press Ctrl+T (Transform) to drag, scale and rotate it; use the 90 / 180 degree buttons for exact turns, then Apply.",
+    "3. To mirror artwork, press FLIP H or FLIP V on the layer card, or Flip H / Flip V while transforming.",
+    "4. To keep a finish inside one piece of artwork (like a clipping mask), open the zone's COLOR section and tick that layer under RESTRICT TO LAYERS.",
+    "5. To repair artwork, open RETOUCH and use the Healing Brush: Alt+click a clean spot, then paint over the flaw."
+   ],
+   "tips": [
+    "Open Undo History to see every change listed newest first and jump back several steps at once."
+   ],
+   "pitfalls": [
+    "FLIP H and FLIP V on the layer card change the layer's pixels; the transform Flip H / Flip V is non-destructive until you apply it.",
+    "Brush strokes keep only 6 undo steps, because each one is a full 2048 x 2048 snapshot; save before a long retouch."
+   ],
+   "related": [
+    "tools.move_transform",
+    "tools.retouch",
+    "tools.undo_redo",
+    "help_howto_3.restrict_to_layer",
+    "patterns.placement",
+    "help_howto_2.move_logo",
+    "history.panel"
+   ],
+   "sources": [
+    "paint-booth-v2.html:2283",
+    "paint-booth-v2.html:3457-3461",
+    "paint-booth-3-canvas.js:23697",
+    "paint-booth-3-canvas.js:26622-26623",
+    "paint-booth-v2.html:2353-2357",
+    "paint-booth-2-state-zones.js:359-368",
+    "paint-booth-2-state-zones.js:373",
+    "paint-booth-3-canvas.js:27390",
+    "paint-booth-3-canvas.js:6876",
+    "scripts/ai_atlas/ui_map.json:12366",
+    "paint-booth-v2.html:3401-3404",
+    "js/spb-support-answers.js:63"
+   ],
+   "aliases": [
+    "clipping mask",
+    "clip to layer",
+    "clone stamp",
+    "clone tool",
+    "flip the whole design",
+    "mirror the livery",
+    "rotate everything",
+    "rotate 90",
+    "scale the whole livery",
+    "resize everything",
+    "crop",
+    "crop tool",
+    "how many undos",
+    "undo limit",
+    "undo depth",
+    "undid too far",
+    "photoshop tools",
+    "missing tools",
+    "pattern follow the body panels"
+   ],
+   "deep": [
+    {
+     "heading": "Why there is no whole-paint flip, scale or crop",
+     "body": "iRacing only accepts a 2048 x 2048 (or 1024 x 1024) paint laid out exactly like the car's template. Flipping, rotating, scaling or cropping the whole sheet would move every panel off its place on the car, so Shokker edits artwork one layer at a time. Patterns and bases are laid flat on that sheet too: they can be tiled, fitted to the zone or placed and rotated by hand (Flip and Rotate 90 in the placement tools), but they do not bend to follow body panels."
+    },
+    {
+     "heading": "How far back undo goes",
+     "body": "Each kind of change has its own history. Selections and zone masks keep 60 steps (they are compressed, so this costs little memory). Layer edits keep up to 30 (as few as 5 when the edits are big, because layer history is held to a memory budget). Zone settings such as base, pattern and intensity keep 15. Brush strokes keep 6, because each stroke stores a whole 2048 x 2048 picture. Ctrl+Z steps back, Ctrl+Y steps forward, and Undo History lets you jump."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Mirror a logo to the other side",
+     "goal": "The same logo on both doors, facing forward",
+     "settings": {
+      "Layer": "duplicate the logo layer",
+      "Transform": "Ctrl+T, Flip H, move to the other side",
+      "Apply": "commit the transform"
+     },
+     "result": "The copy faces the other way on the second door."
+    },
+    {
+     "title": "Finish only inside the artwork",
+     "goal": "Chrome only on the stripe artwork",
+     "settings": {
+      "Zone": "Chrome",
+      "COLOR > RESTRICT TO LAYERS": "tick the stripe layer"
+     },
+     "result": "The chrome stays inside the stripe like a clipping mask."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Is there a clipping mask?",
+     "a": "No. Tick the layer under RESTRICT TO LAYERS on the zone to keep a look inside that artwork."
+    },
+    {
+     "q": "Where is the clone stamp?",
+     "a": "It was removed from the RETOUCH menu; use the Healing Brush (Alt+click a source, then paint)."
+    },
+    {
+     "q": "Can I flip or rotate the whole design?",
+     "a": "No; flip or rotate one layer at a time with FLIP H / FLIP V or Transform (Ctrl+T). The right-click Flip View H / V only mirrors your view of the canvas."
+    },
+    {
+     "q": "How many undos do I get?",
+     "a": "60 selection steps, up to 30 layer steps (fewer for big edits), 15 zone steps and 6 brush strokes."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Ctrl+Z will not undo an older brush stroke.",
+     "cause": "Only the last 6 brush strokes are kept.",
+     "fix": "Save your project before long retouch work, or reopen the saved project."
+    },
+    {
+     "symptom": "The artwork moved instead of the pattern.",
+     "cause": "The toolbar was in LAYER mode, so Transform worked on the layer.",
+     "fix": "Switch to ZONE mode to transform the zone's pattern or base."
+    }
+   ],
+   "protips": [
+    "Transform's Flip H / Flip V do not touch the pixels until you apply, so you can try a mirror and cancel."
+   ],
+   "screens": [
+    "ui_menu_transform",
+    "ui_undo_history"
+   ]
+  },
+  {
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-05",
+   "controls": [],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "id": "tools.liquify_and_warp",
+   "title": "Liquify, warp and bending artwork",
+   "domain": "tools",
+   "level": "intermediate",
+   "summary": "Shokker has no Liquify, Warp or Puppet Warp tool. Transform (Ctrl+T) moves, scales and rotates a layer, and Smudge (Q) in the RETOUCH menu smears layer pixels; to bend a logo along a curve, do it in Photoshop and open the PSD again.",
+   "what": "Shokker's editing tools work on flat layers. Transform (Ctrl+T) in LAYER mode moves, scales and rotates the selected artwork. The RETOUCH menu has five tools: Color Brush, Recolor, Healing Brush, Smudge and Burn. Smudge smears the selected layer's pixels in the direction you drag, with its own Strength from 1 to 100 percent (50 to start); it can push an edge a little, but it is not a warp mesh. There is no tool that bends, curves or distorts a whole logo. For that, warp the artwork in Photoshop or another editor, save the PSD and open it again with PSD/XCF/ORA in the top row.",
+   "when": [
+    "You want to bend a logo round a wheel arch or along a stripe.",
+    "You look for Photoshop's Liquify, Warp or Puppet Warp.",
+    "Artwork needs a small push or stretch."
+   ],
+   "how": [
+    "1. To move, resize or turn artwork, select its layer, switch the toolbar to LAYER and press Ctrl+T (Transform). Drag, scale and rotate, then Apply.",
+    "2. For a small push of pixels, open RETOUCH, pick Smudge (Q), set Strength and drag on the layer.",
+    "3. To bend artwork properly, warp it in Photoshop or another editor and save the PSD.",
+    "4. Open it again in Shokker with PSD/XCF/ORA in the top row (SOURCE PAINT), or add the bent logo as a transparent PNG with + Layer."
+   ],
+   "tips": [
+    "Smudge at low Strength with several short strokes looks cleaner than one long stroke.",
+    "Remember the sheet is flat: a straight logo on the sheet already follows the panel on the car."
+   ],
+   "pitfalls": [
+    "Smudge smears texture as well as shape, so fine detail goes soft.",
+    "Transform changes the selected artwork or selection as a whole; it cannot curve one part of it."
+   ],
+   "related": [
+    "tools.editing_limits",
+    "preview_render.export_psd_photoshop",
+    "workflows.one_flat_sheet",
+    "help_howto_2.move_logo"
+   ],
+   "sources": [
+    "paint-booth-v2.html:2283",
+    "paint-booth-v2.html:2353-2361",
+    "paint-booth-v2.html:2873-2878",
+    "docs/ai_knowledge/how_do_i.md:794",
+    "paint-booth-v2.html:2281",
+    "paint-booth-v2.html:3844"
+   ],
+   "aliases": [
+    "liquify",
+    "liquify tool",
+    "liquefy",
+    "warp",
+    "warp tool",
+    "puppet warp",
+    "mesh warp",
+    "bend a logo",
+    "bend artwork",
+    "curve a logo",
+    "distort",
+    "distort tool",
+    "skew",
+    "envelope distort",
+    "wrap a logo around the arch"
+   ],
+   "deep": [
+    {
+     "heading": "What each tool can do",
+     "body": "Transform changes position, size and angle of a whole layer or selection. Smudge drags pixels along your stroke. Healing Brush blends clean texture over a flaw. None of them bends a shape along a curve, which is what Liquify or Warp do in a photo editor."
+    },
+    {
+     "heading": "The round trip for warped artwork",
+     "body": "Do the bending where the warp tools are, then bring the result back: save the layered PSD and open it with PSD/XCF/ORA, or export the bent logo as a transparent PNG and add it with + Layer. Your zones and finishes stay in the Shokker project."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Logo round a wheel arch",
+     "goal": "A sponsor curved over the arch",
+     "settings": {
+      "Photoshop": "Warp the logo into an arc",
+      "Shokker": "+ Layer with the curved PNG, then Ctrl+T to place it"
+     },
+     "result": "The logo follows the arch on the sheet."
+    },
+    {
+     "title": "Small edge fix",
+     "goal": "Push a jagged stripe edge straight",
+     "settings": {
+      "RETOUCH": "Smudge (Q)",
+      "Strength": "about 30 percent"
+     },
+     "result": "The edge is nudged without repainting the stripe."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Is there a liquify or warp tool?",
+     "a": "No. Use Transform for size and angle, Smudge for small pushes, and Photoshop for real warping."
+    },
+    {
+     "q": "Can I skew or distort a logo?",
+     "a": "Shokker's Transform moves, scales and rotates; it has no skew or distort tool. Do that in another editor and add the result as a layer."
+    },
+    {
+     "q": "Where is Smudge?",
+     "a": "In the RETOUCH menu (shortcut Q). It has its own Strength setting."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Smudge does nothing.",
+     "cause": "No layer is selected, or the toolbar is in ZONE mode.",
+     "fix": "Select the artwork layer and switch the toolbar to LAYER."
+    },
+    {
+     "symptom": "The logo went blurry after smudging.",
+     "cause": "Smudge smears detail.",
+     "fix": "Undo and bend the logo in a photo editor instead."
+    }
+   ],
+   "protips": [
+    "Keep the original flat logo as its own layer; if the bent version looks wrong you can start again without re-importing."
+   ],
+   "screens": [
+    "ui_menu_retouch"
+   ]
+  }
+ ]
+}

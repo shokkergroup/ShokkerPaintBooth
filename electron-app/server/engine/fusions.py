@@ -57,17 +57,16 @@ import numpy as np
 
 try:
     import shokker_fusions_expansion as _fexp
-    FUSION_REGISTRY = getattr(_fexp, 'FUSION_REGISTRY', {})
-    integrate_fusions = getattr(_fexp, 'integrate_fusions', None)
-    get_fusion_group_map = _fexp.get_fusion_group_map
-    get_fusion_counts = _fexp.get_fusion_counts
-    _FUSIONS_LOADED = True
-except Exception as _ex:
-    print(f"[V5 Fusions] Warning: Could not load fusions: {_ex}")
-    FUSION_REGISTRY = {}
-    _FUSIONS_LOADED = False
-    def get_fusion_group_map(): return {"fusions": {}}
-    def get_fusion_counts(): return {"fusions": 0}
+except ImportError:
+    from engine.expansions import fusions as _fexp  # SPB-102: canonical 201-fusion registry
+
+FUSION_REGISTRY = getattr(_fexp, 'FUSION_REGISTRY', {})
+integrate_fusions = getattr(_fexp, 'integrate_fusions', None)
+get_fusion_group_map = _fexp.get_fusion_group_map
+get_fusion_counts = _fexp.get_fusion_counts
+_FUSIONS_LOADED = bool(FUSION_REGISTRY)
+if not _FUSIONS_LOADED:
+    print("[V5 Fusions] Warning: FUSION_REGISTRY empty after load")
 
 
 # ================================================================

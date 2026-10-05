@@ -1,0 +1,162 @@
+{
+ "fre_gold_glyphs": {
+  "hue": 0.1205,
+  "dom": 0.125,
+  "sat": 0.388,
+  "lum": 0.331,
+  "target": 0.115,
+  "fix": -0.0055
+ },
+ "fre_gold_inlay": {
+  "hue": 0.1043,
+  "dom": 0.0972,
+  "sat": 0.363,
+  "lum": 0.328,
+  "target": 0.115,
+  "fix": 0.0107
+ },
+ "fre_gold_mosaic": {
+  "hue": 0.1237,
+  "dom": 0.0972,
+  "sat": 0.39,
+  "lum": 0.323,
+  "target": 0.115,
+  "fix": -0.0087
+ },
+ "fre_gold_ziggurat": {
+  "hue": 0.1156,
+  "dom": 0.1528,
+  "sat": 0.391,
+  "lum": 0.328,
+  "target": 0.115,
+  "fix": -0.0006
+ },
+ "fre_ivory_leaf": {
+  "hue": 0.1132,
+  "dom": 0.0972,
+  "sat": 0.249,
+  "lum": 0.451,
+  "target": 0.105,
+  "fix": -0.0082
+ },
+ "fre_ivory_mosaic": {
+  "hue": 0.1118,
+  "dom": 0.125,
+  "sat": 0.265,
+  "lum": 0.462,
+  "target": 0.105,
+  "fix": -0.0068
+ },
+ "fre_ivory_ziggurat": {
+  "hue": 0.1123,
+  "dom": 0.0972,
+  "sat": 0.255,
+  "lum": 0.475,
+  "target": 0.105,
+  "fix": -0.0073
+ },
+ "fre_lapis_glyphs": {
+  "hue": 0.6215,
+  "dom": 0.625,
+  "sat": 0.505,
+  "lum": 0.165,
+  "target": 0.625,
+  "fix": 0.0035
+ },
+ "fre_lapis_inlay": {
+  "hue": 0.634,
+  "dom": 0.5972,
+  "sat": 0.499,
+  "lum": 0.181,
+  "target": 0.625,
+  "fix": -0.009
+ },
+ "fre_lapis_mosaic": {
+  "hue": 0.6292,
+  "dom": 0.6528,
+  "sat": 0.444,
+  "lum": 0.174,
+  "target": 0.625,
+  "fix": -0.0042
+ },
+ "fre_lapis_ziggurat": {
+  "hue": 0.6369,
+  "dom": 0.5972,
+  "sat": 0.425,
+  "lum": 0.177,
+  "target": 0.625,
+  "fix": -0.0119
+ },
+ "fre_malachite_leaf": {
+  "hue": 0.3579,
+  "dom": 0.3472,
+  "sat": 0.327,
+  "lum": 0.194,
+  "target": 0.36,
+  "fix": 0.0021
+ },
+ "fre_malachite_mosaic": {
+  "hue": 0.3592,
+  "dom": 0.3472,
+  "sat": 0.354,
+  "lum": 0.191,
+  "target": 0.36,
+  "fix": 0.0008
+ },
+ "fre_malachite_ziggurat": {
+  "hue": 0.357,
+  "dom": 0.3472,
+  "sat": 0.367,
+  "lum": 0.215,
+  "target": 0.36,
+  "fix": 0.003
+ },
+ "fre_terracotta_glyphs": {
+  "hue": 0.0346,
+  "dom": 0.0417,
+  "sat": 0.343,
+  "lum": 0.261,
+  "target": 0.045,
+  "fix": 0.0104
+ },
+ "fre_terracotta_inlay": {
+  "hue": 0.0409,
+  "dom": 0.0417,
+  "sat": 0.355,
+  "lum": 0.252,
+  "target": 0.045,
+  "fix": 0.0041
+ },
+ "fre_terracotta_leaf": {
+  "hue": 0.0559,
+  "dom": 0.0417,
+  "sat": 0.345,
+  "lum": 0.246,
+  "target": 0.045,
+  "fix": -0.0109
+ },
+ "fre_turquoise_glyphs": {
+  "hue": 0.4636,
+  "dom": 0.4583,
+  "sat": 0.483,
+  "lum": 0.27,
+  "target": 0.47,
+  "fix": 0.0064
+ },
+ "fre_turquoise_inlay": {
+  "hue": 0.4787,
+  "dom": 0.4306,
+  "sat": 0.483,
+  "lum": 0.264,
+  "target": 0.47,
+  "fix": -0.0087
+ },
+ "fre_turquoise_leaf": {
+  "hue": 0.4663,
+  "dom": 0.4583,
+  "sat": 0.441,
+  "lum": 0.269,
+  "target": 0.47,
+  "fix": 0.0037
+ }
+}

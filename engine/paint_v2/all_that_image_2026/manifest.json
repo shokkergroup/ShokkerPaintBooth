@@ -1,0 +1,966 @@
+{
+  "revision": "AT-R2",
+  "local_owner_review": true,
+  "items": [
+    {
+      "id": "at_beige_box",
+      "name": "Cdrom: Beige Box",
+      "idea": "Aged ivory computer-case ABS with fine vents, molded ribs, recessed fasteners and tiny green indicator details.",
+      "revision": "AT-R2-5369297e94d8",
+      "asset_sha256": {
+        "paint": "045d4df0ad49deebcd530fb98d02c19cf5dbc4bd5754e80a2f128df85cc06a2e",
+        "spec": "5369297e94d82c4a65ad2da515ea6e85608fe241ed95acd120c8a6e5e4d7994a"
+      },
+      "source_sha256": "b8ee1a510d620e165f8a578d0fedd1510e5d4777c71b46b06b96ad42ce4f3fa0",
+      "material_median": [
+        9,
+        59,
+        109
+      ]
+    },
+    {
+      "id": "at_crt_blue_screen",
+      "name": "Cdrom: CRT Blue Screen",
+      "idea": "Cobalt blue CRT phosphor, abstract electronic texture with no writing.",
+      "revision": "AT-R2-d15a82aed694",
+      "asset_sha256": {
+        "paint": "fefd2373ac7f5320bff0df75242a89cd8982bfb34b5bd88324a512844cdde5dd",
+        "spec": "d15a82aed694f58c76b7a6ec8e73b40e49b418885e1e0bca33d22daed025b11b"
+      },
+      "source_sha256": "83bf7a646c739f333532c1a48959b93545f4241f759daf87f27403e20281b86f",
+      "material_median": [
+        8,
+        205,
+        189
+      ]
+    },
+    {
+      "id": "at_corrupt_jpeg",
+      "name": "Cdrom: Corrupt JPEG",
+      "idea": "An abstract damaged digital photograph compressed into overlapping tiny discontinuous blocks.",
+      "revision": "AT-R2-364ad89aaa7b",
+      "asset_sha256": {
+        "paint": "213fe3715e0ed94dc429a744cc6269dbbcbb09cf2148875fa4825655eee4d991",
+        "spec": "364ad89aaa7bcc20cb7f25ae02cd379c560a66ff16d49cf94f904be1d93a678c"
+      },
+      "source_sha256": "d23d79e972ca48b86be334e92c9b2af58a5edc8079e5f4f0aed5f680dc6e5362",
+      "material_median": [
+        14,
+        158,
+        200
+      ]
+    },
+    {
+      "id": "at_cyber_café",
+      "name": "Cdrom: Cyber Café",
+      "idea": "Cold perforated steel with tiny scattered cyan LED-like inserts.",
+      "revision": "AT-R2-89fe02a1a809",
+      "asset_sha256": {
+        "paint": "89d302ad35f9410cc99ddd984ce2d3551ddbc7aa86e52ccacbfb75a0656a5ee1",
+        "spec": "89fe02a1a8096eff701c0435636de0ac472d53bd088b28e7cefdd2b19ec3077f"
+      },
+      "source_sha256": "d9c7c8a5fb48d45ee016846b5453abbe274bf6290c2733eddaa8c46e18596f32",
+      "material_median": [
+        195,
+        72,
+        175
+      ]
+    },
+    {
+      "id": "at_dial_up_green",
+      "name": "Cdrom: Dial-Up Green",
+      "idea": "Black glass with abstract green terminal activity.",
+      "revision": "AT-R2-8ac16779356b",
+      "asset_sha256": {
+        "paint": "3fbd028d16364b4b71bb08cbb1118e3e680449598c1cde5ae928f7a3eeecb127",
+        "spec": "8ac16779356bee1d2f636021bd734150652db127992e0ecea26403a362cb37f1"
+      },
+      "source_sha256": "44b156a3db4cdc1ba202fa9a73fc413c5833bdb3c9e15c251d2727805641a573",
+      "material_median": [
+        7,
+        105,
+        96
+      ]
+    },
+    {
+      "id": "at_disc_rainbow",
+      "name": "Cdrom: Disc Rainbow",
+      "idea": "Silver optical disc foil with curved multicolor pit tracks.",
+      "revision": "AT-R2-d09faddf6b1b",
+      "asset_sha256": {
+        "paint": "40bc97ce3c72367ef1f41e9d324427095d8ce6f0c7d911edd392fd6173559a60",
+        "spec": "d09faddf6b1bd9f66530b0a1bcfa4cf892b977b3a88563a88d2e0cdad9245c15"
+      },
+      "source_sha256": "e3be121536dd84023f16ee0744631ddfbb2876c767366c9963bd511a24445363",
+      "material_median": [
+        187,
+        55,
+        144
+      ]
+    },
+    {
+      "id": "at_floppy_black",
+      "name": "Cdrom: Floppy Black",
+      "idea": "Anthracite matte magnetic-disk casing material, fragmented shutter-like brushed slivers.",
+      "revision": "AT-R2-7b7b6f53cd52",
+      "asset_sha256": {
+        "paint": "2632d042042b535500ca21b696a933c209c626611ad131b1d56c8c338feef3e7",
+        "spec": "7b7b6f53cd52a53ce3738e8a92d58ab43f410231466420a82cd6fd673bc28a08"
+      },
+      "source_sha256": "84a6c4ebd3206f222a5c8053eacb5f25bc792d11d2538023648373653c6e15b4",
+      "material_median": [
+        6,
+        65,
+        69
+      ]
+    },
+    {
+      "id": "at_frosted_shell",
+      "name": "Cdrom: Frosted Shell",
+      "idea": "Blueberry polymer with frosted pockets, glossy molded ribs and smoky electronic traces beneath the surface.",
+      "revision": "AT-R2-beba1995c0a1",
+      "asset_sha256": {
+        "paint": "fb97e3fa77e5974a18c8c25ded80f877c0009f9d207c05fef83f1fd2c89d1d48",
+        "spec": "beba1995c0a1b79de30fe28277ba99be4da5ddd3cb8a70fd92b96ff9d41ad836"
+      },
+      "source_sha256": "20a6371bafd0ee26df63774b980b13a30d529c6653f4a8e611909df1a1dcddf6",
+      "material_median": [
+        5,
+        133,
+        126
+      ]
+    },
+    {
+      "id": "at_iridescent_cd_r",
+      "name": "Cdrom: Iridescent CD-R",
+      "idea": "Green-gold writable optical-disc dye lacquer, visibly different from silver rainbow data tracks.",
+      "revision": "AT-R2-c3459e20d148",
+      "asset_sha256": {
+        "paint": "9931b6fe8f3414332c1540f4b0536a23d3633ac0a4238e9aebbc95c69f061a6a",
+        "spec": "c3459e20d1483a855d3faae88b71d14652d633c1e53a0f7843d774680f85598f"
+      },
+      "source_sha256": "e57d9ab7b8ebc0f451fc9f7d7dd635da1268936438ddb0799bae3e28780d34c8",
+      "material_median": [
+        197,
+        63,
+        161
+      ]
+    },
+    {
+      "id": "at_mouse_ball_grime",
+      "name": "Cdrom: Arcade Token Foil",
+      "idea": "Arcade-token micro-embossing: densely overlapping tiny coin-edge fragments.",
+      "revision": "AT-R2-abc5e03ca916",
+      "asset_sha256": {
+        "paint": "243c27a9c066daec3fbe36937562be9599c8a5c2f6006611f7fea388ca0a342a",
+        "spec": "abc5e03ca91628da1263d959a44359bbfac5ae10262186d34356cd720c7e1403"
+      },
+      "source_sha256": "d13e5e0f46119b4f9878a7d324eef78b12090549878f5a0c57f2be5d9e33dbd4",
+      "material_median": [
+        198,
+        71,
+        155
+      ]
+    },
+    {
+      "id": "at_pipes_screensaver",
+      "name": "Cdrom: Pipes Screensaver",
+      "idea": "A dense tangle of colorful enamel pipes, polished metal elbows and dark joints inspired by 1990s screensavers.",
+      "revision": "AT-R2-47819de6225d",
+      "asset_sha256": {
+        "paint": "7280942c36b10d8f6b390233b621596d6b492e478160a70fbf7be7703deb2535",
+        "spec": "47819de6225df42e18db95b4bc1c9f9373cb9ccc37faab599a4673ea56d83735"
+      },
+      "source_sha256": "e0714a91f3db334af4d82e7c922b4f580b19e4a8452c1592aa3dd02dcdcf6386",
+      "material_median": [
+        20,
+        91,
+        97
+      ]
+    },
+    {
+      "id": "at_windows_teal",
+      "name": "Cdrom: LAN Party Circuit",
+      "idea": "Fine intricate cyan, lime and violet electronic routes in black resin with exposed silver solder.",
+      "revision": "AT-R2-5c9af0e9db3f",
+      "asset_sha256": {
+        "paint": "e7c0433d36ae2ecba8fbd5dbfe8bb8004cefca54002f6be7917f41a6ecea3ceb",
+        "spec": "5c9af0e9db3f187e0d3d7a6de0cb2aba650bf706bd697da4c4edfc33ec7a6e8e"
+      },
+      "source_sha256": "5758705a9690cfb2c538f93bded81daa298e5e3d3e1b3ba80044af21adbd88d0",
+      "material_median": [
+        6,
+        94,
+        119
+      ]
+    },
+    {
+      "id": "at_y2k_chrome",
+      "name": "Cdrom: Y2K Chrome",
+      "idea": "Liquid silver inflatable chrome fragments scattered evenly.",
+      "revision": "AT-R2-08ea05af94a7",
+      "asset_sha256": {
+        "paint": "707537e8990b91aef5caf7ffbff9d776bddb0ebf50621f933027adae6855fc37",
+        "spec": "08ea05af94a70257788ea27cbfe304c55d8a087ea42975f676d91b94183fd394"
+      },
+      "source_sha256": "71023189a2a70088120cda2044a63c26a9ae7f0771d789268cfcd62bb95b2997",
+      "material_median": [
+        246,
+        15,
+        56
+      ]
+    },
+    {
+      "id": "at_zip_disk",
+      "name": "Cdrom: Zip Disk",
+      "idea": "Saturated cobalt molded plastic with disciplined micro-ribbed engineering details, distinct from black floppy texture.",
+      "revision": "AT-R2-86da71df2249",
+      "asset_sha256": {
+        "paint": "3c6b4d9f2f89ccf67b90cb81c391ebf686112622468084bf676932a26cbab00a",
+        "spec": "86da71df2249c83ff4f9707324b748cacb2bc3058a6bbdd3a9f036169de4da35"
+      },
+      "source_sha256": "bcda3445cd7343bc987b79343ace9637ba8babe1fbddbf2df9bd9c5a5bde73c2",
+      "material_median": [
+        7,
+        60,
+        70
+      ]
+    },
+    {
+      "id": "at_anodised_peg",
+      "name": "Extreme: Anodised Peg",
+      "idea": "Violet anodized chromoly with densely distributed short silver grinding scars.",
+      "revision": "AT-R2-84d3c7414871",
+      "asset_sha256": {
+        "paint": "8f03f3b8541cc024525440950dc150843e0668936e5c0e31dbb71e1370126e18",
+        "spec": "84d3c74148712692e135409f2500496a4d6867ed6f8074bea919d460b30b449c"
+      },
+      "source_sha256": "726f98ea4924d131c75a1565546bc792f9b6c4172fb672885c9a4872a549045f",
+      "material_median": [
+        153,
+        121,
+        165
+      ]
+    },
+    {
+      "id": "at_bmx_dirt",
+      "name": "Extreme: BMX Dirt",
+      "idea": "Warm compacted clay and tiny embedded grains, with short interrupted compressed tire-like marks.",
+      "revision": "AT-R2-396c34c35dbc",
+      "asset_sha256": {
+        "paint": "48277166dfe746265ad4c10a4a52e82fcd7f3435c8ea4280b6457f39868e6684",
+        "spec": "396c34c35dbcecb62f15007373d89d038a5bfecb431626e0614e88fe09395871"
+      },
+      "source_sha256": "d4eefaa0ecbb2018abbc0a4f45bb49518bee5f8f144d7482aac8950004ba4f8b",
+      "material_median": [
+        35,
+        179,
+        199
+      ]
+    },
+    {
+      "id": "at_big_dog_print",
+      "name": "Extreme: Big Dog Print",
+      "idea": "Oversized 1990s comic-graphic screenprint abstracted into tiny playful ink shapes on cotton.",
+      "revision": "AT-R2-28d87209ba61",
+      "asset_sha256": {
+        "paint": "1c1884da177e0dd14ee14d6f0690d1f7741e5d936806be2e076080a685f2dc80",
+        "spec": "28d87209ba6150071a28e8d84fb8dd01b6306068d251962d4dc1fdfb7857b730"
+      },
+      "source_sha256": "968bbfcf467517a417faea76bf1883c3ef3fc7600f606b196021ef53f45fbf40",
+      "material_median": [
+        7,
+        167,
+        208
+      ]
+    },
+    {
+      "id": "at_bungee_cord",
+      "name": "Extreme: Bungee Cord",
+      "idea": "Small multidirectional braided elastic-sheath fragments in mismatched orange teal white black.",
+      "revision": "AT-R2-9098b38018a1",
+      "asset_sha256": {
+        "paint": "06a1f82316177703648834c207de655847f3f6b17bceccf734785791da2e29b8",
+        "spec": "9098b38018a1a881020a7e55e7d2253258556cb727c5bd177979956fbb8beb67"
+      },
+      "source_sha256": "bf86152cd536f53412f1250507987f2a0c17582336e7c03a2d1f28e545a3acc7",
+      "material_median": [
+        7,
+        190,
+        184
+      ]
+    },
+    {
+      "id": "at_chain_link",
+      "name": "Extreme: Chain Link",
+      "idea": "Fine galvanized diamond-wire mesh without a background scene, tiny diamonds.",
+      "revision": "AT-R2-fefa424e71b4",
+      "asset_sha256": {
+        "paint": "a8ed7d9170252f5d01b1089bc27f30d86b39528fb2033b8e4f3d78a07c14a97f",
+        "spec": "fefa424e71b40493734c80343dba053fa16c017b3d06564db411312ae113a474"
+      },
+      "source_sha256": "61215a11d67d64df5a437362f36e0af7e007a1da9490934a4a5e67e6b0d82c38",
+      "material_median": [
+        205,
+        67,
+        92
+      ]
+    },
+    {
+      "id": "at_dew_green",
+      "name": "Extreme: Dew Green",
+      "idea": "Acid-lime translucent citrus lacquer densely aerated with tiny abstract carbonation textures.",
+      "revision": "AT-R2-e41265943573",
+      "asset_sha256": {
+        "paint": "96cb78359e6b026664a1eae0795012495d4efd0096939f0de6a3d8b8a2b79f18",
+        "spec": "e4126594357363c4613fef9b79c826bd7e7d04d85fc2be88ac16828538c8b262"
+      },
+      "source_sha256": "b44140b01abe3bdf97d0de7cb41fdfcf8ad58a2f9c12fd1e80174b7fa0cb6c8b",
+      "material_median": [
+        10,
+        33,
+        52
+      ]
+    },
+    {
+      "id": "at_grip_tape",
+      "name": "Extreme: Grip Tape",
+      "idea": "Dense charcoal silicon-carbide abrasive grit with visible angular cutting faces.",
+      "revision": "AT-R2-7f736acb8b18",
+      "asset_sha256": {
+        "paint": "275dc79f7bdfedca587bd8d6076cd26bc158c7e27b3557267aecd0b9f28f4fd6",
+        "spec": "7f736acb8b1893e94d866e2f53400723cc9b5457e7bdee107d982ed1fb117647"
+      },
+      "source_sha256": "8c9e0b517e00208c98280c1880eb29ea90fe6a3815c8ba76526ddf309fa93e89",
+      "material_median": [
+        8,
+        104,
+        110
+      ]
+    },
+    {
+      "id": "at_half_pipe_ply",
+      "name": "Extreme: Half Pipe Ply",
+      "idea": "Fine warm plywood/masonite laminate with short interwoven grain segments and small wear marks.",
+      "revision": "AT-R2-ad420906ce91",
+      "asset_sha256": {
+        "paint": "1b1f58f646bbd05ecc02ce7cce5fccfdf164c6bd63de72b5cf063791aed1b41d",
+        "spec": "ad420906ce910eecd031b7f9a2ebecf1bf0d98f03b39ce4e214333046eb4a500"
+      },
+      "source_sha256": "1fbe3a884ac555dce9e8be9719afe40b86b09ac1be487e2d3dd4a651628fce5b",
+      "material_median": [
+        9,
+        156,
+        191
+      ]
+    },
+    {
+      "id": "at_mountain_topo",
+      "name": "Extreme: Mountain Topo",
+      "idea": "Dense abstract topographic cartography on faded cream paper with no text numbers map icons or large landmarks.",
+      "revision": "AT-R2-ea3bf92578c4",
+      "asset_sha256": {
+        "paint": "b4b89cb9ca0a6e6bfdb19d3c37d7c20233578fdf9d44f8d85ab327a9668bf94a",
+        "spec": "ea3bf92578c4a00d6df36c6dc272ed7db4c06cb3f2f8ab2a5c9fe30f05e28eb2"
+      },
+      "source_sha256": "1e7307c0ce45b1573d738240691f0180b5e1ace55fc582dbbb0b5499d32863cb",
+      "material_median": [
+        8,
+        153,
+        182
+      ]
+    },
+    {
+      "id": "at_neon_wetsuit",
+      "name": "Extreme: Neon Wetsuit",
+      "idea": "Abstract fluoro pink cyan black neoprene with tiny curved inset patches and bonded seams.",
+      "revision": "AT-R2-5e034054874d",
+      "asset_sha256": {
+        "paint": "e5c7881df29c5282710a5d811b3de51701bace4c199069108ba1c43707d18e9c",
+        "spec": "5e034054874df4afc1fd95c0a2e0a2818508b6df4badfe665153280ca5cb76d1"
+      },
+      "source_sha256": "624b0e728cd236637cdd14757d5cb6e29c08391394d77b1b9ce62a4b7c160ba6",
+      "material_median": [
+        3,
+        154,
+        203
+      ]
+    },
+    {
+      "id": "at_roller_blade",
+      "name": "Extreme: Roller Blade",
+      "idea": "Pearl-gray molded urethane with purple and orange inserts, recessed vents and fine worn tread.",
+      "revision": "AT-R2-5091277b1b8a",
+      "asset_sha256": {
+        "paint": "1c2fe30591ef2ddb40f1db9201bc5034a78a1dd46938175079add817f45c6856",
+        "spec": "5091277b1b8a6234a68e78c41eb7000a904c3268f8f799ad9b6187a4e96493f0"
+      },
+      "source_sha256": "e28cffafc3052199b701c3ddef1c8ba8f59c6af8b9e04ea44853a4d5afc57f9e",
+      "material_median": [
+        9,
+        28,
+        50
+      ]
+    },
+    {
+      "id": "at_skatepark_concrete",
+      "name": "Extreme: Skate Deck Shred",
+      "idea": "Vibrant scraped skate-deck graphic layers, many tiny multicolor ink shards exposing pale plywood.",
+      "revision": "AT-R2-da3238ceddf3",
+      "asset_sha256": {
+        "paint": "99ac320eb2d4191f55ed06ddf9414bacfa817d4a853e689a025558d93f08bc0e",
+        "spec": "da3238ceddf31590e9f85e93273d58cb4b8cb7ad3faba1ef41f61e01bb843eb5"
+      },
+      "source_sha256": "7d114238a28d5449c3f0b0d913be14a8c64ae4f996e0ba101dc22fb920a321da",
+      "material_median": [
+        13,
+        106,
+        176
+      ]
+    },
+    {
+      "id": "at_snowboard_graphic",
+      "name": "Extreme: Snowboard Graphic",
+      "idea": "Abstract vibrant sublimated topsheet print with fine intersecting slashes under worn clear film.",
+      "revision": "AT-R2-071234b195ee",
+      "asset_sha256": {
+        "paint": "c6803bee9dea1588d321e81867c4dea9ec49eff07da780b0896e8d06338bc0c6",
+        "spec": "071234b195ee2ff4e0ddf8c1fea78915a269c9894961db4cc738564b2ab2bb76"
+      },
+      "source_sha256": "29e741948c27f5ceab53e12e878d98c9bcb27b120b31c8fe0c5eea9ef154d933",
+      "material_median": [
+        9,
+        67,
+        148
+      ]
+    },
+    {
+      "id": "at_surf_wax",
+      "name": "Extreme: Surf Wax",
+      "idea": "Cream, mint and coral wax shavings with combed ridges, cloudy deposits and polished wear.",
+      "revision": "AT-R2-833b73461b94",
+      "asset_sha256": {
+        "paint": "30e6db917706d0012675c1eb8e7f2b920b7ecfb4e6cff069032b38f93d609f7f",
+        "spec": "833b73461b94562bdb54872a94f6828ae688c657e5c88c4417bd760faf8a9145"
+      },
+      "source_sha256": "ed1ffe8edb9badf849967172ac7c147588e9b2cd6d12d5e6195453379b6231ea",
+      "material_median": [
+        9,
+        128,
+        112
+      ]
+    },
+    {
+      "id": "at_windbreaker_block",
+      "name": "Extreme: Windbreaker Block",
+      "idea": "Teal purple coral nylon color blocking expressed as many small angular panels.",
+      "revision": "AT-R2-7858b896ff62",
+      "asset_sha256": {
+        "paint": "e1e301964adfd6dcecd916f7a27cc5ea9603bdbf227f1009a5d53eacfaea48d2",
+        "spec": "7858b896ff6259d7f44aa00d513d863dbdc9cf04b744db73cbaeb7a2867da771"
+      },
+      "source_sha256": "88cf2af293bf034e98458b33d7f4793e6779069cd01759247dd088db8dc2cc66",
+      "material_median": [
+        9,
+        85,
+        73
+      ]
+    },
+    {
+      "id": "at_boombox_chrome",
+      "name": "Fresh: Boombox Chrome",
+      "idea": "Chrome speaker grille and brushed aluminum abstract surface with fine perforation arrays.",
+      "revision": "AT-R2-75fabc27a533",
+      "asset_sha256": {
+        "paint": "d7c5c1dbc205ff61390c856281d2f5733433f6844f16cc08b7dd1be8773ac552",
+        "spec": "75fabc27a5332b4f8b548b9c272a39baa3006802fcc32d4a3dc5a6eb44f3f6b8"
+      },
+      "source_sha256": "80b112698e7bbc3a3febd3228b9db809078f1c6a61915cb5b640d0a72759ed70",
+      "material_median": [
+        216,
+        45,
+        89
+      ]
+    },
+    {
+      "id": "at_bucket_hat",
+      "name": "Fresh: Bucket Hat",
+      "idea": "Sand olive reversible cotton twill in small concentric stitching fragments.",
+      "revision": "AT-R2-72e26cc62e01",
+      "asset_sha256": {
+        "paint": "12849d4aded4e89ddcbf4a42c339457e48c559cdcc72522a4df99584ca42c7f4",
+        "spec": "72e26cc62e01900e47232ff6bf4186c111e849f7d0191b3423e90c2d7c00e872"
+      },
+      "source_sha256": "1fb025251236c2b13d161ab34ce2984a5fdebba50472bd90c951ad7c8fe5d7b6",
+      "material_median": [
+        4,
+        184,
+        212
+      ]
+    },
+    {
+      "id": "at_cross_colour_block",
+      "name": "Fresh: Cross Colour Block",
+      "idea": "Primary red gold green blue blocks on dark denim in a dense angular patchwork.",
+      "revision": "AT-R2-174a112ca457",
+      "asset_sha256": {
+        "paint": "456ce7489befe4f32c6f14668eb9f71834c1f95f2ea6bfce44fd6ecce40023b9",
+        "spec": "174a112ca4573b632662804703853006a185f79b690d171f533bbc0928cf094a"
+      },
+      "source_sha256": "72031fb8f53b82468f1fd5115f0a226fce1d0bde2498149e3085d186ed5d28c9",
+      "material_median": [
+        4,
+        194,
+        215
+      ]
+    },
+    {
+      "id": "at_denim_baggy",
+      "name": "Fresh: Denim Baggy",
+      "idea": "Stonewashed indigo denim with dense broken twill and tiny bleach-worn marks.",
+      "revision": "AT-R2-5ccf68b2d602",
+      "asset_sha256": {
+        "paint": "94eb024c761a595ec7b5d4379f61a68cf8f02358b9c8aa36fd389234f4872718",
+        "spec": "5ccf68b2d602b1ede30ca9c38af940b188de16478d4ef9abf2d7363fd7adcde7"
+      },
+      "source_sha256": "fc9a6db8507ca1280b617a8d70c7ccb83a60b68cff1ebfae19837b52063ed012",
+      "material_median": [
+        4,
+        198,
+        217
+      ]
+    },
+    {
+      "id": "at_fresh_kicks",
+      "name": "Fresh: Fresh Kicks",
+      "idea": "White patent leather and bright shoe mesh abstracted as small curved mixed-material patches.",
+      "revision": "AT-R2-7516f7b0edc9",
+      "asset_sha256": {
+        "paint": "c40effca98bfafa762c07c2e5ad24c9ff790c0dfddf50aee2826335cee78bb98",
+        "spec": "7516f7b0edc99bcc6879309b9f354e5c3e2721915d3bfe5096c947a8767ff014"
+      },
+      "source_sha256": "e0d35211ece54b0bf2f9225743855000280b7d1f40b7335ebbfc95b5784b87f5",
+      "material_median": [
+        12,
+        30,
+        60
+      ]
+    },
+    {
+      "id": "at_gold_rope",
+      "name": "Fresh: Gold Rope",
+      "idea": "Warm gold fine herringbone linked metal in multidirectional small fragments.",
+      "revision": "AT-R2-2140448f7d28",
+      "asset_sha256": {
+        "paint": "95122cb12679e41b59d7cb7abfef532b5c52f9819cbd609aa4370dfbf48cb0d9",
+        "spec": "2140448f7d286935f1b7c8f135af11da2a199db379736c456c8d0c5a6ab37c6c"
+      },
+      "source_sha256": "2a1c48e7df204ebfebec00d9fef8a1ca0f11af2d689341c9977ac25f0d57996b",
+      "material_median": [
+        206,
+        61,
+        150
+      ]
+    },
+    {
+      "id": "at_graffiti_fill",
+      "name": "Fresh: Graffiti Fill",
+      "idea": "Vibrant cyan, pink, orange and purple spray fragments with crisp black hooks, overspray and layered ink edges.",
+      "revision": "AT-R2-97a6ae051681",
+      "asset_sha256": {
+        "paint": "a37281af3d6cfb27914f36393453a7494f6c041e89b9db6a4f6921beccd13f28",
+        "spec": "97a6ae051681edaa83fc5f5da0c09397bab9d7a0eca4305974a92f4f1113fc5e"
+      },
+      "source_sha256": "548d616055a3177b1df1e651c5ad5527f7c53a4b0cdef24a0b2b25943ba3b3f8",
+      "material_median": [
+        10,
+        76,
+        148
+      ]
+    },
+    {
+      "id": "at_grill_chrome",
+      "name": "Fresh: Grill Chrome",
+      "idea": "Bright polished chrome with tiny rounded segmented jewel-like forms.",
+      "revision": "AT-R2-eae38b45c21e",
+      "asset_sha256": {
+        "paint": "c487ad911f63a0de3a1431f306e2f17c6ebf8483819a0b3ece0e98fab476ae27",
+        "spec": "eae38b45c21eff827540969a38b1ba3d678ab4fa06de87d0dbd198f7e1e96040"
+      },
+      "source_sha256": "83176956e01d89f3c44664ad5f2e4930798c90f432a661c1fc747f4a2d9c2953",
+      "material_median": [
+        243,
+        48,
+        73
+      ]
+    },
+    {
+      "id": "at_kangol_felt",
+      "name": "Fresh: Kangol Felt",
+      "idea": "Deep burgundy felt with dense wool fibers, soft nap changes and tiny compressed seams.",
+      "revision": "AT-R2-b7833e1a9bde",
+      "asset_sha256": {
+        "paint": "ddce553d58bbb65d01ed4cc01e771e9de674877d1af9391021adcb8f5618e437",
+        "spec": "b7833e1a9bdeb52bacd2238e8b83884cdbcc8c4c8bb35b9f65df439b95c9ae6e"
+      },
+      "source_sha256": "6e21242c0f1b886dec1c31cf61185dfc3c3e0be24a6ca34cb5a48ead93dee6d0",
+      "material_median": [
+        5,
+        201,
+        210
+      ]
+    },
+    {
+      "id": "at_nameplate_gold",
+      "name": "Fresh: Neon Sneaker Sole",
+      "idea": "Electric orange, yellow, lime and violet rubber outsole micro-tread, dense multidirectional tread geometry.",
+      "revision": "AT-R2-891a6613496d",
+      "asset_sha256": {
+        "paint": "1c7ab27229794220b59ad593ff938b8a45f57eac4a982f642c919d6c38212001",
+        "spec": "891a6613496df83e882d184d7498be56b2c651384449b19a437062636af417ae"
+      },
+      "source_sha256": "68464bd7a351338dbc6427feb99c6e31f293b1ed4c4db1537b87d59c47158295",
+      "material_median": [
+        7,
+        153,
+        124
+      ]
+    },
+    {
+      "id": "at_starter_jacket",
+      "name": "Fresh: Starter Jacket",
+      "idea": "Royal blue red white satin nylon fragments with small embroidered stitches.",
+      "revision": "AT-R2-eec8420dc27a",
+      "asset_sha256": {
+        "paint": "6e020bc80535827847199540f1963488cb95382dde3e5904d20123b217361040",
+        "spec": "eec8420dc27a0b5637fd2ced1b17f16a7285c65bdd38afca41333d29753a9410"
+      },
+      "source_sha256": "77b88de1c348be880a0aa2c6dde0ce6a240b575ff5cc597cfe7dfd167995bc37",
+      "material_median": [
+        3,
+        171,
+        199
+      ]
+    },
+    {
+      "id": "at_velour_rose",
+      "name": "Fresh: Velour Rose",
+      "idea": "Rose-pink crushed velour with tiny richly varied nap facets.",
+      "revision": "AT-R2-5124784c9323",
+      "asset_sha256": {
+        "paint": "1ab114eca45732b5def7a4030e3614fa30aeff60e2cb78ce7759d177526337c7",
+        "spec": "5124784c932335412ca1d7dec278203f5e6d496a37236aec4244b733b43869bd"
+      },
+      "source_sha256": "aeec8435b955b927c67be63212a516053b78d9cf9351494855b21bab42cd64f5",
+      "material_median": [
+        5,
+        200,
+        205
+      ]
+    },
+    {
+      "id": "at_velour_tracksuit",
+      "name": "Fresh: Velour Tracksuit",
+      "idea": "Deep purple looped velour with narrow tiny rib segments and cream piping fragments, distinct from crushed rose fans.",
+      "revision": "AT-R2-b6ca9d2864a6",
+      "asset_sha256": {
+        "paint": "4c0002540f7c340ba4d3d37d6785af305f697b388beb1826b4a8d8acaad7ab1f",
+        "spec": "b6ca9d2864a686c9548858a9d61be6eff801b4a4c6c1d98f23a638ed2539f6c9"
+      },
+      "source_sha256": "7dbcb5987bc7ff9ee9503adb60ed2b7a9c35e1c91e02c8c48c5721a96441199c",
+      "material_median": [
+        6,
+        207,
+        198
+      ]
+    },
+    {
+      "id": "at_vinyl_crate",
+      "name": "Fresh: Vinyl Crate",
+      "idea": "Worn charcoal paperboard and small black vinyl groove fragments with muted colorful sleeve-print scraps.",
+      "revision": "AT-R2-861722acee84",
+      "asset_sha256": {
+        "paint": "fe3f0bdfd061726b0af6126fe2f0bc1421fc5d33693cbfe5ec1b6ff56507879d",
+        "spec": "861722acee84c76f9f8ede851b5d5f9643c0a96185890278d0729abc55dea5a8"
+      },
+      "source_sha256": "30dd37a73f7679a2238c57552fa9d2603cd4c2b9e19852bcbb9da1c120149c3f",
+      "material_median": [
+        6,
+        61,
+        124
+      ]
+    },
+    {
+      "id": "at_band_tee_crack",
+      "name": "Flannel: Band Tee Crack",
+      "idea": "Ivory charcoal burgundy distressed plastisol ink on black cotton.",
+      "revision": "AT-R2-b258f0612747",
+      "asset_sha256": {
+        "paint": "4df07b339eda9a8f940df08171a83cba66a5e27567983daf77967d5911bf71b7",
+        "spec": "b258f061274740f5a8e8bdb9ebd751eb25ccdbd924981fdacda6451e7cd58898"
+      },
+      "source_sha256": "23d4bb55230c5896e84ea533b299c83a870613b4164e07e4e79b2cf9f8643c23",
+      "material_median": [
+        2,
+        190,
+        217
+      ]
+    },
+    {
+      "id": "at_basement_amp",
+      "name": "Flannel: Basement Amp",
+      "idea": "Dark charcoal amp tolex with small crushed corners and dense embossed pebble patterns.",
+      "revision": "AT-R2-eb1f32ac6868",
+      "asset_sha256": {
+        "paint": "980e5ce2f3ad9646a05c12263363cd4359007210f6279bd249fce51c4ee13232",
+        "spec": "eb1f32ac68685e44511fbe16e049cc54df20d401bd3edbd0f1c2655bbf44dc1d"
+      },
+      "source_sha256": "52a364db5564a1b0a1a2ba6260a5d3403f85e6d6f5071058718858109540bbc3",
+      "material_median": [
+        6,
+        200,
+        186
+      ]
+    },
+    {
+      "id": "at_cassette_tape",
+      "name": "Flannel: Cassette Tape",
+      "idea": "Dark brown magnetic tape ribbon fragments interwoven with tiny clear plastic and colored label-ink slivers.",
+      "revision": "AT-R2-91cfe8633f5b",
+      "asset_sha256": {
+        "paint": "245d485063b29ae92b114a3e9d7ce5be8d3728c119d4409000ec268dacad3d8e",
+        "spec": "91cfe8633f5b0201b4a9ced262c279682bdfce7af2733ddf11876e9aa0763c57"
+      },
+      "source_sha256": "946a46ee318a65b3ccae16511fefc4d59a4b9e77241f6680b7d2f63c6fd3a789",
+      "material_median": [
+        24,
+        75,
+        70
+      ]
+    },
+    {
+      "id": "at_chipped_nail",
+      "name": "Flannel: Mosh Pit Flyers",
+      "idea": "Dense torn neon punk-gig poster fragments in magenta, cream, black and acid yellow, abstract unlettered print.",
+      "revision": "AT-R2-d8a6a009ea6f",
+      "asset_sha256": {
+        "paint": "7b3c65efb666a2f478366fbfcb79b77c960674c4e88654be4433e9a9c2f332a5",
+        "spec": "d8a6a009ea6f50fe2299b443183f28c72bc125f11882603dc017ab4f208e682d"
+      },
+      "source_sha256": "a32596b788866513942a2e504cd1f68b3b6dd810012150dc970f8172bcee6761",
+      "material_median": [
+        7,
+        160,
+        189
+      ]
+    },
+    {
+      "id": "at_combat_boot_steel",
+      "name": "Flannel: Safety Pin Chrome",
+      "idea": "Tiny multidirectional punk safety-pin spring coils, loop and clasp fragments, bright silver on black.",
+      "revision": "AT-R2-ffd17f720bdb",
+      "asset_sha256": {
+        "paint": "525ab8be96c73c10b06300d6c5d6294165c0ceee768a610401aba30916e84b10",
+        "spec": "ffd17f720bdb1fe3c1e5a6196ba1ddea12feb5f52ac57f1c636b4b80cfe9823a"
+      },
+      "source_sha256": "54a2c3f5a40d2d428eff96347c929dee7f15ee8313fa8749bc06ce2bcef173e2",
+      "material_median": [
+        5,
+        182,
+        178
+      ]
+    },
+    {
+      "id": "at_corduroy_olive",
+      "name": "Flannel: Corduroy Olive",
+      "idea": "Olive fine-wale corduroy in short differently oriented ribbed patches.",
+      "revision": "AT-R2-8eae7877e35d",
+      "asset_sha256": {
+        "paint": "102b72ed3647cdb8f970f062e88a866f905a5efa9408df682bf4a1988ff0ce81",
+        "spec": "8eae7877e35da313ce7939ca6f239cdf59687a619754ef69d0c37384457d7c86"
+      },
+      "source_sha256": "49c6a001b6071d616bfce461dca45e62b243250c5baaf5efdca6acf66227e54a",
+      "material_median": [
+        4,
+        191,
+        213
+      ]
+    },
+    {
+      "id": "at_distressed_denim",
+      "name": "Flannel: Distressed Denim",
+      "idea": "Very dark indigo denim with many tiny frayed openings and exposed pale crossing yarns.",
+      "revision": "AT-R2-8c45ee37851f",
+      "asset_sha256": {
+        "paint": "d541fc2661367c36ca634d08a75d34e55d61334ff66eb1ebad4c4acdcd2bda54",
+        "spec": "8c45ee37851fdf755c7029dab76f5b58f2a09a52896056755f82cfe35bb58ce2"
+      },
+      "source_sha256": "bed52819e15d7282ed4f1abd2184e26ad86635c9fc44bd87160bef3aa56a8bcd",
+      "material_median": [
+        4,
+        195,
+        213
+      ]
+    },
+    {
+      "id": "at_doc_marten",
+      "name": "Flannel: Doc Marten",
+      "idea": "Cherry oxblood leather with tiny sharp worn creases and small yellow stitch fragments.",
+      "revision": "AT-R2-7cc2267f9ba8",
+      "asset_sha256": {
+        "paint": "3b09076567b683b6ef4e9b0fd0c3b8b860ec2cf5c1cfc548431ea03cd6a6fba2",
+        "spec": "7cc2267f9ba8fba776d175a0ae3c898c5e69c64523ecb26566d1869f3059a9cb"
+      },
+      "source_sha256": "698892a286d5d4eb3c8a4774302c90e6e4c6f7653cb0f0e19dd5ef317b203b5e",
+      "material_median": [
+        6,
+        195,
+        197
+      ]
+    },
+    {
+      "id": "at_flannel_forest",
+      "name": "Flannel: Flannel Forest",
+      "idea": "Forest-green and black brushed flannel windowpane plaid, distinct from red buffalo check.",
+      "revision": "AT-R2-d61c5e37f2e9",
+      "asset_sha256": {
+        "paint": "892b657110067621a4d5f905a1cdf6b6fc804f6b2a1de5cb193ecd27900d4289",
+        "spec": "d61c5e37f2e92247b9de02b219ca76c4685311a685734fd07e39b1a4b9a58da0"
+      },
+      "source_sha256": "b82ccfc111855b77bc4c3badf3af8211e327d79340a046a6df04d9f01515e2d5",
+      "material_median": [
+        2,
+        207,
+        223
+      ]
+    },
+    {
+      "id": "at_moss_sidewalk",
+      "name": "Flannel: Moss Sidewalk",
+      "idea": "Tiny moss growth following a fine branching concrete crack network.",
+      "revision": "AT-R2-2c5054a2e19a",
+      "asset_sha256": {
+        "paint": "dca06655cb63e4a04801f3eb49015baeeb1af41973410a9498513efd312252db",
+        "spec": "2c5054a2e19a1896afa30ab387332ac41a9e74c75cc941ac67b9c1af8138f091"
+      },
+      "source_sha256": "48ec74dc5adc7444b458dc1d249b7b4b5e7bfe6297787c2a8fe70c594d0500e1",
+      "material_median": [
+        4,
+        193,
+        216
+      ]
+    },
+    {
+      "id": "at_overcast_grey",
+      "name": "Flannel: Blacklight Gig",
+      "idea": "Fluorescent violet cyan lime gig-poster ink abstractions on velvety near-black, dense tiny lively marks.",
+      "revision": "AT-R2-6aab378c7e43",
+      "asset_sha256": {
+        "paint": "249cb583a316ab1227f45902886e30ba3eca2fe58d74dacdc5df05646c3d7b7c",
+        "spec": "6aab378c7e436506dd322b19827c57d47760c9cf22a8b675e34997058cb14e6f"
+      },
+      "source_sha256": "5cb5af40353d68d56715482e70c0afe045b00aaab36ff1c6b5b23354ada777d1",
+      "material_median": [
+        8,
+        77,
+        174
+      ]
+    },
+    {
+      "id": "at_seattle_rain",
+      "name": "Flannel: Seattle Rain",
+      "idea": "Fine dense clear drizzle beads and tiny winding wet rivulets on blue-gray surface.",
+      "revision": "AT-R2-76399691443c",
+      "asset_sha256": {
+        "paint": "fd3f12b1d05a018a5abe2a58579771b7a904e4cb0c016b50ca1c302da6e77660",
+        "spec": "76399691443cbc977051bf19311100a9d0ddb42026e540ab6f3a895c3740d426"
+      },
+      "source_sha256": "b5108af815ec109656304f1eb5ac446b46909f2eef75982da5dd437daab5af60",
+      "material_median": [
+        6,
+        31,
+        48
+      ]
+    },
+    {
+      "id": "at_sharpie_ink",
+      "name": "Flannel: Sharpie Ink",
+      "idea": "Black marker ink bleeding into faded canvas, abstract scribble fragments without readable writing.",
+      "revision": "AT-R2-6d3b89e253ff",
+      "asset_sha256": {
+        "paint": "a89d674c45d850ccbe0c53629a25a58ec3cc839f5f7380bb998c16c4d117d4ba",
+        "spec": "6d3b89e253ff37e4df7d8ad8fe9a667dff6132f9d71ceb43685063068f5e4fac"
+      },
+      "source_sha256": "f58a9e847236b32e8a07fef94cd632f74b33ff2342a330fe34ca1df7c55e6e7a",
+      "material_median": [
+        8,
+        175,
+        219
+      ]
+    },
+    {
+      "id": "at_thrift_cardigan",
+      "name": "Flannel: Thrift Cardigan",
+      "idea": "Warm oatmeal brown marled knit with small cable and rib fragments.",
+      "revision": "AT-R2-53661c678a0d",
+      "asset_sha256": {
+        "paint": "29e86a478947ddaa35a8b3e88cd441114eda76f6fe4b23594f4c2bde3399a034",
+        "spec": "53661c678a0d7975b101070af1056d0fdfca39ffb1a2608ed19fd79b7adc24e7"
+      },
+      "source_sha256": "b9d95733a055210fc230a8a83f8adc7a1bfbb21765bf71a8e686feaeca77b6c6",
+      "material_median": [
+        5,
+        188,
+        210
+      ]
+    },
+    {
+      "id": "at_airbrush_tee",
+      "name": "Fresh: Airbrush Tee",
+      "idea": "Soft hand-airbrushed cyan, hot-pink and sunset-orange spray hooks on white cotton, with gentle overspray and fine fabric grain.",
+      "revision": "AT-R2-090161cfe356",
+      "asset_sha256": {
+        "paint": "e435b497dc7a3d194c7732228a43cd16dd39b3ca4a1a29513539b6864b877342",
+        "spec": "090161cfe356090d74b08578eaeb47a382f003ccd7955087a7ede401af62ee65"
+      },
+      "source_sha256": "d83d213c1384579c3bf3147041169b32e2d7508960aebc149df4778dac060578",
+      "material_median": [
+        6,
+        189,
+        218
+      ]
+    },
+    {
+      "id": "at_flannel_red",
+      "name": "Flannel: Flannel Red",
+      "idea": "Small red-and-black buffalo checks in brushed cotton, with crossed yarn, fuzzy nap and gently worn red threads.",
+      "revision": "AT-R2-3abcc6abf199",
+      "asset_sha256": {
+        "paint": "4bc91adce070baa1d3f2b5bba6b1f7e868829f3297402d274da29b81d2edec11",
+        "spec": "3abcc6abf19914d4180fac35abb37edc08c5da2adf0d7b1c12b15c1e0fe38dd3"
+      },
+      "source_sha256": "4360d59d34db68ce6ba5d6873ff8e3fb849b80d27f40e1e08f2c1ec55b7c2441",
+      "material_median": [
+        5,
+        193,
+        214
+      ]
+    },
+    {
+      "id": "at_holo_sticker",
+      "name": "Cdrom: Holo Sticker",
+      "idea": "Embossed hologram foil with fine spectral engraving and sharply reflective silver facets between satin interference cells.",
+      "revision": "AT-R2-2e3a2ede0a36",
+      "asset_sha256": {
+        "paint": "42e4ef2d82cfa0af7e015deffdfbf615232a5ca234de20ed5dce6d14b6bf4f2b",
+        "spec": "2e3a2ede0a36309b6e454137091cf5f3b6221ebfc186049df794d0a40b9b6ac1"
+      },
+      "source_sha256": "e8abf6b51d4633792c40fd0185f2709e607ef2cc45ab78ecfd1c7c1988bb94f8",
+      "material_median": [
+        152,
+        124,
+        159
+      ]
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon_red_alert",
+  "builder_seconds": 1.229347,
+  "under_three_seconds": true,
+  "determinism": {
+    "paint_byte_identical": true,
+    "spec_byte_identical": true,
+    "rerun_seconds": 1.46852,
+    "pass": true
+  },
+  "material_stats_working": {
+    "std": {
+      "M": 82.789734,
+      "R": 83.29921,
+      "Cc": 83.260773
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": -0.288813,
+      "M_Cc": 0.065658,
+      "R_Cc": -0.503391
+    }
+  },
+  "unique_mrc_triples": 447,
+  "geometry": {
+    "family_count": 7,
+    "families": {
+      "compression_front": 3734,
+      "magenta_cooling_tail": 2443,
+      "recoil_scar": 472,
+      "tick_comb_microcut": 1086,
+      "white_hot_pressure_lip": 310,
+      "angular_cavitation_pit": 331,
+      "sheared_microcheck_fragment": 56
+    },
+    "width_native_min": 9.045,
+    "width_native_median": 25.174,
+    "width_native_p90": 30.563,
+    "width_native_max": 31.998,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "compression fronts": 0.18918,
+    "white-hot lips": 0.01971,
+    "tick-comb cuts": 0.057229,
+    "recoil scars": 0.030577,
+    "cavitation pits": 0.02081,
+    "micro-check fragments": 0.001575,
+    "magenta cooling tails": 0.127351,
+    "intact clear pools": 0.558709
+  },
+  "visible_family_coverage_count": 6,
+  "edge_continuity": {
+    "edge_to_global_gradient_ratio": 0.939969,
+    "edge_dark_void_fraction": 7.6e-05,
+    "pass": true
+  },
+  "picker_survival": {
+    "sizes": {
+      "128": {
+        "luma_std": 0.088436,
+        "chroma_std": 0.088089,
+        "cross_to_forward_gradient_ratio": 1.365266,
+        "pass": true
+      },
+      "64": {
+        "luma_std": 0.063993,
+        "chroma_std": 0.065159,
+        "cross_to_forward_gradient_ratio": 1.269456,
+        "pass": true
+      }
+    },
+    "pass": true
+  },
+  "mechanical_gates": {
+    "five_plus_anatomy_families": true,
+    "five_plus_family_masks_above_one_percent": true,
+    "all_geometry_8_to_32_native": true,
+    "eight_tiers_each": true,
+    "material_std_at_least_30": true,
+    "channels_not_copied_or_inverse": true,
+    "many_material_triples": true,
+    "edge_continuity": true,
+    "directional_picker_survival": true
+  },
+  "mechanical_gates_pass": true,
+  "official_m7": null,
+  "official_m7_note": "Unwired isolated pilot; no registry/workbook record exists, so no composite is fabricated."
+}

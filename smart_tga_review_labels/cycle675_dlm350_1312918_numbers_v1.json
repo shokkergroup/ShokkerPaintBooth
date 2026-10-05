@@ -1,0 +1,9 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_1312918.tga","inspection_records":"_smart_tga_runs/cycle675_dlm_subtype_review/inspection_records.json","review_scope":"Cycle 675 source plus complete Number/Sponsor/Template/Paint sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[281,247,170,86],"target_layer":"numbers","label":"true_custom_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[501,279,20,11],"target_layer":"numbers","label":"true_custom_number_trim"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[464,292,124,41],"target_layer":"sponsors","label":"logo_mark_false_number"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[754,445,75,146],"target_layer":"sponsors","label":"stacked_wordmark_false_number"},
+ {"layer":"numbers","component_index":4,"expected_bbox":[691,459,40,114],"target_layer":"sponsors","label":"stacked_wordmark_false_number"},
+ {"layer":"numbers","component_index":5,"expected_bbox":[282,723,168,85],"target_layer":"numbers","label":"true_custom_number"},
+ {"layer":"numbers","component_index":6,"expected_bbox":[815,830,135,111],"target_layer":"numbers","label":"true_custom_number"}
+]}

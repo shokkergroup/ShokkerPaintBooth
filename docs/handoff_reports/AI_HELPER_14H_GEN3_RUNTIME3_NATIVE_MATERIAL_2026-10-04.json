@@ -1,0 +1,57 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "session": "7874521216e1",
+  "runtime": "Gen3 Runtime3",
+  "result": {
+    "operation": "dfca6954de",
+    "done": true,
+    "result": {
+      "unitless": {
+        "text": "Nothing was changed. I read clearcoat on the roof. Please give a relative amount in points, such as “by 20 points”.",
+        "queue": 0,
+        "zonesExact": true,
+        "paintExact": true,
+        "specExact": true
+      },
+      "explicit": {
+        "queue": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "shift": {
+              "metal": 0,
+              "rough": 0,
+              "clearcoat": 20
+            }
+          }
+        ],
+        "settled": true,
+        "paintExact": true,
+        "channelsChanged": [
+          0,
+          0,
+          29713,
+          0
+        ],
+        "outsideRoofSpecPixels": 0,
+        "layersExact": true,
+        "text": "Adjusting only the roof clearcoat up by 20 points.",
+        "undoableAfterUndo": false
+      },
+      "undo": {
+        "undone": true,
+        "settled": true,
+        "paintExact": true,
+        "specExact": true,
+        "layersExact": true
+      },
+      "attempts": 0
+    }
+  },
+  "note": "Undoable field was read from the same entry object after _undoLast changed its state. Controller Undo returned true and restored exact preview hashes; this is not a before-click UI availability assertion.",
+  "limits": [
+    "Actual1024 preview pixels and native2048 target mask; no full-size export",
+    "Existing controller API Undo, not actual UI button click"
+  ],
+  "providerAttempts": 0
+}

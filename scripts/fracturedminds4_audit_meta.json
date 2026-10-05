@@ -1,0 +1,92 @@
+[
+ {
+  "id": "fm_barbed_wire",
+  "name": "Barbed Wire",
+  "kind": "finish",
+  "desc": "REBUILT (your r23: 'sparse, lifeless') \u2014 now RAZOR NEST: the canvas packed with overlapping razor coils at every angle; PINK formula spec \u2014 pink wire field, light-blue coil pools, purple specks inside the pools.",
+  "ai_rating": 45,
+  "mip": 0.63,
+  "render_s": 1.17
+ },
+ {
+  "id": "fm_croc_hide",
+  "name": "Croc Hide",
+  "kind": "finish",
+  "desc": "REBUILT (your r45: 'very little change with the spec') \u2014 same scute geometry, spec pumped to the PINK formula: pink plate field, light-blue wrinkle rivers, blue scutes whose dome crests stay mid-metal (the purple dot).",
+  "ai_rating": 58,
+  "mip": 0.54,
+  "render_s": 1.64
+ },
+ {
+  "id": "fm_frost_lace",
+  "name": "Frost Lace",
+  "kind": "finish",
+  "desc": "BLUE FLIP #2 \u2014 window-frost ferns: purple crystal lace growing across a blue mirror pane, lace tips sparking light pink. The crystals are the metal \u2014 inverted role.",
+  "ai_rating": 52,
+  "mip": 0.55,
+  "render_s": 1.22
+ },
+ {
+  "id": "fm_geode_slice",
+  "name": "Geode Slice",
+  "kind": "finish",
+  "desc": "NEW (replaces Feather Fall, r29) \u2014 agate geode cross-section: wobbling growth bands around seed cores; pink banded field, every 3rd band + druzy cores flood blue with purple-dot crystal specks.",
+  "ai_rating": 59,
+  "mip": 0.35,
+  "render_s": 1.21
+ },
+ {
+  "id": "fm_glacier_core",
+  "name": "Glacier Core",
+  "kind": "finish",
+  "desc": "BLUE FLIP #1 \u2014 glacial ice from above: MOSTLY-BLUE mirror field, purple crevasse veins, rare light-pink frost ridges, deep-ice windows even bluer.",
+  "ai_rating": 48,
+  "mip": 0.68,
+  "render_s": 1.75
+ },
+ {
+  "id": "fm_inferno_veins",
+  "name": "Inferno Veins",
+  "kind": "finish",
+  "desc": "REBUILT (your r57 \u2014 THE formula note) \u2014 pink plate field, vein+halo corridors flood light blue, sparse embers inside the veins are the purple dots. This is the labyrinth recipe on magma geometry.",
+  "ai_rating": 53,
+  "mip": 0.71,
+  "render_s": 1.82
+ },
+ {
+  "id": "fm_ion_drift",
+  "name": "Ion Drift",
+  "kind": "finish",
+  "desc": "BLUE FLIP #3 \u2014 charged plasma streams drifting through a blue mirror field: purple stream cores, light-pink pulse heads, star pinpricks between the streams.",
+  "ai_rating": 44,
+  "mip": 0.51,
+  "render_s": 1.49
+ },
+ {
+  "id": "fm_thousand_eyes",
+  "name": "Thousand Eyes",
+  "kind": "finish",
+  "desc": "NEW (replaces Honeycomb, r37 \u2014 you said HORROR INSPIRED) \u2014 a field of almond eyes staring out of the paint: pink sclera field + bloodshot veins, glistening blue irises with purple striation dots, dead void pupils.",
+  "ai_rating": 51,
+  "mip": 0.54,
+  "render_s": 1.65
+ },
+ {
+  "id": "fm_tide_glass",
+  "name": "Tide Glass",
+  "kind": "finish",
+  "desc": "BLUE FLIP #4 \u2014 pool-floor caustics: two interfering purple-pink light webs over deep blue glass, web nodes sparking light pink.",
+  "ai_rating": 59,
+  "mip": 0.73,
+  "render_s": 1.22
+ },
+ {
+  "id": "fm_witchlight",
+  "name": "Witchlight",
+  "kind": "finish",
+  "desc": "BLUE FLIP #5 \u2014 drifting ghost-orbs with trailing purple wisps over the deepest blue mirror; orb cores burn light pink inside hard blue halos.",
+  "ai_rating": 49,
+  "mip": 0.64,
+  "render_s": 1.5
+ }
+]

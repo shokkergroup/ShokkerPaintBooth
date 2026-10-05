@@ -1,0 +1,104 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "atp_holo_sticker_image",
+  "display_name": "Holo Sticker / image",
+  "promise": "Abstract security-foil microembossing, nested optical motifs and worn laminate without text or fixed orientation.",
+  "carrier_grammar": "Generated densely interlocked spectral rosettes and curved grating fans with facets, scuffs and interruptions; direct sampling preserves fine optical linework.",
+  "spec_grammar": "Six recorded image feature masks classify pigment, substrate and local edges; per-feature M/R/Cc states use local chroma and edge tiers. These are inferred regions, not true recovered material geometry.",
+  "reference_physics": {
+    "mechanism": "Abstract security-foil microembossing, nested optical motifs and worn laminate without text or fixed orientation. Material response is authored as an approximation; RGB M/R/Cc cannot encode optical diffraction or fabric geometry.",
+    "sources": [
+      "https://www.kurz-world.com/en/solutions/holograms/"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "embossed_loops",
+      "role": "Visible subject-specific embossed loops"
+    },
+    {
+      "name": "diffractive_tracks",
+      "role": "Visible subject-specific diffractive tracks"
+    },
+    {
+      "name": "foil_facets",
+      "role": "Visible subject-specific foil facets"
+    },
+    {
+      "name": "laminate_scuffs",
+      "role": "Visible subject-specific laminate scuffs"
+    },
+    {
+      "name": "peel_fissures",
+      "role": "Visible subject-specific peel fissures"
+    },
+    {
+      "name": "micro_rosettes",
+      "role": "Visible subject-specific micro rosettes"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "embossed_loops",
+      "diffractive_tracks",
+      "foil_facets",
+      "laminate_scuffs",
+      "peel_fissures",
+      "micro_rosettes"
+    ],
+    "R": [
+      "embossed_loops",
+      "diffractive_tracks",
+      "foil_facets",
+      "laminate_scuffs",
+      "peel_fissures",
+      "micro_rosettes"
+    ],
+    "Cc": [
+      "embossed_loops",
+      "diffractive_tracks",
+      "foil_facets",
+      "laminate_scuffs",
+      "peel_fissures",
+      "micro_rosettes"
+    ]
+  },
+  "material_tiers": [
+    0.18,
+    0.28,
+    0.38,
+    0.48,
+    0.58,
+    0.68,
+    0.78,
+    0.92
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_disc_rainbow",
+      "difference": "Nested optical line fans and rosettes replace horizontal CD tracks or generic metallic flecks."
+    },
+    {
+      "finish_id": "at_iridescent_cd_r",
+      "difference": "Nested optical line fans and rosettes replace horizontal CD tracks or generic metallic flecks."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "Dense nested rings, rosettes and line fans evoke embossed optical foil.",
+      "Local spectral tracks and facet regions have distinct sharp reflective material responses.",
+      "Scuffs and interruptions break the laminate pattern without introducing text or upright objects."
+    ],
+    "reviewer": "Codex visual construction review; not owner acceptance or blind-user validation.",
+    "limitations": "Fine picker filtering can obscure the weave or spray process; 2048 native-scale and cross-card production gates remain separate."
+  },
+  "construction_key": "atp_holo_sticker_image_authored_v1",
+  "spec_key": "atp_holo_sticker_image_feature_regions_v1",
+  "production_status": "comparison candidate only; no promotion",
+  "sampling_notes": "Repeated source tile; individual primitives target 8\u201332 pixels. Microtexture may be finer. Not a proof of full-map non-repetition."
+}

@@ -1,0 +1,126 @@
+{
+  "schema": "spb-ai-sprint-review/1",
+  "date": "2026-10-03",
+  "reviewer": "Codex",
+  "scope": "Independent review and suggestions; no AI/UI implementation or release changes.",
+  "findings": [
+    {
+      "priority": 1,
+      "title": "Part-only stack changes whole-body zones",
+      "file": "js/spb-pro-advisor.js",
+      "line": 1850,
+      "repro": "matte black on the roof only with a fine hex texture",
+      "observed": "Use-kit base item targets body; apply emits edit_zone for body z5/z6 to matte black plus add_zone for roof spec texture. Snake scales on the hood only in gold similarly emits gold body changes and clears existing body patterns.",
+      "suggestion": "Bind scope to each requested layer. Keep all layers on the named part for part-only asks; use a whole-body base only when explicitly requested. Assert unchanged outside-part zones and pixels."
+    },
+    {
+      "priority": 2,
+      "title": "Typed element replies do not execute card actions",
+      "file": "js/spb-pro-ai.js",
+      "line": 2019,
+      "repro": [
+        "make the numbers purple",
+        "there are none on this paint",
+        "no, I will show you"
+      ],
+      "observed": [
+        "numbers confirmation card appears",
+        "unknown look there none; confirmation still pending",
+        "finish recommendations; confirmation still pending"
+      ],
+      "suggestion": "Dispatch typed yes/no/none to the same handlers as card buttons, using the active card and paint identity. Do not let an old pending card suppress unrelated self-help.",
+      "verification": "Real Source Paint flat load with bump_rev=False, isolated Chrome 9731/test server 59879; zones unchanged by typed replies."
+    },
+    {
+      "priority": 2,
+      "title": "Facet rebuild restores stale cards",
+      "file": "scripts/ai_atlas/derive_facets.py",
+      "line": 50,
+      "repro": "Temporary sandbox with newer cards.jsonl and older cards.before_facets_20261003.jsonl; run generator --write with ROOT redirected to sandbox.",
+      "observed": "Newer deep correction and vocabulary replaced by backup contents. No real card files changed.",
+      "suggestion": "Derive from current cards; track and replace only generator-owned facet/syn additions. Preserve unrelated deep/manual fields and include an incremental-rebuild preservation test."
+    },
+    {
+      "priority": 2,
+      "title": "Suggested acceptance rerun still contains visibility workaround bug",
+      "file": "_easy_claude_work/pw/msr_verify.py",
+      "line": 23,
+      "observed": "msr_verify and aibridge still hide Wire/Mask layers without _finishLayerVisibilityChange. Do not use the old 14/100 browser score as final-build success rate.",
+      "suggestion": "Correct the harness, use production loaders without page-side revision bumps, freeze source hashes/build and use unseen prompts. Score routing, emitted mutations, 2D output and spec/material evidence separately."
+    },
+    {
+      "priority": 2,
+      "title": "Reported green commands can measure no cases or fail diagnostics silently",
+      "file": "_easy_claude_work/adv_fp.js",
+      "line": 8,
+      "observed": "Bare adv_fp command in handoff tests 0 prompts. With explicit *prompts.txt: 284 prompts, 220 valid claims. Self-help holdout has 14 misses but exits 0 by design; t259 prints results without asserting exit failure.",
+      "suggestion": "Fail on empty fixture sets; separate diagnostic scoring from acceptance thresholds; make acceptance wrappers enforce recorded counts/assertions and preserve original snapshots."
+    }
+  ],
+  "fresh_checks": {
+    "convo": "52/52",
+    "tool": "15/15",
+    "stack": "94/94",
+    "edit_corpus": "409/409",
+    "edit_requests": "17/17",
+    "compound": "50/50 + 22/22 guards",
+    "compound_regression": "581 phrases; 45 intentional compound changes; 0 other changes",
+    "element_modes": "14/14 synthetic",
+    "deep_accessor": "9/9",
+    "selfhelp_in_sample": "163/182; 22/22 guards",
+    "selfhelp_clean_holdout2": "16/30; 10 unclaimed and 4 wrong answers in component test",
+    "selfhelp_claims": "2181 phrases; 138 claims; 24 designer overlaps",
+    "route_pytest": "29 passed",
+    "mcp_parity": "21 MAPT tools + 1 extra; no mismatches",
+    "mcp_blind_smoke": "4 modes passed against fake bridge",
+    "element_policy_browser": "11/11",
+    "real_flat_load": "ok/rendered/img_changed true with bump_rev=False",
+    "runtime_sync": "29 targets; no drift",
+    "control_character_scan": "190 files; 0 affected",
+    "intricate_runner_syntax": "passed",
+    "late_browser_source_hash_changes": []
+  },
+  "recommendations": [
+    "Treat sponsor and stripe identification as end-to-end product failures even when segmentation works on correct boxes; keep confirmation and resolve whole decal versus lettering ambiguity. Reported sponsor score 17/30 paints: IoU .366, 78/202 places, .479 average body leakage; not rerun in this review.",
+    "Prioritize scope, reply handling and reliable acceptance; curate high-confidence visual tags before more synonym expansion.",
+    "Use holdout2 16/30 as the self-help component result; tuned 57/60 and in-sample 163/182 are not independent buyer-success rates.",
+    "Continue keeping engine/catalogue changes and the parked in-panel guidance in their separately authorized lanes."
+  ],
+  "limits": [
+    "Did not re-run full blind numbers/sponsors/stripe or 610-ask visual battery.",
+    "Did not certify Electron packaging, paid-model behavior or an installed real MCP client.",
+    "No live-server restart, .mcpb rebuild, git add/commit or catalogue/renderer change.",
+    "Whole-body scope issue reproduced in exact apply-plan output, not a new full rendered pixel battery."
+  ],
+  "source_sha256_late_browser_review": {
+    "js/spb-ai-atlas-data.js": "bc9736361ed991745828da6bef14b55f8a8cbf6909a52e25b84a005dd94836e8",
+    "js/spb-car-atlas-data.js": "7db4aded317b8fa678fb3a6f800eaf078e146f367062ea0886acfbc40fd29476",
+    "js/spb-car-edge-data.js": "9a6bea3164177b99c8aeda81be0f0dd6066f5f08e2b260f033eac18e49eea358",
+    "js/spb-car-edge.js": "74b895ec0419df17e482b506eb52eb11a9ca4c3d532f7869979a8d856ed39384",
+    "js/spb-car-islands-data.js": "e356dfc616662c3c0bd34132677306339276953386dc37b04a5fc315b948a579",
+    "js/spb-ai-atlas.js": "68aab458fb74fbd70836271ef7ddc93821b7a6bbe67dc53cdd6e054a83d69633",
+    "js/spb-ai-cards-data.js": "134082b15b089c5c4a63134503202c03c84fb3c5ccc9a0e538595a83b0f197f2",
+    "js/spb-ai-cards.js": "96935f47182e8b533a403b6f4f5e61094f61179c8d8c7486bd562cf8dfde77a0",
+    "js/spb-ai-knowledge.js": "e2a1647af707d2bfe5ea09ed64adabad1bf3db341df8d7b61dc8c01508774c97",
+    "js/spb-colours-ext.js": "af642bf2b2f2405aec8ca01438767e6f4981cbe86cd2c1242019a8a8e2ed304d",
+    "js/spb-intent-data.js": "4db3a36743554c7b769e2c2119cc086e8f375a2b1ec5ad8b645d8eca3e7aeacb",
+    "js/spb-intent.js": "bde8b935b71c9e176b559e89df6b36d6edc2444c0efa6edd16fc89251eab91df",
+    "js/spb-lexicon-ext.js": "410df33c7455cdbaaf7f022dcd5fb0fc9e3a7b18344b93338a79d0f7f1e6eb01",
+    "js/spb-lsa-data.js": "1b669a9c779f59d687f29932ab411aeab804e5993c10abdc227e61ce75c3dea3",
+    "js/spb-pro-advisor.js": "5f4f920b5ddaa4d483777d02a79f9e928749127f1edf907a43538057ff6e7f54",
+    "js/spb-pro-design.js": "d127d3ee24415989fd7b607a4a4f0a9f1a5d20dc869909c372b4b447fbca46c0",
+    "js/spb-pro-edit.js": "78ce952c1501bc1f523b79fb568c3fa35be61d4f2b0425a7e6b8648229a10aa0",
+    "js/spb-elements-model.js": "0bb21484fea028bf495c8559259928911891a5f4533e90a6c2f7088b32b65e18",
+    "js/spb-pro-elements.js": "1d9ab00234211db989dd6251485bb47755560fc65aee3a0cd896460c18f5f8fc",
+    "js/spb-pro-zone-kit.js": "692f8307dd3262816fa6940c70dfadd31bd3f2ea97f8fbdb18447866001c792b",
+    "js/spb-pro-ai.js": "30db062ff07c7e5e5ce74d87589aa40099b9d85e444ddcb71202906d8b98355c",
+    "js/spb-self-help.js": "d5b2011b6ff9941d51ae4d6dbd677cddbb4c1d428a9bb4ac7dd881de73d1e256",
+    "js/spb-pro-rank.js": "255d38adf099818cd5cb64f93af399dc03e8d32115a7f1c2ac3299540e2929cd",
+    "mcp/server/index.js": "3937e7d63fc0e1f40dfed7988f6ed0520da2f840405849d1b05a18a01c736860",
+    "mcp/server/tools.json": "fe5d3de9b88c1c932af8c71b84c808c9c86581941208cdd8ee2288dcab0046ea",
+    "paint-booth-v2.html": "7d14124b53a62501f03b9fac1cc79168ed73ebaa2ad98426ce44cff115fe348c",
+    "paint-booth-3-canvas.js": "f55880174d7aff86f44f8ee5b0c28aff31cddcde6491386d558ec16a27b98f56",
+    "js/spb-pro-carmap.js": "4e2d851c7a43b072db10874b52c988f1deab6e0c9dfca0f541db0c6827c955d4",
+    "server_routes/ai_car_routes.py": "ca6296edd2421936f9e751f84bc9f7863e71fa8269eaf8cfe824fe631f0a1ec5"
+  }
+}

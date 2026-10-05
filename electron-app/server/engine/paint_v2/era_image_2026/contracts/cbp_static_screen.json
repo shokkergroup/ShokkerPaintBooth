@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_static_screen",
+  "display_name": "Sprawl: Signal Shatter",
+  "promise": "Signal fracture glass: compact crisp irregular cobalt polygon displays filled with clean cyan dash matrices, sharp scarlet scan segments, violet nested rectangles, amber pixel constellations and silver fractured rims.",
+  "carrier_grammar": "Signal fracture glass: compact crisp irregular cobalt polygon displays filled with clean cyan dash matrices, sharp scarlet scan segments, violet nested rectangles, amber pixel constellations and silver fractured rims. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for cobalt fractured displays, cyan dash matrices, scarlet scan segments, violet nested rectangles, amber pixel constellations, silver fractured rims is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Signal fracture glass: compact crisp irregular cobalt polygon displays filled with clean cyan dash matrices, sharp scarlet scan segments, violet nested rectangles, amber pixel constellations and silver fractured rims. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_static_screen.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "cobalt fractured displays",
+      "role": "Actual shared paint and spec geometry: cobalt fractured displays"
+    },
+    {
+      "name": "cyan dash matrices",
+      "role": "Actual shared paint and spec geometry: cyan dash matrices"
+    },
+    {
+      "name": "scarlet scan segments",
+      "role": "Actual shared paint and spec geometry: scarlet scan segments"
+    },
+    {
+      "name": "violet nested rectangles",
+      "role": "Actual shared paint and spec geometry: violet nested rectangles"
+    },
+    {
+      "name": "amber pixel constellations",
+      "role": "Actual shared paint and spec geometry: amber pixel constellations"
+    },
+    {
+      "name": "silver fractured rims",
+      "role": "Actual shared paint and spec geometry: silver fractured rims"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "cobalt fractured displays",
+      "cyan dash matrices",
+      "scarlet scan segments",
+      "violet nested rectangles",
+      "amber pixel constellations",
+      "silver fractured rims"
+    ],
+    "R": [
+      "cobalt fractured displays",
+      "cyan dash matrices",
+      "scarlet scan segments",
+      "violet nested rectangles",
+      "amber pixel constellations",
+      "silver fractured rims"
+    ],
+    "Cc": [
+      "cobalt fractured displays",
+      "cyan dash matrices",
+      "scarlet scan segments",
+      "violet nested rectangles",
+      "amber pixel constellations",
+      "silver fractured rims"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_corrupt_memory",
+      "difference": "This finish uses Dense microscopic cyan display glass splinters, red scan cut dashes, violet polarizer flakes, yellow trapped pixel points and black triangular missing sections. Crisp broken display layered texture, no broad glitch bands or full screen, no generic rainbow confetti.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_rain_screen",
+      "difference": "This finish uses Dense microscopic cyan display glass splinters, red scan cut dashes, violet polarizer flakes, yellow trapped pixel points and black triangular missing sections. Crisp broken display layered texture, no broad glitch bands or full screen, no generic rainbow confetti.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "cobalt fractured displays is visible in the authored geometry",
+      "cyan dash matrices is visible in the authored geometry",
+      "scarlet scan segments is visible in the authored geometry",
+      "violet nested rectangles is visible in the authored geometry",
+      "amber pixel constellations is visible in the authored geometry",
+      "silver fractured rims is visible in the authored geometry"
+    ],
+    "source_sha256": "5c44635569d10a7acd14816e0e7819c1e023fc641390e28325ad2c69a9c5f9c2",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_static_screen-authored-Signal fracture glass: compact crisp irregular cobalt polygon displays filled with clean cyan dash matrices, sharp scarlet scan segments, violet nested rectangles, amber pixel constellations and silver fractured rims. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_static_screen-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 80.6,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "4cc758786edc7b613beeab5602a9305e2dddb6f9ae1262627099a01e75349e53"
+}

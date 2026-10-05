@@ -1,0 +1,28 @@
+{
+ "liveries": 801,
+ "errors": 0,
+ "numbers": {
+  "components_total": 8873,
+  "per_livery_median": 9.0,
+  "area_p50": 250,
+  "area_p90": 4899,
+  "w_p50": 22,
+  "h_p50": 21
+ },
+ "sponsors": {
+  "components_total": 66789,
+  "per_livery_median": 73.0,
+  "area_p50": 166,
+  "area_p90": 1374,
+  "w_p50": 20,
+  "h_p50": 13
+ },
+ "template": {
+  "components_total": 116698,
+  "per_livery_median": 151.0,
+  "area_p50": 75,
+  "area_p90": 897,
+  "w_p50": 10,
+  "h_p50": 11
+ }
+}

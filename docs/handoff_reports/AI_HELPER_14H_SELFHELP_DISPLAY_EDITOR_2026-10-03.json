@@ -1,0 +1,84 @@
+{
+  "report_id": "AI_HELPER_14H_SELFHELP_DISPLAY_EDITOR_2026-10-03",
+  "date_utc": "2026-10-04",
+  "scope": "W20 self-help answer presentation and full-editor mode guidance",
+  "verdict": "FIXED_IN_HELPER_AND_CONTRACT_TESTED",
+  "frozen_oracle": {
+    "test": "tests/ai_selfhelp_display_editor_contract.cjs",
+    "fresh_question_count": 12,
+    "native_regression_count": 1,
+    "fresh_questions": [
+      "How can I put one finish on just a single door?",
+      "Where do I change the color of a selected panel?",
+      "What is the safest way to save my current paint project?",
+      "Can I keep the chat visible while I work on the full editor?",
+      "How do I switch from the chat experience to the full editor without losing my place?",
+      "I am using the full editor: how do I ask AI a follow-up about the finish?",
+      "Can AI answer a question while I keep editing the car?",
+      "How do I undo the last zone change?",
+      "Why did my chosen finish affect more than one surface?",
+      "Where can I review or change the export settings?",
+      "Does the helper keep my conversation when I reload a different car?",
+      "What exact hidden AI controls are available in the editor?"
+    ],
+    "native_regression": "How do I chat with AI while using the full editor?",
+    "display_expectations": [
+      "Alternate question phrases remain in the index for matching but are not printed in the human answer.",
+      "Full editor answer uses the documented AI button and Tell me what you want input.",
+      "Chat Studio answer describes its left-side chat and its Full editor handoff separately.",
+      "Unsupported persistence and undocumented-control questions do not acquire invented behavior or controls."
+    ]
+  },
+  "source_hashes": {
+    "js/spb-self-help.js": {
+      "before": "AF2219158B1C6FC307D8F18288B0AA8D766774F7C165F1A45E9BD383F7223E26",
+      "after": "B860C0ACC0AB442F7B6477853C4438AB0B9E74E94FD87904E356768D2F97F7B2"
+    },
+    "js/spb-chat-studio.js": "A748D60D14EA661E3F8148341115C2675AA736C0B0F6CF1649C593EC715D1825",
+    "docs/ai_knowledge/how_do_i.md": "657570A562E75C5EA56AB953D5D835803E1EB518366FBD6EEBB8125E3F9C3E26",
+    "docs/ai_knowledge/app_map.md": "853A366E329A1ABFF25FB84D6178E04F9B65A18897CB472ABC99E2BD25C0C267",
+    "docs/SELF_HELP.md": "8CED47A2F4AF88BFF6FDDFA06B6190F0EC3A3B14FEAF30F9021825CFDBA36BEF"
+  },
+  "changes": [
+    "howtoAnswer now omits alias-only note metadata when it is flattened into a note; aliases remain untouched in the matching/index data.",
+    "Knowledge fallback display removes standalone Also asked as lines before showing source text.",
+    "The hdi.use_chat answer now depends on actual state mode: Chat Studio is described as left-side chat plus the visible Full editor handoff; full editor guidance points to the bottom-right AI button and Tell me what you want input. The full editor handoff is not falsely recommended when the user is already in that mode.",
+    "An unsupported request for hidden or undocumented controls now receives a bounded statement that the helper has no verified list, instead of an unrelated preview-diagnosis answer.",
+    "Chat questions explicitly comparing Chat Studio and the full editor now route to the mode-specific hdi.use_chat answer rather than an unrelated Easy-mode or panel topic."
+  ],
+  "manual_evidence": [
+    {
+      "source": "docs/ai_knowledge/how_do_i.md:596-602",
+      "supports": "Chat mode / AI panel; CHAT pill or AI button; enter sends; Undo; common requests need no key."
+    },
+    {
+      "source": "docs/ai_knowledge/app_map.md:528-535",
+      "supports": "In the Pro/Chat editor, AI button is bottom right; it opens the copilot; Tell me what you want accepts input with Enter and Shift+Enter; answers have Undo."
+    },
+    {
+      "source": "js/spb-chat-studio.js:4,31-32,144-145",
+      "supports": "Chat Studio has its own chat view and a visible Full editor button whose title says it closes the Studio and uses the full editor."
+    }
+  ],
+  "verification": {
+    "focused_test": "PASS — W20 test: 21 assertions, all 12 frozen fresh questions, one separately labeled supplied regression.",
+    "existing_tests": [
+      "PASS — tests/ai_self_help_semantic_contract.cjs (13 intent checks, 6 command/help boundaries).",
+      "PASS — tests/ai_self_help_w4_semantic_contract.cjs (8 checks).",
+      "PASS — tests/ai_self_help_action_lifecycle_contract.cjs.",
+      "PASS — tests/ai_self_help_action_async_contract.cjs.",
+      "PASS — tests/ai_self_help_mode_contract.cjs (15/15).",
+      "PASS — tests/ai_self_help_intent_contract.cjs (12 guidance checks, 4 routing boundaries).",
+      "PASS — tests/ai_help_router_contract.cjs (24 direct routing claims and ownership guards)."
+    ],
+    "native_query_before": "Actual SpbSelfHelp.handle output matched hdi.use_chat but printed the whole 'Also asked as: ...' alias list into the answer. In full editor state it instructed the user to click CHAT in the pill.",
+    "native_query_after": "The actual helper answer remains claimed by hdi.use_chat, prints no alias metadata, and describes the full-editor AI button and input. The Chat Studio state separately describes its left-side chat and Full editor → handoff.",
+    "offline": "Actual knowledge/self-help modules were loaded in a VM with network/XHR traps; zero provider, browser or native actions were invoked.",
+    "asynchronous_loading": "Not applicable: the exercised helper and knowledge modules load synchronously in the current app script path."
+  },
+  "limitations": [
+    "Helper answer behavior was tested through the actual SpbSelfHelp.handle/classify functions in a minimal VM with supplied app state; no visible browser DOM or live app was used.",
+    "The knowledge fallback alias cleaner is covered by implementation inspection; test cases primarily exercise the normal HOWTO claim/render path.",
+    "This change does not edit generated manuals, knowledge sources, router presentation code, mirrors, or app UI."
+  ]
+}

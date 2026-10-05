@@ -2,7 +2,7 @@
   "name": "NASCAR Classic",
   "description": "Throwback stock car livery with gloss body, chrome numbers, carbon hood, and matte lower trim.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "chevy_silverado_2019, generic_stock_car",
   "notes": "Best on cars with a clean door number area. Tune baseColor on Body zone to match your team color. Carbon hood reads well under daylight and night lights.",
   "zones": [

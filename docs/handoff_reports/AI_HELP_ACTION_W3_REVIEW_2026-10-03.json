@@ -1,0 +1,60 @@
+{
+  "review": "independent read-only W3 action/context review",
+  "review_date": "2026-10-03",
+  "source_snapshot": {
+    "js/spb-self-help.js": "3CC4EE4CC7CB7EED0D9A20F0559838E0382B1BB90ECC5B9B8B8B6CA7C507750F",
+    "electron-app/server/js/spb-self-help.js": "D5B2011B6FF9941D51AE4D6DBD677CDDBB4C1D428A9BB4AC7DD881DE73D1E256"
+  },
+  "test": "tests/ai_help_action_w3_review_contract.cjs",
+  "method": "Executed the real js/spb-ai-knowledge.js and js/spb-self-help.js sources in a fresh Node VM with a minimal app boundary. Queries obtain real helper-offered actions before lifecycle changes. This is a distinct contract from the producer's action/mode tests.",
+  "result": {
+    "passed": 14,
+    "failed": 1,
+    "passed_cases": [
+      "in-place reorder resolves the same zone object to its current index",
+      "identity-free replacement clone is rejected",
+      "document replacement invalidates the offered action",
+      "removed target is rejected",
+      "renamed target is rejected",
+      "duplicate UUID ambiguity is rejected",
+      "successful action is one-shot",
+      "throwing callback reports unconfirmed and consumes action",
+      "missing callback reports unavailable",
+      "explicit preview callback refusal reports done=false",
+      "new non-help input invalidates the old action",
+      "when both Chat Studio and Easy body classes exist, Easy takes precedence",
+      "Chat Studio Pro HOWTO includes the visible Full editor handoff",
+      "Chat Studio selected-zone overview includes Full editor handoff and plain-language in-chat edits"
+    ],
+    "failed_cases": [
+      {
+        "case": "same-UUID same-name replacement clone (Undo-like object replacement)",
+        "actual": "UUID fallback resolves the replacement and toggleZoneMute mutates it, but post-action confirmation searches for the original object reference; runDoIt returns done=false after the requested mutation succeeded.",
+        "impact": "False negative and conflicting guidance for a safe UUID-resolved action."
+      }
+    ],
+    "async_probe": {
+      "callback": "triggerPreviewRender returned a pending Promise, later resolved false",
+      "actual": "runDoIt immediately returned done=true and 'Refreshing the LIVE PREVIEW now' before the Promise settled; later refusal cannot revise the response.",
+      "impact": "False Done if an installed preview controller is asynchronous and refuses/rejects. Current app callback's synchronous contract was not established by this isolated review."
+    }
+  },
+  "follow_up_after_producer_repairs": {
+    "source_snapshot": {
+      "js/spb-self-help.js": "AF2219158B1C6FC307D8F18288B0AA8D766774F7C165F1A45E9BD383F7223E26"
+    },
+    "reran_untouched_contract": "node tests/ai_help_action_w3_review_contract.cjs — PASS, 15/15 cases",
+    "fresh_async_probe": {
+      "callback": "pending Promise later resolved false",
+      "actual": "earlyDone=false; result has pending=true and done=false, with text saying the refresh started but completion cannot be confirmed",
+      "verdict": "The prior false-Done finding is fixed for promise-returning refresh callbacks."
+    },
+    "clone_postcondition": "Same-UUID/name replacement clone was mutated and returned done=true. The prior false-negative finding is fixed.",
+    "review_delta": "The initial frozen snapshot and findings above are preserved as the before state; this section records the independently verified after state."
+  },
+  "scope_limitations": [
+    "No native app/MCP moved-target proof; parent owns that acceptance.",
+    "The packaged mirror hash was recorded but mirror behavior was not executed.",
+    "Reviewed only W3 action lifecycle and Chat Studio/Easy help context; the six known semantic misses were explicitly out of scope."
+  ]
+}

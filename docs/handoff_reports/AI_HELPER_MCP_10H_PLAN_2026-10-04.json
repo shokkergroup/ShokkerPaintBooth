@@ -1,0 +1,73 @@
+{
+  "schema": "spb-mcp-car-workflow-sprint/1",
+  "status": "active",
+  "ownerSteeringUTC": "2026-10-04T18:57:58Z",
+  "checkpointUTC": "2026-10-05T03:15:00Z",
+  "deadlineUTC": "2026-10-05T04:57:58Z",
+  "deadlineLocal": "2026-10-05 00:57:58 America/New_York",
+  "objective": "Make actual ChatGPT MCP car-painting workflows useful, impressive, correct and reliable through realistic app use and observed-failure fixes.",
+  "ownerBoundary": "Claude owns offline-helper tweaking. Pending offline successors remain private evidence; Codex stops that implementation lane.",
+  "orchestration": {
+    "planner": "gpt-6.1-sol xhigh",
+    "workers": "gpt-6-luna",
+    "maxConcurrentWorkers": 3,
+    "root": "Actual app and production MCP tool use; native output assessment; integration; Wiki.",
+    "workerLanes": [
+      "Production MCP contracts and truthful tool completion",
+      "Buyer scenarios and pixel/material acceptance",
+      "Independent MCP layer/zone/source safety review"
+    ]
+  },
+  "heartbeat": {
+    "id": "spb-ai-offline-helper-14-hour-sprint",
+    "intervalMinutes": 10,
+    "recovery": "Explicitly resume useful interrupted workers with followup_task. Continue active work between checks."
+  },
+  "fixtures": {
+    "roots": [
+      "C:\\1Shokker Paint Car Examples",
+      "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint"
+    ],
+    "originals": "read-only",
+    "latest22OriginalIntegrityReceipt": "_easy_claude_work/ai14h_generation3_audit/customer-originals-rehash-1855.json",
+    "selectedNativeBaseline": "10 PSD imports and12 TGA cold reopens; selection diversity, not all car types."
+  },
+  "workflowPriorities": [
+    "Recolor body/panels while retaining numbers/logos",
+    "Refine materials/spec channels while retaining current paint",
+    "Compose a complete color-plus-finish/material request on one area",
+    "Reuse the existing zone and prevent overlay concealment",
+    "Safely edit visible/hidden/locked PSD artwork layers",
+    "Multi-panel and source-color edits with explicit scope",
+    "Truthful completion with actual pixel/render changes",
+    "Exact Undo, save, cold reopen and source preservation",
+    "Use real production ChatGPT MCP schemas, discoverability and images"
+  ],
+  "verification": [
+    "Actual app controllers through browser MCP; actual production stdio/HTTP bridge tool calls",
+    "Observed existing UUIDs/targets, private projects/output only",
+    "Inspect native images and full raster/mask/source evidence appropriate to each operation",
+    "No synthetic pixel/mask replacement to manufacture passing outputs",
+    "Independent review of failure fixes before guarded integration",
+    "Preserve concurrent Claude work and both runtime copies"
+  ],
+  "providerPolicy": "ChatGPT bridge/local application paths. No DeepSeek/OpenRouter calls unless genuinely necessary.",
+  "baselineInstalled": {
+    "specOnly": "AI_HELPER_SPEC_ONLY_INSTALL_2026-10-04.json",
+    "broaderGen3": "Not installed; retained as reviewed private historical evidence"
+  },
+  "nextActions": [
+    "Accept reviewed named-family visible-pixel guard in private runtime through actual RAM and ARCA full2048 exports, masks, Undo and saved reopening",
+    "Narrowly rebase accepted owned MCP changes into current root and packaged mirror, preserving concurrent Claude bytes",
+    "Exercise actual texture-preserving scoped ARCA recolor and inspect before/after outputs",
+    "Verify originals and document actual wins/limits; at04:57:58UTC finish safe operation and pause only this heartbeat"
+  ],
+  "latestRecoveryCheckpoint": "_easy_claude_work/spb_mcp10h_recovery22/RECOVERY_STATE_0302.json",
+  "currentAcceptance": {
+    "roof": "full2048 zerooutside roof paint/M/R/spec, Undo exact, cold7exports exact",
+    "pro4": "102920stripepixels only, finish-only refinement, cold7exports exact",
+    "formula": "actual satinpearl + M-only fine sparkle; fullpaintRGBexact; dark605333specpixels exact; cold7exports exact",
+    "ram": "copy/mute/reorder/Undo7exports exact; strictnamed-pink fullscope rejected pendingnewmask",
+    "arca": "13layers opacityscope+exactUndo; reddesign keepsRGB/exclusions but35102nonred materialpixels require familyguard"
+  }
+}

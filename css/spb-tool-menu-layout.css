@@ -1,0 +1,72 @@
+/* SPB-93 2026-09-07: keep every tool reachable at the 1100px minimum.
+   Wrapping the toolbar avoids page-wide scrolling without clipping its menus.
+   Primary tool buttons (including Pick Color) retain their existing styling. */
+@media (max-width: 1740px) {
+    #spbTopToolbar {
+        flex-wrap: wrap !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+    /* The existing command bar wraps into 2–3 rows here. Its fixed 76px
+       height clipped Render above the bar and zoom controls below it. Let
+       the existing controls allocate their actual height, without changing
+       the Pick Color controls or their handlers. */
+    #centerPanel > #previewBottomBar {
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        flex: 0 0 auto !important;
+        align-content: flex-start !important;
+    }
+    /* SPB-93: reserve the zoom row before a selection exists. Otherwise the
+       new Region badge wraps zoom mid-drag and changes canvas coordinates. */
+    #centerPanel > #previewBottomBar > #zoomControls {
+        flex-basis: 100% !important;
+    }
+    /* Edit Big is an explicit, temporary canvas workspace. Keep panel state
+       intact: Exit Big restores the same Zone editor, layer and scroll state. */
+    body:has(#splitViewContainer.spb-focus-source) .main-container > #leftPanel,
+    body:has(#splitViewContainer.spb-focus-source) .main-container > #rightPanel,
+    body:has(#splitViewContainer.spb-focus-source) .main-container > #zoneEditorFloat,
+    body:has(#splitViewContainer.spb-focus-source) .zone-float-expand-tab {
+        display: none !important;
+    }
+    body:has(#splitViewContainer.spb-focus-source) .main-container > #centerPanel {
+        padding-left: 0 !important;
+        min-width: 0 !important;
+        transition: none !important;
+    }
+}
+#spbTopToolbar details.spb-tb-menu:not([open]) > .spb-tb-pop {
+    display: none !important;
+}
+/* SPB-93: utility shortcuts were overflowing their flex allocation into
+   Settings at 1100px. Keep the existing controls in a second, wrapping row. */
+@media (max-width: 1740px) {
+    .header {
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        flex-shrink: 0 !important;
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+    }
+    .header .header-fields {
+        flex-wrap: wrap !important;
+        height: auto !important;
+        min-width: 0 !important;
+        row-gap: 6px !important;
+    }
+    .header .header-quick-controls {
+        flex: 0 0 100% !important;
+        min-width: 0 !important;
+        flex-wrap: wrap !important;
+        row-gap: 6px !important;
+    }
+}
+#spbTopToolbar .spb-tb-pop button:focus-visible {
+    outline: 2px solid var(--accent-cyan, #22d3ee);
+    outline-offset: -2px;
+}
+/* Training Wheels are owner-approved fixed corner panels; styling lives in spb-quests-20260718.css. */

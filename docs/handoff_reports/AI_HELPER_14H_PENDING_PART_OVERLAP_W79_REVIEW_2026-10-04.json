@@ -1,0 +1,76 @@
+{
+  "review": "W79 independent pending-part overlap route review",
+  "reviewedUTC": "2026-10-04",
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_w79_review/frozen/spb-pro-ai.js",
+    "sha256": "b4a519d02419f6e5b21a9bc0de6488c3124d7f3fc1bb2b52738f27b2f0617d1e",
+    "installed": false
+  },
+  "supportSources": {
+    "js/spb-pro-edit.js": "99703873013e198857d9aceaa334821098e53dcaa9d55e14dbd1ec50e58604de",
+    "js/spb-pro-design.js": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8",
+    "js/spb-pro-zone-kit.js": "ea9e169b909a30a6431f7fd48b87658b8258d480f165d304cb0ca5dac8983af7"
+  },
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w79_review/fresh-desired-oracle.json",
+    "sha256": "ADFDF65D5912CF4FE5535DDE41CB84F4A171562B08E99CCC392D4F24BECFCF91",
+    "freshCases": 14,
+    "parentRegressionSeparate": true
+  },
+  "artifacts": {
+    "test": "tests/ai_pending_part_overlap_w79_review_contract.cjs",
+    "testSha256": "4416760bac61781a780741caa5d99224abf0e4ddf0ceaa7fce8d4eb4e3871cbc",
+    "producerTest": "tests/ai_pending_part_overlap_w79_contract.cjs",
+    "producerTestSha256": "d07c9e01e283fa8b6dcd88b3777d5a68b7161382146cb0a1bf332d12b7d18635"
+  },
+  "results": {
+    "producerContract": "12/12 PASS_WITH_LIMITS; function-level queue test with controlled add/edit callbacks.",
+    "actualRouteHarness": "14 frozen prompts traversed actual offlineAskCore, offlineEditAsk/offlineCoveredPartAsk/offlinePartAsk where selected, E/D parsers and W79 queueEditZones. Source transaction, zone setup, rendering and add/edit tool effects were mocked.",
+    "separateParentRegression": {
+      "input": "Make the green on the roof blue",
+      "setup": "Existing roof owner provenance generation 2, same source path/fingerprint A, fake current committed transaction generation 3 after failed load.",
+      "result": "0 queued. Actual route replies that it cannot safely keep existing part colour because prior zone is ambiguous or no longer matches the car.",
+      "verdict": "PASS for the reported source-colour stale-owner regression in this isolated route fixture."
+    },
+    "staleSourceColorFollowup": {
+      "input": "Make the green on the roof lighter",
+      "result": "0 queued; same stale-owner refusal.",
+      "verdict": "PASS."
+    },
+    "freshFindings": [
+      {
+        "id": "multiple-part-array-one-stale",
+        "input": "Make the roof and hood blue",
+        "result": "Actual offline route queues two add_zone operations: blue hood and blue roof; response says both are done.",
+        "expected": "0 queued atomically because the fixture has stale roof provenance.",
+        "verdict": "FAIL against frozen oracle. The new color is explicit, which W79's producer test deliberately allows; the concrete risk is stacking a new gloss zone over the old roof owner and silently losing the previous effective finish/owner instead of reusing or refusing."
+      },
+      {
+        "id": "ambiguous-current-overlap",
+        "input": "Make the upper body blue",
+        "result": "Actual D/offline route queues one add_zone with region {everything:true} and says the body is now blue.",
+        "expected": "Ask/refuse without guessing an all-car scope.",
+        "verdict": "FAIL against frozen oracle; route evidence confirms broad expansion. This is a classifier/coverage-family concern, not proven to be introduced by W79."
+      },
+      {
+        "id": "unrelated-control",
+        "input": "Make the hood yellow",
+        "result": "One add_zone scoped to {part:'hood'} despite stale roof provenance.",
+        "verdict": "PASS control for unrelated target isolation."
+      },
+      {
+        "id": "portion-controls",
+        "inputs": ["Make the green on the left flank blue", "Change the right flank green to blue"],
+        "result": "Each route queued one zone scoped to left side or right side respectively; one used a colors+tolerance selector.",
+        "verdict": "PARTIAL: selector scope is present in queued specs; no renderer/mask footprint was run to prove pixel isolation."
+      }
+    ],
+    "otherCases": "Executed; several frozen expectations could not be judged as owner-reuse positives because this harness intentionally seeded one stale roof and did not seed valid committed owners/registry entries for every prompt. Full per-case queue/reply observations are emitted by the test. No aggregate pass percentage is claimed."
+  },
+  "limitations": [
+    "No actual failed PSD load was executed. The route fixture represents the observed generation-2 owner versus generation-3 committed transaction with local objects.",
+    "No browser, native app, renderer, PSD pixels, provider, MCP, or application write was used.",
+    "The test does not claim current-owner positive reuse; producer-level explicit-color control is retained separately in the 12-case W79 contract.",
+    "W79 candidate does not address the observed ambiguous 'upper body' expansion, and no production repair was authorized in this review lane."
+  ]
+}

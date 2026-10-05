@@ -1,0 +1,78 @@
+{
+  "status": "FINDINGS",
+  "task": "W42 independent lifecycle replay of frozen W32 and W33 oracles, with fresh generation-lease checks",
+  "date": "2026-10-04",
+  "sourceSnapshot": {
+    "path": "_easy_claude_work/ai14h_w42_sources/js/spb-pro-ai.js",
+    "sha256": "5ECB313E66BA26B91020367C148D11227DA1385925E144A41DDEBD6940EA53EB",
+    "operationManagerPath": "_easy_claude_work/ai14h_w42_sources/js/spb-ai-operation.js",
+    "operationManagerSha256": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6",
+    "generationLeasePath": "_easy_claude_work/ai14h_w42_sources/js/spb-ai-lease.generation-candidate.js",
+    "generationLeaseSha256": "DE276372A763310EC051DB141FCB1D601E11DBF193843E2B21A405226F782134",
+    "testHashes": {
+      "tests/ai_operation_w42_offline_async_contract.cjs": "F70C3F013C434BE72B815883EEA8FF9271D664AE999E1D40547C7052C21AAB12",
+      "tests/ai_operation_w42_delayed_helpers_contract.cjs": "DFDCF7E7C33779883C60F00AACFCEE345F84474999CEAFB9F34A9EAED8DB04BF"
+    }
+  },
+  "oracleIntegrity": {
+    "w32": "10 declared cases carried forward without changing their desired invariants; path/hash fields were adapted to the W42 immutable snapshot.",
+    "w32CasesSha256": "3AC8B88FBB07D057C92600047B52736D23D6CEB34DB8AF8BA39586DD27322274",
+    "w33": {
+      "count": 15,
+      "sha256": "A9A7F06CCF23EF98F7180EFB551614C0B75D6889871E70CFF5C0239234183663",
+      "note": "Original 15-case oracle JSON and assertions retained. Four added generation-lease checks are labeled separately and are not counted as W33 oracle credit."
+    },
+    "priorArtifacts": "Original W32/W33 tests and reports were not modified."
+  },
+  "results": {
+    "w32OfflineAsync": {
+      "runtimeProbes": 5,
+      "runtimePasses": 3,
+      "unchangedOracleAssertionFailures": 2,
+      "confirmedAsyncSinkReproductions": 1,
+      "staleQueueProposals": 0,
+      "providerCalls": 0,
+      "nativeCalls": 0,
+      "details": [
+        {
+          "case": "operation-tools-async-mark-callback-output-fence",
+          "severity": "confirmed defect",
+          "evidence": "The actual extracted mark_elements handler awaited a controlled analyse promise after its collection became stale, then invoked teachBoxes and mutated ownership. The outer wrapper returned an error only after this downstream mutation had already happened.",
+          "scope": "VM with controlled SpbProElements callbacks; no real painting, provider, or native execution."
+        },
+        {
+          "case": "offline-spec-preview-manual-revision-conflict",
+          "severity": "oracle expectation mismatch, not a confirmed defect",
+          "evidence": "The unchanged assertion expects a one-item stale queue. On the exact W42 snapshot the helper instead returns zero queued actions after the source/revision change. The helper did not mutate zones; the stale queue expectation is more restrictive than the stated rejection invariant."
+        }
+      ],
+      "report": "AI_HELPER_14H_OPERATION_W42_OFFLINE_ASYNC_2026-10-04.json"
+    },
+    "w33DelayedRoutesAndMcp": {
+      "oracleCases": 15,
+      "concreteChecks": 11,
+      "staticOnlyChecks": 8,
+      "assertionErrors": 0,
+      "freshLeaseControllerChecks": {
+        "count": 4,
+        "passed": 4,
+        "cases": [
+          "stale A release after retiring A cannot release B",
+          "nested internal acquisition cannot release a foreign active lease",
+          "rejected acquisition makes zero end calls and preserves foreign owner",
+          "successful MCP wrapper release calls end exactly once; a new external owner can acquire"
+        ]
+      },
+      "notableObservation": "During the MCP preview source-switch probe, the stale wrapper returned no image to its caller, but the core sampled the replacement-source preview before the wrapper rejected the result.",
+      "providerCalls": 0,
+      "nativeCalls": 0,
+      "browserCalls": 0,
+      "report": "AI_HELPER_14H_OPERATION_W42_DELAYED_HELPERS_2026-10-04.json"
+    }
+  },
+  "limitations": [
+    "The tests execute extracted actual candidate functions in VM harnesses; provider/native/renderer/server effects are controlled fakes.",
+    "No full application UI, browser, native paint effect, or live MCP server was exercised. Cancel/manual-revision and self-help immediate-finish checks remain static-only.",
+    "These results review the supplied immutable W42 candidate plus generation lease adapter. They do not certify root integration of the lease adapter, W40 scoped-colour proof changes, or W38 persistence changes."
+  ]
+}

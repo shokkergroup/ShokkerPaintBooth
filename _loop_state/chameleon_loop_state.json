@@ -1,0 +1,83 @@
+{
+  "group": "Chameleon",
+  "ticks": [
+    {
+      "tick": 1,
+      "started_at": "2026-05-27T10:09:51Z",
+      "ended_at": "2026-05-27T10:09:51Z",
+      "bases": [
+        "chameleon_amethyst",
+        "chameleon_arctic",
+        "chameleon_aurora",
+        "chameleon_copper",
+        "chameleon_emerald"
+      ],
+      "note": "SPB overnight tick \u2014 Chameleon batch (5): hue-walk spec intensifier"
+    },
+    {
+      "tick": 2,
+      "started_at": "2026-05-27T10:24:54Z",
+      "ended_at": "2026-05-27T10:24:54Z",
+      "bases": [
+        "chameleon_fire",
+        "chameleon_frost",
+        "chameleon_galaxy",
+        "chameleon_midnight",
+        "chameleon_neon"
+      ],
+      "note": "SPB overnight tick \u2014 Chameleon batch (5): hue-walk spec intensifier"
+    },
+    {
+      "tick": 3,
+      "started_at": "2026-05-27T10:39:56Z",
+      "ended_at": "2026-05-27T10:39:56Z",
+      "bases": [
+        "chameleon_obsidian",
+        "chameleon_ocean",
+        "chameleon_phoenix",
+        "chameleon_venom",
+        "mystichrome"
+      ],
+      "note": "SPB overnight tick \u2014 Chameleon batch (5): hue-walk spec intensifier"
+    },
+    {
+      "tick": 4,
+      "started_at": "2026-05-27T18:26:27Z",
+      "ended_at": "2026-05-27T18:26:27Z",
+      "bases": [
+        "chameleon_amethyst",
+        "chameleon_arctic",
+        "chameleon_aurora",
+        "chameleon_copper",
+        "chameleon_emerald"
+      ],
+      "note": "wave=24 \u2014 Chameleon hue-walk sparkle wave \u2014 batch ['chameleon_amethyst', 'chameleon_arctic', 'chameleon_aurora', 'chameleon_copper', 'chameleon_emerald']"
+    },
+    {
+      "tick": 5,
+      "started_at": "2026-05-27T18:41:30Z",
+      "ended_at": "2026-05-27T18:41:30Z",
+      "bases": [
+        "chameleon_fire",
+        "chameleon_frost",
+        "chameleon_galaxy",
+        "chameleon_midnight",
+        "chameleon_neon"
+      ],
+      "note": "wave=25 \u2014 Chameleon hue-walk sparkle wave \u2014 batch ['chameleon_fire', 'chameleon_frost', 'chameleon_galaxy', 'chameleon_midnight', 'chameleon_neon']"
+    },
+    {
+      "tick": 6,
+      "started_at": "2026-05-27T18:56:33Z",
+      "ended_at": "2026-05-27T18:56:33Z",
+      "bases": [
+        "chameleon_obsidian",
+        "chameleon_ocean",
+        "chameleon_phoenix",
+        "chameleon_venom",
+        "mystichrome"
+      ],
+      "note": "wave=26 \u2014 Chameleon hue-walk sparkle wave \u2014 batch ['chameleon_obsidian', 'chameleon_ocean', 'chameleon_phoenix', 'chameleon_venom', 'mystichrome']"
+    }
+  ]
+}

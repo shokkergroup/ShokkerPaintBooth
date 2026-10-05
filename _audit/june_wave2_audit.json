@@ -1,0 +1,328 @@
+{
+  "category": "wave2",
+  "entries": {
+    "lfr_star_lattice": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 67,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781154234486
+    },
+    "lfr_stencil_stars": {
+      "verdict": "rebuild",
+      "rating": 60,
+      "ai_rating": 59,
+      "reasons": [
+        "Too sparse",
+        "Too blobby / macro"
+      ],
+      "notes": "",
+      "ts": 1781154246315
+    },
+    "lfr_stripe_drift": {
+      "verdict": "keep",
+      "rating": 77,
+      "ai_rating": 72,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781154704937
+    },
+    "lfr_bunting_scallop": {
+      "verdict": "keep",
+      "rating": 67,
+      "ai_rating": 74,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781154779298
+    },
+    "lfr_firework_radial": {
+      "verdict": "rebuild",
+      "rating": 46,
+      "ai_rating": 64,
+      "reasons": [
+        "Too blobby / macro"
+      ],
+      "notes": "The radials are too big and clumped together too much in certain areas",
+      "ts": 1781154810246
+    },
+    "lfr_ribbon_weave": {
+      "verdict": "keep",
+      "rating": 80,
+      "ai_rating": 76,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781155469905
+    },
+    "prizm_adaptive": {
+      "verdict": "keep",
+      "rating": 68,
+      "ai_rating": 61,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781155568615
+    },
+    "prizm_alien_skin": {
+      "verdict": "keep",
+      "rating": 67,
+      "ai_rating": 68,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781155678067
+    },
+    "prizm_aurora_shift": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 74,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781155855291
+    },
+    "prizm_arctic": {
+      "verdict": "keep",
+      "rating": 77,
+      "ai_rating": 76,
+      "reasons": [],
+      "notes": "This one does NOT SHOW UP in my picker but it looks really cool??",
+      "ts": 1781155883020
+    },
+    "prizm_black_rainbow": {
+      "verdict": "keep",
+      "rating": 70,
+      "ai_rating": 76,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781155983095
+    },
+    "prizm_blood_moon": {
+      "verdict": "keep",
+      "rating": 77,
+      "ai_rating": 56,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781156050230
+    },
+    "prizm_candy_paint": {
+      "verdict": "keep",
+      "rating": 78,
+      "ai_rating": 73,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781156320787
+    },
+    "prizm_chrome_rose": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": 66,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781156424146
+    },
+    "prizm_cosmos": {
+      "verdict": "rebuild",
+      "rating": 44,
+      "ai_rating": 65,
+      "reasons": [],
+      "notes": "Ditch the pin stars and the circular nebula. Replace with finer detailed elements",
+      "ts": 1781156521700
+    },
+    "prizm_copper_flame": {
+      "verdict": "keep",
+      "rating": 76,
+      "ai_rating": 64,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781156556876
+    },
+    "prizm_dark_matter": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": 73,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781156638937
+    },
+    "prizm_deep_space": {
+      "verdict": "rebuild",
+      "rating": 55,
+      "ai_rating": 73,
+      "reasons": [
+        "Too flat / boring",
+        "Not enough fine detail",
+        "No depth"
+      ],
+      "notes": "",
+      "ts": 1781156670609
+    },
+    "prizm_duochrome": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 72,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781156802518
+    },
+    "prizm_ember": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": 71,
+      "reasons": [],
+      "notes": "Looks cool but another one that's not showing up in the UI/PICKER?",
+      "ts": 1781156873087
+    },
+    "prizm_fire_ice": {
+      "verdict": "keep",
+      "rating": 75,
+      "ai_rating": 76,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781156932972
+    },
+    "prizm_galaxy_dust": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 65,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781157008420
+    },
+    "prizm_holographic": {
+      "verdict": "rebuild",
+      "rating": 45,
+      "ai_rating": 74,
+      "reasons": [
+        "Spec wrong for paint",
+        "Wrong vibe for name"
+      ],
+      "notes": "That's NOT holographic",
+      "ts": 1781157124580
+    },
+    "prizm_iridescent": {
+      "verdict": "keep",
+      "rating": 69,
+      "ai_rating": 63,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781157182692
+    },
+    "prizm_mystichrome": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 73,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781157241440
+    },
+    "prizm_neon": {
+      "verdict": "keep",
+      "rating": 70,
+      "ai_rating": 69,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781157332672
+    },
+    "prizm_oceanic": {
+      "verdict": "rebuild",
+      "rating": 55,
+      "ai_rating": 56,
+      "reasons": [
+        "Weak spec colors",
+        "No depth",
+        "Too flat / boring",
+        "Low effort / lazy"
+      ],
+      "notes": "",
+      "ts": 1781157353014
+    },
+    "prizm_phoenix": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": 72,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781157439641
+    },
+    "prizm_solar": {
+      "verdict": "keep",
+      "rating": 77,
+      "ai_rating": 56,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781157518420
+    },
+    "prizm_spectrum": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 74,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781157595559
+    },
+    "prizm_sunset_strip": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 71,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781157702533
+    },
+    "prizm_titanium": {
+      "verdict": "rebuild",
+      "rating": 45,
+      "ai_rating": 56,
+      "reasons": [
+        "Weak spec colors",
+        "Spec wrong for paint",
+        "No depth",
+        "Too blobby / macro",
+        "Not enough fine detail",
+        "Low effort / lazy"
+      ],
+      "notes": "",
+      "ts": 1781157722056
+    },
+    "prizm_toxic_waste": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": 68,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781157799136
+    },
+    "prizm_midnight": {
+      "verdict": "rebuild",
+      "rating": null,
+      "ai_rating": 72,
+      "reasons": [
+        "Too similar to another"
+      ],
+      "notes": "",
+      "ts": 1781157841209
+    },
+    "prizm_venom": {
+      "verdict": "keep",
+      "rating": 70,
+      "ai_rating": 70,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781157876461
+    },
+    "lfr_old_glory_flux": {
+      "verdict": "keep",
+      "rating": 75,
+      "ai_rating": 75,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781157969269
+    },
+    "lfr_we_the_people": {
+      "verdict": "keep",
+      "rating": 67,
+      "ai_rating": 76,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781157989606
+    }
+  },
+  "updated": 1781157989
+}

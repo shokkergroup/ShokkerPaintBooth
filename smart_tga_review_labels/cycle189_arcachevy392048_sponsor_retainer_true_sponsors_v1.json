@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "paint_label": "stockcars2 arcachevy25/car_num_392048.tga",
+  "inspection_records": "_smart_tga_runs/cycle184_sponsor_retainer_crosscar_routes_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle184_sponsor_retainer_crosscar_routes_v1/stockcars2_arcachevy25_car_num_392048/component_records.json",
+  "review_scope": "Cycle 189 reviewed Sponsor-retainer fixture pack from Cycle 185-188 offline rules and Cycle 188 contact-sheet visual review. Runtime Smart TGA masks are unchanged.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 8,
+      "expected_bbox": [
+        989,
+        28,
+        18,
+        122
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_vertical_wordmark",
+      "note": "Visually reviewed narrow vertical sponsor wordmark/text from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 18,
+      "expected_bbox": [
+        989,
+        178,
+        19,
+        123
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_vertical_wordmark",
+      "note": "Visually reviewed narrow vertical sponsor wordmark/text from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 30,
+      "expected_bbox": [
+        793,
+        425,
+        200,
+        343
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_large_saturated_panel",
+      "note": "Visually reviewed saturated stock-car sponsor panel from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Paint or Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 35,
+      "expected_bbox": [
+        38,
+        487,
+        31,
+        200
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_vertical_wordmark",
+      "note": "Visually reviewed narrow vertical sponsor wordmark/text from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors, not Numbers."
+    }
+  ]
+}

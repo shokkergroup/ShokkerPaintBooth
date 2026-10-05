@@ -19,19 +19,64 @@ def _time_case(records, name, fn):
     return out
 
 
-def test_spec_overlay_small_scale_uses_canvas_sized_generation():
-    from engine.compose import _scale_down_spec_pattern
+def test_spec_overlay_small_scale_uses_tile_sized_generation():
+    """[2026-07-07 owner perf, amended 2026-07-08] scale<1 generates ONE TILE at
+    (canvas × scale) resolution plus AT MOST one cached canvas-res reference for
+    the value-parity moment match — never anything larger than canvas, and never
+    a per-tick full-res generation. If this fails, someone re-widened scale-down
+    back to full-res generation (or broke the reference-stats cache)."""
+    from engine.compose import _scale_down_spec_pattern, _SPEC_SCALE_REF_STATS_CACHE
 
+    _SPEC_SCALE_REF_STATS_CACHE.clear()
     calls = []
 
     def fake_spec(shape, seed=0, sm=1.0, **kwargs):
-        calls.append(tuple(shape))
+        calls.append(tuple(shape[:2]))
         return np.full(shape[:2], 0.5, dtype=np.float32)
 
-    out = _scale_down_spec_pattern(fake_spec, 0.30, (512, 512), 123, 1.0, {})
+    out = _scale_down_spec_pattern(fake_spec, 0.25, (512, 512), 123, 1.0, {})
 
     assert out.shape == (512, 512)
-    assert calls == [(512, 512)]
+    assert (128, 128) in calls, f"expected a 128x128 tile generation at 0.25 scale, got {calls}"
+    canvas_calls = [c for c in calls if c == (512, 512)]
+    assert len(canvas_calls) <= 1, f"more than one canvas-res generation: {calls}"
+    assert all(c[0] <= 512 and c[1] <= 512 for c in calls), f"generated ABOVE canvas res: {calls}"
+
+
+def test_spec_overlay_small_scale_cost_shrinks_with_scale():
+    """Across a scale drag, only tiles are generated after the one-time cached
+    canvas-res reference — total cost must stay far below per-tick full-res."""
+    from engine.compose import _scale_down_spec_pattern, _SPEC_SCALE_REF_STATS_CACHE
+
+    _SPEC_SCALE_REF_STATS_CACHE.clear()
+    pixel_counts = []
+
+    def counting_spec(shape, seed=0, sm=1.0, **kwargs):
+        pixel_counts.append(shape[0] * shape[1])
+        return np.random.default_rng(1).random(shape[:2]).astype(np.float32)
+
+    for scale in (0.5, 0.4, 0.3, 0.25):
+        _scale_down_spec_pattern(counting_spec, scale, (2048, 2048), 1, 1.0, {})
+    full = 2048 * 2048
+    ref_calls = [p for p in pixel_counts if p == full]
+    tile_pixels = sum(p for p in pixel_counts if p != full)
+    assert len(ref_calls) <= 1, f"reference regenerated per tick: {pixel_counts}"
+    assert tile_pixels <= full, (
+        f"4 drag ticks generated {tile_pixels}px of tiles — scale-down is not "
+        f"cheaper than full-res anymore ({pixel_counts})")
+
+
+def test_spec_overlay_tile_gen_failure_falls_back_to_canvas():
+    """A generator that dies at tile res must still render via the canvas-res fallback."""
+    from engine.compose import _scale_down_spec_pattern
+
+    def picky_spec(shape, seed=0, sm=1.0, **kwargs):
+        if shape[0] < 512:
+            raise ValueError("too small for me")
+        return np.full(shape[:2], 0.5, dtype=np.float32)
+
+    out = _scale_down_spec_pattern(picky_spec, 0.25, (512, 512), 123, 1.0, {})
+    assert out.shape == (512, 512)
 
 
 def test_regular_pattern_rebuilds_are_allowlisted_not_family_broad():
@@ -42,7 +87,7 @@ def test_regular_pattern_rebuilds_are_allowlisted_not_family_broad():
 
     # SPB-4 is intentionally replacing weak renderer IDs in bounded batches.
     # Keep this as a broad-family guard, not a freeze on legitimate per-ID fixes.
-    assert len(bespoke) < 124
+    assert len(bespoke) < 128
     assert len(bespoke) < len(candidates)
     assert "zigzag_bands" not in bespoke
     assert "fiber_optic" in bespoke

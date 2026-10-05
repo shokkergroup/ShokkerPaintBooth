@@ -1,0 +1,39 @@
+{
+  "status": "PRIVATE_NATIVE_REPAIR_PASS",
+  "scope": "Newline-only private reload; gen2 ZoneKit and actual native apply/Undo. Experimental reload, not cold current full integration.",
+  "utc": "2026-10-04 06:01 UTC",
+  "operation": "ced6ecefb6",
+  "done": true,
+  "result": {
+    "wireBefore": "65ad4705e818c5f1952b94c3a4b9e125ae854fea7ee64a90169f300eeb108138",
+    "patchedWire": "adee9a752dbc2b9aa0b9d92a343cddfbc6f4d33b61125f9de3a9cc1fae3bd10e",
+    "patch": "newline only at swallowed bookkeeping",
+    "queue": 1,
+    "settled": true,
+    "changed": true,
+    "paintChanged": true,
+    "specChanged": true,
+    "entry": {
+      "id": 1,
+      "lines": [
+        "Roof recoloured blue: limited to layer Car Paint; covers everything on that layer; limited to the roof; finish Gloss; colour #1450b4; placed at the top of the stack (wins overlaps)"
+      ],
+      "undoableBefore": true,
+      "undone": true,
+      "layerUndo": 0,
+      "maskUndo": 0,
+      "recipe": 1
+    },
+    "undoReturned": true,
+    "undoSettled": true,
+    "zonesRestored": true,
+    "paintRestored": true,
+    "specRestored": true,
+    "attempts": 0
+  },
+  "limits": [
+    "Wire source65ad with only newline repair has hashadee9; root W29 snapshotB43 repaired609b was separately independently tested.",
+    "Private imported fixture only; no project/export/save/provider calls.",
+    "A fresh current page and full helper integration remain pending."
+  ]
+}

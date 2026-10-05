@@ -1,0 +1,219 @@
+{
+  "work_item": "W116b Runtime9 contextual-help successor holdout",
+  "status": "PASS_PRIVATE_CANDIDATE",
+  "source": {
+    "path": "_easy_claude_work/ai14h_w116_successor/spb-pro-ai.js",
+    "sha256": "AEA057CB2965B714700304CA598C0E59AB25E02FFFB5575D5D29FC36CCD5FF76",
+    "baseRuntime9": "_easy_claude_work/ai14h_generation3_runtime9/js/spb-pro-ai.js",
+    "baseSha256": "1C178D2717D0ED654C1840AA01452F03322CFB9F3BA4716E2FE333F48D079430",
+    "publicAskExport": true
+  },
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w116_successor/fresh-oracle.json",
+    "sha256": "AF9F528F6A9F101601D4003A20007BE7A0E9C09DAC35BB8A832DC6EA1E880F39",
+    "frozenBeforeSourceInspection": true,
+    "cases": 14
+  },
+  "parentSuppliedPostFreezeCases": [
+    "parent-coat-controls",
+    "parent-offline-credits",
+    "parent-authored-color-retain",
+    "parent-mask-undo",
+    "parent-blue-coat-no-punctuation",
+    "parent-blue-material-channel",
+    "parent-latest-receipt-current",
+    "parent-latest-receipt-empty"
+  ],
+  "sourcePaintDescriptionAudit": {
+    "status": "ACCURATE_WITH_CAVEAT",
+    "evidence": "Runtime9 system rule 16c says color \"source\" preserves paint when editing an existing zone and warns that a new source-colored zone can reveal original template art; spb-pro-edit parser comments describe the existing-zone case. No prompt-copy change made. Authored Solid color remains a separate zone color mode."
+  },
+  "counts": {
+    "frozenCases": 14,
+    "parentSuppliedSupplementalCases": 8,
+    "totalChecks": 22,
+    "failedChecks": 0,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "queueApplications": 0
+  },
+  "rows": [
+    {
+      "id": "blue-coat-channel-help",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "clearcoat_channel",
+      "text": "The Clearcoat slider controls the B (blue) channel of the spec map. It changes the clear reflective coating/material response, not blue paint. Metalness and roughness are separate channels. This question made no changes."
+    },
+    {
+      "id": "blue-channel-order-variant",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "clearcoat_channel",
+      "text": "The Clearcoat slider controls the B (blue) channel of the spec map. It changes the clear reflective coating/material response, not blue paint. Metalness and roughness are separate channels. This question made no changes."
+    },
+    {
+      "id": "unfamiliar-logo-reliability",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "logo_finder_limits",
+      "text": "I cannot guarantee that the finder identifies every logo on an unfamiliar car. It can suggest candidates, but you need to inspect the marked areas and confirm them before relying on the result. Finding a sponsor does not recolor it. This question made no changes."
+    },
+    {
+      "id": "logo-identification-order-variant",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "logo_finder_limits",
+      "text": "I cannot guarantee that the finder identifies every logo on an unfamiliar car. It can suggest candidates, but you need to inspect the marked areas and confirm them before relying on the result. Finding a sponsor does not recolor it. This question made no changes."
+    },
+    {
+      "id": "recent-sheet-receipt",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "recent_change_receipt",
+      "text": "For this loaded paint, the last verified applied changes were: Changed roof to blue."
+    },
+    {
+      "id": "receipt-after-undo",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "recent_change_receipt",
+      "text": "The latest recorded change was undone or replaced, so I will not describe it as a current change. This question did not change the paint."
+    },
+    {
+      "id": "editable-layers-tomorrow",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "saved_layer_pixels",
+      "text": "Use Save / Open to save and reopen a SHOKK project. It keeps layer state and the current raster pixel payload for layers that have pixels, while recording the source-paint path. The original PSD bytes are not embedded, and original adjustment-layer semantics are not guaranteed. Keep the source PSD available and verify the reopened layers. This question made no changes."
+    },
+    {
+      "id": "editable-layers-order-variant",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "saved_layer_pixels",
+      "text": "Use Save / Open to save and reopen a SHOKK project. It keeps layer state and the current raster pixel payload for layers that have pixels, while recording the source-paint path. The original PSD bytes are not embedded, and original adjustment-layer semantics are not guaranteed. Keep the source PSD available and verify the reopened layers. This question made no changes."
+    },
+    {
+      "id": "remembered-number-not-current-proof",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "current_paint_confirmation",
+      "text": "Remembering a number location from another paint does not confirm its location on the currently loaded paint. Inspect the current paint and confirm the marked area before relying on it. This question made no changes."
+    },
+    {
+      "id": "number-memory-order-variant",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "current_paint_confirmation",
+      "text": "Remembering a number location from another paint does not confirm its location on the currently loaded paint. Inspect the current paint and confirm the marked area before relying on it. This question made no changes."
+    },
+    {
+      "id": "polite-roof-action",
+      "howto": false,
+      "queue": 0,
+      "delegated": 1,
+      "text": "controlled offline action handoff"
+    },
+    {
+      "id": "direct-blue-action",
+      "howto": false,
+      "queue": 0,
+      "delegated": 1,
+      "text": "controlled offline action handoff"
+    },
+    {
+      "id": "hypothetical-no-apply",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "hypothetical_edit",
+      "text": "Nothing was changed. A separate direct roof-color instruction would first be checked against the current roof ownership and paint; if that scope cannot be proved, the helper should ask instead of changing a broader area."
+    },
+    {
+      "id": "explicit-solid-color-action",
+      "howto": false,
+      "queue": 0,
+      "delegated": 1,
+      "text": "controlled offline action handoff"
+    },
+    {
+      "id": "parent-coat-controls",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "clearcoat_channel",
+      "text": "The Clearcoat slider controls only the B channel of the spec map. Metalness (R) and roughness (G) are separate sliders/channels, so changing clearcoat does not change them. This question made no changes."
+    },
+    {
+      "id": "parent-offline-credits",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "offline_credits",
+      "text": "Supported built-in finish changes can run locally without an AI provider key or paid model call. A connected external AI may have its own provider charges, but it is not required for supported offline edits. This question made no changes."
+    },
+    {
+      "id": "parent-authored-color-retain",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "keep_authored_solid_color",
+      "text": "To keep an authored Solid color and change only its finish, keep the zone in Solid color mode and leave its current color value unchanged; change only the finish control. Do not switch the zone to Source Paint, which uses the loaded image instead of the authored color. This question made no changes."
+    },
+    {
+      "id": "parent-mask-undo",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "undo_mask_conflict",
+      "text": "Undo checks whether the mask still matches the state recorded with the AI edit. If you drew or changed the mask afterward, that conflicting manual mask is kept and only safe AI-owned values are restored; if the change cannot be separated safely, Undo refuses it. This is not a whole-PSD restore. This question made no changes."
+    },
+    {
+      "id": "parent-blue-coat-no-punctuation",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "clearcoat_channel",
+      "text": "The Clearcoat slider controls the B (blue) channel of the spec map. It changes the clear reflective coating/material response, not blue paint. Metalness and roughness are separate channels. This question made no changes."
+    },
+    {
+      "id": "parent-blue-material-channel",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "clearcoat_channel",
+      "text": "The blue material channel is Clearcoat (B). Its slider changes the clear reflective coating, not the paint color. Roughness is the separate green (G) channel and stays unchanged when only Clearcoat is adjusted. This question made no changes."
+    },
+    {
+      "id": "parent-latest-receipt-current",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "recent_change_receipt",
+      "text": "For this loaded paint, the last verified applied changes were: Changed roof to blue."
+    },
+    {
+      "id": "parent-latest-receipt-empty",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "topic": "recent_change_receipt",
+      "text": "I do not have a current, verified apply receipt to explain, so I will not guess from a draft or generic success message. This question made no changes."
+    }
+  ],
+  "issues": [],
+  "limits": [
+    "The test executes exact extracted contextualHelpReply(), offlineInstructionPreflight(), and ask() bodies, plus the actual receipt/self-help/intent modules from frozen Runtime9. The desktop IIFE is not booted. Provider and action downstream are controlled off-line; no native app, provider, save, queue-apply, or backend action occurred."
+  ]
+}

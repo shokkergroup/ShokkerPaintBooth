@@ -1,0 +1,1072 @@
+{
+  "$schema": "shokk-forge.template-adapter/v1",
+  "package_version": "10",
+  "package_contract": "stable-livery-neutral-mask-authority",
+  "adapter_id": "iracing-dirt-late-model-350-358-438-official-v1",
+  "display_name": "iRacing Dirt Late Model 350/358/438 shared official template",
+  "livery_agnostic": true,
+  "canvas": [
+    2048,
+    2048
+  ],
+  "coordinate_system": {
+    "origin": "top-left",
+    "x_axis": "right",
+    "y_axis": "down",
+    "bbox_format": "x0,y0,x1,y1"
+  },
+  "optional_evidence_roles": {
+    "front_corner_left": {
+      "surface": "nose",
+      "physical_scope": "front_left_corner_transition",
+      "minimum_confidence": 0.85,
+      "slot_confidence": 0.65,
+      "confirmed_confidence": 0.9,
+      "requires_user_attestation": true,
+      "capture_guidance": "Photograph the driver-side front corner square to the curved nose transition. Keep the complete wheel opening, hood seam, valance edge, and corner artwork visible; do not upload the generic center-front image again.",
+      "capture_quality_contract": {
+        "$schema": "shokk-forge.surface-capture-quality-contract/v1",
+        "minimum_width": 640,
+        "minimum_height": 360,
+        "minimum_short_edge": 360,
+        "minimum_pixels": 230400,
+        "advisory_minimum_luma_stddev": 8.0,
+        "advisory_minimum_edge_mean": 2.0,
+        "advisory_maximum_shadow_fraction": 0.85,
+        "advisory_maximum_highlight_fraction": 0.85,
+        "review_minimum_quad_pixels": 12000,
+        "review_minimum_edge_pixels": 64,
+        "review_boundary_warning_margin": 0.005
+      },
+      "review_contract": {
+        "anchor_field": "front_corner_left_quad",
+        "coordinate_space": "normalized_source_image",
+        "point_order": "screen_tl_tr_br_bl",
+        "minimum_area": 0.005,
+        "seed_quad": [[0.02, 0.02], [0.98, 0.02], [0.98, 0.98], [0.02, 0.98]],
+        "seed_is_authority": false
+      },
+      "prohibited_substitute_roles": [
+        "front",
+        "left",
+        "front_3q"
+      ],
+      "request_triggers": [
+        {
+          "reason": "incomplete_surface_coverage",
+          "scope": "nose",
+          "remaining_scope_contains": "front_corner"
+        }
+      ]
+    },
+    "front_corner_right": {
+      "surface": "nose",
+      "physical_scope": "front_right_corner_transition",
+      "minimum_confidence": 0.85,
+      "slot_confidence": 0.65,
+      "confirmed_confidence": 0.9,
+      "requires_user_attestation": true,
+      "capture_guidance": "Photograph the passenger-side front corner square to the curved nose transition. Keep the complete wheel opening, hood seam, valance edge, and corner artwork visible; do not mirror or reuse the driver-side image.",
+      "capture_quality_contract": {
+        "$schema": "shokk-forge.surface-capture-quality-contract/v1",
+        "minimum_width": 640,
+        "minimum_height": 360,
+        "minimum_short_edge": 360,
+        "minimum_pixels": 230400,
+        "advisory_minimum_luma_stddev": 8.0,
+        "advisory_minimum_edge_mean": 2.0,
+        "advisory_maximum_shadow_fraction": 0.85,
+        "advisory_maximum_highlight_fraction": 0.85,
+        "review_minimum_quad_pixels": 12000,
+        "review_minimum_edge_pixels": 64,
+        "review_boundary_warning_margin": 0.005
+      },
+      "review_contract": {
+        "anchor_field": "front_corner_right_quad",
+        "coordinate_space": "normalized_source_image",
+        "point_order": "screen_tl_tr_br_bl",
+        "minimum_area": 0.005,
+        "seed_quad": [[0.02, 0.02], [0.98, 0.02], [0.98, 0.98], [0.02, 0.98]],
+        "seed_is_authority": false
+      },
+      "prohibited_substitute_roles": [
+        "front",
+        "right",
+        "front_3q"
+      ],
+      "request_triggers": [
+        {
+          "reason": "incomplete_surface_coverage",
+          "scope": "nose",
+          "remaining_scope_contains": "front_corner"
+        }
+      ]
+    },
+    "rear_inside": {
+      "surface": "spoiler_inside",
+      "physical_scope": "rear_spoiler_inside_face",
+      "minimum_confidence": 0.85,
+      "slot_confidence": 0.65,
+      "confirmed_confidence": 0.9,
+      "requires_user_attestation": true,
+      "capture_guidance": "Photograph the face of the rear spoiler seen from the cockpit/front of the car. Keep all four spoiler-face corners visible and avoid substituting the outward-facing rear view.",
+      "capture_quality_contract": {
+        "$schema": "shokk-forge.surface-capture-quality-contract/v1",
+        "minimum_width": 640,
+        "minimum_height": 360,
+        "minimum_short_edge": 360,
+        "minimum_pixels": 230400,
+        "advisory_minimum_luma_stddev": 8.0,
+        "advisory_minimum_edge_mean": 2.0,
+        "advisory_maximum_shadow_fraction": 0.85,
+        "advisory_maximum_highlight_fraction": 0.85,
+        "review_minimum_quad_pixels": 12000,
+        "review_minimum_edge_pixels": 64,
+        "review_boundary_warning_margin": 0.005
+      },
+      "review_contract": {
+        "anchor_field": "spoiler_inside_quad",
+        "coordinate_space": "normalized_source_image",
+        "point_order": "screen_tl_tr_br_bl",
+        "minimum_area": 0.005,
+        "seed_quad": [[0.02, 0.02], [0.98, 0.02], [0.98, 0.98], [0.02, 0.98]],
+        "seed_is_authority": false
+      },
+      "prohibited_substitute_roles": [
+        "rear",
+        "rear_3q"
+      ],
+      "request_triggers": [
+        {
+          "reason": "missing_car_space_anchors",
+          "scope": "rear",
+          "field_contains": "spoiler_inside_quad"
+        },
+        {
+          "reason": "unresolved_projector",
+          "scope": "spoiler_inside"
+        }
+      ]
+    }
+  },
+  "base_fill": {
+    "mode": "full_canvas",
+    "basis": "Official Dirt Late Model Paintable Area/Main Car Body is a full 2048x2048 Base Paint layer; the simulator UV selects body islands while official decal/hardware layers remain above it.",
+    "projected_art_must_still_clip_to_calibrated_surfaces": true
+  },
+  "sources": {
+    "seed": {
+      "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_dlm_dossier\\template_adapter_seed.json",
+      "sha256": "a4dec62487c500108ad3cbd006fadb70af1de948edf200462827307aefa34dc0"
+    },
+    "panel_map": {
+      "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_dlm_dossier\\panel_map.json",
+      "sha256": "086751e6a9fe731c41ad5dcbd115bae325f491781c9a92a8069dad60746152f5"
+    }
+  },
+  "guides": {
+    "mandatory": {
+      "source_path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_dlm_dossier\\psd\\guides\\00_Mandatory.png",
+      "source_sha256": "a5dc705ebcbc568e84494f7f5c57c5f3a2a0d8c44f0847217e0e1e8c346d2405",
+      "source_size": [
+        1024,
+        1024
+      ],
+      "working_size": [
+        2048,
+        2048
+      ],
+      "resampling": "nearest",
+      "polarity": "alpha_is_forbidden"
+    },
+    "number_blocks": {
+      "source_path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_dlm_dossier\\psd\\guides\\01_Number_Blocks.png",
+      "source_sha256": "69d31b2b04c47971fbc05d9462ad30422286283e1bf64ba63e05155103995466",
+      "source_size": [
+        1024,
+        1024
+      ],
+      "working_size": [
+        2048,
+        2048
+      ],
+      "resampling": "nearest",
+      "polarity": "alpha_is_recommended"
+    },
+    "sponsor_blocks": {
+      "source_path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_dlm_dossier\\psd\\guides\\02_Sponsor_Blocks.png",
+      "source_sha256": "1b7be887d5becb8dd8a09a0c84637b99214f349e7758714636c25ce9ee05e50a",
+      "source_size": [
+        1024,
+        1024
+      ],
+      "working_size": [
+        2048,
+        2048
+      ],
+      "resampling": "nearest",
+      "polarity": "alpha_is_recommended"
+    },
+    "car_mask": {
+      "source_path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_dlm_dossier\\psd\\guides\\03_Mask.png",
+      "source_sha256": "c9a794fcd83b8399c9f85fa562d73d816dfd3aa8a88ff2d35d62a75dcd46d96f",
+      "source_size": [
+        1024,
+        1024
+      ],
+      "working_size": [
+        2048,
+        2048
+      ],
+      "resampling": "nearest",
+      "polarity": "alpha_is_nonpaintable"
+    },
+    "wire": {
+      "source_path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_dlm_dossier\\psd\\guides\\04_Wire.png",
+      "source_sha256": "56dff2dc571ee865e89bc730b48eebf673102d140d261cf935ae59bce1417f96",
+      "source_size": [
+        1024,
+        1024
+      ],
+      "working_size": [
+        2048,
+        2048
+      ],
+      "resampling": "nearest",
+      "polarity": "alpha_is_wire"
+    }
+  },
+  "surfaces": {
+    "left_strip": {
+      "family": "side",
+      "side": "left",
+      "paintable": true,
+      "projector": "wheelbase_profile",
+      "upright_rotation_deg": 180,
+      "inverse_ready": true,
+      "car_space_extent": {
+        "x_min": -0.6458992,
+        "x_max": 1.0082195,
+        "y_bottom": 0.0014125,
+        "y_top": 0.266971
+      },
+      "calibration_basis": "Accepted cross-car Mountain Dew/Miller side extent; run_03_surface_extent_calibration",
+      "bbox": [
+        0,
+        285,
+        1310,
+        715
+      ],
+      "bbox_normalized": [
+        0.0,
+        0.13916016,
+        0.63964844,
+        0.34912109
+      ],
+      "stored_orientation": "rot180",
+      "truth_note": null,
+      "mask_path": "masks/left_strip.png",
+      "mask_sha256": "7daf17b535f5654dd36689d7db50226b754481cc2031ad477f89fe42b5e89c3c",
+      "mask_pixels": 480188,
+      "bbox_pixels": 563300,
+      "mask_fill_fraction": 0.852455,
+      "mandatory_pixels_inside_surface": 0,
+      "ownership_contract": "exclusive_nearest_unique_core/v1"
+    },
+    "right_strip": {
+      "family": "side",
+      "side": "right",
+      "paintable": true,
+      "projector": "wheelbase_profile",
+      "upright_rotation_deg": 0,
+      "inverse_ready": true,
+      "car_space_extent": {
+        "x_min": -0.6458992,
+        "x_max": 1.0082195,
+        "y_bottom": 0.0014125,
+        "y_top": 0.266971
+      },
+      "calibration_basis": "Accepted cross-car Mountain Dew/Miller side extent; run_03_surface_extent_calibration",
+      "bbox": [
+        0,
+        1445,
+        1310,
+        1755
+      ],
+      "bbox_normalized": [
+        0.0,
+        0.70556641,
+        0.63964844,
+        0.85693359
+      ],
+      "stored_orientation": "normal",
+      "truth_note": null,
+      "mask_path": "masks/right_strip.png",
+      "mask_sha256": "79c3e60d679d11f59a8c9cae6cb60c332e0752242bea19a61f2c37fe73a5a638",
+      "mask_pixels": 346555,
+      "bbox_pixels": 406100,
+      "mask_fill_fraction": 0.853374,
+      "mandatory_pixels_inside_surface": 3504,
+      "ownership_contract": "exclusive_nearest_unique_core/v1"
+    },
+    "left_front_fender": {
+      "family": "front_fender",
+      "side": "left",
+      "paintable": true,
+      "projector": "wheelbase_profile",
+      "upright_rotation_deg": 180,
+      "inverse_ready": true,
+      "car_space_extent": {
+        "x_min": 0.705,
+        "x_max": 1.32,
+        "y_bottom": 0.04875,
+        "y_top": 0.38625
+      },
+      "calibration_basis": "Accepted cross-car Mountain Dew/Miller fender extent; run_04_multisurface_calibration",
+      "bbox": [
+        1400,
+        310,
+        1726,
+        760
+      ],
+      "bbox_normalized": [
+        0.68359375,
+        0.15136719,
+        0.84277344,
+        0.37109375
+      ],
+      "stored_orientation": "rot180_tilt~38",
+      "truth_note": null,
+      "mask_path": "masks/left_front_fender.png",
+      "mask_sha256": "c2c04280fe68526902a8e0dcd6cc5ed907093c10c73d8da4171d02c426619f53",
+      "mask_pixels": 99012,
+      "bbox_pixels": 146700,
+      "mask_fill_fraction": 0.674928,
+      "mandatory_pixels_inside_surface": 0,
+      "ownership_contract": "exclusive_nearest_unique_core/v1"
+    },
+    "right_front_fender": {
+      "family": "front_fender",
+      "side": "right",
+      "paintable": true,
+      "projector": "wheelbase_profile",
+      "upright_rotation_deg": 0,
+      "inverse_ready": true,
+      "car_space_extent": {
+        "x_min": 0.705,
+        "x_max": 1.32,
+        "y_bottom": 0.04875,
+        "y_top": 0.38625
+      },
+      "calibration_basis": "Accepted cross-car Mountain Dew/Miller fender extent; run_04_multisurface_calibration",
+      "bbox": [
+        1180,
+        1420,
+        1560,
+        1830
+      ],
+      "bbox_normalized": [
+        0.57617188,
+        0.69335938,
+        0.76171875,
+        0.89355469
+      ],
+      "stored_orientation": "normal_tilt~-38",
+      "truth_note": null,
+      "mask_path": "masks/right_front_fender.png",
+      "mask_sha256": "f127d8c08ee7c14f7fe36b8cd6f4093c03a1808e5fd606c724d4b7986ce24565",
+      "mask_pixels": 93631,
+      "bbox_pixels": 155800,
+      "mask_fill_fraction": 0.600969,
+      "mandatory_pixels_inside_surface": 0,
+      "ownership_contract": "exclusive_nearest_unique_core/v1"
+    },
+    "rear_deck_lid": {
+      "family": "top",
+      "side": "center",
+      "paintable": true,
+      "projector": "direct_top_quad",
+      "source_anchor": "rear_deck_quad",
+      "source_corner_contract": "cyclic_screen_top_first",
+      "source_domain": "direct_isolated_top_panel_or_confirmed_top_quad",
+      "upright_rotation_deg": 90,
+      "inverse_ready": true,
+      "bbox": [
+        30,
+        700,
+        520,
+        1420
+      ],
+      "bbox_normalized": [
+        0.01464844,
+        0.34179688,
+        0.25390625,
+        0.69335938
+      ],
+      "stored_orientation": "rot90ccw (MINED: reads at rot270 like hood/nose \u2014 apply rotate +90; hand-label rot90cw was WRONG)",
+      "truth_note": null,
+      "mask_path": "masks/rear_deck_lid.png",
+      "mask_sha256": "4dd8c7d7e37b0842e3661e3d8e4cf73c93ea7a6e0203b23bed1ef807a1373946",
+      "mask_pixels": 342576,
+      "bbox_pixels": 352800,
+      "mask_fill_fraction": 0.97102,
+      "mandatory_pixels_inside_surface": 0,
+      "ownership_contract": "exclusive_nearest_unique_core/v1"
+    },
+    "tub_windshield": {
+      "family": "interior",
+      "side": "center",
+      "paintable": false,
+      "projector": "fixed_template",
+      "upright_rotation_deg": 0,
+      "inverse_ready": false,
+      "bbox": [
+        560,
+        700,
+        1310,
+        1420
+      ],
+      "bbox_normalized": [
+        0.2734375,
+        0.34179688,
+        0.63964844,
+        0.69335938
+      ],
+      "stored_orientation": null,
+      "truth_note": "interior \u2014 keep base color",
+      "mask_path": "masks/tub_windshield.png",
+      "mask_sha256": "ea8eeda701a219327397ef9bed052e468c36d3c567faaec11c379df7e87c30b8",
+      "mask_pixels": 523876,
+      "bbox_pixels": 540000,
+      "mask_fill_fraction": 0.970141,
+      "mandatory_pixels_inside_surface": 0
+    },
+    "hood": {
+      "family": "top",
+      "side": "center",
+      "paintable": true,
+      "projector": "direct_top_quad",
+      "source_anchor": "hood_quad",
+      "source_corner_contract": "cyclic_screen_top_first",
+      "source_domain": "direct_isolated_top_panel_or_confirmed_top_quad",
+      "upright_rotation_deg": 90,
+      "inverse_ready": true,
+      "bbox": [
+        1230,
+        760,
+        1560,
+        1330
+      ],
+      "bbox_normalized": [
+        0.60058594,
+        0.37109375,
+        0.76171875,
+        0.64941406
+      ],
+      "stored_orientation": "rot90ccw",
+      "truth_note": null,
+      "mask_path": "masks/hood.png",
+      "mask_sha256": "d2c96889c83371042ecfdc6f6934657ac0fbfc26a4543bcf92d9bf6f2b9e6b20",
+      "mask_pixels": 187016,
+      "bbox_pixels": 188100,
+      "mask_fill_fraction": 0.994237,
+      "mandatory_pixels_inside_surface": 0,
+      "ownership_contract": "exclusive_nearest_unique_core/v1"
+    },
+    "nose": {
+      "family": "front",
+      "side": "center",
+      "paintable": true,
+      "projector": "front_car_space",
+      "upright_rotation_deg": 90,
+      "inverse_ready": false,
+      "unresolved": "front-view width/height anchors required",
+      "qualified_subprojectors": {
+        "front_valance": {
+          "projector": "front_valance_scanline",
+          "inverse_ready": true,
+          "source_anchor": "front_valance_quad",
+          "required_anchors": [
+            "center_x",
+            "half_width",
+            "ground_y",
+            "valance_top_y",
+            "front_valance_quad"
+          ],
+          "source_domain": "direct_isolated_front_valance_component",
+          "source_corner_contract": "cyclic_screen_top_first",
+          "surface_v_range": [
+            0.0,
+            0.4
+          ],
+          "qualified_scope": "front_valance_only",
+          "full_surface_inverse_ready": false,
+          "coverage_contract": "partial_surface/v1",
+          "satisfies_full_surface": false,
+          "remaining_scope": "upper_nose_and_both_front_corner_transitions",
+          "source_support_excludes": [
+            "assembled_front_car",
+            "isolated_hood_artwork",
+            "full_nose_guess"
+          ],
+          "reflection_allowed": false,
+          "promotion_contract": "active+two_controls+withheld+owner_review/v1"
+        }
+      },
+      "bbox": [
+        1600,
+        760,
+        1900,
+        1400
+      ],
+      "bbox_normalized": [
+        0.78125,
+        0.37109375,
+        0.92773438,
+        0.68359375
+      ],
+      "stored_orientation": "rot90ccw",
+      "truth_note": null,
+      "mask_path": "masks/nose.png",
+      "mask_sha256": "a4d9876bdbdd08a7de06165aa30ff9bfb73e9d1bfa9f15e7e80e951234b109de",
+      "mask_pixels": 176136,
+      "bbox_pixels": 192000,
+      "mask_fill_fraction": 0.917375,
+      "mandatory_pixels_inside_surface": 268,
+      "ownership_contract": "exclusive_nearest_unique_core/v1"
+    },
+    "roof": {
+      "family": "top",
+      "side": "center",
+      "paintable": true,
+      "projector": "direct_top_quad",
+      "source_anchor": "roof_quad",
+      "source_corner_contract": "cyclic_screen_top_first",
+      "source_domain": "direct_isolated_top_panel_or_confirmed_top_quad",
+      "upright_rotation_deg": 0,
+      "inverse_ready": true,
+      "bbox": [
+        1550,
+        1545,
+        1975,
+        2025
+      ],
+      "bbox_normalized": [
+        0.75683594,
+        0.75439453,
+        0.96435547,
+        0.98876953
+      ],
+      "stored_orientation": "upright",
+      "truth_note": null,
+      "mask_path": "masks/roof.png",
+      "mask_sha256": "2194c01c9b5057ec20a06507622665822322a7fb711b55b01695f03c7f10728e",
+      "mask_pixels": 191730,
+      "bbox_pixels": 204000,
+      "mask_fill_fraction": 0.939853,
+      "mandatory_pixels_inside_surface": 342,
+      "ownership_contract": "exclusive_nearest_unique_core/v1"
+    },
+    "spoiler_inside": {
+      "family": "rear_aero",
+      "side": "inside",
+      "paintable": true,
+      "projector": "rear_car_space",
+      "required_anchors": [
+        "spoiler_inside_quad"
+      ],
+      "upright_rotation_deg": 180,
+      "inverse_ready": false,
+      "unresolved": "rear-view spoiler anchors required",
+      "bbox": [
+        500,
+        1845,
+        1170,
+        1930
+      ],
+      "bbox_normalized": [
+        0.24414062,
+        0.90087891,
+        0.57128906,
+        0.94238281
+      ],
+      "stored_orientation": "rot180",
+      "truth_note": null,
+      "mask_path": "masks/spoiler_inside.png",
+      "mask_sha256": "ee89e8c5b73469d15e35d76c58de80bea53fe731db44f64e27ec3b710612edf8",
+      "mask_pixels": 56950,
+      "bbox_pixels": 56950,
+      "mask_fill_fraction": 1.0,
+      "mandatory_pixels_inside_surface": 0,
+      "ownership_contract": "exclusive_nearest_unique_core/v1"
+    },
+    "spoiler_outside": {
+      "family": "rear_aero",
+      "side": "outside",
+      "paintable": true,
+      "projector": "direct_quad",
+      "source_anchor": "spoiler_outside_quad",
+      "required_anchors": [
+        "spoiler_outside_quad"
+      ],
+      "source_corner_contract": "cyclic_screen_top_first",
+      "source_domain": "direct_isolated_spoiler_face_or_confirmed_rear_quad",
+      "upright_rotation_deg": 0,
+      "inverse_ready": true,
+      "bbox": [
+        500,
+        1935,
+        1170,
+        2010
+      ],
+      "bbox_normalized": [
+        0.24414062,
+        0.94482422,
+        0.57128906,
+        0.98144531
+      ],
+      "stored_orientation": "normal",
+      "truth_note": null,
+      "mask_path": "masks/spoiler_outside.png",
+      "mask_sha256": "a0cadc7c44eb59a1d5c8e921e7f8bed304b1c6ac0450ed10bc0e59b0e64450f4",
+      "mask_pixels": 46230,
+      "bbox_pixels": 50250,
+      "mask_fill_fraction": 0.92,
+      "mandatory_pixels_inside_surface": 0,
+      "ownership_contract": "exclusive_nearest_unique_core/v1"
+    },
+    "spoiler_boards_woo": {
+      "family": "mandatory_series",
+      "side": "center",
+      "paintable": false,
+      "projector": "fixed_template",
+      "upright_rotation_deg": 0,
+      "inverse_ready": false,
+      "bbox": [
+        1220,
+        60,
+        1450,
+        460
+      ],
+      "bbox_normalized": [
+        0.59570312,
+        0.02929688,
+        0.70800781,
+        0.22460938
+      ],
+      "stored_orientation": null,
+      "truth_note": "World of Outlaws logos printed on template",
+      "mask_path": "masks/spoiler_boards_woo.png",
+      "mask_sha256": "6c8b8f7e25ebc3c65d7e119d86ec1275afd2d8d0a92483d9e87cb36bdfe867f5",
+      "mask_pixels": 75544,
+      "bbox_pixels": 92000,
+      "mask_fill_fraction": 0.82113,
+      "mandatory_pixels_inside_surface": 0
+    },
+    "window_net": {
+      "family": "hardware",
+      "side": "left",
+      "paintable": false,
+      "projector": "fixed_template",
+      "upright_rotation_deg": 0,
+      "inverse_ready": false,
+      "bbox": [
+        1460,
+        60,
+        1710,
+        300
+      ],
+      "bbox_normalized": [
+        0.71289062,
+        0.02929688,
+        0.83496094,
+        0.14648438
+      ],
+      "stored_orientation": null,
+      "truth_note": null,
+      "mask_path": "masks/window_net.png",
+      "mask_sha256": "e7437508201a548b5361b43a73e388272366aeae8b4aba92af05fa4b76972f6b",
+      "mask_pixels": 59048,
+      "bbox_pixels": 60000,
+      "mask_fill_fraction": 0.984133,
+      "mandatory_pixels_inside_surface": 59048
+    },
+    "fuel_cell_circle": {
+      "family": "hardware",
+      "side": "center",
+      "paintable": false,
+      "projector": "fixed_template",
+      "upright_rotation_deg": 0,
+      "inverse_ready": false,
+      "bbox": [
+        595,
+        780,
+        780,
+        1050
+      ],
+      "bbox_normalized": [
+        0.29052734,
+        0.38085938,
+        0.38085938,
+        0.51269531
+      ],
+      "stored_orientation": null,
+      "truth_note": null,
+      "mask_path": "masks/fuel_cell_circle.png",
+      "mask_sha256": "42f1d0fa471180260b04a9a4fadb10b016b0a76adb09976fbb589f376f771dc1",
+      "mask_pixels": 49950,
+      "bbox_pixels": 49950,
+      "mask_fill_fraction": 1.0,
+      "mandatory_pixels_inside_surface": 0
+    }
+  },
+  "placement_anchors": {
+    "roof_number": {
+      "role": "number",
+      "bbox": [
+        1590,
+        1650,
+        1930,
+        1896
+      ],
+      "source_bbox_xywh": [
+        795,
+        825,
+        170,
+        123
+      ],
+      "source_space": [
+        1024,
+        1024
+      ],
+      "orientation_deg": 0,
+      "basis": "panel_map.number_blocks"
+    },
+    "door_number_upper_side": {
+      "role": "number",
+      "bbox": [
+        582,
+        456,
+        892,
+        678
+      ],
+      "source_bbox_xywh": [
+        291,
+        228,
+        155,
+        111
+      ],
+      "source_space": [
+        1024,
+        1024
+      ],
+      "orientation_deg": 180,
+      "basis": "panel_map.number_blocks",
+      "visual_rotation_adjust_deg": 2.0,
+      "calibration_basis": "Owner in-sim DLM driver-side physical-level correction, 2026-07-14"
+    },
+    "door_number_lower_side": {
+      "role": "number",
+      "bbox": [
+        580,
+        1436,
+        890,
+        1642
+      ],
+      "source_bbox_xywh": [
+        290,
+        718,
+        155,
+        103
+      ],
+      "source_space": [
+        1024,
+        1024
+      ],
+      "orientation_deg": 0,
+      "basis": "panel_map.number_blocks"
+    },
+    "nose_number_small": {
+      "role": "number",
+      "bbox": [
+        542,
+        1832,
+        628,
+        1886
+      ],
+      "source_bbox_xywh": [
+        271,
+        916,
+        43,
+        27
+      ],
+      "source_space": [
+        1024,
+        1024
+      ],
+      "orientation_deg": 180,
+      "basis": "panel_map.number_blocks"
+    },
+    "nose_vertical_sponsor": {
+      "role": "sponsor",
+      "bbox": [
+        1392,
+        798,
+        1628,
+        1276
+      ],
+      "source_bbox_xywh": [
+        696,
+        399,
+        118,
+        239
+      ],
+      "source_space": [
+        1024,
+        1024
+      ],
+      "orientation_deg": 90,
+      "basis": "panel_map.sponsor_blocks"
+    },
+    "upper_side_rear_sponsor_strip": {
+      "role": "sponsor",
+      "bbox": [
+        32,
+        618,
+        514,
+        704
+      ],
+      "source_bbox_xywh": [
+        16,
+        309,
+        241,
+        43
+      ],
+      "source_space": [
+        1024,
+        1024
+      ],
+      "orientation_deg": 180,
+      "basis": "panel_map.sponsor_blocks",
+      "visual_rotation_adjust_deg": 2.0,
+      "calibration_basis": "Owner in-sim DLM driver-side physical-level correction, 2026-07-14"
+    },
+    "lower_side_rear_sponsor_strip": {
+      "role": "sponsor",
+      "bbox": [
+        38,
+        1420,
+        490,
+        1500
+      ],
+      "source_bbox_xywh": [
+        19,
+        710,
+        226,
+        40
+      ],
+      "source_space": [
+        1024,
+        1024
+      ],
+      "orientation_deg": 0,
+      "basis": "panel_map.sponsor_blocks"
+    },
+    "spoiler_lower_sponsor_strip": {
+      "role": "sponsor",
+      "bbox": [
+        670,
+        1935,
+        1166,
+        1989
+      ],
+      "source_bbox_xywh": [
+        258,
+        966,
+        325,
+        27
+      ],
+      "source_space": [
+        1024,
+        1024
+      ],
+      "orientation_deg": 0,
+      "basis": "panel_map.sponsor_blocks",
+      "calibration_basis": "Owner in-sim outward-spoiler visual centering matched to accepted inside face, 2026-07-14"
+    },
+    "spoiler_upper_sponsor_strip": {
+      "role": "sponsor",
+      "bbox": [
+        670,
+        1832,
+        1166,
+        1886
+      ],
+      "source_bbox_xywh": [
+        335,
+        916,
+        248,
+        27
+      ],
+      "source_space": [
+        1024,
+        1024
+      ],
+      "orientation_deg": 180,
+      "basis": "panel_map.sponsor_blocks"
+    },
+    "upper_side_center_sponsor_strip": {
+      "role": "sponsor",
+      "bbox": [
+        910,
+        532,
+        1182,
+        592
+      ],
+      "source_bbox_xywh": [
+        455,
+        266,
+        136,
+        30
+      ],
+      "source_space": [
+        1024,
+        1024
+      ],
+      "orientation_deg": 180,
+      "basis": "panel_map.sponsor_blocks",
+      "visual_rotation_adjust_deg": 2.0,
+      "calibration_basis": "Owner in-sim DLM driver-side physical-level correction, 2026-07-14"
+    },
+    "lower_side_center_sponsor_strip": {
+      "role": "sponsor",
+      "bbox": [
+        904,
+        1506,
+        1176,
+        1566
+      ],
+      "source_bbox_xywh": [
+        452,
+        753,
+        136,
+        30
+      ],
+      "source_space": [
+        1024,
+        1024
+      ],
+      "orientation_deg": 0,
+      "basis": "panel_map.sponsor_blocks"
+    }
+  },
+  "adjacency": [
+    {
+      "a": "left_strip",
+      "b": "left_front_fender",
+      "seam": "left_door_to_front_fender",
+      "confidence": 1.0,
+      "basis": "owner in-game keepout evidence"
+    },
+    {
+      "a": "right_strip",
+      "b": "right_front_fender",
+      "seam": "right_door_to_front_fender",
+      "confidence": 1.0,
+      "basis": "owner in-game keepout evidence"
+    },
+    {
+      "a": "hood",
+      "b": "nose",
+      "seam": "hood_to_nose",
+      "confidence": 0.75,
+      "basis": "template body-flow identity; calibration pending"
+    },
+    {
+      "a": "spoiler_inside",
+      "b": "spoiler_outside",
+      "seam": "spoiler_two_faces",
+      "confidence": 0.9,
+      "basis": "official template labels"
+    }
+  ],
+  "keepouts": {
+    "note": "Learned from owner's in-game wireframe renders (Mountain Dew v1, 2026-07-13). The FRONT FENDER FLARE piece overlays the door strip's forward end in 3D \u2014 side decals extending past the boundary get chopped mid-glyph on the car. Also: iRacing stamps the WoO series decal over the sail boards; sponsor art there is wasted (put quarter-panel sponsors on the BAND upper-rear instead). Roof: official Number Blocks guide is LANDSCAPE (339x246) -> roof art reads front/rear, and the real-paint corpus (reads at rot0) maps to reads-from-REAR in game; that is the real DLM convention, keep it.",
+    "right_strip_door_visible_x": [
+      590,
+      1130
+    ],
+    "left_strip_door_visible_upright_x": [
+      180,
+      1310
+    ],
+    "sail_boards": "series decal overlay \u2014 no sponsor placement",
+    "dark_field_logos": "logos must contrast the destination field: use white knockout versions of dark wordmarks on DEW-green-class fields"
+  },
+  "orientation_evidence": {
+    "_method": "OCR-at-4-rotations vote across 50 real DLM paints (dirtlatemodel 350, 757 available) + structure-tensor stripe angles. Controls right_door(rot0)/left_door(rot180) reproduced with 30/34 clear wins \u2014 method validated. _dlm_orientation_miner.py / _dlm_orientation_report.py, 2026-07-13.",
+    "reads_at": {
+      "right_door": 0,
+      "left_door": 180,
+      "roof": 0,
+      "hood": 270,
+      "nose": 270,
+      "deck": 270,
+      "right_fender": 0,
+      "left_fender": "0/180 ambiguous (low text)",
+      "topleft_a": 0,
+      "topleft_b": 0
+    },
+    "place_upright_art_rotate": {
+      "roof": 0,
+      "hood": 90,
+      "nose": 90,
+      "deck": 90
+    },
+    "fender_stripe_flow": "both fender pieces: continuation bands rise up-right ~+37 deg in template space, entering from the lower door-side edge (mined angle left 37/coh .66 + corpus examples car_1147215, car_817663)",
+    "topleft_pieces": "both read rot0 with text present \u2014 likely nose cone halves / tail; identity still unconfirmed"
+  },
+  "policy": {
+    "readable_art_reflection_allowed": false,
+    "unresolved_projectors_must_abstain": true,
+    "mandatory_overlap_allowed": false,
+    "livery_specific_rules_allowed": false,
+    "guide_polarity_must_be_explicit": true
+  },
+  "exclusive_ownership": {
+    "schema": "shokk-forge.adapter-exclusive-ownership/v1",
+    "algorithm": "nearest_unique_surface_core; no livery pixels",
+    "preserves_union": true,
+    "overlap_pixels_before": 35080,
+    "overlap_pixels_after": 0,
+    "pair_overlaps_before": [
+      {
+        "a": "left_strip",
+        "b": "rear_deck_lid",
+        "pixels": 7350
+      },
+      {
+        "a": "right_strip",
+        "b": "right_front_fender",
+        "pixels": 25724
+      },
+      {
+        "a": "right_front_fender",
+        "b": "roof",
+        "pixels": 2006
+      }
+    ],
+    "source_mask_sha256": {
+      "left_strip": "ea3abaa3d9ea7933ad7b50681fd217536230c3b7f555dbc1c609154600e856a6",
+      "right_strip": "033fdcce2a88c554a60bbcfe1d243c247ba9003e1e7d5a668220997d036e772f",
+      "left_front_fender": "858b15aff29cc628b1311f310c939609521a9d9bbf80bd0e8389b48652d79990",
+      "right_front_fender": "a920d11a2c298f06e134474ac605ad7ca6d8be19d5095eb5d71a245717211962",
+      "rear_deck_lid": "986412577742836741fa608efccd1bd1d9666121aab3d1a78d42a07b4d964316",
+      "hood": "c07af48a8b99ac1aeb77c1084ad1d16596b48f987c8f7e0bf5c84f8c42551304",
+      "nose": "a5b4531468c00776e0babbcf9d383aeada88bf0640d3f9e4f78b7d6a4c0033f2",
+      "roof": "efdff0938f2647c685c1cddfa27a04795bfc9744f414fbfdabb60f409ba41854",
+      "spoiler_inside": "c052b06eb53482e77500d24aff550a25260f11a1a784c767331144683680ef7c",
+      "spoiler_outside": "412a499f8131988b1fbb3688cc7e22c0d3d8d3a476f170696782b965a52b76bc"
+    }
+  }
+}

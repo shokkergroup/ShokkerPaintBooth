@@ -61,7 +61,7 @@ from typing import Tuple
 
 import numpy as np
 
-from engine.core import multi_scale_noise, get_mgrid, hsv_to_rgb_vec
+from engine.core import _resize_array, multi_scale_noise, get_mgrid, hsv_to_rgb_vec
 from engine.paint_v2 import ensure_bb_2d
 
 
@@ -96,6 +96,8 @@ CC_VANTA: float = 240.0
 
 # Tiny epsilon for divide-by-zero guards.
 EPS: float = 1e-6
+
+_BASIC_FIELD_CACHE = {}
 
 ShapeLike = Tuple[int, int]
 SpecTriple = Tuple[np.ndarray, np.ndarray, np.ndarray]
@@ -210,6 +212,30 @@ def _safe_seed(seed) -> int:
     except (TypeError, ValueError):
         logger.warning("finish_basic: bad seed %r, falling back to 0", seed)
         return 0
+
+
+def _basic_cache_put(key, value):
+    if len(_BASIC_FIELD_CACHE) > 96:
+        _BASIC_FIELD_CACHE.clear()
+    _BASIC_FIELD_CACHE[key] = value
+    return value
+
+
+def _basic_noise(shape, scales, weights, seed, cap=1024):
+    h, w = _hw(shape)
+    key = ("noise", int(h), int(w), tuple(scales), tuple(weights), int(seed), int(cap))
+    cached = _BASIC_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    work = min(int(cap), int(h), int(w))
+    if work < min(h, w):
+        sh = max(8, int(round(h * work / max(h, w))))
+        sw = max(8, int(round(w * work / max(h, w))))
+        field = multi_scale_noise((sh, sw), scales, weights, seed)
+        field = _resize_array(np.asarray(field, dtype=np.float32), h, w)
+    else:
+        field = multi_scale_noise((h, w), scales, weights, seed)
+    return _basic_cache_put(key, np.asarray(field, dtype=np.float32))
 
 
 # ============================================================================
@@ -555,48 +581,40 @@ def spec_flat_black(shape, seed, sm: float, base_m: float, base_r: float) -> Spe
 
 def paint_frozen_v2(paint: np.ndarray, shape, mask: np.ndarray, seed,
                     pm: float, bb) -> np.ndarray:
-    """Frozen (ice-crystal) — slight blue iridescence (WEAK-017).
-
-    Distinct from ``frozen_matte`` (frosted/etched). Frozen = crystalline
-    sparkle with cold metallic blue cast.
-    """
+    """Frozen — icy white frost with crystal icy-blue accents (SPB Exotic Metal owner REBUILD 2026-05-27)."""
     paint = _safe_paint_copy(paint)
-    out = paint
+    h, w = _hw(shape)
+    s = _safe_seed(seed)
+    frost = multi_scale_noise((h, w), [4, 8, 16, 32], [0.28, 0.30, 0.26, 0.16], s + 7701)
+    frost01 = np.clip(frost * 0.5 + 0.5, 0.0, 1.0)
+    crystal = np.clip((multi_scale_noise((h, w), [2, 5, 11], [0.42, 0.34, 0.24], s + 7702) - 0.45) * 3.5, 0.0, 1.0)
     blend = np.clip(pm, 0.0, 1.0) * mask
-    out[:, :, 0] = np.clip(out[:, :, 0] - 0.025 * blend, 0.0, 1.0)  # less red
-    out[:, :, 2] = np.clip(out[:, :, 2] + 0.04 * blend, 0.0, 1.0)   # more blue
-    return out
+    icy_white = 0.92 + frost01 * 0.06 + crystal * 0.04
+    out = paint.copy()
+    for c, lift in enumerate((0.88, 0.91, 1.00)):
+        out[:, :, c] = np.clip(out[:, :, c] * (1.0 - blend * 0.55) + icy_white * blend * (0.62 if c == 2 else 0.78), 0.0, 1.0)
+    out[:, :, 2] = np.clip(out[:, :, 2] + crystal * 0.12 * blend, 0.0, 1.0)
+    out[:, :, 0] = np.clip(out[:, :, 0] - crystal * 0.06 * blend, 0.0, 1.0)
+    return out.astype(np.float32)
 
 
 def spec_frozen(shape, seed, sm: float, base_m: float, base_r: float) -> SpecTriple:
-    """Frozen spec — Worley-style ice-crystal pattern (WEAK-017).
-
-    Distance-to-nearest-seed-point produces sharp crystalline boundaries.
-    The inner per-crystal loop is bounded (80 points) and vectorized over
-    the (H, W) grid, so performance scales as ``O(H·W·N_crystals)`` —
-    ~80 ms at 2048² with N=80. Trade-off accepted for the visual win.
-    """
+    """Frozen spec — icy white crystal facets + icy-blue CC pools (SPB owner REBUILD 2026-05-27)."""
     try:
         _validate_spec_inputs(shape, seed, sm)
         h, w = _hw(shape)
         s = _safe_seed(seed)
-        rng = np.random.RandomState(s + 7700)
-        n_crystals = 80
-        pts_y = rng.uniform(0, h, n_crystals).astype(np.float32)
-        pts_x = rng.uniform(0, w, n_crystals).astype(np.float32)
-        yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
-
-        # Vectorized min-distance accumulation. Each iteration is a single
-        # broadcast over the full (H,W) grid — no Python pixel loop.
-        dist = np.full((h, w), 1e9, dtype=np.float32)
-        for i in range(n_crystals):
-            d = np.sqrt((yy - pts_y[i]) ** 2 + (xx - pts_x[i]) ** 2)
-            dist = np.minimum(dist, d)
-
-        crystal = np.clip(dist / (float(dist.max()) + EPS), 0.0, 1.0)
-        M = base_m + crystal * 40.0 * sm - 20.0
-        R = base_r + (1.0 - crystal) * 35.0 * sm
-        CC = CC_MIN + crystal * 20.0 * sm
+        fine = multi_scale_noise((h, w), [2, 5, 11, 23], [0.36, 0.30, 0.22, 0.12], s + 7703)
+        fine01 = np.clip(fine * 0.5 + 0.5, 0.0, 1.0)
+        dendrite = np.clip(
+            np.abs(np.sin((np.mgrid[0:h, 0:w][1].astype(np.float32) * 0.08
+                           + np.mgrid[0:h, 0:w][0].astype(np.float32) * 0.05 + fine * 4.0) * np.pi))
+            * (1.0 - fine01 * 0.35), 0.0, 1.0)
+        sparkle = np.clip((multi_scale_noise((h, w), [1, 3, 7], [0.45, 0.35, 0.20], s + 7704) - 0.58) * 5.0, 0.0, 1.0)
+        crystal = np.clip(dendrite * 0.55 + sparkle * 0.45, 0.0, 1.0)
+        M = np.clip(195.0 + crystal * 55.0 * sm + fine01 * 18.0 * sm, 0, 255)
+        R = np.clip(118.0 + (1.0 - crystal) * 42.0 * sm + fine01 * 22.0 * sm, 15, 255)
+        CC = np.clip(88.0 + crystal * 38.0 * sm + fine01 * 28.0 * sm, 16, 255)
         return _enforce_iron_rules(M, R, CC)
     except Exception as exc:  # noqa: BLE001
         logger.error("spec_frozen failed: %s", exc)
@@ -690,7 +708,7 @@ def spec_iridescent(shape, seed, sm: float, base_m: float, base_r: float) -> Spe
         _validate_spec_inputs(shape, seed, sm)
         h, w = _hw(shape)
         s = _safe_seed(seed)
-        film = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], s + 200)
+        film = _basic_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], s + 200, cap=960)
         M = float(base_m) + film * 20.0 * sm
         R = float(base_r) + film * 8.0 * sm
         CC = CC_MIN + film * 3.0 * sm
@@ -897,38 +915,46 @@ def spec_perlin(shape, seed, sm: float, base_m: float, base_r: float) -> SpecTri
 
 def paint_orange_peel_gloss_v2(paint: np.ndarray, shape, mask: np.ndarray, seed,
                                pm: float, bb) -> np.ndarray:
-    """Orange peel gloss — visible dimple texture from spray micro-coating."""
+    """Orange peel gloss — saturated factory orange with 8–12 px peel dimples."""
     paint = _safe_paint_copy(paint)
     if pm == 0.0:
         return paint
     h, w = _hw(shape)
     s = _safe_seed(seed)
-    dimple_coarse = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], s + 8800)
-    dimple_fine = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], s + 8801)
-    cells = np.sin(dimple_coarse * np.pi * 12.0) * 0.5 + 0.5  # ~6-8 px cells
-    cells = cells * (0.8 + dimple_fine * 0.2)
-    texture = cells * 0.12 * pm
-    contrasted = np.clip((paint - 0.5) * 1.06 + 0.5, 0.0, 1.0)
-    effect = np.clip(contrasted + texture[:, :, np.newaxis] - 0.06, 0.0, 1.0)
+    dimple_coarse = multi_scale_noise((h, w), [8, 16], [0.52, 0.48], s + 8800)
+    dimple_fine = multi_scale_noise((h, w), [16, 32], [0.58, 0.42], s + 8801)
+    cells = np.sin(dimple_coarse * np.pi * 22.0) * 0.5 + 0.5
+    cells = np.clip(cells * (0.78 + dimple_fine * 0.28), 0, 1)
+    valley = 1.0 - cells
+    peel_shadow = valley * 0.14 * pm
+
+    orange = np.array([0.94, 0.38, 0.04], dtype=np.float32)
+    deep_orange = np.array([0.72, 0.22, 0.02], dtype=np.float32)
+    highlight = np.array([1.00, 0.58, 0.12], dtype=np.float32)
+    effect = orange[None, None, :] * (0.82 + cells[:, :, None] * 0.12)
+    effect = np.clip(effect - peel_shadow[:, :, None] * np.array([0.18, 0.08, 0.02], dtype=np.float32), 0, 1)
+    effect = np.clip(effect + valley[:, :, None] * deep_orange[None, None, :] * 0.10, 0, 1)
+    effect = np.clip(effect + cells[:, :, None] * highlight[None, None, :] * 0.08, 0, 1)
+
     m3 = mask[:, :, np.newaxis]
-    result = effect * m3 + paint * (1.0 - m3)
-    return np.clip(result, 0.0, 1.0).astype(np.float32)
+    result = np.clip(paint * (1.0 - m3 * pm) + effect * (m3 * pm), 0.0, 1.0)
+    return result.astype(np.float32)
 
 
 def spec_orange_peel_gloss(shape, seed, sm: float, base_m: float,
                            base_r: float) -> SpecTriple:
-    """Orange peel spec — fine cellular bumps (6-8 px cells)."""
+    """Orange peel spec — fine 8–12 px cellular bumps under wet clearcoat."""
     try:
         _validate_spec_inputs(shape, seed, sm)
         h, w = _hw(shape)
         s = _safe_seed(seed)
-        dimple_coarse = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], s + 8800)
-        dimple_fine = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], s + 8801)
-        cells = np.sin(dimple_coarse * np.pi * 12.0) * 0.5 + 0.5
-        cells = cells * (0.8 + dimple_fine * 0.2)
-        M = base_m + cells * 15.0 * sm - 7.0
-        R = base_r + (1.0 - cells) * 30.0 * sm + cells * 5.0 * sm
-        CC = CC_MIN + (1.0 - cells) * 12.0 * sm
+        dimple_coarse = multi_scale_noise((h, w), [8, 16], [0.52, 0.48], s + 8800)
+        dimple_fine = multi_scale_noise((h, w), [16, 32], [0.58, 0.42], s + 8801)
+        cells = np.sin(dimple_coarse * np.pi * 22.0) * 0.5 + 0.5
+        cells = np.clip(cells * (0.78 + dimple_fine * 0.28), 0, 1)
+        M = base_m + cells * 22.0 * sm - 8.0
+        R = base_r + (1.0 - cells) * 38.0 * sm + cells * 8.0 * sm
+        CC = CC_MIN + (1.0 - cells) * 18.0 * sm + cells * 6.0 * sm
         return _enforce_iron_rules(M, R, CC)
     except Exception as exc:  # noqa: BLE001
         logger.error("spec_orange_peel_gloss failed: %s", exc)
@@ -1054,13 +1080,30 @@ def spec_satin(shape, seed, sm: float, base_m: float, base_r: float) -> SpecTrip
 
 
 # ============================================================================
-# SATIN_METAL — pass-through paint; spec brushes it.
+# SATIN_METAL — color-safe brushed metal with satin anisotropy.
 # ============================================================================
 
 def paint_satin_metal_v2(paint: np.ndarray, shape, mask: np.ndarray, seed,
                          pm: float, bb) -> np.ndarray:
-    """Satin metal: pass-through (brushed_grain handles surface)."""
-    return _safe_paint_copy(paint)
+    """Satin metal: preserves base hue, adds fine directional brushed travel."""
+    paint = _safe_paint_copy(paint)
+    h, w = _hw(shape)
+    s = _safe_seed(seed)
+    y, x = get_mgrid((h, w))
+    grain = _basic_noise((h, w), [18, 36, 72], [0.48, 0.34, 0.18], s + 450, cap=960)
+    micro = _basic_noise((h, w), [4, 8, 16], [0.45, 0.35, 0.20], s + 451, cap=960)
+    brush = np.sin(y * 0.030 + grain * 2.1).astype(np.float32) * 0.5 + 0.5
+    cross = np.sin(x * 0.006 + micro * 1.7).astype(np.float32) * 0.5 + 0.5
+    gray = paint.mean(axis=2, keepdims=True)
+    satin = paint * 0.88 + gray * 0.12
+    lift = ((brush - 0.5) * 0.055 + (cross - 0.5) * 0.018) * pm
+    cool_warm = (grain - 0.5) * 0.020 * pm
+    tinted = np.empty_like(satin)
+    tinted[:, :, 0] = np.clip(satin[:, :, 0] + lift + cool_warm, 0.0, 1.0)
+    tinted[:, :, 1] = np.clip(satin[:, :, 1] + lift * 0.96, 0.0, 1.0)
+    tinted[:, :, 2] = np.clip(satin[:, :, 2] + lift - cool_warm, 0.0, 1.0)
+    m3 = mask[:, :, np.newaxis]
+    return (tinted * m3 + paint * (1.0 - m3)).astype(np.float32)
 
 
 def spec_satin_metal(shape, seed, sm: float, base_m: float, base_r: float) -> SpecTriple:
@@ -1069,13 +1112,14 @@ def spec_satin_metal(shape, seed, sm: float, base_m: float, base_r: float) -> Sp
         _validate_spec_inputs(shape, seed, sm)
         h, w = _hw(shape)
         s = _safe_seed(seed)
-        rng = np.random.RandomState(s + 450)
-        # Directional brush: column-correlated noise + light isotropic jitter.
-        brush = (rng.standard_normal((h, 1)).astype(np.float32) * 0.7
-                 + rng.standard_normal((h, w)).astype(np.float32) * 0.3)
-        M = float(base_m) + brush * 12.0 * sm
-        R = float(base_r) + brush * 10.0 * sm
-        CC = CC_MIN + np.abs(brush) * 4.0 * sm
+        y, x = get_mgrid((h, w))
+        grain = _basic_noise((h, w), [18, 36, 72], [0.48, 0.34, 0.18], s + 450, cap=960)
+        micro = _basic_noise((h, w), [4, 8, 16], [0.45, 0.35, 0.20], s + 451, cap=960)
+        brush = np.sin(y * 0.030 + grain * 2.1).astype(np.float32) * 0.5 + 0.5
+        cross = np.sin(x * 0.006 + micro * 1.7).astype(np.float32) * 0.5 + 0.5
+        M = float(base_m) + (brush - 0.35) * 34.0 * sm + micro * 16.0 * sm
+        R = float(base_r) + (1.0 - brush) * 24.0 * sm + cross * 8.0 * sm
+        CC = CC_MIN + (1.0 - brush) * 10.0 * sm + micro * 5.0 * sm
         return _enforce_iron_rules(M, R, CC)
     except Exception as exc:  # noqa: BLE001
         logger.error("spec_satin_metal failed: %s", exc)

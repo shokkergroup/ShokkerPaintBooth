@@ -1,0 +1,198 @@
+{
+ "efx_cathedral_veil": {
+  "bands": "quantile",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_kintsugi_bloom": {
+  "bands": "linear",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_quicksilver_pool": {
+  "bands": "linear",
+  "chips": 0.15
+ },
+ "efx_volcanic_obsidian": {
+  "bands": "quantile",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_aurora_skin": {
+  "bands": "quantile",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_lace_filament": {
+  "bands": "linear",
+  "chips": 0.15
+ },
+ "efx_tempered_spectrum": {
+  "bands": "linear",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_damascus_fold": {
+  "bands": "quantile",
+  "chips": 0.15
+ },
+ "efx_stardust_coat": {
+  "bands": "linear",
+  "chips": 0.34
+ },
+ "efx_spectral_edge": {
+  "bands": "linear",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_holo_flake": {
+  "bands": "quantile",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_holo_prism_cells": {
+  "bands": "quantile",
+  "chips": 0.15
+ },
+ "efx_holo_scan": {
+  "bands": "quantile",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_micro_glitter": {
+  "bands": "linear",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_chunky_flake": {
+  "bands": "linear",
+  "chips": 0.34
+ },
+ "efx_glass_flake": {
+  "bands": "quantile",
+  "chips": 0.15
+ },
+ "efx_gold_leaf": {
+  "bands": "quantile",
+  "chips": 0.15
+ },
+ "efx_surface_rust": {
+  "bands": "quantile",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_rust_through": {
+  "bands": "linear",
+  "chips": 0.34
+ },
+ "chalky_base": {
+  "bands": "quantile",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_peeling_clear": {
+  "bands": "quantile",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_sun_faded": {
+  "bands": "quantile",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_galvanized_spangle": {
+  "bands": "quantile",
+  "chips": 0.15
+ },
+ "efx_verdigris": {
+  "bands": "linear",
+  "chips": 0.15
+ },
+ "efx_soot_wash": {
+  "bands": "linear",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_salt_bloom": {
+  "bands": "linear",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_hammered": {
+  "bands": "quantile",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_cast_iron": {
+  "bands": "quantile",
+  "chips": 0.15
+ },
+ "efx_knurled": {
+  "bands": "linear",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_engine_turned": {
+  "bands": "linear",
+  "chips": 0.34
+ },
+ "efx_sandblasted": {
+  "bands": "linear",
+  "micro": "paint",
+  "chips": 0.15
+ },
+ "efx_wire_brushed": {
+  "bands": "quantile",
+  "micro": "paint",
+  "chips": 0.15
+ },
+ "efx_mill_scale": {
+  "bands": "linear",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_orange_peel": {
+  "bands": "quantile",
+  "chips": 0.34
+ },
+ "efx_crackle_lacquer": {
+  "bands": "quantile",
+  "chips": 0.34
+ },
+ "efx_wrinkle_coat": {
+  "bands": "quantile",
+  "chips": 0.34
+ },
+ "efx_raku_glaze": {
+  "bands": "quantile",
+  "chips": 0.34
+ },
+ "efx_powder_texture": {
+  "bands": "quantile",
+  "chips": 0.34
+ },
+ "efx_terrazzo": {
+  "bands": "linear",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_leather_grain": {
+  "bands": "quantile",
+  "chips": 0.34
+ },
+ "efx_rain_beads": {
+  "bands": "quantile",
+  "micro": "paint",
+  "chips": 0.15
+ },
+ "efx_snow_crust": {
+  "bands": "linear",
+  "micro": "paint",
+  "chips": 0.34
+ },
+ "efx_nacre": {
+  "bands": "quantile",
+  "micro": "paint",
+  "chips": 0.34
+ }
+}

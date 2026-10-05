@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- DIAGNOSTICS RECORDER: FIRST <script> in <head> for the one-click "Report a Problem" feature. -->
+  <script src="js/diagnostics/spb-diag-recorder.js?v=spb-diag-recorder-20260604"></script>
+  <title>AUTO PAINTER (Shokk Trace) — Shokker Paint Booth</title>
+  <!--
+    SPB-AUTOPAINT-001 · 2026-05-29 · autonomous dev loop.
+    Self-contained client-side proof of the Auto Painter / "Shokk Trace" tool:
+    drop a blank iRacing template -> it auto-detects every paintable zone via
+    connected-components -> rename zones -> export a zone-map JSON. Runs with NO
+    server (works over file://). Mirrors the Python zone_segmenter.py algorithm.
+    Owner picks the final name from 25 options; "Shokk Trace" is provisional.
+  -->
+  <style>
+    :root { color-scheme: dark; --bg:#07090d; --panel:#10161e; --line:#2b3645; --text:#eaf0f8; --muted:#9ba8b8; --accent:#f0c040; --cyan:#62d7ff; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; background:var(--bg); color:var(--text); font:13px/1.45 system-ui,Segoe UI,sans-serif; }
+    .app { display:grid; grid-template-columns:minmax(300px,380px) minmax(0,1fr); grid-template-rows:auto 1fr; height:100vh; }
+    header { grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 14px; border-bottom:1px solid var(--line); background:#080b10; }
+    h1 { margin:0; font-size:18px; font-weight:800; letter-spacing:.04em; }
+    h1 small { font-size:11px; font-weight:600; color:var(--muted); letter-spacing:.02em; }
+    .tagline { margin-top:2px; color:var(--muted); font-size:11px; max-width:680px; }
+    .header-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; min-height:34px; padding:0 14px; border-radius:7px; border:1px solid var(--line); background:#111925; color:var(--text); font-weight:640; cursor:pointer; font-size:12px; text-decoration:none; }
+    .btn:hover { border-color:var(--accent); }
+    .btn:disabled { opacity:.45; cursor:not-allowed; }
+    .btn.primary { background:linear-gradient(135deg,#c8960c,var(--accent)); color:#1a1200; border-color:transparent; font-weight:720; }
+    aside { grid-row:2; overflow:auto; padding:12px; border-right:1px solid var(--line); display:flex; flex-direction:column; gap:10px; }
+    main { grid-row:2; overflow:auto; padding:12px 14px 24px; min-width:0; display:flex; flex-direction:column; }
+    .card { border:1px solid var(--line); border-radius:8px; background:var(--panel); padding:10px 11px; }
+    .card h3 { margin:0 0 8px; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+    label { font-size:11px; color:var(--muted); display:block; margin-bottom:4px; }
+    .hint { font-size:10px; color:var(--muted); line-height:1.45; margin:0; }
+    input[type=range] { width:100%; }
+    .rowflex { display:flex; align-items:center; gap:8px; }
+    #dropZone { padding:22px 14px; border:2px dashed var(--line); border-radius:10px; text-align:center; color:var(--muted); font-size:13px; cursor:pointer; transition:.15s; }
+    #dropZone.drag { border-color:var(--cyan); background:#0c121a; color:var(--text); }
+    #stageWrap { position:relative; flex:1; min-height:0; border:1px solid var(--line); border-radius:8px; background:#05070a; overflow:auto; display:flex; align-items:center; justify-content:center; }
+    #stage { max-width:100%; image-rendering:auto; display:block; }
+    .stage-empty { color:var(--muted); font-size:13px; padding:40px; text-align:center; }
+    .zone-row { display:flex; align-items:center; gap:6px; padding:5px 6px; border:1px solid var(--line); border-radius:6px; margin-bottom:5px; background:#0c1018; cursor:pointer; }
+    .zone-row.active { border-color:var(--cyan); box-shadow:0 0 8px rgba(98,215,255,.18); }
+    .zone-swatch { width:14px; height:14px; border-radius:3px; flex-shrink:0; border:1px solid rgba(255,255,255,.3); }
+    .zone-row .zid { font-size:10px; color:var(--muted); width:22px; flex-shrink:0; }
+    .zone-row select { flex:1; min-width:0; font-size:11px; padding:4px 5px; border-radius:5px; border:1px solid var(--line); background:#0a1018; color:var(--text); }
+    .zone-row .area { font-size:9px; color:var(--muted); flex-shrink:0; }
+    .stat { display:flex; justify-content:space-between; font-size:11px; padding:2px 0; }
+    .stat b { color:var(--cyan); font-weight:700; }
+    #toast { position:fixed; bottom:16px; right:16px; z-index:60; display:flex; flex-direction:column; gap:6px; }
+    .t { padding:8px 12px; border-radius:7px; font-size:12px; font-weight:620; border:1px solid var(--line); background:#141c28; box-shadow:0 6px 24px rgba(0,0,0,.45); }
+    .t.ok { border-color:#2a6b3a; background:#102818; color:#b8f0c8; }
+    .t.err { border-color:#6b2a2a; background:#281010; color:#f0b8b8; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>AUTO PAINTER <small>· Shokk Trace (working name)</small></h1>
+        <div class="tagline">Drop a blank iRacing template → it auto-detects every paintable zone → name them → export a <strong>zone map</strong>. The foundation for turning photos/renders into editable templates.</div>
+      </div>
+      <div class="header-actions">
+        <!-- One-click "Report a Problem" (button injected by spb-diag-report.js). -->
+        <span data-spb-report-slot data-spb-report-label="Report a Problem"
+              data-spb-report-btn-class="btn"
+              title="Hit a bug? Copy a diagnostics report to paste to Shokker support."></span>
+        <a class="btn" href="/">← Paint Booth</a>
+      </div>
+    </header>
+
+    <aside>
+      <div class="card">
+        <h3>1 · Load template</h3>
+        <div id="dropZone">Drop a template <strong>PNG/JPG</strong> here<br><span class="hint">or click to browse</span></div>
+        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" style="display:none" />
+      </div>
+
+      <div class="card">
+        <h3>2 · Detection tuning</h3>
+        <label class="rowflex">BG tolerance <input type="range" id="tol" min="8" max="90" value="34"><span id="tolV" style="min-width:28px;text-align:right;color:var(--cyan)">34</span></label>
+        <label class="rowflex">Seal gaps <input type="range" id="seal" min="0" max="6" value="2"><span id="sealV" style="min-width:28px;text-align:right;color:var(--cyan)">2</span></label>
+        <label class="rowflex">Min size % <input type="range" id="minA" min="1" max="40" value="6"><span id="minAV" style="min-width:36px;text-align:right;color:var(--cyan)">0.06%</span></label>
+        <button class="btn primary" id="reseg" disabled style="width:100%;margin-top:6px">Re-detect zones</button>
+        <p class="hint" style="margin-top:6px">Background is auto-sampled from the border. Raise tolerance if panels merge with the field; lower it if panels get split.</p>
+      </div>
+
+      <div class="card">
+        <h3>3 · Zones <span id="zCount" class="hint"></span></h3>
+        <p class="hint" id="connectedHint" style="display:none;margin:0 0 8px;padding:7px 9px;border-radius:6px;background:#241f0c;border:1px solid #ffd23a;color:#ffd23a;font-weight:600;line-height:1.4">Looks like a real connected iRacing template (the offline detector sees ~1 area). Use <strong>“Real iRacing template?”</strong> in step 5 below — pick the car or OCR its labeled guide.</p>
+        <p id="presetHint" class="hint" style="margin:0 0 6px;color:var(--cyan)"></p>
+        <button class="btn" id="ocrNameBtn" style="width:100%;margin-bottom:8px" title="Read the template's baked-in 'Zone N' label text (server OCR) and name zones automatically. Use the FLAT labeled guide for best results.">Auto-name from labels (OCR)</button>
+        <div id="zoneList"><p class="hint">Load a template to detect zones.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>4 · Export</h3>
+        <button class="btn" id="dlMap" disabled style="width:100%;margin-bottom:6px">Download zone map (.json)</button>
+        <button class="btn" id="dlOverlay" disabled style="width:100%">Download labeled overlay (.png)</button>
+      </div>
+
+      <div class="card">
+        <h3>5 · Build template from a design</h3>
+        <p class="hint" style="margin:0 0 6px">Drop a design that's already in template/UV space (a flat design, or an existing painted template). It reads each zone's colour + finish and fills a starting <strong>paint</strong> + <strong>spec</strong> map.</p>
+        <div id="designDrop" style="padding:14px;border:2px dashed var(--line);border-radius:8px;text-align:center;color:var(--muted);font-size:12px;cursor:pointer">Drop <strong>design</strong> image<br><span class="hint">or click to browse</span></div>
+        <input type="file" id="designInput" accept="image/png,image/jpeg,image/webp" style="display:none" />
+        <div id="designName" class="hint" style="margin-top:4px"></div>
+        <label style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:11px;color:var(--text)"><input type="checkbox" id="wantDecals" checked /> Extract decal library (logos, numbers, sponsor blocks)</label>
+        <button class="btn primary" id="buildBtn" disabled style="width:100%;margin-top:6px">Build paint + spec</button>
+        <p class="hint" style="margin-top:6px">Uses the app server (<code>/api/shokk-trace/build</code>). Needs the tool open inside Paint Booth (or its server running).</p>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)">
+          <p class="hint" style="margin:0 0 6px"><strong style="color:var(--cyan)">Real iRacing template?</strong> Real templates are one connected paint area, so the offline detector above sees a single blob. Pick the car and Build through the server's <em>separator partition</em> — it cuts along the drawn zone lines into true panels.</p>
+          <label class="rowflex" style="font-size:11px">Car <select id="seedRefSel" style="flex:1;margin-left:6px;background:#0a0c10;color:var(--text);border:1px solid var(--line);border-radius:5px;padding:4px"></select></label>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <button class="btn" id="seedRefUpload" style="flex:1" title="Load a per-car seed reference .json (authored once, reused across the class)">Load seed .json…</button>
+            <button class="btn" id="authorLabelsBtn" style="flex:1" title="OCR a labeled iRacing template guide to auto-create this car's zone seeds — no PSD needed.">OCR labeled guide…</button>
+          </div>
+          <input type="file" id="seedRefInput" accept="application/json,.json" style="display:none" />
+          <input type="file" id="authorLabelsInput" accept="image/png,image/jpeg,image/webp" style="display:none" />
+          <button class="btn primary" id="buildSepBtn" disabled style="width:100%;margin-top:6px">Build from real template</button>
+          <button class="btn" id="zonesOnlyBtn" disabled style="width:100%;margin-top:6px" title="Skip the design — just extract the named zones and send them to Paint Booth so you can paint them yourself.">Zones only — no design needed →</button>
+          <div style="display:flex;gap:6px;margin-top:8px;align-items:center;border-top:1px dashed var(--line);padding-top:8px">
+            <select id="placeZoneSel" title="Zone to place a seed for" style="flex:1;background:#0a0c10;color:var(--text);border:1px solid var(--line);border-radius:5px;padding:4px;font-size:11px"></select>
+            <button class="btn" id="placeSeedBtn" style="flex:0 0 auto" title="Toggle on, then click the loaded template to drop a seed for the selected zone — fixes a zone OCR missed (e.g. Pitboard) or one placed wrong.">📍 Place seed</button>
+          </div>
+          <p class="hint" id="placeHint" style="margin:3px 0 0;display:none;color:var(--cyan)">Click the template image to drop the seed. Placements collect into an “Edited” car — pick it, then Build / Zones only.</p>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <button class="btn" id="saveSeedRefBtn" style="flex:1" title="Download the selected car's zone seeds as a .json — Load it next time, or drop it into _shokk_trace/seed_refs/ to make it a permanent car. Closes the 'author once, reuse across the class' loop.">💾 Save this car (.json)</button>
+            <button class="btn" id="forgetRefsBtn" style="flex:0 0 auto" title="Clear cars auto-remembered in this browser (OCR'd / placed / loaded). The built-in cars stay.">Forget saved</button>
+          </div>
+          <p class="hint" style="margin:3px 0 0">Authored cars (OCR / placed / loaded) are auto-remembered in this browser across reloads.</p>
+          <p class="hint" style="margin-top:6px">Drop the template up top (the <em>Zones and Gridlines</em> image cuts best). <strong>Build from real template</strong> also fills paint+spec from a design; <strong>Zones only</strong> just hands you the named, editable panels. Uses <code>/api/shokk-trace/{build,segment}-separators</code>; results + Send below.</p>
+        </div>
+        <div id="buildResults" style="margin-top:8px;display:none">
+          <div id="fitNote" style="display:none;margin-bottom:6px;padding:6px 9px;border-radius:6px;font-size:11px;font-weight:600;line-height:1.35"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <div><label>Paint</label><a id="dlPaint" download><img id="imgPaint" style="width:100%;border:1px solid var(--line);border-radius:5px;background:#0a0c10;display:block"/></a></div>
+            <div><label>Spec (M/R/CC)</label><a id="dlSpec" download><img id="imgSpec" style="width:100%;border:1px solid var(--line);border-radius:5px;background:#0a0c10;display:block"/></a></div>
+          </div>
+          <p class="hint" style="margin-top:4px">Click an image to download. Spec channels: R=Metallic, G=Roughness, B=Clearcoat.</p>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button class="btn primary" id="sendZonesBtn" style="flex:1">Send to Paint Booth zones</button>
+            <button class="btn" id="dlHandoffBtn" title="Download a .shokktrace.json handoff bundle (zones + RLE + colours + decals)">.shokktrace</button>
+          </div>
+          <p class="hint" style="margin-top:4px">Sends named zones (with region masks + base colours) straight into Paint Booth as editable zones. Then pick a base material per zone and render.</p>
+          <div id="decalWrap" style="display:none;margin-top:8px">
+            <label>Extracted decals <span id="decalCount" class="hint"></span></label>
+            <div id="decalGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:5px;max-height:220px;overflow:auto;background:repeating-conic-gradient(#1a222e 0% 25%,#10161e 0% 50%) 50%/16px 16px;border:1px solid var(--line);border-radius:6px;padding:5px"></div>
+            <p class="hint" style="margin-top:3px">Click a decal to download its transparent PNG.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Detection stats</h3>
+        <div id="stats"><p class="hint">—</p></div>
+      </div>
+    </aside>
+
+    <main>
+      <div id="stageWrap"><div class="stage-empty">No template loaded yet.<br>Drop one on the left — it works entirely offline, right here in this page.</div></div>
+    </main>
+  </div>
+  <div id="toast"></div>
+
+<script>
+"use strict";
+(function () {
+  // ---- iRacing-ish zone vocabulary for the rename dropdowns ----
+  const ZONE_NAMES = ["Unassigned","Front Bumper","Rear Bumper","Hood","Roof","Rear Decklid",
+    "Left Side","Right Side","Spoiler (Outside)","Spoiler (Inside)","Windshield Banner",
+    "Pitboard","Number Panel","Contingency","Mirror","Window","Misc"];
+  const PALETTE = [[239,192,64],[98,215,255],[255,110,110],[140,220,140],[200,140,255],
+    [255,170,80],[120,200,255],[255,130,200],[180,255,120],[255,220,120],[120,255,220],
+    [220,120,255],[255,150,150],[150,255,200],[200,200,255],[255,200,150]];
+
+  let img = null;          // HTMLImageElement
+  let work = null;         // {w,h, data:Uint8ClampedArray}  working-res RGBA
+  let zoneMap = null;      // current result
+  let activeId = null;
+  const MAX_DIM = 1100;    // working resolution cap for snappy in-browser CC
+
+  const $ = (id) => document.getElementById(id);
+  function toast(msg, kind) {
+    const el = document.createElement("div");
+    el.className = "t " + (kind || "");
+    el.textContent = msg;
+    $("toast").appendChild(el);
+    setTimeout(() => el.remove(), kind === "err" ? 5200 : 3200);
+  }
+
+  // ---------- load ----------
+  const dz = $("dropZone");
+  dz.addEventListener("click", () => $("fileInput").click());
+  $("fileInput").addEventListener("change", (e) => { if (e.target.files[0]) loadFile(e.target.files[0]); });
+  ["dragenter","dragover"].forEach(ev => dz.addEventListener(ev, (e)=>{e.preventDefault();dz.classList.add("drag");}));
+  ["dragleave","drop"].forEach(ev => dz.addEventListener(ev, (e)=>{e.preventDefault();dz.classList.remove("drag");}));
+  dz.addEventListener("drop", (e) => { const f = e.dataTransfer.files[0]; if (f) loadFile(f); });
+
+  function loadFile(file) {
+    if (!/^image\//.test(file.type)) { toast("Not an image file", "err"); return; }
+    const url = URL.createObjectURL(file);
+    const im = new Image();
+    im.onload = () => {
+      img = im;
+      // rasterize to working resolution
+      const scale = Math.min(1, MAX_DIM / Math.max(im.width, im.height));
+      const w = Math.round(im.width * scale), h = Math.round(im.height * scale);
+      const c = document.createElement("canvas"); c.width = w; c.height = h;
+      const ctx = c.getContext("2d"); ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(im, 0, 0, w, h);
+      work = { w, h, data: ctx.getImageData(0, 0, w, h).data, srcW: im.width, srcH: im.height, name: file.name, file: file };
+      URL.revokeObjectURL(url);
+      $("reseg").disabled = false;
+      const _zb = $("zonesOnlyBtn"); if (_zb) _zb.disabled = false;   // no design needed
+      segment();
+    };
+    im.onerror = () => { toast("Could not decode image", "err"); URL.revokeObjectURL(url); };
+    im.src = url;
+  }
+
+  // ---------- segmentation (mirrors zone_segmenter.py) ----------
+  function modalBorderColor(d, w, h) {
+    const strip = Math.max(1, Math.min(8, (h/4)|0, (w/4)|0));
+    const counts = new Map();
+    const tally = (x, y) => {
+      const i = (y*w + x)*4;
+      const key = ((d[i]>>3)<<10) | ((d[i+1]>>3)<<5) | (d[i+2]>>3);
+      counts.set(key, (counts.get(key)||0)+1);
+    };
+    for (let y=0; y<h; y++) for (let s=0;s<strip;s++){ tally(s,y); tally(w-1-s,y); }
+    for (let x=0; x<w; x++) for (let s=0;s<strip;s++){ tally(x,s); tally(x,h-1-s); }
+    let best=0,bk=0; for (const [k,c] of counts) if (c>best){best=c;bk=k;}
+    return [((bk>>10)&31)<<3, ((bk>>5)&31)<<3, (bk&31)<<3];
+  }
+
+  function segment() {
+    if (!work) return;
+    const t0 = performance.now();
+    const { w, h, data: d } = work;
+    const N = w*h;
+    const tol = +$("tol").value, seal = +$("seal").value, minFrac = (+$("minA").value)/10000; // slider 1..40 -> 0.01%..0.40% of canvas (parity w/ zone_segmenter.py)
+    const bg = modalBorderColor(d, w, h);
+    const tol2 = tol*tol;
+
+    // isBg = within tolerance of background colour (and not transparent-as-fg)
+    const isBg = new Uint8Array(N);
+    for (let p=0,i=0; p<N; p++,i+=4) {
+      const dr=d[i]-bg[0], dg=d[i+1]-bg[1], db=d[i+2]-bg[2];
+      const transparent = d[i+3] < 16;
+      isBg[p] = (transparent || (dr*dr+dg*dg+db*db) <= tol2) ? 1 : 0;
+    }
+    // flood fill background from the borders -> outerBg; enclosed bg becomes fg (hole fill)
+    const outer = new Uint8Array(N);
+    const stack = [];
+    const pushIf = (x,y) => { const p=y*w+x; if (isBg[p] && !outer[p]){ outer[p]=1; stack.push(p);} };
+    for (let x=0;x<w;x++){ pushIf(x,0); pushIf(x,h-1); }
+    for (let y=0;y<h;y++){ pushIf(0,y); pushIf(w-1,y); }
+    while (stack.length) {
+      const p = stack.pop(), x=p%w, y=(p/w)|0;
+      if (x>0){const q=p-1; if(isBg[q]&&!outer[q]){outer[q]=1;stack.push(q);}}
+      if (x<w-1){const q=p+1; if(isBg[q]&&!outer[q]){outer[q]=1;stack.push(q);}}
+      if (y>0){const q=p-w; if(isBg[q]&&!outer[q]){outer[q]=1;stack.push(q);}}
+      if (y<h-1){const q=p+w; if(isBg[q]&&!outer[q]){outer[q]=1;stack.push(q);}}
+    }
+    const fg = new Uint8Array(N);
+    for (let p=0;p<N;p++) fg[p] = outer[p] ? 0 : 1;   // everything not reachable bg = foreground
+
+    // seal: binary closing approx (dilate then erode) to bridge wireframe gaps
+    let mask = fg;
+    for (let k=0;k<seal;k++) mask = dilate(mask, w, h);
+    for (let k=0;k<seal;k++) mask = erode(mask, w, h);
+
+    // connected components (8-conn) via iterative flood fill
+    const label = new Int32Array(N).fill(0);
+    let nLab = 0;
+    const comp = [];
+    for (let p=0;p<N;p++) {
+      if (!mask[p] || label[p]) continue;
+      nLab++;
+      let area=0, sx=0, sy=0, x0=1e9,y0=1e9,x1=-1,y1=-1;
+      label[p]=nLab; const st=[p];
+      while (st.length) {
+        const q=st.pop(), qx=q%w, qy=(q/w)|0;
+        area++; sx+=qx; sy+=qy;
+        if (qx<x0)x0=qx; if (qx>x1)x1=qx; if (qy<y0)y0=qy; if (qy>y1)y1=qy;
+        const nb=[q-1,q+1,q-w,q+w,q-w-1,q-w+1,q+w-1,q+w+1];
+        const okL=qx>0, okR=qx<w-1, okT=qy>0, okB=qy<h-1;
+        const valid=[okL,okR,okT,okB, okT&&okL, okT&&okR, okB&&okL, okB&&okR];
+        for (let n=0;n<8;n++){ if(!valid[n])continue; const r=nb[n]; if(mask[r]&&!label[r]){label[r]=nLab;st.push(r);} }
+      }
+      comp.push({lab:nLab, area, cx:sx/area, cy:sy/area, x0,y0,x1,y1});
+    }
+    const minArea = Math.max(1, Math.floor(minFrac * N));
+    let kept = comp.filter(c => c.area >= minArea);
+    kept.sort((a,b)=> (a.y0-b.y0) || (a.x0-b.x0));
+
+    // build zone map
+    const areaRank = [...kept].sort((a,b)=>b.area-a.area);
+    const rankOf = new Map(); areaRank.forEach((c,r)=>rankOf.set(c.lab,r));
+    const regions = kept.map((c,idx) => {
+      const bw=c.x1-c.x0+1, bh=c.y1-c.y0+1;
+      return {
+        id: idx+1, _lab: c.lab,
+        name: null,
+        suggested_name: suggestName(c.cx/w, c.cy/h, bw, bh, rankOf.get(c.lab)),
+        bbox:[c.x0,c.y0,bw,bh], area_px:c.area,
+        centroid:[+c.cx.toFixed(1),+c.cy.toFixed(1)],
+        centroid_norm:[+(c.cx/w).toFixed(4),+(c.cy/h).toFixed(4)],
+        mirror_of:null,
+      };
+    });
+    suggestMirrors(regions, w, h);
+
+    zoneMap = {
+      schema:"shokk-trace.zonemap/0", source:work.name,
+      width:w, height:h, src_width:work.srcW, src_height:work.srcH,
+      background_rgb:bg, region_count:regions.length, regions,
+      _label:label, _ms:Math.round(performance.now()-t0),
+    };
+    activeId = null;
+    applyNamingPreset(zoneMap);   // "name one truck, reuse" — restore saved names by layout
+    render();
+    renderZoneList();
+    renderStats();
+    $("dlMap").disabled = $("dlOverlay").disabled = regions.length===0;
+    toast(`${regions.length} zones detected in ${zoneMap._ms} ms`, "ok");
+  }
+
+  function dilate(m,w,h){ const o=new Uint8Array(m.length); for(let y=0;y<h;y++)for(let x=0;x<w;x++){const p=y*w+x; if(m[p]){o[p]=1;continue;} let v=0; if(x>0&&m[p-1])v=1;else if(x<w-1&&m[p+1])v=1;else if(y>0&&m[p-w])v=1;else if(y<h-1&&m[p+w])v=1; o[p]=v;} return o;}
+  function erode(m,w,h){ const o=new Uint8Array(m.length); for(let y=0;y<h;y++)for(let x=0;x<w;x++){const p=y*w+x; if(!m[p]){o[p]=0;continue;} let v=1; if(x>0&&!m[p-1])v=0;else if(x<w-1&&!m[p+1])v=0;else if(y>0&&!m[p-w])v=0;else if(y<h-1&&!m[p+w])v=0; o[p]=v;} return o;}
+
+  function suggestName(cx, cy, w, h, rank) {
+    const ar = w/Math.max(h,1e-6);
+    if (rank < 4 && ar > 1.6) return cy < 0.5 ? "Left Side" : "Right Side";
+    if (cy < 0.2 && cx < 0.45) return "Front Bumper";
+    if (cy < 0.2 && cx > 0.5) return "Rear Bumper";
+    if (cx > 0.6 && cy > 0.25 && cy < 0.8) return "Hood";
+    if (cx > 0.3 && cx < 0.6 && cy > 0.4 && cy < 0.75 && ar < 1.5) return "Roof";
+    if (cx < 0.35 && cy > 0.4 && cy < 0.8) return "Rear Decklid";
+    if (ar > 4 || h/Math.max(w,1e-6) > 4) return "Spoiler (Outside)";
+    return "Unassigned";
+  }
+  function suggestMirrors(regs, w, h) {
+    // check BOTH vertical-axis and horizontal-axis reflection (iRacing stacks L/R)
+    for (let i=0;i<regs.length;i++){ const a=regs[i]; if(a.mirror_of)continue;
+      let best=null,bs=1e9;
+      for (let j=i+1;j<regs.length;j++){ const b=regs[j]; if(b.mirror_of)continue;
+        const ar=Math.abs(a.area_px-b.area_px)/Math.max(a.area_px,b.area_px); if(ar>0.25)continue;
+        const vx=Math.abs((a.centroid[0]-w/2)+(b.centroid[0]-w/2))/w, vy=Math.abs(a.centroid[1]-b.centroid[1])/h;
+        const hy=Math.abs((a.centroid[1]-h/2)+(b.centroid[1]-h/2))/h, hx=Math.abs(a.centroid[0]-b.centroid[0])/w;
+        const vert=vx+vy, horiz=hx+hy, s=Math.min(vert,horiz);
+        const ok=(vx<0.09&&vy<0.09)||(hy<0.09&&hx<0.09);
+        if (ok && s<bs){bs=s;best=b;}
+      }
+      if (best){ a.mirror_of=best.id; best.mirror_of=a.id; }
+    }
+  }
+
+  // ---------- render ----------
+  function buildOverlayCanvas() {
+    const { w, h } = work;
+    const c = document.createElement("canvas"); c.width=w; c.height=h;
+    const ctx = c.getContext("2d");
+    const out = ctx.createImageData(w, h);
+    const o = out.data, d = work.data, label = zoneMap._label;
+    const labToRegion = new Map(); zoneMap.regions.forEach(r => labToRegion.set(r._lab, r));
+    for (let p=0,i=0;p<w*h;p++,i+=4){
+      const reg = labToRegion.get(label[p]);
+      if (reg){ const col=PALETTE[(reg.id-1)%PALETTE.length];
+        const hot = (activeId===reg.id);
+        const a = hot?0.78:0.55;
+        o[i]  = d[i]*(1-a)+col[0]*a; o[i+1]=d[i+1]*(1-a)+col[1]*a; o[i+2]=d[i+2]*(1-a)+col[2]*a; o[i+3]=255;
+      } else { o[i]=d[i]*0.32; o[i+1]=d[i+1]*0.32; o[i+2]=d[i+2]*0.32; o[i+3]=255; }
+    }
+    ctx.putImageData(out, 0, 0);
+    // labels + boxes
+    ctx.lineWidth = 2; ctx.font = `${Math.max(13, (w/95)|0)}px system-ui,sans-serif`; ctx.textBaseline="top";
+    zoneMap.regions.forEach(r => {
+      const [x,y,bw,bh]=r.bbox; const hot=activeId===r.id;
+      ctx.strokeStyle = hot?"#62d7ff":"rgba(255,255,255,.85)"; ctx.strokeRect(x,y,bw,bh);
+      const txt = `#${r.id} ${r.name||r.suggested_name}`;
+      ctx.fillStyle="rgba(0,0,0,.85)"; ctx.fillText(txt, x+5, y+5);
+      ctx.fillStyle = hot?"#62d7ff":"#fff"; ctx.fillText(txt, x+4, y+4);
+    });
+    return c;
+  }
+  function render() {
+    const wrap = $("stageWrap"); wrap.innerHTML="";
+    if (!zoneMap) return;
+    const c = buildOverlayCanvas(); c.id="stage"; wrap.appendChild(c);
+  }
+  function renderZoneList() {
+    const host = $("zoneList"); $("zCount").textContent = `(${zoneMap.regions.length})`;
+    // Real iRacing templates are ONE connected mass → the offline detector sees ~1
+    // area. When that's what we got, nudge the user to the separator path (step 5).
+    const ch = $("connectedHint");
+    if (ch) {
+      const A = zoneMap.width * zoneMap.height;
+      const majors = zoneMap.regions.filter(r => r.area_px >= 0.01 * A).length;
+      const biggest = zoneMap.regions.reduce((m, r) => Math.max(m, r.area_px), 0) / A;
+      ch.style.display = (majors <= 2 || biggest > 0.4) ? "block" : "none";
+    }
+    if (!zoneMap.regions.length){ host.innerHTML='<p class="hint">No zones found — try raising BG tolerance.</p>'; return; }
+    host.innerHTML = zoneMap.regions.map(r => {
+      const col=PALETTE[(r.id-1)%PALETTE.length];
+      const opts = ZONE_NAMES.map(n => `<option ${ (r.name||r.suggested_name)===n ? "selected":""}>${n}</option>`).join("");
+      const pct = (100*r.area_px/(zoneMap.width*zoneMap.height)).toFixed(1);
+      const mir = r.mirror_of ? ` ⇄${r.mirror_of}` : "";
+      return `<div class="zone-row" data-id="${r.id}">
+        <span class="zone-swatch" style="background:rgb(${col[0]},${col[1]},${col[2]})"></span>
+        <span class="zid">#${r.id}</span>
+        <select data-id="${r.id}">${opts}</select>
+        <span class="area">${pct}%${mir}</span></div>`;
+    }).join("");
+    host.querySelectorAll(".zone-row").forEach(row => {
+      row.addEventListener("click", (e)=>{ if(e.target.tagName==="SELECT")return; setActive(+row.dataset.id); });
+    });
+    host.querySelectorAll("select").forEach(sel => {
+      sel.addEventListener("change", ()=>{ const r=zoneMap.regions.find(z=>z.id==sel.dataset.id); if(r){ r.name=sel.value; render(); saveNamingPreset(zoneMap); } });
+      sel.addEventListener("focus", ()=> setActive(+sel.dataset.id));
+    });
+  }
+  function setActive(id){ activeId = (activeId===id?null:id);
+    document.querySelectorAll(".zone-row").forEach(r=>r.classList.toggle("active", +r.dataset.id===activeId));
+    render();
+  }
+  function renderStats() {
+    const bg=zoneMap.background_rgb;
+    $("stats").innerHTML = `
+      <div class="stat"><span>Working res</span><b>${zoneMap.width}×${zoneMap.height}</b></div>
+      <div class="stat"><span>Source res</span><b>${zoneMap.src_width}×${zoneMap.src_height}</b></div>
+      <div class="stat"><span>Background</span><b>rgb(${bg.join(",")})</b></div>
+      <div class="stat"><span>Zones</span><b>${zoneMap.region_count}</b></div>
+      <div class="stat"><span>Detect time</span><b>${zoneMap._ms} ms</b></div>`;
+  }
+
+  // ---------- export ----------
+  function cleanMap() {
+    const m = JSON.parse(JSON.stringify(zoneMap, (k,v)=> (k==="_label"?undefined:v)));
+    m.regions.forEach(r => { delete r._lab; if(!r.name) r.name=null; });
+    return m;
+  }
+  function download(name, blob){ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); }
+  $("dlMap").addEventListener("click", ()=>{ if(!zoneMap)return;
+    download((work.name.replace(/\.[^.]+$/,"")||"template")+".zonemap.json", new Blob([JSON.stringify(cleanMap(),null,2)],{type:"application/json"}));
+  });
+  $("dlOverlay").addEventListener("click", ()=>{ if(!zoneMap)return;
+    buildOverlayCanvas().toBlob(b=>download((work.name.replace(/\.[^.]+$/,"")||"template")+".zones.png", b));
+  });
+
+  // ---------- controls ----------
+  $("tol").addEventListener("input", e=>$("tolV").textContent=e.target.value);
+  $("seal").addEventListener("input", e=>$("sealV").textContent=e.target.value);
+  $("minA").addEventListener("input", e=>$("minAV").textContent=((+e.target.value)/100).toFixed(2)+"%");
+  $("reseg").addEventListener("click", segment);
+
+  // ---------- design drop + server build (/api/shokk-trace/build) ----------
+  let designFile = null;
+  let lastBuild = null;   // { data, stem } from the most recent successful build
+  const ddz = $("designDrop");
+  ddz.addEventListener("click", () => $("designInput").click());
+  $("designInput").addEventListener("change", (e) => { if (e.target.files[0]) setDesign(e.target.files[0]); });
+  ["dragenter","dragover"].forEach(ev => ddz.addEventListener(ev, (e)=>{e.preventDefault();ddz.style.borderColor="var(--cyan)";}));
+  ["dragleave","drop"].forEach(ev => ddz.addEventListener(ev, (e)=>{e.preventDefault();ddz.style.borderColor="var(--line)";}));
+  ddz.addEventListener("drop", (e) => { const f = e.dataTransfer.files[0]; if (f) setDesign(f); });
+  function setDesign(f) {
+    if (!/^image\//.test(f.type)) { toast("Not an image file", "err"); return; }
+    designFile = f;
+    $("designName").textContent = "Design: " + f.name;
+    $("buildBtn").disabled = false;
+    const sepBtn = $("buildSepBtn"); if (sepBtn) sepBtn.disabled = false;
+  }
+  async function buildTemplate() {
+    if (!(work && work.file)) { toast("Load a template first (top-left)", "err"); return; }
+    if (!designFile) { toast("Drop a design image", "err"); return; }
+    const btn = $("buildBtn"), old = btn.textContent;
+    btn.disabled = true; btn.textContent = "Building…";
+    try {
+      const names = {};
+      if (zoneMap) zoneMap.regions.forEach(r => { names[r.id] = r.name || r.suggested_name; });
+      const fd = new FormData();
+      fd.append("template", work.file, work.name || "template.png");
+      fd.append("design", designFile, designFile.name || "design.png");
+      fd.append("names", JSON.stringify(names));
+      fd.append("bg_tolerance", $("tol").value);
+      fd.append("close_radius", $("seal").value);
+      fd.append("min_area_frac", ((+$("minA").value) / 10000).toString());
+      fd.append("decals", $("wantDecals").checked ? "true" : "false");
+      const base = location.protocol.startsWith("http") ? "" : (window.SHOKK_API_BASE || "");
+      const resp = await fetch(base + "/api/shokk-trace/build", { method: "POST", body: fd });
+      const data = await resp.json();
+      if (!data.success) throw new Error(data.error || "build failed");
+      const stem = (work.name || "template").replace(/\.[^.]+$/, "");
+      showBuildResult(data, stem);
+      toast(`Built paint + spec (${data.design_spec.zone_count} zones`
+        + (data.decals ? `, ${data.decals.length} decals)` : ")"), "ok");
+    } catch (e) {
+      toast("Build failed: " + (e.message || e) + " — is the Paint Booth server running?", "err");
+    } finally {
+      btn.disabled = false; btn.textContent = old;
+    }
+  }
+  $("buildBtn").addEventListener("click", buildTemplate);
+
+  // Fit indicator: warns when the picked car/seed-ref doesn't match the template
+  // (separator builds carry data.fit; the island /build path doesn't → hidden).
+  function updateFitNote(data) {
+    const el = $("fitNote"); if (!el) return;
+    const f = data && data.fit;
+    if (!f) { el.style.display = "none"; return; }
+    const styles = {
+      good: ["#0d2a16", "#3ad07a", "✓ Good fit — " + f.seeds_in_paint + "/" + f.seeds_total + " zones matched this template"],
+      weak: ["#2a2410", "#ffd23a", "⚠ " + (f.warnings && f.warnings[0] ? f.warnings[0] : "Partial fit — double-check the car selection")],
+      mismatch: ["#2a1014", "#ff5d73", "⛔ " + (f.warnings && f.warnings[0] ? f.warnings[0] : "This template doesn't match the selected car")],
+    };
+    const s = styles[f.verdict] || styles.weak;
+    el.style.background = s[0]; el.style.color = s[1]; el.style.border = "1px solid " + s[1];
+    el.textContent = s[2];
+    el.style.display = "block";
+  }
+
+  // Shared: show a build bundle (same shape from /build and /build-separators).
+  function showBuildResult(data, stem) {
+    $("imgPaint").src = data.paint_data_url; $("dlPaint").href = data.paint_data_url; $("dlPaint").download = stem + ".paint.png";
+    $("imgSpec").src = data.spec_data_url; $("dlSpec").href = data.spec_data_url; $("dlSpec").download = stem + ".spec.png";
+    lastBuild = { data, stem };
+    $("buildResults").style.display = "block";
+    updateFitNote(data);
+    renderDecals(data.decals || [], stem);
+  }
+
+  // ---------- separator build (/api/shokk-trace/build-separators) ----------
+  // Real iRacing templates are ONE connected paint mass (the offline detector sees
+  // a single blob). This path posts the template as the gridlines asset + a design
+  // + a per-car SEED REFERENCE; the server cuts the blue along the drawn green
+  // separators into true panels. Returns the same bundle as /build, so it reuses
+  // showBuildResult + the Send-to-Paint-Booth path. Embedded refs mirror
+  // _shokk_trace/seed_refs/*.json (authored once from the PSD label layers).
+  const SHOKK_TRACE_SEED_REFS = {
+    "2026-nascar-chevy-truck": {
+      display_name: "2026 NASCAR Chevy Truck (Silverado)", width: 2048, height: 2048,
+      seeds: [
+        { name: "Front Bumper", nx: 0.23975, ny: 0.06812 }, { name: "Rear Bumper", nx: 0.63428, ny: 0.04907 },
+        { name: "Hood", nx: 0.78955, ny: 0.56543 }, { name: "Windshield Banner", nx: 0.57886, ny: 0.573 },
+        { name: "Rear Decklid", nx: 0.11353, ny: 0.56519 }, { name: "Right Side", nx: 0.43945, ny: 0.90894 },
+        { name: "Pitboard", nx: 0.24072, ny: 0.95312 }, { name: "Spoiler (Outside)", nx: 0.15771, ny: 0.38159 },
+        { name: "Spoiler (Outside)", nx: 0.14209, ny: 0.76587 }, { name: "Spoiler (Inside)", nx: 0.81812, ny: 0.36377 },
+        { name: "Spoiler (Inside)", nx: 0.81567, ny: 0.77856 }, { name: "Left Side", nx: 0.47778, ny: 0.24219 },
+        { name: "Roof", nx: 0.47729, ny: 0.55298 },
+      ],
+    },
+  };
+  const uploadedRefs = {};   // id -> {display_name, seeds} (OCR / "Load .json…" / edited)
+  // Auto-remember authored cars across reloads so an accidental refresh doesn't lose
+  // an OCR'd / hand-placed car (the file-based "Save" stays the way to share/commit).
+  const RUNTIME_REFS_KEY = "shokkTraceRuntimeRefs";
+  function persistRuntimeRefs() { try { localStorage.setItem(RUNTIME_REFS_KEY, JSON.stringify(uploadedRefs)); } catch (e) {} }
+  function loadRuntimeRefs() {
+    try { const r = JSON.parse(localStorage.getItem(RUNTIME_REFS_KEY) || "{}");
+      if (r && typeof r === "object") for (const k in r) { if (r[k] && Array.isArray(r[k].seeds)) uploadedRefs[k] = r[k]; } }
+    catch (e) {}
+  }
+  function allSeedRefs() { return Object.assign({}, SHOKK_TRACE_SEED_REFS, uploadedRefs); }
+  function refSeeds(ref) { return (ref && ref.seeds) || (ref && ref.seedref && ref.seedref.seeds) || []; }
+  function populateSeedRefs() {
+    const sel = $("seedRefSel"); if (!sel) return;
+    const refs = allSeedRefs();
+    sel.innerHTML = Object.keys(refs).map(id =>
+      `<option value="${id}">${refs[id].display_name || id} (${(refs[id].seeds || []).length} seeds)</option>`).join("");
+    persistRuntimeRefs();
+  }
+  function forgetRuntimeRefs() {
+    Object.keys(uploadedRefs).forEach(k => delete uploadedRefs[k]);
+    try { localStorage.removeItem(RUNTIME_REFS_KEY); } catch (e) {}
+    populateSeedRefs();
+    toast("Forgot remembered cars (built-in stays)", "ok");
+  }
+  function currentSeedRef() {
+    const sel = $("seedRefSel"); if (!sel || !sel.value) return null;
+    return allSeedRefs()[sel.value] || null;
+  }
+  loadRuntimeRefs();
+  populateSeedRefs();
+  const _sru = $("seedRefUpload");
+  if (_sru) _sru.addEventListener("click", () => $("seedRefInput").click());
+  const _sri = $("seedRefInput");
+  if (_sri) _sri.addEventListener("change", (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      try {
+        const j = JSON.parse(rd.result);
+        const seeds = j.seeds || (j.seedref && j.seedref.seeds);
+        if (!Array.isArray(seeds) || !seeds.length) throw new Error("no seeds[] in file");
+        const id = "uploaded:" + (j.template_id || f.name);
+        uploadedRefs[id] = { display_name: "Uploaded: " + (j.display_name || j.template_id || f.name), seeds };
+        populateSeedRefs(); $("seedRefSel").value = id;
+        toast(`Loaded seed reference (${seeds.length} seeds)`, "ok");
+      } catch (err) { toast("Bad seed reference: " + (err.message || err), "err"); }
+    };
+    rd.readAsText(f);
+  });
+
+  // Author seeds from a labeled guide via OCR (/seeds-from-labels) → register as a
+  // runtime ref the same way an uploaded .json is, then the user picks + Builds.
+  function applyOcrSeeds(data, filename) {
+    const seeds = (data.seeds || []).map(s => ({ name: s.name, nx: s.nx, ny: s.ny }));
+    if (!seeds.length) return 0;
+    const nzones = (data.report && data.report.found) ? data.report.found.length : seeds.length;
+    const id = "ocr:" + (filename || "labeled");
+    uploadedRefs[id] = { display_name: "OCR: " + (filename || "labeled") + " (" + nzones + " zones)", seeds };
+    populateSeedRefs(); $("seedRefSel").value = id;
+    if (data.report && data.report.missing && data.report.missing.length) {
+      const ps = $("placeZoneSel"); if (ps) ps.value = data.report.missing[0];   // pre-aim at a missed zone
+    }
+    return seeds.length;
+  }
+  async function authorFromLabels(file) {
+    const btn = $("authorLabelsBtn"), old = btn.textContent;
+    btn.disabled = true; btn.textContent = "Reading labels…";
+    try {
+      const fd = new FormData();
+      fd.append("labeled", file, file.name || "labeled.png");
+      const base = location.protocol.startsWith("http") ? "" : (window.SHOKK_API_BASE || "");
+      const resp = await fetch(base + "/api/shokk-trace/seeds-from-labels", { method: "POST", body: fd });
+      const data = await resp.json();
+      if (!data.success) throw new Error(data.error || "OCR failed");
+      const n = applyOcrSeeds(data, file.name);
+      if (!n) throw new Error("no zone labels recognized — try the flat labeled guide");
+      const rep = data.report || {};
+      let msg = "Authored " + n + " seeds across " + ((rep.found || []).length) + " zones";
+      if (rep.missing && rep.missing.length) msg += " — add by hand: " + rep.missing.join(", ");
+      toast(msg, "ok");
+    } catch (e) {
+      toast("OCR authoring failed: " + (e.message || e) + " — needs the Paint Booth server (tesseract)", "err");
+    } finally { btn.disabled = false; btn.textContent = old; }
+  }
+  const _alb = $("authorLabelsBtn");
+  if (_alb) _alb.addEventListener("click", () => $("authorLabelsInput").click());
+  const _ali = $("authorLabelsInput");
+  if (_ali) _ali.addEventListener("change", (e) => { const f = e.target.files[0]; if (f) authorFromLabels(f); });
+
+  // ---------- click-to-place a zone seed (fix a zone OCR missed / misplaced) ----
+  const SHOKK_ZONE_NAMES = ["Front Bumper", "Rear Bumper", "Hood", "Roof", "Rear Decklid",
+    "Windshield Banner", "Left Side", "Right Side", "Spoiler (Outside)", "Spoiler (Inside)",
+    "Pitboard", "Number Panel"];
+  (function populatePlaceZones() {
+    const sel = $("placeZoneSel"); if (!sel) return;
+    sel.innerHTML = SHOKK_ZONE_NAMES.map(n => `<option value="${n}">${n}</option>`).join("");
+  })();
+  let placeMode = false;
+  function setPlaceMode(on) {
+    placeMode = on;
+    const btn = $("placeSeedBtn"); if (btn) { btn.textContent = on ? "📍 Placing…" : "📍 Place seed"; btn.classList.toggle("primary", on); }
+    const hint = $("placeHint"); if (hint) hint.style.display = on ? "block" : "none";
+    const wrap = $("stageWrap"); if (wrap) wrap.style.cursor = on ? "crosshair" : "";
+  }
+  // Add a seed to an "Edited" runtime car (cloned from whatever's selected), so a
+  // user can fill a zone OCR missed without leaving the tool. Subsequent placements
+  // extend the same Edited car. The seeds flow through Build/Zones-only as normal.
+  function placeSeed(zoneName, nx, ny) {
+    let seeds, baseName;
+    if (uploadedRefs["edited:current"] && $("seedRefSel").value === "edited:current") {
+      seeds = uploadedRefs["edited:current"].seeds.slice();
+      baseName = uploadedRefs["edited:current"]._base || "car";
+    } else {
+      const cur = currentSeedRef();
+      seeds = (cur ? refSeeds(cur) : []).map(s => ({ name: s.name, nx: s.nx, ny: s.ny }));
+      baseName = (cur && cur.display_name ? cur.display_name : "car").replace(/\s*\(\d+[^)]*\)\s*$/, "").trim() || "car";
+    }
+    seeds.push({ name: zoneName, nx: +(+nx).toFixed(5), ny: +(+ny).toFixed(5) });
+    const nz = new Set(seeds.map(s => s.name)).size;
+    uploadedRefs["edited:current"] = { display_name: baseName + " ✎ (" + nz + " zones)", seeds, _base: baseName };
+    populateSeedRefs(); $("seedRefSel").value = "edited:current";
+    return seeds.length;
+  }
+  const _psw = $("stageWrap");
+  if (_psw) _psw.addEventListener("click", (e) => {
+    if (!placeMode) return;
+    const cv = document.getElementById("stage");
+    if (!cv) { toast("Load a template first (top-left)", "err"); return; }
+    const rect = cv.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return;
+    const nx = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+    const ny = Math.min(1, Math.max(0, (e.clientY - rect.top) / rect.height));
+    const zone = $("placeZoneSel").value;
+    if (!zone) { toast("Pick a zone to place", "err"); return; }
+    const n = placeSeed(zone, nx, ny);
+    toast(`Placed “${zone}” (${n} seeds) — pick the “Edited” car, then Build`, "ok");
+  });
+  const _psb = $("placeSeedBtn");
+  if (_psb) _psb.addEventListener("click", () => setPlaceMode(!placeMode));
+
+  // ---------- save / export the current car's seed reference (.json) ------------
+  // Closes "author once, reuse": OCR + place-seed make a runtime car; this writes it
+  // out as a shokk-trace.seedref/0 the user can Load next time, or drop into
+  // _shokk_trace/seed_refs/ to make permanent. Same format author_seed_ref.py emits.
+  function seedRefSignature(seeds) {
+    const cells = seeds.map(s => `${s.name}@${Math.floor(s.nx * 6)},${Math.floor(s.ny * 6)}`).sort();
+    return { zone_count: seeds.length, cells };
+  }
+  function buildSeedRefExport() {
+    const ref = currentSeedRef();
+    const seeds = refSeeds(ref);
+    if (!seeds || !seeds.length) return null;
+    const disp = (ref && ref.display_name ? ref.display_name : "car")
+      .replace(/^\s*(OCR|Uploaded|Edited)\s*:?\s*/i, "")
+      .replace(/✎/g, "").replace(/\.(png|jpe?g|webp)\b/i, "")
+      .replace(/\s*\(\d+[^)]*\)\s*$/, "").trim() || "car";
+    const tid = disp.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "car";
+    const W = (work && work.srcW) || 2048, H = (work && work.srcH) || 2048;
+    return {
+      schema: "shokk-trace.seedref/0", template_id: tid, display_name: disp,
+      source: "Shokk Trace tool", width: W, height: H,
+      seeds: seeds.map(s => ({ name: s.name, nx: +(+s.nx).toFixed(5), ny: +(+s.ny).toFixed(5) })),
+      signature: seedRefSignature(seeds),
+      notes: "Authored in the Auto Painter tool; drop into _shokk_trace/seed_refs/ to make it permanent.",
+    };
+  }
+  function saveSeedRef() {
+    const out = buildSeedRefExport();
+    if (!out) { toast("Pick a car first (or author one)", "err"); return; }
+    download(out.template_id + ".json", new Blob([JSON.stringify(out, null, 2)], { type: "application/json" }));
+    toast(`Saved ${out.seeds.length} seeds → ${out.template_id}.json`, "ok");
+  }
+  const _ssb = $("saveSeedRefBtn");
+  if (_ssb) _ssb.addEventListener("click", saveSeedRef);
+  const _frb = $("forgetRefsBtn");
+  if (_frb) _frb.addEventListener("click", forgetRuntimeRefs);
+
+  async function buildSeparators() {
+    if (!(work && work.file)) { toast("Load a template first (top-left)", "err"); return; }
+    if (!designFile) { toast("Drop a design image", "err"); return; }
+    const ref = currentSeedRef();
+    const seeds = refSeeds(ref);
+    if (!seeds.length) { toast("Pick a car / seed reference", "err"); return; }
+    const btn = $("buildSepBtn"), old = btn.textContent;
+    btn.disabled = true; btn.textContent = "Building…";
+    try {
+      const fd = new FormData();
+      fd.append("grid", work.file, work.name || "template.png");
+      fd.append("design", designFile, designFile.name || "design.png");
+      fd.append("seeds", JSON.stringify(seeds));
+      fd.append("decals", $("wantDecals").checked ? "true" : "false");
+      const base = location.protocol.startsWith("http") ? "" : (window.SHOKK_API_BASE || "");
+      const resp = await fetch(base + "/api/shokk-trace/build-separators", { method: "POST", body: fd });
+      const data = await resp.json();
+      if (!data.success) throw new Error(data.error || "build failed");
+      const stem = (work.name || "template").replace(/\.[^.]+$/, "");
+      showBuildResult(data, stem);
+      toast(`Built ${data.region_count} real zones`
+        + (data.decals ? `, ${data.decals.length} decals` : "") + " — ready to Send", "ok");
+    } catch (e) {
+      toast("Build failed: " + (e.message || e) + " — is the Paint Booth server running?", "err");
+    } finally { btn.disabled = false; btn.textContent = old; }
+  }
+  const _bsb = $("buildSepBtn");
+  if (_bsb) _bsb.addEventListener("click", buildSeparators);
+
+  // zones-only: separator-partition a real template into named zones with NO
+  // design, preview the overlay, and reuse the Send-to-Paint-Booth path. The bundle
+  // already carries a default colour + neutral spec per zone, so buildHandoff works.
+  function showZonesResult(data, stem) {
+    const ov = data.overlay_data_url || "";
+    if (ov) {
+      $("imgPaint").src = ov; $("dlPaint").href = ov; $("dlPaint").download = stem + ".zones.png";
+      $("imgSpec").src = ov; $("dlSpec").href = ov; $("dlSpec").download = stem + ".zones.png";
+    }
+    lastBuild = { data, stem };
+    $("buildResults").style.display = "block";
+    updateFitNote(data);
+    renderDecals([], stem);
+  }
+  async function zonesOnly() {
+    if (!(work && work.file)) { toast("Load a template first (top-left)", "err"); return; }
+    const seeds = refSeeds(currentSeedRef());
+    if (!seeds.length) { toast("Pick a car / seed reference", "err"); return; }
+    const btn = $("zonesOnlyBtn"), old = btn.textContent;
+    btn.disabled = true; btn.textContent = "Detecting…";
+    try {
+      const fd = new FormData();
+      fd.append("grid", work.file, work.name || "template.png");
+      fd.append("seeds", JSON.stringify(seeds));
+      const base = location.protocol.startsWith("http") ? "" : (window.SHOKK_API_BASE || "");
+      const resp = await fetch(base + "/api/shokk-trace/segment-separators", { method: "POST", body: fd });
+      const data = await resp.json();
+      if (!data.success) throw new Error(data.error || "segment failed");
+      const stem = (work.name || "template").replace(/\.[^.]+$/, "");
+      showZonesResult(data, stem);
+      toast(`Detected ${data.region_count} zones — click “Send to Paint Booth zones”`, "ok");
+    } catch (e) {
+      toast("Detect failed: " + (e.message || e) + " — is the Paint Booth server running?", "err");
+    } finally { btn.disabled = false; btn.textContent = old; }
+  }
+  const _zob = $("zonesOnlyBtn");
+  if (_zob) _zob.addEventListener("click", zonesOnly);
+
+  // ---------- zone-name presets ("name one truck, reuse across the class") ----
+  // Auto-saved per layout signature (major-zone count + coarse centroid map) to
+  // localStorage; auto-applied by nearest-centroid match when the same layout is
+  // loaded again. Lets a painter name a car once and reuse it on its siblings.
+  const NAME_PRESET_KEY = "shokkTraceNamePresets";
+  function loadPresets() { try { return JSON.parse(localStorage.getItem(NAME_PRESET_KEY) || "{}"); } catch (e) { return {}; } }
+  function savePresets(p) { try { localStorage.setItem(NAME_PRESET_KEY, JSON.stringify(p)); } catch (e) {} }
+  function isMajor(zm, r) { return r.area_px >= 0.01 * zm.width * zm.height; }
+  function layoutSignature(zm) {
+    const majors = zm.regions.filter(r => isMajor(zm, r));
+    const pts = majors.map(r => `${Math.round(r.centroid_norm[0] * 20)},${Math.round(r.centroid_norm[1] * 20)}`).sort();
+    return majors.length + "|" + pts.join(";");
+  }
+  function setPresetHint(t) { const el = $("presetHint"); if (el) el.textContent = t || ""; }
+  function saveNamingPreset(zm) {
+    if (!zm) return;
+    const named = zm.regions.filter(r => r.name).map(r => ({ name: r.name, cx: r.centroid_norm[0], cy: r.centroid_norm[1] }));
+    if (!named.length) return;
+    const p = loadPresets();
+    p[layoutSignature(zm)] = { zones: named, savedAt: Date.now() };
+    savePresets(p);
+    setPresetHint(`✓ Names saved for this layout (${named.length}) — auto-applied next time`);
+  }
+  function applyNamingPreset(zm) {
+    if (!zm) return 0;
+    const entry = loadPresets()[layoutSignature(zm)];
+    if (!entry) { setPresetHint(""); return 0; }
+    const used = new Set();
+    let n = 0;
+    entry.zones.forEach(sv => {
+      let best = null, bd = 1e9;
+      zm.regions.forEach(r => {
+        if (used.has(r.id)) return;
+        const dx = r.centroid_norm[0] - sv.cx, dy = r.centroid_norm[1] - sv.cy, d = dx * dx + dy * dy;
+        if (d < bd) { bd = d; best = r; }
+      });
+      if (best && bd < 0.01) { best.name = sv.name; used.add(best.id); n++; }
+    });
+    if (n) setPresetHint(`↺ Restored ${n} zone names from a saved preset for this layout`);
+    return n;
+  }
+
+  // ---------- auto-name from labels (server OCR) ----------
+  // Match server-named regions to client zones by nearest centroid (the server
+  // segments at full res, the client at MAX_DIM, so ids/centroids differ slightly).
+  function applyServerNames(srvRegions) {
+    if (!zoneMap || !Array.isArray(srvRegions)) return 0;
+    let applied = 0;
+    srvRegions.forEach(s => {
+      if (!s.name || !s.centroid_norm) return;
+      let best = null, bd = 1e9;
+      zoneMap.regions.forEach(r => {
+        const dx = r.centroid_norm[0] - s.centroid_norm[0], dy = r.centroid_norm[1] - s.centroid_norm[1];
+        const d = dx * dx + dy * dy;
+        if (d < bd) { bd = d; best = r; }
+      });
+      if (best && bd < 0.01) { best.name = s.name; applied++; }
+    });
+    if (applied) { renderZoneList(); render(); saveNamingPreset(zoneMap); }
+    return applied;
+  }
+  async function autoNameFromLabels() {
+    if (!(work && work.file)) { toast("Load a template first", "err"); return; }
+    const btn = $("ocrNameBtn"), old = btn.textContent;
+    btn.disabled = true; btn.textContent = "Reading labels…";
+    try {
+      const fd = new FormData();
+      fd.append("template", work.file, work.name || "template.png");
+      fd.append("ocr_names", "true");
+      fd.append("bg_tolerance", $("tol").value);
+      fd.append("close_radius", $("seal").value);
+      fd.append("min_area_frac", ((+$("minA").value) / 10000).toString());
+      const base = location.protocol.startsWith("http") ? "" : (window.SHOKK_API_BASE || "");
+      const resp = await fetch(base + "/api/shokk-trace/segment", { method: "POST", body: fd });
+      const data = await resp.json();
+      if (!data.success) throw new Error(data.error || "segment failed");
+      const applied = applyServerNames((data.zone_map && data.zone_map.regions) || []);
+      toast(applied ? `Auto-named ${applied} zones from labels` : "No labels recognized — try the flat labeled guide", applied ? "ok" : "err");
+    } catch (e) {
+      toast("OCR naming failed: " + (e.message || e) + " — needs the Paint Booth server", "err");
+    } finally { btn.disabled = false; btn.textContent = old; }
+  }
+  $("ocrNameBtn").addEventListener("click", autoNameFromLabels);
+
+  // ---------- handoff to Paint Booth zones ----------
+  function buildHandoff(data, stem) {
+    const ds = data.design_spec || { zones: [] };
+    const rm = data.region_masks || {};
+    const colorBy = {}, specBy = {};
+    ds.zones.forEach(z => { colorBy[z.name] = z.base_color; specBy[z.name] = z.spec_MRCC; });
+    const zones = Object.keys(rm).map(name => ({
+      name, base_color: colorBy[name] || null, spec_MRCC: specBy[name] || null, rle: rm[name],
+    }));
+    const first = zones[0] && zones[0].rle;
+    return {
+      schema: "shokk-trace.handoff/0", source: stem,
+      width: first ? first.width : null, height: first ? first.height : null,
+      zones, decals_count: (data.decals || []).length,
+    };
+  }
+  function downloadHandoff(payload, stem) {
+    download((stem || "template") + ".shokktrace.json",
+      new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
+  }
+  function sendToPaintBooth() {
+    if (!lastBuild) { toast("Build a paint+spec first", "err"); return; }
+    const payload = buildHandoff(lastBuild.data, lastBuild.stem);
+    try {
+      if (window.opener && typeof window.opener.shokkTraceImportZones === "function") {
+        const n = window.opener.shokkTraceImportZones(payload);
+        toast(`Sent ${n || payload.zones.length} zones to Paint Booth`, "ok");
+        if (typeof window.opener.focus === "function") window.opener.focus();
+      } else {
+        toast("Paint Booth window not found — downloading handoff instead", "err");
+        downloadHandoff(payload, lastBuild.stem);
+      }
+    } catch (e) { toast("Send failed: " + (e.message || e), "err"); }
+  }
+  $("sendZonesBtn").addEventListener("click", sendToPaintBooth);
+  $("dlHandoffBtn").addEventListener("click", () => {
+    if (!lastBuild) { toast("Build a paint+spec first", "err"); return; }
+    downloadHandoff(buildHandoff(lastBuild.data, lastBuild.stem), lastBuild.stem);
+  });
+
+  function renderDecals(decals, stem) {
+    const wrap = $("decalWrap"), grid = $("decalGrid");
+    if (!decals.length) { wrap.style.display = "none"; grid.innerHTML = ""; return; }
+    $("decalCount").textContent = `(${decals.length})`;
+    grid.innerHTML = decals.map(d => {
+      const fn = `${stem}.decal${d.id}_${(d.source_zone||"zone").replace(/[^a-z0-9]+/gi,"-")}.png`;
+      const title = `${d.kind} · ${d.source_zone} · ${d.bbox[2]}×${d.bbox[3]}px`;
+      return `<a href="${d.png_data_url}" download="${fn}" title="${title}" style="display:block;border:1px solid var(--line);border-radius:4px;overflow:hidden">
+        <img src="${d.png_data_url}" style="width:100%;height:48px;object-fit:contain;display:block" alt="${title}"/></a>`;
+    }).join("");
+    wrap.style.display = "block";
+  }
+
+  // Test hook so the page can be verified headlessly (load an image by URL/data
+  // URL, then read the result). Used by the dev loop's automated checks.
+  window.ShokkTrace = {
+    loadFromUrl(url) {
+      return new Promise((res, rej) => {
+        const im = new Image();
+        im.crossOrigin = "anonymous";
+        im.onload = () => {
+          img = im;
+          const scale = Math.min(1, MAX_DIM / Math.max(im.width, im.height));
+          const w = Math.round(im.width*scale), h = Math.round(im.height*scale);
+          const c = document.createElement("canvas"); c.width=w; c.height=h;
+          const ctx = c.getContext("2d"); ctx.imageSmoothingEnabled=false;
+          ctx.drawImage(im,0,0,w,h);
+          work = { w, h, data: ctx.getImageData(0,0,w,h).data, srcW:im.width, srcH:im.height, name:"test" };
+          $("reseg").disabled=false; segment(); res(window.ShokkTrace.summary());
+        };
+        im.onerror = rej; im.src = url;
+      });
+    },
+    summary() { return zoneMap ? { count: zoneMap.region_count, ms: zoneMap._ms,
+      names: zoneMap.regions.map(r=>r.suggested_name) } : null; },
+    renderDecals(decals, stem) { $("buildResults").style.display="block"; renderDecals(decals, stem||"test");
+      return { gridChildren: $("decalGrid").children.length, wrapShown: $("decalWrap").style.display }; },
+    buildHandoff(data, stem) { return buildHandoff(data, stem||"test"); },
+    _zoneMap() { return zoneMap; },
+    _saveNames() { return saveNamingPreset(zoneMap); },
+    _sig() { return zoneMap ? layoutSignature(zoneMap) : null; },
+    _presetHint() { return $("presetHint").textContent; },
+    _applyServerNames(srv) { return applyServerNames(srv); },
+    _seedRefIds() { return Object.keys(allSeedRefs()); },
+    _selectedSeeds() { const r = currentSeedRef(); return r ? refSeeds(r) : null; },
+    _showBuildResult(data, stem) { showBuildResult(data, stem || "test");
+      return { shown: $("buildResults").style.display === "block", hasLastBuild: !!lastBuild,
+        paintSet: !!$("imgPaint").src, sendEnabled: !$("sendZonesBtn").disabled }; },
+    _showZonesResult(data, stem) { showZonesResult(data, stem || "test");
+      return { shown: $("buildResults").style.display === "block", hasLastBuild: !!lastBuild,
+        sendEnabled: !$("sendZonesBtn").disabled }; },
+    _fitNote() { const el = $("fitNote"); return { display: el.style.display, text: el.textContent, color: el.style.color }; },
+    _applyOcrSeeds(data, fn) { const n = applyOcrSeeds(data, fn || "ford.png");
+      return { added: n, ids: Object.keys(allSeedRefs()), selected: $("seedRefSel").value,
+        selectedSeeds: (currentSeedRef() ? refSeeds(currentSeedRef()).length : 0),
+        hasAuthorBtn: !!$("authorLabelsBtn") }; },
+    _placeSeed(zone, nx, ny) { const n = placeSeed(zone || "Pitboard", nx == null ? 0.24 : nx, ny == null ? 0.95 : ny);
+      const ss = refSeeds(currentSeedRef());
+      return { count: n, selected: $("seedRefSel").value, selectedSeeds: ss.length,
+        lastName: ss[ss.length - 1].name, placeZones: $("placeZoneSel").options.length,
+        hasPlaceBtn: !!$("placeSeedBtn") }; },
+    _exportSeedRef() { return buildSeedRefExport(); },
+    _hasSaveBtn() { return !!$("saveSeedRefBtn"); },
+    _runtimeRefs() { let ls = {}; try { ls = JSON.parse(localStorage.getItem(RUNTIME_REFS_KEY) || "{}"); } catch (e) {}
+      return { inMemory: Object.keys(uploadedRefs), persisted: Object.keys(ls), hasForgetBtn: !!$("forgetRefsBtn") }; },
+    _forget() { forgetRuntimeRefs(); return this._runtimeRefs(); },
+    _connectedHint() { const ch = $("connectedHint");
+      let majors = null, biggest = null;
+      if (zoneMap) { const A = zoneMap.width * zoneMap.height;
+        majors = zoneMap.regions.filter(r => r.area_px >= 0.01 * A).length;
+        biggest = +(zoneMap.regions.reduce((m, r) => Math.max(m, r.area_px), 0) / A).toFixed(3); }
+      return { shown: ch ? ch.style.display === "block" : null, majors, biggest }; },
+  };
+})();
+</script>
+<!-- One-click "Report a Problem" builder (wires the header slot). -->
+<script src="js/diagnostics/spb-diag-report.js?v=spb-diag-report-20260604"></script>
+</body>
+</html>

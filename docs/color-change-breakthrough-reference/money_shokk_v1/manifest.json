@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "baked": "2026-05-28",
+  "count": 40,
+  "composer_v1_rerendered": [
+    "msh_canary_coffin",
+    "msh_cerulean_cobra",
+    "msh_daffodil_bayou",
+    "msh_hyperpink_torii",
+    "msh_magenta_widow",
+    "msh_peach_jellyshock",
+    "msh_seafoam_piranha"
+  ],
+  "note": "Frozen V1 bake-off archive for COLOR_CHANGE_BREAKTHROUGH.html. Composer REBUILD entries restored from pre-V2 recipes."
+}

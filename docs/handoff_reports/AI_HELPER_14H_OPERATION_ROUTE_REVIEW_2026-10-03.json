@@ -1,0 +1,60 @@
+{
+  "review": "W10 actual-route operation acceptance oracle preparation",
+  "date_utc": "2026-10-04",
+  "scope": "Prepared a frozen 16-case acceptance oracle and a VM harness that will call bounded actual pro-AI ask/runTurn/runTurn2/finish/finishCore/previewOptions/makeTools/onEvent/Cancel/doUndo functions. No production source was edited. No provider, native UI, server, or mirror calls were made.",
+  "frozen_source": {
+    "pre-integration_sha256": "115F602D49E465B6F49530B07A4C2E4B81E8D6089C2D8204BCAE9D57807690D4",
+    "freeze_boundary": "Oracle and source assertion pinned before root operation-manager integration.",
+    "post-freeze_drift": "Parent reported external copilot edits after the freeze. Latest read-only hash observed during preparation: 588A6120301F5009C3AC5C2249421B50D7BF6C1493D1356C8C002601FC996AC6. The parent also reported an intermediate 470F2A… state. No behavioral test was run against either moving post-freeze source."
+  },
+  "oracle": {
+    "path": "tests/ai_operation_route_review_contract.cjs",
+    "case_count": 16,
+    "cases": [
+      "synchronous provider throw releases busy/controller state",
+      "warm rejection releases busy/controller state",
+      "Cancel with provider ignoring AbortSignal discards late success",
+      "Cancel A, start B, late A result cannot apply or clear B",
+      "late A progress event cannot overwrite B state",
+      "late A tool callback cannot append/apply after B",
+      "late A rejection cleanup cannot clear B",
+      "ready A followed by ask B before finish A",
+      "same-path reload increments source generation and invalidates A",
+      "source switch during warm prevents provider call",
+      "source switch during preflight prevents provider call",
+      "source switch during ordinary option previews prevents preview/apply on the replacement source",
+      "same-source Cancel restores its own preview without overwriting a manual revision",
+      "manual layer revision conflict prevents stale apply",
+      "normal edit action followed by actual doUndo restores the fake pre-action state",
+      "public ask admits B after Cancel A while A remains unsettled"
+    ],
+    "identity_inputs": "Harness models the actual public controller shape `SPBSourceLoadTransaction.getGeneration/getCommittedPath/getCommittedFingerprint`, a stable image reference, paintCanvas width/height, and `_spbLayerRev`; it avoids synthetic docId identity. Those controller and canvas values are fake test fixtures, not evidence of native behavior."
+  },
+  "harness": {
+    "method": "Extracts actual bounded source functions by stable function boundaries; fake provider promises expose their options, callbacks, and AbortSignal. Actual makeTools creates edit_layer callbacks. Fake applyQueue/preview/Undo effects mutate observable arrays and revisions; actual finish/options/Undo/cancel/event control flow decides whether those effects run.",
+    "source_assertion": "The test refuses to run if current js/spb-pro-ai.js does not match the frozen 115F… pre-integration hash. Update only this hash after root provides a candidate hash; do not weaken the ORACLE assertions.",
+    "validation": "`node --check tests/ai_operation_route_review_contract.cjs` passed. The behavior harness was intentionally not run because pro-AI source changed after the pinned freeze and the parent instructed waiting for a candidate hash."
+  },
+  "integration_dependencies_for_root": [
+    "At public ask entry, allocate an operation ticket before any warm/preflight await and capture source generation, image identity, committed path/fingerprint, paint dimensions, and layer/zone revision.",
+    "Before and after warm/preflight, verify the request ticket and document snapshot; do not enter provider work for a replaced source.",
+    "For each runTurn2/provider-tool collection—including repair turns—allocate a distinct collection generation. Bind tool descriptors/callbacks and progress events to that token; reject stale callbacks after Cancel, repair, or a newer ask.",
+    "On Cancel, revoke the current ticket and clear busy/controller state only if that ticket still owns the route. A late resolve/reject/finally from A must not change B state.",
+    "Catch synchronous AI.run throws as well as asynchronous provider and warm failures, settling busy/controller state for the owning request.",
+    "Immediately before finish/apply, completion text, and every option preview/restore, check that the operation remains current and that document/revision matches. Option restoration must only restore the preview owned by that operation on its original document/revision.",
+    "Preserve standard action and Undo semantics; one accepted action remains one undoable transaction."
+  ],
+  "historical_baselines_kept_separate": {
+    "W10_lease_cancel_review": "7/10 at its frozen run; three failures concerned ignored-abort late apply, synchronous provider throw, and ordinary document switch.",
+    "operation_primitive_review": "Original primitive source 7/9; after root manager repair the restored frozen oracle passed 9/9, plus separately labeled path-only fail-closed observation and root collection-token regression. This is primitive-only evidence and does not count as route integration."
+  },
+  "claims_not_made": [
+    "No route behavioral pass/fail result is claimed for the moving 470F… or 588A… sources.",
+    "No actual operation-manager integration into pro-AI is claimed yet.",
+    "No native browser, provider, server, canvas, or live painter result is claimed."
+  ],
+  "owned_artifacts": [
+    "tests/ai_operation_route_review_contract.cjs",
+    "docs/handoff_reports/AI_HELPER_14H_OPERATION_ROUTE_REVIEW_2026-10-03.json"
+  ]
+}

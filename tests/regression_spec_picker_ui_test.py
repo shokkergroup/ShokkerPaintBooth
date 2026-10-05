@@ -7,6 +7,17 @@ BOOT_JS = REPO / "paint-booth-6-ui-boot.js"
 CSS = REPO / "paint-booth-v2.css"
 HTML = REPO / "paint-booth-v2.html"
 
+# Picker chrome/look CSS was split out of paint-booth-v2.css into dated css/ modules
+# (S1 modularization). The spec-picker popout/scroll rules now live here.
+CSS_UI_FIXES = REPO / "css" / "ui-fixes-20260511.css"
+
+# Swatch-popup picker logic was extracted out of paint-booth-2-state-zones.js into
+# js/zones/* control modules. The lane/strategy/action helpers + the internal-review
+# UI gate (formerly PICKER_INTERNAL_REVIEW_UI_ENABLED) now live in these modules.
+ZONE_LANE_JS = REPO / "js" / "zones" / "swatch-popup-lane-controls.js"
+ZONE_STRATEGY_JS = REPO / "js" / "zones" / "swatch-popup-category-strategy-controls.js"
+ZONE_ACTION_JS = REPO / "js" / "zones" / "swatch-popup-action-controls.js"
+
 
 def _read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
@@ -21,6 +32,19 @@ def test_spec_pattern_picker_has_search_grouping_and_inline_toggle_hooks():
     assert "function toggleSpecPickerCategory(gridId, catName)" in src
     assert "function toggleInlineSpecPatternGrid(gridId, tabsId)" in src
     assert "function _positionSpecThumbPopup(popup, anchorRect)" in src
+    assert "toggleSpecPickerCategory(this.parentElement.id,this.dataset.category)" not in src
+    assert "e.stopPropagation();" in src
+    assert "picker.scrollTop = 0;" in src
+    assert "function _resetSpecPatternPickerPopoutScroll(gridId)" in src
+    assert "grid.style.overflowAnchor = 'none';" in src
+    assert "img.loading = 'eager';" in src
+    assert "img.addEventListener('load', reset, { once: true });" in src
+    assert "requestAnimationFrame(function() { requestAnimationFrame(reset); });" in src
+    assert "setTimeout(reset, 120);" in src
+    assert "setTimeout(reset, 600);" in src
+    assert "function _focusSpecPickerSearchWithoutScroll(search)" in src
+    assert "search.focus({ preventScroll: true });" in src
+    assert "active.scrollIntoView({ block: 'center', behavior: 'smooth' });" not in src
 
     expected_inline_grids = [
         "specPatternGrid${i}",
@@ -35,9 +59,16 @@ def test_spec_pattern_picker_has_search_grouping_and_inline_toggle_hooks():
     assert 'id="fifthOverlaySpecPatternGrid${i}_tabs"' in src
     assert 'class="spec-pattern-thumb-card" data-spid="${sp.id}" data-category="${_sg5}"' in src
     assert "function _setSpecPatternPickerPopout(gridId, open)" in src
+    assert "node.id === gridId) node.classList.add('spec-pattern-grid')" in src
+    assert "if (!_isZoneSpecLayerPicker(gridId))" in src
+    assert "document.getElementById(gridId + '_activeLaneStatus')" in src
+    assert "node.style.display = 'none';" in src
     assert "function _portalSpecPickerChrome(gridId, open)" in src
     assert "document.body.appendChild(node)" in src
     assert "spb-spec-picker-portal:" in src
+    assert "document.getElementById(record.node.id) !== record.node" in src
+    assert "record.node.parentNode.removeChild(record.node)" in src
+    assert "delete _specPickerPortalState[gridId]" in src
     assert "function _renderSpecPatternToolbar(gridId)" in src
     assert "function closeSpecPatternPickerPopout(gridId)" in src
     assert "function closeOpenSpecPatternPickers()" in src
@@ -73,7 +104,9 @@ def test_spec_pattern_clearcoat_channel_uses_engine_c_token():
 
 
 def test_spec_pattern_picker_css_uses_readable_browser_cards():
-    css = _read(CSS)
+    # The spec-picker popout/scroll-anchor rules were split out of paint-booth-v2.css
+    # into css/ui-fixes-20260511.css; read both so this guard still covers them.
+    css = _read(CSS) + "\n" + _read(CSS_UI_FIXES)
 
     assert ".spec-picker-search" in css
     assert ".spec-picker-count" in css
@@ -97,6 +130,16 @@ def test_spec_pattern_picker_css_uses_readable_browser_cards():
     assert ".spec-pattern-grid.spec-picker-popout-open .spec-pattern-group-heading" in css
     assert "grid-column: 1 / -1" in css
     assert ".spec-pattern-grid.spec-picker-popout-open .spec-pattern-thumb-card" in css
+    assert "scroll-padding-top: 0 !important" in css
+    assert "overflow-anchor: none !important" in css
+    assert "z-index: 6401 !important" in css
+    assert '[id^="specPatternPicker_"][id$="_activeLaneStatus"].spec-picker-popout-open' in css
+    assert "visibility: hidden !important" in css
+    assert ".spec-pattern-grid.spec-picker-popout-open .spec-pattern-group-heading,\n.spec-pattern-grid.spec-picker-popout-open .spec-pattern-thumb-card" in css
+    assert 'body > [id^="specPatternPicker_"].spec-picker-popout-open' in css
+    assert '[id^="overlaySpecPatternGrid"].spec-picker-popout-open' in css
+    assert '.zone-editor-float [id^="specPatternPicker_"].spec-picker-popout-open' in css
+    assert '.zone-editor-float [id*="OverlaySpecPatternGrid"].spec-picker-popout-open' in css
     assert "width: 100% !important" in css
     assert "height: 106px !important" in css
 
@@ -124,14 +167,16 @@ def test_spec_pattern_picker_has_favorites_alias_search_and_ranking_chips():
     assert "window.setSpecPatternCurationLane = setSpecPatternCurationLane" in src
     assert "_updateSpecActiveLaneStatus(grid, visible)" in src
     assert "Clear the lane to return to every spec overlay group" in src
-    assert "Open the matching Spec Plan row" in src
+    assert "PICKER_INTERNAL_REVIEW_UI_ENABLED = false" in src
+    assert "!PICKER_INTERNAL_REVIEW_UI_ENABLED ? ''" in src
     assert "_setPickerActiveLaneContext('spec', gridId" in src
     assert "focusSpecPatternCategoryStrategyLane(gridId, lane, event, category)" in src
     assert "var categoryMatch = _pickerCardMatchesContextCategory(card, activeContext)" in src
     assert "data-rank-overall" in src
     assert "data-owner-status" in src
     assert "data-handoff" in src
-    assert "Strong Measured" in src
+    assert "Pro Picks" in src
+    assert "Release-facing picker cues hide internal scorecard details." in src
     assert "Render Estimate" in src
     assert "scores.confidence" in src
     assert "spec-pattern-favorites-heading" in src
@@ -167,7 +212,16 @@ def test_finish_library_guided_catalog_css_is_responsive_and_card_based():
 
 
 def test_zone_dropdown_picker_is_large_readable_and_favorites_ranked():
-    src = _read(STATE_JS)
+    # Swatch-popup lane/strategy/action helpers (curation lanes, "Pro Picks" cues,
+    # category strategy examples, focusSwatchReviewCandidate, and the internal-review
+    # UI gate) were extracted out of paint-booth-2-state-zones.js into js/zones/*
+    # control modules. Read state + those modules so the picker contract still holds.
+    src = (
+        _read(STATE_JS)
+        + "\n" + _read(ZONE_LANE_JS)
+        + "\n" + _read(ZONE_STRATEGY_JS)
+        + "\n" + _read(ZONE_ACTION_JS)
+    )
     css = _read(CSS)
     html = _read(HTML)
 
@@ -234,7 +288,9 @@ def test_zone_dropdown_picker_is_large_readable_and_favorites_ranked():
     assert "This category" in src
     assert "All matching lane" in src
     assert "const categoryMatch = _pickerCardMatchesContextCategory(item, activeContext)" in src
-    assert "Open the matching Category Plan row" in src
+    # PICKER_INTERNAL_REVIEW_UI_ENABLED was renamed to the deps-injected, default-off
+    # internalReviewUiEnabled gate when the swatch-popup logic moved to js/zones/*.
+    assert "internalReviewUiEnabled = !!deps.internalReviewUiEnabled" in src
     assert "data-plan-category" in src
     assert "data-plan-lane" in src
     assert "data-picker-category" in src
@@ -242,9 +298,9 @@ def test_zone_dropdown_picker_is_large_readable_and_favorites_ranked():
     assert "swatch-group-plan" in src
     assert "Category health:" in src
     assert "Showcase" in src
-    assert "Strong Measured" in src
-    assert "Needs Owner Rating" in src
-    assert "SPB-67 Surgery" in src
+    assert "Pro Picks" in src
+    assert "Best-looking pattern options" in src
+    assert "Consistently strong paint behavior" in src
     assert "function collectPickerRankingRows(limit)" in src
     assert "window.collectPickerRankingRows = collectPickerRankingRows" in src
     assert "function collectPickerOwnerDisagreementRows(limit)" in src
@@ -254,6 +310,10 @@ def test_zone_dropdown_picker_is_large_readable_and_favorites_ranked():
     assert "function exportPickerRatingReview(event, scopeName)" in src
     assert "function collectPickerCategoryStrategyRows(scopeTypes, limit)" in src
     assert "window.collectPickerCategoryStrategyRows = collectPickerCategoryStrategyRows" in src
+    assert "reviewExamples" in src
+    assert "showcaseExamples" in src
+    assert "function _renderCategoryStrategyExamples(row)" in src
+    assert "focusSwatchReviewCandidate(id, event, filterName)" in src
     assert "function collectPickerConsolidatedCategoryProposal(scopeTypes)" in src
     assert "window.collectPickerConsolidatedCategoryProposal = collectPickerConsolidatedCategoryProposal" in src
     assert "function exportPickerConsolidatedCategoryProposal(event)" in src
@@ -267,7 +327,7 @@ def test_zone_dropdown_picker_is_large_readable_and_favorites_ranked():
     assert "Owner / measured score gaps" in src
     assert "function _renderSwatchLowScorePanel(limit)" in src
     assert "function toggleSwatchLowScorePanel(force)" in src
-    assert "function focusSwatchReviewCandidate(id, event)" in src
+    assert "function focusSwatchReviewCandidate(id, event, filterName)" in src
     assert "toggleSwatchPickerFavorite" in src
     assert "grid.insertAdjacentHTML('afterbegin', favHtml)" in src
     assert "popupW = Math.min(1500" in src
@@ -298,6 +358,7 @@ def test_zone_dropdown_picker_is_large_readable_and_favorites_ranked():
     assert ".swatch-low-score-row" in css
     assert ".swatch-category-strategy-panel" in css
     assert ".swatch-category-strategy-row" in css
+    assert ".swatch-category-strategy-examples" in css
     assert ".swatch-category-proposal-summary" in css
     assert ".swatch-category-proposal-card" in css
     assert ".swatch-category-plan-badge" in css
@@ -325,7 +386,7 @@ def test_zone_dropdown_picker_is_large_readable_and_favorites_ranked():
     assert "grid-template-columns: repeat(auto-fill, minmax(158px, 1fr))" in css
     assert ".swatch-rank-chip" in css
     assert ".swatch-fav-btn" in css
-    assert "Split swatch: left paint finish, right spec finish" in html
+    assert "Split swatch: left paint; right compiled spec (RGB = M / Roughness / Cc)" in html
     assert "swatchPopupFilterButtons" in html
     assert "swatchPopupSortButtons" in html
     assert "swatchPopupReviewBtn" in html
@@ -360,7 +421,7 @@ def test_spec_pattern_picker_has_review_queue_and_owner_rating_layer():
     assert "collectPickerConsolidatedCategoryProposal(['spec_pattern'])" in src
     assert "Spec overlay category plan" in src
     assert "Spec overlay proposal" in src
-    assert "Spec Plan" in src
+    assert "isZoneLayerPicker || !PICKER_INTERNAL_REVIEW_UI_ENABLED ? ''" in src
     assert "Spec overlay owner / measured gaps" in src
     assert "Search is scoped to this spec overlay category lane" in src
     assert "Search covers this spec lane across all overlay categories" in src
@@ -383,9 +444,10 @@ def test_split_swatch_right_side_uses_spec_finish_visualization():
     server = _read(REPO / "server.py")
 
     assert "def _render_spec_swatch_bytes(finish_type, finish_key, size, seed):" in server
-    assert "Right panel: actual spec behavior visualization" in server
+    assert "Render the right half of picker split swatches from the engine spec map." in server
+    assert "red = metallic, green = roughness, blue = clearcoat" in server
     assert "png_right = _render_spec_swatch_bytes(finish_type, finish_key, size, seed)" in server
-    assert "left=paint/material preview, right=spec-map behavior preview" in _read(STATE_JS)
+    assert "Server returns left=paint/material preview, right=spec-map behavior preview." in _read(STATE_JS)
 
 
 def test_fullscreen_finish_browser_defaults_to_guided_catalog_lanes():
@@ -405,6 +467,45 @@ def test_fullscreen_finish_browser_defaults_to_guided_catalog_lanes():
     assert "grid-template-columns: 172px minmax(0, 1fr)" in css
 
 
+def test_swatch_picker_has_smart_finish_search_affordances():
+    html = _read(HTML)
+    src = _read(STATE_JS)
+    css = _read(CSS)
+
+    assert "swatch-smart-search-row" in html
+    assert "swatch-search-topline" in html
+    assert "Search titles, descriptions, ids, or #tags" in html
+    # 2026-06-02 (owner): the old 5 tags (chrome/weathered/color-shift were firehoses,
+    # "matte sponsor" was a broken two-token tag) were scrapped for 15 single-token tags
+    # that each map to a real, non-firehose set of finishes and actually filter.
+    new_swatch_search_tags = [
+        "#carbon", "#candy", "#pearl", "#aurora", "#glass", "#glow", "#crystal",
+        "#copper", "#luxury", "#racing", "#tactical", "#grunge", "#dragon", "#space", "#scales",
+    ]
+    for tag in new_swatch_search_tags:
+        assert "setSwatchSmartSearch('%s')" % tag in html, "missing smart-search tag %s" % tag
+    # the scrapped tags must be gone
+    for dead in ["#chrome", "#weathered", "#matte sponsor", "#color-shift"]:
+        assert "setSwatchSmartSearch('%s')" % dead not in html, "scrapped tag still present: %s" % dead
+    # 2026-06-02: the old SPBSwatchPopupFilterControls module (which defined
+    # _smartSearchTokens/_smartSearchAliasesForWord/SEARCH_KEYWORDS/setSwatchSmartSearch)
+    # is dead code — its install() is never called. The ACTIVE search layer is these
+    # top-level functions in paint-booth-2-state-zones.js. setSwatchSmartSearch was
+    # missing entirely (every #hashtag chip threw "not defined"); it is now defined here.
+    assert "function _normSearch(s)" in src
+    assert "function _normSearchTokens(q)" in src
+    assert "function _matchTokensNorm(tokens, hayNorm)" in src
+    assert "function filterSwatchPopup(query)" in src
+    assert "function setSwatchSmartSearch(query)" in src
+    assert "function _swatchPickerSearchText(" in src
+    # the search box drives the live filter directly; the chips call setSwatchSmartSearch
+    assert 'oninput="filterSwatchPopup(this.value)"' in html
+    assert 'id="swatchSearchInput"' in html
+    assert ".swatch-smart-search-row" in css
+    assert ".swatch-search-topline" in css
+    assert "#swatchPopup.active #swatchSearchInput" in css
+
+
 def test_spec_pattern_picker_changes_are_synced_to_runtime_mirrors():
     state_src = _read(STATE_JS)
     css_src = _read(CSS)
@@ -412,25 +513,21 @@ def test_spec_pattern_picker_changes_are_synced_to_runtime_mirrors():
     scorecard_src = _read(REPO / "paint-booth-0-catalog-scorecard.js")
     owner_src = _read(REPO / "paint-booth-0-picker-owner-ratings.js")
 
+    # 2026-06-09: 3-copy -> 2-copy; the pyserver/_internal mirror was removed. One mirror each.
     mirror_state_paths = [
         REPO / "electron-app/server/paint-booth-2-state-zones.js",
-        REPO / "electron-app/server/pyserver/_internal/paint-booth-2-state-zones.js",
     ]
     mirror_css_paths = [
         REPO / "electron-app/server/paint-booth-v2.css",
-        REPO / "electron-app/server/pyserver/_internal/paint-booth-v2.css",
     ]
     mirror_html_paths = [
         REPO / "electron-app/server/paint-booth-v2.html",
-        REPO / "electron-app/server/pyserver/_internal/paint-booth-v2.html",
     ]
     mirror_scorecard_paths = [
         REPO / "electron-app/server/paint-booth-0-catalog-scorecard.js",
-        REPO / "electron-app/server/pyserver/_internal/paint-booth-0-catalog-scorecard.js",
     ]
     mirror_owner_paths = [
         REPO / "electron-app/server/paint-booth-0-picker-owner-ratings.js",
-        REPO / "electron-app/server/pyserver/_internal/paint-booth-0-picker-owner-ratings.js",
     ]
 
     for path in mirror_state_paths:

@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_iridescent_cd_r",
+  "display_name": "Cdrom: Iridescent CD-R",
+  "promise": "Green-gold writable optical-disc dye lacquer, visibly different from silver rainbow data tracks",
+  "carrier_grammar": "Green-gold writable optical-disc dye lacquer, visibly different from silver rainbow data tracks; single full-canvas image, no duplicated quadrants. Fine features: gold green recording dye, fine burnished data arcs, lacquer scratch troughs, spectral pit rims, dark recording pits, engraved silver ticks",
+  "spec_grammar": "Feature-specific selectors partition gold green recording dye, fine burnished data arcs, lacquer scratch troughs, spectral pit rims, dark recording pits, engraved silver ticks. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "gold green recording dye",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "fine burnished data arcs",
+      "role": "Material feature selected from artwork by detail:>:0.59"
+    },
+    {
+      "name": "lacquer scratch troughs",
+      "role": "Material feature selected from artwork by detail:<:0.25"
+    },
+    {
+      "name": "spectral pit rims",
+      "role": "Material feature selected from artwork by s:>:0.62&edge:>:0.39"
+    },
+    {
+      "name": "dark recording pits",
+      "role": "Material feature selected from artwork by g:<:0.23"
+    },
+    {
+      "name": "engraved silver ticks",
+      "role": "Material feature selected from artwork by g:>:0.8&s:<:0.23"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "gold green recording dye",
+      "fine burnished data arcs",
+      "lacquer scratch troughs",
+      "spectral pit rims",
+      "dark recording pits",
+      "engraved silver ticks"
+    ],
+    "R": [
+      "gold green recording dye",
+      "fine burnished data arcs",
+      "lacquer scratch troughs",
+      "spectral pit rims",
+      "dark recording pits",
+      "engraved silver ticks"
+    ],
+    "Cc": [
+      "gold green recording dye",
+      "fine burnished data arcs",
+      "lacquer scratch troughs",
+      "spectral pit rims",
+      "dark recording pits",
+      "engraved silver ticks"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "gold green recording dye",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine burnished data arcs",
+      "range": [
+        [
+          240,
+          0,
+          170
+        ],
+        [
+          255,
+          30,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "lacquer scratch troughs",
+      "range": [
+        [
+          0,
+          130,
+          110
+        ],
+        [
+          22,
+          235,
+          245
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "spectral pit rims",
+      "range": [
+        [
+          240,
+          0,
+          16
+        ],
+        [
+          255,
+          32,
+          90
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dark recording pits",
+      "range": [
+        [
+          65,
+          110,
+          125
+        ],
+        [
+          185,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "engraved silver ticks",
+      "range": [
+        [
+          180,
+          30,
+          25
+        ],
+        [
+          240,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_beige_box",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_crt_blue_screen",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "gold green recording dye",
+      "fine burnished data arcs",
+      "lacquer scratch troughs",
+      "spectral pit rims",
+      "dark recording pits",
+      "engraved silver ticks"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_iridescent_cd_r / Green-gold writable optical-disc dye lacquer, visibly different from silver rainbow data tracks",
+  "spec_key": "at_iridescent_cd_r / gold green recording dye all; fine burnished data arcs detail:>:0.59; lacquer scratch troughs detail:<:0.25; spectral pit rims s:>:0.62&edge:>:0.39; dark recording pits g:<:0.23; engraved silver ticks g:>:0.8&s:<:0.23",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

@@ -1,0 +1,163 @@
+/* ============================================================================
+   SPB BETA POLISH - 2026-09-05 (owner: "BETA LAUNCH PREP ... a few small fixes")
+
+   Two owner-visible regressions, fixed deliberately in ONE small file with
+   high-specificity !important rules so the next stylesheet added to the stack
+   cannot silently undo them again. Static guard: tests/guard_beta_polish_20260905.js
+   (run: node tests/guard_beta_polish_20260905.js). This link must stay BEFORE
+   css/spb-clean-default-20260829.css (the clean skin must remain the last link);
+   these rules win on specificity, not on order.
+
+   1. VERSION BADGE. Owner: "The version number is jacked up and overlapping the
+      iracing user id box ... It needs to be SMALL and sit above the red line
+      right beside where it says SHOKKER PAINT BOOTH."
+      Measured 2026-09-05 at 1920px / PRO: the brand block is absolute, 194px
+      wide, logo 132x98 at its left edge; the 13px pill sat TOP-beside the logo
+      and ran to x=222 while the iRacing User ID box starts at x=212. The "red
+      line" is the orange EKG pulse (.header-brand::after, the bottom 9px of the
+      brand block, visible in gallery looks). The badge now sits bottom-right of
+      the logo on the PAINT BOOTH baseline, 15px above the block's bottom edge so
+      it clears that pulse, as plain 9px gold text - no pill, no border.
+
+   2. BASE COLOR LOCK BOX. Owner: "JACKED UP AGAIN ... supposed to be a freaking
+      square box that's more easily seen." Every look restyles
+      input[type="checkbox"] globally (pro-theme: appearance:none, dark box on a
+      dark card; clean skin: native 12px that Chrome draws dark). Each fix to the
+      INPUT lost to the next global rule. The visible box is now a SPAN
+      (.spb-lock-box) that no checkbox rule can ever touch; the real checkbox
+      stays in the DOM (1x1, transparent) so onchange -> setZoneLockBaseColor and
+      keyboard toggling are unchanged.
+   ========================================================================== */
+
+/* ---------------------------------------------------------- 1. version badge */
+.header .header-brand .subtitle #liveBuildBadge.version-badge {
+  font-size: 9px !important;
+  line-height: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.4px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
+  min-height: 0 !important;
+  height: auto !important;
+  color: rgba(255, 205, 92, 0.92) !important;   /* the logo's gold */
+  white-space: nowrap !important;
+  display: inline-block !important;
+  vertical-align: baseline !important;
+}
+
+.header .header-brand .subtitle {
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  line-height: 11px !important;
+}
+
+/* wide layout: the brand block is absolute (spb-header-slim), logo 132x98 */
+@media (min-width: 1350px) {
+  .header .header-brand .subtitle {
+    position: absolute !important;
+    left: 138px !important;      /* logo right edge (132) + 6px breathing room */
+    bottom: 15px !important;     /* PAINT BOOTH baseline; the 9px EKG pulse sits below */
+    top: auto !important;
+    right: auto !important;
+    display: block !important;
+    width: auto !important;
+    max-width: 56px !important;  /* 138 + 56 = 194 = the brand reserve; User ID box starts at 212 */
+    overflow: hidden !important;
+    text-align: left !important;
+  }
+}
+
+/* narrow layout: brand is in-flow, logo 48px; 48 + 11 = 59 < the 62px header */
+@media (max-width: 1349.98px) {
+  .header .header-brand .subtitle {
+    position: static !important;
+    display: block !important;
+    margin: 0 !important;
+  }
+}
+
+/* ---------------------------------------------------- 2. BASE COLOR lock box */
+.zone-base-color-card .zone-base-color-title .spb-lock-toggle {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  position: relative !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  user-select: none;
+}
+
+/* the real checkbox: kept for state + a11y, hidden from every checkbox skin */
+.zone-base-color-card .zone-base-color-title .spb-lock-toggle > input.spb-lock-input[type="checkbox"] {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  flex: 0 0 1px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  opacity: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+/* the box people actually see: a 14px square with a 2px accent border */
+.zone-base-color-card .zone-base-color-title .spb-lock-toggle > .spb-lock-box {
+  display: inline-block !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  min-height: 14px !important;
+  flex: 0 0 14px !important;
+  border: 2px solid var(--clean-accent, var(--accent, #00e5ff)) !important;
+  border-radius: 3px !important;
+  background: rgba(255, 255, 255, 0.07) !important;   /* neutral: the accent is orange in the clean skin, cyan elsewhere */
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.zone-base-color-card .zone-base-color-title .spb-lock-toggle > .spb-lock-box::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 3px !important;
+  top: 0 !important;
+  width: 4px !important;
+  height: 8px !important;
+  border: solid #061018 !important;
+  border-width: 0 2px 2px 0 !important;
+  transform: rotate(45deg) !important;
+  opacity: 0 !important;
+}
+.zone-base-color-card .zone-base-color-title .spb-lock-toggle:hover > .spb-lock-box {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+.zone-base-color-card .zone-base-color-title .spb-lock-toggle > input.spb-lock-input:checked + .spb-lock-box {
+  background: var(--clean-accent, var(--accent, #00e5ff)) !important;
+  border-color: var(--clean-accent, var(--accent, #00e5ff)) !important;
+}
+.zone-base-color-card .zone-base-color-title .spb-lock-toggle > input.spb-lock-input:checked + .spb-lock-box::after {
+  opacity: 1 !important;
+}
+.zone-base-color-card .zone-base-color-title .spb-lock-toggle > input.spb-lock-input:focus-visible + .spb-lock-box {
+  outline: 2px solid var(--clean-accent, var(--accent, #00e5ff)) !important;
+  outline-offset: 2px !important;
+}
+.zone-base-color-card .zone-base-color-title .spb-lock-toggle > .spb-lock-text {
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.3px !important;
+  color: var(--text-primary, #e6ecf5) !important;
+}

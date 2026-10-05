@@ -2,7 +2,7 @@
   "name": "LMP Prototype",
   "description": "Le Mans prototype aesthetic: brushed aluminum body, carbon aerodynamics, and fluorescent hi-viz accents for top-class visibility.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "any LMP-style chassis, endurance prototypes",
   "notes": "Hi-viz zones are intentionally bold for TV/stream legibility. Drop Accent intensity to 70 if hit too hard for your taste.",
   "zones": [

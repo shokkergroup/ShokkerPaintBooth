@@ -1,0 +1,56 @@
+{
+  "task": "W62 independent operation ownership failure-state review",
+  "date": "2026-10-04",
+  "scope": "Isolated proAI candidate only; no live controller/canvas, renderer, provider, browser, or native paint calls",
+  "source_pins": {
+    "gen3_pro_ai_baseline": {
+      "path": "_easy_claude_work/ai14h_generation3_candidate/rebase2/js/spb-pro-ai.js",
+      "sha256": "6952C11AD7ED954262BE19DD053B17D5FA7A60EC32A896C97D32251075B68451"
+    },
+    "w53_canvas_api": {
+      "path": "_easy_claude_work/ai14h_w53_candidate/candidate/paint-booth-3-canvas.js",
+      "sha256": "159716B3150C785517BEC3A1CF1B00A7318121885E7640276B5FFAF14FC91D9A"
+    },
+    "operation_manager": {
+      "path": "js/spb-ai-operation.js",
+      "sha256": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6"
+    }
+  },
+  "fresh_oracle": {
+    "path": "tests/ai_operation_w62_ownership_failure_contract.cjs",
+    "sha256": "4C29CEF2F786D3DA133A7B9B4F94558BE725AB8029CA0D39BCDFBF3275F65759",
+    "cases_frozen_before_source_review": 12,
+    "adjudication": "The initially frozen no-apply expectation for any failed replacement was too broad. The W53 API advances committedGeneration and retains path/fingerprint when the old document remains valid; W64 owner clarification confirms a fresh diagnosis may edit that retained source. This is preserved as a positive case. The actual fail-closed case is post-draw reset with loading=false but isCommitted=false and empty fingerprint. The original oracle file remains unchanged."
+  },
+  "baseline_observation": "Initial actual-controller harness against the pinned baseline passed 6/10; reproduced stable empty-revision authorization on repeated hash-reader failure, queue application when no fresh hash getter exists, and queue application against an uncommitted post-draw reset.",
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_w62_candidate/js/spb-pro-ai.js",
+    "sha256": "3A193C10175F49841C398DD83D915061C1F25BBFCB4650F56A90588B2821FC17",
+    "changes": [
+      "A throwing or empty available uncached revision reader now returns a per-read failure revision, so repeated failures cannot preserve an operation ticket.",
+      "When the uncached reader is absent, the existing cached fallback stays intact for the established W56 manager-level positive oracle; the mutation boundary separately requires a successful nonempty uncached hash.",
+      "operationDocument now records committed generation, source committed state, and derived readiness without making passive operations invalid solely because a source is not writable.",
+      "applyQueue requires a committed, nonloading W53 source whose committed generation matches the current generation and whose path/fingerprint are nonempty. It also refuses when a fresh zone hash cannot be read."
+    ]
+  },
+  "validation": {
+    "actual_controller_harness": "PASS 13/13 focused checks using extracted operationDocument, operationRevision, and applyQueue plus the actual js/spb-ai-operation.js manager",
+    "includes": [
+      "hash reader repeatedly throws after manual zone change",
+      "uncached getter missing with legacy cached fallback",
+      "both hash getters missing",
+      "valid retained source after failed replacement",
+      "post-draw uncommitted reset with empty fingerprint",
+      "source loading, ready apply, document replacement, and manual revision controls",
+      "owned synchronous publish remains current across display cache refresh",
+      "passive no-paint self-help remains available"
+    ],
+    "w56_oracle": "PASS unchanged tests/ai_operation_fresh_revision_contract.cjs; W56 report SHA256 remained 2850B896A86139DC129CE7E190A1B956036487139F01B34F209D182C721A2927",
+    "syntax": "PASS node --check for candidate and review harness"
+  },
+  "limits": [
+    "Candidate is not integrated or live/native accepted; root owns integration.",
+    "The uncached hash reader is required for actual queue mutation even when the manager-level legacy cached fallback can preserve a ticket. This is intentionally fail-closed at publication.",
+    "No pixel renderer or native application effects were invoked."
+  ]
+}

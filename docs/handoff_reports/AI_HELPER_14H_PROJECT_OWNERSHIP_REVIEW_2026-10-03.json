@@ -1,0 +1,74 @@
+{
+  "report_id": "AI_HELPER_14H_PROJECT_OWNERSHIP_REVIEW_2026-10-03",
+  "review_scope": "W18 read-only saved-project helper ownership audit",
+  "date_utc": "2026-10-04",
+  "verdict": "NO_CROSS_RELOAD_PART_PROVENANCE_CLAIM",
+  "frozen_oracle": {
+    "test_file": "tests/ai_part_project_roundtrip_review_contract.cjs",
+    "case_count": 10,
+    "cases": [
+      "saved-source-same-car-provenance-roundtrip",
+      "repeated-same-name-zones-remain-distinct",
+      "renamed-zone-retains-or-invalidates-by-stable-identity",
+      "muted-zone-provenance-is-preserved-but-not-active",
+      "same-path-new-source-generation-invalidates-provenance",
+      "stale-layout-element-and-mask-metadata-refused",
+      "unsupported-or-forged-private-metadata-refused",
+      "ephemeral-edit-registry-not-mistaken-for-restored-state",
+      "restore-failure-keeps-prior-project-state",
+      "serializer-does-not-drop-unrelated-zone-state"
+    ],
+    "test_result": "PASS: 10-case frozen oracle registered; stable source-hash assertions and targeted actual-source contract assertions pass.",
+    "test_limit": "This contract test statically checks the actual serializer/restore windows; it does not execute the entire getConfig/loadConfigFromObj/project-open path. No native I/O or project file was used."
+  },
+  "source_freeze_sha256": {
+    "js/features/spb-projects.js": "40520AD3E373B2505CCE0AB4BA030F282E9EBA2A0A9B1C8F6093A0AA97EC34B3",
+    "paint-booth-2-state-zones.js": "E1EFA310757FBBDBF5EA5CB030DDC651BDAC1A6618A8388DA1535D00D8F3BC95",
+    "paint-booth-3-canvas.js": "F55880174D7AFF86F44F8EE5B0C28AFF31CDDCDE6491386D558EC16A27B98F56",
+    "js/spb-pro-zone-kit.js": "6968963FC8D382E3ECDA629089A71A73A519270C0B577E98DF03D9F7D48D68D0"
+  },
+  "evidence": [
+    {
+      "source": "js/features/spb-projects.js:185-234",
+      "finding": "buildProjectPayload obtains config from window.getConfig() and embeds that config directly in the envelope. The project envelope stores source paint path, canvas dimensions, layer data and selected-layer data, but it does not add zone part ownership metadata itself."
+    },
+    {
+      "source": "js/features/spb-projects.js:647-668",
+      "finding": "Project config remapping clones config and rewrites source-layer bindings. That operation would preserve unrelated JSON fields if present; it does not synthesize provenance."
+    },
+    {
+      "source": "paint-booth-2-state-zones.js:16033-16037,16052-16058,16267-16282,16296",
+      "finding": "getConfig explicitly serializes zone id, ordinary material/finish fields, mute state, source-layer links and encoded region/spatial masks. It does not serialize zone._aiPartProv."
+    },
+    {
+      "source": "paint-booth-2-state-zones.js:16303-16309,16337-16358,16564-16573",
+      "finding": "loadConfigFromObj materializes zones field-by-field, preserves a present zone id (creating a new one only when absent), decodes region/spatial masks, preserves ordinary finish/mute fields, and does not restore _aiPartProv. Repeated same-name zones therefore remain distinguishable through persisted IDs, but any omitted ownership association cannot follow them across reload."
+    },
+    {
+      "source": "js/spb-pro-zone-kit.js:432-442",
+      "finding": "rememberPartRegion attaches private in-memory _aiPartProv to the live zone with serialized region, region-mask hash, part-mask hash, layout signature and element signature. It has no explicit source fingerprint or source-load generation field."
+    },
+    {
+      "source": "paint-booth-3-canvas.js:1122-1137,1196-1202",
+      "finding": "The application has a numeric source-load generation and committed source path/fingerprint accessors. These provide a real runtime source identity boundary; path alone is insufficient for same-path reload safety."
+    }
+  ],
+  "scenario_outcomes": {
+    "ordinary_zone_state_and_mask_fields": "Source contract retains them through the explicit config projection and restore materialization; full production roundtrip execution was outside this narrow harness.",
+    "zone_identity_and_duplicate_names": "Zone IDs are explicitly saved/restored, so duplicate names need not collide. No production project-file mutation was performed.",
+    "part_provenance_cross_reload": "FAIL / NOT PRESERVED: _aiPartProv is absent from both explicit save and load projections. A same-car saved project therefore cannot restore this helper's association from current config fields.",
+    "ephemeral_edit_registry": "Cross-reload registry restoration was not verified in this W18 harness. Do not treat private per-session registry state as persisted project ownership.",
+    "rename_mute_forgery_stale_layout": "No cross-reload provenance policy exists to exercise because provenance is dropped. Current zone fields retain name and muted state; provenance semantics require a separately specified validated persistence contract."
+  },
+  "recommended_future_contract": [
+    "Add a versioned, narrowly scoped part-ownership field to project zone config only after defining schema validation and fail-closed behavior; do not serialize arbitrary private helper objects wholesale.",
+    "Bind saved provenance to stable zone ID, canonical source identity/content fingerprint, part/region-mask hashes, layout signature and element signature. Recompute or validate runtime load generation after source commit rather than persisting an ephemeral generation as a durable identity.",
+    "Keep same-name zones distinct by stable zone IDs; define rename and mute semantics explicitly. On malformed, stale, unsupported or mismatched metadata, ignore ownership and require a fresh explicit selection instead of guessing from name/order/position.",
+    "Integrate through the project config serializer/loader boundary, preserving unrelated fields and existing mask codec behavior. Add a fresh saved-project fixture test that executes actual config capture, JSON encoding, restore and source identity validation before claiming round-trip support."
+  ],
+  "limitations": [
+    "No full project open/save, native UI, server, provider or external I/O was invoked.",
+    "No assertions are made about user-visible UI behavior or actual zone painting after restore.",
+    "The proAI in-memory registry was not re-audited in this W18 task; prior session notes that it resets on page load remain a separate baseline observation, not a result of this test."
+  ]
+}

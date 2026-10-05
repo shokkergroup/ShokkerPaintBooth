@@ -1,0 +1,14 @@
+{
+  "version":1,
+  "paint_label":"dirtlatemodel 358/car_num_1040211.tga",
+  "inspection_records":"_smart_tga_runs/cycle662_dlm_group_features_holdout/inspection_records.json",
+  "review_scope":"Cycle 662 source plus all owner/combined sheets, suspects, position cues, and physical-group review.",
+  "component_labels":[
+    {"layer":"numbers","component_index":0,"expected_bbox":[373,240,68,87],"target_layer":"numbers","label":"true_upper_number_digit","family_id":"number:04"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[298,726,68,88],"target_layer":"numbers","label":"true_lower_number_digit_zero","family_id":"number:04"},
+    {"layer":"numbers","component_index":2,"expected_bbox":[367,726,60,63],"target_layer":"numbers","label":"true_lower_number_digit_four_fragment","family_id":"number:04"},
+    {"layer":"paint","component_index":null,"expected_bbox":[680,724,10,11],"target_layer":"template","label":"tiny_fixed_boundary_shape_false_textlike_paint"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[401,258,17,55],"target_layer":"numbers","label":"position_cue_true_upper_digit_four","family_id":"number:04"},
+    {"layer":"candidate_group","component_index":null,"expected_bbox":[298,726,129,88],"target_layer":"numbers","label":"intrinsic_physical_group_true_lower_number","family_id":"number:04","group_id":"pdg:52613ed7e6f66fdc"}
+  ]
+}

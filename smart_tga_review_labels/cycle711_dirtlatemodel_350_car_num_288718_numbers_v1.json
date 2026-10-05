@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 350/car_num_288718.tga",
+  "inspection_records": "_smart_tga_runs/cycle711_fresh_dlm_active_pool/inspection_records.json",
+  "review_scope": "Cycle 711 frozen active-learning selection; source, owner sheets, context crops, and isolated proposal masks reviewed.",
+  "selection_policy": "frozen_cycle711_recovery_disagreement_uncertainty",
+  "component_labels": [
+    {"layer":"sponsors","component_index":11,"expected_bbox":[305,240,144,104],"target_layer":"numbers","label":"true_number_6_copy"},
+    {"layer":"numbers","component_index":0,"expected_bbox":[22,296,174,64],"target_layer":"sponsors","label":"sponsor_bulk_material_false_number"},
+    {"layer":"paint","component_index":0,"expected_bbox":[0,0,1024,1024],"target_layer":"paint","label":"whole_paint_false_number"}
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "$schema": "shokk-forge.template-adapter-seed/v1",
+  "adapter_id": "iracing-dirt-late-model-350-358-438-official-v1",
+  "display_name": "iRacing Dirt Late Model 350/358/438 shared official template",
+  "canvas": [2048, 2048],
+  "coordinate_system": {
+    "origin": "top-left",
+    "x_axis": "right",
+    "y_axis": "down",
+    "bbox_format": "x0,y0,x1,y1"
+  },
+  "guide_roles": {
+    "mandatory": {"path": "psd/guides/00_Mandatory.png", "polarity": "alpha_is_forbidden"},
+    "number_blocks": {"path": "psd/guides/01_Number_Blocks.png", "polarity": "alpha_is_recommended"},
+    "sponsor_blocks": {"path": "psd/guides/02_Sponsor_Blocks.png", "polarity": "alpha_is_recommended"},
+    "car_mask": {"path": "psd/guides/03_Mask.png", "polarity": "alpha_is_nonpaintable"},
+    "wire": {"path": "psd/guides/04_Wire.png", "polarity": "alpha_is_wire"}
+  },
+  "base_fill": {
+    "mode": "full_canvas",
+    "basis": "Official Dirt Late Model Paintable Area/Main Car Body is a full 2048x2048 Base Paint layer; the simulator UV selects body islands while official decal/hardware layers remain above it.",
+    "projected_art_must_still_clip_to_calibrated_surfaces": true
+  },
+  "placement_anchor_overrides": {
+    "door_number_upper_side": {
+      "visual_rotation_adjust_deg": 2.0,
+      "calibration_basis": "Owner in-sim DLM driver-side physical-level correction, 2026-07-14"
+    },
+    "upper_side_rear_sponsor_strip": {
+      "visual_rotation_adjust_deg": 2.0,
+      "calibration_basis": "Owner in-sim DLM driver-side physical-level correction, 2026-07-14"
+    },
+    "upper_side_center_sponsor_strip": {
+      "visual_rotation_adjust_deg": 2.0,
+      "calibration_basis": "Owner in-sim DLM driver-side physical-level correction, 2026-07-14"
+    },
+    "spoiler_lower_sponsor_strip": {
+      "bbox": [670, 1935, 1166, 1989],
+      "calibration_basis": "Owner in-sim outward-spoiler visual centering matched to accepted inside face, 2026-07-14"
+    }
+  },
+  "surfaces": {
+    "left_strip": {"family": "side", "side": "left", "paintable": true, "projector": "wheelbase_profile", "upright_rotation_deg": 180, "inverse_ready": true, "car_space_extent": {"x_min": -0.6458992, "x_max": 1.0082195, "y_bottom": 0.0014125, "y_top": 0.266971}, "calibration_basis": "Accepted cross-car Mountain Dew/Miller side extent; run_03_surface_extent_calibration"},
+    "right_strip": {"family": "side", "side": "right", "paintable": true, "projector": "wheelbase_profile", "upright_rotation_deg": 0, "inverse_ready": true, "car_space_extent": {"x_min": -0.6458992, "x_max": 1.0082195, "y_bottom": 0.0014125, "y_top": 0.266971}, "calibration_basis": "Accepted cross-car Mountain Dew/Miller side extent; run_03_surface_extent_calibration"},
+    "left_front_fender": {"family": "front_fender", "side": "left", "paintable": true, "projector": "wheelbase_profile", "upright_rotation_deg": 180, "inverse_ready": true, "car_space_extent": {"x_min": 0.705, "x_max": 1.32, "y_bottom": 0.04875, "y_top": 0.38625}, "calibration_basis": "Accepted cross-car Mountain Dew/Miller fender extent; run_04_multisurface_calibration"},
+    "right_front_fender": {"family": "front_fender", "side": "right", "paintable": true, "projector": "wheelbase_profile", "upright_rotation_deg": 0, "inverse_ready": true, "car_space_extent": {"x_min": 0.705, "x_max": 1.32, "y_bottom": 0.04875, "y_top": 0.38625}, "calibration_basis": "Accepted cross-car Mountain Dew/Miller fender extent; run_04_multisurface_calibration"},
+    "rear_deck_lid": {"family": "top", "side": "center", "paintable": true, "projector": "top_car_space", "upright_rotation_deg": 90, "inverse_ready": false, "unresolved": "top-view longitudinal/lateral anchors required"},
+    "tub_windshield": {"family": "interior", "side": "center", "paintable": false, "projector": "fixed_template", "upright_rotation_deg": 0, "inverse_ready": false},
+    "hood": {"family": "top", "side": "center", "paintable": true, "projector": "top_car_space", "upright_rotation_deg": 90, "inverse_ready": false, "unresolved": "general perspective top-view longitudinal/lateral anchors required", "qualified_subprojectors": {"complete_isolated_orthographic_panel": {"inverse_ready": true, "projector": "border_background_rejection_largest_component_mask_scanline_piecewise", "stored_rotation_deg": 90, "containment_required": 1.0, "component_policy": "largest_border-disconnected_foreground_component", "sampling_policy": "ordered_foreground_pixels_per_scanline", "calibration_basis": "Sex Wax active + Waffle/Friday controls + withheld Domino direct top-view complete isolated hood panels; Cycle 27 pass 13"}}},
+    "nose": {"family": "front", "side": "center", "paintable": true, "projector": "front_car_space", "upright_rotation_deg": 90, "inverse_ready": false, "unresolved": "full-height front correspondences remain required; only the direct-evidence valance is qualified", "front_space_contract": {"u": "(x-center_x)/half_width", "v": "(ground_y-y)/(2*half_width)", "vertical_normalization": "two_half_width"}, "qualified_subprojectors": {"front_valance": {"inverse_ready": true, "projector": "official_mask_scanline_piecewise", "front_space_u_range": [-1.0, 1.0], "front_space_v_range": [0.0, 0.4], "stored_direction": "front-left -> UV-bottom; front-right -> UV-top; ground -> UV-right", "containment_required": 1.0, "max_mean_mask_snap_px": 4.0, "max_peak_mask_snap_px": 24.0, "calibration_basis": "Sex Wax active + Waffle/Friday controls + withheld Domino direct-front isolated valances with raw landmark-derived two-half-width vertical scale; Cycle 26 pass 08; colored source splat Cycle 27 pass 14"}}, "front_assembly_contract": {"semantic_partition": "direct-image edge peak inside the corridor between isolated hood-art and valance support", "ownership": "hood and front_valance are disjoint physical instances and disjoint official-mask pixels", "duplicate_policy": "one physical_instance_id may populate only one surface", "abstention": "do not populate the unevidenced full nose", "calibration_basis": "Sex Wax active + Waffle/Friday controls + withheld Domino; Cycle 27 passes 09 and 15"}},
+    "roof": {"family": "top", "side": "center", "paintable": true, "projector": "top_car_space", "upright_rotation_deg": 0, "inverse_ready": false, "unresolved": "top-view roof-corner anchors required"},
+    "spoiler_inside": {"family": "rear_aero", "side": "inside", "paintable": true, "projector": "rear_car_space", "upright_rotation_deg": 180, "inverse_ready": false, "unresolved": "rear-view spoiler anchors required"},
+    "spoiler_outside": {"family": "rear_aero", "side": "outside", "paintable": true, "projector": "rear_car_space", "upright_rotation_deg": 0, "inverse_ready": false, "unresolved": "rear-view spoiler anchors required"},
+    "spoiler_boards_woo": {"family": "mandatory_series", "side": "center", "paintable": false, "projector": "fixed_template", "upright_rotation_deg": 0, "inverse_ready": false},
+    "window_net": {"family": "hardware", "side": "left", "paintable": false, "projector": "fixed_template", "upright_rotation_deg": 0, "inverse_ready": false},
+    "fuel_cell_circle": {"family": "hardware", "side": "center", "paintable": false, "projector": "fixed_template", "upright_rotation_deg": 0, "inverse_ready": false}
+  },
+  "semantic_visibility": {
+    "left_strip": {
+      "stored_orientation": "rot180",
+      "hidden_rects": [
+        {"bbox": [0, 285, 1310, 335], "reason": "physical bottom 50px tucks under the rocker/skirt in iRacing"},
+        {"bbox": [1130, 285, 1310, 715], "reason": "front fender flare overlays the forward door-strip end in 3D"}
+      ],
+      "evidence": "Owner masked/unmasked iRacing renders plus Claude/Fable sim-truth law, 2026-07-15"
+    },
+    "right_strip": {
+      "stored_orientation": "normal",
+      "hidden_rects": [
+        {"bbox": [0, 1705, 1310, 1755], "reason": "physical bottom 50px tucks under the rocker/skirt in iRacing"},
+        {"bbox": [1130, 1445, 1310, 1755], "reason": "front fender flare overlays the forward door-strip end in 3D"}
+      ],
+      "evidence": "Owner masked/unmasked iRacing renders plus Claude/Fable sim-truth law, 2026-07-15"
+    }
+  },
+  "adjacency": [
+    {"a": "left_strip", "b": "left_front_fender", "seam": "left_door_to_front_fender", "confidence": 1.0, "basis": "owner in-game keepout evidence", "continuity_audit": {"mode": "overlapping_car_space", "alpha_threshold": 80, "confidence_balance_tolerance": 0.08, "minimum_overlap_pixels": 500, "pass_score": 85.0}},
+    {"a": "right_strip", "b": "right_front_fender", "seam": "right_door_to_front_fender", "confidence": 1.0, "basis": "owner in-game keepout evidence", "continuity_audit": {"mode": "overlapping_car_space", "alpha_threshold": 80, "confidence_balance_tolerance": 0.08, "minimum_overlap_pixels": 500, "pass_score": 85.0}},
+    {"a": "hood", "b": "nose", "seam": "hood_to_nose", "confidence": 0.95, "basis": "the compiled candidate pixels for both physical panels must survive inverse UV placement and non-reflecting reprojection into a shared calibrated view", "continuity_audit": {"mode": "candidate_surface_roundtrip", "correspondence_key": "hood_nose_candidate_pixels", "required_physical_surfaces": ["hood", "nose"], "minimum_views": 1, "pass_score": 85.0}},
+    {"a": "rear_deck_lid", "b": "spoiler_inside", "seam": "rear_deck_to_inside_spoiler", "confidence": 0.9, "basis": "the upper rear deck and inward spoiler face are jointly visible in a calibrated top/rear view and must be audited from final candidate pixels", "continuity_audit": {"mode": "candidate_surface_roundtrip", "correspondence_key": "rear_deck_spoiler_candidate_pixels", "required_physical_surfaces": ["rear_deck_lid", "spoiler_inside"], "minimum_views": 1, "pass_score": 85.0}},
+    {"a": "spoiler_inside", "b": "spoiler_outside", "seam": "spoiler_two_faces", "confidence": 0.95, "basis": "official inside ROT180/outside normal labels map the shared physical top edge to inside UV-bottom/outside UV-top", "continuity_audit": {"mode": "normalized_uv_edge_profile", "a_edge": "bottom", "b_edge": "top", "reverse_a": false, "reverse_b": true, "band_pixels": 2, "samples": 256, "length_range": [0.03, 0.97], "minimum_valid_samples": 200, "pass_score": 85.0}}
+  ],
+  "surface_overlap_ownership": [
+    {"winner": "rear_deck_lid", "loser": "left_strip", "basis": "official top-panel identity owns the mined 15px bbox collision"},
+    {"winner": "right_front_fender", "loser": "right_strip", "basis": "distinct passenger fender island owns the asymmetric strip/fender collision"},
+    {"winner": "roof", "loser": "right_front_fender", "basis": "official roof island owns the mined 10px bbox collision"}
+  ],
+  "policy": {
+    "readable_art_reflection_allowed": false,
+    "unresolved_projectors_must_abstain": true,
+    "mandatory_overlap_allowed": false,
+    "livery_specific_rules_allowed": false,
+    "guide_polarity_must_be_explicit": true
+  }
+}

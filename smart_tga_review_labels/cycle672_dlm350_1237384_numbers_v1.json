@@ -1,0 +1,8 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_1237384.tga","inspection_records":"_smart_tga_runs/cycle672_dlm_semantic_label_review/inspection_records.json","review_scope":"Cycle 672 source plus complete Number/Sponsor/Template/Paint sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[41,17,63,41],"target_layer":"template","label":"template_geometry_false_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[320,33,156,83],"target_layer":"template","label":"template_geometry_false_number"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[169,37,77,27],"target_layer":"template","label":"template_panel_false_number"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[168,88,94,46],"target_layer":"template","label":"template_panel_false_number"},
+ {"layer":"numbers","component_index":4,"expected_bbox":[304,245,141,83],"target_layer":"numbers","family_id":"number:8","label":"true_custom_number_8"},
+ {"layer":"numbers","component_index":5,"expected_bbox":[297,730,142,72],"target_layer":"numbers","family_id":"number:8","label":"true_custom_number_8"}
+]}

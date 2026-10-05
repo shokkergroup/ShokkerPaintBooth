@@ -1,0 +1,70 @@
+{
+  "work_item": "W88 independent imperative/hypothetical instruction-route acceptance holdout",
+  "date": "2026-10-04",
+  "status": "PASS_WITH_LIMITS_PRIVATE_CANDIDATE",
+  "scope": "Fresh route audit plus isolated candidate. No installed production source, HTML, mirror, Wiki, renderer, provider, native app, or external MCP route was changed or called.",
+  "frozen_oracle": {
+    "path": "_easy_claude_work/ai14h_w88_review/fresh-oracle.json",
+    "sha256": "F01122CF9DBB579B8F7D88FE142DB43D466477EE0B1613852EBC44D357653E1F",
+    "case_count": 20,
+    "frozen_before_controller_or_planner_inspection": true
+  },
+  "source_pins": {
+    "integration10_pro_ai": "E28770330994FFC04364D0A48E88B98B69D25F9848E23D56CC1CEA07165DA713",
+    "runtime3_design": "0533393FF5F2170236F60D4ED489C7AE52F98805E12B0764DA67A967F756F2E8",
+    "runtime3_edit": "99703873013E198857D9ACEAA334821098E53DCAA9D55E14DBD1EC50E58604DE",
+    "material_controls_runtime2": "A6F50C22C2D3A4F6F9707505D66C6C30B9D2CC0E04D78F00F0D103F38A49919D",
+    "complete_instruction_guard": "BA0AF1F9E217695ED733DDE81C8DEC1A735DD1F052E8C06B3098866D392A551C",
+    "integration10_self_help": "A25FEBD091B6D13EE2B3AAF3713F21A2FA720C0F240A6B042CD6DEFD023CF783",
+    "operation_module": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6",
+    "lease_module": "DE276372A763310EC051DB141FCB1D601E11DBF193843E2B21A405226F782134"
+  },
+  "private_candidate": {
+    "pro_ai": {
+      "path": "_easy_claude_work/ai14h_w88_review/candidate/spb-pro-ai.js",
+      "sha256": "829EF29E481876DAA38585D601BC0D0FFA3BC825884F6EDEC180B671E75FBFC7"
+    },
+    "intent_guard": {
+      "path": "_easy_claude_work/ai14h_w88_review/candidate/spb-ai-instruction-intent-guard.js",
+      "sha256": "F02093D25758FD41847A1F7D2E7CC9774A4875571885F03A6CB1DC241F0E2CB4"
+    },
+    "change": "A small preflight classifies explicit leading how-to/hypothetical and quoted/read-only wrappers before D/E action planning. It also refuses a targetless new-color-plus-overlay request that simultaneously says to keep current paint. An explicit `Apply this request:` prefix is stripped only when followed by a direct recognized paint verb; no geometry is inferred."
+  },
+  "route_test": {
+    "path": "tests/ai_instruction_route_w88_contract.cjs",
+    "sha256": "7086E1F26665988FBFD09AF7B95B68F070D4055E27EF0B5FCD8951DB68D971F2",
+    "result": "PASS_WITH_LIMITS_PRIVATE_CANDIDATE",
+    "frozen_cases": 20,
+    "actual_route_cases_executed": 16,
+    "stateful_cases_not_exercised": 4,
+    "checks": [
+      "Executed actual offlineAsk, offlineAskCore and D/E planners with controlled terminal add/edit callbacks.",
+      "Baseline queued a scoped roof recolor for `If I wanted to make the roof blue...`, for a customer-quoted roof-blue instruction followed by an explanation request, and for `How do I make the roof blue?`; replies claimed Done. Candidate returned no queue and a read-only clarification for each.",
+      "Baseline turned the targetless `Make it matte black with a gold carbon-weave overlay, but keep its current paint color` into one whole-color-zone addition and a Done reply. Candidate returned no queue and named the incompatible/missing-target constraint.",
+      "Direct `Make only the roof blue` and `Can you make the roof blue?` remain actionable with region `{part: roof}`. Candidate also routes the explicit `Apply this request: make only the roof blue` wrapper to that same scoped region; baseline did not parse this wrapper.",
+      "Unitless clearcoat request asks for the missing points unit while retaining roof/channel; explicit amount with no helper-owned current zone is refused with a truthful owner prerequisite. Selective/multi-channel/contradictory/mixed requests in this empty-owner fixture queue zero and ask for clarification.",
+      "The actual typed `send` function was invoked with controlled finish/ask callbacks for hypothetical, quoted, and how-to requests. Candidate calls finish once with guidance and never calls ask. Source order also confirms send preflight precedes ask."
+    ],
+    "provider_calls": 0,
+    "native_calls": 0
+  },
+  "unexercised_frozen_cases": [
+    "source pending",
+    "retained pixels with uncommitted selected-source fingerprint",
+    "stale part owner against changed committed source/mask",
+    "duplicate current helper owners"
+  ],
+  "limits": [
+    "These four stateful cases were frozen but deliberately not credited as tested; the harness does not recreate SourceLoadTransaction or full source/mask/owner proof. Root's separate native/source acceptance remains necessary.",
+    "The route terminal add/edit handlers are controlled and no apply/render/paint pixels are run. Done text is assessed at planner return, not as native output evidence.",
+    "Material-channel multi-clause cases used an empty-owner fixture. Their zero-queue clarifications do not prove multi-channel application or preserve-channel pixel effects with a valid owner.",
+    "The private candidate is not installed and must be reconciled with integration10 and current Runtime 4 dependencies before any promotion. It does not modify MCP structured tools or claim new car/part recognition."
+  ],
+  "effects": {
+    "production_files_changed": 0,
+    "external_mcp_calls": 0,
+    "provider_calls": 0,
+    "native_calls": 0,
+    "renderer_calls": 0
+  }
+}

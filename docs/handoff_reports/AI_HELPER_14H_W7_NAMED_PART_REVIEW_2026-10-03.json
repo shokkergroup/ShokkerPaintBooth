@@ -1,0 +1,41 @@
+{
+  "review": "W7 named-part command owner and compile scope",
+  "date": "2026-10-03",
+  "result": "PASS_WITH_INTEGRATION_LIMIT",
+  "scope": "Read-only review of the W7 E.plan/E.compile implementation; no production edits in this review pass, provider calls, browser use, or native-app acceptance.",
+  "frozen_oracle": {
+    "path": "docs/handoff_reports/AI_HELPER_14H_W7_NAMED_PART_ORACLE_2026-10-03.json",
+    "sha256": "DD7B2DC88B341E22480B033ED848AEBFF8332255A070945BE98D6384EBF2609C",
+    "cases": 18
+  },
+  "reviewed_source": {
+    "path": "js/spb-pro-edit.js",
+    "sha256": "8995CB5187B520FED37A1BA06869779D4638B78B39B3B3B95736265A50A409BE",
+    "anchors": {
+      "strict_part_first_normalization": "398-404",
+      "exact_named_part_claim_gate": "531-549",
+      "atomic_unresolved_composition_guard": "681"
+    }
+  },
+  "contract": {
+    "path": "tests/ai_named_part_commands_contract.cjs",
+    "sha256": "6B5F29E2696918211062F6D449B18C2ADBCC1CA5E833986A30D860E132F240D7",
+    "result": "PASS",
+    "coverage": "12 imperative named-part commands compile to their requested single part with destination/material metadata; 6 advice/whole-body/layered/recipe requests do not acquire exactPart; extra-action, clearcoat adjustment, carbon stack, preserved-panel clarification, and positive body-plus-part exception guards pass."
+  },
+  "verification": {
+    "node_check_spb_pro_edit": "PASS",
+    "ai_named_part_commands_contract": "PASS",
+    "ai_request_composition_contract": "PASS",
+    "ai_stack_scope_contract": "PASS",
+    "ai_source_colour_scope_contract": "PASS",
+    "ai_preservation_review_contract": "PASS",
+    "ai_offline_preservation_contract": "PASS",
+    "ai_help_router_contract": "PASS"
+  },
+  "limits": [
+    "The exactPart marker is proven at E.plan/E.compile only. Parent-side dispatch priority, real offline queue behavior, and native green-roof acceptance remain unverified in this review.",
+    "The compound clearcoat-adjustment request is confirmed not to receive exactPart; its separate planner routing remains a parent-owned issue.",
+    "ai_part_followup_contract.cjs and ai_part_followup_review_contract.cjs had previously failed in parent-owned pro-ai queue harnesses (expected one edit, observed zero); parent reported those harnesses will be refreshed after committed registration, so they are not counted as W7 parser failures."
+  ]
+}

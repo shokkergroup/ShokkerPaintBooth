@@ -1,0 +1,48 @@
+{
+  "schema": "smart-tga-reviewed-tiled-palette-candidates-v1",
+  "cycle": 721,
+  "reviewed_at": "2026-07-13",
+  "review_method": "geometry and ranking frozen before the exact six-paint screen; source_1024 plus all 96 masked-pixel candidates reviewed for each paint",
+  "scope": "six paint-disjoint numbered DLM350/358 holdouts",
+  "source_copy_ledger": [
+    {"paint":"dirtlatemodel 350/car_num_1008314.tga","visible_primary_number_copies":3,"complete_candidates":2,"miss":"upper 45 remains split into separate 4/5 proposals"},
+    {"paint":"dirtlatemodel 350/car_num_1013637.tga","visible_primary_number_copies":2,"complete_candidates":2,"miss":null},
+    {"paint":"dirtlatemodel 350/car_num_1017630.tga","visible_primary_number_copies":3,"complete_candidates":3,"miss":null},
+    {"paint":"dirtlatemodel 358/car_num_1009117.tga","visible_primary_number_copies":2,"complete_candidates":2,"miss":null},
+    {"paint":"dirtlatemodel 358/car_num_1009267.tga","visible_primary_number_copies":3,"complete_candidates":3,"miss":null},
+    {"paint":"dirtlatemodel 358/car_num_1010211.tga","visible_primary_number_copies":3,"complete_candidates":3,"miss":null}
+  ],
+  "source_totals": {
+    "visible_primary_number_copies": 16,
+    "baseline_complete_candidates": 2,
+    "tiled_complete_candidates": 15,
+    "baseline_complete_candidate_recall": 0.125,
+    "tiled_complete_candidate_recall": 0.9375,
+    "absolute_gain": 0.8125
+  },
+  "representative_labels": [
+    {"paint":"dirtlatemodel 350/car_num_1008314.tga","rank":16,"bbox":[809,832,150,93],"semantic":"Number","complete_copy":true,"physical_copy":"1008314-roof","contamination":"none"},
+    {"paint":"dirtlatemodel 350/car_num_1008314.tga","rank":66,"bbox":[293,720,182,79],"semantic":"Number","complete_copy":true,"physical_copy":"1008314-lower","contamination":"none"},
+    {"paint":"dirtlatemodel 350/car_num_1008314.tga","rank":56,"bbox":[287,214,97,99],"semantic":"Number","complete_copy":false,"physical_copy":"1008314-upper","note":"4 fragment"},
+    {"paint":"dirtlatemodel 350/car_num_1008314.tga","rank":60,"bbox":[360,250,110,86],"semantic":"Number","complete_copy":false,"physical_copy":"1008314-upper","note":"5 fragment"},
+    {"paint":"dirtlatemodel 350/car_num_1013637.tga","rank":16,"bbox":[288,725,139,70],"semantic":"Number","complete_copy":true,"physical_copy":"1013637-lower","contamination":"none"},
+    {"paint":"dirtlatemodel 350/car_num_1013637.tga","rank":20,"bbox":[320,258,221,76],"semantic":"Number","complete_copy":true,"physical_copy":"1013637-upper","contamination":"Trading Paints wordmark"},
+    {"paint":"dirtlatemodel 350/car_num_1017630.tga","rank":7,"bbox":[832,843,134,100],"semantic":"Number","complete_copy":true,"physical_copy":"1017630-roof","contamination":"none"},
+    {"paint":"dirtlatemodel 350/car_num_1017630.tga","rank":43,"bbox":[288,215,192,133],"semantic":"Number","complete_copy":true,"physical_copy":"1017630-upper","contamination":"adjacent livery/wordmark outline"},
+    {"paint":"dirtlatemodel 350/car_num_1017630.tga","rank":44,"bbox":[288,718,192,90],"semantic":"Number","complete_copy":true,"physical_copy":"1017630-lower","contamination":"adjacent livery outline"},
+    {"paint":"dirtlatemodel 358/car_num_1009117.tga","rank":38,"bbox":[604,927,159,96],"semantic":"Number","complete_copy":true,"physical_copy":"1009117-lower","contamination":"none"},
+    {"paint":"dirtlatemodel 358/car_num_1009117.tga","rank":70,"bbox":[693,704,149,59],"semantic":"Number","complete_copy":true,"physical_copy":"1009117-upper","contamination":"none"},
+    {"paint":"dirtlatemodel 358/car_num_1009267.tga","rank":18,"bbox":[284,724,135,83],"semantic":"Number","complete_copy":true,"physical_copy":"1009267-lower","contamination":"none"},
+    {"paint":"dirtlatemodel 358/car_num_1009267.tga","rank":35,"bbox":[288,242,192,93],"semantic":"Number","complete_copy":true,"physical_copy":"1009267-upper","contamination":"adjacent sponsor text"},
+    {"paint":"dirtlatemodel 358/car_num_1009267.tga","rank":21,"bbox":[823,831,120,123],"semantic":"Number","complete_copy":true,"physical_copy":"1009267-roof","contamination":"none"},
+    {"paint":"dirtlatemodel 358/car_num_1010211.tga","rank":3,"bbox":[293,246,89,42],"semantic":"Number","complete_copy":true,"physical_copy":"1010211-upper","contamination":"none"},
+    {"paint":"dirtlatemodel 358/car_num_1010211.tga","rank":4,"bbox":[338,725,50,81],"semantic":"Number","complete_copy":true,"physical_copy":"1010211-lower","contamination":"none"},
+    {"paint":"dirtlatemodel 358/car_num_1010211.tga","rank":34,"bbox":[640,803,320,217],"semantic":"Number","complete_copy":true,"physical_copy":"1010211-roof","contamination":"livery and sponsor panel"}
+  ],
+  "safety": {
+    "casts_votes": false,
+    "ownership_authority": false,
+    "output_applied": false,
+    "exact_reconstruction_affected": false
+  }
+}

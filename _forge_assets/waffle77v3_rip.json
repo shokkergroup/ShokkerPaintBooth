@@ -1,0 +1,127 @@
+{
+ "outdir": "_forge_assets/waffle77v3",
+ "sheets": {
+  "n": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/DLM MOCKUPS/Waffle House DLM/ChatGPT Image Jul 15, 2026, 01_34_22 AM (7).png",
+  "c": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/DLM MOCKUPS/Waffle House DLM/ChatGPT Image Jul 15, 2026, 01_34_22 AM (8).png",
+  "g": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/DLM MOCKUPS/Waffle House DLM/ChatGPT Image Jul 15, 2026, 01_34_23 AM (9).png"
+ },
+ "assets": {
+  "num_door": {
+   "sheet": "n",
+   "fbox": [
+    0.02,
+    0.155,
+    0.235,
+    0.3
+   ]
+  },
+  "num_roof": {
+   "sheet": "n",
+   "fbox": [
+    0.505,
+    0.155,
+    0.715,
+    0.3
+   ]
+  },
+  "num_nose": {
+   "sheet": "n",
+   "fbox": [
+    0.108,
+    0.36,
+    0.215,
+    0.44
+   ]
+  },
+  "spo_hoosier": {
+   "sheet": "c",
+   "fbox": [
+    0.255,
+    0.145,
+    0.4,
+    0.225
+   ]
+  },
+  "spo_qa1": {
+   "sheet": "c",
+   "fbox": [
+    0.255,
+    0.28,
+    0.4,
+    0.355
+   ]
+  },
+  "spo_comp": {
+   "sheet": "c",
+   "fbox": [
+    0.255,
+    0.405,
+    0.4,
+    0.48
+   ]
+  },
+  "spo_bilstein": {
+   "sheet": "c",
+   "fbox": [
+    0.255,
+    0.525,
+    0.4,
+    0.595
+   ]
+  },
+  "spo_vp": {
+   "sheet": "c",
+   "fbox": [
+    0.255,
+    0.625,
+    0.4,
+    0.725
+   ]
+  },
+  "spo_weld": {
+   "sheet": "c",
+   "fbox": [
+    0.255,
+    0.765,
+    0.4,
+    0.845
+   ]
+  },
+  "spo_floracing": {
+   "sheet": "c",
+   "fbox": [
+    0.255,
+    0.89,
+    0.4,
+    0.955
+   ]
+  },
+  "gfx_side_a": {
+   "sheet": "g",
+   "fbox": [
+    0.012,
+    0.125,
+    0.415,
+    0.385
+   ]
+  },
+  "gfx_side_b": {
+   "sheet": "g",
+   "fbox": [
+    0.428,
+    0.125,
+    0.83,
+    0.385
+   ]
+  },
+  "gfx_check": {
+   "sheet": "g",
+   "fbox": [
+    0.02,
+    0.1,
+    0.415,
+    0.135
+   ]
+  }
+ }
+}

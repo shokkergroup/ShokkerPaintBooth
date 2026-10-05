@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_band_tee_crack",
+  "display_name": "Flannel: Band Tee Crack",
+  "promise": "Ivory charcoal burgundy distressed plastisol ink on black cotton, no bands logos words or figures",
+  "carrier_grammar": "Ivory charcoal burgundy distressed plastisol ink on black cotton, no bands logos words or figures; single full-canvas image, no duplicated quadrants. Fine features: faded cotton shirt, dark print fissures, raised plastisol islands, worn print shoulders, exposed pale cotton fibers, fine ink flake crests",
+  "spec_grammar": "Feature-specific selectors partition faded cotton shirt, dark print fissures, raised plastisol islands, worn print shoulders, exposed pale cotton fibers, fine ink flake crests. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "faded cotton shirt",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "dark print fissures",
+      "role": "Material feature selected from artwork by g:<:0.23"
+    },
+    {
+      "name": "raised plastisol islands",
+      "role": "Material feature selected from artwork by g:>:0.51&edge:<:0.36"
+    },
+    {
+      "name": "worn print shoulders",
+      "role": "Material feature selected from artwork by edge:>:0.6"
+    },
+    {
+      "name": "exposed pale cotton fibers",
+      "role": "Material feature selected from artwork by g:>:0.78&s:<:0.3"
+    },
+    {
+      "name": "fine ink flake crests",
+      "role": "Material feature selected from artwork by detail:>:0.77"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "faded cotton shirt",
+      "dark print fissures",
+      "raised plastisol islands",
+      "worn print shoulders",
+      "exposed pale cotton fibers",
+      "fine ink flake crests"
+    ],
+    "R": [
+      "faded cotton shirt",
+      "dark print fissures",
+      "raised plastisol islands",
+      "worn print shoulders",
+      "exposed pale cotton fibers",
+      "fine ink flake crests"
+    ],
+    "Cc": [
+      "faded cotton shirt",
+      "dark print fissures",
+      "raised plastisol islands",
+      "worn print shoulders",
+      "exposed pale cotton fibers",
+      "fine ink flake crests"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "faded cotton shirt",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dark print fissures",
+      "range": [
+        [
+          0,
+          175,
+          190
+        ],
+        [
+          8,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "raised plastisol islands",
+      "range": [
+        [
+          0,
+          75,
+          70
+        ],
+        [
+          15,
+          190,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "worn print shoulders",
+      "range": [
+        [
+          0,
+          130,
+          150
+        ],
+        [
+          22,
+          225,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "exposed pale cotton fibers",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine ink flake crests",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_basement_amp",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_cassette_tape",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "faded cotton shirt",
+      "dark print fissures",
+      "raised plastisol islands",
+      "worn print shoulders",
+      "exposed pale cotton fibers",
+      "fine ink flake crests"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_band_tee_crack / Ivory charcoal burgundy distressed plastisol ink on black cotton, no bands logos words or figures",
+  "spec_key": "at_band_tee_crack / faded cotton shirt all; dark print fissures g:<:0.23; raised plastisol islands g:>:0.51&edge:<:0.36; worn print shoulders edge:>:0.6; exposed pale cotton fibers g:>:0.78&s:<:0.3; fine ink flake crests detail:>:0.77",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

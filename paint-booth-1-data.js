@@ -20,9 +20,22 @@
 function toggleSettingsDropdown() {
     const dd = document.getElementById('settingsDropdown');
     const btn = document.getElementById('settingsGearBtn');
-    dd.classList.toggle('open');
-    if (btn) btn.classList.toggle('active');
+    if (!dd) return;
+    const webMenu = document.getElementById('webCommandMenu');
+    const webBtn = document.getElementById('webCommandsBtn');
+    if (webMenu) webMenu.classList.remove('open');
+    if (webBtn) {
+        webBtn.classList.remove('active');
+        webBtn.setAttribute('aria-expanded', 'false');
+    }
+    const isOpen = !dd.classList.contains('open');
+    dd.classList.toggle('open', isOpen);
+    if (btn) {
+        btn.classList.toggle('active', isOpen);
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    }
 }
+window.toggleSettingsDropdown = toggleSettingsDropdown;
 // Close settings dropdown when clicking outside
 document.addEventListener('click', function (e) {
     const dd = document.getElementById('settingsDropdown');
@@ -30,6 +43,7 @@ document.addEventListener('click', function (e) {
     if (dd && dd.classList.contains('open') && !dd.contains(e.target) && btn && !btn.contains(e.target)) {
         dd.classList.remove('open');
         btn.classList.remove('active');
+        btn.setAttribute('aria-expanded', 'false');
     }
 });
 
@@ -50,7 +64,11 @@ function updateOnboardingHints() {
 
     // Canvas hint: show after paint loaded, hide once a zone has a color
     if (canvasHint) {
-        const anyZoneHasColor = zones && zones.some(z => z.color !== null || (z.regionMask && z.regionMask.some(v => v > 0)));
+        // SPB-93 tools 2026-09-07, owner: remove laggy drags. Native4096
+        // onboarding refresh took24ms rescanning a mask already counted by
+        // apply-area activation. Reuse the same-turn stats; retain early-load fallback.
+        const anyZoneHasColor = zones && zones.some(z => z.color !== null || (z.regionMask &&
+            (window.SPBMaskStats ? window.SPBMaskStats.any(z.regionMask) : z.regionMask.some(v => v > 0))));
         canvasHint.style.display = (paintLoaded && !anyZoneHasColor) ? '' : 'none';
     }
 
@@ -170,14 +188,13 @@ function decodeTGA(arrayBuffer) {
  * @param {string} fileName - shown in the toast/status line.
  * @returns {void}
  */
-function loadDecodedImageToCanvas(width, height, rgbaData, fileName) {
+function loadDecodedImageToCanvas(width, height, rgbaData, fileName, options) {
+    const opts = options || {};
+    // SPB-93 2026-09-07: decoded TGA/blank imports retain scaled masks and
+    // restore the outgoing document if pixel publication fails.
+    _spbCommitSourceFile(width, height,
+        ctx => ctx.putImageData(new ImageData(rgbaData, width, height), 0, 0), opts);
     const canvas = document.getElementById('paintCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = width;
-    canvas.height = height;
-    const imgData = new ImageData(rgbaData, width, height);
-    ctx.putImageData(imgData, 0, 0);
-    paintImageData = ctx.getImageData(0, 0, width, height);
     // Also size region canvas
     const regionCanvas = document.getElementById('regionCanvas');
     regionCanvas.width = width;
@@ -270,10 +287,86 @@ async function _mergeFinishDataFromServer() {
             if (added > 0) console.log(`[FinishData] Merged ${added} new entries from server`);
         }
 
-        // Alpha UX: keep curated local finish lists stable; do not auto-inject extra server-only IDs.
+        // Bases/patterns stay curated (no auto-inject of legacy registry leftovers),
+        // but MONOLITHICS follows the LIVE server registry — owner 2026-06-11:
+        // "EVERYTIME you put new names the new names should populate in the
+        // dropdown viewer." New/renamed finishes appear; deleted ids vanish.
         _merge(BASES, data.bases, 'base', false);
         _merge(PATTERNS, data.patterns, 'pattern', false);
-        _merge(MONOLITHICS, data.specials || data.monolithics, 'monolithic', false);
+        _merge(MONOLITHICS, data.specials || data.monolithics, 'monolithic', true);
+
+        // ── Registry-truth reconciliation (the specials payload covers EVERY id
+        //    in MONOLITHIC_REGISTRY, so absence from it = finish no longer exists) ──
+        const _serverSpecials = data.specials || data.monolithics;
+        if (Array.isArray(_serverSpecials) && _serverSpecials.length > 100) {
+            const liveIds = new Set(_serverSpecials.map(e => (typeof e === 'string') ? e : e.id));
+            // 1. prune dead static entries (e.g. replaced category clones) so the
+            //    SEARCH BAR stops surfacing names that can no longer render
+            let pruned = 0;
+            for (let i = MONOLITHICS.length - 1; i >= 0; i--) {
+                if (!liveIds.has(MONOLITHICS[i].id)) { MONOLITHICS.splice(i, 1); pruned++; }
+            }
+            // 2. group reconciliation: any picker group whose name matches a live
+            //    server category gets the SERVER id list (Zone Popout lanes follow
+            //    the registry — new ids in, dead ids out)
+            if (typeof SPECIAL_GROUPS !== 'undefined') {
+                const byCat = {};
+                const categoryRedirects = (typeof window !== 'undefined' && window.SPB_SPECIAL_CATEGORY_REDIRECTS) || {};
+                _serverSpecials.forEach(e => {
+                    const id = (typeof e === 'string') ? e : e.id;
+                    const sourceCat = (typeof e === 'string') ? '' : (e.category || '');
+                    // Category folds must survive async API reconciliation.
+                    const cat = categoryRedirects[sourceCat] || sourceCat;
+                    if (cat && cat !== 'Other') (byCat[cat] = byCat[cat] || []).push(id);
+                });
+                let regrouped = 0;
+                Object.keys(SPECIAL_GROUPS).forEach(g => {
+                    if (byCat[g] && byCat[g].length) {
+                        SPECIAL_GROUPS[g].length = 0;
+                        SPECIAL_GROUPS[g].push(...byCat[g]);
+                        regrouped++;
+                    }
+                });
+                // [2026-08-09 S18] Put back the ids the parse-time prune dropped
+                // for being absent from MONOLITHICS - the merge above just proved
+                // they exist. Without this they stay homeless and the picker shows
+                // them (if at all) only in a leftover catch-all; three Color-Shift
+                // families rendered completely EMPTY because of it.
+                var _homes = (typeof window !== 'undefined' && window.SPB_PRUNED_SPECIAL_HOMES) || null;
+                var _restored = 0, _stillDead = 0, _noGroup = 0;
+                if (_homes) {
+                    const _live = new Set();
+                    if (typeof BASES !== 'undefined') BASES.forEach(b => { if (b && b.id) _live.add(b.id); });
+                    MONOLITHICS.forEach(m => { if (m && m.id) _live.add(m.id); });
+                    Object.keys(_homes).forEach(id => {
+                        if (!_live.has(id)) { _stillDead++; return; }
+                        const g = _homes[id];
+                        // the group may have been folded into a merged family
+                        if (!Array.isArray(SPECIAL_GROUPS[g])) { _noGroup++; return; }
+                        if (SPECIAL_GROUPS[g].indexOf(id) === -1) { SPECIAL_GROUPS[g].push(id); _restored++; }
+                    });
+                }
+                if (pruned || regrouped || _restored) console.log(`[FinishData] Registry sync: ${pruned} dead entries pruned, ${regrouped} picker groups refreshed from server, ${_restored} id(s) restored to their declared family (${_stillDead} still not live, ${_noGroup} group gone)`);
+            }
+        }
+
+        // [2026-09-05 RETIRED LEDGER] The server merge above can regroup picker lanes from the
+        // live registry and restore parse-time-pruned ids, and the registry re-registers
+        // retired families at the first render. Retired ids/groups are removed AGAIN here so
+        // nothing the server reports can surface them. Owner 2026-09-05: "dead and buried
+        // stays dead and buried." Ledger: scripts/retired_catalog.json; gate: spb_retired_gate.py
+        try {
+            if (typeof window !== 'undefined' && window.SPB_RETIRED) {
+                const _nRet = window.SPB_RETIRED.prune({
+                    SPECIAL_GROUPS: (typeof SPECIAL_GROUPS !== 'undefined') ? SPECIAL_GROUPS : null,
+                    BASE_GROUPS: (typeof BASE_GROUPS !== 'undefined') ? BASE_GROUPS : null,
+                    PATTERN_GROUPS: (typeof PATTERN_GROUPS !== 'undefined') ? PATTERN_GROUPS : null,
+                    SPECIALS_SECTIONS: (typeof SPECIALS_SECTIONS !== 'undefined') ? SPECIALS_SECTIONS : null,
+                    homes: window.SPB_PRUNED_SPECIAL_HOMES || null
+                });
+                if (_nRet) console.log(`[FinishData] Retired ledger: ${_nRet} retired reference(s) removed after server merge`);
+            }
+        } catch (e) { console.warn('[FinishData] retired ledger prune (post-merge) failed', e); }
 
         // Re-render finish library so new entries appear
         if (typeof renderFinishLibrary === 'function') renderFinishLibrary();

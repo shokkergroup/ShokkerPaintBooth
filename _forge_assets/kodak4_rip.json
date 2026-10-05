@@ -1,0 +1,100 @@
+{
+ "outdir": "_forge_assets/kodak4",
+ "sheets": {
+  "3": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/Dirt Late Model PSDs/ChatGPT Image Jul 13, 2026, 12_14_14 AM (3).png",
+  "4": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/Dirt Late Model PSDs/ChatGPT Image Jul 13, 2026, 12_14_14 AM (4).png",
+  "10": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/Dirt Late Model PSDs/ChatGPT Image Jul 13, 2026, 12_14_16 AM (10).png"
+ },
+ "assets": {
+  "num4_door": {
+   "sheet": 3,
+   "fbox": [
+    0.024,
+    0.154,
+    0.203,
+    0.425
+   ]
+  },
+  "num4_small": {
+   "sheet": 3,
+   "fbox": [
+    0.236,
+    0.537,
+    0.314,
+    0.691
+   ]
+  },
+  "kodak_red": {
+   "sheet": 4,
+   "fbox": [
+    0.484,
+    0.113,
+    0.738,
+    0.258
+   ]
+  },
+  "film_black": {
+   "sheet": 4,
+   "fbox": [
+    0.592,
+    0.266,
+    0.74,
+    0.379
+   ]
+  },
+  "kodak_icon": {
+   "sheet": 4,
+   "fbox": [
+    0.777,
+    0.107,
+    0.938,
+    0.36
+   ]
+  },
+  "spoiler_banner": {
+   "sheet": 4,
+   "fbox": [
+    0.041,
+    0.478,
+    0.413,
+    0.588
+   ]
+  },
+  "rocker_a": {
+   "sheet": 10,
+   "fbox": [
+    0.019,
+    0.681,
+    0.277,
+    0.746
+   ]
+  },
+  "rocker_b": {
+   "sheet": 10,
+   "fbox": [
+    0.019,
+    0.745,
+    0.264,
+    0.813
+   ]
+  },
+  "vp": {
+   "sheet": 10,
+   "fbox": [
+    0.605,
+    0.208,
+    0.663,
+    0.288
+   ]
+  },
+  "num4_large": {
+   "sheet": 3,
+   "fbox": [
+    0.05,
+    0.514,
+    0.178,
+    0.693
+   ]
+  }
+ }
+}

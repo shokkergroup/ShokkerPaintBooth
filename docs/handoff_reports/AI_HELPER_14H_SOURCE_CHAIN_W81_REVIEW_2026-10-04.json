@@ -1,0 +1,85 @@
+{
+  "review": "W81 source-bytes PSD import to layer-rasterization chain",
+  "status": "PASS_WITH_LIMITS",
+  "reviewed_at": "2026-10-04",
+  "frozen_oracle": {
+    "path": "_easy_claude_work/ai14h_w81_review_fresh_oracle.json",
+    "sha256": "59A05B4DCA65E6140A85EF0EFC5ADFFA47F464178F87928078024F4F43704E0C",
+    "case_count": 12,
+    "correction": "The pre-inspection F02 draft named expectedSourceBytesSha256. Backend inspection established that the existing route contract is sourceBytesSha256; the corrected client now uses that exact field. The frozen draft was preserved unchanged and the review test enforces the route's established field."
+  },
+  "pins": {
+    "client": {
+      "path": "_easy_claude_work/ai14h_generation3_candidate/w81_source_chain/paint-booth-3-canvas.js",
+      "sha256": "ef180b9b67b7e95c7c0a00b3932259fbb35752a4ebfd8087e5bbf592d12e5a01"
+    },
+    "backend_route_snapshot": {
+      "path": "_easy_claude_work/ai14h_w81_review/frozen/psd_import_routes.py",
+      "sha256": "faf99df7eddeed1623342efda2479bbd23fb1d763b5f7759df8068f63ee0d902"
+    },
+    "backend_cache_snapshot": {
+      "path": "_easy_claude_work/ai14h_w81_review/frozen/server.py",
+      "sha256": "1b094f80d81582416b03b0c63f1814665fb78969f2bb1675e5219e710c522294"
+    },
+    "project_routes_snapshot": {
+      "path": "_easy_claude_work/ai14h_w81_review/frozen/project_routes.py",
+      "sha256": "8367c99a181b7da254a1ea2eabd2610157f336274196def623725f3231222ad0e"
+    }
+  },
+  "findings": [
+    "The initially reviewed client pin sent expectedSourceBytesSha256 while the route reads sourceBytesSha256; that client/route mismatch was real. It was repaired in the reviewed client pin. The two-stage contract now agrees on sourceBytesSha256 for the raster request and response receipt.",
+    "For a digest-bearing import, the client refuses missing, empty, mismatching, or uppercase raster receipts before entering layer pixel staging. Backend replacement races return HTTP 409 and do not return a success receipt.",
+    "The staged import has generation checks before the synchronous live-document mutation window and snapshots/restores document state if commit throws. Network/raster/decode failures occur before that window, retaining the previous source document in the controlled replay.",
+    "When the import response has no sourceBytesSha256, the client preserves its tagged composite fingerprint fallback. This identity is not a file-sha256 identity; durable part-memory authorization remains restricted to strong file-byte identity by the W76/W72 contract."
+  ],
+  "verification": {
+    "client_review_contract": {
+      "command": "node tests/ai_source_chain_w81_review_contract.cjs",
+      "status": "PASS_WITH_LIMITS",
+      "cases": 7
+    },
+    "client_existing_contract": {
+      "command": "node tests/ai_source_chain_w81_contract.cjs",
+      "status": "PASS_WITH_LIMITS",
+      "cases": 7,
+      "coverage": "Actual _doPSDImport/source-transaction closures with controlled responses; positive stops at layer-pixel staging."
+    },
+    "backend_route_contract": {
+      "command": "python tests/ai_source_bytes_psd_rasterize_w81_candidate_contract.py",
+      "status": "PASS_WITH_LIMITS",
+      "cases": 7,
+      "coverage": "Actual private Flask raster route with generated PSDs; psd-tools 1.14.3; includes digest match, malformed/stale digest, pre-parse and post-raster replacement races, same-mtime restore, and legacy caller compatibility."
+    },
+    "cache_regression_contract": {
+      "command": "python tests/ai_source_bytes_psd_cache_w78_contract.py",
+      "status": "PASS",
+      "cases": 8
+    },
+    "weak_identity_memory_contract": {
+      "command": "node tests/ai_source_bytes_part_memory_w76_review_contract.cjs",
+      "weak_session_and_durable_gate": "PASS",
+      "overall_suite": "FINDINGS",
+      "unrelated_finding": "The suite also reports an existing P1 where overlapping pending scopes (whole roof versus upper roof) have distinct edit keys and can miss the ownership guard. This is outside W81's source-byte chain and is not counted as a W81 regression or pass."
+    },
+    "fingerprint_and_memory_gate_contract": {
+      "command": "node tests/ai_source_bytes_part_memory_w72_contract.cjs",
+      "status": "PASS",
+      "cases": 21
+    },
+    "provider_calls": 0,
+    "native_or_live_server_calls": 0,
+    "raw_source_bytes_transferred": false
+  },
+  "limits": [
+    "The client positive control intentionally throws at layer-pixel staging; it does not prove a successful browser/native document import, visual output, or production runtime installation.",
+    "Actual backend route tests use generated PSD fixtures and the private Flask test client, not the live server.",
+    "The initial F02 wording in the immutable fresh oracle was invalid; it is explicitly corrected here without rewriting that oracle.",
+    "The separate W76 memory suite's overlapping-scope finding remains open and is recorded so this report does not imply that all durable part-memory ownership cases pass."
+  ],
+  "review_artifacts": [
+    "tests/ai_source_chain_w81_review_contract.cjs",
+    "tests/ai_source_chain_w81_contract.cjs",
+    "tests/ai_source_bytes_psd_rasterize_w81_candidate_contract.py",
+    "tests/ai_source_bytes_psd_cache_w78_contract.py"
+  ]
+}

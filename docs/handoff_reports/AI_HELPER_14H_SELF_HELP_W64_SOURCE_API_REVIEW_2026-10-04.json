@@ -1,0 +1,170 @@
+{
+  "review": "W64 self-help action with actual W53 source transaction API",
+  "date": "2026-10-04",
+  "status": "PASS",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w64_review/oracle.json",
+    "sha256": "75A69CC242B96FB5932101D4D7F11BC0437E834C728321E0D89173EBE50DD881",
+    "cases": [
+      {
+        "id": "W64-F01",
+        "case": "old action offered before load of a different source",
+        "expect": "refuse while pending and stale old offer after failed load"
+      },
+      {
+        "id": "W64-F02",
+        "case": "offer action after actual API begins load",
+        "expect": "no mutation while isCommitted=false"
+      },
+      {
+        "id": "W64-F03",
+        "case": "failed replacement retains source A with fresh committed generation",
+        "expect": "old chip refuses; fresh diagnosis on retained A may act"
+      },
+      {
+        "id": "W64-F04",
+        "case": "same path is loaded with different committed bytes",
+        "expect": "old chip refuses on generation/fingerprint change"
+      },
+      {
+        "id": "W64-F05",
+        "case": "hood geometry changes after action offer",
+        "expect": "stale target refuses"
+      },
+      {
+        "id": "W64-F06",
+        "case": "current hood is cloned by Undo with same stable ID and target stamp",
+        "expect": "safe current clone resolves"
+      },
+      {
+        "id": "W64-F07",
+        "case": "zone order changes in place while hood object remains stable",
+        "expect": "action follows the same target identity"
+      },
+      {
+        "id": "W64-F08",
+        "case": "duplicate hood ID is added",
+        "expect": "ambiguous action refuses"
+      },
+      {
+        "id": "W64-F09",
+        "case": "hood stable ID is removed",
+        "expect": "action refuses"
+      },
+      {
+        "id": "W64-F10",
+        "case": "layer lock or presentation state changes after offer",
+        "expect": "stale layer-state action refuses"
+      },
+      {
+        "id": "W64-F11",
+        "case": "no paint source, zones or layers are present",
+        "expect": "passive guidance remains available"
+      },
+      {
+        "id": "W64-F12",
+        "case": "same source and target remain valid, controller rejects action",
+        "expect": "do not report completion when controller fails"
+      }
+    ]
+  },
+  "sourceHashes": {
+    "w59CandidateHelper": "2E6E631B7FAD10113F3FF2AD98AADD68D26686EEF89488D80D13C093204ED88E",
+    "w59CandidateKnowledge": "E2A1647AF707D2BFE5EA09ED64ADABAD1BF3DB341DF8D7B61DC8C01508774C97",
+    "w53CandidateCanvas": "159716B3150C785517BEC3A1CF1B00A7318121885E7640276B5FFAF14FC91D9A",
+    "w59AuditManifest": "C6EF714541E85A12CD913E2D8FBBFD9EF6411599EDFE7AA8AA46F44365E5CDBC"
+  },
+  "retainedOracles": {
+    "w59": {
+      "path": "tests/ai_self_help_w59_review_contract.cjs",
+      "result": {
+        "ok": true,
+        "output": [
+          "W59 frozen helper: 16/16 fresh lifecycle checks passed"
+        ]
+      }
+    },
+    "w3": {
+      "path": "tests/ai_help_action_w3_review_contract.cjs",
+      "result": {
+        "ok": true,
+        "output": [
+          "PASS independent W3 review cases: 15 passed, 0 failed"
+        ]
+      }
+    },
+    "w4": {
+      "path": "tests/ai_self_help_w4_review_contract.cjs",
+      "result": {
+        "ok": true,
+        "output": [
+          "PASS W4 independent semantic review: 12/12"
+        ]
+      }
+    }
+  },
+  "counts": {
+    "freshCases": 13,
+    "freshPassed": 13,
+    "freshFailed": 0
+  },
+  "results": [
+    {
+      "name": "actual W53 transaction reports fresh readiness through the exact installed public methods",
+      "pass": true
+    },
+    {
+      "name": "old action offered before load of a different source",
+      "pass": true
+    },
+    {
+      "name": "offer action after actual API begins load",
+      "pass": true
+    },
+    {
+      "name": "failed replacement retains source A with fresh committed generation",
+      "pass": true
+    },
+    {
+      "name": "same path is loaded with different committed bytes",
+      "pass": true
+    },
+    {
+      "name": "hood geometry changes after action offer",
+      "pass": true
+    },
+    {
+      "name": "current hood is cloned by Undo with same stable ID and target stamp",
+      "pass": true
+    },
+    {
+      "name": "zone order changes in place while hood object remains stable",
+      "pass": true
+    },
+    {
+      "name": "duplicate hood ID is added",
+      "pass": true
+    },
+    {
+      "name": "hood stable ID is removed",
+      "pass": true
+    },
+    {
+      "name": "layer lock or presentation state changes after offer",
+      "pass": true
+    },
+    {
+      "name": "no paint source, zones or layers are present",
+      "pass": true
+    },
+    {
+      "name": "same source and target remain valid, controller rejects action",
+      "pass": true
+    }
+  ],
+  "limits": [
+    "Actual W53 `_spbBeginSourceLoad`, `_spbIsCurrentSourceLoad`, `_spbSourceLoadResult`, and registered `SPBSourceLoadTransaction` object are extracted from the pinned candidate and executed; a narrow test seam sets the source path/fingerprint at the point where a mocked loader would publish bytes. The surrounding canvas loaders and UI are not run.",
+    "Self-help controller operations are mocked and zero provider, browser, native, render, or save calls are made.",
+    "W59/W3/W4 prior oracles are compatibility replays on the pinned helper; W3/W4 runners substitute only the frozen W59 helper bytes for the active file."
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "workItem": "W120 independent W112 canvas consumer review",
+  "status": "PASS_PRIVATE_FUNCTION_REPLAY",
+  "source": {
+    "path": "_easy_claude_work/ai14h_tga_consumer_candidate/paint-booth-3-canvas.js",
+    "sha256": "D02A3DBFC72EDA731D1D1C3A361910248797CC7C4E159AD99763882982C53A15",
+    "guard": {
+      "path": "_easy_claude_work/ai14h_final_source_identity_candidate/browser-file-v2/spb-pro-ai.js",
+      "sha256": "FB63F5906E1C9FC9D49150F571D64FDE640E0A4630319C418FE4F9C2E7E5413A"
+    }
+  },
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w120_part_memory_source_identity/canvas-consumer-oracle.json",
+    "sha256": "6574D74842C9513E98354FDD72EA62655D44B3856CF883982987402D578E81A4",
+    "cases": 8,
+    "frozenBeforeDynamicReplay": true
+  },
+  "cases": [
+    {
+      "id": "preview-header-sha",
+      "result": "PASS",
+      "kind": "flat",
+      "path": "C:/paint/car.tga",
+      "fingerprint": "file-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "durableGuard": true
+    },
+    {
+      "id": "preview-headerless",
+      "result": "PASS",
+      "kind": "flat",
+      "path": "C:/paint/car.tga",
+      "fingerprint": "9f64a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a",
+      "durableGuard": false
+    },
+    {
+      "id": "preview-malformed-header",
+      "result": "PASS",
+      "kind": "flat",
+      "path": "C:/paint/car.tga",
+      "fingerprint": "9f64a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a",
+      "durableGuard": false
+    },
+    {
+      "id": "preview-stale-response",
+      "result": "PASS",
+      "lateAOk": false,
+      "finalPath": "B.tga",
+      "finalFingerprint": "file-sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    {
+      "id": "browser-file-exact-bytes",
+      "result": "PASS",
+      "kind": "browser-file",
+      "path": "browser-file:car.tga",
+      "fingerprint": "file-sha256:5f53c0ff07ba5d9a330e68c95dabb1a9bc49e29f9ed53f6fa7c6d99abb000050",
+      "durableGuard": true
+    },
+    {
+      "id": "browser-file-weak-hash",
+      "result": "PASS",
+      "fingerprint": "fnv1a32-d762f305-4",
+      "durableGuard": false
+    },
+    {
+      "id": "browser-file-stale-read",
+      "result": "PASS",
+      "finalPath": "browser-file:new.png",
+      "finalFingerprint": "file-sha256:348fbb44967377ced7e055fcbee6c17092a342966c8f1f867f5fbf3269bbb845"
+    },
+    {
+      "id": "browser-file-unreadable",
+      "result": "PASS",
+      "path": "browser-file:bad.tga",
+      "fingerprint": "",
+      "pending": false,
+      "committedGeneration": 0
+    }
+  ],
+  "limits": [
+    "Executed exact extracted loadPaintPreviewFromServer and markFlatPaintLiveSource plus their exact source transaction/fingerprint/decode helpers in a VM with fake fetch/DOM/Image/File services. Actual raster draw and backend are stubbed; no browser or native app.",
+    "Header correctness is a producer contract and was not re-proven here; parent W112 backend has separate snapshot/header tests.",
+    "The test proves hash/path/kind propagation, consumer race refusal, and headerless durable-denial behavior, not correct visual TGA decoding or persisted-project restore."
+  ]
+}

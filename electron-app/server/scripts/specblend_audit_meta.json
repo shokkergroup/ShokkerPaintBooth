@@ -1,0 +1,56 @@
+[
+ {
+  "id": "blend_ghost_carve",
+  "name": "\ud83d\udc7b Ghost Carve",
+  "kind": "finish",
+  "desc": "THE one. Carves the Ghost Fracture color-shift contract into ANY base: the pattern becomes env-mirror cells (CC swings 64\u2194240), metal lobe untouched. Ritual: base + pattern + this mode + crush color near black + daytime track \u2014 the pattern flashes sky-teal/sun-gold by angle on any finish/combo.",
+  "ai_rating": 77,
+  "mip": 1.0,
+  "render_s": 0.98
+ },
+ {
+  "id": "blend_chrome_inlay",
+  "name": "\ud83e\ude9e Chrome Inlay",
+  "kind": "finish",
+  "desc": "Dielectric mirror inlay where the pattern is hot: metal dips, clearcoat ceilings, gloss floors (the blue-insight recipe). Hardest possible env flash \u2014 pattern reads as pure chrome inlays.",
+  "ai_rating": 62,
+  "mip": 1.0,
+  "render_s": 1.23
+ },
+ {
+  "id": "blend_frost_etch",
+  "name": "\u2744 Frost Etch",
+  "kind": "finish",
+  "desc": "Pattern sandblasts the gloss: roughness way up, metal slightly down. Etched areas go milky in sun while the rest stays mirror \u2014 reads like acid-etched glass.",
+  "ai_rating": 55,
+  "mip": 1.0,
+  "render_s": 0.98
+ },
+ {
+  "id": "blend_angle_flip",
+  "name": "\ud83d\udd04 Angle Flip",
+  "kind": "finish",
+  "desc": "Pattern hot areas get metal-flash physics; the NEGATIVE SPACE gets mirror-flash physics. The pattern appears at one viewing angle and INVERTS at another. Nobody else has this.",
+  "ai_rating": 80,
+  "mip": 1.0,
+  "render_s": 0.98
+ },
+ {
+  "id": "blend_ember_gate",
+  "name": "\ud83d\udd25 Ember Gate",
+  "kind": "finish",
+  "desc": "Only the pattern's top ridges ignite (clearcoat pinned near max + gloss floor): sparkle ignition along edges, calm everywhere else. Best with patterns that have strong peaks.",
+  "ai_rating": 56,
+  "mip": 1.0,
+  "render_s": 1.2
+ },
+ {
+  "id": "blend_depth_press",
+  "name": "\ud83d\udddc Depth Press",
+  "kind": "finish",
+  "desc": "Emboss in spec only: every pattern element gets a lit rim and a shadow rim \u2014 the pattern reads STAMPED INTO the paint at speed, without touching the paint itself.",
+  "ai_rating": 57,
+  "mip": 1.0,
+  "render_s": 1.08
+ }
+]

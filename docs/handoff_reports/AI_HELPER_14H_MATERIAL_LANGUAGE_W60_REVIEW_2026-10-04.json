@@ -1,0 +1,253 @@
+{
+  "status": "PASS",
+  "task": "W60 independent actual material-router review",
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_w54_candidate/js/spb-pro-ai.js",
+    "sha256": "3DA5C98B7202288979EFE0F53FE48818F31A6A5B5428BFB178CAEBA5C25E82D6",
+    "controlsPath": "_easy_claude_work/ai14h_w54_candidate/js/spb-ai-material-controls.js",
+    "controlsSha256": "A6F50C22C2D3A4F6F9707505D66C6C30B9D2CC0E04D78F00F0D103F38A49919D",
+    "installed": false
+  },
+  "frozenRuntime1": {
+    "manifestPath": "_easy_claude_work/ai14h_generation3_audit/frozen-runtime1/audit-manifest.json",
+    "manifestSha256": "C6EF714541E85A12CD913E2D8FBBFD9EF6411599EDFE7AA8AA46F44365E5CDBC",
+    "manifestProAISha256": "3da5c98b7202288979efe0f53fe48818f31a6a5b5428bfb178caeba5c25e82d6",
+    "runtime1ProAISha256": "3da5c98b7202288979efe0f53fe48818f31a6a5b5428bfb178caeba5c25e82d6"
+  },
+  "unchangedW54Oracle": {
+    "status": "PASS 21 W54 frozen-oracle/material-route checks",
+    "exitCode": 0,
+    "stdout": "PASS 21 W54 frozen-oracle/material-route checks"
+  },
+  "freshOracle": [
+    {
+      "id": "left-side-panel-clearcoat-synonym",
+      "text": "Increase clear coat on the left side panel by 14 points.",
+      "kind": "edit",
+      "part": "left side",
+      "channel": "clearcoat",
+      "delta": 14
+    },
+    {
+      "id": "boot-metallic-channel-synonyms",
+      "text": "Reduce metallic channel on the boot by 7 points.",
+      "kind": "edit",
+      "part": "trunk",
+      "channel": "metalness",
+      "delta": -7
+    },
+    {
+      "id": "truck-bed-roughness",
+      "text": "Raise roughness on the truck bed by 20 points.",
+      "kind": "edit",
+      "part": "bed",
+      "channel": "roughness",
+      "delta": 20
+    },
+    {
+      "id": "unitless-retains-clearcoat-roof",
+      "text": "Increase clearcoat on the roof by 20.",
+      "kind": "clarify",
+      "part": "roof",
+      "channel": "clearcoat",
+      "question": {}
+    },
+    {
+      "id": "clearcoat-hood-positive-synonym",
+      "text": "Increase clear coat on the hood by 20 points.",
+      "kind": "edit",
+      "part": "hood",
+      "channel": "clearcoat",
+      "delta": 20
+    },
+    {
+      "id": "material-channel-with-exact-target-asks-channel",
+      "text": "Raise material channel on spoiler by 12 points.",
+      "kind": "clarify",
+      "question": {}
+    },
+    {
+      "id": "comparative-shinier-preserve-roughness",
+      "text": "Make clearcoat on the roof shinier while keeping roughness unchanged.",
+      "kind": "clarify"
+    },
+    {
+      "id": "explicit-preservation-ambiguity",
+      "text": "Raise clearcoat on the roof by 10 points, but preserve metalness.",
+      "kind": "clarify"
+    },
+    {
+      "id": "negated-clearcoat-is-no-op",
+      "text": "Don't increase clearcoat on the roof.",
+      "kind": "clarify"
+    },
+    {
+      "id": "extra-paint-action-is-no-op",
+      "text": "Increase clearcoat on the roof by 10 points and make the hood red.",
+      "kind": "clarify"
+    },
+    {
+      "id": "two-channel-actions-are-no-op",
+      "text": "Increase clearcoat on the roof by 10 points and raise hood roughness by 5 points.",
+      "kind": "clarify"
+    },
+    {
+      "id": "relative-edit-with-preserved-roughness-clarifies",
+      "text": "Raise clearcoat on roof by 10 points and keep roughness unchanged.",
+      "kind": "clarify"
+    },
+    {
+      "id": "right-side-panel-target-alias",
+      "text": "Increase clearcoat on the right side panel by 6 points.",
+      "kind": "edit",
+      "part": "right side",
+      "channel": "clearcoat",
+      "delta": 6
+    },
+    {
+      "id": "bonnet-target-alias",
+      "text": "Lower clearcoat on the bonnet by 5 points.",
+      "kind": "edit",
+      "part": "hood",
+      "channel": "clearcoat",
+      "delta": -5
+    },
+    {
+      "id": "specular-channel-stays-ambiguous",
+      "text": "Raise specular channel on the spoiler by 20 points.",
+      "kind": "clarify",
+      "question": {}
+    }
+  ],
+  "results": [
+    {
+      "id": "left-side-panel-clearcoat-synonym",
+      "pass": true,
+      "kind": "queued-single-channel",
+      "queueCount": 1,
+      "part": "left side",
+      "channel": "clearcoat",
+      "delta": 14
+    },
+    {
+      "id": "boot-metallic-channel-synonyms",
+      "pass": true,
+      "kind": "queued-single-channel",
+      "queueCount": 1,
+      "part": "trunk",
+      "channel": "metalness",
+      "delta": -7
+    },
+    {
+      "id": "truck-bed-roughness",
+      "pass": true,
+      "kind": "queued-single-channel",
+      "queueCount": 1,
+      "part": "bed",
+      "channel": "roughness",
+      "delta": 20
+    },
+    {
+      "id": "unitless-retains-clearcoat-roof",
+      "pass": true,
+      "kind": "clarify-no-queue",
+      "queueCount": 0,
+      "reply": "Nothing was changed. I read clearcoat on the roof. Please give a relative amount in points, such as “by 20 points”."
+    },
+    {
+      "id": "clearcoat-hood-positive-synonym",
+      "pass": true,
+      "kind": "queued-single-channel",
+      "queueCount": 1,
+      "part": "hood",
+      "channel": "clearcoat",
+      "delta": 20
+    },
+    {
+      "id": "material-channel-with-exact-target-asks-channel",
+      "pass": true,
+      "kind": "clarify-no-queue",
+      "queueCount": 0,
+      "reply": "Which material channel: metalness, roughness, or clearcoat?"
+    },
+    {
+      "id": "comparative-shinier-preserve-roughness",
+      "pass": true,
+      "kind": "clarify-no-queue",
+      "queueCount": 0,
+      "reply": "Nothing was changed. Name one channel and a relative change in points, or tell me which channels to keep unchanged."
+    },
+    {
+      "id": "explicit-preservation-ambiguity",
+      "pass": true,
+      "kind": "clarify-no-queue",
+      "queueCount": 0,
+      "reply": "Which exact part and material channel should I adjust? I can change only metalness, roughness, or clearcoat."
+    },
+    {
+      "id": "negated-clearcoat-is-no-op",
+      "pass": true,
+      "kind": "clarify-no-queue",
+      "queueCount": 0,
+      "reply": "Nothing was changed. I will leave that material channel alone."
+    },
+    {
+      "id": "extra-paint-action-is-no-op",
+      "pass": true,
+      "kind": "clarify-no-queue",
+      "queueCount": 0,
+      "reply": "Which exact part and material channel should I adjust? I can change only metalness, roughness, or clearcoat."
+    },
+    {
+      "id": "two-channel-actions-are-no-op",
+      "pass": true,
+      "kind": "clarify-no-queue",
+      "queueCount": 0,
+      "reply": "Which exact part and material channel should I adjust? I can change only metalness, roughness, or clearcoat."
+    },
+    {
+      "id": "relative-edit-with-preserved-roughness-clarifies",
+      "pass": true,
+      "kind": "clarify-no-queue",
+      "queueCount": 0,
+      "reply": "Which exact part and material channel should I adjust? I can change only metalness, roughness, or clearcoat."
+    },
+    {
+      "id": "right-side-panel-target-alias",
+      "pass": true,
+      "kind": "queued-single-channel",
+      "queueCount": 1,
+      "part": "right side",
+      "channel": "clearcoat",
+      "delta": 6
+    },
+    {
+      "id": "bonnet-target-alias",
+      "pass": true,
+      "kind": "queued-single-channel",
+      "queueCount": 1,
+      "part": "hood",
+      "channel": "clearcoat",
+      "delta": -5
+    },
+    {
+      "id": "specular-channel-stays-ambiguous",
+      "pass": true,
+      "kind": "clarify-no-queue",
+      "queueCount": 0,
+      "reply": "Which material channel: metalness, roughness, or clearcoat?"
+    }
+  ],
+  "counts": {
+    "passed": 15,
+    "total": 15,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "serverCalls": 0
+  },
+  "limits": [
+    "Runs actual offlineAsk, offlineMaterialPlan, offlineMaterialAsk, parse and buildEdit from the frozen W54 candidate in VM; only the edit-zone tool handler is a controlled queue sink.",
+    "Does not invoke native renderer, actual source zones, provider, server or browser. Clarifications and queue construction are verified; installation/runtime acceptance is separate.",
+    "No unit-policy relaxation; all positive changes use explicit relative points and one channel."
+  ]
+}

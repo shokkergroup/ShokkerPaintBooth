@@ -1,0 +1,85 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon_rainbow_tube",
+  "display_name": "Prism Fault",
+  "carrier": "black laminated optical film densely fractured into overlapping 8-32px diffraction platelet packets",
+  "material_story": {
+    "M": "spectral edge splits, white caustics, exposed chips, and buried reflective plate overlaps",
+    "R": "chipped corners, absorption notches, displaced ghosts, and break-attached chromatic dust",
+    "Cc": "intact laminate platelets, narrow clear seams, color ghosts, and buried overlaps; low at breaks"
+  },
+  "vetoes": [
+    "no rainbow stripes or bands",
+    "no literal tubes or smooth gradients",
+    "no confetti, repeating shards, or fish scales",
+    "no simple hue noise",
+    "no unrelated noise/spec underlay"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 2.5046,
+  "material_stats": {
+    "std": {
+      "M": 82.789986,
+      "R": 83.299194,
+      "Cc": 83.260788
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": -0.203394,
+      "M_Cc": 0.662797,
+      "R_Cc": -0.407953
+    }
+  },
+  "geometry_stats": {
+    "family_count": 9,
+    "families": {
+      "fractured_diffraction_platelets": 11327,
+      "asymmetric_spectral_edge_splits": 7315,
+      "displaced_color_ghosts": 2855,
+      "chipped_prism_corners": 1375,
+      "narrow_clear_seams": 2855,
+      "dark_absorption_notches": 2265,
+      "tiny_white_caustics": 1485,
+      "buried_plate_overlaps": 11327,
+      "chromatic_dust_at_breaks": 1948
+    },
+    "width_native_min": 8.0,
+    "width_native_median": 12.0,
+    "width_native_p90": 26.0,
+    "width_native_max": 26.0,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "fractured_diffraction_platelets": 0.463912,
+    "asymmetric_spectral_edge_splits": 0.327995,
+    "displaced_color_ghosts": 0.242417,
+    "chipped_prism_corners": 0.020656,
+    "narrow_clear_seams": 0.222336,
+    "dark_absorption_notches": 0.101588,
+    "tiny_white_caustics": 0.023957,
+    "buried_plate_overlaps": 0.129333,
+    "chromatic_dust_at_breaks": 0.026926
+  }
+}

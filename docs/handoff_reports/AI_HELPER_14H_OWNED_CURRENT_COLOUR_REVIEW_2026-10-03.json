@@ -1,0 +1,363 @@
+{
+  "title": "W22 owned current-color follow-up review",
+  "generated_at": "2026-10-04T05:15:42.147Z",
+  "mode": "read-only parser/compiler and source audit; no native paint sampling, provider, browser, or queue application",
+  "frozen_cases_sha256": "518d0159b6c585959570bf698755edb83591d78719f12b2d277cafe1d10af78d",
+  "cases_count": 10,
+  "source_hashes": {
+    "js/spb-pro-ai.js": "93bf5627e8bad72b8777a6438a7db9ec1ce167af7478afdb15ec643caf0712bb",
+    "js/spb-pro-edit.js": "873d00c393b7cd3d723de72fd307645ad08a0d166b5605ce7a22521a4fbdc9bc",
+    "js/spb-pro-design.js": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8",
+    "js/spb-pro-zone-kit.js": "6968963fc8d382e3ecda629089a71a73a519270c0b577e98df03d9f7d48d68d0"
+  },
+  "native_confirmed_parent_evidence": [
+    "Make only the roof blue: one owned roof zone updated to #1450b4.",
+    "Make only the roof chrome: preserved the blue base on the roof."
+  ],
+  "production_source_slices": {
+    "editEnv_sha256": "3defec4e6836372a2756fcc5e6064133546841fd6e31fff72655745ad9e543c0",
+    "zoneColours_sha256": "6c06381c9b7d155c9aa26c20f2281573e27c251b9a76c78a6d40eb053c8ba789",
+    "applyQueue_sha256": "3e5d349008ede78fb1d2dc1af6ddc11cfeb03dab2a9310131e94b19c94c3ba6a",
+    "editEnv_memo_ms": 2500,
+    "applyQueue_invalidates_editEnv_memo": false,
+    "details": "editEnv memoizes source palette and zoneColours for 2.5 seconds. applyQueue does not invalidate that memo after successful zone mutation. An immediate cross-route edit can therefore observe the pre-edit source palette with no owned-blue row; this is a code-supported race hypothesis, not native runtime proof."
+  },
+  "actual_edit_module_observations": {
+    "source_only_OC01_OC02": "E.plan/E.compile ask which source color is intended and queue no edit because blue is absent from the supplied source palette.",
+    "owned_zone_OC01_OC02": "With the actual production zoneColours record shape, E.compile emits one zoneEdit for roof-uuid, changes the requested color, omits finish and region so the existing finish and mask remain owned by that zone.",
+    "current_color_phrases": "OC04/OC05 do not parse reliably: the planner treats current/version as unsupported looks and asks; no mutation is compiled.",
+    "broader_scope": "OC08–OC10 surfaced source-layer and ambiguous-scope limitations; per-case parser/compiler outcomes are recorded below and are not accepted behavior.",
+    "current_source_scope": "These source-level compiler observations are distinct from the older modules loaded during the native gen2 session."
+  },
+  "lowest_risk_candidate": "Invalidate the short editEnv memo after successful queue application that can change zones, then rebuild the E environment before compiling the next user turn. A broader current-color resolver would need exact owner, exact named-part, unique helper-owned zone, and user-spoken source/current disambiguation; do not infer source cyan is roof paint. Validate on native preview with the same exact prompts before production integration.",
+  "limits": [
+    "The current-zone record is synthetic but uses the exact compact fields produced by pro-ai.js zoneColours(); it is not sampled from the reported native zone.",
+    "No change was made to production files. This review does not verify the native generation-2 prompt routing, visible render, Undo, or zone mask bytes.",
+    "OC01/OC02 demonstrate existing compiler support conditional on current zoneColours being fresh; they do not prove the stale memo caused the reported native miss."
+  ],
+  "cases": [
+    {
+      "id": "OC01",
+      "ask": "Change the blue on the roof to pale red.",
+      "expected": "resolve-blue-against-owned-roof-current-color; update same zone color",
+      "sourceOnly": {
+        "planKind": "ops",
+        "planAsk": "change the blue on the roof to pale red",
+        "compileAsk": "I do not see any blue on this car, but I do see cyan (27% of the car). Is that the one? Otherwise tell me which: black (42%), cyan (27%), white (11%), sand (6%), green (2%).",
+        "missing": [
+          "colour"
+        ],
+        "zones": []
+      },
+      "ownedRoof": {
+        "planKind": "ops",
+        "planAsk": "change the blue on the roof to pale red",
+        "compileAsk": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Blue roof",
+            "color": "#e88797",
+            "zoneEdit": {
+              "zone_id": "roof-uuid",
+              "zone": "Blue roof",
+              "hex": "#1450b4"
+            },
+            "finishExplicit": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "OC02",
+      "ask": "Change the blue on the roof to dark blue.",
+      "expected": "resolve-blue-against-owned-roof-current-color; preserve finish and update same zone color",
+      "sourceOnly": {
+        "planKind": "ops",
+        "planAsk": "change the blue on the roof to dark blue",
+        "compileAsk": "I do not see any blue on this car, but I do see cyan (27% of the car). Is that the one? Otherwise tell me which: black (42%), cyan (27%), white (11%), sand (6%), green (2%).",
+        "missing": [
+          "colour"
+        ],
+        "zones": []
+      },
+      "ownedRoof": {
+        "planKind": "ops",
+        "planAsk": "change the blue on the roof to dark blue",
+        "compileAsk": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Blue roof",
+            "color": "#0b2350",
+            "zoneEdit": {
+              "zone_id": "roof-uuid",
+              "zone": "Blue roof",
+              "hex": "#1450b4"
+            },
+            "finishExplicit": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "OC03",
+      "ask": "Change the red on the roof to pale red.",
+      "expected": "resolve-red-against-owned-roof-current-color; update same zone color",
+      "sourceOnly": {
+        "planKind": "ask",
+        "planAsk": "What should I do with the red? Pick a look, or tell me a colour.",
+        "compileAsk": null,
+        "missing": null,
+        "zones": null
+      },
+      "ownedRoof": {
+        "planKind": "ask",
+        "planAsk": "What should I do with the red? Pick a look, or tell me a colour.",
+        "compileAsk": null,
+        "missing": null,
+        "zones": null
+      }
+    },
+    {
+      "id": "OC04",
+      "ask": "Change the current roof color from blue to pale red.",
+      "expected": "explicit-current-color wording resolves against owned zone, not source palette",
+      "sourceOnly": {
+        "planKind": "ops",
+        "planAsk": "change the current roof colour from blue to pale red",
+        "compileAsk": "I do not know a look called “current”. Here is what I can do to the roof:",
+        "missing": [
+          "look"
+        ],
+        "zones": []
+      },
+      "ownedRoof": {
+        "planKind": "ops",
+        "planAsk": "change the current roof colour from blue to pale red",
+        "compileAsk": "I do not know a look called “current”. Here is what I can do to the roof:",
+        "missing": [
+          "look"
+        ],
+        "zones": []
+      }
+    },
+    {
+      "id": "OC05",
+      "ask": "Make the roof a lighter version of its current blue.",
+      "expected": "preserve ownership and finish; use supported relative-lightening semantics or clarify",
+      "sourceOnly": {
+        "planKind": "ops",
+        "planAsk": "make the roof a lighter version of its current blue",
+        "compileAsk": "I do not know a look called “version current”. Here is what I can do to the roof:",
+        "missing": [
+          "look"
+        ],
+        "zones": []
+      },
+      "ownedRoof": {
+        "planKind": "ops",
+        "planAsk": "make the roof a lighter version of its current blue",
+        "compileAsk": "I do not know a look called “version current”. Here is what I can do to the roof:",
+        "missing": [
+          "look"
+        ],
+        "zones": []
+      }
+    },
+    {
+      "id": "OC06",
+      "ask": "Make only the roof blue.",
+      "expected": "separate native-confirmed base case; same owned roof zone",
+      "sourceOnly": {
+        "planKind": "ops",
+        "planAsk": "make only the roof blue",
+        "compileAsk": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Roof recoloured blue",
+            "color": "#1450b4",
+            "finish": "base::gloss",
+            "region": {
+              "part": "roof"
+            },
+            "finishExplicit": false
+          }
+        ]
+      },
+      "ownedRoof": {
+        "planKind": "ops",
+        "planAsk": "make only the roof blue",
+        "compileAsk": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Roof recoloured blue",
+            "color": "#1450b4",
+            "finish": "base::gloss",
+            "region": {
+              "part": "roof"
+            },
+            "finishExplicit": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "OC07",
+      "ask": "Make only the roof chrome.",
+      "expected": "separate native-confirmed finish-only case; preserve current blue",
+      "sourceOnly": {
+        "planKind": "ops",
+        "planAsk": "make only the roof chrome",
+        "compileAsk": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Roof chrome",
+            "color": "source",
+            "finish": "base::f_chrome",
+            "region": {
+              "part": "roof"
+            },
+            "finishExplicit": true
+          }
+        ]
+      },
+      "ownedRoof": {
+        "planKind": "ops",
+        "planAsk": "make only the roof chrome",
+        "compileAsk": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Roof chrome",
+            "color": "source",
+            "finish": "base::f_chrome",
+            "region": {
+              "part": "roof"
+            },
+            "finishExplicit": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "OC08",
+      "ask": "Change the original cyan source layer, not the blue roof repaint.",
+      "expected": "do not mutate owned blue roof as if cyan were current; clarify or target source layer",
+      "sourceOnly": {
+        "planKind": "ask",
+        "planAsk": "I cannot find a layer called “source” in this file. This paint has no layers.",
+        "compileAsk": null,
+        "missing": null,
+        "zones": null
+      },
+      "ownedRoof": {
+        "planKind": "ask",
+        "planAsk": "I cannot find a layer called “source” in this file. This paint has no layers.",
+        "compileAsk": null,
+        "missing": null,
+        "zones": null
+      }
+    },
+    {
+      "id": "OC09",
+      "ask": "Change the blue on the roof and the cyan on the side to pale red.",
+      "expected": "mixed current/source colors and scopes must not be conflated; clarify or preserve distinct targets",
+      "sourceOnly": {
+        "planKind": "ops",
+        "planAsk": "change the blue on the roof and the cyan on the side to pale red",
+        "compileAsk": "I do not see any blue on this car, but I do see cyan (27% of the car). Is that the one? Otherwise tell me which: black (42%), cyan (27%), white (11%), sand (6%), green (2%).",
+        "missing": [
+          "colour"
+        ],
+        "zones": []
+      },
+      "ownedRoof": {
+        "planKind": "ops",
+        "planAsk": "change the blue on the roof and the cyan on the side to pale red",
+        "compileAsk": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Blue roof",
+            "color": "#e88797",
+            "zoneEdit": {
+              "zone_id": "roof-uuid",
+              "zone": "Blue roof",
+              "hex": "#1450b4"
+            },
+            "finishExplicit": false
+          },
+          {
+            "name": "Left side recoloured pink",
+            "color": "#e88797",
+            "finish": "base::gloss",
+            "region": {
+              "part": "left side"
+            },
+            "finishExplicit": false
+          },
+          {
+            "name": "Right side recoloured pink",
+            "color": "#e88797",
+            "finish": "base::gloss",
+            "region": {
+              "part": "right side"
+            },
+            "finishExplicit": false
+          },
+          {
+            "name": "Cyan shifted to pink, keeping the shading",
+            "color": "source",
+            "finish": "base::gloss",
+            "region": {
+              "colors": [
+                "#00b8d4"
+              ],
+              "tolerance": 38
+            },
+            "finishExplicit": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "OC10",
+      "ask": "Change any blue on the car to pale red.",
+      "expected": "no exact owned-part scope; no automatic roof-zone mutation",
+      "sourceOnly": {
+        "planKind": "ops",
+        "planAsk": "change any blue on the car to pale red",
+        "compileAsk": "I do not see any blue on this car, but I do see cyan (27% of the car). Is that the one? Otherwise tell me which: black (42%), cyan (27%), white (11%), sand (6%), green (2%).",
+        "missing": [
+          "colour"
+        ],
+        "zones": []
+      },
+      "ownedRoof": {
+        "planKind": "ops",
+        "planAsk": "change any blue on the car to pale red",
+        "compileAsk": "I do not know a look called “any”. Here is what I can do to the blue:",
+        "missing": [
+          "look"
+        ],
+        "zones": []
+      }
+    }
+  ],
+  "native_snapshot_distinction": {
+    "current_source_reviewed": {
+      "pro_ai_sha256": "93bf5627e8bad72b8777a6438a7db9ec1ce167af7478afdb15ec643caf0712bb",
+      "pro_edit_sha256": "873d00c393b7cd3d723de72fd307645ad08a0d166b5605ce7a22521a4fbdc9bc"
+    },
+    "native_generation2_loaded_snapshot_prefixes": {
+      "pro_ai": "115f",
+      "pro_edit": "d4cd"
+    },
+    "provenance": "Parent-provided native-generation-2 snapshot evidence, added after the W22 audit.",
+    "limitation": "The gen2 native miss came from older loaded modules reported to lack zoneColours/shownShares and the E zoneEdit route. W22 examined later current source and synthetic fresh zoneColours only. Its conditional compiler result must not be attributed to the older loaded gen2 modules and is not native acceptance for either version."
+  }
+}

@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- DIAGNOSTICS RECORDER: FIRST <script> in <head> for the one-click "Report a Problem" feature.
+       Surfaces the per-variant SHOKK THE WORLD 500s the owner otherwise can't see. -->
+  <script src="js/diagnostics/spb-diag-recorder.js?v=spb-diag-recorder-20260604"></script>
+  <title>SHOKK DROP — Shokker Paint Booth</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root { color-scheme: dark; --bg: #07090d; --panel: #10161e; --line: #2b3645; --text: #eaf0f8; --muted: #9ba8b8; --accent: #f0c040; --cyan: #62d7ff; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font: 13px/1.45 system-ui, Segoe UI, sans-serif; }
+    .app { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); grid-template-rows: auto 1fr; height: 100vh; }
+    header { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: #080b10; }
+    h1 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: 0.04em; }
+    .tagline { margin-top: 2px; color: var(--muted); font-size: 11px; max-width: 640px; }
+    .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 0 14px; border-radius: 7px; border: 1px solid var(--line); background: #111925; color: var(--text); font-weight: 640; cursor: pointer; font-size: 12px; text-decoration: none; }
+    .btn:hover { border-color: var(--accent); }
+    .btn.primary { background: linear-gradient(135deg, #c8960c, var(--accent)); color: #1a1200; border-color: transparent; font-weight: 720; }
+    aside { grid-row: 2; overflow: auto; padding: 12px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; transition: outline-color 0.15s; }
+    aside.sidebar-drop-active { outline: 2px dashed var(--cyan); outline-offset: -4px; background: #0c121a; }
+    main { grid-row: 2; overflow: auto; padding: 12px 14px 24px; min-width: 0; }
+    .card { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 10px 11px; }
+    .card h3 { margin: 0 0 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 4px; }
+    select, input[type=text] { width: 100%; font-size: 12px; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line); background: #0a1018; color: var(--text); margin-bottom: 8px; }
+    .hint { font-size: 10px; color: var(--muted); line-height: 1.45; margin: 0; }
+    #dropZone { padding: 14px; border: 1px dashed var(--line); border-radius: 8px; text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 12px; }
+    .gallery-toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+    .gallery-toolbar input[type=search] { flex: 1; min-width: 140px; font-size: 12px; padding: 7px 10px; border-radius: 6px; border: 1px solid var(--line); background: #0a1018; color: var(--text); }
+    .gallery-toolbar select { width: auto; min-width: 110px; margin: 0; font-size: 12px; padding: 7px 8px; }
+    .gallery-toolbar .count { font-size: 10px; color: var(--muted); margin-left: auto; }
+    #galleryGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+    .drop-card { position: relative; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 8px; cursor: pointer; transition: border-color 0.15s; }
+    .drop-card:hover, .drop-card.drop-card-active { border-color: var(--cyan); }
+    .drop-card.drop-card-checked { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+    .drop-pick { position: absolute; top: 12px; left: 12px; z-index: 2; width: 18px; height: 18px; cursor: pointer; accent-color: #f0c040; }
+    .drop-card h2 { font-size: 12px; margin: 6px 0 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .drop-card .meta { font-size: 10px; color: var(--muted); margin: 0 0 4px; }
+    .drop-gauntlet-badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 4px; margin: 0 0 4px; letter-spacing: 0.02em; }
+    .drop-gauntlet-pass { background: #102818; color: #8fd8a0; border: 1px solid #2a6b3a; }
+    .drop-gauntlet-fail { background: #281818; color: #f0a8a8; border: 1px solid #6b2a2a; }
+    .drop-card img.thumb { width: 100%; background: #0a0c10; border-radius: 6px; display: block; aspect-ratio: 2 / 1; object-fit: cover; }
+    .drop-preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+    .drop-preview-grid.drop-preview-channels { grid-template-columns: 1fr; }
+    @media (min-width: 520px) { .drop-preview-grid.drop-preview-channels { grid-template-columns: 1fr 1fr 1fr; } }
+    .drop-preview-cell img { width: 100%; border-radius: 5px; border: 1px solid var(--line); background: #0a0c10; display: block; aspect-ratio: 1; object-fit: cover; }
+    .drop-preview-cell img[alt*="Metallic"], .drop-preview-cell img[alt*="Roughness"], .drop-preview-cell img[alt*="Clearcoat"] { aspect-ratio: 2 / 1; }
+    .drop-preview-cap { font-size: 9px; font-weight: 650; margin-top: 3px; line-height: 1.35; }
+    .drop-preview-hint { display: block; font-weight: 400; color: var(--muted); font-size: 8px; margin-top: 1px; }
+    #userImportPreviewBox { max-height: 70vh; overflow-y: auto; }
+    #shokkDropToast { position: fixed; bottom: 16px; right: 16px; z-index: 10060; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
+    .shokk-drop-toast { padding: 8px 12px; border-radius: 7px; font-size: 12px; font-weight: 620; box-shadow: 0 6px 24px rgba(0,0,0,0.45); border: 1px solid var(--line); background: #141c28; color: var(--text); animation: shokkDropToastIn 0.2s ease; }
+    .shokk-drop-toast.success { border-color: #2a6b3a; background: #102818; color: #b8f0c8; }
+    .shokk-drop-toast.error { border-color: #6b2a2a; background: #281010; color: #f0b8b8; }
+    .shokk-drop-toast.info { border-color: #2a4a6b; background: #101828; color: #b8d8f0; }
+    @keyframes shokkDropToastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .btn.shokk-world-btn { background: linear-gradient(135deg, #1a3a5c, #62d7ff 55%, #f0c040); color: #0a1018; border: none; font-weight: 800; letter-spacing: 0.04em; }
+    .btn.shokk-world-btn:hover { filter: brightness(1.08); }
+    #dnaRemixRow { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); }
+    #dnaRemixPreviewImg { width: 100%; border-radius: 6px; border: 1px solid var(--line); margin-top: 6px; aspect-ratio: 2/1; object-fit: cover; background: #0a0c10; }
+    .dna-style-pick { margin-bottom: 6px; }
+    .dna-style-pick-native { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+    .dna-style-pick-btn { width: 100%; display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line); background: #0c1018; color: var(--text); cursor: pointer; text-align: left; font-size: 11px; }
+    .dna-style-pick-btn:hover { border-color: var(--cyan); background: #101828; }
+    .dna-style-pick-thumb { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; background: #0a0c10; flex-shrink: 0; border: 1px solid var(--line); }
+    .dna-style-pick-label { flex: 1; line-height: 1.25; }
+    .dna-style-pick-chevron { color: var(--muted); font-size: 10px; }
+    .dna-style-picker-panel { position: fixed; inset: 0; z-index: 10100; background: rgba(4,8,14,0.88); display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .dna-style-picker-panel[hidden] { display: none !important; }
+    .dna-style-picker-dialog { width: min(720px, 96vw); max-height: 88vh; display: flex; flex-direction: column; background: #0a0e14; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+    .dna-style-picker-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    .dna-style-picker-filter { margin: 8px 12px 0; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line); background: #060a10; color: var(--text); font-size: 12px; }
+    .dna-style-picker-grid { flex: 1; overflow-y: auto; padding: 10px 12px 14px; display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+    .dna-style-tile { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 6px; background: #0c1018; cursor: pointer; color: var(--text); }
+    .dna-style-tile:hover, .dna-style-tile-active { border-color: var(--cyan); box-shadow: 0 0 10px rgba(98,215,255,0.2); }
+    .dna-style-tile img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; background: #060a10; }
+    .dna-style-tile-label { font-size: 9px; line-height: 1.2; text-align: center; color: var(--muted); }
+    .dna-style-tile-pal { position: absolute; top: 3px; right: 3px; border: none; background: rgba(6,10,16,0.78); border-radius: 5px; font-size: 11px; line-height: 1; padding: 3px 4px; cursor: pointer; }
+    .dna-style-tile-pal:hover { background: rgba(98,215,255,0.3); }
+    .dna-style-tile-tuned { position: absolute; top: 4px; left: 5px; color: #62d7ff; font-size: 12px; text-shadow: 0 0 4px #000; }
+    .dna-pal-editor { position: fixed; inset: 0; z-index: 10120; background: rgba(4,8,14,0.9); display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .dna-pal-editor[hidden] { display: none !important; }
+    .dna-pal-dialog { width: min(560px, 96vw); max-height: 86vh; display: flex; flex-direction: column; background: #0a0e14; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+    .dna-pal-chips { flex: 1; overflow-y: auto; padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 6px; }
+    .dna-pal-chip { position: relative; border: 2px solid transparent; border-radius: 6px; padding: 10px 6px; font-size: 10px; font-weight: 700; color: #0a0e14; text-shadow: 0 1px 2px rgba(255,255,255,0.5); cursor: pointer; opacity: 0.45; filter: grayscale(0.4); }
+    .dna-pal-chip-on { opacity: 1; filter: none; border-color: #fff; box-shadow: 0 0 8px rgba(255,255,255,0.4); }
+    .dna-pal-chip .dna-pal-check { display: none; position: absolute; top: 2px; right: 4px; color: #0a0e14; }
+    .dna-pal-chip-on .dna-pal-check { display: inline; }
+    .dna-pal-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--line); }
+    .onboard { border: 1px solid var(--line); border-radius: 10px; background: linear-gradient(160deg, #101a26, #0b1118); padding: 12px 14px; margin: 0 0 12px; }
+    .onboard.onboard-collapsed .onboard-body { display: none; }
+    .onboard-head { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
+    .onboard-head-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .onboard-title { margin: 0 0 4px; font-size: 15px; font-weight: 800; letter-spacing: 0.02em; }
+    .onboard-lead { margin: 0; color: var(--muted); font-size: 12px; max-width: 760px; line-height: 1.5; }
+    .onboard-body { margin-top: 12px; display: grid; gap: 14px; grid-template-columns: 1fr; }
+    @media (min-width: 760px) { .onboard-body { grid-template-columns: 1.05fr 1fr; } }
+    .onboard-steps { display: grid; gap: 8px; align-content: start; }
+    .onboard-step { display: flex; gap: 10px; align-items: flex-start; font-size: 12px; line-height: 1.45; }
+    .onboard-step-num { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(135deg, #c8960c, var(--accent)); color: #1a1200; font-weight: 800; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+    .onboard-chip { display: inline-block; padding: 1px 7px; border-radius: 5px; background: linear-gradient(135deg, #1a3a5c, #62d7ff 55%, #f0c040); color: #0a1018; font-weight: 800; font-size: 11px; }
+    .onboard-sub { margin: 0 0 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .onboard-types { border-left: 1px solid var(--line); padding-left: 14px; }
+    @media (max-width: 759px) { .onboard-types { border-left: none; padding-left: 0; border-top: 1px solid var(--line); padding-top: 12px; } }
+    .onboard-type-list { margin: 0 0 8px; padding-left: 18px; display: grid; gap: 5px; font-size: 11.5px; line-height: 1.45; color: var(--text); }
+    .onboard-type-list strong { color: var(--cyan); }
+    .onboard-tip { margin: 0; font-size: 11px; color: var(--muted); line-height: 1.5; }
+    .shokk-world-overlay { display: none; position: fixed; inset: 0; z-index: 10080; background: rgba(4,8,14,0.92); align-items: stretch; justify-content: center; padding: 12px; }
+    .shokk-world-overlay.shokk-world-active { display: flex; }
+    .shokk-world-panel { flex: 1; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; background: #0a0e14; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; max-height: 96vh; }
+    .shokk-world-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--line); background: #080b10; }
+    .shokk-world-head h2 { margin: 0; font-size: 16px; color: var(--accent); letter-spacing: 0.08em; }
+    .shokk-world-sub { margin: 4px 0 0; font-size: 11px; color: var(--muted); }
+    .shokk-world-head-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+    .shokk-world-ekg-wrap { padding: 8px 12px; background: #060a10; border-bottom: 1px solid var(--line); }
+    .shokk-world-ekg-wrap canvas { width: 100%; height: 56px; display: block; }
+    .shokk-world-grid { flex: 1; overflow-y: auto; padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+    .shokk-world-slot { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 6px; display: flex; flex-direction: column; gap: 4px; transition: border-color 0.2s, box-shadow 0.2s; }
+    .shokk-world-slot-ready { border-color: var(--cyan); box-shadow: 0 0 12px rgba(98,215,255,0.15); animation: shokkSlotPop 0.35s ease; }
+    @keyframes shokkSlotPop { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+    .shokk-world-slot-inner img { width: 100%; border-radius: 5px; aspect-ratio: 1/1; object-fit: contain; background: #0a0c10; display: block; }
+    .shokk-world-slot-wait { text-align: center; padding: 28px 8px; color: var(--muted); font-size: 11px; animation: shokkPulse 1s ease infinite; }
+    @keyframes shokkPulse { 50% { opacity: 0.45; } }
+    .shokk-world-slot-cap { font-size: 9px; margin-top: 4px; line-height: 1.35; color: var(--muted); }
+    .shokk-world-pick { font-size: 10px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .shokk-world-slot-actions .btn { font-size: 9px; padding: 2px 6px; min-height: 22px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>SHOKK DROP</h1>
+        <div class="tagline">Drop any art · <strong>SHOKK THE WORLD</strong> = 20 specs · DNA Remix · Share <strong>.spbdrop</strong> · <em>SHOKK DROP</em> in Paint Booth</div>
+      </div>
+      <div class="header-actions">
+        <!-- One-click "Report a Problem": surfaces the per-variant SHOKK THE WORLD
+             500s that happen on the user's machine. Button injected by
+             js/diagnostics/spb-diag-report.js into this slot. -->
+        <span data-spb-report-slot data-spb-report-label="Report a Problem"
+              data-spb-report-btn-class="btn"
+              title="Hit a bug (e.g. a SHOKK THE WORLD variant failed)? Copy a diagnostics report to paste to Shokker support."></span>
+        <button type="button" class="btn" id="onboardRestoreBtn" title="Show the getting-started guide again">Guide</button>
+        <a class="btn" href="/SHOKK_DROP_BIBLE.html" title="Product bible — architecture &amp; roadmap (SPB-109)">Bible</a>
+        <a class="btn" href="/api/user-imports/export-all" download>Export all .spbdrop</a>
+        <a class="btn" href="/">← Paint Booth</a>
+      </div>
+    </header>
+    <aside aria-label="Import sidebar — drop PNG or JPG here">
+      <p class="hint" style="margin:0 0 4px;">Drop PNG/JPG/WebP here to import &amp; preview</p>
+      <div class="card">
+        <h3>New drop</h3>
+        <label for="userImportKind">Type</label>
+        <select id="userImportKind">
+          <option value="paint_monolithic">Paint finish</option>
+          <option value="pattern">Pattern</option>
+          <option value="spec_overlay">Spec overlay</option>
+          <option value="paint_spec_set">Paint + spec maps (exact)</option>
+          <option value="car_template">Car template (whole car)</option>
+        </select>
+        <p class="hint" id="userImportKindHelp" style="margin:-4px 0 8px;color:var(--muted);"></p>
+        <p class="hint" id="userImportCarTemplateHint" style="display:none;margin:-4px 0 8px;">Whole-car paint + spec. SHOKK THE WORLD → <strong>Try in Booth</strong> drops it as a full-body zone that covers the entire car, leaving your existing zones intact underneath.</p>
+        <!-- IMPORT A SET (Phase 2 ask 2): paint + authored spec = EXACT finish, no DNA bake.
+             Wired to backend kind=paint_spec_set via importPaintSpecSet() below. -->
+        <div id="userImportSetRow" style="display:none;border:1px solid var(--line);border-radius:8px;padding:9px 10px;margin:0 0 10px;background:#0c121b;">
+          <h3 style="margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent);">Import a set — exact finish</h3>
+          <p class="hint" style="margin:0 0 8px;">Bring your own spec maps. The spec is used <strong>verbatim</strong> (no DNA bake) so the finish renders exactly as authored. Channel map: <strong style="color:#ff8888;">R = Metallic</strong>, <strong style="color:#88ff88;">G = Roughness</strong>, <strong style="color:#88aaff;">B = Clearcoat</strong>.</p>
+          <label for="userImportSetTarget">Save as</label>
+          <select id="userImportSetTarget" title="What kind of library entry to create from this set">
+            <option value="paint">Paint finish</option>
+            <option value="pattern">Pattern</option>
+            <option value="spec_overlay">Spec overlay</option>
+          </select>
+          <label style="margin-top:4px;">Paint image <span class="hint">(the color art)</span></label>
+          <input type="file" id="userImportSetPaint" accept=".png,.jpg,.jpeg,.webp,.tga,.bmp,image/*" style="margin-bottom:8px;" />
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 6px;">
+            <label style="display:inline-flex;align-items:center;gap:5px;margin:0;cursor:pointer;color:var(--text);"><input type="radio" name="userImportSetSpecMode" value="none" checked style="width:auto;margin:0;" />No spec — auto-generate</label>
+            <label style="display:inline-flex;align-items:center;gap:5px;margin:0;cursor:pointer;color:var(--accent);font-weight:700;" title="Ignite your paint with the FRACTURED look — near-chrome metal, maxed clearcoat, roughness woven along your art's own edges. No spec maps needed."><input type="radio" name="userImportSetSpecMode" value="fracture" style="width:auto;margin:0;" />FRACTURE the spec ⚡</label>
+            <label style="display:inline-flex;align-items:center;gap:5px;margin:0;cursor:pointer;color:var(--text);"><input type="radio" name="userImportSetSpecMode" value="combined" style="width:auto;margin:0;" />Combined spec (one RGB image)</label>
+            <label style="display:inline-flex;align-items:center;gap:5px;margin:0;cursor:pointer;color:var(--text);"><input type="radio" name="userImportSetSpecMode" value="channels" style="width:auto;margin:0;" />Separate R / G / B images</label>
+          </div>
+          <!-- Explanation shown only for FRACTURE. Restored to working order
+               2026-08-09 (the loader had been discarding every fractured
+               import), so it now gets copy that says what it actually does. -->
+          <p class="hint" id="userImportFractureHelp" style="display:none;margin:-2px 0 8px;padding:6px 8px;border-left:2px solid var(--accent);background:#141007;">
+            <strong style="color:var(--accent);">FRACTURE ⚡</strong> needs <strong>no spec maps at all</strong>. SHOKK traces your art's own edges and ignites them:
+            near-chrome metal (M≈250), maxed clearcoat, and roughness woven along your motif's lanes — computed fresh at render, so it always matches the art exactly.
+            Your paint supplies the dark color; the shine comes from the angle. Best on art with strong graphics or edges.
+          </p>
+          <div id="userImportSetCombinedBox">
+            <label>Combined spec image <span class="hint">(RGB = M / R / Cc)</span></label>
+            <input type="file" id="userImportSetSpecCombined" accept=".png,.jpg,.jpeg,.webp,.tga,.bmp,image/*" style="margin-bottom:6px;" />
+          </div>
+          <div id="userImportSetChannelsBox" style="display:none;">
+            <label style="color:#ff8888;">R — Metallic plate</label>
+            <input type="file" id="userImportSetSpecR" accept=".png,.jpg,.jpeg,.webp,.tga,.bmp,image/*" style="margin-bottom:6px;" />
+            <label style="color:#88ff88;">G — Roughness plate</label>
+            <input type="file" id="userImportSetSpecG" accept=".png,.jpg,.jpeg,.webp,.tga,.bmp,image/*" style="margin-bottom:6px;" />
+            <label style="color:#88aaff;">B — Clearcoat plate</label>
+            <input type="file" id="userImportSetSpecB" accept=".png,.jpg,.jpeg,.webp,.tga,.bmp,image/*" style="margin-bottom:6px;" />
+            <p class="hint" style="margin:0 0 6px;">Any plate left empty fills as black (channel off).</p>
+          </div>
+          <label style="margin:2px 0 6px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:var(--text);"><input type="checkbox" id="userImportSetAlsoPattern" style="width:auto;margin:0;" />Also add as pattern</label>
+          <button type="button" class="btn primary" id="btnImportSet" style="width:100%;margin-top:2px;" onclick="importPaintSpecSet()">Import set (exact finish)</button>
+        </div>
+        <div id="userImportSpecChannelRow" style="display:none;">
+          <label>Spec channel strength (M / R / CC)</label>
+          <p class="hint" style="margin:-2px 0 8px;">Your RGB plate maps R→Metallic, G→Roughness, B→Clearcoat. Set each channel 0–200%.</p>
+          <div style="display:grid;gap:6px;margin-bottom:8px;">
+            <label style="display:flex;align-items:center;gap:8px;font-size:11px;color:#ff8888;">M <input type="range" id="userImportSpecM" min="0" max="200" value="100" style="flex:1;" oninput="document.getElementById('userImportSpecMVal').textContent=this.value+'%'"><span id="userImportSpecMVal" style="min-width:36px;text-align:right;">100%</span></label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:11px;color:#88ff88;">R <input type="range" id="userImportSpecR" min="0" max="200" value="100" style="flex:1;" oninput="document.getElementById('userImportSpecRVal').textContent=this.value+'%'"><span id="userImportSpecRVal" style="min-width:36px;text-align:right;">100%</span></label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:11px;color:#88aaff;">CC <input type="range" id="userImportSpecC" min="0" max="200" value="100" style="flex:1;" oninput="document.getElementById('userImportSpecCVal').textContent=this.value+'%'"><span id="userImportSpecCVal" style="min-width:36px;text-align:right;">100%</span></label>
+          </div>
+        </div>
+        <!-- Wrapped in #userImportStyleRow so the existing hide-logic in
+             user-imports.js (updateUserImportsStatus) can hide DNA style for
+             Types whose backend import ignores style_override. -->
+        <div id="userImportStyleRow">
+          <label for="userImportStyleOverride">DNA style <span id="dnaStyleCount" class="hint"></span></label>
+          <select id="userImportStyleOverride" title="Override Import DNA personality"><option value="">Auto (analyze image)</option></select>
+          <p class="hint" style="margin:-4px 0 8px;">Hover any style for a description · SHOKK THE WORLD samples 20 per run.</p>
+        </div>
+        <div id="userImportVibeRow">
+          <label for="userImportVibeRef">Match vibe (finish id)</label>
+          <input type="text" id="userImportVibeRef" placeholder="optional shipped finish id" />
+        </div>
+        <div id="userImportAlsoPatternRow">
+          <label><input type="checkbox" id="userImportAlsoPattern" /> Also add as pattern</label>
+        </div>
+        <div id="dnaRemixRow">
+          <h3 style="margin:8px 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">DNA Remix</h3>
+          <p class="hint" style="margin:0 0 6px;">Pick styles by thumbnail — first mix slot in World uses A+B below. Live blend preview after you start a World session.</p>
+          <label style="margin-bottom:4px;">Style A</label>
+          <select id="dnaRemixStyleA" title="DNA Remix style A"></select>
+          <label style="margin-top:6px;">Style B</label>
+          <select id="dnaRemixStyleB" title="DNA Remix style B"></select>
+          <label style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11px;">Mix
+            <input type="range" id="dnaRemixSlider" min="0" max="100" value="50" style="flex:1;">
+            <span id="dnaRemixSliderVal" style="min-width:36px;text-align:right;">50%</span>
+          </label>
+          <img id="dnaRemixPreviewImg" alt="DNA remix preview" style="display:none;" />
+        </div>
+        <div id="shokkWildnessRow" style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);">
+          <label style="display:flex;align-items:center;gap:8px;font-size:11px;">Spec wildness
+            <input type="range" id="shokkWildness" min="0" max="100" value="50" style="flex:1;">
+            <span id="shokkWildnessVal" style="min-width:62px;text-align:right;color:var(--cyan);">Balanced</span>
+          </label>
+          <p class="hint" style="margin:4px 0 0;">Subtle = traces with gentle color · Insane = maximum spec gamut. Set it <strong>before</strong> hitting ⚡ — a running World session keeps the wildness it started with. Click a style&rsquo;s 🎨 in the picker to retune its spec colors.</p>
+          <button type="button" class="btn" id="btnRandomizeDna" style="width:100%;margin-top:8px;font-size:11px;" title="Roll a random Style A + B, mix amount and wildness — then hit ⚡ SHOKK THE WORLD">🎲 Randomize DNA + wildness</button>
+        </div>
+        <input type="file" id="shokkWorldFileInput" accept=".png,.jpg,.jpeg,.webp,.tga,.bmp,image/*" style="display:none;" />
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+          <button type="button" class="btn shokk-world-btn" id="btnShokkTheWorld" title="20 specs: 8 standard · 7 two-style mix · 5 INSANE 4-way blend">⚡ SHOKK THE WORLD</button>
+          <button type="button" class="btn primary" id="btnImportPreview" onclick="openUserImportDialog(true)">Import &amp; preview</button>
+          <button type="button" class="btn" onclick="processUserImportInbox()" title="Batch-import every image sitting in the SHOKK DROP inbox folder on disk (advanced). Folder: %APPDATA%\ShokkerPaintBooth\user_imports\inbox — processed files move to inbox\done.">Inbox</button>
+          <button type="button" class="btn" id="btnResumeWorld" style="display:none;" onclick="reopenLastShokkWorld()" title="Reopen the last SHOKK THE WORLD session — baked specs reload instantly and your picks are kept">↩ Reopen World</button>
+        </div>
+        <p class="hint" style="margin-top:6px;">Shift+drop for instant World. <strong>Save selected</strong> = library finish. <strong>Save recipe</strong> on a card = reuse DNA mix later.</p>
+        <div id="dnaPresetsRow" style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);">
+          <h3 style="margin:0 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">My DNA recipes</h3>
+          <div id="dnaPresetsList" class="hint">Loading…</div>
+        </div>
+        <div id="userImportPreviewMeta" class="hint" style="margin-top:8px;"></div>
+        <div id="userImportPreviewBox"></div>
+        <div id="userImportPreviewActions" style="display:none;margin-top:6px;">
+          <button type="button" class="btn primary" onclick="commitPendingUserImport()">Commit drop</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Library</h3>
+        <div id="userImportsStatus" class="hint">Loading…</div>
+        <div id="userImportsList" style="max-height:160px;overflow-y:auto;margin-top:6px;"></div>
+      </div>
+      <p class="hint">Cousin to full <strong>.SHOKK</strong> designs — Drops are shareable finish packs from any PNG/JPG. Drop <strong>.spbdrop</strong> files on the gallery to import from friends.</p>
+    </aside>
+    <main>
+      <!-- ONBOARDING (Phase 2 ask 3): friendly cold-start intro. Collapsible +
+           dismissible; remembers state in localStorage (spbDropOnboardingDismissed). -->
+      <section id="shokkDropOnboarding" class="onboard" aria-label="What is SHOKK DROP">
+        <div class="onboard-head">
+          <div>
+            <h2 class="onboard-title">👋 Welcome to SHOKK DROP</h2>
+            <p class="onboard-lead">Turn <strong>any image</strong> into a race-ready paint finish — with the metallic / roughness / clearcoat “spec” maps that make it shine in iRacing. Drop art, and SHOKK builds the finish for you.</p>
+          </div>
+          <div class="onboard-head-actions">
+            <button type="button" class="btn" id="onboardToggleBtn" title="Show/hide this guide">Hide guide</button>
+            <button type="button" class="btn" id="onboardDismissBtn" title="Don't show this again on this computer">Got it ✕</button>
+          </div>
+        </div>
+        <div class="onboard-body" id="onboardBody">
+          <div class="onboard-steps">
+            <div class="onboard-step"><span class="onboard-step-num">1</span><div><strong>Pick a Type</strong> on the left (Paint, Pattern, Spec overlay, Paint + spec set, or Car template). Not sure? Leave it on <em>Paint finish</em>.</div></div>
+            <div class="onboard-step"><span class="onboard-step-num">2</span><div><strong>Drop or choose an image</strong> in the sidebar (PNG / JPG / WebP). It’s auto-sized to fill the 2048×2048 car canvas.</div></div>
+            <div class="onboard-step"><span class="onboard-step-num">3</span><div><strong>Preview, then Commit</strong> — or hit <span class="onboard-chip">⚡ SHOKK THE WORLD</span> to explode one image into 20 spec variations and keep your favorites.</div></div>
+            <div class="onboard-step"><span class="onboard-step-num">4</span><div><strong>Use it in the Booth</strong> — your drops appear in the <em>SHOKK DROP</em> group inside the Paint Booth, ready to paint your car.</div></div>
+          </div>
+          <div class="onboard-types">
+            <h3 class="onboard-sub">What each import Type does</h3>
+            <ul class="onboard-type-list">
+              <li><strong>Paint finish</strong> — your image becomes the car color; SHOKK auto-generates a matching spec map (the shine). Best starting point. <em>Or attach your own M/R/CC maps below</em> for an exact shine.</li>
+              <li><strong>Pattern</strong> — a repeating/overlay design (keeps transparency) you can stamp onto zones. <em>Attach your own M/R/CC maps below</em> to author the shine yourself.</li>
+              <li><strong>Spec overlay</strong> — a shine-only layer (no color); your RGB plate maps R→Metallic, G→Roughness, B→Clearcoat. <em>Attach a combined RGB or separate M/R/CC maps below.</em></li>
+              <li><strong>Paint + spec maps (exact)</strong> — you supply BOTH the paint and your own spec maps (combined RGB <em>or</em> separate M/R/CC). Saved <em>verbatim</em> (no auto bake) so it renders exactly as you authored it.</li>
+              <li><strong>Car template (whole car)</strong> — a full-body paint+spec that drops over the entire car as one zone.</li>
+            </ul>
+            <p class="onboard-tip">💡 <strong>DNA Remix</strong> blends two different spec styles. <strong>Spec wildness</strong> controls how loud the shine gets. <strong>Save recipe</strong> reuses a DNA mix later. Share any drop as a <strong>.spbdrop</strong> file.</p>
+            <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);">
+              <p class="onboard-tip" style="margin:0 0 6px;"><strong>No art handy?</strong> Generate a sample plate right here and run the real pipeline on it — nothing to download, nothing to install.</p>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <button type="button" class="btn primary" id="btnSampleImport" title="Generate demo art in your browser and run the normal Import DNA preview on it">🎨 Try a sample</button>
+                <button type="button" class="btn shokk-world-btn" id="btnSampleWorld" title="Generate demo art and explode it into 20 spec variations">⚡ Sample → SHOKK THE WORLD</button>
+                <select id="sampleArtKind" title="Which kind of sample art to generate" style="width:auto;margin:0;font-size:11px;padding:4px 6px;">
+                  <option value="flow">Flow ribbons</option>
+                  <option value="cells">Cell mosaic</option>
+                  <option value="sparks">Spark field</option>
+                  <option value="rings">Concentric rings</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div id="dropZone">Drop <strong>.spbdrop</strong> pack(s) here (legacy .spbshokk still accepted)</div>
+      <div class="gallery-toolbar">
+        <input type="search" id="gallerySearch" placeholder="Search drops…" aria-label="Search drops" />
+        <select id="galleryKindFilter" aria-label="Filter by type">
+          <option value="all">All types</option>
+          <option value="paint_monolithic">Paint</option>
+          <option value="pattern">Pattern</option>
+          <option value="spec_overlay">Spec overlay</option>
+        </select>
+        <select id="gallerySort" aria-label="Sort drops" title="Sort the gallery">
+          <option value="library">Library order</option>
+          <option value="newest">Newest first</option>
+          <option value="name">Name A–Z</option>
+          <option value="favorites">★ Favorites first</option>
+        </select>
+        <button type="button" class="btn" id="galleryFavOnly" title="Show only your ★ favorites" style="font-size:11px;min-height:30px;padding:0 10px;">★ Only</button>
+        <span class="count" id="galleryCount"></span>
+      </div>
+      <!-- Library health notice: only appears when the manifest carries entries
+           the engine can't build (missing spec/paint files). Those are invisible
+           in the gallery, so without this there's no way to find or remove them. -->
+      <div id="galleryHealthBar" style="display:none;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px;padding:8px 10px;border:1px solid #6b5a2a;border-radius:8px;background:#1a1509;">
+        <strong id="galleryHealthMsg" style="font-size:12px;color:#f0d68a;"></strong>
+        <button type="button" class="btn" id="galleryHealthDetails" style="font-size:11px;">Details</button>
+        <button type="button" class="btn" id="galleryHealthClean" style="font-size:11px;border-color:#6b2a2a;color:#f0a8a8;">Clean up</button>
+        <button type="button" class="btn" id="galleryHealthDismiss" style="margin-left:auto;font-size:11px;">Dismiss</button>
+      </div>
+      <!-- Bulk action bar (T11): appears only when cards are check-selected. -->
+      <div id="galleryBulkBar" style="display:none;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px;padding:8px 10px;border:1px solid var(--accent);border-radius:8px;background:#151007;">
+        <strong id="galleryBulkCount" style="font-size:12px;color:var(--accent);"></strong>
+        <button type="button" class="btn" id="galleryBulkExport" title="Download every selected drop as ONE .spbdrop bundle">⬇ Export bundle</button>
+        <button type="button" class="btn" id="galleryBulkFav" title="Mark all selected as ★ favorites">★ Favorite</button>
+        <button type="button" class="btn" id="galleryBulkDelete" style="border-color:#6b2a2a;color:#f0a8a8;" title="Delete every selected drop (asks first)">Delete selected</button>
+        <button type="button" class="btn" id="galleryBulkClear" style="margin-left:auto;" title="Clear the selection">Clear</button>
+      </div>
+      <div id="galleryGrid"></div>
+    </main>
+  </div>
+  <div id="shokkDropToast" aria-live="polite"></div>
+  <script src="js/finishes/guest-designers.js?v=shokk-drop"></script>
+  <script src="js/finishes/user-import-gallery.js?v=shokk-drop-uxp-20260808"></script>
+  <script src="js/finishes/user-import-drop-preview.js?v=shokk-drop"></script>
+  <script src="js/finishes/user-imports.js?v=shokk-drop-uxp-20260808d"></script>
+  <script src="js/finishes/user-import-dna-style-picker.js?v=shokk-drop-dnapick3"></script>
+  <script src="js/finishes/user-import-shokk-world.js?v=shokk-drop-uxp-20260809b"></script>
+  <script src="js/finishes/user-import-dna-presets.js?v=shokk-drop-uxp-20260809a"></script>
+  <!-- One-click "Report a Problem" builder (wires the header slot). -->
+  <script src="js/diagnostics/spb-diag-report.js?v=spb-diag-report-20260604"></script>
+  <script>
+    (function () {
+      var _allEntries = [];
+      // One cache-bust stamp per DATA refresh (not per render): renderGallery
+      // re-runs on every search keystroke, and a per-render Date.now() forced
+      // every thumbnail to re-download on each keystroke.
+      var _galleryStamp = Date.now();
+      var _galleryLoadedOnce = false;
+      // ---- FAVORITES (local to this machine; never touches library data) ----
+      var FAV_KEY = 'spbDropFavorites';
+      var _favs = {};
+      try { _favs = JSON.parse(localStorage.getItem(FAV_KEY) || '{}') || {}; } catch (e) { _favs = {}; }
+      var _favOnly = false;
+      function _isFav(id) { return !!_favs[id]; }
+      function _persistFavs() {
+        try { localStorage.setItem(FAV_KEY, JSON.stringify(_favs)); } catch (e) {}
+      }
+      window.toggleShokkDropFav = function (id, btn, ev) {
+        if (ev && ev.stopPropagation) ev.stopPropagation();
+        if (!id) return;
+        if (_favs[id]) delete _favs[id]; else _favs[id] = 1;
+        _persistFavs();
+        if (btn) {
+          btn.textContent = _favs[id] ? '★' : '☆';
+          btn.style.color = _favs[id] ? '#ffd76a' : 'var(--muted)';
+          btn.title = _favs[id] ? 'Favorited — click to unfavorite' : 'Mark as favorite';
+        }
+        // Re-render only when the current view depends on favorite state.
+        var sortEl = document.getElementById('gallerySort');
+        if (_favOnly || (sortEl && sortEl.value === 'favorites')) applyGalleryFilters();
+        else _updateFavCount();
+      };
+      // ---- BULK SELECTION (T11) — export a subset / delete many at once ----
+      var _bulkSel = {};
+      function _bulkIds() { return Object.keys(_bulkSel); }
+      function _updateBulkBar() {
+        var bar = document.getElementById('galleryBulkBar');
+        var lbl = document.getElementById('galleryBulkCount');
+        if (!bar) return;
+        var n = _bulkIds().length;
+        bar.style.display = n ? 'flex' : 'none';
+        if (lbl) lbl.textContent = n + ' selected';
+      }
+      window.toggleShokkDropBulk = function (id, cb, ev) {
+        if (ev && ev.stopPropagation) ev.stopPropagation();
+        if (!id) return;
+        if (cb && cb.checked) _bulkSel[id] = 1; else delete _bulkSel[id];
+        var card = document.querySelector('.drop-card[data-drop-id="' + id + '"]');
+        if (card) card.classList.toggle('drop-card-checked', !!_bulkSel[id]);
+        _updateBulkBar();
+      };
+      function _clearBulk() {
+        _bulkSel = {};
+        document.querySelectorAll('.drop-pick').forEach(function (c) { c.checked = false; });
+        document.querySelectorAll('.drop-card-checked').forEach(function (c) { c.classList.remove('drop-card-checked'); });
+        _updateBulkBar();
+      }
+      function _bulkExport() {
+        var ids = _bulkIds();
+        if (!ids.length) return;
+        var btn = document.getElementById('galleryBulkExport');
+        if (btn) { btn.disabled = true; btn.textContent = 'Bundling…'; }
+        showShokkDropToast('Bundling ' + ids.length + ' drop(s)…', 'info');
+        fetch('/api/user-imports/export-selected', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids: ids })
+        }).then(function (r) {
+          if (!r.ok) {
+            return r.json().then(function (j) { throw new Error((j && j.error) || ('Export failed (' + r.status + ')')); });
+          }
+          return r.blob();
+        }).then(function (blob) {
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'shokk_drop_selection_' + ids.length + '.spbdrop';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
+          showShokkDropToast('Bundle downloaded — ' + ids.length + ' drop(s)', 'success');
+        }).catch(function (err) {
+          showShokkDropToast('Bundle failed: ' + err.message, 'error');
+        }).then(function () {
+          if (btn) { btn.disabled = false; btn.textContent = '⬇ Export bundle'; }
+        });
+      }
+      function _bulkDelete() {
+        var ids = _bulkIds();
+        if (!ids.length) return;
+        if (!window.confirm('Delete ' + ids.length + ' drop(s)?\n\n' + ids.join('\n') +
+            '\n\nThis removes them from the library and the booth picker. It can’t be undone.')) return;
+        var btn = document.getElementById('galleryBulkDelete');
+        if (btn) { btn.disabled = true; btn.textContent = 'Deleting…'; }
+        // Sequential, not parallel: each delete rewrites the shared manifest.
+        var okCount = 0, failed = [];
+        ids.reduce(function (chain, id) {
+          return chain.then(function () {
+            return fetch('/api/user-imports/delete', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: id })
+            }).then(function (r) { return r.json(); })
+              .then(function (d) { if (d && d.error) failed.push(id); else okCount++; })
+              .catch(function () { failed.push(id); });
+          });
+        }, Promise.resolve()).then(function () {
+          if (btn) { btn.disabled = false; btn.textContent = 'Delete selected'; }
+          _clearBulk();
+          showShokkDropToast(
+            failed.length
+              ? ('Deleted ' + okCount + ', failed ' + failed.length + ': ' + failed.join(', '))
+              : ('Deleted ' + okCount + ' drop(s)'),
+            failed.length ? 'error' : 'success');
+          if (typeof loadUserImports === 'function') loadUserImports();
+          refreshGallery();
+        });
+      }
+      function _bulkFavorite() {
+        var ids = _bulkIds();
+        if (!ids.length) return;
+        ids.forEach(function (id) { _favs[id] = 1; });
+        _persistFavs();
+        showShokkDropToast('Favorited ' + ids.length + ' drop(s)', 'success');
+        applyGalleryFilters();
+      }
+      function _updateFavCount() {
+        var b = document.getElementById('galleryFavOnly');
+        if (!b) return;
+        var n = Object.keys(_favs).length;
+        b.textContent = _favOnly ? ('★ Only (' + n + ')') : ('★ ' + n);
+        b.style.borderColor = _favOnly ? 'var(--accent)' : 'var(--line)';
+        b.style.color = _favOnly ? 'var(--accent)' : 'var(--text)';
+      }
+      function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+      function showShokkDropToast(message, kind) {
+        var host = document.getElementById('shokkDropToast');
+        if (!host || !message) return;
+        var el = document.createElement('div');
+        el.className = 'shokk-drop-toast' + (kind ? ' ' + kind : '');
+        el.textContent = message;
+        host.appendChild(el);
+        setTimeout(function () { el.remove(); }, kind === 'error' ? 6000 : 4000);
+      }
+      window.showToast = showShokkDropToast;
+      function copyShokkDropShareLink(id, btn) {
+        if (!id) return;
+        var url = window.location.origin + '/api/user-imports/export/' + encodeURIComponent(id);
+        var done = function () {
+          showShokkDropToast('Share link copied', 'success');
+          if (btn) {
+            var prev = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(function () { btn.textContent = prev; }, 1600);
+          }
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(done).catch(function () {
+            showShokkDropToast(url, 'info');
+          });
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = url;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); done(); } catch (e) { showShokkDropToast(url, 'info'); }
+          ta.remove();
+        }
+      }
+      window.copyShokkDropShareLink = copyShokkDropShareLink;
+      function _entryKind(e) {
+        return e.kind || 'paint_monolithic';
+      }
+      function _selectImportedDrop(id) {
+        if (!id) return;
+        var card = document.querySelector('.drop-card[data-drop-id="' + id + '"]');
+        if (card) {
+          selectDropCard(id, card);
+          card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else if (typeof showShokkDropSavedPreview === 'function') {
+          showShokkDropSavedPreview(id);
+        }
+      }
+      function _gauntletBadge(e) {
+        if (_entryKind(e) !== 'paint_monolithic') return '';
+        var dna = e.import_dna;
+        if (!dna || !dna.gauntlet_stats) return '';
+        var st = dna.gauntlet_stats;
+        var passed = !!dna.gauntlet_passed;
+        var label = passed ? 'PASS' : 'FAIL';
+        var short = 'M' + Math.round(st.M_std || 0) + ' R' + Math.round(st.R_std || 0) + ' C' + Math.round(st.C_std || 0);
+        var tip = 'Import DNA gauntlet: ' + label +
+          '\nM σ=' + (st.M_std || 0) + ' range=' + (st.M_range || 0) +
+          '\nR σ=' + (st.R_std || 0) + ' range=' + (st.R_range || 0) +
+          '\nC σ=' + (st.C_std || 0) + ' range=' + (st.C_range || 0) +
+          (dna.gauntlet_passes ? ('\nPasses: ' + dna.gauntlet_passes) : '');
+        return '<span class="drop-gauntlet-badge ' + (passed ? 'drop-gauntlet-pass' : 'drop-gauntlet-fail') +
+          '" title="' + esc(tip) + '">' + esc(label + ' · ' + short) + '</span>';
+      }
+      function _filteredEntries() {
+        var q = (document.getElementById('gallerySearch').value || '').trim().toLowerCase();
+        var kind = document.getElementById('galleryKindFilter').value || 'all';
+        var out = _allEntries.filter(function (e) {
+          if (_favOnly && !_isFav(e.id)) return false;
+          if (kind !== 'all' && _entryKind(e) !== kind) return false;
+          if (!q) return true;
+          var dna = e.import_dna ? (e.import_dna.style || '') : '';
+          var hay = [e.id, e.name, e.kind, dna].join(' ').toLowerCase();
+          return hay.indexOf(q) >= 0;
+        });
+        // Client-side sort of the COPY filter() returned; 'library' keeps the
+        // registry order untouched (the pre-existing default).
+        var sortEl = document.getElementById('gallerySort');
+        var sort = sortEl ? sortEl.value : 'library';
+        if (sort === 'newest') {
+          out.sort(function (a, b) {
+            return String(b.imported || '').localeCompare(String(a.imported || ''));
+          });
+        } else if (sort === 'name') {
+          out.sort(function (a, b) {
+            return String(a.name || a.id).toLowerCase().localeCompare(String(b.name || b.id).toLowerCase());
+          });
+        } else if (sort === 'favorites') {
+          // ★ first, then newest within each group (stable, useful ordering).
+          out.sort(function (a, b) {
+            var fa = _isFav(a.id) ? 0 : 1, fb = _isFav(b.id) ? 0 : 1;
+            if (fa !== fb) return fa - fb;
+            return String(b.imported || '').localeCompare(String(a.imported || ''));
+          });
+        }
+        return out;
+      }
+      function renderGallery(entries) {
+        var grid = document.getElementById('galleryGrid');
+        var countEl = document.getElementById('galleryCount');
+        if (countEl) {
+          countEl.textContent = entries.length + ' of ' + _allEntries.length;
+        }
+        _updateFavCount();
+        // Drop bulk selections whose entry no longer exists (e.g. just deleted)
+        // so the bar can't count ghosts.
+        Object.keys(_bulkSel).forEach(function (id) {
+          if (!_allEntries.some(function (e) { return e.id === id; })) delete _bulkSel[id];
+        });
+        _updateBulkBar();
+        if (!_allEntries.length) {
+          grid.innerHTML = '<p class="hint">No drops yet — import art on the left or drop a .spbdrop pack above.</p>';
+          return;
+        }
+        if (!entries.length) {
+          grid.innerHTML = _favOnly && !Object.keys(_favs).length
+            ? '<p class="hint">No favorites yet — click a card’s ☆ to star it, then use ★ Only to see just those.</p>'
+            : '<p class="hint">No drops match your search. Try clearing filters.</p>';
+          return;
+        }
+        grid.innerHTML = entries.map(function (e) {
+          var isPaint = !e.kind || e.kind === 'paint_monolithic';
+          var dna = e.import_dna ? e.import_dna.style : '';
+          var dnaLabel = dna ? ((typeof formatUserImportDnaStyle === 'function')
+            ? formatUserImportDnaStyle(dna) : dna.replace(/_/g, ' ')) : '';
+          var thumb = '<img class="thumb" data-id="' + esc(e.id) + '" src="/api/user-imports/preview-image/' + esc(e.id) + '?t=' + _galleryStamp + '" alt="paint | spec preview" loading="lazy" decoding="async">';
+          var fav = _isFav(e.id);
+          var favBtn = '<button type="button" class="drop-fav-btn" title="' +
+            (fav ? 'Favorited — click to unfavorite' : 'Mark as favorite') +
+            '" style="background:none;border:none;cursor:pointer;font-size:15px;line-height:1;padding:0 0 0 4px;color:' +
+            (fav ? '#ffd76a' : 'var(--muted)') + ';" onclick="toggleShokkDropFav(\'' + esc(e.id) + '\',this,event)">' +
+            (fav ? '★' : '☆') + '</button>';
+          var checked = _bulkSel[e.id] ? ' checked' : '';
+          var pick = '<input type="checkbox" class="drop-pick"' + checked +
+            ' title="Select for bulk export / delete" aria-label="Select ' + esc(e.name || e.id) + '"' +
+            ' onclick="toggleShokkDropBulk(\'' + esc(e.id) + '\',this,event)">';
+          return '<article class="drop-card' + (_bulkSel[e.id] ? ' drop-card-checked' : '') +
+            '" data-drop-id="' + esc(e.id) + '" onclick="selectDropCard(\'' + esc(e.id) + '\',this)">' + pick + thumb +
+            '<h2 title="' + esc(e.id) + '" style="display:flex;align-items:center;gap:2px;">' +
+            '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(e.name || e.id) + '</span>' + favBtn + '</h2>' +
+            _gauntletBadge(e) +
+            '<p class="meta">' + esc(e.kind || 'paint') + (dnaLabel ? ' · ' + esc(dnaLabel) : '') + '</p>' +
+            '<div onclick="event.stopPropagation()">' +
+            (isPaint ? '<button type="button" style="font-size:10px;background:none;border:none;color:#ffd76a;cursor:pointer;padding:0;font-weight:700;" onclick="useDropInBooth(\'' + esc(e.id) + '\')" title="Open the Paint Booth with this drop staged and ready to render">🎨 Use in Booth</button> · ' : '') +
+            '<a href="/api/user-imports/export/' + esc(e.id) + '" download style="font-size:10px;color:var(--cyan);">.spbdrop</a>' +
+            ' · <button type="button" style="font-size:10px;background:none;border:none;color:var(--cyan);cursor:pointer;padding:0;" onclick="copyShokkDropShareLink(\'' + esc(e.id) + '\',this)">Copy link</button>' +
+            (isPaint ? ' · <button type="button" style="font-size:10px;background:none;border:none;color:var(--cyan);cursor:pointer;padding:0;" onclick="loadEnginePreview(\'' + esc(e.id) + '\',this)" title="Replace the thumbnail with a real engine render of this finish">Pipeline render</button>' : '') +
+            (isPaint ? ' · <button type="button" style="font-size:10px;background:none;border:none;color:var(--accent);cursor:pointer;padding:0;" onclick="rebakeUserImportDna(\'' + esc(e.id) + '\')" title="Re-run Import DNA with the current sidebar style/vibe settings — REPLACES this drop&#39;s spec">Re-DNA</button>' : '') +
+            (isPaint ? ' · <button type="button" style="font-size:10px;background:none;border:none;color:#9ae6b4;cursor:pointer;padding:0;" onclick="forkShokkDrop(\'' + esc(e.id) + '\')" title="Make a NEW drop from this art with a fresh DNA bake — the original is left untouched">⑃ Fork</button>' : '') +
+            (isPaint ? ' · <button type="button" style="font-size:10px;background:none;border:none;color:#ffd76a;cursor:pointer;padding:0;font-weight:700;" onclick="openFinishOnBall(\'' + esc(e.id) + '\')" title="Spin on the Finish Viewer ball">🔮 View on Ball</button>' : '') +
+            ' · <button type="button" style="font-size:10px;background:none;border:none;color:#f0a8a8;cursor:pointer;padding:0;" onclick="deleteShokkDropCard(\'' + esc(e.id) + '\')" title="Delete this drop (asks first)">Delete</button>' +
+            '</div></article>';
+        }).join('');
+      }
+      window.openFinishOnBall = function (id) {
+        var url = (window.location.origin || '') + '/finish-viewer.html?finish=' + encodeURIComponent(id) + '&source=api';
+        window.open(url, '_blank');
+      };
+      // Open the Paint Booth with this saved drop staged (same stagedMono
+      // mechanism SHOKK THE WORLD "Try in Booth" already uses).
+      window.useDropInBooth = function (id) {
+        if (!id) return;
+        var url = (window.location.origin || '') + '/?stagedMono=' + encodeURIComponent(id);
+        window.open(url, '_blank');
+        showShokkDropToast('Opened Paint Booth with "' + id + '" staged — hit RENDER there', 'success');
+      };
+      // Delete straight from a gallery card. Reuses deleteUserImport()
+      // (confirm-protected); its loadUserImports() chain refreshes this gallery.
+      window.deleteShokkDropCard = function (id) {
+        if (!id) return;
+        if (typeof deleteUserImport === 'function') {
+          deleteUserImport(id);
+        } else {
+          showShokkDropToast('Delete unavailable — reload the page', 'error');
+        }
+      };
+      // Fork = new drop from the same art with a fresh DNA bake. Uses whatever
+      // DNA style / vibe / FRACTURE mode the sidebar currently shows, so the
+      // controls you can see are the controls that apply.
+      window.forkShokkDrop = function (id) {
+        if (!id) return;
+        var styleEl = document.getElementById('userImportStyleOverride');
+        var vibeEl = document.getElementById('userImportVibeRef');
+        var fracEl = document.querySelector('input[name="userImportSetSpecMode"]:checked');
+        var style = styleEl ? styleEl.value : '';
+        var styleLabel = (styleEl && styleEl.selectedIndex >= 0)
+          ? styleEl.options[styleEl.selectedIndex].textContent : 'Auto';
+        var fracture = !!(fracEl && fracEl.value === 'fracture');
+        var name = window.prompt(
+          'Name for the fork:\n\nDNA style: ' + (style ? styleLabel : 'Auto (analyze image)') +
+          (fracture ? '\nSpec: FRACTURE ⚡' : ''),
+          '');
+        if (name === null) return; // cancelled
+        showShokkDropToast('Forking ' + id + '…', 'info');
+        fetch('/api/user-imports/fork', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: id,
+            name: name || '',
+            style_override: style,
+            vibe_ref: vibeEl ? vibeEl.value.trim() : '',
+            fracture: fracture ? '1' : ''
+          })
+        }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+          .then(function (res) {
+            if (!res.ok || res.body.error) throw new Error((res.body && res.body.error) || 'Fork failed');
+            var ne = res.body.entry || {};
+            showShokkDropToast('Forked → ' + (ne.name || ne.id) + ' (original untouched)', 'success');
+            if (typeof loadUserImports === 'function') loadUserImports();
+            refreshGallery(ne.id ? [ne] : null);
+          })
+          .catch(function (err) { showShokkDropToast('Fork failed: ' + err.message, 'error'); });
+      };
+      window.loadEnginePreview = function (id, btn) {
+        var img = document.querySelector('img[data-id="' + id + '"]');
+        if (!img) return;
+        if (btn) btn.textContent = 'Rendering…';
+        var restore = function () { if (btn) btn.textContent = 'Pipeline render'; };
+        // Restore the button when the render actually arrives (or fails),
+        // instead of a blind 8s timer that lied both ways.
+        img.onload = function () { img.onload = img.onerror = null; restore(); };
+        img.onerror = function () {
+          img.onload = img.onerror = null;
+          restore();
+          showShokkDropToast('Pipeline render failed for ' + id + ' — thumbnail restored', 'error');
+          img.src = '/api/user-imports/preview-image/' + id + '?t=' + Date.now();
+        };
+        img.src = '/api/user-imports/engine-preview/' + id + '?size=512&t=' + Date.now();
+      };
+      window.selectDropCard = function (id, el) {
+        document.querySelectorAll('.drop-card-active').forEach(function (c) { c.classList.remove('drop-card-active'); });
+        if (el) el.classList.add('drop-card-active');
+        if (typeof showShokkDropSavedPreview === 'function') showShokkDropSavedPreview(id);
+      };
+      function refreshGallery(imported) {
+        var grid = document.getElementById('galleryGrid');
+        if (grid && !_galleryLoadedOnce) {
+          grid.innerHTML = '<p class="hint">Loading drops…</p>';
+        }
+        fetch('/api/user-imports').then(function (r) {
+          if (!r.ok) throw new Error('Server responded ' + r.status);
+          return r.json();
+        })
+          .then(function (d) {
+            _allEntries = d.entries || [];
+            _galleryStamp = Date.now(); // data actually refreshed — new stamp
+            _galleryLoadedOnce = true;
+            renderGallery(_filteredEntries());
+            if (imported && imported.length) {
+              var last = imported[imported.length - 1];
+              if (last && last.id) _selectImportedDrop(last.id);
+            }
+          })
+          .catch(function (err) {
+            if (grid) {
+              grid.innerHTML = '<p class="hint" style="color:#f0a8a8;">Couldn’t load your drops (' + esc(err.message || err) + '). ' +
+                'Is the Paint Booth server running? ' +
+                '<button type="button" class="btn" style="margin-left:6px;" onclick="window.retryShokkDropGallery()">Retry</button></p>';
+            }
+          });
+      }
+      window.retryShokkDropGallery = function () { refreshGallery(); };
+
+      // ---- LIBRARY HEALTH (ghost manifest entries) ----
+      var _ghosts = [];
+      function checkLibraryHealth() {
+        var bar = document.getElementById('galleryHealthBar');
+        if (!bar) return;
+        fetch('/api/user-imports/health')
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (d) {
+            if (!d || d.error) return;
+            _ghosts = d.ghosts || [];
+            if (!_ghosts.length) { bar.style.display = 'none'; return; }
+            var msg = document.getElementById('galleryHealthMsg');
+            if (msg) {
+              msg.textContent = '⚠ ' + _ghosts.length + ' ghost entr' + (_ghosts.length === 1 ? 'y' : 'ies') +
+                ' in your library — listed in the manifest but missing files, so ' +
+                (_ghosts.length === 1 ? 'it' : 'they') + ' can’t render (and “Export all” would ship ' +
+                (_ghosts.length === 1 ? 'it' : 'them') + ' broken).';
+            }
+            bar.style.display = 'flex';
+          })
+          .catch(function () { /* health is advisory — never block the gallery */ });
+      }
+      // Public so the check can be re-run after any library mutation (and so
+      // its behaviour is verifiable without driving the UI).
+      window.checkShokkDropLibraryHealth = checkLibraryHealth;
+      (function bindHealthBar() {
+        var det = document.getElementById('galleryHealthDetails');
+        var cln = document.getElementById('galleryHealthClean');
+        var dis = document.getElementById('galleryHealthDismiss');
+        if (det) det.addEventListener('click', function () {
+          if (!_ghosts.length) return;
+          var lines = _ghosts.map(function (g) {
+            return '• ' + (g.name || g.id) + '  [' + g.id + ']\n    kind: ' + g.kind +
+              ' · spec_mode: ' + g.spec_mode +
+              '\n    missing: ' + ((g.missing_files || []).join(', ') || '(files present — entry rejected for another reason)');
+          }).join('\n\n');
+          window.alert('Ghost library entries\n\n' + lines +
+            '\n\nClean up removes these manifest rows. No renderable drop is touched.');
+        });
+        if (cln) cln.addEventListener('click', function () {
+          if (!_ghosts.length) return;
+          var ids = _ghosts.map(function (g) { return g.id; });
+          if (!window.confirm('Remove ' + ids.length + ' ghost entr' + (ids.length === 1 ? 'y' : 'ies') +
+              ' from the library manifest?\n\n' + ids.join('\n') +
+              '\n\nThese can’t render and are invisible in the gallery. Nothing you can see will change.')) return;
+          cln.disabled = true;
+          cln.textContent = 'Cleaning…';
+          var ok = 0, bad = [];
+          ids.reduce(function (chain, id) {
+            return chain.then(function () {
+              return fetch('/api/user-imports/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+              }).then(function (r) { return r.json(); })
+                .then(function (d) { if (d && d.error) bad.push(id); else ok++; })
+                .catch(function () { bad.push(id); });
+            });
+          }, Promise.resolve()).then(function () {
+            cln.disabled = false;
+            cln.textContent = 'Clean up';
+            showShokkDropToast(bad.length
+              ? ('Cleaned ' + ok + ', failed ' + bad.length)
+              : ('Cleaned ' + ok + ' ghost entr' + (ok === 1 ? 'y' : 'ies')),
+              bad.length ? 'error' : 'success');
+            checkLibraryHealth();
+            refreshGallery();
+          });
+        });
+        if (dis) dis.addEventListener('click', function () {
+          var bar = document.getElementById('galleryHealthBar');
+          if (bar) bar.style.display = 'none';
+        });
+      })();
+      function applyGalleryFilters() {
+        renderGallery(_filteredEntries());
+      }
+      var searchEl = document.getElementById('gallerySearch');
+      var kindEl = document.getElementById('galleryKindFilter');
+      var sortEl = document.getElementById('gallerySort');
+      if (searchEl) searchEl.addEventListener('input', applyGalleryFilters);
+      if (kindEl) kindEl.addEventListener('change', applyGalleryFilters);
+      if (sortEl) sortEl.addEventListener('change', applyGalleryFilters);
+      var favOnlyBtn = document.getElementById('galleryFavOnly');
+      if (favOnlyBtn) {
+        favOnlyBtn.addEventListener('click', function () {
+          _favOnly = !_favOnly;
+          applyGalleryFilters();
+        });
+        _updateFavCount();
+      }
+      [['galleryBulkExport', _bulkExport], ['galleryBulkDelete', _bulkDelete],
+       ['galleryBulkFav', _bulkFavorite], ['galleryBulkClear', _clearBulk]
+      ].forEach(function (pair) {
+        var b = document.getElementById(pair[0]);
+        if (b) b.addEventListener('click', pair[1]);
+      });
+      // "/" anywhere (outside a field) jumps to gallery search; Escape clears it.
+      if (searchEl) {
+        document.addEventListener('keydown', function (e) {
+          if (e.key !== '/' || e.ctrlKey || e.altKey || e.metaKey) return;
+          var t = e.target;
+          var tag = t && t.tagName ? t.tagName.toUpperCase() : '';
+          if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (t && t.isContentEditable)) return;
+          e.preventDefault();
+          searchEl.focus();
+          searchEl.select();
+        });
+        searchEl.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && searchEl.value) {
+            e.stopPropagation();
+            searchEl.value = '';
+            applyGalleryFilters();
+          }
+        });
+        searchEl.placeholder = 'Search drops…  ( / )';
+      }
+      if (window.bindUserImportPackDropZone) {
+        bindUserImportPackDropZone(document.getElementById('dropZone'), refreshGallery);
+      }
+
+      // ---- 🎲 RANDOMIZE DNA + WILDNESS ----
+      // 75 styles × 75 × mix × wildness is a big space to explore by hand.
+      // Rolls the EXISTING controls (never a hidden path) and fires their
+      // change/input events so the live blend preview + labels follow.
+      (function initRandomizeDna() {
+        var btn = document.getElementById('btnRandomizeDna');
+        if (!btn) return;
+        btn.addEventListener('click', function () {
+          var a = document.getElementById('dnaRemixStyleA');
+          var b = document.getElementById('dnaRemixStyleB');
+          var t = document.getElementById('dnaRemixSlider');
+          var w = document.getElementById('shokkWildness');
+          if (!a || !b || !a.options.length) {
+            showShokkDropToast('DNA styles still loading — try again in a second', 'info');
+            return;
+          }
+          var n = a.options.length;
+          var ia = Math.floor(Math.random() * n);
+          var ib = Math.floor(Math.random() * n);
+          if (ib === ia) ib = (ia + 1 + Math.floor(Math.random() * (n - 1))) % n; // A and B must differ
+          a.selectedIndex = ia;
+          b.selectedIndex = ib;
+          a.dispatchEvent(new Event('change', { bubbles: true }));
+          b.dispatchEvent(new Event('change', { bubbles: true }));
+          if (t) {
+            t.value = String(25 + Math.floor(Math.random() * 51)); // 25-75: a real blend, not a near-copy
+            t.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+          if (w) {
+            w.value = String(20 + Math.floor(Math.random() * 71)); // 20-90
+            w.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+          var la = a.options[a.selectedIndex] ? a.options[a.selectedIndex].textContent : a.value;
+          var lb = b.options[b.selectedIndex] ? b.options[b.selectedIndex].textContent : b.value;
+          var wl = document.getElementById('shokkWildnessVal');
+          showShokkDropToast('🎲 ' + la + ' × ' + lb + ' · mix ' + (t ? t.value : '?') + '%' +
+            (wl ? ' · ' + wl.textContent : '') + ' — hit ⚡ to explode it', 'success');
+        });
+      })();
+
+      // ---- "TRY A SAMPLE" (cold start) ----
+      // Generates demo art in-browser (canvas → PNG File) and feeds it through
+      // the EXACT same import / World entry points a real file uses — no
+      // special-case path, no bundled asset, no download. Four generators, all
+      // dense high-frequency fields per the house fine-detail rule (8-32px
+      // features at 2048²), scaled here at 1024² for a fast client bake.
+      (function initSampleArt() {
+        var S = 1024;
+        function _rand(seed) { // deterministic-ish per click without Math.random reliance
+          var x = seed;
+          return function () { x = (x * 1103515245 + 12345) & 0x7fffffff; return x / 0x7fffffff; };
+        }
+        function genSampleArt(kind, seed) {
+          var cv = document.createElement('canvas');
+          cv.width = cv.height = S;
+          var c = cv.getContext('2d');
+          var rnd = _rand(seed || 1337);
+          var hueBase = Math.floor(rnd() * 360);
+          c.fillStyle = 'hsl(' + hueBase + ',55%,10%)';
+          c.fillRect(0, 0, S, S);
+          var i, n, x, y, r;
+          if (kind === 'cells') {
+            // Voronoi-ish mosaic: many small cells, wide value spread.
+            var pts = [];
+            for (i = 0; i < 420; i++) pts.push([rnd() * S, rnd() * S, hueBase + rnd() * 120 - 60, 24 + rnd() * 62]);
+            pts.forEach(function (p) {
+              c.beginPath();
+              c.arc(p[0], p[1], 10 + rnd() * 16, 0, 6.2832);
+              c.fillStyle = 'hsl(' + p[2] + ',85%,' + p[3] + '%)';
+              c.fill();
+            });
+            for (i = 0; i < 2600; i++) { // micro grain on top
+              c.fillStyle = 'hsla(' + (hueBase + rnd() * 160) + ',95%,' + (30 + rnd() * 60) + '%,0.55)';
+              c.fillRect(rnd() * S, rnd() * S, 2 + rnd() * 5, 2 + rnd() * 5);
+            }
+          } else if (kind === 'sparks') {
+            for (i = 0; i < 5200; i++) {
+              x = rnd() * S; y = rnd() * S; r = 1 + rnd() * 4;
+              c.fillStyle = 'hsla(' + (hueBase + rnd() * 90 - 45) + ',95%,' + (35 + rnd() * 60) + '%,' + (0.35 + rnd() * 0.65) + ')';
+              c.beginPath(); c.arc(x, y, r, 0, 6.2832); c.fill();
+            }
+            for (i = 0; i < 90; i++) { // sparse bright streaks for structure
+              c.strokeStyle = 'hsla(' + (hueBase + rnd() * 120) + ',90%,72%,0.5)';
+              c.lineWidth = 1 + rnd() * 2.5;
+              c.beginPath(); x = rnd() * S; y = rnd() * S;
+              c.moveTo(x, y); c.lineTo(x + rnd() * 90 - 45, y + rnd() * 90 - 45); c.stroke();
+            }
+          } else if (kind === 'rings') {
+            for (i = 0; i < 150; i++) {
+              x = rnd() * S; y = rnd() * S;
+              var rings = 3 + Math.floor(rnd() * 5);
+              for (n = 0; n < rings; n++) {
+                c.strokeStyle = 'hsla(' + (hueBase + n * 14 + rnd() * 60) + ',88%,' + (30 + rnd() * 55) + '%,0.75)';
+                c.lineWidth = 1 + rnd() * 2;
+                c.beginPath(); c.arc(x, y, 4 + n * (3 + rnd() * 4), 0, 6.2832); c.stroke();
+              }
+            }
+            for (i = 0; i < 1800; i++) {
+              c.fillStyle = 'hsla(' + (hueBase + rnd() * 140) + ',90%,' + (40 + rnd() * 50) + '%,0.5)';
+              c.fillRect(rnd() * S, rnd() * S, 2, 2 + rnd() * 4);
+            }
+          } else { // 'flow' — curl-ish ribbons of short segments
+            for (i = 0; i < 900; i++) {
+              x = rnd() * S; y = rnd() * S;
+              var ang = rnd() * 6.2832;
+              c.strokeStyle = 'hsla(' + (hueBase + rnd() * 110 - 30) + ',88%,' + (32 + rnd() * 55) + '%,0.8)';
+              c.lineWidth = 1 + rnd() * 3;
+              c.beginPath(); c.moveTo(x, y);
+              for (n = 0; n < 14; n++) {
+                ang += (rnd() - 0.5) * 0.9;
+                x += Math.cos(ang) * (3 + rnd() * 6);
+                y += Math.sin(ang) * (3 + rnd() * 6);
+                c.lineTo(x, y);
+              }
+              c.stroke();
+            }
+            for (i = 0; i < 2200; i++) {
+              c.fillStyle = 'hsla(' + (hueBase + rnd() * 150) + ',92%,' + (45 + rnd() * 50) + '%,0.45)';
+              c.fillRect(rnd() * S, rnd() * S, 2 + rnd() * 3, 2 + rnd() * 3);
+            }
+          }
+          return cv;
+        }
+        function sampleFile(kind) {
+          var seed = Number(String(Date.now()).slice(-7)) || 1337;
+          var cv = genSampleArt(kind, seed);
+          return new Promise(function (resolve, reject) {
+            cv.toBlob(function (blob) {
+              if (!blob) { reject(new Error('Sample generation failed')); return; }
+              resolve(new File([blob], 'shokk_sample_' + kind + '_' + seed + '.png', { type: 'image/png' }));
+            }, 'image/png');
+          });
+        }
+        function _kind() {
+          var el = document.getElementById('sampleArtKind');
+          return el ? el.value : 'flow';
+        }
+        // Public entry point: window.shokkDropSampleArt('flow'|'cells'|'sparks'|'rings')
+        // → Promise<File>. Exposed so the sample art is reusable (other SPB
+        // pages, demos) and so its gauntlet quality is verifiable without
+        // driving the UI.
+        window.shokkDropSampleArt = function (kind) { return sampleFile(kind || 'flow'); };
+        window.shokkDropSampleKinds = ['flow', 'cells', 'sparks', 'rings'];
+        var impBtn = document.getElementById('btnSampleImport');
+        if (impBtn) impBtn.addEventListener('click', function () {
+          impBtn.disabled = true;
+          showShokkDropToast('Generating sample art…', 'info');
+          sampleFile(_kind()).then(function (f) {
+            // Sample art is paint art — make sure the Type matches before the
+            // shared import path reads it.
+            var kindSel = document.getElementById('userImportKind');
+            if (kindSel && kindSel.value !== 'paint_monolithic') {
+              kindSel.value = 'paint_monolithic';
+              kindSel.dispatchEvent(new Event('change'));
+            }
+            return processUserImportFileList([f], true);
+          }).catch(function (err) {
+            showShokkDropToast('Sample failed: ' + (err.message || err), 'error');
+          }).then(function () { impBtn.disabled = false; });
+        });
+        var wBtn = document.getElementById('btnSampleWorld');
+        if (wBtn) wBtn.addEventListener('click', function () {
+          if (typeof startShokkTheWorld !== 'function') return;
+          wBtn.disabled = true;
+          showShokkDropToast('Generating sample art…', 'info');
+          sampleFile(_kind()).then(function (f) {
+            return startShokkTheWorld([f]);
+          }).catch(function (err) {
+            showShokkDropToast('Sample failed: ' + (err.message || err), 'error');
+          }).then(function () { wBtn.disabled = false; });
+        });
+      })();
+
+      // ---- STRAY-DROP SAFETY NET ----
+      // A drop that misses the sidebar / pack zone used to make the browser
+      // NAVIGATE to the dropped file — wiping the page and any active SHOKK
+      // THE WORLD session. Catch strays anywhere on the page and route them
+      // into the same import flows the real zones use.
+      (function bindStrayDropNet() {
+        function _inBoundZone(target) {
+          var aside = document.querySelector('aside');
+          var dz = document.getElementById('dropZone');
+          return (aside && aside.contains(target)) || (dz && dz.contains(target));
+        }
+        document.addEventListener('dragover', function (e) { e.preventDefault(); });
+        document.addEventListener('drop', function (e) {
+          if (_inBoundZone(e.target)) return; // the zone's own handler owns it
+          e.preventDefault();
+          var files = (e.dataTransfer && e.dataTransfer.files)
+            ? Array.prototype.slice.call(e.dataTransfer.files) : [];
+          if (!files.length) return;
+          var imgs = files.filter(function (f) {
+            return /\.(png|jpe?g|webp|tga|bmp)$/i.test(f.name) || (f.type || '').indexOf('image/') === 0;
+          });
+          var packs = files.filter(function (f) {
+            var n = (f.name || '').toLowerCase();
+            return n.endsWith('.spbdrop') || n.endsWith('.spbshokk');
+          });
+          if (e.shiftKey && imgs.length && typeof startShokkTheWorld === 'function') {
+            startShokkTheWorld(imgs);
+            return;
+          }
+          if (packs.length && typeof importUserImportPack === 'function') {
+            showShokkDropToast('Importing ' + packs.length + ' pack(s)…', 'info');
+            Promise.all(packs.map(importUserImportPack))
+              .then(function (results) {
+                var imported = [];
+                (results || []).forEach(function (r) {
+                  ((r && r.imported) || []).forEach(function (x) { imported.push(x); });
+                });
+                showShokkDropToast('Imported ' + (imported.length || packs.length) + ' drop(s)', 'success');
+                if (typeof loadUserImports === 'function') loadUserImports();
+                refreshGallery(imported);
+              })
+              .catch(function (err) { showShokkDropToast('Pack import failed: ' + err.message, 'error'); });
+            return;
+          }
+          if (imgs.length && typeof processUserImportFileList === 'function') {
+            processUserImportFileList(imgs, true);
+            return;
+          }
+          showShokkDropToast('That file type isn’t importable — PNG / JPG / WebP art or .spbdrop packs', 'info');
+        });
+      })();
+      var origLoad = window.loadUserImports;
+      if (origLoad) {
+        window.loadUserImports = function () {
+          return origLoad().then(function (data) {
+            refreshGallery();
+            return data;
+          });
+        };
+      }
+
+      // ---- ONBOARDING (Phase 2 ask 3): collapse + dismiss, remembered locally ----
+      (function initOnboarding() {
+        var panel = document.getElementById('shokkDropOnboarding');
+        if (!panel) return;
+        var toggleBtn = document.getElementById('onboardToggleBtn');
+        var dismissBtn = document.getElementById('onboardDismissBtn');
+        var restoreBtn = document.getElementById('onboardRestoreBtn');
+        var DISMISS_KEY = 'spbDropOnboardingDismissed';
+        var COLLAPSE_KEY = 'spbDropOnboardingCollapsed';
+        function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+        function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+        function applyCollapsed(collapsed) {
+          panel.classList.toggle('onboard-collapsed', collapsed);
+          if (toggleBtn) toggleBtn.textContent = collapsed ? 'Show guide' : 'Hide guide';
+        }
+        // Header "Guide" button: bring the intro back after Hide/Got-it —
+        // previously the dismiss toast pointed at a reset that didn't exist.
+        if (restoreBtn) restoreBtn.addEventListener('click', function () {
+          lsSet(DISMISS_KEY, '0');
+          lsSet(COLLAPSE_KEY, '0');
+          panel.style.display = '';
+          applyCollapsed(false);
+          panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        if (toggleBtn) toggleBtn.addEventListener('click', function () {
+          var collapsed = !panel.classList.contains('onboard-collapsed');
+          applyCollapsed(collapsed);
+          lsSet(COLLAPSE_KEY, collapsed ? '1' : '0');
+        });
+        if (dismissBtn) dismissBtn.addEventListener('click', function () {
+          lsSet(DISMISS_KEY, '1');
+          panel.style.display = 'none';
+          showShokkDropToast('Guide hidden — bring it back any time with the Guide button up top.', 'info');
+        });
+        // All handlers are bound above BEFORE this gate, so the header Guide
+        // button can restore a dismissed panel with working Hide/Got-it buttons.
+        if (lsGet(DISMISS_KEY) === '1') {
+          panel.style.display = 'none';
+        } else {
+          applyCollapsed(lsGet(COLLAPSE_KEY) === '1');
+        }
+      })();
+
+      // ---- IMPORT A SET (Phase 2 ask 2): per-Type help, set-row toggle, combined/channels ----
+      (function initImportSetUi() {
+        var kindSel = document.getElementById('userImportKind');
+        var setRow = document.getElementById('userImportSetRow');
+        var help = document.getElementById('userImportKindHelp');
+        var combinedBox = document.getElementById('userImportSetCombinedBox');
+        var channelsBox = document.getElementById('userImportSetChannelsBox');
+        var targetEl = document.getElementById('userImportSetTarget');
+        // Whose set-row this is per Type. paint_spec_set already routes here;
+        // these other types now also expose the attach-your-own-spec block so
+        // an exact M/R/CC shine can be supplied for Paint / Pattern / Spec overlay.
+        var SET_ROW_KINDS = ['paint_monolithic', 'pattern', 'spec_overlay', 'paint_spec_set'];
+        // When the Type already conveys the target, hide "Save as" + force it.
+        var KIND_TO_TARGET = {
+          paint_monolithic: 'paint',
+          pattern: 'pattern',
+          spec_overlay: 'spec_overlay'
+        };
+        var KIND_HELP = {
+          paint_monolithic: 'Your image becomes the car color — SHOKK auto-builds a matching spec, or attach your own M/R/CC maps below for an exact shine.',
+          pattern: 'A repeating / overlay design (transparency kept). Attach your own M/R/CC maps below to author the shine yourself. Heads up: choosing a file imports it right away (no preview step).',
+          spec_overlay: 'Shine-only layer (no color). Attach a combined RGB plate or separate M/R/CC maps below — R→Metallic, G→Roughness, B→Clearcoat.',
+          paint_spec_set: 'Bring your own spec maps (combined RGB or separate M/R/CC). Saved verbatim (no DNA bake) for an exact finish.',
+          car_template: 'Full-body paint + spec that drops over the whole car as one zone. Heads up: choosing a file imports it right away (no preview step).'
+        };
+        function _targetRowEl() {
+          // The "Save as" label+select pair. Hide both when the Type implies it.
+          return targetEl ? targetEl.previousElementSibling : null; // the <label for="userImportSetTarget">
+        }
+        function syncSetUi() {
+          var kind = kindSel ? kindSel.value : 'paint_monolithic';
+          if (help) help.textContent = KIND_HELP[kind] || '';
+          // Paint + spec overlay get a preview step; Pattern / Car template
+          // import the moment a file is chosen — make the button say so.
+          var importBtn = document.getElementById('btnImportPreview');
+          if (importBtn) {
+            var hasPreview = (kind === 'paint_monolithic' || kind === 'spec_overlay');
+            importBtn.textContent = hasPreview ? 'Import & preview' : 'Choose file & import';
+          }
+          var showSet = SET_ROW_KINDS.indexOf(kind) !== -1;
+          if (setRow) setRow.style.display = showSet ? '' : 'none';
+          // For non-set Types, force the target to match + hide the "Save as" picker.
+          var forced = KIND_TO_TARGET[kind];
+          if (targetEl) {
+            if (forced) {
+              targetEl.value = forced;
+              targetEl.style.display = 'none';
+              var lbl = _targetRowEl();
+              if (lbl && lbl.tagName === 'LABEL') lbl.style.display = 'none';
+            } else {
+              targetEl.style.display = '';
+              var lbl2 = _targetRowEl();
+              if (lbl2 && lbl2.tagName === 'LABEL') lbl2.style.display = '';
+            }
+          }
+        }
+        function syncSpecMode() {
+          var modeEl = document.querySelector('input[name="userImportSetSpecMode"]:checked');
+          var mode = modeEl ? modeEl.value : 'combined';
+          if (combinedBox) combinedBox.style.display = (mode === 'combined') ? '' : 'none';
+          if (channelsBox) channelsBox.style.display = (mode === 'channels') ? '' : 'none';
+          var fx = document.getElementById('userImportFractureHelp');
+          if (fx) fx.style.display = (mode === 'fracture') ? '' : 'none';
+        }
+        // ---- LIVE PREVIEW wiring (debounced) ----
+        function _debounce(fn, ms) {
+          var t = null;
+          return function () {
+            if (t) clearTimeout(t);
+            t = setTimeout(function () { t = null; fn(); }, ms);
+          };
+        }
+        function _fireSetPreview() {
+          if (typeof window.previewPaintSpecSet === 'function') window.previewPaintSpecSet();
+        }
+        var _firePreviewDebounced = _debounce(_fireSetPreview, 220);
+        if (kindSel) kindSel.addEventListener('change', syncSetUi);
+        Array.prototype.forEach.call(
+          document.querySelectorAll('input[name="userImportSetSpecMode"]'),
+          function (r) { r.addEventListener('change', function () { syncSpecMode(); _fireSetPreview(); }); }
+        );
+        // File pickers — preview on change (no debounce needed; user picks once).
+        ['userImportSetPaint', 'userImportSetSpecCombined',
+         'userImportSetSpecR', 'userImportSetSpecG', 'userImportSetSpecB'
+        ].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.addEventListener('change', _fireSetPreview);
+        });
+        // Strength sliders — debounced live re-preview.
+        ['userImportSpecM', 'userImportSpecR', 'userImportSpecC'].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.addEventListener('input', _firePreviewDebounced);
+        });
+        syncSetUi();
+        syncSpecMode();
+      })();
+
+      // Shared FormData builder for the paint+spec SET (used by BOTH the live
+      // preview POST and the commit/import POST so they stay byte-for-byte in
+      // sync). Channel filenames are forced to tokens the backend recognizes
+      // (channel_r/g/b + paint_spec) so combine_channel_specs / detect_spec_mode
+      // pick them up regardless of the user's original filenames.
+      //
+      // Returns { fd, mode, target, hasSpec, error } — error is a user-facing
+      // string when the selection is incomplete (caller decides toast vs silent).
+      function buildPaintSpecSetFormData(opts) {
+        opts = opts || {};
+        var lenient = !!opts.lenient; // preview tolerates a missing paint plate
+        var paintEl = document.getElementById('userImportSetPaint');
+        var paint = paintEl && paintEl.files && paintEl.files[0];
+        var modeEl = document.querySelector('input[name="userImportSetSpecMode"]:checked');
+        var mode = modeEl ? modeEl.value : 'none';
+        var targetEl = document.getElementById('userImportSetTarget');
+        var target = targetEl ? targetEl.value : 'paint';
+        var fd = new FormData();
+        fd.append('kind', 'paint_spec_set');
+        fd.append('set_kind', target);
+        // [SPB FRACTURE auto-derive 2026-06-16] "FRACTURE the spec" = no spec maps; the backend
+        // ignites the paint's own geometry (spec_mode="fractured") instead of the auto-DNA bake.
+        if (mode === 'fracture') fd.append('fracture', 'true');
+        var nameBase = paint ? paint.name.replace(/\.[^.]+$/, '') : 'set';
+        fd.append('name', nameBase);
+        var alsoPat = document.getElementById('userImportSetAlsoPattern');
+        if (alsoPat && alsoPat.checked) fd.append('also_pattern', '1');
+        // Per-channel strength multipliers (default 100% = 1.0, neutral).
+        var mEl = document.getElementById('userImportSpecM');
+        var rStrEl = document.getElementById('userImportSpecR');
+        var cEl = document.getElementById('userImportSpecC');
+        fd.append('spec_m', String((mEl ? +mEl.value : 100) / 100));
+        fd.append('spec_r', String((rStrEl ? +rStrEl.value : 100) / 100));
+        fd.append('spec_c', String((cEl ? +cEl.value : 100) / 100));
+        // Paint plate — neutral filename so backend never mistakes it for spec.
+        if (paint) {
+          var ext = (paint.name.match(/\.[^.]+$/) || ['.png'])[0];
+          fd.append('files', paint, 'paint' + ext);
+        } else if (!lenient) {
+          return { error: 'Choose a paint image first' };
+        }
+        var hasSpec = false;
+        if (mode === 'channels') {
+          var rEl = document.getElementById('userImportSetSpecR');
+          var gEl = document.getElementById('userImportSetSpecG');
+          var bEl = document.getElementById('userImportSetSpecB');
+          var r = rEl && rEl.files[0], g = gEl && gEl.files[0], b = bEl && bEl.files[0];
+          if (!r && !g && !b) {
+            return lenient ? { fd: fd, mode: mode, target: target, hasSpec: false, paint: paint }
+                           : { error: 'Add at least one channel plate (R/G/B)' };
+          }
+          if (r) fd.append('files', r, 'channel_r' + (r.name.match(/\.[^.]+$/) || ['.png'])[0]);
+          if (g) fd.append('files', g, 'channel_g' + (g.name.match(/\.[^.]+$/) || ['.png'])[0]);
+          if (b) fd.append('files', b, 'channel_b' + (b.name.match(/\.[^.]+$/) || ['.png'])[0]);
+          hasSpec = true;
+        } else if (mode === 'combined') {
+          var specEl = document.getElementById('userImportSetSpecCombined');
+          var spec = specEl && specEl.files && specEl.files[0];
+          if (!spec) {
+            return lenient ? { fd: fd, mode: mode, target: target, hasSpec: false, paint: paint }
+                           : { error: 'Choose a combined spec image (or switch to R/G/B)' };
+          }
+          fd.append('files', spec, 'paint_spec' + (spec.name.match(/\.[^.]+$/) || ['.png'])[0]);
+          hasSpec = true;
+        }
+        // mode === 'none' -> no spec attached (auto-generate on commit).
+        return { fd: fd, mode: mode, target: target, hasSpec: hasSpec, paint: paint };
+      }
+
+      // LIVE PREVIEW: build the SAME FormData as the import but POST to /preview,
+      // then render the resulting blended-spec + 3-channel panel BEFORE commit.
+      window.previewPaintSpecSet = function () {
+        var built = buildPaintSpecSetFormData({ lenient: true });
+        if (built.error) return; // incomplete selection — stay quiet during live edits
+        // Nothing to preview yet (no paint AND no spec) — bail silently.
+        if (!built.paint && !built.hasSpec) return;
+        var box = document.getElementById('userImportPreviewBox');
+        var meta = document.getElementById('userImportPreviewMeta');
+        if (box) box.innerHTML = '<p class="hint" style="padding:8px;">Rendering spec preview…</p>';
+        fetch('/api/user-imports/preview', { method: 'POST', body: built.fd })
+          .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+          .then(function (res) {
+            if (!res.ok || res.body.error) throw new Error((res.body && res.body.error) || 'Preview failed');
+            var data = res.body;
+            var ts = '?t=' + Date.now();
+            var ch = data.preview_channels || {};
+            if (typeof window.renderShokkDropPreviewPanel === 'function') {
+              window.renderShokkDropPreviewPanel(box, {
+                preview_kind: built.target,
+                preview_paint: data.preview_paint ? data.preview_paint + ts : '',
+                preview_spec: data.preview_spec ? data.preview_spec + ts : '',
+                preview_channels: {
+                  r: ch.r ? ch.r + ts : '',
+                  g: ch.g ? ch.g + ts : '',
+                  b: ch.b ? ch.b + ts : ''
+                }
+              });
+            }
+            if (meta) {
+              var specLbl = built.hasSpec
+                ? (built.mode === 'channels' ? 'R/G/B plates' : 'combined RGB')
+                : (built.mode === 'fracture' ? 'FRACTURED ⚡' : 'auto-generated');
+              meta.textContent = (data.name || built.paint && built.paint.name || 'Spec set') +
+                ' · spec ' + specLbl + ' · live preview (not saved)';
+            }
+            var actions = document.getElementById('userImportPreviewActions');
+            if (actions) {
+              actions.style.display = '';
+              var btn = actions.querySelector('button');
+              if (btn) { btn.textContent = 'Commit set (exact finish)'; btn.setAttribute('onclick', 'importPaintSpecSet()'); }
+            }
+          })
+          .catch(function (err) {
+            if (box) box.innerHTML = '<p class="hint" style="color:#f88;padding:8px;">Preview failed: ' + (err.message || err) + '</p>';
+          });
+      };
+
+      // Build + POST a paint+spec SET to the backend (kind=paint_spec_set).
+      // _setImportInFlight guards BOTH triggers (the set-row button and the
+      // shared preview-actions button when it's repointed here) — a second
+      // click during the multi-second import created a duplicate entry.
+      var _setImportInFlight = false;
+      window.importPaintSpecSet = function () {
+        if (_setImportInFlight) return;
+        var built = buildPaintSpecSetFormData({ lenient: false });
+        if (built.error) { showShokkDropToast(built.error, 'error'); return; }
+        _setImportInFlight = true;
+        var btns = [document.getElementById('btnImportSet'),
+                    document.querySelector('#userImportPreviewActions button')].filter(Boolean);
+        var prevLabels = btns.map(function (b) { return b.textContent; });
+        btns.forEach(function (b) { b.disabled = true; b.textContent = 'Importing…'; });
+        function releaseSetBtns() {
+          _setImportInFlight = false;
+          btns.forEach(function (b, i) { b.disabled = false; b.textContent = prevLabels[i]; });
+        }
+        showShokkDropToast(
+          built.hasSpec ? 'Importing exact set…'
+            : (built.mode === 'fracture' ? 'Importing (FRACTURE spec)…' : 'Importing (auto spec)…'),
+          'info');
+        fetch('/api/user-imports/import', { method: 'POST', body: built.fd })
+          .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+          .then(function (res) {
+            if (!res.ok || res.body.error) throw new Error((res.body && res.body.error) || 'Import failed');
+            releaseSetBtns();
+            showShokkDropToast('Imported set: ' + (res.body.entry && (res.body.entry.name || res.body.entry.id)), 'success');
+            if (typeof loadUserImports === 'function') loadUserImports();
+            refreshGallery(res.body.entry ? [res.body.entry] : null);
+          })
+          .catch(function (err) {
+            releaseSetBtns();
+            showShokkDropToast('Set import failed: ' + err.message, 'error');
+          });
+      };
+
+      refreshGallery();
+      checkLibraryHealth();
+    })();
+  </script>
+</body>
+</html>

@@ -15,7 +15,8 @@ Techniques (all different):
   satin_gold         - Anisotropic Ward BRDF tangent-direction sheen
 """
 import numpy as np
-from engine.core import multi_scale_noise, get_mgrid
+import cv2 as _cv2
+from engine.core import _resize_array, multi_scale_noise, get_mgrid
 from engine.paint_v2 import ensure_bb_2d
 
 
@@ -68,8 +69,55 @@ def _mf_norm01(arr):
     return ((arr - float(arr.min())) / span).astype(np.float32)
 
 
+_MF_FIELD_CACHE = {}
+
+
+def _mf_cache_put(key, value):
+    if len(_MF_FIELD_CACHE) > 96:
+        _MF_FIELD_CACHE.clear()
+    _MF_FIELD_CACHE[key] = value
+    return value
+
+
+def _mf_noise(shape, scales, weights, seed, cap=1024):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    key = ("noise", int(h), int(w), tuple(scales), tuple(weights), int(seed), int(cap))
+    cached = _MF_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    work = min(int(cap), int(h), int(w))
+    if work < min(h, w):
+        sh = max(8, int(round(h * work / max(h, w))))
+        sw = max(8, int(round(w * work / max(h, w))))
+        field = multi_scale_noise((sh, sw), scales, weights, seed)
+        field = _resize_array(np.asarray(field, dtype=np.float32), h, w)
+    else:
+        field = multi_scale_noise((h, w), scales, weights, seed)
+    return _mf_cache_put(key, np.asarray(field, dtype=np.float32))
+
+
+def _mf_soft_field(shape, seed, feature_px):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    key = ("soft", int(h), int(w), int(seed), float(feature_px))
+    cached = _MF_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    rng = np.random.default_rng(seed)
+    gh = max(3, int(np.ceil(h / max(1, feature_px))))
+    gw = max(3, int(np.ceil(w / max(1, feature_px))))
+    small = rng.random((gh, gw), dtype=np.float32)
+    field = _cv2.resize(small, (w, h), interpolation=_cv2.INTER_CUBIC)
+    sigma = max(1.0, float(feature_px) / 18.0)
+    field = _cv2.GaussianBlur(field.astype(np.float32), (0, 0), sigmaX=sigma, sigmaY=sigma)
+    return _mf_cache_put(key, _mf_norm01(field))
+
+
 def _mf_micro(shape, seed, density):
     h, w = shape[:2] if len(shape) > 2 else shape
+    key = ("micro", int(h), int(w), int(seed), float(density))
+    cached = _MF_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
     rng = np.random.default_rng(seed)
     n = min(int(h * w * density), 150000)
     out = np.zeros((h, w), dtype=np.float32)
@@ -78,69 +126,85 @@ def _mf_micro(shape, seed, density):
         xx = rng.integers(0, w, n)
         vals = rng.uniform(0.18, 1.0, n).astype(np.float32)
         np.maximum.at(out, (yy, xx), vals)
-    return np.maximum.reduce([
+    return _mf_cache_put(key, np.maximum.reduce([
         out,
         np.roll(out, 1, axis=0) * 0.34,
         np.roll(out, -1, axis=1) * 0.34,
-    ]).astype(np.float32)
+    ]).astype(np.float32))
+
+
+def _electric_ice_fields(shape, seed):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    key = ("electric_ice_fields", int(h), int(w), int(seed))
+    cached = _MF_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    n1 = _mf_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 921, cap=384)
+    n2 = _mf_noise((h, w), [16, 32], [0.5, 0.5], seed + 922, cap=384)
+    ice_base = _mf_noise((h, w), [16, 32], [0.5, 0.5], seed + 924, cap=384)
+    frost = _mf_noise((h, w), [3, 8], [0.6, 0.4], seed + 925, cap=384)
+    ridge = np.clip((np.abs(np.gradient(n1, axis=0)) + np.abs(np.gradient(n1, axis=1))) * 34.0, 0, 2.0)
+    fine_branch = np.clip((np.abs(np.gradient(n2, axis=0)) + np.abs(np.gradient(n2, axis=1))) * 50.0, 0, 2.0) * 0.5
+    lightning = np.clip(ridge + fine_branch + np.abs(frost) * 0.45, 0, 2.0).astype(np.float32)
+    return _mf_cache_put(key, (lightning, np.asarray(ice_base, dtype=np.float32), np.asarray(frost, dtype=np.float32)))
 
 
 def paint_copper_metallic_v2(paint, shape, mask, seed, pm, bb):
-    """Standard copper: copper color first, subtle fine grain second."""
+    """Standard copper: clean warm copper paint with only soft metallic travel."""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
-    grain = _mf_norm01(multi_scale_noise((h, w), [2, 5, 12, 28], [0.34, 0.30, 0.23, 0.13], seed + 900))
-    polish = _mf_norm01(multi_scale_noise((h, w), [18, 42], [0.58, 0.42], seed + 901))
-    micro = _mf_micro((h, w), seed + 902, 0.026)
-    fine = _mf_norm01(multi_scale_noise((h, w), [1, 2, 4], [0.42, 0.34, 0.24], seed + 903))
+    y, x = get_mgrid((h, w))
+    body = _mf_soft_field((h, w), seed + 900, 144)
+    polish = _mf_soft_field((h, w), seed + 901, 288)
+    sweep = np.clip(
+        0.5 + 0.5 * np.sin((x / max(w, 1)) * np.pi * 1.1 + (y / max(h, 1)) * 0.55 + polish * 0.45),
+        0,
+        1,
+    ).astype(np.float32)
     copper = np.array([0.82, 0.39, 0.16], dtype=np.float32)
     warm = np.array([0.96, 0.57, 0.24], dtype=np.float32)
-    effect = copper[None, None, :] * (0.82 + polish[:, :, None] * 0.14) + warm[None, None, :] * micro[:, :, None] * 0.10
-    effect = np.clip(
-        effect
-        + (grain[:, :, None] - 0.5) * np.array([0.045, 0.028, 0.010], dtype=np.float32)
-        + (fine[:, :, None] - 0.5) * np.array([0.075, 0.040, 0.012], dtype=np.float32),
-        0, 1
-    )
+    effect = copper[None, None, :] * (0.82 + body[:, :, None] * 0.070 + sweep[:, :, None] * 0.035)
+    effect = np.clip(effect + warm[None, None, :] * polish[:, :, None] * 0.040, 0, 1)
     blend = np.clip(pm, 0.0, 1.0) * mask[:, :, None]
-    return np.clip(base * (1 - blend) + effect * blend + bb[:, :, None] * 0.20 * blend, 0, 1).astype(np.float32)
+    return np.clip(base * (1 - blend) + effect * blend + bb[:, :, None] * 0.18 * blend, 0, 1).astype(np.float32)
 
 
 def spec_copper_metallic(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    grain = _mf_norm01(multi_scale_noise((h, w), [2, 5, 12, 28], [0.34, 0.30, 0.23, 0.13], seed + 900))
-    micro = _mf_micro((h, w), seed + 902, 0.026)
-    fine = _mf_norm01(multi_scale_noise((h, w), [1, 2, 4], [0.42, 0.34, 0.24], seed + 903))
-    M = np.clip(184.0 + grain * 38.0 * sm + micro * 28.0 * sm + fine * 24.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(18.0 + (1 - micro) * 26.0 * sm + grain * 12.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(16.0 + grain * 12.0 * sm, 16, 255).astype(np.float32)
+    body = _mf_soft_field((h, w), seed + 900, 144)
+    polish = _mf_soft_field((h, w), seed + 901, 288)
+    M = np.clip(188.0 + body * 24.0 * sm + polish * 12.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(18.0 + (1.0 - polish) * 12.0 * sm, 15, 255).astype(np.float32)
+    CC = np.clip(16.0 + polish * 7.0 * sm, 16, 255).astype(np.float32)
     return M, R, CC
 
 
 def paint_standard_metallic_v2(paint, shape, mask, seed, pm, bb):
-    """Plain standard metallic: preserves base hue with dense fine metal flake."""
+    """Plain standard metallic: preserves base hue with controlled satin metal sheen."""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
-    flake = _mf_micro((h, w), seed + 943, 0.040)
-    grain = _mf_norm01(multi_scale_noise((h, w), [2, 6, 14, 32], [0.34, 0.30, 0.22, 0.14], seed + 941))
+    y, x = get_mgrid((h, w))
+    body = _mf_soft_field((h, w), seed + 941, 160)
+    polish = _mf_soft_field((h, w), seed + 942, 320)
+    sweep = np.clip(0.5 + 0.5 * np.sin((x / max(w, 1)) * np.pi * 1.25 + body * 0.4), 0, 1).astype(np.float32)
     gray = base.mean(axis=2, keepdims=True)
-    metallic = np.clip(base * 0.78 + gray * 0.16 + 0.04, 0, 1)
-    metallic = np.clip(metallic * (0.92 + grain[:, :, None] * 0.12) + flake[:, :, None] * 0.11, 0, 1)
+    metallic = np.clip(base * 0.82 + gray * 0.12 + 0.04, 0, 1)
+    metallic = np.clip(metallic * (0.94 + body[:, :, None] * 0.055 + sweep[:, :, None] * 0.025) + polish[:, :, None] * 0.035, 0, 1)
     blend = np.clip(pm, 0.0, 1.0) * mask[:, :, None]
     return np.clip(base * (1 - blend) + metallic * blend + bb[:, :, None] * 0.18 * blend, 0, 1).astype(np.float32)
 
 
 def spec_standard_metallic(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    grain = _mf_norm01(multi_scale_noise((h, w), [2, 6, 14, 32], [0.34, 0.30, 0.22, 0.14], seed + 941))
-    flake = _mf_micro((h, w), seed + 943, 0.040)
-    M = np.clip(168.0 + grain * 38.0 * sm + flake * 45.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(22.0 + (1 - flake) * 30.0 * sm + grain * 10.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(16.0 + flake * 10.0 * sm, 16, 255).astype(np.float32)
+    body = _mf_soft_field((h, w), seed + 941, 160)
+    polish = _mf_soft_field((h, w), seed + 942, 320)
+    M = np.clip(168.0 + body * 24.0 * sm + polish * 14.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(22.0 + (1.0 - polish) * 18.0 * sm, 15, 255).astype(np.float32)
+    CC = np.clip(16.0 + polish * 9.0 * sm, 16, 255).astype(np.float32)
     return M, R, CC
 
 
@@ -231,22 +295,8 @@ def paint_electric_ice_v2(paint, shape, mask, seed, pm, bb):
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
-    # Lichtenberg: fractal branching from dielectric breakdown
-    # Approximate with multi-octave noise thresholded at different levels
-    n1 = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 921)
-    n2 = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 922)
-    n3 = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 923)
-    # Branch-like structures from gradient ridges
-    gy1 = np.abs(np.gradient(n1, axis=0))
-    gx1 = np.abs(np.gradient(n1, axis=1))
-    ridge = np.clip((gy1 + gx1) * 8.0, 0, 1)
-    # Fine branches
-    gy2 = np.abs(np.gradient(n2, axis=0))
-    gx2 = np.abs(np.gradient(n2, axis=1))
-    fine_branch = np.clip((gy2 + gx2) * 12.0, 0, 1) * 0.5
-    lightning = np.clip(ridge + fine_branch, 0, 1) * 0.12
-    # Ice blue base
-    ice_base = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 924)
+    lightning, ice_base, _frost = _electric_ice_fields((h, w), seed)
+    lightning = np.clip(lightning, 0, 1) * 0.12
     effect = np.stack([
         np.clip(0.45 + ice_base * 0.04 + lightning * 0.8, 0, 1),
         np.clip(0.55 + ice_base * 0.05 + lightning, 0, 1),
@@ -269,11 +319,16 @@ def spec_electric_ice(shape, seed, sm, base_m, base_r):
     actually looks electric.
     """
     h, w = shape[:2] if len(shape) > 2 else shape
-    n1 = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 921)
-    n2 = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 922)
-    ice_base = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 924)
+    lightning, ice_base, frost = _electric_ice_fields((h, w), seed)
+    M = np.clip(120.0 + lightning * 50.0 * sm + ice_base * 8.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(15.0 + lightning * 12.0 * sm + ice_base * 3.0 * sm + np.abs(frost) * 6.0 * sm, 15, 255).astype(np.float32)
+    CC = np.clip(16.0 + lightning * 4.0 + ice_base * 2.0, 16, 255).astype(np.float32)
+    return M, R, CC
+    n1 = _mf_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 921, cap=768)
+    n2 = _mf_noise((h, w), [16, 32], [0.5, 0.5], seed + 922, cap=768)
+    ice_base = _mf_noise((h, w), [16, 32], [0.5, 0.5], seed + 924, cap=768)
     # NEW (Win A6): high-frequency frost crackle so micro-detail registers.
-    frost = multi_scale_noise((h, w), [3, 8], [0.6, 0.4], seed + 925)
+    frost = _mf_noise((h, w), [3, 8], [0.6, 0.4], seed + 925, cap=768)
     # Primary ridge from Lichtenberg branching — boost amplification 8→32 and
     # widen [0,1] clip so the ridge field carries real signal.
     ridge = np.clip((np.abs(np.gradient(n1, axis=0)) + np.abs(np.gradient(n1, axis=1))) * 32.0, 0, 2.0)
@@ -399,7 +454,7 @@ def paint_plasma_metal_v2(paint, shape, mask, seed, pm, bb):
     # Plasma treatment: ion bombardment creates localized surface energy zones
     # High energy zones = more wettable = smoother coating
     # Low energy zones = beading = textured
-    ion_dose = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 961)
+    ion_dose = _mf_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 961, cap=640)
     # Surface energy gradient
     energy = np.clip(ion_dose, 0, 1)
     # Color: iridescent from oxidation layers formed during plasma treatment
@@ -408,7 +463,7 @@ def paint_plasma_metal_v2(paint, shape, mask, seed, pm, bb):
     irid_g = 0.42 + 0.10 * np.cos(oxide_phase - 1.8)
     irid_b = 0.50 + 0.10 * np.cos(oxide_phase + 1.8)
     # Texture roughness inversely proportional to surface energy
-    tex = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 962)
+    tex = _mf_noise((h, w), [32, 64], [0.5, 0.5], seed + 962, cap=640)
     texture = tex * (1.0 - energy) * 0.04
     effect = np.stack([
         np.clip(irid_r + texture, 0, 1),
@@ -421,8 +476,8 @@ def paint_plasma_metal_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_plasma_metal(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    ion = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 961)
-    tex = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 962)
+    ion = _mf_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 961, cap=640)
+    tex = _mf_noise((h, w), [32, 64], [0.5, 0.5], seed + 962, cap=640)
     # Texture roughness inversely proportional to surface energy (matching paint)
     texture_var = tex * (1.0 - np.clip(ion, 0, 1))
     M = np.clip(150.0 + ion * 55.0 * sm, 0, 255).astype(np.float32)

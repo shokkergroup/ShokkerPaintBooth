@@ -127,6 +127,23 @@ function _shokkApiBase() {
     return '';
 }
 
+function _shokkEscapeHtml(value) {
+    return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function _shokkEscapeSingleQuotedAttr(value) {
+    return _shokkEscapeHtml(String(value == null ? '' : value)
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/\r/g, '\\r')
+        .replace(/\n/g, '\\n'));
+}
+
 /**
  * Updates the "SPEC: loaded/missing/none" status chip + banner shown when a
  * SHOKK file is active. Defensive: tolerates missing DOM elements.
@@ -209,7 +226,7 @@ async function _loadShokkLibraryContents() {
 
         if (status) status.textContent = `${_shokkLibraryData.length} file${_shokkLibraryData.length !== 1 ? 's' : ''}`;
     } catch (e) {
-        grid.innerHTML = `<div style="color:#ff6666;padding:20px;font-size:12px;">Error loading library: ${e.message}</div>`;
+        grid.innerHTML = `<div style="color:#ff6666;padding:20px;font-size:12px;">Error loading library: ${_shokkEscapeHtml(e.message)}</div>`;
     }
 }
 
@@ -236,7 +253,7 @@ function _renderShokkGrid(entries, filter = '') {
 
     if (!filtered.length) {
         grid.innerHTML = `<div style="color:var(--text-dim);font-size:12px;padding:32px;text-align:center;">
-            ${lf ? `No SHOKK files match "${filter}"` : 'No SHOKK files yet.<br><br>Render something, then click <strong>🔥 Save SHOKK</strong> to create your first one!'}
+            ${lf ? `No SHOKK files match "${_shokkEscapeHtml(filter)}"` : 'No SHOKK files yet.<br><br>Render something, then click <strong>🔥 Save SHOKK</strong> to create your first one!'}
         </div>`;
         return;
     }
@@ -267,19 +284,21 @@ let _selectedShokkPath = '';
  * @returns {string} HTML fragment
  */
 function _shokkCard(e) {
-    const tags = (e.tags || []).map(t => `<span class="shokk-tag">${t}</span>`).join('');
+    const displayName = e.name || e.filename || 'Untitled SHOKK';
+    const displayDesc = e.description || '';
+    const tags = (e.tags || []).map(t => `<span class="shokk-tag">${_shokkEscapeHtml(t)}</span>`).join('');
     const meta = [
-        e.author ? `by ${e.author}` : '',
-        e.size_mb ? `${e.size_mb}MB` : '',
+        e.author ? `by ${_shokkEscapeHtml(e.author)}` : '',
+        e.size_mb ? `${_shokkEscapeHtml(e.size_mb)}MB` : '',
         e.has_spec ? '✓ Spec' : '',
         e.has_paint ? '✓ Paint' : '',
     ].filter(Boolean).join(' · ');
-    const safePath = (e.path || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-    const safeFilename = (e.filename || '').replace(/'/g, "\\'");
+    const safePath = _shokkEscapeSingleQuotedAttr(e.path || '');
+    const safeFilename = _shokkEscapeSingleQuotedAttr(e.filename || '');
 
     const previewUrl = e.preview_url && !e.preview_url.startsWith('http') ? (_shokkApiBase() + (e.preview_url.startsWith('/') ? '' : '/') + e.preview_url) : (e.preview_url || '');
     const previewEl = previewUrl
-        ? `<img src="${previewUrl.replace(/"/g, '&quot;')}" alt="preview" class="shokk-card-preview" onerror="this.style.display='none'">`
+        ? `<img src="${_shokkEscapeHtml(previewUrl)}" alt="preview" class="shokk-card-preview" onerror="this.style.display='none'">`
         : `<div class="shokk-card-no-preview">🎨</div>`;
 
     const deleteBtn = e.source !== 'factory'
@@ -295,10 +314,10 @@ function _shokkCard(e) {
     ${renameBtn}
     <div class="shokk-card-thumb">${previewEl}</div>
     <div class="shokk-card-body">
-        <div class="shokk-card-name">${e.source === 'factory' ? '⭐ ' : ''}${e.name || e.filename}</div>
+        <div class="shokk-card-name">${e.source === 'factory' ? '⭐ ' : ''}${_shokkEscapeHtml(displayName)}</div>
         <div class="shokk-card-meta">${meta}</div>
         <div class="shokk-card-tags">${tags}</div>
-        ${e.description ? `<div class="shokk-card-desc">${e.description.substring(0, 80)}${e.description.length > 80 ? '…' : ''}</div>` : ''}
+        ${displayDesc ? `<div class="shokk-card-desc">${_shokkEscapeHtml(displayDesc.substring(0, 80))}${displayDesc.length > 80 ? '…' : ''}</div>` : ''}
     </div>
     <button class="shokk-card-open" onclick="showShokkImportOptions('${safePath}');event.stopPropagation()">OPEN</button>
 </div>`;
@@ -411,6 +430,19 @@ async function loadShokkFile(shokkPath, mode = 'full') {
             if (typeof showToast === 'function') showToast('This SHOKK has NO spec map payload.', true);
         }
 
+        // [ULTRACODE 2026-08-22 M4] snapshot zone layer restrictions BEFORE the
+        // paint load: loadPaintImageFromPath's flat/TGA paths call
+        // clearPSDDocumentState({clearZoneSourceLayers:true}), which wiped the
+        // restrictions applySessionConfig just restored — a reopened SHOKK then
+        // rendered differently than it was saved while the toast said "zones
+        // restored".
+        const _shokkRestrictionSnap = (typeof zones !== 'undefined' && Array.isArray(zones))
+            ? zones.map(z => ({
+                sourceLayers: Array.isArray(z.sourceLayers) ? z.sourceLayers.slice() : [],
+                sourceLayer: z.sourceLayer || null,
+            }))
+            : null;
+
         // Load paint file ONLY in 'full' mode (skip in spec_only and spec_and_zones)
         let didLoadPaint = false;
         if (mode === 'full') {
@@ -477,6 +509,24 @@ async function loadShokkFile(shokkPath, mode = 'full') {
             }
         }
 
+        // [ULTRACODE 2026-08-22 M4] re-apply the restrictions the paint load
+        // cleared; be honest when they cannot bind (flat baked paint = no PSD
+        // layers to restrict against).
+        let _restrictionsRestored = 0, _restrictionsDangling = 0;
+        if (_shokkRestrictionSnap && typeof zones !== 'undefined') {
+            const _layersNow = (typeof window !== 'undefined' && Array.isArray(window._psdLayers)) ? window._psdLayers : [];
+            zones.forEach((z, i) => {
+                const snap = _shokkRestrictionSnap[i];
+                if (!snap || (!snap.sourceLayer && !snap.sourceLayers.length)) return;
+                z.sourceLayers = snap.sourceLayers.slice();
+                z.sourceLayer = snap.sourceLayer;
+                _restrictionsRestored++;
+                const ids = snap.sourceLayers.length ? snap.sourceLayers : [snap.sourceLayer];
+                if (!ids.every(id => _layersNow.some(l => l && l.id === id))) _restrictionsDangling++;
+            });
+            if (_restrictionsRestored && typeof renderZones === 'function') renderZones();
+        }
+
         const parts = [];
         if (spec_path) parts.push('spec locked');
         if (didLoadPaint) parts.push('paint loaded');
@@ -488,6 +538,11 @@ async function loadShokkFile(shokkPath, mode = 'full') {
             _triggerTgaFilePickerForShokk();
         } else {
             if (typeof showToast === 'function') showToast(`✅ ${mode === 'full' ? 'Opened' : 'Imported'}: ${manifest.name || 'SHOKK'} [${parts.join(' · ')}]`);
+            // [M4] honest warning when restrictions cannot bind to layers.
+            if (_restrictionsDangling > 0 && typeof showToast === 'function') {
+                const _pf = (session_json && session_json.paintFile) ? session_json.paintFile.replace(/\\/g, '/').split('/').pop() : 'the original layered file';
+                showToast(`${_restrictionsDangling} zone(s) use LAYER restrictions this baked paint cannot provide — open ${_pf} (the layered original) to restore them fully.`, true);
+            }
         }
 
         // When spec was applied and we didn't load a paint image, update main area so user sees "Spec from SHOKK loaded"
@@ -687,10 +742,23 @@ async function confirmSaveShokk() {
         closeSaveShokkModal();
         if (typeof showToast === 'function') showToast('Saving SHOKK…');
 
+        const hasLiveFlatSource = !!(typeof window !== 'undefined' && window._spbFlatPaintLiveSource);
+
         // Include the lastRenderedJobId so the server grabs the correct render
         const savePayload = { name, author, description, tags, session_json, include_paint: includePaint };
         if (typeof lastRenderedJobId !== 'undefined' && lastRenderedJobId) {
             savePayload.job_id = lastRenderedJobId;
+        }
+        if (includePaint && hasLiveFlatSource) {
+            if (typeof buildLivePaintCompositeCanvas !== 'function' || typeof canvasToBase64Async !== 'function') {
+                throw new Error('Save SHOKK needs the live canvas capture helpers. Reload the app, then try again.');
+            }
+            const liveCanvas = buildLivePaintCompositeCanvas();
+            if (!liveCanvas) {
+                throw new Error('Save SHOKK could not capture the live Change File canvas.');
+            }
+            savePayload.paint_image_base64 = await canvasToBase64Async(liveCanvas);
+            savePayload.source_mode = 'live_flat_canvas';
         }
 
         const base = _shokkApiBase();
@@ -703,6 +771,10 @@ async function confirmSaveShokk() {
         if (!data.ok) throw new Error(data.error || 'Save failed');
 
         const parts = [data.has_spec ? '✓ Spec' : 'No spec (render first)', data.has_paint ? '✓ Paint' : ''].filter(Boolean);
+        if (data.has_paint && data.paint_source === 'live_canvas') {
+            const paintPartIndex = parts.findIndex(p => p.indexOf('Paint') !== -1);
+            if (paintPartIndex >= 0) parts.splice(paintPartIndex, 1, '✓ Live paint');
+        }
         const savedDir = (data.path || '').replace(/[\\/][^\\/]*$/, '');
         if (typeof showToast === 'function') showToast(`✅ Saved: ${name}.shokk  [${parts.join(' · ')}]${savedDir ? '  →  ' + savedDir : ''}`);
 
@@ -801,10 +873,10 @@ async function exportSpecChannels(fromLibrary) {
         if (outputDir) body.output_dir = outputDir;
 
         if (fromLibrary && _selectedShokkPath) {
-            showToast('Extracting and exporting from SHOKK file…');
+            showToast('Exporting SHOKK channel PNGs for Photoshop inspection…');
             body.shokk_path = _selectedShokkPath;
         } else {
-            showToast('Exporting spec channels + paint for Photoshop…');
+            showToast('Exporting channel PNGs for Photoshop inspection…');
         }
         body.include_paint = true;
 
@@ -821,7 +893,7 @@ async function exportSpecChannels(fromLibrary) {
         const dir = paths.length ? paths[0].replace(/[^/\\]*$/, '') : '';
         const fileCount = paths.length;
         if (dir && typeof localStorage !== 'undefined') localStorage.setItem(PS_EXPORT_FOLDER_KEY, dir);
-        showToast(`✅ ${fileCount} files exported to: ${dir}`);
+        showToast(`✅ ${fileCount} channel PNG files exported to: ${dir}`);
 
         // Show a details panel
         const details = Object.entries(data.paths)
@@ -853,31 +925,31 @@ async function loadBlankCanvas(width = 2048, height = 2048, color = 'ffffff') {
         showToast('Creating blank canvas…');
         // Download the blank TGA and trigger load as if user picked a file
         const base = _shokkApiBase();
-        const url = base + `/api/blank-canvas?width=${width}&height=${height}&color=${color}`;
+        let blankPath = '';
 
-        // For Electron/local env: fetch the file and use as a blob
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Failed to generate blank canvas');
-        const blob = await res.blob();
-
-        // Create a fake File object the existing loadPaintImage() can consume
-        const file = new File([blob], 'blank_canvas.tga', { type: 'image/tga' });
-
-        // Use existing paint image loader
-        if (typeof loadPaintImageFromFile === 'function') {
-            loadPaintImageFromFile(file);
-        } else {
-            // Fallback: create a data URL and load it directly
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    if (typeof _onPaintImageLoaded === 'function') _onPaintImageLoaded(img, 'blank_canvas.tga');
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+        if (typeof window._spbFetchDefaultAssets === 'function') {
+            const assets = await window._spbFetchDefaultAssets();
+            blankPath = (assets && assets.blank_canvas_tga) ? assets.blank_canvas_tga : '';
         }
+
+        if (!blankPath) {
+            const generated = await fetch(base + `/api/blank-canvas?width=${width}&height=${height}&color=${color}&mode=json`);
+            if (!generated.ok) throw new Error('Failed to generate blank canvas');
+            const generatedData = await generated.json();
+            blankPath = generatedData.path || '';
+        }
+
+        if (!blankPath) throw new Error('Blank canvas path unavailable');
+        if (typeof window.loadPaintPreviewFromServer !== 'function') {
+            throw new Error('Path-based paint preview loader unavailable');
+        }
+
+        await window.loadPaintPreviewFromServer(blankPath);
+        if (typeof window.setCurrentSourcePaintFile === 'function') {
+            window.setCurrentSourcePaintFile(blankPath, { clearPSD: true, remember: true, validate: true });
+        }
+        showToast('Blank canvas loaded - build your effects, then Save SHOKK!');
+        return;
 
         showToast('✅ Blank canvas loaded - build your effects, then Save SHOKK!');
     } catch (e) {

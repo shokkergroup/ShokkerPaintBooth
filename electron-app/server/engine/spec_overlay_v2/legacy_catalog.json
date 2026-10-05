@@ -1,0 +1,1716 @@
+{
+  "items": [
+    {
+      "id": "spec_holographic_oil_circuit",
+      "name": "SPEC Holographic Oil Circuit",
+      "desc": "Rainbow oil-film highlights, polished low-roughness arcs, and prismatic clearcoat response.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_black_emboss_mandala",
+      "name": "SPEC Black Emboss Mandala",
+      "desc": "Dark raised relief, satin valleys, and glossy mandala edge catches.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_graphite_cross_lattice",
+      "name": "SPEC Graphite Cross Lattice",
+      "desc": "Graphite lattice ribs with crisp bright intersections and controlled satin gaps.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_marble_flow_pearl",
+      "name": "SPEC Marble Flow Pearl",
+      "desc": "Pearl marble veins with soft clearcoat rivers and polished vein ridges.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_acid_carbon_mesh",
+      "name": "SPEC Acid Carbon Mesh",
+      "desc": "Acid-tinted mesh/carbon contrast with tight gloss cells and matte under-weave.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_noir_houndstooth_star",
+      "name": "SPEC Noir Houndstooth Star",
+      "desc": "Noir textile stars and houndstooth checks with thread-level roughness shifts.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_hazard_chevron_weave",
+      "name": "SPEC Hazard Chevron Weave",
+      "desc": "Hazard chevrons with bright cut edges, dark rubber troughs, and woven directionality.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_burn_hole_mesh",
+      "name": "SPEC Burn Hole Mesh",
+      "desc": "Burned mesh crater texture with scorched rough pits and polished raised rim detail.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_teal_hex_haze",
+      "name": "SPEC Teal Hex Haze",
+      "desc": "Teal hex haze with pearly bokeh cells and restrained translucent clearcoat.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_shadow_diamond_mesh",
+      "name": "SPEC Shadow Diamond Mesh",
+      "desc": "Shadow diamond mesh with repeating raised ridges and satin recessed panels.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_talavera_tile_riot",
+      "name": "SPEC Talavera Tile Riot",
+      "desc": "Talavera ceramic tile gloss with enamel ridges and deep grout contrast.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_green_plasma_vein",
+      "name": "SPEC Green Plasma Vein",
+      "desc": "Green plasma veins with electrical gloss streaks and smoky rough shadows.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_neon_fracture_net",
+      "name": "SPEC Neon Fracture Net",
+      "desc": "Neon fracture net with hot crack clearcoat and black low-sheen islands.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_pink_checker_carbon",
+      "name": "SPEC Pink Checker Carbon",
+      "desc": "Pink checker carbon geometry with glossy colored cells and dark woven breaks.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_red_herringbone_heat",
+      "name": "SPEC Red Herringbone Heat",
+      "desc": "Red herringbone heat weave with diagonal satin grain and hot edge flashes.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_chrome_oval_chain",
+      "name": "Pop Top",
+      "desc": "Stamped aluminium can top — pull-tab ring, rivet, and rolled rim.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_terracotta_ceramic_grid",
+      "name": "SPEC Terracotta Ceramic Grid",
+      "desc": "Terracotta ceramic grid with glazed stone islands and gritty grout channels.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_gunmetal_geo_tessellation",
+      "name": "SPEC Gunmetal Geo Tessellation",
+      "desc": "Gunmetal micro tessellation with precise satin/metal facet shifts.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_tokyo_script_textile",
+      "name": "SPEC Tokyo Script Textile",
+      "desc": "Tokyo script textile with inked cloth valleys and glossy red-white calligraphy strokes.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_lime_pixel_confetti",
+      "name": "SPEC Lime Pixel Confetti",
+      "desc": "Lime pixel confetti with small hard gloss pops across a matte field.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_psychedelic_floral_spin",
+      "name": "SPEC Psychedelic Floral Spin",
+      "desc": "Psychedelic guilloche floral rings with shifting satin petals and chrome thread lines.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_ice_facet_shatter",
+      "name": "SPEC Ice Facet Shatter",
+      "desc": "Ice crystal shards with cold clearcoat facets and bright frozen cuts.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_ember_circuit_maze",
+      "name": "SPEC Ember Circuit Maze",
+      "desc": "Ember circuit maze with heated copper lines and dark insulated cells.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_blue_polygon_shatter",
+      "name": "SPEC Blue Polygon Shatter",
+      "desc": "Blue polygon shatter with angular clearcoat facets and graphite separators.",
+      "category": "Source Pattern Plates",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "banded_rows",
+      "name": "Banded Rows",
+      "desc": "Adds horizontal metallic/roughness bands with soft feathered transitions between value zones",
+      "category": "Structure & Geometry",
+      "defaults": {
+        "num_bands": 50,
+        "palette_size": 10
+      }
+    },
+    {
+      "id": "hex_cells",
+      "name": "Hex Cells",
+      "desc": "Applies honeycomb hexagonal cell grid with per-cell metallic and roughness variation for tiled texture",
+      "category": "Structure & Geometry",
+      "defaults": {
+        "cell_size": 20
+      }
+    },
+    {
+      "id": "panel_zones",
+      "name": "Panel Zones",
+      "desc": "Defines large irregular zones with different metallic and roughness values — panel color variation",
+      "category": "Structure & Geometry",
+      "defaults": {
+        "num_zones": 25
+      }
+    },
+    {
+      "id": "spec_carbon_weave",
+      "name": "Carbon Weave (Spec)",
+      "desc": "Adds woven fiber crosshatch roughness pattern simulating carbon fiber surface texture on spec maps",
+      "category": "Surface & Spray Texture",
+      "defaults": {
+        "weave_size": 12
+      }
+    },
+    {
+      "id": "crackle_network",
+      "name": "Crackle Network",
+      "desc": "Creates crack and craze roughness network like dried clay — sharp channels cut through smooth surface",
+      "category": "Weather, Wear & Track",
+      "defaults": {
+        "cell_count": 25
+      }
+    },
+    {
+      "id": "pebble_grain",
+      "name": "Pebble Grain",
+      "desc": "Adds large rounded roughness bumps like leather pebble grain — dimpled surface texture variation",
+      "category": "Surface & Spray Texture",
+      "defaults": {
+        "pebble_size": 5
+      }
+    },
+    {
+      "id": "wave_ripple",
+      "name": "Wave Ripple",
+      "desc": "Adds directional water surface interference waves that modulate roughness in flowing ripple bands",
+      "category": "Optical & Interference",
+      "defaults": {
+        "num_waves": 5
+      }
+    },
+    {
+      "id": "voronoi_fracture",
+      "name": "Voronoi Fracture",
+      "desc": "Shattered glass cell boundaries with dark fracture lines",
+      "category": "Sparkle & Micro-Metal",
+      "defaults": {
+        "num_cells": 200,
+        "edge_width": 1
+      }
+    },
+    {
+      "id": "diamond_lattice",
+      "name": "Diamond Lattice",
+      "desc": "R6 owner rebuild — CLEAN sharp rhombus lattice grid with crisp 1px polyline outlines, uniform per-cell fill from a tight polished-steel palette + every 7th cell as a brighter hero gem with sharp top-edge highlight (no noise, no grain, no FBM)",
+      "category": "Geometric & Structural",
+      "defaults": {
+        "cell_size": 24,
+        "depth_variation": 0.4
+      }
+    },
+    {
+      "id": "galaxy_swirl",
+      "name": "Galaxy Swirl",
+      "desc": "Creates spiral galaxy arm metallic patterns with scattered star cluster highlight points throughout",
+      "category": "Optical & Interference",
+      "defaults": {
+        "num_arms": 4,
+        "twist": 3
+      }
+    },
+    {
+      "id": "prismatic_shatter",
+      "name": "Prismatic Shatter",
+      "desc": "Shattered prism fragments reflecting at different angles",
+      "category": "Sparkle & Micro-Metal",
+      "defaults": {
+        "num_shards": 300
+      }
+    },
+    {
+      "id": "lava_crack",
+      "name": "Lava Crack",
+      "desc": "Cooling lava plates with bright glowing fissures between",
+      "category": "Organic & Natural",
+      "defaults": {
+        "num_plates": 35,
+        "glow_width": 4
+      }
+    },
+    {
+      "id": "spec_diffraction_grating_cd",
+      "name": "Diffraction Grating (CD)",
+      "desc": "Fine parallel ruling lines — CD surface rainbow diffraction",
+      "category": "Optical & Interference",
+      "defaults": {
+        "line_freq": 80,
+        "num_orders": 5
+      }
+    },
+    {
+      "id": "metallic_sand",
+      "name": "Metallic Sand",
+      "desc": "Fine 2px block-quantized metallic sand particles — slightly larger than diamond dust",
+      "category": "Sparkle & Micro-Metal",
+      "defaults": {
+        "block_size": 2
+      }
+    },
+    {
+      "id": "holographic_flake",
+      "name": "Holographic Flake",
+      "desc": "Iridescent flakes with position-modulated brightness — rainbow prismatic scatter",
+      "category": "Sparkle & Micro-Metal",
+      "defaults": {
+        "density": 0.02,
+        "freq_x": 35,
+        "freq_y": 28
+      }
+    },
+    {
+      "id": "stardust_fine",
+      "name": "Stardust Fine",
+      "desc": "Extremely fine high-density sparkle — like a star-filled night sky",
+      "category": "Sparkle & Micro-Metal",
+      "defaults": {
+        "density": 0.05
+      }
+    },
+    {
+      "id": "pearl_micro",
+      "name": "Pearl Micro",
+      "desc": "Soft pearlescent micro-texture — smooth undulating mother-of-pearl iridescence",
+      "category": "Sparkle & Micro-Metal",
+      "defaults": {
+        "octaves": 4
+      }
+    },
+    {
+      "id": "gold_flake",
+      "name": "Gold Flake",
+      "desc": "Large sparse irregular gold-leaf style flakes — bright fragments on a dark field",
+      "category": "Sparkle & Micro-Metal",
+      "defaults": {
+        "density1": 0.6,
+        "density2": 0.5
+      }
+    },
+    {
+      "id": "brushed_sparkle",
+      "name": "Nordic Rune Field",
+      "desc": "Carved Viking runes on dark stone — angular Algiz/Tiwaz/Othala/Eihwaz line geometries 12-22 px Poisson-scattered + 8-14 hero 24-32 px halo-glowing runes + 3-5 red blood-magic runes, M=Metallic + G=Roughness + B=Clearcoat",
+      "category": "Gothic & Horror",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "sparkle_shattered",
+      "name": "Razor Wire Coil",
+      "desc": "Coiled concertina razor wire — 6-12 helical bands sweeping diagonal sine curves, 4-7 px thick with sharp triangular razor blades 6-10 px embedded every 8-12 px + 4-8 hero barbed bundle crossings + 6-12 broken sheared wire ends, M=Metallic + G=Roughness + B=Clearcoat",
+      "category": "Predator Skins",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "chevron_bands",
+      "name": "Chevron Bands",
+      "desc": "V-shaped chevron bands — arrowhead striping using y + abs(x-center) coordinate",
+      "category": "Structure & Geometry",
+      "defaults": {
+        "num_bands": 40,
+        "v_angle": 0.6
+      }
+    },
+    {
+      "id": "wave_bands",
+      "name": "Wave Bands",
+      "desc": "Sinusoidal wavy bands — undulating stripes using y + sin(x * freq) coordinate",
+      "category": "Structure & Geometry",
+      "defaults": {
+        "num_bands": 36,
+        "wave_freq": 6,
+        "wave_amp": 0.12
+      }
+    },
+    {
+      "id": "gradient_bands",
+      "name": "Gradient Bands",
+      "desc": "Bands that fade bright-to-dark internally — fmod banding with within-band gradient",
+      "category": "Structure & Geometry",
+      "defaults": {
+        "num_bands": 35
+      }
+    },
+    {
+      "id": "brushed_diagonal",
+      "name": "Brushed Diagonal",
+      "desc": "45° diagonal brushed lines via rotated projection — chevron-style panel polish, G=Roughness",
+      "category": "Directional Metal & Brush",
+      "defaults": {
+        "frequency": 70,
+        "angle_deg": 45
+      }
+    },
+    {
+      "id": "brushed_cross",
+      "name": "Brushed Cross",
+      "desc": "R6 rebuild: bidirectional H+V cross-brushed scotch-brite strata + 100-200 explicit '+' cross marks 8-16 px scattered as HERO motif (no more engine-turn circles) + 14-22 larger crosses with bright halo, G=Roughness",
+      "category": "Directional Metal & Brush",
+      "defaults": {
+        "frequency": 60
+      }
+    },
+    {
+      "id": "guilloche_waves",
+      "name": "Guilloché Waves",
+      "desc": "Phase-modulated engine-turned wave sheets — classic pocket-watch sweep lines undulating, R=Metallic",
+      "category": "Precision & Guilloché",
+      "defaults": {
+        "x_freq": 60,
+        "y_mod_freq": 8,
+        "amplitude": 0.15
+      }
+    },
+    {
+      "id": "guilloche_sunray",
+      "name": "Guilloché Sunray",
+      "desc": "Engine-turned sunray — radial lines + concentric rings polar cross-hatch, pocket-watch dial character, R=Metallic",
+      "category": "Precision & Guilloché",
+      "defaults": {
+        "n_rays": 72,
+        "ring_freq": 20,
+        "ray_fade": 0.6
+      }
+    },
+    {
+      "id": "guilloche_moire_eng",
+      "name": "Guilloché Moiré",
+      "desc": "Two offset concentric ring systems beating into flowing moiré ellipses, R=Metallic",
+      "category": "Precision & Guilloché",
+      "defaults": {
+        "freq": 30,
+        "offset_frac": 0.15
+      }
+    },
+    {
+      "id": "knurl_diamond",
+      "name": "Knurl Diamond",
+      "desc": "Diamond knurl — crossed diagonal sin lines, raised diamond peaks at both-high intersections, G=Roughness + R=Metallic",
+      "category": "Precision & Guilloché",
+      "defaults": {
+        "frequency": 30,
+        "angle_deg": 45
+      }
+    },
+    {
+      "id": "edm_dimple",
+      "name": "EDM Dimple",
+      "desc": "EDM dimple texture — hex-packed spherical craters, bright rim, dark pit — electrical discharge machining, G=Roughness + R=Metallic",
+      "category": "Precision & Guilloché",
+      "defaults": {
+        "spacing": 12,
+        "dimple_radius_frac": 0.4
+      }
+    },
+    {
+      "id": "spec_carbon_2x2_twill",
+      "name": "Carbon 2×2 Twill",
+      "desc": "Standard 2×2 twill carbon fiber — diagonal ±45° tow families, over-2/under-2 interlace, sharp metallic peaks at tow crowns",
+      "category": "Carbon & Composite Weave"
+    },
+    {
+      "id": "spec_carbon_3k_fine",
+      "name": "Carbon 3K Fine",
+      "desc": "Fine 3K carbon (3000 filament tow) — high-frequency ±45° twill with narrow Gaussian tow crowns, aerospace small-weave look",
+      "category": "Carbon & Composite Weave"
+    },
+    {
+      "id": "spec_carbon_forged",
+      "name": "Carbon Forged",
+      "desc": "Forged carbon (random short-fiber SMC) — random overlapping strand segments at all angles, marbled metallic pattern, NOT a regular weave",
+      "category": "Carbon & Composite Weave"
+    },
+    {
+      "id": "spec_carbon_wet_layup",
+      "name": "Carbon Wet Layup",
+      "desc": "Wet layup carbon — fiber weave shows through thick resin layer, Gaussian-blurred soft metallic peaks, resin-rich gloss",
+      "category": "Carbon & Composite Weave"
+    },
+    {
+      "id": "spec_kevlar_weave",
+      "name": "Kevlar Weave",
+      "desc": "Kevlar/aramid fiber weave — plain-weave geometry with matte satin sheen, silky micro-texture, moderate interlace roughness",
+      "category": "Carbon & Composite Weave"
+    },
+    {
+      "id": "spec_fiberglass_chopped",
+      "name": "Fiberglass Chopped",
+      "desc": "Chopped strand fiberglass mat — random clustered glass strands, orientation-weighted specular (vertical fibers most specular), non-woven",
+      "category": "Carbon & Composite Weave"
+    },
+    {
+      "id": "spec_mesh_perforated",
+      "name": "Mesh Perforated",
+      "desc": "Perforated metal mesh — regular circular holes with smooth radial transition, high metallic between perforations, R=0 at hole centers",
+      "category": "Carbon & Composite Weave"
+    },
+    {
+      "id": "spec_expanded_metal",
+      "name": "Expanded Metal",
+      "desc": "Expanded metal mesh — rotated diamond-pattern openings from slitting/stretching sheet, high metallic wire edges, open diamond interior",
+      "category": "Carbon & Composite Weave"
+    },
+    {
+      "id": "cc_panel_pool",
+      "name": "CC Panel Pool",
+      "desc": "Clearcoat pooling — gravity-settled extra-clear in panel low spots, scattered Gaussian gloss pools, B=Clearcoat",
+      "category": "Clearcoat & Coating",
+      "defaults": {
+        "num_pools": 12,
+        "pool_spread": 0.18
+      }
+    },
+    {
+      "id": "cc_overspray_halo",
+      "name": "CC Overspray Halo",
+      "desc": "Overspray halo — spray gun edge mist, ring of thin/rough clearcoat at spray boundary, B=Clearcoat",
+      "category": "Clearcoat & Coating",
+      "defaults": {
+        "num_halos": 6,
+        "halo_radius": 0.22
+      }
+    },
+    {
+      "id": "cc_wet_zone",
+      "name": "CC Wet Zone",
+      "desc": "Wet zones — unleveled clearcoat blob patches at higher gloss, organic FBM-thresholded dark areas, B=Clearcoat",
+      "category": "Clearcoat & Coating",
+      "defaults": {
+        "num_zones": 5
+      }
+    },
+    {
+      "id": "cc_panel_fade",
+      "name": "CC Panel Fade",
+      "desc": "Panel fade — clearcoat thickness gradient across panel from spray angle, one side gloss one side dull, B=Clearcoat",
+      "category": "Clearcoat & Coating",
+      "defaults": {
+        "fade_direction": 0,
+        "noise_warp": 0.06
+      }
+    },
+    {
+      "id": "spec_galvanic_corrosion",
+      "name": "Galvanic Corrosion",
+      "desc": "Voronoi two-metal partition — roughness spikes and metallic drops at dissimilar metal contact seams",
+      "category": "Weather, Wear & Track"
+    },
+    {
+      "id": "spec_stress_fractures",
+      "name": "Stress Fractures",
+      "desc": "Metal fatigue crack tree grown along FBM gradients — crack pixels near-zero metallic, max roughness",
+      "category": "Weather, Wear & Track"
+    },
+    {
+      "id": "spec_sandblast_strip",
+      "name": "Sandblast Strip",
+      "desc": "FBM blob-shaped sandblasted zones — bare metal roughness adjacent to unblasted painted surfaces",
+      "category": "Weather, Wear & Track"
+    },
+    {
+      "id": "spec_hammered_dimple",
+      "name": "Hammered Dimple",
+      "desc": "Hex-grid hemispherical hammer dimples — cos(r/radius×π/2) profile peaks at rim edge (angled surface), low at dome center, R=Metallic",
+      "category": "Structure & Geometry",
+      "defaults": {
+        "dimple_spacing": 18
+      }
+    },
+    {
+      "id": "spec_architectural_grid",
+      "name": "Architectural Grid",
+      "desc": "Curtain wall grid — polished aluminum frame (high metallic) surrounding low-metallic glass panels, min(fmod) frame-proximity approach, 10% frame width, R=Metallic",
+      "category": "Structure & Geometry",
+      "defaults": {
+        "cell_size": 40,
+        "frame_frac": 0.1
+      }
+    },
+    {
+      "id": "spec_brick_mortar",
+      "name": "Brick Mortar",
+      "desc": "Running-bond brickwork — near-zero metallic clay brick faces with moderate metallic cement mortar joints, 0.5-offset stagger per course, R=Metallic + G=Roughness",
+      "category": "Structure & Geometry",
+      "defaults": {
+        "brick_h": 16,
+        "brick_w": 36,
+        "mortar_frac": 0.08
+      }
+    },
+    {
+      "id": "spec_snake_scales",
+      "name": "Snake Scales",
+      "desc": "Reptile scale array — elongated oval scales in offset rows, specular peak near scale center-top (convex surface), lower metallic at scale edges, overlap regions roughness spike, elliptical distance function, R=Metallic + G=Roughness",
+      "category": "Organic & Natural",
+      "defaults": {
+        "scale_w": 20,
+        "scale_h": 14
+      }
+    },
+    {
+      "id": "spec_fish_scales",
+      "name": "Fish Scales",
+      "desc": "Fish scale array — circular overlapping scales, INVERTED radial metallic gradient vs snake scales: higher metallic at scale rim + lower at center (iridescent armored look), radial shimmer rings, R=Metallic",
+      "category": "Organic & Natural",
+      "defaults": {
+        "scale_r": 16
+      }
+    },
+    {
+      "id": "spec_terrain_erosion",
+      "name": "Terrain Erosion",
+      "desc": "Eroded terrain topology — multi-octave domain-warped FBM, ridgetops lower roughness (wind-polished rock), valley floors higher roughness (sediment), cliff faces high metallic (fresh exposed rock), gradient magnitude as roughness proxy, R=Metallic + G=Roughness",
+      "category": "Organic & Natural",
+      "defaults": {
+        "octaves": 7
+      }
+    },
+    {
+      "id": "spec_fresnel_gradient",
+      "name": "Fresnel Gradient",
+      "desc": "Fresnel reflectivity gradient — Schlick approximation drives edge-brightening (glancing angle = max metallic), center near-normal incidence = moderate metallic, FBM perturbs edge boundary, R=Metallic + G=Roughness",
+      "category": "Optical & Interference",
+      "defaults": {
+        "edge_metallic": 0.92,
+        "center_metallic": 0.38
+      }
+    },
+    {
+      "id": "holo_prism_shift",
+      "name": "Holo Prism Shift",
+      "desc": "Holographic prism flecks 4-10 px with per-fleck rainbow CC sweep + 6-12 angular facet cluster zones 16-22 px for view-angle shift, M=Metallic + G=Roughness + B=Clearcoat",
+      "category": "Holographic & Color-Shift",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_retroreflective",
+      "name": "Retroreflective",
+      "desc": "Retroreflective surface (road signs/safety vest) — staggered Gaussian corner-cube grid with microsphere fill between, FBM bead-coat variation, characteristic sparkly grid of retroreflective materials, R=Metallic",
+      "category": "Optical & Interference",
+      "defaults": {
+        "grid_spacing": 22,
+        "microsphere_fill": 0.55
+      }
+    },
+    {
+      "id": "snake_scale_diamond",
+      "name": "Snake Scale Diamond",
+      "desc": "Diamond-tessellated 10-16 px snake scales staggered with crown highlight + dark base + iridescent CC centerline + 4-8 enlarged king-scale zones 16-22 px with dramatic chroma split, M=Metallic + G=Roughness + B=Clearcoat",
+      "category": "Predator Skins",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_iridescent_film",
+      "name": "Iridescent Film",
+      "desc": "Thin-film iridescence — FBM-driven film thickness with sin²(thickness × band_freq × π) interference banding, smooth film surface near-zero roughness throughout, oily shimmer pattern, R=Metallic",
+      "category": "Optical & Interference",
+      "defaults": {
+        "film_octaves": 5,
+        "band_freq": 12
+      }
+    },
+    {
+      "id": "spec_anisotropic_radial",
+      "name": "Anisotropic Radial",
+      "desc": "Radial anisotropic star pattern — sin(atan2 × N/2)^p formula creates sharp angular metallic bands from disc center, FBM run-out perturbation, distinct from brushed_radial smooth gradient, R=Metallic",
+      "category": "Optical & Interference",
+      "defaults": {
+        "num_segments": 24,
+        "star_power": 2
+      }
+    },
+    {
+      "id": "spec_chromatic_aberration",
+      "name": "Chromatic Aberration",
+      "desc": "Lens chromatic aberration — inner zone uniform spec, outer zones alternating metallic fringes at multi-frequency period growing with radius (CA magnitude grows outward), FBM field-curvature distortion, R=Metallic",
+      "category": "Optical & Interference",
+      "defaults": {
+        "inner_radius": 0.3,
+        "fringe_period": 0.04
+      }
+    },
+    {
+      "id": "spec_anodized_texture",
+      "name": "Anodized Texture",
+      "desc": "Anodized aluminum nanoporous oxide layer — hexagonal three-cosine pore grid (100+ pores/unit), high metallic oxide inter-pore matrix, low metallic pore centers, moderate roughness (G: 30-60), glossy clearcoat (B: 20-40), R=Metallic + G=Roughness",
+      "category": "Surface & Spray Texture",
+      "defaults": {
+        "pore_density": 105,
+        "metallic_base": 170
+      }
+    },
+    {
+      "id": "spec_pvd_coating",
+      "name": "PVD Coating",
+      "desc": "Physical Vapor Deposition nodule texture — ultra-fine Voronoi (80+ cells/unit) nucleation sites, very high metallic 180-240/255 throughout, near-zero roughness G: 10-30/255, minimal grain boundary dip, TiN/TiAlN characteristic smooth highly-reflective surface, R=Metallic + G=Roughness",
+      "category": "Surface & Spray Texture",
+      "defaults": {
+        "cell_density": 80
+      }
+    },
+    {
+      "id": "spec_laser_etched",
+      "name": "Laser Etched",
+      "desc": "Laser-etched pattern on polished surface — sharp step-function boundary (FBM-wobbled edge) between etched border strips (G=200+ rough, R=40 oxidized) and polished tile centers (G=10, R=200 mirror), no gradual transition, R=Metallic + G=Roughness",
+      "category": "Surface & Spray Texture",
+      "defaults": {
+        "tile_size": 32,
+        "border_frac": 0.18
+      }
+    },
+    {
+      "id": "spec_liquid_metal",
+      "name": "Liquid Metal",
+      "desc": "Mercury / liquid metal surface — near-perfect reflectivity (R: 240-255, G: 2-8, B: 16-18) with two-frequency gravity wave interference pattern, standing wave beating creates subtle metallic modulation, very low amplitude (0.04), distinguishes from flat chrome, R=Metallic dominant",
+      "category": "Exotic & Kinetic",
+      "defaults": {
+        "wave1_freq": 0.8,
+        "wave2_freq": 1.3,
+        "amplitude": 0.04
+      }
+    },
+    {
+      "id": "spec_chameleon_flake",
+      "name": "Chameleon Flake",
+      "desc": "ChromaFlair / chameleon flake spec — medium-scale Voronoi (20-40/unit), each flake random metallic value (160-220/255) by hash, random-metallic mosaic pattern, inter-flake boundary roughness spike, genuine ChromaFlair spec signature, R=Metallic + G=Roughness",
+      "category": "Exotic & Kinetic",
+      "defaults": {
+        "cell_density": 28,
+        "metallic_base": 190
+      }
+    },
+    {
+      "id": "spec_damascus_steel_spec",
+      "name": "Damascus Steel Spec",
+      "desc": "Damascus steel surface micro-topography spec — flow-field distorted layer bands, high-carbon bands (R=190/255 metallic, G=20/255 smooth, polishes bright), low-carbon bands (R=120/255, G=60/255 slightly rougher, chemical etch reveals), sinuous watered-silk FBM warp, different from paint damascus_steel, R=Metallic + G=Roughness",
+      "category": "Exotic & Kinetic",
+      "defaults": {
+        "num_layers": 18,
+        "warp_strength": 4.5
+      }
+    },
+    {
+      "id": "heat_discoloration",
+      "name": "Heat Discoloration",
+      "desc": "Heat-treated metal color zones — concentric temperature gradient bands like exhaust manifold bluing or weld heat-affected zones with oxide micro-texture",
+      "category": "Racing & Livery Story",
+      "defaults": {
+        "num_zones": 5,
+        "max_radius": 0.2
+      }
+    },
+    {
+      "id": "salt_spray_corrosion",
+      "name": "Salt Spray Corrosion",
+      "desc": "Fine salt-air corrosion pitting — coastal marine environment surface degradation with clustered micro-pits, halo staining, and salt-exposure base roughness",
+      "category": "Racing & Livery Story",
+      "defaults": {
+        "pit_density": 0.015,
+        "cluster_count": 15
+      }
+    },
+    {
+      "id": "vinyl_stretched",
+      "name": "Vinyl Stretched",
+      "desc": "Vinyl wrap stretched over a curve — directional micro-streaks along the stretch axis with periodic ridges where film thinned and thickened, G=Roughness",
+      "category": "Racing & Livery Story",
+      "defaults": {
+        "stretch_freq": 18,
+        "stretch_amp": 0.3
+      }
+    },
+    {
+      "id": "mother_of_pearl_inlay",
+      "name": "Mother of Pearl Inlay",
+      "desc": "Nacre inlay shards — Voronoi cells each with their own iridescence phase and band-axis direction so adjacent shards shimmer at different angles, R=Metallic",
+      "category": "Sparkle & Micro-Metal",
+      "defaults": {
+        "num_shards": 140,
+        "shimmer_freq": 14
+      }
+    },
+    {
+      "id": "anodized_rainbow",
+      "name": "Anodized Rainbow",
+      "desc": "Anodized titanium / niobium oxide rainbow bands — smooth low-roughness surface with FBM-warped interference banding from oxide thickness gradient, R=Metallic",
+      "category": "Sparkle & Micro-Metal",
+      "defaults": {
+        "band_freq": 10,
+        "axis_jitter": 0.1
+      }
+    },
+    {
+      "id": "crypt_brick",
+      "name": "Crypt Brick",
+      "desc": "Heavy stone-block masonry — cold-grey blocks 18-30 px wide x 10-16 px tall in staggered courses with deep dark mortar seams + 6-10 hero cracked/chipped blocks showing bare stone + subtle moss-green CC accent at base, M=Metallic + G=Roughness + B=Clearcoat",
+      "category": "Gothic & Horror",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "brushed_linear_cool",
+      "name": "Brushed Linear (Cool)",
+      "desc": "Cool-toned brushed_linear — crisper higher-frequency grain with boosted contrast, suits steel/titanium/chrome finishes, G=Roughness",
+      "category": "Directional Metal & Brush",
+      "defaults": {
+        "frequency": 92
+      }
+    },
+    {
+      "id": "checker_flag_subtle",
+      "name": "Checker Flag Subtle",
+      "desc": "Faint warped checkered-flag specular ghost — soft-edged alternating cells with a gentle FBM wobble so the grid never sits perfectly straight, R=Metallic",
+      "category": "Racing & Livery Story",
+      "defaults": {
+        "squares": 18,
+        "warp": 0.006
+      }
+    },
+    {
+      "id": "morning_dew_fog",
+      "name": "Morning Dew Fog",
+      "desc": "Soft top-biased misted haze with very fine dewlet micro-bumps — cold-morning damp layer, B=Clearcoat",
+      "category": "Weather, Wear & Track",
+      "defaults": {
+        "fog_density": 0.55
+      }
+    },
+    {
+      "id": "airbrush_gradient_bloom",
+      "name": "Engine-Turn Starburst",
+      "desc": "Explosive radial-arc cluster — 30-50 radiation points each emitting 8-14 fly-cut arcs fanning 12-22 px with bright leading-edge crescents on polished billet steel + 6-10 hero oversized 24-32 px starburst clusters, M=Metallic + G=Roughness + B=Clearcoat",
+      "category": "Engine-Turn & Machined",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "halftone_print",
+      "name": "Halftone Print",
+      "desc": "Regular halftone grid with per-cell radius modulated by FBM tonal map — pop-art / comic halftone dots, R=Metallic",
+      "category": "Artistic & Abstract",
+      "defaults": {
+        "cell": 12,
+        "dot_max": 0.45
+      }
+    },
+    {
+      "id": "ember_field",
+      "name": "Ember Field",
+      "desc": "200-400 glowing embers 3-8 px with hot bright CC cores + cooling outer halos, vertical heat-rise smear, + 8-14 burning coal hot-spots 10-18 px with extra-bright cores, M=Metallic + G=Roughness + B=Clearcoat",
+      "category": "Fire & Heat",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "pangolin_armor",
+      "name": "Pangolin Armor",
+      "desc": "Heavy overlapping pangolin armor scales — bronze/copper spearhead plates 14-22 px wide x 10-16 px tall packed in directional pinecone rows + sharp keel ridge per plate + 8-14 hero 22-30 px lead scales with extra-bright keels, M=Metallic + G=Roughness + B=Clearcoat",
+      "category": "Predator Skins",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "viper_pit_hex",
+      "name": "Viper Pit Hex",
+      "desc": "Pit-viper hex-diamond pattern — angular 10-16 px hex shapes with sharp corners packed dense on cold dark-olive viper-venom substrate + 6-10 hero 18-24 px fang hexes with bright fang-yellow vertical keel ridges, M=Metallic + G=Roughness + B=Clearcoat",
+      "category": "Predator Skins",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "samhain_ritual",
+      "name": "Samhain Ritual",
+      "desc": "Reference-backed occult fire ritual overlay - candle arcs, ceremonial geometry, ember leafwork, bone-gold filigree and hot ash ridges remapped into distinct M/R/CC spec response",
+      "category": "Gothic & Horror",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "ouija_mystic",
+      "name": "Ouija Mystic",
+      "desc": "Reference-backed spirit-board glamour overlay - planchette shields, moon phases, compass eyes, purple filigree and antique-gold linework remapped into dynamic M/R/CC spec response",
+      "category": "Gothic & Horror",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "king_cobra_coil",
+      "name": "King Cobra Coil",
+      "desc": "Reference-backed dangerous animal overlay - gilded cobra scales, fangs, eyes, and black-green armor linework remapped into dynamic M/R/CC spec response",
+      "category": "Dangerous Animals",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "widow_web_venom",
+      "name": "Widow Web Venom",
+      "desc": "Reference-backed dangerous animal overlay - red-black widow web panels, silk radial geometry, glass venom beads, and chromium fang accents remapped into dynamic M/R/CC spec response",
+      "category": "Dangerous Animals",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "tiger_fang_fracture",
+      "name": "Tiger Fang Fracture",
+      "desc": "Reference-backed dangerous animal overlay - tiger-stripe fracture shards, claw flashes, amber predator eyes, and torn black enamel remapped into dynamic M/R/CC spec response",
+      "category": "Dangerous Animals",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "scorpion_ember_hex",
+      "name": "Scorpion Ember Hex",
+      "desc": "Reference-backed dangerous animal overlay - scorched scorpion hooks, ember hex armor, molten cracks, and segmented sting plates remapped into dynamic M/R/CC spec response",
+      "category": "Dangerous Animals",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "hornet_swarm_static",
+      "name": "Hornet Swarm Static",
+      "desc": "Reference-backed dangerous animal overlay - hornet bodies, wing facets, yellow-black warning geometry, and blue static arcs remapped into dynamic M/R/CC spec response",
+      "category": "Dangerous Animals",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "croc_delta_armor",
+      "name": "Croc Delta Armor",
+      "desc": "Reference-backed dangerous animal overlay - swamp crocodile armor plates, bone teeth, dark water gloss, and river-patina scale texture remapped into dynamic M/R/CC spec response",
+      "category": "Dangerous Animals",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "panther_shadow_claw",
+      "name": "Panther Shadow Claw",
+      "desc": "Reference-backed dangerous animal overlay - midnight panther fur, purple claw blades, leopard ghost spots, and cyan eye glints remapped into dynamic M/R/CC spec response",
+      "category": "Dangerous Animals",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "piranha_frenzy_current",
+      "name": "Piranha Frenzy Current",
+      "desc": "Reference-backed dangerous animal overlay - crimson piranha eyes, tooth rows, scale flashes, and turbulent teal current streaks remapped into dynamic M/R/CC spec response",
+      "category": "Dangerous Animals",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "jellyshock_drift",
+      "name": "Jellyshock Drift",
+      "desc": "Reference-backed dangerous animal overlay - neon jellyfish bells, electrical tendrils, translucent ocean mesh, and pink-blue bio-glow remapped into dynamic M/R/CC spec response",
+      "category": "Dangerous Animals",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "sharkbite_riptide",
+      "name": "Sharkbite Riptide",
+      "desc": "Reference-backed dangerous animal overlay - shark teeth, riptide foam, steel-blue fin blades, and saltwater scale plates remapped into dynamic M/R/CC spec response",
+      "category": "Dangerous Animals",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "bayou_hex_burlap",
+      "name": "Bayou Hex Burlap",
+      "desc": "Reference-backed voodoo overlay - moss-dark burlap hex weave, stitched bone knots, root bindings, and swamp grit remapped into dynamic M/R/CC spec response",
+      "category": "Voodoo Inspired",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "candle_wax_veve",
+      "name": "Candle Wax Veve",
+      "desc": "Reference-backed voodoo overlay - raised candle-wax veve lines, amber drips, bead nodes, and scratched altar stone remapped into dynamic M/R/CC spec response",
+      "category": "Voodoo Inspired",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "pins_and_thread",
+      "name": "Pins & Thread",
+      "desc": "Reference-backed voodoo overlay - black cloth patches, red and gold stitch glyphs, pins, pearls, and stitched charm grids remapped into dynamic M/R/CC spec response",
+      "category": "Voodoo Inspired",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "swamp_charm_patina",
+      "name": "Swamp Charm Patina",
+      "desc": "Reference-backed voodoo overlay - oxidized charms, shells, bones, skulls, shields, and green patina relics remapped into dynamic M/R/CC spec response",
+      "category": "Voodoo Inspired",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "mojo_bag_grain",
+      "name": "Mojo Bag Grain",
+      "desc": "Reference-backed voodoo overlay - leather mojo-bag quilting, tied pouches, ritual knots, scratched symbols, and bronze dust remapped into dynamic M/R/CC spec response",
+      "category": "Voodoo Inspired",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "midnight_gris_gris",
+      "name": "Midnight Gris-Gris",
+      "desc": "Reference-backed voodoo overlay - midnight gris-gris scatter, purple crystals, bones, handprints, relic beads, and occult debris remapped into dynamic M/R/CC spec response",
+      "category": "Voodoo Inspired",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "bayou_smoke_script",
+      "name": "Bayou Smoke Script",
+      "desc": "Reference-backed voodoo overlay - blue-purple bayou smoke columns, gold spirit-script circles, skull marks, and glass bubbles remapped into dynamic M/R/CC spec response",
+      "category": "Voodoo Inspired",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "coffin_nail_rust",
+      "name": "Coffin Nail Rust",
+      "desc": "Reference-backed voodoo overlay - blackened coffin nails, X-stamped rivets, rust pits, tiny skull talismans, and dirty bronze scars remapped into dynamic M/R/CC spec response",
+      "category": "Voodoo Inspired",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "root_doctor_copper",
+      "name": "Root Doctor Copper",
+      "desc": "Reference-backed voodoo overlay - copper root tendrils, masks, bottles, bone charms, patina enamel, and dense ritual icons remapped into dynamic M/R/CC spec response",
+      "category": "Voodoo Inspired",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spanish_moss_static",
+      "name": "Spanish Moss Static",
+      "desc": "Reference-backed voodoo overlay - hanging Spanish moss, pale thread filigree, dew pearls, fog wisps, and swamp-lace sigils remapped into dynamic M/R/CC spec response",
+      "category": "Voodoo Inspired",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "seigaiha_chrome",
+      "name": "Seigaiha Chrome",
+      "desc": "Reference-backed Rising Sun Spec overlay - polished blue seigaiha wave geometry, chrome arcs, floral caps, and bead highlights remapped into dynamic M/R/CC spec response",
+      "category": "Rising Sun Spec",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "sakura_static",
+      "name": "Sakura Static",
+      "desc": "Reference-backed Rising Sun Spec overlay - sakura blossoms, pink gloss petals, gold linework, and soft star-grid texture remapped into dynamic M/R/CC spec response",
+      "category": "Rising Sun Spec",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "kintsugi_rift",
+      "name": "Kintsugi Rift",
+      "desc": "Reference-backed Rising Sun Spec overlay - navy ceramic shards, ivory panels, repaired gold fractures, and fine floral inlay remapped into dynamic M/R/CC spec response",
+      "category": "Rising Sun Spec",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "oni_veil_mosaic",
+      "name": "Oni Veil Mosaic",
+      "desc": "Reference-backed Rising Sun Spec overlay - dark oni masks, purple-teal veil shapes, red eye glints, and shadow floral mosaics remapped into dynamic M/R/CC spec response",
+      "category": "Rising Sun Spec",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "shogun_scale_brocade",
+      "name": "Shogun Scale Brocade",
+      "desc": "Reference-backed Rising Sun Spec overlay - shogun armor plates, red cord brocade, gold crests, and layered scale panels remapped into dynamic M/R/CC spec response",
+      "category": "Rising Sun Spec",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "kyoto_lantern_filigree",
+      "name": "Kyoto Lantern Filigree",
+      "desc": "Reference-backed Rising Sun Spec overlay - Kyoto lanterns, tassels, floral filigree, teal lacquer, and warm gold scrollwork remapped into dynamic M/R/CC spec response",
+      "category": "Rising Sun Spec",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "bonsai_drift_circuit",
+      "name": "Bonsai Drift Circuit",
+      "desc": "Reference-backed Rising Sun Spec overlay - bonsai branch flow, nature circuit linework, moss greens, copper traces, and circular brush currents remapped into dynamic M/R/CC spec response",
+      "category": "Rising Sun Spec",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "fuji_frost_crest",
+      "name": "Fuji Frost Crest",
+      "desc": "Reference-backed Rising Sun Spec overlay - icy Fuji mountain crests, snowflake geometry, silver-blue peaks, and frosted cloud scrolls remapped into dynamic M/R/CC spec response",
+      "category": "Rising Sun Spec",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "rising_sun_prismwave",
+      "name": "Rising Sun Prismwave",
+      "desc": "Reference-backed Rising Sun Spec overlay - red-gold sunburst fans, prism waves, blue accent arcs, and dense gold pattern sparkle remapped into dynamic M/R/CC spec response",
+      "category": "Rising Sun Spec",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "shark_denticle",
+      "name": "Shark Denticle",
+      "desc": "Drag-reducing shark-skin denticle pattern — hundreds of small tooth-shaped 8-14 px scales all oriented in the same flow direction with bright keel ridge highlights + 12-20 hero 16-22 px lead denticles with extra-bright keels, M=Metallic + G=Roughness + B=Clearcoat",
+      "category": "Predator Skins",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "jaguar_rosette",
+      "name": "Jaguar Rosette",
+      "desc": "Jaguar coat rosette markings — 90-200 ring clusters of 3-5 dark spots around a darker center spot on warm tan-gold base + 8-12 hero 22-28 px rosettes with bright tan rim and dramatic dark spots, M=Metallic + G=Roughness + B=Clearcoat",
+      "category": "Predator Skins",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "alligator_hide",
+      "name": "Alligator Hide",
+      "desc": "Fine 8-14 px rectangular leathery plates packed dense, deep dark M=low fissure cracks between plates, per-plate independent M/R/CC, sub-plate 2-3 px micro-pitting, M=Metallic + G=Roughness + B=Clearcoat",
+      "category": "Predator Skins",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "dragon_scale_macro",
+      "name": "Dragon Scale Macro",
+      "desc": "Armored overlapping 14-26 px pentagon/hex hybrid dragon plates with M=high spine ridge + dark crevice + CC iridescent edge highlight + 12-20 hero spike-crest plates with extra-bright cresting, M=Metallic + G=Roughness + B=Clearcoat",
+      "category": "Predator Skins",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "raptor_feather",
+      "name": "Raptor Feather",
+      "desc": "Overlapping raptor flight feathers — vertical quill segments 6-14 px tall x 3-6 px wide with bright central shaft + barb spread + cohesive raven-black/warm-brown/bronze racing palette + 8-15 hero primary feathers 18-24 px, M=Metallic + G=Roughness + B=Clearcoat",
+      "category": "Predator Skins",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_weld_stack_rainbow",
+      "name": "Weld Stack Rainbow",
+      "desc": "TIG bead stacks with blue-straw heat tint and crisp bead rims.",
+      "category": "Machined & Race Hardware",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_titanium_heat_fishscale",
+      "name": "Titanium Heat Fishscale",
+      "desc": "Overlapping titanium heat scales with blue, violet, and gold oxide shifts.",
+      "category": "Fire, Heat & Exhaust",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_ceramic_brake_sinter",
+      "name": "Ceramic Brake Sinter",
+      "desc": "Carbon-ceramic rotor pores, swept brake arcs, and hot dust glazing.",
+      "category": "Machined & Race Hardware",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_beadlock_bolt_circle",
+      "name": "Beadlock Bolt Circle",
+      "desc": "Dense beadlock bolt heads, washer rings, and indexed circular rows.",
+      "category": "Machined & Race Hardware",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_knurled_socket_grip",
+      "name": "Knurled Socket Grip",
+      "desc": "Socket-tool diamond knurl and polished peak flecks.",
+      "category": "Machined & Race Hardware",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_louvered_aluminum_slot",
+      "name": "Louvered Aluminum Slot",
+      "desc": "Stamped aluminum louvers with dark slots and bright leading lips.",
+      "category": "Machined & Race Hardware",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_carbon_tow_spread",
+      "name": "Carbon Tow Spread",
+      "desc": "Spread-tow carbon ribbons with rectangular fiber lanes.",
+      "category": "Carbon & Composite",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_kevlar_blue_hybrid",
+      "name": "Kevlar Blue Hybrid",
+      "desc": "Aramid-carbon hybrid weave with satin yellow and blue-black tow crossings.",
+      "category": "Carbon & Composite",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_nomex_honeycomb_core",
+      "name": "Nomex Honeycomb Core",
+      "desc": "Open honeycomb composite core with resin-wet cell edges.",
+      "category": "Carbon & Composite",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_prepreg_resin_bleed",
+      "name": "Prepreg Resin Bleed",
+      "desc": "Prepreg pinholes, resin bleed lines, and glossy trapped clear.",
+      "category": "Carbon & Composite",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_braided_hose_sleeve",
+      "name": "Braided Hose Sleeve",
+      "desc": "Braided stainless and aramid sleeve strands in diagonal over-under rows.",
+      "category": "Race Track Materials",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_rubber_tire_cord",
+      "name": "Rubber Tire Cord",
+      "desc": "Exposed tire cord ribs, rubber scuffs, and satin black worn streaks.",
+      "category": "Race Track Materials",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_tar_snake_sealant",
+      "name": "Tar Snake Sealant",
+      "desc": "Track tar-seal strips with glossy raised asphalt snakes.",
+      "category": "Race Track Materials",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_rain_bead_aero",
+      "name": "Rain Bead Aero",
+      "desc": "Wind-sheared rain beads and short aero trails under clearcoat.",
+      "category": "Race Track Materials",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_sharkskin_riblet",
+      "name": "Sharkskin Riblet",
+      "desc": "Directional shark denticle riblets with tiny keel highlights.",
+      "category": "Predator & Animal Armor",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_alligator_scute_plate",
+      "name": "Alligator Scute Plate",
+      "desc": "Alligator scute armor plates, dark seams, and worn glossy crowns.",
+      "category": "Predator & Animal Armor",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_mantis_shrimp_shell",
+      "name": "Mantis Shrimp Shell",
+      "desc": "Segmented iridescent shell armor with micro ridges.",
+      "category": "Predator & Animal Armor",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_armadillo_band_armor",
+      "name": "Armadillo Band Armor",
+      "desc": "Layered armadillo armor bands with hard ridges and dusty valleys.",
+      "category": "Predator & Animal Armor",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_abalone_crack_inlay",
+      "name": "Abalone Crack Inlay",
+      "desc": "Abalone shard inlay with pearly islands and dark grout.",
+      "category": "Cultural & Inlay",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_guilloche_watch_dial",
+      "name": "Guilloche Watch Dial",
+      "desc": "Fine watch-dial guilloche waves and jeweled engraved cuts.",
+      "category": "Engine Turn & Optical",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_laser_etched_microbar",
+      "name": "Laser Etched Microbar",
+      "desc": "Laser-etched micro bars, registration ticks, and satin burn marks.",
+      "category": "Engine Turn & Optical",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_circuit_solder_mask",
+      "name": "Circuit Solder Mask",
+      "desc": "PCB traces, solder pads, via rings, and gloss mask islands.",
+      "category": "Engine Turn & Optical",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_exhaust_soot_gradient",
+      "name": "Exhaust Soot Gradient",
+      "desc": "Layered exhaust soot, oxide specks, and brushed heat flow.",
+      "category": "Fire, Heat & Exhaust",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_flame_lapped_clearcoat",
+      "name": "Flame Lapped Clearcoat",
+      "desc": "Kustom flame-lap clearcoat edges with glossy hotrod overlap ridges.",
+      "category": "Fire, Heat & Exhaust",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_burnt_clutch_dust",
+      "name": "Burnt Clutch Dust",
+      "desc": "Copper clutch dust, hot spots, and scorched friction streaks.",
+      "category": "Fire, Heat & Exhaust",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_ice_frost_feather",
+      "name": "Ice Frost Feather",
+      "desc": "Frost fern crystals with sharp clearcoat feather branches.",
+      "category": "Weathered Physical",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_mud_crackle_dried",
+      "name": "Dried Mud Crackle",
+      "desc": "Dried mud plates with clean cracks and dusty high shelves.",
+      "category": "Weathered Physical",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_red_clay_roost",
+      "name": "Red Clay Roost",
+      "desc": "Red-clay roost flecks and angled dirt sling streaks.",
+      "category": "Weathered Physical",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_fuel_stain_evap_ring",
+      "name": "Fuel Stain Evap Ring",
+      "desc": "Fuel evaporated rings, ghost halos, and clean solvent edge marks.",
+      "category": "Liquid & Clearcoat",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_polished_swirl_compound",
+      "name": "Hay Straw",
+      "desc": "Dry woven straw and hay-fiber strands with a matte, fibrous sheen.",
+      "category": "Liquid & Clearcoat",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_sandblasted_mask_edge",
+      "name": "Sandblasted Mask Edge",
+      "desc": "Masked blast transitions, satin eroded grain, and sharp tape borders.",
+      "category": "Weathered Physical",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_anodized_hex_fade",
+      "name": "Anodized Hex Fade",
+      "desc": "Anodized hex panels with electric fade and polished cell lips.",
+      "category": "Engine Turn & Optical",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_waterjet_cut_edge",
+      "name": "Waterjet Cut Edge",
+      "desc": "Waterjet kerf striations, garnet scoring, and cut-edge shimmer.",
+      "category": "Machined & Race Hardware",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_lfr_starfield_scatter",
+      "name": "Liberty Starfield Scatter",
+      "desc": "Omnidirectional 5-point star scatter — bright glint cores, signed twinkle halos, and a faint constellation web.",
+      "category": "Let Freedom Ring",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_lfr_corridor_sheen",
+      "name": "Stripe Corridor Sheen",
+      "desc": "Multi-angle anisotropic sheen corridors — stripe feel at every rotation with cross-lane brush grain.",
+      "category": "Let Freedom Ring",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_lfr_firework_radial",
+      "name": "Firework Burst Radial",
+      "desc": "Scattered radial firework bursts — bright spokes, expanding shock rings, and ember-trail glow coronas.",
+      "category": "Let Freedom Ring",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_lfr_brocade_relief",
+      "name": "Eagle Brocade Relief",
+      "desc": "Interlocking feather-scale brocade at varying angles with barb grain and a damask diamond overlay.",
+      "category": "Let Freedom Ring",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_lfr_liberty_colorflip",
+      "name": "Liberty Color-Flip",
+      "desc": "Angle-reactive tricolor flip — three offset interference phase fields flash red-to-white-to-blue as light sweeps.",
+      "category": "Let Freedom Ring",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_lfr_anisotropic_drift",
+      "name": "Brushed Steel Drift",
+      "desc": "Curling multi-directional brushed metal — flowing highlights, perpendicular micro-scratches, satin sheen pools.",
+      "category": "Let Freedom Ring",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_lfr_sparkler_embers",
+      "name": "Sparkler Ember Dust",
+      "desc": "Dense hot micro-sparks with radiating jets, drifting soot streaks, and warm glow blooms.",
+      "category": "Let Freedom Ring",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_lfr_torch_flicker",
+      "name": "Liberty Torch Flicker",
+      "desc": "Living flame-tongue flicker — bright cores, heat-shimmer roughness warp, ember glow pooling at lobe bases.",
+      "category": "Let Freedom Ring",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_lfr_capitol_veins",
+      "name": "Capitol Marble Veins",
+      "desc": "Branching polished marble veins with micro-fracture grain and translucent calcite depth.",
+      "category": "Let Freedom Ring",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    },
+    {
+      "id": "spec_lfr_canyon_bevel",
+      "name": "Canyon Relief Bevel",
+      "desc": "Faceted canyon relief — per-facet bevel highlights, valley-edge roughness, and ambient depth pools.",
+      "category": "Let Freedom Ring",
+      "defaults": {},
+      "defaultChannels": "MRC"
+    }
+  ],
+  "groups": {
+    "pearl_micro": "Sparkle & Micro-Metal",
+    "gold_flake": "Sparkle & Micro-Metal",
+    "holographic_flake": "Sparkle & Micro-Metal",
+    "metallic_sand": "Sparkle & Micro-Metal",
+    "mother_of_pearl_inlay": "Sparkle & Micro-Metal",
+    "prismatic_shatter": "Sparkle & Micro-Metal",
+    "stardust_fine": "Sparkle & Micro-Metal",
+    "galaxy_swirl": "Sparkle & Micro-Metal",
+    "spec_chromatic_aberration": "Optical & Interference",
+    "spec_diffraction_grating_cd": "Optical & Interference",
+    "spec_fresnel_gradient": "Optical & Interference",
+    "spec_iridescent_film": "Optical & Interference",
+    "spec_retroreflective": "Optical & Interference",
+    "wave_ripple": "Optical & Interference",
+    "anodized_rainbow": "Optical & Interference",
+    "brushed_cross": "Directional Metal & Brush",
+    "brushed_diagonal": "Directional Metal & Brush",
+    "brushed_linear_cool": "Directional Metal & Brush",
+    "spec_anisotropic_radial": "Directional Metal & Brush",
+    "spec_carbon_2x2_twill": "Carbon & Composite Weave",
+    "spec_carbon_3k_fine": "Carbon & Composite Weave",
+    "spec_carbon_forged": "Carbon & Composite Weave",
+    "spec_carbon_wet_layup": "Carbon & Composite Weave",
+    "spec_expanded_metal": "Carbon & Composite Weave",
+    "spec_fiberglass_chopped": "Carbon & Composite Weave",
+    "spec_kevlar_weave": "Carbon & Composite Weave",
+    "spec_mesh_perforated": "Carbon & Composite Weave",
+    "spec_carbon_weave": "Carbon & Composite Weave",
+    "cc_overspray_halo": "Clearcoat & Coating",
+    "cc_panel_fade": "Clearcoat & Coating",
+    "cc_panel_pool": "Clearcoat & Coating",
+    "cc_wet_zone": "Clearcoat & Coating",
+    "banded_rows": "Structure & Geometry",
+    "chevron_bands": "Structure & Geometry",
+    "gradient_bands": "Structure & Geometry",
+    "hex_cells": "Structure & Geometry",
+    "panel_zones": "Structure & Geometry",
+    "spec_architectural_grid": "Structure & Geometry",
+    "spec_brick_mortar": "Structure & Geometry",
+    "spec_hammered_dimple": "Structure & Geometry",
+    "wave_bands": "Structure & Geometry",
+    "voronoi_fracture": "Structure & Geometry",
+    "pebble_grain": "Surface & Spray Texture",
+    "spec_anodized_texture": "Surface & Spray Texture",
+    "spec_laser_etched": "Surface & Spray Texture",
+    "spec_pvd_coating": "Surface & Spray Texture",
+    "lava_crack": "Organic & Natural",
+    "spec_fish_scales": "Organic & Natural",
+    "spec_snake_scales": "Organic & Natural",
+    "spec_terrain_erosion": "Organic & Natural",
+    "crackle_network": "Weather, Wear & Track",
+    "morning_dew_fog": "Weather, Wear & Track",
+    "spec_galvanic_corrosion": "Weather, Wear & Track",
+    "spec_sandblast_strip": "Weather, Wear & Track",
+    "spec_stress_fractures": "Weather, Wear & Track",
+    "salt_spray_corrosion": "Weather, Wear & Track",
+    "checker_flag_subtle": "Racing & Livery Story",
+    "heat_discoloration": "Racing & Livery Story",
+    "vinyl_stretched": "Racing & Livery Story",
+    "sparkle_shattered": "Mechanical & Industrial",
+    "spec_chameleon_flake": "Exotic & Kinetic",
+    "spec_damascus_steel_spec": "Exotic & Kinetic",
+    "spec_liquid_metal": "Exotic & Kinetic",
+    "edm_dimple": "Precision & Guilloché",
+    "guilloche_moire_eng": "Precision & Guilloché",
+    "guilloche_sunray": "Precision & Guilloché",
+    "guilloche_waves": "Precision & Guilloché",
+    "knurl_diamond": "Precision & Guilloché",
+    "diamond_lattice": "Precision & Guilloché",
+    "halftone_print": "Artistic & Abstract",
+    "alligator_hide": "Predator Skins",
+    "dragon_scale_macro": "Predator Skins",
+    "jaguar_rosette": "Predator Skins",
+    "pangolin_armor": "Predator Skins",
+    "raptor_feather": "Predator Skins",
+    "shark_denticle": "Predator Skins",
+    "snake_scale_diamond": "Predator Skins",
+    "viper_pit_hex": "Predator Skins",
+    "king_cobra_coil": "Dangerous Animals",
+    "widow_web_venom": "Dangerous Animals",
+    "tiger_fang_fracture": "Dangerous Animals",
+    "scorpion_ember_hex": "Dangerous Animals",
+    "hornet_swarm_static": "Dangerous Animals",
+    "croc_delta_armor": "Dangerous Animals",
+    "panther_shadow_claw": "Dangerous Animals",
+    "piranha_frenzy_current": "Dangerous Animals",
+    "jellyshock_drift": "Dangerous Animals",
+    "sharkbite_riptide": "Dangerous Animals",
+    "brushed_sparkle": "Gothic & Horror",
+    "crypt_brick": "Gothic & Horror",
+    "ouija_mystic": "Gothic & Horror",
+    "samhain_ritual": "Gothic & Horror",
+    "bayou_hex_burlap": "Voodoo Inspired",
+    "candle_wax_veve": "Voodoo Inspired",
+    "pins_and_thread": "Voodoo Inspired",
+    "swamp_charm_patina": "Voodoo Inspired",
+    "mojo_bag_grain": "Voodoo Inspired",
+    "midnight_gris_gris": "Voodoo Inspired",
+    "bayou_smoke_script": "Voodoo Inspired",
+    "coffin_nail_rust": "Voodoo Inspired",
+    "root_doctor_copper": "Voodoo Inspired",
+    "spanish_moss_static": "Voodoo Inspired",
+    "seigaiha_chrome": "Rising Sun Spec",
+    "sakura_static": "Rising Sun Spec",
+    "kintsugi_rift": "Rising Sun Spec",
+    "oni_veil_mosaic": "Rising Sun Spec",
+    "shogun_scale_brocade": "Rising Sun Spec",
+    "kyoto_lantern_filigree": "Rising Sun Spec",
+    "bonsai_drift_circuit": "Rising Sun Spec",
+    "fuji_frost_crest": "Rising Sun Spec",
+    "rising_sun_prismwave": "Rising Sun Spec",
+    "airbrush_gradient_bloom": "Engine-Turn & Machined",
+    "ember_field": "Fire & Heat",
+    "holo_prism_shift": "Holographic & Color-Shift",
+    "spec_holographic_oil_circuit": "Source Pattern Plates",
+    "spec_black_emboss_mandala": "Source Pattern Plates",
+    "spec_graphite_cross_lattice": "Source Pattern Plates",
+    "spec_marble_flow_pearl": "Source Pattern Plates",
+    "spec_acid_carbon_mesh": "Source Pattern Plates",
+    "spec_noir_houndstooth_star": "Source Pattern Plates",
+    "spec_hazard_chevron_weave": "Source Pattern Plates",
+    "spec_burn_hole_mesh": "Source Pattern Plates",
+    "spec_teal_hex_haze": "Source Pattern Plates",
+    "spec_shadow_diamond_mesh": "Source Pattern Plates",
+    "spec_talavera_tile_riot": "Source Pattern Plates",
+    "spec_green_plasma_vein": "Source Pattern Plates",
+    "spec_neon_fracture_net": "Source Pattern Plates",
+    "spec_pink_checker_carbon": "Source Pattern Plates",
+    "spec_red_herringbone_heat": "Source Pattern Plates",
+    "spec_chrome_oval_chain": "Source Pattern Plates",
+    "spec_terracotta_ceramic_grid": "Source Pattern Plates",
+    "spec_gunmetal_geo_tessellation": "Source Pattern Plates",
+    "spec_tokyo_script_textile": "Source Pattern Plates",
+    "spec_lime_pixel_confetti": "Source Pattern Plates",
+    "spec_psychedelic_floral_spin": "Source Pattern Plates",
+    "spec_ice_facet_shatter": "Source Pattern Plates",
+    "spec_ember_circuit_maze": "Source Pattern Plates",
+    "spec_blue_polygon_shatter": "Source Pattern Plates",
+    "spec_weld_stack_rainbow": "Definitive Spec Replacements",
+    "spec_titanium_heat_fishscale": "Definitive Spec Replacements",
+    "spec_ceramic_brake_sinter": "Definitive Spec Replacements",
+    "spec_beadlock_bolt_circle": "Definitive Spec Replacements",
+    "spec_knurled_socket_grip": "Definitive Spec Replacements",
+    "spec_louvered_aluminum_slot": "Definitive Spec Replacements",
+    "spec_carbon_tow_spread": "Definitive Spec Replacements",
+    "spec_kevlar_blue_hybrid": "Definitive Spec Replacements",
+    "spec_nomex_honeycomb_core": "Definitive Spec Replacements",
+    "spec_prepreg_resin_bleed": "Definitive Spec Replacements",
+    "spec_braided_hose_sleeve": "Definitive Spec Replacements",
+    "spec_rubber_tire_cord": "Definitive Spec Replacements",
+    "spec_tar_snake_sealant": "Definitive Spec Replacements",
+    "spec_rain_bead_aero": "Definitive Spec Replacements",
+    "spec_sharkskin_riblet": "Definitive Spec Replacements",
+    "spec_alligator_scute_plate": "Definitive Spec Replacements",
+    "spec_mantis_shrimp_shell": "Definitive Spec Replacements",
+    "spec_armadillo_band_armor": "Definitive Spec Replacements",
+    "spec_abalone_crack_inlay": "Definitive Spec Replacements",
+    "spec_guilloche_watch_dial": "Definitive Spec Replacements",
+    "spec_laser_etched_microbar": "Definitive Spec Replacements",
+    "spec_circuit_solder_mask": "Definitive Spec Replacements",
+    "spec_exhaust_soot_gradient": "Definitive Spec Replacements",
+    "spec_flame_lapped_clearcoat": "Definitive Spec Replacements",
+    "spec_burnt_clutch_dust": "Definitive Spec Replacements",
+    "spec_ice_frost_feather": "Definitive Spec Replacements",
+    "spec_mud_crackle_dried": "Definitive Spec Replacements",
+    "spec_red_clay_roost": "Definitive Spec Replacements",
+    "spec_fuel_stain_evap_ring": "Definitive Spec Replacements",
+    "spec_polished_swirl_compound": "Definitive Spec Replacements",
+    "spec_sandblasted_mask_edge": "Definitive Spec Replacements",
+    "spec_anodized_hex_fade": "Definitive Spec Replacements",
+    "spec_waterjet_cut_edge": "Definitive Spec Replacements",
+    "spec_lfr_starfield_scatter": "Let Freedom Ring",
+    "spec_lfr_corridor_sheen": "Let Freedom Ring",
+    "spec_lfr_firework_radial": "Let Freedom Ring",
+    "spec_lfr_brocade_relief": "Let Freedom Ring",
+    "spec_lfr_liberty_colorflip": "Let Freedom Ring",
+    "spec_lfr_anisotropic_drift": "Let Freedom Ring",
+    "spec_lfr_sparkler_embers": "Let Freedom Ring",
+    "spec_lfr_torch_flicker": "Let Freedom Ring",
+    "spec_lfr_capitol_veins": "Let Freedom Ring",
+    "spec_lfr_canyon_bevel": "Let Freedom Ring"
+  }
+}

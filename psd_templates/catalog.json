@@ -1,5 +1,5 @@
 {
-  "version": "6.2.0",
+  "version": "6.3.0",
   "schema_version": "1.0.0",
   "generated": "2026-04-17",
   "description": "Master catalog of PSD templates Shokker Paint Booth recognizes. Each entry describes a template that SPB can identify by layer signature and provides metadata about layout, zones, and sponsor placement without needing to load the PSD itself.",

@@ -2,7 +2,7 @@
   "name": "GT3 Modern",
   "description": "Contemporary GT3 factory-team livery: pearl body with color-shift accents, gloss sponsors, and brushed aluminum roof.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "any GT3 chassis, generic_sports_car",
   "notes": "Designed for sleek endurance cars. The color shift accent comes alive under track lights. Swap base color hex on Body zone to re-theme the whole livery instantly.",
   "zones": [

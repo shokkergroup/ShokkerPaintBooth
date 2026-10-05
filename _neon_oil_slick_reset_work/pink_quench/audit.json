@@ -1,0 +1,194 @@
+{
+  "schema": "spb-neon-oil-slick-pilot-audit/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon_pink_blaze",
+  "seed": 2443190310,
+  "builder_elapsed_seconds": 2.032133,
+  "native_paint_spec_elapsed_seconds": 2.082145,
+  "repeat_elapsed_seconds": 2.361313,
+  "deterministic": true,
+  "paint_sha256": "5fcc0200717ef1e0a6e900d635b3081ef7998ba13a16f9c942da4244430b151f",
+  "spec_sha256": "11e692f2cdf0f8c2d9bd005db514a15b24ff4fb97214060468b75673e4d42766",
+  "material_stats_native": {
+    "std": {
+      "M": 82.78994,
+      "R": 81.487122,
+      "Cc": 83.260696
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.324976,
+      "M_Cc": -0.218501,
+      "R_Cc": -0.217276
+    }
+  },
+  "geometry_stats": {
+    "family_count": 10,
+    "families": {
+      "black ceramic shock facets": 5041,
+      "broken glass ends": 630,
+      "cyan stress pinpoints": 480,
+      "dark quenched pits": 575,
+      "magenta glass splinters": 3834,
+      "oxide crumbs": 811,
+      "pale temper lips": 1934,
+      "quenched glass beads": 492,
+      "short branching checks": 1046,
+      "violet cooling shadows": 2021
+    },
+    "width_native_min": 8.019,
+    "width_native_median": 16.889,
+    "width_native_p90": 26.611,
+    "width_native_max": 31.499,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "black ceramic shock facets": 0.282085,
+    "magenta glass splinters": 0.182626,
+    "pale temper lips": 0.075921,
+    "violet cooling shadows": 0.065861,
+    "cyan stress pinpoints": 0.007625,
+    "broken glass ends": 0.01732,
+    "short branching checks": 0.028885,
+    "quenched glass beads": 0.008656,
+    "oxide crumbs": 0.011912,
+    "dark quenched pits": 0.01106
+  },
+  "max_unmarked_void_native_px": 24.0,
+  "seam_ratios_vs_local_neighbor_change": {
+    "paint_x_to_local_ratio": 1.59803,
+    "paint_y_to_local_ratio": 1.227133,
+    "M_x_to_local_ratio": 1.598656,
+    "M_y_to_local_ratio": 1.005495,
+    "R_x_to_local_ratio": 1.547798,
+    "R_y_to_local_ratio": 1.128632,
+    "Cc_x_to_local_ratio": 1.168437,
+    "Cc_y_to_local_ratio": 0.913907
+  },
+  "picker_luma_std": {
+    "64": 11.275024,
+    "128": 18.123425
+  },
+  "checks": {
+    "deterministic": true,
+    "native_paint_spec_under_3_seconds": true,
+    "repeat_under_3_seconds": true,
+    "ten_attached_families": true,
+    "all_dimensions_8_32_native": true,
+    "eight_tiers_each_channel": true,
+    "std_at_least_30_each_channel": true,
+    "channels_not_copied_or_inverse": true,
+    "full_canvas_no_void_over_64px": true,
+    "picker_64_survives": true,
+    "picker_128_survives": true,
+    "periodic_seams_below_3x_local_change": true
+  },
+  "all_mechanical_checks_green": true,
+  "catalog_m7": "PENDING isolated official workbook harness",
+  "mapped_car": "PENDING; three-position material light proxy supplied for owner screening",
+  "manifest": {
+    "schema": "spb-neon-oil-slick-pilot/1",
+    "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+    "finish_id": "neon_pink_blaze",
+    "display_name": "Pink Quench",
+    "carrier": "black ceramic coating loaded with thermally quenched ruby fluorescent glass splinters",
+    "material_story": {
+      "M": "conductive ceramic exposure, cyan stress pinpoints, oxide crumbs, and broken substrate lead while glass stays low",
+      "R": "broken ends, short checks, oxide crumbs, quenched pits, and cooling shadows rise independently",
+      "Cc": "intact magenta glass, pale temper lips, and quenched beads retain clear; breaks, checks, and pits interrupt it"
+    },
+    "vetoes": [
+      "flame, ribbon, tiger stripe, or long crack",
+      "heart, flower, petal, or radial stamp",
+      "floating confetti or generic flake recolor",
+      "Blue Breakdown, Redline Shear, or Emberwake recolor",
+      "generic noise or unrelated texture underlay"
+    ],
+    "native_size": [
+      2048,
+      2048
+    ],
+    "builder_elapsed_seconds": 2.032133,
+    "material_stats": {
+      "std": {
+        "M": 82.78994,
+        "R": 81.487122,
+        "Cc": 83.260696
+      },
+      "range": {
+        "M": [
+          7,
+          253
+        ],
+        "R": [
+          8,
+          251
+        ],
+        "Cc": [
+          6,
+          254
+        ]
+      },
+      "tier_count": {
+        "M": 8,
+        "R": 8,
+        "Cc": 8
+      },
+      "correlation": {
+        "M_R": 0.324976,
+        "M_Cc": -0.218501,
+        "R_Cc": -0.217276
+      }
+    },
+    "geometry_stats": {
+      "family_count": 10,
+      "families": {
+        "black ceramic shock facets": 5041,
+        "broken glass ends": 630,
+        "cyan stress pinpoints": 480,
+        "dark quenched pits": 575,
+        "magenta glass splinters": 3834,
+        "oxide crumbs": 811,
+        "pale temper lips": 1934,
+        "quenched glass beads": 492,
+        "short branching checks": 1046,
+        "violet cooling shadows": 2021
+      },
+      "width_native_min": 8.019,
+      "width_native_median": 16.889,
+      "width_native_p90": 26.611,
+      "width_native_max": 31.499,
+      "fine_8_32_fraction": 1.0
+    },
+    "causal_mask_coverage": {
+      "black ceramic shock facets": 0.282085,
+      "magenta glass splinters": 0.182626,
+      "pale temper lips": 0.075921,
+      "violet cooling shadows": 0.065861,
+      "cyan stress pinpoints": 0.007625,
+      "broken glass ends": 0.01732,
+      "short branching checks": 0.028885,
+      "quenched glass beads": 0.008656,
+      "oxide crumbs": 0.011912,
+      "dark quenched pits": 0.01106
+    }
+  }
+}

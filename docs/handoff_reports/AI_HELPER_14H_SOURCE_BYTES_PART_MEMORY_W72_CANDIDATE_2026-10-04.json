@@ -1,0 +1,50 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "task": "W72 layered source byte identity + pending saved-part ownership guard",
+  "createdUtc": "2026-10-04T00:00:00Z",
+  "scope": "Private candidate only; no live canvas/controller files, native app, provider, server, or project data were changed.",
+  "frozenInputs": "_easy_claude_work/ai14h_w72_candidate/source-freeze.json",
+  "candidate": {
+    "canvas": "_easy_claude_work/ai14h_w72_candidate/canvas/paint-booth-3-canvas.js",
+    "controller": "_easy_claude_work/ai14h_w72_candidate/js/spb-pro-ai.js",
+    "patch": "_easy_claude_work/ai14h_w72_candidate/AI_HELPER_14H_SOURCE_BYTES_PART_MEMORY_W72.patch"
+  },
+  "changes": [
+    "Layered imports with a valid sourceBytesSha256 commit file-sha256:<64 lowercase hex>; a present malformed digest throws before document commit.",
+    "Older backends missing sourceBytesSha256 retain a clearly weak composite-sha256:<digest> identity. On no-WebCrypto fallback, the identity is separately tagged composite-fnv1a32:<digest>, avoiding a false SHA-256 claim.",
+    "The durable part-memory runtime is gated at its actual isCommitted callback: layered imports qualify only with file-sha256 identity. This blocks durable capture/hydration for older backends while leaving normal source loading and scoped current-session helper code in place.",
+    "The edit queue prior-part check now counts sanitized unresolved pending provenance, so a source-color roof request cannot add a new source roof over an inert saved roof; an unrelated pending part remains unaffected."
+  ],
+  "verification": {
+    "test": "tests/ai_source_bytes_part_memory_w72_contract.cjs",
+    "result": "PASS",
+    "cases": 21,
+    "groups": {
+      "fingerprintSelection": 10,
+      "durableGateThroughActualInitHook": 4,
+      "pendingOwnerPredicate": 5,
+      "actualQueuePendingControls": 2
+    },
+    "syntax": "node --check passed for candidate canvas and pro-ai source.",
+    "method": "Executed extracted actual candidate fingerprint helper, the actual ensurePartMemoryRuntime isCommitted hook, actual editKey/pending-owner helper, and actual queueEditZones against controlled stubs. No full app cold load or native test."
+  },
+  "sourceHashes": {
+    "frozen W53 canvas": "159716b3150c785517bec3a1cf1b00a7318121885e7640276b5ffaf14fc91d9a",
+    "frozen integration6 controller": "e1296f12c9f72a68be513f91aafe7cd2502804cc2fc4eaf74600612796fcc43e",
+    "frozen part-memory project bridge": "763d36addca501256e1346d58b797d339b15666d04273cbf5c4840b15c1c6fc1",
+    "candidate canvas": "1bd43baf7d1bdac1e07417d6ff6b30f71e78f1ff9169987c03198dd63dc2d4da",
+    "candidate controller": "9709d6a2ec1a72376d07e9a8e07d2252c95888b2e365540f2ad0c6efd73e3bd1"
+  },
+  "limitations": [
+    "The harness proves helper selection and callback/queue boundaries from actual candidate source, but it does not run a full browser/canvas source-load commit.",
+    "A valid backend digest must be supplied by the separately isolated W71 backend candidate before the strong path can activate; older servers continue to load with weak composite identity but cannot persist/rebind named-part ownership.",
+    "The W72 patch does not change persisted schema fields or add raw bytes; it relies on exact tagged fingerprint equality already present in the W53 memory binding."
+  ],
+  "effects": {
+    "productionFiles": 0,
+    "native": 0,
+    "providers": 0,
+    "server": 0,
+    "projectWrites": 0
+  }
+}

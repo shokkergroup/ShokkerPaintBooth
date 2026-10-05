@@ -1,0 +1,113 @@
+{
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon_ice_white",
+  "display_name": "Cryoglass Fiber",
+  "builder_seconds": 1.819635,
+  "under_three_seconds": true,
+  "determinism": {
+    "paint_byte_identical": true,
+    "spec_byte_identical": true,
+    "rerun_seconds": 2.057487,
+    "pass": true
+  },
+  "material_stats_working": {
+    "std": {
+      "M": 82.78643,
+      "R": 83.299248,
+      "Cc": 83.260788
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": -0.230082,
+      "M_Cc": 0.474833,
+      "R_Cc": -0.62523
+    }
+  },
+  "unique_mrc_triples": 314,
+  "geometry": {
+    "family_count": 9,
+    "families": {
+      "black occlusion cuts": 969,
+      "clipped fiber ends": 701,
+      "crossing welds": 201,
+      "delamination notches": 1031,
+      "faceted trapped-air beads": 698,
+      "fractured translucent fibers": 4580,
+      "frost collars": 805,
+      "graphite resin facets": 4629,
+      "prismatic splinters": 1302
+    },
+    "width_native_min": 8.004,
+    "width_native_median": 18.709,
+    "width_native_p90": 28.819,
+    "width_native_max": 31.995,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "graphite/blue-black resin facets": 0.177468,
+    "fractured translucent fibers": 0.203011,
+    "prismatic splinters": 0.034709,
+    "frost collars": 0.02686,
+    "clipped fiber ends": 0.021827,
+    "faceted trapped-air beads": 0.018381,
+    "crossing welds": 0.006314,
+    "delamination notches": 0.020649,
+    "black occlusion cuts": 0.03864,
+    "intact resin/fiber pools": 0.243505
+  },
+  "visible_family_coverage_count": 9,
+  "edge_continuity": {
+    "edge_to_global_gradient_ratio": 0.963804,
+    "edge_dark_void_fraction": 0.0,
+    "pass": true
+  },
+  "picker_survival": {
+    "sizes": {
+      "128": {
+        "luma_std": 0.122119,
+        "chroma_std": 0.035201,
+        "luma_p95_minus_p05": 0.363245,
+        "pass": true
+      },
+      "64": {
+        "luma_std": 0.094816,
+        "chroma_std": 0.02812,
+        "luma_p95_minus_p05": 0.27802,
+        "pass": true
+      }
+    },
+    "pass": true
+  },
+  "mechanical_gates": {
+    "eight_plus_anatomy_families": true,
+    "eight_plus_family_masks_above_half_percent": true,
+    "all_geometry_8_to_32_native": true,
+    "eight_tiers_each": true,
+    "material_std_at_least_30": true,
+    "channels_not_copied_or_inverse": true,
+    "many_material_triples": true,
+    "edge_continuity": true,
+    "picker_survival_128_and_64": true
+  },
+  "mechanical_gates_pass": true,
+  "official_m7": null,
+  "official_m7_note": "Unwired isolated pilot; no registry/workbook record exists, so no composite is fabricated."
+}

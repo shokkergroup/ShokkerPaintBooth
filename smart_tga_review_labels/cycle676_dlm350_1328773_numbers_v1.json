@@ -1,0 +1,9 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_1328773.tga","inspection_records":"_smart_tga_runs/cycle676_dlm_failure_stage_review/inspection_records.json","review_scope":"Cycle 676 source plus complete Number/Sponsor/Template/Paint sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[26,62,109,11],"target_layer":"sponsors","label":"wordmark_false_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[593,131,21,23],"target_layer":"paint","label":"livery_fragment_false_number"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[265,234,421,103],"target_layer":"numbers","label":"true_custom_number"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[909,498,9,66],"target_layer":"sponsors","label":"vertical_wordmark_false_number"},
+ {"layer":"numbers","component_index":4,"expected_bbox":[284,730,156,85],"target_layer":"numbers","label":"true_custom_number"},
+ {"layer":"numbers","component_index":5,"expected_bbox":[108,788,43,15],"target_layer":"sponsors","label":"wordmark_false_number"},
+ {"layer":"numbers","component_index":6,"expected_bbox":[57,814,42,14],"target_layer":"sponsors","label":"wordmark_false_number"}
+]}

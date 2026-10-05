@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "paint_label": "skmodified tour/car_num_98671.tga",
+  "inspection_records": "_smart_tga_runs/cycle129_skmodified_route_feature_complete_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle129_skmodified_route_feature_complete_v1/skmodified_tour_car_num_98671/component_records.json",
+  "review_scope": "Cycle 158 SK Modified 98671 compact sponsor/contingency logo hard negatives from the full-policy Sponsors-to-Template gap.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 9,
+      "expected_bbox": [552, 151, 53, 15],
+      "target_layer": "sponsors",
+      "label": "compact_contingency_logo",
+      "note": "Small sponsor/contingency logo in the center decal stack; should stay Sponsors, not Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 10,
+      "expected_bbox": [734, 192, 38, 27],
+      "target_layer": "sponsors",
+      "label": "compact_contingency_logo",
+      "note": "Nitro/Holley/MSD-style contingency logo; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 12,
+      "expected_bbox": [539, 217, 36, 9],
+      "target_layer": "sponsors",
+      "label": "compact_contingency_logo",
+      "note": "Small sponsor logo fragment inside the center contingency stack."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 14,
+      "expected_bbox": [523, 227, 38, 31],
+      "target_layer": "sponsors",
+      "label": "compact_contingency_logo",
+      "note": "Square sponsor/contingency decal; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 34,
+      "expected_bbox": [523, 901, 40, 31],
+      "target_layer": "sponsors",
+      "label": "compact_contingency_logo",
+      "note": "Lower mirrored sponsor/contingency decal; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 37,
+      "expected_bbox": [746, 915, 36, 20],
+      "target_layer": "sponsors",
+      "label": "compact_contingency_logo",
+      "note": "Small sponsor decal on the lower-right contingency stack."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 39,
+      "expected_bbox": [544, 933, 36, 12],
+      "target_layer": "sponsors",
+      "label": "compact_contingency_logo",
+      "note": "Small horizontal sponsor logo in the lower contingency stack."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 42,
+      "expected_bbox": [561, 950, 36, 21],
+      "target_layer": "sponsors",
+      "label": "compact_contingency_logo",
+      "note": "Small Mobil/COM-style contingency logo; should stay Sponsors."
+    }
+  ]
+}

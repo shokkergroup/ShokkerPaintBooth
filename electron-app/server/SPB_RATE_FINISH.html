@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SPB Rate Finish — quick owner rating tool (SPB-89)</title>
+<style>
+  :root {
+    --bg: #0f1115; --panel: #161a22; --ink: #e7ecf3; --muted: #8b95a7;
+    --line: #232a36; --accent: #4ea7fc; --good: #10b981; --warn: #f59e0b; --bad: #ef4444;
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; }
+  a { color: var(--accent); }
+  header { padding: 18px 24px; border-bottom: 1px solid var(--line); background: var(--panel); }
+  header h1 { margin: 0 0 4px; font-size: 18px; }
+  header .sub { color: var(--muted); font-size: 12px; }
+  main { padding: 22px; max-width: 980px; margin: 0 auto; display: grid; grid-template-columns: 1fr 360px; gap: 22px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px; }
+  h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin: 0 0 14px; }
+  label.q { display: block; margin: 14px 0 6px; font-weight: 600; font-size: 13px; }
+  input[type=text], select, textarea { width: 100%; box-sizing: border-box; background: #0c0f15;
+    color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 9px 11px; font: inherit; }
+  textarea { min-height: 70px; resize: vertical; }
+  .radios { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+  .radios label { padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px;
+    background: rgba(255,255,255,.02); cursor: pointer; font-size: 13px; }
+  .radios label:has(input:checked) { background: rgba(78,167,252,.10); border-color: var(--accent); }
+  .radios input { display: none; }
+  .scores { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin: 8px 0; }
+  .scores .slider-row { display: grid; grid-template-columns: 1fr 32px; gap: 6px; align-items: center; font-size: 12px; }
+  .scores input[type=range] { width: 100%; }
+  .scores .val { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .actions { display: flex; gap: 10px; align-items: center; margin-top: 18px; }
+  button { font: inherit; padding: 9px 16px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink); }
+  button.primary { background: var(--accent); color: #06121f; font-weight: 600; border: 0; }
+  button:hover { filter: brightness(1.1); }
+  .status { font-size: 12px; color: var(--muted); }
+  .status.ok { color: var(--good); }
+  .status.err { color: var(--bad); }
+  .existing { list-style: none; padding: 0; margin: 0; }
+  .existing li { padding: 8px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+  .existing li:hover { background: rgba(255,255,255,.02); }
+  .existing li .pill { display: inline-block; padding: 1px 7px; border-radius: 9px;
+    font-size: 11px; border: 1px solid var(--line); margin-right: 6px; }
+  .pill.keeper { color: var(--good); border-color: var(--good); }
+  .pill.watch { color: var(--warn); border-color: var(--warn); }
+  .pill.rework_spec, .pill.rework_paint, .pill.reject { color: var(--bad); border-color: var(--bad); }
+  .hint { color: var(--muted); font-size: 11px; margin-top: 4px; }
+  code { background: rgba(255,255,255,.04); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>SPB Rate Finish <span style="color:var(--muted); font-weight:normal; font-size:13px;">— SPB-89 quick-rate tool</span></h1>
+  <div class="sub">Type a finish ID, pick a status, click Save. Persists to <code>paint-booth-0-picker-owner-ratings.js</code> via the local server. Requires the painter server running.</div>
+</header>
+
+<main>
+
+<section>
+  <h2>Rate a finish</h2>
+
+  <label class="q">Finish ID <span style="color:var(--muted); font-weight:normal;">— e.g. <code>monolithic:x_ray</code></span></label>
+  <input type="text" id="finishId" placeholder="surface:id" autocomplete="off" list="finishList">
+  <datalist id="finishList"></datalist>
+  <div class="hint" id="finishHint"></div>
+
+  <label class="q">Status</label>
+  <div class="radios" id="statusRadios">
+    <label><input type="radio" name="status" value="keeper"> ⭐ keeper</label>
+    <label><input type="radio" name="status" value="watch"> 👁 watch</label>
+    <label><input type="radio" name="status" value="rework_spec"> 🔧 rework_spec</label>
+    <label><input type="radio" name="status" value="rework_paint"> 🎨 rework_paint</label>
+    <label><input type="radio" name="status" value="reject"> ✗ reject</label>
+  </div>
+
+  <label class="q">Quick scores <span style="color:var(--muted); font-weight:normal;">(0-100, optional, only saved if you move them)</span></label>
+  <div class="scores" id="scoreSliders">
+    <!-- populated by JS -->
+  </div>
+
+  <label class="q">Notes <span style="color:var(--muted); font-weight:normal;">(optional, 1-3 lines)</span></label>
+  <textarea id="notes" placeholder="What stood out? Why this rating?"></textarea>
+
+  <div class="actions">
+    <button id="saveBtn" class="primary">💾 Save rating</button>
+    <button id="clearBtn">Clear form</button>
+    <span class="status" id="statusMsg"></span>
+  </div>
+
+  <div class="hint" style="margin-top:14px;">Server endpoint: <code>POST /api/owner-rating</code>. History audit trail at <code>paint-booth-0-picker-owner-ratings-history.jsonl</code>. The painter server must be running on this same origin for Save to work.</div>
+</section>
+
+<section>
+  <h2>Existing ratings</h2>
+  <p style="color:var(--muted); font-size:12px; margin:0 0 12px;">Click an entry to load it into the form for editing.</p>
+  <ul class="existing" id="existingRatings">
+    <li style="color:var(--muted);">Loading...</li>
+  </ul>
+</section>
+
+</main>
+
+<!-- Source the data files so we can show existing ratings + autocomplete IDs -->
+<script src="paint-booth-0-picker-owner-ratings.js"></script>
+<script src="paint-booth-0-finish-data.js"></script>
+
+<script>
+const SCORE_KEYS = [
+  ["patternDesign", "Pattern design"],
+  ["uniqueness", "Uniqueness"],
+  ["specDetail", "Spec detail"],
+  ["renderTime", "Render time"],
+  ["intentFit", "Intent fit"],
+  ["sponsorSafety", "Sponsor safety"],
+  ["overall", "Overall"],
+];
+
+const scoreSlidersEl = document.getElementById("scoreSliders");
+const sliderState = {};
+SCORE_KEYS.forEach(([key, label]) => {
+  const row = document.createElement("div");
+  row.className = "slider-row";
+  row.innerHTML = `<div><div>${label}</div>
+    <input type="range" data-key="${key}" min="0" max="100" value="50"></div>
+    <div class="val" data-val="${key}">—</div>`;
+  scoreSlidersEl.appendChild(row);
+  sliderState[key] = { moved: false, value: 50 };
+});
+scoreSlidersEl.addEventListener("input", (e) => {
+  if (e.target.matches("input[type=range]")) {
+    const key = e.target.dataset.key;
+    sliderState[key] = { moved: true, value: parseInt(e.target.value, 10) };
+    document.querySelector(`[data-val="${key}"]`).textContent = e.target.value;
+  }
+});
+
+function loadExisting() {
+  const list = document.getElementById("existingRatings");
+  list.innerHTML = "";
+  const data = window.PICKER_OWNER_RATINGS || {};
+  const ids = Object.keys(data).sort();
+  if (!ids.length) {
+    list.innerHTML = '<li style="color:var(--muted);">No existing ratings.</li>';
+    return;
+  }
+  ids.forEach(fid => {
+    const entry = data[fid];
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="pill ${entry.status}">${entry.status}</span>
+      <code>${fid}</code>
+      <span style="float:right; color:var(--muted); font-size:11px;">${entry.scores ? entry.scores.overall + " ⭐" : ""}</span>
+      <div style="color:var(--muted); font-size:11px; margin-top:3px;">${entry.notes || ""}</div>`;
+    li.addEventListener("click", () => loadIntoForm(fid, entry));
+    list.appendChild(li);
+  });
+}
+
+function loadIntoForm(fid, entry) {
+  document.getElementById("finishId").value = fid;
+  document.querySelector(`input[name="status"][value="${entry.status}"]`).checked = true;
+  if (entry.scores) {
+    Object.entries(entry.scores).forEach(([k, v]) => {
+      const slider = document.querySelector(`input[type=range][data-key="${k}"]`);
+      if (slider) {
+        slider.value = v;
+        sliderState[k] = { moved: true, value: v };
+        document.querySelector(`[data-val="${k}"]`).textContent = v;
+      }
+    });
+  }
+  document.getElementById("notes").value = entry.notes || "";
+  document.getElementById("statusMsg").textContent = `Loaded ${fid} for editing.`;
+  document.getElementById("statusMsg").className = "status";
+}
+
+// Build autocomplete list from finish-data if available
+function buildAutocomplete() {
+  const dl = document.getElementById("finishList");
+  const sources = [
+    [window.FINISH_DATA?.monolithics, "monolithic"],
+    [window.FINISH_DATA?.bases, "base"],
+    [window.FINISH_DATA?.patterns, "pattern"],
+    [window.FINISH_DATA?.specPatterns, "spec_pattern"],
+  ];
+  let count = 0;
+  sources.forEach(([arr, prefix]) => {
+    if (!arr) return;
+    arr.forEach(f => {
+      const id = typeof f === "string" ? f : f?.id;
+      if (id) {
+        const opt = document.createElement("option");
+        opt.value = `${prefix}:${id}`;
+        dl.appendChild(opt);
+        count++;
+      }
+    });
+  });
+  if (count > 0) {
+    document.getElementById("finishHint").textContent = `${count} finishes available for autocomplete.`;
+  }
+}
+
+document.getElementById("saveBtn").addEventListener("click", async () => {
+  const fid = document.getElementById("finishId").value.trim();
+  const status = document.querySelector('input[name="status"]:checked')?.value;
+  const notes = document.getElementById("notes").value.trim();
+  const statusEl = document.getElementById("statusMsg");
+  statusEl.className = "status";
+
+  if (!fid || !fid.includes(":")) {
+    statusEl.textContent = "Need finish ID in form 'surface:id'";
+    statusEl.className = "status err";
+    return;
+  }
+  if (!status) {
+    statusEl.textContent = "Pick a status.";
+    statusEl.className = "status err";
+    return;
+  }
+  const scores = {};
+  Object.entries(sliderState).forEach(([k, s]) => {
+    if (s.moved) scores[k] = s.value;
+  });
+  const payload = { finish_id: fid, status, notes, scores };
+
+  statusEl.textContent = "Saving...";
+  try {
+    const resp = await fetch("/api/owner-rating", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const body = await resp.json();
+    if (resp.ok && body.ok) {
+      statusEl.textContent = `Saved. ${body.total_entries} total entries.`;
+      statusEl.className = "status ok";
+      setTimeout(() => location.reload(), 1500);  // Reload so existing-list updates
+    } else {
+      statusEl.textContent = `Error: ${body.error || resp.statusText}`;
+      statusEl.className = "status err";
+    }
+  } catch (err) {
+    statusEl.textContent = `Fetch failed: ${err.message}. Is the painter server running?`;
+    statusEl.className = "status err";
+  }
+});
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+  document.getElementById("finishId").value = "";
+  document.querySelectorAll('input[name="status"]').forEach(r => r.checked = false);
+  document.querySelectorAll('#scoreSliders input[type=range]').forEach(s => { s.value = 50; });
+  Object.keys(sliderState).forEach(k => sliderState[k] = { moved: false, value: 50 });
+  document.querySelectorAll('[data-val]').forEach(v => v.textContent = "—");
+  document.getElementById("notes").value = "";
+  document.getElementById("statusMsg").textContent = "";
+});
+
+loadExisting();
+buildAutocomplete();
+</script>
+
+</body>
+</html>

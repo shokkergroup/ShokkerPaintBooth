@@ -1,0 +1,452 @@
+[
+ {
+  "id": "spectrum_stress_storm",
+  "name": "Spectrum Stress Storm",
+  "kind": "finish",
+  "desc": "A polariscope hurricane: dozens of colliding photoelastic stress fringes \u2014 real fringe-order physics, rainbow contours storming across dark glass.",
+  "ai_rating": 58,
+  "mip": 0.54,
+  "render_s": 1.49
+ },
+ {
+  "id": "spectrum_fracture_polarized",
+  "name": "Spectrum Fracture Polarized",
+  "kind": "finish",
+  "desc": "Cracked stressed glass: fringe rainbows CROWD at every crack tip (true stress concentration), the fractures glassy black.",
+  "ai_rating": 57,
+  "mip": 0.5,
+  "render_s": 0.75
+ },
+ {
+  "id": "spectrum_tempered_ghost",
+  "name": "Spectrum Tempered Ghost",
+  "kind": "finish",
+  "desc": "The polarized-sunglasses car-window secret: a drifting lattice of quench-spot stress rosettes in rose and iris over smoked glass.",
+  "ai_rating": 67,
+  "mip": 0.56,
+  "render_s": 0.5
+ },
+ {
+  "id": "spectrum_abrasion_halo",
+  "name": "Spectrum Abrasion Halo",
+  "kind": "finish",
+  "desc": "Scratch holography on polished steel: thousands of micro arcs whose spectral glints CRAWL along the scratches as the view tilts.",
+  "ai_rating": 66,
+  "mip": 0.4,
+  "render_s": 0.5
+ },
+ {
+  "id": "spectrum_orbital_engrave",
+  "name": "Spectrum Orbital Engrave",
+  "kind": "finish",
+  "desc": "Interlocking orbital ring systems cut into black chrome, each system flashing its glint at a different clock position \u2014 sequential fire.",
+  "ai_rating": 69,
+  "mip": 0.4,
+  "render_s": 0.56
+ },
+ {
+  "id": "spectrum_swirl_supernova",
+  "name": "Spectrum Swirl Supernova",
+  "kind": "finish",
+  "desc": "The detailer's swirl-mark nightmare made cosmic: micro arc-galaxies on deep violet, dispersive star glints riding every arc.",
+  "ai_rating": 59,
+  "mip": 0.45,
+  "render_s": 0.49
+ },
+ {
+  "id": "spectrum_vinyl_groove",
+  "name": "Spectrum Vinyl Groove",
+  "kind": "finish",
+  "desc": "Record grooves at hairline pitch sweeping in from off-canvas spindles, tone-arm rainbows raking across the tracks, anti-static dust glints.",
+  "ai_rating": 68,
+  "mip": 0.4,
+  "render_s": 0.61
+ },
+ {
+  "id": "spectrum_data_etch",
+  "name": "Spectrum Data Etch",
+  "kind": "finish",
+  "desc": "Optical-disc data sectors: wedge fields of micro-tracks, every sector refracting its own order rainbow off the etched blocks.",
+  "ai_rating": 68,
+  "mip": 0.26,
+  "render_s": 0.41
+ },
+ {
+  "id": "spectrum_grating_quilt",
+  "name": "Spectrum Grating Quilt",
+  "kind": "finish",
+  "desc": "Holo-foil patchwork: stitched tiles of hairline diffraction gratings at scattered angles \u2014 every patch fires its own color at its own angle.",
+  "ai_rating": 66,
+  "mip": 0.39,
+  "render_s": 0.8
+ },
+ {
+  "id": "spectrum_liquid_crystal",
+  "name": "Spectrum Liquid Crystal",
+  "kind": "finish",
+  "desc": "Cholesteric liquid crystal under the microscope: fingerprint pitch bands cycling the wheel, dark disclination defects threading through.",
+  "ai_rating": 68,
+  "mip": 0.49,
+  "render_s": 1.02
+ },
+ {
+  "id": "spectrum_thermo_touch",
+  "name": "Spectrum Thermo Touch",
+  "kind": "finish",
+  "desc": "Thermochromic skin: heat blooms crawl through the LC spectrum (bronze-green-blue) over visible fingerprint texture \u2014 a touch-reactive heat map.",
+  "ai_rating": 54,
+  "mip": 0.5,
+  "render_s": 0.84
+ },
+ {
+  "id": "spectrum_smectic_fan",
+  "name": "Spectrum Smectic Fan",
+  "kind": "finish",
+  "desc": "Smectic focal-conic fans: packed ribbed fan domains, each refracting its own slice of the wheel \u2014 polarized-microscope money shot.",
+  "ai_rating": 72,
+  "mip": 0.49,
+  "render_s": 0.74
+ },
+ {
+  "id": "spectrum_black_opal",
+  "name": "Spectrum Black Opal",
+  "kind": "finish",
+  "desc": "Lightning Ridge black opal: sleeping color domains in near-black potch that DETONATE in spectral fire at the gate angle.",
+  "ai_rating": 58,
+  "mip": 0.56,
+  "render_s": 0.78
+ },
+ {
+  "id": "spectrum_boulder_opal",
+  "name": "Spectrum Boulder Opal",
+  "kind": "finish",
+  "desc": "Boulder opal: rainbow fire running only in the veins through dark ironstone \u2014 the matrix stays stone, the seams burn.",
+  "ai_rating": 56,
+  "mip": 0.41,
+  "render_s": 1.57
+ },
+ {
+  "id": "spectrum_opal_core",
+  "name": "Spectrum Opal Core",
+  "kind": "finish",
+  "desc": "Full crystal opal: wall-to-wall play-of-color domains over milk glass, every domain flashing on its own schedule.",
+  "ai_rating": 64,
+  "mip": 0.56,
+  "render_s": 0.96
+ },
+ {
+  "id": "spectrum_contact_bloom",
+  "name": "Spectrum Contact Bloom",
+  "kind": "finish",
+  "desc": "Newton-ring blossoms: thin-film interference rings with true Airy crowding around every contact point, overlapping into gardens.",
+  "ai_rating": 59,
+  "mip": 0.57,
+  "render_s": 1.08
+ },
+ {
+  "id": "spectrum_oilfilm_rain",
+  "name": "Spectrum Oilfilm Rain",
+  "kind": "finish",
+  "desc": "Gasoline rainbow after rain: drain-streaked oil film, rain-impact ring sets, wet aggregate poking through the slick.",
+  "ai_rating": 56,
+  "mip": 0.42,
+  "render_s": 0.93
+ },
+ {
+  "id": "spectrum_prism_pool",
+  "name": "Spectrum Prism Pool",
+  "kind": "finish",
+  "desc": "Dispersed caustics in a midnight pool: every dancing light filament is itself a tiny spectrum, red bending wider than blue.",
+  "ai_rating": 58,
+  "mip": 0.55,
+  "render_s": 1.37
+ },
+ {
+  "id": "spectrum_jewel_box",
+  "name": "Spectrum Jewel Box",
+  "kind": "finish",
+  "desc": "Stained-glass shard mosaic with dispersed caustics caged INSIDE each facet \u2014 light trapped in a jewel case.",
+  "ai_rating": 61,
+  "mip": 0.56,
+  "render_s": 1.66
+ },
+ {
+  "id": "spectrum_moire_silk",
+  "name": "Spectrum Moire Silk",
+  "kind": "finish",
+  "desc": "Two silk-fine line lattices a hair off angle: giant slow rainbow interference beats rolling over visible micro-threads.",
+  "ai_rating": 69,
+  "mip": 0.43,
+  "render_s": 0.39
+ },
+ {
+  "id": "spectrum_interference_weave",
+  "name": "Spectrum Interference Weave",
+  "kind": "finish",
+  "desc": "Over-under thread weave where the moire beat phase decides every crossing's hue \u2014 textile interference.",
+  "ai_rating": 70,
+  "mip": 0.47,
+  "render_s": 0.66
+ },
+ {
+  "id": "spectrum_rainbow_river",
+  "name": "Spectrum Rainbow River",
+  "kind": "finish",
+  "desc": "Spectrum as a fluid: hue advected along real currents \u2014 rainbow streams, eddies trapping whirlpools of trapped color.",
+  "ai_rating": 55,
+  "mip": 0.45,
+  "render_s": 1.33
+ },
+ {
+  "id": "spectrum_magnet_flow",
+  "name": "Spectrum Magnet Flow",
+  "kind": "finish",
+  "desc": "Iron filings in spectral ink: hue advected along true dipole field lines arcing pole to pole.",
+  "ai_rating": 74,
+  "mip": 0.42,
+  "render_s": 1.33
+ },
+ {
+  "id": "spectrum_smoke_chroma",
+  "name": "Spectrum Smoke Chroma",
+  "kind": "finish",
+  "desc": "Laminar smoke going turbulent, every filament carrying its slice of spectrum through the curl.",
+  "ai_rating": 66,
+  "mip": 0.57,
+  "render_s": 1.77
+ },
+ {
+  "id": "spectrum_forge_heat",
+  "name": "Spectrum Forge Heat",
+  "kind": "finish",
+  "desc": "True Planck incandescence: hammered steel glowing through cherry-orange-white by actual blackbody color, slag flecks quenching dark.",
+  "ai_rating": 55,
+  "mip": 0.59,
+  "render_s": 0.46
+ },
+ {
+  "id": "spectrum_star_temperature",
+  "name": "Spectrum Star Temperature",
+  "kind": "finish",
+  "desc": "The HR diagram as a sky: thousands of stars each colored by its real temperature class \u2014 red dwarfs to blue giants.",
+  "ai_rating": 54,
+  "mip": 0.34,
+  "render_s": 0.25
+ },
+ {
+  "id": "spectrum_aberration_glitch",
+  "name": "Spectrum Aberration Glitch",
+  "kind": "finish",
+  "desc": "A crisp mono mosaic shot through a broken lens: R and B sheared opposite ways so EVERY edge grows prism fringes.",
+  "ai_rating": 63,
+  "mip": 0.61,
+  "render_s": 0.82
+ },
+ {
+  "id": "spectrum_ghost_prism",
+  "name": "Spectrum Ghost Prism",
+  "kind": "finish",
+  "desc": "Double-exposure spectroscopy: an attractor motif and its R/G/B ghosts offset in three directions \u2014 spectral echo art.",
+  "ai_rating": 71,
+  "mip": 0.52,
+  "render_s": 0.74
+ },
+ {
+  "id": "spectrum_topo_rainbow",
+  "name": "Spectrum Topo Rainbow",
+  "kind": "finish",
+  "desc": "Survey-fine elevation isolines cycling the wheel over shaded relief \u2014 cartography as iridescence.",
+  "ai_rating": 73,
+  "mip": 0.47,
+  "render_s": 0.39
+ },
+ {
+  "id": "spectrum_pressure_map",
+  "name": "Spectrum Pressure Map",
+  "kind": "finish",
+  "desc": "Meteorology in paint: cyclone isobar spirals cycling hue, wind-streak barbs combing between the cells.",
+  "ai_rating": 74,
+  "mip": 0.52,
+  "render_s": 0.58
+ },
+ {
+  "id": "spectrum_lathe_burst",
+  "name": "Spectrum Lathe Burst",
+  "kind": "finish",
+  "desc": "Overlapping spin-cut systems; hue follows the cut angle like light raking spun metal \u2014 holographic engine-turning.",
+  "ai_rating": 67,
+  "mip": 0.47,
+  "render_s": 1.38
+ },
+ {
+  "id": "spectrum_clockwork_dial",
+  "name": "Spectrum Clockwork Dial",
+  "kind": "finish",
+  "desc": "Watch-dial guilloche: jittered gold rosettes over spectral lathe rings on near-black \u2014 horology under a prism.",
+  "ai_rating": 74,
+  "mip": 0.6,
+  "render_s": 1.25
+ },
+ {
+  "id": "spectrum_redshift_drift",
+  "name": "Spectrum Redshift Drift",
+  "kind": "finish",
+  "desc": "Receding galaxies: streaks red-shifted trailing, blue-shifted leading, smeared along the expansion flow.",
+  "ai_rating": 73,
+  "mip": 0.45,
+  "render_s": 0.44
+ },
+ {
+  "id": "spectrum_event_horizon",
+  "name": "Spectrum Event Horizon",
+  "kind": "finish",
+  "desc": "An accretion disk doppler-beamed for real: the approaching side burns blue-white, the receding side dims red, around lensed black cores.",
+  "ai_rating": 74,
+  "mip": 0.42,
+  "render_s": 0.7
+ },
+ {
+  "id": "spectrum_shatter_glass",
+  "name": "Spectrum Shatter Glass",
+  "kind": "finish",
+  "desc": "Tempered glass exploded: shard mosaic, each fragment refracting its own dispersion gradient, prism fringes at every fracture line.",
+  "ai_rating": 71,
+  "mip": 0.58,
+  "render_s": 0.84
+ },
+ {
+  "id": "spectrum_diamond_fire",
+  "name": "Spectrum Diamond Fire",
+  "kind": "finish",
+  "desc": "Brilliant-cut scintillation: kite-facet fans with internal dispersion and white scintillation pins \u2014 ice with fire in it.",
+  "ai_rating": 54,
+  "mip": 0.56,
+  "render_s": 1.98
+ },
+ {
+  "id": "spectrum_xray_bloom",
+  "name": "Spectrum Xray Bloom",
+  "kind": "finish",
+  "desc": "A garden in body color whose vein SKELETONS detonate spectral at the flash angle \u2014 the flowers x-ray themselves.",
+  "ai_rating": 69,
+  "mip": 0.52,
+  "render_s": 1.33
+ },
+ {
+  "id": "spectrum_circuit_awakens",
+  "name": "Spectrum Circuit Awakens",
+  "kind": "finish",
+  "desc": "Dormant circuitry: Manhattan traces and solder vias that power ON in spectral sequence as the view sweeps.",
+  "ai_rating": 62,
+  "mip": 0.41,
+  "render_s": 0.4
+ },
+ {
+  "id": "spectrum_bismuth_garden",
+  "name": "Spectrum Bismuth Garden",
+  "kind": "finish",
+  "desc": "Bismuth hopper crystals: stepped square-spiral terraces in anodize rainbow by depth \u2014 the staircase geode.",
+  "ai_rating": 67,
+  "mip": 0.51,
+  "render_s": 0.84
+ },
+ {
+  "id": "spectrum_anodine_dunes",
+  "name": "Spectrum Anodine Dunes",
+  "kind": "finish",
+  "desc": "Wind-rippled dunes anodized by slope aspect: straw-violet-cobalt riding the slip faces, grating-fine ripples everywhere.",
+  "ai_rating": 66,
+  "mip": 0.55,
+  "render_s": 0.36
+ },
+ {
+  "id": "spectrum_peacock_eye",
+  "name": "Spectrum Peacock Eye",
+  "kind": "finish",
+  "desc": "Peacock train: dense structural-color eyespots (cobalt heart, teal iris, bronze halo) over fine radiating barbs.",
+  "ai_rating": 68,
+  "mip": 0.49,
+  "render_s": 0.97
+ },
+ {
+  "id": "spectrum_beetle_elytra",
+  "name": "Spectrum Beetle Elytra",
+  "kind": "finish",
+  "desc": "Jewel-scarab shell: hexagonal micro-dimple lattice with metallic green-gold bands sweeping across the carapace.",
+  "ai_rating": 58,
+  "mip": 0.49,
+  "render_s": 0.31
+ },
+ {
+  "id": "spectrum_nacre_tide",
+  "name": "Spectrum Nacre Tide",
+  "kind": "finish",
+  "desc": "Abalone growth terraces: wavy stacked layer-lines, mother-of-pearl travel by layer count, dark conchiolin seams.",
+  "ai_rating": 65,
+  "mip": 0.56,
+  "render_s": 0.36
+ },
+ {
+  "id": "spectrum_borealis_ice",
+  "name": "Spectrum Borealis Ice",
+  "kind": "finish",
+  "desc": "Aurora curtains REFRACTED through pack ice: every shard displaces and recolors the light passing through it.",
+  "ai_rating": 67,
+  "mip": 0.62,
+  "render_s": 0.91
+ },
+ {
+  "id": "spectrum_spill_metropolis",
+  "name": "Spectrum Spill Metropolis",
+  "kind": "finish",
+  "desc": "Gasoline rainbow on wet night asphalt: micro-aggregate, drain swirls, neon signs bleeding into the slick.",
+  "ai_rating": 51,
+  "mip": 0.37,
+  "render_s": 0.44
+ },
+ {
+  "id": "spectrum_chromatic_orchid",
+  "name": "Spectrum Chromatic Orchid",
+  "kind": "finish",
+  "desc": "Orchid fields with spectral nectar-guide veins \u2014 the ultraviolet runway insects see, made visible.",
+  "ai_rating": 75,
+  "mip": 0.58,
+  "render_s": 0.8
+ },
+ {
+  "id": "spectrum_mantis_strike",
+  "name": "Spectrum Mantis Strike",
+  "kind": "finish",
+  "desc": "Mantis-shrimp carapace: segmented armor plates each cycling its own spectral band, raptorial strike streaks in ember.",
+  "ai_rating": 69,
+  "mip": 0.58,
+  "render_s": 0.64
+ },
+ {
+  "id": "spectrum_vhs_phantom",
+  "name": "Spectrum Vhs Phantom",
+  "kind": "finish",
+  "desc": "Analog video breakdown: scanline micro, tracking-error rainbow tears, chromatic ghost offsets \u2014 the haunted tape.",
+  "ai_rating": 61,
+  "mip": 0.59,
+  "render_s": 0.5
+ },
+ {
+  "id": "spectrum_flare_spectra",
+  "name": "Spectrum Flare Spectra",
+  "kind": "finish",
+  "desc": "Spectroheliograph corona: thin emission-line arcs in pure spectral colors leaping across near-black.",
+  "ai_rating": 56,
+  "mip": 0.5,
+  "render_s": 1.65
+ },
+ {
+  "id": "spectrum_singularity_lens",
+  "name": "Spectrum Singularity Lens",
+  "kind": "finish",
+  "desc": "A deep-field sky gravitationally smeared into Einstein arcs and rings around invisible dark masses, violet rim-light on the voids.",
+  "ai_rating": 55,
+  "mip": 0.46,
+  "render_s": 0.81
+ }
+]

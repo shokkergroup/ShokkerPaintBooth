@@ -1,0 +1,206 @@
+/* ============================================================
+   SPB Look UX Polish 2
+   Heartbeat 2026-05-20: final lightweight layer for Settings
+   readability and lively-but-quiet Look picker polish.
+   Classic remains untouched.
+   ============================================================ */
+
+body[data-look]:not([data-look="classic"]) #settingsDropdown {
+    isolation: isolate;
+    overflow: hidden !important;
+}
+
+body[data-look]:not([data-look="classic"]) #settingsDropdown::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    background:
+        linear-gradient(120deg, transparent 0%, color-mix(in srgb, var(--look-live-line, #00e5ff) 10%, transparent) 48%, transparent 60%),
+        radial-gradient(circle at 14% 10%, var(--look-live-fill, rgba(0,229,255,0.1)), transparent 28%);
+    background-size: 240% 100%, 100% 100%;
+    opacity: 0.45;
+    animation: spbSettingsQuietSheen 18s linear infinite;
+}
+
+body[data-look]:not([data-look="classic"]) #settingsDropdown .settings-section {
+    padding: 12px 12px 13px !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--look-live-line, #00e5ff) 18%, transparent) !important;
+}
+
+body[data-look]:not([data-look="classic"]) #settingsDropdown .settings-section-title {
+    margin-bottom: 7px !important;
+    color: color-mix(in srgb, var(--look-live-line, #00e5ff) 72%, #ffffff 28%) !important;
+    font-size: 9px !important;
+    line-height: 1.1 !important;
+    letter-spacing: 0.8px !important;
+    text-shadow: 0 0 8px var(--look-live-glow, rgba(0,229,255,0.22)) !important;
+}
+
+body[data-look]:not([data-look="classic"]) #looksGrid {
+    gap: 8px !important;
+}
+
+body[data-look]:not([data-look="classic"]) #looksGrid .look-card {
+    min-height: 58px !important;
+    padding: 8px 8px 7px !important;
+    border-width: 1px !important;
+    border-radius: 7px !important;
+    background:
+        linear-gradient(145deg, color-mix(in srgb, var(--look-live-fill, rgba(0,229,255,0.12)) 82%, transparent), rgba(0, 0, 0, 0.18)),
+        var(--bg-card) !important;
+}
+
+body[data-look]:not([data-look="classic"]) #settingsDropdown input[type="text"],
+body[data-look]:not([data-look="classic"]) #settingsDropdown button,
+body[data-look]:not([data-look="classic"]) #settingsDropdown .btn {
+    min-height: 26px;
+    border-width: 1px !important;
+    box-shadow: none !important;
+}
+
+body[data-look]:not([data-look="classic"]) #settingsDropdown input[type="checkbox"] {
+    width: 14px !important;
+    height: 14px !important;
+    margin-right: 6px !important;
+    accent-color: var(--look-live-line, #00e5ff);
+}
+
+body[data-look]:not([data-look="classic"]) #settingsDropdown label {
+    align-items: center !important;
+    gap: 4px !important;
+}
+
+body[data-look]:not([data-look="classic"]) #settingsDropdown [style*="font-size:8px"] {
+    line-height: 1.35 !important;
+    color: color-mix(in srgb, var(--text-dim, #9aa) 78%, #ffffff 22%) !important;
+}
+
+@keyframes spbSettingsQuietSheen {
+    0% { background-position: 170% 0, 0 0; }
+    100% { background-position: -90% 0, 0 0; }
+}
+
+body[data-look]:not([data-look="classic"]) .right-panel .rp-tabs {
+    gap: 3px !important;
+    padding: 5px 6px 0 !important;
+    border-bottom-color: color-mix(in srgb, var(--look-live-line, #00e5ff) 20%, transparent) !important;
+}
+
+body[data-look]:not([data-look="classic"]) .right-panel .rp-tab {
+    min-height: 28px !important;
+    border: 1px solid transparent !important;
+    border-radius: 6px 6px 0 0 !important;
+    box-shadow: none !important;
+    letter-spacing: 0.6px !important;
+}
+
+body[data-look]:not([data-look="classic"]) .right-panel .rp-tab:hover,
+body[data-look]:not([data-look="classic"]) .right-panel .rp-tab.active {
+    border-color: color-mix(in srgb, var(--look-live-line, #00e5ff) 46%, transparent) !important;
+    background: color-mix(in srgb, var(--look-live-fill, rgba(0,229,255,0.12)) 72%, rgba(255,255,255,0.04)) !important;
+    text-shadow: 0 0 7px var(--look-live-glow, rgba(0,229,255,0.22)) !important;
+}
+
+body[data-look]:not([data-look="classic"]) .right-panel .right-panel-actionbar {
+    padding: 7px 8px !important;
+    gap: 5px !important;
+    border-bottom-color: color-mix(in srgb, var(--look-live-line, #00e5ff) 18%, transparent) !important;
+}
+
+body[data-look]:not([data-look="classic"]) .right-panel .right-panel-actionbar button {
+    min-height: 24px !important;
+    border-width: 1px !important;
+    box-shadow: none !important;
+}
+
+body[data-look]:not([data-look="classic"]) .finish-library {
+    gap: 7px !important;
+    padding: 8px !important;
+}
+
+body[data-look]:not([data-look="classic"]) .finish-item,
+body[data-look]:not([data-look="classic"]) .finish-card,
+body[data-look]:not([data-look="classic"]) .shokk-card {
+    position: relative;
+    overflow: hidden;
+    border-width: 1px !important;
+    border-color: color-mix(in srgb, var(--look-live-line, #00e5ff) 28%, transparent) !important;
+    border-radius: 7px !important;
+    box-shadow: inset 2px 0 0 color-mix(in srgb, var(--look-live-line, #00e5ff) 70%, transparent) !important;
+    background:
+        linear-gradient(100deg, color-mix(in srgb, var(--look-live-fill, rgba(0,229,255,0.12)) 56%, transparent), transparent 58%),
+        var(--bg-card) !important;
+}
+
+body[data-look]:not([data-look="classic"]) .finish-item:hover,
+body[data-look]:not([data-look="classic"]) .finish-card:hover,
+body[data-look]:not([data-look="classic"]) .shokk-card:hover {
+    transform: translateY(-1px) !important;
+    box-shadow:
+        inset 2px 0 0 var(--look-live-line, #00e5ff),
+        0 0 0 1px color-mix(in srgb, var(--look-live-line, #00e5ff) 34%, transparent),
+        0 0 12px var(--look-live-glow, rgba(0,229,255,0.22)) !important;
+}
+
+body[data-look]:not([data-look="classic"]) .finish-item-name,
+body[data-look]:not([data-look="classic"]) .shokk-card-name {
+    line-height: 1.18 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+body[data-look]:not([data-look="classic"]) .finish-item-desc,
+body[data-look]:not([data-look="classic"]) .shokk-card-desc,
+body[data-look]:not([data-look="classic"]) .shokk-card-meta {
+    line-height: 1.28 !important;
+    color: color-mix(in srgb, var(--text-dim, #9aa) 78%, #ffffff 22%) !important;
+}
+
+body[data-look]:not([data-look="classic"]) .finish-item-assign,
+body[data-look]:not([data-look="classic"]) .shokk-card-open,
+body[data-look]:not([data-look="classic"]) .shokk-card-rename,
+body[data-look]:not([data-look="classic"]) .shokk-card-delete {
+    border-width: 1px !important;
+    box-shadow: none !important;
+}
+
+body[data-look]:not([data-look="classic"]) #renderFloat {
+    border-radius: 9px !important;
+    filter: drop-shadow(0 0 10px var(--look-live-glow, rgba(0,229,255,0.2)));
+}
+
+body[data-look]:not([data-look="classic"]) #renderFloat .btn-render {
+    border: 1px solid color-mix(in srgb, var(--look-live-line, #00e5ff) 44%, rgba(255,255,255,0.12)) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        0 0 14px var(--look-live-glow, rgba(0,229,255,0.22)) !important;
+}
+
+body[data-look]:not([data-look="classic"]) #renderFloat .render-shortcuts-btn,
+body[data-look]:not([data-look="classic"]) .zoom-controls,
+body[data-look]:not([data-look="classic"]) .eyedropper-dock-top #eyedropperInfo {
+    border-width: 1px !important;
+    border-color: color-mix(in srgb, var(--look-live-line, #00e5ff) 30%, transparent) !important;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.24), 0 0 12px var(--look-live-glow, rgba(0,229,255,0.16)) !important;
+}
+
+body[data-look]:not([data-look="classic"]) .zoom-controls {
+    gap: 3px !important;
+    padding: 4px 5px !important;
+    background: color-mix(in srgb, var(--bg-card, #101018) 86%, transparent) !important;
+}
+
+body[data-look]:not([data-look="classic"]) .zoom-controls .zoom-btn {
+    min-width: 30px !important;
+    height: 30px !important;
+    border-width: 1px !important;
+    box-shadow: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body[data-look]:not([data-look="classic"]) #settingsDropdown::before {
+        animation: none !important;
+    }
+}

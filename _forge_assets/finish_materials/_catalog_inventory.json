@@ -1,0 +1,5458 @@
+[
+{
+"id": "acid_etch",
+"M": 25,
+"R": 160,
+"CC": 130,
+"spatial": true,
+"desc": "Acid-rain etched surface - pitted with partial clearcoat failure. FLAG-WA-005 FIX: M=25 (a"
+},
+{
+"id": "acid_rain",
+"M": 60,
+"R": 130,
+"CC": 140,
+"spatial": true,
+"desc": "Acid rain - chemical etch damage, partial coat failure with oxidation patches"
+},
+{
+"id": "acid_swirl",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Acid Swirl"
+},
+{
+"id": "agate_blue",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Agate Blue"
+},
+{
+"id": "alubeam",
+"M": 245,
+"R": 18,
+"CC": 16,
+"spatial": true,
+"desc": "BASF Alubeam liquid mirror \u2014 ultra-fine oriented aluminum flake, coherent blur between chr"
+},
+{
+"id": "amber_glass",
+"M": 0,
+"R": 18,
+"CC": 16,
+"spatial": true,
+"desc": "Amber Glass \u2014 warm honey gem glass, wet depth"
+},
+{
+"id": "amber_hazard",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Amber Hazard"
+},
+{
+"id": "ambulance_white",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Ambulance white - high-visibility emergency gloss white, pure dielectric \u2014 GGX-FIX: R=8->1"
+},
+{
+"id": "amethyst",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Amethyst"
+},
+{
+"id": "ammolite",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Ammolite"
+},
+{
+"id": "anime_cel_shade_chrome",
+"M": 200,
+"R": 30,
+"CC": 20,
+"spatial": true,
+"desc": "Anime Cel Shade Chrome \u2014 flat cel-shaded bands with sharp metallic highlight steps."
+},
+{
+"id": "anime_comic_halftone",
+"M": 50,
+"R": 90,
+"CC": 45,
+"spatial": true,
+"desc": "Anime Comic Halftone \u2014 Ben-Day dot pattern with size variation on paper base."
+},
+{
+"id": "anime_crystal_facet",
+"M": 210,
+"R": 25,
+"CC": 20,
+"spatial": true,
+"desc": "Anime Crystal Facet \u2014 large angular Voronoi crystalline facets with jewel colors."
+},
+{
+"id": "anime_energy_aura",
+"M": 210,
+"R": 25,
+"CC": 22,
+"spatial": true,
+"desc": "Anime Energy Aura \u2014 radial power glow field with energy rays and bright core."
+},
+{
+"id": "anime_gradient_hair",
+"M": 140,
+"R": 35,
+"CC": 20,
+"spatial": true,
+"desc": "Anime Gradient Hair \u2014 vivid magenta-pink top fading to deep indigo bottom."
+},
+{
+"id": "anime_mecha_plate",
+"M": 190,
+"R": 40,
+"CC": 22,
+"spatial": true,
+"desc": "Anime Mecha Plate \u2014 hard geometric panel grid with metallic zones and dark seams."
+},
+{
+"id": "anime_neon_outline",
+"M": 200,
+"R": 30,
+"CC": 25,
+"spatial": true,
+"desc": "Anime Neon Outline \u2014 dark base with bright cyan-magenta neon edge highlights."
+},
+{
+"id": "anime_sakura_scatter",
+"M": 100,
+"R": 45,
+"CC": 20,
+"spatial": true,
+"desc": "Anime Sakura Scatter \u2014 cherry blossom petal scatter on soft pink background."
+},
+{
+"id": "anime_sparkle_burst",
+"M": 220,
+"R": 20,
+"CC": 25,
+"spatial": true,
+"desc": "Anime Sparkle Burst \u2014 4-pointed starburst sparkle clusters on midnight base."
+},
+{
+"id": "anime_speed_lines",
+"M": 180,
+"R": 40,
+"CC": 30,
+"spatial": true,
+"desc": "Anime Speed Lines \u2014 radial motion lines from focal point. White streaks on dark."
+},
+{
+"id": "anodized",
+"M": 170,
+"R": 80,
+"CC": 140,
+"spatial": true,
+"desc": "Gritty matte anodized aluminum (CC=140 flat) \u2014 BASE-034 FIX: R=80 (standard anodized alumi"
+},
+{
+"id": "anodized_exotic",
+"M": 110,
+"R": 38,
+"CC": 45,
+"spatial": true,
+"desc": "Anodized Exotic \u2014 dye-impregnated oxide layer, semi-gloss, subtle hex pore micro-texture"
+},
+{
+"id": "antique_chrome",
+"M": 220,
+"R": 18,
+"CC": 50,
+"spatial": true,
+"desc": "Antique chrome \u2014 patina accumulation + pitting corrosion model. FLAT-FIX: boosted noise."
+},
+{
+"id": "aramid",
+"M": 30,
+"R": 90,
+"CC": 100,
+"spatial": true,
+"desc": "Aramid fiber - warm gold-amber interwoven synthetic threads catching light harshly at its "
+},
+{
+"id": "arctic_ice",
+"M": 80,
+"R": 50,
+"CC": 90,
+"spatial": true,
+"desc": "Arctic ice - frozen crystalline surface, cracked ice with blue-white interior \u2014 BASE-024 F"
+},
+{
+"id": "argyle_pastel",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Argyle Pastel"
+},
+{
+"id": "armor_plate",
+"M": 60,
+"R": 160,
+"CC": 130,
+"spatial": true,
+"desc": "Armor plate - heavy rolled steel, deep scuffs and slight oxidation, naked heavy metal (CC="
+},
+{
+"id": "asphalt_grind",
+"M": 10,
+"R": 210,
+"CC": 200,
+"spatial": true,
+"desc": "Asphalt grind - rough road-surface texture, maximum roughness, zero coat (CC=200 dead flat"
+},
+{
+"id": "atomic_charcoal",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Atomic Charcoal"
+},
+{
+"id": "atomic_starburst",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Atomic Starburst"
+},
+{
+"id": "azurite",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Azurite"
+},
+{
+"id": "barn_find",
+"M": 80,
+"R": 160,
+"CC": 210,
+"spatial": true,
+"desc": "Barn-find condition - decades of clearcoat breakdown, deep chalky flat (CC=210)"
+},
+{
+"id": "basalt_weave",
+"M": 70,
+"R": 60,
+"CC": 40,
+"spatial": true,
+"desc": "Basalt Weave \u2014 bronze-grey volcanic basalt fiber twill"
+},
+{
+"id": "battle_patina",
+"M": 140,
+"R": 150,
+"CC": 50,
+"spatial": true,
+"desc": "Heavily worn metal base with thin protective satin coat - used racecar look \u2014 BASE-036 FIX"
+},
+{
+"id": "battleship_gray",
+"M": 20,
+"R": 140,
+"CC": 120,
+"spatial": true,
+"desc": "Battleship gray - naval haze gray with significant vertical salt spray weathering (CC=120)"
+},
+{
+"id": "beetle_jewel",
+"M": 200,
+"R": 25,
+"CC": 18,
+"spatial": true,
+"desc": "Beetle Jewel \u2014 Chrysina green-gold iridescent shell with organic flow zones."
+},
+{
+"id": "beetle_rainbow",
+"M": 220,
+"R": 20,
+"CC": 18,
+"spatial": true,
+"desc": "Beetle Rainbow \u2014 Chrysochroa full-spectrum wing case via thin-film interference."
+},
+{
+"id": "beetle_stag",
+"M": 170,
+"R": 30,
+"CC": 20,
+"spatial": true,
+"desc": "Beetle Stag \u2014 dark metallic stag beetle armor plates with chitin shine."
+},
+{
+"id": "bentley_silver",
+"M": 235,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Bentley silver - Rolls-Royce/Bentley ultra-fine silver metallic \u2014 GGX-FIX: R=12->15"
+},
+{
+"id": "big_kahuna",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Big Kahuna"
+},
+{
+"id": "bioluminescent",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Bioluminescent - deep sea organism soft internal glow, dielectric organic surface \u2014 GGX-FI"
+},
+{
+"id": "black_chrome",
+"M": 255,
+"R": 2,
+"CC": 16,
+"spatial": true,
+"desc": "Black chrome \u2014 Beer-Lambert smoke absorption, double-pass, specular highlights preserved"
+},
+{
+"id": "black_opal",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Black Opal"
+},
+{
+"id": "blackout",
+"M": 5,
+"R": 210,
+"CC": 200,
+"spatial": true,
+"desc": "Stealth murdered-out - near-total absorption, dead flat (CC=200)"
+},
+{
+"id": "blackout_ops",
+"M": 8,
+"R": 205,
+"CC": 16,
+"spatial": true,
+"desc": "Blackout Ops"
+},
+{
+"id": "blue_chrome",
+"M": 255,
+"R": 2,
+"CC": 16,
+"spatial": true,
+"desc": "Blue chrome \u2014 thin-film interference, soap bubble physics on metal (blue\u2192purple\u2192gold\u2192green"
+},
+{
+"id": "blue_ice_flake",
+"M": 200,
+"R": 15,
+"CC": 30,
+"spatial": true,
+"desc": "Jagged frozen ice fractals catching deep light in a frozen state \u2014 GGX-FIX: R=5\u219215"
+},
+{
+"id": "bronze_flake",
+"M": 100,
+"R": 120,
+"CC": 100,
+"spatial": true,
+"desc": "10,000-year oxidized shipwreck brass, aggressively dripping with rich verdigris (CC=100 sa"
+},
+{
+"id": "brushed_aluminum",
+"M": 200,
+"R": 55,
+"CC": 16,
+"spatial": true,
+"desc": "Brushed natural aluminum directional grain \u2014 BASE-026 FIX: M=200 (real brushed aluminum, n"
+},
+{
+"id": "brushed_titanium",
+"M": 180,
+"R": 70,
+"CC": 16,
+"spatial": true,
+"desc": "Heavy directional titanium grain"
+},
+{
+"id": "brushed_wrap",
+"M": 180,
+"R": 75,
+"CC": 35,
+"spatial": true,
+"desc": "Brushed wrap - brushed metal vinyl film, directional grain visible through coat"
+},
+{
+"id": "bubblegum_dot",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Bubblegum Dot"
+},
+{
+"id": "bugatti_blue",
+"M": 180,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Bugatti Bleu de France - signature Bugatti deep two-tone blue \u2014 GGX-FIX: R=10->15"
+},
+{
+"id": "bullseye_chrome",
+"M": 240,
+"R": 3,
+"CC": 16,
+"spatial": true,
+"desc": "Bullseye chrome \u2014 concentric ring diffraction pattern, rotational polishing rings"
+},
+{
+"id": "burnt_headers",
+"M": 190,
+"R": 45,
+"CC": 16,
+"spatial": true,
+"desc": "Exhaust header heat-treated gold-blue oxide"
+},
+{
+"id": "butterfly_monarch",
+"M": 55,
+"R": 80,
+"CC": 30,
+"spatial": true,
+"desc": "Butterfly Monarch \u2014 orange-black monarch wing pattern with Voronoi vein network."
+},
+{
+"id": "butterfly_morpho",
+"M": 230,
+"R": 20,
+"CC": 16,
+"spatial": true,
+"desc": "Butterfly Morpho \u2014 brilliant Morpho blue structural color with angle-dependent flash."
+},
+{
+"id": "candy",
+"M": 200,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Deep wet candy transparent glass"
+},
+{
+"id": "candy_apple",
+"M": 230,
+"R": 15,
+"CC": 24,
+"spatial": true,
+"desc": "A deeply unholy crimson candy gloss that pulls light into a violently crushed shadow point"
+},
+{
+"id": "candy_aqua",
+"M": 185,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Candy Aqua \u2014 beachy turquoise candy over silver flake, deep wet depth"
+},
+{
+"id": "candy_burgundy",
+"M": 180,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Deep burgundy candy over chrome base \u2014 BASE-013 FIX: M=180 (candy metallic base), R=15, CC"
+},
+{
+"id": "candy_chrome",
+"M": 250,
+"R": 4,
+"CC": 16,
+"spatial": true,
+"desc": "Candy-tinted chrome - deep color over mirror base"
+},
+{
+"id": "candy_cobalt",
+"M": 180,
+"R": 15,
+"CC": 26,
+"spatial": true,
+"desc": "Ultra-thick pressurized deep-ocean resin pour over dark scatter base \u2014 GGX-FIX: R=5\u219215, CC"
+},
+{
+"id": "candy_emerald",
+"M": 190,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Uranium glass generating intense radioluminescence \u2014 GGX-FIX: R=2\u219215"
+},
+{
+"id": "candy_gold",
+"M": 195,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Candy Gold \u2014 liquid amber candy over bright gold flake, deep wet gloss"
+},
+{
+"id": "candy_lime",
+"M": 175,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Candy Lime \u2014 vivid chartreuse candy over silver-green flake"
+},
+{
+"id": "carbon_3k_fine",
+"M": 60,
+"R": 30,
+"CC": 16,
+"spatial": true,
+"desc": "Carbon 3K Fine \u2014 tight high-frequency \u00b145\u00b0 twill, aerospace small-weave"
+},
+{
+"id": "carbon_base",
+"M": 55,
+"R": 30,
+"CC": 16,
+"spatial": true,
+"desc": "Carbon fiber base - dense micro-strand 2x2 twill weave heavily absorbing ambient light"
+},
+{
+"id": "carbon_blue",
+"M": 60,
+"R": 30,
+"CC": 16,
+"spatial": true,
+"desc": "Carbon Blue \u2014 candy-blue tinted carbon twill under deep wet clear"
+},
+{
+"id": "carbon_ceramic",
+"M": 120,
+"R": 25,
+"CC": 120,
+"spatial": true,
+"desc": "Carbon ceramic baked under extreme pressure and heat, exposing abrasive microscopic silica"
+},
+{
+"id": "carbon_red",
+"M": 60,
+"R": 30,
+"CC": 16,
+"spatial": true,
+"desc": "Carbon Red \u2014 candy-red tinted carbon twill under deep wet clear"
+},
+{
+"id": "carbon_satin",
+"M": 55,
+"R": 110,
+"CC": 120,
+"spatial": true,
+"desc": "Carbon Satin \u2014 matte-clear 2x2 twill, OEM stealth carbon"
+},
+{
+"id": "carbon_weave",
+"M": 70,
+"R": 35,
+"CC": 16,
+"spatial": true,
+"desc": "Carbon weave - visible diagonal twill weave carbon fiber pattern under coat"
+},
+{
+"id": "cathedral_glass",
+"M": 0,
+"R": 16,
+"CC": 16,
+"spatial": true,
+"desc": "Cathedral Glass \u2014 stained violet leaded glass, deep colored depth + facets"
+},
+{
+"id": "cats_eye_beaded",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Cats Eye Beaded"
+},
+{
+"id": "cc_arctic_freeze",
+"M": 200,
+"R": 20,
+"CC": 16,
+"spatial": true,
+"desc": "BLEND: Deep icy blue freeze"
+},
+{
+"id": "cc_blood_wash",
+"M": 80,
+"R": 45,
+"CC": 16,
+"spatial": true,
+"desc": "BLEND: Deep dramatic crimson wash"
+},
+{
+"id": "cc_bronze_heat",
+"M": 200,
+"R": 50,
+"CC": 16,
+"spatial": true,
+"desc": "BLEND: Warm bronze aged patina"
+},
+{
+"id": "cc_electric_cyan",
+"M": 180,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "BLEND: Vivid teal-blue neon shock"
+},
+{
+"id": "cc_ghost_silver",
+"M": 240,
+"R": 10,
+"CC": 16,
+"spatial": true,
+"desc": "BLEND: Ghostly pale silver bleach"
+},
+{
+"id": "cc_inferno",
+"M": 150,
+"R": 40,
+"CC": 16,
+"spatial": true,
+"desc": "BLEND: Hot ember red/orange fire"
+},
+{
+"id": "cc_midnight",
+"M": 5,
+"R": 8,
+"CC": 16,
+"spatial": true,
+"desc": "BLEND: Near-black midnight void"
+},
+{
+"id": "cc_royal_purple",
+"M": 120,
+"R": 30,
+"CC": 16,
+"spatial": true,
+"desc": "BLEND: Deep royal purple majestic"
+},
+{
+"id": "cc_solar_gold",
+"M": 230,
+"R": 25,
+"CC": 16,
+"spatial": true,
+"desc": "BLEND: Rich warm luxury gold"
+},
+{
+"id": "cc_toxic",
+"M": 100,
+"R": 60,
+"CC": 16,
+"spatial": true,
+"desc": "BLEND: Sickly neon green radioactive"
+},
+{
+"id": "cerakote",
+"M": 30,
+"R": 160,
+"CC": 170,
+"spatial": true,
+"desc": "Mil-spec ceramic coating - heavy desaturation with high frequency hard chalky speckling (C"
+},
+{
+"id": "cerakote_gloss",
+"M": 45,
+"R": 55,
+"CC": 16,
+"spatial": true,
+"desc": "Cerakote gloss - polymer ceramic sealed gloss surface \u2014 FLAG-IND-001 FIX: M=45 (semi-metal"
+},
+{
+"id": "cerakote_pvd",
+"M": 55,
+"R": 174,
+"CC": 160,
+"spatial": true,
+"desc": "Cerakote / PVD Hard Coat \u2014 TiN/TiAlN thin hard coating: muted colors, flat surface, no cle"
+},
+{
+"id": "ceramic",
+"M": 10,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Ultra-smooth ceramic coating deep wet shine \u2014 FOUNDATION-AUDIT: noise_M 30\u219210 (ceramic sho"
+},
+{
+"id": "ceramic_matte",
+"M": 10,
+"R": 195,
+"CC": 160,
+"spatial": true,
+"desc": "Diffuse fired ceramic with intense high-frequency abrasive grit structure (CC=160 flat). H"
+},
+{
+"id": "chalky_base",
+"M": 0,
+"R": 210,
+"CC": 230,
+"spatial": true,
+"desc": "Chalky oxidised flat - CC=230 near-maximum degradation, powdery dead surface"
+},
+{
+"id": "chameleon",
+"M": 160,
+"R": 25,
+"CC": 16,
+"spatial": true,
+"desc": "Dual-tone color-shift angle-dependent"
+},
+{
+"id": "champagne",
+"M": 200,
+"R": 30,
+"CC": 16,
+"spatial": true,
+"desc": "Champagne metallic - warm gold-silver, French sparkling wine colour"
+},
+{
+"id": "champagne_flake",
+"M": 255,
+"R": 2,
+"CC": 16,
+"spatial": true,
+"desc": "A hyper-reflective pure 24K gold with near-zero roughness and high metal flake scaling \u2014 B"
+},
+{
+"id": "checkered_chrome",
+"M": 250,
+"R": 4,
+"CC": 16,
+"spatial": true,
+"desc": "Checkered chrome \u2014 checker-flag threshold-modulated reflectance, chrome squares vs dark ma"
+},
+{
+"id": "cherry_polka",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Cherry Polka"
+},
+{
+"id": "chevron_blaze",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Chevron Blaze"
+},
+{
+"id": "chromaflair",
+"M": 210,
+"R": 15,
+"CC": 18,
+"spatial": true,
+"desc": "ChromaFlair Light Shift \u2014 3-angle color flip via multi-stop hue rotation \u2014 GGX-FIX: R=12->"
+},
+{
+"id": "chrome",
+"M": 255,
+"R": 2,
+"CC": 16,
+"spatial": true,
+"desc": "Pure mirror chrome \u2014 Fresnel reflection + environment distortion"
+},
+{
+"id": "chrome_diner",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Chrome Diner"
+},
+{
+"id": "chrome_neon",
+"M": 8,
+"R": 40,
+"CC": 16,
+"spatial": true,
+"desc": "Chrome Neon"
+},
+{
+"id": "chrome_wrap",
+"M": 255,
+"R": 3,
+"CC": 16,
+"spatial": true,
+"desc": "Chrome wrap - mirror chrome vinyl, slightly textured vs real chrome"
+},
+{
+"id": "clear_matte",
+"M": 0,
+"R": 220,
+"CC": 210,
+"spatial": true,
+"desc": "Precision matte clearcoat (BMW Frozen/Porsche Chalk style) \u2014 R=220 true matte roughness, C"
+},
+{
+"id": "cobalt_metal",
+"M": 195,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Cobalt metal - blue-tinted raw cobalt alloy, no clearcoat"
+},
+{
+"id": "color_flip_wrap",
+"M": 155,
+"R": 22,
+"CC": 16,
+"spatial": true,
+"desc": "Color flip wrap - dual-colour angle-shift vinyl film"
+},
+{
+"id": "copper",
+"M": 190,
+"R": 55,
+"CC": 16,
+"spatial": true,
+"desc": "Warm oxidized copper metallic"
+},
+{
+"id": "copper_pearl",
+"M": 150,
+"R": 34,
+"CC": 16,
+"spatial": true,
+"desc": "Copper Pearl \u2014 warm copper/bronze mica pearl with fine platelet shift"
+},
+{
+"id": "coral_pearl",
+"M": 120,
+"R": 38,
+"CC": 16,
+"spatial": true,
+"desc": "Coral Pearl \u2014 beachy coral/peach mica pearl, soft warm shimmer"
+},
+{
+"id": "coral_stripe",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Coral Stripe"
+},
+{
+"id": "coyote_fde",
+"M": 8,
+"R": 185,
+"CC": 16,
+"spatial": true,
+"desc": "Coyote Fde"
+},
+{
+"id": "crackle_glaze",
+"M": 0,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Raku Crackle \u2014 teal celadon glaze with fine Voronoi crack network"
+},
+{
+"id": "crumbling_clear",
+"M": 30,
+"R": 180,
+"CC": 235,
+"spatial": true,
+"desc": "Peeling, crumbling clearcoat - paint underneath showing through (CC=235)"
+},
+{
+"id": "crystal_clear",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "A completely lucid, perfectly clear viscous water coating that never dries or sets \u2014 GGX-F"
+},
+{
+"id": "cx_acid_rain",
+"M": 125,
+"R": 70,
+"CC": 55,
+"spatial": true,
+"desc": "Acid Rain \u2014 toxic yellow chrome + sick green + bruise purple + ash gray matte."
+},
+{
+"id": "cx_apocalypse",
+"M": 120,
+"R": 80,
+"CC": 70,
+"spatial": true,
+"desc": "Apocalypse \u2014 scorching white chrome + blood red + rust orange + dead black. End times."
+},
+{
+"id": "cx_arctic",
+"M": 170,
+"R": 35,
+"CC": 22,
+"spatial": true,
+"desc": "COLORSHOXX Arctic Mirage \u2014 ice silver \u2194 deep teal dual-tone. Silver zones flash brilliantl"
+},
+{
+"id": "cx_aurora_borealis",
+"M": 145,
+"R": 50,
+"CC": 30,
+"spatial": true,
+"desc": "Aurora Borealis \u2014 electric green + deep teal + violet purple. Three-zone northern lights."
+},
+{
+"id": "cx_black_ice",
+"M": 195,
+"R": 85,
+"CC": 75,
+"spatial": true,
+"desc": "Black Ice \u2014 mostly black; ice-white and blue frost buried until glancing light reveals the"
+},
+{
+"id": "cx_blood_mercury",
+"M": 150,
+"R": 45,
+"CC": 28,
+"spatial": true,
+"desc": "Blood Mercury \u2014 liquid chrome silver \u2194 deep arterial crimson."
+},
+{
+"id": "cx_chrome_void",
+"M": 120,
+"R": 100,
+"CC": 80,
+"spatial": true,
+"desc": "Chrome Void \u2014 pure mirror chrome \u2194 absolute matte black. Maximum possible contrast."
+},
+{
+"id": "cx_cotton_candy",
+"M": 228,
+"R": 55,
+"CC": 45,
+"spatial": true,
+"desc": "Cotton Candy \u2014 carnival pastels buried; pink/cyan/violet flash from different pan directio"
+},
+{
+"id": "cx_dragon_scale",
+"M": 145,
+"R": 80,
+"CC": 70,
+"spatial": true,
+"desc": "Dragon Scale \u2014 chrome gold + ember orange + charcoal black. Three-zone fire wyrm."
+},
+{
+"id": "cx_electric_storm",
+"M": 130,
+"R": 80,
+"CC": 70,
+"spatial": true,
+"desc": "Electric Storm \u2014 crackling blue chrome \u2194 thundercloud dark matte."
+},
+{
+"id": "cx_emerald_city",
+"M": 220,
+"R": 60,
+"CC": 50,
+"spatial": true,
+"desc": "Emerald City \u2014 Oz palette buried in dark emerald; gold road and ruby slipper reveal by ang"
+},
+{
+"id": "cx_emerald_ruby",
+"M": 215,
+"R": 65,
+"CC": 55,
+"spatial": true,
+"desc": "Emerald Ruby \u2014 jewel tones buried in dark base; emerald vs ruby reveal on different pan ax"
+},
+{
+"id": "cx_frozen_nebula",
+"M": 145,
+"R": 60,
+"CC": 50,
+"spatial": true,
+"desc": "Frozen Nebula \u2014 ice white chrome + cosmic blue + deep purple void. Three-zone deep space."
+},
+{
+"id": "cx_glacier_fire",
+"M": 135,
+"R": 70,
+"CC": 60,
+"spatial": true,
+"desc": "Glacier Fire \u2014 icy white-blue chrome \u2194 molten orange-red matte."
+},
+{
+"id": "cx_hellfire",
+"M": 130,
+"R": 85,
+"CC": 80,
+"spatial": true,
+"desc": "Hellfire \u2014 white-hot chrome + lava orange + scorched black. Three-zone inferno."
+},
+{
+"id": "cx_inferno",
+"M": 180,
+"R": 30,
+"CC": 20,
+"spatial": true,
+"desc": "COLORSHOXX Inferno Flip \u2014 crimson red \u2194 midnight blue dual-tone. Red zones flash metallic "
+},
+{
+"id": "cx_midnight_chrome",
+"M": 125,
+"R": 120,
+"CC": 110,
+"spatial": true,
+"desc": "Midnight Chrome \u2014 dark blue chrome mirror \u2194 pure flat black void."
+},
+{
+"id": "cx_neon_abyss",
+"M": 120,
+"R": 90,
+"CC": 80,
+"spatial": true,
+"desc": "Neon Abyss \u2014 electric hot pink chrome \u2194 abyssal black-green matte."
+},
+{
+"id": "cx_obsidian_gold",
+"M": 125,
+"R": 110,
+"CC": 100,
+"spatial": true,
+"desc": "Obsidian Gold \u2014 liquid 24k gold chrome \u2194 volcanic obsidian dead matte."
+},
+{
+"id": "cx_ocean_trench",
+"M": 120,
+"R": 80,
+"CC": 70,
+"spatial": true,
+"desc": "Ocean Trench \u2014 bioluminescent teal + deep navy + abyssal black. Three-zone deep sea."
+},
+{
+"id": "cx_phantom",
+"M": 160,
+"R": 35,
+"CC": 24,
+"spatial": true,
+"desc": "COLORSHOXX Phantom Violet \u2014 electric violet \u2194 gunmetal dual-tone. Violet pops vivid metall"
+},
+{
+"id": "cx_prism_shatter",
+"M": 175,
+"R": 35,
+"CC": 25,
+"spatial": true,
+"desc": "Prism Shatter \u2014 chrome red + gold + teal + indigo. Four-color shattered light spectrum."
+},
+{
+"id": "cx_rose_chrome",
+"M": 135,
+"R": 90,
+"CC": 80,
+"spatial": true,
+"desc": "Rose Chrome \u2014 rose gold chrome mirror \u2194 deep burgundy velvet matte."
+},
+{
+"id": "cx_royal_spectrum",
+"M": 195,
+"R": 28,
+"CC": 20,
+"spatial": true,
+"desc": "Royal Spectrum \u2014 chrome silver + sapphire blue + ruby red + emerald green. Crown jewels."
+},
+{
+"id": "cx_solar",
+"M": 200,
+"R": 28,
+"CC": 20,
+"spatial": true,
+"desc": "COLORSHOXX Solar Flare \u2014 warm gold \u2194 copper-red dual-tone. Gold zones flash like liquid me"
+},
+{
+"id": "cx_supernova",
+"M": 140,
+"R": 70,
+"CC": 60,
+"spatial": true,
+"desc": "Supernova \u2014 white-hot chrome + electric blue + magenta + void black. Four-stage stellar ex"
+},
+{
+"id": "cx_toxic_chrome",
+"M": 125,
+"R": 95,
+"CC": 90,
+"spatial": true,
+"desc": "Toxic Chrome \u2014 acid green chrome \u2194 chemical waste matte."
+},
+{
+"id": "cx_venom",
+"M": 150,
+"R": 40,
+"CC": 25,
+"spatial": true,
+"desc": "COLORSHOXX Venom Shift \u2014 toxic green \u2194 black-purple dual-tone. Green zones pop metallic, p"
+},
+{
+"id": "cx_white_lightning",
+"M": 130,
+"R": 95,
+"CC": 80,
+"spatial": true,
+"desc": "White Lightning \u2014 blinding white chrome \u2194 charcoal matte."
+},
+{
+"id": "cyber_camo",
+"M": 8,
+"R": 90,
+"CC": 16,
+"spatial": true,
+"desc": "Cyber Camo"
+},
+{
+"id": "dark_chrome",
+"M": 250,
+"R": 15,
+"CC": 40,
+"spatial": true,
+"desc": "PVD dark chrome \u2014 exponential darkening, specular highlight preservation, near-mirror M=25"
+},
+{
+"id": "dark_matter",
+"M": 0,
+"R": 240,
+"CC": 220,
+"spatial": true,
+"desc": "Dark matter - ultra-dark hidden angle-dependent reveal, maximum absorption (CC=220 dead fl"
+},
+{
+"id": "data_rain",
+"M": 8,
+"R": 160,
+"CC": 16,
+"spatial": true,
+"desc": "Data Rain"
+},
+{
+"id": "dealer_pearl",
+"M": 80,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Dealer pearl - typical dealership tri-coat pearl upgrade, three distinct coat zones. WEAK-"
+},
+{
+"id": "deep_pearl",
+"M": 88,
+"R": 58,
+"CC": 16,
+"spatial": true,
+"desc": "Deep Pearl Type III \u2014 three-stage tri-coat pearl with edge-weighted metallic flop; warm/co"
+},
+{
+"id": "desert_dpm",
+"M": 8,
+"R": 175,
+"CC": 16,
+"spatial": true,
+"desc": "Desert Dpm"
+},
+{
+"id": "desert_worn",
+"M": 20,
+"R": 160,
+"CC": 130,
+"spatial": true,
+"desc": "Desert worn - sand-blasted UV-hammered surface, coat nearly gone"
+},
+{
+"id": "destroyed_coat",
+"M": 0,
+"R": 210,
+"CC": 255,
+"spatial": true,
+"desc": "Completely destroyed clearcoat - maximum degradation, pure chalk-rough (CC=255)"
+},
+{
+"id": "diamond_coat",
+"M": 220,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Diamond dust ultra-fine sparkle coat \u2014 GGX-FIX: R=3\u219215 (M=220 non-chrome metallic)"
+},
+{
+"id": "diamond_grade",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Diamond Grade"
+},
+{
+"id": "dichroic_glass",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Dichroic Glass"
+},
+{
+"id": "diner_checker",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Diner Checker"
+},
+{
+"id": "disco_black_diamond",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Disco Black Diamond"
+},
+{
+"id": "drag_strip_gloss",
+"M": 140,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Drag strip gloss - ultra-polished show car finish, came off the trailer \u2014 GGX-FIX: R=6->15"
+},
+{
+"id": "dragonfly_wing",
+"M": 130,
+"R": 20,
+"CC": 18,
+"spatial": true,
+"desc": "Dragonfly Wing \u2014 transparent wing membrane with rainbow interference and dark veins."
+},
+{
+"id": "duracoat",
+"M": 20,
+"R": 130,
+"CC": 150,
+"spatial": true,
+"desc": "Tactical epoxy coat - rippling and uneven pooling from thick air-dry epoxy spray (CC=150 f"
+},
+{
+"id": "dyneema_white",
+"M": 18,
+"R": 120,
+"CC": 110,
+"spatial": true,
+"desc": "Dyneema White \u2014 white UHMWPE technical weave, matte"
+},
+{
+"id": "efx_aurora_fold",
+"M": 170,
+"R": 60,
+"CC": 95,
+"spatial": true,
+"desc": "\u2605 Aurora Fold (DUAL) \u2014 interleaved at freq 80"
+},
+{
+"id": "efx_aurora_obsidian_veil",
+"M": 130,
+"R": 100,
+"CC": 100,
+"spatial": true,
+"desc": "\u2605 Aurora / Obsidian Veil (DUAL) \u2014 interleaved at freq 80"
+},
+{
+"id": "efx_aurora_skin",
+"M": 140,
+"R": 55,
+"CC": 130,
+"spatial": true,
+"desc": "\u2605 Aurora Skin \u2014 flowing chromatic veils with high-freq CC oscillation"
+},
+{
+"id": "efx_cathedral_holographic",
+"M": 155,
+"R": 80,
+"CC": 100,
+"spatial": true,
+"desc": "\u2605 Cathedral / Holographic (DUAL) \u2014 interleaved at freq 96"
+},
+{
+"id": "efx_cathedral_veil",
+"M": 110,
+"R": 110,
+"CC": 80,
+"spatial": true,
+"desc": "\u2605 Cathedral Veil \u2014 Voronoi cane network + glass-interior texture"
+},
+{
+"id": "efx_crystalline_triad",
+"M": 120,
+"R": 110,
+"CC": 90,
+"spatial": true,
+"desc": "\u2605 Crystalline Triad (TRIPLE) \u2014 interleaved at freq 80"
+},
+{
+"id": "efx_damascus_fold",
+"M": 200,
+"R": 60,
+"CC": 55,
+"spatial": true,
+"desc": "\u2605 Damascus Fold \u2014 interleaved anisotropic bands at multiple angles"
+},
+{
+"id": "efx_damascus_trinity",
+"M": 175,
+"R": 60,
+"CC": 60,
+"spatial": true,
+"desc": "\u2605 Damascus Trinity (TRIPLE) \u2014 fine diagonal stripes at freq 24"
+},
+{
+"id": "efx_frost_fractal",
+"M": 150,
+"R": 80,
+"CC": 130,
+"spatial": true,
+"desc": "\u2605 Frost Fractal \u2014 5-frequency recursive ridges + ice-crystal sparkle"
+},
+{
+"id": "efx_frost_mercury_duo",
+"M": 180,
+"R": 50,
+"CC": 90,
+"spatial": true,
+"desc": "\u2605 Frost / Mercury Duo (DUAL) \u2014 interleaved at freq 96"
+},
+{
+"id": "efx_holographic_drift",
+"M": 200,
+"R": 40,
+"CC": 120,
+"spatial": true,
+"desc": "\u2605 Holographic Drift \u2014 diffraction grating + micro-sparkle (4 octave bands)"
+},
+{
+"id": "efx_kintsugi_bloom",
+"M": 90,
+"R": 130,
+"CC": 60,
+"spatial": true,
+"desc": "\u2605 Kintsugi Bloom \u2014 sparse gold veins on a textured matte body"
+},
+{
+"id": "efx_lace_filament",
+"M": 140,
+"R": 110,
+"CC": 90,
+"spatial": true,
+"desc": "\u2605 Lace Filament \u2014 5-octave fractal lace + anisotropic body grain"
+},
+{
+"id": "efx_quicksilver_pool",
+"M": 215,
+"R": 10,
+"CC": 25,
+"spatial": true,
+"desc": "\u2605 Quicksilver Pool \u2014 multi-scale mercury pooling, chrome territory"
+},
+{
+"id": "efx_spectral_edge",
+"M": 90,
+"R": 130,
+"CC": 80,
+"spatial": true,
+"desc": "\u2605 Spectral Edge \u2014 sharp light corridors at 3 frequencies + sub-pixel speckle"
+},
+{
+"id": "efx_stardust_coat",
+"M": 100,
+"R": 70,
+"CC": 80,
+"spatial": true,
+"desc": "\u2605 Stardust Coat \u2014 sparse big stars + dense micro-sparkle on dark body"
+},
+{
+"id": "efx_tempered_quattro",
+"M": 155,
+"R": 65,
+"CC": 110,
+"spatial": true,
+"desc": "\u2605 Tempered Quattro (QUAD) \u2014 modulated concentric rings"
+},
+{
+"id": "efx_tempered_spectrum",
+"M": 170,
+"R": 70,
+"CC": 130,
+"spatial": true,
+"desc": "\u2605 Tempered Spectrum \u2014 heat-tint bands with anisotropic grain + sparkle"
+},
+{
+"id": "efx_volcanic_obsidian",
+"M": 110,
+"R": 150,
+"CC": 70,
+"spatial": true,
+"desc": "\u2605 Volcanic Obsidian \u2014 Voronoi fracture wells with knife-edge ridges"
+},
+{
+"id": "efx_volcanic_triad",
+"M": 145,
+"R": 100,
+"CC": 75,
+"spatial": true,
+"desc": "\u2605 Volcanic Triad (TRIPLE) \u2014 interleaved at freq 72"
+},
+{
+"id": "eggshell",
+"M": 0,
+"R": 130,
+"CC": 100,
+"spatial": true,
+"desc": "Eggshell - low sheen wall-paint finish, CC=100. FLAT-FIX: added perlin noise."
+},
+{
+"id": "electric_ice",
+"M": 240,
+"R": 10,
+"CC": 16,
+"spatial": true,
+"desc": "Icy electric blue metallic - cold neon shimmer"
+},
+{
+"id": "electroplated_gold",
+"M": 250,
+"R": 10,
+"CC": 16,
+"spatial": true,
+"desc": "Electroplated Gold / Rose Gold \u2014 warm mirror: near-chrome metallic with warm gold or rose-"
+},
+{
+"id": "emerald_glass",
+"M": 0,
+"R": 17,
+"CC": 16,
+"spatial": true,
+"desc": "Emerald Glass \u2014 deep green faceted gem glass, wet depth"
+},
+{
+"id": "enamel",
+"M": 0,
+"R": 18,
+"CC": 16,
+"spatial": true,
+"desc": "Enamel - baked dielectric gloss filled with microscopic silica sediment imperfections. FLA"
+},
+{
+"id": "endurance_ceramic",
+"M": 15,
+"R": 80,
+"CC": 50,
+"spatial": true,
+"desc": "Endurance ceramic (Apollo Shield Char) - thermal fatigue micro-craze, charred reentry plat"
+},
+{
+"id": "enh_anodized",
+"M": 180,
+"R": 60,
+"CC": 80,
+"spatial": true,
+"desc": "Enhanced Anodized - anodized aluminum with oxide variation"
+},
+{
+"id": "enh_baked_enamel",
+"M": 0,
+"R": 16,
+"CC": 18,
+"spatial": true,
+"desc": "Enhanced Baked Enamel - traditional enamel with kiln-fired depth"
+},
+{
+"id": "enh_brushed",
+"M": 180,
+"R": 70,
+"CC": 60,
+"spatial": true,
+"desc": "Enhanced Brushed - directional brush grain with metallic depth"
+},
+{
+"id": "enh_carbon_fiber",
+"M": 55,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Enhanced Carbon Fiber - carbon weave with resin depth variation"
+},
+{
+"id": "enh_ceramic_glaze",
+"M": 5,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Enhanced Ceramic Glaze - deep wet ceramic with pool depth"
+},
+{
+"id": "enh_chrome",
+"M": 250,
+"R": 2,
+"CC": 16,
+"spatial": true,
+"desc": "Enhanced Chrome - mirror chrome with environment distortion"
+},
+{
+"id": "enh_clear_matte",
+"M": 0,
+"R": 200,
+"CC": 140,
+"spatial": true,
+"desc": "Enhanced Clear Matte - protective flat coat with micro-haze (HA12: R 160\u2192200)"
+},
+{
+"id": "enh_clear_satin",
+"M": 0,
+"R": 95,
+"CC": 70,
+"spatial": true,
+"desc": "Enhanced Clear Satin - satin clearcoat with orange-peel micro"
+},
+{
+"id": "enh_eggshell",
+"M": 0,
+"R": 65,
+"CC": 45,
+"spatial": true,
+"desc": "Enhanced Eggshell - subtle orange-peel texture with warm tone"
+},
+{
+"id": "enh_frozen",
+"M": 160,
+"R": 80,
+"CC": 125,
+"spatial": true,
+"desc": "Enhanced Frozen - icy surface with crystal texture and frost haze"
+},
+{
+"id": "enh_gel_coat",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Enhanced Gel Coat - fiberglass gel coat with flow-out variation"
+},
+{
+"id": "enh_gloss",
+"M": 0,
+"R": 18,
+"CC": 16,
+"spatial": true,
+"desc": "Enhanced Gloss - deep wet gloss with micro-ripple shimmer"
+},
+{
+"id": "enh_living_matte",
+"M": 5,
+"R": 195,
+"CC": 145,
+"spatial": true,
+"desc": "Enhanced Living Matte - organic matte with biological grain (HA13: R 170\u2192195)"
+},
+{
+"id": "enh_matte",
+"M": 0,
+"R": 200,
+"CC": 170,
+"spatial": true,
+"desc": "Enhanced Matte - organic micro-grain matte with pore texture"
+},
+{
+"id": "enh_metallic",
+"M": 200,
+"R": 45,
+"CC": 16,
+"spatial": true,
+"desc": "Enhanced Metallic - visible flake sparkle with depth variation"
+},
+{
+"id": "enh_neutral_grey",
+"M": 0,
+"R": 180,
+"CC": 145,
+"spatial": true,
+"desc": "Enhanced Neutral Grey - professional neutral with micro-grain"
+},
+{
+"id": "enh_pearl",
+"M": 100,
+"R": 35,
+"CC": 16,
+"spatial": true,
+"desc": "Enhanced Pearl - pearlescent shimmer with iridescent micro-shift"
+},
+{
+"id": "enh_piano_black",
+"M": 0,
+"R": 20,
+"CC": 16,
+"spatial": true,
+"desc": "Enhanced Piano Black - mirror-deep black with reflection depth"
+},
+{
+"id": "enh_powder_coat",
+"M": 10,
+"R": 115,
+"CC": 140,
+"spatial": true,
+"desc": "Enhanced Powder Coat - electrostatic powder with orange-peel grain"
+},
+{
+"id": "enh_primer",
+"M": 0,
+"R": 180,
+"CC": 160,
+"spatial": true,
+"desc": "Enhanced Primer - rough industrial primer with grit variation"
+},
+{
+"id": "enh_pure_black",
+"M": 0,
+"R": 235,
+"CC": 185,
+"spatial": true,
+"desc": "Enhanced Pure Black - absolute black with dead matte grain"
+},
+{
+"id": "enh_satin",
+"M": 15,
+"R": 90,
+"CC": 55,
+"spatial": true,
+"desc": "Enhanced Satin - directional brushed satin with warm sheen"
+},
+{
+"id": "enh_satin_chrome",
+"M": 248,
+"R": 35,
+"CC": 35,
+"spatial": true,
+"desc": "Enhanced Satin Chrome - brushed chrome with directional grain"
+},
+{
+"id": "enh_semi_gloss",
+"M": 0,
+"R": 55,
+"CC": 30,
+"spatial": true,
+"desc": "Enhanced Semi Gloss - sweet spot between gloss and satin"
+},
+{
+"id": "enh_silk",
+"M": 10,
+"R": 55,
+"CC": 35,
+"spatial": true,
+"desc": "Enhanced Silk - ultra-smooth with subtle directional sheen"
+},
+{
+"id": "enh_soft_gloss",
+"M": 0,
+"R": 40,
+"CC": 20,
+"spatial": true,
+"desc": "Enhanced Soft Gloss - gentle gloss with warm micro-shimmer"
+},
+{
+"id": "enh_soft_matte",
+"M": 0,
+"R": 195,
+"CC": 160,
+"spatial": true,
+"desc": "Enhanced Soft Matte - velvet-touch matte with organic grain"
+},
+{
+"id": "enh_vinyl_wrap",
+"M": 0,
+"R": 95,
+"CC": 105,
+"spatial": true,
+"desc": "Enhanced Vinyl Wrap - conformable vinyl with stretch texture"
+},
+{
+"id": "enh_warm_white",
+"M": 0,
+"R": 115,
+"CC": 90,
+"spatial": true,
+"desc": "Enhanced Warm White - creamy warm white with ceramic undertone"
+},
+{
+"id": "enh_wet_look",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Enhanced Wet Look - ultra-deep wet coating with clarity depth"
+},
+{
+"id": "f_anodized",
+"M": 180,
+"R": 65,
+"CC": 85,
+"spatial": true,
+"desc": "Foundation anodized - anodized oxide layer finish, CC=85, flat"
+},
+{
+"id": "f_baked_enamel",
+"M": 0,
+"R": 18,
+"CC": 20,
+"spatial": true,
+"desc": "Foundation baked enamel - hard baked traditional enamel, flat"
+},
+{
+"id": "f_bead_blast",
+"M": 180,
+"R": 160,
+"CC": 140,
+"spatial": false,
+"desc": "Foundation bead blast - glass bead blasted metal surface, flat"
+},
+{
+"id": "f_brushed",
+"M": 180,
+"R": 75,
+"CC": 65,
+"spatial": true,
+"desc": "Foundation brushed - directional grain metallic, flat (add a brushed Spec Pattern for grai"
+},
+{
+"id": "f_candy",
+"M": 200,
+"R": 20,
+"CC": 16,
+"spatial": false,
+"desc": "Foundation candy - transparent glass over metallic base, flat"
+},
+{
+"id": "f_carbon_fiber",
+"M": 55,
+"R": 30,
+"CC": 16,
+"spatial": true,
+"desc": "Foundation carbon fiber - material baseline, flat (add `carbon_fiber` pattern for visible "
+},
+{
+"id": "f_chrome",
+"M": 255,
+"R": 2,
+"CC": 16,
+"spatial": true,
+"desc": "Foundation chrome - pure mirror metallic, flat"
+},
+{
+"id": "f_clear_satin",
+"M": 0,
+"R": 100,
+"CC": 75,
+"spatial": true,
+"desc": "Clear satin foundation - CC=75"
+},
+{
+"id": "f_electroplate",
+"M": 245,
+"R": 8,
+"CC": 16,
+"spatial": false,
+"desc": "Foundation electroplate - electroplated metal coating, flat"
+},
+{
+"id": "f_frozen",
+"M": 160,
+"R": 85,
+"CC": 130,
+"spatial": true,
+"desc": "Foundation frozen matte - icy matte metal, CC=130 deliberately flat"
+},
+{
+"id": "f_galvanized",
+"M": 195,
+"R": 65,
+"CC": 30,
+"spatial": false,
+"desc": "Foundation galvanized - hot-dip zinc coating, flat"
+},
+{
+"id": "f_gel_coat",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Foundation gel coat - fiberglass gelcoat high-gloss, flat"
+},
+{
+"id": "f_hot_dip",
+"M": 190,
+"R": 70,
+"CC": 35,
+"spatial": false,
+"desc": "Foundation hot dip - hot-dip galvanized zinc material, flat"
+},
+{
+"id": "f_matte",
+"M": 0,
+"R": 210,
+"CC": 180,
+"spatial": false,
+"desc": "Foundation matte - dead flat matte finish, flat"
+},
+{
+"id": "f_metallic",
+"M": 200,
+"R": 50,
+"CC": 16,
+"spatial": true,
+"desc": "Foundation metallic - standard metallic flake, no color shift, flat"
+},
+{
+"id": "f_mill_scale",
+"M": 120,
+"R": 110,
+"CC": 130,
+"spatial": false,
+"desc": "Foundation mill scale - iron oxide scale material, flat"
+},
+{
+"id": "f_neutral_grey",
+"M": 0,
+"R": 185,
+"CC": 150,
+"spatial": true,
+"desc": "Neutral grey foundation - dull flat, CC=150"
+},
+{
+"id": "f_patina",
+"M": 80,
+"R": 120,
+"CC": 140,
+"spatial": false,
+"desc": "Foundation patina - oxidation patina material, flat (add a weathering Spec Pattern for cor"
+},
+{
+"id": "f_pearl",
+"M": 100,
+"R": 40,
+"CC": 16,
+"spatial": true,
+"desc": "Foundation pearl - pearlescent sheen, flat"
+},
+{
+"id": "f_powder_coat",
+"M": 10,
+"R": 120,
+"CC": 145,
+"spatial": true,
+"desc": "Foundation powder coat - thick textured coating, CC=145 no traditional clearcoat, flat"
+},
+{
+"id": "f_pure_black",
+"M": 0,
+"R": 240,
+"CC": 190,
+"spatial": true,
+"desc": "Pure black foundation - near-flat, CC=190"
+},
+{
+"id": "f_pure_white",
+"M": 0,
+"R": 145,
+"CC": 110,
+"spatial": true,
+"desc": "Pure white foundation - eggshell sheen"
+},
+{
+"id": "f_pvd_coating",
+"M": 230,
+"R": 15,
+"CC": 16,
+"spatial": false,
+"desc": "Foundation PVD coating - physical vapor deposition metallic, flat"
+},
+{
+"id": "f_sand_cast",
+"M": 150,
+"R": 140,
+"CC": 120,
+"spatial": false,
+"desc": "Foundation sand cast - rough sand casting material, flat (add a rough Spec Pattern for cas"
+},
+{
+"id": "f_satin_chrome",
+"M": 250,
+"R": 45,
+"CC": 40,
+"spatial": true,
+"desc": "Foundation satin chrome - silky satin metallic, flat"
+},
+{
+"id": "f_shot_peen",
+"M": 190,
+"R": 130,
+"CC": 110,
+"spatial": false,
+"desc": "Foundation shot peen - dimpled peened metal, flat (add a dimple Spec Pattern for visible p"
+},
+{
+"id": "f_soft_gloss",
+"M": 0,
+"R": 42,
+"CC": 22,
+"spatial": true,
+"desc": "Soft gloss foundation - near-gloss CC=22"
+},
+{
+"id": "f_soft_matte",
+"M": 0,
+"R": 200,
+"CC": 165,
+"spatial": true,
+"desc": "Soft matte foundation - flat finish, CC=165"
+},
+{
+"id": "f_thermal_spray",
+"M": 160,
+"R": 100,
+"CC": 90,
+"spatial": false,
+"desc": "Foundation thermal spray - plasma-sprayed metal material, flat"
+},
+{
+"id": "f_vapor_deposit",
+"M": 240,
+"R": 10,
+"CC": 16,
+"spatial": false,
+"desc": "Foundation vapor deposit - thin-film vacuum deposition, flat"
+},
+{
+"id": "f_vinyl_wrap",
+"M": 0,
+"R": 100,
+"CC": 110,
+"spatial": true,
+"desc": "Foundation vinyl wrap - vinyl material finish, CC=110 no clearcoat, flat"
+},
+{
+"id": "f_warm_white",
+"M": 0,
+"R": 120,
+"CC": 95,
+"spatial": true,
+"desc": "Warm white foundation - eggshell-plus sheen, CC=95"
+},
+{
+"id": "f_weathering_steel",
+"M": 100,
+"R": 130,
+"CC": 160,
+"spatial": false,
+"desc": "Foundation weathering steel - Cor-Ten material, flat"
+},
+{
+"id": "f_wrinkle_coat",
+"M": 10,
+"R": 170,
+"CC": 150,
+"spatial": false,
+"desc": "Foundation wrinkle coat - wrinkle-textured powder coating, flat"
+},
+{
+"id": "factory_basecoat",
+"M": 130,
+"R": 30,
+"CC": 16,
+"spatial": true,
+"desc": "Factory basecoat - standard OEM metallic, the average showroom car that left the plant"
+},
+{
+"id": "ferrari_rosso",
+"M": 120,
+"R": 15,
+"CC": 22,
+"spatial": true,
+"desc": "Ferrari Rosso Corsa - triple-layer candy coat with Beer-Lambert pigment absorption, deep c"
+},
+{
+"id": "fiberglass",
+"M": 0,
+"R": 55,
+"CC": 30,
+"spatial": true,
+"desc": "Fiberglass - rough internal dielectric strands suspended in a milky resin, refracting at s"
+},
+{
+"id": "fine_silver_flake",
+"M": 235,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Crushed silver mica shards suspended in thick clear resin \u2014 silver mirror class (HEENAN HA"
+},
+{
+"id": "fire_agate",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Fire Agate"
+},
+{
+"id": "fire_engine",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Fire engine red - deep wet apparatus red, dielectric, maximum gloss \u2014 GGX-FIX: R=6\u219215. FLA"
+},
+{
+"id": "fire_flake",
+"M": 220,
+"R": 80,
+"CC": 20,
+"spatial": true,
+"desc": "The violent surface of the sun exploding with massive bright spots of solar plasma"
+},
+{
+"id": "firefly_glow",
+"M": 160,
+"R": 40,
+"CC": 30,
+"spatial": true,
+"desc": "Firefly Glow \u2014 dark exoskeleton with bioluminescent yellow-green lantern zones."
+},
+{
+"id": "flame_blue",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Blue"
+},
+{
+"id": "flame_candy",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Candy"
+},
+{
+"id": "flame_cold",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Cold"
+},
+{
+"id": "flame_dragon",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Dragon"
+},
+{
+"id": "flame_ember",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Ember"
+},
+{
+"id": "flame_ghost",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Ghost"
+},
+{
+"id": "flame_green",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Green"
+},
+{
+"id": "flame_hotrod",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Hotrod"
+},
+{
+"id": "flame_inferno",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Inferno"
+},
+{
+"id": "flame_lava",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Lava"
+},
+{
+"id": "flame_phoenix",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Phoenix"
+},
+{
+"id": "flame_pink",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Pink"
+},
+{
+"id": "flame_plasma",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Plasma"
+},
+{
+"id": "flame_purple",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Purple"
+},
+{
+"id": "flame_rainbow",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Rainbow"
+},
+{
+"id": "flame_smoke",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Smoke"
+},
+{
+"id": "flame_toxic",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Toxic"
+},
+{
+"id": "flame_tribal",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame Tribal"
+},
+{
+"id": "flame_true_fire",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame True Fire"
+},
+{
+"id": "flame_white_hot",
+"M": 40,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flame White Hot"
+},
+{
+"id": "flat_black",
+"M": 0,
+"R": 248,
+"CC": 220,
+"spatial": true,
+"desc": "Dead flat zero-sheen black with organic chalky micro-pore variation \u2014 military/rat-rod aut"
+},
+{
+"id": "fleet_white",
+"M": 0,
+"R": 18,
+"CC": 16,
+"spatial": true,
+"desc": "Fleet white - crosslinked polyurethane commercial white, durable uniform dielectric finish"
+},
+{
+"id": "flower_power",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Flower Power"
+},
+{
+"id": "forged_blue",
+"M": 70,
+"R": 40,
+"CC": 16,
+"spatial": true,
+"desc": "Forged Blue \u2014 chopped forged carbon in blue resin, marbled"
+},
+{
+"id": "forged_carbon_vis",
+"M": 28,
+"R": 35,
+"CC": 18,
+"spatial": true,
+"desc": "Forged Carbon Visible Weave \u2014 Lamborghini-style random-fiber organic composite; non-repeat"
+},
+{
+"id": "forged_composite",
+"M": 90,
+"R": 35,
+"CC": 16,
+"spatial": true,
+"desc": "Forged composite - irregular micro-chopped carbon chunks reflecting light independently in"
+},
+{
+"id": "formica_boomerang",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Formica Boomerang"
+},
+{
+"id": "frozen",
+"M": 225,
+"R": 140,
+"CC": 100,
+"spatial": true,
+"desc": "Frozen icy metallic \u2014 WEAK-017 FIX: ice-crystal Worley spec, blue iridescence in paint (vi"
+},
+{
+"id": "frozen_matte",
+"M": 60,
+"R": 210,
+"CC": 175,
+"spatial": true,
+"desc": "BMW Individual frozen matte \u2014 WEAK-017 FIX: frosted-glass surface, uniform micro-roughness"
+},
+{
+"id": "galvanized",
+"M": 195,
+"R": 65,
+"CC": 30,
+"spatial": true,
+"desc": "Hot-dip galvanized zinc - the zinc IS the coat (CC=30 thin metallic coat)"
+},
+{
+"id": "ghost_graphic",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Ghost Graphic"
+},
+{
+"id": "gingham_red",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Gingham Red"
+},
+{
+"id": "glitch_rgb",
+"M": 8,
+"R": 120,
+"CC": 16,
+"spatial": true,
+"desc": "Glitch Rgb"
+},
+{
+"id": "gloss",
+"M": 0,
+"R": 30,
+"CC": 16,
+"spatial": true,
+"desc": "Standard glossy clearcoat with painter-grade micro-variation \u2014 sponsor-safe foundation (HA"
+},
+{
+"id": "gloss_wrap",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Gloss wrap - high-gloss smooth vinyl, dielectric \u2014 GGX-FIX: R=8\u219215. FLAT-FIX: added perlin"
+},
+{
+"id": "googie_orbit",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Googie Orbit"
+},
+{
+"id": "graphene",
+"M": 210,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Graphene sheet \u2014 GGX-FIX: R=12\u219215. Atomically thin dark lattice with extreme geometric mic"
+},
+{
+"id": "green_flake",
+"M": 180,
+"R": 20,
+"CC": 50,
+"spatial": true,
+"desc": "Dark space meteorite that fades to an intense glowing neon green at its specular angles"
+},
+{
+"id": "groovy_marble",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Groovy Marble"
+},
+{
+"id": "groovy_zigzag",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Groovy Zigzag"
+},
+{
+"id": "gunmetal",
+"M": 220,
+"R": 40,
+"CC": 16,
+"spatial": true,
+"desc": "Dark aggressive blue-gray metallic"
+},
+{
+"id": "gunmetal_flake",
+"M": 210,
+"R": 30,
+"CC": 16,
+"spatial": true,
+"desc": "Geometric stair-step oxidation layering of Bismuth \u2014 BASE-042 FIX: R=30 (metallic flake sp"
+},
+{
+"id": "gunmetal_satin",
+"M": 205,
+"R": 110,
+"CC": 28,
+"spatial": true,
+"desc": "Gunmetal Satin / Dark Industrial Metallic \u2014 CNC-machined alloy zone, dark grey with subtle"
+},
+{
+"id": "gunship_gray",
+"M": 5,
+"R": 200,
+"CC": 190,
+"spatial": true,
+"desc": "Gunship gray - radar absorbent material (RAM), extremely gritty micro-texture (CC=190 near"
+},
+{
+"id": "harlequin",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Harlequin"
+},
+{
+"id": "heat_treated",
+"M": 140,
+"R": 35,
+"CC": 16,
+"spatial": true,
+"desc": "Heat-treated tool steel blue-gold zones \u2014 BASE-035 FIX: M=140 (tool steel/gun barrel, not "
+},
+{
+"id": "hex_tech",
+"M": 8,
+"R": 130,
+"CC": 16,
+"spatial": true,
+"desc": "Hex Tech"
+},
+{
+"id": "hi_vis_lime",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Hi Vis Lime"
+},
+{
+"id": "hippie_rainbow",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Hippie Rainbow"
+},
+{
+"id": "holo_vapor",
+"M": 8,
+"R": 40,
+"CC": 16,
+"spatial": true,
+"desc": "Holo Vapor"
+},
+{
+"id": "holographic_base",
+"M": 200,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Holographic base - full prismatic rainbow hologram base, strong angle shift \u2014 GGX-FIX: R=6"
+},
+{
+"id": "hybrid_weave",
+"M": 70,
+"R": 40,
+"CC": 16,
+"spatial": true,
+"desc": "Hybrid weave - tight structural interplay between carbon dark and kevlar thread matrices"
+},
+{
+"id": "hydrographic",
+"M": 240,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Mirror metal under maximum deep clearcoat - wet glass over chrome \u2014 GGX-FIX: R=5\u219215"
+},
+{
+"id": "hypershift_spectral",
+"M": 218,
+"R": 33,
+"CC": 16,
+"spatial": true,
+"desc": "Hypershift Spectral 360\u00b0 \u2014 PPG HyperShift: 6-anchor full spectral sweep with steeper trans"
+},
+{
+"id": "infinite_finish",
+"M": 160,
+"R": 60,
+"CC": 16,
+"spatial": true,
+"desc": "Infinite Finish (PARADIGM) - fractal dimensional warp: self-similar chrome-matte inversion"
+},
+{
+"id": "ink_copper",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Ink Copper"
+},
+{
+"id": "ink_emerald",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Ink Emerald"
+},
+{
+"id": "iridescent",
+"M": 200,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Norse mythology rainbow bridge - iridescent wrap with angle-shift color \u2014 BASE-038 FIX: M="
+},
+{
+"id": "jelly_pearl",
+"M": 120,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Ultra-wet candy pearl - max depth, like looking through colored glass \u2014 GGX-FIX: R=10\u219215"
+},
+{
+"id": "jukebox_neon",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Jukebox Neon"
+},
+{
+"id": "kaleido_rings",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Kaleido Rings"
+},
+{
+"id": "kevlar_base",
+"M": 20,
+"R": 100,
+"CC": 180,
+"spatial": true,
+"desc": "Kevlar base - raw ballistic macro-weave thread matrix completely devoid of sealant"
+},
+{
+"id": "kevlar_red",
+"M": 70,
+"R": 60,
+"CC": 16,
+"spatial": true,
+"desc": "Kevlar Red Hybrid \u2014 carbon + red aramid interwoven tracer tows"
+},
+{
+"id": "koenigsegg_clear",
+"M": 80,
+"R": 20,
+"CC": 16,
+"spatial": true,
+"desc": "Koenigsegg clear carbon - visible clear-coated forged weave, semi-metallic"
+},
+{
+"id": "kryptek_typhon",
+"M": 8,
+"R": 160,
+"CC": 16,
+"spatial": true,
+"desc": "Kryptek Typhon"
+},
+{
+"id": "labradorite",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Labradorite"
+},
+{
+"id": "lamborghini_verde",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Lambo Verde Mantis - electric green dielectric, ceramic-like gloss surface \u2014 GGX-FIX: R=6-"
+},
+{
+"id": "lapis_lazuli",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Lapis Lazuli"
+},
+{
+"id": "lava_lamp_groovy",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Lava Lamp Groovy"
+},
+{
+"id": "lava_lamp_purple",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Lava Lamp Purple"
+},
+{
+"id": "lemon_polka",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Lemon Polka"
+},
+{
+"id": "liquid_glaze",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Liquid Glaze \u2014 cobalt ultra-wet glaze, maximum gloss depth"
+},
+{
+"id": "liquid_light",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Liquid Light"
+},
+{
+"id": "liquid_obsidian",
+"M": 255,
+"R": 2,
+"CC": 16,
+"spatial": true,
+"desc": "Liquid obsidian - flowing glass-metal phase boundary, metallic oscillates at near-zero rou"
+},
+{
+"id": "liquid_titanium",
+"M": 245,
+"R": 5,
+"CC": 16,
+"spatial": true,
+"desc": "Liquid titanium - near-mirror flowing molten metal surface"
+},
+{
+"id": "liquid_wrap",
+"M": 0,
+"R": 80,
+"CC": 50,
+"spatial": true,
+"desc": "Liquid rubber peel coat \u2014 WEAK-016 FIX: distinct rubber/vinyl character (R=80 slightly rou"
+},
+{
+"id": "living_matte",
+"M": 0,
+"R": 190,
+"CC": 140,
+"spatial": true,
+"desc": "Organic matte - low organic sheen, CC=140"
+},
+{
+"id": "m81_woodland",
+"M": 8,
+"R": 175,
+"CC": 16,
+"spatial": true,
+"desc": "M81 Woodland"
+},
+{
+"id": "malachite",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Malachite"
+},
+{
+"id": "marble_bardiglio",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Marble Bardiglio"
+},
+{
+"id": "marble_calacatta",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Marble Calacatta"
+},
+{
+"id": "marble_carrara",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Marble Carrara"
+},
+{
+"id": "marble_fusion",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Marble Fusion"
+},
+{
+"id": "marble_nero",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Marble Nero"
+},
+{
+"id": "marble_portoro",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Marble Portoro"
+},
+{
+"id": "marble_rose",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Marble Rose"
+},
+{
+"id": "marble_rosso",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Marble Rosso"
+},
+{
+"id": "marble_statuario",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Marble Statuario"
+},
+{
+"id": "marble_verde_alpi",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Marble Verde Alpi"
+},
+{
+"id": "marpat_woodland",
+"M": 8,
+"R": 175,
+"CC": 16,
+"spatial": true,
+"desc": "Marpat Woodland"
+},
+{
+"id": "matte",
+"M": 0,
+"R": 200,
+"CC": 160,
+"spatial": true,
+"desc": "Flat matte \u2014 WEAK-012 FIX: upgraded from paint_none + noise variation for organic chalky t"
+},
+{
+"id": "matte_wrap",
+"M": 0,
+"R": 195,
+"CC": 165,
+"spatial": true,
+"desc": "Matte wrap - dead-flat vinyl, zero sheen, the wrap IS the protection layer (CC=165 flat) \u2014"
+},
+{
+"id": "maybach_two_tone",
+"M": 180,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Maybach two-tone - Mercedes-Maybach duo-tone luxury split metallic \u2014 GGX-FIX: R=12->15"
+},
+{
+"id": "mclaren_orange",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "McLaren Papaya Spark - iconic McLaren orange, dielectric ceramic-smooth \u2014 GGX-FIX: R=6->15"
+},
+{
+"id": "melting_rainbow",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Melting Rainbow"
+},
+{
+"id": "mercury",
+"M": 255,
+"R": 3,
+"CC": 16,
+"spatial": true,
+"desc": "Liquid mercury pooling mirror - desaturated chrome flow"
+},
+{
+"id": "mercury_glass",
+"M": 90,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Mercury Glass \u2014 antique silvered mottle, blotchy metallic patches"
+},
+{
+"id": "metal_flake_base",
+"M": 215,
+"R": 28,
+"CC": 18,
+"spatial": true,
+"desc": "Metal flake base - heavy visible coarse metalflake in clear, classic show-car base \u2014 BASE-"
+},
+{
+"id": "metallic",
+"M": 200,
+"R": 50,
+"CC": 16,
+"spatial": true,
+"desc": "Standard metallic with visible flake"
+},
+{
+"id": "midnight_pearl",
+"M": 175,
+"R": 22,
+"CC": 16,
+"spatial": true,
+"desc": "Midnight pearl - deep dark paint with hidden pearl sparkle visible at angles. WEAK-031 FIX"
+},
+{
+"id": "mil_spec_od",
+"M": 2,
+"R": 180,
+"CC": 195,
+"spatial": true,
+"desc": "Mil-spec OD - flat olive drab standard with heavy field mud smudging (CC=195 dead flat)"
+},
+{
+"id": "mil_spec_tan",
+"M": 0,
+"R": 220,
+"CC": 200,
+"spatial": true,
+"desc": "Martian Regolith Dust - heavy iron oxide crushing, rust dunes, and sharp glass shards (CC="
+},
+{
+"id": "milk_glass",
+"M": 0,
+"R": 45,
+"CC": 30,
+"spatial": true,
+"desc": "Milk Glass \u2014 opaque milky white glass, soft subsurface"
+},
+{
+"id": "mint_stripe",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Mint Stripe"
+},
+{
+"id": "mirror_gold",
+"M": 255,
+"R": 2,
+"CC": 16,
+"spatial": true,
+"desc": "Mirror gold - pure chrome physics with warm gold color push from paint_fn"
+},
+{
+"id": "moonstone",
+"M": 80,
+"R": 30,
+"CC": 16,
+"spatial": true,
+"desc": "Moonstone - soft milky translucent shimmer, blue-white adularescence. FLAT-FIX: boosted no"
+},
+{
+"id": "moth_luna",
+"M": 40,
+"R": 120,
+"CC": 70,
+"spatial": true,
+"desc": "Moth Luna \u2014 pale green Luna moth with concentric eye-spot patterns. Soft matte."
+},
+{
+"id": "msh_canary_coffin",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Canary Coffin V2 \u2014 electric blue body, lavender/pink coffin-rust reveal; finer"
+},
+{
+"id": "msh_cerulean_cobra",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Cerulean Cobra V2 \u2014 sapphire-indigo body, molten gold scale bloom (no white wa"
+},
+{
+"id": "msh_daffodil_bayou",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Daffodil Bayou V2 \u2014 electric indigo body, violet/pink bayou script smoke on cu"
+},
+{
+"id": "msh_hyperpink_torii",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Hyperpink Torii V2 \u2014 sapphire-teal body, peach-gold torii lattice flare (color"
+},
+{
+"id": "msh_lime_scorpion",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Lime Scorpion \u2014 violet-indigo base with ember-hex copper bloom. Densest spec t"
+},
+{
+"id": "msh_magenta_widow",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Magenta Widow V2 \u2014 deep blue-indigo body, hot pink/crimson web flashes under s"
+},
+{
+"id": "msh_neonice_rising",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Neon Ice Rising \u2014 ice-blue body, sunset orange prismwave crown on roof and qua"
+},
+{
+"id": "msh_orchid_kintsugi",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Orchid Kintsugi \u2014 teal-green body, champagne-gold crack-line reveal. Repair-go"
+},
+{
+"id": "msh_peach_jellyshock",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Peach Jellyshock V2 \u2014 ice-blue body, burned hot pink/jelly drift flashes (owne"
+},
+{
+"id": "msh_seafoam_piranha",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Seafoam Piranha V2 \u2014 deep blue body, electric aqua/magenta current streaks und"
+},
+{
+"id": "msha_canary_gris_gris",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Canary Gris-Gris \u2014 electric indigo-blue base with soft pearlescent amethyst cr"
+},
+{
+"id": "msha_cherry_blossom_flux",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Cherry Blossom Flux \u2014 intense sky-teal body blooming cherry-blossom pink under"
+},
+{
+"id": "msha_emerald_brocade",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Emerald Brocade V2 \u2014 electric blue body, vibrant gold-coral samurai-armor scal"
+},
+{
+"id": "msha_fuji_neon_crest",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Fuji Neon Crest V2 \u2014 ice-blue body with electric ice-blue and soft purple clou"
+},
+{
+"id": "msha_hyperpink_threads",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Hyperpink Threads V2 \u2014 sapphire-blue body with golden micro-thread grid reveal"
+},
+{
+"id": "msha_peach_burlap",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Peach Burlap V2 \u2014 deep royal indigo body, shifting copper-gold hex burlap weav"
+},
+{
+"id": "msha_seafoam_charm",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Seafoam Charm V2 \u2014 royal blue-indigo body, shifting emerald-patina charms unde"
+},
+{
+"id": "msha_solar_moss",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Solar Moss V2 \u2014 deep blue-violet base shifting to glowing neon-green moss spar"
+},
+{
+"id": "msha_volcanic_croc",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Volcanic Croc V2 \u2014 sapphire-blue body shifting to molten lava gold plates unde"
+},
+{
+"id": "msha_waxen_voodoo",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Waxen Voodoo V2 \u2014 royal indigo body, shimmering gold waxen veve highlights und"
+},
+{
+"id": "mshc_acid_hornet",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Magenta Hornet (V2 COOL) \u2014 magenta_arc held near its native MAGENTA (~0.90), w"
+},
+{
+"id": "mshc_amber_panther",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Amber Panther \u2014 peach \u2192 deep teal-night body, amber pearl glints catch on curv"
+},
+{
+"id": "mshc_canary_widow_redux",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Amber Widow (V2 DARK) \u2014 near-black body, AMBER-GOLD \u2192 warm copper widow-web bu"
+},
+{
+"id": "mshc_copper_jubilee",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Copper Jubilee \u2014 daffodil \u2192 indigo body with warm copper voodoo-root reveal. L"
+},
+{
+"id": "mshc_emerald_sharkbite",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Copper Sharkbite (V2 DARK) \u2014 near-black body, COPPER \u2192 bright copper-gold shar"
+},
+{
+"id": "mshc_oni_orchid_glass",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Oni Orchid (V2 COOL) \u2014 orchid held near its native ORCHID-MAGENTA (~0.83 / ~30"
+},
+{
+"id": "mshc_oxblood_seigaiha",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Oxblood Seigaiha \u2014 magenta \u2192 sea-green wave body with chrome crest peaks. M_ra"
+},
+{
+"id": "mshc_rosethorn_bonsai",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Ember Rosethorn (V2 DARK) \u2014 near-black body, deep EMBER red-orange \u2192 hot-orang"
+},
+{
+"id": "mshc_tigerblood_voltage",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Tigerblood Ember (V2 DARK) \u2014 near-black body, molten ORANGE \u2192 ember-red tiger "
+},
+{
+"id": "mshc_violet_kyoto",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Violet Kyoto (V2 COOL) \u2014 cerulean rotated +72\u00b0 lands VIOLET (~0.78), a cool je"
+},
+{
+"id": "mshx_blueprint_jackpot",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Blueprint Jackpot V2 - owner V1 3/REBUILD 'fairly weak'; tighter coffin gates,"
+},
+{
+"id": "mshx_coral_sharkskin",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Coral Sharkskin V2 - owner V1 3/REBUILD weak reveal; owner-proven blue-base di"
+},
+{
+"id": "mshx_dover_jackpot",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Dover Jackpot V2 - owner V1 3/REBUILD not much shifting; darker indigo Dover b"
+},
+{
+"id": "mshx_glacier_pinkslip",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Glacier Pinkslip V2 - owner V1 3/REBUILD dull transition; Prism Tipjar-derived"
+},
+{
+"id": "mshx_kintsugi_ransom",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Kintsugi Ransom - orchid energy becomes teal-night paint with pale-gold fractu"
+},
+{
+"id": "mshx_lime_afterburner",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Lime Afterburner V2 - owner V1 5/REBUILD had hotspots but weaker; deeper blue-"
+},
+{
+"id": "mshx_miami_blacklight",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Miami Blacklight V2 - owner V1 3/REBUILD no real color coming through; neon-ic"
+},
+{
+"id": "mshx_prism_tipjar",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Prism Tipjar - magenta arc becomes sapphire-teal, then tips warm orange/pink f"
+},
+{
+"id": "mshx_royal_sunstroke",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Royal Sunstroke V2 - owner V1 3/REBUILD boring; canary-to-indigo base with cha"
+},
+{
+"id": "mshx_venom_cashmere",
+"M": 180,
+"R": 80,
+"CC": 60,
+"spatial": true,
+"desc": "MONEY SHOKK Venom Cashmere V2 - owner V1 4/REBUILD white flashes; ice-blue/purple body wit"
+},
+{
+"id": "multicam",
+"M": 8,
+"R": 165,
+"CC": 16,
+"spatial": true,
+"desc": "Multicam"
+},
+{
+"id": "mushroom_fade",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Mushroom Fade"
+},
+{
+"id": "nebula",
+"M": 0,
+"R": 25,
+"CC": 16,
+"spatial": true,
+"desc": "Nebula - space dust cloud, purple-blue cosmic nebula with star sparkles"
+},
+{
+"id": "neon_acid_blob",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Neon Acid Blob"
+},
+{
+"id": "neon_blacklight",
+"M": 244,
+"R": 18,
+"CC": 16,
+"spatial": true,
+"desc": "Neon Blacklight \u2014 UV-reactive purple that glows in dark zones."
+},
+{
+"id": "neon_circuit",
+"M": 8,
+"R": 120,
+"CC": 16,
+"spatial": true,
+"desc": "Neon Circuit"
+},
+{
+"id": "neon_cyber_yellow",
+"M": 240,
+"R": 16,
+"CC": 16,
+"spatial": true,
+"desc": "Neon Cyber Yellow \u2014 cyberpunk yellow with circuit trace PCB pattern."
+},
+{
+"id": "neon_dual_glow",
+"M": 242,
+"R": 16,
+"CC": 16,
+"spatial": true,
+"desc": "Neon Dual Glow \u2014 two-color neon (pink+blue) split by warped spatial field."
+},
+{
+"id": "neon_electric_blue",
+"M": 240,
+"R": 17,
+"CC": 16,
+"spatial": true,
+"desc": "Neon Electric Blue \u2014 deep UV blue with plasma discharge veins."
+},
+{
+"id": "neon_ice_white",
+"M": 248,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Neon Ice White \u2014 cold white neon with frost crystallization dendrites."
+},
+{
+"id": "neon_orange_hazard",
+"M": 240,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Neon Orange Hazard \u2014 construction orange with diagonal warning stripe pattern."
+},
+{
+"id": "neon_pink_blaze",
+"M": 242,
+"R": 16,
+"CC": 16,
+"spatial": true,
+"desc": "Neon Pink Blaze \u2014 hot pink neon with concentric pulsing glow zones."
+},
+{
+"id": "neon_rainbow_tube",
+"M": 245,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Neon Rainbow Tube \u2014 full spectrum neon tube with horizontal banding."
+},
+{
+"id": "neon_red_alert",
+"M": 243,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Neon Red Alert \u2014 emergency red with siren-like concentric rings."
+},
+{
+"id": "neon_toxic_green",
+"M": 245,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Neon Toxic Green \u2014 radioactive green with Geiger-counter scatter particles."
+},
+{
+"id": "neutron_star",
+"M": 0,
+"R": 255,
+"CC": 255,
+"spatial": true,
+"desc": "Total void black sink surrounded by an intense glowing ring of orbital light reflection"
+},
+{
+"id": "nomex_honeycomb",
+"M": 45,
+"R": 100,
+"CC": 70,
+"spatial": true,
+"desc": "Nomex Honeycomb \u2014 gold aramid honeycomb core, hex cells"
+},
+{
+"id": "obsidian",
+"M": 20,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Obsidian - extremely sharp fractured volcanic glass with intense razor-sharp micro-flaking"
+},
+{
+"id": "obsidian_gold",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Obsidian Gold"
+},
+{
+"id": "od_drab",
+"M": 8,
+"R": 185,
+"CC": 16,
+"spatial": true,
+"desc": "Od Drab"
+},
+{
+"id": "oil_slick_groove",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Oil Slick Groove"
+},
+{
+"id": "onyx_emerald",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Onyx Emerald"
+},
+{
+"id": "onyx_honey",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Onyx Honey"
+},
+{
+"id": "onyx_pink",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Onyx Pink"
+},
+{
+"id": "onyx_white",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Onyx White"
+},
+{
+"id": "opal",
+"M": 180,
+"R": 50,
+"CC": 16,
+"spatial": true,
+"desc": "Dragon's Pearl Scale \u2014 iridescent hexagonal scale pattern, multi-colored angle-shift shimm"
+},
+{
+"id": "orange_peel_gloss",
+"M": 0,
+"R": 55,
+"CC": 16,
+"spatial": true,
+"desc": "Orange-peel texture sealed under thick clearcoat \u2014 MATL-FIX: R=160->55 (gloss clearcoat su"
+},
+{
+"id": "organic_metal",
+"M": 210,
+"R": 45,
+"CC": 16,
+"spatial": true,
+"desc": "Organic flowing metallic with Perlin noise terrain"
+},
+{
+"id": "original_metal_flake",
+"M": 250,
+"R": 50,
+"CC": 30,
+"spatial": true,
+"desc": "Exploding star massive metallic chunks sealed in aerospace clear"
+},
+{
+"id": "oxidized",
+"M": 15,
+"R": 70,
+"CC": 160,
+"spatial": true,
+"desc": "Oxidized metallic - rust/iron-oxide bloom, clearcoat near-destroyed (CC=160). FLAG-WA-003 "
+},
+{
+"id": "oxidized_copper",
+"M": 25,
+"R": 95,
+"CC": 120,
+"spatial": true,
+"desc": "Oxidized copper - fully green-oxidized Statue-of-Liberty patina (CC=120). FLAG-WA-001 FIX:"
+},
+{
+"id": "p_coronal",
+"M": 220,
+"R": 50,
+"CC": 16,
+"spatial": true,
+"desc": "The blazing surface of a star. Violent fusion loops shifting across the chassis"
+},
+{
+"id": "p_erised",
+"M": 255,
+"R": 2,
+"CC": 16,
+"spatial": true,
+"desc": "Negative Normal Mirror: Physically exotic negative roughness bounds bending reflections pa"
+},
+{
+"id": "p_geomagnetic",
+"M": 250,
+"R": 20,
+"CC": 16,
+"spatial": true,
+"desc": "Polarized magnetic fields warping light into an aurora borealis across a metallic matrix"
+},
+{
+"id": "p_hypercane",
+"M": 50,
+"R": 80,
+"CC": 80,
+"spatial": true,
+"desc": "Volumetric, chaotic atmosphere trapped in paint. Dark stormy blues with lightning"
+},
+{
+"id": "p_mercury",
+"M": 255,
+"R": 2,
+"CC": 16,
+"spatial": true,
+"desc": "Mercury (PARADIGM) - liquid metal pooling, flowing silver mercury surface"
+},
+{
+"id": "p_non_euclidean",
+"M": 150,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Infinite recursive structural depth that actively defies exterior dimensions"
+},
+{
+"id": "p_phantom",
+"M": 0,
+"R": 35,
+"CC": 16,
+"spatial": true,
+"desc": "Phantom (PARADIGM) - barely-there translucent mist, ghostly fog-like presence"
+},
+{
+"id": "p_programmable",
+"M": 128,
+"R": 128,
+"CC": 16,
+"spatial": true,
+"desc": "Programmable Utility Fog: A shifting swarm of nanobots transitioning between matte void an"
+},
+{
+"id": "p_schrodinger",
+"M": 255,
+"R": 40,
+"CC": 50,
+"spatial": true,
+"desc": "Schrodinger's Dust: Quantum probability paint. Flickers and changes states rapidly based o"
+},
+{
+"id": "p_seismic",
+"M": 10,
+"R": 200,
+"CC": 120,
+"spatial": true,
+"desc": "Tectonic graphite base ripping open to reveal churning molten kinetic energy"
+},
+{
+"id": "p_superfluid",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Frictionless liquid helium behavior; flowing, crawling bose-einstein condensate"
+},
+{
+"id": "p_time_reversed",
+"M": 200,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Time-Reversed Entropy: Chaos dynamically resolving into perfect geometric order at glancin"
+},
+{
+"id": "p_volcanic",
+"M": 60,
+"R": 180,
+"CC": 120,
+"spatial": true,
+"desc": "Volcanic (PARADIGM) - lava cooling to rock, glowing heat veins through dark stone (CC=120 "
+},
+{
+"id": "pace_car_pearl",
+"M": 110,
+"R": 16,
+"CC": 16,
+"spatial": true,
+"desc": "Pace car pearl - official pace car triple-pearl finish, three distinct coat zones. WEAK-03"
+},
+{
+"id": "pagani_tricolore",
+"M": 160,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Pagani tricolore - premium three-tone angle-resolved shift paint"
+},
+{
+"id": "paint_brush_stroke",
+"M": 12,
+"R": 84,
+"CC": 58,
+"spatial": true,
+"desc": "Visible brush strokes with bristle ridges, troughs, and impasto paint load."
+},
+{
+"id": "paint_drip_gravity",
+"M": 20,
+"R": 72,
+"CC": 32,
+"spatial": true,
+"desc": "Gravity-dripped paint runs with vertical curtain streaks, beads, and pooled wet clearcoat."
+},
+{
+"id": "paint_roller_streak",
+"M": 6,
+"R": 112,
+"CC": 92,
+"spatial": true,
+"desc": "Roller-applied paint with lap lines, dry edges, and fine roller fibers."
+},
+{
+"id": "paint_splatter_loose",
+"M": 18,
+"R": 88,
+"CC": 40,
+"spatial": true,
+"desc": "Loose paint splatter with dense atomized mist and irregular droplets."
+},
+{
+"id": "paint_sponge_stipple",
+"M": 8,
+"R": 135,
+"CC": 120,
+"spatial": true,
+"desc": "Sponge-stippled faux finish with irregular pores, dabs, and matte texture."
+},
+{
+"id": "paint_spray_fade",
+"M": 18,
+"R": 62,
+"CC": 30,
+"spatial": true,
+"desc": "Airbrushed spray fade with soft atomized gradient and paint-gun mist."
+},
+{
+"id": "patina_bronze",
+"M": 40,
+"R": 90,
+"CC": 100,
+"spatial": true,
+"desc": "Aged oxidized bronze with green patina \u2014 FLAG-WA-002 FIX: M=40 (CuO/Cu2O/CuCO3 oxide layer"
+},
+{
+"id": "patina_coat",
+"M": 100,
+"R": 150,
+"CC": 50,
+"spatial": true,
+"desc": "Old weathered paint with fresh satin clearcoat sprayed over - protected patina"
+},
+{
+"id": "peace_tie_dye",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Peace Tie Dye"
+},
+{
+"id": "pearl",
+"M": 100,
+"R": 40,
+"CC": 16,
+"spatial": true,
+"desc": "Pearlescent iridescent sheen \u2014 per-platelet M/R/CC variation, fine platelet flash. WEAK-03"
+},
+{
+"id": "pearlescent_white",
+"M": 120,
+"R": 20,
+"CC": 16,
+"spatial": true,
+"desc": "Pearl white - tri-coat pearlescent white, deep directional sparkle"
+},
+{
+"id": "pewter",
+"M": 100,
+"R": 90,
+"CC": 80,
+"spatial": true,
+"desc": "A dark, cursed grey meta-lead finish pulsing with forbidden underworld geometry (CC=80 sat"
+},
+{
+"id": "pf_apex_spectrum",
+"M": 135,
+"R": 70,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Apex Spectrum \u2014 v3: max hue walk still **micro** on albedo; bold metallic in s"
+},
+{
+"id": "pf_blend_ocean_peach_ivory",
+"M": 134,
+"R": 48,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Blend Ocean Peach Ivory \u2014 pastel tri-hue on ivory value; beach luxury micro sp"
+},
+{
+"id": "pf_blend_quad_weave",
+"M": 135,
+"R": 67,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Blend Quad Weave \u2014 four-hue weave in micro field; spec carries extra separatio"
+},
+{
+"id": "pf_blend_triad_mist",
+"M": 135,
+"R": 65,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Blend Triad Mist \u2014 three-hue mist (teal/violet/gold) crushed to micro scales."
+},
+{
+"id": "pf_bright_canary_glass",
+"M": 134,
+"R": 52,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Bright Canary Glass \u2014 lemon-lime glass bright plate; satin-glass spec envelope"
+},
+{
+"id": "pf_bright_cerulean_pop",
+"M": 137,
+"R": 62,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Bright Cerulean Pop \u2014 saturated sky blue; sparkle via HF spec, not albedo band"
+},
+{
+"id": "pf_bright_hyperpink",
+"M": 137,
+"R": 61,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Bright Hyperpink \u2014 neon magenta/pink pop with crushed micro texture + glass sp"
+},
+{
+"id": "pf_bright_lime_voltage",
+"M": 137,
+"R": 60,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Bright Lime Voltage \u2014 acid lime on bright value; undertone via micro yellow-gr"
+},
+{
+"id": "pf_bright_magenta_arc",
+"M": 137,
+"R": 64,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Bright Magenta Arc \u2014 hot magenta/fuchsia with micro hue arc; no macro stripes."
+},
+{
+"id": "pf_bright_neon_ice_stream",
+"M": 136,
+"R": 58,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Bright Neon Ice Stream \u2014 electric cyan/ice blue bright plate; arctic undertone"
+},
+{
+"id": "pf_bright_orchid_pulse",
+"M": 136,
+"R": 63,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Bright Orchid Pulse \u2014 vivid orchid/violet bright finish; pulse in spec, not ca"
+},
+{
+"id": "pf_bright_peach_fizz",
+"M": 135,
+"R": 55,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Bright Peach Fizz \u2014 warm peach/coral bright shell; fizz is spec HF, not peach "
+},
+{
+"id": "pf_bright_seafoam_bolt",
+"M": 135,
+"R": 56,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Bright Seafoam Bolt \u2014 seafoam/lime voltage on bright shell; undertone through "
+},
+{
+"id": "pf_bright_solar_daffodil",
+"M": 138,
+"R": 59,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Bright Solar Daffodil \u2014 high-key yellow sun plate; micro hue so sponsors stay "
+},
+{
+"id": "pf_chromatic_storm",
+"M": 135,
+"R": 66,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Chromatic Storm \u2014 v3: crushed multi-scale hue fog + dense spec interference (n"
+},
+{
+"id": "pf_cluster_bitumen_aurora",
+"M": 134,
+"R": 68,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Cluster Bitumen Aurora \u2014 tar-black with scattered aurora RGB pockets; unique i"
+},
+{
+"id": "pf_cluster_coal_starfield",
+"M": 134,
+"R": 69,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Cluster Coal Starfield \u2014 coal black with starfield jewel pockets; denser micro"
+},
+{
+"id": "pf_cluster_obsidian_gild",
+"M": 135,
+"R": 62,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Cluster Obsidian Gild \u2014 gilded micro-pools on obsidian; purple/teal counter-is"
+},
+{
+"id": "pf_cluster_tar_eclipse",
+"M": 135,
+"R": 66,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Cluster Tar Eclipse \u2014 black islands: gold/violet/teal pockets + crushed grain."
+},
+{
+"id": "pf_cluster_void_islands",
+"M": 134,
+"R": 67,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Cluster Void Islands \u2014 void black + isolated hue archipelagos; each island uni"
+},
+{
+"id": "pf_cobalt_fire",
+"M": 137,
+"R": 64,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Cobalt Fire \u2014 v3: cobalt/lava without candy bands; flash is spec-led."
+},
+{
+"id": "pf_copper_moon",
+"M": 135,
+"R": 51,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Copper Moon \u2014 **unchanged v2 path** (artist hold); burnished copper, spec-led "
+},
+{
+"id": "pf_crystal_fade",
+"M": 134,
+"R": 48,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Crystal Fade \u2014 v3: opal milk micro veins + satin frost spec (tighter than v2 w"
+},
+{
+"id": "pf_dark_matter_halo",
+"M": 132,
+"R": 69,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Dark Matter Halo \u2014 v3: void base; halo is HF spec ridge energy, not radial pin"
+},
+{
+"id": "pf_emerald_inferno",
+"M": 134,
+"R": 67,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Emerald Inferno \u2014 v3: no pinwheel; acid/ember via micro hue + HF spec shards."
+},
+{
+"id": "pf_emerald_orchid_storm",
+"M": 135,
+"R": 67,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Emerald Orchid Storm \u2014 emerald/jade/orchid tri-storm; crushed hue complexity."
+},
+{
+"id": "pf_event_horizon_spectra",
+"M": 131,
+"R": 73,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Event Horizon Spectra \u2014 v3: ink-quiet diffuse; sub-pixel spec carriers stack s"
+},
+{
+"id": "pf_fade_copper_teal_sunset",
+"M": 134,
+"R": 60,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Fade Copper Teal Sunset \u2014 copper\u2192teal sunset gradient character via **region o"
+},
+{
+"id": "pf_glacial_burn",
+"M": 136,
+"R": 58,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Glacial Burn \u2014 v3: cooler, smoother ultra carrier vs Oil Nebula; ice/ember sep"
+},
+{
+"id": "pf_golden_ultraviolet_fog",
+"M": 134,
+"R": 69,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Golden Ultraviolet Fog \u2014 full-spectrum madness #3 (warmer): gold fog into UV v"
+},
+{
+"id": "pf_gradient_venetian_veil",
+"M": 134,
+"R": 54,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Gradient Venetian Veil \u2014 soft multi-octave gradient bias in region scales + mi"
+},
+{
+"id": "pf_hyperwave",
+"M": 135,
+"R": 66,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Hyperwave \u2014 v3: lateral energy without macro sweep stripes; HF spec scan textu"
+},
+{
+"id": "pf_ion_trap",
+"M": 136,
+"R": 68,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Ion Trap \u2014 v3: electric blue-violet micro grain; no wide ion stripes in diffus"
+},
+{
+"id": "pf_iris_velvet_crossfade",
+"M": 134,
+"R": 63,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Iris Velvet Crossfade \u2014 iris/violet velvet crossfade; micro cross hue, no macr"
+},
+{
+"id": "pf_midnight_coral_ember",
+"M": 133,
+"R": 66,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Midnight Coral Ember \u2014 deep midnight with coral ember micro pockets + warm spe"
+},
+{
+"id": "pf_midnight_prism",
+"M": 133,
+"R": 72,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Midnight Prism \u2014 v3: ink-quiet plane; prismatic lightning almost entirely in s"
+},
+{
+"id": "pf_molten_aurora",
+"M": 136,
+"R": 64,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Molten Aurora \u2014 v3: ember/teal without diagonal macro bands; heat reads from s"
+},
+{
+"id": "pf_neon_nova",
+"M": 139,
+"R": 59,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Neon Nova \u2014 v3: no radial fan; pocket hue via micro regions + cyber-dense spec"
+},
+{
+"id": "pf_oil_nebula",
+"M": 131,
+"R": 71,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Oil Nebula \u2014 v3: distinct HF phase set from Glacial; thinner tri power, more w"
+},
+{
+"id": "pf_prismatic_void_madness",
+"M": 134,
+"R": 72,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Prismatic Void Madness \u2014 full-spectrum madness #2 on deep void; rainbow in spe"
+},
+{
+"id": "pf_quad_jade_violet_gold_slate",
+"M": 135,
+"R": 64,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Quad Jade Violet Gold Slate \u2014 four-tone luxury blend; all crushed to fine text"
+},
+{
+"id": "pf_rose_quantum",
+"M": 135,
+"R": 54,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Rose Quantum \u2014 v3: no quantum pinwheel; rose/teal as micro pockets + jewelry s"
+},
+{
+"id": "pf_sapphire_blood",
+"M": 136,
+"R": 65,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Sapphire Blood \u2014 v3: jewel hue crushed to fine texture; wine undertow in spec "
+},
+{
+"id": "pf_spectral_tidepool_wash",
+"M": 135,
+"R": 65,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Spectral Tidepool Wash \u2014 teal/green/violet wash; tidepool spectral in HF spec."
+},
+{
+"id": "pf_spectrum_chaos_crown",
+"M": 134,
+"R": 71,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Spectrum Chaos Crown \u2014 full-spectrum madness #1: max hue span, still pixel-cru"
+},
+{
+"id": "pf_toxic_horizon",
+"M": 137,
+"R": 61,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Toxic Horizon \u2014 v3: chartreuse/purple as micro mosaic; hazard glitter in spec."
+},
+{
+"id": "pf_tri_crimson_cyan_mage",
+"M": 135,
+"R": 66,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Tri Crimson Cyan Mage \u2014 crimson/cyan/magenta triad on micro islands; mage unde"
+},
+{
+"id": "pf_violet_sunrise",
+"M": 135,
+"R": 57,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Violet Sunrise \u2014 v3: dawn gold/violet as crushed fields; zero candy stripes."
+},
+{
+"id": "pf_void_pearl",
+"M": 140,
+"R": 54,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE Void Pearl \u2014 **unchanged v2 path** (artist hold); charcoal opal, spec-led bloo"
+},
+{
+"id": "pf_white_castle_of_fear",
+"M": 142,
+"R": 50,
+"CC": null,
+"spatial": true,
+"desc": "PRISM FORGE White Castle of Fear \u2014 glimmering white show plate; ice-blue undertone via tin"
+},
+{
+"id": "piano_black",
+"M": 18,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Deep ebony piano black with liquid-lacquer depth modulation \u2014 Audi/BMW signature trim dept"
+},
+{
+"id": "pink_fleck",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Pink Fleck"
+},
+{
+"id": "plasma_core",
+"M": 220,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Plasma core - glowing plasma reactor metallic, electric purple-blue surface \u2014 GGX-FIX: R=8"
+},
+{
+"id": "plasma_metal",
+"M": 250,
+"R": 20,
+"CC": 16,
+"spatial": true,
+"desc": "Extraterrestrial smart-metal with phase-shifting liquid surface"
+},
+{
+"id": "plasma_pulse",
+"M": 8,
+"R": 90,
+"CC": 16,
+"spatial": true,
+"desc": "Plasma Pulse"
+},
+{
+"id": "platinum",
+"M": 255,
+"R": 4,
+"CC": 16,
+"spatial": true,
+"desc": "Platinum - pure dense mirror metal, slightly warmer than chrome, coated"
+},
+{
+"id": "police_black",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Police black - law enforcement glossy black, dielectric \u2014 GGX-FIX: R=10\u219215. FLAT-FIX: adde"
+},
+{
+"id": "porcelain",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Fractured monolithic bone ivory finish with subsurface micro-cracks spreading continuously"
+},
+{
+"id": "porsche_pts",
+"M": 150,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Porsche PTS - Paint-to-Sample deep custom coat with visible metallic depth \u2014 GGX-FIX: R=14"
+},
+{
+"id": "pour_galaxy",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Pour Galaxy"
+},
+{
+"id": "pour_gold_marble",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Pour Gold Marble"
+},
+{
+"id": "pour_lava",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Pour Lava"
+},
+{
+"id": "pour_monochrome",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Pour Monochrome"
+},
+{
+"id": "pour_neon",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Pour Neon"
+},
+{
+"id": "pour_ocean",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Pour Ocean"
+},
+{
+"id": "pour_rose",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Pour Rose"
+},
+{
+"id": "pour_tropical",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Pour Tropical"
+},
+{
+"id": "powder_coat",
+"M": 10,
+"R": 90,
+"CC": 50,
+"spatial": true,
+"desc": "Cured thick polyester block color with aggressive baked orange-peel rippling"
+},
+{
+"id": "primer",
+"M": 0,
+"R": 210,
+"CC": 180,
+"spatial": true,
+"desc": "Raw grey primer with sand-grit + coverage variation \u2014 unfinished build / project-car authe"
+},
+{
+"id": "prismatic",
+"M": 200,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Over-tuned holographic logic breaking standard M/R bounds to create truly impossible color"
+},
+{
+"id": "psychedelic_swirl",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Psychedelic Swirl"
+},
+{
+"id": "quantum_black",
+"M": 0,
+"R": 255,
+"CC": 235,
+"spatial": true,
+"desc": "Quantum black - near-perfect light absorption, maximum possible roughness (CC=235 dead fla"
+},
+{
+"id": "quantum_foam",
+"M": 128,
+"R": 128,
+"CC": 80,
+"spatial": true,
+"desc": "Quantum Foam (PARADIGM) - every possible reflectance/gloss/matte at once at pixel scale; n"
+},
+{
+"id": "race_day_gloss",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Race day gloss - multi-polish wet-look total internal reflection coating, fresh off the tr"
+},
+{
+"id": "rally_mud",
+"M": 20,
+"R": 185,
+"CC": 80,
+"spatial": true,
+"desc": "Rally mud - partially mud-splattered paint, coat degrading from abuse"
+},
+{
+"id": "raw_aluminum",
+"M": 200,
+"R": 30,
+"CC": 100,
+"spatial": true,
+"desc": "Bare unfinished aluminum sheet metal \u2014 BASE-033 FIX: M=200 (real bare aluminum, not near-c"
+},
+{
+"id": "red_chrome",
+"M": 220,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Red chrome \u2014 anodization simulation, oxide layer selective wavelength absorption \u2014 GGX-FIX"
+},
+{
+"id": "retroreflective_silver",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Retroreflective Silver"
+},
+{
+"id": "rose_gold",
+"M": 220,
+"R": 30,
+"CC": 16,
+"spatial": true,
+"desc": "Pink-gold metallic warm shimmer \u2014 BASE-011 FIX: M=220 (metallic alloy), R=30, CC=16"
+},
+{
+"id": "ruby_glass",
+"M": 0,
+"R": 17,
+"CC": 16,
+"spatial": true,
+"desc": "Ruby Glass \u2014 deep red faceted gem glass, wet depth"
+},
+{
+"id": "rugged",
+"M": 50,
+"R": 190,
+"CC": 175,
+"spatial": true,
+"desc": "Rugged off-road coat - very rough protective layer (CC=175 flat)"
+},
+{
+"id": "salt_corroded",
+"M": 40,
+"R": 180,
+"CC": 120,
+"spatial": true,
+"desc": "Salt corroded - coastal salt-air corrosion, speckled oxide with coat failure. FLAG-WA-006 "
+},
+{
+"id": "sandblasted",
+"M": 180,
+"R": 150,
+"CC": 155,
+"spatial": true,
+"desc": "Raw stripped metal - massive high frequency sharp static grit with omni-scattering reflect"
+},
+{
+"id": "sapphire_glass",
+"M": 0,
+"R": 17,
+"CC": 16,
+"spatial": true,
+"desc": "Sapphire Glass \u2014 deep blue faceted gem glass, wet depth"
+},
+{
+"id": "satin",
+"M": 0,
+"R": 95,
+"CC": 70,
+"spatial": true,
+"desc": "Satin - mid sheen, CC=70 moderate clearcoat degradation \u2014 WEAK-014: noise variation"
+},
+{
+"id": "satin_candy",
+"M": 0,
+"R": 170,
+"CC": 65,
+"spatial": true,
+"desc": "Satin Candy / Matte Candy \u2014 vivid pigment under satin clear, glowing-coal effect: color al"
+},
+{
+"id": "satin_chrome",
+"M": 250,
+"R": 45,
+"CC": 40,
+"spatial": true,
+"desc": "BMW silky satin chrome \u2014 directional micro-brushing, anisotropic reflection"
+},
+{
+"id": "satin_gold",
+"M": 235,
+"R": 60,
+"CC": 16,
+"spatial": true,
+"desc": "Satin gold metallic warm sheen - factory satin clearcoat (CC=16)"
+},
+{
+"id": "satin_metal",
+"M": 235,
+"R": 65,
+"CC": 16,
+"spatial": true,
+"desc": "Subtle brushed satin metallic"
+},
+{
+"id": "satin_wrap",
+"M": 0,
+"R": 130,
+"CC": 60,
+"spatial": true,
+"desc": "Vinyl wrap satin surface - the film IS the coat layer (CC=60)"
+},
+{
+"id": "scarab_gold",
+"M": 210,
+"R": 25,
+"CC": 18,
+"spatial": true,
+"desc": "Scarab Gold \u2014 Egyptian scarab golden-green iridescent shift with shell texture."
+},
+{
+"id": "school_bus",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "School bus yellow - Federal Standard 13432 chrome yellow with UV stabilizer haze \u2014 FLAG-OE"
+},
+{
+"id": "scuffed_satin",
+"M": 0,
+"R": 160,
+"CC": 110,
+"spatial": true,
+"desc": "Scuffed satin \u2014 WEAK-015 FIX: R=160 rougher+CC=110 duller than plain satin (was R=110, CC="
+},
+{
+"id": "sea_glass",
+"M": 0,
+"R": 55,
+"CC": 40,
+"spatial": true,
+"desc": "Sea Glass \u2014 frosted beachy seafoam, soft tumbled glass"
+},
+{
+"id": "semi_gloss",
+"M": 0,
+"R": 55,
+"CC": 40,
+"spatial": true,
+"desc": "Semi-gloss - slight sheen, CC=40 mild dulling. FLAT-FIX: added perlin noise."
+},
+{
+"id": "sequin_copper",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Sequin Copper"
+},
+{
+"id": "sequin_emerald",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Sequin Emerald"
+},
+{
+"id": "sequin_gold",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Sequin Gold"
+},
+{
+"id": "sequin_holographic",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Sequin Holographic"
+},
+{
+"id": "sequin_ice",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Sequin Ice"
+},
+{
+"id": "sequin_mardi_gras",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Sequin Mardi Gras"
+},
+{
+"id": "sequin_rainbow",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Sequin Rainbow"
+},
+{
+"id": "sequin_rose",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Sequin Rose"
+},
+{
+"id": "sequin_silver",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Sequin Silver"
+},
+{
+"id": "shokk_apex",
+"M": 230,
+"R": 15,
+"CC": 40,
+"spatial": true,
+"desc": "Multi-layer technique stack - thin-film + dither + grooves + spectral simultaneously"
+},
+{
+"id": "shokk_aurora",
+"M": 165,
+"R": 16,
+"CC": 16,
+"spatial": true,
+"desc": "Atmospheric curtain dynamics - layered sine-wave curtain folds with M/R variation"
+},
+{
+"id": "shokk_blood",
+"M": 200,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Arterial vein topology - dark venous cracks across high-M base, dried-blood crust on ridge"
+},
+{
+"id": "shokk_catalyst",
+"M": 120,
+"R": 35,
+"CC": 16,
+"spatial": true,
+"desc": "BZ reaction wavefront - four-phase spiral with distinct Fresnel per phase"
+},
+{
+"id": "shokk_cipher",
+"M": 220,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Steganographic encoding - hidden pattern emerges through Fresnel amplification of micro-pe"
+},
+{
+"id": "shokk_dual",
+"M": 140,
+"R": 36,
+"CC": 16,
+"spatial": true,
+"desc": "Hard chromatic binary flip - two complementary colors in interlocking Voronoi tessellation"
+},
+{
+"id": "shokk_flux",
+"M": 220,
+"R": 15,
+"CC": 30,
+"spatial": true,
+"desc": "Thin-film optical interference - CC thickness drives wavelength-selective reflection"
+},
+{
+"id": "shokk_fusion_base",
+"M": 165,
+"R": 38,
+"CC": 16,
+"spatial": true,
+"desc": "Tokamak plasma confinement - toroidal geometry with blackbody temperature-mapped spec"
+},
+{
+"id": "shokk_helix",
+"M": 215,
+"R": 28,
+"CC": 30,
+"spatial": true,
+"desc": "Double-strand complementary spiral - R/CC phase opposition swaps dominant strand"
+},
+{
+"id": "shokk_inferno",
+"M": 128,
+"R": 50,
+"CC": 48,
+"spatial": true,
+"desc": "Blackbody radiation temperature map - Planck's law M/R follows thermodynamic temperature"
+},
+{
+"id": "shokk_mirage",
+"M": 235,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Thermal gradient refraction - domain-warped UV creates heat-shimmer color displacement"
+},
+{
+"id": "shokk_phase",
+"M": 110,
+"R": 15,
+"CC": 20,
+"spatial": true,
+"desc": "Liquid crystal domain simulation - Voronoi cells with M=0 to M=220 per domain"
+},
+{
+"id": "shokk_polarity",
+"M": 190,
+"R": 25,
+"CC": 16,
+"spatial": true,
+"desc": "Magnetic domain visualization - Ising model domains with textured boundary network"
+},
+{
+"id": "shokk_prism",
+"M": 190,
+"R": 15,
+"CC": 38,
+"spatial": true,
+"desc": "Caustic refraction through crystal - concentrated light bands with CC thickness variation"
+},
+{
+"id": "shokk_pulse",
+"M": 220,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Concentric standing wave - hot pink crests / electric blue troughs with rhythmic radial pu"
+},
+{
+"id": "shokk_reactor",
+"M": 120,
+"R": 30,
+"CC": 40,
+"spatial": true,
+"desc": "Cherenkov radiation glow - stable dielectric cores anchor shifting metallic field"
+},
+{
+"id": "shokk_rift",
+"M": 145,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Dimensional fracture network - warm/cool sides with mirror-bright crack lightning"
+},
+{
+"id": "shokk_spectrum",
+"M": 245,
+"R": 30,
+"CC": 16,
+"spatial": true,
+"desc": "Diffraction grating dispersion - parallel micro-groove roughness reveals spectral bands"
+},
+{
+"id": "shokk_static",
+"M": 210,
+"R": 18,
+"CC": 16,
+"spatial": true,
+"desc": "SHOKK Static - crackling static interference metallic blue-gray (H4HR-BOCK1: noise scales "
+},
+{
+"id": "shokk_surge",
+"M": 185,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Standing wave superposition - constructive/destructive nodes with non-repeating pattern"
+},
+{
+"id": "shokk_tesseract_v2",
+"M": 150,
+"R": 18,
+"CC": 20,
+"spatial": true,
+"desc": "4D hypercube projection - six impossible coexisting faces with distinct spec per face"
+},
+{
+"id": "shokk_venom",
+"M": 0,
+"R": 70,
+"CC": 16,
+"spatial": true,
+"desc": "Toxic ceramic with reactive pools - acid green-yellow base, neon-bright wet zones with smo"
+},
+{
+"id": "shokk_void",
+"M": 0,
+"R": 240,
+"CC": 240,
+"spatial": true,
+"desc": "Vantablack absorption with rare edge shimmer - 0.3% of pixels glint at sharpest Perlin cre"
+},
+{
+"id": "shokk_vortex",
+"M": 225,
+"R": 15,
+"CC": 36,
+"spatial": true,
+"desc": "Logarithmic spiral color drain - dual-spiral Moire interference shifts with angle"
+},
+{
+"id": "shokk_wraith",
+"M": 128,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Sub-resolution metallic dithering - M=0/255 error-diffused dither exploits texture filteri"
+},
+{
+"id": "showroom_clear",
+"M": 10,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Showroom clear - multi-layer Fresnel clearcoat stack, deep wet-look mirror finish \u2014 GGX-FI"
+},
+{
+"id": "silk",
+"M": 0,
+"R": 85,
+"CC": 60,
+"spatial": true,
+"desc": "Silk \u2014 smooth low-reflection sheen with fabric-soft directional micro-variation (HARDMODE-"
+},
+{
+"id": "singularity",
+"M": 120,
+"R": 65,
+"CC": 16,
+"spatial": true,
+"desc": "Theoretical boundary physics shifting colors infinitely toward standard absolute zero \u2014 LA"
+},
+{
+"id": "smoked",
+"M": 10,
+"R": 30,
+"CC": 60,
+"spatial": true,
+"desc": "Charcoal grey medium capturing a deep smoky internal volumetric particle volume \u2014 BASE-043"
+},
+{
+"id": "smoked_glass",
+"M": 0,
+"R": 17,
+"CC": 16,
+"spatial": true,
+"desc": "Smoked Glass \u2014 charcoal translucent glass, deep tint"
+},
+{
+"id": "soda_check",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Soda Check"
+},
+{
+"id": "solar_panel",
+"M": 15,
+"R": 45,
+"CC": 16,
+"spatial": true,
+"desc": "Solar panel - dark photovoltaic blue-black, slightly metallic cell grid look"
+},
+{
+"id": "spectraflame",
+"M": 245,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Hot Wheels candy-over-chrome deep sparkle \u2014 BASE-012 FIX: M=245 (chrome base), CC=16. GGX-"
+},
+{
+"id": "spectrolite",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Spectrolite"
+},
+{
+"id": "spread_tow",
+"M": 65,
+"R": 30,
+"CC": 16,
+"spatial": true,
+"desc": "Spread-Tow \u2014 wide flat carbon ribbons, modern large-weave"
+},
+{
+"id": "starfield_reflective",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Starfield Reflective"
+},
+{
+"id": "stealth_wrap",
+"M": 10,
+"R": 200,
+"CC": 170,
+"spatial": true,
+"desc": "Predator-style refractive stealth boundary (CC=170 flat) \u2014 BASE-030 FIX: M=10 (stealth = n"
+},
+{
+"id": "stock_car_enamel",
+"M": 0,
+"R": 18,
+"CC": 16,
+"spatial": true,
+"desc": "Stock car enamel - traditional thick NASCAR enamel, hard-baked dielectric. FLAT-FIX: added"
+},
+{
+"id": "sub_black",
+"M": 0,
+"R": 235,
+"CC": 210,
+"spatial": true,
+"desc": "Sub black - anechoic rubber tile grid, absolute light absorption (CC=210 dead flat)"
+},
+{
+"id": "submarine_black",
+"M": 0,
+"R": 235,
+"CC": 215,
+"spatial": true,
+"desc": "Submarine hull black - anechoic submarine hull coating, absolute light absorption (CC=215 "
+},
+{
+"id": "sun_baked",
+"M": 0,
+"R": 150,
+"CC": 155,
+"spatial": true,
+"desc": "Sun baked - UV-cooked faded chalky surface, FBM bleach + 40% desat, coat crumbling. WARN-W"
+},
+{
+"id": "sun_fade",
+"M": 10,
+"R": 130,
+"CC": 120,
+"spatial": true,
+"desc": "UV sun-damaged paint - FBM bleach + 40% desaturation, chalky, coat breaking down. FLAG-WA-"
+},
+{
+"id": "sunburst_60s",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Sunburst 60S"
+},
+{
+"id": "sunstone",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Sunstone"
+},
+{
+"id": "superconductor",
+"M": 200,
+"R": 145,
+"CC": 40,
+"spatial": true,
+"desc": "Heavily frosted metal sitting indefinitely at absolute zero, perpetually generating micro-"
+},
+{
+"id": "surgical_steel",
+"M": 250,
+"R": 50,
+"CC": 16,
+"spatial": true,
+"desc": "Indestructible weaponized metal alloy exhibiting incredibly aggressive, deep brushing goug"
+},
+{
+"id": "synthwave",
+"M": 8,
+"R": 70,
+"CC": 16,
+"spatial": true,
+"desc": "Synthwave"
+},
+{
+"id": "taxi_yellow",
+"M": 3,
+"R": 25,
+"CC": 110,
+"spatial": true,
+"desc": "Taxi yellow - UV-photodegraded cab yellow with chalking and mechanical wear zones (CC=110)"
+},
+{
+"id": "tempered_glass",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Tempered glass - heat-stressed layered glass containing severe high-frequency molecular te"
+},
+{
+"id": "terracotta_glaze",
+"M": 0,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Terracotta Glaze \u2014 warm earthy glazed terracotta"
+},
+{
+"id": "terrain_chrome",
+"M": 250,
+"R": 8,
+"CC": 16,
+"spatial": true,
+"desc": "Chrome with Perlin terrain-like distortion in roughness"
+},
+{
+"id": "terrazzo_cream",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Terrazzo Cream"
+},
+{
+"id": "textured_wrap",
+"M": 0,
+"R": 95,
+"CC": 40,
+"spatial": true,
+"desc": "Textured wrap - orange-peel embossed vinyl, color-preserving bump texture. WARN-WRAP-001 F"
+},
+{
+"id": "tie_dye_crumple",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Tie Dye Crumple"
+},
+{
+"id": "tie_dye_spiral",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Tie Dye Spiral"
+},
+{
+"id": "tiger_eye",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Tiger Eye"
+},
+{
+"id": "tiger_iron",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Tiger Iron"
+},
+{
+"id": "tiger_stripe",
+"M": 8,
+"R": 168,
+"CC": 16,
+"spatial": true,
+"desc": "Tiger Stripe"
+},
+{
+"id": "tinted_clear",
+"M": 0,
+"R": 15,
+"CC": 16,
+"spatial": true,
+"desc": "Deep tinted clearcoat over base color - dielectric, pure wet glass depth \u2014 GGX-FIX: R=8\u219215"
+},
+{
+"id": "tinted_lacquer",
+"M": 130,
+"R": 80,
+"CC": 16,
+"spatial": true,
+"desc": "Semi-metallic under thick lacquer pour - depth and warmth. FLAT-FIX: boosted noise."
+},
+{
+"id": "titanium_raw",
+"M": 155,
+"R": 85,
+"CC": 16,
+"spatial": true,
+"desc": "Titanium raw - omnidirectional rough industrial surface, no grain, no coat"
+},
+{
+"id": "travertine",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Travertine"
+},
+{
+"id": "tri_coat_pearl",
+"M": 130,
+"R": 25,
+"CC": 16,
+"spatial": true,
+"desc": "Tri-coat pearl - three-layer candy pearl, directional mica waves + dense sparkle"
+},
+{
+"id": "tribal_blaze",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Tribal Blaze"
+},
+{
+"id": "trippy_concentric",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Trippy Concentric"
+},
+{
+"id": "tron_grid",
+"M": 8,
+"R": 130,
+"CC": 16,
+"spatial": true,
+"desc": "Tron Grid"
+},
+{
+"id": "tungsten",
+"M": 240,
+"R": 25,
+"CC": 16,
+"spatial": true,
+"desc": "Tungsten - ultra-dense dark gray metal, near-chrome metallic, no coat"
+},
+{
+"id": "turquoise_fleck",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Turquoise Fleck"
+},
+{
+"id": "twoface_blue_copper",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Twoface Blue Copper"
+},
+{
+"id": "twoface_crimson_navy",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Twoface Crimson Navy"
+},
+{
+"id": "twoface_gold_emerald",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Twoface Gold Emerald"
+},
+{
+"id": "twoface_green_magenta",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Twoface Green Magenta"
+},
+{
+"id": "twoface_pink_teal",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Twoface Pink Teal"
+},
+{
+"id": "twoface_purple_gold",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Twoface Purple Gold"
+},
+{
+"id": "twoface_red_cyan",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Twoface Red Cyan"
+},
+{
+"id": "twoface_silver_void",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Twoface Silver Void"
+},
+{
+"id": "twoface_teal_orange",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Twoface Teal Orange"
+},
+{
+"id": "twoface_violet_lime",
+"M": 60,
+"R": 28,
+"CC": 16,
+"spatial": true,
+"desc": "Twoface Violet Lime"
+},
+{
+"id": "urban_digital",
+"M": 8,
+"R": 170,
+"CC": 16,
+"spatial": true,
+"desc": "Urban Digital"
+},
+{
+"id": "vantablack",
+"M": 0,
+"R": 255,
+"CC": 240,
+"spatial": true,
+"desc": "Absolute void zero reflection - CC=240 maximum possible degradation"
+},
+{
+"id": "velvet_floc",
+"M": 0,
+"R": 248,
+"CC": 245,
+"spatial": true,
+"desc": "Velvet / Suede Floc \u2014 absolute light absorption, G=248 eliminates all microfacet response,"
+},
+{
+"id": "victory_lane",
+"M": 185,
+"R": 16,
+"CC": 16,
+"spatial": true,
+"desc": "Victory lane - champagne-soaked celebration metallic, dense festive sparkle"
+},
+{
+"id": "vintage_chrome",
+"M": 240,
+"R": 20,
+"CC": 50,
+"spatial": true,
+"desc": "Vintage chrome \u2014 UV yellowing + micro-pit scatter, 1950s chrome with dignified aging (CC=5"
+},
+{
+"id": "vinyl_groove",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Vinyl Groove"
+},
+{
+"id": "volcanic",
+"M": 80,
+"R": 180,
+"CC": 70,
+"spatial": true,
+"desc": "Volcanic ash coating - the ash layer IS the coat, heavily degraded (CC=70)"
+},
+{
+"id": "warp_op",
+"M": 20,
+"R": 24,
+"CC": 16,
+"spatial": true,
+"desc": "Warp Op"
+},
+{
+"id": "wasp_warning",
+"M": 80,
+"R": 50,
+"CC": 30,
+"spatial": true,
+"desc": "Wasp Warning \u2014 yellow-black aposematic banding with metallic shimmer."
+},
+{
+"id": "wet_look",
+"M": 0,
+"R": 22,
+"CC": 16,
+"spatial": true,
+"desc": "Deep wet clearcoat \u2014 fresh-waxed flow-out variation with concours depth (HARDMODE-FOUND-2:"
+},
+{
+"id": "xirallic",
+"M": 170,
+"R": 20,
+"CC": 18,
+"spatial": true,
+"desc": "Xirallic Crystal Flake \u2014 large sparse alumina flakes with iron oxide blue-silver interfere"
+},
+{
+"id": "ms_acid_veil_ambush",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_acid_veil_ambush)"
+},
+{
+"id": "ms_blood_empress",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_blood_empress)"
+},
+{
+"id": "ms_bone_sonata",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_bone_sonata)"
+},
+{
+"id": "ms_chainburst_inferno",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_chainburst_inferno)"
+},
+{
+"id": "ms_cinder_spiral",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_cinder_spiral)"
+},
+{
+"id": "ms_crimson_dragon",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_crimson_dragon)"
+},
+{
+"id": "ms_cryo_shard",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_cryo_shard)"
+},
+{
+"id": "ms_crystal_onslaught",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_crystal_onslaught)"
+},
+{
+"id": "ms_dragon_ascent",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_dragon_ascent)"
+},
+{
+"id": "ms_dragon_soul",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_dragon_soul)"
+},
+{
+"id": "ms_emerald_scale_mirage",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_emerald_scale_mirage)"
+},
+{
+"id": "ms_fang_cataclysm",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_fang_cataclysm)"
+},
+{
+"id": "ms_frost_sentinel",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_frost_sentinel)"
+},
+{
+"id": "ms_frozen_inferno",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_frozen_inferno)"
+},
+{
+"id": "ms_lotus_ascention",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_lotus_ascention)"
+},
+{
+"id": "ms_molten_sting",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_molten_sting)"
+},
+{
+"id": "ms_porcelain_cipher",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_porcelain_cipher)"
+},
+{
+"id": "ms_serpent_haze_strike",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_serpent_haze_strike)"
+},
+{
+"id": "ms_shadow_wraith",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_shadow_wraith)"
+},
+{
+"id": "ms_soul_forge",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_soul_forge)"
+},
+{
+"id": "ms_tempest_crown",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_tempest_crown)"
+},
+{
+"id": "ms_thunder_mandala",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_thunder_mandala)"
+},
+{
+"id": "ms_toxic_labyrinth",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_toxic_labyrinth)"
+},
+{
+"id": "ms_venom_eclipse",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_venom_eclipse)"
+},
+{
+"id": "ms_venom_veil",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_venom_veil)"
+},
+{
+"id": "ms_zero_hour",
+"M": 130,
+"R": 72,
+"CC": 42,
+"spatial": true,
+"desc": "Mortal Shokk V2 (ms_zero_hour)"
+}
+]

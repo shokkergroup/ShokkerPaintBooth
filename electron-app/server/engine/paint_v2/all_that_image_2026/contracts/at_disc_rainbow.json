@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_disc_rainbow",
+  "display_name": "Cdrom: Disc Rainbow",
+  "promise": "Silver optical disc foil with curved multicolor pit tracks, no whole circles or disc objects",
+  "carrier_grammar": "Silver optical disc foil with curved multicolor pit tracks, no whole circles or disc objects; single full-canvas image, no duplicated quadrants. Fine features: silver lacquer lands, spectral data tracks, engraved track edges, burnished interference dashes, dark data pits, fine lacquer scuffs",
+  "spec_grammar": "Feature-specific selectors partition silver lacquer lands, spectral data tracks, engraved track edges, burnished interference dashes, dark data pits, fine lacquer scuffs. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "silver lacquer lands",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "spectral data tracks",
+      "role": "Material feature selected from artwork by s:>:0.18"
+    },
+    {
+      "name": "engraved track edges",
+      "role": "Material feature selected from artwork by edge:>:0.46"
+    },
+    {
+      "name": "burnished interference dashes",
+      "role": "Material feature selected from artwork by s:>:0.30&detail:>:0.62"
+    },
+    {
+      "name": "dark data pits",
+      "role": "Material feature selected from artwork by g:<:0.22"
+    },
+    {
+      "name": "fine lacquer scuffs",
+      "role": "Material feature selected from artwork by fine:>:0.79&g:>:0.55"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "silver lacquer lands",
+      "spectral data tracks",
+      "engraved track edges",
+      "burnished interference dashes",
+      "dark data pits",
+      "fine lacquer scuffs"
+    ],
+    "R": [
+      "silver lacquer lands",
+      "spectral data tracks",
+      "engraved track edges",
+      "burnished interference dashes",
+      "dark data pits",
+      "fine lacquer scuffs"
+    ],
+    "Cc": [
+      "silver lacquer lands",
+      "spectral data tracks",
+      "engraved track edges",
+      "burnished interference dashes",
+      "dark data pits",
+      "fine lacquer scuffs"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "silver lacquer lands",
+      "range": [
+        [
+          155,
+          18,
+          16
+        ],
+        [
+          225,
+          100,
+          100
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "spectral data tracks",
+      "range": [
+        [
+          200,
+          8,
+          105
+        ],
+        [
+          255,
+          80,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "engraved track edges",
+      "range": [
+        [
+          105,
+          65,
+          65
+        ],
+        [
+          225,
+          165,
+          200
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "burnished interference dashes",
+      "range": [
+        [
+          240,
+          0,
+          175
+        ],
+        [
+          255,
+          22,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dark data pits",
+      "range": [
+        [
+          30,
+          110,
+          125
+        ],
+        [
+          155,
+          225,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine lacquer scuffs",
+      "range": [
+        [
+          80,
+          120,
+          110
+        ],
+        [
+          190,
+          230,
+          240
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_beige_box",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_crt_blue_screen",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "silver lacquer lands",
+      "spectral data tracks",
+      "engraved track edges",
+      "burnished interference dashes",
+      "dark data pits",
+      "fine lacquer scuffs"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_disc_rainbow / Silver optical disc foil with curved multicolor pit tracks, no whole circles or disc objects",
+  "spec_key": "at_disc_rainbow / silver lacquer lands all; spectral data tracks s:>:0.18; engraved track edges edge:>:0.46; burnished interference dashes s:>:0.30&detail:>:0.62; dark data pits g:<:0.22; fine lacquer scuffs fine:>:0.79&g:>:0.55",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

@@ -1,0 +1,170 @@
+{
+  "version": 1,
+  "paint_label": "latemodel2023/car_num_1072142.tga",
+  "inspection_records": "_smart_tga_runs/cycle115_latemodel2023_1072142_route_baseline/inspection_records.json",
+  "review_scope": "Cycle 115 fourth-car challenge: IHOP/Bass Pro/Sun Drop sponsor logos are leaking into Numbers while obvious 8 race-number components are in Sponsors.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 0,
+      "expected_bbox": [436, 255, 151, 107],
+      "target_layer": "numbers",
+      "label": "true_number",
+      "note": "Upper side-panel race-number 8 was routed as Sponsor."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 23,
+      "expected_bbox": [439, 883, 146, 77],
+      "target_layer": "numbers",
+      "label": "true_number",
+      "note": "Lower side-panel race-number 8 was routed as Sponsor."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 2,
+      "expected_bbox": [659, 90, 101, 21],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo_fragment",
+      "note": "Small sponsor/text fragment, not a race number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 3,
+      "expected_bbox": [875, 97, 40, 56],
+      "target_layer": "sponsors",
+      "label": "sponsor_wordmark_fragment",
+      "note": "IHOP logo letter fragment misrouted as Number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 4,
+      "expected_bbox": [832, 98, 40, 40],
+      "target_layer": "sponsors",
+      "label": "sponsor_wordmark_fragment",
+      "note": "IHOP logo letter fragment misrouted as Number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 5,
+      "expected_bbox": [831, 139, 85, 34],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo_fragment",
+      "note": "IHOP smile/logo stroke, not race number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 7,
+      "expected_bbox": [865, 312, 65, 7],
+      "target_layer": "paint",
+      "label": "paint_livery_stripe",
+      "note": "Thin red livery stripe misrouted as Number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 9,
+      "expected_bbox": [84, 344, 40, 55],
+      "target_layer": "sponsors",
+      "label": "sponsor_wordmark_fragment",
+      "note": "IHOP logo letter fragment misrouted as Number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 10,
+      "expected_bbox": [777, 447, 117, 85],
+      "target_layer": "sponsors",
+      "label": "sponsor_wordmark_fragment",
+      "note": "Large IHOP logo letters misrouted as Number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 12,
+      "expected_bbox": [776, 539, 86, 85],
+      "target_layer": "sponsors",
+      "label": "sponsor_wordmark_fragment",
+      "note": "Large IHOP logo letter misrouted as Number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 13,
+      "expected_bbox": [776, 632, 86, 78],
+      "target_layer": "sponsors",
+      "label": "sponsor_wordmark_fragment",
+      "note": "Large IHOP logo letter misrouted as Number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 15,
+      "expected_bbox": [100, 820, 37, 40],
+      "target_layer": "sponsors",
+      "label": "sponsor_wordmark_fragment",
+      "note": "Lower IHOP logo letter fragment misrouted as Number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 16,
+      "expected_bbox": [141, 820, 40, 41],
+      "target_layer": "sponsors",
+      "label": "sponsor_wordmark_fragment",
+      "note": "Lower IHOP logo letter fragment misrouted as Number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 2,
+      "expected_bbox": [81, 260, 85, 57],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo",
+      "note": "Bass Pro Shops logo is Sponsor; keep as hard negative for sponsor-vs-number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 3,
+      "expected_bbox": [17, 279, 45, 40],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo",
+      "note": "Sun Drop logo is Sponsor; keep as hard negative for sponsor-vs-number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 21,
+      "expected_bbox": [221, 841, 229, 160],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo",
+      "note": "Large pancake/IHOP sponsor graphic should not become Number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 24,
+      "expected_bbox": [89, 902, 85, 58],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo",
+      "note": "Bass Pro Shops logo is Sponsor; keep as hard negative for sponsor-vs-number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 25,
+      "expected_bbox": [25, 906, 43, 40],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo",
+      "note": "Sun Drop logo is Sponsor; keep as hard negative for sponsor-vs-number."
+    },
+    {
+      "layer": "paint",
+      "component_index": 0,
+      "expected_bbox": [0, 0, 1024, 1024],
+      "review_bbox": [165, 405, 265, 135],
+      "target_layer": "paint",
+      "label": "paint_livery_panel",
+      "note": "Plain blue paint/livery field; keep as Paint training evidence."
+    },
+    {
+      "layer": "paint",
+      "component_index": 0,
+      "expected_bbox": [0, 0, 1024, 1024],
+      "review_bbox": [290, 520, 285, 190],
+      "target_layer": "paint",
+      "label": "paint_livery_texture",
+      "note": "Speckled blue livery texture around the hood number; keep as Paint."
+    }
+  ]
+}

@@ -1,0 +1,293 @@
+{
+ "version": "shokk-forge.spec-policy/v1",
+ "doctrine": "R=metallic 0-255, G=roughness 0 mirror-255 matte, B=clearcoat INVERTED 16=max gloss, A=255. Calibrated against car_spec_23371 (real painter: heavy fine texture, satin metallic). Owner fine-detail law: multi-octave noise, single-px flake sparkle.",
+ "default_material": "body_paint",
+ "materials": {
+  "body_paint": {
+   "R": 110,
+   "G": 96,
+   "B": 44,
+   "flake": 0.0,
+   "noise": [
+    10,
+    12,
+    8
+   ]
+  },
+  "pearl_white": {
+   "R": 150,
+   "G": 74,
+   "B": 26,
+   "flake": 0.02,
+   "noise": [
+    12,
+    8,
+    6
+   ],
+   "finish": "candy_chrome"
+  },
+  "metallic_paint": {
+   "R": 240,
+   "G": 76,
+   "B": 28,
+   "flake": 0.05,
+   "noise": [
+    10,
+    10,
+    8
+   ],
+   "candy_depth": 14
+  },
+  "metallic_gold": {
+   "R": 255,
+   "G": 58,
+   "B": 22,
+   "flake": 0.08,
+   "noise": [
+    8,
+    12,
+    8
+   ],
+   "candy_depth": 10,
+   "finish": "candy_gold"
+  },
+  "vinyl_decal": {
+   "R": 34,
+   "G": 48,
+   "B": 20,
+   "flake": 0.0,
+   "noise": [
+    5,
+    5,
+    4
+   ],
+   "edge_relief": true,
+   "color_aware": true
+  },
+  "matte_trim": {
+   "R": 8,
+   "G": 216,
+   "B": 64,
+   "flake": 0.0,
+   "noise": [
+    4,
+    10,
+    8
+   ],
+   "booth_base": "f_pure_black"
+  },
+  "aluminum": {
+   "R": 205,
+   "G": 112,
+   "B": 58,
+   "flake": 0.01,
+   "noise": [
+    8,
+    14,
+    6
+   ],
+   "anisotropic": true,
+   "finish": "alubeam"
+  },
+  "gloss_black": {
+   "R": 70,
+   "G": 42,
+   "B": 18,
+   "flake": 0.0,
+   "noise": [
+    5,
+    4,
+    4
+   ],
+   "finish": "piano_black"
+  },
+  "candy_red": {
+   "R": 240,
+   "G": 76,
+   "B": 28,
+   "finish": "red_chrome",
+   "candy_depth": 14
+  },
+  "candy_green": {
+   "R": 240,
+   "G": 76,
+   "B": 28,
+   "finish": "candy_emerald",
+   "candy_depth": 14
+  },
+  "candy_burg": {
+   "R": 240,
+   "G": 76,
+   "B": 28,
+   "finish": "candy_burgundy",
+   "candy_depth": 12
+  },
+  "candy_navy": {
+   "R": 240,
+   "G": 76,
+   "B": 28,
+   "finish": "candy_cobalt",
+   "candy_depth": 12
+  }
+ },
+ "layer_rules": [
+  {
+   "match": "(?i)^template$",
+   "action": "skip"
+  },
+  {
+   "match": "(?i)^(number|num)",
+   "material": "vinyl_decal"
+  },
+  {
+   "match": "(?i)(script|highlife|crest|acdelco|comp|vp|bilstein|moroso|edelbrock|floracing|hoosier|shokker|banquet|coors|md_|spoiler_text|spoiler_face|legend|badge)",
+   "material": "vinyl_decal"
+  },
+  {
+   "match": "(?i)tub",
+   "material": "matte_trim"
+  },
+  {
+   "match": "(?i)(board|plate)",
+   "material": "aluminum"
+  },
+  {
+   "match": "(?i)(band|fill|hood_art|nose_art|deck_art|fender|sweep|rocker|gold|base|side)",
+   "material": "by_color"
+  }
+ ],
+ "color_materials": [
+  {
+   "rgb": [
+    250,
+    248,
+    244
+   ],
+   "material": "pearl_white",
+   "note": "miller warm white"
+  },
+  {
+   "rgb": [
+    255,
+    255,
+    255
+   ],
+   "material": "pearl_white"
+  },
+  {
+   "rgb": [
+    176,
+    20,
+    24
+   ],
+   "material": "candy_red",
+   "note": "classic red"
+  },
+  {
+   "rgb": [
+    200,
+    154,
+    70
+   ],
+   "material": "metallic_gold"
+  },
+  {
+   "rgb": [
+    10,
+    79,
+    35
+   ],
+   "material": "candy_green",
+   "note": "dew green"
+  },
+  {
+   "rgb": [
+    119,
+    178,
+    85
+   ],
+   "material": "candy_green"
+  },
+  {
+   "rgb": [
+    227,
+    6,
+    19
+   ],
+   "material": "candy_red"
+  },
+  {
+   "rgb": [
+    242,
+    232,
+    210
+   ],
+   "material": "pearl_white",
+   "note": "coors cream"
+  },
+  {
+   "rgb": [
+    107,
+    29,
+    29
+   ],
+   "material": "candy_burg"
+  },
+  {
+   "rgb": [
+    0,
+    27,
+    42
+   ],
+   "material": "candy_navy"
+  },
+  {
+   "rgb": [
+    12,
+    12,
+    12
+   ],
+   "material": "matte_trim"
+  }
+ ],
+ "color_match_threshold": 90,
+ "decal_color_materials": [
+  {
+   "rgb": [
+    200,
+    154,
+    70
+   ],
+   "material": "metallic_gold",
+   "note": "gold keylines inside decals sparkle"
+  },
+  {
+   "rgb": [
+    201,
+    162,
+    74
+   ],
+   "material": "metallic_gold"
+  },
+  {
+   "rgb": [
+    15,
+    15,
+    15
+   ],
+   "material": "gloss_black",
+   "note": "black outlines/shadows go wet-gloss"
+  }
+ ],
+ "decal_match_threshold": 45,
+ "geometry": {
+  "seams": true,
+  "seam_rough": 10,
+  "rivets": true
+ },
+ "weathering": {
+  "enable": false,
+  "strength": 14,
+  "zones": []
+ }
+}

@@ -1,0 +1,24 @@
+{
+  "work_item": "W94 root source-format durable identity boundary",
+  "date": "2026-10-04",
+  "status": "PASS_WITH_LIMITS_PRIVATE_CANDIDATE",
+  "finding": "W83 attests immutable PSD/PSB parse snapshots; ORA/XCF adapters retain lazy path readers. A streamed file digest alone cannot attest their parsed bytes through a transient A/B/A path replacement.",
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_generation3_candidate/integration12/paint-booth-3-canvas.js",
+    "sha256": "cb4cc4679f69cbe206e02dd512c7f197f971482b6bdb088e5b78a2f397d3cdc9"
+  },
+  "behavior": "Known ORA/XCF layered imports retain tagged composite identity and normal matching raster receipt validation; durable saved-part rebinding requires file-sha256 and therefore remains inactive for these formats. Supported PSD imports retain byte-attested identity.",
+  "test": {
+    "path": "tests/ai_layered_fingerprint_w94_contract.cjs",
+    "cases": 8,
+    "actual": "Exact candidate fingerprint function executed in Node VM",
+    "result": "PASS",
+    "provider_calls": 0
+  },
+  "limits": [
+    "No ORA/XCF parser snapshot guarantee added.",
+    "No full import/native output claim from this small function test.",
+    "No installed production source changed.",
+    "Synthetic PSB fingerprint case characterizes this helper only; actual PSD import route rejects PSB. No supported PSB import/commit claim."
+  ]
+}

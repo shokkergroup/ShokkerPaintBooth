@@ -1,0 +1,4828 @@
+{
+ "_doc": "Retirement ledger -- the ONE list of what is dead and buried. policy 'hide' = never visible in any picker, never injected/merged/rehomed by any script, marked retired:true by /api/finish-data; the renderer stays so saved cars paint. Enforced by scripts/spb_retired_gate.py. Regenerate with scripts/build_retired_catalog.py -- do not hand-edit ids. Owner mandate 2026-09-05: 'MAKE SURE that things that are supposed to be dead and buried stay dead and buried.'",
+ "policy_default": "hide",
+ "generated_by": "scripts/build_retired_catalog.py",
+ "counts": {
+  "special_group": 17,
+  "monolithic": 288,
+  "pattern": 98,
+  "base_group": 7,
+  "base": 104,
+  "feature": 1,
+  "inferred": 185
+ },
+ "entries": [
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "paint-booth-0-finish-data.js:2171 (B5 pulled from SPECIALS_SECTIONS); wiki archive 2026-06-03",
+   "owner_verdict": "Owner 2026-09-05: 'hide both'. Resurrected by js/spb-finish-atlas.js rescueOrphans() (07-31) and _SPB_CATEGORY_MERGES_2026_08_23 (Aurora -> Prizm); both must go.",
+   "group": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_borealis",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_solar_wind",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_nebula",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_chromatic_surge",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_frozen_flame",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_deep_ocean",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_volcanic",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_ethereal",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_toxic_current",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_midnight_silk",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_electric_candy",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_ocean_phosphor",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_molten_earth",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_arctic_shimmer",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_neon_storm",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_twilight_veil",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_dragon_fire",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_crystal_prism",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_shadow_silk",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_copper_patina",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_poison_ivy",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_champagne_dream",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_thunderhead",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_coral_reef",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_black_rainbow",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_cherry_blossom",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_plasma_reactor",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_autumn_ember",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_ice_crystal",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Aurora & Chromatic Flow']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "aurora_supernova",
+   "family": "Aurora & Chromatic Flow"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "paint-booth-0-finish-data.js:2171 (B5 pulled from SPECIALS_SECTIONS); wiki archive 2026-06-03",
+   "owner_verdict": "Owner 2026-09-05: 'hide both'. Resurrected by js/spb-finish-atlas.js rescueOrphans() (07-31) and _SPB_CATEGORY_MERGES_2026_08_23 (Aurora -> Prizm); both must go.",
+   "group": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_midnight_galaxy",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_volcanic_ember",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_arctic_aurora",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_black_opal",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_dragon_scale",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_toxic_nebula",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_rose_gold_dust",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_deep_space",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_phoenix_feather",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_frozen_mercury",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_jungle_venom",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_cobalt_storm",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_sunset_strip",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_absinthe_dreams",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_titanium_rain",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_blood_moon",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_peacock_strut",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_champagne_frost",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_neon_viper",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_obsidian_fire",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_mermaid_scale",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_carbon_prizm",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_molten_copper",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_electric_storm",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_desert_mirage",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_venom_strike",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_sapphire_ice",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_inferno_chrome",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_phantom_violet",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Chromatic Flake']",
+   "owner_verdict": "Owner 2026-09-05: hide",
+   "id": "cf_solar_flare",
+   "family": "Chromatic Flake"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "paint-booth-0-finish-data.js:2010; B5 2026-06-03; boot prints '[Atelier] Module not found'",
+   "owner_verdict": "Renderers never wired; Atlas rescueOrphans() re-adds the group to SHOKKER -- must go.",
+   "group": "Atelier — Ultra Detail"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_brushed_titanium",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_carbon_weave_micro",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_cathedral_glass",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_ceramic_glaze",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_damascus_layers",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_engine_turned",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_fluid_metal",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_forged_iron_texture",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_gold_leaf_micro",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_hand_brushed_metal",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_japanese_lacquer",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_marble_vein_fine",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_micro_flake_burst",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_obsidian_glass",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_pearl_depth_layers",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_silk_weave",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "SPECIAL_GROUPS['Atelier — Ultra Detail']",
+   "owner_verdict": "hide (unwired)",
+   "id": "atelier_vintage_enamel_crackle",
+   "family": "Atelier"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "cel_shade",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "cursed",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "double_exposure",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "eclipse",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "glitch",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "holographic_wrap",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "infrared",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "mystichrome_classic",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "nightmare",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "phantom",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "polarized",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "possessed",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "reaper",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "thermochromic",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "uv_blacklight",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "wraith",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "x_ray",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "voodoo",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "banshee",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "blood_oath",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "catacombs",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "dark_ritual",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "death_metal",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "demon_forge",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "gargoyle",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "graveyard",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "haunted",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "hellhound",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "iron_maiden",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "lich_king",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "necrotic",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "shadow_realm",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "spectral",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "chromatic_aberration",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "crt_scanline",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "datamosh",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "embossed",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "film_burn",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "fish_eye",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "halftone",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "kaleidoscope",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "long_exposure",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "negative",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "parallax",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "refraction",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "solarization",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "hex_mandala",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "lace_filigree",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "brushed_metal_fine",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "honeycomb_organic",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "baroque_scrollwork",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "art_nouveau_vine",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "penrose_quasi",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "topographic_dense",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "scripts/scrub_orphan_finishes.py ORPHANS (owner-directed scrub)",
+   "owner_verdict": "Scrubbed tiles; re-homed as dangling refs by _SPECIALS_UNGROUPED_2026_08 (08-09) -- keep hidden.",
+   "id": "interference_rings",
+   "family": "orphan-scrub-2026-06-03"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "paint-booth-0-finish-data.js:6113 (MC_DEFS emptied 2026-06-03); _SPECIALS_UNGROUPED_2026_08 re-created the group name",
+   "owner_verdict": "25 dynamic mc_* tiles scrubbed 2026-06-03; group name must not come back.",
+   "group": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_black_marble",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_blood_splat",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_blue_camo",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_christmas",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_deep_space",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_desert_camo",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_earth_tone",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_fire_storm",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_gold_marble",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_green_marble",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_halloween",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_ink_splat",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_miami_vice",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_neon_camo",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_neon_splat",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_paint_splat",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_rasta",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_red_marble",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_snow_camo",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_tropical",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_urban_camo",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_usa_flag",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_vaporwave",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_white_marble",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "MC_DEFS emptied (paint-booth-0-finish-data.js:6113-6118)",
+   "owner_verdict": "hide",
+   "id": "mc_woodland_camo",
+   "family": "Multi-Color Sets"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_50s_boomerang",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_50s_bullet",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_50s_chrome_line",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_50s_classic_stripe",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_50s_diamond",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_50s_diner_curve",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_50s_rocket",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_50s_scallop",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_50s_starburst",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_50s_tailfin",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_60s_flower",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_60s_lavalamp",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_60s_mod_stripe",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_60s_opart_ray",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_60s_peace_curve",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_60s_swirl",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_60s_thin_stripe",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_60s_wide_stripe",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_60s_woodstock",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_70s_bell_flare",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_70s_bicentennial",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_70s_disco",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_70s_earth_geo",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_70s_orange_curve",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_70s_patchwork",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_70s_shag",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_70s_sparkle",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_70s_studio54",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_80s_acid_washed",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_80s_memphis",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_80s_my_little_friend",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_80s_neon_hex",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_80s_outrun",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_80s_pastel_zig",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_80s_pixel",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_80s_synth_sun",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_80s_vapor",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_80s_yo_joe",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_90s_alt_cross",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_90s_grunge",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_90s_rave_zig",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_90s_tama90s",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_90s_trolls",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:5696/5708 ('retired 2026-08-31 -- rebuilt as the decade shelves below'); engine/registry.py:78-81 deletes decade_* at build; engine/pattern_expansion.py re-adds at lazy load",
+   "owner_verdict": "hide (rebuilt shelves supersede)",
+   "id": "decade_90s_y2k",
+   "family": "decades-generic-2026-04"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:2398-2408 `_retired` loop",
+   "owner_verdict": "Owner: combinatorial grids / category ditched. Ids stay engine-resolvable for saved projects.",
+   "group": "🌊 FRACTURED DEEP"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:2398-2408 `_retired` loop",
+   "owner_verdict": "Owner: combinatorial grids / category ditched. Ids stay engine-resolvable for saved projects.",
+   "group": "⚡ FRACTURED TEMPEST"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:2398-2408 `_retired` loop",
+   "owner_verdict": "Owner: combinatorial grids / category ditched. Ids stay engine-resolvable for saved projects.",
+   "group": "❄️ FRACTURED FROST"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:2398-2408 `_retired` loop",
+   "owner_verdict": "Owner: combinatorial grids / category ditched. Ids stay engine-resolvable for saved projects.",
+   "group": "Atmosphere"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:2398-2408 `_retired` loop",
+   "owner_verdict": "Owner: combinatorial grids / category ditched. Ids stay engine-resolvable for saved projects.",
+   "group": "🛸 FRACTURED UFO"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:2398-2408 `_retired` loop",
+   "owner_verdict": "Owner: combinatorial grids / category ditched. Ids stay engine-resolvable for saved projects.",
+   "group": "🌌 FRACTURED NEBULA"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:2398-2408 `_retired` loop",
+   "owner_verdict": "Owner: combinatorial grids / category ditched. Ids stay engine-resolvable for saved projects.",
+   "group": "🌈 FRACTURED RAINBOW"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:2398-2408 `_retired` loop",
+   "owner_verdict": "Owner: combinatorial grids / category ditched. Ids stay engine-resolvable for saved projects.",
+   "group": "🏺 FRACTURED RELIC"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:2398-2408 `_retired` loop",
+   "owner_verdict": "Owner: combinatorial grids / category ditched. Ids stay engine-resolvable for saved projects.",
+   "group": "🔮 FRACTURED OCCULT"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:2398-2408 `_retired` loop",
+   "owner_verdict": "Owner: combinatorial grids / category ditched. Ids stay engine-resolvable for saved projects.",
+   "group": "🪟 FRACTURED CATHEDRAL"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:2398-2408 `_retired` loop",
+   "owner_verdict": "Owner: combinatorial grids / category ditched. Ids stay engine-resolvable for saved projects.",
+   "group": "🍶 FRACTURED KINTSUGI"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "paint-booth-0-finish-data.js:2398-2408 `_retired` loop",
+   "owner_verdict": "Owner: combinatorial grids / category ditched. Ids stay engine-resolvable for saved projects.",
+   "group": "⚙️ FRACTURED CLOCKWORK"
+  },
+  {
+   "kind": "base_group",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md",
+   "owner_verdict": "Owner call 2026-09-05.",
+   "group": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "aramid",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "carbon_base",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "carbon_ceramic",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "fiberglass",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "forged_composite",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "graphene",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "hybrid_weave",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "kevlar_base",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "carbon_weave",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "forged_carbon_vis",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "carbon_3k_fine",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "carbon_satin",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "carbon_red",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "carbon_blue",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "spread_tow",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "forged_blue",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "nomex_honeycomb",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "kevlar_red",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "basalt_weave",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Carbon & Composite)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "dyneema_white",
+   "family": "Carbon & Composite"
+  },
+  {
+   "kind": "base_group",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md",
+   "owner_verdict": "Owner call 2026-09-05.",
+   "group": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "ceramic",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "ceramic_matte",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "crystal_clear",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "enamel",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "obsidian",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "piano_black",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "porcelain",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "tempered_glass",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "cathedral_glass",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "sea_glass",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "sapphire_glass",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "ruby_glass",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "emerald_glass",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "amber_glass",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "smoked_glass",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "milk_glass",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "mercury_glass",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "crackle_glaze",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "liquid_glaze",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Ceramic & Glass)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "terracotta_glaze",
+   "family": "Ceramic & Glass"
+  },
+  {
+   "kind": "base_group",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md",
+   "owner_verdict": "Owner call 2026-09-05.",
+   "group": "Chrome & Mirror"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Chrome & Mirror)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "antique_chrome",
+   "family": "Chrome & Mirror"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Chrome & Mirror)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "black_chrome",
+   "family": "Chrome & Mirror"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Chrome & Mirror)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "blue_chrome",
+   "family": "Chrome & Mirror"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Chrome & Mirror)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "candy_chrome",
+   "family": "Chrome & Mirror"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Chrome & Mirror)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "chrome",
+   "family": "Chrome & Mirror"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Chrome & Mirror)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "dark_chrome",
+   "family": "Chrome & Mirror"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Chrome & Mirror)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "mirror_gold",
+   "family": "Chrome & Mirror"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Chrome & Mirror)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "red_chrome",
+   "family": "Chrome & Mirror"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Chrome & Mirror)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "satin_chrome",
+   "family": "Chrome & Mirror"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Chrome & Mirror)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "surgical_steel",
+   "family": "Chrome & Mirror"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Chrome & Mirror)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "electroplated_gold",
+   "family": "Chrome & Mirror"
+  },
+  {
+   "kind": "base_group",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md",
+   "owner_verdict": "Owner call 2026-09-05.",
+   "group": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "anodized",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "brushed_aluminum",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "brushed_titanium",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "cobalt_metal",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "diamond_coat",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "frozen",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "liquid_titanium",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "platinum",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "raw_aluminum",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "rose_gold",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "titanium_raw",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "tungsten",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "organic_metal",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "anodized_exotic",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "xirallic",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Exotic Metal)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "chromaflair",
+   "family": "Exotic Metal"
+  },
+  {
+   "kind": "base_group",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md",
+   "owner_verdict": "Owner call 2026-09-05.",
+   "group": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "candy",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "candy_apple",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "champagne",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "copper",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "gunmetal",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "gunmetal_satin",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "metal_flake_base",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "original_metal_flake",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "champagne_flake",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "fine_silver_flake",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "blue_ice_flake",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "bronze_flake",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "gunmetal_flake",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "green_flake",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "fire_flake",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "metallic",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "midnight_pearl",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "pearl",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "pearlescent_white",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "pewter",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "satin_metal",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Metallic Standard)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "alubeam",
+   "family": "Metallic Standard"
+  },
+  {
+   "kind": "base_group",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md",
+   "owner_verdict": "Owner call 2026-09-05.",
+   "group": "Candy & Pearl"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Candy & Pearl)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "candy_burgundy",
+   "family": "Candy & Pearl"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Candy & Pearl)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "candy_cobalt",
+   "family": "Candy & Pearl"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Candy & Pearl)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "candy_emerald",
+   "family": "Candy & Pearl"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Candy & Pearl)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "iridescent",
+   "family": "Candy & Pearl"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Candy & Pearl)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "tinted_clear",
+   "family": "Candy & Pearl"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Candy & Pearl)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "tri_coat_pearl",
+   "family": "Candy & Pearl"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Candy & Pearl)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "jelly_pearl",
+   "family": "Candy & Pearl"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Candy & Pearl)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "orange_peel_gloss",
+   "family": "Candy & Pearl"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Candy & Pearl)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "satin_candy",
+   "family": "Candy & Pearl"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Candy & Pearl)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "deep_pearl",
+   "family": "Candy & Pearl"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Candy & Pearl)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "candy_gold",
+   "family": "Candy & Pearl"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Candy & Pearl)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "candy_lime",
+   "family": "Candy & Pearl"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Candy & Pearl)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "candy_aqua",
+   "family": "Candy & Pearl"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Candy & Pearl)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "copper_pearl",
+   "family": "Candy & Pearl"
+  },
+  {
+   "kind": "base",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "docs/RETIRED_SHELVES_2026-09-05.md (Candy & Pearl)",
+   "owner_verdict": "hide; renderer kept",
+   "id": "coral_pearl",
+   "family": "Candy & Pearl"
+  },
+  {
+   "kind": "base_group",
+   "policy": "hide",
+   "since": "2026-05-18",
+   "record": "paint-booth-0-finish-data.js ~5710 ('Racing Heritage base group REMOVED')",
+   "owner_verdict": "Owner mandate 2026-05-18; the 11 ids stay in BASES for cross-references.",
+   "group": "Racing Heritage"
+  },
+  {
+   "kind": "special_group",
+   "policy": "hide",
+   "since": "2026-04-23",
+   "record": "paint-booth-0-finish-data.js:2024-2028 (painter-truth cleanup)",
+   "owner_verdict": "Retired from the shipping special-monolithic surface.",
+   "group": "Carbon & Weave"
+  },
+  {
+   "kind": "feature",
+   "policy": "hide",
+   "since": "2026-09-05",
+   "record": "Owner 2026-09-05: 'the custom finishes - we scrapped that part of the app'. Button removed earlier; js/zones/finish-mixer-controls.js, paint-booth-2-state-zones.js:20101-20650, server_routes/custom_finish_routes.py, server_routes/custom_finish_mixer_routes.py, /api/custom-finishes page-load fetch",
+   "owner_verdict": "Scrapped. No script tag, no routes, no page-load fetch, no custom finishes pushed into BASES.",
+   "feature": "finish_mixer",
+   "html_script": "js/zones/finish-mixer-controls.js",
+   "routes": [
+    "/api/custom-finishes",
+    "/api/save-custom-finish",
+    "/api/delete-custom-finish",
+    "/api/mix-preview",
+    "/api/mix-paint-preview"
+   ],
+   "registrars": [
+    "register_custom_finish_routes(",
+    "register_custom_finish_mixer_routes(",
+    "from server_routes.custom_finish_routes import",
+    "from server_routes.custom_finish_mixer_routes import"
+   ],
+   "boot_calls": [
+    "_loadCustomFinishes"
+   ]
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "acid_etched_glass",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "acid_trip",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "aged_leather",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "alexandrite",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "annealed_steel",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "antimatter",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "art_deco_gold",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "astral",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "bare_aluminum",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "bark",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "barn_find",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "beat_up_truck",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "black_diamond",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "black_flag",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "bone",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "brick_wall",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "brushed_gunmetal",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "brushed_steel_dark",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "burlap",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "burnout_zone",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "carbon_raw",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "cast_iron",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "cast_iron_raw",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "champagne_toast",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "chicane_blur",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "chrome_oxidized",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "classic_racing",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "concrete",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "cool_down",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "cork",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "crocodile_leather",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "crystal_cave",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "cs_candy_paint",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "cs_dark_flame",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "cs_gold_rush",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "cs_neon_dreams",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "cs_rose_gold_shift",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "cs_twilight",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "daguerreotype",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "damascus_steel",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "dark_fairy",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "dawn_patrol",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "diner_chrome",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "drafting",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "drag_chute",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "dragon_breath",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "dreamscape",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "drive_in",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "enchanted",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "etched_metal",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "ethereal",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "faded_glory",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "flag_wave",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "forged_iron",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "forged_titanium",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "fourth_dimension",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "fractal_dimension",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "glitch_reality",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "granite",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "green_flag",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "grid_walk",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "grindhouse",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "grinding_marks",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "hallucination",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "hammered_copper",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "heat_blued",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "heat_haze",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "hot_rod_flames",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "jukebox",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "last_lap",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "levitation",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "linen",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "liquid_gold",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "mill_scale",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "mirage",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "moonshine",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "mother_of_pearl",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "multiverse",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "muscle_car_stripe",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "nascar_heritage",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "nebula_core",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "night_race",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "nostalgia_drag",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "obsidian_glass",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "old_school",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "oxidized_bronze",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "pace_lap",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "parchment",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "patina_truck",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "petrified_wood",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "phantom_zone",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "phosphate_coat",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "photo_finish",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "pin_up",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "pit_stop",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "pole_position",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "polished_brass",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "portal",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "psychedelic",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "rain_race",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "raw_concrete",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "raw_weld",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "red_mist",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "ruby",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "sandstone",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "sapphire",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "sepia",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "silk_road",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "simulation",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "singularity",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "slate_tile",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "slipstream",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "stained_glass",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "stucco",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "suede",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "terra_cotta",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "tesseract",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "time_warp",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "tin_type",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "tunnel_run",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "under_lights",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "velvet_crush",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "venetian_glass",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "victory_burnout",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "void_walker",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "volcanic_rock",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "white_flag",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "woodie",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "woodie_wagon",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "worn_asphalt",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "monolithic",
+   "policy": "hide",
+   "since": "2026-06-03",
+   "record": "INFERRED: registered only by the lazy expansion load (shokker_24k_expansion / color monolithics) and in no picker group since the 2026-05-18 / 2026-06-03 section removals",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "zeppelin",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "cape_flow",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "carbon_4x4",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "carbon_spread_tow",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "carbon_uni",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "cartoon_plaid",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "caustic_light",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "comic_halftone",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "comic_panel",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "coral_reef",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "cross_grid",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "dark_knight_scales",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "dot_fine",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "dot_large",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "exhaust_wrap",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "gamma_pulse",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "gothic_cross",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "groovy_swirl",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "harness_weave",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "hero_burst",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "iron_cross",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "lace",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "morse_code",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "pentagram",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "pixel_mosaic",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "polka_pop",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "pow_burst",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "power_aura",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "power_bolt",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "prehistoric_spot",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "quilted",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "retro_atom",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "retro_flower_power",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "river_stone",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "rune_grid",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "shield_rings",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "silk_weave",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "star_field",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "toon_bones",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "toon_cloud",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "toon_lightning",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "toon_speed",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "toon_stars",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "tree_bark",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "tweed_weave",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "velvet",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "villain_stripe",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "voronoi_edge",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "voronoi_fine",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "voronoi_large",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "web_pattern",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "wifi_waves",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "yin_yang",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "yin_yang_grid",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  },
+  {
+   "kind": "pattern",
+   "policy": "hide",
+   "since": "2026-08-31",
+   "record": "INFERRED: lazy-only pattern in no PATTERN_GROUPS entry",
+   "owner_verdict": "Owner 2026-09-05: not-showing == removed. Review basis=INFERRED.",
+   "id": "zigzag_stripe",
+   "family": "lazy-only-ungrouped",
+   "basis": "INFERRED"
+  }
+ ]
+}

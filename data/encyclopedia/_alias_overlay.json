@@ -1,0 +1,18 @@
+{
+ "_about": "HELPER_V2 fix pass 4 2026-10-04 owner: keep improving the Offline Helper. Search aliases layered over the articles at index time (offline helper js/spb-offline-answer.js AND server_routes/encyclopedia_routes.py read this file, so online / MCP grounding gets the same picks). add = extra aliases, drop = aliases that send a question to the wrong card. The article files stay untouched (a fact-check lane owns them). Files starting with _ are skipped by the encyclopedia generators and gates.",
+ "overlay": {
+  "help_howto_3.what_are_layers": { "add": ["how do layers work", "how layers work", "layers explained", "what is a layer", "what do layers do"] },
+  "recipes.candy": { "add": ["what is candy paint", "candy paint", "candy finish", "what is candy", "how does candy work", "candy look"] },
+  "preview_render.trading_paints_mip": { "add": ["where do spec maps go for trading paints", "spec map trading paints", "spec maps trading paints", "upload my spec to trading paints", "where does the spec go"] },
+  "spec.channel_b_clearcoat": { "add": ["what does the blue channel do", "blue channel spec map", "blue channel do", "b channel spec map"] },
+  "help_howto_1.add_logo": { "add": ["use my own logo", "my own logo", "import my logo", "add my logo", "put my logo on", "own logo"] },
+  "help_howto_2.make_chrome": { "add": ["mirror finish", "get a mirror finish", "mirror look", "mirror shine", "liquid metal look", "full chrome"] },
+  "patterns.choosing_at_car_scale": { "add": ["how big should features be", "feature size", "how big should the detail be", "how fine should a pattern be", "detail size", "8 to 32 pixels", "how big should a pattern be"] },
+  "finishes.colour_source_modes": { "add": ["lock base color", "lock base colour", "try lots of finishes on the same colour", "try many finishes on one colour", "keep my colour when i swap the finish", "same colour different finishes", "keep the colour when changing finish"] },
+  "settings.overview": { "add": ["old spec in every render", "old spec shows up", "old spec under every render", "clear import spec map", "clear the imported spec", "remove imported spec map", "import spec map clear"] },
+  "support.numbers_vanished": { "add": ["sponsors are gone", "sponsors gone after finish", "sponsors disappeared after finish", "numbers gone after finish", "sponsors missing after finish", "logos gone after finish"] },
+  "help_howto_1.colour_not_applying": { "add": ["still the old colour", "roof still yellow", "part still old colour", "colour did not change", "colour not changing", "why is it still"] },
+  "ui_shell.number_modes": { "add": ["add a number", "how do i add a number", "add numbers to my car", "put a number on my car", "race number"] },
+  "recipes.retro_stripes": { "drop": ["add a number", "how do i add a number", "add numbers to my car"] }
+ }
+}

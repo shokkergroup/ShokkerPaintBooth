@@ -2,7 +2,7 @@
   "name": "Retro Outrun",
   "description": "Full synthwave 80s neon aesthetic — gradient pink-to-purple body, chrome accents, neon grid overlay, and glowing pinstripes. Pure vaporwave vibes.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "any chassis, reads best on smooth GT / supercar bodies",
   "notes": "The Grid Overlay zone is what sells the retro look — don't disable it. For extra Miami vibes, push Body baseColor slightly hotter pink (#ff3d7e). Works great paired with sunset-lit tracks.",
   "zones": [

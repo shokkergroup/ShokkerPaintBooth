@@ -1,0 +1,7 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_1052874.tga","inspection_records":"_smart_tga_runs/cycle663_dlm_group_semantic_holdout/inspection_records.json","review_scope":"Cycle 663 source, all owner/combined sheets, suspects, position cues, and physical groups.","component_labels":[
+  {"layer":"numbers","component_index":0,"expected_bbox":[271,716,197,108],"target_layer":"numbers","label":"true_lower_number","family_id":"number:15"},
+  {"layer":"numbers","component_index":1,"expected_bbox":[821,788,123,213],"target_layer":"numbers","label":"true_rear_number","family_id":"number:15"},
+  {"layer":"candidate","component_index":null,"expected_bbox":[345,916,230,30],"target_layer":"sponsors","label":"position_cue_true_sponsor_wordmark"},
+  {"layer":"candidate","component_index":null,"expected_bbox":[285,225,210,125],"target_layer":"numbers","label":"missed_true_upper_number","family_id":"number:15"},
+  {"layer":"candidate_group","component_index":null,"expected_bbox":[21,716,447,108],"target_layer":"uncertain","label":"mixed_true_number_sponsors_and_livery","family_id":"number:15","group_id":"pdg:84abcc72fb971a93"}
+]}

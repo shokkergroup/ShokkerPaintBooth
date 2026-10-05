@@ -50,9 +50,9 @@ Three things happen in sequence:
 
 1. **Color pass:** SPB composites the final color TGA at full resolution.
 2. **Spec pass:** SPB generates the matching spec map TGA.
-3. **Deploy:** If Live Link is enabled, both files are copied to your iRacing paints folder. Otherwise they land in `Documents\Shokker Paint Booth\renders\`.
+3. **Deploy:** if **iRacing Car Folder** (top bar) is set, both files are copied into it: `car_num_<ID>.tga` (Custom Number) or `car_<ID>.tga` (Sim-Stamped Number), and `car_spec_<ID>.tga`. With no car folder nothing reaches iRacing (a banner says so). Shokker keeps the two newest renders in its own render folder.
 
-A confirmation dialog tells you exactly where the files went.
+A green banner under the render tells you where the files went; a red one tells you what failed.
 
 ![Step 3 — Render confirmation dialog](docs/img/tutorial-10-step3.png)
 
@@ -75,20 +75,17 @@ From any history entry you can:
 
 History is stored in `Documents\Shokker Paint Booth\render_history\` as a JSON log plus the actual TGA files. You can clean it out manually — older renders eat disk.
 
-## Step 5 — Live Link to iRacing
+## Step 5 — Getting the files into iRacing
 
-Live Link is the feature that makes SPB feel like magic: every time you hit RENDER, the files go *straight to iRacing's paints folder*. No manual copy, no file management. You go from "change a color" to "see it in the sim" in seconds.
+The top bar holds everything iRacing needs:
 
-Configure in `Settings → Live Link`:
+- **iRacing User ID:** your iRacing **Customer ID** (4–7 digits; helmet icon in iRacing → Profile). It is part of every file name; it is not your car number.
+- **Custom Number / Sim-Stamped Number:** Custom Number writes `car_num_<ID>.tga` (your paint carries its own number; iRacing loads it only with **Settings → Graphics → Hide Car Numbers ON**). Sim-Stamped Number writes `car_<ID>.tga` (iRacing stamps your number on; Hide Car Numbers OFF). They must agree. If you are unsure, render once in each mode: both files stay in the folder.
+- **iRacing Car Folder:** the car's folder, for example `Documents\iRacing\paint\stockcars chevyss\` (the ▾ menu lists the folders iRacing created; run a car once in iRacing to create its folder).
 
-- **Enabled:** On / off
-- **iRacing Paints Folder:** Browse to `Documents\iRacing\paint\` (typically auto-detected)
-- **Subfolder convention:** SPB auto-routes to the right subfolder based on the current template — `trucks\silverado2019\` for the Silverado, `series\gt3\` for GT3 cars, etc.
-- **File naming:** `car_<driver-id>.tga` and `car_spec_<driver-id>.tga` (driver ID pulled from iRacing profile)
+With the car folder set, every RENDER copies the paint and spec files into it. **Auto-deploy after render** (Settings gear) only matters when the car folder is empty. Then in iRacing press **Alt+Tab → Ctrl+R** (Reload Car Textures).
 
-Once configured, forget it. Every render from then on deploys automatically.
-
-**Multi-machine:** if you paint on one machine and race on another, set Live Link to a shared Dropbox / OneDrive folder that both machines sync. Paint on the laptop, race on the gaming desktop, no manual transfer.
+Something not showing? Say **it does not show up in iRacing** in the chat and the built-in helper checks your settings and your folder.
 
 ## Step 6 — Export config (.shokker file)
 
@@ -158,11 +155,11 @@ Total time, once you have a design ready: about 3 minutes from final tweak to sh
 
 ## Troubleshooting
 
-**RENDER is grayed out.** No active zones, or the current project has errors. Check the Zones panel for missing colors or finishes.
+**RENDER does nothing or shows a message.** The button is greyed only while no paint is open or one is loading. Otherwise a message tells you what is missing: a Source Paint, your iRacing User ID, or a zone with both a colour and a finish.
 
-**Render finished but iRacing shows old paint.** iRacing caches aggressively. In the Paint screen, hit the reload button. If still stale, exit to the main menu and come back — iRacing sometimes only reloads on session change.
+**Render finished but iRacing shows old paint.** Alt+Tab to iRacing and press **Ctrl+R** (Reload Car Textures); in a replay, move to a moment when your car is not in the pit lane. Still old? Check that the User ID, the car folder and the Custom Number / Sim-Stamped setting (with iRacing's Hide Car Numbers) all agree: the chat helper can check them for you.
 
-**Live Link path not found.** Open Settings → Live Link → verify the path. If iRacing was installed to a non-default location (e.g., `D:\iRacing`), update the path manually.
+**Car folder not found.** Pick the car's folder again with the ▾ menu or the folder button (it must be a folder, not a .tga file). iRacing creates a car's folder the first time you run that car in a session.
 
 **Render History is empty after restart.** History is enabled by default but can be toggled off in Settings → Render → Keep History. Also check disk space — if `Documents\Shokker Paint Booth\render_history\` is on a full drive, writes silently fail.
 

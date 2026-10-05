@@ -1,0 +1,702 @@
+{
+  "generated": "2026-05-30T05:04:08Z",
+  "size": 256,
+  "seed": 42,
+  "count": 77,
+  "categories": 53,
+  "finishes": {
+    "gloss": {
+      "kind": "base",
+      "label": "base / gloss",
+      "category": "Bases",
+      "file": "baselines/base__gloss.png",
+      "hash": "84052e580620762e",
+      "w": 256,
+      "h": 256
+    },
+    "matte": {
+      "kind": "base",
+      "label": "base / matte",
+      "category": "Bases",
+      "file": "baselines/base__matte.png",
+      "hash": "84052e580620762e",
+      "w": 256,
+      "h": 256
+    },
+    "chrome": {
+      "kind": "base",
+      "label": "base / chrome",
+      "category": "Bases",
+      "file": "baselines/base__chrome.png",
+      "hash": "5060b0bfef5e0a26",
+      "w": 256,
+      "h": 256
+    },
+    "satin": {
+      "kind": "base",
+      "label": "base / satin",
+      "category": "Bases",
+      "file": "baselines/base__satin.png",
+      "hash": "84052e580620762e",
+      "w": 256,
+      "h": 256
+    },
+    "flat_black": {
+      "kind": "base",
+      "label": "base / flat_black",
+      "category": "Bases",
+      "file": "baselines/base__flat_black.png",
+      "hash": "84052e580620762e",
+      "w": 256,
+      "h": 256
+    },
+    "brushed_aluminum": {
+      "kind": "base",
+      "label": "base / brushed_aluminum",
+      "category": "Bases",
+      "file": "baselines/base__brushed_aluminum.png",
+      "hash": "bd287fba375ce625",
+      "w": 256,
+      "h": 256
+    },
+    "carbon_weave": {
+      "kind": "base",
+      "label": "base / carbon_weave",
+      "category": "Bases",
+      "file": "baselines/base__carbon_weave.png",
+      "hash": "ba71910df1f7373c",
+      "w": 256,
+      "h": 256
+    },
+    "acid_etch": {
+      "kind": "base",
+      "label": "base / acid_etch",
+      "category": "Bases",
+      "file": "baselines/base__acid_etch.png",
+      "hash": "c97e4be095e57994",
+      "w": 256,
+      "h": 256
+    },
+    "black_chrome": {
+      "kind": "base",
+      "label": "base / black_chrome",
+      "category": "Bases",
+      "file": "baselines/base__black_chrome.png",
+      "hash": "a531d3d8904e72c4",
+      "w": 256,
+      "h": 256
+    },
+    "cc_toxic": {
+      "kind": "base",
+      "label": "base / cc_toxic",
+      "category": "Bases",
+      "file": "baselines/base__cc_toxic.png",
+      "hash": "25a1b36a562ee9f2",
+      "w": 256,
+      "h": 256
+    },
+    "cx_emerald_ruby": {
+      "kind": "base",
+      "label": "base / cx_emerald_ruby",
+      "category": "Bases",
+      "file": "baselines/base__cx_emerald_ruby.png",
+      "hash": "b85a13816cfb7bc8",
+      "w": 256,
+      "h": 256
+    },
+    "efx_aurora_obsidian_veil": {
+      "kind": "base",
+      "label": "base / efx_aurora_obsidian_veil",
+      "category": "Bases",
+      "file": "baselines/base__efx_aurora_obsidian_veil.png",
+      "hash": "84052e580620762e",
+      "w": 256,
+      "h": 256
+    },
+    "enh_chrome": {
+      "kind": "base",
+      "label": "base / enh_chrome",
+      "category": "Bases",
+      "file": "baselines/base__enh_chrome.png",
+      "hash": "864fe7d1706625ab",
+      "w": 256,
+      "h": 256
+    },
+    "f_candy": {
+      "kind": "base",
+      "label": "base / f_candy",
+      "category": "Bases",
+      "file": "baselines/base__f_candy.png",
+      "hash": "84052e580620762e",
+      "w": 256,
+      "h": 256
+    },
+    "factory_basecoat": {
+      "kind": "base",
+      "label": "base / factory_basecoat",
+      "category": "Bases",
+      "file": "baselines/base__factory_basecoat.png",
+      "hash": "4fc1e3c91d6bd0a2",
+      "w": 256,
+      "h": 256
+    },
+    "koenigsegg_clear": {
+      "kind": "base",
+      "label": "base / koenigsegg_clear",
+      "category": "Bases",
+      "file": "baselines/base__koenigsegg_clear.png",
+      "hash": "c14db2d1ded0378f",
+      "w": 256,
+      "h": 256
+    },
+    "ms_fang_cataclysm": {
+      "kind": "base",
+      "label": "base / ms_fang_cataclysm",
+      "category": "Bases",
+      "file": "baselines/base__ms_fang_cataclysm.png",
+      "hash": "fd9f07d9e8b01ca3",
+      "w": 256,
+      "h": 256
+    },
+    "msha_hyperpink_threads": {
+      "kind": "base",
+      "label": "base / msha_hyperpink_threads",
+      "category": "Bases",
+      "file": "baselines/base__msha_hyperpink_threads.png",
+      "hash": "7aafdcf27aadb895",
+      "w": 256,
+      "h": 256
+    },
+    "neon_electric_blue": {
+      "kind": "base",
+      "label": "base / neon_electric_blue",
+      "category": "Bases",
+      "file": "baselines/base__neon_electric_blue.png",
+      "hash": "516fec0122be6c36",
+      "w": 256,
+      "h": 256
+    },
+    "pagani_tricolore": {
+      "kind": "base",
+      "label": "base / pagani_tricolore",
+      "category": "Bases",
+      "file": "baselines/base__pagani_tricolore.png",
+      "hash": "337ef646fb40e1c1",
+      "w": 256,
+      "h": 256
+    },
+    "pf_cluster_obsidian_gild": {
+      "kind": "base",
+      "label": "base / pf_cluster_obsidian_gild",
+      "category": "Bases",
+      "file": "baselines/base__pf_cluster_obsidian_gild.png",
+      "hash": "be998fbe419bad3d",
+      "w": 256,
+      "h": 256
+    },
+    "pf_tri_crimson_cyan_mage": {
+      "kind": "base",
+      "label": "base / pf_tri_crimson_cyan_mage",
+      "category": "Bases",
+      "file": "baselines/base__pf_tri_crimson_cyan_mage.png",
+      "hash": "bc3a27d5ed77a654",
+      "w": 256,
+      "h": 256
+    },
+    "school_bus": {
+      "kind": "base",
+      "label": "base / school_bus",
+      "category": "Bases",
+      "file": "baselines/base__school_bus.png",
+      "hash": "d92568a4609f6a09",
+      "w": 256,
+      "h": 256
+    },
+    "silk": {
+      "kind": "base",
+      "label": "base / silk",
+      "category": "Bases",
+      "file": "baselines/base__silk.png",
+      "hash": "84052e580620762e",
+      "w": 256,
+      "h": 256
+    },
+    "xirallic": {
+      "kind": "base",
+      "label": "base / xirallic",
+      "category": "Bases",
+      "file": "baselines/base__xirallic.png",
+      "hash": "8c9edf5cd0333962",
+      "w": 256,
+      "h": 256
+    },
+    "biomechanical": {
+      "kind": "pattern",
+      "label": "pattern / biomechanical",
+      "category": "Patterns: \u2726 Abstract, Fractal & Paradigm",
+      "file": "baselines/pattern__biomechanical.png",
+      "hash": "1b04b3d054f68420",
+      "w": 256,
+      "h": 256
+    },
+    "carbon_fiber": {
+      "kind": "pattern",
+      "label": "pattern / carbon_fiber",
+      "category": "Patterns: \u2699 Tech, Carbon & Industrial",
+      "file": "baselines/pattern__carbon_fiber.png",
+      "hash": "fbfa4c43aa52a6ac",
+      "w": 256,
+      "h": 256
+    },
+    "art_deco": {
+      "kind": "pattern",
+      "label": "pattern / art_deco",
+      "category": "Patterns: \u25c6 Geometry, Deco & Op-Art",
+      "file": "baselines/pattern__art_deco.png",
+      "hash": "443d1f10a3ab39b4",
+      "w": 256,
+      "h": 256
+    },
+    "camo": {
+      "kind": "pattern",
+      "label": "pattern / camo",
+      "category": "Patterns: \ud83c\udf3f Nature, Animals & Weather",
+      "file": "baselines/pattern__camo.png",
+      "hash": "fc640b63419564e4",
+      "w": 256,
+      "h": 256
+    },
+    "aztec": {
+      "kind": "pattern",
+      "label": "pattern / aztec",
+      "category": "Patterns: \ud83c\udf0e Cultural, World & Dark",
+      "file": "baselines/pattern__aztec.png",
+      "hash": "f8c20bc3ca0cf706",
+      "w": 256,
+      "h": 256
+    },
+    "decade_50s_diner_checkerboard": {
+      "kind": "pattern",
+      "label": "pattern / decade_50s_diner_checkerboard",
+      "category": "Patterns: \ud83c\udf9e Decades 50s-80s",
+      "file": "baselines/pattern__decade_50s_diner_checkerboard.png",
+      "hash": "f3e39dcbccfa6810",
+      "w": 256,
+      "h": 256
+    },
+    "decade_90s_grunge_splatter": {
+      "kind": "pattern",
+      "label": "pattern / decade_90s_grunge_splatter",
+      "category": "Patterns: \ud83d\udcbf 90s, Skate & Surf",
+      "file": "baselines/pattern__decade_90s_grunge_splatter.png",
+      "hash": "93614079fab17315",
+      "w": 256,
+      "h": 256
+    },
+    "shimmer_quantum_shard": {
+      "kind": "pattern",
+      "label": "pattern / shimmer_quantum_shard",
+      "category": "Patterns: \u2728 Reactive & Surface Accents",
+      "file": "baselines/pattern__shimmer_quantum_shard.png",
+      "hash": "884d16e32a71059d",
+      "w": 256,
+      "h": 256
+    },
+    "grad_amber_night": {
+      "kind": "monolithic",
+      "label": "mono:grad_* / grad_amber_night",
+      "category": "mono: grad",
+      "file": "baselines/monolithic__grad_amber_night.png",
+      "hash": "c97e6f2fd9f6f125",
+      "w": 256,
+      "h": 256
+    },
+    "cs_amber_indigo": {
+      "kind": "monolithic",
+      "label": "mono:cs_* / cs_amber_indigo",
+      "category": "mono: cs",
+      "file": "baselines/monolithic__cs_amber_indigo.png",
+      "hash": "2fc88e863971f70a",
+      "w": 256,
+      "h": 256
+    },
+    "cx_autumn_blaze": {
+      "kind": "monolithic",
+      "label": "mono:cx_* / cx_autumn_blaze",
+      "category": "mono: cx",
+      "file": "baselines/monolithic__cx_autumn_blaze.png",
+      "hash": "6ecc675648a6e3e5",
+      "w": 256,
+      "h": 256
+    },
+    "spectrum_aurora_classic": {
+      "kind": "monolithic",
+      "label": "mono:spectrum_* / spectrum_aurora_classic",
+      "category": "mono: spectrum",
+      "file": "baselines/monolithic__spectrum_aurora_classic.png",
+      "hash": "3cf34dde9f541fed",
+      "w": 256,
+      "h": 256
+    },
+    "prizm_adaptive": {
+      "kind": "monolithic",
+      "label": "mono:prizm_* / prizm_adaptive",
+      "category": "mono: prizm",
+      "file": "baselines/monolithic__prizm_adaptive.png",
+      "hash": "aa075fbed38e558c",
+      "w": 256,
+      "h": 256
+    },
+    "chameleon_amethyst": {
+      "kind": "monolithic",
+      "label": "mono:chameleon_* / chameleon_amethyst",
+      "category": "mono: chameleon",
+      "file": "baselines/monolithic__chameleon_amethyst.png",
+      "hash": "c20a51628ce2c891",
+      "w": 256,
+      "h": 256
+    },
+    "ghost_camo": {
+      "kind": "monolithic",
+      "label": "mono:ghost_* / ghost_camo",
+      "category": "mono: ghost",
+      "file": "baselines/monolithic__ghost_camo.png",
+      "hash": "17dd5c6fdd4af2b8",
+      "w": 256,
+      "h": 256
+    },
+    "depth_bubble": {
+      "kind": "monolithic",
+      "label": "mono:depth_* / depth_bubble",
+      "category": "mono: depth",
+      "file": "baselines/monolithic__depth_bubble.png",
+      "hash": "096bce93e3d621d0",
+      "w": 256,
+      "h": 256
+    },
+    "reactive_candy_reveal": {
+      "kind": "monolithic",
+      "label": "mono:reactive_* / reactive_candy_reveal",
+      "category": "mono: reactive",
+      "file": "baselines/monolithic__reactive_candy_reveal.png",
+      "hash": "8738a3634f72fe3c",
+      "w": 256,
+      "h": 256
+    },
+    "sparkle_champagne": {
+      "kind": "monolithic",
+      "label": "mono:sparkle_* / sparkle_champagne",
+      "category": "mono: sparkle",
+      "file": "baselines/monolithic__sparkle_champagne.png",
+      "hash": "9530e444e05a8a6a",
+      "w": 256,
+      "h": 256
+    },
+    "wave_candy_flow": {
+      "kind": "monolithic",
+      "label": "mono:wave_* / wave_candy_flow",
+      "category": "mono: wave",
+      "file": "baselines/monolithic__wave_candy_flow.png",
+      "hash": "9b976cc9deff4934",
+      "w": 256,
+      "h": 256
+    },
+    "halo_circle_pearl": {
+      "kind": "monolithic",
+      "label": "mono:halo_* / halo_circle_pearl",
+      "category": "mono: halo",
+      "file": "baselines/monolithic__halo_circle_pearl.png",
+      "hash": "d8a2c25f530619c3",
+      "w": 256,
+      "h": 256
+    },
+    "fractal_candy_chaos": {
+      "kind": "monolithic",
+      "label": "mono:fractal_* / fractal_candy_chaos",
+      "category": "mono: fractal",
+      "file": "baselines/monolithic__fractal_candy_chaos.png",
+      "hash": "86d3e6d516db8219",
+      "w": 256,
+      "h": 256
+    },
+    "exotic_anti_metal": {
+      "kind": "monolithic",
+      "label": "mono:exotic_* / exotic_anti_metal",
+      "category": "mono: exotic",
+      "file": "baselines/monolithic__exotic_anti_metal.png",
+      "hash": "0a445c6480f6981f",
+      "w": 256,
+      "h": 256
+    },
+    "living_chrome": {
+      "kind": "monolithic",
+      "label": "mono:living_* / living_chrome",
+      "category": "mono: living",
+      "file": "baselines/monolithic__living_chrome.png",
+      "hash": "bfae49edb946af18",
+      "w": 256,
+      "h": 256
+    },
+    "aurora": {
+      "kind": "monolithic",
+      "label": "mono:aurora_* / aurora",
+      "category": "mono: aurora",
+      "file": "baselines/monolithic__aurora.png",
+      "hash": "5cecb30f0981dea8",
+      "w": 256,
+      "h": 256
+    },
+    "neon_glow": {
+      "kind": "monolithic",
+      "label": "mono:neon_* / neon_glow",
+      "category": "mono: neon",
+      "file": "baselines/monolithic__neon_glow.png",
+      "hash": "2d70b1babf8c536c",
+      "w": 256,
+      "h": 256
+    },
+    "thermal_titanium": {
+      "kind": "monolithic",
+      "label": "mono:thermal_* / thermal_titanium",
+      "category": "mono: thermal",
+      "file": "baselines/monolithic__thermal_titanium.png",
+      "hash": "3f96c222fb664dc8",
+      "w": 256,
+      "h": 256
+    },
+    "spectral": {
+      "kind": "monolithic",
+      "label": "mono:spectral_* / spectral",
+      "category": "mono: spectral",
+      "file": "baselines/monolithic__spectral.png",
+      "hash": "269bf534986f19c1",
+      "w": 256,
+      "h": 256
+    },
+    "aniso_circular_chrome": {
+      "kind": "monolithic",
+      "label": "mono:aniso_* / aniso_circular_chrome",
+      "category": "mono: aniso",
+      "file": "baselines/monolithic__aniso_circular_chrome.png",
+      "hash": "df296bff97e7fc53",
+      "w": 256,
+      "h": 256
+    },
+    "cc_acid_burn": {
+      "kind": "monolithic",
+      "label": "mono:cc_* / cc_acid_burn",
+      "category": "mono: cc",
+      "file": "baselines/monolithic__cc_acid_burn.png",
+      "hash": "2af5a887cd76367b",
+      "w": 256,
+      "h": 256
+    },
+    "crystal_lattice": {
+      "kind": "monolithic",
+      "label": "mono:crystal_* / crystal_lattice",
+      "category": "mono: crystal",
+      "file": "baselines/monolithic__crystal_lattice.png",
+      "hash": "8af05936cd3b2000",
+      "w": 256,
+      "h": 256
+    },
+    "dark_ritual": {
+      "kind": "monolithic",
+      "label": "mono:dark_* / dark_ritual",
+      "category": "mono: dark",
+      "file": "baselines/monolithic__dark_ritual.png",
+      "hash": "a199f3b4ec7c7220",
+      "w": 256,
+      "h": 256
+    },
+    "dualshift_blue_to_orange": {
+      "kind": "monolithic",
+      "label": "mono:dualshift_* / dualshift_blue_to_orange",
+      "category": "mono: dualshift",
+      "file": "baselines/monolithic__dualshift_blue_to_orange.png",
+      "hash": "d7a89cfbe50f363a",
+      "w": 256,
+      "h": 256
+    },
+    "ember": {
+      "kind": "monolithic",
+      "label": "mono:ember_* / ember",
+      "category": "mono: ember",
+      "file": "baselines/monolithic__ember.png",
+      "hash": "cc0a295fc790d023",
+      "w": 256,
+      "h": 256
+    },
+    "galaxy": {
+      "kind": "monolithic",
+      "label": "mono:galaxy_* / galaxy",
+      "category": "mono: galaxy",
+      "file": "baselines/monolithic__galaxy.png",
+      "hash": "b3897f71d6e23d56",
+      "w": 256,
+      "h": 256
+    },
+    "gradient_anodized_gloss": {
+      "kind": "monolithic",
+      "label": "mono:gradient_* / gradient_anodized_gloss",
+      "category": "mono: gradient",
+      "file": "baselines/monolithic__gradient_anodized_gloss.png",
+      "hash": "664fe57492504afd",
+      "w": 256,
+      "h": 256
+    },
+    "laser_grid": {
+      "kind": "monolithic",
+      "label": "mono:laser_* / laser_grid",
+      "category": "mono: laser",
+      "file": "baselines/monolithic__laser_grid.png",
+      "hash": "0f7bbfa256344f75",
+      "w": 256,
+      "h": 256
+    },
+    "microshift_blue_teal_cyan": {
+      "kind": "monolithic",
+      "label": "mono:microshift_* / microshift_blue_teal_cyan",
+      "category": "mono: microshift",
+      "file": "baselines/monolithic__microshift_blue_teal_cyan.png",
+      "hash": "f68a72f273e95005",
+      "w": 256,
+      "h": 256
+    },
+    "multiscale_candy_frost": {
+      "kind": "monolithic",
+      "label": "mono:multiscale_* / multiscale_candy_frost",
+      "category": "mono: multiscale",
+      "file": "baselines/monolithic__multiscale_candy_frost.png",
+      "hash": "60118ae4eb938b48",
+      "w": 256,
+      "h": 256
+    },
+    "oil_slick": {
+      "kind": "monolithic",
+      "label": "mono:oil_* / oil_slick",
+      "category": "mono: oil",
+      "file": "baselines/monolithic__oil_slick.png",
+      "hash": "962f7091bc460d00",
+      "w": 256,
+      "h": 256
+    },
+    "p_aurora": {
+      "kind": "monolithic",
+      "label": "mono:p_* / p_aurora",
+      "category": "mono: p",
+      "file": "baselines/monolithic__p_aurora.png",
+      "hash": "b145209008b2449a",
+      "w": 256,
+      "h": 256
+    },
+    "quilt_alternating_duo": {
+      "kind": "monolithic",
+      "label": "mono:quilt_* / quilt_alternating_duo",
+      "category": "mono: quilt",
+      "file": "baselines/monolithic__quilt_alternating_duo.png",
+      "hash": "c60d06bb2b91aa5d",
+      "w": 256,
+      "h": 256
+    },
+    "trizone_anodized_candy_silk": {
+      "kind": "monolithic",
+      "label": "mono:trizone_* / trizone_anodized_candy_silk",
+      "category": "mono: trizone",
+      "file": "baselines/monolithic__trizone_anodized_candy_silk.png",
+      "hash": "d803d4e486916b26",
+      "w": 256,
+      "h": 256
+    },
+    "ui_black_rainbow_holo_x2": {
+      "kind": "monolithic",
+      "label": "mono:ui_* / ui_black_rainbow_holo_x2",
+      "category": "mono: ui",
+      "file": "baselines/monolithic__ui_black_rainbow_holo_x2.png",
+      "hash": "0b34e1e2fc661911",
+      "w": 256,
+      "h": 256
+    },
+    "weather_acid_rain": {
+      "kind": "monolithic",
+      "label": "mono:weather_* / weather_acid_rain",
+      "category": "mono: weather",
+      "file": "baselines/monolithic__weather_acid_rain.png",
+      "hash": "95d39feff8639c60",
+      "w": 256,
+      "h": 256
+    },
+    "weathered_metal": {
+      "kind": "monolithic",
+      "label": "mono:weathered_* / weathered_metal",
+      "category": "mono: weathered",
+      "file": "baselines/monolithic__weathered_metal.png",
+      "hash": "1606682831735c2d",
+      "w": 256,
+      "h": 256
+    },
+    "vm_adobe_sunset": {
+      "kind": "monolithic",
+      "label": "masterclass:Viva Mexico / vm_adobe_sunset",
+      "category": "Masterclass: Viva Mexico",
+      "file": "baselines/monolithic__vm_adobe_sunset.png",
+      "hash": "cf89df04382fcdf9",
+      "w": 256,
+      "h": 256
+    },
+    "uj_aston_strait_silver": {
+      "kind": "monolithic",
+      "label": "masterclass:Union Jacked / uj_aston_strait_silver",
+      "category": "Masterclass: Union Jacked",
+      "file": "baselines/monolithic__uj_aston_strait_silver.png",
+      "hash": "d06b347a8af68e61",
+      "w": 256,
+      "h": 256
+    },
+    "rs_akane_flake_fog": {
+      "kind": "monolithic",
+      "label": "masterclass:Rising Sun / rs_akane_flake_fog",
+      "category": "Masterclass: Rising Sun",
+      "file": "baselines/monolithic__rs_akane_flake_fog.png",
+      "hash": "972874cdbecc66f3",
+      "w": 256,
+      "h": 256
+    },
+    "fd_abyssal_sea": {
+      "kind": "monolithic",
+      "label": "masterclass:Forbidden Dragon / fd_abyssal_sea",
+      "category": "Masterclass: Forbidden Dragon",
+      "file": "baselines/monolithic__fd_abyssal_sea.png",
+      "hash": "73f358d19c708de9",
+      "w": 256,
+      "h": 256
+    },
+    "ms_acid_veil_ambush": {
+      "kind": "monolithic",
+      "label": "masterclass:Mortal Shokk / ms_acid_veil_ambush",
+      "category": "Masterclass: Mortal Shokk",
+      "file": "baselines/monolithic__ms_acid_veil_ambush.png",
+      "hash": "033841c95095b888",
+      "w": 256,
+      "h": 256
+    },
+    "gf_magnific_digital_illustration_a_dark_background_": {
+      "kind": "monolithic",
+      "label": "masterclass:Grunge & Fun / gf_magnific_digital_illustration_a_dark_background_",
+      "category": "Masterclass: Grunge & Fun",
+      "file": "baselines/monolithic__gf_magnific_digital_illustration_a_dark_background_.png",
+      "hash": "659bb4e318b02096",
+      "w": 256,
+      "h": 256
+    },
+    "gd_lyons_black_rainbow_holo_x": {
+      "kind": "monolithic",
+      "label": "masterclass:Guest Designers / gd_lyons_black_rainbow_holo_x",
+      "category": "Masterclass: Guest Designers",
+      "file": "baselines/monolithic__gd_lyons_black_rainbow_holo_x.png",
+      "hash": "9cc0d082b5849a50",
+      "w": 256,
+      "h": 256
+    }
+  }
+}

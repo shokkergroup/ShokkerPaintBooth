@@ -1,0 +1,49 @@
+Slider Fix Smoke Test — 2026-05-27T06:40:17.326Z
+=================================================
+Total: 40  PASS: 40  FAIL: 0
+
+[PASS] setZoneBaseScale(0, 0.25) -> zones[0].baseScale ≈ 0.25 (got 0.2500)
+[PASS] setZoneBaseScale(0, 0.5) -> zones[0].baseScale ≈ 0.50 (got 0.5000)
+[PASS] setZoneBaseScale(0, 0.75) -> zones[0].baseScale ≈ 0.75 (got 0.7500)
+[PASS] setZoneBaseScale(0, 1) -> zones[0].baseScale ≈ 1.00 (got 1.0000)
+[PASS] setZoneBaseScale(0, 1.5) -> zones[0].baseScale ≈ 1.50 (got 1.5000)
+[PASS] setZoneBaseScale(0, 2) -> zones[0].baseScale ≈ 2.00 (got 2.0000)
+[PASS] setZoneBaseScale did NOT create a global 'baseScale'
+[PASS] setZoneBaseColorScale(0, 0.25) -> zones[0].baseColorScale ≈ 0.25 (got 0.2500)
+[PASS] setZoneBaseColorScale(0, 0.5) -> zones[0].baseColorScale ≈ 0.50 (got 0.5000)
+[PASS] setZoneBaseColorScale(0, 0.75) -> zones[0].baseColorScale ≈ 0.75 (got 0.7500)
+[PASS] setZoneBaseColorScale(0, 1) -> zones[0].baseColorScale ≈ 1.00 (got 1.0000)
+[PASS] setZoneBaseColorScale(0, 1.5) -> zones[0].baseColorScale ≈ 1.50 (got 1.5000)
+[PASS] setZoneBaseColorScale(0, 2) -> zones[0].baseColorScale ≈ 2.00 (got 2.0000)
+[PASS] setZoneBaseColorScale did NOT create a global 'baseColorScale'
+[PASS] setZoneSpecScale(0, 0.25) -> zones[0].specScale ≈ 0.25 (got 0.2500)
+[PASS] setZoneSpecScale(0, 0.5) -> zones[0].specScale ≈ 0.50 (got 0.5000)
+[PASS] setZoneSpecScale(0, 0.75) -> zones[0].specScale ≈ 0.75 (got 0.7500)
+[PASS] setZoneSpecScale(0, 1) -> zones[0].specScale ≈ 1.00 (got 1.0000)
+[PASS] setZoneSpecScale(0, 1.5) -> zones[0].specScale ≈ 1.50 (got 1.5000)
+[PASS] setZoneSpecScale(0, 2) -> zones[0].specScale ≈ 2.00 (got 2.0000)
+[PASS] setZoneSpecScale did NOT create a global 'specScale'
+[PASS] setZoneBaseScale(0, 0.05) -> zones[0].baseScale == 0.05 (NOT clamped to 1.0)
+[PASS] setZoneBaseScale(0, 0.25) -> zones[0].baseScale == 0.25 (NOT clamped to 1.0)
+[PASS] setZoneBaseColorScale(0, 0.05) -> zones[0].baseColorScale == 0.05 (NOT clamped to 1.0)
+[PASS] setZoneBaseColorScale(0, 0.25) -> zones[0].baseColorScale == 0.25 (NOT clamped to 1.0)
+[PASS] setZoneSpecScale(0, 0.05) -> zones[0].specScale == 0.05 (NOT clamped to 1.0)
+[PASS] setZoneSpecScale(0, 0.25) -> zones[0].specScale == 0.25 (NOT clamped to 1.0)
+[PASS] setZoneBaseScale(0, 0.50) leaves zones[1].baseScale == 1.0
+[PASS] setZoneBaseScale(1, 1.75) leaves zones[0].baseScale == 0.50 (was set above)
+[PASS] setZoneBaseScale(1, 1.75) lands on zones[1].baseScale
+[PASS] setZoneBaseColorScale(0, 0.50) leaves zones[1].baseColorScale == 1.0
+[PASS] setZoneBaseColorScale(1, 1.75) leaves zones[0].baseColorScale == 0.50 (was set above)
+[PASS] setZoneBaseColorScale(1, 1.75) lands on zones[1].baseColorScale
+[PASS] setZoneSpecScale(0, 0.50) leaves zones[1].specScale == 1.0
+[PASS] setZoneSpecScale(1, 1.75) leaves zones[0].specScale == 0.50 (was set above)
+[PASS] setZoneSpecScale(1, 1.75) lands on zones[1].specScale
+[PASS] resetZoneBaseColorScale(0) -> zones[0].baseColorScale == 1.0
+[PASS] resetZoneSpecScale(0) -> zones[0].specScale == 1.0
+[PASS] stepZoneBaseColorScale(0, -1) from 1.0 -> 0.95
+[PASS] stepZoneSpecScale(0, -1) from 0.10 -> 0.05
+
+SCALE_BASE_MIN constant (extracted):
+const SCALE_PATTERN_MIN = 0.10, SCALE_PATTERN_MAX = 4.0, SCALE_STEP = 0.05;
+const SCALE_BASE_MIN = 0.05, SCALE_BASE_MAX = 10.0;
+const SCALE_OVERLAY_MIN = 0.10, SCALE_OVERLAY_MAX = 5.0;

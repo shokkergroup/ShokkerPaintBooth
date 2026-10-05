@@ -1,0 +1,9 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_269333.tga","inspection_records":"_smart_tga_runs/cycle684_dlm_intrinsic_hardware_review/inspection_records.json","review_scope":"Cycle 684 source plus complete owner sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[521,1,257,322],"target_layer":"numbers","label":"true_primary_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[861,3,163,180],"target_layer":"template","label":"hardware_map_false_number"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[452,55,58,29],"target_layer":"sponsors","label":"wordmark_false_number"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[613,149,6,9],"target_layer":"paint","label":"livery_fragment_false_number"},
+ {"layer":"numbers","component_index":4,"expected_bbox":[725,215,12,15],"target_layer":"sponsors","label":"wordmark_fragment_false_number"},
+ {"layer":"numbers","component_index":5,"expected_bbox":[541,223,15,2],"target_layer":"sponsors","label":"wordmark_fragment_false_number"},
+ {"layer":"numbers","component_index":6,"expected_bbox":[565,299,23,29],"target_layer":"numbers","label":"true_primary_number_fragment"}
+]}

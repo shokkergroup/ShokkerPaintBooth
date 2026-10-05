@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_894277.tga",
+  "inspection_records": "_smart_tga_runs/cycle695_dlm_v3_fresh_confirmation/inspection_records.json",
+  "review_scope": "Frozen-v3 forward route source and complete Number sheet.",
+  "component_labels": [
+    {"layer":"numbers","component_index":0,"expected_bbox":[133,6,157,69],"target_layer":"template","label":"template_body_false_number"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[42,18,61,40],"target_layer":"template","label":"template_hardware_false_number"},
+    {"layer":"numbers","component_index":2,"expected_bbox":[959,29,32,39],"target_layer":"template","label":"template_hardware_false_number"},
+    {"layer":"numbers","component_index":3,"expected_bbox":[991,29,27,42],"target_layer":"template","label":"template_hardware_false_number"},
+    {"layer":"numbers","component_index":4,"expected_bbox":[329,71,148,46],"target_layer":"template","label":"template_hardware_false_number"},
+    {"layer":"numbers","component_index":5,"expected_bbox":[953,114,45,37],"target_layer":"template","label":"template_hardware_false_number"},
+    {"layer":"numbers","component_index":6,"expected_bbox":[932,233,62,16],"target_layer":"template","label":"template_hardware_false_number"},
+    {"layer":"numbers","component_index":7,"expected_bbox":[4,905,199,108],"target_layer":"template","label":"template_hardware_false_number"}
+  ]
+}

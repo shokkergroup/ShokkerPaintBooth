@@ -1,0 +1,259 @@
+{
+  "category": "fracturedminds",
+  "entries": {
+    "fm_barbed_wire": {
+      "verdict": "rebuild",
+      "rating": 66,
+      "ai_rating": 41,
+      "reasons": [
+        "Too blobby / macro",
+        "Not enough fine detail",
+        "Other (see notes)"
+      ],
+      "notes": "Too big details and it doesn't look enough like fine barbed wire\n",
+      "ts": 1781215688145
+    },
+    "fm_basketweave": {
+      "verdict": "rebuild",
+      "rating": 41,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "That magical spec pattern is NOT coming through on this one. I don't see any blue in the combined spec to help push the color through right??",
+      "ts": 1781216777645
+    },
+    "fm_cable_knit": {
+      "verdict": "rebuild",
+      "rating": 56,
+      "ai_rating": 49,
+      "reasons": [],
+      "notes": "Not enough of the color pop coming through - don't see much blue on this one either in the combined spec?",
+      "ts": 1781217503220
+    },
+    "fm_carbon_weave": {
+      "verdict": "rebuild",
+      "rating": 62,
+      "ai_rating": 46,
+      "reasons": [],
+      "notes": "The PAINT channel needs to be much more colorful. Make it a black rainbow carbon with black, silver, blue, and purple colors. And put some flakes in the weave pattern itself. Not enough going on inside of the weave in the spec",
+      "ts": 1781217654584
+    },
+    "fm_chainlink": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781218340400
+    },
+    "fm_chainmail": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 51,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781218448277
+    },
+    "fm_checkerflash": {
+      "verdict": "keep",
+      "rating": 76,
+      "ai_rating": 49,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781218540049
+    },
+    "fm_circuit_maze": {
+      "verdict": "keep",
+      "rating": 75,
+      "ai_rating": 42,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781218628014
+    },
+    "fm_code_cascade": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 44,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781218755353
+    },
+    "fm_damascus": {
+      "verdict": "keep",
+      "rating": 77,
+      "ai_rating": 52,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781218887248
+    },
+    "fm_diamond_plate": {
+      "verdict": "rebuild",
+      "rating": 45,
+      "ai_rating": 47,
+      "reasons": [],
+      "notes": "This one just isn't giving me any wow factor. Do something much more exotic with it",
+      "ts": 1781218967090
+    },
+    "fm_dragon_scale": {
+      "verdict": "rebuild",
+      "rating": 46,
+      "ai_rating": 49,
+      "reasons": [],
+      "notes": "Need a much more dynamic dragon scale pattern for the paint and spec and i see no blue/purple in the combined spec trying to help things along here",
+      "ts": 1781219037718
+    },
+    "fm_feather_fall": {
+      "verdict": "rebuild",
+      "rating": 41,
+      "ai_rating": 40,
+      "reasons": [
+        "Too blobby / macro",
+        "Too flat / boring",
+        "Not enough fine detail"
+      ],
+      "notes": "Definitely need much more fine detail here. Also don't feel like falling feathers at all. Maybe change this one to like a Phoenix feathers that are on fire? ",
+      "ts": 1781219120075
+    },
+    "fm_fiber_optic": {
+      "verdict": "rebuild",
+      "rating": 41,
+      "ai_rating": 40,
+      "reasons": [
+        "Too blobby / macro",
+        "Too flat / boring",
+        "Not enough fine detail"
+      ],
+      "notes": "Does not feel like a fiber optic pattern at all. Like this one should be SICK and it's very plain on the design",
+      "ts": 1781219190538
+    },
+    "fm_flame_helix": {
+      "verdict": "rebuild",
+      "rating": 45,
+      "ai_rating": 46,
+      "reasons": [
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781219303007
+    },
+    "fm_flame_lick": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781219345329
+    },
+    "fm_flame_wall": {
+      "verdict": "rebuild",
+      "rating": 46,
+      "ai_rating": 45,
+      "reasons": [
+        "Too flat / boring",
+        "No depth"
+      ],
+      "notes": "",
+      "ts": 1781219397830
+    },
+    "fm_frost_feather": {
+      "verdict": "rebuild",
+      "rating": 35,
+      "ai_rating": 40,
+      "reasons": [
+        "Too blobby / macro",
+        "Too flat / boring",
+        "Too similar to another",
+        "Not enough fine detail",
+        "Colors muddy"
+      ],
+      "notes": "",
+      "ts": 1781219506472
+    },
+    "fm_graphene": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 51,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781219604008
+    },
+    "fm_gyro_cage": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 49,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781219642720
+    },
+    "fm_gyroid": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 51,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781219697704
+    },
+    "fm_herringbone": {
+      "verdict": "rebuild",
+      "rating": 42,
+      "ai_rating": 50,
+      "reasons": [
+        "Too similar to another",
+        "Too flat / boring",
+        "No depth"
+      ],
+      "notes": "",
+      "ts": 1781219716718
+    },
+    "fm_hexcore": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 45,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781219755365
+    },
+    "fm_honeycomb": {
+      "verdict": "rebuild",
+      "rating": 39,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "That's NOT a honeycomb pattern and it's boring",
+      "ts": 1781219820775
+    },
+    "fm_honeycomb_burst": {
+      "verdict": "rebuild",
+      "rating": 38,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "Not honeycomb and boring. We need more diversity in spec channel to add a little layering",
+      "ts": 1781219846372
+    },
+    "fm_inferno_veins": {
+      "verdict": "rebuild",
+      "rating": 39,
+      "ai_rating": 45,
+      "reasons": [
+        "Too blobby / macro",
+        "Too flat / boring",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781219856611
+    },
+    "fm_labyrinth": {
+      "verdict": "rebuild",
+      "rating": 37,
+      "ai_rating": 46,
+      "reasons": [
+        "Too similar to another",
+        "No depth",
+        "Too flat / boring",
+        "Low effort / lazy"
+      ],
+      "notes": "",
+      "ts": 1781219870231
+    }
+  },
+  "updated": 1781219870
+}

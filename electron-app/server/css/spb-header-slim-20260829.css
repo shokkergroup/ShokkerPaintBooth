@@ -1,0 +1,177 @@
+/* [SPB-HEADER-SLIM 2026-08-29] Owner declutter surgery, Batch 1 — loaded LAST so its
+   (0,2,0)+!important selectors win the legacy ui-modernization cascade. One button language:
+   flat dark pills, one accent for primary actions. */
+
+/* 5) UI-scale (zoom) cluster — owner 2026-08-29 round 4: "a bit bigger" */
+.ui-scale-control .ui-scale-btn { min-height: 22px !important; height: 22px !important; width: 22px !important;
+  padding: 0 !important; font-size: 13px !important; border-radius: 5px !important; background: none !important; }
+.ui-scale-control #uiScaleLabel { font-size: 10px !important; min-width: 32px !important; }
+
+/* 7) MODE: owner round 4 — "separate them and make them sit side-by-side and a bit bigger" */
+#spbModePill.spb-mode-pill { flex-direction: row !important; align-items: center; gap: 5px;
+  background: none !important; border: none !important; padding: 0 !important; }
+#spbModePill.spb-mode-pill::before { content: none !important; }
+#spbModePill .spb-mode-opt { padding: 6px 16px !important; font-size: 11px !important; font-weight: 800;
+  letter-spacing: 0.5px; line-height: 1.1; text-align: center; border: 1px solid rgba(148,163,184,0.22) !important;
+  border-radius: 7px !important; }
+
+/* 9a) stacked Projects / Import Recipe pills */
+.spb-cmd-stack .header-command-btn { font-size: 8.5px !important; padding: 2px 8px !important;
+  min-height: 20px !important; text-align: left; }
+
+/* [Batch 3] color cluster: grow into the freed width; promote the two primary actions */
+#previewBottomBar #eyedropperDockTop { flex: 1 1 auto !important; min-width: 0 !important; }
+#previewBottomBar #eyedropperInfo { flex: 1 1 auto !important; max-height: 34px !important; gap: 8px !important; }
+#previewBottomBar #eyedropperInfo, #previewBottomBar #eyedropperInfo * { font-size: 11px !important; }
+#previewBottomBar #eyedropperSwatch { width: 24px !important; height: 24px !important; }
+#previewBottomBar #eyedropperAddColorBtn, #previewBottomBar #eyedropperExcludeBtn {
+  padding: 6px 16px !important; font-size: 12px !important; font-weight: 800 !important; border-radius: 8px !important; }
+#previewBottomBar #eyedropperExcludeBtn { background: rgba(255,68,68,0.15) !important; border-color: #ff4444 !important; color: #ff9a9a !important; }
+#previewBottomBar #eyedropperPanelHint, #previewBottomBar .eyedropper-strip-divider { display: none !important; }
+
+/* [Batch 6 fix] RENDER HISTORY menu: never flex-crush to 0 width in the nowrap toolbar;
+   below 1500px the label drops to the icon alone so the row still fits at the 1100px min. */
+#spbRenderHistMenu { flex: 0 0 auto !important; }
+#spbRenderHistMenu > summary { white-space: nowrap; }
+@media (max-width: 1500px) {
+  #spbRenderHistMenu .spb-rh-label { display: none; }
+}
+
+/* [SPB-DECLUTTER2 2026-08-29] owner: "make the settings button more noticeable/hard to miss" */
+#settingsGearBtn {
+  width: auto !important; height: auto !important;
+  display: inline-flex !important; align-items: center; gap: 5px;
+  font-size: 11px !important; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;
+  padding: 6px 12px !important; border: 1px solid var(--accent-gold, #FFB300) !important;
+  color: var(--accent-gold, #FFB300) !important; background: rgba(255,179,0,0.10) !important;
+  border-radius: 8px !important; cursor: pointer;
+}
+#settingsGearBtn:hover { background: rgba(255,179,0,0.22) !important; }
+/* toolbar homes for the relocated header commands: keep them compact in the row */
+.spb-top-toolbar .header-command-btn { font-size: 9px !important; padding: 3px 8px !important; min-height: 20px !important; }
+.spb-top-toolbar .spb-cmd-stack { display: flex; flex-direction: column; gap: 3px; align-items: stretch; }
+
+/* [SPB-DECLUTTER2 2026-08-29] the 48px logo is dark art on a dark bar - give it a quiet chip */
+#spbHeaderLogo {
+  background: rgba(255, 255, 255, 0.07);
+  padding: 3px 6px;
+  box-sizing: border-box;   /* [SPB-DECLUTTER3] height set below INCLUDES the chip padding */
+}
+
+/* [SPB-DECLUTTER3 2026-08-29] owner: "Want everything to look bigger" */
+.header .header-command-btn { font-size: 10px !important; padding: 5px 12px !important; min-height: 24px !important; }
+.spb-top-toolbar .header-command-btn { font-size: 10px !important; padding: 4px 10px !important; min-height: 22px !important; }
+@media (min-width: 1650px) {
+  #previewBottomBar #btnRender.btn-render { font-size: 15px !important; letter-spacing: 2px !important; }
+  #previewBottomBar #eyedropperAddColorBtn, #previewBottomBar #eyedropperExcludeBtn {
+    padding: 8px 18px !important; font-size: 13px !important; }
+  #previewBottomBar #eyedropperSetBtn, #previewBottomBar #useRegionBtn {
+    font-size: 12px !important; padding: 7px 14px !important; }
+  #previewBottomBar #eyedropperInfo, #previewBottomBar #eyedropperInfo * { font-size: 12px !important; }
+  #previewBottomBar #eyedropperSwatch { width: 30px !important; height: 30px !important; }
+  #previewBottomBar .zoom-btn { width: 30px !important; height: 30px !important; font-size: 13px !important; }
+  #previewBottomBar .zoom-level { font-size: 12px !important; }
+}
+
+/* [SPB-DECLUTTER3 2026-08-29] owner: "FOR EDITING LAYER I'm not wanting any of that crap in the
+   middle. I want ALL layer controls to stay in the layers thing on the right side." Triple-id +
+   !important beats showLayerDock's inline display:flex (proven pattern, spb-focus-mode:79).
+   buildLayerDock/watchLayerSelection stay untouched - all safe no-ops on a hidden dock. */
+#layerActiveDock#layerActiveDock#layerActiveDock { display: none !important; }
+
+/* [SPB-DECLUTTER3 2026-08-29] owner: tall corner logo "from the top left to right above ZONES",
+   version small beside it, both rows shifted right. Only at >=1350px - at the 1100px minimum the
+   single-row toolbar has ~0-40px slack, so the brand stays in-flow at 48px there. */
+@media (min-width: 1350px) {
+  .header, .spb-top-toolbar { padding-left: 212px !important; }   /* [fix2] room for logo + the small version badge beside it */
+  .header .header-brand {
+    position: absolute !important;
+    top: 4px;
+    left: 14px;
+    z-index: 2;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start;   /* [SPB-DECLUTTER5] version badge sits TOP-beside the logo (bottom placement drifted into the tools row) */
+    gap: 8px;
+    padding-left: 0 !important;   /* neutralize ui-modernization-20260509's 31px EKG pad */
+    min-width: 0 !important;
+  }
+  #spbHeaderLogo { height: 98px !important; max-width: 132px; object-fit: contain; }
+}
+
+/* [SPB-DECLUTTER3 fix3] the 56px bar must never wrap button labels */
+#previewBottomBar .btn, #previewBottomBar button { white-space: nowrap !important; }
+
+/* [round 4] version badge must stay inside the logo reserve — it was kissing the MOVE tool */
+.header .header-brand { max-width: 194px; overflow: hidden; }
+#liveBuildBadge.version-badge { font-size: 9px !important; padding: 1px 5px !important; white-space: nowrap; }
+
+/* [round 4] post-render bar mess: at wide widths the 56px bar must be ONE row — the status text
+   and the grown color cluster were wrapping the zoom pill onto a clipped second line. */
+@media (min-width: 1650px) {
+  #previewBottomBar { flex-wrap: nowrap !important; overflow: hidden !important; }
+  #spbRenderStatus { min-width: 118px; text-align: left; }
+  /* the zoom/FIT/1:1/Edit Big pill must CONTAIN its bigger 30px buttons */
+  #previewBottomBar .zoom-controls, #previewBottomBar #zoomControls {
+    height: 40px !important; min-height: 40px !important; max-height: 40px !important;
+    align-items: center !important; padding: 2px 8px !important; box-sizing: border-box;
+    flex: 0 0 auto !important; overflow: hidden;
+  }
+}
+
+/* [SPB-DECLUTTER5 2026-08-29] zoom cluster: FIT / 1:1 / Edit Big / Compare were stepping on
+   each other post-render — smaller, nowrap, and Compare can never float over its neighbors */
+@media (min-width: 1650px) {
+  #previewBottomBar .zoom-btn { width: 24px !important; height: 24px !important; font-size: 11px !important; }
+  #previewBottomBar .zoom-level { font-size: 11px !important; min-width: 34px !important; }
+}
+#previewBottomBar .zoom-controls, #previewBottomBar #zoomControls { flex-wrap: nowrap !important; }
+#previewBottomBar #btnSourceFocus { font-size: 10px !important; padding: 0 7px !important; width: auto !important; white-space: nowrap; }
+#previewBottomBar #btnCompare {
+  position: static !important; float: none !important; margin: 0 !important;
+  font-size: 10px !important; padding: 3px 8px !important; align-self: center;
+}
+#previewBottomBar #canvasDisplayModeGroup .zoom-btn { width: auto !important; padding: 0 7px !important; font-size: 10px !important; }
+
+/* [SPB-DECLUTTER5 2026-08-29] owner: "across the VERY TOP normalize the sizes of everything" —
+   one box height, one pill height, one label size across the header row */
+.header .header-field {
+  height: 46px !important; min-height: 46px !important; max-height: 46px !important;
+  box-sizing: border-box; overflow: hidden;
+}
+.header .header-field input[type="text"] { height: 20px; font-size: 11px !important; }
+.header .header-command-btn,
+.header #settingsGearBtn,
+.header #spbGuideToggle,
+.header #spbModePill .spb-mode-opt {
+  height: 28px !important; min-height: 28px !important; max-height: 28px !important;
+  display: inline-flex !important; align-items: center !important;
+  box-sizing: border-box; font-size: 11px !important;
+}
+.header .ui-scale-control, .header #spbModePill { align-self: center; }
+
+/* [SPB-DECLUTTER5 fix-b] the normalize rule's display:inline-flex overrode the parked FOCUS
+   exit chip's inline display:none - FOCUS is ditched, keep the chip dead for good */
+#spbFocusExitChip { display: none !important; }
+/* idle zone-card tool icons were visible but too dim to notice - owner wants them SEEN */
+#zoneList .zone-card .zone-mute-btn,
+#zoneList .zone-card .zone-move-btn,
+#zoneList .zone-card .zone-delete-btn { opacity: 1 !important; }
+/* bar right side: keep Set / Use Region from clipping when Compare is up */
+#previewBottomBar #eyedropperSetBtn, #previewBottomBar #useRegionBtn {
+  font-size: 11px !important; padding: 6px 10px !important; }
+
+/* [SPB-FRACTURE-SHORTCUT 2026-09-01] owner: one-click FRACTURE THIS PAINT button beside
+   Shokk Drop. The header row is display:flex/nowrap in a fixed 50px bar, so a new full-width
+   label ran 158px off the right edge below ~1400px (measured: unreachable at the 1100px min,
+   fine on the owner's 1936px screen). The label degrades instead of overflowing:
+   full text when there's room, "FRACTURE" mid, skull-only when tight. Tooltip always carries
+   the full meaning, so the compact forms stay discoverable. */
+#btnFractureThisPaint { white-space: nowrap; flex: 0 0 auto; }
+@media (max-width: 1640px) {
+  #btnFractureThisPaint .frac-lbl-long { display: none !important; }
+}
+@media (max-width: 1400px) {
+  #btnFractureThisPaint .frac-lbl { display: none !important; }
+  #btnFractureThisPaint { padding-left: 4px !important; padding-right: 4px !important; font-size: 12px !important; }
+}

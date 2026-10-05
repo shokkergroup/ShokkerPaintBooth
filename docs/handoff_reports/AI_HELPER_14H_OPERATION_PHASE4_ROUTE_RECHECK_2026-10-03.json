@@ -1,0 +1,563 @@
+{
+  "review": "W24 independent operation candidate route review",
+  "date": "2026-10-04",
+  "status": "BLOCKED",
+  "oracle": {
+    "sha256": "3293D6070258C895F67A21ECCFE0BBEE7FD000568196FF37A834303C128BDCEA",
+    "cases": [
+      {
+        "id": "sync-provider-throw-releases-request",
+        "must": [
+          "busy and controller clear",
+          "composer can accept a fresh request"
+        ]
+      },
+      {
+        "id": "warm-rejection-releases-request",
+        "must": [
+          "warm failure is settled safely",
+          "no stale or stranded busy state"
+        ]
+      },
+      {
+        "id": "cancel-ignoring-abort-discards-late-success",
+        "must": [
+          "late canceled result cannot apply",
+          "cannot publish done"
+        ]
+      },
+      {
+        "id": "cancel-A-new-B-late-A-result",
+        "must": [
+          "A completion cannot clear B busy/owner",
+          "A queue cannot apply"
+        ]
+      },
+      {
+        "id": "cancel-A-new-B-late-A-event",
+        "must": [
+          "late progress event cannot overwrite B status or composer"
+        ]
+      },
+      {
+        "id": "cancel-A-new-B-late-A-tool-callback",
+        "must": [
+          "stale A tool callback cannot append/apply after B begins"
+        ]
+      },
+      {
+        "id": "cancel-A-new-B-late-A-rejection-cleanup",
+        "must": [
+          "A finally/rejection cannot clear B ownership or busy state"
+        ]
+      },
+      {
+        "id": "ready-A-ask-B-before-finish-A",
+        "must": [
+          "A finish becomes stale once B owns the route",
+          "A cannot apply or mark completion"
+        ]
+      },
+      {
+        "id": "same-path-source-generation-reload",
+        "must": [
+          "same-path new source generation invalidates old turn before apply"
+        ]
+      },
+      {
+        "id": "warm-source-switch-before-provider",
+        "must": [
+          "old warm continuation cannot call provider after source switch"
+        ]
+      },
+      {
+        "id": "preflight-source-switch-before-provider",
+        "must": [
+          "old preflight continuation cannot start model turn on new source"
+        ]
+      },
+      {
+        "id": "ordinary-options-source-switch",
+        "must": [
+          "old options cannot preview/apply on replacement source"
+        ]
+      },
+      {
+        "id": "same-document-cancel-restores-own-preview",
+        "must": [
+          "cancel restores exact owned preview snapshot once",
+          "later manual edit is not overwritten"
+        ]
+      },
+      {
+        "id": "manual-revision-conflict-before-apply",
+        "must": [
+          "stale turn cannot publish over a manual revision"
+        ]
+      },
+      {
+        "id": "normal-action-and-undo",
+        "must": [
+          "one current action applies once",
+          "Undo restores exactly that action"
+        ]
+      },
+      {
+        "id": "public-ask-starts-B-after-cancel-A",
+        "must": [
+          "public ask admits B while canceled A is still settling"
+        ]
+      }
+    ]
+  },
+  "candidate": {
+    "label": "phase4-rebased-353",
+    "path": "_easy_claude_work/ai14h_w10_candidate/js/spb-pro-ai.js",
+    "frozen_temp_path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_easy_claude_work\\ai14h_w10_phase4_sources\\js\\spb-pro-ai.js",
+    "sha256": "353CCAEB8C8431393ACA26C6D40987D9351636BC4359F9BAF4BFFE7A79C31E3D",
+    "bytes": 456642
+  },
+  "operation_module": {
+    "path": "js/spb-ai-operation.js",
+    "sha256": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6",
+    "bytes": 4238
+  },
+  "counts": {
+    "total": 16,
+    "passed": 15,
+    "failed": 1,
+    "zero_real_provider_calls": true,
+    "mocked_provider_invocations": 17
+  },
+  "details": [
+    {
+      "id": "sync-provider-throw-releases-request",
+      "verdict": "pass",
+      "busy": false,
+      "controller": null
+    },
+    {
+      "id": "warm-rejection-releases-request",
+      "verdict": "pass",
+      "error": "Error: warm rejected",
+      "busy": false
+    },
+    {
+      "id": "cancel-ignoring-abort-discards-late-success",
+      "verdict": "pass",
+      "writes": 0,
+      "lateTextLogged": false
+    },
+    {
+      "id": "cancel-A-new-B-late-A-result",
+      "verdict": "pass",
+      "afterLateA": {
+        "busy": true,
+        "controllerStillB": true,
+        "writes": 0
+      },
+      "afterB": {
+        "busy": false,
+        "controller": null
+      }
+    },
+    {
+      "id": "cancel-A-new-B-late-A-event",
+      "verdict": "pass",
+      "progressB": "Planning (AI round 5)…",
+      "progressAfterAEvent": "Planning (AI round 5)…"
+    },
+    {
+      "id": "cancel-A-new-B-late-A-tool-callback",
+      "verdict": "pass",
+      "rejected": true,
+      "writes": 0
+    },
+    {
+      "id": "cancel-A-new-B-late-A-rejection-cleanup",
+      "verdict": "pass",
+      "afterAReject": {
+        "busy": true,
+        "controllerStillB": true
+      },
+      "afterB": {
+        "busy": false,
+        "controller": null
+      }
+    },
+    {
+      "id": "ready-A-ask-B-before-finish-A",
+      "verdict": "pass",
+      "writes": 0,
+      "readyAStale": true
+    },
+    {
+      "id": "same-path-source-generation-reload",
+      "verdict": "pass",
+      "generation": 11,
+      "path": "car.psd",
+      "writes": 0
+    },
+    {
+      "id": "warm-source-switch-before-provider",
+      "verdict": "pass",
+      "providerCalls": 0
+    },
+    {
+      "id": "preflight-source-switch-before-provider",
+      "verdict": "pass",
+      "providerCalls": 0
+    },
+    {
+      "id": "ordinary-options-source-switch",
+      "verdict": "pass",
+      "previewImages": [],
+      "sampledReplacement": false,
+      "replacementZonesPreserved": true,
+      "zones": [
+        {
+          "id": "replacement-zone",
+          "name": "New document zone",
+          "color": "teal"
+        }
+      ]
+    },
+    {
+      "id": "same-document-cancel-restores-own-preview",
+      "verdict": "pass",
+      "restored": true,
+      "busy": false
+    },
+    {
+      "id": "manual-revision-conflict-before-apply",
+      "verdict": "pass",
+      "revision": 21,
+      "writes": 0
+    },
+    {
+      "id": "normal-action-and-undo",
+      "verdict": "fail",
+      "reason": "_pendingCard is not defined"
+    },
+    {
+      "id": "public-ask-starts-B-after-cancel-A",
+      "verdict": "pass",
+      "providerCalls": 2
+    }
+  ],
+  "failures": [
+    {
+      "id": "normal-action-and-undo",
+      "error": "_pendingCard is not defined"
+    }
+  ],
+  "mock_adjustments": [
+    "The original scenario oracle is unchanged. The mock undo snapshot now captures both zones and layers because the normal-action-and-undo case mutates a layer; the prior zone-only snapshot could not model the expected layer Undo.",
+    "Provider starts are observed by bounded setImmediate polling for the expected mock invocation count, not by assuming eight microtasks are enough."
+  ],
+  "limits": [
+    "Candidate bytes were copied and hash-pinned before helper extraction; the moving candidate path is not loaded by this harness.",
+    "The fake provider is only a deferred local function; no network/provider, browser, native app, rendering engine, or live MCP route ran.",
+    "Apply/undo, canvas/source identity, layer state, and preview effects are modeled in the harness. Candidate integrations not covered by the 16 frozen cases (including MCP) are not certified."
+  ],
+  "comparison_runs": [
+    {
+      "label": "phase4-rebased-353-complete-dependencies",
+      "candidate": {
+        "label": "phase4-rebased-353-complete-dependencies",
+        "path": "_easy_claude_work/ai14h_w10_candidate/js/spb-pro-ai.js",
+        "frozen_temp_path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_easy_claude_work\\ai14h_w10_phase4_sources\\js\\spb-pro-ai.js",
+        "sha256": "353CCAEB8C8431393ACA26C6D40987D9351636BC4359F9BAF4BFFE7A79C31E3D",
+        "bytes": 456642
+      },
+      "operation_module": {
+        "path": "js/spb-ai-operation.js",
+        "sha256": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6",
+        "bytes": 4238
+      },
+      "counts": {
+        "total": 16,
+        "passed": 16,
+        "failed": 0,
+        "zero_real_provider_calls": true,
+        "mocked_provider_invocations": 17
+      },
+      "details": [
+        {
+          "id": "sync-provider-throw-releases-request",
+          "verdict": "pass",
+          "busy": false,
+          "controller": null
+        },
+        {
+          "id": "warm-rejection-releases-request",
+          "verdict": "pass",
+          "error": "Error: warm rejected",
+          "busy": false
+        },
+        {
+          "id": "cancel-ignoring-abort-discards-late-success",
+          "verdict": "pass",
+          "writes": 0,
+          "lateTextLogged": false
+        },
+        {
+          "id": "cancel-A-new-B-late-A-result",
+          "verdict": "pass",
+          "afterLateA": {
+            "busy": true,
+            "controllerStillB": true,
+            "writes": 0
+          },
+          "afterB": {
+            "busy": false,
+            "controller": null
+          }
+        },
+        {
+          "id": "cancel-A-new-B-late-A-event",
+          "verdict": "pass",
+          "progressB": "Planning (AI round 5)…",
+          "progressAfterAEvent": "Planning (AI round 5)…"
+        },
+        {
+          "id": "cancel-A-new-B-late-A-tool-callback",
+          "verdict": "pass",
+          "rejected": true,
+          "writes": 0
+        },
+        {
+          "id": "cancel-A-new-B-late-A-rejection-cleanup",
+          "verdict": "pass",
+          "afterAReject": {
+            "busy": true,
+            "controllerStillB": true
+          },
+          "afterB": {
+            "busy": false,
+            "controller": null
+          }
+        },
+        {
+          "id": "ready-A-ask-B-before-finish-A",
+          "verdict": "pass",
+          "writes": 0,
+          "readyAStale": true
+        },
+        {
+          "id": "same-path-source-generation-reload",
+          "verdict": "pass",
+          "generation": 11,
+          "path": "car.psd",
+          "writes": 0
+        },
+        {
+          "id": "warm-source-switch-before-provider",
+          "verdict": "pass",
+          "providerCalls": 0
+        },
+        {
+          "id": "preflight-source-switch-before-provider",
+          "verdict": "pass",
+          "providerCalls": 0
+        },
+        {
+          "id": "ordinary-options-source-switch",
+          "verdict": "pass",
+          "previewImages": [],
+          "sampledReplacement": false,
+          "replacementZonesPreserved": true,
+          "zones": [
+            {
+              "id": "replacement-zone",
+              "name": "New document zone",
+              "color": "teal"
+            }
+          ]
+        },
+        {
+          "id": "same-document-cancel-restores-own-preview",
+          "verdict": "pass",
+          "restored": true,
+          "busy": false
+        },
+        {
+          "id": "manual-revision-conflict-before-apply",
+          "verdict": "pass",
+          "revision": 21,
+          "writes": 0
+        },
+        {
+          "id": "normal-action-and-undo",
+          "verdict": "pass",
+          "applyCount": 1,
+          "undoRestored": true
+        },
+        {
+          "id": "public-ask-starts-B-after-cancel-A",
+          "verdict": "pass",
+          "providerCalls": 2
+        }
+      ],
+      "failures": [],
+      "limits": [
+        "Candidate bytes were copied and hash-pinned before helper extraction; the moving candidate path is not loaded by this harness.",
+        "The fake provider is only a deferred local function; no network/provider, browser, native app, rendering engine, or live MCP route ran.",
+        "Apply/undo, canvas/source identity, layer state, and preview effects are modeled in the harness. Candidate integrations not covered by the 16 frozen cases (including MCP) are not certified."
+      ],
+      "mock_adjustments": [
+        "The original scenario oracle is unchanged. The mock undo snapshot now captures both zones and layers because the normal-action-and-undo case mutates a layer; the prior zone-only snapshot could not model the expected layer Undo.",
+        "Provider starts are observed by bounded setImmediate polling for the expected mock invocation count, not by assuming eight microtasks are enough."
+      ]
+    }
+  ],
+  "latest_comparison": {
+    "label": "phase4-rebased-353-complete-dependencies",
+    "candidate": {
+      "label": "phase4-rebased-353-complete-dependencies",
+      "path": "_easy_claude_work/ai14h_w10_candidate/js/spb-pro-ai.js",
+      "frozen_temp_path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_easy_claude_work\\ai14h_w10_phase4_sources\\js\\spb-pro-ai.js",
+      "sha256": "353CCAEB8C8431393ACA26C6D40987D9351636BC4359F9BAF4BFFE7A79C31E3D",
+      "bytes": 456642
+    },
+    "operation_module": {
+      "path": "js/spb-ai-operation.js",
+      "sha256": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6",
+      "bytes": 4238
+    },
+    "counts": {
+      "total": 16,
+      "passed": 16,
+      "failed": 0,
+      "zero_real_provider_calls": true,
+      "mocked_provider_invocations": 17
+    },
+    "details": [
+      {
+        "id": "sync-provider-throw-releases-request",
+        "verdict": "pass",
+        "busy": false,
+        "controller": null
+      },
+      {
+        "id": "warm-rejection-releases-request",
+        "verdict": "pass",
+        "error": "Error: warm rejected",
+        "busy": false
+      },
+      {
+        "id": "cancel-ignoring-abort-discards-late-success",
+        "verdict": "pass",
+        "writes": 0,
+        "lateTextLogged": false
+      },
+      {
+        "id": "cancel-A-new-B-late-A-result",
+        "verdict": "pass",
+        "afterLateA": {
+          "busy": true,
+          "controllerStillB": true,
+          "writes": 0
+        },
+        "afterB": {
+          "busy": false,
+          "controller": null
+        }
+      },
+      {
+        "id": "cancel-A-new-B-late-A-event",
+        "verdict": "pass",
+        "progressB": "Planning (AI round 5)…",
+        "progressAfterAEvent": "Planning (AI round 5)…"
+      },
+      {
+        "id": "cancel-A-new-B-late-A-tool-callback",
+        "verdict": "pass",
+        "rejected": true,
+        "writes": 0
+      },
+      {
+        "id": "cancel-A-new-B-late-A-rejection-cleanup",
+        "verdict": "pass",
+        "afterAReject": {
+          "busy": true,
+          "controllerStillB": true
+        },
+        "afterB": {
+          "busy": false,
+          "controller": null
+        }
+      },
+      {
+        "id": "ready-A-ask-B-before-finish-A",
+        "verdict": "pass",
+        "writes": 0,
+        "readyAStale": true
+      },
+      {
+        "id": "same-path-source-generation-reload",
+        "verdict": "pass",
+        "generation": 11,
+        "path": "car.psd",
+        "writes": 0
+      },
+      {
+        "id": "warm-source-switch-before-provider",
+        "verdict": "pass",
+        "providerCalls": 0
+      },
+      {
+        "id": "preflight-source-switch-before-provider",
+        "verdict": "pass",
+        "providerCalls": 0
+      },
+      {
+        "id": "ordinary-options-source-switch",
+        "verdict": "pass",
+        "previewImages": [],
+        "sampledReplacement": false,
+        "replacementZonesPreserved": true,
+        "zones": [
+          {
+            "id": "replacement-zone",
+            "name": "New document zone",
+            "color": "teal"
+          }
+        ]
+      },
+      {
+        "id": "same-document-cancel-restores-own-preview",
+        "verdict": "pass",
+        "restored": true,
+        "busy": false
+      },
+      {
+        "id": "manual-revision-conflict-before-apply",
+        "verdict": "pass",
+        "revision": 21,
+        "writes": 0
+      },
+      {
+        "id": "normal-action-and-undo",
+        "verdict": "pass",
+        "applyCount": 1,
+        "undoRestored": true
+      },
+      {
+        "id": "public-ask-starts-B-after-cancel-A",
+        "verdict": "pass",
+        "providerCalls": 2
+      }
+    ],
+    "failures": [],
+    "limits": [
+      "Candidate bytes were copied and hash-pinned before helper extraction; the moving candidate path is not loaded by this harness.",
+      "The fake provider is only a deferred local function; no network/provider, browser, native app, rendering engine, or live MCP route ran.",
+      "Apply/undo, canvas/source identity, layer state, and preview effects are modeled in the harness. Candidate integrations not covered by the 16 frozen cases (including MCP) are not certified."
+    ],
+    "mock_adjustments": [
+      "The original scenario oracle is unchanged. The mock undo snapshot now captures both zones and layers because the normal-action-and-undo case mutates a layer; the prior zone-only snapshot could not model the expected layer Undo.",
+      "Provider starts are observed by bounded setImmediate polling for the expected mock invocation count, not by assuming eight microtasks are enough."
+    ]
+  }
+}

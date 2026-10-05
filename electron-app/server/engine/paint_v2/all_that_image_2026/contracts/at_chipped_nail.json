@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_chipped_nail",
+  "display_name": "Flannel: Mosh Pit Flyers",
+  "promise": "Dense torn neon punk-gig poster fragments in magenta, cream, black and acid yellow, abstract unlettered print",
+  "carrier_grammar": "Dense torn neon punk-gig poster fragments in magenta, cream, black and acid yellow, abstract unlettered print; single full-canvas image, no duplicated quadrants. Fine features: torn cream flyer paper, black flyer ink, magenta poster ink, acid yellow screenprint, ragged torn paper lips, fine staple glints",
+  "spec_grammar": "Feature-specific selectors partition torn cream flyer paper, black flyer ink, magenta poster ink, acid yellow screenprint, ragged torn paper lips, fine staple glints. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "torn cream flyer paper",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "black flyer ink",
+      "role": "Material feature selected from artwork by g:<:0.23"
+    },
+    {
+      "name": "magenta poster ink",
+      "role": "Material feature selected from artwork by h:>:270&s:>:0.4"
+    },
+    {
+      "name": "acid yellow screenprint",
+      "role": "Material feature selected from artwork by h:>:35&h:<:80&s:>:0.45"
+    },
+    {
+      "name": "ragged torn paper lips",
+      "role": "Material feature selected from artwork by edge:>:0.68"
+    },
+    {
+      "name": "fine staple glints",
+      "role": "Material feature selected from artwork by g:>:0.88&s:<:0.16"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "torn cream flyer paper",
+      "black flyer ink",
+      "magenta poster ink",
+      "acid yellow screenprint",
+      "ragged torn paper lips",
+      "fine staple glints"
+    ],
+    "R": [
+      "torn cream flyer paper",
+      "black flyer ink",
+      "magenta poster ink",
+      "acid yellow screenprint",
+      "ragged torn paper lips",
+      "fine staple glints"
+    ],
+    "Cc": [
+      "torn cream flyer paper",
+      "black flyer ink",
+      "magenta poster ink",
+      "acid yellow screenprint",
+      "ragged torn paper lips",
+      "fine staple glints"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "torn cream flyer paper",
+      "range": [
+        [
+          0,
+          155,
+          170
+        ],
+        [
+          10,
+          245,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "black flyer ink",
+      "range": [
+        [
+          0,
+          130,
+          150
+        ],
+        [
+          22,
+          225,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "magenta poster ink",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "acid yellow screenprint",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "ragged torn paper lips",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine staple glints",
+      "range": [
+        [
+          240,
+          0,
+          16
+        ],
+        [
+          255,
+          32,
+          90
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_band_tee_crack",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_basement_amp",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "torn cream flyer paper",
+      "black flyer ink",
+      "magenta poster ink",
+      "acid yellow screenprint",
+      "ragged torn paper lips",
+      "fine staple glints"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_chipped_nail / Dense torn neon punk-gig poster fragments in magenta, cream, black and acid yellow, abstract unlettered print",
+  "spec_key": "at_chipped_nail / torn cream flyer paper all; black flyer ink g:<:0.23; magenta poster ink h:>:270&s:>:0.4; acid yellow screenprint h:>:35&h:<:80&s:>:0.45; ragged torn paper lips edge:>:0.68; fine staple glints g:>:0.88&s:<:0.16",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

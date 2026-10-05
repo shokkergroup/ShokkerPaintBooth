@@ -1,0 +1,200 @@
+[
+ {
+  "id": "fm_barbed_wire",
+  "name": "Barbed Wire",
+  "kind": "finish",
+  "desc": "REBUILT \u2014 your note: too blobby, not fine. Now concertina razor coils: dense fine loops + barb ticks, CC breathes in the coil halos, barb tips pin near-max.",
+  "ai_rating": 48,
+  "mip": 0.45,
+  "render_s": 1.26
+ },
+ {
+  "id": "fm_basalt",
+  "name": "Basalt",
+  "kind": "finish",
+  "desc": "NEW (replaces Tread Plate) \u2014 columnar basalt end-on: hot/cold column clans, chipped sparkling rims, onion-fracture rings giving every column its own radial flash signature.",
+  "ai_rating": 60,
+  "mip": 0.63,
+  "render_s": 1.55
+ },
+ {
+  "id": "fm_croc_hide",
+  "name": "Croc Hide",
+  "kind": "finish",
+  "desc": "NEW (replaces Scale Armor) \u2014 rounded-rect osteoderm scutes (SDF grid) with keeled domes, mirror caps on crests, wet CC rivers in the wrinkle channels; scattered blue scutes.",
+  "ai_rating": 55,
+  "mip": 0.42,
+  "render_s": 1.38
+ },
+ {
+  "id": "fm_diamondback",
+  "name": "Diamondback",
+  "kind": "finish",
+  "desc": "NEW (replaces Serpentine) \u2014 rattler diamond chain on a winding spine; the chain IGNITES progressively along its length (traveling gradient phase per row), pale keel borders.",
+  "ai_rating": 64,
+  "mip": 0.56,
+  "render_s": 1.36
+ },
+ {
+  "id": "fm_dragonfly",
+  "name": "Dragonfly",
+  "kind": "finish",
+  "desc": "NEW (replaces Shatter Web) \u2014 two-tier wing venation (primary veins + secondary mesh); only the BIG membrane panes ignite blue (size-graded thin film), veins run near-max conduits.",
+  "ai_rating": 52,
+  "mip": 0.7,
+  "render_s": 1.48
+ },
+ {
+  "id": "fm_ebru_marble",
+  "name": "Ebru Marble",
+  "kind": "finish",
+  "desc": "NEW (replaces Sonar) \u2014 Turkish paper-marbling: ink streams combed into feathered chevrons; three inks = three spec identities (tinted metal / dielectric blue / textured gold).",
+  "ai_rating": 64,
+  "mip": 0.49,
+  "render_s": 1.26
+ },
+ {
+  "id": "fm_feather_fall",
+  "name": "Feather Fall",
+  "kind": "finish",
+  "desc": "REBUILT \u2014 your note: blobby / no depth / muddy. Now crisp micro plumes with true DROP SHADOWS (offset ghost layer goes dead-matte in spec \u2014 the depth reads in the shift too).",
+  "ai_rating": 49,
+  "mip": 0.51,
+  "render_s": 1.45
+ },
+ {
+  "id": "fm_gila_bead",
+  "name": "Gila Bead",
+  "kind": "finish",
+  "desc": "NEW (replaces Pin Matrix) \u2014 gila-monster beaded reticulation in two clans (metal crowns vs mirror domes) with a live crawling border wire between them.",
+  "ai_rating": 59,
+  "mip": 0.46,
+  "render_s": 1.37
+ },
+ {
+  "id": "fm_herringbone",
+  "name": "Herringbone",
+  "kind": "finish",
+  "desc": "REBUILT \u2014 your note: shift not coming through. Now COMET PLANKS: every plank fades metal->clearcoat along its own length, rows alternate direction, grout dead-dark.",
+  "ai_rating": 54,
+  "mip": 0.44,
+  "render_s": 1.37
+ },
+ {
+  "id": "fm_honeycomb",
+  "name": "Honeycomb",
+  "kind": "finish",
+  "desc": "REBUILT \u2014 your note: spec weak + disliked design. Now per-cell HONEY FILL levels with meniscus highlights, golden metal walls, dead wax-capped cells as contrast beats.",
+  "ai_rating": 68,
+  "mip": 0.57,
+  "render_s": 1.35
+ },
+ {
+  "id": "fm_inferno_veins",
+  "name": "Inferno Veins",
+  "kind": "finish",
+  "desc": "REBUILT \u2014 your note: not shifting even crushed. Metal floor now NEVER collapses (physics-gated); veins are thin CC infernos with graded halos + plate striation shimmer.",
+  "ai_rating": 48,
+  "mip": 0.69,
+  "render_s": 1.55
+ },
+ {
+  "id": "fm_labyrinth",
+  "name": "Labyrinth",
+  "kind": "finish",
+  "desc": "REBUILT \u2014 your note: pattern AND spec won't shift. Now square-spiral maze tiles (alternating chirality); corridors flood CC by depth-into-the-spiral, centers detonate.",
+  "ai_rating": 58,
+  "mip": 0.57,
+  "render_s": 1.32
+ },
+ {
+  "id": "fm_mudcrack",
+  "name": "Mudcrack",
+  "kind": "finish",
+  "desc": "NEW (replaces Voronoi Silk) \u2014 dried lakebed: crack canyons run deep CC, CURLED LIPS ridge metal (double distance-band), plate cores crossfade on a slow macro gradient.",
+  "ai_rating": 56,
+  "mip": 0.62,
+  "render_s": 1.55
+ },
+ {
+  "id": "fm_nanoweave",
+  "name": "Nanoweave",
+  "kind": "finish",
+  "desc": "REBUILT \u2014 your note: weak all around. Now micro twill with LIVE DATA FIBERS (~26%) carrying CC current \u2014 dashes race along threads with white-hot pulse heads.",
+  "ai_rating": 59,
+  "mip": 0.59,
+  "render_s": 1.37
+ },
+ {
+  "id": "fm_octo_suckers",
+  "name": "Octo Suckers",
+  "kind": "finish",
+  "desc": "NEW (replaces Origami) \u2014 curling tapered arms of suckers; every cup a wet CC pool deepening toward its pore, every lip a metal ring, papillae shimmer between.",
+  "ai_rating": 52,
+  "mip": 0.52,
+  "render_s": 1.64
+ },
+ {
+  "id": "fm_penrose",
+  "name": "Penrose",
+  "kind": "finish",
+  "desc": "NEW (replaces Wiremesh) \u2014 de Bruijn five-grid quasicrystal: NEVER repeats anywhere on the car; gold star suns, cyan anti-star wells, aperiodic CC flood across the low field.",
+  "ai_rating": 56,
+  "mip": 0.49,
+  "render_s": 1.15
+ },
+ {
+  "id": "fm_python_skin",
+  "name": "Python Skin",
+  "kind": "finish",
+  "desc": "NEW (replaces Orbit Swarm) \u2014 python rosette saddles grown as blotch colonies with pale gold rims; saddle hearts pool deep CC, keeled belly scales micro-shimmer underneath.",
+  "ai_rating": 68,
+  "mip": 0.6,
+  "render_s": 1.28
+ },
+ {
+  "id": "fm_rivet_array",
+  "name": "Rivet Array",
+  "kind": "finish",
+  "desc": "REBUILT \u2014 your note: spec makes no sense / repeated. Now aircraft skin: per-panel brushed grain directions, rivet lines only along seams, scattered cool-mirror panels, lap-joint shadows.",
+  "ai_rating": 54,
+  "mip": 0.63,
+  "render_s": 1.59
+ },
+ {
+  "id": "fm_stingray",
+  "name": "Stingray",
+  "kind": "finish",
+  "desc": "NEW (replaces Perforated) \u2014 shagreen pearl-bead leather (size-jittered hex packing) with a thin WINDING eye-stone ridge; eye-line beads flip to pure-blue dielectric mirror.",
+  "ai_rating": 51,
+  "mip": 0.43,
+  "render_s": 1.45
+ },
+ {
+  "id": "fm_tiger_slash",
+  "name": "Tiger Slash",
+  "kind": "finish",
+  "desc": "REBUILT \u2014 your note: not coming through. Now organic forked tapered stripes in two clans \u2014 blue-mirror slashes vs molten-metal slashes \u2014 swept by a cross-stripe gradient.",
+  "ai_rating": 59,
+  "mip": 0.55,
+  "render_s": 1.24
+ },
+ {
+  "id": "fm_topo_lines",
+  "name": "Topo Lines",
+  "kind": "finish",
+  "desc": "REBUILT \u2014 your note: pattern in spec ALL WRONG. Now bathymetric: the elevation FIELD drives CC (striped by alternating contour intervals), peaks detonate, bounded blue basins.",
+  "ai_rating": 65,
+  "mip": 0.43,
+  "render_s": 1.16
+ },
+ {
+  "id": "fm_tortoise",
+  "name": "Tortoise",
+  "kind": "finish",
+  "desc": "NEW (replaces Thorn Bramble) \u2014 shell plates with INTERIOR GROWTH RINGS (distance-transform sine per plate); rings flash sequentially rim-to-center, each plate on its own phase.",
+  "ai_rating": 67,
+  "mip": 0.63,
+  "render_s": 1.78
+ }
+]

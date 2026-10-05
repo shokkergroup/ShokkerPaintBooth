@@ -1,0 +1,48 @@
+{
+  "task": "W59 self-help action lifecycle review and isolated candidate",
+  "date": "2026-10-04",
+  "scope": "No live helper or canvas edits; no browser, provider, native paint, renderer, or server calls",
+  "frozen_inputs": {
+    "audit_manifest": {
+      "path": "_easy_claude_work/ai14h_generation3_audit/frozen-runtime1/audit-manifest.json",
+      "sha256": "C6EF714541E85A12CD913E2D8FBBFD9EF6411599EDFE7AA8AA46F44365E5CDBC",
+      "generation": "gen3-runtime1",
+      "candidate": true
+    },
+    "self_help_sha256": "B860C0ACC0AB442F7B6477853C4438AB0B9E74E94FD87904E356768D2F97F7B2",
+    "source_api_candidate": {
+      "path": "_easy_claude_work/ai14h_w53_candidate/candidate/paint-booth-3-canvas.js",
+      "sha256": "159716B3150C785517BEC3A1CF1B00A7318121885E7640276B5FFAF14FC91D9A",
+      "used_interface": ["getGeneration", "getCommittedGeneration", "isLoading", "isCommitted", "getCommittedPath", "getCommittedFingerprint"]
+    }
+  },
+  "oracle": {
+    "path": "tests/ai_self_help_w59_contract.cjs",
+    "fresh_cases_frozen_before_self_help_review": 12,
+    "runner": "tests/ai_self_help_w59_review_contract.cjs",
+    "baseline": "5/12 passed; failures were pending/new source generation, same-path content replacement, in-place geometry move, duplicate ID with original object retained, absent ID, and in-place layer visibility change"
+  },
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_w59_candidate/js/spb-self-help.js",
+    "sha256": "2E6E631B7FAD10113F3FF2AD98AADD68D26686EEF89488D80D13C093204ED88E",
+    "changes": [
+      "Action validity now records and rechecks committed source generation, readiness, path, and byte fingerprint. Pending or uncommitted source state cannot execute a chip.",
+      "A source API without the readiness contract does not grant a mutation; legacy tests with no source API retain prior behavior.",
+      "Zone actions require one nonempty stable ID, matching name, and unchanged compact geometry/mask stamp. Duplicate IDs and changed target geometry are refused; same-ID Undo clones and safe in-place reorder still work.",
+      "Layer visibility, opacity, blend, order, and lock state are included in the action stamp so in-place manual presentation changes stale a chip.",
+      "Controller confirmation rules and passive help behavior remain intact."
+    ]
+  },
+  "validation": {
+    "w59_candidate": "PASS 16/16 fresh lifecycle checks",
+    "w3_compatibility_replay": "PASS 15/15 existing independent W3 review cases; replayed against the isolated candidate, not re-credited as fresh W59 evidence",
+    "w4_compatibility_replay": "PASS 12/12 existing independent W4 review cases and 8/8 semantic contract cases; replayed against the isolated candidate, not re-credited as fresh evidence",
+    "syntax": "PASS node --check"
+  },
+  "limits": [
+    "The W53 source API candidate is not installed or live-accepted by this review; root owns any canvas integration.",
+    "The earlier active API snapshot lacks loading/committed-generation readiness fields. The W59 helper candidate therefore refuses mutations when an API exists without those fields. The W53 candidate supplies the required interface.",
+    "Zone mask validity uses a compact Adler checksum plus region descriptor data rather than a retained mask copy; this is bounded lifecycle protection, not a cryptographic identity proof.",
+    "The tests use the actual frozen helper bodies in a VM with controlled transaction and controller services; they do not exercise a browser UI or native canvas."
+  ]
+}

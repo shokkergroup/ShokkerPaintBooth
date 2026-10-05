@@ -28,10 +28,15 @@ function extractTopLevelFunction(src, funcName) {
 }
 
 const block = [
+  extractTopLevelFunction(API_RENDER_SRC, '_encodeZoneApplyMasks'),
   extractTopLevelFunction(API_RENDER_SRC, '_mapSpecPatternEntry'),
   extractTopLevelFunction(API_RENDER_SRC, '_applyBaseColorBranch'),
   extractTopLevelFunction(API_RENDER_SRC, '_zoneShouldPreserveScopedBrushExactColorPayload'),
   extractTopLevelFunction(API_RENDER_SRC, '_applyBlendBaseOverlay'),
+  extractTopLevelFunction(API_RENDER_SRC, '_normalizeExtraBaseOverlayPatternValue'),
+  extractTopLevelFunction(API_RENDER_SRC, '_extraBaseOverlayInheritsPrimaryPattern'),
+  extractTopLevelFunction(API_RENDER_SRC, '_extraBaseOverlayBlendModeRequiresPattern'),
+  extractTopLevelFunction(API_RENDER_SRC, '_extraBaseOverlayNumberOrInherited'),
   extractTopLevelFunction(API_RENDER_SRC, '_applyExtraBaseOverlay'),
   extractTopLevelFunction(API_RENDER_SRC, '_applyAllExtraBaseOverlays'),
   extractTopLevelFunction(API_RENDER_SRC, '_zoneHasActiveBaseOverlay'),
@@ -43,6 +48,7 @@ const block = [
   extractTopLevelFunction(API_RENDER_SRC, '_applyBaseColorMode'),
   'const SPEC_PATTERN_STACK_TIERS = [["specPatternStack","spec_pattern_stack"],["overlaySpecPatternStack","overlay_spec_pattern_stack"],["thirdOverlaySpecPatternStack","third_overlay_spec_pattern_stack"],["fourthOverlaySpecPatternStack","fourth_overlay_spec_pattern_stack"],["fifthOverlaySpecPatternStack","fifth_overlay_spec_pattern_stack"]];',
   extractTopLevelFunction(API_RENDER_SRC, '_applyAllSpecPatternStacks'),
+  extractTopLevelFunction(API_RENDER_SRC, '_zoneShouldFitIntoApplyArea'),
   extractTopLevelFunction(API_RENDER_SRC, 'buildServerZonesForRender'),
 ].join('\n\n');
 

@@ -1,0 +1,142 @@
+{
+  "session": "b61566a2e65c",
+  "backend": "http://localhost:59879/",
+  "private_document": true,
+  "source_tag": "20261003ai14h1",
+  "generation_scope": "Named-part dispatcher generation, before later prohibition/material/hue repairs; fresh cold document and canonical PSD import",
+  "fixture": "SPB Chevy Truck Starting Example PSD.psd",
+  "provider_calls": 0,
+  "red": {
+    "done": true,
+    "result": {
+      "busy": false,
+      "zoneCount": 6,
+      "roof": [
+        {
+          "id": "zone_fe5ac6f5-5d1a-445c-9344-d85eaecfdaa4",
+          "name": "Roof recoloured red",
+          "color": "everything",
+          "base": "gloss",
+          "selector": "{\"layers\":[\"Car Paint\"],\"island\":\"roof\"}"
+        }
+      ],
+      "last": [
+        {
+          "text": "Done — the roof (3% of the car) is now recoloured red.",
+          "tools": null,
+          "applied": null,
+          "failed": null
+        }
+      ],
+      "attempts": 0
+    }
+  },
+  "chrome": {
+    "done": true,
+    "result": {
+      "busy": false,
+      "zoneCount": 6,
+      "sameId": true,
+      "paintExact": true,
+      "specChanged": true,
+      "roof": [
+        {
+          "id": "zone_fe5ac6f5-5d1a-445c-9344-d85eaecfdaa4",
+          "name": "Roof chrome",
+          "base": "f_chrome",
+          "colorMode": "special",
+          "target": null,
+          "colorHex": null,
+          "colors": []
+        }
+      ],
+      "last": [
+        "Done — the roof is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched. (I updated your earlier change to the same colour instead of stacking a new one on top.)"
+      ],
+      "attempts": 0
+    }
+  },
+  "green": {
+    "done": true,
+    "result": {
+      "busy": false,
+      "zoneCount": 6,
+      "sameId": true,
+      "paintChanged": true,
+      "specExact": true,
+      "roof": [
+        {
+          "id": "zone_fe5ac6f5-5d1a-445c-9344-d85eaecfdaa4",
+          "name": "Roof recoloured green",
+          "base": "f_chrome",
+          "colorMode": "special",
+          "newColor": null,
+          "spec": [
+            null,
+            null,
+            null
+          ]
+        }
+      ],
+      "last": [
+        "Done — the roof is now recoloured green. (I updated your earlier change to the same colour instead of stacking a new one on top.)"
+      ],
+      "attempts": 0
+    }
+  },
+  "undo": {
+    "done": true,
+    "result": {
+      "zoneCount": 6,
+      "roofId": "zone_fe5ac6f5-5d1a-445c-9344-d85eaecfdaa4",
+      "paintExact": true,
+      "specExact": true,
+      "metadataExact": false,
+      "mask": {
+        "length": 4194304,
+        "selected": 200869,
+        "outside": 0
+      },
+      "stableIdFunctions": [
+        "bindUserImportSidebarDropZone",
+        "_newZoneId",
+        "_ensureAllZonesHaveIds",
+        "_spbZoneSliderSync",
+        "validateZonesBeforeRender",
+        "showZoneValidationWarnings",
+        "zoneSourceLayerIds",
+        "_migrateZoneFinishIds",
+        "_hideZoneTransformNumericPanel",
+        "_zoneShouldRequestPriorityOverride"
+      ],
+      "attempts": 0
+    }
+  },
+  "stable_retry": {
+    "operation": "2ea9eecde9",
+    "done": true,
+    "result": {
+      "zoneCount": 6,
+      "sameId": true,
+      "base": "f_chrome",
+      "paintChanged": true,
+      "specExact": true,
+      "attempts": 0,
+      "undo": {
+        "paintExact": true,
+        "specExact": true,
+        "fullMetadataExact": true
+      }
+    }
+  },
+  "acceptance": {
+    "recolor_followup": "PASS same roof UUID, 6 zones, chrome preserved, paint changed and spec preview unchanged",
+    "undo": "PASS paint/spec/full canonical zone metadata after normal stable-ID initialization",
+    "mask": "4194304 pixels, 200869 selected, 0 outside roof"
+  },
+  "limits": [
+    "Initial raw metadata Undo comparison changes uninitialized default UUIDs and absent nullable mask fields; retaken canonical baseline after ordinary _ensureAllZonesHaveIds and first Undo passes",
+    "Source-color hue repair, material channel route, long-request coverage and later prohibition native checks remain pending; no full current-source native acceptance inferred",
+    "Negative probes were unapplied and exposed two forbidden edits; repairs source reviewed separately"
+  ]
+}

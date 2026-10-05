@@ -1,0 +1,146 @@
+{
+ "outdir": "_forge_assets/mtndew11",
+ "sheets": {
+  "logos": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/DLM MOCKUPS/Mountain Dew/ChatGPT Image Jul 13, 2026, 06_54_07 PM (6).png",
+  "numbers": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/DLM MOCKUPS/Mountain Dew/ChatGPT Image Jul 13, 2026, 06_54_07 PM (7).png",
+  "rear": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/DLM MOCKUPS/Mountain Dew/ChatGPT Image Jul 13, 2026, 06_54_08 PM (10).png"
+ },
+ "assets": {
+  "md_lockup": {
+   "sheet": "logos",
+   "fbox": [
+    0.012,
+    0.115,
+    0.645,
+    0.585
+   ],
+   "cluster": true
+  },
+  "md_stacked": {
+   "sheet": "logos",
+   "fbox": [
+    0.01,
+    0.565,
+    0.35,
+    0.825
+   ]
+  },
+  "shokker_boxed": {
+   "sheet": "logos",
+   "fbox": [
+    0.28,
+    0.515,
+    0.685,
+    0.797
+   ],
+   "cluster": true
+  },
+  "acdelco": {
+   "sheet": "logos",
+   "fbox": [
+    0.005,
+    0.83,
+    0.196,
+    0.975
+   ]
+  },
+  "comp": {
+   "sheet": "logos",
+   "fbox": [
+    0.19,
+    0.815,
+    0.368,
+    0.968
+   ],
+   "cluster": true
+  },
+  "vp": {
+   "sheet": "logos",
+   "fbox": [
+    0.36,
+    0.845,
+    0.482,
+    0.995
+   ],
+   "cluster": true
+  },
+  "bilstein": {
+   "sheet": "logos",
+   "fbox": [
+    0.485,
+    0.855,
+    0.636,
+    0.955
+   ]
+  },
+  "floracing": {
+   "sheet": "logos",
+   "fbox": [
+    0.628,
+    0.845,
+    0.838,
+    0.965
+   ],
+   "cluster": true
+  },
+  "hoosier": {
+   "sheet": "logos",
+   "fbox": [
+    0.82,
+    0.8,
+    1.0,
+    0.975
+   ],
+   "cluster": true
+  },
+  "num_roof": {
+   "sheet": "numbers",
+   "fbox": [
+    0.545,
+    0.08,
+    0.9,
+    0.548
+   ],
+   "cluster": true
+  },
+  "num_nose": {
+   "sheet": "numbers",
+   "fbox": [
+    0.835,
+    0.352,
+    0.985,
+    0.548
+   ],
+   "cluster": true
+  },
+  "spoiler_face": {
+   "sheet": "rear",
+   "fbox": [
+    0.012,
+    0.18,
+    0.505,
+    0.32
+   ]
+  },
+  "plate_left": {
+   "sheet": "rear",
+   "fbox": [
+    0.535,
+    0.177,
+    0.755,
+    0.36
+   ],
+   "cluster": true
+  },
+  "plate_right": {
+   "sheet": "rear",
+   "fbox": [
+    0.765,
+    0.153,
+    1.0,
+    0.36
+   ],
+   "cluster": true
+  }
+ }
+}

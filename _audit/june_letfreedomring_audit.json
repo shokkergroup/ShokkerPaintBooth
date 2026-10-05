@@ -1,0 +1,317 @@
+{
+  "category": "letfreedomring",
+  "entries": {
+    "lfr_old_glory_flux": {
+      "verdict": "rebuild",
+      "rating": 63,
+      "ai_rating": 87,
+      "reasons": [],
+      "notes": "Spec not doing enough work to make the pattern really stand out",
+      "ts": 1781124887374
+    },
+    "lfr_rockets_red_glare": {
+      "verdict": "rebuild",
+      "rating": 35,
+      "ai_rating": 49,
+      "reasons": [
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "Way too little detail. Need alot more firework effects",
+      "ts": 1781124916485
+    },
+    "lfr_liberty_torch": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 79,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781124995787
+    },
+    "lfr_eagle_ascendant": {
+      "verdict": "keep",
+      "rating": 69,
+      "ai_rating": 94,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781125082771
+    },
+    "lfr_we_the_people": {
+      "verdict": "rebuild",
+      "rating": 70,
+      "ai_rating": 87,
+      "reasons": [],
+      "notes": "It's just too blobby needs 8x finer details",
+      "ts": 1781125236964
+    },
+    "lfr_midnight_militia": {
+      "verdict": "keep",
+      "rating": 71,
+      "ai_rating": 54,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781125353086
+    },
+    "lfr_freedom_forge": {
+      "verdict": "rebuild",
+      "rating": 45,
+      "ai_rating": 90,
+      "reasons": [
+        "Too similar to another",
+        "Low effort / lazy"
+      ],
+      "notes": "Have used this same pattern REPEATEDLY. We need new pattern designs. Better patterns for sure. Smarter, more dynamic. ",
+      "ts": 1781125477614
+    },
+    "lfr_amber_waves": {
+      "verdict": "keep",
+      "rating": 68,
+      "ai_rating": 83,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781125567866
+    },
+    "lfr_glory_chrome": {
+      "verdict": "keep",
+      "rating": 68,
+      "ai_rating": 93,
+      "reasons": [
+        "Too similar to another",
+        "Low effort / lazy"
+      ],
+      "notes": "",
+      "ts": 1781125679845
+    },
+    "lfr_sparkler_dusk": {
+      "verdict": "keep",
+      "rating": 66,
+      "ai_rating": 49,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781125689847
+    },
+    "spec_lfr_starfield_scatter": {
+      "verdict": "rebuild",
+      "rating": 40,
+      "ai_rating": 46,
+      "reasons": [
+        "Not enough fine detail",
+        "Render time too long"
+      ],
+      "notes": "",
+      "ts": 1781125877850
+    },
+    "spec_lfr_corridor_sheen": {
+      "verdict": "rebuild",
+      "rating": 43,
+      "ai_rating": 66,
+      "reasons": [
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781125984942
+    },
+    "spec_lfr_firework_radial": {
+      "verdict": "rebuild",
+      "rating": 46,
+      "ai_rating": 53,
+      "reasons": [
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781125999298
+    },
+    "spec_lfr_brocade_relief": {
+      "verdict": "keep",
+      "rating": 67,
+      "ai_rating": 54,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781126093300
+    },
+    "spec_lfr_liberty_colorflip": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 56,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781126163316
+    },
+    "spec_lfr_anisotropic_drift": {
+      "verdict": "keep",
+      "rating": 69,
+      "ai_rating": 51,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781126252006
+    },
+    "spec_lfr_sparkler_embers": {
+      "verdict": "rebuild",
+      "rating": 53,
+      "ai_rating": 65,
+      "reasons": [
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781126264389
+    },
+    "spec_lfr_torch_flicker": {
+      "verdict": "rebuild",
+      "rating": 38,
+      "ai_rating": 48,
+      "reasons": [
+        "Too flat / boring",
+        "Not enough fine detail",
+        "Too blobby / macro",
+        "Low effort / lazy"
+      ],
+      "notes": "",
+      "ts": 1781126285789
+    },
+    "spec_lfr_capitol_veins": {
+      "verdict": "keep",
+      "rating": 86,
+      "ai_rating": 77,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781126695814
+    },
+    "spec_lfr_canyon_bevel": {
+      "verdict": "keep",
+      "rating": 67,
+      "ai_rating": 56,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781127164175
+    },
+    "lfr_star_lattice": {
+      "verdict": "rebuild",
+      "rating": 44,
+      "ai_rating": 89,
+      "reasons": [
+        "Not enough fine detail",
+        "Too blobby / macro"
+      ],
+      "notes": "",
+      "ts": 1781127710752
+    },
+    "lfr_bunting_scallop": {
+      "verdict": "rebuild",
+      "rating": 39,
+      "ai_rating": 91,
+      "reasons": [
+        "Too flat / boring",
+        "Not enough fine detail",
+        "Too blobby / macro",
+        "Low effort / lazy"
+      ],
+      "notes": "",
+      "ts": 1781127726917
+    },
+    "lfr_distressed_flag": {
+      "verdict": "rebuild",
+      "rating": 39,
+      "ai_rating": 94,
+      "reasons": [
+        "Too blobby / macro",
+        "Too flat / boring",
+        "Not enough fine detail",
+        "Wrong vibe for name",
+        "Low effort / lazy"
+      ],
+      "notes": "",
+      "ts": 1781127750529
+    },
+    "lfr_stripe_drift": {
+      "verdict": "rebuild",
+      "rating": 40,
+      "ai_rating": 94,
+      "reasons": [
+        "Too flat / boring",
+        "Not enough fine detail",
+        "Too blobby / macro"
+      ],
+      "notes": "",
+      "ts": 1781127773383
+    },
+    "lfr_eagle_crest": {
+      "verdict": "rebuild",
+      "rating": 37,
+      "ai_rating": 73,
+      "reasons": [
+        "Too blobby / macro",
+        "Too sparse",
+        "Not enough fine detail",
+        "Wrong vibe for name",
+        "Low effort / lazy"
+      ],
+      "notes": "",
+      "ts": 1781127796081
+    },
+    "lfr_firework_radial": {
+      "verdict": "rebuild",
+      "rating": 43,
+      "ai_rating": 79,
+      "reasons": [
+        "Too sparse",
+        "Too blobby / macro",
+        "Too flat / boring",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781127812917
+    },
+    "lfr_constellation_field": {
+      "verdict": "replace",
+      "rating": 19,
+      "ai_rating": 62,
+      "reasons": [],
+      "notes": "Try something else with lots of micro details",
+      "ts": 1781127839938
+    },
+    "lfr_ribbon_weave": {
+      "verdict": "rebuild",
+      "rating": 39,
+      "ai_rating": 91,
+      "reasons": [
+        "Not enough fine detail",
+        "Low effort / lazy",
+        "Too sparse"
+      ],
+      "notes": "",
+      "ts": 1781127854730
+    },
+    "lfr_stencil_stars": {
+      "verdict": "rebuild",
+      "rating": 35,
+      "ai_rating": 94,
+      "reasons": [
+        "Too sparse",
+        "Too blobby / macro",
+        "Not enough fine detail",
+        "Low effort / lazy"
+      ],
+      "notes": "",
+      "ts": 1781127881062
+    },
+    "lfr_liberty_filigree": {
+      "verdict": "replace",
+      "rating": 37,
+      "ai_rating": 85,
+      "reasons": [
+        "Too sparse",
+        "Too blobby / macro",
+        "Too flat / boring",
+        "Not enough fine detail",
+        "Wrong vibe for name",
+        "Low effort / lazy"
+      ],
+      "notes": "",
+      "ts": 1781127916906
+    }
+  },
+  "updated": 1781127916
+}

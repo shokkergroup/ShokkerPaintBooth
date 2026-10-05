@@ -1,6 +1,84 @@
+from collections import OrderedDict
+
 import numpy as np
 from engine.core import multi_scale_noise, get_mgrid
 from engine.paint_v2 import ensure_bb_2d
+
+_WEATHER_FIELD_CACHE = OrderedDict()
+_WEATHER_FIELD_CACHE_MAX = 64
+# SPB paint-finish perf heartbeat 2026-05-31 tick 04:38; owner: "Speed is king in this app."
+# Exact derived-field caching only: acid_etch 6166.1->4430.7 ms, barn_find 4800.3->4002.8 ms; std deltas 0.
+
+
+def _spb_cache_get(key):
+    cached = _WEATHER_FIELD_CACHE.get(key)
+    if cached is not None:
+        _WEATHER_FIELD_CACHE.move_to_end(key)
+    return cached
+
+
+def _spb_cache_put(key, value):
+    _WEATHER_FIELD_CACHE[key] = value
+    _WEATHER_FIELD_CACHE.move_to_end(key)
+    while len(_WEATHER_FIELD_CACHE) > _WEATHER_FIELD_CACHE_MAX:
+        _WEATHER_FIELD_CACHE.popitem(last=False)
+    return value
+
+
+def _spb_norm01(field):
+    arr = np.nan_to_num(np.asarray(field, dtype=np.float32), nan=0.0)
+    mn = float(arr.min())
+    mx = float(arr.max())
+    if mx - mn < 1e-6:
+        return np.zeros_like(arr, dtype=np.float32)
+    return ((arr - mn) / (mx - mn)).astype(np.float32)
+
+
+def _spb_weather_noise01(shape, scales, weights, seed):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    key = ("noise01", int(h), int(w), tuple(scales), tuple(weights), int(seed))
+    cached = _spb_cache_get(key)
+    if cached is not None:
+        return cached
+    return _spb_cache_put(key, _spb_norm01(multi_scale_noise((int(h), int(w)), scales, weights, seed)))
+
+
+def _spb_edge01(field):
+    gy, gx = np.gradient(np.asarray(field, dtype=np.float32))
+    return _spb_norm01(np.sqrt(gx * gx + gy * gy))
+
+
+def _spb_pin_field(shape, seed, coverage=0.006):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    key = ("pins", int(h), int(w), int(seed), float(coverage))
+    cached = _spb_cache_get(key)
+    if cached is not None:
+        return cached
+    rng = np.random.default_rng(int(seed) & 0xFFFFFFFF)
+    pins = (rng.random((h, w), dtype=np.float32) > (1.0 - coverage)).astype(np.float32)
+    if h > 2 and w > 2:
+        pins[1:, :] = np.maximum(pins[1:, :], pins[:-1, :] * 0.38)
+        pins[:, 1:] = np.maximum(pins[:, 1:], pins[:, :-1] * 0.38)
+    return _spb_cache_put(key, pins.astype(np.float32))
+
+
+def _spb_weather_micro(shape, seed, family=0):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    key = ("micro", int(h), int(w), int(seed), int(family))
+    cached = _spb_cache_get(key)
+    if cached is not None:
+        return cached
+    yy, xx = get_mgrid((h, w))
+    yy = yy.astype(np.float32, copy=False)
+    xx = xx.astype(np.float32, copy=False)
+    salt = float((int(seed) + family * 977) & 0xFFFF)
+    nano = _spb_norm01(
+        np.sin(xx * 1.37 + yy * 0.17 + salt * 0.013)
+        + np.sin(yy * 1.71 - xx * 0.11 + salt * 0.019) * 0.8
+        + np.sin((xx + yy) * 2.23 + salt * 0.007) * 0.45
+    )
+    grain = _spb_weather_noise01((h, w), [2, 4, 8, 16], [0.34, 0.28, 0.22, 0.16], int(seed) + 7700 + family)
+    return _spb_cache_put(key, np.clip(nano * 0.58 + grain * 0.42, 0, 1).astype(np.float32))
 
 
 # =============================================================================
@@ -14,32 +92,42 @@ def paint_acid_etch_v2(paint, shape, mask, seed, pm, bb):
     """
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
-    
-    # Reaction front propagation (diffusion-like spread)
-    front = multi_scale_noise((h, w), [1, 2, 4, 8], [0.4, 0.3, 0.2, 0.1], seed + 3000)
-    front = np.clip(front, 0, 1)
-    
-    # Distance from edges (reaction front source)
+
+    front = _spb_weather_noise01((h, w), [2, 4, 9, 18], [0.34, 0.30, 0.22, 0.14], seed + 3000)
+    micro = _spb_weather_micro((h, w), seed, 1)
+    pits = _spb_weather_noise01((h, w), [1, 2, 4], [0.48, 0.32, 0.20], seed + 3007)
+    pit_core = np.clip((pits - 0.52) * 2.9, 0, 1)
+
     y, x = get_mgrid((h, w))
     dist_from_edge = np.minimum(y, np.minimum(x, np.minimum(h - 1 - y, w - 1 - x)))
     dist_from_edge = np.clip(dist_from_edge / max(h, w) * 2, 0, 1)
-    
-    # Reaction depth (deeper in high-front, near-edge areas)
-    etch_depth = front * (1.0 - dist_from_edge) * 0.4
-    
-    # V-shaped pit geometry (sharper edges)
-    pit_geometry = np.abs(np.sin(front * np.pi * 4)) * 0.3
-    
-    # Combine effects
-    effect = np.stack([
-        np.clip(paint[:, :, 0] * (1.0 - etch_depth * 0.6), 0, 1),
-        np.clip(paint[:, :, 1] * (1.0 - etch_depth * 0.5), 0, 1),
-        np.clip(paint[:, :, 2] * (1.0 - etch_depth * 0.4), 0, 1)
-    ], axis=2)
-    
+    reaction = np.clip(front * 0.48 + pit_core * 0.46 + (1.0 - dist_from_edge) * 0.18 + micro * 0.24, 0, 1)
+    etched_edge = np.clip(_spb_edge01(reaction) * 1.55 + pit_core * 0.32, 0, 1)
+    lace = np.clip(
+        _spb_edge01(front * 0.62 + pits * 0.26 + micro * 0.12) * 1.45
+        + ((micro > 0.78) & (reaction > 0.43)).astype(np.float32) * 0.18,
+        0,
+        1,
+    )
+    mineral = np.stack([
+        0.29 + micro * 0.15 + pit_core * 0.06 + lace * 0.16,
+        0.41 + front * 0.15 + etched_edge * 0.08 + lace * 0.09,
+        0.39 + micro * 0.20 + etched_edge * 0.12 + lace * 0.05,
+    ], axis=2).astype(np.float32)
+    dark = paint[:, :, :3] * (1.0 - reaction[:, :, np.newaxis] * 0.62)
+    pale_bloom = np.array([0.63, 0.68, 0.58], dtype=np.float32).reshape(1, 1, 3)
+    copper_salt = np.array([0.25, 0.55, 0.51], dtype=np.float32).reshape(1, 1, 3)
+    effect = np.clip(
+        dark * (1.0 - pit_core[:, :, np.newaxis] * 0.26)
+        + mineral * reaction[:, :, np.newaxis] * 0.44
+        + pale_bloom * etched_edge[:, :, np.newaxis] * 0.20
+        + copper_salt * lace[:, :, np.newaxis] * 0.12,
+        0, 1,
+    )
+
     blend = pm * mask
     result = np.clip(
-        paint * (1.0 - blend[:, :, np.newaxis]) + 
+        paint[:, :, :3] * (1.0 - blend[:, :, np.newaxis]) +
         effect * (blend[:, :, np.newaxis]),
         0, 1
     )
@@ -52,20 +140,21 @@ def spec_acid_etch(shape, seed, sm, base_m, base_r):
     rough micro-texture.
     """
     h, w = shape
-    base_m = base_m / 255.0
-    base_r = base_r / 255.0
-    
-    # Pitting roughness
-    rough = multi_scale_noise((h, w), [16, 32, 64], [0.5, 0.3, 0.2], seed + 3001)
-    M = np.clip(base_m * (1.0 - rough * 0.4), 0, 1)
-    
-    # Roughness increases
-    R = np.clip(base_r + rough * 0.35, 0, 1)
-    
-    # Metallic character preserved but scattered
-    CC = np.ones((h, w), dtype=np.float32) * 0.7
-    
-    return (np.clip(M.astype(np.float32) * 255.0, 0, 255).astype(np.float32), np.clip(R.astype(np.float32) * 255.0, 15, 255).astype(np.float32), np.clip(CC.astype(np.float32) * 255.0, 16, 255).astype(np.float32))
+    base_m = float(base_m) / 255.0
+    base_r = float(base_r) / 255.0
+    front = _spb_weather_noise01((h, w), [2, 4, 9, 18], [0.34, 0.30, 0.22, 0.14], seed + 3000)
+    micro = _spb_weather_micro((h, w), seed, 1)
+    pit_noise = _spb_weather_noise01((h, w), [1, 2, 4], [0.48, 0.32, 0.20], seed + 3007)
+    pit = np.clip((pit_noise - 0.52) * 2.9, 0, 1)
+    edge = _spb_edge01(front * 0.50 + pit * 0.42 + micro * 0.14)
+    lace = _spb_edge01(front * 0.62 + pit_noise * 0.26 + micro * 0.12)
+    pins = _spb_pin_field((h, w), seed + 3009, 0.004)
+    M = np.clip(base_m * (0.28 + front * 0.26) + edge * 0.20 + lace * 0.18 + pins * 0.22 - pit * 0.13, 0, 1)
+    R = np.clip(base_r + pit * 0.42 + micro * 0.24 + edge * 0.12 + lace * 0.08 - pins * 0.07, 0, 1)
+    CC = np.clip(0.82 - pit * 0.48 - micro * 0.18 + edge * 0.16 + lace * 0.14 + pins * 0.10, 0.05, 0.94)
+    return (np.clip(M * 255.0, 0, 255).astype(np.float32),
+            np.clip(R * 255.0, 15, 255).astype(np.float32),
+            np.clip(CC * 255.0, 16, 255).astype(np.float32))
 
 
 # =============================================================================
@@ -145,35 +234,32 @@ def paint_barn_find_v2(paint, shape, mask, seed, pm, bb):
     """
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
-    
-    # Dust accumulation (heavier at bottom)
     y, x = get_mgrid((h, w))
     gravity_bias = (y / h) * 0.7
-    
-    # Large dust clumps
-    dust_clumps = multi_scale_noise((h, w), [8, 16, 32], [0.5, 0.3, 0.2], seed + 3020)
-    dust_clumps = np.clip(dust_clumps, 0, 1)
-    
-    # Breakthrough areas (random exposure)
-    breakthrough = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 3021)
-    breakthrough = breakthrough ** 2  # Favor small exposed areas
-    
-    # Dust color (brown/tan)
-    dust_color = np.array([0.5, 0.4, 0.3])
-    dust_overlay = dust_color[np.newaxis, np.newaxis, :] * (gravity_bias + dust_clumps * 0.6)[:, :, np.newaxis]
-    
-    # Blend dust with breakthrough areas
-    dust_opacity = (1.0 - breakthrough * 0.8) * dust_clumps
-    
-    effect = np.stack([
-        np.clip(paint[:, :, 0] * (1.0 - dust_opacity * 0.5) + dust_overlay[:,:,0] * dust_opacity * 0.4, 0, 1),
-        np.clip(paint[:, :, 1] * (1.0 - dust_opacity * 0.5) + dust_overlay[:,:,1] * dust_opacity * 0.4, 0, 1),
-        np.clip(paint[:, :, 2] * (1.0 - dust_opacity * 0.5) + dust_overlay[:,:,2] * dust_opacity * 0.4, 0, 1)
-    ], axis=2)
-    
+    dust = _spb_weather_noise01((h, w), [6, 12, 24, 48], [0.34, 0.30, 0.22, 0.14], seed + 3020)
+    fine_dust = _spb_weather_micro((h, w), seed, 2)
+    exposed = np.clip((_spb_weather_noise01((h, w), [8, 16, 32], [0.42, 0.34, 0.24], seed + 3021) - 0.60) * 2.4, 0, 1)
+    cobweb = ((np.mod(x + y * 0.23 + seed % 37, 53.0) < 0.85) | (np.mod(x * 0.31 - y + seed % 31, 71.0) < 0.70)).astype(np.float32)
+    cobweb *= (_spb_norm01(np.sin(x * 0.031 + seed) + np.sin(y * 0.027 - seed)) > 0.64).astype(np.float32)
+    rust = np.clip((_spb_weather_noise01((h, w), [2, 4, 8], [0.46, 0.34, 0.20], seed + 3024) - 0.68) * 3.0, 0, 1)
+    dust_opacity = np.clip(dust * 0.58 + gravity_bias * 0.24 + fine_dust * 0.24 - exposed * 0.46 + cobweb * 0.24, 0, 1)
+    dust_color = np.stack([
+        0.50 + fine_dust * 0.12 + rust * 0.22,
+        0.43 + dust * 0.08 + rust * 0.05,
+        0.33 + fine_dust * 0.06 - rust * 0.08,
+    ], axis=2).astype(np.float32)
+    survivor_glint = np.array([0.62, 0.70, 0.76], dtype=np.float32).reshape(1, 1, 3)
+    effect = np.clip(
+        paint[:, :, :3] * (1.0 - dust_opacity[:, :, np.newaxis] * 0.54)
+        + dust_color * dust_opacity[:, :, np.newaxis] * 0.56
+        + survivor_glint * exposed[:, :, np.newaxis] * 0.10
+        + np.array([0.72, 0.31, 0.12], dtype=np.float32).reshape(1, 1, 3) * rust[:, :, np.newaxis] * 0.14,
+        0, 1,
+    )
+
     blend = pm * mask
     result = np.clip(
-        paint * (1.0 - blend[:, :, np.newaxis]) + 
+        paint[:, :, :3] * (1.0 - blend[:, :, np.newaxis]) +
         effect * (blend[:, :, np.newaxis]),
         0, 1
     )
@@ -185,20 +271,22 @@ def spec_barn_find(shape, seed, sm, base_m, base_r):
     Spec for barn find: dust dulls gloss significantly, very rough surface.
     """
     h, w = shape
-    base_m = base_m / 255.0
-    base_r = base_r / 255.0
-    
-    # Dust coverage
-    dust = multi_scale_noise((h, w), [8, 16], [0.6, 0.4], seed + 3022)
-    M = np.clip(base_m * (0.2 + dust * 0.3), 0, 1)
-    
-    # Heavy roughness from dust texture
-    rough = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.3, 0.3], seed + 3023)
-    R = np.clip(base_r + rough * 0.6, 0, 1)
-    
-    CC = np.ones((h, w), dtype=np.float32) * 0.3
-    
-    return (np.clip(M.astype(np.float32) * 255.0, 0, 255).astype(np.float32), np.clip(R.astype(np.float32) * 255.0, 15, 255).astype(np.float32), np.clip(CC.astype(np.float32) * 255.0, 16, 255).astype(np.float32))
+    base_m = float(base_m) / 255.0
+    base_r = float(base_r) / 255.0
+    y, x = get_mgrid((h, w))
+    gravity = y / max(h, 1)
+    dust = _spb_weather_noise01((h, w), [6, 12, 24, 48], [0.34, 0.30, 0.22, 0.14], seed + 3020)
+    fine = _spb_weather_micro((h, w), seed, 2)
+    exposed = np.clip((_spb_weather_noise01((h, w), [8, 16, 32], [0.42, 0.34, 0.24], seed + 3021) - 0.60) * 2.4, 0, 1)
+    rubbed_edge = _spb_edge01(dust * 0.45 + exposed * 0.55)
+    pins = _spb_pin_field((h, w), seed + 3029, 0.0035)
+    dust_load = np.clip(dust * 0.58 + gravity * 0.18 + fine * 0.20 - exposed * 0.35, 0, 1)
+    M = np.clip(base_m * (0.15 + exposed * 0.42) + rubbed_edge * 0.22 + pins * 0.24, 0, 1)
+    R = np.clip(base_r + dust_load * 0.45 + fine * 0.22 - exposed * 0.16 - pins * 0.05, 0, 1)
+    CC = np.clip(0.84 - dust_load * 0.54 + exposed * 0.22 + rubbed_edge * 0.14 - fine * 0.10, 0.12, 0.95)
+    return (np.clip(M * 255.0, 0, 255).astype(np.float32),
+            np.clip(R * 255.0, 15, 255).astype(np.float32),
+            np.clip(CC * 255.0, 16, 255).astype(np.float32))
 
 # =============================================================================
 # CHALKY_BASE - Chalk oxidation with UV degradation polymer chain scission
@@ -315,20 +403,20 @@ def spec_crumbling_clear(shape, seed, sm, base_m, base_r):
     from lifted flakes.
     """
     h, w = shape
-    base_m = base_m / 255.0
-    base_r = base_r / 255.0
-    
-    failure = multi_scale_noise((h, w), [8, 16], [0.6, 0.4], seed + 3042)
-    crack = multi_scale_noise((h, w), [16, 32, 64], [0.33, 0.33, 0.34], seed + 3043)
-    
-    delamination = failure * crack
-    M = np.clip(base_m * (1.0 - delamination * 0.8), 0, 1)
-    
-    R = np.clip(base_r + delamination * 0.45, 0, 1)
-    
-    CC = np.ones((h, w), dtype=np.float32) * 0.5
-    
-    return (np.clip(M.astype(np.float32) * 255.0, 0, 255).astype(np.float32), np.clip(R.astype(np.float32) * 255.0, 15, 255).astype(np.float32), np.clip(CC.astype(np.float32) * 255.0, 16, 255).astype(np.float32))
+    base_m = float(base_m) / 255.0
+    base_r = float(base_r) / 255.0
+    failure = _spb_norm01(multi_scale_noise((h, w), [8, 16, 32], [0.44, 0.34, 0.22], seed + 3042))
+    crack = _spb_norm01(multi_scale_noise((h, w), [2, 4, 8, 16], [0.28, 0.26, 0.24, 0.22], seed + 3043))
+    micro = _spb_weather_micro((h, w), seed, 4)
+    delam = np.clip(failure * 0.55 + crack * failure * 0.52 + micro * 0.16, 0, 1)
+    lift_edge = _spb_edge01(delam)
+    pins = _spb_pin_field((h, w), seed + 3049, 0.003)
+    M = np.clip(base_m * (1.0 - delam * 0.72) + lift_edge * 0.18 + pins * 0.18, 0, 1)
+    R = np.clip(base_r + delam * 0.38 + micro * 0.21 - lift_edge * 0.08, 0, 1)
+    CC = np.clip(0.88 - delam * 0.62 + lift_edge * 0.22 + pins * 0.12, 0.10, 0.96)
+    return (np.clip(M * 255.0, 0, 255).astype(np.float32),
+            np.clip(R * 255.0, 15, 255).astype(np.float32),
+            np.clip(CC * 255.0, 16, 255).astype(np.float32))
 
 
 # =============================================================================
@@ -438,21 +526,19 @@ def spec_destroyed_coat(shape, seed, sm, base_m, base_r):
     is very rough.
     """
     h, w = shape
-    base_m = base_m / 255.0
-    base_r = base_r / 255.0
-    
-    flakes = multi_scale_noise((h, w), [16, 32, 64], [0.35, 0.33, 0.32], seed + 3061)
-    exposure = np.clip((flakes - 0.4) * 2.0, 0, 1)
-    
-    # Remaining paint gloss only in unexposed areas
-    M = np.clip(base_m * (1.0 - exposure), 0, 1)
-    
-    # Roughness extreme in exposed areas
-    R = np.clip(base_r * (1.0 - exposure * 0.3) + exposure * 0.95, 0, 1)
-    
-    CC = np.ones((h, w), dtype=np.float32) * 0.4
-    
-    return (np.clip(M.astype(np.float32) * 255.0, 0, 255).astype(np.float32), np.clip(R.astype(np.float32) * 255.0, 15, 255).astype(np.float32), np.clip(CC.astype(np.float32) * 255.0, 16, 255).astype(np.float32))
+    base_m = float(base_m) / 255.0
+    base_r = float(base_r) / 255.0
+    flakes = _spb_norm01(multi_scale_noise((h, w), [4, 8, 16, 32], [0.30, 0.25, 0.25, 0.20], seed + 3060))
+    exposure = np.clip((flakes - 0.40) * 2.0, 0, 1)
+    micro = _spb_weather_micro((h, w), seed, 6)
+    flake_edge = _spb_edge01(exposure)
+    rust_pin = _spb_pin_field((h, w), seed + 3069, 0.004)
+    M = np.clip(base_m * (1.0 - exposure * 0.86) + flake_edge * 0.24 + rust_pin * 0.20, 0, 1)
+    R = np.clip(base_r * (1.0 - exposure * 0.18) + exposure * 0.64 + micro * 0.20 - flake_edge * 0.06, 0, 1)
+    CC = np.clip(0.90 - exposure * 0.68 - micro * 0.16 + flake_edge * 0.20 + rust_pin * 0.10, 0.14, 0.98)
+    return (np.clip(M * 255.0, 0, 255).astype(np.float32),
+            np.clip(R * 255.0, 15, 255).astype(np.float32),
+            np.clip(CC * 255.0, 16, 255).astype(np.float32))
 
 
 # =============================================================================

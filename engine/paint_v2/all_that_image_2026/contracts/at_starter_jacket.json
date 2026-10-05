@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_starter_jacket",
+  "display_name": "Fresh: Starter Jacket",
+  "promise": "Royal blue red white satin nylon fragments with small embroidered stitches, no teams logos or garment shapes",
+  "carrier_grammar": "Royal blue red white satin nylon fragments with small embroidered stitches, no teams logos or garment shapes; single full-canvas image, no duplicated quadrants. Fine features: blue satin filaments, red sportswear satin, white appliqué thread, dark ribbed trim, stitched appliqué edges, fine filament wear",
+  "spec_grammar": "Feature-specific selectors partition blue satin filaments, red sportswear satin, white appliqué thread, dark ribbed trim, stitched appliqué edges, fine filament wear. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "blue satin filaments",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "red sportswear satin",
+      "role": "Material feature selected from artwork by h:<:30&s:>:0.4"
+    },
+    {
+      "name": "white appliqué thread",
+      "role": "Material feature selected from artwork by g:>:0.7&s:<:0.3"
+    },
+    {
+      "name": "dark ribbed trim",
+      "role": "Material feature selected from artwork by g:<:0.26"
+    },
+    {
+      "name": "stitched appliqué edges",
+      "role": "Material feature selected from artwork by edge:>:0.64"
+    },
+    {
+      "name": "fine filament wear",
+      "role": "Material feature selected from artwork by fine:>:0.84"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "blue satin filaments",
+      "red sportswear satin",
+      "white appliqué thread",
+      "dark ribbed trim",
+      "stitched appliqué edges",
+      "fine filament wear"
+    ],
+    "R": [
+      "blue satin filaments",
+      "red sportswear satin",
+      "white appliqué thread",
+      "dark ribbed trim",
+      "stitched appliqué edges",
+      "fine filament wear"
+    ],
+    "Cc": [
+      "blue satin filaments",
+      "red sportswear satin",
+      "white appliqué thread",
+      "dark ribbed trim",
+      "stitched appliqué edges",
+      "fine filament wear"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "blue satin filaments",
+      "range": [
+        [
+          0,
+          40,
+          45
+        ],
+        [
+          18,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "red sportswear satin",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "white appliqué thread",
+      "range": [
+        [
+          0,
+          100,
+          130
+        ],
+        [
+          12,
+          195,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dark ribbed trim",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "stitched appliqué edges",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine filament wear",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_airbrush_tee",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_boombox_chrome",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "blue satin filaments",
+      "red sportswear satin",
+      "white appliqué thread",
+      "dark ribbed trim",
+      "stitched appliqué edges",
+      "fine filament wear"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_starter_jacket / Royal blue red white satin nylon fragments with small embroidered stitches, no teams logos or garment shapes",
+  "spec_key": "at_starter_jacket / blue satin filaments all; red sportswear satin h:<:30&s:>:0.4; white appliqué thread g:>:0.7&s:<:0.3; dark ribbed trim g:<:0.26; stitched appliqué edges edge:>:0.64; fine filament wear fine:>:0.84",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

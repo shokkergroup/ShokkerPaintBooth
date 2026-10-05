@@ -1,0 +1,48 @@
+{
+  "review": "W77 source-bound offline explanation of the last applied change",
+  "result": "ISOLATED_CANDIDATE_PASS_WITH_LIMITS",
+  "date_utc": "2026-10-04",
+  "scope": "Frozen Runtime3 controller/operation API and W36 lease; isolated receipt-explanation module and candidate send-route hook only. Root owns production script order, HTML integration, and any live/native acceptance.",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w77_review/fresh-desired-oracle.json",
+    "sha256": "74746A8562F1C0A7659425D6264EB1547F3B346156A77C502ABCB69420C8E09D",
+    "cases_frozen_before_candidate_inspection": 15,
+    "supplemental_case": "After freezing the oracle, added a stricter current-paint zone-revision mismatch case; this is reported separately from the original 15-case oracle."
+  },
+  "sources": {
+    "runtime3_controller": {"path":"_easy_claude_work/ai14h_w77_review/frozen_runtime3/spb-pro-ai.js","sha256":"EEE47A9E461290F97893A721742CBEAC4F1FBB148B37CDFB8696CF9107520574"},
+    "w36_lease": {"path":"_easy_claude_work/ai14h_w77_review/frozen_runtime3/spb-ai-lease.js","sha256":"DE276372A763310EC051DB141FCB1D601E11DBF193843E2B21A405226F782134"},
+    "operation_manager": {"path":"_easy_claude_work/ai14h_w77_review/frozen_runtime3/spb-ai-operation.js","sha256":"47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6"},
+    "candidate_controller": {"path":"_easy_claude_work/ai14h_w77_review/candidate/js/spb-pro-ai.js","sha256":"B41A13930A19B91146740FD6A85D72E07981771D97E9C14E9EA985CA5DEA8CBC"},
+    "candidate_module": {"path":"_easy_claude_work/ai14h_w77_review/candidate/js/spb-ai-receipt-explainer.js","sha256":"25ABA5EE85E9C9FB7EFE3603FCE22B140CCB09D2CBD09A9303AC6AB00530EAC3"},
+    "test": {"path":"tests/ai_receipt_explainer_w77_contract.cjs","sha256":"B38D1039F9238C95E5EF664A8E2E7A0FEC7916B0ECEA486753552413499C976E"},
+    "source_freeze_manifest": "_easy_claude_work/ai14h_w77_review/source-freeze.json"
+  },
+  "implementation": {
+    "module_api": "SpbAiReceiptExplainer.claim(text) strictly recognizes standalone last-change questions. explain(log, isCurrent) derives only from AI history entries with actual applied lines or explicit 'Could not apply' notes.",
+    "controller_hook": "Candidate hook in send() runs after the existing instruction preflight and before general self-help/action routing. It queues no operation and uses the frozen controller's operation ticket, document identity, and revision to require a still-current receipt.",
+    "identity_gate": "The candidate requires the entry's bound request ticket to match current source generation, committed generation, path, content fingerprint, canvas identity/dimensions, layer/image references and readiness through SpbAiOperation.sameDocument; it also requires ticket.revision === operationRevision(). Same-path source reload, canvas replacement, or intervening zone/layer revision therefore fails closed.",
+    "reply_contract": "Success lists recorded applied lines for the currently loaded paint. Partial results list both successful lines and failed operation notes. Failed-only receipts explicitly state no paint change was applied. Undone/superseded receipts are not described as current. Missing, generic-Done, stale, or unbound receipts return a safe unavailable explanation."
+  },
+  "verification": {
+    "command": "node tests/ai_receipt_explainer_w77_contract.cjs",
+    "result": "PASS",
+    "coverage": "6 positive and 5 negative phrase-classifier checks; actual candidate send() route; actual finishCore() entry construction using controlled applyQueue effects for success, multi-line, partial, failed-only, and no-line generic-Done records; actual frozen operationDocument/operationRevision/operationManager/operationEntryDocumentCurrent APIs; source-generation reload at unchanged path, canvas reference replacement, manual revision mismatch; undone/superseded flags; mixed action and ordinary-help routing controls.",
+    "route_effects": "Receipt explanation output has an empty queue and zero provider calls. The mock apply counter remains unchanged during explanation; one controlled mocked apply is used only to generate an actual finishCore receipt fixture.",
+    "syntax": "node --check passed for both candidate JavaScript files."
+  },
+  "limitations": [
+    "The actual send function and finishCore function are executed from candidate source, but applyQueue is a controlled stub; no real paint pixels, browser DOM, native app, server, or provider were used.",
+    "Undone and superseded markers are controlled fixture state. This verifies the explainer's refusal behavior, not the full native Ctrl+Z/redo path that sets those markers.",
+    "Ordinary guidance preservation is a route-order control using a stub self-help claimant; no attempt was made to alter the self-help knowledge source.",
+    "The new module is not wired into HTML/script load order and the isolated candidate is not installed. Root must load the module before proAI and decide whether to integrate it.",
+    "This is an explanation of recorded operations, not visual proof that current pixels match the receipt; no rendered preview is claimed."
+  ],
+  "effects": {
+    "live_or_shared_production_edits": 0,
+    "wiki_or_mirror_edits": 0,
+    "provider_calls": 0,
+    "native_calls": 0,
+    "server_calls": 0
+  }
+}

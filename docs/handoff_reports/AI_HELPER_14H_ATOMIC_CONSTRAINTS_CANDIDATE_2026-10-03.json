@@ -1,0 +1,95 @@
+{
+  "id": "W34",
+  "status": "isolated-candidate-only",
+  "generated_utc": "2026-10-04T06:23:43.950Z",
+  "frozen_sources": {
+    "spb-pro-ai.js": "609b8ec85228f15d2cc9b3ab82cd692eb2ea90d258cf5045fd36448ad3c46c6b",
+    "spb-pro-design.js": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8",
+    "spb-pro-edit.js": "d940e6688b3ed5e8fa0514c8774e73a4a2b564ad723e507166248e3e97ac75d0"
+  },
+  "candidate_router_sha256": "39fbb9a1cbb421347763ba78b6d8e3e0307b082a2db42b09de0d8ac705beaf9a",
+  "fresh_oracle": {
+    "count": 12,
+    "sha256": "f561c10e14b68a4063474bba89dc35518fa418f789469bfc49c2956ffc2dba3c",
+    "guarded_cases": [
+      "W34-01",
+      "W34-02",
+      "W34-03",
+      "W34-04",
+      "W34-10",
+      "W34-12"
+    ],
+    "route_probes": [
+      {
+        "id": "W34-01",
+        "route": "actual offline entry-point guard",
+        "queue": 0
+      },
+      {
+        "id": "W34-03",
+        "route": "actual offline entry-point guard",
+        "queue": 0
+      },
+      {
+        "id": "W34-04",
+        "route": "actual offline entry-point guard",
+        "queue": 0
+      },
+      {
+        "id": "W34-10",
+        "route": "actual offline entry-point guard",
+        "queue": 0
+      },
+      {
+        "id": "W34-02",
+        "route": "actual ask() configured=true",
+        "queue": 0
+      },
+      {
+        "id": "W34-12",
+        "route": "actual send() entry point",
+        "queue": 0
+      }
+    ],
+    "nonblocking_cases": [
+      {
+        "id": "W34-05",
+        "guard": "delegated"
+      },
+      {
+        "id": "W34-06",
+        "guard": "delegated"
+      },
+      {
+        "id": "W34-07",
+        "guard": "delegated"
+      },
+      {
+        "id": "W34-08",
+        "guard": "delegated"
+      },
+      {
+        "id": "W34-09",
+        "guard": "delegated"
+      },
+      {
+        "id": "W34-11",
+        "guard": "delegated"
+      }
+    ]
+  },
+  "candidate_module": "_easy_claude_work/ai14h_w34_candidate/js/spb-ai-complete-instruction-guard.js",
+  "expected_scope": [
+    "guard only concrete paint-color contradictions bundled with a preservation request",
+    "decline unresolved paint-preservation plus explicit overlay/weave/pattern transformations",
+    "ask before fallbacks or providers; no partial queue",
+    "questions/how-to and valid finish-only/source-color/material operations pass through"
+  ],
+  "limits": [
+    "Candidate is isolated; current live source is unchanged.",
+    "Route probes executed extracted real offlineAsk/offlineAskCore/offlineLookAsk/ask/send entry points with test dependencies, not full UI or real queue/tool integration.",
+    "No native paint, model/provider, browser, or renderer was used.",
+    "W34-07 and finish-only cases confirm the guard delegates; they do not certify the downstream result is complete.",
+    "Guard rejects the recognized contradiction and keep-color overlay ambiguity; it is not a general-purpose complete instruction parser."
+  ]
+}

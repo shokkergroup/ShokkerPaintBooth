@@ -1,0 +1,745 @@
+/* ============================================================================
+ * SPB EXPERIENCE LAB — shared primitives  (2026-07-29, Claude)
+ *
+ * Loaded once. Inert unless <body> carries .spb-xp (the engine adds it only
+ * when an experience is active), so Classic Mode is untouched byte-for-byte.
+ *
+ * This file exists so the twenty experiences are RECIPES, not twenty bespoke
+ * stylesheets (CLAUDE.md architecture addendum: build the library once).
+ * It also CENTRALLY ENFORCES the owner's hard geometry contract, so an
+ * individual pack cannot accidentally violate it:
+ *
+ *   owner 2026-07-29 — "The SOURCE and LIVE PREVIEW boxes MUST be at least the
+ *   same size they are now... The combined, RED, GREEN, AND BLUE previews can
+ *   be small. They MUST also be in the perfect squares because the canvas for
+ *   the previews in iRacing is 2048x2048"
+ * ==========================================================================*/
+
+/* ---------------------------------------------------------------------------
+ * 1. THE SQUARE GUARANTEE (non-negotiable, applies to all 20)
+ * ------------------------------------------------------------------------ */
+body.spb-xp {
+    /* Edge length of each small channel preview. Packs may retune within
+       32-96px; the gate rejects anything above 25% of the SOURCE edge. */
+    --xp-ch: 56px;
+    --xp-gap: 8px;
+    --xp-radius: 10px;
+    --xp-glass: rgba(10, 12, 20, 0.82);
+    --xp-glass-hi: rgba(22, 26, 40, 0.92);
+    --xp-line: rgba(255, 255, 255, 0.10);
+    --xp-ink: #e8eef7;
+    --xp-dim: #93a3b8;
+}
+
+/* Perfect squares, always. Width and height are driven from the SAME variable,
+   so there is no path by which these can become rectangles — which matters
+   because a non-square preview misrepresents a 2048x2048 iRacing canvas. */
+body.spb-xp .spec-channel-dock-canvas {
+    width: var(--xp-ch) !important;
+    height: var(--xp-ch) !important;
+    aspect-ratio: 1 / 1 !important;
+    flex: 0 0 auto !important;
+    border-radius: 4px;
+}
+body.spb-xp .spec-channel-dock-cell {
+    width: var(--xp-ch) !important;
+    min-width: var(--xp-ch) !important;
+    min-height: 0 !important;
+    height: auto !important;
+    flex: 0 0 auto !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border-radius: 6px;
+}
+body.spb-xp .spec-channel-dock-label {
+    font-size: 6.5px !important;
+    line-height: 1.5 !important;
+    padding: 1px 0 !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * 2. CHROME RECLAMATION
+ * Both preview squares are HEIGHT-limited (measured: s = min((rowW-8)/2, rowH)
+ * and rowH is the binding term in every viewport). So a band lifted out of the
+ * vertical flow becomes SOURCE pixels and LIVE PREVIEW pixels 1:1.
+ * ------------------------------------------------------------------------ */
+
+/* Float a band over the canvas instead of stacking it above the artwork.
+   Height cost to the layout: zero. */
+body.spb-xp .spbx-float {
+    position: absolute !important;
+    z-index: 60;
+    background: var(--xp-glass);
+    backdrop-filter: blur(14px) saturate(1.15);
+    -webkit-backdrop-filter: blur(14px) saturate(1.15);
+    border: 1px solid var(--xp-line);
+    border-radius: var(--xp-radius);
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.5);
+    padding: 4px 8px;
+    max-width: calc(100% - 24px);
+}
+/* SPECIFICITY TRAP — read before styling a relocated band.
+   The inline simplify block in paint-booth-v2.html pins the action bar BY ID
+   with !important:
+       #previewBottomBar { height:76px !important; min-height:76px !important;
+                           max-height:76px !important; flex:0 0 76px !important; }
+   An id beats any number of classes, so a pack rule like `.xp-foo-dock
+   { height:auto !important }` silently loses. In a row-direction container the
+   pinned `flex:0 0 76px` then makes the bar 76px WIDE, and its children (RENDER,
+   the region actions, the zoom pill) spill out over the artwork.
+   These id-qualified rules release it for any pack that relocates the bar. */
+/* The id-pinned 76px applies to EVERY pack, including ones that leave the bar
+   where it is (bar:'keep'). With wrapped content taller than 76px it clipped
+   17-34px of controls. Release the pin unconditionally — the bar should be as
+   tall as its contents, wherever it lives. */
+body.spb-xp #previewBottomBar {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    flex: 0 0 auto !important;
+    overflow: visible !important;
+}
+body.spb-xp #previewBottomBar.spbx-relocated {
+    position: static !important;
+    width: auto !important;
+    flex: 1 1 auto !important;
+}
+/* The action bar holds RENDER + Shortcuts + the region group + the zoom pill.
+   In a narrower container that content overruns its box and the last control
+   gets sliced in half (observed: "Shortcuts" cut to "Shortc"). A clipped
+   control is a removed control, so let it wrap instead. */
+/* Horizontal scrolling was WRONG: it kept the bar to one row but let RENDER
+   scroll out of sight, and clipped it vertically (I12 + I9 failures on 6 packs).
+   A control you have to scroll to find is worse than a taller bar. So: wrap
+   again — nothing hidden, nothing clipped — and claw the height back by making
+   the bar's own chrome compact instead. */
+body.spb-xp #previewBottomBar.spbx-relocated,
+body.spb-xp #previewBottomBar.spbx-relocated .render-float-actions {
+    flex-wrap: wrap !important;
+    overflow: visible !important;
+    min-width: 0 !important;
+    gap: 4px !important;
+    padding: 2px 6px !important;
+    row-gap: 3px !important;
+}
+body.spb-xp #previewBottomBar.spbx-relocated .btn,
+body.spb-xp #previewBottomBar.spbx-relocated button { padding-top: 3px !important; padding-bottom: 3px !important; }
+body.spb-xp #previewBottomBar.spbx-relocated .zoom-controls { gap: 2px !important; }
+body.spb-xp #previewBottomBar.spbx-float,
+body.spb-xp #previewBottomBar.spbx-float .render-float-actions {
+    flex-wrap: wrap !important;
+    overflow: visible !important;
+    min-width: 0 !important;
+}
+/* The strip holds squares + actions; keep it to those two rows. */
+/* No cap: capping it clipped the action bar (the very chopping we are fixing).
+   With the bar forced to a single scrolling row the strip is naturally compact
+   (squares ~66px + actions ~40px), so it needs no ceiling. */
+body.spb-xp #previewTopStrip {
+    flex-wrap: wrap !important;
+    flex: 0 0 auto !important;
+    overflow: visible !important;
+}
+/* The horizontal scrollbar on the action bar adds a few px the column did not
+   budget for, pushing it past the window edge. Reserve the room. */
+body.spb-xp #splitViewContainer { padding-bottom: 12px !important; }
+/* .spbx-float must beat any id-level `position` the app sets, or the bar stays
+   in the vertical flow and the pack silently loses the space it moved it for. */
+body.spb-xp #previewBottomBar.spbx-float,
+body.spb-xp #toolOptionsBar.spbx-float {
+    position: absolute !important;
+}
+/* ...and so must the OFFSETS. With only `position` winning, the bar keeps its
+   static coordinates and simply sits where it always did — which looked like
+   the float had worked while the pack got none of the height back. Measured
+   proof: id-qualifying these took Command from 315sq to 375sq at 1100x800. */
+body.spb-xp #previewBottomBar.spbx-float-bottom,
+body.spb-xp #toolOptionsBar.spbx-float-bottom {
+    bottom: 12px !important; top: auto !important;
+    left: 50% !important; right: auto !important;
+    transform: translateX(-50%) !important;
+}
+body.spb-xp #previewBottomBar.spbx-float-top,
+body.spb-xp #toolOptionsBar.spbx-float-top {
+    top: 10px !important; bottom: auto !important;
+    left: 50% !important; right: auto !important;
+    transform: translateX(-50%) !important;
+}
+
+body.spb-xp .spbx-float-top { top: 10px; left: 50%; transform: translateX(-50%); }
+body.spb-xp .spbx-float-bottom { bottom: 12px; left: 50%; transform: translateX(-50%); }
+body.spb-xp .spbx-float-tl { top: 10px; left: 12px; }
+body.spb-xp .spbx-float-tr { top: 10px; right: 12px; }
+body.spb-xp .spbx-float-bl { bottom: 12px; left: 12px; }
+body.spb-xp .spbx-float-br { bottom: 12px; right: 12px; }
+
+/* ---------------------------------------------------------------------------
+ * NOTHING GETS CHOPPED — owner report 2026-07-29
+ *
+ * The app caps `#toolOptionsBar.tool-options-bar` at max-height:66px with
+ * overflow-y:auto (css/ui-modernization-20260510-early.css:34). Brush mode has
+ * TWO rows of controls, so the second one (Pick / Round / size / hex / Erase)
+ * is sliced in half. In Classic that at least reads as a scroll region; in an
+ * experience the bar floats on glass, so it just looks like the controls were
+ * cut out of the app.
+ *
+ * Every pack floats this bar (baseLayout puts it out of flow unless the pack
+ * asks otherwise), so letting it be its natural height costs the artwork
+ * nothing. A control you cannot see is a control that has been removed.
+ * ------------------------------------------------------------------------ */
+/* Compact at rest: one row, scrollable (so nothing is lost), with the MORE
+   control offering the rest. Expanded, it lifts out of flow over the canvas so
+   the artwork keeps its height. */
+body.spb-xp #toolOptionsBar.spbx-opts-inflow {
+    max-height: 44px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+body.spb-xp.spbx-opts-open #toolOptionsBar.spbx-opts-inflow {
+    position: absolute !important;
+    z-index: 120 !important;
+    left: 8px !important; right: 8px !important;
+    width: auto !important; max-width: none !important;
+    max-height: 46vh !important;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6) !important;
+}
+body.spb-xp .spbx-opts-more {
+    margin-left: auto;
+    flex: 0 0 auto;
+    padding: 3px 10px;
+    font: 700 9px/1 ui-monospace, Menlo, Consolas, monospace;
+    letter-spacing: 1.2px;
+    cursor: pointer;
+    color: var(--xp-ink);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--xp-line);
+    border-radius: 6px;
+}
+body.spb-xp .spbx-opts-more:hover { border-color: var(--xp-ink); }
+
+body.spb-xp #toolOptionsBar.tool-options-bar {
+    /* NOTE: height is owned by the .spbx-opts-inflow rules above (compact at
+       rest + MORE to expand). Setting max-height:none here as well used to win
+       on equal specificity by coming later in the file, which silently undid
+       the compact state and cost 21% of the artwork. */
+    align-content: flex-start !important;
+    /* Uncapping the HEIGHT made it grow sideways instead and run off the right
+       edge of the screen — the same controls chopped, just on the other axis.
+       Pin the width so the flex row is forced to WRAP downward, which is the
+       only direction with room. */
+    flex-wrap: wrap !important;
+    width: max-content !important;
+    /* Cap against the CONTAINING BLOCK, not the viewport. The bar is centred
+       inside #centerPanel (894px at 1366x768), so a viewport-relative cap of
+       1000px let it hang 53px off each side. calc(100% - 24px) is measured
+       against the panel it actually lives in. */
+    max-width: calc(100% - 24px) !important;
+    box-sizing: border-box !important;
+}
+/* Superseded by the compact + MORE model above; the max-height:40vh here beat
+   it on specificity (`:not()` counts as a class) and quietly restored the tall
+   bar. Only the flex/margin corrections remain. */
+body.spb-xp #toolOptionsBar.tool-options-bar:not(.spbx-float) {
+    flex: 0 0 auto !important;
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+    position: relative !important;
+    z-index: 5 !important;
+}
+
+/* Reveal-on-approach: chrome that stays out of the way until wanted.
+   Used by the progressive-disclosure experiences (Studio, Zen, Heads-Up). */
+body.spb-xp .spbx-peekable {
+    opacity: 0.18;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+}
+body.spb-xp .spbx-peekable:hover,
+body.spb-xp .spbx-peekable:focus-within,
+body.spb-xp .spbx-peekable.spbx-awake { opacity: 1; }
+
+/* ---------------------------------------------------------------------------
+ * 3. RAILS — the standard home for the 4 channel squares when a pack lifts
+ * them off the top of the artwork. Vertical rail costs width (cheap, because
+ * the squares are height-limited); horizontal rail costs height (expensive).
+ * ------------------------------------------------------------------------ */
+body.spb-xp .spbx-rail-v {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+    padding: 6px 4px;
+    overflow: visible;
+}
+body.spb-xp .spbx-rail-h {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+    padding: 4px 6px;
+}
+/* When the dock is railed, kill its own bar chrome so it doesn't reintroduce
+   the height it was moved to avoid. */
+body.spb-xp .spbx-rail-v #specChannelDock,
+body.spb-xp .spbx-rail-h #specChannelDock {
+    display: flex !important;
+    flex-direction: inherit !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    gap: 6px !important;
+    min-height: 0 !important;
+}
+body.spb-xp .spbx-rail-v .spec-channel-dock-cells {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+/* The dock's own justify-content:space-between flings the four squares to the
+   corners of whatever container they land in. They should read as one group. */
+body.spb-xp #specChannelDock,
+body.spb-xp .spec-channel-dock-cells {
+    justify-content: center !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * 4. THE SQUARES ROW — packs may restyle the two sacred boxes but never shrink
+ * them. These rules only add framing; sizing stays owned by _sizePreviewSquares.
+ * ------------------------------------------------------------------------ */
+body.spb-xp #previewSquaresRow {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: var(--xp-gap) !important;
+    min-height: 0 !important;
+}
+body.spb-xp #splitSource,
+body.spb-xp #splitPreview {
+    border-radius: var(--xp-radius);
+    overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+ * 5. PANEL WIDTH RELEASE
+ * The inline simplify block in paint-booth-v2.html pins .left-panel and
+ * .right-panel width + min-width + max-width with !important. Any pack that
+ * resizes a rail must release all three or nothing happens — this bit the
+ * 2026-07-28 layout gallery (see _look_gallery_work/NOTES.md).
+ * ------------------------------------------------------------------------ */
+body.spb-xp.spbx-rails-free .left-panel {
+    width: var(--xp-left, 192px) !important;
+    min-width: var(--xp-left, 192px) !important;
+    max-width: var(--xp-left, 192px) !important;
+}
+body.spb-xp.spbx-rails-free .right-panel {
+    width: var(--xp-right, 204px) !important;
+    min-width: var(--xp-right, 204px) !important;
+    max-width: var(--xp-right, 204px) !important;
+}
+/* The zone popout is pinned to the old left rail width — follow it. */
+body.spb-xp.spbx-rails-free .zone-editor-float {
+    left: var(--xp-left, 192px) !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * 5b. THE 320px RESERVATION — the single biggest constraint in the app
+ *
+ * Measured 2026-07-29. Both sacred boxes are WIDTH-limited in both viewports:
+ *     s = min((rowWidth - 8) / 2, rowHeight)
+ *     desktop  row 1102x673 -> s = 547  (width binds; 126px of height unused)
+ *     min-1100 row  306x393 -> s = 149  (width binds; 244px of height unused)
+ *
+ * And the dominant width thief is one rule in paint-booth-v2.html:826
+ *     .zone-editor-float.active:not(.collapsed) ~ .center-panel
+ *         { padding-left: 320px !important; }
+ * At 1100x800 that reserves 320 of the center panel's 656px — 49% — so the
+ * zone popout gets twice the width of the car being painted.
+ *
+ * The popout is sacred (owner: "We still need to keep... the Zone Popout
+ * panel") but it does not have to permanently RESERVE a column. Floating it
+ * over the canvas keeps every control and returns the width to the artwork:
+ *     desktop 547 -> ~709 edge (+30% edge, +68% area)
+ *     min-1100 149 -> ~311 edge (+109% edge, +336% area)
+ *
+ * How each experience handles the popout is a genuine design choice (quiet
+ * slide-over, glass overlay, docked tile, full-focus panel) — so this provides
+ * the mechanism and lets each pack pick the behaviour.
+ * ------------------------------------------------------------------------ */
+body.spb-xp.spbx-popout-float .zone-editor-float.active:not(.collapsed) ~ .center-panel,
+body.spb-xp.spbx-popout-float .center-panel {
+    padding-left: 0 !important;
+}
+body.spb-xp.spbx-popout-float .zone-editor-float {
+    z-index: 240 !important;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.62) !important;
+    border-radius: 0 14px 14px 0;
+}
+/* DOCKED popout: it becomes an inspector inside a rail instead of a floating
+   panel over the artwork. Every control is retained; it simply stops competing
+   with the car for the same pixels. All the fixed/absolute positioning the
+   float relied on has to be unwound, hence the breadth of these overrides. */
+body.spb-xp.spbx-popout-docked #zoneEditorFloat,
+body.spb-xp.spbx-popout-docked .zone-editor-float {
+    position: static !important;
+    left: auto !important; right: auto !important; top: auto !important; bottom: auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    flex: 1 1 auto !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+    z-index: auto !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+/* An empty popout (no zone selected) must not hold open a blank slab. */
+body.spb-xp.spbx-popout-docked #zoneEditorFloat:not(.active) {
+    flex: 0 0 auto !important;
+}
+body.spb-xp.spbx-popout-docked #zoneEditorFloat .zone-detail-body {
+    overflow-y: auto !important;
+    min-height: 0 !important;
+    flex: 1 1 auto !important;
+}
+/* Collapsed state is meaningless when docked — never hide the inspector. */
+body.spb-xp.spbx-popout-docked #zoneEditorFloat.collapsed {
+    display: flex !important;
+    visibility: visible !important;
+}
+body.spb-xp.spbx-popout-docked #zoneFloatExpandTab { display: none !important; }
+
+/* INSPECTOR OVER THE ZONES RAIL — owner's panel model, 2026-07-29.
+   The zone inspector overlays SHOKK ZONES inside the left rail; LAYERS keeps
+   the right rail, so both are visible at once. Minimize collapses the inspector
+   to its title strip and SHOKK ZONES shows through underneath.
+   Replaces the LAYERS|ZONE tabs, which wrongly made the two mutually exclusive. */
+/* .canvas-viewport carries min-height: min(520px, calc(100vh - 206px)). When the
+   tool-options bar grows (brush mode) the column runs out of room and that floor
+   makes the viewport overlap the bar above it — the last 3px of artwork overlap.
+   The app's own _sizePreviewSquares() zeroes this inline, but it runs before the
+   bar grows, so the stale floor wins. Zero it declaratively instead. */
+body.spb-xp #canvasViewport.canvas-viewport { min-height: 0 !important; }
+
+/* Column wrapper used when the pack made #centerPanel a row (see placeToolOptions). */
+body.spb-xp .spbx-opts-col {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+}
+
+/* ===========================================================================
+ * THE BENCH — geometry for the one canonical skeleton (see Ctx.bench()).
+ * Zones + Zone Popout share the left rail; Layers keeps the right; the four
+ * channel previews sit under the artwork. Everything permanently visible.
+ * ======================================================================== */
+body.spb-xp.spbx-bench .spbx-bench-left {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+/* ZONES on top — enough to see several at once, then it scrolls. */
+body.spb-xp.spbx-bench .spbx-bench-left > .zone-list-wrapper,
+body.spb-xp.spbx-bench .spbx-bench-left > #zoneList,
+body.spb-xp.spbx-bench .spbx-bench-left > .panel-header {
+    flex: 0 0 auto !important;
+}
+body.spb-xp.spbx-bench .spbx-bench-left #zoneList {
+    max-height: 34vh !important;
+    overflow-y: auto !important;
+}
+/* ZONE POPOUT below it, taking the rest — never overlaying, never hidden. */
+body.spb-xp.spbx-bench #zoneEditorFloat.spbx-bench-insp {
+    position: static !important;
+    left: auto !important; right: auto !important; top: auto !important; bottom: auto !important;
+    width: 100% !important; min-width: 0 !important; max-width: none !important;
+    height: auto !important; max-height: none !important;
+    flex: 1 1 auto !important;
+    min-height: 160px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    border: none !important;
+    border-top: 2px solid var(--xp-line) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    transform: none !important;
+    z-index: auto !important;
+}
+/* Collapsed/inactive states must never hide it — it is required to be visible. */
+body.spb-xp.spbx-bench #zoneEditorFloat.spbx-bench-insp.collapsed,
+body.spb-xp.spbx-bench #zoneEditorFloat.spbx-bench-insp:not(.active) {
+    display: flex !important;
+    visibility: visible !important;
+}
+body.spb-xp.spbx-bench #zoneEditorFloat.spbx-bench-insp .zone-detail-body {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+}
+body.spb-xp.spbx-bench #zoneFloatExpandTab { display: none !important; }
+
+/* LAYERS rail — always visible, scrolls internally. */
+body.spb-xp.spbx-bench .spbx-bench-right {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+}
+
+/* The channel strip + action row: one compact band under the artwork. */
+body.spb-xp.spbx-bench .spbx-bench-strip {
+    flex: 0 0 auto !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 4px 8px !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+}
+body.spb-xp.spbx-bench .spbx-bench-strip #specChannelDock {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    gap: 7px !important;
+    flex: 0 0 auto !important;
+    justify-content: flex-start !important;
+    min-height: 0 !important;
+}
+body.spb-xp.spbx-bench .spbx-bench-strip #previewBottomBar {
+    flex: 1 1 auto !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    justify-content: flex-end !important;
+}
+body.spb-xp.spbx-bench #splitViewContainer {
+    flex-direction: column !important;
+    padding: 8px !important;
+    gap: 6px !important;
+}
+
+body.spb-xp .spbx-zones-host { position: relative !important; }
+/* The inspector has to be editable, so the rail hosting it gets a usable floor
+   without each pack having to restate its width. max() keeps a pack's larger
+   choice intact. */
+body.spb-xp.spbx-insp-left.spbx-rails-free .left-panel {
+    width: max(var(--xp-left, 192px), 292px) !important;
+    min-width: max(var(--xp-left, 192px), 292px) !important;
+    max-width: max(var(--xp-left, 192px), 292px) !important;
+}
+
+body.spb-xp .spbx-zones-host > #zoneEditorFloat.spbx-inspector {
+    position: absolute !important;
+    left: 0 !important; right: 0 !important; top: 0 !important; bottom: 0 !important;
+    z-index: 8 !important;
+    width: auto !important; max-width: none !important;
+    display: flex !important; flex-direction: column !important;
+    background: var(--bg-card, #0d1117) !important;
+    border-right: none !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+    overflow: hidden !important;
+}
+/* Minimised: only the title strip remains, pinned to the top, so the zones list
+   underneath is usable. The panel is still mounted — nothing is detached. */
+body.spb-xp.spbx-insp-min-on .spbx-zones-host > #zoneEditorFloat.spbx-inspector {
+    bottom: auto !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45) !important;
+}
+body.spb-xp.spbx-insp-min-on .spbx-zones-host > #zoneEditorFloat.spbx-inspector > *:not(.spbx-insp-bar) {
+    display: none !important;
+}
+/* When the inspector is closed entirely, don't leave an empty slab. */
+body.spb-xp .spbx-zones-host > #zoneEditorFloat.spbx-inspector:not(.active) {
+    display: none !important;
+}
+
+body.spb-xp .spbx-insp-bar {
+    flex: 0 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; padding: 6px 8px; cursor: default;
+    background: rgba(0, 0, 0, 0.28);
+    border-bottom: 1px solid var(--xp-line);
+}
+body.spb-xp .spbx-insp-title {
+    font-size: 10px; font-weight: 800; letter-spacing: 1.6px; color: var(--xp-dim);
+}
+body.spb-xp .spbx-insp-min {
+    width: 24px; height: 20px; cursor: pointer; line-height: 1;
+    background: transparent; color: var(--xp-ink);
+    border: 1px solid var(--xp-line); border-radius: 5px; font-size: 11px;
+}
+body.spb-xp .spbx-insp-min:hover { border-color: var(--xp-ink); }
+/* The zones list must stay scrollable underneath a minimised inspector. */
+body.spb-xp.spbx-insp-min-on .spbx-zones-host #zoneList { padding-top: 4px !important; }
+
+/* Optional scrim so an open popout reads as "on top of" rather than "part of". */
+body.spb-xp .spbx-scrim {
+    position: fixed; inset: 0; z-index: 230;
+    background: rgba(2, 4, 10, 0.42);
+    backdrop-filter: blur(2px);
+    opacity: 0; pointer-events: none; transition: opacity 0.18s ease;
+}
+body.spb-xp.spbx-popout-open .spbx-scrim { opacity: 1; pointer-events: auto; }
+
+/* ---------------------------------------------------------------------------
+ * 6. SCROLL RESCUE
+ * Several packs collapse a wide bar into a narrow container. Anything holding
+ * moved tool buttons needs to scroll rather than clip — clipping is how you
+ * silently "remove" a tool, which the owner explicitly forbade.
+ * ------------------------------------------------------------------------ */
+body.spb-xp .spbx-scroll-y { overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; }
+body.spb-xp .spbx-scroll-x { overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
+body.spb-xp .spbx-scroll-x::-webkit-scrollbar,
+body.spb-xp .spbx-scroll-y::-webkit-scrollbar { width: 7px; height: 7px; }
+body.spb-xp .spbx-scroll-x::-webkit-scrollbar-thumb,
+body.spb-xp .spbx-scroll-y::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18); border-radius: 4px;
+}
+
+/* ---------------------------------------------------------------------------
+ * 7. SHARED WIDGETS (palette, sheet, pill) used by several experiences
+ * ------------------------------------------------------------------------ */
+body.spb-xp .spbx-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px;
+    background: var(--xp-glass-hi); border: 1px solid var(--xp-line);
+    color: var(--xp-ink); font-size: 11px; cursor: pointer;
+}
+body.spb-xp .spbx-pill:hover { border-color: rgba(255, 255, 255, 0.3); }
+
+body.spb-xp .spbx-sheet {
+    position: fixed; inset: 0; z-index: 9400;
+    display: none; align-items: flex-start; justify-content: center;
+    background: rgba(2, 4, 10, 0.72);
+    backdrop-filter: blur(6px);
+}
+body.spb-xp .spbx-sheet.open { display: flex; }
+body.spb-xp .spbx-sheet-inner {
+    margin-top: 12vh; width: min(720px, 92vw);
+    background: var(--xp-glass-hi); border: 1px solid var(--xp-line);
+    border-radius: 14px; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.7);
+    overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+ * 8. SHORT VIEWPORTS — the horizontal-band tax
+ *
+ * Found 2026-07-29 by widening the gate to 1366x768 (the most common laptop
+ * panel there is). Every pack that puts a horizontal band above or below the
+ * artwork flips from width-limited to HEIGHT-limited on a short screen, and six
+ * of them came out SMALLER THAN CLASSIC — Arcade and Card Deck by ~38%. They
+ * had passed 1920x1080 and 1100x800 for hours; the failure only existed at a
+ * size nobody had measured.
+ *
+ * Height budget at 768: 768 − header 62 − toolbar 46 − strip ~70 − action bar
+ * ~76 ≈ 514 for band + artwork. A 132px band leaves 382 -> a 191px box, well
+ * under Classic's 270. So the bands shrink when vertical space is scarce.
+ * Nothing is hidden — the bands scroll, exactly as they do at full height.
+ * ------------------------------------------------------------------------ */
+@media (max-height: 860px) {
+    /* Owner: the COMBINED/R/G/B previews "can be small". On a short screen that
+       permission is worth real estate — 56px -> 42px gives every pack ~14px of
+       strip height back, and they stay perfectly square. */
+    body.spb-xp { --xp-ch: 42px !important; }
+    /* The in-flow tool-options bar costs ~48px, which is exactly the deficit
+       that put 11 packs below Classic at 1366x768. One tight row here; the MORE
+       control still reaches every option, so nothing is lost. */
+    body.spb-xp #toolOptionsBar.spbx-opts-inflow {
+        max-height: 30px !important;
+        padding-top: 2px !important;
+        padding-bottom: 2px !important;
+        margin-bottom: 2px !important;
+        gap: 5px !important;
+    }
+    body.spb-xp #previewTopStrip { padding-top: 3px !important; padding-bottom: 3px !important; }
+    /* The strip measured 190px on Card Deck and Terminal — not their signature
+       bands, but the ACTION BAR wrapping to ~3 rows inside it. Compact the bar's
+       own controls so it wraps to one or two; every control stays present. */
+    body.spb-xp #previewBottomBar.spbx-relocated { font-size: 10px !important; row-gap: 2px !important; }
+    body.spb-xp #previewBottomBar.spbx-relocated .btn,
+    body.spb-xp #previewBottomBar.spbx-relocated button {
+        padding: 2px 7px !important;
+        font-size: 10px !important;
+        min-height: 0 !important;
+        line-height: 1.25 !important;
+    }
+    body.spb-xp #previewBottomBar.spbx-relocated .btn-render {
+        padding: 4px 14px !important;
+        font-size: 11px !important;
+    }
+    body.spb-xp #previewBottomBar.spbx-relocated .zoom-controls,
+    body.spb-xp #previewBottomBar.spbx-relocated #eyedropperDockTop { gap: 3px !important; }
+    body.spb-xp #previewTopStrip #specChannelDock { gap: 6px !important; }
+    body.spb-xp #splitViewContainer { padding-bottom: 8px !important; }
+    body.spb-xp #rightPanel.xp-deck-rail { max-height: 62px !important; }
+
+    /* Packs that carry an EXTRA band of their own are still short of Classic at
+       1366x768 after the shared trim. Each keeps its identity; only the band's
+       padding gives. Deficits measured: mixingdesk -3px, pitwall -11, stages
+       -18, terminal -26, carddeck -74. */
+    body.spb-xp.spb-xp-03-mixingdesk .xp-desk-bridge { padding: 4px 10px !important; gap: 8px !important; }
+    body.spb-xp.spb-xp-05-pitwall .xp-pit-cell { padding: 2px 9px !important; }
+    body.spb-xp.spb-xp-05-pitwall #leftPanel.xp-pit-board { max-height: 62px !important; }
+    body.spb-xp.spb-xp-09-stages .xp-st-hint { display: none !important; }
+    body.spb-xp.spb-xp-09-stages .xp-st-step { padding: 7px 10px !important; }
+    body.spb-xp.spb-xp-11-terminal .xp-tm { height: 54px !important; }
+    /* Card Deck's bottom rail is the whole idea, but at this height it has to be
+       a single scrolling row of cards rather than a block. */
+    body.spb-xp.spb-xp-06-carddeck #rightPanel.xp-deck-rail {
+        max-height: 46px !important;
+        overflow-y: auto !important;
+    }
+    body.spb-xp.spb-xp-06-carddeck .xp-deck-trigger { top: 4px !important; padding: 4px 10px !important; }
+    body.spb-xp #leftPanel.xp-pit-board { max-height: 74px !important; }
+    body.spb-xp #rightPanel.xp-deck-rail { max-height: 82px !important; }
+    body.spb-xp #leftPanel.xp-ar-roster { max-height: 74px !important; }
+    body.spb-xp .xp-tm { height: 84px !important; }
+    body.spb-xp .xp-pit-cell { padding: 3px 10px !important; }
+    body.spb-xp .xp-cr-cell { padding: 3px 10px !important; }
+    /* Lookbook's masthead is generous by design; keep the identity, lose the air. */
+    body.spb-xp .xp-lb-masthead { padding: 6px 20px 4px !important; }
+    body.spb-xp .xp-lb-title { font-size: 17px !important; }
+    /* Stages: keep the hint (it is the teaching text) but stop it costing a row. */
+    body.spb-xp .xp-st-hint { padding: 2px 14px !important; font-size: 10px !important; }
+    body.spb-xp .xp-st-step { padding: 9px 12px !important; }
+    /* Give every pack a little back from the container padding too. */
+    body.spb-xp #splitViewContainer { padding: 5px !important; }
+
+    /* Two packs style their own container/bands at higher specificity than the
+       rule above (pack scope = body.spb-xp-NN, one class more than body.spb-xp),
+       so the shared shrink lost to them and they stayed under Classic on a
+       laptop: Terminal 260sq and Arcade 220sq vs Classic 270sq. Matched here. */
+    body.spb-xp.spb-xp-11-terminal #splitViewContainer { padding: 4px !important; }
+    body.spb-xp.spb-xp-11-terminal .xp-tm { height: 66px !important; }
+    body.spb-xp.spb-xp-11-terminal .xp-tm-log { font-size: 10.5px !important; padding: 3px 8px !important; }
+    body.spb-xp.spb-xp-11-terminal .xp-tm-row { padding: 3px 8px !important; }
+
+    body.spb-xp.spb-xp-17-arcade #splitViewContainer { padding: 5px !important; gap: 6px !important; }
+    body.spb-xp.spb-xp-17-arcade #leftPanel.xp-ar-roster { max-height: 62px !important; }
+    body.spb-xp.spb-xp-17-arcade #splitSource,
+    body.spb-xp.spb-xp-17-arcade #splitPreview { border-width: 2px !important; }
+    body.spb-xp.spb-xp-17-arcade .xp-ar-strip { padding: 5px 10px !important; }
+}
+
+/* Motion respect — several experiences lean on animation. */
+@media (prefers-reduced-motion: reduce) {
+    body.spb-xp * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

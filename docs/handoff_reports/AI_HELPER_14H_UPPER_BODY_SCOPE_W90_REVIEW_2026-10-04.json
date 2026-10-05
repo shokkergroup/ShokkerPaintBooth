@@ -1,0 +1,81 @@
+{
+  "task": "W90 independent upper-body scope review and private dispatch-guard replay",
+  "date": "2026-10-04",
+  "status": "PASS_WITH_LIMITS_PRIVATE_CANDIDATE",
+  "freshOracle": {
+    "path": "_easy_claude_work/ai14h_w90_review/fresh-oracle.json",
+    "sha256": "9A970B1A02E1E7F034F0BBAA2B075FA8E5EC9F620A3CBCC8889FED1B68DDCD82",
+    "cases": 20,
+    "frozenBeforeW85CandidateSourceInspection": true,
+    "families": ["ambiguous relative body/extents", "known exact parts", "explicit whole-car/body/everything", "stale owner atomics"]
+  },
+  "sourcePins": {
+    "integration9ControllerBaseline": {
+      "path": "_easy_claude_work/ai14h_generation3_candidate/integration9/js/spb-pro-ai.js",
+      "sha256": "AAE99CDD02B00BDD78D1F02FED85C18BC72B82CAB9A66CEB7E0E3590EC3E8790"
+    },
+    "originalW85Candidate": {
+      "path": "_easy_claude_work/ai14h_w85_review/candidate/spb-pro-ai.js",
+      "sha256": "E7ECEAF11B2BFC1A39E48C86A07F8DAB95EC046C678087A8168B6E8CC016F70E"
+    },
+    "privateW90Candidate": {
+      "path": "_easy_claude_work/ai14h_w90_review/candidate/spb-pro-ai.js",
+      "sha256": "3EAA2D22CF26DEBF9E7FD580DF096D02F21C6FE8CABF78FF91F59B36668454B6"
+    },
+    "design": {
+      "path": "_easy_claude_work/ai14h_w85_review/candidate/spb-pro-design.js",
+      "sha256": "4648DE3231015497CC9FF816612A542097A1AD14038A7210753F6CDBFD88D832"
+    },
+    "edit": {
+      "path": "_easy_claude_work/ai14h_generation3_runtime3/js/spb-pro-edit.js",
+      "sha256": "99703873013E198857D9ACEAA334821098E53DCAA9D55E14DBD1EC50E58604DE"
+    },
+    "W85ProducerOracle": {
+      "path": "_easy_claude_work/ai14h_w85_review/fresh-oracle.json",
+      "sha256": "DED5D8A5C249024DEF2043F671D5E13498C33E4720E49ABE45BEB78F94B44971"
+    }
+  },
+  "baselineFinding": {
+    "severity": "P1",
+    "request": "Make the front section red.",
+    "designRoute": "D.lookRequest returned query=section, whole=true, and the red color.",
+    "controllerSink": "spb-pro-ai.js:2380 adds a body target with region.everything when lr.whole is true.",
+    "controlledRouteEvidence": "With actual W85 offlineAskCore/offlineLookAsk and a controlled successful resolveLook result, the request queued one add_zone with region {everything:true, paintable:true}. The controlled result proves route amplification, not that the live catalog contains a matching look named section."
+  },
+  "privateRepair": {
+    "path": "_easy_claude_work/ai14h_w90_review/candidate/spb-pro-ai.js",
+    "line": 2853,
+    "change": "A shared offlineAskCore preflight rejects imperative relative body extents before look, designer, advisor or other fallbacks. It excludes explicitly whole/entire car, vehicle, body and everything requests. The response names the ambiguous region and says nothing changed.",
+    "sourceUntouched": true
+  },
+  "results": {
+    "command": "node tests/ai_upper_body_scope_w90_review_contract.cjs",
+    "status": "PASS_WITH_LIMITS_PRIVATE_W90_GUARD_ONE_SAFE_UNSUPPORTED_SYNONYM",
+    "relativeExtentRefusals": "12/12; all queues empty with explicit scope clarification",
+    "knownExactPartControls": "3/3; front bumper, hood and roof remain part-scoped",
+    "explicitWholeScopeControls": "whole car blue, everything gold, plus post-inspection whole body blue all queue region.everything=true",
+    "allPanelsSupplement": "Make all panels blue safely queues nothing and asks for exact supported parts; the explicit plural-all synonym is not currently completed.",
+    "entireVehicleSupplement": "Recolor the entire vehicle red safely queues nothing on the no-hit offline look path. A controlled resolve maps it to everything; the no-hit route is less responsive than the explicit whole-car/body controls.",
+    "staleOwner": "The stale roof+hood candidate queues zero versus two baseline adds; stale roof alone also queues zero and says it did not add a replacement.",
+    "controlledLookHit": "Unpatched W85 route queues one whole-car target; private W90 shared guard queues zero before resolveLook.",
+    "providerCalls": 0,
+    "nativeCalls": 0
+  },
+  "retainedW85Regression": {
+    "command": "node tests/ai_upper_body_scope_w85_contract.cjs",
+    "status": "PASS_WITH_LIMITS",
+    "cases": 13,
+    "ambiguousRefusals": 9,
+    "wholeCarControls": 3,
+    "staleMultiPartBaselineQueue": 2,
+    "staleMultiPartCandidateQueue": 0,
+    "providerCalls": 0,
+    "nativeCalls": 0
+  },
+  "limits": [
+    "Tests execute actual pinned controller, D/E planners and queue functions, with controlled source identity, look resolution and add/edit callbacks. They do not mutate zones, render, measure mask geometry, or exercise a native app.",
+    "The successful look hit is deliberately controlled to prove the unsafe target sink; it is not evidence of a current catalog match for the ambiguous free word.",
+    "All panels and entire vehicle synonym gaps are safe no-ops/refusals in the tested no-hit route; only explicit whole car, body and everything controls are credited as complete whole-scope positives.",
+    "W80 merged integration is outside the pinned W85 inputs and remains unreviewed; this isolated guard is not promotion/native acceptance."
+  ]
+}

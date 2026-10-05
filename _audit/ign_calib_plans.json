@@ -1,0 +1,374 @@
+{
+ "fable": [
+  {
+   "id": "fable_saffron_circuit",
+   "knee": 2,
+   "crush": true,
+   "ss": null
+  },
+  {
+   "id": "fable_oilforge",
+   "knee": null,
+   "crush": true,
+   "ss": null
+  },
+  {
+   "id": "fable_quicksilver_garden",
+   "knee": null,
+   "crush": true,
+   "ss": null
+  },
+  {
+   "id": "fable_nightbloom",
+   "knee": null,
+   "crush": true,
+   "ss": null
+  },
+  {
+   "id": "fable_magnetite_flow",
+   "knee": null,
+   "crush": true,
+   "ss": null
+  },
+  {
+   "id": "fable_comet_parade",
+   "knee": null,
+   "crush": true,
+   "ss": null
+  },
+  {
+   "id": "fable_static_bloom",
+   "knee": 0,
+   "crush": false,
+   "ss": null
+  }
+ ],
+ "rw": [
+  {
+   "id": "butterfly_monarch",
+   "knee": null,
+   "crush": true,
+   "ss": 1.43
+  },
+  {
+   "id": "scarab_gold",
+   "knee": null,
+   "crush": true,
+   "ss": 1.44
+  },
+  {
+   "id": "moth_luna",
+   "knee": null,
+   "crush": true,
+   "ss": 1.41
+  },
+  {
+   "id": "wasp_warning",
+   "knee": null,
+   "crush": true,
+   "ss": 1.39
+  },
+  {
+   "id": "firefly_glow",
+   "knee": null,
+   "crush": true,
+   "ss": 1.39
+  },
+  {
+   "id": "anime_energy_aura",
+   "knee": null,
+   "crush": true,
+   "ss": 1.42
+  },
+  {
+   "id": "anime_neon_outline",
+   "knee": 2,
+   "crush": true,
+   "ss": 1.37
+  },
+  {
+   "id": "neon_toxic_green",
+   "knee": 2,
+   "crush": true,
+   "ss": 1.49
+  },
+  {
+   "id": "neon_electric_blue",
+   "knee": 2,
+   "crush": true,
+   "ss": 1.36
+  },
+  {
+   "id": "neon_blacklight",
+   "knee": 2,
+   "crush": true,
+   "ss": 1.34
+  },
+  {
+   "id": "neon_red_alert",
+   "knee": 0,
+   "crush": true,
+   "ss": 1.36
+  },
+  {
+   "id": "neon_cyber_yellow",
+   "knee": 0,
+   "crush": true,
+   "ss": 1.4
+  },
+  {
+   "id": "neon_rainbow_tube",
+   "knee": 0,
+   "crush": true,
+   "ss": 1.4
+  },
+  {
+   "id": "mystichrome",
+   "knee": null,
+   "crush": true,
+   "ss": 1.51
+  },
+  {
+   "id": "prizm_dark_matter",
+   "knee": null,
+   "crush": true,
+   "ss": 1.39
+  },
+  {
+   "id": "prizm_fire_ice",
+   "knee": null,
+   "crush": true,
+   "ss": 1.47
+  },
+  {
+   "id": "prizm_iridescent",
+   "knee": 2,
+   "crush": true,
+   "ss": 1.36
+  },
+  {
+   "id": "prizm_midnight",
+   "knee": 2,
+   "crush": true,
+   "ss": 1.34
+  },
+  {
+   "id": "prizm_neon",
+   "knee": 0,
+   "crush": true,
+   "ss": 1.36
+  },
+  {
+   "id": "beetle_rainbow",
+   "knee": 0,
+   "crush": true,
+   "ss": 1.36
+  },
+  {
+   "id": "dragonfly_wing",
+   "knee": 0,
+   "crush": true,
+   "ss": 1.38
+  },
+  {
+   "id": "neon_pink_blaze",
+   "knee": 0,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "neon_ice_white",
+   "knee": 0,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "chameleon_aurora",
+   "knee": 2,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "chameleon_frost",
+   "knee": 0,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "prizm_black_rainbow",
+   "knee": 0,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "prizm_blood_moon",
+   "knee": 2,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "prizm_copper_flame",
+   "knee": 2,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "prizm_mystichrome",
+   "knee": 2,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "prizm_oceanic",
+   "knee": 0,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "prizm_solar",
+   "knee": 0,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "prizm_spectrum",
+   "knee": 0,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "prizm_toxic_waste",
+   "knee": 0,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "beetle_jewel",
+   "knee": null,
+   "crush": true,
+   "ss": 1.51
+  },
+  {
+   "id": "anime_speed_lines",
+   "knee": 0,
+   "crush": true,
+   "ss": 1.34
+  },
+  {
+   "id": "anime_gradient_hair",
+   "knee": 2,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "anime_crystal_facet",
+   "knee": null,
+   "crush": true,
+   "ss": 1.51
+  },
+  {
+   "id": "chameleon_copper",
+   "knee": null,
+   "crush": true,
+   "ss": 1.52
+  },
+  {
+   "id": "chameleon_ocean",
+   "knee": 0,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "chameleon_phoenix",
+   "knee": 0,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "prizm_adaptive",
+   "knee": null,
+   "crush": true,
+   "ss": 1.49
+  },
+  {
+   "id": "prizm_aurora_shift",
+   "knee": 0,
+   "crush": false,
+   "ss": null
+  },
+  {
+   "id": "prizm_holographic",
+   "knee": 0,
+   "crush": false,
+   "ss": null
+  }
+ ],
+ "cult": [
+  {
+   "id": "lfr_rockets_red_glare",
+   "knee": 2,
+   "crush": true,
+   "ss": null
+  },
+  {
+   "id": "lfr_freedom_forge",
+   "knee": 2,
+   "crush": true,
+   "ss": null
+  },
+  {
+   "id": "lfr_amber_waves",
+   "knee": 0,
+   "crush": true,
+   "ss": null
+  },
+  {
+   "id": "lfr_old_glory_flux",
+   "knee": null,
+   "crush": true,
+   "ss": null
+  },
+  {
+   "id": "lfr_liberty_torch",
+   "knee": null,
+   "crush": true,
+   "ss": null
+  },
+  {
+   "id": "lfr_eagle_ascendant",
+   "knee": null,
+   "crush": true,
+   "ss": null
+  },
+  {
+   "id": "lfr_we_the_people",
+   "knee": null,
+   "crush": true,
+   "ss": null
+  },
+  {
+   "id": "lfr_midnight_militia",
+   "knee": null,
+   "crush": true,
+   "ss": null
+  },
+  {
+   "id": "lfr_glory_chrome",
+   "knee": null,
+   "crush": true,
+   "ss": null
+  },
+  {
+   "id": "lfr_sparkler_dusk",
+   "knee": null,
+   "crush": true,
+   "ss": null
+  }
+ ],
+ "ovl": [
+  "spec_lfr_capitol_veins",
+  "spec_lfr_corridor_sheen",
+  "spec_lfr_firework_radial",
+  "spec_lfr_liberty_colorflip"
+ ]
+}

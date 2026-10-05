@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_flannel_red",
+  "display_name": "Flannel: Flannel Red",
+  "promise": "Small red-and-black buffalo checks in brushed cotton, with crossed yarn, fuzzy nap and gently worn red threads.",
+  "carrier_grammar": "Small red-and-black buffalo checks in brushed cotton, with crossed yarn, fuzzy nap and gently worn red threads.; single full-canvas image, no duplicated quadrants. Fine features: red buffalo warp, black buffalo weft, raised crossing yarn, brushed thread nap, red yarn abrasion, deep woven gaps",
+  "spec_grammar": "Feature-specific selectors partition red buffalo warp, black buffalo weft, raised crossing yarn, brushed thread nap, red yarn abrasion, deep woven gaps. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "red buffalo warp",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "black buffalo weft",
+      "role": "Material feature selected from artwork by g:<:0.32"
+    },
+    {
+      "name": "raised crossing yarn",
+      "role": "Material feature selected from artwork by detail:>:0.61"
+    },
+    {
+      "name": "brushed thread nap",
+      "role": "Material feature selected from artwork by fine:>:0.69"
+    },
+    {
+      "name": "red yarn abrasion",
+      "role": "Material feature selected from artwork by x:>:0.74"
+    },
+    {
+      "name": "deep woven gaps",
+      "role": "Material feature selected from artwork by detail:<:0.18"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "red buffalo warp",
+      "black buffalo weft",
+      "raised crossing yarn",
+      "brushed thread nap",
+      "red yarn abrasion",
+      "deep woven gaps"
+    ],
+    "R": [
+      "red buffalo warp",
+      "black buffalo weft",
+      "raised crossing yarn",
+      "brushed thread nap",
+      "red yarn abrasion",
+      "deep woven gaps"
+    ],
+    "Cc": [
+      "red buffalo warp",
+      "black buffalo weft",
+      "raised crossing yarn",
+      "brushed thread nap",
+      "red yarn abrasion",
+      "deep woven gaps"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "red buffalo warp",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "black buffalo weft",
+      "range": [
+        [
+          0,
+          175,
+          190
+        ],
+        [
+          8,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "raised crossing yarn",
+      "range": [
+        [
+          0,
+          100,
+          130
+        ],
+        [
+          12,
+          195,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "brushed thread nap",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "red yarn abrasion",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "deep woven gaps",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_disc_rainbow",
+      "difference": "Optical continuous grating differs from this named material construction."
+    },
+    {
+      "finish_id": "at_flannel_forest",
+      "difference": "Woven windowpane cotton differs from this named material construction."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "red buffalo warp",
+      "black buffalo weft",
+      "raised crossing yarn",
+      "brushed thread nap",
+      "red yarn abrasion",
+      "deep woven gaps"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_flannel_red / Small red-and-black buffalo checks in brushed cotton, with crossed yarn, fuzzy nap and gently worn red threads.",
+  "spec_key": "at_flannel_red / red buffalo warp all; black buffalo weft g:<:0.32; raised crossing yarn detail:>:0.61; brushed thread nap fine:>:0.69; red yarn abrasion x:>:0.74; deep woven gaps detail:<:0.18",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

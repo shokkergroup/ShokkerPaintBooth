@@ -1,0 +1,28 @@
+{
+  "contract": "spb-ai-part-followup-harness-refresh/1",
+  "date": "2026-10-03",
+  "scope": "Refresh only tests/ai_part_followup_contract.cjs and tests/ai_part_followup_review_contract.cjs; no production, Wiki, mirror, provider or native UI edits.",
+  "production-source": {
+    "path": "js/spb-pro-ai.js",
+    "sha256-at-review-start": "a5ed3023735381f1349f367699281749c4a96c54b0d61ab1e612ae780d5cfb88",
+    "sha256-after-final-rerun": "b53750a6beff560d2917458efe38bcf1ecd4e98198ffada938ba0721e6b30e79",
+    "note": "The source hash changed during this review under the root-owned routing lane. Both harness commands were rerun against the final hash recorded here."
+  },
+  "harness-changes": [
+    "Both harnesses now extract production part ownership validation, registry snapshot/reconcile, mark/register helpers, guarded applyQueue and queueEditZones.",
+    "Compilation handlers stage add/edit operations; the real ZoneKit batch and production registry registrar run only when the staged queue is committed.",
+    "Existing selector, provenance, car/layout, mute, rename, ambiguity, noReg and color/material preservation cases remain.",
+    "Added assertions that abandoned plans preserve the committed owner and leave zones unchanged, while failed ZoneKit results cannot commit a planned rename or material change."
+  ],
+  "validation": {
+    "commands": [
+      "node tests/ai_part_followup_contract.cjs",
+      "node tests/ai_part_followup_review_contract.cjs"
+    ],
+    "results": [
+      "PASS ai_part_followup_contract.cjs (real ZoneKit, production staged apply and registry lifecycle)",
+      "PASS independent staged actual-zone follow-up review (commit-only registration, abandoned plans, failed results, reuse and stale identity)"
+    ],
+    "production-issues-observed": []
+  }
+}

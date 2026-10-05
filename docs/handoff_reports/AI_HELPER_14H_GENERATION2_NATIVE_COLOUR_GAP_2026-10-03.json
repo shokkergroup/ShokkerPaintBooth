@@ -1,0 +1,128 @@
+{
+  "title": "Generation2 native prohibitions and current-color follow-up gap",
+  "date": "2026-10-04",
+  "session": "f6e712ef218a",
+  "loaded_source_snapshot": "_easy_claude_work/ai14h_generation2_sources",
+  "proAI_sha256": "115f602d49e465b6f49530b07a4c2e4b81e8d6089c2d8204bcae9d57807690d4",
+  "provider_calls": 0,
+  "prohibitions": {
+    "operation": "44679d4759",
+    "done": true,
+    "result": {
+      "results": [
+        {
+          "text": "Do not make the roof blue.",
+          "reply": {
+            "text": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request.",
+            "queue": [],
+            "entry": {
+              "text": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request.",
+              "lines": [],
+              "notes": []
+            }
+          },
+          "settled": true,
+          "zonesExact": true,
+          "paintExact": true,
+          "specExact": true
+        },
+        {
+          "text": "Keep the roof red; never recolor it green.",
+          "reply": {
+            "text": "Nothing was changed. I can’t yet guarantee this combined request leaves the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+            "queue": [],
+            "entry": {
+              "text": "Nothing was changed. I can’t yet guarantee this combined request leaves the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+              "lines": [],
+              "notes": []
+            }
+          },
+          "settled": true,
+          "zonesExact": true,
+          "paintExact": true,
+          "specExact": true
+        }
+      ],
+      "providerAttempts": 0
+    }
+  },
+  "current_colour_gap": {
+    "setup": [
+      "Make only the roof blue.",
+      "Make only the roof chrome."
+    ],
+    "observed_setup": "Actual queue one edit on existing roof UUID; color#1450b4 then chrome finish only,6 zones.",
+    "requests": [
+      "Change the blue on the roof to pale red.",
+      "Change the blue on the roof to dark blue."
+    ],
+    "observed": "Both replies said no blue exists and offered source cyan27% instead; no queued mutation. Original source palette black42/cyan27/white11/yellow6/green2 omits current owned roof blue.",
+    "verdict": "SAFE_BUT_INCOMPLETE; no native hue transform executed; mocked W7 transform projection is not native rendered acceptance."
+  },
+  "audit_limitations": [
+    "Audit script incorrectly called _undoLast after no-op responses, which undid earlier setup changes. Those comparisons cannot establish Undo failure. It subsequently restored the canonical saved red-chrome roof metadata with an actual one-owner finish request.",
+    "Saved earlier checkpoint previews were896paint/640spec; current settled outputs1024/1024. URL inequality across differing output dimensions is not pixel-change evidence."
+  ],
+  "fixture_recovery": {
+    "operation": "57384bbd8c",
+    "done": true,
+    "result": {
+      "reply": {
+        "text": "Done — the roof is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched. (I updated your earlier change to the same colour instead of stacking a new one on top.)\nNEXT: Undo | A bit more | Show me options for the roof | Make the black matte | Make the cyan metallic",
+        "queue": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "name": "Roof chrome",
+              "finish": "base::f_chrome"
+            }
+          }
+        ],
+        "entry": {
+          "text": "Done — the roof is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched. (I updated your earlier change to the same colour instead of stacking a new one on top.)",
+          "lines": [
+            "Roof chrome: finish Chrome"
+          ],
+          "notes": []
+        }
+      },
+      "settled": true,
+      "restoredSavedChrome": {
+        "zonesExact": true,
+        "paintExact": false,
+        "specExact": false
+      },
+      "idSame": true,
+      "providerAttempts": 0
+    }
+  },
+  "preview_dimension_diagnostic": {
+    "done": true,
+    "result": {
+      "savedPaint": {
+        "width": 896,
+        "height": 896,
+        "pixelFNV": "8d59194d"
+      },
+      "currentPaint": {
+        "width": 1024,
+        "height": 1024,
+        "pixelFNV": "223385ba"
+      },
+      "savedSpec": {
+        "width": 640,
+        "height": 640,
+        "pixelFNV": "cfffe944"
+      },
+      "currentSpec": {
+        "width": 1024,
+        "height": 1024,
+        "pixelFNV": "946918ca"
+      },
+      "metadataExact": true,
+      "providerAttempts": 0
+    }
+  },
+  "next": "W22 read-only current-owned-palette audit; later repair must verify actual rendered output at a consistent dimension."
+}

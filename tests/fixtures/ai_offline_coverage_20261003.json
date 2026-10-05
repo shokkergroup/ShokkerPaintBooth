@@ -1,0 +1,221 @@
+{
+  "purpose": "Frozen natural-language coverage prompts authored before routing source inspection. Short/long pairs preserve the same request semantics.",
+  "cases": [
+    {
+      "id": "S01-short",
+      "pair": "S01",
+      "variant": "short",
+      "ask": "Paint only the hood matte blue.",
+      "word_count": 6,
+      "intended_scope": "part-only",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "S01-long",
+      "pair": "S01",
+      "variant": "long",
+      "ask": "For my next track day, please paint only the hood matte blue. Leave every other panel exactly as it is because I already like the current body color and do not want the rest changed.",
+      "word_count": 35,
+      "intended_scope": "part-only",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "S02-short",
+      "pair": "S02",
+      "variant": "short",
+      "ask": "Make the roof pearl gold with fine hex cells only there.",
+      "word_count": 11,
+      "intended_scope": "part-only",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "S02-long",
+      "pair": "S02",
+      "variant": "long",
+      "ask": "For the next version of this design, make the roof pearl gold with fine hex cells only there. Keep the hood, doors, and every other painted surface as they currently are.",
+      "word_count": 31,
+      "intended_scope": "part-only",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "S03-short",
+      "pair": "S03",
+      "variant": "short",
+      "ask": "Set the whole car to silver.",
+      "word_count": 6,
+      "intended_scope": "whole-car",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "S03-long",
+      "pair": "S03",
+      "variant": "long",
+      "ask": "For a clean new look before the weekend, set the whole car to silver. Please apply the same silver base across every painted body panel and do not add any stripes or patterns.",
+      "word_count": 33,
+      "intended_scope": "whole-car",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "S04-short",
+      "pair": "S04",
+      "variant": "short",
+      "ask": "Make the whole car blue, then add gold snake scales to the hood only.",
+      "word_count": 14,
+      "intended_scope": "whole-car+hood",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "S04-long",
+      "pair": "S04",
+      "variant": "long",
+      "ask": "Start with a blue base across the whole car, then add gold snake scales to the hood only. Keep that order, and make sure the scale layer stays confined to the hood while the other panels remain blue.",
+      "word_count": 38,
+      "intended_scope": "whole-car+hood",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "S05-short",
+      "pair": "S05",
+      "variant": "short",
+      "ask": "Make the roof blue and hood gold; leave all other panels alone.",
+      "word_count": 12,
+      "intended_scope": "multi-part-with-exclusion",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "S05-long",
+      "pair": "S05",
+      "variant": "long",
+      "ask": "Please make the roof blue and the hood gold, while leaving all other panels alone. I want those two named parts changed independently and the remaining body paint preserved exactly as it is now.",
+      "word_count": 34,
+      "intended_scope": "multi-part-with-exclusion",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "S06-short",
+      "pair": "S06",
+      "variant": "short",
+      "ask": "Turn the hood red, then correct it to matte black only.",
+      "word_count": 11,
+      "intended_scope": "correction-order-part-only",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "S06-long",
+      "pair": "S06",
+      "variant": "long",
+      "ask": "First turn the hood red, but that is a correction: the final request is matte black on the hood only. Keep the rest of the car unchanged and use the corrected color as the final result.",
+      "word_count": 36,
+      "intended_scope": "correction-order-part-only",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "S07-short",
+      "pair": "S07",
+      "variant": "short",
+      "ask": "Put a pearl white base on the hood only; keep the roof blue.",
+      "word_count": 13,
+      "intended_scope": "part-only-exclusion",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "S07-long",
+      "pair": "S07",
+      "variant": "long",
+      "ask": "I want a pearl white base on the hood only, and the roof must stay blue. Preserve the current color on all remaining panels too, since this is a local hood change rather than a new full-car scheme.",
+      "word_count": 38,
+      "intended_scope": "part-only-exclusion",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "S08-short",
+      "pair": "S08",
+      "variant": "short",
+      "ask": "Make the entire body matte black, then put a blue carbon layer on just the roof.",
+      "word_count": 16,
+      "intended_scope": "part-last-order",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "S08-long",
+      "pair": "S08",
+      "variant": "long",
+      "ask": "Please make the entire body matte black first, then put a blue carbon layer on just the roof. The black base should cover the full car while the carbon finish remains limited to the roof panel.",
+      "word_count": 36,
+      "intended_scope": "part-last-order",
+      "expected_capability": "offline-supported"
+    },
+    {
+      "id": "U01-short",
+      "pair": "U01",
+      "variant": "short",
+      "ask": "Make the paint glow in the dark and pulse.",
+      "word_count": 9,
+      "intended_scope": "unsupported-animation",
+      "expected_capability": "offline-clarify-or-capability-limit"
+    },
+    {
+      "id": "U01-long",
+      "pair": "U01",
+      "variant": "long",
+      "ask": "For the night race, make the paint glow in the dark and pulse continuously. I need actual light emission and visible animation on track, rather than a still reflective finish that only resembles a glow.",
+      "word_count": 35,
+      "intended_scope": "unsupported-animation",
+      "expected_capability": "offline-clarify-or-capability-limit"
+    },
+    {
+      "id": "U02-short",
+      "pair": "U02",
+      "variant": "short",
+      "ask": "Copy the colors from the photo I meant to attach.",
+      "word_count": 10,
+      "intended_scope": "missing-reference-photo",
+      "expected_capability": "offline-clarify"
+    },
+    {
+      "id": "U02-long",
+      "pair": "U02",
+      "variant": "long",
+      "ask": "Please copy the colors and sponsor placement from the reference photo I meant to attach. There is no image in this message, so use that missing photo as the source instead of guessing a palette or inventing its layout.",
+      "word_count": 39,
+      "intended_scope": "missing-reference-photo",
+      "expected_capability": "offline-clarify"
+    },
+    {
+      "id": "U03-short",
+      "pair": "U03",
+      "variant": "short",
+      "ask": "Save this project and email it to the team.",
+      "word_count": 9,
+      "intended_scope": "external-save-email",
+      "expected_capability": "offline-unsupported"
+    },
+    {
+      "id": "U03-long",
+      "pair": "U03",
+      "variant": "long",
+      "ask": "When the repaint is finished, save the project file and email it to the whole team with a short note. Please send it to the usual address even though I have not provided an email address here.",
+      "word_count": 37,
+      "intended_scope": "external-save-email",
+      "expected_capability": "offline-unsupported"
+    },
+    {
+      "id": "U04-short",
+      "pair": "U04",
+      "variant": "short",
+      "ask": "Replace the rear wing with a moving LED sign.",
+      "word_count": 9,
+      "intended_scope": "unknown-part-physical-change",
+      "expected_capability": "offline-clarify"
+    },
+    {
+      "id": "U04-long",
+      "pair": "U04",
+      "variant": "long",
+      "ask": "For this concept, replace the rear wing with a moving LED sign that animates during the race. Keep the rest of the car paint untouched; I mean a physical moving display, not a painted graphic that imitates one.",
+      "word_count": 38,
+      "intended_scope": "unknown-part-physical-change",
+      "expected_capability": "offline-clarify"
+    }
+  ]
+}

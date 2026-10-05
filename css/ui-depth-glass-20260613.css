@@ -1,0 +1,469 @@
+/* ============================================================================
+   SHOKKER PAINT BOOTH — DEPTH + MATERIAL LAYER  (glass / elevation / glow)
+   File: css/ui-depth-glass-20260613.css
+   Created: 2026-06-13   Lane: UI/UX (DEPTH + MATERIAL)
+
+   OWNER BRIEF
+   -----------
+   "Subtle glowing elements... high scale feel and quality so it don't feel
+   boring. This is SHOKKER PAINT BOOTH — it shouldn't feel like a nursing home."
+   Earlier polish was "not noticeable" -> this layer makes the premium read
+   TASTEFULLY NOTICEABLE: real depth, glassy frosted surfaces, accent-gradient
+   hairline dividers, refined elevation, and a restrained living glow.
+
+   STRICTLY ADDITIVE & SAFE
+   ------------------------
+   - Loaded AFTER css/ui-modern-polish-20260613.css so depth/material wins for
+     elevation + glass only. No DOM/JS/layout changes; nothing hidden.
+   - Builds on the existing dark neon brand: teal #22d3ee / #00e5ff, gold #ffb020,
+     orange #ff7a18. Reuses the polish layer's tokens where present and defines
+     its own DEPTH tokens (prefixed --dg-) so the two layers never collide.
+   - GPU-cheap: depth via box-shadow + 1 layered backdrop-filter per surface
+     class (not per element); ONE low-cost looping glow on the hero RENDER CTA,
+     gated behind prefers-reduced-motion. No filters on scrolling lists.
+   - Real selectors verified live against paint-booth-v2.html via CDP DOM enum.
+
+   CONTENTS
+   --------
+   0. Depth tokens + motion gate
+   1. Frosted glass for floating surfaces (settings, popouts, modals, menus)
+   2. Structural panels: left / right / center — material depth + inner light
+   3. Accent-gradient hairline dividers (section headers, panel edges)
+   4. Card elevation: zone cards, finish catalog cards, look cards, swatch tiles
+   5. Buttons: layered depth + the living-glow hero RENDER CTA
+   6. Preview stage: cinematic vignette + floor reflection feel
+   7. Status bars + toolbar pop menus: seated glass
+   ============================================================================ */
+
+/* ===========================================================================
+   0. DEPTH TOKENS + MOTION GATE
+   =========================================================================== */
+:root {
+  /* Layered, physically-plausible elevation (ambient + key + contact + inner
+     top-light). Deeper than the polish layer's shadows so lift reads clearly. */
+  --dg-elev-1:
+    0 1px 1px rgba(0,0,0,0.28),
+    0 2px 6px rgba(0,0,0,0.30),
+    inset 0 1px 0 rgba(255,255,255,0.045);
+  --dg-elev-2:
+    0 2px 4px rgba(0,0,0,0.30),
+    0 8px 22px rgba(0,0,0,0.40),
+    inset 0 1px 0 rgba(255,255,255,0.055);
+  --dg-elev-3:
+    0 4px 10px rgba(0,0,0,0.34),
+    0 18px 48px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.07);
+  --dg-elev-float:
+    0 6px 14px rgba(0,0,0,0.36),
+    0 28px 70px rgba(0,0,0,0.62),
+    0 0 0 1px rgba(255,255,255,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+
+  /* Brand accents reused for glow/dividers (kept restrained). */
+  --dg-teal: #22d3ee;
+  --dg-teal-2: #00e5ff;
+  --dg-gold: #ffb020;
+  --dg-orange: #ff7a18;
+
+  /* Glassy fill bases (translucent so backdrop-filter shows through). */
+  --dg-glass-float: rgba(15, 19, 33, 0.80);
+  --dg-glass-deep:  rgba(11, 14, 26, 0.86);
+
+  /* Accent-gradient hairline used as a divider / top sheen. */
+  --dg-hairline: linear-gradient(90deg,
+    rgba(34,211,238,0) 0%,
+    rgba(34,211,238,0.45) 18%,
+    rgba(255,176,32,0.40) 50%,
+    rgba(255,122,24,0.42) 82%,
+    rgba(255,122,24,0) 100%);
+
+  --dg-glow-soft: 0 0 0 1px rgba(34,211,238,0.18), 0 0 18px rgba(34,211,238,0.16);
+}
+
+/* ===========================================================================
+   1. FROSTED GLASS FOR FLOATING SURFACES
+   Floating/overlay surfaces get a real frosted backdrop + float elevation, so
+   they read as physical glass panes hovering above the workbench.
+   =========================================================================== */
+.settings-dropdown,
+#settingsDropdown,
+.web-command-menu,
+#webCommandMenu,
+.zone-editor-float,
+#zoneEditorFloat,
+.zone-more-menu,
+#zoneMoreMenu,
+.swatch-popup,
+#swatchPopup,
+.spb-tb-pop,
+.render-float,
+.finish-popup,
+.undo-history-panel,
+.recent-paths-dropdown,
+.toast {
+  -webkit-backdrop-filter: blur(14px) saturate(135%);
+  backdrop-filter: blur(14px) saturate(135%);
+}
+
+/* Modal / dialog glass: dim+blur the backdrop, float the panel. The blur on the
+   *-overlay frosts the workbench behind so the dialog feels seated in depth. */
+.modal-overlay,
+.preset-gallery-overlay,
+.finish-browser-overlay,
+.finish-compare-overlay,
+.dual-shift-overlay,
+.tmpl-name-overlay,
+.file-picker-overlay,
+.tutorial-backdrop {
+  -webkit-backdrop-filter: blur(7px) saturate(110%) brightness(0.92);
+  backdrop-filter: blur(7px) saturate(110%) brightness(0.92);
+}
+
+.modal,
+.modal-inner,
+.modal-content,
+.shokk-modal-inner,
+.preset-gallery-modal,
+.finish-browser-modal,
+.finish-compare-modal,
+.dual-shift-modal,
+.tmpl-name-dialog,
+.file-picker,
+.spb-render-modal,
+.tutorial-tooltip {
+  box-shadow: var(--dg-elev-float) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  backdrop-filter: blur(16px) saturate(130%);
+  /* Accent-gradient hairline at the very top edge of every dialog. */
+  position: relative;
+}
+.modal::before,
+.modal-inner::before,
+.shokk-modal-inner::before,
+.preset-gallery-modal::before,
+.finish-browser-modal::before,
+.finish-compare-modal::before,
+.dual-shift-modal::before,
+.tmpl-name-dialog::before,
+.file-picker::before,
+.spb-render-modal::before {
+  content: "";
+  position: absolute;
+  left: 12px; right: 12px; top: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--dg-hairline);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* Settings + popouts: glassy fill + float elevation + top hairline. */
+.settings-dropdown,
+#settingsDropdown,
+.zone-editor-float,
+#zoneEditorFloat,
+.web-command-menu,
+#webCommandMenu {
+  background: linear-gradient(180deg, var(--dg-glass-float), var(--dg-glass-deep)) !important;
+  box-shadow: var(--dg-elev-float) !important;
+}
+.settings-dropdown::before,
+.zone-editor-float::before,
+.web-command-menu::before {
+  content: "";
+  position: absolute;
+  left: 14px; right: 14px; top: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--dg-hairline);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* ===========================================================================
+   2. STRUCTURAL PANELS — material depth + inner light
+   The left/right rails and center stage get subtle inner top-light + a seam so
+   the three columns read as separate planes at different depths. GPU-cheap:
+   gradients + box-shadow only (no backdrop-filter on the big scrolling rails).
+   =========================================================================== */
+.left-panel,
+#leftPanel {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    1px 0 0 rgba(255,255,255,0.04),
+    8px 0 28px -18px rgba(0,0,0,0.7) !important;
+}
+.right-panel,
+#rightPanel {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    -1px 0 0 rgba(255,255,255,0.04),
+    -8px 0 28px -18px rgba(0,0,0,0.7) !important;
+}
+
+/* Center stage reads as the recessed "booth" the car sits in: a soft inner
+   ambient occlusion at the column seams. Keeps the existing radial brand wash. */
+.center-panel,
+#centerPanel {
+  box-shadow:
+    inset 22px 0 40px -34px rgba(0,0,0,0.9),
+    inset -22px 0 40px -34px rgba(0,0,0,0.9) !important;
+}
+
+/* Studio / panel section header gets a quiet glass seat. */
+.zone-studio-header,
+.finish-header-meta,
+.rp-tabs {
+  position: relative;
+}
+
+/* ===========================================================================
+   3. ACCENT-GRADIENT HAIRLINE DIVIDERS
+   Replace flat/heavy section rules with a fading accent hairline. Adds premium
+   rhythm without shouting. Applied via ::after so it never affects layout.
+   =========================================================================== */
+.section-header,
+.zone-studio-header,
+.fine-tuning-header,
+.swatch-search-topline,
+.more-menu-header,
+.modal-header,
+.finish-catalog-heading {
+  position: relative;
+}
+.section-header::after,
+.zone-studio-header::after,
+.fine-tuning-header::after,
+.swatch-search-topline::after,
+.more-menu-header::after,
+.modal-header::after,
+.finish-catalog-heading::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background: var(--dg-hairline);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* ===========================================================================
+   4. CARD ELEVATION
+   Zone cards, finish catalog cards, look cards and swatch tiles get real
+   layered elevation + a refined hover lift with a restrained accent halo.
+   =========================================================================== */
+.zone-card {
+  box-shadow: var(--dg-elev-1) !important;
+}
+.zone-card:hover {
+  box-shadow:
+    var(--dg-elev-2),
+    0 0 0 1px rgba(34,211,238,0.22),
+    0 0 16px -2px rgba(34,211,238,0.18) !important;
+}
+.zone-card.selected,
+.zone-card.active {
+  box-shadow:
+    var(--dg-elev-2),
+    0 0 0 1px rgba(34,211,238,0.42),
+    0 0 22px -2px rgba(34,211,238,0.26) !important;
+}
+
+/* Finish catalog cards / finish items / look cards — product-tile elevation. */
+.finish-catalog-card,
+.finish-item,
+.look-card {
+  box-shadow: var(--dg-elev-1) !important;
+}
+.finish-catalog-card:hover,
+.finish-item:hover,
+.look-card:hover {
+  box-shadow:
+    var(--dg-elev-3),
+    0 0 0 1px rgba(34,211,238,0.20),
+    0 0 18px -3px rgba(34,211,238,0.18) !important;
+}
+
+/* Finish swatch canvases (the rendered chips) — a crisp seat ring + drop so the
+   art reads as a physical sample tile, not a flat thumbnail. */
+.finish-swatch-canvas,
+.swatch-stage-img,
+.finish-popup-swatch {
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.45),
+    inset 0 0 0 1px rgba(255,255,255,0.10) !important;
+  border-radius: 8px;
+}
+
+/* Swatch grid tiles in the picker. */
+.swatch-popup-grid > * {
+  transition: box-shadow 160ms cubic-bezier(0.22,0.61,0.36,1),
+              transform 130ms cubic-bezier(0.22,0.61,0.36,1);
+}
+.swatch-popup-grid > *:hover {
+  box-shadow: var(--dg-elev-2), 0 0 0 1px rgba(34,211,238,0.25) !important;
+  transform: translateY(-2px);
+}
+
+/* ===========================================================================
+   5. BUTTONS — layered depth + the living-glow hero RENDER CTA
+   =========================================================================== */
+/* Header command/browse/shortcut pills + accent buttons get true contact depth. */
+.header-command-btn,
+.header-browse-btn,
+.header-shortcut-btn,
+.btn-accent {
+  box-shadow: var(--dg-elev-1) !important;
+}
+.header-command-btn:hover,
+.header-browse-btn:hover,
+.header-shortcut-btn:hover {
+  box-shadow: var(--dg-elev-2), 0 0 14px -3px rgba(34,211,238,0.35) !important;
+}
+.header-command-btn.primary {
+  box-shadow: var(--dg-elev-1), 0 0 0 1px rgba(34,211,238,0.30) inset !important;
+}
+
+/* HERO: the RENDER button. The owner wants it to feel ALIVE — a subtle, slow
+   breathing glow so the workbench never feels like a "nursing home", while
+   staying GPU-cheap (animates box-shadow on ONE element) and reduced-motion
+   safe. The look (gradient/text) is untouched; only depth + glow are added. */
+.btn-render,
+.primary-render-action {
+  position: relative;
+  box-shadow:
+    0 6px 22px rgba(255,122,24,0.34),
+    0 0 0 1px rgba(255,255,255,0.10) inset,
+    0 1px 0 rgba(255,210,150,0.25) inset !important;
+  animation: dg-render-breathe 3.6s ease-in-out infinite;
+}
+.btn-render:hover,
+.primary-render-action:hover {
+  box-shadow:
+    0 10px 30px rgba(255,122,24,0.52),
+    0 0 24px rgba(255,160,60,0.46),
+    0 0 0 1px rgba(255,255,255,0.14) inset,
+    0 1px 0 rgba(255,220,160,0.30) inset !important;
+  animation: none; /* hover takes over — steady bright */
+}
+@keyframes dg-render-breathe {
+  0%, 100% {
+    box-shadow:
+      0 6px 22px rgba(255,122,24,0.32),
+      0 0 7px rgba(255,140,40,0.18),
+      0 0 0 1px rgba(255,255,255,0.10) inset,
+      0 1px 0 rgba(255,210,150,0.25) inset;
+  }
+  50% {
+    box-shadow:
+      0 7px 27px rgba(255,122,24,0.46),
+      0 0 22px rgba(255,165,70,0.40),
+      0 0 0 1px rgba(255,255,255,0.12) inset,
+      0 1px 0 rgba(255,215,160,0.28) inset;
+  }
+}
+
+/* Tool rail buttons (vertical paint tools) — quiet contact shadow + tactile
+   pressed feel, with a teal seat when active. */
+.vtool-btn,
+.draw-tool-btn {
+  box-shadow: var(--dg-elev-1) !important;
+}
+.vtool-btn:active,
+.draw-tool-btn:active {
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.45) !important;
+}
+.vtool-btn.active,
+.vtool-btn.selected,
+.draw-tool-btn.active,
+.draw-tool-btn.selected {
+  box-shadow:
+    0 0 0 1px rgba(34,211,238,0.45),
+    0 0 14px -3px rgba(34,211,238,0.40),
+    inset 0 1px 0 rgba(255,255,255,0.06) !important;
+}
+
+/* ===========================================================================
+   6. PREVIEW STAGE — cinematic depth
+   A soft vignette + grounding shadow under the preview so the car render feels
+   like it's sitting in a real lit booth. Visual-only; never blocks the canvas.
+   =========================================================================== */
+.preview-inner,
+.split-pane > .preview-inner {
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.025),
+    inset 0 0 90px rgba(0,0,0,0.45),
+    inset 0 0 44px rgba(34,211,238,0.045) !important;
+}
+
+/* Grounding contact shadow beneath the rendered car image. */
+.preview-inner > #previewPaintPane img,
+.preview-inner > #previewBeforePane img,
+.preview-inner > #previewSpecPane img,
+.swatch-stage-img {
+  box-shadow: 0 22px 50px -18px rgba(0,0,0,0.65) !important;
+}
+
+/* The "living frame" / breathing aura around the stage — give it a faint,
+   slow accent pulse (depth glow only; respects reduced-motion). */
+.preview-living-frame,
+.preview-breathing-aura {
+  animation: dg-stage-aura 7.5s ease-in-out infinite;
+}
+@keyframes dg-stage-aura {
+  0%, 100% { box-shadow: inset 0 0 60px -30px rgba(34,211,238,0.12); }
+  50%      { box-shadow: inset 0 0 80px -28px rgba(34,211,238,0.20); }
+}
+
+/* ===========================================================================
+   7. STATUS BARS + TOOLBAR POP MENUS — seated glass
+   =========================================================================== */
+.global-status-bar,
+.workbench-command-bar,
+.spb-cmdbar-bottom {
+  -webkit-backdrop-filter: blur(10px) saturate(125%);
+  backdrop-filter: blur(10px) saturate(125%);
+  box-shadow:
+    0 -1px 0 rgba(255,255,255,0.04) inset,
+    0 -10px 26px -18px rgba(0,0,0,0.8) !important;
+}
+
+/* Top toolbar dropdown pops — frosted, floated, hairline-topped. */
+.spb-tb-pop {
+  background: linear-gradient(180deg, var(--dg-glass-float), var(--dg-glass-deep)) !important;
+  box-shadow: var(--dg-elev-3) !important;
+  position: relative;
+}
+.spb-tb-pop::before {
+  content: "";
+  position: absolute;
+  left: 10px; right: 10px; top: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--dg-hairline);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+/* Status chips — subtle contact shadow so the bottom bar reads as discrete keys. */
+.status-chip {
+  box-shadow: var(--dg-elev-1) !important;
+}
+
+/* ===========================================================================
+   MOTION GATE — kill the living glows + transitions for reduced-motion users.
+   (Static depth/elevation/glass all remain; only the animation is removed.)
+   =========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .btn-render,
+  .primary-render-action,
+  .preview-living-frame,
+  .preview-breathing-aura {
+    animation: none !important;
+  }
+  .swatch-popup-grid > * { transition: none !important; }
+}
+
+/* ============================================================================
+   END DEPTH + MATERIAL LAYER
+   ============================================================================ */

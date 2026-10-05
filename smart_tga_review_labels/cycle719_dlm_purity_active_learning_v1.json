@@ -1,0 +1,20 @@
+{
+  "schema": "smart-tga-reviewed-local-family-candidates-v1",
+  "cycle": 719,
+  "reviewed_at": "2026-07-13",
+  "review_method": "frozen-model active-learning selection followed by visual source, Number/Sponsor/Template/Paint sheets, and every local candidate crop",
+  "scope": "one previously unused numbered DLM350 paint selected from a six-paint 350/358 production-route pool because the frozen purity probe exposed proposal-conflict risk",
+  "source_copy_ledger": [
+    {"paint":"dirtlatemodel 350/car_num_1000912.tga","visible_number_copies":3,"route_complete_correct":2}
+  ],
+  "source_totals":{"visible_number_copies":3,"route_complete_correct":2},
+  "candidate_labels":[
+    {"paint":"dirtlatemodel 350/car_num_1000912.tga","family_id":"number-family:49ba1440a1f2cd19","bbox":[312,228,104,112],"semantic":"Number","complete_copy":false,"physical_copy":"1000912-upper","note":"upper 34 number support; overlap-risk flag is a benign nested number fragment"},
+    {"paint":"dirtlatemodel 350/car_num_1000912.tga","family_id":"number-family:7dbb61ca655c7b0e","bbox":[304,276,12,32],"semantic":"Number","complete_copy":false,"physical_copy":"1000912-upper","note":"thin upper-number fragment"},
+    {"paint":"dirtlatemodel 350/car_num_1000912.tga","family_id":"number-family:b04f89a90a0da6db","bbox":[424,264,28,40],"semantic":"Number","complete_copy":false,"physical_copy":"1000912-upper","note":"right upper-number fragment"},
+    {"paint":"dirtlatemodel 350/car_num_1000912.tga","family_id":"number-family:e133c553dbf9ffb0","bbox":[784,772,176,204],"semantic":"Sponsor","complete_copy":false,"physical_copy":null,"note":"black/blue HELTON arrow logo; accepted hard negative scored 0.910643 by frozen purity model"},
+    {"paint":"dirtlatemodel 350/car_num_1000912.tga","family_id":"number-family:f912a2d8a0d487e0","bbox":[281,728,187,96],"semantic":"Number","complete_copy":true,"physical_copy":"1000912-lower","note":"complete lower 34"}
+  ],
+  "candidate_totals":{"all":5,"Number":4,"Sponsor":1,"Template/hardware":0,"Paint/livery":0,"uncertain":0},
+  "hard_negative_controls":["1000912:e133c553dbf9ffb0"]
+}

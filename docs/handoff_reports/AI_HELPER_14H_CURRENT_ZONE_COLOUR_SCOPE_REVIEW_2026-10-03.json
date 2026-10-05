@@ -1,0 +1,1479 @@
+{
+  "title": "W23 current zone-colour scope safety review",
+  "generated_at": "2026-10-04T05:36:17.347Z",
+  "mode": "read-only pinned-source helper audit with mocked queue/apply callbacks; no provider/browser/native pixels",
+  "frozen_scenarios_sha256": "9936629743ffa9c6ae0760fd40498215a4c62f3eb1d02dc555386017cfd57270",
+  "frozen_scenario_count": 14,
+  "pinned_source_hashes": {
+    "spb-pro-ai.js": "93bf5627e8bad72b8777a6438a7db9ec1ce167af7478afdb15ec643caf0712bb",
+    "spb-pro-edit.js": "868e698dd0dc6a3424d5bcb2612bc0f8f21dc7c6ca3ffa6ea2524193cd76078e",
+    "spb-pro-design.js": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8"
+  },
+  "supplied_native_snapshot_scope": {
+    "gen2_loaded_pro_ai_prefix": "115f",
+    "gen2_loaded_edit_prefix": "d4cd",
+    "limitation": "Parent reports the native generation-2 session used these older loaded snapshots, which lack this report’s zoneColours/shownShares and E zoneEdit pathway. The native miss belongs to that old loaded code; this W23 review evaluates only the pinned newer 93bf/868e source snapshots, not what was installed in gen2."
+  },
+  "actual_functions_exercised": {
+    "pro_ai_zoneLayerNames": "671fedd22b6d8d431fe025fed1b1e472ee264641df53049a3d285e52bb956c05",
+    "pro_ai_zoneColours": "6c06381c9b7d155c9aa26c20f2281573e27c251b9a76c78a6d40eb053c8ba789",
+    "pro_ai_queueEditZones": "d4ccd69a90022a26ffca719ce63c6ea5770c06c48df85009355a3451fd725066",
+    "pro_ai_applyQueue": "3e5d349008ede78fb1d2dc1af6ddc11cfeb03dab2a9310131e94b19c94c3ba6a",
+    "offline_edit_ask": "adaf1fb7215249e86d27a6dd1650b801114bdac1b51b8d424e10d4961f43fc11",
+    "offline_ask": "13aa8742ff1f0edb92d67f500cfede22e6fc99237bfaff1c7f0bfef44c3c03cb",
+    "edit_plan_and_compile": "executed directly from pinned spb-pro-edit.js; zone-edit queue and applyQueue executed from pinned spb-pro-ai.js with callbacks that capture/mimic successful Zone.batch only. offlineEditAsk/offlineAsk were source-checked for the production compile/dispatch call chain, not invoked as whole UI flows."
+  },
+  "findings": {
+    "current_color_owner_scope_gap": "zoneColours() emits solid-zone id/name/color/coverage/layers but no region, selector, part scope, or helper provenance. E.zoneHits() matches by color family/name (and optional layer names) but ignores requested part; zoneColourOps() emits zoneEdit with zone_id only. queueEditZones() turns that into edit_zone {zone_id,color,...} and applyQueue batches it with no part guard. Thus a whole-body pink owner is edited for “only the pink on the roof.”",
+    "ambiguity": "multiple matching owner records are all turned into edits; no uniqueness/overlap guard appears in this pathway. A matching manual/renamed solid zone is eligible because the harvested record has no helper-ownership filter. Rows with selected share > 0 but visible_pct = 0 survive zoneColours() and still match because E.zoneHits() does not filter zero visible share.",
+    "muted_empty": "actual zoneColours() excludes muted zones and zones with nonpositive selected footprint. It can retain an entirely hidden selection (visible_pct = 0) when its selected share is positive.",
+    "preservation": "For a uniquely matched row, zoneEdit omits region and the queue payload carries only the original zone id and requested color, preserving existing region/mask/material fields at the edit interface."
+  },
+  "historical_w22_context": "W22 tested the newer current source and a synthetic fresh owner row. Its conditional E compiler capability is not native generation-2 acceptance and does not show that loaded generation-2 code contained the owner-color pathway.",
+  "acceptance_limits": [
+    "Final Zone.batch/pixel effects are mocked; the test proves actual queue fields and actual applyQueue batch specs, not real masks or rendered pixels.",
+    "Zone fixture region scopes are scenario labels only: the actual production zoneColours extractor does not read them, which is part of the observed scope loss.",
+    "The live E source changed after the pinned 868e snapshot to 1412ae…; no current-live acceptance is claimed and that writer was not read or tested.",
+    "No producer 9/10 tail-positive result is re-credited as fresh evidence by these independent adversarial cases."
+  ],
+  "outcomes": [
+    {
+      "id": "ZC01",
+      "ask": "Change the blue on the roof to pale pink.",
+      "setup": "unique exact owned roof-blue zone",
+      "oracle": "one edit to same UUID; roof region unchanged",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "roof-blue",
+          "zone": "Roof repaint",
+          "index": 0,
+          "share_pct": 18,
+          "selects_pct": 18,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof to pale pink",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "pink",
+              "hex": "#ff7eb6",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Roof repaint",
+            "color": "#f28bb8",
+            "zoneEdit": {
+              "zone_id": "roof-blue",
+              "zone": "Roof repaint",
+              "hex": "#1450b4"
+            },
+            "parts": []
+          }
+        ]
+      },
+      "queueApply": {
+        "queueSummary": {
+          "errs": [],
+          "lines": [
+            "the blue painted by \"Roof repaint\" (18% of the car) is now recoloured pink"
+          ],
+          "labels": [
+            "blue"
+          ],
+          "allSpec": false,
+          "anyColourTarget": false,
+          "merged": 0,
+          "zoneEdits": 1
+        },
+        "queued": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "roof-blue",
+              "color": "#f28bb8"
+            }
+          }
+        ],
+        "committedBatch": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "roof-blue",
+              "color": "#f28bb8"
+            }
+          }
+        ],
+        "applied": {
+          "results": [
+            {
+              "ok": true,
+              "applied": [
+                "set color"
+              ],
+              "index": 0,
+              "name": "Roof repaint"
+            }
+          ],
+          "lines": [
+            "Roof repaint: set color"
+          ],
+          "failed": [],
+          "layerUndo": 0,
+          "maskUndo": [],
+          "partRegUndo": {
+            "sig": "fixture-car",
+            "before": {},
+            "after": {}
+          }
+        }
+      }
+    },
+    {
+      "id": "ZC02",
+      "ask": "Change only the pink on the roof to pale red.",
+      "setup": "whole-body pink owner plus source pink elsewhere",
+      "oracle": "must not edit whole-body owner for roof-only request",
+      "ownerRecords": [
+        {
+          "hex": "#ff3fa4",
+          "zone_id": "pink-body",
+          "zone": "Pink body",
+          "index": 0,
+          "share_pct": 78,
+          "selects_pct": 78,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change only the pink on the roof to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "pink",
+              "hex": "#ff7eb6",
+              "qual": null,
+              "at": 17,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 42,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Pink body",
+            "color": "#e88797",
+            "zoneEdit": {
+              "zone_id": "pink-body",
+              "zone": "Pink body",
+              "hex": "#ff3fa4"
+            },
+            "parts": []
+          }
+        ]
+      },
+      "queueApply": {
+        "queueSummary": {
+          "errs": [],
+          "lines": [
+            "the pink painted by \"Pink body\" (78% of the car) is now recoloured red"
+          ],
+          "labels": [
+            "pink"
+          ],
+          "allSpec": false,
+          "anyColourTarget": false,
+          "merged": 0,
+          "zoneEdits": 1
+        },
+        "queued": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "pink-body",
+              "color": "#e88797"
+            }
+          }
+        ],
+        "committedBatch": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "pink-body",
+              "color": "#e88797"
+            }
+          }
+        ],
+        "applied": {
+          "results": [
+            {
+              "ok": true,
+              "applied": [
+                "set color"
+              ],
+              "index": 0,
+              "name": "Pink body"
+            }
+          ],
+          "lines": [
+            "Pink body: set color"
+          ],
+          "failed": [],
+          "layerUndo": 0,
+          "maskUndo": [],
+          "partRegUndo": {
+            "sig": "fixture-car",
+            "before": {},
+            "after": {}
+          }
+        }
+      }
+    },
+    {
+      "id": "ZC03",
+      "ask": "Change the blue on the roof and body to pale red.",
+      "setup": "same color on roof owner and body owner",
+      "oracle": "resolve both only if request explicitly names both complete scopes",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "blue-roof",
+          "zone": "Blue roof",
+          "index": 0,
+          "share_pct": 16,
+          "selects_pct": 16,
+          "finish": "",
+          "layers": []
+        },
+        {
+          "hex": "#1450b4",
+          "zone_id": "blue-body",
+          "zone": "Blue body",
+          "index": 1,
+          "share_pct": 78,
+          "selects_pct": 78,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof and body to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 14,
+              "qual": "pale",
+              "exact": false
+            }
+          },
+          {
+            "target": {
+              "kind": "body",
+              "at": 1
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 14,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Blue roof",
+            "color": "#e88797",
+            "zoneEdit": {
+              "zone_id": "blue-roof",
+              "zone": "Blue roof",
+              "hex": "#1450b4"
+            },
+            "parts": []
+          },
+          {
+            "name": "Blue body",
+            "color": "#e88797",
+            "zoneEdit": {
+              "zone_id": "blue-body",
+              "zone": "Blue body",
+              "hex": "#1450b4"
+            },
+            "parts": []
+          },
+          {
+            "name": "Whole car recoloured pink",
+            "color": "#e88797",
+            "finish": "base::gloss",
+            "region": {
+              "everything": true,
+              "paintable": true
+            },
+            "parts": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "ZC04",
+      "ask": "Change the blue on the roof and left side to pale red.",
+      "setup": "same color on roof and side helper owners",
+      "oracle": "edit each uniquely owned requested region only",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "blue-roof",
+          "zone": "Blue roof",
+          "index": 0,
+          "share_pct": 16,
+          "selects_pct": 16,
+          "finish": "",
+          "layers": []
+        },
+        {
+          "hex": "#1450b4",
+          "zone_id": "blue-side",
+          "zone": "Blue left side",
+          "index": 1,
+          "share_pct": 24,
+          "selects_pct": 24,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof and left side to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 19,
+              "qual": "pale",
+              "exact": false
+            }
+          },
+          {
+            "target": {
+              "kind": "part",
+              "part": "left side",
+              "at": 1
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 19,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Blue roof",
+            "color": "#e88797",
+            "zoneEdit": {
+              "zone_id": "blue-roof",
+              "zone": "Blue roof",
+              "hex": "#1450b4"
+            },
+            "parts": []
+          },
+          {
+            "name": "Blue left side",
+            "color": "#e88797",
+            "zoneEdit": {
+              "zone_id": "blue-side",
+              "zone": "Blue left side",
+              "hex": "#1450b4"
+            },
+            "parts": []
+          },
+          {
+            "name": "Left side recoloured pink",
+            "color": "#e88797",
+            "finish": "base::gloss",
+            "region": {
+              "part": "left side"
+            },
+            "parts": [
+              "left side"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "ZC05",
+      "ask": "Change the pink on the roof to pale red.",
+      "setup": "overlapping whole-body and roof pink owners",
+      "oracle": "clarify; never guess between overlapping owners",
+      "ownerRecords": [
+        {
+          "hex": "#ff3fa4",
+          "zone_id": "pink-body",
+          "zone": "Pink body",
+          "index": 0,
+          "share_pct": 78,
+          "selects_pct": 78,
+          "finish": "",
+          "layers": []
+        },
+        {
+          "hex": "#ff3fa4",
+          "zone_id": "pink-roof",
+          "zone": "Pink roof",
+          "index": 1,
+          "share_pct": 16,
+          "selects_pct": 16,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the pink on the roof to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "pink",
+              "hex": "#ff7eb6",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Pink body",
+            "color": "#e88797",
+            "zoneEdit": {
+              "zone_id": "pink-body",
+              "zone": "Pink body",
+              "hex": "#ff3fa4"
+            },
+            "parts": []
+          },
+          {
+            "name": "Pink roof",
+            "color": "#e88797",
+            "zoneEdit": {
+              "zone_id": "pink-roof",
+              "zone": "Pink roof",
+              "hex": "#ff3fa4"
+            },
+            "parts": []
+          }
+        ]
+      },
+      "queueApply": {
+        "queueSummary": {
+          "errs": [],
+          "lines": [
+            "the pink painted by \"Pink body\" (78% of the car) is now recoloured red",
+            "the pink painted by \"Pink roof\" (16% of the car) is now recoloured red"
+          ],
+          "labels": [
+            "pink",
+            "pink"
+          ],
+          "allSpec": false,
+          "anyColourTarget": false,
+          "merged": 0,
+          "zoneEdits": 2
+        },
+        "queued": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "pink-body",
+              "color": "#e88797"
+            }
+          },
+          {
+            "kind": "edit",
+            "zone": 1,
+            "spec": {
+              "zone_id": "pink-roof",
+              "color": "#e88797"
+            }
+          }
+        ],
+        "committedBatch": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "pink-body",
+              "color": "#e88797"
+            }
+          },
+          {
+            "kind": "edit",
+            "zone": 1,
+            "spec": {
+              "zone_id": "pink-roof",
+              "color": "#e88797"
+            }
+          }
+        ],
+        "applied": {
+          "results": [
+            {
+              "ok": true,
+              "applied": [
+                "set color"
+              ],
+              "index": 0,
+              "name": "Pink body"
+            },
+            {
+              "ok": true,
+              "applied": [
+                "set color"
+              ],
+              "index": 1,
+              "name": "Pink roof"
+            }
+          ],
+          "lines": [
+            "Pink body: set color",
+            "Pink roof: set color"
+          ],
+          "failed": [],
+          "layerUndo": 0,
+          "maskUndo": [],
+          "partRegUndo": {
+            "sig": "fixture-car",
+            "before": {},
+            "after": {}
+          }
+        }
+      }
+    },
+    {
+      "id": "ZC06",
+      "ask": "Change the blue on the roof to pale red.",
+      "setup": "only matching owner is muted",
+      "oracle": "do not adopt or edit muted zone; clarify/source-target safely",
+      "ownerRecords": [],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": "I do not see any blue on this car, but I do see cyan (27% of the car). Is that the one? Otherwise tell me which: black (42%), cyan (27%), white (11%), sand (6%), green (2%).",
+        "missing": [
+          {
+            "why": "colour",
+            "word": "blue"
+          }
+        ],
+        "zones": []
+      }
+    },
+    {
+      "id": "ZC07",
+      "ask": "Change the blue on the roof to pale red.",
+      "setup": "matching owner has zero/currently hidden footprint",
+      "oracle": "do not treat hidden owner color as visible current roof paint",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "hidden-blue",
+          "zone": "Hidden blue roof",
+          "index": 0,
+          "share_pct": 0,
+          "selects_pct": 18,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Hidden blue roof",
+            "color": "#e88797",
+            "zoneEdit": {
+              "zone_id": "hidden-blue",
+              "zone": "Hidden blue roof",
+              "hex": "#1450b4"
+            },
+            "parts": []
+          }
+        ]
+      },
+      "queueApply": {
+        "queueSummary": {
+          "errs": [],
+          "lines": [
+            "the blue painted by \"Hidden blue roof\" is now recoloured red"
+          ],
+          "labels": [
+            "blue"
+          ],
+          "allSpec": false,
+          "anyColourTarget": false,
+          "merged": 0,
+          "zoneEdits": 1
+        },
+        "queued": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "hidden-blue",
+              "color": "#e88797"
+            }
+          }
+        ],
+        "committedBatch": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "hidden-blue",
+              "color": "#e88797"
+            }
+          }
+        ],
+        "applied": {
+          "results": [
+            {
+              "ok": true,
+              "applied": [
+                "set color"
+              ],
+              "index": 0,
+              "name": "Hidden blue roof"
+            }
+          ],
+          "lines": [
+            "Hidden blue roof: set color"
+          ],
+          "failed": [],
+          "layerUndo": 0,
+          "maskUndo": [],
+          "partRegUndo": {
+            "sig": "fixture-car",
+            "before": {},
+            "after": {}
+          }
+        }
+      }
+    },
+    {
+      "id": "ZC08",
+      "ask": "Change the blue on the roof to pale red.",
+      "setup": "duplicate UUID/clone with same color-selector provenance",
+      "oracle": "ambiguous ownership must clarify",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "clone-blue",
+          "zone": "Cloned blue roof",
+          "index": 0,
+          "share_pct": 16,
+          "selects_pct": 16,
+          "finish": "",
+          "layers": []
+        },
+        {
+          "hex": "#1450b4",
+          "zone_id": "clone-blue",
+          "zone": "Cloned blue roof copy",
+          "index": 1,
+          "share_pct": 16,
+          "selects_pct": 16,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Cloned blue roof",
+            "color": "#e88797",
+            "zoneEdit": {
+              "zone_id": "clone-blue",
+              "zone": "Cloned blue roof",
+              "hex": "#1450b4"
+            },
+            "parts": []
+          },
+          {
+            "name": "Cloned blue roof copy",
+            "color": "#e88797",
+            "zoneEdit": {
+              "zone_id": "clone-blue",
+              "zone": "Cloned blue roof copy",
+              "hex": "#1450b4"
+            },
+            "parts": []
+          }
+        ]
+      },
+      "queueApply": {
+        "queueSummary": {
+          "errs": [],
+          "lines": [
+            "the blue painted by \"Cloned blue roof\" (16% of the car) is now recoloured red",
+            "the blue painted by \"Cloned blue roof copy\" (16% of the car) is now recoloured red"
+          ],
+          "labels": [
+            "blue",
+            "blue"
+          ],
+          "allSpec": false,
+          "anyColourTarget": false,
+          "merged": 0,
+          "zoneEdits": 2
+        },
+        "queued": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "clone-blue",
+              "color": "#e88797"
+            }
+          },
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "clone-blue",
+              "color": "#e88797"
+            }
+          }
+        ],
+        "committedBatch": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "clone-blue",
+              "color": "#e88797"
+            }
+          },
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "clone-blue",
+              "color": "#e88797"
+            }
+          }
+        ],
+        "applied": {
+          "results": [
+            {
+              "ok": true,
+              "applied": [
+                "set color"
+              ],
+              "index": 0,
+              "name": "Cloned blue roof"
+            },
+            {
+              "ok": true,
+              "applied": [
+                "set color"
+              ],
+              "index": 0,
+              "name": "Cloned blue roof"
+            }
+          ],
+          "lines": [
+            "Cloned blue roof: set color",
+            "Cloned blue roof: set color"
+          ],
+          "failed": [],
+          "layerUndo": 0,
+          "maskUndo": [],
+          "partRegUndo": {
+            "sig": "fixture-car",
+            "before": {},
+            "after": {}
+          }
+        }
+      }
+    },
+    {
+      "id": "ZC09",
+      "ask": "Change the blue on the moon panel to pale red.",
+      "setup": "unknown named part",
+      "oracle": "no whole-body fallback or arbitrary matching-zone edit",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "body-blue",
+          "zone": "Blue body",
+          "index": 0,
+          "share_pct": 78,
+          "selects_pct": 78,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the moon panel to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": null
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 43,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": "I do not know a look called “moon panel”. Here is what I can do to the blue:",
+        "missing": [
+          {
+            "why": "look",
+            "label": "blue"
+          }
+        ],
+        "zones": []
+      }
+    },
+    {
+      "id": "ZC10",
+      "ask": "Change the blue on the car and only the red on the roof to pale pink.",
+      "setup": "whole-body plus named-part constraints",
+      "oracle": "whole-body and roof constraints remain distinct and complete",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "blue-body",
+          "zone": "Blue body",
+          "index": 0,
+          "share_pct": 78,
+          "selects_pct": 78,
+          "finish": "",
+          "layers": []
+        },
+        {
+          "hex": "#c8102e",
+          "zone_id": "red-roof",
+          "zone": "Red roof",
+          "index": 1,
+          "share_pct": 16,
+          "selects_pct": 16,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the car and only the red on the roof to pale pink",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": null
+            },
+            "colour": {
+              "name": "pink",
+              "hex": "#ff7eb6",
+              "at": 34,
+              "qual": "pale",
+              "exact": false
+            }
+          },
+          {
+            "target": {
+              "kind": "colour",
+              "word": "red",
+              "hex": "#c8102e",
+              "qual": null,
+              "at": 10,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "pink",
+              "hex": "#ff7eb6",
+              "at": 34,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Blue body",
+            "color": "#f28bb8",
+            "zoneEdit": {
+              "zone_id": "blue-body",
+              "zone": "Blue body",
+              "hex": "#1450b4"
+            },
+            "parts": []
+          },
+          {
+            "name": "Red roof",
+            "color": "#f28bb8",
+            "zoneEdit": {
+              "zone_id": "red-roof",
+              "zone": "Red roof",
+              "hex": "#c8102e"
+            },
+            "parts": []
+          }
+        ]
+      },
+      "queueApply": {
+        "queueSummary": {
+          "errs": [],
+          "lines": [
+            "the blue painted by \"Blue body\" (78% of the car) is now recoloured pink",
+            "the red painted by \"Red roof\" (16% of the car) is now recoloured pink"
+          ],
+          "labels": [
+            "blue",
+            "red"
+          ],
+          "allSpec": false,
+          "anyColourTarget": false,
+          "merged": 0,
+          "zoneEdits": 2
+        },
+        "queued": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "blue-body",
+              "color": "#f28bb8"
+            }
+          },
+          {
+            "kind": "edit",
+            "zone": 1,
+            "spec": {
+              "zone_id": "red-roof",
+              "color": "#f28bb8"
+            }
+          }
+        ],
+        "committedBatch": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "blue-body",
+              "color": "#f28bb8"
+            }
+          },
+          {
+            "kind": "edit",
+            "zone": 1,
+            "spec": {
+              "zone_id": "red-roof",
+              "color": "#f28bb8"
+            }
+          }
+        ],
+        "applied": {
+          "results": [
+            {
+              "ok": true,
+              "applied": [
+                "set color"
+              ],
+              "index": 0,
+              "name": "Blue body"
+            },
+            {
+              "ok": true,
+              "applied": [
+                "set color"
+              ],
+              "index": 1,
+              "name": "Red roof"
+            }
+          ],
+          "lines": [
+            "Blue body: set color",
+            "Red roof: set color"
+          ],
+          "failed": [],
+          "layerUndo": 0,
+          "maskUndo": [],
+          "partRegUndo": {
+            "sig": "fixture-car",
+            "before": {},
+            "after": {}
+          }
+        }
+      }
+    },
+    {
+      "id": "ZC11",
+      "ask": "Change the blue numbers to pale red.",
+      "setup": "whole-body owner linked to a source layer",
+      "oracle": "layer-linked whole region is not adopted as numbers-only owner",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "blue-layer",
+          "zone": "Blue layer zone",
+          "index": 0,
+          "share_pct": 28,
+          "selects_pct": 28,
+          "finish": "",
+          "layers": [
+            "Numbers"
+          ]
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue numbers to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "numbers",
+              "at": 17
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 33,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Numbers recoloured pink",
+            "color": "#e88797",
+            "finish": "base::gloss",
+            "region": {
+              "layers": [
+                "Numbers"
+              ]
+            },
+            "parts": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "ZC12",
+      "ask": "Change the blue on the roof to pale red.",
+      "setup": "requested blue exists only in source paint; helper owner is different color",
+      "oracle": "do not confuse source and currently painted colors",
+      "ownerRecords": [
+        {
+          "hex": "#c8102e",
+          "zone_id": "red-roof",
+          "zone": "Red roof",
+          "index": 0,
+          "share_pct": 16,
+          "selects_pct": 16,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Blue (roof) shifted to pink, keeping the shading",
+            "color": "source",
+            "finish": "base::gloss",
+            "region": {
+              "colors": [
+                "#1450b4"
+              ],
+              "tolerance": 38,
+              "part": "roof"
+            },
+            "parts": [
+              "roof"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "ZC13",
+      "ask": "Change the blue on the roof to pale red.",
+      "setup": "blue absent from source and no visible owned-blue roof zone",
+      "oracle": "clarify/no queue",
+      "ownerRecords": [],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof to pale red",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": "I do not see any blue on this car, but I do see cyan (27% of the car). Is that the one? Otherwise tell me which: black (42%), cyan (27%), white (11%), sand (6%), green (2%).",
+        "missing": [
+          {
+            "why": "colour",
+            "word": "blue"
+          }
+        ],
+        "zones": []
+      }
+    },
+    {
+      "id": "ZC14",
+      "ask": "Change the blue on the roof to pale pink.",
+      "setup": "unique owner name changed but same selector still exists",
+      "oracle": "renamed/manual/uncertain owner must not be adopted implicitly",
+      "ownerRecords": [
+        {
+          "hex": "#1450b4",
+          "zone_id": "manual-blue",
+          "zone": "Renamed blue body",
+          "index": 0,
+          "share_pct": 78,
+          "selects_pct": 78,
+          "finish": "",
+          "layers": []
+        }
+      ],
+      "planned": {
+        "kind": "ops",
+        "text": "change the blue on the roof to pale pink",
+        "ops": [
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 12,
+              "parts": [
+                "roof"
+              ]
+            },
+            "colour": {
+              "name": "pink",
+              "hex": "#ff7eb6",
+              "at": 37,
+              "qual": "pale",
+              "exact": false
+            }
+          }
+        ]
+      },
+      "compiled": {
+        "ask": null,
+        "missing": [],
+        "zones": [
+          {
+            "name": "Renamed blue body",
+            "color": "#f28bb8",
+            "zoneEdit": {
+              "zone_id": "manual-blue",
+              "zone": "Renamed blue body",
+              "hex": "#1450b4"
+            },
+            "parts": []
+          }
+        ]
+      },
+      "queueApply": {
+        "queueSummary": {
+          "errs": [],
+          "lines": [
+            "the blue painted by \"Renamed blue body\" (78% of the car) is now recoloured pink"
+          ],
+          "labels": [
+            "blue"
+          ],
+          "allSpec": false,
+          "anyColourTarget": false,
+          "merged": 0,
+          "zoneEdits": 1
+        },
+        "queued": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "manual-blue",
+              "color": "#f28bb8"
+            }
+          }
+        ],
+        "committedBatch": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "zone_id": "manual-blue",
+              "color": "#f28bb8"
+            }
+          }
+        ],
+        "applied": {
+          "results": [
+            {
+              "ok": true,
+              "applied": [
+                "set color"
+              ],
+              "index": 0,
+              "name": "Renamed blue body"
+            }
+          ],
+          "lines": [
+            "Renamed blue body: set color"
+          ],
+          "failed": [],
+          "layerUndo": 0,
+          "maskUndo": [],
+          "partRegUndo": {
+            "sig": "fixture-car",
+            "before": {},
+            "after": {}
+          }
+        }
+      }
+    }
+  ]
+}

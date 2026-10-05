@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "paint_label": "protrucks pro4truck/car_num_1011235.tga",
+  "component_records": "_smart_tga_runs/cycle129_protrucks_route_feature_complete_v1/protrucks_pro4truck_car_num_1011235/component_records.json",
+  "review_scope": "Cycle 139 manual review of unlabeled subcomponent-number accepts from the eight-fixture probe; this pack marks sponsor/contingency digits that should not become race-number layer pixels.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 15,
+      "expected_bbox": [297, 519, 29, 18],
+      "target_layer": "sponsors",
+      "label": "small_sponsor_digit_mark",
+      "note": "Tiny sponsor/contingency digit-like mark near the Protruck sponsor stack; not one of the reviewed 818 race-number placements."
+    }
+  ]
+}

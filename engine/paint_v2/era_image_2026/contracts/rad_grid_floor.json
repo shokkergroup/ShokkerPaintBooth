@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_grid_floor",
+  "display_name": "Grid: Laser Tile",
+  "promise": "Tiny magenta and cyan tiled diamonds with glossy dark faces and bright grout crossings.",
+  "carrier_grammar": "Tiny magenta and cyan tiled diamonds with glossy dark faces and bright grout crossings. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for cobalt tile faces, magenta diamond tiles, cyan grout crossings, dark glass pockets, white corner points is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny magenta and cyan tiled diamonds with glossy dark faces and bright grout crossings. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_grid_floor.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "cobalt tile faces",
+      "role": "Actual shared paint and spec geometry: cobalt tile faces"
+    },
+    {
+      "name": "magenta diamond tiles",
+      "role": "Actual shared paint and spec geometry: magenta diamond tiles"
+    },
+    {
+      "name": "cyan grout crossings",
+      "role": "Actual shared paint and spec geometry: cyan grout crossings"
+    },
+    {
+      "name": "dark glass pockets",
+      "role": "Actual shared paint and spec geometry: dark glass pockets"
+    },
+    {
+      "name": "white corner points",
+      "role": "Actual shared paint and spec geometry: white corner points"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "cobalt tile faces",
+      "magenta diamond tiles",
+      "cyan grout crossings",
+      "dark glass pockets",
+      "white corner points"
+    ],
+    "R": [
+      "cobalt tile faces",
+      "magenta diamond tiles",
+      "cyan grout crossings",
+      "dark glass pockets",
+      "white corner points"
+    ],
+    "Cc": [
+      "cobalt tile faces",
+      "magenta diamond tiles",
+      "cyan grout crossings",
+      "dark glass pockets",
+      "white corner points"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_laser_grid",
+      "difference": "This finish uses Dense tiny isometric diamond tiles in hotmagenta, cobalt and cyan, no perspective vanishing point. Grid fragments change orientation every few tiles, narrow bright pink grout, subtly scratched dark blue glass faces, sharp white pin intersections. Flat all-over tile material, not a scene.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_grid_tile",
+      "difference": "This finish uses Dense tiny isometric diamond tiles in hotmagenta, cobalt and cyan, no perspective vanishing point. Grid fragments change orientation every few tiles, narrow bright pink grout, subtly scratched dark blue glass faces, sharp white pin intersections. Flat all-over tile material, not a scene.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "cobalt tile faces is visible in the authored geometry",
+      "magenta diamond tiles is visible in the authored geometry",
+      "cyan grout crossings is visible in the authored geometry",
+      "dark glass pockets is visible in the authored geometry",
+      "white corner points is visible in the authored geometry"
+    ],
+    "source_sha256": "91bbc2e6e181e854b962691bc4518a7053555fadae41822cfd265d4d5a63d0aa",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_grid_floor-authored-Tiny magenta and cyan tiled diamonds with glossy dark faces and bright grout crossings. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_grid_floor-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 68.4,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "f8233679fc36fb0695d645fcd4c2c5753376162157b36234a8cbad078d917162"
+}

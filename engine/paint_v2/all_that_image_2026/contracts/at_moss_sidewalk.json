@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_moss_sidewalk",
+  "display_name": "Flannel: Moss Sidewalk",
+  "promise": "Tiny moss growth following a fine branching concrete crack network, no pavement scene",
+  "carrier_grammar": "Tiny moss growth following a fine branching concrete crack network, no pavement scene; single full-canvas image, no duplicated quadrants. Fine features: green moss cushion, damp sidewalk channels, gray mineral substrate, fine moss leaf tips, wet moss membrane, dry moss fibers",
+  "spec_grammar": "Feature-specific selectors partition green moss cushion, damp sidewalk channels, gray mineral substrate, fine moss leaf tips, wet moss membrane, dry moss fibers. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "green moss cushion",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "damp sidewalk channels",
+      "role": "Material feature selected from artwork by g:<:0.29"
+    },
+    {
+      "name": "gray mineral substrate",
+      "role": "Material feature selected from artwork by s:<:0.22&g:>:0.4"
+    },
+    {
+      "name": "fine moss leaf tips",
+      "role": "Material feature selected from artwork by detail:>:0.62"
+    },
+    {
+      "name": "wet moss membrane",
+      "role": "Material feature selected from artwork by g:>:0.8"
+    },
+    {
+      "name": "dry moss fibers",
+      "role": "Material feature selected from artwork by fine:>:0.79"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "green moss cushion",
+      "damp sidewalk channels",
+      "gray mineral substrate",
+      "fine moss leaf tips",
+      "wet moss membrane",
+      "dry moss fibers"
+    ],
+    "R": [
+      "green moss cushion",
+      "damp sidewalk channels",
+      "gray mineral substrate",
+      "fine moss leaf tips",
+      "wet moss membrane",
+      "dry moss fibers"
+    ],
+    "Cc": [
+      "green moss cushion",
+      "damp sidewalk channels",
+      "gray mineral substrate",
+      "fine moss leaf tips",
+      "wet moss membrane",
+      "dry moss fibers"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "green moss cushion",
+      "range": [
+        [
+          0,
+          175,
+          190
+        ],
+        [
+          8,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "damp sidewalk channels",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          10,
+          55,
+          80
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "gray mineral substrate",
+      "range": [
+        [
+          10,
+          145,
+          160
+        ],
+        [
+          90,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine moss leaf tips",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "wet moss membrane",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dry moss fibers",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_band_tee_crack",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_basement_amp",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "green moss cushion",
+      "damp sidewalk channels",
+      "gray mineral substrate",
+      "fine moss leaf tips",
+      "wet moss membrane",
+      "dry moss fibers"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_moss_sidewalk / Tiny moss growth following a fine branching concrete crack network, no pavement scene",
+  "spec_key": "at_moss_sidewalk / green moss cushion all; damp sidewalk channels g:<:0.29; gray mineral substrate s:<:0.22&g:>:0.4; fine moss leaf tips detail:>:0.62; wet moss membrane g:>:0.8; dry moss fibers fine:>:0.79",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

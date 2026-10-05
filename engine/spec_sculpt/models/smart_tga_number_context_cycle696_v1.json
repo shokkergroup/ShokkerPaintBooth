@@ -1,0 +1,20 @@
+{
+  "schema": "smart-tga-number-context-prototypes-v1",
+  "version": "cycle696-dlm-context-envelope-v1",
+  "feature_order": ["center_dx_per_seed_width", "center_dy_per_seed_height", "log_width_ratio", "log_height_ratio"],
+  "prototypes": [
+    [0.7702606, 0.03754261, 1.10483021, 0.44677445],
+    [0.00747011, -0.09872134, -0.07653734, 0.19282905],
+    [-0.25834405, 0.0335118, 0.98913351, 1.2409294],
+    [-0.11093739, 0.02408597, 0.64243004, 0.30230278],
+    [0.2284079, 4.45632309, 1.16700302, 2.26354123],
+    [1.77217849, 0.34655984, 1.68339931, 1.32682693],
+    [-1.43835605, -0.33438903, 1.53126638, 1.22264081],
+    [-0.16860037, -2.68737643, 0.70414127, 1.90372823]
+  ],
+  "intrinsic_seed_contract": {"minimum_side": 4, "area_fraction_min": 0.00005, "area_fraction_max": 0.08},
+  "context_contract": {"maximum_area_fraction": 0.15, "minimum_evaluation_iou": 0.2},
+  "casts_votes": false,
+  "ownership_authority": false,
+  "adds_pixels": false
+}

@@ -1,0 +1,152 @@
+{
+  "utc": "2026-10-04T07:21:30.557Z",
+  "status": "REVIEW_COMPLETE_FINDING",
+  "candidate": {
+    "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_easy_claude_work\\ai14h_w44_candidate\\candidate\\paint-booth-3-canvas.js",
+    "sha256": "98a3fa5390e89409913e519f1b77f39fb0dcb6d171d950fbcdc4356e9bf10679",
+    "immutable": true,
+    "installed": false
+  },
+  "baseline_sha256_prefix": "F5588017",
+  "producer_contract": {
+    "path": "tests/ai_source_commit_proof_candidate_contract.cjs",
+    "result": "CANDIDATE_PASS 12/12 unchanged; its generated report was restored byte-for-byte afterward"
+  },
+  "oracle": [
+    {
+      "id": "fresh-generation-load-failure",
+      "want": "failed replacement keeps only the unchanged/restored prior committed source current"
+    },
+    {
+      "id": "stale-older-load",
+      "want": "older async result cannot settle or replace the latest transaction"
+    },
+    {
+      "id": "failed-hash",
+      "want": "failed content hashing cannot publish a ready committed source"
+    },
+    {
+      "id": "null-does-not-clear-newer-pending",
+      "want": "null completion cannot clear or commit the latest pending source"
+    },
+    {
+      "id": "change-file-entrypoint-a",
+      "want": "browsePaintFile Change File path reaches live-source fingerprint marker"
+    },
+    {
+      "id": "change-file-entrypoint-b",
+      "want": "loadPaintImage Change File path reaches live-source fingerprint marker"
+    },
+    {
+      "id": "source-restore-api",
+      "want": "restore API issues a fresh generation and commits the restored path/content identity"
+    },
+    {
+      "id": "filepath-fingerprint-coherence",
+      "want": "the committed path belongs to the same selected file bytes used for hashing"
+    },
+    {
+      "id": "reentrant-generation-during-hash",
+      "want": "newer generation invalidates an older pending file hash"
+    },
+    {
+      "id": "positive-current-load",
+      "want": "successful current marker stores selected bytes fingerprint and captured source path"
+    }
+  ],
+  "rows": [
+    {
+      "case": {
+        "id": "fresh-generation-load-failure",
+        "want": "failed replacement keeps only the unchanged/restored prior committed source current"
+      },
+      "passed": true
+    },
+    {
+      "case": {
+        "id": "stale-older-load",
+        "want": "older async result cannot settle or replace the latest transaction"
+      },
+      "passed": true
+    },
+    {
+      "case": {
+        "id": "failed-hash",
+        "want": "failed content hashing cannot publish a ready committed source"
+      },
+      "passed": true,
+      "observation": "safe-not-ready; failure leaves latest generation pending with no surfaced result"
+    },
+    {
+      "case": {
+        "id": "null-does-not-clear-newer-pending",
+        "want": "null completion cannot clear or commit the latest pending source"
+      },
+      "passed": true
+    },
+    {
+      "case": {
+        "id": "change-file-entrypoint-a",
+        "want": "browsePaintFile Change File path reaches live-source fingerprint marker"
+      },
+      "passed": true
+    },
+    {
+      "case": {
+        "id": "change-file-entrypoint-b",
+        "want": "loadPaintImage Change File path reaches live-source fingerprint marker"
+      },
+      "passed": true
+    },
+    {
+      "case": {
+        "id": "source-restore-api",
+        "want": "restore API issues a fresh generation and commits the restored path/content identity"
+      },
+      "passed": true
+    },
+    {
+      "case": {
+        "id": "filepath-fingerprint-coherence",
+        "want": "the committed path belongs to the same selected file bytes used for hashing"
+      },
+      "passed": true,
+      "observation": "counterexample reproduced: new B bytes are committed under prior A path because getter prioritizes committed source"
+    },
+    {
+      "case": {
+        "id": "reentrant-generation-during-hash",
+        "want": "newer generation invalidates an older pending file hash"
+      },
+      "passed": true
+    },
+    {
+      "case": {
+        "id": "positive-current-load",
+        "want": "successful current marker stores selected bytes fingerprint and captured source path"
+      },
+      "passed": true
+    }
+  ],
+  "counts": {
+    "review_cases": 10,
+    "provider_calls": 0
+  },
+  "finding": {
+    "severity": "P1",
+    "summary": "markFlatPaintLiveSource hashes the newly selected browser file but then asks getCurrentSourcePaintFile for its path; that getter prioritizes the previously committed source path, so a new Change File B can be marked committed under old path A.",
+    "evidence": "W45 case filepath-fingerprint-coherence reproduced committedPath C:/old-A.tga with fingerprint fp:2,3,4 from newly selected B bytes; isCommitted() returned true."
+  },
+  "other_observations": [
+    "Fresh failed replacement result preserves/restores the old committed path and fingerprint and advances their committed generation only when both are present. This is coherent when loader rollback retained the old document; transaction result remains ok:false.",
+    "Failed Change File byte hashing is safely not committed, but markFlatPaintLiveSource swallows rejection without settling the transaction. The source stays not-ready at the current generation and has no returned failure result; readiness can remain stranded until another transaction or restore.",
+    "Both browser file entrypoints call markFlatPaintLiveSource after pixel commit for TGA and raster loads.",
+    "Source restore increments generation before restoring and only reports readiness when restored path and fingerprint are both non-empty."
+  ],
+  "limits": [
+    "Controlled VM executed actual transaction and marker helpers with stub document restore and controlled file byte promises.",
+    "Change File callsite integration was verified from actual handler bodies, not driven through a native browser FileReader/Image event loop.",
+    "No renderer, native file picker, server, provider or network was used."
+  ],
+  "source_sha256_after": "98a3fa5390e89409913e519f1b77f39fb0dcb6d171d950fbcdc4356e9bf10679"
+}

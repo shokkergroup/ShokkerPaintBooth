@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "paint_label": "protrucks pro4truck/car_num_1007551.tga",
+  "inspection_records": "_smart_tga_runs/cycle146_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle146_route_pressure_v1/protrucks_pro4truck_car_num_1007551/component_records.json",
+  "review_scope": "Cycle 146 review of accepted Sponsor-routed subcomponent candidate on Pro4 truck 1007551: keep the flag-filled 199 number body.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 24,
+      "expected_bbox": [735, 408, 80, 62],
+      "target_layer": "numbers",
+      "label": "true_number_199_submask",
+      "note": "Flag-filled side number 199 body routed to Sponsors; should be Numbers."
+    }
+  ]
+}

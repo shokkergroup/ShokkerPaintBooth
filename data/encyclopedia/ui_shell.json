@@ -1,0 +1,4783 @@
+{
+ "domain": "ui_shell",
+ "version": 1,
+ "articles": [
+  {
+   "id": "ui_shell.window_tour",
+   "title": "The window tour: header, toolbar, zones, centre, right column, render",
+   "domain": "ui_shell",
+   "summary": "Shokker Pro is one window with five areas: the header rows, the toolbar, the ZONES column, the centre canvas and the right column. Knowing where each one lives makes every other page easier to follow.",
+   "what": "The top of the window holds three setup rows: your iRacing User ID with the number mode, the SOURCE PAINT box, and the IRACING CAR FOLDER box. Below them is the tool row (Move, Pick, Color, Wand, Lasso, Rect, Brush, Fill, Erase) with the HISTORY, SELECT, RETOUCH, MASK, TRANSFORM and ADJUST menus. The left column is ZONES: each zone is a card that says which part of the paint it covers and what finish it gets. The centre shows your SOURCE paint and the LIVE PREVIEW of the finished car, with the RENDER button and the spec channel strip. The right column has two tabs, FINISHES and LAYERS. The AI copilot button at the bottom right opens the helper.",
+   "when": [
+    "You just opened Shokker and want to know what everything is.",
+    "Someone tells you to \"use the left column\" and you are not sure which one that is."
+   ],
+   "how": [
+    "1. Look at the very top. Set IRACING USER ID, SOURCE PAINT and IRACING CAR FOLDER once per car.",
+    "2. In the tool row, pick a tool. The tool options bar under it changes to match the tool you picked.",
+    "3. In the left column (ZONES), press + Add Zone, or click a zone card to open its ZONE POPOUT PANEL and give it a colour and a finish.",
+    "4. Watch the centre column. SOURCE is your paint, LIVE PREVIEW shows the finished car. Use SOURCE, CAR and SPLIT to switch the view.",
+    "5. Press RENDER (Ctrl+R) when you like the look. The finished paint and spec files go to your iRacing car folder."
+   ],
+   "controls": [
+    {
+     "label": "SOURCE PAINT box",
+     "range": "",
+     "default": "",
+     "effect": "The paint file Shokker works on (a flat TGA / PNG / JPEG, or a PSD): type or paste a path, or use the buttons beside it.",
+     "inv": "paintFile"
+    },
+    {
+     "label": "IRACING CAR FOLDER box",
+     "range": "",
+     "default": "",
+     "effect": "The iRacing car folder the finished paint and spec files are written to.",
+     "inv": "outputDir"
+    },
+    {
+     "label": "IRACING USER ID box",
+     "range": "",
+     "default": "",
+     "effect": "Your iRacing customer number (4-7 digits); it is part of the saved file names.",
+     "inv": "iracingId"
+    },
+    {
+     "label": "RENDER",
+     "range": "",
+     "default": "",
+     "effect": "RENDER (Ctrl+R): builds the finished paint TGA and the spec TGA and writes them to the iRacing car folder.",
+     "inv": "btnRender"
+    },
+    {
+     "label": "Tutorial",
+     "range": "",
+     "default": "",
+     "effect": "Training Wheels: step-by-step quests that teach the app as you use it (load, zone, finish, render, then patterns, spec, overlays), plus a hint chip for your next move.",
+     "inv": "spbGuideToggle"
+    }
+   ],
+   "tips": [
+    "Press Shift+E to show or hide the zone popout panel when it is in the way.",
+    "Collapse the left or right column with the small arrow on its edge to get more canvas room.",
+    "The Tutorial button (top right) turns on Training Wheels, step-by-step quests that teach the app as you use it."
+   ],
+   "pitfalls": [
+    "The paint canvas is the car laid flat, so left, right, top and bottom on screen are not the same as on the car."
+   ],
+   "related": [
+    "ui_shell.mode_pill",
+    "ui_shell.canvas_overlays",
+    "ui_shell.tool_options_bar",
+    "zones.what_is_a_zone",
+    "layers.panel",
+    "ui_shell.render_results_panel"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "btnRender"
+    },
+    {
+     "do": "control",
+     "id": "spbGuideToggle"
+    }
+   ],
+   "figures": [
+    "g12_window_tour"
+   ],
+   "covers": [
+    "doc.04.where_things_are_pro_layout",
+    "wiki.overview.what_it_does_for_the_user",
+    "paintFile",
+    "outputDir",
+    "iracingId",
+    "btnRender",
+    "spbGuideToggle"
+   ],
+   "sources": [
+    "docs/ai_knowledge/04_limits_and_app_map.md:12",
+    "paint-booth-6-ui-boot.js:3825",
+    "paint-booth-v2.html:1807",
+    "paint-booth-5-api-render.js:2191",
+    "paint-booth-3-canvas.js:421",
+    "paint-booth-v2.html:1829",
+    "paint-booth-5-api-render.js:2577",
+    "paint-booth-v2.html:1790",
+    "paint-booth-v2.html:1791",
+    "paint-booth-v2.html:1797",
+    "paint-booth-v2.html:1801",
+    "paint-booth-v2.html:1831",
+    "paint-booth-v2.html:2256",
+    "paint-booth-v2.html:3577",
+    "paint-booth-6-ui-boot.js:3793",
+    "js/spb-support-answers.js:22",
+    "js/spb-support-answers.js:25",
+    "js/spb-support-answers.js:28",
+    "js/spb-support-answers.js:31",
+    "js/spb-support-answers.js:51",
+    "js/spb-support-answers.js:94",
+    "docs/ai_knowledge/04_limits_and_app_map.md:13",
+    "docs/ai_knowledge/04_limits_and_app_map.md:14"
+   ],
+   "aliases": [
+    "center column",
+    "centre column",
+    "left column",
+    "right column",
+    "screen layout",
+    "ui layout",
+    "user interface",
+    "what are the parts of the screen",
+    "where is everything",
+    "window tour",
+    "tour of the window",
+    "what is everything on screen",
+    "layout of the app"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The three setup boxes decide your file names",
+     "body": "The iRacing User ID box takes your Customer ID, 4 to 7 digits. It is not your car number. The two switches beside it, Custom Number and Sim-Stamped Number, cannot both be on: ticking one unticks the other, and you cannot untick the one that is on. Custom Number saves car_num_<ID>.tga, Sim-Stamped Number saves car_<ID>.tga, and the shine file is always car_spec_<ID>.tga."
+    },
+    {
+     "heading": "What RENDER really does",
+     "body": "RENDER (Ctrl+R) builds the finished paint TGA plus the spec TGA and copies both into the iRacing Car Folder if that box is filled. A render usually takes seconds to about a minute, and Shokker stops waiting after 5 minutes. If the Car Folder box is empty the files are not copied anywhere iRacing can see."
+    },
+    {
+     "heading": "Which area owns what",
+     "body": "The ZONES column is a list with the top card winning where zones overlap. The centre column holds SOURCE, LIVE PREVIEW, the RENDER button and the channel strip with COMBINED, R METAL, G ROUGH and B COAT. The right column holds the layer list. The Settings gear at the top right holds Auto-deploy after render, Export ZIP Package, Import Spec Map and Report a Problem."
+    },
+    {
+     "heading": "Making room",
+     "body": "With a zone popout open, Shift+E collapses or expands it. A bare E is the eraser, so only the Shift version toggles the panel. The small arrows on the left and right column edges collapse those columns to give the canvas more room."
+    }
+   ],
+   "examples": [
+    {
+     "title": "First-time setup for a car you drive",
+     "goal": "Get one render into iRacing with the right file names",
+     "settings": {
+      "iRacing User ID": "your own 4 to 7 digit Customer ID",
+      "Custom Number": "checked",
+      "Source Paint": "open the car's own template with the PSD/XCF/ORA button",
+      "iRacing Car Folder": "pick the car from the arrow menu beside the box"
+     },
+     "result": "After RENDER the car folder holds car_num_<ID>.tga and car_spec_<ID>.tga. In iRacing press Ctrl+R to reload the textures."
+    },
+    {
+     "title": "Let iRacing stamp the number for you",
+     "goal": "Keep iRacing's own number and sponsor stamps on the car",
+     "settings": {
+      "iRacing User ID": "your own 4 to 7 digit Customer ID",
+      "Sim-Stamped Number": "checked",
+      "Custom Number": "unchecked (it unchecks itself)",
+      "iRacing Car Folder": "the same car folder"
+     },
+     "result": "RENDER writes car_<ID>.tga plus car_spec_<ID>.tga. iRacing loads this file when its Hide Car Numbers setting is OFF, which is its default."
+    },
+    {
+     "title": "Get more canvas room while you paint",
+     "goal": "See the whole car larger",
+     "settings": {
+      "Left column arrow": "collapse the ZONES column",
+      "Right column arrow": "collapse the FINISHES and LAYERS column",
+      "Shift+E": "hide the zone popout panel"
+     },
+     "result": "The centre column gets the freed width. Press the arrows again or Shift+E again to bring the panels back."
+    }
+   ],
+   "combos": [
+    {
+     "with": "ui_shell.number_modes",
+     "why": "Explains why the Custom Number and Sim-Stamped Number switches must match iRacing's Hide Car Numbers setting."
+    },
+    {
+     "with": "ui_shell.car_folder",
+     "why": "The Car Folder box is what actually puts the rendered files where iRacing can load them."
+    },
+    {
+     "with": "ui_shell.render_results_panel",
+     "why": "Shows what to do after you press RENDER, including finding your saved files."
+    },
+    {
+     "with": "zones.priority",
+     "why": "The ZONES column is read top to bottom, so card order decides who wins an overlap."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Is the iRacing User ID my car number?",
+     "a": "No. It is your iRacing Customer ID, 4 to 7 digits, found under the helmet icon then Profile in iRacing. iRacing matches a paint to a driver by that number in the file name."
+    },
+    {
+     "q": "Where do I type my car number?",
+     "a": "Nowhere. Shokker has no car number box. The Custom Number and Sim-Stamped Number switches only choose the file name that gets saved."
+    },
+    {
+     "q": "Why are left and right on screen different from the car?",
+     "a": "The canvas is the car laid flat, with the side panels, hood, roof and trunk cut open. Use named parts in a zone instead of guessing from screen position."
+    },
+    {
+     "q": "Do I have to press the Settings gear to deploy?",
+     "a": "Usually not. When the iRacing Car Folder box is set, every render is copied there. Auto-deploy after render only matters when that box is empty."
+    },
+    {
+     "q": "The zone panel is in my way. How do I hide it?",
+     "a": "With a zone popout open, press Shift+E to collapse or expand it. A bare E is the eraser."
+    },
+    {
+     "q": "How long should a render take?",
+     "a": "Seconds to about a minute. Two minutes or more means something heavy, such as many zones or stacked finishes. Shokker gives up after 5 minutes."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Render finishes but iRacing shows plain paint-shop colours",
+     "cause": "The iRacing Car Folder box was empty, or the number switch does not match iRacing's Hide Car Numbers setting",
+     "fix": "Fill the iRacing Car Folder box from the arrow menu, then check the Custom Number or Sim-Stamped Number switch against the iRacing setting and render again."
+    },
+    {
+     "symptom": "You cannot untick Custom Number",
+     "cause": "The two number switches work as a pair and one must always stay on",
+     "fix": "Tick Sim-Stamped Number instead; Custom Number unticks by itself."
+    },
+    {
+     "symptom": "Pressing E hides nothing and switches you to the eraser",
+     "cause": "E by itself is the eraser tool",
+     "fix": "Hold Shift with E when you want the zone panel. Press E alone only when you want the eraser."
+    }
+   ],
+   "protips": [
+    "Render once with each number switch and both files stay in the car folder, so iRacing picks the right one without you guessing.",
+    "The Settings gear holds the less common items: Auto-deploy after render, Export ZIP Package, Import Spec Map, Report a Problem and License."
+   ],
+   "screens": [
+    "ui_ui_size_box",
+    "ui_window_tour"
+   ]
+  },
+  {
+   "id": "ui_shell.mode_pill",
+   "title": "The PRO / CHAT pill: pick your door",
+   "domain": "ui_shell",
+   "summary": "Shokker has two ways in: PRO is the full shop and CHAT lets you type what you want. They both edit the same car, so you can switch any time.",
+   "what": "The pill sits in the top row. PRO gives you every control: zones, finishes, layers, masks, spec tools, sliders. CHAT is the Pro screen with the AI copilot open so you can say \"make the hood matte black\" and watch it happen; it works with no key and gets smarter with one. Chat cannot do everything: it cannot import files, export or hand-paint, and every change it makes has an Undo button.",
+   "when": [
+    "You do not know which control to use and just know the look you want (try CHAT).",
+    "You want exact control, hand-drawn masks, layers or spec sliders (use PRO)."
+   ],
+   "how": [
+    "1. Find the PRO / CHAT pill in the top row.",
+    "2. Click the mode you want. Your paint and zones stay as they are.",
+    "3. To come back, click PRO. Nothing is lost by switching."
+   ],
+   "controls": [
+    {
+     "label": "PRO",
+     "range": "",
+     "default": "",
+     "effect": "Switch to the full Pro shop.",
+     "inv": "spbModeProBtn"
+    },
+    {
+     "label": "CHAT",
+     "range": "",
+     "default": "",
+     "effect": "Switch to Chat (talk to Shokker).",
+     "inv": "spbModeChatBtn"
+    }
+   ],
+   "tips": [
+    "New to Shokker? Start in CHAT, or turn on the Tutorial (Training Wheels) in PRO."
+   ],
+   "pitfalls": [
+    "Chat changes zones and layer settings only. For importing a paint, exporting to iRacing or hand painting, use PRO."
+   ],
+   "related": [
+    "ui_shell.window_tour",
+    "ui_shell.top_bar_buttons"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "spbModeProBtn"
+    },
+    {
+     "do": "control",
+     "id": "spbModeChatBtn"
+    }
+   ],
+   "figures": [
+    "g17_pick_a_door"
+   ],
+   "covers": [
+    "mode.pro",
+    "mode.chat",
+    "spbModeProBtn",
+    "spbModeChatBtn"
+   ],
+   "sources": [
+    "docs/ai_knowledge/04_limits_and_app_map.md:25",
+    "paint-booth-v2.html:1",
+    "paint-booth-v2.html:1925",
+    "paint-booth-v2.html:1928",
+    "paint-booth-v2.html:1926",
+    "paint-booth-v2.html:1930",
+    "js/spb-chat-studio.js:25",
+    "js/spb-chat-studio.js:35",
+    "js/spb-chat-studio.js:36",
+    "js/spb-chat-studio.js:39",
+    "js/spb-chat-studio.js:40",
+    "js/spb-chat-studio.js:43",
+    "js/spb-chat-studio.js:44",
+    "js/spb-chat-studio.js:45",
+    "js/spb-chat-studio.js:47",
+    "js/spb-chat-studio.js:50",
+    "js/spb-chat-studio.js:382",
+    "js/spb-chat-studio.js:400",
+    "js/spb-chat-studio.js:401",
+    "js/spb-support-answers.js:106",
+    "js/spb-support-answers.js:109",
+    "js/spb-support-answers.js:100",
+    "docs/ai_knowledge/04_limits_and_app_map.md:7"
+   ],
+   "aliases": [
+    "chat mode",
+    "modes",
+    "pick a mode",
+    "pro chat",
+    "pro mode",
+    "switch mode",
+    "pro chat pill",
+    "switch pro and chat",
+    "mode pill"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "One car, two front doors",
+     "body": "CHAT is not a separate program. It uses the same paint, the same zones and the same render as PRO. Switching only swaps which screen you look at. Full editor, in the top right of the Chat screen, does the same as clicking PRO."
+    },
+    {
+     "heading": "What the Chat screen holds",
+     "body": "The Chat screen has a big live preview with three tabs: Paint, Shine (spec) and Car parts. Shine (spec) shows the spec map, where red means metal, teal means matte and black means gloss. Along the top and sides you also get Render & save, Compare, Undo, Surprise me, Colours from a picture, Copy recipe, Paste recipe, Check my setup and Watch a demo. A Versions strip lets you click back to any earlier version of your design."
+    },
+    {
+     "heading": "What Chat will and will not do",
+     "body": "The built-in designer runs free and offline for simple asks like colours, parts, stripes, numbers and themes. Only open-ended asks go to an AI model, and that needs your own OpenRouter key. The AI never deletes, saves, exports or renders for you and cannot copy files into iRacing. Render & save and the PRO RENDER button do the render, and every change the AI makes has its own Undo."
+    },
+    {
+     "heading": "Chat remembers where you were",
+     "body": "If you closed Shokker while Chat was open, it opens in Chat next time. A brand-new first launch also opens Chat. Click PRO any time to go back to the full shop."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Say what you want, then fine-tune in Pro",
+     "goal": "Start from words and finish with exact controls",
+     "settings": {
+      "Mode pill": "CHAT",
+      "Type in the chat": "retro red white and blue stripes, flat with chrome trim",
+      "Mode pill (second step)": "PRO",
+      "ZONES column": "open the zone it created and adjust the finish"
+     },
+     "result": "The design appears on your car from plain words. In PRO the same zones show up as cards you can edit."
+    },
+    {
+     "title": "Check how the shine looks without leaving Chat",
+     "goal": "See the metal and gloss of your design",
+     "settings": {
+      "Mode pill": "CHAT",
+      "Tab above the preview": "Shine (spec)"
+     },
+     "result": "The preview switches to the spec map. Red areas are metal, teal areas are matte and black areas are gloss."
+    },
+    {
+     "title": "Take back a bad change",
+     "goal": "Return to the way the car looked before the helper's last edit",
+     "settings": {
+      "Mode pill": "CHAT",
+      "Button": "Undo, or click an earlier Versions chip"
+     },
+     "result": "The car returns to the earlier look. Undo reverses the last thing the copilot changed."
+    }
+   ],
+   "combos": [
+    {
+     "with": "ai_copilot.chat_mode",
+     "why": "Explains the copilot behind Chat, including what it costs and when it needs a key."
+    },
+    {
+     "with": "ui_shell.window_tour",
+     "why": "The Pro window is what you land in when you click PRO, so know where its columns are."
+    },
+    {
+     "with": "ai_copilot.can_and_cannot",
+     "why": "Lists exactly what the helper behind Chat can and cannot change."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Do I lose anything when I switch between PRO and CHAT?",
+     "a": "No. Both edit the same car, paint and zones, so switching never changes your work."
+    },
+    {
+     "q": "Does Chat work without an AI key?",
+     "a": "Yes. The built-in designer works free and offline for whole designs, colours, parts, stripes and numbers. A key only adds open-ended and compound requests."
+    },
+    {
+     "q": "Can Chat render and save my paint?",
+     "a": "Yes, with the Render & save button on the Chat screen, which does the same as RENDER in Pro. The AI copilot will not render for you by itself."
+    },
+    {
+     "q": "Can Chat import my template or export to iRacing?",
+     "a": "No. Importing a paint, exporting and hand painting are Pro jobs. Click PRO for those."
+    },
+    {
+     "q": "How do I undo what the helper did?",
+     "a": "Press Undo on the Chat screen, or click an earlier chip on the Versions strip to go back to it."
+    },
+    {
+     "q": "Does Chat need the internet?",
+     "a": "No. Shokker and the built-in helper run on your computer offline. Only the optional AI answers need internet."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You asked Chat to import your template and nothing happened",
+     "cause": "Chat cannot import files, export or hand paint",
+     "fix": "Click PRO, use the PSD/XCF/ORA button next to Source Paint, then come back to Chat."
+    },
+    {
+     "symptom": "Chat gave a simple answer but never used your AI model",
+     "cause": "Simple asks are done by the free built-in designer first, on purpose",
+     "fix": "That is normal. If you want every request to go to the AI, switch off the Free designer first checkbox, which appears once an AI key is set."
+    },
+    {
+     "symptom": "The Shine tab looks very different from the Paint tab",
+     "cause": "The Shine tab shows the spec map, not colours",
+     "fix": "Read it as red metal, teal matte, black gloss. The real paint colours are on the Paint tab."
+    }
+   ],
+   "protips": [
+    "The Shine (spec) tab in Chat is a quick way to check metal and gloss without opening the channel strip in Pro.",
+    "Surprise me gives four different complete designs for your car; tap the one you like."
+   ],
+   "screens": [
+    "ui_chat_mode",
+    "ui_mode_pill"
+   ]
+  },
+  {
+   "id": "ui_shell.panels_and_ui_size",
+   "title": "Collapsing panels and making the interface smaller or larger",
+   "domain": "ui_shell",
+   "summary": "You can fold the left and right columns away and shrink or grow the toolbars. The canvas itself is not zoomed by these buttons.",
+   "what": "Each side column has a small arrow on its edge. Clicking it collapses the column to nothing or opens it again. In the header, two buttons make the interface smaller or larger. They scale the toolbars and panels, not your paint. The size is saved, so Shokker opens the same way next time. The size moves in steps from 70% to 150%.",
+   "when": [
+    "Your screen is small and the canvas feels cramped.",
+    "Text and buttons are too tiny to read."
+   ],
+   "how": [
+    "1. To get canvas room, click the arrow on the edge of the ZONES column or the FINISHES / LAYERS column.",
+    "2. To change the size of the buttons and panels, click \"Make UI chrome smaller\" or \"UI Larger\" in the header.",
+    "3. Click again to step further. The change stays after you restart."
+   ],
+   "controls": [
+    {
+     "label": "Make UI chrome smaller",
+     "range": "",
+     "default": "",
+     "effect": "shrink toolbar / panel chrome (does NOT zoom the canvas)",
+     "inv": "pro.header.ui_smaller"
+    },
+    {
+     "label": "UI Larger",
+     "range": "",
+     "default": "",
+     "effect": "grow toolbar / panel chrome (does NOT zoom the canvas)",
+     "inv": "pro.header.ui_larger"
+    },
+    {
+     "label": "Collapse arrow (left column)",
+     "range": "",
+     "default": "",
+     "effect": "Collapses or expands the ZONES column.",
+     "inv": "leftCollapseBtn"
+    },
+    {
+     "label": "Collapse arrow (right column)",
+     "range": "",
+     "default": "",
+     "effect": "Collapses or expands the FINISHES / LAYERS column.",
+     "inv": "rightCollapseBtn"
+    }
+   ],
+   "tips": [
+    "Collapsing a column does not delete anything. The zones and layers are still there.",
+    "Use Zoom, FIT and 1:1 under the canvas to zoom your paint instead."
+   ],
+   "pitfalls": [
+    "The UI size buttons do not zoom the paint canvas. Use the canvas zoom buttons for that."
+   ],
+   "related": [
+    "ui_shell.window_tour",
+    "tools.zoom_pan"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.header.ui_smaller"
+    },
+    {
+     "do": "control",
+     "id": "pro.header.ui_larger"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.header.ui_smaller",
+    "pro.header.ui_larger",
+    "leftCollapseBtn",
+    "rightCollapseBtn"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:220",
+    "paint-booth-2-state-zones.js:230",
+    "paint-booth-3-canvas.js:30362",
+    "paint-booth-v2.html:1918",
+    "paint-booth-v2.html:1918",
+    "paint-booth-3-canvas.js:30365",
+    "paint-booth-2-state-zones.js:231",
+    "paint-booth-2-state-zones.js:242",
+    "paint-booth-2-state-zones.js:250",
+    "paint-booth-2-state-zones.js:262",
+    "paint-booth-3-canvas.js:30362",
+    "paint-booth-3-canvas.js:30368",
+    "paint-booth-3-canvas.js:30386",
+    "paint-booth-2-state-zones.js:223"
+   ],
+   "aliases": [
+    "collapse panel",
+    "hide the left panel",
+    "interface too small",
+    "make ui larger",
+    "make ui smaller",
+    "more room for canvas",
+    "text too small",
+    "ui scale",
+    "ui size",
+    "ui too small",
+    "bigger buttons",
+    "interface size",
+    "collapse panels",
+    "panel size",
+    "zoom the interface"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The 15 size steps",
+     "body": "The interface size moves through 15 fixed steps: 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 140 and 150 percent. Each click on Make UI chrome smaller or UI Larger moves one step. The current number shows between the two buttons. There is no reset button, so to get back to normal click until the label reads 100%."
+    },
+    {
+     "heading": "What scales and what does not",
+     "body": "The size buttons scale the toolbars and panels only. Your paint on the canvas keeps its own zoom, which you change with Ctrl+Plus, Ctrl+Minus and Ctrl+0 (fit), or the Zoom, FIT and 1:1 buttons under the canvas. Mixing the two up is the most common surprise."
+    },
+    {
+     "heading": "What collapsing really does",
+     "body": "The arrow on the edge of the ZONES column or the FINISHES / LAYERS column shrinks that column to zero width. Nothing is deleted. A small handle stays at the window edge so you can open it again. The arrow points in or out to show which way it will move."
+    },
+    {
+     "heading": "What is remembered",
+     "body": "The interface size is saved on this computer and applied the next time Shokker opens. If everything looks too small or too large after a restart, that saved size is the reason."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Fit Shokker on a small laptop screen",
+     "goal": "Make everything fit without scrolling the toolbar",
+     "settings": {
+      "Make UI chrome smaller": "click 3 times",
+      "Percent label": "reads 85%",
+      "Left column arrow": "collapse while you paint, open to edit zones"
+     },
+     "result": "The toolbars and panels shrink to 85% and the paint canvas gets more room. Your zoom on the paint is unchanged."
+    },
+    {
+     "title": "Bigger buttons for easier clicking",
+     "goal": "Read small labels without squinting",
+     "settings": {
+      "UI Larger": "click 4 times",
+      "Percent label": "reads 120%"
+     },
+     "result": "Every toolbar, panel and label grows to 120% and the value is kept for next time. Click Make UI chrome smaller 4 times to return to 100%."
+    },
+    {
+     "title": "Full-width canvas for a close-up",
+     "goal": "Look at the car as large as possible",
+     "settings": {
+      "Left column arrow": "collapse the ZONES column",
+      "Right column arrow": "collapse the FINISHES / LAYERS column",
+      "Fit button under the canvas": "press FIT"
+     },
+     "result": "The canvas has the whole window width and FIT scales the paint to it."
+    }
+   ],
+   "combos": [
+    {
+     "with": "tools.zoom_pan",
+     "why": "Canvas zoom is a separate control from the interface size, so use it when you want to see paint detail."
+    },
+    {
+     "with": "ui_shell.window_tour",
+     "why": "Shows what each column holds before you decide which to hide."
+    },
+    {
+     "with": "zones.popout_panel",
+     "why": "Shift+E hides the zone popout panel when you need more canvas without touching the columns."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why did the whole window get smaller but my paint did not?",
+     "a": "The size buttons change only the toolbars and panels. The paint canvas has its own zoom."
+    },
+    {
+     "q": "How do I get back to normal size?",
+     "a": "There is no reset button. Click the other size button until the label reads 100%."
+    },
+    {
+     "q": "What are the smallest and largest sizes?",
+     "a": "70 percent and 150 percent, in steps of 5 percent up to 130 and then 10 percent steps to 140 and 150."
+    },
+    {
+     "q": "Do Ctrl+Plus and Ctrl+Minus change the interface size?",
+     "a": "No. They zoom the paint canvas. Ctrl+0 fits the paint to the window. The interface size uses only the two buttons in the header."
+    },
+    {
+     "q": "Did collapsing the zones column delete my zones?",
+     "a": "No. The zones and layers are still there. Click the arrow at the window edge to open the column again."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You pressed Ctrl+Plus and the toolbar did not grow",
+     "cause": "Ctrl+Plus, Ctrl+Minus and Ctrl+0 zoom the paint canvas, not the interface",
+     "fix": "Use UI Larger or Make UI chrome smaller in the header for the interface size."
+    },
+    {
+     "symptom": "A column vanished and you cannot find it",
+     "cause": "It was collapsed with the arrow on its edge",
+     "fix": "Look at the very left or right edge of the window for the small arrow handle and click it."
+    },
+    {
+     "symptom": "Everything looks tiny after a restart",
+     "cause": "A smaller interface size was saved last time",
+     "fix": "Click UI Larger until the label reads 100%."
+    }
+   ],
+   "protips": [
+    "The brush cursor ring stays lined up under your pointer at every interface size, so a small interface does not throw off your painting.",
+    "Pair a smaller interface size with both columns collapsed when you only want to see the paint at its biggest."
+   ],
+   "screens": [
+    "ui_ui_size_box"
+   ]
+  },
+  {
+   "id": "ui_shell.source_paint",
+   "title": "The SOURCE PAINT box and its buttons",
+   "domain": "ui_shell",
+   "summary": "SOURCE PAINT is the paint file Shokker works on: a flat TGA, PNG or JPEG, or a layered PSD template. Load it first; everything else builds on it.",
+   "what": "Type or paste a path into the SOURCE PAINT box, or use the two buttons beside it. TGA/PNG/JPEG loads one flat picture with no layers. PSD/XCF/ORA loads a layered template, so the body, numbers, sponsors and tape stay separate and you can aim a finish at just one of them. With nothing loaded, the centre of the window offers Load Paint Image, Blank Canvas and Import PSD instead.",
+   "when": [
+    "Start of every job.",
+    "You loaded something and nothing seems to happen.",
+    "You want to work on numbers or sponsors alone (load a layered template)."
+   ],
+   "how": [
+    "1. Click PSD/XCF/ORA for a layered template, or TGA/PNG/JPEG for a flat picture.",
+    "2. Pick your file in the file window and confirm.",
+    "3. Wait for the paint to appear in SOURCE. Layers, if any, show in the layer list.",
+    "4. No file yet? Press Blank Canvas to design from plain white."
+   ],
+   "controls": [
+    {
+     "label": "SOURCE PAINT box",
+     "range": "",
+     "default": "",
+     "effect": "The paint file Shokker works on (a flat TGA / PNG / JPEG, or a PSD): type or paste a path, or use the buttons beside it.",
+     "inv": "paintFile"
+    },
+    {
+     "label": "TGA/PNG/JPEG",
+     "range": "",
+     "default": "",
+     "effect": "Browse for a flat paint picture (TGA / PNG / JPEG / BMP) and load it as the paint.",
+     "inv": "pro.header.tga_png_jpeg"
+    },
+    {
+     "label": "PSD/XCF/ORA",
+     "range": "",
+     "default": "",
+     "effect": "Browse for a layered PSD / XCF / ORA template so every layer (body, numbers, sponsors, tape) stays separate.",
+     "inv": "pro.header.psd_xcf_ora"
+    },
+    {
+     "label": "Load Paint Image",
+     "range": "",
+     "default": "",
+     "effect": "browse for a car paint TGA file",
+     "inv": "pro.center.load_paint_image"
+    },
+    {
+     "label": "Blank Canvas",
+     "range": "",
+     "default": "",
+     "effect": "Blank Canvas: start from plain white to design from scratch.",
+     "inv": "pro.center.blank_canvas"
+    },
+    {
+     "label": "Import PSD",
+     "range": "",
+     "default": "",
+     "effect": "Import PSD: load a Photoshop template to get editable layers.",
+     "inv": "onboardingImportPsdBtn"
+    },
+    {
+     "label": "Load TGA",
+     "range": "",
+     "default": "",
+     "effect": "Load TGA: load a flat paint picture (no layers).",
+     "inv": "pro.center.load_tga"
+    }
+   ],
+   "tips": [
+    "Use the template for the same car you drive.",
+    "A flat TGA has no layers. A PSD does, and that is what makes \"only the numbers\" possible."
+   ],
+   "pitfalls": [
+    "Pasting a folder path into the box does not load a paint.",
+    "Dropping an image onto the canvas replaces the paint. It does not add a logo. Use + Layer in the layer list for a logo.",
+    "Before exporting a layered template, make sure the Mask, Wire and Car_Mandatory layers are OFF."
+   ],
+   "related": [
+    "ui_shell.car_folder",
+    "layers.open_psd",
+    "layers.turn_off_before_export",
+    "ui_shell.window_tour"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.header.psd_xcf_ora"
+    },
+    {
+     "do": "control",
+     "id": "pro.header.tga_png_jpeg"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "paintFile",
+    "pro.header.tga_png_jpeg",
+    "pro.header.psd_xcf_ora",
+    "pro.center.load_paint_image",
+    "pro.center.blank_canvas",
+    "onboardingImportPsdBtn",
+    "pro.center.load_tga"
+   ],
+   "sources": [
+    "docs/ai_knowledge/06_layers_panels_and_export.md:3",
+    "paint-booth-v2.html:1807",
+    "paint-booth-5-api-render.js:2191",
+    "paint-booth-3-canvas.js:421",
+    "paint-booth-v2.html:1820",
+    "paint-booth-v2.html:1824",
+    "paint-booth-v2.html:2801",
+    "paint-booth-3-canvas.js:1097",
+    "paint-booth-3-canvas.js:461",
+    "paint-booth-3-canvas.js:468",
+    "paint-booth-3-canvas.js:474",
+    "paint-booth-3-canvas.js:485",
+    "paint-booth-3-canvas.js:489",
+    "paint-booth-2-state-zones.js:3285",
+    "paint-booth-2-state-zones.js:3303",
+    "paint-booth-7-shokk.js:920",
+    "paint-booth-v2.html:1808",
+    "paint-booth-v2.html:1817",
+    "paint-booth-v2.html:1820",
+    "js/spb-support-answers.js:63",
+    "js/spb-support-answers.js:40",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:4"
+   ],
+   "aliases": [
+    "blank canvas",
+    "import paint",
+    "load my template",
+    "load paint",
+    "nothing happened when i loaded my paint",
+    "open my paint",
+    "psd",
+    "source paint",
+    "load paint button"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Typing a path versus browsing",
+     "body": "Shokker checks what you type in the Source Paint box about half a second after you stop typing. A green check mark means the file exists. You see a red 'not found' when it does not exist and a red 'directory' when you pasted a folder. Pressing Enter, or leaving the box, loads the paint only when the path is a full path ending in .tga. For PNG, JPEG, BMP or a layered template use the buttons."
+    },
+    {
+     "heading": "Flat picture or layered template",
+     "body": "The TGA/PNG/JPEG button loads one flat picture with no layers. The PSD/XCF/ORA button loads the template with every layer separate: body paint, numbers, sponsors, tape, decals and the template guide layers. Only a layered file lets you aim a finish at just the numbers or just the body. The template guide layers (Mask, Wire, Car_Mandatory) are not paint and must be OFF at render time."
+    },
+    {
+     "heading": "Size and format rules",
+     "body": "iRacing only accepts a car paint that is exactly 2048 by 2048 pixels (1024 by 1024 also works). Any other size is ignored and you see your paint-shop colours. Shokker renders at the size of the file you open, so open the car's own template and never resize it. Paints save as 24-bit TGA."
+    },
+    {
+     "heading": "Recent paints and the blank start",
+     "body": "Click in the Source Paint box and a drop-down lists the last 8 paint paths you used, newest first. With nothing loaded, the centre of the window offers Load Paint Image, Blank Canvas and Import PSD. Blank Canvas makes a plain white 2048 by 2048 paint to design from scratch."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Start from the car's layered template",
+     "goal": "Get separate body, number and sponsor layers",
+     "settings": {
+      "Source Paint button": "PSD/XCF/ORA",
+      "File type": "the template for the SAME car you drive",
+      "Layer list": "check that the layers appear"
+     },
+     "result": "The paint shows in SOURCE and the layer list fills the layer list. Switch Mask, Wire and Car_Mandatory OFF before you render."
+    },
+    {
+     "title": "Load a flat TGA by pasting its path",
+     "goal": "Reopen a paint you already exported",
+     "settings": {
+      "Source Paint": "the full path of your TGA file, ending in .tga",
+      "Key": "press Enter"
+     },
+     "result": "A green check appears, the paint loads in SOURCE and the path is added to the recent list."
+    },
+    {
+     "title": "Design from scratch with no file",
+     "goal": "Make a livery without a template",
+     "settings": {
+      "Centre of the window": "press Blank Canvas"
+     },
+     "result": "A plain white 2048 by 2048 paint loads so zones and finishes have something to work on."
+    }
+   ],
+   "combos": [
+    {
+     "with": "layers.open_psd",
+     "why": "Loading the PSD gives you the layer tree; this page explains the layers once they are in."
+    },
+    {
+     "with": "layers.turn_off_before_export",
+     "why": "Template guide layers loaded from a PSD must be switched off before RENDER or their outlines get baked into your paint."
+    },
+    {
+     "with": "ui_shell.car_folder",
+     "why": "Source Paint is the input; the Car Folder is where the finished files go."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What size must my paint be?",
+     "a": "Exactly 2048 by 2048 (1024 by 1024 also works). iRacing ignores any other size and shows the paint-shop colours instead."
+    },
+    {
+     "q": "Why does pasting a folder path do nothing?",
+     "a": "The box needs a file. Pasting a folder shows a red 'directory' mark and nothing loads."
+    },
+    {
+     "q": "I dropped a logo onto the canvas and my whole paint changed",
+     "a": "Dropping an image on the canvas replaces the paint. To add a logo use + Layer in the layer list."
+    },
+    {
+     "q": "Which file should I open, TGA or PSD?",
+     "a": "Open the PSD/XCF/ORA template if you want separate numbers, sponsors and body. A flat TGA has no layers."
+    },
+    {
+     "q": "Can I start without any car file?",
+     "a": "Yes. With nothing loaded, press Blank Canvas for a plain white 2048 by 2048 start."
+    },
+    {
+     "q": "Does the car template have to match my car?",
+     "a": "Yes. Use the template for the same car you drive; the panel layout is different on every car."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The red 'not found' mark shows next to the box",
+     "cause": "The path is mistyped or the file moved",
+     "fix": "Use the TGA/PNG/JPEG button to browse to the file instead of typing."
+    },
+    {
+     "symptom": "You typed a PNG path and nothing loaded",
+     "cause": "Pressing Enter in the box loads only full paths that end in .tga",
+     "fix": "Click the TGA/PNG/JPEG button and pick the PNG in the file window."
+    },
+    {
+     "symptom": "Panel outlines and a second number appear in the render",
+     "cause": "Mask, Wire or Car_Mandatory template layers were left on",
+     "fix": "Switch those layers off in the layer list and render again."
+    }
+   ],
+   "protips": [
+    "The drop-down of recent paths opens when you click into the box, so reopening last week's car is one click.",
+    "If you open a template at a different size than 2048 by 2048, Shokker renders at that size and iRacing will ignore the result."
+   ],
+   "screens": [
+    "ui_header_rows"
+   ]
+  },
+  {
+   "id": "ui_shell.car_folder",
+   "title": "The iRacing Car Folder box and Browse buttons",
+   "domain": "ui_shell",
+   "summary": "The IRACING CAR FOLDER tells Shokker where your car lives in the iRacing paint folder. Render then saves the finished files straight there.",
+   "what": "Set it once per car. Shokker can list the iRacing cars it found on this computer, most recently painted first, so you can pick yours from the list. If your car is not listed, browse for the car folder in Windows. The folder you pick decides the file names: car_num_ID.tga and car_spec_ID.tga when Custom Number is on, or car_ID.tga and car_spec_ID.tga for Sim-Stamped Number.",
+   "when": [
+    "Paint is not showing in iRacing.",
+    "You want to paint a different car."
+   ],
+   "how": [
+    "1. Open the list with \"Pick detected iRacing car\" and click your car.",
+    "2. If it is not in the list, press the browse button and choose the car folder inside Documents/iRacing/paint.",
+    "3. Check your iRacing User ID is filled in. It becomes part of the saved file names.",
+    "4. Press RENDER. The files land in that folder."
+   ],
+   "controls": [
+    {
+     "label": "IRACING CAR FOLDER box",
+     "range": "",
+     "default": "",
+     "effect": "The iRacing car folder the finished paint and spec files are written to.",
+     "inv": "outputDir"
+    },
+    {
+     "label": "Pick detected iRacing car",
+     "range": "",
+     "default": "",
+     "effect": "Pick your car from the list of iRacing cars Shokker detected (most recently painted first).",
+     "inv": "carPickBtn"
+    },
+    {
+     "label": "Browse iRacing car folder in Windows File Explorer",
+     "range": "",
+     "default": "",
+     "effect": "Browse for the iRacing car folder in Windows.",
+     "inv": "pro.header.browse_car_folder"
+    },
+    {
+     "label": "IRACING USER ID box",
+     "range": "",
+     "default": "",
+     "effect": "Your iRacing customer number (4-7 digits); it is part of the saved file names.",
+     "inv": "iracingId"
+    }
+   ],
+   "tips": [
+    "Run the car once in iRacing first if it is missing from the list.",
+    "In iRacing, press Alt+Tab to come back to the sim and Ctrl+R to reload the paint."
+   ],
+   "pitfalls": [
+    "Point to the car FOLDER, not to a TGA file.",
+    "A wrong User ID means iRacing ignores the files."
+   ],
+   "related": [
+    "ui_shell.number_modes",
+    "ui_shell.render_results_panel",
+    "ui_shell.source_paint"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "carPickBtn"
+    },
+    {
+     "do": "control",
+     "id": "outputDir"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "outputDir",
+    "carPickBtn",
+    "pro.header.browse_car_folder",
+    "iracingId"
+   ],
+   "sources": [
+    "docs/ai_knowledge/06_layers_panels_and_export.md:10",
+    "paint-booth-v2.html:1829",
+    "paint-booth-5-api-render.js:2577",
+    "paint-booth-v2.html:1838",
+    "paint-booth-v2.html:1841",
+    "paint-booth-v2.html:1790",
+    "paint-booth-5-api-render.js:2374",
+    "paint-booth-2-state-zones.js:16037",
+    "paint-booth-v2.html:1831",
+    "paint-booth-v2.html:1856",
+    "paint-booth-v2.html:1865",
+    "paint-booth-v2.html:1878",
+    "paint-booth-v2.html:1879",
+    "paint-booth-v2.html:1880",
+    "paint-booth-v2.html:1887",
+    "paint-booth-v2.html:1895",
+    "js/spb-support-answers.js:22",
+    "js/spb-support-answers.js:31",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:11",
+    "paint-booth-v2.html:3721"
+   ],
+   "aliases": [
+    "browse car folder",
+    "car folder",
+    "customer id",
+    "iracing car folder",
+    "iracing paint folder",
+    "my car is not listed",
+    "pick my car",
+    "user id",
+    "where do my files go",
+    "set iracing folder",
+    "point shokker at my iracing folder"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Shokker fills the box for you on first launch",
+     "body": "Shortly after Shokker starts it looks in your Documents iRacing paint folder. If the iRacing Car Folder box is empty, it fills in the car you painted most recently. The detection is silent: there is no 'cars found' message. Pick a different car with the arrow button beside the box."
+    },
+    {
+     "heading": "The arrow menu",
+     "body": "The arrow lists up to 60 detected iRacing cars, most recently painted first. The car that is currently set has a check mark. Clicking a car sets the box and shows 'iRacing car folder set' with the car name. If nothing is found the menu says no paint folders were detected and points you to the folder button to browse by hand."
+    },
+    {
+     "heading": "What lands in the folder",
+     "body": "Every render copies the paint file and the spec file into the box's folder. With Custom Number you get car_num_<ID>.tga, with Sim-Stamped Number you get car_<ID>.tga, and you always get car_spec_<ID>.tga. The car folder name uses a space where the car path has a slash, for example stockcars chevyss. If the box is empty the files are not copied anywhere iRacing can see."
+    },
+    {
+     "heading": "Folder, not file",
+     "body": "The box wants the exact car folder, never a TGA file. Putting the ID in the User ID box is separate: the ID only becomes part of the file names. Auto-deploy after render in the Settings gear matters only when this box is empty, and then it copies to the last car Shokker remembered."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Set the car from the detected list",
+     "goal": "Point renders at the car you are about to race",
+     "settings": {
+      "iRacing Car Folder": "press the arrow beside the box",
+      "Menu": "click your car; a check mark shows the current one",
+      "iRacing User ID": "your 4 to 7 digit Customer ID"
+     },
+     "result": "A message says the car folder was set. RENDER now copies car_num_<ID>.tga or car_<ID>.tga and car_spec_<ID>.tga into that car's folder."
+    },
+    {
+     "title": "Car is not in the list",
+     "goal": "Set a car folder that Shokker has not detected",
+     "settings": {
+      "iRacing Car Folder": "press the folder button beside the box and browse",
+      "Folder to choose": "the car's own folder inside Documents, iRacing, paint",
+      "Not a TGA file": "choose the folder, not a file"
+     },
+     "result": "The box shows the folder path and renders copy there."
+    },
+    {
+     "title": "Send the last render to a second car",
+     "goal": "Reuse a render on another car without re-rendering",
+     "settings": {
+      "Deploy to a different car": "open it under the render results",
+      "Deploy Car Select": "pick the other car",
+      "Deploy Now": "press it"
+     },
+     "result": "The last render is copied into that other car's folder. Shokker keeps only the two newest renders, so do this soon after rendering."
+    }
+   ],
+   "combos": [
+    {
+     "with": "ui_shell.number_modes",
+     "why": "The Custom Number and Sim-Stamped Number switches decide whether the folder gets car_num_<ID>.tga or car_<ID>.tga."
+    },
+    {
+     "with": "preview_render.reload_in_iracing",
+     "why": "After files land in the folder, Alt+Tab to iRacing and press Ctrl+R to see them."
+    },
+    {
+     "with": "preview_render.where_files_go",
+     "why": "Explains the render folder Shokker keeps and how Show my files opens it."
+    },
+    {
+     "with": "preview_render.auto_deploy",
+     "why": "Auto-deploy after render only matters when this box is empty."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why is my car missing from the arrow list?",
+     "a": "Shokker lists the cars iRacing has made paint folders for. Run the car once in iRacing, or browse for its folder with the folder button."
+    },
+    {
+     "q": "Where is the iRacing paint folder?",
+     "a": "It is Documents, then iRacing, then paint, then one folder per car. Windows can have two Documents folders when OneDrive is on, which can show the wrong empty one."
+    },
+    {
+     "q": "Do I pick the folder or the TGA file?",
+     "a": "The folder. The box wants the exact car folder, not a file."
+    },
+    {
+     "q": "I left the box empty and iRacing shows nothing. Why?",
+     "a": "With no car folder set, renders are not copied anywhere iRacing can see. Set the box, or use Show my files and copy by hand."
+    },
+    {
+     "q": "Does the User ID go in this box?",
+     "a": "No. The User ID has its own box. It only becomes part of the file names."
+    },
+    {
+     "q": "Can I keep my older renders?",
+     "a": "Shokker keeps only the two newest in its own render folder. Files already copied into your car folder stay there until you replace them."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The render finished but iRacing shows plain colours",
+     "cause": "The Car Folder box was empty or points at the wrong car",
+     "fix": "Open the arrow menu, pick the car you are driving and render again."
+    },
+    {
+     "symptom": "You pasted a path ending in .tga into the box",
+     "cause": "The box wants the car folder, not a file",
+     "fix": "Delete the file name and keep only the folder, or pick the car from the arrow menu."
+    },
+    {
+     "symptom": "The files went into a different folder than iRacing reads",
+     "cause": "Windows has two Documents folders because of OneDrive",
+     "fix": "Use the arrow menu or press Show my files after a render to see the real folder."
+    }
+   ],
+   "protips": [
+    "The check mark in the arrow menu tells you which car folder is active, so you can confirm before you render.",
+    "Because the most recently painted car is filled in at launch, you only need to touch this box when you switch cars."
+   ],
+   "screens": [
+    "ui_header_rows"
+   ]
+  },
+  {
+   "id": "ui_shell.number_modes",
+   "title": "Custom Number vs Sim-Stamped Number",
+   "domain": "ui_shell",
+   "summary": "These two switches only choose which file name Shokker writes. They must agree with iRacing's Hide Car Numbers setting.",
+   "what": "There is no place to type a car number in Shokker. Custom Number writes car_num_ID.tga: your paint carries its own number and iRacing loads this file only when its Graphics setting Hide Car Numbers is ON. Sim-Stamped Number writes car_ID.tga: iRacing stamps your number and sponsors on top, which is what it does by default. Only one can be on at a time, and Custom Number is the default.",
+   "when": [
+    "Your number shows twice, or not at all.",
+    "iRacing shows its own paint-shop colours instead of your paint."
+   ],
+   "how": [
+    "1. Decide: did you draw your own number on the paint (Custom Number) or should iRacing add it (Sim-Stamped Number)?",
+    "2. Tick that box next to your iRacing User ID at the top.",
+    "3. In iRacing, set Graphics > Hide Car Numbers to match: ON for Custom Number, OFF for Sim-Stamped.",
+    "4. Render, then press Ctrl+R in iRacing."
+   ],
+   "controls": [
+    {
+     "label": "CUSTOM NUMBER",
+     "range": "",
+     "default": "on",
+     "effect": "Custom Number: the number is part of your paint and iRacing will not add one.",
+     "inv": "useCustomNumberCheckbox"
+    },
+    {
+     "label": "SIM-STAMPED NUMBER",
+     "range": "",
+     "default": "",
+     "effect": "Sim-Stamped Number: iRacing stamps your number on the car in the series font.",
+     "inv": "useSimStampedCheckbox"
+    }
+   ],
+   "tips": [
+    "Not sure which one? Render once in each mode. Both files stay in the folder and iRacing picks the right one.",
+    "Restart iRacing after changing Hide Car Numbers; an iRacing update can switch it back."
+   ],
+   "pitfalls": [
+    "A number-stamp layer left ON in the template gives you the number twice. Turn the template layers off before rendering.",
+    "Do not paint a number on the template if you use Sim-Stamped Number."
+   ],
+   "related": [
+    "ui_shell.car_folder",
+    "layers.turn_off_before_export",
+    "ui_shell.render_results_panel"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "useCustomNumberCheckbox"
+    },
+    {
+     "do": "control",
+     "id": "useSimStampedCheckbox"
+    }
+   ],
+   "figures": [
+    "g10_file_naming"
+   ],
+   "covers": [
+    "useCustomNumberCheckbox",
+    "useSimStampedCheckbox"
+   ],
+   "sources": [
+    "paint-booth-v2.html:1793",
+    "paint-booth-v2.html:1797",
+    "server.py:5625",
+    "paint-booth-v2.html:1797",
+    "paint-booth-5-api-render.js:1903",
+    "paint-booth-5-api-render.js:5894",
+    "paint-booth-v2.html:1801",
+    "paint-booth-5-api-render.js:2132",
+    "paint-booth-5-api-render.js:5897",
+    "paint-booth-5-api-render.js:2128",
+    "server.py:5634",
+    "js/spb-support-answers.js:28",
+    "js/spb-support-answers.js:40",
+    "js/spb-support-answers.js:45"
+   ],
+   "aliases": [
+    "car num",
+    "car number",
+    "custom number",
+    "hide car numbers",
+    "number shows twice",
+    "sim stamped number",
+    "simstamped",
+    "wrong number",
+    "number mode"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The switch only changes the file name",
+     "body": "Nothing in the picture changes. The paint inside car_num_<ID>.tga and car_<ID>.tga is identical. Only the name differs, and iRacing picks which name to load from its Graphics setting Hide Car Numbers. Custom Number is the default, so a fresh install writes car_num_<ID>.tga."
+    },
+    {
+     "heading": "The pairing table",
+     "body": "Custom Number writes car_num_<ID>.tga and iRacing loads it only when Hide Car Numbers is ON. Sim-Stamped Number writes car_<ID>.tga and iRacing loads it when Hide Car Numbers is OFF, which is iRacing's default. If the two disagree, iRacing finds no file and quietly shows your paint-shop colours. The spec file car_spec_<ID>.tga is named the same either way."
+    },
+    {
+     "heading": "Saved between sessions",
+     "body": "When you tick a box, Shokker saves the choice and shows a message: 'Car files: car_num_XXXXX.tga (custom numbers)' or 'Car files: car_XXXXX.tga (no custom numbers)'. On the next launch the boxes are restored from that saved choice. The boxes act as a pair: you cannot untick the one that is on, you tick the other one."
+    },
+    {
+     "heading": "Seeing the number twice",
+     "body": "Two numbers on the car means a number-stamp layer from the template was left visible when you rendered. Switch the template layers off, especially the group named Turn Off Before Exporting TGA, and render again."
+    }
+   ],
+   "examples": [
+    {
+     "title": "You drew your own number on the paint",
+     "goal": "Keep your custom number exactly as painted",
+     "settings": {
+      "Custom Number": "checked",
+      "Sim-Stamped Number": "unchecked",
+      "iRacing Graphics, Hide Car Numbers": "ON"
+     },
+     "result": "RENDER saves car_num_<ID>.tga and car_spec_<ID>.tga. iRacing loads your file with no extra number on top."
+    },
+    {
+     "title": "Let iRacing place the series number",
+     "goal": "Use iRacing's own number font and sponsor stamps",
+     "settings": {
+      "Sim-Stamped Number": "checked",
+      "Custom Number": "unchecked",
+      "iRacing Graphics, Hide Car Numbers": "OFF"
+     },
+     "result": "RENDER saves car_<ID>.tga and car_spec_<ID>.tga. Do not paint a number on the paint in this mode."
+    },
+    {
+     "title": "Not sure which one iRacing wants",
+     "goal": "Find out without guessing",
+     "settings": {
+      "Step 1": "render with Custom Number",
+      "Step 2": "tick Sim-Stamped Number and render again",
+      "Car folder": "both files are now there"
+     },
+     "result": "iRacing loads whichever file matches its Hide Car Numbers setting. Restart iRacing once after changing that setting."
+    }
+   ],
+   "combos": [
+    {
+     "with": "ui_shell.car_folder",
+     "why": "The same folder receives whichever file name you choose here."
+    },
+    {
+     "with": "layers.turn_off_before_export",
+     "why": "Fixes the double number caused by stamp layers left on."
+    },
+    {
+     "with": "preview_render.output_files",
+     "why": "Lists the files a render creates in each number mode."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Where do I type my car number?",
+     "a": "Nowhere. These two switches only choose the file name. The number itself is on your paint or stamped by iRacing."
+    },
+    {
+     "q": "Which is the default?",
+     "a": "Custom Number. A fresh Shokker writes car_num_<ID>.tga."
+    },
+    {
+     "q": "My paint shows plain paint-shop colours in iRacing. Why?",
+     "a": "The file name probably does not match Hide Car Numbers. Custom Number needs it ON, Sim-Stamped Number needs it OFF."
+    },
+    {
+     "q": "Do I have to restart iRacing?",
+     "a": "Yes, once, after changing Hide Car Numbers. An iRacing update can also switch the setting back."
+    },
+    {
+     "q": "Why can I not untick the box that is on?",
+     "a": "One mode is always on. Tick the other box and the first unticks by itself."
+    },
+    {
+     "q": "Does Trading Paints care which mode I used?",
+     "a": "Upload the paint file Shokker wrote: car_num_<ID>.tga for Custom Number or car_<ID>.tga for Sim-Stamped. The shine is the separate car_spec_<ID>.tga."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "iRacing ignores your files and shows plain colours",
+     "cause": "The Shokker number mode and iRacing's Hide Car Numbers setting do not agree",
+     "fix": "Match them: Custom Number with Hide Car Numbers ON, or Sim-Stamped Number with it OFF, then restart iRacing."
+    },
+    {
+     "symptom": "The number appears twice on the car",
+     "cause": "A number-stamp template layer was left on when you rendered",
+     "fix": "Turn off the template layers, including the Turn Off Before Exporting TGA group, and render again."
+    },
+    {
+     "symptom": "You painted a number and iRacing adds another",
+     "cause": "You are in Sim-Stamped Number mode",
+     "fix": "Switch to Custom Number if you want your painted number, or remove your number from the paint."
+    }
+   ],
+   "protips": [
+    "Rendering once in each mode leaves both files in the folder, and iRacing quietly loads whichever matches your setting.",
+    "Your choice is saved, so you set it once per setup rather than once per car."
+   ],
+   "screens": [
+    "ui_decal_rescue",
+    "ui_header_rows"
+   ]
+  },
+  {
+   "id": "ui_shell.top_bar_buttons",
+   "title": "Top-bar buttons: Spec Sculpt, Shokk Drop, Fracture, Settings, Tutorial",
+   "domain": "ui_shell",
+   "summary": "A few buttons in the top row open whole other pages or one-click looks. Here is what each one does and when you would press it.",
+   "what": "SPEC SCULPT opens the guided look library for the shine and metal map. Shokk Drop is where you import art, import a spec map and share .spbdrop packs. FRACTURE THIS PAINT puts a Soul Core Emerald / Pink Flash finish into the selected zone in one click. The gear opens Settings: licence, keyboard shortcuts, ZIP export, spec map import, auto-deploy (Live Link) and Training Wheels. Tutorial turns on Training Wheels: quests that teach the app as you use it, with a hint chip for your next move.",
+   "when": [
+    "You want a guided spec look (Spec Sculpt).",
+    "You want to import or share a pack (Shokk Drop).",
+    "You want a dramatic look in one click (Fracture).",
+    "You have licence trouble or want shortcuts (gear).",
+    "You are lost (Tutorial)."
+   ],
+   "how": [
+    "1. Click the button in the top row.",
+    "2. SPEC SCULPT opens the guided look library and Shokk Drop opens in its own window. Each has its own controls.",
+    "3. For Fracture, first click the zone you want to change, then press FRACTURE THIS PAINT.",
+    "4. For Settings, click the gear, then pick the setting."
+   ],
+   "controls": [
+    {
+     "label": "SPEC SCULPT",
+     "range": "",
+     "default": "",
+     "effect": "Open the complete guided Spec Sculpt look library",
+     "inv": "pro.header.spec_sculpt"
+    },
+    {
+     "label": "Shokk Drop",
+     "range": "",
+     "default": "",
+     "effect": "import art, Import DNA spec, share .spbdrop packs",
+     "inv": "pro.header.shokk_drop"
+    },
+    {
+     "label": "FRACTURE THIS PAINT",
+     "range": "",
+     "default": "",
+     "effect": "One click puts a Soul Core Emerald / Pink Flash finish into the selected zone's base (and its colour unless Color Lock is on).",
+     "inv": "btnFractureThisPaint"
+    },
+    {
+     "label": "Settings",
+     "range": "",
+     "default": "",
+     "effect": "Opens Settings: licence, keyboard shortcuts, ZIP export, spec map import, Live Link, Training Wheels.",
+     "inv": "settingsGearBtn"
+    },
+    {
+     "label": "Tutorial",
+     "range": "",
+     "default": "",
+     "effect": "Training Wheels: step-by-step quests that teach the app as you use it (load, zone, finish, render, then patterns, spec, overlays), plus a hint chip for your next move.",
+     "inv": "spbGuideToggle"
+    },
+    {
+     "label": "ZIP export checkbox",
+     "range": "",
+     "default": "",
+     "effect": "Bundles paint TGA, spec TGA and preview into a ZIP on every render.",
+     "inv": "exportZipCheckbox"
+    },
+    {
+     "label": "Auto-deploy (Live Link) checkbox",
+     "range": "",
+     "default": "",
+     "effect": "Auto-deploy: copies every render to your iRacing car folder automatically.",
+     "inv": "liveLinkCheckbox"
+    },
+    {
+     "label": "Training Wheels checkbox",
+     "range": "",
+     "default": "",
+     "effect": "step-by-step quests and a next-move hint chip that teach the app while you use it",
+     "inv": "trainingWheelsCheckbox"
+    },
+    {
+     "label": "Keyboard Shortcuts",
+     "range": "",
+     "default": "",
+     "effect": "Show all keyboard shortcuts (press ?)",
+     "inv": "pro.settings.keyboard_shortcuts"
+    },
+    {
+     "label": "Import TGA",
+     "range": "",
+     "default": "",
+     "effect": "Import an existing spec map TGA to merge under your render.",
+     "inv": "pro.settings.import_tga"
+    },
+    {
+     "label": "Clear",
+     "range": "",
+     "default": "",
+     "effect": "Remove imported spec map and render on default base",
+     "inv": "btnClearSpecMap"
+    }
+   ],
+   "tips": [
+    "Training Wheels can be switched off the same way, or from the checkbox in Settings."
+   ],
+   "pitfalls": [
+    "FRACTURE THIS PAINT also changes the zone colour unless the colour Lock is on. Undo with Ctrl+Z."
+   ],
+   "related": [
+    "ui_shell.mode_pill",
+    "ui_shell.window_tour",
+    "ui_shell.update_banner"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "btnFractureThisPaint"
+    },
+    {
+     "do": "control",
+     "id": "settingsGearBtn"
+    },
+    {
+     "do": "control",
+     "id": "spbGuideToggle"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.header.spec_sculpt",
+    "pro.header.shokk_drop",
+    "btnFractureThisPaint",
+    "settingsGearBtn",
+    "spbGuideToggle",
+    "exportZipCheckbox",
+    "liveLinkCheckbox",
+    "trainingWheelsCheckbox",
+    "pro.settings.keyboard_shortcuts",
+    "pro.settings.import_tga",
+    "btnClearSpecMap"
+   ],
+   "sources": [
+    "paint-booth-v2.html:1937",
+    "paint-booth-v2.html:1938",
+    "paint-booth-6-ui-boot.js:5358",
+    "paint-booth-v2.html:1944",
+    "paint-booth-2-state-zones.js:7822",
+    "paint-booth-v2.html:1955",
+    "paint-booth-6-ui-boot.js:5468",
+    "paint-booth-1-data.js:20",
+    "paint-booth-v2.html:1937",
+    "paint-booth-v2.html:1939",
+    "paint-booth-v2.html:1943",
+    "paint-booth-v2.html:1954",
+    "paint-booth-v2.html:1955",
+    "paint-booth-v2.html:1972",
+    "paint-booth-v2.html:2196",
+    "paint-booth-v2.html:2197",
+    "paint-booth-v2.html:2206",
+    "paint-booth-v2.html:2226",
+    "paint-booth-v2.html:2234",
+    "paint-booth-v2.html:2245",
+    "paint-booth-v2.html:2240",
+    "paint-booth-2-state-zones.js:7824",
+    "paint-booth-2-state-zones.js:7828",
+    "paint-booth-2-state-zones.js:7832",
+    "paint-booth-6-ui-boot.js:5338-5377"
+   ],
+   "aliases": [
+    "auto deploy",
+    "fracture this paint",
+    "gear",
+    "licence",
+    "license key",
+    "live link",
+    "settings",
+    "shokk drop button",
+    "spec sculpt button",
+    "training wheels",
+    "tutorial",
+    "zip export",
+    "top bar buttons",
+    "top bar"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "What each button opens",
+     "body": "SPEC SCULPT opens the guided look library for the shine and metal map. Shokk Drop opens in its own window so you can import art, import a spec map and share .spbdrop packs. Encyclopedia opens this full-window reader, and pressing / inside it searches. FRACTURE THIS PAINT and Tutorial act on your project right away. The gear opens a dropdown."
+    },
+    {
+     "heading": "Exactly what FRACTURE THIS PAINT changes",
+     "body": "It works on the zone you have selected, or the first zone if none is selected, and gives that zone the base Soul Core Emerald / Pink Flash. It also changes the zone's colour unless Color Lock is on; when the lock is on the message adds that your colour was kept. With no zones it only says to add a zone first. It is one undo step."
+    },
+    {
+     "heading": "Inside the Settings gear",
+     "body": "The dropdown holds Options (Export ZIP Package, Training Wheels, Report a Problem), Quick Tools (Keyboard Shortcuts), Import Spec Map (Merge Mode) with Import TGA and Clear, and Auto-Deploy to iRacing. Export ZIP Package bundles paint TGA, spec TGA and a preview into one zip on every render, saved to your output folder. Import Spec Map shows 'No spec map' until you import one, and zones paint on top of an imported map."
+    },
+    {
+     "heading": "The green dot",
+     "body": "At the far right a small dot shows whether Shokker's engine is running. Green means online and red means offline. Rendering needs it green."
+    }
+   ],
+   "examples": [
+    {
+     "title": "One-click dramatic look",
+     "goal": "Try a fractured finish on one panel",
+     "settings": {
+      "ZONES column": "click the zone you want",
+      "FRACTURE THIS PAINT": "press it",
+      "Color Lock": "turn it on first if you want to keep your colour"
+     },
+     "result": "That zone's base becomes Soul Core Emerald / Pink Flash. Press Ctrl+Z to take it back."
+    },
+    {
+     "title": "Bundle every render into a zip",
+     "goal": "Hand a paint and spec to a friend in one file",
+     "settings": {
+      "Settings gear": "open it",
+      "Export ZIP Package": "checked"
+     },
+     "result": "Every render also makes a zip with the paint TGA, the spec TGA and a preview in your output folder."
+    },
+    {
+     "title": "Merge a spec map you made elsewhere",
+     "goal": "Keep a hand-made shine map and paint zones on top",
+     "settings": {
+      "Settings gear": "open it",
+      "Import Spec Map (Merge Mode)": "press Import TGA and pick your spec map",
+      "To undo": "press Clear"
+     },
+     "result": "Areas no zone covers keep your imported spec. Clear returns to the default base."
+    }
+   ],
+   "combos": [
+    {
+     "with": "ui_shell.mode_pill",
+     "why": "The PRO and CHAT pill sits in this same top row."
+    },
+    {
+     "with": "settings.overview",
+     "why": "Goes deeper on everything inside the gear dropdown."
+    },
+    {
+     "with": "ui_shell.update_banner",
+     "why": "The banner under the title bar appears when a new Shokker version is ready."
+    },
+    {
+     "with": "shortcuts.table",
+     "why": "Keyboard Shortcuts in the gear lists the same keys."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What is the Tutorial button?",
+     "a": "It turns on Training Wheels: step-by-step quests that teach the app while you use it, plus a hint chip for your next move. Press it again to turn them off."
+    },
+    {
+     "q": "Does FRACTURE THIS PAINT change my colour?",
+     "a": "Yes, unless Color Lock is on. It always changes the zone's base finish."
+    },
+    {
+     "q": "What happens if I press FRACTURE THIS PAINT with no zones?",
+     "a": "Nothing is changed. Shokker asks you to add a zone first."
+    },
+    {
+     "q": "Where is Auto-deploy?",
+     "a": "In the Settings gear, as Auto-deploy after render. It only matters when the iRacing Car Folder box is empty."
+    },
+    {
+     "q": "How do I see every keyboard shortcut?",
+     "a": "Press the question mark key, or choose Keyboard Shortcuts in the Settings gear."
+    },
+    {
+     "q": "The dot at the far right is red. What now?",
+     "a": "The engine is not reachable and rendering will not work until it is green. Restart Shokker."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "FRACTURE THIS PAINT changed the wrong zone",
+     "cause": "It acts on the selected zone, or the first zone when none is selected",
+     "fix": "Click the zone you want first, press Ctrl+Z to undo, then press the button again."
+    },
+    {
+     "symptom": "Your car colour changed after FRACTURE THIS PAINT",
+     "cause": "Color Lock was off",
+     "fix": "Undo with Ctrl+Z, turn on Color Lock for the zone, and press the button again."
+    },
+    {
+     "symptom": "Your imported spec map seems to be ignored",
+     "cause": "A zone covers that area, and zones paint on top of the imported map",
+     "fix": "Areas not covered by a zone keep the imported spec. Narrow the zone, or press Clear to drop the imported map."
+    }
+   ],
+   "protips": [
+    "Training Wheels can also be switched from the Settings gear, and finishing the Core Loop quest offers to turn them off.",
+    "Report a Problem in the gear copies a plain-text diagnostics report to paste to support; no licence key or password is included."
+   ],
+   "screens": [
+    "ui_top_bar_buttons"
+   ]
+  },
+  {
+   "id": "ui_shell.update_banner",
+   "title": "The update banner",
+   "domain": "ui_shell",
+   "summary": "When a newer Shokker is ready, a banner appears under the title bar. You can download it now or be reminded later.",
+   "what": "The banner has two buttons. Download Update fetches the new version. Remind Me Later hides the banner for now. Installing an update restarts the app, so finish what you are doing first.",
+   "when": [
+    "A banner shows under the title bar.",
+    "You are in the middle of a job and do not want to restart."
+   ],
+   "how": [
+    "1. Save your work with Save / Open in the toolbar.",
+    "2. Click Download Update on the banner.",
+    "3. Let the app restart when it asks."
+   ],
+   "controls": [
+    {
+     "label": "Download Update",
+     "range": "",
+     "default": "",
+     "effect": "Downloads the new Shokker version.",
+     "inv": "spbUpdateBannerDownload"
+    },
+    {
+     "label": "Remind Me Later",
+     "range": "",
+     "default": "",
+     "effect": "Hides the update banner for now.",
+     "inv": "spbUpdateBannerSnooze"
+    }
+   ],
+   "tips": [
+    "Pressing Remind Me Later is safe. The banner comes back next time."
+   ],
+   "pitfalls": [
+    "Installing restarts the app. Unsaved work can be lost."
+   ],
+   "related": [
+    "ui_shell.save_open_projects",
+    "ui_shell.top_bar_buttons"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "spbUpdateBannerDownload"
+    },
+    {
+     "do": "control",
+     "id": "spbUpdateBannerSnooze"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "spbUpdateBannerDownload",
+    "spbUpdateBannerSnooze"
+   ],
+   "sources": [
+    "paint-booth-v2.html:1578",
+    "paint-booth-v2.html:1579",
+    "paint-booth-v2.html:1569",
+    "paint-booth-v2.html:1578",
+    "paint-booth-v2.html:1612",
+    "paint-booth-v2.html:1636",
+    "paint-booth-v2.html:1646",
+    "paint-booth-v2.html:1663",
+    "paint-booth-v2.html:1669",
+    "paint-booth-v2.html:1697",
+    "electron-app/main.js:3406",
+    "electron-app/main.js:3411",
+    "electron-app/main.js:3412",
+    "electron-app/main.js:3445"
+   ],
+   "aliases": [
+    "download update",
+    "how do i update",
+    "new version",
+    "remind me later",
+    "update available",
+    "update banner",
+    "update notice"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Three button states",
+     "body": "The same button changes as the update moves along. It starts as Download Update. When you press it, it turns grey and reads Downloading with a percent from 0 to 100. When the download is done it becomes Install & Restart. Nothing installs until you press that last button."
+    },
+    {
+     "heading": "When Shokker checks",
+     "body": "Shokker looks for a newer version a few seconds after it starts, not constantly. The update is never forced: the download only starts when you press Download Update."
+    },
+    {
+     "heading": "How long Remind Me Later lasts",
+     "body": "Remind Me Later hides the banner for 24 hours. Closing and reopening Shokker does not bring it back during that time. After 24 hours the banner shows again at the next launch."
+    },
+    {
+     "heading": "When the in-app download is not available",
+     "body": "If this copy of Shokker cannot download inside the app, Download Update opens the Shokker releases page in your browser instead. The banner then hides for 1 hour so it does not pop right back. Your licence and settings are kept when the app updates."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Update safely between sessions",
+     "goal": "Install a new version without losing work",
+     "settings": {
+      "Step 1": "save your project with Save / Open",
+      "Step 2": "press Download Update and let it reach 100%",
+      "Step 3": "press Install & Restart when it appears"
+     },
+     "result": "Shokker restarts on the new version and your licence and settings are still there."
+    },
+    {
+     "title": "Mid-render, not now",
+     "goal": "Ignore the banner while you finish a livery",
+     "settings": {
+      "Remind Me Later": "press it"
+     },
+     "result": "The banner is gone for 24 hours. Update when you have a quiet moment."
+    },
+    {
+     "title": "The banner reads Downloading and nothing happens",
+     "goal": "Know what to expect",
+     "settings": {
+      "Button": "leave it alone while it counts up"
+     },
+     "result": "Clicks are ignored during the download. When it reaches the end the button changes to Install & Restart."
+    }
+   ],
+   "combos": [
+    {
+     "with": "ui_shell.save_open_projects",
+     "why": "Save your project before installing, because installing restarts Shokker."
+    },
+    {
+     "with": "ui_shell.top_bar_buttons",
+     "why": "The banner appears right under the title bar above these buttons."
+    },
+    {
+     "with": "settings.activation_license",
+     "why": "Your licence is kept across an update."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Will updating erase my licence or settings?",
+     "a": "No. They are kept when Shokker installs the update and relaunches."
+    },
+    {
+     "q": "Does the update install by itself?",
+     "a": "No. It only downloads when you press Download Update, and it only installs when you press Install & Restart or when you next quit the app after downloading."
+    },
+    {
+     "q": "I pressed Remind Me Later. When will it come back?",
+     "a": "After 24 hours."
+    },
+    {
+     "q": "The banner vanished after I pressed Download Update and my browser opened.",
+     "a": "This copy could not download inside the app, so it sent you to the releases page. The banner hides for 1 hour."
+    },
+    {
+     "q": "Can I get the banner back sooner?",
+     "a": "Not from the banner itself. It returns after the snooze ends and a launch finds the update."
+    },
+    {
+     "q": "Can I lose my work by updating?",
+     "a": "Installing restarts Shokker, so save your project first with Save / Open."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You lost a design after installing an update",
+     "cause": "The app restarted before the project was saved",
+     "fix": "Save the project with Save / Open before you press Install & Restart."
+    },
+    {
+     "symptom": "You expected the banner back after reopening Shokker",
+     "cause": "Remind Me Later lasts 24 hours",
+     "fix": "Wait for the snooze to end, or download the update from the releases page yourself."
+    }
+   ],
+   "protips": [
+    "After the download reaches 100% you can keep working. The update waits until you press Install & Restart or quit Shokker.",
+    "The version number is shown in the banner text, so you can tell whether it is the update you were told about."
+   ],
+   "screens": [
+    "ui_update_banner"
+   ]
+  },
+  {
+   "id": "ui_shell.canvas_overlays",
+   "title": "The canvas and its overlays",
+   "domain": "ui_shell",
+   "summary": "The centre of the window shows your paint with coloured overlays that tell you what each zone is catching. Learn the colours and you can see your zones at a glance.",
+   "what": "The SOURCE canvas is your flat paint where the tools work. On top of it Shokker paints a zone colour overlay so you can see which pixels the selected zone owns. Spatial strokes show in green when you INCLUDE an area and red when you EXCLUDE it. A line above the canvas says \"Drawing for:\" and names the zone your strokes will go to, so check it before you draw. The Opacity slider by the selection bar fades the zone overlay: 0 hides it, 100 is normal, 200 doubles it. The Zoom button next to it fits the view to the selected zone's area. When no paint is loaded, the canvas shows a welcome card with Load Paint Image, Import PSD and Blank Canvas.",
+   "when": [
+    "You cannot tell which part of the car a zone covers.",
+    "The overlay hides the paint you want to look at.",
+    "Your strokes seem to go to the wrong zone."
+   ],
+   "how": [
+    "1. Click a zone card in the left column. The canvas overlay shows what it owns.",
+    "2. Look at \"Drawing for:\" above the canvas to confirm which zone you are editing.",
+    "3. Drag the Opacity slider in the selection bar to fade the overlay if it hides your paint.",
+    "4. Press the Zoom button to fit the view to that zone's area."
+   ],
+   "controls": [
+    {
+     "label": "Zone overlay opacity percent",
+     "range": "0-200",
+     "default": "100",
+     "effect": "Zone overlay opacity: how strongly the zone colour overlay shows on the canvas (default 50%).",
+     "inv": "overlayOpacity"
+    },
+    {
+     "label": "Spatial brush size",
+     "range": "3-80",
+     "default": "15",
+     "effect": "Spatial brush size",
+     "inv": "pro.center.spatial_brush_size"
+    },
+    {
+     "label": "SOURCE",
+     "range": "",
+     "default": "",
+     "effect": "SOURCE view: the original paint canvas where tools work.",
+     "inv": "btnCanvasViewSource"
+    },
+    {
+     "label": "CAR",
+     "range": "",
+     "default": "",
+     "effect": "CAR view: show the rendered car under the canvas while tools stay active.",
+     "inv": "btnCanvasViewRendered"
+    },
+    {
+     "label": "SPLIT",
+     "range": "",
+     "default": "",
+     "effect": "SPLIT view (Shift+V): source and live preview side by side.",
+     "inv": "btnSplitView"
+    },
+    {
+     "label": "Edit Big",
+     "range": "",
+     "default": "",
+     "effect": "Edit Big: hide the live preview and edit the source canvas larger.",
+     "inv": "btnSourceFocus"
+    },
+    {
+     "label": "Compare",
+     "range": "",
+     "default": "",
+     "effect": "before/after comparison slider",
+     "inv": "btnCompare"
+    },
+    {
+     "label": "Refresh",
+     "range": "",
+     "default": "",
+     "effect": "aborts any stuck render, clears pipeline, and re-runs. Use this if the preview is hung.",
+     "inv": "btnPreviewRefreshSource"
+    },
+    {
+     "label": "B/A",
+     "range": "",
+     "default": "",
+     "effect": "compare the last preview against the current one",
+     "inv": "btnBeforeAfterSource"
+    },
+    {
+     "label": "Channels",
+     "range": "",
+     "default": "",
+     "effect": "view spec map channels and numeric values",
+     "inv": "btnSpecMapInspectorSource"
+    }
+   ],
+   "tips": [
+    "Green means keep (Include). Red means remove (Exclude).",
+    "Use SOURCE, CAR and SPLIT to see the finished car while you work."
+   ],
+   "pitfalls": [
+    "The overlay is only a guide. It never changes your paint or your render."
+   ],
+   "related": [
+    "ui_shell.selection_bar",
+    "ui_shell.preview_channel_views",
+    "zones.how_pixels_picked",
+    "tools.zoom_pan"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "overlayOpacity"
+    },
+    {
+     "do": "control",
+     "id": "btnSplitView"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "overlayOpacity",
+    "pro.center.spatial_brush_size",
+    "btnCanvasViewSource",
+    "btnCanvasViewRendered",
+    "btnSplitView",
+    "btnSourceFocus",
+    "btnCompare",
+    "btnPreviewRefreshSource",
+    "btnBeforeAfterSource",
+    "btnSpecMapInspectorSource"
+   ],
+   "sources": [
+    "paint-booth-v2.html:3301",
+    "paint-booth-v2.html:3318",
+    "paint-booth-3-canvas.js:8509",
+    "paint-booth-3-canvas.js:8523",
+    "paint-booth-3-canvas.js:8513",
+    "paint-booth-v2.html:3189",
+    "paint-booth-3-canvas.js:5412",
+    "paint-booth-v2.html:3601",
+    "paint-booth-v2.html:3192",
+    "paint-booth-v2.html:3201",
+    "paint-booth-v2.html:3311",
+    "paint-booth-3-canvas.js:8104",
+    "paint-booth-3-canvas.js:8525",
+    "paint-booth-3-canvas.js:8530",
+    "paint-booth-3-canvas.js:9804",
+    "paint-booth-3-canvas.js:9815",
+    "paint-booth-3-canvas.js:17484",
+    "paint-booth-3-canvas.js:34710",
+    "paint-booth-3-canvas.js:34721",
+    "paint-booth-3-canvas.js:34729"
+   ],
+   "aliases": [
+    "canvas",
+    "drawing for",
+    "edit big",
+    "green and red overlay",
+    "overlay hides my paint",
+    "overlay opacity",
+    "source canvas",
+    "zone overlay",
+    "canvas overlays"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "What the Opacity slider really reads",
+     "body": "The Opacity slider runs from 0 to 200 and starts at 100. The percentage printed next to it is half the slider position, so the default shows 50% and the far right shows 100%. Slider 0 hides the zone overlay completely. The overlay is only a guide drawn on top of your paint and never changes the render."
+    },
+    {
+     "heading": "Keys for the overlay",
+     "body": "Press the comma key to dim the overlay and the full stop key to brighten it. Each press moves the slider by 10 steps, which is 5 points on the printed percentage. The keys do nothing while you are typing in a text box, and they ignore Ctrl, Alt and Meta combinations."
+    },
+    {
+     "heading": "Include and exclude strokes",
+     "body": "Spatial strokes are stored per pixel as unset, include or exclude. Include shows green and exclude shows red. The Size slider next to them runs from 3 to 80 and starts at 15. The Erase button beside it removes spatial strokes only. Strokes go to the zone named after Drawing for: above the canvas, so check that name before you paint."
+    },
+    {
+     "heading": "Three views and a focus mode",
+     "body": "SOURCE is the flat paint where tools work. CAR keeps your tools live while the finished car is shown under the canvas. SPLIT (Shift+V) puts source and live preview side by side. Edit Big hides the live preview so the source canvas is larger for precise selections. Compare (B) opens a before and after slider, and Refresh (F5) re-runs a stuck preview."
+    }
+   ],
+   "examples": [
+    {
+     "title": "See the zone without hiding your paint",
+     "goal": "Check which pixels a zone owns while still seeing the livery",
+     "settings": {
+      "ZONES column": "click the zone card",
+      "Opacity slider": "drag to about 40 (the label reads 20%)",
+      "Drawing for": "confirm the zone name"
+     },
+     "result": "The coloured overlay is faint so the paint shows through. Press the comma key to dim it more, the full stop key to brighten."
+    },
+    {
+     "title": "Paint a precise selection large",
+     "goal": "Make a careful include and exclude on a small part",
+     "settings": {
+      "Edit Big": "press it",
+      "Size": "set the spatial brush to 8",
+      "Zone": "check Drawing for names the zone you intend"
+     },
+     "result": "The source canvas fills the centre so small strokes are easy. Press Edit Big again to bring the live preview back."
+    },
+    {
+     "title": "Judge the finish while you edit",
+     "goal": "See the car and still use the tools",
+     "settings": {
+      "View buttons": "press CAR (or SPLIT / Shift+V for side by side)"
+     },
+     "result": "The rendered car shows under the canvas, tools stay active, and the title reads CAR VIEW."
+    }
+   ],
+   "combos": [
+    {
+     "with": "ui_shell.selection_bar",
+     "why": "The Opacity slider and Zoom button live in the selection bar."
+    },
+    {
+     "with": "zones.how_pixels_picked",
+     "why": "Explains why green include and red exclude strokes matter to which pixels a zone owns."
+    },
+    {
+     "with": "ui_shell.preview_channel_views",
+     "why": "Channels and the spec views sit with the same SOURCE, CAR and SPLIT controls."
+    },
+    {
+     "with": "tools.zoom_pan",
+     "why": "The Zoom button fits the view to the zone; the canvas zoom keys are in this article."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does my Opacity readout say 50% when the slider is in the middle?",
+     "a": "The number is half the slider position: slider 100 shows 50%, slider 200 shows 100%."
+    },
+    {
+     "q": "What are green and red on the canvas?",
+     "a": "Green strokes include an area in the zone and red strokes exclude it."
+    },
+    {
+     "q": "Does the overlay change my paint or my render?",
+     "a": "No. It is only a guide on screen."
+    },
+    {
+     "q": "How do I see which zone my strokes will go to?",
+     "a": "Read the Drawing for: line above the canvas. Click a different zone card to change it."
+    },
+    {
+     "q": "What does Edit Big do?",
+     "a": "It hides the live preview so the source canvas is bigger. Click it again to exit."
+    },
+    {
+     "q": "The preview is stuck. What do I do?",
+     "a": "Press Refresh or F5. It stops any stuck render and runs it again."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You cannot see your paint under the colour overlay",
+     "cause": "The zone overlay is at full strength",
+     "fix": "Drag the Opacity slider down or press the comma key a few times."
+    },
+    {
+     "symptom": "Strokes went into the wrong zone",
+     "cause": "Drawing for: named a different zone than you expected",
+     "fix": "Undo, click the right zone card, check the name above the canvas, and draw again."
+    },
+    {
+     "symptom": "Comma and full stop do nothing",
+     "cause": "Focus is in a text box, or a Ctrl, Alt or Meta key is held",
+     "fix": "Click on the canvas first and press the key alone."
+    }
+   ],
+   "protips": [
+    "Opacity at slider 0 hides the overlay entirely, which is useful for taking a clean screenshot.",
+    "Use SPLIT (Shift+V) with a zone selected to watch the finish change while the overlay shows where the zone lives."
+   ],
+   "screens": [
+    "ui_source_and_live"
+   ]
+  },
+  {
+   "id": "ui_shell.preview_channel_views",
+   "title": "Preview and the spec channel views",
+   "domain": "ui_shell",
+   "summary": "The LIVE PREVIEW shows the finished car. Under it, buttons show the spec map one channel at a time: metal, roughness and clearcoat.",
+   "what": "The preview refreshes as you change zones. The spec channel strip under it has COMBINED, R METAL, G ROUGH and B COAT. R METAL is the metallic channel: brighter means more metal. G ROUGH is roughness: darker is mirror, lighter is matte. B COAT is clearcoat: 16 is the glossiest, 255 is dull. Clicking a view opens a larger one; the full-size window has PAINT and SPEC MAP switches and the same channel buttons, plus an A Mask view for the specular mask (rarely used). Before After (B) compares the last preview with the current one, and Spec Map Inspector shows the channels with their numbers.",
+   "when": [
+    "You want to check shine and metal before you render.",
+    "The preview is stale, blank or not changing.",
+    "You want to see what a change did."
+   ],
+   "how": [
+    "1. Look at LIVE PREVIEW in the centre column.",
+    "2. Click R METAL, G ROUGH or B COAT under it to see one channel.",
+    "3. Click a thumbnail to open the full-size view; switch between PAINT and SPEC MAP at the top.",
+    "4. If the preview does not change, press Refresh (or F5) to abort a stuck preview and run it again.",
+    "5. Press Before After (B) to compare with the previous preview."
+   ],
+   "controls": [
+    {
+     "label": "COMBINED",
+     "range": "",
+     "default": "",
+     "effect": "hover to enlarge, click for full view",
+     "inv": "pro.preview.combined"
+    },
+    {
+     "label": "R METAL",
+     "range": "",
+     "default": "",
+     "effect": "Red channel of the spec map: Metallic (brighter = more metal).",
+     "inv": "pro.preview.r_metal"
+    },
+    {
+     "label": "G ROUGH",
+     "range": "",
+     "default": "",
+     "effect": "Green channel: Roughness (darker = mirror, lighter = matte).",
+     "inv": "pro.preview.g_rough"
+    },
+    {
+     "label": "B COAT",
+     "range": "",
+     "default": "",
+     "effect": "Blue channel: Clearcoat (16 = max gloss, 255 = dull).",
+     "inv": "pro.preview.b_coat"
+    },
+    {
+     "label": "ALL",
+     "range": "",
+     "default": "",
+     "effect": "Show all spec channels combined",
+     "inv": "pro.preview.all"
+    },
+    {
+     "label": "A Mask",
+     "range": "",
+     "default": "",
+     "effect": "Specular Mask (rarely used, advanced control)",
+     "inv": "pro.preview.a_mask"
+    },
+    {
+     "label": "Refresh",
+     "range": "",
+     "default": "",
+     "effect": "Refresh preview (F5): aborts a stuck render and re-runs the live preview.",
+     "inv": "btnPreviewRefresh"
+    },
+    {
+     "label": "Before After",
+     "range": "",
+     "default": "",
+     "effect": "Before / After (B): compare the last preview with the current one.",
+     "inv": "btnBeforeAfter"
+    },
+    {
+     "label": "Spec Map Inspector",
+     "range": "",
+     "default": "",
+     "effect": "Channels inspector: spec map channels with numeric values.",
+     "inv": "btnSpecMapInspector"
+    },
+    {
+     "label": "PAINT",
+     "range": "",
+     "default": "",
+     "effect": "View paint preview",
+     "inv": "lightboxPaintBtn"
+    },
+    {
+     "label": "SPEC MAP",
+     "range": "",
+     "default": "",
+     "effect": "View spec map preview",
+     "inv": "lightboxSpecBtn"
+    },
+    {
+     "label": "ALL",
+     "range": "",
+     "default": "",
+     "effect": "Show all spec channels combined",
+     "inv": "lightboxChAll"
+    },
+    {
+     "label": "R Metal",
+     "range": "",
+     "default": "",
+     "effect": "Metallic (0=dielectric, 255=metallic)",
+     "inv": "lightboxChR"
+    },
+    {
+     "label": "G Rough",
+     "range": "",
+     "default": "",
+     "effect": "Roughness (0=mirror, 255=matte)",
+     "inv": "lightboxChG"
+    },
+    {
+     "label": "B Coat",
+     "range": "",
+     "default": "",
+     "effect": "Clearcoat (16=max gloss, 255=dull)",
+     "inv": "lightboxChB"
+    },
+    {
+     "label": "Close lightbox",
+     "range": "",
+     "default": "",
+     "effect": "Close lightbox (Esc)",
+     "inv": "pro.preview.close_lightbox"
+    }
+   ],
+   "tips": [
+    "Brighter R means more metal. Darker G means shinier.",
+    "Esc closes the full-size window."
+   ],
+   "pitfalls": [
+    "A very low clearcoat number is not \"more gloss\". On the blue channel 16 is the glossiest and bigger numbers get duller."
+   ],
+   "related": [
+    "ui_shell.canvas_overlays",
+    "ui_shell.render_results_panel"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "btnPreviewRefresh"
+    },
+    {
+     "do": "control",
+     "id": "btnBeforeAfter"
+    },
+    {
+     "do": "control",
+     "id": "btnSpecMapInspector"
+    }
+   ],
+   "figures": [
+    "g01_spec_channels"
+   ],
+   "covers": [
+    "specMapInspectorModal",
+    "pro.preview.combined",
+    "pro.preview.r_metal",
+    "pro.preview.g_rough",
+    "pro.preview.b_coat",
+    "pro.preview.all",
+    "pro.preview.a_mask",
+    "btnPreviewRefresh",
+    "btnBeforeAfter",
+    "btnSpecMapInspector",
+    "lightboxPaintBtn",
+    "lightboxSpecBtn",
+    "lightboxChAll",
+    "lightboxChR",
+    "lightboxChG",
+    "lightboxChB",
+    "pro.preview.close_lightbox"
+   ],
+   "sources": [
+    "paint-booth-6-ui-boot.js:3785",
+    "paint-booth-v2.html:3985",
+    "paint-booth-2-state-zones.js:3913",
+    "paint-booth-2-state-zones.js:3940",
+    "paint-booth-v2.html:3479",
+    "paint-booth-3-canvas.js:10136",
+    "paint-booth-v2.html:3481",
+    "paint-booth-v2.html:3488",
+    "paint-booth-2-state-zones.js:3912",
+    "paint-booth-2-state-zones.js:3923",
+    "paint-booth-2-state-zones.js:3927",
+    "paint-booth-2-state-zones.js:3966",
+    "paint-booth-2-state-zones.js:3976",
+    "paint-booth-2-state-zones.js:4008",
+    "paint-booth-v2.html:3514",
+    "paint-booth-v2.html:5145",
+    "paint-booth-v2.html:5146",
+    "paint-booth-v2.html:5147",
+    "docs/ai_knowledge/04_limits_and_app_map.md:14",
+    "js/spb-support-answers.js:34"
+   ],
+   "aliases": [
+    "b coat",
+    "before after",
+    "channel views",
+    "channels",
+    "g rough",
+    "live preview",
+    "preview not updating",
+    "preview stale",
+    "r metal",
+    "refresh preview",
+    "spec channel",
+    "spec map inspector",
+    "spec channel view",
+    "view only metallic",
+    "channel preview"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "The four channels and their numbers",
+     "body": "The spec map is one picture with four channels, each stored as 0 to 255. R is metal, 0 for none and 255 for full metal. G is roughness, 0 for a mirror and 255 for matte. B is clearcoat, 0 to 15 for none, 16 for the glossiest and 255 for dull. A is the specular mask. Each view button shows one channel as a grey map."
+    },
+    {
+     "heading": "Spec Map Inspector gives real numbers",
+     "body": "Spec Map Inspector lists the lowest, highest and average value of R, G, B and A over the whole car. Click anywhere on the map to read the exact stored values at that pixel. It stays empty until a preview exists, so switch to CAR or SPLIT view first and let the preview render. The inspector tints each channel: red for R, green for G, blue for B and orange for A."
+    },
+    {
+     "heading": "Where each view lives",
+     "body": "The strip under the live preview has COMBINED, R METAL, G ROUGH and B COAT. Hovering a thumbnail enlarges it and clicking opens the full-size window. In that window you switch between PAINT and SPEC MAP and pick ALL, R Metal, G Rough or B Coat. Esc closes it. Before After (B) compares the last preview with the current one."
+    },
+    {
+     "heading": "Refresh and a stuck preview",
+     "body": "The preview re-renders after you change a zone. If it is stale, blank or not changing, Refresh (F5) aborts any stuck render, clears it and runs again."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Check whether a zone is really chrome",
+     "goal": "Confirm the metal and mirror numbers",
+     "settings": {
+      "View": "switch to CAR or SPLIT",
+      "Spec Map Inspector": "press it",
+      "Click": "click the chrome area on the map"
+     },
+     "result": "A chrome zone reads R near 255 and G near 0. B near 16 means very glossy clearcoat."
+    },
+    {
+     "title": "Find why a panel looks dull",
+     "goal": "See which channel is wrong",
+     "settings": {
+      "G ROUGH": "open the full-size view",
+      "B Coat": "then open it"
+     },
+     "result": "Light areas on G ROUGH are matte. A high number on B COAT is a dull clearcoat, because 16 is the glossiest."
+    },
+    {
+     "title": "See what a change did",
+     "goal": "Compare before and after one edit",
+     "settings": {
+      "Change": "edit one zone setting",
+      "Before After": "press it or press B"
+     },
+     "result": "Shokker compares the previous preview with the current one."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.what_is_spec_map",
+     "why": "Explains the four channels in full."
+    },
+    {
+     "with": "spec.channel_b_clearcoat",
+     "why": "Why 16 is the glossiest and bigger numbers get duller."
+    },
+    {
+     "with": "spec.reading_by_colour",
+     "why": "How to read the colours you see in the spec views."
+    },
+    {
+     "with": "ui_shell.canvas_overlays",
+     "why": "SOURCE, CAR and SPLIT decide whether the preview shows."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Is a low clearcoat number more gloss?",
+     "a": "No. On B, 16 is the glossiest. 0 to 15 means no clearcoat, and bigger numbers get duller up to 255."
+    },
+    {
+     "q": "What does a dark G ROUGH mean?",
+     "a": "Dark is mirror-like and light is matte."
+    },
+    {
+     "q": "Why does the Spec Map Inspector say there is no spec map yet?",
+     "a": "No preview has rendered. Switch to CAR or SPLIT view, set up zones and wait for the preview, then open it again."
+    },
+    {
+     "q": "What is the A Mask view?",
+     "a": "The specular mask channel. It is rarely used and is an advanced control."
+    },
+    {
+     "q": "How do I get an exact number for a spot on the car?",
+     "a": "Open Spec Map Inspector and click the spot on the map to read the stored values."
+    },
+    {
+     "q": "The preview will not update. What do I do?",
+     "a": "Press Refresh or F5 to stop a stuck render and run it again."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The channel views show nothing",
+     "cause": "The preview has not rendered yet, often because you are in SOURCE view with no zones",
+     "fix": "Add a zone with a finish, switch to CAR or SPLIT view, and press Refresh if needed."
+    },
+    {
+     "symptom": "B COAT looks bright, so you assume extra gloss",
+     "cause": "Bright on B COAT means a high number, and high numbers are duller",
+     "fix": "Remember 16 is the glossiest and 255 is dull. Read the number in Spec Map Inspector."
+    },
+    {
+     "symptom": "The preview shows an old look",
+     "cause": "The preview is stale",
+     "fix": "Press Refresh or F5."
+    }
+   ],
+   "protips": [
+    "The full-size window has the same channel buttons as the strip, so you can flip PAINT, SPEC MAP and each channel without closing it.",
+    "Spec Map Inspector shows min, max and mean per channel, a quick way to see whether a look uses the whole 0 to 255 range."
+   ],
+   "screens": [
+    "spec_viewer_buttons",
+    "ui_spec_strip"
+   ]
+  },
+  {
+   "id": "ui_shell.template_layer_views",
+   "title": "Wire, Mask and Car Mandatory: seeing and hiding the template lines",
+   "domain": "ui_shell",
+   "summary": "The green lines or extra shapes on your paint are the template guides. They help you paint but must be turned off before you render.",
+   "what": "A layered car template carries guide layers: Wire (panel outlines), Mask (what is paintable) and Car_Mandatory (real art for the headlight and grill mesh), grouped under \"Turn Off Before Exporting TGA\". They show in the SOURCE view as lines or shapes. Click the eye icon on a layer to hide or show it, and Alt+click the eye to see only that layer. If a guide is on when you render, it is painted into your TGA.",
+   "when": [
+    "You see green outlines or a second number on your finished paint.",
+    "You want to hide the guide lines while you design."
+   ],
+   "how": [
+    "1. Open the layer list (right column) in the right column.",
+    "2. Find Wire, Mask, Car_Mandatory and the \"Turn Off Before Exporting TGA\" group.",
+    "3. Click the eye icon on each to hide it.",
+    "4. Render, then check the preview again."
+   ],
+   "controls": [
+    {
+     "label": "Layer eye icon",
+     "range": "",
+     "default": "",
+     "effect": "Shows / hides the layer. Alt+click isolates that layer.",
+     "inv": "layer.eye"
+    }
+   ],
+   "tips": [
+    "You can also ask the AI copilot to hide the template layers; Undo brings them back."
+   ],
+   "pitfalls": [
+    "Leaving them on paints the outlines into the car and can give you two numbers or sponsors."
+   ],
+   "related": [
+    "layers.wire_mask_mandatory",
+    "layers.turn_off_before_export",
+    "layers.panel"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "layer.eye"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "layers.wire",
+    "layers.turnoff",
+    "layer.eye"
+   ],
+   "sources": [
+    "js/spb-support-answers.js:16",
+    "paint-booth-3-canvas.js:23490",
+    "paint-booth-3-canvas.js:23329",
+    "paint-booth-3-canvas.js:23289",
+    "paint-booth-3-canvas.js:23476",
+    "paint-booth-3-canvas.js:23481",
+    "paint-booth-3-canvas.js:26327",
+    "paint-booth-3-canvas.js:26336",
+    "paint-booth-3-canvas.js:26344",
+    "js/spb-easy-auto.js:155",
+    "js/spb-easy-auto.js:156",
+    "js/spb-support-answers.js:40",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:11",
+    "paint-booth-3-canvas.js:23342",
+    "paint-booth-v2.html:4729",
+    "paint-booth-3-canvas.js:23346-23351"
+   ],
+   "aliases": [
+    "car mandatory",
+    "green lines on my car",
+    "hide template",
+    "mask layer",
+    "outlines in my paint",
+    "template lines",
+    "wire lines",
+    "wireframe",
+    "hide wireframe",
+    "show template lines"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "What each guide layer is",
+     "body": "Wire draws the panel outlines. Mask marks which parts of the sheet are paintable. The group named Turn Off Before Exporting TGA holds the number and sponsor stamp blocks, and Car_Mandatory (real art for the headlight and grill mesh) sits with it. They help you place things but are not paint. Whatever is visible when you render is baked into the TGA."
+    },
+    {
+     "heading": "What goes wrong when they are left on",
+     "body": "Outlines get printed on the car, and stamp blocks give you two numbers or two sets of sponsors because iRacing adds its own. On one truck template the Wire layer drew a repeating grid across every panel, and on one race car template the Mask became a fake extra colour part. Neither is a bug in your design; the guides were just left on."
+    },
+    {
+     "heading": "Eye, solo and group switches",
+     "body": "Click the eye on a layer to hide or show it. Alt+click the eye to show only that layer, and Alt+click the same eye again to bring back the exact visibility you had before, with a message saying Layer visibility restored. A layer group has its own visibility switch, so the group Turn Off Before Exporting TGA can be hidden in one click."
+    },
+    {
+     "heading": "Flat paints have no guides",
+     "body": "A flat TGA, PNG or JPEG has no layers, so there is nothing to switch off. In that case the Layers column says NO LAYERS - TGA LOADED and points you to the Import PSD button for editable layers; the number and sponsor splitting tools are not part of this build."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Clean the template before the first render",
+     "goal": "Make sure no outlines or stamps print",
+     "settings": {
+      "Wire": "eye off",
+      "Mask": "eye off",
+      "Car_Mandatory": "eye off",
+      "Turn Off Before Exporting TGA": "eye off on the group",
+      "Layer list": "open it"
+     },
+     "result": "The green lines and shapes disappear from SOURCE. RENDER now prints only your paint."
+    },
+    {
+     "title": "Check one layer on its own",
+     "goal": "See what a single layer looks like",
+     "settings": {
+      "Eye on the layer": "Alt+click it",
+      "To restore": "Alt+click the same eye again"
+     },
+     "result": "Only that layer shows and a message says Isolated with its name. The second Alt+click restores the previous visibility exactly."
+    },
+    {
+     "title": "Let the helper do it",
+     "goal": "Hide the guides without hunting for them",
+     "settings": {
+      "Chat or helper box": "type: hide the template layers"
+     },
+     "result": "The template layers are hidden and the change has an Undo button."
+    }
+   ],
+   "combos": [
+    {
+     "with": "layers.turn_off_before_export",
+     "why": "The full list of layers that must be off before RENDER."
+    },
+    {
+     "with": "layers.wire_mask_mandatory",
+     "why": "Describes each guide layer and what it is for."
+    },
+    {
+     "with": "ui_shell.number_modes",
+     "why": "A number stamp left on is the usual reason for seeing a number twice."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why are there green lines on my paint?",
+     "a": "Those are the template guides, usually the Wire layer. Hide it with its eye in the layer list before rendering."
+    },
+    {
+     "q": "Do I need to turn them off every time?",
+     "a": "Check before every render. A visible guide gets baked into the TGA."
+    },
+    {
+     "q": "Why do I see two numbers on the car?",
+     "a": "A stamp layer from the template was left visible, and iRacing adds its own stamp on top."
+    },
+    {
+     "q": "How do I see only one layer?",
+     "a": "Alt+click its eye icon. Alt+click it again to restore what was visible before."
+    },
+    {
+     "q": "Can the guides be turned off together?",
+     "a": "Yes. Switch off the eye on the group named Turn Off Before Exporting TGA."
+    },
+    {
+     "q": "I loaded a flat TGA and cannot find these layers.",
+     "a": "A flat file has no layers, so there are no guides. Load the car's PSD template if you want them."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Panel outlines show up in the finished car",
+     "cause": "The Wire layer was visible at render time",
+     "fix": "Hide Wire in the layer list and render again."
+    },
+    {
+     "symptom": "An odd extra colour region shows on the car",
+     "cause": "The Mask layer was left on and was treated as paint",
+     "fix": "Hide the Mask layer and render again."
+    },
+    {
+     "symptom": "After Alt+click everything else is hidden",
+     "cause": "Alt+click isolates a layer by design",
+     "fix": "Alt+click the same eye again to restore the earlier visibility."
+    }
+   ],
+   "protips": [
+    "Alt+click the eye is a quick visibility check: it is fully reversible.",
+    "Say hide the template layers to the helper and Undo brings them back."
+   ],
+   "screens": [
+    "pair_wire_mask_visible",
+    "ui_layer_groups"
+   ]
+  },
+  {
+   "id": "ui_shell.render_results_panel",
+   "title": "The render results panel (recipe card)",
+   "domain": "ui_shell",
+   "summary": "After RENDER finishes, a recipe card shows what was built. From it you can copy the card, save it, share the look, keep a version or send the paint to another car.",
+   "what": "RENDER (Ctrl+R) builds the finished paint TGA and the spec TGA and writes them to your iRacing car folder. It will not start without a loaded paint, a 4 to 7 digit User ID and at least one zone that has both a colour and a finish. A missing car folder does not stop it (the files just are not copied to iRacing), and template layers left on do not stop it either: they are baked into your TGA. The recipe card then offers Copy Card (a picture for Discord), Save Card PNG, Share Recipe (a .shokkerrecipe file with a preview), Copy TP Desc (a Trading Paints description of your zone finishes and colours), Save to keep (copies this render to a subfolder so the next render does not overwrite it) and Recent renders (your last 10, with their full recipes). The deploy row copies the same render into another car's folder.",
+   "when": [
+    "You finished a design and want it in iRacing.",
+    "You want to share the look or keep a version.",
+    "You want the same paint on a second car."
+   ],
+   "how": [
+    "1. Fill in User ID, SOURCE PAINT and IRACING CAR FOLDER, and switch the template layers off.",
+    "2. Press RENDER (or Ctrl+R).",
+    "3. When the recipe card appears, use Copy Card, Save Card PNG or Share Recipe to share.",
+    "4. Press Save to keep to store this render before you try something else.",
+    "5. For a second car, open \"Deploy to a different car\", pick the car and press Deploy Now."
+   ],
+   "controls": [
+    {
+     "label": "RENDER",
+     "range": "",
+     "default": "",
+     "effect": "RENDER (Ctrl+R): builds the finished paint TGA and the spec TGA and writes them to the iRacing car folder.",
+     "inv": "btnRender"
+    },
+    {
+     "label": "Copy Card",
+     "range": "",
+     "default": "",
+     "effect": "Copies the recipe card picture to the clipboard (paste into Discord).",
+     "inv": "pro.render.copy_card"
+    },
+    {
+     "label": "Save Card PNG",
+     "range": "",
+     "default": "",
+     "effect": "Save this recipe card as a PNG image file",
+     "inv": "pro.render.save_card_png"
+    },
+    {
+     "label": "Share Recipe",
+     "range": "",
+     "default": "",
+     "effect": "Downloads this look as a .shokkerrecipe file with preview.",
+     "inv": "pro.render.share_recipe"
+    },
+    {
+     "label": "Copy TP Desc",
+     "range": "",
+     "default": "",
+     "effect": "copy Trading Paints description (zone finishes, colors) to clipboard",
+     "inv": "pro.render.copy_tp_desc"
+    },
+    {
+     "label": "Save to keep",
+     "range": "",
+     "default": "",
+     "effect": "Copies this render to a subfolder so the next render does not overwrite it.",
+     "inv": "btnSaveToKeep"
+    },
+    {
+     "label": "Recent renders",
+     "range": "",
+     "default": "",
+     "effect": "recall one of the last 10 saved renders and restore its full recipe",
+     "inv": "pro.render.recent_renders"
+    },
+    {
+     "label": "Deploy to a different car",
+     "range": "",
+     "default": "",
+     "effect": "This render is already in the active car's iRacing folder (Live Link). Open this to also copy it into a different car's folder.",
+     "inv": "deployRowToggle"
+    },
+    {
+     "label": "Deploy Car Select",
+     "range": "",
+     "default": "",
+     "effect": "Pick another iRacing car to also copy this render to.",
+     "inv": "deployCarSelect"
+    },
+    {
+     "label": "Deploy Now",
+     "range": "",
+     "default": "",
+     "effect": "Copies this render to the chosen car's iRacing folder.",
+     "inv": "pro.render.deploy_now"
+    },
+    {
+     "label": "Close render statistics",
+     "range": "",
+     "default": "",
+     "effect": "Close render stats panel",
+     "inv": "pro.render.close_render_statistics"
+    }
+   ],
+   "tips": [
+    "Use Recent renders to go back to an earlier look with its full recipe.",
+    "In iRacing press Alt+Tab, then Ctrl+R to reload the paint."
+   ],
+   "pitfalls": [
+    "A render that will not start is almost always a missing paint, a User ID that is not 4 to 7 digits, or no zone with both a colour and a finish. A missing car folder or visible template layers do not block it, but they spoil the result.",
+    "Trading Paints takes the spec only as a .mip file. iRacing makes it from your spec TGA the first time you drive the car."
+   ],
+   "related": [
+    "ui_shell.car_folder",
+    "ui_shell.number_modes",
+    "ui_shell.template_layer_views",
+    "ui_shell.save_open_projects"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "btnRender"
+    }
+   ],
+   "figures": [
+    "g09_render_export_flow"
+   ],
+   "covers": [
+    "renderResultsPanel",
+    "btnRender",
+    "pro.render.copy_card",
+    "pro.render.save_card_png",
+    "pro.render.share_recipe",
+    "pro.render.copy_tp_desc",
+    "btnSaveToKeep",
+    "pro.render.recent_renders",
+    "deployRowToggle",
+    "deployCarSelect",
+    "pro.render.deploy_now",
+    "pro.render.close_render_statistics"
+   ],
+   "sources": [
+    "paint-booth-6-ui-boot.js:3793",
+    "js/spb-support-answers.js:45",
+    "paint-booth-v2.html:3626",
+    "paint-booth-5-api-render.js:3920",
+    "paint-booth-v2.html:3578",
+    "paint-booth-5-api-render.js:1875",
+    "paint-booth-5-api-render.js:2946",
+    "paint-booth-v2.html:3644",
+    "paint-booth-v2.html:3577",
+    "paint-booth-v2.html:3618",
+    "paint-booth-v2.html:3638",
+    "paint-booth-v2.html:3648",
+    "paint-booth-v2.html:3651",
+    "paint-booth-v2.html:3654",
+    "paint-booth-v2.html:3656",
+    "paint-booth-v2.html:3653",
+    "paint-booth-v2.html:3721",
+    "paint-booth-5-api-render.js:3431",
+    "paint-booth-5-api-render.js:3494",
+    "paint-booth-5-api-render.js:3523",
+    "paint-booth-5-api-render.js:3526",
+    "paint-booth-5-api-render.js:5552",
+    "paint-booth-5-api-render.js:5569",
+    "paint-booth-5-api-render.js:6206",
+    "js/canvas/render-source-readiness.js:23",
+    "js/canvas/render-source-readiness.js:55",
+    "js/spb-support-answers.js:51",
+    "js/spb-support-answers.js:22",
+    "paint-booth-5-api-render.js:3484-3524",
+    "js/canvas/render-source-readiness.js:56"
+   ],
+   "aliases": [
+    "copy card",
+    "copy tp desc",
+    "ctrl r",
+    "deploy to another car",
+    "recent renders",
+    "recipe card",
+    "render",
+    "render recipe",
+    "render will not start",
+    "save to keep",
+    "share recipe",
+    "render results"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "What stops a render and what only warns",
+     "body": "RENDER stays greyed out and reads OPEN PAINT FIRST or LOADING PAINT until a paint has fully loaded. It then refuses when the iRacing User ID is not 4 to 7 digits, and when no zone has both a colour and a finish. Zones missing either one are skipped, and a message tells you how many. The car folder is not required to render, but with the box empty the files are not copied to iRacing."
+    },
+    {
+     "heading": "What the recipe card holds",
+     "body": "After the render, a card pops up over the window showing the paint, the spec map, the render time and a breakdown of every zone: base colour, pattern, finish and strength. A status line at the top says whether the files landed in your iRacing folder. Close the card with CLOSE, the Esc key, or by clicking outside it."
+    },
+    {
+     "heading": "Keeping and sharing",
+     "body": "Shokker keeps only the two newest renders in its own folder, so use Save to keep before trying something new. Recent renders lists your last 10, saved automatically, and restores a full recipe. Share Recipe saves a .shokkerrecipe file with a preview that anyone can load with Import Recipe. Copy Card puts the card picture on the clipboard for Discord, and Copy TP Desc copies a Trading Paints description of your zone finishes and colours."
+    },
+    {
+     "heading": "A second car",
+     "body": "The files are already in the active car's folder. Deploy to a different car opens a short list of your iRacing cars. Pick one and press Deploy Now to copy this same render into that folder. Only the two newest renders can be deployed."
+    }
+   ],
+   "examples": [
+    {
+     "title": "First render to iRacing",
+     "goal": "Get a design into the sim",
+     "settings": {
+      "iRacing User ID": "your 4 to 7 digit Customer ID",
+      "iRacing Car Folder": "your car, from the arrow menu",
+      "Template layers": "Mask, Wire and Car_Mandatory switched OFF",
+      "RENDER": "press it, or press Ctrl+R"
+     },
+     "result": "The recipe card opens with a green saved status. In iRacing press Alt+Tab, then Ctrl+R."
+    },
+    {
+     "title": "Keep a good version before experimenting",
+     "goal": "Not lose a look you like",
+     "settings": {
+      "Save to keep": "press it on the recipe card",
+      "Recent renders": "open it later to recall the render and its recipe"
+     },
+     "result": "Shokker copies the render to a keep folder so the next render does not overwrite it. The last 10 renders are also recalled from Recent renders."
+    },
+    {
+     "title": "Show a design to friends",
+     "goal": "Post your livery in Discord",
+     "settings": {
+      "Copy Card": "press it",
+      "Discord": "paste with Ctrl+V"
+     },
+     "result": "The recipe card picture pastes into Discord. Use Save Card PNG for a file instead."
+    }
+   ],
+   "combos": [
+    {
+     "with": "ui_shell.car_folder",
+     "why": "The Car Folder box decides whether the render is copied into iRacing."
+    },
+    {
+     "with": "ui_shell.number_modes",
+     "why": "Decides whether the card reports car_num_<ID>.tga or car_<ID>.tga."
+    },
+    {
+     "with": "layers.turn_off_before_export",
+     "why": "Template layers left on get baked into the render."
+    },
+    {
+     "with": "preview_render.trading_paints_mip",
+     "why": "Copy TP Desc and the spec .mip are the two Trading Paints details you need after rendering."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why is the RENDER button grey?",
+     "a": "No paint is loaded yet, or one is still loading. The button reads OPEN PAINT FIRST or LOADING PAINT. Open your Source Paint and wait."
+    },
+    {
+     "q": "Why did it ask for my User ID?",
+     "a": "Render needs a 4 to 7 digit iRacing Customer ID because it names the files iRacing loads. Without it the files would have no ID."
+    },
+    {
+     "q": "What does 'zones skipped' mean?",
+     "a": "Some zones had no colour or no finish. Give each a colour and a finish and render again."
+    },
+    {
+     "q": "How many old renders can I get back?",
+     "a": "The last 10, from Recent renders. Shokker's own render folder holds only the two newest."
+    },
+    {
+     "q": "How do I close the recipe card?",
+     "a": "Press CLOSE, press Esc, or click outside the card."
+    },
+    {
+     "q": "Can I stop a render that is taking too long?",
+     "a": "A Terminate button appears after a few seconds. It only stops waiting: the engine still finishes and still copies the files."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Nothing happens when you press RENDER",
+     "cause": "The button is greyed because no paint has finished loading",
+     "fix": "Open your Source Paint and wait for the button to say RENDER."
+    },
+    {
+     "symptom": "You rendered again and lost the last look",
+     "cause": "Only the two newest renders are kept",
+     "fix": "Press Save to keep, or recall earlier ones from Recent renders (the last 10)."
+    },
+    {
+     "symptom": "Render says some zones were skipped",
+     "cause": "Those zones have no colour or no finish yet",
+     "fix": "Pick a colour with Pick plus Add, then give each zone a finish from the BASE MATERIAL box."
+    }
+   ],
+   "protips": [
+    "Ctrl+R renders from anywhere in the window, and the same keys reload textures inside iRacing after you Alt+Tab.",
+    "Recent renders has an Import Recipe button, so a friend's .shokkerrecipe file can be loaded from the same panel.",
+    "A 'Save to keep' copy needs the car folder set first; without it you get a message asking for the folder."
+   ],
+   "screens": [
+    "flow_step6_recipe_card",
+    "ui_render_history_menu"
+   ]
+  },
+  {
+   "id": "ui_shell.tool_options_bar",
+   "title": "The tool options bar",
+   "domain": "ui_shell",
+   "summary": "The strip under the toolbar changes to match the tool you picked. It holds the sliders and switches for that tool only.",
+   "what": "Pick Brush and you get size, hardness, opacity, flow, spacing, smoothing and stabilizer. Pick Wand and you get tolerance, contiguous, sample area and anti-alias. Other tools bring their own options, such as gradient type, smudge strength or clone settings. A few are always useful: Selection mode (Add, Replace, Subtract), the foreground colour, and the auto-feather box. If a slider you expect is missing, you probably have a different tool active.",
+   "when": [
+    "A slider is not where you expect it.",
+    "A tool behaves oddly and you want to tune it."
+   ],
+   "how": [
+    "1. Click a tool in the tool row.",
+    "2. Look at the strip under the toolbar. It now shows that tool's options.",
+    "3. Drag a slider or type a number. The brush ring on the canvas follows the size."
+   ],
+   "controls": [
+    {
+     "label": "Brush size in pixels",
+     "range": "1-300",
+     "default": "20",
+     "effect": "Brush / eraser size in pixels (1-300); [ and ] keys change it.",
+     "inv": "brushSize"
+    },
+    {
+     "label": "Brush hardness percent",
+     "range": "0-100",
+     "default": "100",
+     "effect": "Brush hardness: 100% (range 0-100%, 0=soft feather, 100=hard edge). Use { } keys to adjust.",
+     "inv": "brushHardness"
+    },
+    {
+     "label": "Color difference allowed (higher = more colors included)",
+     "range": "0-255",
+     "default": "32",
+     "effect": "How different a colour can be and still get picked (higher = more colours).",
+     "inv": "wandTolerance"
+    },
+    {
+     "label": "Selection mode dropdown (Add / Replace / Subtract)",
+     "range": "",
+     "default": "",
+     "effect": "How a new selection combines with the existing one: Add (+), Replace, Subtract.",
+     "inv": "selectionMode"
+    },
+    {
+     "label": "Auto-feather selection edges (px). 0 = off (hard edge). Any value softens the edge of the NEXT selection you commit (marquee / lasso / wand ",
+     "range": "0-50",
+     "default": "0",
+     "effect": "Auto-feather selection edges (px). 0 = off (hard edge). Any value softens the edge of the NEXT selection you commit (marquee / lasso / wand / pen / smart-fill), so the finish fades in at the border. One Undo reverts the whole selection.",
+     "inv": "selectionFeather"
+    },
+    {
+     "label": "Fg Color Picker",
+     "range": "",
+     "default": "#000000",
+     "effect": "Foreground (paint) colour for brushes and fills; X swaps with background.",
+     "inv": "fgColorPicker"
+    }
+   ],
+   "tips": [
+    "Number keys 1 to 9 set brush opacity quickly, and [ ] change the brush size.",
+    "The tool options are the same controls described on the Brush, Wand and Selection pages."
+   ],
+   "pitfalls": [
+    "The bar changes with the tool and with ZONE or LAYER mode. If a tool seems to do nothing, check the ZONE / LAYER switch first."
+   ],
+   "related": [
+    "tools.brush_eraser",
+    "tools.select_shapes",
+    "tools.selection_modes",
+    "tools.retouch"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "brushSize"
+    },
+    {
+     "do": "control",
+     "id": "wandTolerance"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "brushSize",
+    "brushHardness",
+    "wandTolerance",
+    "selectionMode",
+    "selectionFeather",
+    "fgColorPicker"
+   ],
+   "sources": [
+    "paint-booth-v2.html:2858",
+    "paint-booth-3-canvas.js:1901",
+    "paint-booth-v2.html:2914",
+    "paint-booth-3-canvas.js:2334",
+    "paint-booth-v2.html:3160",
+    "paint-booth-3-canvas.js:108",
+    "paint-booth-v2.html:2844",
+    "paint-booth-3-canvas.js:2435",
+    "paint-booth-v2.html:2920",
+    "paint-booth-v2.html:3183",
+    "paint-booth-3-canvas.js:28547",
+    "paint-booth-3-canvas.js:28562",
+    "paint-booth-3-canvas.js:28589"
+   ],
+   "aliases": [
+    "options bar",
+    "slider missing",
+    "tool options",
+    "tool settings",
+    "where is the brush size"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Every brush option, range and starting value",
+     "body": "Size runs 1 to 300 pixels and starts at 20. Opacity runs 1 to 100 and starts at 100. Hard (hardness) runs 0 to 100 and starts at 100, where 0 is a soft feather and 100 a hard edge. Flow runs 1 to 100 and starts at 100. Spacing runs 1 to 200 percent of the brush size and starts at 25. Smooth runs 0 to 100 and starts at 10, which is the natural default. Stab (stabilizer) runs 0 to 200 pixels and starts at 0; higher values make the tip trail behind the pointer."
+    },
+    {
+     "heading": "Quick keys that match the sliders",
+     "body": "The left and right square bracket keys make the brush smaller and larger. The curly bracket keys change hardness. Number keys set opacity fast: 1 is 10 percent, 5 is 50 percent and 0 is 100 percent."
+    },
+    {
+     "heading": "Wand and selection options",
+     "body": "The Tolerance slider runs 0 to 255 and starts at 32. Contiguous ON picks only connected matching pixels, and OFF picks every matching pixel. Sample area is Point Sample, 3x3 Average (the default), 5x5 Average or 11x11 Average, which makes the wand more forgiving. Feather runs 0 to 50 pixels and starts at 0, which is a hard edge; it softens the NEXT selection you finish, and one Undo reverts the whole selection. The Mode dropdown reads Mode: Add (+), Replace or Subtract (-)."
+    },
+    {
+     "heading": "What the bar shows and hides",
+     "body": "The bar only shows controls for the tool you have. The selection Mode dropdown appears for selection tools such as Wand, Rect and Lasso, with the hint Shift+click add, Alt+click subtract. The foreground colour appears for colour brush, recolor, pencil and brush. The Eraser changes its options by mode, so the Opacity, Hard and Flow controls hide in the block and clear-all modes."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Soft airbrush edge",
+     "goal": "Paint a gentle fade",
+     "settings": {
+      "Size": "120",
+      "Hard": "0",
+      "Opacity": "60",
+      "Flow": "40"
+     },
+     "result": "A wide soft stroke that builds slowly the more you pass over it."
+    },
+    {
+     "title": "Clean straight lines with a shaky mouse",
+     "goal": "Smooth out wobble",
+     "settings": {
+      "Smooth": "40",
+      "Stab": "60",
+      "Size": "8",
+      "Hard": "100"
+     },
+     "result": "A fine hard line where the tip trails the pointer and smooths jitter."
+    },
+    {
+     "title": "Pick one colour without leaking",
+     "goal": "Select a flat colour area exactly",
+     "settings": {
+      "Contiguous": "checked",
+      "Sample area": "Point Sample",
+      "Feather": "0",
+      "Material tolerance": "20"
+     },
+     "result": "Only connected pixels very close to the clicked colour are selected, with a hard edge."
+    }
+   ],
+   "combos": [
+    {
+     "with": "tools.brush_eraser",
+     "why": "Goes deeper on how Size, Hard, Flow and Spacing change a stroke."
+    },
+    {
+     "with": "tools.select_shapes",
+     "why": "The Wand, Rect and Lasso options live in this bar."
+    },
+    {
+     "with": "tools.selection_modes",
+     "why": "Add, Replace and Subtract, with Shift and Alt, are explained there."
+    },
+    {
+     "with": "ui_shell.selection_bar",
+     "why": "The selection bar sits next to this one and handles what you do with a finished selection."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why is the slider I expect missing?",
+     "a": "Each tool shows only its own controls. A different tool is active, or you are in the other of ZONE and LAYER mode."
+    },
+    {
+     "q": "What do the number keys do?",
+     "a": "They set brush opacity: 1 is 10 percent, 5 is 50 percent and 0 is 100 percent."
+    },
+    {
+     "q": "How do I make the brush softer?",
+     "a": "Lower Hard toward 0. Curly bracket keys also change it."
+    },
+    {
+     "q": "What is Flow versus Opacity?",
+     "a": "Opacity caps how strong the paint can get. Flow is how fast it builds up per pass."
+    },
+    {
+     "q": "What does Stab do?",
+     "a": "It adds a lag between the pointer and the brush tip, up to 200 pixels, to smooth wobble."
+    },
+    {
+     "q": "What does Feather do on selections?",
+     "a": "It softens the edge of the next selection, 0 to 50 pixels. At 0 the edge is hard."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The brush hardly changes the paint",
+     "cause": "Opacity or Flow was left low from an earlier job",
+     "fix": "Set Opacity and Flow back to 100."
+    },
+    {
+     "symptom": "The wand picks far too much",
+     "cause": "Tolerance is high or Contiguous is off",
+     "fix": "Lower Tolerance toward the default 32 and tick Contiguous."
+    },
+    {
+     "symptom": "Your selection has a soft edge you did not want",
+     "cause": "Feather was left above 0",
+     "fix": "Set Feather to 0 before making the selection."
+    }
+   ],
+   "protips": [
+    "Spacing is the distance between brush dabs as a percent of brush size, so the same Spacing number scales with the brush.",
+    "The 3x3 Average default makes the wand less speckled than Point Sample on grainy paint.",
+    "Feather is applied to the NEXT selection, so set it before you click."
+   ],
+   "screens": [
+    "ui_tool_options",
+    "ui_toolbar_menus"
+   ]
+  },
+  {
+   "id": "ui_shell.selection_bar",
+   "title": "The selection / mask bar",
+   "domain": "ui_shell",
+   "summary": "The bar under the canvas edits the selection or mask of the selected zone: include, exclude, grow, shrink, feather, invert, copy and mirror.",
+   "what": "It works on the zone you have selected. Include paints areas to KEEP in the zone's colour match (green overlay) and Exclude paints areas to REMOVE (red overlay). Undo and Redo step through strokes. Deselect clears the selection for the zone, Invert swaps selected and unselected, Spatial clears the include/exclude strokes and Clear All clears every drawn region. + Grow and Shrink move the edge by 2 px, with +1 and a 1 px contract for fine moves. Fill closes enclosed holes. Feather softens edges, Smooth removes jagged edges, Copy sends this zone's mask to another zone, Mirror flips it left to right and Zoom fits the view to it.",
+   "when": [
+    "A zone's edge looks jagged, has holes or leaves a fringe.",
+    "You want the same area on a second zone or on the mirror side of the car."
+   ],
+   "how": [
+    "1. Select the zone in the left column.",
+    "2. Pick a selection tool (Wand, Lasso, Rect or Brush) and make a selection.",
+    "3. Use + Grow or Shrink to move the edge, Fill to close holes and Smooth or Feather to soften it.",
+    "4. Use Copy to send the mask to another zone, or Mirror to flip it to the other side."
+   ],
+   "controls": [
+    {
+     "label": "Include",
+     "range": "",
+     "default": "",
+     "effect": "paint areas to KEEP in zone's color match (green overlay)",
+     "inv": "pro.selection_bar.include"
+    },
+    {
+     "label": "Exclude",
+     "range": "",
+     "default": "",
+     "effect": "paint areas to REMOVE from zone's color match (red overlay)",
+     "inv": "pro.selection_bar.exclude"
+    },
+    {
+     "label": "Undo",
+     "range": "",
+     "default": "",
+     "effect": "Undo last stroke (Ctrl+Z)",
+     "inv": "pro.selection_bar.undo"
+    },
+    {
+     "label": "Redo",
+     "range": "",
+     "default": "",
+     "effect": "Redo last undone action (Ctrl+Y / Ctrl+Shift+Z)",
+     "inv": "pro.selection_bar.redo"
+    },
+    {
+     "label": "Deselect",
+     "range": "",
+     "default": "",
+     "effect": "Clear selection for the current zone",
+     "inv": "pro.selection_bar.deselect"
+    },
+    {
+     "label": "Invert",
+     "range": "",
+     "default": "",
+     "effect": "Invert the current zone selection",
+     "inv": "pro.selection_bar.invert"
+    },
+    {
+     "label": "Spatial",
+     "range": "",
+     "default": "",
+     "effect": "Clear spatial include/exclude for current zone",
+     "inv": "pro.selection_bar.spatial"
+    },
+    {
+     "label": "Clear All",
+     "range": "",
+     "default": "",
+     "effect": "Clear ALL drawn regions",
+     "inv": "pro.selection_bar.clear_all"
+    },
+    {
+     "label": "+ Grow",
+     "range": "",
+     "default": "",
+     "effect": "Expand selection outward by 2px",
+     "inv": "pro.selection_bar.grow"
+    },
+    {
+     "label": "Shrink",
+     "range": "",
+     "default": "",
+     "effect": "Contract selection inward by 2px",
+     "inv": "pro.selection_bar.shrink"
+    },
+    {
+     "label": "Fill",
+     "range": "",
+     "default": "",
+     "effect": "Fill enclosed holes in selection",
+     "inv": "pro.selection_bar.fill"
+    },
+    {
+     "label": "Feather",
+     "range": "",
+     "default": "",
+     "effect": "Soften selection edges (grow then shrink)",
+     "inv": "pro.selection_bar.feather"
+    },
+    {
+     "label": "Smooth",
+     "range": "",
+     "default": "",
+     "effect": "Smooth jagged selection edges",
+     "inv": "pro.selection_bar.smooth"
+    },
+    {
+     "label": "Copy",
+     "range": "",
+     "default": "",
+     "effect": "Copy this zone's mask to another zone",
+     "inv": "pro.selection_bar.copy"
+    },
+    {
+     "label": "Mirror",
+     "range": "",
+     "default": "",
+     "effect": "Mirror mask horizontally (flip leftright)",
+     "inv": "pro.selection_bar.mirror"
+    },
+    {
+     "label": "Zoom",
+     "range": "",
+     "default": "",
+     "effect": "Zoom viewport to fit current zone's selection",
+     "inv": "pro.selection_bar.zoom"
+    }
+   ],
+   "tips": [
+    "Grow by 2 px gives a safety margin around lettering.",
+    "Include is green and Exclude is red on the canvas."
+   ],
+   "pitfalls": [
+    "Clear All removes every drawn region on the zone, so use Deselect if you only want to drop the current selection."
+   ],
+   "related": [
+    "tools.refine_selection",
+    "tools.selection_modes",
+    "tools.mirror_symmetry",
+    "ui_shell.canvas_overlays"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.selection_bar.include"
+    },
+    {
+     "do": "control",
+     "id": "pro.selection_bar.exclude"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.selection_bar.include",
+    "pro.selection_bar.exclude",
+    "pro.selection_bar.undo",
+    "pro.selection_bar.redo",
+    "pro.selection_bar.deselect",
+    "pro.selection_bar.invert",
+    "pro.selection_bar.spatial",
+    "pro.selection_bar.clear_all",
+    "pro.selection_bar.grow",
+    "pro.selection_bar.shrink",
+    "pro.selection_bar.fill",
+    "pro.selection_bar.feather",
+    "pro.selection_bar.smooth",
+    "pro.selection_bar.copy",
+    "pro.selection_bar.mirror",
+    "pro.selection_bar.zoom"
+   ],
+   "sources": [
+    "paint-booth-v2.html:3215",
+    "paint-booth-3-canvas.js:5040",
+    "paint-booth-v2.html:3219",
+    "paint-booth-v2.html:2321",
+    "paint-booth-3-canvas.js:6939",
+    "paint-booth-v2.html:2322",
+    "paint-booth-3-canvas.js:7096",
+    "paint-booth-v2.html:3240",
+    "paint-booth-v2.html:3174",
+    "paint-booth-v2.html:3260",
+    "paint-booth-v2.html:3266",
+    "paint-booth-v2.html:3265",
+    "paint-booth-v2.html:3270",
+    "paint-booth-3-canvas.js:8083",
+    "paint-booth-3-canvas.js:8095",
+    "paint-booth-3-canvas.js:8142",
+    "paint-booth-3-canvas.js:8187",
+    "paint-booth-3-canvas.js:8196",
+    "paint-booth-3-canvas.js:8262",
+    "paint-booth-3-canvas.js:8274",
+    "paint-booth-3-canvas.js:8296",
+    "paint-booth-3-canvas.js:8312",
+    "paint-booth-3-canvas.js:8329",
+    "paint-booth-3-canvas.js:8348",
+    "paint-booth-3-canvas.js:8390",
+    "paint-booth-3-canvas.js:8478",
+    "paint-booth-3-canvas.js:8504"
+   ],
+   "aliases": [
+    "feather selection",
+    "grow selection",
+    "holes in selection",
+    "include and exclude",
+    "invert selection",
+    "jagged edges",
+    "mask bar",
+    "selection bar",
+    "shrink selection"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Exact pixel amounts",
+     "body": "+ Grow and Shrink move the edge by 2 pixels, and the small +1 and -1 buttons move it by 1. A message tells you how many pixels changed, for example how many were added or how many remain. Feather softens the edge by 2 pixels. Fill closes holes that are fully enclosed and says if none were found. Smooth rounds off jagged edges and says when the edge is already smooth."
+    },
+    {
+     "heading": "Soft edges are real values",
+     "body": "Feather does not just blur the picture. It gives the selection edge partial strength, so the finish fades in at the border. Invert keeps that soft band on both sides, and Invert on an empty selection selects everything."
+    },
+    {
+     "heading": "Three different clears",
+     "body": "Deselect clears the current zone's drawn selection and keeps your tool. Spatial clears only the green and red Include and Exclude brush strokes for the current zone. Clear All is the big one: it clears the drawn regions on every zone that has one, not just the current zone. It is a single undo step, so Ctrl+Z brings every zone back at once."
+    },
+    {
+     "heading": "Copy and Mirror",
+     "body": "Copy opens a small menu of your other zones and sends this zone's mask to the one you pick. If there is no mask it says so. Mirror flips the mask left to right across the whole canvas and names the zone it flipped. Zoom fits the view to the zone's selection."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Safety margin around lettering",
+     "goal": "Cover a number with a little room to spare",
+     "settings": {
+      "Selection tool": "Wand on the number",
+      "+ Grow": "press once (2 px)",
+      "Fill": "press once"
+     },
+     "result": "The selection extends 2 pixels beyond the letters and any enclosed holes inside the digits are filled."
+    },
+    {
+     "title": "Soft fade at a stripe edge",
+     "goal": "Let a finish fade in instead of a hard line",
+     "settings": {
+      "Selection": "make the stripe selection",
+      "Feather": "press once"
+     },
+     "result": "The edge gets a 2 pixel soft band, so the finish blends at the border."
+    },
+    {
+     "title": "Make the other side match",
+     "goal": "Copy a left-side stripe mask to the right side",
+     "settings": {
+      "Selection": "mask drawn on the left zone",
+      "Copy": "pick the right zone",
+      "Mirror": "press it on the new zone"
+     },
+     "result": "The right zone now carries the flipped mask. Check it on the canvas, because the flip is across the whole canvas."
+    }
+   ],
+   "combos": [
+    {
+     "with": "tools.refine_selection",
+     "why": "Explains growing, shrinking, feathering and smoothing in more depth."
+    },
+    {
+     "with": "tools.mirror_symmetry",
+     "why": "Painting with a mirror versus mirroring a finished mask."
+    },
+    {
+     "with": "zones.how_pixels_picked",
+     "why": "Include, Exclude and region masks decide which pixels a zone owns."
+    },
+    {
+     "with": "ui_shell.canvas_overlays",
+     "why": "Green and red overlay colours and the Opacity slider live there."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What is the difference between Deselect, Spatial and Clear All?",
+     "a": "Deselect clears this zone's selection. Spatial clears only this zone's green and red brush strokes. Clear All clears the drawn regions on every zone."
+    },
+    {
+     "q": "Can I undo Clear All?",
+     "a": "Yes. It is one undo step that restores every zone's regions together."
+    },
+    {
+     "q": "Why did + Grow say the selection is already at the canvas edge?",
+     "a": "The selection touches the edge of the sheet, so growing has no room to add pixels."
+    },
+    {
+     "q": "What does Fill do?",
+     "a": "It fills holes fully enclosed by the selection. If there are none it says no enclosed holes found."
+    },
+    {
+     "q": "Does Include change my paint?",
+     "a": "No. Include and Exclude only change which pixels the zone owns. Green keeps, red removes."
+    },
+    {
+     "q": "How do I copy a mask to another zone?",
+     "a": "Press Copy and choose the zone from the menu."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Every zone lost its drawn regions",
+     "cause": "Clear All affects all zones with a drawn region, not only the current one",
+     "fix": "Press Ctrl+Z once to bring them all back, then use Deselect for just the current zone."
+    },
+    {
+     "symptom": "Mirror put the mask in the wrong place",
+     "cause": "Mirror flips across the whole canvas",
+     "fix": "Undo and use Copy plus your own selection tools if you need a different flip."
+    },
+    {
+     "symptom": "Nothing happens when you press + Grow",
+     "cause": "The zone has no drawn region yet",
+     "fix": "Make a selection with a tool first; the bar says to draw one first."
+    }
+   ],
+   "protips": [
+    "Grow by 2 pixels around lettering gives a safety margin so the edge of a number never shows the old paint.",
+    "Each of the selection buttons reports what it did, such as how many pixels a Grow added, so you can see whether a press changed anything.",
+    "Invert on a zone with no mask selects the whole sheet, a quick way to start from everything and subtract."
+   ],
+   "screens": [
+    "ui_menu_mask_refine",
+    "ui_selection_bar"
+   ]
+  },
+  {
+   "id": "ui_shell.placement_overlay",
+   "title": "Placement mode: moving a pattern or base by hand",
+   "domain": "ui_shell",
+   "summary": "Placement mode lets you drag a pattern or base around on the template to position it, and flip or turn it with a small bar.",
+   "what": "When you start placing a pattern, base or overlay by hand, a banner says \"Position on template\" and a MANUAL PLACEMENT bar appears over the canvas. Click and drag on the template to move the target. The bar has Flip Placement H, Flip Placement V, a 90 degree turn each way, Reset to centred defaults, and Done to keep the values and leave placement mode. Esc also exits.",
+   "when": [
+    "A pattern or base lands in the wrong spot and you want to nudge it.",
+    "You want to mirror or turn a pattern."
+   ],
+   "how": [
+    "1. Start placement from the zone's pattern or base controls.",
+    "2. Drag on the template to move the pattern or base.",
+    "3. Use Flip H, Flip V or the 90 degree buttons to turn it.",
+    "4. Press Reset to go back to centred, or Done (or Esc) to keep your placement."
+   ],
+   "controls": [
+    {
+     "label": "Flip Placement H",
+     "range": "",
+     "default": "",
+     "effect": "flip the placement target (base/pattern/overlay) horizontally",
+     "inv": "pro.placement.flip_placement_h"
+    },
+    {
+     "label": "Flip Placement V",
+     "range": "",
+     "default": "",
+     "effect": "flip the placement target (base/pattern/overlay) vertically",
+     "inv": "pro.placement.flip_placement_v"
+    },
+    {
+     "label": "+90°",
+     "range": "",
+     "default": "",
+     "effect": "Rotate active placement target 90° clockwise",
+     "inv": "pro.placement.90"
+    },
+    {
+     "label": "90°",
+     "range": "",
+     "default": "",
+     "effect": "Rotate active placement target 90° counter-clockwise",
+     "inv": "pro.placement.90~2"
+    },
+    {
+     "label": "Reset",
+     "range": "",
+     "default": "",
+     "effect": "Reset active placement target to centered defaults",
+     "inv": "pro.placement.reset"
+    },
+    {
+     "label": "Done",
+     "range": "",
+     "default": "",
+     "effect": "keep current values and exit placement mode (Esc also works)",
+     "inv": "pro.placement.done"
+    }
+   ],
+   "tips": [
+    "Esc is a quick way out of placement mode."
+   ],
+   "pitfalls": [
+    "Done keeps your current placement values. Reset throws them away and centres the target."
+   ],
+   "related": [
+    "tools.move_transform",
+    "zones.card_controls"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.placement.done"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.placement.flip_placement_h",
+    "pro.placement.flip_placement_v",
+    "pro.placement.90",
+    "pro.placement.90~2",
+    "pro.placement.reset",
+    "pro.placement.done"
+   ],
+   "sources": [
+    "paint-booth-v2.html:3386",
+    "paint-booth-v2.html:3397",
+    "paint-booth-3-canvas.js:1518",
+    "paint-booth-v2.html:3398",
+    "paint-booth-3-canvas.js:1535",
+    "paint-booth-v2.html:3399",
+    "paint-booth-3-canvas.js:1552",
+    "paint-booth-v2.html:3401",
+    "paint-booth-v2.html:3323",
+    "paint-booth-v2.html:3325",
+    "paint-booth-v2.html:3404",
+    "paint-booth-3-canvas.js:1428",
+    "paint-booth-3-canvas.js:1445",
+    "paint-booth-3-canvas.js:1451",
+    "paint-booth-3-canvas.js:1463",
+    "paint-booth-3-canvas.js:1494",
+    "paint-booth-3-canvas.js:1502",
+    "paint-booth-3-canvas.js:1508",
+    "paint-booth-3-canvas.js:1528",
+    "paint-booth-3-canvas.js:1556",
+    "paint-booth-3-canvas.js:1590",
+    "paint-booth-3-canvas.js:1595",
+    "paint-booth-3-canvas.js:1606",
+    "paint-booth-2-state-zones.js:816",
+    "paint-booth-2-state-zones.js:824",
+    "paint-booth-2-state-zones.js:922"
+   ],
+   "aliases": [
+    "flip placement",
+    "manual placement",
+    "move a pattern by hand",
+    "placement bar",
+    "position pattern",
+    "placement mode"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "What you can place",
+     "body": "Placement works on a zone's pattern, its base, the second to fifth base layers, and each spec pattern in the stack. When it starts, Shokker selects the zone, switches the cursor to the move arrow and turns on SPLIT view so you see the result live. A message tells you: drag to position, scroll to resize, use the 90 degree buttons to rotate."
+    },
+    {
+     "heading": "Exactly what Reset does",
+     "body": "Reset puts the target back to the middle of the canvas: horizontal and vertical offset 0.5 each, scale 1.0 (normal size) and rotation 0. For a pattern or base it also clears any flips. For second to fifth base layers it resets position, size and rotation. Reset is one undo step, so Ctrl+Z brings your placement back."
+    },
+    {
+     "heading": "Flip and turn rules",
+     "body": "Flip H and Flip V toggle each time you press them. The two 90 degree buttons turn the target a quarter turn clockwise or counter-clockwise, wrapping at 360. Spec patterns can be turned and moved but cannot be flipped, so Flip does nothing for them. Each flip, turn and Reset is its own undo step."
+    },
+    {
+     "heading": "Leaving placement",
+     "body": "Done and the Enter key keep your values, finish any drag in progress, and leave placement. Esc leaves placement too, but if you are in the middle of a drag the first Esc only cancels that drag (a message says Placement drag cancelled) and a second Esc closes placement. Closing shows Placement editing closed."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Centre a stripe pattern that landed off to one side",
+     "goal": "Start from a known centre point",
+     "settings": {
+      "Placement bar": "Reset",
+      "Then": "drag to the position you want"
+     },
+     "result": "The pattern jumps to offset 0.5 by 0.5 at scale 1.0 and rotation 0, then follows your drag."
+    },
+    {
+     "title": "Turn a pattern on its side",
+     "goal": "Run a pattern the other way",
+     "settings": {
+      "Rotate button": "+90°, once",
+      "Check": "watch the SPLIT preview"
+     },
+     "result": "The pattern turns a quarter turn clockwise. Press the other 90 degree button, or Ctrl+Z, to turn back."
+    },
+    {
+     "title": "Mirror a graphic for the other side of the car",
+     "goal": "Make the same pattern face the opposite way",
+     "settings": {
+      "Flip Placement H": "press it once",
+      "Done": "press it"
+     },
+     "result": "The pattern flips left to right, and Done keeps it."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.card_controls",
+     "why": "Placement starts from a zone's pattern or base controls."
+    },
+    {
+     "with": "tools.move_transform",
+     "why": "Moving whole layer art uses Move and Transform, not placement."
+    },
+    {
+     "with": "ui_shell.canvas_overlays",
+     "why": "Placement turns on SPLIT view, which is explained there."
+    }
+   ],
+   "faq": [
+    {
+     "q": "How do I resize a pattern in placement mode?",
+     "a": "Scroll the mouse wheel over the template while placement is active."
+    },
+    {
+     "q": "What does Done do compared to Reset?",
+     "a": "Done keeps your values and exits. Reset centres the target, sets scale to 1.0, and clears rotation."
+    },
+    {
+     "q": "Why did the Flip button do nothing?",
+     "a": "You are placing a spec pattern, and spec patterns cannot be flipped. They can be moved, scaled and turned."
+    },
+    {
+     "q": "Can I undo a placement move?",
+     "a": "Yes. Flips, turns and Reset each push an undo step."
+    },
+    {
+     "q": "How do I get out of placement mode?",
+     "a": "Press Done or Enter to keep what you did. Esc also leaves; during a drag, the first Esc cancels the drag and a second Esc closes placement."
+    },
+    {
+     "q": "Why did my view switch to split?",
+     "a": "Placement turns on SPLIT view on purpose so you see the live result while you drag."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The pattern disappeared after you pressed Reset",
+     "cause": "Reset centres the target and sets size 1.0, which can leave it away from where you were looking",
+     "fix": "Press Ctrl+Z to undo the reset, or drag the target back."
+    },
+    {
+     "symptom": "You pressed Esc and your last drag vanished",
+     "cause": "Esc during a drag cancels that drag",
+     "fix": "Release the mouse and press Done or Enter to keep the drag."
+    },
+    {
+     "symptom": "Nothing moves when you drag",
+     "cause": "Placement mode is not active, so a normal tool is catching the drag",
+     "fix": "Start placement from the zone's pattern or base controls and wait for the Position on template banner."
+    }
+   ],
+   "protips": [
+    "The banner and bar only appear while placement is on, so seeing the Position on template banner confirms you are in the right mode.",
+    "If you want a pattern exactly centred and unrotated, Reset is the fastest way to a clean starting point."
+   ],
+   "screens": [
+    "ui_placement_mode"
+   ]
+  },
+  {
+   "id": "ui_shell.zones_more_menu",
+   "title": "Zones > More menu",
+   "domain": "ui_shell",
+   "summary": "The three-dot More menu above the zone list holds the less common zone tools: presets, randomise, apply to all, library, templates, .shokk files and channel export.",
+   "what": "Presets Gallery applies a ready-made zone layout. Rand Current Zone and Rand All Zones randomise finishes for ideas (Ctrl+Z undoes, and Rand All overwrites your finishes). The Smart Randomize checkbox picks good-looking combinations rather than pure chance. Apply Finish to All gives every zone the same finish. Shokker Library opens saved looks. Save as Template stores the current zone layout under a name you choose (up to 60 characters) and Load Template brings one back. LOAD SHOKK FILE and SAVE SHOKK reopen or save a session as a .shokk file. PNG Channels Export writes the paint and spec channels as PNG pictures for inspection or Photoshop, to the export folder you set.",
+   "when": [
+    "You want quick ideas or a ready-made start.",
+    "You want to reuse a zone layout on another paint.",
+    "You want to check or edit the spec in another app."
+   ],
+   "how": [
+    "1. Click More above the zone list.",
+    "2. Pick the tool you need, for example Presets Gallery or Save as Template.",
+    "3. For a template, type a name and press Save.",
+    "4. For channel PNGs, set the export folder (Browse Folder) and press PNG Channels Export."
+   ],
+   "controls": [
+    {
+     "label": "More",
+     "range": "",
+     "default": "",
+     "effect": "Opens the More menu (presets, randomise, apply to all, library, templates, SHOKK files, channel PNG export).",
+     "inv": "pro.zones.more"
+    },
+    {
+     "label": "Presets Gallery",
+     "range": "",
+     "default": "",
+     "effect": "Browse ready-made zone layouts / looks and apply one.",
+     "inv": "pro.zones_more.presets_gallery"
+    },
+    {
+     "label": "Rand Current Zone",
+     "range": "",
+     "default": "",
+     "effect": "Randomises the finish of the selected zone.",
+     "inv": "pro.zones_more.rand_current_zone"
+    },
+    {
+     "label": "Rand All Zones",
+     "range": "",
+     "default": "",
+     "effect": "Randomises every zone.",
+     "inv": "pro.zones_more.rand_all_zones"
+    },
+    {
+     "label": "Apply Finish to All",
+     "range": "",
+     "default": "",
+     "effect": "Gives the same finish to every zone.",
+     "inv": "pro.zones_more.apply_finish_to_all"
+    },
+    {
+     "label": "Shokker Library",
+     "range": "",
+     "default": "",
+     "effect": "Opens the Shokker Library of saved looks.",
+     "inv": "pro.zones_more.shokker_library"
+    },
+    {
+     "label": "Undo History",
+     "range": "",
+     "default": "",
+     "effect": "Opens the Undo History list.",
+     "inv": "pro.zones_more.undo_history"
+    },
+    {
+     "label": "Save as Template",
+     "range": "",
+     "default": "",
+     "effect": "Saves the current zone layout as a named template.",
+     "inv": "pro.zones_more.save_as_template"
+    },
+    {
+     "label": "Load Template... dropdown",
+     "range": "",
+     "default": "",
+     "effect": "Dropdown of your saved zone templates; choosing one loads it.",
+     "inv": "templateSelect"
+    },
+    {
+     "label": "LOAD SHOKK FILE",
+     "range": "",
+     "default": "",
+     "effect": "Loads a saved .shokk session.",
+     "inv": "pro.zones_more.load_shokk_file"
+    },
+    {
+     "label": "SAVE SHOKK",
+     "range": "",
+     "default": "",
+     "effect": "Saves the zones and finishes (and optionally the paint) as a .shokk file.",
+     "inv": "pro.zones_more.save_shokk"
+    },
+    {
+     "label": "PNG Channels Export",
+     "range": "",
+     "default": "",
+     "effect": "Exports the paint and the spec channels as PNG pictures for inspection or Photoshop.",
+     "inv": "pro.zones_more.png_channels_export"
+    },
+    {
+     "label": "Export folder box (PNG channels)",
+     "range": "",
+     "default": "",
+     "effect": "Folder where PNG channel exports are written.",
+     "inv": "leftPanelPsExportFolder"
+    },
+    {
+     "label": "Browse Folder",
+     "range": "",
+     "default": "",
+     "effect": "Choose the export folder in Explorer.",
+     "inv": "pro.zones_more.browse_folder"
+    },
+    {
+     "label": "Smart Randomize checkbox",
+     "range": "",
+     "default": "on",
+     "effect": "Smart Randomize: picks good-looking combinations instead of pure chance.",
+     "inv": "smartRandomize"
+    },
+    {
+     "label": "e.g. My 3-Color Layout (max 60 chars)",
+     "range": "",
+     "default": "",
+     "effect": "use a descriptive name you'll recognize later",
+     "inv": "tmplNameInput"
+    },
+    {
+     "label": "Save",
+     "range": "",
+     "default": "",
+     "effect": "Save current zone layout as a reusable template",
+     "inv": "pro.zones_more.save"
+    }
+   ],
+   "tips": [
+    "Turn on Smart Randomize before using Rand to get better combinations."
+   ],
+   "pitfalls": [
+    "Rand All Zones overwrites finishes on every zone. It is undoable, but save first if you like what you have.",
+    "PNG Channels Export makes inspection pictures. It does not create the final iRacing files."
+   ],
+   "related": [
+    "zones.presets_templates",
+    "ui_shell.save_open_projects",
+    "zones.card_controls"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.zones.more"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "presetGalleryOverlay",
+    "tmplNameOverlay",
+    "pro.zones.more",
+    "pro.zones_more.presets_gallery",
+    "pro.zones_more.rand_current_zone",
+    "pro.zones_more.rand_all_zones",
+    "pro.zones_more.apply_finish_to_all",
+    "pro.zones_more.shokker_library",
+    "pro.zones_more.undo_history",
+    "pro.zones_more.save_as_template",
+    "templateSelect",
+    "pro.zones_more.load_shokk_file",
+    "pro.zones_more.save_shokk",
+    "pro.zones_more.png_channels_export",
+    "leftPanelPsExportFolder",
+    "pro.zones_more.browse_folder",
+    "smartRandomize",
+    "tmplNameInput",
+    "pro.zones_more.save"
+   ],
+   "sources": [
+    "paint-booth-v2.html:2648",
+    "paint-booth-v2.html:4255",
+    "paint-booth-6-ui-boot.js:1311",
+    "paint-booth-6-ui-boot.js:1316",
+    "paint-booth-v2.html:4383",
+    "paint-booth-6-ui-boot.js:2820",
+    "paint-booth-6-ui-boot.js:2831",
+    "paint-booth-v2.html:2641",
+    "paint-booth-v2.html:2640",
+    "paint-booth-v2.html:2651",
+    "paint-booth-v2.html:2650",
+    "paint-booth-v2.html:2655",
+    "paint-booth-v2.html:2658",
+    "paint-booth-v2.html:2674",
+    "paint-booth-v2.html:2673",
+    "paint-booth-v2.html:2681",
+    "paint-booth-v2.html:4385",
+    "paint-booth-6-ui-boot.js:2060",
+    "paint-booth-6-ui-boot.js:2109",
+    "paint-booth-6-ui-boot.js:2130",
+    "paint-booth-6-ui-boot.js:2137",
+    "paint-booth-6-ui-boot.js:2150",
+    "paint-booth-6-ui-boot.js:2164",
+    "paint-booth-6-ui-boot.js:2820",
+    "paint-booth-6-ui-boot.js:2826",
+    "paint-booth-6-ui-boot.js:2839",
+    "paint-booth-6-ui-boot.js:2855",
+    "paint-booth-6-ui-boot.js:2879",
+    "paint-booth-6-ui-boot.js:1326",
+    "paint-booth-2-state-zones.js:4300",
+    "paint-booth-2-state-zones.js:4303",
+    "paint-booth-2-state-zones.js:4307",
+    "paint-booth-7-shokk.js:896",
+    "paint-booth-0-finish-data.js:6393",
+    "paint-booth-6-ui-boot.js:2196"
+   ],
+   "aliases": [
+    "apply finish to all",
+    "load template",
+    "more menu",
+    "png channels export",
+    "presets gallery",
+    "randomise zones",
+    "randomize",
+    "save template",
+    "three dot menu",
+    "zones more"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "How Smart Randomize decides",
+     "body": "Smart Randomize is ticked by default. When it is on and the zone's base and pattern are not locked, 8 times out of 10 Shokker picks from a hand-checked list of 97 base and pattern pairs that look good together. The other 2 times it picks at random but re-rolls up to 20 times to avoid a list of 25 known ugly pairs. With it off, the pick is pure chance. Locks are respected, so a zone with its base, pattern or intensity locked keeps that part."
+    },
+    {
+     "heading": "What Rand and Apply Finish to All overwrite",
+     "body": "Rand Current Zone changes the selected zone's base, pattern and strength, and clears its finish and stacked pattern layers. Rand All Zones changes the base, pattern, finish and strength of every zone that is not locked, so save first if you like your look. Apply Finish to All asks you to confirm, then copies the selected zone's base, pattern, finish, strengths, scale and pattern stack onto every other zone. It does not copy colours or drawn regions. Each is one undo step."
+    },
+    {
+     "heading": "Templates are small and local",
+     "body": "Save as Template asks for a name of up to 60 characters. Press Enter to save or Esc to cancel. A template remembers each zone's name, colour rules, base, pattern, finish, strengths, scale, locks and pattern stack. It does not remember drawn selections, so loading a template gives you zones without any drawn regions. Templates live on this computer inside Shokker, not in your project file, so use SAVE SHOKK to share a whole design."
+    },
+    {
+     "heading": "Presets and exports",
+     "body": "Presets Gallery holds 23 ready-made zone layouts in five groups: Show Car, Clean, Aggressive, Special Effect and Themed. PNG Channels Export writes the paint and spec channels as PNG pictures to the folder in the export box, for inspection or Photoshop. A message tells you how many files it wrote and where. These pictures are for looking, not the final iRacing files."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Get ideas without losing your work",
+     "goal": "Roll the dice safely",
+     "settings": {
+      "Smart Randomize": "checked",
+      "Zones you want to keep": "lock their base and pattern first",
+      "Rand All Zones": "press it, repeat until you like it"
+     },
+     "result": "Unlocked zones get new bases, patterns and strengths. Press Ctrl+Z to step back."
+    },
+    {
+     "title": "Same finish on every panel",
+     "goal": "Quick uniform look before fine-tuning",
+     "settings": {
+      "ZONES column": "select the zone with the finish you like",
+      "Apply Finish to All": "press it and confirm"
+     },
+     "result": "Every other zone takes the base, pattern, finish and strengths of the selected zone. Colours stay as they were."
+    },
+    {
+     "title": "Save a reusable layout",
+     "goal": "Reuse a zone setup on the next car",
+     "settings": {
+      "Save as Template": "press it",
+      "Name": "My 3-Color Layout",
+      "Load Template": "pick it from the dropdown later"
+     },
+     "result": "The toast reads Template saved with the zone count. Loading it later replaces your zones with the saved ones."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.presets_templates",
+     "why": "Goes deeper on presets and templates."
+    },
+    {
+     "with": "ui_shell.save_open_projects",
+     "why": "SAVE SHOKK and LOAD SHOKK FILE are the whole-project save."
+    },
+    {
+     "with": "zones.card_controls",
+     "why": "Locks on a zone card decide what Rand may change."
+    },
+    {
+     "with": "history.panel",
+     "why": "Undo History lives in this menu and shows every step Rand took."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What does Smart Randomize do?",
+     "a": "It picks from a list of 97 good base and pattern pairs most of the time and avoids 25 ugly pairs otherwise. It is on by default."
+    },
+    {
+     "q": "Can I undo Rand All Zones?",
+     "a": "Yes. Press Ctrl+Z. It overwrites finishes on every zone first, so save if you like the current look."
+    },
+    {
+     "q": "Does Apply Finish to All change my colours?",
+     "a": "No. It copies the finish settings only: base, pattern, finish, strengths, scale and pattern stack."
+    },
+    {
+     "q": "Do templates include my drawn selections?",
+     "a": "No. Drawn regions are not saved in a template."
+    },
+    {
+     "q": "How long can a template name be?",
+     "a": "60 characters."
+    },
+    {
+     "q": "What is the difference between SAVE SHOKK and Save as Template?",
+     "a": "SAVE SHOKK saves a whole session as a file you can share. A template only stores zone settings on this computer."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Rand All Zones wiped a look you liked",
+     "cause": "It overwrites unlocked zones",
+     "fix": "Press Ctrl+Z, and lock the base and pattern on zones you want to keep."
+    },
+    {
+     "symptom": "A loaded template has none of your drawn areas",
+     "cause": "Templates do not store drawn regions",
+     "fix": "Redraw the selections, or use SAVE SHOKK for a full session."
+    },
+    {
+     "symptom": "PNG Channels Export did not make iRacing files",
+     "cause": "It writes inspection PNGs only",
+     "fix": "Use RENDER for the real paint and spec TGAs."
+    }
+   ],
+   "protips": [
+    "Lock a zone's base or pattern on its card and Rand leaves it alone, so you can randomize only the parts you do not mind changing.",
+    "The message after Rand Current Zone names the base and pattern it chose and adds a hint about the combination.",
+    "Undo History in this menu shows every step so you can jump back after a bad roll."
+   ],
+   "screens": [
+    "ui_presets_gallery",
+    "ui_template_library",
+    "ui_zones_more_menu"
+   ]
+  },
+  {
+   "id": "ui_shell.dialogs_reference",
+   "title": "Dialogs reference: what each pop-up is for",
+   "domain": "ui_shell",
+   "summary": "Shokker opens a handful of pop-up windows. This page lists them with one line each so you know which one you are looking at.",
+   "what": "Render Recipe is the card after a render. Spec Map: Channels and Values shows the spec channels with numbers. Decal Rescue Kit puts a flat, satin or gloss non-metal spec under sim-stamped numbers and sponsors so they read cleanly. Lighting Mask controls the spec alpha channel (fake holes, grille openings, recessed vents) and is an advanced tool. Material Range Remapper retunes the metal, roughness and clearcoat ranges inside a zone while keeping its texture. Preset Gallery applies ready-made zone layouts. Finish Catalog is the full-screen browser with search, filters and favourites; Finish Comparison lines finishes up side by side. Legacy Dual Color Shift builds a two-colour shift: Color A is seen face-on, Color B at steep angles, with an intensity slider. Save Zone Template stores a zone layout. Select File is Shokker's own file browser where you type a full path and press Go. SHOKK LIBRARY lists saved .shokk files. LAYER EFFECTS opens with a double-click on a layer. KEYBOARD SHORTCUTS opens with the ? key. Generated Python Script saves your setup as a script.",
+   "when": [
+    "A window opened and you are not sure what it is for."
+   ],
+   "how": [
+    "1. Read the window title.",
+    "2. Find it in the list above.",
+    "3. Close it with its X button, or with Esc where it says so, if you opened it by accident."
+   ],
+   "controls": [
+    {
+     "label": "Script file name",
+     "range": "",
+     "default": "a default name",
+     "effect": "Name for the saved script file. The extension is added for you. Use letters, numbers and underscores.",
+     "inv": "scriptFilename"
+    },
+    {
+     "label": "Save Both Files (.py + .bat)",
+     "range": "",
+     "default": "",
+     "effect": "Download both the Python script and a .bat launcher to run it easily",
+     "inv": "pro.dialogs.save_both_files_py_bat"
+    },
+    {
+     "label": "Save .py Only",
+     "range": "",
+     "default": "",
+     "effect": "Download only the Python script file",
+     "inv": "pro.dialogs.save_py_only"
+    },
+    {
+     "label": "Copy to Clipboard",
+     "range": "",
+     "default": "",
+     "effect": "Copy the generated script to your clipboard",
+     "inv": "pro.dialogs.copy_to_clipboard"
+    },
+    {
+     "label": "Color A face-on color picker",
+     "range": "",
+     "default": "#ff3388",
+     "effect": "Pick the face-on color (seen when viewing the surface straight on)",
+     "inv": "dualShiftColorA"
+    },
+    {
+     "label": "Color B edge angle color picker",
+     "range": "",
+     "default": "#ffd926",
+     "effect": "Pick the edge-angle color (seen at steep viewing angles)",
+     "inv": "dualShiftColorB"
+    },
+    {
+     "label": "#hex",
+     "range": "",
+     "default": "#ff3388",
+     "effect": "Hex color value (e.g. #ff3388)",
+     "inv": "dualShiftHexA"
+    },
+    {
+     "label": "#hex",
+     "range": "",
+     "default": "#ffd926",
+     "effect": "Hex color value (e.g. #ffd926)",
+     "inv": "dualShiftHexB"
+    },
+    {
+     "label": "Shift intensity: 100% (range 0-100%, controls how strong the color shift effect is)",
+     "range": "0-100",
+     "default": "100",
+     "effect": "Shift intensity: 100% (range 0-100%, controls how strong the color shift effect is)",
+     "inv": "dualShiftIntensity"
+    },
+    {
+     "label": "Apply Shift",
+     "range": "",
+     "default": "",
+     "effect": "Apply the custom color shift to the selected zone",
+     "inv": "pro.dialogs.apply_shift"
+    },
+    {
+     "label": "Type or paste a full file path, then Enter or Go...",
+     "range": "",
+     "default": "",
+     "effect": "Type or paste a full path to a file or folder, then press Enter or click Go.",
+     "inv": "filePickerPath"
+    },
+    {
+     "label": "Go",
+     "range": "",
+     "default": "",
+     "effect": "Navigate to typed path",
+     "inv": "pro.dialogs.go"
+    },
+    {
+     "label": "Select",
+     "range": "",
+     "default": "",
+     "effect": "Confirm selection",
+     "inv": "filePickerSelectBtn"
+    }
+   ],
+   "tips": [
+    "Press ? at any time to see the keyboard shortcuts."
+   ],
+   "pitfalls": [
+    "Cancel closes a dialog without applying. Apply or Save makes the change."
+   ],
+   "related": [
+    "ui_shell.zones_more_menu",
+    "layers.effects",
+    "layers.decal_rescue",
+    "shortcuts.table"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "scriptModal",
+    "specMapInspectorModal",
+    "decalRescueOverlay",
+    "specLightingMaskOverlay",
+    "specMaterialRemapOverlay",
+    "finishBrowserOverlay",
+    "finishCompareOverlay",
+    "dualShiftOverlay",
+    "filePickerOverlay",
+    "swatchPreviewModal",
+    "shokkLibraryModal",
+    "layerEffectsDialog",
+    "shortcutOverlay",
+    "renderResultsPanel",
+    "presetGalleryOverlay",
+    "tmplNameOverlay",
+    "scriptFilename",
+    "pro.dialogs.save_both_files_py_bat",
+    "pro.dialogs.save_py_only",
+    "pro.dialogs.copy_to_clipboard",
+    "dualShiftColorA",
+    "dualShiftColorB",
+    "dualShiftHexA",
+    "dualShiftHexB",
+    "dualShiftIntensity",
+    "pro.dialogs.apply_shift",
+    "filePickerPath",
+    "pro.dialogs.go",
+    "filePickerSelectBtn"
+   ],
+   "sources": [
+    "paint-booth-v2.html:3944",
+    "paint-booth-2-state-zones.js:18636",
+    "paint-booth-v2.html:3985",
+    "paint-booth-2-state-zones.js:3913",
+    "paint-booth-2-state-zones.js:3940",
+    "paint-booth-v2.html:4109",
+    "paint-booth-v2.html:4152",
+    "paint-booth-v2.html:4200",
+    "paint-booth-v2.html:4215",
+    "paint-booth-v2.html:4270",
+    "paint-booth-v2.html:4327",
+    "paint-booth-v2.html:4343",
+    "paint-booth-v2.html:4353",
+    "paint-booth-v2.html:4396",
+    "paint-booth-v2.html:5219",
+    "js/canvas/zone/spec-material-remap.js:14",
+    "js/canvas/zone/spec-material-remap.js:15",
+    "js/canvas/zone/spec-material-remap.js:21",
+    "js/canvas/zone/spec-material-remap.js:26",
+    "js/canvas/zone/spec-material-remap.js:31",
+    "paint-booth-6-ui-boot.js:1961",
+    "paint-booth-6-ui-boot.js:2048",
+    "paint-booth-6-ui-boot.js:3766"
+   ],
+   "aliases": [
+    "dialogs",
+    "dual color shift",
+    "file browser",
+    "file picker",
+    "lighting mask",
+    "pop up windows",
+    "popups",
+    "python script",
+    "range remapper",
+    "what is this window"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "pro",
+   "deep": [
+    {
+     "heading": "Decal Rescue Kit: three safe materials",
+     "body": "Sim-stamped numbers and sponsors inherit the spec map under them, so a chrome or candy body makes white vinyl look dirty. Decal Rescue Kit sets the active zone to one of three flat non-metal recipes written as Metal, Roughness, Clearcoat. Flat Vinyl is 0, 100, 110. Satin Decal is 0, 100, 75. Gloss Decal is 0, 42, 22. It changes only the spec of that zone, keeps your paint colours and layer pixels, and one Undo restores the old recipe."
+    },
+    {
+     "heading": "Lighting Mask changes only the alpha channel",
+     "body": "Lighting Mask edits just the spec alpha channel, never paint colour and never Metal, Roughness or Clearcoat. The choices are Use Source Alpha (removes Shokker's override), AUTO Full Lighting at A 255, Reduced Lighting at A 128 for recessed vents and deep seams, and Kill Lighting at A 0 for fake holes and grille openings. Kill Lighting is not a shortcut for matte vinyl. Soft selection edges give a soft alpha fade."
+    },
+    {
+     "heading": "Material Range Remapper presets",
+     "body": "The Remapper squeezes each of Metal, Roughness and Clearcoat into a Low to High range while keeping scratches, weave, flake and wear. Source 0 maps to Low, 255 to High, and everything between scales proportionally. Presets, Low to High: Metallic uses Metal 205 to 255, Roughness 8 to 90, Clearcoat 8 to 55. Printed Vinyl uses Metal 0 to 24, Roughness 70 to 155, Clearcoat 55 to 135. Matte Texture uses Metal 0 to 24, Roughness 180 to 255, Clearcoat 160 to 230. Gloss Texture uses Metal 0 to 24, Roughness 0 to 70, Clearcoat 0 to 55. Original is 0 to 255 on all three."
+    },
+    {
+     "heading": "The browsing dialogs",
+     "body": "Finish Comparison shows 2 to 4 columns side by side, with the first filled from the zone's current finish, and + Column adds one up to 4. Finish Catalog has All Types, Base + Pattern and Monolithic filters, search, and sort by Default, A to Z, Z to A, Recent or Favorites. Select File is Shokker's own browser: type a full path and press Enter or Go, then Select. Legacy Dual Color Shift starts with Color A #ff3388, Color B #ffd926 and intensity 100, and Apply Shift puts it on the selected zone."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Make white numbers readable over chrome",
+     "goal": "Stop the sponsor stamp area picking up chrome",
+     "settings": {
+      "Selection": "draw the number and sponsor footprint with Rect, Lasso or Pen",
+      "Mask, Grow": "use it first for edge safety",
+      "Decal Rescue Kit": "Flat Vinyl"
+     },
+     "result": "That zone becomes Metal 0, Roughness 100, Clearcoat 110, so stamps read cleanly. Undo restores the old recipe."
+    },
+    {
+     "title": "Tame a wild imported spec map",
+     "goal": "Keep the texture but cap how metallic it gets",
+     "settings": {
+      "Material Range Remapper": "open it on the zone",
+      "Preset": "Printed Vinyl",
+      "Apply Remap": "press it"
+     },
+     "result": "Texture is kept while Metal stays 0 to 24, Roughness 70 to 155 and Clearcoat 55 to 135. Restore Original undoes it."
+    },
+    {
+     "title": "Fake a grille hole",
+     "goal": "Make a cutout look unlit",
+     "settings": {
+      "Selection": "the grille footprint",
+      "Lighting Mask": "Kill Lighting (A 0)"
+     },
+     "result": "Sun and reflection are suppressed in that footprint so it reads as a hole."
+    }
+   ],
+   "combos": [
+    {
+     "with": "layers.decal_rescue",
+     "why": "The full story on why stamped numbers and sponsors need a safe material."
+    },
+    {
+     "with": "ui_shell.preview_channel_views",
+     "why": "Spec Map: Channels and Values is the dialog that shows the numbers these tools change."
+    },
+    {
+     "with": "ui_shell.zones_more_menu",
+     "why": "Presets Gallery and Save Zone Template open from the More menu."
+    },
+    {
+     "with": "shortcuts.table",
+     "why": "The Keyboard Shortcuts dialog is the live version of this reference."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which dialog shows the spec numbers?",
+     "a": "Spec Map: Channels and Values. Click the map to read exact stored values."
+    },
+    {
+     "q": "What do the three Decal Rescue choices do?",
+     "a": "They set a flat non-metal spec under stamps: Flat Vinyl 0, 100, 110, Satin Decal 0, 100, 75, Gloss Decal 0, 42, 22 as Metal, Roughness, Clearcoat."
+    },
+    {
+     "q": "Does Lighting Mask change my paint colours?",
+     "a": "No. It only edits the spec alpha channel."
+    },
+    {
+     "q": "How many finishes can I compare at once?",
+     "a": "Two to four columns. The first starts with your zone's current finish."
+    },
+    {
+     "q": "How do I open the shortcuts list?",
+     "a": "Press the question mark key. Press it again to close."
+    },
+    {
+     "q": "How do I close a dialog by accident?",
+     "a": "Use its close button. Cancel closes without applying and Apply or Save makes the change."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Kill Lighting made a panel look matte instead of fixing it",
+     "cause": "Alpha 0 suppresses all light for that footprint and is meant for fake holes",
+     "fix": "Use Restore Source Alpha, then use Material Range Remapper or a Foundation finish for matte."
+    },
+    {
+     "symptom": "Your numbers still look dirty over chrome",
+     "cause": "The Decal Rescue footprint did not cover the whole stamp area",
+     "fix": "Redraw the footprint, use Mask then Grow for edge safety, and apply Decal Rescue Kit again."
+    },
+    {
+     "symptom": "The Remapper made the texture flat",
+     "cause": "The Low and High values are too close together",
+     "fix": "Widen the range, or press Restore Original and start from a preset."
+    }
+   ],
+   "protips": [
+    "The Remapper keeps your texture. Narrow the range to control a wild imported map without flattening its detail.",
+    "Kill Lighting at alpha 0 is the right tool for grille openings and fake holes, and Reduced Lighting at 128 suits recessed vents.",
+    "The old two-colour shift editor is marked legacy. The catalogue colour-shift entry is now a fixed finish, so use that for new work."
+   ],
+   "screens": [
+    "ui_shortcuts_dialog"
+   ]
+  },
+  {
+   "id": "ui_shell.save_open_projects",
+   "title": "Save, Open, Import Recipe and projects",
+   "domain": "ui_shell",
+   "summary": "There is no File menu. Save / Open in the toolbar keeps your whole project in one file, and a few other buttons share smaller pieces.",
+   "what": "Save / Open saves or loads a complete workflow in one project file: the paint (including a PSD), every zone and all layer settings. Only Shokker can open a project file, so do not upload it to Trading Paints. SAVE SHOKK (in Zones > More) saves the zones and finishes, and optionally the paint, as a .shokk file, which is good for sharing or backup. Import Recipe loads a .shokkerrecipe, yours or someone else's, and restores its colours, finishes and effects on this car. Share Recipe on the render card makes that file. Ctrl+S refreshes a local autosave snapshot; use Save / Open or SAVE SHOKK for a file you can move around.",
+   "when": [
+    "You want to come back to a project later.",
+    "You want to share a look or back up your setup.",
+    "A friend sent you a recipe file."
+   ],
+   "how": [
+    "1. Click Save / Open in the toolbar and choose to save or load.",
+    "2. For a shareable look file, open Zones > More > SAVE SHOKK, give it a name (and optionally your name and a description) and tick \"Include the paint\" if you want it fully portable.",
+    "3. To use someone else's recipe, click Import Recipe and pick the .shokkerrecipe file.",
+    "4. To reopen a .shokk, use LOAD SHOKK FILE in Zones > More and open the one you want."
+   ],
+   "controls": [
+    {
+     "label": "Save / Open",
+     "range": "",
+     "default": "",
+     "effect": "Save / Open: saves or loads a complete workflow in one file (paint incl. PSD, every zone, all layer settings).",
+     "inv": "spbProjectsButton"
+    },
+    {
+     "label": "Import Recipe",
+     "range": "",
+     "default": "",
+     "effect": "Imports a .shokkerrecipe (yours or shared) and restores the recipe (colours, finishes, effects) on this car.",
+     "inv": "pro.toolbar.import_recipe"
+    },
+    {
+     "label": "SAVE SHOKK",
+     "range": "",
+     "default": "",
+     "effect": "Saves the zones and finishes (and optionally the paint) as a .shokk file.",
+     "inv": "pro.zones_more.save_shokk"
+    },
+    {
+     "label": "LOAD SHOKK FILE",
+     "range": "",
+     "default": "",
+     "effect": "Loads a saved .shokk session.",
+     "inv": "pro.zones_more.load_shokk_file"
+    },
+    {
+     "label": "e.g. Purple Color Shift v1",
+     "range": "",
+     "default": "",
+     "effect": "Name for the .shokk file.",
+     "inv": "shokkSaveName"
+    },
+    {
+     "label": "Your name or username (optional)",
+     "range": "",
+     "default": "",
+     "effect": "Your name (optional) stored in the file.",
+     "inv": "shokkSaveAuthor"
+    },
+    {
+     "label": "Short description of this paint recipe (e.g. 'Holographic chrome with red flake highlights — works great on dark cars')...",
+     "range": "",
+     "default": "",
+     "effect": "Short description of the recipe.",
+     "inv": "shokkSaveDesc"
+    },
+    {
+     "label": "Include the paint TGA in the .shokker preset file for full portability",
+     "range": "",
+     "default": "on",
+     "effect": "Include the paint TGA in the .shokker preset file for full portability",
+     "inv": "shokkIncludePaint"
+    },
+    {
+     "label": "Search by name, author, or tag...",
+     "range": "",
+     "default": "",
+     "effect": "Filter SHOKK files by name, author, or tag",
+     "inv": "shokkSearchInput"
+    },
+    {
+     "label": "Open Selected",
+     "range": "",
+     "default": "",
+     "effect": "Open the selected SHOKK file",
+     "inv": "pro.shokk_library.open_selected"
+    }
+   ],
+   "tips": [
+    "Search the SHOKK library by name, author or tag."
+   ],
+   "pitfalls": [
+    "Ctrl+S is only an autosave snapshot, not a file you can send to a friend.",
+    "Recipes restore the look on this car. They are not the paint file itself.",
+    "The file Trading Paints and iRacing want is made by RENDER, not by Save."
+   ],
+   "related": [
+    "ui_shell.zones_more_menu",
+    "ui_shell.render_results_panel",
+    "zones.presets_templates"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "spbProjectsButton"
+    },
+    {
+     "do": "control",
+     "id": "pro.toolbar.import_recipe"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "spbProjectsButton",
+    "pro.toolbar.import_recipe",
+    "pro.zones_more.save_shokk",
+    "pro.zones_more.load_shokk_file",
+    "shokkSaveName",
+    "shokkSaveAuthor",
+    "shokkSaveDesc",
+    "shokkIncludePaint",
+    "shokkSearchInput",
+    "pro.shokk_library.open_selected"
+   ],
+   "sources": [
+    "paint-booth-6-ui-boot.js:3797",
+    "js/spb-support-answers.js:45",
+    "paint-booth-v2.html:2497",
+    "paint-booth-v2.html:2498",
+    "paint-booth-5-api-render.js:5498",
+    "paint-booth-v2.html:2670",
+    "paint-booth-7-shokk.js:691",
+    "paint-booth-v2.html:2669",
+    "js/features/spb-projects.js:285",
+    "js/features/spb-projects.js:354",
+    "js/features/spb-projects.js:361",
+    "js/features/spb-projects.js:367",
+    "js/features/spb-projects.js:941",
+    "js/features/spb-projects.js:952",
+    "js/features/spb-projects.js:969",
+    "js/features/spb-projects.js:1007",
+    "js/features/spb-projects.js:1020",
+    "js/features/project-name-dialog.js:18",
+    "js/features/project-name-dialog.js:20",
+    "paint-booth-7-shokk.js:629",
+    "paint-booth-7-shokk.js:721",
+    "paint-booth-v2.html:5046",
+    "paint-booth-v2.html:5055",
+    "paint-booth-v2.html:5053",
+    "paint-booth-v2.html:5084",
+    "paint-booth-5-api-render.js:5493",
+    "paint-booth-5-api-render.js:5522"
+   ],
+   "aliases": [
+    "autosave",
+    "import recipe",
+    "load shokk",
+    "open project",
+    "save my work",
+    "save project",
+    "save shokk",
+    "shokk file",
+    "where is the file menu",
+    "save and open",
+    "import recipe button"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "What Save / Open captures",
+     "body": "Save / Open opens a panel called SPB PROJECTS. Its SAVE CURRENT button captures the open source paint, every zone, the Layer settings and the live Layer pixels in one project. You need a source paint open first, or the save refuses with a message saying to open one. A naming box titled Save project proposes the paint's file name (or My Project) and allows up to 80 characters."
+    },
+    {
+     "heading": "Opening a project is checked before anything changes",
+     "body": "Each row in SPB PROJECTS shows the save time, the paint name, the zone count and the Layer count. OPEN first checks that the saved source paint is still there and still the same file. If it is missing the row says SOURCE MISSING, and if the paint changed since you saved, the open stops and tells you. Damaged Layer pixels also stop it. In every stop case nothing is applied and your current work stays as it was. The X on a row deletes that project after a confirmation, and that cannot be undone."
+    },
+    {
+     "heading": "SAVE SHOKK is a different, smaller file",
+     "body": "Zones > More > SAVE SHOKK asks for a Name (required, 80 characters), an optional Author (60 characters), a Description (300 characters) and tags: Color Shift, Chrome, Matte, Pearl, Candy, Neon, Dark, Pattern-Based, Multi-Layer and Full Scheme. Include paint file is ticked by default and is recommended: the file is larger but fully shareable. Opening one from the SHOKK LIBRARY offers four choices: Spec Map Only, Spec Map + New TGA, Spec + Zones (Keep Paint) and Full Import (Everything)."
+    },
+    {
+     "heading": "Recipes replace your zones",
+     "body": "Share Recipe on the render card needs a finished render first, otherwise it says to render first. Import Recipe accepts a .shokkerrecipe file, asks Import this recipe with the zone count, and then replaces your current zones. It restores zones and looks, not the paint itself, so the car you import onto should already have the paint you want underneath."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Back up a livery before a risky change",
+     "goal": "Keep a restore point you can reopen later",
+     "settings": {
+      "Save / Open": "click it in the top toolbar",
+      "SAVE CURRENT": "click",
+      "Project name": "type a name such as Gulf v3, then press Save"
+     },
+     "result": "The project appears in the list with its time, zone count and Layer count. Use OPEN on that row any time to get back exactly this state."
+    },
+    {
+     "title": "Share a look with a friend, paint included",
+     "goal": "Send a portable file that carries the paint",
+     "settings": {
+      "Zones": "More, then SAVE SHOKK",
+      "Name": "Purple Shift v1",
+      "Author": "your driver name",
+      "Include paint file": "ticked (default)"
+     },
+     "result": "You get a .shokk file your friend can open from the SHOKK LIBRARY with Full Import (Everything)."
+    },
+    {
+     "title": "Try a friend's look on your own paint",
+     "goal": "Use their zones and finishes but keep your own paint",
+     "settings": {
+      "Zones": "More, then open the SHOKK LIBRARY",
+      "Open Selected": "pick their file",
+      "How do you want to open this SHOKK": "Spec + Zones (Keep Paint)"
+     },
+     "result": "Their spec map and zone setup load while your current paint stays loaded."
+    }
+   ],
+   "combos": [
+    {
+     "with": "ui_shell.zones_more_menu",
+     "why": "SAVE SHOKK, LOAD SHOKK FILE and the zone templates all live in the More menu."
+    },
+    {
+     "with": "ui_shell.render_results_panel",
+     "why": "Share Recipe sits on the render card, and the files you actually upload come from RENDER, not from Save."
+    },
+    {
+     "with": "preview_render.trading_paints_mip",
+     "why": "Explains which files Trading Paints wants, so you do not upload a project file by mistake."
+    },
+    {
+     "with": "history.panel",
+     "why": "Undo History is for quick steps back. Save a project before a big change if you want a restore point that lasts."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Is there a File menu?",
+     "a": "No. Save / Open is a button in the top toolbar, and the smaller save and share options live in Zones > More and on the render card."
+    },
+    {
+     "q": "Can I upload my project to Trading Paints?",
+     "a": "No. Only Shokker can open a project or .shokk file, and Trading Paints will say it is the wrong file type. Press RENDER and upload the files it makes."
+    },
+    {
+     "q": "What does Ctrl+S do?",
+     "a": "It refreshes a local autosave snapshot and shows Autosave snapshot saved locally. It does not make a file you can send."
+    },
+    {
+     "q": "Why does a project say SOURCE MISSING?",
+     "a": "The paint file it was saved from has been moved, renamed or deleted. Put the file back where it was, then open the project."
+    },
+    {
+     "q": "Why did my project refuse to open with a changed source message?",
+     "a": "The paint file was edited after you saved. The open stops so your layers and zones are not applied onto the wrong picture. Restore the original file and try again."
+    },
+    {
+     "q": "Does Import Recipe bring in the paint?",
+     "a": "No. It restores zones, colours, finishes and effects on this car and replaces your current zones after you confirm."
+    },
+    {
+     "q": "Can I delete a saved project?",
+     "a": "Yes. Press the X on its row in SPB PROJECTS and confirm. This cannot be undone."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Save says to open a source paint first",
+     "cause": "A project needs a source paint to be tied to, and none is open",
+     "fix": "Open your paint (or Blank Canvas) first, then use SAVE CURRENT."
+    },
+    {
+     "symptom": "You imported a recipe and lost your zones",
+     "cause": "Import Recipe replaces the current zones after you confirm",
+     "fix": "Save a project before importing. If it already happened, press Ctrl+Z straight away or open that saved project."
+    },
+    {
+     "symptom": "A friend cannot open your .shokk with its paint",
+     "cause": "Include paint file was unticked when you saved",
+     "fix": "Save it again with Include paint file ticked, then resend it."
+    }
+   ],
+   "protips": [
+    "Save a project before any big change. It is the only restore point that also keeps live Layer pixels.",
+    "Share Recipe needs one finished render first. Before that it only shows a note saying to render first.",
+    "If a project fails to open during the final restore, Shokker puts your previous document back and tells you so."
+   ],
+   "screens": [
+    "ui_toolbar_right"
+   ]
+  }
+ ]
+}

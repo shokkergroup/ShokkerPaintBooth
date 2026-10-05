@@ -1,0 +1,148 @@
+{
+ "PASS": [
+  [
+   "Hologram Metal",
+   "xlab_hologram_metal",
+   "monolithic"
+  ],
+  [
+   "Dichroic Skin",
+   "xlab_dichroic_skin",
+   "monolithic"
+  ],
+  [
+   "Truchet Glass",
+   "ff_truchet_glass",
+   "monolithic"
+  ],
+  [
+   "Cinder Pulse",
+   "impossible_cinder_pulse",
+   "monolithic"
+  ],
+  [
+   "Hologram Noir",
+   "impossible_hologram_noir",
+   "monolithic"
+  ]
+ ],
+ "PROMISE": [
+  [
+   "Split Underglow",
+   "neon_dual_glow",
+   "monolithic"
+  ],
+  [
+   "Afterburn Chrome",
+   "neon_rainbow_tube",
+   "monolithic"
+  ],
+  [
+   "Neon Underglow",
+   "neon_electric_blue",
+   "monolithic"
+  ],
+  [
+   "Tokyo Rain",
+   "neon2_rain",
+   "monolithic"
+  ]
+ ],
+ "FAIL": [
+  [
+   "Ember Weave",
+   "xlab_ember_weave",
+   "monolithic"
+  ],
+  [
+   "Comet Terrace",
+   "xlab_comet_terrace",
+   "monolithic"
+  ],
+  [
+   "Hex Reliquary",
+   "xlab_hex_reliquary",
+   "monolithic"
+  ],
+  [
+   "Labyrinth Pulse",
+   "xlab_labyrinth_pulse",
+   "monolithic"
+  ],
+  [
+   "Medusa Lattice",
+   "xlab_medusa_lattice",
+   "monolithic"
+  ],
+  [
+   "Static Bloom",
+   "xlab_static_bloom",
+   "monolithic"
+  ],
+  [
+   "Turbo Heat",
+   "neon2_emberwake_delam",
+   "monolithic"
+  ],
+  [
+   "Redline Rush",
+   "neon_red_alert",
+   "monolithic"
+  ],
+  [
+   "Seoul Circuit",
+   "neon2_circuit_city",
+   "monolithic"
+  ],
+  [
+   "Import Royalty",
+   "neon_pink_blaze",
+   "monolithic"
+  ],
+  [
+   "Laser Lane",
+   "neon2_laser_web",
+   "monolithic"
+  ],
+  [
+   "Phantom Taillights",
+   "neon2_phantom_mica",
+   "monolithic"
+  ],
+  [
+   "Street Pulse",
+   "neon2_flow_tubes",
+   "monolithic"
+  ],
+  [
+   "Tunnel Vision",
+   "neon_cyber_yellow",
+   "monolithic"
+  ],
+  [
+   "Nitro Purge",
+   "neon_ice_white",
+   "monolithic"
+  ],
+  [
+   "Boost Spool",
+   "neon2_plasma_tubes",
+   "monolithic"
+  ],
+  [
+   "Burnout Ember",
+   "neon_orange_hazard",
+   "monolithic"
+  ],
+  [
+   "Carbon Voltage",
+   "neon2_honeycomb",
+   "monolithic"
+  ],
+  [
+   "Midnight Candy",
+   "neon2_frequency_fault",
+   "monolithic"
+  ]
+ ]
+}

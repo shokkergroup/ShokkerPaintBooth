@@ -1,0 +1,212 @@
+[
+ {
+  "id": "spec_lfr_starfield_scatter",
+  "name": "Liberty Starfield Scatter",
+  "desc": "An omnidirectional scattered field of 5-point liberty stars at every rotation \u2014 bright micro-glint cores (M), a separate signed roughness halo per star (R), and an independent translucent clearcoat constellation web (Cc). The abstracted canton: stars everywhere, no upright grid.",
+  "kind": "spec_overlay",
+  "ai_rating": 46
+ },
+ {
+  "id": "spec_lfr_corridor_sheen",
+  "name": "Stripe Corridor Sheen",
+  "desc": "The 13 stripes abstracted into a MULTI-DIRECTIONAL sheen-corridor field: 3-5 broad anisotropic 'lanes' each running a DIFFERENT random angle, so the stripe-feel survives any rotation. M = lane gloss bands; R = signed brush grain ACROSS the lanes; Cc = soft corridor pooling on its own lane set.",
+  "kind": "spec_overlay",
+  "ai_rating": 66
+ },
+ {
+  "id": "spec_lfr_firework_radial",
+  "name": "Firework Burst Radial",
+  "desc": "Scattered radial firework bursts at random centers \u2014 inherently rotation-proof. M = bright burst spokes that ramp dark at the tips; R = expanding signed shock-RINGS on a separate center set; Cc = a soft glow corona + falling ember trails on a third set. A living burst field.",
+  "kind": "spec_overlay",
+  "ai_rating": 53
+ },
+ {
+  "id": "spec_lfr_brocade_relief",
+  "name": "Eagle Brocade Relief",
+  "desc": "The eagle abstracted into an OMNIDIRECTIONAL feather-brocade relief \u2014 interlocking feather-scale lozenges tiled at varying angles like an heraldic brocade, never one upright bird. M = raised feather-scale edges; R = signed barb grain inside each scale; Cc = damask diamond overlay on its own lattice.",
+  "kind": "spec_overlay",
+  "ai_rating": 54
+ },
+ {
+  "id": "spec_lfr_liberty_colorflip",
+  "name": "Liberty Color-Flip",
+  "desc": "A LIVING red/white/blue color-flip clearcoat: the spec shifts which channel dominates as the viewing/sun angle sweeps, so the panel flashes red-to-white-to-blue. M = a smooth thin-film phase field; R = an inverse-phase signed field; Cc = a third phase-shifted field at a different frequency \u2014 three offset interference waves give the angle-reactive tricolor flip.",
+  "kind": "spec_overlay",
+  "ai_rating": 56
+ },
+ {
+  "id": "spec_lfr_anisotropic_drift",
+  "name": "Brushed Steel Drift",
+  "desc": "A multi-directional anisotropic brushed-metal field \u2014 like brushed steel that curves and swirls in several directions at once, evoking a flag furling in wind without any literal stripes. M = flowing brush highlights along a curl field; R = signed cross-grain micro-scratches on a perpendicular flow; Cc = broad satin sheen pools on a slow swirl.",
+  "kind": "spec_overlay",
+  "ai_rating": 51
+ },
+ {
+  "id": "spec_lfr_sparkler_embers",
+  "name": "Sparkler Ember Dust",
+  "desc": "Handheld-sparkler ember dust: dense scattered hot micro-sparks with short radiating spark-jets, plus drifting smoke. M = ultra-fine bright spark grains + tiny radiating jets; R = signed soot/smoke streaks on their own drift; Cc = soft warm glow blooms around spark clusters. Festive, omnidirectional, fine-detail.",
+  "kind": "spec_overlay",
+  "ai_rating": 65
+ },
+ {
+  "id": "spec_lfr_torch_flicker",
+  "name": "Liberty Torch Flicker",
+  "desc": "Living flame-tongue flicker like the Statue of Liberty's torch: scattered upward-licking flame lobes at random local angles with a heat-shimmer warp, tuned to feel like it's flickering. M = bright flame-tongue cores; R = signed heat-shimmer roughness warp on its own noise; Cc = a separate ember-glow gradient that pools at lobe bases.",
+  "kind": "spec_overlay",
+  "ai_rating": 48
+ },
+ {
+  "id": "spec_lfr_capitol_veins",
+  "name": "Capitol Marble Veins",
+  "desc": "White-marble Capitol veining: branching translucent veins wandering across a polished stone field, evoking the marble of national monuments. M = bright polished vein ridges; R = signed micro-fracture grain on a different vein network; Cc = deep translucent vein interiors + soft calcite cloud mottling on its own field.",
+  "kind": "spec_overlay",
+  "ai_rating": 77
+ },
+ {
+  "id": "spec_lfr_canyon_bevel",
+  "name": "Canyon Relief Bevel",
+  "desc": "Fake-3D faceted canyon-bevel relief: a Voronoi-shattered terrain of angular plateaus where each facet gets a directional bevel highlight, giving a carved monument-stone feel. M = facet bevel highlights (top-lit per-facet random light); R = signed valley-edge roughness on the facet borders; Cc = a smooth ambient-occlusion depth pool independent of facet lighting.",
+  "kind": "spec_overlay",
+  "ai_rating": 56
+ },
+ {
+  "id": "lfr_star_lattice",
+  "name": "Star Lattice",
+  "desc": "Multi-scale five-point liberty stars scattered at random sizes AND random rotations across the surface \u2014 never a grid, never upright. Reads as a constellation of stars from any panel angle. White-silver star bodies with a faint blue halo.",
+  "kind": "pattern",
+  "ai_rating": 89
+ },
+ {
+  "id": "lfr_stripe_drift",
+  "name": "Stripe Drift",
+  "desc": "Tapered red-and-white bands that drift across the surface at many DIFFERENT angles, widening and pinching as they go \u2014 the spirit of flag stripes freed from being parallel. No two bands share a direction, so it never reads as a literal 13-stripe flag.",
+  "kind": "pattern",
+  "ai_rating": 94
+ },
+ {
+  "id": "lfr_bunting_scallop",
+  "name": "Bunting Scallop",
+  "desc": "Scattered swags of patriotic bunting \u2014 nested circular-arc scallops \u2014 flung across the surface at random rotations, like festival bunting draped every which way. Each swag is a stack of arcs in alternating red/white/blue, never hung in one straight upright row.",
+  "kind": "pattern",
+  "ai_rating": 91
+ },
+ {
+  "id": "lfr_distressed_flag",
+  "name": "Distressed Flag",
+  "desc": "An all-over weathered patriotic texture \u2014 cracked, faded, sun-bleached red/white/blue worn into the surface like a battle-worn vintage flag. There is no flag shape; it is a continuous distressed field of fractured paint and grain carrying the colors everywhere.",
+  "kind": "pattern",
+  "ai_rating": 94
+ },
+ {
+  "id": "lfr_eagle_crest",
+  "name": "Eagle Crest",
+  "desc": "An omnidirectional brocade of abstract eagle crests \u2014 swept wing-fan rosettes radiating in every direction with a bright shield heart \u2014 scattered like heraldic damask rather than one upright bird.",
+  "kind": "pattern",
+  "ai_rating": 73
+ },
+ {
+  "id": "lfr_firework_radial",
+  "name": "Firework Radial",
+  "desc": "Bursting fireworks scattered across the surface \u2014 multiple radial spark-bursts of varied size detonating from random points, each a fan of fine spokes with a white-hot core and a sparkle shell. Bursts point outward in all directions, so there is no up.",
+  "kind": "pattern",
+  "ai_rating": 79
+ },
+ {
+  "id": "lfr_constellation_field",
+  "name": "Constellation Field",
+  "desc": "An irregular night-sky field of liberty stars \u2014 glowing points of varied brightness scattered with faint connecting lines, like constellations. Stars twinkle in size, connections wander, nothing aligns to a grid.",
+  "kind": "pattern",
+  "ai_rating": 62
+ },
+ {
+  "id": "lfr_ribbon_weave",
+  "name": "Ribbon Weave",
+  "desc": "An omnidirectional over-under weave of patriotic ribbons \u2014 red, white and blue bands interlacing in a basket lattice built on two randomly-rotated axes, so the weave reads diagonally and never as a straight up/down grid.",
+  "kind": "pattern",
+  "ai_rating": 91
+ },
+ {
+  "id": "lfr_stencil_stars",
+  "name": "Stencil Stars",
+  "desc": "Spray-painted stencil stars scattered with soft over-sprayed edges and fine paint grain \u2014 like stars stenciled by hand at random angles and sizes, with bleed and speckle around each. Worn, tactile, all-over; no aligned rows.",
+  "kind": "pattern",
+  "ai_rating": 94
+ },
+ {
+  "id": "lfr_liberty_filigree",
+  "name": "Liberty Filigree",
+  "desc": "Omnidirectional scrollwork \u2014 sweeping liberty filigree of rose-curve and spiral flourishes radiating from scattered hubs in every direction, like engraved coin ornament wrapped around the whole surface. Continuous, ornate, never an upright crest.",
+  "kind": "pattern",
+  "ai_rating": 85
+ },
+ {
+  "id": "lfr_old_glory_flux",
+  "name": "Old Glory Flux",
+  "desc": "Deep navy lacquer dusted with an omnidirectional field of tiny red-and-white star-flecks under a multi-directional color-shift sheen that travels from red through white to blue as the car turns; no upright flag, the patriotic read is pure palette plus angle-flux.",
+  "kind": "finish",
+  "ai_rating": 87
+ },
+ {
+  "id": "lfr_rockets_red_glare",
+  "name": "Rockets Red Glare",
+  "desc": "Several seeded firework bursts of concentric red and gold rings bloom across a near-black night field; the burst sparks are albedo-flat but mirror-metallic in spec, so the whole sky flares and crackles only when light rakes the panel.",
+  "kind": "finish",
+  "ai_rating": 49
+ },
+ {
+  "id": "lfr_liberty_torch",
+  "name": "Liberty Torch",
+  "desc": "An omnidirectional field of licking flame tongues in red, orange and gold over warm ember-black; flames point every which way like a wrapped torch, so there is no top or bottom, just heat that glows hotter at the tips in the clearcoat.",
+  "kind": "finish",
+  "ai_rating": 79
+ },
+ {
+  "id": "lfr_eagle_ascendant",
+  "name": "Eagle Ascendant",
+  "desc": "A dense gold-on-navy brocade of scattered feather and wing motifs at every angle, like imperial eagle damask wrapped seamlessly; no single bird, just an all-over heraldic weave that catches gilt light from any direction.",
+  "kind": "finish",
+  "ai_rating": 94
+ },
+ {
+  "id": "lfr_we_the_people",
+  "name": "We The People",
+  "desc": "Aged parchment cross-hatched with an all-over engraved guilloche of fine interwoven curves, like the back of a banknote; ink lines run in every direction with debossed relief that catches a low matte sheen, scholarly and document-old.",
+  "kind": "finish",
+  "ai_rating": 87
+ },
+ {
+  "id": "lfr_midnight_militia",
+  "name": "Midnight Militia",
+  "desc": "Tactical matte multicam in muted navy, slate and olive blotches with a fine deep grain; dead-flat, light-eating cammo that breaks up the panel with soft organic patches and zero shine, built for stealth patriot builds.",
+  "kind": "finish",
+  "ai_rating": 54
+ },
+ {
+  "id": "lfr_freedom_forge",
+  "name": "Freedom Forge",
+  "desc": "Molten steel poured into a cooling crust: glowing orange cracks web across cooling gunmetal cells with scattered white-hot sparks, like a forge mid-pour, the cracks blazing in clearcoat while the steel plateaus stay rough and dark.",
+  "kind": "finish",
+  "ai_rating": 90
+ },
+ {
+  "id": "lfr_amber_waves",
+  "name": "Amber Waves",
+  "desc": "Multi-directional rippling fields of wheat-gold grain bending as if wind crosses from several directions at once; soft sheen-corridors of light roll across the gold like sun on a prairie, warm and alive but never pointing one way.",
+  "kind": "finish",
+  "ai_rating": 83
+ },
+ {
+  "id": "lfr_glory_chrome",
+  "name": "Glory Chrome",
+  "desc": "Liquid show-chrome brushed in several crossing directions and dusted with red, white and blue mirror flecks; a polished patriot mirror that throws crossed brush highlights and tri-color glints from any angle, full reflectivity with patriot soul.",
+  "kind": "finish",
+  "ai_rating": 93
+ },
+ {
+  "id": "lfr_sparkler_dusk",
+  "name": "Sparkler Dusk",
+  "desc": "Dusk-purple twilight scattered with comet-spark micro-flake: hundreds of tiny tapered spark streaks at every angle leave glittering trails like handheld sparklers waved in the dark, each trail tipped with a hot white micro-flake that twinkles in spec.",
+  "kind": "finish",
+  "ai_rating": 49
+ }
+]

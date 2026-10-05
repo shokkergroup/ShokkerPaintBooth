@@ -1,0 +1,12 @@
+{
+  "wave": 34,
+  "last_portal": "colorshoxx",
+  "last_batch": [
+    "cx_peacock_fan",
+    "cx_rainbow_stealth",
+    "cx_oil_slick",
+    "cx_molten_metal",
+    "cx_red_green_chaos"
+  ],
+  "note": "Wave 2 applied after fixing worker \u2014 previous 26 ticks only re-rendered unchanged code"
+}

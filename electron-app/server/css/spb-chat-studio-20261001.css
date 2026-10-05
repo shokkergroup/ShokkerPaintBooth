@@ -1,0 +1,144 @@
+/* SPB CHAT STUDIO (2026-10-01): the copilot docked left, a big live preview right. Scoped under #spbChatStudio / body.spb-chat-studio. */
+#spbChatStudio { position: fixed; inset: 0; z-index: 9300; display: flex; flex-direction: column; padding-left: var(--spb-cs-dock, 470px); color: #e9ecfa; font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+    background: radial-gradient(1200px 700px at 70% 30%, rgba(210,30,192,0.10), transparent 60%), radial-gradient(900px 600px at 30% 90%, rgba(31,196,232,0.08), transparent 60%), #0b0d18; }
+#spbChatStudio[hidden] { display: none !important; }
+#spbChatStudio *, #spbChatStudio *::before, #spbChatStudio *::after { box-sizing: border-box; }
+.spb-cs-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 18px; flex: 0 0 auto; border-bottom: 1px solid rgba(255,255,255,0.09); background: rgba(8,10,20,0.7); backdrop-filter: blur(6px); }
+.spb-cs-brand { font-weight: 800; letter-spacing: .16em; font-size: 15px; white-space: nowrap; } .spb-cs-brand b { color: #ff7a18; } .spb-cs-brand span { margin-left: 10px; font-weight: 600; letter-spacing: .08em; color: #9aa0bd; font-size: 12px; }
+.spb-cs-car { font-size: 13px; padding: 4px 11px; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); color: #d5d9ee; white-space: nowrap; max-width: 280px; overflow: hidden; text-overflow: ellipsis; }
+.spb-cs-tabs { display: flex; gap: 3px; padding: 3px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
+.spb-cs-tab { border: 0; background: transparent; color: #b9bdd6; padding: 6px 13px; border-radius: 8px; cursor: pointer; font: 700 12.5px/1 inherit; letter-spacing: .04em; } .spb-cs-tab:hover { color: #fff; } .spb-cs-tab.on { color: #1a0d03; background: linear-gradient(135deg, #ffb060, #ff7a18); }
+.spb-cs-sp { flex: 1; }
+.spb-cs-btn { border: 1px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.07); color: #fff; padding: 7px 14px; border-radius: 9px; cursor: pointer; font: 700 12.5px/1 inherit; letter-spacing: .03em; white-space: nowrap; }
+.spb-cs-btn:hover { background: rgba(255,255,255,0.14); } .spb-cs-btn.hot { color: #1a0d03; border: 0; background: linear-gradient(135deg, #ffb060, #ff7a18); } .spb-cs-btn.hot:hover { filter: brightness(1.1); } .spb-cs-btn.ghost { background: transparent; color: #aab0cc; }
+.spb-cs-main { flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 18px; }
+.spb-cs-frame { position: relative; height: 100%; max-height: 100%; aspect-ratio: 1 / 1; max-width: 100%; border-radius: 14px; overflow: hidden; background: #15151c; border: 1px solid rgba(255,255,255,0.14); box-shadow: 0 20px 60px rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; }
+.spb-cs-frame img { width: 100%; height: 100%; object-fit: contain; display: block; } .spb-cs-frame img[hidden] { display: none; }
+.spb-cs-wait { position: absolute; left: 12px; top: 12px; display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: rgba(0,0,0,0.65); color: #ffd28a; font-size: 12.5px; } .spb-cs-wait[hidden] { display: none; }
+.spb-cs-spin { width: 12px; height: 12px; border-radius: 50%; border: 2px solid rgba(255,210,138,0.3); border-top-color: #ffd28a; animation: spbCsSpin .8s linear infinite; } @keyframes spbCsSpin { to { transform: rotate(360deg); } }
+.spb-cs-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 30px; color: #aab0cc; font-size: 14px; } .spb-cs-empty[hidden] { display: none; }
+.spb-cs-foot { flex: 0 0 auto; display: flex; align-items: center; gap: 12px; padding: 10px 18px 14px; border-top: 1px solid rgba(255,255,255,0.08); background: rgba(8,10,20,0.55); }
+.spb-cs-foot-lab { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #8e93ad; white-space: nowrap; }
+.spb-cs-chips { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: thin; padding-bottom: 2px; }
+.spb-cs-chip { flex: 0 0 auto; padding: 4px 11px; border-radius: 999px; font-size: 12px; color: #e9ecfa; background: rgba(210,30,192,0.14); border: 1px solid rgba(210,30,192,0.4); white-space: nowrap; } .spb-cs-chip i { font-style: normal; color: #ffb7f0; margin-left: 4px; } .spb-cs-chip.dim { background: transparent; border-style: dashed; color: #8e93ad; }
+
+/* the copilot panel docks to the left edge while the studio is open */
+body.spb-chat-studio .spb-pai { left: 0 !important; top: 0 !important; right: auto !important; bottom: 0 !important; width: var(--spb-cs-dock, 470px) !important; height: 100vh !important; max-height: 100vh !important; max-width: 100vw !important; border-radius: 0 !important; resize: none !important; z-index: 9401; }
+body.spb-chat-studio .spb-pai.min .spb-pai-log, body.spb-chat-studio .spb-pai.min .spb-pai-bar { display: flex !important; } body.spb-chat-studio .spb-pai.min { height: 100vh !important; }
+body.spb-chat-studio .spb-pai-x[data-act="close"], body.spb-chat-studio .spb-pai-x[data-act="min"], body.spb-chat-studio .spb-pai-fab, body.spb-chat-studio #spbProAIFab { display: none !important; }
+body.spb-chat-studio .spb-pai-head { cursor: default; }
+body.spb-chat-studio .spb-pai-msg { font-size: 14px; } body.spb-chat-studio .spb-pai-thumb { max-width: 100%; }
+body.spb-chat-studio .spb-pai-input { font-size: 14px; }
+@media (max-width: 1250px) { #spbChatStudio { --spb-cs-dock: 400px; } body.spb-chat-studio .spb-pai { --spb-cs-dock: 400px; } .spb-cs-brand span, .spb-cs-foot-lab { display: none; } }
+
+/* the PRO | CHAT pill (the old EASY segment is parked and hidden) */
+#spbModePill .spb-mode-opt#spbModeEasyBtn { display: none !important; }
+#spbModeChatBtn.spb-mode-opt { white-space: nowrap; }
+
+/* the Training Wheels invitation must not cover the studio */
+body.spb-chat-studio #spbTrainingChoice { display: none !important; }
+
+/* versions filmstrip + before/after slider (2026-10-01) */
+.spb-cs-film-row { flex: 0 0 auto; display: flex; align-items: center; gap: 12px; padding: 8px 18px 0; background: rgba(8,10,20,0.55); border-top: 1px solid rgba(255,255,255,0.08); }
+.spb-cs-film { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: thin; padding: 2px 0 6px; }
+.spb-cs-ver { flex: 0 0 auto; width: 92px; padding: 3px; border-radius: 9px; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.04); color: #cfd2e6; display: flex; flex-direction: column; gap: 3px; font: 600 10.5px/1.2 inherit; text-align: left; }
+.spb-cs-ver:hover { border-color: rgba(255,255,255,0.4); } .spb-cs-ver.on { border-color: #ff7a18; box-shadow: 0 0 0 2px rgba(255,122,24,0.3); color: #fff; }
+.spb-cs-ver img, .spb-cs-ver-ph { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 6px; background: #15151c; display: block; }
+.spb-cs-ver span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.spb-cs-cmp { position: absolute; inset: 0; cursor: ew-resize; user-select: none; } .spb-cs-cmp[hidden] { display: none; }
+.spb-cs-cmp img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #15151c; pointer-events: none; }
+.spb-cs-cmp-line { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1.5px; background: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.7); }
+.spb-cs-cmp-line span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 34px; height: 34px; border-radius: 50%; background: #fff; color: #222; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.6); }
+.spb-cs-cmp em { position: absolute; top: 12px; font-style: normal; font: 800 11px/1 inherit; letter-spacing: .14em; padding: 5px 9px; border-radius: 6px; background: rgba(0,0,0,0.65); color: #fff; } .spb-cs-cmp-l { left: 12px; } .spb-cs-cmp-r { right: 12px; }
+.spb-cs-btn.on { background: rgba(255,122,24,0.28); border-color: #ff7a18; }
+.spb-cs-btn.spark { border-color: rgba(210,30,192,0.7); background: linear-gradient(135deg, rgba(210,30,192,0.28), rgba(31,196,232,0.22)); } .spb-cs-btn.spark:hover { filter: brightness(1.25); }
+
+.spb-cs-frame.drop { outline: 3px dashed #ff7a18; outline-offset: -6px; } .spb-cs-frame.drop::after { content: 'Drop the picture: I will design in its colours'; position: absolute; inset: auto 0 14px 0; text-align: center; font: 700 15px/1 inherit; color: #ffd28a; text-shadow: 0 2px 8px #000; }
+.spb-cs-cap { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); max-width: 82%; padding: 11px 18px; border-radius: 12px; background: rgba(8,10,20,0.86); border: 1px solid rgba(255,122,24,0.6); color: #fff; font: 700 15px/1.35 inherit; text-align: center; z-index: 5; box-shadow: 0 8px 28px rgba(0,0,0,0.6); pointer-events: none; } .spb-cs-cap[hidden] { display: none; }
+.spb-cs-brain { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #8e93ad; } .spb-cs-brain[hidden] { display: none; } .spb-cs-brain select { background: rgba(255,255,255,0.07); color: #fff; border: 1px solid rgba(255,255,255,0.22); border-radius: 8px; padding: 6px 8px; font: 700 12px/1 inherit; letter-spacing: 0; text-transform: none; max-width: 200px; } .spb-cs-brain select option { background: #15151c; color: #fff; }
+
+.spb-cs-sub { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; padding: 7px 18px; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(8,10,20,0.45); }
+.spb-cs-hint { font-size: 12px; color: #8e93ad; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.spb-cs-car { flex: 0 1 auto; min-width: 40px; max-width: 220px; }
+@media (max-width: 1500px) { .spb-cs-brand span { display: none; } }
+@media (max-width: 1250px) { .spb-cs-hint { display: none; } }
+
+.spb-cs-brand span { display: none; }
+.spb-cs-sub { flex-wrap: wrap; row-gap: 6px; }
+.spb-cs-toast { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); max-width: 86%; padding: 9px 16px; border-radius: 10px; background: rgba(8,10,20,0.92); border: 1px solid rgba(255,255,255,0.28); color: #fff; font: 600 13px/1.4 inherit; z-index: 6; text-align: center; box-shadow: 0 6px 22px rgba(0,0,0,0.55); } .spb-cs-toast.bad { border-color: #ffb27a; color: #ffd9bd; } .spb-cs-toast[hidden] { display: none; }
+
+/* AI clarity (2026-10-02, owner: "I'm confused and this is my product"): an "AI" label in front of the two AI controls and a plain-words "How AI works" card with the two ways to use Claude / OpenAI */
+.spb-cs-aihead { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #ff9d4d; font-weight: 700; } .spb-cs-aihead[hidden] { display: none; }
+.spb-cs-aihelp { flex: 0 0 auto; padding: 10px 18px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(14,16,32,0.97); } .spb-cs-aihelp[hidden] { display: none; }
+.spb-cs-aihelp-in { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; align-items: start; }
+.spb-cs-aihelp-h { grid-column: 1 / -1; font-weight: 700; font-size: 14px; color: #fff; }
+.spb-cs-aihelp-card { padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); font-size: 12.5px; line-height: 1.5; color: #d5d8ea; } .spb-cs-aihelp-card b { color: #fff; } .spb-cs-aihelp-card p { margin: 4px 0 0; }
+.spb-cs-aihelp-row { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; }
+
+.spb-cs-aigroup { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; padding: 3px 10px; border: 1px dashed rgba(255,157,77,0.38); border-radius: 10px; }
+/* the "How AI works" card floats over the picture instead of pushing it down */
+.spb-cs-aihelp { position: relative; height: 0; padding: 0; border: 0; background: transparent; overflow: visible; z-index: 30; }
+.spb-cs-aihelp-in { position: absolute; top: 4px; left: 18px; right: 18px; padding: 12px 14px; border-radius: 12px; background: rgba(14,16,32,0.985); border: 1px solid rgba(255,157,77,0.45); box-shadow: 0 18px 50px rgba(0,0,0,0.6); }
+/* the one model, shown not picked: the Copilot model from the gear (DeepSeek v4.1 Flash recommended); amber when it is anything else */
+.spb-cs-modelchip { padding: 3px 10px; border-radius: 999px; cursor: pointer; font-size: 11px; letter-spacing: .04em; color: #bfe9d0; border: 1px solid rgba(110,220,160,0.45); background: rgba(40,120,80,0.16); } .spb-cs-modelchip[hidden] { display: none; }
+.spb-cs-modelchip.warn { color: #ffd9a8; border-color: rgba(255,157,77,0.7); background: rgba(255,157,77,0.14); }
+.spb-ai-note.warn { color: #ffd9a8; }
+
+/* COPILOT-PAGE 2026-10-04 (owner): SOURCE / LIVE PREVIEW / Combined / R / G / B strip under the big car (mirrors the Full Editor) + the layer bar on the right + Lock to layer */
+.spb-cs-main { align-items: stretch; justify-content: center; gap: 14px; padding: 14px 14px 10px 18px; }
+.spb-cs-stage { flex: 1 1 auto; min-width: 0; min-height: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.spb-cs-stage .spb-cs-frame { flex: 1 1 0; min-height: 0; height: auto; width: auto; max-width: 100%; aspect-ratio: 1 / 1; }
+.spb-cs-frame canvas.spb-cs-bigcv { width: 100%; height: 100%; object-fit: contain; display: block; image-rendering: auto; } .spb-cs-frame canvas.spb-cs-bigcv[hidden] { display: none; }
+.spb-cs-strip { flex: 0 0 auto; width: 100%; max-width: 760px; display: flex; align-items: stretch; gap: 6px; }
+.spb-cs-cells { flex: 1 1 auto; min-width: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.spb-cs-cell { min-width: 0; display: flex; flex-direction: column; align-items: stretch; gap: 4px; padding: 4px 4px 5px; border-radius: 9px; cursor: zoom-in; border: 1.5px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.04); color: #cfd2e6; font: 700 10.5px/1.15 inherit; letter-spacing: .07em; text-transform: uppercase; text-align: center; }
+.spb-cs-cell:hover { border-color: rgba(255,255,255,0.42); color: #fff; } .spb-cs-cell.on { border-color: #ff7a18; box-shadow: 0 0 0 2px rgba(255,122,24,0.3); color: #fff; cursor: default; }
+.spb-cs-cell canvas, .spb-cs-cell img { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: contain; display: block; border-radius: 6px; background: #15151c; }
+.spb-cs-cell img[hidden] { display: block; visibility: hidden; }
+.spb-cs-cell.empty canvas, .spb-cs-cell.empty img { opacity: 0.25; }
+.spb-cs-cell span { overflow: hidden; text-overflow: ellipsis; overflow-wrap: anywhere; }
+.spb-cs-cell.c-ch-r span { color: #ff8a8a; } .spb-cs-cell.c-ch-g span { color: #8af0a0; } .spb-cs-cell.c-ch-b span { color: #8ab4ff; }
+.spb-cs-strip-tg { flex: 0 0 20px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.04); color: #8e93ad; border-radius: 8px; cursor: pointer; padding: 0; font: 700 11px/1 inherit; }
+.spb-cs-strip-tg:hover { color: #fff; } .spb-cs-strip-tg .b { display: none; }
+.spb-cs-strip.min .spb-cs-cells { display: none; } .spb-cs-strip.min { justify-content: center; }
+.spb-cs-strip.min .spb-cs-strip-tg { flex: 0 0 auto; padding: 6px 12px; letter-spacing: .08em; text-transform: uppercase; } .spb-cs-strip.min .spb-cs-strip-tg .a { display: none; } .spb-cs-strip.min .spb-cs-strip-tg .b { display: inline; }
+.spb-cs-layers { flex: 0 0 228px; min-width: 0; min-height: 0; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; background: rgba(8,10,20,0.62); overflow: hidden; }
+.spb-cs-layers[hidden] { display: none; }
+.spb-cs-lhead { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 9px 11px 7px; font: 700 11px/1 inherit; letter-spacing: .14em; text-transform: uppercase; color: #8e93ad; }
+.spb-cs-lhead i { font-style: normal; color: #ff9d4d; margin-left: 4px; }
+.spb-cs-lhint { flex: 0 0 auto; padding: 0 11px 7px; font-size: 11px; line-height: 1.3; color: #7d829c; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.spb-cs-lwork { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; margin: 0 8px 7px; padding: 5px 6px 5px 10px; border-radius: 8px; background: rgba(255,122,24,0.18); border: 1px solid rgba(255,122,24,0.6); color: #ffe2c6; font-size: 12px; } .spb-cs-lwork[hidden] { display: none; }
+.spb-cs-lwork b { color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1 1 auto; min-width: 0; }
+.spb-cs-llist { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; }
+.spb-cs-lrow { display: flex; align-items: center; gap: 6px; padding: 5px 7px 5px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); border-left: 3px solid transparent; }
+.spb-cs-lrow:hover { background: rgba(255,255,255,0.04); }
+.spb-cs-lrow.locked { background: rgba(255,122,24,0.15); border-left-color: #ff7a18; }
+.spb-cs-leye { flex: 0 0 20px; appearance: none; border: 0; background: transparent; color: #e9ecfa; cursor: pointer; padding: 0; font-size: 13px; line-height: 1; text-align: center; }
+.spb-cs-lrow.off .spb-cs-leye { opacity: 0.4; } .spb-cs-lrow.off .spb-cs-lname { color: #6d7290; } .spb-cs-lrow.off .spb-cs-lthumb { opacity: 0.45; }
+.spb-cs-lthumb { flex: 0 0 28px; width: 28px; height: 28px; border-radius: 4px; border: 1px solid #333; background: #111; }
+.spb-cs-lmeta { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.spb-cs-lname { max-width: 100%; font-size: 12.5px; font-weight: 600; color: #e3e6f5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.spb-cs-lrole { font-size: 9.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 1px 6px; border-radius: 999px; color: #c9cde3; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.16); }
+.spb-cs-lrole.r-numbers { color: #ffd38a; border-color: rgba(255,190,90,0.55); background: rgba(255,170,60,0.12); }
+.spb-cs-lrole.r-logos, .spb-cs-lrole.r-sponsors { color: #ffb7f0; border-color: rgba(210,30,192,0.55); background: rgba(210,30,192,0.12); }
+.spb-cs-lrole.r-tape { color: #9fe7ff; border-color: rgba(31,196,232,0.55); background: rgba(31,196,232,0.12); }
+.spb-cs-lrole.r-body { color: #b9f5c8; border-color: rgba(110,220,160,0.5); background: rgba(40,120,80,0.16); }
+.spb-cs-lrole.r-template { color: #8e93ad; border-style: dashed; background: transparent; }
+.spb-cs-llock { flex: 0 0 auto; border: 1px solid rgba(255,255,255,0.22); background: transparent; color: #b9bdd6; border-radius: 7px; padding: 4px 7px; cursor: pointer; font: 700 10.5px/1 inherit; letter-spacing: .04em; white-space: nowrap; }
+.spb-cs-llock:hover { color: #fff; border-color: #ff9d4d; } .spb-cs-lrow.locked .spb-cs-llock { background: #ff7a18; border-color: #ff7a18; color: #1a0d03; }
+.spb-cs-lk-x { flex: 0 0 auto; border: 0; background: rgba(0,0,0,0.25); color: #fff; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; font-size: 15px; line-height: 1; padding: 0; }
+.spb-cs-lk-x:hover { background: rgba(0,0,0,0.5); }
+/* the "Working in: <layer>" chip sits just above the copilot's input box (only inside the studio) */
+.spb-cs-lockchip { display: flex; align-items: center; gap: 8px; margin: 6px 10px 0; padding: 6px 8px 6px 11px; border-radius: 10px; font-size: 13px; line-height: 1.3; flex: 0 0 auto; }
+.spb-cs-lockchip.on { background: rgba(255,122,24,0.17); border: 1px solid rgba(255,122,24,0.65); color: #ffe2c6; }
+.spb-cs-lockchip.sug { background: rgba(31,196,232,0.10); border: 1px solid rgba(31,196,232,0.5); color: #cdeffa; }
+.spb-cs-lockchip b { color: #fff; } .spb-cs-lockchip i { font-style: normal; color: #c8b39d; font-size: 11.5px; margin-left: 4px; }
+.spb-cs-lk-t { flex: 1 1 auto; min-width: 0; } .spb-cs-lockchip .spb-cs-btn { padding: 5px 10px; font-size: 11.5px; }
+.spb-cs-lockchip[hidden], body:not(.spb-chat-studio) .spb-cs-lockchip { display: none !important; }
+@media (max-width: 1250px) { .spb-cs-layers { flex-basis: 196px; } .spb-cs-lhint { display: none; } .spb-cs-main { gap: 10px; padding: 10px 10px 8px 12px; } .spb-cs-cells { gap: 5px; } .spb-cs-cell { font-size: 9px; letter-spacing: .04em; padding: 3px 3px 4px; } .spb-cs-lockchip i { display: none; } .spb-cs-llock { padding: 4px 5px; font-size: 10px; } .spb-cs-leye { flex-basis: 16px; } .spb-cs-lrow { gap: 5px; } }
+/* the Full Editor's pixel readout (X:/Y:/hex, follows the hidden #paintCanvas under the studio) must not float over the copilot */
+body.spb-chat-studio #platinumCoordReadout { display: none !important; }
+@media (max-height: 820px) { .spb-cs-strip { max-width: 560px; } }
+
+/* SPB-CHAT-FILEPICKER 2026-10-05: keep the canonical picker above Chat Studio and its copilot dock. */
+body.spb-chat-studio #filePickerOverlay.active { z-index: 9500 !important; }

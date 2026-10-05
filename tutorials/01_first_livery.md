@@ -69,26 +69,25 @@ SPB does three things in sequence:
 
 1. Composites the final color paint texture (the `.tga` iRacing reads for color)
 2. Generates a matching spec map (the `_spec.tga` iRacing reads for material properties)
-3. Writes both to your iRacing custom paints directory via Live Link
+3. Copies both into your iRacing car folder (the **iRacing Car Folder** in the top bar)
 
-A confirmation dialog tells you exactly where the files were written. Something like:
+A green banner under the render tells you where the files went, something like:
 
 ```
-Documents\iRacing\paint\trucks\silverado2019\car_<your-iracing-id>.tga
-Documents\iRacing\paint\trucks\silverado2019\car_spec_<your-iracing-id>.tga
+Documents\iRacing\paint\trucks silverado2019\car_num_<your-iracing-id>.tga
+Documents\iRacing\paint\trucks silverado2019\car_spec_<your-iracing-id>.tga
 ```
 
-If Live Link isn't configured, SPB still renders — it just drops the files in your `Documents\Shokker Paint Booth\renders\` folder and tells you to copy them yourself.
+(`car_num_` when **Custom Number** is selected next to your ID, `car_` for **Sim-Stamped Number**; iRacing loads the one that matches its **Hide Car Numbers** setting.) If the car folder is empty, SPB still renders but nothing is copied into iRacing, and a banner tells you to set the car folder.
 
 ## Step 6 — See it in iRacing
 
-If iRacing is already running:
+If iRacing is already running with your car:
 
-1. Switch to the **Paint** screen for the Silverado.
-2. Hit the reload button.
-3. Your candy red appears immediately.
+1. **Alt+Tab** to iRacing.
+2. Press **Ctrl+R** (Reload Car Textures). The car flashes white, then shows your new paint.
 
-If iRacing isn't running, fire it up. The custom paint loads automatically the next time you sit in the truck.
+If iRacing isn't running, start it: the custom paint loads when you sit in the car.
 
 ![Step 6 — Silverado in iRacing](docs/img/tutorial-01-step6.png)
 
@@ -114,11 +113,11 @@ Every time you change the color or finish, you can re-render. There is no "save 
 
 **The canvas is blank or stuck on a placeholder.** Press `F5` to flush the preview cache and force a re-render. If that fails, restart the app — the auto-restore feature will bring back your work.
 
-**RENDER button is grayed out.** You probably haven't added a zone yet. Or you have a zone but no color or no finish on it. Check the zone card for missing pieces.
+**RENDER button is grayed out.** It is greyed only while no paint is open or one is still loading. If you click it and a message appears, read it: it names what is missing (a Source Paint, your iRacing User ID, or a zone that has both a colour and a finish).
 
-**Render finished but I can't find the file in iRacing.** Open Settings (`Ctrl+,`), look at the **Live Link** section, and confirm your iRacing paints path is set correctly. The default is `Documents\iRacing\paint\` but some users move it.
+**Render finished but I can't find the file in iRacing.** Check the **iRacing Car Folder** in the top bar: it must be the folder of the car you drive. Say **it does not show up in iRacing** in the chat and the helper checks it for you.
 
-**iRacing shows the old paint.** iRacing caches paints aggressively. Hit the reload button on the in-sim Paint screen, or restart the iRacing client.
+**iRacing shows the old paint.** Alt+Tab to iRacing and press **Ctrl+R** (Reload Car Textures). No restart needed.
 
 **The candy red looks weirdly muted in iRacing.** That's correct! iRacing applies its own lighting, ambient occlusion, and clearcoat. The Live Preview in SPB shows the paint in flat studio lighting; in-sim you'll see the same paint under track lighting. They will look slightly different. This is expected.
 

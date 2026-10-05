@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_ash_fall",
+  "display_name": "Sprawl: Ember Fallout",
+  "promise": "Emberfall lacquer: densely interlocking electric-orange feather-like cinder blades, magenta heat borders, cyan crystalline spark clusters, purple carbon splinters and sharp dark gaps.",
+  "carrier_grammar": "Emberfall lacquer: densely interlocking electric-orange feather-like cinder blades, magenta heat borders, cyan crystalline spark clusters, purple carbon splinters and sharp dark gaps. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for purple carbon blades, orange cinder faces, magenta heat borders, cyan crystalline sparks, gold ember tips, dark blade gaps is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Emberfall lacquer: densely interlocking electric-orange feather-like cinder blades, magenta heat borders, cyan crystalline spark clusters, purple carbon splinters and sharp dark gaps. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_ash_fall.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "purple carbon blades",
+      "role": "Actual shared paint and spec geometry: purple carbon blades"
+    },
+    {
+      "name": "orange cinder faces",
+      "role": "Actual shared paint and spec geometry: orange cinder faces"
+    },
+    {
+      "name": "magenta heat borders",
+      "role": "Actual shared paint and spec geometry: magenta heat borders"
+    },
+    {
+      "name": "cyan crystalline sparks",
+      "role": "Actual shared paint and spec geometry: cyan crystalline sparks"
+    },
+    {
+      "name": "gold ember tips",
+      "role": "Actual shared paint and spec geometry: gold ember tips"
+    },
+    {
+      "name": "dark blade gaps",
+      "role": "Actual shared paint and spec geometry: dark blade gaps"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "purple carbon blades",
+      "orange cinder faces",
+      "magenta heat borders",
+      "cyan crystalline sparks",
+      "gold ember tips",
+      "dark blade gaps"
+    ],
+    "R": [
+      "purple carbon blades",
+      "orange cinder faces",
+      "magenta heat borders",
+      "cyan crystalline sparks",
+      "gold ember tips",
+      "dark blade gaps"
+    ],
+    "Cc": [
+      "purple carbon blades",
+      "orange cinder faces",
+      "magenta heat borders",
+      "cyan crystalline sparks",
+      "gold ember tips",
+      "dark blade gaps"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_sodium_fog",
+      "difference": "This finish uses Dense minuscule coral curled ash flakes with golden ember pin grains, violet enamel pockets, turquoise oxidized dust and pale porous flake edges. Bright hot residue microtexture, no gray ash field or large flames, flakes tiny torn scrolls rather than rock grains.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_scav_rust",
+      "difference": "This finish uses Dense minuscule coral curled ash flakes with golden ember pin grains, violet enamel pockets, turquoise oxidized dust and pale porous flake edges. Bright hot residue microtexture, no gray ash field or large flames, flakes tiny torn scrolls rather than rock grains.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "purple carbon blades is visible in the authored geometry",
+      "orange cinder faces is visible in the authored geometry",
+      "magenta heat borders is visible in the authored geometry",
+      "cyan crystalline sparks is visible in the authored geometry",
+      "gold ember tips is visible in the authored geometry",
+      "dark blade gaps is visible in the authored geometry"
+    ],
+    "source_sha256": "e78748e956eb8cca75034f0d32085e68b222c21631d90723ba15fba89c07c79b",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_ash_fall-authored-Emberfall lacquer: densely interlocking electric-orange feather-like cinder blades, magenta heat borders, cyan crystalline spark clusters, purple carbon splinters and sharp dark gaps. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_ash_fall-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 63.7,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "7c296a1011537c543822082378461a29a1ce858e944d89f010dd8b6ab88a2686"
+}

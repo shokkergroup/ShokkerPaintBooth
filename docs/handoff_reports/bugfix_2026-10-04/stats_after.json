@@ -1,0 +1,255 @@
+{
+ "bases": {
+  "matte": {
+   "M": 0,
+   "R": 200,
+   "CC": 160
+  },
+  "satin": {
+   "M": 0,
+   "R": 95,
+   "CC": 70
+  },
+  "gloss": {
+   "M": 0,
+   "R": 30,
+   "CC": 16
+  }
+ },
+ "wear": {
+  "matte@0": {
+   "B_mean": 153.1,
+   "B_p5": 159,
+   "B_p95": 160,
+   "G_mean": 195.0,
+   "R_mean": 0.2,
+   "sec": 1.1
+  },
+  "matte@50": {
+   "B_mean": 176.4,
+   "B_p5": 159,
+   "B_p95": 219,
+   "G_mean": 211.1,
+   "R_mean": 0.2,
+   "sec": 2.2
+  },
+  "matte@100": {
+   "B_mean": 197.6,
+   "B_p5": 160,
+   "B_p95": 255,
+   "G_mean": 226.1,
+   "R_mean": 0.2,
+   "sec": 2.3
+  },
+  "satin@0": {
+   "B_mean": 67.1,
+   "B_p5": 69,
+   "B_p95": 70,
+   "G_mean": 94.7,
+   "R_mean": 0.2,
+   "sec": 0.9
+  },
+  "satin@50": {
+   "B_mean": 90.5,
+   "B_p5": 69,
+   "B_p95": 129,
+   "G_mean": 110.8,
+   "R_mean": 0.2,
+   "sec": 2.1
+  },
+  "satin@100": {
+   "B_mean": 114.3,
+   "B_p5": 70,
+   "B_p95": 190,
+   "G_mean": 127.3,
+   "R_mean": 0.2,
+   "sec": 2.3
+  },
+  "gloss@0": {
+   "B_mean": 16.0,
+   "B_p5": 16,
+   "B_p95": 16,
+   "G_mean": 32.7,
+   "R_mean": 0.2,
+   "sec": 0.9
+  },
+  "gloss@50": {
+   "B_mean": 39.4,
+   "B_p5": 16,
+   "B_p95": 76,
+   "G_mean": 48.7,
+   "R_mean": 0.2,
+   "sec": 2.2
+  },
+  "gloss@100": {
+   "B_mean": 63.2,
+   "B_p5": 16,
+   "B_p95": 136,
+   "G_mean": 65.2,
+   "R_mean": 0.2,
+   "sec": 2.2
+  }
+ },
+ "apply_wear_flat": {
+  "flat_matte@50": {
+   "B_in": 200,
+   "B_mean": 227.2,
+   "B_min": 200,
+   "B_max": 255
+  },
+  "flat_matte@100": {
+   "B_in": 200,
+   "B_mean": 239.5,
+   "B_min": 200,
+   "B_max": 255
+  },
+  "flat_satin@50": {
+   "B_in": 90,
+   "B_mean": 118.6,
+   "B_min": 90,
+   "B_max": 167
+  },
+  "flat_satin@100": {
+   "B_in": 90,
+   "B_mean": 147.6,
+   "B_min": 90,
+   "B_max": 244
+  },
+  "flat_gloss@50": {
+   "B_in": 16,
+   "B_mean": 44.6,
+   "B_min": 16,
+   "B_max": 93
+  },
+  "flat_gloss@100": {
+   "B_in": 16,
+   "B_mean": 73.6,
+   "B_min": 16,
+   "B_max": 170
+  }
+ },
+ "bcoat": {
+  "matte:none": {
+   "B_mean": 153.1,
+   "B_p5": 159,
+   "B_p95": 160,
+   "G_mean": 195.0,
+   "R_mean": 0.2
+  },
+  "matte:DeepGloss_old(+85)": {
+   "B_mean": 234.3,
+   "B_p5": 244,
+   "B_p95": 245,
+   "G_mean": 152.1,
+   "R_mean": 24.1
+  },
+  "matte:DeepGloss_new(-85)": {
+   "B_mean": 71.9,
+   "B_p5": 74,
+   "B_p95": 75,
+   "G_mean": 152.1,
+   "R_mean": 24.1
+  },
+  "matte:SatinMatte_new(+40)": {
+   "B_mean": 191.3,
+   "B_p5": 199,
+   "B_p95": 200,
+   "G_mean": 248.1,
+   "R_mean": 0.2
+  },
+  "satin:none": {
+   "B_mean": 67.1,
+   "B_p5": 69,
+   "B_p95": 70,
+   "G_mean": 94.7,
+   "R_mean": 0.2
+  },
+  "satin:DeepGloss_old(+85)": {
+   "B_mean": 148.3,
+   "B_p5": 154,
+   "B_p95": 155,
+   "G_mean": 51.8,
+   "R_mean": 24.1
+  },
+  "satin:DeepGloss_new(-85)": {
+   "B_mean": 16.0,
+   "B_p5": 16,
+   "B_p95": 16,
+   "G_mean": 51.8,
+   "R_mean": 24.1
+  },
+  "satin:SatinMatte_new(+40)": {
+   "B_mean": 105.3,
+   "B_p5": 109,
+   "B_p95": 110,
+   "G_mean": 156.8,
+   "R_mean": 0.2
+  }
+ },
+ "blend": {
+  "so0.0:normal": {
+   "paint_vs_normal": 0.0,
+   "spec_vs_normal": 0.0
+  },
+  "so0.0:multiply": {
+   "paint_vs_normal": 79.407,
+   "spec_vs_normal": 0.884
+  },
+  "so0.0:screen": {
+   "paint_vs_normal": 66.128,
+   "spec_vs_normal": 42.095
+  },
+  "so0.0:overlay": {
+   "paint_vs_normal": 126.741,
+   "spec_vs_normal": 0.884
+  },
+  "so0.6:normal": {
+   "paint_vs_normal": 0.0,
+   "spec_vs_normal": 0.0
+  },
+  "so0.6:multiply": {
+   "paint_vs_normal": 79.407,
+   "spec_vs_normal": 0.0
+  },
+  "so0.6:screen": {
+   "paint_vs_normal": 66.128,
+   "spec_vs_normal": 0.0
+  },
+  "so0.6:overlay": {
+   "paint_vs_normal": 126.741,
+   "spec_vs_normal": 0.0
+  }
+ },
+ "smap": {
+  "ones": {
+   "paint_vs_none": 0.224,
+   "spec_vs_none": 0.0,
+   "paint_left": 0.193,
+   "paint_right": 0.255
+  },
+  "zeros": {
+   "paint_vs_none": 128.838,
+   "spec_vs_none": 5.189,
+   "paint_left": 120.59,
+   "paint_right": 137.085
+  },
+  "left_off": {
+   "paint_vs_none": 60.422,
+   "spec_vs_none": 2.542,
+   "paint_left": 120.448,
+   "paint_right": 0.396
+  }
+ },
+ "fusion": {
+  "showroom": {
+   "spec_vs_linear": 0.0,
+   "R_mean": 161.3,
+   "R_mean_linear": 161.3
+  },
+  "split_m90": {
+   "spec_vs_linear": 25.285,
+   "R_mean": 60.2,
+   "R_mean_linear": 161.3
+  }
+ }
+}

@@ -1,0 +1,10 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_1149998.tga","inspection_records":"_smart_tga_runs/cycle667_dlm_v3_intrinsic_review/inspection_records.json","review_scope":"Cycle 667 source and complete Number/Sponsor/Template/Paint/group sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[317,32,162,87],"target_layer":"paint","label":"broad_red_livery_fragment"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[171,39,73,24],"target_layer":"paint","label":"red_livery_panel"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[280,129,332,211],"target_layer":"numbers","label":"true_upper_number","family_id":"number:16"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[472,227,22,22],"target_layer":"sponsors","label":"small_brand_mark"},
+ {"layer":"numbers","component_index":4,"expected_bbox":[723,563,47,15],"target_layer":"template","label":"fixed_template_swatch"},
+ {"layer":"numbers","component_index":5,"expected_bbox":[270,712,191,123],"target_layer":"numbers","label":"true_lower_number","family_id":"number:16"},
+ {"layer":"numbers","component_index":6,"expected_bbox":[779,823,192,125],"target_layer":"numbers","label":"true_rear_number","family_id":"number:16"},
+ {"layer":"numbers","component_index":7,"expected_bbox":[257,920,58,15],"target_layer":"sponsors","label":"small_sponsor_wordmark"}
+]}

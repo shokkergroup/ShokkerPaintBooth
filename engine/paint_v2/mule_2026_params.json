@@ -1,0 +1,22 @@
+{
+ "chosen": {
+  "mul_bubble_clad": 1,
+  "mul_confusion_blob": 2,
+  "mul_countershade": 7,
+  "mul_decoy_blackout": 1,
+  "mul_edge_chamfer": 6,
+  "mul_erlkonig_swirl": 7,
+  "mul_false_shadow": 0,
+  "mul_foam_clad": 2,
+  "mul_matte_cover": 9,
+  "mul_moire_defeat": 0,
+  "mul_pixel_break": 9,
+  "mul_qr_scramble": 1,
+  "mul_retro_patch": 5,
+  "mul_shutline_fake": 5,
+  "mul_tape_seam": 0,
+  "mul_wireframe": 8
+ },
+ "n_variants": 10,
+ "res": 1024
+}

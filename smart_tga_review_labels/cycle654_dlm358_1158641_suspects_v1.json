@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_1158641.tga",
+  "inspection_records": "_smart_tga_runs/cycle654_dlm_batch_unique/inspection_records.json",
+  "review_scope": "Cycle 654 manual source and all-owner sheet review of every emitted suspect bbox.",
+  "component_labels": [
+    {"layer":"numbers","component_index":1,"expected_bbox":[738,406,94,222],"target_layer":"sponsors","label":"sponsor_badge","note":"BERNHEISEL sponsor badge, not the true 27."},
+    {"layer":"paint","component_index":31,"expected_bbox":[508,774,16,2],"target_layer":"sponsors","label":"sponsor_wordmark_fragment","note":"Tiny BEER HILL GANG script fragment."}
+  ]
+}

@@ -290,9 +290,9 @@ def _make_colorshift_spec_v5():
     """
     def spec_fn(shape, mask, seed, sm):
         return _engine.spec_chameleon_v5(shape, mask, seed, sm,
-                                          M_base=215, M_range=35,
-                                          R_base=12, R_range=15,
-                                          CC_base=16, CC_range=40)
+                                          M_base=165, M_range=78,
+                                          R_base=24, R_range=34,
+                                          CC_base=16, CC_range=64)
     return spec_fn
 
 
@@ -629,9 +629,40 @@ def _build_multicolor_entries():
     ]
     entries = {}
     mc_spec = _make_multicolor_spec()
+
+    def _make_neon_camo_spec():
+        """Surgical override for mc_neon_camo.
+        Pushes wider M/R/CC spread plus finer pin highlights so the finish
+        survives weaker practical lighting while keeping a controllable floor.
+        """
+        def spec_fn(shape, mask, seed, sm):
+            h, w = shape[:2] if len(shape) > 2 else shape
+            spec = np.zeros((h, w, 4), dtype=np.uint8)
+
+            zone_noise = _engine.multi_scale_noise((h, w), [16, 32, 64], [0.25, 0.45, 0.30], seed + 9720)
+            micro_noise = _engine.multi_scale_noise((h, w), [2, 4, 8], [0.40, 0.35, 0.25], seed + 9721)
+            pin_noise = _engine.multi_scale_noise((h, w), [1, 2], [0.60, 0.40], seed + 9722)
+
+            # Small bright pins and deeper quiet pockets improve twinkle contrast.
+            pin_mask = (pin_noise > 0.58).astype(np.float32)
+            quiet_mask = ((pin_noise < -0.55) & (zone_noise < -0.10)).astype(np.float32)
+
+            m_var = 154 + zone_noise * 34 + micro_noise * 18 + pin_mask * 30 - quiet_mask * 58
+            r_var = 34 + zone_noise * 26 + micro_noise * 34 - pin_mask * 16 + quiet_mask * 120
+            cc_var = 24 + zone_noise * 14 - micro_noise * 18 + pin_mask * 12 - quiet_mask * 26
+
+            spec[:, :, 0] = np.clip(m_var * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+            spec[:, :, 1] = np.clip(r_var * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+            spec[:, :, 2] = np.clip(cc_var * mask + 0 * (1 - mask), 0, 255).astype(np.uint8)
+            spec[:, :, 3] = 255
+            return spec
+
+        return spec_fn
+
     for name, colors, ptype in MULTICOLOR_DEFS:
+        spec_fn = _make_neon_camo_spec() if name == "mc_neon_camo" else mc_spec
         paint_fn = _make_multicolor_paint(colors, ptype)
-        entries[name] = (mc_spec, paint_fn)
+        entries[name] = (spec_fn, paint_fn)
     return entries
 
 

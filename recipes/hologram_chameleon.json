@@ -2,7 +2,7 @@
   "name": "Hologram Chameleon",
   "description": "Color-shift base, pearl overlay for depth, and iridescent sponsor panels that flip through the spectrum under different angles.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "any chassis, most dramatic on curved bodywork",
   "notes": "Chameleon bases respond heavily to lighting angle - expect different looks at different tracks and times of day. The Pearl Overlay zone is what gives the finish its depth; don't disable it.",
   "zones": [

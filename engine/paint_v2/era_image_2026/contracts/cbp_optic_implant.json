@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_optic_implant",
+  "display_name": "Chrome: Optic Iris",
+  "promise": "Tiny fuchsia iris wedges and cyan lens rings cluster around gold optical pinpoints.",
+  "carrier_grammar": "Tiny fuchsia iris wedges and cyan lens rings cluster around gold optical pinpoints. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for fuchsia iris wedges, cyan lens rings, gold optical pinpoints, cobalt polarizer dashes, black baffle slits is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny fuchsia iris wedges and cyan lens rings cluster around gold optical pinpoints. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_optic_implant.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "fuchsia iris wedges",
+      "role": "Actual shared paint and spec geometry: fuchsia iris wedges"
+    },
+    {
+      "name": "cyan lens rings",
+      "role": "Actual shared paint and spec geometry: cyan lens rings"
+    },
+    {
+      "name": "gold optical pinpoints",
+      "role": "Actual shared paint and spec geometry: gold optical pinpoints"
+    },
+    {
+      "name": "cobalt polarizer dashes",
+      "role": "Actual shared paint and spec geometry: cobalt polarizer dashes"
+    },
+    {
+      "name": "black baffle slits",
+      "role": "Actual shared paint and spec geometry: black baffle slits"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "fuchsia iris wedges",
+      "cyan lens rings",
+      "gold optical pinpoints",
+      "cobalt polarizer dashes",
+      "black baffle slits"
+    ],
+    "R": [
+      "fuchsia iris wedges",
+      "cyan lens rings",
+      "gold optical pinpoints",
+      "cobalt polarizer dashes",
+      "black baffle slits"
+    ],
+    "Cc": [
+      "fuchsia iris wedges",
+      "cyan lens rings",
+      "gold optical pinpoints",
+      "cobalt polarizer dashes",
+      "black baffle slits"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_neural_port",
+      "difference": "This finish uses Microscopic fragmented fuchsia radial iris wedges, cyan incomplete lens rings, gold optical pinpoints, cobalt polarizer dashes and black baffle slits. Dense varied micro apertures, no eyeballs or anatomy, no large full circles, no regular identical repeated lenses.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_mirror_shades",
+      "difference": "This finish uses Microscopic fragmented fuchsia radial iris wedges, cyan incomplete lens rings, gold optical pinpoints, cobalt polarizer dashes and black baffle slits. Dense varied micro apertures, no eyeballs or anatomy, no large full circles, no regular identical repeated lenses.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "fuchsia iris wedges is visible in the authored geometry",
+      "cyan lens rings is visible in the authored geometry",
+      "gold optical pinpoints is visible in the authored geometry",
+      "cobalt polarizer dashes is visible in the authored geometry",
+      "black baffle slits is visible in the authored geometry"
+    ],
+    "source_sha256": "115d3c988f65992e842d03283d7ed44ae7f3fa21ebf7aff8d59b1f3b20bfb7aa",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_optic_implant-authored-Tiny fuchsia iris wedges and cyan lens rings cluster around gold optical pinpoints. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_optic_implant-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 80.2,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "90bbe6818a27a06f940ff6d6a785a0d3ec918adbef886ea6f6bb8795b6162bd8"
+}

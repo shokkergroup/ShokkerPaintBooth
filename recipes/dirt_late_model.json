@@ -2,7 +2,7 @@
   "name": "Dirt Late Model",
   "description": "Dirt track late model with gloss color body, reflective numbers, heavy mud spatter pattern, and tread-marked lower panels. Has the authentic Saturday-night-short-track look.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "dirt_late_model, street_stock, modified",
   "notes": "Mud pattern intensity can be turned way down (40-60) for a cleaner 'hot lap' look or cranked up (100) for mid-race carnage. Numbers zone uses chrome for that classic vinyl-on-dirt reflectivity.",
   "zones": [

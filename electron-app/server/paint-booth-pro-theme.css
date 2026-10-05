@@ -1943,7 +1943,11 @@ textarea:focus-visible {
 
 /* 93. Long text wrap protection in narrow panels */
 .right-panel, .left-panel {
-    word-break: break-word;
+    /* [SPB-HEADER-SLIM 2026-08-29] was word-break:break-word — that reduces every flex label's
+       min-content to 1ch, which crushed layer-card labels to one char per line ("O p a c i t y")
+       once the panel slimmed to 204px. overflow-wrap gives the same long-text protection without
+       touching intrinsic sizes. */
+    overflow-wrap: break-word;
 }
 
 /* 94. Modal body padding consistency */

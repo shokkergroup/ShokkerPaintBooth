@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 350/car_num_1013637.tga",
+  "inspection_records": "_smart_tga_runs/cycle658_dlm_palette_roles/inspection_records.json",
+  "review_scope": "Cycle 658 manual source, Number, Sponsor, Template, Paint, and all-owner sheet review; clean Number ownership.",
+  "component_labels": [
+    {"layer":"numbers","component_index":0,"expected_bbox":[296,254,144,85],"target_layer":"numbers","label":"true_side_number","family_id":"number:10_langenfelder_style"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[282,721,151,78],"target_layer":"numbers","label":"true_side_number","family_id":"number:10_langenfelder_style"}
+  ]
+}

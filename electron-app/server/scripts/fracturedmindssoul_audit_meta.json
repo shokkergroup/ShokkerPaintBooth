@@ -1,0 +1,497 @@
+[
+ {
+  "id": "fm_basalt",
+  "name": "Basalt",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 46,
+  "mip": 0.62,
+  "render_s": 2.58
+ },
+ {
+  "id": "fm_basketweave",
+  "name": "Basketweave",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 56,
+  "mip": 0.39,
+  "render_s": 2.6
+ },
+ {
+  "id": "fm_cable_knit",
+  "name": "Cable Knit",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 56,
+  "mip": 0.46,
+  "render_s": 3.45
+ },
+ {
+  "id": "fm_carbon_weave",
+  "name": "Carbon Weave",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 58,
+  "mip": 0.62,
+  "render_s": 3.19
+ },
+ {
+  "id": "fm_chainlink",
+  "name": "Chainlink",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 48,
+  "mip": 0.51,
+  "render_s": 2.51
+ },
+ {
+  "id": "fm_chainmail",
+  "name": "Chainmail",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 49,
+  "mip": 0.46,
+  "render_s": 2.68
+ },
+ {
+  "id": "fm_checkerflash",
+  "name": "Checkerflash",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 46,
+  "mip": 0.55,
+  "render_s": 2.48
+ },
+ {
+  "id": "fm_circuit_maze",
+  "name": "Circuit Maze",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 37,
+  "mip": 0.69,
+  "render_s": 3.21
+ },
+ {
+  "id": "fm_code_cascade",
+  "name": "Code Cascade",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 42,
+  "mip": 0.62,
+  "render_s": 2.57
+ },
+ {
+  "id": "fm_croc_hide",
+  "name": "Croc Hide",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 47,
+  "mip": 0.41,
+  "render_s": 2.39
+ },
+ {
+  "id": "fm_damascus",
+  "name": "Damascus",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 50,
+  "mip": 0.36,
+  "render_s": 2.56
+ },
+ {
+  "id": "fm_diamond_plate",
+  "name": "Diamond Plate",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 55,
+  "mip": 0.63,
+  "render_s": 2.66
+ },
+ {
+  "id": "fm_diamondback",
+  "name": "Diamondback",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 48,
+  "mip": 0.58,
+  "render_s": 2.15
+ },
+ {
+  "id": "fm_dragon_scale",
+  "name": "Dragon Scale",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 59,
+  "mip": 0.57,
+  "render_s": 2.62
+ },
+ {
+  "id": "fm_dragonfly",
+  "name": "Dragonfly",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 41,
+  "mip": 0.7,
+  "render_s": 2.51
+ },
+ {
+  "id": "fm_ebru_marble",
+  "name": "Ebru Marble",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 54,
+  "mip": 0.45,
+  "render_s": 2.31
+ },
+ {
+  "id": "fm_fiber_optic",
+  "name": "Fiber Optic",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 48,
+  "mip": 0.66,
+  "render_s": 3.31
+ },
+ {
+  "id": "fm_flame_helix",
+  "name": "Flame Helix",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 57,
+  "mip": 0.6,
+  "render_s": 2.97
+ },
+ {
+  "id": "fm_flame_lick",
+  "name": "Flame Lick",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 48,
+  "mip": 0.47,
+  "render_s": 3.08
+ },
+ {
+  "id": "fm_flame_wall",
+  "name": "Flame Wall",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 60,
+  "mip": 0.62,
+  "render_s": 4.06
+ },
+ {
+  "id": "fm_frost_feather",
+  "name": "Frost Feather",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 51,
+  "mip": 0.64,
+  "render_s": 3.24
+ },
+ {
+  "id": "fm_frost_lace",
+  "name": "Frost Lace",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 45,
+  "mip": 0.45,
+  "render_s": 2.28
+ },
+ {
+  "id": "fm_geode_slice",
+  "name": "Geode Slice",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 45,
+  "mip": 0.3,
+  "render_s": 2.37
+ },
+ {
+  "id": "fm_gila_bead",
+  "name": "Gila Bead",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 52,
+  "mip": 0.44,
+  "render_s": 2.17
+ },
+ {
+  "id": "fm_glacier_core",
+  "name": "Glacier Core",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 40,
+  "mip": 0.73,
+  "render_s": 2.33
+ },
+ {
+  "id": "fm_graphene",
+  "name": "Graphene",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 49,
+  "mip": 0.38,
+  "render_s": 2.79
+ },
+ {
+  "id": "fm_gyro_cage",
+  "name": "Gyro Cage",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 45,
+  "mip": 0.55,
+  "render_s": 2.37
+ },
+ {
+  "id": "fm_gyroid",
+  "name": "Gyroid",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 49,
+  "mip": 0.57,
+  "render_s": 2.58
+ },
+ {
+  "id": "fm_herringbone",
+  "name": "Herringbone",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 45,
+  "mip": 0.54,
+  "render_s": 2.14
+ },
+ {
+  "id": "fm_hexcore",
+  "name": "Hexcore",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 42,
+  "mip": 0.57,
+  "render_s": 2.55
+ },
+ {
+  "id": "fm_honeycomb_burst",
+  "name": "Honeycomb Burst",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 57,
+  "mip": 0.43,
+  "render_s": 3.02
+ },
+ {
+  "id": "fm_inferno_veins",
+  "name": "Inferno Veins",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 44,
+  "mip": 0.62,
+  "render_s": 2.41
+ },
+ {
+  "id": "fm_ion_drift",
+  "name": "Ion Drift",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 42,
+  "mip": 0.53,
+  "render_s": 2.42
+ },
+ {
+  "id": "fm_labyrinth",
+  "name": "Labyrinth",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 47,
+  "mip": 0.47,
+  "render_s": 2.53
+ },
+ {
+  "id": "fm_lattice",
+  "name": "Lattice",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 59,
+  "mip": 0.58,
+  "render_s": 2.49
+ },
+ {
+  "id": "fm_magma",
+  "name": "Magma",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 51,
+  "mip": 0.56,
+  "render_s": 2.84
+ },
+ {
+  "id": "fm_mudcrack",
+  "name": "Mudcrack",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 45,
+  "mip": 0.66,
+  "render_s": 2.44
+ },
+ {
+  "id": "fm_nanoweave",
+  "name": "Nanoweave",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 48,
+  "mip": 0.5,
+  "render_s": 2.14
+ },
+ {
+  "id": "fm_octo_suckers",
+  "name": "Octo Suckers",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 43,
+  "mip": 0.6,
+  "render_s": 2.26
+ },
+ {
+  "id": "fm_penrose",
+  "name": "Penrose",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 51,
+  "mip": 0.54,
+  "render_s": 2.49
+ },
+ {
+  "id": "fm_petal_storm",
+  "name": "Petal Storm",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 43,
+  "mip": 0.47,
+  "render_s": 2.14
+ },
+ {
+  "id": "fm_python_skin",
+  "name": "Python Skin",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 49,
+  "mip": 0.61,
+  "render_s": 2.04
+ },
+ {
+  "id": "fm_riverine",
+  "name": "Riverine",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 51,
+  "mip": 0.67,
+  "render_s": 2.97
+ },
+ {
+  "id": "fm_rivet_array",
+  "name": "Rivet Array",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 43,
+  "mip": 0.63,
+  "render_s": 2.67
+ },
+ {
+  "id": "fm_rope_coil",
+  "name": "Rope Coil",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 67,
+  "mip": 0.47,
+  "render_s": 2.67
+ },
+ {
+  "id": "fm_static_burst",
+  "name": "Static Burst",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 63,
+  "mip": 0.42,
+  "render_s": 2.76
+ },
+ {
+  "id": "fm_stingray",
+  "name": "Stingray",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 45,
+  "mip": 0.41,
+  "render_s": 2.33
+ },
+ {
+  "id": "fm_tessellate",
+  "name": "Tessellate",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 49,
+  "mip": 0.68,
+  "render_s": 2.99
+ },
+ {
+  "id": "fm_thousand_eyes",
+  "name": "Thousand Eyes",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 44,
+  "mip": 0.57,
+  "render_s": 2.57
+ },
+ {
+  "id": "fm_tide_glass",
+  "name": "Tide Glass",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 45,
+  "mip": 0.67,
+  "render_s": 2.14
+ },
+ {
+  "id": "fm_tiger_slash",
+  "name": "Tiger Slash",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 48,
+  "mip": 0.44,
+  "render_s": 2.28
+ },
+ {
+  "id": "fm_topo_lines",
+  "name": "Topo Lines",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 51,
+  "mip": 0.42,
+  "render_s": 1.92
+ },
+ {
+  "id": "fm_tortoise",
+  "name": "Tortoise",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 46,
+  "mip": 0.66,
+  "render_s": 2.53
+ },
+ {
+  "id": "fm_tsunami",
+  "name": "Tsunami",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 66,
+  "mip": 0.56,
+  "render_s": 2.76
+ },
+ {
+  "id": "fm_witchlight",
+  "name": "Witchlight",
+  "kind": "finish",
+  "desc": "SOUL-PHYSICS RETUNE \u2014 design kept verbatim, spec re-dialed to the winner contract you proved on Blood Marble (metal ~252, clearcoat railed 255, roughness = gloss floor 30 + fine aperture lanes traced from the design's own geometry), paint crushed-but-COLORFUL (less crushed than the souls).",
+  "ai_rating": 42,
+  "mip": 0.68,
+  "render_s": 2.16
+ }
+]

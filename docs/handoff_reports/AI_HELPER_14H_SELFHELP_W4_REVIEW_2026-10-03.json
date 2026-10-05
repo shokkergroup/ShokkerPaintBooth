@@ -1,0 +1,35 @@
+{
+  "review": "independent W4 semantic review of offline self-help classifier and ownership boundaries",
+  "review_date": "2026-10-03",
+  "source_snapshot": {
+    "js/spb-self-help.js": "AF2219158B1C6FC307D8F18288B0AA8D766774F7C165F1A45E9BD383F7223E26"
+  },
+  "test": "tests/ai_self_help_w4_review_contract.cjs",
+  "method": "Ran the current knowledge and self-help modules directly in a fresh Node VM. Authored 12 novel paraphrases across six error families, balanced between contextual help and action-owner cases. Help requires an intended topical/UI citation and useful content; command cases must return null to remain with the action owner. Supplied state is checked for mutation.",
+  "result": {
+    "passed": 12,
+    "failed": 0,
+    "balance": {
+      "contextual_help": 6,
+      "action_or_command_ownership": 6
+    },
+    "cases": [
+      { "id": "number-size-help", "verdict": "PASS", "citation": "hdi.move_logo" },
+      { "id": "number-color-command", "verdict": "PASS", "ownership": "returned null" },
+      { "id": "orbit-car-help", "verdict": "PASS", "citation": "hdi.not_in_shokker" },
+      { "id": "pattern-rotation-help", "verdict": "PASS", "citations": ["hdi.rotate_pattern", "zone.pattern_rotation"] },
+      { "id": "flat-preview-size-help", "verdict": "PASS", "citation": "hdi.preview_bigger" },
+      { "id": "imperative-load-request", "verdict": "PASS", "ownership": "returned null" },
+      { "id": "saved-weak-sim-help", "verdict": "PASS", "citation": "hdi.look_differs" },
+      { "id": "color-strength-command", "verdict": "PASS", "ownership": "returned null" },
+      { "id": "mixed-3d-and-flat-help", "verdict": "PASS", "citation": "hdi.not_in_shokker" },
+      { "id": "flat-only-inspection-help", "verdict": "PASS", "citations": ["channel_previews", "spec_map", "spec_view"] },
+      { "id": "roof-clearcoat-control-help", "verdict": "PASS", "citation": "hdi.gloss_level" },
+      { "id": "shiny-preface-roof-command", "verdict": "PASS", "ownership": "returned null" }
+    ]
+  },
+  "limitations": [
+    "This is a bounded set of independent semantic probes, not a population estimate or replacement for holdout evaluations.",
+    "No provider, native MCP, live server, or packaged mirror was used."
+  ]
+}

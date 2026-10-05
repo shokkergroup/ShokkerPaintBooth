@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_corduroy_olive",
+  "display_name": "Flannel: Corduroy Olive",
+  "promise": "Olive fine-wale corduroy in short differently oriented ribbed patches, no single facing direction",
+  "carrier_grammar": "Olive fine-wale corduroy in short differently oriented ribbed patches, no single facing direction; single full-canvas image, no duplicated quadrants. Fine features: olive corduroy ribs, deep wale channels, raised velvet rib crests, fine cross-weave fibers, lint and loose nap, worn pale wale tips",
+  "spec_grammar": "Feature-specific selectors partition olive corduroy ribs, deep wale channels, raised velvet rib crests, fine cross-weave fibers, lint and loose nap, worn pale wale tips. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "olive corduroy ribs",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "deep wale channels",
+      "role": "Material feature selected from artwork by g:<:0.3"
+    },
+    {
+      "name": "raised velvet rib crests",
+      "role": "Material feature selected from artwork by detail:>:0.62"
+    },
+    {
+      "name": "fine cross-weave fibers",
+      "role": "Material feature selected from artwork by x:>:0.68"
+    },
+    {
+      "name": "lint and loose nap",
+      "role": "Material feature selected from artwork by fine:>:0.76"
+    },
+    {
+      "name": "worn pale wale tips",
+      "role": "Material feature selected from artwork by g:>:0.8"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "olive corduroy ribs",
+      "deep wale channels",
+      "raised velvet rib crests",
+      "fine cross-weave fibers",
+      "lint and loose nap",
+      "worn pale wale tips"
+    ],
+    "R": [
+      "olive corduroy ribs",
+      "deep wale channels",
+      "raised velvet rib crests",
+      "fine cross-weave fibers",
+      "lint and loose nap",
+      "worn pale wale tips"
+    ],
+    "Cc": [
+      "olive corduroy ribs",
+      "deep wale channels",
+      "raised velvet rib crests",
+      "fine cross-weave fibers",
+      "lint and loose nap",
+      "worn pale wale tips"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "olive corduroy ribs",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "deep wale channels",
+      "range": [
+        [
+          0,
+          175,
+          190
+        ],
+        [
+          8,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "raised velvet rib crests",
+      "range": [
+        [
+          0,
+          40,
+          45
+        ],
+        [
+          18,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine cross-weave fibers",
+      "range": [
+        [
+          0,
+          100,
+          130
+        ],
+        [
+          12,
+          195,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "lint and loose nap",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "worn pale wale tips",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_band_tee_crack",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_basement_amp",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "olive corduroy ribs",
+      "deep wale channels",
+      "raised velvet rib crests",
+      "fine cross-weave fibers",
+      "lint and loose nap",
+      "worn pale wale tips"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_corduroy_olive / Olive fine-wale corduroy in short differently oriented ribbed patches, no single facing direction",
+  "spec_key": "at_corduroy_olive / olive corduroy ribs all; deep wale channels g:<:0.3; raised velvet rib crests detail:>:0.62; fine cross-weave fibers x:>:0.68; lint and loose nap fine:>:0.76; worn pale wale tips g:>:0.8",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

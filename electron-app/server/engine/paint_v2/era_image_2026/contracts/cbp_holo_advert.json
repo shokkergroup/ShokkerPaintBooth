@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_holo_advert",
+  "display_name": "Street: Holo Advert Foil",
+  "promise": "Tiny cyan and rose lenticular foil slivers flash between violet enamel gaps.",
+  "carrier_grammar": "Tiny cyan and rose lenticular foil slivers flash between violet enamel gaps. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "Independently graded cyan engraved combs, rose foil prisms, gold pin prisms, dielectric violet enamel gaps and silver razor rims. Enamel distances bind narrow pink polished lips and rough green embossed shoulders; rib relief modulates each material continuously.",
+  "reference_physics": {
+    "mechanism": "Tiny cyan and rose lenticular foil slivers flash between violet enamel gaps. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_holo_advert.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "lenticular foil slivers",
+      "role": "Actual shared paint and spec geometry: lenticular foil slivers"
+    },
+    {
+      "name": "cyan engraved combs",
+      "role": "Actual shared paint and spec geometry: cyan engraved combs"
+    },
+    {
+      "name": "rose foil prisms",
+      "role": "Actual shared paint and spec geometry: rose foil prisms"
+    },
+    {
+      "name": "gold pin prisms",
+      "role": "Actual shared paint and spec geometry: gold pin prisms"
+    },
+    {
+      "name": "violet enamel gaps",
+      "role": "Actual shared paint and spec geometry: violet enamel gaps"
+    },
+    {
+      "name": "silver razor rims",
+      "role": "Actual shared paint and spec geometry: silver razor rims"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "lenticular foil slivers",
+      "cyan engraved combs",
+      "rose foil prisms",
+      "gold pin prisms",
+      "violet enamel gaps",
+      "silver razor rims"
+    ],
+    "R": [
+      "lenticular foil slivers",
+      "cyan engraved combs",
+      "rose foil prisms",
+      "gold pin prisms",
+      "violet enamel gaps",
+      "silver razor rims"
+    ],
+    "Cc": [
+      "lenticular foil slivers",
+      "cyan engraved combs",
+      "rose foil prisms",
+      "gold pin prisms",
+      "violet enamel gaps",
+      "silver razor rims"
+    ]
+  },
+  "material_tiers": [
+    "cyan anodized engraved comb",
+    "rose coated foil prism",
+    "gold polished pin prism",
+    "violet dielectric enamel",
+    "silver razor rim",
+    "dark enamel slot",
+    "polished foil lip",
+    "rough embossed shoulder"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_holo_sticker",
+      "difference": "This finish uses Microscopic lenticular advertising foil: dense narrow cyan rose angular comb slivers with staggered line engravings, violet enamel gaps, gold pin prisms and silver razor rims. No signs or letters, no broad rainbow waves, no large hologram panels.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_mirror_shades",
+      "difference": "This finish uses Microscopic lenticular advertising foil: dense narrow cyan rose angular comb slivers with staggered line engravings, violet enamel gaps, gold pin prisms and silver razor rims. No signs or letters, no broad rainbow waves, no large hologram panels.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "lenticular foil slivers is visible in the authored geometry",
+      "cyan engraved combs is visible in the authored geometry",
+      "rose foil prisms is visible in the authored geometry",
+      "gold pin prisms is visible in the authored geometry",
+      "violet enamel gaps is visible in the authored geometry",
+      "silver razor rims is visible in the authored geometry"
+    ],
+    "source_sha256": "a8887b29d47425ec6f365a3e5f9df78ba3a449da7eea72e89397d5e8e9cedad3",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_holo_advert-authored-Tiny cyan and rose lenticular foil slivers flash between violet enamel gaps. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_holo_advert-lenticular-foil-enamel-razor-anatomy-v2",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 67.1,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "a78e80a2a5bb07c2f27e2b22bf9297acf227c1624ee003c551a68fb536845c1b"
+}

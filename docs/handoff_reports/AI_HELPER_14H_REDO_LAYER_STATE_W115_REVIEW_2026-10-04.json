@@ -1,0 +1,590 @@
+{
+  "work_item": "W115 independent Redo layer-state guard review",
+  "status": "PASS_WITH_LIMITS",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w115_review/fresh-oracle.json",
+    "sha256": "485FC7AF22DAEA42ABE75DDF1C87DFE84026DE0B306FCF5BDC00418ADAE34C1E",
+    "cases": 7,
+    "frozenBeforeIntegration19Read": true
+  },
+  "sources": {
+    "before": {
+      "path": "_easy_claude_work/ai14h_generation3_candidate/integration18/js/spb-pro-ai.js",
+      "sha256": "F88C962C94887D63C93AB775FE0B5AE3418A97F0AD0CC35A4C95A739719BEF4B"
+    },
+    "after": {
+      "path": "_easy_claude_work/ai14h_generation3_candidate/integration19/js/spb-pro-ai.js",
+      "sha256": "1C178D2717D0ED654C1840AA01452F03322CFB9F3BA4716E2FE333F48D079430"
+    }
+  },
+  "beforeRows": [
+    {
+      "id": "unchanged-layer-state",
+      "result": "Make the roof chrome",
+      "applied": 1,
+      "pushes": 1,
+      "layerState": [
+        {
+          "id": "paint-a",
+          "v": true,
+          "o": 100,
+          "b": "source-over",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        },
+        {
+          "id": "paint-b",
+          "v": false,
+          "o": 72,
+          "b": "multiply",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        }
+      ],
+      "zones": [
+        {
+          "k": "uk1",
+          "sig": "{\"id\":\"roof-1\",\"name\":\"Roof\",\"baseColor\":\"#123456\",\"regionMask\":null,\"useRegion\":true,\"spatialMask\":null,\"patternStrengthMap\":null}|4:6binyz|-|-",
+          "mp": {
+            "regionMask": "4:g6hefj:1bbyh9d",
+            "spatialMask": "-",
+            "patternStrengthMap": "-"
+          }
+        }
+      ]
+    },
+    {
+      "id": "manual-visible-change",
+      "result": "Make the roof chrome",
+      "applied": 1,
+      "pushes": 1,
+      "layerState": [
+        {
+          "id": "paint-a",
+          "v": false,
+          "o": 100,
+          "b": "source-over",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        },
+        {
+          "id": "paint-b",
+          "v": false,
+          "o": 72,
+          "b": "multiply",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        }
+      ],
+      "zones": [
+        {
+          "k": "uk1",
+          "sig": "{\"id\":\"roof-1\",\"name\":\"Roof\",\"baseColor\":\"#123456\",\"regionMask\":null,\"useRegion\":true,\"spatialMask\":null,\"patternStrengthMap\":null}|4:6binyz|-|-",
+          "mp": {
+            "regionMask": "4:g6hefj:1bbyh9d",
+            "spatialMask": "-",
+            "patternStrengthMap": "-"
+          }
+        }
+      ]
+    },
+    {
+      "id": "manual-opacity-change",
+      "result": "Make the roof chrome",
+      "applied": 1,
+      "pushes": 1,
+      "layerState": [
+        {
+          "id": "paint-a",
+          "v": true,
+          "o": 64,
+          "b": "source-over",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        },
+        {
+          "id": "paint-b",
+          "v": false,
+          "o": 72,
+          "b": "multiply",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        }
+      ],
+      "zones": [
+        {
+          "k": "uk1",
+          "sig": "{\"id\":\"roof-1\",\"name\":\"Roof\",\"baseColor\":\"#123456\",\"regionMask\":null,\"useRegion\":true,\"spatialMask\":null,\"patternStrengthMap\":null}|4:6binyz|-|-",
+          "mp": {
+            "regionMask": "4:g6hefj:1bbyh9d",
+            "spatialMask": "-",
+            "patternStrengthMap": "-"
+          }
+        }
+      ]
+    },
+    {
+      "id": "manual-blend-change",
+      "result": "Make the roof chrome",
+      "applied": 1,
+      "pushes": 1,
+      "layerState": [
+        {
+          "id": "paint-a",
+          "v": true,
+          "o": 100,
+          "b": "multiply",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        },
+        {
+          "id": "paint-b",
+          "v": false,
+          "o": 72,
+          "b": "multiply",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        }
+      ],
+      "zones": [
+        {
+          "k": "uk1",
+          "sig": "{\"id\":\"roof-1\",\"name\":\"Roof\",\"baseColor\":\"#123456\",\"regionMask\":null,\"useRegion\":true,\"spatialMask\":null,\"patternStrengthMap\":null}|4:6binyz|-|-",
+          "mp": {
+            "regionMask": "4:g6hefj:1bbyh9d",
+            "spatialMask": "-",
+            "patternStrengthMap": "-"
+          }
+        }
+      ]
+    },
+    {
+      "id": "zone-conflict",
+      "result": null,
+      "applied": 0,
+      "pushes": 0,
+      "layerState": [
+        {
+          "id": "paint-a",
+          "v": true,
+          "o": 100,
+          "b": "source-over",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        },
+        {
+          "id": "paint-b",
+          "v": false,
+          "o": 72,
+          "b": "multiply",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        }
+      ],
+      "zones": [
+        {
+          "k": "uk1",
+          "sig": "{\"id\":\"roof-1\",\"name\":\"Roof\",\"baseColor\":\"#c8102e\",\"regionMask\":null,\"useRegion\":true,\"spatialMask\":null,\"patternStrengthMap\":null}|4:6binyz|-|-",
+          "mp": {
+            "regionMask": "4:g6hefj:1bbyh9d",
+            "spatialMask": "-",
+            "patternStrengthMap": "-"
+          }
+        }
+      ]
+    },
+    {
+      "id": "layer-reordered",
+      "result": "Make the roof chrome",
+      "applied": 1,
+      "pushes": 1,
+      "layerState": [
+        {
+          "id": "paint-b",
+          "v": false,
+          "o": 72,
+          "b": "multiply",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        },
+        {
+          "id": "paint-a",
+          "v": true,
+          "o": 100,
+          "b": "source-over",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        }
+      ],
+      "zones": [
+        {
+          "k": "uk1",
+          "sig": "{\"id\":\"roof-1\",\"name\":\"Roof\",\"baseColor\":\"#123456\",\"regionMask\":null,\"useRegion\":true,\"spatialMask\":null,\"patternStrengthMap\":null}|4:6binyz|-|-",
+          "mp": {
+            "regionMask": "4:g6hefj:1bbyh9d",
+            "spatialMask": "-",
+            "patternStrengthMap": "-"
+          }
+        }
+      ]
+    },
+    {
+      "id": "layer-removed",
+      "result": "Make the roof chrome",
+      "applied": 1,
+      "pushes": 1,
+      "layerState": [
+        {
+          "id": "paint-a",
+          "v": true,
+          "o": 100,
+          "b": "source-over",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        }
+      ],
+      "zones": [
+        {
+          "k": "uk1",
+          "sig": "{\"id\":\"roof-1\",\"name\":\"Roof\",\"baseColor\":\"#123456\",\"regionMask\":null,\"useRegion\":true,\"spatialMask\":null,\"patternStrengthMap\":null}|4:6binyz|-|-",
+          "mp": {
+            "regionMask": "4:g6hefj:1bbyh9d",
+            "spatialMask": "-",
+            "patternStrengthMap": "-"
+          }
+        }
+      ]
+    }
+  ],
+  "afterRows": [
+    {
+      "id": "unchanged-layer-state",
+      "result": "Make the roof chrome",
+      "applied": 1,
+      "pushes": 1,
+      "layerState": [
+        {
+          "id": "paint-a",
+          "v": true,
+          "o": 100,
+          "b": "source-over",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        },
+        {
+          "id": "paint-b",
+          "v": false,
+          "o": 72,
+          "b": "multiply",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        }
+      ],
+      "zones": [
+        {
+          "k": "uk1",
+          "sig": "{\"id\":\"roof-1\",\"name\":\"Roof\",\"baseColor\":\"#123456\",\"regionMask\":null,\"useRegion\":true,\"spatialMask\":null,\"patternStrengthMap\":null}|4:6binyz|-|-",
+          "mp": {
+            "regionMask": "4:g6hefj:1bbyh9d",
+            "spatialMask": "-",
+            "patternStrengthMap": "-"
+          }
+        }
+      ]
+    },
+    {
+      "id": "manual-visible-change",
+      "result": null,
+      "applied": 0,
+      "pushes": 0,
+      "layerState": [
+        {
+          "id": "paint-a",
+          "v": false,
+          "o": 100,
+          "b": "source-over",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        },
+        {
+          "id": "paint-b",
+          "v": false,
+          "o": 72,
+          "b": "multiply",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        }
+      ],
+      "zones": [
+        {
+          "k": "uk1",
+          "sig": "{\"id\":\"roof-1\",\"name\":\"Roof\",\"baseColor\":\"#123456\",\"regionMask\":null,\"useRegion\":true,\"spatialMask\":null,\"patternStrengthMap\":null}|4:6binyz|-|-",
+          "mp": {
+            "regionMask": "4:g6hefj:1bbyh9d",
+            "spatialMask": "-",
+            "patternStrengthMap": "-"
+          }
+        }
+      ]
+    },
+    {
+      "id": "manual-opacity-change",
+      "result": null,
+      "applied": 0,
+      "pushes": 0,
+      "layerState": [
+        {
+          "id": "paint-a",
+          "v": true,
+          "o": 64,
+          "b": "source-over",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        },
+        {
+          "id": "paint-b",
+          "v": false,
+          "o": 72,
+          "b": "multiply",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        }
+      ],
+      "zones": [
+        {
+          "k": "uk1",
+          "sig": "{\"id\":\"roof-1\",\"name\":\"Roof\",\"baseColor\":\"#123456\",\"regionMask\":null,\"useRegion\":true,\"spatialMask\":null,\"patternStrengthMap\":null}|4:6binyz|-|-",
+          "mp": {
+            "regionMask": "4:g6hefj:1bbyh9d",
+            "spatialMask": "-",
+            "patternStrengthMap": "-"
+          }
+        }
+      ]
+    },
+    {
+      "id": "manual-blend-change",
+      "result": null,
+      "applied": 0,
+      "pushes": 0,
+      "layerState": [
+        {
+          "id": "paint-a",
+          "v": true,
+          "o": 100,
+          "b": "multiply",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        },
+        {
+          "id": "paint-b",
+          "v": false,
+          "o": 72,
+          "b": "multiply",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        }
+      ],
+      "zones": [
+        {
+          "k": "uk1",
+          "sig": "{\"id\":\"roof-1\",\"name\":\"Roof\",\"baseColor\":\"#123456\",\"regionMask\":null,\"useRegion\":true,\"spatialMask\":null,\"patternStrengthMap\":null}|4:6binyz|-|-",
+          "mp": {
+            "regionMask": "4:g6hefj:1bbyh9d",
+            "spatialMask": "-",
+            "patternStrengthMap": "-"
+          }
+        }
+      ]
+    },
+    {
+      "id": "zone-conflict",
+      "result": null,
+      "applied": 0,
+      "pushes": 0,
+      "layerState": [
+        {
+          "id": "paint-a",
+          "v": true,
+          "o": 100,
+          "b": "source-over",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        },
+        {
+          "id": "paint-b",
+          "v": false,
+          "o": 72,
+          "b": "multiply",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        }
+      ],
+      "zones": [
+        {
+          "k": "uk1",
+          "sig": "{\"id\":\"roof-1\",\"name\":\"Roof\",\"baseColor\":\"#c8102e\",\"regionMask\":null,\"useRegion\":true,\"spatialMask\":null,\"patternStrengthMap\":null}|4:6binyz|-|-",
+          "mp": {
+            "regionMask": "4:g6hefj:1bbyh9d",
+            "spatialMask": "-",
+            "patternStrengthMap": "-"
+          }
+        }
+      ]
+    },
+    {
+      "id": "layer-reordered",
+      "result": null,
+      "applied": 0,
+      "pushes": 0,
+      "layerState": [
+        {
+          "id": "paint-b",
+          "v": false,
+          "o": 72,
+          "b": "multiply",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        },
+        {
+          "id": "paint-a",
+          "v": true,
+          "o": 100,
+          "b": "source-over",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        }
+      ],
+      "zones": [
+        {
+          "k": "uk1",
+          "sig": "{\"id\":\"roof-1\",\"name\":\"Roof\",\"baseColor\":\"#123456\",\"regionMask\":null,\"useRegion\":true,\"spatialMask\":null,\"patternStrengthMap\":null}|4:6binyz|-|-",
+          "mp": {
+            "regionMask": "4:g6hefj:1bbyh9d",
+            "spatialMask": "-",
+            "patternStrengthMap": "-"
+          }
+        }
+      ]
+    },
+    {
+      "id": "layer-removed",
+      "result": null,
+      "applied": 0,
+      "pushes": 0,
+      "layerState": [
+        {
+          "id": "paint-a",
+          "v": true,
+          "o": 100,
+          "b": "source-over",
+          "h": {
+            "v": true,
+            "o": true,
+            "b": true
+          }
+        }
+      ],
+      "zones": [
+        {
+          "k": "uk1",
+          "sig": "{\"id\":\"roof-1\",\"name\":\"Roof\",\"baseColor\":\"#123456\",\"regionMask\":null,\"useRegion\":true,\"spatialMask\":null,\"patternStrengthMap\":null}|4:6binyz|-|-",
+          "mp": {
+            "regionMask": "4:g6hefj:1bbyh9d",
+            "spatialMask": "-",
+            "patternStrengthMap": "-"
+          }
+        }
+      ]
+    }
+  ],
+  "findings": [],
+  "limits": [
+    "Executed actual undoSameLayers, layerSame, undoSigNow, undoSameZones, and redoLast bodies in an isolated VM. Zone restore, snapshot capture, stack, render, and document ownership services were instrumented adapters; no canvas/app mutation was performed.",
+    "The baseline source reproduces the defect: post-Undo layer visibility, opacity, blend, reorder, and removal changes still invoke undoApply and push. Integration19 refuses each, while preserving unchanged Redo and existing zone-conflict refusal.",
+    "Pixel-buffer and transform preservation are outside this contract: these fields are not in layerState/undoApply, and the probe covers presentation flags, layer membership/order, and zone signatures only."
+  ],
+  "counts": {
+    "cases": 7,
+    "beforeDefectCases": 5,
+    "afterPassed": 7,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "canvasApplyCalls": 0
+  }
+}

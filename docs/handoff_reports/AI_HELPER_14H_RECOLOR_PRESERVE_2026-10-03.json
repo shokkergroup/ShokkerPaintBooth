@@ -1,0 +1,64 @@
+{
+  "review": "W12 independent named-part recolor preservation review",
+  "date": "2026-10-04",
+  "status": "parser repair and pure-module contracts pass; integrated routing not evaluated",
+  "scope": {
+    "source": "js/spb-pro-edit.js",
+    "source_sha256_current": "D4CDD87EFC9A0FFAB5AA923134C13BCBA722E68FB91F1F4899EA16D61B204F0C",
+    "source_sha256_before_repair": "not captured; source file was untracked in this checkout",
+    "allowed_changes": [
+      "js/spb-pro-edit.js (plan() preservation-tail parsing/exactPart proof only)",
+      "tests/ai_named_part_recolor_preserve_contract.cjs",
+      "docs/handoff_reports/AI_HELPER_14H_RECOLOR_PRESERVE_2026-10-03.json"
+    ],
+    "not_touched": [
+      "proAI or D routing",
+      "HTML and runtime mirrors",
+      "SPB_WIKI.html",
+      "providers, native MCP, tools/kernel/canvas"
+    ]
+  },
+  "fresh_oracle": {
+    "authored_before_plan_source_inspection": true,
+    "cases": [
+      "F07 current chrome with rest-of-car-right tail",
+      "British spelling recolour",
+      "plain named-part recolor",
+      "same-part existing satin and matte preservation tails",
+      "rest-of-car-right tail",
+      "leave-all-other-parts-alone tail",
+      "cross-part preserve, mixed finish/color actions, two-part targets, unknown parts/subparts, whole-body, negative, question/how-to, diagnostic-only, ambiguous/missing-owner syntactic cases"
+    ],
+    "file": "tests/ai_named_part_recolor_preserve_contract.cjs",
+    "post_repair_result": "21/21 oracle assertions passed",
+    "exact_color_only_positive_cases": 7
+  },
+  "repair": {
+    "finding": "F07 was declined by E.plan because a preservation sentence after an otherwise complete named-part recolor prevented the strict exactPart proof; the desired color-only request therefore had no accepted plan.",
+    "change": "Added a plan-local, anchored preservation-tail recognizer. It strips only a small whitelist of same-part current/existing/original named-finish statements, the exact all-other-parts-alone statement, or the exact rest-of-car-already-right statement, and only after the preceding phrase parses as one complete color-only assignment to one known part with no leftover words or extra look/material operation.",
+    "result": "F07 now yields one exact roof part operation, green color, null look/relative/shade/pop, no unknown words, and no finish/color/pattern/mask fields are authored by this module. Same-part chrome/satin/matte preservation tails yield the same color-only shape.",
+    "safety": "Cross-part preservation still routes to a protected-parts ask. Mixed finish/color changes, mixed multi-part actions, unknown/subpart targets, negatives, questions, and diagnostics do not gain an exactPart claim. Ambiguous or missing ownership is outside E.plan and must be rejected by the parent route."
+  },
+  "verification": {
+    "commands": [
+      "node tests/ai_named_part_recolor_preserve_contract.cjs",
+      "node tests/ai_named_part_commands_contract.cjs",
+      "node --check js/spb-pro-edit.js"
+    ],
+    "results": [
+      "21/21 fresh oracle assertions passed",
+      "Existing named-part command contract passed: 12 simple part plans, 6 non-claims, 3 unknown/material guards, 3 preservation/composition guards",
+      "JavaScript syntax check passed"
+    ]
+  },
+  "limitations": [
+    "No native/browser route, queue, current-owner registry, mask, undo, or finish-retention behavior was executed; this is a pure E.plan review.",
+    "Ownership cases are syntactic probes only. Parent routing must enforce unique current helper-owned exact-part provenance before queueing.",
+    "The test/report date follows the 2026-10-04 task execution; requested report filename retains the sprint's 2026-10-03 date."
+  ],
+  "root_verified_pre_repair_hash": {
+    "sha256": "fd2e2365f45a9dd2751c6eb6701bfd78cfd57c3230d8cb999842aa5fadd79ac2",
+    "evidence": "Frozen W9 actual-route review source hash captured before W12 was assigned; E was an exclusive W12 write lane",
+    "note": "Producer did not capture its own before hash; this is separate pre-existing root/reviewer evidence, not a reconstructed hash"
+  }
+}

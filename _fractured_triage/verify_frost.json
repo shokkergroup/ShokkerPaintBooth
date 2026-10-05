@@ -1,0 +1,176 @@
+{
+ "module": "frost",
+ "finishes": {
+  "ffr_blue_serac": {
+   "band": 0.7501,
+   "fine": 18.74,
+   "cov": 64,
+   "hue": 13,
+   "t": 1.783,
+   "ok": true
+  },
+  "ffr_cyan_fissure": {
+   "band": 0.7684,
+   "fine": 21.64,
+   "cov": 64,
+   "hue": 6,
+   "t": 0.842,
+   "ok": true
+  },
+  "ffr_cyan_frond": {
+   "band": 0.894,
+   "fine": 16.0,
+   "cov": 64,
+   "hue": 8,
+   "t": 0.843,
+   "ok": true
+  },
+  "ffr_cyan_frostbloom": {
+   "band": 0.5404,
+   "fine": 13.8,
+   "cov": 64,
+   "hue": 8,
+   "t": 0.879,
+   "ok": true
+  },
+  "ffr_cyan_veil": {
+   "band": 0.7531,
+   "fine": 12.24,
+   "cov": 64,
+   "hue": 7,
+   "t": 0.991,
+   "ok": true
+  },
+  "ffr_diamond_dust": {
+   "band": 0.6009,
+   "fine": 9.64,
+   "cov": 64,
+   "hue": 19,
+   "t": 0.665,
+   "ok": true
+  },
+  "ffr_glacier_fern": {
+   "band": 0.5805,
+   "fine": 14.16,
+   "cov": 64,
+   "hue": 12,
+   "t": 1.161,
+   "ok": true
+  },
+  "ffr_hoarfrost_white": {
+   "band": 0.7124,
+   "fine": 8.37,
+   "cov": 64,
+   "hue": 11,
+   "t": 0.569,
+   "ok": true
+  },
+  "ffr_ice_needles": {
+   "band": 0.6652,
+   "fine": 8.69,
+   "cov": 64,
+   "hue": 11,
+   "t": 0.657,
+   "ok": true
+  },
+  "ffr_silver_dendrite": {
+   "band": 0.5979,
+   "fine": 8.98,
+   "cov": 64,
+   "hue": 12,
+   "t": 0.699,
+   "ok": true
+  },
+  "ffr_silver_hoar": {
+   "band": 0.7987,
+   "fine": 16.41,
+   "cov": 64,
+   "hue": 8,
+   "t": 0.629,
+   "ok": true
+  },
+  "ffr_snowdrift_ice": {
+   "band": 0.8736,
+   "fine": 17.27,
+   "cov": 64,
+   "hue": 13,
+   "t": 0.847,
+   "ok": true
+  },
+  "ffr_steel_bubbles": {
+   "band": 0.6935,
+   "fine": 8.77,
+   "cov": 64,
+   "hue": 8,
+   "t": 0.698,
+   "ok": true
+  },
+  "ffr_steel_flurry": {
+   "band": 0.6613,
+   "fine": 12.69,
+   "cov": 64,
+   "hue": 10,
+   "t": 0.812,
+   "ok": true
+  },
+  "ffr_violet_chasm": {
+   "band": 0.757,
+   "fine": 6.68,
+   "cov": 64,
+   "hue": 11,
+   "t": 0.733,
+   "ok": true
+  },
+  "ffr_violet_rime": {
+   "band": 0.6198,
+   "fine": 8.3,
+   "cov": 64,
+   "hue": 7,
+   "t": 0.646,
+   "ok": true
+  },
+  "ffr_violet_sectored": {
+   "band": 0.6706,
+   "fine": 11.59,
+   "cov": 64,
+   "hue": 13,
+   "t": 0.733,
+   "ok": true
+  },
+  "ffr_violet_trapped": {
+   "band": 0.6662,
+   "fine": 9.05,
+   "cov": 64,
+   "hue": 11,
+   "t": 1.297,
+   "ok": true
+  },
+  "ffr_whiteout_rift": {
+   "band": 0.6841,
+   "fine": 13.52,
+   "cov": 64,
+   "hue": 9,
+   "t": 0.806,
+   "ok": true
+  },
+  "ffr_window_fern": {
+   "band": 0.7279,
+   "fine": 18.08,
+   "cov": 64,
+   "hue": 11,
+   "t": 1.507,
+   "ok": true
+  }
+ },
+ "summary": {
+  "band_median": 0.6888,
+  "band_min": 0.5404,
+  "worst_pair": [
+   "ffr_glacier_fern",
+   "ffr_violet_sectored",
+   0.221
+  ],
+  "n_ok": 20,
+  "n": 20
+ }
+}

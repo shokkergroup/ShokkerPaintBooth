@@ -9,6 +9,7 @@ color flip harder than a normal static TGA should allow.
 
 from __future__ import annotations
 
+import cv2
 import numpy as np
 
 try:
@@ -28,6 +29,23 @@ def _norm01(arr):
 
 def _rgb(rgb):
     return np.array(rgb, dtype=np.float32).reshape(1, 1, 3)
+
+
+def _hash01(shape, seed, salt=0):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    y = np.linspace(0.0, 1.0, h, dtype=np.float32).reshape(h, 1)
+    x = np.linspace(0.0, 1.0, w, dtype=np.float32).reshape(1, w)
+    s = float(seed + salt) * 0.00173
+    n = np.sin((x * (113.7 + (salt % 13) * 5.1) + y * (271.9 + (salt % 11) * 6.7) + s) * 43758.5453)
+    return (n - np.floor(n)).astype(np.float32)
+
+
+def _resize_field(arr, shape, nearest=False):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    if arr.shape[:2] == (h, w):
+        return arr.astype(np.float32)
+    interpolation = cv2.INTER_NEAREST if nearest else cv2.INTER_LINEAR
+    return cv2.resize(arr.astype(np.float32), (w, h), interpolation=interpolation).astype(np.float32)
 
 
 def _color_table(colors):
@@ -65,9 +83,20 @@ def _hyperflip_fields(
     u = xf * c + yf * s
     v = xf * -s + yf * c
 
-    warp_a = (multi_scale_noise((h, w), [18, 36, 72], [0.42, 0.36, 0.22], seed + 911) - 0.5)
-    warp_b = (multi_scale_noise((h, w), [9, 18, 36], [0.38, 0.36, 0.26], seed + 929) - 0.5)
-    blue = _norm01(multi_scale_noise((h, w), [2, 4, 8, 16], [0.36, 0.28, 0.22, 0.14], seed + 941))
+    warp_a = _norm01(
+        np.sin((xf * 0.010 + yf * 0.017 + seed * 0.0011) * np.pi)
+        + np.cos((xf * 0.021 - yf * 0.013 + seed * 0.0017) * np.pi) * 0.62
+        + (_hash01((h, w), seed, 911) - 0.5) * 0.38
+    ) - 0.5
+    warp_b = _norm01(
+        np.cos((xf * 0.014 - yf * 0.019 + seed * 0.0013) * np.pi)
+        + np.sin((xf * 0.027 + yf * 0.008 + seed * 0.0021) * np.pi) * 0.58
+        + (_hash01((h, w), seed, 929) - 0.5) * 0.34
+    ) - 0.5
+    blue = _norm01(
+        _hash01((h, w), seed, 941) * 0.58
+        + (0.5 + 0.5 * np.sin((u * 0.83 + v * 1.37 + seed * 0.011) * np.pi)) * 0.42
+    )
 
     # Three carriers avoid a simple checkerboard. The periods intentionally
     # live near pixel/mipmap scale so the viewer's eye integrates them.
@@ -80,7 +109,7 @@ def _hyperflip_fields(
     # This fills red gaps with color information without becoming coarse pepper.
     micro_a = np.sin((u * 1.71 + v * 0.43 + warp_b * 3.0 * size_scale) / max(1.13 * pix, 0.72) * np.pi)
     micro_b = np.sin((u * -0.58 + v * 1.93 + warp_a * 2.4 * size_scale) / max(1.47 * pix, 0.72) * np.pi)
-    micro_noise = multi_scale_noise((h, w), [1, 2, 4, 8], [0.38, 0.30, 0.20, 0.12], seed + 953)
+    micro_noise = _hash01((h, w), seed, 953)
     micro = _norm01(micro_a * 0.40 + micro_b * 0.36 + (micro_noise - 0.5) * 0.54)
 
     macro = _norm01(
@@ -128,9 +157,18 @@ def paint_hyperflip_core(
     if hasattr(bb, "ndim") and bb.ndim == 2:
         bb = bb[:, :, np.newaxis]
 
+    ds = max(1, min(h, w) // 768)
+    sh, sw = max(192, h // ds), max(192, w // ds)
     flash, mist, veil, macro, blue, micro = _hyperflip_fields(
-        (h, w), seed, density, orientation, turbulence, fine_density
+        (sh, sw), seed, density, orientation, turbulence, fine_density
     )
+    if ds > 1:
+        flash = _resize_field(flash, (h, w), nearest=True)
+        mist = _resize_field(mist, (h, w), nearest=True)
+        veil = _resize_field(veil, (h, w))
+        macro = _resize_field(macro, (h, w))
+        blue = _resize_field(blue, (h, w))
+        micro = _resize_field(micro, (h, w))
     ca = _rgb(color_a)
     cb = _rgb(color_b)
     flakes = _color_table(flake_colors if flake_colors is not None else [color_b])
@@ -164,9 +202,8 @@ def paint_hyperflip_core(
     fine_color = np.clip(mist_tint * mist_boost + ca * 0.018, 0.0, 1.0)
     paint_rgb = paint_rgb * (1.0 - fine_alpha) + fine_color * fine_alpha
 
-    rng = np.random.RandomState(seed + 989)
-    nano = rng.random((h, w)).astype(np.float32)
-    nano_noise = _norm01(multi_scale_noise((h, w), [1, 2, 4], [0.50, 0.32, 0.18], seed + 991))
+    nano = _hash01((h, w), seed, 989)
+    nano_noise = _hash01((h, w), seed, 991)
     nano_mask = np.clip(
         np.where(nano > 0.55, (nano - 0.55) / 0.45, 0.0) * 0.60
         + np.where(nano_noise > 0.50, (nano_noise - 0.50) / 0.50, 0.0) * 0.40,
@@ -183,7 +220,12 @@ def paint_hyperflip_core(
 
     # Add tiny same-hue pearl noise so the finish still has richness without
     # showing obvious blue/purple pixels in the diffuse texture.
-    pearl = (_norm01(multi_scale_noise((h, w), [4, 8, 16], [0.45, 0.35, 0.20], seed + 977)) - 0.5)
+    pearl = _norm01(
+        _hash01((h, w), seed, 977) * 0.60
+        + (0.5 + 0.5 * np.sin((np.arange(w, dtype=np.float32).reshape(1, w) * 0.071
+                                + np.arange(h, dtype=np.float32).reshape(h, 1) * 0.043
+                                + seed * 0.013) * np.pi)) * 0.40
+    ) - 0.5
     paint_rgb = np.clip(paint_rgb + ca * pearl[:, :, np.newaxis] * 0.045, 0.0, 1.0)
 
     blend = np.clip(float(pm) * 0.96, 0.0, 1.0)
@@ -205,13 +247,23 @@ def spec_hyperflip_core(
     flash_clearcoat=16.0,
 ):
     h, w = shape[:2] if len(shape) > 2 else shape
+    ds = max(1, min(h, w) // 768)
+    sh, sw = max(192, h // ds), max(192, w // ds)
     flash, mist, veil, macro, blue, micro = _hyperflip_fields(
-        (h, w), seed, density, orientation, turbulence, fine_density
+        (sh, sw), seed, density, orientation, turbulence, fine_density
     )
+    if ds > 1:
+        flash = _resize_field(flash, (h, w), nearest=True)
+        mist = _resize_field(mist, (h, w), nearest=True)
+        veil = _resize_field(veil, (h, w))
+        macro = _resize_field(macro, (h, w))
+        blue = _resize_field(blue, (h, w))
     mask = mask.astype(np.float32)
     strength = np.clip(float(sm), 0.25, 2.0)
 
     glint = np.clip((flash * 0.82 + mist * 0.18 + veil * 0.24) * strength, 0.0, 1.0)
+    nano_glint = _hash01((h, w), seed, 1201)
+    glint = np.clip(glint + np.clip((nano_glint - 0.78) * 3.2, 0.0, 0.42) * strength, 0.0, 1.0)
     M = np.clip(8.0 + glint * (float(flash_metal) - 8.0) + macro * 10.0, 0.0, 255.0)
     R = np.clip(float(matte_rough) - glint * (float(matte_rough) - float(flash_rough)) + (blue - 0.5) * 12.0, 15.0, 255.0)
     CC = np.clip(
@@ -442,7 +494,19 @@ def _make_paint(preset):
     return _paint
 
 
-HYPERFLIP_MONOLITHICS = {
-    f"cx_{name}": (_make_spec(preset), _make_paint(preset))
-    for name, preset in HYPERFLIP_PRESETS.items()
-}
+HYPERFLIP_MONOLITHICS = {}
+try:
+    from engine.hyperflip_angle_reveal import HYPERFLIP_ANGLE_REVEAL
+
+    HYPERFLIP_MONOLITHICS.update(HYPERFLIP_ANGLE_REVEAL)
+except ImportError:  # pragma: no cover
+    HYPERFLIP_MONOLITHICS = {
+        f"cx_{name}": (_make_spec(preset), _make_paint(preset))
+        for name, preset in HYPERFLIP_PRESETS.items()
+    }
+
+if not HYPERFLIP_MONOLITHICS:
+    HYPERFLIP_MONOLITHICS = {
+        f"cx_{name}": (_make_spec(preset), _make_paint(preset))
+        for name, preset in HYPERFLIP_PRESETS.items()
+    }

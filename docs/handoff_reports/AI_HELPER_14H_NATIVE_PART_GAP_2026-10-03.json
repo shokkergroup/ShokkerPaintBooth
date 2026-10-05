@@ -1,0 +1,100 @@
+{
+  "schema": "spb-native-part-followup-gap/1",
+  "session": "4e06e064fcb3",
+  "backend": "http://localhost:59879/",
+  "readiness": "actual source loaded in cold private session; tokens not yet promoted",
+  "first": {
+    "done": true,
+    "result": {
+      "busy": false,
+      "providerAttempts": 1,
+      "zones": [
+        {
+          "id": "zone_7cb8a485-bf66-4356-b629-e0f4b47e91fb",
+          "name": "Red roof",
+          "color": "#c8102e",
+          "mode": "solid",
+          "finish": "gloss",
+          "prov": {
+            "r": "{\"layers\":[\"Car Paint\"],\"island\":\"roof\"}",
+            "z": "4194304:1du129g",
+            "p": "4194304:1du129g",
+            "l": "7ffdffc0bff9ffc43ff9ffc1ffffffc0fffe7fe0ffffffe0fc3ffff8fc7fffb4fffffffeffffffe4200e00e0ffccc7ffffedfff0fffde7f2ffffe7f9ffffe7f9fffffbfdfffffbfefffffbfefffffbfefffffbfdfffff7f9fff7e7fafffefff2ffcc1ffe3f9ce7fe7ffff009ffffffe1fe7fff78fffffc3e1ffffdff03bffdff",
+            "e": ""
+          },
+          "region": "roof"
+        }
+      ],
+      "last": [
+        {
+          "id": 1,
+          "text": "Done — added a layered look (bottom to top: red roof) on the roof. Your numbers and sponsors are untouched.",
+          "notes": [],
+          "lines": [
+            "Red roof: limited to layer Car Paint; covers everything on that layer; limited to the roof; finish Gloss; colour #c8102e; placed at the top of the stack (wins overlaps)"
+          ],
+          "undoable": true,
+          "meta": "✦ built-in design library · no AI used"
+        }
+      ]
+    }
+  },
+  "second": {
+    "done": true,
+    "result": {
+      "busy": false,
+      "providerAttempts": 1,
+      "newZones": [
+        {
+          "id": "zone_672b4d9a-1d0c-446e-b8c4-0a85313f005c",
+          "name": "Roof chrome",
+          "color": "#ffffff",
+          "mode": "source",
+          "finish": "f_chrome",
+          "prov": true,
+          "region": "roof"
+        },
+        {
+          "id": "zone_7cb8a485-bf66-4356-b629-e0f4b47e91fb",
+          "name": "Red roof",
+          "color": "#c8102e",
+          "mode": "solid",
+          "finish": "gloss",
+          "prov": true,
+          "region": "roof"
+        }
+      ],
+      "last": [
+        {
+          "id": 2,
+          "text": "Done — the roof (3% of the car) is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+          "lines": [
+            "Roof chrome: limited to layer Car Paint; covers everything on that layer; limited to the roof; finish Chrome; keeps the car's own colour; placed at the top of the stack (wins overlaps)"
+          ],
+          "notes": [],
+          "undoable": true
+        }
+      ]
+    }
+  },
+  "outcome": {
+    "done": true,
+    "result": {
+      "settled": true,
+      "newZoneCount": 2,
+      "firstStillPresent": true,
+      "firstColor": "#c8102e",
+      "paintPreviewSame": false,
+      "specPreviewSame": false,
+      "firstPaintHash": "238c7d61a9e04be2bd28158ca6cc01abb0b0b2eb185b7134ea4085f02f7e1bdb",
+      "currentPaintHash": "9d9e5a72fc2328bd618a0652ceb24d171af5481e7c64b8e4b94612fd62fa329f",
+      "firstSpecHash": "acfc86ad71db0cb89f68f74053bbb6fb10d7df25e114a20eccb9f137315d316b",
+      "currentSpecHash": "ef4fab1f5d04c589539509f8f315c05498b42ccab07291aef8ebd33fa74503dd",
+      "attempts": 1
+    }
+  },
+  "provider_attempts": 1,
+  "paid_provider_calls": 0,
+  "provider_attempt_note": "Root called SpbProCar.ensure() default labels true once; guard blocked call. All typed command checks had no provider attempts.",
+  "interpretation": "First design/compound route did not register selector in _editReg; later E edit route added source-color roof zone instead of reusing red roof. Cross-route integration repair required."
+}

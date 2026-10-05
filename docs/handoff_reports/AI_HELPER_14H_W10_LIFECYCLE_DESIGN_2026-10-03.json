@@ -1,0 +1,94 @@
+{
+  "schema": "spb-ai-lifecycle-design/1",
+  "date": "2026-10-03",
+  "reviewer": "GPT-6.1 SOL xhigh",
+  "scope": "Design only; this report is the sole write. Production/tests/Wiki unchanged;0 provider/native calls.",
+  "review_input": {
+    "pro_ai_freeze": "115f602d49e465b6f49530b07a4c2e4b81e8d6089c2d8204bcae9d57807690d4",
+    "test": "tests/ai_lease_cancel_review_contract.cjs",
+    "report": "docs/handoff_reports/AI_HELPER_14H_LEASE_CANCEL_REVIEW_2026-10-03.json",
+    "result": "7/10 actual-source extracted-flow scenarios pass. Fake provider proves sync throw strands busy/ctl, AbortSignal-ignoring completion applies after Cancel, and an ordinary delayed answer reaches applyQueue after the harness document changes.",
+    "limit": "Harness docId/state is not production document identity; applyQueue, tool queue injection and rendering are doubles. Repros establish missing lifecycle guards at the extracted boundary, not full native mutation outcomes."
+  },
+  "recommended_design": {
+    "principle": "Add one private operation ticket and extend the existing guards; retain controllers, Undo and active lease exclusivity. Cancellation revokes publication independently of transport abort.",
+    "private_state": "Monotonic operation serial plus current ticket. Ticket contains id, captured document descriptor, captured AbortController, canceled flag, phase and optional preview snapshot/expected preview state. Do not use _cancelOpts alone: a new run legitimately resets it.",
+    "document_descriptor": "Read the actual source-controlled lexical _spbSourceLoadGeneration using typeof, plus paintImageData object identity, paintCanvas width/height, _psdPath/document-kind and applicable layer identity. The generation increments in _spbBeginSourceLoad, including same-path reloads and in-progress replacements; it is the primary source-load boundary. A window-only lookup is insufficient for a lexical global. Do not depend on state.docId, model cached signature or car folder as the sole identity.",
+    "revision_policy": "Keep document identity distinct from mutable layer/zone revision. Capture baseline _spbLayerRev for an ordinary request so unrelated layer changes invalidate pending work. Authorized preview/commit mutations may advance the expected revision at the synchronous controller publication point; never blindly adopt whichever revision appears after an await. Source generation/object/path/dimensions must never be rebased during a request. If unrelated Zone editing can occur during preview, compare expected controller state or existing revision before restoration; same source alone cannot certify that restoring a snapshot is safe.",
+    "helpers": [
+      "beginOperation(): creates a private ticket before the first async step; records document identity and controller, then claims busy ownership.",
+      "sameOperationDocument(ticket): source/document identity equality; excludes the ticket canceled flag so legitimate same-document Cancel restoration remains possible.",
+      "operationCurrent(ticket): ticket is current owner, not canceled, source/document still matches and any expected mutation revision matches.",
+      "clearOperationUI(ticket): clears _busy/_progress/_ctl only if the current owner is ticket and the controller belongs to ticket. A stale completion may report cancellation but cannot clear newer state.",
+      "stampResult(result,ticket): associates every ask result that can apply/restore with its originating ticket, including offline and option results. Mutable unstamped results cannot infer identity at finish time.",
+      "cancelOperation(ticket): mark canceled/revoke first, abort the ticket's controller best-effort, then owner-only UI cleanup. Pending callbacks remain permanently unauthorized even if the next run resets _cancelOpts."
+    ]
+  },
+  "patch_map": [
+    {
+      "function": "ask(text,o), currently around2054",
+      "change": "Capture or reuse the operation ticket once at public request start, before CAR.ensure/warm/offline async paths. Propagate it through askCore/runTurn, repairs and corrections. Recursive continuation of the same request must reuse its ticket; a new user request creates a new serial. Stamp the final result. Preserve existing help ownership and element guards.",
+      "reason": "Adding a guard only in runTurn2 misses CAR.ensure and ordinary offline async work; creating a ticket after awaiting captures the replacement document."
+    },
+    {
+      "function": "runTurn/runTurn2, currently673-693",
+      "change": "Gate each continuation on operationCurrent. Capture ctl/signal from the ticket rather than global _ctl. Invoke AI.run inside Promise.resolve().then(function(){ return AI.run(opts); }) or equivalent try/catch-to-rejected-Promise. Apply a terminal success/error handler to the entire warm/settle/provider chain, with owner-only cleanup. Scope onEvent to the ticket so late events cannot change a newer request's progress. Provider success after cancellation/source replacement becomes a canceled/stale result with an empty queue.",
+      "reason": "The current synchronous AI.run call bypasses attached rejection cleanup; warm/whenSettled rejection needs the same cleanup. Ordinary success has no cancellation/document check."
+    },
+    {
+      "function": "makeTools call site in runTurn2",
+      "change": "Wrap returned actual handlers: before invocation check operationCurrent, then return an explicit aborted/stale tool result on failure. Recheck after asynchronous work and immediately before queue publication or direct controller mutation. Close the collecting phase when the provider result is accepted, so late callbacks cannot append to a ready result. Do not wrap only the provider Promise.",
+      "reason": "A provider may ignore AbortSignal and invoke tools later. A pre-invocation wrapper protects late calls, but cannot stop side effects in a handler already awaiting; those need a check at their mutation/queue sink. Never claim wrapper coverage for inner asynchronous mutations that were not exercised."
+    },
+    {
+      "function": "finishCore, currently710 and apply around748",
+      "change": "Resolve the originating ticket from stamped result/entry options; reject stale/canceled/mismatched operations at function entry BEFORE any prior-design doUndo, restore, recipe replacement or history changes. Recheck immediately before applyQueue. Guard deferred postCheck/finalVerdict/repair publication with that same ticket. Pass the existing element identity as an additional guard rather than replacing it. Cancellation reporting must not invoke an unconditionally global elementRunCanceled cleanup for an old ticket.",
+      "reason": "Guarding only applyQueue leaves earlier restore/Undo logic able to affect another document. Rechecking only elementRunIdentity leaves ordinary asks unprotected."
+    },
+    {
+      "function": "previewOptions, currently815",
+      "change": "Bind snap, selected-zone state and any _orig use to the ticket's original document. Check before initial unpackSnap, every option apply, each after-await image read and every restore. On user Cancel, stop remaining options and restore the preview baseline only when source/document and expected preview mutation state still match. On a source switch or unrelated conflicting edit, discard the old snapshot without restoring it. Successful same-document restore uses existing restoreZones/selection authority; it does not add history. Cleanup remains owner-only.",
+      "reason": "Ordinary option entries currently have unconditional restoreZones and unpackSnap branches; element-only guards do not protect them. Cancel must revoke painting while allowing safe restoration of the preview it owns."
+    },
+    {
+      "function": "Stop branch, currently2721",
+      "change": "Cancel the current operation ticket first, then set _cancelOpts for legacy option-loop compatibility and abort its captured controller. Clear only this owner's busy/progress/controller state. Preserve the ticket with its canceled flag for late callbacks and finish guards. A subsequent request must never make the old ticket valid again.",
+      "reason": "Transport abort is best effort; _cancelOpts is reset by later options and provides no request-specific revocation."
+    }
+  ],
+  "smallest_safe_order": [
+    "Add private operation/document helper functions and exact-result stamping. Keep the lease module unchanged.",
+    "Wire ask/runTurn/runTurn2, Promise-boundary errors, tool invocation guards and owner-only completion.",
+    "Guard finishCore before all mutations and deferred repair work.",
+    "Wire Stop and document-bound option restore, then audit any direct runTurn/finish callers for ticket propagation.",
+    "Update focused actual-source tests with real descriptor values; run native verification after integration freeze."
+  ],
+  "test_changes": [
+    "Evaluate the actual new identity helper in the VM. Set real _spbSourceLoadGeneration, paintImageData, paintCanvas dimensions, _psdPath, document-kind and layer revision. Remove fake docId as the cause of identity invalidation; retain it only as an output trace if useful.",
+    "Provider ignores abort: call actual wrapped makeTools handler after Stop, then resolve. Assert0 queue/controller mutations,0 apply, canceled result and recoverable UI.",
+    "Start A, Cancel A, start B, resolve/reject/event A while B is pending. Assert B remains busy and retains B's controller/progress; B applies exactly once and A never applies.",
+    "AI.run sync throw, warm rejection and whenSettled rejection all settle into a handled result with owner cleanup. Include throw during tool handling;0 unintended history.",
+    "Start an ordinary ask; change actual source generation while keeping same car/path/dimensions. Also replace paintImageData, change dimensions/path, and simulate layered-to-flat. Late finish must produce0 apply/restore/Undo.",
+    "Capture at ask start, switch source during CAR.ensure/warm and before runTurn2; do not recapture the new source as the old request's authority.",
+    "Return ready result A, start B before finish(A): finish(A) cannot apply or restore. Mutable unstamped results cannot acquire authority from whichever document is current.",
+    "Options: actual same-document Cancel restores original snapshot/selection once and stops later options. Source change before awaited preview completion causes0 restore/unpack/Undo on the new document. A legitimate own revision advance permits same-document completion; a manual conflicting revision does not get silently rebased.",
+    "Exercise actual tool callbacks rather than injecting a queue only after provider resolution. For already-running async tool handlers, place cancellation between await and mutation and assert the actual sink refuses publication.",
+    "Retain existing element identity/stale-card tests and active lease exclusivity checks. No expiration of an active external call."
+  ],
+  "native_acceptance": [
+    "On an isolated current-source page, start a controlled delayed ordinary provider adapter without network calls, replace a flat source through the production loader, then release the response. Compare new-source pixels, original zone objects/properties, layer state and history before/after; exact preservation.",
+    "Use a controlled adapter that ignores abort and attempts its real tool callback after Stop. Start a second request before releasing the first. Verify request2 remains operable, old request never writes and displayed busy/progress reflect request2.",
+    "Run option previews with controlled delays. Same-document Stop restores baseline; loading a new source during preview leaves that new source exact. Use production beginSource generation, without page-side revision patches.",
+    "Perform a successful current-document ordinary action and exact Undo/Redo through existing controller history. Source/runtime/token hashes must match the evaluated build."
+  ],
+  "risks": [
+    "Do not couple all validity to _spbLayerRev: legitimate option preview/publication may advance it. Do not solve that by blindly accepting the current revision after an await.",
+    "Do not read only window._spbSourceLoadGeneration; the actual declaration is lexical var in the loaded script. Tests must mirror that lookup.",
+    "Generic tool wrappers cannot revoke side effects already executing inside an async handler; inspect the actual mutation sinks exercised by the tests.",
+    "Canceling an old operation must not clear the current request's ctl/busy, release its ownership, restore an old snapshot or push Undo into a new document.",
+    "An answer result is not an applied result. Keep operation ownership long enough to validate finish and distinguish closed collecting/publication phases.",
+    "Existing stale helpers with unconditional global cleanup require ticket-aware use; preserving their current calls without ownership checks reintroduces the A/B race.",
+    "No active lease timeout change is needed for these three defects. A future abandoned-request policy must revoke publication before granting a new owner."
+  ],
+  "handoff": "Root implements/integrates and owns shared Wiki. This design does not certify full native behavior or paid providers."
+}

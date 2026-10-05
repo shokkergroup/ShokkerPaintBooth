@@ -1,0 +1,7 @@
+# MCP parity + blind-client fallback (2026-10-03)
+- `_easy_claude_work/mcp_parity_test.js`: statically extracts MAPT + makeTools parameter names from js/spb-pro-ai.js (dynamic specProps/Object.assign zone tools handled) and compares with mcp/server/tools.json. Result: PASS (21 MAPT tools + spb_look_at_paint).
+- Mismatch found + fixed: tools.json lacked `spb_add_graphic` (app list_tools and index.js NAME_MAP expose it). Added from the app's own definition, after apply_scheme. The four edits made today (mark_elements modes/none, refinish mark_mode/exclude, suggest_finishes stack, finish_details deep) were already in parity.
+- index.js: logs `clientInfo` at initialize. `SPB_MCP_BLIND_CLIENT` = true|false|auto (default auto; or `<token dir>/blind_client.txt`). auto = clientInfo.name not in {claude-code, claude-desktop, claude-ai, codex} (prefix match; claude-ai is what Claude Desktop reports - added beyond the owner list).
+- Blind (spb_look_at_paint, spb_mark_elements, spb_preview only): extra text block = UNVERIFIED label + describe_paint summary (one extra bridge call) + app finder guess / colour shares. `true` also removes the image blocks; `auto` keeps them (some clients show them). Sighted clients: output unchanged.
+- Smoke: `_easy_claude_work/mcp_blind_smoke.js` (fake bridge, 4 modes) passes.
+- NOT verified: real ChatGPT/other client behaviour, live app. Needs .mcpb rebuild (owner step) to ship index.js + tools.json.

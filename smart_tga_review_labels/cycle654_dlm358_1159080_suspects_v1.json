@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_1159080.tga",
+  "inspection_records": "_smart_tga_runs/cycle654_dlm_batch_unique/inspection_records.json",
+  "review_scope": "Cycle 654 manual source and all-owner sheet review of every emitted suspect bbox.",
+  "component_labels": [
+    {"layer":"sponsors","component_index":32,"expected_bbox":[151,74,88,5],"target_layer":"paint","label":"paint_livery_stripe","note":"Thin blue livery stripe beneath a fixed body opening."}
+  ]
+}

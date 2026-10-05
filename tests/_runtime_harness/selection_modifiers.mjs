@@ -1,119 +1,37 @@
-// Runtime harness for selection modifier family TF9-TF11:
-//   growSelection / shrinkSelection / smoothSelection
-//
-// Pre-fix: each called pushUndo() — a function that does NOT exist in the
-// canonical 3-copy build (only in the legacy paint-booth-app.js bundle).
-// The typeof-guard masked the missing reference, so selection grow/shrink/
-// smooth were SILENTLY UNREVERTABLE.
-//
-// Fix: replaced with pushZoneUndo (which IS defined in state-zones.js
-// and is what every sister selection mutator uses).
-//
-// Two scenarios per function:
-//   pushUndo_only_defined  — sets pushUndo as a spy, leaves pushZoneUndo undefined.
-//                             Pre-fix: would push to pushUndo. Post-fix: must push to
-//                             pushZoneUndo (which doesn't exist) so NO undo fires.
-//                             We assert the post-fix behavior: pushUndo NOT called,
-//                             zone mask still mutated.
-//   pushZoneUndo_defined   — defines pushZoneUndo as the spy. Verify the post-fix
-//                             call lands on pushZoneUndo, not pushUndo.
-
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+// SPB-93: legacy API through the current shared Mask engine, with real history.
+import {readFileSync} from 'node:fs';
+import {createRequire} from 'node:module';
 import vm from 'node:vm';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const REPO = join(__dirname, '..', '..');
-const SRC = readFileSync(join(REPO, 'paint-booth-3-canvas.js'), 'utf8');
-
-function extractTopLevelFunction(name) {
-    const needle = '\nfunction ' + name + '(';
-    const start = SRC.indexOf(needle) + 1;
-    if (start === 0) throw new Error('Could not locate function ' + name);
-    let i = SRC.indexOf('{', start);
-    let depth = 0;
-    for (; i < SRC.length; i++) {
-        const ch = SRC[i];
-        if (ch === '{') depth++;
-        else if (ch === '}') { depth--; if (depth === 0) break; }
-    }
-    return SRC.slice(start, i + 1);
+const require=createRequire(import.meta.url);
+const source=readFileSync(new URL('../../paint-booth-3-canvas.js',import.meta.url),'utf8');
+const refine=require('../../js/canvas/zone/selection-refine.js');
+function extract(name){
+ const start=source.indexOf('function '+name+'(');
+ if(start<0)throw Error('Missing '+name);
+ let i=source.indexOf('{',start),depth=0;
+ for(;i<source.length;i++){if(source[i]==='{')depth++;else if(source[i]==='}'&&!--depth)break;}
+ return source.slice(start,i+1);
 }
-
-function makeContext({ provideZoneUndo, provideLegacyPushUndo }) {
-    const W = 8, H = 8;
-    const calls = {
-        showToast: [],
-        pushZoneUndo: [],
-        pushUndo: [],
-    };
-    // Build a 3x3 selection in the middle of the 8x8 mask so grow/shrink/smooth
-    // have something to operate on.
-    const mask = new Uint8Array(W * H);
-    for (let y = 3; y < 6; y++) {
-        for (let x = 3; x < 6; x++) {
-            mask[y * W + x] = 255;
-        }
-    }
-    const ctx = {
-        document: {
-            getElementById: function (id) {
-                if (id === 'paintCanvas') return { width: W, height: H };
-                return null;
-            },
-        },
-        showToast: function (msg, isError) { calls.showToast.push([msg, !!isError]); },
-        zones: [{ name: 'Hood', regionMask: mask }],
-        selectedZoneIndex: 0,
-        renderRegionOverlay: function () {},
-    };
-    if (provideZoneUndo) ctx.pushZoneUndo = function (label) { calls.pushZoneUndo.push(label); };
-    if (provideLegacyPushUndo) ctx.pushUndo = function (label) { calls.pushUndo.push(label); };
-    ctx._calls = calls;
-    ctx._mask = mask;
-    return ctx;
+const names=['_selectionRefineContext','_commitSelectionRefine','growRegionMask','shrinkRegionMask','smoothRegionMask','growSelection','shrinkSelection','smoothSelection'];
+const script=names.map(extract).join('\n');
+const results={};
+for(const name of ['growSelection','shrinkSelection','smoothSelection']){
+ results[name]={};
+ for(const scenario of ['changed','empty']){
+  const mask=new Uint8Array(64);
+  if(scenario==='changed')for(let y=2;y<6;y++)for(let x=2;x<6;x++)mask[y*8+x]=255;
+  if(scenario==='changed')mask[2*8+6]=255;
+  const before=Array.from(mask),history=[],wrongHistory=[];
+  const canvas={width:8,height:8,dataset:{}};
+  const context={window:{SPBSelectionRefine:refine},zones:[{regionMask:mask}],selectedZoneIndex:0,
+   document:{getElementById:()=>canvas},performance,showToast(){},_refreshZoneMaskHistoryUI(){},
+   pushUndo(index){history.push({index,mask:Array.from(context.zones[index].regionMask)});},
+   pushZoneUndo(){wrongHistory.push('zone-config');}};
+  vm.createContext(context);vm.runInContext(script,context);
+  vm.runInContext(name+'(2)',context);
+  const after=Array.from(context.zones[0].regionMask);
+  results[name][scenario]={changed:before.some((v,i)=>v!==after[i]),history,
+   original:before,wrongHistory,committed:JSON.parse(canvas.dataset.spbSelectionRefineLast).committed};
+ }
 }
-
-function snapshotMask(mask) { return Array.from(mask); }
-
-function runOne(funcName, scenario) {
-    let opts;
-    if (scenario === 'pushZoneUndo_defined') opts = { provideZoneUndo: true, provideLegacyPushUndo: true };
-    else if (scenario === 'only_legacy_push_undo') opts = { provideZoneUndo: false, provideLegacyPushUndo: true };
-    else opts = { provideZoneUndo: true, provideLegacyPushUndo: false };
-
-    const ctx = makeContext(opts);
-    const before = snapshotMask(ctx._mask);
-    const body = extractTopLevelFunction(funcName);
-    const script = body + '\n;' + funcName + '(' + (funcName === 'smoothSelection' ? '' : '2') + ');';
-    let error = null;
-    try {
-        vm.createContext(ctx);
-        vm.runInContext(script, ctx, { filename: funcName + '.runtime.js', timeout: 2000 });
-    } catch (e) {
-        error = { message: e.message };
-    }
-    const after = snapshotMask(ctx._mask);
-    return {
-        func: funcName,
-        scenario,
-        ok: error === null,
-        error,
-        pushZoneUndo: ctx._calls.pushZoneUndo,
-        legacy_pushUndo: ctx._calls.pushUndo,
-        showToast: ctx._calls.showToast,
-        mask_changed: JSON.stringify(before) !== JSON.stringify(after),
-    };
-}
-
-const FUNCS = ['growSelection', 'shrinkSelection', 'smoothSelection'];
-const SCENARIOS = ['pushZoneUndo_defined', 'only_legacy_push_undo'];
-const results = {};
-for (const f of FUNCS) {
-    results[f] = {};
-    for (const s of SCENARIOS) {
-        results[f][s] = runOne(f, s);
-    }
-}
-console.log(JSON.stringify(results, null, 2));
+console.log(JSON.stringify(results));

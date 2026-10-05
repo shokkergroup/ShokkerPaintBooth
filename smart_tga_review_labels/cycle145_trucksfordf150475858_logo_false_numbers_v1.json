@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "paint_label": "trucks fordf150/car_num_475858.tga",
+  "inspection_records": "_smart_tga_runs/cycle145_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle145_route_pressure_v1/trucks_fordf150_car_num_475858/component_records.json",
+  "review_scope": "Cycle 145 review of fresh accepted Sponsor-routed number candidates on Ford F150 truck 475858: reject sponsor word fragments, mascot/logo marks, and square sponsor panel confusers.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 5,
+      "expected_bbox": [23, 81, 39, 37],
+      "target_layer": "sponsors",
+      "label": "simpson_air_sponsor_submask_false_number",
+      "note": "Submask from a Simpson/Air sponsor mark; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 6,
+      "expected_bbox": [432, 81, 38, 26],
+      "target_layer": "sponsors",
+      "label": "simpson_air_sponsor_submask_false_number",
+      "note": "Submask from a Simpson/Air sponsor mark; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 27,
+      "expected_bbox": [85, 610, 37, 18],
+      "target_layer": "sponsors",
+      "label": "mascot_logo_fragment_false_number",
+      "note": "Tiny mascot/logo fragment; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 31,
+      "expected_bbox": [761, 562, 40, 29],
+      "target_layer": "sponsors",
+      "label": "small_round_logo_false_number",
+      "note": "Small round sponsor logo; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 45,
+      "expected_bbox": [191, 904, 120, 120],
+      "target_layer": "sponsors",
+      "label": "bluefox_square_sponsor_panel_false_number",
+      "note": "BlueFox square sponsor/logo panel; should stay Sponsors."
+    }
+  ]
+}

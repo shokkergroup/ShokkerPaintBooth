@@ -1,0 +1,2091 @@
+{
+  "entries": {
+    "mirror_chrome": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351621233
+    },
+    "mercury_flow": {
+      "verdict": "keep",
+      "rating": 8,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351630931
+    },
+    "radial_machined": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351641651
+    },
+    "brushed_titanium": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351647362
+    },
+    "titanium_vortex": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351653405
+    },
+    "obsidian_mirror": {
+      "verdict": "rebuild",
+      "rating": 5,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351663539
+    },
+    "midnight_chrome": {
+      "verdict": "rebuild",
+      "rating": 3,
+      "reasons": [],
+      "name": "",
+      "notes": "I don't think this is chrome based - based on the color of the combined spec map",
+      "ts": 1780351688806
+    },
+    "chrome_chainmail": {
+      "verdict": "keep",
+      "rating": 8,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351694231
+    },
+    "kaido_chrome": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351700482
+    },
+    "weathered_steel": {
+      "verdict": "keep",
+      "rating": 8,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351706275
+    },
+    "diamond_chrome": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351711905
+    },
+    "mystic_chrome": {
+      "verdict": "rebuild",
+      "rating": 2,
+      "reasons": [
+        "color",
+        "artifact"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780351728177
+    },
+    "phantom_mirror": {
+      "verdict": "keep",
+      "rating": 8,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351733217
+    },
+    "satin_weave": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351740757
+    },
+    "forged_carbon": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351754001
+    },
+    "hybrid_weave": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351758668
+    },
+    "acid_carbon": {
+      "verdict": "keep",
+      "rating": 8,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351763375
+    },
+    "checker_carbon": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351769437
+    },
+    "bakeneko_velvet": {
+      "verdict": "new",
+      "rating": 3,
+      "reasons": [],
+      "name": "",
+      "notes": "Just doesn't fit. This pattern won't go well as is",
+      "ts": 1780351809328
+    },
+    "carbon_fiber": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351814990
+    },
+    "ceramic_matte": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351821972
+    },
+    "matte_silk": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351826834
+    },
+    "gunmetal_satin": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351830088
+    },
+    "frozen_matte": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780351833713
+    },
+    "dark_matter": {
+      "verdict": "rebuild",
+      "rating": 3,
+      "reasons": [
+        "big",
+        "flat",
+        "color",
+        "unreal"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780351851480
+    },
+    "cotton_candy": {
+      "verdict": "rebuild",
+      "rating": 3,
+      "reasons": [
+        "color",
+        "name"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780352285728
+    },
+    "candy_poison": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352291362
+    },
+    "inverted_candy": {
+      "verdict": "rebuild",
+      "rating": 4,
+      "reasons": [
+        "flat",
+        "color"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780352305103
+    },
+    "pearl_chaser": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352313689
+    },
+    "ghost_scales": {
+      "verdict": "keep",
+      "rating": 9,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352319560
+    },
+    "ghost_waves": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352325793
+    },
+    "anodized_gloss": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352344376
+    },
+    "circle_pearl": {
+      "verdict": "keep",
+      "rating": 5,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352350112
+    },
+    "candy_tiles": {
+      "verdict": "rebuild",
+      "rating": 4,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780352361482
+    },
+    "ghost_metal": {
+      "verdict": "keep",
+      "rating": 8,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352366768
+    },
+    "mercury_candy": {
+      "verdict": "keep",
+      "rating": 8,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352369948
+    },
+    "candy_flow": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352376004
+    },
+    "anodized": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352381322
+    },
+    "ghost_camo": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352386123
+    },
+    "chaos_flake": {
+      "verdict": "keep",
+      "rating": 9,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352390647
+    },
+    "hex_flake": {
+      "verdict": "rebuild",
+      "rating": 4,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780352396856
+    },
+    "organic_flake": {
+      "verdict": "rebuild",
+      "rating": 3,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780352402606
+    },
+    "chrome_mosaic": {
+      "verdict": "rebuild",
+      "rating": 3,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780352407543
+    },
+    "sparkle_burst": {
+      "verdict": "rebuild",
+      "rating": 2,
+      "reasons": [
+        "flat"
+      ],
+      "name": "",
+      "notes": "Needs a lot more detail",
+      "ts": 1780352428792
+    },
+    "akane_flake": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352436139
+    },
+    "galaxy_sparkle": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352444407
+    },
+    "firefly_sparkle": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352449501
+    },
+    "metal_flake": {
+      "verdict": "keep",
+      "rating": 8,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352453738
+    },
+    "ice_flake": {
+      "verdict": "keep",
+      "rating": 8,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352459277
+    },
+    "gradient_tiles": {
+      "verdict": "rebuild",
+      "rating": 3,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780352464517
+    },
+    "duo_tiles": {
+      "verdict": null,
+      "rating": 4,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780352468563
+    },
+    "arctic_chameleon": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352473047
+    },
+    "emerald_chameleon": {
+      "verdict": "keep",
+      "rating": 8,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352478615
+    },
+    "venom_chameleon": {
+      "verdict": "keep",
+      "rating": 8,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352483996
+    },
+    "galaxy_chameleon": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352489656
+    },
+    "obsidian_chameleon": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352495849
+    },
+    "hyperflip_blue_copper": {
+      "verdict": "rename",
+      "rating": 6,
+      "reasons": [],
+      "name": "Hyperflip Holo Wave",
+      "notes": "",
+      "ts": 1780352538809
+    },
+    "prism_shatter": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352543949
+    },
+    "holographic": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352547799
+    },
+    "spectral_rings": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352551903
+    },
+    "spectral_mono": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352555675
+    },
+    "rainbow_metal": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352559475
+    },
+    "oil_slick_macro": {
+      "verdict": "rebuild",
+      "rating": 3,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780352564763
+    },
+    "oil_slick_wave": {
+      "verdict": "rebuild",
+      "rating": 3,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780352570355
+    },
+    "spectral_edge": {
+      "verdict": "rebuild",
+      "rating": 2,
+      "reasons": [
+        "big",
+        "flat"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780352576311
+    },
+    "neon_outline": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352581865
+    },
+    "aurora_chameleon": {
+      "verdict": "keep",
+      "rating": 8,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352588099
+    },
+    "copper_flame": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352592007
+    },
+    "fire_vortex": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352597793
+    },
+    "neon_equalizer": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352602593
+    },
+    "molten_metal": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352605915
+    },
+    "marble_pearl": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352610305
+    },
+    "prizm_neon": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352614139
+    },
+    "aurora_wave": {
+      "verdict": "rebuild",
+      "rating": 5,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780352619401
+    },
+    "gunmetal_gold": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352624665
+    },
+    "midnight_gold": {
+      "verdict": "keep",
+      "rating": 8,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352630645
+    },
+    "satin_gold": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780352634745
+    },
+    "rose_gold": {
+      "verdict": "rebuild",
+      "rating": null,
+      "reasons": [
+        "dup"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780352639182
+    },
+    "gradient_chrome_matte": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353050498
+    },
+    "milagro_silver": {
+      "verdict": "new",
+      "rating": 3,
+      "reasons": [],
+      "name": "",
+      "notes": "These types of finishes just won't work well for this area of the program",
+      "ts": 1780353079369
+    },
+    "electric_arc": {
+      "verdict": "rebuild",
+      "rating": 3,
+      "reasons": [
+        "big",
+        "flat"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780353093386
+    },
+    "kinpaku_blaze": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353100420
+    },
+    "brushed_metal_fine": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353105894
+    },
+    "void": {
+      "verdict": "rebuild",
+      "rating": 4,
+      "reasons": [
+        "dup",
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780353112406
+    },
+    "gradient_metallic_satin": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353118732
+    },
+    "gradient_pearl_chrome": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353125462
+    },
+    "tengu_storm": {
+      "verdict": "new",
+      "rating": 3,
+      "reasons": [],
+      "name": "",
+      "notes": "These finishes just don't do as well in this environment. ",
+      "ts": 1780353142950
+    },
+    "ms_frozen_inferno": {
+      "verdict": "new",
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353150270
+    },
+    "bosozoku_riot": {
+      "verdict": "new",
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353154198
+    },
+    "seismic": {
+      "verdict": "new",
+      "rating": 3,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353162714
+    },
+    "weather_sun_fade": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353167754
+    },
+    "weathered_paint": {
+      "verdict": "rebuild",
+      "rating": 3,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780353173742
+    },
+    "weather_ice_storm": {
+      "verdict": "rebuild",
+      "rating": 3,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780353180030
+    },
+    "ember": {
+      "verdict": "rebuild",
+      "rating": 3,
+      "reasons": [
+        "artifact",
+        "unreal"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780353193338
+    },
+    "gradient_candy_frozen": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353197930
+    },
+    "gradient_candy_matte": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353202288
+    },
+    "maguey_pearl": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353208680
+    },
+    "trizone_anodized_candy_silk": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353213624
+    },
+    "glass_armor": {
+      "verdict": "rebuild",
+      "rating": 4,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780353223334
+    },
+    "aniso_diagonal_candy": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353227404
+    },
+    "windsor_guard_gloss": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353233612
+    },
+    "candy": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353237028
+    },
+    "spectrum_reptile_macro": {
+      "verdict": "rebuild",
+      "rating": 4,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780353242450
+    },
+    "sparkle_diamond_dust": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353247090
+    },
+    "spectrum_reptile_micro": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353252720
+    },
+    "goodwood_heritage_flake": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353262182
+    },
+    "spectrum_reptile_wave": {
+      "verdict": "rebuild",
+      "rating": 4,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780353267740
+    },
+    "mosaic_jaguar": {
+      "verdict": "new",
+      "rating": 4,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353280574
+    },
+    "spectrum_reptile_classic": {
+      "verdict": "rebuild",
+      "rating": 4,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780353288478
+    },
+    "sparkle_constellation": {
+      "verdict": null,
+      "rating": 4,
+      "reasons": [
+        "dup",
+        "flat"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780353300978
+    },
+    "hypercane": {
+      "verdict": "rebuild",
+      "rating": 4,
+      "reasons": [
+        "big",
+        "dup"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780353313135
+    },
+    "oni_bloodshift": {
+      "verdict": "rebuild",
+      "rating": 4,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353323413
+    },
+    "spectrum_holographic_macro": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353329870
+    },
+    "iridescent": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353336160
+    },
+    "mini_cooper_flip": {
+      "verdict": "rebuild",
+      "rating": 5,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353342576
+    },
+    "spectrum_vapor_macro": {
+      "verdict": "rebuild",
+      "rating": 3,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780353348986
+    },
+    "hyperflip_crimson_prism": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353357906
+    },
+    "rose_chrome": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353368273
+    },
+    "jorogumo_silk": {
+      "verdict": "rebuild",
+      "rating": 4,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353380840
+    },
+    "gradient_spectraflame_void": {
+      "verdict": "rebuild",
+      "rating": 4,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780353391033
+    },
+    "blackbody": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353395838
+    },
+    "wormhole": {
+      "verdict": "keep",
+      "rating": 5,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353400028
+    },
+    "kurogane_rain": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780353403798
+    },
+    "tesla_coil": {
+      "verdict": "rebuild",
+      "rating": 5,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780353411780
+    },
+    "rising_sun_flare": {
+      "verdict": "rebuild",
+      "rating": 5,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780353423945
+    },
+    "chrome_outline": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "candy_apple": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "flake_forward": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "shattered_glass": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "crushed_glass": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "pearl_veil": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "silk_matte": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "liquid_chrome": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "black_chrome": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "show_gloss": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "wet_clearcoat": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "piano_black": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "liquid_silver": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "polished_steel": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "rim_flash": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "show_mirror": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "pearl_white": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "pearl_deep": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "candy_deep": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "candy_red": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "candy_blue": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "colorshift": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "oil_slick": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "opal_glow": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "prism_travel": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "ghost_pearl": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "rose_gold_pearl": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "champagne_pearl": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "dead_flat": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "satin": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "velvet_deep": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "suede": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "matte_metallic": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "eggshell": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "matte_chrome": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "stealth_flat": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "concrete": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "chalk": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "micro_metalflake": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "coarse_metalflake": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "glitter_storm": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "diamond_dust": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "flip_flake": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "starlight": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "crackle_break": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "fractured_ice": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "hex_shimmer": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "static_noise": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "snowflake_flake": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "brushed_aluminum": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "machined_billet": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "gunmetal": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "damascus": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "titanium_burn": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "bead_blasted": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "hairline_steel": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "knurled": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "carbon_gloss": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "carbon_matte": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "kevlar_weave": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "fiberglass": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "honeycomb_tech": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "circuit_board": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "perforated": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "brushed_patina": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "rust_bloom": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "worn_clearcoat": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "sun_faded": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "oxidized_metal": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "battle_worn": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "primer_grey": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "bare_metal_weathered": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "dust_coat": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "mud_splatter": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "mercury_pool": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "liquid_glass": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "plasma_flow": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "nebula_drift": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "aurora_flow": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "thermal_shift": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "galaxy_metal": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "ferrofluid": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "neon_edge": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "uv_reactive": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "ember_glow": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "ice_glow": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "toxic_glow": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "infrared": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "hammered_metal": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "orange_peel": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "leather_grain": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "snakeskin": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "crocodile": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "water_droplets": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "frost_crystal": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "marble_vein": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "woodgrain": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "stone_rough": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "vantablack": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "radar_absorb": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "tactical_grey": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "night_ops": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "cerakote": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "digi_camo_spec": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "two_stage_metallic": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "kandy_flake": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "show_pearl_chrome": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "flip_chrome": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "rootbeer_kandy": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "lime_pearl": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "violet_flip": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "gold_leaf": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "bronze_age": {
+      "verdict": null,
+      "rating": null,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 0
+    },
+    "weather_volcanic_ash": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780355392147
+    },
+    "aniso_wave_titanium": {
+      "verdict": "keep",
+      "rating": 8,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780355399441
+    },
+    "trizone_stealth_spectra_frozen": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780355404585
+    },
+    "weather_hood_bake": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780355410537
+    },
+    "weather_ocean_mist": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780355416885
+    },
+    "kintsugi_bloom": {
+      "verdict": "rebuild",
+      "rating": 3,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "Way too little details",
+      "ts": 1780355437133
+    },
+    "sparkle_lightning_bug": {
+      "verdict": "keep",
+      "rating": 7,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780355441771
+    },
+    "black_ice": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780355447961
+    },
+    "spectrum_mirage_micro": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780355452606
+    },
+    "volcanic_obsidian": {
+      "verdict": "rebuild",
+      "rating": 3,
+      "reasons": [
+        "big"
+      ],
+      "name": "",
+      "notes": "",
+      "ts": 1780355467272
+    },
+    "topographic_dense": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780355477374
+    },
+    "reactive_matte_shine": {
+      "verdict": "keep",
+      "rating": 6,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780356171739
+    },
+    "living_electric_current": {
+      "verdict": "keep",
+      "rating": 5,
+      "reasons": [],
+      "name": "",
+      "notes": "",
+      "ts": 1780356177500
+    }
+  },
+  "updated": 1780356177
+}

@@ -1,0 +1,114 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon_toxic_green",
+  "display_name": "Radium Capillary",
+  "carrier": "black porous ceramic with dense radium-green capillary mineral deposits",
+  "material_story": {
+    "M": "mineral lips, bright meniscus beads, and acid crust expose the strongest radium deposit",
+    "R": "broken porous pockets, dry gaps, acid crust, pits, and branch damage raise roughness",
+    "Cc": "intact ceramic, wet mineral pools, blue-green salts, and meniscus deposits retain coat while rupture loses it"
+  },
+  "vetoes": [
+    "slime or drips",
+    "veins",
+    "lightning",
+    "long lines",
+    "biological worms",
+    "circuit traces",
+    "hexes or grids",
+    "generic green noise",
+    "macro voids"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 2.131177,
+  "material_stats": {
+    "std": {
+      "M": 82.78933,
+      "R": 83.298569,
+      "Cc": 83.260826
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.433822,
+      "M_Cc": 0.445264,
+      "R_Cc": 0.018194
+    }
+  },
+  "geometry_stats": {
+    "family_count": 11,
+    "families": {
+      "acid-yellow crust flakes": 1823,
+      "black porous ceramic facets": 7174,
+      "blue-green shadow salts": 438,
+      "bright meniscus beads": 1107,
+      "broken porous pockets": 371,
+      "dark occlusion pits": 872,
+      "dry mineral gaps": 836,
+      "finite branch stubs": 1118,
+      "mineral lips": 1598,
+      "short capillary deposits": 3605,
+      "short kinked capillary legs": 170
+    },
+    "width_native_min": 8.0,
+    "width_native_median": 17.493,
+    "width_native_p90": 25.899,
+    "width_native_max": 31.99,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "black porous ceramic facets": 0.329187,
+    "short kinked capillary deposits": 0.131994,
+    "mineral lips": 0.04239,
+    "bright meniscus beads": 0.048162,
+    "broken porous pockets": 0.030559,
+    "acid-yellow crust": 0.035547,
+    "blue-green shadow salts": 0.041749,
+    "finite branch stubs": 0.034505,
+    "dry mineral gaps": 0.022295,
+    "dark occlusion pits": 0.022551,
+    "wet mineral pools": 0.211475,
+    "intact ceramic/salt pools": 0.633037
+  },
+  "provenance": {
+    "ticket": "SPB-105",
+    "date": "2026-08-27",
+    "tick": "RC-P2",
+    "verdict": "RC-P1's mechanically rich but near-uniform quadrilaterals collapsed into green confetti; RC-P2 separates the ceramic, salt, capillary, meniscus, crust, and rupture silhouettes.",
+    "metric_movement": {
+      "ceramic_mask_coverage": [
+        0.177341,
+        0.329187
+      ],
+      "picker_64_luma_std": [
+        0.072824,
+        0.082347
+      ],
+      "max_abs_material_correlation": [
+        0.528839,
+        0.445264
+      ]
+    }
+  }
+}

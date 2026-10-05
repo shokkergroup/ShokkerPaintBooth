@@ -1,0 +1,219 @@
+{
+  "sprint": "Owner-authorized 14h AI/offline helper",
+  "date": "2026-10-04",
+  "status": "PASS_WITH_OPEN_GATES",
+  "runtime": "Gen3 Runtime6",
+  "installed": false,
+  "sources": {
+    "installed": false,
+    "capturedUTC": "2026-10-04T11:53:32.403829+00:00",
+    "purpose": "Runtime6 final combined AI/offline acceptance; exact sources, private projects, provider blocked. No runtime evidence claimed before native execution.",
+    "hashes": {
+      "js/spb-ai-complete-instruction-guard.js": "ba0af1f9e217695ed733dde81c8dec1a735dd1f052e8c06b3098866d392a551c",
+      "js/spb-ai-instruction-intent-guard.js": "3267dc263cf85bcb34b55588997acba737f4a47e7bdde490face4d9d6271fb60",
+      "js/spb-ai-lease.js": "de276372a763310ec051db141fcb1d601e11dbf193843e2b21a405226f782134",
+      "js/spb-ai-material-controls.js": "30b18516a3f13dd7854f6ef36fdf5eb7a37985537e63c4c6405fefa690c6baec",
+      "js/spb-ai-operation.js": "47587a1a53a35ce7e58825bac864bd75c2421d26c19791957f57bb199a7000c6",
+      "js/spb-ai-part-memory-project.js": "fff0127a7570c3fa8eaf2ad431f1ce2717763a2cd5b1688b15d18cc4f3c98d17",
+      "js/spb-ai-part-memory.js": "6e0d1e1466feca847d3a1c3300f32779ba610f3b6c72c7904a6c8fd97a6b3652",
+      "js/spb-ai-receipt-explainer.js": "25aba5ee85e9c9fb7efe3603fce22b140ccb09d2cbd09a9303ac6ab00530eac3",
+      "js/spb-pro-ai.js": "87af037611933a108dceee1e30ecb28e3cb0608448e278617f3646022948aa18",
+      "js/spb-pro-design.js": "4648de3231015497cc9ff816612a542097a1ad14038a7210753f6cdbfd88d832",
+      "js/spb-pro-edit.js": "7d063444021f8f4144b96130800badfe62741cdefc9104417f3e99af65270767",
+      "js/spb-pro-zone-kit.js": "ea9e169b909a30a6431f7fd48b87658b8258d480f165d304cb0ca5dac8983af7",
+      "js/spb-self-help.js": "d1a76c2a5b8616133f8226602d43245bfc7dcc2b99b6bbedea68af0641a2d6be",
+      "paint-booth-2-state-zones.js": "710b4d8b1b7f229d334e06d1eb331ff48d9873a7cd139b276d2bab3ebfd591e7",
+      "paint-booth-3-canvas.js": "cb4cc4679f69cbe206e02dd512c7f197f971482b6bdb088e5b78a2f397d3cdc9"
+    },
+    "backend": {
+      "server.py": "a845f7ee1cd96b9f87fe1af85d42a1b86dd2059e2a5893e47006a08d773ac2ce",
+      "server_routes/psd_import_routes.py": "6a0fce336fc5ef54eb80ef92a220abc0d81e5b22107b2bf3a4e3b0872f51a95d"
+    }
+  },
+  "native": {
+    "colour": {
+      "queueLength": 1,
+      "kind": "edit",
+      "proof": true,
+      "ownerSame": true,
+      "color": "#1f8a3b",
+      "finish": "f_chrome",
+      "paint": {
+        "changed": 29873,
+        "outside": 0,
+        "channels": [
+          29873,
+          29873,
+          29873,
+          0
+        ]
+      },
+      "specSame": true,
+      "layersSame": true,
+      "entry": [
+        {
+          "lines": [
+            "Roof recoloured red: colour #1f8a3b"
+          ],
+          "notes": [],
+          "undoable": true
+        }
+      ]
+    },
+    "colourUndo": {
+      "paintExact": true,
+      "specExact": true,
+      "layersExact": true
+    },
+    "finish": {
+      "queueLength": 1,
+      "kind": "edit",
+      "proof": true,
+      "sameOwner": true,
+      "colorSame": true,
+      "finish": "f_clear_satin",
+      "paintExact": true,
+      "spec": {
+        "changed": 29873,
+        "outside": 0,
+        "channels": [
+          29873,
+          29873,
+          29873,
+          0
+        ]
+      },
+      "layersExact": true,
+      "notes": []
+    },
+    "finishExplicitKeep": {
+      "queue": 0,
+      "text": "I could not verify an existing zone for only the roof. A new finish could restore the source paint, so I have not queued a change. Select the intended zone to change its finish, or name the color to use."
+    },
+    "material": {
+      "queueLength": 1,
+      "queueMetadata": [
+        "_spbPartRegKey",
+        "_spbPartOwnerName",
+        "_spbPartForgetKey",
+        "_spbScopedPartProof",
+        "_spbMaterialBefore"
+      ],
+      "sameOwner": true,
+      "colorSame": true,
+      "finishSame": true,
+      "maskSame": true,
+      "paintExact": true,
+      "spec": {
+        "changed": 29873,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          29873,
+          0
+        ]
+      },
+      "layersExact": true,
+      "shifts": {
+        "metal": 0,
+        "rough": 0,
+        "clearcoat": 20
+      },
+      "notes": []
+    },
+    "materialUndo": {
+      "undo": true,
+      "paintExact": true,
+      "specExact": true,
+      "layersExact": true,
+      "color": "#1450b4",
+      "finish": "f_chrome"
+    },
+    "readOnly": {
+      "rows": [
+        {
+          "text": "Explain what changing only the roof to blue would do. Do not apply it.",
+          "queueLength": 0,
+          "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+        },
+        {
+          "text": "Apply this request: paint the hood gold, but do not execute the change; just explain it.",
+          "queueLength": 0,
+          "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+        },
+        {
+          "text": "The roof is blue without applying changes; make only the roof green.",
+          "queueLength": 0,
+          "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+        },
+        {
+          "text": "The roof is currently green without executing anything; change the roof to blue.",
+          "queueLength": 0,
+          "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+        },
+        {
+          "text": "Make only the upper body blue.",
+          "queueLength": 0,
+          "reply": "I cannot safely infer what “upper body” means on this car. Nothing was changed. Name a supported part or zone, such as the hood, roof or left side."
+        },
+        {
+          "text": "Make the whole car blue except the upper body.",
+          "queueLength": 0,
+          "reply": "I cannot safely infer what “upper body” means on this car. Nothing was changed. Name a supported part or zone, such as the hood, roof or left side."
+        },
+        {
+          "text": "Make the blue on the front section green.",
+          "queueLength": 0,
+          "reply": "I cannot safely infer what “front section” means on this car. Nothing was changed. Name a supported part or zone, such as the hood, roof or left side."
+        }
+      ],
+      "paintExact": true,
+      "specExact": true,
+      "zonesExact": true,
+      "layersExact": true,
+      "providers": 0
+    },
+    "source": {
+      "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+      "fingerprint": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf",
+      "generation": 3
+    },
+    "providers": 0
+  },
+  "coldSave": {
+    "firstOpenedProject": "AI14H Runtime5 Fresh Blue Roof.spbproj",
+    "savedBeforeAnyHelperAsk": true,
+    "inactivePendingRecordCount": 1,
+    "liveProofBeforeSave": false,
+    "newFile": "_easy_claude_work/ai14h_generation3_audit/runtime6-projects/AI14H Runtime6 Cold Blue Roof.spbproj",
+    "bytes": 2983688,
+    "sha256": "b0d121c8e18761ebace9b41d2ad0c75e9a4e424a54e9b95766108ad8121b3e0c",
+    "embeddedLayers": 11,
+    "reopenedNewFile": true,
+    "firstColourAskReboundFreshProof": true,
+    "sameZoneId": "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a"
+  },
+  "parserChecks": {
+    "sourceEdit": "7d063444021f8f4144b96130800badfe62741cdefc9104417f3e99af65270767",
+    "sourceDesign": "4648de3231015497cc9ff816612a542097a1ad14038a7210753f6cdbfd88d832",
+    "phrases": 477,
+    "mismatches": 0,
+    "toolRequests": 17,
+    "toolMismatches": 0,
+    "diagnosticPhrases": 77,
+    "allExitCodes": 0
+  },
+  "openGates": [
+    "Explicit keep-current finish request blocked by earlier W80 guard; plain finish request passed actual output. W111 repair pending.",
+    "W105 contextual help routing gaps; W108/W109 repair/review pending.",
+    "W110 additional material grammar private candidate has controlled-route evidence only.",
+    "Actual current-session compatibility on private legacy backend and promotion still pending."
+  ],
+  "limits": [
+    "Actual previews are 1024x1024; source masks and layer pixels are 2048x2048. No 2048 export or production render acceptance claimed.",
+    "Cold Save/Open was a real .spbproj and actual UI Name dialog, in an isolated private project namespace; owner project files were untouched.",
+    "Runtime6 sources were immutable; later candidate changes are not covered by this report.",
+    "No provider or DeepSeek/OpenRouter calls/attempts, live backend restart, installer or release."
+  ]
+}

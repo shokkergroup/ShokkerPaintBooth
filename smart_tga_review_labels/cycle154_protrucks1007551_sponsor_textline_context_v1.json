@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "paint_label": "protrucks pro4truck/car_num_1007551.tga",
+  "inspection_records": "_smart_tga_runs/cycle146_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle146_route_pressure_v1/protrucks_pro4truck_car_num_1007551/component_records.json",
+  "review_scope": "Cycle 154 Protruck sponsor textline / wordmark strip cleanup plus source-Sponsors template-panel negatives.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 10,
+      "expected_bbox": [182, 108, 141, 39],
+      "target_layer": "sponsors",
+      "label": "yokohama_wordmark_panel_upper_left",
+      "note": "Black YOKOHAMA sponsor wordmark panel; should stay Sponsors rather than becoming Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 17,
+      "expected_bbox": [633, 264, 292, 21],
+      "target_layer": "sponsors",
+      "label": "long_general_tire_sponsor_textline_upper_right",
+      "note": "Long white sponsor textline/strip paired with nearby YOKOHAMA logo; should remain editable Sponsors, not Paint."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 18,
+      "expected_bbox": [729, 297, 47, 11],
+      "target_layer": "sponsors",
+      "label": "yokohama_wordmark_fragment_side",
+      "note": "Small high-edge YOKOHAMA wordmark fragment; should stay Sponsors instead of Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 19,
+      "expected_bbox": [781, 297, 18, 11],
+      "target_layer": "sponsors",
+      "label": "yokohama_wordmark_fragment_side",
+      "note": "Small detached YOKOHAMA lettering/mark fragment; should remain Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 20,
+      "expected_bbox": [800, 301, 9, 6],
+      "target_layer": "sponsors",
+      "label": "tiny_yokohama_wordmark_fragment_side",
+      "note": "Tiny residual piece of the YOKOHAMA sponsor mark; keep with Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 22,
+      "expected_bbox": [629, 337, 52, 334],
+      "target_layer": "sponsors",
+      "label": "vertical_general_tire_sponsor_strip_center",
+      "note": "Tall low-saturation GENERAL TIRE sponsor strip; should not be absorbed into Paint."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 27,
+      "expected_bbox": [756, 699, 81, 12],
+      "target_layer": "sponsors",
+      "label": "yokohama_wordmark_strip_lower_right",
+      "note": "Lower-right YOKOHAMA sponsor strip; should stay Sponsors rather than Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 35,
+      "expected_bbox": [207, 875, 81, 13],
+      "target_layer": "sponsors",
+      "label": "yokohama_wordmark_strip_lower_left",
+      "note": "Lower-left YOKOHAMA sponsor strip; mirrored strip should be retained as Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 0,
+      "expected_bbox": [833, 3, 94, 41],
+      "target_layer": "template",
+      "label": "flat_template_panel_top_right_from_sponsors",
+      "note": "White/gray template part initially routed through Sponsors; should become Template, not Sponsors or Paint."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 4,
+      "expected_bbox": [820, 48, 100, 96],
+      "target_layer": "template",
+      "label": "gray_template_panel_top_right_from_sponsors",
+      "note": "Flat gray template panel near top-right body part cluster; should be Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 14,
+      "expected_bbox": [875, 157, 147, 63],
+      "target_layer": "template",
+      "label": "wide_gray_template_panel_top_right_from_sponsors",
+      "note": "Wide gray/white template panel that is not a sponsor logo; should be Template instead of Paint."
+    }
+  ]
+}

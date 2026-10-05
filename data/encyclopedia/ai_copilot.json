@@ -1,0 +1,1672 @@
+{
+ "domain": "ai_copilot",
+ "version": 1,
+ "articles": [
+  {
+   "id": "ai_copilot.chat_mode",
+   "title": "Chat mode: tell Shokker what you want",
+   "domain": "ai_copilot",
+   "summary": "CHAT opens a studio with the helper on the left and a big live preview on the right. Say what you want in plain words and the car changes, with Undo for every step.",
+   "what": "Chat is the easy front door to the same booth. It works on the same paint, zones and spec as PRO, so nothing is a second copy. The helper on the left builds on what is on the car, and the car on the right updates as it goes. Tabs show the Paint, the Shine (spec) or the Car parts Shokker knows. A view strip under the car mirrors the Full Editor views, and a layer bar on the right lets you lock the helper to one layer. Every step is saved under Versions, and Compare slides between before and after. It works with no key at all: the built-in helper has a guided builder, a design library of more than 70 themes, and Surprise me. An AI key or Claude through MCP adds free-form chat.",
+   "when": [
+    "You would rather describe the look than set sliders.",
+    "You want four quick design ideas to react to.",
+    "You are editing a finished livery (\"make the black matte\")."
+   ],
+   "how": [
+    "Load your template or paint, then click CHAT in the mode switch (or the AI button, bottom right).",
+    "Type what you want, for example \"make the hood matte black\", \"retro red white and blue stripes\", or \"numbers gold chrome\", and press Enter.",
+    "Look at the preview. Press Undo under that answer if it is not right, or Another take for a different idea.",
+    "Press Surprise me for four complete ideas tried on your car, or Colours from a picture to design in a logo's colours.",
+    "Press Render & save when you like it, or Full editor to continue in PRO."
+   ],
+   "controls": [
+    {
+     "label": "Surprise me",
+     "range": "button",
+     "default": "",
+     "effect": "Four complete designs for your car; tap the one you like.",
+     "inv": "ai.panel"
+    },
+    {
+     "label": "Colours from a picture",
+     "range": "button",
+     "default": "",
+     "effect": "Reads the three strongest colours of a logo, photo or flag and designs in them.",
+     "inv": "ai.panel"
+    },
+    {
+     "label": "Compare",
+     "range": "button",
+     "default": "",
+     "effect": "A slider between before and after.",
+     "inv": "ai.panel"
+    },
+    {
+     "label": "Versions",
+     "range": "filmstrip",
+     "default": "",
+     "effect": "Every step is saved; click one to go back.",
+     "inv": "ai.panel"
+    },
+    {
+     "label": "Lock to layer",
+     "range": "chip",
+     "default": "off",
+     "effect": "Limits the helper to one layer, so a request such as \"make it red\" changes only that layer.",
+     "inv": "ai.panel"
+    }
+   ],
+   "tips": [
+    "Be as specific as you like about the part: \"the rear half of the left side\" works once the car's parts are known.",
+    "Chat never touches numbers, sponsors or logos unless you name them.",
+    "Say \"undo\" to take back the last step, or \"start over\" to begin again."
+   ],
+   "pitfalls": [
+    "Chat changes zones and layer settings only. It does not open files, import a paint, save or export; do those in PRO.",
+    "If the helper says it does not know the car, show it the parts once (see the car parts articles)."
+   ],
+   "related": [
+    "ai_copilot.offline_vs_ai",
+    "ai_copilot.edit_existing",
+    "ai_copilot.picking_colours_in_words",
+    "cars.teach_parts",
+    "workflows.pro_or_chat"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "ai.panel"
+    },
+    {
+     "do": "control",
+     "id": "ai.input",
+     "label": "Tell me what you want... box"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "ai.fab",
+    "ai.input",
+    "ai.undo",
+    "ai.another",
+    "hdi.use_chat"
+   ],
+   "sources": [
+    "paint-booth-v2.html:1925-1934",
+    "js/spb-chat-studio.js:3-8",
+    "js/spb-chat-studio.js:32-46",
+    "js/spb-pro-ai.js:3842-3856",
+    "scripts/ai_atlas/ui_map.json:13072"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "type what i want",
+    "describe the paint in words",
+    "talk to shokker",
+    "chat with the app",
+    "tell it what to paint",
+    "paint by typing",
+    "chat panel"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Same booth, different front door",
+     "body": "Chat works on the same paint, zones and shine as PRO, so nothing is a second copy. The helper is on the left, the live car on the right. Tabs show the Paint, the Shine (spec) or the Car parts Shokker knows. A view strip under the car mirrors the Full Editor views, and a layer bar on the right lets you lock the helper to one layer so \"make it red\" changes only that layer."
+    },
+    {
+     "heading": "Every step is kept",
+     "body": "Each change is saved under Versions; click one to go back. Compare slides between before and after. Under each answer, Undo takes that one step back and Another take gives a different idea. You can also say \"undo\" or \"start over\"."
+    },
+    {
+     "heading": "It works with no key",
+     "body": "The built-in helper is a guided builder with a library of more than 70 design themes and Surprise me, which tries four complete ideas on your car. Adding an AI key or connecting Claude through MCP adds free-form chat on top."
+    },
+    {
+     "heading": "What it will not do",
+     "body": "Chat changes zones and layer settings only. It does not open files, import a paint, save or export; do those in PRO. Numbers, sponsors and logos are not touched unless you name them."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Start from a plain request",
+     "goal": "Get a first look without touching a slider",
+     "settings": {
+      "Mode": "CHAT",
+      "Message": "make the hood matte black",
+      "Then": "Look at the preview and press Undo if it is wrong"
+     },
+     "result": "The hood zone gets a matte black finish and the car on the right updates."
+    },
+    {
+     "title": "Four ideas at once",
+     "goal": "React to complete designs instead of building one",
+     "settings": {
+      "Button": "Surprise me",
+      "Pick": "Tap the one you like",
+      "Finish": "Render & save or Full editor"
+     },
+     "result": "Four complete designs tried on your car; the one you tap stays."
+    },
+    {
+     "title": "Design in a logo's colours",
+     "goal": "Use the colours of a sponsor picture",
+     "settings": {
+      "Button": "Colours from a picture",
+      "Picture": "A logo, photo or flag"
+     },
+     "result": "The three strongest colours are read and the design uses them."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Is Chat a different program from PRO?",
+     "a": "No. It edits the same paint, zones and spec. Full editor takes you back to PRO."
+    },
+    {
+     "q": "Do I need an AI key?",
+     "a": "No. The guided builder, the 70-plus themes and Surprise me work free."
+    },
+    {
+     "q": "Will Chat change my numbers?",
+     "a": "Not unless you name them."
+    },
+    {
+     "q": "How do I go back a step?",
+     "a": "Press Undo under the answer, say \"undo\", or click an earlier step in Versions."
+    },
+    {
+     "q": "Can Chat save my paint?",
+     "a": "No. Press Render & save, or use PRO."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Chat says it does not know your car",
+     "cause": "The car is not in the library yet",
+     "fix": "Show it the parts once; it remembers them."
+    },
+    {
+     "symptom": "You asked Chat to open a file and nothing happened",
+     "cause": "Chat does not do file jobs",
+     "fix": "Open the file in PRO, then come back to Chat."
+    }
+   ],
+   "protips": [
+    "Lock to layer is the safest way to edit a layered livery: the helper then cannot reach anything outside that layer.",
+    "Be specific about the part: \"the rear half of the left side\" works once the car's parts are known."
+   ],
+   "screens": [
+    "ui_ai_panel"
+   ]
+  },
+  {
+   "id": "ai_copilot.offline_vs_ai",
+   "title": "Offline helper, AI key or Claude: what each does",
+   "domain": "ai_copilot",
+   "summary": "The built-in helper is free and works offline as a guided builder. For free-form chat, add a key (DeepSeek through OpenRouter) or connect Claude or ChatGPT through MCP.",
+   "what": "There are three ways to talk to Shokker. 1. The built-in helper needs no key and no internet. It is a guided builder: you choose what to change (a colour found on the car, a named part, a layer, numbers or sponsors, the whole car), then what to do (recolour, add a finish, add a pattern, change the shine) and which look, picked from real catalogue thumbnails, with Run and Undo. If you type a sentence, it pre-fills the builder with what it understood and asks about the rest. Known words in your text are highlighted and open a short card from the Encyclopedia. 2. Free chat with the AI key: the Ask DeepSeek instead button sends the same text to the model chosen in the gear (DeepSeek v4.1 Flash is recommended, about a half cent per request). 3. MCP: connect Claude or ChatGPT/Codex on your own plan and talk to them; they drive the booth. Every AI change has an Undo, and numbers, sponsors and logos are not touched unless you name them.",
+   "when": [
+    "You are deciding whether you need an AI key.",
+    "The built-in helper did not understand a sentence and you want to know what to do."
+   ],
+   "how": [
+    "Start with the built-in helper. Type the request, check how it read it, and press Run.",
+    "If it cannot understand part of it, an open step with choices shows; pick one, or press Ask DeepSeek instead.",
+    "For open-ended chat, add an OpenRouter key in the Chat gear (see the key article), or connect Claude or ChatGPT (see the MCP article).",
+    "Press Undo under any answer to take it back."
+   ],
+   "controls": [
+    {
+     "label": "Ask DeepSeek instead",
+     "range": "button",
+     "default": "",
+     "effect": "Sends the same text to the online model chosen in the gear. Needs a key.",
+     "inv": "ai.panel"
+    }
+   ],
+   "tips": [
+    "Most buyers never need a key; the builder, the 70-plus themes and Surprise me work free.",
+    "The built-in helper never guesses: what it cannot read becomes an open question with choices."
+   ],
+   "pitfalls": [
+    "The online model costs a little per request and is capped per day; the built-in helper costs nothing.",
+    "An outside assistant (Claude or ChatGPT) and the in-app copilot should not both edit at once; use Take over in SPB to switch."
+   ],
+   "related": [
+    "ai_copilot.gear_key_model",
+    "ai_copilot.mcp_claude_chatgpt",
+    "ai_copilot.what_ai_sees",
+    "ai_copilot.chat_mode",
+    "ai_copilot.picking_colours_in_words"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "hdi.ai_key",
+    "hdi.use_claude_mcp",
+    "hdi.use_chatgpt",
+    "doc.04.works_without_an_ai_key",
+    "doc.04.three_ways_to_talk_to_shokker_all_optional"
+   ],
+   "sources": [
+    "js/spb-offline-builder.js:1-14",
+    "docs/ai_knowledge/04_limits_and_app_map.md:25-30",
+    "js/spb-ai-core.js:131-137",
+    "scripts/ai_atlas/ui_map.json:13089"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "do i need an ai key",
+    "offline helper vs ai",
+    "which helper should i use",
+    "does the helper need internet",
+    "is the helper offline",
+    "built in helper or ai",
+    "difference between helper and claude"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Three ways to talk",
+     "body": "One: the built-in helper needs no key and no internet. It is a guided builder: you choose what to change, what to do, and which look from real catalogue thumbnails, then Run and Undo. Two: free chat with the AI key, where Ask DeepSeek instead sends the same text to the model chosen in the gear. Three: MCP, where Claude or ChatGPT/Codex on your own plan drive the booth."
+    },
+    {
+     "heading": "What \"what to change\" means",
+     "body": "You pick a colour found on the car, a named part, a layer, numbers or sponsors, or the whole car. Then you pick what to do (recolour, add a finish, add a pattern, change the shine). If you type a sentence the builder is pre-filled with what it understood and asks about the rest. Known words in your text are highlighted and open a short card from the Encyclopedia."
+    },
+    {
+     "heading": "The built-in helper never guesses",
+     "body": "What it cannot read becomes an open question with choices. That is why it is safe to try first."
+    },
+    {
+     "heading": "Cost and limits",
+     "body": "The online model costs a little per request (DeepSeek v4.1 Flash is about a half cent) and is capped per day. The built-in helper costs nothing. An outside assistant and the in-app copilot should not both edit at once; use Take over in SPB to switch."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Try the free helper first",
+     "goal": "Get a change done without a key",
+     "settings": {
+      "Type": "make the stripes gold",
+      "Check": "How it read the request",
+      "Press": "Run"
+     },
+     "result": "The stripes change. If part of the sentence was unclear, an open step with choices appears."
+    },
+    {
+     "title": "Hand a hard sentence to the online model",
+     "goal": "Get free-form help when the builder cannot read a request",
+     "settings": {
+      "Needs": "A key in the Chat gear",
+      "Button": "Ask DeepSeek instead"
+     },
+     "result": "The same text goes to the model chosen in the gear."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Do I need a key?",
+     "a": "Most buyers never do. The builder, the themes and Surprise me work free."
+    },
+    {
+     "q": "Does the free helper send my paint anywhere?",
+     "a": "No. It works on your computer."
+    },
+    {
+     "q": "How much does the online model cost?",
+     "a": "DeepSeek v4.1 Flash, the recommended one, is about half a cent per request, and a daily cap protects you."
+    },
+    {
+     "q": "Can Claude and the in-app helper edit together?",
+     "a": "They should not. Use Take over in SPB to switch who is editing."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You type a long sentence and get a question back",
+     "cause": "The built-in helper asks rather than guessing",
+     "fix": "Answer the question by clicking a choice, or press Ask DeepSeek instead."
+    },
+    {
+     "symptom": "Changes from Claude appear while you work in the panel",
+     "cause": "An outside assistant has control",
+     "fix": "Press Take over in SPB."
+    }
+   ],
+   "protips": [
+    "Say the part and the look in the same sentence; the builder pre-fills both and you only confirm."
+   ],
+   "screens": [
+    "ui_mode_pill",
+    "ui_ai_panel"
+   ]
+  },
+  {
+   "id": "ai_copilot.edit_existing",
+   "title": "Changing what is already on the car",
+   "domain": "ai_copilot",
+   "summary": "Most people start from a finished livery. Tell Shokker \"make the black matte\" or \"numbers purple metallic\" and it finds that colour on the car and changes only that.",
+   "what": "Shokker reads the real colours in your paint (not the template's dead space), so \"the black\", \"all the red\" or \"the dark blue\" point at pixels that are actually there. It then changes only those: a look alone (matte, satin, chrome, powder coat, wet look) changes the shine and keeps your colour; a new colour repaints exactly those pixels; both together do both. Words such as \"a bit glossier\" or \"darker\" are understood too. If you name a colour that is not on the car (say pink when the car has red), it asks rather than guessing. A second request on the same colour edits the zone it made, so changes stack instead of resetting. Numbers, sponsors and logos are changed only when you name them.",
+   "when": [
+    "You loaded a finished paint and want to change one colour or a look.",
+    "You want a matte or satin version of a livery.",
+    "You want numbers or stripes a different colour."
+   ],
+   "how": [
+    "Load the finished paint (PSD with layers is best, or a flat TGA).",
+    "In Chat type for example \"make the black matte\", \"numbers purple and metallic\", \"everything that is white, make it satin\", or \"powder coat the yellow\".",
+    "Check how it read the request in the builder, then press Run.",
+    "Not right? Press Undo under that answer. Say \"a bit more\" or \"do the same for the roof\" to keep going."
+   ],
+   "controls": [],
+   "tips": [
+    "A look word alone (matte, satin, chrome) keeps your colours exactly; it changes only the shine. Add a colour word to change the colour too.",
+    "Say \"except the numbers\" or \"but leave the numbers alone\" to protect them."
+   ],
+   "pitfalls": [
+    "On a flat paint (no layers), numbers, sponsors and stripes are not known; Shokker asks you to show them first.",
+    "\"Red matte\" may include a dark-red tail-light lens because it matches by colour."
+   ],
+   "related": [
+    "ai_copilot.chat_mode",
+    "ai_copilot.what_ai_sees",
+    "recipes.edit_one_thing",
+    "recipes.matte_black",
+    "support.numbers_vanished"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "sources": [
+    "docs/EDIT_EXISTING_HELPER.md:1-35",
+    "docs/EDIT_EXISTING_HELPER.md:48-58"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "change what is already on the car",
+    "edit my existing livery",
+    "change the current paint",
+    "edit the current livery",
+    "tweak what i already have",
+    "change colours already on the car"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "It reads the real colours",
+     "body": "Shokker reads the real colours in your paint, not the template's dead space, so \"the black\", \"all the red\" or \"the dark blue\" point at pixels that are actually there, and it changes only those."
+    },
+    {
+     "heading": "Look word, colour word, or both",
+     "body": "A look alone (matte, satin, chrome, powder coat, wet look) changes only the shine and keeps your colour exactly. A new colour repaints exactly those pixels. Both together do both. Words such as \"a bit glossier\" or \"darker\" nudge what is there. A second request on the same colour edits the zone it made, so changes stack instead of resetting."
+    },
+    {
+     "heading": "It asks instead of guessing",
+     "body": "If you name a colour that is not on the car (say pink when the car has only red), it asks. On a flat paint with no layers, numbers, sponsors and stripes are not known, so it asks you to show them first."
+    },
+    {
+     "heading": "Protecting numbers",
+     "body": "Numbers, sponsors and logos change only when named. Say \"except the numbers\" or \"but leave the numbers alone\" to protect them explicitly."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Matte version of a livery",
+     "goal": "Make every black area matte and keep the colours",
+     "settings": {
+      "Message": "make the black matte",
+      "Check": "How it read the request",
+      "Press": "Run"
+     },
+     "result": "Only the shine of the black changes; the colour stays the same. Undo takes it back."
+    },
+    {
+     "title": "Recolour the numbers",
+     "goal": "Change the numbers to metallic purple",
+     "settings": {
+      "Message": "numbers purple and metallic",
+      "Paint": "A layered PSD works best"
+     },
+     "result": "The numbers get purple with a metallic shine."
+    },
+    {
+     "title": "Stack a second change",
+     "goal": "Add more to what you just did",
+     "settings": {
+      "Message": "a bit more",
+      "or": "do the same for the roof"
+     },
+     "result": "The helper adjusts the same zone or repeats the change on the roof."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does \"make it matte\" change my colours?",
+     "a": "No. A look word alone changes only the shine."
+    },
+    {
+     "q": "Why did \"red matte\" touch my tail-light lens?",
+     "a": "It matches by colour, so a dark-red lens can be included. Undo and name the part."
+    },
+    {
+     "q": "Does it work on a flat TGA?",
+     "a": "Yes, but a layered PSD is best. On a flat paint it asks you to show numbers, sponsors and stripes."
+    },
+    {
+     "q": "How do I protect the numbers?",
+     "a": "Say \"except the numbers\" or \"leave the numbers alone\"."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A colour you named is not changing",
+     "cause": "That colour is not actually on the car, or is a different shade",
+     "fix": "Answer the helper's question to point it at the right colour."
+    },
+    {
+     "symptom": "Numbers changed along with everything else",
+     "cause": "You named a colour the numbers also use",
+     "fix": "Undo and add \"except the numbers\"."
+    }
+   ],
+   "protips": [
+    "For best results load the layered PSD. Layers let the helper tell stripes, numbers and sponsors apart, which a flat TGA cannot."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "ai_copilot.picking_colours_in_words",
+   "title": "Picking colours and looks in plain words",
+   "domain": "ai_copilot",
+   "summary": "Chat understands everyday colour words, hex codes, parts, \"the black on the hood\", slang like \"powder coat\", and even \"same shade as the hood\".",
+   "what": "You do not need a painter's vocabulary. The helper reads colour words (including shades such as powder blue or charcoal), hex codes, and phrases such as \"all the red\", \"the dark blue\" or \"the black on the hood\". It maps spoken looks to real catalogue finishes: powder coat, plasti dip, cerakote, matte, satin, gloss, wet look, chrome, satin chrome, dark chrome, metallic, pearl, candy and more. Compound sentences (\"make the hood and the roof powder coat, then the stripes gold\") are split into steps. If a word is ambiguous it asks with buttons instead of guessing.",
+   "when": [
+    "You are not sure how to name a colour or a look.",
+    "You want to be precise about which part or colour changes."
+   ],
+   "how": [
+    "Type the request in plain words, or use a hex code like #ff7eb6.",
+    "To match a colour on your car say \"same shade as the hood\".",
+    "Name a part or a colour on the car: \"the roof\", \"all the red\", \"the black on the hood\".",
+    "Answer any question it asks by clicking a button."
+   ],
+   "controls": [],
+   "tips": [
+    "Add a look and a colour in one go: \"matte metallic purple on the left side\".",
+    "\"A bit glossier\" or \"darker\" nudges what is there rather than replacing it."
+   ],
+   "pitfalls": [
+    "Colour names are read by family; \"pink\" on a car with only red will be asked about, not forced.",
+    "Spelling mistakes in common words are understood, but made-up looks are asked about."
+   ],
+   "related": [
+    "ai_copilot.edit_existing",
+    "ai_copilot.chat_mode",
+    "zones.named_parts",
+    "recipes.candy"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "sources": [
+    "docs/EDIT_EXISTING_HELPER.md:12-20",
+    "docs/EDIT_EXISTING_HELPER.md:24-26",
+    "js/spb-pro-ai.js:3842-3856"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "color words",
+    "hex codes in chat",
+    "same shade as",
+    "plain words",
+    "how to name a colour",
+    "plasti dip",
+    "cerakote",
+    "powder coat",
+    "name a colour",
+    "say a colour in words"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Words it understands",
+     "body": "Everyday colour words (including shades such as powder blue or charcoal), hex codes such as #ff7eb6, and phrases like \"all the red\", \"the dark blue\" or \"the black on the hood\". \"Same shade as the hood\" copies a colour from the car."
+    },
+    {
+     "heading": "Looks mapped to real finishes",
+     "body": "Spoken looks map to real catalogue finishes: powder coat, plasti dip, cerakote, matte, satin, gloss, wet look, chrome, satin chrome, dark chrome, metallic, pearl, candy and more."
+    },
+    {
+     "heading": "Long sentences are split",
+     "body": "A compound sentence such as \"make the hood and the roof powder coat, then the stripes gold\" is split into steps. Ambiguous words are asked about with buttons."
+    },
+    {
+     "heading": "Colour families",
+     "body": "Names are read by family. \"Pink\" on a car with only red will be asked about, not forced. Spelling mistakes in common words are understood, but made-up looks are asked about."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Look plus colour",
+     "goal": "Set both at once",
+     "settings": {
+      "Message": "matte metallic purple on the left side"
+     },
+     "result": "The left side is repainted purple with a matte metallic look."
+    },
+    {
+     "title": "Exact colour from a code",
+     "goal": "Use a specific shade",
+     "settings": {
+      "Message": "make the roof #ff7eb6"
+     },
+     "result": "The roof takes that exact pink."
+    },
+    {
+     "title": "Match a colour on the car",
+     "goal": "Make one part the same as another",
+     "settings": {
+      "Message": "make the roof the same shade as the hood"
+     },
+     "result": "The roof copies the hood colour."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can I type a hex code?",
+     "a": "Yes, such as #ff7eb6."
+    },
+    {
+     "q": "What does \"a bit glossier\" do?",
+     "a": "It nudges what is there instead of replacing it."
+    },
+    {
+     "q": "Which looks does it know?",
+     "a": "Powder coat, plasti dip, cerakote, matte, satin, gloss, wet look, chrome, satin chrome, dark chrome, metallic, pearl, candy and more."
+    },
+    {
+     "q": "What if it does not know my word?",
+     "a": "It asks with buttons instead of guessing."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "It asks which pink you mean",
+     "cause": "There is no pink on the car, only red",
+     "fix": "Pick from the buttons, or use a hex code."
+    },
+    {
+     "symptom": "The wrong part changed",
+     "cause": "The part was not named",
+     "fix": "Name it: \"the black on the hood\" or \"the left side\"."
+    }
+   ],
+   "protips": [
+    "A hex code is the most precise way to say a colour when a name is ambiguous."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "ai_copilot.gear_key_model",
+   "title": "The AI gear: key, model and daily cap",
+   "domain": "ai_copilot",
+   "summary": "In the Chat gear you paste an OpenRouter key and use one model (DeepSeek v4.1 Flash is recommended). A daily spending cap stops runaway costs.",
+   "what": "The gear (cog) in the AI panel is where you add an online key. Paste your OpenRouter key and press Save; it is stored on this computer, encrypted for your Windows account. The Model line shows the one model the helper will use. DeepSeek v4.1 Flash is recommended: it is the cheapest that works well, around half a cent per request. If you pick a different model the gear warns that it usually costs more and offers Use the recommended model. The Daily cap (default $2 per day) is checked before every request, and Test connection and Check credit are there too. The When switch chooses Auto (AI only when the built-in helper is not sure), Always, or Off. A private option runs a model on your own PC through Ollama or LM Studio. A key is optional.",
+   "when": [
+    "You want free-form chat, not just the built-in builder.",
+    "You want to control how much you spend.",
+    "The helper says the daily cap has been reached."
+   ],
+   "how": [
+    "Open the AI panel and click the gear.",
+    "Get a key at openrouter.ai/keys, add a few dollars of credit, and paste it in the Key line. Press Save.",
+    "Leave the Model on the recommended one.",
+    "Set the Daily cap you are comfortable with, and keep When on Auto.",
+    "Press Test connection to check it."
+   ],
+   "controls": [
+    {
+     "label": "Key",
+     "range": "text (hidden)",
+     "default": "",
+     "effect": "Your OpenRouter key, kept on this computer.",
+     "inv": "ai.gear"
+    },
+    {
+     "label": "Model",
+     "range": "one model",
+     "default": "deepseek/deepseek-v4.1-flash",
+     "effect": "The only model the helper uses. The studio shows it but has no second picker.",
+     "inv": "ai.gear"
+    },
+    {
+     "label": "Daily cap",
+     "range": "$0.05 to $500 per day",
+     "default": "$2.00",
+     "effect": "Stops requests once the day's spend passes the cap. Raise it in the gear to continue.",
+     "inv": "ai.gear"
+    },
+    {
+     "label": "When",
+     "range": "Auto | Always | Off",
+     "default": "Auto",
+     "effect": "Auto uses the AI only when the built-in helper is not sure.",
+     "inv": "ai.gear"
+    }
+   ],
+   "tips": [
+    "Set a spending limit on the key at OpenRouter as well.",
+    "You never need a key to use the built-in helper, Surprise me or the 70-plus themes."
+   ],
+   "pitfalls": [
+    "Do not paste your key in chat or into support messages.",
+    "A higher-priced model costs more per request. The gear shows a warning when you are on one.",
+    "Without a key, picture-based finish naming and the open-ended AI answers are unavailable."
+   ],
+   "related": [
+    "ai_copilot.offline_vs_ai",
+    "ai_copilot.what_ai_sees",
+    "ai_copilot.mcp_claude_chatgpt",
+    "settings.overview"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "ai.gear"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "ai.gear",
+    "hdi.ai_key",
+    "hdi.ai_limits"
+   ],
+   "sources": [
+    "js/spb-ai-core.js:121-146",
+    "server_routes/ai_copilot_routes.py:9",
+    "server_routes/ai_copilot_routes.py:427",
+    "server_routes/ai_copilot_routes.py:556-558",
+    "scripts/ai_atlas/ui_map.json:13089"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "openrouter key",
+    "api key",
+    "deepseek",
+    "copilot model",
+    "daily cap",
+    "spending cap",
+    "ai cost",
+    "ai gear",
+    "add an ai key",
+    "ollama",
+    "local model",
+    "add api key",
+    "ai api key",
+    "ai settings gear",
+    "deepseek key",
+    "daily ai cap",
+    "where do i put my api key",
+    "ai model setting",
+    "change ai model",
+    "ai key setup"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "The gear in the AI panel",
+     "body": "Paste your OpenRouter key and press Save. It is stored on this computer, encrypted for your Windows account. A key is optional. The Model line shows the one model the helper uses. DeepSeek v4.1 Flash is recommended because it is the cheapest that works well, about half a cent per request. Pick a different model and the gear warns that it usually costs more, with a Use the recommended model button."
+    },
+    {
+     "heading": "The daily cap",
+     "body": "The cap defaults to $2 per day and can be set from $0.05 to $500. It is checked before every request. When it is reached the helper says so, and you raise it in the gear to continue. Test connection and Check credit are there too."
+    },
+    {
+     "heading": "The When switch",
+     "body": "Auto uses the AI only when the built-in helper is not sure. Always uses it every time. Off never uses it. A private option runs a model on your own PC through Ollama or LM Studio."
+    },
+    {
+     "heading": "Without a key",
+     "body": "The builder, Surprise me and the 70-plus themes all work free. Picture-based finish naming and open-ended AI answers are unavailable."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Set up with a small budget",
+     "goal": "Use the online model safely",
+     "settings": {
+      "Key": "OpenRouter key from openrouter.ai/keys with a few dollars of credit",
+      "Model": "DeepSeek v4.1 Flash (recommended)",
+      "Daily cap": "$2.00",
+      "When": "Auto"
+     },
+     "result": "The AI is used only when the built-in helper is unsure, and spend stops at $2 a day."
+    },
+    {
+     "title": "Check it works",
+     "goal": "Confirm the key is good",
+     "settings": {
+      "Button": "Test connection",
+      "Then": "Check credit"
+     },
+     "result": "You see that the connection works and how much credit is left."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Where do I get a key?",
+     "a": "At openrouter.ai/keys. Add a few dollars of credit."
+    },
+    {
+     "q": "Is my key stored safely?",
+     "a": "It is stored on this computer, encrypted for your Windows account. Never paste it in chat or in a support message."
+    },
+    {
+     "q": "The helper says the daily cap was reached.",
+     "a": "Raise the Daily cap in the gear to continue."
+    },
+    {
+     "q": "Can I use a model on my own PC?",
+     "a": "Yes, through the private option with Ollama or LM Studio."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Costs are higher than expected",
+     "cause": "A higher-priced model is selected",
+     "fix": "Press Use the recommended model."
+    },
+    {
+     "symptom": "You cannot find the key box",
+     "cause": "You opened the booth Settings gear",
+     "fix": "Open the gear inside the AI panel."
+    }
+   ],
+   "protips": [
+    "Also set a spending limit on the key at OpenRouter. Two limits are better than one."
+   ],
+   "screens": [
+    "pair_zone_added"
+   ]
+  },
+  {
+   "id": "ai_copilot.mcp_claude_chatgpt",
+   "title": "Using Claude or ChatGPT through MCP",
+   "domain": "ai_copilot",
+   "summary": "Connect Claude Desktop or ChatGPT/Codex on your own plan and ask them to design your livery. No key is needed in Shokker and every change shows in the AI panel with Undo.",
+   "what": "MCP is a way for an outside assistant to drive the booth. In the AI gear, switch on the control option (Let an AI assistant control Shokker Paint Booth), then press Install in Claude Desktop and restart Claude Desktop. With Shokker open, ask Claude for example: Using Shokker Paint Booth, give me a Gulf-style livery. For ChatGPT or Codex, open the bridge settings, choose Connect ChatGPT / Codex, review it, press Add SPB to Codex settings, restart Codex and sign in with ChatGPT. Your own plan limits apply. The assistant sees the same car knowledge, finishes (4,137, or about 4,800 looks counting patterns and spec patterns) and named parts as the in-app helper, and changes the same zones. Only one assistant should edit at a time: use Take over in SPB before asking the in-app helper while an outside assistant has control.",
+   "when": [
+    "You already pay for Claude or ChatGPT and want to use that.",
+    "You want the smartest free-form designing without an OpenRouter key."
+   ],
+   "how": [
+    "Open the AI panel > gear and switch on the control option.",
+    "Press Install in Claude Desktop, then restart Claude Desktop (or use the Codex steps above).",
+    "Keep Shokker open and ask the assistant what you want.",
+    "Watch the AI panel: each change appears with an Undo button."
+   ],
+   "controls": [
+    {
+     "label": "Control option",
+     "range": "on / off",
+     "default": "off",
+     "effect": "Lets Claude or ChatGPT/Codex control the booth. Off means no outside access.",
+     "inv": "mcp.claude"
+    },
+    {
+     "label": "Connect ChatGPT / Codex",
+     "range": "bridge settings",
+     "default": "",
+     "effect": "Adds Shokker to Codex settings; restart Codex and sign in.",
+     "inv": "mcp.chatgpt"
+    },
+    {
+     "label": "Take over in SPB",
+     "range": "button",
+     "default": "",
+     "effect": "Gets editing back for the in-app helper when an outside assistant has control.",
+     "inv": "ai.gear"
+    }
+   ],
+   "tips": [
+    "Ask for a whole livery at once (\"a Gulf style livery\") and then refine.",
+    "Shine-only requests (\"only the chrome, keep my colours\") use foundation finishes that leave your paint untouched."
+   ],
+   "pitfalls": [
+    "Changes by an outside assistant can appear while you are working; Undo takes them back.",
+    "Only the page that is open and connected receives the changes, so close extra Shokker windows you are not using."
+   ],
+   "related": [
+    "ai_copilot.offline_vs_ai",
+    "ai_copilot.gear_key_model",
+    "ai_copilot.what_ai_sees"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "mcp.claude"
+    },
+    {
+     "do": "control",
+     "id": "mcp.chatgpt"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "mcp.claude",
+    "mcp.chatgpt",
+    "hdi.use_claude_mcp",
+    "hdi.use_chatgpt",
+    "doc.10.support_the_two_ways_to_use_claude_or_openai_with_shokker_th",
+    "doc.04.chatgpt_codex_subscription_connection"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:13054-13090",
+    "docs/ai_knowledge/04_limits_and_app_map.md:19-33",
+    "js/spb-pro-ai.js:2988"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "mcp",
+    "claude desktop",
+    "chatgpt",
+    "codex",
+    "use claude",
+    "use my claude plan",
+    "let ai control shokker",
+    "take over in spb",
+    "bridge settings",
+    "install in claude desktop",
+    "use claude with shokker",
+    "chatgpt with shokker",
+    "connect claude",
+    "mcp setup",
+    "hook up claude",
+    "claude mcp",
+    "chatgpt mcp",
+    "use claude desktop with shokker"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Setting up Claude Desktop",
+     "body": "In the AI gear, switch on Let an AI assistant control Shokker Paint Booth, then press Install in Claude Desktop and restart Claude Desktop. With Shokker open, ask for a whole livery, for example: Using Shokker Paint Booth, give me a Gulf-style livery."
+    },
+    {
+     "heading": "Setting up ChatGPT or Codex",
+     "body": "Open the bridge settings, choose Connect ChatGPT / Codex, review it, press Add SPB to Codex settings, restart Codex and sign in with ChatGPT. Your own plan limits apply."
+    },
+    {
+     "heading": "What the assistant knows",
+     "body": "It sees the same car knowledge, the finishes (4,137, or about 4,800 looks counting patterns and spec patterns) and the named parts as the in-app helper, and changes the same zones. Every change shows in the AI panel with an Undo button."
+    },
+    {
+     "heading": "One editor at a time",
+     "body": "Use Take over in SPB before asking the in-app helper while an outside assistant has control. Only the page that is open and connected receives changes, so close extra Shokker windows you are not using."
+    }
+   ],
+   "examples": [
+    {
+     "title": "A full livery by request",
+     "goal": "Let Claude design the whole car",
+     "settings": {
+      "Gear": "Control option on",
+      "Setup": "Install in Claude Desktop, then restart it",
+      "Ask": "Using Shokker Paint Booth, give me a Gulf-style livery"
+     },
+     "result": "Claude checks the setup, reads the zones and builds the scheme. Each change appears in the panel with Undo."
+    },
+    {
+     "title": "Shine only",
+     "goal": "Change the gloss and keep your colours",
+     "settings": {
+      "Ask": "only the chrome, keep my colours"
+     },
+     "result": "A foundation finish is used, which leaves the paint untouched."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Do I need an AI key in Shokker for this?",
+     "a": "No. Your own Claude or ChatGPT plan is used."
+    },
+    {
+     "q": "Can I undo what Claude did?",
+     "a": "Yes. Every change has an Undo button in the AI panel, or say \"undo\"."
+    },
+    {
+     "q": "Claude is changing things while I work.",
+     "a": "That is an outside assistant with control. Use Take over in SPB to switch back."
+    },
+    {
+     "q": "How many finishes can it use?",
+     "a": "4,137 finishes, or about 4,800 looks counting patterns and spec patterns: the same catalogue as the booth."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Claude cannot reach Shokker",
+     "cause": "Shokker is closed, or Claude Desktop was not restarted after Install",
+     "fix": "Keep Shokker open and restart Claude Desktop."
+    },
+    {
+     "symptom": "Two assistants fight over the car",
+     "cause": "The in-app helper and an outside assistant both edit",
+     "fix": "Use Take over in SPB and let one work at a time."
+    }
+   ],
+   "protips": [
+    "Ask for the whole livery first, then refine with small requests. Big first, then details gets the best results."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "ai_copilot.what_ai_sees",
+   "title": "What the helper can see and what it never touches",
+   "domain": "ai_copilot",
+   "summary": "The helper reads your zones, the colours actually on your paint and a preview picture. It does not change numbers, sponsors or logos unless you name them, and cannot save, export or delete.",
+   "what": "To help, the helper reads your zones, your layers, the real colours in your paint (with how much of the car each covers), and the preview. The online model can also look at a picture of your paint when it needs to, such as to name a finish from a photo or check its own result; only the provider you chose sees it. The built-in helper does none of that online. What it will do: change zones and layer settings, set finishes and colours, aim at named parts. What it will not do: delete zones, open or save files, import a paint, export to iRacing, change your car folder or User ID, draw by hand or add text. Numbers, sponsors and logos are left alone unless you name them, and Chat's whole-car looks stay in the body paint layers. Every change has Undo.",
+   "when": [
+    "You are worried the helper will change your numbers or sponsors.",
+    "You want to know what leaves your computer."
+   ],
+   "how": [
+    "To change numbers on purpose, name them: \"make the numbers gold chrome\".",
+    "After a change, check the preview; press Undo under the answer if you do not like it.",
+    "If you do not want pictures sent out, use the built-in helper only, or skip the key."
+   ],
+   "controls": [],
+   "tips": [
+    "The helper tells you what it changed and what it assumed. Read that line.",
+    "To lock work to one layer, use Lock to layer in the Chat studio."
+   ],
+   "pitfalls": [
+    "The online model sees your requests and, when needed, a picture of your paint. That is why a key is optional.",
+    "Do not expect it to save or export; use PRO's Render for that."
+   ],
+   "related": [
+    "ai_copilot.edit_existing",
+    "ai_copilot.gear_key_model",
+    "support.numbers_vanished",
+    "ai_copilot.chat_mode"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "hdi.ai_limits"
+   ],
+   "sources": [
+    "docs/ai_knowledge/04_limits_and_app_map.md:3-12",
+    "js/spb-pro-ai.js:3871-3874",
+    "js/spb-pro-ai.js:3842-3856",
+    "docs/EDIT_EXISTING_HELPER.md:1-6"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "what can the ai see",
+    "will it change my numbers",
+    "what the ai cannot do",
+    "ai limits",
+    "privacy",
+    "numbers sponsors untouched",
+    "is my paint sent online",
+    "what does the ai see",
+    "can the ai see my paint",
+    "does the helper touch my numbers",
+    "ai privacy",
+    "does the ai change my sponsors"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "What it reads",
+     "body": "Your zones, your layers, the real colours in your paint with how much of the car each covers, and the preview. The online model can also look at a picture of your paint when it needs to, for example to name a finish from a photo or check its own result; only the provider you chose sees it. The built-in helper does none of that online."
+    },
+    {
+     "heading": "What it will do and not do",
+     "body": "It will change zones and layer settings, set finishes and colours and aim at named parts. It will not delete zones, open or save files, import a paint, export to iRacing, change your car folder or User ID, draw by hand or add text."
+    },
+    {
+     "heading": "Numbers, sponsors, logos",
+     "body": "They are left alone unless you name them, and Chat's whole-car looks stay in the body paint layers. Every change has Undo."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Change the numbers on purpose",
+     "goal": "Make numbers gold chrome",
+     "settings": {
+      "Message": "make the numbers gold chrome"
+     },
+     "result": "Only the numbers change, because you named them."
+    },
+    {
+     "title": "Keep everything on your computer",
+     "goal": "Avoid sending pictures out",
+     "settings": {
+      "Use": "The built-in helper only",
+      "Key": "Do not add one"
+     },
+     "result": "Nothing is sent out; picture-based naming and open-ended answers are unavailable."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does the helper see my paint picture?",
+     "a": "The online model can when it needs to; only the provider you chose sees it. The built-in helper works on your computer."
+    },
+    {
+     "q": "Will it change my sponsors?",
+     "a": "Not unless you name them."
+    },
+    {
+     "q": "Can it save my work?",
+     "a": "No. Use PRO's Render for saving and exporting."
+    },
+    {
+     "q": "Does it know how iRacing lights the car?",
+     "a": "No. It sets values only."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You expected it to export",
+     "cause": "File jobs are not part of the helper",
+     "fix": "Use Render and save yourself."
+    },
+    {
+     "symptom": "You pasted your key in chat",
+     "cause": "It looked like a normal text box",
+     "fix": "Change the key at OpenRouter and keep it only in the gear."
+    }
+   ],
+   "protips": [
+    "Read the helper's \"what I changed and assumed\" line. It tells you exactly where it guessed."
+   ],
+   "screens": [
+    "pair_zone_added"
+   ]
+  },
+  {
+   "id": "ai_copilot.car_learning",
+   "title": "How the helper learns your car",
+   "domain": "ai_copilot",
+   "summary": "Known cars are recognised from the sheet layout and the car folder. A car that is new to Shokker is taught once, remembered on your computer, and confirmed before use.",
+   "what": "The helper climbs a ladder when you ask for \"the hood\". First it looks for a match in the shipped car library, by sheet layout or iRacing car folder. If the sheet is at least 78% like a known car, it proposes that car's layout fitted to your sheet and waits for one click; it never applies a look-alike silently. If nothing is close, it shows your sheet and asks you to draw each part. Everything you confirm or teach is stored on this computer and recognised next time, including other paints of the same car. If your paint has lost its template dead space, the helper can still recognise many cars from where panel edges fall, but treats that as a proposal to confirm.",
+   "when": [
+    "Chat asks you to show it the parts.",
+    "You want to know why it recognises some cars without asking."
+   ],
+   "how": [
+    "Ask Chat for something on a part.",
+    "If it proposes a car (\"looks like...\"), press Yes only if it is right.",
+    "If it asks, draw a box round each part once.",
+    "Next time it recognises the car by itself."
+   ],
+   "controls": [],
+   "tips": [
+    "Teach only the parts you need; you can add more later."
+   ],
+   "pitfalls": [
+    "A wrong Yes teaches a wrong map; use the gear to load or save a corrected car map."
+   ],
+   "related": [
+    "cars.teach_parts",
+    "cars.supported_cars",
+    "cars.reading_sheet"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "sources": [
+    "docs/CAR_LEARNING.md:5-9",
+    "docs/CAR_LEARNING.md:11-13",
+    "js/spb-pro-carmap.js:372-386"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "car learning",
+    "how it learns",
+    "it remembers my car",
+    "recognises my car",
+    "look alike layout",
+    "helper doesnt know my car",
+    "teach the helper my car",
+    "car parts learning",
+    "helper learns parts"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "The ladder",
+     "body": "First the helper looks for a match in the shipped car library, by sheet layout or by the iRacing car folder. If the sheet is at least 78% like a known car, it proposes that car's layout fitted to your sheet and waits for one click; it never applies a look-alike silently. If nothing is close, it shows your sheet and asks you to draw each part."
+    },
+    {
+     "heading": "Memory",
+     "body": "Everything you confirm or teach is stored on this computer and recognised next time, including other paints of the same car."
+    },
+    {
+     "heading": "Paints without the template",
+     "body": "If your paint has lost its template dead space, the helper can still recognise many cars from where the panel edges fall, but treats that as a proposal to confirm."
+    }
+   ],
+   "examples": [
+    {
+     "title": "First time with a car",
+     "goal": "Get Chat to understand \"the hood\"",
+     "settings": {
+      "Message": "make the hood red",
+      "If it proposes a car": "Press Yes only if it is right",
+      "If it asks": "Draw a box round the hood once"
+     },
+     "result": "The hood is stored and recognised next time."
+    },
+    {
+     "title": "Repair a wrong map",
+     "goal": "Correct a wrong Yes",
+     "settings": {
+      "Where": "Chat gear",
+      "Action": "Load a corrected car map, or save one"
+     },
+     "result": "The wrong lesson is replaced."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why did it recognise my car without asking?",
+     "a": "It matched the car folder or the sheet layout against the shipped library."
+    },
+    {
+     "q": "Is what I teach shared?",
+     "a": "No. It stays on this computer."
+    },
+    {
+     "q": "Should I teach every part?",
+     "a": "No, only the ones you need. You can add more later."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Zones land on the wrong panel for a car it \"recognised\"",
+     "cause": "A wrong Yes taught a wrong map",
+     "fix": "Load or save a corrected car map in the gear."
+    },
+    {
+     "symptom": "It asks again every time",
+     "cause": "The part was never confirmed or taught",
+     "fix": "Teach it once with a box."
+    }
+   ],
+   "protips": [
+    "Check the preview before pressing Yes on a proposed car. The 78% match is a good guess, not proof."
+   ],
+   "screens": [
+    "ui_header_rows"
+   ]
+  },
+  {
+   "id": "ai_copilot.panel_tour",
+   "title": "The AI copilot panel, step by step",
+   "domain": "ai_copilot",
+   "summary": "The AI copilot panel is the chat window at the bottom right of PRO and the left side of CHAT. Type what you want, see the car change, and press Undo under any answer you do not like.",
+   "what": "The panel works on the same zones and layers as PRO. It shows what it changed, keeps each step so you can go back, and lets you choose how it thinks: the free built-in guided builder, the online model with your key, or an outside assistant over MCP. It never touches numbers, sponsors or logos unless you name them.",
+   "when": [
+    "You want to describe a change instead of setting sliders.",
+    "You are not sure what the helper can see or change."
+   ],
+   "how": [
+    "Open the panel with the AI button at the bottom right of PRO, or click CHAT at the top.",
+    "Pick what to change, what to do and which look in the guided builder, or type a sentence and let it pre-fill the builder.",
+    "Press Run and look at the preview.",
+    "Press Undo under the answer to take it back, or Another take for a different idea.",
+    "Open the gear in the panel for the key, model and outside assistant connection."
+   ],
+   "controls": [
+    {
+     "label": "Another take",
+     "range": "button",
+     "default": "",
+     "effect": "A different version of the same request.",
+     "inv": "ai.panel"
+    },
+    {
+     "label": "Undo",
+     "range": "button",
+     "default": "",
+     "effect": "Takes back that one helper step.",
+     "inv": "ai.panel"
+    }
+   ],
+   "tips": [
+    "Typing a sentence works without any key; known words in your text are highlighted and open a short card.",
+    "The helper can read the preview and your zones, so you can say \"the hood\" or \"the yellow\"."
+   ],
+   "pitfalls": [
+    "It cannot import files, save, export or draw by hand; it tells you where to click instead."
+   ],
+   "related": [
+    "ai_copilot.chat_mode",
+    "ai_copilot.offline_vs_ai",
+    "ai_copilot.gear_key_model",
+    "ai_copilot.what_ai_sees",
+    "ai_copilot.can_and_cannot",
+    "ai_copilot.mcp_claude_chatgpt"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "ai.panel"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "ai.panel"
+   ],
+   "sources": [
+    "js/spb-pro-ai.js:1925",
+    "js/spb-chat-studio.js:3-8"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "shokker ai panel",
+    "ai button",
+    "copilot window",
+    "chat window",
+    "ai panel buttons",
+    "undo ai change"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Where the panel is",
+     "body": "It is the chat window at the bottom right of PRO (the AI button) and the left side of CHAT. It works on the same zones and layers as PRO, shows what it changed and keeps each step so you can go back."
+    },
+    {
+     "heading": "Pick how it thinks",
+     "body": "You choose the free built-in guided builder, the online model with your key, or an outside assistant over MCP. Open the gear in the panel for the key, model and outside-assistant connection."
+    },
+    {
+     "heading": "The rhythm",
+     "body": "Pick what to change, what to do and which look (or type a sentence and let it pre-fill the builder), press Run, look at the preview, then Undo or Another take if needed. Known words in your text are highlighted and open a short card."
+    }
+   ],
+   "examples": [
+    {
+     "title": "A first change",
+     "goal": "Try the panel safely",
+     "settings": {
+      "Open": "AI button, bottom right",
+      "Type": "make the roof white",
+      "Press": "Run, then Undo to compare"
+     },
+     "result": "You see the change and the undo restores the earlier look."
+    },
+    {
+     "title": "A different idea",
+     "goal": "Get another version of the same request",
+     "settings": {
+      "Button": "Another take"
+     },
+     "result": "The helper tries a different version of the request."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Where is the AI panel?",
+     "a": "Click the AI button at the bottom right of PRO, or click CHAT at the top."
+    },
+    {
+     "q": "Can it import or export files?",
+     "a": "No. It tells you where to click instead."
+    },
+    {
+     "q": "What is Another take?",
+     "a": "A different version of the same request."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You cannot find the key box",
+     "cause": "It is in the gear inside this panel",
+     "fix": "Open the panel and click its gear."
+    },
+    {
+     "symptom": "You expect the panel to save",
+     "cause": "It cannot save or export",
+     "fix": "Use Render in PRO."
+    }
+   ],
+   "protips": [
+    "You can say \"the hood\" or \"the yellow\" because the helper reads your zones and the preview."
+   ],
+   "screens": [
+    "ui_mode_pill",
+    "ui_ai_panel"
+   ]
+  },
+  {
+   "id": "ai_copilot.can_and_cannot",
+   "title": "What the helper can do, what it cannot, and how it talks",
+   "domain": "ai_copilot",
+   "summary": "It can change zones, finishes, colours, patterns, layer settings and named car parts, and look at your preview. It cannot delete zones, open or save files, export, draw by hand or add text.",
+   "what": "The helper changes what the zones and layers hold. It reads every zone, knows the whole finish catalogue, can aim at named parts of the car, offers whole designs to pick from and undoes its own work step by step. It cannot do file jobs or hand painting; it says so plainly and tells you where to click. It talks in plain words, says what it changed, and asks one short question when it is unsure.",
+   "when": [
+    "You want to know whether to ask the helper or do it yourself.",
+    "The helper answered \"I cannot do that\"."
+   ],
+   "how": [
+    "Ask for looks and placement: colours, finishes, patterns, strength, a part of the car, a layer.",
+    "Do file jobs yourself: open, import, save, Render, export, Auto-deploy and the User ID and car folder.",
+    "Do hand painting with the toolbar: brush, lasso, fill, text.",
+    "If it cannot delete a zone, it mutes it and tells you to delete it in the zones list.",
+    "Check each change in the preview; Undo is always there."
+   ],
+   "controls": [],
+   "tips": [
+    "The helper cannot see how iRacing lights the car on track. It sets values only.",
+    "Say one short thing at a time; the answers are kept short."
+   ],
+   "pitfalls": [
+    "Do not expect it to render the final full-size paint."
+   ],
+   "related": [
+    "ai_copilot.what_ai_sees",
+    "ai_copilot.offline_vs_ai",
+    "ai_copilot.panel_tour",
+    "recipes.undo_start_over"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "doc.04.the_copilot_can_pro_mode",
+    "doc.04.the_copilot_cannot_say_so_plainly_then_give_the_manual_steps",
+    "doc.04.talking_style"
+   ],
+   "sources": [
+    "docs/ai_knowledge/04_limits_and_app_map.md:3-11",
+    "docs/ai_knowledge/04_limits_and_app_map.md:19-21",
+    "js/spb-pro-ai.js:3871-3874"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "what can the ai do",
+    "helper cannot",
+    "copilot limits",
+    "ai can do",
+    "what can the helper do",
+    "helper limits",
+    "what can i ask the helper",
+    "can the helper paint for me",
+    "helper abilities"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Ask for looks and placement",
+     "body": "Colours, finishes, patterns, strength, a part of the car, a layer. The helper reads every zone, knows the whole finish catalogue, offers whole designs to pick from and undoes its own work step by step."
+    },
+    {
+     "heading": "Do these yourself",
+     "body": "Open, import, save, Render, export, Auto-deploy and the User ID and car folder. Hand painting with the toolbar (brush, lasso, fill, text) is also yours. The helper says so plainly and tells you where to click."
+    },
+    {
+     "heading": "Deleting",
+     "body": "It cannot delete a zone. It mutes it and tells you to delete it in the zones list."
+    },
+    {
+     "heading": "Lighting",
+     "body": "The helper cannot see how iRacing lights the car on track. It sets values only."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Ask the right thing",
+     "goal": "Know whether to ask or do it yourself",
+     "settings": {
+      "Ask": "make the left side pearl white",
+      "Do yourself": "Render and Save to iRacing"
+     },
+     "result": "The helper does the look; you do the file job."
+    },
+    {
+     "title": "Remove a zone",
+     "goal": "Get rid of a zone you no longer want",
+     "settings": {
+      "Helper": "Mutes it",
+      "You": "Delete it in the zones list"
+     },
+     "result": "The zone is gone for good."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can the helper render my final paint?",
+     "a": "No. Press RENDER in PRO."
+    },
+    {
+     "q": "Can it add text?",
+     "a": "No. Use the Text tool."
+    },
+    {
+     "q": "Why did it say \"I cannot do that\"?",
+     "a": "It is a file job or hand painting. It tells you where to click."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You keep asking it to save",
+     "cause": "Saving is outside what it can do",
+     "fix": "Press Render and save in PRO."
+    },
+    {
+     "symptom": "A \"deleted\" zone is still in the list",
+     "cause": "It only mutes zones",
+     "fix": "Delete it from the zones list."
+    }
+   ],
+   "protips": [
+    "Say one short thing at a time. Short requests get short, accurate answers and are easy to undo."
+   ],
+   "screens": [
+    "ui_toolbar_right"
+   ]
+  },
+  {
+   "id": "ai_copilot.mcp_tool_list",
+   "title": "What Claude can do in Shokker: the tools it uses",
+   "domain": "ai_copilot",
+   "summary": "When you connect Claude or ChatGPT over MCP it gets about 27 tools. It checks the setup, reads zones, looks at the preview, asks you to show car parts, makes changes, and can undo them.",
+   "what": "These tools are what the outside assistant calls, and each matches something you can do by hand. The status check comes first and reports the car, its named parts, any missing parts, the layers and the zone count. The zone reader lists each zone, what it covers and how much of the paint it really wins. The preview returns the flat paint picture and, on request, the shine-map picture. A request-parts tool asks you to show Shokker the parts of a car it does not know. Undo takes back the last changes. A look tool shows the whole flat paint with a ruler so positions can be read. Beyond those six there are catalogue tools (find, browse, compare and describe finishes, patterns and spec patterns, and suggest finishes for a situation), design tools (design recipes, apply a whole scheme, add, edit and duplicate zones, edit a layer, add a graphic, refinish, mark elements) and reading tools (get state, car map, describe the paint, check the setup and a built-in manual). All changes also appear in the AI copilot panel with an Undo button.",
+   "when": [
+    "You connected Claude or ChatGPT and want to know what it is doing.",
+    "The assistant asked you to show it the car parts."
+   ],
+   "how": [
+    "Connect from the gear in the panel (see the MCP article).",
+    "Ask the assistant for a look; it first checks the setup.",
+    "If it asks for car parts, drag a box around each part in the panel once per car.",
+    "Watch the panel: every change shows there with Undo.",
+    "Say \"undo\" to take back the last change, or press the button."
+   ],
+   "controls": [
+    {
+     "label": "Status check",
+     "range": "tool",
+     "default": "",
+     "effect": "Is Shokker connected, which car, which parts are known, how many zones.",
+     "inv": "mcp.spb_status"
+    },
+    {
+     "label": "Read zones",
+     "range": "tool",
+     "default": "",
+     "effect": "Every zone, what it covers and how much of the paint it wins.",
+     "inv": "mcp.spb_get_zones"
+    },
+    {
+     "label": "Preview",
+     "range": "tool",
+     "default": "",
+     "effect": "The flat paint as a picture, and the shine map on request.",
+     "inv": "mcp.spb_preview"
+    },
+    {
+     "label": "Request parts",
+     "range": "tool",
+     "default": "",
+     "effect": "Asks you to show the car parts, once per car.",
+     "inv": "mcp.spb_request_parts"
+    },
+    {
+     "label": "Undo",
+     "range": "tool",
+     "default": "1 step",
+     "effect": "Takes back the last changes.",
+     "inv": "mcp.spb_undo"
+    },
+    {
+     "label": "Look at paint",
+     "range": "tool",
+     "default": "",
+     "effect": "The whole flat paint with a 0.1 ruler.",
+     "inv": "mcp.spb_look_at_paint"
+    }
+   ],
+   "tips": [
+    "Only one thing edits at a time; you can take over in the panel.",
+    "If the assistant cannot see pictures it works from measured colour shares and zone visibility."
+   ],
+   "pitfalls": [
+    "The assistant does not touch numbers, sponsors or logos unless you name them."
+   ],
+   "related": [
+    "ai_copilot.mcp_claude_chatgpt",
+    "ai_copilot.panel_tour",
+    "cars.teach_parts",
+    "ai_copilot.what_ai_sees"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "mcp.spb_status",
+    "mcp.spb_get_zones",
+    "mcp.spb_preview",
+    "mcp.spb_request_parts",
+    "mcp.spb_undo",
+    "mcp.spb_look_at_paint"
+   ],
+   "sources": [
+    "mcp/server/index.js:37-41",
+    "js/spb-pro-ai.js:3238"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "mcp tools",
+    "spb tools",
+    "what claude can do",
+    "status check tool",
+    "look at paint",
+    "what can claude do in shokker",
+    "claude tools list",
+    "what claude can change"
+   ],
+   "level": "pro",
+   "deep": [
+    {
+     "heading": "The tools",
+     "body": "Status check reports the car, its named parts, any missing parts, the layers and the zone count. Read zones lists each zone, what it covers and how much of the paint it really wins. Preview returns the flat paint and, on request, the shine-map picture. Request parts asks you to show Shokker the parts of a car it does not know. Undo takes back the last changes. Look at paint shows the whole flat paint with a 0.1 ruler so positions can be read."
+    },
+    {
+     "heading": "What the assistant does first",
+     "body": "It checks the setup before designing. If parts are missing it asks you to show them (once per car). Every change also appears in the AI copilot panel with an Undo button."
+    },
+    {
+     "heading": "Without pictures",
+     "body": "If the assistant cannot see pictures it works from measured colour shares and zone visibility."
+    }
+   ],
+   "examples": [
+    {
+     "title": "What you see in a request",
+     "goal": "Follow what Claude is doing",
+     "settings": {
+      "Step 1": "Status check",
+      "Step 2": "Read zones",
+      "Step 3": "Make changes",
+      "Step 4": "Preview"
+     },
+     "result": "Each change shows in the panel with Undo."
+    },
+    {
+     "title": "Show the car parts",
+     "goal": "Answer a request for parts",
+     "settings": {
+      "Where": "AI panel",
+      "Do": "Drag a box around each part once per car"
+     },
+     "result": "The assistant can aim at named parts."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can the assistant touch my numbers?",
+     "a": "Not unless you name them."
+    },
+    {
+     "q": "Can I stop it?",
+     "a": "Say \"undo\" or press Undo, and use Take over in SPB."
+    },
+    {
+     "q": "What is Look at paint?",
+     "a": "The whole flat paint with a ruler so the assistant can read positions."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The assistant says parts are missing",
+     "cause": "The car is not in the library yet",
+     "fix": "Show the parts in the panel once."
+    },
+    {
+     "symptom": "Changes seem to go nowhere",
+     "cause": "More than one Shokker window is open",
+     "fix": "Close extra windows; only the connected page receives changes."
+    }
+   ],
+   "protips": [
+    "If the assistant seems confused about the car, ask it to run the status check again. It reports exactly which parts are known."
+   ],
+   "screens": [
+    "ui_toolbar_menus"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "smart-tga-missed-instance-annotations-v1",
+  "cycle": 712,
+  "inspection_records": "_smart_tga_runs/cycle711_fresh_dlm_active_pool/inspection_records.json",
+  "casts_votes": false,
+  "ownership_authority": false,
+  "instances": [
+    {"paint_label":"dirtlatemodel 350/car_num_275289.tga","family_id":"number:30","copy":"upper_side","bbox":[280,180,335,180],"status":"missing_raw_number_proposal"},
+    {"paint_label":"dirtlatemodel 350/car_num_275289.tga","family_id":"number:30","copy":"lower_side","bbox":[300,705,315,155],"status":"missing_raw_number_proposal"},
+    {"paint_label":"dirtlatemodel 350/car_num_275289.tga","family_id":"number:30","copy":"deck","bbox":[775,775,215,225],"status":"missing_raw_number_proposal"}
+  ]
+}

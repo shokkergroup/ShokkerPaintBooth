@@ -1,0 +1,22 @@
+{
+ "chosen": {
+  "bth_blush": 2,
+  "bth_buff_hologram": 2,
+  "bth_die_back": 2,
+  "bth_dirt_nib": 2,
+  "bth_dry_spray": 2,
+  "bth_edge_map": 6,
+  "bth_fisheye": 9,
+  "bth_lifting": 1,
+  "bth_mask_bleed": 1,
+  "bth_mottling": 5,
+  "bth_sag_curtain": 5,
+  "bth_sand_scratch": 9,
+  "bth_solvent_pop": 5,
+  "bth_tape_ridge": 9,
+  "bth_tiger_stripe": 1,
+  "bth_water_spot": 5
+ },
+ "n_variants": 10,
+ "res": 1024
+}

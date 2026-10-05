@@ -1,0 +1,277 @@
+{
+  "status": "CORE_PASS_WITH_LIMITS",
+  "installed": false,
+  "session": "b0b78d73dcdb",
+  "url": "http://localhost:59881/",
+  "runtimeManifest": "_easy_claude_work/ai14h_generation3_runtime2/source-freeze.json",
+  "providerAttempts": 0,
+  "results": {
+    "import": {
+      "operation": "31aee8510a",
+      "done": true,
+      "result": {
+        "result": {
+          "ok": true,
+          "requestedPath": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+          "committedPath": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+          "generation": 2,
+          "fingerprint": "a91984f525ff7a67763cc32962759cc56c1f908fdde4fc99827b80392e79bc33",
+          "error": null
+        },
+        "settled": true,
+        "zones": 5,
+        "layers": 11,
+        "source": {
+          "generation": 2,
+          "committed": 2,
+          "loading": false,
+          "ready": true,
+          "fingerprint": "a91984f525ff7a67763cc32962759cc56c1f908fdde4fc99827b80392e79bc33"
+        },
+        "attempts": 0
+      }
+    },
+    "chrome": {
+      "operation": "ce28040daf",
+      "done": true,
+      "result": {
+        "queue": [
+          {
+            "kind": "add",
+            "zone": null,
+            "spec": {
+              "name": "Roof chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "layers": [
+                  "Car Paint"
+                ],
+                "island": "roof"
+              }
+            },
+            "scoped": false
+          }
+        ],
+        "reply": "Done — the roof (3% of the car) is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.\nNEXT: Undo | A bit more | Show me options for the roof | Make the black matte | Make the cyan metallic",
+        "cancelled": false,
+        "settled": true,
+        "paintExact": true,
+        "specChanged": true,
+        "zones": 6,
+        "owner": {
+          "id": "zone_869a7d53-0cf6-41c3-b65a-eb7da242e2ff",
+          "name": "Roof chrome",
+          "base": "f_chrome",
+          "color": "everything",
+          "mask": "4194304:1du129g",
+          "proof": true,
+          "source": {
+            "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+            "fingerprint": "a91984f525ff7a67763cc32962759cc56c1f908fdde4fc99827b80392e79bc33",
+            "generation": 2,
+            "width": 2048,
+            "height": 2048
+          }
+        },
+        "savedAIFields": [
+          "customPaint",
+          "patternPaintMode",
+          "usePaintReactive",
+          "paintReactiveColor",
+          "spbAIPartMemory"
+        ],
+        "lines": null,
+        "undoable": true,
+        "attempts": 0
+      }
+    },
+    "red": {
+      "operation": "1cd966b1e3",
+      "done": true,
+      "result": {
+        "queue": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "color": "#c8102e",
+            "scoped": false
+          }
+        ],
+        "reply": "Done — the roof is now recoloured red. (I updated your earlier change to the same colour instead of stacking a new one on top.)\nNEXT: Undo | Make the black matte | Make the cyan metallic | Make the white pearl | Make the numbers metallic",
+        "cancelled": false,
+        "settled": true,
+        "id": "zone_869a7d53-0cf6-41c3-b65a-eb7da242e2ff",
+        "mask": "4194304:1du129g",
+        "base": "f_chrome",
+        "source": {
+          "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+          "fingerprint": "a91984f525ff7a67763cc32962759cc56c1f908fdde4fc99827b80392e79bc33",
+          "generation": 2,
+          "width": 2048,
+          "height": 2048
+        },
+        "savedRecord": true,
+        "entryKeys": [
+          "role",
+          "id",
+          "request",
+          "text",
+          "lines",
+          "notes",
+          "opts",
+          "meta",
+          "kind",
+          "undoable",
+          "_models",
+          "editCtx",
+          "next",
+          "recipe",
+          "maskUndo",
+          "_partRegUndo",
+          "zdiff",
+          "layerUndo",
+          "undoSnap",
+          "_zPushed",
+          "_lPushed",
+          "undoAfter",
+          "snap",
+          "thumb",
+          "thumbPending",
+          "img"
+        ],
+        "undoable": true,
+        "attempts": 0
+      }
+    },
+    "firstReopen": {
+      "operation": "e3db3e1e89",
+      "done": true,
+      "result": {
+        "imported": {
+          "ok": true,
+          "requestedPath": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+          "committedPath": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+          "generation": 3,
+          "fingerprint": "a91984f525ff7a67763cc32962759cc56c1f908fdde4fc99827b80392e79bc33",
+          "error": null
+        },
+        "settled": true,
+        "staged": 1,
+        "activeBefore": 0,
+        "activeAfter": 1,
+        "firstRequestCancelled": false,
+        "queue": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "color": "#1f8a3b",
+            "scoped": false
+          }
+        ],
+        "reply": "Done — the red painted by \"Roof recoloured red\" (3% of the car) is now recoloured green.\nNEXT: Undo | Make the black matte | Make the cyan metallic | Make the white pearl | Make the numbers metallic",
+        "sourceGeneration": 3,
+        "id": "zone_869a7d53-0cf6-41c3-b65a-eb7da242e2ff",
+        "mask": "4194304:1du129g",
+        "base": "f_chrome",
+        "binding": {
+          "generation": 3,
+          "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+          "fingerprint": "a91984f525ff7a67763cc32962759cc56c1f908fdde4fc99827b80392e79bc33",
+          "width": 2048,
+          "height": 2048
+        },
+        "attempts": 0,
+        "scopedProof": true,
+        "scopedDiagnosticCorrection": "The initial diagnostic read q.spec._spbScopedProof. Actual controller key is q._spbScopedPartProof, independently inspected before application; native apply confirms it."
+      }
+    },
+    "firstReopenApply": {
+      "operation": "91aa55c4f9",
+      "done": true,
+      "result": {
+        "settled": true,
+        "scopedProof": true,
+        "sameID": true,
+        "sameMask": true,
+        "sameFinish": true,
+        "paintChangedPixels": 29713,
+        "specChangedChannels": 0,
+        "outsideRoofPreviewPixels": 0,
+        "previewSize": [
+          1024,
+          1024
+        ],
+        "lines": [
+          "Roof recoloured red: colour #1f8a3b"
+        ],
+        "undoable": true,
+        "sourceGeneration": 3,
+        "attempts": 0
+      }
+    },
+    "mcpGuardRefusal": {
+      "operation": "4c0cab6ece",
+      "done": true,
+      "result": {
+        "result": {
+          "ok": false,
+          "error": "The buyer switched the AI bridge off. Nothing from this queued change was applied.",
+          "result": null
+        },
+        "settled": true,
+        "useRegion": false,
+        "mask": null,
+        "undoable": true,
+        "lines": [
+          "Roof recoloured red: colour #1f8a3b"
+        ],
+        "attempts": 0
+      }
+    },
+    "cleanup": {
+      "operation": "fc757aca08",
+      "done": true,
+      "result": {
+        "restored": true,
+        "settled": true,
+        "paintExact": true,
+        "specExact": true,
+        "layersExact": true,
+        "bridgeEnabled": false,
+        "attempts": 0
+      }
+    }
+  },
+  "materialUnitless": {
+    "done": true,
+    "result": {
+      "request": "Increase clearcoat on the roof by 20",
+      "queue": 0,
+      "reply": "Nothing was changed. I read clearcoat on the roof. Please give a relative amount in points, such as “by 20 points”.",
+      "cancelled": false,
+      "zonesExact": false,
+      "paintExact": true,
+      "specExact": true,
+      "layersExact": true,
+      "attempts": 0
+    }
+  },
+  "unitlessRepeat": {
+    "queue": 0,
+    "reply": "Nothing was changed. I read clearcoat on the roof. Please give a relative amount in points, such as “by 20 points”.",
+    "zonesExact": true,
+    "paintExact": true,
+    "specExact": true,
+    "layersExact": true,
+    "attempts": 0
+  },
+  "limits": [
+    "W66/W67/W70/W71/W72 later changes are not included in this frozen Runtime2.",
+    "Layered source fingerprint is composite text, not whole-file bytes; W71/W72 are closing that persistence gap.",
+    "MCP mask-dependency native test was refused by the private audit bridge's forced-off status; no W57 native acceptance is claimed. Controlled test metadata was restored and actual private backend bridge disabled afterward.",
+    "First unitless material query after controlled config restoration hydrated owned metadata, changing raw zone JSON but no pixels/layers; the immediate repeat had exact metadata and pixel equality.",
+    "Paint/spec comparisons are actual 1024x1024 previews, with full 2048 mask blocks for outside-scope overlap; no full-size export was performed.",
+    "Startup console 403s correlate with external Google font requests; actual source import/render APIs succeeded."
+  ]
+}

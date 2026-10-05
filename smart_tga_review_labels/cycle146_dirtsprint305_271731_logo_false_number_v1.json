@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "paint_label": "dirtsprint winged 305/car_num_271731.tga",
+  "inspection_records": "_smart_tga_runs/cycle146_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle146_route_pressure_v1/dirtsprint_winged_305_car_num_271731/component_records.json",
+  "review_scope": "Cycle 146 review of accepted Sponsor-routed subcomponent candidate on dirt sprint 305 271731: reject round sponsor logo badge masquerading as a number.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 5,
+      "expected_bbox": [448, 118, 79, 83],
+      "target_layer": "sponsors",
+      "label": "round_sponsor_logo_badge_false_number",
+      "note": "Round sponsor/logo badge with arrow/S-like mark; should stay Sponsors, not Numbers."
+    }
+  ]
+}

@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_velour_tracksuit",
+  "display_name": "Fresh: Velour Tracksuit",
+  "promise": "Deep purple looped velour with narrow tiny rib segments and cream piping fragments, distinct from crushed rose fans",
+  "carrier_grammar": "Deep purple looped velour with narrow tiny rib segments and cream piping fragments, distinct from crushed rose fans; single full-canvas image, no duplicated quadrants. Fine features: purple velour loops, directional pile ribs, deep plush recesses, raised stitch tracks, polished worn pile, fine pile fuzz",
+  "spec_grammar": "Feature-specific selectors partition purple velour loops, directional pile ribs, deep plush recesses, raised stitch tracks, polished worn pile, fine pile fuzz. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "purple velour loops",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "directional pile ribs",
+      "role": "Material feature selected from artwork by y:>:0.55"
+    },
+    {
+      "name": "deep plush recesses",
+      "role": "Material feature selected from artwork by g:<:0.29"
+    },
+    {
+      "name": "raised stitch tracks",
+      "role": "Material feature selected from artwork by edge:>:0.62"
+    },
+    {
+      "name": "polished worn pile",
+      "role": "Material feature selected from artwork by detail:>:0.75"
+    },
+    {
+      "name": "fine pile fuzz",
+      "role": "Material feature selected from artwork by fine:>:0.82"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "purple velour loops",
+      "directional pile ribs",
+      "deep plush recesses",
+      "raised stitch tracks",
+      "polished worn pile",
+      "fine pile fuzz"
+    ],
+    "R": [
+      "purple velour loops",
+      "directional pile ribs",
+      "deep plush recesses",
+      "raised stitch tracks",
+      "polished worn pile",
+      "fine pile fuzz"
+    ],
+    "Cc": [
+      "purple velour loops",
+      "directional pile ribs",
+      "deep plush recesses",
+      "raised stitch tracks",
+      "polished worn pile",
+      "fine pile fuzz"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "purple velour loops",
+      "range": [
+        [
+          0,
+          175,
+          190
+        ],
+        [
+          8,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "directional pile ribs",
+      "range": [
+        [
+          0,
+          40,
+          45
+        ],
+        [
+          18,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "deep plush recesses",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "raised stitch tracks",
+      "range": [
+        [
+          0,
+          100,
+          130
+        ],
+        [
+          12,
+          195,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "polished worn pile",
+      "range": [
+        [
+          0,
+          55,
+          30
+        ],
+        [
+          20,
+          160,
+          190
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine pile fuzz",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_airbrush_tee",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_boombox_chrome",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "purple velour loops",
+      "directional pile ribs",
+      "deep plush recesses",
+      "raised stitch tracks",
+      "polished worn pile",
+      "fine pile fuzz"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_velour_tracksuit / Deep purple looped velour with narrow tiny rib segments and cream piping fragments, distinct from crushed rose fans",
+  "spec_key": "at_velour_tracksuit / purple velour loops all; directional pile ribs y:>:0.55; deep plush recesses g:<:0.29; raised stitch tracks edge:>:0.62; polished worn pile detail:>:0.75; fine pile fuzz fine:>:0.82",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

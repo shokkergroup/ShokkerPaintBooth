@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_cyber_café",
+  "display_name": "Cdrom: Cyber Café",
+  "promise": "Cold perforated steel with tiny scattered cyan LED-like inserts, no desks or objects",
+  "carrier_grammar": "Cold perforated steel with tiny scattered cyan LED-like inserts, no desks or objects; single full-canvas image, no duplicated quadrants. Fine features: steel lands, dark bores, rolled silver rims, cyan resin inserts, deburring arcs, oxidized pocks",
+  "spec_grammar": "Feature-specific selectors partition steel lands, dark bores, rolled silver rims, cyan resin inserts, deburring arcs, oxidized pocks. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "steel lands",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "dark bores",
+      "role": "Material feature selected from artwork by g:<:0.27"
+    },
+    {
+      "name": "rolled silver rims",
+      "role": "Material feature selected from artwork by edge:>:0.55&g:>:0.45"
+    },
+    {
+      "name": "cyan resin inserts",
+      "role": "Material feature selected from artwork by s:>:0.24&h:>:155&h:<:220"
+    },
+    {
+      "name": "deburring arcs",
+      "role": "Material feature selected from artwork by x:>:0.72&g:>:0.56"
+    },
+    {
+      "name": "oxidized pocks",
+      "role": "Material feature selected from artwork by s:>:0.16&h:<:75"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "steel lands",
+      "dark bores",
+      "rolled silver rims",
+      "cyan resin inserts",
+      "deburring arcs",
+      "oxidized pocks"
+    ],
+    "R": [
+      "steel lands",
+      "dark bores",
+      "rolled silver rims",
+      "cyan resin inserts",
+      "deburring arcs",
+      "oxidized pocks"
+    ],
+    "Cc": [
+      "steel lands",
+      "dark bores",
+      "rolled silver rims",
+      "cyan resin inserts",
+      "deburring arcs",
+      "oxidized pocks"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "steel lands",
+      "range": [
+        [
+          155,
+          45,
+          110
+        ],
+        [
+          240,
+          130,
+          235
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dark bores",
+      "range": [
+        [
+          18,
+          120,
+          155
+        ],
+        [
+          95,
+          245,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "rolled silver rims",
+      "range": [
+        [
+          230,
+          2,
+          170
+        ],
+        [
+          255,
+          40,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cyan resin inserts",
+      "range": [
+        [
+          0,
+          20,
+          16
+        ],
+        [
+          35,
+          88,
+          95
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "deburring arcs",
+      "range": [
+        [
+          190,
+          75,
+          55
+        ],
+        [
+          250,
+          180,
+          190
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "oxidized pocks",
+      "range": [
+        [
+          12,
+          135,
+          165
+        ],
+        [
+          120,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_beige_box",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_crt_blue_screen",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "steel lands",
+      "dark bores",
+      "rolled silver rims",
+      "cyan resin inserts",
+      "deburring arcs",
+      "oxidized pocks"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_cyber_café / Cold perforated steel with tiny scattered cyan LED-like inserts, no desks or objects",
+  "spec_key": "at_cyber_café / steel lands all; dark bores g:<:0.27; rolled silver rims edge:>:0.55&g:>:0.45; cyan resin inserts s:>:0.24&h:>:155&h:<:220; deburring arcs x:>:0.72&g:>:0.56; oxidized pocks s:>:0.16&h:<:75",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

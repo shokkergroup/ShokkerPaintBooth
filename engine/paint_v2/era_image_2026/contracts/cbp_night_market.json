@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_night_market",
+  "display_name": "Street: Night Market Vinyl",
+  "promise": "Tiny tangerine, fuchsia and turquoise vinyl overlaps with pearly crimped edges.",
+  "carrier_grammar": "Tiny tangerine, fuchsia and turquoise vinyl overlaps with pearly crimped edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for tangerine vinyl, fuchsia overlaps, turquoise vinyl slivers, pearly crimp tips, purple mesh underlayer is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny tangerine, fuchsia and turquoise vinyl overlaps with pearly crimped edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_night_market.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "tangerine vinyl",
+      "role": "Actual shared paint and spec geometry: tangerine vinyl"
+    },
+    {
+      "name": "fuchsia overlaps",
+      "role": "Actual shared paint and spec geometry: fuchsia overlaps"
+    },
+    {
+      "name": "turquoise vinyl slivers",
+      "role": "Actual shared paint and spec geometry: turquoise vinyl slivers"
+    },
+    {
+      "name": "pearly crimp tips",
+      "role": "Actual shared paint and spec geometry: pearly crimp tips"
+    },
+    {
+      "name": "purple mesh underlayer",
+      "role": "Actual shared paint and spec geometry: purple mesh underlayer"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "tangerine vinyl",
+      "fuchsia overlaps",
+      "turquoise vinyl slivers",
+      "pearly crimp tips",
+      "purple mesh underlayer"
+    ],
+    "R": [
+      "tangerine vinyl",
+      "fuchsia overlaps",
+      "turquoise vinyl slivers",
+      "pearly crimp tips",
+      "purple mesh underlayer"
+    ],
+    "Cc": [
+      "tangerine vinyl",
+      "fuchsia overlaps",
+      "turquoise vinyl slivers",
+      "pearly crimp tips",
+      "purple mesh underlayer"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_vending_glow",
+      "difference": "This finish uses Dense micro patchwork of translucent tangerine fuchsia turquoise market-awning vinyl slivers: crimped edges, small heat-weld dots, pearly crease tips, purple mesh underlayer and tiny wet pinholes. No stalls or objects, no broad fabric panels, irregular short folded strips in every direction.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_windbreaker_block",
+      "difference": "This finish uses Dense micro patchwork of translucent tangerine fuchsia turquoise market-awning vinyl slivers: crimped edges, small heat-weld dots, pearly crease tips, purple mesh underlayer and tiny wet pinholes. No stalls or objects, no broad fabric panels, irregular short folded strips in every direction.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "tangerine vinyl is visible in the authored geometry",
+      "fuchsia overlaps is visible in the authored geometry",
+      "turquoise vinyl slivers is visible in the authored geometry",
+      "pearly crimp tips is visible in the authored geometry",
+      "purple mesh underlayer is visible in the authored geometry"
+    ],
+    "source_sha256": "db1b43e9587908da746464632e72a74a5f223dc5886a269ee1cfce24badb96b0",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_night_market-authored-Tiny tangerine, fuchsia and turquoise vinyl overlaps with pearly crimped edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_night_market-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 51.8,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "b1dfaff024889435946c9c294e9b7f2c8a14a9956f9a30c4963ef3688cbc1802"
+}

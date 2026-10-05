@@ -1,0 +1,1647 @@
+{
+  "schema": "smart-tga-direct-exact-candidate-labels-v1",
+  "cycle": 725,
+  "reviewed_at": "2026-07-13",
+  "review_method": "visual inspection of all 96 active-selected exact source masks on lossless checker sheets; completion means the candidate contains one usable physical number copy",
+  "label_count": 96,
+  "semantic_counts": {
+    "uncertain": 18,
+    "Paint/livery": 15,
+    "Number": 44,
+    "Sponsor": 19
+  },
+  "complete_number_count": 30,
+  "number_fragment_count": 14,
+  "labels": [
+    {
+      "review_code": "A000",
+      "paint": "dirtlatemodel 350/car_num_1000912.tga",
+      "candidate_index": 78,
+      "proposal_id": "number-tiled-palette:6d310a68f93fbbeb",
+      "bbox_for_review_trace_only": [
+        320,
+        729,
+        273,
+        267
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A001",
+      "paint": "dirtlatemodel 350/car_num_1000912.tga",
+      "candidate_index": 66,
+      "proposal_id": "number-tiled-palette:a8a9842319cdc913",
+      "bbox_for_review_trace_only": [
+        160,
+        704,
+        320,
+        307
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A002",
+      "paint": "dirtlatemodel 350/car_num_1000912.tga",
+      "candidate_index": 10,
+      "proposal_id": "number-tiled-palette:8377a4ce3e1f3a2b",
+      "bbox_for_review_trace_only": [
+        346,
+        288,
+        23,
+        36
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A003",
+      "paint": "dirtlatemodel 350/car_num_1000912.tga",
+      "candidate_index": 79,
+      "proposal_id": "number-tiled-companion:d19605c197ab32e4",
+      "bbox_for_review_trace_only": [
+        0,
+        729,
+        480,
+        267
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A004",
+      "paint": "dirtlatemodel 350/car_num_1000912.tga",
+      "candidate_index": 64,
+      "proposal_id": "number-tiled-palette:4ded557a0a68bc3a",
+      "bbox_for_review_trace_only": [
+        640,
+        704,
+        320,
+        318
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A005",
+      "paint": "dirtlatemodel 350/car_num_1006305.tga",
+      "candidate_index": 81,
+      "proposal_id": "number-tiled-palette:e8260d106a7c20ae",
+      "bbox_for_review_trace_only": [
+        3,
+        160,
+        317,
+        203
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A006",
+      "paint": "dirtlatemodel 350/car_num_1006305.tga",
+      "candidate_index": 2,
+      "proposal_id": "number-tiled-palette:653ab666e65be925",
+      "bbox_for_review_trace_only": [
+        297,
+        787,
+        23,
+        24
+      ],
+      "semantic": "Paint/livery",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A007",
+      "paint": "dirtlatemodel 350/car_num_1006305.tga",
+      "candidate_index": 88,
+      "proposal_id": "number-tiled-companion:de6809973ffd08b6",
+      "bbox_for_review_trace_only": [
+        192,
+        768,
+        384,
+        133
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A008",
+      "paint": "dirtlatemodel 350/car_num_1006305.tga",
+      "candidate_index": 36,
+      "proposal_id": "number-tiled-companion:527e55cbaf0a1a20",
+      "bbox_for_review_trace_only": [
+        96,
+        192,
+        384,
+        168
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_upper_side"
+    },
+    {
+      "review_code": "A009",
+      "paint": "dirtlatemodel 350/car_num_1006305.tga",
+      "candidate_index": 75,
+      "proposal_id": "number-tiled-companion:a9187da4b9c2556e",
+      "bbox_for_review_trace_only": [
+        0,
+        640,
+        480,
+        320
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "none"
+    },
+    {
+      "review_code": "A010",
+      "paint": "dirtlatemodel 350/car_num_1007631.tga",
+      "candidate_index": 63,
+      "proposal_id": "number-tiled-palette:1a862d3560d6b5be",
+      "bbox_for_review_trace_only": [
+        320,
+        715,
+        320,
+        110
+      ],
+      "semantic": "Paint/livery",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A011",
+      "paint": "dirtlatemodel 350/car_num_1007631.tga",
+      "candidate_index": 71,
+      "proposal_id": "number-tiled-companion:ce3cd75c9a223c4f",
+      "bbox_for_review_trace_only": [
+        96,
+        707,
+        292,
+        152
+      ],
+      "semantic": "Number",
+      "complete_copy": false,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_lower_side"
+    },
+    {
+      "review_code": "A012",
+      "paint": "dirtlatemodel 350/car_num_1007631.tga",
+      "candidate_index": 42,
+      "proposal_id": "number-tiled-palette:40b855eb1a463deb",
+      "bbox_for_review_trace_only": [
+        288,
+        211,
+        192,
+        142
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A013",
+      "paint": "dirtlatemodel 350/car_num_1007631.tga",
+      "candidate_index": 74,
+      "proposal_id": "number-tiled-companion:3ce079495c112ca1",
+      "bbox_for_review_trace_only": [
+        192,
+        104,
+        192,
+        249
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A014",
+      "paint": "dirtlatemodel 350/car_num_1007631.tga",
+      "candidate_index": 56,
+      "proposal_id": "number-tiled-palette:3576e52c0bd66a30",
+      "bbox_for_review_trace_only": [
+        396,
+        722,
+        143,
+        29
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A015",
+      "paint": "dirtlatemodel 350/car_num_1008063.tga",
+      "candidate_index": 86,
+      "proposal_id": "number-tiled-palette:39ff754c7e220705",
+      "bbox_for_review_trace_only": [
+        160,
+        713,
+        320,
+        235
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_lower_side"
+    },
+    {
+      "review_code": "A016",
+      "paint": "dirtlatemodel 350/car_num_1008063.tga",
+      "candidate_index": 28,
+      "proposal_id": "number-tiled-palette:6b66d844f2ab7249",
+      "bbox_for_review_trace_only": [
+        307,
+        257,
+        73,
+        31
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A017",
+      "paint": "dirtlatemodel 350/car_num_1008063.tga",
+      "candidate_index": 77,
+      "proposal_id": "number-tiled-companion:f716dbff56bf5f7c",
+      "bbox_for_review_trace_only": [
+        239,
+        257,
+        139,
+        43
+      ],
+      "semantic": "Number",
+      "complete_copy": false,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_upper_side"
+    },
+    {
+      "review_code": "A018",
+      "paint": "dirtlatemodel 350/car_num_1008063.tga",
+      "candidate_index": 12,
+      "proposal_id": "number-tiled-palette:754ce7c2cfc617b4",
+      "bbox_for_review_trace_only": [
+        358,
+        259,
+        27,
+        10
+      ],
+      "semantic": "Paint/livery",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A019",
+      "paint": "dirtlatemodel 350/car_num_1008063.tga",
+      "candidate_index": 33,
+      "proposal_id": "number-tiled-palette:64f85e10d963b603",
+      "bbox_for_review_trace_only": [
+        387,
+        791,
+        34,
+        14
+      ],
+      "semantic": "Paint/livery",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A020",
+      "paint": "dirtlatemodel 350/car_num_308339.tga",
+      "candidate_index": 4,
+      "proposal_id": "number-tiled-palette:94afa257094667c0",
+      "bbox_for_review_trace_only": [
+        314,
+        251,
+        51,
+        37
+      ],
+      "semantic": "Number",
+      "complete_copy": false,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_upper_side"
+    },
+    {
+      "review_code": "A021",
+      "paint": "dirtlatemodel 350/car_num_308339.tga",
+      "candidate_index": 32,
+      "proposal_id": "number-tiled-palette:d9dcf2a689786b5b",
+      "bbox_for_review_trace_only": [
+        401,
+        768,
+        49,
+        31
+      ],
+      "semantic": "Number",
+      "complete_copy": false,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_lower_side"
+    },
+    {
+      "review_code": "A022",
+      "paint": "dirtlatemodel 350/car_num_308339.tga",
+      "candidate_index": 6,
+      "proposal_id": "number-tiled-palette:9a2b1275aa9c0fab",
+      "bbox_for_review_trace_only": [
+        402,
+        768,
+        47,
+        30
+      ],
+      "semantic": "Number",
+      "complete_copy": false,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_lower_side"
+    },
+    {
+      "review_code": "A023",
+      "paint": "dirtlatemodel 350/car_num_308339.tga",
+      "candidate_index": 80,
+      "proposal_id": "number-tiled-companion:80fb378ac74471e1",
+      "bbox_for_review_trace_only": [
+        313,
+        246,
+        149,
+        74
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_upper_side"
+    },
+    {
+      "review_code": "A024",
+      "paint": "dirtlatemodel 350/car_num_308339.tga",
+      "candidate_index": 38,
+      "proposal_id": "number-tiled-companion:cd12f4f62c1468b6",
+      "bbox_for_review_trace_only": [
+        320,
+        719,
+        66,
+        81
+      ],
+      "semantic": "Number",
+      "complete_copy": false,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_lower_side"
+    },
+    {
+      "review_code": "A025",
+      "paint": "dirtlatemodel 350/car_num_321255.tga",
+      "candidate_index": 90,
+      "proposal_id": "number-tiled-companion:f38a6d154c0335d9",
+      "bbox_for_review_trace_only": [
+        480,
+        704,
+        480,
+        296
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A026",
+      "paint": "dirtlatemodel 350/car_num_321255.tga",
+      "candidate_index": 86,
+      "proposal_id": "number-tiled-palette:c30952c06c2667aa",
+      "bbox_for_review_trace_only": [
+        672,
+        832,
+        192,
+        190
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A027",
+      "paint": "dirtlatemodel 350/car_num_321255.tga",
+      "candidate_index": 69,
+      "proposal_id": "number-tiled-palette:4881547048879268",
+      "bbox_for_review_trace_only": [
+        192,
+        192,
+        192,
+        192
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A028",
+      "paint": "dirtlatemodel 350/car_num_321255.tga",
+      "candidate_index": 80,
+      "proposal_id": "number-tiled-palette:67250c831585e0e8",
+      "bbox_for_review_trace_only": [
+        320,
+        166,
+        320,
+        184
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_upper_side"
+    },
+    {
+      "review_code": "A029",
+      "paint": "dirtlatemodel 350/car_num_321255.tga",
+      "candidate_index": 62,
+      "proposal_id": "number-tiled-palette:2055f39d71d548d2",
+      "bbox_for_review_trace_only": [
+        288,
+        672,
+        192,
+        192
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A030",
+      "paint": "dirtlatemodel 350/car_num_327705.tga",
+      "candidate_index": 51,
+      "proposal_id": "number-tiled-palette:a705991c32af1e97",
+      "bbox_for_review_trace_only": [
+        768,
+        845,
+        181,
+        112
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "roof_number"
+    },
+    {
+      "review_code": "A031",
+      "paint": "dirtlatemodel 350/car_num_327705.tga",
+      "candidate_index": 59,
+      "proposal_id": "number-tiled-companion:511be1891d7876d6",
+      "bbox_for_review_trace_only": [
+        778,
+        782,
+        182,
+        125
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A032",
+      "paint": "dirtlatemodel 350/car_num_327705.tga",
+      "candidate_index": 62,
+      "proposal_id": "number-tiled-companion:1815bd0aad5740dd",
+      "bbox_for_review_trace_only": [
+        778,
+        782,
+        182,
+        125
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A033",
+      "paint": "dirtlatemodel 350/car_num_327705.tga",
+      "candidate_index": 95,
+      "proposal_id": "number-tiled-palette:021531e236a4d80c",
+      "bbox_for_review_trace_only": [
+        172,
+        718,
+        308,
+        183
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "none"
+    },
+    {
+      "review_code": "A034",
+      "paint": "dirtlatemodel 350/car_num_327705.tga",
+      "candidate_index": 50,
+      "proposal_id": "number-tiled-companion:66e464faff1bc8a4",
+      "bbox_for_review_trace_only": [
+        323,
+        276,
+        148,
+        63
+      ],
+      "semantic": "Number",
+      "complete_copy": false,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_upper_side"
+    },
+    {
+      "review_code": "A035",
+      "paint": "dirtlatemodel 350/car_num_327705.tga",
+      "candidate_index": 81,
+      "proposal_id": "number-tiled-companion:865cd3e4446ff338",
+      "bbox_for_review_trace_only": [
+        160,
+        704,
+        320,
+        255
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_lower_side"
+    },
+    {
+      "review_code": "A036",
+      "paint": "dirtlatemodel 350/car_num_331993.tga",
+      "candidate_index": 5,
+      "proposal_id": "number-tiled-palette:d52e71d9dd06e3f4",
+      "bbox_for_review_trace_only": [
+        334,
+        768,
+        25,
+        16
+      ],
+      "semantic": "Paint/livery",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A037",
+      "paint": "dirtlatemodel 350/car_num_331993.tga",
+      "candidate_index": 26,
+      "proposal_id": "number-tiled-palette:4bb59712edc98832",
+      "bbox_for_review_trace_only": [
+        910,
+        852,
+        18,
+        12
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "roof_number"
+    },
+    {
+      "review_code": "A038",
+      "paint": "dirtlatemodel 350/car_num_331993.tga",
+      "candidate_index": 49,
+      "proposal_id": "number-tiled-palette:362136a03013cf0e",
+      "bbox_for_review_trace_only": [
+        288,
+        218,
+        192,
+        123
+      ],
+      "semantic": "Paint/livery",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A039",
+      "paint": "dirtlatemodel 350/car_num_331993.tga",
+      "candidate_index": 40,
+      "proposal_id": "number-tiled-palette:34bfe5a306e2901d",
+      "bbox_for_review_trace_only": [
+        805,
+        832,
+        138,
+        139
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "roof_number"
+    },
+    {
+      "review_code": "A040",
+      "paint": "dirtlatemodel 350/car_num_331993.tga",
+      "candidate_index": 54,
+      "proposal_id": "number-tiled-palette:369945de3df2e5c7",
+      "bbox_for_review_trace_only": [
+        192,
+        220,
+        192,
+        128
+      ],
+      "semantic": "Paint/livery",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A041",
+      "paint": "dirtlatemodel 350/car_num_336528.tga",
+      "candidate_index": 75,
+      "proposal_id": "number-tiled-palette:744072936ad58482",
+      "bbox_for_review_trace_only": [
+        178,
+        137,
+        302,
+        183
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_upper_side"
+    },
+    {
+      "review_code": "A042",
+      "paint": "dirtlatemodel 350/car_num_336528.tga",
+      "candidate_index": 76,
+      "proposal_id": "number-tiled-palette:5d0960d1692e695e",
+      "bbox_for_review_trace_only": [
+        704,
+        704,
+        316,
+        320
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "none"
+    },
+    {
+      "review_code": "A043",
+      "paint": "dirtlatemodel 350/car_num_336528.tga",
+      "candidate_index": 64,
+      "proposal_id": "number-tiled-palette:74df0f3e64ac337a",
+      "bbox_for_review_trace_only": [
+        640,
+        728,
+        320,
+        232
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "roof_number"
+    },
+    {
+      "review_code": "A044",
+      "paint": "dirtlatemodel 350/car_num_336528.tga",
+      "candidate_index": 67,
+      "proposal_id": "number-tiled-palette:e886d820e4c50a5f",
+      "bbox_for_review_trace_only": [
+        424,
+        218,
+        23,
+        15
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A045",
+      "paint": "dirtlatemodel 350/car_num_336528.tga",
+      "candidate_index": 82,
+      "proposal_id": "number-tiled-companion:791e4b7979991631",
+      "bbox_for_review_trace_only": [
+        252,
+        724,
+        340,
+        236
+      ],
+      "semantic": "Paint/livery",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A046",
+      "paint": "dirtlatemodel 350/car_num_343044.tga",
+      "candidate_index": 78,
+      "proposal_id": "number-tiled-palette:903fbef743951659",
+      "bbox_for_review_trace_only": [
+        833,
+        835,
+        182,
+        42
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A047",
+      "paint": "dirtlatemodel 350/car_num_343044.tga",
+      "candidate_index": 92,
+      "proposal_id": "number-tiled-palette:b876d40894438cf9",
+      "bbox_for_review_trace_only": [
+        265,
+        918,
+        119,
+        23
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A048",
+      "paint": "dirtlatemodel 350/car_num_343044.tga",
+      "candidate_index": 59,
+      "proposal_id": "number-tiled-palette:f4e4a8b3d3e8ac87",
+      "bbox_for_review_trace_only": [
+        770,
+        842,
+        94,
+        88
+      ],
+      "semantic": "Number",
+      "complete_copy": false,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "roof_number"
+    },
+    {
+      "review_code": "A049",
+      "paint": "dirtlatemodel 350/car_num_343044.tga",
+      "candidate_index": 66,
+      "proposal_id": "number-tiled-companion:023ccb39d7476605",
+      "bbox_for_review_trace_only": [
+        331,
+        720,
+        149,
+        80
+      ],
+      "semantic": "Number",
+      "complete_copy": false,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_lower_side"
+    },
+    {
+      "review_code": "A050",
+      "paint": "dirtlatemodel 350/car_num_343044.tga",
+      "candidate_index": 82,
+      "proposal_id": "number-tiled-palette:813b3e8d46b8225e",
+      "bbox_for_review_trace_only": [
+        333,
+        241,
+        143,
+        20
+      ],
+      "semantic": "Paint/livery",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A051",
+      "paint": "dirtlatemodel 358/car_num_1003732.tga",
+      "candidate_index": 73,
+      "proposal_id": "number-tiled-palette:e171797664fe92c8",
+      "bbox_for_review_trace_only": [
+        295,
+        782,
+        185,
+        51
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A052",
+      "paint": "dirtlatemodel 358/car_num_1003732.tga",
+      "candidate_index": 51,
+      "proposal_id": "number-tiled-companion:9e12beb06d50c300",
+      "bbox_for_review_trace_only": [
+        279,
+        244,
+        105,
+        90
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_upper_side"
+    },
+    {
+      "review_code": "A053",
+      "paint": "dirtlatemodel 358/car_num_1003732.tga",
+      "candidate_index": 91,
+      "proposal_id": "number-tiled-palette:1cb18baa00bc1b36",
+      "bbox_for_review_trace_only": [
+        704,
+        769,
+        272,
+        183
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "roof_number"
+    },
+    {
+      "review_code": "A054",
+      "paint": "dirtlatemodel 358/car_num_1003732.tga",
+      "candidate_index": 39,
+      "proposal_id": "number-tiled-palette:0cd1ec9187be6d4b",
+      "bbox_for_review_trace_only": [
+        382,
+        761,
+        21,
+        14
+      ],
+      "semantic": "Paint/livery",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A055",
+      "paint": "dirtlatemodel 358/car_num_1003732.tga",
+      "candidate_index": 87,
+      "proposal_id": "number-tiled-palette:b1d672d40ca8d556",
+      "bbox_for_review_trace_only": [
+        288,
+        210,
+        192,
+        146
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_upper_side"
+    },
+    {
+      "review_code": "A056",
+      "paint": "dirtlatemodel 358/car_num_1006305.tga",
+      "candidate_index": 81,
+      "proposal_id": "number-tiled-palette:e8260d106a7c20ae",
+      "bbox_for_review_trace_only": [
+        3,
+        160,
+        317,
+        203
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A057",
+      "paint": "dirtlatemodel 358/car_num_1006305.tga",
+      "candidate_index": 2,
+      "proposal_id": "number-tiled-palette:653ab666e65be925",
+      "bbox_for_review_trace_only": [
+        297,
+        787,
+        23,
+        24
+      ],
+      "semantic": "Paint/livery",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A058",
+      "paint": "dirtlatemodel 358/car_num_1006305.tga",
+      "candidate_index": 88,
+      "proposal_id": "number-tiled-companion:de6809973ffd08b6",
+      "bbox_for_review_trace_only": [
+        192,
+        768,
+        384,
+        133
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A059",
+      "paint": "dirtlatemodel 358/car_num_1006305.tga",
+      "candidate_index": 36,
+      "proposal_id": "number-tiled-companion:527e55cbaf0a1a20",
+      "bbox_for_review_trace_only": [
+        96,
+        192,
+        384,
+        168
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_upper_side"
+    },
+    {
+      "review_code": "A060",
+      "paint": "dirtlatemodel 358/car_num_1006305.tga",
+      "candidate_index": 75,
+      "proposal_id": "number-tiled-companion:a9187da4b9c2556e",
+      "bbox_for_review_trace_only": [
+        0,
+        640,
+        480,
+        320
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "none"
+    },
+    {
+      "review_code": "A061",
+      "paint": "dirtlatemodel 358/car_num_1008515.tga",
+      "candidate_index": 35,
+      "proposal_id": "number-tiled-companion:0b1de1779be4085a",
+      "bbox_for_review_trace_only": [
+        278,
+        718,
+        103,
+        102
+      ],
+      "semantic": "Paint/livery",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A062",
+      "paint": "dirtlatemodel 358/car_num_1008515.tga",
+      "candidate_index": 76,
+      "proposal_id": "number-tiled-palette:afd5b74108a5e0b7",
+      "bbox_for_review_trace_only": [
+        828,
+        839,
+        105,
+        104
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A063",
+      "paint": "dirtlatemodel 358/car_num_1008515.tga",
+      "candidate_index": 91,
+      "proposal_id": "number-tiled-companion:abb269b9642d01e1",
+      "bbox_for_review_trace_only": [
+        258,
+        259,
+        109,
+        86
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_upper_side"
+    },
+    {
+      "review_code": "A064",
+      "paint": "dirtlatemodel 358/car_num_1008515.tga",
+      "candidate_index": 52,
+      "proposal_id": "number-tiled-palette:4d5d597640465cd3",
+      "bbox_for_review_trace_only": [
+        384,
+        305,
+        23,
+        20
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A065",
+      "paint": "dirtlatemodel 358/car_num_1008515.tga",
+      "candidate_index": 87,
+      "proposal_id": "number-tiled-companion:a195c71c1f207bbf",
+      "bbox_for_review_trace_only": [
+        290,
+        785,
+        35,
+        43
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A066",
+      "paint": "dirtlatemodel 358/car_num_1321255.tga",
+      "candidate_index": 34,
+      "proposal_id": "number-tiled-palette:8c325f311e3f330c",
+      "bbox_for_review_trace_only": [
+        384,
+        710,
+        192,
+        112
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A067",
+      "paint": "dirtlatemodel 358/car_num_1321255.tga",
+      "candidate_index": 37,
+      "proposal_id": "number-tiled-palette:ab099e2347d935c3",
+      "bbox_for_review_trace_only": [
+        686,
+        769,
+        274,
+        191
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A068",
+      "paint": "dirtlatemodel 358/car_num_1321255.tga",
+      "candidate_index": 80,
+      "proposal_id": "number-tiled-palette:459af80efcd8b1c6",
+      "bbox_for_review_trace_only": [
+        320,
+        215,
+        320,
+        265
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A069",
+      "paint": "dirtlatemodel 358/car_num_1321255.tga",
+      "candidate_index": 67,
+      "proposal_id": "number-tiled-companion:cc686eb66f78bb59",
+      "bbox_for_review_trace_only": [
+        320,
+        640,
+        297,
+        359
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A070",
+      "paint": "dirtlatemodel 358/car_num_1321255.tga",
+      "candidate_index": 91,
+      "proposal_id": "number-tiled-companion:6a3d0423278a5071",
+      "bbox_for_review_trace_only": [
+        192,
+        672,
+        192,
+        327
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A071",
+      "paint": "dirtlatemodel 358/car_num_1328151.tga",
+      "candidate_index": 42,
+      "proposal_id": "number-tiled-palette:c325e7648edfded1",
+      "bbox_for_review_trace_only": [
+        320,
+        715,
+        273,
+        105
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_lower_side"
+    },
+    {
+      "review_code": "A072",
+      "paint": "dirtlatemodel 358/car_num_1328151.tga",
+      "candidate_index": 62,
+      "proposal_id": "number-tiled-palette:9aaf6dc4eb1ae22a",
+      "bbox_for_review_trace_only": [
+        7,
+        717,
+        313,
+        89
+      ],
+      "semantic": "Paint/livery",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A073",
+      "paint": "dirtlatemodel 358/car_num_1328151.tga",
+      "candidate_index": 95,
+      "proposal_id": "number-tiled-companion:8601c24ef18252da",
+      "bbox_for_review_trace_only": [
+        740,
+        585,
+        34,
+        46
+      ],
+      "semantic": "Paint/livery",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A074",
+      "paint": "dirtlatemodel 358/car_num_1328151.tga",
+      "candidate_index": 66,
+      "proposal_id": "number-tiled-companion:be8fe09539db2783",
+      "bbox_for_review_trace_only": [
+        24,
+        715,
+        72,
+        34
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A075",
+      "paint": "dirtlatemodel 358/car_num_1328151.tga",
+      "candidate_index": 39,
+      "proposal_id": "number-tiled-companion:48a951202e66d549",
+      "bbox_for_review_trace_only": [
+        7,
+        718,
+        473,
+        98
+      ],
+      "semantic": "Number",
+      "complete_copy": false,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_lower_side"
+    },
+    {
+      "review_code": "A076",
+      "paint": "dirtlatemodel 358/car_num_197595.tga",
+      "candidate_index": 67,
+      "proposal_id": "number-tiled-companion:d146cc78f96ce0f8",
+      "bbox_for_review_trace_only": [
+        273,
+        919,
+        105,
+        77
+      ],
+      "semantic": "uncertain",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A077",
+      "paint": "dirtlatemodel 358/car_num_197595.tga",
+      "candidate_index": 52,
+      "proposal_id": "number-tiled-companion:3d1f926516fddc52",
+      "bbox_for_review_trace_only": [
+        288,
+        722,
+        192,
+        220
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_lower_side"
+    },
+    {
+      "review_code": "A078",
+      "paint": "dirtlatemodel 358/car_num_197595.tga",
+      "candidate_index": 56,
+      "proposal_id": "number-tiled-companion:4a24ec73447b6dd8",
+      "bbox_for_review_trace_only": [
+        379,
+        723,
+        202,
+        87
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_lower_side"
+    },
+    {
+      "review_code": "A079",
+      "paint": "dirtlatemodel 358/car_num_197595.tga",
+      "candidate_index": 39,
+      "proposal_id": "number-tiled-palette:12bde22fff712263",
+      "bbox_for_review_trace_only": [
+        797,
+        843,
+        102,
+        133
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "roof_number"
+    },
+    {
+      "review_code": "A080",
+      "paint": "dirtlatemodel 358/car_num_197595.tga",
+      "candidate_index": 84,
+      "proposal_id": "number-tiled-palette:dc1799fab061d70e",
+      "bbox_for_review_trace_only": [
+        320,
+        719,
+        273,
+        119
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_lower_side"
+    },
+    {
+      "review_code": "A081",
+      "paint": "dirtlatemodel 358/car_num_233946.tga",
+      "candidate_index": 89,
+      "proposal_id": "number-tiled-companion:5839cefafcc8c8da",
+      "bbox_for_review_trace_only": [
+        160,
+        716,
+        320,
+        190
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_lower_side"
+    },
+    {
+      "review_code": "A082",
+      "paint": "dirtlatemodel 358/car_num_233946.tga",
+      "candidate_index": 71,
+      "proposal_id": "number-tiled-companion:6a1cbca5331802d2",
+      "bbox_for_review_trace_only": [
+        288,
+        715,
+        306,
+        149
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_lower_side"
+    },
+    {
+      "review_code": "A083",
+      "paint": "dirtlatemodel 358/car_num_233946.tga",
+      "candidate_index": 20,
+      "proposal_id": "number-tiled-palette:3af292d251583239",
+      "bbox_for_review_trace_only": [
+        342,
+        315,
+        11,
+        19
+      ],
+      "semantic": "Number",
+      "complete_copy": false,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_upper_side"
+    },
+    {
+      "review_code": "A084",
+      "paint": "dirtlatemodel 358/car_num_233946.tga",
+      "candidate_index": 66,
+      "proposal_id": "number-tiled-palette:9e0d35750e7e58c9",
+      "bbox_for_review_trace_only": [
+        288,
+        181,
+        192,
+        107
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_upper_side"
+    },
+    {
+      "review_code": "A085",
+      "paint": "dirtlatemodel 358/car_num_233946.tga",
+      "candidate_index": 28,
+      "proposal_id": "number-tiled-palette:b89c3015c13536c8",
+      "bbox_for_review_trace_only": [
+        872,
+        886,
+        7,
+        21
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "roof_number"
+    },
+    {
+      "review_code": "A086",
+      "paint": "dirtlatemodel 358/car_num_247671.tga",
+      "candidate_index": 1,
+      "proposal_id": "number-tiled-companion:2e918316e6d79618",
+      "bbox_for_review_trace_only": [
+        820,
+        845,
+        44,
+        53
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "roof_number"
+    },
+    {
+      "review_code": "A087",
+      "paint": "dirtlatemodel 358/car_num_247671.tga",
+      "candidate_index": 68,
+      "proposal_id": "number-tiled-palette:d59a798ed3d1cfbc",
+      "bbox_for_review_trace_only": [
+        274,
+        918,
+        110,
+        25
+      ],
+      "semantic": "Number",
+      "complete_copy": false,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "nose_number_small"
+    },
+    {
+      "review_code": "A088",
+      "paint": "dirtlatemodel 358/car_num_247671.tga",
+      "candidate_index": 23,
+      "proposal_id": "number-tiled-palette:5126a028694fe9dc",
+      "bbox_for_review_trace_only": [
+        297,
+        734,
+        6,
+        10
+      ],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "door_number_lower_side"
+    },
+    {
+      "review_code": "A089",
+      "paint": "dirtlatemodel 358/car_num_247671.tga",
+      "candidate_index": 47,
+      "proposal_id": "number-tiled-palette:ab0a12eae8a305e4",
+      "bbox_for_review_trace_only": [
+        857,
+        834,
+        73,
+        30
+      ],
+      "semantic": "Number",
+      "complete_copy": false,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "roof_number"
+    },
+    {
+      "review_code": "A090",
+      "paint": "dirtlatemodel 358/car_num_247671.tga",
+      "candidate_index": 93,
+      "proposal_id": "number-tiled-palette:af608539b820baea",
+      "bbox_for_review_trace_only": [
+        704,
+        773,
+        136,
+        106
+      ],
+      "semantic": "Paint/livery",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A091",
+      "paint": "dirtlatemodel 358/car_num_258767.tga",
+      "candidate_index": 59,
+      "proposal_id": "number-tiled-companion:83f94bbeea58ca98",
+      "bbox_for_review_trace_only": [
+        287,
+        717,
+        193,
+        114
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A092",
+      "paint": "dirtlatemodel 358/car_num_258767.tga",
+      "candidate_index": 21,
+      "proposal_id": "number-tiled-palette:a7dfb39ad56d533a",
+      "bbox_for_review_trace_only": [
+        343,
+        292,
+        18,
+        8
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A093",
+      "paint": "dirtlatemodel 358/car_num_258767.tga",
+      "candidate_index": 44,
+      "proposal_id": "number-tiled-palette:a5cbf3f9522fd02f",
+      "bbox_for_review_trace_only": [
+        265,
+        921,
+        36,
+        18
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A094",
+      "paint": "dirtlatemodel 358/car_num_258767.tga",
+      "candidate_index": 16,
+      "proposal_id": "number-tiled-palette:d93bd0edf0de47f6",
+      "bbox_for_review_trace_only": [
+        916,
+        882,
+        9,
+        7
+      ],
+      "semantic": "Sponsor",
+      "complete_copy": null,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "A095",
+      "paint": "dirtlatemodel 358/car_num_258767.tga",
+      "candidate_index": 10,
+      "proposal_id": "number-tiled-palette:752f765803ccc714",
+      "bbox_for_review_trace_only": [
+        806,
+        883,
+        36,
+        58
+      ],
+      "semantic": "Number",
+      "complete_copy": false,
+      "review_status": "direct_visual_exact_mask",
+      "ownership_authority": false,
+      "family_id": "primary_number_family",
+      "physical_copy_id": "roof_number"
+    }
+  ],
+  "safety": {
+    "exact_candidate_id_is_supervision_key": true,
+    "bbox_is_runtime_authority": false,
+    "filename_or_car_features": false,
+    "ownership_authority": false
+  }
+}

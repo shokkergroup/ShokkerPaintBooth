@@ -1,0 +1,22 @@
+{
+  "schema": "spb-help-action-live-baseline/1",
+  "session": "6b4fae0aab57",
+  "backend": "http://localhost:59879/",
+  "method": "Actual selectZone/toggleZoneMute, typed help, real SpbProZone.batch reorder, typed original DoIt label; isolated audit backend. No pixel/mask writes or paid calls.",
+  "originalTarget": {
+    "name": "Zone 2",
+    "index": 0,
+    "muted": true
+  },
+  "last": [
+    {
+      "role": "user",
+      "text": "Do it: switch \"Zone 2\" back on"
+    },
+    {
+      "role": "ai",
+      "text": "Done - \"Zone 1\" is switched back on (click its eye icon to undo).\nDo you see it now?"
+    }
+  ],
+  "providerAttempts": 0
+}

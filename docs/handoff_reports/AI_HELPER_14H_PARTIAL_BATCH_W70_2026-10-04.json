@@ -1,0 +1,49 @@
+{
+  "id": "AI_HELPER_14H_PARTIAL_BATCH_W70_2026-10-04",
+  "date": "2026-10-04",
+  "scope": "isolated W70 audit and candidate repair for actual helper offline part/element planning and aggregate batch completion copy",
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_w70_candidate/js/spb-pro-ai.js",
+    "sha256": "FE0CE34905A3044F22C3DC91B8DAC9071DEF80F56A8346FC3D0B362BDA4D1223",
+    "changes": [
+      "offlinePartAsk now returns an empty queue and a truthful no-change clarification if any requested part cannot be selected, rather than leaving earlier valid part operations queued while claiming all requested parts were completed.",
+      "offlineElementAsk applies the same all-or-nothing compile refusal when any requested element is unavailable.",
+      "finishCore replaces the full-success sentence with explicit successful lines and failed operations when a real apply batch partially succeeds."
+    ],
+    "not_promoted": true
+  },
+  "pinned_sources": {
+    "baseline_w67": {
+      "path": "_easy_claude_work/ai14h_w67_candidate/js/spb-pro-ai.js",
+      "sha256": "136B437D194F389DF79EBC629EC931D6553D5DFBCC7F161531CC9F7B5954F779"
+    },
+    "zone_kit": {
+      "path": "js/spb-pro-zone-kit.js",
+      "sha256": "6968963FC8D382E3ECDA629089A71A73A519270C0B577E98DF03D9F7D48D68D0"
+    }
+  },
+  "frozen_oracle": {
+    "path": "tests/ai_operation_w70_partial_batch_contract.cjs",
+    "sha256": "56DA234573D0C8A67BAA2D47E23E37C93D566EA01358DC0F4353E581A55566D8",
+    "cases": 12
+  },
+  "regression": {
+    "path": "tests/ai_operation_w70_partial_batch_review_contract.cjs",
+    "sha256": "4CF6C8F8661003A518337089B644349E35D45530AC67619ACB47FD92A9CA8505",
+    "candidate": "12/12 passed",
+    "baseline": "12/12 characterization assertions passed; two offline planner cases reproduce queued partial changes with false full-success copy, and forced apply failure reproduces stale full-success copy",
+    "coverage": "Actual extracted makeTools/offlinePartAsk/offlineElementAsk/applyQueue/finishCore with actual ZoneKit source in a VM; single/multi success; invalid and duplicate targets; malformed add; rejected edit; missing region; offline zero-mask/absent-element failures; forced addZone failure; existing-zone non-mutation on planner refusal. No browser, native painting, provider, network, or server calls."
+  },
+  "findings_and_limits": [
+    "Reachable offline part route gap: the planner accumulates selector errors but previously continued with valid operations and summarized all requested parts as completed. A synthetic template with a recognized right-side island but zero current pixels reproduced this through actual production functions. The candidate now refuses the whole compile result before any zone change.",
+    "Reachable offline element route gap: the planner previously queued found elements and omitted missing-element errors from its success sentence. A stripes-present/sponsors-absent fixture reproduced it; the candidate refuses the whole plan before mutation.",
+    "Actual ZoneKit batch applies operations sequentially and reports each failure; it does not roll back successful prior operations. A deliberate second addZone exception demonstrated partial commit and confirmed the prior finishCore copy retained a contradictory full-success claim. Candidate copy now names applied lines and failed operations. The thrown addZone failure was injected and is not evidence that ordinary validated route input naturally causes this failure.",
+    "Actual MCP makeTools handlers validate each operation before enqueueing. Invalid later edits, malformed adds, and ambiguous duplicate IDs are rejected before they enter the queue; prior valid operations remain queued. The model/provider may decide how to narrate that tool error, but no provider was called and provider-authored copy behavior is outside this audit.",
+    "No general rollback framework was added. Candidate covers the two concrete offline compile routes and makes apply-time partial results explicit; other asynchronous/external side effects are outside the isolated lane."
+  ],
+  "files_changed": [
+    "_easy_claude_work/ai14h_w70_candidate/js/spb-pro-ai.js",
+    "tests/ai_operation_w70_partial_batch_review_contract.cjs",
+    "docs/handoff_reports/AI_HELPER_14H_PARTIAL_BATCH_W70_2026-10-04.json"
+  ]
+}

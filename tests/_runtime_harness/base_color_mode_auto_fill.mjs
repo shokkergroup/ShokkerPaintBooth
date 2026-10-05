@@ -89,7 +89,8 @@ const fnNormalizeFinishId = extractFn(stateSrc, '_spbNormalizeFinishId');
 const fnIsShippingSpecialLikeFinishId = extractFn(stateSrc, '_spbIsShippingSpecialLikeFinishId');
 const fnShould = extractFn(stateSrc, '_spbShouldAutoFillBaseColor');
 const fnApply = extractFn(stateSrc, '_spbApplyPickedBaseToZone');
-if (!fnGetBaseGroup || !fnNormalizeFinishId || !fnIsShippingSpecialLikeFinishId || !fnShould || !fnApply) {
+const fnDefaultToFinish = extractFn(stateSrc, '_spbDefaultBaseColorToFinish');
+if (!fnGetBaseGroup || !fnNormalizeFinishId || !fnIsShippingSpecialLikeFinishId || !fnShould || !fnApply || !fnDefaultToFinish) {
     console.error('Failed to extract target functions');
     process.exit(1);
 }
@@ -105,8 +106,17 @@ ${fnNormalizeFinishId}
 ${fnIsShippingSpecialLikeFinishId}
 ${fnShould}
 ${fnApply}
-const results = { foundation: [], byGroup: {} };
-for (const group of _SPB_NO_AUTO_COLOR_GROUPS) {
+// Stubs for helpers the pick path calls that are irrelevant to the invariant.
+function _spbColorLocked() { return false; }
+function _spbFindFinishDisplay(id) { return BASES.find(b => b.id === id) || null; }
+function _spbExtractSwatchHex(sw, fb) { return (typeof sw === 'string' && sw[0] === '#') ? sw : fb; }
+${fnDefaultToFinish}
+// 2026-09-30 owner law: "the foundations are not supposed to have color functions at all. They
+// are supposed to be spec only ... default to keep the cars source paint". Other groups adopt the
+// base's colour by design since the 2026-07-08 owner rule, so only the Foundation shelves are gated.
+const FOUNDATION_GROUPS = ['Foundation', 'Foundation EFX'];
+const results = { byGroup: {}, swaps: [] };
+for (const group of FOUNDATION_GROUPS) {
     const ids = BASE_GROUPS[group] || [];
     if (!ids.length) continue;
     const groupResults = [];
@@ -120,6 +130,14 @@ for (const group of _SPB_NO_AUTO_COLOR_GROUPS) {
             color_after: zone.baseColor,
             autoFilled: zone._autoBaseColorFill === true,
         });
+        // Swap A: colour auto-filled by a previous finish -> unwound to source paint.
+        const za = { base: 'x', baseColorMode: 'special', baseColorSource: 'mono:x', baseColor: '#123456', _autoBaseColorFill: true };
+        _spbApplyPickedBaseToZone(za, bid);
+        // Swap B: painter's own manual solid colour -> survives the Foundation pick.
+        const zb = { base: 'x', baseColorMode: 'solid', baseColor: '#abcdef', _autoBaseColorFill: false };
+        _spbApplyPickedBaseToZone(zb, bid);
+        results.swaps.push({ id: bid, autoMode: za.baseColorMode, autoFlag: za._autoBaseColorFill,
+                             manualMode: zb.baseColorMode, manualColor: zb.baseColor });
     }
     results.byGroup[group] = groupResults;
 }
@@ -138,6 +156,17 @@ for (const [group, rows] of Object.entries(parsed.byGroup)) {
             console.error(`FAIL: picking '${r.id}' (group='${group}', resolved='${r.group_resolved}') flipped mode to '${r.mode_after}' and baseColor to '${r.color_after}' (autoFilled=${r.autoFilled})`);
             failures++;
         }
+    }
+}
+
+for (const s of parsed.swaps) {
+    if (s.autoMode !== 'source' || s.autoFlag) {
+        console.error(`FAIL: '${s.id}' kept a previous finish's auto colour (mode='${s.autoMode}')`);
+        failures++;
+    }
+    if (s.manualMode !== 'solid' || s.manualColor !== '#abcdef') {
+        console.error(`FAIL: '${s.id}' clobbered the painter's manual colour (mode='${s.manualMode}', color='${s.manualColor}')`);
+        failures++;
     }
 }
 

@@ -1,0 +1,11 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_15129.tga","inspection_records":"_smart_tga_runs/cycle681_dlm_candidate_coverage_review/inspection_records.json","review_scope":"Cycle 681 source plus complete owner sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[328,211,155,133],"target_layer":"numbers","family_id":"number:43","label":"true_custom_number_43"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[317,716,181,140],"target_layer":"numbers","family_id":"number:43","label":"true_custom_number_43"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[555,742,13,13],"target_layer":"sponsors","label":"sponsor_fragment_false_number"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[537,744,16,17],"target_layer":"sponsors","label":"sponsor_fragment_false_number"},
+ {"layer":"numbers","component_index":4,"expected_bbox":[572,744,9,5],"target_layer":"sponsors","label":"sponsor_fragment_false_number"},
+ {"layer":"numbers","component_index":5,"expected_bbox":[522,756,10,9],"target_layer":"sponsors","label":"sponsor_fragment_false_number"},
+ {"layer":"numbers","component_index":6,"expected_bbox":[308,824,5,11],"target_layer":"sponsors","label":"sponsor_fragment_false_number"},
+ {"layer":"numbers","component_index":7,"expected_bbox":[320,824,19,11],"target_layer":"sponsors","label":"sponsor_fragment_false_number"},
+ {"layer":"numbers","component_index":8,"expected_bbox":[816,825,132,133],"target_layer":"numbers","family_id":"number:43","label":"true_custom_number_43"}
+]}

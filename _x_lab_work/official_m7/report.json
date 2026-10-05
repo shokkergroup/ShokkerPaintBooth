@@ -1,0 +1,158 @@
+{
+  "ship_bar": 85.0,
+  "scores": {
+    "monolithic:xlab_abyssal_lens": 98.0,
+    "monolithic:xlab_afterimage_lacquer": 90.8,
+    "monolithic:xlab_aerogel_fire": 98.7,
+    "monolithic:xlab_anamorphic_pearl": 93.7,
+    "monolithic:xlab_anti_gravity_foil": 93.5,
+    "monolithic:xlab_arc_weld_velvet": 88.7,
+    "monolithic:xlab_black_ice_orbit": 91.4,
+    "monolithic:xlab_bloomglass": 89.7,
+    "monolithic:xlab_brunel_current": 90.7,
+    "monolithic:xlab_caustic_engine": 98.5,
+    "monolithic:xlab_ceramic_storm": 99.4,
+    "monolithic:xlab_chiral_mercury": 98.1,
+    "monolithic:xlab_chromatophore": 95.1,
+    "monolithic:xlab_cinder_mirror": 95.3,
+    "monolithic:xlab_coral_voltage": 95.3,
+    "monolithic:xlab_cryogenic_sunset": 99.2,
+    "monolithic:xlab_deep_time": 92.5,
+    "monolithic:xlab_dichroic_skin": 98.6,
+    "monolithic:xlab_electric_ink": 97.3,
+    "monolithic:xlab_ferrofluid_silk": 89.0,
+    "monolithic:xlab_ghost_transmission": 94.1,
+    "monolithic:xlab_hologram_metal": 88.8,
+    "monolithic:xlab_ion_bloom": 96.5,
+    "monolithic:xlab_laminar_magma": 93.6,
+    "monolithic:xlab_luminous_carbon": 93.5,
+    "monolithic:xlab_memory_glass": 100.0,
+    "monolithic:xlab_nebula_ceramic": 98.1,
+    "monolithic:xlab_photon_patina": 97.8,
+    "monolithic:xlab_quantum_tide": 98.6,
+    "monolithic:xlab_sonic_chrome": 99.9
+  },
+  "failed": {},
+  "builders": {
+    "monolithic:xlab_abyssal_lens": {
+      "name": "Abyssal Lens",
+      "builder_seconds": 1.61011
+    },
+    "monolithic:xlab_afterimage_lacquer": {
+      "name": "Afterimage Lacquer",
+      "builder_seconds": 1.98408
+    },
+    "monolithic:xlab_aerogel_fire": {
+      "name": "Aerogel Fire",
+      "builder_seconds": 1.85122
+    },
+    "monolithic:xlab_anamorphic_pearl": {
+      "name": "Anamorphic Pearl",
+      "builder_seconds": 2.01893
+    },
+    "monolithic:xlab_anti_gravity_foil": {
+      "name": "Anti-Gravity Foil",
+      "builder_seconds": 2.57108
+    },
+    "monolithic:xlab_arc_weld_velvet": {
+      "name": "Arc-Weld Velvet",
+      "builder_seconds": 1.75487
+    },
+    "monolithic:xlab_black_ice_orbit": {
+      "name": "Black Ice Orbit",
+      "builder_seconds": 2.21065
+    },
+    "monolithic:xlab_bloomglass": {
+      "name": "Bloomglass",
+      "builder_seconds": 3.18854
+    },
+    "monolithic:xlab_brunel_current": {
+      "name": "Brunel Current",
+      "builder_seconds": 2.00184
+    },
+    "monolithic:xlab_caustic_engine": {
+      "name": "Caustic Engine",
+      "builder_seconds": 1.87486
+    },
+    "monolithic:xlab_ceramic_storm": {
+      "name": "Ceramic Storm",
+      "builder_seconds": 1.88915
+    },
+    "monolithic:xlab_chiral_mercury": {
+      "name": "Chiral Mercury",
+      "builder_seconds": 1.89614
+    },
+    "monolithic:xlab_chromatophore": {
+      "name": "Chromatophore",
+      "builder_seconds": 3.08626
+    },
+    "monolithic:xlab_cinder_mirror": {
+      "name": "Cinder Mirror",
+      "builder_seconds": 2.13033
+    },
+    "monolithic:xlab_coral_voltage": {
+      "name": "Coral Voltage",
+      "builder_seconds": 2.30985
+    },
+    "monolithic:xlab_cryogenic_sunset": {
+      "name": "Cryogenic Sunset",
+      "builder_seconds": 1.71482
+    },
+    "monolithic:xlab_deep_time": {
+      "name": "Deep Time",
+      "builder_seconds": 1.79081
+    },
+    "monolithic:xlab_dichroic_skin": {
+      "name": "Dichroic Skin",
+      "builder_seconds": 1.75533
+    },
+    "monolithic:xlab_electric_ink": {
+      "name": "Electric Ink",
+      "builder_seconds": 1.75557
+    },
+    "monolithic:xlab_ferrofluid_silk": {
+      "name": "Ferrofluid Silk",
+      "builder_seconds": 1.59164
+    },
+    "monolithic:xlab_ghost_transmission": {
+      "name": "Ghost Transmission",
+      "builder_seconds": 2.33207
+    },
+    "monolithic:xlab_hologram_metal": {
+      "name": "Hologram Metal",
+      "builder_seconds": 2.39359
+    },
+    "monolithic:xlab_ion_bloom": {
+      "name": "Ion Bloom",
+      "builder_seconds": 2.3695
+    },
+    "monolithic:xlab_laminar_magma": {
+      "name": "Laminar Magma",
+      "builder_seconds": 1.64797
+    },
+    "monolithic:xlab_luminous_carbon": {
+      "name": "Luminous Carbon",
+      "builder_seconds": 2.30464
+    },
+    "monolithic:xlab_memory_glass": {
+      "name": "Memory Glass",
+      "builder_seconds": 1.6702
+    },
+    "monolithic:xlab_nebula_ceramic": {
+      "name": "Nebula Ceramic",
+      "builder_seconds": 2.80526
+    },
+    "monolithic:xlab_photon_patina": {
+      "name": "Photon Patina",
+      "builder_seconds": 1.6777
+    },
+    "monolithic:xlab_quantum_tide": {
+      "name": "Quantum Tide",
+      "builder_seconds": 1.59556
+    },
+    "monolithic:xlab_sonic_chrome": {
+      "name": "Sonic Chrome",
+      "builder_seconds": 1.66321
+    }
+  }
+}

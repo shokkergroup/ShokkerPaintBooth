@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_snowboard_graphic",
+  "display_name": "Extreme: Snowboard Graphic",
+  "promise": "Abstract vibrant sublimated topsheet print with fine intersecting slashes under worn clear film, no snowboards text logos or figures",
+  "carrier_grammar": "Abstract vibrant sublimated topsheet print with fine intersecting slashes under worn clear film, no snowboards text logos or figures; single full-canvas image, no duplicated quadrants. Fine features: printed board lacquer, black graphic cuts, yellow graphic panels, blue printed shards, cut graphic shoulders, fine board scratches",
+  "spec_grammar": "Feature-specific selectors partition printed board lacquer, black graphic cuts, yellow graphic panels, blue printed shards, cut graphic shoulders, fine board scratches. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "printed board lacquer",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "black graphic cuts",
+      "role": "Material feature selected from artwork by g:<:0.22"
+    },
+    {
+      "name": "yellow graphic panels",
+      "role": "Material feature selected from artwork by h:>:32&h:<:75&s:>:0.5"
+    },
+    {
+      "name": "blue printed shards",
+      "role": "Material feature selected from artwork by h:>:190&h:<:260&s:>:0.4"
+    },
+    {
+      "name": "cut graphic shoulders",
+      "role": "Material feature selected from artwork by edge:>:0.62"
+    },
+    {
+      "name": "fine board scratches",
+      "role": "Material feature selected from artwork by fine:>:0.86"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "printed board lacquer",
+      "black graphic cuts",
+      "yellow graphic panels",
+      "blue printed shards",
+      "cut graphic shoulders",
+      "fine board scratches"
+    ],
+    "R": [
+      "printed board lacquer",
+      "black graphic cuts",
+      "yellow graphic panels",
+      "blue printed shards",
+      "cut graphic shoulders",
+      "fine board scratches"
+    ],
+    "Cc": [
+      "printed board lacquer",
+      "black graphic cuts",
+      "yellow graphic panels",
+      "blue printed shards",
+      "cut graphic shoulders",
+      "fine board scratches"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "printed board lacquer",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "black graphic cuts",
+      "range": [
+        [
+          0,
+          130,
+          150
+        ],
+        [
+          22,
+          225,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "yellow graphic panels",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "blue printed shards",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cut graphic shoulders",
+      "range": [
+        [
+          240,
+          0,
+          170
+        ],
+        [
+          255,
+          30,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine board scratches",
+      "range": [
+        [
+          0,
+          130,
+          110
+        ],
+        [
+          22,
+          235,
+          245
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_anodised_peg",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_bmx_dirt",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "printed board lacquer",
+      "black graphic cuts",
+      "yellow graphic panels",
+      "blue printed shards",
+      "cut graphic shoulders",
+      "fine board scratches"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_snowboard_graphic / Abstract vibrant sublimated topsheet print with fine intersecting slashes under worn clear film, no snowboards text logos or figures",
+  "spec_key": "at_snowboard_graphic / printed board lacquer all; black graphic cuts g:<:0.22; yellow graphic panels h:>:32&h:<:75&s:>:0.5; blue printed shards h:>:190&h:<:260&s:>:0.4; cut graphic shoulders edge:>:0.62; fine board scratches fine:>:0.86",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

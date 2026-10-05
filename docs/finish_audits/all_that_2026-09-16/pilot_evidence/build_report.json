@@ -1,0 +1,140 @@
+{
+  "atp_airbrush_tee_code": {
+    "author_seconds": 45.469,
+    "mask_coverage": [
+      0.3939,
+      0.2779,
+      0.363,
+      0.2036,
+      0.0599,
+      0.0393
+    ],
+    "paint_std": [
+      59.15,
+      50.94,
+      23.16
+    ],
+    "spec_std": [
+      5.2,
+      30.5,
+      16.3
+    ],
+    "source_image_size": null,
+    "status": "visual review pending"
+  },
+  "atp_airbrush_tee_image": {
+    "author_seconds": 1.048,
+    "mask_coverage": [
+      0.0636,
+      0.2543,
+      0.13,
+      0.112,
+      0.3597,
+      0.0804
+    ],
+    "paint_std": [
+      74.18,
+      47.91,
+      30.27
+    ],
+    "spec_std": [
+      11.33,
+      44.44,
+      99.45
+    ],
+    "source_image_size": 1254,
+    "status": "visual review pending"
+  },
+  "atp_flannel_red_code": {
+    "author_seconds": 0.688,
+    "mask_coverage": [
+      0.25,
+      0.25,
+      0.5,
+      0.375,
+      0.0989,
+      0.0337
+    ],
+    "paint_std": [
+      58.12,
+      3.35,
+      5.67
+    ],
+    "spec_std": [
+      5.85,
+      16.17,
+      41.45
+    ],
+    "source_image_size": null,
+    "status": "visual review pending"
+  },
+  "atp_flannel_red_image": {
+    "author_seconds": 1.053,
+    "mask_coverage": [
+      0.1544,
+      0.2434,
+      0.3552,
+      0.2434,
+      0.0017,
+      0.0019
+    ],
+    "paint_std": [
+      54.02,
+      5.17,
+      3.65
+    ],
+    "spec_std": [
+      9.12,
+      25.13,
+      82.58
+    ],
+    "source_image_size": 1254,
+    "status": "visual review pending"
+  },
+  "atp_holo_sticker_code": {
+    "author_seconds": 16.702,
+    "mask_coverage": [
+      0.1658,
+      0.1492,
+      0.1535,
+      0.0444,
+      0.1254,
+      0.1781
+    ],
+    "paint_std": [
+      47.68,
+      46.01,
+      42.27
+    ],
+    "spec_std": [
+      37.76,
+      38.7,
+      31.59
+    ],
+    "source_image_size": null,
+    "status": "visual review pending"
+  },
+  "atp_holo_sticker_image": {
+    "author_seconds": 1.168,
+    "mask_coverage": [
+      0.0497,
+      0.2863,
+      0.3725,
+      0.123,
+      0.0742,
+      0.0941
+    ],
+    "paint_std": [
+      44.89,
+      42.98,
+      41.14
+    ],
+    "spec_std": [
+      62.94,
+      59.58,
+      48.4
+    ],
+    "source_image_size": 1254,
+    "status": "visual review pending"
+  }
+}

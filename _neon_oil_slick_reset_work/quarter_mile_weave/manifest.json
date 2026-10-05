@@ -1,0 +1,92 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_quarter_mile_weave",
+  "display_name": "Quarter-Mile Weave",
+  "carrier": "locally speed-sheared fluorescent 16px micro-check textile laminated under clear",
+  "material_story": {
+    "M": "metalized warp faces, reflective knots, timing hairs, micro-ladders, and exposed thread ends",
+    "R": "local slip, broken fibers, timing cuts, and attached rubber pickup; bridges and knots stay smooth",
+    "Cc": "intact woven laminate and resin bridges rise while slip damage, pickup, and thread rupture fall"
+  },
+  "vetoes": [
+    "flags",
+    "checker banners",
+    "full-width ribbons",
+    "Christmas trees",
+    "lanes",
+    "uniform checker wallpaper",
+    "macro panels",
+    "authored primitives over 32px"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 1.52677,
+  "material_stats": {
+    "std": {
+      "M": 82.7901,
+      "R": 83.301437,
+      "Cc": 83.26078
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.675075,
+      "M_Cc": 0.723269,
+      "R_Cc": 0.600086
+    }
+  },
+  "geometry_stats": {
+    "family_count": 11,
+    "families": {
+      "warp/weft cell": 17956,
+      "two-cell local slip packet": 2550,
+      "burnished slip lip": 2550,
+      "broken thread gap": 713,
+      "exposed thread end": 1426,
+      "timing hairline": 483,
+      "two-stage micro-ladder": 301,
+      "rubber pickup packet": 874,
+      "resin bridge": 940,
+      "reflective stitch knot": 1007,
+      "torn 2x2 micro-check cell": 1174
+    },
+    "width_native_min": 8.0,
+    "width_native_median": 16.0,
+    "width_native_p90": 32.0,
+    "width_native_max": 32.0,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "segmented weave cells": 0.844209,
+    "local slip packets": 0.08904,
+    "burnished slip lips": 0.054684,
+    "broken thread gaps": 0.010731,
+    "exposed thread ends": 0.0157,
+    "timing hairlines": 0.011631,
+    "micro-ladders": 0.004622,
+    "rubber pickup": 0.016588,
+    "resin bridges": 0.019258,
+    "reflective knots": 0.009414,
+    "micro-check cues": 0.055936
+  }
+}

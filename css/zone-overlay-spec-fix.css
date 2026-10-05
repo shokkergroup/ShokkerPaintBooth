@@ -1,0 +1,184 @@
+/* Overlay spec pattern cards — keep controls readable in the zone popout. */
+.zone-detail-body .overlay-spec-patterns {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.zone-detail-body .overlay-spec-patterns > div:first-child {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    align-items: center;
+}
+
+.zone-detail-body .overlay-spec-pattern-layer-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 8px;
+    background: rgba(13, 18, 30, 0.92);
+    border: 1px solid rgba(132, 162, 205, 0.14);
+}
+
+.zone-detail-body .overlay-spec-pattern-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.zone-detail-body .overlay-spec-pattern-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: #e8edf7;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.zone-detail-body .overlay-spec-pattern-desc {
+    font-size: 9px;
+    color: #9aa8c2;
+}
+
+.zone-detail-body .overlay-spec-pattern-thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+.zone-detail-body .overlay-spec-pattern-controls {
+    display: grid;
+    gap: 8px;
+}
+
+.zone-detail-body .overlay-spec-pattern-controls .stack-control-group,
+.zone-detail-body .overlay-spec-pattern-controls .hsb-controls {
+    display: grid !important;
+    grid-template-columns: 52px minmax(0, 1fr) auto auto auto !important;
+    gap: 6px !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 4px 6px !important;
+    border-radius: 6px !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(132, 162, 205, 0.10) !important;
+}
+
+.zone-detail-body .overlay-spec-pattern-controls .stack-label-mini {
+    min-width: 0 !important;
+    white-space: normal !important;
+    line-height: 1.15 !important;
+}
+
+.zone-detail-body .overlay-spec-pattern-controls .stack-step-btn {
+    width: 24px !important;
+    min-width: 24px !important;
+    height: 24px !important;
+    padding: 0 !important;
+}
+
+.zone-detail-body .overlay-spec-pattern-controls .stack-slider {
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+.zone-detail-body .overlay-spec-pattern-controls .stack-val {
+    min-width: 42px !important;
+    text-align: center !important;
+}
+
+.zone-detail-body .overlay-spec-pattern-controls .overlay-spec-pattern-blend-control {
+    grid-template-columns: 52px minmax(0, 1fr) !important;
+}
+
+.zone-detail-body .overlay-spec-pattern-controls .overlay-spec-pattern-channel-control {
+    grid-template-columns: 52px repeat(3, auto) minmax(0, 1fr) !important;
+    justify-content: start !important;
+}
+
+/* SPB 2026-05-28 — full-width zone CTA bars (Add Spec Pattern / Add Layer).
+   ui-modernization-20260508 forces ALL .btn.btn-sm inside .zone-base-rotate-row to 24×24px.
+   These CTAs must never pick up that rule — use .spb-zone-cta-bar instead of .btn.btn-sm. */
+.zone-editor-float .spb-full-width-cta-wrap,
+.zone-detail-body .spb-full-width-cta-wrap {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 8px 0 6px !important;
+    box-sizing: border-box !important;
+}
+
+.zone-editor-float .spb-zone-cta-bar,
+.zone-detail-body .spb-zone-cta-bar,
+.zone-editor-float .zone-base-rotate-row .spb-zone-cta-bar,
+.zone-editor-float .spb-full-width-cta-wrap > .spb-zone-cta-bar {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 42px !important;
+    height: auto !important;
+    flex: none !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 11px 16px !important;
+    border-radius: 8px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.45px !important;
+    line-height: 1.35 !important;
+    text-align: center !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    cursor: pointer !important;
+    font-family: inherit !important;
+}
+
+.zone-editor-float .spb-add-spec-pattern-cta,
+.zone-detail-body .spb-add-spec-pattern-cta {
+    background: linear-gradient(135deg, #ff7a18 0%, #ff2d6f 100%) !important;
+    color: #fff !important;
+    border: 1px solid #ff9a3a !important;
+    box-shadow: 0 0 14px rgba(255, 122, 24, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35) !important;
+}
+
+.zone-editor-float .pattern-add-layer-inline,
+.zone-detail-body .pattern-add-layer-inline {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.24) 0%, rgba(16, 185, 129, 0.16) 100%) !important;
+    color: #bbf7d0 !important;
+    border: 1px solid rgba(34, 197, 94, 0.58) !important;
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+.zone-editor-float .spb-zone-cta-bar:hover,
+.zone-detail-body .spb-zone-cta-bar:hover {
+    filter: brightness(1.08) !important;
+}
+
+.zone-editor-float .zone-workflow-panels,
+.zone-detail-body .zone-workflow-panels {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.zone-editor-float .zone-workflow-panels > *,
+.zone-detail-body .zone-workflow-panels > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+}

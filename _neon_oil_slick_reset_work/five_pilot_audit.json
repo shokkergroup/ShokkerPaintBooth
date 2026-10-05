@@ -1,0 +1,1303 @@
+{
+  "schema": "spb-neon-oil-slick-five-pilot-audit/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "all_mechanical_checks_pass": true,
+  "unique_finish_ids": true,
+  "pilots": [
+    {
+      "slug": "blue_breakdown",
+      "finish_id": "neon_electric_blue",
+      "display_name": "Blue Breakdown",
+      "status": "PASS",
+      "checks": {
+        "deterministic": true,
+        "native_render_le_3s": true,
+        "shape_2048": true,
+        "five_plus_families": true,
+        "all_geometry_8_32px": true,
+        "eight_exact_tiers_each": true,
+        "material_std_ge_20": true,
+        "channels_not_copies": true,
+        "picker_has_structure": true,
+        "official_isolated_m7_ge_85": true
+      },
+      "native_authored_elapsed_seconds": 1.297838,
+      "material": {
+        "std": {
+          "M": 82.790024,
+          "R": 83.299194,
+          "Cc": 83.260818
+        },
+        "range": {
+          "M": [
+            7,
+            253
+          ],
+          "R": [
+            8,
+            251
+          ],
+          "Cc": [
+            6,
+            254
+          ]
+        },
+        "tier_count": {
+          "M": 8,
+          "R": 8,
+          "Cc": 8
+        },
+        "correlation": {
+          "M_R": 0.132737,
+          "M_Cc": -0.192778,
+          "R_Cc": -0.457555
+        }
+      },
+      "geometry": {
+        "family_count": 11,
+        "families": {
+          "sintered_ceramic_facets": 11025,
+          "vitrified_facet_edges": 7997,
+          "primary_fissures": 895,
+          "secondary_forks": 3589,
+          "fused_lips": 5228,
+          "quenched_channels": 4484,
+          "violet_temper_shoulders": 3410,
+          "corona_beads": 1307,
+          "healed_glass_bridges": 628,
+          "residue_flecks": 1821,
+          "rupture_nodes": 122
+        },
+        "width_native_min": 9.0,
+        "width_native_median": 9.0,
+        "width_native_p90": 12.0,
+        "width_native_max": 16.0,
+        "fine_8_32_fraction": 1.0
+      },
+      "mask_coverage": {
+        "sintered_ceramic_facets": 0.680604,
+        "vitrified_facet_edges": 0.457942,
+        "primary_fissures": 0.078372,
+        "secondary_forks": 0.154675,
+        "fused_lips": 0.239053,
+        "quenched_channels": 0.20331,
+        "violet_temper_shoulders": 0.137609,
+        "corona_beads": 0.039871,
+        "healed_glass_bridges": 0.040284,
+        "residue_flecks": 0.084062,
+        "rupture_nodes": 0.006447
+      },
+      "picker_luma_std": 20.154298,
+      "largest_dark_void_native_px": 30.8,
+      "m7": 87.2,
+      "m7_note": "Official workbook modules run against isolated refreshed pilot evidence.",
+      "m7_pass_85": true
+    },
+    {
+      "slug": "sodium_scuff",
+      "finish_id": "neon_orange_hazard",
+      "display_name": "Sodium Scuff",
+      "status": "PASS",
+      "checks": {
+        "deterministic": true,
+        "native_render_le_3s": true,
+        "shape_2048": true,
+        "five_plus_families": true,
+        "all_geometry_8_32px": true,
+        "eight_exact_tiers_each": true,
+        "material_std_ge_20": true,
+        "channels_not_copies": true,
+        "picker_has_structure": true,
+        "official_isolated_m7_ge_85": true
+      },
+      "native_authored_elapsed_seconds": 1.246544,
+      "material": {
+        "std": {
+          "M": 82.797401,
+          "R": 83.29908,
+          "Cc": 83.260765
+        },
+        "range": {
+          "M": [
+            7,
+            253
+          ],
+          "R": [
+            8,
+            251
+          ],
+          "Cc": [
+            6,
+            254
+          ]
+        },
+        "tier_count": {
+          "M": 8,
+          "R": 8,
+          "Cc": 8
+        },
+        "correlation": {
+          "M_R": 0.25388,
+          "M_Cc": 0.346256,
+          "R_Cc": 0.05856
+        }
+      },
+      "geometry": {
+        "family_count": 7,
+        "families": {
+          "bead_clusters": 4345,
+          "crushed_shards": 546,
+          "deep_gouges": 1039,
+          "exposed_cores": 1701,
+          "polished_skid_lips": 1649,
+          "rebound_specks": 1706,
+          "resin_tails": 2174
+        },
+        "width_native_min": 8.0,
+        "width_native_median": 12.0,
+        "width_native_p90": 16.0,
+        "width_native_max": 20.0,
+        "fine_8_32_fraction": 1.0
+      },
+      "mask_coverage": {
+        "bead_clusters": 0.203035,
+        "exposed_cores": 0.044539,
+        "resin_tails": 0.171722,
+        "crushed_shards": 0.016731,
+        "polished_skid_lips": 0.123674,
+        "deep_gouges": 0.100855,
+        "rebound_specks": 0.04363
+      },
+      "picker_luma_std": 24.372999,
+      "largest_dark_void_native_px": 59.938,
+      "m7": 85.5,
+      "m7_note": "Official workbook modules run against isolated refreshed pilot evidence.",
+      "m7_pass_85": true
+    },
+    {
+      "slug": "redline_shear",
+      "finish_id": "neon_red_alert",
+      "display_name": "Redline Shear",
+      "status": "PASS",
+      "checks": {
+        "deterministic": true,
+        "native_render_le_3s": true,
+        "shape_2048": true,
+        "five_plus_families": true,
+        "all_geometry_8_32px": true,
+        "eight_exact_tiers_each": true,
+        "material_std_ge_20": true,
+        "channels_not_copies": true,
+        "picker_has_structure": true,
+        "official_isolated_m7_ge_85": true
+      },
+      "native_authored_elapsed_seconds": 1.30613,
+      "material": {
+        "std": {
+          "M": 82.789734,
+          "R": 83.29921,
+          "Cc": 83.260773
+        },
+        "range": {
+          "M": [
+            7,
+            253
+          ],
+          "R": [
+            8,
+            251
+          ],
+          "Cc": [
+            6,
+            254
+          ]
+        },
+        "tier_count": {
+          "M": 8,
+          "R": 8,
+          "Cc": 8
+        },
+        "correlation": {
+          "M_R": -0.288813,
+          "M_Cc": 0.065658,
+          "R_Cc": -0.503391
+        }
+      },
+      "geometry": {
+        "family_count": 7,
+        "families": {
+          "compression_front": 3734,
+          "magenta_cooling_tail": 2443,
+          "recoil_scar": 472,
+          "tick_comb_microcut": 1086,
+          "white_hot_pressure_lip": 310,
+          "angular_cavitation_pit": 331,
+          "sheared_microcheck_fragment": 56
+        },
+        "width_native_min": 9.045,
+        "width_native_median": 25.174,
+        "width_native_p90": 30.563,
+        "width_native_max": 31.998,
+        "fine_8_32_fraction": 1.0
+      },
+      "mask_coverage": {
+        "compression fronts": 0.18918,
+        "white-hot lips": 0.01971,
+        "tick-comb cuts": 0.057229,
+        "recoil scars": 0.030577,
+        "cavitation pits": 0.02081,
+        "micro-check fragments": 0.001575,
+        "magenta cooling tails": 0.127351,
+        "intact clear pools": 0.558709
+      },
+      "picker_luma_std": 17.40816,
+      "largest_dark_void_native_px": 74.363,
+      "m7": 85.3,
+      "m7_note": "Official workbook modules run against isolated refreshed pilot evidence.",
+      "m7_pass_85": true
+    },
+    {
+      "slug": "quarter_mile_weave",
+      "finish_id": "neon2_quarter_mile_weave",
+      "display_name": "Quarter-Mile Weave",
+      "status": "PASS",
+      "checks": {
+        "deterministic": true,
+        "native_render_le_3s": true,
+        "shape_2048": true,
+        "five_plus_families": true,
+        "all_geometry_8_32px": true,
+        "eight_exact_tiers_each": true,
+        "material_std_ge_20": true,
+        "channels_not_copies": true,
+        "picker_has_structure": true,
+        "official_isolated_m7_ge_85": true
+      },
+      "native_authored_elapsed_seconds": 1.180913,
+      "material": {
+        "std": {
+          "M": 82.7901,
+          "R": 83.301437,
+          "Cc": 83.26078
+        },
+        "range": {
+          "M": [
+            7,
+            253
+          ],
+          "R": [
+            8,
+            251
+          ],
+          "Cc": [
+            6,
+            254
+          ]
+        },
+        "tier_count": {
+          "M": 8,
+          "R": 8,
+          "Cc": 8
+        },
+        "correlation": {
+          "M_R": 0.675075,
+          "M_Cc": 0.723269,
+          "R_Cc": 0.600086
+        }
+      },
+      "geometry": {
+        "family_count": 11,
+        "families": {
+          "warp/weft cell": 17956,
+          "two-cell local slip packet": 2550,
+          "burnished slip lip": 2550,
+          "broken thread gap": 713,
+          "exposed thread end": 1426,
+          "timing hairline": 483,
+          "two-stage micro-ladder": 301,
+          "rubber pickup packet": 874,
+          "resin bridge": 940,
+          "reflective stitch knot": 1007,
+          "torn 2x2 micro-check cell": 1174
+        },
+        "width_native_min": 8.0,
+        "width_native_median": 16.0,
+        "width_native_p90": 32.0,
+        "width_native_max": 32.0,
+        "fine_8_32_fraction": 1.0
+      },
+      "mask_coverage": {
+        "segmented weave cells": 0.844209,
+        "local slip packets": 0.08904,
+        "burnished slip lips": 0.054684,
+        "broken thread gaps": 0.010731,
+        "exposed thread ends": 0.0157,
+        "timing hairlines": 0.011631,
+        "micro-ladders": 0.004622,
+        "rubber pickup": 0.016588,
+        "resin bridges": 0.019258,
+        "reflective knots": 0.009414,
+        "micro-check cues": 0.055936
+      },
+      "picker_luma_std": 8.35771,
+      "largest_dark_void_native_px": 21.181,
+      "m7": 86.0,
+      "m7_note": "Official workbook modules run against isolated refreshed pilot evidence.",
+      "m7_pass_85": true
+    },
+    {
+      "slug": "torque_scar",
+      "finish_id": "neon2_torque_scar",
+      "display_name": "Torque Scar",
+      "status": "PASS",
+      "checks": {
+        "deterministic": true,
+        "native_render_le_3s": true,
+        "shape_2048": true,
+        "five_plus_families": true,
+        "all_geometry_8_32px": true,
+        "eight_exact_tiers_each": true,
+        "material_std_ge_20": true,
+        "channels_not_copies": true,
+        "picker_has_structure": true,
+        "official_isolated_m7_ge_85": true
+      },
+      "native_authored_elapsed_seconds": 1.742872,
+      "material": {
+        "std": {
+          "M": 82.790024,
+          "R": 83.299133,
+          "Cc": 83.260788
+        },
+        "range": {
+          "M": [
+            7,
+            253
+          ],
+          "R": [
+            8,
+            251
+          ],
+          "Cc": [
+            6,
+            254
+          ]
+        },
+        "tier_count": {
+          "M": 8,
+          "R": 8,
+          "Cc": 8
+        },
+        "correlation": {
+          "M_R": -0.210836,
+          "M_Cc": 0.245341,
+          "R_Cc": -0.370277
+        }
+      },
+      "geometry": {
+        "family_count": 12,
+        "families": {
+          "carbon elastomer facets": 10957,
+          "cross-shear cuts": 2800,
+          "embedded hot grit": 1309,
+          "exposed-clear gaps": 2200,
+          "facet shear edges": 7444,
+          "icy substrate scores": 1980,
+          "raw rubber transfers": 8390,
+          "red heat lips": 3901,
+          "rubber crumbs": 8106,
+          "smoke-etch whiskers": 2222,
+          "tread microblocks": 2826,
+          "violet glaze islands": 3201
+        },
+        "width_native_min": 8.0,
+        "width_native_median": 16.949,
+        "width_native_p90": 24.667,
+        "width_native_max": 32.0,
+        "fine_8_32_fraction": 1.0
+      },
+      "mask_coverage": {
+        "carbon elastomer facets": 0.459928,
+        "facet shear edges": 0.289916,
+        "raw rubber transfers": 0.438354,
+        "tread microblocks": 0.099843,
+        "red heat lips": 0.209922,
+        "rubber crumbs": 0.091928,
+        "violet glaze islands": 0.137097,
+        "cross-shear cuts": 0.131807,
+        "smoke-etch whiskers": 0.100744,
+        "exposed-clear gaps": 0.068642,
+        "icy substrate scores": 0.098041,
+        "embedded hot grit": 0.016148
+      },
+      "picker_luma_std": 17.477764,
+      "largest_dark_void_native_px": 28.0,
+      "m7": 88.9,
+      "m7_note": "Official workbook modules run against isolated refreshed pilot evidence.",
+      "m7_pass_85": true
+    }
+  ],
+  "pairwise_structural_correlation": {
+    "blue_breakdown__sodium_scuff": 0.347318,
+    "blue_breakdown__redline_shear": 0.28126,
+    "blue_breakdown__quarter_mile_weave": 0.426397,
+    "blue_breakdown__torque_scar": 0.427437,
+    "sodium_scuff__redline_shear": 0.252814,
+    "sodium_scuff__quarter_mile_weave": 0.369721,
+    "sodium_scuff__torque_scar": 0.396666,
+    "redline_shear__quarter_mile_weave": 0.321504,
+    "redline_shear__torque_scar": 0.319232,
+    "quarter_mile_weave__torque_scar": 0.482083
+  },
+  "max_pairwise_structural_correlation": 0.482083,
+  "contacts": {
+    "paint_contact": "pilot_paint_contact.png",
+    "picker_64_contact": "pilot_picker_64_contact.png",
+    "material_contact": "pilot_material_contact.png",
+    "light_sweep_contact": "pilot_light_sweep_contact.png"
+  },
+  "official_isolated_m7": {
+    "schema": "spb-neon-oil-slick-isolated-official-m7/2",
+    "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+    "ship_bar": 85.0,
+    "official_workbook_modules": [
+      "M1",
+      "M2",
+      "M5",
+      "M6",
+      "M7"
+    ],
+    "all_pass_85": true,
+    "byFinish": {
+      "base:neon_electric_blue": {
+        "slug": "blue_breakdown",
+        "finish_id": "neon_electric_blue",
+        "builder_seconds": 1.376878,
+        "paint_metrics": {
+          "paint_luma_std": 41.21405792236328,
+          "paint_luma_span": 255.0,
+          "paint_fine_energy": 0.009794869142420152,
+          "paint_residual_energy": 0.0068564083996941055,
+          "paint_block_energy": 0.10501903459137561,
+          "paint_macro_energy": 0.10501903459137561,
+          "paint_micro_macro_ratio": 0.09326756030972434,
+          "paint_color_population": 140,
+          "paint_saturation_mean": 0.8290354013442993
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.79002380371094,
+          "r_std": 83.2991943359375,
+          "cc_std": 83.26081848144531,
+          "independence": 0.7389767600835971
+        },
+        "composite": 87.2,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 66.0,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "base:neon_orange_hazard": {
+        "slug": "sodium_scuff",
+        "finish_id": "neon_orange_hazard",
+        "builder_seconds": 1.326445,
+        "paint_metrics": {
+          "paint_luma_std": 41.16814041137695,
+          "paint_luma_span": 232.86270141601562,
+          "paint_fine_energy": 0.006216133342069738,
+          "paint_residual_energy": 0.004351293339448816,
+          "paint_block_energy": 0.11278699987074908,
+          "paint_macro_energy": 0.11278699987074908,
+          "paint_micro_macro_ratio": 0.05511391693362943,
+          "paint_color_population": 42,
+          "paint_saturation_mean": 0.6923459768295288
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.79740142822266,
+          "r_std": 83.29907989501953,
+          "cc_std": 83.2607650756836,
+          "independence": 0.7804347927907719
+        },
+        "composite": 85.5,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 61.2,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "base:neon_red_alert": {
+        "slug": "redline_shear",
+        "finish_id": "neon_red_alert",
+        "builder_seconds": 1.433223,
+        "paint_metrics": {
+          "paint_luma_std": 31.339677810668945,
+          "paint_luma_span": 254.75543212890625,
+          "paint_fine_energy": 0.003388354825038536,
+          "paint_residual_energy": 0.002371848377526975,
+          "paint_block_energy": 0.0710425432990579,
+          "paint_macro_energy": 0.0710425432990579,
+          "paint_micro_macro_ratio": 0.04769472864696088,
+          "paint_color_population": 245,
+          "paint_saturation_mean": 0.930461049079895
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.78973388671875,
+          "r_std": 83.29920959472656,
+          "cc_std": 83.26077270507812,
+          "independence": 0.7140460475862948
+        },
+        "composite": 85.3,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 60.8,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "monolithic:neon2_quarter_mile_weave": {
+        "slug": "quarter_mile_weave",
+        "finish_id": "neon2_quarter_mile_weave",
+        "builder_seconds": 1.339608,
+        "paint_metrics": {
+          "paint_luma_std": 27.515338897705078,
+          "paint_luma_span": 255.0,
+          "paint_fine_energy": 0.007900926178576899,
+          "paint_residual_energy": 0.0055306483250038285,
+          "paint_block_energy": 0.0670535218481924,
+          "paint_macro_energy": 0.0670535218481924,
+          "paint_micro_macro_ratio": 0.11783014464869437,
+          "paint_color_population": 282,
+          "paint_saturation_mean": 0.796912431716919
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.79010009765625,
+          "r_std": 83.30143737792969,
+          "cc_std": 83.26078033447266,
+          "independence": 0.3338565361917208
+        },
+        "composite": 86.0,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 62.6,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "monolithic:neon2_torque_scar": {
+        "slug": "torque_scar",
+        "finish_id": "neon2_torque_scar",
+        "builder_seconds": 1.742562,
+        "paint_metrics": {
+          "paint_luma_std": 44.95609664916992,
+          "paint_luma_span": 255.0,
+          "paint_fine_energy": 0.014212864520503025,
+          "paint_residual_energy": 0.009949005164352117,
+          "paint_block_energy": 0.12572079826803767,
+          "paint_macro_energy": 0.12572079826803767,
+          "paint_micro_macro_ratio": 0.11305102032681254,
+          "paint_color_population": 260,
+          "paint_saturation_mean": 0.7136036157608032
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.79002380371094,
+          "r_std": 83.29913330078125,
+          "cc_std": 83.26078796386719,
+          "independence": 0.7245153452925664
+        },
+        "composite": 88.9,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 70.4,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "base:neon_blacklight": {
+        "slug": "ultraviolet_bloom",
+        "finish_id": "neon_blacklight",
+        "builder_seconds": 1.506657,
+        "paint_metrics": {
+          "paint_luma_std": 46.05208206176758,
+          "paint_luma_span": 255.0,
+          "paint_fine_energy": 0.01236107583139457,
+          "paint_residual_energy": 0.0086527530819762,
+          "paint_block_energy": 0.12105261110791973,
+          "paint_macro_energy": 0.12105261110791973,
+          "paint_micro_macro_ratio": 0.10211325239712951,
+          "paint_color_population": 271,
+          "paint_saturation_mean": 0.810442328453064
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.79002380371094,
+          "r_std": 83.29917907714844,
+          "cc_std": 83.26068878173828,
+          "independence": 0.6407359406217832
+        },
+        "composite": 88.5,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 69.2,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "monolithic:neon2_phantom_mica": {
+        "slug": "phantom_mica",
+        "finish_id": "neon2_phantom_mica",
+        "builder_seconds": 2.313261,
+        "paint_metrics": {
+          "paint_luma_std": 39.99056625366211,
+          "paint_luma_span": 255.0,
+          "paint_fine_energy": 0.006128563600427964,
+          "paint_residual_energy": 0.004289994520299574,
+          "paint_block_energy": 0.10932924607220817,
+          "paint_macro_energy": 0.10932924607220817,
+          "paint_micro_macro_ratio": 0.05605603093961026,
+          "paint_color_population": 313,
+          "paint_saturation_mean": 0.5390812158584595
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.78997039794922,
+          "r_std": 83.2990951538086,
+          "cc_std": 83.2607421875,
+          "independence": 0.6772276482177589
+        },
+        "composite": 87.3,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 66.1,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "monolithic:neon2_frequency_fault": {
+        "slug": "frequency_fault",
+        "finish_id": "neon2_frequency_fault",
+        "builder_seconds": 2.18833,
+        "paint_metrics": {
+          "paint_luma_std": 25.333112716674805,
+          "paint_luma_span": 255.0,
+          "paint_fine_energy": 0.005788586186427696,
+          "paint_residual_energy": 0.004052010330499387,
+          "paint_block_energy": 0.07004731122185202,
+          "paint_macro_energy": 0.07004731122185202,
+          "paint_micro_macro_ratio": 0.08263823529348951,
+          "paint_color_population": 167,
+          "paint_saturation_mean": 0.6396209597587585
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.79000091552734,
+          "r_std": 83.05376434326172,
+          "cc_std": 83.26063537597656,
+          "independence": 0.7224253393760925
+        },
+        "composite": 85.5,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 61.3,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "base:neon_cyber_yellow": {
+        "slug": "voltage_plate",
+        "finish_id": "neon_cyber_yellow",
+        "builder_seconds": 1.872966,
+        "paint_metrics": {
+          "paint_luma_std": 40.27510070800781,
+          "paint_luma_span": 226.09584045410156,
+          "paint_fine_energy": 0.007939977271884096,
+          "paint_residual_energy": 0.005557984090318867,
+          "paint_block_energy": 0.10067010019339767,
+          "paint_macro_energy": 0.10067010019339767,
+          "paint_micro_macro_ratio": 0.078871256277987,
+          "paint_color_population": 45,
+          "paint_saturation_mean": 0.5415656566619873
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.78987121582031,
+          "r_std": 80.6917724609375,
+          "cc_std": 83.2605209350586,
+          "independence": 0.8046131877663445
+        },
+        "composite": 85.6,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 61.5,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "base:neon_dual_glow": {
+        "slug": "janus_lensfield",
+        "finish_id": "neon_dual_glow",
+        "builder_seconds": 2.330753,
+        "paint_metrics": {
+          "paint_luma_std": 42.10742950439453,
+          "paint_luma_span": 255.0,
+          "paint_fine_energy": 0.012856195487228094,
+          "paint_residual_energy": 0.008999336841059665,
+          "paint_block_energy": 0.12836003023035386,
+          "paint_macro_energy": 0.12836003023035386,
+          "paint_micro_macro_ratio": 0.10015731115173836,
+          "paint_color_population": 200,
+          "paint_saturation_mean": 0.563485860824585
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.78996276855469,
+          "r_std": 83.2991714477539,
+          "cc_std": 83.26078796386719,
+          "independence": 0.7909376454931639
+        },
+        "composite": 88.6,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 69.6,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "base:neon_ice_white": {
+        "slug": "cryoglass_fiber",
+        "finish_id": "neon_ice_white",
+        "builder_seconds": 1.783164,
+        "paint_metrics": {
+          "paint_luma_std": 42.89442825317383,
+          "paint_luma_span": 255.0,
+          "paint_fine_energy": 0.007364111320645202,
+          "paint_residual_energy": 0.005154877924451641,
+          "paint_block_energy": 0.1148845074223537,
+          "paint_macro_energy": 0.1148845074223537,
+          "paint_micro_macro_ratio": 0.06410012529863819,
+          "paint_color_population": 56,
+          "paint_saturation_mean": 0.6126806735992432
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.78643035888672,
+          "r_std": 83.29924774169922,
+          "cc_std": 83.26078796386719,
+          "independence": 0.5566182473350935
+        },
+        "composite": 86.1,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 63.0,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "monolithic:neon2_emberwake_delam": {
+        "slug": "emberwake_delam",
+        "finish_id": "neon2_emberwake_delam",
+        "builder_seconds": 1.8676,
+        "paint_metrics": {
+          "paint_luma_std": 31.198945999145508,
+          "paint_luma_span": 255.0,
+          "paint_fine_energy": 0.005735578723982269,
+          "paint_residual_energy": 0.004014905106787588,
+          "paint_block_energy": 0.07450838275984221,
+          "paint_macro_energy": 0.07450838275984221,
+          "paint_micro_macro_ratio": 0.07697897218450397,
+          "paint_color_population": 178,
+          "paint_saturation_mean": 0.8341917991638184
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.78964233398438,
+          "r_std": 83.29917907714844,
+          "cc_std": 83.26078796386719,
+          "independence": 0.6728926981529173
+        },
+        "composite": 85.8,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 62.0,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "base:neon_pink_blaze": {
+        "slug": "pink_quench",
+        "finish_id": "neon_pink_blaze",
+        "builder_seconds": 2.119883,
+        "paint_metrics": {
+          "paint_luma_std": 29.4447078704834,
+          "paint_luma_span": 255.0,
+          "paint_fine_energy": 0.005745664764853085,
+          "paint_residual_energy": 0.0040219653353971594,
+          "paint_block_energy": 0.06624817193723193,
+          "paint_macro_energy": 0.06624817193723193,
+          "paint_micro_macro_ratio": 0.08672940847782068,
+          "paint_color_population": 183,
+          "paint_saturation_mean": 0.6378345489501953
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.7899398803711,
+          "r_std": 81.48712158203125,
+          "cc_std": 83.26069641113281,
+          "independence": 0.7464155686727407
+        },
+        "composite": 85.3,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 60.8,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "base:neon_rainbow_tube": {
+        "slug": "prism_fault",
+        "finish_id": "neon_rainbow_tube",
+        "builder_seconds": 2.330669,
+        "paint_metrics": {
+          "paint_luma_std": 33.356998443603516,
+          "paint_luma_span": 255.0,
+          "paint_fine_energy": 0.0072422298730588424,
+          "paint_residual_energy": 0.005069560911141189,
+          "paint_block_energy": 0.10004872340782016,
+          "paint_macro_energy": 0.10004872340782016,
+          "paint_micro_macro_ratio": 0.07238702930309218,
+          "paint_color_population": 366,
+          "paint_saturation_mean": 0.5378496646881104
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.78998565673828,
+          "r_std": 83.2991943359375,
+          "cc_std": 83.26078796386719,
+          "independence": 0.5752855079157155
+        },
+        "composite": 87.3,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 66.2,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "base:neon_toxic_green": {
+        "slug": "radium_capillary",
+        "finish_id": "neon_toxic_green",
+        "builder_seconds": 2.085139,
+        "paint_metrics": {
+          "paint_luma_std": 36.519065856933594,
+          "paint_luma_span": 246.15615844726562,
+          "paint_fine_energy": 0.006071780709659352,
+          "paint_residual_energy": 0.004250246496761546,
+          "paint_block_energy": 0.08682975021063112,
+          "paint_macro_energy": 0.08682975021063112,
+          "paint_micro_macro_ratio": 0.06992742343413934,
+          "paint_color_population": 133,
+          "paint_saturation_mean": 0.6593854427337646
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.7893295288086,
+          "r_std": 83.29856872558594,
+          "cc_std": 83.26082611083984,
+          "independence": 0.7009065744586672
+        },
+        "composite": 86.0,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 62.8,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "monolithic:neon2_sign_tubes": {
+        "slug": "vacuum_phosphor",
+        "finish_id": "neon2_sign_tubes",
+        "builder_seconds": 1.970926,
+        "paint_metrics": {
+          "paint_luma_std": 26.71904182434082,
+          "paint_luma_span": 240.9671630859375,
+          "paint_fine_energy": 0.005625264784869026,
+          "paint_residual_energy": 0.003937685349408318,
+          "paint_block_energy": 0.06611944460401348,
+          "paint_macro_energy": 0.06611944460401348,
+          "paint_micro_macro_ratio": 0.08507731452613518,
+          "paint_color_population": 173,
+          "paint_saturation_mean": 0.6046265363693237
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.58629608154297,
+          "r_std": 83.29716491699219,
+          "cc_std": 83.26081085205078,
+          "independence": 0.5490743786106109
+        },
+        "composite": 85.2,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 60.5,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "monolithic:neon2_circuit_city": {
+        "slug": "copper_ghost",
+        "finish_id": "neon2_circuit_city",
+        "builder_seconds": 2.493222,
+        "paint_metrics": {
+          "paint_luma_std": 28.16624641418457,
+          "paint_luma_span": 251.38307189941406,
+          "paint_fine_energy": 0.005623483190349504,
+          "paint_residual_energy": 0.003936438233244652,
+          "paint_block_energy": 0.08226729748295802,
+          "paint_macro_energy": 0.08226729748295802,
+          "paint_micro_macro_ratio": 0.0683562407226812,
+          "paint_color_population": 264,
+          "paint_saturation_mean": 0.5727484822273254
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.79004669189453,
+          "r_std": 83.29917907714844,
+          "cc_std": 83.2607650756836,
+          "independence": 0.8223702683542248
+        },
+        "composite": 86.2,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 63.1,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "monolithic:neon2_rain": {
+        "slug": "fresnel_rain_skin",
+        "finish_id": "neon2_rain",
+        "builder_seconds": 2.033112,
+        "paint_metrics": {
+          "paint_luma_std": 31.513776779174805,
+          "paint_luma_span": 255.0,
+          "paint_fine_energy": 0.006715663274129232,
+          "paint_residual_energy": 0.004700964291890462,
+          "paint_block_energy": 0.08365756764131434,
+          "paint_macro_energy": 0.08365756764131434,
+          "paint_micro_macro_ratio": 0.08027562196074056,
+          "paint_color_population": 142,
+          "paint_saturation_mean": 0.6753089427947998
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 81.83380889892578,
+          "r_std": 83.29891204833984,
+          "cc_std": 83.26075744628906,
+          "independence": 0.5598976306185736
+        },
+        "composite": 86.1,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 62.9,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "monolithic:neon2_laser_web": {
+        "slug": "pulse_ablation",
+        "finish_id": "neon2_laser_web",
+        "builder_seconds": 2.279177,
+        "paint_metrics": {
+          "paint_luma_std": 32.62412643432617,
+          "paint_luma_span": 255.0,
+          "paint_fine_energy": 0.005971197988472733,
+          "paint_residual_energy": 0.004179838591930912,
+          "paint_block_energy": 0.07605549681420419,
+          "paint_macro_energy": 0.07605549681420419,
+          "paint_micro_macro_ratio": 0.07851106413859553,
+          "paint_color_population": 209,
+          "paint_saturation_mean": 0.5465879440307617
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.78946685791016,
+          "r_std": 83.29617309570312,
+          "cc_std": 83.26081848144531,
+          "independence": 0.6817527994017661
+        },
+        "composite": 86.0,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 62.6,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "monolithic:neon2_splatter": {
+        "slug": "burner_impact",
+        "finish_id": "neon2_splatter",
+        "builder_seconds": 2.057807,
+        "paint_metrics": {
+          "paint_luma_std": 29.216772079467773,
+          "paint_luma_span": 241.198486328125,
+          "paint_fine_energy": 0.0058727685142965875,
+          "paint_residual_energy": 0.004110937960007611,
+          "paint_block_energy": 0.07554595049689798,
+          "paint_macro_energy": 0.07554595049689798,
+          "paint_micro_macro_ratio": 0.07773770103716851,
+          "paint_color_population": 270,
+          "paint_saturation_mean": 0.5911992192268372
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.78962707519531,
+          "r_std": 83.26907348632812,
+          "cc_std": 83.2607421875,
+          "independence": 0.8312196629504366
+        },
+        "composite": 86.0,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 62.8,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "monolithic:neon2_wireframe": {
+        "slug": "live_mesh_delam",
+        "finish_id": "neon2_wireframe",
+        "builder_seconds": 2.314651,
+        "paint_metrics": {
+          "paint_luma_std": 23.634464263916016,
+          "paint_luma_span": 211.02413940429688,
+          "paint_fine_energy": 0.0051866765115775315,
+          "paint_residual_energy": 0.0036306735581042716,
+          "paint_block_energy": 0.0705861858293122,
+          "paint_macro_energy": 0.0705861858293122,
+          "paint_micro_macro_ratio": 0.0734800506733666,
+          "paint_color_population": 273,
+          "paint_saturation_mean": 0.6458842754364014
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.79000854492188,
+          "r_std": 83.29915618896484,
+          "cc_std": 83.26079559326172,
+          "independence": 0.7183069971328045
+        },
+        "composite": 85.6,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 61.6,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "monolithic:neon2_plasma_tubes": {
+        "slug": "boost_helix",
+        "finish_id": "neon2_plasma_tubes",
+        "builder_seconds": 2.492349,
+        "paint_metrics": {
+          "paint_luma_std": 23.860565185546875,
+          "paint_luma_span": 245.5404052734375,
+          "paint_fine_energy": 0.0056105660457237095,
+          "paint_residual_energy": 0.003927396232006597,
+          "paint_block_energy": 0.06687023686427696,
+          "paint_macro_energy": 0.06687023686427696,
+          "paint_micro_macro_ratio": 0.0839022905977017,
+          "paint_color_population": 346,
+          "paint_saturation_mean": 0.6685235500335693
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.78994750976562,
+          "r_std": 83.29913330078125,
+          "cc_std": 83.26078796386719,
+          "independence": 0.7190013311897504
+        },
+        "composite": 85.6,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 61.6,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "monolithic:neon2_honeycomb": {
+        "slug": "electrocell",
+        "finish_id": "neon2_honeycomb",
+        "builder_seconds": 2.311606,
+        "paint_metrics": {
+          "paint_luma_std": 35.36619567871094,
+          "paint_luma_span": 255.0,
+          "paint_fine_energy": 0.005579960579965629,
+          "paint_residual_energy": 0.0039059724059759397,
+          "paint_block_energy": 0.08848960726868872,
+          "paint_macro_energy": 0.08848960726868872,
+          "paint_micro_macro_ratio": 0.06305780703741522,
+          "paint_color_population": 294,
+          "paint_saturation_mean": 0.644200325012207
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.78945922851562,
+          "r_std": 83.29814910888672,
+          "cc_std": 83.26078796386719,
+          "independence": 0.5829854128080248
+        },
+        "composite": 86.5,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 64.0,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "monolithic:neon2_flow_tubes": {
+        "slug": "pulsefoil_pleats",
+        "finish_id": "neon2_flow_tubes",
+        "builder_seconds": 2.499254,
+        "paint_metrics": {
+          "paint_luma_std": 37.603328704833984,
+          "paint_luma_span": 254.38360595703125,
+          "paint_fine_energy": 0.008618867163564645,
+          "paint_residual_energy": 0.006033207014495251,
+          "paint_block_energy": 0.10330014696308211,
+          "paint_macro_energy": 0.10330014696308211,
+          "paint_micro_macro_ratio": 0.08343518781870558,
+          "paint_color_population": 208,
+          "paint_saturation_mean": 0.659624457359314
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.79002380371094,
+          "r_std": 83.29901885986328,
+          "cc_std": 83.26073455810547,
+          "independence": 0.6423658362632683
+        },
+        "composite": 87.4,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 66.4,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      },
+      "monolithic:neon2_synthwave_sun": {
+        "slug": "velvet_static",
+        "finish_id": "neon2_synthwave_sun",
+        "builder_seconds": 2.213013,
+        "paint_metrics": {
+          "paint_luma_std": 28.87238311767578,
+          "paint_luma_span": 255.0,
+          "paint_fine_energy": 0.006877023098515529,
+          "paint_residual_energy": 0.00481391616896087,
+          "paint_block_energy": 0.0563940497005687,
+          "paint_macro_energy": 0.0563940497005687,
+          "paint_micro_macro_ratio": 0.1219458991689717,
+          "paint_color_population": 339,
+          "paint_saturation_mean": 0.550413966178894
+        },
+        "spec_metrics": {
+          "m_range": 246.0,
+          "r_range": 243.0,
+          "cc_range": 248.0,
+          "m_std": 82.7866439819336,
+          "r_std": 83.29888153076172,
+          "cc_std": 83.26085662841797,
+          "independence": 0.5833560916833984
+        },
+        "composite": 85.2,
+        "pass_85": true,
+        "intent": "fine_structural_color",
+        "components": {
+          "m5": 60.4,
+          "m6": 100.0
+        },
+        "tier": "keeper"
+      }
+    },
+    "scorecard": "_neon_oil_slick_reset_work/isolated_official_m7/scorecard_neon_pilots.js",
+    "metrics_dir": "_neon_oil_slick_reset_work/isolated_official_m7/metrics",
+    "shipping_state_changed": false
+  },
+  "official_m7_note": "Official workbook stack ran against isolated refreshed evidence; candidates remain absent from live registry/catalog."
+}

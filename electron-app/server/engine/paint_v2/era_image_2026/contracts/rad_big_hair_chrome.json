@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_big_hair_chrome",
+  "display_name": "Radical: Glam Lightning Foil",
+  "promise": "Crimson and violet foil teeth with silver lightning cuts and tiny lacquer sparks.",
+  "carrier_grammar": "Crimson and violet foil teeth with silver lightning cuts and tiny lacquer sparks. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for crimson glam foil, violet lacquer teeth, silver lightning cuts, gold pin sparks, black enamel gaps is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Crimson and violet foil teeth with silver lightning cuts and tiny lacquer sparks. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_big_hair_chrome.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "crimson glam foil",
+      "role": "Actual shared paint and spec geometry: crimson glam foil"
+    },
+    {
+      "name": "violet lacquer teeth",
+      "role": "Actual shared paint and spec geometry: violet lacquer teeth"
+    },
+    {
+      "name": "silver lightning cuts",
+      "role": "Actual shared paint and spec geometry: silver lightning cuts"
+    },
+    {
+      "name": "gold pin sparks",
+      "role": "Actual shared paint and spec geometry: gold pin sparks"
+    },
+    {
+      "name": "black enamel gaps",
+      "role": "Actual shared paint and spec geometry: black enamel gaps"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "crimson glam foil",
+      "violet lacquer teeth",
+      "silver lightning cuts",
+      "gold pin sparks",
+      "black enamel gaps"
+    ],
+    "R": [
+      "crimson glam foil",
+      "violet lacquer teeth",
+      "silver lightning cuts",
+      "gold pin sparks",
+      "black enamel gaps"
+    ],
+    "Cc": [
+      "crimson glam foil",
+      "violet lacquer teeth",
+      "silver lightning cuts",
+      "gold pin sparks",
+      "black enamel gaps"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_chrome_type",
+      "difference": "This finish uses 1980s glam-metal foil material: extremely tiny crimson violet serrated lightning teeth, short triangular chrome cut edges, purple hairline grooves, gold pin sparks and black enamel gaps. Dense sharp metallic album-foil fragments, no lettering or hair, no whole lightning bolts or large shards.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "at_holo_sticker",
+      "difference": "This finish uses 1980s glam-metal foil material: extremely tiny crimson violet serrated lightning teeth, short triangular chrome cut edges, purple hairline grooves, gold pin sparks and black enamel gaps. Dense sharp metallic album-foil fragments, no lettering or hair, no whole lightning bolts or large shards.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "crimson glam foil is visible in the authored geometry",
+      "violet lacquer teeth is visible in the authored geometry",
+      "silver lightning cuts is visible in the authored geometry",
+      "gold pin sparks is visible in the authored geometry",
+      "black enamel gaps is visible in the authored geometry"
+    ],
+    "source_sha256": "08f3311f2e6db3cc204e6108499c5859430a8fe055a9a8be08ed9afbe450f792",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_big_hair_chrome-authored-Crimson and violet foil teeth with silver lightning cuts and tiny lacquer sparks. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_big_hair_chrome-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 64.1,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "98b3d76d5daf93b02c20f363cdd2252ed7e4404b849f648c3e4d71bde5dee6df"
+}

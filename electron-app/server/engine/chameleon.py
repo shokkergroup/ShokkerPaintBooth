@@ -11,6 +11,7 @@ CONTENTS:
   spec_chameleon_pro       - backward-compatible spec wrapper
   paint_chameleon_v5_core  - CORE paint function: all chameleon presets use this
   paint_chameleon_gradient - backward-compatible 2-param wrapper
+  Aurora & Chromatic Flow    - paint_aurora_* + spec_aurora_flow_core + profiles/layers
   paint_chameleon_midnight  - Deep purple → indigo → teal → gold
   paint_chameleon_phoenix   - Crimson → red → orange → gold
   paint_chameleon_ocean     - Teal → blue → indigo → violet
@@ -52,6 +53,8 @@ def integrate_chameleon(engine_module):
     """Wire this module into the host engine. Called once at startup."""
     global _engine
     _engine = engine_module
+    # Aurora / Chromatic Flow monolithics read profiles from the host module at registration time.
+    engine_module.AURORA_FLOW_SPEC_PROFILES = AURORA_FLOW_SPEC_PROFILES
 
 
 def _msn(shape, scales, weights, seed):
@@ -245,11 +248,22 @@ def spec_chameleon_v5(shape, mask, seed, sm, field=None,
     CC_arr = CC_base + field * CC_range
 
     # Independent noise overlays for M and R — creates viewing-angle shimmer
-    m_noise = _msn((sh, sw), [16, 32, 64], [0.3, 0.4, 0.3], seed + 8200)
-    M_arr = M_arr + m_noise * 8 * sm
-    # R noise at DIFFERENT scale + seed so M and R vary independently (key for shimmer)
-    r_noise = _msn((sh, sw), [32, 64, 128], [0.3, 0.4, 0.3], seed + 8310)
-    R_arr = R_arr + r_noise * 8 * sm
+    # SPB overnight 2026-05-27 tick 2 — finer M/R/CC octaves + stronger hue-walk spec
+    m_noise = _msn((sh, sw), [8, 16, 32, 64, 128, 256], [0.14, 0.18, 0.20, 0.20, 0.18, 0.10], seed + 8200)
+    M_arr = M_arr + m_noise * 14.0 * sm
+    r_noise = _msn((sh, sw), [12, 24, 48, 96, 128, 256], [0.16, 0.18, 0.20, 0.20, 0.16, 0.10], seed + 8310)
+    R_arr = R_arr + r_noise * 14.0 * sm
+    cc_noise = _msn((sh, sw), [24, 48, 96, 192], [0.32, 0.30, 0.24, 0.14], seed + 8420)
+    CC_arr = CC_arr + cc_noise * 9.0 * sm
+    sparkle = ((m_noise > 0.68) & (r_noise < 0.38)).astype(np.float32)
+    try:
+        from engine import overnight_boost as _ob
+        _sm = _ob.wave_mult(float(sm), "spec")
+        _gl = _ob.wave_mult(1.0, "glint")
+    except Exception:
+        _sm, _gl = float(sm), 1.0
+    M_arr = M_arr + sparkle * 26.0 * _sm * _gl
+    CC_arr = CC_arr + sparkle * 18.0 * _sm * _gl
 
     spec_small = np.zeros((sh, sw, 4), dtype=np.uint8)
     spec_small[:,:,0] = np.clip(M_arr * mask_s, 0, 255).astype(np.uint8)
@@ -564,10 +578,164 @@ def _aurora_flow_field(shape, seed, num_bands=8, flow_stretch=4.0):
     return field
 
 
+def spec_aurora_flow_core(shape, mask, seed, sm, profile):
+    """PBR spec coordinated with `paint_aurora_flow_core`: same aurora band field drives
+    metallic / roughness / clearcoat variation so swatches show structure in every channel.
+
+    Replaces the old flat `_spec_chameleon_24k` wiring for these finishes (which read as
+    solid chrome: ~constant high M, flat low R, pinned CC).
+    """
+    # ~25–30% richer micro-detail vs baseline; disabled per-finish (e.g. Frozen Flame lock).
+    _db = 1.0 if profile.get("no_detail_boost") else 1.275
+    h, w = shape
+    nb = int(profile.get("num_bands", 8))
+    fs = float(profile.get("flow_stretch", 4.0))
+    field = _aurora_flow_field(shape, seed, nb, fs)
+    f = np.clip(field.astype(np.float32), 0.0, 1.0)
+    fi = np.clip(1.0 - f if profile.get("invert_field") else f, 0.0, 1.0)
+
+    m0 = float(profile.get("m_base", 120.0))
+    m1 = float(profile.get("m_span", 80.0))
+    r0 = float(profile.get("r_base", 28.0))
+    r1 = float(profile.get("r_span", 45.0))
+    cc0 = float(profile.get("cc_base", 40.0))
+    cc1 = float(profile.get("cc_span", 70.0))
+
+    M = m0 + fi * m1
+    R = r0 + (1.0 - fi) * r1 * float(profile.get("r_coupling", 1.0))
+    CC = cc0 + fi * cc1
+
+    chrome = float(profile.get("chrome_flash", 0.0))
+    if chrome > 0:
+        ridge_freq = float(profile.get("ridge_freq", 5.0))
+        if not profile.get("no_detail_boost"):
+            # Slight per-seed diversity so finishes don't share identical ridge rhythm.
+            ridge_freq = ridge_freq * (0.94 + 0.12 * ((seed + 31) % 17) / 16.0)
+        ridges = np.power(np.abs(np.sin(f * np.pi * ridge_freq)), 2.2)
+        M = M + ridges * chrome * 72.0 * sm * _db
+        R = np.clip(R - ridges * chrome * 28.0 * sm * _db, 15.0, 255.0)
+        CC = np.clip(CC - ridges * chrome * 22.0 * sm * _db, 16.0, 255.0)
+
+    m_n = float(profile.get("m_noise", 14.0)) * _db
+    r_n = float(profile.get("r_noise", 22.0)) * _db
+    cc_n = float(profile.get("cc_noise", 16.0)) * _db
+    if _db > 1.0:
+        M = M + _msn(shape, [6, 12, 24, 48, 96], [0.19, 0.21, 0.22, 0.22, 0.16], seed + 91000) * (8.5 * sm)
+        R = R + _msn(shape, [9, 18, 36, 72], [0.27, 0.27, 0.26, 0.20], seed + 91007) * (12.0 * sm)
+    M = M + _msn(shape, [10, 22, 44, 88, 132], [0.22, 0.22, 0.22, 0.20, 0.14], seed + 91001) * m_n * sm
+    R = R + _msn(shape, [14, 28, 56, 112], [0.28, 0.26, 0.26, 0.20], seed + 91002) * r_n * sm
+    CC = CC + _msn(shape, [24, 52, 104], [0.36, 0.34, 0.30], seed + 91003) * cc_n * sm
+
+    carb = float(profile.get("carbon", 0.0)) * _db
+    if carb > 0:
+        y, x = get_mgrid((h, w))
+        yf = y.astype(np.float32) / max(h - 1, 1)
+        xf = x.astype(np.float32) / max(w - 1, 1)
+        ang = float(seed % 360) * 0.01745329252
+        weave = np.sin((yf * np.cos(ang) * 190.0 + xf * np.sin(ang) * 260.0) * np.pi)
+        weave *= _msn(shape, [48, 96], [0.52, 0.48], seed + 91004)
+        R = R + weave * carb * 42.0 * sm
+        M = np.clip(M - np.maximum(0.0, weave) * carb * 18.0 * sm, 0.0, 255.0)
+
+    scr = float(profile.get("scratches", 0.0)) * _db
+    if scr > 0:
+        scratch_noise = np.abs(_msn(shape, [160, 320], [0.55, 0.45], seed + 91005))
+        scratch_mask = (scratch_noise < (0.055 + 0.04 * (1.0 - sm))).astype(np.float32)
+        R = R + scratch_mask * scr * 62.0 * sm
+        M = M + scratch_mask * scr * 38.0 * sm
+        CC = CC + scratch_mask * scr * 35.0 * sm
+
+    cg = float(profile.get("crushed_glass", 0.0)) * _db
+    if cg > 0:
+        sparkle_field = _chameleon_v5_flake(shape, seed + 91006, cell_size=2)
+        glass_spark = np.power(np.clip(sparkle_field - 0.62, 0.0, 1.0) / 0.38, 1.8)
+        M = M + glass_spark * cg * 58.0 * sm
+        R = np.clip(R - glass_spark * cg * 25.0 * sm, 15.0, 255.0)
+        CC = np.clip(CC - glass_spark * cg * 12.0 * sm, 16.0, 255.0)
+
+    mask_f = mask.astype(np.float32)
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    spec[:, :, 0] = np.clip(M * mask_f, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.where(mask_f > 0.01, np.clip(R, 15, 255), 0).astype(np.uint8)
+    spec[:, :, 2] = np.where(mask_f > 0.01, np.clip(CC, 16, 255), 0).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask_f * 255.0, 0, 255).astype(np.uint8)
+    return spec
+
+
+# Per-finish spec profiles: MUST keep num_bands / flow_stretch aligned with paint for spatial coherence.
+AURORA_FLOW_SPEC_PROFILES = {
+    "aurora_borealis":        dict(num_bands=10, flow_stretch=5.0,  m_base=88,  m_span=118, r_base=22, r_span=52, cc_base=26, cc_span=92,  invert_field=False, chrome_flash=0.42, ridge_freq=7.0,  m_noise=16, r_noise=26, cc_noise=20, carbon=0.0,  scratches=0.06, crushed_glass=0.14),
+    "aurora_solar_wind":      dict(num_bands=12, flow_stretch=6.0,  m_base=105, m_span=125, r_base=18, r_span=48, cc_base=22, cc_span=78,  invert_field=False, chrome_flash=0.62, ridge_freq=8.5,  m_noise=18, r_noise=24, cc_noise=18, carbon=0.0,  scratches=0.0,  crushed_glass=0.18),
+    "aurora_nebula":          dict(num_bands=8,  flow_stretch=4.0,  m_base=92,  m_span=108, r_base=26, r_span=58, cc_base=30, cc_span=102, invert_field=True,  chrome_flash=0.35, ridge_freq=6.0,  m_noise=17, r_noise=28, cc_noise=22, carbon=0.0,  scratches=0.0,  crushed_glass=0.22),
+    "aurora_chromatic_surge": dict(num_bands=16, flow_stretch=3.0,  m_base=72,  m_span=132, r_base=20, r_span=62, cc_base=24, cc_span=95,  invert_field=False, chrome_flash=0.48, ridge_freq=11.0, m_noise=19, r_noise=30, cc_noise=24, carbon=0.08, scratches=0.0,  crushed_glass=0.28),
+    "aurora_frozen_flame":    dict(num_bands=14, flow_stretch=5.0,  m_base=98,  m_span=105, r_base=24, r_span=54, cc_base=28, cc_span=88,  invert_field=False, chrome_flash=0.72, ridge_freq=9.0,  m_noise=15, r_noise=22, cc_noise=19, carbon=0.0,  scratches=0.05, crushed_glass=0.16, no_detail_boost=True),
+    "aurora_deep_ocean":      dict(num_bands=6,  flow_stretch=7.0,  m_base=78,  m_span=95,  r_base=30, r_span=46, cc_base=38, cc_span=82,  invert_field=True,  chrome_flash=0.22, ridge_freq=5.0,  m_noise=14, r_noise=20, cc_noise=26, carbon=0.0,  scratches=0.12, crushed_glass=0.08),
+    "aurora_volcanic":        dict(num_bands=10, flow_stretch=4.0,  m_base=110, m_span=115, r_base=32, r_span=72, cc_base=52, cc_span=105, invert_field=False, chrome_flash=0.28, ridge_freq=6.5,  m_noise=20, r_noise=34, cc_noise=28, carbon=0.12, scratches=0.18, crushed_glass=0.10),
+    "aurora_ethereal":        dict(num_bands=20, flow_stretch=3.0,  m_base=62,  m_span=78,  r_base=38, r_span=42, cc_base=48, cc_span=75,  invert_field=True,  chrome_flash=0.12, ridge_freq=14.0, m_noise=11, r_noise=18, cc_noise=20, carbon=0.0,  scratches=0.0,  crushed_glass=0.06),
+    "aurora_toxic_current":   dict(num_bands=14, flow_stretch=4.5,  m_base=118, m_span=112, r_base=16, r_span=56, cc_base=20, cc_span=72,  invert_field=False, chrome_flash=0.55, ridge_freq=10.0, m_noise=21, r_noise=27, cc_noise=17, carbon=0.0,  scratches=0.04, crushed_glass=0.24),
+    "aurora_midnight_silk":   dict(num_bands=8,  flow_stretch=6.0,  m_base=48,  m_span=62,  r_base=52, r_span=68, cc_base=78, cc_span=115, invert_field=True,  chrome_flash=0.08, ridge_freq=5.5,  m_noise=12, r_noise=22, cc_noise=24, carbon=0.06, scratches=0.14, crushed_glass=0.04),
+    "aurora_electric_candy":  dict(num_bands=16, flow_stretch=6.5,  m_base=95,  m_span=125, r_base=14, r_span=58, cc_base=22, cc_span=68,  invert_field=False, chrome_flash=0.68, ridge_freq=12.0, m_noise=22, r_noise=26, cc_noise=16, carbon=0.0,  scratches=0.0,  crushed_glass=0.30),
+    "aurora_ocean_phosphor":  dict(num_bands=7,  flow_stretch=5.5,  m_base=70,  m_span=88,  r_base=34, r_span=48, cc_base=36, cc_span=90,  invert_field=True,  chrome_flash=0.25, ridge_freq=6.0,  m_noise=13, r_noise=19, cc_noise=28, carbon=0.0,  scratches=0.08, crushed_glass=0.20),
+    "aurora_molten_earth":    dict(num_bands=9,  flow_stretch=4.5,  m_base=85,  m_span=102, r_base=36, r_span=65, cc_base=55, cc_span=98,  invert_field=False, chrome_flash=0.18, ridge_freq=5.8,  m_noise=18, r_noise=32, cc_noise=26, carbon=0.14, scratches=0.16, crushed_glass=0.06),
+    "aurora_arctic_shimmer":  dict(num_bands=8,  flow_stretch=5.0,  m_base=58,  m_span=74,  r_base=42, r_span=38, cc_base=32, cc_span=62,  invert_field=True,  chrome_flash=0.38, ridge_freq=9.0,  m_noise=10, r_noise=16, cc_noise=14, carbon=0.0,  scratches=0.02, crushed_glass=0.12),
+    "aurora_neon_storm":      dict(num_bands=18, flow_stretch=7.5,  m_base=108, m_span=135, r_base=14, r_span=64, cc_base=18, cc_span=74,  invert_field=False, chrome_flash=0.58, ridge_freq=13.0, m_noise=24, r_noise=32, cc_noise=18, carbon=0.10, scratches=0.06, crushed_glass=0.32),
+    "aurora_twilight_veil":   dict(num_bands=10, flow_stretch=5.0,  m_base=76,  m_span=96,  r_base=30, r_span=54, cc_base=40, cc_span=96,  invert_field=True,  chrome_flash=0.22, ridge_freq=7.0,  m_noise=15, r_noise=24, cc_noise=26, carbon=0.05, scratches=0.10, crushed_glass=0.10),
+    "aurora_dragon_fire":     dict(num_bands=15, flow_stretch=6.0,  m_base=112, m_span=118, r_base=28, r_span=70, cc_base=38, cc_span=92,  invert_field=False, chrome_flash=0.52, ridge_freq=8.0,  m_noise=21, r_noise=30, cc_noise=22, carbon=0.16, scratches=0.12, crushed_glass=0.14),
+    "aurora_crystal_prism":   dict(num_bands=17, flow_stretch=7.0,  m_base=82,  m_span=128, r_base=18, r_span=52, cc_base=24, cc_span=62,  invert_field=False, chrome_flash=0.65, ridge_freq=14.0, m_noise=19, r_noise=24, cc_noise=15, carbon=0.0,  scratches=0.04, crushed_glass=0.35),
+    "aurora_shadow_silk":     dict(num_bands=9,  flow_stretch=6.0,  m_base=42,  m_span=58,  r_base=58, r_span=72, cc_base=92, cc_span=105, invert_field=True,  chrome_flash=0.06, ridge_freq=5.0,  m_noise=11, r_noise=20, cc_noise=22, carbon=0.18, scratches=0.12, crushed_glass=0.03),
+    "aurora_copper_patina":   dict(num_bands=9,  flow_stretch=4.5,  m_base=68,  m_span=92,  r_base=44, r_span=58, cc_base=62, cc_span=105, invert_field=False, chrome_flash=0.15, ridge_freq=6.2,  m_noise=17, r_noise=30, cc_noise=30, carbon=0.10, scratches=0.22, crushed_glass=0.05),
+    "aurora_poison_ivy":      dict(num_bands=16, flow_stretch=6.5,  m_base=115, m_span=118, r_base=18, r_span=58, cc_base=22, cc_span=76,  invert_field=False, chrome_flash=0.48, ridge_freq=11.5, m_noise=22, r_noise=28, cc_noise=18, carbon=0.12, scratches=0.08, crushed_glass=0.26),
+    "aurora_champagne_dream": dict(num_bands=8,  flow_stretch=5.0,  m_base=64,  m_span=82,  r_base=36, r_span=36, cc_base=34, cc_span=58,  invert_field=True,  chrome_flash=0.32, ridge_freq=8.0,  m_noise=10, r_noise=14, cc_noise=12, carbon=0.0,  scratches=0.0,  crushed_glass=0.08),
+    "aurora_thunderhead":     dict(num_bands=10, flow_stretch=5.5,  m_base=72,  m_span=105, r_base=34, r_span=62, cc_base=46, cc_span=88,  invert_field=False, chrome_flash=0.45, ridge_freq=7.5,  m_noise=18, r_noise=28, cc_noise=24, carbon=0.22, scratches=0.14, crushed_glass=0.08),
+    "aurora_coral_reef":      dict(num_bands=10, flow_stretch=5.0,  m_base=80,  m_span=98,  r_base=28, r_span=50, cc_base=32, cc_span=88,  invert_field=True,  chrome_flash=0.28, ridge_freq=7.0,  m_noise=15, r_noise=22, cc_noise=24, carbon=0.0,  scratches=0.06, crushed_glass=0.18),
+    "aurora_black_rainbow":   dict(num_bands=14, flow_stretch=6.0,  m_base=52,  m_span=108, r_base=40, r_span=62, cc_base=58, cc_span=105, invert_field=False, chrome_flash=0.40, ridge_freq=9.5,  m_noise=16, r_noise=26, cc_noise=26, carbon=0.14, scratches=0.10, crushed_glass=0.16),
+    "aurora_cherry_blossom":  dict(num_bands=8,  flow_stretch=4.5,  m_base=58,  m_span=72,  r_base=40, r_span=34, cc_base=38, cc_span=58,  invert_field=True,  chrome_flash=0.18, ridge_freq=8.0,  m_noise=9,  r_noise=14, cc_noise=12, carbon=0.0,  scratches=0.02, crushed_glass=0.06),
+    "aurora_plasma_reactor":  dict(num_bands=18, flow_stretch=7.0,  m_base=118, m_span=122, r_base=12, r_span=56, cc_base=18, cc_span=58,  invert_field=False, chrome_flash=0.72, ridge_freq=15.0, m_noise=24, r_noise=28, cc_noise=14, carbon=0.08, scratches=0.05, crushed_glass=0.34),
+    "aurora_autumn_ember":    dict(num_bands=9,  flow_stretch=4.5,  m_base=86,  m_span=102, r_base=34, r_span=62, cc_base=48, cc_span=96,  invert_field=False, chrome_flash=0.22, ridge_freq=6.8,  m_noise=17, r_noise=28, cc_noise=26, carbon=0.08, scratches=0.15, crushed_glass=0.08),
+    "aurora_ice_crystal":     dict(num_bands=8,  flow_stretch=5.5,  m_base=54,  m_span=76,  r_base=44, r_span=32, cc_base=28, cc_span=48,  invert_field=True,  chrome_flash=0.42, ridge_freq=10.0, m_noise=9,  r_noise=12, cc_noise=10, carbon=0.0,  scratches=0.03, crushed_glass=0.14),
+    "aurora_supernova":       dict(num_bands=16, flow_stretch=7.5,  m_base=122, m_span=115, r_base=22, r_span=68, cc_base=28, cc_span=82,  invert_field=False, chrome_flash=0.58, ridge_freq=11.0, m_noise=23, r_noise=32, cc_noise=20, carbon=0.12, scratches=0.08, crushed_glass=0.22),
+}
+
+
+# Extra paint-layer DNA per finish (chromatic aberration, sparkle, weave, damage, glass glitter).
+AURORA_FLOW_LAYERS = {
+    "aurora_borealis":        dict(chromatic_ab=0.62, sparkle=0.38, carbon=0.0,  scratches=0.06, crushed_glass=0.14, pearl=0.28, blackout=0.0),
+    "aurora_solar_wind":      dict(chromatic_ab=0.48, sparkle=0.55, carbon=0.0,  scratches=0.0,  crushed_glass=0.12, pearl=0.12, blackout=0.0),
+    "aurora_nebula":          dict(chromatic_ab=0.72, sparkle=0.42, carbon=0.0,  scratches=0.0,  crushed_glass=0.24, pearl=0.35, blackout=0.0),
+    "aurora_chromatic_surge": dict(chromatic_ab=0.95, sparkle=0.35, carbon=0.10, scratches=0.0,  crushed_glass=0.26, pearl=0.15, blackout=0.0),
+    "aurora_frozen_flame":    dict(chromatic_ab=0.55, sparkle=0.48, carbon=0.0,  scratches=0.05, crushed_glass=0.18, pearl=0.22, blackout=0.0, no_detail_boost=True),
+    "aurora_deep_ocean":      dict(chromatic_ab=0.42, sparkle=0.22, carbon=0.0,  scratches=0.08, crushed_glass=0.10, pearl=0.18, blackout=0.08),
+    "aurora_volcanic":        dict(chromatic_ab=0.38, sparkle=0.28, carbon=0.18, scratches=0.12, crushed_glass=0.08, pearl=0.0,  blackout=0.22),
+    "aurora_ethereal":        dict(chromatic_ab=0.58, sparkle=0.18, carbon=0.0,  scratches=0.0,  crushed_glass=0.05, pearl=0.42, blackout=0.0),
+    "aurora_toxic_current":   dict(chromatic_ab=0.68, sparkle=0.52, carbon=0.0,  scratches=0.04, crushed_glass=0.22, pearl=0.0,  blackout=0.0),
+    "aurora_midnight_silk":   dict(chromatic_ab=0.35, sparkle=0.12, carbon=0.08, scratches=0.08, crushed_glass=0.04, pearl=0.15, blackout=0.35),
+    "aurora_electric_candy":  dict(chromatic_ab=0.88, sparkle=0.62, carbon=0.0,  scratches=0.0,  crushed_glass=0.28, pearl=0.08, blackout=0.0),
+    "aurora_ocean_phosphor":  dict(chromatic_ab=0.52, sparkle=0.36, carbon=0.0,  scratches=0.05, crushed_glass=0.22, pearl=0.25, blackout=0.12),
+    "aurora_molten_earth":    dict(chromatic_ab=0.32, sparkle=0.24, carbon=0.16, scratches=0.14, crushed_glass=0.05, pearl=0.0,  blackout=0.18),
+    "aurora_arctic_shimmer":  dict(chromatic_ab=0.45, sparkle=0.32, carbon=0.0,  scratches=0.02, crushed_glass=0.14, pearl=0.52, blackout=0.0),
+    "aurora_neon_storm":      dict(chromatic_ab=0.82, sparkle=0.68, carbon=0.12, scratches=0.06, crushed_glass=0.30, pearl=0.0,  blackout=0.0),
+    "aurora_twilight_veil":   dict(chromatic_ab=0.58, sparkle=0.22, carbon=0.06, scratches=0.08, crushed_glass=0.10, pearl=0.32, blackout=0.15),
+    "aurora_dragon_fire":     dict(chromatic_ab=0.48, sparkle=0.40, carbon=0.20, scratches=0.10, crushed_glass=0.12, pearl=0.0,  blackout=0.25),
+    "aurora_crystal_prism":   dict(chromatic_ab=0.92, sparkle=0.45, carbon=0.0,  scratches=0.04, crushed_glass=0.32, pearl=0.38, blackout=0.0),
+    "aurora_shadow_silk":     dict(chromatic_ab=0.40, sparkle=0.10, carbon=0.22, scratches=0.10, crushed_glass=0.03, pearl=0.08, blackout=0.42),
+    "aurora_copper_patina":   dict(chromatic_ab=0.36, sparkle=0.20, carbon=0.14, scratches=0.18, crushed_glass=0.04, pearl=0.0,  blackout=0.15),
+    "aurora_poison_ivy":      dict(chromatic_ab=0.62, sparkle=0.58, carbon=0.14, scratches=0.06, crushed_glass=0.24, pearl=0.0,  blackout=0.12),
+    "aurora_champagne_dream": dict(chromatic_ab=0.48, sparkle=0.28, carbon=0.0,  scratches=0.0,  crushed_glass=0.08, pearl=0.58, blackout=0.0),
+    "aurora_thunderhead":     dict(chromatic_ab=0.35, sparkle=0.26, carbon=0.28, scratches=0.12, crushed_glass=0.08, pearl=0.12, blackout=0.22),
+    "aurora_coral_reef":      dict(chromatic_ab=0.55, sparkle=0.34, carbon=0.0,  scratches=0.05, crushed_glass=0.16, pearl=0.22, blackout=0.0),
+    "aurora_black_rainbow":   dict(chromatic_ab=0.78, sparkle=0.30, carbon=0.16, scratches=0.08, crushed_glass=0.14, pearl=0.0,  blackout=0.38),
+    "aurora_cherry_blossom":  dict(chromatic_ab=0.50, sparkle=0.20, carbon=0.0,  scratches=0.02, crushed_glass=0.05, pearl=0.48, blackout=0.0),
+    "aurora_plasma_reactor":  dict(chromatic_ab=0.85, sparkle=0.70, carbon=0.10, scratches=0.05, crushed_glass=0.34, pearl=0.15, blackout=0.0),
+    "aurora_autumn_ember":    dict(chromatic_ab=0.34, sparkle=0.26, carbon=0.10, scratches=0.12, crushed_glass=0.06, pearl=0.0,  blackout=0.12),
+    "aurora_ice_crystal":     dict(chromatic_ab=0.52, sparkle=0.38, carbon=0.0,  scratches=0.03, crushed_glass=0.18, pearl=0.55, blackout=0.0),
+    "aurora_supernova":       dict(chromatic_ab=0.68, sparkle=0.58, carbon=0.14, scratches=0.06, crushed_glass=0.20, pearl=0.10, blackout=0.28),
+}
+
+
 def paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, color_stops,
                            num_bands=8, flow_stretch=4.0, band_sharpness=1.0,
                            flake_intensity=0.03, blend_strength=0.93,
-                           metallic_brighten=0.12):
+                           metallic_brighten=0.12, layer=None):
     """Aurora flow CORE — fine intertwined color bands flowing across the surface.
 
     Unlike chameleon which shifts broadly across panels, aurora creates visible
@@ -593,17 +761,87 @@ def paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, color_stops,
     # Map through color ramp
     ramp_r, ramp_g, ramp_b = _chameleon_v5_color_ramp(field, color_stops)
 
-    # Fine flake texture for metallic micro-variation
+    layer = layer or {}
+    # ~27.5% extra micro-detail on paint; `no_detail_boost` locks a finish (e.g. Frozen Flame).
+    _db = 1.0 if layer.get("no_detail_boost") else 1.275
+
+    # Voronoi flake + optional ultra-fine grain (frozen: same strength as pre-boost baseline)
     flake = _chameleon_v5_flake(shape, seed + 200, cell_size=4)
-    flake_bright = (flake - 0.5) * 2.0 * flake_intensity
+    flake_bright = (flake - 0.5) * 2.0 * flake_intensity * _db
     ramp_r = np.clip(ramp_r + flake_bright, 0, 1)
     ramp_g = np.clip(ramp_g + flake_bright, 0, 1)
     ramp_b = np.clip(ramp_b + flake_bright, 0, 1)
+    if _db > 1.0:
+        flake_fine = _chameleon_v5_flake(shape, seed + 205, cell_size=2)
+        ff = (flake_fine - 0.5) * 2.0 * flake_intensity * 0.42 * _db
+        ramp_r = np.clip(ramp_r + ff, 0, 1)
+        ramp_g = np.clip(ramp_g + ff, 0, 1)
+        ramp_b = np.clip(ramp_b + ff, 0, 1)
 
     # Metallic brightness compensation
     ramp_r = np.clip(ramp_r + metallic_brighten, 0, 1)
     ramp_g = np.clip(ramp_g + metallic_brighten, 0, 1)
     ramp_b = np.clip(ramp_b + metallic_brighten, 0, 1)
+
+    cab = float(layer.get("chromatic_ab", 0.0))
+    if cab > 0 and pm > 0.001:
+        nr = _msn(shape, [12, 16, 32, 64, 96], [0.22, 0.22, 0.22, 0.20, 0.14], seed + 7201)
+        ng = _msn(shape, [12, 16, 32, 64, 96], [0.22, 0.22, 0.22, 0.20, 0.14], seed + 7202)
+        nb = _msn(shape, [12, 16, 32, 64, 96], [0.22, 0.22, 0.22, 0.20, 0.14], seed + 7203)
+        ramp_r = np.clip(ramp_r + (nr - 0.5) * 0.26 * cab * pm * _db, 0, 1)
+        ramp_g = np.clip(ramp_g + (ng - 0.5) * 0.22 * cab * pm * _db, 0, 1)
+        ramp_b = np.clip(ramp_b + (nb - 0.5) * 0.28 * cab * pm * _db, 0, 1)
+
+    sp = float(layer.get("sparkle", 0.0))
+    if sp > 0 and pm > 0.001:
+        spark = _chameleon_v5_flake(shape, seed + 7211, cell_size=3)
+        spikes = np.power(np.clip(spark - 0.52, 0, 1) / 0.48, 2.2)
+        boost = spikes * sp * pm * 0.95 * _db
+        ramp_r = np.clip(ramp_r + boost, 0, 1)
+        ramp_g = np.clip(ramp_g + boost * 0.97, 0, 1)
+        ramp_b = np.clip(ramp_b + boost * 1.03, 0, 1)
+
+    carb = float(layer.get("carbon", 0.0))
+    if carb > 0 and pm > 0.001:
+        y, x = get_mgrid((h, w))
+        yf = y.astype(np.float32) / max(h - 1, 1)
+        xf = x.astype(np.float32) / max(w - 1, 1)
+        weave = np.sin(yf * np.pi * 95.0) * np.sin(xf * np.pi * 118.0 + yf * np.pi * 22.0)
+        weave = weave * carb * 0.22 * pm * _db
+        ramp_r = np.clip(ramp_r - weave * 0.35, 0, 1)
+        ramp_g = np.clip(ramp_g - weave * 0.28, 0, 1)
+        ramp_b = np.clip(ramp_b - weave * 0.30, 0, 1)
+
+    scrpaint = float(layer.get("scratches", 0.0))
+    if scrpaint > 0 and pm > 0.001:
+        sf = np.abs(_msn(shape, [180, 360], [0.55, 0.45], seed + 7221))
+        smask = (sf < 0.045).astype(np.float32)
+        ramp_r = np.clip(ramp_r + smask * scrpaint * 0.14 * pm * _db, 0, 1)
+        ramp_g = np.clip(ramp_g + smask * scrpaint * 0.13 * pm * _db, 0, 1)
+        ramp_b = np.clip(ramp_b + smask * scrpaint * 0.12 * pm * _db, 0, 1)
+
+    cg = float(layer.get("crushed_glass", 0.0))
+    if cg > 0 and pm > 0.001:
+        grit = _chameleon_v5_flake(shape, seed + 7231, cell_size=2)
+        glitter = np.power(np.clip(grit - 0.72, 0, 1) / 0.28, 1.6)
+        ramp_r = np.clip(ramp_r + glitter * cg * 0.55 * pm * _db, 0, 1)
+        ramp_g = np.clip(ramp_g + glitter * cg * 0.52 * pm * _db, 0, 1)
+        ramp_b = np.clip(ramp_b + glitter * cg * 0.58 * pm * _db, 0, 1)
+
+    pearl = float(layer.get("pearl", 0.0))
+    if pearl > 0 and pm > 0.001:
+        ph1 = _msn(shape, [40, 80], [0.5, 0.5], seed + 7241)
+        ph2 = _msn(shape, [56, 112], [0.5, 0.5], seed + 7242)
+        ramp_r = np.clip(ramp_r + (ph1 - 0.5) * 0.07 * pearl * pm * _db, 0, 1)
+        ramp_g = np.clip(ramp_g + (ph2 - 0.5) * 0.09 * pearl * pm * _db, 0, 1)
+        ramp_b = np.clip(ramp_b + ((ph1 + ph2) * 0.5 - 0.5) * 0.10 * pearl * pm * _db, 0, 1)
+
+    bo = float(layer.get("blackout", 0.0))
+    if bo > 0 and pm > 0.001:
+        ds = 1.0 - bo * 0.42 * pm
+        ramp_r *= ds
+        ramp_g *= ds
+        ramp_b *= ds
 
     # Blend with original paint
     blend = blend_strength * pm
@@ -628,8 +866,7 @@ def paint_aurora_borealis(paint, shape, mask, seed, pm, bb):
         (1.00, 130, 0.85, 0.80),   # Back to green
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
-                                  num_bands=10, flow_stretch=5.0, band_sharpness=1.2)
-
+                                  num_bands=10, flow_stretch=5.0, band_sharpness=1.2, layer=AURORA_FLOW_LAYERS["aurora_borealis"])
 def paint_aurora_solar_wind(paint, shape, mask, seed, pm, bb):
     """Solar Wind — Orange → gold → yellow → lime → cyan → blue electric bands"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -642,8 +879,7 @@ def paint_aurora_solar_wind(paint, shape, mask, seed, pm, bb):
         (1.00, 220, 0.82, 0.74),   # Blue
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
-                                  num_bands=12, flow_stretch=6.0, band_sharpness=1.0)
-
+                                  num_bands=12, flow_stretch=6.0, band_sharpness=1.0, layer=AURORA_FLOW_LAYERS["aurora_solar_wind"])
 def paint_aurora_nebula(paint, shape, mask, seed, pm, bb):
     """Nebula — Deep purple → magenta → pink → rose → coral → amber flowing wisps"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -656,8 +892,7 @@ def paint_aurora_nebula(paint, shape, mask, seed, pm, bb):
         (1.00, 35,  0.80, 0.80),   # Amber
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
-                                  num_bands=8, flow_stretch=4.0, band_sharpness=1.5)
-
+                                  num_bands=8, flow_stretch=4.0, band_sharpness=1.5, layer=AURORA_FLOW_LAYERS["aurora_nebula"])
 def paint_aurora_chromatic_surge(paint, shape, mask, seed, pm, bb):
     """Chromatic Surge — Full rainbow spectrum in tight concentrated bands"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -672,8 +907,7 @@ def paint_aurora_chromatic_surge(paint, shape, mask, seed, pm, bb):
         (1.00, 340, 0.88, 0.80),   # Magenta
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
-                                  num_bands=16, flow_stretch=3.0, band_sharpness=0.8)
-
+                                  num_bands=16, flow_stretch=3.0, band_sharpness=0.8, layer=AURORA_FLOW_LAYERS["aurora_chromatic_surge"])
 def paint_aurora_frozen_flame(paint, shape, mask, seed, pm, bb):
     """Frozen Flame — Ice blue → white → gold → red concentrated flow"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -685,8 +919,7 @@ def paint_aurora_frozen_flame(paint, shape, mask, seed, pm, bb):
         (1.00, 200, 0.55, 0.88),   # Back to Ice
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
-                                  num_bands=14, flow_stretch=5.0, band_sharpness=1.8)
-
+                                  num_bands=14, flow_stretch=5.0, band_sharpness=1.8, layer=AURORA_FLOW_LAYERS["aurora_frozen_flame"])
 def paint_aurora_deep_ocean(paint, shape, mask, seed, pm, bb):
     """Deep Ocean — Dark navy → sapphire → teal → aqua → seafoam subtle flowing bands"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -698,8 +931,7 @@ def paint_aurora_deep_ocean(paint, shape, mask, seed, pm, bb):
         (1.00, 155, 0.70, 0.78),   # Seafoam
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
-                                  num_bands=6, flow_stretch=7.0, band_sharpness=1.0)
-
+                                  num_bands=6, flow_stretch=7.0, band_sharpness=1.0, layer=AURORA_FLOW_LAYERS["aurora_deep_ocean"])
 def paint_aurora_volcanic(paint, shape, mask, seed, pm, bb):
     """Volcanic Flow — Black → deep red → orange → gold flowing magma veins"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -712,8 +944,7 @@ def paint_aurora_volcanic(paint, shape, mask, seed, pm, bb):
         (1.00, 0,   0.08, 0.18),   # Back to Dark
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
-                                  num_bands=10, flow_stretch=4.0, band_sharpness=2.0)
-
+                                  num_bands=10, flow_stretch=4.0, band_sharpness=2.0, layer=AURORA_FLOW_LAYERS["aurora_volcanic"])
 def paint_aurora_ethereal(paint, shape, mask, seed, pm, bb):
     """Ethereal — Soft pastel flowing: lavender → mint → peach → sky ultra-fine threads"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -726,8 +957,7 @@ def paint_aurora_ethereal(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=20, flow_stretch=3.0, band_sharpness=0.7,
-                                  flake_intensity=0.02)
-
+                                  flake_intensity=0.02, layer=AURORA_FLOW_LAYERS["aurora_ethereal"])
 def paint_aurora_toxic_current(paint, shape, mask, seed, pm, bb):
     """Toxic Current — Acid green → neon yellow → electric blue concentrated electric bands"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -739,8 +969,7 @@ def paint_aurora_toxic_current(paint, shape, mask, seed, pm, bb):
         (1.00, 120, 0.90, 0.82),   # Back to Green
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
-                                  num_bands=14, flow_stretch=4.5, band_sharpness=1.5)
-
+                                  num_bands=14, flow_stretch=4.5, band_sharpness=1.5, layer=AURORA_FLOW_LAYERS["aurora_toxic_current"])
 def paint_aurora_midnight_silk(paint, shape, mask, seed, pm, bb):
     """Midnight Silk — Very dark with subtle deep blue → purple → teal threads barely visible"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -753,9 +982,7 @@ def paint_aurora_midnight_silk(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=8, flow_stretch=6.0, band_sharpness=1.0,
-                                  flake_intensity=0.02, metallic_brighten=0.05)
-
-
+                                  flake_intensity=0.02, metallic_brighten=0.05, layer=AURORA_FLOW_LAYERS["aurora_midnight_silk"])
 # --- Aurora Presets (Extended — 20 new) ---
 
 def paint_aurora_electric_candy(paint, shape, mask, seed, pm, bb):
@@ -771,8 +998,7 @@ def paint_aurora_electric_candy(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=16, flow_stretch=6.5, band_sharpness=2.0,
-                                  flake_intensity=0.07)
-
+                                  flake_intensity=0.07, layer=AURORA_FLOW_LAYERS["aurora_electric_candy"])
 def paint_aurora_ocean_phosphor(paint, shape, mask, seed, pm, bb):
     """Ocean Phosphorescence — deep navy → bioluminescent blue → cyan → teal → seafoam gentle bands"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -785,8 +1011,7 @@ def paint_aurora_ocean_phosphor(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=7, flow_stretch=5.5, band_sharpness=0.9,
-                                  flake_intensity=0.02)
-
+                                  flake_intensity=0.02, layer=AURORA_FLOW_LAYERS["aurora_ocean_phosphor"])
 def paint_aurora_molten_earth(paint, shape, mask, seed, pm, bb):
     """Molten Earth — burnt sienna → copper → dark red → amber → charcoal warm earthy flow"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -799,8 +1024,7 @@ def paint_aurora_molten_earth(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=9, flow_stretch=4.5, band_sharpness=1.1,
-                                  flake_intensity=0.03)
-
+                                  flake_intensity=0.03, layer=AURORA_FLOW_LAYERS["aurora_molten_earth"])
 def paint_aurora_arctic_shimmer(paint, shape, mask, seed, pm, bb):
     """Arctic Shimmer — ice white → pale blue → silver → frost blue → pale lavender cold delicate"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -813,8 +1037,7 @@ def paint_aurora_arctic_shimmer(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=8, flow_stretch=5.0, band_sharpness=0.8,
-                                  flake_intensity=0.02, metallic_brighten=0.15)
-
+                                  flake_intensity=0.02, metallic_brighten=0.15, layer=AURORA_FLOW_LAYERS["aurora_arctic_shimmer"])
 def paint_aurora_neon_storm(paint, shape, mask, seed, pm, bb):
     """Neon Storm — ULTRA WILD: neon green → hot pink → electric purple → bright orange → cyan"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -828,8 +1051,7 @@ def paint_aurora_neon_storm(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=18, flow_stretch=7.5, band_sharpness=2.5,
-                                  flake_intensity=0.08)
-
+                                  flake_intensity=0.08, layer=AURORA_FLOW_LAYERS["aurora_neon_storm"])
 def paint_aurora_twilight_veil(paint, shape, mask, seed, pm, bb):
     """Twilight Veil — deep purple → rose gold → dusty pink → slate blue → dark magenta elegant"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -842,8 +1064,7 @@ def paint_aurora_twilight_veil(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=10, flow_stretch=5.0, band_sharpness=1.2,
-                                  flake_intensity=0.03)
-
+                                  flake_intensity=0.03, layer=AURORA_FLOW_LAYERS["aurora_twilight_veil"])
 def paint_aurora_dragon_fire(paint, shape, mask, seed, pm, bb):
     """Dragon Fire — WILD: bright orange → deep red → gold → black → surprise electric blue"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -857,8 +1078,7 @@ def paint_aurora_dragon_fire(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=15, flow_stretch=6.0, band_sharpness=2.2,
-                                  flake_intensity=0.06)
-
+                                  flake_intensity=0.06, layer=AURORA_FLOW_LAYERS["aurora_dragon_fire"])
 def paint_aurora_crystal_prism(paint, shape, mask, seed, pm, bb):
     """Crystal Prism — WILD: full rainbow red → orange → yellow → green → blue → violet spectrum"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -873,8 +1093,7 @@ def paint_aurora_crystal_prism(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=17, flow_stretch=7.0, band_sharpness=2.0,
-                                  flake_intensity=0.06)
-
+                                  flake_intensity=0.06, layer=AURORA_FLOW_LAYERS["aurora_crystal_prism"])
 def paint_aurora_shadow_silk(paint, shape, mask, seed, pm, bb):
     """Shadow Silk — very dark: black → dark purple → dark teal → charcoal → midnight blue luxury"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -887,8 +1106,7 @@ def paint_aurora_shadow_silk(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=9, flow_stretch=6.0, band_sharpness=1.0,
-                                  flake_intensity=0.02, metallic_brighten=0.04)
-
+                                  flake_intensity=0.02, metallic_brighten=0.04, layer=AURORA_FLOW_LAYERS["aurora_shadow_silk"])
 def paint_aurora_copper_patina(paint, shape, mask, seed, pm, bb):
     """Copper Patina — copper → verdigris green → brown → teal → oxidized orange aged metal flow"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -901,8 +1119,7 @@ def paint_aurora_copper_patina(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=9, flow_stretch=4.5, band_sharpness=1.1,
-                                  flake_intensity=0.03)
-
+                                  flake_intensity=0.03, layer=AURORA_FLOW_LAYERS["aurora_copper_patina"])
 def paint_aurora_poison_ivy(paint, shape, mask, seed, pm, bb):
     """Poison Ivy — ULTRA WILD: toxic green → black → bright lime → dark emerald → acid yellow"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -916,8 +1133,7 @@ def paint_aurora_poison_ivy(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=16, flow_stretch=6.5, band_sharpness=2.3,
-                                  flake_intensity=0.07)
-
+                                  flake_intensity=0.07, layer=AURORA_FLOW_LAYERS["aurora_poison_ivy"])
 def paint_aurora_champagne_dream(paint, shape, mask, seed, pm, bb):
     """Champagne Dream — pale gold → cream → blush pink → soft peach → pearl white luxurious"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -930,8 +1146,7 @@ def paint_aurora_champagne_dream(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=8, flow_stretch=5.0, band_sharpness=0.8,
-                                  flake_intensity=0.02, metallic_brighten=0.14)
-
+                                  flake_intensity=0.02, metallic_brighten=0.14, layer=AURORA_FLOW_LAYERS["aurora_champagne_dream"])
 def paint_aurora_thunderhead(paint, shape, mask, seed, pm, bb):
     """Thunderhead — steel grey → dark charcoal → silver flash → slate → gunmetal dramatic storm"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -944,8 +1159,7 @@ def paint_aurora_thunderhead(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=10, flow_stretch=5.5, band_sharpness=1.4,
-                                  flake_intensity=0.04)
-
+                                  flake_intensity=0.04, layer=AURORA_FLOW_LAYERS["aurora_thunderhead"])
 def paint_aurora_coral_reef(paint, shape, mask, seed, pm, bb):
     """Coral Reef — coral pink → turquoise → sand gold → seafoam → deep blue tropical underwater"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -958,8 +1172,7 @@ def paint_aurora_coral_reef(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=10, flow_stretch=5.0, band_sharpness=1.0,
-                                  flake_intensity=0.03)
-
+                                  flake_intensity=0.03, layer=AURORA_FLOW_LAYERS["aurora_coral_reef"])
 def paint_aurora_black_rainbow(paint, shape, mask, seed, pm, bb):
     """Black Rainbow — WILD: dark versions of rainbow — dark red → dark orange → dark yellow → dark green → dark blue"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -974,8 +1187,7 @@ def paint_aurora_black_rainbow(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=14, flow_stretch=6.0, band_sharpness=2.0,
-                                  flake_intensity=0.05, metallic_brighten=0.06)
-
+                                  flake_intensity=0.05, metallic_brighten=0.06, layer=AURORA_FLOW_LAYERS["aurora_black_rainbow"])
 def paint_aurora_cherry_blossom(paint, shape, mask, seed, pm, bb):
     """Cherry Blossom — soft pink → white → pale rose → light green → blush delicate spring"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -988,8 +1200,7 @@ def paint_aurora_cherry_blossom(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=8, flow_stretch=4.5, band_sharpness=0.7,
-                                  flake_intensity=0.02, metallic_brighten=0.12)
-
+                                  flake_intensity=0.02, metallic_brighten=0.12, layer=AURORA_FLOW_LAYERS["aurora_cherry_blossom"])
 def paint_aurora_plasma_reactor(paint, shape, mask, seed, pm, bb):
     """Plasma Reactor — ULTRA WILD: electric cyan → white-hot → purple → bright blue → magenta"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -1003,8 +1214,7 @@ def paint_aurora_plasma_reactor(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=18, flow_stretch=7.0, band_sharpness=2.5,
-                                  flake_intensity=0.08)
-
+                                  flake_intensity=0.08, layer=AURORA_FLOW_LAYERS["aurora_plasma_reactor"])
 def paint_aurora_autumn_ember(paint, shape, mask, seed, pm, bb):
     """Autumn Ember — burnt orange → dark red → gold → maroon → brown fall foliage flow"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -1017,8 +1227,7 @@ def paint_aurora_autumn_ember(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=9, flow_stretch=4.5, band_sharpness=1.1,
-                                  flake_intensity=0.03)
-
+                                  flake_intensity=0.03, layer=AURORA_FLOW_LAYERS["aurora_autumn_ember"])
 def paint_aurora_ice_crystal(paint, shape, mask, seed, pm, bb):
     """Ice Crystal — very pale blue → white → crystal clear → frost → pale cyan nearly-white ice"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -1031,8 +1240,7 @@ def paint_aurora_ice_crystal(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=8, flow_stretch=5.5, band_sharpness=0.7,
-                                  flake_intensity=0.02, metallic_brighten=0.16)
-
+                                  flake_intensity=0.02, metallic_brighten=0.16, layer=AURORA_FLOW_LAYERS["aurora_ice_crystal"])
 def paint_aurora_supernova(paint, shape, mask, seed, pm, bb):
     """Supernova — ULTRA WILD: white-hot → orange → red → deep purple → black stellar explosion"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -1046,7 +1254,7 @@ def paint_aurora_supernova(paint, shape, mask, seed, pm, bb):
     ]
     return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
                                   num_bands=16, flow_stretch=7.5, band_sharpness=2.2,
-                                  flake_intensity=0.07)
+                                  flake_intensity=0.07, layer=AURORA_FLOW_LAYERS["aurora_supernova"])
 
 
 # ================================================================

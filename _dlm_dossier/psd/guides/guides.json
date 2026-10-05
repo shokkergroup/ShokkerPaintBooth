@@ -1,0 +1,62 @@
+[
+ {
+  "idx": 0,
+  "name": "Mandatory",
+  "kind": "pixel",
+  "bbox": [
+   0,
+   58,
+   1999,
+   1780
+  ],
+  "visible": true
+ },
+ {
+  "idx": 1,
+  "name": "Number Blocks",
+  "kind": "pixel",
+  "bbox": [
+   543,
+   456,
+   1930,
+   1896
+  ],
+  "visible": true
+ },
+ {
+  "idx": 2,
+  "name": "Sponsor Blocks",
+  "kind": "pixel",
+  "bbox": [
+   33,
+   532,
+   1628,
+   1986
+  ],
+  "visible": true
+ },
+ {
+  "idx": 3,
+  "name": "Mask",
+  "kind": "pixel",
+  "bbox": [
+   0,
+   0,
+   2048,
+   2048
+  ],
+  "visible": true
+ },
+ {
+  "idx": 4,
+  "name": "Wire",
+  "kind": "pixel",
+  "bbox": [
+   5,
+   5,
+   2045,
+   2045
+  ],
+  "visible": true
+ }
+]

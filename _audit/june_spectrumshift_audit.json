@@ -1,0 +1,195 @@
+{
+  "category": "spectrumshift",
+  "entries": {
+    "spectrum_swirl_supernova": {
+      "verdict": "rebuild",
+      "rating": 27,
+      "ai_rating": 59,
+      "reasons": [],
+      "notes": "The little \"star glints\" look hand drawn by a 5 year old. I never love when they show up on your outputs unless they'd look much, much better. I'm cool with the Swirl Supernova concept otherwise. Also the spec map it a little lacking in variety and diversity\n",
+      "ts": 1781185131600
+    },
+    "spectrum_data_etch": {
+      "verdict": "rebuild",
+      "rating": 42,
+      "ai_rating": 68,
+      "reasons": [
+        "Too blobby / macro"
+      ],
+      "notes": "Look how large these areas are. They are MASSIVE on a 2048x2048 canvas. Idea is fine but we can't have slices like this so large. ",
+      "ts": 1781185258402
+    },
+    "spectrum_grating_quilt": {
+      "verdict": "rebuild",
+      "rating": 32,
+      "ai_rating": 66,
+      "reasons": [
+        "Too similar to another",
+        "Too blobby / macro",
+        "Too flat / boring"
+      ],
+      "notes": "We have a lot of finishes like this already but this is also VERY blobby. Just way too big. We have tons of voroni fracture type looks. We need NEW and UNIQUE looks not in the database at all",
+      "ts": 1781185307810
+    },
+    "spectrum_thermo_touch": {
+      "verdict": "rebuild",
+      "rating": 33,
+      "ai_rating": 54,
+      "reasons": [
+        "Weak spec colors",
+        "Low effort / lazy"
+      ],
+      "notes": "Spec way too blotchy needs much finer details",
+      "ts": 1781185338179
+    },
+    "spectrum_smectic_fan": {
+      "verdict": "rebuild",
+      "rating": 34,
+      "ai_rating": 72,
+      "reasons": [
+        "Too similar to another",
+        "Too blobby / macro"
+      ],
+      "notes": "Another that's too blotchy and the spec is too big also and these look a lot like many others. Need fresh ideas/looks. These voronoi looks are all over the app now as it is",
+      "ts": 1781185396149
+    },
+    "spectrum_opal_core": {
+      "verdict": "rebuild",
+      "rating": 34,
+      "ai_rating": 64,
+      "reasons": [
+        "Too similar to another",
+        "Too blobby / macro"
+      ],
+      "notes": "",
+      "ts": 1781185417816
+    },
+    "spectrum_prism_pool": {
+      "verdict": "rebuild",
+      "rating": 66,
+      "ai_rating": 58,
+      "reasons": [],
+      "notes": "The spec map needs to be much more detailed/alive",
+      "ts": 1781185455207
+    },
+    "spectrum_jewel_box": {
+      "verdict": "replace",
+      "rating": 27,
+      "ai_rating": 61,
+      "reasons": [],
+      "notes": "NO MORE VORONOI/STAINED GLASS LOOKS",
+      "ts": 1781185475250
+    },
+    "spectrum_moire_silk": {
+      "verdict": "rebuild",
+      "rating": 55,
+      "ai_rating": 69,
+      "reasons": [
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781185492063
+    },
+    "spectrum_aberration_glitch": {
+      "verdict": "replace",
+      "rating": 37,
+      "ai_rating": 63,
+      "reasons": [],
+      "notes": "No more voronoi/stained glass looks!",
+      "ts": 1781185556838
+    },
+    "spectrum_clockwork_dial": {
+      "verdict": "rebuild",
+      "rating": 63,
+      "ai_rating": 74,
+      "reasons": [],
+      "notes": "Very unique idea but the patterns on the paint and spec are way way too big. Need 40x finer detail. ",
+      "ts": 1781185599037
+    },
+    "spectrum_event_horizon": {
+      "verdict": "replace",
+      "rating": 31,
+      "ai_rating": 74,
+      "reasons": [],
+      "notes": "Seeing a lot of these look the same. REDSHIFT DRIFT, MAGNET FLOW, ORBITAL ENGRAVE - they are all way too similar",
+      "ts": 1781185652516
+    },
+    "spectrum_shatter_glass": {
+      "verdict": "replace",
+      "rating": 36,
+      "ai_rating": 71,
+      "reasons": [],
+      "notes": "No more voronoi/shattered glass/stained glass looks for now. Make something TRULY UNIQUE",
+      "ts": 1781185687359
+    },
+    "spectrum_diamond_fire": {
+      "verdict": "rebuild",
+      "rating": 40,
+      "ai_rating": 54,
+      "reasons": [
+        "Too blobby / macro",
+        "Too flat / boring",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781185698956
+    },
+    "spectrum_circuit_awakens": {
+      "verdict": "rebuild",
+      "rating": 40,
+      "ai_rating": 62,
+      "reasons": [
+        "No depth",
+        "Too flat / boring",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781185716628
+    },
+    "spectrum_peacock_eye": {
+      "verdict": "rebuild",
+      "rating": 34,
+      "ai_rating": 68,
+      "reasons": [
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "Need about 75x more peacock eyes and they need to be about 1/3 of the current size",
+      "ts": 1781185777237
+    },
+    "spectrum_vhs_phantom": {
+      "verdict": "rebuild",
+      "rating": 27,
+      "ai_rating": 61,
+      "reasons": [],
+      "notes": "LOVE the idea behind it but the result is not where it should be at all. Too blotchy, too similar to others and most importantly it doesn't LOOK like VHS scanlines. You should research what VHS scanlines actually look like. ",
+      "ts": 1781185854942
+    },
+    "spectrum_flare_spectra": {
+      "verdict": "replace",
+      "rating": 23,
+      "ai_rating": 56,
+      "reasons": [],
+      "notes": "Probably the laziest and weakest output here. Pattern design on paint is very sparse and awful",
+      "ts": 1781185884448
+    },
+    "spectrum_singularity_lens": {
+      "verdict": "rebuild",
+      "rating": 29,
+      "ai_rating": 55,
+      "reasons": [],
+      "notes": "It looks like those weird 5 year old hand drawn stars again. ",
+      "ts": 1781185931113
+    },
+    "spectrum_magnet_flow": {
+      "verdict": "replace",
+      "rating": 35,
+      "ai_rating": 74,
+      "reasons": [],
+      "notes": "Just don't like this overall look/style",
+      "ts": 1781186229099
+    }
+  },
+  "updated": 1781186229
+}

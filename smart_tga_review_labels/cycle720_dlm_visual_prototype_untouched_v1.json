@@ -1,0 +1,50 @@
+{
+  "schema": "smart-tga-reviewed-local-family-candidates-v1",
+  "cycle": 720,
+  "reviewed_at": "2026-07-13",
+  "review_method": "frozen visual-prototype screen followed by visual review of all six sources, route component sheets, and every local candidate crop; the bank and threshold were frozen before these paints were opened",
+  "scope": "six paint-disjoint numbered DLM350/358 untouched prototype-screen paints",
+  "source_copy_ledger": [
+    {"paint":"dirtlatemodel 350/car_num_1006305.tga","visible_number_copies":3,"local_complete_candidates":0,"local_final_correct":0},
+    {"paint":"dirtlatemodel 350/car_num_1007631.tga","visible_number_copies":2,"local_complete_candidates":1,"local_final_correct":0},
+    {"paint":"dirtlatemodel 350/car_num_1008063.tga","visible_number_copies":3,"local_complete_candidates":1,"local_final_correct":1},
+    {"paint":"dirtlatemodel 358/car_num_1003732.tga","visible_number_copies":3,"local_complete_candidates":0,"local_final_correct":0},
+    {"paint":"dirtlatemodel 358/car_num_1006305.tga","visible_number_copies":3,"local_complete_candidates":0,"local_final_correct":0},
+    {"paint":"dirtlatemodel 358/car_num_1008515.tga","visible_number_copies":2,"local_complete_candidates":0,"local_final_correct":0}
+  ],
+  "source_totals": {"visible_number_copies":16,"local_complete_candidates":2,"local_final_correct":1},
+  "candidate_labels": [
+    {"paint":"dirtlatemodel 350/car_num_1006305.tga","family_id":"number-family:59ba946d8633d40d","bbox":[780,769,197,95],"semantic":"Paint/livery","complete_copy":false,"physical_copy":null,"note":"solid blue body panel; clean hard negative"},
+
+    {"paint":"dirtlatemodel 350/car_num_1007631.tga","family_id":"number-family:811c4acf3a274258","bbox":[272,200,144,140],"semantic":"Number","complete_copy":true,"physical_copy":"1007631-upper","note":"complete stylized blue/red 5; visual bank positive but existing local scorer rejected it"},
+
+    {"paint":"dirtlatemodel 350/car_num_1008063.tga","family_id":"number-family:5b159b627f63ca77","bbox":[270,915,38,31],"semantic":"Sponsor","complete_copy":false,"physical_copy":null,"note":"small green grenade/wordmark logo"},
+    {"paint":"dirtlatemodel 350/car_num_1008063.tga","family_id":"number-family:998a53f11b5ebc4f","bbox":[299,919,21,25],"semantic":"Sponsor","complete_copy":false,"physical_copy":null,"note":"adjacent small logo/wordmark fragment"},
+    {"paint":"dirtlatemodel 350/car_num_1008063.tga","family_id":"number-family:a81f9b93a0e13847","bbox":[893,875,74,103],"semantic":"Number","complete_copy":true,"physical_copy":"1008063-roof","note":"complete green 64; sole current and final shadow accept"},
+
+    {"paint":"dirtlatemodel 358/car_num_1003732.tga","family_id":"number-family:52ef4cc8fe0992a0","bbox":[784,820,36,84],"semantic":"Number","complete_copy":false,"physical_copy":"1003732-roof","note":"large 812 digit fragment; visual bank positive but existing local scorer rejected it"},
+    {"paint":"dirtlatemodel 358/car_num_1003732.tga","family_id":"number-family:ea49bbd56c730e4d","bbox":[280,920,20,20],"semantic":"Number","complete_copy":false,"physical_copy":"1003732-rear","note":"tiny 812 fragment"},
+
+    {"paint":"dirtlatemodel 358/car_num_1006305.tga","family_id":"number-family:59ba946d8633d40d","bbox":[780,769,197,95],"semantic":"Paint/livery","complete_copy":false,"physical_copy":null,"note":"solid blue body panel; duplicate artwork in a separate DLM family is retained as a paint-disjoint control"},
+
+    {"paint":"dirtlatemodel 358/car_num_1008515.tga","family_id":"number-family:1000c321ce053eb8","bbox":[283,336,25,4],"semantic":"Paint/livery","complete_copy":false,"physical_copy":null,"note":"thin yellow livery stripe"},
+    {"paint":"dirtlatemodel 358/car_num_1008515.tga","family_id":"number-family:2b99e9fc83142301","bbox":[880,838,54,98],"semantic":"Sponsor","complete_copy":false,"physical_copy":null,"note":"round Om sponsor logo; visual bank false positive outside the existing gate"},
+    {"paint":"dirtlatemodel 358/car_num_1008515.tga","family_id":"number-family:2f43ee503e1e5a7f","bbox":[880,836,12,2],"semantic":"Paint/livery","complete_copy":false,"physical_copy":null,"note":"two-pixel livery edge"},
+    {"paint":"dirtlatemodel 358/car_num_1008515.tga","family_id":"number-family:9643b719259fd13d","bbox":[234,714,334,115],"semantic":"uncertain","complete_copy":false,"physical_copy":"1008515-lower","note":"18 plus multiple sponsor logos in one mixed panel; visual bank false positive outside the existing gate"},
+    {"paint":"dirtlatemodel 358/car_num_1008515.tga","family_id":"number-family:a75effc852cce8c0","bbox":[304,240,228,107],"semantic":"uncertain","complete_copy":false,"physical_copy":"1008515-upper","note":"18 plus skull and sponsor graphics in one mixed panel; visual bank false positive outside the existing gate"},
+    {"paint":"dirtlatemodel 358/car_num_1008515.tga","family_id":"number-family:f4fc230b58170a38","bbox":[900,816,64,120],"semantic":"Sponsor","complete_copy":false,"physical_copy":null,"note":"round Om sponsor-logo family"}
+  ],
+  "candidate_totals": {"all":14,"Number":4,"Sponsor":4,"Template/hardware":0,"Paint/livery":4,"uncertain":2},
+  "hard_negative_controls": [
+    "350-1006305:59ba946d8633d40d",
+    "350-1008063:5b159b627f63ca77",
+    "350-1008063:998a53f11b5ebc4f",
+    "358-1006305:59ba946d8633d40d",
+    "358-1008515:1000c321ce053eb8",
+    "358-1008515:2b99e9fc83142301",
+    "358-1008515:2f43ee503e1e5a7f",
+    "358-1008515:9643b719259fd13d",
+    "358-1008515:a75effc852cce8c0",
+    "358-1008515:f4fc230b58170a38"
+  ]
+}

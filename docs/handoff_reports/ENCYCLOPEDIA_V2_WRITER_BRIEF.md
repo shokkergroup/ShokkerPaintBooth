@@ -1,0 +1,15 @@
+# Encyclopedia v2 — shared writer brief (orchestrator, 2026-10-04)
+
+Owner: "The Offline Encyclopedia needs to FEEL like an Encyclopedia ... understand everything about SPB. Bases, sliders, specs, patterns, zones, layers, etc. EVERYTHING." Plus: a standalone SPB Encyclopedia opened from the TOP bar, thorough ("anything people could possibly want to know about the program, how it works, how specs work"), with graphics; it may borrow user-relevant knowledge from the Living Wiki (SPB_WIKI.html).
+
+Plan + lane split + article tree + schema: `docs/handoff_reports/ENCYCLOPEDIA_V2_PLAN.md` (read §2 your Parts, §3, §4 schema, §5 if lane D). Inventory with `file:line` per fact: `scripts/ai_atlas/enc_inventory.json` (filter by your domains with a script; never load it whole into context).
+
+## Rules for every lane
+1. **Facts come from code / data / wiki, never memory.** Every article has `sources[]` ("file:line" or "SPB_WIKI.html#section"); every number (range, default, channel value) is copied from the source. If code and wiki disagree, code wins — note it in your report.
+2. **Write for a buyer**, plain words, short sentences, no dev jargon or internal paths in user text. An article: `summary` (1–2 sentences), `what`, `when[]`, `how[]` (numbered steps naming the real buttons), `controls[]` {label, range, default, effect}, `tips[]`, `pitfalls[]`, `related[]` (ids), `actions[]` (real finish ids / flow names / UI control ids — verify they exist), `figures[]` (lane D figure ids from plan §5, may not exist yet), `quick` (true if it is an AI-panel quick card), `aliases[]` (what a buyer would type, incl. typos/plurals).
+3. **Incremental, append-safe:** write each article to your domain file `data/encyclopedia/<domain>.json` right after authoring it (load → add → atomic write via temp + os.replace), resume by skipping ids already there. Never hold all articles until the end.
+4. **Generated pages via a script** (AI-as-compiler): per-item pages (finishes/patterns/controls/cars) are produced by a generator from data, not typed through context. Generator under `scripts/ai_atlas/enc_gen_<lane>.py`.
+5. **Your files only** — `data/encyclopedia/<your domains>.json`, your generator, your report. Do not edit any js/html/py app file, do not touch `js/spb-encyclopedia-data.js` (index merge happens once at the end), no server restarts, never port 59876.
+6. **Gate:** `node _easy_claude_work/enc_v2_test.js` (lane A builds it first; until it exists run your own schema check). Must pass for your files: schema, sources resolve (file exists and line in range), action/related ids exist, no duplicate ids/aliases across lanes, readability (no internal paths in user text).
+7. **Report** `docs/handoff_reports/ENC_LANE_<X>.md`, updated after every Part: articles written/planned, generated page counts, gate line, facts where code ≠ wiki, gaps. `## FINAL` at the end; final message to the orchestrator ≤10 lines.
+8. Token discipline (CLAUDE.md): read surgically (grep + offset/limit), filter output, Write tool for scripts (no heredocs), one verdict line per check.

@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_flannel_forest",
+  "display_name": "Flannel: Flannel Forest",
+  "promise": "Forest-green and black brushed flannel windowpane plaid, distinct from red buffalo check",
+  "carrier_grammar": "Forest-green and black brushed flannel windowpane plaid, distinct from red buffalo check; single full-canvas image, no duplicated quadrants. Fine features: green warp yarn, black windowpane weft, cream pinstripe yarn, raised twill crossings, brushed cotton fuzz, recessed nap gaps",
+  "spec_grammar": "Feature-specific selectors partition green warp yarn, black windowpane weft, cream pinstripe yarn, raised twill crossings, brushed cotton fuzz, recessed nap gaps. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "green warp yarn",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "black windowpane weft",
+      "role": "Material feature selected from artwork by g:<:0.37"
+    },
+    {
+      "name": "cream pinstripe yarn",
+      "role": "Material feature selected from artwork by g:>:0.70&s:<:0.42"
+    },
+    {
+      "name": "raised twill crossings",
+      "role": "Material feature selected from artwork by detail:>:0.64&edge:>:0.35"
+    },
+    {
+      "name": "brushed cotton fuzz",
+      "role": "Material feature selected from artwork by fine:>:0.65"
+    },
+    {
+      "name": "recessed nap gaps",
+      "role": "Material feature selected from artwork by detail:<:0.22"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "green warp yarn",
+      "black windowpane weft",
+      "cream pinstripe yarn",
+      "raised twill crossings",
+      "brushed cotton fuzz",
+      "recessed nap gaps"
+    ],
+    "R": [
+      "green warp yarn",
+      "black windowpane weft",
+      "cream pinstripe yarn",
+      "raised twill crossings",
+      "brushed cotton fuzz",
+      "recessed nap gaps"
+    ],
+    "Cc": [
+      "green warp yarn",
+      "black windowpane weft",
+      "cream pinstripe yarn",
+      "raised twill crossings",
+      "brushed cotton fuzz",
+      "recessed nap gaps"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "green warp yarn",
+      "range": [
+        [
+          0,
+          140,
+          185
+        ],
+        [
+          8,
+          205,
+          235
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "black windowpane weft",
+      "range": [
+        [
+          0,
+          185,
+          205
+        ],
+        [
+          5,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cream pinstripe yarn",
+      "range": [
+        [
+          0,
+          130,
+          165
+        ],
+        [
+          12,
+          215,
+          245
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "raised twill crossings",
+      "range": [
+        [
+          0,
+          110,
+          145
+        ],
+        [
+          10,
+          190,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "brushed cotton fuzz",
+      "range": [
+        [
+          0,
+          185,
+          210
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "recessed nap gaps",
+      "range": [
+        [
+          0,
+          210,
+          225
+        ],
+        [
+          4,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_band_tee_crack",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_basement_amp",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "green warp yarn",
+      "black windowpane weft",
+      "cream pinstripe yarn",
+      "raised twill crossings",
+      "brushed cotton fuzz",
+      "recessed nap gaps"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_flannel_forest / Forest-green and black brushed flannel windowpane plaid, distinct from red buffalo check",
+  "spec_key": "at_flannel_forest / green warp yarn all; black windowpane weft g:<:0.37; cream pinstripe yarn g:>:0.70&s:<:0.42; raised twill crossings detail:>:0.64&edge:>:0.35; brushed cotton fuzz fine:>:0.65; recessed nap gaps detail:<:0.22",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_skatepark_concrete",
+  "display_name": "Extreme: Skate Deck Shred",
+  "promise": "Vibrant scraped skate-deck graphic layers, many tiny multicolor ink shards exposing pale plywood",
+  "carrier_grammar": "Vibrant scraped skate-deck graphic layers, many tiny multicolor ink shards exposing pale plywood; single full-canvas image, no duplicated quadrants. Fine features: scraped deck graphic, exposed pale plywood, magenta lacquer chips, cyan ink remnants, dark scrape trenches, ragged ply splinters",
+  "spec_grammar": "Feature-specific selectors partition scraped deck graphic, exposed pale plywood, magenta lacquer chips, cyan ink remnants, dark scrape trenches, ragged ply splinters. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "scraped deck graphic",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "exposed pale plywood",
+      "role": "Material feature selected from artwork by s:<:0.27&g:>:0.52"
+    },
+    {
+      "name": "magenta lacquer chips",
+      "role": "Material feature selected from artwork by h:>:280&s:>:0.35"
+    },
+    {
+      "name": "cyan ink remnants",
+      "role": "Material feature selected from artwork by h:>:165&h:<:220&s:>:0.4"
+    },
+    {
+      "name": "dark scrape trenches",
+      "role": "Material feature selected from artwork by g:<:0.19"
+    },
+    {
+      "name": "ragged ply splinters",
+      "role": "Material feature selected from artwork by edge:>:0.76"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "scraped deck graphic",
+      "exposed pale plywood",
+      "magenta lacquer chips",
+      "cyan ink remnants",
+      "dark scrape trenches",
+      "ragged ply splinters"
+    ],
+    "R": [
+      "scraped deck graphic",
+      "exposed pale plywood",
+      "magenta lacquer chips",
+      "cyan ink remnants",
+      "dark scrape trenches",
+      "ragged ply splinters"
+    ],
+    "Cc": [
+      "scraped deck graphic",
+      "exposed pale plywood",
+      "magenta lacquer chips",
+      "cyan ink remnants",
+      "dark scrape trenches",
+      "ragged ply splinters"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "scraped deck graphic",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "exposed pale plywood",
+      "range": [
+        [
+          0,
+          115,
+          140
+        ],
+        [
+          18,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "magenta lacquer chips",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cyan ink remnants",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dark scrape trenches",
+      "range": [
+        [
+          10,
+          145,
+          160
+        ],
+        [
+          90,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "ragged ply splinters",
+      "range": [
+        [
+          0,
+          155,
+          170
+        ],
+        [
+          10,
+          245,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_anodised_peg",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_bmx_dirt",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "scraped deck graphic",
+      "exposed pale plywood",
+      "magenta lacquer chips",
+      "cyan ink remnants",
+      "dark scrape trenches",
+      "ragged ply splinters"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_skatepark_concrete / Vibrant scraped skate-deck graphic layers, many tiny multicolor ink shards exposing pale plywood",
+  "spec_key": "at_skatepark_concrete / scraped deck graphic all; exposed pale plywood s:<:0.27&g:>:0.52; magenta lacquer chips h:>:280&s:>:0.35; cyan ink remnants h:>:165&h:<:220&s:>:0.4; dark scrape trenches g:<:0.19; ragged ply splinters edge:>:0.76",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

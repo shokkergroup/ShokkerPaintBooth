@@ -1,0 +1,87 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon_pink_blaze",
+  "display_name": "Pink Quench",
+  "carrier": "black ceramic coating loaded with thermally quenched ruby fluorescent glass splinters",
+  "material_story": {
+    "M": "conductive ceramic exposure, cyan stress pinpoints, oxide crumbs, and broken substrate lead while glass stays low",
+    "R": "broken ends, short checks, oxide crumbs, quenched pits, and cooling shadows rise independently",
+    "Cc": "intact magenta glass, pale temper lips, and quenched beads retain clear; breaks, checks, and pits interrupt it"
+  },
+  "vetoes": [
+    "flame, ribbon, tiger stripe, or long crack",
+    "heart, flower, petal, or radial stamp",
+    "floating confetti or generic flake recolor",
+    "Blue Breakdown, Redline Shear, or Emberwake recolor",
+    "generic noise or unrelated texture underlay"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 2.032133,
+  "material_stats": {
+    "std": {
+      "M": 82.78994,
+      "R": 81.487122,
+      "Cc": 83.260696
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.324976,
+      "M_Cc": -0.218501,
+      "R_Cc": -0.217276
+    }
+  },
+  "geometry_stats": {
+    "family_count": 10,
+    "families": {
+      "black ceramic shock facets": 5041,
+      "broken glass ends": 630,
+      "cyan stress pinpoints": 480,
+      "dark quenched pits": 575,
+      "magenta glass splinters": 3834,
+      "oxide crumbs": 811,
+      "pale temper lips": 1934,
+      "quenched glass beads": 492,
+      "short branching checks": 1046,
+      "violet cooling shadows": 2021
+    },
+    "width_native_min": 8.019,
+    "width_native_median": 16.889,
+    "width_native_p90": 26.611,
+    "width_native_max": 31.499,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "black ceramic shock facets": 0.282085,
+    "magenta glass splinters": 0.182626,
+    "pale temper lips": 0.075921,
+    "violet cooling shadows": 0.065861,
+    "cyan stress pinpoints": 0.007625,
+    "broken glass ends": 0.01732,
+    "short branching checks": 0.028885,
+    "quenched glass beads": 0.008656,
+    "oxide crumbs": 0.011912,
+    "dark quenched pits": 0.01106
+  }
+}

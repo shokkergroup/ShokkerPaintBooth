@@ -1,0 +1,310 @@
+[
+ {
+  "id": "fable_ember_glass",
+  "name": "Ember Glass",
+  "desc": "Molten candy glass crushed to flake scale: thousands of hairline fissures pool deep crimson-black in a blood-orange coat while a blizzard of white-hot micro-cinders drifts across the surface. Reads as living ember crust from track distance and pure fire up close.",
+  "kind": "finish",
+  "technique": "3200-site noise-warped micro-Voronoi hairline gap web drives Beer-Lambert candy pooling; 2400 windowed micro-cinder sparks; spec M=own glint scatter+cinder flash, R=own 4-axis micro brush, Cc=fissure glow web",
+  "mip": 0.59,
+  "ai_rating": 63,
+  "render_s": 2.54,
+  "fineness": {
+   "char_px": 11.86,
+   "blob_fraction": 0.15,
+   "fine_fraction": 0.491
+  }
+ },
+ {
+  "id": "fable_glacier_core",
+  "name": "Glacier Core",
+  "desc": "Shattered-frost candy: thousands of tiny ice splinters, each tipped to catch its own light, etch bright arctic-cyan scratches into a deep sapphire coat dusted with frost sparkle. Raking sun flashes a second hidden layer of splinters awake.",
+  "kind": "finish",
+  "technique": "3400 windowed anisotropic needle stamps (per-needle angle + signed facet tilt) thin the candy coat; spec M=own 1500-needle flash set+glitter, R=5-axis frost-feather micro grain, Cc=own soft frost-filament glow set",
+  "mip": 0.52,
+  "ai_rating": 54,
+  "render_s": 1.94,
+  "fineness": {
+   "char_px": 11.82,
+   "blob_fraction": 0.152,
+   "fine_fraction": 0.494
+  }
+ },
+ {
+  "id": "fable_abyss_lantern",
+  "name": "Abyss Lantern",
+  "desc": "A near-black deep-sea candy where hundreds of tiny lantern points glow teal-green through the murk, each ringed by a hair-fine membrane, threaded together by plankton-fine bioluminescent webs that only ignite under raking light.",
+  "kind": "finish",
+  "technique": "1150 micro lantern points (windowed gaussian+micro ring) thin a deep teal Beer-Lambert coat; level-set noise filament glow web; spec M=own plankton glints, R=own silt micro grain, Cc=lantern+ring+web choreography",
+  "mip": 0.44,
+  "ai_rating": 59,
+  "render_s": 2.02,
+  "fineness": {
+   "char_px": 10.95,
+   "blob_fraction": 0.145,
+   "fine_fraction": 0.556
+  }
+ },
+ {
+  "id": "fable_stained_aurora",
+  "name": "Gemcrush Aurora",
+  "desc": "Crushed cathedral glass at micro-mosaic scale: thousands of angular jewel chips - ruby, amber, emerald, sapphire, violet - leaded with hairline grout where the candy pools dark, dusted with dichroic teal/magenta glitter and drifting under a slow aurora. A third of the chips are mirror-polished and flip the mosaic's color when the light rakes.",
+  "kind": "finish",
+  "technique": "8500-chip rotated-Chebyshev micro-Voronoi (per-chip rotation, facet axis, jewel hue, candy depth, mirror flag); spec M=mirror-chip flip lattice+star glints, R=own hammered micro grain, Cc=own 850 micro-glow points+aurora pool",
+  "mip": 0.48,
+  "ai_rating": 65,
+  "render_s": 1.98,
+  "fineness": {
+   "char_px": 11.16,
+   "blob_fraction": 0.143,
+   "fine_fraction": 0.54
+  }
+ },
+ {
+  "id": "fable_prism_veil",
+  "name": "Prism Veil",
+  "desc": "Luminous prismatic silk: a multi-angle thickness drape walks the body from deep garnet through magenta-rose and violet-orchid up to pale aqua-opal, threaded everywhere with hair-fine wavy silk fibres. Faint near-black violet hairlines snake through the bright silk in winding corridors \u2014 and when the sun lines up they detonate white-hot (M~250) against the calm satin.",
+  "kind": "finish",
+  "technique": "5 random-axis wavy micro-thread families (3-5px period, ~1px crests) weighted by quantized thin-film orders; spec M=own thread set+order-edge flare lines, R=own satin micro field, Cc=own slow pool+soft thread glow",
+  "mip": 0.55,
+  "ai_rating": 70,
+  "render_s": 1.28,
+  "fineness": {
+   "char_px": 11.45,
+   "blob_fraction": 0.16,
+   "fine_fraction": 0.589
+  },
+  "ignition": "Ghost filaments hide as near-black hairlines in the bright orchid silk (same generator, same seed); M slams to ~250 on those exact pixels (~11% hot) while the surrounding silk idles at M~90 with rough drape-order seams (R) and wandering sheen pools (Cc) staying calm."
+ },
+ {
+  "id": "fable_oilforge",
+  "name": "Oilforge",
+  "desc": "Forged gunmetal laced with hundreds of micro oil-film rings in two castes from one generator: live rings bloom committed copper-gold-teal-indigo film orders while quench pools sit as near-black glass \u2014 until the sun lines up and those exact black pools detonate as mirror plateaus with ring crests near 252, each wearing an ember clearcoat corona.",
+  "kind": "finish",
+  "technique": "560 windowed micro epicenters (max-combined exp falloff) quantized to 7.5 Newton orders; territory-snapped 3-angle micro scratch grain; spec M=ring crests, R=own multi-angle brush grain, Cc=half-own-epicenter heat glow",
+  "mip": 0.61,
+  "ai_rating": 53,
+  "render_s": 1.9,
+  "fineness": {
+   "char_px": 11.97,
+   "blob_fraction": 0.145,
+   "fine_fraction": 0.459
+  },
+  "ignition": "Quench oil pools hide near-black in the paint, detonate as M~205-252 mirror rings on those same pixels, while the brushed-steel floor and live colour rings stay calm (M floor ~18-30)."
+ },
+ {
+  "id": "fable_tempered_dawn",
+  "name": "Tempered Dawn",
+  "desc": "Over a thousand thread-fine weld arcs lace raw brushed titanium, each wrapped in real quantized temper color \u2014 silver bead, bronze-crimson heart, golden straw halo. Up close it reads like a welder's sketchbook; at speed it glitters like warm metal at dawn.",
+  "kind": "finish",
+  "technique": "1400 random-walk micro weld arcs (cv2 polylines + distance transform) with interference_palette temper orders pushed outside the silver bead; 3-axis micro titanium crosshatch; Cc rides a SECOND 320-arc ember set; satin corridors break R; local-mean equalizer keeps macro a low-contrast carrier.",
+  "mip": 0.44,
+  "ai_rating": 61,
+  "render_s": 1.63,
+  "fineness": {
+   "char_px": 10.29,
+   "blob_fraction": 0.135,
+   "fine_fraction": 0.573
+  }
+ },
+ {
+  "id": "fable_pulse_alloy",
+  "name": "Pulse Alloy",
+  "desc": "Hundreds of micro pulse-cores ripple concentric rings just a few pixels apart, every ring order snapping to a contrasting hue of the teal-violet-magenta-amber palette. The highlight rides its own hidden ring lattice, so the colors walk across the car as it turns.",
+  "kind": "finish",
+  "technique": "620 nearest-center pulse-ring cores via cKDTree with integer ring order striding a quantized OKLCH LUT (ring spacing 2.3-4.2px work); R = its OWN 380-center ring lattice (hue-travel corridors); Cc = 380 shimmer ponds + pins on a third center set.",
+  "mip": 0.53,
+  "ai_rating": 51,
+  "render_s": 1.61,
+  "fineness": {
+   "char_px": 10.94,
+   "blob_fraction": 0.135,
+   "fine_fraction": 0.573
+  }
+ },
+ {
+  "id": "fable_velvet_eclipse",
+  "name": "Velvet Eclipse",
+  "desc": "Deep indigo velvet shot through with a molten-gold micro lattice \u2014 head-on it reads midnight, raking sun sets the gold pools on fire while eclipse coronas glow in the clearcoat.",
+  "kind": "finish",
+  "technique": "Pool-thresholded micro flip lattice (gold density breathes through mid/macro molten pools) + Beer-Lambert amber candy over OKLab gold metal + scattered corona ring/umbra system in Cc.",
+  "mip": 0.61,
+  "ai_rating": 71,
+  "render_s": 1.47,
+  "fineness": {
+   "char_px": 16.6,
+   "blob_fraction": 0.249,
+   "fine_fraction": 0.472
+  }
+ },
+ {
+  "id": "fable_wovenlight",
+  "name": "Wovenlight",
+  "desc": "An over/under ribbon weave of emerald satin and royal-violet mirror that flips color as the car turns \u2014 dive shadows give the basket real depth and light pools diagonally across the weave.",
+  "kind": "finish",
+  "technique": "Dual random-axis domain-warped basket weave with floor-parity over/under logic, OKLab satin ribbon ramps, thread striations per axis, sharp groove seams, and a third-angle warped sheen-pool field for the clearcoat.",
+  "mip": 0.77,
+  "ai_rating": 57,
+  "render_s": 1.31,
+  "fineness": {
+   "char_px": 21.1,
+   "blob_fraction": 0.374,
+   "fine_fraction": 0.187
+  }
+ },
+ {
+  "id": "fable_sovereign_flip",
+  "name": "Sovereign Flip",
+  "desc": "Twenty thousand flake-scale territories interleave matte oxblood, champagne mirror and emerald glass candy \u2014 near-uniform head-on, until the sun picks a phase and the whole car flips. Cloisonne ink seams trace every micro-cell like stained glass.",
+  "kind": "finish",
+  "technique": "tri_partition 20000-cell 3-coloring (computed at half grid for perf, ~18px cells at 2048); gray-equalized 3-phase materials so the flip lives in M/R/Cc (champagne mirror mask, independent 3-band grain, emerald candy + relief + seam varnish); local-mean equalizer flattens same-color cluster blobs.",
+  "mip": 0.69,
+  "ai_rating": 58,
+  "render_s": 1.49,
+  "fineness": {
+   "char_px": 11.37,
+   "blob_fraction": 0.122,
+   "fine_fraction": 0.42
+  }
+ },
+ {
+  "id": "fable_static_bloom",
+  "name": "Static Bloom",
+  "desc": "A crushed-fine archipelago of cobalt-static, magenta-filament and amber-ember micro territories under a global layer of signal static \u2014 bright cyan live pins beside near-black dead dropouts, white-hot filament cores, glowing ember halos. When the sun lines up, every dead pixel and filament core detonates into a mirror starfield while glassy ember pools and wet seam-lanes hold the calm.",
+  "kind": "finish",
+  "technique": "argmax-of-3-blurred-noise micro territories (~12-16px at 2048, NOT a Voronoi); per-territory motifs at 2-6px canvas grain (1px dot static / 2.5-4px 3-axis filaments / 2200 micro embers); each spec channel reads exactly one territory's motif; island luminance tiers carry the mip read.",
+  "mip": 0.54,
+  "ai_rating": 65,
+  "render_s": 1.74,
+  "fineness": {
+   "char_px": 11.06,
+   "blob_fraction": 0.134,
+   "fine_fraction": 0.519
+  },
+  "ignition": "Near-black dead-pixel dropouts (global) and white-hot magenta filament cores hide in the paint, then detonate together in M at ~235-250; live cyan pins only gleam, ember glass (Cc) and territory seam gloss lanes (R) stay calm."
+ },
+ {
+  "id": "fable_aurora_travel",
+  "name": "Aurora Travel",
+  "desc": "Half-width aurora curtains carry the teal-to-violet-to-magenta ramp under thousands of flake-fine ray striations, while glossy corridors cut across the bands so the live highlight migrates through the palette. Shimmer ponds soak the clearcoat in their own quiet glow.",
+  "kind": "finish",
+  "technique": "4-axis warped sine curtains (lam 14-26, half round-1 width) + 3-axis gated ray striations (2.4-3.4px work) + sharpened edge filaments; R = 5 jittered crossing corridor axes (hue-travel); Cc = 280 micro ponds + drift; gray-balanced OKLCH stops + pond-only albedo darkening + local-mean equalizer.",
+  "mip": 0.55,
+  "ai_rating": 50,
+  "render_s": 2.05,
+  "fineness": {
+   "char_px": 10.93,
+   "blob_fraction": 0.132,
+   "fine_fraction": 0.512
+  }
+ },
+ {
+  "id": "fable_saffron_circuit",
+  "name": "Saffron Circuit",
+  "desc": "Etched saffron circuit board re-imagined as a live power grid: a flat-light saffron-to-rose-to-ember body carved by scattered service traces, with heavier scarlet power rails snaking through at every angle and amber solder pads dotting the lattice. The exact red rail pixels are wired to M~252, so the hot lines that you see in the paint are the hot spots that erupt in the sun.",
+  "kind": "finish",
+  "technique": "cv2-scattered multi-angle trace/elbow etch relief; flat-lightness OKLCH ramp keyed to isotropic trace density; Beer-Lambert candy pooling in the grooves; inverse-depth roughness so the etch runs glossy.",
+  "mip": 0.69,
+  "ai_rating": 64,
+  "render_s": 1.68,
+  "fineness": {
+   "char_px": 15.6,
+   "blob_fraction": 0.22,
+   "fine_fraction": 0.405
+  },
+  "ignition": "Scarlet power rails (the visible hot red lines) detonate M~252 on their exact paint pixels (~6-9% hot area); the engraved saffron service traces, glossy grooves and satin flanks stay calm; vias and a third-angle sheen pool carry Cc elsewhere."
+ },
+ {
+  "id": "fable_quicksilver_garden",
+  "name": "Quicksilver Garden",
+  "desc": "A liquid-chrome micro-garden: 5,200 pastel candy cells with silk striation lanes, every cell outlined in a white-silver web, and roughly one cell in six replaced by a near-black mercury pond. When the sun lines up, the ponds detonate into white liquid mirror while the silver web flashes wet and the pastel garden stays calm satin.",
+  "kind": "finish",
+  "technique": "3200-site domain-warped Voronoi micro-mosaic; per-cell oriented pastel mini-ramps + striation bands driving candy depth; spec: M=hot rim web (keeper idea), R=per-cell gloss mosaic, Cc=per-cell core pooling.",
+  "mip": 0.64,
+  "ai_rating": 76,
+  "render_s": 1.81,
+  "fineness": {
+   "char_px": 14.33,
+   "blob_fraction": 0.202,
+   "fine_fraction": 0.43
+  },
+  "ignition": "Mercury-pond cells hide near-black in the paint and detonate at M~250 on those exact pixels; the painted silver rim web carries the wet Cc flash; the pastel garden and its silk R striation lanes stay calm."
+ },
+ {
+  "id": "fable_emberline_drift",
+  "name": "Emberline Drift",
+  "desc": "Wind-crushed ember dunes: five interfering ridge fields fold into a knife-edge micro lattice, gold crests over crimson hollows with live ember sparks crackling in between. Glossy lane threads cross the drift on their own angles.",
+  "kind": "finish",
+  "technique": "5-axis folded |sin| interference micro-dune lattice + valley ember micro-sparks; spec: M=crest caps, R=own-axis glossy micro lanes, Cc=ember-glow pools from the sparks' own halo field.",
+  "mip": 0.32,
+  "ai_rating": 54,
+  "render_s": 1.86,
+  "fineness": {
+   "char_px": 5.63,
+   "blob_fraction": 0.053,
+   "fine_fraction": 0.808
+  }
+ },
+ {
+  "id": "fable_duomorph",
+  "name": "Duomorph",
+  "desc": "Two hidden artworks on one car: orbital glyph rosettes flare in the metallic under direct sun, while sweeping ribbon arcs glow out of the clearcoat at glancing angles \u2014 the deep graphite paint only whispers both until the light picks a side.",
+  "kind": "finish",
+  "technique": "Dual-motif angle choreography: scattered ring+orbit-dot rosette glyphs (random centers/rotations, crisp 2-3 px ring lines) ride ONLY the M channel; long counter-flowing circle-arc ribbons from their own off-canvas centers ride ONLY Cc; R is an independent neutral grain+macro story. OKLCH graphite ramp base with both motifs added at 0.17 whisper weight.",
+  "mip": 0.64,
+  "ai_rating": 47,
+  "render_s": 2.52,
+  "fineness": {
+   "char_px": 11.7,
+   "blob_fraction": 0.143,
+   "fine_fraction": 0.495
+  }
+ },
+ {
+  "id": "fable_nightbloom",
+  "name": "Nightbloom",
+  "desc": "A midnight garden: ink-plum petal rosettes scattered at random rotations sleep almost invisibly on an indigo dusk floor, gold pollen embers glowing at their hearts between thin jade moon-vines and faint perfume rings. Walk the sun across the car and the dark petals detonate into silver bloom fans.",
+  "kind": "finish",
+  "technique": "Radial-from-scattered-centers dusk carrier drives a 3-stop indigo\u2192violet\u2192plum OKLCH ramp (flatten_lightness=0.45 keeps it rich end to end). Petal-fan blooms (petal comb x annular body x fine radial ribs + hot pistil core) live almost entirely in Cc with an 0.11 paint hint; M carries 430 scattered pollen micro-stars; R rides its own dusk haze + grain.",
+  "mip": 0.7,
+  "ai_rating": 52,
+  "render_s": 1.9,
+  "fineness": {
+   "char_px": 15.19,
+   "blob_fraction": 0.206,
+   "fine_fraction": 0.398
+  },
+  "ignition": "Ink-plum petal fans hide dark in the paint and detonate at M~250 on those exact pixels; gold pollen embers carry the Cc wet glaze; dusk floor, jade vines and perfume rings stay calm (hot M 6.6%, max |corr| 0.21, spec 0.99s / paint 1.60s at 2048)."
+ },
+ {
+  "id": "fable_magnetite_flow",
+  "name": "Magnetite Flow",
+  "desc": "Iron-filing filaments combed along the field lines of 18 scattered magnetic poles: bright blued-steel filings over a blue-black ground on the south territories, near-black magnetite on the north -- until the sun lines up and the hidden north filings detonate as molten mirror threads on those exact pixels.",
+  "kind": "finish",
+  "technique": "Domain-owned (Voronoi) 3-wave hex interference spike fur + per-domain flow-aligned scanline streak + droplet condensation field; steel-blue Beer-Lambert pooling; loud M/R/Cc hue separation.",
+  "mip": 0.66,
+  "ai_rating": 64,
+  "render_s": 1.54,
+  "fineness": {
+   "char_px": 16.19,
+   "blob_fraction": 0.229,
+   "fine_fraction": 0.469
+  },
+  "ignition": "North-territory filament crests hide near-black in the paint and detonate at M~250 as mirror threads when the sun aligns; the steel south filings, wall corridors (R) and pole gloss wells (Cc) stay calm."
+ },
+ {
+  "id": "fable_comet_parade",
+  "name": "Comet Parade",
+  "desc": "A scattered parade of gilded comets \u2014 amber tails running to white-gold heads, each towing a thin teal bow-shock crescent \u2014 drifts at every angle across a calm deep indigo-violet nebula. Hidden among them rides a second, ghost parade of near-invisible violet-dark mirror streaks that stay quiet until the sun lines up, then detonate as chrome comets between the gold ones.",
+  "kind": "finish",
+  "technique": "Three INDEPENDENT comet populations, one per spec channel, zero shared centers: M = 64 bright heads + short decaying tails; R = 34 long soft wake streaks with SIGNED amplitude (gloss lanes both lighter and darker than neutral); Cc = 44 bow-shock double-arc crescents. Paint = 3-stop violet\u2192indigo\u2192teal OKLCH nebula ramp (flatten_lightness=0.5) with all three populations tinted in subtly + micro starfield grain.",
+  "mip": 0.73,
+  "ai_rating": 50,
+  "render_s": 1.67,
+  "fineness": {
+   "char_px": 19.29,
+   "blob_fraction": 0.303,
+   "fine_fraction": 0.327
+  },
+  "ignition": "Ghost-comet capsules hide violet-dark in the nebula but carry M~240 on those exact pixels (5.6% hot) and detonate as a mirror parade when the sun lines up; the gilded comets' rough teal wakes (R) and wet bow-shock crescents (Cc) trace the visible paint while the nebula floor stays calm."
+ }
+]

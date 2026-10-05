@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "paint_label": "superlatemodel/car_num_975933.tga",
+  "inspection_records": "_smart_tga_runs/cycle145_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle145_route_pressure_v1/superlatemodel_car_num_975933/component_records.json",
+  "review_scope": "Cycle 145 review of fresh accepted Sponsor-routed number candidates on super late model 975933: keep the true 151 side number and reject small contingency/logo/panel confusers.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 17,
+      "expected_bbox": [468, 259, 78, 110],
+      "target_layer": "numbers",
+      "label": "true_number_151_body",
+      "note": "True side-number 151 body routed to Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 20,
+      "expected_bbox": [337, 347, 33, 33],
+      "target_layer": "sponsors",
+      "label": "small_round_contingency_logo_false_number",
+      "note": "Small round/O contingency logo; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 26,
+      "expected_bbox": [41, 527, 33, 24],
+      "target_layer": "sponsors",
+      "label": "tiny_diagonal_logo_mark_false_number",
+      "note": "Tiny diagonal logo/mark; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 36,
+      "expected_bbox": [842, 623, 83, 60],
+      "target_layer": "sponsors",
+      "label": "gray_livery_logo_panel_false_number",
+      "note": "Gray sponsor/livery logo panel; should stay Sponsors rather than Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 39,
+      "expected_bbox": [942, 642, 27, 28],
+      "target_layer": "sponsors",
+      "label": "small_round_contingency_logo_false_number",
+      "note": "Small round/O contingency logo; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 51,
+      "expected_bbox": [116, 864, 36, 36],
+      "target_layer": "sponsors",
+      "label": "small_round_contingency_logo_false_number",
+      "note": "Small round/O contingency logo; should stay Sponsors."
+    }
+  ]
+}

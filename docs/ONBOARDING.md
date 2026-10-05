@@ -1,5 +1,10 @@
 # Shokker Paint Booth — Contributor Onboarding
 
+> **Start at [`SPB_WIKI.html`](../SPB_WIKI.html) — the living source of truth**
+> (overview, architecture, the 4 sideload apps, conventions, agent board, trouble
+> log, daily log). Open it in any browser. This onboarding doc covers clone &
+> setup; when it disagrees with the Wiki, the Wiki wins.
+
 Welcome. This document gets a new contributor from a fresh machine to their first
 merged pull request. It assumes you can read code and know how to use Git; it does
 not assume you have seen SPB before.
@@ -29,13 +34,14 @@ three.
 
 ## Clone & setup (5 steps)
 
-1.  **Clone.** Do it to a path without spaces if you can; the project lives at
-    `E:\Koda\Shokker Paint Booth Gold to Platinum` on the maintainer's machine and
-    the apostrophe in `Ricky's PC` has caused shell-quoting pain in the past. A
-    path like `C:\spb` is friendlier.
+1.  **Clone.** Do it to a path without spaces if you can; as of 2026-05-14, the
+    maintainer's canonical local workspace lives at
+    `C:\DRIVE E BACKUP\Shokker Paint Booth Gold to Platinum`. The old
+    `E:\Koda\Shokker Paint Booth Gold to Platinum` path is stale/backup-only. A
+    path like `C:\spb` is friendlier for fresh clones.
 
-        git clone https://github.com/shokkergroup/paint-booth.git
-        cd paint-booth
+        git clone https://github.com/shokkergroup/ShokkerPaintBooth.git
+        cd ShokkerPaintBooth
 
 2.  **Install Python dev deps.** Create a venv so you don't pollute system Python,
     then install the project as editable with dev extras:
@@ -57,7 +63,11 @@ three.
     and confirms your environment is sane:
 
         python tests/smoke_test.py
-        python -m pytest tests -v -m smoke
+        python -m pytest tests -v -m smoke --ignore-glob="tests/test_forge_*"
+
+    Note: the `--ignore-glob` is required for now — the ~150 `tests/test_forge_*`
+    files are known-red at collection time on `main` and abort a bare
+    `pytest tests` run before any test executes.
 
 5.  **Launch the app.** Two processes — Flask server and Electron shell. Two
     terminals is simplest, or use the VS Code compound launch config "Full stack:
@@ -90,15 +100,23 @@ review is fast. Squash merge is the norm.
 
 ## Key concepts to understand before touching code
 
-- **Three-copy sync.** Three files (`base_registry_data.py`,
-  `paint-booth-0-finish-data.js`, and a handful more) exist in three locations:
-  `./`, `electron-app/server/`, and `electron-app/server/pyserver/_internal/`.
-  Edit only the root copy, then run `node scripts/sync-runtime-copies.js --write`
-  or VS Code task "Write Sync". CI will fail on PRs that skip this.
-- **Zones vs layers.** A **zone** is a region of the car (hood, door, bumper). A
-  **layer** is a paint operation within a zone (base colour, pattern, finish
-  overlay). The UI edits layers per zone; the renderer composites layers bottom-
-  up per zone then the whole car in one pass.
+- **Two-copy sync.** A set of runtime files (`base_registry_data.py`,
+  `paint-booth-0-finish-data.js`, `spec_patterns.py`, and a handful more) exist
+  in TWO locations: `./` (source of truth) and `electron-app/server/` (packaged
+  into the installer). Edit only the root copy, then run
+  `node scripts/sync-runtime-copies.js --write` or VS Code task "Write Sync".
+  The build hard-fails on drift. (This was a THREE-copy rule until 2026-06-09,
+  when the vestigial `electron-app/server/pyserver/_internal/` copy was deleted —
+  do not recreate it; see CHANGELOG 2026-06-09.)
+- **Zones vs layers.** A **zone** is a region of the car (hood, door, bumper)
+  the user dresses with a base/pattern/spec recipe. A **layer** today primarily
+  means an imported **PSD layer** (the app auto-loads a layered example PSD).
+  Zones can be **restricted to layers** ("Restrict to Layers"): the zone then
+  owns exactly the pixels where that layer visibly wins in the composited stack,
+  decided by a binary 50%-alpha rule ("crisp-50"), and a zone restricted only to
+  hidden layers fails closed (paints nothing, with a toast). The definitive spec
+  is [ZONE_OWNERSHIP.md](ZONE_OWNERSHIP.md) — read it before touching ownership
+  code; three prior semantics each looked right and failed.
 - **Spec channel semantics.** R=metallic, G=roughness, B=clearcoat **inverted**
   (0–15 = none, 16 = maximum gloss, 255 = dull). That B-channel inversion
   surprises everybody; see `docs/CONVENTIONS.md` for the full table.
@@ -107,7 +125,7 @@ review is fast. Squash merge is the norm.
   (stripes, carbon weave, flake) that modulates one or more channels. Some
   categories blur the line (e.g., "brushed aluminium" is sold as a finish but is
   implemented as a pattern stack).
-- **Registry double-binding.** Every pattern lives in three registries:
+- **Registry triple-binding.** Every pattern lives in three registries:
   `PATTERNS` (JS display), `PATTERN_GROUPS` (JS picker), and `PATTERN_REGISTRY`
   (Python lookup). Miss one and the UI shows it but rendering silently skips it.
 

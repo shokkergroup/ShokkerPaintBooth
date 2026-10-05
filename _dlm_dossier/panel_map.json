@@ -1,0 +1,745 @@
+{
+ "template": "dirtlatemodel_350/358/438 (shared \u2014 owner 2026-07-11)",
+ "space": "1024x1024",
+ "sources": {
+  "guides_psd": "Shokker DLM PSD.psd :: 'Turn Off Before Exporting TGA'",
+  "consensus": "_dlm_dossier/consensus (636 plain / 801 num liveries)"
+ },
+ "number_blocks": [
+  {
+   "name": "roof_number",
+   "bbox": [
+    795,
+    825,
+    170,
+    123
+   ],
+   "area": 20910
+  },
+  {
+   "name": "door_number_upper_side",
+   "bbox": [
+    291,
+    228,
+    155,
+    111
+   ],
+   "area": 17205
+  },
+  {
+   "name": "door_number_lower_side",
+   "bbox": [
+    290,
+    718,
+    155,
+    103
+   ],
+   "area": 15965
+  },
+  {
+   "name": "nose_number_small",
+   "bbox": [
+    271,
+    916,
+    43,
+    27
+   ],
+   "area": 1161
+  }
+ ],
+ "sponsor_blocks": [
+  {
+   "name": "nose_vertical_sponsor",
+   "bbox": [
+    696,
+    399,
+    118,
+    239
+   ],
+   "area": 28202
+  },
+  {
+   "name": "upper_side_rear_sponsor_strip",
+   "bbox": [
+    16,
+    309,
+    241,
+    43
+   ],
+   "area": 10363
+  },
+  {
+   "name": "lower_side_rear_sponsor_strip",
+   "bbox": [
+    19,
+    710,
+    226,
+    40
+   ],
+   "area": 9040
+  },
+  {
+   "name": "spoiler_lower_sponsor_strip",
+   "bbox": [
+    258,
+    966,
+    325,
+    27
+   ],
+   "area": 8775
+  },
+  {
+   "name": "spoiler_upper_sponsor_strip",
+   "bbox": [
+    335,
+    916,
+    248,
+    27
+   ],
+   "area": 6696
+  },
+  {
+   "name": "upper_side_center_sponsor_strip",
+   "bbox": [
+    455,
+    266,
+    136,
+    30
+   ],
+   "area": 4080
+  },
+  {
+   "name": "lower_side_center_sponsor_strip",
+   "bbox": [
+    452,
+    753,
+    136,
+    30
+   ],
+   "area": 4080
+  }
+ ],
+ "mandatory_decals": [
+  {
+   "bbox": [
+    730,
+    29,
+    125,
+    124
+   ],
+   "area": 15500
+  },
+  {
+   "bbox": [
+    948,
+    407,
+    50,
+    69
+   ],
+   "area": 3419
+  },
+  {
+   "bbox": [
+    855,
+    736,
+    57,
+    38
+   ],
+   "area": 2166
+  },
+  {
+   "bbox": [
+    171,
+    39,
+    73,
+    23
+   ],
+   "area": 1679
+  },
+  {
+   "bbox": [
+    986,
+    548,
+    9,
+    130
+   ],
+   "area": 1170
+  },
+  {
+   "bbox": [
+    0,
+    882,
+    110,
+    8
+   ],
+   "area": 880
+  },
+  {
+   "bbox": [
+    173,
+    860,
+    44,
+    17
+   ],
+   "area": 748
+  },
+  {
+   "bbox": [
+    173,
+    851,
+    16,
+    8
+   ],
+   "area": 128
+  }
+ ],
+ "panels": [
+  {
+   "name": "side_panel_upper",
+   "bbox": [
+    0,
+    148,
+    690,
+    205
+   ],
+   "note": "opposite car side: stored ROTATED 180 deg relative to side_panel_lower (owner-verified 2026-07-11, see side_check.png) \u2014 content placed on it must be pre-rotated 180, NOT mirrored"
+  },
+  {
+   "name": "side_panel_lower",
+   "bbox": [
+    0,
+    698,
+    640,
+    205
+   ],
+   "note": "opposite car side (mirror of side_panel_upper); text on one side is mirrored in UV"
+  },
+  {
+   "name": "top_deck_interior",
+   "bbox": [
+    10,
+    375,
+    545,
+    330
+   ],
+   "note": "hood/cockpit top deck; median is dark across 636 liveries (painters leave dark); low sponsor value"
+  },
+  {
+   "name": "nose_front",
+   "bbox": [
+    540,
+    360,
+    295,
+    335
+   ],
+   "note": "tall flat nose; hosts nose_vertical_sponsor (Valvoline-class) + center circle emblem spot"
+  },
+  {
+   "name": "front_bumper_valance",
+   "bbox": [
+    830,
+    365,
+    115,
+    330
+   ],
+   "note": "molded front with headlight decal region (template hardware in median)"
+  },
+  {
+   "name": "roof",
+   "bbox": [
+    770,
+    765,
+    215,
+    250
+   ],
+   "note": "hosts the giant roof_number \u2014 strongest number zone in the 801-livery variance diff"
+  },
+  {
+   "name": "rear_spoiler_strips",
+   "bbox": [
+    248,
+    900,
+    345,
+    100
+   ],
+   "note": "two long spoiler faces; sponsor strips + occasional small number"
+  },
+  {
+   "name": "sail_panels_top",
+   "bbox": [
+    480,
+    25,
+    250,
+    210
+   ],
+   "note": "sail/quarter windows w/ series (Outlaws) branding conventions in median"
+  },
+  {
+   "name": "misc_parts_right_column",
+   "bbox": [
+    860,
+    20,
+    164,
+    330
+   ],
+   "note": "small hardware parts + digit sheet cluster (white glyphs in median)"
+  },
+  {
+   "name": "right_front_fender",
+   "bbox": [
+    590,
+    710,
+    184,
+    205
+   ],
+   "note": "measured template_truth 2026-07-12; tilted blade piece. Width trimmed 190->184 (2026-07-13): at 190 the bbox slice reached x1560 and grabbed the roof island's left 10px (gold fender fill bled onto the roof; previously masked by the baked roof_art cream). Fender island still fully covered by the majority-inside whole-island rule."
+  },
+  {
+   "name": "left_front_fender",
+   "bbox": [
+    700,
+    155,
+    163,
+    225
+   ],
+   "note": "measured template_truth 2026-07-12; stored rot180+tilt"
+  },
+  {
+   "name": "sail_board_a",
+   "bbox": [
+    610,
+    30,
+    113,
+    98
+   ],
+   "note": "spoiler side board / sail w/ WoO print, stored normal"
+  },
+  {
+   "name": "sail_board_b",
+   "bbox": [
+    613,
+    135,
+    113,
+    95
+   ],
+   "note": "spoiler side board / sail w/ WoO print, stored ROT180"
+  }
+ ],
+ "empirical": {
+  "source": "801 car_num liveries via production CPU Smart TGA brain (2026-07-11 overnight)",
+  "number_zones": [
+   {
+    "bbox": [
+     269,
+     225,
+     208,
+     121
+    ],
+    "strength": 0.563,
+    "matches_authored": "door_number_upper_side",
+    "iou": 0.684
+   },
+   {
+    "bbox": [
+     275,
+     714,
+     196,
+     110
+    ],
+    "strength": 0.476,
+    "matches_authored": "door_number_lower_side",
+    "iou": 0.74
+   },
+   {
+    "bbox": [
+     794,
+     811,
+     170,
+     159
+    ],
+    "strength": 0.4,
+    "matches_authored": "roof_number",
+    "iou": 0.766
+   },
+   {
+    "bbox": [
+     928,
+     187,
+     67,
+     96
+    ],
+    "strength": 0.258,
+    "matches_authored": null,
+    "iou": 0.0
+   },
+   {
+    "bbox": [
+     314,
+     28,
+     164,
+     93
+    ],
+    "strength": 0.189,
+    "matches_authored": null,
+    "iou": 0.0
+   },
+   {
+    "bbox": [
+     707,
+     703,
+     44,
+     28
+    ],
+    "strength": 0.159,
+    "matches_authored": null,
+    "iou": 0.0
+   },
+   {
+    "bbox": [
+     695,
+     423,
+     128,
+     181
+    ],
+    "strength": 0.153,
+    "matches_authored": null,
+    "iou": 0.0
+   },
+   {
+    "bbox": [
+     952,
+     153,
+     43,
+     31
+    ],
+    "strength": 0.145,
+    "matches_authored": null,
+    "iou": 0.0
+   },
+   {
+    "bbox": [
+     723,
+     677,
+     96,
+     24
+    ],
+    "strength": 0.136,
+    "matches_authored": null,
+    "iou": 0.0
+   },
+   {
+    "bbox": [
+     719,
+     738,
+     102,
+     24
+    ],
+    "strength": 0.135,
+    "matches_authored": null,
+    "iou": 0.0
+   },
+   {
+    "bbox": [
+     782,
+     704,
+     43,
+     29
+    ],
+    "strength": 0.133,
+    "matches_authored": null,
+    "iou": 0.0
+   },
+   {
+    "bbox": [
+     170,
+     38,
+     74,
+     24
+    ],
+    "strength": 0.123,
+    "matches_authored": null,
+    "iou": 0.0
+   }
+  ],
+  "number_block_content_stats": {
+   "roof_number": {
+    "samples": 1079,
+    "w_p50": 78,
+    "w_p90": 160,
+    "h_p50": 81,
+    "h_p90": 145,
+    "area_p50": 2097,
+    "center_median": [
+     880.0,
+     887.8
+    ]
+   },
+   "door_number_upper_side": {
+    "samples": 1473,
+    "w_p50": 89,
+    "w_p90": 182,
+    "h_p50": 70,
+    "h_p90": 108,
+    "area_p50": 1609,
+    "center_median": [
+     368.9,
+     284.4
+    ]
+   },
+   "door_number_lower_side": {
+    "samples": 1392,
+    "w_p50": 87,
+    "w_p90": 179,
+    "h_p50": 66,
+    "h_p90": 102,
+    "area_p50": 1654,
+    "center_median": [
+     371.3,
+     767.6
+    ]
+   },
+   "nose_number_small": {
+    "samples": 368,
+    "w_p50": 45,
+    "w_p90": 61,
+    "h_p50": 25,
+    "h_p90": 30,
+    "area_p50": 762,
+    "center_median": [
+     292.3,
+     930.4
+    ]
+   }
+  },
+  "door_mirror_relation": {
+   "door_x_offset": -1,
+   "door_y_offset": 490,
+   "note": "side panels are 180-degree-rotated twins in UV (y-offset 490 in 1024-space); text/designs on the upper panel are placed upside-down so they read correctly on the physical car"
+  }
+ },
+ "orientation_deg": {
+  "door_number_upper_side": 180,
+  "door_number_lower_side": 0,
+  "roof_number": 0,
+  "nose_number_small": 180,
+  "side_panel_upper": 180,
+  "side_panel_lower": 0,
+  "upper_side_rear_sponsor_strip": 180,
+  "upper_side_center_sponsor_strip": 180,
+  "lower_side_rear_sponsor_strip": 0,
+  "lower_side_center_sponsor_strip": 0,
+  "spoiler_upper_sponsor_strip": 180,
+  "spoiler_lower_sponsor_strip": 0,
+  "nose_vertical_sponsor": 90,
+  "top_deck_interior": 90,
+  "nose_front": 90,
+  "rear_deck_lid": 90
+ },
+ "orientation_note": "owner-verified 2026-07-11 (side_check.png): upper side ROT180, roof UPRIGHT (unlike ARCA where roof is ROT180)",
+ "nose_direction": {
+  "side_panel_lower": "RIGHT \u2014 lower band is the RIGHT side of the car; art composed nose-right, text reads normal (verified car_num_1006305 + car_num_23371, 2026-07-12)",
+  "side_panel_upper": "stored art nose-RIGHT after ROT180 (physical LEFT side of car, nose-left when viewed); left-side view art + ROT180 = correct",
+  "rule": "Mockup boards show the LEFT side view: feed it to side_panel_upper (ROT180 auto). side_panel_lower needs a FLIPPED composition with text elements re-placed unflipped (painter convention \u2014 no mirrored text on real cars)."
+ },
+ "owner_labels": {
+  "source": "C:\\DRIVE E BACKUP\\Claude Code Assistant\\12-iRacing Misc\\Shokker iRacing\\EXAMPLE PSD's\\Dirt Late Model PSDs\\DIRT LATE MODEL TEMPLATE TGA.tga",
+  "read_date": "2026-07-12",
+  "labels": {
+   "side_panel_upper": "LEFT SIDE \u2014 stored ROT180 (also LEFT REAR QUARTER + LEFT FRONT FENDER, all ROT180)",
+   "side_panel_lower": "RIGHT SIDE \u2014 normal, nose at RIGHT (also RIGHT REAR QUARTER + RIGHT FRONT FENDER, normal)",
+   "roof": "ROOF \u2014 upright",
+   "spoiler_upper_strip": "SPOILER INSIDE \u2014 ROT180",
+   "spoiler_lower_strip": "SPOILER OUTSIDE \u2014 normal",
+   "hood_nose_tub": "HOOD / NOSE / TUB \u2014 stored rotated 90 CCW; upright art (top view, nose at BOTTOM) must be PIL rotate(+90) before paste; nose edge lands at template RIGHT",
+   "rear_deck_lid": "REAR DECK LID \u2014 OCR mining across 50 real paints supersedes the hand label: reads at rot270 like hood/nose, so upright art gets PIL rotate(+90)",
+   "nose_number_small": "stored ROT180 (owner catch 2026-07-12: upright-in-template read upside down on car)"
+  },
+  "warning": "top_deck_interior bbox spans BOTH the rear deck lid (-90) and the tub (+90). Whole-top transplants are 180-off on the deck-lid islands. Split needed for deck-critical schemes."
+ },
+ "template_truth": {
+  "_source": "measured off DIRT LATE MODEL TEMPLATE TGA piece labels, 2026-07-12 (tpl_q1..q4.png)",
+  "_units": "2048 template space, bbox = [x0,y0,x1,y1]",
+  "left_strip": {
+   "bbox": [
+    0,
+    285,
+    1310,
+    715
+   ],
+   "stored": "rot180",
+   "arch_keepout": [
+    355,
+    380,
+    660,
+    650
+   ],
+   "quarter_x": [
+    0,
+    330
+   ],
+   "door_x": [
+    660,
+    1310
+   ]
+  },
+  "right_strip": {
+   "bbox": [
+    0,
+    1445,
+    1310,
+    1755
+   ],
+   "stored": "normal",
+   "arch_keepout": [
+    330,
+    1470,
+    580,
+    1685
+   ],
+   "quarter_x": [
+    0,
+    330
+   ],
+   "door_x": [
+    590,
+    1310
+   ]
+  },
+  "left_front_fender": {
+   "bbox": [
+    1400,
+    310,
+    1726,
+    760
+   ],
+   "stored": "rot180_tilt~38"
+  },
+  "right_front_fender": {
+   "bbox": [
+    1180,
+    1420,
+    1560,
+    1830
+   ],
+   "stored": "normal_tilt~-38"
+  },
+  "rear_deck_lid": {
+   "bbox": [
+    30,
+    700,
+    520,
+    1420
+   ],
+   "stored": "rot90ccw (MINED: reads at rot270 like hood/nose \u2014 apply rotate +90; hand-label rot90cw was WRONG)"
+  },
+  "tub_windshield": {
+   "bbox": [
+    560,
+    700,
+    1310,
+    1420
+   ],
+   "note": "interior \u2014 keep base color"
+  },
+  "hood": {
+   "bbox": [
+    1230,
+    760,
+    1560,
+    1330
+   ],
+   "stored": "rot90ccw"
+  },
+  "nose": {
+   "bbox": [
+    1600,
+    760,
+    1900,
+    1400
+   ],
+   "stored": "rot90ccw"
+  },
+  "roof": {
+   "bbox": [
+    1550,
+    1545,
+    1975,
+    2025
+   ],
+   "stored": "upright"
+  },
+  "spoiler_inside": {
+   "bbox": [
+    500,
+    1845,
+    1170,
+    1930
+   ],
+   "stored": "rot180"
+  },
+  "spoiler_outside": {
+   "bbox": [
+    500,
+    1935,
+    1170,
+    2010
+   ],
+   "stored": "normal"
+  },
+  "spoiler_boards_woo": {
+   "bbox": [
+    1220,
+    60,
+    1450,
+    460
+   ],
+   "note": "World of Outlaws logos printed on template"
+  },
+  "window_net": {
+   "bbox": [
+    1460,
+    60,
+    1710,
+    300
+   ]
+  },
+  "fuel_cell_circle": {
+   "bbox": [
+    595,
+    780,
+    780,
+    1050
+   ]
+  }
+ },
+ "decal_keepouts": {
+  "note": "Learned from owner's in-game wireframe renders (Mountain Dew v1, 2026-07-13). The FRONT FENDER FLARE piece overlays the door strip's forward end in 3D — side decals extending past the boundary get chopped mid-glyph on the car. Also: iRacing stamps the WoO series decal over the sail boards; sponsor art there is wasted (put quarter-panel sponsors on the BAND upper-rear instead). Roof: official Number Blocks guide is LANDSCAPE (339x246) -> roof art reads front/rear, and the real-paint corpus (reads at rot0) maps to reads-from-REAR in game; that is the real DLM convention, keep it.",
+  "right_strip_door_visible_x": [590, 1130],
+  "left_strip_door_visible_upright_x": [180, 1310],
+  "sail_boards": "series decal overlay — no sponsor placement",
+  "dark_field_logos": "logos must contrast the destination field: use white knockout versions of dark wordmarks on DEW-green-class fields"
+ },
+ "mined_orientation": {
+  "_method": "OCR-at-4-rotations vote across 50 real DLM paints (dirtlatemodel 350, 757 available) + structure-tensor stripe angles. Controls right_door(rot0)/left_door(rot180) reproduced with 30/34 clear wins \u2014 method validated. _dlm_orientation_miner.py / _dlm_orientation_report.py, 2026-07-13.",
+  "reads_at": {
+   "right_door": 0,
+   "left_door": 180,
+   "roof": 0,
+   "hood": 270,
+   "nose": 270,
+   "deck": 270,
+   "right_fender": 0,
+   "left_fender": "0/180 ambiguous (low text)",
+   "topleft_a": 0,
+   "topleft_b": 0
+  },
+  "place_upright_art_rotate": {
+   "roof": 0,
+   "hood": 90,
+   "nose": 90,
+   "deck": 90
+  },
+  "fender_stripe_flow": "both fender pieces: continuation bands rise up-right ~+37 deg in template space, entering from the lower door-side edge (mined angle left 37/coh .66 + corpus examples car_1147215, car_817663)",
+  "topleft_pieces": "both read rot0 with text present \u2014 likely nose cone halves / tail; identity still unconfirmed"
+ }
+}

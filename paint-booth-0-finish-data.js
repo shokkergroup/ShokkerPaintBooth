@@ -13,6 +13,537 @@
 // BASES - Single source of truth for base materials (picker + server)
 // =============================================================================
 const BASES = [
+    // ASTRA expansion forty / SPB-105 / 2026-09-05.
+    {"id":"astra_janus_blades","name":"Janus Blades","desc":"ASTRA COLOR SHOXX / Dense sheaves of two-faced blades on a flow: a scarlet matte-lacquer face and a cobalt brushed-metal face split by a chrome spine.","swatch":"#87465f","astraLane":"COLOR SHOXX"},
+    {"id":"astra_scarlet_undertow","name":"Chromatic Undertow","desc":"ASTRA COLOR SHOXX / Rip-current bands curl into hooks around hundreds of vortices, turquoise metal against vermilion enamel with pale eddy lips.","swatch":"#a48563","astraLane":"COLOR SHOXX"},
+    {"id":"astra_cobalt_guillotine","name":"Spectrum Guillotine","desc":"ASTRA COLOR SHOXX / Shutter slats sliced by guillotine cuts into shards knocked to new angles, lime lacquer and amethyst metal, every cut burning a spectrum.","swatch":"#879a49","astraLane":"COLOR SHOXX"},
+    {"id":"astra_chromatic_switchyard","name":"Chromatic Switchyard","desc":"ASTRA COLOR SHOXX / A switchyard drawn as a transit map: yellow-lacquer and cobalt-metal lanes with sleepers, 45-degree crossovers and white roundels.","swatch":"#225191","astraLane":"COLOR SHOXX"},
+    {"id":"astra_ruby_blue_cyclone","name":"Bipolar Cyclone","desc":"ASTRA COLOR SHOXX / A weather map of small cyclones spinning both ways: ruby-lacquer and ice-metal spiral arms, chrome eyes and dark shear wakes.","swatch":"#bc526a","astraLane":"COLOR SHOXX"},
+    {"id":"astra_prism_rebellion","name":"Prism Rebellion","desc":"ASTRA COLOR SHOXX / A shattered prism wall: warped triangular shards, some split finer, amber glass against violet metal, every edge dispersed into RGB.","swatch":"#cf782b","astraLane":"COLOR SHOXX"},
+    {"id":"astra_redshift_rivets","name":"Dichroic Rivets","desc":"ASTRA COLOR SHOXX / Studded dichroic armour: hex-packed domed rivet heads shifting rose to gold to turquoise with slope, washers and empty sockets.","swatch":"#5e6d83","astraLane":"COLOR SHOXX"},
+    {"id":"astra_blueblood_chevron","name":"Switchblade Chevron","desc":"ASTRA COLOR SHOXX / Chevron parquet in bands of random height, cobalt metal against gold lacquer, switchblade columns flipped open on chrome pins.","swatch":"#826e4d","astraLane":"COLOR SHOXX"},
+    {"id":"astra_duality_scales","name":"Duality Scales","desc":"ASTRA COLOR SHOXX / Imbricated scales on curving rows, each with a lime-lacquer tip and a plum-metal root, a hidden field dithering which leads.","swatch":"#a2be4f","astraLane":"COLOR SHOXX"},
+    {"id":"astra_polarity_lace","name":"Polarity Lace","desc":"ASTRA COLOR SHOXX / Lace woven from electrostatics: coral field-line threads and jade equipotential threads crossing in gold knots over navy openwork.","swatch":"#195748","astraLane":"COLOR SHOXX"},
+    {"id":"astra_pipeline_royale","name":"Pipeline Royale","desc":"ASTRA SURFS UP / Rows of peeling surf barrels: navy trough to glassy green lip, white foam and spray, dark tubes opening under the throw.","swatch":"#1090a2","astraLane":"SURFS UP"},
+    {"id":"astra_reef_cathedral","name":"Reef Cathedral","desc":"ASTRA SURFS UP / Brain-coral naves from a reaction-diffusion labyrinth, coral ridges over teal grooves, star polyps and sunlit caustics.","swatch":"#a85a32","astraLane":"SURFS UP"},
+    {"id":"astra_tidal_lace","name":"Tidal Lacework","desc":"ASTRA SURFS UP / The lace a retreating wave leaves: a thick white foam net torn open in patches over orange-gold sand and water that deepens from aqua to cobalt-indigo.","swatch":"#23aacf","astraLane":"SURFS UP"},
+    {"id":"astra_surf_wax_ritual","name":"Surf Wax Ritual","desc":"ASTRA SURFS UP / Fresh wax on a board: domed wax beads rubbed up in circles over a glowing tropical basecoat, comb crosshatch and sand grains.","swatch":"#d2ae91","astraLane":"SURFS UP"},
+    {"id":"astra_wipeout_paisley","name":"Wipeout Paisley","desc":"ASTRA SURFS UP / Psychedelic surf paisley: packed curled boteh at every size and angle, echo bands, beaded borders and inner eyes on a dot print.","swatch":"#9c904c","astraLane":"SURFS UP"},
+    {"id":"astra_kelp_couture","name":"Kelp Couture","desc":"ASTRA SURFS UP / A kelp forest cut as couture: three depths of translucent ruffled ribbons with gold midribs, float pearls and sequin glints.","swatch":"#b19733","astraLane":"SURFS UP"},
+    {"id":"astra_boardwalk_pinlines","name":"Boardwalk Pinlines","desc":"ASTRA SURFS UP / A painted boardwalk: every plank a faded beach-hut colour with grain, wear-through and nails, coach-lined in its complement colour with cream clothoid sign-painter flourishes.","swatch":"#af9768","astraLane":"SURFS UP"},
+    {"id":"astra_volcanic_break","name":"Volcanic Break","desc":"ASTRA SURFS UP / A surf break over basalt: hexagonal column tops, lava glowing through hidden joints, teal tide in the low columns, foam at the waterline.","swatch":"#7e7453","astraLane":"SURFS UP"},
+    {"id":"astra_abyssal_lanterns","name":"Abyssal Lanterns","desc":"ASTRA SURFS UP / The deep lit only by its animals: amber, magenta and coral jellies with trailing tentacles, light chains and plankton sparks in polished indigo water.","swatch":"#3252a3","astraLane":"SURFS UP"},
+    {"id":"astra_sea_glass_confessional","name":"Sea Glass Confessional","desc":"ASTRA SURFS UP / A backlit confessional window of sea glass: saturated frosted pebbles in strong regional colour families (kelly, cobalt, amber, aqua), dark leading and a lattice screen shadow.","swatch":"#49a36d","astraLane":"SURFS UP"},
+    {"id":"astra_cytokinesis_candy","name":"Cytokinesis Candy","desc":"ASTRA MAD SCIENTIST / A tissue of hard-candy cells mid-mitosis: resting cells with speckled nuclei, dividing peanuts with two nuclei and glowing spindles.","swatch":"#707fa5","astraLane":"MAD SCIENTIST"},
+    {"id":"astra_quantum_petri","name":"Quantum Petri Carnival","desc":"ASTRA MAD SCIENTIST / Bacterial colonies on amber agar: quantised growth rings, pinwheel cores, fractal fingering rims and clear inhibition zones.","swatch":"#b18535","astraLane":"MAD SCIENTIST"},
+    {"id":"astra_chromosome_riot","name":"Chromosome Riot","desc":"ASTRA MAD SCIENTIST / A spectral karyotype rioting: X chromosomes at every angle, pinched centromeres, fluorescent hues, G-bands and telomere caps.","swatch":"#4c5289","astraLane":"MAD SCIENTIST"},
+    {"id":"astra_plasma_sutures","name":"Plasma Sutures","desc":"ASTRA MAD SCIENTIST / Incisions in an iridescent membrane stitched shut with violet-white plasma cross-stitches, Lichtenberg arcs and cauterised edges.","swatch":"#785a96","astraLane":"MAD SCIENTIST"},
+    {"id":"astra_bismuth_delirium","name":"Bismuth Delirium","desc":"ASTRA MAD SCIENTIST / An aggregate of bismuth hopper crystals: square stair-stepped spirals sinking to hollow centres in shifting oxide colours.","swatch":"#867467","astraLane":"MAD SCIENTIST"},
+    {"id":"astra_strange_attractor","name":"Strange Attractor","desc":"ASTRA MAD SCIENTIST / Specimens of chaos: real Clifford and de Jong attractors iterated into glowing filament galaxies, rotated across a phase-space grid.","swatch":"#47c3ab","astraLane":"MAD SCIENTIST"},
+    {"id":"astra_neuron_carnival","name":"Neuron Carnival","desc":"ASTRA MAD SCIENTIST / A Brainbow tangle: hundreds of neurons each its own fluorescent colour, glowing somata, three-level dendrites and bouton-studded axons.","swatch":"#4a4e5f","astraLane":"MAD SCIENTIST"},
+    {"id":"astra_xenobot_orchard","name":"Xenobot Orchard","desc":"ASTRA MAD SCIENTIST / An orchard of xenobots: lime, cyan and hot-pink frog-cell spheres with Pac-Man mouths and cilia fringes on oxblood soil, with gold cell piles for their offspring.","swatch":"#678862","astraLane":"MAD SCIENTIST"},
+    {"id":"astra_fermion_foundry","name":"Fermion Foundry","desc":"ASTRA MAD SCIENTIST / A bubble chamber in a furnace: orange-gold and cyan tracks colour-coded by momentum curl into tightening spirals over glowing oxblood iron.","swatch":"#9a6632","astraLane":"MAD SCIENTIST"},
+    {"id":"astra_chromatic_centrifuge","name":"Chromatic Centrifuge","desc":"ASTRA MAD SCIENTIST / Lathe-turned rotors carrying rings of sample tubes spun into density-gradient colour bands, pellets at the rim, polished hubs.","swatch":"#88809f","astraLane":"MAD SCIENTIST"},
+    {"id":"astra_causal_origami","name":"Causal Origami","desc":"ASTRA FUTURE SHOXX / Miura-ori folded foil: alternating hot-magenta and teal fold columns in flowing regions, chrome mountain creases, a causal fold wave across the car.","swatch":"#28c7c7","astraLane":"FUTURE SHOXX"},
+    {"id":"astra_photonic_switchboard","name":"Photonic Switchboard","desc":"ASTRA FUTURE SHOXX / A silicon photonics wafer: 45-degree waveguides carrying coloured laser light, ring resonators, grating combs and die streets.","swatch":"#a07056","astraLane":"FUTURE SHOXX"},
+    {"id":"astra_negative_space_engine","name":"Negative Space Engine","desc":"ASTRA FUTURE SHOXX / Blue-violet anodised titanium over a live engine: hole size traces hidden gear trains, copper light glowing and spilling through every perforation.","swatch":"#dab788","astraLane":"FUTURE SHOXX"},
+    {"id":"astra_temporal_braille","name":"Temporal Braille","desc":"ASTRA FUTURE SHOXX / A refreshable braille display the size of the car: six-dot pins spell text, each pin the complement of the backlit blue-to-violet-to-red panel beneath it.","swatch":"#411353","astraLane":"FUTURE SHOXX"},
+    {"id":"astra_klein_circuit","name":"Klein Circuit","desc":"ASTRA FUTURE SHOXX / A circuit that loops back through itself: 45-degree gold buses on black mask, a lilac inner layer, vias, pads and Klein bridges.","swatch":"#ccaa51","astraLane":"FUTURE SHOXX"},
+    {"id":"astra_auxetic_exoskin","name":"Auxetic Exoskin","desc":"ASTRA FUTURE SHOXX / A rotating-squares auxetic skin: bevelled gunmetal plates hinged corner to corner, a strain field opening glowing ember gaps.","swatch":"#d05e2c","astraLane":"FUTURE SHOXX"},
+    {"id":"astra_memory_metal_zipper","name":"Memory Metal Zipper","desc":"ASTRA FUTURE SHOXX / Zippers on an exact conformal flow: heat-tinted nitinol teeth interlocking copper and silver on woven tape, some runs sprung open.","swatch":"#50a93a","astraLane":"FUTURE SHOXX"},
+    {"id":"astra_orbitless_navigation","name":"Orbitless Navigation","desc":"ASTRA FUTURE SHOXX / A portolan chart with no orbits: hidden wind roses shoot 32 rhumb lines across a dark sea chart in gold, green and red.","swatch":"#1d5752","astraLane":"FUTURE SHOXX"},
+    {"id":"astra_tachyon_feather","name":"Tachyon Feather","desc":"ASTRA FUTURE SHOXX / Plumage faster than light: overlapping contour feathers with bright rachises and iridescent barbs, Cherenkov-blue tip streaks.","swatch":"#4a9e45","astraLane":"FUTURE SHOXX"},
+    {"id":"astra_programmable_matter","name":"Programmable Matter","desc":"ASTRA FUTURE SHOXX / An isometric field of voxel modules, faces lit three ways, colour-coded in programmed data tiles, empty slots and LED edges.","swatch":"#986853","astraLane":"FUTURE SHOXX"},
+    // END ASTRA expansion forty.
+    // ASTRA / owner commissioned 2026-09-05. Ten independently authored carriers.
+    {"id":"astra_event_horizon","name":"Event Horizon","desc":"ASTRA ASTRA ORIGINALS / A field of tiny black holes: absorbing shadows, chrome photon rings, Doppler-bright accretion discs and polar jets over a lensed starfield.","swatch":"#2c2a5b"},
+    {"id":"astra_quasicrystal_crown","name":"Quasicrystal Crown","desc":"ASTRA ASTRA ORIGINALS / Five-fold quasicrystal interference drawn as gold contour filigree over royal enamel, with ten-fold gold crowns and cabochon gems.","swatch":"#4e6fc2"},
+    {"id":"astra_gravity_loom","name":"Gravity Loom","desc":"ASTRA ASTRA ORIGINALS / A 2/2 twill of metallic silk pulled into gravity wells: threads bend, redshift and sink toward tiny stars ringed by Einstein rings.","swatch":"#2c7970"},
+    {"id":"astra_phoenix_ceramic","name":"Phoenix Ceramic","desc":"ASTRA ASTRA ORIGINALS / Raku kintsugi: smoke-stained crackle inside a coarse fracture net, raised gold repair seams and copper-luster flame tongues.","swatch":"#b17d58"},
+    {"id":"astra_sovereign_nacre","name":"Sovereign Nacre","desc":"ASTRA ASTRA ORIGINALS / Paua nacre: swirling interference colour, growth-line terraces every few pixels, a shimmering tablet mosaic and blister pearls.","swatch":"#2c44a6"},
+    {"id":"astra_magnetic_regalia","name":"Magnetic Regalia","desc":"ASTRA ASTRA ORIGINALS / Ferrofluid under magnets: black-chrome Rosensweig spike crowns rise at the poles, gold iron-filing dashes trace every field line.","swatch":"#423e3f"},
+    {"id":"astra_meteorite_royal","name":"Meteorite Royal","desc":"ASTRA ASTRA ORIGINALS / An etched iron meteorite: Widmanstaetten lamellae in three directions etched gold, royal blue and violet, each its own material, with taenite rims and plessite fill.","swatch":"#9560eb"},
+    {"id":"astra_cryogenic_bloom","name":"Cryogenic Bloom","desc":"ASTRA ASTRA ORIGINALS / Six-fold ice dendrites bloom from hundreds of nuclei over crystalline rime, glassy ice against frost with cold violet plasma.","swatch":"#194574"},
+    {"id":"astra_chronograph_gold","name":"Chronograph Gold","desc":"ASTRA ASTRA ORIGINALS / Watchmaker gold: panels engine-turned in six guilloche patterns, polished chamfers, ruby jewels in chatons and toothed wheels.","swatch":"#b49553"},
+    {"id":"astra_velvet_supernova","name":"Velvet Supernova","desc":"ASTRA ASTRA ORIGINALS / Plum panne velvet strewn with supernova remnants: knotty filament shells, synchrotron cores and diffraction-spiked neutron stars.","swatch":"#711e52"},
+
+    // ═══ SLITHERIN (16) — owner mandate 2026-09-04 ═══════════════════════════
+    // SCALE ARCHITECTURE, not snake-coloured patterns. The catalog already held 84
+    // snake-named and 30 reptile-scale finishes (fc_snakeskin, fm_python_skin,
+    // fm_diamondback, alligator_hide...), so a generic scaly pattern would have
+    // failed the uniqueness gate outright. Each of these builds the SCALE FIELD
+    // differently — keeled or smooth, overlapping or granular, stretched or banded —
+    // and the pattern rides on that geometry. Pattern tones derive from the
+    // painter's own base colour, so a red car gives a red snake.
+    { id: "slt_reticulated", name: "Reticulated Python", desc: "A continuous pale copper net holds dark irregular armour blocks, each packed with fine keratin crescents, root pores and differently coated facets.", swatch: "#947e6a", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+    { id: "slt_diamondback", name: "Diamondback Armor", desc: "Pale bordered rhombs traverse a fine raised keel field: charcoal diamond centres, copper axial ribs, cream pointed collars and individually scarred scale faces.", swatch: "#6c6e5d", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+    { id: "slt_boa_saddle", name: "Boa Saddlework", desc: "Pinched dark saddles sit within copper-ivory hide, with scalloped keratin tesserae, cream saddle rims, dry waist trenches and minute basal freckles.", swatch: "#846c5f", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+    { id: "slt_corn_blotch", name: "Corn Snake Blotch", desc: "Unbroken dark outlines enclose burnt-scarlet saddles over fine orange belly checks, with pearled rims, tiny pigment pores and individually cut keratin tiles.", swatch: "#a56649", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+    { id: "slt_anaconda_oval", name: "Anaconda Oval", desc: "Staggered dark oval markings hold pale olive hearts across fine emerald hide, with offset eyelid rims, pore constellations and hooked keratin creases.", swatch: "#60865a", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+    { id: "slt_milk_band", name: "Milk Snake Band", desc: "Ordered scarlet-black-ivory rings bend around fine transverse skin, with scalloped band seams, lacquered red ribs, dry black keratin and minute cream root pearls.", swatch: "#835b58", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+    { id: "slt_gaboon_geometric", name: "Gaboon Geometric", desc: "Razor hourglasses and triangular flank marks tessellate through bronze-plum hide, divided by pale bevels, fine leaf-vein cuts and dry black root creases.", swatch: "#786862", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+    { id: "slt_keeled_viper", name: "Keeled Viper", desc: "Dense overlapping asymmetric spear scales form a complete copper-green skin; raised keels divide independently polished faces, with lapped edges, dry root shoulders, hooked tips, crossed dermal cuts and elongated pores.", swatch: "#676454", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+    { id: "slt_cycloid_gloss", name: "Sea Snake Gloss", desc: "Overlapping wet cycloid shells show fan striae, bright meniscus lips, dark basal pockets and pin-sized trapped droplets through blue-gold pearl.", swatch: "#628f9c", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+    { id: "slt_cobra_hood", name: "Cobra Hood Weave", desc: "Splayed hood ribs pull fine scales wide through cobalt-bronze silk, with paired vein seams, polished shoulder lips and dark flexible hinge roots.", swatch: "#656c61", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+    { id: "slt_ventral_scute", name: "Ventral Scute", desc: "Wide transverse belly plates interlock through narrow side hinges: amber pearl faces, fine friction ribs, cream seam lips and rooted skin pores.", swatch: "#846661", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+    { id: "slt_sidewinder_micro", name: "Sidewinder Micro", desc: "Sand-adapted diamond granules have asymmetric windward polish, fine erosion pits, dry lee ridges and silica caught between small ochre-violet scales.", swatch: "#716b62", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+    { id: "slt_wart_tubercle", name: "Wart Snake Hide", desc: "Crowded irregular tubercles rise from violet hide, with copper worn crowns, dry granular collars, pearly satellite warts and tiny asymmetric skin fissures.", swatch: "#795d6b", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+    { id: "slt_sunbeam_iris", name: "Sunbeam Iridescence", desc: "Swept overlapping lance scales with dark roots, luminous interference faces, fine striae and individually polished trailing lips.", swatch: "#3e4f6d", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+    { id: "slt_shed_ecdysis", name: "Shed Skin Lace", desc: "Papery translucent scale ghosts form a dense ivory-violet lace: curled membrane lips, missing windows, dry wrinkle cuts and fine basal root rings.", swatch: "#a6a1a2", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+    { id: "slt_albino_translucent", name: "Albino Translucence", desc: "Living ivory-pink skin keeps its fine pigmentless scale ghosts, with translucent keratin veils, rose capillary roots, polished pearl lips and faint dry dermal cuts.", swatch: "#cdb9b8", subsection: "Living Armor", sourceShelf: "🐍 SLITHERIN" },
+
+    // ═══ LIGHTNING SHOKK (16) — owner mandate 2026-09-04 ═════════════════════
+    // Sixteen DISCHARGE MORPHOLOGIES, not sixteen electric colours. The catalog
+    // already had 59 lightning-named and 205 electric-named finishes, but only 5
+    // that were actually a branching discharge STRUCTURE. Each of these is a
+    // different way electricity finds a path — and each is a FIELD of discharge
+    // (branch spacing 12-24px), because a single hero bolt is a macro composition
+    // that fails the car-window gate outright.
+    { id: "lsk_return_stroke", name: "Return Stroke", desc: "Stepped silver return channels race through ink-blue lacquer: narrow bright cores, copper ion collars, leader forks and etched shock bands.", swatch: "#4f6270", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+    { id: "lsk_lichtenberg", name: "Lichtenberg Burn", desc: "A dense dielectric burn forest: black ramifying scars, copper ash collars and pale conductive veins embedded in amber-violet glass.", swatch: "#656b5f", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+    { id: "lsk_spider_crawl", name: "Spider Crawl", desc: "Fine horizontal crawler fans braid through midnight turquoise: hooked side branches, conductive knots, matte scorch cuffs and tiny copper bridges.", swatch: "#708874", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+    { id: "lsk_bead", name: "Beaded Lightning", desc: "A fading channel breaks into oblique pearl droplets: bright bead heads, copper tails, charcoal necks and tiny residual charge hairs over indigo lacquer.", swatch: "#7e657d", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+    { id: "lsk_tesla_streamer", name: "Tesla Streamer", desc: "Microscopic winding coils launch curled pearl streamers through burgundy lacquer: exposed coil turns, hooked terminals, dark insulation and copper feed vias.", swatch: "#a38077", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+    { id: "lsk_plasma_globe", name: "Plasma Globe", desc: "A densely tessellated glass plasma lens: winding inner filaments meet pink rim flashes, polished nuclei and fine etched lens sectors.", swatch: "#683b5d", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+    { id: "lsk_st_elmo", name: "St Elmo's Fire", desc: "Point-discharge brushwork over violet enamel: silver needle apices, cobalt corona ribs, copper guard collars and graded pearlescent discharge skirts.", swatch: "#4b6276", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+    { id: "lsk_corona_ring", name: "Corona Ring Lace", desc: "Interlocking fine copper coronas fringe a cyan ceramic lace: asymmetric oval guards, radial pearl streamlets, shield apertures and dark seated torus roots.", swatch: "#869e95", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+    { id: "lsk_streamer_front", name: "Streamer Front", desc: "Fine comb-shaped discharge fronts overlap through amber glass: advancing pearl tips, copper precursor hooks, dark return trenches and graded charge skirts.", swatch: "#998474", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+    { id: "lsk_sprite", name: "Sprite Tendrils", desc: "Microscopic copper-red sprite caps hang over violet branched tendrils: pearl columns, dark root forks and tiny misted termination points.", swatch: "#7e7682", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+    { id: "lsk_static_creep", name: "Static Creep", desc: "Connected charge creeps around fine crazed enamel islands: doubled metal tracks, frosted insulating ridges, trapped pin sparks and copper junctions.", swatch: "#517b85", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+    { id: "lsk_spark_gap", name: "Spark Gap Array", desc: "Opposing microscopic silver contacts punctuate burnt-orange ceramic: fractured gap arcs, copper contact shoulders, black ablation pits and fine guard engraving.", swatch: "#857976", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+    { id: "lsk_jacobs_ladder", name: "Jacob's Ladder", desc: "Copper rails carry dense ascending arc rungs through jade-black enamel, with white contact shoes, heat-tarnished slots and tiny etched climb marks.", swatch: "#576650", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+    { id: "lsk_arc_weld", name: "Arc Weld Mosaic", desc: "Overlapping molten weld dimes in heat-coloured titanium: rolled crescent rims, dark fusion roots, puddle pores and fine flying spatter.", swatch: "#5e6d72", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+    { id: "lsk_carbon_track", name: "Carbon Tracking", desc: "Ragged graphite charge ropes creep through pearlescent porcelain: braided char veins, fused glass shoulders, copper contamination and tiny burn-through pores.", swatch: "#769184", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+    { id: "lsk_fulgurite", name: "Fulgurite Glass", desc: "Lightning-fused sand becomes an intricate amber tube lace: vitreous walls, dark hollow bores, sintered silica grains, melt striae and trapped pearly bubbles.", swatch: "#6f5d43", subsection: "Discharge", sourceShelf: "⚡ LIGHTNING SHOKK" },
+
+    // ═══ MULE (16) — owner mandate 2026-09-04 ════════════════════════════════
+    // Automotive PROTOTYPE DISGUISE, not military camouflage: the catalog already
+    // holds woodland/MARPAT/DPM/Kryptek/dazzle, and those were ruled off limits.
+    // The subject is defeating a camera and an eye — swirl vinyl, cladding, false
+    // shutlines, moire tuned to alias a sensor, shading painted to cancel form.
+    { id: "mul_erlkonig_swirl", name: "Erlkonig Swirl", desc: "Opposed black-and-ivory camouflage curls splice through fine foil seams, with broken ink bridges, copper register ticks and etched pearl pockets.", swatch: "#81807a", subsection: "Optical Deception", sourceShelf: "🕵️ MULE" },
+    { id: "mul_confusion_blob", name: "Confusion Blob", desc: "Interlocking amorphous print masks erase panel cues: chalk islands, graphite channels, inner copper keylines and differently coated pigment pockets.", swatch: "#5f6b70", subsection: "Optical Deception", sourceShelf: "🕵️ MULE" },
+    { id: "mul_pixel_break", name: "Pixel Break Grid", desc: "Unequal fine digital rectangles break depth cues through foil planes, black erasure slots, bevelled pixel edges and tiny segmented scan rails.", swatch: "#635e7c", subsection: "Optical Deception", sourceShelf: "🕵️ MULE" },
+    { id: "mul_qr_scramble", name: "QR Scramble Matrix", desc: "Scrambled sensor-style matrices interlock finder assemblies, broken timing rails, foil data modules and matte erased windows across a fine digital skin.", swatch: "#5e747a", subsection: "Optical Deception", sourceShelf: "🕵️ MULE" },
+    { id: "mul_moire_defeat", name: "Moire Defeat", desc: "Contradictory optical domains: two chirped rulings beat across silver print, copper crossings and fine lens seams.", swatch: "#54525f", subsection: "Optical Deception", sourceShelf: "🕵️ MULE" },
+    { id: "mul_countershade", name: "Countershade", desc: "Backwards shading cancels tiny barrel forms: inverted light belts, dark false crowns, pale underside lips and independently coated registration cuts.", swatch: "#8f7b7b", subsection: "Optical Deception", sourceShelf: "🕵️ MULE" },
+    { id: "mul_false_shadow", name: "False Shadow", desc: "Impossible shadow ribbons cross folded print planes: offset cast-shadow wedges, erasure lips, fine hatch pockets and polished witness vertices.", swatch: "#65637b", subsection: "Optical Deception", sourceShelf: "🕵️ MULE" },
+    { id: "mul_edge_chamfer", name: "Edge Chamfer", desc: "Nested impossible bevels divide tiny octagonal plates into silver lips, dark recess claims, copper counter-edges and coated centre windows.", swatch: "#8a7272", subsection: "Optical Deception", sourceShelf: "🕵️ MULE" },
+    { id: "mul_shutline_fake", name: "Fake Shutline", desc: "Contradictory tiny panel gaps cut a false body surface into bevelled jigsaw planes, with offset hinge ticks, stamped seam numbers and coated false shadows.", swatch: "#6a7d85", subsection: "Optical Deception", sourceShelf: "🕵️ MULE" },
+    { id: "mul_wireframe", name: "Wireframe Print", desc: "A projected impossible truss floats across fine coated facets, with foreshortened cross braces, copper vertex seats, dark mesh voids and clipped dashed occlusion.", swatch: "#33504c", subsection: "Optical Deception", sourceShelf: "🕵️ MULE" },
+    { id: "mul_decoy_blackout", name: "Decoy Blackout", desc: "Fine badge and lamp masks disappear into charcoal: soft blackout fields, gloss witness rims, torn adhesive teeth and hidden coated false-light apertures.", swatch: "#2a323c", subsection: "Optical Deception", sourceShelf: "🕵️ MULE" },
+    { id: "mul_foam_clad", name: "Foam Cladding", desc: "Fine strapped protective foam has crowded closed-cell cushions, porous compression rims, dark strap roots and small exposed fastening seats.", swatch: "#6c706f", subsection: "Filmcraft", sourceShelf: "🕵️ MULE" },
+    { id: "mul_bubble_clad", name: "Bubble Cladding", desc: "Dense protective air quilts press against translucent cover film, with sealed cells, doubled weld seams, flattened contact crescents and tiny taped witness edges.", swatch: "#88979b", subsection: "Filmcraft", sourceShelf: "🕵️ MULE" },
+    { id: "mul_tape_seam", name: "Gaffer Tape Seam", desc: "Crossing fine gaffer strips hold the disguise: torn yarn edges, pressed adhesive lips, folded tape creases, witness fibres and dark overlap counts.", swatch: "#5a5d5a", subsection: "Filmcraft", sourceShelf: "🕵️ MULE" },
+    { id: "mul_matte_cover", name: "Matte Cover Cloth", desc: "A deliberately quiet charcoal disguise cloth carries fine crossed yarn, compressed seam lips, dry abrasion sweeps, small pores and uneven tension creases.", swatch: "#2c343f", subsection: "Filmcraft", sourceShelf: "🕵️ MULE" },
+    { id: "mul_retro_patch", name: "Retroreflective Patch", desc: "Fine glass-bead patches expose pale lens hearts, dark return cups, printed patch seams and minute foil backings beneath a clear binder.", swatch: "#89817f", subsection: "Optical Deception", sourceShelf: "🕵️ MULE" },
+
+    // ═══ THE BOOTH (16) — owner mandate 2026-09-04 ═══════════════════════════
+    // Paint-shop defects: the trade's own failure vocabulary, and the emptiest
+    // domain in the catalog (fisheye, die-back, sanding telegraph and buffing
+    // holograms all returned ZERO across 4035 finishes). Every one MODULATES the
+    // painter's colour, because a defect happens TO paint rather than replacing it.
+    { id: "bth_fisheye", name: "Fisheye Lacquer", desc: "Candy lacquer draws away from contaminants into irregular craters: exposed metal floors, copper rolled rims and wet menisci over fine metallic pigment.", swatch: "#386a71", subsection: "Paint Alchemy", sourceShelf: "🎨 THE BOOTH" },
+    { id: "bth_solvent_pop", name: "Solvent Pop Lacquer", desc: "Ruptured fine solvent blisters tear copper-red lacquer into angular vent mouths, curled shell fragments, dark pinholes and pearled release collars.", swatch: "#8a6964", subsection: "Paint Alchemy", sourceShelf: "🎨 THE BOOTH" },
+    { id: "bth_sag_curtain", name: "Sag Curtain Flow", desc: "Fine overloaded lacquer runs into branching gravity curtains: bulbous run toes, polished advancing lips, folded wet shoulders and dry separation trenches.", swatch: "#697375", subsection: "Paint Alchemy", sourceShelf: "🎨 THE BOOTH" },
+    { id: "bth_dry_spray", name: "Dry Spray Velvet", desc: "Half-cured fine droplets form a dense velvet aggregate: granular pigment crowns, unflowed necks, dry island rims, sparse wet binder and tiny trapped pores.", swatch: "#837464", subsection: "Paint Alchemy", sourceShelf: "🎨 THE BOOTH" },
+    { id: "bth_mottling", name: "Mottled Metallic", desc: "Clumped metallic pigment drifts into fine copper-blue islands: differently tilted flake fans, pale binder seams, dark pigment knots and small polished grain tips.", swatch: "#9e9a8b", subsection: "Paint Alchemy", sourceShelf: "🎨 THE BOOTH" },
+    { id: "bth_tiger_stripe", name: "Tiger Stripe Spray", desc: "Fine gun-pass bands overlap through amber-violet metallic paint, with feathered overspray teeth, polished pass cores, dark overlap seams and individually tilted flakes.", swatch: "#927b71", subsection: "Paint Alchemy", sourceShelf: "🎨 THE BOOTH" },
+    { id: "bth_die_back", name: "Die-Back Patina", desc: "Gloss sinks through fine wrinkled lacquer islands: matte collapsed faces, surviving pearl lips, dry crease roots, polished pigment witnesses and subtle coat-density ghosts.", swatch: "#8d8072", subsection: "Paint Alchemy", sourceShelf: "🎨 THE BOOTH" },
+    { id: "bth_blush", name: "Blushed Clearcoat", desc: "Moisture whitens rose-violet lacquer into fine milky veils, with binder pockets, condensation stringers, small trapped droplets and surviving polished pigment.", swatch: "#be94a8", subsection: "Paint Alchemy", sourceShelf: "🎨 THE BOOTH" },
+    { id: "bth_lifting", name: "Lifted Lacquer", desc: "Attacked undercoat buckles into fine peeled ribbons: curled film tongues, exposed primer windows, dark hinge roots, flaked edges and polished swollen shoulders.", swatch: "#83727d", subsection: "Paint Alchemy", sourceShelf: "🎨 THE BOOTH" },
+    { id: "bth_sand_scratch", name: "Sand Scratch Alloy", desc: "Fine crossed grit cuts telegraph through blue-bronze alloy paint: scored grooves, raised burr lips, short polishing arcs, grit pores and exposed pigment filings.", swatch: "#545a5b", subsection: "Paint Alchemy", sourceShelf: "🎨 THE BOOTH" },
+    { id: "bth_dirt_nib", name: "Dirt Nib Lacquer", desc: "Angular dust tents wet lacquer into fine raised peaks, with stretched menisci, dark rooted grit, pearl stress cuts and small trapped binder beads.", swatch: "#6e5567", subsection: "Paint Alchemy", sourceShelf: "🎨 THE BOOTH" },
+    { id: "bth_edge_map", name: "Repair Edge Map", desc: "Fine repaired coating contours reappear as nested gloss witnesses: exposed alloy, primer rings, colour film steps, ghost edge lips and small sanding notches.", swatch: "#948388", subsection: "Paint Alchemy", sourceShelf: "🎨 THE BOOTH" },
+    { id: "bth_buff_hologram", name: "Rotary Buff Hologram", desc: "Tiny rotary arcs overlap through polished cobalt alloy: hooked pigtails, bright arc lips, compound grains, burnished flats and short residual haze bands.", swatch: "#3e6874", subsection: "Filmcraft", sourceShelf: "🎨 THE BOOTH" },
+    { id: "bth_mask_bleed", name: "Mask Bleed Lace", desc: "Fine colour fingers wick beneath cut masks into pale primer: branched capillary tongues, pinned dye beads, sharp mask edges and differently coated bleed menisci.", swatch: "#83938e", subsection: "Filmcraft", sourceShelf: "🎨 THE BOOTH" },
+    { id: "bth_tape_ridge", name: "Cured Tape Ridge", desc: "Fine cured paint shelves rise around pulled mask cuts: stepped colour plateaus, polished ridge walls, ragged tear teeth, primer slivers and trapped edge pigment.", swatch: "#857e83", subsection: "Filmcraft", sourceShelf: "🎨 THE BOOTH" },
+    { id: "bth_water_spot", name: "Mineral Water Spot", desc: "Drying hard water leaves fine broken mineral rims through lacquer: salt fans, clear lens hearts, etched stain floors and small copper-pearl residue grains.", swatch: "#7b968c", subsection: "Paint Alchemy", sourceShelf: "🎨 THE BOOTH" },
+
+    // ═══ FLAW LAB (25) — owner mandate 2026-09-04 ═══════════════════════════
+    // Non-destructive testing: the invisible made visible. Chosen by MEASUREMENT,
+    // not taste — scanning all 4010 base finishes across 20 candidate domains,
+    // NDT/inspection imaging returned ONE hit (itself a false positive), against
+    // 159 for ice/frost and 79 for lattice/foam. One arc, 25 real techniques,
+    // each with its own physics, its own spec grammar and its own material story.
+    { id: "fl_penetrant_bleed", name: "Penetrant Bleed", desc: "Branched fatigue fissures with capillary dye reservoirs. Colored inspection artwork with developer wash, wicking halos, open fissures, dye reservoirs, satellite indications.", swatch: "#c8e04a" },
+    { id: "fl_magnetic_particle", name: "Magnetic Particle", desc: "iron powder dragged along the flux leaking out of a crack in a magnetised part", swatch: "#3b3f46" },
+    { id: "fl_brittle_lacquer", name: "Brittle Lacquer", desc: "Ranked tensile crack combs with arrested tips and lifted lacquer lips. Colored inspection artwork with lacquer islands, tension cracks, lifted lips, arrest bars, detached flakes.", swatch: "#cfd3d6" },
+    { id: "fl_macro_etch", name: "Macro Etch", desc: "Bent forging grain ribbons flowing around die bosses. Colored inspection artwork with grain ribbons, etched boundaries, die bosses, compressed bands, inclusion strings.", swatch: "#5f7d9a" },
+    { id: "fl_hardness_indent", name: "Hardness Indent", desc: "Diamond pyramid impressions with four independently polished faces. Colored inspection artwork with indent wells, pyramid faces, pileup rims, corner cracks, traverse dots.", swatch: "#8e949c" },
+    { id: "fl_crack_tip", name: "Crack Tip Field", desc: "Open cracks ending in paired butterfly yield lobes. Colored inspection artwork with crack stems, yield lobes, stress contours, slip fans, arrest tips.", swatch: "#6a6f78" },
+    { id: "fl_strain_rosette", name: "Strain Rosette", desc: "Three directional serpentine foil gauges with separate solder pads. Colored inspection artwork with polyimide pads, serpentine conductors, return bends, terminal lands, lead wires.", swatch: "#c0a35a" },
+    { id: "fl_chladni", name: "Chladni Figure", desc: "Intersecting standing wave nodes with granular ridges and scoured antinodes. Colored inspection artwork with modal ridges, node grains, intersection heaps, scoured bellies, stray powder.", swatch: "#d8d2c4" },
+    { id: "fl_photoelastic_iso", name: "Isochromatic Fringe", desc: "a stressed transparent model in a polariscope, its fringe order read out in spectral colour", swatch: "#7ad0e0" },
+    { id: "fl_isoclinic_dark", name: "Isoclinic Band", desc: "the dark loci where a principal stress axis lines up with the polariser", swatch: "#2f333a" },
+    { id: "fl_holo_interfero", name: "Holographic Interferogram", desc: "Eccentric contour orders surrounding displaced skin blisters. Colored inspection artwork with bulge contours, order shoulders, disbond rims, phase discontinuities, isolated fringe glints.", swatch: "#e2704a" },
+    { id: "fl_moire_deflect", name: "Moire Deflectometry", desc: "Two locally displaced ronchi gratings with beat envelopes. Colored inspection artwork with first ruling, crossed ruling, beat knots, deflection seams, registration slits.", swatch: "#9aa3ad" },
+    { id: "fl_shearography", name: "Shearography", desc: "Opposed fringe lobes separated by a displacement derivative null. Colored inspection artwork with positive fringes, negative fringes, null seams, coherent grains, disbond edges.", swatch: "#8b8f98" },
+    { id: "fl_schlieren", name: "Schlieren", desc: "Directional density gradients curling into knife edge flow streaks. Colored inspection artwork with compression ribbons, expansion ribbons, curl cores, shear threads, shock ticks.", swatch: "#a8b0b8" },
+    { id: "fl_shadowgraph", name: "Shadowgraph", desc: "Paired bright and dark shock fronts with refracted crossing wakes. Colored inspection artwork with compression fronts, shadow doubles, shock intersections, wake arcs, fine caustics.", swatch: "#b6bcc2" },
+    { id: "fl_barkhausen", name: "Barkhausen Noise", desc: "Jagged avalanche domains with pinned walls and burst ladders. Colored inspection artwork with domain plates, jump boundaries, avalanche spikes, pinning inclusions, switching ladders.", swatch: "#7b6f86" },
+    { id: "fl_eddy_impedance", name: "Eddy Current", desc: "the impedance-plane loop a probe's coil traces as it crosses a crack", swatch: "#d0a03c" },
+    { id: "fl_c_scan", name: "Ultrasonic C-Scan", desc: "Raster echo cells quantizing irregular defect islands. Colored inspection artwork with sample cells, echo plateaus, defect margins, dropout pixels, probe steps.", swatch: "#e06a30" },
+    { id: "fl_a_scan_gate", name: "A-Scan Gate", desc: "Stacked oscilloscope echo trains enclosed by independent gate cursors. Colored inspection artwork with trace baselines, entry pulses, backwall echoes, gate brackets, ringdown ripples.", swatch: "#6fd08a" },
+    { id: "fl_phased_array", name: "Phased Array", desc: "Rotated fan sectors divided into angular beams and curved range gates. Colored inspection artwork with sector wedges, range arcs, hot echo cells, dead beams, focus points.", swatch: "#7e6a9c" },
+    { id: "fl_radiograph_weld", name: "Weld Radiograph", desc: "Sinuous multipass weld beads showing internal pores and lack of fusion. Colored inspection artwork with bead ribbons, overlap scallops, gas pores, fusion gaps, dense inclusions.", swatch: "#96999e" },
+    { id: "fl_ct_slice", name: "CT Slice", desc: "Asymmetric hollow sections with detector ring artifacts and metal streaks. Colored inspection artwork with section walls, internal cavities, detector rings, metal streaks, density islands.", swatch: "#e8a03a" },
+    { id: "fl_tsa_stress", name: "Thermoelastic Stress", desc: "Opposed thermal stress lobes around loaded perforations sampled on detector pixels. Colored inspection artwork with loaded webs, hot lobes, cool lobes, detector cuts, stress concentration rims.", swatch: "#b060c0" },
+    { id: "fl_pulse_thermo", name: "Pulse Thermography", desc: "Nested delayed heat islands with independently diffusing perimeters. Colored inspection artwork with warm plateaus, cooling halos, delamination cores, depth contours, sound material channels.", swatch: "#e8641e" },
+    { id: "fl_acoustic_emission", name: "Acoustic Emission", desc: "Intersecting partial arrival rings and triangulated burst sites. Colored inspection artwork with arrival rings, sensor vertices, triangulation chords, burst stars, attenuation dots.", swatch: "#e8c341" },
+
+    // ─── WRAP SHOP wave 2 (2026-09-04): 17 -> 25 ─────────────────────────────
+    // Eight structural families the shelf did not yet have: hex lattice, woven
+    // twill, Truchet arc tiling, cellular EDGE network, optical displacement,
+    // curl-field line-integral convolution, log-spiral polar, and integer
+    // layer-count overlap.
+    { id: "wrap_hex_ppf", name: "Hex PPF Veil", desc: "Fine engineered polymer cells partition elastic protective film: recovered roofs, narrow adhesive seats, short stress ribs, healing witnesses and small pigment traces.", swatch: "#7f9698", subsection: "Filmcraft", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_twill_film", name: "Twill Surge Foil", desc: "Fine curved unequal warp/weft ribbons obey two-over-one twill occlusion, with underpasses, pressed crowns, parallel edge filaments and split ends.", swatch: "#827775", subsection: "Filmcraft", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_truchet_knurl", name: "Truchet Facet Knurl", desc: "Binary diagonal folds join opposed triangular foil facets into an irregular knurl network; fine engraved grip cuts, blind adhesive windows, clinched corner bosses and keyed fold tabs belong to their own facet.", swatch: "#635d54", subsection: "Filmcraft", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_craze_net", name: "Craze Fracture Lacquer", desc: "Fine unequal angular brittle fissures branch through film, with stopped tips, asymmetrically lifted lips, rooted secondary cracks and flaked junctions.", swatch: "#677662", subsection: "Paint Alchemy", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_lens_array", name: "Lenticular Lens Field", desc: "Unequal fine short cylindrical lenticules stagger in direction and carry paired opposing print lanes, barrel crowns, recessed roots and polished cap ends.", swatch: "#59585c", subsection: "Optical Deception", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_flow_wrapline", name: "Flow Streamlet Inlay", desc: "Dense short curving foil streamlets follow a rotating grain field; independently crowned ribbons split into twin tails over recessed ink beds, with one polished rail, transverse braking cuts, leading prism lips and blind tension ports. No continuous lamella or broad common background carries the design.", swatch: "#63585e", subsection: "Filmcraft", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_spiral_burnish", name: "Spiral Burnish Film", desc: "Dense fine eccentric spiral polish scores connect through short dragged tails in a continuous clear film, with score lips, compound grains and unbroken smooth recovery lands.", swatch: "#5f7479", subsection: "Filmcraft", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_overlap_ghost", name: "Overlap Ghost Register", desc: "Two independent fine angular film-island fields overlap, showing doubled buried silhouettes, paired menisci, clipped lower print edges and trapped adhesive pockets.", swatch: "#918d8d", subsection: "Filmcraft", sourceShelf: "WRAP SHOP" },
+
+    // ═══ WRAP SHOP (19) — owner mandate 2026-09-04 ═══════════════════════════
+    // Vinyl wrap as an APPLIED SHEET, which the catalog had never modelled. The
+    // nine pre-existing *_wrap bases are sheen presets wearing wrap names (gloss
+    // /matte/satin/stealth differ only in roughness); none of them has a seam, a
+    // squeegee mark, trapped air, a knifed edge or a perforation.
+    // These MODULATE the painter's own paint instead of replacing it, so a painter
+    // can wrap the scheme they already have. Each look is the winner of 10 scored
+    // candidates (scripts/spb_variant_search.py; winners in wrap_shop_2026_params.json).
+    // Colour Flip and Stretch Thin were CUT rather than shipped weak.
+    { id: "wrap_panel_seam", name: "Panel Step Inlay", desc: "Irregular fine trapezoidal film panels meet through offset stair joints, exposed adhesive lands and tiny keyed corners.", swatch: "#736b6d", subsection: "Filmcraft", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_squeegee", name: "Squeegee Witness", desc: "Unequal dense fine diagonal installer passes overlap at changing angles; rolled pressure toes, dragged adhesive ribs, dark rear roots and recovering shoulders belong to each actual pass.", swatch: "#5b6d6c", subsection: "Filmcraft", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_knife_edge", name: "Knife Cut Suture", desc: "A fine nonperiodic angular cut network has displaced one-sided flaps, exposed backing, interrupted uncut bridges and pointed turn burrs.", swatch: "#7b7b7c", subsection: "Filmcraft", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_layered_cut", name: "Layered Cut Foil", desc: "Two independent laser-cut foil webs interpenetrate: openings reveal the lower sheet, deep backing, adhesive undercuts and polished cut rims.", swatch: "#7c6968", subsection: "Filmcraft", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_lift_curl", name: "Lifted Film Edges", desc: "Unequal fine polygonal shingles lift at selected boundaries, exposing curled undersides, amber adhesive lands, dark hinges and directional roof creases.", swatch: "#795d6b", subsection: "Filmcraft", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_microbubble", name: "Microbubble Emboss", desc: "Asymmetric fine four-lobed trapped-air pillows join through continuous sealing webs, with pinch roots and tiny satellite vents.", swatch: "#686e68", subsection: "Paint Alchemy", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_creases", name: "Crease Fold Prism", desc: "Unequal fine triangular fan folds have alternating front/back planes, short discontinuous hinges, crumpled junctions and sharp crease roots.", swatch: "#6a6a73", subsection: "Filmcraft", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_heat_gun", name: "Heat Glazed Print", desc: "Fine displaced halftone inks soften inside unequal thermal dwell patches; glazed film, stretched recovery streaks, melted pigment pools and rooted witness lips trace the heated print.", swatch: "#919595", subsection: "Paint Alchemy", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_wet_apply", name: "Wet Apply Meniscus", desc: "Unequal fine elongated liquid lenses connect by capillary drainage paths; dry contact islands, pale menisci and particle wakes show liquid under film.", swatch: "#658585", subsection: "Paint Alchemy", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_air_release", name: "Air Release Manifold", desc: "Fine curving adhesive spines feed staggered oblique blind vents; unequal collector pockets, narrowed throats, paired channel walls and film roof ribs trace manufactured air routing without box-grid intersections.", swatch: "#90917b", subsection: "Filmcraft", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_perf_window", name: "Perforated Window Film", desc: "Fine short rounded oblique slots have staggered lengths and alternating punch angles; thin web bridges, recessed backing and asymmetric burrs establish actual perforation.", swatch: "#6e7f6e", subsection: "Optical Deception", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_laminate", name: "Laminate Parallax", desc: "Two independently engraved fine plies have offset angular windows, separate projected rulings, double cut edges and adhesive moire.", swatch: "#8f8898", subsection: "Optical Deception", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_print_band", name: "Print Register Prism", desc: "Unequal fine oblique print-pass bars carry three displaced ink registrations, dark overlap traps, clipped halftone dots and small foil slots.", swatch: "#727367", subsection: "Optical Deception", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_brushed_film", name: "Brushed Satin Alloy", desc: "Unequal directed bundles contain five to nine short 8–28px brush filaments with tapered starts, broken ends, crossgrain cuts and displaced burrs.", swatch: "#576664", subsection: "Filmcraft", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_holographic", name: "Holographic Foil", desc: "Security foil filled with microscopic engraved rosettes, ruled diffraction sectors, pale register cores and gold ghost rings.", swatch: "#898778", subsection: "Optical Deception", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_roll_memory", name: "Roll Memory Scroll", desc: "Opposing incomplete fine spiral turns alternate handedness and unequal pitch, with open seams, compressed ribs and thin turning lips.", swatch: "#72676c", subsection: "Filmcraft", sourceShelf: "WRAP SHOP" },
+    { id: "wrap_ceramic_coat", name: "Ceramic Levelled Glaze", desc: "Intact continuous blue-grey glaze carries fine unequal levelling tongues, short fluid contact necks, attached glass beads, cured menisci, local wipe striae and rare pigment witnesses. Small fluid anatomy owns the image; quiet paint is intentional.", swatch: "#75a4b1", subsection: "Paint Alchemy", sourceShelf: "WRAP SHOP" },
+
+    // ── THE DECADE SHELVES + THE TACTICAL/CYBERPUNK SPLIT (2026-08-31) ──
+    // Owner: Marble & Onyx was "tons of repeating designs... LAZY" (one veining
+    // algorithm recoloured 19 times) and OPTIC LAB was five unrelated one-off
+    // modules under a technique name. Flipped to the 1980s and the 1970s, a 1990s
+    // shelf added, and TACTICAL & CYBERPUNK split in two. 300 finishes, 20 lanes.
+    // 🪩 FAR OUT
+    { id: "fo_boogie_neon", name: "Disco: Boogie Neon", desc: "Bent tube in three colours, buzzing, with the transformer hum you can feel.", swatch: "#28709E" },
+    { id: "fo_discotheque_haze", name: "Disco: Discotheque Haze", desc: "Dry ice and cigarette smoke holding the beams up where you can see them.", swatch: "#5B9E9E" },
+    { id: "fo_glitter_ball_rain", name: "Disco: Glitter Ball Rain", desc: "The dots the ball throws, moving across everything in the room at once.", swatch: "#A8B2C1" },
+    { id: "fo_hustle_teal", name: "Disco: Hustle Teal", desc: "Polyester in a colour that only existed for about six years.", swatch: "#5B9E9E" },
+    { id: "fo_lighted_floor", name: "Disco: Lighted Floor", desc: "Perspex squares lit from underneath, each one changing on its own count.", swatch: "#28709E" },
+    { id: "fo_lurex_gold", name: "Disco: Lurex Gold", desc: "Metallic thread woven through the knit so the whole shirt is a light source.", swatch: "#C19328" },
+    { id: "fo_lurex_rose", name: "Disco: Lurex Rose", desc: "The same thread in rose gold, on a body-con knit that has no give in it at all.", swatch: "#BC5B84" },
+    { id: "fo_mirror_ball", name: "Disco: Mirror Ball", desc: "A thousand glass tiles on a motor, each throwing the same light somewhere else.", swatch: "#A8B2C1" },
+    { id: "fo_platform_patent", name: "Disco: Platform Patent", desc: "Patent leather on a four-inch stack — a mirror you can walk in.", swatch: "#843D9E" },
+    { id: "fo_roller_rink", name: "Disco: Roller Rink", desc: "Sealed maple under blacklight, with forty years of wheel polish on it.", swatch: "#843D9E" },
+    { id: "fo_saturday_chrome", name: "Disco: Saturday Chrome", desc: "The white suit was the exception. Everything else in that club was chrome.", swatch: "#A8B2C1" },
+    { id: "fo_sequin_sheet", name: "Disco: Sequin Sheet", desc: "Overlapping paillettes stitched in courses, every one free to flip.", swatch: "#BC5B84" },
+    { id: "fo_studio_gold", name: "Disco: Studio Gold", desc: "Gilt, mirror and a doorman. The room was mostly dark and entirely gold.", swatch: "#9E703D" },
+    { id: "fo_velvet_rope", name: "Disco: Velvet Rope", desc: "Crushed velvet, the deepest black in the building and the softest thing in it.", swatch: "#9E703D" },
+    { id: "fo_vinyl_groove", name: "Disco: Vinyl Groove", desc: "A twelve-inch single, lit from the side so the groove pitch shows.", swatch: "#56565E" },
+    { id: "fo_conversation_pit", name: "Shag: Conversation Pit", desc: "Burnt orange upholstery on a sunken bench you had to step down into.", swatch: "#C15B1E" },
+    { id: "fo_corduroy_brown", name: "Shag: Corduroy Brown", desc: "Wide wale, worn at the knee, in the brown that swallowed every room.", swatch: "#704C30" },
+    { id: "fo_fondue_copper", name: "Shag: Fondue Copper", desc: "Hammered copper on the good pot, brought out for guests four times a year.", swatch: "#C15B1E" },
+    { id: "fo_formica_boomerang", name: "Shag: Formica Boomerang", desc: "Laminate with the little shapes on it, and a chrome edge strip.", swatch: "#4C8E8E" },
+    { id: "fo_lava_lamp", name: "Shag: Lava Lamp", desc: "Wax rising in a column, never quite the same shape twice.", swatch: "#C15B1E" },
+    { id: "fo_linoleum_teal", name: "Shag: Linoleum Teal", desc: "Sheet vinyl with a repeating pattern designed to hide absolutely everything.", swatch: "#4C8E8E" },
+    { id: "fo_macrame_hang", name: "Shag: Macramé Hang", desc: "Jute knotted into a plant hanger by somebody in the family.", swatch: "#C1B28E" },
+    { id: "fo_popcorn_ceiling", name: "Shag: Popcorn Ceiling", desc: "Sprayed texture with a little sparkle in it, and asbestos, probably.", swatch: "#C1B28E" },
+    { id: "fo_rattan_weave", name: "Shag: Rattan Weave", desc: "A peacock chair nobody could actually sit in comfortably.", swatch: "#C1B28E" },
+    { id: "fo_shag_avocado", name: "Shag: Shag Avocado", desc: "Two inches of pile in a colour named after a fruit, and a rake to comb it.", swatch: "#848C38" },
+    { id: "fo_shag_harvest", name: "Shag: Shag Harvest", desc: "Harvest gold, the other colour every appliance came in.", swatch: "#C18E23" },
+    { id: "fo_smoked_glass", name: "Shag: Smoked Glass", desc: "Bronze-tinted glass in the coffee table and the shower door alike.", swatch: "#704C30" },
+    { id: "fo_tab_curtain", name: "Shag: Tab Curtain", desc: "Barkcloth with a bold repeat, hung on wooden rings that never ran smoothly.", swatch: "#C18E23" },
+    { id: "fo_terrazzo_kitchen", name: "Shag: Terrazzo Kitchen", desc: "Chips of everything set in resin and ground flat, indestructible.", swatch: "#848C38" },
+    { id: "fo_wood_panel", name: "Shag: Wood Panel", desc: "Photo-printed walnut on hardboard, and nobody minded that it was fake.", swatch: "#7F5633" },
+    { id: "fo_barbed_wire", name: "Outlaw: Barbed Wire", desc: "Four-point wire on cedar posts, rusted to the colour of the ground.", swatch: "#56565E" },
+    { id: "fo_basket_stamp", name: "Outlaw: Basket Stamp", desc: "The other tooling: a basketweave stamp walked across the whole skirt.", swatch: "#996633" },
+    { id: "fo_black_hat", name: "Outlaw: Black Hat", desc: "Beaver felt, brushed one way, the darkest thing anyone in the room owns.", swatch: "#56565E" },
+    { id: "fo_concho_row", name: "Outlaw: Concho Row", desc: "Hammered silver discs down a belt, each one covering a stitch line.", swatch: "#B29EA8" },
+    { id: "fo_longhorn_hide", name: "Outlaw: Longhorn Hide", desc: "Brindle hide with the hair still on, thrown over the back of a chair.", swatch: "#996633" },
+    { id: "fo_mesa_sunset", name: "Outlaw: Mesa Sunset", desc: "Sandstone in horizontal courses with the light going down behind it.", swatch: "#C16633" },
+    { id: "fo_outlaw_chrome", name: "Outlaw: Outlaw Chrome", desc: "Exhaust and a kick starter, wiped down with a rag every single night.", swatch: "#56565E" },
+    { id: "fo_prairie_denim", name: "Outlaw: Prairie Denim", desc: "Chambray gone pale at the shoulders from a decade of sun.", swatch: "#5B7AA8" },
+    { id: "fo_raw_denim", name: "Outlaw: Raw Denim", desc: "Selvedge twill, unwashed, that will take a year to look like anything.", swatch: "#5B7AA8" },
+    { id: "fo_rhinestone_suit", name: "Outlaw: Rhinestone Suit", desc: "A Nudie suit: chain stitch, cactus, and more stones than the wearer could afford.", swatch: "#B29EA8" },
+    { id: "fo_rodeo_dust", name: "Outlaw: Rodeo Dust", desc: "Arena dirt hanging in the light after eight seconds of work.", swatch: "#AD9360" },
+    { id: "fo_silver_buckle", name: "Outlaw: Silver Buckle", desc: "A trophy buckle the size of a saucer, engraved and gold-washed.", swatch: "#B29EA8" },
+    { id: "fo_snakeskin_boot", name: "Outlaw: Snakeskin Boot", desc: "Belly cut, lacquered, on a boot that cost more than the horse.", swatch: "#996633" },
+    { id: "fo_tooled_saddle", name: "Outlaw: Tooled Saddle", desc: "Sheridan floral cut with a swivel knife and beveled by hand, one stamp at a time.", swatch: "#996633" },
+    { id: "fo_turquoise_silver", name: "Outlaw: Turquoise Silver", desc: "Sleeping Beauty stone in a hand-stamped bezel, with the matrix showing.", swatch: "#4CA8A8" },
+    { id: "fo_airbrush_mural", name: "Van: Airbrush Mural", desc: "A wizard, a wolf and a planet, on the side of a panel van, freehand.", swatch: "#84479E" },
+    { id: "fo_cb_static", name: "Van: CB Static", desc: "A chromed mic, a whip antenna and forty channels of nothing much.", swatch: "#4270C6" },
+    { id: "fo_candy_apple", name: "Van: Candy Apple", desc: "Candy over a silver base, so the colour has depth you can look into.", swatch: "#B22328" },
+    { id: "fo_desert_scene", name: "Van: Desert Scene", desc: "Airbrushed dunes with a saguaro in the middle distance, always.", swatch: "#C16633" },
+    { id: "fo_eagle_gold", name: "Van: Eagle Gold", desc: "Gold leaf laid over size and burnished, then outlined in black.", swatch: "#BC8E2D" },
+    { id: "fo_flame_job", name: "Van: Flame Job", desc: "Licks laid out in tape, shot hot in the middle and cool at the tips.", swatch: "#D17014" },
+    { id: "fo_ghost_mural", name: "Van: Ghost Mural", desc: "Pearl on pearl — invisible head-on and unmistakable from the kerb.", swatch: "#84479E" },
+    { id: "fo_metalflake_blue", name: "Van: Metalflake Blue", desc: "Big flake laid heavy under clear, sanded and shot four more times.", swatch: "#4270C6" },
+    { id: "fo_metalflake_red", name: "Van: Metalflake Red", desc: "The same flake in red, which shows every single flaw in the bodywork.", swatch: "#B72D33" },
+    { id: "fo_pinstripe_kit", name: "Van: Pinstripe Kit", desc: "One-shot enamel pulled with a dagger brush, no tape, no second chances.", swatch: "#9E8E4C" },
+    { id: "fo_porthole_chrome", name: "Van: Porthole Chrome", desc: "A bubble window and a chrome trim ring, because the van needed both.", swatch: "#9E8E4C" },
+    { id: "fo_shag_interior", name: "Van: Shag Interior", desc: "The inside was carpeted. All of it. Including the ceiling.", swatch: "#C15B1E" },
+    { id: "fo_sunset_stripe", name: "Van: Sunset Stripe", desc: "The graduated stripe down the flank, orange through yellow, on every van.", swatch: "#D17014" },
+    { id: "fo_tailgate_sunburst", name: "Van: Tailgate Sunburst", desc: "Rays out of a single point on the back doors, in six shades of the same idea.", swatch: "#BC8E2D" },
+    { id: "fo_wheel_well_rust", name: "Van: Wheel Well Rust", desc: "The part of the van the mural never reached, going back to the earth.", swatch: "#7F5633" },
+    // ⚡ BAD & RAD
+    { id: "rad_amber_terminal", name: "Arcade: Amber Terminal", desc: "Amber phosphor dashes, fading raster echoes and warm glass etched with tiny signal breaks.", swatch: "#B76B0F" },
+    { id: "rad_attract_mode", name: "Arcade: Attract Mode", desc: "Electric pixel comets and collision bursts on deep ultraviolet arcade glass.", swatch: "#5B4CCC" },
+    { id: "rad_bezel_black", name: "Arcade: Neon Bezel Inlay", desc: "Hot-pink and turquoise cabinet inlays set into finely stippled black arcade plastic.", swatch: "#8E7A42" },
+    { id: "rad_cabinet_side_art", name: "Arcade: Cabinet Side Art", desc: "Layered red, cyan and yellow screenprint lightning with scuffed vinyl edges.", swatch: "#DB3D19" },
+    { id: "rad_dot_matrix", name: "Arcade: Dot Matrix", desc: "RGB phosphor triads and tiny dark shadow-mask slots beneath violet-tinted glass.", swatch: "#196B9E" },
+    { id: "rad_high_score", name: "Arcade: High Score Confetti", desc: "Arcade crown circuitry: small sharp pixel CROWNS with stepped ruby gold cyan jewels, double outlines, segmented score ladders, diamond medals and pixel sparkle clusters.", swatch: "#33A84C" },
+    { id: "rad_insert_coin", name: "Arcade: Coin Return Glow", desc: "Cherry-red coin-return lenses with amber ribbed windows and small polished latch details.", swatch: "#196B9E" },
+    { id: "rad_joystick_ball", name: "Arcade: Cherry Resin", desc: "Candy joystick resin: clean interlocking cherry-red domed disks with transparent amber crescents, cyan bearing collars, black recessed sockets, tiny white glint wedges and purple axial grooves.", swatch: "#288E4C" },
+    { id: "rad_marquee_bulb", name: "Arcade: Marquee Chase", desc: "Ruby, amber and cyan prismatic lens fragments with bright glass ridges and dim recesses.", swatch: "#DB3D19" },
+    { id: "rad_phosphor_green", name: "Arcade: Phosphor Green", desc: "Tiny lime phosphor-grain clusters with emerald afterglow and fine raster dropout.", swatch: "#33A84C" },
+    { id: "rad_quarter_slot", name: "Arcade: Token Jackpot", desc: "Burnished gold token-edge teeth, red enamel arcs and polished nickel chips.", swatch: "#8E7A42" },
+    { id: "rad_screen_burn", name: "Arcade: Screen Burn Echo", desc: "Faded cyan and pink raster ghosts beneath sharper orange phosphor strokes.", swatch: "#B76B0F" },
+    { id: "rad_sprite_sheet", name: "Arcade: Sprite Mosaic", desc: "Arcade power-up enamel: densely scattered tiny abstract pixel stars, stepped diamonds, nested square portals, zigzag energy trails and segmented rings in vermilion cyan yellow violet.", swatch: "#288E4C" },
+    { id: "rad_trackball_wear", name: "Arcade: Trackball Swirl", desc: "Arcade pinball ricochet: flat abstract intersecting candy-red arcs, turquoise concentric target segments, gold triangular rebound patterns, violet dotted score trails, tiny white chrome glints.", swatch: "#8E7A42" },
+    { id: "rad_vector_glow", name: "Arcade: Vector Glow", desc: "Cyan, violet and hot-pink wireframe fragments with bright beam junctions.", swatch: "#5B4CCC" },
+    { id: "rad_boombox_grille", name: "Grid: Equalizer Grille", desc: "Turquoise speaker perforations, magenta mesh and tiny amber meter bars.", swatch: "#8E7A42" },
+    { id: "rad_cassette_shell", name: "Grid: Mixtape Candy", desc: "Translucent fuchsia cassette plastic with cobalt ribs, orange leader strips and tiny metal guides.", swatch: "#A8B7CC" },
+    { id: "rad_chrome_type", name: "Grid: Chrome Bevel", desc: "Tiny blue-to-pink beveled strokes with sharp silver edges and purple enamel valleys.", swatch: "#A8B7CC" },
+    { id: "rad_digital_sunrise", name: "Grid: Digital Sunrise", desc: "Tangerine, pink and violet color bands broken into fine stepped sunrise fragments.", swatch: "#E52D70" },
+    { id: "rad_grid_floor", name: "Grid: Laser Tile", desc: "Tiny magenta and cyan tiled diamonds with glossy dark faces and bright grout crossings.", swatch: "#EF4C33" },
+    { id: "rad_laser_grid", name: "Grid: Laser Crossfire", desc: "Fine red, electric-blue and lime laser strokes with smoky violet interference pockets.", swatch: "#569ED1" },
+    { id: "rad_laserdisc_rainbow", name: "Grid: Laserdisc Prism", desc: "Fine silver diffraction teeth and rainbow recording tracks with sharp foil flashes.", swatch: "#569ED1" },
+    { id: "rad_miami_pastel", name: "Grid: Miami Pastel", desc: "Flamingo, aqua and pale lemon stucco with fine stepped deco inlays.", swatch: "#EA84B2" },
+    { id: "rad_neon_tube", name: "Grid: Neon Candy Glass", desc: "Tiny pink and aqua bent-glass strokes with peach halos and clear polished rims.", swatch: "#B7238E" },
+    { id: "rad_outrun_stripe", name: "Grid: Outrun Stripe", desc: "Hot red and cyan speed chevrons with pink offsets and glossy midnight enamel.", swatch: "#E52D70" },
+    { id: "rad_static_snow", name: "Grid: Chromatic Static", desc: "Tiny RGB interference flecks and vivid analog color tears beneath television glass.", swatch: "#995184" },
+    { id: "rad_sunset_bars", name: "Grid: Sunset Arcs", desc: "Fine curved coral and orange bands with berry-purple gaps and gold lacquer edges.", swatch: "#EF4C33" },
+    { id: "rad_synth_key", name: "Grid: Synth Sequencer", desc: "Candy-colored sequencer pads, ivory key slivers and small amber indicator marks.", swatch: "#A8B7CC" },
+    { id: "rad_vhs_tracking", name: "Grid: VHS Tracking", desc: "Magenta and cyan tape tears with fine scanline offsets and warm head-switching flecks.", swatch: "#995184" },
+    { id: "rad_vector_horizon", name: "Grid: Vector Terrain", desc: "Tiny cyan and pink contour facets etched into violet glass with gold junction sparks.", swatch: "#B7238E" },
+    { id: "rad_anodised_trim", name: "Memphis: Anodised Trim", desc: "Aqua, rose and lemon aluminum trims with brushed faces and fine polished cuts.", swatch: "#2884B7" },
+    { id: "rad_bacterio_print", name: "Memphis: Bacterio Pop", desc: "Tiny black bacteria-like squiggles, coral dots and teal commas under cream melamine.", swatch: "#A8A8AD" },
+    { id: "rad_confetti_laminate", name: "Memphis: Confetti Laminate", desc: "Tiny primary-color confetti, black hatch marks and bright chips beneath glossy melamine.", swatch: "#2884B7" },
+    { id: "rad_glass_block", name: "Memphis: Candy Glass Flute", desc: "Aqua and rose fluted glass with lemon pin reflections and frosted seams.", swatch: "#B7EFDB" },
+    { id: "rad_grid_tile", name: "Memphis: Ceramic Mosaic", desc: "Tiny coral, teal and mustard ceramic tiles with fine grout and chipped glaze.", swatch: "#DB3D70" },
+    { id: "rad_jazz_cup", name: "Memphis: Electric Brush", desc: "Teal dry-brush hooks, violet wisps and coral overspray on fine cream paper.", swatch: "#DB3D70" },
+    { id: "rad_lacquer_cabinet", name: "Memphis: Primary Lacquer", desc: "Cherry-red, lemon and cobalt lacquer slivers with crisp black seams and polished corners.", swatch: "#A8A8AD" },
+    { id: "rad_milano_squiggle", name: "Memphis: Milano Squiggle", desc: "Thin cobalt coils, coral broken loops and mustard dash pairs under satin varnish.", swatch: "#2884B7" },
+    { id: "rad_neon_wire_chair", name: "Memphis: Neon Wire Weave", desc: "1980s neon wire artwork: intricate offset magenta wire loops, cyan bent grids, yellow zigzag knots, purple curved mesh pockets and navy negative-space slits.", swatch: "#339E93" },
+    { id: "rad_pastel_mint", name: "Memphis: Mint Inlay", desc: "Mint enamel with tiny black grout hooks, apricot inserts and creamy ceramic chips.", swatch: "#B7EFDB" },
+    { id: "rad_peach_fuzz", name: "Memphis: Peach Fuzz", desc: "Peach, coral and lilac flock fibers with soft crushed nap and fine woven peeks.", swatch: "#EAAD93" },
+    { id: "rad_speckle_wall", name: "Memphis: Party Speckle", desc: "Tiny coral, cobalt and lemon paint flecks over textured aqua plaster.", swatch: "#C6C1BC" },
+    { id: "rad_sponge_paint", name: "Memphis: Tropical Sponge", desc: "Coral and turquoise sponge impressions with lemon glaze and fine porous edges.", swatch: "#EAAD93" },
+    { id: "rad_terrazzo_chip", name: "Memphis: Candy Terrazzo", desc: "Fine coral, mint and cobalt stone chips polished into lemon terrazzo.", swatch: "#C6C1BC" },
+    { id: "rad_zigzag_runner", name: "Memphis: Zigzag Runner", desc: "Fine mustard, teal and raspberry woven zigzags with cream yarn knots.", swatch: "#339E93" },
+    { id: "rad_aerobics_gym", name: "Radical: Aerobics Stripe", desc: "Fine coral, lime and violet athletic knit with tiny ribbed cuffs and elastic seams.", swatch: "#84E53D" },
+    { id: "rad_airbrush_portrait", name: "Radical: Airbrush Flare", desc: "Soft pink, aqua and peach spray crescents with tiny stenciled white highlights on satin cotton.", swatch: "#C1429E" },
+    { id: "rad_big_hair_chrome", name: "Radical: Glam Lightning Foil", desc: "Crimson and violet foil teeth with silver lightning cuts and tiny lacquer sparks.", swatch: "#D6513D" },
+    { id: "rad_hair_metal", name: "Radical: Stage Glitter", desc: "Ruby, gold and amethyst stage glitter with fine mirror flakes and dark lacquer pockets.", swatch: "#D6513D" },
+    { id: "rad_hypercolour", name: "Radical: Heatwave Dye", desc: "Fine pink, orange and lime dye blooms with soft violet transitions in cotton fibers.", swatch: "#EAAD93" },
+    { id: "rad_neon_grip", name: "Radical: Neon Grip", desc: "Lime rubber ribs with orange knurl nicks and violet recessed grooves.", swatch: "#84E53D" },
+    { id: "rad_neon_spandex", name: "Radical: Neon Spandex", desc: "Smooth aerodynamic stretch ribbons: clean acid-lime, cyan and hot-pink elastic interlocks, taut curved seams, tiny contrasting stitch ladders, violet inset bands and clean satin highlights.", swatch: "#D62384" },
+    { id: "rad_puffy_paint", name: "Radical: Puffy Paint", desc: "Tiny raised pink, teal and yellow paint curls on violet cotton.", swatch: "#C1429E" },
+    { id: "rad_rad_splatter_deck", name: "Radical: Rad Splatter Deck", desc: "Fine orange and lime splashes over cobalt deck lacquer with small scraped maple flecks.", swatch: "#3393C1" },
+    { id: "rad_skate_deck", name: "Radical: Deck Ripper", desc: "Fine magenta and acid-yellow torn print with teal slivers and scraped maple fibers.", swatch: "#B75128" },
+    { id: "rad_slap_bracelet", name: "Radical: Sweatband Stripe", desc: "Fine terry loops in lemon, raspberry and aqua with short striped ribbing.", swatch: "#D62384" },
+    { id: "rad_splatter_tee", name: "Radical: Splatter Tee", desc: "Fine teal, purple and pink thrown paint with dry cotton showing between droplets.", swatch: "#3393C1" },
+    { id: "rad_tiger_stripe", name: "Radical: Tiger Stripe", desc: "Tiny tapered black tiger strokes over hot orange guitar lacquer with yellow airbrush edges.", swatch: "#DB8919" },
+    { id: "rad_trapper_sticker", name: "Radical: Trapper Sticker", desc: "Tiny puffy vinyl and holographic sticker fragments in candy colors with silver foil edges.", swatch: "#3393C1" },
+    { id: "rad_zebra_wrap", name: "Radical: Neon Zebra Wrap", desc: "Fine irregular black zebra stripes with pink and aqua edges on warm ivory vinyl.", swatch: "#D6513D" },
+    // 💿 ALL THAT
+    { id: "at_beige_box", name: "Cdrom: Beige Box", desc: "Aged ivory computer-case ABS with fine vents, molded ribs, recessed fasteners and tiny green indicator details.", swatch: "#CCC1A8" },
+    { id: "at_crt_blue_screen", name: "Cdrom: CRT Blue Screen", desc: "Cobalt blue CRT phosphor, abstract electronic texture with no writing.", swatch: "#9EA8B2" },
+    { id: "at_corrupt_jpeg", name: "Cdrom: Corrupt JPEG", desc: "An abstract damaged digital photograph compressed into overlapping tiny discontinuous blocks.", swatch: "#992D9E" },
+    { id: "at_cyber_café", name: "Cdrom: Cyber Café", desc: "Cold perforated steel with tiny scattered cyan LED-like inserts.", swatch: "#BCDBE5" },
+    { id: "at_dial_up_green", name: "Cdrom: Dial-Up Green", desc: "Black glass with abstract green terminal activity.", swatch: "#709E66" },
+    { id: "at_disc_rainbow", name: "Cdrom: Disc Rainbow", desc: "Silver optical disc foil with curved multicolor pit tracks.", swatch: "#B74CA8" },
+    { id: "at_floppy_black", name: "Cdrom: Floppy Black", desc: "Anthracite matte magnetic-disk casing material, fragmented shutter-like brushed slivers.", swatch: "#848489" },
+    { id: "at_frosted_shell", name: "Cdrom: Frosted Shell", desc: "Blueberry polymer with frosted pockets, glossy molded ribs and smoky electronic traces beneath the surface.", swatch: "#BCDBE5" },
+    { id: "at_holo_sticker", name: "Cdrom: Holo Sticker", desc: "Embossed hologram foil with fine spectral engraving and sharply reflective silver facets between satin interference cells.", swatch: "#B74CA8" },
+    { id: "at_iridescent_cd_r", name: "Cdrom: Iridescent CD-R", desc: "Green-gold writable optical-disc dye lacquer, visibly different from silver rainbow data tracks.", swatch: "#B74CA8" },
+    { id: "at_mouse_ball_grime", name: "Cdrom: Arcade Token Foil", desc: "Arcade-token micro-embossing: densely overlapping tiny coin-edge fragments.", swatch: "#CCC1A8" },
+    { id: "at_pipes_screensaver", name: "Cdrom: Pipes Screensaver", desc: "A dense tangle of colorful enamel pipes, polished metal elbows and dark joints inspired by 1990s screensavers.", swatch: "#992D9E" },
+    { id: "at_windows_teal", name: "Cdrom: LAN Party Circuit", desc: "Fine intricate cyan, lime and violet electronic routes in black resin with exposed silver solder.", swatch: "#9EA8B2" },
+    { id: "at_y2k_chrome", name: "Cdrom: Y2K Chrome", desc: "Liquid silver inflatable chrome fragments scattered evenly.", swatch: "#B2C1D6" },
+    { id: "at_zip_disk", name: "Cdrom: Zip Disk", desc: "Saturated cobalt molded plastic with disciplined micro-ribbed engineering details, distinct from black floppy texture.", swatch: "#848489" },
+    { id: "at_anodised_peg", name: "Extreme: Anodised Peg", desc: "Violet anodized chromoly with densely distributed short silver grinding scars.", swatch: "#8EDB28" },
+    { id: "at_bmx_dirt", name: "Extreme: BMX Dirt", desc: "Warm compacted clay and tiny embedded grains, with short interrupted compressed tire-like marks.", swatch: "#937542" },
+    { id: "at_big_dog_print", name: "Extreme: Big Dog Print", desc: "Oversized 1990s comic-graphic screenprint abstracted into tiny playful ink shapes on cotton.", swatch: "#B76B28" },
+    { id: "at_bungee_cord", name: "Extreme: Bungee Cord", desc: "Small multidirectional braided elastic-sheath fragments in mismatched orange teal white black.", swatch: "#8EDB28" },
+    { id: "at_chain_link", name: "Extreme: Chain Link", desc: "Fine galvanized diamond-wire mesh without a background scene, tiny diamonds.", swatch: "#A3A3A3" },
+    { id: "at_dew_green", name: "Extreme: Dew Green", desc: "Acid-lime translucent citrus lacquer densely aerated with tiny abstract carbonation textures.", swatch: "#8EDB28" },
+    { id: "at_grip_tape", name: "Extreme: Grip Tape", desc: "Dense charcoal silicon-carbide abrasive grit with visible angular cutting faces.", swatch: "#A3A3A3" },
+    { id: "at_half_pipe_ply", name: "Extreme: Half Pipe Ply", desc: "Fine warm plywood/masonite laminate with short interwoven grain segments and small wear marks.", swatch: "#937542" },
+    { id: "at_mountain_topo", name: "Extreme: Mountain Topo", desc: "Dense abstract topographic cartography on faded cream paper with no text numbers map icons or large landmarks.", swatch: "#DB5628" },
+    { id: "at_neon_wetsuit", name: "Extreme: Neon Wetsuit", desc: "Abstract fluoro pink cyan black neoprene with tiny curved inset patches and bonded seams.", swatch: "#84C6CC" },
+    { id: "at_roller_blade", name: "Extreme: Roller Blade", desc: "Pearl-gray molded urethane with purple and orange inserts, recessed vents and fine worn tread.", swatch: "#288EB7" },
+    { id: "at_skatepark_concrete", name: "Extreme: Skate Deck Shred", desc: "Vibrant scraped skate-deck graphic layers, many tiny multicolor ink shards exposing pale plywood.", swatch: "#A3A3A3" },
+    { id: "at_snowboard_graphic", name: "Extreme: Snowboard Graphic", desc: "Abstract vibrant sublimated topsheet print with fine intersecting slashes under worn clear film.", swatch: "#DB5628" },
+    { id: "at_surf_wax", name: "Extreme: Surf Wax", desc: "Cream, mint and coral wax shavings with combed ridges, cloudy deposits and polished wear.", swatch: "#84C6CC" },
+    { id: "at_windbreaker_block", name: "Extreme: Windbreaker Block", desc: "Teal purple coral nylon color blocking expressed as many small angular panels.", swatch: "#288EB7" },
+    { id: "at_airbrush_tee", name: "Fresh: Airbrush Tee", desc: "Soft hand-airbrushed cyan, hot-pink and sunset-orange spray hooks on white cotton, with gentle overspray and fine fabric grain.", swatch: "#D1478E" },
+    { id: "at_boombox_chrome", name: "Fresh: Boombox Chrome", desc: "Chrome speaker grille and brushed aluminum abstract surface with fine perforation arrays.", swatch: "#848489" },
+    { id: "at_bucket_hat", name: "Fresh: Bucket Hat", desc: "Sand olive reversible cotton twill in small concentric stitching fragments.", swatch: "#8E9975" },
+    { id: "at_cross_colour_block", name: "Fresh: Cross Colour Block", desc: "Primary red gold green blue blocks on dark denim in a dense angular patchwork.", swatch: "#288442" },
+    { id: "at_denim_baggy", name: "Fresh: Denim Baggy", desc: "Stonewashed indigo denim with dense broken twill and tiny bleach-worn marks.", swatch: "#288442" },
+    { id: "at_fresh_kicks", name: "Fresh: Fresh Kicks", desc: "White patent leather and bright shoe mesh abstracted as small curved mixed-material patches.", swatch: "#B73338" },
+    { id: "at_gold_rope", name: "Fresh: Gold Rope", desc: "Warm gold fine herringbone linked metal in multidirectional small fragments.", swatch: "#C69923" },
+    { id: "at_graffiti_fill", name: "Fresh: Graffiti Fill", desc: "Vibrant cyan, pink, orange and purple spray fragments with crisp black hooks, overspray and layered ink edges.", swatch: "#D1478E" },
+    { id: "at_grill_chrome", name: "Fresh: Grill Chrome", desc: "Bright polished chrome with tiny rounded segmented jewel-like forms.", swatch: "#B2C1D6" },
+    { id: "at_kangol_felt", name: "Fresh: Kangol Felt", desc: "Deep burgundy felt with dense wool fibers, soft nap changes and tiny compressed seams.", swatch: "#8E9975" },
+    { id: "at_nameplate_gold", name: "Fresh: Neon Sneaker Sole", desc: "Electric orange, yellow, lime and violet rubber outsole micro-tread, dense multidirectional tread geometry.", swatch: "#C69923" },
+    { id: "at_starter_jacket", name: "Fresh: Starter Jacket", desc: "Royal blue red white satin nylon fragments with small embroidered stitches.", swatch: "#B73338" },
+    { id: "at_velour_rose", name: "Fresh: Velour Rose", desc: "Rose-pink crushed velour with tiny richly varied nap facets.", swatch: "#A34793" },
+    { id: "at_velour_tracksuit", name: "Fresh: Velour Tracksuit", desc: "Deep purple looped velour with narrow tiny rib segments and cream piping fragments, distinct from crushed rose fans.", swatch: "#A34793" },
+    { id: "at_vinyl_crate", name: "Fresh: Vinyl Crate", desc: "Worn charcoal paperboard and small black vinyl groove fragments with muted colorful sleeve-print scraps.", swatch: "#848489" },
+    { id: "at_band_tee_crack", name: "Flannel: Band Tee Crack", desc: "Ivory charcoal burgundy distressed plastisol ink on black cotton.", swatch: "#9E937F" },
+    { id: "at_basement_amp", name: "Flannel: Basement Amp", desc: "Dark charcoal amp tolex with small crushed corners and dense embossed pebble patterns.", swatch: "#6B4228" },
+    { id: "at_cassette_tape", name: "Flannel: Cassette Tape", desc: "Dark brown magnetic tape ribbon fragments interwoven with tiny clear plastic and colored label-ink slivers.", swatch: "#6B4228" },
+    { id: "at_chipped_nail", name: "Flannel: Mosh Pit Flyers", desc: "Dense torn neon punk-gig poster fragments in magenta, cream, black and acid yellow, abstract unlettered print.", swatch: "#282833" },
+    { id: "at_combat_boot_steel", name: "Flannel: Safety Pin Chrome", desc: "Tiny multidirectional punk safety-pin spring coils, loop and clasp fragments, bright silver on black.", swatch: "#9E937F" },
+    { id: "at_corduroy_olive", name: "Flannel: Corduroy Olive", desc: "Olive fine-wale corduroy in short differently oriented ribbed patches.", swatch: "#567F47" },
+    { id: "at_distressed_denim", name: "Flannel: Distressed Denim", desc: "Very dark indigo denim with many tiny frayed openings and exposed pale crossing yarns.", swatch: "#667AA3" },
+    { id: "at_doc_marten", name: "Flannel: Doc Marten", desc: "Cherry oxblood leather with tiny sharp worn creases and small yellow stitch fragments.", swatch: "#6B4228" },
+    { id: "at_flannel_forest", name: "Flannel: Flannel Forest", desc: "Forest-green and black brushed flannel windowpane plaid, distinct from red buffalo check.", swatch: "#1E2328" },
+    { id: "at_flannel_red", name: "Flannel: Flannel Red", desc: "Small red-and-black buffalo checks in brushed cotton, with crossed yarn, fuzzy nap and gently worn red threads.", swatch: "#282833" },
+    { id: "at_moss_sidewalk", name: "Flannel: Moss Sidewalk", desc: "Tiny moss growth following a fine branching concrete crack network.", swatch: "#567F47" },
+    { id: "at_overcast_grey", name: "Flannel: Blacklight Gig", desc: "Fluorescent violet cyan lime gig-poster ink abstractions on velvety near-black, dense tiny lively marks.", swatch: "#7A8E93" },
+    { id: "at_seattle_rain", name: "Flannel: Seattle Rain", desc: "Fine dense clear drizzle beads and tiny winding wet rivulets on blue-gray surface.", swatch: "#7A8E93" },
+    { id: "at_sharpie_ink", name: "Flannel: Sharpie Ink", desc: "Black marker ink bleeding into faded canvas, abstract scribble fragments without readable writing.", swatch: "#667AA3" },
+    { id: "at_thrift_cardigan", name: "Flannel: Thrift Cardigan", desc: "Warm oatmeal brown marled knit with small cable and rib fragments.", swatch: "#9E937F" },
+    // 🎯 TACTICAL & FIELD
+    { id: "tac_break_up_bark", name: "Camo: Break-Up Bark", desc: "Photo bark and limbs, printed so a treestand outline stops being a shape.", swatch: "#9E6628" },
+    { id: "tac_brushstroke_field", name: "Camo: Brushstroke Field", desc: "Painted by hand onto shelter-halves, which is where all of this started.", swatch: "#605B3D" },
+    { id: "tac_chocolate_chip", name: "Camo: Chocolate Chip", desc: "Six colours with black pebble spots, for a desert that had no pebbles.", swatch: "#B29E70" },
+    { id: "tac_desert_dpm", name: "Camo: Desert DPM", desc: "Two-colour disruptive over sand, printed on cotton that faded in one tour.", swatch: "#B29E70" },
+    { id: "tac_duck_blind", name: "Camo: Duck Blind", desc: "Photo-real reed and cattail, printed so the pattern never repeats in view.", swatch: "#7F6B3D" },
+    { id: "tac_flecktarn", name: "Camo: Flecktarn", desc: "Dense spots that dither into each other at ten metres.", swatch: "#605B3D" },
+    { id: "tac_frog_skin", name: "Camo: Frog Skin", desc: "Reversible spot pattern, green one side and beach the other.", swatch: "#706B4C" },
+    { id: "tac_m81_woodland", name: "Camo: M81 Woodland", desc: "Four colours, organic blobs, and the pattern every army copied for thirty years.", swatch: "#605B3D" },
+    { id: "tac_marpat_digital", name: "Camo: MARPAT Digital", desc: "Pixels at two scales at once, so it breaks up close AND at distance.", swatch: "#706B4C" },
+    { id: "tac_multicam_transition", name: "Camo: Multicam Transition", desc: "Seven colours that blend rather than edge, so it works in more than one place.", swatch: "#8E7F51" },
+    { id: "tac_rain_pattern", name: "Camo: Rain Pattern", desc: "Vertical dashes over a base, the Eastern Bloc answer to everything above.", swatch: "#8E9399" },
+    { id: "tac_snow_overwhite", name: "Camo: Snow Overwhite", desc: "An oversuit pulled over everything else, tearing on the first fence.", swatch: "#CCD3DB" },
+    { id: "tac_tiger_stripe", name: "Camo: Tiger Stripe", desc: "Brush strokes running horizontally, cut for jungle where the light is vertical.", swatch: "#565133" },
+    { id: "tac_tigerstripe_night", name: "Camo: Tigerstripe Night", desc: "The same stripe in blacks that differ only in how they take IR.", swatch: "#383842" },
+    { id: "tac_urban_grey_digital", name: "Camo: Urban Grey Digital", desc: "The one everybody agrees does not work anywhere, still issued for a decade.", swatch: "#8E9399" },
+    { id: "tac_anodised_hard", name: "Hardware: Anodised Hard", desc: "Type III hardcoat — thicker than the metal it grew out of, and matte.", swatch: "#606B42" },
+    { id: "tac_battle_worn", name: "Hardware: Battle Worn", desc: "Cerakote worn through to metal at every edge a hand or a wall has found.", swatch: "#9E8C66" },
+    { id: "tac_carbon_handguard", name: "Hardware: Carbon Handguard", desc: "Twill weave under resin, cool to the touch after a string nobody should fire.", swatch: "#66666B" },
+    { id: "tac_cerakote_grey", name: "Hardware: Cerakote Grey", desc: "Ceramic in a polymer carrier, sprayed thin and baked — flatter than paint.", swatch: "#70756D" },
+    { id: "tac_fde_polymer", name: "Hardware: FDE Polymer", desc: "Moulded-in texture on a polymer frame, in the tan that replaced black.", swatch: "#9E8C66" },
+    { id: "tac_gun_blue", name: "Hardware: Gun Blue", desc: "Hot salts and an oil wipe, over steel polished to 400 grit first.", swatch: "#475166" },
+    { id: "tac_kydex_sheet", name: "Hardware: Kydex Sheet", desc: "Thermoformed over the mould, with the pebble grain the sheet came with.", swatch: "#5B5B60" },
+    { id: "tac_nitride_black", name: "Hardware: Nitride Black", desc: "Nitrocarburised to 70 Rockwell, and the blackest surface in the case.", swatch: "#383842" },
+    { id: "tac_optic_glass", name: "Hardware: Optic Glass", desc: "Multi-coated lens, purple in reflection, doing its job by not being seen.", swatch: "#475166" },
+    { id: "tac_parkerised", name: "Hardware: Parkerised", desc: "Manganese phosphate, porous by design so it holds oil in the surface.", swatch: "#66666B" },
+    { id: "tac_rail_section", name: "Hardware: Rail Section", desc: "Slots at a fixed pitch, anodised, with the numbers laser-etched.", swatch: "#70756D" },
+    { id: "tac_sling_webbing", name: "Hardware: Sling Webbing", desc: "Mil-spec nylon, edge-sealed with a flame, in the green that fades to grey.", swatch: "#606B42" },
+    { id: "tac_stippled_grip", name: "Hardware: Stippled Grip", desc: "Burned into the polymer with a soldering iron, badly, by the owner.", swatch: "#5B5B60" },
+    { id: "tac_suppressor_heat", name: "Hardware: Suppressor Heat", desc: "Titanium that has been hot enough, often enough, to colour in rings.", swatch: "#9EA3A8" },
+    { id: "tac_titanium_bead", name: "Hardware: Titanium Bead", desc: "Bead blasted to a uniform matte so nothing on it can catch the sun.", swatch: "#9EA3A8" },
+    { id: "tac_autumn_brush", name: "Field: Autumn Brush", desc: "Oak and maple after the first frost, which is when everything moves.", swatch: "#9E6628" },
+    { id: "tac_bird_dog_tick", name: "Field: Bird Dog Tick", desc: "German shorthair ticking — the roan that is neither white nor liver.", swatch: "#8E9393" },
+    { id: "tac_blaze_cap", name: "Field: Blaze Cap", desc: "Knit blaze with a black band, the one thing everyone in the woods agrees on.", swatch: "#EA6B0A" },
+    { id: "tac_blaze_orange", name: "Field: Blaze Orange", desc: "Fluorescent, which means it emits more than it reflects, which is the point.", swatch: "#EA6B0A" },
+    { id: "tac_canvas_duck", name: "Field: Canvas Duck", desc: "Twelve-ounce cotton, waxed, that stands up on its own after a season.", swatch: "#B2996B" },
+    { id: "tac_cedar_decoy", name: "Field: Cedar Decoy", desc: "Carved, painted, and chipped by forty seasons of being thrown into a bag.", swatch: "#755B33" },
+    { id: "tac_creel_wicker", name: "Field: Creel Wicker", desc: "Split willow woven wet, with a leather strap gone black at the buckle.", swatch: "#B2996B" },
+    { id: "tac_fly_line", name: "Field: Fly Line", desc: "Weight-forward, floating, in a colour you can track against grey water.", swatch: "#899E93" },
+    { id: "tac_frozen_bank", name: "Field: Frozen Bank", desc: "Shelf ice over a slow edge, with the current still moving under it.", swatch: "#CCD3DB" },
+    { id: "tac_marsh_reed", name: "Field: Marsh Reed", desc: "Phragmites standing dead through winter, the colour of old straw.", swatch: "#7F6B3D" },
+    { id: "tac_neoprene_wader", name: "Field: Neoprene Wader", desc: "Five mil, with a boot foot and a patch kit you will need in October.", swatch: "#5B7075" },
+    { id: "tac_river_stone", name: "Field: River Stone", desc: "Rounded cobble in a shallow run, seen through a foot of moving water.", swatch: "#8E9393" },
+    { id: "tac_topo_sheet", name: "Field: Topo Sheet", desc: "A 1:24000 quad folded to the section you need, with a pencil line on it.", swatch: "#B2996B" },
+    { id: "tac_trout_flank", name: "Field: Trout Flank", desc: "Guanine platelets under the skin — a mirror that only works from below.", swatch: "#899E93" },
+    { id: "tac_wet_waxed_cotton", name: "Field: Wet Waxed Cotton", desc: "Wax bloomed to the surface, beading rain for about the first hour.", swatch: "#755B33" },
+    { id: "tac_ambush_green", name: "Night: Ambush Green", desc: "Foliage through a tube: every leaf the same brightness, no depth at all.", swatch: "#238E3D" },
+    { id: "tac_blackout_curtain", name: "Night: Blackout Curtain", desc: "Napped blackout cloth over a doorway, so no light says anyone is here.", swatch: "#383842" },
+    { id: "tac_chem_light", name: "Night: Chem Light", desc: "Snapped, shaken, and good for eight hours of exactly one colour.", swatch: "#6BC63D" },
+    { id: "tac_cold_steel_night", name: "Night: Cold Steel Night", desc: "Bare metal at minus ten, taking heat out of a hand through a glove.", swatch: "#475166" },
+    { id: "tac_frost_breath", name: "Night: Frost Breath", desc: "Vapour freezing on a collar, which is the one thing camouflage cannot fix.", swatch: "#384C6B" },
+    { id: "tac_ir_flat", name: "Night: IR Flat", desc: "Near-IR-matched black — the same to the eye, very different through a tube.", swatch: "#383842" },
+    { id: "tac_moonlit_snow", name: "Night: Moonlit Snow", desc: "Enough light to read by, and no colour in any of it.", swatch: "#4C6689" },
+    { id: "tac_muzzle_flash", name: "Night: Muzzle Flash", desc: "Unburnt powder igniting outside the barrel, gone in two milliseconds.", swatch: "#B77014" },
+    { id: "tac_night_vision", name: "Night: Night Vision", desc: "P43 phosphor and the scintillation that never quite settles.", swatch: "#238E3D" },
+    { id: "tac_red_lens", name: "Night: Red Lens", desc: "The filter that preserves dark adaptation, over a map at 0300.", swatch: "#DB4223" },
+    { id: "tac_signal_mirror", name: "Night: Signal Mirror", desc: "Two square inches of glass that can be seen from an aircraft at ten miles.", swatch: "#4C6689" },
+    { id: "tac_starlight_scope", name: "Night: Starlight Scope", desc: "Image intensified from almost nothing, with the grain that comes free.", swatch: "#384C6B" },
+    { id: "tac_thermal_black_hot", name: "Night: Thermal Black Hot", desc: "The same sensor with the palette inverted, which some people prefer.", swatch: "#383842" },
+    { id: "tac_thermal_white_hot", name: "Night: Thermal White Hot", desc: "Temperature mapped to brightness, so a warm engine is the brightest thing.", swatch: "#DB4223" },
+    { id: "tac_tracer_arc", name: "Night: Tracer Arc", desc: "Every fifth round burning, which shows the trajectory to everyone.", swatch: "#B77014" },
+    // 🌃 CYBERPUNK
+    { id: "cbp_acid_rain", name: "Street: Acid Rain", desc: "Lime corrosion pinholes and pink rain beads bite into cobalt enamel.", swatch: "#5B9375" },
+    { id: "cbp_holo_advert", name: "Street: Holo Advert Foil", desc: "Tiny cyan and rose lenticular foil slivers flash between violet enamel gaps.", swatch: "#9E3DB2" },
+    { id: "cbp_kanji_signage", name: "Street: Neon Sign Enamel", desc: "Neon sign enamel: layered abstract magenta and scarlet enamel sign strokes, thin cyan double borders, tiny amber lamp lenses, violet mounting-slot groups and gold foil corner tabs.", swatch: "#198499" },
+    { id: "cbp_night_market", name: "Street: Night Market Vinyl", desc: "Tiny tangerine, fuchsia and turquoise vinyl overlaps with pearly crimped edges.", swatch: "#CC5B23" },
+    { id: "cbp_overpass_sodium", name: "Street: Sodium Rivet", desc: "Sodium rivet mesh: many small amber rivet constellations and coral clipped structural brackets with cyan enamel ribs, purple recessed hatch ladders, scarlet warning notches, polished silver thin lips.", swatch: "#D1A819" },
+    { id: "cbp_puddle_neon", name: "Street: Puddle Neon", desc: "Cyan, pink and electric-orange wet micro-ripples cross dark blue enamel.", swatch: "#198499" },
+    { id: "cbp_rain_screen", name: "Street: Rain Screen", desc: "Turquoise microbeads interrupt a sharp magenta and cobalt display mesh.", swatch: "#56667A" },
+    { id: "cbp_shutter_tag", name: "Street: Shutter Tag", desc: "Lime paint-marker hooks and pink spray dots sit on fine violet shutter ribs.", swatch: "#CC5B23" },
+    { id: "cbp_sodium_fog", name: "Street: Vapor Dye", desc: "Sodium vapor dye: bold elegant amber flowing translucent loops threaded by sharp scarlet light slits, fine pink sparks, deep violet curved apertures, cyan prismatic ribbons and gold dotted channels.", swatch: "#B77019" },
+    { id: "cbp_sodium_vapour", name: "Street: Amber Discharge", desc: "Amber plasma filaments and violet glass specks form a fine branching discharge texture.", swatch: "#B77019" },
+    { id: "cbp_steam_grate", name: "Street: Thermal Vent", desc: "Thermal vent fanwork: tightly arranged small spiral vent segments in copper orange, turquoise louver combs, magenta heat slots, violet ceramic gaskets and bright gold fastener rows.", swatch: "#66665B" },
+    { id: "cbp_taxi_panel", name: "Street: Taxi Signal Enamel", desc: "Cyber taxi enamel: vivid yellow-black checker fragments curving into compact racing-like wavelets, orange reflector ribs, blue capsule running lights, magenta circuit stitches and chrome thin edge rails.", swatch: "#D1A819" },
+    { id: "cbp_vending_glow", name: "Street: Vending Glow", desc: "Lime acrylic lenses and pink ribbed windows sparkle between blue enamel dividers.", swatch: "#9E3DB2" },
+    { id: "cbp_wet_asphalt", name: "Street: Neon Aggregate", desc: "Cyan and fuchsia glass grit glints through dark petrol-blue wet aggregate.", swatch: "#56667A" },
+    { id: "cbp_neon_tube", name: "Street: Neon Capillary", desc: "Fine turquoise capillary bends and ruby glass collars lie in violet enamel.", swatch: "#198499" },
+    { id: "cbp_carbon_limb", name: "Chrome: Conductive Carbon", desc: "Tiny carbon braid bundles interlock with turquoise conductors and crimson resin stitches.", swatch: "#565660" },
+    { id: "cbp_ceramic_limb", name: "Chrome: Ceramic Microarmor", desc: "Chrome ceramic microarmor: mostly brilliant silver curved overlapping ceramic scales with crisp pink chrome rims, cobalt slit inserts, gold rivet halos, turquoise hairline glaze cracks and polished white shoulders.", swatch: "#CCD1D6" },
+    { id: "cbp_chrome_spine", name: "Chrome: Articulated Chrome", desc: "Tiny mirror hinges and cobalt sockets interlock with pink ceramic bearing pads.", swatch: "#A8A3A8" },
+    { id: "cbp_gold_contact", name: "Chrome: Gold Contact", desc: "Fine gold spring contacts cluster among emerald insulators and ruby resin dots.", swatch: "#B78E28" },
+    { id: "cbp_gunmetal_aug", name: "Chrome: Anodized Servo", desc: "Lime and violet machined microteeth with copper bearings and black lubricant pockets.", swatch: "#757F8E" },
+    { id: "cbp_mirror_shades", name: "Chrome: Spectral Lens", desc: "Fine orange and cyan optical slivers with violet anti-reflective rims and mirror glints.", swatch: "#B78E28" },
+    { id: "cbp_neural_port", name: "Chrome: Neural Port", desc: "Neural connector rosettes: intricate concentric copper and cobalt segmented socket rings with tiny pink contact pins, turquoise branching fiber roots, violet triangular insulator petals, black central slots and bright silver microbevels.", swatch: "#7A899E" },
+    { id: "cbp_optic_implant", name: "Chrome: Optic Iris", desc: "Tiny fuchsia iris wedges and cyan lens rings cluster around gold optical pinpoints.", swatch: "#7A899E" },
+    { id: "cbp_porcelain_face", name: "Chrome: Opal Ceramic", desc: "Fine peach and aquamarine porcelain fragments with violet crazing and pearly edges.", swatch: "#CCD1D6" },
+    { id: "cbp_ripperdoc_steel", name: "Chrome: Laser-Etched Alloy", desc: "Magenta and teal etched microgrooves with copper oxide dots and bright surgical edges.", swatch: "#757F8E" },
+    { id: "cbp_servo_housing", name: "Chrome: Servo Honeycomb", desc: "Tiny orange rounded honeycomb sockets with blue gaskets and chrome locking tabs.", swatch: "#565660" },
+    { id: "cbp_skin_weave", name: "Chrome: Signal Weave", desc: "Coral synthetic fibers cross turquoise conductive threads and tiny gold stitch nodes.", swatch: "#934C6B" },
+    { id: "cbp_subdermal_plate", name: "Chrome: Microplate Inlay", desc: "Fine emerald rhombus plates with ruby flexible joints and bright gold corners.", swatch: "#A8A3A8" },
+    { id: "cbp_titanium_rib", name: "Chrome: Titanium Ribbon", desc: "Tiny blue and gold titanium ribbon folds with magenta oxide and mirror cut edges.", swatch: "#A8A3A8" },
+    { id: "cbp_wetware_membrane", name: "Chrome: Wetware Gel", desc: "Tiny coral gel cells with lime membranes and violet suspended filaments.", swatch: "#934C6B" },
+    { id: "cbp_black_ice", name: "Netrun: Black Ice", desc: "Black ICE security: dark polished jagged shields nested inside sharp cyan fractured circuit ice, ruby lock-shaped abstract apertures, gold fractured edge sparks and violet prismatic facets.", swatch: "#A82328" },
+    { id: "cbp_corrupt_memory", name: "Netrun: Corrupt Memory", desc: "Memory checksum cascade: irregular ruby byte ladders interleaving electric-blue memory bars, acid-yellow missing-bit apertures, violet square spirals and cyan broken parity rings.", swatch: "#C12870" },
+    { id: "cbp_daemon_red", name: "Netrun: Daemon Red", desc: "Crimson forked microglyphs with orange cores and violet etched tails.", swatch: "#A82328" },
+    { id: "cbp_datastream", name: "Netrun: Data Braid", desc: "Fine turquoise pulse beads run through pink braided fiber-optic strands.", swatch: "#339E4C" },
+    { id: "cbp_deep_archive", name: "Netrun: Archive Foil", desc: "Copper micro-engraved tabs with emerald index cuts and sapphire lacquer pores.", swatch: "#424260" },
+    { id: "cbp_encryption_lattice", name: "Netrun: Encryption Lattice", desc: "Tiny lime interlocking hooks form an irregular lattice over violet ceramic.", swatch: "#8442C6" },
+    { id: "cbp_firewall_grid", name: "Netrun: Firewall Ceramic", desc: "Firewall labyrinth: vivid scarlet double-wall angular maze pathways enclosing varied blue octagonal bays, amber gates, magenta corner sparks, purple vent combs and mint stepped terminal dots.", swatch: "#4299E5" },
+    { id: "cbp_ghost_protocol", name: "Netrun: Ghost Protocol", desc: "Fine lilac translucent echoes overlap cyan etched fragments and rose pin glints.", swatch: "#709EB2" },
+    { id: "cbp_ice_wall", name: "Netrun: Cryo Prism", desc: "Fine turquoise frost needles grow between pink glass prisms and cobalt pores.", swatch: "#4299E5" },
+    { id: "cbp_neural_static", name: "Netrun: Neural Static", desc: "Fine yellow and pink synaptic specks branch between blue insulating grains.", swatch: "#709EB2" },
+    { id: "cbp_packet_loss", name: "Netrun: Packet Loss", desc: "Fine orange punched pixels and cyan displaced slivers interrupt purple foil.", swatch: "#424260" },
+    { id: "cbp_quantum_violet", name: "Netrun: Quantum Violet", desc: "Tiny violet interference rings cross lime phase slivers and pink optical grains.", swatch: "#8442C6" },
+    { id: "cbp_root_access", name: "Netrun: Root Access", desc: "Tiny gold keyway cuts and red contact teeth lock into emerald enamel.", swatch: "#339E4C" },
+    { id: "cbp_trace_route", name: "Netrun: Trace Route", desc: "Fine cyan right-angle traces link orange nodes across magenta etched enamel.", swatch: "#424260" },
+    { id: "cbp_worm_trail", name: "Netrun: Worm Trail", desc: "Fine lime segmented curls with pink etched teeth and copper node grains.", swatch: "#C12870" },
+    { id: "cbp_ash_fall", name: "Sprawl: Ember Fallout", desc: "Emberfall lacquer: densely interlocking electric-orange feather-like cinder blades, magenta heat borders, cyan crystalline spark clusters, purple carbon splinters and sharp dark gaps.", swatch: "#66665B" },
+    { id: "cbp_biohazard_bloom", name: "Sprawl: Biohazard Bloom", desc: "Lime spore rosettes and pink gel pores spread across cobalt polymer.", swatch: "#75B733" },
+    { id: "cbp_concrete_rot", name: "Sprawl: Reclaim Mosaic", desc: "Cyber aggregate repair: coral and turquoise narrow branching repair seams crossing angular indigo lacquer islands, embedded gold micro-grid screens, magenta hexagonal inspection plugs, white ceramic grit constellations.", swatch: "#999991" },
+    { id: "cbp_corp_glass", name: "Sprawl: Corporate Dichroic", desc: "Corporate prism lattice: emerald transparent polygon windows with layered internal gold filament grids, pink spectral bevels, cyan split corner brackets, violet microdot security bands.", swatch: "#898E93" },
+    { id: "cbp_corp_grey", name: "Sprawl: Security Foil", desc: "Fine vermilion guilloche curls with teal foil teeth and violet embossed dots.", swatch: "#898E93" },
+    { id: "cbp_cracked_solar", name: "Sprawl: Solar Fracture", desc: "Tiny sapphire solar-cell shards with copper busbars and magenta fractured edges.", swatch: "#66477A" },
+    { id: "cbp_duct_grime", name: "Sprawl: Coolant Capillary", desc: "Tiny lime coolant channels thread through purple seals and copper mesh.", swatch: "#66665B" },
+    { id: "cbp_hazard_stripe", name: "Sprawl: Hazard Microprint", desc: "Hazard origami enamel: interleaved tiny orange-black chevron fins with sharp cobalt folds, hot-pink edge wiring, gold warning studs, turquoise cutout triangles and violet recessed seams.", swatch: "#B7A319" },
+    { id: "cbp_oil_slick_puddle", name: "Sprawl: Oil Interference", desc: "Fine rose, gold and teal oil-film loops with violet meniscus pits.", swatch: "#66477A" },
+    { id: "cbp_rad_warning", name: "Sprawl: Reactor Enamel", desc: "Radiation pulse lacquer: yellow-orange interrupted radial arcs radiating among cobalt nested triangles, scarlet hazard notches, magenta ion tracks and bright cyan microdots.", swatch: "#B7A319" },
+    { id: "cbp_rebar_skeleton", name: "Sprawl: Copper Reinforcement", desc: "Tiny ribbed copper struts cross turquoise ceramic grit and fuchsia resin collars.", swatch: "#995123" },
+    { id: "cbp_scav_rust", name: "Sprawl: Salvage Patina", desc: "Fine orange oxide scales with turquoise verdigris and ruby surviving enamel.", swatch: "#995123" },
+    { id: "cbp_scrap_weld", name: "Sprawl: Weld Spectrum", desc: "Laser-weld candy metal: precise narrow electric-blue overlapping scalloped weld beads, copper pinstripes, magenta heat halos, gold-polished seams, violet recess fillets, sparse bright silver spark diamonds.", swatch: "#995123" },
+    { id: "cbp_sewer_bloom", name: "Sprawl: Algae Circuit", desc: "Biolume microgarden: sharp teal branching fernlike capillaries with lime bulb tips, coral curled spore fans, cobalt honeycomb pores, violet root knots and fine gold microbeads.", swatch: "#75B733" },
+    { id: "cbp_static_screen", name: "Sprawl: Signal Shatter", desc: "Signal fracture glass: compact crisp irregular cobalt polygon displays filled with clean cyan dash matrices, sharp scarlet scan segments, violet nested rectangles, amber pixel constellations and silver fractured rims.", swatch: "#898E93" },
+
     { id: "p_superfluid", name: "Absolute Zero Superfluid (PARADIGM)", desc: "Ultra-smooth flowing surface — zero-friction liquid metal look with soft cyan undertone", swatch: "#E0FFFF" },
     { id: "p_coronal", name: "Coronal Mass Ejection (PARADIGM)", desc: "Hot orange-white metallic with turbulent bright loops — solar surface look", swatch: "#FF4500" },
     { id: "p_seismic", name: "Seismic Faultline (PARADIGM)", desc: "Dark graphite base with glowing cracks — molten orange veins through matte black", swatch: "#3A1A1A" },
@@ -26,16 +557,16 @@ const BASES = [
     { id: "acid_rain", name: "Acid Rain", desc: "Chemical rain etched paint — pitted surface with clearcoat failure zones. Realistic environmental damage look.", swatch: "#778866" },
     { id: "ambulance_white", name: "Ambulance White", desc: "High-visibility emergency white — bright reflective finish for first responder and safety vehicle builds", swatch: "#ffffff", colorSafe: true },
     { id: "anodized", name: "Anodized", desc: "Apple-product oxide layer — color dyed into metal, not painted on. Gritty matte, no clearcoat feel. Tech/modern builds.", swatch: "#7788aa", colorSafe: true },
-    { id: "anime_cel_shade_chrome", name: "Anime Cel Shade Chrome", desc: "Flat cel-shaded bands with sharp metallic highlight steps", swatch: "#5566aa" },
-    { id: "anime_comic_halftone", name: "Anime Comic Halftone", desc: "Ben-Day dot pattern with size variation on paper base — manga panel screentone aesthetic for stylized builds", swatch: "#CC2255" },
-    { id: "anime_crystal_facet", name: "Anime Crystal Facet", desc: "Large angular crystalline facets with jewel tones per face", swatch: "#8844cc" },
-    { id: "anime_energy_aura", name: "Anime Energy Aura", desc: "Radial power glow field with energy rays and bright core", swatch: "#44aaff" },
-    { id: "anime_gradient_hair", name: "Anime Gradient Hair", desc: "Vivid magenta-pink top fading to deep indigo bottom — anime character hair gradient for stylized cosplay-themed cars", swatch: "#CC22AA" },
-    { id: "anime_mecha_plate", name: "Anime Mecha Plate", desc: "Hard geometric panel lines with alternating metallic zones", swatch: "#445577" },
-    { id: "anime_neon_outline", name: "Anime Neon Outline", desc: "Dark base with bright cyan-magenta neon edge highlights — anime energy-rim aesthetic for night-race cyber builds", swatch: "#22DDCC" },
-    { id: "anime_sakura_scatter", name: "Anime Sakura Scatter", desc: "Cherry blossom petal scatter on soft pink background — Japanese seasonal motif for itasha and JDM-styled builds", swatch: "#EE8899" },
-    { id: "anime_sparkle_burst", name: "Anime Sparkle Burst", desc: "Concentrated 4-pointed starburst sparkle clusters on dark", swatch: "#ffeecc" },
-    { id: "anime_speed_lines", name: "Anime Speed Lines", desc: "Directional motion lines radiating from focal point — anime action-scene speed effect for high-energy race-themed builds", swatch: "#DDDDEE" },
+    { id: "anime_cel_shade_chrome", name: "Anime Cel Terminator", desc: "Multi-light cel shading — hard posterized bands, bold ink terminators, hatch penumbras, warm rim-light streaks", swatch: "#8892d8" },
+    { id: "anime_comic_halftone", name: "Anime Screentone Moire", desc: "Two interfering Ben-Day screentone lattices with tone-graded dot sizes, hatch shadow pockets and red spot dots", swatch: "#d8d2c8" },
+    { id: "anime_crystal_facet", name: "Anime Crystal Shards", desc: "A cascade of voronoi crystal shards — per-shard refraction stripes, prism edges, glint lines, facet dust", swatch: "#8a4ce0" },
+    { id: "anime_energy_aura", name: "Anime Ki Corona", desc: "A charging ki double-corona — hard aura shells, gold core to cyan edge, electric filaments, rising embers", swatch: "#35c8ff" },
+    { id: "anime_gradient_hair", name: "Anime Ink-Brush Strands", desc: "Flowing anisotropic hair-strand streamlines with an angle-mapped sheen band, crossovers and flyaways", swatch: "#c04cc8" },
+    { id: "anime_mecha_plate", name: "Anime Mecha Greeble", desc: "Chamfered mecha plating — rivet rows, vent louvers, warning chevrons, glowing seams, hero-color panels", swatch: "#5a6b8c" },
+    { id: "anime_neon_outline", name: "Anime Neo-Tokyo Glow", desc: "Aerial night Tokyo — glowing street grid, thousands of lit windows, neon signage, wet-street reflections", swatch: "#ff8a3d" },
+    { id: "anime_sakura_scatter", name: "Anime Sakura Hurricane", desc: "A hurricane of true notched sakura petals in three depth layers with wind streaks over a dusk-rose sky", swatch: "#ff9db8" },
+    { id: "anime_sparkle_burst", name: "Anime Shoujo Sparkle", desc: "Shoujo sparkle field — 4/5/6-point stars, prism cross-flares, bubble bokeh, glitter dust on nebula midnight", swatch: "#ffd7ea" },
+    { id: "anime_speed_lines", name: "Anime Speed-Line Storm", desc: "Interfering multi-focal manga speed-line systems — density waves, dark gaps, chrome pinstripes, crimson accents", swatch: "#dfe3ec" },
     { id: "antique_chrome", name: "Antique Chrome", desc: "Yellowed, pitted, cloudy chrome — decades of age showing. Warmer than clean chrome. Vintage restorations and rat rods.", swatch: "#e8e8ee" },
     { id: "aramid", name: "Aramid", desc: "Kevlar ballistic fiber weave — gold-tan aramid like bulletproof vest material. Lighter than carbon. Exotic/race builds.", swatch: "#aa9944" },
     { id: "armor_plate", name: "Armor Plate", desc: "Thick rolled steel like a tank hull — heavy, scarred from manufacturing. Military vehicle and apocalypse builds.", swatch: "#778877" },
@@ -45,7 +576,18 @@ const BASES = [
     { id: "bentley_silver", name: "Bentley Silver", desc: "Ultra-refined silver metallic — finer flake than standard, Rolls-Royce/Bentley OEM luxury. Elegant and understated.", swatch: "#ccccdd", colorSafe: true },
     { id: "beetle_jewel", name: "Beetle Jewel", desc: "Chrysina jewel beetle green-gold iridescent shell — real insect-inspired metallic with angle-shift shimmer", swatch: "#55aa22" },
     { id: "beetle_rainbow", name: "Beetle Rainbow", desc: "Chrysochroa beetle full-spectrum thin-film iridescence — rainbow wing case effect shifting at every angle", swatch: "#7744cc" },
-    { id: "beetle_stag", name: "Beetle Stag", desc: "Dark metallic stag beetle armor plates with chitin shine", swatch: "#221108" },
+    { id: "beetle_tortoise", name: "Tortoise Glass", desc: "Transparent tortoise-beetle armor over a gold-to-red fluid reflector - fine glass scutes and independent material shift", swatch: "#d9a522" },
+    { id: "beetle_tiger", name: "Tiger Beetle Velocity", desc: "Fine white tiger-beetle maculation streams over a pointillistic copper, green and violet structural shell", swatch: "#c75818" },
+    { id: "beetle_rose_chafer", name: "Rose Chafer Velvet", desc: "Polarized metallic-green reflector bowls with warped scallop flow, gold lips, fan striae and pollen dimples", swatch: "#45a92c" },
+    { id: "beetle_buprestid", name: "Buprestid Furnace", desc: "Thermosensitive jewel-beetle multilayer with dense green, ember, cobalt and violet furnace ribbons over fine reflector valleys", swatch: "#e76319" },
+    { id: "beetle_ground", name: "Ground Beetle Obsidian", desc: "Oil-black Carabid armor with engraved polygon mesh, diffraction lines, continuous abrasion tracks and a buried micro-cross array", swatch: "#0b3150" },
+    { id: "beetle_stag", name: "Stag Carapace", desc: "Layered Lucanus armor with oxblood and cold-steel sclerites, bent ribs, pore canals and copper spiral-woven trabecular nodes", swatch: "#4b0a0d" },
+    { id: "beetle_longhorn", name: "Longhorn Filament", desc: "Individually tilted Cerambycid sack-scales with yellow-green, orange and turquoise photonic layers, cortex lips and crystal crossbands", swatch: "#75b91e" },
+    { id: "beetle_click", name: "Click Beetle Plasma", desc: "Superblack microtube eyes and yellow-green or orange lantern beads threaded along continuous cyan nerve routes through punctured armor", swatch: "#0ed7ba" },
+    { id: "butterfly_emperor", name: "Emperor Eyelet", desc: "Braided bronze and violet micro-ocelli over structural-blue purple-emperor scales with gold rims and pearl pupils", swatch: "#3421a8" },
+    { id: "butterfly_swallowtail", name: "Swallowtail Prism", desc: "Varied fork-tailed Papilio shingles with lemon thin-film, teal multilayers, melanin lanes and cyan-gold prism wells", swatch: "#18c8a2" },
+    { id: "butterfly_glasswing", name: "Glasswing Lattice", desc: "Translucent Greta oto membrane cells with silver-cyan veins, anti-reflective pillar relief, bristle traces and mirror dew", swatch: "#8dbbc4" },
+    { id: "butterfly_peacock", name: "Peacock Scale Furnace", desc: "Cobalt, emerald and copper micro-rosette glass corridors between ultra-black absorber lanes with roof-scale relief", swatch: "#074c83" },
     { id: "bioluminescent", name: "Bioluminescent", desc: "Deep-sea creature glow — soft luminous emission like anglerfish or jellyfish. Ethereal alien look for sci-fi builds.", swatch: "#22aa88" },
     { id: "black_chrome", name: "Black Chrome", desc: "Nearly black mirror chrome — dark as possible while still reflective. Sleeker than gunmetal, darker than dark chrome.", swatch: "#334455" },
     { id: "blackout", name: "Blackout", desc: "Murdered-out stealth black — thin protective matte coat over dark base. Darker than matte, less extreme than vantablack.", swatch: "#111111" },
@@ -55,7 +597,7 @@ const BASES = [
     { id: "brushed_wrap", name: "Brushed Wrap", desc: "Vinyl wrap version of brushed aluminum — directional grain film but removable. Less realistic than paint but easy swap.", swatch: "#99aaaa", colorSafe: true },
     { id: "bugatti_blue", name: "Bugatti Blue", desc: "Bugatti Bleu de France iconic deep royal blue — rich saturated hue with dark contrast, hypercar elegance", swatch: "#2244aa", colorSafe: true },
     { id: "burnt_headers", name: "Burnt Headers", desc: "Exhaust header heat-cycle oxide — gold-to-blue temper color bands from extreme heat exposure on raw steel", swatch: "#665533" },
-    { id: "butterfly_monarch", name: "Butterfly Monarch", desc: "Orange-black monarch wing pattern with vein network — biological insect wing structure for nature-inspired builds", swatch: "#EE7700" },
+    { id: "butterfly_monarch", name: "Monarch Mosaic", desc: "Dense orange scale windows inside absorptive black vein channels with overlapping lips, lamina ridges and cream marginal islands", swatch: "#f06a08" },
     { id: "butterfly_morpho", name: "Butterfly Morpho", desc: "Morpho blue structural color with angle-dependent flash — biological iridescence with no actual blue pigment, all optics", swatch: "#2255EE" },
     { id: "candy", name: "Candy", desc: "Deep transparent color over metallic base — classic hot rod candy. Your color shows through with wet depth and sparkle.", swatch: "#cc2244", colorSafe: true },
     { id: "candy_apple", name: "Satan's Apple", desc: "Deep blood-red candy gloss with extreme shadow crush — very dark, very wet", swatch: "#5E0000" },
@@ -64,17 +606,39 @@ const BASES = [
     { id: "candy_cobalt", name: "Mariana Trench Resin", desc: "Ultra-deep cobalt blue resin — thick gloss over dark scatter base", swatch: "#001B4D" },
     { id: "candy_emerald", name: "Radioactive Glass", desc: "Vivid green glass with bright edge glow — uranium glass look", swatch: "#16FF00" },
     { id: "carbon_base", name: "Carbon Base", desc: "Raw exposed carbon fiber — the weave IS the finish. Low metallic with visible fiber structure. Race car essential.", swatch: "#333333" },
+    { id: "carbon_3k_fine", name: "Carbon 3K Fine", desc: "Tight high-frequency 3K ±45° twill — small aerospace weave with crisp fiber striation under gloss clear", swatch: "#2a2a2e" },
+    { id: "carbon_satin", name: "Carbon Satin", desc: "Matte-clear 2×2 twill — OEM stealth carbon, woven structure with a dead-flat satin top", swatch: "#232326" },
+    { id: "carbon_red", name: "Carbon Red", desc: "Candy-red tinted carbon twill under deep wet clear — colored carbon with full weave detail", swatch: "#5a1212" },
+    { id: "carbon_blue", name: "Carbon Blue", desc: "Candy-blue tinted carbon twill under deep wet clear — colored carbon with full weave detail", swatch: "#14224d" },
+    { id: "spread_tow", name: "Spread-Tow Carbon", desc: "Wide flat spread-tow ribbons — modern large-format carbon weave, big rectangular lanes", swatch: "#303034" },
+    { id: "forged_blue", name: "Forged Blue", desc: "Chopped forged carbon set in blue resin — random marbled strand chunks, wet clearcoat", swatch: "#2a3350" },
+    { id: "nomex_honeycomb", name: "Nomex Honeycomb", desc: "Gold aramid honeycomb core — open hex cells with resin-wet walls, exposed composite structure", swatch: "#b88a2a" },
+    { id: "kevlar_red", name: "Kevlar Red Hybrid", desc: "Carbon black interwoven with red aramid tracer tows — race hybrid weave", swatch: "#6a1414" },
+    { id: "basalt_weave", name: "Basalt Weave", desc: "Bronze-grey volcanic basalt fiber twill — warm metallic mineral weave, distinct from carbon", swatch: "#5a4d3c" },
+    { id: "dyneema_white", name: "Dyneema White", desc: "White UHMWPE technical weave — matte high-strength fabric, pale woven structure", swatch: "#cfd0d4" },
     { id: "carbon_ceramic", name: "Carbon Ceramic", desc: "Carbon-ceramic brake disc surface — gray with carbon fiber flecks. Exotic supercar brakes-as-finish aesthetic.", swatch: "#333333", colorSafe: true },
     { id: "cerakote", name: "Cerakote", desc: "Military-spec ceramic polymer coating — tough, dead flat, tactical feel. Like a firearm finish on a race car.", swatch: "#667755" },
     { id: "ceramic", name: "Ceramic", desc: "Ultra-smooth ceramic nano-coating — deep wet shine with glass-like clarity and hydrophobic surface protection", swatch: "#5588bb", colorSafe: true },
+    { id: "cathedral_glass", name: "Cathedral Glass", desc: "Stained leaded cathedral glass — deep violet colored panels with faceted depth and leading texture", swatch: "#5a2a8c" },
+    { id: "sea_glass", name: "Sea Glass", desc: "Frosted beachy sea glass — soft seafoam tumbled finish, matte-satin with gentle subsurface", swatch: "#8ec9bc" },
+    { id: "sapphire_glass", name: "Sapphire Glass", desc: "Deep blue faceted gem glass — sapphire transparency with wet specular depth", swatch: "#1530a0" },
+    { id: "ruby_glass", name: "Ruby Glass", desc: "Deep red faceted gem glass — ruby cranberry transparency with wet specular depth", swatch: "#9e1020" },
+    { id: "emerald_glass", name: "Emerald Glass", desc: "Deep green faceted gem glass — emerald transparency with wet specular depth", swatch: "#0a7038" },
+    { id: "amber_glass", name: "Amber Glass", desc: "Warm honey amber gem glass — golden transparency with wet depth and facets", swatch: "#c8820e" },
+    { id: "smoked_glass", name: "Smoked Glass", desc: "Charcoal smoked translucent glass — dark tinted transparency, privacy-glass depth", swatch: "#2a2a30" },
+    { id: "milk_glass", name: "Milk Glass", desc: "Opaque milky white glass — soft subsurface glow, vintage pressed-glass look", swatch: "#e6e7ea" },
+    { id: "mercury_glass", name: "Mercury Glass", desc: "Antique silvered mercury glass — blotchy mottled silvering with worn metallic patches", swatch: "#8c8d92" },
+    { id: "crackle_glaze", name: "Raku Crackle", desc: "Teal celadon raku glaze — fine crazed crack network over wet ceramic glaze", swatch: "#5fa89e" },
+    { id: "liquid_glaze", name: "Liquid Glaze", desc: "Cobalt ultra-wet ceramic glaze — maximum gloss depth, pooled liquid-glass surface", swatch: "#15309a" },
+    { id: "terracotta_glaze", name: "Terracotta Glaze", desc: "Warm glazed terracotta — earthy orange clay with a soft glaze sheen and fine crazing", swatch: "#c46a40" },
     { id: "ceramic_matte", name: "Ceramic Matte", desc: "Ceramic nano-coat in matte — protected flat finish like PPF/ceramic but zero gloss. Modern stealth with UV protection.", swatch: "#667788", colorSafe: true },
-    { id: "chalky_base", name: "Chalky Base", desc: "Chalky oxidised flat — near-maximum degradation, powdery dead surface like neglected fence paint. Apocalypse and abandoned-vehicle builds.", swatch: "#AAAAAA", colorSafe: true },
-    { id: "chameleon", name: "Dual-Shift", desc: "Two-tone angle-dependent flip — procedural micro-spec, no hand painting. Grazing light reveals the second color.", swatch: "#7766aa" },
+    { id: "chalky_base", name: "Chalked Paint", desc: "Oxidised paint gone to chalk — powdery blotches fading your colour, pinholed all over.", swatch: "#b9b5a8", colorSafe: true },
+    { id: "chameleon", name: "Orchid Shift Pearl", desc: "Candy-pearl that shifts candy magenta to candy teal across the surface — fine mica platelets carry the two-tone flip.", swatch: "#b0228c" },
     { id: "champagne", name: "Champagne", desc: "Warm gold-silver blend — softer than gold, warmer than silver. Wedding cars, luxury sedans, elegant formal builds.", swatch: "#ccbb88" },
     { id: "checkered_chrome", name: "Checkered Chrome", desc: "Polished chrome with checkered flag reflection pattern — winner circle finish for victory lap builds", swatch: "#dde0ee" },
     { id: "chrome", name: "Chrome", desc: "Perfect mirror reflection — M255 R2 pure chrome. The ultimate show car base. Reflects environment like liquid metal.", swatch: "#e8e8ee" },
     { id: "chrome_wrap", name: "Chrome Wrap", desc: "Mirror chrome vinyl film — like chrome but with subtle stretch marks and wrap texture. Film-based, not paint.", swatch: "#dde0ee" },
-    { id: "clear_matte", name: "Clear Matte", desc: "Flat clearcoat with real protection — unlike raw matte, resists UV and scratches. Matte look, clearcoat durability.", swatch: "#aabbaa", colorSafe: true },
+    { id: "clear_matte", name: "Clear Matte", desc: "Flat clearcoat with real protection — unlike raw matte, resists UV and scratches. Matte look, clearcoat durability.", swatch: "#aabbaa", colorSafe: true, retired: true },
     { id: "cobalt_metal", name: "Cobalt Metal", desc: "Blue-gray cobalt metallic — cool industrial tone darker than silver, bluer than gunmetal. Aerospace builds.", swatch: "#4466aa" },
     { id: "color_flip_wrap", name: "Angle Flip Wrap", desc: "Dichroic-style wrap — micro-spec drives angle-resolved color flip. Math-generated in seconds.", swatch: "#8866aa" },
     { id: "copper", name: "Copper", desc: "Warm oxidized copper metallic — rich bronze-gold tone with natural patina character. Pairs beautifully with celtic patterns.", swatch: "#cc7744" },
@@ -87,9 +651,37 @@ const BASES = [
     { id: "destroyed_coat", name: "Destroyed Coat", desc: "Completely destroyed clearcoat — maximum degradation, pure chalk-rough surface stripped to primer in places. Junkyard authenticity.", swatch: "#555544", colorSafe: true },
     { id: "diamond_coat", name: "Diamond Coat", desc: "Diamond dust ultra-fine sparkle coat — micro-crystal glitter sealed in deep clear for show car brilliance", swatch: "#ccddee", colorSafe: true },
     { id: "drag_strip_gloss", name: "Drag Strip Gloss", desc: "Ultra-polished drag strip show gloss — mirror-wet quarter-mile paint for heads-up racing and car shows", swatch: "#dd4444" },
-    { id: "dragonfly_wing", name: "Dragonfly Wing", desc: "Transparent wing membrane with rainbow interference — biological thin-film optics with delicate vein network detail", swatch: "#AADDEE" },
+    { id: "dragonfly_wing", name: "Dragonfly Resilin", desc: "Corrugated Odonata rails and irregular vein cells with blue elastic joints, membrane suspension zones and weighted amber mass bars", swatch: "#3b8ea5" },
+{ id: "dragonfly_emerald", name: "Emerald Skimmer", desc: "Compact emerald, cyan and violet structural-colour clouds built from quasi-ordered nanospheres, melanin stiffeners, wax platelets and attached articulation flashes", swatch: "#14b88a" },
+{ id: "damselfly_cobalt", name: "Damselfly Cobalt", desc: "Compact paired cobalt wing laminations over melanin troughs with steel cross-sutures, violet forks and wet seam flashes", swatch: "#244bd8" },
+{ id: "cicada_membrane", name: "Cicada Window", desc: "Unequal bronze wing veins and compact tension ties over hydrophobic nanocone glass, rare suture collars and turquoise interference panes", swatch: "#2e7f83" },
+{ id: "lacewing_aurora", name: "Lacewing Aurora", desc: "Sigmoid pseudomedial rails, convergent radial branches and staggered gradates over rose-green thin-film panes with oval joints and vein setae", swatch: "#65c58b" },
+{ id: "mayfly_silver", name: "Mayfly Silverstream", desc: "Alternating convex and concave corrugation veins with sparse cross-ties, intercalary forks, fine silver facets and flexible blue bullae", swatch: "#9db7c7" },
+{ id: "bee_honeycomb", name: "Bee Venturi", desc: "Connected irregular wax-cell armor with transitional shared walls, honey menisci, cocoon silk, propolis plugs, wax grains and pollen-set hairs", swatch: "#d08a17" },
+{ id: "bumble_velvet", name: "Bumble Velvet", desc: "Interlocking ochre and sable directional pile built from socketed branched setae, comb fringes, pollen hooks and polished black-chitin slits", swatch: "#b57416" },
+{ id: "hoverfly_mirror", name: "Hoverfly Mirror", desc: "Paired pollinose maculae assembled from fine mirror tergite plates beneath transparent wing film, true and spurious vein rails, microtrichia islands and bare windows", swatch: "#5faaa1" },
+{ id: "firefly_lantern", name: "Firefly Lantern", desc: "Active and dormant three-layer light-organ modules combining jagged extraction prisms, photogenic cross-nets, radial urate reflectors, tracheal twigs, bulbs and dark shell sutures", swatch: "#62d81f" },
+{ id: "firefly_ember", name: "Firefly Emberglass", desc: "pH-tuned ember wedges trapped in soot-glass sclerite facets with active-site clamp rails, quenched pits, copper seam lips, wet prism edges and reinforced oxygen capillaries", swatch: "#b84218" },
+{ id: "ant_velvet", name: "Velvet Ant Armor", desc: "ultrablack overlapping mutillid sclerites with stacked lamella lips, connective pillars, edge-born grooved warning setae, defensive spines and stridulatory combs", swatch: "#a32618" },
+{ id: "mantis_orchid", name: "Orchid Mantis Silk", desc: "overlapping bilateral femoral-lobe cuticle fans with urate-white reservoirs, pink pigment-export seams, growth veins, UV-dark clefts, articulation pearls, wet rims and raptorial toothlets", swatch: "#e8b8dc" },
+{ id: "mantis_leaf", name: "Leaf Mantis Patina", desc: "ripped and crumpled dead-leaf lamina of connected angular creases, torn margins, petiole remnants, bounded verdigris decay, pore chains and serrated lobe edges", swatch: "#8a5125" },
+{ id: "katydid_leafglass", name: "Katydid Leafglass", desc: "branching leaf-mimic tegmen veins enclosing translucent green panes, necrotic cells, bite scallops, acoustic mirrors, file teeth and skeletonized ocellata", swatch: "#2caa73" },
+{ id: "stick_insect_bark", name: "Stick Insect Bark", desc: "segmented phasmid bark-cuticle bundles with fine splinters, tergite sutures, scar collars, lichen rosettes, resin wells, tubercles and femoral spines", swatch: "#9a5c27" },
+{ id: "cockroach_onyx", name: "Roach Onyx Armor", desc: "overlapping black-mahogany abdominal tergite shingles with membranes, wax pores, gland crescents, tongue plates, sensory sockets, polished lips and bounded abrasion", swatch: "#351623" },
+{ id: "weevil_opal", name: "Weevil Opal Mosaic", desc: "thousands of concave scale pits holding individually tuned single-diamond photonic rosettes, grain boundaries, ice rims, microbead points and empty sockets", swatch: "#8a7bd4" },
+{ id: "weevil_gilded", name: "Gilded Weevil Striae", desc: "broken longitudinal puncture furrows dividing convex intervals of directional gold sawtooth scales, polished lips, boss crowns, interlocking ridges and olive wear", swatch: "#b87916" },
+{ id: "scarab_sunplate", name: "Scarab Sunplate", desc: "interlocking golden shell plates filled with radial helicoid wedges, graded-pitch arcs, polarizer cores, diffraction teeth, cobalt underplates, pore canals and worn rims", swatch: "#c58b18" },
+{ id: "scarab_night", name: "Scarab Nightshift", desc: "flowing near-black lenticular absorber armour with chiral crescent seams, micropillars, moisture channels, cross-ply windows, mercury crowns and flooded clear edges", swatch: "#182557" },
+{ id: "jewel_spider", name: "Jewel Spider Cuticle", desc: "transparent emerald cuticle over irregular guanocyte cells, silver guanine doublets, ruby fluorescent microspheres, absorptive cores and silk-root filaments", swatch: "#19a49c" },
+{ id: "orb_weaver_silk", name: "Orb Weaver Silk", desc: "paired silver-blue capture fibres, diagonal load silk, wet glue pearls, amber glycoprotein cores, salt glints, capillary spools and branching anchors", swatch: "#83dcf5" },
+{ id: "praying_mantis_verdigris", name: "Mantis Verdigris", desc: "articulated bronze raptorial chains with dark hinges, socketed fixed and tiltable teeth, honeycomb grip grooves, pale contact wear and bounded verdigris", swatch: "#637e3d" },
+    { id: "hornet_titanium", name: "Hornet Titanium", desc: "flowing titanium gaster turbines with yellow cuticle blades, black joints, gland reservoirs, pore collars, spiracles and violet elastic hinges", swatch: "#8ba1b7" },
+    { id: "leafcutter_copper", name: "Leafcutter Copper", desc: "diagonal copper mandible sheaves carrying attached zinc-edged green cut leaves with wear, clay, red oxide and polished tips", swatch: "#b65d2a" },
+    { id: "dung_beetle_oil", name: "Dung Beetle Oilglass", desc: "petroleum thin-film contours over corrugated elytral basins with wax, cracks, pores, helicoids and wet troughs", swatch: "#34246f" },
+    { id: "bluebottle_mercury", name: "Bluebottle Mercury", desc: "liquid-metal ommatidial shoals with pseudopupils, corneal dust, calypter veins, setulae, spiracles and ginger hairs", swatch: "#169ac7" },
+    { id: "caddiscase_river", name: "Caddiscase Riverstone", desc: "selected river grains stitched with paired underwater silk, fuzzy adhesive, calcium knots, wet lips, mica and algae", swatch: "#72806a" },
     { id: "duracoat", name: "Duracoat", desc: "Tactical epoxy DuraCoat — mil-spec firearm-grade protective finish, flat and chemical-resistant for builds", swatch: "#556644" },
-    { id: "eggshell", name: "Eggshell", desc: "Soft low-sheen eggshell — gentle warmth between flat and satin, like fine interior wall paint on a car body", swatch: "#ddddcc", colorSafe: true },
+    { id: "eggshell", name: "Eggshell", desc: "Soft diffuse eggshell (0/140/100) — the last stop before matte.", swatch: "#ddddcc", colorSafe: true },
     { id: "electric_ice", name: "Electric Ice", desc: "Icy electric blue metallic with cold neon shimmer — frozen lightning trapped in pale blue metal flake", swatch: "#88ccee" },
     { id: "enamel", name: "Enamel", desc: "Hard baked enamel — traditional glossy paint with deep color and thick old-school body. Classic restorations.", swatch: "#4488aa" },
     { id: "endurance_ceramic", name: "Apollo Shield Char", desc: "Scorched ceramic heat shield — charred brown-black with rough ablative texture", swatch: "#2F2016" },
@@ -98,32 +690,38 @@ const BASES = [
     { id: "firefly_glow", name: "Firefly Glow", desc: "Dark exoskeleton with bioluminescent yellow-green lantern zones", swatch: "#88cc22" },
     { id: "fiberglass", name: "Fiberglass", desc: "Raw fiberglass gelcoat — slightly wavy semi-gloss surface straight from the mold before any finish paint", swatch: "#aaddee" },
     { id: "fire_engine", name: "Fire Engine", desc: "Deep wet fire apparatus red — thick glossy emergency red with maximum visibility. Classic American fire truck.", swatch: "#cc2222" },
-    { id: "flat_black", name: "Flat Black", desc: "Dead flat zero shine — like matte but even more extreme. No clearcoat at all. Raw paint surface. Military/rat rod essential.", swatch: "#0a0a0a", colorSafe: true },
-    { id: "f_pure_white", name: "Pure White (Foundation)", desc: "Plain solid white reference base — no texture or effect, just clean color. Use to isolate pattern work", swatch: "#f5f5f5", colorSafe: true },
-    { id: "f_pure_black", name: "Pure Black (Foundation)", desc: "Plain solid black reference base — zero texture, zero effect. Darkest clean starting point for pattern overlays", swatch: "#0a0a0a", colorSafe: true },
-    { id: "f_neutral_grey", name: "Neutral Grey (Foundation)", desc: "Plain mid-tone grey reference base — neutral and flat. Best for evaluating patterns without color bias", swatch: "#6a6a6a", colorSafe: true },
-    { id: "f_soft_gloss", name: "Soft Gloss (Foundation)", desc: "Plain glossy reference base — smooth reflective surface without metallic flake. Clean sponsor-safe starting point", swatch: "#8899aa", colorSafe: true },
-    { id: "f_soft_matte", name: "Soft Matte (Foundation)", desc: "Plain flat matte reference base — zero sheen, zero texture. The simplest non-reflective foundation", swatch: "#555555", colorSafe: true },
-    { id: "f_clear_satin", name: "Clear Satin (Foundation)", desc: "Plain satin clearcoat reference base — soft sheen without metallic. Balanced between gloss and matte foundations", swatch: "#99aabb", colorSafe: true },
-    { id: "f_warm_white", name: "Warm White (Foundation)", desc: "Plain warm-toned white reference base — slightly creamy, no texture. Softer than pure white foundation", swatch: "#e8e4dc", colorSafe: true },
-    { id: "f_chrome", name: "Chrome (Foundation)", desc: "Plain mirror chrome reference base — full reflectivity, no color tint. Use when you want raw chrome under patterns", swatch: "#e8e8ee", colorSafe: true },
-    { id: "f_satin_chrome", name: "Satin Chrome (Foundation)", desc: "Plain satin chrome reference base — brushed metallic sheen without color. Softer than mirror chrome foundation", swatch: "#ccccdd", colorSafe: true },
-    { id: "f_metallic", name: "Metallic (Foundation)", desc: "Plain metallic reference base — flat metallic material (M/R tuned for metallic look), no baked-in flake or angle play. Clean baseline for layering a Spec Pattern Overlay on top.", swatch: "#99AACC", colorSafe: true },
-    { id: "f_pearl", name: "Pearl (Foundation)", desc: "Plain pearlescent reference base — soft rainbow shimmer, no color tint. Clean pearl starting point for overlays", swatch: "#dde0e8", colorSafe: true },
-    { id: "f_carbon_fiber", name: "Carbon Fiber (Foundation)", desc: "Plain carbon fiber reference base — flat dark material tuned for carbon look, no baked-in weave or resin pooling. Add a carbon-weave Spec Pattern Overlay for visible weave texture.", swatch: "#333333", colorSafe: true },
-    { id: "f_brushed", name: "Brushed (Foundation)", desc: "Plain brushed-metallic reference base — flat metallic material tuned for a brushed look, no baked-in grain or brush lines. Add a brushed-grain Spec Pattern Overlay for visible linear grain.", swatch: "#99AAAA", colorSafe: true },
-    { id: "f_frozen", name: "Frozen (Foundation)", desc: "Plain frozen matte reference base — cold icy sheen, no crystal detail. Simpler than the enhanced frozen version", swatch: "#99bbcc", colorSafe: true },
-    { id: "f_powder_coat", name: "Powder Coat (Foundation)", desc: "Thick powder coating texture foundation — uniform durable surface, the industrial-tough baseline for tactical and utility builds.", swatch: "#667755", colorSafe: true },
-    { id: "f_anodized", name: "Anodized (Foundation)", desc: "Plain anodized aluminum reference base — dyed oxide layer, no pore detail. Clean tech-metal starting point", swatch: "#7788aa", colorSafe: true },
-    { id: "f_vinyl_wrap", name: "Vinyl Wrap (Foundation)", desc: "Plain vinyl wrap reference base — smooth film surface, no stretch marks or conform lines. Basic wrap look", swatch: "#555555", colorSafe: true },
-    { id: "f_gel_coat", name: "Gel Coat (Foundation)", desc: "Plain fiberglass gelcoat reference base — flat high-gloss material, no baked-in flow-out waves. The marine and kit-car classic baseline.", swatch: "#AADDEE", colorSafe: true },
-    { id: "f_baked_enamel", name: "Baked Enamel (Foundation)", desc: "Hard baked traditional enamel foundation — kiln-fired thick gloss like vintage refrigerator paint. Solid restoration baseline.", swatch: "#4488AA", colorSafe: true },
+    { id: "flat_black", name: "Flat Black", desc: "Dead flat, zero coat (0/250/255) — the darkest response the paint side of the cube has.", swatch: "#0a0a0a", colorSafe: true },
+    { id: "f_pure_white", name: "Pure White", desc: "Plain solid white reference base — no texture or effect, just clean color. Use to isolate pattern work", swatch: "#f5f5f5", colorSafe: true, retired: true },
+    { id: "f_pure_black", name: "Pure Black", desc: "Plain solid black reference base — zero texture, zero effect. Darkest clean starting point for pattern overlays", swatch: "#0a0a0a", colorSafe: true, retired: true },
+    { id: "f_neutral_grey", name: "Neutral Grey", desc: "Plain mid-tone grey reference base — neutral and flat. Best for evaluating patterns without color bias", swatch: "#6a6a6a", colorSafe: true, retired: true },
+    { id: "f_soft_gloss", name: "Soft Gloss", desc: "Plain glossy reference base — smooth reflective surface without metallic flake. Clean sponsor-safe starting point", swatch: "#8899aa", colorSafe: true, retired: true },
+    { id: "f_soft_matte", name: "Soft Matte", desc: "Plain flat matte reference base — zero sheen, zero texture. The simplest non-reflective foundation", swatch: "#555555", colorSafe: true, retired: true },
+    { id: "f_clear_satin", name: "Clear Satin", desc: "Plain satin clearcoat reference base — soft sheen without metallic. Balanced between gloss and matte foundations", swatch: "#99aabb", colorSafe: true, retired: true },
+    { id: "f_warm_white", name: "Warm White", desc: "Plain warm-toned white reference base — slightly creamy, no texture. Softer than pure white foundation", swatch: "#e8e4dc", colorSafe: true, retired: true },
+    { id: "f_chrome", name: "Chrome", desc: "Mirror chrome (255/2/16) — full metal, no roughness. Pick a near-white colour for silver, any colour for tinted chrome.", swatch: "#e8e8ee", colorSafe: true },
+    { id: "f_satin_chrome", name: "Satin Chrome", desc: "Satin chrome (250/45/40) — chrome-tier metal with a broader, softer highlight.", swatch: "#ccccdd", colorSafe: true },
+    { id: "f_metallic", name: "Metallic", desc: "General body metallic (200/50/16) — flat metallic material, no baked-in flake or angle play.", swatch: "#99AACC", colorSafe: true },
+    { id: "f_pearl", name: "Pearl", desc: "Pearl body (100/40/16) — half-metal response with a polished highlight. Your colour, pearl light.", swatch: "#dde0e8", colorSafe: true },
+    { id: "f_carbon_fiber", name: "Carbon Fiber", desc: "Plain carbon fiber reference base — flat dark material tuned for carbon look, no baked-in weave or resin pooling. Add a carbon-weave Spec Pattern Overlay for visible weave texture.", swatch: "#333333", colorSafe: true, retired: true },
+    { id: "f_brushed", name: "Brushed", desc: "Brushed metal response (180/75/65) — broad metal highlight with a weak coat. Add a brushed-grain Spec Pattern Overlay for visible grain.", swatch: "#99AAAA", colorSafe: true },
+    { id: "f_frozen", name: "Frozen", desc: "Frozen technical film (160/85/130) — hazed metallic with the coat pushed back. Cold and dry.", swatch: "#99bbcc", colorSafe: true },
+    { id: "f_powder_coat", name: "Powder Coat", desc: "Thick powder coating (10/120/145) — eggshell sheen with the clearcoat suppressed. Industrial and tactical builds.", swatch: "#667755", colorSafe: true },
+    { id: "f_anodized", name: "Anodized", desc: "Plain anodized aluminum reference base — dyed oxide layer, no pore detail. Clean tech-metal starting point", swatch: "#7788aa", colorSafe: true, retired: true },
+    { id: "f_vinyl_wrap", name: "Vinyl Wrap", desc: "Plain vinyl wrap reference base — smooth film surface, no stretch marks or conform lines. Basic wrap look", swatch: "#555555", colorSafe: true, retired: true },
+    { id: "f_gel_coat", name: "Gel Coat", desc: "Plain fiberglass gelcoat reference base — flat high-gloss material, no baked-in flow-out waves. The marine and kit-car classic baseline.", swatch: "#AADDEE", colorSafe: true, retired: true },
+    { id: "f_baked_enamel", name: "Baked Enamel", desc: "Hard baked traditional enamel foundation — kiln-fired thick gloss like vintage refrigerator paint. Solid restoration baseline.", swatch: "#4488AA", colorSafe: true, retired: true },
+    // FOUNDATION ONE 2026-09-03 — five cells promoted/added from the Spec Guide production deck.
+    { id: "f_candy", name: "Candy", desc: "Candy response (200/15/16) — polished metallic under a colour you pick. Deep hot-rod glass without a clear layer.", swatch: "#cc2244", colorSafe: true },
+    { id: "f_bead_blast", name: "Bead Blast", desc: "Bead-blasted metal (180/160/140) — broad diffuse metal sparkle, no coat. Raw shop hardware.", swatch: "#9aa0a6", colorSafe: true },
+    { id: "f_satin_pearl", name: "Satin Pearl", desc: "Satin pearl / mica (100/90/60) — pearl body with the highlight softened to satin.", swatch: "#d9dbe6", colorSafe: true },
+    { id: "f_matte_metallic", name: "Matte Metallic", desc: "Matte metallic (225/140/100) — rough hazed metal, the BMW-Frozen look. Metal that does not shine.", swatch: "#8d949c", colorSafe: true },
+    { id: "f_dark_chrome", name: "Dark Chrome", desc: "Dark chrome (250/15/40) — chrome-tier response with a weaker coat. Pick a dark colour for gunmetal or black chrome.", swatch: "#3a3d44", colorSafe: true },
     { id: "fleet_white", name: "Hyper-Bleach Alabaster", desc: "The purest synthetic white designed to actively blow out localized camera sensors", swatch: "#FFFFFF" },
     { id: "forged_composite", name: "Forged Composite", desc: "Lamborghini-style forged carbon composite — random chopped fiber swirl pattern sealed in deep resin clear", swatch: "#555555" },
     { id: "frozen", name: "Frozen", desc: "Icy matte metallic — cold crystal texture like frost on metal. Unique look between chrome and matte.", swatch: "#99bbcc", colorSafe: true },
     { id: "frozen_matte", name: "Frozen Matte", desc: "BMW Individual frozen matte metallic — icy crystal sheen with zero gloss, the original luxury frozen paint", swatch: "#99aabb", colorSafe: true },
     { id: "galvanized", name: "Galvanized", desc: "Hot-dip galvanized zinc crystalline spangle — raw industrial zinc coating with visible crystal flower pattern", swatch: "#aabbbb" },
-    { id: "gloss", name: "Gloss", desc: "Clean smooth gloss paint — non-metallic, pure color. The safest choice for readable sponsors and numbers.", swatch: "#44aa44", colorSafe: true },
+    { id: "gloss", name: "Gloss", desc: "Standard glossy body (0/30/16). The safe default under sponsors and numbers.", swatch: "#44aa44", colorSafe: true },
     { id: "gloss_wrap", name: "Gloss Wrap", desc: "Glossy vinyl wrap film — smooth high-shine like paint gloss but removable and uniform. No metallic, pure clean color.", swatch: "#44aa66" },
     { id: "graphene", name: "Graphene", desc: "Single-layer graphene ultra-thin metallic — futuristic nano-material with subtle dark iridescence and depth", swatch: "#889999" },
     { id: "gunmetal", name: "Gunmetal", desc: "Dark blue-gray metallic — aggressive, industrial, masculine. The go-to for tactical and military-inspired builds.", swatch: "#556677", colorSafe: true },
@@ -131,15 +729,66 @@ const BASES = [
     { id: "heat_treated", name: "Heat Treated", desc: "Heat-treated titanium with blue-gold oxide zones — temper colors from welding heat on raw aerospace metal", swatch: "#7788cc" },
     { id: "holographic_base", name: "Holographic Base", desc: "Full holographic rainbow prismatic base — bright spectral color shift across the entire surface at every angle", swatch: "#aa88dd" },
     { id: "hybrid_weave", name: "Hybrid Weave", desc: "Carbon-kevlar hybrid bi-weave — alternating black carbon and gold aramid threads in a tight diagonal pattern", swatch: "#666655" },
-    { id: "iridescent", name: "Bifrost Crystal", desc: "Rainbow prismatic metallic — strong color shift across viewing angles", swatch: "#E1A1FF" },
+    { id: "iridescent", name: "Abalone Nacre", desc: "Abalone-shell pearl — green/blue/violet thin-film nacre flecks over a deep pearl body", swatch: "#1a6e5a" },
     { id: "jelly_pearl", name: "Jelly Pearl", desc: "Translucent jelly-like pearl coating with deep shimmer — semi-transparent gel surface that lets the base color glow through", swatch: "#DDBBEE", colorSafe: true },
     { id: "kevlar_base", name: "Kevlar Base", desc: "Same aramid as bulletproof vests — tough golden fiber weave. Pairs with carbon for hybrid. Tactical/military builds.", swatch: "#998844" },
     { id: "koenigsegg_clear", name: "Koenigsegg Clear", desc: "Clear-coated visible carbon weave Koenigsegg style — exposed fiber under deep glossy resin shell", swatch: "#3d3020" },
     { id: "lamborghini_verde", name: "Lambo Verde", desc: "Lamborghini Verde Mantis electric green — vivid acid-bright hue that screams Italian supercar aggression", swatch: "#33cc55" },
     { id: "liquid_titanium", name: "Liquid Titanium", desc: "Molten titanium pooling mirror — liquid-metal sheen with warm gray tone and flowing reflective highlights", swatch: "#8899aa" },
     { id: "liquid_wrap", name: "Liquid Wrap", desc: "PlastiDip-style removable rubber coat — textured matte you can peel off later. Temporary builds and experiments.", swatch: "#8866aa" },
-    { id: "living_matte", name: "Living Matte", desc: "Organic living matte — subtle biological sheen that shifts softly like skin or natural material under light", swatch: "#666666", colorSafe: true },
-    { id: "matte", name: "Matte", desc: "Dead flat with zero reflection — stealth, military, DTM race looks. Absorbs light completely. Great under carbon fiber.", swatch: "#666666", colorSafe: true },
+    // SPB-102 / PRISM FORGE — procedural spectral bases (2026-05-17 UI wire-up)
+    { id: "pf_event_horizon_spectra", name: "PF: Event Horizon Spectra", desc: "PRISM FORGE Event Horizon Spectra — v3: ink-quiet diffuse; sub-pixel spec carriers stack spectral flash in sim.", swatch: "#888899" },
+    { id: "pf_chromatic_storm", name: "PF: Chromatic Storm", desc: "PRISM FORGE Chromatic Storm — v3: crushed multi-scale hue fog + dense spec interference (no damascus wallpaper).", swatch: "#888899" },
+    { id: "pf_neon_nova", name: "PF: Neon Nova", desc: "PRISM FORGE Neon Nova — v3: no radial fan; pocket hue via micro regions + cyber-dense spec lattice.", swatch: "#888899" },
+    { id: "pf_molten_aurora", name: "PF: Molten Aurora", desc: "PRISM FORGE Molten Aurora — v3: ember/teal without diagonal macro bands; heat reads from spec beats.", swatch: "#888899" },
+    { id: "pf_void_pearl", name: "PF: Void Pearl", desc: "PRISM FORGE Void Pearl — **unchanged v2 path** (artist hold); charcoal opal, spec-led bloom.", swatch: "#888899" },
+    { id: "pf_ion_trap", name: "PF: Ion Trap", desc: "PRISM FORGE Ion Trap — v3: electric blue-violet micro grain; no wide ion stripes in diffuse.", swatch: "#888899" },
+    { id: "pf_sapphire_blood", name: "PF: Sapphire Blood", desc: "PRISM FORGE Sapphire Blood — v3: jewel hue crushed to fine texture; wine undertow in spec mix.", swatch: "#888899" },
+    { id: "pf_emerald_inferno", name: "PF: Emerald Inferno", desc: "PRISM FORGE Emerald Inferno — v3: no pinwheel; acid/ember via micro hue + HF spec shards.", swatch: "#888899" },
+    { id: "pf_violet_sunrise", name: "PF: Violet Sunrise", desc: "PRISM FORGE Violet Sunrise — v3: dawn gold/violet as crushed fields; zero candy stripes.", swatch: "#888899" },
+    { id: "pf_copper_moon", name: "PF: Copper Moon", desc: "PRISM FORGE Copper Moon — **unchanged v2 path** (artist hold); burnished copper, spec-led story.", swatch: "#888899" },
+    { id: "pf_toxic_horizon", name: "PF: Toxic Horizon", desc: "PRISM FORGE Toxic Horizon — v3: chartreuse/purple as micro mosaic; hazard glitter in spec.", swatch: "#888899" },
+    { id: "pf_glacial_burn", name: "PF: Glacial Burn", desc: "PRISM FORGE Glacial Burn — v3: cooler, smoother ultra carrier vs Oil Nebula; ice/ember separation.", swatch: "#888899" },
+    { id: "pf_oil_nebula", name: "PF: Oil Nebula", desc: "PRISM FORGE Oil Nebula — v3: distinct HF phase set from Glacial; thinner tri power, more warp chaos.", swatch: "#888899" },
+    { id: "pf_rose_quantum", name: "PF: Rose Quantum", desc: "PRISM FORGE Rose Quantum — v3: no quantum pinwheel; rose/teal as micro pockets + jewelry spec.", swatch: "#888899" },
+    { id: "pf_cobalt_fire", name: "PF: Cobalt Fire", desc: "PRISM FORGE Cobalt Fire — v3: cobalt/lava without candy bands; flash is spec-led.", swatch: "#888899" },
+    { id: "pf_midnight_prism", name: "PF: Midnight Prism", desc: "PRISM FORGE Midnight Prism — v3: ink-quiet plane; prismatic lightning almost entirely in spec.", swatch: "#888899" },
+    { id: "pf_hyperwave", name: "PF: Hyperwave", desc: "PRISM FORGE Hyperwave — v3: lateral energy without macro sweep stripes; HF spec scan texture.", swatch: "#888899" },
+    { id: "pf_crystal_fade", name: "PF: Crystal Fade", desc: "PRISM FORGE Crystal Fade — v3: opal milk micro veins + satin frost spec (tighter than v2 wallpaper).", swatch: "#888899" },
+    { id: "pf_dark_matter_halo", name: "PF: Dark Matter Halo", desc: "PRISM FORGE Dark Matter Halo — v3: void base; halo is HF spec ridge energy, not radial pinwheel paint.", swatch: "#888899" },
+    { id: "pf_apex_spectrum", name: "PF: Apex Spectrum", desc: "PRISM FORGE Apex Spectrum — v3: max hue walk still **micro** on albedo; bold metallic in spec (no cell wallpaper).", swatch: "#888899" },
+    { id: "pf_cluster_tar_eclipse", name: "PF: Cluster Tar Eclipse", desc: "PRISM FORGE Cluster Tar Eclipse — black islands: gold/violet/teal pockets + crushed grain.", swatch: "#888899" },
+    { id: "pf_cluster_bitumen_aurora", name: "PF: Cluster Bitumen Aurora", desc: "PRISM FORGE Cluster Bitumen Aurora — tar-black with scattered aurora RGB pockets; unique island layout.", swatch: "#888899" },
+    { id: "pf_cluster_obsidian_gild", name: "PF: Cluster Obsidian Gild", desc: "PRISM FORGE Cluster Obsidian Gild — gilded micro-pools on obsidian; purple/teal counter-islands.", swatch: "#888899" },
+    { id: "pf_cluster_coal_starfield", name: "PF: Cluster Coal Starfield", desc: "PRISM FORGE Cluster Coal Starfield — coal black with starfield jewel pockets; denser micro sparkle.", swatch: "#888899" },
+    { id: "pf_cluster_void_islands", name: "PF: Cluster Void Islands", desc: "PRISM FORGE Cluster Void Islands — void black + isolated hue archipelagos; each island unique weighting.", swatch: "#888899" },
+    { id: "pf_bright_solar_daffodil", name: "PF: Bright Solar Daffodil", desc: "PRISM FORGE Bright Solar Daffodil — high-key yellow sun plate; micro hue so sponsors stay clean.", swatch: "#888899" },
+    { id: "pf_bright_hyperpink", name: "PF: Bright Hyperpink", desc: "PRISM FORGE Bright Hyperpink — neon magenta/pink pop with crushed micro texture + glass spec.", swatch: "#888899" },
+    { id: "pf_bright_seafoam_bolt", name: "PF: Bright Seafoam Bolt", desc: "PRISM FORGE Bright Seafoam Bolt — seafoam/lime voltage on bright shell; undertone through micro hue.", swatch: "#888899" },
+    { id: "pf_bright_cerulean_pop", name: "PF: Bright Cerulean Pop", desc: "PRISM FORGE Bright Cerulean Pop — saturated sky blue; sparkle via HF spec, not albedo bands.", swatch: "#888899" },
+    { id: "pf_bright_canary_glass", name: "PF: Bright Canary Glass", desc: "PRISM FORGE Bright Canary Glass — lemon-lime glass bright plate; satin-glass spec envelope.", swatch: "#888899" },
+    { id: "pf_bright_magenta_arc", name: "PF: Bright Magenta Arc", desc: "PRISM FORGE Bright Magenta Arc — hot magenta/fuchsia with micro hue arc; no macro stripes.", swatch: "#888899" },
+    { id: "pf_bright_lime_voltage", name: "PF: Bright Lime Voltage", desc: "PRISM FORGE Bright Lime Voltage — acid lime on bright value; undertone via micro yellow-green walk.", swatch: "#888899" },
+    { id: "pf_bright_peach_fizz", name: "PF: Bright Peach Fizz", desc: "PRISM FORGE Bright Peach Fizz — warm peach/coral bright shell; fizz is spec HF, not peach stripes.", swatch: "#888899" },
+    { id: "pf_bright_neon_ice_stream", name: "PF: Bright Neon Ice Stream", desc: "PRISM FORGE Bright Neon Ice Stream — electric cyan/ice blue bright plate; arctic undertone.", swatch: "#888899" },
+    { id: "pf_bright_orchid_pulse", name: "PF: Bright Orchid Pulse", desc: "PRISM FORGE Bright Orchid Pulse — vivid orchid/violet bright finish; pulse in spec, not candy bands.", swatch: "#888899" },
+    { id: "pf_blend_triad_mist", name: "PF: Blend Triad Mist", desc: "PRISM FORGE Blend Triad Mist — three-hue mist (teal/violet/gold) crushed to micro scales.", swatch: "#888899" },
+    { id: "pf_blend_quad_weave", name: "PF: Blend Quad Weave", desc: "PRISM FORGE Blend Quad Weave — four-hue weave in micro field; spec carries extra separation.", swatch: "#888899" },
+    { id: "pf_spectrum_chaos_crown", name: "PF: Spectrum Chaos Crown", desc: "PRISM FORGE Spectrum Chaos Crown — full-spectrum madness #1: max hue span, still pixel-crushed on albedo.", swatch: "#888899" },
+    { id: "pf_prismatic_void_madness", name: "PF: Prismatic Void Madness", desc: "PRISM FORGE Prismatic Void Madness — full-spectrum madness #2 on deep void; rainbow in spec + micro hue.", swatch: "#888899" },
+    { id: "pf_white_castle_of_fear", name: "PF: White Castle of Fear", desc: "PRISM FORGE White Castle of Fear — glimmering white show plate; ice-blue undertone via tint + micro hue.", swatch: "#888899" },
+    { id: "pf_gradient_venetian_veil", name: "PF: Gradient Venetian Veil", desc: "PRISM FORGE Gradient Venetian Veil — soft multi-octave gradient bias in region scales + micro crush.", swatch: "#888899" },
+    { id: "pf_tri_crimson_cyan_mage", name: "PF: Tri Crimson Cyan Mage", desc: "PRISM FORGE Tri Crimson Cyan Mage — crimson/cyan/magenta triad on micro islands; mage undertone in spec.", swatch: "#888899" },
+    { id: "pf_quad_jade_violet_gold_slate", name: "PF: Quad Jade Violet Gold Slate", desc: "PRISM FORGE Quad Jade Violet Gold Slate — four-tone luxury blend; all crushed to fine texture.", swatch: "#888899" },
+    { id: "pf_fade_copper_teal_sunset", name: "PF: Fade Copper Teal Sunset", desc: "PRISM FORGE Fade Copper Teal Sunset — copper→teal sunset gradient character via **region octaves** + micro.", swatch: "#888899" },
+    { id: "pf_blend_ocean_peach_ivory", name: "PF: Blend Ocean Peach Ivory", desc: "PRISM FORGE Blend Ocean Peach Ivory — pastel tri-hue on ivory value; beach luxury micro spec.", swatch: "#888899" },
+    { id: "pf_iris_velvet_crossfade", name: "PF: Iris Velvet Crossfade", desc: "PRISM FORGE Iris Velvet Crossfade — iris/violet velvet crossfade; micro cross hue, no macro bands.", swatch: "#888899" },
+    { id: "pf_spectral_tidepool_wash", name: "PF: Spectral Tidepool Wash", desc: "PRISM FORGE Spectral Tidepool Wash — teal/green/violet wash; tidepool spectral in HF spec.", swatch: "#888899" },
+    { id: "pf_midnight_coral_ember", name: "PF: Midnight Coral Ember", desc: "PRISM FORGE Midnight Coral Ember — deep midnight with coral ember micro pockets + warm spec.", swatch: "#888899" },
+    { id: "pf_emerald_orchid_storm", name: "PF: Emerald Orchid Storm", desc: "PRISM FORGE Emerald Orchid Storm — emerald/jade/orchid tri-storm; crushed hue complexity.", swatch: "#888899" },
+    { id: "pf_golden_ultraviolet_fog", name: "PF: Golden Ultraviolet Fog", desc: "PRISM FORGE Golden Ultraviolet Fog — full-spectrum madness #3 (warmer): gold fog into UV violet micro travel.", swatch: "#888899" },
+    { id: "living_matte", name: "Living Matte", desc: "Organic living matte — subtle biological sheen that shifts softly like skin or natural material under light", swatch: "#666666", colorSafe: true, retired: true },
+    { id: "matte", name: "Matte", desc: "Matte body (0/200/160) — light is absorbed, a faint coat lobe keeps it from going dead.", swatch: "#666666", colorSafe: true },
     { id: "matte_wrap", name: "Matte Wrap", desc: "Dead-flat vinyl film — zero sheen like matte paint but removable. No orange peel. Cleaner flat than spray matte.", swatch: "#555555" },
     { id: "maybach_two_tone", name: "Maybach Two-Tone", desc: "Mercedes-Maybach duo-tone luxury split — formal upper/lower color divide with chrome accent separation line", swatch: "#4a4035", colorSafe: true },
     { id: "mclaren_orange", name: "McLaren Orange", desc: "McLaren Papaya Spark vivid orange — the iconic British racing orange from Woking, bold and unmistakable", swatch: "#ee6622" },
@@ -156,14 +805,167 @@ const BASES = [
     { id: "metallic", name: "Metallic", desc: "Classic automotive metallic — visible metal flake particles in clearcoat. The standard race car base. Sponsor-safe.", swatch: "#aabbcc", colorSafe: true },
     { id: "midnight_pearl", name: "Midnight Pearl", desc: "Deep dark pearlescent with hidden sparkle — nearly black until light catches the pearl shift underneath", swatch: "#dde0e8", colorSafe: true },
     { id: "mil_spec_od", name: "Mil-Spec OD", desc: "Olive drab mil-spec CARC coating — flat OD green per military standard for tactical ground vehicle builds", swatch: "#556644" },
+    { id: "multicam", name: "Multicam", desc: "Multicam/Scorpion fine organic camo — tan/green/brown blended micro-blobs, matte cerakote feel", swatch: "#6a6450" },
+    { id: "marpat_woodland", name: "MARPAT Digital", desc: "Pixelated digital woodland camo — fine green/brown/tan/black pixels, flat tactical", swatch: "#3a4030" },
+    { id: "tiger_stripe", name: "Tiger Stripe", desc: "Jungle tiger stripe — fine wavy black brush stripes over olive/tan, matte", swatch: "#4a4a2e" },
+    { id: "kryptek_typhon", name: "Kryptek Typhon", desc: "Angular reptilian-scale camo — fine black/grey geometric cells, matte", swatch: "#2a2c30" },
+    { id: "m81_woodland", name: "M81 Woodland", desc: "Classic 4-color woodland camo — fine brown/green/black organic blobs, matte", swatch: "#3a4228" },
+    { id: "desert_dpm", name: "Desert DPM", desc: "Desert disruptive-pattern camo — fine tan/brown blobs, matte", swatch: "#b09060" },
+    { id: "urban_digital", name: "Urban Digital", desc: "Urban digital camo — fine grey/white/black pixels, matte", swatch: "#888a8e" },
+    { id: "od_drab", name: "OD Green", desc: "Solid olive-drab tactical cerakote — flat mil-spec coating with micro grain", swatch: "#4d5333" },
+    { id: "coyote_fde", name: "Coyote FDE", desc: "Solid coyote / flat-dark-earth tan tactical cerakote — flat with micro grain", swatch: "#8c7654" },
+    { id: "blackout_ops", name: "Blackout Ops", desc: "Murdered-out tactical black — near-flat with fine chalky micro-pore texture", swatch: "#18181c" },
+    { id: "neon_circuit", name: "Neon Circuit", desc: "Cyberpunk PCB — fine routed cyan/magenta circuit traces and nodes on dark board", swatch: "#10b0c0" },
+    { id: "tron_grid", name: "Tron Grid", desc: "Glowing fine cyan grid with bright intersection nodes and depth fade on black", swatch: "#10a0d0" },
+    { id: "synthwave", name: "Synthwave", desc: "Retro synthwave — magenta→cyan gradient with sun band and a fine glowing grid", swatch: "#c83a8c" },
+    { id: "data_rain", name: "Data Rain", desc: "Matrix code-rain — fine green glyph streaks dripping on black", swatch: "#1a8a30" },
+    { id: "glitch_rgb", name: "RGB Glitch", desc: "Datamosh glitch — fine chromatic RGB-shifted scanlines and blocks", swatch: "#6040a0" },
+    { id: "hex_tech", name: "Hex Tech", desc: "Sci-fi hex panel grid — fine glowing cyan honeycomb edges on dark", swatch: "#14a0b0" },
+    { id: "holo_vapor", name: "Holo Vapor", desc: "Holographic vaporwave — fine pastel thin-film iridescent swirl", swatch: "#c8a0e0" },
+    { id: "chrome_neon", name: "Chrome Neon", desc: "Polished chrome with fine diagonal magenta/cyan neon pinstripes", swatch: "#b0b4bc" },
+    { id: "plasma_pulse", name: "Plasma Pulse", desc: "Electric plasma — fine blue/purple energy filaments and arcs", swatch: "#7a30c0" },
+    { id: "cyber_camo", name: "Cyber Camo", desc: "Cyberpunk digital camo — fine neon cyan/magenta/violet pixel blocks on dark", swatch: "#18c0d0" },
+    { id: "labradorite", name: "Labradorite", desc: "Gray feldspar that flashes electric blue/gold at angle (labradorescence)", swatch: "#2a3a6a" },
+    { id: "spectrolite", name: "Spectrolite", desc: "Full-spectrum labradorite — blue/gold/green/violet flash domains", swatch: "#3a2a6a" },
+    { id: "ammolite", name: "Ammolite", desc: "Iridescent fossil-shell — fractured rainbow plates with dark seams", swatch: "#b8407a" },
+    { id: "tiger_eye", name: "Tiger's Eye", desc: "Chatoyant golden-brown silk fibre bands with a moving cat's-eye sheen", swatch: "#9a6a1a" },
+    { id: "dichroic_glass", name: "Dichroic Glass", desc: "Art-glass dichroic film — flowing two-color iridescent flip", swatch: "#c060a0" },
+    { id: "fire_agate", name: "Fire Agate", desc: "Banded agate with fiery iridescent flash pockets", swatch: "#b0600f" },
+    { id: "malachite", name: "Malachite", desc: "Concentric green mineral banding (eye rings)", swatch: "#1f6a3a" },
+    { id: "azurite", name: "Azurite", desc: "Deep blue wavy mineral bands with crystalline glints", swatch: "#1a3aa0" },
+    { id: "black_opal", name: "Black Opal", desc: "Black body with vivid multi-color play-of-color fire", swatch: "#202840" },
+    { id: "sunstone", name: "Sunstone", desc: "Warm orange with copper aventurescent schiller glitter", swatch: "#c8600f" },
+    { id: "retroreflective_silver", name: "Retro Silver", desc: "Road-sign retroreflective — muted by day, blazes white under lights", swatch: "#9a9ca0" },
+    { id: "hi_vis_lime", name: "Hi-Vis Lime", desc: "Safety lime-yellow retroreflective sheeting", swatch: "#b8d020" },
+    { id: "cats_eye_beaded", name: "Cat's Eye", desc: "Beaded retroreflective studs on charcoal — sparkles under lights", swatch: "#2a2c30" },
+    { id: "diamond_grade", name: "Diamond Grade", desc: "Prismatic micro-cube reflective sheeting", swatch: "#7a8aa0" },
+    { id: "ghost_graphic", name: "Ghost Graphic", desc: "Graphic hidden in daylight, blazes under direct light", swatch: "#3a2a18" },
+    { id: "amber_hazard", name: "Amber Hazard", desc: "Amber reflective hazard stripes", swatch: "#c8820a" },
+    { id: "tribal_blaze", name: "Tribal Blaze", desc: "Reflective tribal linework that ignites at night", swatch: "#303236" },
+    { id: "big_kahuna", name: "Big Kahuna", desc: "Sunset-orange surf-tribal over teal, reflective", swatch: "#0a4a4a" },
+    { id: "chevron_blaze", name: "Battenburg", desc: "Reflective battenburg emergency checker", swatch: "#4a5a30" },
+    { id: "starfield_reflective", name: "Starfield", desc: "Reflective stars — dark by day, starry under lights", swatch: "#1a1f3a" },
+    { id: "twoface_blue_copper", name: "Two-Face Blue/Copper", desc: "Bold directional two-color flip — blue to copper", swatch: "#4060c0" },
+    { id: "twoface_purple_gold", name: "Two-Face Purple/Gold", desc: "Bold directional two-color flip — purple to gold", swatch: "#8a5ac0" },
+    { id: "twoface_green_magenta", name: "Two-Face Green/Magenta", desc: "Bold directional two-color flip — green to magenta", swatch: "#80608a" },
+    { id: "twoface_teal_orange", name: "Two-Face Teal/Orange", desc: "Bold directional two-color flip — teal to orange", swatch: "#c08040" },
+    { id: "twoface_red_cyan", name: "Two-Face Red/Cyan", desc: "Bold directional two-color flip — red to cyan", swatch: "#a06070" },
+    { id: "twoface_silver_void", name: "Two-Face Silver/Void", desc: "Dramatic light/dark directional flip — silver to black", swatch: "#6a6c70" },
+    { id: "twoface_pink_teal", name: "Two-Face Pink/Teal", desc: "Bold directional two-color flip — pink to teal", swatch: "#c06080" },
+    { id: "twoface_gold_emerald", name: "Two-Face Gold/Emerald", desc: "Bold directional two-color flip — gold to emerald", swatch: "#8a8a40" },
+    { id: "twoface_violet_lime", name: "Two-Face Violet/Lime", desc: "Bold directional two-color flip — violet to lime", swatch: "#8aa050" },
+    { id: "twoface_crimson_navy", name: "Two-Face Crimson/Navy", desc: "Bold directional two-color flip — crimson to navy", swatch: "#6a3050" },
+    { id: "pour_ocean", name: "Ocean Pour", desc: "Acrylic pour cells with silicone lacing — blue/teal/white", swatch: "#2a7a8a" },
+    { id: "pour_lava", name: "Lava Pour", desc: "Fluid pour — black/red/orange/gold cells", swatch: "#b04010" },
+    { id: "pour_galaxy", name: "Galaxy Pour", desc: "Fluid pour — purple/magenta/white cells", swatch: "#6a3a8a" },
+    { id: "pour_gold_marble", name: "Gold Marble Pour", desc: "Luxe fluid pour — black/white/gold", swatch: "#8a7030" },
+    { id: "pour_tropical", name: "Tropical Pour", desc: "Fluid pour — teal/lime/yellow", swatch: "#4aa060" },
+    { id: "pour_rose", name: "Rose Pour", desc: "Fluid pour — rose/pink/white/gold", swatch: "#c06a7a" },
+    { id: "ink_emerald", name: "Emerald Ink", desc: "Alcohol-ink emerald blooms, soft feathered cells", swatch: "#2a8a4a" },
+    { id: "ink_copper", name: "Copper Ink", desc: "Alcohol-ink teal/copper patina blooms", swatch: "#5a8a7a" },
+    { id: "pour_monochrome", name: "Mono Pour", desc: "Fluid pour — black/white/grey cells", swatch: "#707274" },
+    { id: "pour_neon", name: "Neon Pour", desc: "Fluid pour — neon cyan/magenta/lime cells", swatch: "#40c0a0" },
+    { id: "sequin_silver", name: "Silver Sequin", desc: "Field of mirror sequins, each catching light at its own flash", swatch: "#aaacb2" },
+    { id: "sequin_gold", name: "Gold Sequin", desc: "Gold sequin sparkle field", swatch: "#c8a030" },
+    { id: "sequin_rose", name: "Rose Sequin", desc: "Rose-gold sequin sparkle field", swatch: "#d07080" },
+    { id: "sequin_emerald", name: "Emerald Sequin", desc: "Emerald sequin sparkle field", swatch: "#30a050" },
+    { id: "sequin_copper", name: "Copper Sequin", desc: "Copper sequin sparkle field", swatch: "#c06030" },
+    { id: "sequin_ice", name: "Ice Sequin", desc: "Icy blue/white sequin sparkle field", swatch: "#8ab0d0" },
+    { id: "sequin_rainbow", name: "Rainbow Sequin", desc: "Multicolor flashing sequins — disco party", swatch: "#a060a0" },
+    { id: "sequin_holographic", name: "Holo Sequin", desc: "Holographic iridescent sequins, each a thin-film hue", swatch: "#b090c0" },
+    { id: "disco_black_diamond", name: "Disco Black Diamond", desc: "Mirror-ball facets flashing on black", swatch: "#404858" },
+    { id: "sequin_mardi_gras", name: "Mardi Gras", desc: "Festive purple/gold/green sequin sparkle", swatch: "#8a6a4a" },
+    { id: "flame_hotrod", name: "Hot Rod Flames", desc: "Classic orange/yellow hot-rod flame licks on black", swatch: "#e06010" },
+    { id: "flame_true_fire", name: "True Fire", desc: "Photoreal turbulent fire — red/orange/yellow", swatch: "#e85010" },
+    { id: "flame_blue", name: "Blue Flame", desc: "Propane-blue flame licks", swatch: "#1060d0" },
+    { id: "flame_green", name: "Green Fire", desc: "Toxic green firestorm", swatch: "#20a020" },
+    { id: "flame_purple", name: "Purple Flame", desc: "Violet/magenta flame licks", swatch: "#8020c0" },
+    { id: "flame_ghost", name: "Ghost Flames", desc: "Subtle tonal black-on-charcoal flame licks", swatch: "#2a2a30" },
+    { id: "flame_inferno", name: "Inferno", desc: "Intense red/orange firestorm", swatch: "#e03000" },
+    { id: "flame_white_hot", name: "White Hot", desc: "Hottest blue-white fire", swatch: "#80a0f0" },
+    { id: "flame_rainbow", name: "Rainbow Fire", desc: "Multicolor spectral flames", swatch: "#a05060" },
+    { id: "flame_ember", name: "Ember Coals", desc: "Glowing ember/coal bed", swatch: "#c84810" },
+    { id: "flame_candy", name: "Candy Flame", desc: "Candy-red metallic flame licks", swatch: "#c01828" },
+    { id: "flame_plasma", name: "Plasma Fire", desc: "Electric blue/purple plasma fire", swatch: "#7040e0" },
+    { id: "flame_cold", name: "Cold Fire", desc: "Icy blue-white cold flame licks", swatch: "#50a0e0" },
+    { id: "flame_lava", name: "Lava Flame", desc: "Molten lava + flame, orange/black", swatch: "#d05010" },
+    { id: "flame_phoenix", name: "Phoenix", desc: "Gold/orange feathery phoenix flames", swatch: "#e0a030" },
+    { id: "flame_toxic", name: "Toxic Flame", desc: "Green/yellow toxic fire", swatch: "#a0c020" },
+    { id: "flame_pink", name: "Pink Flame", desc: "Hot-pink flame licks", swatch: "#e030a0" },
+    { id: "flame_smoke", name: "Smoke & Fire", desc: "Orange fire bleeding into grey smoke", swatch: "#a06030" },
+    { id: "flame_tribal", name: "Tribal Flame", desc: "Bold tribal flame tongues", swatch: "#d04810" },
+    { id: "flame_dragon", name: "Dragon Breath", desc: "Intense orange/red/yellow dragon breath", swatch: "#e04810" },
+    { id: "marble_carrara", name: "Carrara Marble", desc: "White Carrara with soft grey veining", swatch: "#e8e8ea" },
+    { id: "marble_calacatta", name: "Calacatta Gold", desc: "White marble with dramatic gold veins", swatch: "#ece2c8" },
+    { id: "marble_nero", name: "Nero Marquina", desc: "Black marble with crisp white veins", swatch: "#1a1a1e" },
+    { id: "marble_portoro", name: "Portoro", desc: "Black marble with luxe gold veins", swatch: "#14110c" },
+    { id: "marble_statuario", name: "Statuario", desc: "Bright white marble, fine grey veining", swatch: "#e6e6ea" },
+    { id: "marble_bardiglio", name: "Bardiglio Grey", desc: "Grey marble with white veins", swatch: "#5a5c62" },
+    { id: "marble_rose", name: "Rose Marble", desc: "Soft pink marble with mauve veining", swatch: "#d8b0b0" },
+    { id: "marble_rosso", name: "Rosso Levanto", desc: "Deep red marble with white veins", swatch: "#6a1414" },
+    { id: "marble_verde_alpi", name: "Verde Alpi", desc: "Dark green marble with white veins", swatch: "#1a4a28" },
+    { id: "marble_fusion", name: "Fusion Marble", desc: "Multicolor luxe marble with gold/teal veins", swatch: "#6a3a5a" },
+    { id: "travertine", name: "Travertine", desc: "Soft beige travertine stone", swatch: "#b8a070" },
+    { id: "obsidian_gold", name: "Obsidian Gold", desc: "Black obsidian shot with gold veins", swatch: "#1a1a1e" },
+    { id: "onyx_emerald", name: "Emerald Onyx", desc: "Banded green onyx slab", swatch: "#1a5a30" },
+    { id: "onyx_honey", name: "Honey Onyx", desc: "Translucent amber banded onyx", swatch: "#c8922a" },
+    { id: "onyx_pink", name: "Pink Onyx", desc: "Banded pink onyx slab", swatch: "#d090a0" },
+    { id: "onyx_white", name: "White Onyx", desc: "Milky backlit banded onyx", swatch: "#dde0e4" },
+    { id: "agate_blue", name: "Blue Agate", desc: "Banded blue agate slab", swatch: "#2a55b0" },
+    { id: "lapis_lazuli", name: "Lapis Lazuli", desc: "Deep blue lapis with gold pyrite flecks", swatch: "#1530a0" },
+    { id: "amethyst", name: "Amethyst", desc: "Purple amethyst geode banding", swatch: "#6a30a0" },
+    { id: "tiger_iron", name: "Tiger Iron", desc: "Red/gold/black banded tiger iron", swatch: "#8a4a18" },
+    { id: "diner_checker", name: "Diner Checkerboard", desc: "Classic black/white diner floor checker", swatch: "#888888" },
+    { id: "soda_check", name: "Soda Fountain Check", desc: "Pastel mint/pink 50s checker", swatch: "#9ad0c0" },
+    { id: "cherry_polka", name: "Cherry Polka", desc: "White polka dots on cherry red", swatch: "#c81824" },
+    { id: "lemon_polka", name: "Lemon Polka", desc: "White polka dots on lemon yellow", swatch: "#e8d020" },
+    { id: "bubblegum_dot", name: "Bubblegum Dots", desc: "Big retro dots on bubblegum pink", swatch: "#e878a0" },
+    { id: "mint_stripe", name: "Mint Candy Stripe", desc: "Mint/cream 50s candy stripes", swatch: "#8ad0b8" },
+    { id: "coral_stripe", name: "Coral Stripe", desc: "Coral/cream diagonal stripes", swatch: "#e08070" },
+    { id: "gingham_red", name: "Red Gingham", desc: "Red/white picnic gingham", swatch: "#c83030" },
+    { id: "atomic_starburst", name: "Atomic Starburst", desc: "Atomic-age starbursts on teal", swatch: "#1a7a7c" },
+    { id: "atomic_charcoal", name: "Atomic Charcoal", desc: "Atomic starbursts on charcoal", swatch: "#c85040" },
+    { id: "googie_orbit", name: "Googie Orbit", desc: "Mid-century googie orbit ellipses", swatch: "#30a0a8" },
+    { id: "vinyl_groove", name: "Vinyl Record", desc: "Concentric record grooves in black", swatch: "#222226" },
+    { id: "harlequin", name: "Harlequin", desc: "Retro harlequin diamonds", swatch: "#b04040" },
+    { id: "argyle_pastel", name: "Pastel Argyle", desc: "Soft 50s argyle diamonds", swatch: "#7a9098" },
+    { id: "terrazzo_cream", name: "Terrazzo", desc: "Confetti terrazzo speckle on cream", swatch: "#c8b8a0" },
+    { id: "formica_boomerang", name: "Formica Boomerang", desc: "Boomerang formica-counter speckle", swatch: "#b89878" },
+    { id: "jukebox_neon", name: "Jukebox Neon", desc: "Chrome-and-neon jukebox arcs on black", swatch: "#e0306a" },
+    { id: "pink_fleck", name: "Pink Metalflake", desc: "50s pink metalflake", swatch: "#d870a0" },
+    { id: "turquoise_fleck", name: "Turquoise Metalflake", desc: "50s turquoise metalflake", swatch: "#20a0a0" },
+    { id: "chrome_diner", name: "Diner Chrome", desc: "Polished diner chrome", swatch: "#9a9ca0" },
+    { id: "tie_dye_spiral", name: "Tie-Dye Spiral", desc: "Classic spiral tie-dye rainbow", swatch: "#c050a0" },
+    { id: "tie_dye_crumple", name: "Crumple Tie-Dye", desc: "Crumpled scrunch tie-dye", swatch: "#a060c0" },
+    { id: "peace_tie_dye", name: "Peace Tie-Dye", desc: "Mellow blue/purple tie-dye spiral", swatch: "#6050b0" },
+    { id: "psychedelic_swirl", name: "Psychedelic Swirl", desc: "Bold psychedelic rainbow swirls", swatch: "#d04090" },
+    { id: "acid_swirl", name: "Acid Swirl", desc: "Neon acid rainbow swirl", swatch: "#40d080" },
+    { id: "melting_rainbow", name: "Melting Rainbow", desc: "Flowing melting rainbow", swatch: "#e05040" },
+    { id: "hippie_rainbow", name: "Hippie Rainbow", desc: "Full flowing rainbow", swatch: "#e08020" },
+    { id: "sunburst_60s", name: "60s Sunburst", desc: "Radiating rainbow sunburst rays", swatch: "#d0b020" },
+    { id: "groovy_zigzag", name: "Groovy Zigzag", desc: "Rainbow zigzag rays", swatch: "#d05050" },
+    { id: "kaleido_rings", name: "Kaleidoscope", desc: "Concentric kaleidoscope rainbow rings", swatch: "#40a0d0" },
+    { id: "trippy_concentric", name: "Trippy Rings", desc: "Tight trippy concentric rainbow", swatch: "#b040a0" },
+    { id: "warp_op", name: "Warp Op-Art", desc: "Psychedelic warped op-art rings", swatch: "#8060c0" },
+    { id: "oil_slick_groove", name: "Oil Slick", desc: "Psychedelic oil-slick flow", swatch: "#6080a0" },
+    { id: "groovy_marble", name: "Groovy Marble", desc: "Psychedelic marbled swirl", swatch: "#8050a0" },
+    { id: "liquid_light", name: "Liquid Light Show", desc: "60s liquid-light-show blooms", swatch: "#d04080" },
+    { id: "flower_power", name: "Flower Power", desc: "Tight flower-power rainbow rosette", swatch: "#d09030" },
+    { id: "lava_lamp_purple", name: "Lava Lamp Purple", desc: "Purple/orange lava-lamp blobs", swatch: "#8a2a8a" },
+    { id: "lava_lamp_groovy", name: "Lava Lamp Groovy", desc: "Orange/teal/avocado lava-lamp blobs", swatch: "#c86020" },
+    { id: "mushroom_fade", name: "Mushroom Fade", desc: "Earthy psychedelic blob fade", swatch: "#8a6a40" },
+    { id: "neon_acid_blob", name: "Neon Acid", desc: "Neon acid-blob psychedelia", swatch: "#20c070" },
     { id: "mil_spec_tan", name: "Martian Regolith Dust", desc: "Extremely rusty, iron-rich, harsh and gritty red dirt directly from the surface of Mars", swatch: "#AE684F" },
     { id: "mirror_gold", name: "Mirror Gold", desc: "Pure mirror gold chrome — full 24k gold reflective surface like a Dubai showpiece, maximum opulence on wheels", swatch: "#ddaa33" },
     { id: "moonstone", name: "Moonstone", desc: "Soft translucent milky moonstone shimmer — pale opalescent glow like the real gemstone with internal light play", swatch: "#ccccdd" },
-    { id: "moth_luna", name: "Moth Luna", desc: "Pale green Luna moth wing with delicate eye-spot markings — soft pastel insect-inspired organic texture", swatch: "#99cc88" },
+    { id: "moth_luna", name: "Luna Silk", desc: "Flowing celadon and lilac feather-scales with curled-tip diffraction, crossrib relief, charcoal interstices and wet silk flashes", swatch: "#74c9a0" },
+    { id: "moth_tiger", name: "Tiger Moth Ember", desc: "Compact ember and ivory warning rivers assembled from fine tilted scale hairs, barb fans and gold keratin filaments over soot velvet", swatch: "#e6330b" },
+    { id: "moth_hummingbird", name: "Hummingbird Blur", desc: "Compact Hemaris wingbeat vortices circulate forked bristles around clear shed-scale membrane, socket halos, anti-reflective pillars and pollen wake", swatch: "#367d67" },
+    { id: "moth_owl", name: "Owl Moth Sable", desc: "Dense broken bronze micro-ocelli braided through absorptive sable nap with disorder ribs, layered bristles and pearl pupil scars", swatch: "#6f3d16" },
     { id: "neutron_star", name: "Accretion Ring", desc: "Void black sink with a sharp micro-spec ring — light grazing the edge explodes into color. Procedural.", swatch: "#0A0A0A" },
     { id: "obsidian", name: "Obsidian", desc: "Volcanic obsidian glass — razor-sharp deep black with mirror sheen like polished igneous rock. Dramatic depth.", swatch: "#0a0a12" },
     { id: "opal", name: "Dragon's Pearl Scale", desc: "Massive multi-colored shifting pearl mimicking the biological armored plate of a dragon", swatch: "#E6E6FA" },
-    { id: "orange_peel_gloss", name: "Orange Peel Gloss", desc: "Orange-peel texture sealed under thick clearcoat — intentional factory paint ripple for authentic OEM character", swatch: "#ddaa55", colorSafe: true },
+    { id: "orange_peel_gloss", name: "Candy Tangerine", desc: "Bright tangerine candy over gold flake with a subtle orange-peel clearcoat ripple — deep wet citrus", swatch: "#e85a0a", colorSafe: true },
     { id: "organic_metal", name: "Organic Metal", desc: "Living organic metallic with subtle biological shimmer — like skin made of metal, alien biotech aesthetic for sci-fi builds.", swatch: "#778866", colorSafe: true },
     { id: "oxidized_copper", name: "Oxidized Copper", desc: "Fully green patina copper — Statue of Liberty look. Rich verdigris over warm copper base. Dramatic weathered effect.", swatch: "#55aa88" },
     { id: "pace_car_pearl", name: "Pace Car Pearl", desc: "Official pace car triple-pearl coat — premium tri-stage white pearl with deep sparkle for parade lap builds", swatch: "#dde0e8" },
@@ -185,7 +987,7 @@ const BASES = [
     { id: "porcelain", name: "Shattered Bone Marrow", desc: "Fractured monolithic bone ivory finish with subsurface micro-cracks", swatch: "#E2E2D0" },
     { id: "porsche_pts", name: "Porsche PTS", desc: "Porsche Paint-to-Sample custom deep coat — bespoke factory color from the PTS catalog, ultra-exclusive OEM", swatch: "#2a2438", colorSafe: true },
     { id: "powder_coat", name: "Powder Coat", desc: "Thick electrostatic powder coating — industrial, durable, slightly textured. Like wheel powder coat on a whole car.", swatch: "#6666bb" },
-    { id: "primer", name: "Primer", desc: "Raw gray primer — no clearcoat, no metallic, just bare primer surface. Unfinished build / project car aesthetic.", swatch: "#808080", colorSafe: true },
+    { id: "primer", name: "Primer", desc: "Raw primer (0/215/200) — duller than matte with almost no coat. Project-car honesty.", swatch: "#808080", colorSafe: true },
     { id: "quantum_black", name: "Quantum Black", desc: "Near-perfect light absorption ultra-black — almost vantablack darkness that flattens all surface detail", swatch: "#111111" },
     { id: "race_day_gloss", name: "Hyper-Ceramic Shell", desc: "Next-gen aerospace thermal tile - optically perfect liquid seal", swatch: "#FFFFFF" },
     { id: "rally_mud", name: "Rally Mud", desc: "Partially mud-splattered rally coating — wet dirt spray pattern over paint from hard off-road stage driving", swatch: "#886644" },
@@ -196,14 +998,14 @@ const BASES = [
     { id: "salt_corroded", name: "Salt Corroded", desc: "Coastal salt-air damage — white salt deposits, pitting, and corrosion. Northeast winter / beach car look.", swatch: "#aabbaa" },
     { id: "sandblasted", name: "Sandblasted", desc: "Raw sandblasted metal — coarse pitted surface from abrasive blasting, stripped bare before paint or left raw", swatch: "#999999" },
     { id: "scarab_gold", name: "Scarab Gold", desc: "Egyptian scarab beetle golden-green iridescent shift — ancient sacred jewel tone with metallic color flip", swatch: "#aacc22" },
-    { id: "satin", name: "Satin", desc: "Between gloss and matte — soft sheen without harsh reflections. Understated elegance, great for professional liveries.", swatch: "#9999a0", colorSafe: true },
+    { id: "satin", name: "Satin", desc: "Satin body film (0/95/70) — soft sheen, no hard reflections. Silk and vinyl-wrap sheens live here too.", swatch: "#9999a0", colorSafe: true },
     { id: "satin_chrome", name: "Satin Chrome", desc: "Softer chrome with directional brushed sheen — BMW M4 style. Less mirror, more silk. Distinct from Mirror Chrome.", swatch: "#bbcccc" },
     { id: "satin_gold", name: "Satin Gold", desc: "Satin gold metallic with warm sheen — soft brushed gold without mirror glare, elegant for luxury accents", swatch: "#c9a227" },
     { id: "satin_metal", name: "Satin Metal", desc: "Subtle brushed satin metallic — soft directional grain with muted flake, quieter than chrome or gloss metal", swatch: "#8899a8", colorSafe: true },
     { id: "satin_wrap", name: "Satin Wrap", desc: "Satin-finish vinyl wrap — soft sheen without metallic flake. Removable unlike paint satin. Cleaner and more uniform.", swatch: "#777788" },
-    { id: "scuffed_satin", name: "Scuffed Satin", desc: "Scuffed satin with micro-abrasion marks — lightly worn version of satin that shows use and subtle damage", swatch: "#999999", colorSafe: true },
+    { id: "scuffed_satin", name: "Scuffed Satin", desc: "Scuffed satin with micro-abrasion marks — lightly worn version of satin that shows use and subtle damage", swatch: "#999999", colorSafe: true, retired: true },
     { id: "school_bus", name: "Hazard Synthetics", desc: "High-visibility radioactive safety polymer that practically glows under light", swatch: "#FFD700" },
-    { id: "semi_gloss", name: "Semi-Gloss", desc: "Between satin and gloss — practical utility finish with moderate sheen, good for fleet and functional builds", swatch: "#44aa44", colorSafe: true },
+    { id: "semi_gloss", name: "Semi-Gloss", desc: "Everyday enamel neighbourhood (0/55/40) — a broader, calmer highlight than gloss.", swatch: "#44aa44", colorSafe: true },
     // 2026-04-19 HEENAN HSHKBASE — promoted to dedicated spec/paint pair.
     { id: "shokk_blood", name: "SHOKK Blood", desc: "Arterial vein topology — bright red base broken by darker venous cracks tracking the spec ridges. Reads as wet blood glossing on dried crust.", swatch: "#aa1122" },
     // 2026-04-19 HEENAN HB3 (modified) — Bockwinkel flagged the engine paint_fn
@@ -248,7 +1050,7 @@ const BASES = [
     // 2026-04-19 HEENAN HSTING2 — Sting copy fix: was build-log-style.
     { id: "shokk_apex", name: "SHOKK Apex", desc: "All SHOKK techniques layered into one finish — spectral, dithered, grooved, and thin-film together. The flagship's flagship.", swatch: "#dd88ff" },
     { id: "showroom_clear", name: "Bioluminescent Slime", desc: "Bright green wet membrane — glossy slime-like surface with vivid glow effect", swatch: "#A2FF00" },
-    { id: "silk", name: "Silk", desc: "Between satin and gloss — fabric-like soft sheen, no harsh reflections. Smoother than satin, less wet than gloss.", swatch: "#9999bb", colorSafe: true },
+    { id: "silk", name: "Silk", desc: "Between satin and gloss — fabric-like soft sheen, no harsh reflections. Smoother than satin, less wet than gloss.", swatch: "#9999bb", colorSafe: true, retired: true },
     { id: "smoked", name: "Demon's Breath Particle Shift", desc: "Deep charcoal gray with smoky internal depth — dark semi-transparent particle texture", swatch: "#2A2A2A" },
     { id: "solar_panel", name: "Solar Panel", desc: "Photovoltaic solar cell dark blue-black — silicon wafer grid pattern with anti-reflective tech surface look", swatch: "#223366" },
     { id: "spectraflame", name: "Sentient Polycarbonate", desc: "Clear optical polymer with internal color shift — changes tone under different lighting angles", swatch: "#CCFAFA" },
@@ -271,39 +1073,59 @@ const BASES = [
     { id: "victory_lane", name: "Victory Lane", desc: "Champagne-soaked celebration metallic sparkle — gold-tinged glitter finish for the post-race winner circle", swatch: "#ddbb44", colorSafe: true },
     { id: "vintage_chrome", name: "Vintage Chrome", desc: "1950s chrome with cloudy oxidation spots — aged patina and pitting from decades of weather, classic era look", swatch: "#aabbcc" },
     { id: "volcanic", name: "Volcanic", desc: "Dark gritty ash texture — rough, desaturated, primal. Like cooled lava. Best with fracture, lightning, or plasma patterns.", swatch: "#cc4422" },
-    { id: "wasp_warning", name: "Wasp Warning", desc: "Yellow-black aposematic banding with metallic shimmer — predator-deterrent insect coloring for high-visibility builds", swatch: "#EECC11" },
-    { id: "wet_look", name: "Wet Look", desc: "Fresh-waxed show car depth — ultra-wet clearcoat that looks perpetually just-detailed. Concours and magazine covers.", swatch: "#337755", colorSafe: true },
-    // ── ENHANCED FOUNDATION (30 premium bases with spec+paint functions) ──
-    { id: "enh_gloss", name: "★ Enhanced Gloss", desc: "Premium gloss with micro-ripple shimmer — more wet depth and surface detail than the plain gloss foundation", swatch: "#55aacc", colorSafe: true },
-    { id: "enh_matte", name: "★ Enhanced Matte", desc: "Premium matte with organic micro-grain pore texture — more surface character than the plain matte foundation", swatch: "#667766", colorSafe: true },
-    { id: "enh_satin", name: "★ Enhanced Satin", desc: "Premium satin with directional brushed grain and warm sheen — richer surface detail than the plain satin foundation", swatch: "#99aa88", colorSafe: true },
-    { id: "enh_metallic", name: "★ Enhanced Metallic", desc: "Premium metallic with visible flake sparkle and depth variation — more flake pop than the plain metallic foundation", swatch: "#aabb99", colorSafe: true },
-    { id: "enh_pearl", name: "★ Enhanced Pearl", desc: "Premium pearl with iridescent micro-shift shimmer — more color play and depth than the plain pearl foundation", swatch: "#ccbbdd", colorSafe: true },
-    { id: "enh_chrome", name: "★ Enhanced Chrome", desc: "Premium chrome with environment distortion and reflection warping — more realism than the plain chrome foundation", swatch: "#dddddd", colorSafe: true },
-    { id: "enh_satin_chrome", name: "★ Enhanced Satin Chrome", desc: "Premium satin chrome with deeper directional grain — more brushed texture than the plain satin chrome foundation", swatch: "#bbcccc", colorSafe: true },
-    { id: "enh_anodized", name: "★ Enhanced Anodized", desc: "Premium anodized with visible oxide variation and pore detail — more surface realism than the plain anodized foundation", swatch: "#7799bb", colorSafe: true },
-    { id: "enh_baked_enamel", name: "★ Enhanced Baked Enamel", desc: "Premium baked enamel with kiln-fired warmth and depth variation — richer gloss than the plain enamel foundation", swatch: "#5588aa", colorSafe: true },
-    { id: "enh_brushed", name: "★ Enhanced Brushed", desc: "Premium brushed metal with deeper grain and metallic variation — richer detail than foundation. Worth it up close.", swatch: "#889999", colorSafe: true },
-    { id: "enh_carbon_fiber", name: "★ Enhanced Carbon Fiber", desc: "Premium carbon fiber with visible resin pooling and depth — more weave detail than foundation. Worth the render cost.", swatch: "#445566", colorSafe: true },
-    { id: "enh_frozen", name: "★ Enhanced Frozen", desc: "Premium frozen with crystal texture and frost haze — more icy detail and depth than the plain frozen foundation", swatch: "#aaccee", colorSafe: true },
-    { id: "enh_gel_coat", name: "★ Enhanced Gel Coat", desc: "Premium gel coat with visible flow-out variation and wet depth — more surface realism than the plain gel coat foundation", swatch: "#66aacc", colorSafe: true },
-    { id: "enh_powder_coat", name: "★ Enhanced Powder Coat", desc: "Premium powder coat with visible orange-peel texture — more surface detail than foundation. Industrial that pops.", swatch: "#778877", colorSafe: true },
-    { id: "enh_vinyl_wrap", name: "★ Enhanced Vinyl Wrap", desc: "Premium vinyl wrap with visible stretch marks and conform lines — more realistic than foundation. Shows wrap character.", swatch: "#668899", colorSafe: true },
-    { id: "enh_soft_gloss", name: "★ Enhanced Soft Gloss", desc: "Premium soft gloss with warm micro-shimmer and subtle depth — more luminous feel than the plain soft gloss foundation", swatch: "#77aabb", colorSafe: true },
-    { id: "enh_soft_matte", name: "★ Enhanced Soft Matte", desc: "Premium soft matte with velvet-touch organic grain — more tactile character than the plain soft matte foundation", swatch: "#778877", colorSafe: true },
-    { id: "enh_warm_white", name: "★ Enhanced Warm White", desc: "Premium warm white with creamy ceramic undertone — more tonal warmth and depth than the plain warm white foundation", swatch: "#eeddcc", colorSafe: true },
-    { id: "enh_ceramic_glaze", name: "★ Enhanced Ceramic Glaze", desc: "Premium ceramic glaze with deep wet pooling and clarity depth — rich liquid-glass look for show car builds", swatch: "#55aaaa", colorSafe: true },
-    { id: "enh_silk", name: "★ Enhanced Silk", desc: "Premium silk with subtle directional fabric-like sheen — smoother and more refined than the plain satin foundation", swatch: "#99aabb", colorSafe: true },
-    { id: "enh_eggshell", name: "★ Enhanced Eggshell", desc: "Premium eggshell with visible orange-peel micro-texture and warm tone — more surface character than flat eggshell", swatch: "#bbaa99", colorSafe: true },
-    { id: "enh_primer", name: "★ Enhanced Primer", desc: "Premium primer with sand-grit and coverage variation — more realistic than flat foundation. Project car authenticity.", swatch: "#888877", colorSafe: true },
-    { id: "enh_clear_matte", name: "★ Enhanced Clear Matte", desc: "Premium clear matte with protective micro-haze — more realistic flat clearcoat than the plain clear matte foundation", swatch: "#667788", colorSafe: true },
-    { id: "enh_semi_gloss", name: "★ Enhanced Semi Gloss", desc: "Premium semi-gloss with balanced sheen between satin and gloss — more nuanced surface than plain semi-gloss", swatch: "#6699aa", colorSafe: true },
-    { id: "enh_wet_look", name: "★ Enhanced Wet Look", desc: "Premium wet look with ultra-deep clarity and glass-like depth — more liquid shine than the standard wet look base", swatch: "#448877", colorSafe: true },
-    { id: "enh_piano_black", name: "★ Enhanced Piano Black", desc: "Premium piano black with mirror-deep reflection depth — richer and more liquid than the standard piano black base", swatch: "#111122", colorSafe: true },
-    { id: "enh_living_matte", name: "★ Enhanced Living Matte", desc: "Premium living matte with biological grain texture — more organic surface character than the standard living matte", swatch: "#667755", colorSafe: true },
-    { id: "enh_neutral_grey", name: "★ Enhanced Neutral Grey", desc: "Premium neutral grey with micro-grain texture — more surface detail and depth than the plain neutral grey foundation", swatch: "#777788", colorSafe: true },
-    { id: "enh_clear_satin", name: "★ Enhanced Clear Satin", desc: "Premium clear satin with orange-peel micro-texture — more realistic clearcoat than the plain clear satin foundation", swatch: "#7799aa", colorSafe: true },
-    { id: "enh_pure_black", name: "★ Enhanced Pure Black", desc: "Premium pure black with dead matte grain texture — more depth and surface character than the plain pure black foundation", swatch: "#0a0a0a", colorSafe: true },
+    { id: "wasp_warning", name: "Wasp Signal", desc: "Connected tergite-chevron chains assembled from duplex yellow and black cuticle plates with pigment granules, pore rosettes, setae and tracheal slits", swatch: "#F0B512" },
+    { id: "wet_look", name: "Wet Look", desc: "Razor-wet lacquer — the tightest highlight a dielectric paint can have (0/15/16). Fresh-detailed concours depth.", swatch: "#337755", colorSafe: true },
+    // ── ★ Enhanced Foundation (30) RETIRED 2026-09-03 (FOUNDATION ONE). Their spec had been forced
+    //    flat since the 2026-04-21 painter mandate, so they were the flat Foundation cells wearing a
+    //    'premium' label. Ids resolve through BASE_ID_ALIASES (below) so saved projects keep rendering. ──
+    // -- FOUNDATION EFX shelf: textured foundations. 2026-09-03 the seven duo/trinity/quattro mashups
+    //    were retired (aliased to their primary ingredient); Phase B rebuilds these as paint+spec. --
+    { id: "efx_holographic_drift", name: "Holographic Drift", desc: "Spec-driven diffraction grating with four-band micro sparkle; base paint stays intact.", swatch: "#D8CCFF", colorSafe: true },
+    { id: "efx_cathedral_veil", name: "Cathedral Veil", desc: "Leaded glass panes in your colour, the came laid in dark chrome and every pane crazed.", swatch: "#7fb3c9", colorSafe: true },
+    { id: "efx_frost_fractal", name: "Frost Fractal", desc: "Spec-driven recursive frost ridges with ice crystal sparkle and tight micro detail.", swatch: "#C8F4FF", colorSafe: true },
+    { id: "efx_kintsugi_bloom", name: "Kintsugi Bloom", desc: "A matte body broken and mended in gold — the seams are the only metal on the car.", swatch: "#c9a24a", colorSafe: true },
+    { id: "efx_quicksilver_pool", name: "Quicksilver Pool", desc: "Mercury pooled on matte paint — liquid mirror islands with caustic light inside them.", swatch: "#c9ced4", colorSafe: true },
+    { id: "efx_volcanic_obsidian", name: "Volcanic Obsidian", desc: "Conchoidal fracture — glassy shells stepping down into dead-black rock.", swatch: "#2a1e26", colorSafe: true },
+    { id: "efx_aurora_skin", name: "Aurora Skin", desc: "Curtains of thin-film colour drifting across your paint, threaded with fine fibre.", swatch: "#6fd6c4", colorSafe: true },
+    { id: "efx_lace_filament", name: "Lace Filament", desc: "Ivory filament lace over your colour, the threads picked out in satin chrome.", swatch: "#d9d1c4", colorSafe: true },
+    { id: "efx_tempered_spectrum", name: "Tempered Spectrum", desc: "Titanium heat tint — straw, bronze, violet and blue oxide bands following the brushed grain.", swatch: "#8a7fb8", colorSafe: true },
+    { id: "efx_damascus_fold", name: "Damascus Fold", desc: "Folded and etched steel — the dark layers bite in, the bright layers polish up.", swatch: "#8b8a7a", colorSafe: true },
+    { id: "efx_stardust_coat", name: "Stardust Coat", desc: "A deep coat with a star field in it — dense micro sparkle and a few bright stars.", swatch: "#18243f", colorSafe: true },
+    { id: "efx_spectral_edge", name: "Prism Edge", desc: "Seven-fold quasicrystal facets, each edge splitting light into a hard prism band.", swatch: "#cfe8ff", colorSafe: true },
+    { id: "efx_frost_mercury_duo", name: "Frost Mercury Duo", desc: "Spec-driven frost and mercury recipe with cold crystalline shine and liquid metal depth.", swatch: "#C8F5FF", colorSafe: true },
+    // FOUNDATION EFX shelf (Phase B, 2026-09-03) — new textured foundations
+    { id: "efx_holo_flake", name: "Holo Flake", desc: "Holographic glitter vinyl — thousands of flakes, each one its own rainbow order.", swatch: "#d8ccff", colorSafe: true },
+    { id: "efx_holo_prism_cells", name: "Holo Prism Cells", desc: "A honeycomb of holographic cells, every cell locked to one colour of the spectrum.", swatch: "#c9b8ff", colorSafe: true },
+    { id: "efx_holo_scan", name: "Holo Scanline", desc: "Two gratings beating against each other — moiré bands of holographic colour.", swatch: "#b9d6ff", colorSafe: true },
+    { id: "efx_micro_glitter", name: "Micro Glitter", desc: "Packed micro glitter — circles inside circles, every one a point of chrome.", swatch: "#e6e2d6", colorSafe: true },
+    { id: "efx_chunky_flake", name: "Chunky Metalflake", desc: "Big bass-boat metalflake under candy — tilted chips that flash one at a time.", swatch: "#b04060", colorSafe: true },
+    { id: "efx_glass_flake", name: "Glass Flake", desc: "Translucent glass shards suspended in clear — faceted, crazed, catching white light.", swatch: "#cde4ec", colorSafe: true },
+    { id: "efx_gold_leaf", name: "Gold Leaf", desc: "Gold leaf laid in sheets over your colour, crinkled and lifting at the corners.", swatch: "#d4a83a", colorSafe: true },
+    { id: "efx_surface_rust", name: "Surface Rust", desc: "Rust blooming through the paint in spots — orange first, then the dark scabs.", swatch: "#8c4a22", colorSafe: true },
+    { id: "efx_rust_through", name: "Rust-Through", desc: "Paint islands left on rusted steel, pitted down to bare metal.", swatch: "#5a3a24", colorSafe: true },
+    { id: "efx_peeling_clear", name: "Peeling Clear", desc: "Clearcoat failure — islands of intact gloss beside hazed, crazed patches where it let go.", swatch: "#9fa39a", colorSafe: true },
+    { id: "efx_sun_faded", name: "Sun Faded", desc: "Twenty summers of sun — broad bleached zones and a fine dust-pitted skin.", swatch: "#c7b9a2", colorSafe: true },
+    { id: "efx_galvanized_spangle", name: "Galvanized Spangle", desc: "Hot-dip zinc spangle — polygonal crystals in your colour, each one a different brightness, feathered inside.", swatch: "#a9adb2", colorSafe: true },
+    { id: "efx_verdigris", name: "Verdigris", desc: "Copper patina in a labyrinth — green crust, raw bronze in the channels.", swatch: "#4f9a82", colorSafe: true },
+    { id: "efx_soot_wash", name: "Soot Wash", desc: "Exhaust soot settling on the panel in smudges and drips, spattered and wet where it is thickest.", swatch: "#2b2b2b", colorSafe: true },
+    { id: "efx_salt_bloom", name: "Salt Bloom", desc: "Salt efflorescence — white crystal ferns growing out of the paint.", swatch: "#e6e6dc", colorSafe: true },
+    { id: "efx_hammered", name: "Hammered", desc: "Ball-peen hammered metal — a lattice of dents, every facet catching its own light.", swatch: "#9a9a9e", colorSafe: true },
+    { id: "efx_cast_iron", name: "Cast Iron", desc: "Sand-cast iron — porous, pitted, dead dark with a dull metal glint on the rims.", swatch: "#3a3a3c", colorSafe: true },
+    { id: "efx_knurled", name: "Knurled", desc: "Machine-knurled diamonds — a grip texture cut into metal, light on every pyramid.", swatch: "#8e9096", colorSafe: true },
+    { id: "efx_engine_turned", name: "Engine Turned", desc: "Jewelled aluminium — overlapping swirl discs, each one a circular brush mark.", swatch: "#c0c4ca", colorSafe: true },
+    { id: "efx_sandblasted", name: "Sandblasted", desc: "Blasted to a uniform micro-pitted tooth — dry metal with a soft sparkle.", swatch: "#a6a6a4", colorSafe: true },
+    { id: "efx_wire_brushed", name: "Wire Brushed", desc: "Wire-wheel swirl scratches sweeping across the metal, bright on the crests.", swatch: "#9d9fa3", colorSafe: true },
+    { id: "efx_mill_scale", name: "Mill Scale", desc: "Hot-rolled steel skin — blue-black scale plates flaking off bright metal.", swatch: "#33363c", colorSafe: true },
+    { id: "efx_orange_peel", name: "Orange Peel", desc: "Real sprayed orange peel — a dimpled gloss that breaks reflections into cells.", swatch: "#6aa0c8", colorSafe: true },
+    { id: "efx_crackle_lacquer", name: "Crackle Lacquer", desc: "Crackle lacquer — a fine craze network opening onto a dark undercoat.", swatch: "#8a6a52", colorSafe: true },
+    { id: "efx_wrinkle_coat", name: "Wrinkle Coat", desc: "Wrinkle powder coat — the valve-cover texture, ridged and dry.", swatch: "#556655", colorSafe: true },
+    { id: "efx_raku_glaze", name: "Raku Glaze", desc: "Raku pottery — glaze flowing in caustic webs, copper lustre where it pooled, crazed all over.", swatch: "#a06a40", colorSafe: true },
+    { id: "efx_powder_texture", name: "Textured Powder", desc: "Sand-texture powder coat — a dense grit of raised specks in your colour.", swatch: "#7b8079", colorSafe: true },
+    { id: "efx_terrazzo", name: "Terrazzo", desc: "Terrazzo — stone chips set in your colour and ground flat, some white, some black.", swatch: "#b8b0a4", colorSafe: true },
+    { id: "efx_leather_grain", name: "Leather Grain", desc: "Pebbled leather — a tight grain of soft cells with creases running between them.", swatch: "#7a5a44", colorSafe: true },
+    { id: "efx_rain_beads", name: "Rain Beads", desc: "Water beading on a waxed panel — every drop a lens with a chrome highlight.", swatch: "#5f8fb0", colorSafe: true },
+    { id: "efx_snow_crust", name: "Snow Crust", desc: "Crusted snow — drifts dividing and merging over your colour, sparkling where it froze hard.", swatch: "#e8ecf2", colorSafe: true },
+    { id: "efx_nacre", name: "Nacre", desc: "Mother of pearl — braided growth lines with a soft interference shimmer.", swatch: "#e3dfe8", colorSafe: true },
     { id: "singularity", name: "Event Horizon", desc: "Near-black base with vivid color bleeding at edges — procedural micro-spec gradient, no hand work", swatch: "#000000" },
     { id: "liquid_obsidian", name: "Liquid Obsidian", desc: "Flowing glass-metal phase boundary - metallic oscillates 0-255 while roughness stays near-zero", swatch: "#080818" },
     { id: "prismatic", name: "Boundary Logic", desc: "Extreme M/R range — procedural micro-spec creates strong angle-resolved color shifts in seconds", swatch: "#E1A1FF" },
@@ -326,11 +1148,16 @@ const BASES = [
     { id: "satin_candy", name: "Satin Candy", desc: "Candy pigment under satin/matte clear — glowing-coal effect: maximum saturation, zero reflection", swatch: "#cc2244", colorSafe: true },
     { id: "velvet_floc", name: "Velvet / Suede Floc", desc: "Flock coating — absolute light absorption, car becomes a pure silhouette shape", swatch: "#0a0a0a" },
     { id: "deep_pearl", name: "Deep Pearl (Type III)", desc: "Three-stage tri-coat pearl with edge-weighted flop — warm/cool color hint at raking angles", swatch: "#f0eef8", colorSafe: true },
+    { id: "candy_gold", name: "Candy Gold", desc: "Liquid amber candy over bright gold flake — deep wet gloss with crisp metalflake sparkle", swatch: "#c8920a", colorSafe: true },
+    { id: "candy_lime", name: "Candy Lime", desc: "Vivid chartreuse candy over silver-green flake — bright wet candy, fine flake detail", swatch: "#7fbf12", colorSafe: true },
+    { id: "candy_aqua", name: "Candy Aqua", desc: "Beachy turquoise candy over silver flake — deep wet aqua depth with crisp sparkle", swatch: "#11a89e", colorSafe: true },
+    { id: "copper_pearl", name: "Copper Pearl", desc: "Warm copper/bronze mica pearl — fine platelet shift, rich metal nacre", swatch: "#9c5a2e", colorSafe: true },
+    { id: "coral_pearl", name: "Coral Pearl", desc: "Beachy coral/peach mica pearl — soft warm shimmer with fine platelets", swatch: "#c66a60", colorSafe: true },
     { id: "gunmetal_satin", name: "Gunmetal Satin Industrial", desc: "CNC-machined alloy satin — dark metallic without gloss, raw processed metal aesthetic", swatch: "#3a3a44", colorSafe: true },
     { id: "forged_carbon_vis", name: "Forged Carbon Visible", desc: "Lamborghini forged carbon — random-fiber organic weave, non-repeating charcoal with wet clearcoat depth", swatch: "#1a1a1c" },
     { id: "electroplated_gold", name: "Electroplated Gold / Rose Gold", desc: "Warm mirror — near-chrome metallic with warm gold or rose-gold albedo, Rolls-Royce Bespoke reference", swatch: "#c8a028", colorSafe: true },
     { id: "cerakote_pvd", name: "Cerakote / PVD Hard Coat", desc: "TiN/TiAlN thin hard coating — muted deep colors, flat zero-clearcoat surface, firearms/motorsport hardware aesthetic", swatch: "#445544", colorSafe: true },
-    { id: "hypershift_spectral", name: "Hypershift Spectral 360°", desc: "PPG HyperShift — 6-anchor full spectral sweep with steep transitions; distinct dominant hue from every viewing angle", swatch: "#cc4488", colorSafe: true },
+    { id: "hypershift_spectral", name: "Black Diamond Candy", desc: "Near-black candy over fine diamond flake — a full-spectrum spark stays buried, igniting only at grazing angles", swatch: "#1a1a22", colorSafe: true },
     // ★ COLORSHOXX — Premium dual-tone color-shifting finishes
     { id: "cx_inferno", name: "COLORSHOXX Inferno Flip", desc: "Crimson red ↔ midnight blue — red zones flash metallic at specular angle, blue holds steady. Two-color premium shift.", swatch: "#991122" },
     { id: "cx_arctic", name: "COLORSHOXX Arctic Mirage", desc: "Ice silver ↔ deep teal — silver flashes brilliantly, teal stays deep and cool. Premium cold-shift.", swatch: "#55AABB" },
@@ -360,57 +1187,99 @@ const BASES = [
     { id: "cx_acid_rain", name: "CX Acid Rain", desc: "Toxic yellow + sick green + bruise purple + ash gray. Chemical downpour.", swatch: "#CCDD22" },
     { id: "cx_royal_spectrum", name: "CX Royal Spectrum", desc: "Chrome silver + sapphire + ruby + emerald. Four crown jewels on one car.", swatch: "#AABBCC" },
     { id: "cx_apocalypse", name: "CX Apocalypse", desc: "Scorching white + blood red + rust orange + dead black. The end of everything.", swatch: "#DD4422" },
-    // ★ MORTAL SHOKK — Fighting-game-inspired married paint+spec finishes
-    { id: "ms_frozen_fury", name: "MS Frozen Fury", desc: "Ice blue + frozen white chrome zones. White flashes at specular, blue holds steady.", swatch: "#88BBEE" },
-    { id: "ms_venom_strike", name: "MS Venom Strike", desc: "Deep gold metallic flash + black matte fire zones. Scorching heat.", swatch: "#DDBB22" },
-    { id: "ms_thunder_lord", name: "MS Thunder Lord", desc: "Electric blue + white lightning veins on dark navy base. Storm unleashed.", swatch: "#3366EE" },
-    { id: "ms_chrome_cage", name: "MS Chrome Cage", desc: "Hollywood gold chrome + green energy shimmer. Star power.", swatch: "#DDCC44" },
-    { id: "ms_dragon_flame", name: "MS Dragon Flame", desc: "Red + orange fire gradient with ember particles on dark smoke.", swatch: "#DD3311" },
-    { id: "ms_royal_edge", name: "MS Royal Edge", desc: "Royal blue silk + silver steel blade streaks. Deadly elegance.", swatch: "#2244AA" },
-    { id: "ms_feral_grin", name: "MS Feral Grin", desc: "Hot pink + venomous purple. Aggressive contrast. Unhinged energy.", swatch: "#EE2288" },
-    { id: "ms_acid_scale", name: "MS Acid Scale", desc: "Acid green + dark scale cell pattern. Voronoi reptile skin.", swatch: "#66DD11" },
-    { id: "ms_soul_drain", name: "MS Soul Drain", desc: "Glowing red energy mist on absolute black void. Soul extraction.", swatch: "#CC1100" },
-    { id: "ms_emerald_shadow", name: "MS Emerald Shadow", desc: "Deep emerald + shadow black stealth zones. Silent strike.", swatch: "#118833" },
-    { id: "ms_void_walker", name: "MS Void Walker", desc: "Absolute black with faint shadow duplicate shimmer. Nearly invisible.", swatch: "#111118" },
-    { id: "ms_ghost_vapor", name: "MS Ghost Vapor", desc: "Gray smoke wisps with chrome peek-through — now you see it, now you don't, ghostly apparition finish.", swatch: "#99AABB" },
-    { id: "ms_shape_shift", name: "MS Shape Shift", desc: "Morphing 3-color zones: mystic green + amber + deep purple. Never the same.", swatch: "#88AA33" },
-    { id: "ms_titan_bronze", name: "MS Titan Bronze", desc: "Massive bronze metallic + dark brutal texture. Four arms of fury.", swatch: "#AA7722" },
-    { id: "ms_war_hammer", name: "MS War Hammer", desc: "Dark armor plate + blood red accent veins. Conqueror finish.", swatch: "#881111" },
-    // ★ NEON UNDERGROUND — Blacklight reactive neon-glow finishes
-    { id: "neon_pink_blaze", name: "NU Pink Blaze", desc: "Hot pink neon with concentric pulsing glow zones. Blacklight reactive.", swatch: "#FF1493" },
-    { id: "neon_toxic_green", name: "NU Toxic Green", desc: "Radioactive green with Geiger-counter scatter particles. Hazmat glow.", swatch: "#39FF14" },
-    { id: "neon_electric_blue", name: "NU Electric Blue", desc: "Deep UV blue with plasma discharge veins. Lightning in a tube.", swatch: "#0033FF" },
-    { id: "neon_blacklight", name: "NU Blacklight", desc: "UV-reactive purple that glows in dark zones. Inverse brightness.", swatch: "#8B00FF" },
-    { id: "neon_orange_hazard", name: "NU Orange Hazard", desc: "Construction orange with diagonal warning stripe pattern. High-vis neon.", swatch: "#FF6600" },
-    { id: "neon_red_alert", name: "NU Red Alert", desc: "Emergency red with siren-like concentric rings. Full alarm.", swatch: "#FF0022" },
-    { id: "neon_cyber_yellow", name: "NU Cyber Yellow", desc: "Cyberpunk yellow with circuit trace PCB pattern. Digital glow.", swatch: "#FFEE00" },
-    { id: "neon_ice_white", name: "NU Ice White", desc: "Cold white neon with frost crystallization dendrites. Sub-zero glow.", swatch: "#E8F0FF" },
-    { id: "neon_dual_glow", name: "NU Dual Glow", desc: "Two-color neon (pink+blue) split by warped spatial field. Dual spectrum.", swatch: "#CC44DD" },
-    { id: "neon_rainbow_tube", name: "NU Rainbow Tube", desc: "Full spectrum neon tube with horizontal banding. All wavelengths.", swatch: "#FF4488" },
+    // ★ MORTAL SHOKK V2 — 4K reference-plate-driven married paint+spec finishes
+    // 2026-05-22: replaced old 15 algorithmic finishes with 26 V2 plate-driven ids
+    // (matches assets/reference_textures/mortal_shokk/manifest.json + cultural_mortal_shokk.py).
+    { id: "ms_acid_veil_ambush", name: "MS Acid Veil Ambush", desc: "Acid mist veil hiding chrome strike zones. Toxic ambush vibe.", swatch: "#66BB22" },
+    { id: "ms_blood_empress", name: "MS Blood Empress", desc: "Regal deep-crimson with imperial gold edge highlights. Empress aura.", swatch: "#99112A" },
+    { id: "ms_bone_sonata", name: "MS Bone Sonata", desc: "Bone-white plate with melodic shadow ribs. Skeletal harmony.", swatch: "#DDD5C0" },
+    { id: "ms_chainburst_inferno", name: "MS Chainburst Inferno", desc: "Cascading flame chains burst across dark metal. Chain reaction inferno.", swatch: "#EE4411" },
+    { id: "ms_cinder_spiral", name: "MS Cinder Spiral", desc: "Spiraling ember sparks on cooling ash substrate. Cinder vortex.", swatch: "#CC5500" },
+    { id: "ms_crimson_dragon", name: "MS Crimson Dragon", desc: "Dragon-scale crimson with shadow-etched scale boundaries. Apex predator.", swatch: "#B01818" },
+    { id: "ms_cryo_shard", name: "MS Cryo Shard", desc: "Frozen cyan shards on glacial substrate. Sub-zero kill strike.", swatch: "#88E8F8" },
+    { id: "ms_crystal_onslaught", name: "MS Crystal Onslaught", desc: "Faceted crystal assault with prism-edge refraction. Shatter-strike.", swatch: "#C8E0F0" },
+    { id: "ms_dragon_ascent", name: "MS Dragon Ascent", desc: "Ascending dragon gold with flame-trail accents. Rising power finish.", swatch: "#DD9911" },
+    { id: "ms_dragon_soul", name: "MS Dragon Soul", desc: "Soul-ember dragon jade with inner glow channels. Spiritual depth.", swatch: "#228866" },
+    { id: "ms_emerald_scale_mirage", name: "MS Emerald Scale Mirage", desc: "Emerald scale shimmer that shifts at viewing angle. Iridescent mirage.", swatch: "#228855" },
+    { id: "ms_fang_cataclysm", name: "MS Fang Cataclysm", desc: "Tooth-shard cataclysm on slate armor. Predator devastation.", swatch: "#444455" },
+    { id: "ms_frost_sentinel", name: "MS Frost Sentinel", desc: "Frozen sentinel-blue with vigilant ice crystals. Guardian frost.", swatch: "#6699CC" },
+    { id: "ms_frozen_inferno", name: "MS Frozen Inferno", desc: "Paradox blue cold-flame on icefire substrate. Frozen burn.", swatch: "#4477BB" },
+    { id: "ms_lotus_ascention", name: "MS Lotus Ascention", desc: "Sacred lotus rising in pink-gold petals. Spiritual ascent finish.", swatch: "#E090B0" },
+    { id: "ms_molten_sting", name: "MS Molten Sting", desc: "Molten metal sting with droplet flares. Liquid-flame venom.", swatch: "#DD6611" },
+    { id: "ms_porcelain_cipher", name: "MS Porcelain Cipher", desc: "Encoded porcelain glaze with cipher-line crackles. Mystery finish.", swatch: "#E8DDD0" },
+    { id: "ms_serpent_haze_strike", name: "MS Serpent Haze Strike", desc: "Toxic serpent haze with venom-strike accents. Coiled deadliness.", swatch: "#88BB22" },
+    { id: "ms_shadow_wraith", name: "MS Shadow Wraith", desc: "Spectral wraith-black with faint shadow-duplicate shimmer. Nearly invisible.", swatch: "#221122" },
+    { id: "ms_soul_forge", name: "MS Soul Forge", desc: "Forged amber with soul-ember inner glow. Crafted-spirit finish.", swatch: "#CC8833" },
+    { id: "ms_tempest_crown", name: "MS Tempest Crown", desc: "Storm-crown tempest blue with lightning crown veins. Sovereign storm.", swatch: "#3344AA" },
+    { id: "ms_thunder_mandala", name: "MS Thunder Mandala", desc: "Sacred thunder mandala in electric violet rays. Storm-spiritual finish.", swatch: "#6633CC" },
+    { id: "ms_toxic_labyrinth", name: "MS Toxic Labyrinth", desc: "Toxic neon maze on contaminated substrate. Hazmat puzzle aesthetic.", swatch: "#99DD11" },
+    { id: "ms_venom_eclipse", name: "MS Venom Eclipse", desc: "Eclipse venom-dark purple with corona shimmer. Total venom blackout.", swatch: "#4D1A66" },
+    { id: "ms_venom_veil", name: "MS Venom Veil", desc: "Venomous veil mixing serpent green and amethyst poison.", swatch: "#884499" },
+    { id: "ms_zero_hour", name: "MS Zero Hour", desc: "Final-hour steel grey with last-second crisis veins. Apocalypse finish.", swatch: "#555566" },
+    // ★ MONEY SHOKK — The Money Shot angle-reveal color change (2026-05-27 breakthrough)
+    { id: "msh_canary_coffin", name: "MSH: Canary Coffin", desc: "V2 — electric blue body, lavender/pink coffin-rust reveal; finer spec gates + chroma lift.", swatch: "#3344EE" },
+    { id: "msh_magenta_widow", name: "MSH: Magenta Widow", desc: "V2 — deep blue-indigo body, hot pink/crimson web flashes. Neon ice base + widow venom overlay.", swatch: "#2244AA" },
+    { id: "msh_cerulean_cobra", name: "MSH: Cerulean Cobra", desc: "V2 — sapphire-indigo body, molten gold scale bloom. Deep blue hue rotation, no white wash.", swatch: "#2233CC" },
+    { id: "msh_lime_scorpion", name: "MSH: Lime Scorpion", desc: "Violet-indigo base with ember-hex copper bloom. Densest spec tiling in the set.", swatch: "#5533AA" },
+    { id: "msh_hyperpink_torii", name: "MSH: Hyperpink Torii", desc: "V2 — sapphire-teal body, peach-gold torii lattice flare. Magenta arc → deep blue, colored reveal.", swatch: "#2266BB" },
+    { id: "msh_seafoam_piranha", name: "MSH: Seafoam Piranha", desc: "V2 — deep blue body, electric aqua/magenta current streaks. Cerulean base replaces dead seafoam green.", swatch: "#2244AA" },
+    { id: "msh_orchid_kintsugi", name: "MSH: Orchid Kintsugi", desc: "Teal-green body, champagne-gold crack-line reveal. Orchid pulse + kintsugi rift.", swatch: "#228866" },
+    { id: "msh_peach_jellyshock", name: "MSH: Peach Jellyshock", desc: "V2 — ice-blue body, burned hot pink jelly drift. Owner hue-shift proof: blue base + jellyshock overlay.", swatch: "#66BBFF" },
+    { id: "msh_daffodil_bayou", name: "MSH: Daffodil Bayou", desc: "V2 — electric indigo body, violet/pink bayou script smoke. Canary→indigo + denser bayou overlay.", swatch: "#4433CC" },
+    { id: "msh_neonice_rising", name: "MSH: Neon Ice Rising", desc: "Ice-blue body, sunset orange prismwave crown on roof and quarters.", swatch: "#88DDFF" },
 
-    // === TEXTILE-INSPIRED BASES === (Session v6.1.2 additions)
-    { id: "textile_denim_weave", name: "Denim Weave", desc: "Cotton denim weave finish with blue indigo tone and subtle fiber texture — perfect for casual-wear livery themes or retro workwear-inspired looks", swatch: "#3a4a6e", category: "Textile-Inspired", tags: ["textile", "fabric", "casual", "denim", "blue"], colorSafe: false },
-    { id: "textile_canvas_rough", name: "Canvas Rough", desc: "Heavy canvas textile look with coarse warp-and-weft threading — evokes artist canvas or sailcloth for rugged industrial and maritime builds", swatch: "#c8b892", category: "Textile-Inspired", tags: ["textile", "fabric", "canvas", "coarse", "natural"], colorSafe: false },
-    { id: "textile_silk_sheen", name: "Silk Sheen", desc: "Smooth silk with subtle sheen and directional luster — elegant luxury fabric finish for high-end fashion-themed show builds", swatch: "#e8d9c0", category: "Textile-Inspired", tags: ["textile", "fabric", "silk", "luxury", "sheen"], colorSafe: false },
-    { id: "textile_velvet_crush", name: "Velvet Crushed", desc: "Crushed velvet pile texture with directional nap variation — deep plush richness that plays with light for boudoir-luxe showcase builds", swatch: "#4a1a3a", category: "Textile-Inspired", tags: ["textile", "fabric", "velvet", "luxury", "plush"], colorSafe: false },
-    { id: "textile_burlap_coarse", name: "Burlap Coarse", desc: "Coarse burlap sack texture with visible jute fibers and rough weave — rustic farmhouse-country aesthetic for weathered agrarian builds", swatch: "#9a7a48", category: "Textile-Inspired", tags: ["textile", "fabric", "burlap", "rustic", "coarse"], colorSafe: false },
-    { id: "textile_suede_soft", name: "Suede Soft", desc: "Soft suede nap with brushed fiber direction and muted matte surface — warm tactile leather-alternative for boutique interior-themed builds", swatch: "#8a6a4a", category: "Textile-Inspired", tags: ["textile", "fabric", "suede", "soft", "matte"], colorSafe: false },
+    // ★ MONEY SHOKK CLAUDE — Claude Opus 4.7 bake-off entry (2026-05-27)
+    { id: "mshc_tigerblood_voltage", name: "MSHC: Tigerblood Voltage", desc: "Deep indigo body, amber tiger-claw flash on glancing sun. Tiger Fang Fracture overlay.", swatch: "#1a1040" },
+    { id: "mshc_oxblood_seigaiha", name: "MSHC: Oxblood Seigaiha", desc: "Magenta → sea-green wave body with chrome crest peaks. Seigaiha Chrome overlay.", swatch: "#cc2288" },
+    { id: "mshc_emerald_sharkbite", name: "MSHC: Emerald Sharkbite", desc: "Seafoam → ruby-coral reveal with salt-teeth gates. Sharkbite Riptide overlay.", swatch: "#40e0d0" },
+    { id: "mshc_amber_panther", name: "MSHC: Amber Panther", desc: "Peach → deep teal-night body, amber pearl glints catch on curve. Panther Shadow Claw overlay.", swatch: "#ffaa66" },
+    { id: "mshc_violet_kyoto", name: "MSHC: Violet Kyoto", desc: "Cerulean → red-violet with gold filigree pins. Kyoto Lantern Filigree overlay.", swatch: "#4b0082" },
+    { id: "mshc_acid_hornet", name: "MSHC: Acid Hornet", desc: "Pink → acid yellow-green swarm reveal. Hornet Swarm Static overlay.", swatch: "#ff69b4" },
+    { id: "mshc_oni_orchid_glass", name: "MSHC: Oni Orchid Glass", desc: "Orchid → coral-amber demon-mosaic shadows. Oni Veil Mosaic overlay.", swatch: "#da70d6" },
+    { id: "mshc_copper_jubilee", name: "MSHC: Copper Jubilee", desc: "Daffodil → indigo-blue with warm copper voodoo-root reveal. Root Doctor Copper overlay.", swatch: "#ffd700" },
+    { id: "mshc_canary_widow_redux", name: "MSHC: Canary Widow Redux", desc: "Canary → coral-orange with ruby web flashes. Same base, +63 rotation, Widow Web Venom.", swatch: "#eebb22" },
+    { id: "mshc_rosethorn_bonsai", name: "MSHC: Rosethorn Bonsai", desc: "Ice blue → soft violet-rose with leaf-circuit gates. Bonsai Drift Circuit overlay.", swatch: "#afeeee" },
 
-    // === STONE & MINERAL BASES ===
-    { id: "stone_slate_matte", name: "Slate Matte", desc: "Dark matte slate surface with natural cleavage lines and subtle mineral flecks — architectural stonework finish for grounded premium builds", swatch: "#404852", category: "Stone & Mineral", tags: ["stone", "mineral", "slate", "matte", "architectural"], colorSafe: false },
-    { id: "stone_marble_polished", name: "Marble Polished", desc: "Polished marble sheen with flowing veins through creamy background — classical Carrara elegance for luxury statement builds", swatch: "#e8e6e2", category: "Stone & Mineral", tags: ["stone", "mineral", "marble", "polished", "luxury"], colorSafe: false },
-    { id: "stone_granite_speckled", name: "Granite Speckled", desc: "Speckled granite pattern with quartz-feldspar-mica grain variation — countertop-grade mineral density for solid industrial-luxe builds", swatch: "#6a6058", category: "Stone & Mineral", tags: ["stone", "mineral", "granite", "speckled", "natural"], colorSafe: false },
-    { id: "stone_sandstone_warm", name: "Sandstone Warm", desc: "Warm sandstone desert tone with layered sedimentary bedding lines — Southwest canyon aesthetic for adventure and overland builds", swatch: "#c8905a", category: "Stone & Mineral", tags: ["stone", "mineral", "sandstone", "warm", "desert"], colorSafe: false },
-    { id: "stone_obsidian_mirror", name: "Obsidian Mirror", desc: "Near-mirror obsidian black with volcanic glass conchoidal fractures — razor-sharp primordial stone for sinister premium builds", swatch: "#0a0a12", category: "Stone & Mineral", tags: ["stone", "mineral", "obsidian", "mirror", "volcanic"], colorSafe: false },
-    { id: "stone_travertine_cream", name: "Travertine Cream", desc: "Cream travertine quarry finish with natural porosity and layered limestone banding — Mediterranean villa elegance for refined builds", swatch: "#e4d5b8", category: "Stone & Mineral", tags: ["stone", "mineral", "travertine", "cream", "natural"], colorSafe: false },
+    // ★ MONEY SHOKK ANTIGRAVITY — Antigravity bake-off entry (2026-05-27)
+    { id: "msha_canary_gris_gris", name: "MSHA: Canary Gris-Gris", desc: "Electric indigo-blue base with a soft pearlescent amethyst crystal shift. Midnight Gris-Gris overlay.", swatch: "#3f00ff" },
+    { id: "msha_emerald_brocade", name: "MSHA: Emerald Brocade", desc: "Bright jade-teal body that flashes coral-gold scales in direct sunlight. Shogun Scale Brocade overlay.", swatch: "#00a86b" },
+    { id: "msha_fuji_neon_crest", name: "MSHA: Fuji Neon Crest", desc: "Icy cyan-violet base that blooms with warm bronze-pink frost peaks. Fuji Frost Crest overlay.", swatch: "#00ffff" },
+    { id: "msha_volcanic_croc", name: "MSHA: Volcanic Croc", desc: "Deep indigo body shifting to molten lava gold plates under high angles. Croc Delta Armor overlay.", swatch: "#4b0082" },
+    { id: "msha_cherry_blossom_flux", name: "MSHA: Cherry Blossom Flux", desc: "Intense sky-teal body blooming cherry-blossom pink under direct solar rays. Sakura Static overlay.", swatch: "#00ced1" },
+    { id: "msha_waxen_voodoo", name: "MSHA: Waxen Voodoo", desc: "Cobalt-violet body with shifting pale amber candle-wax veves catching solar glare. Candle Wax Veve overlay.", swatch: "#4b0082" },
+    { id: "msha_hyperpink_threads", name: "MSHA: Hyperpink Threads", desc: "Neon violet base with golden micro-thread grid reveals that sparkle under motion. Pins & Thread overlay.", swatch: "#8a2be2" },
+    { id: "msha_peach_burlap", name: "MSHA: Peach Burlap", desc: "Mint-teal base with shifting copper-rose hex burlap texture. Bayou Hex Burlap overlay.", swatch: "#98ff98" },
+    { id: "msha_seafoam_charm", name: "MSHA: Seafoam Charm", desc: "Royal purple body with shifting emerald-patina charms under grazing sunlight. Swamp Charm Patina overlay.", swatch: "#7b1fa2" },
+    { id: "msha_solar_moss", name: "MSHA: Solar Moss", desc: "Electric magenta base that shifts to moss-green sparkles under glanced lighting. Spanish Moss Static overlay.", swatch: "#ff007f" },
 
-    // === PAINT TECHNIQUE BASES ===
-    { id: "paint_drip_gravity", name: "Drip Gravity", desc: "Gravity-dripped paint runs with vertical curtain streaks and pooling at lower edges — Jackson-Pollock-adjacent action painting for expressive art builds", swatch: "#3a2a52", category: "Paint Technique", tags: ["paint", "technique", "drip", "gravity", "expressive"], colorSafe: false },
-    { id: "paint_splatter_loose", name: "Splatter Loose", desc: "Loose paint splatter overlay with scattered droplets and fine mist in varied sizes — graffiti-underground aesthetic for rebellious street-art builds", swatch: "#2a2a35", category: "Paint Technique", tags: ["paint", "technique", "splatter", "graffiti", "street"], colorSafe: false },
-    { id: "paint_sponge_stipple", name: "Sponge Stipple", desc: "Sponge-stippled finish with irregular dabbed texture and layered tonal variation — faux-finish decorative painting for vintage interior-inspired builds", swatch: "#a88862", category: "Paint Technique", tags: ["paint", "technique", "sponge", "stipple", "vintage"], colorSafe: false },
-    { id: "paint_roller_streak", name: "Roller Streak", desc: "Paint roller streak marks with directional lap lines and edge buildup — imperfect DIY garage-job charm for lo-fi honest builds", swatch: "#7a8a95", category: "Paint Technique", tags: ["paint", "technique", "roller", "streak", "diy"], colorSafe: false },
-    { id: "paint_spray_fade", name: "Spray Fade", desc: "Graduated spray gun fade with soft atomized transition from dense to thin coverage — classic airbrush blend for custom show builds", swatch: "#c85a3a", category: "Paint Technique", tags: ["paint", "technique", "spray", "fade", "airbrush"], colorSafe: false },
-    { id: "paint_brush_stroke", name: "Brush Stroke", desc: "Visible brushstroke texture with directional bristle marks and impasto ridges — hand-painted fine-art aesthetic for gallery-piece showpiece builds", swatch: "#5a6a48", category: "Paint Technique", tags: ["paint", "technique", "brush", "stroke", "artistic"], colorSafe: false }
+    // ★ MONEY SHOKK CODEX — Codex bake-off entry (2026-05-27)
+    { id: "mshx_blueprint_jackpot", name: "MSHX: Blueprint Jackpot V2", desc: "Rebuilt after owner 3/REBUILD — tighter coffin gates, stronger blue-indigo landing, brighter lavender/pink flare.", swatch: "#6732e0" },
+    { id: "mshx_venom_cashmere", name: "MSHX: Venom Cashmere V2", desc: "Rebuilt after owner 4/REBUILD — neon-ice base, blue/purple body, colored tiger-fang glints instead of white glare.", swatch: "#d617e5" },
+    { id: "mshx_glacier_pinkslip", name: "MSHX: Glacier Pinkslip V2", desc: "Rebuilt after owner 3/REBUILD — Prism Tipjar-derived sapphire body with sharkbite pink/ice flare.", swatch: "#1585bd" },
+    { id: "mshx_lime_afterburner", name: "MSHX: Lime Afterburner V2", desc: "Rebuilt after owner 5/REBUILD — deeper blue-purple landing with dense copper scorpion ember cells.", swatch: "#b21adb" },
+    { id: "mshx_miami_blacklight", name: "MSHX: Miami Blacklight V2", desc: "Rebuilt after owner 3/REBUILD — neon-ice substrate with magenta widow-web flare baked into the reveal.", swatch: "#c719e7" },
+    { id: "mshx_royal_sunstroke", name: "MSHX: Royal Sunstroke V2", desc: "Rebuilt after owner 3/REBUILD — canary-to-indigo base with champagne/pink Kyoto pin bloom.", swatch: "#6732e0" },
+    { id: "mshx_kintsugi_ransom", name: "MSHX: Kintsugi Ransom", desc: "Teal-night paint with pale-gold fracture flashes that read expensive fast. Orchid + Kintsugi Rift.", swatch: "#127f78" },
+    { id: "mshx_coral_sharkskin", name: "MSHX: Coral Sharkskin V2", desc: "Rebuilt after owner 3/REBUILD — owner-proven blue-base direction with hot piranha current scratches.", swatch: "#c719e7" },
+    { id: "mshx_dover_jackpot", name: "MSHX: Dover Jackpot V2", desc: "Rebuilt after owner 3/REBUILD — darker indigo Dover body with tighter violet/pink smoke-script payout.", swatch: "#391de0" },
+    { id: "mshx_prism_tipjar", name: "MSHX: Prism Tipjar", desc: "Sapphire-teal body tipping warm orange/pink from prismwave micro-crowns in motion. Magenta + Rising Sun Prismwave.", swatch: "#146aa8" },
+    // ★ NEON UNDERGROUND v4 — tuner-nightlife optical materials; SPB-105 NU-V4-LIVE-1
+    { id: "neon_pink_blaze", name: "Import Royalty", desc: "Layered razor vinyl slashes with prismatic tuner-wrap edges.", swatch: "#ff27b7" },
+    { id: "neon_toxic_green", name: "Toxic Overdrive", desc: "Acid-green current pools with yellow pressure lips and black sink regions.", swatch: "#62ff16" },
+    { id: "neon_electric_blue", name: "Neon Underglow", desc: "Ground-effects cyan and magenta rising through smoked wet-look paint.", swatch: "#00a8ff" },
+    { id: "neon_blacklight", name: "Blacklight Garage", desc: "Fluorescent solvent pools and ultraviolet shop-light reflections on concrete black.", swatch: "#9c35ff" },
+    { id: "neon_orange_hazard", name: "Burnout Ember", desc: "Curved tire-heat tracks, underlit smoke and ember-red rubber fragments.", swatch: "#ff4a12" },
+    { id: "neon_red_alert", name: "Redline Rush", desc: "Escalating redline heat and speed rhythm without a literal gauge.", swatch: "#ff163d" },
+    { id: "neon_cyber_yellow", name: "Tunnel Vision", desc: "Vanishing tunnel lights stretching into yellow, cyan and white speed wedges.", swatch: "#ffe21a" },
+    { id: "neon_ice_white", name: "Nitro Purge", desc: "Electric-blue purge plumes, frost shock and white pressure cores.", swatch: "#9defff" },
+    { id: "neon_dual_glow", name: "Split Underglow", desc: "Opposed cyan and magenta ground-light fields dividing a smoked body.", swatch: "#d92cff" },
+    { id: "neon_rainbow_tube", name: "Afterburn Chrome", desc: "Heat-shifted chrome with broad spectral oxidation bands and brushed fire.", swatch: "#ff4fd8" }
+    // 2026-05-18 (owner mandate): Textile-Inspired (6), Stone & Mineral (6),
+    // and Paint Technique (6) base categories TOTALLY REMOVED. Renderers
+    // for these ids were previously skipped in the engine ("Missing ids
+    // skipped" log line) so the picker tiles were dead weight. Source-of-
+    // truth bases removed here; downstream BASE_GROUPS, BASE_METADATA,
+    // BASE_FAMILY_MAP, and HERO_BASES entries scrubbed alongside.
 ];
 
 // =============================================================================
@@ -444,7 +1313,7 @@ const BASE_METADATA = {
     piano_black:   { family: "gloss", substrate: "paint", coating: "clearcoat", tier: "premium", aggression: 2, sponsor_safe: true, best_with: ["none", "carbon_fiber"] },
     gloss:         { family: "gloss", substrate: "paint", coating: "clearcoat", tier: "standard", aggression: 1, sponsor_safe: true, best_with: ["none", "carbon_fiber", "tribal_flame"] },
     ceramic:       { family: "ceramic", substrate: "composite", coating: "clearcoat", tier: "premium", aggression: 1, sponsor_safe: true, best_with: ["none", "diamond_plate"] },
-    barn_find:     { family: "weathered", substrate: "paint", coating: "none", tier: "premium", aggression: 3, sponsor_safe: false, best_with: ["acid_wash", "battle_worn", "rust_bloom"] },
+    barn_find:     { family: "weathered", substrate: "paint", coating: "none", tier: "premium", aggression: 3, sponsor_safe: false, best_with: ["acid_wash", "battle_worn"] },
     copper:        { family: "metallic", substrate: "metal", coating: "none", tier: "premium", aggression: 3, sponsor_safe: true, best_with: ["none", "tribal_flame", "celtic_knot"] },
     gunmetal:      { family: "metallic", substrate: "metal", coating: "clearcoat", tier: "premium", aggression: 2, sponsor_safe: true, best_with: ["carbon_fiber", "hex_mesh", "diamond_plate"] },
 
@@ -465,9 +1334,9 @@ const BASE_METADATA = {
 
     // === WEATHERED BASES ===
     acid_etch:     { family: "weathered", substrate: "paint", coating: "none", tier: "standard", aggression: 4, sponsor_safe: false, best_with: ["acid_wash", "fracture"] },
-    battle_patina: { family: "weathered", substrate: "metal", coating: "none", tier: "standard", aggression: 4, sponsor_safe: false, best_with: ["battle_worn", "rust_bloom"] },
+    battle_patina: { family: "weathered", substrate: "metal", coating: "none", tier: "standard", aggression: 4, sponsor_safe: false, best_with: ["battle_worn"] },
     sun_fade:      { family: "weathered", substrate: "paint", coating: "none", tier: "standard", aggression: 2, sponsor_safe: true, best_with: ["none", "acid_wash"] },
-    oxidized:      { family: "weathered", substrate: "metal", coating: "oxide", tier: "standard", aggression: 3, sponsor_safe: true, best_with: ["none", "rust_bloom"] },
+    oxidized:      { family: "weathered", substrate: "metal", coating: "oxide", tier: "standard", aggression: 3, sponsor_safe: true, best_with: ["none"] },
 
     // === EXOTIC BASES ===
     spectraflame:  { family: "candy", substrate: "metal", coating: "clearcoat", tier: "premium", aggression: 4, sponsor_safe: false, best_with: ["holographic_flake", "stardust"] },
@@ -483,12 +1352,14 @@ const BASE_METADATA = {
 // =============================================================================
 const BASE_FAMILY_MAP = {
     chrome: ["alubeam","black_chrome","blue_chrome","bullseye_chrome","candy_chrome","cc_ghost_silver","champagne_flake","checkered_chrome","chrome","chrome_wrap","dark_chrome","electric_ice","electroplated_gold","enh_chrome","f_chrome","f_electroplate","f_vapor_deposit","hydrographic","liquid_obsidian","liquid_titanium","mercury","mirror_gold","neon_blacklight","neon_cyber_yellow","neon_dual_glow","neon_electric_blue","neon_ice_white","neon_orange_hazard","neon_pink_blaze","neon_rainbow_tube","neon_red_alert","neon_toxic_green","p_erised","p_geomagnetic","p_mercury","platinum","rose_gold","spectraflame","surgical_steel","terrain_chrome","tungsten","vintage_chrome"],
-    satin_chrome: ["enh_satin_chrome","f_satin_chrome","original_metal_flake","p_schrodinger","satin_chrome","shokk_spectrum"],
+    satin_chrome: ["enh_satin_chrome","f_satin_chrome","f_dark_chrome","original_metal_flake","p_schrodinger","satin_chrome","shokk_spectrum"],
     brushed: ["brushed_aluminum","brushed_titanium","brushed_wrap","enh_brushed","f_brushed","satin_metal"],
-    metallic: ["anime_gradient_hair","anime_mecha_plate","anime_sakura_scatter","anime_speed_lines","anodized_exotic","beetle_stag","burnt_headers","cc_bronze_heat","cc_inferno","cc_royal_purple","cc_toxic","copper","cx_arctic","cx_aurora_borealis","cx_blood_mercury","cx_frozen_nebula","cx_phantom","cx_prism_shatter","cx_venom","drag_strip_gloss","dragonfly_wing","enh_anodized","enh_metallic","f_metallic","factory_basecoat","ferrari_rosso","fine_silver_flake","firefly_glow","gunmetal","infinite_finish","metallic","ms_feral_grin","ms_frozen_fury","ms_royal_edge","ms_shape_shift","ms_thunder_lord","opal","organic_metal","p_coronal","p_non_euclidean","pagani_tricolore","porsche_pts","satin_gold","shokk_aurora","shokk_catalyst","shokk_dual","shokk_fusion_base","shokk_inferno","shokk_phase","shokk_reactor","shokk_rift","shokk_tesseract_v2","shokk_wraith","xirallic"],
-    heavy_metallic: ["anime_cel_shade_chrome","anime_crystal_facet","anime_energy_aura","anime_neon_outline","anime_sparkle_burst","antique_chrome","beetle_jewel","beetle_rainbow","bentley_silver","blue_ice_flake","bugatti_blue","butterfly_morpho","cc_arctic_freeze","cc_electric_cyan","cc_solar_gold","champagne","cobalt_metal","cx_inferno","cx_royal_spectrum","cx_solar","diamond_coat","f_pvd_coating","graphene","green_flake","gunmetal_flake","holographic_base","maybach_two_tone","metal_flake_base","ms_chrome_cage","p_time_reversed","plasma_core","plasma_metal","prismatic","raw_aluminum","red_chrome","scarab_gold","shokk_apex","shokk_blood","shokk_cipher","shokk_flux","shokk_helix","shokk_mirage","shokk_polarity","shokk_prism","shokk_pulse","shokk_static","shokk_surge","shokk_vortex","victory_lane"],
-    pearl: ["dealer_pearl","deep_pearl","enh_pearl","f_pearl","jelly_pearl","midnight_pearl","pace_car_pearl","pearl","pearlescent_white","tri_coat_pearl"],
+    metallic: ["anime_gradient_hair","anime_mecha_plate","anime_sakura_scatter","anime_speed_lines","anodized_exotic","beetle_stag","burnt_headers","cc_bronze_heat","cc_inferno","cc_royal_purple","cc_toxic","copper","cx_arctic","cx_aurora_borealis","cx_blood_mercury","cx_frozen_nebula","cx_phantom","cx_prism_shatter","cx_venom","drag_strip_gloss","dragonfly_wing","enh_anodized","enh_metallic","f_metallic","factory_basecoat","ferrari_rosso","fine_silver_flake","firefly_glow","gunmetal","infinite_finish","metallic","ms_blood_empress","ms_crimson_dragon","ms_dragon_ascent","ms_dragon_soul","ms_lotus_ascention","ms_molten_sting","ms_serpent_haze_strike","ms_soul_forge","ms_tempest_crown","ms_thunder_mandala","opal","organic_metal","p_coronal","p_non_euclidean","pagani_tricolore","porsche_pts","satin_gold","shokk_aurora","shokk_catalyst","shokk_dual","shokk_fusion_base","shokk_inferno","shokk_phase","shokk_reactor","shokk_rift","shokk_tesseract_v2","shokk_wraith","xirallic"],
+    heavy_metallic: ["anime_cel_shade_chrome","anime_crystal_facet","anime_energy_aura","anime_neon_outline","anime_sparkle_burst","antique_chrome","beetle_jewel","beetle_rainbow","bentley_silver","blue_ice_flake","bugatti_blue","butterfly_morpho","cc_arctic_freeze","cc_electric_cyan","cc_solar_gold","champagne","cobalt_metal","cx_inferno","cx_royal_spectrum","cx_solar","diamond_coat","f_pvd_coating","graphene","green_flake","gunmetal_flake","holographic_base","maybach_two_tone","metal_flake_base","ms_chainburst_inferno","ms_cinder_spiral","ms_crystal_onslaught","ms_emerald_scale_mirage","ms_thunder_mandala","p_time_reversed","plasma_core","plasma_metal","prismatic","raw_aluminum","red_chrome","scarab_gold","shokk_apex","shokk_blood","shokk_cipher","shokk_flux","shokk_helix","shokk_mirage","shokk_polarity","shokk_prism","shokk_pulse","shokk_static","shokk_surge","shokk_vortex","victory_lane"],
+    pearl: ["dealer_pearl","deep_pearl","enh_pearl","f_pearl","f_satin_pearl","jelly_pearl","midnight_pearl","pace_car_pearl","pearl","pearlescent_white","tri_coat_pearl"],
     candy: ["candy","candy_apple","candy_burgundy","candy_cobalt","candy_emerald","f_candy"],
+    // FOUNDATION ONE 2026-09-03: new flat cells
+    matte_metal: ["f_matte_metallic","f_bead_blast"],
     ceramic: ["ceramic","ceramic_matte","enamel","enh_baked_enamel","enh_ceramic_glaze","enh_gel_coat","f_baked_enamel","f_gel_coat","stock_car_enamel","tempered_glass"],
     gloss: ["ambulance_white","bioluminescent","cc_midnight","crystal_clear","enh_eggshell","enh_gloss","enh_piano_black","enh_semi_gloss","enh_silk","enh_soft_gloss","enh_wet_look","f_soft_gloss","fire_engine","fleet_white","gloss","lamborghini_verde","mclaren_orange","nebula","obsidian","p_phantom","p_superfluid","piano_black","police_black","porcelain","race_day_gloss","school_bus","semi_gloss","shokk_venom","showroom_clear","smoked","solar_panel","taxi_yellow","wet_look"],
     satin: ["battleship_gray","eggshell","enh_clear_satin","enh_satin","enh_warm_white","f_clear_satin","f_pure_white","f_warm_white","rally_mud","satin","sun_baked"],
@@ -496,9 +1367,9 @@ const BASE_FAMILY_MAP = {
     vinyl: ["enh_vinyl_wrap","f_vinyl_wrap","gloss_wrap","liquid_wrap","matte_wrap","satin_wrap","stealth_wrap","textured_wrap"],
     carbon: ["aramid","carbon_base","carbon_ceramic","carbon_weave","enh_carbon_fiber","f_carbon_fiber","fiberglass","forged_carbon_vis","kevlar_base"],
     industrial: ["cerakote","cerakote_gloss","cerakote_pvd","duracoat","endurance_ceramic","enh_powder_coat","f_powder_coat","powder_coat"],
-    weathered: ["acid_etch","acid_rain","barn_find","battle_patina","crumbling_clear","cx_acid_rain","desert_worn","destroyed_coat","f_patina","f_weathering_steel","ms_acid_scale","oxidized","oxidized_copper","patina_bronze","patina_coat","salt_corroded","sun_fade","track_worn"],
+    weathered: ["acid_etch","acid_rain","barn_find","battle_patina","crumbling_clear","cx_acid_rain","desert_worn","destroyed_coat","f_patina","f_weathering_steel","ms_toxic_labyrinth","oxidized","oxidized_copper","patina_bronze","patina_coat","salt_corroded","sun_fade","track_worn"],
     optical: ["chameleon","chromaflair","color_flip_wrap","hypershift_spectral","iridescent"],
-    exotic: ["anime_comic_halftone","anodized","arctic_ice","armor_plate","blackout","butterfly_monarch","cc_blood_wash","cx_apocalypse","cx_chrome_void","cx_dragon_scale","cx_electric_storm","cx_glacier_fire","cx_hellfire","cx_midnight_chrome","cx_neon_abyss","cx_obsidian_gold","cx_ocean_trench","cx_rose_chrome","cx_supernova","cx_toxic_chrome","cx_white_lightning","enh_frozen","f_anodized","f_bead_blast","f_frozen","f_galvanized","f_hot_dip","f_mill_scale","f_sand_cast","f_shot_peen","f_thermal_spray","forged_composite","frozen","frozen_matte","galvanized","gunmetal_satin","heat_treated","hybrid_weave","koenigsegg_clear","moonstone","moth_luna","ms_dragon_flame","ms_emerald_shadow","ms_ghost_vapor","ms_soul_drain","ms_titan_bronze","ms_venom_strike","ms_void_walker","ms_war_hammer","p_hypercane","p_programmable","p_volcanic","pewter","quantum_foam","rugged","sandblasted","silk","singularity","superconductor","tinted_clear","tinted_lacquer","titanium_raw","volcanic","wasp_warning"],
+    exotic: ["anime_comic_halftone","anodized","arctic_ice","armor_plate","blackout","butterfly_monarch","cc_blood_wash","cx_apocalypse","cx_chrome_void","cx_dragon_scale","cx_electric_storm","cx_glacier_fire","cx_hellfire","cx_midnight_chrome","cx_neon_abyss","cx_obsidian_gold","cx_ocean_trench","cx_rose_chrome","cx_supernova","cx_toxic_chrome","cx_white_lightning","enh_frozen","f_anodized","f_bead_blast","f_frozen","f_galvanized","f_hot_dip","f_mill_scale","f_sand_cast","f_shot_peen","f_thermal_spray","forged_composite","frozen","frozen_matte","galvanized","gunmetal_satin","heat_treated","hybrid_weave","koenigsegg_clear","moonstone","moth_luna","ms_acid_veil_ambush","ms_bone_sonata","ms_cryo_shard","ms_fang_cataclysm","ms_frost_sentinel","ms_frozen_inferno","ms_porcelain_cipher","ms_shadow_wraith","ms_venom_eclipse","ms_venom_veil","ms_zero_hour","p_hypercane","p_programmable","p_volcanic","pewter","quantum_foam","rugged","sandblasted","silk","singularity","superconductor","tinted_clear","tinted_lacquer","titanium_raw","volcanic","wasp_warning"],
 };
 
 // Helper: get family for a base ID
@@ -953,6 +1824,18 @@ const PATTERNS = [
     { id: "geo_voronoi_organic", name: "Voronoi Organic", desc: "Organic Voronoi cells with irregular polygonal regions derived from randomized seed point tessellation — cellular biological texture ideal on pearl, candy, or metallic bases", swatch: "#667799", category: "Advanced Geometric", tags: ["geometric", "organic", "cellular", "mathematical"] },
     { id: "geo_fractal_triangle", name: "Sierpinski Triangle", desc: "Sierpinski fractal triangle with recursive self-similar triangular subdivisions revealing infinite nested detail — mathematical fractal art on dark, chrome, or neon bases", swatch: "#cc3355", category: "Advanced Geometric", tags: ["geometric", "fractal", "mathematical", "recursive"] },
     { id: "geo_hilbert_curve", name: "Hilbert Curve", desc: "Space-filling Hilbert curve with continuous fractal path weaving through every grid cell in recursive u-shaped segments — algorithmic elegance on matte, chrome, or dark bases", swatch: "#3388cc", category: "Advanced Geometric", tags: ["geometric", "fractal", "mathematical", "curve"] },
+    // === LET FREEDOM RING PATTERNS 2026-06-09 START === (UV-agnostic patriotic drop)
+    { id: "lfr_star_lattice", name: "Star Lattice", desc: "Liberty stars scattered at random sizes and rotations — a constellation of five-point stars with faint blue halos, never a grid, never upright", swatch: "linear-gradient(135deg, #1a2a6c 0%, #e8e8f0 55%, #3a4a9c 100%)", category: "Let Freedom Ring", tags: ["patriotic", "stars", "july4", "freedom"] },
+    { id: "lfr_stripe_drift", name: "Stripe Drift", desc: "Tapered red-and-white bands drifting at many different angles, widening and pinching — flag-stripe spirit freed from being parallel", swatch: "linear-gradient(115deg, #b02030 0%, #f0f0f4 45%, #c03040 100%)", category: "Let Freedom Ring", tags: ["patriotic", "stripes", "july4", "freedom"] },
+    { id: "lfr_bunting_scallop", name: "Bunting Scallop", desc: "Scattered swags of patriotic bunting — nested red/white/blue arc scallops flung at random rotations like festival bunting draped every which way", swatch: "linear-gradient(150deg, #b02030 0%, #f0f0f4 40%, #1a2a6c 100%)", category: "Let Freedom Ring", tags: ["patriotic", "bunting", "july4", "freedom"] },
+    { id: "lfr_distressed_flag", name: "Distressed Patina", desc: "All-over weathered, distressed grain — sun-bleached patriotic patina worn into the surface", swatch: "linear-gradient(125deg, #8a2530 0%, #c8c0b8 50%, #2a3a64 100%)", category: "Let Freedom Ring", tags: ["patriotic", "weathered", "vintage", "july4"] },
+    { id: "lfr_eagle_crest", name: "Liberty Weave", desc: "Fine omnidirectional diagonal weave in patriot tones", swatch: "linear-gradient(140deg, #1a2a5c 0%, #d8b040 55%, #243468 100%)", category: "Let Freedom Ring", tags: ["patriotic", "weave", "july4"] },
+    { id: "lfr_firework_radial", name: "Firework Radial", desc: "Bursting fireworks scattered across the surface — radial spark-bursts with white-hot cores and sparkle shells detonating from random points", swatch: "linear-gradient(160deg, #101830 0%, #e8c050 50%, #b02030 100%)", category: "Let Freedom Ring", tags: ["patriotic", "fireworks", "july4", "freedom"] },
+    { id: "lfr_constellation_field", name: "Constellation Field", desc: "An irregular night-sky field of liberty stars — glowing points of varied brightness with faint connecting constellation lines, nothing aligned to a grid", swatch: "linear-gradient(130deg, #0e1430 0%, #8090d0 60%, #141c3c 100%)", category: "Let Freedom Ring", tags: ["patriotic", "stars", "night", "july4"] },
+    { id: "lfr_ribbon_weave", name: "Ribbon Weave", desc: "Omnidirectional over-under weave of red, white and blue ribbons interlacing on two randomly-rotated axes — reads diagonal, never an upright grid", swatch: "linear-gradient(120deg, #b02030 0%, #f0f0f4 35%, #1a2a6c 70%, #b02030 100%)", category: "Let Freedom Ring", tags: ["patriotic", "weave", "ribbon", "july4"] },
+    { id: "lfr_stencil_stars", name: "Stencil Stars", desc: "Spray-painted stencil stars at random angles and sizes with soft over-spray bleed and fine paint speckle — worn, tactile, all-over", swatch: "linear-gradient(145deg, #2a3a64 0%, #e8e8f0 55%, #34457c 100%)", category: "Let Freedom Ring", tags: ["patriotic", "stencil", "stars", "july4"] },
+    { id: "lfr_liberty_filigree", name: "Spangled Field", desc: "Scattered bright stars over a fine engraved weave — star-spangled allover", swatch: "linear-gradient(135deg, #1c2c5e 0%, #c8ccd8 50%, #28386c 100%)", category: "Let Freedom Ring", tags: ["patriotic", "stars", "spangled", "july4"] },
+    // === LET FREEDOM RING PATTERNS 2026-06-09 END ===
 ];;
 
 // =============================================================================
@@ -1024,9 +1907,26 @@ const REMOVED_SPECIAL_IDS = new Set([
     "alexandrite", "black_diamond", "champagne_toast", "galaxy", "liquid_gold", "mother_of_pearl", "ruby", "sapphire", "silk_road", "stained_glass", "velvet_crush", "venetian_glass",
     "aged_leather", "bark", "bone", "brick_wall", "burlap", "cork", "crocodile_leather", "linen", "parchment", "petrified_wood", "stucco", "suede", "terra_cotta",
     "black_flag", "burnout_zone", "chicane_blur", "cool_down", "dawn_patrol", "drafting", "drag_chute", "flag_wave", "green_flag", "grid_walk", "heat_haze", "last_lap", "night_race", "pace_lap", "photo_finish", "pit_stop", "pole_position", "race_worn", "rain_race", "red_mist", "slipstream", "tunnel_run", "under_lights", "victory_burnout", "white_flag",
-    "acid_trip", "antimatter", "astral", "crystal_cave", "dark_fairy", "dragon_breath", "dreamscape", "enchanted", "ethereal", "fourth_dimension", "fractal_dimension", "glitch_reality", "hallucination", "levitation", "mirage", "multiverse", "nebula_core", "phantom_zone", "portal", "simulation", "tesseract", "time_warp", "void_walker", "wormhole",
+    // SPB-107 (2026-05-18): wormhole removed from this purge list. It was
+    // accidentally swept in with the old Surreal/Dreamscape group when those
+    // ids were dropped. Wormhole IS a shipping PARADIGM finish on paint_v3
+    // (see engine/paint_v3/paradigm_v3.py) and must remain selectable in
+    // the Specials → PARADIGM lane.
+    "acid_trip", "antimatter", "astral", "crystal_cave", "dark_fairy", "dragon_breath", "dreamscape", "enchanted", "ethereal", "fourth_dimension", "fractal_dimension", "glitch_reality", "hallucination", "levitation", "mirage", "multiverse", "nebula_core", "phantom_zone", "portal", "simulation", "tesseract", "time_warp", "void_walker",
     "acid_etched_glass", "brushed_steel_dark", "cast_iron", "concrete", "etched_metal", "forged_iron", "granite", "hammered_copper", "obsidian_glass", "sandstone", "slate_tile", "volcanic_rock",
-    "art_deco_gold", "barn_find", "beat_up_truck", "classic_racing", "daguerreotype", "diner_chrome", "drive_in", "faded_glory", "grindhouse", "hot_rod_flames", "jukebox", "moonshine", "muscle_car_stripe", "nascar_heritage", "nostalgia_drag", "old_school", "patina_truck", "pin_up", "psychedelic", "sepia", "tin_type", "vinyl_record", "woodie", "woodie_wagon", "zeppelin"
+    "art_deco_gold", "barn_find", "beat_up_truck", "classic_racing", "daguerreotype", "diner_chrome", "drive_in", "faded_glory", "grindhouse", "hot_rod_flames", "jukebox", "moonshine", "muscle_car_stripe", "nascar_heritage", "nostalgia_drag", "old_school", "patina_truck", "pin_up", "psychedelic", "sepia", "tin_type", "vinyl_record", "woodie", "woodie_wagon", "zeppelin",
+    // 2026-06-08 audit: hidden — no engine renderer (would crash on click).
+    // The v6.2.z MONOLITHIC_WAVE (30 rl_/v_/sf_/w_/fx_ ids) + 2 loose monolithics
+    // (acid_rain_drip, carbon_3k_weave) have NO backend renderer → every click
+    // raises ValueError 'Unknown base' and the render fails. Stripped here via
+    // the existing MONOLITHICS .filter(!REMOVED_SPECIAL_IDS.has(id)) guards; the
+    // matching MONOLITHIC_GROUPS sub-tab sections are emptied below.
+    "rl_nascar_classic", "rl_f1_carbon_wing", "rl_gt3_pearl", "rl_lmp_silver_arrow", "rl_rally_mud_splat", "rl_drift_wrap",
+    "v_70s_stripes", "v_80s_neon_wedge", "v_90s_racing_decal", "v_classic_hot_rod", "v_muscle_car_stripe", "v_touring_car_livery",
+    "sf_hologram_shift", "sf_energy_core", "sf_stealth_matte", "sf_plasma_flame", "sf_cyber_circuit", "sf_void_crystal",
+    "w_barn_find", "w_rust_belt", "w_sun_faded", "w_salt_corrosion", "w_burn_marks", "w_acid_wash",
+    "fx_color_shift_ultra", "fx_glitter_storm", "fx_wet_look_mirror", "fx_liquid_metal", "fx_aurora_wave", "fx_galaxy_dust",
+    "acid_rain_drip", "carbon_3k_weave"
 ]);
 
 // =============================================================================
@@ -1044,17 +1944,50 @@ const _SPECIALS_SHOKKER = {
     // 2026-04-19 HEENAN H4HR-3: crystal_lattice MONO renamed → crystal_lattice_mono
     // (PATTERN tier kept the canonical id). gravity_well MONO is unchanged here
     // (SPEC tier is the one getting renamed in H4HR-5 below — see SPEC_PATTERN_GROUPS).
-    "PARADIGM": ["blackbody", "ember", "p_aurora", "pulse", "thin_film", "crystal_lattice_mono", "living_chrome", "mercury_pool", "quantum", "singularity", "gravity_well", "phase_shift", "void", "wormhole", "glass_armor", "magnetic", "p_static", "stealth", "p_superfluid", "p_coronal", "p_seismic", "p_hypercane", "p_geomagnetic", "p_non_euclidean", "p_time_reversed", "p_programmable", "p_erised", "p_schrodinger", "p_mercury", "p_phantom", "p_volcanic", "arctic_ice", "nebula", "quantum_foam", "infinite_finish"],
-    "★ COLORSHOXX": ["cx_inferno", "cx_arctic", "cx_venom", "cx_solar", "cx_phantom", "cx_chrome_void", "cx_blood_mercury", "cx_neon_abyss", "cx_glacier_fire", "cx_obsidian_gold", "cx_electric_storm", "cx_rose_chrome", "cx_toxic_chrome", "cx_midnight_chrome", "cx_white_lightning", "cx_aurora_borealis", "cx_dragon_scale", "cx_frozen_nebula", "cx_hellfire", "cx_ocean_trench", "cx_supernova", "cx_prism_shatter", "cx_acid_rain", "cx_royal_spectrum", "cx_apocalypse", "cx_gold_green", "cx_gold_purple", "cx_teal_blue", "cx_copper_rose", "cx_gold_olive_emerald", "cx_purple_plum_bronze", "cx_blue_teal_cyan", "cx_burgundy_wine_gold", "cx_sunset_horizon", "cx_northern_lights", "cx_peacock_fan", "cx_rainbow_stealth", "cx_oil_slick", "cx_molten_metal", "cx_red_green_chaos", "cx_orange_blue_electric", "cx_pink_yellow_pop", "cx_purple_gold_majesty", "cx_custom_shift", "cx_pink_to_gold", "cx_blue_to_orange", "cx_purple_to_green", "cx_teal_to_magenta", "cx_red_to_cyan", "cx_sunset_shift", "cx_emerald_ruby", "cx_ice_fire", "cx_hyperflip_red_blue", "cx_hyperflip_pink_black", "cx_hyperflip_orange_cyan", "cx_hyperflip_lime_purple", "cx_hyperflip_purple_gold", "cx_hyperflip_electric_blue_copper", "cx_hyperflip_bronze_teal", "cx_hyperflip_silver_violet", "cx_hyperflip_crimson_prism", "cx_hyperflip_midnight_opal", "cx_cotton_candy", "cx_forest_fire", "cx_deep_sea", "cx_galaxy_dust", "cx_autumn_blaze", "cx_thunderstorm", "cx_tropical_sunset", "cx_black_ice", "cx_cherry_blossom", "cx_volcanic_glass", "cx_neon_dreams", "cx_champagne_toast", "cx_emerald_city", "cx_midnight_aurora", "cx_bronze_age"],
-    "★ MORTAL SHOKK": ["ms_frozen_fury", "ms_venom_strike", "ms_thunder_lord", "ms_chrome_cage", "ms_dragon_flame", "ms_royal_edge", "ms_feral_grin", "ms_acid_scale", "ms_soul_drain", "ms_emerald_shadow", "ms_void_walker", "ms_ghost_vapor", "ms_shape_shift", "ms_titan_bronze", "ms_war_hammer"],
-    "Shokk Series": ["burnt_headers", "electric_ice", "mercury", "plasma_metal", "shokk_blood", "shokk_pulse", "shokk_static", "shokk_venom", "shokk_void", "volcanic", "shokk_flux", "shokk_phase", "shokk_dual", "shokk_spectrum", "shokk_aurora", "shokk_helix", "shokk_catalyst", "shokk_mirage", "shokk_polarity", "shokk_reactor", "shokk_prism", "shokk_wraith", "shokk_tesseract_v2", "shokk_fusion_base", "shokk_rift", "shokk_vortex", "shokk_surge", "shokk_cipher", "shokk_inferno", "shokk_apex"],
-    // 2026-04-23 Codex finish-taxonomy hardening:
-    // keep shipping special ids in ONE canonical category only.
-    // Angle SHOKK is now reserved for the true angle-read entries instead of
-    // duplicating PARADIGM / Shokk Series / Extreme finishes.
-    "Angle SHOKK": ["chameleon", "color_flip_wrap", "pagani_tricolore"],
-    "Extreme & Experimental": ["bioluminescent", "dark_matter", "holographic_base", "neutron_star", "plasma_core", "quantum_black", "solar_panel", "superconductor", "prismatic", "liquid_obsidian", "vantablack"],
-    "★ NEON UNDERGROUND": ["neon_pink_blaze", "neon_toxic_green", "neon_electric_blue", "neon_blacklight", "neon_orange_hazard", "neon_red_alert", "neon_cyber_yellow", "neon_ice_white", "neon_dual_glow", "neon_rainbow_tube"],
+    // PARADIGM rebuilt 2026-08-31 (owner: "our original Shokker design system
+    // which now feels ancient... redesign this entire category and expand it
+    // from 35 to 50. Give it it's OWN unique feel somehow"). The 34 ids that
+    // were here had no shared idea and several duplicated the categories
+    // rebuilt tonight (Hypercane/Seismic -> ELEMENTS, Wormhole/Event Horizon
+    // -> COSMOS, Volcanic/Ember -> FLAMES). They stay defined below so saved
+    // projects still render; they are off the shelf, so out of the picker.
+    "PARADIGM": ["pdg_burlap_glaze", "pdg_canvas_pearl", "pdg_corduroy_liquid", "pdg_denim_chrome", "pdg_felt_carrier", "pdg_hessian_mercury", "pdg_knit_liquid", "pdg_silk_carrier", "pdg_tweed_mirror", "pdg_wool_glass", "pdg_bark_chrome", "pdg_coral_glass", "pdg_fur_carrier", "pdg_hide_pearl", "pdg_leaf_liquid", "pdg_lichen_mercury", "pdg_moss_glass", "pdg_petal_liquid", "pdg_root_mercury", "pdg_spore_pearl", "pdg_basalt_mirror", "pdg_chalk_chrome", "pdg_concrete_liquid", "pdg_granite_mercury", "pdg_grit_carrier", "pdg_gypsum_glass", "pdg_pumice_pearl", "pdg_sandstone_liquid", "pdg_slate_glass", "pdg_terracotta_carrier", "pdg_blotter_glass", "pdg_card_pearl", "pdg_chipboard_liquid", "pdg_cork_pearl", "pdg_corrugate_mercury", "pdg_greyboard_carrier", "pdg_kraft_chrome", "pdg_newsprint_glass", "pdg_plywood_liquid", "pdg_sawdust_mirror", "pdg_ash_chrome", "pdg_cinder_mirror", "pdg_corrosion_glass", "pdg_decay_pearl", "pdg_flake_carrier", "pdg_mould_liquid", "pdg_rust_mirror", "pdg_soot_pearl", "pdg_verdigris_glass", "pdg_weathered_liquid"],
+    // COLORSHOXX -> WORLD OF COLOR, 2026-08-31 (owner: "originally designed to
+    // try to do something unique with color flipping... outdated and very
+    // repetitive now... take it from 77 to 100 and repurpose to WORLD OF COLOR
+    // which will take colors/styles from various COUNTRIES"). The 77 cx_ ids
+    // stay defined and registered so saved projects still render; they are off
+    // the shelf. Twenty places, five finishes each, and each finish is a
+    // material or process that place actually makes colour with.
+    "🌍 WORLD OF COLOR": ["woc_aran_cable", "woc_burren_pavement", "woc_connemara_marble", "woc_peat_cut", "woc_stout_head", "woc_arctic_light", "woc_birch_bark", "woc_fjord_water", "woc_rosemaling", "woc_slate_roof", "woc_azulejo_blue", "woc_calcada_wave", "woc_cork_bark", "woc_douro_schist", "woc_sardine_tin", "woc_cairngorm_granite", "woc_cask_char", "woc_harris_tweed", "woc_heather_moor", "woc_tartan_sett", "woc_block_print", "woc_madras_check", "woc_marigold_mound", "woc_mirror_work", "woc_sandstone_jali", "woc_aizome_vat", "woc_kintsugi_seam", "woc_raku_crackle", "woc_urushi_lacquer", "woc_washi_fibre", "woc_bojagi_patch", "woc_celadon_glaze", "woc_dancheong", "woc_hanji_sheet", "woc_najeon_inlay", "woc_hammered_copper", "woc_iznik_tile", "woc_kilim_weave", "woc_meerschaum", "woc_nazar_glass", "woc_alabaster", "woc_desert_glass", "woc_faience_blue", "woc_lapis_ground", "woc_papyrus_weave", "woc_basalt_highland", "woc_coffee_bed", "woc_danakil_salt", "woc_lalibela_stone", "woc_shamma_cotton", "woc_bogolan_mud", "woc_brass_casting", "woc_indigo_resist", "woc_kente_strip", "woc_laterite_road", "woc_atlas_cedar", "woc_saffron_souk", "woc_tadelakt", "woc_tannery_vats", "woc_zellij_star", "woc_amazon_canopy", "woc_calcadao", "woc_carnival_block", "woc_cocoa_pod", "woc_tourmaline", "woc_havana_facade", "woc_malecon_spray", "woc_sugar_crystal", "woc_tobacco_leaf", "woc_vintage_lacquer", "woc_allspice_bark", "woc_blue_mountain", "woc_rasta_weave", "woc_sea_glass", "woc_sound_system", "woc_alpaca_weave", "woc_andes_strata", "woc_chicha_morada", "woc_cusco_textile", "woc_salt_terrace", "woc_black_sand", "woc_geothermal", "woc_greenstone", "woc_kauri_gum", "woc_silver_fern", "woc_desert_varnish", "woc_eucalypt_bark", "woc_ochre_bed", "woc_opal_seam", "woc_salt_pan", "woc_batik_wax", "woc_ikat_warp", "woc_spice_heap", "woc_teak_grain", "woc_volcanic_sand", "woc_abaca_fibre", "woc_capiz_shell", "woc_jeepney_chrome", "woc_mayon_ash", "woc_rice_terrace"],
+    "★ MORTAL SHOKK": ["ms_acid_veil_ambush", "ms_blood_empress", "ms_bone_sonata", "ms_chainburst_inferno", "ms_cinder_spiral", "ms_crimson_dragon", "ms_cryo_shard", "ms_crystal_onslaught", "ms_dragon_ascent", "ms_dragon_soul", "ms_emerald_scale_mirage", "ms_fang_cataclysm", "ms_frost_sentinel", "ms_frozen_inferno", "ms_lotus_ascention", "ms_molten_sting", "ms_porcelain_cipher", "ms_serpent_haze_strike", "ms_shadow_wraith", "ms_soul_forge", "ms_tempest_crown", "ms_thunder_mandala", "ms_toxic_labyrinth", "ms_venom_eclipse", "ms_venom_veil", "ms_zero_hour"],
+    // MONEY SHOKK rebuilt 2026-08-31 (owner: "forty themed exotic engines about
+    // wealth in every form - mint foil, vault steel, counterfeit gold,
+    // burn-a-stack green... right now we are falling WELL SHORT"). The old 40
+    // were {colour} {creature} in four seeded batches with nothing about money
+    // in them. The msh_/mshc_/msha_/mshx_ ids stay defined and registered so
+    // saved projects still render; they are off the shelf.
+    "★ MONEY SHOKK": ["msk_denomination_foil", "msk_fresh_sheet", "msk_intaglio_plate", "msk_microtext_field", "msk_optically_variable", "msk_rose_engine", "msk_security_thread", "msk_watermark_pulp", "msk_armoured_glass", "msk_bullion_stack", "msk_cage_mesh", "msk_deposit_brass", "msk_hardplate", "msk_night_deposit", "msk_tamper_seal", "msk_timelock", "msk_bearer_deed", "msk_brilliant_cut", "msk_bullion_pour", "msk_leaf_gilding", "msk_platinum_ingot", "msk_share_certificate", "msk_title_vellum", "msk_watch_movement", "msk_bleached_note", "msk_laundered", "msk_plated_brass", "msk_rescreened", "msk_salted_bar", "msk_superdollar", "msk_uv_dead", "msk_wrong_watermark", "msk_bond_ash", "msk_burn_a_stack", "msk_confetti_drop", "msk_cross_cut", "msk_hyperinflation", "msk_ink_spill", "msk_ticker_crash", "msk_torn_in_half"],
+    // SPB-102 — same 50 pf_* ids as BASE_GROUPS["★ PRISM FORGE"]; surfaced here for SHOKKER swatch picker lane
+    "★ PRISM FORGE": ["pf_event_horizon_spectra", "pf_chromatic_storm", "pf_neon_nova", "pf_molten_aurora", "pf_void_pearl", "pf_ion_trap", "pf_sapphire_blood", "pf_emerald_inferno", "pf_violet_sunrise", "pf_copper_moon", "pf_toxic_horizon", "pf_glacial_burn", "pf_oil_nebula", "pf_rose_quantum", "pf_cobalt_fire", "pf_midnight_prism", "pf_hyperwave", "pf_crystal_fade", "pf_dark_matter_halo", "pf_apex_spectrum", "pf_cluster_tar_eclipse", "pf_cluster_bitumen_aurora", "pf_cluster_obsidian_gild", "pf_cluster_coal_starfield", "pf_cluster_void_islands", "pf_bright_solar_daffodil", "pf_bright_hyperpink", "pf_bright_seafoam_bolt", "pf_bright_cerulean_pop", "pf_bright_canary_glass", "pf_bright_magenta_arc", "pf_bright_lime_voltage", "pf_bright_peach_fizz", "pf_bright_neon_ice_stream", "pf_bright_orchid_pulse", "pf_blend_triad_mist", "pf_blend_quad_weave", "pf_spectrum_chaos_crown", "pf_prismatic_void_madness", "pf_white_castle_of_fear", "pf_gradient_venetian_veil", "pf_tri_crimson_cyan_mage", "pf_quad_jade_violet_gold_slate", "pf_fade_copper_teal_sunset", "pf_blend_ocean_peach_ivory", "pf_iris_velvet_crossfade", "pf_spectral_tidepool_wash", "pf_midnight_coral_ember", "pf_emerald_orchid_storm", "pf_golden_ultraviolet_fog"],
+    "Shokk Series": ["burnt_headers", "electric_ice", "mercury", "plasma_metal", "shokk_blood", "shokk_pulse", "shokk_static", "shokk_venom", "shokk_void", "volcanic", "shokk_flux", "shokk_phase", "shokk_dual", "shokk_spectrum", "shokk_aurora", "shokk_helix", "shokk_catalyst", "shokk_mirage", "shokk_polarity", "shokk_reactor", "shokk_prism", "shokk_wraith", "shokk_tesseract_v2", "shokk_fusion_base", "shokk_rift", "shokk_vortex", "shokk_surge", "shokk_cipher", "shokk_inferno", "shokk_apex", "chameleon", "color_flip_wrap", "pagani_tricolore"],
+    // 2026-06-02 (owner): the "Angle SHOKK" special group held only 3 finishes
+    // (chameleon, color_flip_wrap, pagani_tricolore) — folded into Shokk Series
+    // above and the group removed. The 3 ids stay fully registered (tiles,
+    // BASE_GROUPS, engine); only the special-group lane changed.
+    // SPB-105 / X-LAB-1, 2026-08-28. Owner: merge the duplicate 11-card
+    // SHOKKER group and 17-card Base group into one real SHOKKER library.
+    "🌃 DARK CITY": ["dkc_wet_asphalt", "dkc_oil_slick", "dkc_manhole_steam", "dkc_tyre_black", "dkc_tar_seam", "dkc_gutter_chrome", "dkc_night_rain", "dkc_kerb_grit", "dkc_storm_drain", "dkc_blacktop_heat", "dkc_obsidian_chill", "dkc_basalt_glass", "dkc_hematite", "dkc_tourmaline_black", "dkc_onyx_band", "dkc_magnetite", "dkc_jet_carve", "dkc_shungite", "dkc_anthracite", "dkc_galena_cube", "dkc_abyss_blue", "dkc_midnight_teal", "dkc_ink_well", "dkc_prussian", "dkc_deep_pine", "dkc_bottle_green", "dkc_nocturne", "dkc_cobalt_night", "dkc_viridian_dark", "dkc_indigo_vault", "dkc_oxblood", "dkc_garnet_dark", "dkc_ember_gold", "dkc_burgundy", "dkc_dried_rose", "dkc_brass_night", "dkc_molten_seam", "dkc_copper_dark", "dkc_rust_noir", "dkc_amber_vault", "dkc_arc_weld", "dkc_lightning_black", "dkc_filament", "dkc_neon_scar", "dkc_laser_cut", "dkc_plasma_seam", "dkc_spark_trail", "dkc_hot_wire", "dkc_tracer", "dkc_flashover"],
+    "X LAB": ["xlab_abyssal_lens", "xlab_afterimage_lacquer", "xlab_aerogel_fire", "xlab_anamorphic_pearl", "xlab_anti_gravity_foil", "xlab_arc_weld_velvet", "xlab_black_ice_orbit", "xlab_bloomglass", "xlab_brunel_current", "xlab_caustic_engine", "xlab_ceramic_storm", "xlab_chiral_mercury", "xlab_chromatophore", "xlab_cinder_mirror", "xlab_coral_voltage", "xlab_cryogenic_sunset", "xlab_deep_time", "xlab_dichroic_skin", "xlab_electric_ink", "xlab_ferrofluid_silk", "xlab_ghost_transmission", "xlab_hologram_metal", "xlab_ion_bloom", "xlab_laminar_magma", "xlab_luminous_carbon", "xlab_memory_glass", "xlab_nebula_ceramic", "xlab_photon_patina", "xlab_quantum_tide", "xlab_sonic_chrome", "xlab_prism_ivy", "xlab_shatter_royale", "xlab_moire_reactor", "xlab_serpent_scales", "xlab_stained_circuit", "xlab_riptide_parquet", "xlab_comet_terrace", "xlab_quasar_quilt", "xlab_glacier_chord", "xlab_murmuration", "xlab_ember_weave", "xlab_borealis_shards", "xlab_medusa_lattice", "xlab_static_bloom", "xlab_chrono_strata", "xlab_hex_reliquary", "xlab_velvet_meteor", "xlab_labyrinth_pulse", "xlab_opal_tessellate", "xlab_singularity_bloom"],
+    // SPB-105 / IMPOSSIBLE-FIRST-LIGHT, 2026-08-29. Separate living-material
+    // lane: successors are informed by, but never replace, X LAB Hologram Metal.
+    "⚡ IMPOSSIBLE FINISHES": ["impossible_cinder_pulse", "impossible_cinder_aurora", "impossible_cinder_oxblood", "impossible_cinder_abyss", "impossible_hologram_noir", "impossible_hologram_ember", "impossible_hologram_ice", "impossible_hologram_verdigris", "impossible_penrose_reactor", "impossible_nacre_terrace"],
+    // SPB-105 / FRACTURED-HOUDINI-LIVE-1, 2026-08-29. Development-visible
+    // material-only light reveals; live owner inspection precedes final proof.
+    "⚡ FRACTURED SHOKK": ["fsh_spectral_silver", "fsh_ribbon_refraction", "fsh_chromatic_comb", "fsh_opal_fault", "fsh_nacre_cascade", "fsh_quasicrystal_fire", "fsh_rosette_engine", "fsh_diamond_fold", "fsh_frost_voltage", "fsh_photon_circuit", "fsh_caustic_lens", "fsh_spectral_satin", "fsh_meteor_wake", "fsh_ferro_crown", "fsh_isobar_chrome", "fsh_crystal_needle", "fsh_bubble_spectrum", "fsh_iris_turbine", "fsh_herringbone_flash", "fsh_hex_resonance"],
+    // SPB-105 NU-25-LIVE-1 — one ordered live group; the picker intentionally
+    // selects every card as mono:<id>, while base metadata still owns 10 thumbnails.
+    "★ NEON UNDERGROUND": ["neon_electric_blue", "neon2_splatter", "neon2_rain", "neon_red_alert", "neon2_quarter_mile_weave", "neon_ice_white", "neon2_plasma_tubes", "neon_cyber_yellow", "neon2_torque_scar", "neon_rainbow_tube", "neon2_wireframe", "neon2_flow_tubes", "neon2_honeycomb", "neon_pink_blaze", "neon_blacklight", "neon_orange_hazard", "neon_dual_glow", "neon2_sign_tubes", "neon2_circuit_city", "neon2_laser_web", "neon2_synthwave_sun", "neon_toxic_green", "neon2_phantom_mica", "neon2_emberwake_delam", "neon2_frequency_fault"],
 };
 
 const _SPECIALS_COLOR_SCIENCE = {
@@ -1072,44 +2005,101 @@ const _SPECIALS_COLOR_SCIENCE = {
 };
 
 const _SPECIALS_MATERIAL_WORLD = {
+    "SOURCE PATTERN PLATES": ["pp_holographic_oil_circuit", "pp_black_emboss_mandala", "pp_graphite_cross_lattice", "pp_marble_flow_pearl", "pp_acid_carbon_mesh", "pp_noir_houndstooth_star", "pp_hazard_chevron_weave", "pp_burn_hole_mesh", "pp_teal_hex_haze", "pp_shadow_diamond_mesh", "pp_talavera_tile_riot", "pp_green_plasma_vein", "pp_neon_fracture_net", "pp_pink_checker_carbon", "pp_red_herringbone_heat", "pp_chrome_oval_chain", "pp_terracotta_ceramic_grid", "pp_gunmetal_geo_tessellation", "pp_tokyo_script_textile", "pp_lime_pixel_confetti", "pp_psychedelic_floral_spin", "pp_ice_facet_shatter", "pp_ember_circuit_maze", "pp_blue_polygon_shatter"],
+    "GRUNGE & FUN": ["gf_x_1024293_6391", "gf_x_1024294_6392", "gf_x_1152842_or6ilf0", "gf_x_1195794_6247", "gf_x_1292", "gf_x_13845", "gf_x_1434947_595", "gf_x_16302407_yellow_hexagon_halftone_pattern_backg", "gf_x_18677", "gf_x_18914258_casino_2021_11", "gf_x_19034947_en9y_pjge_210709", "gf_x_19516529_casino_2021_17", "gf_x_20216645_6276400", "gf_x_20771417_v6t9_6fpy_210512", "gf_x_2149635369", "gf_x_22587040_6656535", "gf_x_22587046_6656517", "gf_x_2311", "gf_x_237560942_1f15d9a7_672f_4b74_9792_9a0daae8fbe2", "gf_x_2425", "gf_x_2474", "gf_x_26323837_blue_hexagon_pattern_background", "gf_x_283511752_c9a714fc_a791_4c92_a2af_e3b8537ecaef", "gf_x_29035", "gf_x_30330639_lightabstrback14gradientd", "gf_x_31587230_7837300", "gf_x_3521", "gf_x_391161788_673b312d_2817_44f1_bfa5_bc51bf8df42d", "gf_x_3946420_524", "gf_x_4004", "gf_x_417665166_62a76dd6_56af_4a68_b801_92f5967beda0", "gf_x_420841114_17c7c800_04f4_4c25_8844_09134f10d3a7", "gf_x_426098859_bfe8ddbc_e982_4a17_b396_d362c3e1e12f", "gf_x_426203826_fc914006_6101_4668_8c1d_3322a73a9319", "gf_x_6090", "gf_x_6113", "gf_x_69", "gf_x_819188_26851_nwdlx0", "gf_x_850287_o4yijt0", "gf_x_850288_o4yijy0", "gf_x_8514125_3910277", "gf_x_9121", "gf_x_9169", "gf_x_9338", "gf_x_946728_oe3t1y0", "gf_x_947419_oe46fw0", "gf_x_9819736_12811_1", "gf_magnific_digital_illustration_a_dark_background_"],
     "Atelier — Ultra Detail": ["atelier_brushed_titanium", "atelier_carbon_weave_micro", "atelier_cathedral_glass", "atelier_ceramic_glaze", "atelier_damascus_layers", "atelier_engine_turned", "atelier_fluid_metal", "atelier_forged_iron_texture", "atelier_gold_leaf_micro", "atelier_hand_brushed_metal", "atelier_japanese_lacquer", "atelier_marble_vein_fine", "atelier_micro_flake_burst", "atelier_obsidian_glass", "atelier_pearl_depth_layers", "atelier_silk_weave", "atelier_vintage_enamel_crackle"],
-    "Metals & Forged": ["forged_iron", "cast_iron", "hammered_copper", "brushed_steel_dark", "etched_metal", "bare_aluminum", "chrome_oxidized", "heat_blued", "oxidized_metal", "mill_scale", "weathered_metal", "carbon_raw", "weathered_paint", "worn_chrome", "phosphate_coat", "raw_weld", "grinding_marks", "forged_titanium", "brushed_gunmetal", "cast_iron_raw", "polished_brass", "annealed_steel", "oxidized_bronze", "damascus_steel"],
-    "Glass & Surface": ["obsidian_glass", "stained_glass", "venetian_glass", "acid_etched_glass", "concrete", "granite", "raw_concrete", "sandstone", "slate_tile", "stucco", "terra_cotta", "volcanic_rock", "brick_wall"],
+    // 2026-06-02 (owner): "Metals & Forged" special group REMOVED (weak). Dropping the
+    // group key removes all its ids from the picker lane. Shared/core finishes
+    // (worn_chrome, weathered_paint, damascus_steel) stay engine-registered for
+    // other surfaces; their exclusive metal tiles are removed from MONOLITHICS.
+    // [SPB-CATALOG-CONSOLIDATION 2026-08-23] Keep the fold at the source table
+    // too so any path that still reads Material World directly never spawns a
+    // one-card Clearcoat shelf. Legacy category names still redirect below.
+    "Glass & Surface": ["obsidian_glass", "stained_glass", "venetian_glass", "acid_etched_glass", "concrete", "granite", "raw_concrete", "sandstone", "slate_tile", "stucco", "terra_cotta", "volcanic_rock", "brick_wall", "cc_overspray_halo", "cc_panel_fade", "cc_panel_pool", "cc_wet_zone"],
     "Leather & Texture": ["aged_leather", "crocodile_leather", "suede", "velvet", "velvet_crush", "linen", "burlap", "cork", "parchment", "bark", "petrified_wood"],
-    "Standalone Effects": ["thermal_titanium", "galaxy_nebula_base", "dark_sigil", "deep_space_void", "polished_obsidian_mono", "patinated_bronze", "reactive_plasma", "molten_metal", "oil_slick_base", "aurora_borealis_mono"],
-    "Brushed & Machined": ["brushed_linear", "brushed_diagonal", "brushed_cross", "brushed_radial", "brushed_arc", "brushed_sparkle", "brushed_metal_fine", "hairline_polish", "lathe_concentric", "bead_blast_uniform", "orbital_swirl", "buffer_swirl", "wire_brushed_coarse", "hand_polished", "face_mill_bands", "fly_cut_arcs", "edm_dimple", "jeweling_circles", "knurl_diamond", "knurl_straight", "engraved_crosshatch", "guilloche_barleycorn", "guilloche_hobnail", "guilloche_moire_eng", "guilloche_sunray", "guilloche_waves"],
-    "Clearcoat Effects": ["cc_drip_runs", "cc_edge_thin", "cc_fish_eye", "cc_gloss_stripe", "cc_masking_edge", "cc_overspray_halo", "cc_panel_fade", "cc_panel_pool", "cc_spot_polish", "cc_wet_zone"],
-    "Ornamental": ["hex_mandala", "lace_filigree", "honeycomb_organic", "baroque_scrollwork", "art_nouveau_vine", "penrose_quasi", "topographic_dense", "interference_rings"],
+    // 2026-06-02 (owner): "Standalone Effects" special group REMOVED (weak). Dropping
+    // the group key removes all 10 ids from the picker lane.
+    // 2026-05-18 (owner mandate): "Brushed & Machined" (only brushed_metal_fine
+    // ever actually surfaced as a visible monolithic) and "Ornamental" (8
+    // finishes) groups TOTALLY REMOVED from the Material World section.
     // 2026-04-23 Codex painter-truth cleanup:
     // retire Carbon & Weave from the shipping special-monolithic surface.
     // The only visibly reachable monolithics here ("carbon_3k_weave" and
     // "carbon_weave") were explicitly painter-rejected, and the spec_* ids
     // never belonged in this monolithic/base picker path to begin with.
-    "Natural & Organic": ["spec_wood_grain_fine", "spec_wood_burl", "spec_stone_granite", "spec_stone_marble", "spec_water_ripple_spec", "spec_coral_reef", "spec_snake_scales", "spec_fish_scales", "spec_leaf_venation", "spec_terrain_erosion", "spec_crystal_growth", "spec_lava_flow", "marble_vein", "cloud_wisps", "sand_dune", "crystal_growth", "reptile_scale", "fungal_network", "neural_dendrite"],
-    "Surface Treatment": ["spec_electroplated_chrome", "spec_anodized_texture", "spec_powder_coat_texture", "spec_thermal_spray", "spec_electroformed_texture", "spec_pvd_coating", "spec_shot_peened", "spec_laser_etched", "spec_cast_surface", "spec_oxidized_pitting", "spec_micro_chips", "spec_aged_matte", "spec_patina_verdigris", "spec_rust_bloom", "spec_galvanic_corrosion", "spec_peeling_clear", "spec_worn_edges", "spec_sandblast_strip", "spec_battle_scars", "spec_stress_fractures", "spec_heat_scale"],
-    "Geometric & Structural": ["spec_faceted_diamond", "spec_hammered_dimple", "spec_knurled_diamond", "spec_knurled_straight", "spec_architectural_grid", "spec_hexagonal_tiles", "spec_brick_mortar", "spec_corrugated_panel", "spec_riveted_plate", "spec_weld_seam", "spec_stamped_emboss", "panel_zones", "hex_cells", "diamond_lattice", "woven_mesh"],
-    "Optical & Light": ["spec_holographic_foil", "spec_oil_film_thick", "spec_magnetic_ferrofluid", "spec_aerogel_surface", "spec_damascus_steel_spec", "spec_liquid_metal", "spec_chameleon_flake", "spec_xirallic_crystal", "spec_iridescent_film", "spec_diffraction_grating", "spec_chromatic_aberration", "spec_fresnel_gradient", "spec_caustic_light", "spec_light_leak", "spec_subsurface_depth", "spec_retroreflective", "spec_velvet_sheen", "spec_bokeh_scatter", "spec_sparkle_flake", "spec_anisotropic_radial", "diffraction_grating", "interference_bands", "heat_distortion", "holographic_flake", "prismatic_dust", "prismatic_shatter"],
-    "Particles & Textures": ["crystal_shimmer", "diamond_dust", "flake_scatter", "gold_flake", "metallic_sand", "micro_sparkle", "pearl_micro", "stardust_fine", "crushed_glass"],
-    "Patterns & Effects": ["acid_etch", "aniso_grain", "banded_rows", "chevron_bands", "circuit_trace", "concentric_ripple", "crackle_network", "depth_gradient", "diagonal_bands", "electric_branches", "flow_lines", "fractal_discharge", "galaxy_swirl", "gradient_bands", "lava_crack", "magnetic_field", "meteor_impact", "micro_facets", "moire_overlay", "orange_peel_texture", "patina_bloom", "pebble_grain", "plasma_turbulence", "quantum_noise", "radial_sunburst", "rust_bloom", "smoke_tendril", "sonic_boom", "spiral_sweep", "split_bands", "topographic_steps", "voronoi_fracture", "wave_bands", "wave_ripple", "wear_scuff"],
+    "Natural & Organic": [ "spec_snake_scales", "spec_fish_scales", "spec_terrain_erosion"],
+    "Surface Treatment": ["spec_anodized_texture", "spec_pvd_coating", "spec_laser_etched", "spec_galvanic_corrosion", "spec_sandblast_strip", "spec_stress_fractures"],
+    "Geometric & Structural": [ "spec_hammered_dimple", "spec_architectural_grid", "spec_brick_mortar", "panel_zones", "hex_cells", "diamond_lattice"],
+    "Optical & Light": [ "spec_damascus_steel_spec", "spec_liquid_metal", "spec_chameleon_flake", "spec_iridescent_film", "spec_chromatic_aberration", "spec_fresnel_gradient", "spec_retroreflective", "spec_anisotropic_radial", "diffraction_grating", "holographic_flake", "prismatic_shatter"],
+    "Particles & Textures": [ "gold_flake", "metallic_sand", "stardust_fine"],
+    // 2026-06-03 (B7): "pearl_micro" pulled from the clickable pattern group — it has no
+    // engine PATTERN_REGISTRY renderer (404s in the picker). Tile def kept below; re-add it
+    // here once a pattern renderer is wired.
+    "Patterns & Effects": ["acid_etch", "banded_rows", "chevron_bands", "crackle_network", "galaxy_swirl", "gradient_bands", "lava_crack", "pebble_grain", "voronoi_fracture", "wave_bands", "wave_ripple"],
 };
 
+// 2026-05-18 (owner mandate): Fusion Lab consolidated from 17 subgroups
+// (mostly 10-finishes-each tiny piles) into 5 themed mega-groups so the
+// picker shows fewer-but-fuller lanes. Original subgroup names kept inline
+// as comments for traceability — every id is preserved, only their group
+// assignment changed. "★ Spectrum Shift" stays standalone per its 50-finish
+// scale and dedicated swatch lane.
 const _SPECIALS_FUSION_LAB = {
-    "Ghost Geometry": ["ghost_camo", "ghost_circuit", "ghost_diamonds", "ghost_fracture", "ghost_hex", "ghost_panel", "ghost_quilt", "ghost_scales", "ghost_stripes", "ghost_vortex", "ghost_waves"],
-    "Surface Accent": ["iridescent_fog", "chrome_delete_edge", "carbon_clearcoat_lock", "racing_scratch", "pearlescent_flip", "frost_crystal", "satin_wax", "uv_night_accent"],
-    "Depth Illusion": ["depth_bubble", "depth_canyon", "depth_crack", "depth_erosion", "depth_honeycomb", "depth_map", "depth_pillow", "depth_ripple", "depth_scale", "depth_vortex", "depth_wave"],
-    "Material Gradients": ["gradient_anodized_gloss", "gradient_candy_frozen", "gradient_candy_matte", "gradient_carbon_chrome", "gradient_chrome_matte", "gradient_ember_ice", "gradient_metallic_satin", "gradient_obsidian_mirror", "gradient_pearl_chrome", "gradient_spectraflame_void"],
-    "Directional Grain": ["aniso_circular_chrome", "aniso_crosshatch_steel", "aniso_diagonal_candy", "aniso_herringbone_gold", "aniso_horizontal_chrome", "aniso_radial_metallic", "aniso_spiral_mercury", "aniso_turbulence_metal", "aniso_vertical_pearl", "aniso_wave_titanium"],
-    "Reactive Panels": ["reactive_candy_reveal", "reactive_chrome_fade", "reactive_dual_tone", "reactive_ghost_metal", "reactive_matte_shine", "reactive_mirror_shadow", "reactive_pearl_flash", "reactive_pulse_metal", "reactive_stealth_pop", "reactive_warm_cold"],
-    "Sparkle Systems": ["sparkle_champagne", "sparkle_confetti", "sparkle_constellation", "sparkle_diamond_dust", "sparkle_firefly", "sparkle_galaxy", "sparkle_lightning_bug", "sparkle_meteor", "sparkle_snowfall", "sparkle_starfield"],
-    "Multi-Scale Texture": ["multiscale_candy_frost", "multiscale_carbon_micro", "multiscale_chrome_grain", "multiscale_chrome_sand", "multiscale_flake_grain", "multiscale_frost_crystal", "multiscale_matte_silk", "multiscale_metal_grit", "multiscale_pearl_texture", "multiscale_satin_weave"],
-    "Weather & Age": ["weather_acid_rain", "weather_barn_dust", "weather_desert_blast", "weather_hood_bake", "weather_ice_storm", "weather_ocean_mist", "weather_road_spray", "weather_salt_spray", "weather_sun_fade", "weather_volcanic_ash"],
-    "Exotic Physics": ["exotic_anti_metal", "exotic_ceramic_void", "exotic_crystal_clear", "exotic_dark_glass", "exotic_foggy_chrome", "exotic_glass_paint", "exotic_inverted_candy", "exotic_liquid_glass", "exotic_phantom_mirror", "exotic_wet_void"],
-    "Tri-Zone Materials": ["trizone_anodized_candy_silk", "trizone_ceramic_flake_satin", "trizone_chrome_candy_matte", "trizone_frozen_ember_chrome", "trizone_glass_metal_matte", "trizone_mercury_obsidian_candy", "trizone_pearl_carbon_gold", "trizone_stealth_spectra_frozen", "trizone_titanium_copper_chrome", "trizone_vanta_chrome_pearl"],
-    "Metallic Halos": ["halo_circle_pearl", "halo_crack_chrome", "halo_diamond_chrome", "halo_grid_pearl", "halo_hex_chrome", "halo_ripple_chrome", "halo_scale_gold", "halo_star_metal", "halo_voronoi_metal", "halo_wave_candy"],
-    "Light Waves": ["wave_candy_flow", "wave_chrome_tide", "wave_circular_radar", "wave_diagonal_sweep", "wave_dual_frequency", "wave_metallic_pulse", "wave_moire_metal", "wave_pearl_current", "wave_standing_chrome", "wave_turbulent_flow"],
-    "Fractal Chaos": ["fractal_candy_chaos", "fractal_chrome_decay", "fractal_cosmic_dust", "fractal_deep_organic", "fractal_dimension", "fractal_electric_noise", "fractal_liquid_fire", "fractal_matte_chrome", "fractal_metallic_storm", "fractal_pearl_cloud", "fractal_warm_cold"],
-    "Spectral Reactive": ["spectral_complementary", "spectral_dark_light", "spectral_earth_sky", "spectral_inverse_logic", "spectral_mono_chrome", "spectral_neon_reactive", "spectral_prismatic_flip", "spectral_rainbow_metal", "spectral_sat_metal", "spectral_warm_cool"],
-    "Panel Quilting": ["quilt_alternating_duo", "quilt_candy_tiles", "quilt_chrome_mosaic", "quilt_diamond_shimmer", "quilt_gradient_tiles", "quilt_hex_variety", "quilt_metallic_pixels", "quilt_organic_cells", "quilt_pearl_patchwork", "quilt_random_chaos"],
+    "★ Spectrum Shift": ["spectrum_aberration_glitch", "spectrum_abrasion_halo", "spectrum_anodine_dunes", "spectrum_beetle_elytra", "spectrum_bismuth_garden", "spectrum_black_opal", "spectrum_borealis_ice", "spectrum_boulder_opal", "spectrum_chromatic_orchid", "spectrum_circuit_awakens", "spectrum_clockwork_dial", "spectrum_contact_bloom", "spectrum_data_etch", "spectrum_diamond_fire", "spectrum_event_horizon", "spectrum_flare_spectra", "spectrum_forge_heat", "spectrum_fracture_polarized", "spectrum_ghost_prism", "spectrum_grating_quilt", "spectrum_interference_weave", "spectrum_jewel_box", "spectrum_lathe_burst", "spectrum_liquid_crystal", "spectrum_magnet_flow", "spectrum_mantis_strike", "spectrum_moire_silk", "spectrum_nacre_tide", "spectrum_oilfilm_rain", "spectrum_opal_core", "spectrum_orbital_engrave", "spectrum_peacock_eye", "spectrum_pressure_map", "spectrum_prism_pool", "spectrum_rainbow_river", "spectrum_redshift_drift", "spectrum_shatter_glass", "spectrum_singularity_lens", "spectrum_smectic_fan", "spectrum_smoke_chroma", "spectrum_spill_metropolis", "spectrum_star_temperature", "spectrum_stress_storm", "spectrum_swirl_supernova", "spectrum_tempered_ghost", "spectrum_thermo_touch", "spectrum_topo_rainbow", "spectrum_vhs_phantom", "spectrum_vinyl_groove", "spectrum_xray_bloom"],
+
+    // Light & Optics — merged: Light Waves (10) + Spectral Reactive (10)
+    // + Metallic Halos (10) + Sparkle Systems (10) = 40 finishes.
+    // Theme: how light interacts with the surface (waves, halos, sparkle, spectral shift).
+    "Light & Optics": [
+        // ★ REWORKED OPTICS 2026-06-19 — 8 physically-grounded optical phenomena (replaced the 20
+        // Light Waves + Spectral Reactive colour-swaps; real wavelength->sRGB spectral engine).
+        "optics2_dvd", "optics2_thinfilm", "optics2_caustics", "optics2_newton", "optics2_prism", "optics2_moire", "optics2_aurora", "optics2_bubbles", "optics2_fiber", "optics2_holo", "optics2_lenticular",
+        // Metallic Halos
+        "halo_circle_pearl", "halo_crack_chrome", "halo_diamond_chrome", "halo_grid_pearl", "halo_hex_chrome", "halo_ripple_chrome", "halo_scale_gold", "halo_star_metal", "halo_voronoi_metal", "halo_wave_candy",
+        // Sparkle Systems
+        "sparkle_champagne", "sparkle_confetti", "sparkle_diamond_dust", "sparkle_galaxy", "sparkle_lightning_bug", "sparkle_meteor", "sparkle_snowfall", "sparkle_starfield"
+    ],
+
+    // Surface & Grain — merged: Directional Grain (10) + Multi-Scale Texture (10)
+    // + Surface Accent (8) + Reactive Panels (10) = 38 finishes.
+    // Theme: surface-level micro-features (grain, texture, accents, reactive panels).
+    "Surface & Grain": [
+        // Directional Grain
+        "aniso_circular_chrome", "aniso_crosshatch_steel", "aniso_diagonal_candy", "aniso_herringbone_gold", "aniso_horizontal_chrome", "aniso_radial_metallic", "aniso_spiral_mercury", "aniso_turbulence_metal", "aniso_vertical_pearl", "aniso_wave_titanium",
+        // Multi-Scale Texture
+        "multiscale_candy_frost", "multiscale_carbon_micro", "multiscale_chrome_grain", "multiscale_chrome_sand", "multiscale_flake_grain", "multiscale_frost_crystal", "multiscale_matte_silk", "multiscale_metal_grit", "multiscale_pearl_texture", "multiscale_satin_weave",
+        // Surface Accent
+        "iridescent_fog", "chrome_delete_edge", "carbon_clearcoat_lock", "racing_scratch", "pearlescent_flip", "frost_crystal", "satin_wax", "uv_night_accent",
+        // Reactive Panels
+        "reactive_candy_reveal", "reactive_chrome_fade", "reactive_dual_tone", "reactive_ghost_metal", "reactive_matte_shine", "reactive_mirror_shadow", "reactive_pearl_flash", "reactive_pulse_metal", "reactive_stealth_pop", "reactive_warm_cold"
+    ],
+
+    // Depth & Geometry — merged: Depth Illusion (11) + Ghost Geometry (11)
+    // + Panel Quilting (10) + Tri-Zone Materials (10) = 42 finishes.
+    // Theme: shape/depth/zone illusion (depth fake-outs, ghost geometry, quilted zones, tri-zone splits).
+    "Depth & Geometry": [
+        // Depth Illusion
+        "depth_bubble", "depth_canyon", "depth_crack", "depth_erosion", "depth_honeycomb", "depth_map", "depth_pillow", "depth_ripple", "depth_scale", "depth_vortex", "depth_wave",
+        // Ghost Geometry
+        "ghost_camo", "ghost_circuit", "ghost_diamonds", "ghost_fracture", "ghost_hex", "ghost_panel", "ghost_quilt", "ghost_scales", "ghost_stripes", "ghost_vortex", "ghost_waves",
+        // Panel Quilting
+        "quilt_alternating_duo", "quilt_candy_tiles", "quilt_chrome_mosaic", "quilt_diamond_shimmer", "quilt_gradient_tiles", "quilt_hex_variety", "quilt_metallic_pixels", "quilt_organic_cells", "quilt_pearl_patchwork", "quilt_random_chaos",
+        // Tri-Zone Materials
+        "trizone_anodized_candy_silk", "trizone_ceramic_flake_satin", "trizone_chrome_candy_matte", "trizone_frozen_ember_chrome", "trizone_glass_metal_matte", "trizone_mercury_obsidian_candy", "trizone_pearl_carbon_gold", "trizone_stealth_spectra_frozen", "trizone_titanium_copper_chrome", "trizone_vanta_chrome_pearl"
+    ],
+
+    // Materials & Physics — merged: Material Gradients (10) + Exotic Physics (10)
+    // + Weather & Age (10) + Fractal Chaos (11) = 41 finishes.
+    // Theme: material-level behavior (gradient blends, exotic surfaces, weathering, fractal noise).
+    "Materials & Physics": [
+        // ★ REWORKED MATERIALS 2026-06-19 — 8 real fabricated material surfaces (replaced the 20
+        // Material Gradients + Exotic Physics colour-swaps; physically-metallic material_spec).
+        "materials2_carbon", "materials2_forged", "materials2_engine", "materials2_liquid", "materials2_crystal", "materials2_ferro", "materials2_fracture", "materials2_damascus", "materials2_kevlar", "materials2_titanium", "materials2_meteorite",
+        // Weather & Age
+        "weather_acid_rain", "weather_barn_dust", "weather_desert_blast", "weather_hood_bake", "weather_ice_storm", "weather_ocean_mist", "weather_road_spray", "weather_salt_spray", "weather_sun_fade", "weather_volcanic_ash",
+        // Fractal Chaos
+        "fractal_candy_chaos", "fractal_chrome_decay", "fractal_cosmic_dust", "fractal_deep_organic", "fractal_dimension", "fractal_electric_noise", "fractal_liquid_fire", "fractal_matte_chrome", "fractal_metallic_storm", "fractal_pearl_cloud", "fractal_warm_cold"
+    ],
 };
 
 // NOTE (2026-04-17): _SPECIALS_RACING_HERITAGE intentionally EMPTY.
@@ -1118,7 +2108,7 @@ const _SPECIALS_FUSION_LAB = {
 const _SPECIALS_RACING_HERITAGE = {};
 
 const _SPECIALS_ATMOSPHERE = {
-    "Atmosphere": ["acid_rain", "black_ice", "blizzard", "desert_mirage", "dew_drop", "dust_storm", "ember_glow", "fog_bank", "frost_bite", "frozen_lake", "hail_damage", "heat_wave", "hurricane", "lightning_strike", "liquid_metal", "magma_flow", "meteor_shower", "monsoon", "ocean_floor", "oil_slick", "permafrost", "solar_wind", "tidal_wave", "tornado_alley", "volcanic_glass"],
+    "Atmosphere": ["acid_rain", "black_ice", "blizzard", "desert_mirage", "dew_drop", "dust_storm", "ember_glow", "fog_bank", "frost_bite", "frozen_lake", "hail_damage", "heat_wave", "hurricane", "lightning_strike", "liquid_metal", "magma_flow", "meteor_shower", "monsoon", "ocean_floor", "permafrost", "solar_wind", "tidal_wave", "tornado_alley", "volcanic_glass"],
 };
 
 const _SPECIALS_SIGNAL = {
@@ -1131,37 +2121,245 @@ const _SPECIALS_SIGNAL = {
 const _SPECIALS_MULTI_SPECTRUM = {};
 
 const _SPECIALS_ANIME_INSPIRED = {
-    "★ ANIME INSPIRED": ["anime_cel_shade_chrome", "anime_speed_lines", "anime_sparkle_burst", "anime_gradient_hair", "anime_mecha_plate", "anime_sakura_scatter", "anime_energy_aura", "anime_comic_halftone", "anime_neon_outline", "anime_crystal_facet"],
+    "★ ANIME INSPIRED": ["anime2_cel_shade", "anime2_screentone", "anime2_sakura", "anime2_mecha", "anime2_speed_lines", "anime2_energy_aura", "anime2_crystal", "anime2_gradient_hair", "anime2_kanji_rain", "anime2_onomatopoeia", "anime2_glitch", "anime2_broadcast", "anime2_blood_moon", "anime2_oni_sumi", "anime2_manga_page"], // [SPB ANIME OVERHAUL 2026-08-25] 8 -> 15 specials (25 total with the 10 bases)
 };
 
 const _SPECIALS_IRIDESCENT_INSECTS = {
-    "★ IRIDESCENT INSECTS": ["beetle_jewel", "beetle_rainbow", "butterfly_morpho", "butterfly_monarch", "dragonfly_wing", "scarab_gold", "moth_luna", "beetle_stag", "wasp_warning", "firefly_glow"],
+    "★ IRIDESCENT INSECTS": ["beetle_jewel", "beetle_rainbow", "beetle_tortoise", "beetle_tiger", "beetle_rose_chafer", "beetle_buprestid", "beetle_ground", "beetle_longhorn", "beetle_click", "butterfly_emperor", "butterfly_swallowtail", "butterfly_glasswing", "butterfly_peacock", "butterfly_morpho", "butterfly_monarch", "dragonfly_wing", "dragonfly_emerald", "damselfly_cobalt", "cicada_membrane", "lacewing_aurora", "mayfly_silver", "bee_honeycomb", "bumble_velvet", "hoverfly_mirror", "firefly_lantern", "firefly_ember", "ant_velvet", "mantis_orchid", "mantis_leaf", "katydid_leafglass", "stick_insect_bark", "cockroach_onyx", "weevil_opal", "weevil_gilded", "scarab_sunplate", "scarab_night", "jewel_spider", "orb_weaver_silk", "praying_mantis_verdigris", "hornet_titanium", "leafcutter_copper", "dung_beetle_oil", "bluebottle_mercury", "caddiscase_river", "moth_luna", "moth_tiger", "moth_hummingbird", "moth_owl", "beetle_stag", "wasp_warning"],
 };
 
-const _SPECIALS_EFFECTS_VISION = {
-    "Effects & Vision": ["acid_trip", "antimatter", "astral", "aurora", "banshee", "black_diamond", "blood_oath", "bone", "catacombs", "cel_shade", "chromatic_aberration", "crt_scanline", "crystal_cave", "cursed", "daguerreotype", "dark_fairy", "dark_ritual", "datamosh", "death_metal", "demon_forge", "double_exposure", "dragon_breath", "dreamscape", "eclipse", "embossed", "enchanted", "ethereal", "film_burn", "fish_eye", "fourth_dimension", "galaxy", "gargoyle", "glitch", "glitch_reality", "graveyard", "grid_walk", "halftone", "hallucination", "haunted", "heat_haze", "hellhound", "holographic_wrap", "infrared", "iron_maiden", "kaleidoscope", "levitation", "lich_king", "long_exposure", "mirage", "multiverse", "nebula_core", "necrotic", "negative", "nightmare", "parallax", "phantom", "phantom_zone", "polarized", "portal", "possessed", "psychedelic", "reaper", "refraction", "rust", "sepia", "shadow_realm", "silk_road", "solarization", "spectral", "tesseract", "thermochromic", "tin_type", "uv_blacklight", "vinyl_record", "void_walker", "voodoo", "wraith", "x_ray"],
+
+const _SPECIALS_CULTURAL = {
+    "RISING SUN": ["rs_rising_sun_flare", "rs_oni_bloodshift", "rs_sakura_storm", "rs_hakuryu_ice", "rs_kuro_dragon", "rs_bamboo_zen", "rs_temple_gold", "rs_geisha_whisper", "rs_thunder_dragon", "rs_koi_ascension", "rs_kyoto_lantern", "rs_shibuya_pulse", "rs_kintsugi_moon", "rs_fuji_dawn", "rs_matcha_ceremony", "rs_kabuki_inferno", "rs_indigo_tsunami", "rs_vermilion_torii", "rs_crane_garden", "rs_sumi_eclipse", "rs_yurei_veil", "rs_kitsune_ember", "rs_oni_nocturne", "rs_gashadokuro_moon", "rs_jorogumo_silk", "rs_tengu_storm", "rs_bakeneko_velvet", "rs_nure_onna_tide", "rs_hyakki_parade", "rs_bell_of_damned", "rs_sakura_cascade", "rs_wisteria_reverie", "rs_lotus_reverie", "rs_peony_festival", "rs_iris_rain", "rs_camellia_glow", "rs_plum_blossom_dawn", "rs_chrysanthemum_sun", "rs_hydrangea_mist", "rs_koi_pond_bloom", "rs_bosozoku_riot", "rs_wangan_midnight_pulse", "rs_touge_apex", "rs_drift_hanami_oversteer", "rs_kaido_chrome_bloom", "rs_dekotora_electric_freight", "rs_time_attack_grid_shock", "rs_akane_flake_fog", "rs_kurogane_rain", "rs_kinpaku_blaze", "rs_ryokucha_scroll", "rs_mikan_pearl"],
+    "VIVA MEXICO": ["vm_aztec_sunfire", "vm_talavera_azul", "vm_quetzal_sunset", "vm_sacred_heart_eclipse", "vm_guadalupe_lowrider", "vm_rosa_corazon", "vm_mariachi_verde", "vm_calavera_violeta", "vm_serape_sunburst", "vm_riviera_lowrider", "vm_luchador_plata", "vm_luchador_rayo", "vm_cactus_sunset", "vm_sierra_verde", "vm_cenote_lace", "vm_agave_pearl", "vm_baja_horizon", "vm_pacific_coast_dawn", "vm_copper_canyon", "vm_sierra_niebla", "vm_oaxaca_moonwater", "vm_xolo_candy_desert", "vm_huichol_beadwork", "vm_sonora_blue_calavera", "vm_bajio_gold_calaveras", "vm_lucha_rosa", "vm_desert_marigold", "vm_zapata_jade", "vm_cinco_spark", "vm_mezcal_smoke", "vm_riviera_corazon", "vm_noche_buena", "vm_rosario_gold", "vm_pyramid_shadow", "vm_fiesta_chrome", "vm_maguey_pearl", "vm_cantina_neon", "vm_azulejo_storm", "vm_calavera_royal", "vm_talavera_muertos", "vm_tulum_candelaria", "vm_eclipse_ofrenda", "vm_charro_nocturne", "vm_cempasuchil_noir", "vm_sierra_madre", "vm_mole_negro", "vm_veracruz_carnival", "vm_jalisco_flash", "vm_mosaic_jaguar", "vm_milagro_silver", "vm_sacred_cenote", "vm_playa_dorada", "vm_adobe_sunset", "vm_zapotec_thunder", "vm_nopal_bloom", "vm_mayan_jade", "vm_neon_cantina", "vm_baja_cartografia"],
+    "UNION JACKED": ["uj_camden_signal_riot", "uj_thames_after_dark", "uj_chelsea_razor_parade", "uj_kings_cross_mercury", "uj_covent_garden_static", "uj_oxford_circus_chrome", "uj_piccadilly_rain_stance", "uj_brick_lane_voltage", "uj_notting_carnival_glass", "uj_beat_burst", "uj_highland_heather_haze", "uj_portobello_pearl_riot", "uj_liverpool_echo_lace", "uj_manchester_acid_union", "uj_glasgow_granite_soul", "uj_belfast_harp_storm", "uj_edinburgh_castle_frost", "uj_welsh_dragon_lacquer", "uj_cornwall_sea_spark", "uj_dover_white_cliff_pearl", "uj_brighton_pier_neon", "uj_southampton_dock_matte", "uj_silverstone_apex_flare", "uj_goodwood_heritage_flake", "uj_isle_of_man_tt_chrome", "uj_ulster_rally_tartan", "uj_highland_fling_metal", "uj_loch_ness_deep_void", "uj_midnight_hearse_baroque", "uj_tudor_rose_filigree", "uj_windsor_guard_gloss", "uj_shard_glass_rain", "uj_gherkin_twist_metal", "uj_black_cab_nocturne", "uj_red_bus_velocity", "uj_routemaster_candy", "uj_mini_cooper_flip", "uj_aston_strait_silver", "uj_bentley_brooklands_mist", "uj_rolls_phantom_veil", "uj_lotus_elan_streak", "uj_mclaren_papaya_strike", "uj_williams_fw_blueblood", "uj_jaguar_etype_silk", "uj_blueblood_beatline"],
+    "FORBIDDEN DRAGON": ["fd_azure_celestial", "fd_vermilion_fire", "fd_abyssal_sea", "fd_imperial_gold", "fd_storm_black", "fd_jade_empress", "fd_frost_emperor", "fd_bronze_relic", "fd_pearl_chaser", "fd_dragon_phoenix", "fd_phoenix_fenghuang", "fd_jade_qilin", "fd_guardian_foo_lion", "fd_vermilion_bird", "fd_black_tortoise", "fd_white_tiger_baihu", "fd_crane_garden", "fd_koi_ascension", "fd_pixiu_fortune", "fd_golden_toad_jinchan"],
+    "LET FREEDOM RING": ["lfr_old_glory_flux", "lfr_rockets_red_glare", "lfr_liberty_torch", "lfr_eagle_ascendant", "lfr_we_the_people", "lfr_midnight_militia", "lfr_freedom_forge", "lfr_amber_waves", "lfr_glory_chrome", "lfr_sparkler_dusk"],
 };
+// 2026-05-18 (owner mandate): "Effects & Vision" section (47 finishes)
+// TOTALLY REMOVED. Quality bar of the underlying renderers (acid_trip,
+// antimatter, kaleidoscope, glitch, etc.) was too far below the 85%
+// composite floor to justify retooling. Section header dropped from
+// SPECIALS_SECTION_ORDER and SPECIALS_SECTIONS below.
+const _SPECIALS_FABLE = {
+    "\u2728 FABLE": ["fab_vellum_leaf", "fab_iron_gall_ink", "fab_gilt_edge", "fab_ribbon_marker", "fab_foxed_page", "fab_woodcut_block", "fab_illuminated_capital", "fab_marbled_endpaper", "fab_calf_binding", "fab_wax_seal", "fab_glass_slipper", "fab_spindle_gold", "fab_crown_jewel", "fab_mirror_mirror", "fab_poisoned_apple", "fab_royal_velvet", "fab_seven_league_boot", "fab_tower_stone", "fab_briar_hedge", "fab_pumpkin_coach", "fab_wolf_pelt", "fab_breadcrumb_trail", "fab_gingerbread", "fab_red_hood", "fab_thorn_thicket", "fab_moss_stone", "fab_lantern_path", "fab_owl_feather", "fab_fox_fur", "fab_beanstalk", "fab_dragon_scale", "fab_hoard_gold", "fab_phoenix_ash", "fab_griffin_bronze", "fab_unicorn_horn", "fab_mermaid_scale", "fab_basilisk_stone", "fab_kraken_ink", "fab_faerie_wing", "fab_troll_granite", "fab_cauldron_brew", "fab_spellbook_vellum", "fab_wishing_well", "fab_moon_path", "fab_star_dust", "fab_enchanted_ice", "fab_witch_amber", "fab_rune_stone", "fab_potion_glass", "fab_genie_brass"],
+};
+
+const _SPECIALS_EFFECTS_VISION = {};
 
 // Section order and group → section map
 // NOTE (2026-04-17): "Racing Heritage" and "Multi-Spectrum" sections removed
 // from Specials. Racing Heritage now lives exclusively under BASE_GROUPS; the
 // 25 Multi-Spectrum finishes were scrubbed entirely per user request.
-const SPECIALS_SECTION_ORDER = ["SHOKKER", "Color Science", "Material World", "Fusion Lab", "Atmosphere", "Signal", "Effects & Vision"];
+// 2026-05-18 (owner mandate): SPECIALS sweep —
+//   • Removed "Effects & Vision" section entirely (47 weak finishes).
+//   • Removed "Brushed & Machined" + "Ornamental" subgroups from Material World.
+//   • Fusion Lab consolidated from 17 subgroups → 5 themed mega-groups
+//     ("Light & Optics", "Surface & Grain", "Depth & Geometry",
+//      "Materials & Physics") plus the standalone "★ Spectrum Shift" lane.
+const SPECIALS_SECTION_ORDER = ["FRACTURED", "SHOKKER", "FABLE", "Cultural", "Color Science", "Material World", "Fusion Lab", "Signal"];
 const SPECIALS_SECTIONS = {
-    "SHOKKER": ["PARADIGM", "★ COLORSHOXX", "★ MORTAL SHOKK", "★ NEON UNDERGROUND", "★ ANIME INSPIRED", "★ IRIDESCENT INSECTS", "Shokk Series", "Angle SHOKK", "Extreme & Experimental"],
-    "Color Science": ["Chameleon", "Aurora & Chromatic Flow", "Chromatic Flake", "Prizm", "Color-Shift Adaptive", "Color-Shift Presets", "Color-Shift Duos", "Color Clash", "Gradient Directional", "Gradient Vortex", "Gradient Extended"],
-    "Material World": ["Atelier — Ultra Detail", "Metals & Forged", "Glass & Surface", "Leather & Texture", "Standalone Effects", "Brushed & Machined", "Clearcoat Effects", "Ornamental", "Natural & Organic", "Surface Treatment", "Geometric & Structural", "Optical & Light", "Particles & Textures", "Patterns & Effects"],
-    "Fusion Lab": ["Ghost Geometry", "Depth Illusion", "Material Gradients", "Directional Grain", "Reactive Panels", "Sparkle Systems", "Multi-Scale Texture", "Weather & Age", "Exotic Physics", "Tri-Zone Materials", "Metallic Halos", "Light Waves", "Fractal Chaos", "Spectral Reactive", "Panel Quilting", "Surface Accent"],
-    "Atmosphere": ["Atmosphere"],
+    // 2026-06-11 owner flagship: FRACTURED MINDS at the VERY TOP — color-shift
+    // bases built on the owner-discovered Ghost Fracture recipe.
+    // 2026-06-12 owner: ONE main category "FRACTURED" with the two
+    // sub-lanes as its folders (MINDS = 55, SOULS = the apex drops)
+    "FRACTURED": ["\ud83d\udd25 FRACTURED FLAMES", "\ud83e\udde0 FRACTURED MINDS", "\ud83d\udc80 FRACTURED SOULS", "\u269b FRACTURED FORGE", "\ud83c\udf17 FRACTURED NIGHTSHIFT", "\ud83c\udf3f FRACTURED WILDS", "\ud83c\udf0a FRACTURED ELEMENTS", "\ud83c\udf0c FRACTURED COSMOS", "\ud83c\udffa FRACTURED RELICS", "\ud83d\udda4 FRACTURED OPALFIRE", "\ud83d\udd37 FRACTURED TESSERA", "⚒ FRACTURED FOUNDRY"],
+    "FABLE": ["\u2728 FABLE"],
+    "Cultural": ["RISING SUN", "VIVA MEXICO", "UNION JACKED", "FORBIDDEN DRAGON", "LET FREEDOM RING"],
+    "SHOKKER": ["SHOKK DROP", "PARADIGM", "★ PRISM FORGE", "🌍 WORLD OF COLOR", "★ MORTAL SHOKK", "★ MONEY SHOKK", "★ NEON UNDERGROUND", "★ ANIME INSPIRED", "★ IRIDESCENT INSECTS", "Shokk Series", "🌃 DARK CITY", "X LAB", "⚡ IMPOSSIBLE FINISHES", "⚡ FRACTURED SHOKK"], // 2026-05-29 owner UI fix (#2): SHOKK DROP user-imports surface at the TOP of SHOKKER (above PARADIGM); empty/absent until imports exist
+    "Color Science": ["Prizm", "Color-Shift Duos", "Color Clash", "Gradient Directional", "Gradient Extended"],
+    // 2026-06-03: "Aurora & Chromatic Flow" (30 aurora_*) + "Chromatic Flake" (30 cf_*) pulled from the
+    // picker for Alpha — mid-rebuild, no engine renderer wired yet (would show as broken/404 tiles).
+    // Group definitions kept; re-add these two section refs once Codex rewires their renderers.
+    "Material World": ["SOURCE PATTERN PLATES", "GRUNGE & FUN", "Glass & Surface", "Optical & Light", "Patterns & Effects"],
+    // 2026-06-03: "Atelier — Ultra Detail" (17 atelier_*) pulled from the picker for Alpha — mid-rebuild,
+    // no engine renderer wired (broken/404 tiles). Group def kept; re-add the section ref once rewired.
+    "Fusion Lab": ["🌈 GRADIENTS", "★ Spectrum Shift", "Light & Optics", "Surface & Grain", "Depth & Geometry", "Materials & Physics"],
+    // 2026-08-31: "Atmosphere" removed. Owner retired the category into
+    // 🌊 FRACTURED ELEMENTS ("take some of the ideas in there and bring them to
+    // FRACTURED ELEMENTS and ditch the ATMOSPHERE category there altogether").
+    // Its one group is on the _retired list below, so the section was already
+    // empty — and an empty section still draws its divider bar in the picker.
     "Signal": ["Signal"],
-    "Effects & Vision": ["Effects & Vision"],
 };
 
 // Merged flat object (all reimagined groups — only backend-registered IDs)
+const _SPECIALS_FRACTURED_MINDS = {
+    "🧠 FRACTURED MINDS": ["fm_basalt", "fm_basketweave", "fm_cable_knit", "fm_carbon_weave", "fm_chainlink", "fm_chainmail", "fm_checkerflash", "fm_circuit_maze", "fm_code_cascade", "fm_croc_hide", "fm_damascus", "fm_diamond_plate", "fm_diamondback", "fm_dragon_scale", "fm_dragonfly", "fm_ebru_marble", "fm_fiber_optic", "fm_flame_helix", "fm_flame_lick", "fm_flame_wall", "fm_frost_feather", "fm_frost_lace", "fm_geode_slice", "fm_gila_bead", "fm_glacier_core", "fm_graphene", "fm_gyro_cage", "fm_gyroid", "fm_herringbone", "fm_hexcore", "fm_honeycomb_burst", "fm_inferno_veins", "fm_ion_drift", "fm_labyrinth", "fm_lattice", "fm_magma", "fm_mudcrack", "fm_nanoweave", "fm_octo_suckers", "fm_penrose", "fm_petal_storm", "fm_python_skin", "fm_riverine", "fm_rivet_array", "fm_rope_coil", "fm_static_burst", "fm_stingray", "fm_tessellate", "fm_thousand_eyes", "fm_tide_glass", "fm_tiger_slash", "fm_topo_lines", "fm_tortoise", "fm_tsunami", "fm_witchlight"]
+};
+
+const _SPECIALS_FRACTURED_SOULS = {
+    "💀 FRACTURED SOULS": ["fs_aurora_threads", "fs_blood_marble", "fs_carnival_night", "fs_circuit_soul", "fs_ember_drift", "fs_geode_vein", "fs_ghost_silk", "fs_guilloche_ghost", "fs_hex_hive", "fs_howl", "fs_moire_phantom", "fs_moth_dust", "fs_night_tide", "fs_nova_burst", "fs_oil_serpent", "fs_petrol_halo", "fs_phantom_lattice", "fs_serpent_scale", "fs_shatter_glass", "fs_shattered_prism", "fs_core_abyss", "fs_core_aurum", "fs_core_crimson", "fs_core_emerald", "fs_core_violet", "fs_soul_loom", "fs_star_chart", "fs_static_veins", "fs_widow_braid", "fs_wraith_veil"]
+};
+
+// FRACTURED FORGE (2026-06-16) — standalone math-engine procedural finishes (NOT color-shift).
+// Batch 1 of a planned 100; backed by engine/expansions/fractured_forge_2026.py.
+const _SPECIALS_FRACTURED_FORGE = {
+    "⚛ FRACTURED FORGE": ["ff_abyssal_currents", "ff_apollonia", "ff_argyle_glass", "ff_aurora_loom", "ff_aurora_veil", "ff_banded_agate", "ff_brain_coral", "ff_brickwork_prism", "ff_catacomb_glass", "ff_caustic_lace", "ff_causticline", "ff_cellwave", "ff_conduit", "ff_conformal_lattice", "ff_cubist_prism", "ff_dactyl", "ff_dichroic_drift", "ff_dragonscale", "ff_drift_lattice", "ff_fracture_web", "ff_geode_facet", "ff_ghost_coil", "ff_gyre", "ff_heartwood", "ff_hivewake", "ff_holo_grating", "ff_hyperflora", "ff_ion_bloom", "ff_knurled_steel", "ff_leaf_vein", "ff_leviathan_filaments", "ff_liquid_agate", "ff_loomwork", "ff_magma_current", "ff_marble", "ff_moire_vortex", "ff_mycelinth", "ff_nebula", "ff_oilskin_weave", "ff_parquet_glass", "ff_peacock_optic", "ff_pendulum_veil", "ff_penrose_quartz", "ff_pentangle", "ff_phase_reliquary", "ff_pinwheel_glass", "ff_plasma_arc", "ff_quasicrystal", "ff_quasiflux", "ff_quicksilver", "ff_resonance", "ff_resonant_cells", "ff_resonant_tide", "ff_ridgeline", "ff_riptide", "ff_rosetta_moire", "ff_scale_mail", "ff_scale_prism", "ff_shardfield", "ff_shroud_silk", "ff_soliton_reef", "ff_spectra_wheel", "ff_spectral_hive", "ff_spectral_ridge", "ff_spectral_veil", "ff_spiral_galaxy", "ff_standing_field", "ff_stormfork", "ff_sunwheel", "ff_tideglass_gyre", "ff_tracewerk", "ff_trihedra", "ff_truchet_flow", "ff_vortex_choir", "ff_watered_silk", "ff_wovencell", "ff_ziggurat_glass", "fml_basalt_colonnade", "fml_glass_gold", "fml_golden_pillows", "fml_golden_seams", "fml_obsidian_flow", "fml_river_gold", "fml_sulfur_delta", "fml_sulfur_pillows", "fml_sulfur_plates", "fml_sulfur_web", "fml_whitehot_glass"]
+};
+
+const _SPECIALS_FRACTURED_DEEP = {
+    "🌊 FRACTURED DEEP": ["fd_abyssalsnow", "fd_anglerfish", "fd_bioluminescence", "fd_brine_glass", "fd_cephalopod", "fd_eeldischarge", "fd_glasssquid", "fd_hadal_glow", "fd_hydrothermal", "fd_jellyfall", "fd_kelp_drift", "fd_krakenink", "fd_maelstrom", "fd_nacre", "fd_pressurestrata", "fd_ripple_glass", "fd_siphonophore", "fd_sonar_glass", "fd_trenchfault", "fd_whalefall"]
+};
+
+const _SPECIALS_FRACTURED_UFO = {
+    "🛸 FRACTURED UFO": ["fu_abduction_shaft", "fu_alien_circuit", "fu_antigrav", "fu_biomech_skin", "fu_crop_circle", "fu_glyph_cells", "fu_glyph_grid", "fu_scanner_sweep", "fu_hex_hull", "fu_hull_cells", "fu_hyperspace", "fu_nebula_portal", "fu_oil_iridescent", "fu_plasma_drive", "fu_portal_rings", "fu_reactor_core", "fu_saucer_alloy", "fu_stargate", "fu_tractor_beam", "fu_wormhole"]
+};
+
+const _SPECIALS_FRACTURED_CRYPTID = {
+    "👣 FRACTURED CRYPTID": ["fc_antler_bone", "fc_bark_camo", "fc_batwing", "fc_bog_murk", "fc_claw_rake", "fc_coarse_hide", "fc_crackle_eyeshine_glass", "fc_dorsal_ridge", "fc_dragon_hex_glass", "fc_eyeshine", "fc_feathered_wing", "fc_gator_hide", "fc_hide_scale_glass", "fc_mossy_stone", "fc_quill_bristle", "fc_sasquatch_fur", "fc_snakeskin", "fc_toad_skin", "fc_webbed_membrane", "fc_will_o_wisp"]
+};
+
+const _SPECIALS_FRACTURED_RAINBOW = {
+    "🌈 FRACTURED RAINBOW": ["fr_chroma_ripple", "fr_chroma_rings", "fr_dichroic_bands", "fr_spectrum_voronoi", "fr_holo_foil", "fr_holo_grating", "fr_iridescent_weave", "fr_kaleidoscope", "fr_oil_slick", "fr_prism_shatter", "fr_opal_fire", "fr_rainbow_caustics", "fr_rainbow_plasma", "fr_rainbow_truchet", "fr_spectral_curl", "fr_spectral_marble", "fr_spectral_spiral", "fr_hex_hive", "fr_prism_wheel", "fr_quasicrystal"]
+};
+
+const _SPECIALS_FRACTURED_OCCULT = {
+    "🔮 FRACTURED OCCULT": ["fo_blood_spatter", "fo_bone_branch", "fo_candle_wax", "fo_cobweb_lace", "fo_cracked_tomb", "fo_crimson_cells", "fo_ectoplasm", "fo_glyph_cells", "fo_graveyard_moss", "fo_haunted_fog", "fo_pentagram_seal", "fo_raven_feather", "fo_rune_lattice", "fo_seance_veil", "fo_shadow_mist", "fo_sigil_grid", "fo_spider_lattice", "fo_stained_chapel", "fo_vampire_damask", "fo_witchfire"]
+};
+
+// FRACTURED MORPHO (2026-07-30) — 50 structural-color finishes (thin-film
+// interference); backed by engine/expansions/fractured_morpho_2026.py.
+const _SPECIALS_FRACTURED_MORPHO = {
+    "🦋 FRACTURED MORPHO": ["fmo_abalone_drift", "fmo_alexandrite_dusk", "fmo_ammolite_skin", "fmo_atlas_wing", "fmo_black_opal", "fmo_black_pearl", "fmo_bornite_patina", "fmo_cassowary_quill", "fmo_chalcopyrite", "fmo_chrysina_gold", "fmo_duck_speculum", "fmo_emperor_scale", "fmo_fire_agate", "fmo_firefly_shell", "fmo_foam_film", "fmo_glasswing", "fmo_grackle_oil", "fmo_ground_beetle", "fmo_hummingbird_gorget", "fmo_jewel_scarab", "fmo_labradorite", "fmo_ladybird_dome", "fmo_luna_dust", "fmo_magpie_wing", "fmo_monarch_vein", "fmo_moonstone_adular", "fmo_morpho_blue", "fmo_mother_of_pearl", "fmo_mussel_shell", "fmo_nacre_brick", "fmo_oil_beetle", "fmo_oil_slick", "fmo_owl_eye", "fmo_paua_storm", "fmo_peacock_eye", "fmo_pearl_oyster", "fmo_pigeon_neck", "fmo_raven_flash", "fmo_scarab_horn", "fmo_soap_bubble", "fmo_spectrolite_vein", "fmo_stag_carapace", "fmo_starling_sheen", "fmo_sunbird_throat", "fmo_sunset_moth", "fmo_sunstone_glitter", "fmo_swallowtail", "fmo_tiger_beetle", "fmo_ulysses_flash", "fmo_weevil_pit"]
+};
+
+// FRACTURED MOLTEN (2026-07-30) — category 1/10 of the FRACTURED expansion
+// (owner color-diversity brief); backed by engine/expansions/fractured_molten_2026.py.
+
+// FRACTURED expansion categories 2-10 (2026-08-01) — central wiring of the 9 wave builds
+const _SPECIALS_FRACTURED_FROST = {
+    "❄️ FRACTURED FROST": ["ffr_blue_serac", "ffr_cyan_fissure", "ffr_cyan_frond", "ffr_cyan_frostbloom", "ffr_cyan_veil", "ffr_diamond_dust", "ffr_glacier_fern", "ffr_hoarfrost_white", "ffr_ice_needles", "ffr_silver_dendrite", "ffr_silver_hoar", "ffr_snowdrift_ice", "ffr_steel_bubbles", "ffr_steel_flurry", "ffr_violet_chasm", "ffr_violet_rime", "ffr_violet_sectored", "ffr_violet_trapped", "ffr_whiteout_rift", "ffr_window_fern"]
+};
+
+const _SPECIALS_FRACTURED_BLOOM = {
+    "🌸 FRACTURED BLOOM": ["fbl_butter_mosaic", "fbl_butter_pollen", "fbl_butter_whorl", "fbl_coral_cluster", "fbl_coral_stamen", "fbl_coral_vine", "fbl_leaf_whorl", "fbl_leafvine_drape", "fbl_lilac_rose", "fbl_lilac_stamen", "fbl_lilac_vine", "fbl_magenta_mosaic", "fbl_magenta_pollen", "fbl_magenta_whorl", "fbl_pink_pollen", "fbl_pink_rose", "fbl_pink_stamen", "fbl_white_pollen", "fbl_blush_rose", "fbl_white_whorl"]
+};
+
+const _SPECIALS_FRACTURED_CLOCKWORK = {
+    "⚙️ FRACTURED CLOCKWORK": ["fcw_brass_balance", "fcw_brass_escapement", "fcw_brass_geartrain", "fcw_brass_guilloche", "fcw_bronze_geartrain", "fcw_bronze_rivets", "fcw_bronze_scroll", "fcw_copper_escapement", "fcw_copper_rivets", "fcw_copper_scroll", "fcw_gold_geartrain", "fcw_gold_guilloche", "fcw_gold_mainspring", "fcw_gunmetal_guilloche", "fcw_gunmetal_mainspring", "fcw_ruby_guilloche", "fcw_ruby_mainspring", "fcw_verdigris_gears", "fcw_verdigris_rivets", "fcw_verdigris_scroll"]
+};
+
+const _SPECIALS_FRACTURED_NEBULA = {
+    "🌌 FRACTURED NEBULA": ["fnb_cyan_drift", "fnb_cyan_dustlane", "fnb_cyan_shockwave", "fnb_cyan_spiral", "fnb_gilded_shockfront", "fnb_gilded_veil", "fnb_golden_cluster", "fnb_golden_pinwheel", "fnb_magenta_emission", "fnb_magenta_remnant", "fnb_magenta_rift", "fnb_magenta_stardust", "fnb_teal_annulus", "fnb_teal_lagoon", "fnb_teal_rift", "fnb_teal_starfield", "fnb_violet_annulus", "fnb_violet_billows", "fnb_violet_galaxy", "fnb_violet_starglow"]
+};
+
+const _SPECIALS_FRACTURED_TEMPEST = {
+    "⚡ FRACTURED TEMPEST": ["fte_ball_lightning", "fte_blue_bolt", "fte_green_strike", "fte_green_supercell", "fte_gustfront_green", "fte_lichtenberg_crown", "fte_slate_billows", "fte_slate_hailfield", "fte_slate_squall", "fte_slate_vortex", "fte_steel_cyclone", "fte_steel_downpour", "fte_steel_rain", "fte_storm_cell", "fte_thunderhead_white", "fte_violet_cumulonimbus", "fte_violet_hail", "fte_violet_twister", "fte_white_arc", "fte_whiteout_hail"]
+};
+
+const _SPECIALS_FRACTURED_CATHEDRAL = {
+    "🪟 FRACTURED CATHEDRAL": ["fca_amber_kiln", "fca_amber_slag", "fca_bottle_cobalt", "fca_bottle_emerald", "fca_bottle_ruby", "fca_bottle_violet", "fca_cobalt_oculus", "fca_cobalt_streak", "fca_crown_amber", "fca_crown_cobalt", "fca_crown_jewels", "fca_crown_violet", "fca_emerald_quarry", "fca_emerald_streak", "fca_emerald_wheel", "fca_jewel_lights", "fca_jewel_streak", "fca_ruby_lights", "fca_ruby_rose", "fca_violet_rose"]
+};
+
+
+// FRACTURED FLAMES. ONE shelf, 75 finishes. Owner 2026-08-31: "put all
+// finishes inside of one master FRACTURED FLAMES category ... so all the
+// cinders would be together". The chapter is carried by the NAME prefix
+// (Cinder: Clinker Crust) and by the order of this list, not by five shelves.
+
+// FRACTURED NIGHTSHIFT. One shelf of 50. The section header pointed at a
+// group that never existed, so the old 101 were invisible in the picker.
+
+// FRACTURED COSMOS. One shelf of 60, chapter-prefixed and chapter-ordered.
+
+// FRACTURED ELEMENTS. One shelf of 60, chapter-prefixed and chapter-ordered.
+const _SPECIALS_FRACTURED_ELEMENTS_2026 = { "\ud83c\udf0a FRACTURED ELEMENTS": ["elm_downpour", "elm_cloudburst", "elm_drizzle", "elm_sheet_rain", "elm_monsoon", "elm_acid_rain", "elm_puddle_skin", "elm_dew_field", "elm_petrichor", "elm_gutter_race", "elm_windscreen", "elm_virga", "elm_blizzard", "elm_snowdrift", "elm_sleet", "elm_hail_damage", "elm_hoarfrost", "elm_rime_ice", "elm_black_ice", "elm_frost_fern", "elm_diamond_dust", "elm_permafrost", "elm_serac_field", "elm_graupel", "elm_tornado_alley", "elm_supercell", "elm_hurricane_eye", "elm_squall_line", "elm_gust_front", "elm_mammatus", "elm_wall_cloud", "elm_lightning_strike", "elm_thunderhead", "elm_microburst", "elm_waterspout", "elm_derecho", "elm_tsunami", "elm_breaker", "elm_whitewater", "elm_tide_race", "elm_storm_surge", "elm_riptide", "elm_spindrift", "elm_whirlpool", "elm_chop", "elm_glassy_swell", "elm_flood_line", "elm_foam_lace", "elm_sandstorm", "elm_haboob", "elm_dust_devil", "elm_heat_shimmer", "elm_drought_crack", "elm_mirage", "elm_dust_veil", "elm_salt_haze", "elm_harmattan", "elm_sirocco", "elm_loess", "elm_brownout"] };
+
+const _SPECIALS_FRACTURED_COSMOS_2026 = { "\ud83c\udf0c FRACTURED COSMOS": ["cos_saucer_alloy", "cos_hull_plating", "cos_glyph_script", "cos_crop_geometry", "cos_abduction_column", "cos_tractor_well", "cos_bio_mech_chitin", "cos_reactor_lattice", "cos_beacon_array", "cos_cloaking_field", "cos_probe_skin", "cos_signal_bloom", "cos_regolith", "cos_crater_field", "cos_ice_moon", "cos_sulfur_volcanics", "cos_gas_giant_bands", "cos_storm_oval", "cos_dune_sea", "cos_salt_flat", "cos_basalt_plain", "cos_methane_lake", "cos_ring_shadow", "cos_terminator", "cos_star_nursery", "cos_emission_nebula", "cos_dark_nebula", "cos_globular_cluster", "cos_spiral_arm", "cos_dust_lane", "cos_deep_field", "cos_reflection_nebula", "cos_planetary_nebula", "cos_filament_web", "cos_zodiacal_light", "cos_molecular_cloud", "cos_event_horizon", "cos_accretion_disc", "cos_gravitational_lens", "cos_wormhole_throat", "cos_supernova_remnant", "cos_pulsar_beam", "cos_magnetar_flare", "cos_relativistic_jet", "cos_bow_shock", "cos_tidal_stream", "cos_kilonova", "cos_frame_drag", "cos_heat_shield", "cos_mli_foil", "cos_solar_sail", "cos_radiator_panel", "cos_whipple_shield", "cos_thermal_blanket", "cos_sun_shade", "cos_mirror_segment", "cos_docking_ring", "cos_ablation_streak", "cos_cryo_tank", "cos_beacon_strobe"] };
+
+const _SPECIALS_FRACTURED_NIGHTSHIFT = { "\ud83c\udf17 FRACTURED NIGHTSHIFT": ["nsx_cyanide_hour", "nsx_ember_verdict", "nsx_violet_sentence", "nsx_copper_confession", "nsx_magenta_testimony", "nsx_ice_to_rust", "nsx_jade_reversal", "nsx_sodium_trial", "nsx_aqua_betrayal", "nsx_chartreuse_alibi", "nsx_slate_ember", "nsx_harbour_amber", "nsx_gunsmoke_coal", "nsx_frost_filament", "nsx_deep_water_forge", "nsx_pewter_sunset", "nsx_storm_copper", "nsx_blue_hour_brass", "nsx_cinder_vault", "nsx_anchor_rust", "nsx_rust_to_glacier", "nsx_amber_cryonic", "nsx_terracotta_freeze", "nsx_bronze_nocturne", "nsx_saffron_midnight", "nsx_ochre_arctic", "nsx_foundry_frost", "nsx_marigold_abyss", "nsx_sienna_signal", "nsx_kiln_blue", "nsx_venom_curfew", "nsx_absinthe_night", "nsx_toxic_recess", "nsx_chlorine_watch", "nsx_lime_interrogation", "nsx_serpent_shift", "nsx_uranium_dusk", "nsx_wormwood_vigil", "nsx_acid_testament", "nsx_hemlock_hour", "nsx_royal_nightfall", "nsx_rose_assize", "nsx_gilt_sentence", "nsx_imperial_drift", "nsx_orchid_curfew", "nsx_cardinal_watch", "nsx_amethyst_bench", "nsx_coronation_blue", "nsx_fuchsia_docket", "nsx_last_session"] };
+
+const _SPECIALS_FRACTURED_FLAMES = { "\ud83d\udd25 FRACTURED FLAMES": ["ffl_flashpoint", "ffl_char_creep", "ffl_tinder_bloom", "ffl_match_head", "ffl_smoulder_bed", "ffl_fuse_line", "ffl_kindle_lattice", "ffl_spark_shower", "ffl_ember_catch", "ffl_pilot_ring", "ffl_autoignition", "ffl_firebrand_scatter", "ffl_scorch_front", "ffl_ignition_delay", "ffl_touchpaper", "ffl_diffusion_sheet", "ffl_wrinkled_front", "ffl_darrieus_cell", "ffl_turbulent_braid", "ffl_flamelet_storm", "ffl_buoyant_fingers", "ffl_shear_tongue", "ffl_pool_puff", "ffl_candle_cone", "ffl_blowtorch", "ffl_backdraft_wrinkle", "ffl_fire_whirl_grain", "ffl_laminar_ladder", "ffl_crown_fire", "ffl_stoichiometric_seam", "ffl_arc_filament", "ffl_ionised_braid", "ffl_magnetised_jet", "ffl_corona_grain", "ffl_streamer_web", "ffl_townsend_cascade", "ffl_pinch_instability", "ffl_cathode_spot", "ffl_glow_discharge", "ffl_lichtenberg_burn", "ffl_plasma_sheath", "ffl_spectral_line", "ffl_electron_avalanche", "ffl_tokamak_ripple", "ffl_aurora_column", "ffl_pahoehoe_skin", "ffl_slag_crust", "ffl_lava_cell", "ffl_quench_craze", "ffl_vitrified_glaze", "ffl_weld_pool", "ffl_molten_drip", "ffl_crucible_skin", "ffl_basalt_column", "ffl_obsidian_chill", "ffl_foundry_spatter", "ffl_tuyere_glow", "ffl_slumped_glass", "ffl_magma_vesicle", "ffl_ropy_flow", "ffl_ember_bed", "ffl_ash_fall", "ffl_soot_bloom", "ffl_char_scale", "ffl_cinder_lattice", "ffl_fly_ash", "ffl_coke_cell", "ffl_clinker_crust", "ffl_ash_glaze", "ffl_dying_coal", "ffl_grey_front", "ffl_retained_heat", "ffl_powder_burn", "ffl_spall_field", "ffl_cold_ash"] };
+
+const _SPECIALS_FRACTURED_FOUNDRY = {
+    "⚒ FRACTURED FOUNDRY": ["ffo_ladle_pour", "ffo_furnace_slag", "ffo_sand_cast", "ffo_chill_ingot", "ffo_forge_scale", "ffo_planished", "ffo_damascus_fold", "ffo_face_mill", "ffo_lathe_turn", "ffo_diamond_knurl", "ffo_belt_grind", "ffo_weld_bead", "ffo_plasma_cut", "ffo_zinc_spangle", "ffo_crucible_dross", "ffo_cast_spatter", "ffo_teeming_stream", "ffo_chill_shot", "ffo_bloom_iron", "ffo_tuyere_burn", "ffo_peened", "ffo_anvil_face", "ffo_drawn_taper", "ffo_upset_bulge", "ffo_swage_block", "ffo_fullered", "ffo_quench_check", "ffo_wire_edm", "ffo_honed_bore", "ffo_broached", "ffo_shot_peened", "ffo_cut_thread", "ffo_fly_cut", "ffo_tig_stack", "ffo_mig_spatter", "ffo_oxy_cut", "ffo_stitch_weld", "ffo_tack_row", "ffo_undercut", "ffo_arc_strike", "ffo_haz_bloom", "ffo_anodised", "ffo_rust_blued", "ffo_parkerised", "ffo_copper_patina", "ffo_powder_coat", "ffo_chrome_flash", "ffo_passivated", "ffo_mill_scale", "ffo_phosphated"]
+};
+
+const _SPECIALS_FRACTURED_TESSERA = {
+    "🔷 FRACTURED TESSERA": ["fts_penrose_reliquary", "fts_ammann_vault", "fts_dodeca_choir", "fts_hex_apiary", "fts_cairo_lantern", "fts_rhombille_cube", "fts_lloyd_froth", "fts_gilbert_shatter", "fts_truchet_braid", "fts_wang_current", "fts_girih_strap", "fts_herringbone_hall", "fts_shear_arcade", "fts_kagome_basket", "fts_snub_carousel", "fts_octagon_court", "fts_basket_weave", "fts_triangle_choir", "fts_pinwheel_infinite", "fts_sphinx_march", "fts_chair_recursion", "fts_mondrian_cut", "fts_slat_stretch", "fts_delaunay_web", "fts_bubble_raft", "fts_mudcrack_pan", "fts_crazed_glaze", "fts_basalt_column", "fts_cafe_wall", "fts_zigzag_ribbon", "fts_spiral_nave", "fts_conformal_bend", "fts_moire_beat", "fts_zellige_star", "fts_mashrabiya_screen", "fts_muqarnas_vault", "fts_woven_interlace", "fts_scalemail_coat", "fts_fishscale_roof", "fts_droste_well", "fts_fibonacci_course", "fts_laguerre_press", "fts_kite_and_dart", "fts_sevenfold_drift", "fts_flemish_bond", "fts_jali_pierce", "fts_hexstar_lantern", "fts_elongated_course", "fts_impact_shatter", "ff_truchet_glass"]
+};
+
+const _SPECIALS_FRACTURED_RELICS_2026 = {
+    "⚗ THE ALEMBIC": ["frl_athanor_slag", "frl_sulfur_crust", "frl_herbarium", "frl_transmutation", "frl_verdigris", "frl_apothecary_crust", "frl_vitriol_etch", "frl_quicksilver", "frl_philosopher", "frl_cinnabar"],
+    "🜏 THE ORACLE": ["frl_blood_augur", "frl_planchette", "frl_casting_bones", "frl_tasseomancy", "frl_palm_line", "frl_astrolabe", "frl_ceromancy", "frl_black_mirror", "frl_ink_scry", "frl_haruspex"],
+    "⚱ THE BARROW": ["frl_urn_slip", "frl_bog_body", "frl_coffin_varnish", "frl_grave_wax", "frl_shroud", "frl_barrow_soil", "frl_bone_ash", "frl_barrow_frost", "frl_ossuary", "frl_corpse_candle"],
+    "🦴 THE BEAST": ["frl_wendigo_horn", "frl_thunderbird_quill", "frl_mothman_dust", "frl_lake_serpent", "frl_devil_hoof", "frl_sasquatch_pelt", "frl_chupacabra_spine", "frl_grendel_hide", "frl_kraken_sucker", "frl_deep_one_gill"],
+    "⛧ THE BINDING": ["frl_hexfoil", "frl_witch_bottle", "frl_binding_knot", "frl_coffin_nail", "frl_salt_circle", "frl_poppet_stitch", "frl_hag_stone", "frl_sigil_wax", "frl_thread_cross", "frl_iron_cage"]
+};
+
+const _SPECIALS_FRACTURED_RELIC = {
+    "🏺 FRACTURED RELIC": ["fre_gold_glyphs", "fre_gold_inlay", "fre_gold_mosaic", "fre_gold_ziggurat", "fre_ivory_leaf", "fre_ivory_mosaic", "fre_ivory_ziggurat", "fre_lapis_glyphs", "fre_lapis_inlay", "fre_lapis_mosaic", "fre_lapis_ziggurat", "fre_malachite_leaf", "fre_malachite_mosaic", "fre_malachite_ziggurat", "fre_terracotta_glyphs", "fre_terracotta_inlay", "fre_terracotta_leaf", "fre_turquoise_glyphs", "fre_turquoise_inlay", "fre_turquoise_leaf"]
+};
+
+const _SPECIALS_FRACTURED_KINTSUGI = {
+    "🍶 FRACTURED KINTSUGI": ["fki_celadon_craquelure", "fki_celadon_raku", "fki_celadon_sweep", "fki_celadon_vein", "fki_cobalt_craquelure", "fki_cobalt_raku", "fki_cobalt_seam", "fki_cobalt_shards", "fki_cobalt_sweep", "fki_cream_confluence", "fki_cream_craquelure", "fki_gilded_craquelure", "fki_gilt_brushwork", "fki_gilt_shards", "fki_golden_raku", "fki_golden_river", "fki_moon_raku", "fki_porcelain_craquelure", "fki_porcelain_mend", "fki_porcelain_shards"]
+};
+
+const _SPECIALS_FRACTURED_PETRI = {
+    "🧫 FRACTURED PETRI": ["fpe_amber_agar", "fpe_amber_diatom", "fpe_amber_moldring", "fpe_amber_plankton", "fpe_cyan_colony", "fpe_cyan_membrane", "fpe_cyan_mold", "fpe_cyan_spineball", "fpe_lime_chains", "fpe_lime_culture", "fpe_lime_diatom", "fpe_lime_mold", "fpe_magenta_bloom", "fpe_magenta_mosaic", "fpe_magenta_plankton", "fpe_magenta_radiolaria", "fpe_violet_chains", "fpe_violet_frustule", "fpe_violet_garden", "fpe_violet_membrane"]
+};
+
+// FRACTURED FLAMES (2026-06-18) — 135 validated flame finishes (51 ignite / 35 topo / 49 dance)
+// from engine/paint_v2/flame_spec_recipes.RECIPES; backed by engine/expansions/flames_catalog_2026.py.
+const _SPECIALS_FRACTURED_FLAMES_IGNITE = { "🔥 FRACTURED FLAMES · Ignite": ["flm_tongues_ignite_classic", "flm_cellular_embers_ignite_classic", "flm_curl_streamers_ignite_blue", "flm_radial_ignite_spectral", "flm_vortex_spiral_ignite_blue", "flm_dragon_jet_ignite_classic", "flm_interference_wisps_ignite_blue", "flm_metaball_plumes_ignite_classic", "flm_candle_ignite_white_hot", "flm_ember_storm_ignite_spectral", "flm_will_o_wisp_ignite_violet", "flm_reaction_diffusion_ignite_green_toxic", "flm_gas_ring_ignite_blue", "flm_plasma_arc_ignite_white_hot", "flm_solar_flare_ignite_white_hot", "flm_lava_flow_ignite_classic", "flm_ferro_spikes_ignite_violet", "flm_backdraft_rings_ignite_green_toxic", "flm_spark_fountain_ignite_white_hot", "flm_corona_rays_ignite_white_hot", "flm_votive_field_ignite_white_hot", "flm_meteor_shower_ignite_white_hot", "flm_smoke_billow_ignite_blue", "flm_pahoehoe_rope_ignite_classic", "flm_napalm_drips_ignite_classic", "flm_magma_bubbles_ignite_classic", "flm_marble_swirl_ignite_blue", "flm_dragon_scale_ignite_classic", "flm_caustic_web_ignite_blue", "flm_obsidian_fracture_ignite_white_hot", "flm_basalt_columns_ignite_classic", "flm_eruption_column_ignite_classic", "flm_heat_mirage_ignite_spectral", "flm_spiral_galaxy_ignite_violet", "flm_aurora_drape_ignite_green_toxic", "flm_kaleidoscope_ignite_spectral", "flm_basket_weave_ignite_classic", "flm_lightning_storm_ignite_blue", "flm_fire_rose_ignite_classic", "flm_mammatus_ignite_white_hot", "flm_spider_web_ignite_violet", "flm_mach_cone_ignite_spectral", "flm_quasicrystal_ignite_green_toxic", "flm_crackle_glaze_ignite_white_hot", "flm_chevron_herringbone_ignite_spectral", "flm_fire_tornado_ignite_white_hot", "flm_quilted_diamond_ignite_blue", "flm_vortex_street_ignite_white_hot", "flm_leopard_rd_ignite_classic", "flm_pele_strands_ignite_white_hot", "flm_tessellated_triangles_ignite_violet", "fml_caldera_rim", "fml_ember_channels", "fml_ember_crust", "fml_ember_web", "fml_jointed_ember", "fml_magma_river", "fml_pillow_glow", "fml_whitehot_caldera", "fml_whitehot_rapids"] };
+const _SPECIALS_FRACTURED_FLAMES_TOPO   = { "🔥 FRACTURED FLAMES · Topo": ["flm_tongues_topo_classic", "flm_curl_streamers_topo_violet", "flm_radial_topo_white_hot", "flm_vortex_spiral_topo_blue", "flm_dragon_jet_topo_classic", "flm_interference_wisps_topo_blue", "flm_metaball_plumes_topo_white_hot", "flm_candle_topo_white_hot", "flm_ember_storm_topo_spectral", "flm_will_o_wisp_topo_violet", "flm_reaction_diffusion_topo_blue", "flm_gas_ring_topo_blue", "flm_plasma_arc_topo_white_hot", "flm_solar_flare_topo_white_hot", "flm_lava_flow_topo_classic", "flm_ferro_spikes_topo_blue", "flm_backdraft_rings_topo_white_hot", "flm_meteor_shower_topo_spectral", "flm_magma_bubbles_topo_white_hot", "flm_marble_swirl_topo_blue", "flm_dragon_scale_topo_violet", "flm_basalt_columns_topo_classic", "flm_eruption_column_topo_white_hot", "flm_spiral_galaxy_topo_violet", "flm_aurora_drape_topo_green_toxic", "flm_kaleidoscope_topo_spectral", "flm_basket_weave_topo_classic", "flm_lightning_storm_topo_blue", "flm_fire_rose_topo_classic", "flm_mammatus_topo_white_hot", "flm_spider_web_topo_violet", "flm_mach_cone_topo_spectral", "flm_quasicrystal_topo_green_toxic", "flm_crackle_glaze_topo_white_hot", "flm_chevron_herringbone_topo_spectral"] };
+const _SPECIALS_FRACTURED_FLAMES_DANCE  = { "🔥 FRACTURED FLAMES · Dance": ["flm_tongues_dance_classic", "flm_cellular_embers_dance_classic", "flm_curl_streamers_dance_blue", "flm_radial_dance_spectral", "flm_vortex_spiral_dance_blue", "flm_dragon_jet_dance_classic", "flm_interference_wisps_dance_blue", "flm_metaball_plumes_dance_white_hot", "flm_candle_dance_white_hot", "flm_ember_storm_dance_spectral", "flm_will_o_wisp_dance_violet", "flm_reaction_diffusion_dance_white_hot", "flm_gas_ring_dance_blue", "flm_solar_flare_dance_white_hot", "flm_lava_flow_dance_classic", "flm_ferro_spikes_dance_violet", "flm_backdraft_rings_dance_blue", "flm_spark_fountain_dance_white_hot", "flm_corona_rays_dance_white_hot", "flm_votive_field_dance_white_hot", "flm_meteor_shower_dance_white_hot", "flm_smoke_billow_dance_violet", "flm_pahoehoe_rope_dance_classic", "flm_napalm_drips_dance_classic", "flm_marble_swirl_dance_blue", "flm_dragon_scale_dance_classic", "flm_caustic_web_dance_white_hot", "flm_obsidian_fracture_dance_violet", "flm_basalt_columns_dance_green_toxic", "flm_eruption_column_dance_classic", "flm_heat_mirage_dance_spectral", "flm_spiral_galaxy_dance_blue", "flm_aurora_drape_dance_green_toxic", "flm_kaleidoscope_dance_violet", "flm_basket_weave_dance_classic", "flm_lightning_storm_dance_blue", "flm_fire_rose_dance_classic", "flm_mammatus_dance_white_hot", "flm_spider_web_dance_violet", "flm_mach_cone_dance_spectral", "flm_quasicrystal_dance_green_toxic", "flm_crackle_glaze_dance_white_hot", "flm_chevron_herringbone_dance_spectral", "flm_fire_tornado_dance_white_hot", "flm_quilted_diamond_dance_blue", "flm_vortex_street_dance_white_hot", "flm_leopard_rd_dance_spectral", "flm_pele_strands_dance_violet", "flm_tessellated_triangles_dance_spectral"] };
+
+// GRADIENTS (2026-06-18) — 11 distinctive gradient finishes (one curated palette each)
+// from engine/paint_v2/gradient_math.GRADIENT_STRUCTURES; backed by engine/expansions/gradients_catalog_2026.py.
+// [SPB-GRADIENT-OVERHAUL-2026-08-23, tick G-2] Owner: gradients are
+// "severely lacking" and need "insane" 10-15-color designs.  Strengthen the
+// existing 11-card shelf instead of creating another light category. GM-1
+// adds 12 composed math mechanisms here (43 total), preserving one strong home.
+const _SPECIALS_GRADIENTS = { "🌈 GRADIENTS": [
+    "grd_oklab_flow", "grd_iridescent", "grd_ridged_contour", "grd_mesh_bleed", "grd_duotone_grain", "grd_chromatic_aberration", "grd_spectral_sweep", "grd_liquid_marble", "grd_moire_interference", "grd_holo_foil", "grd_radial_burst",
+    "grd_hyperprism_supernova", "grd_aurora_reactor", "grd_toxic_candy_nebula", "grd_ultraviolet_solarstorm", "grd_chromatic_faultline",
+    "grd_kaleidoscope_overdrive", "grd_spectrum_dragonfire", "grd_digital_acid_rain", "grd_quantum_carnival", "grd_holographic_maelstrom",
+    "grd_electric_coral_rift", "grd_neon_cathedral", "grd_plasma_oilspill", "grd_candy_quasar", "grd_laser_jungle",
+    "grd_infrared_glacier", "grd_prismatic_thunderhead", "grd_solar_reef", "grd_velvet_spectrum_crash", "grd_cosmic_heatmap",
+    "grd_domain_coloring_singularity", "grd_nebulabrot_ionstorm", "grd_superformula_starforge", "grd_bismuth_colorquake",
+    "grd_stable_ink_supercurrent", "grd_electrostatic_candy_wells", "grd_ferrofluid_spectrum_crown", "grd_viscous_prism_fingers",
+    "grd_scarab_shingle_cascade", "grd_nacre_brickwave", "grd_singularity_loom", "grd_harmonic_cathedral"
+] };
+
+const _SPECIALS_FRACTURED_OPALFIRE = {
+    "🖤 FRACTURED OPALFIRE": ["fof_abyssal_vents", "fof_acid_circuit", "fof_amber_shardglass", "fof_argent_hammer", "fof_bronze_keels", "fof_copper_pahoehoe", "fof_crimson_columns", "fof_ember_reef", "fof_emerald_braid", "fof_frosted_pennies", "fof_gilded_abyss", "fof_gilded_pave", "fof_magenta_anticline", "fof_molten_core", "fof_nebula_swirls", "fof_orchid_kagome", "fof_patina_guilloche", "fof_petrol_swirl", "fof_regalia_roundels", "fof_royal_terraces", "fof_sapphire_shatter", "fof_teal_drainage", "fof_toxic_drips", "fof_treasure_facets", "fof_violet_burstfoam", "fsk_aurora_veil", "fsk_basket_weave", "fsk_carbon_weave", "fsk_chainmail", "fsk_chesterfield", "fsk_circuit_trace", "fsk_croc_hide", "fsk_damascus", "fsk_diamond_plate", "fsk_dragon_scale", "fsk_feather_mantle", "fsk_herringbone", "fsk_hex_mesh", "fsk_houndstooth", "fsk_knurl", "fsk_mosaic_glass", "fsk_nebula_prism", "fsk_oilslick_weave", "fsk_opal_pave", "fsk_prism_shatter", "fsk_scale_mail", "fsk_snakeskin", "fsk_spectrum_scales", "fsk_spider_silk", "fsk_stingray"]
+};
+
 const SPECIAL_GROUPS = Object.assign({},
+    _SPECIALS_FRACTURED_ELEMENTS_2026,
+    _SPECIALS_FRACTURED_COSMOS_2026,
+    _SPECIALS_FRACTURED_NIGHTSHIFT,
+    _SPECIALS_FRACTURED_FLAMES,
+    _SPECIALS_GRADIENTS,
+    _SPECIALS_FRACTURED_MINDS,
+    _SPECIALS_FRACTURED_SOULS,
+    _SPECIALS_FRACTURED_FORGE,
+    _SPECIALS_FRACTURED_OPALFIRE,
+    _SPECIALS_FRACTURED_DEEP,
+    _SPECIALS_FRACTURED_CRYPTID,
+    _SPECIALS_FRACTURED_UFO,
+    _SPECIALS_FRACTURED_RAINBOW,
+    _SPECIALS_FRACTURED_OCCULT,
+    _SPECIALS_FRACTURED_MORPHO,
+    _SPECIALS_FRACTURED_FROST,
+    _SPECIALS_FRACTURED_BLOOM,
+    _SPECIALS_FRACTURED_CLOCKWORK,
+    _SPECIALS_FRACTURED_NEBULA,
+    _SPECIALS_FRACTURED_TEMPEST,
+    _SPECIALS_FRACTURED_CATHEDRAL,
+    _SPECIALS_FRACTURED_FOUNDRY,
+    _SPECIALS_FRACTURED_TESSERA,
+    _SPECIALS_FRACTURED_RELICS_2026,
+    _SPECIALS_FRACTURED_RELIC,
+    _SPECIALS_FRACTURED_KINTSUGI,
+    _SPECIALS_FRACTURED_PETRI,
     _SPECIALS_SHOKKER,
     _SPECIALS_ANIME_INSPIRED,
     _SPECIALS_IRIDESCENT_INSECTS,
+    _SPECIALS_CULTURAL,
+    _SPECIALS_FABLE,
     _SPECIALS_COLOR_SCIENCE,
     _SPECIALS_MATERIAL_WORLD,
     _SPECIALS_FUSION_LAB,
@@ -1172,6 +2370,115 @@ const SPECIAL_GROUPS = Object.assign({},
     _SPECIALS_EFFECTS_VISION
 );
 
+// [SPB-FRACTURED-AUDIT 2026-08-01] Owner mandate: FRACTURED had 21 active
+// categories after the K3 wave — too many. Consolidate by theme; the finish
+// ids and their per-group source tables above stay untouched, this just
+// re-homes them into merged picker groups.
+const _SPB_FRACTURED_MERGES = {
+    "\ud83c\udf3f FRACTURED WILDS":    ["\ud83d\udc63 FRACTURED CRYPTID", "\ud83e\udd8b FRACTURED MORPHO", "\ud83c\udf38 FRACTURED BLOOM", "\ud83e\uddeb FRACTURED PETRI"],
+    // ELEMENTS is NOT merged any more. This row is how the category became
+    // 20 deep-sea creatures plus two colour grids under one weather name.
+    // COSMOS is NOT merged any more. This row is exactly how the category
+    // came to be three unrelated blocks: UFO (on-theme) + NEBULA (a
+    // 5-colour x 4-structure grid) + RAINBOW (iridescence, which is not
+    // outer space) stapled under one name. The 2026-08-31 rebuild replaces
+    // all 60 with a single authored set; the three source shelves are
+    // retired from the picker below and their ids stay engine-resolvable.
+    "🏺 FRACTURED RELICS":   ["⚗ THE ALEMBIC", "🜏 THE ORACLE", "⚱ THE BARROW", "🦴 THE BEAST", "⛧ THE BINDING"],
+};
+for (const [_mergedName, _parts] of Object.entries(_SPB_FRACTURED_MERGES)) {
+    const _ids = [];
+    for (const _p of _parts) {
+        if (Array.isArray(SPECIAL_GROUPS[_p])) _ids.push(...SPECIAL_GROUPS[_p]);
+        delete SPECIAL_GROUPS[_p];
+    }
+    if (_ids.length) SPECIAL_GROUPS[_mergedName] = _ids;
+}
+
+// [FRACTURED RELICS 2026-08-30] The five old RELICS shelves are RETIRED FROM THE
+// PICKER. They were combinatorial grids (6 materials x 4 archetypes, 6 glass
+// colours x 6 window types, 6 glazes x 6 crack types, 6 metals x 6 mechanisms),
+// which is why the whole category read as the same finish over and over. Their
+// 100 ids stay REGISTERED IN THE ENGINE so saved projects that reference them
+// still render — this only removes them from the picker taxonomy. The source
+// tables above are left in place for reference.
+for (const _retired of ["\ud83c\udf0a FRACTURED DEEP", "\u26a1 FRACTURED TEMPEST", "\u2744\ufe0f FRACTURED FROST", "Atmosphere", "\ud83d\udef8 FRACTURED UFO", "\ud83c\udf0c FRACTURED NEBULA", "\ud83c\udf08 FRACTURED RAINBOW", "🏺 FRACTURED RELIC", "🔮 FRACTURED OCCULT",
+                        "🪟 FRACTURED CATHEDRAL", "🍶 FRACTURED KINTSUGI",
+                        "⚙️ FRACTURED CLOCKWORK"]) {
+    delete SPECIAL_GROUPS[_retired];
+}
+
+
+
+// [2026-08-09 S20] 215 specials had never belonged to ANY family: the
+// registry grew and the picker taxonomy never caught up, so both Pro Mode and
+// Spec Sculpt swept them into a leftover bucket. Existing family names are
+// reused wherever one fits (five of them were sitting completely EMPTY); only
+// Color-Shift Micro, Multi-Color Sets, Wave & Flow, Living Surfaces and
+// Horror & Occult are new. These are PUSHED, not assigned, so they cannot
+// clobber a family that already has members - and they are added BEFORE the
+// prune below, so an id that never resolves is still dropped.
+const _SPECIALS_UNGROUPED_2026_08 = {
+    "Multi-Color Sets": ["mc_black_marble", "mc_blood_splat", "mc_blue_camo", "mc_christmas", "mc_deep_space", "mc_desert_camo", "mc_earth_tone", "mc_fire_storm", "mc_gold_marble", "mc_green_marble", "mc_halloween", "mc_ink_splat", "mc_miami_vice", "mc_neon_camo", "mc_neon_splat", "mc_paint_splat", "mc_rasta", "mc_red_marble", "mc_snow_camo", "mc_tropical", "mc_urban_camo", "mc_usa_flag", "mc_vaporwave", "mc_white_marble", "mc_woodland_camo"],
+    "Optical & Light": ["chromatic_aberration", "crt_scanline", "datamosh", "double_exposure", "film_burn", "fish_eye", "gd_lyons_black_rainbow_holo_x", "glitch", "halftone", "holographic_wrap", "infrared", "interference_rings", "kaleidoscope", "long_exposure", "negative", "oil_slick", "oil_slick_base", "parallax", "polarized", "refraction", "solarization", "thermochromic", "uv_blacklight", "x_ray"],
+    "Horror & Occult": ["banshee", "blood_oath", "catacombs", "cursed", "dark_ritual", "dark_sigil", "death_metal", "demon_forge", "gargoyle", "graveyard", "haunted", "hellhound", "iron_maiden", "lich_king", "necrotic", "nightmare", "phantom", "possessed", "reaper", "shadow_realm", "voodoo", "wraith"],
+    "Surface Treatment": ["annealed_steel", "bare_aluminum", "brushed_gunmetal", "brushed_metal_fine", "carbon_raw", "cast_iron_raw", "chrome_oxidized", "daily_driver", "damascus_steel", "forged_titanium", "grinding_marks", "heat_blued", "mill_scale", "molten_metal", "oxidized_bronze", "oxidized_metal", "patinated_bronze", "phosphate_coat", "polished_brass", "polished_obsidian_mono", "raw_weld", "thermal_titanium"],
+    "Color-Shift Micro": ["microshift_blue_teal_cyan", "microshift_burgundy_wine_gold", "microshift_copper_rose", "microshift_gold_green", "microshift_gold_olive_emerald", "microshift_gold_purple", "microshift_molten_metal", "microshift_northern_lights", "microshift_oil_slick", "microshift_orange_blue_electric", "microshift_peacock_fan", "microshift_pink_yellow_pop", "microshift_purple_gold_majesty", "microshift_purple_plum_bronze", "microshift_rainbow_stealth", "microshift_red_green_chaos", "microshift_sunset_horizon", "microshift_teal_blue"],
+    "★ Spectrum Shift": ["spectral", "spectral_complementary", "spectral_dark_light", "spectral_earth_sky", "spectral_inverse_logic", "spectral_mono_chrome", "spectral_neon_reactive", "spectral_prismatic_flip", "spectral_rainbow_metal", "spectral_sat_metal", "spectral_warm_cool", "spectrum_sin_orchid"],
+    "★ ANIME INSPIRED": ["anime_cel_shade_chrome", "anime_comic_halftone", "anime_crystal_facet", "anime_energy_aura", "anime_gradient_hair", "anime_mecha_plate", "anime_neon_outline", "anime_sakura_scatter", "anime_sparkle_burst", "anime_speed_lines", "cel_shade"],
+    "Glass & Surface": ["exotic_anti_metal", "exotic_ceramic_void", "exotic_crystal_clear", "exotic_dark_glass", "exotic_foggy_chrome", "exotic_glass_paint", "exotic_inverted_candy", "exotic_liquid_glass", "exotic_phantom_mirror", "exotic_wet_void", "wet_gloss"],
+    "Gradient Extended": ["gradient_anodized_gloss", "gradient_candy_frozen", "gradient_candy_matte", "gradient_carbon_chrome", "gradient_chrome_matte", "gradient_ember_ice", "gradient_metallic_satin", "gradient_obsidian_mirror", "gradient_pearl_chrome", "gradient_spectraflame_void"],
+    "Wave & Flow": ["wave_candy_flow", "wave_chrome_tide", "wave_circular_radar", "wave_diagonal_sweep", "wave_dual_frequency", "wave_metallic_pulse", "wave_moire_metal", "wave_pearl_current", "wave_standing_chrome", "wave_turbulent_flow"],
+    "Color-Shift Duos": ["dualshift_blue_to_orange", "dualshift_custom", "dualshift_emerald_ruby", "dualshift_ice_fire", "dualshift_pink_to_gold", "dualshift_purple_to_green", "dualshift_red_to_cyan", "dualshift_sunset", "dualshift_teal_to_magenta"],
+    "Living Surfaces": ["living_electric_current", "living_flame_flicker", "living_heat_haze", "living_lake_ripple", "living_led_chase", "living_neon_equalizer", "living_oil_pulse", "living_twinkle_stars", "living_wave_tide"],
+    "Geometric & Structural": ["art_nouveau_vine", "baroque_scrollwork", "embossed", "hex_mandala", "honeycomb_organic", "lace_filigree", "penrose_quasi", "topographic_dense"],
+    "Atmosphere": ["deep_space_void", "eclipse", "galaxy_nebula_base", "gravity_well", "reactive_plasma"],
+    "Natural & Organic": ["rust", "weathered_metal", "weathered_paint", "worn_asphalt", "worn_chrome"],
+    "Aurora & Chromatic Flow": ["aurora", "aurora_borealis_mono"],
+    "Particles & Textures": ["sparkle_constellation", "sparkle_firefly"],
+};
+Object.keys(_SPECIALS_UNGROUPED_2026_08).forEach(function (groupName) {
+    if (!Array.isArray(SPECIAL_GROUPS[groupName])) SPECIAL_GROUPS[groupName] = [];
+    _SPECIALS_UNGROUPED_2026_08[groupName].forEach(function (id) {
+        if (SPECIAL_GROUPS[groupName].indexOf(id) === -1) SPECIAL_GROUPS[groupName].push(id);
+    });
+});
+
+// [SPB-CATALOG-CONSOLIDATION 2026-08-23] Owner: these shelves are "all very
+// light" and should be folded into stronger categories. Moving whole arrays
+// keeps every registered id/favorite/project stable; the resolver prune below
+// still prevents an unresolved legacy id from becoming a broken picker card.
+const _SPB_CATEGORY_MERGES_2026_08_23 = [
+    ["Surface & Grain", ["Leather & Texture", "Natural & Organic", "Particles & Textures"]],
+    ["Glass & Surface", ["Clearcoat Effects"]],
+    ["Materials & Physics", ["Surface Treatment"]],
+    ["Depth & Geometry", ["Geometric & Structural"]],
+    // [2026-09-05 RETIRED LEDGER] "Aurora & Chromatic Flow" no longer folds into Prizm: the owner
+    // pulled it 2026-06-03 and said "hide both" 2026-09-05 (scripts/retired_catalog.json).
+    ["Prizm", ["Chameleon"]],
+    ["Color-Shift Duos", ["Color-Shift Adaptive", "Color-Shift Presets"]],
+    ["Gradient Directional", ["Gradient Vortex"]],
+];
+const _SPB_SPECIAL_CATEGORY_REDIRECTS_2026_08_23 = {};
+for (const [_target, _sources] of _SPB_CATEGORY_MERGES_2026_08_23) {
+    if (!Array.isArray(SPECIAL_GROUPS[_target])) SPECIAL_GROUPS[_target] = [];
+    for (const _source of _sources) {
+        _SPB_SPECIAL_CATEGORY_REDIRECTS_2026_08_23[_source] = _target;
+        for (const _id of (SPECIAL_GROUPS[_source] || [])) {
+            if (!SPECIAL_GROUPS[_target].includes(_id)) SPECIAL_GROUPS[_target].push(_id);
+        }
+        delete SPECIAL_GROUPS[_source];
+    }
+}
+// /api/finish-data arrives after this static catalog and can carry the old
+// Python category names.  Export the redirects so live registry reconciliation
+// aggregates those ids into the same consolidated destinations instead of
+// silently dropping them into the leftover shelf.
+try {
+    window.SPB_SPECIAL_CATEGORY_REDIRECTS = Object.freeze(
+        Object.assign({}, _SPB_SPECIAL_CATEGORY_REDIRECTS_2026_08_23)
+    );
+} catch (e) {}
 // Keep the shipping Specials picker aligned with the MONOLITHICS filters below.
 // Removed ids are intentionally not reachable; leaving them in SPECIAL_GROUPS
 // creates blank picker tiles and trips validateFinishData().
@@ -1183,6 +2490,1129 @@ Object.keys(SPECIAL_GROUPS).forEach(function (groupName) {
 });
 
 const MONOLITHICS = [
+  { id: "fab_vellum_leaf", name: "Vellum Leaf", desc: "Calfskin scraped, limed and stretched, still showing the follicle side.", tags: ["fable","story","storybook"] },
+  { id: "fab_iron_gall_ink", name: "Iron Gall Ink", desc: "Oak gall and green vitriol — black going brown, and eating the page slowly.", tags: ["fable","story","storybook"] },
+  { id: "fab_gilt_edge", name: "Gilt Edge", desc: "Leaf laid on the block edge and burnished, so the closed book is solid gold.", tags: ["fable","story","storybook"] },
+  { id: "fab_ribbon_marker", name: "Ribbon Marker", desc: "Woven silk bound into the spine, frayed at the end from a century of use.", tags: ["fable","story","storybook"] },
+  { id: "fab_foxed_page", name: "Foxed Page", desc: "Rust-coloured spots blooming through the paper wherever the damp got in.", tags: ["fable","story","storybook"] },
+  { id: "fab_woodcut_block", name: "Woodcut Block", desc: "Cut against the end grain so the line can be as fine as the printer dares.", tags: ["fable","story","storybook"] },
+  { id: "fab_illuminated_capital", name: "Illuminated Capital", desc: "One letter given a week, gold over gesso, with a hare in the descender.", tags: ["fable","story","storybook"] },
+  { id: "fab_marbled_endpaper", name: "Marbled Endpaper", desc: "Colour floated on size and combed, then lifted in one pull. No two ever match.", tags: ["fable","story","storybook"] },
+  { id: "fab_calf_binding", name: "Calf Binding", desc: "Full calf, blind-tooled, darkened at the joints where the hands go.", tags: ["fable","story","storybook"] },
+  { id: "fab_wax_seal", name: "Wax Seal", desc: "Poured, stamped, and cracked across the middle the moment it was opened.", tags: ["fable","story","storybook"] },
+  { id: "fab_glass_slipper", name: "Glass Slipper", desc: "It fits one person and it is made of glass — both facts are the whole story.", tags: ["fable","story","storybook"] },
+  { id: "fab_spindle_gold", name: "Spindle Gold", desc: "Straw in at night and gold on the bobbin by morning, at a price agreed too fast.", tags: ["fable","story","storybook"] },
+  { id: "fab_crown_jewel", name: "Crown Jewel", desc: "Cut to throw light rather than to keep weight, which is a choice about being seen.", tags: ["fable","story","storybook"] },
+  { id: "fab_mirror_mirror", name: "Mirror Mirror", desc: "It only ever answers the question it was asked, which is the trouble with it.", tags: ["fable","story","storybook"] },
+  { id: "fab_poisoned_apple", name: "Poisoned Apple", desc: "One side red enough to sell it, and the seller ate the other half first.", tags: ["fable","story","storybook"] },
+  { id: "fab_royal_velvet", name: "Royal Velvet", desc: "Cut pile deep enough to hold a handprint, in the purple nobody else was allowed.", tags: ["fable","story","storybook"] },
+  { id: "fab_seven_league_boot", name: "Seven-League Boot", desc: "Twenty-one miles a stride, and creased across the instep like any other boot.", tags: ["fable","story","storybook"] },
+  { id: "fab_tower_stone", name: "Tower Stone", desc: "Coursed rubble with one window, set higher than anybody sensible would build.", tags: ["fable","story","storybook"] },
+  { id: "fab_briar_hedge", name: "Briar Hedge", desc: "A hundred years of growth in one night, and every thorn pointing outward.", tags: ["fable","story","storybook"] },
+  { id: "fab_pumpkin_coach", name: "Pumpkin Coach", desc: "Ribbed, gilded, and on a strict schedule.", tags: ["fable","story","storybook"] },
+  { id: "fab_wolf_pelt", name: "Wolf Pelt", desc: "Guard hairs over a dense undercoat, banded so the grey is never one grey.", tags: ["fable","story","storybook"] },
+  { id: "fab_breadcrumb_trail", name: "Breadcrumb Trail", desc: "A plan that depended on the birds not being hungry.", tags: ["fable","story","storybook"] },
+  { id: "fab_gingerbread", name: "Gingerbread", desc: "Baked hard, iced at the seams, and structurally sounder than it looks.", tags: ["fable","story","storybook"] },
+  { id: "fab_red_hood", name: "Red Hood", desc: "Wool, hooded, and the single most visible thing in a winter wood.", tags: ["fable","story","storybook"] },
+  { id: "fab_thorn_thicket", name: "Thorn Thicket", desc: "Blackthorn: the spines are modified branches, which is why they are that hard.", tags: ["fable","story","storybook"] },
+  { id: "fab_moss_stone", name: "Moss Stone", desc: "North face, always. It is the only compass in the story that works.", tags: ["fable","story","storybook"] },
+  { id: "fab_lantern_path", name: "Lantern Path", desc: "Lit one at a time, ahead of you, by somebody who left before you arrived.", tags: ["fable","story","storybook"] },
+  { id: "fab_owl_feather", name: "Owl Feather", desc: "A serrated leading edge that breaks the air up so nothing downstairs hears it.", tags: ["fable","story","storybook"] },
+  { id: "fab_fox_fur", name: "Fox Fur", desc: "Red over cream over black, in that order, on every single hair.", tags: ["fable","story","storybook"] },
+  { id: "fab_beanstalk", name: "Beanstalk", desc: "Twining left to right because that is what beans do, all the way up.", tags: ["fable","story","storybook"] },
+  { id: "fab_dragon_scale", name: "Dragon Scale", desc: "Overlapping, keeled, and each one anchored deeper than it looks.", tags: ["fable","story","storybook"] },
+  { id: "fab_hoard_gold", name: "Hoard Gold", desc: "Counted once, a very long time ago, and every coin missed since.", tags: ["fable","story","storybook"] },
+  { id: "fab_phoenix_ash", name: "Phoenix Ash", desc: "The interesting part is not the fire. It is what is still warm underneath.", tags: ["fable","story","storybook"] },
+  { id: "fab_griffin_bronze", name: "Griffin Bronze", desc: "Cast in two halves and pinned, with the join green where the rain sits.", tags: ["fable","story","storybook"] },
+  { id: "fab_unicorn_horn", name: "Unicorn Horn", desc: "A single spiral groove, always the same handedness, in something that is not ivory.", tags: ["fable","story","storybook"] },
+  { id: "fab_mermaid_scale", name: "Mermaid Scale", desc: "Guanine platelets stacked to a quarter wavelength, which is why they are that colour.", tags: ["fable","story","storybook"] },
+  { id: "fab_basilisk_stone", name: "Basilisk Stone", desc: "Whatever it looked at last is still standing there, in considerable detail.", tags: ["fable","story","storybook"] },
+  { id: "fab_kraken_ink", name: "Kraken Ink", desc: "Released as a decoy shaped roughly like the animal that released it.", tags: ["fable","story","storybook"] },
+  { id: "fab_faerie_wing", name: "Faerie Wing", desc: "Structural colour in a membrane two cells thick. No pigment involved at all.", tags: ["fable","story","storybook"] },
+  { id: "fab_troll_granite", name: "Troll Granite", desc: "Caught out by the sunrise, and now part of the landscape.", tags: ["fable","story","storybook"] },
+  { id: "fab_cauldron_brew", name: "Cauldron Brew", desc: "Double, double. It has been on since Tuesday and nobody remembers the recipe.", tags: ["fable","story","storybook"] },
+  { id: "fab_spellbook_vellum", name: "Spellbook Vellum", desc: "Written in a hand that expected to be read aloud, and once only.", tags: ["fable","story","storybook"] },
+  { id: "fab_wishing_well", name: "Wishing Well", desc: "Nine metres of cold water and about forty years of small change.", tags: ["fable","story","storybook"] },
+  { id: "fab_moon_path", name: "Moon Path", desc: "It points at you from wherever you stand, which is either lovely or a warning.", tags: ["fable","story","storybook"] },
+  { id: "fab_star_dust", name: "Star Dust", desc: "Everything heavier than helium, and all of it secondhand.", tags: ["fable","story","storybook"] },
+  { id: "fab_enchanted_ice", name: "Enchanted Ice", desc: "It does not melt, which is the tell. Real ice is always in a hurry.", tags: ["fable","story","storybook"] },
+  { id: "fab_witch_amber", name: "Witch Amber", desc: "Something small is in it, and it has been looking out for a very long time.", tags: ["fable","story","storybook"] },
+  { id: "fab_rune_stone", name: "Rune Stone", desc: "Straight lines only — carved across the grain, by people who carved into wood first.", tags: ["fable","story","storybook"] },
+  { id: "fab_potion_glass", name: "Potion Glass", desc: "Hand-blown, unevenly walled, and stoppered with something chewed.", tags: ["fable","story","storybook"] },
+  { id: "fab_genie_brass", name: "Genie Brass", desc: "Polished on one side from rubbing, and considerably larger on the inside.", tags: ["fable","story","storybook"] },
+
+  { id: "dkc_wet_asphalt", name: "Wet Asphalt", desc: "Road after rain, holding every light in the street in a thin film.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_oil_slick", name: "Oil Slick", desc: "A film one wavelength thick on black water, and every colour in it.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_manhole_steam", name: "Manhole Steam", desc: "Vapour off a grate at 3am, lit from one side and gone by morning.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_tyre_black", name: "Tyre Black", desc: "Moulded tread in the deadest black there is, with the mould line still on it.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_tar_seam", name: "Tar Seam", desc: "Poured hot into the joint, gone hard and glossy where it pooled.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_gutter_chrome", name: "Gutter Chrome", desc: "Water finding the low line, and the low line turning out to be polished.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_night_rain", name: "Night Rain", desc: "Vertical water against a dark building, each drop its own lens.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_kerb_grit", name: "Kerb Grit", desc: "Swept into the edge and left there — the chalkiest dark on the shelf.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_storm_drain", name: "Storm Drain", desc: "Routed underneath everything, and the only light is what falls in.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_blacktop_heat", name: "Blacktop Heat", desc: "Fresh laid and still soft, shimmering where the sun is still on it.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_obsidian_chill", name: "Obsidian Chill", desc: "Cooled too fast to crystallise. Conchoidal, and sharper than surgical steel.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_basalt_glass", name: "Basalt Glass", desc: "Columns cracked by their own cooling, with a glassy skin on every face.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_hematite", name: "Hematite", desc: "Iron oxide polished until it turns into a mirror that is somehow still red.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_tourmaline_black", name: "Tourmaline Black", desc: "Schorl: black until you turn it, and then it is not black at all.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_onyx_band", name: "Onyx Band", desc: "Banded chalcedony cut across the layers so the bands read as stripes.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_magnetite", name: "Magnetite", desc: "Lodestone in a field, standing up into spikes because it can.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_jet_carve", name: "Jet Carve", desc: "Fossil wood cut and polished for mourning jewellery, warm to the touch.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_shungite", name: "Shungite", desc: "Carbon that predates multicellular life, and conducts like it knows it.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_anthracite", name: "Anthracite", desc: "Hard coal with a vitreous fracture — the cleanest burn and the brightest break.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_galena_cube", name: "Galena Cube", desc: "Lead sulphide cleaving into perfect cubes, each face a small dull mirror.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_abyss_blue", name: "Abyss Blue", desc: "Below the last light. Whatever is down there makes its own.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_midnight_teal", name: "Midnight Teal", desc: "A pool lit from under the water, at the hour the party thins out.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_ink_well", name: "Ink Well", desc: "Iron gall ink pooling in the bottom of the well, thick enough to stand a nib in.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_prussian", name: "Prussian", desc: "The first modern synthetic blue, and still the deepest one in the box.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_deep_pine", name: "Deep Pine", desc: "Closed canopy at dusk, where the green has gone almost to black.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_bottle_green", name: "Bottle Green", desc: "Thick cast glass — black on edge, green through the face, and full of bubbles.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_nocturne", name: "Nocturne", desc: "Written to be played quietly, in a room with one lamp on.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_cobalt_night", name: "Cobalt Night", desc: "Cobalt on a dark body, fired so the pigment sinks into the glaze.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_viridian_dark", name: "Viridian Dark", desc: "Hydrated chromium oxide: a green so deep it argues with black.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_indigo_vault", name: "Indigo Vault", desc: "Twelve dips and a day in the air between each, until it stops being blue.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_oxblood", name: "Oxblood", desc: "Boot polish built up over years, worn back at the toe to something darker.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_garnet_dark", name: "Garnet Dark", desc: "Almandine: opaque in the hand and full of fire the moment it is lit.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_ember_gold", name: "Ember Gold", desc: "A bed with no flame left on it, and more heat than it looks like.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_burgundy", name: "Burgundy", desc: "In the bottle it is black; against a candle it is not.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_dried_rose", name: "Dried Rose", desc: "Kept in a book for a decade, gone to paper and holding the colour anyway.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_brass_night", name: "Brass Night", desc: "Unlacquered and left alone, so it darkens everywhere a hand does not go.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_molten_seam", name: "Molten Seam", desc: "Cold plate with something still liquid running in the joint.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_copper_dark", name: "Copper Dark", desc: "Roofing copper eight winters in, before the green arrives and after the shine goes.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_rust_noir", name: "Rust Noir", desc: "Oxide advancing across a dark panel, and winning, slowly.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_amber_vault", name: "Amber Vault", desc: "Resin with something in it, forty million years into a very slow set.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_arc_weld", name: "Arc Weld", desc: "Strike an arc without a helmet once and you remember it for a week.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_lightning_black", name: "Lightning Black", desc: "One channel out of a thousand attempts, and it lasts thirty microseconds.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_filament", name: "Filament", desc: "Coiled tungsten at 2800K, which is most of the way to giving up.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_neon_scar", name: "Neon Scar", desc: "Bent glass on a black wall, and the wall is only there to hold it.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_laser_cut", name: "Laser Cut", desc: "A kerf a quarter of a millimetre wide, with the heat colour still on the edge.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_plasma_seam", name: "Plasma Seam", desc: "Where the ionised column touches metal, and the metal notices.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_spark_trail", name: "Spark Trail", desc: "Grinding wheel on mild steel: each spark a burning particle with a lifetime.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_hot_wire", name: "Hot Wire", desc: "Nichrome through foam, glowing exactly as much as the current says.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_tracer", name: "Tracer", desc: "Every fifth round burning, which is how you learn where the others went.", tags: ["dark","streak","hot-edge"] },
+  { id: "dkc_flashover", name: "Flashover", desc: "Every surface in the room reaching ignition temperature at the same moment.", tags: ["dark","streak","hot-edge"] },
+// FRACTURED SHOKK20 — original light-response development set, 2026-09-18.
+  { id: "fsh_spectral_silver", name: "Prism Shards — R3 DEV", desc: "Small angular prism chips with irregular color transitions. Development study; in-game validation and final review pending.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","nonband","development"] },
+  { id: "fsh_ribbon_refraction", name: "Brushed Spectrum — R3 DEV", desc: "Layered short brush strokes with broken, feathered color transitions. Development study; in-game validation and final review pending.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","nonband","development"] },
+  { id: "fsh_chromatic_comb", name: "R1 REJECTED \u2014 Chromatic Comb", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+  { id: "fsh_opal_fault", name: "Opal Bloom — R3 DEV", desc: "Overlapping mineral blooms with soft, uneven color transitions. Development study; in-game validation and final review pending.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","nonband","development"] },
+  { id: "fsh_nacre_cascade", name: "R1 REJECTED \u2014 Nacre Cascade", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+  { id: "fsh_quasicrystal_fire", name: "R1 REJECTED \u2014 Quasicrystal Fire", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+  { id: "fsh_rosette_engine", name: "R1 REJECTED \u2014 Rosette Engine", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+  { id: "fsh_diamond_fold", name: "R1 REJECTED \u2014 Diamond Fold", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+  { id: "fsh_frost_voltage", name: "Chromatic Grunge — R3 DEV", desc: "Pitted metal, scuffed rims and oxide flecks with irregular color gradients. Development study; in-game validation and final review pending.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","nonband","development"] },
+  { id: "fsh_photon_circuit", name: "R1 REJECTED \u2014 Photon Circuit", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+  { id: "fsh_caustic_lens", name: "R1 REJECTED \u2014 Caustic Lens", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+  { id: "fsh_spectral_satin", name: "R1 REJECTED \u2014 Spectral Satin", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+  { id: "fsh_meteor_wake", name: "R1 REJECTED \u2014 Meteor Wake", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+  { id: "fsh_ferro_crown", name: "R1 REJECTED \u2014 Ferro Crown", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+  { id: "fsh_isobar_chrome", name: "R1 REJECTED \u2014 Isobar Chrome", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+  { id: "fsh_crystal_needle", name: "R1 REJECTED \u2014 Crystal Needle", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+  { id: "fsh_bubble_spectrum", name: "R1 REJECTED \u2014 Bubble Spectrum", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+  { id: "fsh_iris_turbine", name: "R1 REJECTED \u2014 Iris Turbine", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+  { id: "fsh_herringbone_flash", name: "R1 REJECTED \u2014 Herringbone Flash", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+  { id: "fsh_hex_resonance", name: "R1 REJECTED \u2014 Hex Resonance", desc: "Owner rejected 2026-09-18: does not reproduce the moving spectral highlight in the reference. Full design reset; not an accepted finish.", swatch: "#91adb8", tags: ["fractured","shokk","spectral","light responsive"] },
+
+
+    // 🌍 WORLD OF COLOR (2026-08-31) - 100 finishes from 20 places, in five
+    // continental chapters. Deliberately a different axis from the five CULTURAL
+    // shelves, which are flags and iconography: this one is craft and material -
+    // a tartan sett, an indigo vat, a celadon glaze, an ochre bed, a salt terrace.
+    // New kit primitives: sett (real over/under weave), stars (zellij/iznik/azulejo
+    // tiling as an implicit field), ikat (one-axis warp-resist smear), resist
+    // (wax or mud, then crackle along the patch edges).
+    { id: "woc_aran_cable", name: "Ireland: Aran Cable", desc: "Honeycomb and cable worked in undyed bainin wool, every stitch countable.", swatch: "#DBD6C6" },
+    { id: "woc_burren_pavement", name: "Ireland: Burren Pavement", desc: "Limestone pavement scored into clints and grykes by rain that took its time.", swatch: "#BCC4BC" },
+    { id: "woc_connemara_marble", name: "Ireland: Connemara Marble", desc: "Serpentine marble from the west — green banding folded by four hundred million years.", swatch: "#6B936B" },
+    { id: "woc_peat_cut", name: "Ireland: Peat Cut", desc: "A turf bank sliced open — ten thousand years of bog laid down in readable courses.", swatch: "#755635" },
+    { id: "woc_stout_head", name: "Ireland: Stout Head", desc: "Nitrogen cascade settling into a cream head over black. The surge is the whole point.", swatch: "#997F5B" },
+    { id: "woc_arctic_light", name: "Norway: Arctic Light", desc: "Two hours of blue dusk that never becomes day, in the week either side of solstice.", swatch: "#84A8CC" },
+    { id: "woc_birch_bark", name: "Norway: Birch Bark", desc: "Paper birch peeling in horizontal ribbons, each lenticel a dark dash across the white.", swatch: "#CCC6BC" },
+    { id: "woc_fjord_water", name: "Norway: Fjord Water", desc: "Meltwater over a drowned glacial valley, cold enough to change the colour of the light.", swatch: "#518999" },
+    { id: "woc_rosemaling", name: "Norway: Rosemaling", desc: "Rose painting on a dowry chest — C-scrolls and cross-hatched flowers, freehand, no pencil.", swatch: "#336656" },
+    { id: "woc_slate_roof", name: "Norway: Slate Roof", desc: "Riven slate hung in courses, thick at the eave and thin at the ridge, good for four hundred years.", swatch: "#7A8289" },
+    { id: "woc_azulejo_blue", name: "Portugal: Azulejo Blue", desc: "Cobalt on tin glaze, tile after tile up a whole façade, crazed by two centuries of weather.", swatch: "#668ECC" },
+    { id: "woc_calcada_wave", name: "Portugal: Calçada Wave", desc: "Black and white limestone cubes set by hand into a rolling wave, a pavement you notice.", swatch: "#A8A8A5" },
+    { id: "woc_cork_bark", name: "Portugal: Cork Bark", desc: "Stripped every nine years and it grows back. Nothing else on earth does this.", swatch: "#AD8E60" },
+    { id: "woc_douro_schist", name: "Portugal: Douro Schist", desc: "Terraces cut into schist so the vines can find water. The rock is the terroir.", swatch: "#847060" },
+    { id: "woc_sardine_tin", name: "Portugal: Sardine Tin", desc: "Packed nose to tail in oil, under a lithographed lid brighter than the fish.", swatch: "#A3ADB7" },
+    { id: "woc_cairngorm_granite", name: "Scotland: Cairngorm Granite", desc: "Coarse pink granite with smoky quartz in it, every crystal a different mind.", swatch: "#998C8E" },
+    { id: "woc_cask_char", name: "Scotland: Cask Char", desc: "Level four char on American oak. The alligator skin inside is what makes the whisky.", swatch: "#995B1E" },
+    { id: "woc_harris_tweed", name: "Scotland: Harris Tweed", desc: "Handwoven in the Outer Hebrides from dyed-in-the-wool yarn, so the colour is IN the fibre.", swatch: "#938970" },
+    { id: "woc_heather_moor", name: "Scotland: Heather Moor", desc: "Ling in full flower over peat — purple to the horizon and knee-deep in it.", swatch: "#896099" },
+    { id: "woc_tartan_sett", name: "Scotland: Tartan Sett", desc: "One sequence of threads, reflected about its pivots and run both ways. Order you can wear.", swatch: "#285138" },
+    { id: "woc_block_print", name: "India: Block Print", desc: "Hand-cut teak blocks, one per colour, walked across the cloth by eye and never quite in register.", swatch: "#B25B42" },
+    { id: "woc_madras_check", name: "India: Madras Check", desc: "Handloom cotton in vegetable dye, made to bleed — the fading is a feature you pay for.", swatch: "#337056" },
+    { id: "woc_marigold_mound", name: "India: Marigold Mound", desc: "Genda strung by the kilometre and heaped at the flower market, orange past the point of sense.", swatch: "#D67F14" },
+    { id: "woc_mirror_work", name: "India: Mirror Work", desc: "Shisha discs caught under a ring of chain stitch, so a whole skirt throws light back at you.", swatch: "#AD5B99" },
+    { id: "woc_sandstone_jali", name: "India: Sandstone Jali", desc: "A screen carved from one slab, cutting the sun into geometry and letting the wind through.", swatch: "#C1A889" },
+    { id: "woc_aizome_vat", name: "Japan: Aizome Vat", desc: "Fermented indigo. The cloth comes out green and turns blue in the air while you watch.", swatch: "#335693" },
+    { id: "woc_kintsugi_seam", name: "Japan: Kintsugi Seam", desc: "The break repaired in gold rather than hidden, so the history is the most valuable part.", swatch: "#B79338" },
+    { id: "woc_raku_crackle", name: "Japan: Raku Crackle", desc: "Pulled from the kiln red hot and thrown into sawdust. The crazing is the record of the shock.", swatch: "#7A7570" },
+    { id: "woc_urushi_lacquer", name: "Japan: Urushi Lacquer", desc: "Forty coats of tree sap, each cured in a damp box and polished back with charcoal.", swatch: "#84231E" },
+    { id: "woc_washi_fibre", name: "Japan: Washi Fibre", desc: "Kozo bark beaten and floated — long fibres locked into a sheet strong enough to be a wall.", swatch: "#D1CCBC" },
+    { id: "woc_bojagi_patch", name: "Korea: Bojagi Patch", desc: "Wrapping cloth pieced from offcuts, seams flat-felled so it reads from either side.", swatch: "#4C7A8E" },
+    { id: "woc_celadon_glaze", name: "Korea: Celadon Glaze", desc: "Goryeo green — iron reduced in a starved kiln until it goes the colour of shallow water.", swatch: "#93BCA8" },
+    { id: "woc_dancheong", name: "Korea: Dancheong", desc: "Mineral pigment on temple timber — it is decoration, and it is also what stops the wood rotting.", swatch: "#842828" },
+    { id: "woc_hanji_sheet", name: "Korea: Hanji Sheet", desc: "Mulberry paper couched a hundred times. Strong enough to floor a room and be walked on.", swatch: "#D6D1BF" },
+    { id: "woc_najeon_inlay", name: "Korea: Najeon Inlay", desc: "Abalone cut into hairlines and laid into black lacquer, so the light moves when you do.", swatch: "#8EA8B7" },
+    { id: "woc_hammered_copper", name: "Türkiye: Hammered Copper", desc: "Planished by hand in the coppersmiths' bazaar, every facet a hammer blow you can count.", swatch: "#BC7038" },
+    { id: "woc_iznik_tile", name: "Türkiye: Iznik Tile", desc: "Quartz-bodied tile under a clear glaze — cobalt, turquoise, and the red that took a century to get.", swatch: "#5B9EAD" },
+    { id: "woc_kilim_weave", name: "Türkiye: Kilim Weave", desc: "Slit-woven flatweave — no pile, so the pattern is the structure and it reads both sides.", swatch: "#3D564C" },
+    { id: "woc_meerschaum", name: "Türkiye: Meerschaum", desc: "Sepiolite carved wet and soft, then smoked for thirty years until it goes amber from the inside.", swatch: "#D6CCB2" },
+    { id: "woc_nazar_glass", name: "Türkiye: Nazar Glass", desc: "Cobalt glass rings, wound hot on the rod and hung anywhere luck is needed.", swatch: "#5693D6" },
+    { id: "woc_alabaster", name: "Egypt: Alabaster", desc: "Calcite banded by dripping water, cut thin enough that a lamp inside shows through the wall.", swatch: "#DBD3BC" },
+    { id: "woc_desert_glass", name: "Egypt: Desert Glass", desc: "Libyan silica glass — sand fused by something that came out of the sky 29 million years ago.", swatch: "#B7C18E" },
+    { id: "woc_faience_blue", name: "Egypt: Faience Blue", desc: "Not clay at all — ground quartz that brings its own glaze to the surface as it dries.", swatch: "#51A3B2" },
+    { id: "woc_lapis_ground", name: "Egypt: Lapis Ground", desc: "Lazurite with pyrite through it, carried two thousand miles from Badakhshan to be ground up.", swatch: "#3851B2" },
+    { id: "woc_papyrus_weave", name: "Egypt: Papyrus Weave", desc: "Pith sliced, laid at right angles and beaten until its own sap glues it into a sheet.", swatch: "#CCB57F" },
+    { id: "woc_basalt_highland", name: "Ethiopia: Basalt Highland", desc: "Flood basalt stacked three kilometres deep, then split open by the rift underneath it.", swatch: "#6B727A" },
+    { id: "woc_coffee_bed", name: "Ethiopia: Coffee Bed", desc: "Cherries drying on raised beds, raked by hand every hour so the ferment stays even.", swatch: "#7F512D" },
+    { id: "woc_danakil_salt", name: "Ethiopia: Danakil Salt", desc: "Salt pans a hundred metres below the sea, cut into slabs and carried out by camel.", swatch: "#D6DBE0" },
+    { id: "woc_lalibela_stone", name: "Ethiopia: Lalibela Stone", desc: "Churches cut DOWN into the rock, roof first, out of one piece of the mountain.", swatch: "#A8754C" },
+    { id: "woc_shamma_cotton", name: "Ethiopia: Shamma Cotton", desc: "Handspun gauze worn as a shawl, so fine that the border stripe is the only weight in it.", swatch: "#DBD8CC" },
+    { id: "woc_bogolan_mud", name: "Mali: Bogolan Mud", desc: "Cloth soaked in leaf tannin, then painted with fermented river mud — the iron fixes the black.", swatch: "#9E8E75" },
+    { id: "woc_brass_casting", name: "Mali: Brass Casting", desc: "Lost wax: the model is destroyed to make the object, so every casting is the only one.", swatch: "#B28E33" },
+    { id: "woc_indigo_resist", name: "Mali: Indigo Resist", desc: "Tied, stitched and dipped a dozen times. Each dip is darker and the resist never quite holds.", swatch: "#426093" },
+    { id: "woc_kente_strip", name: "Mali: Kente Strip", desc: "Woven in narrow strips on a men's loom, then sewn edge to edge so the pattern steps.", swatch: "#285B42" },
+    { id: "woc_laterite_road", name: "Mali: Laterite Road", desc: "Iron-rich soil that sets like brick in the sun and turns the whole country red in the dry.", swatch: "#B76638" },
+    { id: "woc_atlas_cedar", name: "Morocco: Atlas Cedar", desc: "Carved cedar ceilings, cut from trees that were old when the city was founded.", swatch: "#8E6B3D" },
+    { id: "woc_saffron_souk", name: "Morocco: Saffron Souk", desc: "Cones of ground spice built by hand and rebuilt every morning after the wind gets at them.", swatch: "#DB8919" },
+    { id: "woc_tadelakt", name: "Morocco: Tadelakt", desc: "Lime plaster burnished with a river stone and sealed with black soap until it holds water.", swatch: "#C1A389" },
+    { id: "woc_tannery_vats", name: "Morocco: Tannery Vats", desc: "Stone wells of dye and pigeon lime in Fez, worked exactly as they were in the eleventh century.", swatch: "#B78E38" },
+    { id: "woc_zellij_star", name: "Morocco: Zellij Star", desc: "Every piece chipped to shape by hand from a fired tile and set face-down into the bed.", swatch: "#994228" },
+    { id: "woc_amazon_canopy", name: "Brazil: Amazon Canopy", desc: "Closed canopy from above — a single surface made of ten thousand competing crowns.", swatch: "#427F42" },
+    { id: "woc_calcadao", name: "Brazil: Calçadão", desc: "Copacabana's black and white wave, laid stone by stone the length of the beach.", swatch: "#ADADAA" },
+    { id: "woc_carnival_block", name: "Brazil: Carnival Block", desc: "Sequin, feather and float paint at four in the morning, all of it built to last one night.", swatch: "#23846B" },
+    { id: "woc_cocoa_pod", name: "Brazil: Cocoa Pod", desc: "Ridged pods cut from the trunk itself, then fermented in banana leaf for a week.", swatch: "#845633" },
+    { id: "woc_tourmaline", name: "Brazil: Tourmaline", desc: "Watermelon crystal: green rind, white ring, pink core, all grown in one go.", swatch: "#843D56" },
+    { id: "woc_havana_facade", name: "Cuba: Havana Facade", desc: "Colonial paint sixteen layers deep, each one failing to a different colour underneath.", swatch: "#B7844C" },
+    { id: "woc_malecon_spray", name: "Cuba: Malecón Spray", desc: "Eight kilometres of sea wall and the Atlantic coming straight over it onto the road.", swatch: "#8EA39E" },
+    { id: "woc_sugar_crystal", name: "Cuba: Sugar Crystal", desc: "Raw crystals off the centrifuge, still warm, still smelling of the cane field.", swatch: "#D6CCB7" },
+    { id: "woc_tobacco_leaf", name: "Cuba: Tobacco Leaf", desc: "Vuelta Abajo wrapper, cured in a barn for fifty days until the veins go the colour of the leaf.", swatch: "#8E6B3D" },
+    { id: "woc_vintage_lacquer", name: "Cuba: Vintage Lacquer", desc: "A '55 Bel Air kept alive for seventy years on house paint, marine varnish and stubbornness.", swatch: "#668EC1" },
+    { id: "woc_allspice_bark", name: "Jamaica: Allspice Bark", desc: "Pimento — one tree that tastes like four spices, and the wood smokes the jerk pit.", swatch: "#89663D" },
+    { id: "woc_blue_mountain", name: "Jamaica: Blue Mountain", desc: "Cloud forest above 1500 metres, where the mist is what makes the coffee worth the price.", swatch: "#56847F" },
+    { id: "woc_rasta_weave", name: "Jamaica: Rasta Weave", desc: "Knitted bands in red, gold and green, worn as a tam and stretched by what is under it.", swatch: "#C69E0F" },
+    { id: "woc_sea_glass", name: "Jamaica: Sea Glass", desc: "Bottle glass rolled by surf until the edges go and the surface frosts right through.", swatch: "#9ECCC1" },
+    { id: "woc_sound_system", name: "Jamaica: Sound System", desc: "Scoops and tweeter boxes stacked to the ceiling, built by the crew that runs them.", swatch: "#706656" },
+    { id: "woc_alpaca_weave", name: "Peru: Alpaca Weave", desc: "Hollow fibre, warmer than wool and no lanolin in it, spun on a drop spindle while walking.", swatch: "#B2A593" },
+    { id: "woc_andes_strata", name: "Peru: Andes Strata", desc: "Rainbow Mountain: marine sediment, iron and copper folded upright and then stripped bare.", swatch: "#A88466" },
+    { id: "woc_chicha_morada", name: "Peru: Chicha Morada", desc: "Purple corn boiled with pineapple rind and clove until the colour is frankly unreasonable.", swatch: "#C16642" },
+    { id: "woc_cusco_textile", name: "Peru: Cusco Textile", desc: "Backstrap loom, warp-faced, so the pattern lives entirely in threads you never see cross.", swatch: "#2D5B70" },
+    { id: "woc_salt_terrace", name: "Peru: Salt Terrace", desc: "Maras: three thousand evaporation ponds fed by one warm spring, worked since before the Inca.", swatch: "#D1CCC1" },
+    { id: "woc_black_sand", name: "Aotearoa: Black Sand", desc: "Titanomagnetite off the volcanoes, hot enough to burn your feet on a cloudy day.", swatch: "#606066" },
+    { id: "woc_geothermal", name: "Aotearoa: Geothermal", desc: "Silica terraces and mud pots at Rotorua, rebuilt daily by water coming up too hot to touch.", swatch: "#A88E3D" },
+    { id: "woc_greenstone", name: "Aotearoa: Greenstone", desc: "Nephrite from the West Coast rivers, tougher than steel and worked only by abrasion.", swatch: "#4C8460" },
+    { id: "woc_kauri_gum", name: "Aotearoa: Kauri Gum", desc: "Resin buried in swamp for thirty thousand years and dug out again with a spear.", swatch: "#C68E33" },
+    { id: "woc_silver_fern", name: "Aotearoa: Silver Fern", desc: "Ponga frond, white underneath, laid face-down to mark a track you can follow by moonlight.", swatch: "#5B8E51" },
+    { id: "woc_desert_varnish", name: "Australia: Desert Varnish", desc: "Manganese and clay laid on rock by microbes at a micron a millennium, and it shines.", swatch: "#7A563D" },
+    { id: "woc_eucalypt_bark", name: "Australia: Eucalypt Bark", desc: "Ribbon gum shedding in long strips, leaving fresh green-grey skin underneath.", swatch: "#9E9E84" },
+    { id: "woc_ochre_bed", name: "Australia: Ochre Bed", desc: "Iron oxide laid down in bands and quarried for forty thousand years as pigment.", swatch: "#BC702D" },
+    { id: "woc_opal_seam", name: "Australia: Opal Seam", desc: "Silica spheres stacked regularly enough to diffract — the fire is structure, not pigment.", swatch: "#8E4C7A" },
+    { id: "woc_salt_pan", name: "Australia: Salt Pan", desc: "Lake Eyre dry: a crust that polygonises as it shrinks and floods once a decade.", swatch: "#D8D6CC" },
+    { id: "woc_batik_wax", name: "Indonesia: Batik Wax", desc: "Drawn in hot wax with a canting, dyed, boiled off, and drawn again for the next colour.", swatch: "#8E6B33" },
+    { id: "woc_ikat_warp", name: "Indonesia: Ikat Warp", desc: "The thread is dyed before it is woven, so the design arrives already blurred. That IS the craft.", swatch: "#3D4C6B" },
+    { id: "woc_spice_heap", name: "Indonesia: Spice Heap", desc: "Nutmeg and mace from islands the world fought a war over. Two spices, one seed.", swatch: "#C67A23" },
+    { id: "woc_teak_grain", name: "Indonesia: Teak Grain", desc: "Oil in the grain itself, which is why a teak deck survives what it survives.", swatch: "#9E7A42" },
+    { id: "woc_volcanic_sand", name: "Indonesia: Volcanic Sand", desc: "Ash from a caldera that emptied itself, farmed within a decade because nothing grows better.", swatch: "#66666B" },
+    { id: "woc_abaca_fibre", name: "Philippines: Abaca Fibre", desc: "Banana-family fibre strong enough to have rigged the world's ships, woven here into cloth.", swatch: "#C1B593" },
+    { id: "woc_capiz_shell", name: "Philippines: Capiz Shell", desc: "Windowpane oyster cut into squares and set in wooden lattice, translucent and cool.", swatch: "#D1D8D6" },
+    { id: "woc_jeepney_chrome", name: "Philippines: Jeepney Chrome", desc: "Stainless bodywork, hand-cut trim and more paint than the mechanicals are worth.", swatch: "#286684" },
+    { id: "woc_mayon_ash", name: "Philippines: Mayon Ash", desc: "The most perfect cone on earth, and the ash fall that keeps it that shape.", swatch: "#706B6B" },
+    { id: "woc_rice_terrace", name: "Philippines: Rice Terrace", desc: "Two thousand years of contour walls at Banaue, still fed by the same irrigation.", swatch: "#75995B" },
+
+
+    // 💵 MONEY SHOKK (2026-08-31 rework) - 40 finishes tracing the life of
+    // wealth in five chapters: how it is MINTED, where it is VAULTED, the ASSETs
+    // that were never cash, the COUNTERFEITs that are a lie in exactly one
+    // material, and the BURN. New kit: guilloche (a rose engine, as an implicit
+    // field), intaglio, microtext, security threads, moire, knurl, facets,
+    // bricks, shred, char, watermark.
+    { id: "msk_denomination_foil", name: "Mint: Denomination Foil", desc: "The holographic patch, stamped in register and struck through with rose-engine work.", swatch: "#A87066" },
+    { id: "msk_fresh_sheet", name: "Mint: Fresh Sheet", desc: "Thirty-two notes to a sheet, uncut, before the guillotine ever touches them.", swatch: "#729375" },
+    { id: "msk_intaglio_plate", name: "Mint: Intaglio Plate", desc: "Line engraving with the ink standing proud of the paper — the one security feature you check with a thumbnail.", swatch: "#729375" },
+    { id: "msk_microtext_field", name: "Mint: Microtext Field", desc: "Lettering below the resolution of any copier, woven into a field of language you can almost read.", swatch: "#4C4C59" },
+    { id: "msk_optically_variable", name: "Mint: Optically Variable", desc: "Ink with interference flakes in it — the denomination that changes colour when the car turns.", swatch: "#5B4C8E" },
+    { id: "msk_rose_engine", name: "Mint: Rose Engine", desc: "A lathe that cuts interfering rosettes no hand can redraw. The machine is called a rose engine; this is its output.", swatch: "#C6C1AF" },
+    { id: "msk_security_thread", name: "Mint: Security Thread", desc: "A metal ribbon buried in the pulp, surfacing through windows, with the mill's loose fibres scattered around it.", swatch: "#7A89B2" },
+    { id: "msk_watermark_pulp", name: "Mint: Watermark Pulp", desc: "Not printed at all — the dandy roll pressed the pulp thinner, and the portrait is a map of paper thickness.", swatch: "#C6C1AF" },
+    { id: "msk_armoured_glass", name: "Vault: Armoured Glass", desc: "Laminate that stops the round and keeps the spall, cracked into a web that holds together.", swatch: "#B7CCE0" },
+    { id: "msk_bullion_stack", name: "Vault: Bullion Stack", desc: "Four hundred troy ounces a bar, stacked five high, each one softer than you expect.", swatch: "#CC9E2D" },
+    { id: "msk_cage_mesh", name: "Vault: Cage Mesh", desc: "Expanded steel between you and the money, close enough to see through and not to reach through.", swatch: "#757C84" },
+    { id: "msk_deposit_brass", name: "Vault: Deposit Brass", desc: "A wall of safe-deposit doors, every one with a name on it and two locks.", swatch: "#B28C38" },
+    { id: "msk_hardplate", name: "Vault: Hardplate", desc: "Manganese hardplate — the layer a drill bit dies in. Cross-cut so the carbide skates.", swatch: "#757C84" },
+    { id: "msk_night_deposit", name: "Vault: Night Deposit", desc: "The chute in the wall, painted the green every bank painted everything until 1979.", swatch: "#517568" },
+    { id: "msk_tamper_seal", name: "Vault: Tamper Seal", desc: "A seal designed to destroy itself: void lettering that surfaces the instant anyone lifts an edge.", swatch: "#89383D" },
+    { id: "msk_timelock", name: "Vault: Timelock", desc: "Clockwork that refuses to open before morning, in polished brass and jewelled bearings.", swatch: "#B28C38" },
+    { id: "msk_bearer_deed", name: "Asset: Bearer Deed", desc: "Whoever holds the paper owns the thing. No name on it anywhere, which is exactly the point.", swatch: "#C1B591" },
+    { id: "msk_brilliant_cut", name: "Asset: Brilliant Cut", desc: "Fifty-seven facets arranged so light that goes in has to come back at you.", swatch: "#B7CCE0" },
+    { id: "msk_bullion_pour", name: "Asset: Bullion Pour", desc: "Molten gold entering a mould — the moment before it becomes a number in a ledger.", swatch: "#CC9E2D" },
+    { id: "msk_leaf_gilding", name: "Asset: Leaf Gilding", desc: "Gold beaten to a fifth of a micron, laid down in leaves that never quite meet.", swatch: "#DBB74C" },
+    { id: "msk_platinum_ingot", name: "Asset: Platinum Ingot", desc: "Denser than gold, rarer than gold, and it does not care what you think of it.", swatch: "#B7BCC6" },
+    { id: "msk_share_certificate", name: "Asset: Share Certificate", desc: "An engraved allegory of Industry, a serial number, and a claim on something you will never see.", swatch: "#C1B591" },
+    { id: "msk_title_vellum", name: "Asset: Title Vellum", desc: "Calfskin, a wax seal and a hand that has been dust for two centuries. Still enforceable.", swatch: "#C6C1AF" },
+    { id: "msk_watch_movement", name: "Asset: Watch Movement", desc: "Côtes de Genève on a bridge nobody will ever look at, because it should be right anyway.", swatch: "#8E939B" },
+    { id: "msk_bleached_note", name: "Counterfeit: Bleached Note", desc: "A one washed to blank and reprinted as a hundred. The paper is genuine, which is the clever part.", swatch: "#CCCCC4" },
+    { id: "msk_laundered", name: "Counterfeit: Laundered", desc: "Through a restaurant, a car wash and a shell in Nicosia, and it comes out the other side clean.", swatch: "#708E99" },
+    { id: "msk_plated_brass", name: "Counterfeit: Plated Brass", desc: "Two microns of gold over brass, and it wears through exactly where a thumb would rest.", swatch: "#A89956" },
+    { id: "msk_rescreened", name: "Counterfeit: Rescreened", desc: "Photographed and reprinted. The scanner's grid beat against the engraving and left its confession.", swatch: "#CCCCC4" },
+    { id: "msk_salted_bar", name: "Counterfeit: Salted Bar", desc: "Right weight, right stamp, tungsten core. It only fails the one test nobody runs.", swatch: "#B7A042" },
+    { id: "msk_superdollar", name: "Counterfeit: Superdollar", desc: "State-made, intaglio-printed, better paper than the original. The engraving is only wrong in one line.", swatch: "#729375" },
+    { id: "msk_uv_dead", name: "Counterfeit: UV Dead", desc: "Perfect in daylight. Under the lamp at the till, the fibres that should light up stay black.", swatch: "#6B6B7F" },
+    { id: "msk_wrong_watermark", name: "Counterfeit: Wrong Watermark", desc: "Printed on, not pressed in. It reads correctly flat and vanishes the moment you hold it up.", swatch: "#CCCCC4" },
+    { id: "msk_bond_ash", name: "Burn: Bond Ash", desc: "Cold ash holding the shape of the certificate right up until the moment you touch it.", swatch: "#6B6B6B" },
+    { id: "msk_burn_a_stack", name: "Burn: Burn A Stack", desc: "A strapped brick going up all at once — the scorch corona running ahead of the black.", swatch: "#7F4719" },
+    { id: "msk_confetti_drop", name: "Burn: Confetti Drop", desc: "A year's bonus turned into ticker tape and thrown off a balcony.", swatch: "#4C8E56" },
+    { id: "msk_cross_cut", name: "Burn: Cross Cut", desc: "Security-grade shredding: 2mm strips, cross-cut, unreconstructable and oddly beautiful.", swatch: "#9E8E5B" },
+    { id: "msk_hyperinflation", name: "Burn: Hyperinflation", desc: "A hundred trillion of something, printed on one side because the second pass costs more than the note.", swatch: "#BFBFC6" },
+    { id: "msk_ink_spill", name: "Burn: Ink Spill", desc: "The dye pack goes off in the bag and marks every note, and the money is still money and worth nothing.", swatch: "#4C4C59" },
+    { id: "msk_ticker_crash", name: "Burn: Ticker Crash", desc: "Tape running faster than anyone can read it, all of it in one direction.", swatch: "#9E2D2D" },
+    { id: "msk_torn_in_half", name: "Burn: Torn In Half", desc: "Half a note is worth nothing, so tearing one is the purest way to spend money on a gesture.", swatch: "#729375" },
+
+
+    // ◈ PARADIGM (2026-08-31 redesign) - 50 finishes in five chapters. Every
+    // one shows a substance you recognise and behaves like something it is not:
+    // the paint is the material, the spec map is a different material on the
+    // same geometry. Gated on ARGUE (distance between the two in the M/R/Cc
+    // cube) as well as the usual band/coverage/uniqueness bars.
+    { id: "pdg_burlap_glaze", name: "Woven: Burlap Glaze", desc: "Open-weave sacking, glazed as though it had been through a kiln.", swatch: "#A88C59" },
+    { id: "pdg_canvas_pearl", name: "Woven: Canvas Pearl", desc: "Artist's canvas, sized and stretched, behaving like a tri-coat pearl.", swatch: "#A88C59" },
+    { id: "pdg_corduroy_liquid", name: "Woven: Corduroy Liquid", desc: "Wales running true down the panel, and each one is a standing wave of liquid.", swatch: "#845E38" },
+    { id: "pdg_denim_chrome", name: "Woven: Denim Chrome", desc: "Twill you could count the picks on, and every one of them is a mirror.", swatch: "#56759E" },
+    { id: "pdg_felt_carrier", name: "Woven: Felt Carrier", desc: "Pressed fibre, no weave at all — and it thresholds under a floodlight like cut metal.", swatch: "#707F70" },
+    { id: "pdg_hessian_mercury", name: "Woven: Hessian Mercury", desc: "Coarse jute sacking, thread for thread — machined out of a single block of mercury.", swatch: "#A88C59" },
+    { id: "pdg_knit_liquid", name: "Woven: Knit Liquid", desc: "Every loop of the knit intact, and the whole surface still moving.", swatch: "#56759E" },
+    { id: "pdg_silk_carrier", name: "Woven: Silk Carrier", desc: "Cloth caught mid-drape, made of a material that only exists after dark.", swatch: "#707F70" },
+    { id: "pdg_tweed_mirror", name: "Woven: Tweed Mirror", desc: "Flecked country cloth with the optics of a polished ingot.", swatch: "#938E87" },
+    { id: "pdg_wool_glass", name: "Woven: Wool Glass", desc: "Carded wool with the surface tension of poured glass.", swatch: "#938E87" },
+    { id: "pdg_bark_chrome", name: "Grown: Bark Chrome", desc: "Deep fissured bark you could put your fingers into, mirror-polished.", swatch: "#70593F" },
+    { id: "pdg_coral_glass", name: "Grown: Coral Glass", desc: "A calcified reef, still porous, and clear all the way through.", swatch: "#56937F" },
+    { id: "pdg_fur_carrier", name: "Grown: Fur Carrier", desc: "Dense pelt lying one way, which under lights behaves like the Fractured rail.", swatch: "#938E87" },
+    { id: "pdg_hide_pearl", name: "Grown: Hide Pearl", desc: "Full-grain leather with its pores intact, finished as a pearl coat.", swatch: "#896B4C" },
+    { id: "pdg_leaf_liquid", name: "Grown: Leaf Liquid", desc: "Venation from midrib to margin, and the whole leaf is still pouring.", swatch: "#4C8E42" },
+    { id: "pdg_lichen_mercury", name: "Grown: Lichen Mercury", desc: "Crustose lichen spreading on rock, rendered as a liquid metal colony.", swatch: "#9EB289" },
+    { id: "pdg_moss_glass", name: "Grown: Moss Glass", desc: "Sphagnum, every frond resolved, cast in optical glass.", swatch: "#568438" },
+    { id: "pdg_petal_liquid", name: "Grown: Petal Liquid", desc: "Petal tissue with the light behaving as though the flower were poured.", swatch: "#4C8E42" },
+    { id: "pdg_root_mercury", name: "Grown: Root Mercury", desc: "A root mat pulled out of the soil intact, every hair of it liquid metal.", swatch: "#70593F" },
+    { id: "pdg_spore_pearl", name: "Grown: Spore Pearl", desc: "A fruiting mat gone velvet — and finished like a show car.", swatch: "#707556" },
+    { id: "pdg_basalt_mirror", name: "Mineral: Basalt Mirror", desc: "Columnar basalt in plan view, each column a perfect mirror.", swatch: "#6B727F" },
+    { id: "pdg_chalk_chrome", name: "Mineral: Chalk Chrome", desc: "Blackboard chalk — the most matte thing there is — polished to a mirror.", swatch: "#CCCCC4" },
+    { id: "pdg_concrete_liquid", name: "Mineral: Concrete Liquid", desc: "Board-marked concrete with the aggregate showing, and it has not set.", swatch: "#99999B" },
+    { id: "pdg_granite_mercury", name: "Mineral: Granite Mercury", desc: "Coarse-grained granite, every crystal visible, machined out of mercury.", swatch: "#8E8C93" },
+    { id: "pdg_grit_carrier", name: "Mineral: Grit Carrier", desc: "Blasting grit at rest, which after dark stops behaving like a mineral at all.", swatch: "#8E8C93" },
+    { id: "pdg_gypsum_glass", name: "Mineral: Gypsum Glass", desc: "Fibrous gypsum — satin spar — taken all the way to optical clarity.", swatch: "#CCCCC4" },
+    { id: "pdg_pumice_pearl", name: "Mineral: Pumice Pearl", desc: "Volcanic foam, light enough to float, finished like a concours pearl.", swatch: "#848484" },
+    { id: "pdg_sandstone_liquid", name: "Mineral: Sandstone Liquid", desc: "Cross-bedded sandstone with every lamina readable, and it is flowing.", swatch: "#B79360" },
+    { id: "pdg_slate_glass", name: "Mineral: Slate Glass", desc: "Riven slate, split along its cleavage, and completely transparent.", swatch: "#6B727F" },
+    { id: "pdg_terracotta_carrier", name: "Mineral: Terracotta Carrier", desc: "Unglazed fired clay that ignites into the carrier the moment lights hit it.", swatch: "#A8663D" },
+    { id: "pdg_blotter_glass", name: "Made: Blotter Glass", desc: "Absorbent blotting stock, which drinks light and somehow also transmits it.", swatch: "#BCBAAF" },
+    { id: "pdg_card_pearl", name: "Made: Card Pearl", desc: "Folded card stock with the crease still crisp, sprayed like a show finish.", swatch: "#B79360" },
+    { id: "pdg_chipboard_liquid", name: "Made: Chipboard Liquid", desc: "Pressed chip and resin, every flake showing, in the middle of pouring.", swatch: "#A07F51" },
+    { id: "pdg_cork_pearl", name: "Made: Cork Pearl", desc: "Cellular cork, every cell open, finished as a three-stage pearl.", swatch: "#A07F51" },
+    { id: "pdg_corrugate_mercury", name: "Made: Corrugate Mercury", desc: "Single-wall board with the flutes running true — poured, not folded.", swatch: "#93938C" },
+    { id: "pdg_greyboard_carrier", name: "Made: Greyboard Carrier", desc: "Book board. The dullest material in any workshop, and it fractures under light.", swatch: "#93938C" },
+    { id: "pdg_kraft_chrome", name: "Made: Kraft Chrome", desc: "Unbleached kraft paper with the fibre lay visible, and it is solid chrome.", swatch: "#B79360" },
+    { id: "pdg_newsprint_glass", name: "Made: Newsprint Glass", desc: "Cheap paper stock, showing its screen, and clear as a lens.", swatch: "#BCBAAF" },
+    { id: "pdg_plywood_liquid", name: "Made: Plywood Liquid", desc: "Rotary-cut veneer with the grain sweeping across it, and it has not stopped moving.", swatch: "#AD844C" },
+    { id: "pdg_sawdust_mirror", name: "Made: Sawdust Mirror", desc: "Swarf and dust from the saw, every particle a facet.", swatch: "#AD844C" },
+    { id: "pdg_ash_chrome", name: "Ruined: Ash Chrome", desc: "Cold wood ash. Nothing on earth reflects less, and this reflects everything.", swatch: "#848484" },
+    { id: "pdg_cinder_mirror", name: "Ruined: Cinder Mirror", desc: "Burnt-out clinker from the bottom of a grate, polished like jewellery.", swatch: "#474442" },
+    { id: "pdg_corrosion_glass", name: "Ruined: Corrosion Glass", desc: "Pitting corrosion eating into the metal, and each pit is a lens.", swatch: "#56937F" },
+    { id: "pdg_decay_pearl", name: "Ruined: Decay Pearl", desc: "Rot doing its work, finished to a standard the object never had when new.", swatch: "#707556" },
+    { id: "pdg_flake_carrier", name: "Ruined: Flake Carrier", desc: "Failing paint curling off the substrate, each flake carrying the Fractured rail.", swatch: "#9E5628" },
+    { id: "pdg_mould_liquid", name: "Ruined: Mould Liquid", desc: "A colony spreading across a damp wall, and the whole wall is running.", swatch: "#707556" },
+    { id: "pdg_rust_mirror", name: "Ruined: Rust Mirror", desc: "Scaling iron oxide lifting off in plates, and every plate is a mirror.", swatch: "#9E5628" },
+    { id: "pdg_soot_pearl", name: "Ruined: Soot Pearl", desc: "Carbon black, the deadest pigment there is, laid down as a pearl.", swatch: "#474442" },
+    { id: "pdg_verdigris_glass", name: "Ruined: Verdigris Glass", desc: "Copper carbonate crusting a roof, and you can see straight through it.", swatch: "#56937F" },
+    { id: "pdg_weathered_liquid", name: "Ruined: Weathered Liquid", desc: "Timber silvered by forty years of weather, and it is pouring off the panel.", swatch: "#848484" },
+
+
+
+
+
+    // FRACTURED ELEMENTS (2026-08-31 rebuild) - 60 weather finishes in five
+    // chapters, absorbing the good ideas from SHOKKER ATMOSPHERE, which is
+    // retired. Fire is deliberately absent: it has its own category.
+    { id: "elm_downpour", name: "Rain: Downpour", desc: "Rain hard enough to be a surface of its own, and the road answering it.", swatch: "#1A2534" },
+    { id: "elm_cloudburst", name: "Rain: Cloudburst", desc: "Every drop lands at once — a whole sheet of overlapping impact rings.", swatch: "#2D3F55" },
+    { id: "elm_drizzle", name: "Rain: Drizzle", desc: "Too fine to hear, wet enough to soak you. Rain you only see against a light.", swatch: "#919CA6" },
+    { id: "elm_sheet_rain", name: "Rain: Sheet Rain", desc: "Wind-driven and near-horizontal, arriving in visible sheets across the tarmac.", swatch: "#373E47" },
+    { id: "elm_monsoon", name: "Rain: Monsoon", desc: "A season, not a shower — warm rain with the whole sky committed to it.", swatch: "#466729" },
+    { id: "elm_acid_rain", name: "Rain: Acid Rain", desc: "Rain that leaves a mark: etched pits where each drop sat and worked.", swatch: "#365321" },
+    { id: "elm_puddle_skin", name: "Rain: Puddle Skin", desc: "Standing water with the wind fretting it and oil-film drifting on top.", swatch: "#52483C" },
+    { id: "elm_dew_field", name: "Rain: Dew Field", desc: "Condensation beaded on cold paint, each bead its own tiny lens.", swatch: "#6F7982" },
+    { id: "elm_petrichor", name: "Rain: Petrichor", desc: "Dry ground taking the first rain — dark patches spreading and joining.", swatch: "#706657" },
+    { id: "elm_gutter_race", name: "Rain: Gutter Race", desc: "Water finding the low line and running it faster than anything else on the road.", swatch: "#354961" },
+    { id: "elm_windscreen", name: "Rain: Windscreen", desc: "Beads shearing sideways and joining into rivulets the moment you move.", swatch: "#283547" },
+    { id: "elm_virga", name: "Rain: Virga", desc: "Rain that never lands — it evaporates on the way down and hangs there instead.", swatch: "#89939D" },
+    { id: "elm_blizzard", name: "Frozen: Blizzard", desc: "Snow moving sideways fast enough that the ground and the sky stop being different.", swatch: "#B0BECF" },
+    { id: "elm_snowdrift", name: "Frozen: Snowdrift", desc: "Wind sculpting snow the same way it sculpts sand, and just as sharply.", swatch: "#BAC8D9" },
+    { id: "elm_sleet", name: "Frozen: Sleet", desc: "Half rain, half ice, and unpleasant in a way neither of them manages alone.", swatch: "#53839D" },
+    { id: "elm_hail_damage", name: "Frozen: Hail Damage", desc: "Dents you can feel through the paint, each one a stone that fell out of a cloud.", swatch: "#B0C0CA" },
+    { id: "elm_hoarfrost", name: "Frozen: Hoarfrost", desc: "Water going straight from vapour to crystal, feathering out on every cold edge.", swatch: "#576369" },
+    { id: "elm_rime_ice", name: "Frozen: Rime Ice", desc: "Freezing fog building into the wind, so the ice grows toward the weather.", swatch: "#84939C" },
+    { id: "elm_black_ice", name: "Frozen: Black Ice", desc: "Invisible until it is far too late — clear ice over dark tarmac.", swatch: "#324155" },
+    { id: "elm_frost_fern", name: "Frozen: Frost Fern", desc: "Window frost: ferns that grow along scratches you never knew the glass had.", swatch: "#375D73" },
+    { id: "elm_diamond_dust", name: "Frozen: Diamond Dust", desc: "Ice crystals falling out of a clear sky, each one catching the sun on its way.", swatch: "#98A6B7" },
+    { id: "elm_permafrost", name: "Frozen: Permafrost", desc: "Ground that has not thawed in ten thousand years, cracked into contraction polygons.", swatch: "#6A9EB9" },
+    { id: "elm_serac_field", name: "Frozen: Serac Field", desc: "A glacier breaking over a step: blocks the size of houses, none of them stable.", swatch: "#7AB0CC" },
+    { id: "elm_graupel", name: "Frozen: Graupel", desc: "Soft hail — snowflakes that fell through supercooled cloud and came out rimed.", swatch: "#94A2B3" },
+    { id: "elm_tornado_alley", name: "Storm: Tornado Alley", desc: "Rotation you can see. The field turns before the funnel ever touches down.", swatch: "#444246" },
+    { id: "elm_supercell", name: "Storm: Supercell", desc: "One storm with its own rotating updraught, which is why it lasts all afternoon.", swatch: "#5F5B54" },
+    { id: "elm_hurricane_eye", name: "Storm: Hurricane Eye", desc: "Bands wrapped tight enough to leave a hole in the middle where it is completely calm.", swatch: "#4A535E" },
+    { id: "elm_squall_line", name: "Storm: Squall Line", desc: "A wall of weather a hundred miles long arriving all at once.", swatch: "#4B535E" },
+    { id: "elm_gust_front", name: "Storm: Gust Front", desc: "The cold air a storm pushes ahead of itself, rolling and picking up everything loose.", swatch: "#9B6B37" },
+    { id: "elm_mammatus", name: "Storm: Mammatus", desc: "Pouches hanging under the anvil — sinking air, and a sky that looks upside down.", swatch: "#4B494B" },
+    { id: "elm_wall_cloud", name: "Storm: Wall Cloud", desc: "The lowered base under the updraught. If anything is going to happen, it happens here.", swatch: "#434146" },
+    { id: "elm_lightning_strike", name: "Storm: Lightning Strike", desc: "One channel out of a thousand attempts, and it lasts about thirty microseconds.", swatch: "#1A1A34" },
+    { id: "elm_thunderhead", name: "Storm: Thunderhead", desc: "Twelve kilometres of vertical development, flattened at the top where it hit the stratosphere.", swatch: "#67717F" },
+    { id: "elm_microburst", name: "Storm: Microburst", desc: "Air falling out of a cloud fast enough to spread sideways when it lands.", swatch: "#456A59" },
+    { id: "elm_waterspout", name: "Storm: Waterspout", desc: "A tornado that found the sea and started lifting it.", swatch: "#347E88" },
+    { id: "elm_derecho", name: "Storm: Derecho", desc: "Straight-line wind that keeps going for six hundred miles without rotating once.", swatch: "#606A78" },
+    { id: "elm_tsunami", name: "Water: Tsunami", desc: "Not a wave — a change in sea level that happens to be moving at jet speed.", swatch: "#25577B" },
+    { id: "elm_breaker", name: "Water: Breaker", desc: "The moment the wave face outruns its own base and the top has nowhere to go.", swatch: "#55A1AA" },
+    { id: "elm_whitewater", name: "Water: Whitewater", desc: "Air beaten into water until it stops being either one.", swatch: "#5BA6AF" },
+    { id: "elm_tide_race", name: "Water: Tide Race", desc: "A whole ocean forced through a gap, and the seams where the flows shear past each other.", swatch: "#2B6389" },
+    { id: "elm_storm_surge", name: "Water: Storm Surge", desc: "The sea arriving somewhere it does not belong, pushed by a low-pressure centre.", swatch: "#59513A" },
+    { id: "elm_riptide", name: "Water: Riptide", desc: "A narrow river running out through the surf, and the reason you swim sideways.", swatch: "#52A4AE" },
+    { id: "elm_spindrift", name: "Water: Spindrift", desc: "Spray torn off the wave tops and carried until it is more air than water.", swatch: "#9F9FA2" },
+    { id: "elm_whirlpool", name: "Water: Whirlpool", desc: "Two tides meeting on a shelf and neither of them giving way.", swatch: "#1E4969" },
+    { id: "elm_chop", name: "Water: Chop", desc: "Short, steep, confused water — the wind arguing with the swell underneath it.", swatch: "#41909A" },
+    { id: "elm_glassy_swell", name: "Water: Glassy Swell", desc: "Long-period energy from a storm a thousand miles away, arriving in perfect order.", swatch: "#235376" },
+    { id: "elm_flood_line", name: "Water: Flood Line", desc: "Silt and debris marking exactly how high it got, all the way along.", swatch: "#746B4D" },
+    { id: "elm_foam_lace", name: "Water: Foam Lace", desc: "What is left on the sand after the wave goes back — a lace of bubbles, briefly.", swatch: "#AFAFB2" },
+    { id: "elm_sandstorm", name: "Dry: Sandstorm", desc: "Visibility measured in metres, and the sound of your own paint being taken off.", swatch: "#8A7046" },
+    { id: "elm_haboob", name: "Dry: Haboob", desc: "A wall of dust a mile high rolling ahead of a collapsing thunderstorm.", swatch: "#9B6A37" },
+    { id: "elm_dust_devil", name: "Dry: Dust Devil", desc: "Ground heated until the air above it has to leave, spinning as it goes.", swatch: "#876D44" },
+    { id: "elm_heat_shimmer", name: "Dry: Heat Shimmer", desc: "Air of two different densities in the same place, and the road bending because of it.", swatch: "#BABABD" },
+    { id: "elm_drought_crack", name: "Dry: Drought Crack", desc: "Clay that has given up all its water and shrunk away from itself.", swatch: "#71624B" },
+    { id: "elm_mirage", name: "Dry: Mirage", desc: "An inverted image of the sky lying on the road, and it stays exactly as far away.", swatch: "#B5B5B8" },
+    { id: "elm_dust_veil", name: "Dry: Dust Veil", desc: "Fine enough to stay up for weeks and to make the sunsets worth watching.", swatch: "#8F6232" },
+    { id: "elm_salt_haze", name: "Dry: Salt Haze", desc: "A dry lake giving its crust back to the wind one flake at a time.", swatch: "#A6A6A9" },
+    { id: "elm_harmattan", name: "Dry: Harmattan", desc: "A trade wind carrying the Sahara west until it reaches the sea and beyond.", swatch: "#B59661" },
+    { id: "elm_sirocco", name: "Dry: Sirocco", desc: "Desert air pulled north across the Mediterranean, arriving hot and full of grit.", swatch: "#AA773E" },
+    { id: "elm_loess", name: "Dry: Loess", desc: "Windblown silt laid down in beds deep enough to farm and soft enough to carve.", swatch: "#978568" },
+    { id: "elm_brownout", name: "Dry: Brownout", desc: "Rotor wash lifting the whole surface at once, and the ground disappearing from under you.", swatch: "#81572C" },
+    // FRACTURED COSMOS (2026-08-31 rebuild) - five chapters of twelve, all of
+    // them genuinely off-planet. Chapter is carried by the NAME prefix so the
+    // whole category can live on one shelf.
+    { id: "cos_saucer_alloy", name: "Contact: Saucer Alloy", desc: "Spun machined hull: concentric turn-rings still on the alloy from the lathe that made it.", swatch: "#9CA9B7" },
+    { id: "cos_hull_plating", name: "Contact: Hull Plating", desc: "Irregular alien plates, recessed seams, fastener rows, and no two panels polished alike.", swatch: "#99A6B4" },
+    { id: "cos_glyph_script", name: "Contact: Glyph Script", desc: "Angular xeno writing — strokes cluster into words, so it reads as language, not scatter.", swatch: "#482271" },
+    { id: "cos_crop_geometry", name: "Contact: Crop Geometry", desc: "Flattened agroglyph rings laid across a standing crop that all leans one way.", swatch: "#399B53" },
+    { id: "cos_abduction_column", name: "Contact: Abduction Column", desc: "A leaning forest of light columns with the dust caught turning inside them.", swatch: "#379550" },
+    { id: "cos_tractor_well", name: "Contact: Tractor Well", desc: "Beam wells pulsing tight concentric pull-rings into whatever is underneath.", swatch: "#338D4C" },
+    { id: "cos_bio_mech_chitin", name: "Contact: Bio-Mech Chitin", desc: "Interlocking chitin plate and the vein bundles running between them. Grown, not built.", swatch: "#4A2374" },
+    { id: "cos_reactor_lattice", name: "Contact: Reactor Lattice", desc: "An isometric strut scaffold with the containment charge running the struts.", swatch: "#24689E" },
+    { id: "cos_beacon_array", name: "Contact: Beacon Array", desc: "Emitter grid mid-broadcast: every cell on its own phase of the same signal.", swatch: "#1F598B" },
+    { id: "cos_cloaking_field", name: "Contact: Cloaking Field", desc: "The hull half-there: a refractive skin that bends the background instead of hiding it.", swatch: "#8A97A3" },
+    { id: "cos_probe_skin", name: "Contact: Probe Skin", desc: "Sensor pits and apertures sunk flush into a plated skin that has been out there a while.", swatch: "#94A2AF" },
+    { id: "cos_signal_bloom", name: "Contact: Signal Bloom", desc: "A transmission leaving: expanding wavefronts stacked over the antenna that threw them.", swatch: "#2669A1" },
+    { id: "cos_regolith", name: "Worlds: Regolith", desc: "Four billion years of impact gardening: dust turned over so often it has no bedrock left.", swatch: "#716A62" },
+    { id: "cos_crater_field", name: "Worlds: Crater Field", desc: "Big enough to have rims and ejecta blankets, and each one has been hit again since.", swatch: "#6B645C" },
+    { id: "cos_ice_moon", name: "Worlds: Ice Moon", desc: "A shell of ice cracked and re-frozen so many times the lines cross their own history.", swatch: "#88A1B7" },
+    { id: "cos_sulfur_volcanics", name: "Worlds: Sulfur Volcanics", desc: "Sulfur flows in every allotrope colour, laid down and buried on a world that never stops.", swatch: "#D5B637" },
+    { id: "cos_gas_giant_bands", name: "Worlds: Gas Giant Bands", desc: "Zonal flow: belts running the opposite way to their neighbours, with storms caught between.", swatch: "#BA9169" },
+    { id: "cos_storm_oval", name: "Worlds: Storm Oval", desc: "An anticyclone that has outlived every telescope pointed at it, kept fed by the shear.", swatch: "#BC936B" },
+    { id: "cos_dune_sea", name: "Worlds: Dune Sea", desc: "Barchan dunes all marching the same way because one wind has had the whole planet to itself.", swatch: "#B66A43" },
+    { id: "cos_salt_flat", name: "Worlds: Salt Flat", desc: "Evaporite polygons: the floor of a sea that left, cracked into plates as it dried.", swatch: "#9D9DA2" },
+    { id: "cos_basalt_plain", name: "Worlds: Basalt Plain", desc: "Flood basalt with wrinkle ridges — a lava ocean that cooled and then shrugged.", swatch: "#45454C" },
+    { id: "cos_methane_lake", name: "Worlds: Methane Lake", desc: "Dark hydrocarbon under an orange haze, with a shoreline that rain keeps redrawing.", swatch: "#745826" },
+    { id: "cos_ring_shadow", name: "Worlds: Ring Shadow", desc: "The ring system printing its own gaps onto the cloud deck below it.", swatch: "#A47D5A" },
+    { id: "cos_terminator", name: "Worlds: Terminator", desc: "The line where the sun is setting: every crater rim throwing a shadow the length of itself.", swatch: "#6F6760" },
+    { id: "cos_star_nursery", name: "Deep Field: Star Nursery", desc: "Pillars being eaten from the outside by the stars they just finished making.", swatch: "#C1385F" },
+    { id: "cos_emission_nebula", name: "Deep Field: Emission Nebula", desc: "Hydrogen ionised by everything young and hot inside it, glowing at one wavelength.", swatch: "#BB365C" },
+    { id: "cos_dark_nebula", name: "Deep Field: Dark Nebula", desc: "Not empty — full. Cold dust thick enough to delete the stars behind it.", swatch: "#261C15" },
+    { id: "cos_globular_cluster", name: "Deep Field: Globular Cluster", desc: "A hundred thousand old stars packed so tightly the sky there never gets dark.", swatch: "#333346" },
+    { id: "cos_spiral_arm", name: "Deep Field: Spiral Arm", desc: "A density wave, not a structure — the arm stays put while the stars pass through.", swatch: "#4175CA" },
+    { id: "cos_dust_lane", name: "Deep Field: Dust Lane", desc: "The dark band across a galaxy's face, edge-on and absolutely opaque.", swatch: "#1C1410" },
+    { id: "cos_deep_field", name: "Deep Field: Deep Field", desc: "Point the telescope at nothing for eleven days and this is what nothing turns out to be.", swatch: "#181824" },
+    { id: "cos_reflection_nebula", name: "Deep Field: Reflection Nebula", desc: "Dust that is not glowing at all — only scattering blue light from a star out of frame.", swatch: "#4378CE" },
+    { id: "cos_planetary_nebula", name: "Deep Field: Planetary Nebula", desc: "A dying star's outer shell thrown off in stages, lit from inside by the core it left.", swatch: "#124649" },
+    { id: "cos_filament_web", name: "Deep Field: Filament Web", desc: "Large-scale structure: galaxies strung on filaments around voids the size of nothing else.", swatch: "#183670" },
+    { id: "cos_zodiacal_light", name: "Deep Field: Zodiacal Light", desc: "Sunlight scattered off the dust in our own plane — the faintest thing you can see.", swatch: "#81654C" },
+    { id: "cos_molecular_cloud", name: "Deep Field: Molecular Cloud", desc: "Cold, clumpy, and barely holding together — every clump a star that has not decided yet.", swatch: "#C9466A" },
+    { id: "cos_event_horizon", name: "Event: Event Horizon", desc: "The photon ring: light that went round more than once before it got out.", swatch: "#1F1106" },
+    { id: "cos_accretion_disc", name: "Event: Accretion Disc", desc: "Gas shearing against itself on the way in, and getting hot enough to be the brightest thing here.", swatch: "#9F5F17" },
+    { id: "cos_gravitational_lens", name: "Event: Gravitational Lens", desc: "Arcs and rings — the same galaxy, imaged four times by the mass in front of it.", swatch: "#0A1632" },
+    { id: "cos_wormhole_throat", name: "Event: Wormhole Throat", desc: "Nested funnels where the geometry stops agreeing with the distance.", swatch: "#742489" },
+    { id: "cos_supernova_remnant", name: "Event: Supernova Remnant", desc: "Ragged filament shells still expanding into whatever the star's wind cleared out first.", swatch: "#1D3C49" },
+    { id: "cos_pulsar_beam", name: "Event: Pulsar Beam", desc: "A lighthouse turning thirty times a second, and you only exist when the beam is on you.", swatch: "#381149" },
+    { id: "cos_magnetar_flare", name: "Event: Magnetar Flare", desc: "Field lines snapping and reconnecting on a crust that just cracked.", swatch: "#38104A" },
+    { id: "cos_relativistic_jet", name: "Event: Relativistic Jet", desc: "Collimated, knotted, and moving at a speed that makes the far side of it invisible.", swatch: "#1D5080" },
+    { id: "cos_bow_shock", name: "Event: Bow Shock", desc: "Where something moving fast meets something already there, and the medium piles up.", swatch: "#69A6B8" },
+    { id: "cos_tidal_stream", name: "Event: Tidal Stream", desc: "A companion galaxy pulled into a thread and wound round its own host.", swatch: "#8888A1" },
+    { id: "cos_kilonova", name: "Event: Kilonova", desc: "Two neutron stars finished. Every heavy element in your body was made in one of these.", swatch: "#80411B" },
+    { id: "cos_frame_drag", name: "Event: Frame Drag", desc: "Spacetime itself wound up by the rotation, so standing still is no longer available.", swatch: "#62380D" },
+    { id: "cos_heat_shield", name: "Vessel: Heat Shield", desc: "Ablative char: the shield works by being destroyed at a rate somebody calculated exactly.", swatch: "#544136" },
+    { id: "cos_mli_foil", name: "Vessel: MLI Foil", desc: "Multi-layer insulation, crumpled gold — the crinkles are the point, not damage.", swatch: "#CE9F2D" },
+    { id: "cos_solar_sail", name: "Vessel: Solar Sail", desc: "A membrane thinner than a bin bag and the size of a football pitch, pushed by light.", swatch: "#BFC9D7" },
+    { id: "cos_radiator_panel", name: "Vessel: Radiator Panel", desc: "White honeycomb whose whole job is to be cold, facing the direction with nothing in it.", swatch: "#BBC0C8" },
+    { id: "cos_whipple_shield", name: "Vessel: Whipple Shield", desc: "Sacrificial outer layer, pitted by grains travelling at ten kilometres a second.", swatch: "#C2CEDE" },
+    { id: "cos_thermal_blanket", name: "Vessel: Thermal Blanket", desc: "Quilted kapton, stitched into cells so a puncture stays a puncture and not a tear.", swatch: "#BE9028" },
+    { id: "cos_sun_shade", name: "Vessel: Sun Shade", desc: "Five layers, each one colder than the last, holding a mirror at forty kelvin.", swatch: "#B2BCCB" },
+    { id: "cos_mirror_segment", name: "Vessel: Mirror Segment", desc: "Gold on beryllium, eighteen hexagons aligned to a fraction of the light they collect.", swatch: "#8C6718" },
+    { id: "cos_docking_ring", name: "Vessel: Docking Ring", desc: "A machined collar built so two things moving at eight kilometres a second can touch gently.", swatch: "#B2B7BE" },
+    { id: "cos_ablation_streak", name: "Vessel: Ablation Streak", desc: "Re-entry flow written onto the shield: every streak is where the plasma went.", swatch: "#5D473B" },
+    { id: "cos_cryo_tank", name: "Vessel: Cryo Tank", desc: "Frost creeping over insulation, because the thing inside is colder than the sky.", swatch: "#4D6476" },
+    { id: "cos_beacon_strobe", name: "Vessel: Beacon Strobe", desc: "Anti-collision strobe on a hull that nothing is close enough to collide with.", swatch: "#399ADA" },
+    // FRACTURED NIGHTSHIFT (2026-08-31 rebuild) - 101 down to 50, and this
+    // time the promise is measured: two interleaved populations, a matte
+    // dielectric in one hue and a chrome-tier metal in another, so broad
+    // daylight shows the first and a hard point light shows the second's
+    // tinted reflection. See engine/paint_v2/daynight.py.
+    { id: "nsx_cyanide_hour", name: "Cyanide Hour", desc: "Teal all day; at the first floodlight it turns to hot copper and stays there.", swatch: "#70C7AE" },
+    { id: "nsx_ember_verdict", name: "Ember Verdict", desc: "Slate blue with a filament network that only announces itself as ember after dark.", swatch: "#789497" },
+    { id: "nsx_violet_sentence", name: "Violet Sentence", desc: "Sober olive by day, liquid violet by night — the braid does the handing over.", swatch: "#A1BE67" },
+    { id: "nsx_copper_confession", name: "Copper Confession", desc: "Sea-green drift that confesses to copper under the lights.", swatch: "#5BDAC3" },
+    { id: "nsx_magenta_testimony", name: "Magenta Testimony", desc: "A chalk-green plate whose crack network burns magenta at night.", swatch: "#57D169" },
+    { id: "nsx_ice_to_rust", name: "Ice to Rust", desc: "Lifted ice plates that oxidise the moment the sun leaves.", swatch: "#69B4BB" },
+    { id: "nsx_jade_reversal", name: "Jade Reversal", desc: "Jade cells, rose-mirror seams — the two never appear together.", swatch: "#5CBE99" },
+    { id: "nsx_sodium_trial", name: "Sodium Trial", desc: "Cold blue bed with sodium-lamp amber waiting inside it.", swatch: "#8CAD8D" },
+    { id: "nsx_aqua_betrayal", name: "Aqua Betrayal", desc: "An aqua burn front that turns blood-red under a point light.", swatch: "#48C9C2" },
+    { id: "nsx_chartreuse_alibi", name: "Chartreuse Alibi", desc: "Acid-green powder coat; the dendrites hold an indigo alibi for after dark.", swatch: "#A3B44C" },
+    { id: "nsx_slate_ember", name: "Slate Ember", desc: "Creased slate that keeps a bed of embers in every fold.", swatch: "#78A0B5" },
+    { id: "nsx_harbour_amber", name: "Harbour Amber", desc: "Cold harbour grey braided with the amber of the dock lamps.", swatch: "#89C19A" },
+    { id: "nsx_gunsmoke_coal", name: "Gunsmoke Coal", desc: "Gunsmoke plates with coal-red heat surviving underneath them.", swatch: "#7483B4" },
+    { id: "nsx_frost_filament", name: "Frost Filament", desc: "Frosted ceramic threaded with filaments that light warm.", swatch: "#68BBAB" },
+    { id: "nsx_deep_water_forge", name: "Deep Water Forge", desc: "Deep-water drift with a forge glow under the surface.", swatch: "#68AEC8" },
+    { id: "nsx_pewter_sunset", name: "Pewter Sunset", desc: "Pewter cells that each hold one sunset.", swatch: "#89848E" },
+    { id: "nsx_storm_copper", name: "Storm Copper", desc: "Storm-grey fingering shot through with old copper.", swatch: "#77BAB3" },
+    { id: "nsx_blue_hour_brass", name: "Blue Hour Brass", desc: "The blue hour, cracked, with brass in every fracture.", swatch: "#96AA82" },
+    { id: "nsx_cinder_vault", name: "Cinder Vault", desc: "A near-black vault whose floor is entirely cinder once the lamps come on.", swatch: "#705B57" },
+    { id: "nsx_anchor_rust", name: "Anchor Rust", desc: "Cold anchor grey overtaken by a rust front after dark.", swatch: "#6E86A3" },
+    { id: "nsx_rust_to_glacier", name: "Rust to Glacier", desc: "Rusted plate by day; every lifted edge goes glacier blue at night.", swatch: "#B2A67A" },
+    { id: "nsx_amber_cryonic", name: "Amber Cryonic", desc: "Amber cells with a cryogenic mirror sleeping in the seams.", swatch: "#BBB267" },
+    { id: "nsx_terracotta_freeze", name: "Terracotta Freeze", desc: "Terracotta that freezes solid the moment the sun drops.", swatch: "#A1A383" },
+    { id: "nsx_bronze_nocturne", name: "Bronze Nocturne", desc: "Bronze braid playing a blue nocturne after hours.", swatch: "#B4A36F" },
+    { id: "nsx_saffron_midnight", name: "Saffron Midnight", desc: "Saffron ground, midnight veins — they trade places at dusk.", swatch: "#C0A247" },
+    { id: "nsx_ochre_arctic", name: "Ochre Arctic", desc: "Ochre drift with arctic light moving under it.", swatch: "#C7B46A" },
+    { id: "nsx_foundry_frost", name: "Foundry Frost", desc: "Foundry heat by day, frost in the creases by night.", swatch: "#CBA165" },
+    { id: "nsx_marigold_abyss", name: "Marigold Abyss", desc: "A marigold bed that opens onto an abyss-blue floor.", swatch: "#CDBB51" },
+    { id: "nsx_sienna_signal", name: "Sienna Signal", desc: "Sienna field with cold signal sparks that only fire at night.", swatch: "#7EA38C" },
+    { id: "nsx_kiln_blue", name: "Kiln Blue", desc: "A kiln-warm front that cools to blue behind it.", swatch: "#C5994B" },
+    { id: "nsx_venom_curfew", name: "Venom Curfew", desc: "Purple curfew broken by acid-green dendrites after dark.", swatch: "#939A52" },
+    { id: "nsx_absinthe_night", name: "Absinthe Night", desc: "Rose by day; absinthe threads take the whole car at night.", swatch: "#87A036" },
+    { id: "nsx_toxic_recess", name: "Toxic Recess", desc: "Indigo recess cells with a toxic charge in the walls.", swatch: "#639964" },
+    { id: "nsx_chlorine_watch", name: "Chlorine Watch", desc: "Pool-blue watch that turns chlorine-green under the lamps.", swatch: "#8CD381" },
+    { id: "nsx_lime_interrogation", name: "Lime Interrogation", desc: "Violet powder coat, lime in every crack — nothing stays hidden.", swatch: "#999F65" },
+    { id: "nsx_serpent_shift", name: "Serpent Shift", desc: "Magenta braid that sheds into serpent green.", swatch: "#A19576" },
+    { id: "nsx_uranium_dusk", name: "Uranium Dusk", desc: "Cold plates over a uranium glow that only shows at the edges.", swatch: "#90AD5C" },
+    { id: "nsx_wormwood_vigil", name: "Wormwood Vigil", desc: "A mauve vigil drifting toward wormwood by midnight.", swatch: "#94A65C" },
+    { id: "nsx_acid_testament", name: "Acid Testament", desc: "Blue-violet fingering with an acid testament underneath.", swatch: "#B09C68" },
+    { id: "nsx_hemlock_hour", name: "Hemlock Hour", desc: "Orchid front, hemlock behind it, and one hour where you see both.", swatch: "#70A44B" },
+    { id: "nsx_royal_nightfall", name: "Royal Nightfall", desc: "Olive court by day; royal violet takes the throne at night.", swatch: "#8BC05B" },
+    { id: "nsx_rose_assize", name: "Rose Assize", desc: "Green bench, rose verdict — the veins deliver it.", swatch: "#47C296" },
+    { id: "nsx_gilt_sentence", name: "Gilt Sentence", desc: "Cold ceramic sentenced to gilt after dark.", swatch: "#7ED0A7" },
+    { id: "nsx_imperial_drift", name: "Imperial Drift", desc: "Imperial drift from moss to amethyst as the light fails.", swatch: "#BED953" },
+    { id: "nsx_orchid_curfew", name: "Orchid Curfew", desc: "A yellow-green braid that closes into orchid at curfew.", swatch: "#DAB568" },
+    { id: "nsx_cardinal_watch", name: "Cardinal Watch", desc: "Green watch-plates, cardinal red beneath every lifted edge.", swatch: "#5BC77E" },
+    { id: "nsx_amethyst_bench", name: "Amethyst Bench", desc: "A powder-green bed with amethyst working up through it.", swatch: "#69C255" },
+    { id: "nsx_coronation_blue", name: "Coronation Blue", desc: "Gold creases at noon, coronation blue by ten.", swatch: "#D3BC5A" },
+    { id: "nsx_fuchsia_docket", name: "Fuchsia Docket", desc: "Fern ground with fuchsia sparks that only strike at night.", swatch: "#52C54A" },
+    { id: "nsx_last_session", name: "Last Session", desc: "The last session of the day: sea-green gives way to crimson mirror.", swatch: "#47C5B9" },
+    // FRACTURED FLAMES (2026-08-30 rebuild) - the life of a fire in five
+    // chapters. Replaces the 135-card cross-product (51 structures x 3 spec
+    // modes x a palette name that never reached the paint). Colour here is
+    // Planck's law through the CIE observer plus real chemiluminescence, so
+    // the fuel that is burning decides the hue.
+    // --- 🔥 FRACTURED FLAMES · Ignition ---
+    { id: "ffl_flashpoint", name: "Ignition: Flashpoint", desc: "The instant it catches — a ragged burn front with the first embers already thrown clear.", swatch: "#BB4728" },
+    { id: "ffl_char_creep", name: "Ignition: Char Creep", desc: "Blackening crawls across the surface along the grain, carbon dendrites trailing behind it.", swatch: "#934738" },
+    { id: "ffl_tinder_bloom", name: "Ignition: Tinder Bloom", desc: "Dry fibre catching all at once: hundreds of thin bright threads opening out of a rough front.", swatch: "#A3300B" },
+    { id: "ffl_match_head", name: "Ignition: Match Head", desc: "Crimson strontium flare — the chemical head burning ahead of the wood.", swatch: "#A24216" },
+    { id: "ffl_smoulder_bed", name: "Ignition: Smoulder Bed", desc: "Heat travelling underground through a packed bed, glowing only where it found air.", swatch: "#D1694E" },
+    { id: "ffl_fuse_line", name: "Ignition: Fuse Line", desc: "Lilac potassium running along a powder trail, spitting as it goes.", swatch: "#72311A" },
+    { id: "ffl_kindle_lattice", name: "Ignition: Kindle Lattice", desc: "Stacked kindling seen from above, each cell lighting on its own schedule.", swatch: "#D3500A" },
+    { id: "ffl_spark_shower", name: "Ignition: Spark Shower", desc: "White-gold thermite spray, every particle burning out along its own arc.", swatch: "#885B24" },
+    { id: "ffl_ember_catch", name: "Ignition: Ember Catch", desc: "A landed ember taking hold — bright cores spreading into the cold bed around them.", swatch: "#D86E54" },
+    { id: "ffl_pilot_ring", name: "Ignition: Pilot Ring", desc: "The blue pilot crown: cool methane braids holding a steady standing flame.", swatch: "#BA7544" },
+    { id: "ffl_autoignition", name: "Ignition: Autoignition", desc: "No spark needed — the whole surface reaches temperature at once and creases as it goes.", swatch: "#DF7B13" },
+    { id: "ffl_firebrand_scatter", name: "Ignition: Firebrand Scatter", desc: "Burning debris carried downwind, each brand starting a new small front where it lands.", swatch: "#984E15" },
+    { id: "ffl_scorch_front", name: "Ignition: Scorch Front", desc: "The dark boundary between what has burned and what has not, creased by its own heat.", swatch: "#C65872" },
+    { id: "ffl_ignition_delay", name: "Ignition: Ignition Delay", desc: "Fuel and air mixed but not yet lit — pale sulfur blue drifting over a cold bed.", swatch: "#BE6C50" },
+    { id: "ffl_touchpaper", name: "Ignition: Touchpaper", desc: "Amber sodium creeping through treated paper along every fibre at once.", swatch: "#7F3215" },
+    // --- 🔥 FRACTURED FLAMES · Flame ---
+    { id: "ffl_diffusion_sheet", name: "Flame: Diffusion Sheet", desc: "Where fuel meets air the burn is a SURFACE, not a volume — a shoal of thin reaction sheets.", swatch: "#9D4D14" },
+    { id: "ffl_wrinkled_front", name: "Flame: Wrinkled Front", desc: "Michelson-Sivashinsky cusping: a flame front unstable to its own curvature, creasing everywhere.", swatch: "#D29B1E" },
+    { id: "ffl_darrieus_cell", name: "Flame: Darrieus Cell", desc: "Darrieus-Landau cellular instability — a premixed flame breaking into its own honeycomb.", swatch: "#CE662A" },
+    { id: "ffl_turbulent_braid", name: "Flame: Turbulent Braid", desc: "Shear at the flame edge rolling into braid after braid, never one big billow.", swatch: "#B06F4F" },
+    { id: "ffl_flamelet_storm", name: "Flame: Flamelet Storm", desc: "Turbulence tears the front into thousands of independent flamelets, each burning on its own.", swatch: "#A15513" },
+    { id: "ffl_buoyant_fingers", name: "Flame: Buoyant Fingers", desc: "Rayleigh-Taylor: hot gas punching up through cold in a hundred small fingers.", swatch: "#BC9A18" },
+    { id: "ffl_shear_tongue", name: "Flame: Shear Tongue", desc: "Amber tongues leaning off a shear layer, licked into ribbons by the crossflow.", swatch: "#DA4D1E" },
+    { id: "ffl_pool_puff", name: "Flame: Pool Puff", desc: "A pool fire breathing — the periodic puff of a buoyant plume, resolved into cells.", swatch: "#B97442" },
+    { id: "ffl_candle_cone", name: "Flame: Candle Cone", desc: "The quiet laminar burn of a wick, all its structure in the fine creases of the sheath.", swatch: "#B0832A" },
+    { id: "ffl_blowtorch", name: "Flame: Blowtorch", desc: "Forced-air blue: the flame stretched thin and fast, streaks running with the jet.", swatch: "#C79826" },
+    { id: "ffl_backdraft_wrinkle", name: "Flame: Backdraft Wrinkle", desc: "Starved, then fed — the front folds back on itself the instant the air arrives.", swatch: "#E57E17" },
+    { id: "ffl_fire_whirl_grain", name: "Flame: Fire Whirl Grain", desc: "Rotation stretches every filament into the same handedness — a whirl written in grain, not in a spiral.", swatch: "#B07151" },
+    { id: "ffl_laminar_ladder", name: "Flame: Laminar Ladder", desc: "An orderly premixed burn: rungs of blue at a fixed spacing, cells filling between them.", swatch: "#B0893C" },
+    { id: "ffl_crown_fire", name: "Flame: Crown Fire", desc: "Fire in the canopy — it stops running along the ground and starts leaping between crowns.", swatch: "#B05A0A" },
+    { id: "ffl_stoichiometric_seam", name: "Flame: Stoichiometric Seam", desc: "Emerald boron marking the exact ratio line where fuel and oxidiser are perfectly matched.", swatch: "#8D2E13" },
+    // --- 🔥 FRACTURED FLAMES · Plasma ---
+    { id: "ffl_arc_filament", name: "Plasma: Arc Filament", desc: "Past burning: an ionised channel that carries current, not fuel.", swatch: "#442F25" },
+    { id: "ffl_ionised_braid", name: "Plasma: Ionised Braid", desc: "Current and field braiding around each other down the length of the column.", swatch: "#BE7A67" },
+    { id: "ffl_magnetised_jet", name: "Plasma: Magnetised Jet", desc: "Copper-blue plasma collimated by its own magnetic field into a single hard direction.", swatch: "#B16F4D" },
+    { id: "ffl_corona_grain", name: "Plasma: Corona Grain", desc: "The violet haze at the edge of a charged surface, grainy right down to the pixel.", swatch: "#4D2E1F" },
+    { id: "ffl_streamer_web", name: "Plasma: Streamer Web", desc: "Streamers branching ahead of the main channel, each looking for the easiest path.", swatch: "#84310F" },
+    { id: "ffl_townsend_cascade", name: "Plasma: Townsend Cascade", desc: "One electron becomes two, two become four — avalanche until the whole gap conducts.", swatch: "#B05F46" },
+    { id: "ffl_pinch_instability", name: "Plasma: Pinch Instability", desc: "The column squeezes itself, necks, and tears — sausage instability written across the surface.", swatch: "#C7A890" },
+    { id: "ffl_cathode_spot", name: "Plasma: Cathode Spot", desc: "Blinding white attachment points skittering across the electrode surface.", swatch: "#906B52" },
+    { id: "ffl_glow_discharge", name: "Plasma: Glow Discharge", desc: "Low pressure, low current — an even green glow with visible striations in it.", swatch: "#BF9D1C" },
+    { id: "ffl_lichtenberg_burn", name: "Plasma: Lichtenberg Burn", desc: "The fractal scar a discharge leaves behind, branching at every scale it can find.", swatch: "#81411C" },
+    { id: "ffl_plasma_sheath", name: "Plasma: Plasma Sheath", desc: "The thin charged skin that forms wherever plasma meets a solid wall.", swatch: "#B48667" },
+    { id: "ffl_spectral_line", name: "Plasma: Spectral Line", desc: "Apple-green barium emitting on one narrow line and nothing else.", swatch: "#87381B" },
+    { id: "ffl_electron_avalanche", name: "Plasma: Electron Avalanche", desc: "Every track a carrier multiplying as it runs; the surface saturates from the leading edge back.", swatch: "#754A20" },
+    { id: "ffl_tokamak_ripple", name: "Plasma: Tokamak Ripple", desc: "Confined and stable — nested flux surfaces rippling in step.", swatch: "#C07555" },
+    { id: "ffl_aurora_column", name: "Plasma: Aurora Column", desc: "Charged particles following field lines down — curtains of green standing on end.", swatch: "#D24D0B" },
+    // --- 🔥 FRACTURED FLAMES · Molten ---
+    { id: "ffl_pahoehoe_skin", name: "Molten: Pahoehoe Skin", desc: "The ropy skin of slow lava, folding over itself as the crust drags on the flow beneath.", swatch: "#C88031" },
+    { id: "ffl_slag_crust", name: "Molten: Slag Crust", desc: "Waste glass floating on the melt, cracked into plates with heat still showing through the seams.", swatch: "#C6823D" },
+    { id: "ffl_lava_cell", name: "Molten: Lava Cell", desc: "Convection cells on an open melt — dark crust above, orange shear at every boundary.", swatch: "#BD5F36" },
+    { id: "ffl_quench_craze", name: "Molten: Quench Craze", desc: "Hot glass into cold water: a craze network that keeps sub-dividing its own biggest fragments.", swatch: "#959344" },
+    { id: "ffl_vitrified_glaze", name: "Molten: Vitrified Glaze", desc: "Ash fused to a glassy skin, then cooled until it crazed — kiln chemistry, not paint.", swatch: "#A16744" },
+    { id: "ffl_weld_pool", name: "Molten: Weld Pool", desc: "The frozen ripple record of a moving arc, each crescent one pulse of the weld.", swatch: "#C27D37" },
+    { id: "ffl_molten_drip", name: "Molten: Molten Drip", desc: "White-hot metal running and freezing on the way down, in hundreds of fine rivulets.", swatch: "#906229" },
+    { id: "ffl_crucible_skin", name: "Molten: Crucible Skin", desc: "Oxide plates lifting off the wall of a crucible, each curled at the edge and lit underneath.", swatch: "#BD982F" },
+    { id: "ffl_basalt_column", name: "Molten: Basalt Column", desc: "Cooling contraction cracking a flow into columns — the same physics as mud, at 1200 degrees.", swatch: "#8F6C52" },
+    { id: "ffl_obsidian_chill", name: "Molten: Obsidian Chill", desc: "Cooled too fast to crystallise: black glass with conchoidal fracture running through it.", swatch: "#906363" },
+    { id: "ffl_foundry_spatter", name: "Molten: Foundry Spatter", desc: "Thrown metal freezing where it lands, pocking the plate it lands on.", swatch: "#A05F3D" },
+    { id: "ffl_tuyere_glow", name: "Molten: Tuyere Glow", desc: "Looking in through the blast port: the hottest zone of the furnace, seen through moving gas.", swatch: "#AD7C21" },
+    { id: "ffl_slumped_glass", name: "Molten: Slumped Glass", desc: "Glass gone soft and taken the shape it was resting on, the flow still legible in the surface.", swatch: "#A47F5A" },
+    { id: "ffl_magma_vesicle", name: "Molten: Magma Vesicle", desc: "Gas coming out of solution — bubbles frozen at the instant the melt stopped moving.", swatch: "#B97648" },
+    { id: "ffl_ropy_flow", name: "Molten: Ropy Flow", desc: "Fast pahoehoe: the skin dragged into tight parallel ropes by the flow under it.", swatch: "#C1653E" },
+    // --- 🔥 FRACTURED FLAMES · Cinder ---
+    { id: "ffl_ember_bed", name: "Cinder: Ember Bed", desc: "What is left when the flame goes: a bed that is all heat and no light, breathing where air reaches it.", swatch: "#BF704E" },
+    { id: "ffl_ash_fall", name: "Cinder: Ash Fall", desc: "Fine grey settling out of the air and building up wherever the wind lets it.", swatch: "#773B17" },
+    { id: "ffl_soot_bloom", name: "Cinder: Soot Bloom", desc: "Carbon inception: dendrites branching out of nothing, the deadest material in the catalog.", swatch: "#682319" },
+    { id: "ffl_char_scale", name: "Cinder: Char Scale", desc: "Burnt skin gone to alligator scale, every plate lifted a little at its edge.", swatch: "#87816E" },
+    { id: "ffl_cinder_lattice", name: "Cinder: Cinder Lattice", desc: "The connected skeleton that survived — only the paths that stayed lit are still there.", swatch: "#BE6E4B" },
+    { id: "ffl_fly_ash", name: "Cinder: Fly Ash", desc: "Spent particles too light to fall, drifting until they cool to nothing.", swatch: "#78401D" },
+    { id: "ffl_coke_cell", name: "Cinder: Coke Cell", desc: "Coal cooked without air until only the carbon cell wall is left standing.", swatch: "#CB5B3A" },
+    { id: "ffl_clinker_crust", name: "Cinder: Clinker Crust", desc: "Fused ash that went hard and vitreous in the grate — the stuff you have to break out.", swatch: "#8E7F67" },
+    { id: "ffl_ash_glaze", name: "Cinder: Ash Glaze", desc: "Wood ash melted onto the pot by its own kiln and crazed as it cooled.", swatch: "#B0554C" },
+    { id: "ffl_dying_coal", name: "Cinder: Dying Coal", desc: "The last of the heat retreating into the middle of each lump.", swatch: "#CD8B1B" },
+    { id: "ffl_grey_front", name: "Cinder: Grey Front", desc: "Ash advancing over ember — the moment a fire stops being orange.", swatch: "#A53B39" },
+    { id: "ffl_retained_heat", name: "Cinder: Retained Heat", desc: "Cold on the outside, still dangerous in the core; convection barely moving above it.", swatch: "#AE6123" },
+    { id: "ffl_powder_burn", name: "Cinder: Powder Burn", desc: "Residue of a fast burn: scorched powder with a few grains that never went off.", swatch: "#482625" },
+    { id: "ffl_spall_field", name: "Cinder: Spall Field", desc: "Thermal shock popping flakes off the surface, each leaving a paler crater.", swatch: "#7BA04E" },
+    { id: "ffl_cold_ash", name: "Cinder: Cold Ash", desc: "Completely out. Fine grey powder holding the shape of what it used to be.", swatch: "#6D251B" },
+    // FRACTURED FOUNDRY (2026-08-30) - worked metal: the mark the process left.
+    { id: "ffo_ladle_pour", name: "Ladle Pour", desc: "A pour that froze while it was still moving: laminar tongues under a wrinkled chill skin.", swatch: "#A59890" },
+    { id: "ffo_furnace_slag", name: "Furnace Slag", desc: "Gas vesicles frozen mid-rise in a glassy crust, the way slag comes off the top of a heat.", swatch: "#59595E" },
+    { id: "ffo_sand_cast", name: "Sand Cast", desc: "The pebbled face a sand mould leaves, parting line still showing across it.", swatch: "#838388" },
+    { id: "ffo_chill_ingot", name: "Chill Ingot", desc: "Chill bands across the face of an ingot with the shrink pipe drawn down its middle.", swatch: "#A19F9D" },
+    { id: "ffo_forge_scale", name: "Forge Scale", desc: "Black scale lifting off hot iron, every flake curling at its edge.", swatch: "#46494D" },
+    { id: "ffo_planished", name: "Planished", desc: "Planished by hand: overlapping hammer facets, each one a shallow dish.", swatch: "#FDFEFE" },
+    { id: "ffo_damascus_fold", name: "Damascus Fold", desc: "Hundreds of folded layers ground back, the ladder showing where the billet was cut.", swatch: "#CDD2DA" },
+    { id: "ffo_face_mill", name: "Face Mill", desc: "Overlapping cutter arcs, each pass stepping across the last.", swatch: "#E2E9F4" },
+    { id: "ffo_lathe_turn", name: "Lathe Turn", desc: "Concentric feed grooves running out from a chuck set off the panel.", swatch: "#ECE9DD" },
+    { id: "ffo_diamond_knurl", name: "Diamond Knurl", desc: "The knurling wheel pressed a cross-hatch of pyramids into the bar.", swatch: "#A4A9B1" },
+    { id: "ffo_belt_grind", name: "Belt Grind", desc: "Long parallel scratches with the odd deep one where a torn grit dug in.", swatch: "#D2D2DD" },
+    { id: "ffo_weld_bead", name: "Weld Bead", desc: "Stacked passes of frozen ripple with the heat-affected zone tempering out either side.", swatch: "#B0AFBE" },
+    { id: "ffo_plasma_cut", name: "Plasma Cut", desc: "Drag lines raked down the kerf with dross still hanging off the bottom.", swatch: "#96999D" },
+    { id: "ffo_zinc_spangle", name: "Zinc Spangle", desc: "Hot-dip galvanising froze into big spangle crystals, every facet catching light its own way.", swatch: "#E6E8EA" },
+    { id: "ffo_crucible_dross", name: "Crucible Dross", desc: "The oxide skin pulled off the top of a melt, wrinkled and torn where the rod dragged.", swatch: "#78787C" },
+    { id: "ffo_cast_spatter", name: "Cast Spatter", desc: "Droplets that flew, landed and froze where they hit, each flattened into its own splat.", swatch: "#9DA0A4" },
+    { id: "ffo_teeming_stream", name: "Teeming Stream", desc: "Metal falling from the ladle, drawn into ropes that thin as they stretch.", swatch: "#B2B5B8" },
+    { id: "ffo_chill_shot", name: "Chill Shot", desc: "Atomised metal quenched into beads and packed into a bed.", swatch: "#D6DDE7" },
+    { id: "ffo_bloom_iron", name: "Bloom Iron", desc: "A sponge of metal and slag hammered together while it was never quite molten.", swatch: "#747479" },
+    { id: "ffo_tuyere_burn", name: "Tuyere Burn", desc: "Where the blast hit, the metal ran and the refractory glazed into downwind streaks.", swatch: "#6D635C" },
+    { id: "ffo_peened", name: "Peened", desc: "A thousand overlapping hammer pits, the face work-hardened and dimpled all over.", swatch: "#D4DAE4" },
+    { id: "ffo_anvil_face", name: "Anvil Face", desc: "Worn hollow in the middle and scarred by everything ever beaten on it.", swatch: "#A3A7AD" },
+    { id: "ffo_drawn_taper", name: "Drawn Taper", desc: "Stretched under the hammer, so the flats step narrower along the bar.", swatch: "#96969C" },
+    { id: "ffo_upset_bulge", name: "Upset Bulge", desc: "Driven back on itself until it swelled, the metal folding in rings around the swell.", swatch: "#79797D" },
+    { id: "ffo_swage_block", name: "Swage Block", desc: "Hammered down into a shaped die, carrying the die's flutes end to end.", swatch: "#D6DCE5" },
+    { id: "ffo_fullered", name: "Fullered", desc: "The fuller drove a row of grooves across the stock to move metal sideways.", swatch: "#8E8E93" },
+    { id: "ffo_quench_check", name: "Quench Check", desc: "Cooled too fast: the skin let go in a net of fine checks with hard metal between.", swatch: "#424C63" },
+    { id: "ffo_wire_edm", name: "Wire EDM", desc: "A field of microscopic craters, each one a single spark's worth of metal gone.", swatch: "#C0C0CD" },
+    { id: "ffo_honed_bore", name: "Honed Bore", desc: "The cross-hatch a hone leaves so the oil has somewhere to sit.", swatch: "#C2C8D0" },
+    { id: "ffo_broached", name: "Broached", desc: "Every tooth cut a shade deeper than the last, so the wall steps in fine terraces.", swatch: "#D0CCC3" },
+    { id: "ffo_shot_peened", name: "Shot Peened", desc: "Blasted with steel shot until the face is a mat of overlapping dimples.", swatch: "#F4F5F6" },
+    { id: "ffo_cut_thread", name: "Cut Thread", desc: "A single helix down the bar with the tool's flank marks still in the flanks.", swatch: "#EECF86" },
+    { id: "ffo_fly_cut", name: "Fly Cut", desc: "One tool tip swinging a wide arc, leaving the big scallops a surfacing cut is prized for.", swatch: "#D5D9DD" },
+    { id: "ffo_tig_stack", name: "TIG Stack", desc: "Stacked dimes: every dip of the rod froze as its own overlapping disc.", swatch: "#AFB0B4" },
+    { id: "ffo_mig_spatter", name: "MIG Spatter", desc: "A fast hot bead with the spatter it threw stuck fast either side.", swatch: "#A2A1A4" },
+    { id: "ffo_oxy_cut", name: "Oxy Cut", desc: "Coarse drag lines with the slag that ran down them still welded on.", swatch: "#A6AAAE" },
+    { id: "ffo_stitch_weld", name: "Stitch Weld", desc: "Short runs with cold gaps between them, the way thin panel gets joined.", swatch: "#ABADB2" },
+    { id: "ffo_tack_row", name: "Tack Row", desc: "A row of spot welds holding the job while the real welding waits.", swatch: "#BBBCC2" },
+    { id: "ffo_undercut", name: "Undercut", desc: "The arc ate into the parent plate beside the bead and left a groove no inspector passes.", swatch: "#C4C6CA" },
+    { id: "ffo_arc_strike", name: "Arc Strike", desc: "Where the rod touched off the joint and burned a bright scar into the plate.", swatch: "#8B8F95" },
+    { id: "ffo_haz_bloom", name: "HAZ Bloom", desc: "No mark at all, just the temper colour blooming out from where the heat went in.", swatch: "#B3AAA9" },
+    { id: "ffo_anodised", name: "Anodised", desc: "The etch left a fine directional grain and the dye sank into the pore structure.", swatch: "#EDEDED" },
+    { id: "ffo_rust_blued", name: "Rust Blued", desc: "Cards of black oxide grown, boiled and carded back until the steel went blue-black.", swatch: "#3D4966" },
+    { id: "ffo_parkerised", name: "Parkerised", desc: "A phosphate crystal coat, matt and grey and thirsty for oil.", swatch: "#4C5056" },
+    { id: "ffo_copper_patina", name: "Copper Patina", desc: "The green climbing out of the low ground and eating its way across the metal.", swatch: "#CC7E56" },
+    { id: "ffo_powder_coat", name: "Powder Coat", desc: "The film flowed out but not quite flat, so it kept its orange-peel.", swatch: "#494A4E" },
+    { id: "ffo_chrome_flash", name: "Chrome Flash", desc: "Flash chrome over a substrate never quite polished out, mirroring every wave under it.", swatch: "#C9C5BB" },
+    { id: "ffo_passivated", name: "Passivated", desc: "No coating to see — just the faint mottle the acid left behind.", swatch: "#CFD0D3" },
+    { id: "ffo_mill_scale", name: "Mill Scale", desc: "Hot-rolled scale, blue-black and tight in places, flaked to bare steel in others.", swatch: "#424447" },
+    { id: "ffo_phosphated", name: "Phosphated", desc: "A heavy dark etch that bites deepest wherever the grain of the steel runs.", swatch: "#9D9DA3" },
+    // FRACTURED TESSERA (2026-08-30) - impossible tilings, lit from within.
+    // Built around the mechanism of ff_truchet_glass, which joins this shelf unchanged.
+    { id: "fts_penrose_reliquary", name: "Penrose Reliquary", desc: "Aperiodic five-fold rhombs that never repeat, leaded in jewel blues and violets.", swatch: "#7D4E78" },
+    { id: "fts_ammann_vault", name: "Ammann Vault", desc: "Eight-fold aperiodic squares and rhombs drawn in amber and teal behind brass came.", swatch: "#855A4A" },
+    { id: "fts_dodeca_choir", name: "Dodeca Choir", desc: "Twelve-fold quasiperiodic panes under an iridised film, hairline-leaded.", swatch: "#956F78" },
+    { id: "fts_hex_apiary", name: "Hex Apiary", desc: "A honeycomb of rolled amber glass in copper foil, every cell its own shade.", swatch: "#8E6A35" },
+    { id: "fts_cairo_lantern", name: "Cairo Lantern", desc: "Interlocking pentagons in seedy lantern glass, bubbles caught in every pane.", swatch: "#686379" },
+    { id: "fts_rhombille_cube", name: "Rhombille Cube", desc: "Three rhombi to a hexagon: a floor of tumbling cubes that will not sit still.", swatch: "#5A524C" },
+    { id: "fts_lloyd_froth", name: "Lloyd Froth", desc: "Relaxed cells of near-equal size, like soap froth frozen and leaded in place.", swatch: "#756794" },
+    { id: "fts_gilbert_shatter", name: "Gilbert Shatter", desc: "Cracks that nucleate, run both ways and stop where they meet an older crack.", swatch: "#693138" },
+    { id: "fts_truchet_braid", name: "Truchet Braid", desc: "Triangular Truchet arcs braiding across the panel behind bevelled came.", swatch: "#7073B0" },
+    { id: "fts_wang_current", name: "Wang Current", desc: "Edge-matched tiles whose colour runs continue clean across the whole panel.", swatch: "#69695F" },
+    { id: "fts_girih_strap", name: "Girih Strap", desc: "Five-fold strapwork interlacing over glass cut to every polygon it leaves.", swatch: "#756547" },
+    { id: "fts_herringbone_hall", name: "Herringbone Hall", desc: "Planks of drawn glass laid herringbone and reinforced with wire.", swatch: "#6F5738" },
+    { id: "fts_shear_arcade", name: "Shear Arcade", desc: "A leaded lattice that leans further with every course, like a hall seen at speed.", swatch: "#6F7488" },
+    { id: "fts_kagome_basket", name: "Kagome Basket", desc: "The trihexagonal basket lattice: triangles and hexagons sharing every vertex.", swatch: "#8D6F4C" },
+    { id: "fts_snub_carousel", name: "Snub Carousel", desc: "Squares pinwheeling between pairs of triangles, every cell twisted against its neighbour.", swatch: "#737575" },
+    { id: "fts_octagon_court", name: "Octagon Court", desc: "Broad octagons with a small square dropped into every crossing.", swatch: "#596278" },
+    { id: "fts_basket_weave", name: "Basket Weave", desc: "Pairs of planks crossing over and under in fours, foiled at every join.", swatch: "#6C564A" },
+    { id: "fts_triangle_choir", name: "Triangle Choir", desc: "The plain equilateral net, every triangle slumped to its own thickness.", swatch: "#896A85" },
+    { id: "fts_pinwheel_infinite", name: "Pinwheel Infinite", desc: "Conway's right triangles at one-to-two: subdivide, turn, repeat — no two panes point the same way.", swatch: "#806E79" },
+    { id: "fts_sphinx_march", name: "Sphinx March", desc: "The sphinx hexiamond, five triangles to a tile, marching by reflex substitution.", swatch: "#585246" },
+    { id: "fts_chair_recursion", name: "Chair Recursion", desc: "L-trominoes that subdivide into four smaller chairs, and those into four more.", swatch: "#685F61" },
+    { id: "fts_mondrian_cut", name: "Mondrian Cut", desc: "A guillotine cut every time: rectangles of every proportion, none of them lining up.", swatch: "#777779" },
+    { id: "fts_slat_stretch", name: "Slat Stretch", desc: "Voronoi cells drawn out along one axis until they read as rolled slats.", swatch: "#755A7F" },
+    { id: "fts_delaunay_web", name: "Delaunay Web", desc: "The triangulation of a scattered point set — every pane a triangle, no two alike.", swatch: "#8C5E74" },
+    { id: "fts_bubble_raft", name: "Bubble Raft", desc: "Hexagonal close packing with the dislocations a real raft always has.", swatch: "#666588" },
+    { id: "fts_mudcrack_pan", name: "Mudcrack Pan", desc: "Mud dried until it split: stubby cells, every join meeting at ninety degrees.", swatch: "#69563C" },
+    { id: "fts_crazed_glaze", name: "Crazed Glaze", desc: "The shrinkage net an old glaze crazes into, long cracks first and short ones after.", swatch: "#6C7273" },
+    { id: "fts_basalt_column", name: "Basalt Column", desc: "Columnar basalt in section: hexagons that cooled imperfectly and wander at the joints.", swatch: "#383D40" },
+    { id: "fts_cafe_wall", name: "Cafe Wall", desc: "Straight courses the eye insists are wedges, because every row is offset against the last.", swatch: "#969896" },
+    { id: "fts_zigzag_ribbon", name: "Zigzag Ribbon", desc: "Courses that fold back on themselves, chevroning all the way down the panel.", swatch: "#9B947D" },
+    { id: "fts_spiral_nave", name: "Spiral Nave", desc: "Courses winding out from a pole set off the panel, so the leadwork sweeps instead of rings.", swatch: "#68658D" },
+    { id: "fts_conformal_bend", name: "Conformal Bend", desc: "A square lattice pushed through a conformal map: right angles kept, the grid itself bent.", swatch: "#64626D" },
+    { id: "fts_moire_beat", name: "Moire Beat", desc: "Two grids at a hair of an angle: where they beat, the panes shrink to slivers.", swatch: "#786A75" },
+    { id: "fts_zellige_star", name: "Zellige Star", desc: "The eight-point star and its cross, cut and set by hand.", swatch: "#928463" },
+    { id: "fts_mashrabiya_screen", name: "Mashrabiya Screen", desc: "A turned-wood screen: discs on a lattice joined by bridges, light coming through the rest.", swatch: "#635548" },
+    { id: "fts_muqarnas_vault", name: "Muqarnas Vault", desc: "Stepped niches corbelling inward, every tier smaller than the one it hangs from.", swatch: "#7D6E55" },
+    { id: "fts_woven_interlace", name: "Woven Interlace", desc: "Every strand passes above one neighbour and below the next; the crossings are their own panes.", swatch: "#986A54" },
+    { id: "fts_scalemail_coat", name: "Scalemail Coat", desc: "Riveted scale armour, each disc hiding the top of the scale below it.", swatch: "#6A5B67" },
+    { id: "fts_fishscale_roof", name: "Fishscale Roof", desc: "Imbricated arcs — the oldest roofing pattern there is.", swatch: "#96827A" },
+    { id: "fts_droste_well", name: "Droste Well", desc: "The same lattice nested inside itself at every octave, opening into a smaller copy of itself.", swatch: "#706166" },
+    { id: "fts_fibonacci_course", name: "Fibonacci Course", desc: "Two plank widths laid in the golden order, so the courses never settle into a repeat.", swatch: "#786569" },
+    { id: "fts_laguerre_press", name: "Laguerre Press", desc: "Voronoi with weights: big cells shoulder the small ones aside and the joins go crooked.", swatch: "#5E6480" },
+    { id: "fts_kite_and_dart", name: "Kite and Dart", desc: "Penrose kites and darts: the same pentagrid, offset to the singular value that splits them.", swatch: "#929068" },
+    { id: "fts_sevenfold_drift", name: "Sevenfold Drift", desc: "Seven-fold order the plane cannot hold periodically, so the panes drift forever.", swatch: "#7E6D79" },
+    { id: "fts_flemish_bond", name: "Flemish Bond", desc: "A header and a stretcher alternating in every course — the bond that reads hand-laid.", swatch: "#715D5A" },
+    { id: "fts_jali_pierce", name: "Jali Pierce", desc: "Pierced stone: an interlocking net of hexagonal openings inside a hexagonal frame.", swatch: "#51615D" },
+    { id: "fts_hexstar_lantern", name: "Hexstar Lantern", desc: "Six-point stars with the triangles they leave between them.", swatch: "#91785C" },
+    { id: "fts_elongated_course", name: "Elongated Course", desc: "Rows of squares alternating with rows of triangles — two kinds of course in one wall.", swatch: "#737575" },
+    { id: "fts_impact_shatter", name: "Impact Shatter", desc: "Radial fractures from strikes set off the panel, crossed by the rings each strike sent out.", swatch: "#A26D57" },
+    // FRACTURED RELICS (2026-08-30) - the cabinet of cursed things: 50 occult /
+    // cryptozoology artifacts replacing the five old 20-card grid shelves.
+    // ⚗ THE ALEMBIC
+    { id: "frl_athanor_slag", name: "Athanor Slag", desc: "The glass that froze in the furnace mouth, gas vesicles caught mid-rise along a flow still moving. A FRACTURED RELICS finish.", swatch: "#714D26" },
+    { id: "frl_sulfur_crust", name: "Sulfur Crust", desc: "Botryoidal sulfur: spheroids budded on spheroids, needles sublimed out of the gaps between. A FRACTURED RELICS finish.", swatch: "#675B28" },
+    { id: "frl_herbarium", name: "Herbarium Press", desc: "A specimen flattened onto rag paper a century ago: midrib, secondaries, reticulation, foxing. A FRACTURED RELICS finish.", swatch: "#3A4228" },
+    { id: "frl_transmutation", name: "Transmutation Seal", desc: "Concentric bands of ring text with the figure struck across them, cut sharp into the plate. A FRACTURED RELICS finish.", swatch: "#32422C" },
+    { id: "frl_verdigris", name: "Verdigris Bloom", desc: "Copper corrosion spreading as colonies, each a crusted disc that grew until it met the next. A FRACTURED RELICS finish.", swatch: "#2E5E2C" },
+    { id: "frl_apothecary_crust", name: "Apothecary Crust", desc: "A bottle left to evaporate: every level it stopped at is a ring, and the salt crystallised on each. A FRACTURED RELICS finish.", swatch: "#2E613E" },
+    { id: "frl_vitriol_etch", name: "Vitriol Etch", desc: "Acid on metal: pits that ate outward along the grain, each fringed by the dendrites the reaction left. A FRACTURED RELICS finish.", swatch: "#215D54" },
+    { id: "frl_quicksilver", name: "Quicksilver", desc: "Beads that ran together and stopped: fat lenses joined by necks, tarnish creeping over the stillest. A FRACTURED RELICS finish.", swatch: "#2C465E" },
+    { id: "frl_philosopher", name: "Philosopher's Stone", desc: "The impossible packing: discs of every size nested into the gaps of the discs before them, each cut as a gem. A FRACTURED RELICS finish.", swatch: "#632D66" },
+    { id: "frl_cinnabar", name: "Cinnabar Druse", desc: "A vug lined with crystal: every termination a facetted point, all crowded into the same small space. A FRACTURED RELICS finish.", swatch: "#682A2A" },
+    // 🜏 THE ORACLE
+    { id: "frl_blood_augur", name: "Blood Augury", desc: "A poured offering dried to a crackle glaze: the network of cracks is the reading. A FRACTURED RELICS finish.", swatch: "#7B3529" },
+    { id: "frl_planchette", name: "Planchette Path", desc: "A spirit board worn by decades of travel, the letter blocks still there under the arcs the planchette polished. A FRACTURED RELICS finish.", swatch: "#6B4E2C" },
+    { id: "frl_casting_bones", name: "Casting Bones", desc: "Knucklebones thrown and settled where they fell, packed tight, each knobbed at both ends. A FRACTURED RELICS finish.", swatch: "#534F2F" },
+    { id: "frl_tasseomancy", name: "Tasseomancy", desc: "Leaf fragments left in the cup, settled into the bands the last swirl of tea drew them into. A FRACTURED RELICS finish.", swatch: "#5C651E" },
+    { id: "frl_palm_line", name: "Palm Reading", desc: "Friction ridges flowing around the loops they grew into, broken where the major lines cross. A FRACTURED RELICS finish.", swatch: "#324A2E" },
+    { id: "frl_astrolabe", name: "Astrolabe Plate", desc: "Almucantar arcs and azimuth rays engraved into brass, a star pointer punched at the crossings. A FRACTURED RELICS finish.", swatch: "#306138" },
+    { id: "frl_ceromancy", name: "Ceromancy", desc: "Molten wax dropped into cold water, set as thin lobed sheets, holed and rimmed where it tore. A FRACTURED RELICS finish.", swatch: "#2B7247" },
+    { id: "frl_black_mirror", name: "Black Mirror", desc: "A scrying glass knapped from obsidian, conchoidal shells rippling from every strike. A FRACTURED RELICS finish.", swatch: "#215B62" },
+    { id: "frl_ink_scry", name: "Ink Scrying", desc: "A drop of ink opening in water: sheets of filament pulled into each other, thinning to smoke. A FRACTURED RELICS finish.", swatch: "#2E436A" },
+    { id: "frl_haruspex", name: "Haruspex", desc: "The reading surface itself: lobes divided by their fissures, the vessel tree branching across every one. A FRACTURED RELICS finish.", swatch: "#6C274A" },
+    // ⚱ THE BARROW
+    { id: "frl_urn_slip", name: "Urn Slip", desc: "A burnished funerary pot: the pebble tool left its strokes, the kiln left its clouds. A FRACTURED RELICS finish.", swatch: "#64392C" },
+    { id: "frl_bog_body", name: "Bog Body", desc: "Skin tanned by peat acid, the pore field still there, the whole hide creased where the bog folded it. A FRACTURED RELICS finish.", swatch: "#5D4127" },
+    { id: "frl_coffin_varnish", name: "Coffin Varnish", desc: "Shellac gone alligator, hard plates of finish curling off the grain that still shows underneath. A FRACTURED RELICS finish.", swatch: "#7C6A1D" },
+    { id: "frl_grave_wax", name: "Grave Wax", desc: "Adipocere: soft lobes set into each other, every surface crazed by a wax that dried too slowly. A FRACTURED RELICS finish.", swatch: "#41492E" },
+    { id: "frl_shroud", name: "Shroud", desc: "Loose linen with threads pulled out of it and the bloom of what soaked through. A FRACTURED RELICS finish.", swatch: "#456B31" },
+    { id: "frl_barrow_soil", name: "Barrow Soil", desc: "The matrix an excavation comes out of: grit, root threads and the sherd edges that make the dig worth digging. A FRACTURED RELICS finish.", swatch: "#2A613F" },
+    { id: "frl_bone_ash", name: "Bone Ash", desc: "Calcined to a crust, grains sintered into each other with the voids the burning left between. A FRACTURED RELICS finish.", swatch: "#32584B" },
+    { id: "frl_barrow_frost", name: "Barrow Frost", desc: "Hoar crystals feathering off cold stone: a spine, side branches, and branches off those. A FRACTURED RELICS finish.", swatch: "#2A636B" },
+    { id: "frl_ossuary", name: "Ossuary Wall", desc: "Long bones stacked end out, packed with the small pieces that fill the gaps, every shaft showing its marrow void. A FRACTURED RELICS finish.", swatch: "#6D4B89" },
+    { id: "frl_corpse_candle", name: "Corpse Candle", desc: "Tallow run down in curtains and set, wick soot blackening the runs it poured over. A FRACTURED RELICS finish.", swatch: "#732D4C" },
+    // 🦴 THE BEAST
+    { id: "frl_wendigo_horn", name: "Wendigo Horn", desc: "Keratin laid down in growth laminae around a curved core, split lengthwise where it dried. A FRACTURED RELICS finish.", swatch: "#71582A" },
+    { id: "frl_thunderbird_quill", name: "Thunderbird Quill", desc: "Barbs combed off a storm-bird shaft, zipped by barbules and torn open where the vane parted. A FRACTURED RELICS finish.", swatch: "#2F3F56" },
+    { id: "frl_mothman_dust", name: "Mothman Dust", desc: "Wing scales shingled in rows, each a ribbed paddle that comes off on your fingers. A FRACTURED RELICS finish.", swatch: "#622D6B" },
+    { id: "frl_lake_serpent", name: "Lake Serpent Scute", desc: "Keeled belly plates carrying the growth annuli of every year it swam, under a haze of shed skin. A FRACTURED RELICS finish.", swatch: "#30512E" },
+    { id: "frl_devil_hoof", name: "Devil's Hoof", desc: "Horn wall in laminae, packed with the tubules that grew it, split down the cleft. A FRACTURED RELICS finish.", swatch: "#633727" },
+    { id: "frl_sasquatch_pelt", name: "Sasquatch Pelt", desc: "Guard hair matted into locks, every lock combed by the same weather and clumped where it dried. A FRACTURED RELICS finish.", swatch: "#464B25" },
+    { id: "frl_chupacabra_spine", name: "Chupacabra Spine", desc: "Dorsal spikes in ranks with the membrane still stretched between them, veined and torn. A FRACTURED RELICS finish.", swatch: "#296A35" },
+    { id: "frl_grendel_hide", name: "Grendel Hide", desc: "Thick leather gone to warts, nodules of every size bedded in a cracked matrix and seamed where old wounds closed. A FRACTURED RELICS finish.", swatch: "#3C6027" },
+    { id: "frl_kraken_sucker", name: "Kraken Sucker", desc: "Rings of chitin teeth packed down the arm, each cup a ring of dentition around a dark throat. A FRACTURED RELICS finish.", swatch: "#7E3441" },
+    { id: "frl_deep_one_gill", name: "Deep One Gill", desc: "Lamellae stacked plate on plate in curved ranks, every filament combed by the water it last breathed. A FRACTURED RELICS finish.", swatch: "#1E7764" },
+    // ⛧ THE BINDING
+    { id: "frl_hexfoil", name: "Hexfoil Ward", desc: "Compass-scribed daisy wheels burned into a threshold beam to turn a witch back at the door. A FRACTURED RELICS finish.", swatch: "#784D24" },
+    { id: "frl_witch_bottle", name: "Witch Bottle", desc: "Bent nails, pins and hair packed into buried glass to catch a curse before it reaches the house. A FRACTURED RELICS finish.", swatch: "#376D2A" },
+    { id: "frl_binding_knot", name: "Binding Knot", desc: "An endless knot tied over and under itself so that whatever it holds can never be untied. A FRACTURED RELICS finish.", swatch: "#425926" },
+    { id: "frl_coffin_nail", name: "Coffin Nail Ward", desc: "Coffin nails driven in a ward grid, each head ringed by the bruise its hammer left in the plate. A FRACTURED RELICS finish.", swatch: "#254D5C" },
+    { id: "frl_salt_circle", name: "Salt Circle", desc: "A poured salt line dried to a crust, throwing dendrites off every edge across black slate. A FRACTURED RELICS finish.", swatch: "#346056" },
+    { id: "frl_poppet_stitch", name: "Poppet Stitch", desc: "Sackcloth closed with crossed sutures and studded with the pins pushed through the poppet. A FRACTURED RELICS finish.", swatch: "#753D2B" },
+    { id: "frl_hag_stone", name: "Hag Stone", desc: "Flint bored through by water, hung on a nail so the eye it grew can watch the door. A FRACTURED RELICS finish.", swatch: "#4E336D" },
+    { id: "frl_sigil_wax", name: "Sigil Seal", desc: "Oxblood wax struck with a sigil die, every disc sagging into the skirt it cooled in. A FRACTURED RELICS finish.", swatch: "#57502F" },
+    { id: "frl_thread_cross", name: "Red Thread Cross", desc: "Crimson yarn wound over crossed rowan twigs, the ply twist running against the wind. A FRACTURED RELICS finish.", swatch: "#803442" },
+    { id: "frl_iron_cage", name: "Iron Cage", desc: "Riveted strap iron crossed over a void, forge scale still flaking from the bars. A FRACTURED RELICS finish.", swatch: "#276738" },
+    // SPB-105 / X-LAB-1, 2026-08-28 — Codex owner-authorized material lab.
+    { id: "xlab_abyssal_lens", name: "Abyssal Lens", desc: "Pressure-warped deep-sea glass with blue caustic lenses", swatch: "#061A3A" },
+    { id: "xlab_afterimage_lacquer", name: "Afterimage Lacquer", desc: "Magenta and cyan light trails trapped under black clear", swatch: "#FF3EA5" },
+    { id: "xlab_aerogel_fire", name: "Aerogel Fire", desc: "Weightless amber heat suspended in frosted silica", swatch: "#F0C070" },
+    { id: "xlab_anamorphic_pearl", name: "Anamorphic Pearl", desc: "Elongated pearl interference that turns with the surface", swatch: "#F4E8FF" },
+    { id: "xlab_anti_gravity_foil", name: "Anti-Gravity Foil", desc: "Levitating mint and gold foil planes with impossible shadows", swatch: "#B0FFB8" },
+    { id: "xlab_arc_weld_velvet", name: "Arc-Weld Velvet", desc: "Blue arc scars crossing soft black velvet chrome", swatch: "#70A8FF" },
+    { id: "xlab_black_ice_orbit", name: "Black Ice Orbit", desc: "Black ice rings and frozen orbital shear", swatch: "#153B66" },
+    { id: "xlab_bloomglass", name: "Bloomglass", desc: "Hot-pink glass blooms rising from cool translucent fractures", swatch: "#FF7BCB" },
+    { id: "xlab_brunel_current", name: "Brunel Current", desc: "Copper engineering-current waves through black enamel", swatch: "#D68B4A" },
+    { id: "xlab_caustic_engine", name: "Caustic Engine", desc: "Machined cyan caustics with deep dark engine cavities", swatch: "#2FFFF0" },
+    { id: "xlab_ceramic_storm", name: "Ceramic Storm", desc: "White ceramic tension cracks carrying electric blue glaze", swatch: "#D5E5FF" },
+    { id: "xlab_chiral_mercury", name: "Chiral Mercury", desc: "Liquid mercury spiraling differently on each side of the sheet", swatch: "#C6C9E8" },
+    { id: "xlab_chromatophore", name: "Chromatophore", desc: "Living color cells blooming beneath a glossy skin", swatch: "#6AFF9B" },
+    { id: "xlab_cinder_mirror", name: "Cinder Mirror", desc: "Mirror-black ash plate cut by incandescent cinder veins", swatch: "#FF5A22" },
+    { id: "xlab_coral_voltage", name: "Coral Voltage", desc: "Electric coral growth branching inside clear pink resin", swatch: "#FF6F92" },
+    { id: "xlab_cryogenic_sunset", name: "Cryogenic Sunset", desc: "Ice-blue metal flash crossed by an impossible warm horizon", swatch: "#9FCBFF" },
+    { id: "xlab_deep_time", name: "Deep Time", desc: "Mineral time-lapse bands pressed into violet-black clear", swatch: "#7250B8" },
+    { id: "xlab_dichroic_skin", name: "Dichroic Skin", desc: "Thin dichroic skin switching cyan, violet and hot gold", swatch: "#D35CFF" },
+    { id: "xlab_electric_ink", name: "Electric Ink", desc: "Conductive blue ink spreading in precise capillary rivers", swatch: "#1D8BFF" },
+    { id: "xlab_ferrofluid_silk", name: "Ferrofluid Silk", desc: "Black ferrofluid spikes folded into violet satin", swatch: "#4C2A6D" },
+    { id: "xlab_ghost_transmission", name: "Ghost Transmission", desc: "Pale transmission lines fading through smoked blue glass", swatch: "#DDF7FF" },
+    { id: "xlab_hologram_metal", name: "Hologram Metal", desc: "Hard metallic hologram plates with spectral refraction", swatch: "#7AFFE8" },
+    // SPB-105 / IMPOSSIBLE-FIRST-LIGHT, 2026-08-29 — separate cards, never a
+    // Hologram Metal replacement. Both routes and static picker assets exist.
+    { id: "impossible_cinder_pulse", name: "Cinder Pulse", desc: "Dark reactive microfacets with cyan, violet, and ember material travel", swatch: "#2B1833" },
+    { id: "impossible_hologram_noir", name: "Hologram Noir", desc: "Graphite optical lattice with controlled cyan, violet, and green travel", swatch: "#18242C" },
+    { id: "impossible_cinder_aurora", name: "Cinder Aurora", desc: "Cinder Pulse's lattice with black beside deep violet and glints of gold, cobalt, pink, forest and oxblood filling the spaces; hidden regions choose which class fires", swatch: "#1C0A2E" },
+    { id: "impossible_cinder_oxblood", name: "Cinder Oxblood", desc: "A tighter cinder lattice of black beside dark red and dark gold, glints of brass, teal, magenta and lime, a two-population spec of pinks and greens", swatch: "#3A0810" },
+    { id: "impossible_cinder_abyss", name: "Cinder Abyss", desc: "A wider, rhombic cinder lattice of black beside navy and deep teal with amber, plum, moss, red and ice glints; the hidden pattern travels in four colours", swatch: "#071A3A" },
+    { id: "impossible_hologram_ember", name: "Hologram Ember", desc: "Hologram Noir's perfect squares on dark bronze, each split into a 3x3 micro-grid of its own hues, seeded with vivid colour squares and black ones, every sub-cell its own material", swatch: "#2A1A12" },
+    { id: "impossible_hologram_ice", name: "Hologram Ice", desc: "Twelve-pixel silver squares in quadrants of cold prism colour, glossed, with tinted brights and navy-black darks; a sub-cell spec in eight tiers per channel", swatch: "#6C7480" },
+    { id: "impossible_hologram_verdigris", name: "Hologram Verdigris", desc: "Twenty-pixel squares on oxidised green, a 4x4 micro-grid of gold, teal and magenta in each, more darks, more brights, a spec that changes every five pixels", swatch: "#0D1C16" },
+    { id: "impossible_penrose_reactor", name: "Penrose Reactor", desc: "A five-fold quasicrystal lattice that never repeats: every polygon its own jewel tone, a wandering class of cells running chrome-hot so the lattice travels under the light", swatch: "#3B2A7A" },
+    { id: "impossible_nacre_terrace", name: "Nacre Terrace", desc: "Thin-film interference on stepped aragonite platelets: true Newton colours computed from film thickness along spiral growth terraces, every platelet its own shade and material", swatch: "#B48CC8" },
+    { id: "impossible_caustic_loom", name: "Caustic Loom", desc: "Light refracted through a woven micro-lens and photon-binned onto the paint: sinuous rainbow-edged caustic filaments over a teal and wine twill, glass where the light folds", swatch: "#1E4A52" },
+    { id: "xlab_ion_bloom", name: "Ion Bloom", desc: "Violet ion flowers expanding through conductive midnight", swatch: "#A759FF" },
+    { id: "xlab_laminar_magma", name: "Laminar Magma", desc: "Thin orange magma lamellae moving under obsidian clear", swatch: "#FF8A20" },
+    { id: "xlab_luminous_carbon", name: "Luminous Carbon", desc: "Conductive carbon ribs emitting a controlled seafoam glow", swatch: "#6EFFE0" },
+    { id: "xlab_memory_glass", name: "Memory Glass", desc: "Lilac glass remembers stress paths as ghost reflections", swatch: "#E6A4FF" },
+    { id: "xlab_nebula_ceramic", name: "Nebula Ceramic", desc: "Cobalt ceramic with embedded violet firing clouds", swatch: "#755BFF" },
+    { id: "xlab_photon_patina", name: "Photon Patina", desc: "Photon oxidation crawling over aged bronze metal", swatch: "#B6FF42" },
+    { id: "xlab_quantum_tide", name: "Quantum Tide", desc: "Blue quantum tide folding through a black tidal mirror", swatch: "#00CFFF" },
+    { id: "xlab_sonic_chrome", name: "Sonic Chrome", desc: "Golden sonic pressure waves embossed in mirror chrome", swatch: "#FFDC66" },
+    // SPB X-LAB-SHIFT, 2026-08-29 — owner commission: 20 Hologram-Metal-mechanism
+    // finishes (region-coherent material cells; "colors DANCE and are ALIVE").
+    { id: "xlab_prism_ivy", name: "Prism Ivy", desc: "Phyllotaxis chrome florets blooming along a rotating spiral of light", swatch: "#59FF9E" },
+    { id: "xlab_shatter_royale", name: "Shatter Royale", desc: "Royal glass shards trading crown-purple fire across chrome fault lines", swatch: "#B44BFF" },
+    { id: "xlab_moire_reactor", name: "Moiré Reactor", desc: "Twin hex lattices beating slow interference zones through a cyan mesh", swatch: "#2FE8FF" },
+    { id: "xlab_serpent_scales", name: "Serpent Scales", desc: "Imbricated viper shingles flexing gold-green muscle bands under skin", swatch: "#7CFF4A" },
+    { id: "xlab_stained_circuit", name: "Stained Circuit", desc: "Obsidian IC blocks waking in Manhattan waves along chrome trace corridors", swatch: "#3D6BFF" },
+    { id: "xlab_riptide_parquet", name: "Riptide Parquet", desc: "Herringbone slats flipping in pairs as a teal riptide pours through the weave", swatch: "#31E8C8" },
+    { id: "xlab_comet_terrace", name: "Comet Terrace", desc: "Shattered ring terraces igniting sector by sector under a sweeping radar arm", swatch: "#FF9A3E" },
+    { id: "xlab_quasar_quilt", name: "Quasar Quilt", desc: "Aperiodic rhomb quilt where five hidden waves crest violet-gold fire", swatch: "#C9A7FF" },
+    { id: "xlab_glacier_chord", name: "Glacier Chord", desc: "Triangulated ice panes ringing as a pressure front migrates through the chords", swatch: "#9FDFFF" },
+    { id: "xlab_murmuration", name: "Murmuration", desc: "A chrome starling flock banking together wherever the field aligns", swatch: "#9AF29A" },
+    { id: "xlab_ember_weave", name: "Ember Weave", desc: "Carbon basketweave whose over-slats catch a creeping flame front first", swatch: "#FF7A3C" },
+    { id: "xlab_borealis_shards", name: "Borealis Shards", desc: "Tall aurora curtain shards passing a horizontal band of living light", swatch: "#5CFFC9" },
+    { id: "xlab_medusa_lattice", name: "Medusa Lattice", desc: "Polar jelly lace pulsing bioluminescent heartbeat rings outward", swatch: "#FF6FB0" },
+    { id: "xlab_static_bloom", name: "Static Bloom", desc: "Reaction blooms flipping coast-to-coast when the phase tide crosses them", swatch: "#E86FFF" },
+    { id: "xlab_chrono_strata", name: "Chrono Strata", desc: "Fault-stepped bronze terraces creeping band by band like a geologic clock", swatch: "#C8A05A" },
+    { id: "xlab_hex_reliquary", name: "Hex Reliquary", desc: "Cloisonné honeycomb trading royal enamel as twin ripples interfere", swatch: "#4A7BFF" },
+    { id: "xlab_velvet_meteor", name: "Velvet Meteor", desc: "Meteor teardrops streaking black velvet in synchronized copper showers", swatch: "#FFD27A" },
+    { id: "xlab_labyrinth_pulse", name: "Labyrinth Pulse", desc: "A chrome-vein maze whose rooms light as the pulse solves the labyrinth", swatch: "#3CD9B0" },
+    { id: "xlab_opal_tessellate", name: "Opal Tessellate", desc: "Milk-opal pentagon field flashing prismatic fire cell by cell", swatch: "#F2E8FF" },
+    { id: "xlab_singularity_bloom", name: "Singularity Bloom", desc: "A turning spiral galaxy whose arm cells ignite outward from the void core", swatch: "#B26BFF" },
+    // Material World / SOURCE PATTERN PLATES - real source plates + paired spec maps
+    { id: "pp_holographic_oil_circuit", name: "Holographic Oil Circuit", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#ba9dff" },
+    { id: "pp_black_emboss_mandala", name: "Black Emboss Mandala", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#2e2926" },
+    { id: "pp_graphite_cross_lattice", name: "Graphite Cross Lattice", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#c7c4bc" },
+    { id: "pp_marble_flow_pearl", name: "Marble Flow Pearl", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#d8d2c8" },
+    { id: "pp_acid_carbon_mesh", name: "Acid Carbon Mesh", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#c7e23c" },
+    { id: "pp_noir_houndstooth_star", name: "Noir Houndstooth Star", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#5a5962" },
+    { id: "pp_hazard_chevron_weave", name: "Hazard Chevron Weave", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#e3c817" },
+    { id: "pp_burn_hole_mesh", name: "Burn Hole Mesh", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#4d4238" },
+    { id: "pp_teal_hex_haze", name: "Teal Hex Haze", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#7ec3bf" },
+    { id: "pp_shadow_diamond_mesh", name: "Shadow Diamond Mesh", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#8b8e91" },
+    { id: "pp_talavera_tile_riot", name: "Talavera Tile Riot", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#1e8cb6" },
+    { id: "pp_green_plasma_vein", name: "Green Plasma Vein", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#64d550" },
+    { id: "pp_neon_fracture_net", name: "Neon Fracture Net", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#3aff45" },
+    { id: "pp_pink_checker_carbon", name: "Pink Checker Carbon", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#ed4fa4" },
+    { id: "pp_red_herringbone_heat", name: "Red Herringbone Heat", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#bd181d" },
+    { id: "pp_chrome_oval_chain", name: "Chrome Oval Chain", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#d8dce4" },
+    { id: "pp_terracotta_ceramic_grid", name: "Terracotta Ceramic Grid", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#9b5d3e" },
+    { id: "pp_gunmetal_geo_tessellation", name: "Gunmetal Geo Tessellation", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#74787b" },
+    { id: "pp_tokyo_script_textile", name: "Tokyo Script Textile", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#cf302c" },
+    { id: "pp_lime_pixel_confetti", name: "Lime Pixel Confetti", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#90d93b" },
+    { id: "pp_psychedelic_floral_spin", name: "Psychedelic Floral Spin", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#d37ad6" },
+    { id: "pp_ice_facet_shatter", name: "Ice Facet Shatter", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#8fc8ff" },
+    { id: "pp_ember_circuit_maze", name: "Ember Circuit Maze", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#ef4b1e" },
+    { id: "pp_blue_polygon_shatter", name: "Blue Polygon Shatter", desc: "Real-source pattern plate cropped to 2048 with paired image-derived dynamic spec channels.", swatch: "#2954c6" },
+    // Cultural / RISING SUN — image-authored 2048 paint plates with paired dynamic spec maps
+    { id: "rs_rising_sun_flare", name: "Rising Sun Flare", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_oni_bloodshift", name: "Oni Bloodshift", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_sakura_storm", name: "Sakura Storm", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_hakuryu_ice", name: "Hakuryu Ice", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_kuro_dragon", name: "Kuro Dragon", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_bamboo_zen", name: "Bamboo Zen", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_temple_gold", name: "Temple Gold", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_geisha_whisper", name: "Geisha Whisper", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_thunder_dragon", name: "Thunder Dragon", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_koi_ascension", name: "Koi Ascension", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_kyoto_lantern", name: "Kyoto Lantern", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_shibuya_pulse", name: "Shibuya Pulse", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_kintsugi_moon", name: "Kintsugi Moon", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_fuji_dawn", name: "Fuji Dawn", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_matcha_ceremony", name: "Matcha Ceremony", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_kabuki_inferno", name: "Kabuki Inferno", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_indigo_tsunami", name: "Indigo Tsunami", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_vermilion_torii", name: "Vermilion Torii", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_crane_garden", name: "Crane Garden", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_sumi_eclipse", name: "Sumi Eclipse", desc: "Japanese-inspired cultural lacquer texture with paired dynamic spec detail.", swatch: "#57576d" },
+    { id: "rs_yurei_veil", name: "Yurei Veil", desc: "Pale ghost-silk moonlit lacquer with drifting spirit veils, dark shrine red, and spectral pearl depth.", swatch: "#57576d" },
+    { id: "rs_kitsune_ember", name: "Kitsune Ember", desc: "Red-orange fox-fire metallic with shrine shadow, ember motion, and sly golden spec heat.", swatch: "#57576d" },
+    { id: "rs_oni_nocturne", name: "Oni Nocturne", desc: "Black-crimson oni mask finish with lacquer smoke, demon-red relief, and night-market menace.", swatch: "#57576d" },
+    { id: "rs_gashadokuro_moon", name: "Gashadokuro Moon", desc: "Cold blue moonbone finish with giant skeleton silhouette, misty shrine detail, and icy spectral texture.", swatch: "#57576d" },
+    { id: "rs_jorogumo_silk", name: "Jorogumo Silk", desc: "Black silk spider finish with pale gold webwork, hidden kimono warmth, and venomous gloss shimmer.", swatch: "#57576d" },
+    { id: "rs_tengu_storm", name: "Tengu Storm", desc: "Electric blue-violet storm finish with tengu wings, lightning fracture, and charged shrine atmosphere.", swatch: "#57576d" },
+    { id: "rs_bakeneko_velvet", name: "Bakeneko Velvet", desc: "Purple-black cat-spirit velvet with moon curls, lantern flecks, and mischievous sakura glow.", swatch: "#57576d" },
+    { id: "rs_nure_onna_tide", name: "Nure-Onna Tide", desc: "Deep indigo serpent tide finish with moonlit wave scales, cyan foam, and wet mythic movement.", swatch: "#57576d" },
+    { id: "rs_hyakki_parade", name: "Hyakki Parade", desc: "Chaotic yokai parade in toxic green, purple lanterns, and black festival lacquer.", swatch: "#57576d" },
+    { id: "rs_bell_of_damned", name: "Bell of the Damned", desc: "Dark temple bell finish with blood moon haze, smoky bronze texture, and haunted red accents.", swatch: "#57576d" },
+    { id: "rs_sakura_cascade", name: "Sakura Cascade", desc: "Bright pink sakura river over warm gold haze with temple silhouettes and soft pearl flower detail.", swatch: "#57576d" },
+    { id: "rs_wisteria_reverie", name: "Wisteria Reverie", desc: "Lavender-blue moon garden pearl with wisteria mist, bridge depth, and cool flake shimmer.", swatch: "#57576d" },
+    { id: "rs_lotus_reverie", name: "Lotus Reverie", desc: "Soft aqua lotus pond pearl with watercolor depth, lily pads, and fine green-blue sparkle.", swatch: "#57576d" },
+    { id: "rs_peony_festival", name: "Peony Festival", desc: "Hot coral peony festival metallic with lantern warmth, fan detail, and dense floral gloss.", swatch: "#57576d" },
+    { id: "rs_iris_rain", name: "Iris Rain", desc: "Cool blue iris garden pearl with rain-silver highlights, temple depth, and violet petal shimmer.", swatch: "#57576d" },
+    { id: "rs_camellia_glow", name: "Camellia Glow", desc: "Deep rose camellia lacquer with lantern gold, crimson petal relief, and lush festival sparkle.", swatch: "#57576d" },
+    { id: "rs_plum_blossom_dawn", name: "Plum Blossom Dawn", desc: "Peach-pink dawn pearl with plum branches, distant temple, and soft sunlit blossom haze.", swatch: "#57576d" },
+    { id: "rs_chrysanthemum_sun", name: "Chrysanthemum Sun", desc: "Radiant yellow-orange chrysanthemum metallic with sunburst petals and warm temple gold.", swatch: "#57576d" },
+    { id: "rs_hydrangea_mist", name: "Hydrangea Mist", desc: "Pale blue-white hydrangea mist pearl with soft bridge depth and airy cold-flower shimmer.", swatch: "#57576d" },
+    { id: "rs_koi_pond_bloom", name: "Koi Pond Bloom", desc: "Turquoise koi pond finish with lotus pink, orange koi motion, and garden-water sparkle.", swatch: "#57576d" },
+    { id: "rs_bosozoku_riot", name: "Bosozoku Riot", desc: "Red rising-sun street-race chrome with black speed stripes, kanji energy, and aggressive metallic grit.", swatch: "#57576d" },
+    { id: "rs_wangan_midnight_pulse", name: "Wangan Midnight Pulse", desc: "Neon purple-blue highway pulse with Japanese street grid, star flake, and high-speed gloss.", swatch: "#57576d" },
+    { id: "rs_touge_apex", name: "Touge Apex", desc: "Black graphite touge finish with silver mountain-road linework and stealth carbon sparkle.", swatch: "#57576d" },
+    { id: "rs_drift_hanami_oversteer", name: "Drift Hanami Oversteer", desc: "Pink-black drift spiral with sakura petals, smoke curves, and oversteer gloss movement.", swatch: "#57576d" },
+    { id: "rs_kaido_chrome_bloom", name: "Kaido Chrome Bloom", desc: "Red-silver kaido racer chrome with rising-sun bloom, sakura lanes, and deep flake paneling.", swatch: "#57576d" },
+    { id: "rs_dekotora_electric_freight", name: "Dekotora Electric Freight", desc: "Electric freight-truck neon finish with blue-magenta panels, chrome light bars, and festival glow.", swatch: "#57576d" },
+    { id: "rs_time_attack_grid_shock", name: "Time Attack Grid Shock", desc: "Black-red time-attack grid with Fuji strike, speedline texture, and hot digital spec pulses.", swatch: "#57576d" },
+    { id: "rs_akane_flake_fog", name: "Akane Flake Fog", desc: "Deep red akane microflake haze with dark lacquer scratches and ember-glow metallic depth.", swatch: "#57576d" },
+    { id: "rs_kurogane_rain", name: "Kurogane Rain", desc: "Blackened steel rain texture with blue-red streaks, wet abrasion, and moody lacquer depth.", swatch: "#57576d" },
+    { id: "rs_kinpaku_blaze", name: "Kinpaku Blaze", desc: "Gold-leaf blaze field with orange copper grain, hot metallic flecks, and layered foil texture.", swatch: "#57576d" },
+    { id: "rs_ryokucha_scroll", name: "Ryokucha Scroll", desc: "Dark green tea-lacquer scrollwork with emerald flake pockets and carved metallic currents.", swatch: "#57576d" },
+    { id: "rs_mikan_pearl", name: "Mikan Pearl", desc: "Mikan orange pearl fade with coral-gold shimmer, soft flake texture, and warm candy depth.", swatch: "#57576d" },
+
+    // Cultural / VIVA MEXICO — cleaned image-authored 2048 paint plates with paired dynamic spec maps
+    // Cultural / FORBIDDEN DRAGON — dense imperial dragon brocades; spec traced from the art at render time (gold->metal, scales/clouds/flames -> decorrelated M/R/Cc). See engine/paint_v2/cultural_forbidden_dragon.py.
+    { id: "fd_azure_celestial", name: "Azure Celestial", desc: "Cobalt-and-silver imperial dragon brocade — sky dragons, clouds and scales in gold linework; spec traced from the art for a shimmering scale-and-cloud reveal.", swatch: "#2a52be" },
+    { id: "fd_vermilion_fire", name: "Vermilion Fire", desc: "Crimson-and-gold dragon brocade with curling flame fields; the fire motifs trace into glossy cut-outs that breathe under sun.", swatch: "#e3431f" },
+    { id: "fd_abyssal_sea", name: "Abyssal Sea", desc: "Jade-and-aqua sea-dragon brocade with foam crests; wave and scale motifs gate the angle reveal.", swatch: "#1f7a6b" },
+    { id: "fd_imperial_gold", name: "Imperial Gold", desc: "Radiant gold-on-lacquer dragon-scale damask; gold linework reads as metal, lacquer cells as glossy clearcoat.", swatch: "#d4af37" },
+    { id: "fd_storm_black", name: "Storm Black", desc: "Black-and-silver storm-dragon brocade with lightning forks; moody dark ground laced with electric metal veins.", swatch: "#2c3e50" },
+    { id: "fd_jade_empress", name: "Jade Empress", desc: "Carved-jade dragon brocade — translucent greens with white relief and gold; sculpted scale field.", swatch: "#2e8b57" },
+    { id: "fd_frost_emperor", name: "Frost Emperor", desc: "Ice-white and glacier-blue dragon brocade with snowflake and frost-fern motifs; crisp cool reveal.", swatch: "#9fd3e0" },
+    { id: "fd_bronze_relic", name: "Bronze Relic", desc: "Antique bronze and verdigris dragon-coin brocade; aged-treasure patina with gold-leaf relief.", swatch: "#8c6a3f" },
+    { id: "fd_pearl_chaser", name: "Pearl Chaser", desc: "Red-and-gold dragons chasing flaming pearls; the pearls trace into glowing focal gems scattered across the body.", swatch: "#c8102e" },
+    { id: "fd_dragon_phoenix", name: "Dragon & Phoenix", desc: "Interlocking dragon-and-phoenix medallion brocade in cobalt, crimson and gold; balanced duo reveal.", swatch: "#b5432f" },
+    { id: "fd_phoenix_fenghuang", name: "Phoenix Fenghuang", desc: "Crimson-orange-and-teal phoenix brocade — sweeping eye-spot tail-feathers fanning every direction; gold linework on a dark ground.", swatch: "#d4502a" },
+    { id: "fd_jade_qilin", name: "Jade Qilin", desc: "Jade-and-gold qilin brocade — scaled unicorn-beasts and cloud scrolls in all orientations; auspicious omnidirectional weave.", swatch: "#2e8b57" },
+    { id: "fd_guardian_foo_lion", name: "Guardian Foo Lion", desc: "Imperial-red-and-gold temple-lion brocade — curly-maned foo dogs with coins and knots; ivory highlights flash as pearl.", swatch: "#b8252b" },
+    { id: "fd_vermilion_bird", name: "Vermilion Bird", desc: "Vermilion-and-flame-gold southern-phoenix brocade with ember motifs; fiery birds turning every way under sun.", swatch: "#e0401e" },
+    { id: "fd_black_tortoise", name: "Black Tortoise", desc: "Black-jade-and-silver Xuanwu brocade — tortoise shells and serpents with water scrolls; deep moody ground.", swatch: "#20413a" },
+    { id: "fd_white_tiger_baihu", name: "White Tiger Baihu", desc: "White-silver-and-gold Bai Hu brocade — black-striped tigers prowling all directions with wind curls and coins.", swatch: "#c9a84a" },
+    { id: "fd_crane_garden", name: "Crane Garden", desc: "Pale-jade crane-garden brocade — red-crowned cranes, pine, lotus and peony; light airy ground for a softer reveal.", swatch: "#9cc5a1" },
+    { id: "fd_koi_ascension", name: "Koi Ascension", desc: "Cobalt-and-gold koi brocade — orange-and-white carp swimming every way over foam swirls and coins.", swatch: "#1b3fa0" },
+    { id: "fd_pixiu_fortune", name: "Pixiu Fortune", desc: "Antique-gold-and-jade Pixiu brocade — winged wealth-beasts amid coin showers; gold reads as metal, jade as gloss.", swatch: "#b8860b" },
+    { id: "fd_golden_toad_jinchan", name: "Golden Toad Jinchan", desc: "Gold-on-lucky-red money-toad brocade — three-legged Jin Chan with coin strings and lotus; opulent prosperity weave.", swatch: "#c8881f" },
+    // === LET FREEDOM RING FINISHES 2026-06-09 START === (fully procedural — zero image plates)
+    { id: "lfr_old_glory_flux", name: "Old Glory Flux", desc: "Deep navy lacquer dusted with red-and-white star-flecks under a multi-directional color-shift sheen that travels red-white-blue as the car turns.", swatch: "#1b2a5e" },
+    { id: "lfr_rockets_red_glare", name: "Rockets Red Glare", desc: "Firework bursts of concentric red and gold rings on a near-black night field — the sparks flare mirror-bright only when light rakes the panel.", swatch: "#3a0d18" },
+    { id: "lfr_liberty_torch", name: "Liberty Torch", desc: "Omnidirectional licking flame tongues in red, orange and gold over ember-black — wrapped torch heat that glows hotter at the tips in clearcoat.", swatch: "#c2491b" },
+    { id: "lfr_eagle_ascendant", name: "Eagle Ascendant", desc: "Dense gold-on-navy brocade of scattered feather and wing motifs at every angle — imperial eagle damask that catches gilt light from any direction.", swatch: "#22305e" },
+    { id: "lfr_we_the_people", name: "We The People", desc: "Aged parchment cross-hatched with an engraved banknote guilloche — debossed ink lines in every direction with a low scholarly sheen.", swatch: "#d8c9a3" },
+    { id: "lfr_midnight_militia", name: "Midnight Militia", desc: "Tactical matte multicam in muted navy, slate and olive blotches with fine deep grain — dead-flat, light-eating stealth patriot camo.", swatch: "#2c3440" },
+    { id: "lfr_freedom_forge", name: "Freedom Forge", desc: "Molten steel mid-pour — glowing orange cracks web across cooling gunmetal cells with white-hot sparks, the cracks blazing in clearcoat.", swatch: "#3a3f46" },
+    { id: "lfr_amber_waves", name: "Amber Waves", desc: "Rippling wheat-gold grain bending under crossing winds — soft sheen-corridors roll across the gold like sun on a prairie.", swatch: "#d9a93f" },
+    { id: "lfr_glory_chrome", name: "Glory Chrome", desc: "Liquid show-chrome brushed in crossing directions and dusted with red, white and blue mirror flecks — a polished patriot mirror.", swatch: "#c9ced8" },
+    { id: "lfr_sparkler_dusk", name: "Sparkler Dusk", desc: "Dusk-purple twilight scattered with comet-spark micro-flake — tapered spark streaks at every angle, each tipped with a twinkling white-hot flake.", swatch: "#3c2a5e" },
+    // === LET FREEDOM RING FINISHES 2026-06-09 END ===
+    // === FABLE FINISHES 2026-06-09 START === (color-science flagship set — fully procedural)
+    { id: "fable_ember_glass", name: "Ember Glass", desc: "Blood-orange candy laid over coarse silver flake, shattered by a crackle relief: the coat burns thin and fiery on every plateau and pools deep crimson-black in the crack valleys. Under track lights the crack web glows wet while flake glints spark across the faces.", swatch: "#b3441a" },
+    { id: "fable_glacier_core", name: "Glacier Core", desc: "Crushed-ice facets locked under arctic cyan candy: every angular shard tips its own way, the coat staying thin and bright on the faces while the fissures between shards flood deep sapphire. Edge glints flash along the shard lines like sun on broken ice.", swatch: "#2e8fb8" },
+    { id: "fable_abyss_lantern", name: "Abyss Lantern", desc: "A near-black deep-sea teal so thick the metal barely survives the dive - until light rakes across it and hidden lantern cells bloom out of the clearcoat like bioluminescence. Head-on it is abyss; at an angle the car is alive.", swatch: "#06282c" },
+    { id: "fable_stained_aurora", name: "Stained Aurora", desc: "A leaded stained-glass window poured over silver leaf: every flow-warped pane is its own jewel - ruby, amber, emerald, sapphire, violet - in deep candy glass that pools darker toward its lead border. Hand-rolled ripple catches the light inside each pane.", swatch: "#7a3fa0" },
+    { id: "fable_prism_veil", name: "Prism Veil", desc: "Banded thin-film interference orders drift like a torn veil over a near-black cherry base - amber, magenta and violet plateaus split by prismatic shimmer, with the order edges flaring under direct light.", swatch: "#4a1428" },
+    { id: "fable_oilforge", name: "Oilforge", desc: "Oil-slick rings bloom in quantized Newton bands around scattered heat spots on brushed gunmetal - the brush grain changes direction patch to patch, and the ring crests flare while the heat centers pool with wet gloss.", swatch: "#56606c" },
+    { id: "fable_tempered_dawn", name: "Tempered Dawn", desc: "Titanium weld-temper: straw, bronze, violet and blue heat bands trace curling weld paths across raw brushed metal, and the bead line itself flares like fresh chrome under direct light.", swatch: "#b08a3c" },
+    { id: "fable_pulse_alloy", name: "Pulse Alloy", desc: "Concentric pulses ripple out from scattered impact points, every ring order snapping to a different hue - teal, violet, magenta, gold - before fading into brushed alloy with a soft pooled glow.", swatch: "#8a4a2c" },
+    { id: "fable_velvet_eclipse", name: "Velvet Eclipse", desc: "Deep indigo velvet shot through with a molten-gold micro lattice — head-on it reads midnight, raking sun sets the gold pools on fire while eclipse coronas glow in the clearcoat.", swatch: "#1c1c4e" },
+    { id: "fable_wovenlight", name: "Wovenlight", desc: "An over/under ribbon weave of emerald satin and royal-violet mirror that flips color as the car turns — dive shadows give the basket real depth and light pools diagonally across the weave.", swatch: "#1e6e4e" },
+    { id: "fable_sovereign_flip", name: "Sovereign Flip", desc: "Three paints in one: matte oxblood, mirror champagne and glass-deep emerald candy split the body into fine inked territories — every sun angle shows you a different car.", swatch: "#5e1e26" },
+    { id: "fable_static_bloom", name: "Static Bloom", desc: "Electric-cobalt micro-static, magenta filament streaks and amber soft blooms each claim their own territory, their own hue family and their own light behavior — a triple-personality finish.", swatch: "#4e3a8e" },
+    { id: "fable_aurora_travel", name: "Aurora Travel", desc: "An aurora curtain that physically travels: glossy corridors cut across the teal-violet-magenta flow, so the live highlight slides through different hues as the car rotates, while curtain-edge filaments flare icy white under direct light.", swatch: "#2a6e8e" },
+    { id: "fable_saffron_circuit", name: "Saffron Circuit", desc: "Etched micro-circuitry in saffron, rose and ember: trace density steers the hue, the grooves polish glossy and pool dark candy, and every via dot glows wet under the clear.", swatch: "#d08a2a" },
+    { id: "fable_quicksilver_garden", name: "Quicksilver Garden", desc: "Liquid chrome overgrown with a garden of pastel cells — every cell grows its own mini color ramp in its own direction behind a mirror-bright rim, and each cell flares at its own angle as you drive.", swatch: "#c8ccd4" },
+    { id: "fable_emberline_drift", name: "Emberline Drift", desc: "Folded dune ridges drift from gold through crimson into smoke; satin sheen lanes cross the dunes at their own angles while embers pool and glow in the clearcoat between the crests.", swatch: "#b86a2a" },
+    { id: "fable_duomorph", name: "Duomorph", desc: "Two hidden artworks on one car: orbital glyph rosettes flare in the metallic under direct sun, while sweeping ribbon arcs glow out of the clearcoat at glancing angles — the deep graphite paint only whispers both until the light picks a side.", swatch: "#2c2c34" },
+    { id: "fable_nightbloom", name: "Nightbloom", desc: "Dusk indigo melting into plum, seeded from scattered night-sky anchors — and when low sun rakes the clearcoat, luminous petal-fan blooms open across the car that the paint itself only hints at.", swatch: "#2c1e4e" },
+    { id: "fable_magnetite_flow", name: "Magnetite Flow", desc: "Ferrofluid spike colonies frozen mid-pulse on wet black: the coat pools deep blue-black between the spikes and thins to bright steel at every crest, and only the spike tips spark when the sun hits them dead-on.", swatch: "#14161c" },
+    { id: "fable_comet_parade", name: "Comet Parade", desc: "A deep-space violet-to-teal field crossed by three separate comet swarms — heads spark in direct light, long wakes drag bright and dark gloss lanes across the panels, and bow-shock crescents glow out of the clearcoat at low sun.", swatch: "#241a44" },
+    // === FABLE FINISHES 2026-06-09 END ===
+    { id: "vm_aztec_sunfire", name: "Aztec Sunfire", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#923514" },
+    { id: "vm_talavera_azul", name: "Talavera Azul", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#434e6e" },
+    { id: "vm_quetzal_sunset", name: "Quetzal Sunset", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#8a4939" },
+    { id: "vm_sacred_heart_eclipse", name: "Sacred Heart Eclipse", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#5a382d" },
+    { id: "vm_guadalupe_lowrider", name: "Guadalupe Lowrider", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#51312a" },
+    { id: "vm_rosa_corazon", name: "Rosa Corazon", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#742c47" },
+    { id: "vm_mariachi_verde", name: "Mariachi Verde", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#5b4d2d" },
+    { id: "vm_calavera_violeta", name: "Calavera Violeta", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#4e3c57" },
+    { id: "vm_serape_sunburst", name: "Serape Sunburst", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#7c3917" },
+    { id: "vm_riviera_lowrider", name: "Riviera Lowrider", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#394f7a" },
+    { id: "vm_luchador_plata", name: "Luchador Plata", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#604d45" },
+    { id: "vm_luchador_rayo", name: "Luchador Rayo", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#3f4452" },
+    { id: "vm_cactus_sunset", name: "Cactus Sunset", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#871511" },
+    { id: "vm_sierra_verde", name: "Sierra Verde", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#446c44" },
+    { id: "vm_cenote_lace", name: "Cenote Lace", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#337d8b" },
+    { id: "vm_agave_pearl", name: "Agave Pearl", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#3f715d" },
+    { id: "vm_baja_horizon", name: "Baja Horizon", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#9a5c40" },
+    { id: "vm_pacific_coast_dawn", name: "Pacific Coast Dawn", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#947f7c" },
+    { id: "vm_copper_canyon", name: "Copper Canyon", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#8c6120" },
+    { id: "vm_sierra_niebla", name: "Sierra Niebla", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#909aa6" },
+    { id: "vm_oaxaca_moonwater", name: "Oaxaca Moonwater", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#1d2b45" },
+    { id: "vm_xolo_candy_desert", name: "Xolo Candy Desert", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#c3714f" },
+    { id: "vm_huichol_beadwork", name: "Huichol Beadwork", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#5c443d" },
+    { id: "vm_sonora_blue_calavera", name: "Sonora Blue Calavera", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#5c6574" },
+    { id: "vm_bajio_gold_calaveras", name: "Bajio Gold Calaveras", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#5d5037" },
+    { id: "vm_lucha_rosa", name: "Lucha Rosa", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#78474f" },
+    { id: "vm_desert_marigold", name: "Desert Marigold", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#624a30" },
+    { id: "vm_zapata_jade", name: "Zapata Jade", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#535b46" },
+    { id: "vm_cinco_spark", name: "Cinco Spark", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#585872" },
+    { id: "vm_mezcal_smoke", name: "Mezcal Smoke", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#595387" },
+    { id: "vm_riviera_corazon", name: "Riviera Corazon", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#614334" },
+    { id: "vm_noche_buena", name: "Noche Buena", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#694a3e" },
+    { id: "vm_rosario_gold", name: "Rosario Gold", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#7d3d21" },
+    { id: "vm_pyramid_shadow", name: "Pyramid Shadow", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#68331a" },
+    { id: "vm_fiesta_chrome", name: "Fiesta Chrome", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#602915" },
+    { id: "vm_maguey_pearl", name: "Maguey Pearl", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#6d2d18" },
+    { id: "vm_cantina_neon", name: "Cantina Neon", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#8b2f28" },
+    { id: "vm_azulejo_storm", name: "Azulejo Storm", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#714120" },
+    { id: "vm_calavera_royal", name: "Calavera Royal", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#7e3b17" },
+    { id: "vm_talavera_muertos", name: "Talavera Muertos", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#7a695a" },
+    { id: "vm_tulum_candelaria", name: "Tulum Candelaria", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#80411d" },
+    { id: "vm_eclipse_ofrenda", name: "Eclipse Ofrenda", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#673524" },
+    { id: "vm_charro_nocturne", name: "Charro Nocturne", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#37535e" },
+    { id: "vm_cempasuchil_noir", name: "Cempasuchil Noir", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#453f3a" },
+    { id: "vm_sierra_madre", name: "Sierra Madre", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#4b6053" },
+    { id: "vm_mole_negro", name: "Mole Negro", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#65483c" },
+    { id: "vm_veracruz_carnival", name: "Veracruz Carnival", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#803e23" },
+    { id: "vm_jalisco_flash", name: "Jalisco Flash", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#565964" },
+    { id: "vm_mosaic_jaguar", name: "Mosaic Jaguar", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#452e1e" },
+    { id: "vm_milagro_silver", name: "Milagro Silver", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#532015" },
+    { id: "vm_sacred_cenote", name: "Sacred Cenote", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#3e3027" },
+    { id: "vm_playa_dorada", name: "Playa Dorada", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#c49a77" },
+    { id: "vm_adobe_sunset", name: "Adobe Sunset", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#7a563c" },
+    { id: "vm_zapotec_thunder", name: "Zapotec Thunder", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#956b3b" },
+    { id: "vm_nopal_bloom", name: "Nopal Bloom", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#ab6832" },
+    { id: "vm_mayan_jade", name: "Mayan Jade", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#895c21" },
+    { id: "vm_neon_cantina", name: "Neon Cantina", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#5b3b65" },
+    { id: "vm_baja_cartografia", name: "Baja Cartografia", desc: "Mexican-inspired cultural lacquer texture with cleaned poster artwork and paired high-detail spec map depth.", swatch: "#998260" },
+
+    // Material World / GRUNGE & FUN - image-authored 2048 plates + matched dynamic spec maps
+    { id: "gf_x_1024293_6391", name: "Blacktop Neon Rain", desc: "Blacktop Neon Rain is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #casino-neon, #neon, #rain, #blacktop, #dots.", swatch: "#38513a" },
+    { id: "gf_x_1024294_6392", name: "Electric Green Scanline", desc: "Electric Green Scanline is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #scanline, #green, #glitch, #digital.", swatch: "#455923" },
+    { id: "gf_x_1152842_or6ilf0", name: "Midnight Blue Mesh", desc: "Midnight Blue Mesh is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #blue, #mesh, #halftone, #depth.", swatch: "#161e82" },
+    { id: "gf_x_1195794_6247", name: "Broken Glass Mosaic", desc: "Broken Glass Mosaic is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #punk-checker, #mosaic, #glass, #black-white, #cells.", swatch: "#797977" },
+    { id: "gf_x_1292", name: "Golden Circuit Lace", desc: "Golden Circuit Lace is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #disco-glitter, #gold, #circuit, #lace, #ornate.", swatch: "#edb013" },
+    { id: "gf_x_13845", name: "Rainbow Audio Shockwave", desc: "Rainbow Audio Shockwave is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #casino-neon, #rainbow, #wave, #audio, #neon.", swatch: "#722b49" },
+    { id: "gf_x_1434947_595", name: "Sunburst Polygon Pop", desc: "Sunburst Polygon Pop is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #comic-pop, #yellow, #polygon, #sunburst, #pop.", swatch: "#fed80d" },
+    { id: "gf_x_16302407_yellow_hexagon_halftone_pattern_backg", name: "Hazard Honeycomb Glow", desc: "Hazard Honeycomb Glow is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #yellow, #honeycomb, #hex, #halftone.", swatch: "#fec303" },
+    { id: "gf_x_18677", name: "Matrix Asphalt Rain", desc: "Matrix Asphalt Rain is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #matrix, #green, #rain, #asphalt.", swatch: "#203724" },
+    { id: "gf_x_18914258_casino_2021_11", name: "Lucky Dice Blackout", desc: "Lucky Dice Blackout is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #casino-neon, #casino, #dice, #cards, #black.", swatch: "#655d3e" },
+    { id: "gf_x_19034947_en9y_pjge_210709", name: "Gilded Mermaid Scales", desc: "Gilded Mermaid Scales is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #metal-flake, #scales, #gold, #white, #mermaid.", swatch: "#e0d4a8" },
+    { id: "gf_x_19516529_casino_2021_17", name: "Vegas Chip Nightfall", desc: "Vegas Chip Nightfall is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #casino-neon, #casino, #chips, #dots, #night.", swatch: "#5a4b2e" },
+    { id: "gf_x_20216645_6276400", name: "Bronze Maze Circuit", desc: "Bronze Maze Circuit is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #metal-flake, #bronze, #maze, #circuit, #geometric.", swatch: "#57462e" },
+    { id: "gf_x_20771417_v6t9_6fpy_210512", name: "Blue Koi Scale Pop", desc: "Blue Koi Scale Pop is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #acid-wash, #blue, #scales, #koi, #pop.", swatch: "#9fbdcf" },
+    { id: "gf_x_2149635369", name: "Molten Mustard Marble", desc: "Molten Mustard Marble is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #worn-rust, #marble, #molten, #red, #yellow.", swatch: "#a75416" },
+    { id: "gf_x_22587040_6656535", name: "Monochrome Pixel Snow", desc: "Monochrome Pixel Snow is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #pixel, #snow, #black-white, #static.", swatch: "#858585" },
+    { id: "gf_x_22587046_6656517", name: "Silver Pixel Gravel", desc: "Silver Pixel Gravel is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #pixel, #gravel, #silver, #static.", swatch: "#afafaf" },
+    { id: "gf_x_2311", name: "Cotton Candy Halftone Fade", desc: "Cotton Candy Halftone Fade is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #acid-wash, #gradient, #pastel, #halftone, #fade.", swatch: "#e7b8f2" },
+    { id: "gf_x_237560942_1f15d9a7_672f_4b74_9792_9a0daae8fbe2", name: "Red Checker Burnout", desc: "Red Checker Burnout is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #punk-checker, #checker, #red, #burnout, #punk.", swatch: "#7c100a" },
+    { id: "gf_x_2425", name: "Purple Reptile Circuit", desc: "Purple Reptile Circuit is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #purple, #scale, #reptile, #circuit.", swatch: "#6e60d3" },
+    { id: "gf_x_2474", name: "Lava Honeycomb Split", desc: "Lava Honeycomb Split is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #lava, #honeycomb, #yellow, #red.", swatch: "#c64816" },
+    { id: "gf_x_26323837_blue_hexagon_pattern_background", name: "Blue Honeycomb Haze", desc: "Blue Honeycomb Haze is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #blue, #honeycomb, #hex, #soft.", swatch: "#08aef7" },
+    { id: "gf_x_283511752_c9a714fc_a791_4c92_a2af_e3b8537ecaef", name: "Deep Blue Dot Fade", desc: "Deep Blue Dot Fade is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #blue, #dots, #halftone, #fade.", swatch: "#003c7c" },
+    { id: "gf_x_29035", name: "Torn Poster Static", desc: "Torn Poster Static is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #poster, #torn, #orange, #static.", swatch: "#c8775c" },
+    { id: "gf_x_30330639_lightabstrback14gradientd", name: "Rainbow Hex Tunnel", desc: "Rainbow Hex Tunnel is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #rainbow, #hex, #tunnel, #optical.", swatch: "#257324" },
+    { id: "gf_x_31587230_7837300", name: "Warped Arcade Checker", desc: "Warped Arcade Checker is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #punk-checker, #checker, #arcade, #warp, #purple.", swatch: "#8e6685" },
+    { id: "gf_x_3521", name: "Electric Scribble Storm", desc: "Electric Scribble Storm is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #casino-neon, #electric, #scribble, #storm, #neon.", swatch: "#235e9e" },
+    { id: "gf_x_391161788_673b312d_2817_44f1_bfa5_bc51bf8df42d", name: "Peach Stone Scuff", desc: "Peach Stone Scuff is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #worn-rust, #peach, #stone, #scuff, #weathered.", swatch: "#fea38d" },
+    { id: "gf_x_3946420_524", name: "Python Scale Armor", desc: "Python Scale Armor is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #metal-flake, #python, #scale, #armor, #brown.", swatch: "#9c8970" },
+    { id: "gf_x_4004", name: "Solar Mesh Fade", desc: "Solar Mesh Fade is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #acid-wash, #solar, #mesh, #gradient, #green.", swatch: "#bcb863" },
+    { id: "gf_x_417665166_62a76dd6_56af_4a68_b801_92f5967beda0", name: "Black White Decay Wall", desc: "Black White Decay Wall is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #decay, #wall, #black-white, #scratch.", swatch: "#7a7a7a" },
+    { id: "gf_x_420841114_17c7c800_04f4_4c25_8844_09134f10d3a7", name: "Frosted Vertical Smear", desc: "Frosted Vertical Smear is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #frost, #vertical, #smear, #silver.", swatch: "#868e96" },
+    { id: "gf_x_426098859_bfe8ddbc_e982_4a17_b396_d362c3e1e12f", name: "Redline Audio Pulse", desc: "Redline Audio Pulse is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #casino-neon, #red, #audio, #pulse, #wave.", swatch: "#e41e00" },
+    { id: "gf_x_426203826_fc914006_6101_4668_8c1d_3322a73a9319", name: "Rainbow Sonar Sweep", desc: "Rainbow Sonar Sweep is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #casino-neon, #rainbow, #sonar, #wave, #sweep.", swatch: "#af4300" },
+    { id: "gf_x_6090", name: "Sunset Mesh Burst", desc: "Sunset Mesh Burst is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #acid-wash, #sunset, #mesh, #orange, #red.", swatch: "#b9692b" },
+    { id: "gf_x_6113", name: "Toxic Green Mesh Fade", desc: "Toxic Green Mesh Fade is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #acid-wash, #green, #toxic, #mesh, #fade.", swatch: "#8c9f4a" },
+    { id: "gf_x_69", name: "Blue Digital Drizzle", desc: "Blue Digital Drizzle is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #blue, #digital, #drizzle, #rain.", swatch: "#0f414b" },
+    { id: "gf_x_819188_26851_nwdlx0", name: "Champagne Bubble Grid", desc: "Champagne Bubble Grid is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #disco-glitter, #champagne, #bubbles, #grid, #dots.", swatch: "#988650" },
+    { id: "gf_x_850287_o4yijt0", name: "Carnival Dot Burst", desc: "Carnival Dot Burst is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #disco-glitter, #carnival, #dots, #burst, #red.", swatch: "#a05457" },
+    { id: "gf_x_850288_o4yijy0", name: "Blue Starburst Marquee", desc: "Blue Starburst Marquee is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #disco-glitter, #blue, #starburst, #marquee, #dots.", swatch: "#3ea0b6" },
+    { id: "gf_x_8514125_3910277", name: "Magenta Static Weave", desc: "Magenta Static Weave is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #magenta, #static, #weave, #noise.", swatch: "#4f4183" },
+    { id: "gf_x_9121", name: "Toxic Diagonal Beam", desc: "Toxic Diagonal Beam is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #acid-wash, #toxic, #diagonal, #beam, #green.", swatch: "#94d402" },
+    { id: "gf_x_9169", name: "Cherry Sunrise Halftone", desc: "Cherry Sunrise Halftone is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #acid-wash, #cherry, #sunrise, #halftone, #orange.", swatch: "#e43f02" },
+    { id: "gf_x_9338", name: "Purple Blue Dot Mesh", desc: "Purple Blue Dot Mesh is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #purple, #blue, #dots, #mesh.", swatch: "#6f3aa8" },
+    { id: "gf_x_946728_oe3t1y0", name: "Blacklight Wireframe", desc: "Blacklight Wireframe is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #punk-checker, #blacklight, #wireframe, #grid, #neon.", swatch: "#2c282f" },
+    { id: "gf_x_947419_oe46fw0", name: "Prism Triangle Confetti", desc: "Prism Triangle Confetti is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #comic-pop, #prism, #triangle, #confetti, #rainbow.", swatch: "#5f8db0" },
+    { id: "gf_x_9819736_12811_1", name: "Dry Brush Carbon Scratch", desc: "Dry Brush Carbon Scratch is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #scratch, #carbon, #dry-brush, #black-white.", swatch: "#4d4d4d" },
+    { id: "gf_magnific_digital_illustration_a_dark_background_", name: "Radiant Dark Matter Burst", desc: "Radiant Dark Matter Burst is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #abstract-gradient, #radiant, #dark, #burst, #halftone.", swatch: "#352b24" },
+
+    // Cultural / UNION JACKED — cleaned 2048 plates; procedural relief-rich M/R/Cc spec (see cultural_union_jacked.py); DNA-polished like Viva Mexico.
+    { id: "uj_camden_signal_riot", name: "Camden Signal Riot", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#3a2c2d" },
+    { id: "uj_thames_after_dark", name: "Thames After Dark", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#14263a" },
+    { id: "uj_chelsea_razor_parade", name: "Chelsea Razor Parade", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#392b26" },
+    { id: "uj_kings_cross_mercury", name: "King's Cross Mercury", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#1d1818" },
+    { id: "uj_covent_garden_static", name: "Covent Garden Static", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#2b241f" },
+    { id: "uj_oxford_circus_chrome", name: "Oxford Circus Chrome", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#2f292f" },
+    { id: "uj_piccadilly_rain_stance", name: "Piccadilly Rain Stance", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#806661" },
+    { id: "uj_brick_lane_voltage", name: "Brick Lane Voltage", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#526877" },
+    { id: "uj_notting_carnival_glass", name: "Notting Carnival Glass", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#925d5c" },
+    { id: "uj_beat_burst", name: "Beat Burst", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#786f8f" },
+    { id: "uj_highland_heather_haze", name: "Highland Heather Haze", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#6e697f" },
+    { id: "uj_portobello_pearl_riot", name: "Portobello Pearl Riot", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#a09c6b" },
+    { id: "uj_liverpool_echo_lace", name: "Liverpool Echo Lace", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#456d76" },
+    { id: "uj_manchester_acid_union", name: "Manchester Acid Union", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#c8ccce" },
+    { id: "uj_glasgow_granite_soul", name: "Glasgow Granite Soul", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#a78c74" },
+    { id: "uj_belfast_harp_storm", name: "Belfast Harp Storm", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#2a4740" },
+    { id: "uj_edinburgh_castle_frost", name: "Edinburgh Castle Frost", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#131520" },
+    { id: "uj_welsh_dragon_lacquer", name: "Welsh Dragon Lacquer", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#677d8e" },
+    { id: "uj_cornwall_sea_spark", name: "Cornwall Sea Spark", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#302c40" },
+    { id: "uj_dover_white_cliff_pearl", name: "Dover White Cliff Pearl", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#758885" },
+    { id: "uj_brighton_pier_neon", name: "Brighton Pier Neon", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#6b7687" },
+    { id: "uj_southampton_dock_matte", name: "Southampton Dock Matte", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#294645" },
+    { id: "uj_silverstone_apex_flare", name: "Silverstone Apex Flare", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#30373d" },
+    { id: "uj_goodwood_heritage_flake", name: "Goodwood Heritage Flake", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#30373d" },
+    { id: "uj_isle_of_man_tt_chrome", name: "Isle of Man TT Chrome", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#242d34" },
+    { id: "uj_ulster_rally_tartan", name: "Ulster Rally Tartan", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#221d17" },
+    { id: "uj_highland_fling_metal", name: "Highland Fling Metal", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#4f5b6c" },
+    { id: "uj_loch_ness_deep_void", name: "Loch Ness Deep Void", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#24272f" },
+    { id: "uj_midnight_hearse_baroque", name: "Midnight Hearse Baroque", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#181718" },
+    { id: "uj_tudor_rose_filigree", name: "Tudor Rose Filigree", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#1b203c" },
+    { id: "uj_windsor_guard_gloss", name: "Windsor Guard Gloss", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#23396e" },
+    { id: "uj_shard_glass_rain", name: "Shard Glass Rain", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#262d28" },
+    { id: "uj_gherkin_twist_metal", name: "Gherkin Twist Metal", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#262b33" },
+    { id: "uj_black_cab_nocturne", name: "Black Cab Nocturne", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#2b4b62" },
+    { id: "uj_red_bus_velocity", name: "Red Bus Velocity", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#322c24" },
+    { id: "uj_routemaster_candy", name: "Routemaster Candy", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#352717" },
+    { id: "uj_mini_cooper_flip", name: "Mini Cooper Flip", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#2b1813" },
+    { id: "uj_aston_strait_silver", name: "Aston Strait Silver", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#5a6877" },
+    { id: "uj_bentley_brooklands_mist", name: "Bentley Brooklands Mist", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#576f9e" },
+    { id: "uj_rolls_phantom_veil", name: "Rolls Phantom Veil", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#434362" },
+    { id: "uj_lotus_elan_streak", name: "Lotus Elan Streak", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#654644" },
+    { id: "uj_mclaren_papaya_strike", name: "McLaren Papaya Strike", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#382b2c" },
+    { id: "uj_williams_fw_blueblood", name: "Williams FW Blueblood", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#7a606d" },
+    { id: "uj_jaguar_etype_silk", name: "Jaguar E-Type Silk", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec.", swatch: "#4c2f32" },
+    { id: "uj_blueblood_beatline", name: "Blueblood Beatline", desc: "Union Jacked cultural lacquer — poster artwork with relief-sculpted procedural M/R/Cc spec. Chromatic-shift spec layer for view-dependent colour travel.", swatch: "#6b555a" },
+
     // ★ COLORSHOXX WAVE 3 — Micro-Flake Color Shift (migrated from MICRO-FLAKE COLOR SHIFT)
     // 2-color micro-flake shifts
     { id: "cx_gold_green", name: "CX Gold-Green Flake", desc: "Warm gold with green-gold micro-flakes. Subtle shift — the car breathes between gold and olive.", swatch: "linear-gradient(135deg, #D4A017 0%, #8B9A1E 100%)" },
@@ -1207,15 +3637,15 @@ const MONOLITHICS = [
     { id: "cx_pink_yellow_pop", name: "CX Pink-Yellow Pop", desc: "Bubblegum meets sunshine. Hot pink and bright yellow at flake scale — surprisingly elegant.", swatch: "linear-gradient(135deg, #CC5588 0%, #DD88AA 33%, #DDCC66 66%, #CCAA33 100%)" },
     { id: "cx_purple_gold_majesty", name: "CX Purple-Gold Majesty", desc: "Deep purple and rich gold in noble opposition. LSU. Lakers. Royalty.", swatch: "linear-gradient(135deg, #553388 0%, #775599 33%, #BBAA44 66%, #DDCC33 100%)" },
     // ★ COLORSHOXX WAVE 3 — Angle-Dependent Shifts (migrated from DUAL COLOR SHIFT)
-    { id: "cx_custom_shift", name: "CX Custom Shift — Pick ANY 2 Colors", desc: "Choose any two colors and SPB builds a true angle-shift between them. Use this when the stock duos are close but you want your own face-to-edge flip.", swatch: "conic-gradient(from 0deg, #ff3388, #ffd926, #1a4de6, #1ae64d, #ff3388)" },
-    { id: "cx_pink_to_gold", name: "CX Pink → Gold Shift", desc: "Wide candy-to-gold roll with a molten arc profile — hot pink holds face-on, then pours into rich gold across the edges.", swatch: "linear-gradient(135deg, #FF3388 0%, #FFD926 100%)" },
-    { id: "cx_blue_to_orange", name: "CX Blue → Orange Shift", desc: "Hard cobalt-to-ember split with a sharper complementary flip than the softer duo shifts. Reads colder face-on and hotter at break angles.", swatch: "linear-gradient(135deg, #1A4DE6 0%, #FF800D 100%)" },
-    { id: "cx_purple_to_green", name: "CX Purple → Green Shift", desc: "Faceted Mystichrome-style jewel flip — royal purple on-axis, emerald-green flashes through the breaks and contour lines.", swatch: "linear-gradient(135deg, #991ACC 0%, #1AE64D 100%)" },
-    { id: "cx_teal_to_magenta", name: "CX Teal → Magenta Shift", desc: "Curved electric sweep with teal body color and neon-magenta edge ribbons. Louder and more liquid than the straight complementary pairs.", swatch: "linear-gradient(135deg, #00CCB3 0%, #E61A80 100%)" },
-    { id: "cx_red_to_cyan", name: "CX Red → Cyan Shift", desc: "High-contrast banded opposition — fire red face-on, ice cyan in crisp cool bands and edge flashes instead of one soft roll.", swatch: "linear-gradient(135deg, #E61A1A 0%, #1AE6E6 100%)" },
+    { id: "cx_custom_shift", name: "CX Prism Reactor Shift", desc: "Fixed deep-ink and magenta prism reactor finish. The old pick-any-two-color feature was removed; this is now a curated COLORSHOXX finish.", swatch: "conic-gradient(from 0deg, #10142e, #f214a8, #6447ff, #10142e)" },
+    { id: "cx_pink_to_gold", name: "CX Pink Gold Abstract Shift", desc: "Hot pink and rich gold trade dominance through abstract liquid islands across the whole canvas. No stripes, no single candy-band roll.", swatch: "linear-gradient(135deg, #FF3388 0%, #FFD926 100%)" },
+    { id: "cx_blue_to_orange", name: "CX Blue Orange Abstract Shift", desc: "Cobalt and ember roll back and forth in broken abstract currents, giving several color-shift reversals instead of one hard split.", swatch: "linear-gradient(135deg, #1A4DE6 0%, #FF800D 100%)" },
+    { id: "cx_purple_to_green", name: "CX Purple Green Abstract Shift", desc: "Royal purple and electric green alternate through abstract jewel pools and contour eddies with lively spec-map contrast.", swatch: "linear-gradient(135deg, #991ACC 0%, #1AE64D 100%)" },
+    { id: "cx_teal_to_magenta", name: "CX Teal Magenta Abstract Shift", desc: "Teal and magenta pulse through abstract plasma eddies with several back-and-forth reversals across the panel.", swatch: "linear-gradient(135deg, #00CCB3 0%, #E61A80 100%)" },
+    { id: "cx_red_to_cyan", name: "CX Red Cyan Abstract Shift", desc: "Fire red and ice cyan snap through abstract cellular wakes instead of stripe rails or candy-cane bands.", swatch: "linear-gradient(135deg, #E61A1A 0%, #1AE6E6 100%)" },
     { id: "cx_sunset_shift", name: "CX Sunset Shift", desc: "Broad warm-to-cool sweep tuned like late sun falling into plum shadow. Softer and more atmospheric than the aggressive duo flips.", swatch: "linear-gradient(135deg, #FF4D00 0%, #990066 100%)" },
     { id: "cx_emerald_ruby", name: "CX Emerald → Ruby Shift", desc: "Jewel-tone arc shift with darker mids — emerald face, ruby edge, and a richer luxury transition than the louder complementary duos.", swatch: "linear-gradient(135deg, #00B34D 0%, #CC0D26 100%)" },
-    { id: "cx_ice_fire", name: "CX Ice → Fire Shift", desc: "Frosted face with a hard ember break — pale ice-blue on-axis that snaps into orange-red fire across contours and edge turns.", swatch: "linear-gradient(135deg, #B3D9FF 0%, #FF3300 100%)" },
+    { id: "cx_ice_fire", name: "CX Ice Fire Abstract Shift", desc: "Frozen blue and ember orange chase each other through abstract thermal islands with lively, varied spec channels.", swatch: "linear-gradient(135deg, #B3D9FF 0%, #FF3300 100%)" },
     // ★ COLORSHOXX HYPERFLIP — opponent-pixel perceptual flips
     { id: "cx_hyperflip_red_blue", name: "CX HyperFlip Red/Blue", desc: "Opposing red and blue pixel populations with spec-gated dominance. Matte red reads off-angle; glossy blue detonates when light catches it.", swatch: "linear-gradient(135deg, #FF0504 0%, #0524FF 100%)" },
     { id: "cx_hyperflip_pink_black", name: "CX HyperFlip Pink/Black", desc: "Hot pink diffuse field hiding glossy black micro-slats. Reads candy pink, then snaps into black-glass depth under highlight.", swatch: "linear-gradient(135deg, #FF0A8C 0%, #020204 100%)" },
@@ -1299,7 +3729,6 @@ const MONOLITHICS = [
     { id: "cc_ultraviolet_burn", name: "Color Clash: Ultraviolet Burn", desc: "UV purple center clashing with safety orange edges — semi-gloss", swatch: "linear-gradient(90deg, #FF8000 0%, #6600E6 50%, #FF8000 100%)" },
     { id: "cc_venom_strike", name: "Color Clash: Venom Strike", desc: "Venom green center dissolving into black edges — high gloss", swatch: "linear-gradient(90deg, #050505 0%, #26D900 50%, #050505 100%)" },
     { id: "cc_voltage_split", name: "Color Clash: Voltage Split", desc: "Electric yellow center splitting into deep navy edges — chrome center, matte edges", swatch: "linear-gradient(90deg, #000D4D 0%, #FFF200 50%, #000D4D 100%)" },
-    { id: "cel_shade", name: "Cel Shade", desc: "Bold cartoon cel-shading with hard-edged shadow bands and flat color fill zones", swatch: "#44aa44" },
     { id: "chameleon_amethyst", name: "Chameleon Amethyst", desc: "Purple to pink to magenta color-shift like a turning amethyst crystal in sunlight", swatch: "#6633aa" },
     { id: "chameleon_arctic", name: "Chameleon Arctic", desc: "Ice blue shifting to white then silver — frigid arctic tones that shimmer with movement", swatch: "#88ccee" },
     { id: "chameleon_copper", name: "Chameleon Copper", desc: "Warm copper to bronze to gold metal shift like heated precious alloy catching firelight", swatch: "#cc7744" },
@@ -1375,17 +3804,14 @@ const MONOLITHICS = [
     { id: "cs_ocean_shift", name: "CS Ocean Shift", desc: "Deep ocean color shift pulling tones into moody teal, navy, and abyssal blue-green", swatch: "#226688" },
     { id: "cs_prism_shift", name: "CS Prism Shift", desc: "Rainbow prism dispersion fanning the base color into a spread of spectral neighbors", swatch: "#ee6644" },
     { id: "cs_vivid", name: "CS Vivid", desc: "Maximum saturation vivid color push cranking chroma to eye-searing intensity", swatch: "#ff44cc" },
-    { id: "cursed", name: "Cursed", desc: "Cracked ancient dark surface with green poison seep — Lovecraftian artifact aesthetic for horror-themed builds", swatch: "#332244" },
     { id: "cyber_punk", name: "Cyberpunk", desc: "Rain-slicked neon pink and blue cyberpunk glow on dark surfaces with wet reflections", swatch: "#ff44ff" },
     { id: "brushed_steel_dark", name: "Dark Brushed Steel", desc: "Dark steel with heavy directional brush grain and moody gunmetal industrial character", swatch: "#888899" },
     { id: "dawn_patrol", name: "Dawn Patrol", desc: "Early morning golden-hour warmth with soft sunrise gradient and peaceful amber glow", swatch: "#886644" },
     { id: "depth_map", name: "Depth Map", desc: "3D depth perception rendered as grayscale elevation mapping — closer surfaces go brighter", swatch: "#446688" },
     { id: "desert_mirage", name: "Desert Mirage", desc: "Wavering heat shimmer distortion over sun-baked sand — the road ahead seems to melt", swatch: "#ccaa77" },
-    { id: "double_exposure", name: "Double Exposure", desc: "Ghostly photography double-exposure overlay blending two images into one surreal frame", swatch: "#887766" },
     { id: "drafting", name: "Drafting", desc: "Aerodynamic draft pressure zones visualized with flowing air-stream color mapping", swatch: "#886644" },
     { id: "dreamscape", name: "Dreamscape", desc: "Surreal soft-focus landscape of floating color clouds and gentle luminous haze", swatch: "#7788cc" },
     { id: "drive_in", name: "Drive-In", desc: "1950s neon drive-in diner glow with chrome reflection — Americana sock-hop aesthetic for vintage cruise builds", swatch: "#CC6688" },
-    { id: "eclipse", name: "Eclipse", desc: "Solar eclipse corona ring of blazing light surrounding an absolute black central void", swatch: "#111122" },
     { id: "ember_glow", name: "Ember Glow", desc: "Smoldering ember surface with bright orange-red cracks glowing through charred black", swatch: "#ee4422" },
     { id: "etched_metal", name: "Etched Metal", desc: "Chemically etched artistic metal with raised and recessed relief pattern detail", swatch: "#aabbcc" },
     { id: "firefly", name: "Firefly", desc: "Scattered bioluminescent glow points drifting across the surface like summer fireflies", swatch: "#ccaa44" },
@@ -1393,14 +3819,11 @@ const MONOLITHICS = [
     { id: "frost_bite", name: "Frost Bite", desc: "Icy crystalline frost coating with sharp frozen crystal patterns and a cold bitter edge", swatch: "#88ccee" },
     { id: "frozen_lake", name: "Frozen Lake", desc: "Thick clear ice layer with trapped air bubbles, deep cracks, and frozen-in-time depth", swatch: "#aaddee" },
     { id: "galaxy", name: "Galaxy", desc: "Deep space nebula swirling with cosmic dust clouds and a brilliant distant star field", swatch: "#221144" },
-    { id: "glitch", name: "Glitch", desc: "Digital corruption with RGB channel displacement, scan lines, and pixel scatter noise", swatch: "#ee44aa" },
     { id: "glitch_reality", name: "Glitch Reality", desc: "Heavy pixel scatter and noise displacement — digital corruption look as if reality itself is buffering and tearing", swatch: "#AA44EE" },
     { id: "green_flag", name: "Green Flag", desc: "Electric green start-race energy radiating outward — pure acceleration confidence", swatch: "#22aa33" },
     { id: "hammered_copper", name: "Hammered Copper", desc: "Hand-hammered warm copper with dimpled bowl texture and rich oxidation tones", swatch: "#cc7744" },
     { id: "heat_haze", name: "Heat Haze", desc: "Intense radiating heat distortion rising from hot metal — the air itself is shimmering", swatch: "#cc8844" },
-    { id: "holographic_wrap", name: "Holographic Wrap", desc: "Full holographic rainbow surface wrap with prismatic color that shifts at every angle", swatch: "#aaccee" },
     { id: "hot_rod_flames", name: "Hot Rod Flames", desc: "Traditional hot rod flowing flame paint job effect — classic 1950s flame licks down the body for nostalgic kustom builds", swatch: "#EE4422" },
-    { id: "infrared", name: "Infrared", desc: "Thermal camera heat-map visualization with hot red zones fading to cool blue regions", swatch: "#cc2233" },
     { id: "laser_grid", name: "Laser Grid", desc: "Bright neon laser beam grid projected across the surface in precise geometric lines", swatch: "#ff2222" },
     { id: "last_lap", name: "Last Lap", desc: "Desperate intensity — heightened contrast plus aggression for the do-or-die final stint of an endurance race", swatch: "#CC2222" },
     { id: "led_matrix", name: "LED Matrix", desc: "Dense RGB LED pixel grid surface glowing with individual addressable light dots", swatch: "#44ccee" },
@@ -1414,27 +3837,18 @@ const MONOLITHICS = [
     // (sister entry at L1233 with different swatch + desc). MONOLITHICS_BY_ID
     // would silently overwrite. Renamed this one to mystichrome_classic
     // (matches its desc "the original chameleon paint").
-    { id: "mystichrome_classic", name: "Mystichrome (Original)", desc: "Ford SVT Cobra legendary purple-green-gold color-shift — the original chameleon paint", swatch: "#6644aa" },
     { id: "neon_glow", name: "Neon Glow", desc: "Bright neon tube edge-glow effect casting vivid colored light against the surface", swatch: "#44ee88" },
     { id: "neon_vegas", name: "Neon Vegas", desc: "Las Vegas strip multi-color neon sign glow with buzzing electric casino energy", swatch: "#22ff88" },
-    { id: "nightmare", name: "Nightmare", desc: "Distorted dark tones — shifted hues with hard shadows for fever-dream horror aesthetic on Halloween and themed builds", swatch: "#220022" },
     { id: "ocean_floor", name: "Ocean Floor", desc: "Deep ocean floor with bioluminescent glow scattered across an abyssal dark surface", swatch: "#224488" },
-    { id: "oil_slick", name: "Oil Slick", desc: "Thin-film rainbow oil-on-water iridescence with full spectrum color interference", swatch: "#224466" },
-    { id: "oil_slick_base", name: "Oil Slick", desc: "Thin-film rainbow over deep dark base — full spectrum petrol-film interference", swatch: "#1a3344" },
-    { id: "thermal_titanium", name: "Thermal Titanium", desc: "Full titanium heat-color finish: silver to straw to purple to deep blue", swatch: "#7799bb" },
-    { id: "galaxy_nebula_base", name: "Galaxy Nebula", desc: "Deep space nebula: multi-region color clouds with star field point sources", swatch: "#221144" },
     { id: "pace_lap", name: "Pace Lap", desc: "Yellow caution flag warm glow blending outward — the calm before green-flag intensity", swatch: "#44aa88" },
     { id: "patina_truck", name: "Patina Truck", desc: "Classic pickup patina — sun fade with surface rust and character that earned itself over decades of farm work", swatch: "#778866" },
     { id: "petrified_wood", name: "Petrified Wood", desc: "Ancient fossilized wood turned to stone with preserved grain and mineral color bands", swatch: "#887766" },
-    { id: "phantom", name: "Phantom", desc: "Semi-transparent ghostly fade revealing depth beneath — a spectral see-through presence", swatch: "#aabbcc" },
     { id: "phantom_zone", name: "Phantom Zone", desc: "Cold crystalline prison look — angular facets in muted blue-gray, like Krypton's banishment cube from Superman lore", swatch: "#556688" },
     { id: "photo_finish", name: "Photo Finish", desc: "Finish-line camera motion blur with speed streaks frozen in the decisive moment", swatch: "#aabbcc" },
     { id: "pin_up", name: "Pin-Up Nose Art", desc: "WWII bomber nose art style hand-painted over military primer — vintage aviation charm", swatch: "#cc8877" },
     { id: "plasma_globe", name: "Plasma Globe", desc: "Electric plasma tendrils branching and reaching from bright center discharge points", swatch: "#8844ff" },
-    { id: "polarized", name: "Polarized", desc: "Polarized lens stress pattern bands revealing hidden rainbow interference fringes", swatch: "#5588bb" },
     { id: "pole_position", name: "Pole Position", desc: "Front-row qualifier energy — electric confident metallic radiating first-place authority", swatch: "#886644" },
     { id: "portal", name: "Portal", desc: "Swirling vortex pattern — concentric energy rings in deep purple opening into another dimension across each panel", swatch: "#6633CC" },
-    { id: "possessed", name: "Possessed", desc: "Demonic red-black inner glow pulsing beneath the surface like something alive inside", swatch: "#cc2222" },
     { id: "prizm_adaptive", name: "Prizm Adaptive", desc: "Panel-mapped adaptive color shift that reads base paint and shifts each panel uniquely", swatch: "#7799bb" },
     { id: "prizm_black_rainbow", name: "Prizm Black Rainbow", desc: "Near-black surface with a hidden full-spectrum rainbow revealed only at steep angles", swatch: "#222222" },
     { id: "prizm_blood_moon", name: "Prizm Blood Moon", desc: "Dark crimson to black to blood-red panel shift evoking a lunar eclipse in deep red", swatch: "#ff66aa" },
@@ -1463,7 +3877,6 @@ const MONOLITHICS = [
     { id: "race_worn", name: "Race Worn", desc: "500-mile race wear - rubber marks, stone chips, brake dust", swatch: "#776655" },
     { id: "radioactive", name: "Radioactive", desc: "Toxic nuclear green glow with hazmat intensity — bright reactor-core radiation on dark base", swatch: "#44ee22" },
     { id: "rain_race", name: "Rain Race", desc: "Wet surface with visible water droplets and splash — soaked rain-tire racing aesthetic for wet-weather endurance builds", swatch: "#886644" },
-    { id: "reaper", name: "Reaper", desc: "Death-black gradient with cold scythe-edge gleam along highlight lines — grim and menacing", swatch: "#222222" },
     { id: "ruby", name: "Ruby", desc: "Deep blood-red gemstone with pigeon-blood core depth and brilliant internal fire refraction", swatch: "#cc1122" },
     { id: "rust", name: "Rust", desc: "Heavy orange-brown iron oxidation with flaking corrosion texture and rough pitted surface", swatch: "#aa5533" },
     { id: "sandstone", name: "Sandstone", desc: "Natural sandstone with visible mineral grain and warm sedimentary layers — desert rock feel", swatch: "#ccbb99" },
@@ -1472,31 +3885,19 @@ const MONOLITHICS = [
     { id: "silk_road", name: "Silk Road", desc: "Flowing silk fabric drape with fine metallic thread shimmer — luxurious textile surface", swatch: "#886644" },
     { id: "stained_glass", name: "Stained Glass", desc: "Cathedral stained-glass window with vivid colored light zones and dark lead borders", swatch: "#aa4466" },
     { id: "static", name: "Static", desc: "Electric static discharge with bright sparking arcs crawling across a charged surface", swatch: "#88aadd" },
-    { id: "thermochromic", name: "Thermochromic", desc: "Heat-sensitive color-change surface shifting hue based on temperature zones across panels", swatch: "#cc4466" },
     { id: "time_warp", name: "Time Warp", desc: "Temporal distortion effect with melting clock faces and spiral warp — surreal Dali look", swatch: "#4466aa" },
     { id: "tornado_alley", name: "Tornado Alley", desc: "Rotating debris-filled violent storm with dark funnel cloud and scattered impact marks", swatch: "#889999" },
     { id: "tunnel_run", name: "Tunnel Run", desc: "Le Mans tunnel transition from bright sunlight into deep shadow and back to daylight", swatch: "#886644" },
     { id: "under_lights", name: "Under Lights", desc: "Night race finish under artificial floodlights with harsh sodium glow and deep shadows", swatch: "#ffcc22" },
-    { id: "uv_blacklight", name: "UV Blacklight", desc: "Blacklight-reactive neon glow — hidden fluorescent patterns emerge under UV light", swatch: "#7722ee" },
     { id: "velvet_crush", name: "Velvet Crush", desc: "Deep crushed velvet texture with pile direction shift — luxury fabric aesthetic with light/dark zones based on viewing angle", swatch: "#662244" },
     { id: "venetian_glass", name: "Venetian Glass", desc: "Hand-blown Murano glass with multi-color translucent layers and trapped air bubbles", swatch: "#44aaaa" },
     { id: "victory_burnout", name: "Victory Burnout", desc: "Tire smoke, confetti, and champagne splash celebration — full post-race podium party aesthetic for winner livery overlays", swatch: "#DDBB55" },
     { id: "vinyl_record", name: "Vinyl Record", desc: "Concentric vinyl groove spiral with reflective rainbow edge and retro center label zone", swatch: "#222222" },
     { id: "volcanic_glass", name: "Volcanic Glass", desc: "Black obsidian volcanic glass with razor-sharp edges and glowing magma vein fractures", swatch: "#553322" },
-    { id: "dark_sigil", name: "Dark Sigil", desc: "Dark mystical sigil pattern with faint arcane glow lines on near-black ritual surface", swatch: "#442244" },
     { id: "weathered_paint", name: "Weathered Paint", desc: "Sun-damaged old paint with peeling flakes and cracking clearcoat over faded original color", swatch: "#887766" },
     { id: "white_flag", name: "White Flag", desc: "Final-lap bright white intensity flash — pure blinding white with maximum reflectivity", swatch: "#dddddd" },
     { id: "woodie_wagon", name: "Woodie Wagon", desc: "1940s wood-panel station wagon sides with honey-toned grain and chrome strip borders", swatch: "#886644" },
     { id: "worn_chrome", name: "Worn Chrome", desc: "Aged pitted chrome with rust spots bleeding through — decades of neglect on mirror finish", swatch: "#aabbbb" },
-    { id: "forged_titanium", name: "Forged Titanium", desc: "Heat-treated titanium with blue-gold oxidation bands — exhaust-pipe temper colors on aerospace-grade metal for race builds", swatch: "#5577AA" },
-    { id: "brushed_gunmetal", name: "Brushed Gunmetal", desc: "Directional brushed dark gunmetal with fine grain lines and cool blue-grey undertone", swatch: "#444450" },
-    { id: "cast_iron_raw", name: "Raw Cast Iron", desc: "Rough sand-cast iron with visible porous surface texture and raw foundry scale marks", swatch: "#3a3a3a" },
-    { id: "polished_brass", name: "Polished Brass", desc: "Mirror-polished brass with warm golden reflection and rich amber depth in shadows", swatch: "#ccaa44" },
-    { id: "annealed_steel", name: "Annealed Steel", desc: "Heat-annealed steel showing rainbow temper colors from straw gold through blue to violet", swatch: "#6688aa" },
-    { id: "oxidized_bronze", name: "Oxidized Bronze", desc: "Ancient bronze with verdigris green patina overlay — museum statue aesthetic with centuries of weathering for art-car builds", swatch: "#448855" },
-    { id: "damascus_steel", name: "Damascus Steel", desc: "Folded steel pattern with visible layer striations — knife-grade pattern-welded steel for luxury and historical builds", swatch: "#556677" },
-    { id: "wraith", name: "Wraith", desc: "Ghostly transparent dark smoke wisps drifting across a cold near-black spectral surface", swatch: "#334455" },
-    { id: "x_ray", name: "X-Ray", desc: "Translucent X-ray negative effect revealing ghostly skeletal structure beneath the paint", swatch: "#33aacc" },
     { id: "astral", name: "Astral", desc: "Astral plane ethereal projection glow with soft luminous aura bleeding into deep indigo", swatch: "#7788cc" },
     { id: "crystal_cave", name: "Crystal Cave", desc: "Underground crystal cave with gemstone reflections and prismatic light scatter on facets", swatch: "#88aaee" },
     { id: "dark_fairy", name: "Dark Fairy", desc: "Dark fae enchantment with twisted magical glow — corrupted fairy dust on shadow base", swatch: "#664488" },
@@ -1511,7 +3912,6 @@ const MONOLITHICS = [
     { id: "simulation", name: "Simulation", desc: "Matrix-style green code rain cascading over dark base — digital simulation overlay", swatch: "#22cc44" },
     { id: "tesseract", name: "Tesseract", desc: "4D hypercube geometric projection with impossible perspective and folded spatial edges", swatch: "#5555cc" },
     { id: "void_walker", name: "Void Walker", desc: "Ultra-dark void with faint structural hints — deep black with subtle edges that hint at form without showing detail", swatch: "#221133" },
-    { id: "voodoo", name: "Voodoo", desc: "Dark ritual scratched hex-symbol effect with smoky halos and disturbed static energy between spellcraft runes", swatch: "#5a2e3b" },
     { id: "art_deco_gold", name: "Art Deco Gold", desc: "1920s Art Deco geometric gold motif with sunburst rays and stepped symmetrical framing", swatch: "#ccaa44" },
     { id: "beat_up_truck", name: "Beat Up Truck", desc: "Well-used farm truck character wear with dents, scratches, and sun-faded workday patina", swatch: "#887766" },
     { id: "classic_racing", name: "Classic Racing", desc: "1960s Le Mans classic racing heritage with period-correct colors and vintage roundels", swatch: "#cc4422" },
@@ -1558,21 +3958,6 @@ const MONOLITHICS = [
     { id: "tesla_coil", name: "Tesla Coil", desc: "Tesla coil discharge with branching violet-white arcs and crackling plasma tendrils", swatch: "#8844ff" },
     { id: "tracer_round", name: "Tracer Round", desc: "Military tracer bullet bright streak with hot phosphorus trail and ballistic light path", swatch: "#ff8822" },
     { id: "welding_arc", name: "Welding Arc", desc: "Intense arc welding bright blue-white flash with spatter sparks and UV-hot glow zone", swatch: "#44ccff" },
-    { id: "banshee", name: "Banshee", desc: "Wailing banshee spectral scream with ghostly pale-blue trails and cold dread atmosphere", swatch: "#556677" },
-    { id: "blood_oath", name: "Blood Oath", desc: "Dark blood pact ritual with deep crimson seal marks and ancient dried-blood surface tone", swatch: "#881122" },
-    { id: "catacombs", name: "Catacombs", desc: "Ancient underground burial chamber stone with bone-dust residue and cold damp texture", swatch: "#554433" },
-    { id: "dark_ritual", name: "Dark Ritual", desc: "Occult ritual circle with dark ceremonial markings and faint eldritch glow from symbols", swatch: "#332244" },
-    { id: "death_metal", name: "Death Metal", desc: "Heavy metal aggressive dark surface with sharp angular typography and blackened steel look", swatch: "#222222" },
-    { id: "demon_forge", name: "Demon Forge", desc: "Hellfire forge with hammered demon-metal texture — dark iron glowing from infernal heat", swatch: "#882211" },
-    { id: "gargoyle", name: "Gargoyle", desc: "Gothic cathedral gargoyle stone surface with weathered grey limestone and carved detail", swatch: "#667766" },
-    { id: "graveyard", name: "Graveyard", desc: "Misty graveyard with moonlit stone surface — cold fog over lichen-covered granite markers", swatch: "#445544" },
-    { id: "haunted", name: "Haunted", desc: "Haunted house flickering spectral presence with cold spots and ghostly translucent patches", swatch: "#334455" },
-    { id: "hellhound", name: "Hellhound", desc: "Burning hell beast with deep claw-mark gouges and ember-orange glow from beneath surface", swatch: "#cc3311" },
-    { id: "iron_maiden", name: "Iron Maiden", desc: "Medieval iron torture device texture with pitted blackened steel and cold forged rivets", swatch: "#556655" },
-    { id: "lich_king", name: "Lich King", desc: "Undead lich frost crown ice aura with pale blue necromantic glow over frozen dark metal", swatch: "#88aacc" },
-    { id: "necrotic", name: "Necrotic", desc: "Decaying necrotic tissue with dark corruption spreading outward from blackened dead zones", swatch: "#443322" },
-    { id: "shadow_realm", name: "Shadow Realm", desc: "Near-total black — deep shadow with minimal surface detail", swatch: "#111122" },
-    { id: "spectral", name: "Spectral", desc: "Ghost spectral translucent phase-shift with see-through shimmer and fading edge presence", swatch: "#7788aa" },
     // 2026-04-19 HEENAN HP1 — id `acid_rain` already exists in BASES (L26).
     // Same id in two registries → BASES_BY_ID / MONOLITHICS_BY_ID lookup
     // returned whichever ran last; painter saw the wrong tile / wrong swatch.
@@ -1603,19 +3988,6 @@ const MONOLITHICS = [
     { id: "pit_stop", name: "Pit Stop", desc: "High-speed pit stop blur urgency with rapid crew motion and tire-smoke in the pit box", swatch: "#888866" },
     { id: "red_mist", name: "Red Mist", desc: "Racing red-mist rage intensity — deep crimson tunnel-vision haze of full-attack driving", swatch: "#cc2233" },
     { id: "slipstream", name: "Slipstream", desc: "Aerodynamic draft tunnel effect with low-pressure wake shimmer trailing behind lead car", swatch: "#667788" },
-    { id: "chromatic_aberration", name: "Chromatic Aberration", desc: "RGB color-channel edge separation with prismatic fringe shift — broken lens distortion", swatch: "#ee4488" },
-    { id: "crt_scanline", name: "CRT Scanline", desc: "Retro CRT monitor scanline display with visible horizontal line gaps and phosphor glow", swatch: "#44cc88" },
-    { id: "datamosh", name: "Datamosh", desc: "Corrupted video compression artifact with pixel-smear glitch blocks and broken frame data", swatch: "#cc44ee" },
-    { id: "embossed", name: "Embossed", desc: "Raised surface emboss relief effect with sculpted depth illusion and soft highlight edges", swatch: "#aabbcc" },
-    { id: "film_burn", name: "Film Burn", desc: "Overexposed film edge burn effect with hot orange-white light leak bleeding into frame", swatch: "#eedd44" },
-    { id: "fish_eye", name: "Fish Eye", desc: "Wide-angle barrel distortion with extreme lens curvature warping edges outward from center", swatch: "#6688aa" },
-    { id: "halftone", name: "Halftone", desc: "Print halftone dot pattern with variable-size Ben-Day dots creating tonal gradient zones", swatch: "#886644" },
-    { id: "kaleidoscope", name: "Kaleidoscope", desc: "Symmetric kaleidoscope mirror pattern with repeated triangular slices and color symmetry", swatch: "#ee66aa" },
-    { id: "long_exposure", name: "Long Exposure", desc: "Motion trail long-exposure light effect with streaked headlight paths and blurred movement", swatch: "#445588" },
-    { id: "negative", name: "Negative", desc: "Photographic negative inversion with reversed tones — light becomes dark, colors flip hue", swatch: "#88ccdd" },
-    { id: "parallax", name: "Parallax", desc: "Depth parallax layer-shifting effect with foreground and background at different rates", swatch: "#667799" },
-    { id: "refraction", name: "Refraction", desc: "Light bending through thick glass refraction with displaced image and prismatic color edges", swatch: "#99bbdd" },
-    { id: "solarization", name: "Solarization", desc: "Sabattier solarization tone reversal with partially inverted midtones and surreal contrast", swatch: "#cc8844" },
     { id: "void", name: "Void", desc: "Material with apparent holes - zero-specular patches surrounded by mirror chrome", swatch: "#020202" },
     { id: "living_chrome", name: "Living Chrome", desc: "Breathing chrome - full metallic with slow roughness oscillation creating undulation illusion", swatch: "#ccddee" },
     { id: "quantum", name: "Quantum", desc: "Every material simultaneously - coherent noise blocks with random metallic and roughness", swatch: "#8899aa" },
@@ -1627,7 +3999,6 @@ const MONOLITHICS = [
     { id: "p_static", name: "Static (PARADIGM)", desc: "TV static signal noise - scan lines with random metallic/roughness per pixel block", swatch: "#999999" },
     { id: "mercury_pool", name: "Mercury Pool", desc: "Liquid mercury pooling - smooth flowing metallic pools with mirror centers", swatch: "#b8c0cc" },
     { id: "phase_shift", name: "Phase Shift", desc: "Conductor/dielectric micro-stripes — alternating reflection models create strong angle-dependent shimmer", swatch: "#9088aa" },
-    { id: "gravity_well", name: "Gravity Well", desc: "Radial Fresnel gradient traps - depth illusion where chrome centers fade to matte edges", swatch: "#2a2a3a" },
     { id: "thin_film", name: "Thin Film", desc: "Physically-linked color + reflectivity - oil-on-water rainbow where hue and spec change together", swatch: "#88aacc" },
     { id: "blackbody", name: "Blackbody", desc: "Continuous temperature emission - smooth black→red→orange→yellow→white thermal gradient", swatch: "#cc4400" },
     { id: "wormhole", name: "Wormhole", desc: "Connected void portal pairs — dark holes ringed with bright chrome edges", swatch: "#0a0a1a" },
@@ -1658,6 +4029,599 @@ const MONOLITHICS = [
     { id: "ghost_circuit", name: "Ghost Circuit", desc: "Circuit board traces in clearcoat — hidden tech lines revealed under angled light", swatch: "#3a5a5a" },
     { id: "ghost_vortex", name: "Ghost Vortex", desc: "Spiral vortex embedded in clearcoat — swirling geometry visible only in reflections", swatch: "#4a4a5a" },
     { id: "ghost_fracture", name: "Ghost Fracture", desc: "Shattered crack network in clearcoat only — fractured glass geometry revealed at angle", swatch: "#3a3a4a" },
+    // FRACTURED MINDS (2026-06-11) — owner flagship color-shift bases
+    { id: "fm_petal_storm", name: "Petal Storm", desc: "Petal Storm — FRACTURED MINDS PASTEL — a storm of drifting flower petals at every angle: light-pink air, light-blue petals, light-purple midribs in the combined spec (the owner-discovered pastel shift recipe). Assign as BASE, pick a color, CRUSH the brightness near black, daytime track.", swatch: "#cba8c6" },
+    { id: "fm_basketweave", name: "Basketweave", desc: "Basketweave — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#56466a" },
+    { id: "fm_cable_knit", name: "Cable Knit", desc: "Cable Knit — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#3f5e58" },
+    { id: "fm_carbon_weave", name: "Carbon Weave", desc: "Carbon Weave — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#5e4a44" },
+    { id: "fm_chainlink", name: "Chainlink", desc: "Chainlink — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#46586a" },
+    { id: "fm_chainmail", name: "Chainmail", desc: "Chainmail — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#5a5246" },
+    { id: "fm_checkerflash", name: "Checkerflash", desc: "Checkerflash — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#4a5670" },
+    { id: "fm_circuit_maze", name: "Circuit Maze", desc: "Circuit Maze — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#56466a" },
+    { id: "fm_code_cascade", name: "Code Cascade", desc: "Code Cascade — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#3f5e58" },
+    { id: "fm_damascus", name: "Damascus", desc: "Damascus — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#5e4a44" },
+    { id: "fm_diamond_plate", name: "Diamond Plate", desc: "Diamond Plate — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#46586a" },
+    { id: "fm_dragon_scale", name: "Dragon Scale", desc: "Dragon Scale — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#5a5246" },
+    { id: "fm_geode_slice", name: "Geode Slice", desc: "Geode Slice — FRACTURED MINDS color-shift base — agate growth bands wobbling around scattered seed cores; pink banded field, every third band and the druzy-crystal cores flood light blue with purple-dot sparks. Assign as BASE, pick a color, CRUSH the brightness near black, daytime track.", swatch: "#7a5a9a" },
+    { id: "fm_glacier_core", name: "Glacier Core", desc: "Glacier Core — FRACTURED MINDS BLUE FLIP — the spec is MOSTLY BLUE: deep-ice mirror field with purple crevasse veins and rare light-pink frost ridges. Crushed dark, the whole surface becomes an env mirror with glinting metal seams. Assign as BASE, crush the brightness, daytime track.", swatch: "#4a6a8a" },
+    { id: "fm_frost_lace", name: "Frost Lace", desc: "Frost Lace — FRACTURED MINDS BLUE FLIP — window-frost fern crystals in purple metal lace over a blue mirror pane, lace tips sparking light pink. MOSTLY-blue combined spec. Assign as BASE, crush the brightness, daytime track.", swatch: "#6a7a9a" },
+    { id: "fm_ion_drift", name: "Ion Drift", desc: "Ion Drift — FRACTURED MINDS BLUE FLIP — charged plasma streams drifting through a blue mirror field, purple stream cores, light-pink pulse heads, star pinpricks between. MOSTLY-blue combined spec. Assign as BASE, crush the brightness, daytime track.", swatch: "#4a5a9a" },
+    { id: "fm_fiber_optic", name: "Fiber Optic", desc: "Fiber Optic — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#56466a" },
+    { id: "fm_flame_helix", name: "Flame Helix", desc: "Flame Helix — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#3f5e58" },
+    { id: "fm_flame_lick", name: "Flame Lick", desc: "Flame Lick — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#5e4a44" },
+    { id: "fm_flame_wall", name: "Flame Wall", desc: "Flame Wall — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#46586a" },
+    { id: "fm_frost_feather", name: "Frost Feather", desc: "Frost Feather — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#5a5246" },
+    { id: "fm_graphene", name: "Graphene", desc: "Graphene — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#4a5670" },
+    { id: "fm_gyro_cage", name: "Gyro Cage", desc: "Gyro Cage — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#56466a" },
+    { id: "fm_gyroid", name: "Gyroid", desc: "Gyroid — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#3f5e58" },
+    { id: "fm_herringbone", name: "Herringbone", desc: "Herringbone — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#5e4a44" },
+    { id: "fm_hexcore", name: "Hexcore", desc: "Hexcore — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#46586a" },
+    { id: "fm_thousand_eyes", name: "Thousand Eyes", desc: "Thousand Eyes — FRACTURED MINDS color-shift base (HORROR) — a field of almond eyes staring out of the paint: bloodshot pink sclera field, glistening blue irises with purple striation dots, dead-void pupils. Crushed dark, the eyes glisten and the pupils stare back black. Assign as BASE, crush the brightness, daytime track.", swatch: "#5a3a4a" },
+    { id: "fm_tide_glass", name: "Tide Glass", desc: "Tide Glass — FRACTURED MINDS BLUE FLIP — sunlight caustics on a pool floor: interfering purple-pink light webs over deep blue glass, web nodes sparking light pink. MOSTLY-blue combined spec. Assign as BASE, crush the brightness, daytime track.", swatch: "#3a6a7a" },
+    { id: "fm_witchlight", name: "Witchlight", desc: "Witchlight — FRACTURED MINDS BLUE FLIP — drifting ghost-orbs with trailing purple wisps over the deepest blue mirror; orb cores burn light pink inside hard-blue halos. MOSTLY-blue combined spec. Assign as BASE, crush the brightness, daytime track.", swatch: "#5a4a8a" },
+    { id: "fm_honeycomb_burst", name: "Honeycomb Burst", desc: "Honeycomb Burst — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#4a5670" },
+    { id: "fm_inferno_veins", name: "Inferno Veins", desc: "Inferno Veins — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#56466a" },
+    { id: "fm_labyrinth", name: "Labyrinth", desc: "Labyrinth — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#3f5e58" },
+    { id: "fm_lattice", name: "Lattice", desc: "Lattice — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#5e4a44" },
+    { id: "fm_magma", name: "Magma", desc: "Magma — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#46586a" },
+    { id: "fm_nanoweave", name: "Nanoweave", desc: "Nanoweave — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#5a5246" },
+    { id: "fm_python_skin", name: "Python Skin", desc: "Python Skin — FRACTURED MINDS color-shift base — rosette saddle colonies ringed by pale gold rims over keeled belly-scale micro-shimmer; the saddle hearts pool deep mirror while the rims halo metal. Assign as BASE, pick a color, CRUSH the brightness near black, daytime track.", swatch: "#6a5a3a" },
+    { id: "fm_octo_suckers", name: "Octo Suckers", desc: "Octo Suckers — FRACTURED MINDS color-shift base — curling tapered arms of sucker rings, every cup a wet mirror pool deepening toward its pore, every lip a metal ring. Assign as BASE, pick a color, CRUSH the brightness near black, daytime track.", swatch: "#6a4256" },
+    { id: "fm_stingray", name: "Stingray Shagreen", desc: "Stingray Shagreen — FRACTURED MINDS color-shift base — dense pearl-bead leather with a thin winding eye-stone ridge; bead crowns dome metal, equators ring mirror, the eye-line beads flip to pure-blue dielectric flash. Assign as BASE, pick a color, CRUSH the brightness near black, daytime track.", swatch: "#4f5866" },
+    { id: "fm_gila_bead", name: "Gila Bead", desc: "Gila Bead — FRACTURED MINDS color-shift base — two clans of beaded reticulation (metal-crown beads vs mirror-dome beads) with a live crawling border wire between the clans. Assign as BASE, pick a color, CRUSH the brightness near black, daytime track.", swatch: "#7a4a26" },
+    { id: "fm_riverine", name: "Riverine", desc: "Riverine — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#46586a" },
+    { id: "fm_rivet_array", name: "Rivet Array", desc: "Rivet Array — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#5a5246" },
+    { id: "fm_rope_coil", name: "Rope Coil", desc: "Rope Coil — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#4a5670" },
+    { id: "fm_croc_hide", name: "Croc Hide", desc: "Croc Hide — FRACTURED MINDS color-shift base — rounded osteoderm scutes with keeled metal domes, mirror caps on the crests, wet mirror rivers in the wrinkle channels; scattered scutes flip to blue dielectric. Assign as BASE, pick a color, CRUSH the brightness near black, daytime track.", swatch: "#4a5a3e" },
+    { id: "fm_diamondback", name: "Diamondback", desc: "Diamondback — FRACTURED MINDS color-shift base — a rattler diamond chain winding along its spine with pale keel borders; the chain IGNITES progressively along its length, each diamond a traveling mirror pulse. Assign as BASE, pick a color, CRUSH the brightness near black, daytime track.", swatch: "#5a4f3a" },
+    { id: "fm_dragonfly", name: "Dragonfly Wing", desc: "Dragonfly Wing — FRACTURED MINDS color-shift base — two-tier wing venation; only the BIG membrane panes ignite blue-mirror (size-graded thin film) while primary veins run near-max conduits. Assign as BASE, pick a color, CRUSH the brightness near black, daytime track.", swatch: "#3e6a7a" },
+    { id: "fm_ebru_marble", name: "Ebru Marble", desc: "Ebru Marble — FRACTURED MINDS color-shift base — Turkish paper-marbling ink streams combed into feathered chevrons; three inks carry three spec identities (tinted metal / dielectric blue / textured gold) with live veins on every combed boundary. Assign as BASE, pick a color, CRUSH the brightness near black, daytime track.", swatch: "#6a3a52" },
+    { id: "fm_static_burst", name: "Static Burst", desc: "Static Burst — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#5a5246" },
+    { id: "fm_tessellate", name: "Tessellate", desc: "Tessellate — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#4a5670" },
+    { id: "fm_tortoise", name: "Tortoise Scute", desc: "Tortoise Scute — FRACTURED MINDS color-shift base — shell plates with interior growth rings that flash SEQUENTIALLY from rim to center, every plate on its own phase; horn seams stay dark. Assign as BASE, pick a color, CRUSH the brightness near black, daytime track.", swatch: "#7a5c2e" },
+    { id: "fm_tiger_slash", name: "Tiger Slash", desc: "Tiger Slash — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#3f5e58" },
+    { id: "fm_topo_lines", name: "Topo Lines", desc: "Topo Lines — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#5e4a44" },
+    // FRACTURED SOULS — apex drag-and-drop color shift (2026-06-12)
+    { id: "fs_core_violet", name: "Soul Core Violet — Yellow Gold Flash", desc: "Soul Core Violet — FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) — Pure pre-crushed dark violet — the proven contract, no texture. Drop it on a zone and the color morphs/reveals by sun angle instantly. No sliders needed.", swatch: "#1c0d2e" },
+    { id: "fs_core_abyss", name: "Soul Core Abyss — Amber Flash", desc: "Soul Core Abyss — FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) — Pure pre-crushed abyss blue core — instant angle-driven color reveal, no setup.", swatch: "#0a1233" },
+    { id: "fs_core_emerald", name: "Soul Core Emerald — Pink Flash", desc: "Soul Core Emerald — FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) — Pure pre-crushed emerald core — instant angle-driven color reveal, no setup.", swatch: "#0a2917" },
+    { id: "fs_core_crimson", name: "Soul Core Crimson — Teal Flash", desc: "Soul Core Crimson — FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) — Pure pre-crushed crimson core — instant angle-driven color reveal, no setup.", swatch: "#2e0a10" },
+    { id: "fs_core_aurum", name: "Soul Core Aurum — Purple Flash", desc: "Soul Core Aurum — FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) — Pure pre-crushed gold core — instant angle-driven color reveal, no setup.", swatch: "#332608" },
+    { id: "fs_wraith_veil", name: "Wraith Veil", desc: "Wraith Veil — FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) — Smoky flowing veils carved into the reveal aperture — violet wraiths sweep across the car as the angle changes.", swatch: "#241238" },
+    { id: "fs_moth_dust", name: "Moth Dust", desc: "Moth Dust — FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) — Glitter-pin field: thousands of razor-aperture sparkle points dancing over a gold-dust core.", swatch: "#3a2c08" },
+    { id: "fs_blood_marble", name: "Blood Marble", desc: "Blood Marble — FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) — Marbled horror swirls in the aperture channel — crimson veins flash through near-black marble.", swatch: "#330a10" },
+    { id: "fs_night_tide", name: "Night Tide", desc: "Night Tide — FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) — Rolling wave-caustic lanes — abyss-blue swells reveal in moving bands.", swatch: "#0a1233" },
+    { id: "fs_static_veins", name: "Static Veins", desc: "Static Veins — FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) — Electric filaments with razor-pin cores — emerald lightning crawls through the reveal.", swatch: "#0a2917" },
+    { id: "fs_shatter_glass", name: "Shatter Glass", desc: "Shatter Glass — FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) — Angular shard lanes — ice-violet fractures flash plate by plate.", swatch: "#1a1233" },
+    { id: "fs_howl", name: "Howl", desc: "Howl — FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) — Radial claw-scratch flares (horror) — ash-violet gashes ignite at angle.", swatch: "#221a26" },
+    { id: "fs_phantom_lattice", name: "Phantom Lattice", desc: "Phantom Lattice — FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) — A faint diamond lattice that only exists at the reveal angle — gunmetal teal.", swatch: "#0d2226" },
+    { id: "fs_ember_drift", name: "Ember Drift", desc: "Ember Drift — FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) — Drifting ember streaks with spark pins — burnt orange fire lanes.", swatch: "#331505" },
+    { id: "fs_carnival_night", name: "Carnival Night", desc: "Carnival Night — FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) — Confetti pin swarm in three hidden colors over midnight — the glitter light show.", swatch: "#120e26" },
+    // FRACTURED SOULS round 3 (2026-06-12) — 15 new on the Blood Marble winner physics (M252/B255-rail/G-lanes)
+    { id: "fs_soul_loom", name: "Soul Loom — Emerald × Violet Weave", desc: "Soul Loom — FRACTURED SOULS round 3 — WOVENLIGHT TWIST: warped ribbon weave with over/under dive shadows + thread striations, pre-crushed emerald and violet ribbon families. Each weave direction flashes its own color by sun angle.", swatch: "#13102a" },
+    { id: "fs_widow_braid", name: "Widow Braid — Tri-Color Weave", desc: "Widow Braid — FRACTURED SOULS round 3 — WOVENLIGHT TWIST: tri-axial braid, three warped strand families 60° apart cycling on top. Rose / petrol / amber crushed hues = three flash colors from three sun geometries.", swatch: "#1c0f17" },
+    { id: "fs_ghost_silk", name: "Ghost Silk — Indigo→Teal Satin", desc: "Ghost Silk — FRACTURED SOULS round 3 — WOVENLIGHT TWIST: micro satin threads in crisp curtain panels; third-angle sheen pools decide where the silk ignites, hue slides indigo→teal along the sheen.", swatch: "#161330" },
+    { id: "fs_shattered_prism", name: "Shattered Prism — 47 Colors", desc: "Shattered Prism — FRACTURED SOULS round 3 — the '47 colors' flagship: fine crystal mosaic, EVERY cell its own crushed hue; borders + facet striations carve the aperture so each cell pops its own complement at its own angle.", swatch: "#1a1422" },
+    { id: "fs_oil_serpent", name: "Oil Serpent — Flow-Hue Currents", desc: "Oil Serpent — FRACTURED SOULS round 3 — advected serpent currents; strand hue follows the FLOW DIRECTION, so the paint flashes different colors depending on which way the current bends.", swatch: "#0c1c1c" },
+    { id: "fs_hex_hive", name: "Hex Hive — Amber/Petrol Comb", desc: "Hex Hive — FRACTURED SOULS round 3 — dead hive: fine rotated honeycomb, three crushed hues cycling cell-by-cell, walls carve the aperture, razor pore pin in every cell.", swatch: "#241a0c" },
+    { id: "fs_guilloche_ghost", name: "Guilloché Ghost — Engine Turn", desc: "Guilloché Ghost — FRACTURED SOULS round 3 — banknote engine-turning: overlapping hairline harmonograph rosette nets, champagne + teal over crushed bronze; curve crossings pin razor glints.", swatch: "#241c10" },
+    { id: "fs_petrol_halo", name: "Petrol Halo — Newton Rings", desc: "Petrol Halo — FRACTURED SOULS round 3 — Newton-ring packets: scattered interference halos of fine concentric rings whose hue cycles with ring index. Oil-on-water, crushed.", swatch: "#0e1822" },
+    { id: "fs_star_chart", name: "Star Chart — Constellation Pins", desc: "Star Chart — FRACTURED SOULS round 3 — grave-sky cartography: razor star pins, hairline constellation chords, three faint nebula washes under crushed indigo.", swatch: "#100d28" },
+    { id: "fs_serpent_scale", name: "Serpent Scale — Emerald/Abyss Rows", desc: "Serpent Scale — FRACTURED SOULS round 3 — imbricated scale rows: fine crescent rims + keeled centers, alternating crushed emerald/abyss rows that flash row-by-row.", swatch: "#0e1f16" },
+    { id: "fs_nova_burst", name: "Nova Burst — Six-Color Detonations", desc: "Nova Burst — FRACTURED SOULS round 3 — scattered micro star-detonations, each with its own crushed hue halo: a six-color nova field on near-black violet.", swatch: "#170f24" },
+    { id: "fs_circuit_soul", name: "Circuit Soul — Copper/Teal Traces", desc: "Circuit Soul — FRACTURED SOULS round 3 — haunted circuitry: hairline traces walking a seed-rotated grid, via-dots pinned razor; copper vs teal trace families flash separately.", swatch: "#101813" },
+    { id: "fs_geode_vein", name: "Geode Vein — Five-Hue Agate", desc: "Geode Vein — FRACTURED SOULS round 3 — agate banding: warped contour bands cycling five crushed hues (violet/teal/gold/rose/ice), druzy pin pockets every few bands.", swatch: "#1c1326" },
+    { id: "fs_moire_phantom", name: "Moiré Phantom — Interference Curves", desc: "Moiré Phantom — FRACTURED SOULS round 3 — circular moiré: two families of fine concentric rings interfere into wandering phantom curves; the beat decides which hue shows (steel-teal vs rose).", swatch: "#191420" },
+    { id: "fs_aurora_threads", name: "Aurora Threads — Green→Violet Curtains", desc: "Aurora Threads — FRACTURED SOULS round 3 — curtain filaments: micro threads gated into crisp aurora curtains, hue sweeping green→teal→violet across the car. Many colors in the paint at once.", swatch: "#0c2017" },
+    // ⚛ FRACTURED FORGE (2026-06-16) — standalone math-engine procedural finishes (batch 1 of 100)
+    { id: "ff_abyssal_currents", name: "Abyssal Currents", desc: "Layered de Jong strange-attractor web (toroidally wrapped) — an intricate blue filament net filling the whole panel. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#3e87c3" },
+    { id: "ff_leviathan_filaments", name: "Leviathan Filaments", desc: "Layered de Jong attractor web in deep emerald — bioluminescent filaments edge to edge. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#3eb484" },
+    { id: "ff_spectral_veil", name: "Spectral Veil", desc: "Layered Clifford attractor web in magenta — looping spectral veils across the canvas. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#be50aa" },
+    { id: "ff_ghost_coil", name: "Ghost Coil", desc: "Dense Clifford attractor — a coiled violet ghost-web of fine filaments. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#7066d0" },
+    { id: "ff_riptide", name: "Riptide", desc: "Divergence-free curl-noise flow — fluid streamline currents in deep ocean blue. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#4478be" },
+    { id: "ff_fracture_web", name: "Fracture Web", desc: "Voronoi fracture cracks (fine shards) in molten copper — intricate shattered tracery. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#a55c37" },
+    { id: "ff_scale_mail", name: "Scale Mail", desc: "Voronoi cellular scales in teal — armored chainmail plating. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#408890" },
+    { id: "ff_stormfork", name: "Stormfork", desc: "Dense branching Lichtenberg discharge — ember lightning forking into every corner. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#cd7a3c" },
+    { id: "ff_drift_lattice", name: "Drift Lattice", desc: "Composition: 300-cell fracture advected by a curl flow — a drifting violet lattice. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#6482be" },
+    { id: "ff_quasicrystal", name: "Quasicrystal", desc: "Crisp n-fold plane-wave quasicrystal interference — sharp aperiodic fringes. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#6450be" },
+    { id: "ff_marble", name: "Marble", desc: "Domain-warped fBm + multi-scale veining in amber — dense turbulent marble. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#c38c46" },
+    { id: "ff_truchet_flow", name: "Truchet Flow", desc: "Curved Truchet tiling — a flowing maze/circuit on a lit teal substrate. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#4296aa" },
+    { id: "ff_conformal_lattice", name: "Conformal Lattice", desc: "A lattice of conformal singularities (w=Σ1/(z-pk)) — copper swirl-medallions tiling the canvas. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#b6723e" },
+    { id: "ff_loomwork", name: "Loomwork", desc: "Anisotropic Gabor thread bands woven over/under — bronze fabric weave. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#be8746" },
+    { id: "ff_sunwheel", name: "Sunwheel", desc: "Vogel golden-angle phyllotaxis seed-cell mosaic — a full sunflower-head floret packing. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#aaa042" },
+    { id: "ff_apollonia", name: "Apollonia", desc: "Dense rim-lit bubble packing in peach/rose-gold — glassy nested rings. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#dc846a" },
+    { id: "ff_pentangle", name: "Pentangle", desc: "de Bruijn pentagrid — Penrose-like aperiodic 5-fold ribbons in violet. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#845ac0" },
+    { id: "ff_ridgeline", name: "Ridgeline", desc: "Ridged multifractal — sharp molten mountain-ridge veins in orange. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#a2603c" },
+    { id: "ff_pendulum_veil", name: "Pendulum Veil", desc: "Overlaid damped harmonograph ribbons on a textured ground — spirograph lacework. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#4684c0" },
+    { id: "ff_causticline", name: "Causticline", desc: "Refracted-ray bunching — a pool-light caustic network in aqua. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#42a2aa" },
+    { id: "ff_vortex_choir", name: "Vortex Choir", desc: "Kuramoto phase-oscillator spiral waves — a sculpted 3D magenta swirl with layered fine detail. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#ac4ca2" },
+    { id: "ff_heartwood", name: "Heartwood", desc: "Warped concentric rings + streaks — rich wood grain. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#a27044" },
+    { id: "ff_dragonscale", name: "Dragonscale", desc: "Staggered overlapping arc-scales (seigaiha) with per-scale shading — bronze dragon scales. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#be884a" },
+    { id: "ff_rosetta_moire", name: "Rosetta Moire", desc: "Two offset concentric ring-gratings — hypnotic moire interference rosettes. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#4684b6" },
+    { id: "ff_dactyl", name: "Dactyl", desc: "Curl-oriented relaxation — fingerprint / labyrinth ridges in violet. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#7070c0" },
+    { id: "ff_shroud_silk", name: "Shroud Silk", desc: "Anisotropic power-law Fourier noise — directional brushed silk sheen. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#8476a4" },
+    { id: "ff_gyre", name: "Gyre", desc: "Wavy slice of a gyroid minimal surface — an organic emerald lattice. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#42a288" },
+    { id: "ff_resonance", name: "Resonance", desc: "Chladni plate vibration — sand on the nodal lines of standing modes, in brass. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#be9644" },
+    { id: "ff_phase_reliquary", name: "Phase Reliquary", desc: "INVENTED — phase singularities of attractor-sampled complex plane-waves: an isotropic speckle filigree. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#5472ca" },
+    { id: "ff_mycelinth", name: "Mycelinth", desc: "INVENTED — a shock-filter growth PDE on a multifractal: self-organizing teal vein walls. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#40a296" },
+    { id: "ff_hyperflora", name: "Hyperflora", desc: "INVENTED — a 5-fold x 7-fold quasicrystal as one complex field: tight non-repeating florets. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#a256ac" },
+    { id: "ff_soliton_reef", name: "Soliton Reef", desc: "INVENTED — a new transcendental escape-time fractal under z -> sin(z)+c/z: rose-gold damask coral. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#a0707e" },
+    { id: "ff_aurora_loom", name: "Aurora Loom", desc: "INVENTED — curl flow advecting particles through an attractor-seeded interference phase: woven aurora. Assign as a BASE; FRACTURED FORGE math-engine finish — near-chrome body that ignites at grazing angles.", swatch: "#44a29e" },
+    { id: "ff_tideglass_gyre", name: "Tideglass Gyre", desc: "A gyroid lattice swept into flowing currents by a curl field — liquid emerald glass. Assign as a BASE; FRACTURED FORGE math-engine finish.", swatch: "#44a096" },
+    { id: "ff_magma_current", name: "Magma Current", desc: "Ridged-multifractal lava ridges advected into molten flowing currents. Assign as a BASE; FRACTURED FORGE math-engine finish.", swatch: "#dc783c" },
+    { id: "ff_liquid_agate", name: "Liquid Agate", desc: "Domain-warped marble pulled into a slow amethyst-and-gold liquid swirl. Assign as a BASE; FRACTURED FORGE math-engine finish.", swatch: "#a064aa" },
+    { id: "ff_hivewake", name: "Hivewake", desc: "A honeycomb lattice rippling in a warm amber current — melting hive. Assign as a BASE; FRACTURED FORGE math-engine finish.", swatch: "#c89646" },
+    { id: "ff_resonant_tide", name: "Resonant Tide", desc: "Chladni nodal figures dissolved into flowing standing-wave tides. Assign as a BASE; FRACTURED FORGE math-engine finish.", swatch: "#6482be" },
+    { id: "ff_watered_silk", name: "Watered Silk", desc: "Directional Fourier silk rippled by a curl flow — rose-pearl watered silk. Assign as a BASE; FRACTURED FORGE math-engine finish.", swatch: "#b48296" },
+    { id: "ff_quasiflux", name: "Quasiflux", desc: "A quasicrystal interference field bent into flowing aperiodic flux lines. Assign as a BASE; FRACTURED FORGE math-engine finish.", swatch: "#5082be" },
+    { id: "ff_conduit", name: "Conduit", desc: "An isometric strut lattice warped into flowing steel conduits. Assign as a BASE; FRACTURED FORGE math-engine finish.", swatch: "#5a8caa" },
+    { id: "ff_spectral_hive", name: "Spectral Hive", desc: "Hex hive cells in teal, violet and amber shades, each ringed by a bright ignitable rim. Multi-hue traced-cell FRACTURED FORGE finish.", swatch: "#1e968c" },
+    { id: "ff_spectra_wheel", name: "Spectra Wheel", desc: "A shattered colour-wheel — magenta, cyan and gold radial wedges behind bright ignitable spokes. FRACTURED FORGE finish.", swatch: "#c8288c" },
+    { id: "ff_brickwork_prism", name: "Brickwork Prism", desc: "Offset brick courses in rust, ochre and teal shades with glowing mortar that ignites at angle. FRACTURED FORGE finish.", swatch: "#be5a28" },
+    { id: "ff_scale_prism", name: "Scale Prism", desc: "Staggered rounded scales in jade, indigo and copper shades, each rimmed by a bright ignitable edge. FRACTURED FORGE finish.", swatch: "#289678" },
+    { id: "ff_wovencell", name: "Wovencell", desc: "Voronoi cells woven through a Gabor thread field — a cellular bronze textile. FRACTURED FORGE finish.", swatch: "#b48c5a" },
+    { id: "ff_geode_facet", name: "Geode Facet", desc: "Faceted crystal cells veined by domain-warped marble — amethyst geode facets. FRACTURED FORGE finish.", swatch: "#826eb4" },
+    { id: "ff_shardfield", name: "Shardfield", desc: "Chebyshev-Voronoi angular shard fractures — an ice-blue shattered field. FRACTURED FORGE finish.", swatch: "#5a82be" },
+    { id: "ff_cellwave", name: "Cellwave", desc: "Voronoi cells modulated by radial wave interference — emerald cells pulsing under moire. FRACTURED FORGE finish.", swatch: "#46a08c" },
+    { id: "ff_resonant_cells", name: "Resonant Cells", desc: "Chladni nodal lines fracturing a copper cell network — resonant cracked plates. FRACTURED FORGE finish.", swatch: "#be824b" },
+    { id: "ff_trihedra", name: "Trihedra", desc: "Triangular tiling in cyan, lime and magenta shades with bright ignitable edges. FRACTURED FORGE finish.", swatch: "#1ea0aa" },
+    { id: "ff_holo_grating", name: "Holo Grating", desc: "Superposed diffraction gratings — a spectral holographic interference field. FRACTURED FORGE finish.", swatch: "#6e5abe" },
+    { id: "ff_standing_field", name: "Standing Field", desc: "Chladni nodal figures crossed with radial interference — a violet standing-wave field. FRACTURED FORGE finish.", swatch: "#825fbe" },
+    { id: "ff_moire_vortex", name: "Moire Vortex", desc: "Moire ring-gratings wound through a spiral phase — a hypnotic blue vortex interference. FRACTURED FORGE finish.", swatch: "#5087be" },
+    { id: "ff_caustic_lace", name: "Caustic Lace", desc: "A caustic light-net draped over Voronoi cells — aqua-and-gold pooled light lace. FRACTURED FORGE finish.", swatch: "#50a096" },
+    { id: "ff_cubist_prism", name: "Cubist Prism", desc: "A cubist mosaic of rust, teal and ochre rectangle panels seamed by glowing ignitable mortar. FRACTURED FORGE finish.", swatch: "#be5f23" },
+    { id: "ff_pinwheel_glass", name: "Pinwheel Glass", desc: "Square panes each split into four pinwheel wedges — indigo, cyan and violet shades behind bright ignitable spokes. FRACTURED FORGE finish.", swatch: "#3c46b9" },
+    { id: "ff_oilskin_weave", name: "Oilskin Weave", desc: "Thin-film petrol iridescence rippling through a woven thread field — oil-on-silk sheen. FRACTURED FORGE finish.", swatch: "#1e5f78" },
+    { id: "ff_dichroic_drift", name: "Dichroic Drift", desc: "Thin-film dichroic bands advected by a curl flow — magenta-to-cyan colour-shifting drift. FRACTURED FORGE finish.", swatch: "#782896" },
+    { id: "ff_peacock_optic", name: "Peacock", desc: "Newton-ring ocelli swept through a vortex — packed emerald-and-gold peacock eyes. FRACTURED FORGE finish.", swatch: "#167858" },
+    { id: "ff_spectral_ridge", name: "Spectral Ridge", desc: "Thin-film spectral bands draped over sharp ridges — iridescent violet-and-teal mountain veins. FRACTURED FORGE finish.", swatch: "#6e468c" },
+    { id: "ff_parquet_glass", name: "Parquet Glass", desc: "Basketweave parquet of interlocking tiles in oak, walnut and brass shades, seamed by glowing ignitable grout. FRACTURED FORGE finish.", swatch: "#965f2d" },
+    { id: "ff_catacomb_glass", name: "Catacomb Glass", desc: "Merged maze-room cells (dominoes and L-shapes) in slate-blue, violet and ember shades behind bright ignitable walls. FRACTURED FORGE finish.", swatch: "#4650a0" },
+    { id: "ff_brain_coral", name: "Brain Coral", desc: "A spinodal domain-maze lobed by Worley cells — a dense convoluted coral-pink brain coral. FRACTURED FORGE finish.", swatch: "#be505a" },
+    { id: "ff_banded_agate", name: "Banded Agate", desc: "Concentric geode growth bands warped and embossed into crisp ridges — a sliced amber-and-teal banded agate. FRACTURED FORGE finish.", swatch: "#966428" },
+    { id: "ff_leaf_vein", name: "Leaf Vein", desc: "A bright vein network bounding translucent cells over marble — backlit leaf venation. FRACTURED FORGE finish.", swatch: "#3c8228" },
+    { id: "ff_truchet_glass", name: "Truchet Glass", desc: "Truchet curved-arc tiles in teal, blue and violet shades, flowing behind bright ignitable arc-seams. FRACTURED FORGE finish.", swatch: "#1e96aa" },
+    { id: "ff_argyle_glass", name: "Argyle Glass", desc: "A diagonal argyle diamond lattice in rust, gold and teal shades laced by bright ignitable cross-seams. FRACTURED FORGE finish.", swatch: "#b45a28" },
+    { id: "ff_ziggurat_glass", name: "Ziggurat Glass", desc: "A grid of nested-square frame stacks in steel-blue, cyan and violet shades, stepped by bright ignitable frame-lines. FRACTURED FORGE finish.", swatch: "#3c5aaf" },
+    { id: "ff_penrose_quartz", name: "Penrose Quartz", desc: "Aperiodic Penrose rhombus tiles lit by plane-wave interference — a faceted violet quartz lattice. FRACTURED FORGE finish.", swatch: "#4637a0" },
+    { id: "ff_tracewerk", name: "Tracewerk", desc: "Dense PCB circuit traces glowing under a soft caustic bloom — a lit green-and-gold circuit board. FRACTURED FORGE finish.", swatch: "#1e8c46" },
+    { id: "ff_quicksilver", name: "Quicksilver", desc: "A Schwarz-P minimal-surface lattice of rounded interlocking cells — pooled liquid-chrome quicksilver. FRACTURED FORGE finish.", swatch: "#326487" },
+    { id: "ff_knurled_steel", name: "Knurled Steel", desc: "A fine diamond knurl over a coarse crisp diamond-tread plate — machined gunmetal catching amber light. FRACTURED FORGE finish.", swatch: "#5f6473" },
+    { id: "ff_nebula", name: "Nebula", desc: "Plasma-ball ion clouds turbulated by marble — a deep-space magenta-and-cyan nebula. FRACTURED FORGE finish.", swatch: "#78288c" },
+    { id: "ff_ion_bloom", name: "Ion Bloom", desc: "Glowing bokeh orbs blooming over a plasma field — drifting cyan-and-violet ions. FRACTURED FORGE finish.", swatch: "#1e7896" },
+    { id: "ff_plasma_arc", name: "Plasma Arc", desc: "Branching Lichtenberg discharge crackling over a plasma glow — high-voltage electric-blue arcs. FRACTURED FORGE finish.", swatch: "#3c5ac8" },
+    { id: "ff_aurora_veil", name: "Aurora Veil", desc: "Aurora curtains curl-warped into rippling omnidirectional veils — green-and-violet northern lights. FRACTURED FORGE finish.", swatch: "#1e966e" },
+    { id: "ff_spiral_galaxy", name: "Spiral Galaxy", desc: "Scattered spiral-wave swirls salted with bokeh stars — a field of purple-and-gold mini galaxies. FRACTURED FORGE finish.", swatch: "#824696" },
+    { id: "fd_anglerfish", name: "Anglerfish", desc: "Several bioluminescent lures glowing through a dim caustic deep-water field — anglerfish in the abyss. FRACTURED DEEP finish.", swatch: "#1e96a0" },
+    { id: "fd_jellyfall", name: "Jellyfall", desc: "Soft glowing bells drifting on a slow current — a bloom of violet-and-blue jellyfish. FRACTURED DEEP finish.", swatch: "#6e3caa" },
+    { id: "fd_hadal_glow", name: "Hadal Glow", desc: "A refracted caustic light-net warped through the deep — hadal-zone pooled aqua light. FRACTURED DEEP finish.", swatch: "#1a7878" },
+    { id: "fd_bioluminescence", name: "Bioluminescence", desc: "A dense fine plankton speckle field — tens of thousands of tiny glow points streaming on a slow deep current. FRACTURED DEEP finish.", swatch: "#22AF96" },
+    { id: "fd_ripple_glass", name: "Ripple Glass", desc: "Concentric rain-on-pond ripple cell bands in deep teal, violet and aqua shades, edged by bright ignitable wavefronts. FRACTURED DEEP finish.", swatch: "#148296" },
+    { id: "fd_hydrothermal", name: "Hydrothermal Vent", desc: "Mineral-rich black-smoker plumes rising through dark water — copper-and-ember hydrothermal vents. FRACTURED DEEP finish.", swatch: "#b45019" },
+    { id: "fd_maelstrom", name: "Maelstrom", desc: "One continuous organic deep-current whirl — curl-flow streamlines marble-warped into a single churning whirlpool. FRACTURED DEEP finish.", swatch: "#1C7896" },
+    { id: "fd_kelp_drift", name: "Kelp Drift", desc: "Dense strands swaying in a slow current over a deep-water glow — a drifting green kelp forest. FRACTURED DEEP finish.", swatch: "#287832" },
+    { id: "fd_cephalopod", name: "Cephalopod", desc: "Rows of suckers warped over a tentacle — iridescent violet deep cephalopod skin. FRACTURED DEEP finish.", swatch: "#783282" },
+    { id: "fd_nacre", name: "Nacre", desc: "Thin-film pearl iridescence over warped marble — deep mother-of-pearl nacre. FRACTURED DEEP finish.", swatch: "#788296" },
+    { id: "fd_sonar_glass", name: "Sonar Glass", desc: "Voronoi cells ringed by concentric sonar bands in deep teal, violet and aqua shades, traced by bright ignitable contours. FRACTURED DEEP finish.", swatch: "#148ca0" },
+    { id: "fd_brine_glass", name: "Brine Veins", desc: "Flowing teal-and-jade brine veins lit by a fine refracted caustic sheen — dense mineral salt veining through the deep. FRACTURED DEEP finish.", swatch: "#1E8C82" },
+    { id: "fd_krakenink", name: "Kraken Ink", desc: "Many fine ink filaments swirling through dark water — a kraken's violet-and-blue ink discharge. FRACTURED DEEP finish.", swatch: "#3c2896" },
+    { id: "fd_whalefall", name: "Whale Fall", desc: "A fine branching skeleton crawling with tiny glowing bone-eaters over a dim seafloor glow — a whale fall on the abyssal plain. FRACTURED DEEP finish.", swatch: "#28966e" },
+    { id: "fd_abyssalsnow", name: "Abyssal Snow", desc: "A dense fall of fine marine-snow flakes drifting on a slow current through the deep water column — abyssal snow. FRACTURED DEEP finish.", swatch: "#6ea0be" },
+    { id: "fd_eeldischarge", name: "Electric Eel", desc: "Many fine branched arcs crackling across a resonant standing field — an electric eel discharging in the dark deep. FRACTURED DEEP finish.", swatch: "#28aac8" },
+    { id: "fd_pressurestrata", name: "Pressure Strata", desc: "Many thin compressed sediment laminae folded and fractured under crushing depth — abyssal pressure strata. FRACTURED DEEP finish.", swatch: "#1e6e82" },
+    { id: "fd_siphonophore", name: "Siphonophore", desc: "A long chain of small glowing zooid bodies in deep teal, violet and aqua, strung on bright ignitable filaments — a drifting siphonophore colony. FRACTURED DEEP finish.", swatch: "#148796" },
+    { id: "fd_glasssquid", name: "Glass Squid", desc: "Stacked thin-film iridescent sheen drifting over a translucent membrane with clear lens-glints — a transparent glass squid in the deep. FRACTURED DEEP finish.", swatch: "#28A5AF" },
+    { id: "fd_trenchfault", name: "Trench Fault", desc: "Offset cold-rock fault blocks in deep teal, blue and violet, split by bright ignitable fissure lines — a fractured deep-sea trench fault. FRACTURED DEEP finish.", swatch: "#14788c" },
+    { id: "fu_saucer_alloy", name: "Saucer Alloy", desc: "Dense machined turn-rings in brushed gunmetal hull alloy — a saucer's spun-metal underbelly. FRACTURED UFO finish.", swatch: "#96aabe" },
+    { id: "fu_tractor_beam", name: "Tractor Beam", desc: "A field of abduction-green beam wells pulsing tight concentric tractor rings. FRACTURED UFO finish.", swatch: "#28d278" },
+    { id: "fu_alien_circuit", name: "Alien Circuit", desc: "Glowing extraterrestrial PCB traces with dense pads and vias on a fine grid. FRACTURED UFO finish.", swatch: "#1eaab4" },
+    { id: "fu_glyph_grid", name: "Glyph Grid", desc: "A tight inscribed matrix of small angular alien hieroglyph strokes and dots. FRACTURED UFO finish.", swatch: "#78c828" },
+    { id: "fu_plasma_drive", name: "Plasma Drive", desc: "A dense scatter of small plasma cores throwing fine radial ion filaments over a warped ion haze — a full-coverage magenta engine bloom with no blank gaps.", swatch: "fuf_plasma_drive" },
+    { id: "fu_crop_circle", name: "Crop Circle", desc: "Dozens of small flattened-ring agroglyphs with spokes and satellite pips scattered over a tight flattened-crop grain — a fine field with no blank patches.", swatch: "fuf_crop_circle" },
+    { id: "fu_abduction_shaft", name: "Abduction Shafts", desc: "A leaning forest of thin tapering abduction-light columns with floating dust motes. FRACTURED UFO finish.", swatch: "#32dc6e" },
+    { id: "fu_oil_iridescent", name: "Oil Iridescence", desc: "Otherworldly thin-film petrol-sheen banding warped over alien hull grain. FRACTURED UFO finish.", swatch: "#7882aa" },
+    { id: "fu_hyperspace", name: "Hyperspace", desc: "One abstract warp-jump star tunnel — fine radial light-streaks from many scattered drift points curl-smeared into a seamless omnidirectional smear, no repeats.", swatch: "fuf_hyperspace" },
+    { id: "fu_wormhole", name: "Wormhole", desc: "A field of small spacetime funnels with nested rings twisted by a swirl phase. FRACTURED UFO finish.", swatch: "#8c3cc8" },
+    { id: "fu_reactor_core", name: "Reactor Lattice", desc: "An isometric strut scaffold charged by a fine energy-pulse overlay — an antimatter core. FRACTURED UFO finish.", swatch: "#28c896" },
+    { id: "fu_biomech_skin", name: "Bio-Mech Skin", desc: "Interlocking domain-warped chitin tubes and pulsing veins over a fine pore grain — a living bio-mechanical alien hide in teal-and-violet, no two regions alike.", swatch: "fuf_biomech_skin" },
+    { id: "fu_hex_hull", name: "Hex Hull", desc: "Tight beveled hexagonal armor cells with seam highlights — small-scale ship-hull plating. FRACTURED UFO finish.", swatch: "#7896aa" },
+    { id: "fu_nebula_portal", name: "Nebula Portal", desc: "A churning interdimensional cloud pierced by bright ignition knots and a star speckle. FRACTURED UFO finish.", swatch: "#7832b4" },
+    { id: "fu_stargate", name: "Star-Gate", desc: "Many scattered counter-rotating phase vortices summed into one organic event-horizon interference of winding rippling arms — a seamless gate field with no single centre.", swatch: "fuf_stargate" },
+    { id: "fu_antigrav", name: "Antigrav Ripple", desc: "Many overlapping concentric pressure-wave fronts quivering — a repulsor field. FRACTURED UFO finish.", swatch: "#32d282" },
+    { id: "fu_scanner_sweep", name: "Gravity Lens", desc: "A starfield bent by a dense scatter of small gravitational masses warping a fine spacetime-ripple substrate into omnidirectional Einstein-ring arcs — an alien gravity-well sensor field.", swatch: "fuf_gravity_lens" },
+    { id: "fu_hull_cells", name: "Hull Cells", desc: "A fine mothership-hull plating of small alien-alloy panes in jade, blue and violet, ringed by bright ignitable seams. FRACTURED UFO finish.", swatch: "#1e966e" },
+    { id: "fu_glyph_cells", name: "Glyph Field", desc: "A fine field of small angular xeno-glyph strokes, arcs and pips jittered off a grid so it never reads as a tile, bedded on a faint inscription grain — full-coverage alien hieroglyphs.", swatch: "fuf_glyph_cells" },
+    { id: "fu_portal_rings", name: "Portal Rings", desc: "Concentric ring-sector portal cells in abduction green and void purple, traced by bright ignitable arcs. FRACTURED UFO finish.", swatch: "#28aa5a" },
+    { id: "fc_sasquatch_fur", name: "Sasquatch Fur", desc: "Matted shaggy strands curl-laid into a dense coat over a dark under-fur — a sasquatch pelt FRACTURED CRYPTID finish.", swatch: "#785f3c" },
+    { id: "fc_quill_bristle", name: "Quill Bristle", desc: "Dense fine porcupine bristles raked over a pebbled hide — a quilled-cryptid FRACTURED CRYPTID finish.", swatch: "#8c785a" },
+    { id: "fc_coarse_hide", name: "Coarse Hide", desc: "Fine warped leather plates over a tight pebble grain — coarse wrinkled cryptid hide FRACTURED CRYPTID finish.", swatch: "#6e5a46" },
+    { id: "fc_eyeshine", name: "Eyeshine", desc: "Hundreds of tiny glowing slit-eyes glinting back densely out of a near-black forest murk.", swatch: "#31832e" },
+    { id: "fc_bog_murk", name: "Bog Murk", desc: "Churning teal water veins threaded with bioluminescent scum — a still-black bog FRACTURED CRYPTID finish.", swatch: "#198278" },
+    { id: "fc_claw_rake", name: "Claw Rake", desc: "Sets of fine taper slashes raking across a dark hide at every angle — a claw-rake FRACTURED CRYPTID finish.", swatch: "#963c28" },
+    { id: "fc_bark_camo", name: "Bark Camo", desc: "Furrowed bark ridge-veins broken by a fine forest-shadow contour web — a bark-camo FRACTURED CRYPTID finish.", swatch: "#506437" },
+    { id: "fc_feathered_wing", name: "Feathered Wing", desc: "One close-cropped fractured feather vane with a curved rachis, dense iridescent barbs, attached barbules, hooklets, cross-locks, tear gaps and snapped tips.", swatch: "linear-gradient(135deg, #04182a, #0d8b62, #79e759, #f4b3c5, #7d2d92)" },
+    { id: "fc_dorsal_ridge", name: "Dorsal Ridge", desc: "Rows of fine keeled arc-scales curl-warped into a running spine of ridges — a reptilian dorsal-ridge FRACTURED CRYPTID finish.", swatch: "#327850" },
+    { id: "fc_webbed_membrane", name: "Webbed Membrane", desc: "A fine vein-network bounding stretched translucent cells — the webbing of a swamp-cryptid hand, a FRACTURED CRYPTID finish.", swatch: "#288282" },
+    { id: "fc_toad_skin", name: "Toad Skin", desc: "Tightly hex-packed warty beads mottled over a damp sheen — a warty bog-toad FRACTURED CRYPTID finish.", swatch: "#46783c" },
+    { id: "fc_antler_bone", name: "Antler Bone", desc: "Abstract dense branching bone and antler forks at every orientation, an organic non-repeating tine network.", swatch: "#896422" },
+    { id: "fc_mossy_stone", name: "Mossy Stone", desc: "Fine cracked stone plates with moss speckle pooling in the seams — a lichen-furred boulder FRACTURED CRYPTID finish.", swatch: "#4b6937" },
+    { id: "fc_will_o_wisp", name: "Will-o'-Wisp", desc: "A dense swarm of small drifting bog-lights, each trailing a fading wisp, scattered organically over a black marsh.", swatch: "#356540" },
+    { id: "fc_snakeskin", name: "Snakeskin", desc: "A fine diamond scale lattice broken by dark blotch banding — a serpent-cryptid snakeskin FRACTURED CRYPTID finish.", swatch: "#5a6e37" },
+    { id: "fc_batwing", name: "Bat Wing", desc: "Leathery wing membranes spanned by radiating finger-bone struts and crinkled by fine wrinkles, scattered at every angle.", swatch: "#9a299b" },
+    { id: "fc_gator_hide", name: "Gator Hide", desc: "Fine bulging scutes in deep grooves with a few raised keel ridges — an armored gator-hide FRACTURED CRYPTID finish.", swatch: "#466437" },
+    { id: "fc_hide_scale_glass", name: "Hide Scale Glass", desc: "Organic undulating overlapping forest-hued hide-scales, each region a different shade, traced by bright ignitable scale-rims.", swatch: "#527a1b" },
+    { id: "fc_dragon_hex_glass", name: "Dragon Hex Glass", desc: "Hex-packed dragon-hide scutes in swamp-green, charcoal and amber shades, traced by bright ignitable keels — a dragon-cryptid FRACTURED CRYPTID finish.", swatch: "#2d5032" },
+    { id: "fc_crackle_eyeshine_glass", name: "Crackle Eyeshine Glass", desc: "A near-black multi-tone reptilian hide studded with countless small amber and green eyeshine glints scattered densely across it.", swatch: "#5e6d1c" },
+    { id: "fr_prism_shatter", name: "Oil-Slick Prism Shatter", desc: "A curl-drifted oil-on-water thin-film sweep shattered into vivid full-spectrum facets, traced by bright ignitable fault-lines. FRACTURED RAINBOW finish.", swatch: "#2bd1c4" },
+    { id: "fr_spectrum_voronoi", name: "Diffraction Spectrum Sweep", desc: "Domain-warped diffraction gratings split light into a dense field of bowing full-spectrum holographic fringes — no two alike. FRACTURED RAINBOW finish.", swatch: "#2864e6" },
+    { id: "fr_hex_hive", name: "Spectral Moire Sweep", desc: "Scattered wave sources beat into a fine omnidirectional moire weave glowing the full spectrum, edged by bright ignitable wavefronts. FRACTURED RAINBOW finish.", swatch: "#28af46" },
+    { id: "fr_kaleidoscope", name: "Kaleidoscope Tiles", desc: "A grid of spinning four-wedge pinwheel tiles in full-spectrum hues — a kaleidoscope mosaic with bright ignitable spokes. FRACTURED RAINBOW finish.", swatch: "#9632c3" },
+    { id: "fr_chroma_rings", name: "Chromatic Ripple Field", desc: "Dozens of scattered ripple sources interfere into one fine non-repeating field of full-spectrum chromatic rings with bright ignitable wavefronts. FRACTURED RAINBOW finish.", swatch: "#eb9619" },
+    { id: "fr_rainbow_truchet", name: "Rainbow Truchet", desc: "Interlocking Truchet curved-arc tiles flowing through full-spectrum regions, seamed by bright ignitable arcs. FRACTURED RAINBOW finish.", swatch: "#1fa0a0" },
+    { id: "fr_prism_wheel", name: "Spectral Prism Burst", desc: "Many balanced counter-spinning vortices warp into a single all-over prismatic burst of flowing full-spectrum arms with bright ignitable seams. FRACTURED RAINBOW finish.", swatch: "#e6dc1e" },
+    { id: "fr_iridescent_weave", name: "Iridescent Weave", desc: "An over-and-under basket-weave of full-spectrum thread tiles — an iridescent woven rainbow with bright ignitable seams. FRACTURED RAINBOW finish.", swatch: "#c83296" },
+    { id: "fr_rainbow_caustics", name: "Rainbow Caustics", desc: "Concentric ripple-caustic cell bands radiating from many scattered sources in full-spectrum hues, edged by bright ignitable wavefronts. FRACTURED RAINBOW finish.", swatch: "#2bd1c4" },
+    { id: "fr_opal_fire", name: "Opal Fire Flecks", desc: "Thousands of tiny scattered opal flecks flash full-spectrum fire over a flowing thin-film spectral field, with bright ignitable glints. FRACTURED RAINBOW finish.", swatch: "#ff6428" },
+    { id: "fr_spectral_spiral", name: "Spectral Marble Flow", desc: "Turbulent domain-warped marble veining smeared along a curl flow into one flowing full-spectrum field, with bright ignitable vein-edges. FRACTURED RAINBOW finish.", swatch: "#9632c3" },
+    { id: "fr_quasicrystal", name: "Spectral Quasicrystal", desc: "A fine decagonal quasi-periodic interference lattice glowing the full spectrum, every fringe a vivid rainbow band with crisp ignitable contours. FRACTURED RAINBOW finish.", swatch: "#39c84b" },
+    { id: "fr_oil_slick", name: "Oil-Slick Iridescence", desc: "Curl-drifted oil-on-water thin-film iridescence beating into flowing full-spectrum bands with bright ignitable rims. FRACTURED RAINBOW finish.", swatch: "#1f8fd2" },
+    { id: "fr_holo_grating", name: "Holographic Grating", desc: "Crossed high-frequency diffraction gratings splitting light into a dense field of fine full-spectrum holographic fringes. FRACTURED RAINBOW finish.", swatch: "#e64bb4" },
+    { id: "fr_chroma_ripple", name: "Chromatic Aberration Ripple", desc: "Many scattered Newton-ring halos blend into one fine non-repeating field of channel-split full-spectrum aberration fringes with bright ignitable contours. FRACTURED RAINBOW finish.", swatch: "#ff50b4" },
+    { id: "fr_dichroic_bands", name: "Dichroic Bands", desc: "High-frequency dichroic-glass stripes shifting angle across the panel, cycling the full spectrum with bright ignitable band-edges. FRACTURED RAINBOW finish.", swatch: "#19c8a0" },
+    { id: "fr_holo_foil", name: "Holographic Foil", desc: "Crinkled crystal-facet holographic foil throwing full-spectrum glints off every creased plane, with bright ignitable creases. FRACTURED RAINBOW finish.", swatch: "#46a0e6" },
+    { id: "fr_rainbow_plasma", name: "Rainbow Plasma", desc: "A dense turbulent plasma field cycling the full spectrum into many small drifting rainbow cells with bright ignitable threads. FRACTURED RAINBOW finish.", swatch: "#ff5050" },
+    { id: "fr_spectral_curl", name: "Spectral Curl-Flow", desc: "A full-spectrum hue field smeared along a divergence-free curl flow into flowing rainbow streamlines with bright ignitable rims. FRACTURED RAINBOW finish.", swatch: "#7d50e6" },
+    { id: "fr_spectral_marble", name: "Spectral Marble", desc: "Turbulent domain-warped marble veining mapped to a flowing full-spectrum hue field, with bright ignitable vein-edges. FRACTURED RAINBOW finish.", swatch: "#19b478" },
+    { id: "fo_ectoplasm", name: "Ectoplasm", desc: "Wraith smoke pulled across the dark in drifting vapour wisps — ectoplasm. A FRACTURED OCCULT finish.", swatch: "#6eaf82" },
+    { id: "fo_blood_spatter", name: "Blood Spatter", desc: "Splattered crimson droplets, cast-off specks and thin drip-runs — blood spatter. A FRACTURED OCCULT finish.", swatch: "#a51416" },
+    { id: "fo_cobweb_lace", name: "Cobweb Lace", desc: "A fine tattered veil of dense torn web-silk strung edge to edge — cobweb lace. A FRACTURED OCCULT finish.", swatch: "#575963" },
+    { id: "fo_sigil_grid", name: "Sigil Grid", desc: "A carved grid of small occult glyphs glowing violet — a cursed sigil plate. A FRACTURED OCCULT finish.", swatch: "#963caf" },
+    { id: "fo_bone_branch", name: "Bone Branch", desc: "A dense thicket of small forked bone-white twigs filling the frame — bone branching. A FRACTURED OCCULT finish.", swatch: "#68655a" },
+    { id: "fo_candle_wax", name: "Candle Wax", desc: "Molten tallow streaming down into pooled drips under amber flame-glow — candle wax. A FRACTURED OCCULT finish.", swatch: "#c88223" },
+    { id: "fo_rune_lattice", name: "Rune Lattice", desc: "A binding lattice of carved angular staves and branches edge to edge — cursed runes. A FRACTURED OCCULT finish.", swatch: "#3c9696" },
+    { id: "fo_shadow_mist", name: "Shadow Mist", desc: "Creeping darkness in curl-warped tendrils with faint thinning rifts — shadow mist. A FRACTURED OCCULT finish.", swatch: "#463c6e" },
+    { id: "fo_seance_veil", name: "Seance Veil", desc: "Hanging translucent spirit-curtain folds in séance violet — a séance veil. A FRACTURED OCCULT finish.", swatch: "#7d37a5" },
+    { id: "fo_pentagram_seal", name: "Pentagram Seal", desc: "A tiled field of small inscribed pentagrams in their circles — conjuring seals. A FRACTURED OCCULT finish.", swatch: "#af232d" },
+    { id: "fo_graveyard_moss", name: "Graveyard Moss", desc: "Weathered stone slabs crusted with sickly-green lichen and dark mortar — gravestone moss. A FRACTURED OCCULT finish.", swatch: "#468241" },
+    { id: "fo_spider_lattice", name: "Spider Web", desc: "Many overlapping orb-webs — radial silk spokes and sagging spirals beaded with dew — a spider web. A FRACTURED OCCULT finish.", swatch: "#4c4e59" },
+    { id: "fo_raven_feather", name: "Raven Feather", desc: "Fine dense overlapping raven plumes layered with depth and fine barbs — glossy plumage. A FRACTURED OCCULT finish.", swatch: "#45495d" },
+    { id: "fo_witchfire", name: "Witchfire", desc: "Cold green-fire ember sparks with upward licks drifting in the dark — witchfire. A FRACTURED OCCULT finish.", swatch: "#3cbe5a" },
+    { id: "fo_cracked_tomb", name: "Cracked Tomb", desc: "An aged carved tomb slab — chiselled granite grain riven by deep fracture lines and lichen. A FRACTURED OCCULT finish.", swatch: "#5c5a5e" },
+    { id: "fo_vampire_damask", name: "Vampire Damask", desc: "Finer ornate baroque scroll-leaf damask undulating in oxblood velvet — vampire wallpaper. A FRACTURED OCCULT finish.", swatch: "#7d2030" },
+    { id: "fo_haunted_fog", name: "Haunted Fog", desc: "Churning banks of rolling ground-mist with bright wispy crests — haunted graveyard fog. A FRACTURED OCCULT finish.", swatch: "#5f6e78" },
+    { id: "fo_glyph_cells", name: "Glyph Sigils", desc: "A dense field of small carved occult sigil strokes glowing violet — an incantation plate. A FRACTURED OCCULT finish.", swatch: "#7d4f96" },
+    { id: "fo_crimson_cells", name: "Crimson Blood", desc: "Blood spatter, drip-runs and coagulated veins crawling across the dark — a crimson blood field. A FRACTURED OCCULT finish.", swatch: "#8c1a1c" },
+    { id: "fo_stained_chapel", name: "Stained Chapel", desc: "A cathedral field of overlapping rose-windows in violet, blood and bone-gold leaded glass — stained chapel. A FRACTURED OCCULT finish.", swatch: "#a37957" },
+    // FRACTURED MORPHO (2026-07-30) — 50 structural-color thin-film finishes
+    { id: "fmo_abalone_drift", name: "Abalone Drift", desc: "Warped nacre tablets drifting in teal, rose and silver-green currents. A FRACTURED MORPHO finish.", swatch: "#84817e" },
+    { id: "fmo_alexandrite_dusk", name: "Alexandrite Dusk", desc: "Slow dusk blotches shifting deep teal to wine-red under changing light. A FRACTURED MORPHO finish.", swatch: "#7d6f79" },
+    { id: "fmo_ammolite_skin", name: "Ammolite Skin", desc: "Fractured fossil plates stained in full-spectrum ammolite fire with dark seams. A FRACTURED MORPHO finish.", swatch: "#7d7f88" },
+    { id: "fmo_atlas_wing", name: "Atlas Wing", desc: "Dense overlapping atlas-moth micro-scales domed with bronze-and-teal structural fire. A FRACTURED MORPHO finish.", swatch: "#8d8078" },
+    { id: "fmo_black_opal", name: "Black Opal", desc: "Pinfire play-of-color domains igniting red, green and violet over jet black. A FRACTURED MORPHO finish.", swatch: "#7d8786" },
+    { id: "fmo_black_pearl", name: "Black Pearl", desc: "A deep charcoal orient rolling slow peacock hues beneath the surface. A FRACTURED MORPHO finish.", swatch: "#987566" },
+    { id: "fmo_bornite_patina", name: "Bornite Patina", desc: "Peacock-ore tarnish blotching purple, blue and copper across raw mineral. A FRACTURED MORPHO finish.", swatch: "#918b83" },
+    { id: "fmo_cassowary_quill", name: "Cassowary Quill", desc: "Coarse double quill strands raking blue-black iridescence in wild directions. A FRACTURED MORPHO finish.", swatch: "#558282" },
+    { id: "fmo_chalcopyrite", name: "Chalcopyrite", desc: "Brassy crystal facets tarnished with magenta and teal iridescent bloom. A FRACTURED MORPHO finish.", swatch: "#846788" },
+    { id: "fmo_chrysina_gold", name: "Chrysina Gold", desc: "A liquid golden mirror film swirling with fine champagne interference ripples. A FRACTURED MORPHO finish.", swatch: "#7a9b76" },
+    { id: "fmo_duck_speculum", name: "Duck Speculum", desc: "Fine curved speculum ribs blazing teal-to-violet like a mallard's wing flash. A FRACTURED MORPHO finish.", swatch: "#698984" },
+    { id: "fmo_emperor_scale", name: "Emperor Scale", desc: "Stretched imperial scale rows ribbed with regal purple-and-gold interference. A FRACTURED MORPHO finish.", swatch: "#798575" },
+    { id: "fmo_fire_agate", name: "Fire Agate", desc: "Botryoidal bubble ridges bubbling with ember, green and violet fire. A FRACTURED MORPHO finish.", swatch: "#927d7c" },
+    { id: "fmo_firefly_shell", name: "Firefly Shell", desc: "Lantern-warm platelet patches ringed with amber-and-green interference ripples. A FRACTURED MORPHO finish.", swatch: "#7c9275" },
+    { id: "fmo_foam_film", name: "Foam Film", desc: "Packed foam-bubble domes each swirling its own tiny soap-film rainbow. A FRACTURED MORPHO finish.", swatch: "#79888d" },
+    { id: "fmo_glasswing", name: "Glasswing", desc: "Clear membrane panels edged with faint pearly thin-film shimmer. A FRACTURED MORPHO finish.", swatch: "#77927d" },
+    { id: "fmo_grackle_oil", name: "Grackle Oil", desc: "Chaotic rainbow-oil rivulets churning bronze, blue and violet across black plumage. A FRACTURED MORPHO finish.", swatch: "#80887c" },
+    { id: "fmo_ground_beetle", name: "Ground Beetle", desc: "Fine grooved elytra striae running the shell in violet-and-bronze interference rows. A FRACTURED MORPHO finish.", swatch: "#809b7b" },
+    { id: "fmo_hummingbird_gorget", name: "Hummingbird Gorget", desc: "A mosaic of tiny angle-tuned platelets detonating magenta-to-emerald gorget fire. A FRACTURED MORPHO finish.", swatch: "#6f8f7a" },
+    { id: "fmo_jewel_scarab", name: "Jewel Scarab", desc: "A hex-packed lattice of dimpled pits blazing emerald-and-ruby structural metal. A FRACTURED MORPHO finish.", swatch: "#88817e" },
+    { id: "fmo_labradorite", name: "Labradorite", desc: "Fine twin lamellae flashing electric blue and gold across dark feldspar. A FRACTURED MORPHO finish.", swatch: "#828a70" },
+    { id: "fmo_ladybird_dome", name: "Ladybird Dome", desc: "Bulging domed shell cells rolling scarlet, gold and jet interference across each dome. A FRACTURED MORPHO finish.", swatch: "#86828d" },
+    { id: "fmo_luna_dust", name: "Luna Dust", desc: "A dense dusting of tiny warped scales shimmering pale moon-green and pearl. A FRACTURED MORPHO finish.", swatch: "#a6757c" },
+    { id: "fmo_magpie_wing", name: "Magpie Wing", desc: "Bold wing-bar lamellae flashing steel blue and ivory across dark feather vanes. A FRACTURED MORPHO finish.", swatch: "#848e7c" },
+    { id: "fmo_monarch_vein", name: "Monarch Vein", desc: "Fine warped wing-cell scales in ember-orange iridescence veined with dark grooves. A FRACTURED MORPHO finish.", swatch: "#7a8d7e" },
+    { id: "fmo_moonstone_adular", name: "Moonstone Adular", desc: "A floating blue-white adularescent glow drifting over fine silver schiller. A FRACTURED MORPHO finish.", swatch: "#618b7a" },
+    { id: "fmo_morpho_blue", name: "Morpho Blue", desc: "Overlapping wing-scale shingles ribbed with fine striations flashing electric blue-violet interference. A FRACTURED MORPHO finish.", swatch: "#16c895" },
+    { id: "fmo_mother_of_pearl", name: "Mother of Pearl", desc: "Fine even aragonite bricks shimmering soft pink, mint and ivory pearl. A FRACTURED MORPHO finish.", swatch: "#526187" },
+    { id: "fmo_mussel_shell", name: "Mussel Shell", desc: "Curved growth-line ridges rippling deep blue and violet nacre along the shell. A FRACTURED MORPHO finish.", swatch: "#7f8271" },
+    { id: "fmo_nacre_brick", name: "Nacre Brick", desc: "Tight brickwork micro-tablets mortared with dark seams, each brick a different pearl hue. A FRACTURED MORPHO finish.", swatch: "#857687" },
+    { id: "fmo_oil_beetle", name: "Oil Beetle", desc: "Thick violet-black oil sheen draining in slow curl swirls across the shell. A FRACTURED MORPHO finish.", swatch: "#7d728b" },
+    { id: "fmo_oil_slick", name: "Oil Slick", desc: "Petrol-slick rainbows shearing across dark water in long curl-driven streaks. A FRACTURED MORPHO finish.", swatch: "#87787e" },
+    { id: "fmo_owl_eye", name: "Owl Eye", desc: "Dense concentric micro-eyespots cycling bronze, violet and teal interference. A FRACTURED MORPHO finish.", swatch: "#79737d" },
+    { id: "fmo_paua_storm", name: "Paua Storm", desc: "Storm-churned paua swirls boiling turquoise, peacock-green and violet. A FRACTURED MORPHO finish.", swatch: "#966d7b" },
+    { id: "fmo_peacock_eye", name: "Peacock Eye", desc: "A dense train of ocellated eyes ringed in sapphire, emerald and bronze. A FRACTURED MORPHO finish.", swatch: "#9b746b" },
+    { id: "fmo_pearl_oyster", name: "Pearl Oyster", desc: "Dense rippled oyster nacre waving silver, blush and aqua across the shell. A FRACTURED MORPHO finish.", swatch: "#64747f" },
+    { id: "fmo_pigeon_neck", name: "Pigeon Neck", desc: "Tight neck-feather swirls shifting emerald to rose-pink with every turn. A FRACTURED MORPHO finish.", swatch: "#6d7d73" },
+    { id: "fmo_raven_flash", name: "Raven Flash", desc: "Dense feather-vane lamellae igniting petrol-blue flashes across raven black. A FRACTURED MORPHO finish.", swatch: "#7c7e94" },
+    { id: "fmo_scarab_horn", name: "Scarab Horn", desc: "Rugged horn-chitin plates mottled with dark amber and forest-green structural fire. A FRACTURED MORPHO finish.", swatch: "#758e78" },
+    { id: "fmo_soap_bubble", name: "Soap Bubble", desc: "Draining soap-film bands swirling the full interference rainbow edge to edge. A FRACTURED MORPHO finish.", swatch: "#808581" },
+    { id: "fmo_spectrolite_vein", name: "Spectrolite Vein", desc: "Fine crossed spectral veins flashing the full labradorescent spectrum. A FRACTURED MORPHO finish.", swatch: "#846b8b" },
+    { id: "fmo_stag_carapace", name: "Stag Carapace", desc: "Tight armour-plate lamellae glowing chestnut, bronze and bottle-green by angle. A FRACTURED MORPHO finish.", swatch: "#886684" },
+    { id: "fmo_starling_sheen", name: "Starling Sheen", desc: "Silky fine feather striations shimmering oily purple and green in lockstep. A FRACTURED MORPHO finish.", swatch: "#44679d" },
+    { id: "fmo_sunbird_throat", name: "Sunbird Throat", desc: "A glittering throat of microscopic scales firing crimson and emerald sparks. A FRACTURED MORPHO finish.", swatch: "#948589" },
+    { id: "fmo_sunset_moth", name: "Sunset Moth", desc: "Fine stacked ridge lamellae sweeping the full sunset spectrum band by band. A FRACTURED MORPHO finish.", swatch: "#808381" },
+    { id: "fmo_sunstone_glitter", name: "Sunstone Glitter", desc: "A storm of glittering copper flecks spangling orange-gold interference sparks. A FRACTURED MORPHO finish.", swatch: "#84946a" },
+    { id: "fmo_swallowtail", name: "Swallowtail Flash", desc: "Steep crossed ridge bands flashing blue and gold like a swallowtail's hindwing. A FRACTURED MORPHO finish.", swatch: "#74837f" },
+    { id: "fmo_tiger_beetle", name: "Tiger Beetle", desc: "Warped dappled pit fields flashing hunter-green and copper across hard elytra. A FRACTURED MORPHO finish.", swatch: "#739177" },
+    { id: "fmo_ulysses_flash", name: "Ulysses Flash", desc: "Angle-tuned platelet domains detonating cobalt flashes across a deep wing-dark field. A FRACTURED MORPHO finish.", swatch: "#968088" },
+    { id: "fmo_weevil_pit", name: "Weevil Pit", desc: "Countless micro-pits stippled across the shell, each glinting turquoise and lime. A FRACTURED MORPHO finish.", swatch: "#788576" },
+    // FRACTURED MOLTEN (2026-07-30) — 20 lava finishes, category 1/10 of the expansion
+    { id: "fml_basalt_colonnade", name: "Basalt Colonnade", desc: "A towering basalt colonnade in side view, every joint ledge glowing dull red. FRACTURED FORGE.", swatch: "#872b0b" },
+    { id: "fml_caldera_rim", name: "Caldera Rim", desc: "Concentric caldera rims alternating orange and gold fire around a cooling crater lake. FRACTURED FLAMES.", swatch: "#804005" },
+    { id: "fml_ember_channels", name: "Ember Channels", desc: "Slow deep-red channels of cooling magma pulsing at the dull-red edge of visibility. FRACTURED FLAMES.", swatch: "#931815" },
+    { id: "fml_ember_crust", name: "Ember Crust", desc: "Rafted lava-crust plates split by glowing ember-red collision seams on black basalt. FRACTURED FLAMES.", swatch: "#b92111" },
+    { id: "fml_ember_web", name: "Ember Web", desc: "A dense ember-red contraction web crackling across a cooling black flow. FRACTURED FLAMES.", swatch: "#b62e0b" },
+    { id: "fml_glass_gold", name: "Golden Glass", desc: "Golden ripples frozen mid-flow in volcanic glass, banded like Pele's tears. FRACTURED FORGE.", swatch: "#754806" },
+    { id: "fml_golden_pillows", name: "Golden Pillows", desc: "Great golden pillow mounds ringed with bright quench hoops on a black flow field. FRACTURED FORGE.", swatch: "#7d4e02" },
+    { id: "fml_golden_seams", name: "Golden Seams", desc: "Broad crust rafts welded by rivers of molten gold along every collision seam. FRACTURED FORGE.", swatch: "#9a6008" },
+    { id: "fml_jointed_ember", name: "Jointed Ember", desc: "Fine jointed pillars fanned and warped, ember-orange fire climbing every ledge. FRACTURED FLAMES.", swatch: "#8a3409" },
+    { id: "fml_magma_river", name: "Magma River", desc: "Branching magma river channels burning ember-orange through black cooling banks. FRACTURED FLAMES.", swatch: "#d44d07" },
+    { id: "fml_obsidian_flow", name: "Obsidian Flow", desc: "Deep-red fire rippling through folded obsidian glass in slow vortex shears. FRACTURED FORGE.", swatch: "#675d58" },
+    { id: "fml_pillow_glow", name: "Pillow Glow", desc: "Bulging pillow-lava mounds glowing orange through their concentric quench rings. FRACTURED FLAMES.", swatch: "#a14906" },
+    { id: "fml_river_gold", name: "River of Gold", desc: "Wide liquid-gold channels meandering between dark quenched levee domains. FRACTURED FORGE.", swatch: "#985505" },
+    { id: "fml_sulfur_delta", name: "Sulfur Delta", desc: "A fine braided delta of sulfur-yellow channels anastomosing across dark tephra. FRACTURED FORGE.", swatch: "#8e7804" },
+    { id: "fml_sulfur_pillows", name: "Sulfur Pillows", desc: "A heaped field of sulfur-yellow quench pillows stacked across dark volcanic glass. FRACTURED FORGE.", swatch: "#9e8002" },
+    { id: "fml_sulfur_plates", name: "Sulfur Plates", desc: "Brimstone-yellow crust plates banded across a cooling sulfur flat. FRACTURED FORGE.", swatch: "#5f4007" },
+    { id: "fml_sulfur_web", name: "Sulfur Web", desc: "A branching web of sulfur-yellow cooling cracks with blazing intersection nodes. FRACTURED FORGE.", swatch: "#786104" },
+    { id: "fml_whitehot_caldera", name: "White-Hot Caldera", desc: "A blinding white-hot caldera rim ringing a dark crater bowl of cooling crust. FRACTURED FLAMES.", swatch: "#99845d" },
+    { id: "fml_whitehot_glass", name: "White-Hot Glass", desc: "White-hot glass flowing in blinding silver-fire folds over a black obsidian body. FRACTURED FORGE.", swatch: "#776650" },
+    { id: "fml_whitehot_rapids", name: "White-Hot Rapids", desc: "Raging white-hot rapids shearing down a dark volcanic flume in silver-fire streaks. FRACTURED FLAMES.", swatch: "#ac8967" },
+
+    // FRACTURED OPALFIRE (2026-08-03) — 50 crush-law flip finishes (owner discovery; replaced MOLTEN)
+    { id: "fof_abyssal_vents", name: "Abyssal Vents", desc: "Ember vent plumes rising off a deep blue bed, two ladders in one field. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#302d43" },
+    { id: "fof_acid_circuit", name: "Acid Circuit", desc: "A rectilinear circuit maze in acid green, traces stepping through dark rungs. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#2c450a" },
+    { id: "fof_amber_shardglass", name: "Amber Shardglass", desc: "Stretched glass facets in dark amber, each facet locked to its rung. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#5c3a0c" },
+    { id: "fof_argent_hammer", name: "Argent Hammer", desc: "Hammered dents in dark silver, every strike a different depth of grey. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#3b444a" },
+    { id: "fof_bronze_keels", name: "Bronze Keels", desc: "Keeled hex scales in bronze, keel and valley terraced apart. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#573013" },
+    { id: "fof_copper_pahoehoe", name: "Copper Pahoehoe", desc: "Ropy pahoehoe coils in copper, each rope stepping through its own dark shades. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#481c0b" },
+    { id: "fof_crimson_columns", name: "Crimson Columns", desc: "Columnar basalt joints in deep crimson, every column face its own rung. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#801523" },
+    { id: "fof_ember_reef", name: "Ember Reef", desc: "A checkered reef of ember and teal, two ladders interleaved cell by cell. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#1f3233" },
+    { id: "fof_emerald_braid", name: "Emerald Braid", desc: "Lateral braid columns in emerald, strands stepping dark to darker. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#0d4815" },
+    { id: "fof_frosted_pennies", name: "Frosted Pennies", desc: "Copper pennies scattered on ice blue, both metals and frost terraced. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#683d1d" },
+    { id: "fof_gilded_abyss", name: "Gilded Abyss", desc: "Mudcrack plates alternating gold and sapphire by parity, both families laddered. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#374031" },
+    { id: "fof_gilded_pave", name: "Gilded Pave", desc: "Brick cobbles paved tight, every stone a different dark rung of gold. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#43300a" },
+    { id: "fof_magenta_anticline", name: "Magenta Anticline", desc: "Anticline ridges in deep magenta, every fold limb a separate shade. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#851962" },
+    { id: "fof_molten_core", name: "Molten Core", desc: "THE FOUNDER — the owner's track discovery baked in: the lava crack-web crushed 4x fine, browns and golds terraced dark. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#68420d" },
+    { id: "fof_nebula_swirls", name: "Nebula Swirls", desc: "Spiral clusters in violet, crimson and ice, arms stepping through the dark. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#5a264b" },
+    { id: "fof_orchid_kagome", name: "Orchid Kagome", desc: "A triaxial kagome lattice weaving three hue families, each on its own ladder. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#29202c" },
+    { id: "fof_patina_guilloche", name: "Patina Guilloché", desc: "Guilloché arc combs in bronze and teal patina, every arc a rung. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#60421c" },
+    { id: "fof_petrol_swirl", name: "Petrol Swirl", desc: "Twisted sector rosettes in three petrol hues, every sector stepped dark. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#2b3031" },
+    { id: "fof_regalia_roundels", name: "Regalia Roundels", desc: "Nested roundels in three regal families, ring by ring down the rungs. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#4d3030" },
+    { id: "fof_royal_terraces", name: "Royal Terraces", desc: "Fault staircases in violet and amber, every step a shade of either family. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#5d2e3b" },
+    { id: "fof_sapphire_shatter", name: "Sapphire Shatter", desc: "Biaxial glass shards in dark sapphire, terraced shard by shard. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#152d6e" },
+    { id: "fof_teal_drainage", name: "Teal Drainage", desc: "A branching channel web in deep teal, every channel bed a darker step. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#0d3d35" },
+    { id: "fof_toxic_drips", name: "Toxic Drips", desc: "Beaded drips in magenta and acid, each bead a darker step down the panel. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#371c12" },
+    { id: "fof_treasure_facets", name: "Treasure Facets", desc: "Gem facet fans in three treasure hues, every facet snapped to its shade. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#224b24" },
+    { id: "fof_violet_burstfoam", name: "Violet Burstfoam", desc: "Burst craters foamed across dark violet, rims and floors on different rungs. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#5c218f" },
+    { id: "fsk_aurora_veil", name: "Aurora Veil", desc: "Combed spectral curtains, the whole aurora stepped into discrete dark bands. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#2e2f2f" },
+    { id: "fsk_basket_weave", name: "Basket Weave", desc: "Rattan over-and-under at fine pitch, every strand stepped. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#362f26" },
+    { id: "fsk_carbon_weave", name: "Carbon Weave", desc: "True 2x2 twill carbon, warp and weft on alternating dark shades, resin pits black. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#2e333a" },
+    { id: "fsk_chainmail", name: "Chainmail", desc: "Interlocked ring rows, every ring stepping through its own dark metal shades. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#2e3339" },
+    { id: "fsk_chesterfield", name: "Chesterfield", desc: "Deep-buttoned tufted leather, folds radiating through dark rungs. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#462d31" },
+    { id: "fsk_circuit_trace", name: "Circuit Trace", desc: "PCB traces, pads and via rings in laddered copper on dark solder mask. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#251e1a" },
+    { id: "fsk_croc_hide", name: "Croc Hide", desc: "Irregular rectangular scutes with deep crease shadows, terraced hide. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#392d26" },
+    { id: "fsk_damascus", name: "Damascus", desc: "Folded-steel contour bands, acid-etched into discrete dark layers. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#222529" },
+    { id: "fsk_diamond_plate", name: "Diamond Plate", desc: "Raised lozenge treadplate, worn bright crowns over deep valley rungs. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#212428" },
+    { id: "fsk_dragon_scale", name: "Dragon Scale", desc: "Broad keeled dragon scales with rim light, laddered scale by scale. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#26382f" },
+    { id: "fsk_feather_mantle", name: "Feather Mantle", desc: "Overlapping barbed feathers, every feather a shade in the ladder. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#312f41" },
+    { id: "fsk_herringbone", name: "Herringbone", desc: "Twill chevrons at fine pitch, each rib course a separate dark shade. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#2a221d" },
+    { id: "fsk_hex_mesh", name: "Hex Mesh", desc: "Honeycomb cells with dark walls, every floor on a different rung. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#382e24" },
+    { id: "fsk_houndstooth", name: "Houndstooth", desc: "The classic broken check, executed micro and terraced dark. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#2c2a25" },
+    { id: "fsk_knurl", name: "Knurl", desc: "Machined diamond knurl at fine pitch, facets quantized into gunmetal steps. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#31343e" },
+    { id: "fsk_mosaic_glass", name: "Mosaic Glass", desc: "Grouted micro-tesserae, every tile snapped to its own dark shade. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#213131" },
+    { id: "fsk_nebula_prism", name: "Nebula Prism", desc: "Spectral cellular nebula, every cell a hue with its own dark ladder. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#1a1b1b" },
+    { id: "fsk_oilslick_weave", name: "Oilslick Weave", desc: "A woven spectral twill — every thread a different hue, every hue laddered. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#2c2c2c" },
+    { id: "fsk_opal_pave", name: "Opal Pave", desc: "Black opal potch with play-of-color patches — the category's namesake stone. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#181618" },
+    { id: "fsk_prism_shatter", name: "Prism Shatter", desc: "Shattered prism shards over black grout pits — the full spectrum, terraced dark. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#444446" },
+    { id: "fsk_scale_mail", name: "Scale Mail", desc: "Half-moon lamellae in overlapping rows, row by row down the rungs. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#4a3d34" },
+    { id: "fsk_snakeskin", name: "Snakeskin", desc: "Overlapping keeled snake scales in diagonal rows, every scale a dark rung. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#212d1f" },
+    { id: "fsk_spectrum_scales", name: "Spectrum Scales", desc: "Snake-gradient scales running the full wheel, each scale dark-rung true. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#313132" },
+    { id: "fsk_spider_silk", name: "Spider Silk", desc: "Layered orb webs with dew-bright nodes over a dark laddered field. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#313a41" },
+    { id: "fsk_stingray", name: "Stingray Shagreen", desc: "Shagreen granule pave with crown beads, each granule snapped to a rung. Quantized dark shade ladder under a night-carrier spec — each shade fires a different flip color as the car turns. FRACTURED OPALFIRE.", swatch: "#1c2023" },
+    // FRACTURED FROST (2026-08-01) — 20 finishes, wave build
+    { id: "ffr_blue_serac", name: "Blue Serac", desc: "Interlocking ice blocks, each face ramped into its own facet — a serac field from above. FRACTURED FROST.", swatch: "#086388" },
+    { id: "ffr_cyan_fissure", name: "Cyan Fissure", desc: "A two-scale crack web with every lip catching light along the fracture. FRACTURED FROST.", swatch: "#0a897f" },
+    { id: "ffr_cyan_frond", name: "Cyan Frond", desc: "Parallel feather laminae combed one way, every frond serrated along its edge. FRACTURED FROST.", swatch: "#066662" },
+    { id: "ffr_cyan_frostbloom", name: "Cyan Frostbloom", desc: "Interfering bloom ripples radiating from hundreds of nucleation points. FRACTURED FROST.", swatch: "#079792" },
+    { id: "ffr_cyan_veil", name: "Cyan Veil", desc: "Interfering micro sine veils drifting across each other in soft billows. FRACTURED FROST.", swatch: "#066665" },
+    { id: "ffr_diamond_dust", name: "Diamond Dust", desc: "Glint powder shot through with vertical micro-pillars — diamond dust hanging in still air. FRACTURED FROST.", swatch: "#66777b" },
+    { id: "ffr_glacier_fern", name: "Glacier Fern", desc: "Curved rime filaments criss-crossing into a mesh — fern growth caught mid-spread. FRACTURED FROST.", swatch: "#0686c7" },
+    { id: "ffr_hoarfrost_white", name: "White Hoarfrost", desc: "A dense felt of short needle spicules, hoarfrost grown thick on every surface. FRACTURED FROST.", swatch: "#5d6e73" },
+    { id: "ffr_ice_needles", name: "Ice Needles", desc: "Long acicular threads all running one heading — ice grown in a current. FRACTURED FROST.", swatch: "#065a8e" },
+    { id: "ffr_silver_dendrite", name: "Silver Dendrite", desc: "A jittered lattice of tiny stellar flakes, each one six-armed and separate. FRACTURED FROST.", swatch: "#41616f" },
+    { id: "ffr_silver_hoar", name: "Silver Hoar", desc: "Two families of dashed needles weaving over and under each other. FRACTURED FROST.", swatch: "#68808c" },
+    { id: "ffr_snowdrift_ice", name: "Snowdrift Ice", desc: "Overlapping sastrugi scales stacked like shingles by the wind. FRACTURED FROST.", swatch: "#4b5255" },
+    { id: "ffr_steel_bubbles", name: "Steel Bubbles", desc: "Dense open annuli with glinting rims — bubbles pressed flat into a ring pack. FRACTURED FROST.", swatch: "#617e9d" },
+    { id: "ffr_steel_flurry", name: "Steel Flurry", desc: "Three sizes of flake grain smeared by wind into a granular scatter. FRACTURED FROST.", swatch: "#425367" },
+    { id: "ffr_violet_chasm", name: "Violet Chasm", desc: "A reaction-diffusion maze of frost-crazing channels, wandering and rejoining. FRACTURED FROST.", swatch: "#890cef" },
+    { id: "ffr_violet_rime", name: "Violet Rime", desc: "Rime streaks advected along a curl field, combed into long drifting strands. FRACTURED FROST.", swatch: "#c90ef9" },
+    { id: "ffr_violet_sectored", name: "Violet Sectored Plate", desc: "Hexagonal micro-plates paved edge to edge, each split into sector wedges. FRACTURED FROST.", swatch: "#8708d9" },
+    { id: "ffr_violet_trapped", name: "Violet Trapped Ice", desc: "Packed micro-bubble domes frozen into the ice, air caught where it stood. FRACTURED FROST.", swatch: "#7f08ea" },
+    { id: "ffr_whiteout_rift", name: "Whiteout Rift", desc: "Herringbone drift pleats folding across the panel in fine chevrons. FRACTURED FROST.", swatch: "#4d5960" },
+    { id: "ffr_window_fern", name: "Window Fern", desc: "Window-pane ferns branching out from the edges in fine feathered fronds. FRACTURED FROST.", swatch: "#3e606a" },
+    // FRACTURED BLOOM (2026-08-01) — 20 finishes, wave build
+    { id: "fbl_butter_mosaic", name: "Butter Mosaic", desc: "Grouted plates stamped with small florets, buttercream over shadow. FRACTURED BLOOM.", swatch: "#895f06" },
+    { id: "fbl_butter_pollen", name: "Butter Pollen", desc: "Spiky echinate grains in two sizes with fine dust settled between them — pollen at magnification. FRACTURED BLOOM.", swatch: "#996907" },
+    { id: "fbl_butter_whorl", name: "Butter Whorl", desc: "A pave of tiny log-spiral pinwheels, each one turning its own way. FRACTURED BLOOM.", swatch: "#865705" },
+    { id: "fbl_coral_cluster", name: "Coral Cluster", desc: "Walled polyp foam with a mouth pore at the centre of every cell — coral seen close. FRACTURED BLOOM.", swatch: "#c82a07" },
+    { id: "fbl_coral_stamen", name: "Coral Stamen", desc: "Two crossed plies of needles, every tip loaded with an anther. Dense as felt. FRACTURED BLOOM.", swatch: "#d94107" },
+    { id: "fbl_coral_vine", name: "Coral Vine Drape", desc: "Branching stem mesh with three scales of ridge-crest venation running through it. FRACTURED BLOOM.", swatch: "#a24709" },
+    { id: "fbl_leaf_whorl", name: "Leaf Whorl", desc: "Pinnate leaflets pleated into fine herringbone — a canopy folded flat. FRACTURED BLOOM.", swatch: "#308607" },
+    { id: "fbl_leafvine_drape", name: "Leafvine Drape", desc: "Two families of stems woven into a living trellis, knotted with small leaves at every crossing. FRACTURED BLOOM.", swatch: "#387706" },
+    { id: "fbl_lilac_rose", name: "Lilac Rose Spiral", desc: "A reaction-diffusion labyrinth of petal ribbons that wander, split and rejoin, never repeating. FRACTURED BLOOM.", swatch: "#9d07eb" },
+    { id: "fbl_lilac_stamen", name: "Lilac Starburst", desc: "Near-regular ray bursts scattered like sparks — a star-lattice of stamens. FRACTURED BLOOM.", swatch: "#8708f3" },
+    { id: "fbl_lilac_vine", name: "Wisteria Drape", desc: "Hanging bead-strand curtains — racemes swaying in parallel down the panel. FRACTURED BLOOM.", swatch: "#950aec" },
+    { id: "fbl_magenta_mosaic", name: "Magenta Mosaic", desc: "Four-lobed petal cells interlocking into a continuous pack, no gaps, no repeats. FRACTURED BLOOM.", swatch: "#cf08c6" },
+    { id: "fbl_magenta_pollen", name: "Magenta Pollen", desc: "Close-packed porate grains, reticulate walls and germ pores picked out in shadow. FRACTURED BLOOM.", swatch: "#be07d2" },
+    { id: "fbl_magenta_whorl", name: "Magenta Whorl", desc: "Scalloped concentric whorls packed edge to edge — a meadow of tiny magenta rosettes, each ringed in its own petal tiers. FRACTURED BLOOM.", swatch: "#e121cb" },
+    { id: "fbl_pink_pollen", name: "Pink Pollen Drift", desc: "Grains caught in a current and smeared into drifting trails across the panel. FRACTURED BLOOM.", swatch: "#d80888" },
+    { id: "fbl_pink_rose", name: "Pink Rose Spiral", desc: "Warp-combed petal sheets folding into eddies, pink over pink, like a rose opened flat. FRACTURED BLOOM.", swatch: "#d80679" },
+    { id: "fbl_pink_stamen", name: "Pink Stamen Star", desc: "Banded filament combs with beads strung along every row. FRACTURED BLOOM.", swatch: "#b90964" },
+    { id: "fbl_white_pollen", name: "Moon Pollen", desc: "Density-gated grain packs clumping and thinning across pale cream — dust with structure. FRACTURED BLOOM.", swatch: "#87717d" },
+    { id: "fbl_blush_rose", name: "Blush Rose Spiral", desc: "Shingled fan-ribbed petals overlapping like scales, blush deepening in the laps. FRACTURED BLOOM.", swatch: "#98617a" },
+    { id: "fbl_white_whorl", name: "Gardenia Whorl", desc: "Cupped petal cushions shaded into soft micro-billows, bone-white and cream. FRACTURED BLOOM.", swatch: "#ae6696" },
+    // FRACTURED CLOCKWORK (2026-08-01) — 20 finishes, wave build
+    { id: "fcw_brass_balance", name: "Brass Balance Wheel", desc: "Packed slotted screw heads, every slot catching light at its own angle. FRACTURED CLOCKWORK.", swatch: "#815f07" },
+    { id: "fcw_brass_escapement", name: "Brass Escapement", desc: "Triple-rail truss with node bosses and domed panels between the rails. FRACTURED CLOCKWORK.", swatch: "#6d4605" },
+    { id: "fcw_brass_geartrain", name: "Brass Gear Train", desc: "An offset-row wall of small crowned gears, every tooth cut and lit. FRACTURED CLOCKWORK.", swatch: "#9f6c06" },
+    { id: "fcw_brass_guilloche", name: "Brass Guilloché", desc: "Grain d'orge — offset barleycorn lenses engine-turned into brass. FRACTURED CLOCKWORK.", swatch: "#755305" },
+    { id: "fcw_bronze_geartrain", name: "Bronze Gear Train", desc: "Cross-milled bands woven over and under, mill grooves running each way. FRACTURED CLOCKWORK.", swatch: "#9e4607" },
+    { id: "fcw_bronze_rivets", name: "Bronze Rivet Plate", desc: "Overlapping stamped circles — perlage, the finisher's mark, laid across the whole plate. FRACTURED CLOCKWORK.", swatch: "#af5208" },
+    { id: "fcw_bronze_scroll", name: "Bronze Scroll", desc: "Folded-billet contour line-work at fixed pitch — damascene in bronze. FRACTURED CLOCKWORK.", swatch: "#864509" },
+    { id: "fcw_copper_escapement", name: "Copper Escapement", desc: "Sawtooth escape rows marching over domed courses in aged copper. FRACTURED CLOCKWORK.", swatch: "#952b06" },
+    { id: "fcw_copper_rivets", name: "Copper Rivet Plate", desc: "A plate pave with rivets driven along every seam, copper darkened at the joints. FRACTURED CLOCKWORK.", swatch: "#be3907" },
+    { id: "fcw_copper_scroll", name: "Copper Scroll Plate", desc: "One brush stroke per cell on a turning grain field — satin sunburst in copper. FRACTURED CLOCKWORK.", swatch: "#9d3808" },
+    { id: "fcw_gold_geartrain", name: "Gold Gear Train", desc: "Interlocked chain-mail rings in overlapping rows, gilt and shadow. FRACTURED CLOCKWORK.", swatch: "#af7d0f" },
+    { id: "fcw_gold_guilloche", name: "Gold Guilloché", desc: "Engine-turned rosettes at fixed petal pitch — true guilloché, cut dense. FRACTURED CLOCKWORK.", swatch: "#935606" },
+    { id: "fcw_gold_mainspring", name: "Gold Mainspring", desc: "Hairspring threads curl-drifted across the plate, gold on gold. FRACTURED CLOCKWORK.", swatch: "#8a5e09" },
+    { id: "fcw_gunmetal_guilloche", name: "Gunmetal Guilloché", desc: "Clous de Paris — a hobnail pyramid waffle, four facets lit per stud. FRACTURED CLOCKWORK.", swatch: "#3f4c5d" },
+    { id: "fcw_gunmetal_mainspring", name: "Gunmetal Mainspring", desc: "Rolled blued-spring bands with fat coil edges, dark steel through and through. FRACTURED CLOCKWORK.", swatch: "#3c4858" },
+    { id: "fcw_ruby_guilloche", name: "Ruby Guilloché", desc: "Cabochon domes in their setting rings over a côtes plate, ruby set in blued steel. FRACTURED CLOCKWORK.", swatch: "#b60920" },
+    { id: "fcw_ruby_mainspring", name: "Ruby Mainspring", desc: "Constant-pitch tempering fringes with oxide pools and set jewels — steel taken to blue. FRACTURED CLOCKWORK.", swatch: "#af0824" },
+    { id: "fcw_verdigris_gears", name: "Verdigris Gears", desc: "Patina dendrites creeping over côtes circulaires, bronze weathering in place. FRACTURED CLOCKWORK.", swatch: "#087f60" },
+    { id: "fcw_verdigris_rivets", name: "Verdigris Rivets", desc: "A dome-rivet field pitted with half-scale patina, bronze gone green. FRACTURED CLOCKWORK.", swatch: "#066f54" },
+    { id: "fcw_verdigris_scroll", name: "Verdigris Scroll", desc: "Acanthus grooves cut deep, engraver's hatch filling the ground, verdigris in the cuts. FRACTURED CLOCKWORK.", swatch: "#086a55" },
+    // FRACTURED NEBULA (2026-08-01) — 20 finishes, wave build
+    { id: "fnb_cyan_drift", name: "Cyan Drift", desc: "Wavy micro strata sheared into dashed layers of drifting gas. FRACTURED NEBULA.", swatch: "#0a7083" },
+    { id: "fnb_cyan_dustlane", name: "Cyan Dust Lane", desc: "Dashed dark lanes all drifting one heading, cutting across the glow. FRACTURED NEBULA.", swatch: "#076983" },
+    { id: "fnb_cyan_shockwave", name: "Cyan Shockwave", desc: "A carpet of sharp-fronted micro rings interfering where they cross. FRACTURED NEBULA.", swatch: "#056680" },
+    { id: "fnb_cyan_spiral", name: "Cyan Spiral", desc: "Hundreds of micro spirals paved across the dark, each one turning its own way. FRACTURED NEBULA.", swatch: "#09738a" },
+    { id: "fnb_gilded_shockfront", name: "Gilded Shockfront", desc: "A carpet of small crescent bow shocks, each trailing its own wake. FRACTURED NEBULA.", swatch: "#896609" },
+    { id: "fnb_gilded_veil", name: "Gilded Veil", desc: "Two soft thread families cross-woven into gauze, gold through gold. FRACTURED NEBULA.", swatch: "#8d5b0b" },
+    { id: "fnb_golden_cluster", name: "Golden Cluster", desc: "Star powder clumped into gravity knots — a globular cluster resolved to grains. FRACTURED NEBULA.", swatch: "#594a39" },
+    { id: "fnb_golden_pinwheel", name: "Golden Pinwheel", desc: "A lattice of three-armed micro whorls, gold turning on gold. FRACTURED NEBULA.", swatch: "#9a6905" },
+    { id: "fnb_magenta_emission", name: "Magenta Emission", desc: "Vertical strand tufts with lit tips — columns of gas being evaporated. FRACTURED NEBULA.", swatch: "#b50c9c" },
+    { id: "fnb_magenta_remnant", name: "Magenta Remnant", desc: "Bright curved shell wisps — the filament web of a supernova remnant still expanding. FRACTURED NEBULA.", swatch: "#a3048f" },
+    { id: "fnb_magenta_rift", name: "Magenta Rift", desc: "A dark dust net branching over glowing gas — the rift that hides the light. FRACTURED NEBULA.", swatch: "#c40999" },
+    { id: "fnb_magenta_stardust", name: "Magenta Stardust", desc: "Dense powder with dark globules silhouetted against it. FRACTURED NEBULA.", swatch: "#9d028e" },
+    { id: "fnb_teal_annulus", name: "Teal Annulus", desc: "Concentric ring stamps nested inside each other across the whole field. FRACTURED NEBULA.", swatch: "#0ac374" },
+    { id: "fnb_teal_lagoon", name: "Teal Lagoon", desc: "Dark bays with bright ionized rims — cavity foam carved by young stars. FRACTURED NEBULA.", swatch: "#0bb073" },
+    { id: "fnb_teal_rift", name: "Teal Rift", desc: "Dark channels mazing through teal glow in a reaction-diffusion rift. FRACTURED NEBULA.", swatch: "#07744b" },
+    { id: "fnb_teal_starfield", name: "Teal Starfield", desc: "Point stars with cross spikes felted dense — a deep field, fully resolved. FRACTURED NEBULA.", swatch: "#07744f" },
+    { id: "fnb_violet_annulus", name: "Violet Annulus", desc: "Overlapping half-ring rows imbricated like scales of expanding shell. FRACTURED NEBULA.", swatch: "#b50bf0" },
+    { id: "fnb_violet_billows", name: "Violet Billows", desc: "Micro-turbulence rolling in violet billows across the whole canvas. FRACTURED NEBULA.", swatch: "#c112e7" },
+    { id: "fnb_violet_galaxy", name: "Violet Galaxy", desc: "Tiny edge-on galaxy lozenges scattered at every angle across the void. FRACTURED NEBULA.", swatch: "#af08f6" },
+    { id: "fnb_violet_starglow", name: "Violet Starglow", desc: "Dense bokeh orbs each wrapped in its own halo, packed edge to edge. FRACTURED NEBULA.", swatch: "#573368" },
+    // FRACTURED TEMPEST (2026-08-01) — 20 finishes, wave build
+    { id: "fte_ball_lightning", name: "Ball Lightning", desc: "Plasma orbs linked by arc filaments, glowing in a loose pack. FRACTURED TEMPEST.", swatch: "#808891" },
+    { id: "fte_blue_bolt", name: "Blue Bolt", desc: "A horizontal glowing web of branching crawler filaments spreading under the cloud base. FRACTURED TEMPEST.", swatch: "#065aac" },
+    { id: "fte_green_strike", name: "Green Strike", desc: "Electric herringbone pleats zigzagging the length of the panel. FRACTURED TEMPEST.", swatch: "#066322" },
+    { id: "fte_green_supercell", name: "Green Supercell", desc: "Many small hook spirals paved across a green-tinged sky. Every one a rotating cell. FRACTURED TEMPEST.", swatch: "#0a790f" },
+    { id: "fte_gustfront_green", name: "Green Gustfront", desc: "Threads all bent one way by the gust front, combed and holding. FRACTURED TEMPEST.", swatch: "#065b21" },
+    { id: "fte_lichtenberg_crown", name: "Lichtenberg Crown", desc: "Lichtenberg crowns branching outward — discharge patterns burned into the field. FRACTURED TEMPEST.", swatch: "#3215d4" },
+    { id: "fte_slate_billows", name: "Slate Billows", desc: "Bottom-lit mammatus pouches packed dome against dome. FRACTURED TEMPEST.", swatch: "#456281" },
+    { id: "fte_slate_hailfield", name: "Slate Hailfield", desc: "A crack net shot through with radial bursts where the stones landed. FRACTURED TEMPEST.", swatch: "#52749a" },
+    { id: "fte_slate_squall", name: "Slate Squall", desc: "Vertical curtains broken by beat interference — a squall line seen edge on. FRACTURED TEMPEST.", swatch: "#2b4364" },
+    { id: "fte_slate_vortex", name: "Slate Vortex", desc: "Wind streaks combed by a curl field and whitened where they stretch. FRACTURED TEMPEST.", swatch: "#3e6381" },
+    { id: "fte_steel_cyclone", name: "Steel Cyclone", desc: "Two crossing wind-streak combs shearing against each other. FRACTURED TEMPEST.", swatch: "#065186" },
+    { id: "fte_steel_downpour", name: "Steel Downpour", desc: "Steep dashed rain lanes, bright where the light catches the fall. FRACTURED TEMPEST.", swatch: "#064c84" },
+    { id: "fte_steel_rain", name: "Steel Rain", desc: "Two depths of micro dash — near rain sharp, far rain soft. FRACTURED TEMPEST.", swatch: "#0852ac" },
+    { id: "fte_storm_cell", name: "Storm Cell", desc: "Interlocking radar cells, each one swirling on its own axis. FRACTURED TEMPEST.", swatch: "#08b024" },
+    { id: "fte_thunderhead_white", name: "White Thunderhead", desc: "Top-lit micro cauliflower — the boiling crown of a thunderhead at altitude. FRACTURED TEMPEST.", swatch: "#6f777c" },
+    { id: "fte_violet_cumulonimbus", name: "Violet Cumulonimbus", desc: "Flat-top anvil scales imbricated in strata shingles. FRACTURED TEMPEST.", swatch: "#3415e3" },
+    { id: "fte_violet_hail", name: "Violet Hail", desc: "Dimple rings with bright rims — a field cratered by hail. FRACTURED TEMPEST.", swatch: "#500ed3" },
+    { id: "fte_violet_twister", name: "Violet Twister", desc: "Corded funnel tufts, wavy and striated, hundreds of small vortices. FRACTURED TEMPEST.", swatch: "#3d1dfb" },
+    { id: "fte_white_arc", name: "White Arc", desc: "Thousands of tiny jagged arcs felted together — spark discharge, everywhere at once. FRACTURED TEMPEST.", swatch: "#909ba9" },
+    { id: "fte_whiteout_hail", name: "Whiteout Hail", desc: "Radiating impact asterisks — splash crowns thrown up on impact. FRACTURED TEMPEST.", swatch: "#5e6264" },
+    // FRACTURED CATHEDRAL (2026-08-01) — 20 finishes, wave build
+    { id: "fca_amber_kiln", name: "Amber Kiln", desc: "Confetti frit chips suspended in a clear matrix, amber and honey glinting through. FRACTURED CATHEDRAL.", swatch: "#5a3404" },
+    { id: "fca_amber_slag", name: "Amber Slag", desc: "Posterized slag marbling — molten pools of amber and ochre swirled and frozen. FRACTURED CATHEDRAL.", swatch: "#6c3d04" },
+    { id: "fca_bottle_cobalt", name: "Bottle Cobalt", desc: "Trailed cane threads drifting across cobalt — glass drawn out hot and laid down in lines. FRACTURED CATHEDRAL.", swatch: "#052067" },
+    { id: "fca_bottle_emerald", name: "Bottle Emerald", desc: "A ream vein web at two scales, emerald glass shot through with finer flow lines. FRACTURED CATHEDRAL.", swatch: "#064d13" },
+    { id: "fca_bottle_ruby", name: "Bottle Ruby", desc: "A millefiori cane pack — hundreds of tiny glass rods in section with dark gaps between. FRACTURED CATHEDRAL.", swatch: "#5f0b0c" },
+    { id: "fca_bottle_violet", name: "Bottle Violet", desc: "Packed seedy bubbles with meniscus walls between them — bottle glass full of trapped air. FRACTURED CATHEDRAL.", swatch: "#47067d" },
+    { id: "fca_cobalt_oculus", name: "Cobalt Oculus", desc: "Hundreds of tiny came-ringed oculi packed across cobalt glass — a wall of little windows, not one big rose. FRACTURED CATHEDRAL.", swatch: "#052975" },
+    { id: "fca_cobalt_streak", name: "Cobalt Streak", desc: "Reamy labyrinth stripe glass — cobalt bands that wander, fork and close. FRACTURED CATHEDRAL.", swatch: "#054b88" },
+    { id: "fca_crown_amber", name: "Crown Amber", desc: "Small crown-glass scales overlapping like pantiles, amber catching light at every lip. FRACTURED CATHEDRAL.", swatch: "#753d05" },
+    { id: "fca_crown_cobalt", name: "Crown Cobalt", desc: "Spun ripples radiating from many centres, cobalt rings crossing and interfering. FRACTURED CATHEDRAL.", swatch: "#05229e" },
+    { id: "fca_crown_jewels", name: "Crown Jewels", desc: "Three scales of faceted jewel-chip dust scattered dense across the glass. FRACTURED CATHEDRAL.", swatch: "#20323c" },
+    { id: "fca_crown_violet", name: "Crown Violet", desc: "Fused stringer needles laid at six angles into a dense violet felt. FRACTURED CATHEDRAL.", swatch: "#7e05ab" },
+    { id: "fca_emerald_quarry", name: "Emerald Quarry", desc: "Leaded basket weave, came crossing over came, emerald panes filling every square. FRACTURED CATHEDRAL.", swatch: "#05601b" },
+    { id: "fca_emerald_streak", name: "Emerald Streak", desc: "Fine drawn-glass striae banded the length of the panel, emerald over emerald. FRACTURED CATHEDRAL.", swatch: "#056e19" },
+    { id: "fca_emerald_wheel", name: "Emerald Wheel", desc: "A sixty-degree tracery mesh with glass triangles set into every opening. FRACTURED CATHEDRAL.", swatch: "#054611" },
+    { id: "fca_jewel_lights", name: "Jewel Lights", desc: "A two-scale ice-crackle came web with jewel glass glowing in every cell. FRACTURED CATHEDRAL.", swatch: "#740e28" },
+    { id: "fca_jewel_streak", name: "Jewel Streak", desc: "Combed opalescent strand glass — jewel hues pulled into long parallel ribbons. FRACTURED CATHEDRAL.", swatch: "#4d416b" },
+    { id: "fca_ruby_lights", name: "Ruby Lights", desc: "A diamond diaper of small domed ruby quarries, each pane leaded and lit from behind. FRACTURED CATHEDRAL.", swatch: "#65180b" },
+    { id: "fca_ruby_rose", name: "Ruby Rose", desc: "Glue-chip frost ferns, many and small, feathering across ruby glass. FRACTURED CATHEDRAL.", swatch: "#661907" },
+    { id: "fca_violet_rose", name: "Violet Rose", desc: "Pleated drapery glass folded into fine herringbone, violet deepening in every fold. FRACTURED CATHEDRAL.", swatch: "#65057d" },
+    // FRACTURED RELIC (2026-08-01) — 20 finishes, wave build
+    { id: "fre_gold_glyphs", name: "Gold Glyphs", desc: "Vertical cartouches in column registers, gilt strips running the panel. FRACTURED RELIC.", swatch: "#754407" },
+    { id: "fre_gold_inlay", name: "Gold Inlay", desc: "Fine gold wires combed across dark stone and burnished flat. FRACTURED RELIC.", swatch: "#86520c" },
+    { id: "fre_gold_mosaic", name: "Gold Mosaic", desc: "A pave of small tessellated stars in a rosette lattice, gilt dulled by burial. FRACTURED RELIC.", swatch: "#825207" },
+    { id: "fre_gold_ziggurat", name: "Gold Ziggurat", desc: "Rows of carved dentils in a course lattice, shadowed in every gap. FRACTURED RELIC.", swatch: "#9f6108" },
+    { id: "fre_ivory_leaf", name: "Ivory Leaf", desc: "Fine bone slivers felted into a dense inlay, warm and dry. FRACTURED RELIC.", swatch: "#6a5e47" },
+    { id: "fre_ivory_mosaic", name: "Ivory Mosaic", desc: "Shingled ivory plaques overlapping like scale armour, aged to cream. FRACTURED RELIC.", swatch: "#766f61" },
+    { id: "fre_ivory_ziggurat", name: "Ivory Ziggurat", desc: "Thousands of tiny stepped pyramids paved into a terrace field. FRACTURED RELIC.", swatch: "#766c58" },
+    { id: "fre_lapis_glyphs", name: "Lapis Glyphs", desc: "A tablet grid of cuneiform cells, each glyph small enough to fill a fingertip. FRACTURED RELIC.", swatch: "#068dd2" },
+    { id: "fre_lapis_inlay", name: "Lapis Inlay", desc: "Irregular lapis chips bedded in dark mastic, gold pyrite catching in the stone. FRACTURED RELIC.", swatch: "#0973cb" },
+    { id: "fre_lapis_mosaic", name: "Lapis Mosaic", desc: "Opus vermiculatum — curved courses of small chips worming around the field. FRACTURED RELIC.", swatch: "#4d4e36" },
+    { id: "fre_lapis_ziggurat", name: "Lapis Ziggurat", desc: "Interlocking meander cells — a Greek-key fret pack in deep blue. FRACTURED RELIC.", swatch: "#6b725c" },
+    { id: "fre_malachite_leaf", name: "Malachite Leaf", desc: "Banded lens cushions of malachite, each band a different depth of green. FRACTURED RELIC.", swatch: "#3e5c15" },
+    { id: "fre_malachite_mosaic", name: "Malachite Mosaic", desc: "Square tesserae grouted tight, every tile its own shade of banded green. FRACTURED RELIC.", swatch: "#0a9230" },
+    { id: "fre_malachite_ziggurat", name: "Malachite Ziggurat", desc: "Stepped herringbone terraces pleating up and back across the stone. FRACTURED RELIC.", swatch: "#09802a" },
+    { id: "fre_terracotta_glyphs", name: "Terracotta Glyphs", desc: "A field of impressed wedges — cuneiform pressed into wet clay and fired. FRACTURED RELIC.", swatch: "#a43306" },
+    { id: "fre_terracotta_inlay", name: "Terracotta Inlay", desc: "Fine sediment plies banded with grit, clay laid down season by season. FRACTURED RELIC.", swatch: "#c64a11" },
+    { id: "fre_terracotta_leaf", name: "Terracotta Leaf", desc: "Overlapping leaf flakes, torn at the edges and lifting from the clay. FRACTURED RELIC.", swatch: "#b55909" },
+    { id: "fre_turquoise_glyphs", name: "Turquoise Glyphs", desc: "Cylinder-seal impressions stamped in packed rings across the surface. FRACTURED RELIC.", swatch: "#06776a" },
+    { id: "fre_turquoise_inlay", name: "Turquoise Inlay", desc: "Sand-grade tesserae — micro-mosaic dust laid grain by grain in turquoise. FRACTURED RELIC.", swatch: "#0d9089" },
+    { id: "fre_turquoise_leaf", name: "Turquoise Leaf", desc: "Gilded leaf crazed into a fine craquelure web over turquoise ground. FRACTURED RELIC.", swatch: "#5c672e" },
+    // FRACTURED KINTSUGI (2026-08-01) — 20 finishes, wave build
+    { id: "fki_celadon_craquelure", name: "Celadon Craquelure", desc: "A sixty-degree triangular lattice of celadon plates with gold pooled at every node. FRACTURED KINTSUGI.", swatch: "#2d6f46" },
+    { id: "fki_celadon_raku", name: "Celadon Raku", desc: "A dense felt of oriented carbon and gold needles laid over jade. Reads as texture you could feel. FRACTURED KINTSUGI.", swatch: "#2f6341" },
+    { id: "fki_celadon_sweep", name: "Celadon Sweep", desc: "Interfering ripple sets radiating from many centres at once, gold pooling where the waves meet. FRACTURED KINTSUGI.", swatch: "#2e5c3f" },
+    { id: "fki_celadon_vein", name: "Celadon Vein", desc: "Drifting gold threads wander over pale jade glaze — thin, endless, never repeating their path. FRACTURED KINTSUGI.", swatch: "#2e5b3e" },
+    { id: "fki_cobalt_craquelure", name: "Cobalt Craquelure", desc: "A two-scale crack web over deep cobalt glaze: broad fractures with finer crazing nested inside each plate. FRACTURED KINTSUGI.", swatch: "#066ae9" },
+    { id: "fki_cobalt_raku", name: "Cobalt Raku", desc: "Crawled glaze beads locked together with carbon-black gaps between them — the crawl fault, made beautiful. FRACTURED KINTSUGI.", swatch: "#0a71e0" },
+    { id: "fki_cobalt_seam", name: "Cobalt Seam", desc: "Fine cobalt strata run the length of the panel; transverse gold faults cut across them like mended slips. FRACTURED KINTSUGI.", swatch: "#0894d8" },
+    { id: "fki_cobalt_shards", name: "Cobalt Shards", desc: "Many small gold crystals grown outward through cobalt glaze, branch on branch. FRACTURED KINTSUGI.", swatch: "#0c83d4" },
+    { id: "fki_cobalt_sweep", name: "Cobalt Sweep", desc: "Micro basket weave in cobalt with gold interlacing over and under every crossing. FRACTURED KINTSUGI.", swatch: "#0755d6" },
+    { id: "fki_cream_confluence", name: "Cream Confluence", desc: "Cream ceramic grit packed tight, gold wetting every interstice between the grains. Reads as sand fused with precious metal. FRACTURED KINTSUGI.", swatch: "#6c553d" },
+    { id: "fki_cream_craquelure", name: "Cream Craquelure", desc: "Packed glaze bubbles with gold films drawn thin across every shared wall — foam frozen mid-fire. FRACTURED KINTSUGI.", swatch: "#614e37" },
+    { id: "fki_gilded_craquelure", name: "Gilded Craquelure", desc: "Hundreds of small gold rings packed across the surface, each one a healed impact in the glaze. FRACTURED KINTSUGI.", swatch: "#815807" },
+    { id: "fki_gilt_brushwork", name: "Gilt Brushwork", desc: "Tight bundles of combed micro-striation, gilt riding the ridges — a brush dragged through wet gold. FRACTURED KINTSUGI.", swatch: "#704607" },
+    { id: "fki_gilt_shards", name: "Gilt Shards", desc: "A reaction-diffusion labyrinth in gold — stripes that wander, split and rejoin without ever repeating. FRACTURED KINTSUGI.", swatch: "#a96706" },
+    { id: "fki_golden_raku", name: "Golden Raku", desc: "Fine herringbone pleats with gilt flashing at every junction. Ceramic that folds like fabric. FRACTURED KINTSUGI.", swatch: "#846109" },
+    { id: "fki_golden_river", name: "Golden River", desc: "A dense web of ridged gold veins branching at two scales across warm ceramic — hundreds of rivers, none of them wide. FRACTURED KINTSUGI.", swatch: "#6e4506" },
+    { id: "fki_moon_raku", name: "Moon Raku", desc: "Posterized turbulence broken into pale cloudlets with bright rims — raku smoke caught in the glaze. FRACTURED KINTSUGI.", swatch: "#68645f" },
+    { id: "fki_porcelain_craquelure", name: "Porcelain Craquelure", desc: "Tiny scalloped crazing laid in offset rows like fish scales, gold catching every arc. FRACTURED KINTSUGI.", swatch: "#827f78" },
+    { id: "fki_porcelain_mend", name: "Porcelain Mend", desc: "Thousands of small porcelain shards paved edge to edge, every joint filled with a hairline gold seam. The signature kintsugi repair, at scale. FRACTURED KINTSUGI.", swatch: "#9d9891" },
+    { id: "fki_porcelain_shards", name: "Porcelain Shards", desc: "Three scales of tinted chip dust settled into diagonal order — fine, finer, finest. FRACTURED KINTSUGI.", swatch: "#77746e" },
+    // FRACTURED PETRI (2026-08-01) — 20 finishes, wave build
+    { id: "fpe_amber_agar", name: "Amber Agar", desc: "A fine two-scale crack web through dried agar, micro-crazing nested between split filaments. FRACTURED PETRI.", swatch: "#7f4808" },
+    { id: "fpe_amber_diatom", name: "Amber Diatom", desc: "Raphe needles felted dense, each needle finely striated along its length. FRACTURED PETRI.", swatch: "#8c4506" },
+    { id: "fpe_amber_moldring", name: "Amber Moldring", desc: "Fuzzy concentric zonation — mould rings packed rim to rim. FRACTURED PETRI.", swatch: "#9d5b06" },
+    { id: "fpe_amber_plankton", name: "Amber Plankton", desc: "Segmented ribbons woven across each other in a loose crossing weave. FRACTURED PETRI.", swatch: "#904406" },
+    { id: "fpe_cyan_colony", name: "Cyan Colony", desc: "Mother colonies each ringed by their own satellite dots. FRACTURED PETRI.", swatch: "#087a87" },
+    { id: "fpe_cyan_membrane", name: "Cyan Membrane", desc: "Warped cortical folds running as a fine ripple carpet — membrane under glass. FRACTURED PETRI.", swatch: "#097884" },
+    { id: "fpe_cyan_mold", name: "Cyan Mold", desc: "A hyphal thread web with conidia beaded along the crest lines. FRACTURED PETRI.", swatch: "#08727e" },
+    { id: "fpe_cyan_spineball", name: "Cyan Spineball", desc: "Urchin spike balls burst across the plate, every ball its own spine count. FRACTURED PETRI.", swatch: "#099198" },
+    { id: "fpe_lime_chains", name: "Lime Chains", desc: "Cocci chains wandering the plate in long beaded drifts. FRACTURED PETRI.", swatch: "#466f06" },
+    { id: "fpe_lime_culture", name: "Lime Culture", desc: "Sinuous streak-plate lanes with colonies budding along every pass of the loop. FRACTURED PETRI.", swatch: "#3c6d07" },
+    { id: "fpe_lime_diatom", name: "Lime Diatom", desc: "Ribbed pills laid in brick courses, striae and girdle lines cut across each one. FRACTURED PETRI.", swatch: "#3f9106" },
+    { id: "fpe_lime_mold", name: "Lime Mold", desc: "Clumped spore dust with soft fuzz halos bleeding out of every cluster. FRACTURED PETRI.", swatch: "#3a6c07" },
+    { id: "fpe_magenta_bloom", name: "Magenta Bloom", desc: "Glossy colony domes in close pack, each one droplet-round and lit from above. FRACTURED PETRI.", swatch: "#b209a3" },
+    { id: "fpe_magenta_mosaic", name: "Magenta Mosaic", desc: "Stained plates stippled with chromatin, grouted into a continuous mosaic. FRACTURED PETRI.", swatch: "#c609ac" },
+    { id: "fpe_magenta_plankton", name: "Magenta Plankton", desc: "Specks caught on curl streamlines and swirled into flow. FRACTURED PETRI.", swatch: "#8b068b" },
+    { id: "fpe_magenta_radiolaria", name: "Magenta Radiolaria", desc: "A perforated hex mesh — silica lattice drilled with thousands of small holes. FRACTURED PETRI.", swatch: "#ce09c1" },
+    { id: "fpe_violet_chains", name: "Violet Chains", desc: "Budding-yeast pseudohyphae looping into a beaded net. FRACTURED PETRI.", swatch: "#5007c4" },
+    { id: "fpe_violet_frustule", name: "Violet Frustule", desc: "Centric diatoms — radial-ribbed discs packed into a lattice. FRACTURED PETRI.", swatch: "#a409f0" },
+    { id: "fpe_violet_garden", name: "Violet Garden", desc: "Radial branching fern colonies fanning out from hundreds of small starts. FRACTURED PETRI.", swatch: "#7c09cd" },
+    { id: "fpe_violet_membrane", name: "Violet Membrane", desc: "Foam pack with bright walls and a nucleus dot set in every cell. FRACTURED PETRI.", swatch: "#a20ef2" },
+    // GHOST LAB single-variable experiments (2026-06-12)
+    { id: "gl_control", name: "GL 00 Control (Ghost Fracture)", desc: "GL 00 Control (Ghost Fracture) — GHOST LAB experiment — Byte-identical Ghost Fracture. Your reference — everything else changes ONE thing vs this. Ritual: assign as BASE, set the SAME purple, CRUSH brightness, same daytime track, compare to GL 00.", swatch: "#3a3a4a" },
+    { id: "gl_metal_low", name: "GL 01 Metal LOW (~150)", desc: "GL 01 Metal LOW (~150) — GHOST LAB experiment — PILLAR 1 TEST: metal dropped to the level our newer finishes use. If the purple stops jumping through, near-max metal is the body-color engine. Ritual: assign as BASE, set the SAME purple, CRUSH brightness, same daytime track, compare to GL 00.", swatch: "#3a3a4a" },
+    { id: "gl_metal_mid", name: "GL 02 Metal MID (~185)", desc: "GL 02 Metal MID (~185) — GHOST LAB experiment — Pillar 1 dose-response: halfway. Tells us the metal threshold where color-jump starts dying. Ritual: assign as BASE, set the SAME purple, CRUSH brightness, same daytime track, compare to GL 00.", swatch: "#3a3a4a" },
+    { id: "gl_rough_pastel", name: "GL 03 Rough PASTEL (150-200)", desc: "GL 03 Rough PASTEL (150-200) — GHOST LAB experiment — PILLAR 2 TEST + the pastel doctrine on-track: roughness raised to the light-pastel band. If flashes go soft/hazy, low roughness is what makes them EXPLODE. Ritual: assign as BASE, set the SAME purple, CRUSH brightness, same daytime track, compare to GL 00.", swatch: "#3a3a4a" },
+    { id: "gl_rough_mirror", name: "GL 04 Rough MIRROR (30-60)", desc: "GL 04 Rough MIRROR (30-60) — GHOST LAB experiment — Pillar 2 the other direction: glossier than GF. Do flashes get even sharper/harder? Ritual: assign as BASE, set the SAME purple, CRUSH brightness, same daytime track, compare to GL 00.", swatch: "#3a3a4a" },
+    { id: "gl_cc_flat", name: "GL 05 Clearcoat FLAT (no cells)", desc: "GL 05 Clearcoat FLAT (no cells) — GHOST LAB experiment — PILLAR 3 TEST: same metal+gloss but the carve is GONE (CC uniform 212). If gold still flashes but with no cell pattern, the carve is only the SHAPE; if gold dies, the carve is the engine. Ritual: assign as BASE, set the SAME purple, CRUSH brightness, same daytime track, compare to GL 00.", swatch: "#3a3a4a" },
+    { id: "gl_cc_shallow", name: "GL 06 Clearcoat SHALLOW carve", desc: "GL 06 Clearcoat SHALLOW carve — GHOST LAB experiment — Pillar 3 dose-response: carve amplitude halved. How much swing does the two-color travel need? Ritual: assign as BASE, set the SAME purple, CRUSH brightness, same daytime track, compare to GL 00.", swatch: "#3a3a4a" },
+    { id: "gl_cc_inverted", name: "GL 07 Clearcoat INVERTED", desc: "GL 07 Clearcoat INVERTED — GHOST LAB experiment — Cells swap polarity (carved becomes flooded). Should swap WHERE gold vs teal appears — confirms the cells choose which env color shows. Ritual: assign as BASE, set the SAME purple, CRUSH brightness, same daytime track, compare to GL 00.", swatch: "#3a3a4a" },
+    { id: "gl_cells_micro", name: "GL 08 Cells MICRO (3x smaller)", desc: "GL 08 Cells MICRO (3x smaller) — GHOST LAB experiment — Structure scale: same recipe, 3x finer cells. Does fine structure shimmer instead of detonate? Ritual: assign as BASE, set the SAME purple, CRUSH brightness, same daytime track, compare to GL 00.", swatch: "#3a3a4a" },
+    { id: "gl_cells_macro", name: "GL 09 Cells MACRO (3x bigger)", desc: "GL 09 Cells MACRO (3x bigger) — GHOST LAB experiment — Structure scale: 3x bigger cells. Do big panels flash harder but read blocky? Ritual: assign as BASE, set the SAME purple, CRUSH brightness, same daytime track, compare to GL 00.", swatch: "#3a3a4a" },
+    { id: "gl_pastel_full", name: "GL 10 Full PASTEL recipe", desc: "GL 10 Full PASTEL recipe — GHOST LAB experiment — The round-5 pastel doctrine applied to GF geometry (rough 150-170, compressed carve 191-240). Head-to-head vs GL 00 settles whether pastel beats the original on track. Ritual: assign as BASE, set the SAME purple, CRUSH brightness, same daytime track, compare to GL 00.", swatch: "#3a3a4a" },
+    { id: "gl_cc_max", name: "GL 11 Clearcoat MAX carve", desc: "GL 11 Clearcoat MAX carve — GHOST LAB experiment — Carve amplitude pushed to the rails (cells swing 40<->250). Is more swing more magic, or does it clip into noise? Ritual: assign as BASE, set the SAME purple, CRUSH brightness, same daytime track, compare to GL 00.", swatch: "#3a3a4a" },
+    { id: "fm_basalt", name: "Basalt Columns", desc: "Basalt Columns — FRACTURED MINDS color-shift base — Giant's Causeway columns end-on: hot and cold column clans, chipped sparkling rims, and onion-fracture rings giving every column its own radial flash signature. Assign as BASE, pick a color, CRUSH the brightness near black, daytime track.", swatch: "#4a4d55" },
+    { id: "fm_tsunami", name: "Tsunami", desc: "Tsunami — FRACTURED MINDS color-shift base — assign as BASE, pick a color, CRUSH the brightness near black, daytime track: the carved cells flash sky-teal and sun-gold by angle while flakes and slashes fire from inside the pattern.", swatch: "#5a5246" },
+    { id: "fm_mudcrack", name: "Mudcrack Curl", desc: "Mudcrack Curl — FRACTURED MINDS color-shift base — dried-lakebed plates whose crack canyons run deep mirror while the curled lips ridge metal; plate cores crossfade on a slow macro gradient. Assign as BASE, pick a color, CRUSH the brightness near black, daytime track.", swatch: "#6a523e" },
+    { id: "fm_penrose", name: "Penrose Quasi", desc: "Penrose Quasi — FRACTURED MINDS color-shift base — five-fold quasicrystal interference that NEVER repeats anywhere on the car: gold star suns, cyan anti-star wells, and an aperiodic mirror flood across the low field. Assign as BASE, pick a color, CRUSH the brightness near black, daytime track.", swatch: "#463e6a" },
     { id: "ghost_quilt", name: "Ghost Quilt", desc: "Micro-panel quilt pattern in clearcoat — subtle stitched grid visible under direct light", swatch: "#4a5a6b" },
     // P3: Directional Grain
     { id: "aniso_horizontal_chrome", name: "Aniso Horizontal Chrome", desc: "Horizontal brushed chrome grain with fine directional scratches — lathe-turned mirror metal", swatch: "#bbccdd" },
@@ -1685,11 +4649,11 @@ const MONOLITHICS = [
     { id: "sparkle_diamond_dust", name: "Sparkle Diamond Dust", desc: "Ultra-fine diamond dust sparkle with thousands of micro-crystal points across the surface", swatch: "#ddeeff" },
     { id: "sparkle_starfield", name: "Sparkle Starfield", desc: "Sparse bright star-point sparkles on deep dark base — night sky with scattered pinpricks", swatch: "#112233" },
     { id: "sparkle_galaxy", name: "Sparkle Galaxy", desc: "Dense galaxy-cluster sparkle distribution with concentrated bright zones and dark voids", swatch: "#223344" },
-    { id: "sparkle_firefly", name: "Sparkle Firefly", desc: "Rare ultra-bright sparkle flashes on dark green base — summer firefly field at dusk", swatch: "#445533" },
     { id: "sparkle_snowfall", name: "Sparkle Snowfall", desc: "Dense cold crystal sparkle field with icy white points on pale frozen base — fresh snow", swatch: "#ccddee" },
-    { id: "sparkle_champagne", name: "Sparkle Champagne", desc: "Fine bubbly champagne sparkle with warm golden micro-points rising through pale base", swatch: "#ddcc99" },
+    // R6 RACING-PIVOT V3 (2026-05-26): sparkle_champagne ALIASED to tiger_stripe_field.
+    // Sparkle-cluster diversification — predator-skin replacement for sparkle clone.
+    { id: "sparkle_champagne", name: "Tiger Stripe Field", desc: "Tiger fur — warm orange-tan base with 18-30 bold black irregular stripes 4-8 px wide running mostly vertical with diagonal jitter + 80-150 short stub stripes + 6-10 hero extra-bold stripes with bright orange edge halo", swatch: "#c66a1f" },
     { id: "sparkle_meteor", name: "Sparkle Meteor", desc: "Directional meteor trail sparkle with streaked bright points all moving in one direction", swatch: "#cc8844" },
-    { id: "sparkle_constellation", name: "Sparkle Constellation", desc: "Arranged sparkle star clusters forming bright groups with dark space between formations", swatch: "#334466" },
     { id: "sparkle_confetti", name: "Sparkle Confetti", desc: "Variable-size confetti sparkle with multi-colored bright points scattered in celebration", swatch: "#ee88cc" },
     { id: "sparkle_lightning_bug", name: "Sparkle Lightning Bug", desc: "Green-tinted bioluminescent glow points on dark base — warm summer lightning bug flicker", swatch: "#88cc44" },
     // P6: Multi-Scale Texture
@@ -1801,6 +4765,59 @@ const MONOLITHICS = [
     { id: "quilt_random_chaos", name: "Quilt Random Chaos", desc: "Tiny fully random material chaos tiles — each micro-square gets unpredictable finish", swatch: "#889999" },
     { id: "quilt_gradient_tiles", name: "Quilt Gradient Tiles", desc: "Large gradient material tiles where each square fades between two different finish types", swatch: "#99aabb" },
     { id: "quilt_alternating_duo", name: "Quilt Alternating Duo", desc: "Alternating duo-material checkerboard with two contrasting finishes in neat tile pattern", swatch: "#8899bb" },
+    // SPB-102 ★ Spectrum Shift — 50 procedural iridescent fusions (2026-05-17 UI wire-up)
+    // SPECTRUM SHIFT 2026 (2026-06-11) — 50 bespoke optical-physics finishes
+    // (engine/expansions/spectrum_shift_2026.py); replaced the 10x5 palette clones.
+    { id: "spectrum_aberration_glitch", name: "Aberration Glitch", desc: "★ Spectrum Shift — Aberration Glitch: A crisp mono mosaic shot through a broken lens: R and B sheared opposite ways so EVERY edge grows prism fringes.", swatch: "#565452" },
+    { id: "spectrum_abrasion_halo", name: "Abrasion Halo", desc: "★ Spectrum Shift — Abrasion Halo: Scratch holography on polished steel: thousands of micro arcs whose spectral glints CRAWL along the scratches as the view tilts.", swatch: "#5e6270" },
+    { id: "spectrum_anodine_dunes", name: "Anodine Dunes", desc: "★ Spectrum Shift — Anodine Dunes: Wind-rippled dunes anodized by slope aspect: straw-violet-cobalt riding the slip faces, grating-fine ripples everywhere.", swatch: "#695461" },
+    { id: "spectrum_beetle_elytra", name: "Beetle Elytra", desc: "★ Spectrum Shift — Beetle Elytra: Jewel-scarab shell: hexagonal micro-dimple lattice with metallic green-gold bands sweeping across the carapace.", swatch: "#40570e" },
+    { id: "spectrum_bismuth_garden", name: "Bismuth Garden", desc: "★ Spectrum Shift — Bismuth Garden: Bismuth hopper crystals: stepped square-spiral terraces in anodize rainbow by depth — the staircase geode.", swatch: "#2b4157" },
+    { id: "spectrum_black_opal", name: "Black Opal", desc: "★ Spectrum Shift — Black Opal: Lightning Ridge black opal: sleeping color domains in near-black potch that DETONATE in spectral fire at the gate angle.", swatch: "#5a4843" },
+    { id: "spectrum_borealis_ice", name: "Borealis Ice", desc: "★ Spectrum Shift — Borealis Ice: Aurora curtains REFRACTED through pack ice: every shard displaces and recolors the light passing through it.", swatch: "#505a57" },
+    { id: "spectrum_boulder_opal", name: "Boulder Opal", desc: "★ Spectrum Shift — Boulder Opal: Boulder opal: rainbow fire running only in the veins through dark ironstone — the matrix stays stone, the seams burn.", swatch: "#483121" },
+    { id: "spectrum_chromatic_orchid", name: "Chromatic Orchid", desc: "★ Spectrum Shift — Chromatic Orchid: Orchid fields with spectral nectar-guide veins — the ultraviolet runway insects see, made visible.", swatch: "#5a3956" },
+    { id: "spectrum_circuit_awakens", name: "Circuit Awakens", desc: "★ Spectrum Shift — Circuit Awakens: Dormant circuitry: Manhattan traces and solder vias that power ON in spectral sequence as the view sweeps.", swatch: "#2c5a39" },
+    { id: "spectrum_clockwork_dial", name: "Clockwork Dial", desc: "★ Spectrum Shift — Clockwork Dial: Watch-dial guilloche: jittered gold rosettes over spectral lathe rings on near-black — horology under a prism.", swatch: "#719046" },
+    { id: "spectrum_contact_bloom", name: "Contact Bloom", desc: "★ Spectrum Shift — Contact Bloom: Newton-ring blossoms: thin-film interference rings with true Airy crowding around every contact point, overlapping into gardens.", swatch: "#8d8981" },
+    { id: "spectrum_data_etch", name: "Data Etch", desc: "★ Spectrum Shift — Data Etch: Optical-disc data sectors: wedge fields of micro-tracks, every sector refracting its own order rainbow off the etched blocks.", swatch: "#9280af" },
+    { id: "spectrum_diamond_fire", name: "Diamond Fire", desc: "★ Spectrum Shift — Diamond Fire: Brilliant-cut scintillation: kite-facet fans with internal dispersion and white scintillation pins — ice with fire in it.", swatch: "#d7e2e0" },
+    { id: "spectrum_event_horizon", name: "Event Horizon", desc: "★ Spectrum Shift — Event Horizon: An accretion disk doppler-beamed for real: the approaching side burns blue-white, the receding side dims red, around lensed black cores.", swatch: "#5a4f54" },
+    { id: "spectrum_flare_spectra", name: "Flare Spectra", desc: "★ Spectrum Shift — Flare Spectra: Spectroheliograph corona: thin emission-line arcs in pure spectral colors leaping across near-black.", swatch: "#5a5656" },
+    { id: "spectrum_forge_heat", name: "Forge Heat", desc: "★ Spectrum Shift — Forge Heat: True Planck incandescence: hammered steel glowing through cherry-orange-white by actual blackbody color, slag flecks quenching dark.", swatch: "#c4894a" },
+    { id: "spectrum_fracture_polarized", name: "Fracture Polarized", desc: "★ Spectrum Shift — Fracture Polarized: Cracked stressed glass: fringe rainbows CROWD at every crack tip (true stress concentration), the fractures glassy black.", swatch: "#594341" },
+    { id: "spectrum_ghost_prism", name: "Ghost Prism", desc: "★ Spectrum Shift — Ghost Prism: Double-exposure spectroscopy: an attractor motif and its R/G/B ghosts offset in three directions — spectral echo art.", swatch: "#4d525a" },
+    { id: "spectrum_grating_quilt", name: "Grating Quilt", desc: "★ Spectrum Shift — Grating Quilt: Holo-foil patchwork: stitched tiles of hairline diffraction gratings at scattered angles — every patch fires its own color at its own angle.", swatch: "#64395c" },
+    { id: "spectrum_interference_weave", name: "Interference Weave", desc: "★ Spectrum Shift — Interference Weave: Over-under thread weave where the moire beat phase decides every crossing's hue — textile interference.", swatch: "#896d63" },
+    { id: "spectrum_jewel_box", name: "Jewel Box", desc: "★ Spectrum Shift — Jewel Box: Stained-glass shard mosaic with dispersed caustics caged INSIDE each facet — light trapped in a jewel case.", swatch: "#5a4740" },
+    { id: "spectrum_lathe_burst", name: "Lathe Burst", desc: "★ Spectrum Shift — Lathe Burst: Overlapping spin-cut systems; hue follows the cut angle like light raking spun metal — holographic engine-turning.", swatch: "#2c668a" },
+    { id: "spectrum_liquid_crystal", name: "Liquid Crystal", desc: "★ Spectrum Shift — Liquid Crystal: Cholesteric liquid crystal under the microscope: fingerprint pitch bands cycling the wheel, dark disclination defects threading through.", swatch: "#414655" },
+    { id: "spectrum_magnet_flow", name: "Magnet Flow", desc: "★ Spectrum Shift — Magnet Flow: Iron filings in spectral ink: hue advected along true dipole field lines arcing pole to pole.", swatch: "#3c5a38" },
+    { id: "spectrum_mantis_strike", name: "Mantis Strike", desc: "★ Spectrum Shift — Mantis Strike: Mantis-shrimp carapace: segmented armor plates each cycling its own spectral band, raptorial strike streaks in ember.", swatch: "#a76f2f" },
+    { id: "spectrum_moire_silk", name: "Moire Silk", desc: "★ Spectrum Shift — Moire Silk: Two silk-fine line lattices a hair off angle: giant slow rainbow interference beats rolling over visible micro-threads.", swatch: "#895a59" },
+    { id: "spectrum_nacre_tide", name: "Nacre Tide", desc: "★ Spectrum Shift — Nacre Tide: Abalone growth terraces: wavy stacked layer-lines, mother-of-pearl travel by layer count, dark conchiolin seams.", swatch: "#895553" },
+    { id: "spectrum_oilfilm_rain", name: "Oilfilm Rain", desc: "★ Spectrum Shift — Oilfilm Rain: Gasoline rainbow after rain: drain-streaked oil film, rain-impact ring sets, wet aggregate poking through the slick.", swatch: "#4a3321" },
+    { id: "spectrum_opal_core", name: "Opal Core", desc: "★ Spectrum Shift — Opal Core: Full crystal opal: wall-to-wall play-of-color domains over milk glass, every domain flashing on its own schedule.", swatch: "#a99393" },
+    { id: "spectrum_orbital_engrave", name: "Orbital Engrave", desc: "★ Spectrum Shift — Orbital Engrave: Interlocking orbital ring systems cut into black chrome, each system flashing its glint at a different clock position — sequential fire.", swatch: "#45465a" },
+    { id: "spectrum_peacock_eye", name: "Peacock Eye", desc: "★ Spectrum Shift — Peacock Eye: Peacock train: dense structural-color eyespots (cobalt heart, teal iris, bronze halo) over fine radiating barbs.", swatch: "#155a37" },
+    { id: "spectrum_pressure_map", name: "Pressure Map", desc: "★ Spectrum Shift — Pressure Map: Meteorology in paint: cyclone isobar spirals cycling hue, wind-streak barbs combing between the cells.", swatch: "#3c683d" },
+    { id: "spectrum_prism_pool", name: "Prism Pool", desc: "★ Spectrum Shift — Prism Pool: Dispersed caustics in a midnight pool: every dancing light filament is itself a tiny spectrum, red bending wider than blue.", swatch: "#38495a" },
+    { id: "spectrum_rainbow_river", name: "Rainbow River", desc: "★ Spectrum Shift — Rainbow River: Spectrum as a fluid: hue advected along real currents — rainbow streams, eddies trapping whirlpools of trapped color.", swatch: "#376c3f" },
+    { id: "spectrum_redshift_drift", name: "Redshift Drift", desc: "★ Spectrum Shift — Redshift Drift: Receding galaxies: streaks red-shifted trailing, blue-shifted leading, smeared along the expansion flow.", swatch: "#53565a" },
+    { id: "spectrum_shatter_glass", name: "Shatter Glass", desc: "★ Spectrum Shift — Shatter Glass: Tempered glass exploded: shard mosaic, each fragment refracting its own dispersion gradient, prism fringes at every fracture line.", swatch: "#4b535f" },
+    { id: "spectrum_singularity_lens", name: "Singularity Lens", desc: "★ Spectrum Shift — Singularity Lens: A deep-field sky gravitationally smeared into Einstein arcs and rings around invisible dark masses, violet rim-light on the voids.", swatch: "#2a3d5a" },
+    { id: "spectrum_smectic_fan", name: "Smectic Fan", desc: "★ Spectrum Shift — Smectic Fan: Smectic focal-conic fans: packed ribbed fan domains, each refracting its own slice of the wheel — polarized-microscope money shot.", swatch: "#563a43" },
+    { id: "spectrum_smoke_chroma", name: "Smoke Chroma", desc: "★ Spectrum Shift — Smoke Chroma: Laminar smoke going turbulent, every filament carrying its slice of spectrum through the curl.", swatch: "#455a4c" },
+    { id: "spectrum_spill_metropolis", name: "Spill Metropolis", desc: "★ Spectrum Shift — Spill Metropolis: Gasoline rainbow on wet night asphalt: micro-aggregate, drain swirls, neon signs bleeding into the slick.", swatch: "#5a2a3e" },
+    { id: "spectrum_star_temperature", name: "Star Temperature", desc: "★ Spectrum Shift — Star Temperature: The HR diagram as a sky: thousands of stars each colored by its real temperature class — red dwarfs to blue giants.", swatch: "#3a335a" },
+    { id: "spectrum_stress_storm", name: "Stress Storm", desc: "★ Spectrum Shift — Stress Storm: A polariscope hurricane: dozens of colliding photoelastic stress fringes — real fringe-order physics, rainbow contours storming across dark glass.", swatch: "#6e576a" },
+    { id: "spectrum_swirl_supernova", name: "Swirl Supernova", desc: "★ Spectrum Shift — Swirl Supernova: The detailer's swirl-mark nightmare made cosmic: micro arc-galaxies on deep violet, dispersive star glints riding every arc.", swatch: "#3e215a" },
+    { id: "spectrum_tempered_ghost", name: "Tempered Ghost", desc: "★ Spectrum Shift — Tempered Ghost: The polarized-sunglasses car-window secret: a drifting lattice of quench-spot stress rosettes in rose and iris over smoked glass.", swatch: "#4a455a" },
+    { id: "spectrum_thermo_touch", name: "Thermo Touch", desc: "★ Spectrum Shift — Thermo Touch: Thermochromic skin: heat blooms crawl through the LC spectrum (bronze-green-blue) over visible fingerprint texture — a touch-reactive heat map.", swatch: "#0d5743" },
+    { id: "spectrum_topo_rainbow", name: "Topo Rainbow", desc: "★ Spectrum Shift — Topo Rainbow: Survey-fine elevation isolines cycling the wheel over shaded relief — cartography as iridescence.", swatch: "#43585a" },
+    { id: "spectrum_vhs_phantom", name: "Vhs Phantom", desc: "★ Spectrum Shift — Vhs Phantom: Analog video breakdown: scanline micro, tracking-error rainbow tears, chromatic ghost offsets — the haunted tape.", swatch: "#578976" },
+    { id: "spectrum_vinyl_groove", name: "Vinyl Groove", desc: "★ Spectrum Shift — Vinyl Groove: Record grooves at hairline pitch sweeping in from off-canvas spindles, tone-arm rainbows raking across the tracks, anti-static dust glints.", swatch: "#963ab4" },
+    { id: "spectrum_xray_bloom", name: "Xray Bloom", desc: "★ Spectrum Shift — Xray Bloom: A garden in body color whose vein SKELETONS detonate spectral at the flash angle — the flowers x-ray themselves.", swatch: "#5a2750" },
     { id: "quilt_organic_cells", name: "Quilt Organic Cells", desc: "Voronoi organic cell materials with irregular natural shapes each holding unique finish", swatch: "#7799aa" },
     // Chromatic Flake Collection — multi-color micro-flake shimmer (30 palettes)
     { id: "cf_midnight_galaxy", name: "CF: Midnight Galaxy", desc: "Deep navy, electric purple, teal, silver, dark magenta micro-flake shimmer", swatch: "#1a1a44" },
@@ -1833,327 +4850,525 @@ const MONOLITHICS = [
     { id: "cf_inferno_chrome", name: "CF: Inferno Chrome", desc: "Chrome silver, fire red, orange, gold, dark steel — blazing metal flake", swatch: "#cc4422" },
     { id: "cf_phantom_violet", name: "CF: Phantom Violet", desc: "Deep violet, silver, black, lavender, dark purple — spectral flake", swatch: "#3a1870" },
     { id: "cf_solar_flare", name: "CF: Solar Flare", desc: "Bright gold, white-hot, amber, orange, deep yellow — stellar eruption flake", swatch: "#eeaa22" },
-    // ===== Research Session 6: 6 New Monolithic Finishes =====
-    { id: "aurora_borealis_mono", name: "Aurora Borealis Curtains", desc: "Flowing curtains of green, teal, and purple northern-lights light play — near-black base with sinusoidal band variation, R=230–255, G=30–80 smooth curtain structure", swatch: "#0d2018" },
-    { id: "deep_space_void", name: "Deep Space Void", desc: "Absolute black base with ultra-sparse mirror-bright star points — near-total void with occasional blinding metallic highlights, maximum void/contrast", swatch: "#050508" },
-    { id: "polished_obsidian_mono", name: "Polished Obsidian", desc: "Volcanic glass — pure black, zero metallic, maximum clearcoat gloss — the anti-chrome: dark environment reflections in a deep black mirror surface", swatch: "#08080a" },
-    { id: "patinated_bronze", name: "Patinated Bronze", desc: "Ancient bronze with verdigris oxidation — warm dark metallic bronze base with turquoise-green patina zones in surface recesses, two-zone color/spec generation", swatch: "#5a3a1a" },
-    { id: "reactive_plasma", name: "Reactive Plasma", desc: "High-energy plasma discharge — electric-blue and violet lightning tendrils against near-black base; tendril zones R=240–255 G=0–10 mirror-chrome, background near-black non-metallic", swatch: "#0a0514" },
-    { id: "molten_metal", name: "Molten Metal", desc: "Just-solidified forge metal — bright orange-gold at hot rear/edges (R=230–255, G=20–40), cooling to dark bronze-grey toward front; heat-state color and spec from same gradient", swatch: "#cc5511" },
+    // 2026-06-02 (owner): the 6 "Research Session 6" standalone-effect monolithics
+    // (aurora_borealis_mono, deep_space_void, polished_obsidian_mono, patinated_bronze,
+    // reactive_plasma, molten_metal) + 4 more (thermal_titanium, galaxy_nebula_base,
+    // dark_sigil, oil_slick_base) were removed with the "Standalone Effects" group.
     // ── INTRICATE & ORNATE — Batch 1 (moved from SPEC_PATTERNS where they were misplaced)
-    { id: "hex_mandala", name: "Hex Mandala", desc: "Hex interference — three 120°-offset cosine waves produce concentric hexagonal ring mandalas", swatch: "#ccaa55" },
-    { id: "lace_filigree", name: "Lace Filigree", desc: "Delicate interlaced openwork — orthogonal and 45° sinusoidal grids combine for intricate lacework threads", swatch: "#ddccbb" },
-    { id: "brushed_metal_fine", name: "Brushed Metal Fine", desc: "Three-frequency directional micro-scratch brushing — very fine anisotropic grain lines like bead-blasted aluminum", swatch: "#aabbcc" },
     { id: "carbon_3k_weave", name: "Carbon 3K Weave", desc: "3K satin-braid diagonal carbon — two interleaved 45° diagonal tow directions vs the standard 2×2 twill", swatch: "#223344" },
-    { id: "honeycomb_organic", name: "Honeycomb Organic", desc: "Warped organic honeycomb — 3-wave hex pattern distorted by noise warp for irregular natural cell shapes", swatch: "#ddaa44" },
-    { id: "baroque_scrollwork", name: "Baroque Scrollwork", desc: "Ornate spiral scrollwork — Archimedean scrolls and sinusoidal flourishes layered for classical baroque decoration", swatch: "#aa8833" },
-    { id: "art_nouveau_vine", name: "Art Nouveau Vine", desc: "Flowing vine tendrils — sinuous stems with branching tendrils in Art Nouveau organic plant style", swatch: "#557744" },
-    { id: "penrose_quasi", name: "Penrose Quasicrystal", desc: "5-fold quasicrystal tiling — five cosine projections at 72° spacing approximate aperiodic Penrose geometry", swatch: "#6655aa" },
-    { id: "topographic_dense", name: "Topographic Dense", desc: "Dense contour lines — 35 contour bands over a multi-scale noise height field, very fine map-like striping", swatch: "#448866" },
-    { id: "interference_rings", name: "Interference Rings", desc: "Newton's ring multi-source interference — four offset radial sources create moiré-like concentric ring beating", swatch: "#66aacc" }
 ].filter(m => !REMOVED_SPECIAL_IDS.has(m.id));
 
 // ============================================================
 // SPEC PATTERNS — stackable spec map overlays
 // ============================================================
 const SPEC_PATTERNS = [
-    { id: "banded_rows", name: "Banded Rows", desc: "Adds horizontal metallic/roughness bands with soft feathered transitions between value zones", category: "Structure", defaults: { num_bands: 50, palette_size: 10 } },
-    { id: "flake_scatter", name: "Flake Scatter", desc: "Scatters sparse metallic flake particles across the surface for random point-sparkle highlights", category: "Metallic", defaults: { density: 0.02, flake_radius: 2 } },
-    { id: "depth_gradient", name: "Depth Gradient", desc: "Creates coating thickness variation from gravity pooling — thicker at bottom affects roughness and gloss", category: "Coating", defaults: { direction: "vertical" } },
-    { id: "orange_peel_texture", name: "Orange Peel", desc: "Adds spray-coat orange peel micro-bump roughness texture simulating real automotive paint surface", category: "Texture", defaults: { cell_size: 6 } },
-    { id: "wear_scuff", name: "Wear & Scuff", desc: "Applies localized roughness patches and directional scuff streaks that break up clearcoat smoothness", category: "Weathering", defaults: { wear_density: 0.3 } },
-    { id: "aniso_grain", name: "Aniso Grain", desc: "Creates directional brushing and grinding lines that affect roughness in one orientation — anisotropic", category: "Texture", defaults: { direction: "horizontal" } },
-    { id: "interference_bands", name: "Interference Bands", desc: "Adds thin-film iridescent metallic banding that shifts reflectivity in periodic color-like waves", category: "Optical", defaults: { frequency: 8.0 } },
-    { id: "concentric_ripple", name: "Concentric Ripple", desc: "Generates expanding roughness rings from random center points — water droplet impact interference", category: "Structure", defaults: { num_centers: 3, ring_freq: 15.0 } },
-    { id: "hex_cells", name: "Hex Cells", desc: "Applies honeycomb hexagonal cell grid with per-cell metallic and roughness variation for tiled texture", category: "Structure", defaults: { cell_size: 20 } },
-    { id: "marble_vein", name: "Marble Vein", desc: "Creates organic roughness veining like natural stone — smooth face with rough vein channel grooves", category: "Organic", defaults: { vein_freq: 6.0, turbulence: 3 } },
-    { id: "cloud_wisps", name: "Cloud Wisps", desc: "Adds fractal cloud formation noise that modulates roughness in soft organic billowing shapes", category: "Organic", defaults: { num_octaves: 5 } },
-    { id: "micro_sparkle", name: "Micro Sparkle", desc: "Applies ultra-fine dense metallic pigment grain that adds overall sparkle to the metallic channel", category: "Metallic", defaults: { density: 0.15 } },
-    { id: "panel_zones", name: "Panel Zones", desc: "Defines large irregular zones with different metallic and roughness values — panel color variation", category: "Structure", defaults: { num_zones: 25 } },
-    { id: "spiral_sweep", name: "Spiral Sweep", desc: "Creates logarithmic spiral arms from center that modulate metallic reflection in rotational sweep", category: "Optical", defaults: { num_arms: 4 } },
+    // Reference Pattern Plates - real source plates converted to SPEC overlays
+    { id: "spec_holographic_oil_circuit", name: "SPEC Holographic Oil Circuit", desc: "Rainbow oil-film highlights, polished low-roughness arcs, and prismatic clearcoat response.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_black_emboss_mandala", name: "SPEC Black Emboss Mandala", desc: "Dark raised relief, satin valleys, and glossy mandala edge catches.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_graphite_cross_lattice", name: "SPEC Graphite Cross Lattice", desc: "Graphite lattice ribs with crisp bright intersections and controlled satin gaps.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_marble_flow_pearl", name: "SPEC Marble Flow Pearl", desc: "Pearl marble veins with soft clearcoat rivers and polished vein ridges.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_acid_carbon_mesh", name: "SPEC Acid Carbon Mesh", desc: "Acid-tinted mesh/carbon contrast with tight gloss cells and matte under-weave.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_noir_houndstooth_star", name: "SPEC Noir Houndstooth Star", desc: "Noir textile stars and houndstooth checks with thread-level roughness shifts.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_hazard_chevron_weave", name: "SPEC Hazard Chevron Weave", desc: "Hazard chevrons with bright cut edges, dark rubber troughs, and woven directionality.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_burn_hole_mesh", name: "SPEC Burn Hole Mesh", desc: "Burned mesh crater texture with scorched rough pits and polished raised rim detail.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_teal_hex_haze", name: "SPEC Teal Hex Haze", desc: "Teal hex haze with pearly bokeh cells and restrained translucent clearcoat.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_shadow_diamond_mesh", name: "SPEC Shadow Diamond Mesh", desc: "Shadow diamond mesh with repeating raised ridges and satin recessed panels.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_talavera_tile_riot", name: "SPEC Talavera Tile Riot", desc: "Talavera ceramic tile gloss with enamel ridges and deep grout contrast.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_green_plasma_vein", name: "SPEC Green Plasma Vein", desc: "Green plasma veins with electrical gloss streaks and smoky rough shadows.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_neon_fracture_net", name: "SPEC Neon Fracture Net", desc: "Neon fracture net with hot crack clearcoat and black low-sheen islands.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_pink_checker_carbon", name: "SPEC Pink Checker Carbon", desc: "Pink checker carbon geometry with glossy colored cells and dark woven breaks.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_red_herringbone_heat", name: "SPEC Red Herringbone Heat", desc: "Red herringbone heat weave with diagonal satin grain and hot edge flashes.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_chrome_oval_chain", name: "Pop Top", desc: "Stamped aluminium can top — pull-tab ring, rivet, and rolled rim.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_terracotta_ceramic_grid", name: "SPEC Terracotta Ceramic Grid", desc: "Terracotta ceramic grid with glazed stone islands and gritty grout channels.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_gunmetal_geo_tessellation", name: "SPEC Gunmetal Geo Tessellation", desc: "Gunmetal micro tessellation with precise satin/metal facet shifts.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_tokyo_script_textile", name: "SPEC Tokyo Script Textile", desc: "Tokyo script textile with inked cloth valleys and glossy red-white calligraphy strokes.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_lime_pixel_confetti", name: "SPEC Lime Pixel Confetti", desc: "Lime pixel confetti with small hard gloss pops across a matte field.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_psychedelic_floral_spin", name: "SPEC Psychedelic Floral Spin", desc: "Psychedelic guilloche floral rings with shifting satin petals and chrome thread lines.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_ice_facet_shatter", name: "SPEC Ice Facet Shatter", desc: "Ice crystal shards with cold clearcoat facets and bright frozen cuts.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_ember_circuit_maze", name: "SPEC Ember Circuit Maze", desc: "Ember circuit maze with heated copper lines and dark insulated cells.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_blue_polygon_shatter", name: "SPEC Blue Polygon Shatter", desc: "Blue polygon shatter with angular clearcoat facets and graphite separators.", category: "Source Pattern Plates", defaults: {}, defaultChannels: "MRC" },
+    { id: "banded_rows", name: "Banded Rows", desc: "Adds horizontal metallic/roughness bands with soft feathered transitions between value zones", category: "Structure & Geometry", defaults: { num_bands: 50, palette_size: 10 } },
+    // R6 RACING-PIVOT V3 (2026-05-26): aniso_grain ALIASED to chainmail_armor.
+    // Owner: "Boring / no character". Replaced with interlocking 6-10 px metal rings.
+    { id: "hex_cells", name: "Hex Cells", desc: "Applies honeycomb hexagonal cell grid with per-cell metallic and roughness variation for tiled texture", category: "Structure & Geometry", defaults: { cell_size: 20 } },
+    { id: "panel_zones", name: "Panel Zones", desc: "Defines large irregular zones with different metallic and roughness values — panel color variation", category: "Structure & Geometry", defaults: { num_zones: 25 } },
     // 2026-04-19 HEENAN HP2 — id `carbon_weave` was a TRIPLE collision:
     // BASES (L291), PATTERNS (L695), and SPEC_PATTERNS (here). Spec-pattern
     // siblings already use the `spec_*` namespace (spec_kevlar_weave,
     // spec_wood_burl, spec_carbon_2x2_twill, etc.). Renamed to spec_carbon_weave
     // to match that convention; updated SPEC_PATTERN_GROUPS["Misc"] reference.
-    { id: "spec_carbon_weave", name: "Carbon Weave (Spec)", desc: "Adds woven fiber crosshatch roughness pattern simulating carbon fiber surface texture on spec maps", category: "Texture", defaults: { weave_size: 12 } },
-    { id: "crackle_network", name: "Crackle Network", desc: "Creates crack and craze roughness network like dried clay — sharp channels cut through smooth surface", category: "Weathering", defaults: { cell_count: 25 } },
-    { id: "flow_lines", name: "Flow Lines", desc: "Adds fluid paint flow stream roughness — directional drip lines that affect clearcoat thickness", category: "Coating", defaults: { num_streams: 40 } },
-    { id: "micro_facets", name: "Micro Facets", desc: "Creates tiny angled facets like crushed crystal that scatter metallic reflection at random micro-angles", category: "Texture", defaults: { facet_size: 8 } },
-    { id: "moire_overlay", name: "Moire Overlay", desc: "Overlaps two metallic grids at slight angle offset creating moire interference fringe modulation", category: "Optical", defaults: { grid1_freq: 60 } },
-    { id: "pebble_grain", name: "Pebble Grain", desc: "Adds large rounded roughness bumps like leather pebble grain — dimpled surface texture variation", category: "Texture", defaults: { pebble_size: 5 } },
-    { id: "radial_sunburst", name: "Radial Sunburst", desc: "Creates metallic rays emanating from center point outward — radial reflection gradient like sunburst", category: "Structure", defaults: { num_rays: 12 } },
-    { id: "topographic_steps", name: "Topo Steps", desc: "Applies contour-line stepped roughness levels creating terraced elevation bands across the surface", category: "Structure", defaults: { num_levels: 8 } },
-    { id: "wave_ripple", name: "Wave Ripple", desc: "Adds directional water surface interference waves that modulate roughness in flowing ripple bands", category: "Optical", defaults: { num_waves: 5 } },
-    { id: "patina_bloom", name: "Patina Bloom", desc: "Creates circular roughness bloom spots from simulated chemical oxidation reaction on the surface", category: "Weathering", defaults: { num_blooms: 80 } },
-    { id: "electric_branches", name: "Electric Branches", desc: "Generates branching tree and lightning roughness patterns — fractal discharge paths across clearcoat", category: "Organic", defaults: { num_trees: 10, branch_depth: 12 } },
+    { id: "spec_carbon_weave", name: "Carbon Weave (Spec)", desc: "Adds woven fiber crosshatch roughness pattern simulating carbon fiber surface texture on spec maps", category: "Surface & Spray Texture", defaults: { weave_size: 12 } },
+    { id: "crackle_network", name: "Crackle Network", desc: "Creates crack and craze roughness network like dried clay — sharp channels cut through smooth surface", category: "Weather, Wear & Track", defaults: { cell_count: 25 } },
+    { id: "pebble_grain", name: "Pebble Grain", desc: "Adds large rounded roughness bumps like leather pebble grain — dimpled surface texture variation", category: "Surface & Spray Texture", defaults: { pebble_size: 5 } },
+    { id: "wave_ripple", name: "Wave Ripple", desc: "Adds directional water surface interference waves that modulate roughness in flowing ripple bands", category: "Optical & Interference", defaults: { num_waves: 5 } },
     // --- NEW PATTERNS (26-50) ---
-    { id: "voronoi_fracture", name: "Voronoi Fracture", desc: "Shattered glass cell boundaries with dark fracture lines", category: "Crystalline", defaults: { num_cells: 200, edge_width: 1.0 } },
-    { id: "plasma_turbulence", name: "Plasma Turbulence", desc: "Hot plasma energy field with chaotic swirling metallic turbulence — intense sci-fi surface modulation", category: "Optical", defaults: { octaves: 6, freq_base: 3.0 } },
-    { id: "diamond_lattice", name: "Diamond Lattice", desc: "Geometric diamond grid with per-cell depth modulation — engraved facet array that catches highlights at panel-rotation angles", category: "Crystalline", defaults: { cell_size: 24, depth_variation: 0.4 } },
-    { id: "acid_etch", name: "Acid Etch", desc: "Chemical dissolution eating through coating layers — pitted clearcoat damage from acid rain or industrial fallout exposure", category: "Weathering", defaults: { intensity: 0.6, blob_count: 150 } },
-    { id: "galaxy_swirl", name: "Galaxy Swirl", desc: "Creates spiral galaxy arm metallic patterns with scattered star cluster highlight points throughout", category: "Optical", defaults: { num_arms: 4, twist: 3.0 } },
-    { id: "reptile_scale", name: "Reptile Scale", desc: "Overlapping biological scales with angle-based specularity", category: "Organic", defaults: { scale_size: 18, overlap: 0.3 } },
-    { id: "magnetic_field", name: "Magnetic Field", desc: "Generates iron filing roughness lines curving between magnetic pole points — electromagnetic texture", category: "Kinetic", defaults: { num_poles: 8, line_density: 60.0 } },
-    { id: "prismatic_shatter", name: "Prismatic Shatter", desc: "Shattered prism fragments reflecting at different angles", category: "Crystalline", defaults: { num_shards: 300 } },
-    { id: "neural_dendrite", name: "Neural Dendrite", desc: "Creates branching neural network metallic patterns with synaptic fire nodes — organic tech overlay", category: "Organic", defaults: { num_neurons: 5, branch_depth: 7 } },
-    { id: "heat_distortion", name: "Heat Distortion", desc: "Adds rising convection shimmer waves that modulate roughness like heat distortion over hot asphalt", category: "Kinetic", defaults: { wave_count: 40, turbulence: 8.0 } },
-    { id: "rust_bloom", name: "Rust Bloom (Spots)", desc: "Expanding oxidation circles with jagged corrosion fronts", category: "Weathering", defaults: { num_spots: 25, max_radius: 50 } },
-    { id: "quantum_noise", name: "Quantum Noise", desc: "Standing wave interference — probability density clouds", category: "Optical", defaults: { num_waves: 120 } },
-    { id: "woven_mesh", name: "Woven Mesh", desc: "Interlocking thread mesh with over/under spec variation — fabric-grade weave that adds tactile texture detail to clearcoat", category: "Texture", defaults: { thread_spacing: 10, thread_width: 3 } },
-    { id: "lava_crack", name: "Lava Crack", desc: "Cooling lava plates with bright glowing fissures between", category: "Organic", defaults: { num_plates: 35, glow_width: 4.0 } },
+    { id: "voronoi_fracture", name: "Voronoi Fracture", desc: "Shattered glass cell boundaries with dark fracture lines", category: "Sparkle & Micro-Metal", defaults: { num_cells: 200, edge_width: 1.0 } },
+    { id: "diamond_lattice", name: "Diamond Lattice", desc: "R6 owner rebuild — CLEAN sharp rhombus lattice grid with crisp 1px polyline outlines, uniform per-cell fill from a tight polished-steel palette + every 7th cell as a brighter hero gem with sharp top-edge highlight (no noise, no grain, no FBM)", category: "Geometric & Structural", defaults: { cell_size: 24, depth_variation: 0.4 } },
+    { id: "galaxy_swirl", name: "Galaxy Swirl", desc: "Creates spiral galaxy arm metallic patterns with scattered star cluster highlight points throughout", category: "Optical & Interference", defaults: { num_arms: 4, twist: 3.0 } },
+    { id: "prismatic_shatter", name: "Prismatic Shatter", desc: "Shattered prism fragments reflecting at different angles", category: "Sparkle & Micro-Metal", defaults: { num_shards: 300 } },
+    { id: "lava_crack", name: "Lava Crack", desc: "Cooling lava plates with bright glowing fissures between", category: "Organic & Natural", defaults: { num_plates: 35, glow_width: 4.0 } },
     // 2026-04-19 HEENAN HP3 — id `diffraction_grating` collided with PATTERNS
     // (L845). Renamed SPEC_PATTERNS entry to spec_diffraction_grating_cd
     // (sister to spec_diffraction_grating which already exists in Optical).
     // TF13 had already disambiguated the display name; this completes the fix
     // at the id level. SPEC_PATTERN_GROUPS["Optical"] updated accordingly.
-    { id: "spec_diffraction_grating_cd", name: "Diffraction Grating (CD)", desc: "Fine parallel ruling lines — CD surface rainbow diffraction", category: "Optical", defaults: { line_freq: 80.0, num_orders: 5 } },
-    { id: "sand_dune", name: "Sand Dune", desc: "Creates wind-sculpted asymmetric roughness ripples with steep slip faces — desert dune surface texture", category: "Texture", defaults: { dune_freq: 15.0, wind_angle: 0.3 } },
-    { id: "circuit_trace", name: "Circuit Trace", desc: "Adds PCB Manhattan-routed metallic traces with solder pad nodes — circuit board reflection pattern", category: "Structure", defaults: { trace_count: 200 } },
+    { id: "spec_diffraction_grating_cd", name: "Diffraction Grating (CD)", desc: "Fine parallel ruling lines — CD surface rainbow diffraction", category: "Optical & Interference", defaults: { line_freq: 80.0, num_orders: 5 } },
     // 2026-04-19 HEENAN H4HR-4 — `oil_slick` collided with MONOLITHICS L1354.
     // SPEC entry namespaced; HP-MIGRATE handles backward compat. MONO keeps id.
-    { id: "spec_oil_slick", name: "Oil Slick (Spec)", desc: "Thin-film oil interference with organic flowing pools — rainbow surface fringe like gasoline on a wet parking lot", category: "Coating", defaults: { num_pools: 8, freq: 6.0 } },
-    { id: "meteor_impact", name: "Meteor Impact", desc: "Radial crater with ejecta rays and concentric shockwaves", category: "Kinetic", defaults: { num_craters: 12 } },
-    { id: "fungal_network", name: "Fungal Network", desc: "Mycelium threads — delicate interconnected branching web", category: "Organic", defaults: { num_hyphae: 60 } },
     // 2026-04-19 HEENAN H4HR-5 — `gravity_well` collided with MONOLITHICS L1562.
-    { id: "spec_gravity_well", name: "Gravity Well (Spec)", desc: "Spacetime warping around singularity — lensing distortion", category: "Optical", defaults: { num_wells: 6 } },
-    { id: "sonic_boom", name: "Sonic Boom", desc: "Generates Mach cone shockwave roughness interference patterns radiating from supersonic source points", category: "Kinetic", defaults: { num_sources: 8 } },
-    { id: "crystal_growth", name: "Crystal Growth (Frost)", desc: "Dendritic frost crystallization — 6-fold branching symmetry", category: "Crystalline", defaults: { num_seeds_pts: 4, growth_steps: 200 } },
-    { id: "smoke_tendril", name: "Smoke Tendril", desc: "Rising smoke plumes with turbulent billowing expansion — atmospheric haze overlay for moody fog-on-paint effects", category: "Coating", defaults: { num_plumes: 20 } },
-    { id: "fractal_discharge", name: "Fractal Discharge", desc: "Recursive branching electrical discharge — dense energy web", category: "Optical", defaults: { num_bolts: 15, depth: 14 } },
     // --- NEW PATTERNS (51-65) ---
     // Sparkle / Flake variants
-    { id: "diamond_dust", name: "Diamond Dust", desc: "Thousands of tiny bright points on a dark field — crushed diamond ultra-fine sparkle", category: "Sparkle", defaults: { density: 0.025 } },
-    { id: "metallic_sand", name: "Metallic Sand", desc: "Fine 2px block-quantized metallic sand particles — slightly larger than diamond dust", category: "Sparkle", defaults: { block_size: 2 } },
-    { id: "holographic_flake", name: "Holographic Flake", desc: "Iridescent flakes with position-modulated brightness — rainbow prismatic scatter", category: "Sparkle", defaults: { density: 0.02, freq_x: 35.0, freq_y: 28.0 } },
-    { id: "crystal_shimmer", name: "Crystal Shimmer", desc: "Small Voronoi facets with edge darkening — angular crystal reflections", category: "Sparkle", defaults: { cell_size: 10, edge_width: 0.25 } },
-    { id: "stardust_fine", name: "Stardust Fine", desc: "Extremely fine high-density sparkle — like a star-filled night sky", category: "Sparkle", defaults: { density: 0.05 } },
-    { id: "pearl_micro", name: "Pearl Micro", desc: "Soft pearlescent micro-texture — smooth undulating mother-of-pearl iridescence", category: "Sparkle", defaults: { octaves: 4 } },
-    { id: "gold_flake", name: "Gold Flake", desc: "Large sparse irregular gold-leaf style flakes — bright fragments on a dark field", category: "Sparkle", defaults: { density1: 0.6, density2: 0.5 } },
-    { id: "brushed_sparkle", name: "Brushed Sparkle", desc: "Directional anisotropic brushed grain with embedded random sparkle points", category: "Sparkle", defaults: { sparkle_density: 0.002 } },
-    { id: "crushed_glass", name: "Crushed Glass", desc: "Jagged angular bright fragments — sharp high-frequency thresholding, not smooth", category: "Sparkle", defaults: { threshold_hi: 0.55 } },
-    { id: "sparkle_rain", name: "Sparkle Rain", desc: "Vertical falling metallic rain streaks with bright heads and fading tails", category: "Sparkle", defaults: { density: 0.008, streak_len: 12 } },
+    { id: "metallic_sand", name: "Metallic Sand", desc: "Fine 2px block-quantized metallic sand particles — slightly larger than diamond dust", category: "Sparkle & Micro-Metal", defaults: { block_size: 2 } },
+    { id: "holographic_flake", name: "Holographic Flake", desc: "Iridescent flakes with position-modulated brightness — rainbow prismatic scatter", category: "Sparkle & Micro-Metal", defaults: { density: 0.02, freq_x: 35.0, freq_y: 28.0 } },
+    { id: "stardust_fine", name: "Stardust Fine", desc: "Extremely fine high-density sparkle — like a star-filled night sky", category: "Sparkle & Micro-Metal", defaults: { density: 0.05 } },
+    { id: "pearl_micro", name: "Pearl Micro", desc: "Soft pearlescent micro-texture — smooth undulating mother-of-pearl iridescence", category: "Sparkle & Micro-Metal", defaults: { octaves: 4 } },
+    { id: "gold_flake", name: "Gold Flake", desc: "Large sparse irregular gold-leaf style flakes — bright fragments on a dark field", category: "Sparkle & Micro-Metal", defaults: { density1: 0.6, density2: 0.5 } },
+    // R6 RACING-PIVOT V3 (2026-05-26): brushed_sparkle ALIASED to nordic_rune_field.
+    // Sparkle-cluster diversification — replaces a near-duplicate sparkle pattern.
+    { id: "brushed_sparkle", name: "Nordic Rune Field", desc: "Carved Viking runes on dark stone — angular Algiz/Tiwaz/Othala/Eihwaz line geometries 12-22 px Poisson-scattered + 8-14 hero 24-32 px halo-glowing runes + 3-5 red blood-magic runes, M=Metallic + G=Roughness + B=Clearcoat", category: "Gothic & Horror", defaults: {}, defaultChannels: "MRC" },
     // 2026-04-19 HEENAN H4HR-6 — `sparkle_constellation` collided with MONOLITHICS L1621.
-    { id: "spec_sparkle_constellation", name: "Sparkle Constellation (Spec)", desc: "Clustered star groups — Gaussian clusters with bright cores", category: "Sparkle", defaults: { n_clusters: 8, stars_per: 40 } },
-    { id: "sparkle_nebula", name: "Sparkle Nebula", desc: "FBM cloud-shaped sparkle regions — dense in clouds, sparse in voids", category: "Sparkle", defaults: { density: 0.006 } },
     // 2026-04-19 HEENAN H4HR-7 — `sparkle_firefly` collided with MONOLITHICS L1617.
-    { id: "spec_sparkle_firefly", name: "Sparkle Firefly (Spec)", desc: "Soft glowing points with warm Gaussian halos — like fireflies at dusk", category: "Sparkle", defaults: { n_flies: 200, glow_radius: 8 } },
-    { id: "sparkle_shattered", name: "Sparkle Shattered", desc: "Angular shard fragments — random bright polygonal pieces like broken glass", category: "Sparkle", defaults: { n_shards: 500 } },
+    // R6 RACING-PIVOT V3 (2026-05-26): sparkle_shattered ALIASED to razor_wire_coil.
+    // Sparkle-cluster diversification — replaces a near-duplicate sparkle pattern.
+    { id: "sparkle_shattered", name: "Razor Wire Coil", desc: "Coiled concertina razor wire — 6-12 helical bands sweeping diagonal sine curves, 4-7 px thick with sharp triangular razor blades 6-10 px embedded every 8-12 px + 4-8 hero barbed bundle crossings + 6-12 broken sheared wire ends, M=Metallic + G=Roughness + B=Clearcoat", category: "Predator Skins", defaults: {}, defaultChannels: "MRC" },
     // 2026-04-19 HEENAN H4HR-8 — `sparkle_champagne` collided with MONOLITHICS L1619.
-    { id: "spec_sparkle_champagne", name: "Sparkle Champagne (Spec)", desc: "Rising round bubble sparkle dots — clustered vertically like champagne fizz", category: "Sparkle", defaults: { density: 0.02, bubble_max: 4 } },
-    { id: "sparkle_comet", name: "Sparkle Comet", desc: "Bright heads with fading directional tail streaks — shooting stars", category: "Sparkle", defaults: { n_comets: 80, tail_len: 30 } },
-    { id: "sparkle_galaxy_swirl", name: "Sparkle Galaxy Swirl", desc: "Logarithmic spiral arms dense with star points — spiral galaxy structure", category: "Sparkle", defaults: { n_arms: 3, density: 0.008 } },
-    { id: "sparkle_electric_field", name: "Sparkle Electric Field", desc: "Sparkle density follows electric field lines between random charges", category: "Sparkle", defaults: { density: 0.01 } },
-    { id: "prismatic_dust", name: "Prismatic Dust", desc: "Multi-frequency scatter overlaid with sin(dist) interference rings — prismatic halo effect", category: "Sparkle", defaults: { scatter_density: 0.005, ring_freq: 18.0 } },
     // Banded row variants
-    { id: "chevron_bands", name: "Chevron Bands", desc: "V-shaped chevron bands — arrowhead striping using y + abs(x-center) coordinate", category: "Structure", defaults: { num_bands: 40, v_angle: 0.6 } },
-    { id: "wave_bands", name: "Wave Bands", desc: "Sinusoidal wavy bands — undulating stripes using y + sin(x * freq) coordinate", category: "Structure", defaults: { num_bands: 36, wave_freq: 6.0, wave_amp: 0.12 } },
-    { id: "gradient_bands", name: "Gradient Bands", desc: "Bands that fade bright-to-dark internally — fmod banding with within-band gradient", category: "Structure", defaults: { num_bands: 35 } },
-    { id: "split_bands", name: "Split Bands", desc: "Alternating thick bright and thin dark bands — two-weight stripe pattern", category: "Structure", defaults: { thick_count: 20, thin_count: 25 } },
-    { id: "diagonal_bands", name: "Diagonal Bands", desc: "45-degree angled bands — diagonal projection coordinate for true angular stripes", category: "Structure", defaults: { num_bands: 45, angle_deg: 45.0 } },
+    { id: "chevron_bands", name: "Chevron Bands", desc: "V-shaped chevron bands — arrowhead striping using y + abs(x-center) coordinate", category: "Structure & Geometry", defaults: { num_bands: 40, v_angle: 0.6 } },
+    { id: "wave_bands", name: "Wave Bands", desc: "Sinusoidal wavy bands — undulating stripes using y + sin(x * freq) coordinate", category: "Structure & Geometry", defaults: { num_bands: 36, wave_freq: 6.0, wave_amp: 0.12 } },
+    { id: "gradient_bands", name: "Gradient Bands", desc: "Bands that fade bright-to-dark internally — fmod banding with within-band gradient", category: "Structure & Geometry", defaults: { num_bands: 35 } },
     // NOTE: Intricate & Ornate patterns MOVED to PATTERNS array (were mistakenly in SPEC_PATTERNS)
     // --- PRIORITY 2 BATCH A: 🪛 Directional Brushed (66–77) — G=Roughness channel ---
-    { id: "brushed_linear", name: "Brushed Linear", desc: "Pure parallel horizontal lines — sin(y×freq) zero x-modulation, G=Roughness — definitive brushed aluminum", category: "Brushed", defaults: { frequency: 80.0 } },
-    { id: "brushed_diagonal", name: "Brushed Diagonal", desc: "45° diagonal brushed lines via rotated projection — chevron-style panel polish, G=Roughness", category: "Brushed", defaults: { frequency: 70.0, angle_deg: 45.0 } },
-    { id: "brushed_cross", name: "Brushed Cross", desc: "Bidirectional H+V cross-brushed strokes — scotch-brite stainless cross-finish, G=Roughness", category: "Brushed", defaults: { frequency: 60.0 } },
-    { id: "brushed_radial", name: "Brushed Radial", desc: "Radial lines from center — machined disc or spinner radial polish, G=Roughness", category: "Brushed", defaults: { num_lines: 120 } },
-    { id: "brushed_arc", name: "Brushed Arc", desc: "Concentric arc sweeps from off-canvas center — belt-sanded panel with slight bow, G=Roughness", category: "Brushed", defaults: { frequency: 50.0 } },
-    { id: "hairline_polish", name: "Hairline Polish", desc: "Ultra-fine high-frequency parallel hairlines — premium stainless steel hairline texture, G=Roughness", category: "Brushed", defaults: { frequency: 200.0 } },
-    { id: "lathe_concentric", name: "Lathe Concentric", desc: "Lathe-turned concentric rings with spiral drift — machined billet part face, G=Roughness", category: "Brushed", defaults: { frequency: 60.0 } },
-    { id: "bead_blast_uniform", name: "Bead Blast", desc: "Isotropic fine pit texture — glass bead blasting, uniform no-directionality grain, G=Roughness", category: "Brushed", defaults: { grain_size: 3.0 } },
-    { id: "orbital_swirl", name: "Orbital Swirl", desc: "DA orbital sander arc passes — overlapping curved brushed regions, G=Roughness", category: "Brushed", defaults: { num_passes: 8 } },
-    { id: "buffer_swirl", name: "Buffer Swirl", desc: "Random circular buffer marks — car-wash or compound-polish swirl arc artifacts, G=Roughness", category: "Brushed", defaults: { num_centers: 20 } },
-    { id: "wire_brushed_coarse", name: "Wire Brushed", desc: "Low-frequency wide directional grain — stiff wire brush coarse scratches with wandering waviness, G=Roughness", category: "Brushed", defaults: { frequency: 25.0 } },
-    { id: "hand_polished", name: "Hand Polished", desc: "Multi-region hand polishing — inconsistent short directional strokes per zone, like wax-on/wax-off, G=Roughness", category: "Brushed", defaults: { num_regions: 12 } },
+    { id: "brushed_diagonal", name: "Brushed Diagonal", desc: "45° diagonal brushed lines via rotated projection — chevron-style panel polish, G=Roughness", category: "Directional Metal & Brush", defaults: { frequency: 70.0, angle_deg: 45.0 } },
+    { id: "brushed_cross", name: "Brushed Cross", desc: "R6 rebuild: bidirectional H+V cross-brushed scotch-brite strata + 100-200 explicit '+' cross marks 8-16 px scattered as HERO motif (no more engine-turn circles) + 14-22 larger crosses with bright halo, G=Roughness", category: "Directional Metal & Brush", defaults: { frequency: 60.0 } },
     // === Guilloché & Machined ===
-    { id: "guilloche_barleycorn", name: "Guilloché Barleycorn", desc: "Classic barleycorn — lobed concentric rings via polar amplitude modulation, interlocking oval cells, R=Metallic", category: "Guilloché", defaults: { frequency: 40.0, n_lobes: 8, amplitude: 0.3 } },
-    { id: "guilloche_hobnail", name: "Guilloché Hobnail", desc: "Square-grid hemispherical dome protrusions — hobnail stud array, R=Metallic", category: "Guilloché", defaults: { spacing: 16, dome_radius_frac: 0.45 } },
-    { id: "guilloche_waves", name: "Guilloché Waves", desc: "Phase-modulated engine-turned wave sheets — classic pocket-watch sweep lines undulating, R=Metallic", category: "Guilloché", defaults: { x_freq: 60.0, y_mod_freq: 8.0, amplitude: 0.15 } },
-    { id: "guilloche_sunray", name: "Guilloché Sunray", desc: "Engine-turned sunray — radial lines + concentric rings polar cross-hatch, pocket-watch dial character, R=Metallic", category: "Guilloché", defaults: { n_rays: 72, ring_freq: 20.0, ray_fade: 0.6 } },
-    { id: "guilloche_moire_eng", name: "Guilloché Moiré", desc: "Two offset concentric ring systems beating into flowing moiré ellipses, R=Metallic", category: "Guilloché", defaults: { freq: 30.0, offset_frac: 0.15 } },
-    { id: "jeweling_circles", name: "Jeweling Circles", desc: "Spotfacing jeweling — hex-packed overlapping circles, scalloped at intersections, R=Metallic", category: "Guilloché", defaults: { spacing: 14, circle_radius_frac: 0.55 } },
-    { id: "knurl_diamond", name: "Knurl Diamond", desc: "Diamond knurl — crossed diagonal sin lines, raised diamond peaks at both-high intersections, G=Roughness + R=Metallic", category: "Guilloché", defaults: { frequency: 30.0, angle_deg: 45.0 } },
-    { id: "knurl_straight", name: "Knurl Straight", desc: "Straight knurl — sharpened horizontal ridges from sine to discrete stepped form, G=Roughness", category: "Guilloché", defaults: { frequency: 40.0, sharpness: 3.0 } },
-    { id: "face_mill_bands", name: "Face Mill Bands", desc: "Face milling — parallel circular arc scallops from sequential cutter passes, G=Roughness", category: "Guilloché", defaults: { pass_width: 60, freq: 20.0 } },
-    { id: "fly_cut_arcs", name: "Fly Cut Arcs", desc: "Fly cutting — overlapping large-radius scalloped arcs from single-point cutter passes, G=Roughness", category: "Guilloché", defaults: { cutter_radius_frac: 1.2, pass_pitch: 40 } },
-    { id: "engraved_crosshatch", name: "Engraved Crosshatch", desc: "Precision engraved crosshatch — additive fine parallel lines at ±angle, uniform weight at all grid points, G=Roughness", category: "Guilloché", defaults: { frequency: 50.0, angle_deg: 30.0 } },
-    { id: "edm_dimple", name: "EDM Dimple", desc: "EDM dimple texture — hex-packed spherical craters, bright rim, dark pit — electrical discharge machining, G=Roughness + R=Metallic", category: "Guilloché", defaults: { spacing: 12, dimple_radius_frac: 0.4 } },
+    { id: "guilloche_waves", name: "Guilloché Waves", desc: "Phase-modulated engine-turned wave sheets — classic pocket-watch sweep lines undulating, R=Metallic", category: "Precision & Guilloché", defaults: { x_freq: 60.0, y_mod_freq: 8.0, amplitude: 0.15 } },
+    { id: "guilloche_sunray", name: "Guilloché Sunray", desc: "Engine-turned sunray — radial lines + concentric rings polar cross-hatch, pocket-watch dial character, R=Metallic", category: "Precision & Guilloché", defaults: { n_rays: 72, ring_freq: 20.0, ray_fade: 0.6 } },
+    { id: "guilloche_moire_eng", name: "Guilloché Moiré", desc: "Two offset concentric ring systems beating into flowing moiré ellipses, R=Metallic", category: "Precision & Guilloché", defaults: { freq: 30.0, offset_frac: 0.15 } },
+    { id: "knurl_diamond", name: "Knurl Diamond", desc: "Diamond knurl — crossed diagonal sin lines, raised diamond peaks at both-high intersections, G=Roughness + R=Metallic", category: "Precision & Guilloché", defaults: { frequency: 30.0, angle_deg: 45.0 } },
+    { id: "edm_dimple", name: "EDM Dimple", desc: "EDM dimple texture — hex-packed spherical craters, bright rim, dark pit — electrical discharge machining, G=Roughness + R=Metallic", category: "Precision & Guilloché", defaults: { spacing: 12, dimple_radius_frac: 0.4 } },
     // --- PRIORITY 2 BATCH D: Carbon Fiber & Industrial Weave (102-113) ---
-    { id: "spec_carbon_2x2_twill", name: "Carbon 2×2 Twill", desc: "Standard 2×2 twill carbon fiber — diagonal ±45° tow families, over-2/under-2 interlace, sharp metallic peaks at tow crowns", category: "Carbon & Weave" },
-    { id: "spec_carbon_plain_weave", name: "Carbon Plain Weave", desc: "Plain weave 1×1 carbon fiber — orthogonal over/under checkerboard interlace, symmetric grid-like metallic variation", category: "Carbon & Weave" },
-    { id: "spec_carbon_3k_fine", name: "Carbon 3K Fine", desc: "Fine 3K carbon (3000 filament tow) — high-frequency ±45° twill with narrow Gaussian tow crowns, aerospace small-weave look", category: "Carbon & Weave" },
-    { id: "spec_carbon_forged", name: "Carbon Forged", desc: "Forged carbon (random short-fiber SMC) — random overlapping strand segments at all angles, marbled metallic pattern, NOT a regular weave", category: "Carbon & Weave" },
-    { id: "spec_carbon_wet_layup", name: "Carbon Wet Layup", desc: "Wet layup carbon — fiber weave shows through thick resin layer, Gaussian-blurred soft metallic peaks, resin-rich gloss", category: "Carbon & Weave" },
-    { id: "spec_kevlar_weave", name: "Kevlar Weave", desc: "Kevlar/aramid fiber weave — plain-weave geometry with matte satin sheen, silky micro-texture, moderate interlace roughness", category: "Carbon & Weave" },
-    { id: "spec_fiberglass_chopped", name: "Fiberglass Chopped", desc: "Chopped strand fiberglass mat — random clustered glass strands, orientation-weighted specular (vertical fibers most specular), non-woven", category: "Carbon & Weave" },
-    { id: "spec_woven_dyneema", name: "Woven Dyneema", desc: "Woven Dyneema/UHMWPE — extremely tight near-invisible weave, subtle grid R variation (160–200 range), the almost-metallic look of UHMWPE sheets", category: "Carbon & Weave" },
-    { id: "spec_mesh_perforated", name: "Mesh Perforated", desc: "Perforated metal mesh — regular circular holes with smooth radial transition, high metallic between perforations, R=0 at hole centers", category: "Carbon & Weave" },
-    { id: "spec_expanded_metal", name: "Expanded Metal", desc: "Expanded metal mesh — rotated diamond-pattern openings from slitting/stretching sheet, high metallic wire edges, open diamond interior", category: "Carbon & Weave" },
-    { id: "spec_chainlink_fence", name: "Chainlink Fence", desc: "Chain-link fence — two families of diagonal crossing wires, double-thickness metallic at intersections, distinct from stamped expanded metal", category: "Carbon & Weave" },
-    { id: "spec_ballistic_weave", name: "Ballistic Weave", desc: "Ballistic nylon/Cordura weave — dense tight plain weave, moderate R (synthetic fiber), subtle interlace roughness, utilitarian tactical texture", category: "Carbon & Weave" },
+    { id: "spec_carbon_2x2_twill", name: "Carbon 2×2 Twill", desc: "Standard 2×2 twill carbon fiber — diagonal ±45° tow families, over-2/under-2 interlace, sharp metallic peaks at tow crowns", category: "Carbon & Composite Weave" },
+    { id: "spec_carbon_3k_fine", name: "Carbon 3K Fine", desc: "Fine 3K carbon (3000 filament tow) — high-frequency ±45° twill with narrow Gaussian tow crowns, aerospace small-weave look", category: "Carbon & Composite Weave" },
+    { id: "spec_carbon_forged", name: "Carbon Forged", desc: "Forged carbon (random short-fiber SMC) — random overlapping strand segments at all angles, marbled metallic pattern, NOT a regular weave", category: "Carbon & Composite Weave" },
+    { id: "spec_carbon_wet_layup", name: "Carbon Wet Layup", desc: "Wet layup carbon — fiber weave shows through thick resin layer, Gaussian-blurred soft metallic peaks, resin-rich gloss", category: "Carbon & Composite Weave" },
+    { id: "spec_kevlar_weave", name: "Kevlar Weave", desc: "Kevlar/aramid fiber weave — plain-weave geometry with matte satin sheen, silky micro-texture, moderate interlace roughness", category: "Carbon & Composite Weave" },
+    { id: "spec_fiberglass_chopped", name: "Fiberglass Chopped", desc: "Chopped strand fiberglass mat — random clustered glass strands, orientation-weighted specular (vertical fibers most specular), non-woven", category: "Carbon & Composite Weave" },
+    { id: "spec_mesh_perforated", name: "Mesh Perforated", desc: "Perforated metal mesh — regular circular holes with smooth radial transition, high metallic between perforations, R=0 at hole centers", category: "Carbon & Composite Weave" },
+    { id: "spec_expanded_metal", name: "Expanded Metal", desc: "Expanded metal mesh — rotated diamond-pattern openings from slitting/stretching sheet, high metallic wire edges, open diamond interior", category: "Carbon & Composite Weave" },
     // --- PRIORITY 2 BATCH E: 🔵 Clearcoat Behavior (114–123) ---
-    { id: "cc_panel_pool", name: "CC Panel Pool", desc: "Clearcoat pooling — gravity-settled extra-clear in panel low spots, scattered Gaussian gloss pools, B=Clearcoat", category: "Clearcoat", defaults: { num_pools: 12, pool_spread: 0.18 } },
-    { id: "cc_drip_runs", name: "CC Drip Runs", desc: "Clearcoat drip runs — vertical streaks of excess clear running down panel, thin elongated gloss streaks, B=Clearcoat", category: "Clearcoat", defaults: { num_drips: 8, drip_length: 0.25 } },
-    { id: "cc_fish_eye", name: "CC Fish Eye", desc: "Fish-eye defects — silicone contamination repels clearcoat, circular bare craters with bright matte edge rings, B=Clearcoat", category: "Clearcoat", defaults: { num_craters: 20, crater_radius: 0.04 } },
-    { id: "cc_overspray_halo", name: "CC Overspray Halo", desc: "Overspray halo — spray gun edge mist, ring of thin/rough clearcoat at spray boundary, B=Clearcoat", category: "Clearcoat", defaults: { num_halos: 6, halo_radius: 0.22 } },
-    { id: "cc_edge_thin", name: "CC Edge Thin", desc: "Panel edge thinning — clearcoat sags/thins at corners, edges rough (bright), center gloss (dark), B=Clearcoat", category: "Clearcoat", defaults: { edge_width: 0.12, noise_scale: 0.04 } },
-    { id: "cc_masking_edge", name: "CC Masking Edge", desc: "Masking tape boundary — hard clearcoat step where tape lifted, abrupt bright-to-dark line at angle, B=Clearcoat", category: "Clearcoat", defaults: { num_edges: 4, edge_softness: 0.03 } },
-    { id: "cc_spot_polish", name: "CC Spot Polish", desc: "Spot polish — localized re-buffed gloss spots against normal texture, random dark smooth circles, B=Clearcoat", category: "Clearcoat", defaults: { num_spots: 15, spot_radius: 0.08 } },
-    { id: "cc_gloss_stripe", name: "CC Gloss Stripe", desc: "Gloss stripes — parallel extra-glossy bands from spray gun double-pass, dark stripes vs normal surface, B=Clearcoat", category: "Clearcoat", defaults: { num_stripes: 6, stripe_width: 0.06, angle_deg: 0.0 } },
-    { id: "cc_wet_zone", name: "CC Wet Zone", desc: "Wet zones — unleveled clearcoat blob patches at higher gloss, organic FBM-thresholded dark areas, B=Clearcoat", category: "Clearcoat", defaults: { num_zones: 5 } },
-    { id: "cc_panel_fade", name: "CC Panel Fade", desc: "Panel fade — clearcoat thickness gradient across panel from spray angle, one side gloss one side dull, B=Clearcoat", category: "Clearcoat", defaults: { fade_direction: 0.0, noise_warp: 0.06 } },
+    { id: "cc_panel_pool", name: "CC Panel Pool", desc: "Clearcoat pooling — gravity-settled extra-clear in panel low spots, scattered Gaussian gloss pools, B=Clearcoat", category: "Clearcoat & Coating", defaults: { num_pools: 12, pool_spread: 0.18 } },
+    { id: "cc_overspray_halo", name: "CC Overspray Halo", desc: "Overspray halo — spray gun edge mist, ring of thin/rough clearcoat at spray boundary, B=Clearcoat", category: "Clearcoat & Coating", defaults: { num_halos: 6, halo_radius: 0.22 } },
+    { id: "cc_wet_zone", name: "CC Wet Zone", desc: "Wet zones — unleveled clearcoat blob patches at higher gloss, organic FBM-thresholded dark areas, B=Clearcoat", category: "Clearcoat & Coating", defaults: { num_zones: 5 } },
+    { id: "cc_panel_fade", name: "CC Panel Fade", desc: "Panel fade — clearcoat thickness gradient across panel from spray angle, one side gloss one side dull, B=Clearcoat", category: "Clearcoat & Coating", defaults: { fade_direction: 0.0, noise_warp: 0.06 } },
     // --- PRIORITY 2 BATCH C: Worn, Patina & Weathering (90-101) ---
-    { id: "spec_rust_bloom", name: "Rust Bloom", desc: "Worley-noise rust blooms spreading from surface defects — metallic drops to zero in corroded zones", category: "Weathering" },
-    { id: "spec_patina_verdigris", name: "Patina Verdigris", desc: "FBM-inverted oxidized copper patina — verdigris pools in recesses, bronze glints on high points", category: "Weathering" },
-    { id: "spec_oxidized_pitting", name: "Oxidized Pitting", desc: "Gaussian oxidation pits — dark metallic centers with bright metallic rings at each pit edge", category: "Weathering" },
-    { id: "spec_heat_scale", name: "Heat Scale", desc: "Sinusoidal heat-gradient bands like titanium exhaust pipes — oxide thickness gradient creates spectral zones", category: "Weathering" },
-    { id: "spec_galvanic_corrosion", name: "Galvanic Corrosion", desc: "Voronoi two-metal partition — roughness spikes and metallic drops at dissimilar metal contact seams", category: "Weathering" },
-    { id: "spec_stress_fractures", name: "Stress Fractures", desc: "Metal fatigue crack tree grown along FBM gradients — crack pixels near-zero metallic, max roughness", category: "Weathering" },
-    { id: "spec_battle_scars", name: "Battle Scars", desc: "Race-impact linear scratch gouges — fresh metal streak flanked by rough paint pile-up edges", category: "Weathering" },
-    { id: "spec_worn_edges", name: "Worn Edges", desc: "Contour-line edge wear — high metallic at simulated panel edges, normal painted spec at center", category: "Weathering" },
-    { id: "spec_peeling_clear", name: "Peeling Clear", desc: "Voronoi clearcoat peel — bonded cells glossy, lifted cells dull, peel boundary adds micro-roughness", category: "Weathering" },
-    { id: "spec_sandblast_strip", name: "Sandblast Strip", desc: "FBM blob-shaped sandblasted zones — bare metal roughness adjacent to unblasted painted surfaces", category: "Weathering" },
-    { id: "spec_micro_chips", name: "Micro Chips", desc: "Stone chip damage field — 3-octave clustered point-process chips expose bare metal on leading surfaces", category: "Weathering" },
-    { id: "spec_aged_matte", name: "Aged Matte", desc: "Long-term matte oxidation — tangent-warped FBM makes some areas deader matte with ghost metallic", category: "Weathering" },
+    { id: "spec_galvanic_corrosion", name: "Galvanic Corrosion", desc: "Voronoi two-metal partition — roughness spikes and metallic drops at dissimilar metal contact seams", category: "Weather, Wear & Track" },
+    { id: "spec_stress_fractures", name: "Stress Fractures", desc: "Metal fatigue crack tree grown along FBM gradients — crack pixels near-zero metallic, max roughness", category: "Weather, Wear & Track" },
+    { id: "spec_sandblast_strip", name: "Sandblast Strip", desc: "FBM blob-shaped sandblasted zones — bare metal roughness adjacent to unblasted painted surfaces", category: "Weather, Wear & Track" },
     // --- PRIORITY 2 BATCH E: Geometric & Architectural (124–135) ---
-    { id: "spec_faceted_diamond", name: "Faceted Diamond", desc: "Gem-cut Voronoi facets — each cell one facet, linear metallic gradient rotates per cell to simulate different facet orientations, multi-directional gem glitter, R=Metallic", category: "Geometric", defaults: { num_cells: 120 } },
-    { id: "spec_hammered_dimple", name: "Hammered Dimple", desc: "Hex-grid hemispherical hammer dimples — cos(r/radius×π/2) profile peaks at rim edge (angled surface), low at dome center, R=Metallic", category: "Geometric", defaults: { dimple_spacing: 18.0 } },
-    { id: "spec_knurled_diamond", name: "Knurled Diamond", desc: "Precision diamond knurl — two diagonal ridge families at ±60° multiply at crossing peaks, cut-into-solid geometry distinct from wire mesh, R=Metallic + G=Roughness", category: "Geometric", defaults: { frequency: 28.0, angle_deg: 60.0 } },
-    { id: "spec_knurled_straight", name: "Knurled Straight", desc: "Axial straight knurl — single horizontal ridge family with sharpened cosine profile, crisp machined-tooth bright ridge / dark valley bands, G=Roughness", category: "Geometric", defaults: { frequency: 36.0, sharpness: 4.0 } },
-    { id: "spec_architectural_grid", name: "Architectural Grid", desc: "Curtain wall grid — polished aluminum frame (high metallic) surrounding low-metallic glass panels, min(fmod) frame-proximity approach, 10% frame width, R=Metallic", category: "Geometric", defaults: { cell_size: 40.0, frame_frac: 0.10 } },
-    { id: "spec_hexagonal_tiles", name: "Hexagonal Tiles", desc: "Hex mosaic tiles — smooth ceramic interior (low metallic) with mineral grout lines (higher metallic, higher roughness), hex distance function tile/grout split, R=Metallic + G=Roughness", category: "Geometric", defaults: { tile_size: 22.0, grout_frac: 0.12 } },
-    { id: "spec_brick_mortar", name: "Brick Mortar", desc: "Running-bond brickwork — near-zero metallic clay brick faces with moderate metallic cement mortar joints, 0.5-offset stagger per course, R=Metallic + G=Roughness", category: "Geometric", defaults: { brick_h: 16.0, brick_w: 36.0, mortar_frac: 0.08 } },
-    { id: "spec_corrugated_panel", name: "Corrugated Panel", desc: "Industrial corrugated metal — sin cross-section, metallic = cos²(surface_normal_angle), wave tops maximum specular, valleys minimum, strong directional sheen, R=Metallic", category: "Geometric", defaults: { frequency: 12.0, amplitude: 0.4 } },
-    { id: "spec_riveted_plate", name: "Riveted Plate", desc: "Aircraft riveted sheet — flat polished plate + Gaussian dome metallic peaks at rivet heads, edge roughness spike at rivet rim, installation smear halo, R=Metallic + G=Roughness", category: "Geometric", defaults: { rivet_spacing: 24.0, rivet_radius_frac: 0.28 } },
-    { id: "spec_weld_seam", name: "Weld Seam", desc: "Linear weld bead — oxidized weld crown + heat-affected zone (scale reduces metallic) + clean base metal, sinusoidal ripple pattern from multi-pass puddle solidification, R=Metallic + G=Roughness", category: "Geometric", defaults: { num_passes: 3, pass_spacing: 8.0 } },
-    { id: "spec_stamped_emboss", name: "Stamped Emboss", desc: "Embossed sheet metal panel — circle-in-square repeating motif, raised areas high metallic (light catch), recessed shadowed, abs(combined sine waves) for sharp emboss peaks, R=Metallic", category: "Geometric", defaults: { cell_size: 28.0 } },
-    { id: "spec_cast_surface", name: "Cast Surface", desc: "Sand-cast raw metal — Gaussian roughness + low-freq sand cluster bumps + sparse gas pore pits, matte-metallic look of unfinished cast iron/aluminum, R=Metallic", category: "Geometric", defaults: { bump_scale: 0.15, grain_scale: 0.05 } },
+    { id: "spec_hammered_dimple", name: "Hammered Dimple", desc: "Hex-grid hemispherical hammer dimples — cos(r/radius×π/2) profile peaks at rim edge (angled surface), low at dome center, R=Metallic", category: "Structure & Geometry", defaults: { dimple_spacing: 18.0 } },
+    { id: "spec_architectural_grid", name: "Architectural Grid", desc: "Curtain wall grid — polished aluminum frame (high metallic) surrounding low-metallic glass panels, min(fmod) frame-proximity approach, 10% frame width, R=Metallic", category: "Structure & Geometry", defaults: { cell_size: 40.0, frame_frac: 0.10 } },
+    { id: "spec_brick_mortar", name: "Brick Mortar", desc: "Running-bond brickwork — near-zero metallic clay brick faces with moderate metallic cement mortar joints, 0.5-offset stagger per course, R=Metallic + G=Roughness", category: "Structure & Geometry", defaults: { brick_h: 16.0, brick_w: 36.0, mortar_frac: 0.08 } },
     // --- PRIORITY 2 BATCH F: Natural & Organic ---
-    { id: "spec_wood_grain_fine", name: "Wood Grain Fine", desc: "Fine maple/birch wood grain — parallel growth rings with FBM warp perturbation, earlywood (ring peak) high metallic, latewood (valley) low metallic + high roughness, R=Metallic + G=Roughness", category: "Natural", defaults: { ring_freq: 0.55, ring_warp: 6.0 } },
-    { id: "spec_wood_burl", name: "Wood Burl", desc: "Burl wood swirling grain — multiple burl eye seed points each with own rotation direction, ring function uses distance_to_nearest_eye for complex burl veneer swirls, R=Metallic", category: "Natural", defaults: { num_eyes: 8, eye_influence: 0.55 } },
-    { id: "spec_stone_granite", name: "Stone Granite", desc: "Granite crystalline texture — multi-scale Voronoi per crystal type: quartz (high metallic), feldspar (medium), mica (very high metallic flash), boundary roughness spike, R=Metallic + G=Roughness", category: "Natural", defaults: { num_crystals: 600 } },
-    { id: "spec_stone_marble", name: "Stone Marble", desc: "Marble vein pattern — vein = sin(x*freq + fbm*warp), vein areas high roughness (micro-fracture) + moderate metallic, marble body low roughness + low metallic (polished stone), R=Metallic + G=Roughness", category: "Natural", defaults: { vein_freq: 0.08, vein_warp: 7.0 } },
-    { id: "spec_water_ripple_spec", name: "Water Ripple", desc: "Water ripple surface — concentric circular waves from multiple random drop points, wave crest higher metallic (facet angle), trough lower metallic, overlapping systems create interference, max gloss throughout, R=Metallic", category: "Natural", defaults: { num_drops: 6 } },
-    { id: "spec_coral_reef", name: "Coral Reef", desc: "Coral reef branching texture — domain-warped multi-scale FBM creates cellular/branching coral structure, branch surfaces moderate metallic (calcium carbonate shimmer), tips highest metallic, void areas zero metallic, R=Metallic", category: "Natural", defaults: { branch_octaves: 6 } },
-    { id: "spec_snake_scales", name: "Snake Scales", desc: "Reptile scale array — elongated oval scales in offset rows, specular peak near scale center-top (convex surface), lower metallic at scale edges, overlap regions roughness spike, elliptical distance function, R=Metallic + G=Roughness", category: "Natural", defaults: { scale_w: 20.0, scale_h: 14.0 } },
-    { id: "spec_fish_scales", name: "Fish Scales", desc: "Fish scale array — circular overlapping scales, INVERTED radial metallic gradient vs snake scales: higher metallic at scale rim + lower at center (iridescent armored look), radial shimmer rings, R=Metallic", category: "Natural", defaults: { scale_r: 16.0 } },
-    { id: "spec_leaf_venation", name: "Leaf Venation", desc: "Leaf vein network — hierarchical: main mid-rib (thickest, highest metallic), secondary veins at angles, tertiary fine FBM network, vein channels high metallic (hydrated tissue), inter-vein leaf tissue lower metallic, R=Metallic + G=Roughness", category: "Natural", defaults: { num_secondary: 8 } },
-    { id: "spec_terrain_erosion", name: "Terrain Erosion", desc: "Eroded terrain topology — multi-octave domain-warped FBM, ridgetops lower roughness (wind-polished rock), valley floors higher roughness (sediment), cliff faces high metallic (fresh exposed rock), gradient magnitude as roughness proxy, R=Metallic + G=Roughness", category: "Natural", defaults: { octaves: 7 } },
-    { id: "spec_crystal_growth", name: "Crystal Growth", desc: "Geode crystal growth — Voronoi facets radiate from center, each crystal face at different angle (metallic varies with face orientation), dense packing creates angular metallic peaks, boundary glint at crystal edges, R=Metallic", category: "Natural", defaults: { num_crystals: 80 } },
-    { id: "spec_lava_flow", name: "Lava Flow", desc: "Solidified lava flow — pahoehoe ropy lines (sinusoidal flow lines, moderate metallic, low roughness) vs aa lava zones (FBM high-roughness, low metallic), flow direction follows perturbed gradient field, R=Metallic + G=Roughness", category: "Natural", defaults: { flow_freq: 0.035 } },
+    { id: "spec_snake_scales", name: "Snake Scales", desc: "Reptile scale array — elongated oval scales in offset rows, specular peak near scale center-top (convex surface), lower metallic at scale edges, overlap regions roughness spike, elliptical distance function, R=Metallic + G=Roughness", category: "Organic & Natural", defaults: { scale_w: 20.0, scale_h: 14.0 } },
+    { id: "spec_fish_scales", name: "Fish Scales", desc: "Fish scale array — circular overlapping scales, INVERTED radial metallic gradient vs snake scales: higher metallic at scale rim + lower at center (iridescent armored look), radial shimmer rings, R=Metallic", category: "Organic & Natural", defaults: { scale_r: 16.0 } },
+    { id: "spec_terrain_erosion", name: "Terrain Erosion", desc: "Eroded terrain topology — multi-octave domain-warped FBM, ridgetops lower roughness (wind-polished rock), valley floors higher roughness (sediment), cliff faces high metallic (fresh exposed rock), gradient magnitude as roughness proxy, R=Metallic + G=Roughness", category: "Organic & Natural", defaults: { octaves: 7 } },
     // --- PRIORITY 2 BATCH G: Lighting & Optical Effects (136-147) ---
-    { id: "spec_fresnel_gradient", name: "Fresnel Gradient", desc: "Fresnel reflectivity gradient — Schlick approximation drives edge-brightening (glancing angle = max metallic), center near-normal incidence = moderate metallic, FBM perturbs edge boundary, R=Metallic + G=Roughness", category: "Optical", defaults: { edge_metallic: 0.92, center_metallic: 0.38 } },
-    { id: "spec_caustic_light", name: "Caustic Light", desc: "Caustic light patterns — folded-wavefront FBM simulation, histogram density of fold landing positions creates bright branching caustic lines like light through water, R=Metallic", category: "Optical", defaults: { caustic_sharpness: 8.0, num_octaves: 4 } },
-    { id: "spec_diffraction_grating", name: "Diffraction Grating", desc: "Physical diffraction grating — sin²(x×freq) ruling lines with position-dependent phase modulation for constructive interference zones, secondary cross-diffraction perpendicular grating, R=Metallic", category: "Optical", defaults: { fine_freq: 120.0, secondary_strength: 0.25 } },
-    { id: "spec_retroreflective", name: "Retroreflective", desc: "Retroreflective surface (road signs/safety vest) — staggered Gaussian corner-cube grid with microsphere fill between, FBM bead-coat variation, characteristic sparkly grid of retroreflective materials, R=Metallic", category: "Optical", defaults: { grid_spacing: 22.0, microsphere_fill: 0.55 } },
-    { id: "spec_velvet_sheen", name: "Velvet Sheen", desc: "Velvet sheen — directional gradient field magnitude as grazing-angle proxy, edge zones high metallic (fiber tips catch light), center zones low metallic + high roughness (fiber base absorption), R=Metallic + G=Roughness", category: "Optical", defaults: { edge_width: 0.22, fiber_scatter: 0.12 } },
-    { id: "spec_sparkle_flake", name: "Sparkle Flake", desc: "Metal flake sparkle field — three size-tier circular flakes with Gaussian mirror-face peak + edge shadow ring, FBM density clustering, R=Metallic", category: "Optical", defaults: { density_base: 0.018 } },
-    { id: "spec_iridescent_film", name: "Iridescent Film", desc: "Thin-film iridescence — FBM-driven film thickness with sin²(thickness × band_freq × π) interference banding, smooth film surface near-zero roughness throughout, oily shimmer pattern, R=Metallic", category: "Optical", defaults: { film_octaves: 5, band_freq: 12.0 } },
-    { id: "spec_anisotropic_radial", name: "Anisotropic Radial", desc: "Radial anisotropic star pattern — sin(atan2 × N/2)^p formula creates sharp angular metallic bands from disc center, FBM run-out perturbation, distinct from brushed_radial smooth gradient, R=Metallic", category: "Optical", defaults: { num_segments: 24, star_power: 2.0 } },
-    { id: "spec_bokeh_scatter", name: "Bokeh Scatter", desc: "Bokeh aperture circles — hexagonally-packed overlapping circles ±20% size variation, Gaussian interior fill + metallic edge ring at aperture blade radius, R=Metallic + B=Clearcoat", category: "Optical", defaults: { num_circles: 60, hex_jitter: 0.15 } },
-    { id: "spec_light_leak", name: "Light Leak", desc: "Lens flare light leak — anamorphic horizontal streak + primary halo ring + ghost aperture circles at intervals along streak axis, retro/aesthetic photographic artifact look, R=Metallic", category: "Optical", defaults: { streak_width: 0.035, num_ghosts: 5 } },
-    { id: "spec_subsurface_depth", name: "Subsurface Depth", desc: "Subsurface scattering depth — blurred FBM gradient magnitude as SSS proxy, high curvature = low metallic (light scatters in), smooth areas = high metallic (surface reflection), depth glow look of skin/marble/wax, R=Metallic + G=Roughness", category: "Optical", defaults: { sss_depth: 0.65, scatter_radius: 8.0 } },
-    { id: "spec_chromatic_aberration", name: "Chromatic Aberration", desc: "Lens chromatic aberration — inner zone uniform spec, outer zones alternating metallic fringes at multi-frequency period growing with radius (CA magnitude grows outward), FBM field-curvature distortion, R=Metallic", category: "Optical", defaults: { inner_radius: 0.30, fringe_period: 0.04 } },
+    { id: "spec_fresnel_gradient", name: "Fresnel Gradient", desc: "Fresnel reflectivity gradient — Schlick approximation drives edge-brightening (glancing angle = max metallic), center near-normal incidence = moderate metallic, FBM perturbs edge boundary, R=Metallic + G=Roughness", category: "Optical & Interference", defaults: { edge_metallic: 0.92, center_metallic: 0.38 } },
+    { id: "holo_prism_shift", name: "Holo Prism Shift", desc: "Holographic prism flecks 4-10 px with per-fleck rainbow CC sweep + 6-12 angular facet cluster zones 16-22 px for view-angle shift, M=Metallic + G=Roughness + B=Clearcoat", category: "Holographic & Color-Shift", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_retroreflective", name: "Retroreflective", desc: "Retroreflective surface (road signs/safety vest) — staggered Gaussian corner-cube grid with microsphere fill between, FBM bead-coat variation, characteristic sparkly grid of retroreflective materials, R=Metallic", category: "Optical & Interference", defaults: { grid_spacing: 22.0, microsphere_fill: 0.55 } },
+    { id: "snake_scale_diamond", name: "Snake Scale Diamond", desc: "Diamond-tessellated 10-16 px snake scales staggered with crown highlight + dark base + iridescent CC centerline + 4-8 enlarged king-scale zones 16-22 px with dramatic chroma split, M=Metallic + G=Roughness + B=Clearcoat", category: "Predator Skins", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_iridescent_film", name: "Iridescent Film", desc: "Thin-film iridescence — FBM-driven film thickness with sin²(thickness × band_freq × π) interference banding, smooth film surface near-zero roughness throughout, oily shimmer pattern, R=Metallic", category: "Optical & Interference", defaults: { film_octaves: 5, band_freq: 12.0 } },
+    { id: "spec_anisotropic_radial", name: "Anisotropic Radial", desc: "Radial anisotropic star pattern — sin(atan2 × N/2)^p formula creates sharp angular metallic bands from disc center, FBM run-out perturbation, distinct from brushed_radial smooth gradient, R=Metallic", category: "Optical & Interference", defaults: { num_segments: 24, star_power: 2.0 } },
+    { id: "spec_chromatic_aberration", name: "Chromatic Aberration", desc: "Lens chromatic aberration — inner zone uniform spec, outer zones alternating metallic fringes at multi-frequency period growing with radius (CA magnitude grows outward), FBM field-curvature distortion, R=Metallic", category: "Optical & Interference", defaults: { inner_radius: 0.30, fringe_period: 0.04 } },
     // --- PRIORITY 2 BATCH H: Surface Treatments (148-155) ---
-    { id: "spec_electroplated_chrome", name: "Electroplated Chrome", desc: "Electroplated chrome micro-crystalline surface — fine isotropic Voronoi (55+ cells/unit) per-crystal metallic variation ±15 around base 230, no directionality, near-zero clearcoat variation (16-18), R=Metallic + B=Clearcoat", category: "Surface Treatment", defaults: { cell_density: 55.0, metallic_base: 230 } },
-    { id: "spec_anodized_texture", name: "Anodized Texture", desc: "Anodized aluminum nanoporous oxide layer — hexagonal three-cosine pore grid (100+ pores/unit), high metallic oxide inter-pore matrix, low metallic pore centers, moderate roughness (G: 30-60), glossy clearcoat (B: 20-40), R=Metallic + G=Roughness", category: "Surface Treatment", defaults: { pore_density: 105.0, metallic_base: 170 } },
-    { id: "spec_powder_coat_texture", name: "Powder Coat Texture", desc: "Powder coat orange-peel surface — low-frequency FBM bumps (wavelength 20-30px), non-metallic (R: 0-20), semi-glossy (B: 50-100), G=Roughness 100-160, softer and lower-frequency than spray orange peel, G=Roughness dominant", category: "Surface Treatment", defaults: { cell_size: 22.0 } },
-    { id: "spec_thermal_spray", name: "Thermal Spray", desc: "Plasma spray / HVOF splat texture — Poisson-disc overlapping circular splats, each with raised metallic center, rough impact-crater rim, oxidized splat top, characteristic metallic sheen with rough orange-peel character, R=Metallic + G=Roughness", category: "Surface Treatment", defaults: { splat_density: 0.018 } },
-    { id: "spec_electroformed_texture", name: "Electroformed Texture", desc: "Electroformed metal columnar grain — anisotropic Voronoi cells taller than wide (aspect ~2.8:1) oriented vertically, column tip (top) = higher metallic, column base = lower metallic, grain boundary roughness spikes, directional columnar structure, R=Metallic + G=Roughness", category: "Surface Treatment", defaults: { col_aspect: 2.8 } },
-    { id: "spec_pvd_coating", name: "PVD Coating", desc: "Physical Vapor Deposition nodule texture — ultra-fine Voronoi (80+ cells/unit) nucleation sites, very high metallic 180-240/255 throughout, near-zero roughness G: 10-30/255, minimal grain boundary dip, TiN/TiAlN characteristic smooth highly-reflective surface, R=Metallic + G=Roughness", category: "Surface Treatment", defaults: { cell_density: 80.0 } },
-    { id: "spec_shot_peened", name: "Shot Peened", desc: "Shot peening overlapping impact dimples — dense Gaussian depression field (100% coverage), dimple center = roughness peak, rim = metallic flash from compressive work hardening, G: 140-200 roughness, R: 80-140 metallic, B: 120-180 (lost gloss), G=Roughness + R=Metallic", category: "Surface Treatment", defaults: { dimple_density: 0.022, dimple_radius: 6.0 } },
-    { id: "spec_laser_etched", name: "Laser Etched", desc: "Laser-etched pattern on polished surface — sharp step-function boundary (FBM-wobbled edge) between etched border strips (G=200+ rough, R=40 oxidized) and polished tile centers (G=10, R=200 mirror), no gradual transition, R=Metallic + G=Roughness", category: "Surface Treatment", defaults: { tile_size: 32.0, border_frac: 0.18 } },
+    { id: "spec_anodized_texture", name: "Anodized Texture", desc: "Anodized aluminum nanoporous oxide layer — hexagonal three-cosine pore grid (100+ pores/unit), high metallic oxide inter-pore matrix, low metallic pore centers, moderate roughness (G: 30-60), glossy clearcoat (B: 20-40), R=Metallic + G=Roughness", category: "Surface & Spray Texture", defaults: { pore_density: 105.0, metallic_base: 170 } },
+    { id: "spec_pvd_coating", name: "PVD Coating", desc: "Physical Vapor Deposition nodule texture — ultra-fine Voronoi (80+ cells/unit) nucleation sites, very high metallic 180-240/255 throughout, near-zero roughness G: 10-30/255, minimal grain boundary dip, TiN/TiAlN characteristic smooth highly-reflective surface, R=Metallic + G=Roughness", category: "Surface & Spray Texture", defaults: { cell_density: 80.0 } },
+    { id: "spec_laser_etched", name: "Laser Etched", desc: "Laser-etched pattern on polished surface — sharp step-function boundary (FBM-wobbled edge) between etched border strips (G=200+ rough, R=40 oxidized) and polished tile centers (G=10, R=200 mirror), no gradual transition, R=Metallic + G=Roughness", category: "Surface & Spray Texture", defaults: { tile_size: 32.0, border_frac: 0.18 } },
     // --- PRIORITY 2 BATCH I: Specialty & Exotic (156-163) ---
-    { id: "spec_liquid_metal", name: "Liquid Metal", desc: "Mercury / liquid metal surface — near-perfect reflectivity (R: 240-255, G: 2-8, B: 16-18) with two-frequency gravity wave interference pattern, standing wave beating creates subtle metallic modulation, very low amplitude (0.04), distinguishes from flat chrome, R=Metallic dominant", category: "Exotic", defaults: { wave1_freq: 0.8, wave2_freq: 1.3, amplitude: 0.04 } },
-    { id: "spec_chameleon_flake", name: "Chameleon Flake", desc: "ChromaFlair / chameleon flake spec — medium-scale Voronoi (20-40/unit), each flake random metallic value (160-220/255) by hash, random-metallic mosaic pattern, inter-flake boundary roughness spike, genuine ChromaFlair spec signature, R=Metallic + G=Roughness", category: "Exotic", defaults: { cell_density: 28.0, metallic_base: 190 } },
-    { id: "spec_xirallic_crystal", name: "Xirallic Crystal", desc: "Xirallic alumina crystal flake — large sparse Voronoi (10-20/unit), steep radial metallic gradient per flake (200-255 at crystal face center, drops to 60-80 at flake edge), low-density deep sparkle character, inter-flake R=80 G=80, distinct depth-sparkle vs standard metallic, R=Metallic + G=Roughness", category: "Exotic", defaults: { cell_density: 14.0 } },
-    { id: "spec_holographic_foil", name: "Holographic Foil", desc: "Holographic foil dual perpendicular gratings — grating 1 (horizontal lines, freq1) × grating 2 (vertical lines, freq2) beat product, cross-term diagonal interference, constructive metallic peaks at 2D grating node intersections, fundamentally different from single-family diffraction grating and moire_overlay, R=Metallic", category: "Exotic", defaults: { grating1_freq: 55.0, grating2_freq: 48.0 } },
-    { id: "spec_oil_film_thick", name: "Oil Film Thick", desc: "Thick oil film pooling — FBM + Gaussian pool centers define thickness distribution, thick pools G=5-15 (smooth level surface), thin film edges G=80-120 (substrate roughness bleeds through), spatial gradient from pool center to edge, different from thin-film oil_slick (this is about surface leveling), G=Roughness + R=Metallic", category: "Exotic", defaults: { num_pools: 6 } },
-    { id: "spec_magnetic_ferrofluid", name: "Magnetic Ferrofluid", desc: "Ferrofluid Rosensweig instability spike array — regular hexagonal array via three-cosine hex field, each spike Gaussian profile (exp(-r²/σ²)), tip metallic 240+ (apex direct reflection), valley metallic 50-80, hex-grid spike distribution, striking sci-fi textured surface, R=Metallic dominant", category: "Exotic", defaults: { hex_spacing: 30.0, spike_sigma: 0.35 } },
-    { id: "spec_aerogel_surface", name: "Aerogel Surface", desc: "Aerogel nanofoam pore network — multi-scale FBM threshold masking creates interconnected strut/pore topology, strut R=40/255 (glass silica), pore R=20/255 (air), strut G=15 (smooth glass), pore G=183 (rough walls), very unusual all-low-metallic signature with glass-smooth struts, R=Metallic + G=Roughness", category: "Exotic", defaults: { octaves: 4, threshold: 0.52 } },
-    { id: "spec_damascus_steel_spec", name: "Damascus Steel Spec", desc: "Damascus steel surface micro-topography spec — flow-field distorted layer bands, high-carbon bands (R=190/255 metallic, G=20/255 smooth, polishes bright), low-carbon bands (R=120/255, G=60/255 slightly rougher, chemical etch reveals), sinuous watered-silk FBM warp, different from paint damascus_steel, R=Metallic + G=Roughness", category: "Exotic", defaults: { num_layers: 18, warp_strength: 4.5 } },
+    { id: "spec_liquid_metal", name: "Liquid Metal", desc: "Mercury / liquid metal surface — near-perfect reflectivity (R: 240-255, G: 2-8, B: 16-18) with two-frequency gravity wave interference pattern, standing wave beating creates subtle metallic modulation, very low amplitude (0.04), distinguishes from flat chrome, R=Metallic dominant", category: "Exotic & Kinetic", defaults: { wave1_freq: 0.8, wave2_freq: 1.3, amplitude: 0.04 } },
+    { id: "spec_chameleon_flake", name: "Chameleon Flake", desc: "ChromaFlair / chameleon flake spec — medium-scale Voronoi (20-40/unit), each flake random metallic value (160-220/255) by hash, random-metallic mosaic pattern, inter-flake boundary roughness spike, genuine ChromaFlair spec signature, R=Metallic + G=Roughness", category: "Exotic & Kinetic", defaults: { cell_density: 28.0, metallic_base: 190 } },
+    { id: "spec_damascus_steel_spec", name: "Damascus Steel Spec", desc: "Damascus steel surface micro-topography spec — flow-field distorted layer bands, high-carbon bands (R=190/255 metallic, G=20/255 smooth, polishes bright), low-carbon bands (R=120/255, G=60/255 slightly rougher, chemical etch reveals), sinuous watered-silk FBM warp, different from paint damascus_steel, R=Metallic + G=Roughness", category: "Exotic & Kinetic", defaults: { num_layers: 18, warp_strength: 4.5 } },
     // --- RACING & AUTOMOTIVE (v6.2) ---
-    { id: "tire_rubber_transfer", name: "Tire Rubber Transfer", desc: "Dark rubber marks from tire contact — parallel arc streaks with rubber particulate roughness embedded in deposit zones, realistic tire-scuff spec overlay for racing scenes", category: "Racing", defaults: { streak_count: 40, arc_strength: 0.3 } },
-    { id: "vinyl_wrap_texture", name: "Vinyl Wrap Texture", desc: "Subtle vinyl wrap film surface texture — air-release channel micro-grooves, fine vinyl surface noise, and tiny trapped air bubble imperfections visible under specular lighting", category: "Racing", defaults: { channel_spacing: 80, bubble_density: 0.001 } },
-    { id: "paint_drip_edge", name: "Paint Drip Edge", desc: "Thick clearcoat sag at panel bottom edges — gravity-pooled curtain ridges with horizontal drip lines, heavy clearcoat buildup zone different from cc_drip_runs vertical streaks", category: "Racing", defaults: { edge_fraction: 0.25, drip_count: 30 } },
-    { id: "racing_tape_residue", name: "Racing Tape Residue", desc: "Adhesive residue from removed sponsor tape — rectangular boundaries with slightly rough sticky film inside and clean paint outside, raised tape edges", category: "Racing", defaults: { num_strips: 6, strip_width_frac: 0.04 } },
-    { id: "sponsor_deboss", name: "Sponsor Deboss", desc: "Pressed-in logo emboss/deboss effect — subtle roughness change from stamped impression in clearcoat surface, catches light at pressed boundary edges", category: "Racing", defaults: { num_logos: 4, depth: 0.3 } },
-    { id: "heat_discoloration", name: "Heat Discoloration", desc: "Heat-treated metal color zones — concentric temperature gradient bands like exhaust manifold bluing or weld heat-affected zones with oxide micro-texture", category: "Racing", defaults: { num_zones: 5, max_radius: 0.2 } },
-    { id: "salt_spray_corrosion", name: "Salt Spray Corrosion", desc: "Fine salt-air corrosion pitting — coastal marine environment surface degradation with clustered micro-pits, halo staining, and salt-exposure base roughness", category: "Racing", defaults: { pit_density: 0.015, cluster_count: 15 } },
-    { id: "track_grime", name: "Track Grime", desc: "Real racing dirt/rubber/oil buildup — concentrated at lower panel areas with splatter spray, embedded rubber particulate, and gravity-biased grime accumulation", category: "Racing", defaults: { splatter_density: 0.005, buildup_zones: 8 } },
+    { id: "heat_discoloration", name: "Heat Discoloration", desc: "Heat-treated metal color zones — concentric temperature gradient bands like exhaust manifold bluing or weld heat-affected zones with oxide micro-texture", category: "Racing & Livery Story", defaults: { num_zones: 5, max_radius: 0.2 } },
+    { id: "salt_spray_corrosion", name: "Salt Spray Corrosion", desc: "Fine salt-air corrosion pitting — coastal marine environment surface degradation with clustered micro-pits, halo staining, and salt-exposure base roughness", category: "Racing & Livery Story", defaults: { pit_density: 0.015, cluster_count: 15 } },
     // --- v6.2.x SPONSOR & VINYL ---
-    { id: "vinyl_seam", name: "Vinyl Seam", desc: "Long bright ridge lines where two vinyl sheets meet — sharp specular crests with soft heat-gun halo on each side, G=Roughness", category: "Sponsor & Vinyl", defaults: { num_seams: 5, seam_width_frac: 0.0025 } },
-    { id: "decal_lift_edge", name: "Decal Lift Edge", desc: "Sponsor decals starting to lift at the edges — bright rim around rectangular sticker boundaries with subtle interior shading and adhesive grit, G=Roughness", category: "Sponsor & Vinyl", defaults: { num_decals: 4, lift_strength: 0.55 } },
-    { id: "sponsor_emboss_v2", name: "Sponsor Emboss V2", desc: "V2 sponsor stamp — mixed circle + rounded-rect logo footprints with SDF-based clean rim relief and subtle interior face dimming, G=Roughness + B=Clearcoat", category: "Sponsor & Vinyl", defaults: { num_logos: 6, base_size: 0.10 } },
-    { id: "sticker_bubble_film", name: "Sticker Bubble Film", desc: "Trapped air bubbles under vinyl film — soft circular dimples with tiny bright glints and Gaussian halos over a subtle film texture, G=Roughness", category: "Sponsor & Vinyl", defaults: { bubble_density: 0.0009, max_radius: 10 } },
-    { id: "vinyl_stretched", name: "Vinyl Stretched", desc: "Vinyl wrap stretched over a curve — directional micro-streaks along the stretch axis with periodic ridges where film thinned and thickened, G=Roughness", category: "Sponsor & Vinyl", defaults: { stretch_freq: 18.0, stretch_amp: 0.30 } },
+    { id: "vinyl_stretched", name: "Vinyl Stretched", desc: "Vinyl wrap stretched over a curve — directional micro-streaks along the stretch axis with periodic ridges where film thinned and thickened, G=Roughness", category: "Racing & Livery Story", defaults: { stretch_freq: 18.0, stretch_amp: 0.30 } },
     // --- v6.2.x RACE WEAR ---
-    { id: "tire_smoke_residue", name: "Tire Smoke Residue", desc: "Hazy directional smudges left after burnouts and hard brake events — multi-pass overlapping ribbons with embedded carbon flecks, biased lower panel, G=Roughness", category: "Race Wear", defaults: { num_passes: 5, smoke_strength: 0.45 } },
-    { id: "brake_dust_buildup", name: "Brake Dust Buildup", desc: "Brake dust accumulation — fine particulate concentrated near lower panels and wheel arches with sparse darker pools, G=Roughness + B=Clearcoat", category: "Race Wear", defaults: { vertical_bias: 0.85, cluster_count: 20 } },
-    { id: "oil_streak_panel", name: "Oil Streak Panel", desc: "Oil and fluid streaks running down a panel — dark vertical wet streaks with bright sheen centerlines and occasional horizontal drip pools, B=Clearcoat + G=Roughness", category: "Race Wear", defaults: { num_streaks: 14, streak_len: 0.45 } },
-    { id: "gravel_chip_field", name: "Gravel Chip Field", desc: "Stone-chip damage — many small irregular bright chips clustered toward leading edges, each with a darker disturbed-clearcoat halo, R=Metallic + G=Roughness", category: "Race Wear", defaults: { chip_density: 0.0008, bias_dir: "leading" } },
-    { id: "wax_streak_polish", name: "Wax Streak Polish", desc: "Hand-polished wax swipes — irregular curved arc gloss lifts left by a buffing cloth with light pre-polish dust underneath, B=Clearcoat + G=Roughness", category: "Race Wear", defaults: { n_strokes: 18, stroke_width: 0.012 } },
     // --- v6.2.x PREMIUM FINISHES ---
-    { id: "mother_of_pearl_inlay", name: "Mother of Pearl Inlay", desc: "Nacre inlay shards — Voronoi cells each with their own iridescence phase and band-axis direction so adjacent shards shimmer at different angles, R=Metallic", category: "Premium", defaults: { num_shards: 140, shimmer_freq: 14.0 } },
-    { id: "anodized_rainbow", name: "Anodized Rainbow", desc: "Anodized titanium / niobium oxide rainbow bands — smooth low-roughness surface with FBM-warped interference banding from oxide thickness gradient, R=Metallic", category: "Premium", defaults: { band_freq: 10.0, axis_jitter: 0.10 } },
-    { id: "frosted_glass_etch", name: "Frosted Glass Etch", desc: "Sandblasted glass — dense fine random etch points forming a diffuse haze with gentle low-frequency variation between heavier/lighter zones, G=Roughness", category: "Premium", defaults: { etch_density: 2200, etch_radius: 2.2 } },
-    { id: "gold_leaf_torn", name: "Gold Leaf Torn", desc: "Torn gold leaf application — discrete sheets with rough warped torn edges, interior wrinkle veins, and exposed dull substrate between sheets, R=Metallic", category: "Premium", defaults: { n_sheets: 10, tear_jitter: 0.08 } },
-    { id: "copper_patina_drip", name: "Copper Patina Drip", desc: "Copper with verdigris patina blooms and vertical green-runoff drip channels where moisture pulled patina downward, R=Metallic + G=Roughness", category: "Premium", defaults: { num_drips: 10, drip_len: 0.55 } },
+    { id: "mother_of_pearl_inlay", name: "Mother of Pearl Inlay", desc: "Nacre inlay shards — Voronoi cells each with their own iridescence phase and band-axis direction so adjacent shards shimmer at different angles, R=Metallic", category: "Sparkle & Micro-Metal", defaults: { num_shards: 140, shimmer_freq: 14.0 } },
+    { id: "anodized_rainbow", name: "Anodized Rainbow", desc: "Anodized titanium / niobium oxide rainbow bands — smooth low-roughness surface with FBM-warped interference banding from oxide thickness gradient, R=Metallic", category: "Sparkle & Micro-Metal", defaults: { band_freq: 10.0, axis_jitter: 0.10 } },
     // --- v6.2.x COLOR-SHIFT VARIANTS ---
-    { id: "brushed_linear_warm", name: "Brushed Linear (Warm)", desc: "Warm-toned brushed_linear — softer denser grain pulled toward smoother side, suits copper/brass/gold finishes, G=Roughness", category: "Brushed", defaults: { frequency: 72.0 } },
-    { id: "brushed_linear_cool", name: "Brushed Linear (Cool)", desc: "Cool-toned brushed_linear — crisper higher-frequency grain with boosted contrast, suits steel/titanium/chrome finishes, G=Roughness", category: "Brushed", defaults: { frequency: 92.0 } },
-    { id: "micro_sparkle_warm", name: "Micro Sparkle (Warm)", desc: "Warm-tinted micro_sparkle — fewer softer sparkles over a lifted dark floor, reads like champagne or gold pearl, R=Metallic", category: "Sparkle", defaults: { density: 0.13 } },
-    { id: "micro_sparkle_cool", name: "Micro Sparkle (Cool)", desc: "Cool-tinted micro_sparkle — denser sharper points over a deep crushed field, reads like diamond ice or silver flake, R=Metallic", category: "Sparkle", defaults: { density: 0.18 } },
-    { id: "cloud_wisps_warm", name: "Cloud Wisps (Warm)", desc: "Warm-toned cloud_wisps — boosted persistence + bias toward higher mids gives a softer hazier pearl roll for sunset/bronze pearls", category: "Organic", defaults: { num_octaves: 5 } },
-    { id: "cloud_wisps_cool", name: "Cloud Wisps (Cool)", desc: "Cool-toned cloud_wisps — extra octave + lower persistence gives a colder sharper cloud for silver/blue/teal pearls", category: "Organic", defaults: { num_octaves: 6 } },
-    { id: "aniso_grain_deep", name: "Aniso Grain (Deep)", desc: "Deep / high-contrast aniso_grain — boosted grain depth and outward histogram push for dramatic anodized or deep brushed looks, G=Roughness", category: "Texture", defaults: {} },
+    { id: "crypt_brick", name: "Crypt Brick", desc: "Heavy stone-block masonry — cold-grey blocks 18-30 px wide x 10-16 px tall in staggered courses with deep dark mortar seams + 6-10 hero cracked/chipped blocks showing bare stone + subtle moss-green CC accent at base, M=Metallic + G=Roughness + B=Clearcoat", category: "Gothic & Horror", defaults: {}, defaultChannels: "MRC" },
+    { id: "brushed_linear_cool", name: "Brushed Linear (Cool)", desc: "Cool-toned brushed_linear — crisper higher-frequency grain with boosted contrast, suits steel/titanium/chrome finishes, G=Roughness", category: "Directional Metal & Brush", defaults: { frequency: 92.0 } },
     // --- v6.2.y RACE HERITAGE ---
-    { id: "checker_flag_subtle", name: "Checker Flag Subtle", desc: "Faint warped checkered-flag specular ghost — soft-edged alternating cells with a gentle FBM wobble so the grid never sits perfectly straight, R=Metallic", category: "Race Heritage", defaults: { squares: 18, warp: 0.006 } },
-    { id: "drag_strip_burnout", name: "Drag Strip Burnout", desc: "Two dark rubber lanes down the panel with heat-smoke haloes and embedded carbon grit — long straight burnout deposit, G=Roughness + R=Metallic", category: "Race Heritage", defaults: { num_strips: 2, strip_width: 0.18 } },
-    { id: "pit_lane_stripes", name: "Pit Lane Stripes", desc: "Parallel bright speed stripes with thin dark feathered rims — pit-lane tape lane livery effect, R=Metallic", category: "Race Heritage", defaults: { num_stripes: 6, stripe_width: 0.012, gap: 0.06 } },
-    { id: "victory_lap_confetti", name: "Victory Lap Confetti", desc: "Mixed-size scattered confetti highlights with soft motion-shadow cool rims — paper bits caught on clearcoat, R=Metallic", category: "Race Heritage", defaults: { density: 0.0009, min_r: 1.5, max_r: 4.5 } },
-    { id: "sponsor_tape_vinyl", name: "Sponsor Tape Vinyl", desc: "Angled rectangular faux-vinyl tape strips with bright hardcut rims and matte interior sheen — sponsor tape seam look, G=Roughness + B=Clearcoat", category: "Race Heritage", defaults: { num_tapes: 3, tape_length: 0.55, tape_width: 0.06 } },
-    { id: "race_number_ghost", name: "Race Number Ghost", desc: "Big circular badge ghost with bright rim and faint crossed numeral strokes — residual competition roundel, B=Clearcoat + G=Roughness", category: "Race Heritage", defaults: {} },
+    { id: "checker_flag_subtle", name: "Checker Flag Subtle", desc: "Faint warped checkered-flag specular ghost — soft-edged alternating cells with a gentle FBM wobble so the grid never sits perfectly straight, R=Metallic", category: "Racing & Livery Story", defaults: { squares: 18, warp: 0.006 } },
     // --- v6.2.y MECHANICAL ---
-    { id: "exhaust_pipe_scorch", name: "Exhaust Pipe Scorch", desc: "Concentric heat-gradient oxide bands around exhaust tips with soft soot halos — straw/blue/purple bluing rings, R=Metallic + G=Roughness", category: "Mechanical", defaults: { num_vents: 2, heat_radius: 0.18 } },
-    { id: "radiator_grille_mesh", name: "Radiator Grille Mesh", desc: "Dense fine perforated grille — bright rims around each dark hole with every-few-cell cross-brace shadow, R=Metallic + G=Roughness", category: "Mechanical", defaults: { cell: 8, hole_frac: 0.55 } },
-    { id: "engine_bay_grime", name: "Engine Bay Grime", desc: "Concentrated lower-panel oily dust with dark pools and oily speckle — engine-bay accumulation, G=Roughness + B=Clearcoat", category: "Mechanical", defaults: { buildup: 0.55 } },
-    { id: "tire_smoke_streaks", name: "Tire Smoke Streaks", desc: "Long thin sinuous horizontal smoke ribbons that fade at both tips — elongated motion trails distinct from smudge-style residue, G=Roughness", category: "Mechanical", defaults: { num_streaks: 14, taper: 0.35 } },
-    { id: "undercarriage_spray", name: "Undercarriage Spray", desc: "Bottom-up road-spray speck fan thinning with height — gravity-biased tire-kicked mote field, G=Roughness", category: "Mechanical", defaults: { spray_density: 0.0025, fan_height: 0.55 } },
-    { id: "suspension_rust_ring", name: "Suspension Rust Ring", desc: "Concentric rust rings around bolt/bushing fixture centres with FBM micro-corrosion flavour, G=Roughness + R=Metallic", category: "Mechanical", defaults: { num_rings: 5, ring_spread: 0.18 } },
     // --- v6.2.y WEATHER & TRACK ---
-    { id: "rain_droplet_beads", name: "Rain Droplet Beads", desc: "Discrete round wet beads with bright glints and dark gravity-sag crescents — individual raindrop pearls, B=Clearcoat + G=Roughness", category: "Weather & Track", defaults: { density: 0.0015, min_r: 2.5, max_r: 6.5 } },
-    { id: "mud_splatter_random", name: "Mud Splatter Random", desc: "Organic dark blobs with FBM-warped edges and radiating thin drip-trail spokes — thrown mud impact splat, G=Roughness + B=Clearcoat", category: "Weather & Track", defaults: { num_splats: 60, splat_size: 0.04 } },
-    { id: "wet_track_gloss", name: "Wet Track Gloss", desc: "Macro glossy water pools with FBM-perturbed boundaries and subtle film-reflection bands, B=Clearcoat", category: "Weather & Track", defaults: { pool_scale: 0.38, num_pools: 8 } },
-    { id: "dry_dust_film", name: "Dry Dust Film", desc: "Whole-panel low-frequency haze with fine embedded grain — uniform dry dust coating, G=Roughness + B=Clearcoat", category: "Weather & Track", defaults: { film_strength: 0.22, grain_scale: 2.0 } },
-    { id: "morning_dew_fog", name: "Morning Dew Fog", desc: "Soft top-biased misted haze with very fine dewlet micro-bumps — cold-morning damp layer, B=Clearcoat", category: "Weather & Track", defaults: { fog_density: 0.55 } },
-    { id: "tarmac_grit_embed", name: "Tarmac Grit Embed", desc: "Tiny dark-cored bright-rim asphalt specks pressed into clearcoat with a low-freq dark wash, R=Metallic + G=Roughness", category: "Weather & Track", defaults: { grit_density: 0.005 } },
+    { id: "morning_dew_fog", name: "Morning Dew Fog", desc: "Soft top-biased misted haze with very fine dewlet micro-bumps — cold-morning damp layer, B=Clearcoat", category: "Weather, Wear & Track", defaults: { fog_density: 0.55 } },
     // --- v6.2.y ARTISTIC ---
-    { id: "brushstroke_bold", name: "Brushstroke Bold", desc: "Painterly elongated curved brush streaks with directional bristle grain and dark trailing rim, R=Metallic", category: "Artistic", defaults: { n_strokes: 14, stroke_width: 0.022 } },
-    { id: "crayon_wax_resist", name: "Crayon Wax Resist", desc: "Short parallel wax-rub streaks layered inside low-freq heavy/light macro zones — wax crayon rubbing texture, G=Roughness", category: "Artistic", defaults: { rub_density: 0.35, streak_len: 0.12 } },
-    { id: "airbrush_gradient_bloom", name: "Airbrush Gradient Bloom", desc: "Soft radial gradient blooms overlapped with global blur — feather-soft airbrush highlights, R=Metallic", category: "Artistic", defaults: { num_blooms: 5, bloom_radius: 0.30 } },
-    { id: "spray_paint_drip", name: "Spray Paint Drip", desc: "Tagger spray drips — bright speckled head with thinning tapered drool running down and a wet centreline, B=Clearcoat + G=Roughness", category: "Artistic", defaults: { num_drips: 9, drip_len: 0.40 } },
-    { id: "stippled_dots_fine", name: "Stippled Dots Fine", desc: "Dense fine uniform bright stipple dots over subtle dark wash — pointillism-style texture, R=Metallic", category: "Artistic", defaults: { dot_density: 0.04, dot_radius: 1.2 } },
-    { id: "halftone_print", name: "Halftone Print", desc: "Regular halftone grid with per-cell radius modulated by FBM tonal map — pop-art / comic halftone dots, R=Metallic", category: "Artistic", defaults: { cell: 12, dot_max: 0.45 } },
+    // R6 RACING-PIVOT V3 (2026-05-26): airbrush_gradient_bloom ALIASED to engine_turn_starburst.
+    // Owner: "Just don't like it. Turn this into an ENGINE TURN type finish of some sort".
+    { id: "airbrush_gradient_bloom", name: "Engine-Turn Starburst", desc: "Explosive radial-arc cluster — 30-50 radiation points each emitting 8-14 fly-cut arcs fanning 12-22 px with bright leading-edge crescents on polished billet steel + 6-10 hero oversized 24-32 px starburst clusters, M=Metallic + G=Roughness + B=Clearcoat", category: "Engine-Turn & Machined", defaults: {}, defaultChannels: "MRC" },
+    { id: "halftone_print", name: "Halftone Print", desc: "Regular halftone grid with per-cell radius modulated by FBM tonal map — pop-art / comic halftone dots, R=Metallic", category: "Artistic & Abstract", defaults: { cell: 12, dot_max: 0.45 } },
     // --- ABSTRACT ART (17 patterns) — art-history-inspired spec overlays ---
-    { id: "abstract_expressionist_splatter", name: "Expressionist Splatter", desc: "Pollock-style paint drips and scattered splatter droplets with occasional downward drip trails — gestural abstract expressionism, R=Metallic", category: "Abstract Art", defaults: { n_splats: 28, drip_chance: 0.6 } },
-    { id: "abstract_cubist_facets", name: "Cubist Facets", desc: "Faceted geometric planes partitioning the surface into Voronoi cells with bimodal tonal contrast — analytic cubism, R=Metallic", category: "Abstract Art", defaults: { num_facets: 28 } },
-    { id: "abstract_rothko_field", name: "Rothko Field", desc: "Soft color-field rectangles stacked with feathered edges and subtle horizontal brush texture — abstract sublime, B=Clearcoat", category: "Abstract Art", defaults: { num_fields: 3, feather: 0.08 } },
-    { id: "abstract_kandinsky_shapes", name: "Kandinsky Shapes", desc: "Scattered circles, lines, and triangles arranged in Kandinsky-style compositional counterpoint, R=Metallic", category: "Abstract Art", defaults: { n_circles: 12, n_lines: 10, n_triangles: 6 } },
-    { id: "abstract_mondrian_grid", name: "Mondrian Grid", desc: "Recursive axis-aligned rectangular grid with thick black grid lines and primary-contrast cell tones — De Stijl neoplasticism", category: "Abstract Art", defaults: { min_splits: 3, max_splits: 6 } },
-    { id: "abstract_op_art_circles", name: "Op Art Circles", desc: "Concentric high-frequency ring illusion from an off-center origin — Bridget Riley illusory motion, R=Metallic", category: "Abstract Art", defaults: { ring_freq: 40.0 } },
-    { id: "abstract_op_art_waves", name: "Op Art Waves", desc: "Tight parallel stripes warped by a slow sinusoidal wave — op-art illusory-motion grid, G=Roughness", category: "Abstract Art", defaults: { freq: 30.0, wave_amp: 0.08, wave_freq: 3.0 } },
-    { id: "abstract_suprematism", name: "Suprematism", desc: "Malevich-style asymmetric hard-edged rectangles of varying rotation — clean geometric suprematist forms, R=Metallic", category: "Abstract Art", defaults: { n_forms: 7 } },
-    { id: "abstract_futurist_motion", name: "Futurist Motion", desc: "Speed-blur streaks fanned along a directional axis — Balla / Boccioni dynamism captured as spec motion, G=Roughness", category: "Abstract Art", defaults: { n_lines: 90, blur_sigma: 1.5 } },
-    { id: "abstract_minimalist_stripe", name: "Minimalist Stripe", desc: "Large flat horizontal bands with subtle hand-painted wash — Agnes Martin / Donald Judd minimalism, B=Clearcoat", category: "Abstract Art", defaults: { n_bands: 6 } },
-    { id: "abstract_hard_edge_field", name: "Hard Edge Field", desc: "Ellsworth Kelly / Frank Stella flat color blocks with razor-sharp half-plane boundaries, R=Metallic", category: "Abstract Art", defaults: { n_blocks: 14 } },
-    { id: "abstract_color_field_bleed", name: "Color Field Bleed", desc: "Frankenthaler soak-stain — large blurred color regions with irregular bleeding edges, B=Clearcoat", category: "Abstract Art", defaults: { num_fields: 4, bleed: 0.06 } },
-    { id: "abstract_fluid_acrylic_pour", name: "Fluid Acrylic Pour", desc: "Swirling marbled fluid-acrylic pour cells from domain-warped turbulence — gravity-pour cell structure, R=Metallic", category: "Abstract Art", defaults: { swirl_freq: 6.0, turb_scale: 40.0 } },
-    { id: "abstract_ink_wash_gradient", name: "Ink Wash Gradient", desc: "Sumi-e ink wash with irregular bleed boundary and small dropped ink blots in the darker end, G=Roughness", category: "Abstract Art", defaults: { edge_bleeds: 12 } },
-    { id: "abstract_neon_glitch", name: "Neon Glitch", desc: "Digital glitch artifacts — horizontal slice offsets, scanline banding, and datamosh rectangular blocks, R=Metallic", category: "Abstract Art", defaults: { n_slices: 30, bar_density: 0.08 } },
-    { id: "abstract_retro_wave", name: "Retro Wave", desc: "Synthwave perspective floor grid with soft sun gradient above a horizon — 80s vapourwave aesthetic, R=Metallic", category: "Abstract Art", defaults: { horizon_frac: 0.55, grid_freq_x: 28.0, grid_freq_y: 18.0 } },
-    { id: "abstract_bauhaus_forms", name: "Bauhaus Forms", desc: "Circle, square, and triangle primary forms arranged with Bauhaus hierarchical balance, R=Metallic", category: "Abstract Art", defaults: { n_primitives: 9 } },
+    { id: "ember_field", name: "Ember Field", desc: "200-400 glowing embers 3-8 px with hot bright CC cores + cooling outer halos, vertical heat-rise smear, + 8-14 burning coal hot-spots 10-18 px with extra-bright cores, M=Metallic + G=Roughness + B=Clearcoat", category: "Fire & Heat", defaults: {}, defaultChannels: "MRC" },
+    { id: "pangolin_armor", name: "Pangolin Armor", desc: "Heavy overlapping pangolin armor scales — bronze/copper spearhead plates 14-22 px wide x 10-16 px tall packed in directional pinecone rows + sharp keel ridge per plate + 8-14 hero 22-30 px lead scales with extra-bright keels, M=Metallic + G=Roughness + B=Clearcoat", category: "Predator Skins", defaults: {}, defaultChannels: "MRC" },
+    { id: "viper_pit_hex", name: "Viper Pit Hex", desc: "Pit-viper hex-diamond pattern — angular 10-16 px hex shapes with sharp corners packed dense on cold dark-olive viper-venom substrate + 6-10 hero 18-24 px fang hexes with bright fang-yellow vertical keel ridges, M=Metallic + G=Roughness + B=Clearcoat", category: "Predator Skins", defaults: {}, defaultChannels: "MRC" },
+    { id: "samhain_ritual", name: "Samhain Ritual", desc: "Reference-backed occult fire ritual overlay - candle arcs, ceremonial geometry, ember leafwork, bone-gold filigree and hot ash ridges remapped into distinct M/R/CC spec response", category: "Gothic & Horror", defaults: {}, defaultChannels: "MRC" },
+    { id: "ouija_mystic", name: "Ouija Mystic", desc: "Reference-backed spirit-board glamour overlay - planchette shields, moon phases, compass eyes, purple filigree and antique-gold linework remapped into dynamic M/R/CC spec response", category: "Gothic & Horror", defaults: {}, defaultChannels: "MRC" },
+    { id: "king_cobra_coil", name: "King Cobra Coil", desc: "Reference-backed dangerous animal overlay - gilded cobra scales, fangs, eyes, and black-green armor linework remapped into dynamic M/R/CC spec response", category: "Dangerous Animals", defaults: {}, defaultChannels: "MRC" },
+    { id: "widow_web_venom", name: "Widow Web Venom", desc: "Reference-backed dangerous animal overlay - red-black widow web panels, silk radial geometry, glass venom beads, and chromium fang accents remapped into dynamic M/R/CC spec response", category: "Dangerous Animals", defaults: {}, defaultChannels: "MRC" },
+    { id: "tiger_fang_fracture", name: "Tiger Fang Fracture", desc: "Reference-backed dangerous animal overlay - tiger-stripe fracture shards, claw flashes, amber predator eyes, and torn black enamel remapped into dynamic M/R/CC spec response", category: "Dangerous Animals", defaults: {}, defaultChannels: "MRC" },
+    { id: "scorpion_ember_hex", name: "Scorpion Ember Hex", desc: "Reference-backed dangerous animal overlay - scorched scorpion hooks, ember hex armor, molten cracks, and segmented sting plates remapped into dynamic M/R/CC spec response", category: "Dangerous Animals", defaults: {}, defaultChannels: "MRC" },
+    { id: "hornet_swarm_static", name: "Hornet Swarm Static", desc: "Reference-backed dangerous animal overlay - hornet bodies, wing facets, yellow-black warning geometry, and blue static arcs remapped into dynamic M/R/CC spec response", category: "Dangerous Animals", defaults: {}, defaultChannels: "MRC" },
+    { id: "croc_delta_armor", name: "Croc Delta Armor", desc: "Reference-backed dangerous animal overlay - swamp crocodile armor plates, bone teeth, dark water gloss, and river-patina scale texture remapped into dynamic M/R/CC spec response", category: "Dangerous Animals", defaults: {}, defaultChannels: "MRC" },
+    { id: "panther_shadow_claw", name: "Panther Shadow Claw", desc: "Reference-backed dangerous animal overlay - midnight panther fur, purple claw blades, leopard ghost spots, and cyan eye glints remapped into dynamic M/R/CC spec response", category: "Dangerous Animals", defaults: {}, defaultChannels: "MRC" },
+    { id: "piranha_frenzy_current", name: "Piranha Frenzy Current", desc: "Reference-backed dangerous animal overlay - crimson piranha eyes, tooth rows, scale flashes, and turbulent teal current streaks remapped into dynamic M/R/CC spec response", category: "Dangerous Animals", defaults: {}, defaultChannels: "MRC" },
+    { id: "jellyshock_drift", name: "Jellyshock Drift", desc: "Reference-backed dangerous animal overlay - neon jellyfish bells, electrical tendrils, translucent ocean mesh, and pink-blue bio-glow remapped into dynamic M/R/CC spec response", category: "Dangerous Animals", defaults: {}, defaultChannels: "MRC" },
+    { id: "sharkbite_riptide", name: "Sharkbite Riptide", desc: "Reference-backed dangerous animal overlay - shark teeth, riptide foam, steel-blue fin blades, and saltwater scale plates remapped into dynamic M/R/CC spec response", category: "Dangerous Animals", defaults: {}, defaultChannels: "MRC" },
+    { id: "bayou_hex_burlap", name: "Bayou Hex Burlap", desc: "Reference-backed voodoo overlay - moss-dark burlap hex weave, stitched bone knots, root bindings, and swamp grit remapped into dynamic M/R/CC spec response", category: "Voodoo Inspired", defaults: {}, defaultChannels: "MRC" },
+    { id: "candle_wax_veve", name: "Candle Wax Veve", desc: "Reference-backed voodoo overlay - raised candle-wax veve lines, amber drips, bead nodes, and scratched altar stone remapped into dynamic M/R/CC spec response", category: "Voodoo Inspired", defaults: {}, defaultChannels: "MRC" },
+    { id: "pins_and_thread", name: "Pins & Thread", desc: "Reference-backed voodoo overlay - black cloth patches, red and gold stitch glyphs, pins, pearls, and stitched charm grids remapped into dynamic M/R/CC spec response", category: "Voodoo Inspired", defaults: {}, defaultChannels: "MRC" },
+    { id: "swamp_charm_patina", name: "Swamp Charm Patina", desc: "Reference-backed voodoo overlay - oxidized charms, shells, bones, skulls, shields, and green patina relics remapped into dynamic M/R/CC spec response", category: "Voodoo Inspired", defaults: {}, defaultChannels: "MRC" },
+    { id: "mojo_bag_grain", name: "Mojo Bag Grain", desc: "Reference-backed voodoo overlay - leather mojo-bag quilting, tied pouches, ritual knots, scratched symbols, and bronze dust remapped into dynamic M/R/CC spec response", category: "Voodoo Inspired", defaults: {}, defaultChannels: "MRC" },
+    { id: "midnight_gris_gris", name: "Midnight Gris-Gris", desc: "Reference-backed voodoo overlay - midnight gris-gris scatter, purple crystals, bones, handprints, relic beads, and occult debris remapped into dynamic M/R/CC spec response", category: "Voodoo Inspired", defaults: {}, defaultChannels: "MRC" },
+    { id: "bayou_smoke_script", name: "Bayou Smoke Script", desc: "Reference-backed voodoo overlay - blue-purple bayou smoke columns, gold spirit-script circles, skull marks, and glass bubbles remapped into dynamic M/R/CC spec response", category: "Voodoo Inspired", defaults: {}, defaultChannels: "MRC" },
+    { id: "coffin_nail_rust", name: "Coffin Nail Rust", desc: "Reference-backed voodoo overlay - blackened coffin nails, X-stamped rivets, rust pits, tiny skull talismans, and dirty bronze scars remapped into dynamic M/R/CC spec response", category: "Voodoo Inspired", defaults: {}, defaultChannels: "MRC" },
+    { id: "root_doctor_copper", name: "Root Doctor Copper", desc: "Reference-backed voodoo overlay - copper root tendrils, masks, bottles, bone charms, patina enamel, and dense ritual icons remapped into dynamic M/R/CC spec response", category: "Voodoo Inspired", defaults: {}, defaultChannels: "MRC" },
+    { id: "spanish_moss_static", name: "Spanish Moss Static", desc: "Reference-backed voodoo overlay - hanging Spanish moss, pale thread filigree, dew pearls, fog wisps, and swamp-lace sigils remapped into dynamic M/R/CC spec response", category: "Voodoo Inspired", defaults: {}, defaultChannels: "MRC" },
+    { id: "seigaiha_chrome", name: "Seigaiha Chrome", desc: "Reference-backed Rising Sun Spec overlay - polished blue seigaiha wave geometry, chrome arcs, floral caps, and bead highlights remapped into dynamic M/R/CC spec response", category: "Rising Sun Spec", defaults: {}, defaultChannels: "MRC" },
+    { id: "sakura_static", name: "Sakura Static", desc: "Reference-backed Rising Sun Spec overlay - sakura blossoms, pink gloss petals, gold linework, and soft star-grid texture remapped into dynamic M/R/CC spec response", category: "Rising Sun Spec", defaults: {}, defaultChannels: "MRC" },
+    { id: "kintsugi_rift", name: "Kintsugi Rift", desc: "Reference-backed Rising Sun Spec overlay - navy ceramic shards, ivory panels, repaired gold fractures, and fine floral inlay remapped into dynamic M/R/CC spec response", category: "Rising Sun Spec", defaults: {}, defaultChannels: "MRC" },
+    { id: "oni_veil_mosaic", name: "Oni Veil Mosaic", desc: "Reference-backed Rising Sun Spec overlay - dark oni masks, purple-teal veil shapes, red eye glints, and shadow floral mosaics remapped into dynamic M/R/CC spec response", category: "Rising Sun Spec", defaults: {}, defaultChannels: "MRC" },
+    { id: "shogun_scale_brocade", name: "Shogun Scale Brocade", desc: "Reference-backed Rising Sun Spec overlay - shogun armor plates, red cord brocade, gold crests, and layered scale panels remapped into dynamic M/R/CC spec response", category: "Rising Sun Spec", defaults: {}, defaultChannels: "MRC" },
+    { id: "kyoto_lantern_filigree", name: "Kyoto Lantern Filigree", desc: "Reference-backed Rising Sun Spec overlay - Kyoto lanterns, tassels, floral filigree, teal lacquer, and warm gold scrollwork remapped into dynamic M/R/CC spec response", category: "Rising Sun Spec", defaults: {}, defaultChannels: "MRC" },
+    { id: "bonsai_drift_circuit", name: "Bonsai Drift Circuit", desc: "Reference-backed Rising Sun Spec overlay - bonsai branch flow, nature circuit linework, moss greens, copper traces, and circular brush currents remapped into dynamic M/R/CC spec response", category: "Rising Sun Spec", defaults: {}, defaultChannels: "MRC" },
+    { id: "fuji_frost_crest", name: "Fuji Frost Crest", desc: "Reference-backed Rising Sun Spec overlay - icy Fuji mountain crests, snowflake geometry, silver-blue peaks, and frosted cloud scrolls remapped into dynamic M/R/CC spec response", category: "Rising Sun Spec", defaults: {}, defaultChannels: "MRC" },
+    { id: "rising_sun_prismwave", name: "Rising Sun Prismwave", desc: "Reference-backed Rising Sun Spec overlay - red-gold sunburst fans, prism waves, blue accent arcs, and dense gold pattern sparkle remapped into dynamic M/R/CC spec response", category: "Rising Sun Spec", defaults: {}, defaultChannels: "MRC" },
+    { id: "shark_denticle", name: "Shark Denticle", desc: "Drag-reducing shark-skin denticle pattern — hundreds of small tooth-shaped 8-14 px scales all oriented in the same flow direction with bright keel ridge highlights + 12-20 hero 16-22 px lead denticles with extra-bright keels, M=Metallic + G=Roughness + B=Clearcoat", category: "Predator Skins", defaults: {}, defaultChannels: "MRC" },
+    { id: "jaguar_rosette", name: "Jaguar Rosette", desc: "Jaguar coat rosette markings — 90-200 ring clusters of 3-5 dark spots around a darker center spot on warm tan-gold base + 8-12 hero 22-28 px rosettes with bright tan rim and dramatic dark spots, M=Metallic + G=Roughness + B=Clearcoat", category: "Predator Skins", defaults: {}, defaultChannels: "MRC" },
+    { id: "alligator_hide", name: "Alligator Hide", desc: "Fine 8-14 px rectangular leathery plates packed dense, deep dark M=low fissure cracks between plates, per-plate independent M/R/CC, sub-plate 2-3 px micro-pitting, M=Metallic + G=Roughness + B=Clearcoat", category: "Predator Skins", defaults: {}, defaultChannels: "MRC" },
+    { id: "dragon_scale_macro", name: "Dragon Scale Macro", desc: "Armored overlapping 14-26 px pentagon/hex hybrid dragon plates with M=high spine ridge + dark crevice + CC iridescent edge highlight + 12-20 hero spike-crest plates with extra-bright cresting, M=Metallic + G=Roughness + B=Clearcoat", category: "Predator Skins", defaults: {}, defaultChannels: "MRC" },
+    { id: "raptor_feather", name: "Raptor Feather", desc: "Overlapping raptor flight feathers — vertical quill segments 6-14 px tall x 3-6 px wide with bright central shaft + barb spread + cohesive raven-black/warm-brown/bronze racing palette + 8-15 hero primary feathers 18-24 px, M=Metallic + G=Roughness + B=Clearcoat", category: "Predator Skins", defaults: {}, defaultChannels: "MRC" },
+    // === SPB DEFINITIVE SPEC OVERLAY REPLACEMENTS 2026-05-29 START ===
+    { id: "spec_weld_stack_rainbow", name: "Weld Stack Rainbow", desc: "TIG bead stacks with blue-straw heat tint and crisp bead rims.", category: "Machined & Race Hardware", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_titanium_heat_fishscale", name: "Titanium Heat Fishscale", desc: "Overlapping titanium heat scales with blue, violet, and gold oxide shifts.", category: "Fire, Heat & Exhaust", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_ceramic_brake_sinter", name: "Ceramic Brake Sinter", desc: "Carbon-ceramic rotor pores, swept brake arcs, and hot dust glazing.", category: "Machined & Race Hardware", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_beadlock_bolt_circle", name: "Beadlock Bolt Circle", desc: "Dense beadlock bolt heads, washer rings, and indexed circular rows.", category: "Machined & Race Hardware", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_knurled_socket_grip", name: "Knurled Socket Grip", desc: "Socket-tool diamond knurl and polished peak flecks.", category: "Machined & Race Hardware", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_louvered_aluminum_slot", name: "Louvered Aluminum Slot", desc: "Stamped aluminum louvers with dark slots and bright leading lips.", category: "Machined & Race Hardware", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_carbon_tow_spread", name: "Carbon Tow Spread", desc: "Spread-tow carbon ribbons with rectangular fiber lanes.", category: "Carbon & Composite", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_kevlar_blue_hybrid", name: "Kevlar Blue Hybrid", desc: "Aramid-carbon hybrid weave with satin yellow and blue-black tow crossings.", category: "Carbon & Composite", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_nomex_honeycomb_core", name: "Nomex Honeycomb Core", desc: "Open honeycomb composite core with resin-wet cell edges.", category: "Carbon & Composite", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_prepreg_resin_bleed", name: "Prepreg Resin Bleed", desc: "Prepreg pinholes, resin bleed lines, and glossy trapped clear.", category: "Carbon & Composite", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_braided_hose_sleeve", name: "Braided Hose Sleeve", desc: "Braided stainless and aramid sleeve strands in diagonal over-under rows.", category: "Race Track Materials", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_rubber_tire_cord", name: "Rubber Tire Cord", desc: "Exposed tire cord ribs, rubber scuffs, and satin black worn streaks.", category: "Race Track Materials", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_tar_snake_sealant", name: "Tar Snake Sealant", desc: "Track tar-seal strips with glossy raised asphalt snakes.", category: "Race Track Materials", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_rain_bead_aero", name: "Rain Bead Aero", desc: "Wind-sheared rain beads and short aero trails under clearcoat.", category: "Race Track Materials", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_sharkskin_riblet", name: "Sharkskin Riblet", desc: "Directional shark denticle riblets with tiny keel highlights.", category: "Predator & Animal Armor", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_alligator_scute_plate", name: "Alligator Scute Plate", desc: "Alligator scute armor plates, dark seams, and worn glossy crowns.", category: "Predator & Animal Armor", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_mantis_shrimp_shell", name: "Mantis Shrimp Shell", desc: "Segmented iridescent shell armor with micro ridges.", category: "Predator & Animal Armor", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_armadillo_band_armor", name: "Armadillo Band Armor", desc: "Layered armadillo armor bands with hard ridges and dusty valleys.", category: "Predator & Animal Armor", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_abalone_crack_inlay", name: "Abalone Crack Inlay", desc: "Abalone shard inlay with pearly islands and dark grout.", category: "Cultural & Inlay", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_guilloche_watch_dial", name: "Guilloche Watch Dial", desc: "Fine watch-dial guilloche waves and jeweled engraved cuts.", category: "Engine Turn & Optical", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_laser_etched_microbar", name: "Laser Etched Microbar", desc: "Laser-etched micro bars, registration ticks, and satin burn marks.", category: "Engine Turn & Optical", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_circuit_solder_mask", name: "Circuit Solder Mask", desc: "PCB traces, solder pads, via rings, and gloss mask islands.", category: "Engine Turn & Optical", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_exhaust_soot_gradient", name: "Exhaust Soot Gradient", desc: "Layered exhaust soot, oxide specks, and brushed heat flow.", category: "Fire, Heat & Exhaust", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_flame_lapped_clearcoat", name: "Flame Lapped Clearcoat", desc: "Kustom flame-lap clearcoat edges with glossy hotrod overlap ridges.", category: "Fire, Heat & Exhaust", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_burnt_clutch_dust", name: "Burnt Clutch Dust", desc: "Copper clutch dust, hot spots, and scorched friction streaks.", category: "Fire, Heat & Exhaust", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_ice_frost_feather", name: "Ice Frost Feather", desc: "Frost fern crystals with sharp clearcoat feather branches.", category: "Weathered Physical", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_mud_crackle_dried", name: "Dried Mud Crackle", desc: "Dried mud plates with clean cracks and dusty high shelves.", category: "Weathered Physical", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_red_clay_roost", name: "Red Clay Roost", desc: "Red-clay roost flecks and angled dirt sling streaks.", category: "Weathered Physical", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_fuel_stain_evap_ring", name: "Fuel Stain Evap Ring", desc: "Fuel evaporated rings, ghost halos, and clean solvent edge marks.", category: "Liquid & Clearcoat", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_polished_swirl_compound", name: "Hay Straw", desc: "Dry woven straw and hay-fiber strands with a matte, fibrous sheen.", category: "Liquid & Clearcoat", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_sandblasted_mask_edge", name: "Sandblasted Mask Edge", desc: "Masked blast transitions, satin eroded grain, and sharp tape borders.", category: "Weathered Physical", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_anodized_hex_fade", name: "Anodized Hex Fade", desc: "Anodized hex panels with electric fade and polished cell lips.", category: "Engine Turn & Optical", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_waterjet_cut_edge", name: "Waterjet Cut Edge", desc: "Waterjet kerf striations, garnet scoring, and cut-edge shimmer.", category: "Machined & Race Hardware", defaults: {}, defaultChannels: "MRC" },
+    // === SPB DEFINITIVE SPEC OVERLAY REPLACEMENTS 2026-05-29 END ===
+    // === LET FREEDOM RING SPEC OVERLAYS 2026-06-09 START === (UV-agnostic patriotic drop)
+    { id: "spec_lfr_starfield_scatter", name: "Liberty Starfield Scatter", desc: "Omnidirectional 5-point star scatter — bright glint cores, signed twinkle halos, and a faint constellation web.", category: "Let Freedom Ring", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_lfr_corridor_sheen", name: "Stripe Corridor Sheen", desc: "Multi-angle anisotropic sheen corridors — stripe feel at every rotation with cross-lane brush grain.", category: "Let Freedom Ring", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_lfr_firework_radial", name: "Firework Burst Radial", desc: "Scattered radial firework bursts — bright spokes, expanding shock rings, and ember-trail glow coronas.", category: "Let Freedom Ring", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_lfr_brocade_relief", name: "Eagle Brocade Relief", desc: "Interlocking feather-scale brocade at varying angles with barb grain and a damask diamond overlay.", category: "Let Freedom Ring", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_lfr_liberty_colorflip", name: "Liberty Color-Flip", desc: "Angle-reactive tricolor flip — three offset interference phase fields flash red-to-white-to-blue as light sweeps.", category: "Let Freedom Ring", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_lfr_anisotropic_drift", name: "Brushed Steel Drift", desc: "Curling multi-directional brushed metal — flowing highlights, perpendicular micro-scratches, satin sheen pools.", category: "Let Freedom Ring", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_lfr_sparkler_embers", name: "Sparkler Ember Dust", desc: "Dense hot micro-sparks with radiating jets, drifting soot streaks, and warm glow blooms.", category: "Let Freedom Ring", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_lfr_torch_flicker", name: "Liberty Torch Flicker", desc: "Living flame-tongue flicker — bright cores, heat-shimmer roughness warp, ember glow pooling at lobe bases.", category: "Let Freedom Ring", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_lfr_capitol_veins", name: "Capitol Marble Veins", desc: "Branching polished marble veins with micro-fracture grain and translucent calcite depth.", category: "Let Freedom Ring", defaults: {}, defaultChannels: "MRC" },
+    { id: "spec_lfr_canyon_bevel", name: "Canyon Relief Bevel", desc: "Faceted canyon relief — per-facet bevel highlights, valley-edge roughness, and ambient depth pools.", category: "Let Freedom Ring", defaults: {}, defaultChannels: "MRC" },
+    // === LET FREEDOM RING SPEC OVERLAYS 2026-06-09 END ===
 ];
+
+// 2026-06-19 FIX (visibility bug): the FULL MONOLITHIC finishes below (FRACTURED FLAMES + GRADIENTS
+// + the NEON / ANIME / LIGHT&OPTICS / MATERIALS reworks) were mistakenly appended INSIDE the
+// SPEC_PATTERNS array (which is spec-only), so they never reached the MONOLITHICS picker list —
+// every group rendered 0 items AND pruneUnresolvedSpecialGroups() emptied their SPECIAL_GROUPS.
+// They are full {id,name,desc,swatch} finishes; collect them here and push into MONOLITHICS BELOW
+// (before the prune runs) so the picker and the registry-truth sync both see them.
+const REWORK_MONOLITHICS = [
+    // === FRACTURED FLAMES 2026-06-18 START === (135: 51 ignite / 35 topo / 49 dance)
+    { id: "flm_tongues_ignite_classic", name: "Tongues — Ignite (Classic)", desc: "Procedural flame finish: tongues structure with the ignite spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_tongues_topo_classic", name: "Tongues — Topo (Classic)", desc: "Procedural flame finish: tongues structure with the topo spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_tongues_dance_classic", name: "Tongues — Dance (Classic)", desc: "Procedural flame finish: tongues structure with the dance spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_cellular_embers_ignite_classic", name: "Cellular Embers — Ignite (Classic)", desc: "Procedural flame finish: cellular embers structure with the ignite spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_cellular_embers_dance_classic", name: "Cellular Embers — Dance (Classic)", desc: "Procedural flame finish: cellular embers structure with the dance spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_curl_streamers_ignite_blue", name: "Curl Streamers — Ignite (Blue)", desc: "Procedural flame finish: curl streamers structure with the ignite spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_curl_streamers_topo_violet", name: "Curl Streamers — Topo (Violet)", desc: "Procedural flame finish: curl streamers structure with the topo spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_curl_streamers_dance_blue", name: "Curl Streamers — Dance (Blue)", desc: "Procedural flame finish: curl streamers structure with the dance spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_radial_ignite_spectral", name: "Radial — Ignite (Spectral)", desc: "Procedural flame finish: radial structure with the ignite spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_radial_topo_white_hot", name: "Radial — Topo (White Hot)", desc: "Procedural flame finish: radial structure with the topo spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_radial_dance_spectral", name: "Radial — Dance (Spectral)", desc: "Procedural flame finish: radial structure with the dance spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_vortex_spiral_ignite_blue", name: "Vortex Spiral — Ignite (Blue)", desc: "Procedural flame finish: vortex spiral structure with the ignite spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_vortex_spiral_topo_blue", name: "Vortex Spiral — Topo (Blue)", desc: "Procedural flame finish: vortex spiral structure with the topo spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_vortex_spiral_dance_blue", name: "Vortex Spiral — Dance (Blue)", desc: "Procedural flame finish: vortex spiral structure with the dance spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_dragon_jet_ignite_classic", name: "Dragon Jet — Ignite (Classic)", desc: "Procedural flame finish: dragon jet structure with the ignite spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_dragon_jet_topo_classic", name: "Dragon Jet — Topo (Classic)", desc: "Procedural flame finish: dragon jet structure with the topo spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_dragon_jet_dance_classic", name: "Dragon Jet — Dance (Classic)", desc: "Procedural flame finish: dragon jet structure with the dance spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_interference_wisps_ignite_blue", name: "Interference Wisps — Ignite (Blue)", desc: "Procedural flame finish: interference wisps structure with the ignite spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_interference_wisps_topo_blue", name: "Interference Wisps — Topo (Blue)", desc: "Procedural flame finish: interference wisps structure with the topo spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_interference_wisps_dance_blue", name: "Interference Wisps — Dance (Blue)", desc: "Procedural flame finish: interference wisps structure with the dance spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_metaball_plumes_ignite_classic", name: "Metaball Plumes — Ignite (Classic)", desc: "Procedural flame finish: metaball plumes structure with the ignite spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_metaball_plumes_topo_white_hot", name: "Metaball Plumes — Topo (White Hot)", desc: "Procedural flame finish: metaball plumes structure with the topo spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_metaball_plumes_dance_white_hot", name: "Metaball Plumes — Dance (White Hot)", desc: "Procedural flame finish: metaball plumes structure with the dance spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_candle_ignite_white_hot", name: "Candle — Ignite (White Hot)", desc: "Procedural flame finish: candle structure with the ignite spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_candle_topo_white_hot", name: "Candle — Topo (White Hot)", desc: "Procedural flame finish: candle structure with the topo spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_candle_dance_white_hot", name: "Candle — Dance (White Hot)", desc: "Procedural flame finish: candle structure with the dance spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_ember_storm_ignite_spectral", name: "Ember Storm — Ignite (Spectral)", desc: "Procedural flame finish: ember storm structure with the ignite spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_ember_storm_topo_spectral", name: "Ember Storm — Topo (Spectral)", desc: "Procedural flame finish: ember storm structure with the topo spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_ember_storm_dance_spectral", name: "Ember Storm — Dance (Spectral)", desc: "Procedural flame finish: ember storm structure with the dance spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_will_o_wisp_ignite_violet", name: "Will O Wisp — Ignite (Violet)", desc: "Procedural flame finish: will o wisp structure with the ignite spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_will_o_wisp_topo_violet", name: "Will O Wisp — Topo (Violet)", desc: "Procedural flame finish: will o wisp structure with the topo spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_will_o_wisp_dance_violet", name: "Will O Wisp — Dance (Violet)", desc: "Procedural flame finish: will o wisp structure with the dance spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_reaction_diffusion_ignite_green_toxic", name: "Reaction Diffusion — Ignite (Green Toxic)", desc: "Procedural flame finish: reaction diffusion structure with the ignite spec mode (green toxic palette). FRACTURED FLAMES.", swatch: "#7cff2e" },
+    { id: "flm_reaction_diffusion_topo_blue", name: "Reaction Diffusion — Topo (Blue)", desc: "Procedural flame finish: reaction diffusion structure with the topo spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_reaction_diffusion_dance_white_hot", name: "Reaction Diffusion — Dance (White Hot)", desc: "Procedural flame finish: reaction diffusion structure with the dance spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_gas_ring_ignite_blue", name: "Gas Ring — Ignite (Blue)", desc: "Procedural flame finish: gas ring structure with the ignite spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_gas_ring_topo_blue", name: "Gas Ring — Topo (Blue)", desc: "Procedural flame finish: gas ring structure with the topo spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_gas_ring_dance_blue", name: "Gas Ring — Dance (Blue)", desc: "Procedural flame finish: gas ring structure with the dance spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_plasma_arc_ignite_white_hot", name: "Plasma Arc — Ignite (White Hot)", desc: "Procedural flame finish: plasma arc structure with the ignite spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_plasma_arc_topo_white_hot", name: "Plasma Arc — Topo (White Hot)", desc: "Procedural flame finish: plasma arc structure with the topo spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_solar_flare_ignite_white_hot", name: "Solar Flare — Ignite (White Hot)", desc: "Procedural flame finish: solar flare structure with the ignite spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_solar_flare_topo_white_hot", name: "Solar Flare — Topo (White Hot)", desc: "Procedural flame finish: solar flare structure with the topo spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_solar_flare_dance_white_hot", name: "Solar Flare — Dance (White Hot)", desc: "Procedural flame finish: solar flare structure with the dance spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_lava_flow_ignite_classic", name: "Lava Flow — Ignite (Classic)", desc: "Procedural flame finish: lava flow structure with the ignite spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_lava_flow_topo_classic", name: "Lava Flow — Topo (Classic)", desc: "Procedural flame finish: lava flow structure with the topo spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_lava_flow_dance_classic", name: "Lava Flow — Dance (Classic)", desc: "Procedural flame finish: lava flow structure with the dance spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_ferro_spikes_ignite_violet", name: "Ferro Spikes — Ignite (Violet)", desc: "Procedural flame finish: ferro spikes structure with the ignite spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_ferro_spikes_topo_blue", name: "Ferro Spikes — Topo (Blue)", desc: "Procedural flame finish: ferro spikes structure with the topo spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_ferro_spikes_dance_violet", name: "Ferro Spikes — Dance (Violet)", desc: "Procedural flame finish: ferro spikes structure with the dance spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_backdraft_rings_ignite_green_toxic", name: "Backdraft Rings — Ignite (Green Toxic)", desc: "Procedural flame finish: backdraft rings structure with the ignite spec mode (green toxic palette). FRACTURED FLAMES.", swatch: "#7cff2e" },
+    { id: "flm_backdraft_rings_topo_white_hot", name: "Backdraft Rings — Topo (White Hot)", desc: "Procedural flame finish: backdraft rings structure with the topo spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_backdraft_rings_dance_blue", name: "Backdraft Rings — Dance (Blue)", desc: "Procedural flame finish: backdraft rings structure with the dance spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_spark_fountain_ignite_white_hot", name: "Spark Fountain — Ignite (White Hot)", desc: "Procedural flame finish: spark fountain structure with the ignite spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_spark_fountain_dance_white_hot", name: "Spark Fountain — Dance (White Hot)", desc: "Procedural flame finish: spark fountain structure with the dance spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_corona_rays_ignite_white_hot", name: "Corona Rays — Ignite (White Hot)", desc: "Procedural flame finish: corona rays structure with the ignite spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_corona_rays_dance_white_hot", name: "Corona Rays — Dance (White Hot)", desc: "Procedural flame finish: corona rays structure with the dance spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_votive_field_ignite_white_hot", name: "Votive Field — Ignite (White Hot)", desc: "Procedural flame finish: votive field structure with the ignite spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_votive_field_dance_white_hot", name: "Votive Field — Dance (White Hot)", desc: "Procedural flame finish: votive field structure with the dance spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_meteor_shower_ignite_white_hot", name: "Meteor Shower — Ignite (White Hot)", desc: "Procedural flame finish: meteor shower structure with the ignite spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_meteor_shower_topo_spectral", name: "Meteor Shower — Topo (Spectral)", desc: "Procedural flame finish: meteor shower structure with the topo spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_meteor_shower_dance_white_hot", name: "Meteor Shower — Dance (White Hot)", desc: "Procedural flame finish: meteor shower structure with the dance spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_smoke_billow_ignite_blue", name: "Smoke Billow — Ignite (Blue)", desc: "Procedural flame finish: smoke billow structure with the ignite spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_smoke_billow_dance_violet", name: "Smoke Billow — Dance (Violet)", desc: "Procedural flame finish: smoke billow structure with the dance spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_pahoehoe_rope_ignite_classic", name: "Pahoehoe Rope — Ignite (Classic)", desc: "Procedural flame finish: pahoehoe rope structure with the ignite spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_pahoehoe_rope_dance_classic", name: "Pahoehoe Rope — Dance (Classic)", desc: "Procedural flame finish: pahoehoe rope structure with the dance spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_napalm_drips_ignite_classic", name: "Napalm Drips — Ignite (Classic)", desc: "Procedural flame finish: napalm drips structure with the ignite spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_napalm_drips_dance_classic", name: "Napalm Drips — Dance (Classic)", desc: "Procedural flame finish: napalm drips structure with the dance spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_magma_bubbles_ignite_classic", name: "Magma Bubbles — Ignite (Classic)", desc: "Procedural flame finish: magma bubbles structure with the ignite spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_magma_bubbles_topo_white_hot", name: "Magma Bubbles — Topo (White Hot)", desc: "Procedural flame finish: magma bubbles structure with the topo spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_marble_swirl_ignite_blue", name: "Marble Swirl — Ignite (Blue)", desc: "Procedural flame finish: marble swirl structure with the ignite spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_marble_swirl_topo_blue", name: "Marble Swirl — Topo (Blue)", desc: "Procedural flame finish: marble swirl structure with the topo spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_marble_swirl_dance_blue", name: "Marble Swirl — Dance (Blue)", desc: "Procedural flame finish: marble swirl structure with the dance spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_dragon_scale_ignite_classic", name: "Dragon Scale — Ignite (Classic)", desc: "Procedural flame finish: dragon scale structure with the ignite spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_dragon_scale_topo_violet", name: "Dragon Scale — Topo (Violet)", desc: "Procedural flame finish: dragon scale structure with the topo spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_dragon_scale_dance_classic", name: "Dragon Scale — Dance (Classic)", desc: "Procedural flame finish: dragon scale structure with the dance spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_caustic_web_ignite_blue", name: "Caustic Web — Ignite (Blue)", desc: "Procedural flame finish: caustic web structure with the ignite spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_caustic_web_dance_white_hot", name: "Caustic Web — Dance (White Hot)", desc: "Procedural flame finish: caustic web structure with the dance spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_obsidian_fracture_ignite_white_hot", name: "Obsidian Fracture — Ignite (White Hot)", desc: "Procedural flame finish: obsidian fracture structure with the ignite spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_obsidian_fracture_dance_violet", name: "Obsidian Fracture — Dance (Violet)", desc: "Procedural flame finish: obsidian fracture structure with the dance spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_basalt_columns_ignite_classic", name: "Basalt Columns — Ignite (Classic)", desc: "Procedural flame finish: basalt columns structure with the ignite spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_basalt_columns_topo_classic", name: "Basalt Columns — Topo (Classic)", desc: "Procedural flame finish: basalt columns structure with the topo spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_basalt_columns_dance_green_toxic", name: "Basalt Columns — Dance (Green Toxic)", desc: "Procedural flame finish: basalt columns structure with the dance spec mode (green toxic palette). FRACTURED FLAMES.", swatch: "#7cff2e" },
+    { id: "flm_eruption_column_ignite_classic", name: "Eruption Column — Ignite (Classic)", desc: "Procedural flame finish: eruption column structure with the ignite spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_eruption_column_topo_white_hot", name: "Eruption Column — Topo (White Hot)", desc: "Procedural flame finish: eruption column structure with the topo spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_eruption_column_dance_classic", name: "Eruption Column — Dance (Classic)", desc: "Procedural flame finish: eruption column structure with the dance spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_heat_mirage_ignite_spectral", name: "Heat Mirage — Ignite (Spectral)", desc: "Procedural flame finish: heat mirage structure with the ignite spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_heat_mirage_dance_spectral", name: "Heat Mirage — Dance (Spectral)", desc: "Procedural flame finish: heat mirage structure with the dance spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_spiral_galaxy_ignite_violet", name: "Spiral Galaxy — Ignite (Violet)", desc: "Procedural flame finish: spiral galaxy structure with the ignite spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_spiral_galaxy_topo_violet", name: "Spiral Galaxy — Topo (Violet)", desc: "Procedural flame finish: spiral galaxy structure with the topo spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_spiral_galaxy_dance_blue", name: "Spiral Galaxy — Dance (Blue)", desc: "Procedural flame finish: spiral galaxy structure with the dance spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_aurora_drape_ignite_green_toxic", name: "Aurora Drape — Ignite (Green Toxic)", desc: "Procedural flame finish: aurora drape structure with the ignite spec mode (green toxic palette). FRACTURED FLAMES.", swatch: "#7cff2e" },
+    { id: "flm_aurora_drape_topo_green_toxic", name: "Aurora Drape — Topo (Green Toxic)", desc: "Procedural flame finish: aurora drape structure with the topo spec mode (green toxic palette). FRACTURED FLAMES.", swatch: "#7cff2e" },
+    { id: "flm_aurora_drape_dance_green_toxic", name: "Aurora Drape — Dance (Green Toxic)", desc: "Procedural flame finish: aurora drape structure with the dance spec mode (green toxic palette). FRACTURED FLAMES.", swatch: "#7cff2e" },
+    { id: "flm_kaleidoscope_ignite_spectral", name: "Kaleidoscope — Ignite (Spectral)", desc: "Procedural flame finish: kaleidoscope structure with the ignite spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_kaleidoscope_topo_spectral", name: "Kaleidoscope — Topo (Spectral)", desc: "Procedural flame finish: kaleidoscope structure with the topo spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_kaleidoscope_dance_violet", name: "Kaleidoscope — Dance (Violet)", desc: "Procedural flame finish: kaleidoscope structure with the dance spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_basket_weave_ignite_classic", name: "Basket Weave — Ignite (Classic)", desc: "Procedural flame finish: basket weave structure with the ignite spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_basket_weave_topo_classic", name: "Basket Weave — Topo (Classic)", desc: "Procedural flame finish: basket weave structure with the topo spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_basket_weave_dance_classic", name: "Basket Weave — Dance (Classic)", desc: "Procedural flame finish: basket weave structure with the dance spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_lightning_storm_ignite_blue", name: "Lightning Storm — Ignite (Blue)", desc: "Procedural flame finish: lightning storm structure with the ignite spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_lightning_storm_topo_blue", name: "Lightning Storm — Topo (Blue)", desc: "Procedural flame finish: lightning storm structure with the topo spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_lightning_storm_dance_blue", name: "Lightning Storm — Dance (Blue)", desc: "Procedural flame finish: lightning storm structure with the dance spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_fire_rose_ignite_classic", name: "Fire Rose — Ignite (Classic)", desc: "Procedural flame finish: fire rose structure with the ignite spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_fire_rose_topo_classic", name: "Fire Rose — Topo (Classic)", desc: "Procedural flame finish: fire rose structure with the topo spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_fire_rose_dance_classic", name: "Fire Rose — Dance (Classic)", desc: "Procedural flame finish: fire rose structure with the dance spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_mammatus_ignite_white_hot", name: "Mammatus — Ignite (White Hot)", desc: "Procedural flame finish: mammatus structure with the ignite spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_mammatus_topo_white_hot", name: "Mammatus — Topo (White Hot)", desc: "Procedural flame finish: mammatus structure with the topo spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_mammatus_dance_white_hot", name: "Mammatus — Dance (White Hot)", desc: "Procedural flame finish: mammatus structure with the dance spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_spider_web_ignite_violet", name: "Spider Web — Ignite (Violet)", desc: "Procedural flame finish: spider web structure with the ignite spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_spider_web_topo_violet", name: "Spider Web — Topo (Violet)", desc: "Procedural flame finish: spider web structure with the topo spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_spider_web_dance_violet", name: "Spider Web — Dance (Violet)", desc: "Procedural flame finish: spider web structure with the dance spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_mach_cone_ignite_spectral", name: "Mach Cone — Ignite (Spectral)", desc: "Procedural flame finish: mach cone structure with the ignite spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_mach_cone_topo_spectral", name: "Mach Cone — Topo (Spectral)", desc: "Procedural flame finish: mach cone structure with the topo spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_mach_cone_dance_spectral", name: "Mach Cone — Dance (Spectral)", desc: "Procedural flame finish: mach cone structure with the dance spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_quasicrystal_ignite_green_toxic", name: "Quasicrystal — Ignite (Green Toxic)", desc: "Procedural flame finish: quasicrystal structure with the ignite spec mode (green toxic palette). FRACTURED FLAMES.", swatch: "#7cff2e" },
+    { id: "flm_quasicrystal_topo_green_toxic", name: "Quasicrystal — Topo (Green Toxic)", desc: "Procedural flame finish: quasicrystal structure with the topo spec mode (green toxic palette). FRACTURED FLAMES.", swatch: "#7cff2e" },
+    { id: "flm_quasicrystal_dance_green_toxic", name: "Quasicrystal — Dance (Green Toxic)", desc: "Procedural flame finish: quasicrystal structure with the dance spec mode (green toxic palette). FRACTURED FLAMES.", swatch: "#7cff2e" },
+    { id: "flm_crackle_glaze_ignite_white_hot", name: "Crackle Glaze — Ignite (White Hot)", desc: "Procedural flame finish: crackle glaze structure with the ignite spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_crackle_glaze_topo_white_hot", name: "Crackle Glaze — Topo (White Hot)", desc: "Procedural flame finish: crackle glaze structure with the topo spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_crackle_glaze_dance_white_hot", name: "Crackle Glaze — Dance (White Hot)", desc: "Procedural flame finish: crackle glaze structure with the dance spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_chevron_herringbone_ignite_spectral", name: "Chevron Herringbone — Ignite (Spectral)", desc: "Procedural flame finish: chevron herringbone structure with the ignite spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_chevron_herringbone_topo_spectral", name: "Chevron Herringbone — Topo (Spectral)", desc: "Procedural flame finish: chevron herringbone structure with the topo spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_chevron_herringbone_dance_spectral", name: "Chevron Herringbone — Dance (Spectral)", desc: "Procedural flame finish: chevron herringbone structure with the dance spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_fire_tornado_ignite_white_hot", name: "Fire Tornado — Ignite (White Hot)", desc: "Procedural flame finish: fire tornado structure with the ignite spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_fire_tornado_dance_white_hot", name: "Fire Tornado — Dance (White Hot)", desc: "Procedural flame finish: fire tornado structure with the dance spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_quilted_diamond_ignite_blue", name: "Quilted Diamond — Ignite (Blue)", desc: "Procedural flame finish: quilted diamond structure with the ignite spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_quilted_diamond_dance_blue", name: "Quilted Diamond — Dance (Blue)", desc: "Procedural flame finish: quilted diamond structure with the dance spec mode (blue palette). FRACTURED FLAMES.", swatch: "#3aa0ff" },
+    { id: "flm_vortex_street_ignite_white_hot", name: "Vortex Street — Ignite (White Hot)", desc: "Procedural flame finish: vortex street structure with the ignite spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_vortex_street_dance_white_hot", name: "Vortex Street — Dance (White Hot)", desc: "Procedural flame finish: vortex street structure with the dance spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_leopard_rd_ignite_classic", name: "Leopard Rd — Ignite (Classic)", desc: "Procedural flame finish: leopard rd structure with the ignite spec mode (classic palette). FRACTURED FLAMES.", swatch: "#ff6a1a" },
+    { id: "flm_leopard_rd_dance_spectral", name: "Leopard Rd — Dance (Spectral)", desc: "Procedural flame finish: leopard rd structure with the dance spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    { id: "flm_pele_strands_ignite_white_hot", name: "Pele Strands — Ignite (White Hot)", desc: "Procedural flame finish: pele strands structure with the ignite spec mode (white hot palette). FRACTURED FLAMES.", swatch: "#ffe8b0" },
+    { id: "flm_pele_strands_dance_violet", name: "Pele Strands — Dance (Violet)", desc: "Procedural flame finish: pele strands structure with the dance spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_tessellated_triangles_ignite_violet", name: "Tessellated Triangles — Ignite (Violet)", desc: "Procedural flame finish: tessellated triangles structure with the ignite spec mode (violet palette). FRACTURED FLAMES.", swatch: "#9a4cff" },
+    { id: "flm_tessellated_triangles_dance_spectral", name: "Tessellated Triangles — Dance (Spectral)", desc: "Procedural flame finish: tessellated triangles structure with the dance spec mode (spectral palette). FRACTURED FLAMES.", swatch: "#ff3a8a" },
+    // === FRACTURED FLAMES 2026-06-18 END ===
+    // === GRADIENTS 2026-06-18 START === (11 distinctive single-palette gradient finishes)
+    { id: "grd_oklab_flow", name: "OKLab Flow Gradient", desc: "A perceptual OKLab sunset ramp drifting along a curl-noise flow — organic, never a dead-straight band. A GRADIENTS finish.", swatch: "#8c1a6b" },
+    { id: "grd_iridescent", name: "Iridescent Gradient", desc: "Oil-slick holographic hue travelling the spectrum along a warped radial coordinate with thin-film sheen — iridescent metal film. A GRADIENTS finish.", swatch: "#33b259" },
+    { id: "grd_ridged_contour", name: "Ridged Contour Gradient", desc: "A warped deep-sea ramp quantised into smooth topographic contour bands with bright ridge-lines — a designed banded surface. A GRADIENTS finish.", swatch: "#053866" },
+    { id: "grd_mesh_bleed", name: "Mesh Bleed Gradient", desc: "Several aurora colour sources bleeding into each other so colour pools and flows — a multi-source gradient mesh. A GRADIENTS finish.", swatch: "#0d8c8c" },
+    { id: "grd_duotone_grain", name: "Duotone Grain Gradient", desc: "A candy-chrome two-anchor OKLab ramp broken by fine ordered dither-grain so the transition shimmers with premium micro-texture. A GRADIENTS finish.", swatch: "#d9338c" },
+    { id: "grd_chromatic_aberration", name: "Chromatic Aberration Gradient", desc: "The same warped miami ramp sampled at three per-channel offsets so R/G/B diverge into prismatic colour fringing — lens-edge chromatic aberration. A GRADIENTS finish.", swatch: "#1aa6b2" },
+    { id: "grd_spectral_sweep", name: "Spectral Sweep Gradient", desc: "A full-spectrum rainbow sweeping once along a warped diagonal, OKLab-smooth so the hues stay clean — a single flowing rainbow band. A GRADIENTS finish.", swatch: "#0dd940" },
+    { id: "grd_liquid_marble", name: "Liquid Marble Gradient", desc: "Iteratively domain-warped royal-purple veins folded into stirred-paint marbling, read off a multi-hue OKLab ramp. A GRADIENTS finish.", swatch: "#590d73" },
+    { id: "grd_moire_interference", name: "Moire Interference Gradient", desc: "Two crossed near-orthogonal wave fields beating into shimmering chrome-ice interference bands — a woven optical gradient. A GRADIENTS finish.", swatch: "#4c6b85" },
+    { id: "grd_holo_foil", name: "Holo Foil Gradient", desc: "Fine repeated diagonal rainbow strips with a crossing sheen band — a holographic foil catching light. A GRADIENTS finish.", swatch: "#0dd940" },
+    { id: "grd_radial_burst", name: "Radial Burst Gradient", desc: "Molten colour swept by angle around a point with a bright radial burst falling off outward — a starburst gradient. A GRADIENTS finish.", swatch: "#8c0f0a" },
+    // === GRADIENT OVERHAUL EXTREMES 2026-08-23: unique 10-15-color systems ===
+    { id: "grd_hyperprism_supernova", name: "Hyperprism Supernova", desc: "15-color mirrored prism wedges detonate through spectral shock rings, fine arcs, glints, short sweeps, rings and petal sparks.", swatch: "#5b00d6", swatch2: "#00f5ff", paletteSize: 15 },
+    { id: "grd_aurora_reactor", name: "Aurora Reactor", desc: "14-color reactor curtains drive cyan, emerald, acid-lime, violet and hot-pink aurora energy through a vertically turbulent field.", swatch: "#00ffd0", swatch2: "#ff37c7", paletteSize: 14 },
+    { id: "grd_toxic_candy_nebula", name: "Toxic Candy Nebula", desc: "12-color candy gas clouds collide toxic lime, ultraviolet, hot pink, tangerine and electric cyan inside a warped nebula.", swatch: "#ff00b8", swatch2: "#39ff14", paletteSize: 12 },
+    { id: "grd_ultraviolet_solarstorm", name: "Ultraviolet Solarstorm", desc: "13-color solar shockwaves cross ultraviolet, magenta, ember, gold and ion-blue in asymmetric expanding bands.", swatch: "#8a00ff", swatch2: "#ff6a00", paletteSize: 13 },
+    { id: "grd_chromatic_faultline", name: "Chromatic Faultline", desc: "15-color tectonic shelves split a complete extreme spectrum along luminous fault traces with crushed fine debris.", swatch: "#ff1744", swatch2: "#00a2ff", paletteSize: 15 },
+    { id: "grd_kaleidoscope_overdrive", name: "Kaleidoscope Overdrive", desc: "12-color stained-light cells fracture purple, cobalt, cyan, green, amber and coral into a nonrepeating overdrive mosaic.", swatch: "#4361ee", swatch2: "#ef476f", paletteSize: 12 },
+    { id: "grd_spectrum_dragonfire", name: "Spectrum Dragonfire", desc: "14-color braided flame tongues climb from violet through magenta, scarlet, molten gold, cyan and blue-white heat.", swatch: "#ff2d00", swatch2: "#00f5d4", paletteSize: 14 },
+    { id: "grd_digital_acid_rain", name: "Digital Acid Rain", desc: "11-color segmented acid rain cascades through black-green, toxic lime, laser yellow, cyan and hard digital blue.", swatch: "#20ff00", swatch2: "#00e5ff", paletteSize: 11 },
+    { id: "grd_quantum_carnival", name: "Quantum Carnival", desc: "15-color five-axis quasicrystal interference throws the full neon spectrum into impossible carnival symmetry.", swatch: "#3400a8", swatch2: "#ff8800", paletteSize: 15 },
+    { id: "grd_holographic_maelstrom", name: "Holographic Maelstrom", desc: "13-color counter-rotating vortices shear blue, aqua, green, yellow, coral, magenta and violet holographic bands.", swatch: "#00fff0", swatch2: "#f000ff", paletteSize: 13 },
+    { id: "grd_electric_coral_rift", name: "Electric Coral Rift", desc: "10-color ocean-cyan and electric-coral plates tear apart at a brilliant energized rift with fine local fracture marks.", swatch: "#00c2d1", swatch2: "#ff5a5f", paletteSize: 10 },
+    { id: "grd_neon_cathedral", name: "Neon Cathedral", desc: "12-color nested luminous arches rise through violet, magenta, ember, gold, ion-blue and white-hot stained light.", swatch: "#e000ff", swatch2: "#ffd500", paletteSize: 12 },
+    { id: "grd_plasma_oilspill", name: "Plasma Oilspill", desc: "15-color liquid topology folds cold blue, cyan, emerald, acid yellow, molten orange, pink and ultraviolet like energized oil.", swatch: "#00b4d8", swatch2: "#d500b8", paletteSize: 15 },
+    { id: "grd_candy_quasar", name: "Candy Quasar", desc: "11-color candy rays erupt from concentric quasar rings in violet, fuchsia, peach, gold, mint and crystalline blue.", swatch: "#ff00a8", swatch2: "#48e5c2", paletteSize: 11 },
+    { id: "grd_laser_jungle", name: "Laser Jungle", desc: "13-color bioelectric vines weave jungle green, acid lime, cyan, cobalt, ultraviolet, hot pink and ember laser light.", swatch: "#40ff00", swatch2: "#ff00a8", paletteSize: 13 },
+    { id: "grd_infrared_glacier", name: "Infrared Glacier", desc: "10-color faceted ice travels from abyssal blue through cyan-white into infrared peach, scarlet and frozen black-red.", swatch: "#35c9ff", swatch2: "#ff4a2d", paletteSize: 10 },
+    { id: "grd_prismatic_thunderhead", name: "Prismatic Thunderhead", desc: "14-color branching storm ridges ignite indigo, ultraviolet, magenta, orange, yellow, electric green and lightning blue.", swatch: "#825bff", swatch2: "#fff000", paletteSize: 14 },
+    { id: "grd_solar_reef", name: "Solar Reef", desc: "12-color cellular reef light blooms through ocean blue, turquoise, mint, sun-yellow, coral, hot pink and deep violet.", swatch: "#00e0c6", swatch2: "#ff6f61", paletteSize: 12 },
+    { id: "grd_velvet_spectrum_crash", name: "Velvet Spectrum Crash", desc: "15-color torn velvet ribbons slam violet, fuchsia, scarlet, orange, yellow, green, cyan and cobalt into layered color impact.", swatch: "#a600ff", swatch2: "#00e5c8", paletteSize: 15 },
+    { id: "grd_cosmic_heatmap", name: "Cosmic Heatmap", desc: "11-color topographic energy terraces climb from midnight and cobalt through cyan, green, yellow, orange and red-hot cosmic peaks.", swatch: "#0047ab", swatch2: "#ff7900", paletteSize: 11 },
+    // === GRADIENT MATH WAVE 2026-08-23: composed recent procedural mechanisms ===
+    { id: "grd_domain_coloring_singularity", name: "Domain Coloring Singularity", desc: "15-color complex-domain singularities are curl-warped into ionized folds, edged with fine spectral filaments and controlled mineral-neon color geography.", swatch: "#6a00c8", swatch2: "#00c97a", paletteSize: 15 },
+    { id: "grd_nebulabrot_ionstorm", name: "Nebulabrot Ionstorm", desc: "14-color orbit-density nebulae collide with spectral-silk interference, forming seeded plasma clouds, charged rims and fine ion channels.", swatch: "#2436a5", swatch2: "#76e6e0", paletteSize: 14 },
+    { id: "grd_superformula_starforge", name: "Superformula Starforge", desc: "13-color superformula stars are interference-warped into forged petals, nested wave chambers, sharp ridges and glittering micro-arcs.", swatch: "#e35088", swatch2: "#00a3a0", paletteSize: 13 },
+    { id: "grd_bismuth_colorquake", name: "Bismuth Colorquake", desc: "12-color bismuth terraces interlock with Chladni nodal geometry, creating crystalline steps, seismic seams and fine resonant edgework.", swatch: "#c39342", swatch2: "#279b7f", paletteSize: 12 },
+    { id: "grd_stable_ink_supercurrent", name: "Stable Ink Supercurrent", desc: "15-color stable-fluid ink is driven through a caustic current, layering turbulent plumes, refractive threads, flecks, rings and luminous wake lines.", swatch: "#006f8e", swatch2: "#a8d866", paletteSize: 15 },
+    { id: "grd_electrostatic_candy_wells", name: "Electrostatic Candy Wells", desc: "11-color equipotential wells bend across ridged terrain, producing candy-charged basins, fine field contours, spark arcs and high-voltage pinpoints.", swatch: "#9c19d2", swatch2: "#16a0d4", paletteSize: 11 },
+    { id: "grd_ferrofluid_spectrum_crown", name: "Ferrofluid Spectrum Crown", desc: "14-color ferrofluid spike crowns mesh with a fine gyroid lattice, stacking magnetic peaks, spectral cells, razor ridges and micro-glints.", swatch: "#34404a", swatch2: "#00a987", paletteSize: 14 },
+    { id: "grd_viscous_prism_fingers", name: "Viscous Prism Fingers", desc: "13-color viscous fingers refract through a Schlieren field, splitting into prismatic branches, pressure halos, short sweeps and fine capillary veins.", swatch: "#bc5a7b", swatch2: "#28d7c7", paletteSize: 13 },
+    { id: "grd_scarab_shingle_cascade", name: "Scarab Shingle Cascade", desc: "12-color scarab-scale shingles cascade through caustic light, with fractured color flipping across fine overlapping plates, rims and spectral flecks.", swatch: "#006d78", swatch2: "#e4e657", paletteSize: 12 },
+    { id: "grd_nacre_brickwave", name: "Nacre Brickwave", desc: "12-color nacre bricks flow through a Gabor filament weave, building pearl tiles, fine mortar flashes, threadlike waves and opalescent edge shifts.", swatch: "#91c7be", swatch2: "#be7e9d", paletteSize: 12 },
+    { id: "grd_singularity_loom", name: "Singularity Loom", desc: "15-color conformal lattice is curl-woven into a singularity loom of pinched cells, fine braided currents, orbit rings and luminous crossing points.", swatch: "#7300a6", swatch2: "#58e8e2", paletteSize: 15 },
+    { id: "grd_harmonic_cathedral", name: "Harmonic Cathedral", desc: "14-color harmonograph tracery rises through Chladni resonance, forming cathedral arches, stained spectral chambers, fine ribs and jeweled nodes.", swatch: "#315bc1", swatch2: "#d6a64a", paletteSize: 14 },
+    // === GRADIENT MATH WAVE 2026-08-23 END ===
+    // === GRADIENTS 2026-06-18 END ===
+    // === NEON UNDERGROUND v4 2026-08-27 START === (25 live mono routes)
+    // SPB-105 NU-V4-LIVE-1: these ten ids also remain in BASES so existing
+    // projects and base thumbnails stay stable. Their explicit MONOLITHICS rows
+    // prevent the async live-registry merge from replacing the authored names
+    // with generic id-title labels inside the actual Specials picker.
+    { id: "neon_electric_blue", name: "Neon Underglow", desc: "Ground-effects cyan and magenta rising through smoked wet-look paint. ★ NEON UNDERGROUND finish.", swatch: "#00a8ff" },
+    { id: "neon2_splatter", name: "Midnight Drift", desc: "Backlit drift haze, curved skid-light and ember heat moving laterally through black. ★ NEON UNDERGROUND finish.", swatch: "#ff2b85" },
+    { id: "neon2_rain", name: "Tokyo Rain", desc: "Rain-smeared Tokyo sign color reflected through deep wet asphalt clear. ★ NEON UNDERGROUND finish.", swatch: "#22c7ff" },
+    { id: "neon_red_alert", name: "Redline Rush", desc: "Escalating redline heat and speed rhythm without a literal gauge. ★ NEON UNDERGROUND finish.", swatch: "#ff163d" },
+    { id: "neon2_quarter_mile_weave", name: "Quarter Mile", desc: "Staging-light energy, fragmented micro-checks and launch streaks on a wet strip. ★ NEON UNDERGROUND finish.", swatch: "#ffc21c" },
+    { id: "neon_ice_white", name: "Nitro Purge", desc: "Electric-blue purge plumes, frost shock and white pressure cores. ★ NEON UNDERGROUND finish.", swatch: "#9defff" },
+    { id: "neon2_plasma_tubes", name: "Boost Spool", desc: "Cyan intake pressure winding into orange turbine heat and compressor glints. ★ NEON UNDERGROUND finish.", swatch: "#ff6a22" },
+    { id: "neon_cyber_yellow", name: "Tunnel Vision", desc: "Vanishing tunnel lights stretching into yellow, cyan and white speed wedges. ★ NEON UNDERGROUND finish.", swatch: "#ffe21a" },
+    { id: "neon2_torque_scar", name: "Wet Apex", desc: "A luminous racing line cutting an S-curve through rain-dark pavement. ★ NEON UNDERGROUND finish.", swatch: "#00f0c8" },
+    { id: "neon_rainbow_tube", name: "Afterburn Chrome", desc: "Heat-shifted chrome with broad spectral oxidation bands and brushed fire. ★ NEON UNDERGROUND finish.", swatch: "#ff4fd8" },
+    { id: "neon2_wireframe", name: "Grid Runner", desc: "Broken perspective grids and hard-turn light trails over a digital void. ★ NEON UNDERGROUND finish.", swatch: "#00e5ff" },
+    { id: "neon2_flow_tubes", name: "Street Pulse", desc: "Crossing long-exposure traffic rivers and wet lane reflections. ★ NEON UNDERGROUND finish.", swatch: "#ff315d" },
+    { id: "neon2_honeycomb", name: "Carbon Voltage", desc: "Edge-lit carbon weave split by charged cyan and violet seams. ★ NEON UNDERGROUND finish.", swatch: "#36f5ff" },
+    { id: "neon_pink_blaze", name: "Import Royalty", desc: "Layered razor vinyl slashes with prismatic tuner-wrap edges. ★ NEON UNDERGROUND finish.", swatch: "#ff27b7" },
+    { id: "neon_blacklight", name: "Blacklight Garage", desc: "Fluorescent solvent pools and ultraviolet shop-light reflections on concrete black. ★ NEON UNDERGROUND finish.", swatch: "#9c35ff" },
+    { id: "neon_orange_hazard", name: "Burnout Ember", desc: "Curved tire-heat tracks, underlit smoke and ember-red rubber fragments. ★ NEON UNDERGROUND finish.", swatch: "#ff4a12" },
+    { id: "neon_dual_glow", name: "Split Underglow", desc: "Opposed cyan and magenta ground-light fields dividing a smoked body. ★ NEON UNDERGROUND finish.", swatch: "#d92cff" },
+    { id: "neon2_sign_tubes", name: "Signglass Shatter", desc: "Broken sign-glass territories with white-hot rims and dying phosphor interiors. ★ NEON UNDERGROUND finish.", swatch: "#ff3b88" },
+    { id: "neon2_circuit_city", name: "Seoul Circuit", desc: "Rounded luminous panel cascades and mint-lilac city-current seams. ★ NEON UNDERGROUND finish.", swatch: "#ff78d8" },
+    { id: "neon2_laser_web", name: "Laser Lane", desc: "Few decisive laser corridors built from tightly bundled fine beams. ★ NEON UNDERGROUND finish.", swatch: "#ff205f" },
+    { id: "neon2_synthwave_sun", name: "Arcade Afterhours", desc: "Blacklight scan waves, vector sweeps and phosphor trails after closing time. ★ NEON UNDERGROUND finish.", swatch: "#f82cff" },
+    { id: "neon_toxic_green", name: "Toxic Overdrive", desc: "Acid-green current pools with yellow pressure lips and black sink regions. ★ NEON UNDERGROUND finish.", swatch: "#62ff16" },
+    { id: "neon2_phantom_mica", name: "Phantom Taillights", desc: "Red and magenta afterimage ribbons fading through midnight blue. ★ NEON UNDERGROUND finish.", swatch: "#ff174f" },
+    { id: "neon2_emberwake_delam", name: "Turbo Heat", desc: "Anodized titanium heat zones, weld ripples and hot turbine seams. ★ NEON UNDERGROUND finish.", swatch: "#ff6426" },
+    { id: "neon2_frequency_fault", name: "Midnight Candy", desc: "Deep candy violet with broad cyan-magenta angle-flip shoulders. ★ NEON UNDERGROUND finish.", swatch: "#843dff" },
+    // === NEON UNDERGROUND v4 2026-08-27 END ===
+    // === ANIME INSPIRED OVERHAUL 2026-08-25 START (15 specials; was 8) ===
+    { id: "anime2_cel_shade", name: "Cel Cloud Sea", desc: "A Ghibli sky-sea — stratified cel-shaded cloud decks with ink rims, sun stipple and tiny birds. ★ ANIME INSPIRED finish.", swatch: "#7fb6f2" },
+    { id: "anime2_screentone", name: "Impact Frames", desc: "Manga impact-burst cells — jagged spike outlines, B/W flash sectors, halftone interiors, yellow flashes. ★ ANIME INSPIRED finish.", swatch: "#1a1a1a" },
+    { id: "anime2_sakura", name: "Hanami Night", desc: "Festival night — glowing ribbed paper lanterns on strings, firefly bokeh, branch silhouettes, drifting petals. ★ ANIME INSPIRED finish.", swatch: "#ff9e5e" },
+    { id: "anime2_mecha", name: "Mecha Hologrid", desc: "Holographic CAD space — depth-faded grids, wireframe primitives, targeting reticles, scan sweep. ★ ANIME INSPIRED finish.", swatch: "#22d4e8" },
+    { id: "anime2_speed_lines", name: "Shuriken Storm", desc: "A blade blizzard — concave 4-point shuriken with spin trails, kunai, embed cracks, crimson ribbons. ★ ANIME INSPIRED finish.", swatch: "#aab4c4" },
+    { id: "anime2_energy_aura", name: "Raiton Lightning", desc: "A dendritic lightning nest — stepped zigzag bolts, white-hot cores in cyan sheaths, mauve echo strikes. ★ ANIME INSPIRED finish.", swatch: "#54d8ff" },
+    { id: "anime2_crystal", name: "Iris Gem Field", desc: "A field of anime-eye irises — radial fibers, limbal rings, jewel heterochromia, window catchlights. ★ ANIME INSPIRED finish.", swatch: "#9b5cff" },
+    { id: "anime2_gradient_hair", name: "Holo Idol Foil", desc: "Idol-sticker holo foil — warped rainbow interference, micro-prism facets, star and heart confetti. ★ ANIME INSPIRED finish.", swatch: "#d24cff" },
+    { id: "anime2_kanji_rain", name: "Kanji Rain", desc: "Columns of brush-stroke glyphs raining down washi — sumi ink, vermillion accents, hanko seals. ★ ANIME INSPIRED finish.", swatch: "#b8332a" },
+    { id: "anime2_onomatopoeia", name: "Onomatopoeia Riot", desc: "A comic sound-effect riot — jagged double-outline bursts, halftone shading, slash marks, action dashes. ★ ANIME INSPIRED finish.", swatch: "#ffd91a" },
+    { id: "anime2_glitch", name: "Cyber Glitch", desc: "Digital dissolve — displaced RGB-split slices, pixel-sort streaks, corrupted neon block mosaics. ★ ANIME INSPIRED finish.", swatch: "#ff1aa6" },
+    { id: "anime2_broadcast", name: "Retro Broadcast", desc: "A CRT transmission — phosphor triads, scanlines, interlace jitter, ghosting, static bursts, test bars. ★ ANIME INSPIRED finish.", swatch: "#e8734a" },
+    { id: "anime2_blood_moon", name: "Blood Moon Eclipse", desc: "A sky multiplied with eclipse moons — cel-banded craters, bright rim arcs, crossing cloud wisps, flocks. ★ ANIME INSPIRED finish.", swatch: "#a61e14" },
+    { id: "anime2_oni_sumi", name: "Oni Sumi-e", desc: "Demon-mask brushwork — dry-bristle horn and fang strokes, enso rings, ink mist, vermillion hanko. ★ ANIME INSPIRED finish.", swatch: "#2b2226" },
+    { id: "anime2_manga_page", name: "Manga Page Chaos", desc: "An exploded manga spread — recursive panels, ink gutters, every panel a different screentone story. ★ ANIME INSPIRED finish.", swatch: "#f2f0e8" },
+    // === ANIME INSPIRED OVERHAUL 2026-08-25 END ===
+    // === LIGHT & OPTICS REWORK 2026-06-19 START ===
+    { id: "optics2_dvd", name: "Diffraction Spiral", desc: "A CD/DVD micro-grating spun into a log-spiral that splits white light into a spectral swirl. Light & Optics finish.", swatch: "#ff2fa0" },
+    { id: "optics2_thinfilm", name: "Thin-Film Oil Slick", desc: "Thin-film interference over a flowing film — oil-on-water iridescence, glossy and shifting. Light & Optics finish.", swatch: "#36d0ff" },
+    { id: "optics2_caustics", name: "Refractive Caustics", desc: "The bright cyan caustic web focused on a sunlit pool floor, rippling over deep teal water. Light & Optics finish.", swatch: "#7af0ff" },
+    { id: "optics2_newton", name: "Newton's Rings", desc: "Scattered lens-contact interference rings (phase proportional to r^2) overlapping into a spectral quilt. Light & Optics finish.", swatch: "#c86cff" },
+    { id: "optics2_prism", name: "Prism Dispersion", desc: "White light shot through scattered prisms, fanning into crossing spectral shafts with fine fingering. Light & Optics finish.", swatch: "#ffd11a" },
+    { id: "optics2_moire", name: "Moire Interference", desc: "Warped line-gratings beating into organic full-spectrum moire fringes over a fine line micro-texture. Light & Optics finish.", swatch: "#2fff7a" },
+    { id: "optics2_aurora", name: "Aurora Veil", desc: "Flowing auroral curtains — luminous draped sheets climbing green to violet with fine ray striations. Light & Optics finish.", swatch: "#34ffa0" },
+    { id: "optics2_bubbles", name: "Soap-Bubble Froth", desc: "A froth of translucent soap bubbles — thin-film spheres with specular glints and bright Fresnel rims. Light & Optics finish.", swatch: "#b0e8ff" },
+    { id: "optics2_fiber", name: "Fiber-Optic Bundle", desc: "A bundle of glowing optical fibres — thin curl-flow strands blazing into bright point tips. Light & Optics finish.", swatch: "#ff5ad0" },
+    { id: "optics2_holo", name: "Holographic Foil", desc: "Embossed holo-glitter foil — a fine diamond mosaic where each cell flashes its own spectral hue. Light & Optics finish.", swatch: "#46ffd0" },
+    { id: "optics2_lenticular", name: "Lenticular Flip", desc: "A lenticular lens sheet — wavy cylindrical lenslets flipping spectral parallax bands with bright crowns. Light & Optics finish.", swatch: "#ffd14a" },
+    // === LIGHT & OPTICS REWORK 2026-06-19 END ===
+    // === MATERIALS & PHYSICS REWORK 2026-06-19 START ===
+    { id: "materials2_carbon", name: "Carbon Twill Weave", desc: "A true 2/2 twill carbon-fibre weave — interlacing tows, diagonal rib, fine carbon filaments. Materials & Physics finish.", swatch: "#2a3142" },
+    { id: "materials2_forged", name: "Forged Carbon", desc: "Marbled chopped-carbon composite — flake shards at random fibre angles with micro glints in resin. Materials & Physics finish.", swatch: "#4a4e57" },
+    { id: "materials2_engine", name: "Engine-Turned Metal", desc: "Machined jeweling — overlapping domed swirls of fine concentric brush rings on polished metal. Materials & Physics finish.", swatch: "#9094a0" },
+    { id: "materials2_liquid", name: "Liquid Metal", desc: "Flowing chrome / mercury — a reflective metaball surface with mirror bands and capillary ripples. Materials & Physics finish.", swatch: "#aeb6c4" },
+    { id: "materials2_crystal", name: "Crystal Lattice", desc: "A grown mineral bed — faceted crystal grains with bright cleavage edges and pin-point glints. Materials & Physics finish.", swatch: "#7a82a0" },
+    { id: "materials2_ferro", name: "Ferrofluid Spikes", desc: "Ferrofluid under a magnet — the Rosensweig spike lattice, black iron mounds with glossy steel caps. Materials & Physics finish.", swatch: "#14161c" },
+    { id: "materials2_fracture", name: "Fracture Net", desc: "A stressed brittle surface shattered into a bright crack network over subtly tilted plates. Materials & Physics finish.", swatch: "#42454c" },
+    { id: "materials2_damascus", name: "Damascus Steel", desc: "Pattern-welded Damascus — folded layers of light/dark steel ground back into a flowing watermark. Materials & Physics finish.", swatch: "#5a5d62" },
+    { id: "materials2_kevlar", name: "Kevlar Aramid Weave", desc: "Golden aramid basket-weave — pairs of tows woven two-at-a-time with fine aramid filaments. Materials & Physics finish.", swatch: "#b88c1e" },
+    { id: "materials2_titanium", name: "Anodized Titanium", desc: "Heat-tinted titanium — straw / violet / cobalt / cyan oxide colours flowing over fine ground metal. Materials & Physics finish.", swatch: "#5a4a8a" },
+    { id: "materials2_meteorite", name: "Meteorite Widmanstatten", desc: "Etched iron-meteorite — interlocking kamacite ribbons crossing at the octahedrite angles. Materials & Physics finish.", swatch: "#7d8088" },
+    // === MATERIALS & PHYSICS REWORK 2026-06-19 END ===
+].filter(m => !REMOVED_SPECIAL_IDS.has(m.id));
+// Merge the reworked/flame/gradient monolithics into MONOLITHICS so the picker (activeTab.items)
+// and pruneUnresolvedSpecialGroups() resolve their ids. MUST run before that prune (line ~4009).
+MONOLITHICS.push(...REWORK_MONOLITHICS);
 
 // =============================================================================
 // v6.2.z MONOLITHIC WAVE — Catalog-only entries.
@@ -2206,81 +5421,207 @@ MONOLITHICS.push(...MONOLITHIC_WAVE);
 // Only the new v6.2.z themed waves are grouped here; legacy monolithics remain
 // discoverable via the default "All" picker view.
 // =============================================================================
-const MONOLITHIC_GROUPS = {
-    "Racing Livery Styles": [
-        "rl_nascar_classic", "rl_f1_carbon_wing", "rl_gt3_pearl",
-        "rl_lmp_silver_arrow", "rl_rally_mud_splat", "rl_drift_wrap"
-    ],
-    "Vintage Styles": [
-        "v_70s_stripes", "v_80s_neon_wedge", "v_90s_racing_decal",
-        "v_classic_hot_rod", "v_muscle_car_stripe", "v_touring_car_livery"
-    ],
-    "Fantasy / Sci-Fi": [
-        "sf_hologram_shift", "sf_energy_core", "sf_stealth_matte",
-        "sf_plasma_flame", "sf_cyber_circuit", "sf_void_crystal"
-    ],
-    "Weathered": [
-        "w_barn_find", "w_rust_belt", "w_sun_faded",
-        "w_salt_corrosion", "w_burn_marks", "w_acid_wash"
-    ],
-    "Special Effects": [
-        "fx_color_shift_ultra", "fx_glitter_storm", "fx_wet_look_mirror",
-        "fx_liquid_metal", "fx_aurora_wave", "fx_galaxy_dust"
-    ],
-};
+// 2026-06-08 audit: hidden — no engine renderer (would crash on click).
+// The 5 v6.2.z MONOLITHIC_WAVE sub-tab sections ("Racing Livery Styles",
+// "Vintage Styles", "Fantasy / Sci-Fi", "Weathered", "Special Effects") held
+// exactly the 30 dead wave ids that have no backend renderer (ValueError
+// 'Unknown base' on click). Sections removed so the empty sub-tabs disappear;
+// the ids are also stripped via REMOVED_SPECIAL_IDS above. This object stays a
+// valid (empty) map — user-imports.js / guest-designers.js add keys at runtime.
+const MONOLITHIC_GROUPS = {};
 
 // =============================================================================
 // SPEC PATTERN GROUPS — sub-tab navigation for SPEC_PATTERNS picker
+// 2026-05-17: Consolidated 27+ legacy tabs -> 14 review lanes (SPB_SPEC_PATTERNS_ATLAS).
 // =============================================================================
 const SPEC_PATTERN_GROUPS = {
-    "Structure":   ["banded_rows", "concentric_ripple", "hex_cells", "chevron_bands", "wave_bands", "gradient_bands", "split_bands", "diagonal_bands"],
-    "Metallic":    ["flake_scatter", "diamond_dust", "metallic_sand", "holographic_flake", "crystal_shimmer", "stardust_fine", "pearl_micro", "gold_flake", "brushed_sparkle", "crushed_glass", "prismatic_dust"],
-    "Coating":     ["depth_gradient"],
-    "Texture":     ["orange_peel_texture", "aniso_grain", "aniso_grain_deep"],
-    // 2026-04-19 HEENAN H2: 15 SPEC_PATTERNS were ungrouped — silent-Misc-tab
-    // bug. Each was already accessible via SPECIAL_GROUPS (Material World ▸
-    // Patterns & Effects, etc.) but missing from the spec-pattern picker.
-    // Added each to its category-correct group below — `acid_etch`,
-    // `rust_bloom`, `lava_crack` to Weathering; `plasma_turbulence`,
-    // `magnetic_field`, `prismatic_shatter`, `heat_distortion`,
-    // `diffraction_grating`, `quantum_noise` to Optical; `galaxy_swirl`,
-    // `reptile_scale`, `neural_dendrite` to Natural; `voronoi_fracture`,
-    // `diamond_lattice` to Geometric; `woven_mesh` to Carbon & Weave.
-    "Weathering":  ["wear_scuff", "spec_rust_bloom", "spec_patina_verdigris", "spec_oxidized_pitting", "spec_heat_scale", "spec_galvanic_corrosion", "spec_stress_fractures", "spec_battle_scars", "spec_worn_edges", "spec_peeling_clear", "spec_sandblast_strip", "spec_micro_chips", "spec_aged_matte", "acid_etch", "rust_bloom", "lava_crack"],
-    // 2026-04-19 HEENAN HP3 — `diffraction_grating` was renamed to
-    // `spec_diffraction_grating_cd` (cross-registry collision fix).
-    // 2026-04-19 HEENAN H4HR-5: `gravity_well` SPEC renamed → `spec_gravity_well`.
-    "Optical":     ["interference_bands", "spec_fresnel_gradient", "spec_caustic_light", "spec_diffraction_grating", "spec_retroreflective", "spec_velvet_sheen", "spec_sparkle_flake", "spec_iridescent_film", "spec_anisotropic_radial", "spec_bokeh_scatter", "spec_light_leak", "spec_subsurface_depth", "spec_chromatic_aberration", "plasma_turbulence", "magnetic_field", "prismatic_shatter", "heat_distortion", "spec_diffraction_grating_cd", "quantum_noise", "spec_gravity_well", "sonic_boom"],
-    "Organic":     ["marble_vein", "cloud_wisps", "cloud_wisps_warm", "cloud_wisps_cool"],
-    // 2026-04-19 HEENAN H4HR-6/7/8: 3 sparkle SPEC entries renamed → spec_sparkle_*
-    // (cross-registry collision fix vs MONOLITHIC sparkle_* siblings).
-    "Sparkle":     ["micro_sparkle", "micro_sparkle_warm", "micro_sparkle_cool", "sparkle_rain", "spec_sparkle_constellation", "sparkle_nebula", "spec_sparkle_firefly", "sparkle_shattered", "spec_sparkle_champagne", "sparkle_comet", "sparkle_galaxy_swirl", "sparkle_electric_field"],
-    // 2026-04-19 HEENAN HP2 + H4HR-4 — `carbon_weave` → `spec_carbon_weave`,
-    // `oil_slick` → `spec_oil_slick` (both cross-registry collision fixes).
-    "Misc":        ["panel_zones", "spiral_sweep", "spec_carbon_weave", "crackle_network", "flow_lines", "micro_facets", "moire_overlay", "pebble_grain", "radial_sunburst", "topographic_steps", "wave_ripple", "patina_bloom", "electric_branches", "circuit_trace", "spec_oil_slick", "meteor_impact", "fractal_discharge"],
-    "Brushed":     ["brushed_linear", "brushed_linear_warm", "brushed_linear_cool", "brushed_diagonal", "brushed_cross", "brushed_radial", "brushed_arc", "hairline_polish", "lathe_concentric", "bead_blast_uniform", "orbital_swirl", "buffer_swirl", "wire_brushed_coarse", "hand_polished"],
-    "Guilloché":   ["guilloche_barleycorn", "guilloche_hobnail", "guilloche_waves", "guilloche_sunray", "guilloche_moire_eng", "jeweling_circles", "knurl_diamond", "knurl_straight", "face_mill_bands", "fly_cut_arcs", "engraved_crosshatch", "edm_dimple"],
-    "Carbon & Weave": ["spec_carbon_2x2_twill", "spec_carbon_plain_weave", "spec_carbon_3k_fine", "spec_carbon_forged", "spec_carbon_wet_layup", "spec_kevlar_weave", "spec_fiberglass_chopped", "spec_woven_dyneema", "spec_mesh_perforated", "spec_expanded_metal", "spec_chainlink_fence", "spec_ballistic_weave", "woven_mesh"],
-    "Clearcoat":   ["cc_panel_pool", "cc_drip_runs", "cc_fish_eye", "cc_overspray_halo", "cc_edge_thin", "cc_masking_edge", "cc_spot_polish", "cc_gloss_stripe", "cc_wet_zone", "cc_panel_fade"],
-    "Geometric":   ["spec_faceted_diamond", "spec_hammered_dimple", "spec_knurled_diamond", "spec_knurled_straight", "spec_architectural_grid", "spec_hexagonal_tiles", "spec_brick_mortar", "spec_corrugated_panel", "spec_riveted_plate", "spec_weld_seam", "spec_stamped_emboss", "spec_cast_surface", "voronoi_fracture", "diamond_lattice"],
-    // 2026-04-19 HEENAN H2 (extended): added remaining Natural / Optical /
-    // Sparkle / Weathering / Carbon un-prefixed siblings so
-    // the spec-pattern picker sees them. Each was already accessible via
-    // SPECIAL_GROUPS but missing from SPEC_PATTERN_GROUPS.
-    "Natural":     ["spec_wood_grain_fine", "spec_wood_burl", "spec_stone_granite", "spec_stone_marble", "spec_water_ripple_spec", "spec_coral_reef", "spec_snake_scales", "spec_fish_scales", "spec_leaf_venation", "spec_terrain_erosion", "spec_crystal_growth", "spec_lava_flow", "galaxy_swirl", "reptile_scale", "neural_dendrite", "sand_dune", "fungal_network", "smoke_tendril", "crystal_growth"],
-    "Surface Treatment": ["spec_electroplated_chrome", "spec_anodized_texture", "spec_powder_coat_texture", "spec_thermal_spray", "spec_electroformed_texture", "spec_pvd_coating", "spec_shot_peened", "spec_laser_etched"],
-    "Exotic":      ["spec_liquid_metal", "spec_chameleon_flake", "spec_xirallic_crystal", "spec_holographic_foil", "spec_oil_film_thick", "spec_magnetic_ferrofluid", "spec_aerogel_surface", "spec_damascus_steel_spec"],
-    "Racing":      ["tire_rubber_transfer", "vinyl_wrap_texture", "paint_drip_edge", "racing_tape_residue", "sponsor_deboss", "heat_discoloration", "salt_spray_corrosion", "track_grime"],
-    "Sponsor & Vinyl": ["vinyl_seam", "decal_lift_edge", "sponsor_emboss_v2", "sticker_bubble_film", "vinyl_stretched"],
-    "Race Wear":   ["tire_smoke_residue", "brake_dust_buildup", "oil_streak_panel", "gravel_chip_field", "wax_streak_polish"],
-    "Premium":     ["mother_of_pearl_inlay", "anodized_rainbow", "frosted_glass_etch", "gold_leaf_torn", "copper_patina_drip"],
-    "Race Heritage": ["checker_flag_subtle", "drag_strip_burnout", "pit_lane_stripes", "victory_lap_confetti", "sponsor_tape_vinyl", "race_number_ghost"],
-    "Mechanical":    ["exhaust_pipe_scorch", "radiator_grille_mesh", "engine_bay_grime", "tire_smoke_streaks", "undercarriage_spray", "suspension_rust_ring"],
-    "Weather & Track": ["rain_droplet_beads", "mud_splatter_random", "wet_track_gloss", "dry_dust_film", "morning_dew_fog", "tarmac_grit_embed"],
-    "Artistic":      ["brushstroke_bold", "crayon_wax_resist", "airbrush_gradient_bloom", "spray_paint_drip", "stippled_dots_fine", "halftone_print"],
-    "Abstract Art":  ["abstract_expressionist_splatter", "abstract_cubist_facets", "abstract_rothko_field", "abstract_kandinsky_shapes", "abstract_mondrian_grid", "abstract_op_art_circles", "abstract_op_art_waves", "abstract_suprematism", "abstract_futurist_motion", "abstract_minimalist_stripe", "abstract_hard_edge_field", "abstract_color_field_bleed", "abstract_fluid_acrylic_pour", "abstract_ink_wash_gradient", "abstract_neon_glitch", "abstract_retro_wave", "abstract_bauhaus_forms"],
+    "Sparkle & Micro-Metal": [
+        "pearl_micro",
+        "gold_flake",
+        "holographic_flake",
+        "metallic_sand",
+        "mother_of_pearl_inlay",
+        "prismatic_shatter",
+        "stardust_fine",
+        "galaxy_swirl",
+    ],
+    "Optical & Interference": [
+        "spec_chromatic_aberration",
+        "spec_diffraction_grating_cd",
+        "spec_fresnel_gradient",
+        "spec_iridescent_film",
+        "spec_retroreflective",
+        "wave_ripple",
+        "anodized_rainbow",
+    ],
+    "Directional Metal & Brush": [
+        "brushed_cross",
+        "brushed_diagonal",
+        "brushed_linear_cool",
+        "spec_anisotropic_radial",
+    ],
+    "Carbon & Composite Weave": [
+        "spec_carbon_2x2_twill",
+        "spec_carbon_3k_fine",
+        "spec_carbon_forged",
+        "spec_carbon_wet_layup",
+        "spec_expanded_metal",
+        "spec_fiberglass_chopped",
+        "spec_kevlar_weave",
+        "spec_mesh_perforated",
+        "spec_carbon_weave",
+    ],
+    "Clearcoat & Coating": [
+        "cc_overspray_halo",
+        "cc_panel_fade",
+        "cc_panel_pool",
+        "cc_wet_zone",
+    ],
+    "Structure & Geometry": [
+        "banded_rows",
+        "chevron_bands",
+        "gradient_bands",
+        "hex_cells",
+        "panel_zones",
+        "spec_architectural_grid",
+        "spec_brick_mortar",
+        "spec_hammered_dimple",
+        "wave_bands",
+        "voronoi_fracture",
+    ],
+    "Surface & Spray Texture": [
+        "pebble_grain",
+        "spec_anodized_texture",
+        "spec_laser_etched",
+        "spec_pvd_coating",
+    ],
+    "Organic & Natural": [
+        "lava_crack",
+        "spec_fish_scales",
+        "spec_snake_scales",
+        "spec_terrain_erosion",
+    ],
+    "Weather, Wear & Track": [
+        "crackle_network",
+        "morning_dew_fog",
+        "spec_galvanic_corrosion",
+        "spec_sandblast_strip",
+        "spec_stress_fractures",
+        "salt_spray_corrosion",
+    ],
+    "Racing & Livery Story": [
+        "checker_flag_subtle",
+        "heat_discoloration",
+        "vinyl_stretched",
+    ],
+    "Mechanical & Industrial": [
+        "sparkle_shattered",
+    ],
+    "Exotic & Kinetic": [
+        "spec_chameleon_flake",
+        "spec_damascus_steel_spec",
+        "spec_liquid_metal",
+    ],
+    "Precision & Guilloché": [
+        "edm_dimple",
+        "guilloche_moire_eng",
+        "guilloche_sunray",
+        "guilloche_waves",
+        "knurl_diamond",
+        "diamond_lattice",
+    ],
+    "Artistic & Abstract": [
+        "halftone_print",
+    ],
+    "Predator Skins": [
+        "alligator_hide",
+        "dragon_scale_macro",
+        "jaguar_rosette",
+        "pangolin_armor",
+        "raptor_feather",
+        "shark_denticle",
+        "snake_scale_diamond",
+        "viper_pit_hex",
+    ],
+    "Dangerous Animals": [
+        "king_cobra_coil",
+        "widow_web_venom",
+        "tiger_fang_fracture",
+        "scorpion_ember_hex",
+        "hornet_swarm_static",
+        "croc_delta_armor",
+        "panther_shadow_claw",
+        "piranha_frenzy_current",
+        "jellyshock_drift",
+        "sharkbite_riptide",
+    ],
+    "Gothic & Horror": [
+        "brushed_sparkle",
+        "crypt_brick",
+        "ouija_mystic",
+        "samhain_ritual",
+    ],
+    "Voodoo Inspired": [
+        "bayou_hex_burlap",
+        "candle_wax_veve",
+        "pins_and_thread",
+        "swamp_charm_patina",
+        "mojo_bag_grain",
+        "midnight_gris_gris",
+        "bayou_smoke_script",
+        "coffin_nail_rust",
+        "root_doctor_copper",
+        "spanish_moss_static",
+    ],
+    "Rising Sun Spec": [
+        "seigaiha_chrome",
+        "sakura_static",
+        "kintsugi_rift",
+        "oni_veil_mosaic",
+        "shogun_scale_brocade",
+        "kyoto_lantern_filigree",
+        "bonsai_drift_circuit",
+        "fuji_frost_crest",
+        "rising_sun_prismwave",
+    ],
+    "Engine-Turn & Machined": [
+        "airbrush_gradient_bloom",
+    ],
+    "Fire & Heat": [
+        "ember_field",
+    ],
+    "Holographic & Color-Shift": [
+        "holo_prism_shift",
+    ],
+    "Source Pattern Plates": [
+        "spec_holographic_oil_circuit", "spec_black_emboss_mandala", "spec_graphite_cross_lattice", "spec_marble_flow_pearl",
+        "spec_acid_carbon_mesh", "spec_noir_houndstooth_star", "spec_hazard_chevron_weave", "spec_burn_hole_mesh",
+        "spec_teal_hex_haze", "spec_shadow_diamond_mesh", "spec_talavera_tile_riot", "spec_green_plasma_vein",
+        "spec_neon_fracture_net", "spec_pink_checker_carbon", "spec_red_herringbone_heat", "spec_chrome_oval_chain",
+        "spec_terracotta_ceramic_grid", "spec_gunmetal_geo_tessellation", "spec_tokyo_script_textile", "spec_lime_pixel_confetti",
+        "spec_psychedelic_floral_spin", "spec_ice_facet_shatter", "spec_ember_circuit_maze", "spec_blue_polygon_shatter",
+    ],
+    "Definitive Spec Replacements": [
+        "spec_weld_stack_rainbow", "spec_titanium_heat_fishscale", "spec_ceramic_brake_sinter", "spec_beadlock_bolt_circle", "spec_knurled_socket_grip",
+        "spec_louvered_aluminum_slot", "spec_carbon_tow_spread", "spec_kevlar_blue_hybrid",
+        "spec_nomex_honeycomb_core", "spec_prepreg_resin_bleed", "spec_braided_hose_sleeve",
+        "spec_rubber_tire_cord", "spec_tar_snake_sealant", "spec_rain_bead_aero",
+        "spec_sharkskin_riblet", "spec_alligator_scute_plate", "spec_mantis_shrimp_shell",
+        "spec_armadillo_band_armor", "spec_abalone_crack_inlay",
+        "spec_guilloche_watch_dial", "spec_laser_etched_microbar", "spec_circuit_solder_mask", "spec_exhaust_soot_gradient", "spec_flame_lapped_clearcoat", "spec_burnt_clutch_dust",
+        "spec_ice_frost_feather", "spec_mud_crackle_dried", "spec_red_clay_roost", "spec_fuel_stain_evap_ring", "spec_polished_swirl_compound",
+        "spec_sandblasted_mask_edge", "spec_anodized_hex_fade", "spec_waterjet_cut_edge",
+    ],
+    "Let Freedom Ring": [
+        "spec_lfr_starfield_scatter", "spec_lfr_corridor_sheen", "spec_lfr_firework_radial",
+        "spec_lfr_brocade_relief", "spec_lfr_liberty_colorflip", "spec_lfr_anisotropic_drift",
+        "spec_lfr_sparkler_embers", "spec_lfr_torch_flicker", "spec_lfr_capitol_veins",
+        "spec_lfr_canyon_bevel",
+    ],
 };
 
+// Explicit picker tab order (Object.keys order is reliable in modern engines; this documents intent).
+const SPEC_PATTERN_GROUP_ORDER = ["Sparkle & Micro-Metal", "Optical & Interference", "Directional Metal & Brush", "Carbon & Composite Weave", "Clearcoat & Coating", "Structure & Geometry", "Surface & Spray Texture", "Organic & Natural", "Weather, Wear & Track", "Racing & Livery Story", "Mechanical & Industrial", "Exotic & Kinetic", "Precision & Guilloché", "Artistic & Abstract", "Predator Skins", "Dangerous Animals", "Gothic & Horror", "Voodoo Inspired", "Rising Sun Spec", "Engine-Turn & Machined", "Fire & Heat", "Holographic & Color-Shift", "Source Pattern Plates"];
 // =============================================================================
 // GROUP MAPS — Bases and patterns (sub-tab navigation); SPECIAL_GROUPS is above.
 //
@@ -2293,9 +5634,158 @@ const SPEC_PATTERN_GROUPS = {
 //  - Bases not in any group ARE still rendered through the engine — they're just
 //    hidden from the picker. Use that intentionally for legacy/internal IDs.
 // =============================================================================
+// SHOKK WORKS 2026-09-30: one parent, five actual subsection rows. Stable finish IDs retained.
+const BASE_GROUP_SUBSECTIONS = { "SHOKK WORKS": [
+  {
+    "name": "Discharge",
+    "description": "Branching burns, plasma filaments, charge fronts and conductor networks. Fine paths and their surrounding material share the same geometry.",
+    "ids": [
+      "lsk_return_stroke",
+      "lsk_lichtenberg",
+      "lsk_spider_crawl",
+      "lsk_st_elmo",
+      "lsk_plasma_globe",
+      "lsk_jacobs_ladder",
+      "lsk_arc_weld",
+      "lsk_sprite",
+      "lsk_static_creep",
+      "lsk_carbon_track",
+      "lsk_bead",
+      "lsk_streamer_front",
+      "lsk_fulgurite",
+      "lsk_spark_gap",
+      "lsk_tesla_streamer",
+      "lsk_corona_ring"
+    ]
+  },
+  {
+    "name": "Living Armor",
+    "description": "Overlapping scales, keels, scutes, granular skin and translucent shed layers. Each animal has its own surface architecture.",
+    "ids": [
+      "slt_reticulated",
+      "slt_keeled_viper",
+      "slt_cycloid_gloss",
+      "slt_ventral_scute",
+      "slt_boa_saddle",
+      "slt_sidewinder_micro",
+      "slt_gaboon_geometric",
+      "slt_milk_band",
+      "slt_corn_blotch",
+      "slt_sunbeam_iris",
+      "slt_shed_ecdysis",
+      "slt_cobra_hood",
+      "slt_wart_tubercle",
+      "slt_diamondback",
+      "slt_anaconda_oval",
+      "slt_albino_translucent"
+    ]
+  },
+  {
+    "name": "Optical Deception",
+    "description": "Prototype disguise, false depth, interference print and optical films. Printed illusions and physical optical surfaces have separate material rules.",
+    "ids": [
+      "mul_erlkonig_swirl",
+      "mul_confusion_blob",
+      "mul_shutline_fake",
+      "mul_moire_defeat",
+      "mul_countershade",
+      "mul_false_shadow",
+      "mul_qr_scramble",
+      "mul_wireframe",
+      "mul_retro_patch",
+      "mul_pixel_break",
+      "mul_decoy_blackout",
+      "mul_edge_chamfer",
+      "wrap_laminate",
+      "wrap_print_band",
+      "wrap_perf_window",
+      "wrap_holographic",
+      "wrap_lens_array"
+    ]
+  },
+  {
+    "name": "Paint Alchemy",
+    "description": "Spray, flow, contamination, cure and protective glaze. Wet and dry states belong to actual paint features; quiet coatings stay quiet.",
+    "ids": [
+      "bth_fisheye",
+      "bth_solvent_pop",
+      "bth_sag_curtain",
+      "bth_dry_spray",
+      "bth_mottling",
+      "bth_tiger_stripe",
+      "bth_die_back",
+      "bth_blush",
+      "bth_lifting",
+      "bth_sand_scratch",
+      "bth_dirt_nib",
+      "bth_edge_map",
+      "bth_water_spot",
+      "wrap_microbubble",
+      "wrap_heat_gun",
+      "wrap_wet_apply",
+      "wrap_ceramic_coat",
+      "wrap_craze_net"
+    ]
+  },
+  {
+    "name": "Filmcraft",
+    "description": "Applied sheets, folds, cuts, woven films, adhesive routing and polish. Layer edges, roofs, backing and seams determine the material response.",
+    "ids": [
+      "mul_foam_clad",
+      "mul_bubble_clad",
+      "mul_matte_cover",
+      "mul_tape_seam",
+      "bth_buff_hologram",
+      "bth_mask_bleed",
+      "bth_tape_ridge",
+      "wrap_panel_seam",
+      "wrap_squeegee",
+      "wrap_brushed_film",
+      "wrap_knife_edge",
+      "wrap_air_release",
+      "wrap_lift_curl",
+      "wrap_layered_cut",
+      "wrap_creases",
+      "wrap_roll_memory",
+      "wrap_hex_ppf",
+      "wrap_twill_film",
+      "wrap_truchet_knurl",
+      "wrap_flow_wrapline",
+      "wrap_spiral_burnish",
+      "wrap_overlap_ghost"
+    ]
+  }
+] };
+
+if (typeof window !== "undefined") window.BASE_GROUP_SUBSECTIONS = BASE_GROUP_SUBSECTIONS;
+
 const BASE_GROUPS = {
-    "Foundation": ["gloss", "matte", "satin", "semi_gloss", "eggshell", "silk", "wet_look", "clear_matte", "primer", "flat_black", "f_metallic", "f_pearl", "f_chrome", "f_satin_chrome", "f_anodized", "f_brushed", "f_powder_coat", "f_carbon_fiber", "f_frozen", "scuffed_satin", "chalky_base", "living_matte", "ceramic", "piano_black", "f_gel_coat", "f_baked_enamel", "f_vinyl_wrap", "f_pure_white", "f_pure_black", "f_neutral_grey", "f_soft_gloss", "f_soft_matte", "f_clear_satin", "f_warm_white"],
-    "★ Enhanced Foundation": ["enh_gloss", "enh_matte", "enh_satin", "enh_metallic", "enh_pearl", "enh_chrome", "enh_satin_chrome", "enh_anodized", "enh_baked_enamel", "enh_brushed", "enh_carbon_fiber", "enh_frozen", "enh_gel_coat", "enh_powder_coat", "enh_vinyl_wrap", "enh_soft_gloss", "enh_soft_matte", "enh_warm_white", "enh_ceramic_glaze", "enh_silk", "enh_eggshell", "enh_primer", "enh_clear_matte", "enh_semi_gloss", "enh_wet_look", "enh_piano_black", "enh_living_matte", "enh_neutral_grey", "enh_clear_satin", "enh_pure_black"],
+    "ASTRA": ["astra_event_horizon", "astra_quasicrystal_crown", "astra_gravity_loom", "astra_phoenix_ceramic", "astra_sovereign_nacre", "astra_magnetic_regalia", "astra_meteorite_royal", "astra_cryogenic_bloom", "astra_chronograph_gold", "astra_velvet_supernova", "astra_janus_blades", "astra_scarlet_undertow", "astra_cobalt_guillotine", "astra_chromatic_switchyard", "astra_ruby_blue_cyclone", "astra_prism_rebellion", "astra_redshift_rivets", "astra_blueblood_chevron", "astra_duality_scales", "astra_polarity_lace", "astra_pipeline_royale", "astra_reef_cathedral", "astra_tidal_lace", "astra_surf_wax_ritual", "astra_wipeout_paisley", "astra_kelp_couture", "astra_boardwalk_pinlines", "astra_volcanic_break", "astra_abyssal_lanterns", "astra_sea_glass_confessional", "astra_cytokinesis_candy", "astra_quantum_petri", "astra_chromosome_riot", "astra_plasma_sutures", "astra_bismuth_delirium", "astra_strange_attractor", "astra_neuron_carnival", "astra_xenobot_orchard", "astra_fermion_foundry", "astra_chromatic_centrifuge", "astra_causal_origami", "astra_photonic_switchboard", "astra_negative_space_engine", "astra_temporal_braille", "astra_klein_circuit", "astra_auxetic_exoskin", "astra_memory_metal_zipper", "astra_orbitless_navigation", "astra_tachyon_feather", "astra_programmable_matter"],
+    // ═══ RETIRED 2026-09-05 — six legacy shelves removed from the picker ══════
+    // Carbon & Composite (20), Ceramic & Glass (20), Chrome & Mirror (11),
+    // Exotic Metal (16), Metallic Standard (22), Candy & Pearl (15) = 104 ids.
+    // Owner call. They are removed from BASE_GROUPS ONLY: their BASES entries and
+    // their engine renderers are untouched, so every saved design that references
+    // one still renders EXACTLY as before — retiring a shelf must not repaint a
+    // customer's car. The 17 places the app itself pointed at one of these ids
+    // (built-in presets, the spec-preview tab, the Easy Mode quick list) were
+    // repointed to live successors first. Full list: docs/RETIRED_SHELVES_2026-09-05.md
+    "🔬 FLAW LAB": [
+        'fl_penetrant_bleed', 'fl_magnetic_particle', 'fl_brittle_lacquer', 'fl_macro_etch', 'fl_hardness_indent', 'fl_crack_tip', 'fl_strain_rosette', 'fl_chladni', 'fl_photoelastic_iso', 'fl_isoclinic_dark', 'fl_holo_interfero', 'fl_moire_deflect', 'fl_shearography', 'fl_schlieren', 'fl_shadowgraph', 'fl_barkhausen', 'fl_eddy_impedance', 'fl_c_scan', 'fl_a_scan_gate', 'fl_phased_array', 'fl_radiograph_weld', 'fl_ct_slice', 'fl_tsa_stress', 'fl_pulse_thermo', 'fl_acoustic_emission'
+    ],
+    "SHOKK WORKS": ["lsk_return_stroke", "lsk_lichtenberg", "lsk_spider_crawl", "lsk_st_elmo", "lsk_plasma_globe", "lsk_jacobs_ladder", "lsk_arc_weld", "lsk_sprite", "lsk_static_creep", "lsk_carbon_track", "lsk_bead", "lsk_streamer_front", "lsk_fulgurite", "lsk_spark_gap", "lsk_tesla_streamer", "lsk_corona_ring", "mul_erlkonig_swirl", "mul_confusion_blob", "mul_shutline_fake", "mul_foam_clad", "mul_bubble_clad", "mul_moire_defeat", "mul_countershade", "mul_false_shadow", "mul_qr_scramble", "mul_wireframe", "mul_matte_cover", "mul_retro_patch", "mul_tape_seam", "mul_pixel_break", "mul_decoy_blackout", "mul_edge_chamfer", "slt_reticulated", "slt_keeled_viper", "slt_cycloid_gloss", "slt_ventral_scute", "slt_boa_saddle", "slt_sidewinder_micro", "slt_gaboon_geometric", "slt_milk_band", "slt_corn_blotch", "slt_sunbeam_iris", "slt_shed_ecdysis", "slt_cobra_hood", "slt_wart_tubercle", "slt_diamondback", "slt_anaconda_oval", "slt_albino_translucent", "bth_fisheye", "bth_solvent_pop", "bth_sag_curtain", "bth_dry_spray", "bth_mottling", "bth_tiger_stripe", "bth_die_back", "bth_blush", "bth_lifting", "bth_sand_scratch", "bth_dirt_nib", "bth_edge_map", "bth_buff_hologram", "bth_mask_bleed", "bth_tape_ridge", "bth_water_spot", "wrap_panel_seam", "wrap_squeegee", "wrap_microbubble", "wrap_laminate", "wrap_brushed_film", "wrap_print_band", "wrap_perf_window", "wrap_knife_edge", "wrap_air_release", "wrap_heat_gun", "wrap_lift_curl", "wrap_holographic", "wrap_wet_apply", "wrap_layered_cut", "wrap_creases", "wrap_roll_memory", "wrap_ceramic_coat", "wrap_hex_ppf", "wrap_twill_film", "wrap_truchet_knurl", "wrap_craze_net", "wrap_lens_array", "wrap_flow_wrapline", "wrap_spiral_burnish", "wrap_overlap_ghost"],
+    // 2026-08-23 review remediation: ceramic + piano_black were rebuilt as
+    // full-design Ceramic & Glass finishes on 2026-06-14. Keeping them here
+    // made the spec-only Foundation category contradict its runtime renderer.
+    // FOUNDATION ONE (owner 2026-09-03): three foundation categories collapsed into ONE category with two
+    // shelves. "Foundation" = 20 flat BASES (spec values only, NO colour of their own) laid out as a sheen
+    // ladder then a metal ladder; every pair differs by >=40 M, >=0.5 octave roughness or >=40 Cc (the rule is
+    // fitted to the owner's Living Matte ~ Matte verdict, gate: scripts/spb_foundation_ladder_gate.py).
+    // "Foundation EFX" = textured foundations that carry paint AND spec. Retired ids -> BASE_ID_ALIASES.
+    "Foundation": [
+        'wet_look', 'gloss', 'semi_gloss', 'satin', 'eggshell', 'matte', 'primer', 'flat_black', 'f_powder_coat', 'f_pearl', 'f_satin_pearl', 'f_metallic', 'f_matte_metallic', 'f_candy', 'f_brushed', 'f_frozen', 'f_bead_blast', 'f_chrome', 'f_dark_chrome', 'f_satin_chrome', 'opal', 'moonstone', 'spectraflame', 'chameleon', 'hypershift_spectral'
+    ],
+    "Foundation EFX": ["efx_holographic_drift", "efx_frost_fractal", "efx_frost_mercury_duo", "efx_cathedral_veil", "efx_kintsugi_bloom", "efx_quicksilver_pool", "efx_volcanic_obsidian", "efx_aurora_skin", "efx_lace_filament", "efx_tempered_spectrum", "efx_damascus_fold", "efx_stardust_coat", "efx_spectral_edge", "efx_holo_flake", "efx_holo_prism_cells", "efx_holo_scan", "efx_micro_glitter", "efx_chunky_flake", "efx_glass_flake", "efx_gold_leaf", "efx_surface_rust", "efx_rust_through", "chalky_base", "efx_peeling_clear", "efx_sun_faded", "efx_galvanized_spangle", "efx_verdigris", "efx_soot_wash", "efx_salt_bloom", "efx_hammered", "efx_cast_iron", "efx_knurled", "efx_engine_turned", "efx_sandblasted", "efx_wire_brushed", "efx_mill_scale", "efx_orange_peel", "efx_crackle_lacquer", "efx_wrinkle_coat", "efx_raku_glaze", "efx_powder_texture", "efx_terrazzo", "efx_leather_grain", "efx_rain_beads", "efx_snow_crust", "efx_nacre"],
     // 2026-04-19 TRUE FIVE-HOUR (TF12) — registry truth.
     // validateFinishData runtime exercise surfaced 9 phantom BASE_GROUPS
     // entries: ids referenced by groups but with no entry in BASES. Painter
@@ -2305,72 +5795,68 @@ const BASE_GROUPS = {
     // & Tactical); acid_etch, battle_patina, oxidized, patina_coat (Weathered
     // & Aged). All 9 still render via the engine; if any should ship as a
     // base, add a proper BASES entry — phantoms in BASE_GROUPS are a UX lie.
-    "Candy & Pearl": ["candy_burgundy", "candy_cobalt", "candy_emerald", "chameleon", "iridescent", "moonstone", "opal", "spectraflame", "tinted_clear", "tri_coat_pearl", "jelly_pearl", "orange_peel_gloss", "satin_candy", "deep_pearl", "hypershift_spectral"],
-    "Carbon & Composite": ["aramid", "carbon_base", "carbon_ceramic", "fiberglass", "forged_composite", "graphene", "hybrid_weave", "kevlar_base", "carbon_weave", "forged_carbon_vis"],
-    "Ceramic & Glass": ["ceramic", "ceramic_matte", "crystal_clear", "enamel", "obsidian", "piano_black", "porcelain", "tempered_glass"],
-    "Chrome & Mirror": ["antique_chrome", "black_chrome", "blue_chrome", "candy_chrome", "chrome", "dark_chrome", "mirror_gold", "red_chrome", "satin_chrome", "surgical_steel", "electroplated_gold"],
-    "Exotic Metal": ["anodized", "brushed_aluminum", "brushed_titanium", "cobalt_metal", "diamond_coat", "frozen", "liquid_titanium", "platinum", "raw_aluminum", "rose_gold", "titanium_raw", "tungsten", "organic_metal", "anodized_exotic", "xirallic", "chromaflair"],
-    "Industrial & Tactical": ["armor_plate", "battleship_gray", "blackout", "cerakote", "duracoat", "gunship_gray", "mil_spec_od", "mil_spec_tan", "powder_coat", "sandblasted", "submarine_black", "velvet_floc", "cerakote_pvd"],
-    "Metallic Standard": ["candy", "candy_apple", "champagne", "copper", "gunmetal", "gunmetal_satin", "metal_flake_base", "original_metal_flake", "champagne_flake", "fine_silver_flake", "blue_ice_flake", "bronze_flake", "gunmetal_flake", "green_flake", "fire_flake", "metallic", "midnight_pearl", "pearl", "pearlescent_white", "pewter", "satin_metal", "alubeam"],
-    "OEM Automotive": ["ambulance_white", "dealer_pearl", "factory_basecoat", "fire_engine", "fleet_white", "police_black", "school_bus", "showroom_clear", "smoked", "taxi_yellow"],
-    "Premium Luxury": ["bentley_silver", "bugatti_blue", "ferrari_rosso", "koenigsegg_clear", "lamborghini_verde", "maybach_two_tone", "mclaren_orange", "pagani_tricolore", "porsche_pts", "satin_gold"],
-    "Racing Heritage": ["asphalt_grind", "barn_find", "bullseye_chrome", "checkered_chrome", "drag_strip_gloss", "endurance_ceramic", "pace_car_pearl", "race_day_gloss", "rally_mud", "stock_car_enamel", "victory_lane"],
-    "Satin & Wrap": ["brushed_wrap", "chrome_wrap", "color_flip_wrap", "frozen_matte", "gloss_wrap", "liquid_wrap", "matte_wrap", "satin_wrap", "stealth_wrap", "textured_wrap"],
-    "Weathered & Aged": ["acid_rain", "desert_worn", "galvanized", "heat_treated", "oxidized_copper", "patina_bronze", "rugged", "salt_corroded", "sun_baked", "vintage_chrome", "sun_fade", "crumbling_clear", "destroyed_coat"],
-    // NOTE (2026-04-17): "★ SHOKK Series", "★ COLORSHOXX", "★ MORTAL SHOKK",
+    // retired 2026-08-31 — rebuilt as the decade shelves below
+    "★ OPTIC LAB · Flash Stone": ["labradorite", "spectrolite", "ammolite", "tiger_eye", "dichroic_glass", "fire_agate", "malachite", "azurite", "black_opal", "sunstone"],
+    "★ OPTIC LAB · Night Bloom": ["retroreflective_silver", "hi_vis_lime", "cats_eye_beaded", "diamond_grade", "ghost_graphic", "amber_hazard", "tribal_blaze", "big_kahuna", "chevron_blaze", "starfield_reflective"],
+    "★ OPTIC LAB · Two-Face": ["twoface_blue_copper", "twoface_purple_gold", "twoface_green_magenta", "twoface_teal_orange", "twoface_red_cyan", "twoface_silver_void", "twoface_pink_teal", "twoface_gold_emerald", "twoface_violet_lime", "twoface_crimson_navy"],
+    "★ OPTIC LAB · Fluid Pour": ["pour_ocean", "pour_lava", "pour_galaxy", "pour_gold_marble", "pour_tropical", "pour_rose", "ink_emerald", "ink_copper", "pour_monochrome", "pour_neon"],
+    "★ OPTIC LAB · Sequin Disco": ["sequin_silver", "sequin_gold", "sequin_rose", "sequin_emerald", "sequin_copper", "sequin_ice", "sequin_rainbow", "sequin_holographic", "disco_black_diamond", "sequin_mardi_gras"],
+    "\ud83e\udea9 FAR OUT": ["fo_boogie_neon", "fo_discotheque_haze", "fo_glitter_ball_rain", "fo_hustle_teal", "fo_lighted_floor", "fo_lurex_gold", "fo_lurex_rose", "fo_mirror_ball", "fo_platform_patent", "fo_roller_rink", "fo_saturday_chrome", "fo_sequin_sheet", "fo_studio_gold", "fo_velvet_rope", "fo_vinyl_groove", "fo_conversation_pit", "fo_corduroy_brown", "fo_fondue_copper", "fo_formica_boomerang", "fo_lava_lamp", "fo_linoleum_teal", "fo_macrame_hang", "fo_popcorn_ceiling", "fo_rattan_weave", "fo_shag_avocado", "fo_shag_harvest", "fo_smoked_glass", "fo_tab_curtain", "fo_terrazzo_kitchen", "fo_wood_panel", "fo_barbed_wire", "fo_basket_stamp", "fo_black_hat", "fo_concho_row", "fo_longhorn_hide", "fo_mesa_sunset", "fo_outlaw_chrome", "fo_prairie_denim", "fo_raw_denim", "fo_rhinestone_suit", "fo_rodeo_dust", "fo_silver_buckle", "fo_snakeskin_boot", "fo_tooled_saddle", "fo_turquoise_silver", "fo_airbrush_mural", "fo_cb_static", "fo_candy_apple", "fo_desert_scene", "fo_eagle_gold", "fo_flame_job", "fo_ghost_mural", "fo_metalflake_blue", "fo_metalflake_red", "fo_pinstripe_kit", "fo_porthole_chrome", "fo_shag_interior", "fo_sunset_stripe", "fo_tailgate_sunburst", "fo_wheel_well_rust"],
+    "\u26a1 BAD & RAD": ["rad_amber_terminal", "rad_attract_mode", "rad_bezel_black", "rad_cabinet_side_art", "rad_dot_matrix", "rad_high_score", "rad_insert_coin", "rad_joystick_ball", "rad_marquee_bulb", "rad_phosphor_green", "rad_quarter_slot", "rad_screen_burn", "rad_sprite_sheet", "rad_trackball_wear", "rad_vector_glow", "rad_boombox_grille", "rad_cassette_shell", "rad_chrome_type", "rad_digital_sunrise", "rad_grid_floor", "rad_laser_grid", "rad_laserdisc_rainbow", "rad_miami_pastel", "rad_neon_tube", "rad_outrun_stripe", "rad_static_snow", "rad_sunset_bars", "rad_synth_key", "rad_vhs_tracking", "rad_vector_horizon", "rad_anodised_trim", "rad_bacterio_print", "rad_confetti_laminate", "rad_glass_block", "rad_grid_tile", "rad_jazz_cup", "rad_lacquer_cabinet", "rad_milano_squiggle", "rad_neon_wire_chair", "rad_pastel_mint", "rad_peach_fuzz", "rad_speckle_wall", "rad_sponge_paint", "rad_terrazzo_chip", "rad_zigzag_runner", "rad_aerobics_gym", "rad_airbrush_portrait", "rad_big_hair_chrome", "rad_hair_metal", "rad_hypercolour", "rad_neon_grip", "rad_neon_spandex", "rad_puffy_paint", "rad_rad_splatter_deck", "rad_skate_deck", "rad_slap_bracelet", "rad_splatter_tee", "rad_tiger_stripe", "rad_trapper_sticker", "rad_zebra_wrap"],
+    "\ud83d\udcbf ALL THAT": ["at_beige_box", "at_crt_blue_screen", "at_corrupt_jpeg", "at_cyber_caf\u00e9", "at_dial_up_green", "at_disc_rainbow", "at_floppy_black", "at_frosted_shell", "at_holo_sticker", "at_iridescent_cd_r", "at_mouse_ball_grime", "at_pipes_screensaver", "at_windows_teal", "at_y2k_chrome", "at_zip_disk", "at_anodised_peg", "at_bmx_dirt", "at_big_dog_print", "at_bungee_cord", "at_chain_link", "at_dew_green", "at_grip_tape", "at_half_pipe_ply", "at_mountain_topo", "at_neon_wetsuit", "at_roller_blade", "at_skatepark_concrete", "at_snowboard_graphic", "at_surf_wax", "at_windbreaker_block", "at_airbrush_tee", "at_boombox_chrome", "at_bucket_hat", "at_cross_colour_block", "at_denim_baggy", "at_fresh_kicks", "at_gold_rope", "at_graffiti_fill", "at_grill_chrome", "at_kangol_felt", "at_nameplate_gold", "at_starter_jacket", "at_velour_rose", "at_velour_tracksuit", "at_vinyl_crate", "at_band_tee_crack", "at_basement_amp", "at_cassette_tape", "at_chipped_nail", "at_combat_boot_steel", "at_corduroy_olive", "at_distressed_denim", "at_doc_marten", "at_flannel_forest", "at_flannel_red", "at_moss_sidewalk", "at_overcast_grey", "at_seattle_rain", "at_sharpie_ink", "at_thrift_cardigan"],
+    "\ud83c\udfaf TACTICAL & FIELD": ["tac_break_up_bark", "tac_brushstroke_field", "tac_chocolate_chip", "tac_desert_dpm", "tac_duck_blind", "tac_flecktarn", "tac_frog_skin", "tac_m81_woodland", "tac_marpat_digital", "tac_multicam_transition", "tac_rain_pattern", "tac_snow_overwhite", "tac_tiger_stripe", "tac_tigerstripe_night", "tac_urban_grey_digital", "tac_anodised_hard", "tac_battle_worn", "tac_carbon_handguard", "tac_cerakote_grey", "tac_fde_polymer", "tac_gun_blue", "tac_kydex_sheet", "tac_nitride_black", "tac_optic_glass", "tac_parkerised", "tac_rail_section", "tac_sling_webbing", "tac_stippled_grip", "tac_suppressor_heat", "tac_titanium_bead", "tac_autumn_brush", "tac_bird_dog_tick", "tac_blaze_cap", "tac_blaze_orange", "tac_canvas_duck", "tac_cedar_decoy", "tac_creel_wicker", "tac_fly_line", "tac_frozen_bank", "tac_marsh_reed", "tac_neoprene_wader", "tac_river_stone", "tac_topo_sheet", "tac_trout_flank", "tac_wet_waxed_cotton", "tac_ambush_green", "tac_blackout_curtain", "tac_chem_light", "tac_cold_steel_night", "tac_frost_breath", "tac_ir_flat", "tac_moonlit_snow", "tac_muzzle_flash", "tac_night_vision", "tac_red_lens", "tac_signal_mirror", "tac_starlight_scope", "tac_thermal_black_hot", "tac_thermal_white_hot", "tac_tracer_arc"],
+    "\ud83c\udf03 CYBERPUNK": ["cbp_acid_rain", "cbp_holo_advert", "cbp_kanji_signage", "cbp_night_market", "cbp_overpass_sodium", "cbp_puddle_neon", "cbp_rain_screen", "cbp_shutter_tag", "cbp_sodium_fog", "cbp_sodium_vapour", "cbp_steam_grate", "cbp_taxi_panel", "cbp_vending_glow", "cbp_wet_asphalt", "cbp_neon_tube", "cbp_carbon_limb", "cbp_ceramic_limb", "cbp_chrome_spine", "cbp_gold_contact", "cbp_gunmetal_aug", "cbp_mirror_shades", "cbp_neural_port", "cbp_optic_implant", "cbp_porcelain_face", "cbp_ripperdoc_steel", "cbp_servo_housing", "cbp_skin_weave", "cbp_subdermal_plate", "cbp_titanium_rib", "cbp_wetware_membrane", "cbp_black_ice", "cbp_corrupt_memory", "cbp_daemon_red", "cbp_datastream", "cbp_deep_archive", "cbp_encryption_lattice", "cbp_firewall_grid", "cbp_ghost_protocol", "cbp_ice_wall", "cbp_neural_static", "cbp_packet_loss", "cbp_quantum_violet", "cbp_root_access", "cbp_trace_route", "cbp_worm_trail", "cbp_ash_fall", "cbp_biohazard_bloom", "cbp_concrete_rot", "cbp_corp_glass", "cbp_corp_grey", "cbp_cracked_solar", "cbp_duct_grime", "cbp_hazard_stripe", "cbp_oil_slick_puddle", "cbp_rad_warning", "cbp_rebar_skeleton", "cbp_scav_rust", "cbp_scrap_weld", "cbp_sewer_bloom", "cbp_static_screen"],
+    "Flames": ["flame_hotrod", "flame_true_fire", "flame_inferno", "flame_dragon", "flame_lava", "flame_ember", "flame_candy", "flame_phoenix", "flame_tribal", "flame_smoke", "flame_blue", "flame_cold", "flame_plasma", "flame_white_hot", "flame_purple", "flame_pink", "flame_green", "flame_toxic", "flame_rainbow", "flame_ghost"],
+    // retired 2026-08-31 — rebuilt as the decade shelves below
+    // 2026-05-18 (owner mandate): "Racing Heritage" base group REMOVED.
+    // The 11 underlying ids (asphalt_grind, barn_find, etc.) remain in
+    // BASES because they're cross-referenced by other family/group lists
+    // (weathered, chrome) and HERO_BASES; only the picker grouping is gone.
+    "Sock Hop": ["diner_checker", "soda_check", "cherry_polka", "lemon_polka", "bubblegum_dot", "mint_stripe", "coral_stripe", "gingham_red", "atomic_starburst", "atomic_charcoal", "googie_orbit", "vinyl_groove", "harlequin", "argyle_pastel", "terrazzo_cream", "formica_boomerang", "jukebox_neon", "pink_fleck", "turquoise_fleck", "chrome_diner"],
+    "Groovy Vibes": ["tie_dye_spiral", "tie_dye_crumple", "peace_tie_dye", "psychedelic_swirl", "acid_swirl", "melting_rainbow", "hippie_rainbow", "sunburst_60s", "groovy_zigzag", "kaleido_rings", "trippy_concentric", "warp_op", "oil_slick_groove", "groovy_marble", "liquid_light", "flower_power", "lava_lamp_purple", "lava_lamp_groovy", "mushroom_fade", "neon_acid_blob"],
+    // NOTE (2026-04-17): "★ SHOKK Series", "🌍 WORLD OF COLOR", "★ MORTAL SHOKK",
     // "★ NEON UNDERGROUND", "★ Anime Inspired" were removed from BASE_GROUPS.
     // They are "Specials"-only categories and now live exclusively in
     // SPECIAL_GROUPS via _SPECIALS_SHOKKER / _SPECIALS_ANIME_INSPIRED.
-    "Iridescent Insects": ["beetle_jewel", "beetle_rainbow", "beetle_stag", "butterfly_monarch", "butterfly_morpho", "dragonfly_wing", "firefly_glow", "moth_luna", "scarab_gold", "wasp_warning"],
-    "Extreme & Experimental": ["bioluminescent", "dark_matter", "electric_ice", "holographic_base", "liquid_obsidian", "mercury", "neutron_star", "plasma_core", "plasma_metal", "prismatic", "quantum_black", "singularity", "solar_panel", "superconductor", "vantablack", "volcanic", "burnt_headers"],
-    "Textile-Inspired": ["textile_denim_weave", "textile_canvas_rough", "textile_silk_sheen", "textile_velvet_crush", "textile_burlap_coarse", "textile_suede_soft"],
-    "Stone & Mineral": ["stone_slate_matte", "stone_marble_polished", "stone_granite_speckled", "stone_sandstone_warm", "stone_obsidian_mirror", "stone_travertine_cream"],
-    "Paint Technique": ["paint_drip_gravity", "paint_splatter_loose", "paint_sponge_stipple", "paint_roller_streak", "paint_spray_fade", "paint_brush_stroke"],
+    "Iridescent Insects": ["beetle_jewel", "beetle_rainbow", "beetle_tortoise", "beetle_tiger", "beetle_rose_chafer", "beetle_buprestid", "beetle_ground", "beetle_stag", "beetle_longhorn", "beetle_click", "butterfly_emperor", "butterfly_swallowtail", "butterfly_glasswing", "butterfly_peacock", "butterfly_monarch", "butterfly_morpho", "dragonfly_wing", "dragonfly_emerald", "damselfly_cobalt", "cicada_membrane", "lacewing_aurora", "mayfly_silver", "bee_honeycomb", "bumble_velvet", "hoverfly_mirror", "firefly_lantern", "firefly_ember", "ant_velvet", "mantis_orchid", "mantis_leaf", "katydid_leafglass", "stick_insect_bark", "cockroach_onyx", "weevil_opal", "weevil_gilded", "moth_luna", "moth_tiger", "moth_hummingbird", "moth_owl", "scarab_sunplate", "scarab_night", "jewel_spider", "orb_weaver_silk", "praying_mantis_verdigris", "hornet_titanium", "leafcutter_copper", "dung_beetle_oil", "bluebottle_mercury", "caddiscase_river", "wasp_warning"],
+    // X-LAB-1: the 17 Extreme IDs now surface once through the SHOKKER
+    // special group above; leaving this Base group made duplicate categories.
+    // 2026-05-18 (owner mandate): "Textile-Inspired", "Stone & Mineral",
+    // and "Paint Technique" base groups REMOVED along with their 18
+    // underlying base entries. Renderers were never registered (engine
+    // logged "Missing ids skipped" for all 18).
+    "★ PRISM FORGE": ["pf_event_horizon_spectra", "pf_chromatic_storm", "pf_neon_nova", "pf_molten_aurora", "pf_void_pearl", "pf_ion_trap", "pf_sapphire_blood", "pf_emerald_inferno", "pf_violet_sunrise", "pf_copper_moon", "pf_toxic_horizon", "pf_glacial_burn", "pf_oil_nebula", "pf_rose_quantum", "pf_cobalt_fire", "pf_midnight_prism", "pf_hyperwave", "pf_crystal_fade", "pf_dark_matter_halo", "pf_apex_spectrum", "pf_cluster_tar_eclipse", "pf_cluster_bitumen_aurora", "pf_cluster_obsidian_gild", "pf_cluster_coal_starfield", "pf_cluster_void_islands", "pf_bright_solar_daffodil", "pf_bright_hyperpink", "pf_bright_seafoam_bolt", "pf_bright_cerulean_pop", "pf_bright_canary_glass", "pf_bright_magenta_arc", "pf_bright_lime_voltage", "pf_bright_peach_fizz", "pf_bright_neon_ice_stream", "pf_bright_orchid_pulse", "pf_blend_triad_mist", "pf_blend_quad_weave", "pf_spectrum_chaos_crown", "pf_prismatic_void_madness", "pf_white_castle_of_fear", "pf_gradient_venetian_veil", "pf_tri_crimson_cyan_mage", "pf_quad_jade_violet_gold_slate", "pf_fade_copper_teal_sunset", "pf_blend_ocean_peach_ivory", "pf_iris_velvet_crossfade", "pf_spectral_tidepool_wash", "pf_midnight_coral_ember", "pf_emerald_orchid_storm", "pf_golden_ultraviolet_fog"],
 };
 
+// [SPB 2026-08-02] Owner: "quite a few Optic Lab finishes - combine them ALL
+// into one category." Runtime merge (per-family source rows above untouched).
+{
+    const _OPTIC_PARTS = ["★ OPTIC LAB · Flash Stone", "★ OPTIC LAB · Night Bloom",
+        "★ OPTIC LAB · Two-Face", "★ OPTIC LAB · Fluid Pour", "★ OPTIC LAB · Sequin Disco"];
+    const _opticIds = [];
+    for (const _p of _OPTIC_PARTS) {
+        if (Array.isArray(BASE_GROUPS[_p])) _opticIds.push(...BASE_GROUPS[_p]);
+        delete BASE_GROUPS[_p];
+    }
+    // 2026-08-31: ★ OPTIC LAB is retired — the owner flipped it to the 1970s
+    // (🪩 FAR OUT). The five source families are still deleted above so they do
+    // not reappear as separate shelves; the ids stay defined and registered so
+    // saved projects still render, they are just off the shelf.
+    void _opticIds;
+}
+
+
 const PATTERN_GROUPS = {
-    "Abstract & Experimental": ["biomechanical", "biomechanical_2", "fractal", "fractal_2", "fractal_3", "interference", "optical_illusion", "optical_illusion_2", "sound_wave", "stardust", "stardust_2", "voronoi_shatter", "Art_Deco", "Art_Deco_V2", "Art_Deco_V3", "Art_Deco_V4"],
-    "Animal & Wildlife": ["camo", "crocodile", "dazzle", "feather", "giraffe", "leopard", "multicam", "snake_skin", "snake_skin_2", "snake_skin_3", "snake_skin_4", "tiger_stripe", "zebra"],
-    "Artistic & Cultural": ["aztec", "aztec_alt1", "aztec_alt2", "dragon_scale", "dragon_scale_alt", "fleur_de_lis", "fleur_de_lis_alt", "japanese_wave", "mandala", "mandela_ornate", "mosaic", "muertos_dod1", "muertos_dod2", "rune_symbols", "steampunk_gears", "tribal_norse_runes", "tribal_celtic_spiral"],
-    // 2026-04-19 HEENAN H4HR-2: carbon_weave PATTERN renamed → carbon_weave_pattern (cross-registry collision fix).
-    "Carbon & Weave": ["carbon_fiber", "kevlar_weave", "nanoweave", "basket_weave_alt", "carbon_alt_1", "carbon_weave_pattern", "exhaust_wrap_alt", "geo_weave", "hex_carbon", "multi_directional", "wavy_carbon"],
-    "Decades - 50s": ["decade_50s_diner_checkerboard", "decade_50s_jukebox_arc", "decade_50s_sputnik_orbit", "decade_50s_drivein_marquee", "decade_50s_fallout_shelter", "decade_50s_boomerang_formica", "decade_50s_atomic_reactor", "decade_50s_diner_chrome", "decade_50s_crt_phosphor", "decade_50s_casino_felt"],
-    "Decades - 60s": ["decade_60s_peace_sign", "decade_60s_tie_dye_spiral", "decade_60s_lava_lamp_blob", "decade_60s_opart_illusion", "decade_60s_pop_art_halftone", "decade_60s_gogo_check", "decade_60s_caged_square", "decade_60s_peter_max_gradient", "decade_60s_peter_max_alt", "Halftone_Rainbow", "12155818_4903117", "12267458_4936872", "12284536_4958169", "12428555_4988298"],
-    "Decades - 70s": ["144644845_10133112", "decade_70s_earth_tone_geo", "248169", "6868396_23455", "78534344_9837553_1", "decade_70s_funk_zigzag", "Groovy_Swirl", "Plad_Wrapper", "decade_70s_studio54_glitter", "decade_70s_pong_pixel"],
-    "Decades - 80s": ["decade_80s_pacman_maze", "decade_80s_neon_grid", "decade_80s_rubiks_cube", "decade_80s_rubiks_cube_2", "decade_80s_rubiks_cube_3", "decade_80s_boombox_speaker", "decade_80s_nintendo_dpad", "decade_80s_breakdance_spin", "decade_80s_laser_tag", "decade_80s_leg_warmer"],
-    "Decades - 90s": ["decade_90s_grunge_splatter", "decade_90s_nirvana_smiley", "decade_90s_cross_colors", "decade_90s_tamagotchi_egg", "decade_90s_sega_blast", "decade_90s_fresh_prince", "decade_90s_floppy_disk", "decade_90s_rave_zigzag", "decade_90s_y2k_bug", "decade_90s_tribal_tattoo", "decade_90s_dialup_static", "decade_90s_slap_bracelet", "decade_90s_windows95", "decade_90s_chrome_bubble", "decade_90s_rugrats_squiggle", "decade_90s_rollerblade_streak", "decade_90s_beanie_tag", "decade_90s_dot_matrix", "decade_90s_geo_minimal", "decade_90s_sbtb_wall"],
-    "Geometric": ["art_deco", "celtic_knot", "chevron", "crosshatch", "greek_key", "pinstripe", "plaid", "tessellation"],
-    "Gothic & Dark": ["barbed_wire", "gothic_arch", "gothic_scroll", "iron_emblem", "five_point_star", "razor_wire", "skull", "skull_wings", "spiderweb", "thorn_vine"],
-    "Metal & Industrial": ["chainlink", "chainmail", "corrugated", "diamond_plate", "expanded_metal", "hammered", "hex_mesh", "metal_flake", "perforated"],
-    "PARADIGM": ["circuitboard", "holographic", "p_tessellation", "p_topographic", "soundwave", "caustic", "dimensional", "fresnel_ghost", "neural", "p_plasma"],
-    // 2026-04-19 HEENAN HB2 — `shokk_cipher` pattern was renamed to
-    // `shokk_cipher_pattern` to resolve cross-registry id collision.
-    "SHOKK PATTERNS": ["data_stream", "glitch_scan", "matrix_rain", "pixel_grid", "shokk_bitrot", "shokk_cipher_pattern", "shokk_firewall", "shokk_hex_dump", "shokk_kernel_panic", "shokk_overflow", "shokk_packet_storm", "shokk_scan_line", "shokk_signal_noise", "shokk_zero_day"],
-    "Skate & Surf": ["Billabong_Board", "Billabong_Surf_Style", "Blind_Skateboy", "Bong_Surfer", "Hardcore_Punk", "Hero_Skate", "Hydro_Wave", "Punk_Rock_Zine", "Skate_Deck", "Skate_Reaper_Glowing_Eyes", "Skate_Reaper_Tiled", "Surf_80s", "Surfin_80s", "Thrash_Metal_Skate_Alt", "Thrash_Metal_Skate", "Tiki_Surf"],
-    "Weather & Elements": ["aurora_bands", "hailstorm", "lightning", "plasma", "ripple", "sandstorm", "solar_flare", "tornado", "wave"],
-    "\u2728 Reactive Shimmer": ["shimmer_quantum_shard", "shimmer_prism_frost", "shimmer_velvet_static", "shimmer_chrome_flux", "shimmer_matte_halo", "shimmer_oil_tension", "shimmer_neon_weft", "shimmer_void_dust", "shimmer_turbine_sheen", "shimmer_spectral_mesh"],
-    // FIVE-HOUR SHIFT Win B1 (TWENTY WINS leftover): the "★ Intricate & Ornate"
-    // group used to live here with 12 ids that ALL exist in MONOLITHICS, not
-    // in PATTERNS. The pattern picker only resolves group ids against PATTERNS,
-    // so this group rendered as an empty tab (zero tiles) — silent UX dead end.
-    // All 12 ids still ship through the monolithics picker via their canonical
-    // groups (e.g. damascus_steel lives in MONOLITHIC_GROUPS["Metals & Forged"],
-    // baroque_scrollwork in "Ornate & Decorative", etc.). Removing the dead
-    // pattern-picker entry stops the validator from screaming `cross_registry_pattern_group`
-    // and stops painters from clicking a tab that contains nothing.
-    "\u2728 World Geometry": ["spiral_fern", "zigzag_bands", "radial_calendar", "triple_knot", "diagonal_interlace", "diamond_blanket", "step_fret", "concentric_dot_rings", "medallion_lattice", "eight_point_star", "petal_frieze", "cloud_scroll"],
-    // 2026-04-19 HEENAN H4HR-1: dragonfly_wing PATTERN renamed → dragonfly_wing_pattern (cross-registry collision fix).
-    "\ud83c\udf3f Natural Textures": ["marble_veining", "wood_burl", "seigaiha_scales", "ammonite_chambers", "peacock_eye", "dragonfly_wing_pattern", "insect_compound", "diatom_radial", "coral_polyp", "birch_bark", "pine_cone_scale", "geode_crystal", "nature_bark_rough", "nature_water_ripple_pat"],
-    "\u2699\ufe0f Tech & Circuit": ["circuit_traces", "hex_circuit", "biomech_cables", "dendrite_web", "crystal_lattice", "chainmail_hex", "graphene_hex", "gear_mesh", "vinyl_record", "fiber_optic", "sonar_ping", "waveform_stack"],
-    "\ud83c\udfa8 Art Deco & Geometric": ["art_deco_fan", "chevron_stack", "quatrefoil", "herringbone", "basket_weave", "houndstooth", "argyle", "tartan", "op_art_rings", "moire_grid", "lozenge_tile", "ogee_lattice"],
-    "\ud83c\udf00 Mathematical & Fractal": ["reaction_diffusion", "fractal_fern", "hilbert_curve", "lorenz_slice", "julia_boundary", "wave_standing", "lissajous_web", "dragon_curve", "diffraction_grating", "perlin_terrain", "phyllotaxis", "truchet_flow", "hypocycloid", "voronoi_relaxed", "wave_ripple_2d", "sierpinski_tri", "geo_fractal_triangle", "geo_hilbert_curve"],
-    "\ud83d\udd2e Op-Art & Visual Illusions": ["concentric_op", "checker_warp", "barrel_distort", "moire_interference", "twisted_rings", "spiral_hypnotic", "necker_grid", "radial_pulse", "hex_op", "pinwheel_tiling", "impossible_grid", "rose_curve"],
-    "\ud83c\udfd7\ufe0f Art Deco & Textile": ["art_deco_sunburst", "art_deco_chevron", "greek_meander", "star_tile_mosaic", "escher_reptile", "constructivist", "bauhaus_system", "celtic_plait", "cane_weave", "cable_knit", "damask_brocade", "tatami_grid"],
-    "\u2728 Surface Accent": ["iridescent_fog", "chrome_delete_edge", "carbon_clearcoat_lock", "racing_scratch", "pearlescent_flip", "frost_crystal", "satin_wax", "uv_night_accent"],
-    // 2026-04-25 CODEX 55: taxonomy cleanup for Alpha. Removed tiny junk-drawer
-    // categories: Final Collection, Nature-Inspired, Tribal & Cultural, and
-    // Advanced Geometric. Their renderable ids now live in the stronger parent
-    // families above; unrenderable legacy ids remain metadata-only for old saves.
+    // 2026-05-23 regular-pattern audit loop: collapse 25 small picker groups into 8 owner-reviewable groups, all <= 50 finishes.
+    "\u2726 Abstract, Fractal & Paradigm": ["biomechanical", "biomechanical_2", "fractal", "fractal_2", "fractal_3", "interference", "optical_illusion", "optical_illusion_2", "sound_wave", "stardust", "stardust_2", "voronoi_shatter", "Art_Deco", "Art_Deco_V2", "Art_Deco_V3", "Art_Deco_V4", "circuitboard", "holographic", "p_tessellation", "p_topographic", "soundwave", "caustic", "dimensional", "fresnel_ghost", "neural", "p_plasma", "reaction_diffusion", "fractal_fern", "hilbert_curve", "lorenz_slice", "julia_boundary", "wave_standing", "lissajous_web", "dragon_curve", "diffraction_grating", "perlin_terrain", "phyllotaxis", "truchet_flow", "hypocycloid", "voronoi_relaxed", "wave_ripple_2d", "sierpinski_tri", "geo_fractal_triangle", "geo_hilbert_curve"],
+    "\u2699 Tech, Carbon & Industrial": ["carbon_fiber", "kevlar_weave", "nanoweave", "basket_weave_alt", "carbon_alt_1", "carbon_weave_pattern", "exhaust_wrap_alt", "geo_weave", "hex_carbon", "multi_directional", "wavy_carbon", "chainlink", "chainmail", "corrugated", "diamond_plate", "expanded_metal", "hammered", "hex_mesh", "metal_flake", "perforated", "data_stream", "glitch_scan", "matrix_rain", "pixel_grid", "shokk_bitrot", "shokk_cipher_pattern", "shokk_firewall", "shokk_hex_dump", "shokk_kernel_panic", "shokk_overflow", "shokk_packet_storm", "shokk_scan_line", "shokk_signal_noise", "shokk_zero_day", "circuit_traces", "hex_circuit", "biomech_cables", "dendrite_web", "crystal_lattice", "chainmail_hex", "graphene_hex", "gear_mesh", "vinyl_record", "fiber_optic", "sonar_ping", "waveform_stack"],
+    "\u25c6 Geometry, Deco & Op-Art": ["art_deco", "celtic_knot", "chevron", "crosshatch", "greek_key", "pinstripe", "plaid", "tessellation", "art_deco_fan", "chevron_stack", "quatrefoil", "herringbone", "basket_weave", "houndstooth", "argyle", "tartan", "op_art_rings", "moire_grid", "lozenge_tile", "ogee_lattice", "concentric_op", "checker_warp", "barrel_distort", "moire_interference", "twisted_rings", "spiral_hypnotic", "necker_grid", "radial_pulse", "hex_op", "pinwheel_tiling", "impossible_grid", "rose_curve", "art_deco_sunburst", "art_deco_chevron", "greek_meander", "star_tile_mosaic", "escher_reptile", "constructivist", "bauhaus_system", "celtic_plait", "cane_weave", "cable_knit", "damask_brocade", "tatami_grid"],
+    "\ud83c\udf3f Nature, Animals & Weather": ["camo", "crocodile", "dazzle", "feather", "giraffe", "leopard", "multicam", "snake_skin", "snake_skin_2", "snake_skin_3", "snake_skin_4", "tiger_stripe", "zebra", "aurora_bands", "hailstorm", "lightning", "plasma", "ripple", "sandstorm", "solar_flare", "tornado", "wave", "marble_veining", "wood_burl", "seigaiha_scales", "ammonite_chambers", "peacock_eye", "dragonfly_wing_pattern", "insect_compound", "diatom_radial", "coral_polyp", "birch_bark", "pine_cone_scale", "geode_crystal", "nature_bark_rough", "nature_water_ripple_pat"],
+    "\ud83c\udf0e Cultural, World & Dark": ["aztec", "aztec_alt1", "aztec_alt2", "dragon_scale", "dragon_scale_alt", "fleur_de_lis", "fleur_de_lis_alt", "japanese_wave", "mandala", "mandela_ornate", "mosaic", "muertos_dod1", "muertos_dod2", "rune_symbols", "steampunk_gears", "tribal_norse_runes", "tribal_celtic_spiral", "barbed_wire", "gothic_arch", "gothic_scroll", "iron_emblem", "five_point_star", "razor_wire", "skull", "skull_wings", "spiderweb", "thorn_vine", "spiral_fern", "zigzag_bands", "radial_calendar", "triple_knot", "diagonal_interlace", "diamond_blanket", "step_fret", "concentric_dot_rings", "medallion_lattice", "eight_point_star", "petal_frieze", "cloud_scroll"],
+    "\ud83c\udf9e Decades 50s-80s": ["decade_50s_diner_checkerboard", "decade_50s_jukebox_arc", "decade_50s_sputnik_orbit", "decade_50s_drivein_marquee", "decade_50s_fallout_shelter", "decade_50s_boomerang_formica", "decade_50s_atomic_reactor", "decade_50s_diner_chrome", "decade_50s_crt_phosphor", "decade_50s_casino_felt", "decade_60s_peace_sign", "decade_60s_tie_dye_spiral", "decade_60s_lava_lamp_blob", "decade_60s_opart_illusion", "decade_60s_pop_art_halftone", "decade_60s_gogo_check", "decade_60s_caged_square", "decade_60s_peter_max_gradient", "decade_60s_peter_max_alt", "Halftone_Rainbow", "12155818_4903117", "12267458_4936872", "12284536_4958169", "12428555_4988298", "144644845_10133112", "decade_70s_earth_tone_geo", "248169", "6868396_23455", "78534344_9837553_1", "decade_70s_funk_zigzag", "Groovy_Swirl", "Plad_Wrapper", "decade_70s_studio54_glitter", "decade_70s_pong_pixel", "decade_80s_pacman_maze", "decade_80s_neon_grid", "decade_80s_rubiks_cube", "decade_80s_rubiks_cube_2", "decade_80s_rubiks_cube_3", "decade_80s_boombox_speaker", "decade_80s_nintendo_dpad", "decade_80s_breakdance_spin", "decade_80s_laser_tag", "decade_80s_leg_warmer"],
+    "\ud83d\udcbf 90s, Skate & Surf": ["decade_90s_grunge_splatter", "decade_90s_nirvana_smiley", "decade_90s_cross_colors", "decade_90s_tamagotchi_egg", "decade_90s_sega_blast", "decade_90s_fresh_prince", "decade_90s_floppy_disk", "decade_90s_rave_zigzag", "decade_90s_y2k_bug", "decade_90s_tribal_tattoo", "decade_90s_dialup_static", "decade_90s_slap_bracelet", "decade_90s_windows95", "decade_90s_chrome_bubble", "decade_90s_rugrats_squiggle", "decade_90s_rollerblade_streak", "decade_90s_beanie_tag", "decade_90s_dot_matrix", "decade_90s_geo_minimal", "decade_90s_sbtb_wall", "Billabong_Board", "Billabong_Surf_Style", "Blind_Skateboy", "Bong_Surfer", "Hardcore_Punk", "Hero_Skate", "Hydro_Wave", "Punk_Rock_Zine", "Skate_Deck", "Skate_Reaper_Glowing_Eyes", "Skate_Reaper_Tiled", "Surf_80s", "Surfin_80s", "Thrash_Metal_Skate_Alt", "Thrash_Metal_Skate", "Tiki_Surf"],
+    "\u2728 Reactive & Surface Accents": ["shimmer_quantum_shard", "shimmer_prism_frost", "shimmer_velvet_static", "shimmer_chrome_flux", "shimmer_matte_halo", "shimmer_oil_tension", "shimmer_neon_weft", "shimmer_void_dust", "shimmer_turbine_sheen", "shimmer_spectral_mesh", "iridescent_fog", "chrome_delete_edge", "carbon_clearcoat_lock", "racing_scratch", "pearlescent_flip", "frost_crystal", "satin_wax", "uv_night_accent"],
+    "\ud83c\udf86 Let Freedom Ring": ["lfr_star_lattice", "lfr_stripe_drift", "lfr_bunting_scallop", "lfr_distressed_flag", "lfr_eagle_crest", "lfr_firework_radial", "lfr_constellation_field", "lfr_ribbon_weave", "lfr_stencil_stars", "lfr_liberty_filigree"],
 };
 
 // Alpha UX curation:
@@ -2614,6 +6100,10 @@ const GRADIENT_DEFS = [
 ];
 
 // REMOVED: Mirror gradients (all gradm_ entries deleted)
+// Compatibility sentinel: getFinishColorsForId still probes this retired
+// family for old saved-project ids.  Keep it defined and empty so a legacy
+// lookup returns null instead of throwing ReferenceError.
+const GRADIENT_MIRROR_DEFS = [];
 
 // REMOVED: 3-Color gradients (all grad3_ entries deleted)
 // REMOVED: 3-Color gradients (all grad3_ entries deleted)
@@ -2723,33 +6213,11 @@ const GHOST_GRADIENT_DEFS = [];
 // REMOVED: Ghost gradient forEach + category
 
 // Multi-Color Pattern entries - now with real 3-color palettes [id, name, [c1,c2,c3], ptype]
-const MC_DEFS = [
-    ["mc_usa_flag", "All-American", ["racing_red", "white", "royal_blue"], "swirl"],
-    ["mc_rasta", "Rasta", ["racing_red", "sunburst_yellow", "forest_green"], "swirl"],
-    ["mc_halloween", "Halloween", ["fire_orange", "black", "purple"], "swirl"],
-    ["mc_christmas", "Christmas", ["racing_red", "forest_green", "white"], "swirl"],
-    ["mc_miami_vice", "Miami Vice", ["hot_pink", "teal", "white"], "swirl"],
-    ["mc_fire_storm", "Fire Storm", ["racing_red", "fire_orange", "sunburst_yellow"], "swirl"],
-    ["mc_deep_space", "Deep Space", ["navy", "purple", "white"], "swirl"],
-    ["mc_tropical", "Tropical", ["lime_green", "sunburst_yellow", "teal"], "swirl"],
-    ["mc_vaporwave", "Vaporwave", ["hot_pink", "purple", "teal"], "swirl"],
-    ["mc_earth_tone", "Earth Tone", ["bronze", "forest_green", "sunburst_yellow"], "swirl"],
-    ["mc_woodland_camo", "Woodland Camo", ["forest_green", "bronze", "black"], "camo"],
-    ["mc_desert_camo", "Desert Camo", ["bronze", "sunburst_yellow", "gunmetal"], "camo"],
-    ["mc_urban_camo", "Urban Camo", ["gunmetal", "silver", "black"], "camo"],
-    ["mc_snow_camo", "Snow Camo", ["white", "silver", "sky_blue"], "camo"],
-    ["mc_neon_camo", "Neon Camo", ["lime_green", "hot_pink", "sunburst_yellow"], "camo"],
-    ["mc_blue_camo", "Blue Camo", ["royal_blue", "navy", "sky_blue"], "camo"],
-    ["mc_white_marble", "White Marble", ["white", "silver", "gunmetal"], "marble"],
-    ["mc_black_marble", "Black Marble", ["black", "gunmetal", "white"], "marble"],
-    ["mc_green_marble", "Green Marble", ["forest_green", "lime_green", "white"], "marble"],
-    ["mc_red_marble", "Red Marble", ["racing_red", "black", "white"], "marble"],
-    ["mc_gold_marble", "Gold Marble", ["gold", "bronze", "black"], "marble"],
-    ["mc_paint_splat", "Paint Splatter", ["racing_red", "sunburst_yellow", "royal_blue"], "splatter"],
-    ["mc_ink_splat", "Ink Splatter", ["black", "gunmetal", "white"], "splatter"],
-    ["mc_neon_splat", "Neon Splatter", ["hot_pink", "lime_green", "sunburst_yellow"], "splatter"],
-    ["mc_blood_splat", "Blood Splatter", ["racing_red", "black", "gunmetal"], "splatter"],
-];
+// 2026-06-03: MC_DEFS emptied (25 dynamic mc_* tiles scrubbed — orphan, zero live picker refs).
+// MUST stay an EMPTY array, not deleted: the forEach below + the .find in getFinishColorsForId
+// reference it, so removing the literal threw a top-level ReferenceError that bricked the whole
+// finish-data module (catalog failed to populate). Empty = harmless no-ops, no mc_* tiles.
+const MC_DEFS = [];
 const MC_CATS = { swirl: "Multi Swirl", camo: "Multi Camo", marble: "Multi Marble", splatter: "Multi Splatter" };
 Object.values(MC_CATS).forEach(c => COLOR_MONO_GROUPS[c] = []);
 MC_DEFS.forEach(([id, name, colors, ptype]) => {
@@ -2772,12 +6240,43 @@ MONOLITHICS.push(...COLOR_MONOLITHICS);
         BASES.forEach(function (b) { if (b && b.id) liveSpecialIds.add(b.id); });
     }
     MONOLITHICS.forEach(function (m) { if (m && m.id) liveSpecialIds.add(m.id); });
+    // [2026-08-09 S18] This prune runs at PARSE time, but /api/finish-data
+    // merges hundreds of registry ids into MONOLITHICS a moment later - so an
+    // id with a perfectly good declared family was being dropped here and had
+    // no way back, ending up in the picker's leftover bucket forever.
+    // MEASURED: 62 such ids (cs_amber_indigo and the rest of Color-Shift Duos
+    // among them - that family rendered EMPTY). Remember where each one lived
+    // so paint-booth-1-data.js can put it back once the merge proves it real.
+    // Nothing is restored blindly: only ids that are live after the merge.
+    var prunedHomes = {};
     Object.keys(SPECIAL_GROUPS).forEach(function (groupName) {
         if (!Array.isArray(SPECIAL_GROUPS[groupName])) return;
         SPECIAL_GROUPS[groupName] = SPECIAL_GROUPS[groupName].filter(function (id) {
-            return liveSpecialIds.has(id);
+            if (liveSpecialIds.has(id)) return true;
+            if (!prunedHomes[id]) prunedHomes[id] = groupName;
+            return false;
         });
     });
+    try { window.SPB_PRUNED_SPECIAL_HOMES = prunedHomes; } catch (e) {}
+})();
+
+// [2026-09-05 RETIRED LEDGER] LAST word on what the picker may show. js/spb-retired-catalog.js
+// (generated from scripts/retired_catalog.json) removes every retired id and group from the
+// final picker tables AFTER all merges/rehomes above, and purges them from the S18 restore
+// map so paint-booth-1-data.js cannot put them back. Owner 2026-09-05: "MAKE SURE that things
+// that are supposed to be dead and buried stay dead and buried." Gate: scripts/spb_retired_gate.py
+(function applyRetiredLedgerAtParse() {
+    try {
+        if (typeof window === 'undefined' || !window.SPB_RETIRED) return;
+        var n = window.SPB_RETIRED.prune({
+            SPECIAL_GROUPS: (typeof SPECIAL_GROUPS !== 'undefined') ? SPECIAL_GROUPS : null,
+            BASE_GROUPS: (typeof BASE_GROUPS !== 'undefined') ? BASE_GROUPS : null,
+            PATTERN_GROUPS: (typeof PATTERN_GROUPS !== 'undefined') ? PATTERN_GROUPS : null,
+            SPECIALS_SECTIONS: (typeof SPECIALS_SECTIONS !== 'undefined') ? SPECIALS_SECTIONS : null,
+            homes: window.SPB_PRUNED_SPECIAL_HOMES || null
+        });
+        if (n) console.log('[FinishData] Retired ledger: ' + n + ' retired id/group reference(s) removed at parse');
+    } catch (e) { console.warn('[FinishData] retired ledger prune failed', e); }
 })();
 
 // SPECIAL_GROUPS is already complete (reimagined taxonomy, JS-resolvable IDs only). Do not merge COLOR_MONO_GROUPS.
@@ -3239,7 +6738,7 @@ function applyCustomDualShift() {
     var rgbA = hexToRgb(ca);
     var rgbB = hexToRgb(cb);
 
-    // Register custom shift on server, then apply as zone finish
+    // Register legacy ad-hoc shift on server, then apply as zone finish
     fetch('/api/dual-shift-register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -3259,8 +6758,8 @@ function applyCustomDualShift() {
                 z.finish = data.finish_id;
                 z.base = null;
                 z.pattern = 'none';
-                z.finishName = 'Custom Shift: ' + ca.toUpperCase() + ' → ' + cb.toUpperCase();
-                // Store custom shift metadata for preset save/restore
+                z.finishName = 'Legacy Dual Shift: ' + ca.toUpperCase() + ' → ' + cb.toUpperCase();
+                // Store legacy ad-hoc shift metadata for preset save/restore
                 z._customDualShift = { colorA: ca, colorB: cb, intensity: intensity };
                 if (typeof renderZones === 'function') renderZones();
                 if (typeof renderZoneDetail === 'function') renderZoneDetail(_dualShiftTargetZone);
@@ -3268,14 +6767,14 @@ function applyCustomDualShift() {
             }
             closeDualShiftModal();
             if (typeof showToast === 'function') {
-                showToast('Custom Dual Shift applied! Rendering...', 'success');
+                showToast('Legacy dual shift applied! Rendering...', 'success');
             }
         } else {
-            alert('Failed to register custom shift: ' + (data.error || 'Unknown error'));
+            alert('Failed to register legacy dual shift: ' + (data.error || 'Unknown error'));
         }
     })
     .catch(function (err) {
-        console.error('Custom dual shift registration failed:', err);
+        console.error('Legacy dual shift registration failed:', err);
         alert('Server error: ' + err.message);
     });
 }
@@ -3325,6 +6824,41 @@ const DEFAULT_ZONES = [
 // INDEXED LOOKUPS — O(1) access for what was previously O(n) array scanning.
 // =============================================================================
 const FINISH_BY_NAME = {};   // lowercased-name -> finish object (BASES + PATTERNS + MONOLITHICS)
+// =============================================================================
+// FOUNDATION ONE — retired base ids -> surviving cell (owner 2026-09-03).
+// Mirror of BASE_ID_ALIASES in engine/base_registry_data.py (the server applies the
+// same map dead-last in every registry). Presets, templates and Easy Mode resolve
+// through spbResolveBaseId(); the retired flat cells also stay in BASES flagged
+// `retired: true` so any other lookup still finds a name.
+// =============================================================================
+const BASE_ID_ALIASES = {
+    living_matte: "matte", f_soft_matte: "matte", f_neutral_grey: "matte",
+    clear_matte: "primer", f_pure_black: "primer",
+    f_gel_coat: "wet_look", f_baked_enamel: "gloss", f_soft_gloss: "gloss",
+    silk: "satin", f_clear_satin: "satin", f_vinyl_wrap: "satin",
+    f_warm_white: "eggshell", f_pure_white: "eggshell", scuffed_satin: "eggshell",
+    f_anodized: "f_brushed",
+    enh_gloss: "gloss", enh_matte: "matte", enh_satin: "satin", enh_metallic: "f_metallic",
+    enh_pearl: "f_pearl", enh_chrome: "f_chrome", enh_satin_chrome: "f_satin_chrome",
+    enh_anodized: "f_brushed", enh_baked_enamel: "gloss", enh_brushed: "f_brushed",
+    enh_carbon_fiber: "f_carbon_fiber", enh_frozen: "f_frozen", enh_gel_coat: "wet_look",
+    enh_powder_coat: "f_powder_coat", enh_vinyl_wrap: "satin", enh_soft_gloss: "gloss",
+    enh_soft_matte: "matte", enh_warm_white: "eggshell", enh_ceramic_glaze: "wet_look",
+    enh_silk: "satin", enh_eggshell: "eggshell", enh_primer: "primer", enh_clear_matte: "primer",
+    enh_semi_gloss: "semi_gloss", enh_wet_look: "wet_look", enh_piano_black: "wet_look",
+    enh_living_matte: "matte", enh_neutral_grey: "matte", enh_clear_satin: "satin", enh_pure_black: "primer",
+    efx_aurora_obsidian_veil: "efx_aurora_skin", efx_damascus_trinity: "efx_damascus_fold",
+    efx_cathedral_holographic: "efx_cathedral_veil", efx_tempered_quattro: "efx_tempered_spectrum",
+    efx_crystalline_triad: "efx_frost_fractal", efx_volcanic_triad: "efx_volcanic_obsidian",
+    efx_aurora_fold: "efx_aurora_skin",
+};
+function spbResolveBaseId(id) {
+    if (typeof id !== 'string' || !id) return id;
+    var seen = 0, cur = id;
+    while (Object.prototype.hasOwnProperty.call(BASE_ID_ALIASES, cur) && seen < 8) { cur = BASE_ID_ALIASES[cur]; seen++; }
+    return cur;
+}
+
 const BASES_BY_ID    = {};
 const PATTERNS_BY_ID = {};
 const SPEC_PATTERNS_BY_ID = {};
@@ -3337,6 +6871,10 @@ const MONOLITHICS_BY_ID   = {};
                 var b = BASES[i];
                 if (b && b.id)   BASES_BY_ID[b.id] = b;
                 if (b && b.name) FINISH_BY_NAME[String(b.name).toLowerCase()] = b;
+            }
+            // FOUNDATION ONE: retired ids that no longer have a BASES entry resolve to their survivor.
+            for (var aliasId in BASE_ID_ALIASES) {
+                if (!BASES_BY_ID[aliasId]) { var tgt = BASES_BY_ID[spbResolveBaseId(aliasId)]; if (tgt) BASES_BY_ID[aliasId] = tgt; }
             }
         }
         if (typeof PATTERNS !== 'undefined' && Array.isArray(PATTERNS)) {
@@ -3503,10 +7041,15 @@ function validateFinishData() {
                     });
                 }
             }
+            // 2026-06-01: these 11 bases are INTENTIONALLY ungrouped. The "Racing Heritage" picker
+            // group was removed by owner mandate 2026-05-18 (see BASE_GROUPS comment ~L2965) but the
+            // BASES entries stay because other family lists + HERO_BASES cross-reference them. They are
+            // deliberately out of the picker — don't report them as a data defect.
+            var INTENTIONAL_UNGROUPED_BASES = new Set(['asphalt_grind', 'barn_find', 'checkered_chrome', 'drag_strip_gloss', 'endurance_ceramic', 'pace_car_pearl', 'race_day_gloss', 'rally_mud', 'bullseye_chrome', 'stock_car_enamel', 'victory_lane']);
             for (var i = 0; i < BASES.length; i++) {
                 var b = BASES[i];
                 if (!b || !b.id) continue;
-                if (!groupedBase.has(b.id)) { problems.push('Ungrouped BASE: ' + b.id); counts.ungrouped_base++; }
+                if (!groupedBase.has(b.id) && !INTENTIONAL_UNGROUPED_BASES.has(b.id) && !b.retired) { problems.push('Ungrouped BASE: ' + b.id); counts.ungrouped_base++; }
                 if (!b.desc || String(b.desc).length < 20) { problems.push('Short/missing desc on BASE: ' + b.id); counts.missing_desc++; }
                 if (!b.swatch) { problems.push('Missing swatch on BASE: ' + b.id); counts.missing_swatch++; }
                 else if (!hexRe.test(b.swatch) && String(b.swatch).indexOf('linear-gradient') < 0) {
@@ -3614,6 +7157,8 @@ if (typeof window !== 'undefined') {
     window.getFinishMetadata    = getFinishMetadata;
     window.validateFinishData   = validateFinishData;
     window.BASES_BY_ID          = BASES_BY_ID;
+    window.BASE_ID_ALIASES      = BASE_ID_ALIASES;
+    window.spbResolveBaseId     = spbResolveBaseId;
     window.PATTERNS_BY_ID       = PATTERNS_BY_ID;
     window.SPEC_PATTERNS_BY_ID  = SPEC_PATTERNS_BY_ID;
     window.MONOLITHICS_BY_ID    = MONOLITHICS_BY_ID;

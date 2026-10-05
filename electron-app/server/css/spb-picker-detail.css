@@ -1,0 +1,60 @@
+/* Owner 2026-09-15: five readable finish cards per desktop row. */
+body #swatchPopup.active .swatch-grid-row {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+}
+body #swatchPopup.active .swatch-group.collapsed .swatch-grid-row { display: none !important; }
+body #swatchPopup.active .swatch-grid-row > .swatch-item {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+}
+body #swatchPopup.active .swatch-catalog-card .swatch-square.swatch-split {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 2 / 1;
+}
+body #swatchPopup.active .swatch-catalog-card .swatch-label { font-size: 14px !important; }
+body #swatchPopup.active .swatch-catalog-card .swatch-card-desc { font-size: 12px !important; }
+body #swatchPopup.active .swatch-rate-slider {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    height: 36px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    touch-action: none;
+    cursor: ew-resize !important;
+}
+body #swatchPopup.active .swatch-rate-slider::-webkit-slider-runnable-track {
+    height: 8px !important;
+    border-radius: 5px !important;
+    background: linear-gradient(90deg, var(--accent, #00e5ff) var(--rating-fill, 50%), #343947 var(--rating-fill, 50%)) !important;
+}
+body #swatchPopup.active .swatch-rate-slider::-webkit-slider-thumb {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    width: 24px !important;
+    height: 24px !important;
+    margin-top: -8px !important;
+    border: 2px solid var(--accent, #00e5ff) !important;
+    border-radius: 50% !important;
+    background: #fff !important;
+    box-shadow: 0 1px 4px #000a !important;
+    transform: none !important;
+}
+body #swatchPopup.active .swatch-rate-slider:focus-visible { outline: 2px solid var(--accent, #00e5ff); outline-offset: 2px; }
+body #swatchPopup.active .swatch-fav-btn { min-width: 32px; min-height: 32px; font-size: 18px; }
+@media (max-width: 1300px) {
+    body #swatchPopup.active .swatch-grid-row { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 1000px) {
+    body #swatchPopup.active .swatch-grid-row { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 720px) {
+    body #swatchPopup.active .swatch-grid-row { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 440px) {
+    body #swatchPopup.active .swatch-grid-row { grid-template-columns: minmax(0, 1fr) !important; }
+}

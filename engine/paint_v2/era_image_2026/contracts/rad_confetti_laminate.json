@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_confetti_laminate",
+  "display_name": "Memphis: Confetti Laminate",
+  "promise": "Tiny primary-color confetti, black hatch marks and bright chips beneath glossy melamine.",
+  "carrier_grammar": "Tiny primary-color confetti, black hatch marks and bright chips beneath glossy melamine. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for turquoise laminate, red confetti rectangles, yellow paper chips, cobalt confetti flecks, black printed hatches is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny primary-color confetti, black hatch marks and bright chips beneath glossy melamine. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_confetti_laminate.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "turquoise laminate",
+      "role": "Actual shared paint and spec geometry: turquoise laminate"
+    },
+    {
+      "name": "red confetti rectangles",
+      "role": "Actual shared paint and spec geometry: red confetti rectangles"
+    },
+    {
+      "name": "yellow paper chips",
+      "role": "Actual shared paint and spec geometry: yellow paper chips"
+    },
+    {
+      "name": "cobalt confetti flecks",
+      "role": "Actual shared paint and spec geometry: cobalt confetti flecks"
+    },
+    {
+      "name": "black printed hatches",
+      "role": "Actual shared paint and spec geometry: black printed hatches"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "turquoise laminate",
+      "red confetti rectangles",
+      "yellow paper chips",
+      "cobalt confetti flecks",
+      "black printed hatches"
+    ],
+    "R": [
+      "turquoise laminate",
+      "red confetti rectangles",
+      "yellow paper chips",
+      "cobalt confetti flecks",
+      "black printed hatches"
+    ],
+    "Cc": [
+      "turquoise laminate",
+      "red confetti rectangles",
+      "yellow paper chips",
+      "cobalt confetti flecks",
+      "black printed hatches"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_terrazzo_chip",
+      "difference": "This finish uses Memphis microconfetti laminate: precise minute red yellow cobalt rectangles, small pink dashes, thin black hash marks, ivory flecks, on turquoise-green substrate. Flat uniform gloss; dense tiny orthogonal and skew fragments; no big terrazzo stones or large patches.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_sprite_sheet",
+      "difference": "This finish uses Memphis microconfetti laminate: precise minute red yellow cobalt rectangles, small pink dashes, thin black hash marks, ivory flecks, on turquoise-green substrate. Flat uniform gloss; dense tiny orthogonal and skew fragments; no big terrazzo stones or large patches.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "turquoise laminate is visible in the authored geometry",
+      "red confetti rectangles is visible in the authored geometry",
+      "yellow paper chips is visible in the authored geometry",
+      "cobalt confetti flecks is visible in the authored geometry",
+      "black printed hatches is visible in the authored geometry"
+    ],
+    "source_sha256": "b300a43f5ee4ff27ba3b97a3cbec40521bf32bedd930552dc7c77ab0379c855d",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_confetti_laminate-authored-Tiny primary-color confetti, black hatch marks and bright chips beneath glossy melamine. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_confetti_laminate-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 79.9,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "68770ea1f5bb83b385ea243729d86eb825ed337cb8b901e7f107aeed4adf45d3"
+}

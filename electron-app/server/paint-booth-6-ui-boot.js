@@ -121,9 +121,87 @@
         let selectedDecalIndex = -1;
         let decalScaleStart = null; // { index, scale0, cx, cy, dist0 }
         let decalRotateStart = null; // { index, rotation0, angle0 }
+        let decalUndoStack = [];
+        let decalRedoStack = [];
+        const DECAL_UNDO_MAX = 40;
+
+        function _spbEscapeDecalHtml(value) {
+            if (typeof escapeHtml === 'function') return escapeHtml(value);
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
 
         const DECAL_HANDLE_RADIUS = 8;
         const DECAL_ROTATE_HANDLE_OFFSET = 28;
+
+        function snapshotDecalLayers() {
+            return decalLayers.map(d => Object.assign({}, d));
+        }
+
+        function restoreDecalSnapshot(snapshot, selectedIdx) {
+            decalLayers = (snapshot || []).map(d => Object.assign({}, d));
+            selectedDecalIndex = Math.max(-1, Math.min(selectedIdx == null ? -1 : selectedIdx, decalLayers.length - 1));
+            draggingDecal = -1;
+            decalScaleStart = null;
+            decalRotateStart = null;
+            renderDecalList();
+            renderDecalOverlay();
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+        }
+
+        function clearDecalRedo() {
+            decalRedoStack.length = 0;
+        }
+        if (typeof window !== 'undefined') window.clearDecalRedo = clearDecalRedo;
+
+        function pushDecalUndo(label) {
+            decalUndoStack.push({
+                snapshot: snapshotDecalLayers(),
+                selectedIndex: selectedDecalIndex,
+                label: label || 'decal edit',
+            });
+            if (decalUndoStack.length > DECAL_UNDO_MAX) decalUndoStack.shift();
+            if (typeof _clearAllRedos === 'function') _clearAllRedos(); else clearDecalRedo();
+            if (typeof _recordUndoAction === 'function') _recordUndoAction('decal');
+        }
+        if (typeof window !== 'undefined') window.pushDecalUndo = pushDecalUndo;
+
+        function undoDecalEdit() {
+            if (decalUndoStack.length === 0) return false;
+            const entry = decalUndoStack.pop();
+            decalRedoStack.push({
+                snapshot: snapshotDecalLayers(),
+                selectedIndex: selectedDecalIndex,
+                label: entry.label,
+            });
+            restoreDecalSnapshot(entry.snapshot, entry.selectedIndex);
+            if (typeof showToast === 'function') showToast('Undid decal: ' + entry.label);
+            return true;
+        }
+        if (typeof window !== 'undefined') window.undoDecalEdit = undoDecalEdit;
+
+        function redoDecalEdit() {
+            if (decalRedoStack.length === 0) return false;
+            const entry = decalRedoStack.pop();
+            decalUndoStack.push({
+                snapshot: snapshotDecalLayers(),
+                selectedIndex: selectedDecalIndex,
+                label: entry.label,
+            });
+            restoreDecalSnapshot(entry.snapshot, entry.selectedIndex);
+            if (typeof showToast === 'function') showToast('Redo decal: ' + entry.label);
+            return true;
+        }
+        if (typeof window !== 'undefined') window.redoDecalEdit = redoDecalEdit;
+
+        if (typeof window !== 'undefined') {
+            window.hasDecalUndo = function () { return decalUndoStack.length > 0; };
+            window.hasDecalRedo = function () { return decalRedoStack.length > 0; };
+        }
 
         function getPaintCanvasSize() {
             const c = document.getElementById('paintCanvas');
@@ -162,6 +240,7 @@
             _spbBuildLayerBitmap(img, targetW, targetH, (layerImg) => {
                 const finalW = layerImg.naturalWidth || layerImg.width || Math.max(1, Math.round(targetW));
                 const finalH = layerImg.naturalHeight || layerImg.height || Math.max(1, Math.round(targetH));
+                let toastMessage = opts.successToast || '';
                 if (typeof _psdLayers !== 'undefined') {
                     const newLayer = {
                         id: (opts.idPrefix || 'decal') + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
@@ -176,6 +255,9 @@
                         locked: false,
                         effects: null,
                     };
+                    if (typeof _pushLayerStackUndo === 'function') {
+                        _pushLayerStackUndo('add imported layer: ' + newLayer.name);
+                    }
                     _psdLayers.push(newLayer);
                     _psdLayersLoaded = true;
                     _selectedLayerId = newLayer.id;
@@ -185,7 +267,9 @@
                     if (typeof drawLayerBounds === 'function') drawLayerBounds();
                     if (typeof switchRightTab === 'function') switchRightTab('layers');
                     if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+                    toastMessage = opts.layerSuccessToast || ('Added as layer: ' + newLayer.name + ' - use Move (V) or Transform Layer; use a layer-restricted zone for material.');
                 } else {
+                    pushDecalUndo('add decal object');
                     decalLayers.push({
                         name: opts.legacyName || opts.name || 'Decal',
                         img: layerImg,
@@ -202,8 +286,10 @@
                     selectedDecalIndex = decalLayers.length - 1;
                     renderDecalList();
                     renderDecalOverlay();
+                    if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+                    toastMessage = opts.legacySuccessToast || toastMessage || ('Added as decal object: ' + (opts.legacyName || opts.name || 'Decal') + ' - drag to move, use handles to scale/rotate.');
                 }
-                if (opts.successToast && typeof showToast === 'function') showToast(opts.successToast);
+                if (toastMessage && typeof showToast === 'function') showToast(toastMessage);
             });
         }
 
@@ -295,7 +381,8 @@
                         y: y,
                         width: dw,
                         height: dh,
-                        successToast: 'Decal added: ' + file.name + ' - drag to move, use handles to scale/rotate',
+                        layerSuccessToast: 'Added as layer: ' + (fileName || file.name || 'Sponsor') + ' - use Move (V) or Transform Layer; use a layer-restricted zone for material.',
+                        legacySuccessToast: 'Added as decal object: ' + file.name + ' - drag to move, use handles to scale/rotate.',
                     });
                 };
                 img.src = blobUrl;
@@ -311,6 +398,7 @@
             // remaining decals down but left the drag handles pointing at
             // stale indices. Next mousemove then moved the WRONG decal
             // (or threw on undefined). Full splice-aware fixup here.
+            pushDecalUndo('remove decal');
             decalLayers.splice(idx, 1);
             if (selectedDecalIndex === idx) selectedDecalIndex = -1;
             else if (selectedDecalIndex > idx) selectedDecalIndex--;
@@ -351,12 +439,14 @@
         // class as marathon #15 (zone reorder) and this shift's C1/C2/H1.
         function setDecalFlipH(idx, val) {
             if (!decalLayers[idx]) return;
+            pushDecalUndo('flip decal horizontal');
             decalLayers[idx].flipH = !!val;
             renderDecalOverlay();
             if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
         }
         function setDecalFlipV(idx, val) {
             if (!decalLayers[idx]) return;
+            pushDecalUndo('flip decal vertical');
             decalLayers[idx].flipV = !!val;
             renderDecalOverlay();
             if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
@@ -364,6 +454,7 @@
 
         function snapDecalToCanvas(idx) {
             if (!decalLayers[idx]) return;
+            pushDecalUndo('snap decal to canvas');
             decalLayers[idx].x = 0;
             decalLayers[idx].y = 0;
             decalLayers[idx].scale = 1.0;
@@ -378,6 +469,7 @@
 
         function setDecalScale(idx, val) {
             if (!decalLayers[idx]) return;
+            pushDecalUndo('scale decal');
             decalLayers[idx].scale = parseFloat(val);
             renderDecalOverlay();
             if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
@@ -385,6 +477,7 @@
 
         function setDecalOpacity(idx, val) {
             if (!decalLayers[idx]) return;
+            pushDecalUndo('opacity decal');
             decalLayers[idx].opacity = parseInt(val);
             renderDecalOverlay();
             if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
@@ -392,13 +485,23 @@
 
         function setDecalRotation(idx, val) {
             if (!decalLayers[idx]) return;
+            pushDecalUndo('rotate decal');
             decalLayers[idx].rotation = parseInt(val);
+            renderDecalOverlay();
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+        }
+
+        function setDecalSpecFinish(idx, val) {
+            if (!decalLayers[idx]) return;
+            pushDecalUndo('decal spec finish');
+            decalLayers[idx].specFinish = val || 'none';
             renderDecalOverlay();
             if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
         }
 
         function toggleDecalVisibility(idx) {
             if (!decalLayers[idx]) return;
+            pushDecalUndo('toggle decal visibility');
             decalLayers[idx].visible = !decalLayers[idx].visible;
             renderDecalList();
             renderDecalOverlay();
@@ -424,9 +527,11 @@
             }
             decalLayers.forEach((d, idx) => {
                 const sel = selectedDecalIndex === idx;
+                const decalName = _spbEscapeDecalHtml(d.name || 'Decal');
+                const decalSrc = _spbEscapeDecalHtml(d.img && d.img.src ? d.img.src : '');
                 html += `<div class="decal-layer-row" ${sel ? ' style="border-color:var(--accent-blue);"' : ''}>
-            <img class="decal-thumb" src="${d.img.src}" alt="${d.name}">
-            <span class="decal-name" title="${d.name}">${d.name}</span>
+            <img class="decal-thumb" src="${decalSrc}" alt="${decalName}">
+            <span class="decal-name" title="${decalName}">${decalName}</span>
             <button onclick="setSelectedDecal(${idx})" title="${sel ? 'Selected' : 'Click to select on canvas'}" style="font-size:9px; padding:2px 6px;">${sel ? '●' : '○'}</button>
             <div class="decal-controls">
                 <span>Sc</span>
@@ -441,7 +546,7 @@
                 <button onclick="snapDecalToCanvas(${idx})" title="Snap to Canvas — reset to position (0,0), scale 1.0, no rotation" style="color:#00C8C8;">⊞</button>
                 <button onclick="removeDecal(${idx})" title="Remove">&times;</button>
             </div>
-            <select onchange="decalLayers[${idx}].specFinish = this.value; renderDecalOverlay();"
+            <select onchange="setDecalSpecFinish(${idx}, this.value)"
                     style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:2px 4px; font-size:10px; width:100%;"
                     title="Apply a spec finish to just this decal's pixels.">
               <option value="none" ${(!d.specFinish || d.specFinish === 'none') ? 'selected' : ''}>No Spec Finish</option>
@@ -474,36 +579,23 @@
                     {id: 'matte',          name: 'Matte'},
                     {id: 'satin',          name: 'Satin'},
                     {id: 'semi_gloss',     name: 'Semi Gloss'},
-                    {id: 'silk',           name: 'Silk'},
                     {id: 'wet_look',       name: 'Wet Look'},
-                    {id: 'clear_matte',    name: 'Clear Matte'},
                     {id: 'flat_black',     name: 'Flat Black'},
                     {id: 'primer',         name: 'Primer'},
                     {id: 'eggshell',       name: 'Eggshell'},
-                    {id: 'ceramic',        name: 'Ceramic'},
-                    {id: 'piano_black',    name: 'Piano Black'},
-                    {id: 'scuffed_satin',  name: 'Scuffed Satin'},
-                    {id: 'chalky_base',    name: 'Chalky'},
-                    {id: 'living_matte',   name: 'Living Matte'},
-                    {id: 'f_chrome',       name: 'Chrome (Foundation)'},
-                    {id: 'f_satin_chrome', name: 'Satin Chrome (Foundation)'},
-                    {id: 'f_metallic',     name: 'Metallic (Foundation)'},
-                    {id: 'f_pearl',        name: 'Pearl (Foundation)'},
-                    {id: 'f_carbon_fiber', name: 'Carbon Fiber (Foundation)'},
-                    {id: 'f_brushed',      name: 'Brushed (Foundation)'},
-                    {id: 'f_frozen',       name: 'Frozen (Foundation)'},
-                    {id: 'f_powder_coat',  name: 'Powder Coat (Foundation)'},
-                    {id: 'f_anodized',     name: 'Anodized (Foundation)'},
-                    {id: 'f_vinyl_wrap',   name: 'Vinyl Wrap (Foundation)'},
-                    {id: 'f_gel_coat',     name: 'Gel Coat (Foundation)'},
-                    {id: 'f_baked_enamel', name: 'Baked Enamel (Foundation)'},
-                    {id: 'f_pure_white',   name: 'Pure White (Foundation)'},
-                    {id: 'f_pure_black',   name: 'Pure Black (Foundation)'},
-                    {id: 'f_neutral_grey', name: 'Neutral Grey (Foundation)'},
-                    {id: 'f_soft_gloss',   name: 'Soft Gloss (Foundation)'},
-                    {id: 'f_soft_matte',   name: 'Soft Matte (Foundation)'},
-                    {id: 'f_clear_satin',  name: 'Clear Satin (Foundation)'},
-                    {id: 'f_warm_white',   name: 'Warm White (Foundation)'},
+                    {id: 'wrap_ceramic_coat', name: 'Ceramic Coat'},
+                    {id: 'f_chrome',       name: 'Chrome'},
+                    {id: 'f_satin_chrome', name: 'Satin Chrome'},
+                    {id: 'f_metallic',     name: 'Metallic'},
+                    {id: 'f_pearl',        name: 'Pearl'},
+                    {id: 'f_brushed',      name: 'Brushed'},
+                    {id: 'f_frozen',       name: 'Frozen'},
+                    {id: 'f_powder_coat',  name: 'Powder Coat'},
+                    {id: 'f_candy',        name: 'Candy'},
+                    {id: 'f_bead_blast',   name: 'Bead Blast'},
+                    {id: 'f_satin_pearl',  name: 'Satin Pearl'},
+                    {id: 'f_matte_metallic', name: 'Matte Metallic'},
+                    {id: 'f_dark_chrome',  name: 'Dark Chrome'},
                 ];
                 // Loaded-data branch must expose the SAME safe set in the SAME
                 // order as the fallback: shipping f_* ids from Foundation only.
@@ -526,7 +618,11 @@
                 const options = foundationBases.length > 0
                     ? foundationBases
                     : fallback.filter(b => _decalSpecIsSupported(b.id));
-                return options.map(b => `<option value="${b.id}" ${d.specFinish === b.id ? 'selected' : ''}>${b.name}</option>`).join('');
+                return options.map(b => {
+                    const optionId = _spbEscapeDecalHtml(b.id || '');
+                    const optionName = _spbEscapeDecalHtml(b.name || b.id || '');
+                    return `<option value="${optionId}" ${d.specFinish === b.id ? 'selected' : ''}>${optionName}</option>`;
+                }).join('');
               })()}
             </select>
         </div>`;
@@ -711,7 +807,8 @@
                     y: y,
                     width: dw,
                     height: dh,
-                    successToast: 'Number decal "' + text + '" added',
+                    layerSuccessToast: 'Number layer added: #' + text + ' - use Move (V) or Transform Layer.',
+                    legacySuccessToast: 'Number decal added: #' + text + ' - drag to move, use handles to scale/rotate.',
                 });
             };
             img.src = c.toDataURL('image/png');
@@ -752,12 +849,14 @@
             if (h.action === 'select') { setSelectedDecal(h.index); return false; }
             if (h.action === 'move') {
                 const d = decalLayers[h.index];
+                pushDecalUndo('move decal');
                 draggingDecal = h.index;
                 decalDragOffset = { x: x - d.x, y: y - d.y };
                 return true;
             }
             if (h.action === 'scale') {
                 const d = decalLayers[h.index];
+                pushDecalUndo('scale decal');
                 const b = getDecalBounds(d);
                 const dist = Math.hypot(x - b.cx, y - b.cy) || 1;
                 decalScaleStart = { index: h.index, scale0: d.scale, cx: b.cx, cy: b.cy, dist0: dist };
@@ -765,6 +864,7 @@
             }
             if (h.action === 'rotate') {
                 const d = decalLayers[h.index];
+                pushDecalUndo('rotate decal');
                 const b = getDecalBounds(d);
                 const angle0 = Math.atan2(y - b.cy, x - b.cx) * 180 / Math.PI;
                 decalRotateStart = { index: h.index, rotation0: d.rotation || 0, angle0 };
@@ -782,6 +882,8 @@
 
         function endDecalDrag() {
             draggingDecal = -1;
+            if (typeof renderDecalList === 'function') renderDecalList();
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
         }
 
         function updateDecalScaleFromMouse(x, y) {
@@ -793,7 +895,11 @@
             renderDecalList();
             renderDecalOverlay();
         }
-        function endDecalScale() { decalScaleStart = null; if (typeof renderDecalList === 'function') renderDecalList(); }
+        function endDecalScale() {
+            decalScaleStart = null;
+            if (typeof renderDecalList === 'function') renderDecalList();
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+        }
 
         function updateDecalRotateFromMouse(x, y) {
             if (!decalRotateStart) return;
@@ -807,7 +913,11 @@
             renderDecalList();
             renderDecalOverlay();
         }
-        function endDecalRotate() { decalRotateStart = null; if (typeof renderDecalList === 'function') renderDecalList(); }
+        function endDecalRotate() {
+            decalRotateStart = null;
+            if (typeof renderDecalList === 'function') renderDecalList();
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+        }
 
         // ===== TEMPLATE LIBRARY (Pre-built Livery Layouts) =====
         const LIVERY_TEMPLATES = [
@@ -817,7 +927,7 @@
                 desc: "Classic dual racing stripes. Body as Zone 1, stripes as Zone 2 with a bold pattern.",
                 zones: [
                     { name: "Body", base: "gloss", pattern: "none", finish: null, intensity: "100", color: "everything", colorMode: "special" },
-                    { name: "Racing Stripes", base: "metallic", pattern: "pinstripe", finish: null, intensity: "100", color: null, colorMode: "none", scale: 2.0 }
+                    { name: "Racing Stripes", base: "f_metallic", pattern: "pinstripe", finish: null, intensity: "100", color: null, colorMode: "none", scale: 2.0 }
                 ]
             },
             {
@@ -826,8 +936,8 @@
                 desc: "Upper/lower two-tone. Assign complementary colors to each zone for a clean split.",
                 zones: [
                     { name: "Upper Body", base: "gloss", pattern: "none", finish: null, intensity: "100", color: null, colorMode: "none" },
-                    { name: "Lower Body", base: "metallic", pattern: "none", finish: null, intensity: "100", color: null, colorMode: "none" },
-                    { name: "Accent Trim", base: "chrome", pattern: "none", finish: null, intensity: "50", color: null, colorMode: "none" }
+                    { name: "Lower Body", base: "f_metallic", pattern: "none", finish: null, intensity: "100", color: null, colorMode: "none" },
+                    { name: "Accent Trim", base: "f_chrome", pattern: "none", finish: null, intensity: "50", color: null, colorMode: "none" }
                 ]
             },
             {
@@ -837,8 +947,8 @@
                 zones: [
                     { name: "Main Body", base: "gloss", pattern: "none", finish: null, intensity: "100", color: "everything", colorMode: "special" },
                     { name: "Hood/Roof", base: "matte", pattern: "none", finish: null, intensity: "100", color: null, colorMode: "none" },
-                    { name: "Side Panels", base: "metallic", pattern: "none", finish: null, intensity: "80", color: null, colorMode: "none" },
-                    { name: "Accents", base: "chrome", pattern: "none", finish: null, intensity: "50", color: null, colorMode: "none" }
+                    { name: "Side Panels", base: "f_metallic", pattern: "none", finish: null, intensity: "80", color: null, colorMode: "none" },
+                    { name: "Accents", base: "f_chrome", pattern: "none", finish: null, intensity: "50", color: null, colorMode: "none" }
                 ]
             },
             {
@@ -846,7 +956,7 @@
                 category: "Performance",
                 desc: "Exposed carbon fiber everywhere with clear-coated accent areas.",
                 zones: [
-                    { name: "Carbon Body", base: "carbon_base", pattern: "none", finish: null, intensity: "100", color: "everything", colorMode: "special" },
+                    { name: "Carbon Body", base: "wrap_twill_film", pattern: "none", finish: null, intensity: "100", color: "everything", colorMode: "special" },
                     { name: "Gloss Panels", base: "gloss", pattern: "carbon_fiber", finish: null, intensity: "80", color: null, colorMode: "none" }
                 ]
             },
@@ -864,8 +974,8 @@
                 category: "Show",
                 desc: "Mirror chrome body with candy-colored accent panels.",
                 zones: [
-                    { name: "Chrome Body", base: "chrome", pattern: "none", finish: null, intensity: "100", color: "everything", colorMode: "special" },
-                    { name: "Candy Accents", base: "candy", pattern: "none", finish: null, intensity: "80", color: null, colorMode: "none" }
+                    { name: "Chrome Body", base: "f_chrome", pattern: "none", finish: null, intensity: "100", color: "everything", colorMode: "special" },
+                    { name: "Candy Accents", base: "f_candy", pattern: "none", finish: null, intensity: "80", color: null, colorMode: "none" }
                 ]
             },
             {
@@ -884,8 +994,8 @@
                 category: "Modern",
                 desc: "Modern gradient look using multiple zones with transitioning finishes.",
                 zones: [
-                    { name: "Front (Bright)", base: "metallic", pattern: "none", finish: null, intensity: "100", color: null, colorMode: "none" },
-                    { name: "Middle", base: "pearl", pattern: "none", finish: null, intensity: "80", color: null, colorMode: "none" },
+                    { name: "Front (Bright)", base: "f_metallic", pattern: "none", finish: null, intensity: "100", color: null, colorMode: "none" },
+                    { name: "Middle", base: "f_pearl", pattern: "none", finish: null, intensity: "80", color: null, colorMode: "none" },
                     { name: "Rear (Dark)", base: "matte", pattern: "none", finish: null, intensity: "50", color: null, colorMode: "none" }
                 ]
             },
@@ -894,9 +1004,9 @@
                 category: "Motorsport",
                 desc: "Traditional oval stock car layout - large body panels with contrasting roof and bumpers.",
                 zones: [
-                    { name: "Main Body", base: "metallic", pattern: "metal_flake", finish: null, intensity: "100", color: "everything", colorMode: "special" },
+                    { name: "Main Body", base: "f_metallic", pattern: "metal_flake", finish: null, intensity: "100", color: "everything", colorMode: "special" },
                     { name: "Roof/Hood", base: "gloss", pattern: "none", finish: null, intensity: "80", color: null, colorMode: "none" },
-                    { name: "Bumpers/Trim", base: "chrome", pattern: "none", finish: null, intensity: "50", color: null, colorMode: "none" },
+                    { name: "Bumpers/Trim", base: "f_chrome", pattern: "none", finish: null, intensity: "50", color: null, colorMode: "none" },
                     { name: "Number Area", base: "gloss", pattern: "none", finish: null, intensity: "80", color: null, colorMode: "none" }
                 ]
             },
@@ -906,7 +1016,7 @@
                 desc: "Color-shifting chameleon body with brushed metal accents.",
                 zones: [
                     { name: "Chameleon Body", finish: "chameleon_emerald", intensity: "100", color: "everything", colorMode: "special" },
-                    { name: "Brushed Accents", base: "brushed_titanium", pattern: "none", finish: null, intensity: "80", color: null, colorMode: "none" }
+                    { name: "Brushed Accents", base: "f_brushed", pattern: "none", finish: null, intensity: "80", color: null, colorMode: "none" }
                 ]
             },
             {
@@ -925,7 +1035,7 @@
                 zones: [
                     { name: "Dark Base", base: "matte", pattern: "none", finish: null, intensity: "100", color: "everything", colorMode: "special" },
                     { name: "Neon Circuits", base: "gloss", pattern: "tron", finish: null, intensity: "100", color: null, colorMode: "none" },
-                    { name: "Glow Accents", base: "chrome", pattern: "circuit_board", finish: null, intensity: "80", color: null, colorMode: "none" }
+                    { name: "Glow Accents", base: "f_chrome", pattern: "circuit_board", finish: null, intensity: "80", color: null, colorMode: "none" }
                 ]
             },
         ];
@@ -976,7 +1086,7 @@
             zones = tmpl.zones.map(z => ({
                 name: z.name || 'Zone',
                 color: z.color || null,
-                base: z.base || null,
+                base: (typeof spbResolveBaseId === 'function' ? spbResolveBaseId(z.base) : z.base) || null,
                 pattern: z.pattern || 'none',
                 finish: z.finish || null,
                 intensity: z.intensity || '100',
@@ -1010,7 +1120,43 @@
         let compareMode = false;
         let compareDividerX = 0.5; // 0-1 fraction
         let renderedImage = null;  // Image element of rendered paint
+        let pendingRenderedImage = null;
         let compareDragging = false;
+        let compareRefreshFrame = 0;
+        let compareResizeObserver = null;
+        let compareMutationObserver = null;
+
+        // [SPB compare freshness 2026-08-22] One redraw per animation frame.
+        // Render completion, intrinsic canvas resize, CSS resize, and window
+        // resize all route here so an open overlay never retains stale pixels.
+        function requestCompareRefresh() {
+            if (!compareMode || !renderedImage) return false;
+            if (compareRefreshFrame) return true;
+            compareRefreshFrame = window.requestAnimationFrame(() => {
+                compareRefreshFrame = 0;
+                if (compareMode && renderedImage) drawCompareView();
+            });
+            return true;
+        }
+
+        function installCompareRefreshObservers() {
+            const paintCanvas = document.getElementById('paintCanvas');
+            if (!paintCanvas) return false;
+            if (typeof ResizeObserver === 'function' && !compareResizeObserver) {
+                compareResizeObserver = new ResizeObserver(requestCompareRefresh);
+                compareResizeObserver.observe(paintCanvas);
+            }
+            if (typeof MutationObserver === 'function' && !compareMutationObserver) {
+                compareMutationObserver = new MutationObserver(requestCompareRefresh);
+                compareMutationObserver.observe(paintCanvas, {
+                    attributes: true,
+                    attributeFilter: ['width', 'height', 'style', 'class']
+                });
+            }
+            window.addEventListener('resize', requestCompareRefresh);
+            return true;
+        }
+        installCompareRefreshObservers();
 
         function toggleCompareMode() {
             if (!renderedImage) {
@@ -1026,24 +1172,43 @@
                 drawCompareView();
                 showToast('Compare mode: drag the divider to compare');
             } else {
-                // Restore original canvas
-                const canvas = document.getElementById('paintCanvas');
-                if (canvas && paintImageData) {
-                    const ctx = canvas.getContext('2d');
-                    ctx.putImageData(paintImageData, 0, 0);
+                // [SPB-DEGRADE-HUNT 2026-08-22] compare now lives on the
+                // #compareCanvas overlay — just hide it. (The old path drew
+                // the render INTO #paintCanvas and "restored" from
+                // paintImageData here; every Generate clicked while compare
+                // was on shipped the polluted canvas as paint_image_base64,
+                // so renders compounded on their own output — the owner's
+                // "quality gets worse and worse as I generate".)
+                const overlay = document.getElementById('compareCanvas');
+                if (overlay) {
+                    overlay.style.display = 'none';
+                    const octx = overlay.getContext('2d');
+                    octx.clearRect(0, 0, overlay.width, overlay.height);
                 }
             }
         }
 
         function drawCompareView() {
+            // [SPB-DEGRADE-HUNT 2026-08-22] draws ONLY into the #compareCanvas
+            // overlay (z-index above #paintCanvas). The left "ORIGINAL" half is
+            // transparent — the live paint canvas shows through — and the right
+            // half paints the render. #paintCanvas is never touched, so render
+            // payloads can no longer inherit compare-mode pixels.
             const canvas = document.getElementById('paintCanvas');
-            if (!canvas || !paintImageData || !renderedImage) return;
-            const ctx = canvas.getContext('2d');
+            const overlay = document.getElementById('compareCanvas');
+            if (!canvas || !overlay || !renderedImage) return;
             const w = canvas.width, h = canvas.height;
+            if (overlay.width !== w || overlay.height !== h) {
+                overlay.width = w; overlay.height = h;
+            }
+            // Track any CSS sizing on the paint canvas so the overlay stays aligned.
+            overlay.style.width = canvas.style.width || '';
+            overlay.style.height = canvas.style.height || '';
+            overlay.style.display = 'block';
+            const ctx = overlay.getContext('2d');
             const divX = Math.round(compareDividerX * w);
 
-            // Draw original on left
-            ctx.putImageData(paintImageData, 0, 0);
+            ctx.clearRect(0, 0, w, h);
 
             // Draw rendered on right
             ctx.save();
@@ -1123,13 +1288,21 @@
         document.addEventListener('mouseup', onCompareMouseUp);
 
         function loadRenderedImageForCompare(url) {
-            renderedImage = new Image();
-            renderedImage.crossOrigin = 'anonymous';
-            renderedImage.onload = () => {
+            const nextImage = new Image();
+            pendingRenderedImage = nextImage;
+            nextImage.crossOrigin = 'anonymous';
+            nextImage.onload = () => {
+                if (pendingRenderedImage !== nextImage) return;
+                pendingRenderedImage = null;
+                renderedImage = nextImage;
                 const btn = document.getElementById('btnCompare');
                 if (btn) btn.style.display = 'inline-block';
+                requestCompareRefresh();
             };
-            renderedImage.src = url;
+            nextImage.onerror = () => {
+                if (pendingRenderedImage === nextImage) pendingRenderedImage = null;
+            };
+            nextImage.src = url;
         }
 
         // ===== PRESET GALLERY =====
@@ -1159,9 +1332,12 @@
             }
 
             let html = '';
+            // BUGFIX 2026-10-04 (encyclopedia lane S, owner-visible mojibake): these icons had been
+            // saved double-encoded (UTF-8 bytes read as cp1252, re-saved as UTF-8: "ðŸ†" for 🏆), so the
+            // Preset Gallery headings showed garbage. Restored to real UTF-8 (same fix on the theme button).
             const categoryIcons = {
-                'Show Car': 'ðŸ†', 'Clean': '✨', 'Aggressive': 'ðŸ”¥',
-                'Special Effect': 'ðŸŒˆ', 'Themed': 'ðŸŽ¯', 'Other': 'ðŸŽ¨'
+                'Show Car': '🏆', 'Clean': '✨', 'Aggressive': '🔥',
+                'Special Effect': '🌈', 'Themed': '🎯', 'Other': '🎨'
             };
 
             // Render in category order, then any remaining
@@ -1169,7 +1345,7 @@
             for (const cat of allCats) {
                 if (!grouped[cat] || grouped[cat].length === 0) continue;
                 html += `<div style="grid-column:1/-1; padding:8px 4px 4px; margin-top:8px; border-bottom:1px solid var(--border); font-size:11px; font-weight:700; letter-spacing:1.5px; color:var(--accent); text-transform:uppercase;">
-            ${categoryIcons[cat] || 'ðŸŽ¨'} ${cat} <span style="font-weight:400; color:var(--text-dim); font-size:9px;">(${grouped[cat].length})</span>
+            ${categoryIcons[cat] || '🎨'} ${cat} <span style="font-weight:400; color:var(--text-dim); font-size:9px;">(${grouped[cat].length})</span>
         </div>`;
 
                 for (const { id, preset } of grouped[cat]) {
@@ -1211,19 +1387,29 @@
             // Populate filter dropdowns
             const baseSelect = document.getElementById('fbFilterBase');
             const patSelect = document.getElementById('fbFilterPattern');
-            if (baseSelect && baseSelect.options.length <= 1) {
-                BASES.forEach(b => {
-                    const opt = document.createElement('option');
-                    opt.value = b.id; opt.textContent = b.name;
-                    baseSelect.appendChild(opt);
-                });
+            if (baseSelect) {
+                const baseCatalogLen = String((typeof BASES !== 'undefined' && BASES.length) || 0);
+                if (baseSelect.dataset.catalogLen !== baseCatalogLen) {
+                    while (baseSelect.options.length > 1) baseSelect.remove(1);
+                    (typeof BASES !== 'undefined' ? BASES : []).forEach(b => {
+                        const opt = document.createElement('option');
+                        opt.value = b.id; opt.textContent = b.name;
+                        baseSelect.appendChild(opt);
+                    });
+                    baseSelect.dataset.catalogLen = baseCatalogLen;
+                }
             }
-            if (patSelect && patSelect.options.length <= 1) {
-                PATTERNS.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p.id; opt.textContent = p.name;
-                    patSelect.appendChild(opt);
-                });
+            if (patSelect) {
+                const patCatalogLen = String((typeof PATTERNS !== 'undefined' && PATTERNS.length) || 0);
+                if (patSelect.dataset.catalogLen !== patCatalogLen) {
+                    while (patSelect.options.length > 1) patSelect.remove(1);
+                    (typeof PATTERNS !== 'undefined' ? PATTERNS : []).forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p.id; opt.textContent = p.name;
+                        patSelect.appendChild(opt);
+                    });
+                    patSelect.dataset.catalogLen = patCatalogLen;
+                }
             }
             // Reset filters (null-safe)
             const fbFilterType = document.getElementById('fbFilterType');
@@ -1237,6 +1423,7 @@
             if (fbSearchEl) fbSearchEl.value = '';
             if (fbSortEl) fbSortEl.value = 'default';
             finishBrowserFavOnly = false;
+            finishBrowserLane = 'featured';
             const favBtn = document.getElementById('fbFavToggle');
             if (favBtn) favBtn.classList.remove('active');
             // Restore view toggle state (viewBtn already declared above)
@@ -1340,6 +1527,16 @@
         const FINISH_FAVORITES_KEY = 'shokker_finish_favorites';
         let finishBrowserCatalogView = false;
         let finishBrowserFavOnly = false;
+        let finishBrowserLane = 'featured';
+        const FINISH_BROWSER_LANES = [
+            { id: 'featured', label: 'Featured', intent: 'Best first clicks' },
+            { id: 'materials', label: 'Core Materials', intent: 'Base paints' },
+            { id: 'specials', label: 'Showcase', intent: 'One-click finishes' },
+            { id: 'culture', label: 'Culture', intent: 'Mexico / Rising Sun' },
+            { id: 'weathered', label: 'Weathered', intent: 'Old, rust, age' },
+            { id: 'advanced', label: 'Advanced', intent: 'Vision and reactive' },
+            { id: 'all', label: 'All', intent: 'Use dropdown filters' },
+        ];
 
         function getFinishFavorites() { try { return JSON.parse(localStorage.getItem(FINISH_FAVORITES_KEY) || '[]'); } catch { return []; } }
         function setFinishFavorites(favs) { localStorage.setItem(FINISH_FAVORITES_KEY, JSON.stringify(favs)); }
@@ -1351,6 +1548,117 @@
             filterFinishBrowser();
         }
         function isFinishFavorite(key) { return getFinishFavorites().includes(key); }
+
+        function setFinishBrowserLane(lane) {
+            finishBrowserLane = lane || 'featured';
+            filterFinishBrowser();
+        }
+        if (typeof window !== 'undefined') window.setFinishBrowserLane = setFinishBrowserLane;
+
+        function _fbBaseItem(base, patId) {
+            const pat = PATTERNS.find(p => p.id === (patId || 'none')) || { id: 'none', name: 'None' };
+            const label = pat.id === 'none' ? base.name : `${base.name} + ${pat.name}`;
+            return { type: 'combo', label, baseId: base.id, patId: pat.id, key: `${base.id}:${pat.id}` };
+        }
+
+        function _fbMonoItem(mono) {
+            return { type: 'mono', label: mono.name, monoId: mono.id, key: `mono:${mono.id}` };
+        }
+
+        function _fbGroupedMonoIds() {
+            const monolithicIdSet = new Set(MONOLITHICS.map(m => m.id));
+            const grouped = new Set();
+            if (typeof SPECIAL_GROUPS !== 'undefined') {
+                Object.values(SPECIAL_GROUPS).forEach(arr => {
+                    if (!Array.isArray(arr)) return;
+                    arr.forEach(id => { if (monolithicIdSet.has(id)) grouped.add(id); });
+                });
+            }
+            return grouped;
+        }
+
+        function _fbSearchText(item) {
+            if (item.type === 'mono') {
+                const m = MONOLITHICS.find(mm => mm.id === item.monoId) || {};
+                return `${item.label} ${item.monoId} ${m.desc || ''}`.toLowerCase();
+            }
+            const b = BASES.find(bb => bb.id === item.baseId) || {};
+            const p = PATTERNS.find(pp => pp.id === item.patId) || {};
+            return `${item.label} ${item.baseId} ${item.patId} ${b.desc || ''} ${p.desc || ''}`.toLowerCase();
+        }
+
+        function _fbMatchesSearch(item, search) {
+            const q = String(search || '').trim().toLowerCase();
+            if (!q) return true;
+            if (typeof _libraryItemMatchesSearch === 'function') {
+                const ref = item.type === 'mono'
+                    ? MONOLITHICS.find(m => m.id === item.monoId)
+                    : BASES.find(b => b.id === item.baseId);
+                if (ref && _libraryItemMatchesSearch(ref, item.type === 'mono' ? 'mono' : 'base', q)) return true;
+            }
+            const hay = _fbSearchText(item);
+            const aliases = (typeof FINISH_LIBRARY_SEARCH_ALIASES !== 'undefined') ? FINISH_LIBRARY_SEARCH_ALIASES : {};
+            return q.split(/\s+/).filter(Boolean).every(word => {
+                if (hay.indexOf(word) >= 0) return true;
+                return (aliases[word] || []).some(alias => hay.indexOf(alias) >= 0);
+            });
+        }
+
+        function _fbLaneItems(lane, groupedSpecialMonoIds) {
+            const groupedMonos = MONOLITHICS.filter(m => !groupedSpecialMonoIds.size || groupedSpecialMonoIds.has(m.id));
+            const addIds = [];
+            const pushUnique = (id) => { if (id && !addIds.includes(id)) addIds.push(id); };
+            if (lane === 'featured') {
+                if (typeof HERO_BASES !== 'undefined') HERO_BASES.forEach(h => pushUnique('base:' + h.id));
+                ['\u2605 COLORSHOXX', 'Chromatic Flake', 'RISING SUN', 'VIVA MEXICO', 'Atmosphere', 'Standalone Effects'].forEach(group => {
+                    const ids = (typeof SPECIAL_GROUPS !== 'undefined' && SPECIAL_GROUPS[group]) || [];
+                    ids.slice(0, 3).forEach(id => pushUnique('mono:' + id));
+                });
+                const pfFeatured = (typeof BASE_GROUPS !== 'undefined' && BASE_GROUPS['\u2605 PRISM FORGE']) || [];
+                pfFeatured.slice(0, 3).forEach(id => pushUnique('base:' + id));
+                return addIds.map(key => {
+                    if (key.indexOf('base:') === 0) {
+                        const base = BASES.find(b => b.id === key.slice(5));
+                        return base ? _fbBaseItem(base, 'none') : null;
+                    }
+                    const mono = MONOLITHICS.find(m => m.id === key.slice(5));
+                    return mono ? _fbMonoItem(mono) : null;
+                }).filter(Boolean);
+            }
+            if (lane === 'materials') {
+                return BASES.filter(b => !/^enh_/.test(b.id || '')).map(b => _fbBaseItem(b, 'none'));
+            }
+            if (lane === 'specials') return groupedMonos.map(_fbMonoItem);
+            if (lane === 'culture') return groupedMonos.filter(m => /^(vm_|rs_)/.test(m.id)).map(_fbMonoItem);
+            if (lane === 'weathered') return groupedMonos.filter(m => /(weather|aged|rust|patina|worn|dust|spray|storm|salt|sun|old)/i.test(`${m.id} ${m.name} ${m.desc || ''}`)).map(_fbMonoItem)
+                .concat(BASES.filter(b => /(weather|aged|rust|patina|worn|dust|spray|storm|salt|sun|old)/i.test(`${b.id} ${b.name} ${b.desc || ''}`)).map(b => _fbBaseItem(b, 'none')));
+            if (lane === 'advanced') {
+                return groupedMonos.filter(m => /(vision|reactive|spectral|depth|fractal|halo|physics|ghost|illusion|exotic|tri[-_ ]?zone)/i.test(`${m.id} ${m.name} ${m.desc || ''}`)).map(_fbMonoItem);
+            }
+            return null;
+        }
+
+        function _fbLaneCounts(groupedSpecialMonoIds) {
+            const counts = {};
+            FINISH_BROWSER_LANES.forEach(lane => {
+                if (lane.id === 'all') counts[lane.id] = BASES.length + MONOLITHICS.length;
+                else counts[lane.id] = _fbLaneItems(lane.id, groupedSpecialMonoIds).length;
+            });
+            return counts;
+        }
+
+        function renderFinishBrowserRail(counts) {
+            const rail = document.getElementById('finishBrowserRail');
+            if (!rail) return;
+            rail.innerHTML = FINISH_BROWSER_LANES.map(lane => {
+                const active = finishBrowserLane === lane.id;
+                const count = counts && counts[lane.id] != null ? counts[lane.id] : 0;
+                return `<button type="button" class="${active ? 'active' : ''}" onclick="setFinishBrowserLane('${lane.id}')" title="${lane.intent}">
+                    <span class="fb-rail-top"><span class="fb-rail-label">${lane.label}</span><span class="fb-rail-count">${count}</span></span>
+                    <span class="fb-rail-bottom"><span>${lane.intent}</span></span>
+                </button>`;
+            }).join('');
+        }
 
         // Generate CSS swatch for a base+pattern combo (no server needed)
         function makeSwatchCSS(baseId, patId) {
@@ -1469,46 +1777,44 @@
             const favs = getFinishFavorites();
             const isCatalog = finishBrowserCatalogView;
             grid.classList.toggle('catalog-view', isCatalog);
+            const groupedSpecialMonoIds = _fbGroupedMonoIds();
+            renderFinishBrowserRail(_fbLaneCounts(groupedSpecialMonoIds));
 
             // Build items array
             let items = [];
 
-            // Combos (base + pattern)
-            if (type === 'all' || type === 'combo') {
-                const bases = baseFilter === 'all' ? BASES : BASES.filter(b => b.id === baseFilter);
-                const pats = patFilter === 'all' ? PATTERNS : PATTERNS.filter(p => p.id === patFilter);
-                for (const b of bases) {
-                    for (const p of pats) {
-                        const label = p.id === 'none' ? b.name : `${b.name} + ${p.name}`;
-                        const key = `${b.id}:${p.id}`;
-                        if (search && !label.toLowerCase().includes(search) && !b.id.includes(search) && !p.id.includes(search) &&
-                            !(b.desc && b.desc.toLowerCase().includes(search)) && !(p.desc && p.desc.toLowerCase().includes(search))) continue;
-                        if (finishBrowserFavOnly && !favs.includes(key)) continue;
-                        items.push({ type: 'combo', label, baseId: b.id, patId: p.id, key });
+            if (finishBrowserLane !== 'all' || search) {
+                const laneItems = search
+                    ? _fbLaneItems('materials', groupedSpecialMonoIds).concat(_fbLaneItems('specials', groupedSpecialMonoIds))
+                    : _fbLaneItems(finishBrowserLane, groupedSpecialMonoIds);
+                items = (laneItems || []).filter(item => _fbMatchesSearch(item, search));
+                if (finishBrowserFavOnly) items = items.filter(item => favs.includes(item.key));
+            } else {
+                // Combos (base + pattern), available only in All mode so the default
+                // catalog does not open into 100k+ generated combinations.
+                if (type === 'all' || type === 'combo') {
+                    const bases = baseFilter === 'all' ? BASES : BASES.filter(b => b.id === baseFilter);
+                    const pats = patFilter === 'all' ? PATTERNS : PATTERNS.filter(p => p.id === patFilter);
+                    for (const b of bases) {
+                        for (const p of pats) {
+                            const item = _fbBaseItem(b, p.id);
+                            if (search && !_fbMatchesSearch(item, search)) continue;
+                            if (finishBrowserFavOnly && !favs.includes(item.key)) continue;
+                            items.push(item);
+                        }
                     }
                 }
-            }
 
-            // Monolithics
-            if (type === 'all' || type === 'mono') {
-                const monolithicIdSet = new Set(MONOLITHICS.map(m => m.id));
-                const groupedSpecialMonoIds = new Set();
-                if (typeof SPECIAL_GROUPS !== 'undefined') {
-                    Object.values(SPECIAL_GROUPS).forEach(arr => {
-                        if (!Array.isArray(arr)) return;
-                        arr.forEach(id => {
-                            if (monolithicIdSet.has(id)) groupedSpecialMonoIds.add(id);
-                        });
-                    });
-                }
-                for (const m of MONOLITHICS) {
-                    if (groupedSpecialMonoIds.size && !groupedSpecialMonoIds.has(m.id)) continue;
-                    const key = `mono:${m.id}`;
-                    if (search && !m.name.toLowerCase().includes(search) && !m.id.includes(search) &&
-                        !(m.desc && m.desc.toLowerCase().includes(search))) continue;
-                    if (baseFilter !== 'all' || patFilter !== 'all') continue;
-                    if (finishBrowserFavOnly && !favs.includes(key)) continue;
-                    items.push({ type: 'mono', label: m.name, monoId: m.id, key });
+                // Monolithics
+                if (type === 'all' || type === 'mono') {
+                    for (const m of MONOLITHICS) {
+                        if (groupedSpecialMonoIds.size && !groupedSpecialMonoIds.has(m.id)) continue;
+                        const item = _fbMonoItem(m);
+                        if (search && !_fbMatchesSearch(item, search)) continue;
+                        if (baseFilter !== 'all' || patFilter !== 'all') continue;
+                        if (finishBrowserFavOnly && !favs.includes(item.key)) continue;
+                        items.push(item);
+                    }
                 }
             }
 
@@ -1605,7 +1911,7 @@
 
         function applyFinishFromBrowser(baseId, patternId, monoId) {
             // Intercept: custom color shift opens the modal
-            if (monoId === 'dualshift_custom' || monoId === 'cx_custom_shift') {
+            if (monoId === 'dualshift_custom') {
                 closeFinishBrowser();
                 if (typeof openDualShiftModal === 'function') openDualShiftModal(finishBrowserTargetZone);
                 return;
@@ -1657,7 +1963,7 @@
             // Pre-populate first column with current zone's finish
             compareColumns = [
                 { base: z.base || 'chrome', pattern: z.pattern || 'none', mono: z.finish || null },
-                { base: 'metallic', pattern: 'carbon_fiber', mono: null }
+                { base: 'f_metallic', pattern: 'carbon_fiber', mono: null }
             ];
             renderCompareColumns();
             const overlay = document.getElementById('finishCompareOverlay');
@@ -1744,7 +2050,7 @@
 
         function addCompareColumn() {
             if (compareColumns.length >= 4) { showToast('Max 4 columns'); return; }
-            compareColumns.push({ base: 'pearl', pattern: 'none', mono: null });
+            compareColumns.push({ base: 'f_pearl', pattern: 'none', mono: null });
             renderCompareColumns();
         }
 
@@ -1897,6 +2203,10 @@
         // ===== ⚡ SHOKK ME — Total Chaos Randomization =====
         function shokkMe(index) {
             if (index < 0 || index >= zones.length) return;
+            if (typeof _shokkIsProtectedZone === 'function' && _shokkIsProtectedZone(zones[index])) {
+                if (typeof showToast === 'function') showToast('That zone is protected (template / sponsor / decal / muted) — left it alone. Try Shokk Me on a paint zone.');
+                return;
+            }
             pushZoneUndo('SHOKK ME');
             const zone = zones[index];
 
@@ -2118,6 +2428,392 @@
         }
         if (typeof window !== 'undefined') window.shokkMe = shokkMe;
 
+        // ============================================================
+        // SHOKK ME — WHOLE CAR (coordinated, vibe-aware designer)  [Roadmap #13/#14]
+        // ------------------------------------------------------------
+        // Per-zone shokkMe() above = independent chaos (random hex/finish per
+        // zone). THIS designs the whole car as ONE coordinated look: a single
+        // harmonious palette + one material theme, assigned by zone role
+        // (hero / accent / tie-in). Respects per-zone locks, one Undo step.
+        // Reuses the booth's curated BASE_GROUPS taxonomy + the Spec Sculpt
+        // vibe->material idea. Fail-soft throughout (never corrupts a design).
+        // ============================================================
+        const SHOKK_VIBES = {
+            stealth: { label: 'Stealth', emoji: '\u{1F977}',
+                blurb: 'Murdered-out: matte & satin darks, dark-chrome accents.',
+                hero:   [['Foundation', ['flat_black','piano_black','matte','satin','primer','semi_gloss']]],   // FOUNDATION ONE 2026-09-03: Enhanced shelf retired
+                accent: [['Chrome & Mirror', ['black_chrome','dark_chrome']], ['Metallic Standard', ['gunmetal','gunmetal_satin']]],
+                tie:    [['Foundation', ['satin','semi_gloss','primer','matte']]],
+                scheme: 'mono', sat: [4, 20], bri: [8, 26], colorMode: 'solid',
+                strength: { hero: 0.55, accent: 0.8, tie: 0.45 },
+                patternPolicy: 'subtle', patternPool: ['carbon_fiber','hex_carbon','shokk_scan_line'] },
+
+            candy_show: { label: 'Candy Show', emoji: '\u{1F36C}',
+                blurb: 'Show-car candy + pearl, vivid harmonious palette, chrome pop.',
+                hero:   [['Candy & Pearl', ['tinted_clear','satin_candy','jelly_pearl','tri_coat_pearl','deep_pearl','candy_burgundy','candy_cobalt','candy_emerald','candy_gold','candy_lime','candy_aqua']]],
+                accent: [['Chrome & Mirror', ['chrome','mirror_gold','candy_chrome']], ['Metallic Standard', ['pearl','pearlescent_white']]],
+                tie:    [['Candy & Pearl', ['tri_coat_pearl','deep_pearl','moonstone']]],
+                scheme: 'analogous', sat: [70, 95], bri: [42, 62], colorMode: 'solid',
+                strength: { hero: 0.8, accent: 0.85, tie: 0.6 },
+                patternPolicy: 'none' },
+
+            carbon_race: { label: 'Carbon Race', emoji: '\u{1F3C1}',
+                blurb: 'Carbon-fiber body, gloss accents, clean sponsor-safe color.',
+                hero:   [['Carbon & Composite', ['carbon_base','carbon_weave','forged_carbon_vis','carbon_3k_fine','spread_tow','carbon_satin']]],
+                accent: [['Chrome & Mirror', ['chrome','satin_chrome']], ['Foundation', ['gloss']]],
+                tie:    [['Foundation', ['gloss','satin','semi_gloss']]],
+                scheme: 'duo', hueA: 0, hueB: 210, sat: [72, 92], bri: [38, 55], colorMode: 'solid',
+                strength: { hero: 0.32, accent: 0.9, tie: 0.5 },
+                patternPolicy: 'subtle', patternPool: ['carbon_fiber','hex_carbon'] },
+
+            chrome_flex: { label: 'Chrome Flex', emoji: '✨',
+                blurb: 'Mirror chrome + color-shift flip — the "how is that possible" flex.',
+                hero:   [['Chrome & Mirror', ['chrome','candy_chrome','blue_chrome','red_chrome']], ['Candy & Pearl', ['chameleon','hypershift_spectral','spectraflame']], ['Exotic Metal', ['chromaflair','xirallic']]],
+                accent: [['Chrome & Mirror', ['black_chrome','dark_chrome']], ['Foundation', ['piano_black']]],
+                tie:    [['Chrome & Mirror', ['satin_chrome','antique_chrome']]],
+                scheme: 'triadic', sat: [60, 90], bri: [45, 65], colorMode: 'solid',
+                strength: { hero: 0.65, accent: 0.85, tie: 0.5 },
+                patternPolicy: 'none' },
+
+            deep_space: { label: 'Deep Space', emoji: '\u{1F30C}',
+                blurb: 'Void-black exotics with one neon accent — galaxy energy.',
+                hero:   [['Extreme & Experimental', ['vantablack','dark_matter','neutron_star','singularity','quantum_black','liquid_obsidian']]],
+                accent: [['Extreme & Experimental', ['plasma_core','bioluminescent','prismatic','holographic_base','electric_ice']]],
+                tie:    [['Extreme & Experimental', ['quantum_black','dark_matter']], ['Foundation', ['piano_black']]],
+                scheme: 'complementary', hueRange: [180, 300], sat: [70, 98], bri: [40, 66], colorMode: 'solid',
+                strength: { hero: 0.45, accent: 0.95, tie: 0.4 },
+                patternPolicy: 'none' },
+
+            marble_estate: { label: 'Marble Estate', emoji: '\u{1F3DB}️',
+                blurb: 'Carved marble & onyx with gold accents — luxury concours.',
+                hero:   [['Marble & Onyx', ['marble_carrara','marble_calacatta','marble_statuario','marble_nero','onyx_white','travertine']]],
+                accent: [['Chrome & Mirror', ['mirror_gold','electroplated_gold']], ['Marble & Onyx', ['obsidian_gold']]],
+                tie:    [['Marble & Onyx', ['marble_bardiglio','marble_nero']], ['Foundation', ['piano_black']]],
+                scheme: 'mono', sat: [10, 30], bri: [55, 85], colorMode: 'source',
+                strength: { hero: 0.5, accent: 0.7, tie: 0.4 },
+                patternPolicy: 'none' },
+
+            inferno: { label: 'Inferno', emoji: '\u{1F525}',
+                blurb: 'Living flame body with blacked-out accents.',
+                hero:   [['Flames', ['flame_true_fire','flame_inferno','flame_dragon','flame_lava','flame_phoenix','flame_ember','flame_hotrod']]],
+                accent: [['Chrome & Mirror', ['black_chrome']], ['Foundation', ['piano_black','flat_black']]],
+                tie:    [['Foundation', ['flat_black','matte']]],
+                scheme: 'analogous', hueRange: [0, 45], sat: [80, 100], bri: [45, 62], colorMode: 'source',
+                strength: { hero: 0.85, accent: 0.7, tie: 0.45 },
+                patternPolicy: 'none' },
+
+            synthwave: { label: 'Synthwave', emoji: '\u{1F306}',
+                blurb: 'Neon magenta + cyan grid energy, 80s cyber.',
+                hero:   [['Tactical & Cyberpunk', ['synthwave','neon_circuit','tron_grid','plasma_pulse','chrome_neon','holo_vapor']]],
+                accent: [['Chrome & Mirror', ['chrome']], ['Tactical & Cyberpunk', ['chrome_neon']]],
+                tie:    [['Tactical & Cyberpunk', ['cyber_camo','data_rain']], ['Foundation', ['piano_black']]],
+                scheme: 'duo', hueA: 305, hueB: 185, sat: [85, 100], bri: [48, 66], colorMode: 'solid',
+                strength: { hero: 0.85, accent: 0.8, tie: 0.55 },
+                patternPolicy: 'themed', patternPool: ['decade_80s_neon_grid','matrix_rain','glitch_scan','data_stream'] },
+
+            retro_groove: { label: 'Retro Groove', emoji: '☮️',
+                blurb: 'Tie-dye & psychedelic swirl, full rainbow fun.',
+                hero:   [['Groovy Vibes', ['tie_dye_spiral','psychedelic_swirl','melting_rainbow','oil_slick_groove','lava_lamp_groovy','acid_swirl','hippie_rainbow']]],
+                accent: [['Groovy Vibes', ['kaleido_rings','trippy_concentric']], ['Chrome & Mirror', ['chrome']]],
+                tie:    [['Groovy Vibes', ['groovy_marble','liquid_light']]],
+                scheme: 'triadic', sat: [75, 100], bri: [45, 66], colorMode: 'source',
+                strength: { hero: 0.8, accent: 0.7, tie: 0.5 },
+                patternPolicy: 'none' },
+
+            color_flip: { label: 'Color Flip', emoji: '\u{1F98E}',
+                blurb: 'Two-tone color-shift flip — different from every angle.',
+                hero:   [['★ OPTIC LAB · Two-Face', ['twoface_blue_copper','twoface_purple_gold','twoface_teal_orange','twoface_red_cyan','twoface_green_magenta','twoface_violet_lime','twoface_gold_emerald']], ['Candy & Pearl', ['chameleon','hypershift_spectral']]],
+                accent: [['Chrome & Mirror', ['black_chrome','chrome']]],
+                tie:    [['Foundation', ['piano_black','satin']]],
+                scheme: 'complementary', sat: [65, 95], bri: [45, 64], colorMode: 'source',
+                strength: { hero: 0.8, accent: 0.75, tie: 0.45 },
+                patternPolicy: 'none' },
+        };
+
+        function _shokkBasesById() {
+            try { if (typeof BASES_BY_ID !== 'undefined' && BASES_BY_ID) return BASES_BY_ID; } catch (e) {}
+            var m = {};
+            try { if (typeof BASES !== 'undefined') BASES.forEach(function (b) { if (b && b.id) m[b.id] = b; }); } catch (e) {}
+            return m;
+        }
+        function _shokkResolvePool(pairs) {
+            var byId = _shokkBasesById(); var out = [];
+            try {
+                (pairs || []).forEach(function (pair) {
+                    var gname = pair[0], subset = pair[1], ids = [];
+                    try { ids = (typeof BASE_GROUPS !== 'undefined' && Array.isArray(BASE_GROUPS[gname])) ? BASE_GROUPS[gname] : []; } catch (e) { ids = []; }
+                    ids.forEach(function (id) {
+                        if (subset && subset.length && subset.indexOf(id) < 0) return;
+                        if (byId[id] && out.indexOf(id) < 0) out.push(id);
+                    });
+                });
+            } catch (e) {}
+            return out;
+        }
+        function _shokkPick(arr) { return (arr && arr.length) ? arr[Math.floor(Math.random() * arr.length)] : null; }
+        function _shokkRand(a, b) { return a + Math.random() * (b - a); }
+        function _shokkHsl(h, s, l) {
+            h = ((h % 360) + 360) % 360; s = Math.max(0, Math.min(100, s)) / 100; l = Math.max(0, Math.min(100, l)) / 100;
+            var c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs(((h / 60) % 2) - 1)), m = l - c / 2, r = 0, g = 0, b = 0;
+            if (h < 60) { r = c; g = x; } else if (h < 120) { r = x; g = c; } else if (h < 180) { g = c; b = x; }
+            else if (h < 240) { g = x; b = c; } else if (h < 300) { r = x; b = c; } else { r = c; b = x; }
+            var to = function (v) { return ('0' + Math.round((v + m) * 255).toString(16)).slice(-2); };
+            return '#' + to(r) + to(g) + to(b);
+        }
+        function _shokkPalette(vibe) {
+            var baseHue;
+            if (vibe.scheme === 'duo') baseHue = vibe.hueA;
+            else if (vibe.hueRange) baseHue = _shokkRand(vibe.hueRange[0], vibe.hueRange[1]);
+            else if (vibe.hue != null) baseHue = vibe.hue;
+            else baseHue = Math.random() * 360;
+            var h2, h3;
+            switch (vibe.scheme) {
+                case 'mono': h2 = baseHue; h3 = baseHue; break;
+                case 'complementary': h2 = baseHue + 180; h3 = baseHue + 180; break;
+                case 'triadic': h2 = baseHue + 120; h3 = baseHue + 240; break;
+                case 'duo': h2 = vibe.hueB; h3 = vibe.hueA; break;
+                case 'analogous': default: h2 = baseHue + 30; h3 = baseHue - 30; break;
+            }
+            var s = vibe.sat || [60, 85], b = vibe.bri || [38, 60];
+            return {
+                hero:   _shokkHsl(baseHue, _shokkRand(s[0], s[1]),                 _shokkRand(b[0], b[1])),
+                accent: _shokkHsl(h2,      Math.min(100, _shokkRand(s[0], s[1]) + 8),  Math.min(94, _shokkRand(b[0], b[1]) + 16)),
+                tie:    _shokkHsl(h3,      Math.max(0, _shokkRand(s[0], s[1]) - 22),   Math.max(6, _shokkRand(b[0], b[1]) - 12))
+            };
+        }
+        function _shokkRole(zone, idx) {
+            var n = (zone && zone.name) ? String(zone.name).toLowerCase() : '';
+            if (/number/.test(n)) return 'accent';
+            if (/everything|remaining|rest|else/.test(n)) return 'tie';
+            if (/body|main|base/.test(n)) return 'hero';
+            if (idx === 0) return 'hero';
+            if (idx === 1) return 'accent';
+            return 'tie';
+        }
+        function _shokkZoneLayerName(zone) {
+            try {
+                if (zone && zone.sourceLayer && typeof _psdLayers !== 'undefined' && Array.isArray(_psdLayers)) {
+                    var L = _psdLayers.find(function (l) { return l && l.id === zone.sourceLayer; });
+                    if (L && L.name) return String(L.name);
+                }
+            } catch (e) {}
+            return '';
+        }
+        // PROTECTED = never auto-designed: whole-car template (covers all pixels),
+        // muted zones, or a zone tied to a sponsor/decal/logo/contingency layer.
+        // Numbers stay designable (owner wants a number zone). Decals/text on the
+        // Layers panel are a separate system and are never touched at all.
+        function _shokkIsProtectedZone(zone) {
+            if (!zone) return true;
+            if (zone.color === 'everything') return true;
+            if (zone.muted) return true;
+            var hay = ((zone.name || '') + ' ' + _shokkZoneLayerName(zone)).toLowerCase();
+            if (/sponsor|decal|logo|contingenc|template|watermark/.test(hay)) return true;
+            return false;
+        }
+        function _shokkClearOverlays(zone) {
+            ['second', 'third', 'fourth', 'fifth'].forEach(function (p) {
+                zone[p + 'Base'] = null; zone[p + 'BaseColor'] = '#ffffff'; zone[p + 'BaseStrength'] = 0;
+                zone[p + 'BaseSpecStrength'] = 1; zone[p + 'BaseBlendMode'] = 'noise'; zone[p + 'BaseFractalScale'] = 24;
+                zone[p + 'BaseScale'] = 1.0; zone[p + 'BasePattern'] = null; zone[p + 'BasePatternOpacity'] = 100;
+                zone[p + 'BasePatternScale'] = 1.0; zone[p + 'BasePatternRotation'] = 0; zone[p + 'BasePatternStrength'] = 1;
+                zone[p + 'BasePatternInvert'] = false; zone[p + 'BasePatternHarden'] = false; zone[p + 'BasePatternOffsetX'] = 0.5;
+                zone[p + 'BasePatternOffsetY'] = 0.5; zone[p + 'BaseColorSource'] = null;
+            });
+        }
+        function shokkMeWholeCar(vibeId, scopeIndices) {
+            try {
+                if (typeof zones === 'undefined' || !Array.isArray(zones) || zones.length === 0) {
+                    if (typeof showToast === 'function') showToast('Add a zone or load a car first');
+                    return;
+                }
+                var keys = Object.keys(SHOKK_VIBES);
+                if (!vibeId || !SHOKK_VIBES[vibeId]) vibeId = keys[Math.floor(Math.random() * keys.length)];
+                var vibe = SHOKK_VIBES[vibeId];
+
+                // Scope: an explicit index list wins; otherwise every non-protected zone.
+                var scope = (scopeIndices && scopeIndices.length)
+                    ? scopeIndices.filter(function (n) { return zones[n] && !_shokkIsProtectedZone(zones[n]); })
+                    : zones.map(function (z, n) { return n; }).filter(function (n) { return zones[n] && !_shokkIsProtectedZone(zones[n]); });
+                if (!scope.length) {
+                    if (typeof showToast === 'function') showToast('No paint zones to design — templates, decals, sponsors & muted zones are protected. Add or select a paint zone first.');
+                    return;
+                }
+                var scopeSet = {}; scope.forEach(function (n) { scopeSet[n] = true; });
+                if (typeof pushZoneUndo === 'function') pushZoneUndo('SHOKK Whole Car · ' + vibe.label);
+
+                var pal = _shokkPalette(vibe);
+                var heroPool = _shokkResolvePool(vibe.hero);
+                var accentPool = _shokkResolvePool(vibe.accent);
+                var tiePool = _shokkResolvePool(vibe.tie);
+                var fallback = ['gloss', 'metallic', 'satin'].filter(function (id) { return _shokkBasesById()[id]; });
+                if (!heroPool.length) heroPool = fallback.length ? fallback : ['gloss'];
+                if (!accentPool.length) accentPool = heroPool;
+                if (!tiePool.length) tiePool = heroPool;
+                var st = vibe.strength || { hero: 0.7, accent: 0.85, tie: 0.55 };
+
+                var designed = 0;
+                for (var i = 0; i < zones.length; i++) {
+                    var zone = zones[i]; if (!zone) continue;
+                    if (!scopeSet[i]) continue;                 // protected or unselected → left untouched
+                    designed++;
+                    var role = _shokkRole(zone, i);
+                    var pool = role === 'hero' ? heroPool : (role === 'accent' ? accentPool : tiePool);
+                    var col = role === 'hero' ? pal.hero : (role === 'accent' ? pal.accent : pal.tie);
+                    var strength = role === 'hero' ? st.hero : (role === 'accent' ? st.accent : st.tie);
+
+                    if (!zone.lockBase) { var bid = _shokkPick(pool); if (bid) { zone.base = bid; zone.finish = null; } }
+
+                    if (!zone.lockPattern) {
+                        if (role === 'accent' || vibe.patternPolicy === 'none' || !vibe.patternPool) zone.pattern = 'none';
+                        else if (vibe.patternPolicy === 'themed' && Math.random() < 0.75) zone.pattern = _shokkPick(vibe.patternPool) || 'none';
+                        else if (vibe.patternPolicy === 'subtle' && Math.random() < 0.35) zone.pattern = _shokkPick(vibe.patternPool) || 'none';
+                        else zone.pattern = 'none';
+                        zone.patternStack = [];
+                    }
+
+                    zone.intensity = '100';
+                    zone.scale = 1.0; zone.rotation = 0;
+                    zone.patternOffsetX = 0.5; zone.patternOffsetY = 0.5;
+                    zone.patternFlipH = false; zone.patternFlipV = false; zone.patternSpecMult = 1.0;
+                    zone.baseScale = 1.0;
+                    zone.baseRotation = (role === 'hero') ? 0 : (Math.floor(Math.random() * 4) * 90);
+                    zone.baseStrength = 1.0;
+                    zone.baseSpecStrength = (role === 'accent') ? 1.35 : 1.1;
+                    zone.baseOffsetX = 0.5; zone.baseOffsetY = 0.5; zone.baseFlipH = false; zone.baseFlipV = false;
+
+                    if (!zone.lockColor) {
+                        if (vibe.colorMode === 'source') {
+                            zone.baseColorMode = 'source'; zone.baseColorSource = null;
+                            zone.baseHueOffset = 0; zone.baseSaturationAdjust = 0; zone.baseBrightnessAdjust = 0;
+                        } else {
+                            zone.baseColorMode = 'solid'; zone.baseColor = col; zone.baseColorSource = null;
+                            zone.baseColorStrength = strength;
+                            zone.baseHueOffset = 0; zone.baseSaturationAdjust = 0; zone.baseBrightnessAdjust = 0;
+                        }
+                    }
+
+                    // Overlays left intact (non-destructive — never wipe a painter's layer/overlay work).
+                    zone.wear = 0;
+                }
+
+                if (typeof renderZones === 'function') renderZones();
+                if (typeof renderZoneDetail === 'function') {
+                    var si = (typeof selectedZoneIndex !== 'undefined' && selectedZoneIndex >= 0 && selectedZoneIndex < zones.length) ? selectedZoneIndex : 0;
+                    try { renderZoneDetail(si); } catch (e) {}
+                }
+                if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+                var protectedCount = zones.length - scope.length;
+                if (typeof showToast === 'function') showToast(vibe.emoji + ' ' + vibe.label + ' · ' + designed + ' zone' + (designed === 1 ? '' : 's') + (protectedCount > 0 ? ' · ' + protectedCount + ' kept safe' : ''));
+            } catch (err) {
+                if (typeof console !== 'undefined') console.warn('[shokkMeWholeCar] failed', err);
+                if (typeof showToast === 'function') showToast('Whole-car Shokk hit a snag — design unchanged (Ctrl+Z safe).');
+            }
+        }
+        function shokkVibeList() {
+            return Object.keys(SHOKK_VIBES).map(function (id) {
+                return { id: id, label: SHOKK_VIBES[id].label, emoji: SHOKK_VIBES[id].emoji, blurb: SHOKK_VIBES[id].blurb || '' };
+            });
+        }
+        function _shokkFinishLabel(zone) {
+            try {
+                if (zone.base && typeof BASES_BY_ID !== 'undefined' && BASES_BY_ID[zone.base]) return BASES_BY_ID[zone.base].name || zone.base;
+                if (zone.finish && typeof MONOLITHICS_BY_ID !== 'undefined' && MONOLITHICS_BY_ID[zone.finish]) return MONOLITHICS_BY_ID[zone.finish].name || zone.finish;
+                if (zone.base) return zone.base;
+                if (zone.finish) return zone.finish;
+            } catch (e) {}
+            return 'empty';
+        }
+        function _shokkProtectReason(zone) {
+            if (!zone) return 'invalid';
+            if (zone.color === 'everything') return 'whole-car template';
+            if (zone.muted) return 'muted';
+            var hay = ((zone.name || '') + ' ' + _shokkZoneLayerName(zone)).toLowerCase();
+            if (/sponsor/.test(hay)) return 'sponsor';
+            if (/decal/.test(hay)) return 'decal';
+            if (/logo/.test(hay)) return 'logo';
+            if (/contingenc/.test(hay)) return 'contingency';
+            if (/template/.test(hay)) return 'template';
+            if (/watermark/.test(hay)) return 'watermark';
+            return '';
+        }
+        function _shokkEsc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+        // Scope picker: pick a vibe + check which zones to design. Unchecked / locked = untouched.
+        function shokkOpenVibeMenu() {
+            try {
+                var menu = document.getElementById('zoneVibeMenu');
+                if (!menu) { shokkMeWholeCar(); return; }
+                if (menu.style.display === 'block') { menu.style.display = 'none'; return; }
+
+                var html = '<div class="more-menu-header">⚡ SHOKK MY WHOLE CAR</div>';
+                html += '<div style="padding:4px 8px 8px;">';
+                html += '<label style="font-size:10px;color:var(--text-dim,#999);display:block;margin-bottom:2px;">Vibe</label>';
+                html += '<select id="shokkVibeSelect" style="width:100%;font-size:11px;padding:3px 5px;margin-bottom:8px;background:var(--bg-input,#222);color:var(--text-main,#eee);border:1px solid var(--border,#444);border-radius:3px;">';
+                html += '<option value="">\u{1F3B2} Surprise Me (random vibe)</option>';
+                shokkVibeList().forEach(function (v) { html += '<option value="' + v.id + '">' + v.emoji + ' ' + _shokkEsc(v.label) + '</option>'; });
+                html += '</select>';
+                html += '<div style="font-size:10px;color:var(--text-dim,#999);margin-bottom:3px;">Design these zones:</div>';
+                if (typeof zones === 'undefined' || !Array.isArray(zones) || zones.length === 0) {
+                    html += '<div style="font-size:10px;color:var(--text-dim,#999);padding:4px 0;">No zones yet — add a paint zone first.</div>';
+                } else {
+                    html += '<div id="shokkZoneChecklist" style="max-height:190px;overflow-y:auto;margin-bottom:6px;">';
+                    zones.forEach(function (z, i) {
+                        var reason = _shokkProtectReason(z);
+                        var nm = _shokkEsc(z && z.name ? z.name : ('Zone ' + (i + 1)));
+                        if (reason) {
+                            html += '<label style="display:flex;align-items:center;gap:6px;font-size:10px;padding:2px 0;opacity:0.55;cursor:not-allowed;" title="Protected — left untouched">'
+                                + '<input type="checkbox" disabled> \u{1F512} ' + nm + ' <span style="color:var(--text-dim,#999);">· ' + _shokkEsc(reason) + '</span></label>';
+                        } else {
+                            var layerName = _shokkZoneLayerName(z);
+                            var meta = layerName ? ('layer "' + _shokkEsc(layerName) + '"') : ('finish: ' + _shokkEsc(_shokkFinishLabel(z)));
+                            html += '<label style="display:flex;align-items:center;gap:6px;font-size:10px;padding:2px 0;cursor:pointer;">'
+                                + '<input type="checkbox" class="shokk-zone-chk" data-idx="' + i + '" checked> ' + nm
+                                + ' <span style="color:var(--text-dim,#999);">· ' + meta + '</span></label>';
+                        }
+                    });
+                    html += '</div>';
+                }
+                html += '<div style="font-size:9px;color:var(--text-dim,#999);margin:2px 0 6px;line-height:1.3;">ℹ Sponsors, numbers &amp; decals on the Layers panel are never touched. Locked zones keep their own settings.</div>';
+                html += '<button onclick="shokkRunFromPanel()" style="width:100%;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;font-weight:800;letter-spacing:0.4px;padding:6px;border:none;border-radius:4px;cursor:pointer;">⚡ Design Selected Zones</button>';
+                html += '</div>';
+                menu.innerHTML = html;
+                menu.style.display = 'block';
+            } catch (e) {
+                if (typeof console !== 'undefined') console.warn('[shokkOpenVibeMenu] failed', e);
+                shokkMeWholeCar();
+            }
+        }
+        function shokkRunFromPanel() {
+            try {
+                var menu = document.getElementById('zoneVibeMenu');
+                var sel = document.getElementById('shokkVibeSelect');
+                var vibeId = sel ? sel.value : '';
+                var idxs = [], total = 0;
+                if (menu) {
+                    var boxes = menu.querySelectorAll('.shokk-zone-chk');
+                    total = boxes.length;
+                    for (var i = 0; i < boxes.length; i++) {
+                        if (boxes[i].checked) { var d = parseInt(boxes[i].getAttribute('data-idx'), 10); if (!isNaN(d)) idxs.push(d); }
+                    }
+                }
+                if (total > 0 && idxs.length === 0) {
+                    if (typeof showToast === 'function') showToast('Check at least one zone to design (or close the panel).');
+                    return;
+                }
+                if (menu) menu.style.display = 'none';
+                shokkMeWholeCar(vibeId || null, idxs);
+            } catch (e) {
+                if (typeof console !== 'undefined') console.warn('[shokkRunFromPanel] failed', e);
+                shokkMeWholeCar();
+            }
+        }
+        if (typeof window !== 'undefined') {
+            window.shokkMeWholeCar = shokkMeWholeCar;
+            window.shokkVibeList = shokkVibeList;
+            window.shokkOpenVibeMenu = shokkOpenVibeMenu;
+            window.shokkRunFromPanel = shokkRunFromPanel;
+        }
+
         // ===== ZONE TEMPLATES (Save/Load) =====
         function getTemplateStore() {
             try { return JSON.parse(localStorage.getItem('shokker_zone_templates') || '{}'); }
@@ -2177,7 +2873,7 @@
                 pickerColor: t.pickerColor || '#3366ff',
                 pickerTolerance: t.pickerTolerance || 40,
                 colors: t.colors || [],
-                base: t.base || null, pattern: t.pattern || 'none',
+                base: (typeof spbResolveBaseId === 'function' ? spbResolveBaseId(t.base) : t.base) || null, pattern: t.pattern || 'none',
                 finish: t.finish || null, intensity: t.intensity || '100',
                 scale: t.scale || 1.0,
                 customSpec: t.customSpec ?? null, customPaint: t.customPaint ?? null,
@@ -2273,7 +2969,8 @@
 
         // ===== FINISH COMBO LIBRARY =====
         function getComboStore() {
-            return JSON.parse(localStorage.getItem('shokker_finish_combos') || '{}');
+            try { return JSON.parse(localStorage.getItem('shokker_finish_combos') || '{}'); }
+            catch { return {}; }
         }
 
         function saveCombo() {
@@ -2481,7 +3178,7 @@
             'prizm duochrome': 'prizm_duochrome', 'prizm duo': 'prizm_duochrome',
             'prizm iridescent': 'prizm_iridescent', 'prizm pearl': 'prizm_iridescent',
             'prizm adaptive': 'prizm_adaptive', 'panel shift': 'prizm_adaptive',
-            'neonizm': 'prizm_holographic', 'color shift v4': 'prizm_holographic',
+            'color shift v4': 'prizm_holographic',
             // Intensity synonyms
             'light': 'subtle', 'soft': 'subtle', 'mild': 'subtle',
             'med': 'medium', 'moderate': 'medium',
@@ -3093,17 +3790,18 @@
                 if (typeof forcePreviewRefresh === 'function') forcePreviewRefresh();
                 return;
             }
-            // Ctrl+R: Render (if server online)
-            if (e.ctrlKey && e.key === 'r') {
+            // Ctrl+R: Render (if server online). Shift is reserved for
+            // Ctrl+Shift+R reload-last-paint below.
+            if (e.ctrlKey && !e.shiftKey && e.key === 'r') {
                 e.preventDefault();
                 safeDoRender();
                 return;
             }
-            // Ctrl+S: Save config (trigger autosave immediately)
+            // Ctrl+S: refresh the local autosave snapshot. Portable project saves use Save SHOKK.
             if (e.ctrlKey && e.key === 's') {
                 e.preventDefault();
                 if (typeof autoSave === 'function') autoSave();
-                if (typeof showToast === 'function') showToast('Config saved');
+                if (typeof showToast === 'function') showToast('Autosave snapshot saved locally');
                 return;
             }
             // Ctrl+G: Generate Script
@@ -3112,8 +3810,10 @@
                 generateScript();
                 return;
             }
-            // 1-9: Select zone
-            if (e.key >= '1' && e.key <= '9') {
+            // Alt+1-9: Select zone. Bare number keys are reserved for
+            // Photoshop-style brush/layer opacity and zoom shortcuts.
+            if (e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && e.key >= '1' && e.key <= '9') {
+                e.preventDefault();
                 const idx = parseInt(e.key) - 1;
                 if (idx < zones.length) {
                     selectZone(idx);
@@ -3125,7 +3825,7 @@
                 randomizeZone(selectedZoneIndex);
                 return;
             }
-            // Shift+E: Toggle zone editor panel collapse/expand (bare E = edge detect tool)
+            // Shift+E: Toggle zone editor panel collapse/expand (bare E = eraser)
             if (e.key === 'E' && e.shiftKey && !e.ctrlKey && !e.altKey) {
                 const floatPanel = document.getElementById('zoneEditorFloat');
                 if (floatPanel && floatPanel.classList.contains('active')) {
@@ -3133,10 +3833,14 @@
                     return;
                 }
             }
-            // / key: Focus chat input (NLP bar)
+            // / key: Focus chat input (NLP bar) or the visible finish search.
             if (e.key === '/') {
                 e.preventDefault();
-                document.getElementById('chatInput')?.focus();
+                const target = document.getElementById('chatInput') || document.getElementById('finishSearch');
+                if (target) {
+                    target.focus();
+                    if (typeof target.select === 'function') target.select();
+                }
                 return;
             }
             // Alt+Arrow: Nudge current zone's drawn region (so you can align edges without redrawing)
@@ -3177,8 +3881,30 @@
                 duplicateZone(selectedZoneIndex);
                 return;
             }
-            // Delete/Backspace: Delete selected zone
-            if (e.key === 'Delete' || e.key === 'Backspace') {
+            // Fill/Delete pixel shortcuts own the key before any zone deletion route.
+            if (e.altKey && e.key === 'Backspace') {
+                e.preventDefault();
+                if (typeof fillSelectionWithColor === 'function') fillSelectionWithColor(false);
+                return;
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Backspace') {
+                e.preventDefault();
+                if (typeof fillSelectionWithColor === 'function') fillSelectionWithColor(true);
+                return;
+            }
+            if (e.key === 'Delete' && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey) {
+                if (typeof hasActivePixelSelection === 'function' && hasActivePixelSelection()) {
+                    e.preventDefault();
+                    if (typeof deleteSelection === 'function') deleteSelection();
+                    return;
+                }
+                if (typeof showToast === 'function') showToast('No active pixel selection to delete. Use Shift+Delete to delete the selected zone.', 'info');
+                e.preventDefault();
+                return;
+            }
+            // Shift+Delete: Delete selected zone intentionally.
+            if (e.key === 'Delete' && e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                e.preventDefault();
                 deleteZone(selectedZoneIndex);
                 return;
             }
@@ -3187,8 +3913,9 @@
                 addZone();
                 return;
             }
-            // V key: Toggle split view
-            if (e.key === 'v' && !e.ctrlKey && !e.altKey) {
+            // Shift+V: Toggle split view (bare V belongs to Move Layer)
+            if ((e.key === 'V' || e.key === 'v') && e.shiftKey && !e.ctrlKey && !e.altKey) {
+                e.preventDefault();
                 toggleSplitView();
                 return;
             }
@@ -3208,16 +3935,29 @@
                 openTemplateLibrary();
                 return;
             }
-            // Tool shortcuts (Photoshop/GIMP-like): P=Pick, W=Wand, A=Select All, B=Brush, O=Rect, L=Lasso, X=Erase
+            // Tool shortcuts (Photoshop/GIMP-like): keep fallback aligned with the left rail and primary canvas handler.
             if (!e.ctrlKey && !e.metaKey && !e.altKey) {
                 const k = e.key.toLowerCase();
                 if (k === 'p') { if (typeof setCanvasMode === 'function') { setCanvasMode('eyedropper'); e.preventDefault(); } return; }
                 if (k === 'w') { if (typeof setCanvasMode === 'function') { setCanvasMode('wand'); e.preventDefault(); } return; }
                 if (k === 'a') { if (typeof setCanvasMode === 'function') { setCanvasMode('selectall'); e.preventDefault(); } return; }
                 if (k === 'b') { if (typeof setCanvasMode === 'function') { setCanvasMode('brush'); e.preventDefault(); } return; }
+                if (k === 'e') { if (typeof setCanvasMode === 'function') { setCanvasMode('erase'); e.preventDefault(); } return; }
+                // SPB-SIMPLIFY-2026-07-19: 'g' (Gradient), 't' (Text), 'u' (Shape), 'n' (Pen) retired here
+                // too — this fallback router was the THIRD copy of the tool-key map and kept arming the
+                // toolbar-removed tools after the primary handlers were fixed. Functions kept in source.
+                // SPB-SIMPLIFY-2026-07-19 owner curation: RETOUCH trimmed to Color Brush / Recolor /
+                // Healing / Smudge / Burn. Cut-tool keys retired here too (the fallback copy of the
+                // map): 's' clone, 'i' pencil, 'd' dodge, 'f' blur-brush, 'h' sharpen-brush.
+                if (k === 'k') { if (typeof setCanvasMode === 'function') { setCanvasMode('fill'); e.preventDefault(); } return; }
                 if (k === 'o') { if (typeof setCanvasMode === 'function') { setCanvasMode('rect'); e.preventDefault(); } return; }
                 if (k === 'l') { if (typeof setCanvasMode === 'function') { setCanvasMode('lasso'); e.preventDefault(); } return; }
-                if (k === 'x') { if (typeof setCanvasMode === 'function') { setCanvasMode('erase'); e.preventDefault(); } return; }
+                if (k === 'v') { if (typeof setCanvasMode === 'function') { setCanvasMode('layer-move'); e.preventDefault(); } return; }
+                if (k === 'c') { if (typeof setCanvasMode === 'function') { setCanvasMode('colorbrush'); e.preventDefault(); } return; }
+                if (k === 'r') { if (typeof setCanvasMode === 'function') { setCanvasMode('recolor'); e.preventDefault(); } return; }
+                if (k === 'q') { if (typeof setCanvasMode === 'function') { setCanvasMode('smudge'); e.preventDefault(); } return; }
+                if (k === 'j') { if (typeof setCanvasMode === 'function') { setCanvasMode('burn'); e.preventDefault(); } return; }
+                if (k === 'm') { if (typeof setCanvasMode === 'function') { setCanvasMode('ellipse-marquee'); e.preventDefault(); } return; }
             }
             // Escape: cancel lasso/rect first, then exit compare / close gallery / modal / undo panel
             if (e.key === 'Escape') {
@@ -3246,14 +3986,14 @@
             const btn = document.getElementById('themeToggleBtn');
             const isLight = body.classList.toggle('theme-light');
             localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
-            if (btn) btn.textContent = isLight ? 'ðŸŒ™ Dark' : '☀ Light';
+            if (btn) btn.textContent = isLight ? '🌙 Dark' : '☀ Light';
         }
         function applySavedTheme() {
             const saved = localStorage.getItem(THEME_KEY);
             const btn = document.getElementById('themeToggleBtn');
             if (saved === 'light') {
                 document.body.classList.add('theme-light');
-                if (btn) btn.textContent = 'ðŸŒ™ Dark';
+                if (btn) btn.textContent = '🌙 Dark';
             } else if (btn) {
                 btn.textContent = '☀ Light';
             }
@@ -3268,13 +4008,27 @@
         if (typeof window.stampLayers === 'undefined') window.stampLayers = [];
         if (typeof window.stampSpecFinish === 'undefined') window.stampSpecFinish = 'gloss';
 
+        function _spbEscapeStampHtml(value) {
+            if (typeof escapeHtml === 'function') return escapeHtml(value);
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         function importStamp() {
             const input = document.createElement('input');
             input.type = 'file';
-            input.accept = '.png,.tga,.PNG,.TGA';
+            input.accept = '.png,.PNG,image/png';
             input.onchange = async function(e) {
                 const file = e.target.files[0];
                 if (!file) return;
+                if (!/\.png$/i.test(file.name) && file.type !== 'image/png') {
+                    showToast('Spec stamps currently support transparent PNG files only.', true);
+                    return;
+                }
 
                 const img = new Image();
                 const url = URL.createObjectURL(file);
@@ -3289,6 +4043,7 @@
                     });
                     renderStampList();
                     showToast('Stamp added: ' + file.name + ' (' + img.width + 'x' + img.height + ')');
+                    if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
                     // FIVE-HOUR SHIFT Win H10: blob URL never revoked.
                     // Marathon #59 fixed this for the decal importer; the
                     // stamp importer was the asymmetric outlier. Without
@@ -3306,9 +4061,8 @@
                     }
                 };
                 img.onerror = function() {
-                    // TGA files can't be loaded by Image directly
                     try { URL.revokeObjectURL(url); } catch (_) {}
-                    showToast('Could not load image. Use PNG format for best results.', true);
+                    showToast('Could not load stamp image. Import a transparent PNG for spec stamps.', true);
                 };
                 img.src = url;
             };
@@ -3370,7 +4124,7 @@
             if (countEl) countEl.textContent = '(' + stamps.length + ' layer' + (stamps.length !== 1 ? 's' : '') + ')';
 
             if (stamps.length === 0) {
-                container.innerHTML = '<div style="font-size:9px; color:var(--text-dim); padding:4px;">No stamps imported. Click "Import Stamp" to add sponsor/decal PNGs.</div>';
+                container.innerHTML = '<div style="font-size:9px; color:var(--text-dim); padding:4px;">No spec stamps imported. Stamps are full-canvas transparent PNG masks, not movable sponsor decals.</div>';
                 return;
             }
 
@@ -3378,9 +4132,10 @@
             stamps.forEach(function(s, i) {
                 var vis = s.visible ? '\u{1F441}' : '\u{1F6AB}';
                 var opacPct = Math.round(s.opacity * 100);
+                var stampName = _spbEscapeStampHtml(s && s.name ? s.name : 'Spec stamp');
                 html += '<div style="display:flex; align-items:center; gap:6px; padding:3px 0; border-bottom:1px solid var(--border);">'
                     + '<button onclick="toggleStampVisibility(' + i + ')" style="font-size:12px; cursor:pointer; background:none; border:none; padding:0;" title="Toggle visibility">' + vis + '</button>'
-                    + '<span style="font-size:9px; color:var(--text-main); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="' + s.name + '">' + s.name + '</span>'
+                    + '<span style="font-size:9px; color:var(--text-main); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="' + stampName + '">' + stampName + '</span>'
                     + '<span style="font-size:8px; color:var(--text-dim);">' + opacPct + '%</span>'
                     + '<input type="range" min="0" max="100" value="' + opacPct + '" onchange="setStampOpacity(' + i + ', this.value/100)" style="width:50px; height:12px;">'
                     + '<button onclick="removeStamp(' + i + ')" style="font-size:10px; cursor:pointer; background:none; border:none; color:var(--error); padding:0;" title="Remove">\u2715</button>'
@@ -3544,8 +4299,12 @@
                 if (!d) return;
                 const v = d.version || '';
                 const b = d.build || '';
-                // Improvement 10: Title bar always reflects current version + build.
-                if (v) document.title = 'Shokker Paint Booth v' + v + (b ? ' • B' + b : '');
+                // Improvement 10: Title bar always reflects the current version.
+                // [10.0.0 2026-08-09] Was `+ (b ? ' • B' + b : '')`, which rendered
+                // "v8.0.4-beta • BSpring Catalogue" — the "B" prefix assumes a numeric
+                // build id, but BUILD_TAG is a name. Owner: drop the tag from the title;
+                // it still travels in /build-info for logs + update detection below.
+                if (v) document.title = 'Shokker Paint Booth v' + v;
                 // Improvement 11: Update detection — toast if build number jumped while app was open elsewhere.
                 if (b && SPB.lastKnownBuild && String(b) !== String(SPB.lastKnownBuild)) {
                     if (typeof showToast === 'function') {
@@ -3603,23 +4362,31 @@
             { keys: 'F1 / ?', desc: 'Show this cheat sheet' },
             { keys: 'F5', desc: 'Force preview refresh' },
             { keys: 'Ctrl+R', desc: 'Render' },
-            { keys: 'Ctrl+S', desc: 'Save config (autosave)' },
+            { keys: 'Ctrl+S', desc: 'Save local autosave snapshot' },
             { keys: 'Ctrl+G', desc: 'Generate script' },
-            { keys: '1-9', desc: 'Select zone' },
+            { keys: 'Alt+1-9', desc: 'Select zone' },
             { keys: 'Shift+R', desc: 'Randomize selected zone' },
             { keys: 'Shift+E', desc: 'Toggle zone editor panel' },
             { keys: '/', desc: 'Focus chat / finish search' },
             { keys: 'Esc', desc: 'Close top modal / cancel tool / clear search' },
             { keys: 'Alt+Arrows', desc: 'Nudge region selection' },
-            { keys: 'Up/Down', desc: 'Cycle zones' },
-            { keys: 'Ctrl+Up/Down', desc: 'Reorder zone priority' },
+            { keys: 'Up / Down', desc: 'Cycle zones' },
+            { keys: 'Ctrl+Up / Ctrl+Down', desc: 'Reorder zone priority' },
             { keys: 'Shift+D', desc: 'Duplicate zone' },
             { keys: 'Shift+N', desc: 'New zone' },
             { keys: 'Shift+H', desc: 'History gallery' },
             { keys: 'Shift+T', desc: 'Template library' },
-            { keys: 'V', desc: 'Toggle split view' },
-            { keys: 'P / W / A / B / O / L / X', desc: 'Pick / Wand / All / Brush / Rect / Lasso / Erase' },
-            { keys: 'Delete / Backspace', desc: 'Delete selected zone' },
+            { keys: 'V', desc: 'Move Layer' },
+            { keys: 'Shift+V', desc: 'Toggle split view' },
+            // SPB-SIMPLIFY-2026-07-19: G/T/U/N removed from the cheat-sheet rows — those shortcuts were
+            // retired with their toolbar tools (Gradient/Text/Shape/Pen, owner Round 10).
+            // (2026-07-19 later, owner curation: S/D/I/H/F dropped with the RETOUCH trim to
+            //  Color Brush / Recolor / Healing / Smudge / Burn.)
+            { keys: 'P / W / A / B / E / K / O / L / V', desc: 'Pick / Wand / All / Brush / Erase / Fill / Rect / Lasso / Move', conflictCheck: false },
+            { keys: 'C / R / Q / J / M', desc: 'Color Brush / Recolor / Smudge / Burn / Ellipse', conflictCheck: false },
+            { keys: 'Alt+Backspace / Ctrl+Backspace', desc: 'Fill active selection with FG / BG' },
+            { keys: 'Delete', desc: 'Delete selected pixels when a pixel selection exists' },
+            { keys: 'Shift+Delete', desc: 'Delete selected zone' },
         ];
 
         // Improvement 16: Detect duplicate shortcut bindings at boot (warn in console only — no UI noise).
@@ -3628,6 +4395,7 @@
                 const seen = {};
                 const conflicts = [];
                 SPB.shortcuts.forEach(function(s) {
+                    if (s.conflictCheck === false) return;
                     s.keys.split('/').forEach(function(k) {
                         const key = k.trim().toLowerCase();
                         if (!key) return;
@@ -3793,6 +4561,15 @@
             } catch (e) {}
         };
         SPB.clearRecentPaints = function() { SPB.lsSet(SPB.RECENT_PAINTS_KEY, []); };
+        function _spbEscapeRecentPaintHtml(value) {
+            if (typeof escapeHtml === 'function') return escapeHtml(value);
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
 
         // Improvement 25: Reload last paint helper.
         SPB.reloadLastPaint = function() {
@@ -3805,7 +4582,7 @@
             if (typeof window.loadPaintByPath === 'function') {
                 try { window.loadPaintByPath(last.path); return; } catch (e) {}
             }
-            if (typeof showToast === 'function') showToast('Reload helper not wired — last path: ' + last.path);
+            if (typeof showToast === 'function') showToast('Recent paint reload is not ready — last path: ' + last.path, true);
         };
 
         // Improvement 26: Network error wrapper — produces friendly user-facing message.
@@ -3911,14 +4688,15 @@
                 if (e.key === 'Escape' && SPB.modalStack.length) {
                     if (SPB.closeTopModal()) { e.preventDefault(); return; }
                 }
-                // '/' focuses search field if present (browser elements only).
+                // '/' focuses chat when available, otherwise the finish search
+                // fallback. Keep this in parity with the legacy bubble handler.
                 if (e.key === '/' && document.activeElement && (document.activeElement.tagName === 'BODY' || document.activeElement === document.documentElement)) {
-                    const search = document.getElementById('finishSearchInput') || document.getElementById('chatInput');
+                    const search = document.getElementById('chatInput') || document.getElementById('finishSearch');
                     if (search) { e.preventDefault(); search.focus(); search.select && search.select(); }
                     return;
                 }
                 // Esc clears search input when focused.
-                if (e.key === 'Escape' && document.activeElement && document.activeElement.id === 'finishSearchInput') {
+                if (e.key === 'Escape' && document.activeElement && document.activeElement.id === 'finishSearch') {
                     document.activeElement.value = '';
                     document.activeElement.dispatchEvent(new Event('input', { bubbles: true }));
                     return;
@@ -4291,6 +5069,36 @@
             _idInput.addEventListener('change', _clearIdHighlight);
             // Check on load
             setTimeout(_clearIdHighlight, 1000);
+
+            // SPB-SIMPLIFY-2026-07-20 (owner request): first-load convenience — guess the user's
+            // iRacing ID from the car_<id>.tga / car_num_<id>.tga files already in their paint
+            // folders and prefill it. HINT ONLY: runs once, only when the field is still empty
+            // after autosave restore, and anything the user ever types wins (autosave persists it,
+            // so this never fires again once an ID exists).
+            setTimeout(function () {
+                try {
+                    if (_idInput.value.trim()) return; // manual/restored value present — never touch
+                    fetch('/api/iracing-id-detect').then(function (r) { return r.json(); }).then(function (d) {
+                        if (!d || !d.best_id || !d.confident) return;
+                        if (_idInput.value.trim()) return; // user typed while we were fetching
+                        _idInput.value = d.best_id;
+                        _idInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        _idInput.dispatchEvent(new Event('change', { bubbles: true })); // updateOutputPath + autosave
+                        // car_num_<id> files dominating means they run custom numbers
+                        var chk = document.getElementById('useCustomNumberCheckbox');
+                        if (chk && typeof toggleCustomNumber === 'function' && chk.checked !== !!d.runs_custom_numbers) {
+                            chk.checked = !!d.runs_custom_numbers;
+                            toggleCustomNumber(!!d.runs_custom_numbers);
+                        }
+                        if (typeof showToast === 'function') {
+                            showToast('Detected your iRacing ID ' + d.best_id + ' from ' + d.best_folder_count +
+                                ' paint folder' + (d.best_folder_count === 1 ? '' : 's') +
+                                (d.runs_custom_numbers ? ' (custom numbers on)' : '') +
+                                ' — change it in the header anytime', 'success');
+                        }
+                    }).catch(function () { /* detection is a bonus, never an error */ });
+                } catch (e) { /* never let a convenience break boot */ }
+            }, 2500);
         }
 
         // Prevent page scroll when dragging Base or Pattern intensity sliders (wheel would scroll the page)
@@ -4379,8 +5187,9 @@
                     return;
                 }
                 host.innerHTML = list.map(function(p, i) {
-                    const name = (p.path || '').split('/').pop().split('\\').pop();
-                    return '<div data-rp-idx="' + i + '" style="cursor:pointer;padding:4px 6px;font-size:11px;border-bottom:1px solid #222;" title="' + (p.path || '') + '">' + (name || '(unnamed)') + '</div>';
+                    const path = String((p && p.path) || '');
+                    const name = path.split('/').pop().split('\\').pop();
+                    return '<div data-rp-idx="' + i + '" style="cursor:pointer;padding:4px 6px;font-size:11px;border-bottom:1px solid #222;" title="' + _spbEscapeRecentPaintHtml(path) + '">' + _spbEscapeRecentPaintHtml(name || '(unnamed)') + '</div>';
                 }).join('');
                 Array.prototype.forEach.call(host.querySelectorAll('[data-rp-idx]'), function(row) {
                     row.onclick = function() {
@@ -4390,7 +5199,7 @@
                         if (typeof window.loadPaintByPath === 'function') {
                             try { window.loadPaintByPath(p.path); } catch (e) {}
                         } else if (typeof showToast === 'function') {
-                            showToast('Recent: ' + p.path);
+                            showToast('Recent paint reload is not ready — path: ' + p.path, true);
                         }
                     };
                 });
@@ -4503,3 +5312,270 @@
             }
         }, 3000);
 
+        // ===== WEB COMMAND MENU (browser parity with hidden Electron menu) =====
+        function getFinishViewerCandidateId() {
+            try {
+                const zoneList = typeof zones !== 'undefined' ? zones : window.zones;
+                const selectedIdx = typeof selectedZoneIndex !== 'undefined' ? selectedZoneIndex : window.selectedZoneIndex;
+                const z = Array.isArray(zoneList) && Number.isInteger(selectedIdx)
+                    ? zoneList[selectedIdx]
+                    : null;
+                const candidates = [z && z.finish, z && z.base, z && z.pattern, 'living_led_chase'].filter(Boolean);
+                const monolithicsRaw = typeof MONOLITHICS !== 'undefined' ? MONOLITHICS : window.MONOLITHICS;
+                const monolithics = Array.isArray(monolithicsRaw) ? monolithicsRaw : [];
+                const monoIds = new Set(monolithics.map(function(item) { return String(item && (item.id || item.key || item) || ''); }));
+                return candidates.find(function(id) { return monoIds.has(String(id)); }) || 'living_led_chase';
+            } catch (e) {
+                return 'living_led_chase';
+            }
+        }
+
+        function buildFinishViewerUrl() {
+            const finish = encodeURIComponent(getFinishViewerCandidateId());
+            const query = '?source=api&finish=' + finish;
+            try {
+                if (window.location.protocol === 'file:') return 'finish-viewer.html' + query;
+                return window.location.origin + '/finish-viewer.html' + query;
+            } catch (e) {
+                return '/finish-viewer.html' + query;
+            }
+        }
+
+        function buildSpecSculptUrl() {
+            try {
+                if (window.location.protocol === 'file:') return 'spec-sculpt.html';
+                return window.location.origin + '/spec-sculpt.html';
+            } catch (e) {
+                return '/spec-sculpt.html';
+            }
+        }
+
+        function buildShokkDropUrl() {
+            try {
+                if (window.location.protocol === 'file:') return 'shokk-drop.html';
+                return window.location.origin + '/shokk-drop.html';
+            } catch (e) {
+                return '/shokk-drop.html';
+            }
+        }
+
+        function openShokkDropLab() {
+            const url = buildShokkDropUrl();
+            const child = window.open(url, 'shokkerShokkDrop');
+            if (child && typeof child.focus === 'function') child.focus();
+            else window.location.href = url;
+            closeWebCommandMenu();
+        }
+
+        function openSpecSculptLab() {
+            const url = buildSpecSculptUrl();
+            const child = window.open(url, 'shokkerSpecSculptLab');
+            if (child && typeof child.focus === 'function') child.focus();
+            else window.location.href = url;
+            closeWebCommandMenu();
+        }
+
+        function buildAutoPainterUrl() {
+            try {
+                if (window.location.protocol === 'file:') return 'auto-painter.html';
+                return window.location.origin + '/auto-painter.html';
+            } catch (e) {
+                return '/auto-painter.html';
+            }
+        }
+
+        // SPB-AUTOPAINT-001: Auto Painter (Shokk Trace) sideload tool launcher.
+        function openAutoPainterLab() {
+            const url = buildAutoPainterUrl();
+            const child = window.open(url, 'shokkerAutoPainter');
+            if (child && typeof child.focus === 'function') child.focus();
+            else window.location.href = url;
+            closeWebCommandMenu();
+        }
+
+        // SPB-AUTOPAINT-001: AUTOPAINTER teaser (owner request 2026-05-30). The
+        // feature isn't public yet, so the dedicated top-bar button shows a clear
+        // "coming soon / experimental" warning instead of opening the in-progress
+        // tool. A low-key "Peek anyway" still opens it for dev/owner testing.
+        function showAutoPainterComingSoon() {
+            closeWebCommandMenu();
+            const prev = document.getElementById('autoPainterComingSoon');
+            if (prev) prev.remove();
+            const ov = document.createElement('div');
+            ov.id = 'autoPainterComingSoon';
+            ov.setAttribute('role', 'dialog');
+            ov.setAttribute('aria-modal', 'true');
+            ov.setAttribute('aria-label', 'Auto Painter — future feature, coming soon');
+            ov.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;'
+                + 'justify-content:center;background:rgba(2,6,12,0.78);backdrop-filter:blur(3px)';
+            ov.innerHTML =
+                '<div style="max-width:560px;margin:20px;padding:26px 28px;border-radius:16px;'
+                + 'background:linear-gradient(160deg,#0d1420,#0a0f17);border:1px solid #2bd4ff;'
+                + 'box-shadow:0 0 0 1px rgba(43,212,255,0.25),0 18px 60px rgba(0,0,0,0.6),0 0 40px rgba(43,212,255,0.25);'
+                + 'color:#e8f3ff;text-align:center">'
+                + '<div style="font-size:46px;line-height:1;margin-bottom:10px">🧪🤖</div>'
+                + '<div style="font-size:22px;font-weight:800;letter-spacing:1.5px;color:#2bd4ff;'
+                + 'text-shadow:0 0 12px rgba(43,212,255,0.6)">AUTOPAINTER</div>'
+                + '<div style="font-size:13px;font-weight:700;letter-spacing:2px;color:#ffd23a;margin-top:8px">'
+                + 'FUTURE FEATURE — COMING SOON!</div>'
+                + '<div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#ff5d73;margin-top:4px">EXPERIMENTAL!</div>'
+                + '<div style="font-size:13px;color:#9fb6cc;margin-top:14px;font-style:italic">'
+                + '🧬 Mad scientist experiment in progress<span id="apsDots"></span></div>'
+                + '<div style="font-size:12px;color:#7e93a8;margin-top:14px;line-height:1.5">'
+                + 'Turn photos / renders of a car into an editable iRacing paint template — auto-detect every '
+                + 'zone, fill paint + spec, drop it straight into the booth. Not wired in yet. Check back soon.</div>'
+                + '<div style="display:flex;gap:10px;justify-content:center;margin-top:22px">'
+                + '<button type="button" id="apsClose" style="padding:9px 22px;border-radius:9px;border:1px solid #2bd4ff;'
+                + 'background:#13324a;color:#dff4ff;font-weight:700;cursor:pointer">Got it</button>'
+                + '<button type="button" id="apsPeek" style="padding:9px 16px;border-radius:9px;border:1px solid #3a4a5c;'
+                + 'background:transparent;color:#7e93a8;font-size:12px;cursor:pointer" '
+                + 'title="Open the in-progress experimental tool (dev preview)">Peek anyway →</button>'
+                + '</div></div>';
+            document.body.appendChild(ov);
+            let dotTimer = null;
+            const close = () => { if (dotTimer) clearInterval(dotTimer); document.removeEventListener('keydown', onKey, true); ov.remove(); };
+            const onKey = (e) => {
+                if (e.defaultPrevented) return;
+                if (e.key !== 'Escape') return;
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                close();
+            };
+            ov.addEventListener('click', (e) => { if (e.target === ov) close(); });
+            document.addEventListener('keydown', onKey, true);
+            const cb = document.getElementById('apsClose'); if (cb) cb.addEventListener('click', close);
+            const pb = document.getElementById('apsPeek');
+            if (pb) pb.addEventListener('click', () => { close(); if (typeof openAutoPainterLab === 'function') openAutoPainterLab(); });
+            // animate the "in progress ........." dots — the mad-scientist touch
+            let n = 0; const dotsEl = document.getElementById('apsDots');
+            dotTimer = setInterval(() => { n = (n + 1) % 10; if (dotsEl) dotsEl.textContent = '.'.repeat(n); }, 220);
+        }
+
+        function closeWebCommandMenu() {
+            const menu = document.getElementById('webCommandMenu');
+            const btn = document.getElementById('webCommandsBtn');
+            if (menu) menu.classList.remove('open');
+            if (btn) {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-expanded', 'false');
+            }
+        }
+
+        function toggleWebCommandMenu(forceOpen) {
+            const menu = document.getElementById('webCommandMenu');
+            const btn = document.getElementById('webCommandsBtn');
+            if (!menu) return;
+            const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : !menu.classList.contains('open');
+            if (shouldOpen) {
+                const settings = document.getElementById('settingsDropdown');
+                const settingsBtn = document.getElementById('settingsGearBtn');
+                if (settings) settings.classList.remove('open');
+                if (settingsBtn) settingsBtn.setAttribute('aria-expanded', 'false');
+            }
+            menu.classList.toggle('open', shouldOpen);
+            if (btn) {
+                btn.classList.toggle('active', shouldOpen);
+                btn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+            }
+        }
+
+        function openFinishViewerFromWeb() {
+            const url = buildFinishViewerUrl();
+            const child = window.open(url, 'shokkerFinishViewer');
+            if (child && typeof child.focus === 'function') child.focus();
+            else window.location.href = url;
+            closeWebCommandMenu();
+        }
+
+        async function runWebCommand(action) {
+            closeWebCommandMenu();
+            try {
+                switch (action) {
+                    case 'finish-viewer':
+                        openFinishViewerFromWeb();
+                        break;
+                    case 'spec-inspector':
+                        if (typeof openSpecMapInspector === 'function') openSpecMapInspector();
+                        break;
+                    case 'spec-sculpt':
+                        openSpecSculptLab();
+                        break;
+                    case 'shokk-drop':
+                        openShokkDropLab();
+                        break;
+                    case 'auto-painter':
+                        openAutoPainterLab();
+                        break;
+                    case 'reload':
+                        if (window.electronAPI && typeof window.electronAPI.reload === 'function') await window.electronAPI.reload();
+                        else window.location.reload();
+                        break;
+                    case 'hard-reload':
+                        if (window.electronAPI && typeof window.electronAPI.hardReload === 'function') await window.electronAPI.hardReload();
+                        else {
+                            const url = new URL(window.location.href);
+                            url.searchParams.set('spb_cache_bust', Date.now().toString(36));
+                            window.location.href = url.toString();
+                        }
+                        break;
+                    case 'devtools':
+                        if (window.electronAPI && typeof window.electronAPI.toggleDevTools === 'function') await window.electronAPI.toggleDevTools();
+                        else if (typeof showToast === 'function') showToast('Use F12 or your browser menu to open Developer Tools.');
+                        else alert('Use F12 or your browser menu to open Developer Tools.');
+                        break;
+                    case 'fullscreen':
+                        if (!document.fullscreenElement && document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+                        else if (document.exitFullscreen) await document.exitFullscreen();
+                        break;
+                    case 'shortcuts':
+                        if (typeof showShortcutLegend === 'function') showShortcutLegend();
+                        break;
+                    case 'settings':
+                        if (typeof toggleSettingsDropdown === 'function') toggleSettingsDropdown();
+                        break;
+                    case 'about':
+                        if (window.electronAPI && typeof window.electronAPI.showAbout === 'function') await window.electronAPI.showAbout();
+                        else alert('Shokker Paint Booth');
+                        break;
+                    case 'app-home':
+                        window.open(window.location.origin + '/paint-booth-v2.html', '_blank');
+                        break;
+                    default:
+                        break;
+                }
+            } catch (err) {
+                if (typeof showToast === 'function') showToast('Command failed: ' + (err.message || err));
+                else console.warn('[SPB-COMMAND]', err);
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('webCommandMenu');
+            if (!menu || !menu.classList.contains('open')) return;
+            const launcher = e.target.closest && e.target.closest('#webCommandMenu, #webCommandsBtn');
+            if (!launcher) closeWebCommandMenu();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.defaultPrevented) return;
+            if (e.key === 'Escape') closeWebCommandMenu();
+        });
+
+        function mountWebCommandLauncher() {
+            const launcher = document.querySelector('.web-command-launcher');
+            const headerRight = document.querySelector('.header-right');
+            const settingsBtn = document.getElementById('settingsGearBtn');
+            if (!launcher || !headerRight || headerRight.contains(launcher)) return;
+            headerRight.insertBefore(launcher, settingsBtn || headerRight.firstChild);
+        }
+
+        mountWebCommandLauncher();
+
+        window.openShokkDropLab = openShokkDropLab;
+        window.openFinishViewerFromWeb = openFinishViewerFromWeb;
+        window.buildSpecSculptUrl = buildSpecSculptUrl;
+        window.openSpecSculptLab = openSpecSculptLab;
+        window.openAutoPainterLab = openAutoPainterLab;
+        window.showAutoPainterComingSoon = showAutoPainterComingSoon;
+        window.toggleWebCommandMenu = toggleWebCommandMenu;
+        window.runWebCommand = runWebCommand;

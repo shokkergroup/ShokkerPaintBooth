@@ -1,0 +1,269 @@
+{
+  "work_item": "W92 independent W88 instruction routing review and isolated repair",
+  "date": "2026-10-04",
+  "decision": "PASS_PRIVATE_CANDIDATE",
+  "scope": "Read-only W88 review plus a separate isolated helper repair. Executed actual offlineAsk/offlineAskCore and D/E planning with controlled queue callbacks, plus actual send() with controlled ask/finish callbacks. No apply, native, provider, server, or production writes.",
+  "frozen_oracles": [
+    {
+      "path": "_easy_claude_work/ai14h_w92_review/fresh_oracle.json",
+      "sha256": "D12AFD9ECB9CE377D385D049EA820117479A18682120E24B05B2102BAF05888C",
+      "cases": 15,
+      "frozen_before_candidate_behavior": true
+    },
+    {
+      "path": "_easy_claude_work/ai14h_w92_review/supplemental_oracle.json",
+      "sha256": "7EE6329054B2FDADA707F48896D8725921AB6418AF5F218D7C7418011CD7C6A4",
+      "cases": 12,
+      "frozen_before_private_repair": true
+    }
+  ],
+  "test": {
+    "path": "tests/ai_instruction_route_w92_review_contract.cjs",
+    "sha256": "E282EF91A8828670DA5D6B219045FA7062B2DD146FD00FC166A9B10C22B32BFB",
+    "run": "PASS",
+    "w88_baseline_defects": 3,
+    "private_repair_holdout": "12/12",
+    "integration12_with_repaired_guard": "15/15"
+  },
+  "source_pins": {
+    "w88_candidate_controller": "829EF29E481876DAA38585D601BC0D0FFA3BC825884F6EDEC180B671E75FBFC7",
+    "w88_intent_guard": "F02093D25758FD41847A1F7D2E7CC9774A4875571885F03A6CB1DC241F0E2CB4",
+    "isolated_w92_intent_guard": "89E0D9E473C13309011D7318A81037C0C286D399B854938A37EDC14DAEDEFC83",
+    "integration10_controller": "E28770330994FFC04364D0A48E88B98B69D25F9848E23D56CC1CEA07165DA713",
+    "integration12_controller": "60AE271C62D697AB31B9F2EED47B841A6038755DB8F319507E38D03185EE3A21",
+    "design": "0533393FF5F2170236F60D4ED489C7AE52F98805E12B0764DA67A967F756F2E8",
+    "edit": "99703873013E198857D9ACEAA334821098E53DCAA9D55E14DBD1EC50E58604DE",
+    "materials": "A6F50C22C2D3A4F6F9707505D66C6C30B9D2CC0E04D78F00F0D103F38A49919D",
+    "complete_instruction_guard": "BA0AF1F9E217695ED733DDE81C8DEC1A735DD1F052E8C06B3098866D392A551C",
+    "self_help": "A25FEBD091B6D13EE2B3AAF3713F21A2FA720C0F240A6B042CD6DEFD023CF783",
+    "operation": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6",
+    "lease": "DE276372A763310EC051DB141FCB1D601E11DBF193843E2B21A405226F782134"
+  },
+  "w88_original_reproductions": {
+    "apply_howto_laundering": "Apply this request: how would I make the roof blue? queued roof blue",
+    "quoted_paraphrase_hood_gold": "The note says to paint the hood gold; can you explain that instruction? queued hood gold",
+    "passive_preface_action_lost": "The roof is currently green. Change only the roof to blue. zero queue"
+  },
+  "repair": {
+    "module": "_easy_claude_work/ai14h_w92_review/candidate/spb-ai-instruction-intent-guard.js",
+    "cases": [
+      {
+        "id": "reported-note-question",
+        "expected": "read-only; zero queued operations",
+        "queue": 0,
+        "region": null,
+        "reply": "Nothing was changed. I treated the quoted instruction as text to explain or transcribe, not as a paint command."
+      },
+      {
+        "id": "customer-paraphrase-question",
+        "expected": "read-only; zero queued operations",
+        "queue": 0,
+        "region": null,
+        "reply": "Nothing was changed. I treated the quoted instruction as text to explain or transcribe, not as a paint command."
+      },
+      {
+        "id": "apply-how-question",
+        "expected": "read-only; zero queued operations",
+        "queue": 0,
+        "region": null,
+        "reply": "Nothing was changed. This reads as a how-to or hypothetical question. Give the change as a direct instruction when you want me to queue it."
+      },
+      {
+        "id": "apply-if-hypothetical",
+        "expected": "read-only; zero queued operations",
+        "queue": 0,
+        "region": null,
+        "reply": "Nothing was changed. This reads as a how-to or hypothetical question. Give the change as a direct instruction when you want me to queue it."
+      },
+      {
+        "id": "passive-before-imperative",
+        "expected": "one roof-scoped action",
+        "queue": 1,
+        "region": {
+          "part": "roof"
+        },
+        "reply": "Done — the roof (35% of the car) is now recoloured blue."
+      },
+      {
+        "id": "passive-before-polite-direct",
+        "expected": "one trunk-scoped action",
+        "queue": 1,
+        "region": {
+          "part": "trunk"
+        },
+        "reply": "Done — the trunk (35% of the car) is now recoloured white."
+      },
+      {
+        "id": "passive-only-no-command",
+        "expected": "read-only; zero queued operations",
+        "queue": 0,
+        "region": null,
+        "reply": "Nothing was changed. Name one exact supported part."
+      },
+      {
+        "id": "imperative-stays-direct",
+        "expected": "one spoiler-scoped action",
+        "queue": 1,
+        "region": {
+          "part": "spoiler"
+        },
+        "reply": "Done — the spoiler (35% of the car) is now recoloured orange."
+      },
+      {
+        "id": "quoted-imperative-control",
+        "expected": "read-only; zero queued operations",
+        "queue": 0,
+        "region": null,
+        "reply": "Nothing was changed. I treated the quoted instruction as text to explain or transcribe, not as a paint command."
+      },
+      {
+        "id": "apply-direct-control",
+        "expected": "one front-bumper-scoped action",
+        "queue": 1,
+        "region": {
+          "part": "front bumper"
+        },
+        "reply": "Done — the front bumper (35% of the car) is now recoloured red."
+      },
+      {
+        "id": "unwrapped-howto-control",
+        "expected": "read-only; zero queued operations",
+        "queue": 0,
+        "region": null,
+        "reply": "Nothing was changed. This reads as a how-to or hypothetical question. Give the change as a direct instruction when you want me to queue it."
+      },
+      {
+        "id": "targetless-keep-paint-conflict",
+        "expected": "clarification; zero queued operations",
+        "queue": 0,
+        "region": null,
+        "reply": "Nothing was changed. This combines a new paint look with keeping current paint, but does not name a supported part. Choose one paint instruction and name the exact part."
+      }
+    ],
+    "changes": [
+      "Treat attribution/report questions about a paint instruction as read-only even without quotation marks.",
+      "Unwrap Apply this request before intent classification; only direct supported paint verbs authorize action, while how-to/hypothetical text remains read-only.",
+      "Drop a passive current-state prefix only when an explicit paint command follows; polite pronoun edits retain the named part.",
+      "Recognize plain weave as an overlay term in targetless keep-current-paint conflict detection."
+    ],
+    "hash": "89E0D9E473C13309011D7318A81037C0C286D399B854938A37EDC14DAEDEFC83"
+  },
+  "combined_replay": [
+    {
+      "id": "quote-exact-roof",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I treated the quoted instruction as text to explain or transcribe, not as a paint command."
+    },
+    {
+      "id": "hypothetical-if",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. This reads as a how-to or hypothetical question. Give the change as a direct instruction when you want me to queue it."
+    },
+    {
+      "id": "howto-question",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. This reads as a how-to or hypothetical question. Give the change as a direct instruction when you want me to queue it."
+    },
+    {
+      "id": "quoted-paraphrase",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I treated the quoted instruction as text to explain or transcribe, not as a paint command."
+    },
+    {
+      "id": "explicit-imperative",
+      "queue": 1,
+      "region": {
+        "part": "roof"
+      },
+      "reply": "Done — the roof (35% of the car) is now recoloured blue."
+    },
+    {
+      "id": "polite-direct",
+      "queue": 1,
+      "region": {
+        "part": "roof"
+      },
+      "reply": "Done — the roof (35% of the car) is now recoloured blue."
+    },
+    {
+      "id": "apply-wrapper",
+      "queue": 1,
+      "region": {
+        "part": "roof"
+      },
+      "reply": "Done — the roof (35% of the car) is now recoloured blue."
+    },
+    {
+      "id": "apply-wrapper-not-imperative",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. This reads as a how-to or hypothetical question. Give the change as a direct instruction when you want me to queue it."
+    },
+    {
+      "id": "targetless-preserve-conflict",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. This combines a new paint look with keeping current paint, but does not name a supported part. Choose one paint instruction and name the ex"
+    },
+    {
+      "id": "quoted-conflict",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. This combines a new paint look with keeping current paint, but does not name a supported part. Choose one paint instruction and name the ex"
+    },
+    {
+      "id": "passive-finish-mention",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. Name one exact supported part."
+    },
+    {
+      "id": "passive-current-color",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. Name one exact supported part."
+    },
+    {
+      "id": "imperative-with-passive-preface",
+      "queue": 1,
+      "region": {
+        "part": "roof"
+      },
+      "reply": "Done — the roof (35% of the car) is now recoloured blue."
+    },
+    {
+      "id": "instruction-analysis-not-action",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request."
+    },
+    {
+      "id": "compound-preserve-targetless",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. This combines a new paint look with keeping current paint, but does not name a supported part. Choose one paint instruction and name the ex"
+    }
+  ],
+  "send_boundary": {
+    "howto": "actual send finishes a no-change guidance reply without invoking ask",
+    "imperative": "actual send calls controlled ask callback once",
+    "limitation": "Full public ask/provider closure was not executed; action dispatch was asserted at send-to-ask boundary. Actual offlineAsk and its planner path were executed.",
+    "apply_imperative": "actual send calls controlled ask callback once"
+  },
+  "limits": [
+    "Queued operations were observed at the compile/planner boundary only; no apply or pixel effect was performed.",
+    "Owner/source-generation proof was not included. Root-provided W97 current-zone keep-paint/chrome issue remains separately untested in this empty-owner route fixture and belongs to the ownership-specific lane.",
+    "The W88 candidate remains unchanged; the repair is only a private helper candidate and has not been integrated or natively accepted."
+  ],
+  "effects": {
+    "production_files_changed": 0,
+    "external_mcp_calls": 0,
+    "provider_calls": 0,
+    "native_calls": 0,
+    "apply_calls": 0
+  }
+}

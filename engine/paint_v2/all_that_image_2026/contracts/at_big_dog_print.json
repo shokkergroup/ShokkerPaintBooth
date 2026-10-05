@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_big_dog_print",
+  "display_name": "Extreme: Big Dog Print",
+  "promise": "Oversized 1990s comic-graphic screenprint abstracted into tiny playful ink shapes on cotton, no dogs lettering logos or figurative images",
+  "carrier_grammar": "Oversized 1990s comic-graphic screenprint abstracted into tiny playful ink shapes on cotton, no dogs lettering logos or figurative images; single full-canvas image, no duplicated quadrants. Fine features: cotton shirt ground, black printed outlines, red graphic ink, blue ink fragments, cream fabric wear, plastisol crack edges",
+  "spec_grammar": "Feature-specific selectors partition cotton shirt ground, black printed outlines, red graphic ink, blue ink fragments, cream fabric wear, plastisol crack edges. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "cotton shirt ground",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "black printed outlines",
+      "role": "Material feature selected from artwork by g:<:0.24"
+    },
+    {
+      "name": "red graphic ink",
+      "role": "Material feature selected from artwork by h:<:30&s:>:0.5"
+    },
+    {
+      "name": "blue ink fragments",
+      "role": "Material feature selected from artwork by h:>:195&h:<:260&s:>:0.4"
+    },
+    {
+      "name": "cream fabric wear",
+      "role": "Material feature selected from artwork by g:>:0.75&s:<:0.22"
+    },
+    {
+      "name": "plastisol crack edges",
+      "role": "Material feature selected from artwork by edge:>:0.79"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "cotton shirt ground",
+      "black printed outlines",
+      "red graphic ink",
+      "blue ink fragments",
+      "cream fabric wear",
+      "plastisol crack edges"
+    ],
+    "R": [
+      "cotton shirt ground",
+      "black printed outlines",
+      "red graphic ink",
+      "blue ink fragments",
+      "cream fabric wear",
+      "plastisol crack edges"
+    ],
+    "Cc": [
+      "cotton shirt ground",
+      "black printed outlines",
+      "red graphic ink",
+      "blue ink fragments",
+      "cream fabric wear",
+      "plastisol crack edges"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "cotton shirt ground",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "black printed outlines",
+      "range": [
+        [
+          0,
+          130,
+          150
+        ],
+        [
+          22,
+          225,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "red graphic ink",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "blue ink fragments",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cream fabric wear",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "plastisol crack edges",
+      "range": [
+        [
+          0,
+          75,
+          70
+        ],
+        [
+          15,
+          190,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_anodised_peg",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_bmx_dirt",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "cotton shirt ground",
+      "black printed outlines",
+      "red graphic ink",
+      "blue ink fragments",
+      "cream fabric wear",
+      "plastisol crack edges"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_big_dog_print / Oversized 1990s comic-graphic screenprint abstracted into tiny playful ink shapes on cotton, no dogs lettering logos or figurative images",
+  "spec_key": "at_big_dog_print / cotton shirt ground all; black printed outlines g:<:0.24; red graphic ink h:<:30&s:>:0.5; blue ink fragments h:>:195&h:<:260&s:>:0.4; cream fabric wear g:>:0.75&s:<:0.22; plastisol crack edges edge:>:0.79",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

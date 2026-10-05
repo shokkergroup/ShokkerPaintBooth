@@ -1,0 +1,404 @@
+{
+  "schema": "spb-smart-tga-golden-corpus-v1",
+  "ocr_region_review_manifest": "smart_tga_ocr_region_reviews_v1.json",
+  "description": "Cycle 630 seed manifest. Release-gating work prioritizes Dirt Late Models, NASCAR-style stock cars, and trucks; exact technical and Number-instance expectations are reviewed, while Sponsor/Template metric coverage and full five-owner semantic review remain deliberately incomplete.",
+  "market_priority": {
+    "release_segments": ["dirt_late_model", "nascar_stock_car", "truck"],
+    "numbered_paint_contract": "car_num_* and car_num_team_* are expected to contain custom numbers",
+    "non_numbered_control_contract": "car_* and car_team_* are non-numbered controls",
+    "default_numbered_test_fraction": 0.9,
+    "out_of_market_policy": "GT/prototype records remain regression controls but do not drive beta release readiness"
+  },
+  "entry_manifests": [
+    "smart_tga_golden_entries_cycle629_porsche963.json",
+    "smart_tga_golden_entries_cycle633_market_full_reviews.json"
+  ],
+  "metric_requirements": {
+    "numbers": {
+      "min_labeled_entries": 50,
+      "min_precision": 0.98,
+      "min_recall": 0.90
+    },
+    "sponsors": {
+      "min_labeled_entries": 50,
+      "min_precision": 0.95,
+      "min_recall": 0.85
+    },
+    "template": {
+      "min_labeled_entries": 30,
+      "min_precision": 0.98,
+      "min_recall": 0.90
+    }
+  },
+  "entries": [
+    {
+      "id": "cup-23371-template-control",
+      "family": "nascar_cup",
+      "paint_label": "stockcars chevycamarozl12022/car_num_23371 - Copy.tga",
+      "expected_build_prefix": "smart-tga-cycle608-",
+      "review_status": "partial",
+      "reviewed_owners": ["numbers"],
+      "known_issues": [
+        "Numbers are confirmed empty; the four remaining owners still need complete semantic review."
+      ],
+      "expected": {
+        "numbers": {
+          "component_count": 0,
+          "component_min_area": 8,
+          "instance_iou_threshold": 0.95,
+          "min_instance_precision": 1.0,
+          "min_instance_recall": 1.0,
+          "component_bboxes": []
+        }
+      }
+    },
+    {
+      "id": "arca-313679-purple-81-family",
+      "family": "arca",
+      "paint_label": "stockcars2 arcachevy25/car_num_313679.tga",
+      "expected_build_prefix": "smart-tga-cycle608-",
+      "review_status": "partial",
+      "reviewed_owners": ["numbers", "template"],
+      "known_issues": [
+        "Several livery panels remain visibly Sponsor-owned and require family-level correction before full approval.",
+        "Sponsors, Brand Graphics, and Paint have not received complete pixel-level human review."
+      ],
+      "expected": {
+        "numbers": {
+          "component_count": 6,
+          "component_min_area": 8,
+          "bbox_tolerance": 0,
+          "instance_iou_threshold": 0.95,
+          "min_instance_precision": 1.0,
+          "min_instance_recall": 1.0,
+          "component_bboxes": [
+            [94, 24, 31, 24],
+            [817, 58, 31, 21],
+            [416, 229, 184, 121],
+            [261, 471, 326, 251],
+            [418, 842, 177, 123],
+            [179, 914, 121, 110]
+          ]
+        }
+      },
+      "component_reviews": {
+        "sponsors": {
+          "component_min_area": 20,
+          "iou_threshold": 0.95,
+          "require_all_predictions_reviewed": true,
+          "min_reviewed_precision": 0.95,
+          "min_reviewed_recall": 0.85,
+          "missing_iou_threshold": 0.50,
+          "true_bboxes": [
+            [465, 58, 33, 14],
+            [51, 219, 70, 30],
+            [613, 306, 39, 21],
+            [654, 311, 41, 18],
+            [210, 313, 66, 62],
+            [360, 373, 48, 81],
+            [168, 427, 37, 32],
+            [0, 462, 118, 251],
+            [170, 735, 41, 34],
+            [389, 738, 28, 81],
+            [374, 777, 13, 7],
+            [374, 789, 14, 24],
+            [114, 816, 164, 64],
+            [611, 861, 40, 22],
+            [696, 860, 40, 20],
+            [45, 942, 71, 30]
+          ],
+          "false_bboxes": [
+            [91, 91, 93, 37],
+            [340, 91, 92, 37],
+            [565, 133, 326, 62],
+            [457, 170, 275, 53],
+            [674, 226, 34, 62],
+            [904, 383, 120, 128],
+            [136, 486, 125, 74],
+            [624, 690, 93, 76],
+            [729, 883, 115, 69],
+            [727, 952, 171, 72]
+          ],
+          "mixed_bboxes": [
+            [734, 229, 153, 119]
+          ],
+          "missing_bboxes": [
+            [328, 242, 90, 55],
+            [317, 894, 89, 55]
+          ]
+        },
+        "template": {
+          "component_min_area": 20,
+          "iou_threshold": 0.95,
+          "require_all_predictions_reviewed": true,
+          "min_reviewed_precision": 0.98,
+          "min_reviewed_recall": 0.98,
+          "true_bboxes": [
+            [40, 10, 132, 45],
+            [353, 10, 131, 44],
+            [184, 19, 156, 29],
+            [776, 18, 100, 38],
+            [529, 20, 101, 37],
+            [186, 69, 152, 55],
+            [655, 101, 96, 17],
+            [842, 115, 32, 26],
+            [532, 118, 34, 30],
+            [733, 119, 57, 11],
+            [617, 122, 110, 9],
+            [680, 512, 28, 174],
+            [730, 960, 165, 60],
+            [901, 979, 8, 12],
+            [951, 982, 6, 11],
+            [922, 984, 19, 13],
+            [995, 995, 10, 9],
+            [979, 1001, 9, 12],
+            [920, 1008, 15, 8]
+          ],
+          "false_bboxes": [
+            [951, 328, 63, 14],
+            [246, 571, 4, 16],
+            [246, 649, 5, 34]
+          ],
+          "mixed_bboxes": [],
+          "missing_bboxes": []
+        }
+      }
+    },
+    {
+      "id":"bmwlmdh-car-team-202699-tga","family":"bmwlmdh","paint_label":"bmwlmdh/car_team_202699.tga","expected_build_prefix":"smart-tga-cycle","review_status":"partial","reviewed_owners":["numbers","paint"],"known_issues":["Owners not yet reviewed: sponsors, template, brand_graphics."],
+      "component_reviews":{
+        "numbers":{"component_min_area":8,"iou_threshold":0.95,"require_all_predictions_reviewed":true,"min_reviewed_precision":0.0,"min_reviewed_recall":0.0,"missing_iou_threshold":0.5,"true_bboxes":[],"false_bboxes":[],"mixed_bboxes":[],"missing_bboxes":[]},
+        "paint":{"component_min_area":20,"iou_threshold":0.95,"require_all_predictions_reviewed":true,"min_reviewed_precision":0.0,"min_reviewed_recall":0.0,"missing_iou_threshold":0.5,"true_bboxes":[],"false_bboxes":[[630,280,13,24]],"mixed_bboxes":[[0,0,1024,1024]],"missing_bboxes":[]}
+      }
+    },
+    {
+      "id":"bmwlmdh-car-team-203907-tga","family":"bmwlmdh","paint_label":"bmwlmdh/car_team_203907.tga","expected_build_prefix":"smart-tga-cycle","review_status":"partial","reviewed_owners":["numbers","paint"],"known_issues":["Owners not yet reviewed: sponsors, template, brand_graphics."],
+      "component_reviews":{
+        "numbers":{"component_min_area":8,"iou_threshold":0.95,"require_all_predictions_reviewed":true,"min_reviewed_precision":0.0,"min_reviewed_recall":0.0,"missing_iou_threshold":0.5,"true_bboxes":[],"false_bboxes":[[149,0,177,228],[137,97,41,25]],"mixed_bboxes":[],"missing_bboxes":[]},
+        "paint":{"component_min_area":20,"iou_threshold":0.95,"require_all_predictions_reviewed":true,"min_reviewed_precision":0.0,"min_reviewed_recall":0.0,"missing_iou_threshold":0.5,"true_bboxes":[],"false_bboxes":[[310,129,5,6],[80,959,8,8],[120,959,14,8]],"mixed_bboxes":[[0,0,1024,1024]],"missing_bboxes":[]}
+      }
+    },
+    {
+      "id":"bmwlmdh-car-team-208755-tga","family":"bmwlmdh","paint_label":"bmwlmdh/car_team_208755.tga","expected_build_prefix":"smart-tga-cycle","review_status":"partial","reviewed_owners":["numbers","paint"],"known_issues":["Owners not yet reviewed: sponsors, template, brand_graphics."],
+      "component_reviews":{
+        "numbers":{"component_min_area":8,"iou_threshold":0.95,"require_all_predictions_reviewed":true,"min_reviewed_precision":0.0,"min_reviewed_recall":0.0,"missing_iou_threshold":0.5,"true_bboxes":[],"false_bboxes":[[91,62,140,63],[94,139,140,64],[91,454,210,73],[91,573,209,93]],"mixed_bboxes":[],"missing_bboxes":[]},
+        "paint":{"component_min_area":20,"iou_threshold":0.95,"require_all_predictions_reviewed":true,"min_reviewed_precision":0.0,"min_reviewed_recall":0.0,"missing_iou_threshold":0.5,"true_bboxes":[],"false_bboxes":[],"mixed_bboxes":[[0,0,1024,1024]],"missing_bboxes":[]}
+      }
+    },
+    {
+      "id":"bmwlmdh-car-team-302280-tga","family":"bmwlmdh","paint_label":"bmwlmdh/car_team_302280.tga","expected_build_prefix":"smart-tga-cycle","review_status":"partial","reviewed_owners":["numbers","paint"],"known_issues":["Owners not yet reviewed: sponsors, template, brand_graphics."],
+      "component_reviews":{
+        "numbers":{"component_min_area":8,"iou_threshold":0.95,"require_all_predictions_reviewed":true,"min_reviewed_precision":0.0,"min_reviewed_recall":0.0,"missing_iou_threshold":0.5,"true_bboxes":[],"false_bboxes":[[186,79,27,48],[214,78,33,49],[147,141,27,48]],"mixed_bboxes":[],"missing_bboxes":[]},
+        "paint":{"component_min_area":20,"iou_threshold":0.95,"require_all_predictions_reviewed":true,"min_reviewed_precision":0.0,"min_reviewed_recall":0.0,"missing_iou_threshold":0.5,"true_bboxes":[[163,697,36,12]],"false_bboxes":[],"mixed_bboxes":[[0,0,1024,1024]],"missing_bboxes":[]}
+      }
+    },
+    {
+      "id":"bmwlmdh-car-team-312727-tga","family":"bmwlmdh","paint_label":"bmwlmdh/car_team_312727.tga","expected_build_prefix":"smart-tga-cycle","review_status":"partial","reviewed_owners":["numbers","paint"],"known_issues":["Owners not yet reviewed: sponsors, template, brand_graphics."],
+      "component_reviews":{
+        "numbers":{"component_min_area":8,"iou_threshold":0.95,"require_all_predictions_reviewed":true,"min_reviewed_precision":0.0,"min_reviewed_recall":0.0,"missing_iou_threshold":0.5,"true_bboxes":[],"false_bboxes":[[913,43,12,42],[251,63,33,29],[311,63,34,29],[302,143,38,30]],"mixed_bboxes":[],"missing_bboxes":[]},
+        "paint":{"component_min_area":20,"iou_threshold":0.95,"require_all_predictions_reviewed":true,"min_reviewed_precision":0.0,"min_reviewed_recall":0.0,"missing_iou_threshold":0.5,"true_bboxes":[],"false_bboxes":[[772,234,14,5],[586,529,28,62],[170,958,10,11]],"mixed_bboxes":[[0,0,1024,1024]],"missing_bboxes":[]}
+      }
+    }
+  ],
+  "semantic_evidence_reviews": {
+    "iou_threshold": 0.9,
+    "records": [
+      {"paint_label":"stockcars chevymontecarlo03/car_num_1017789.tga","bbox":[917,682,25,39],"verdict":"vote","target_owner":"sponsors","reason":"complex_number_badge_logo_anatomy"},
+      {"paint_label":"stockcars chevymontecarlo03/car_num_1017789.tga","bbox":[917,682,25,39],"verdict":"vote","target_owner":"sponsors","reason":"matching_sponsor_badge_family"},
+      {"paint_label":"stockcars chevymontecarlo87/car_num_101667.tga","bbox":[611,876,103,82],"verdict":"vote","target_owner":"sponsors","reason":"complex_number_badge_logo_anatomy"},
+      {"paint_label":"stockcars chevymontecarlo87/car_num_101667.tga","bbox":[611,876,103,82],"verdict":"vote","target_owner":"sponsors","reason":"matching_sponsor_badge_family"},
+      {"paint_label":"stockcars chevymontecarlo87/car_num_101667.tga","bbox":[874,910,62,89],"verdict":"vote","target_owner":"sponsors","reason":"complex_number_badge_logo_anatomy"},
+      {"paint_label":"stockcars chevymontecarlo87/car_num_101667.tga","bbox":[874,910,62,89],"verdict":"vote","target_owner":"sponsors","reason":"matching_sponsor_badge_family"},
+      {"paint_label":"stockcars chevymontecarlo03/car_num_1017789.tga","bbox":[914,522,32,102],"verdict":"vote","target_owner":"sponsors","reason":"alphabetic_number_badge_atom_anatomy"},
+      {"paint_label":"stockcars chevymontecarlo03/car_num_1017789.tga","bbox":[917,526,25,19],"verdict":"vote","target_owner":"sponsors","reason":"alphabetic_number_badge_atom_anatomy"},
+      {"paint_label":"stockcars chevymontecarlo03/car_num_1017789.tga","bbox":[913,675,36,122],"verdict":"vote","target_owner":"sponsors","reason":"alphabetic_number_badge_atom_anatomy"},
+      {"paint_label":"stockcars chevymontecarlo03/car_num_1017789.tga","bbox":[917,682,25,39],"verdict":"vote","target_owner":"sponsors","reason":"alphabetic_number_badge_atom_anatomy"},
+      {"paint_label":"stockcars chevymontecarlo03/car_num_1017789.tga","bbox":[914,522,32,102],"verdict":"vote","target_owner":"sponsors","reason":"high_confidence_alphabetic_ocr_owner_conflict"},
+      {"paint_label":"stockcars chevymontecarlo03/car_num_1017789.tga","bbox":[917,526,25,19],"verdict":"vote","target_owner":"sponsors","reason":"high_confidence_alphabetic_ocr_owner_conflict"},
+      {"paint_label":"stockcars chevymontecarlo03/car_num_1017789.tga","bbox":[913,675,36,122],"verdict":"vote","target_owner":"sponsors","reason":"high_confidence_alphabetic_ocr_owner_conflict"},
+      {"paint_label":"stockcars chevymontecarlo03/car_num_1017789.tga","bbox":[917,682,25,39],"verdict":"vote","target_owner":"sponsors","reason":"high_confidence_alphabetic_ocr_owner_conflict"},
+      {"paint_label":"Dirt Late Model/car_num_1101717.tga","bbox":[254,225,143,125],"verdict":"hard_negative","label":"true_number_family"},
+      {"paint_label":"Dirt Late Model/car_num_1101717.tga","bbox":[262,709,150,122],"verdict":"hard_negative","label":"true_number_family"},
+      {"paint_label":"Dirt Late Model/car_num_1101717.tga","bbox":[798,840,176,128],"verdict":"hard_negative","label":"true_number_family"},
+      {"paint_label":"protrucks pro2lite/car_num_109895.tga","bbox":[11,304,59,50],"verdict":"hard_negative","label":"true_number_family"},
+      {"paint_label":"protrucks pro2lite/car_num_109895.tga","bbox":[94,330,51,62],"verdict":"hard_negative","label":"true_number_family"},
+      {"paint_label":"protrucks pro2lite/car_num_109895.tga","bbox":[143,330,31,62],"verdict":"hard_negative","label":"true_number_family"},
+      {"paint_label":"protrucks pro2lite/car_num_109895.tga","bbox":[456,512,133,123],"verdict":"hard_negative","label":"true_number_family"},
+      {"paint_label":"protrucks pro2lite/car_num_109895.tga","bbox":[83,744,99,87],"verdict":"hard_negative","label":"true_number_family"},
+      {"paint_label":"stockcars chevymontecarlo03/car_num_1017789.tga","bbox":[413,315,91,121],"verdict":"hard_negative","label":"true_number_family"},
+      {"paint_label":"stockcars chevymontecarlo03/car_num_1017789.tga","bbox":[498,314,87,119],"verdict":"hard_negative","label":"true_number_family"},
+      {"paint_label":"stockcars chevymontecarlo03/car_num_1017789.tga","bbox":[428,852,170,147],"verdict":"hard_negative","label":"true_number_family"},
+      {"paint_label":"stockcars chevymontecarlo03/car_num_1017789.tga","bbox":[418,869,84,114],"verdict":"hard_negative","label":"true_number_family"},
+      {"paint_label":"latemodel/car_num_494232.tga","bbox":[311,538,214,133],"verdict":"hard_negative","label":"true_pale_gray_number"},
+      {"paint_label":"latemodel/car_num_494232.tga","bbox":[437,883,204,116],"verdict":"hard_negative","label":"true_pale_gray_number"},
+      {"paint_label":"stockcars fordfusion/car_num_245400.tga","bbox":[374,323,174,106],"verdict":"hard_negative","label":"true_pale_gray_number"},
+      {"paint_label":"stockcars fordfusion/car_num_245400.tga","bbox":[333,576,200,168],"verdict":"hard_negative","label":"true_pale_gray_number"},
+      {"paint_label":"stockcars fordfusion/car_num_245400.tga","bbox":[367,881,176,109],"verdict":"hard_negative","label":"true_pale_gray_number"},
+      {"paint_label":"stockcars fordfusion/car_num_245400.tga","bbox":[206,952,41,57],"verdict":"hard_negative","label":"true_pale_gray_number"},
+      {"paint_label":"trucks ram2026/car_num_230331.tga","bbox":[819,44,39,27],"verdict":"hard_negative","label":"true_pale_gray_number"},
+      {"paint_label":"trucks ram2026/car_num_230331.tga","bbox":[410,156,185,145],"verdict":"hard_negative","label":"true_pale_gray_number"},
+      {"paint_label":"trucks ram2026/car_num_230331.tga","bbox":[402,494,80,174],"verdict":"hard_negative","label":"true_pale_gray_number"},
+      {"paint_label":"trucks ram2026/car_num_230331.tga","bbox":[479,867,100,157],"verdict":"hard_negative","label":"true_pale_gray_number"},
+      {"paint_label":"stockcars camarozl12018/car_num_245400.tga","bbox":[447,414,67,28],"verdict":"vote","target_owner":"template","reason":"flat_neutral_number_panel_anatomy"},
+      {"paint_label":"stockcars camarozl12018/car_num_245400.tga","bbox":[447,414,67,28],"verdict":"vote","target_owner":"template","reason":"matching_template_panel_family"},
+      {"paint_label":"protrucks pro2lite/car_num_109895.tga","bbox":[45,528,85,42],"verdict":"vote","target_owner":"template","reason":"flat_neutral_number_panel_anatomy"},
+      {"paint_label":"protrucks pro2lite/car_num_109895.tga","bbox":[45,528,85,42],"verdict":"vote","target_owner":"template","reason":"matching_template_panel_family"},
+      {"paint_label":"protrucks pro2lite/car_num_109895.tga","bbox":[48,578,30,41],"verdict":"vote","target_owner":"template","reason":"flat_neutral_number_panel_anatomy"},
+      {"paint_label":"protrucks pro2lite/car_num_109895.tga","bbox":[48,578,30,41],"verdict":"vote","target_owner":"template","reason":"matching_template_panel_family"},
+      {"paint_label":"protrucks pro2lite/car_num_109895.tga","bbox":[99,584,35,29],"verdict":"vote","target_owner":"template","reason":"flat_neutral_number_panel_anatomy"},
+      {"paint_label":"protrucks pro2lite/car_num_109895.tga","bbox":[99,584,35,29],"verdict":"vote","target_owner":"template","reason":"matching_template_panel_family"},
+      {"paint_label":"Dirt Late Model/car_num_1101717.tga","bbox":[951,409,20,65],"verdict":"vote","target_owner":"template","reason":"repeated_flat_dark_nontext_hardware_near_template"},
+      {"paint_label":"Dirt Late Model/car_num_1101717.tga","bbox":[95,905,105,108],"verdict":"vote","target_owner":"template","reason":"repeated_flat_dark_nontext_hardware_near_template"},
+      {"paint_label":"Dirt Late Model/car_num_1004124.tga","bbox":[42,18,61,40],"verdict":"vote","target_owner":"paint","reason":"repeated_flat_dark_nontext_livery_panel"},
+      {"paint_label":"Dirt Late Model/car_num_1004124.tga","bbox":[951,409,20,65],"verdict":"vote","target_owner":"paint","reason":"repeated_flat_dark_nontext_livery_panel"},
+      {"paint_label":"Dirt Late Model/car_num_1004124.tga","bbox":[916,682,95,82],"verdict":"vote","target_owner":"paint","reason":"repeated_flat_dark_nontext_livery_panel"},
+      {"paint_label":"Dirt Late Model/car_num_1004124.tga","bbox":[226,850,51,51],"verdict":"vote","target_owner":"paint","reason":"repeated_flat_dark_nontext_livery_panel"},
+      {"paint_label":"Dirt Late Model/car_num_1004124.tga","bbox":[4,908,93,95],"verdict":"vote","target_owner":"paint","reason":"repeated_flat_dark_nontext_livery_panel"},
+      {"paint_label":"Dirt Late Model/car_num_1004124.tga","bbox":[916,682,95,82],"verdict":"vote","target_owner":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"Dirt Late Model/car_num_1004124.tga","bbox":[4,908,93,95],"verdict":"vote","target_owner":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"stockcars2 arcachevy25/car_num_313679.tga","bbox":[91,91,93,37],"verdict":"vote","target_owner":"template","reason":"mirrored_neutral_hardware_pair_near_template"},
+      {"paint_label":"stockcars2 arcachevy25/car_num_313679.tga","bbox":[340,91,92,37],"verdict":"vote","target_owner":"template","reason":"mirrored_neutral_hardware_pair_near_template"},
+      {"paint_label":"stockcars2 arcachevy25/car_num_1010498.tga","bbox":[315,171,183,35],"verdict":"vote","target_owner":"paint","reason":"repeated_flat_dark_nontext_livery_panel"},
+      {"paint_label":"stockcars2 arcachevy25/car_num_1010498.tga","bbox":[643,802,71,44],"verdict":"vote","target_owner":"paint","reason":"repeated_flat_dark_nontext_livery_panel"},
+      {"paint_label":"stockcars2 arcachevy25/car_num_1010498.tga","bbox":[310,984,430,40],"verdict":"vote","target_owner":"template","reason":"repeated_flat_dark_nontext_hardware_near_template"},
+      {"paint_label":"audir8lmsevo2gt3/car_team_366006.tga","bbox":[177,407,55,40],"verdict":"vote","target_owner":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"audir8lmsevo2gt3/car_team_366006.tga","bbox":[170,857,62,42],"verdict":"vote","target_owner":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"audir8lmsevo2gt3/car_team_394621.tga","bbox":[379,153,116,100],"verdict":"vote","target_owner":"template","reason":"repeated_flat_dark_nontext_hardware_near_template"},
+      {"paint_label":"audir8lmsevo2gt3/car_team_394621.tga","bbox":[75,387,96,50],"verdict":"vote","target_owner":"template","reason":"repeated_flat_dark_nontext_hardware_near_template"},
+      {"paint_label":"bmwm4gt3/car_team_342834.tga","bbox":[767,171,157,39],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"bmwm4gt3/car_team_342834.tga","bbox":[479,280,137,23],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"bmwm4gt3/car_team_342834.tga","bbox":[405,314,121,10],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"bmwm4gt3/car_team_342834.tga","bbox":[539,314,81,10],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"bmwm4gt3/car_team_342834.tga","bbox":[530,359,77,21],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"bmwm4gt3/car_team_342834.tga","bbox":[274,636,73,39],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"bmwm4gt3/car_team_342834.tga","bbox":[741,856,48,24],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"bmwm4gt3/car_team_342834.tga","bbox":[789,434,48,23],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"bmwm4gt3/car_team_342834.tga","bbox":[817,620,21,70],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"bmwm4gt3/car_team_342834.tga","bbox":[909,648,19,52],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[363,264,135,28],"verdict":"vote","target_owner":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[163,360,96,83],"verdict":"vote","target_owner":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[595,766,68,34],"verdict":"vote","target_owner":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[163,816,149,100],"verdict":"vote","target_owner":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[894,906,83,87],"verdict":"vote","target_owner":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"porsche963gtp/car_team_341576.tga","bbox":[166,359,58,123],"verdict":"vote","target_owner":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"porsche963gtp/car_team_341576.tga","bbox":[888,502,34,35],"verdict":"vote","target_owner":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"porsche963gtp/car_team_341576.tga","bbox":[324,766,62,33],"verdict":"vote","target_owner":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"porsche963gtp/car_team_341576.tga","bbox":[994,895,30,109],"verdict":"vote","target_owner":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"porsche963gtp/car_team_341576.tga","bbox":[553,941,45,24],"verdict":"vote","target_owner":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[54,398,41,79],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[375,567,14,36],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[662,694,86,24],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[57,799,36,68],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[441,847,22,12],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[467,847,84,12],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[986,862,28,102],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[76,800,16,68],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[640,912,100,14],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[382,932,42,16],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[576,397,20,19],"verdict":"vote","target_owner":"sponsors","reason":"repeated_embedded_sponsor_badge_inlay"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[578,849,19,19],"verdict":"vote","target_owner":"sponsors","reason":"repeated_embedded_sponsor_badge_inlay"},
+      {"paint_label":"bmwlmdh/car_team_302280.tga","bbox":[631,211,67,94],"verdict":"vote","target_owner":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"bmwlmdh/car_team_302280.tga","bbox":[819,514,93,95],"verdict":"vote","target_owner":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"bmwlmdh/car_team_302280.tga","bbox":[898,638,99,49],"verdict":"vote","target_owner":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"ferrari499p/car_team_361857.tga","bbox":[514,0,78,109],"verdict":"vote","target_owner":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"ferrari499p/car_team_361857.tga","bbox":[769,298,102,66],"verdict":"vote","target_owner":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"ferrari499p/car_team_361857.tga","bbox":[869,588,106,83],"verdict":"vote","target_owner":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"ferrari499p/car_team_361857.tga","bbox":[716,830,158,51],"verdict":"vote","target_owner":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"porsche963gtp/car_team_218081.tga","bbox":[531,177,202,53],"verdict":"vote","target_owner":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"porsche963gtp/car_team_218081.tga","bbox":[0,255,35,94],"verdict":"vote","target_owner":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"porsche963gtp/car_team_218081.tga","bbox":[0,601,158,87],"verdict":"vote","target_owner":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"porsche963gtp/car_team_218081.tga","bbox":[531,877,202,54],"verdict":"vote","target_owner":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"porsche963gtp/car_team_303328.tga","bbox":[532,179,199,49],"verdict":"vote","target_owner":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"porsche963gtp/car_team_303328.tga","bbox":[93,418,39,187],"verdict":"vote","target_owner":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"ferrari499p/car_team_251596.tga","bbox":[975,66,49,104],"verdict":"vote","target_owner":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"ferrari499p/car_team_251596.tga","bbox":[845,647,173,98],"verdict":"vote","target_owner":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[672,159,131,34],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[989,309,20,82],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[614,910,116,16],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[51,486,56,92],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[72,506,44,65],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[389,564,20,134],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[54,690,32,47],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[70,724,31,47],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[459,739,54,16],"verdict":"hard_negative","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[991,867,20,82],"verdict":"hard_negative","label":"true_sponsor_wordmark"}
+    ],
+    "reason_acceptance": {
+      "alphabetic_number_badge_atom_anatomy": {
+        "target_owner": "sponsors",
+        "min_reviewed_predictions": 4,
+        "min_reviewed_precision": 1.0,
+        "min_hard_negatives": 10,
+        "require_all_predictions_reviewed": true
+      },
+      "high_confidence_alphabetic_ocr_owner_conflict": {
+        "target_owner": "sponsors",
+        "min_reviewed_predictions": 4,
+        "min_reviewed_precision": 1.0,
+        "min_hard_negatives": 10,
+        "require_all_predictions_reviewed": true
+      },
+      "repeated_embedded_sponsor_badge_inlay": {
+        "target_owner": "sponsors",
+        "min_reviewed_predictions": 2,
+        "min_reviewed_precision": 1.0,
+        "min_hard_negatives": 10,
+        "require_all_predictions_reviewed": true
+      },
+      "repeated_diagonal_carbon_weave_hardware": {
+        "target_owner": "template",
+        "min_reviewed_predictions": 7,
+        "min_reviewed_precision": 1.0,
+        "min_hard_negatives": 10,
+        "require_all_predictions_reviewed": true
+      },
+      "repeated_paint_palette_livery_surface": {
+        "target_owner": "paint",
+        "min_reviewed_predictions": 7,
+        "min_reviewed_precision": 1.0,
+        "min_hard_negatives": 10,
+        "require_all_predictions_reviewed": true
+      }
+    }
+  },
+  "canary_component_reviews": {
+    "iou_threshold": 0.9,
+    "records": [
+      {"paint_label":"ferrari499p/car_team_361857.tga","bbox":[716,830,158,51],"verdict":"move","from":"sponsors","to":"paint","reason":"repeated_paint_palette_livery_surface"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[363,264,135,28],"verdict":"move","from":"sponsors","to":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[163,360,96,83],"verdict":"move","from":"sponsors","to":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[595,766,68,34],"verdict":"move","from":"sponsors","to":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[163,816,149,100],"verdict":"move","from":"sponsors","to":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[894,906,83,87],"verdict":"move","from":"sponsors","to":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"porsche963gtp/car_team_341576.tga","bbox":[166,359,58,123],"verdict":"move","from":"sponsors","to":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"porsche963gtp/car_team_341576.tga","bbox":[888,502,34,35],"verdict":"move","from":"sponsors","to":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"porsche963gtp/car_team_341576.tga","bbox":[324,766,62,33],"verdict":"move","from":"sponsors","to":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"porsche963gtp/car_team_341576.tga","bbox":[994,895,30,109],"verdict":"move","from":"sponsors","to":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"porsche963gtp/car_team_341576.tga","bbox":[553,941,45,24],"verdict":"move","from":"sponsors","to":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[54,398,41,79],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[375,567,14,36],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[662,694,86,24],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[57,799,36,68],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[441,847,22,12],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[467,847,84,12],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[986,862,28,102],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[76,800,16,68],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[640,912,100,14],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[382,932,42,16],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[576,397,20,19],"verdict":"move","from":"paint","to":"sponsors","reason":"repeated_embedded_sponsor_badge_inlay"},
+      {"paint_label":"ferrari499p/car_team_346747.tga","bbox":[578,849,19,19],"verdict":"move","from":"paint","to":"sponsors","reason":"repeated_embedded_sponsor_badge_inlay"},
+      {"paint_label":"ferrari499p/car_team_251596.tga","bbox":[975,66,49,104],"verdict":"move","from":"sponsors","to":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"ferrari499p/car_team_251596.tga","bbox":[845,647,173,98],"verdict":"move","from":"sponsors","to":"template","reason":"repeated_diagonal_carbon_weave_hardware"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[672,159,131,34],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[989,309,20,82],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[614,910,116,16],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[51,486,56,92],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[72,506,44,65],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[389,564,20,134],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[54,690,32,47],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[70,724,31,47],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[459,739,54,16],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"},
+      {"paint_label":"ferrari499p/car_team_377925.tga","bbox":[991,867,20,82],"verdict":"protected","owner":"sponsors","label":"true_sponsor_wordmark"}
+    ]
+  }
+}

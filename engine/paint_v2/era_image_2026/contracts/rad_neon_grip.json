@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_neon_grip",
+  "display_name": "Radical: Neon Grip",
+  "promise": "Lime rubber ribs with orange knurl nicks and violet recessed grooves.",
+  "carrier_grammar": "Lime rubber ribs with orange knurl nicks and violet recessed grooves. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for lime grip rubber, orange knurl nicks, violet recessed grooves, pale handling haze, fine rubber pores is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Lime rubber ribs with orange knurl nicks and violet recessed grooves. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_neon_grip.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "lime grip rubber",
+      "role": "Actual shared paint and spec geometry: lime grip rubber"
+    },
+    {
+      "name": "orange knurl nicks",
+      "role": "Actual shared paint and spec geometry: orange knurl nicks"
+    },
+    {
+      "name": "violet recessed grooves",
+      "role": "Actual shared paint and spec geometry: violet recessed grooves"
+    },
+    {
+      "name": "pale handling haze",
+      "role": "Actual shared paint and spec geometry: pale handling haze"
+    },
+    {
+      "name": "fine rubber pores",
+      "role": "Actual shared paint and spec geometry: fine rubber pores"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "lime grip rubber",
+      "orange knurl nicks",
+      "violet recessed grooves",
+      "pale handling haze",
+      "fine rubber pores"
+    ],
+    "R": [
+      "lime grip rubber",
+      "orange knurl nicks",
+      "violet recessed grooves",
+      "pale handling haze",
+      "fine rubber pores"
+    ],
+    "Cc": [
+      "lime grip rubber",
+      "orange knurl nicks",
+      "violet recessed grooves",
+      "pale handling haze",
+      "fine rubber pores"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_nameplate_gold",
+      "difference": "This finish uses Dense fine molded fluorescent lime rubber grip, tiny broken diamond knurls, short rounded rib pairs, orange shoulder nicks, violet inset groove specks and pale handling haze. All microscopically small rubber forms vary direction; no whole handle or large tread blocks.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_neon_spandex",
+      "difference": "This finish uses Dense fine molded fluorescent lime rubber grip, tiny broken diamond knurls, short rounded rib pairs, orange shoulder nicks, violet inset groove specks and pale handling haze. All microscopically small rubber forms vary direction; no whole handle or large tread blocks.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "lime grip rubber is visible in the authored geometry",
+      "orange knurl nicks is visible in the authored geometry",
+      "violet recessed grooves is visible in the authored geometry",
+      "pale handling haze is visible in the authored geometry",
+      "fine rubber pores is visible in the authored geometry"
+    ],
+    "source_sha256": "a39f70991c8817159a3e0c6784705b44744c48c90680a91b5f29e46d044767f8",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_neon_grip-authored-Lime rubber ribs with orange knurl nicks and violet recessed grooves. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_neon_grip-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 64.2,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "a1ac5ee4d0be535875b03ab1b2ce4656ee551f4d51573c4bc8c56d1ce23fea57"
+}

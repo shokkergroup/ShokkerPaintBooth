@@ -1,0 +1,46 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "task": "W73 independent real-PSD route/cache review of W71 source-byte identity candidate",
+  "createdLocalDate": "2026-10-04",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w73_review/fresh-oracle.json",
+    "sha256": "8E766EB4E17C621E6B60FB293672312939C3A05803893BE408E124CC80DD03C2",
+    "frozenBeforeCandidateRouteInspection": true,
+    "assertions": 10
+  },
+  "frozenCandidateBytes": {
+    "route": {"path": "_easy_claude_work/ai14h_w73_review/frozen/candidate-psd_import_routes.py", "sha256": "C0D17BD94BBBDD3A5E3B689421CB7622538681B7A05B7322B20CC81DF8F89F44"},
+    "serverCacheLoader": {"path": "_easy_claude_work/ai14h_w73_review/frozen/server.py", "sha256": "FDC9AB9EF16C21E64E3130DCB170406AA45A1898872254F0C76C77C4300CFD75"},
+    "fingerprintHelperSource": {"path": "_easy_claude_work/ai14h_w73_review/frozen/project_routes.py", "sha256": "8367C99A181B7DA254A1EA2EBD2610157F336274196DEF623725F3231222AD0E"}
+  },
+  "originalW71Oracle": {
+    "path": "tests/ai_source_bytes_psd_import_w71_contract.py",
+    "sha256": "84E2472AF47ACC0D18C51D50D4DF45CEE9222BE09D975B5119D525611451F238",
+    "result": "PASS",
+    "cases": 5,
+    "summary": "Original controlled-parser contract passed unchanged."
+  },
+  "realPsdReview": {
+    "test": "tests/ai_source_bytes_psd_import_w73_real_psd_contract.py",
+    "sha256": "057B1577653C6369E866C9D5B2CFD62A7AD95F8993E15343F252EBE30D3911EC",
+    "result": "PASS",
+    "psdTools": "1.14.3",
+    "fixture": "Generated actual 8x8 RGB PSD via psd-tools with two real pixel layers, one hidden; actual candidate Flask handler, actual candidate _get_cached_psd AST, actual candidate source fingerprint helper, and actual server_routes.psd_import_tree builder. Native/server/provider effects mocked or absent.",
+    "verified": [
+      "Valid PSD imports with expected dimensions and layer metadata; only digest metadata is returned, not raw PSD bytes.",
+      "Unchanged source hits response cache and does not parse again.",
+      "Hidden-layer pixel bytes changed at same path and exact same mtime while visible composite stayed byte-identical; SHA-256 changed and parser ran again.",
+      "Replacing bytes immediately after the handler's pre-parse fingerprint yields HTTP 409 and no success digest; retry against stable bytes succeeds.",
+      "Replacing bytes after real layer-tree extraction yields HTTP 409 and no success digest; retry against stable bytes succeeds.",
+      "Missing file returns 404 and malformed PSD returns 500; neither returns a success digest."
+    ],
+    "counts": {"routeScenarios": 7, "samePathSameMtimeHiddenByteReplacement": 1, "raceConflicts": 2, "stableRetries": 2, "missingMalformedChecks": 2, "rawBytesTransferred": 0, "providerCalls": 0, "nativeCalls": 0, "serverRestarts": 0}
+  },
+  "limitations": [
+    "The real generated PSD validates psd-tools parsing/composition and the actual route/cache callback wiring in a Flask test client, but not the live application/native UI/server integration.",
+    "Race callbacks deterministically inject file replacement at the pre-fingerprint boundary and after tree extraction; they validate rejection semantics but do not establish atomic filesystem snapshots against every concurrent writer pattern.",
+    "The route returns ordinary layer metadata and a composite image data URL; the test verifies no source-file bytes or 8BPS header is present in those responses, not broader transport/proxy logging behavior.",
+    "The separate W69 lease review remains pinned to an older lease source (D765); this review makes no claim about final Gen3 lease integration. A final combined-controller gate must repin the current W36 lease generation (DE276372...)."
+  ],
+  "effects": {"productionEdits": 0, "candidateEdits": 0, "rawPsdTransfers": 0, "providers": 0, "native": 0, "browser": 0, "serverRestart": 0}
+}

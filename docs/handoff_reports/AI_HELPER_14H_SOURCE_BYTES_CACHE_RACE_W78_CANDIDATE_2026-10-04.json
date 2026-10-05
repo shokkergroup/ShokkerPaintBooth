@@ -1,0 +1,49 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "task": "W78 private PSD parser-cache race repair candidate; W81 route-side raster source binding supplement",
+  "date": "2026-10-04",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w78_review_fresh_oracle.json",
+    "sha256": "274CDE5A68A3B2A5CA47B2C08DAD1F2ADCC8585B1651889D029B443256008A2F",
+    "cases": 9,
+    "frozenBeforePrivateCandidateInspection": true
+  },
+  "baselineReproduction": {
+    "test": "tests/ai_source_bytes_psd_cache_w78_baseline_repro.py",
+    "sha256": "27B9672E8C28EA5AFCCB5DF3DFF1C97A1BEFAB87694B4D6338729BEE70118E26",
+    "frozenRoute": "_easy_claude_work/ai14h_w73_review/frozen/candidate-psd_import_routes.py",
+    "result": "REPRODUCED with actual psd-tools PSD and Flask handler: initial request returns 409 after A->B replacement; restoring A at same path and mtime returns HTTP 200 with digest A but B's visible composite pixel [15,180,90] instead of A [200,10,20]."
+  },
+  "privateCandidate": {
+    "server": {"path":"_easy_claude_work/ai14h_w78_candidate/server.py","sha256":"1B094F80D81582416B03B0C63F1814665FB78969F2BB1675E5219E710C522294"},
+    "routes": {"path":"_easy_claude_work/ai14h_w78_candidate/server_routes/psd_import_routes.py","sha256":"FAF99DF7EDDEED1623342EFDA2479BBD23FB1D763B5F7759DF8068F63EE0D902"},
+    "patch":"_easy_claude_work/ai14h_w78_candidate/AI_HELPER_14H_SOURCE_BYTES_CACHE_RACE_W78.patch",
+    "changes":[
+      "The private server wires an invalidator for its actual path-keyed _psd_cache. A digest-aware PSD import that detects changed bytes evicts any parsed object acquired during the raced operation; downstream tree/build failures after parser acquisition also evict conservatively.",
+      "Response-cache hits re-fingerprint immediately before returning cached success; changed bytes return 409 and the stale response entry is discarded.",
+      "The parser loader's legacy no-digest behavior is unchanged."
+    ]
+  },
+  "verification": {
+    "w78Test": {"path":"tests/ai_source_bytes_psd_cache_w78_contract.py","sha256":"B696A4FF5C4075CDE8ECEDFBF24B0C054B03B37EDD0A0346C7A115D7E08A1EB6","result":"PASS","cases":8,"psdTools":"1.14.3","keyResults":["Real PSD fixed-mtime A->raced B->restore A returns the correct A pixel and digest after invalidation.","Cache-hit race returns 409 without a digest; stable B retry has matching digest/composite.","A raced parser followed by controlled layer-tree failure evicts its object; restored A retry returns A.","Direct no-digest parser-cache callers retain mtime-only object reuse.","No raw source bytes returned; provider/native calls 0."]},
+    "w81RasterTest": {"path":"tests/ai_source_bytes_psd_rasterize_w81_candidate_contract.py","sha256":"D1DF036587C276F4DAB0C84BADFEC706F8C6B351C493822D2BFDECCB5E867E0D","result":"PASS_WITH_LIMITS","cases":7,"psdTools":"1.14.3","keyResults":["Optional sourceBytesSha256 binds /api/psd-rasterize-all to the import's bytes, uses digest-aware parser cache, checks again after rasterization, and returns a matching digest receipt.","Wrong or malformed expected digest is rejected; replacement before parse or after raster generation returns 409 and evicts parser state.","Legacy callers without the digest field still receive successful old-shape responses."]},
+    "preservedContracts":[
+      {"test":"tests/ai_source_bytes_psd_import_w71_contract.py","result":"PASS","cases":5},
+      {"test":"tests/ai_source_bytes_psd_import_w73_real_psd_contract.py","result":"PASS","cases":7}
+    ],
+    "syntax":"python -m py_compile passed for candidate server, route and W78/W81 tests."
+  },
+  "integrationRequirement": {
+    "owner": "Root client integration lane",
+    "mustDo":"The actual client must pass the digest returned by /api/psd-import into /api/psd-rasterize-all and validate the raster response receipt before committing the layered document.",
+    "currentReviewLimit":"This report verifies only private candidate routes; it does not claim the loaded client has been updated. Without digest-bearing second request, the import-tree/composite and raster responses can still observe different file versions."
+  },
+  "limits":[
+    "No live server files were written, no server was restarted, and no native app/provider/browser calls occurred.",
+    "The private route registration keeps invalidate_cached_psd optional for compatibility. A separate embedder using the digest-aware import route must supply a matching invalidation callback to close the parser-cache poison path; the candidate server registration does so.",
+    "Cache-hit safety uses a second streaming fingerprint. A file can still be replaced after that final check; this is a filesystem race boundary, not an atomic file-handle snapshot guarantee.",
+    "The W81 endpoint is now byte-bindable, but end-to-end safety depends on the parent integrating the client request/receipt check before document commit."
+  ],
+  "effects":{"productionFiles":0,"serverRestarts":0,"native":0,"providers":0,"browser":0,"rawSourceTransfers":0}
+}
+

@@ -1,0 +1,116 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_honeycomb",
+  "display_name": "Electrocell",
+  "carrier": "black electrochemical ceramic with dense irregular collapsed membrane deposits",
+  "material_story": {
+    "M": "acid-charged rims, fused bridges, crystal beads, electrolyte residue, and torn exposed corners raise metallic response",
+    "R": "exhausted centers, clipped pores, torn corners, separator abrasion, and collapsed membrane raise roughness",
+    "Cc": "intact membrane, ceramic, cyan electrolyte, magenta separator, and fused bridges retain coat while rupture loses it"
+  },
+  "vetoes": [
+    "honeycomb or hexagons",
+    "grids or rows",
+    "bubbles or circles",
+    "scales",
+    "biological cells",
+    "flowers",
+    "repeated tile or stamp grammar",
+    "macro voids"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 2.287611,
+  "material_stats": {
+    "std": {
+      "M": 82.789459,
+      "R": 83.298149,
+      "Cc": 83.260788
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.293086,
+      "M_Cc": 0.687328,
+      "R_Cc": 0.27063
+    }
+  },
+  "geometry_stats": {
+    "family_count": 10,
+    "families": {
+      "acid-yellow charged rims": 2168,
+      "black electrochemical ceramic facets": 5304,
+      "clipped angular pore mouths": 708,
+      "dark exhausted membrane centers": 903,
+      "displaced cyan electrolyte ghosts": 1897,
+      "faceted electrolyte crystal beads": 576,
+      "finite fused membrane bridges": 633,
+      "irregular collapsed membrane plates": 3013,
+      "magenta separator shadows": 1845,
+      "torn membrane corners": 866
+    },
+    "width_native_min": 8.0,
+    "width_native_median": 19.322,
+    "width_native_p90": 26.21,
+    "width_native_max": 30.997,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "black electrochemical ceramic facets": 0.2433,
+    "irregular collapsed membrane plates": 0.165475,
+    "acid-yellow charged rims": 0.060884,
+    "displaced cyan electrolyte ghosts": 0.086736,
+    "magenta separator shadows": 0.06783,
+    "clipped angular pore mouths": 0.017985,
+    "finite fused membrane bridges": 0.012189,
+    "faceted electrolyte crystal beads": 0.00928,
+    "torn membrane corners": 0.016194,
+    "dark exhausted membrane centers": 0.02762,
+    "registered charged pools": 0.03413,
+    "intact membrane/ceramic pools": 0.531206
+  },
+  "provenance": {
+    "ticket": "SPB-105",
+    "date": "2026-08-27",
+    "tick": "EC-P2",
+    "verdict": "EC-P1 placed carrier and rupture anatomy in the same tiny-chip register and collapsed into multicolor confetti; EC-P2 tightens asymmetric directional collapse packets and separates buried layers from edge charge.",
+    "metric_movement": {
+      "picker_64_chroma_std": [
+        0.014026,
+        0.037328
+      ],
+      "picker_64_luma_std": [
+        0.037495,
+        0.078475
+      ],
+      "collapsed_membrane_coverage": [
+        0.113789,
+        0.165475
+      ],
+      "family_masks_above_half_percent": [
+        9,
+        10
+      ]
+    }
+  }
+}

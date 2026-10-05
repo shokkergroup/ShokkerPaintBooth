@@ -1,0 +1,86 @@
+{
+  "schema": "spb-neon-oil-slick-pilot-audit/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon_orange_hazard",
+  "seed": 5901594,
+  "builder_elapsed_seconds": 1.250521,
+  "native_paint_spec_elapsed_seconds": 1.292198,
+  "repeat_elapsed_seconds": 1.508553,
+  "deterministic": true,
+  "paint_sha256": "c67b95f469703f7919399cb18cfe39572603a977d23acde84a3c92f5790ccebc",
+  "spec_sha256": "8cf5aff1982d9ad8642008520ceaaad2638a4716717a9af8c44635e3057dd1ac",
+  "material_stats_native": {
+    "std": {
+      "M": 82.797401,
+      "R": 83.29908,
+      "Cc": 83.260765
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.25388,
+      "M_Cc": 0.346256,
+      "R_Cc": 0.05856
+    }
+  },
+  "geometry_stats": {
+    "family_count": 7,
+    "families": {
+      "bead_clusters": 4345,
+      "crushed_shards": 546,
+      "deep_gouges": 1039,
+      "exposed_cores": 1701,
+      "polished_skid_lips": 1649,
+      "rebound_specks": 1706,
+      "resin_tails": 2174
+    },
+    "width_native_min": 8.0,
+    "width_native_median": 12.0,
+    "width_native_p90": 16.0,
+    "width_native_max": 20.0,
+    "fine_8_32_fraction": 1.0
+  },
+  "max_unmarked_void_native_px": 60.726,
+  "seam_ratios_vs_local_neighbor_change": {
+    "paint_x_to_local_ratio": 1.152102,
+    "paint_y_to_local_ratio": 0.811068,
+    "M_x_to_local_ratio": 1.18531,
+    "M_y_to_local_ratio": 0.943315,
+    "R_x_to_local_ratio": 0.933303,
+    "R_y_to_local_ratio": 0.867815,
+    "Cc_x_to_local_ratio": 1.030484,
+    "Cc_y_to_local_ratio": 0.898701
+  },
+  "checks": {
+    "deterministic": true,
+    "builder_under_3_seconds": true,
+    "native_paint_spec_under_3_seconds": true,
+    "repeat_under_3_seconds": true,
+    "seven_attached_families": true,
+    "all_widths_8_32_native": true,
+    "eight_tiers_each_channel": true,
+    "std_at_least_30_each_channel": true,
+    "full_canvas_no_void_over_64px": true,
+    "channels_not_copied_or_inverse": true
+  },
+  "all_mechanical_checks_green": true,
+  "catalog_m7": "PENDING: isolated pilot is deliberately not registered or baked",
+  "mapped_car": "PENDING: core light-sweep proxy supplied; true car proof requires promotion harness"
+}

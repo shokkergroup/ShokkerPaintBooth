@@ -1,0 +1,406 @@
+/* ============================================================================
+   SPB EASY SHELL presentation — the real Pro workspace with advanced chrome
+   tucked away. Owner decision 2026-09-02: bring the SHOKK DEMO's directness,
+   large material cards, and readable slider rows to the main app's Easy view.
+
+   `spb-focus-on` is a historical internal hook retained for rollback safety;
+   there is no user-facing Focus mode. Hiding and layout overrides stay scoped
+   to Easy; the owner-approved Zone slider grammar is shared by Easy and Pro.
+   ============================================================================ */
+
+/* The promoted Exclude button has no Pro home outside its Mask menu. */
+#vtModeSpatialExcludeTop { display: none !important; }
+
+/* ============================== HEADER ==================================== */
+/* Keep the PRO | EASY pill visible and truthful. Hide the advanced launchers;
+   source/output/number controls, FRACTURE, Settings and server state remain. */
+body.spb-focus-on #spbModePill {
+    display: inline-flex !important;
+}
+body.spb-focus-on [data-testid="btn-shortcuts"],
+body.spb-focus-on [data-testid="btn-spec-sculpt"],
+body.spb-focus-on [data-testid="btn-shokk-drop"],
+body.spb-focus-on [data-testid="btn-import-recipe"],
+body.spb-focus-on #spbxPickerChip,
+body.spb-focus-on #spbGuideToggle {
+    display: none !important;
+}
+
+/* ============================== TOOLBAR =================================== */
+/* Easy exposes exactly the eight owner-approved tools. COLOR is the existing
+   eyedropper because the Zone color workflow depends on its sampled pixel;
+   Layers remain directly selectable in the right rail. */
+body.spb-focus-on #spbTopToolbar > * { display: none !important; }
+/* SPB-93: saving and reopening a workflow is a basic Easy action. */
+body.spb-focus-on #spbTopToolbar > #spbProjectsButton { display: inline-flex !important; }
+body.spb-focus-on #spbTopToolbar > #spbToolClusterSelect,
+body.spb-focus-on #spbTopToolbar > .spb-tb-cluster:has(> #vtModeBrush) {
+    display: flex !important;
+    align-items: stretch;
+    gap: 8px;
+}
+/* SPB-93 2026-09-07: a fresh starter reload can select Layer mode.
+   Keep the existing edit target visible beside Easy's eight drawing tools;
+   hiding it made a Zone workflow appear to switch to Wire without a control. */
+body.spb-focus-on #spbTopToolbar > #toolbarEditModeGroup {
+    display: flex !important;
+    align-items: center;
+    gap: 4px;
+    padding-inline: 8px;
+    border-left: 1px solid var(--border);
+}
+body.spb-focus-on #toolbarEditModeGroup::before {
+    content: "EDIT";
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-dim);
+    margin-right: 3px;
+}
+body.spb-focus-on #vtModeEyedropper,
+body.spb-focus-on #vtModeSpatialExcludeTop,
+body.spb-focus-on #vtModeWand,
+body.spb-focus-on #vtModeLasso,
+body.spb-focus-on #vtModeRect,
+body.spb-focus-on #vtModeBrush,
+body.spb-focus-on #vtModeFill,
+body.spb-focus-on #vtModeErase {
+    display: flex !important;
+}
+body.spb-focus-on #vtModeEyedropper,
+body.spb-focus-on #vtModeSpatialExcludeTop {
+    min-width: 78px;
+    min-height: 42px;
+    border-radius: 9px !important;
+    justify-content: center;
+}
+body.spb-focus-on #spbToolClusterSelect .spb-ti-lbl,
+body.spb-focus-on #spbTopToolbar > .spb-tb-cluster:has(> #vtModeBrush) .spb-ti-lbl {
+    text-transform: uppercase;
+}
+body.spb-focus-on #vtModeEyedropper .spb-ti-ico,
+body.spb-focus-on #vtModeSpatialExcludeTop .spb-ti-ico { font-size: 0; }
+body.spb-focus-on #vtModeEyedropper .spb-ti-ico::after {
+    content: '\25CE';
+    font-size: 18px;
+}
+body.spb-focus-on #vtModeSpatialExcludeTop .spb-ti-ico::after {
+    content: '\2715';
+    font-size: 17px;
+}
+body.spb-focus-on #vtModeEyedropper .spb-ti-lbl,
+body.spb-focus-on #vtModeSpatialExcludeTop .spb-ti-lbl { font-size: 0; }
+body.spb-focus-on #vtModeEyedropper .spb-ti-lbl::after {
+    content: 'COLOR';
+    font-size: 10px;
+}
+body.spb-focus-on #vtModeSpatialExcludeTop .spb-ti-lbl::after {
+    content: 'EXCLUDE';
+    font-size: 10px;
+}
+
+/* ========================= MIDDLE EDITING STRIP =========================== */
+/* These surfaces expose hidden Layer/selection tools. Canvas zoom stays
+   visible: it is navigation, not an editing tool, and matches the demo. */
+body.spb-focus-on #toolOptionsBar#toolOptionsBar#toolOptionsBar,
+body.spb-focus-on #layerActiveDock#layerActiveDock#layerActiveDock,
+body.spb-focus-on .render-shortcuts-btn {
+    display: none !important;
+}
+
+/* Keep the sampled color, target Zone, Add Color and Exclude actions. */
+body.spb-focus-on #eyedropperSetBtn,
+body.spb-focus-on #useRegionBtn,
+body.spb-focus-on #regionStatus,
+body.spb-focus-on #eyedropperPanelHint,
+body.spb-focus-on .eyedropper-strip-divider {
+    display: none !important;
+}
+
+/* ========================== ZONE POPOUT PANEL ============================= */
+/* No Pattern, Spec Pattern, spec-source, or 2nd–5th base-overlay editors in
+   Easy. Existing Pro project data is intentionally left untouched and still
+   renders; the controls return the instant the painter switches to Pro. */
+body.spb-focus-on [id^="sectionPattern"],
+body.spb-focus-on [id^="sectionSpecPatterns"],
+body.spb-focus-on [id^="sectionZoneSpecSource"],
+body.spb-focus-on [id^="sectionOverlays"],
+body.spb-focus-on [id^="overlayMinimap"],
+body.spb-focus-on #specFromShokkBanner,
+body.spb-focus-on #patternActiveBadge,
+body.spb-focus-on .settings-section:has(#settingsImportSpecHeading) {
+    display: none !important;
+}
+
+/* SPB-UX-2026-09-03 (owner): Easy and Pro use the same Zone-card grammar.
+   The old Pro-only 360px cap starved its slider tracks and clipped finish names,
+   even though the card rules below were shared. Keep the dedicated full-screen
+   Easy product (.spb-easy-on) out of this Main App layout contract. */
+body:not(.spb-easy-on) #zoneEditorFloat.zone-editor-float {
+    left: 192px !important;
+    width: clamp(340px, 29vw, 460px) !important;
+    max-width: calc(100vw - 220px) !important;
+}
+body:not(.spb-easy-on) #zoneEditorFloat.zone-editor-float.active:not(.collapsed) ~ .center-panel {
+    padding-left: calc(clamp(340px, 29vw, 460px) + 14px) !important;
+}
+body:not(.spb-easy-on) .zone-editor-float .zone-detail-body {
+    padding: 14px 16px 18px !important;
+}
+
+/* SPB-UX-2026-09-03 (owner: Pro must be the exact same Material / Color card
+   system as Easy): use one shared selector for every main-workspace view. The
+   separate full-screen Easy product remains isolated behind .spb-easy-on. */
+body:not(.spb-easy-on) .zone-detail-body .zone-finish-row:has(> label[title^="BASE MATERIAL"]) {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 8px 10px !important;
+    padding: 12px !important;
+    margin: 2px 0 10px !important;
+    border: 1px solid rgba(255, 142, 34, 0.42) !important;
+    border-radius: 12px !important;
+    background: linear-gradient(145deg, rgba(255, 139, 32, 0.10), rgba(7, 12, 22, 0.92)) !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .zone-finish-row:has(> label[title^="BASE MATERIAL"]) > label {
+    grid-column: 1 / -1;
+    width: auto !important;
+    min-width: 0 !important;
+    color: #ffb05a !important;
+    font-size: 11px !important;
+    letter-spacing: 1.15px;
+    text-transform: uppercase;
+}
+body:not(.spb-easy-on) .zone-detail-body .zone-finish-row:has(> label[title^="BASE MATERIAL"]) > .swatch-trigger {
+    display: grid !important;
+    grid-template-columns: 68px minmax(0, 1fr) auto !important;
+    min-height: 76px !important;
+    gap: 12px !important;
+    padding: 7px !important;
+    border-color: rgba(124, 157, 202, 0.34) !important;
+    border-radius: 10px !important;
+    background: #09101d !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .zone-finish-row:has(> label[title^="BASE MATERIAL"]) > .swatch-trigger > .swatch-dot {
+    width: 68px !important;
+    height: 68px !important;
+    min-width: 68px !important;
+    min-height: 68px !important;
+    aspect-ratio: 1 / 1 !important;
+    border-radius: 8px !important;
+    object-fit: cover !important;
+    image-rendering: auto !important;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.12), 0 8px 20px rgba(0,0,0,0.34) !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .zone-finish-row:has(> label[title^="BASE MATERIAL"]) .swatch-name {
+    min-width: 0 !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    color: #f2f6ff !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .zone-finish-row:has(> label[title^="BASE MATERIAL"]) .swatch-name > span,
+body:not(.spb-easy-on) .zone-detail-body .zone-base-color-source-trigger .swatch-name,
+body:not(.spb-easy-on) .zone-detail-body .zone-base-color-source-trigger .swatch-name > span {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+}
+body:not(.spb-easy-on) .zone-detail-body .zone-finish-row:has(> label[title^="BASE MATERIAL"]) .swatch-name-category {
+    margin-top: 4px;
+    font-size: 9.5px !important;
+    color: #91a4c3 !important;
+}
+
+/* BASE COLOR gets its own spacious card, including lock, mode and truthful
+   special-finish preview when From Special is selected. */
+body:not(.spb-easy-on) .zone-detail-body .zone-finish-row:has(select[onchange^="setZoneBaseColorMode"]) {
+    padding: 12px !important;
+    margin: 0 0 10px !important;
+    gap: 9px !important;
+    border: 1px solid rgba(0, 208, 230, 0.28) !important;
+    border-radius: 12px !important;
+    background: linear-gradient(145deg, rgba(0, 208, 230, 0.08), rgba(7, 12, 22, 0.92)) !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .zone-base-color-card-head {
+    display: grid !important;
+    grid-template-columns: auto auto minmax(190px, 1fr) !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-wrap: nowrap !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .zone-base-color-title {
+    min-width: auto !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 7px !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .zone-base-color-title .stack-label-mini {
+    min-width: auto !important;
+    white-space: nowrap !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .zone-base-color-title label {
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .zone-base-color-card-head > .zone-base-color-mode {
+    grid-column: 3 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+}
+body:not(.spb-easy-on) .zone-detail-body select[onchange^="setZoneBaseColorMode"] {
+    max-width: none !important;
+    min-width: 180px !important;
+    min-height: 34px !important;
+    font-size: 11px !important;
+    border-radius: 8px !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .zone-base-color-source-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .zone-base-color-source-trigger {
+    display: grid !important;
+    grid-template-columns: 68px minmax(0, 1fr) auto !important;
+    min-height: 76px !important;
+    gap: 12px !important;
+    padding: 7px !important;
+    border-radius: 9px !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .zone-base-color-source-trigger .swatch-dot {
+    width: 68px !important;
+    height: 68px !important;
+    min-width: 68px !important;
+    min-height: 68px !important;
+    aspect-ratio: 1 / 1 !important;
+    border-radius: 8px !important;
+    object-fit: cover !important;
+    image-rendering: auto !important;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.12), 0 8px 20px rgba(0,0,0,0.34) !important;
+}
+
+/* Keep the demo-style slider grammar—strong +/- targets, a flexible track and
+   a real value pill—but halve the excess vertical chrome from the first pass.
+   This retains 22px controls and the full horizontal track, while fitting
+   materially more controls into the Main App Zone popout. */
+body:not(.spb-easy-on) .zone-detail-body .stack-control-group:has(input[type="range"]) {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    gap: 4px !important;
+    min-height: 28px !important;
+    padding: 2px 5px !important;
+    margin-bottom: 3px !important;
+    border: 1px solid rgba(125, 151, 190, 0.13) !important;
+    border-radius: 9px !important;
+    background: rgba(7, 13, 24, 0.72) !important;
+    grid-template-columns: none !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .stack-control-group:has(input[type="range"]) > .stack-label-mini {
+    flex: 0 0 94px !important;
+    min-width: 94px !important;
+    width: 94px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 10px !important;
+    font-weight: 750 !important;
+    color: #d0daf0 !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .stack-control-group:has(input[type="range"]) > input[type="range"],
+body:not(.spb-easy-on) .zone-detail-body .stack-control-group:has(input[type="range"]) > .stack-slider {
+    flex: 1 1 100px !important;
+    width: auto !important;
+    min-width: 54px !important;
+    height: 14px !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .stack-control-group:has(input[type="range"]) > .stack-step-btn,
+body:not(.spb-easy-on) .zone-detail-body .stack-control-group:has(input[type="range"]) > button.btn-sm {
+    flex: 0 0 22px !important;
+    width: 22px !important;
+    min-width: 22px !important;
+    height: 22px !important;
+    min-height: 22px !important;
+    padding: 0 !important;
+    border-radius: 6px !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    color: #dce8ff !important;
+    border-color: rgba(97, 139, 190, 0.42) !important;
+    background: #0b1727 !important;
+}
+body:not(.spb-easy-on) .zone-detail-body .stack-control-group:has(input[type="range"]) > .stack-val,
+body:not(.spb-easy-on) .zone-detail-body .stack-control-group:has(input[type="range"]) > .stack-val-input,
+body:not(.spb-easy-on) .zone-detail-body .stack-control-group:has(input[type="range"]) > input[type="number"] {
+    flex: 0 0 46px !important;
+    min-width: 46px !important;
+    width: 46px !important;
+    min-height: 22px !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 4px !important;
+    border: 1px solid rgba(0, 208, 230, 0.30) !important;
+    border-radius: 6px !important;
+    background: rgba(0, 208, 230, 0.10) !important;
+    color: #aef4ff !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    text-align: center !important;
+    white-space: nowrap;
+}
+body:not(.spb-easy-on) .zone-detail-body .stack-control-group:has(input[type="range"]):focus-within {
+    border-color: rgba(255, 142, 34, 0.55) !important;
+    box-shadow: 0 0 0 2px rgba(255, 142, 34, 0.10) !important;
+}
+
+@media (max-width: 1120px) {
+    body:not(.spb-easy-on) #zoneEditorFloat.zone-editor-float {
+        width: 340px !important;
+    }
+    body:not(.spb-easy-on) #zoneEditorFloat.zone-editor-float.active:not(.collapsed) ~ .center-panel {
+        padding-left: 354px !important;
+    }
+    body:not(.spb-easy-on) .zone-detail-body .stack-control-group:has(input[type="range"]) > .stack-label-mini {
+        flex-basis: 76px !important;
+        min-width: 76px !important;
+        width: 76px !important;
+    }
+    body:not(.spb-easy-on) .zone-detail-body .zone-finish-row:has(> label[title^="BASE MATERIAL"]) > .swatch-trigger {
+        grid-template-columns: 64px minmax(0, 1fr) auto !important;
+    }
+    body:not(.spb-easy-on) .zone-detail-body .zone-finish-row:has(> label[title^="BASE MATERIAL"]) > .swatch-trigger > .swatch-dot {
+        width: 64px !important;
+        height: 64px !important;
+        min-width: 64px !important;
+        min-height: 64px !important;
+    }
+    body:not(.spb-easy-on) .zone-detail-body .zone-base-color-card-head {
+        grid-template-columns: auto auto minmax(0, 1fr) !important;
+    }
+    body:not(.spb-easy-on) .zone-detail-body .zone-base-color-source-trigger {
+        grid-template-columns: 64px minmax(0, 1fr) auto !important;
+    }
+    body:not(.spb-easy-on) .zone-detail-body .zone-base-color-source-trigger .swatch-dot {
+        width: 64px !important;
+        height: 64px !important;
+        min-width: 64px !important;
+        min-height: 64px !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.spb-focus-on .zone-detail-body *,
+    body.spb-focus-on .zone-card * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

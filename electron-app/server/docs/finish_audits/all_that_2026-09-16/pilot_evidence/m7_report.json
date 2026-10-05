@@ -1,0 +1,103 @@
+{
+  "status": "diagnostic only; ALL THAT has no M6 profile. Missing components are renormalized by official M7; no production pass is claimed.",
+  "ship_bar": 85,
+  "before": "N/A: originals absent from shipping scorecard",
+  "candidates": {
+    "atp_airbrush_tee_code": {
+      "composite": 73.5,
+      "preCloneComposite": 73.5,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "ok",
+      "components": {
+        "m1": 56.2,
+        "m5": 87.4
+      },
+      "componentsUsed": [
+        "m1",
+        "m5"
+      ]
+    },
+    "atp_airbrush_tee_image": {
+      "composite": 59.4,
+      "preCloneComposite": 64.6,
+      "clonePenalty": 0.92,
+      "cloneSize": 3,
+      "intent": "full",
+      "tier": "watch",
+      "components": {
+        "m1": 37.4,
+        "m5": 86.3
+      },
+      "componentsUsed": [
+        "m1",
+        "m5"
+      ]
+    },
+    "atp_flannel_red_code": {
+      "composite": 66.1,
+      "preCloneComposite": 71.8,
+      "clonePenalty": 0.92,
+      "cloneSize": 3,
+      "intent": "full",
+      "tier": "ok",
+      "components": {
+        "m1": 37.4,
+        "m5": 99.4
+      },
+      "componentsUsed": [
+        "m1",
+        "m5"
+      ]
+    },
+    "atp_flannel_red_image": {
+      "composite": 75.4,
+      "preCloneComposite": 75.4,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "ok",
+      "components": {
+        "m1": 44.8,
+        "m5": 99.9
+      },
+      "componentsUsed": [
+        "m1",
+        "m5"
+      ]
+    },
+    "atp_holo_sticker_code": {
+      "composite": 80.0,
+      "preCloneComposite": 80.0,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m1": 56.7,
+        "m5": 98.7
+      },
+      "componentsUsed": [
+        "m1",
+        "m5"
+      ]
+    },
+    "atp_holo_sticker_image": {
+      "composite": 65.4,
+      "preCloneComposite": 71.1,
+      "clonePenalty": 0.92,
+      "cloneSize": 3,
+      "intent": "full",
+      "tier": "ok",
+      "components": {
+        "m1": 37.9,
+        "m5": 97.6
+      },
+      "componentsUsed": [
+        "m1",
+        "m5"
+      ]
+    }
+  }
+}

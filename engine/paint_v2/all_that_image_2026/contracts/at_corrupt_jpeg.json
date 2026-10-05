@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_corrupt_jpeg",
+  "display_name": "Cdrom: Corrupt JPEG",
+  "promise": "An abstract damaged digital photograph compressed into overlapping tiny discontinuous blocks",
+  "carrier_grammar": "An abstract damaged digital photograph compressed into overlapping tiny discontinuous blocks; single full-canvas image, no duplicated quadrants. Fine features: compressed print fragments, black missing blocks, cyan chroma offsets, magenta codec tears, block boundary etch, quantization flecks",
+  "spec_grammar": "Feature-specific selectors partition compressed print fragments, black missing blocks, cyan chroma offsets, magenta codec tears, block boundary etch, quantization flecks. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "compressed print fragments",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "black missing blocks",
+      "role": "Material feature selected from artwork by g:<:0.16"
+    },
+    {
+      "name": "cyan chroma offsets",
+      "role": "Material feature selected from artwork by h:>:160&h:<:210&s:>:0.3"
+    },
+    {
+      "name": "magenta codec tears",
+      "role": "Material feature selected from artwork by h:>:275&s:>:0.3"
+    },
+    {
+      "name": "block boundary etch",
+      "role": "Material feature selected from artwork by edge:>:0.65"
+    },
+    {
+      "name": "quantization flecks",
+      "role": "Material feature selected from artwork by fine:>:0.82"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "compressed print fragments",
+      "black missing blocks",
+      "cyan chroma offsets",
+      "magenta codec tears",
+      "block boundary etch",
+      "quantization flecks"
+    ],
+    "R": [
+      "compressed print fragments",
+      "black missing blocks",
+      "cyan chroma offsets",
+      "magenta codec tears",
+      "block boundary etch",
+      "quantization flecks"
+    ],
+    "Cc": [
+      "compressed print fragments",
+      "black missing blocks",
+      "cyan chroma offsets",
+      "magenta codec tears",
+      "block boundary etch",
+      "quantization flecks"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "compressed print fragments",
+      "range": [
+        [
+          0,
+          130,
+          150
+        ],
+        [
+          22,
+          225,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "black missing blocks",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cyan chroma offsets",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "magenta codec tears",
+      "range": [
+        [
+          240,
+          0,
+          170
+        ],
+        [
+          255,
+          30,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "block boundary etch",
+      "range": [
+        [
+          180,
+          30,
+          25
+        ],
+        [
+          240,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "quantization flecks",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_beige_box",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_crt_blue_screen",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "compressed print fragments",
+      "black missing blocks",
+      "cyan chroma offsets",
+      "magenta codec tears",
+      "block boundary etch",
+      "quantization flecks"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_corrupt_jpeg / An abstract damaged digital photograph compressed into overlapping tiny discontinuous blocks",
+  "spec_key": "at_corrupt_jpeg / compressed print fragments all; black missing blocks g:<:0.16; cyan chroma offsets h:>:160&h:<:210&s:>:0.3; magenta codec tears h:>:275&s:>:0.3; block boundary etch edge:>:0.65; quantization flecks fine:>:0.82",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

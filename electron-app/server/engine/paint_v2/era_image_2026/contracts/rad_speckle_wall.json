@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_speckle_wall",
+  "display_name": "Memphis: Party Speckle",
+  "promise": "Tiny coral, cobalt and lemon paint flecks over textured aqua plaster.",
+  "carrier_grammar": "Tiny coral, cobalt and lemon paint flecks over textured aqua plaster. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for aqua plaster, coral paint flicks, cobalt paint splinters, lemon splatter dots, white mineral grains, plaster micro pits is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny coral, cobalt and lemon paint flecks over textured aqua plaster. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_speckle_wall.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "aqua plaster",
+      "role": "Actual shared paint and spec geometry: aqua plaster"
+    },
+    {
+      "name": "coral paint flicks",
+      "role": "Actual shared paint and spec geometry: coral paint flicks"
+    },
+    {
+      "name": "cobalt paint splinters",
+      "role": "Actual shared paint and spec geometry: cobalt paint splinters"
+    },
+    {
+      "name": "lemon splatter dots",
+      "role": "Actual shared paint and spec geometry: lemon splatter dots"
+    },
+    {
+      "name": "white mineral grains",
+      "role": "Actual shared paint and spec geometry: white mineral grains"
+    },
+    {
+      "name": "plaster micro pits",
+      "role": "Actual shared paint and spec geometry: plaster micro pits"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "aqua plaster",
+      "coral paint flicks",
+      "cobalt paint splinters",
+      "lemon splatter dots",
+      "white mineral grains",
+      "plaster micro pits"
+    ],
+    "R": [
+      "aqua plaster",
+      "coral paint flicks",
+      "cobalt paint splinters",
+      "lemon splatter dots",
+      "white mineral grains",
+      "plaster micro pits"
+    ],
+    "Cc": [
+      "aqua plaster",
+      "coral paint flicks",
+      "cobalt paint splinters",
+      "lemon splatter dots",
+      "white mineral grains",
+      "plaster micro pits"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_splatter_tee",
+      "difference": "This finish uses Very finely spattered colorful decorative plaster: aqua ground with dense coral elongated microflicks, cobalt hairline splinters, lemon pin dots, tiny white mineral grains and little stippled pores. Not random giant chips, varied five mark types, fine festive speckle wallpaper feeling.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_confetti_laminate",
+      "difference": "This finish uses Very finely spattered colorful decorative plaster: aqua ground with dense coral elongated microflicks, cobalt hairline splinters, lemon pin dots, tiny white mineral grains and little stippled pores. Not random giant chips, varied five mark types, fine festive speckle wallpaper feeling.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "aqua plaster is visible in the authored geometry",
+      "coral paint flicks is visible in the authored geometry",
+      "cobalt paint splinters is visible in the authored geometry",
+      "lemon splatter dots is visible in the authored geometry",
+      "white mineral grains is visible in the authored geometry",
+      "plaster micro pits is visible in the authored geometry"
+    ],
+    "source_sha256": "3c3a372659652ffcd09fb4ba18a195c989cbd6dde7a38489267afe2933411088",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_speckle_wall-authored-Tiny coral, cobalt and lemon paint flecks over textured aqua plaster. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_speckle_wall-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 77.7,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "b143ba73b8177bdcba1ffa98b3ec5bf24eaad2d8afefbb28e3ce354b5c43feb6"
+}

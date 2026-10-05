@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 350/car_num_290060.tga",
+  "inspection_records": "_smart_tga_runs/cycle711_fresh_dlm_active_pool/inspection_records.json",
+  "review_scope": "Untouched Cycle 712 holdout; source, complete owner sheets, and proposal crops reviewed after model freeze.",
+  "evaluation_role": "untouched_cross_owner_holdout",
+  "component_labels": [
+    {"layer":"numbers","component_index":0,"expected_bbox":[286,231,181,116],"target_layer":"numbers","label":"true_number_6_copy"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[281,716,171,106],"target_layer":"numbers","label":"true_number_6_copy"},
+    {"layer":"paint","component_index":0,"expected_bbox":[0,0,1024,1024],"target_layer":"paint","label":"whole_paint_false_number"}
+  ]
+}

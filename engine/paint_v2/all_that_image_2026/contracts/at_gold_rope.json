@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_gold_rope",
+  "display_name": "Fresh: Gold Rope",
+  "promise": "Warm gold fine herringbone linked metal in multidirectional small fragments, no necklace object",
+  "carrier_grammar": "Warm gold fine herringbone linked metal in multidirectional small fragments, no necklace object; single full-canvas image, no duplicated quadrants. Fine features: gold rope wire, dark braid interstices, polished rope crowns, milled wire ridges, brushed gold scuffs, deep oxide recesses",
+  "spec_grammar": "Feature-specific selectors partition gold rope wire, dark braid interstices, polished rope crowns, milled wire ridges, brushed gold scuffs, deep oxide recesses. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "gold rope wire",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "dark braid interstices",
+      "role": "Material feature selected from artwork by g:<:0.25"
+    },
+    {
+      "name": "polished rope crowns",
+      "role": "Material feature selected from artwork by detail:>:0.65"
+    },
+    {
+      "name": "milled wire ridges",
+      "role": "Material feature selected from artwork by edge:>:0.62"
+    },
+    {
+      "name": "brushed gold scuffs",
+      "role": "Material feature selected from artwork by fine:>:0.78"
+    },
+    {
+      "name": "deep oxide recesses",
+      "role": "Material feature selected from artwork by g:<:0.14&s:>:0.25"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "gold rope wire",
+      "dark braid interstices",
+      "polished rope crowns",
+      "milled wire ridges",
+      "brushed gold scuffs",
+      "deep oxide recesses"
+    ],
+    "R": [
+      "gold rope wire",
+      "dark braid interstices",
+      "polished rope crowns",
+      "milled wire ridges",
+      "brushed gold scuffs",
+      "deep oxide recesses"
+    ],
+    "Cc": [
+      "gold rope wire",
+      "dark braid interstices",
+      "polished rope crowns",
+      "milled wire ridges",
+      "brushed gold scuffs",
+      "deep oxide recesses"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "gold rope wire",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dark braid interstices",
+      "range": [
+        [
+          65,
+          110,
+          125
+        ],
+        [
+          185,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "polished rope crowns",
+      "range": [
+        [
+          240,
+          0,
+          16
+        ],
+        [
+          255,
+          32,
+          90
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "milled wire ridges",
+      "range": [
+        [
+          240,
+          0,
+          170
+        ],
+        [
+          255,
+          30,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "brushed gold scuffs",
+      "range": [
+        [
+          180,
+          30,
+          25
+        ],
+        [
+          240,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "deep oxide recesses",
+      "range": [
+        [
+          10,
+          145,
+          160
+        ],
+        [
+          90,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_airbrush_tee",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_boombox_chrome",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "gold rope wire",
+      "dark braid interstices",
+      "polished rope crowns",
+      "milled wire ridges",
+      "brushed gold scuffs",
+      "deep oxide recesses"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_gold_rope / Warm gold fine herringbone linked metal in multidirectional small fragments, no necklace object",
+  "spec_key": "at_gold_rope / gold rope wire all; dark braid interstices g:<:0.25; polished rope crowns detail:>:0.65; milled wire ridges edge:>:0.62; brushed gold scuffs fine:>:0.78; deep oxide recesses g:<:0.14&s:>:0.25",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

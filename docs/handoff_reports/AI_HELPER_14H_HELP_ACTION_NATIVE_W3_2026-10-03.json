@@ -1,0 +1,31 @@
+{
+  "schema": "spb-help-action-native-review/1",
+  "session": "1eae5becd8e6",
+  "backend": "http://localhost:59879/",
+  "method": "Actual typed help; SpbProZone.batch move; observed Do-it UI button clicked through SPB MCP; real controllers only.",
+  "offered_target": {
+    "name": "Zone 2",
+    "index": 1,
+    "muted": true
+  },
+  "before_click": {
+    "target_index": 0,
+    "target_muted": true,
+    "other_name": "Zone 1",
+    "other_muted": false
+  },
+  "after_click": {
+    "target_index": 0,
+    "target_muted": false,
+    "other_name": "Zone 1",
+    "other_muted": false
+  },
+  "reply": "Done - \"Zone 2\" is switched back on (click its eye icon to undo).",
+  "fixture_restored": true,
+  "provider_attempts": 0,
+  "helper_sha256": "3cc4ee4cc7cb7eed0d9a20f0559838e0382b1bb90ecc5b9b8b8b6ca7c507750f",
+  "limitations": [
+    "Same-UUID clone postcondition and asynchronous callback reporting have separate independent review findings; this native reorder proof does not cover those.",
+    "No packaged Electron acceptance."
+  ]
+}

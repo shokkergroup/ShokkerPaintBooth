@@ -1,0 +1,82 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon_orange_hazard",
+  "display_name": "Sodium Scuff",
+  "carrier": "Retroreflective orange microbeads embedded, dragged, and burnished through one black polyurethane sheet.",
+  "material_story": {
+    "M": "Reflective bead backing, exposed cores, crushed shards, and polished skid lips rise; deep gouges fall.",
+    "R": "Deep gouges, crushed shards, resin drag and rebound debris rise; burnished lips and intact bead faces fall.",
+    "Cc": "Intact black polyurethane and pooled orange resin tails rise; exposed tracks, cores, shards and gouges fall."
+  },
+  "vetoes": [
+    "caution tape",
+    "chevrons",
+    "polka dots",
+    "random confetti",
+    "asphalt scene",
+    "Oil Slick flow topology"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 1.250521,
+  "material_stats": {
+    "std": {
+      "M": 82.797401,
+      "R": 83.29908,
+      "Cc": 83.260765
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.25388,
+      "M_Cc": 0.346256,
+      "R_Cc": 0.05856
+    }
+  },
+  "geometry_stats": {
+    "family_count": 7,
+    "families": {
+      "bead_clusters": 4345,
+      "crushed_shards": 546,
+      "deep_gouges": 1039,
+      "exposed_cores": 1701,
+      "polished_skid_lips": 1649,
+      "rebound_specks": 1706,
+      "resin_tails": 2174
+    },
+    "width_native_min": 8.0,
+    "width_native_median": 12.0,
+    "width_native_p90": 16.0,
+    "width_native_max": 20.0,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "bead_clusters": 0.203035,
+    "exposed_cores": 0.044539,
+    "resin_tails": 0.171722,
+    "crushed_shards": 0.016731,
+    "polished_skid_lips": 0.123674,
+    "deep_gouges": 0.100855,
+    "rebound_specks": 0.04363
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "status": "EXPERIMENTAL_NATIVE_FINDINGS",
+  "session": "f6e712ef218a",
+  "observedUTC": "2026-10-04 05:57:29 UTC",
+  "scope": "Private imported Chevy Silverado fixture; four modules reloaded in place; no cold current page acceptance",
+  "load": {
+    "hashes": {
+      "js/spb-pro-design.js": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8",
+      "js/spb-pro-edit.js": "5e8cc8bb52825b4ebac672a991d6d927b0e5c1906c6d54e80970fb79e18ac456",
+      "js/spb-self-help.js": "b860c0acc0ab442f7b6477853c4438ab0b9e74e94fd87904e356768d2f97f7b2",
+      "js/spb-pro-ai.js": "65ad4705e818c5f1952b94c3a4b9e125ae854fea7ee64a90169f300eeb108138"
+    },
+    "mode": "Private experimental hot load; runtime/HTML unchanged",
+    "zones": 5,
+    "providers": 0
+  },
+  "scopedColour": {
+    "hashes": {
+      "js/spb-pro-design.js": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8",
+      "js/spb-pro-edit.js": "5e8cc8bb52825b4ebac672a991d6d927b0e5c1906c6d54e80970fb79e18ac456",
+      "js/spb-self-help.js": "b860c0acc0ab442f7b6477853c4438ab0b9e74e94fd87904e356768d2f97f7b2",
+      "js/spb-pro-ai.js": "65ad4705e818c5f1952b94c3a4b9e125ae854fea7ee64a90169f300eeb108138"
+    },
+    "setup": {
+      "blue": {
+        "text": "Done — the roof (3% of the car) is now recoloured blue.\nNEXT: Undo | Make the black matte | Make the cyan metallic | Make the white pearl | Make the numbers metallic",
+        "queue": [
+          {
+            "kind": "add",
+            "zone": null,
+            "spec": {
+              "name": "Roof recoloured blue",
+              "finish": "base::gloss",
+              "color": "#1450b4",
+              "region": {
+                "layers": [
+                  "Car Paint"
+                ],
+                "island": "roof"
+              }
+            }
+          }
+        ],
+        "entry": {
+          "text": "Done — the roof (3% of the car) is now recoloured blue.",
+          "lines": [],
+          "notes": []
+        }
+      },
+      "chrome": {
+        "text": "Done — the roof is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched. (I updated your earlier change to the same colour instead of stacking a new one on top.)\nNEXT: Undo | A bit more | Show me options for the roof | Make the black matte | Make the cyan metallic",
+        "queue": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "name": "Roof chrome",
+              "finish": "base::f_chrome"
+            }
+          }
+        ],
+        "entry": {
+          "text": "Done — the roof is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched. (I updated your earlier change to the same colour instead of stacking a new one on top.)",
+          "lines": [],
+          "notes": []
+        }
+      }
+    },
+    "observed": {
+      "reply": {
+        "text": "Nothing was changed. The blue there is painted by your zone “Roof chrome”, which also covers other places, so I did not change it. Say “make all the blue red” to change it everywhere.",
+        "queue": [],
+        "entry": {
+          "text": "Nothing was changed. The blue there is painted by your zone “Roof chrome”, which also covers other places, so I did not change it. Say “make all the blue red” to change it everywhere.",
+          "lines": [],
+          "notes": []
+        }
+      },
+      "settled": true,
+      "zoneCount": 6,
+      "ownerSame": true,
+      "paintChanged": false,
+      "specExact": true
+    },
+    "undo": {
+      "zonesExact": true,
+      "paintExact": true,
+      "specExact": true
+    },
+    "providerAttempts": 0
+  },
+  "finishBookkeeping": {
+    "afterAsk": {
+      "zonesUnchanged": true,
+      "keys": [
+        "offline",
+        "text",
+        "queue",
+        "usage",
+        "calls",
+        "model",
+        "tools",
+        "editPlan",
+        "editCtx",
+        "pic"
+      ],
+      "queueCount": 1
+    },
+    "afterFinish": {
+      "zonesChanged": true,
+      "returnType": "undefined",
+      "last": {
+        "id": 4,
+        "lines": [],
+        "undoable": false,
+        "layerUndo": null,
+        "maskUndoCount": 0,
+        "text": "Done — the roof is now recoloured green. (I updated your earlier change to the same colour instead of stacking a new one on top.)"
+      }
+    },
+    "providers": 0
+  },
+  "sourceConfirmation": "The exact swallowed bookkeeping line occurs in retained hot wire65ad source and current root W29 snapshot b43d. Newline-only repair candidate609b remains uninstalled pending independent finish-route test.",
+  "limits": [
+    "Wire source SHA256 is recorded, full wire source bytes remain only in private browser memory; no durable full hot2 source archive was created.",
+    "Experimental reload resets controller registry/history and can differ from a fresh page. This report does not certify cold current installation or current root source/mirror parity.",
+    "No actual provider requests or attempts occurred.",
+    "Native scope result is safe refusal, not successful current-owner recolor; verified2.9% roof scope makes the answer's covers-other-places explanation inaccurate."
+  ]
+}

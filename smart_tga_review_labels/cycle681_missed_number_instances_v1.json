@@ -1,0 +1,13 @@
+{"version":1,"inspection_records":"_smart_tga_runs/cycle681_dlm_candidate_coverage_review/inspection_records.json","review_scope":"Cycle 681 visually confirmed complete primary Number copies absent from final Number components. Bboxes are durable review truth only and never runtime authority.","casts_votes":false,"ownership_authority":false,"instances":[
+ {"paint_label":"dirtlatemodel 350/car_num_33863.tga","review_id":"miss:33863:15:lower","bbox":[294,716,180,116],"target_layer":"numbers","family_id":"number:15","label":"missed_true_number_copy"},
+ {"paint_label":"dirtlatemodel 358/car_num_24919.tga","review_id":"miss:24919:75:upper","bbox":[280,224,190,120],"target_layer":"numbers","family_id":"number:75","label":"missed_true_number_copy"},
+ {"paint_label":"dirtlatemodel 358/car_num_24919.tga","review_id":"miss:24919:75:lower","bbox":[275,710,205,115],"target_layer":"numbers","family_id":"number:75","label":"missed_true_number_copy"},
+ {"paint_label":"dirtlatemodel 358/car_num_24919.tga","review_id":"miss:24919:75:deck","bbox":[785,795,185,190],"target_layer":"numbers","family_id":"number:75","label":"missed_true_number_copy"},
+ {"paint_label":"dirtlatemodel 358/car_num_24924.tga","review_id":"miss:24924:157:upper","bbox":[275,220,180,120],"target_layer":"numbers","family_id":"number:157","label":"missed_true_number_copy"},
+ {"paint_label":"dirtlatemodel 358/car_num_29279.tga","review_id":"miss:29279:1:upper","bbox":[300,220,155,125],"target_layer":"numbers","family_id":"number:1","label":"missed_true_number_copy"},
+ {"paint_label":"dirtlatemodel 358/car_num_29279.tga","review_id":"miss:29279:1:lower","bbox":[290,710,170,120],"target_layer":"numbers","family_id":"number:1","label":"missed_true_number_copy"},
+ {"paint_label":"dirtlatemodel 358/car_num_29279.tga","review_id":"miss:29279:1:deck","bbox":[800,800,165,180],"target_layer":"numbers","family_id":"number:1","label":"missed_true_number_copy"},
+ {"paint_label":"dirtlatemodel 358/car_num_32776.tga","review_id":"miss:32776:77:upper","bbox":[285,220,190,125],"target_layer":"numbers","family_id":"number:77","label":"missed_true_number_copy"},
+ {"paint_label":"dirtlatemodel 358/car_num_32776.tga","review_id":"miss:32776:77:lower","bbox":[285,710,195,120],"target_layer":"numbers","family_id":"number:77","label":"missed_true_number_copy"},
+ {"paint_label":"dirtlatemodel 358/car_num_32776.tga","review_id":"miss:32776:77:deck","bbox":[790,800,180,190],"target_layer":"numbers","family_id":"number:77","label":"missed_true_number_copy"}
+]}

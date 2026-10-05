@@ -1,0 +1,110 @@
+[
+ {
+  "id": "gl_control",
+  "name": "GL 00 Control (Ghost Fracture)",
+  "kind": "experiment",
+  "desc": "Byte-identical Ghost Fracture. Your reference \u2014 everything else changes ONE thing vs this.",
+  "ai_rating": 50,
+  "mip": 1.0,
+  "render_s": 1.7
+ },
+ {
+  "id": "gl_metal_low",
+  "name": "GL 01 Metal LOW (~150)",
+  "kind": "experiment",
+  "desc": "PILLAR 1 TEST: metal dropped to the level our newer finishes use. If the purple stops jumping through, near-max metal is the body-color engine.",
+  "ai_rating": 50,
+  "mip": 1.0,
+  "render_s": 0.67
+ },
+ {
+  "id": "gl_metal_mid",
+  "name": "GL 02 Metal MID (~185)",
+  "kind": "experiment",
+  "desc": "Pillar 1 dose-response: halfway. Tells us the metal threshold where color-jump starts dying.",
+  "ai_rating": 50,
+  "mip": 1.0,
+  "render_s": 0.67
+ },
+ {
+  "id": "gl_rough_pastel",
+  "name": "GL 03 Rough PASTEL (150-200)",
+  "kind": "experiment",
+  "desc": "PILLAR 2 TEST + the pastel doctrine on-track: roughness raised to the light-pastel band. If flashes go soft/hazy, low roughness is what makes them EXPLODE.",
+  "ai_rating": 50,
+  "mip": 1.0,
+  "render_s": 0.56
+ },
+ {
+  "id": "gl_rough_mirror",
+  "name": "GL 04 Rough MIRROR (30-60)",
+  "kind": "experiment",
+  "desc": "Pillar 2 the other direction: glossier than GF. Do flashes get even sharper/harder?",
+  "ai_rating": 50,
+  "mip": 1.0,
+  "render_s": 0.59
+ },
+ {
+  "id": "gl_cc_flat",
+  "name": "GL 05 Clearcoat FLAT (no cells)",
+  "kind": "experiment",
+  "desc": "PILLAR 3 TEST: same metal+gloss but the carve is GONE (CC uniform 212). If gold still flashes but with no cell pattern, the carve is only the SHAPE; if gold dies, the carve is the engine.",
+  "ai_rating": 50,
+  "mip": 1.0,
+  "render_s": 0.62
+ },
+ {
+  "id": "gl_cc_shallow",
+  "name": "GL 06 Clearcoat SHALLOW carve",
+  "kind": "experiment",
+  "desc": "Pillar 3 dose-response: carve amplitude halved. How much swing does the two-color travel need?",
+  "ai_rating": 50,
+  "mip": 1.0,
+  "render_s": 0.67
+ },
+ {
+  "id": "gl_cc_inverted",
+  "name": "GL 07 Clearcoat INVERTED",
+  "kind": "experiment",
+  "desc": "Cells swap polarity (carved becomes flooded). Should swap WHERE gold vs teal appears \u2014 confirms the cells choose which env color shows.",
+  "ai_rating": 50,
+  "mip": 1.0,
+  "render_s": 0.67
+ },
+ {
+  "id": "gl_cells_micro",
+  "name": "GL 08 Cells MICRO (3x smaller)",
+  "kind": "experiment",
+  "desc": "Structure scale: same recipe, 3x finer cells. Does fine structure shimmer instead of detonate?",
+  "ai_rating": 50,
+  "mip": 1.0,
+  "render_s": 0.72
+ },
+ {
+  "id": "gl_cells_macro",
+  "name": "GL 09 Cells MACRO (3x bigger)",
+  "kind": "experiment",
+  "desc": "Structure scale: 3x bigger cells. Do big panels flash harder but read blocky?",
+  "ai_rating": 50,
+  "mip": 1.0,
+  "render_s": 0.75
+ },
+ {
+  "id": "gl_pastel_full",
+  "name": "GL 10 Full PASTEL recipe",
+  "kind": "experiment",
+  "desc": "The round-5 pastel doctrine applied to GF geometry (rough 150-170, compressed carve 191-240). Head-to-head vs GL 00 settles whether pastel beats the original on track.",
+  "ai_rating": 50,
+  "mip": 1.0,
+  "render_s": 0.69
+ },
+ {
+  "id": "gl_cc_max",
+  "name": "GL 11 Clearcoat MAX carve",
+  "kind": "experiment",
+  "desc": "Carve amplitude pushed to the rails (cells swing 40<->250). Is more swing more magic, or does it clip into noise?",
+  "ai_rating": 50,
+  "mip": 1.0,
+  "render_s": 0.58
+ }
+]

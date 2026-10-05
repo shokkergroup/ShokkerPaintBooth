@@ -1,0 +1,111 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_hypercolour",
+  "display_name": "Radical: Heatwave Dye",
+  "promise": "Fine pink, orange and lime dye blooms with soft violet transitions in cotton fibers.",
+  "carrier_grammar": "Fine pink, orange and lime dye blooms with soft violet transitions in cotton fibers. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "Dielectric cotton dye anatomy: independently graded orange pigment blooms, lime flecks, violet satin fibers, rough pale fuzz and capillary edges.",
+  "reference_physics": {
+    "mechanism": "Fine pink, orange and lime dye blooms with soft violet transitions in cotton fibers. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_hypercolour.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "pink dyed cotton",
+      "role": "Actual shared paint and spec geometry: pink dyed cotton"
+    },
+    {
+      "name": "orange pigment blooms",
+      "role": "Actual shared paint and spec geometry: orange pigment blooms"
+    },
+    {
+      "name": "lime dye flecks",
+      "role": "Actual shared paint and spec geometry: lime dye flecks"
+    },
+    {
+      "name": "violet transition fibers",
+      "role": "Actual shared paint and spec geometry: violet transition fibers"
+    },
+    {
+      "name": "pale cotton fuzz",
+      "role": "Actual shared paint and spec geometry: pale cotton fuzz"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "pink dyed cotton",
+      "orange pigment blooms",
+      "lime dye flecks",
+      "violet transition fibers",
+      "pale cotton fuzz"
+    ],
+    "R": [
+      "pink dyed cotton",
+      "orange pigment blooms",
+      "lime dye flecks",
+      "violet transition fibers",
+      "pale cotton fuzz"
+    ],
+    "Cc": [
+      "pink dyed cotton",
+      "orange pigment blooms",
+      "lime dye flecks",
+      "violet transition fibers",
+      "pale cotton fuzz"
+    ]
+  },
+  "material_tiers": [
+    "pink dyed cotton dielectric material with independent continuous roughness/coating response",
+    "orange pigment blooms dielectric material with independent continuous roughness/coating response",
+    "lime dye flecks dielectric material with independent continuous roughness/coating response",
+    "violet transition fibers dielectric material with independent continuous roughness/coating response",
+    "pale cotton fuzz dielectric material with independent continuous roughness/coating response",
+    "raised fiber tips and compressed seams"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_sponge_paint",
+      "difference": "This finish uses Vivid 1980s reactive-dye inspired cotton microtexture, tiny pink orange lime irregular dye blooms and violet transition edges following individual fine cotton yarns. Dense soft edged pin-scale mottles, no large heatmap patches, no broad gradients, no claim of actual temperature change.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "at_velour_rose",
+      "difference": "This finish uses Vivid 1980s reactive-dye inspired cotton microtexture, tiny pink orange lime irregular dye blooms and violet transition edges following individual fine cotton yarns. Dense soft edged pin-scale mottles, no large heatmap patches, no broad gradients, no claim of actual temperature change.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "pink dyed cotton is visible in the authored geometry",
+      "orange pigment blooms is visible in the authored geometry",
+      "lime dye flecks is visible in the authored geometry",
+      "violet transition fibers is visible in the authored geometry",
+      "pale cotton fuzz is visible in the authored geometry"
+    ],
+    "source_sha256": "f109aa783612dfb495aa602882c80aefa63226d909f03fe56cbdfc7acdd887dd",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_hypercolour-authored-Fine pink, orange and lime dye blooms with soft violet transitions in cotton fibers. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_hypercolour-named-dielectric-textile-v1",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 67.2,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "16373c25cc42284411d02ced729db1d546f7e2ab02d1d0f046cc0a94358ff5dd"
+}

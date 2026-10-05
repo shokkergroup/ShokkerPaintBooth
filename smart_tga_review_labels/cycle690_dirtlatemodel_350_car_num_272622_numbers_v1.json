@@ -1,0 +1,9 @@
+{
+  "version":1,"paint_label":"dirtlatemodel 350/car_num_272622.tga",
+  "inspection_records":"_smart_tga_runs/cycle690_dlm_candidate_family_review_feature_export/inspection_records.json",
+  "review_scope":"Cycle 690 source plus complete Number/Sponsor/Template/Paint sheets and physical groups.",
+  "component_labels":[
+    {"layer":"numbers","component_index":0,"expected_bbox":[25,299,174,56],"target_layer":"sponsors","label":"wordmark_false_number"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[286,716,169,100],"target_layer":"numbers","label":"true_number"}
+  ]
+}

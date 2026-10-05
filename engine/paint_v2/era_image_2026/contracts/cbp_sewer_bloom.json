@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_sewer_bloom",
+  "display_name": "Sprawl: Algae Circuit",
+  "promise": "Biolume microgarden: sharp teal branching fernlike capillaries with lime bulb tips, coral curled spore fans, cobalt honeycomb pores, violet root knots and fine gold microbeads.",
+  "carrier_grammar": "Biolume microgarden: sharp teal branching fernlike capillaries with lime bulb tips, coral curled spore fans, cobalt honeycomb pores, violet root knots and fine gold microbeads. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for teal branching capillaries, lime bulb tips, coral curled spore fans, cobalt honeycomb pores, violet root knots, gold microbeads is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Biolume microgarden: sharp teal branching fernlike capillaries with lime bulb tips, coral curled spore fans, cobalt honeycomb pores, violet root knots and fine gold microbeads. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_sewer_bloom.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "teal branching capillaries",
+      "role": "Actual shared paint and spec geometry: teal branching capillaries"
+    },
+    {
+      "name": "lime bulb tips",
+      "role": "Actual shared paint and spec geometry: lime bulb tips"
+    },
+    {
+      "name": "coral curled spore fans",
+      "role": "Actual shared paint and spec geometry: coral curled spore fans"
+    },
+    {
+      "name": "cobalt honeycomb pores",
+      "role": "Actual shared paint and spec geometry: cobalt honeycomb pores"
+    },
+    {
+      "name": "violet root knots",
+      "role": "Actual shared paint and spec geometry: violet root knots"
+    },
+    {
+      "name": "gold microbeads",
+      "role": "Actual shared paint and spec geometry: gold microbeads"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "teal branching capillaries",
+      "lime bulb tips",
+      "coral curled spore fans",
+      "cobalt honeycomb pores",
+      "violet root knots",
+      "gold microbeads"
+    ],
+    "R": [
+      "teal branching capillaries",
+      "lime bulb tips",
+      "coral curled spore fans",
+      "cobalt honeycomb pores",
+      "violet root knots",
+      "gold microbeads"
+    ],
+    "Cc": [
+      "teal branching capillaries",
+      "lime bulb tips",
+      "coral curled spore fans",
+      "cobalt honeycomb pores",
+      "violet root knots",
+      "gold microbeads"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_biohazard_bloom",
+      "difference": "This finish uses Dense microscopic emerald branching algae frond fragments around orange ceramic grains, pink wet pores, lime filament tips and black substrate cracks. Fine feathery biological mats with short fronds, no actual plants or broad slime field, no big cells.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_wetware_membrane",
+      "difference": "This finish uses Dense microscopic emerald branching algae frond fragments around orange ceramic grains, pink wet pores, lime filament tips and black substrate cracks. Fine feathery biological mats with short fronds, no actual plants or broad slime field, no big cells.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "teal branching capillaries is visible in the authored geometry",
+      "lime bulb tips is visible in the authored geometry",
+      "coral curled spore fans is visible in the authored geometry",
+      "cobalt honeycomb pores is visible in the authored geometry",
+      "violet root knots is visible in the authored geometry",
+      "gold microbeads is visible in the authored geometry"
+    ],
+    "source_sha256": "25800d71562433e1927e47222739ca5f4408ad8d2f7104bb7f8d4fb0c974ca25",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_sewer_bloom-authored-Biolume microgarden: sharp teal branching fernlike capillaries with lime bulb tips, coral curled spore fans, cobalt honeycomb pores, violet root knots and fine gold microbeads. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_sewer_bloom-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 68.1,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "810922d7099a087aaf7c3f76705eafaecb31a9feec00166b161c29f88c2c8e69"
+}

@@ -1,0 +1,151 @@
+{
+  "status": "PASS",
+  "scope": "Unchanged integrated 16-case actual serializer/load/controller oracle plus W51 fresh malformed/duplicate-owner/current-layer/source-race/no-write tests and actual delayed ROUTER2 callback bodies in a controlled VM. Native/provider/server effects zero; selection fallback assessed for synchronous-only execution.",
+  "sourceHashes": {
+    "js/spb-pro-ai.js": "3da5c98b7202288979efe0f53fe48818f31a6a5b5428bfb178caeba5c25e82d6",
+    "js/spb-pro-edit.js": "19cbb899006d625bd2649fdaf8903eda48d6bf8d9bd22be0d90db7c52673937e",
+    "js/spb-pro-zone-kit.js": "ea9e169b909a30a6431f7fd48b87658b8258d480f165d304cb0ca5dac8983af7",
+    "js/spb-ai-operation.js": "47587a1a53a35ce7e58825bac864bd75c2421d26c19791957f57bb199a7000c6",
+    "js/spb-ai-lease.js": "de276372a763310ec051db141fcb1d601e11dbf193843e2b21a405226f782134",
+    "js/spb-ai-part-memory.js": "6e0d1e1466feca847d3a1c3300f32779ba610f3b6c72c7904a6c8fd97a6b3652",
+    "js/spb-ai-part-memory-project.js": "763d36addca501256e1346d58b797d339b15666d04273cbf5c4840b15c1c6fc1",
+    "js/spb-ai-complete-instruction-guard.js": "ba0af1f9e217695ed733dde81c8dec1a735dd1f052e8c06b3098866d392a551c",
+    "paint-booth-2-state-zones.js": "710b4d8b1b7f229d334e06d1eb331ff48d9873a7cd139b276d2bab3ebfd591e7",
+    "paint-booth-3-canvas.js": "e7674f6c7ac16bc4bbda954c4664c0b5fd2333fd55a012625176e5cedfcc859d",
+    "js/spb-pro-design.js": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8"
+  },
+  "results": [
+    {
+      "id": "actual-save-load-fresh-generation-exact-owner",
+      "pass": true
+    },
+    {
+      "id": "fingerprint-replacement",
+      "pass": true
+    },
+    {
+      "id": "path-replacement",
+      "pass": true
+    },
+    {
+      "id": "canvas-size",
+      "pass": true
+    },
+    {
+      "id": "pending-source",
+      "pass": true
+    },
+    {
+      "id": "unknown-source-bytes",
+      "pass": true
+    },
+    {
+      "id": "manual-mask",
+      "pass": true
+    },
+    {
+      "id": "changed-layout",
+      "pass": true
+    },
+    {
+      "id": "changed-element",
+      "pass": true
+    },
+    {
+      "id": "hidden-layer",
+      "pass": true
+    },
+    {
+      "id": "locked-layer",
+      "pass": true
+    },
+    {
+      "id": "missing-part-mask",
+      "pass": true
+    },
+    {
+      "id": "duplicate-pending-selector",
+      "pass": true
+    },
+    {
+      "id": "duplicate-id",
+      "pass": true
+    },
+    {
+      "id": "save-does-not-adopt-current-source-for-stale-owner",
+      "pass": true
+    },
+    {
+      "id": "browser-selected-identity-ignores-legacy-engine-target",
+      "pass": true
+    },
+    {
+      "id": "W51-malformed-pending-record-stays-inert",
+      "pass": true
+    },
+    {
+      "id": "W51-duplicate-active-uuid-never-acquires-part-ownership",
+      "pass": true
+    },
+    {
+      "id": "W51-missing-owner-proof-fails-closed",
+      "pass": true
+    },
+    {
+      "id": "W51-ambiguous-current-layer-name-rejected",
+      "pass": true
+    },
+    {
+      "id": "W51-source-generation-change-during-registration-rejected-without-owner-write",
+      "pass": true
+    },
+    {
+      "id": "W51-no-provenance-write-before-invalid-current-proof",
+      "pass": true
+    },
+    {
+      "id": "W51-owner-and-source-binding-write-only-after-all-proof-passes",
+      "pass": true
+    },
+    {
+      "id": "W51-rshotWatch-stale-after-document-replacement-has-no-capture",
+      "pass": true
+    },
+    {
+      "id": "W51-onlineMeasure-stale-manual-revision-has-no-post-await-preview-or-note",
+      "pass": true
+    },
+    {
+      "id": "W51-onlineMeasure-current-operation-keeps-post-settle-check",
+      "pass": true
+    },
+    {
+      "id": "W51-afterApply-stale-source-does-not-capture-preview-or-mutate-entry",
+      "pass": true
+    },
+    {
+      "id": "W51-offline-selection-fallback-is-synchronous-no-delayed-closure",
+      "pass": true
+    }
+  ],
+  "providerCalls": 0,
+  "nativeCalls": 0,
+  "serverCalls": 0,
+  "dynamicDelayedCallbackCases": 4,
+  "staticFallbackCase": 1,
+  "reviewFindings": {
+    "partMemory": {
+      "actualSerializerAndLoad": "Actual frozen getConfig/loadConfigFromObj functions save sanitized spbAIPartMemory and stage it inert; W51 positive rebind only writes current _aiPartProv/_aiPartSource after source, mask, selector, owner uniqueness and layer proof.",
+      "freshResults": "11 additional W51 ownership cases pass, including source generation changed during CAR.maskFor registration, two active rows with same UUID, malformed staged record, missing owner proof, ambiguous Car Paint layer-name lookup, and Proxy-observed zero writes on failed proofs.",
+      "limitations": "Fixture controlled; it tests actual root modules and extracted actual state callbacks, not native PSD reload or user project file I/O. Freeze manifest says installed:false."
+    },
+    "delayedCallbacks": {
+      "rshotWatch": "Actual callback refuses stale ticket after Z.whenSettled; dynamically verified a source generation/path replacement prevents rshotGrab.",
+      "onlineMeasure": "Actual callback refuses stale ticket after settle; dynamically verified a manual layer-revision increment prevents preview capture and notes. Stable-ticket control still executes preview capture.",
+      "afterApply": "Actual closure refuses stale operation after settle; dynamically verified source replacement prevents preview capture and entry-note mutation.",
+      "offlineComplaintSel": "This selection fallback is synchronous and has no then/await closure in its body; no delayed callback exists to race. This is static classification, not an interactive selection test."
+    },
+    "excludedKnownIssue": "W49 mark_elements behavior explicitly excluded by parent and not asserted.",
+    "confidence": "Dynamic checks cover frozen source functions with fake promises and controlled effect stubs only; no actual app/native/provider behavior is certified."
+  }
+}

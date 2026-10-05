@@ -1,0 +1,243 @@
+{
+  "schema": "spb-smart-tga-ocr-region-review-v1",
+  "reviews": [
+    {
+      "id": "mclaren720sgt3/car_team_364398.tga::gpu-mirror-word-0::IL ^on CVM ZEE LHI?' HErb WE",
+      "label": "unsafe_overlap",
+      "notes": "Oversized low-confidence multi-word region; removed by Cycle 620 broad-region gate.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "mclaren720sgt3/car_team_364398.tga::gpu-mirror-word-1::ziw",
+      "label": "garbled",
+      "notes": "SIM logo read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "mclaren720sgt3/car_team_364398.tga::gpu-mirror-word-2::ZMAJ Miz",
+      "label": "garbled",
+      "notes": "SIM/CAMS logo family read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "lamborghinievogt3/car_team_260018.tga::gpu-mirror-word-0::CLD",
+      "label": "garbled",
+      "notes": "GTP/contingency mark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "lamborghinievogt3/car_team_260018.tga::gpu-mirror-word-1::COETHO",
+      "label": "garbled",
+      "notes": "COELHO wordmark has a character error.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "lamborghinievogt3/car_team_260018.tga::gpu-mirror-word-2::KLKI",
+      "label": "garbled",
+      "notes": "Logo text read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "sponsors"
+    },
+    {
+      "id": "lamborghinievogt3/car_team_260018.tga::gpu-mirror-word-3::Jutom",
+      "label": "garbled",
+      "notes": "MOTUL wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "sponsors"
+    },
+    {
+      "id": "lamborghinievogt3/car_team_260018.tga::gpu-mirror-word-4::AETOCIDVDE",
+      "label": "garbled",
+      "notes": "VELOCIDADE wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "lamborghinievogt3/car_team_260018.tga::gpu-mirror-word-5::Jutom",
+      "label": "garbled",
+      "notes": "Second MOTUL wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "sponsors"
+    },
+    {
+      "id": "lamborghinievogt3/car_team_260018.tga::gpu-mirror-word-6::0n9mz",
+      "label": "garbled",
+      "notes": "Contingency logo cluster read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "cadillacvseriesrgtp/car_292370.tga::gpu-mirror-word-0::CVDITTVC",
+      "label": "garbled",
+      "notes": "CADILLAC wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "cadillacvseriesrgtp/car_292370.tga::gpu-mirror-word-1::Perg",
+      "label": "garbled",
+      "notes": "Small body wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "dallarap217/car_223703.tga::gpu-mirror-word-0::HOYEHYD",
+      "label": "garbled",
+      "notes": "HOMESTEAD wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "sponsors"
+    },
+    {
+      "id": "bmwm4gt3/car_team_342834.tga::gpu-mirror-word-0::OCIVWE BVCIMC VCVDEWA WOlObzbOblz",
+      "label": "garbled",
+      "notes": "Long racing academy wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "bmwm4gt3/car_team_342834.tga::gpu-mirror-word-1::IM",
+      "label": "garbled",
+      "notes": "Short vertical mark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "bmwm4gt3/car_team_342834.tga::gpu-mirror-word-2::JJJIM OAAHJIA",
+      "label": "garbled",
+      "notes": "RICHARD MILLE wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "audir8lmsevo2gt3/car_team_366006.tga::gpu-mirror-word-0::AQDKH",
+      "label": "garbled",
+      "notes": "ABSOLUT VODKA wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "audir8lmsevo2gt3/car_team_366006.tga::gpu-mirror-word-1::VBzom",
+      "label": "garbled",
+      "notes": "Second ABSOLUT wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "stockcars2 arcachevy25/car_num_313679.tga::gpu-mirror-word-0::BuIgtuo",
+      "label": "garbled",
+      "notes": "THINK OUTSIDE wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "sponsors"
+    },
+    {
+      "id": "ferrarievogt3/car_466592.tga::gpu-mirror-word-0::zonimoa",
+      "label": "garbled",
+      "notes": "Domino's wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "ferrarievogt3/car_466592.tga::gpu-mirror-word-1::pssiq",
+      "label": "garbled",
+      "notes": "Pizza logo read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "template"
+    },
+    {
+      "id": "ferrarievogt3/car_466592.tga::gpu-mirror-word-2::Yajvijjo",
+      "label": "garbled",
+      "notes": "Pizza delivery text read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "sponsors"
+    },
+    {
+      "id": "ferrarievogt3/car_466592.tga::gpu-mirror-word-3::bbO",
+      "label": "garbled",
+      "notes": "DPD logo read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "sponsors"
+    },
+    {
+      "id": "ferrarievogt3/car_492748.tga::gpu-mirror-word-0::\"Ma",
+      "label": "garbled",
+      "notes": "Small logo text read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "ferrarievogt3/car_492748.tga::gpu-mirror-word-1::Om",
+      "label": "garbled",
+      "notes": "Small livery text read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "ferrarievogt3/car_team_115274.tga::gpu-mirror-word-0::Kvclc",
+      "label": "garbled",
+      "notes": "Racing wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "ferrarievogt3/car_team_115274.tga::gpu-mirror-word-1::NMn",
+      "label": "garbled",
+      "notes": "Shift/livery wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "ferrarievogt3/car_team_115274.tga::gpu-mirror-word-2::Mmn",
+      "label": "garbled",
+      "notes": "Logo text read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "ferrarievogt3/car_team_115274.tga::gpu-mirror-word-3::bbO",
+      "label": "garbled",
+      "notes": "DPD logo read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "ferrarievogt3/car_team_115274.tga::gpu-mirror-word-4::Mn",
+      "label": "garbled",
+      "notes": "Logo text read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "mercedesamgevogt3/car_num_team_205476.tga::gpu-mirror-word-0::2rsijimi",
+      "label": "garbled",
+      "notes": "LIMITLESS MOTORSPORTS wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "mercedesamgevogt3/car_team_230207.tga::gpu-mirror-word-0::L.w aouug",
+      "label": "garbled",
+      "notes": "Body message read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "mercedesamgevogt3/car_team_230207.tga::gpu-mirror-word-1::richi",
+      "label": "garbled",
+      "notes": "LIGHT SPEED RACING wordmark read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    },
+    {
+      "id": "mercedesamgevogt3/car_team_230207.tga::gpu-mirror-word-2::EED",
+      "label": "garbled",
+      "notes": "Small logo text read incorrectly.",
+      "quality_basis": "legacy_mirror",
+      "dominant_owner": "paint"
+    }
+  ]
+}

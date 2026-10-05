@@ -1,0 +1,5 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_1298513.tga","inspection_records":"_smart_tga_runs/cycle674_dlm_strict_confirmation_review/inspection_records.json","review_scope":"Cycle 674 source plus complete Number/Sponsor/Template/Paint sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[320,35,156,81],"target_layer":"template","label":"hardware_shape_false_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[296,230,166,112],"target_layer":"numbers","family_id":"number:2","label":"true_custom_number_2"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[10,262,157,26],"target_layer":"sponsors","label":"local_long_haul_wordmark_false_number"}
+]}

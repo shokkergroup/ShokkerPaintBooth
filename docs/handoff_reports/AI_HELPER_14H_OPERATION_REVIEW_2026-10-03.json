@@ -1,0 +1,67 @@
+{
+  "review": "W10 independent operation-manager primitive review with root repair follow-up",
+  "date_utc": "2026-10-04",
+  "scope": "Read-only standalone review of js/spb-ai-operation.js using its CommonJS-exported API and fake descriptors. No pro-AI integration, native behavior, provider behavior, or live paint behavior is claimed.",
+  "source_history": {
+    "initial_review_sha256": "C9C548B9A29803E4BBCE7320EE5BDC9B74FFA6E67B63DB54D7AA6B53AF399FB1",
+    "repaired_source_sha256": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6",
+    "baseline_before_repair": "The original frozen oracle had 7/9 checks pass. The two misses were path-only same-path reload identity and mutable readDocument object aliasing.",
+    "review_correction": "During follow-up, I had added an initial-current-true assertion to the frozen path-only reload case after the oracle was established. Root correctly identified that this changed the original case. I removed that added assertion and restored the frozen case to its original post-reload stale check. The path-only startup refusal is now a separately labeled post-review API-boundary observation, not frozen-oracle credit."
+  },
+  "test": {
+    "path": "tests/ai_operation_review_contract.cjs",
+    "command": "node tests/ai_operation_review_contract.cjs",
+    "result": "PASS 11/11 total: 9/9 frozen independent-oracle checks, 1/1 separately labeled post-review path-only fail-closed observation, and 1/1 separately labeled root collection-token regression.",
+    "coverage": [
+      "cancel A, start B, then late A publication/restoration/cancel cleanup eligibility",
+      "same logical request entering a repair-turn collection generation; old and post-ready result gates",
+      "same-path source reload with and without a reported generation",
+      "same-path/same-index element reference replacement",
+      "preview restore after a later manual revision",
+      "stale publication after a newer owner starts",
+      "collecting versus ready behavior",
+      "root-supplied regression for two collection generations on one request ticket"
+    ],
+    "limitations": "The API is exercised directly. A tiny consumer-side callback gate uses collecting(ticket, collection) to test the primitive; no actual model tool callback, dispatcher, editor controller, renderer, or native UI is invoked."
+  },
+  "repaired_behavior": [
+    {
+      "id": "source-generation-required-for-same-path-reload-safety",
+      "verdict": "frozen oracle passes; path-only caller is separately confirmed fail-closed",
+      "evidence": "The manager snapshots descriptor fields at start and validDocument requires finite numeric sourceGeneration or generation before sameDocument/current succeeds (js/spb-ai-operation.js:11-26).",
+      "probe": "Fresh snapshots with the same path but generation 4→5 invalidate the old ticket and refuse publication. The restored frozen path-only test changes a path-only descriptor at the same path and observes current(ticket) false after reload. Separately, a post-review boundary observation confirms the ticket is already non-current immediately after start when no generation is provided.",
+      "integration_contract": "The controller must supply its actual monotonic source-load generation (and relevant source/canvas identity) in every document snapshot. Path alone fails closed; this review did not verify real controller wiring."
+    },
+    {
+      "id": "mutable-readDocument-result-is-snapshotted",
+      "verdict": "pass after repair",
+      "evidence": "The manager shallow-copies document fields into a ticket snapshot (js/spb-ai-operation.js:11-15).",
+      "probe": "When readDocument returns one mutable object and sourceGeneration changes in place from 1 to 2, current(ticket) becomes false. This was a counterexample before repair and passes after repair."
+    },
+    {
+      "id": "per-turn-collecting-ticket-required-for-tool-callbacks",
+      "verdict": "standalone primitive pass; integration unverified",
+      "evidence": "The manager exposes collect(ticket); collecting/ready accept an optional collection token (js/spb-ai-operation.js:44-46).",
+      "probe": "The additional root-supplied test keeps one request ticket, opens collection generations 2 then 3, rejects late collection-2 append/ready, and accepts generation 3. The frozen test also proves a new turn ticket invalidates an earlier ticket.",
+      "integration_contract": "The dispatcher must allocate a collection token for each provider/tool turn, including repair turns; bind results to that token and gate callbacks with collecting(ticket, token), not current(ticket) alone. The primitive does not intercept callback mutations itself."
+    }
+  ],
+  "confirmed_standalone_passes": [
+    "Cancel A then start B: late A publish and restore are refused; stale A cancel returns false and leaves B current.",
+    "When sourceGeneration is part of a fresh identity snapshot, same-path reload invalidates the old ticket.",
+    "Path-only descriptors fail closed because they cannot provide reload identity.",
+    "In-place document descriptor mutation is detected after the repair snapshots fields.",
+    "Replacing elementRef while path and index remain stable invalidates the old ticket.",
+    "After preview publication advances the expected revision, a later manual revision causes restore to refuse without invoking its callback.",
+    "A stale ticket cannot publish after a newer ticket takes ownership.",
+    "The new collection token rejects old callbacks and old ready signals within the same request."
+  ],
+  "not_claimed": [
+    "No production integration into js/spb-pro-ai.js was present or tested in this review.",
+    "No claim is made about real tool callbacks, actual controller generation wiring, canvas/layer revisions, preview restore effects, document loading, or native UI correctness."
+  ],
+  "owned_artifacts": [
+    "tests/ai_operation_review_contract.cjs",
+    "docs/handoff_reports/AI_HELPER_14H_OPERATION_REVIEW_2026-10-03.json"
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "work_item": "W97 private repair candidate: finish-only reuse of current source-bound whole-part owner",
+  "date": "2026-10-04",
+  "status": "PARTIAL_PASS_PRIVATE_CANDIDATE",
+  "scope": "Isolated controller candidate only. Actual integration13 E.plan/E.compile plus actual queueEditZones and actual scoped-part proof helpers were executed with a controlled edit callback. No apply/native/provider/server action.",
+  "frozen_oracle": {
+    "path": "_easy_claude_work/ai14h_w97_review/fresh_oracle.json",
+    "sha256": "869A86262CDC76A794C74FB7C09CE9589EA64F9A6F3E03676C0F9E8CD8BAC5DE",
+    "cases": 12,
+    "frozen_before_candidate_inspection": true
+  },
+  "source_pins": {
+    "integration13_controller_base": "849ff995f82ddfbc3be12d60faadc1bc8eccde7b11d666f76b3ebeb77a5c4742",
+    "private_candidate": "e6840fc79cdcd7e0e11ccad677a34eb7ab86cd903bbe0652089769187da19909",
+    "design": "4648de3231015497cc9ff816612a542097a1ad14038a7210753f6cdbfd88d832",
+    "edit": "3696cf6c9bdf9a28a056ebf90a9ddd23cfe290134943c11beb4c7ec5485a173a",
+    "test": "A7C71B8D3B1B10E5AF0C78CA06A661A78E3E7689C854B197C06C3CCC14F52A6C",
+    "repro_patch": "A8DEE2FDA6ED00E88DE8D153A21784282184A9DC5B065574E2974E9C0C5BB2E0"
+  },
+  "baseline": {
+    "passed": 6,
+    "failed": 6,
+    "rows": [
+      {
+        "id": "roof-chrome-keep-paint",
+        "pass": false,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"Roof chrome: I cannot safely keep the existing part colour because its earlier zone is ambiguous or no longer matches this car; name the colour you want or clarify which zone to change.\"],\"adds\":0,\"edits\":[]}"
+      },
+      {
+        "id": "roof-satin-keep-paint",
+        "pass": false,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"Roof satin: I cannot safely keep the existing part colour because its earlier zone is ambiguous or no longer matches this car; name the colour you want or clarify which zone to change.\"],\"adds\":0,\"edits\":[]}"
+      },
+      {
+        "id": "roof-gloss-keep-paint",
+        "pass": false,
+        "detail": "{\"parseFailure\":true,\"errors\":[\"E.plan did not recognize the frozen route case\"],\"adds\":0,\"edits\":[]}"
+      },
+      {
+        "id": "roof-ordinary-finish",
+        "pass": false,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"Roof chrome: I cannot safely keep the existing part colour because its earlier zone is ambiguous or no longer matches this car; name the colour you want or clarify which zone to change.\"],\"adds\":0,\"edits\":[]}"
+      },
+      {
+        "id": "partial-roof-owner",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"Roof chrome: I cannot safely keep the existing part colour because its earlier zone is ambiguous or no longer matches this car; name the colour you want or clarify which zone to change.\"],\"adds\":0,\"edits\":0}"
+      },
+      {
+        "id": "stale-source-owner",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"Roof chrome: I cannot safely keep the existing part colour because its earlier zone is ambiguous or no longer matches this car; name the colour you want or clarify which zone to change.\"],\"adds\":0,\"edits\":0}"
+      },
+      {
+        "id": "duplicate-roof-owners",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"Roof chrome: I cannot safely keep the existing part colour because its earlier zone is ambiguous or no longer matches this car; name the colour you want or clarify which zone to change.\"],\"adds\":0,\"edits\":0}"
+      },
+      {
+        "id": "manual-roof-zone",
+        "pass": false,
+        "detail": "{\"parseFailure\":false,\"errors\":[],\"adds\":1,\"edits\":0}"
+      },
+      {
+        "id": "stale-layout-owner",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"Roof chrome: I cannot safely keep the existing part colour because its earlier zone is ambiguous or no longer matches this car; name the colour you want or clarify which zone to change.\"],\"adds\":0,\"edits\":0}"
+      },
+      {
+        "id": "hidden-body-layer-owner",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"Roof chrome: I cannot safely keep the existing part colour because its earlier zone is ambiguous or no longer matches this car; name the colour you want or clarify which zone to change.\"],\"adds\":0,\"edits\":0}"
+      },
+      {
+        "id": "mixed-paint-owner",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"Roof chrome: I cannot safely keep the existing part colour because its earlier zone is ambiguous or no longer matches this car; name the colour you want or clarify which zone to change.\"],\"adds\":0,\"edits\":0}"
+      },
+      {
+        "id": "same-roof-alias-control",
+        "pass": false,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"Hood chrome: I cannot safely keep the existing part colour because its earlier zone is ambiguous or no longer matches this car; name the colour you want or clarify which zone to change.\"],\"adds\":0,\"edits\":[]}"
+      }
+    ]
+  },
+  "candidate": {
+    "passed": 11,
+    "failed": 1,
+    "rows": [
+      {
+        "id": "roof-chrome-keep-paint",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[],\"adds\":0,\"edits\":[{\"id\":\"zone-roof\",\"finish\":\"base::f_chrome\",\"proof\":true}]}"
+      },
+      {
+        "id": "roof-satin-keep-paint",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[],\"adds\":0,\"edits\":[{\"id\":\"zone-roof\",\"finish\":\"base::f_clear_satin\",\"proof\":true}]}"
+      },
+      {
+        "id": "roof-gloss-keep-paint",
+        "pass": false,
+        "detail": "{\"parseFailure\":true,\"errors\":[\"E.plan did not recognize the frozen route case\"],\"adds\":0,\"edits\":[]}"
+      },
+      {
+        "id": "roof-ordinary-finish",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[],\"adds\":0,\"edits\":[{\"id\":\"zone-roof\",\"finish\":\"base::f_chrome\",\"proof\":true}]}"
+      },
+      {
+        "id": "partial-roof-owner",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"The existing roof zone does not have one current whole-part helper proof, so I left it unchanged. Reconfirm that part before changing its finish.\"],\"adds\":0,\"edits\":0}"
+      },
+      {
+        "id": "stale-source-owner",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"The existing roof zone does not have one current whole-part helper proof, so I left it unchanged. Reconfirm that part before changing its finish.\"],\"adds\":0,\"edits\":0}"
+      },
+      {
+        "id": "duplicate-roof-owners",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"The existing roof zone does not have one current whole-part helper proof, so I left it unchanged. Reconfirm that part before changing its finish.\"],\"adds\":0,\"edits\":0}"
+      },
+      {
+        "id": "manual-roof-zone",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"The existing roof zone does not have one current whole-part helper proof, so I left it unchanged. Reconfirm that part before changing its finish.\"],\"adds\":0,\"edits\":0}"
+      },
+      {
+        "id": "stale-layout-owner",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"The existing roof zone does not have one current whole-part helper proof, so I left it unchanged. Reconfirm that part before changing its finish.\"],\"adds\":0,\"edits\":0}"
+      },
+      {
+        "id": "hidden-body-layer-owner",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"The existing roof zone does not have one current whole-part helper proof, so I left it unchanged. Reconfirm that part before changing its finish.\"],\"adds\":0,\"edits\":0}"
+      },
+      {
+        "id": "mixed-paint-owner",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[\"The existing roof zone does not have one current whole-part helper proof, so I left it unchanged. Reconfirm that part before changing its finish.\"],\"adds\":0,\"edits\":0}"
+      },
+      {
+        "id": "same-roof-alias-control",
+        "pass": true,
+        "detail": "{\"parseFailure\":false,\"errors\":[],\"adds\":0,\"edits\":[{\"id\":\"zone-hood\",\"finish\":\"base::f_chrome\",\"proof\":true}]}"
+      }
+    ]
+  },
+  "implementation": {
+    "candidate_path": "_easy_claude_work/ai14h_w97_review/candidate-spb-pro-ai.js",
+    "repro_patch_path": "_easy_claude_work/ai14h_w97_review/W97.patch",
+    "details": [
+      "Before resolving a source-colour part request, locate a unique semantic same-part selector among all zones, including muted and pending records; any manual, duplicate, or ambiguous match fails closed.",
+      "For the one candidate, require current edit registration, scopedPartProofCurrent and currentPartZoneOwners, exact current committed strong file SHA source binding, matching source generation/path/dimensions, current CAR/layout/mask/layer proof, fully visible footprint, exact zone/part mask match, visible body-paint layer binding, solid paint appearance, and full strength.",
+      "Canonicalize the planned selector to the saved owner selector only after proof succeeds, then queue an edit with unchanged base color and attach the fresh proof for downstream validation.",
+      "If a same-part prior zone exists but proof is unavailable or stale, refuse without adding a replacement."
+    ]
+  },
+  "reproducibility": {
+    "baseline": "Set W97_SOURCE=baseline; node tests/ai_part_finish_owner_w97_contract.cjs",
+    "candidate": "node tests/ai_part_finish_owner_w97_contract.cjs",
+    "candidate_node_syntax": "node --check _easy_claude_work/ai14h_w97_review/candidate-spb-pro-ai.js"
+  },
+  "remaining": {
+    "frozen_case": "roof-gloss-keep-paint",
+    "observed": "E.plan returns null for “Change the roof finish to gloss without repainting it.” on both baseline and candidate, before owner lookup. Candidate therefore leaves that frozen positive unserved; parser capability was not changed in this ownership lane.",
+    "owner_proof": "The edit callback is controlled. The test proves selector resolution, no add-zone, no color field, and proof attached to the edit request; it does not execute actual makeTools/doEdit or an apply."
+  },
+  "effects": {
+    "production_files_changed": 0,
+    "apply_calls": 0,
+    "native_calls": 0,
+    "provider_calls": 0,
+    "server_calls": 0
+  }
+}

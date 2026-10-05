@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_cross_colour_block",
+  "display_name": "Fresh: Cross Colour Block",
+  "promise": "Primary red gold green blue blocks on dark denim in a dense angular patchwork, no large blocks",
+  "carrier_grammar": "Primary red gold green blue blocks on dark denim in a dense angular patchwork, no large blocks; single full-canvas image, no duplicated quadrants. Fine features: red plain weave blocks, cobalt blue weave blocks, yellow woven blocks, green stitched blocks, black seam divisions, tiny stitch knots",
+  "spec_grammar": "Feature-specific selectors partition red plain weave blocks, cobalt blue weave blocks, yellow woven blocks, green stitched blocks, black seam divisions, tiny stitch knots. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "red plain weave blocks",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "cobalt blue weave blocks",
+      "role": "Material feature selected from artwork by h:>:205&h:<:265&s:>:0.5"
+    },
+    {
+      "name": "yellow woven blocks",
+      "role": "Material feature selected from artwork by h:>:35&h:<:75&s:>:0.5"
+    },
+    {
+      "name": "green stitched blocks",
+      "role": "Material feature selected from artwork by h:>:75&h:<:165&s:>:0.5"
+    },
+    {
+      "name": "black seam divisions",
+      "role": "Material feature selected from artwork by g:<:0.22"
+    },
+    {
+      "name": "tiny stitch knots",
+      "role": "Material feature selected from artwork by fine:>:0.82"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "red plain weave blocks",
+      "cobalt blue weave blocks",
+      "yellow woven blocks",
+      "green stitched blocks",
+      "black seam divisions",
+      "tiny stitch knots"
+    ],
+    "R": [
+      "red plain weave blocks",
+      "cobalt blue weave blocks",
+      "yellow woven blocks",
+      "green stitched blocks",
+      "black seam divisions",
+      "tiny stitch knots"
+    ],
+    "Cc": [
+      "red plain weave blocks",
+      "cobalt blue weave blocks",
+      "yellow woven blocks",
+      "green stitched blocks",
+      "black seam divisions",
+      "tiny stitch knots"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "red plain weave blocks",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cobalt blue weave blocks",
+      "range": [
+        [
+          0,
+          40,
+          45
+        ],
+        [
+          18,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "yellow woven blocks",
+      "range": [
+        [
+          0,
+          100,
+          130
+        ],
+        [
+          12,
+          195,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "green stitched blocks",
+      "range": [
+        [
+          0,
+          130,
+          150
+        ],
+        [
+          22,
+          225,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "black seam divisions",
+      "range": [
+        [
+          0,
+          175,
+          190
+        ],
+        [
+          8,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "tiny stitch knots",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_airbrush_tee",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_boombox_chrome",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "red plain weave blocks",
+      "cobalt blue weave blocks",
+      "yellow woven blocks",
+      "green stitched blocks",
+      "black seam divisions",
+      "tiny stitch knots"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_cross_colour_block / Primary red gold green blue blocks on dark denim in a dense angular patchwork, no large blocks",
+  "spec_key": "at_cross_colour_block / red plain weave blocks all; cobalt blue weave blocks h:>:205&h:<:265&s:>:0.5; yellow woven blocks h:>:35&h:<:75&s:>:0.5; green stitched blocks h:>:75&h:<:165&s:>:0.5; black seam divisions g:<:0.22; tiny stitch knots fine:>:0.82",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

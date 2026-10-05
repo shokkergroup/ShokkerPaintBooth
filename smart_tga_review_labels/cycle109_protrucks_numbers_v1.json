@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "paint_label": "protrucks pro4truck/car_num_1011235.tga",
+  "inspection_records": "_smart_tga_runs/cycle109_protrucks_component_baseline_v1/inspection_records.json",
+  "review_scope": "Cycle 109 manual visual review of baseline Pro4 Truck route components; focus is promoting missed 818 race-number placements out of Sponsors while demoting the false MCCRANEY panel out of Numbers.",
+  "component_labels": [
+    {
+      "layer": "numbers",
+      "component_index": 0,
+      "expected_bbox": [632, 338, 34, 328],
+      "target_layer": "sponsors",
+      "label": "sponsor_text_panel",
+      "note": "Vertical MCCRANEY sponsor panel was the only baseline Number component; not a race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 4,
+      "expected_bbox": [876, 155, 148, 65],
+      "review_bbox": [880, 160, 74, 43],
+      "foreground": {
+        "mode": "local_color_distance",
+        "color_distance": 22,
+        "edge_color_distance": 14,
+        "edge_dilate": 1,
+        "close": 1,
+        "min_area": 10
+      },
+      "target_layer": "numbers",
+      "label": "true_number_submask",
+      "note": "Upper side-panel 818, foreground only; leave the gray plate and McAfee text out of Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 5,
+      "expected_bbox": [341, 227, 42, 42],
+      "target_layer": "numbers",
+      "label": "true_number_fragment",
+      "note": "One upper split 818 digit island."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 6,
+      "expected_bbox": [290, 228, 38, 42],
+      "target_layer": "numbers",
+      "label": "true_number_fragment",
+      "note": "One upper split 818 digit island."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 7,
+      "expected_bbox": [439, 369, 193, 173],
+      "review_bbox": [464, 438, 132, 70],
+      "foreground": {
+        "mode": "local_color_distance",
+        "color_distance": 26,
+        "edge_color_distance": 16,
+        "edge_dilate": 1,
+        "close": 1,
+        "min_area": 16
+      },
+      "target_layer": "numbers",
+      "label": "true_number_submask",
+      "note": "Large center 818, foreground only; leave hand graphic, teal livery panel, and surrounding sponsor design as non-number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 17,
+      "expected_bbox": [279, 716, 112, 98],
+      "review_bbox": [283, 724, 84, 46],
+      "foreground": {
+        "mode": "local_color_distance",
+        "color_distance": 22,
+        "edge_color_distance": 14,
+        "edge_dilate": 1,
+        "close": 1,
+        "min_area": 10
+      },
+      "target_layer": "numbers",
+      "label": "true_number_submask",
+      "note": "Lower side-panel 818, foreground only; keep McAfee text and the white plate out of Numbers."
+    },
+    {
+      "layer": "paint",
+      "component_index": 0,
+      "expected_bbox": [0, 0, 1024, 1024],
+      "review_bbox": [20, 45, 140, 80],
+      "target_layer": "paint",
+      "label": "paint_livery_panel",
+      "note": "Upper-left teal livery fill; keep as Paint training evidence."
+    },
+    {
+      "layer": "paint",
+      "component_index": 0,
+      "expected_bbox": [0, 0, 1024, 1024],
+      "review_bbox": [520, 225, 150, 95],
+      "target_layer": "paint",
+      "label": "paint_livery_panel",
+      "note": "Plain gray body/livery panel; keep as Paint training evidence."
+    },
+    {
+      "layer": "paint",
+      "component_index": 0,
+      "expected_bbox": [0, 0, 1024, 1024],
+      "review_bbox": [675, 402, 140, 100],
+      "target_layer": "paint",
+      "label": "paint_livery_panel",
+      "note": "Right-side gray/teal livery field away from the reviewed 818 number; keep as Paint."
+    }
+  ]
+}

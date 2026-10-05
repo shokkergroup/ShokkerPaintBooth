@@ -1,0 +1,2177 @@
+{
+ "domain": "playbook",
+ "version": 1,
+ "articles": [
+  {
+   "id": "playbook.colour_modes",
+   "title": "Colour modes: what colour a finish paints",
+   "domain": "playbook",
+   "summary": "A zone can keep your own paint colour, paint one solid colour, paint a gradient, or let the finish bring its own colour. Choosing the mode is the first decision for any zone.",
+   "what": "BASE COLOR is the dropdown that decides where a finish gets its colour. Use source paint keeps the car's own colour and changes only the shine, which is perfect for gloss, matte, satin, pearl or candy over an existing livery. Solid paints the whole zone one colour. Gradient blends 2 to 10 colours across the whole flat sheet in a direction. Finish colour lets chrome, carbon, holographic and similar finishes bring their own.",
+   "when": [
+    "You are not sure whether to repaint or only change the shine.",
+    "A finish changed the colour of your livery and you did not want that."
+   ],
+   "how": [
+    "Open the zone and look at BASE COLOR.",
+    "Pick Use source paint when the colours must stay and only the shine changes.",
+    "Pick a solid colour when the zone should be one new colour.",
+    "Pick the custom gradient for a fade, then add the stops.",
+    "Leave it on the finish's own colour when you want the chrome or carbon look itself."
+   ],
+   "controls": [
+    {
+     "label": "BASE COLOR",
+     "range": "dropdown",
+     "default": "",
+     "effect": "Where the finish takes its colour from.",
+     "inv": "zone.base_color_mode"
+    },
+    {
+     "label": "Solid colour",
+     "range": "swatch",
+     "default": "",
+     "effect": "One flat colour for the whole zone.",
+     "inv": "zone.solid_color"
+    },
+    {
+     "label": "Custom gradient",
+     "range": "2 to 10 stops",
+     "default": "",
+     "effect": "A fade across the flat sheet in a direction.",
+     "inv": "zone.gradient"
+    }
+   ],
+   "tips": [
+    "A gradient runs across the entire flat sheet, so a horizontal fade follows the sheet columns, not the length of the car."
+   ],
+   "pitfalls": [
+    "A finish that brings its own colour replaces your colour. Use a coating base with source paint instead."
+   ],
+   "related": [
+    "recipes.three_colour_gradient",
+    "recipes.chrome_source",
+    "playbook.strengths_adjustments",
+    "zones.what_is_a_zone"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.base_color_mode"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "doc.01.colour_modes_what_colour_the_finish_paints"
+   ],
+   "sources": [
+    "docs/ai_knowledge/01_how_pro_works.md:18-23"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "colour modes",
+    "color modes",
+    "base color modes",
+    "source paint mode",
+    "solid colour mode",
+    "paint colour from the finish or mine"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The four answers to \"where does the colour come from\"",
+     "body": "BASE COLOR decides it. Use source paint keeps the car's own colour and changes only the shine: perfect for gloss, matte, satin, pearl or candy over an existing livery. Solid paints the whole zone one colour. Gradient blends 2 to 10 colours in a direction. Finish colour lets chrome, carbon, holographic and similar finishes bring their own."
+    },
+    {
+     "heading": "Gradients run across the whole sheet",
+     "body": "A gradient runs across the entire flat sheet, so a horizontal fade follows the sheet columns, not the length of the car. Panels do not line up. Give each panel its own zone if you want a fade per panel."
+    },
+    {
+     "heading": "Colour replacement warning",
+     "body": "A finish that brings its own colour replaces your colour. If you want to keep your colours, use a coating base with source paint instead."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Matte over an existing livery",
+     "goal": "Change shine only",
+     "settings": {
+      "Base": "A Foundation finish such as Matte",
+      "BASE COLOR": "Use source paint"
+     },
+     "result": "The colours stay and only the shine changes."
+    },
+    {
+     "title": "A fade on one side",
+     "goal": "Blend two colours on the left side",
+     "settings": {
+      "Zone": "Left side only",
+      "BASE COLOR": "Custom gradient with 2 stops",
+      "Direction": "Along the side"
+     },
+     "result": "A fade on that side that does not run into other panels."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which mode keeps my paint colours?",
+     "a": "Use source paint."
+    },
+    {
+     "q": "How many colours can a gradient have?",
+     "a": "2 to 10 stops."
+    },
+    {
+     "q": "Why does my fade not line up on the bumper?",
+     "a": "A gradient covers the flat sheet, not the 3D car. Use one zone per panel."
+    },
+    {
+     "q": "Why did chrome replace my colour?",
+     "a": "A finish with its own colour replaces yours. Use a Foundation finish with source paint."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Your livery turned plain silver",
+     "cause": "A finish that brings its own colour was applied",
+     "fix": "Undo and use a coating or Foundation base with Use source paint."
+    },
+    {
+     "symptom": "A horizontal fade looks different on each side",
+     "cause": "It follows sheet columns",
+     "fix": "Use a zone per side or panel."
+    }
+   ],
+   "protips": [
+    "Decide the colour mode first. Most \"it looks wrong\" problems are a mode mismatch, not a bad finish."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "playbook.strengths_adjustments",
+   "title": "Strengths and adjustments on a zone",
+   "domain": "playbook",
+   "summary": "Four groups of sliders tune a zone: how strong it is overall, how much of the finish replaces your paint, how shiny or metal the spec is, and the colour tweaks hue, saturation and brightness.",
+   "what": "Intensity is the percentage badge on the zone card, 10 to 100 in steps of 10; presets and Rand set it and there is no slider for it. Base Strength runs 0 to 100 percent in steps of 5: 100 replaces your paint fully and lower values let more of the original show. Spec Strength runs 0 to 100 percent in steps of 5 and scales the shine map. Hue (-180 to 180), Saturation (-100 to 100) and Brightness (-100 to 200) tweak the base colour. Scale and Rotation change the size and angle of the finish's own texture. The three spec sliders push metal, roughness and clearcoat up or down for the whole zone.",
+   "when": [
+    "A finish is too strong, too weak, too coarse or the wrong tint.",
+    "You want to nudge a finish instead of hunting for another one."
+   ],
+   "how": [
+    "Open the zone and change one slider at a time.",
+    "For a weaker look lower Base Strength; for a shinier or flatter look use Spec Strength and the three spec sliders.",
+    "For colour, use Hue, Saturation and Brightness.",
+    "For size, use Base Scale (0.05 to 5, 1.00 is normal).",
+    "Judge it in Render, since fine detail does not show well in the small preview."
+   ],
+   "controls": [
+    {
+     "label": "Base Strength",
+     "range": "0 to 100%, step 5",
+     "default": "100%",
+     "effect": "How much of the finish replaces the original paint.",
+     "inv": "zone.base_strength"
+    },
+    {
+     "label": "Spec Strength",
+     "range": "0 to 100%, step 5",
+     "default": "100%",
+     "effect": "How strong the shine map is.",
+     "inv": "zone.spec_strength"
+    },
+    {
+     "label": "Base Scale",
+     "range": "0.05 to 5",
+     "default": "1.00",
+     "effect": "Size of the finish texture in this zone.",
+     "inv": "zone.base_scale"
+    },
+    {
+     "label": "Hue Shift",
+     "range": "-180 to 180",
+     "default": "0",
+     "effect": "Rotates every colour around the colour wheel.",
+     "inv": "zone.hue_shift"
+    },
+    {
+     "label": "Saturation",
+     "range": "-100 to 100",
+     "default": "0",
+     "effect": "How vivid or grey the colour is.",
+     "inv": "zone.saturation"
+    },
+    {
+     "label": "Brightness",
+     "range": "-100 to 200",
+     "default": "0",
+     "effect": "Lighter or darker.",
+     "inv": "zone.brightness"
+    }
+   ],
+   "tips": [
+    "The sliders in the popout show percentages; the saved value is the same number.",
+    "Large spec slider moves can cancel the finish; pick a better finish instead."
+   ],
+   "pitfalls": [
+    "\"Crushed down to 50 percent\" means texture scale, not strength."
+   ],
+   "related": [
+    "playbook.hsb_sliders",
+    "playbook.buyer_words",
+    "support.tiny_or_huge",
+    "spec.strength_and_independent"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.base_strength"
+    },
+    {
+     "do": "control",
+     "id": "zone.base_scale"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "doc.01.strengths_and_adjustments"
+   ],
+   "sources": [
+    "docs/ai_knowledge/01_how_pro_works.md:24-31"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "strengths",
+    "adjustments",
+    "zone sliders",
+    "base strength spec strength",
+    "zone strength",
+    "zone adjustments"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "The ranges",
+     "body": "Intensity is the percentage badge on the zone card, 10 to 100 in steps of 10; presets and Rand set it and there is no slider for it. Base Strength runs 0 to 100 percent in steps of 5: 100 replaces your paint fully and lower values let more of the original show. Spec Strength runs 0 to 100 percent in steps of 5 and scales the shine map. Hue is -180 to 180, Saturation -100 to 100 and Brightness -100 to 200. Base Scale is 0.05 to 5 where 1.00 is normal. Scale and Rotation change the size and angle of the finish's own texture."
+    },
+    {
+     "heading": "Size is not strength",
+     "body": "When someone says \"crushed down to 50 percent\" they mean texture scale, not strength. Changing strength when you meant size makes the finish weaker, not smaller."
+    },
+    {
+     "heading": "The three spec sliders",
+     "body": "They push metal, roughness and clearcoat up or down for the whole zone. Large moves can cancel the finish: pick a better finish instead."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Weaker finish",
+     "goal": "Let more of the original paint show through",
+     "settings": {
+      "Base Strength": "60%"
+     },
+     "result": "The finish replaces less of your paint."
+    },
+    {
+     "title": "Finer texture",
+     "goal": "Make the pattern smaller",
+     "settings": {
+      "Base Scale": "0.5",
+      "Judge in": "Render"
+     },
+     "result": "Finer detail. Fine detail does not show well in the small preview."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What is the difference between Intensity and Base Strength?",
+     "a": "Intensity is a percentage badge on the zone card (10 to 100) with no slider of its own. Base Strength is how much of the finish replaces your paint (0 to 100%, step 5)."
+    },
+    {
+     "q": "What does Base Scale 1.00 mean?",
+     "a": "Normal size. Lower is finer, higher is larger (0.05 to 5)."
+    },
+    {
+     "q": "Do the popout percentages differ from the saved value?",
+     "a": "No, they are the same number."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The finish got weaker but not smaller",
+     "cause": "Strength was lowered when scale was meant",
+     "fix": "Use Base Scale instead."
+    },
+    {
+     "symptom": "The finish disappeared after big spec moves",
+     "cause": "Large spec slider moves cancel the finish",
+     "fix": "Reset the sliders and choose a better finish."
+    }
+   ],
+   "protips": [
+    "Move one slider at a time and judge in Render. Several at once makes it impossible to know which one did it."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "playbook.hsb_sliders",
+   "title": "Steer a finish's colour with hue, saturation and brightness",
+   "domain": "playbook",
+   "summary": "Most finishes that bring their own palette can be steered with Hue, Saturation and Brightness on the zone, so you do not need to search for a different finish.",
+   "what": "If a finish is almost right, move the three colour sliders instead of changing finish. Too dark or navy: Brightness up 30 to 40. Leaning violet: Hue down about 15 toward sky blue. Grey looking tinted: Saturation down about 10. Flecks gone grey after darkening: Saturation up. One worked example took a blue-white glow finish with Brightness plus 35, Hue minus 15 and Saturation minus 10 to a light ice blue and steel grey with no gradient.",
+   "when": [
+    "A finish is nearly right but the colour is off.",
+    "You want a two-colour look without a gradient."
+   ],
+   "how": [
+    "Open the zone with the finish.",
+    "Move Brightness first, then Hue, then Saturation, a little at a time.",
+    "Check the preview after each move, then Render for the real result.",
+    "If you cannot get there, try another finish and tune that one."
+   ],
+   "controls": [
+    {
+     "label": "Hue Shift",
+     "range": "-180 to 180",
+     "default": "0",
+     "effect": "Rotates every colour around the wheel.",
+     "inv": "zone.hue_shift"
+    },
+    {
+     "label": "Saturation",
+     "range": "-100 to 100",
+     "default": "0",
+     "effect": "How vivid or grey.",
+     "inv": "zone.saturation"
+    },
+    {
+     "label": "Brightness",
+     "range": "-100 to 200",
+     "default": "0",
+     "effect": "Lighter or darker.",
+     "inv": "zone.brightness"
+    }
+   ],
+   "tips": [
+    "Small steps; the effect depends on the finish."
+   ],
+   "pitfalls": [
+    "Hue rotates every colour in the finish, not just one."
+   ],
+   "related": [
+    "playbook.strengths_adjustments",
+    "playbook.colour_modes"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.hue_shift"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "doc.09.playbook_adjust_a_finish_s_colour_with_the_h_s_b_sliders"
+   ],
+   "sources": [
+    "docs/ai_knowledge/09_field_playbook.md:24-26"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "hue saturation brightness",
+    "hsb sliders",
+    "adjust finish colour",
+    "finish too dark",
+    "finish too purple",
+    "hue slider",
+    "saturation slider",
+    "brightness slider",
+    "hsb",
+    "steer finish colour"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Tune the finish, do not swap it",
+     "body": "If a finish is almost right, move the three colour sliders instead of changing finish. Too dark or navy: Brightness up 30 to 40. Leaning violet: Hue down about 15 toward sky blue. Grey looking tinted: Saturation down about 10. Flecks gone grey after darkening: Saturation up."
+    },
+    {
+     "heading": "Order matters a little",
+     "body": "Move Brightness first, then Hue, then Saturation, a little at a time, and check the preview after each move. Hue rotates every colour in the finish, not just one."
+    },
+    {
+     "heading": "A real worked case",
+     "body": "A blue-white glow finish took Brightness plus 35, Hue minus 15 and Saturation minus 10 to reach a light ice blue and steel grey with no gradient."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Ice blue from a blue-white glow finish",
+     "goal": "Shift the palette without changing finish",
+     "settings": {
+      "Brightness": "+35",
+      "Hue": "-15",
+      "Saturation": "-10"
+     },
+     "result": "Light ice blue and steel grey."
+    },
+    {
+     "title": "Fix a navy look",
+     "goal": "Lighten a finish that came out too dark",
+     "settings": {
+      "Brightness": "+30 to +40"
+     },
+     "result": "The navy lifts toward the intended colour."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does Hue change only one colour?",
+     "a": "No. It rotates every colour in the finish."
+    },
+    {
+     "q": "What are the ranges?",
+     "a": "Hue -180 to 180, Saturation -100 to 100, Brightness -100 to 200."
+    },
+    {
+     "q": "What if I cannot reach the colour?",
+     "a": "Try another finish and tune that one."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The flecks went grey",
+     "cause": "Brightness was lowered a lot",
+     "fix": "Raise Saturation after darkening."
+    },
+    {
+     "symptom": "Everything turned the wrong colour",
+     "cause": "Hue moved too far",
+     "fix": "Use small steps."
+    }
+   ],
+   "protips": [
+    "Start with Brightness; most \"wrong colour\" complaints are really \"wrong lightness\"."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "playbook.gradients_and_flake",
+   "title": "Gradients, and a touch of colour in black",
+   "domain": "playbook",
+   "summary": "A gradient is laid over the whole flat sheet, so it will not line up from panel to panel. For a little colour coming into black, use a coloured flake or sparkle finish instead of a fade.",
+   "what": "Because the car is unwrapped, one fade does not continue from the side onto the bumper or the other side, and buyers notice. Use a gradient only for a deliberate whole-sheet effect, or give each panel its own zone and its own fade. A touch of colour in a dark area means sparkles or flecks of that colour, not a gradient. A deep-space flake finish does this: black with blue, purple and silver flake, steered to blue with Brightness about minus 45, Hue about minus 20 and Saturation about plus 60, gave roughly 55 percent pure black with blue flecks. Paint patterns cannot take a colour, so they do not do this job.",
+   "when": [
+    "You want blue in the black without a fade.",
+    "A gradient does not line up across the car."
+   ],
+   "how": [
+    "For a fade, use one zone per panel and give each its own gradient.",
+    "For colour in black, choose a flake finish whose flecks are already the colour you want.",
+    "Steer it with Brightness, Hue and Saturation on the zone.",
+    "Add a spec pattern on top for texture without changing the colour.",
+    "Check the result in Render at full size."
+   ],
+   "controls": [
+    {
+     "label": "Custom gradient",
+     "range": "2 to 10 stops",
+     "default": "",
+     "effect": "A fade across the flat sheet.",
+     "inv": "zone.gradient"
+    }
+   ],
+   "tips": [
+    "Flake finishes keep their flecks readable when Saturation is raised after darkening."
+   ],
+   "pitfalls": [
+    "Patterns with strong opacity flood the area with the colour instead of sparkling."
+   ],
+   "related": [
+    "recipes.three_colour_gradient",
+    "playbook.hsb_sliders",
+    "recipes.flake_pearl"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "doc.09.playbook_gradients_run_across_the_whole_sheet",
+    "doc.09.playbook_a_touch_of_colour_in_black_coloured_sparkle_flake_i"
+   ],
+   "sources": [
+    "docs/ai_knowledge/09_field_playbook.md:18-23"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "blue in the black",
+    "coloured flake in black",
+    "gradient does not line up",
+    "touch of colour",
+    "colour in black",
+    "flake in black"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Why gradients disappoint on a car",
+     "body": "Because the car is unwrapped, one fade does not continue from the side onto the bumper or the other side, and buyers notice. Use a gradient only for a deliberate whole-sheet effect, or give each panel its own zone and its own fade."
+    },
+    {
+     "heading": "A touch of colour in black",
+     "body": "Use sparkles or flecks of that colour, not a gradient. A deep-space flake finish (black with blue, purple and silver flake) steered with Brightness about minus 45, Hue about minus 20 and Saturation about plus 60 gave roughly 55 percent pure black with blue flecks."
+    },
+    {
+     "heading": "Patterns cannot do this job",
+     "body": "Paint patterns cannot take a colour in this way, and patterns with strong opacity flood the area instead of sparkling."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Deep blue sparkle in black",
+     "goal": "A mostly black car with blue flecks",
+     "settings": {
+      "Finish": "A deep-space flake finish",
+      "Brightness": "-45",
+      "Hue": "-20",
+      "Saturation": "+60"
+     },
+     "result": "About 55 percent pure black with blue flecks."
+    },
+    {
+     "title": "Fade per panel",
+     "goal": "A fade that looks right on each side",
+     "settings": {
+      "Zones": "One per panel",
+      "Each": "Its own gradient"
+     },
+     "result": "Each panel fades on its own."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does my gradient break at the bumper?",
+     "a": "It lives on the flat sheet, not the 3D car."
+    },
+    {
+     "q": "How do I get a little colour in black?",
+     "a": "Use a flake finish with flecks of that colour."
+    },
+    {
+     "q": "Can I add texture without changing colour?",
+     "a": "Yes, add a spec pattern on top."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The black turned fully coloured",
+     "cause": "A high-opacity pattern flooded the area",
+     "fix": "Use a flake finish instead."
+    },
+    {
+     "symptom": "Flecks vanish after darkening",
+     "cause": "Brightness lowered without Saturation",
+     "fix": "Raise Saturation."
+    }
+   ],
+   "protips": [
+    "Check the result in Render at full size. Flecks are the first thing the small preview hides."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "playbook.buyer_words",
+   "title": "What common buyer words mean in the app",
+   "domain": "playbook",
+   "summary": "Everyday words such as crushed down to 50 percent, a touch of colour, the same shade and keep the strokes each have a precise meaning in the app: scale, sparkles, a sampled colour and a fill-only recolour.",
+   "what": "People describe changes in everyday words, and a few of them have a precise meaning here. Pattern size or crushed down means the zone's texture scale (0.05 to 5) and the spec pattern scale, not spec strength or overall intensity. A touch of colour in a dark area means flecks, not a fade. Only the yellow in the logo means pick that colour, with a tolerance, on that art's layer inside a small box. Same shade means sample the colour from the car instead of guessing a name. Keep the strokes means recolour only the fill colour with a tight tolerance and leave the outline colours alone. Starting from the base file means clean zones: reset them rather than undoing many steps.",
+   "when": [
+    "You are describing a change to the helper or to support.",
+    "A reply changed the wrong thing."
+   ],
+   "how": [
+    "For size use Base Scale or the pattern Scale; leave strength alone unless you mean strength.",
+    "For a colour from the car use PICK COLOR FROM CAR.",
+    "To recolour only a fill, keep Tolerance low.",
+    "To begin from the base file, use Reset All Zones."
+   ],
+   "controls": [
+    {
+     "label": "Base Scale",
+     "range": "0.05 to 5",
+     "default": "1.00",
+     "effect": "The size words map here.",
+     "inv": "zone.base_scale"
+    },
+    {
+     "label": "PICK COLOR FROM CAR",
+     "range": "eyedropper",
+     "default": "",
+     "effect": "Samples the real colour.",
+     "inv": "zone.pick_color_from_car"
+    }
+   ],
+   "tips": [
+    "Words like thinner, bigger or smaller about a pattern are scale."
+   ],
+   "pitfalls": [
+    "Changing strength when you meant size makes the finish weaker, not smaller."
+   ],
+   "related": [
+    "playbook.strengths_adjustments",
+    "playbook.recolour_art_part",
+    "zones.tolerance",
+    "support.tiny_or_huge"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "doc.09.playbook_buyer_words_crushed_down_to_x_pattern_smaller_patte"
+   ],
+   "sources": [
+    "docs/ai_knowledge/09_field_playbook.md:12-14"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "crushed down to",
+    "pattern smaller",
+    "keep the strokes",
+    "buyer words",
+    "what does pearl mean",
+    "what does candy mean",
+    "paint words explained",
+    "paint terms"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Words with a precise meaning",
+     "body": "Pattern size, thinner, bigger, smaller or crushed down means the zone's texture scale (0.05 to 5) and the spec pattern scale, not strength. A touch of colour in a dark area means flecks, not a fade. Same shade means sample the colour from the car instead of guessing a name. Keep the strokes means recolour only the fill colour with a tight tolerance and leave the outline colours alone."
+    },
+    {
+     "heading": "Only the yellow",
+     "body": "Only the yellow in the logo means pick that colour, with a tolerance, on that art's layer inside a small box."
+    },
+    {
+     "heading": "Starting over",
+     "body": "Starting from the base file means clean zones: reset them (Reset All Zones) rather than undoing many steps."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Smaller pattern",
+     "goal": "Make a pattern thinner",
+     "settings": {
+      "Control": "Base Scale or the pattern Scale"
+     },
+     "result": "The texture gets smaller without losing strength."
+    },
+    {
+     "title": "Match the hood colour",
+     "goal": "Same shade on the roof",
+     "settings": {
+      "Tool": "PICK COLOR FROM CAR",
+      "Click": "The hood"
+     },
+     "result": "You get the real colour, not a guess."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does \"make it smaller\" change strength?",
+     "a": "No. It changes scale."
+    },
+    {
+     "q": "How do I recolour a fill without touching the outline?",
+     "a": "Keep the tolerance low and pick only the fill colour."
+    },
+    {
+     "q": "How do I go back to the base file?",
+     "a": "Press Reset All Zones."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The finish got weaker instead of smaller",
+     "cause": "Strength was changed",
+     "fix": "Use Base Scale."
+    },
+    {
+     "symptom": "The outline colour changed",
+     "cause": "Tolerance was too wide",
+     "fix": "Lower the tolerance."
+    }
+   ],
+   "protips": [
+    "When describing a change to the helper, use these words. They map straight onto the right control."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "playbook.recolour_art_part",
+   "title": "Recolour only part of a piece of art",
+   "domain": "playbook",
+   "summary": "To change just a number fill or one colour in a logo, make a zone limited to that art's layer, pick the exact fill colour and keep the tolerance tight so the outline survives.",
+   "what": "Use a zone limited to the Numbers layer and the fill colour. Sample the real fill first: dark fills are often close to a black outline, so keep the tolerance around 10 to 16. For a colour inside one logo, combine the colour with a small box around the logo and limit the layers to the decal layers. Without the layer limit the box also grabs body paint whose original colour matches. Then zoom the preview to confirm the outline and drop stroke survived.",
+   "when": [
+    "You want a different number fill but the same outline.",
+    "You want to recolour one colour of a logo."
+   ],
+   "how": [
+    "Add a zone and use PICK COLOR FROM CAR on the fill colour.",
+    "Tick only the art's layer under RESTRICT TO LAYERS.",
+    "Keep the tolerance low (about 10 to 16), and draw a small box around a logo if needed.",
+    "Choose the new colour and finish, then zoom the preview to check the outline."
+   ],
+   "controls": [
+    {
+     "label": "RESTRICT TO LAYERS",
+     "range": "checkboxes",
+     "default": "",
+     "effect": "Keeps the zone on the art layer.",
+     "inv": "zone.restrict_layers"
+    },
+    {
+     "label": "Colour tolerance",
+     "range": "slider",
+     "default": "",
+     "effect": "How close a colour must be to be taken.",
+     "inv": "zone.tolerance"
+    }
+   ],
+   "tips": [
+    "Check the zone's footprint shows only the art zone as the source of its pixels."
+   ],
+   "pitfalls": [
+    "A wide tolerance eats the outline."
+   ],
+   "related": [
+    "recipes.finish_on_numbers",
+    "zones.tolerance",
+    "zones.restrict_layers"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.restrict_layers"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "doc.09.playbook_recolour_only_part_of_a_piece_of_art_number_fill_lo"
+   ],
+   "sources": [
+    "docs/ai_knowledge/09_field_playbook.md:15-17"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "recolour number fill",
+    "logo colour only",
+    "change number colour keep outline",
+    "recolour part of a logo",
+    "change colour of part of the art",
+    "recolour part of art"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Limit to the art layer",
+     "body": "Use a zone limited to the Numbers layer and the fill colour. Sample the real fill first: dark fills are often close to a black outline, so keep the tolerance around 10 to 16."
+    },
+    {
+     "heading": "A colour inside one logo",
+     "body": "Combine the colour with a small box around the logo and limit the layers to the decal layers. Without the layer limit the box also grabs body paint whose original colour matches."
+    },
+    {
+     "heading": "Check the outline",
+     "body": "Zoom the preview to confirm the outline and drop stroke survived. A wide tolerance eats the outline."
+    }
+   ],
+   "examples": [
+    {
+     "title": "New number fill colour",
+     "goal": "Change only the fill of the numbers",
+     "settings": {
+      "Zone": "PICK COLOR FROM CAR on the fill",
+      "RESTRICT TO LAYERS": "Numbers only",
+      "Tolerance": "10 to 16"
+     },
+     "result": "The fill changes and the outline stays."
+    },
+    {
+     "title": "One colour in a logo",
+     "goal": "Recolour yellow in a sponsor logo",
+     "settings": {
+      "Box": "Small box around the logo",
+      "Layers": "Decal layers only",
+      "Tolerance": "Low"
+     },
+     "result": "Only that logo changes."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does the body also change?",
+     "a": "The layer limit was off, so body paint of the same colour was caught."
+    },
+    {
+     "q": "What tolerance should I use?",
+     "a": "About 10 to 16 for dark fills near a black outline."
+    },
+    {
+     "q": "Does this work on a flat paint?",
+     "a": "Only by colour. A layered file is much better."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The outline disappeared",
+     "cause": "Tolerance too wide",
+     "fix": "Lower it and check by zooming."
+    },
+    {
+     "symptom": "Body paint changed too",
+     "cause": "No layer limit",
+     "fix": "Tick only the art's layer under RESTRICT TO LAYERS."
+    }
+   ],
+   "protips": [
+    "Sample the fill with PICK COLOR FROM CAR instead of guessing a name. Dark fills are easy to mistake for the outline."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "playbook.session_start",
+   "title": "Start of every design session",
+   "domain": "playbook",
+   "summary": "Turn the template layers Wire, Mask and Car Mandatory off before judging the preview, read the zones, and make sure only one Shokker page is open.",
+   "what": "Template layers can be on by default to show the panels, and they draw grids, outlines and fake headlights over the preview you are judging. With Mask off, the empty space between panels shows the base colour: that is not on the car, and iRacing never shows it. Zone numbers move when zones are added on top, so read the zone list before editing and use names. If two different designs show on consecutive reads, two Shokker pages are open: close the other one first.",
+   "when": [
+    "You start a new design on a layered template.",
+    "The preview shows grids or outlines."
+   ],
+   "how": [
+    "Look at the layer list (right column) and switch off Wire, Mask and Car Mandatory (the group named Turn Off Before Exporting).",
+    "Read the zone list top to bottom before adding or changing anything.",
+    "Close any second Shokker window or tab.",
+    "Then make your changes and check each one in the preview."
+   ],
+   "controls": [],
+   "tips": [
+    "The template layers are for placing things; they are off for the final."
+   ],
+   "pitfalls": [
+    "The empty space between panels is not part of the car, whatever colour it shows."
+   ],
+   "related": [
+    "layers.turn_off_before_export",
+    "layers.wire_mask_mandatory",
+    "layers.paintable_area",
+    "zones.priority"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "doc.09.playbook_start_of_every_design_session_template_wireframe_wi"
+   ],
+   "sources": [
+    "docs/ai_knowledge/09_field_playbook.md:9-11"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "start of session",
+    "turn off wire mask",
+    "before you design",
+    "wire mask car mandatory off",
+    "start a session",
+    "before i start designing"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Why guides lie",
+     "body": "Template layers can be on by default to show the panels, and they draw grids, outlines and fake headlights over the preview you are judging. With Mask off, the empty space between panels shows the base colour: that is not on the car, and iRacing never shows it."
+    },
+    {
+     "heading": "Zone numbers move",
+     "body": "Zone numbers move when zones are added on top, so read the zone list top to bottom before editing and use names."
+    },
+    {
+     "heading": "One page only",
+     "body": "If two different designs show on consecutive reads, two Shokker pages are open. Close the other one first."
+    }
+   ],
+   "examples": [
+    {
+     "title": "The three-step opener",
+     "goal": "Start every session clean",
+     "settings": {
+      "1": "Layer list: Wire, Mask, Car Mandatory off",
+      "2": "Read the zone list",
+      "3": "Close extra Shokker windows"
+     },
+     "result": "You judge the real preview."
+    },
+    {
+     "title": "Empty space looks wrong",
+     "goal": "Know what to ignore",
+     "settings": {
+      "Look at": "Space between panels"
+     },
+     "result": "It is not part of the car, whatever colour it shows."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why are there lines over my preview?",
+     "a": "Wire or Mask is on. Turn it off."
+    },
+    {
+     "q": "Why do I see two designs?",
+     "a": "Two Shokker pages are open."
+    },
+    {
+     "q": "Why does empty space have colour?",
+     "a": "It shows the base colour with Mask off; iRacing never shows it."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You fix things that are not wrong",
+     "cause": "Template guides were on",
+     "fix": "Turn them off before judging."
+    },
+    {
+     "symptom": "Edits land on the wrong zone",
+     "cause": "Zone numbers moved",
+     "fix": "Re-read the list."
+    }
+   ],
+   "protips": [
+    "Make the guide-off routine a habit. It is the same four switches as the clean-render check."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "playbook.preview_cannot_show",
+   "title": "Effects the preview cannot show",
+   "domain": "playbook",
+   "summary": "The live preview is much smaller than the real 2048 paint, so fine sparkle, micro-flake and small-scale patterns average out. Candy, chrome and metal twists show in the spec views and in Render.",
+   "what": "Do not conclude a finish did nothing from the small picture. Zoom a crop, read the spec views, or Render. In the spec views red is metal, green is roughness and blue is clearcoat, where high means dull. In one test a holographic drift finish at a small scale looked flat green in the spec view, yet measured clearly metal against plain gloss. Candy, chrome and metal twists are invisible in the flat colour preview, so confirm them on the spec views.",
+   "when": [
+    "A fine effect seems to have done nothing.",
+    "You are judging sparkle or holographic shimmer."
+   ],
+   "how": [
+    "Open the spec views and look at R METAL, G ROUGH and B COAT.",
+    "Zoom into a crop of the preview.",
+    "Render and judge at full size.",
+    "Compare with the plain gloss version of the same zone if unsure."
+   ],
+   "controls": [],
+   "tips": [
+    "The spec views tell you what iRacing will light, even when the colour picture looks the same."
+   ],
+   "pitfalls": [
+    "Do not remove a finish because the small picture looks flat."
+   ],
+   "related": [
+    "preview_render.preview_vs_render",
+    "ui_shell.preview_channel_views",
+    "spec.reading_by_colour",
+    "concepts.preview_vs_truth"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "doc.09.playbook_checking_effects_the_preview_cannot_show"
+   ],
+   "sources": [
+    "docs/ai_knowledge/09_field_playbook.md:30-32"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "preview cannot show",
+    "fine effect invisible",
+    "sparkle not showing in preview",
+    "preview cant show",
+    "effects missing in preview"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Small preview, big paint",
+     "body": "The live preview is much smaller than the real 2048 paint, so fine sparkle, micro-flake and small-scale patterns average out. Candy, chrome and metal twists are invisible in the flat colour preview, so confirm them on the spec views."
+    },
+    {
+     "heading": "Reading the spec views",
+     "body": "Red is metal, green is roughness and blue is clearcoat, where high means dull. In one test a holographic drift finish at a small scale looked flat green in the spec view, yet measured clearly metal against plain gloss."
+    },
+    {
+     "heading": "Do not delete on a hunch",
+     "body": "Do not conclude a finish did nothing from the small picture. Zoom a crop, read the spec views, or Render."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Check a quiet finish",
+     "goal": "Decide if it is really doing something",
+     "settings": {
+      "Views": "R METAL, G ROUGH, B COAT",
+      "Compare": "A plain gloss zone"
+     },
+     "result": "You see the metal and roughness difference even if the colour looks flat."
+    },
+    {
+     "title": "Zoom check",
+     "goal": "See fine detail",
+     "settings": {
+      "Do": "Zoom into a crop, then Render"
+     },
+     "result": "Detail that averaged out in the small preview appears."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does my sparkle finish look flat?",
+     "a": "The small preview averages out fine sparkle. Render and zoom."
+    },
+    {
+     "q": "What does high blue mean?",
+     "a": "Dull clearcoat. Low blue is glossier."
+    },
+    {
+     "q": "Where do I see what iRacing will light?",
+     "a": "In the spec views."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You removed a finish that was working",
+     "cause": "The small picture looked flat",
+     "fix": "Check the spec views before removing it."
+    },
+    {
+     "symptom": "Chrome looks like plain paint",
+     "cause": "The colour view cannot show a mirror",
+     "fix": "Look at R METAL."
+    }
+   ],
+   "protips": [
+    "Compare with a plain gloss version of the same zone whenever a finish looks like nothing. If the spec views differ, it is working."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "playbook.things_to_avoid",
+   "title": "Things that went wrong before: avoid them",
+   "domain": "playbook",
+   "summary": "Do not undo many steps after resetting by hand, do not expect lightning on matte black to read as bolts, and remember the empty space between panels keeps the old colour.",
+   "what": "These are lessons from real sessions. Undoing many steps after you reset zones by hand can bring back an old state with dozens of zones; mute or edit back instead, or reset. The lightning paint pattern on matte black reads as grey cracked glass, not bolts, at any scale. The base colour of a scheme is limited to the paintable area, so once Mask is hidden, the empty space keeps the old colour; that is harmless in iRacing. The zone list does not show scale or spec strength, so if you set a value by hand keep it in mind before a helper overwrites it. On some cars a part such as the spoiler has no body paint pixels, so schemes skip it.",
+   "when": [
+    "Something odd came back after an undo.",
+    "A pattern looks wrong on black."
+   ],
+   "how": [
+    "To go back, mute the zone or edit it back instead of many undo steps.",
+    "To start clean, press Reset All Zones.",
+    "Try a different pattern on matte black than lightning.",
+    "Check the car's parts article if a part seems to be skipped."
+   ],
+   "controls": [],
+   "tips": [],
+   "pitfalls": [
+    "Many undo steps after a manual reset can bring back an older state."
+   ],
+   "related": [
+    "recipes.undo_start_over",
+    "cars.safe_areas",
+    "layers.paintable_area"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "doc.09.playbook_things_that_went_wrong_avoid"
+   ],
+   "sources": [
+    "docs/ai_knowledge/09_field_playbook.md:33-39"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "things that went wrong",
+    "known problems to avoid",
+    "lightning on matte black",
+    "common mistakes",
+    "what not to do",
+    "mistakes to avoid"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Undo after a manual reset",
+     "body": "Undoing many steps after you reset zones by hand can bring back an old state with dozens of zones. Mute or edit back instead, or press Reset All Zones."
+    },
+    {
+     "heading": "Patterns that surprise",
+     "body": "The lightning paint pattern on matte black reads as grey cracked glass, not bolts, at any scale."
+    },
+    {
+     "heading": "The space between panels",
+     "body": "The base colour of a scheme is limited to the paintable area, so once Mask is hidden the empty space keeps the old colour. That is harmless in iRacing."
+    },
+    {
+     "heading": "Hidden values",
+     "body": "The zone list does not show scale or spec strength, so if you set a value by hand keep it in mind before a helper overwrites it. On some cars a part such as the spoiler has no body paint pixels, so schemes skip it."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Go back safely",
+     "goal": "Return to an earlier look",
+     "settings": {
+      "Do": "Mute the zone or edit it back",
+      "Or": "Reset All Zones"
+     },
+     "result": "You avoid restoring dozens of old zones."
+    },
+    {
+     "title": "Matte black with a pattern",
+     "goal": "Pick a pattern that reads well",
+     "settings": {
+      "Avoid": "Lightning",
+      "Try": "A different pattern"
+     },
+     "result": "The pattern reads as intended."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why did undo bring back dozens of zones?",
+     "a": "You undid many steps after resetting by hand. Use Reset All Zones next time."
+    },
+    {
+     "q": "Why is the spoiler skipped?",
+     "a": "On some cars it has no body paint pixels."
+    },
+    {
+     "q": "Why does the empty space keep an old colour?",
+     "a": "It is outside the paintable area. It is harmless."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "An old state came back",
+     "cause": "Many undo steps after a manual reset",
+     "fix": "Reset All Zones instead."
+    },
+    {
+     "symptom": "Helper overwrote your scale",
+     "cause": "The zone list does not show scale",
+     "fix": "Note hand-set values before asking the helper."
+    }
+   ],
+   "protips": [
+    "If you are going to try something risky, save a project first. Undo is for small steps, not for time travel."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "playbook.artwork_reveal",
+   "title": "Make artwork appear when light hits it",
+   "domain": "playbook",
+   "summary": "Use two spec-only zones on the art with your picture left unchanged: matte on the whole art layer, then satin chrome on the art's light tones above it. The shape then flashes silver as the light sweeps.",
+   "what": "The picture never changes, only the shine map. The whole art layer gets a soft matte base so shadows absorb light. Above it, a second zone takes only the art's light tones (colours such as light grey, with a tolerance near 40) and gets a satin chrome. In the sim the light parts flash silver as the sun or track lights sweep, and the dark parts stay dead, so the shape appears out of the paint. Check the spec view: chrome should sit only on highlights, matte on shadows.",
+   "when": [
+    "You want a face, mask or logo to light up on the track.",
+    "You want a hidden image that shows only in the light."
+   ],
+   "how": [
+    "Add a zone limited to the art layer with a Matte foundation finish and BASE COLOR on your own paint.",
+    "Add a second zone above it, same layer, picking the light tones with a tolerance around 40, with a satin chrome foundation finish.",
+    "Open the spec view: chrome (red) should sit on highlights only.",
+    "Use mirror chrome instead of satin for a harder flash."
+   ],
+   "controls": [
+    {
+     "label": "Use source paint",
+     "range": "option",
+     "default": "",
+     "effect": "Keeps the picture exactly as it is.",
+     "inv": "zone.base_color_mode"
+    }
+   ],
+   "tips": [
+    "Check that the same layer does not also hold light text, which would get chrome too."
+   ],
+   "pitfalls": [
+    "The upper zone must be above the matte one, because the top zone wins."
+   ],
+   "related": [
+    "recipes.chrome_source",
+    "spec.paint_spec_marriage",
+    "zones.priority",
+    "playbook.spec_only_changes"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "doc.09.playbook_make_artwork_reveal_light_up_when_light_hits_it_fac"
+   ],
+   "sources": [
+    "docs/ai_knowledge/09_field_playbook.md:40-41"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "reveal artwork",
+    "light up logo in light",
+    "hidden image in the sun",
+    "artwork reveal",
+    "hidden graphic in the shine",
+    "art that shows in the light",
+    "reveal art in light"
+   ],
+   "level": "pro",
+   "deep": [
+    {
+     "heading": "Only the shine map changes",
+     "body": "The picture never changes. The whole art layer gets a soft matte base so shadows absorb light. Above it a second zone takes only the art's light tones (colours such as light grey, tolerance near 40) and gets a satin chrome."
+    },
+    {
+     "heading": "What you see in the sim",
+     "body": "The light parts flash silver as the sun or track lights sweep, and the dark parts stay dead, so the shape appears out of the paint. Use mirror chrome instead of satin for a harder flash."
+    },
+    {
+     "heading": "Order matters",
+     "body": "The upper zone must be above the matte one, because the top zone wins. Check the spec view: chrome (red) should sit only on highlights, matte on shadows. Make sure the same layer does not also hold light text, which would get chrome too."
+    }
+   ],
+   "examples": [
+    {
+     "title": "A hidden logo that flashes",
+     "goal": "Reveal artwork only at certain light angles",
+     "settings": {
+      "Zone 2 (top)": "Art layer, light tones at tolerance about 40, satin chrome Foundation finish",
+      "Zone 1 (below)": "Art layer, Matte Foundation finish",
+      "BASE COLOR": "Use source paint on both"
+     },
+     "result": "The picture is unchanged in colour and flashes silver on its light parts."
+    },
+    {
+     "title": "Harder flash",
+     "goal": "More contrast",
+     "settings": {
+      "Zone 2 finish": "Mirror chrome"
+     },
+     "result": "A sharper flash."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does this change my artwork colours?",
+     "a": "No. Only the shine map changes."
+    },
+    {
+     "q": "Why does my text also flash?",
+     "a": "The same layer holds light text. Separate it."
+    },
+    {
+     "q": "Which zone goes on top?",
+     "a": "The chrome one."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Nothing flashes",
+     "cause": "The chrome zone is below the matte one",
+     "fix": "Move the chrome zone above."
+    },
+    {
+     "symptom": "The whole art flashes",
+     "cause": "Tolerance too wide",
+     "fix": "Lower it so only light tones are picked."
+    }
+   ],
+   "protips": [
+    "This is the cleanest way to give flat artwork depth: no colour change at all, only light."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "playbook.spec_only_changes",
+   "title": "Change only the shine and keep the paint exactly",
+   "domain": "playbook",
+   "summary": "Use a Foundation finish with the base colour set to source paint. It changes the shine map and leaves the colour exactly as it is; ordinary chrome, metallic or candy bases repaint the car.",
+   "what": "Spec-only looks are the safest way to change shine on a finished livery. Foundation finishes (the ones named Foundation or starting with f) are made to do this. On real templates the paint changed 0 percent with Foundation finishes, and about 78 to 85 percent of a hood changed with ordinary chrome, metallic or candy. Looks: mirror chrome, satin chrome, dark chrome, polished metal, matte metal, pearl, satin pearl, candy, brushed metal, frosted, matte, satin and gloss. A finish that brings its own pattern can also be given a solid colour: you then keep the colour flat and get only its texture in the shine map.",
+   "when": [
+    "You said \"only the shine\" or \"keep my colours\".",
+    "You want numbers or sponsors to stay pixel for pixel."
+   ],
+   "how": [
+    "Add or open a zone that covers the area.",
+    "Under BASE choose a Foundation finish for the look (for example Chrome or Matte).",
+    "Set BASE COLOR to Use source paint.",
+    "Compare the preview before and after: the colours should be identical.",
+    "Refine with the three spec sliders if needed."
+   ],
+   "controls": [
+    {
+     "label": "BASE COLOR",
+     "range": "dropdown",
+     "default": "",
+     "effect": "Use source paint keeps the colours.",
+     "inv": "zone.base_color_mode"
+    },
+    {
+     "label": "Base Material",
+     "range": "picker",
+     "default": "",
+     "effect": "Foundation Bases are the spec-only family.",
+     "inv": "zone.base_material"
+    }
+   ],
+   "tips": [
+    "When stacking a chrome fill over gloss decals, keep the special fill zone above the decal gloss zone."
+   ],
+   "pitfalls": [
+    "Never use the ordinary chrome, metallic or candy bases for spec-only work."
+   ],
+   "related": [
+    "recipes.chrome_source",
+    "spec.paint_spec_marriage",
+    "playbook.artwork_reveal",
+    "playbook.colour_modes"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.base_material"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "doc.08.spec_only_changes_shine_metal_roughness_without_touching_the",
+    "doc.09.playbook_spec_only_looks_on_a_solid_colour"
+   ],
+   "sources": [
+    "docs/ai_knowledge/08_livery_design.md:21-23",
+    "docs/ai_knowledge/09_field_playbook.md:27-29"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "spec only",
+    "only the shine",
+    "change shine not colour",
+    "foundation finish source",
+    "only change the shine",
+    "keep the paint exactly",
+    "spec only changes"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Why Foundation finishes",
+     "body": "Foundation finishes (named Foundation or starting with f) are made to change the shine only. On real templates the paint changed 0 percent with Foundation finishes, and about 78 to 85 percent of a hood changed with ordinary chrome, metallic or candy."
+    },
+    {
+     "heading": "The looks you can get",
+     "body": "Mirror chrome, satin chrome, dark chrome, polished metal, matte metal, pearl, satin pearl, candy, brushed metal, frosted, matte, satin and gloss. A finish that brings its own pattern can also be given a solid colour so you keep the colour flat and get only its texture in the shine map."
+    },
+    {
+     "heading": "Stacking",
+     "body": "When stacking a chrome fill over gloss decals, keep the special fill zone above the decal gloss zone."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Mirror chrome, keep colours",
+     "goal": "Chrome shine on the hood without recolouring",
+     "settings": {
+      "Base": "Chrome from Foundation Bases",
+      "BASE COLOR": "Use source paint"
+     },
+     "result": "The preview colours are identical; the sim shows a mirror."
+    },
+    {
+     "title": "Satin livery",
+     "goal": "Make a gloss livery satin",
+     "settings": {
+      "Base": "A Foundation satin finish",
+      "BASE COLOR": "Use source paint"
+     },
+     "result": "Same colours, softer shine."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why not use the normal chrome base?",
+     "a": "It repaints the car. Foundation chrome keeps your colours."
+    },
+    {
+     "q": "How do I confirm nothing changed in colour?",
+     "a": "Compare the preview before and after."
+    },
+    {
+     "q": "Can I fine-tune the shine?",
+     "a": "Yes, with the three spec sliders."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The hood changed colour",
+     "cause": "An ordinary chrome, metallic or candy base was used",
+     "fix": "Undo and use a Foundation finish with source paint."
+    },
+    {
+     "symptom": "Chrome covers decals",
+     "cause": "The special fill zone is below the decal zone",
+     "fix": "Move it above."
+    }
+   ],
+   "protips": [
+    "If the request is \"only the shine\", the answer is always Foundation plus Use source paint."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "playbook.livery_parts",
+   "title": "How a livery is built from parts",
+   "domain": "playbook",
+   "summary": "A paint scheme is a base colour, one or two accents and a trim colour, laid on the car's named parts. Work part by part, not with boxes across the sheet.",
+   "what": "The car lies flat on the sheet: two side panels, hood, roof, trunk, front and rear bumper and spoiler. On a side panel, height is measured from the roof-line down to the rocker. 0.00 to 0.12 is the window edge; 0.10 to 0.25 the beltline, where a thin stripe separates body from glass; 0.30 to 0.65 the door centre where the number lives, so keep it calm; 0.64 to 0.70 a pinstripe above the lower band; 0.68 to 1.00 the lower body and rocker band, the classic place for the second colour. The front 22 percent of the length is the front fender and the rear 24 percent the rear quarter. Sides mirror each other, so one region can take both.",
+   "when": [
+    "You are planning a livery from scratch.",
+    "You are not sure where on the sheet a stripe should go."
+   ],
+   "how": [
+    "Decide the base colour, one accent and a trim colour.",
+    "Place each by named part (left side, hood, roof), then by a band within it.",
+    "Keep the door centre calm for the number.",
+    "Put the second colour in the lower band, and mirror to the other side.",
+    "Check the preview and fix anything off."
+   ],
+   "controls": [],
+   "tips": [
+    "The built-in design recipes already know these proportions; use them for any scheme or throwback."
+   ],
+   "pitfalls": [
+    "The outside assistants refuse very large boxes; name the part instead."
+   ],
+   "related": [
+    "cars.reading_sheet",
+    "zones.named_parts",
+    "playbook.scheme_families",
+    "playbook.composition_rules"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "doc.08.how_a_livery_is_built_from_parts",
+    "doc.08.where_things_go_on_a_side_panel_height_measured_from_the_roo"
+   ],
+   "sources": [
+    "docs/ai_knowledge/08_livery_design.md:3-8"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "how a livery is built",
+    "where things go on a side",
+    "roof line to rocker",
+    "livery proportions",
+    "how a livery is made",
+    "parts of a livery",
+    "livery building blocks"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Height bands on a side panel",
+     "body": "Height is measured from the roof-line (0) down to the rocker (1). 0.00 to 0.12 is the window edge; 0.10 to 0.25 the beltline, where a thin stripe separates body from glass; 0.30 to 0.65 the door centre where the number lives, so keep it calm; 0.64 to 0.70 a pinstripe above the lower band; 0.68 to 1.00 the lower body and rocker band, the classic place for the second colour."
+    },
+    {
+     "heading": "Length along a side",
+     "body": "The front 22 percent of the length is the front fender and the rear 24 percent the rear quarter. Sides mirror each other, so one region can take both."
+    },
+    {
+     "heading": "Work by named part",
+     "body": "A scheme is a base colour, one or two accents and a trim colour laid on named parts: two side panels, hood, roof, trunk, front and rear bumper and spoiler. Outside assistants refuse very large boxes, so name the part instead."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Lower-band two-tone",
+     "goal": "Put the second colour where it belongs",
+     "settings": {
+      "Part": "Left side",
+      "Band": "Height 0.68 to 1.00",
+      "Mirror": "To the right side"
+     },
+     "result": "A classic lower band on both sides."
+    },
+    {
+     "title": "Calm number area",
+     "goal": "Keep the number readable",
+     "settings": {
+      "Keep clear": "Door centre, height 0.30 to 0.65"
+     },
+     "result": "No busy stripes behind the number."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Where does the number live?",
+     "a": "Around the door centre, height 0.30 to 0.65."
+    },
+    {
+     "q": "Where does the beltline stripe go?",
+     "a": "At height 0.10 to 0.25."
+    },
+    {
+     "q": "Why work by part, not by box?",
+     "a": "Named parts are exact and boxes across the sheet may hit other panels."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A stripe crosses the number",
+     "cause": "It was placed in the door-centre band",
+     "fix": "Move it to the beltline or the lower band."
+    },
+    {
+     "symptom": "The assistant refuses a huge box",
+     "cause": "Boxes over a small share of the sheet are refused",
+     "fix": "Name the part."
+    }
+   ],
+   "protips": [
+    "The built-in design recipes already know these proportions. Use them to lay a whole scheme in one go, then adjust."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "playbook.scheme_families",
+   "title": "Classic scheme families and era palettes",
+   "domain": "playbook",
+   "summary": "Retro lower band, classic twin stripes, two-tone, colour block, bookends and stealth are the common families. Each era has its own palette of colours.",
+   "what": "Retro lower band: body colour, a bold lower band, a thin trim line above it, bumpers and spoiler in the band colour (Pepsi-style, Sunoco-style, Gulf-style). Classic twin stripes: two parallel stripes along the sides continuing as a centre stripe over hood, roof and trunk. Two-tone: second colour from the belt down plus hood and bumpers. Colour block: hood, roof and rear quarters in different colours. Bookends: contrasting front and rear ends with a quiet body. Stealth: dark on dark with one thin accent. Eras: 1960s to 70s powder blue and orange, navy and white, harvest orange, rust brown, mustard; 1970s to 80s red, white and blue with chrome trim, black and gold, blue and yellow; 1980s hot pink, cyan and purple on black or white; 1990s teal, purple and magenta splashes; modern is matte black with one accent, or white with one strong colour.",
+   "when": [
+    "You want a throwback or a specific style.",
+    "You need a palette for an era."
+   ],
+   "how": [
+    "Pick the family that matches the look you want.",
+    "Pick the era palette.",
+    "Lay the colours on the parts as in the parts article.",
+    "Use the design recipes in Chat to lay a whole scheme in one go, then adjust."
+   ],
+   "controls": [],
+   "tips": [
+    "A twist on a retro scheme is one unexpected element: a candy or pearl panel, a flipped colour, a metallic roof."
+   ],
+   "pitfalls": [
+    "More than one twist makes the scheme look busy."
+   ],
+   "related": [
+    "playbook.livery_parts",
+    "playbook.composition_rules",
+    "recipes.retro_stripes",
+    "recipes.two_tone"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "doc.08.classic_scheme_families",
+    "doc.08.era_palettes"
+   ],
+   "sources": [
+    "docs/ai_knowledge/08_livery_design.md:9-14"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "scheme families",
+    "era palettes",
+    "gulf style",
+    "retro lower band",
+    "twin stripes",
+    "stealth livery",
+    "classic livery schemes",
+    "retro scheme ideas",
+    "era colours"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The six families",
+     "body": "Retro lower band: body colour, a bold lower band, a thin trim line above it, bumpers and spoiler in the band colour (Pepsi, Sunoco, Gulf style). Classic twin stripes: two parallel stripes along the sides continuing as a centre stripe over hood, roof and trunk. Two-tone: second colour from the belt down plus hood and bumpers. Colour block: hood, roof and rear quarters in different colours. Bookends: contrasting front and rear ends with a quiet body. Stealth: dark on dark with one thin accent."
+    },
+    {
+     "heading": "Era palettes",
+     "body": "1960s to 70s: powder blue and orange, navy and white, harvest orange, rust brown, mustard. 1970s to 80s: red, white and blue with chrome trim, black and gold, blue and yellow. 1980s: hot pink, cyan and purple on black or white. 1990s: teal, purple and magenta splashes. Modern: matte black with one accent, or white with one strong colour."
+    },
+    {
+     "heading": "One twist only",
+     "body": "A twist on a retro scheme is one unexpected element: a candy or pearl panel, a flipped colour, a metallic roof. More than one makes the scheme look busy."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Gulf-style retro",
+     "goal": "Powder blue and orange lower band",
+     "settings": {
+      "Family": "Retro lower band",
+      "Palette": "1960s to 70s powder blue and orange"
+     },
+     "result": "A classic racing livery."
+    },
+    {
+     "title": "Modern stealth",
+     "goal": "A quiet, aggressive look",
+     "settings": {
+      "Family": "Stealth",
+      "Palette": "Matte black with one thin accent"
+     },
+     "result": "Dark on dark with a single accent."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can Chat lay a whole scheme in one go?",
+     "a": "Yes, the design recipes lay a scheme and you adjust."
+    },
+    {
+     "q": "What is a twist?",
+     "a": "One unexpected element, such as a candy panel or a metallic roof."
+    },
+    {
+     "q": "Which palette is modern?",
+     "a": "Matte black with one accent, or white with one strong colour."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The scheme looks busy",
+     "cause": "More than one twist",
+     "fix": "Keep one."
+    },
+    {
+     "symptom": "The era feels off",
+     "cause": "Colours from different decades mixed",
+     "fix": "Stay in one era palette."
+    }
+   ],
+   "protips": [
+    "Pick the family first, then the era. Family decides layout, era decides colour."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "playbook.composition_rules",
+   "title": "What makes a scheme look professional",
+   "domain": "playbook",
+   "summary": "Use one dominant colour (about 60 percent), one accent (about 30) and one trim (about 10). Keep the number calm, line the blocks up across the car and never paint over numbers or sponsors.",
+   "what": "White or black as the quiet colour lets the accents sing. The side band continues the bumper colour, and the hood stripe continues over the roof and trunk. Keep contrast between the number and its background, and do not run a busy stripe behind the numbers. Matte paint with chrome trim lines is the modern retro look; gloss everywhere is the showroom look. Finish choices: matte for flat paint, gloss for showroom, satin in between, chrome for trim lines (a chrome pinstripe on a matte car reads as real chrome), and metallic or candy blocks beside flat blocks create the pop through opposite colour and opposite shine.",
+   "when": [
+    "A scheme looks amateur or crowded.",
+    "You are choosing finishes for each part."
+   ],
+   "how": [
+    "Choose one dominant colour, one accent, one trim.",
+    "Line up the bands across the car.",
+    "Choose finishes: matte or satin for the body, chrome for trim, candy or metallic for one hero block.",
+    "Check the number area has contrast."
+   ],
+   "controls": [],
+   "tips": [
+    "A chrome pinstripe on matte reads as real chrome."
+   ],
+   "pitfalls": [
+    "Never paint over numbers, sponsors or tape; use the body paint layers only."
+   ],
+   "related": [
+    "playbook.livery_parts",
+    "playbook.scheme_families",
+    "recipes.make_it_pop",
+    "recipes.two_tone"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "doc.08.composition_rules_that_make_a_scheme_look_professional",
+    "doc.08.finish_choices_for_schemes"
+   ],
+   "sources": [
+    "docs/ai_knowledge/08_livery_design.md:15-20"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "composition rules",
+    "professional livery",
+    "60 30 10",
+    "finish choices for schemes",
+    "make my livery look professional",
+    "layout tips",
+    "composition",
+    "professional look"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "60-30-10",
+     "body": "One dominant colour (about 60 percent), one accent (about 30) and one trim (about 10). White or black as the quiet colour lets the accents sing."
+    },
+    {
+     "heading": "Line things up",
+     "body": "The side band continues the bumper colour, and the hood stripe continues over the roof and trunk. Keep contrast between the number and its background, and do not run a busy stripe behind the numbers."
+    },
+    {
+     "heading": "Finish choices",
+     "body": "Matte for flat paint, gloss for showroom, satin in between, chrome for trim lines (a chrome pinstripe on a matte car reads as real chrome). Metallic or candy blocks beside flat blocks create the pop through opposite colour and opposite shine. Never paint over numbers, sponsors or tape; use the body paint layers only."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Modern retro",
+     "goal": "Matte body with real-looking trim",
+     "settings": {
+      "Body": "Matte",
+      "Trim": "Chrome pinstripe",
+      "Hero block": "Candy or metallic"
+     },
+     "result": "A matte car with chrome lines and a single hero block."
+    },
+    {
+     "title": "Showroom",
+     "goal": "A glossy clean look",
+     "settings": {
+      "Finish": "Gloss everywhere"
+     },
+     "result": "A clean showroom look."
+    }
+   ],
+   "faq": [
+    {
+     "q": "How many colours should a scheme have?",
+     "a": "One dominant, one accent and one trim."
+    },
+    {
+     "q": "Why does my chrome stripe look fake?",
+     "a": "Chrome reads as real against matte; against gloss it blends in."
+    },
+    {
+     "q": "Can I paint over numbers?",
+     "a": "No. Use the body paint layers only."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The number is hard to read",
+     "cause": "Low contrast or a busy stripe behind it",
+     "fix": "Calm the door centre and raise contrast."
+    },
+    {
+     "symptom": "The scheme feels flat",
+     "cause": "No contrast in shine",
+     "fix": "Put a metallic or candy block next to flat paint."
+    }
+   ],
+   "protips": [
+    "Opposite colour and opposite shine together make a block pop more than either alone."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "playbook.placement_wrong",
+   "title": "The placement looks wrong: fix it by part and band",
+   "domain": "playbook",
+   "summary": "Do not guess new coordinates. Name the part and its band, compare to what the zone really covers, and fix the part, portion or band.",
+   "what": "When a stripe or block is in the wrong place, say which part and band you mean, such as the lower third of the left side. Compare with the zone's covers text and its visible share, and change the part, portion or band. If a part of the car is not known, show it to Shokker once and it remembers. Say plainly which part you changed.",
+   "when": [
+    "A stripe is too high, too low, or on the wrong side.",
+    "The helper put something in the wrong place."
+   ],
+   "how": [
+    "Name the part and the band you want.",
+    "Check what the zone covers in its card.",
+    "Change the part, portion or band.",
+    "If the part is unknown, show it once in the AI panel."
+   ],
+   "controls": [],
+   "tips": [],
+   "pitfalls": [
+    "Guessing coordinates makes it worse."
+   ],
+   "related": [
+    "cars.teach_parts",
+    "zones.named_parts",
+    "playbook.livery_parts"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "doc.08.when_the_buyer_says_the_placement_is_wrong"
+   ],
+   "sources": [
+    "docs/ai_knowledge/08_livery_design.md:24-25"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "placement is wrong",
+    "stripe in the wrong place",
+    "wrong part",
+    "stripe in wrong place",
+    "placement wrong"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Say it by part and band",
+     "body": "When a stripe or block is in the wrong place, say which part and band you mean, such as the lower third of the left side. Do not guess new coordinates; that makes it worse."
+    },
+    {
+     "heading": "Compare with what the zone covers",
+     "body": "Check the zone's covers text and its visible share, then change the part, portion or band. Say plainly which part you changed."
+    },
+    {
+     "heading": "Unknown parts",
+     "body": "If a part of the car is not known, show it to Shokker once and it remembers."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Move a stripe lower",
+     "goal": "Fix a stripe that sits too high",
+     "settings": {
+      "Say": "the lower third of the left side",
+      "Check": "The zone card"
+     },
+     "result": "The stripe moves to the band."
+    },
+    {
+     "title": "Unknown part",
+     "goal": "Fix a block on a part Shokker does not know",
+     "settings": {
+      "Do": "Show the part once in the AI panel"
+     },
+     "result": "Placement by name works from then on."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Should I give coordinates?",
+     "a": "No. Name the part and band."
+    },
+    {
+     "q": "How do I see what a zone covers?",
+     "a": "Open its card; it shows the covers text and visible share."
+    },
+    {
+     "q": "What if the part is unknown?",
+     "a": "Show it once and it is remembered."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Corrections make it worse",
+     "cause": "Coordinates were guessed",
+     "fix": "Name the part and band."
+    },
+    {
+     "symptom": "The block lands on a different panel",
+     "cause": "The part is unknown",
+     "fix": "Teach the part."
+    }
+   ],
+   "protips": [
+    "Use a fraction of a part (\"the lower third of the left side\"). It is more reliable than numbers."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "playbook.smart_separate_status",
+   "title": "Smart Separate and Auto-build layers: status in this build",
+   "domain": "playbook",
+   "summary": "Smart Separate finds numbers, sponsors, logos and the car template on a flat paint and builds layers from them. In this customer build its scripts are not loaded, so the Auto-build layers button does not appear.",
+   "what": "The idea is for a flat paint with no layers: the app works out what is a number, a sponsor, a logo, the fixed car template and the base paint, then builds real layers so you can restrict a zone to them. A text-reading engine finds numbers and sponsor words, and a stored template for about 67 known cars helps. It was judged not reliable enough to ship, so the page does not load it. Spec Sculpt has its own related Auto-Separate for protecting decals. For layers today use a layered file.",
+   "when": [
+    "A guide mentions Auto-build layers.",
+    "You have a flat paint and want the numbers separate."
+   ],
+   "how": [
+    "Use a layered PSD template when you want real layers.",
+    "In Spec Sculpt use Auto-Separate to protect decals while you sculpt the shine.",
+    "On a flat paint, select numbers by their colour with a zone, and give the zone a medium tolerance.",
+    "Check the result in the preview."
+   ],
+   "controls": [],
+   "tips": [],
+   "pitfalls": [
+    "Do not expect a Smart Separate button in the main window."
+   ],
+   "related": [
+    "spec_sculpt.smart_separate",
+    "layers.open_psd",
+    "recipes.finish_on_numbers",
+    "cars.supported_cars"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "wiki.smart_separate.1_the_shipped_heuristic_engine_cpu_what_",
+    "wiki.smart_separate.4_the_front_end_js_features_smart_separa"
+   ],
+   "sources": [
+    "SPB_WIKI.html:4806-4860",
+    "paint-booth-v2.html:4723-4727"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "auto build layers",
+    "separate numbers and sponsors",
+    "auto layers",
+    "auto build layers status"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "What the idea is",
+     "body": "For a flat paint with no layers, the app would work out what is a number, a sponsor, a logo, the fixed car template and the base paint, then build real layers so you can restrict a zone to them. It used a text-reading engine for numbers and sponsor words and a stored template for about 67 known cars."
+    },
+    {
+     "heading": "Why it is not in the window",
+     "body": "It was judged not reliable enough to ship, so the page does not load it and no Auto-build layers button appears."
+    },
+    {
+     "heading": "What to use today",
+     "body": "A layered PSD template gives real layers. Spec Sculpt has its own Auto-Separate for protecting decals while you sculpt the shine. On a flat paint, select numbers by colour with a zone and a medium tolerance."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Protect decals while sculpting shine",
+     "goal": "Keep numbers and sponsors untouched",
+     "settings": {
+      "Where": "Spec Sculpt",
+      "Use": "Auto-Separate"
+     },
+     "result": "Decals are protected while you sculpt."
+    },
+    {
+     "title": "Numbers on a flat paint",
+     "goal": "Select numbers without layers",
+     "settings": {
+      "Zone": "Pick the number colour",
+      "Tolerance": "Medium"
+     },
+     "result": "The numbers can be targeted by colour."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Where is the Auto-build layers button?",
+     "a": "It does not appear in this build."
+    },
+    {
+     "q": "Is there another way to protect decals?",
+     "a": "Yes, Spec Sculpt's Auto-Separate."
+    },
+    {
+     "q": "How do I get real layers?",
+     "a": "Open a layered PSD template."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You search for a Smart Separate button",
+     "cause": "It is not loaded in this build",
+     "fix": "Use a layered file."
+    },
+    {
+     "symptom": "Number colour edits spill onto the body",
+     "cause": "The tolerance is too wide on a flat paint",
+     "fix": "Lower it and check the preview."
+    }
+   ],
+   "protips": [
+    "If you often work from flat paints, ask the paint's author for the layered file. It saves more time than any workaround."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-05",
+   "controls": [],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "id": "playbook.colour_matching",
+   "title": "Exact brand colours, Pantone and colour-blind friendly schemes",
+   "domain": "playbook",
+   "level": "beginner",
+   "summary": "Type an exact hex colour into the zone's BASE COLOR box, or sample one with the eyedropper. Shokker has no Pantone library and no colour-blind preview, so convert a Pantone colour to hex first; strong light-dark contrast is the general way to keep a scheme readable.",
+   "what": "Every zone's BASE COLOR has a colour swatch and a text box that takes a hex value like #1a6dff, so a brand colour can be entered exactly. Pick Color (P) samples a colour from the paint, and the eyedropper button next to BASE COLOR can pick one from anywhere on screen. Shokker does not include a Pantone book: look up the Pantone colour's hex value elsewhere and type it in. iRacing lights the car with sun, shadow and the metal in the spec map, so the same hex can look different on track. There is no colour-blind simulation or colour-blind mode in Shokker, and the app's docs say nothing specific about colour blindness. The app's own readability advice is to separate colours and numbers by value (light against dark); as general design practice, that also helps colour-blind viewers.",
+   "when": [
+    "A sponsor gives you an exact brand colour.",
+    "Your team colours must match across several cars.",
+    "You want a scheme that reads clearly for colour-blind drivers."
+   ],
+   "how": [
+    "1. Open the zone and set BASE COLOR to Use solid color.",
+    "2. Click the hex box next to the swatch, type the value (for example #1a6dff) and press Enter.",
+    "3. To copy a colour that is already on the paint, use Pick Color (P) and click it.",
+    "4. For a Pantone colour, look up its hex value first, then type it in.",
+    "5. Render and check in iRacing; adjust brightness slightly if metal or lighting shifts it."
+   ],
+   "tips": [
+    "Write your team's hex values down and reuse them on every car you paint so the set matches."
+   ],
+   "pitfalls": [
+    "Metallic and chrome finishes multiply your colour by the metal in the spec, so a brand colour can read darker; use a non-metal finish when the colour must be exact.",
+    "Typing a hex in the zone's colour-match picker chooses which pixels to catch; it does not recolour them. Use BASE COLOR to set a colour."
+   ],
+   "related": [
+    "help_howto_1.eyedropper",
+    "tools.eyedropper_pick",
+    "support.colours_differ",
+    "playbook.hsb_sliders",
+    "finishes.what_makes_a_finish_pop",
+    "recipes.match_photo",
+    "zones.add_pick_colour"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:1924-1925",
+    "paint-booth-2-state-zones.js:8085-8095",
+    "scripts/ai_atlas/ui_map.json:13275",
+    "docs/ai_knowledge/10_support_troubleshooting.md:29-31",
+    "docs/ai_knowledge/05_design_and_taste.md:4",
+    "docs/ai_knowledge/05_design_and_taste.md:7",
+    "paint-booth-2-state-zones.js:1656"
+   ],
+   "aliases": [
+    "pantone",
+    "pantone match",
+    "pantone color",
+    "exact brand colour",
+    "brand color match",
+    "sponsor colour code",
+    "hex code",
+    "type a hex colour",
+    "rgb value",
+    "match team colours",
+    "colorblind",
+    "color blind",
+    "colour blind friendly",
+    "colorblind friendly scheme",
+    "accessibility",
+    "readable colours"
+   ],
+   "deep": [
+    {
+     "heading": "Exact colour versus what iRacing shows",
+     "body": "The hex you type is exactly what goes into the paint file. iRacing then lights it: sun, shadow and reflections change how bright it looks, and the metal value in the spec map multiplies it, so metallic and chrome areas look darker than the flat colour. For a colour that must match a logo, use a gloss or satin finish with little metal, and compare on track rather than in the preview."
+    },
+    {
+     "heading": "Colours that read for everyone",
+     "body": "The readability rule Shokker's helper follows is contrast: put a colour next to a clearly lighter or darker one, and make numbers and sponsors light on dark or dark on light. Shokker has no colour-blind check, so this is general design practice rather than an app feature: schemes that rely only on hue, such as red next to green at the same brightness, are the ones colour-blind viewers commonly cannot separate, and the same light-dark rule helps there."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Sponsor blue, exactly",
+     "goal": "Match a sponsor's #0046ad",
+     "settings": {
+      "BASE COLOR": "Use solid color",
+      "Hex box": "#0046ad",
+      "Finish": "gloss, low metal"
+     },
+     "result": "The paint file holds the exact sponsor blue."
+    },
+    {
+     "title": "Readable for colour-blind fans",
+     "goal": "Red and green team colours that stay distinct",
+     "settings": {
+      "Red": "a dark red",
+      "Green": "a light lime",
+      "Numbers": "white on the dark colour"
+     },
+     "result": "The two colours differ by brightness, not only by hue."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can I match a Pantone colour?",
+     "a": "There is no Pantone library. Convert the Pantone colour to hex and type it into BASE COLOR."
+    },
+    {
+     "q": "How do I enter an exact colour?",
+     "a": "Type the hex value into the box next to the BASE COLOR swatch."
+    },
+    {
+     "q": "Is there a colour-blind mode?",
+     "a": "No, Shokker has no colour-blind mode or preview. Building the scheme on light-dark contrast is general good practice."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The brand colour looks darker on track.",
+     "cause": "A metallic or chrome finish multiplies the colour by the metal value.",
+     "fix": "Use a finish with little metal for colour-critical areas."
+    },
+    {
+     "symptom": "Typing the hex did not change the colour.",
+     "cause": "It was typed into the colour-match picker, which only chooses pixels.",
+     "fix": "Type it into BASE COLOR's hex box instead."
+    }
+   ],
+   "protips": [
+    "Keep a note of your team's hex values and reuse them on every car you paint (Shokker paints cars only in this build, not helmets or suits)."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  }
+ ]
+}

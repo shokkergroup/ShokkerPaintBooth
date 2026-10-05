@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_outrun_stripe",
+  "display_name": "Grid: Outrun Stripe",
+  "promise": "Hot red and cyan speed chevrons with pink offsets and glossy midnight enamel.",
+  "carrier_grammar": "Hot red and cyan speed chevrons with pink offsets and glossy midnight enamel. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for midnight enamel, cyan speed trails, pink offset stripes, white pinstripe chips, nested chevron arrowheads, long interrupted trailing streaks is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Hot red and cyan speed chevrons with pink offsets and glossy midnight enamel. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_outrun_stripe.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "midnight enamel",
+      "role": "Actual shared paint and spec geometry: midnight enamel"
+    },
+    {
+      "name": "cyan speed trails",
+      "role": "Actual shared paint and spec geometry: cyan speed trails"
+    },
+    {
+      "name": "pink offset stripes",
+      "role": "Actual shared paint and spec geometry: pink offset stripes"
+    },
+    {
+      "name": "white pinstripe chips",
+      "role": "Actual shared paint and spec geometry: white pinstripe chips"
+    },
+    {
+      "name": "nested chevron arrowheads",
+      "role": "Actual shared paint and spec geometry: nested chevron arrowheads"
+    },
+    {
+      "name": "long interrupted trailing streaks",
+      "role": "Actual shared paint and spec geometry: long interrupted trailing streaks"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "midnight enamel",
+      "cyan speed trails",
+      "pink offset stripes",
+      "white pinstripe chips",
+      "nested chevron arrowheads",
+      "long interrupted trailing streaks"
+    ],
+    "R": [
+      "midnight enamel",
+      "cyan speed trails",
+      "pink offset stripes",
+      "white pinstripe chips",
+      "nested chevron arrowheads",
+      "long interrupted trailing streaks"
+    ],
+    "Cc": [
+      "midnight enamel",
+      "cyan speed trails",
+      "pink offset stripes",
+      "white pinstripe chips",
+      "nested chevron arrowheads",
+      "long interrupted trailing streaks"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_cabinet_side_art",
+      "difference": "This finish uses Hundreds of minuscule razor thin stepped racing chevrons, red leading edges, cyan offset trails, pink stripe chips and tiny white pinstripes on midnight purple enamel. Short disconnected aerodynamic angles turn freely, no continuous giant diagonal bands, no vehicles or horizon.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_zigzag_runner",
+      "difference": "This finish uses Hundreds of minuscule razor thin stepped racing chevrons, red leading edges, cyan offset trails, pink stripe chips and tiny white pinstripes on midnight purple enamel. Short disconnected aerodynamic angles turn freely, no continuous giant diagonal bands, no vehicles or horizon.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "midnight enamel is visible in the authored geometry",
+      "cyan speed trails is visible in the authored geometry",
+      "pink offset stripes is visible in the authored geometry",
+      "white pinstripe chips is visible in the authored geometry",
+      "nested chevron arrowheads is visible in the authored geometry",
+      "long interrupted trailing streaks is visible in the authored geometry"
+    ],
+    "source_sha256": "d08ffe634c2f8cd2c18f0afbcf0f2aca5f0e5376b343c0fd5385a96f2c00edae",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_outrun_stripe-authored-Hot red and cyan speed chevrons with pink offsets and glossy midnight enamel. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_outrun_stripe-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 77.2,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "091a99c97166beedab91beff324bae2e0c9875dbfb14c0c895888f12bbeca482"
+}

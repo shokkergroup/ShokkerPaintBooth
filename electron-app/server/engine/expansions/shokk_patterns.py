@@ -68,6 +68,124 @@ def _apply_paint_blend(paint, shape, mask, seed, pm, field, hue_shift=0.0, sat_b
     return np.clip(out, 0, 255).astype(np.float32)
 
 
+def _field_edge(field):
+    """Normalized edge energy for spec-only raised traces."""
+    gy, gx = np.gradient(field.astype(np.float32))
+    edge = np.sqrt(gx * gx + gy * gy)
+    edge = edge / max(float(edge.max()), 1e-6)
+    return np.clip(edge, 0, 1).astype(np.float32)
+
+
+def _micro_events(shape, seed, coverage=0.012):
+    """Sparse deterministic pin glints, kept tiny at 2048 full-car scale."""
+    h, w = shape
+    rng = np.random.RandomState(seed)
+    hot = (rng.rand(h, w).astype(np.float32) > (1.0 - coverage)).astype(np.float32)
+    if h > 2 and w > 2:
+        hot[1:, :] = np.maximum(hot[1:, :], hot[:-1, :] * 0.45)
+        hot[:, 1:] = np.maximum(hot[:, 1:], hot[:, :-1] * 0.45)
+    return hot.astype(np.float32)
+
+
+def _channel_rich_shokk_spec(field, seed, material):
+    h, w = field.shape
+    edge = _field_edge(field)
+    micro = _noise((h, w), [3, 7, 17, 43], [0.30, 0.28, 0.24, 0.18], seed + 917)
+    micro = (micro - float(micro.min())) / max(float(micro.max() - micro.min()), 1e-6)
+    pins = _micro_events((h, w), seed + 191, coverage=0.010)
+    veins = _noise((h, w), [9, 23, 61], [0.42, 0.35, 0.23], seed + 271)
+    veins = (veins - float(veins.min())) / max(float(veins.max() - veins.min()), 1e-6)
+    fn = (field - float(field.min())) / max(float(field.max() - field.min()), 1e-6)
+
+    if material == "bitrot":
+        corrupt = np.clip((fn - 0.34) * 2.2, 0, 1)
+        pv = fn * 0.46 + edge * 0.38 + corrupt * 0.18 + pins * 0.26 + micro * 0.08
+        m_extra = corrupt * 52 + edge * 64 + pins * 96 + micro * 16
+        r_extra = (1.0 - corrupt) * 14 + veins * 16 - edge * 58 - pins * 42 - 4
+        cc = 126 - corrupt * 54 - edge * 70 - pins * 58 + veins * 48
+    elif material == "hex":
+        changed = np.clip((field - 0.45) * 2.5, 0, 1)
+        pv = field * 0.50 + edge * 0.34 + changed * 0.14 + pins * 0.24 + micro * 0.10
+        m_extra = edge * 58 + changed * 48 + pins * 90 + micro * 14
+        r_extra = veins * 12 + (1.0 - field) * 10 - edge * 54 - pins * 38 - 3
+        cc = 110 - changed * 34 - edge * 44 - pins * 52 + veins * 42
+    elif material == "signal":
+        pulse = np.clip((fn - 0.28) * 2.8, 0, 1)
+        pv = fn * 0.38 + edge * 0.42 + pulse * 0.20 + pins * 0.28 + micro * 0.10
+        m_extra = pulse * 64 + edge * 58 + pins * 94 + micro * 18
+        r_extra = veins * 28 + (1.0 - pulse) * 22 - edge * 82 - pins * 46 - 10
+        cc = 136 - pulse * 54 - edge * 76 - pins * 62 + veins * 52
+    elif material == "scan":
+        phosphor = np.clip((field - 0.28) * 2.2, 0, 1)
+        pv = field * 0.38 + edge * 0.42 + phosphor * 0.16 + pins * 0.20 + micro * 0.12
+        m_extra = phosphor * 42 + edge * 52 + pins * 78 + micro * 16
+        r_extra = veins * 20 + (1.0 - phosphor) * 16 - edge * 52 - pins * 34 - 4
+        cc = 126 - phosphor * 40 - edge * 54 - pins * 46 + veins * 34
+    elif material == "cipher":
+        key = np.clip((field - 0.50) * 2.6, 0, 1)
+        pv = field * 0.44 + edge * 0.38 + key * 0.18 + pins * 0.24 + micro * 0.10
+        m_extra = key * 62 + edge * 60 + pins * 92 + micro * 14
+        r_extra = veins * 14 + (1.0 - key) * 10 - edge * 56 - pins * 38 - 5
+        cc = 108 - key * 36 - edge * 50 - pins * 52 + veins * 42
+    elif material == "zero":
+        exploit = np.clip((fn - 0.32) * 2.8, 0, 1)
+        pv = fn * 0.36 + edge * 0.46 + exploit * 0.20 + pins * 0.24 + micro * 0.12
+        m_extra = exploit * 70 + edge * 56 + pins * 92 + micro * 16
+        r_extra = veins * 24 + (1.0 - exploit) * 18 - edge * 84 - pins * 42 - 8
+        cc = 138 - exploit * 66 - edge * 78 - pins * 58 + veins * 48
+    elif material == "packet":
+        pv = field * 0.55 + edge * 0.33 + pins * 0.32 + micro * 0.10
+        m_extra = edge * 58 + pins * 96 + (field > 0.72).astype(np.float32) * 24 + micro * 12
+        r_extra = (1.0 - field) * 8 + veins * 8 - edge * 58 - pins * 42 - 4
+        cc = 105 - edge * 50 - pins * 60 + (1.0 - field) * 50 + veins * 35
+    elif material == "overflow":
+        cascade = np.clip((field - 0.60) * 2.8, 0, 1)
+        pv = field * 0.48 + edge * 0.34 + cascade * 0.20 + pins * 0.26 + micro * 0.08
+        m_extra = cascade * 70 + edge * 45 + pins * 88 + micro * 15
+        r_extra = (1.0 - cascade) * 10 + veins * 12 - edge * 52 - pins * 36 - 4
+        cc = 114 - cascade * 48 - edge * 34 - pins * 54 + veins * 38
+    elif material == "panic":
+        flash = (field > 0.82).astype(np.float32)
+        pv = field * 0.45 + edge * 0.37 + flash * 0.18 + pins * 0.28 + micro * 0.09
+        m_extra = flash * 84 + edge * 56 + pins * 92 + micro * 18
+        r_extra = veins * 12 + (1.0 - field) * 8 - flash * 52 - pins * 36 - 2
+        cc = 120 - flash * 58 - edge * 36 - pins * 52 + veins * 40
+    else:
+        breach = np.clip((field - 0.52) * 2.4, 0, 1)
+        pv = field * 0.42 + edge * 0.40 + breach * 0.18 + pins * 0.24 + micro * 0.10
+        m_extra = edge * 62 + breach * 66 + pins * 90 + micro * 16
+        r_extra = veins * 10 + (1.0 - breach) * 8 - edge * 60 - pins * 40 - 6
+        cc = 112 - edge * 58 - breach * 46 - pins * 56 + veins * 42
+
+    return {
+        "pattern_val": np.clip(pv, 0, 1).astype(np.float32),
+        "R_range": -130.0,
+        "M_range": 35.0,
+        "R_extra": np.clip(r_extra, -96, 30).astype(np.float32),
+        "M_extra": np.clip(m_extra, 0, 125).astype(np.float32),
+        "CC": np.clip(cc, 16, 185).astype(np.float32),
+    }
+
+
+def _apply_shokk_tint(paint, shape, seed, pm, field, palette):
+    h, w = shape
+    base = _apply_paint_blend(paint, (h, w), None, seed, pm, field, hue_shift=palette["hue"])
+    if pm == 0.0:
+        return base
+    edge = _field_edge(field)
+    micro = _noise((h, w), [5, 13, 37], [0.35, 0.35, 0.30], seed + 503)
+    micro = (micro - float(micro.min())) / max(float(micro.max() - micro.min()), 1e-6)
+    hot = np.clip(field * 0.55 + edge * 0.30 + micro * 0.15, 0, 1)[:, :, np.newaxis]
+    paint_scale = 255.0 if float(np.nanmax(base)) > 2.0 else 1.0
+    cool = np.array(palette["cool"], dtype=np.float32).reshape(1, 1, 3) * paint_scale
+    warm = np.array(palette["warm"], dtype=np.float32).reshape(1, 1, 3) * paint_scale
+    glow = cool * (1.0 - hot) + warm * hot
+    out = base * (1.0 - 0.26 * pm) + glow * (0.26 * pm)
+    edge_color = np.array(palette["edge"], dtype=np.float32).reshape(1, 1, 3) * paint_scale
+    out += edge[:, :, np.newaxis] * edge_color * (0.18 * pm)
+    return np.clip(out, 0, paint_scale).astype(np.float32)
+
+
 # ================================================================
 # 1. SHOKK_BITROT — Corrupted binary data blocks with glitch artifacts
 # ================================================================
@@ -127,7 +245,7 @@ def _compute_bitrot(shape, seed):
 def texture_shokk_bitrot(shape, mask, seed, sm):
     h, w = shape[:2] if len(shape) > 2 else shape
     field = _compute_bitrot((h, w), seed)
-    return {"pattern_val": field, "R_range": 1.0, "M_range": 1.0, "CC": None}
+    return _channel_rich_shokk_spec(field, seed, "bitrot")
 
 
 def paint_shokk_bitrot(paint, shape, mask, seed, pm, bb):
@@ -136,7 +254,12 @@ def paint_shokk_bitrot(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     field = _compute_bitrot((h, w), seed)
-    return _apply_paint_blend(paint, (h, w), mask, seed, pm, field, hue_shift=0.4)
+    return _apply_shokk_tint(paint, (h, w), seed, pm, field, {
+        "hue": 0.40,
+        "cool": (0.02, 0.12, 0.12),
+        "warm": (0.75, 0.06, 0.30),
+        "edge": (0.10, 0.95, 0.72),
+    })
 
 
 # ================================================================
@@ -202,7 +325,7 @@ def _compute_packet_storm(shape, seed):
 def texture_shokk_packet_storm(shape, mask, seed, sm):
     h, w = shape[:2] if len(shape) > 2 else shape
     field = _compute_packet_storm((h, w), seed)
-    return {"pattern_val": field, "R_range": 1.0, "M_range": 1.0, "CC": None}
+    return _channel_rich_shokk_spec(field, seed, "packet")
 
 
 def paint_shokk_packet_storm(paint, shape, mask, seed, pm, bb):
@@ -211,7 +334,12 @@ def paint_shokk_packet_storm(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     field = _compute_packet_storm((h, w), seed)
-    return _apply_paint_blend(paint, (h, w), mask, seed, pm, field, hue_shift=0.2)
+    return _apply_shokk_tint(paint, (h, w), seed, pm, field, {
+        "hue": 0.22,
+        "cool": (0.03, 0.30, 0.82),
+        "warm": (0.00, 0.95, 0.78),
+        "edge": (0.18, 0.92, 1.00),
+    })
 
 
 # ================================================================
@@ -297,7 +425,7 @@ def _compute_hex_dump(shape, seed):
 def texture_shokk_hex_dump(shape, mask, seed, sm):
     h, w = shape[:2] if len(shape) > 2 else shape
     field = _compute_hex_dump((h, w), seed)
-    return {"pattern_val": field, "R_range": 1.0, "M_range": 1.0, "CC": None}
+    return _channel_rich_shokk_spec(field, seed, "hex")
 
 
 def paint_shokk_hex_dump(paint, shape, mask, seed, pm, bb):
@@ -306,7 +434,12 @@ def paint_shokk_hex_dump(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     field = _compute_hex_dump((h, w), seed)
-    return _apply_paint_blend(paint, (h, w), mask, seed, pm, field, hue_shift=0.15)
+    return _apply_shokk_tint(paint, (h, w), seed, pm, field, {
+        "hue": 0.16,
+        "cool": (0.02, 0.18, 0.30),
+        "warm": (0.46, 0.92, 0.98),
+        "edge": (0.86, 0.98, 1.00),
+    })
 
 
 # ================================================================
@@ -323,26 +456,33 @@ def _compute_signal_noise(shape, seed):
 
     # Base: Multiple sine wave signals at different frequencies
     signal = np.zeros((h, w), dtype=np.float32)
-    num_signals = 12
+    num_signals = 16
     for i in range(num_signals):
-        freq = rng.uniform(0.01, 0.08)
+        freq = rng.uniform(0.035, 0.18)
         phase = rng.uniform(0, 2 * np.pi)
-        amplitude = rng.uniform(0.1, 0.3)
+        amplitude = rng.uniform(0.08, 0.22)
         band_y = rng.uniform(0, h)
-        band_h = rng.uniform(h * 0.03, h * 0.08)
+        band_h = rng.uniform(max(6, h * 0.010), max(8, h * 0.032))
         wave = np.sin(xf * freq + phase) * amplitude + 0.5
         # Gaussian band mask
         band_mask = np.exp(-0.5 * ((yf - band_y) / band_h) ** 2)
         signal += wave * band_mask
 
+    carrier = (
+        np.sin(xf * rng.uniform(0.19, 0.34) + yf * rng.uniform(0.010, 0.028) + rng.uniform(0, 6.28)) * 0.5
+        + np.sin(xf * rng.uniform(0.41, 0.72) + rng.uniform(0, 6.28)) * 0.28
+        + 0.5
+    ).astype(np.float32)
+    signal += carrier * 0.18
+
     # Noise bursts — rectangular regions of pure noise
-    num_bursts = max(25, h // 40)
+    num_bursts = max(70, h // 14)
     noise_layer = np.zeros((h, w), dtype=np.float32)
     for _ in range(num_bursts):
         ny = rng.randint(0, h)
         nx = rng.randint(0, w)
-        nh = rng.randint(8, max(9, h // 60))
-        nw = rng.randint(30, max(31, w // 6))
+        nh = rng.randint(2, max(3, h // 180))
+        nw = rng.randint(10, max(11, w // 28))
         ny1, ny2 = max(0, ny), min(h, ny + nh)
         nx1, nx2 = max(0, nx), min(w, nx + nw)
         noise_layer[ny1:ny2, nx1:nx2] = rng.rand(ny2 - ny1, nx2 - nx1).astype(np.float32)
@@ -359,14 +499,19 @@ def _compute_signal_noise(shape, seed):
     scan_period = max(4, h // 200)
     scan_lines = ((y_arr % scan_period) == 0).astype(np.float32) * 0.15
 
-    result = signal * 0.6 + noise_layer * 0.5 + scan_lines
+    pepper = rng.rand(h, w).astype(np.float32)
+    pepper = (pepper > 0.986).astype(np.float32) * rng.uniform(0.35, 0.75, (h, w)).astype(np.float32)
+    micro = _noise((h, w), [3, 5, 11], [0.45, 0.35, 0.20], seed + 644)
+    micro = (micro - float(micro.min())) / max(float(micro.max() - micro.min()), 1e-6)
+
+    result = signal * 0.34 + noise_layer * 0.36 + scan_lines + micro * 0.32 + pepper * 0.34
     return np.clip(result, 0, 1).astype(np.float32)
 
 
 def texture_shokk_signal_noise(shape, mask, seed, sm):
     h, w = shape[:2] if len(shape) > 2 else shape
     field = _compute_signal_noise((h, w), seed)
-    return {"pattern_val": field, "R_range": 1.0, "M_range": 1.0, "CC": None}
+    return _channel_rich_shokk_spec(field, seed, "signal")
 
 
 def paint_shokk_signal_noise(paint, shape, mask, seed, pm, bb):
@@ -375,7 +520,12 @@ def paint_shokk_signal_noise(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     field = _compute_signal_noise((h, w), seed)
-    return _apply_paint_blend(paint, (h, w), mask, seed, pm, field, hue_shift=0.5)
+    return _apply_shokk_tint(paint, (h, w), seed, pm, field, {
+        "hue": 0.50,
+        "cool": (0.02, 0.08, 0.24),
+        "warm": (0.10, 1.00, 0.72),
+        "edge": (0.20, 0.86, 1.00),
+    })
 
 
 # ================================================================
@@ -438,7 +588,7 @@ def _compute_scan_line(shape, seed):
 def texture_shokk_scan_line(shape, mask, seed, sm):
     h, w = shape[:2] if len(shape) > 2 else shape
     field = _compute_scan_line((h, w), seed)
-    return {"pattern_val": field, "R_range": 1.0, "M_range": 1.0, "CC": None}
+    return _channel_rich_shokk_spec(field, seed, "scan")
 
 
 def paint_shokk_scan_line(paint, shape, mask, seed, pm, bb):
@@ -447,7 +597,12 @@ def paint_shokk_scan_line(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     field = _compute_scan_line((h, w), seed)
-    return _apply_paint_blend(paint, (h, w), mask, seed, pm, field, hue_shift=0.1)
+    return _apply_shokk_tint(paint, (h, w), seed, pm, field, {
+        "hue": 0.10,
+        "cool": (0.02, 0.10, 0.12),
+        "warm": (0.28, 0.98, 0.42),
+        "edge": (0.96, 0.36, 0.62),
+    })
 
 
 # ================================================================
@@ -509,7 +664,7 @@ def _compute_cipher(shape, seed):
 def texture_shokk_cipher(shape, mask, seed, sm):
     h, w = shape[:2] if len(shape) > 2 else shape
     field = _compute_cipher((h, w), seed)
-    return {"pattern_val": field, "R_range": 1.0, "M_range": 1.0, "CC": None}
+    return _channel_rich_shokk_spec(field, seed, "cipher")
 
 
 def paint_shokk_cipher(paint, shape, mask, seed, pm, bb):
@@ -518,7 +673,12 @@ def paint_shokk_cipher(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     field = _compute_cipher((h, w), seed)
-    return _apply_paint_blend(paint, (h, w), mask, seed, pm, field, hue_shift=0.3)
+    return _apply_shokk_tint(paint, (h, w), seed, pm, field, {
+        "hue": 0.30,
+        "cool": (0.07, 0.04, 0.30),
+        "warm": (0.96, 0.12, 0.90),
+        "edge": (0.16, 0.94, 1.00),
+    })
 
 
 # ================================================================
@@ -598,7 +758,7 @@ def _compute_overflow(shape, seed):
 def texture_shokk_overflow(shape, mask, seed, sm):
     h, w = shape[:2] if len(shape) > 2 else shape
     field = _compute_overflow((h, w), seed)
-    return {"pattern_val": field, "R_range": 1.0, "M_range": 1.0, "CC": None}
+    return _channel_rich_shokk_spec(field, seed, "overflow")
 
 
 def paint_shokk_overflow(paint, shape, mask, seed, pm, bb):
@@ -607,7 +767,12 @@ def paint_shokk_overflow(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     field = _compute_overflow((h, w), seed)
-    return _apply_paint_blend(paint, (h, w), mask, seed, pm, field, hue_shift=0.6)
+    return _apply_shokk_tint(paint, (h, w), seed, pm, field, {
+        "hue": 0.58,
+        "cool": (0.13, 0.06, 0.38),
+        "warm": (1.00, 0.46, 0.04),
+        "edge": (0.95, 0.16, 1.00),
+    })
 
 
 # ================================================================
@@ -690,7 +855,7 @@ def _compute_kernel_panic(shape, seed):
 def texture_shokk_kernel_panic(shape, mask, seed, sm):
     h, w = shape[:2] if len(shape) > 2 else shape
     field = _compute_kernel_panic((h, w), seed)
-    return {"pattern_val": field, "R_range": 1.0, "M_range": 1.0, "CC": None}
+    return _channel_rich_shokk_spec(field, seed, "panic")
 
 
 def paint_shokk_kernel_panic(paint, shape, mask, seed, pm, bb):
@@ -699,7 +864,12 @@ def paint_shokk_kernel_panic(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     field = _compute_kernel_panic((h, w), seed)
-    return _apply_paint_blend(paint, (h, w), mask, seed, pm, field, hue_shift=0.7)
+    return _apply_shokk_tint(paint, (h, w), seed, pm, field, {
+        "hue": 0.70,
+        "cool": (0.20, 0.02, 0.05),
+        "warm": (1.00, 0.14, 0.00),
+        "edge": (1.00, 0.68, 0.10),
+    })
 
 
 # ================================================================
@@ -786,7 +956,7 @@ def _compute_zero_day(shape, seed):
 def texture_shokk_zero_day(shape, mask, seed, sm):
     h, w = shape[:2] if len(shape) > 2 else shape
     field = _compute_zero_day((h, w), seed)
-    return {"pattern_val": field, "R_range": 1.0, "M_range": 1.0, "CC": None}
+    return _channel_rich_shokk_spec(field, seed, "zero")
 
 
 def paint_shokk_zero_day(paint, shape, mask, seed, pm, bb):
@@ -795,7 +965,12 @@ def paint_shokk_zero_day(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     field = _compute_zero_day((h, w), seed)
-    return _apply_paint_blend(paint, (h, w), mask, seed, pm, field, hue_shift=0.35)
+    return _apply_shokk_tint(paint, (h, w), seed, pm, field, {
+        "hue": 0.35,
+        "cool": (0.01, 0.16, 0.18),
+        "warm": (0.95, 0.24, 0.10),
+        "edge": (0.72, 1.00, 0.26),
+    })
 
 
 # ================================================================
@@ -878,7 +1053,7 @@ def texture_shokk_firewall(shape, mask, seed, sm):
     # Background digital noise fill for coverage
     bg_fill = _noise((h, w), [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 700) * 0.18 + 0.10
     field = np.clip(np.maximum(field, bg_fill), 0, 1)
-    return {"pattern_val": field, "R_range": 1.0, "M_range": 1.0, "CC": None}
+    return _channel_rich_shokk_spec(field, seed, "firewall")
 
 
 def paint_shokk_firewall(paint, shape, mask, seed, pm, bb):
@@ -887,7 +1062,12 @@ def paint_shokk_firewall(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     field = _compute_firewall((h, w), seed)
-    return _apply_paint_blend(paint, (h, w), mask, seed, pm, field, hue_shift=0.25)
+    return _apply_shokk_tint(paint, (h, w), seed, pm, field, {
+        "hue": 0.28,
+        "cool": (0.02, 0.16, 0.22),
+        "warm": (1.00, 0.24, 0.02),
+        "edge": (0.08, 0.98, 0.80),
+    })
 
 
 # ================================================================
@@ -898,61 +1078,61 @@ SHOKK_PATTERNS = {
     "shokk_bitrot": {
         "texture_fn": texture_shokk_bitrot,
         "paint_fn": paint_shokk_bitrot,
-        "variable_cc": False,
+        "variable_cc": True,
         "desc": "Corrupted binary data blocks with random degradation and glitch artifacts",
     },
     "shokk_packet_storm": {
         "texture_fn": texture_shokk_packet_storm,
         "paint_fn": paint_shokk_packet_storm,
-        "variable_cc": False,
+        "variable_cc": True,
         "desc": "Dense data packet headers and payloads as structured blocks with address fields",
     },
     "shokk_hex_dump": {
         "texture_fn": texture_shokk_hex_dump,
         "paint_fn": paint_shokk_hex_dump,
-        "variable_cc": False,
+        "variable_cc": True,
         "desc": "Hexadecimal memory dump visualization with address and ASCII columns",
     },
     "shokk_signal_noise": {
         "texture_fn": texture_shokk_signal_noise,
         "paint_fn": paint_shokk_signal_noise,
-        "variable_cc": False,
+        "variable_cc": True,
         "desc": "Digital signal-to-noise ratio with clean bands interrupted by noise bursts",
     },
     "shokk_scan_line": {
         "texture_fn": texture_shokk_scan_line,
         "paint_fn": paint_shokk_scan_line,
-        "variable_cc": False,
+        "variable_cc": True,
         "desc": "CRT/VHS scan line effect with line dropout and tracking errors",
     },
     "shokk_cipher": {
         "texture_fn": texture_shokk_cipher,
         "paint_fn": paint_shokk_cipher,
-        "variable_cc": False,
+        "variable_cc": True,
         "desc": "Encrypted data stream with pseudorandom blocks and key boundary markers",
     },
     "shokk_overflow": {
         "texture_fn": texture_shokk_overflow,
         "paint_fn": paint_shokk_overflow,
-        "variable_cc": False,
+        "variable_cc": True,
         "desc": "Buffer overflow — orderly data cascading into chaos at overflow points",
     },
     "shokk_kernel_panic": {
         "texture_fn": texture_shokk_kernel_panic,
         "paint_fn": paint_shokk_kernel_panic,
-        "variable_cc": False,
+        "variable_cc": True,
         "desc": "System crash dump with structured header and cascading memory corruption",
     },
     "shokk_zero_day": {
         "texture_fn": texture_shokk_zero_day,
         "paint_fn": paint_shokk_zero_day,
-        "variable_cc": False,
+        "variable_cc": True,
         "desc": "Exploit injection — clean data with precisely placed anomalous insertion points",
     },
     "shokk_firewall": {
         "texture_fn": texture_shokk_firewall,
         "paint_fn": paint_shokk_firewall,
-        "variable_cc": False,
+        "variable_cc": True,
         "desc": "Network defense grid with probe attempts and breach scatter marks",
     },
 }

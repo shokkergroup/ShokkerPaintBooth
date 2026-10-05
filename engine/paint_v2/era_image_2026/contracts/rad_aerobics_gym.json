@@ -1,0 +1,111 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_aerobics_gym",
+  "display_name": "Radical: Aerobics Stripe",
+  "promise": "Fine coral, lime and violet athletic knit with tiny ribbed cuffs and elastic seams.",
+  "carrier_grammar": "Fine coral, lime and violet athletic knit with tiny ribbed cuffs and elastic seams. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "Dielectric coral satin stretch knit, lime rib shoulders, dull violet elastic, rough ivory stitch knots and matte dark gaps.",
+  "reference_physics": {
+    "mechanism": "Fine coral, lime and violet athletic knit with tiny ribbed cuffs and elastic seams. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_aerobics_gym.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "coral stretch knit",
+      "role": "Actual shared paint and spec geometry: coral stretch knit"
+    },
+    {
+      "name": "lime rib stitches",
+      "role": "Actual shared paint and spec geometry: lime rib stitches"
+    },
+    {
+      "name": "violet elastic loops",
+      "role": "Actual shared paint and spec geometry: violet elastic loops"
+    },
+    {
+      "name": "ivory stitch knots",
+      "role": "Actual shared paint and spec geometry: ivory stitch knots"
+    },
+    {
+      "name": "dark knit gaps",
+      "role": "Actual shared paint and spec geometry: dark knit gaps"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "coral stretch knit",
+      "lime rib stitches",
+      "violet elastic loops",
+      "ivory stitch knots",
+      "dark knit gaps"
+    ],
+    "R": [
+      "coral stretch knit",
+      "lime rib stitches",
+      "violet elastic loops",
+      "ivory stitch knots",
+      "dark knit gaps"
+    ],
+    "Cc": [
+      "coral stretch knit",
+      "lime rib stitches",
+      "violet elastic loops",
+      "ivory stitch knots",
+      "dark knit gaps"
+    ]
+  },
+  "material_tiers": [
+    "coral stretch knit dielectric material with independent continuous roughness/coating response",
+    "lime rib stitches dielectric material with independent continuous roughness/coating response",
+    "violet elastic loops dielectric material with independent continuous roughness/coating response",
+    "ivory stitch knots dielectric material with independent continuous roughness/coating response",
+    "dark knit gaps dielectric material with independent continuous roughness/coating response",
+    "raised fiber tips and compressed seams"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_neon_spandex",
+      "difference": "This finish uses Dense micro athletic knit in fluorescent coral lime violet, thin disconnected rib stripes, tiny elastic loop crests and ivory stitch knots. Multidirectional short striped fabric fragments, 1980s aerobics leotard and headband material, not a person or large garment panels.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "at_bungee_cord",
+      "difference": "This finish uses Dense micro athletic knit in fluorescent coral lime violet, thin disconnected rib stripes, tiny elastic loop crests and ivory stitch knots. Multidirectional short striped fabric fragments, 1980s aerobics leotard and headband material, not a person or large garment panels.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "coral stretch knit is visible in the authored geometry",
+      "lime rib stitches is visible in the authored geometry",
+      "violet elastic loops is visible in the authored geometry",
+      "ivory stitch knots is visible in the authored geometry",
+      "dark knit gaps is visible in the authored geometry"
+    ],
+    "source_sha256": "4503f4942d29a1ccb50c337ba614c7d9d3ffad204b509e7458db5d20a83791e7",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_aerobics_gym-authored-Fine coral, lime and violet athletic knit with tiny ribbed cuffs and elastic seams. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_aerobics_gym-named-dielectric-yarn-v1",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 61.8,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "71ec75d94c97a84227cfcaf19a458f44979546dc5bdc6ca599ae69297855ad99"
+}

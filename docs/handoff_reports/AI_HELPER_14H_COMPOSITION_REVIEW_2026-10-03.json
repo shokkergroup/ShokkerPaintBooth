@@ -1,0 +1,69 @@
+{
+  "schema": "spb-ai-composition-review/1",
+  "review_date": "2026-10-03",
+  "mode": "read-only production review; added and reran independent regression test only",
+  "frozen_fixture": "docs/handoff_reports/AI_HELPER_14H_FRESH_SCOPE_2026-10-03.json",
+  "frozen_fixture_results": {
+    "cases": 24,
+    "designer_compound_plans": 3,
+    "advisor_apply_plan_cases": 3,
+    "suggest_tool_apply_cases": 4,
+    "unique_cases_with_any_apply_route": 7,
+    "unsafe_cases_after_repair": [],
+    "historical_pre_repair_finding": {
+      "id": "S10",
+      "request": "On the left side only, pink ghost camo under fine snake-skin texture.",
+      "expected": ["left side"],
+      "actual_before_repair": ["left side", "right side"],
+      "status": "resolved by directional advisor targets; current answer kit and tool apply use left side only"
+    },
+    "preservation_cases": 6,
+    "preservation_cases_with_completed_apply": 0
+  },
+  "fresh_adversarial_checks": {
+    "directional_formulations": 5,
+    "directional_formulations_passed": 5,
+    "checked_routes": ["D.compoundPlan when applicable", "advisor kit item targets", "A.applyPlan outputs", "A.suggestTool.apply"],
+    "both_side_controls": 2,
+    "both_side_controls_passed": 2,
+    "layer_rule": "Each kit item target and every emitted part-region is checked; empty non-base layers are accepted because the base card carries stackWith.",
+    "whole_body_preservation_probes": 4,
+    "whole_body_preservation_probes_with_completed_apply": 0,
+    "advice_guidance_probes": 3,
+    "advice_guidance_probes_with_completed_apply": 0,
+    "explicit_body_plus_part_positive": "Designer and actual suggested-tool apply split whole-body zones from the named part."
+  },
+  "current_status": "PASS for reviewed composition scope after producer repair",
+  "historical_finding": {
+    "priority": "P1 promotion blocker before repair; resolved in re-review",
+    "summary": "Advisor execution previously broadened directional left-side and right-side requests to both side panels.",
+    "source": [
+      { "file": "js/spb-pro-advisor.js", "lines": "33", "detail": "The `sides` target always names both left and right parts and has no directional targets." },
+      { "file": "js/spb-pro-advisor.js", "lines": "1855-1857", "detail": "Matching target entries are unioned into `pp`; a directional side match becomes both parts." },
+      { "file": "js/spb-pro-advisor.js", "lines": "1862-1864", "detail": "The union is copied into the visible kit item target." },
+      { "file": "js/spb-pro-advisor.js", "lines": "1910", "detail": "The real suggested-tool apply path passes each item target to `applyPlan`." },
+      { "file": "js/spb-pro-design.js", "lines": "278", "detail": "Designer vocabulary distinguishes left/driver side and right/passenger side." }
+    ],
+    "regression_test": "tests/ai_composition_w1_review_contract.cjs",
+    "regression_result_before_repair": "FAIL: 4 directional scope violations across A.applyPlan and suggestTool.apply; both-side positive control passed.",
+    "regression_result_after_repair": "PASS: all 5 directional formulations and both both-side controls retained exact scope across checked apply routes."
+  },
+  "verification": {
+    "passed": [
+      "node tests/ai_composition_w1_review_contract.cjs",
+      "node tests/ai_request_composition_contract.cjs",
+      "node tests/ai_stack_scope_contract.cjs"
+    ],
+    "separate_prior_scope_holdout_counts": {
+      "fixture": "docs/handoff_reports/CODEX_SCOPE_HOLDOUT_FINAL_2026-10-03.json",
+      "scope_compatible": 19,
+      "unsupported_no_mutation_plan": 6,
+      "recommendation_only_scoped": 2,
+      "partial_missing_whole_body_scope": 1,
+      "total": 28,
+      "note": "Kept separate from this fresh 24-case fixture; figures are from the saved final holdout report, not recomputed in this review."
+    },
+    "not_run": ["browser/native-app acceptance", "MCP acceptance", "providers"]
+  },
+  "review_limit": "The preservation probes remain safely unsupported; this review does not certify native app or MCP runtime behavior."
+}

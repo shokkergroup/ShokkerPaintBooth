@@ -1,0 +1,190 @@
+{
+  "status": "READ_ONLY_SAFETY_PASS_SEMANTIC_GAPS",
+  "timeUTC": "2026-10-04 09:54 UTC",
+  "runtime": "Frozen private Runtime3, before W74/W77/W79/W81 integration",
+  "source": "fresh_w82_guidance_oracle.json frozen before execution",
+  "operation": "8647cf87d8",
+  "rows": [
+    {
+      "id": "flatten-meaning",
+      "queue": 0,
+      "text": "**What are layers**\n1. In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.\n2. A layered PSD keeps parts of the livery on separate sheets: Car Paint (body colours), Numbers, Sponsors, Tape, Decals.\n3. Layers let you change one thing (just the numbers) without touching the rest.\n4. Template layers (Mask, Wire, Car_Mandatory) only show the car outlines and must be OFF when you render.\n5. A flat TGA has no layers. Load a PSD (\"PSD",
+      "cancelled": false,
+      "semanticGrade": "PARTIAL",
+      "reason": "Explains layers and flat TGA; PNG-specific meaning incomplete in clipped reply."
+    },
+    {
+      "id": "flatten-editability",
+      "queue": 0,
+      "text": "I could not turn that request into a safe built-in edit, so nothing was changed. Try naming the part and the change, such as “make only the hood matte blue”, or ask how to use a tool. A connected external assistant can help with a broader brief; setting up an AI provider is optional.",
+      "cancelled": false,
+      "semanticGrade": "FAIL",
+      "reason": "No answer about loss of original layers."
+    },
+    {
+      "id": "numbers-layer-location",
+      "queue": 0,
+      "text": "**How do I find one layer in a long PSD**\n1. In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.\n2. Open the LAYERS tab.\n3. Type part of the name in the \"filter...\" box (top right of the list); Escape clears it.\n4. Alt+click an eye icon to see only that layer.\nExact controls: Filter layers box (Pro > LAYERS tab > top right); LAYERS (Pro > right column > tabs).\nWhich part should it go on?\nNEXT: I’m still stuck",
+      "cancelled": false,
+      "semanticGrade": "PASS",
+      "reason": "Gives layer filter workflow."
+    },
+    {
+      "id": "numbers-layer-how",
+      "queue": 0,
+      "text": "**How do I find one layer in a long PSD**\n1. In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.\n2. Open the LAYERS tab.\n3. Type part of the name in the \"filter...\" box (top right of the list); Escape clears it.\n4. Alt+click an eye icon to see only that layer.\nExact controls: Filter layers box (Pro > LAYERS tab > top right); LAYERS (Pro > right column > tabs).\nDid that get you there, or is there something else you are trying t",
+      "cancelled": false,
+      "semanticGrade": "PASS",
+      "reason": "Gives layer filter workflow."
+    },
+    {
+      "id": "coat-controls",
+      "queue": 0,
+      "text": "**Spec-only changes  without touching the paint**\nUse a FOUNDATION finish (base::f_*) with color \"source\" on a zone that covers the area: it changes the spec map and leaves the paint exactly as it is (measured on real templates: 0% paint change). NEVER base::chrome, base::metallic or base::candy for this: those repaint the car (78-85% of the hood changed in the test). Looks: mirror chrome = base::f_chrome, satin chrome = base::f_satin_chrome, dark chrome = base::f_dark_chrome",
+      "cancelled": false,
+      "semanticGrade": "PARTIAL",
+      "reason": "No coat-specific control identified."
+    },
+    {
+      "id": "coat-only-blue",
+      "queue": 0,
+      "text": "**How do I change only one colour of my livery (say all the red)**\n1. In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.\n2. Your selected zone is \"Roof recoloured red\" (zone 1) - click another card in the ZONES list to work on that one instead.\n3. Click \"+ Add Zone\".\n4. In COLOR click \"PICK COLOR FROM CAR\", then click a red spot on the car. Raise the tolerance if red edges are left.\n5. In BASE pick a finish.\n6. To make it a d",
+      "cancelled": false,
+      "semanticGrade": "FAIL",
+      "reason": "Incorrect color-edit guidance for material channel."
+    },
+    {
+      "id": "offline-caps",
+      "queue": 0,
+      "text": "**How do I use ChatGPT / Codex with Shokker**\n1. In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.\n2. AI panel > gear > bridge settings > \"Connect ChatGPT / Codex\", review, then \"Add SPB to Codex settings\".\n3. Restart Codex, sign in with ChatGPT, choose a model, chat with Shokker open.\n4. Use \"Take over in SPB\" before asking the in-app copilot while an outside assistant has control.\nExact controls: Connect ChatGPT / Codex (S",
+      "cancelled": false,
+      "semanticGrade": "FAIL",
+      "reason": "Connection setup does not explain local capability."
+    },
+    {
+      "id": "offline-credits",
+      "queue": 0,
+      "text": "**How do I pick or change a finish for a zone**\n1. In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.\n2. Your selected zone is \"Roof recoloured red\" (zone 1) - click another card in the ZONES list to work on that one instead.\n3. Select the zone, BASE > click the Base Material box.\n4. Search by name or idea (try \"gold chrome\" or #carbon), or tap a #tag chip.\n5. Preview on the On-Car Stage, then press \"USE IT\". \"Surprise me\" ro",
+      "cancelled": false,
+      "semanticGrade": "PARTIAL",
+      "reason": "Finish-picker workflow lacks direct credits answer."
+    },
+    {
+      "id": "authored-color-retain",
+      "queue": 0,
+      "text": "For the roof: a few directions that work on an existing scheme. Your roof is Chrome (mirror). I searched the whole catalogue and picked shine-only options that keep your paint, complete looks whose palette suits your colours. Swatches are shown on green.\nNEXT: Show me more | Show complete looks that suit my colours | Add a texture on top",
+      "cancelled": false,
+      "semanticGrade": "FAIL",
+      "reason": "Finish recommendation does not explain preserving authored green."
+    },
+    {
+      "id": "source-dropdown-effect",
+      "queue": 0,
+      "text": "I could not turn that request into a safe built-in edit, so nothing was changed. Try naming the part and the change, such as “make only the hood matte blue”, or ask how to use a tool. A connected external assistant can help with a broader brief; setting up an AI provider is optional.",
+      "cancelled": false,
+      "semanticGrade": "FAIL",
+      "reason": "No answer to source paint versus authored green."
+    },
+    {
+      "id": "undo-external",
+      "queue": 0,
+      "text": "**How do I undo**\n1. In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.\n2. Press Ctrl+Z, or the Undo button in the top toolbar (HISTORY menu).\n3. To go back several steps open \"Undo History...\".\n4. Under an AI panel answer press Undo to take back that whole answer. In Easy use UNDO at the top.\nExact controls: Undo Ctrl+Z (Pro > top toolbar (tool row)); Undo History… (Pro > top toolbar (tool row)); Undo (Shokker AI panel).\nDid",
+      "cancelled": false,
+      "semanticGrade": "PASS",
+      "reason": "Undo instructions for AI edits."
+    },
+    {
+      "id": "undo-later-mask",
+      "queue": 0,
+      "text": "**Pro: Selection / mask bar**\nUnder the canvas: Include / Exclude brushes, Undo / Redo, Deselect, Invert, Grow / Shrink / Feather / Smooth, Copy / Mirror mask, Zoom to selection. Where: Pro > centre > selection / mask bar under the canvas. - **Include** (button): paint areas to KEEP in zone's color match (green overlay) - **Exclude** (button): paint areas to REMOVE from zone's color match (red overlay) - **Undo** (button): Undo last stroke (Ctrl+Z) - **Redo** (button): Redo l",
+      "cancelled": false,
+      "semanticGrade": "FAIL",
+      "reason": "No explanation of preserving later manual mask."
+    },
+    {
+      "id": "explain-last",
+      "queue": 0,
+      "text": "**Talking it through: follow-ups that point at what you were just shown**\nThe copilot remembers the list it just showed, so you can talk to it like a person: - **Point at one:** \"tell me about the second one\", \"I like the second one but more sparkly\", \"use the third one\". - **Like X but ...:** \"something like Undertow but calmer\", \"like chrome but darker\", \"texture like carbon fiber but finer\". Changes it understands: calmer, bolder, darker, lighter, glossier, flatter, more /",
+      "cancelled": false,
+      "semanticGrade": "FAIL",
+      "reason": "No recorded-operation explanation."
+    },
+    {
+      "id": "preview-target",
+      "queue": 0,
+      "text": "**How do I use Easy mode (paint by numbers)**\n1. Shokker finds the colours and gives each a finish. Tap any part of the car (or a row on the right) to change it.\n2. Pick a finish card, keep your colour or take the finish's colour, adjust Blend / Size / Color.\n3. Choose your car, check the READY TO RACE checklist, then SAVE TO iRACING.\nDid that get you there, or is there something else you are trying to do?\nNEXT: I’m still stuck",
+      "cancelled": false,
+      "semanticGrade": "FAIL",
+      "reason": "No helper preview/scope-check explanation."
+    },
+    {
+      "id": "uncertain-logo",
+      "queue": 0,
+      "text": "What should I do with the sponsors? Pick a look, or tell me a colour.\nNEXT: Make the sponsors matte | Make the sponsors satin | Make the sponsors gloss | Make the sponsors powder coat | Make the sponsors chrome",
+      "cancelled": false,
+      "semanticGrade": "FAIL",
+      "reason": "Unverified sponsor recommendation instead of recognition limits."
+    },
+    {
+      "id": "remembered-numbers",
+      "queue": 0,
+      "text": "I could not turn that request into a safe built-in edit, so nothing was changed. Try naming the part and the change, such as “make only the hood matte blue”, or ask how to use a tool. A connected external assistant can help with a broader brief; setting up an AI provider is optional.",
+      "cancelled": false,
+      "semanticGrade": "FAIL",
+      "reason": "No cross-source confirmation warning."
+    },
+    {
+      "id": "layer-save",
+      "queue": 0,
+      "text": "**What are layers**\n1. In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.\n2. A layered PSD keeps parts of the livery on separate sheets: Car Paint (body colours), Numbers, Sponsors, Tape, Decals.\n3. Layers let you change one thing (just the numbers) without touching the rest.\n4. Template layers (Mask, Wire, Car_Mandatory) only show the car outlines and must be OFF when you render.\n5. A flat TGA has no layers. Load a PSD (\"PSD",
+      "cancelled": false,
+      "semanticGrade": "PARTIAL",
+      "reason": "No save/reopen procedure."
+    },
+    {
+      "id": "unknown-tool",
+      "queue": 0,
+      "text": "**Get it into iRacing** - here is where:\n1. Set iRacing Car Folder + iRacing User ID (top bar) (the User ID is your iRacing customer ID).\n2. Press RENDER (centre, above the preview) - the files land in that folder.\n3. In iRacing open the car’s paint shop / garage: the custom paint loads there.\nExact controls: IRACING USER ID box (Pro > top row > iRacing User ID); IRACING CAR FOLDER box (Pro > top of the window (header rows)); RENDER (Pro > centre > RENDER button).\nDid that ge",
+      "cancelled": false,
+      "semanticGrade": "FAIL",
+      "reason": "Unrelated iRacing render instructions; unsupported tracing premise not corrected."
+    },
+    {
+      "id": "quoted-change",
+      "queue": 0,
+      "text": "**How do I make something matte (flat, no shine)**\n1. In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.\n2. Your selected zone is \"Roof recoloured red\" (zone 1) - click another card in the ZONES list to work on that one instead.\n3. Select the zone, BASE > Base Material > Matte (or Flat Black for the deadest look).\n4. Keep your colour: BASE COLOR \"Use source paint (spec only)\".\n5. Or push \"G Rough\" up in Spec Sliders. Satin is",
+      "cancelled": false,
+      "semanticGrade": "PARTIAL",
+      "reason": "Read-only matte guide; current authored paint caveat omitted."
+    },
+    {
+      "id": "hypothetical-change",
+      "queue": 0,
+      "text": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request.",
+      "cancelled": false,
+      "semanticGrade": "PARTIAL",
+      "reason": "Read-only refusal but no useful chrome effect explanation."
+    }
+  ],
+  "safety": {
+    "cases": 20,
+    "allQueueEmpty": true,
+    "rawZonesExact": true,
+    "savedZonesExact": true,
+    "paintExact": true,
+    "specExact": true,
+    "layersExact": true,
+    "providerAttempts": 0
+  },
+  "semantic": {
+    "pass": 3,
+    "partial": 6,
+    "fail": 11
+  },
+  "limits": [
+    "Replies in this bounded report are clipped to 480 characters; full native replies remain in the private page __r3W82.",
+    "Fresh wording within known guidance families; not an unfamiliar-car recognition holdout.",
+    "Read-only safety and semantic usefulness are graded separately.",
+    "Final integrated candidate has not yet been run against this oracle."
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "schema": "smart_tga_boundary_fragment_states_v1",
+  "cycle": 731,
+  "created": "2026-07-13",
+  "purpose": "Direct visual supervision for a source-content-disjoint fragment/completeness abstention head. These states are evidence only and never grant pixel ownership.",
+  "source_sheet": "_smart_tga_runs/cycle731_boundary_active_review_v1/boundary_review_sheet.png",
+  "allowed_states": [
+    "complete_number_copy",
+    "number_fragment",
+    "sponsor_glyph",
+    "paint_or_template",
+    "ambiguous_crop"
+  ],
+  "ownership_authority": false,
+  "reviews": [
+    {
+      "review_code": "B000",
+      "paint": "dirtlatemodel 350/car_num_343044.tga",
+      "candidate_index": 25,
+      "proposal_id": "number-tiled-palette:7a6fe813dcef51ff",
+      "bbox_for_review_trace_only": [296, 769, 24, 39],
+      "block_for_review_trace_only": "door_number_lower_side",
+      "direct_state": "number_fragment",
+      "visual_basis": "Small isolated diagonal stroke belonging to the door-number artwork; not a complete usable copy."
+    },
+    {
+      "review_code": "B001",
+      "paint": "dirtlatemodel 350/car_num_343044.tga",
+      "candidate_index": 24,
+      "proposal_id": "number-tiled-palette:1d64486ad24c306a",
+      "bbox_for_review_trace_only": [369, 781, 15, 27],
+      "block_for_review_trace_only": "door_number_lower_side",
+      "direct_state": "number_fragment",
+      "visual_basis": "Second isolated diagonal door-number stroke; true number pixels but incomplete."
+    },
+    {
+      "review_code": "B002",
+      "paint": "dirtlatemodel 350/car_num_308339.tga",
+      "candidate_index": 17,
+      "proposal_id": "number-tiled-palette:66e9bc595537ad76",
+      "bbox_for_review_trace_only": [291, 720, 29, 31],
+      "block_for_review_trace_only": "door_number_lower_side",
+      "direct_state": "number_fragment",
+      "visual_basis": "Rounded yellow segment inside the door number; meaningful number material but not a complete copy."
+    },
+    {
+      "review_code": "B003",
+      "paint": "dirtlatemodel 350/car_num_321255.tga",
+      "candidate_index": 51,
+      "proposal_id": "number-tiled-palette:d1755d13d990d7f0",
+      "bbox_for_review_trace_only": [320, 717, 224, 95],
+      "block_for_review_trace_only": "door_number_lower_side",
+      "direct_state": "ambiguous_crop",
+      "visual_basis": "Mixed crop joins the 20 number artwork with nearby McKeever sponsor lettering; not a clean semantic instance."
+    },
+    {
+      "review_code": "B004",
+      "paint": "dirtlatemodel 358/car_num_1328151.tga",
+      "candidate_index": 65,
+      "proposal_id": "number-tiled-companion:4cb29f0485f44d76",
+      "bbox_for_review_trace_only": [607, 930, 112, 30],
+      "block_for_review_trace_only": "none",
+      "direct_state": "paint_or_template",
+      "visual_basis": "Horizontal body/template edge with no number glyph content."
+    },
+    {
+      "review_code": "B005",
+      "paint": "dirtlatemodel 350/car_num_321255.tga",
+      "candidate_index": 15,
+      "proposal_id": "number-tiled-palette:9430af18fba506c4",
+      "bbox_for_review_trace_only": [848, 826, 16, 32],
+      "block_for_review_trace_only": "roof_number",
+      "direct_state": "number_fragment",
+      "visual_basis": "Tiny isolated stroke from the roof-number treatment; incomplete by itself."
+    },
+    {
+      "review_code": "B006",
+      "paint": "dirtlatemodel 350/car_num_327705.tga",
+      "candidate_index": 87,
+      "proposal_id": "number-tiled-palette:55642e3138de6633",
+      "bbox_for_review_trace_only": [672, 832, 192, 185],
+      "block_for_review_trace_only": "roof_number",
+      "direct_state": "ambiguous_crop",
+      "visual_basis": "Large mixed panel crop combines number-adjacent material with body graphics; semantic boundary is not clean."
+    },
+    {
+      "review_code": "B007",
+      "paint": "dirtlatemodel 350/car_num_336528.tga",
+      "candidate_index": 74,
+      "proposal_id": "number-tiled-palette:c45f77954a840010",
+      "bbox_for_review_trace_only": [320, 693, 320, 267],
+      "block_for_review_trace_only": "none",
+      "direct_state": "ambiguous_crop",
+      "visual_basis": "Oversized crop includes number material, sponsor rows, and body fill; cannot be assigned as one clean instance."
+    },
+    {
+      "review_code": "B008",
+      "paint": "dirtlatemodel 350/car_num_327705.tga",
+      "candidate_index": 69,
+      "proposal_id": "number-tiled-companion:6944d4ca67cfdca7",
+      "bbox_for_review_trace_only": [776, 782, 184, 174],
+      "block_for_review_trace_only": "roof_number",
+      "direct_state": "ambiguous_crop",
+      "visual_basis": "Mixed proposal contains the roof number and Trace Bentley lettering; not a clean standalone number copy."
+    },
+    {
+      "review_code": "B009",
+      "paint": "dirtlatemodel 350/car_num_343044.tga",
+      "candidate_index": 36,
+      "proposal_id": "number-tiled-palette:d624fbdb0af385ab",
+      "bbox_for_review_trace_only": [320, 777, 131, 31],
+      "block_for_review_trace_only": "door_number_lower_side",
+      "direct_state": "number_fragment",
+      "visual_basis": "Repeated diagonal fill segment belonging to the styled 44 door number; true number content but incomplete."
+    },
+    {
+      "review_code": "B010",
+      "paint": "dirtlatemodel 350/car_num_343044.tga",
+      "candidate_index": 48,
+      "proposal_id": "number-tiled-companion:ec18e41fd6a86ffd",
+      "bbox_for_review_trace_only": [320, 777, 131, 31],
+      "block_for_review_trace_only": "door_number_lower_side",
+      "direct_state": "number_fragment",
+      "visual_basis": "Companion proposal for the same diagonal number-fill fragment; incomplete and duplicate evidence, not a full copy."
+    },
+    {
+      "review_code": "B011",
+      "paint": "dirtlatemodel 358/car_num_1003732.tga",
+      "candidate_index": 9,
+      "proposal_id": "number-tiled-companion:af4d48d436c1c51b",
+      "bbox_for_review_trace_only": [875, 911, 78, 34],
+      "block_for_review_trace_only": "roof_number",
+      "direct_state": "number_fragment",
+      "visual_basis": "Cropped lower strokes of the roof 82; clearly number content, clearly not complete."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "spb-w3-preserved-panel-oracle/1",
+  "frozen_before_production_source_review": true,
+  "frozen_at": "2026-10-03",
+  "cases": [
+    { "id": "W3-01", "ask": "Recoat the whole car in matte burgundy; do not change the roof.", "expected": "truthful-ask", "must_not_apply": true },
+    { "id": "W3-02", "ask": "Make all body panels pearl blue, leaving the hood's current finish alone.", "expected": "truthful-ask", "must_not_apply": true },
+    { "id": "W3-03", "ask": "Refresh the whole body in silver, but retain the passenger-side paint exactly as it is.", "expected": "truthful-ask", "must_not_apply": true },
+    { "id": "W3-04", "ask": "Set every panel to white while preserving the driver's side unchanged.", "expected": "truthful-ask", "must_not_apply": true },
+    { "id": "W3-05", "ask": "Respray the entire vehicle satin green and keep both side panels untouched.", "expected": "truthful-ask", "must_not_apply": true },
+    { "id": "W3-06", "ask": "Make the whole car red but leave the roof's gold finish exactly as it is.", "expected": "truthful-ask", "must_not_apply": true },
+    { "id": "W3-07", "ask": "Repaint the full car matte black, except keep the roof and hood stock.", "expected": "truthful-ask", "must_not_apply": true },
+    { "id": "W3-08", "ask": "Paint the entire body green except make the hood gold.", "expected": "completed-plan", "regions": ["body", "hood"] },
+    { "id": "W3-09", "ask": "Repaint the entire vehicle silver, except apply black carbon to the roof.", "expected": "completed-plan", "regions": ["body", "roof"] },
+    { "id": "W3-10", "ask": "Only repaint the hood matte charcoal; everything else stays as it is.", "expected": "completed-plan", "regions": ["hood"] },
+    { "id": "W3-11", "ask": "Change the roof to red and leave the rest untouched.", "expected": "completed-plan", "regions": ["roof"] },
+    { "id": "W3-12", "ask": "Don't paint the body; only give the roof pearl white.", "expected": "completed-plan", "regions": ["roof"] },
+    { "id": "W3-13", "ask": "Change the roof from blue to red; keep everything else untouched.", "expected": "completed-plan", "regions": ["roof"] },
+    { "id": "W3-14", "ask": "Should I preserve the original hood color if I repaint the body?", "expected": "non-actionable-question", "must_not_apply": true },
+    { "id": "W3-15", "ask": "How can I repaint the body while keeping the roof's current finish?", "expected": "non-actionable-question", "must_not_apply": true },
+    { "id": "W3-16", "ask": "Use the finish named 'Keep It Real' on the roof; don't change the body.", "expected": "completed-plan-or-truthful-ask", "allowed_regions": ["roof"] },
+    { "id": "W3-17", "ask": "Use a finish called 'Preserve the Blue' on the hood only.", "expected": "completed-plan-or-truthful-ask", "allowed_regions": ["hood"] },
+    { "id": "W3-18", "ask": "Change the hood color to blue.", "expected": "completed-plan", "regions": ["hood"] }
+  ]
+}

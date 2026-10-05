@@ -1,0 +1,1502 @@
+{
+ "tac_m81_woodland": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "tac_marpat_digital": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "tac_tiger_stripe": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "tac_multicam_transition": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "tac_desert_dpm": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "tac_snow_overwhite": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "tac_duck_blind": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "tac_urban_grey_digital": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "tac_brushstroke_field": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "tac_frog_skin": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "tac_chocolate_chip": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "tac_rain_pattern": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "tac_flecktarn": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "tac_tigerstripe_night": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "tac_break_up_bark": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "tac_cerakote_grey": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "tac_parkerised": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "tac_fde_polymer": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "tac_kydex_sheet": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "tac_gun_blue": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "tac_rail_section": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "tac_suppressor_heat": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "tac_optic_glass": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "tac_stippled_grip": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "tac_anodised_hard": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "tac_carbon_handguard": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "tac_nitride_black": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "tac_battle_worn": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "tac_titanium_bead": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "tac_sling_webbing": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "tac_blaze_orange": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "tac_canvas_duck": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "tac_neoprene_wader": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "tac_trout_flank": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "tac_cedar_decoy": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "tac_river_stone": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "tac_topo_sheet": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "tac_autumn_brush": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "tac_fly_line": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "tac_blaze_cap": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "tac_wet_waxed_cotton": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "tac_creel_wicker": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "tac_marsh_reed": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "tac_bird_dog_tick": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "tac_frozen_bank": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "tac_night_vision": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "tac_thermal_white_hot": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "tac_ir_flat": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "tac_chem_light": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "tac_muzzle_flash": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "tac_moonlit_snow": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "tac_starlight_scope": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "tac_tracer_arc": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "tac_red_lens": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "tac_cold_steel_night": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "tac_thermal_black_hot": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "tac_ambush_green": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "tac_signal_mirror": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "tac_blackout_curtain": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "tac_frost_breath": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_disc_rainbow": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_beige_box": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "at_windows_teal": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "at_pipes_screensaver": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "at_y2k_chrome": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_dial_up_green": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "at_frosted_shell": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_corrupt_jpeg": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "at_floppy_black": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "at_holo_sticker": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "at_crt_blue_screen": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "at_mouse_ball_grime": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "at_zip_disk": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "at_iridescent_cd_r": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "at_cyber_caf\u00e9": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "at_snowboard_graphic": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "at_windbreaker_block": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_dew_green": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "at_skatepark_concrete": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "at_grip_tape": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "at_big_dog_print": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_surf_wax": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "at_bmx_dirt": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "at_anodised_peg": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_neon_wetsuit": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_half_pipe_ply": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "at_roller_blade": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_mountain_topo": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_chain_link": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_bungee_cord": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "at_velour_tracksuit": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "at_gold_rope": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "at_cross_colour_block": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_airbrush_tee": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_bucket_hat": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "at_fresh_kicks": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "at_boombox_chrome": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_velour_rose": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "at_nameplate_gold": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_denim_baggy": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "at_graffiti_fill": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "at_kangol_felt": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "at_grill_chrome": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "at_vinyl_crate": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "at_starter_jacket": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "at_flannel_red": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "at_flannel_forest": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "at_thrift_cardigan": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "at_seattle_rain": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "at_moss_sidewalk": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "at_doc_marten": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_distressed_denim": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "at_band_tee_crack": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "at_corduroy_olive": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "at_overcast_grey": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "at_basement_amp": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "at_combat_boot_steel": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "at_sharpie_ink": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "at_cassette_tape": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "at_chipped_nail": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_phosphor_green": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_amber_terminal": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_sprite_sheet": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "rad_dot_matrix": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "rad_cabinet_side_art": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_marquee_bulb": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "rad_quarter_slot": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "rad_attract_mode": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_trackball_wear": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "rad_vector_glow": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "rad_bezel_black": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_insert_coin": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_high_score": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "rad_joystick_ball": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "rad_screen_burn": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "rad_vector_horizon": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "rad_sunset_bars": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "rad_chrome_type": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "rad_vhs_tracking": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_laserdisc_rainbow": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "rad_outrun_stripe": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "rad_miami_pastel": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "rad_neon_tube": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_grid_floor": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "rad_static_snow": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "rad_digital_sunrise": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_cassette_shell": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "rad_boombox_grille": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_synth_key": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "rad_laser_grid": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "rad_milano_squiggle": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_bacterio_print": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_jazz_cup": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_terrazzo_chip": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "rad_pastel_mint": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "rad_peach_fuzz": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "rad_confetti_laminate": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_grid_tile": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "rad_zigzag_runner": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "rad_neon_wire_chair": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "rad_speckle_wall": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_glass_block": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "rad_lacquer_cabinet": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "rad_sponge_paint": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_anodised_trim": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "rad_splatter_tee": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_hair_metal": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "rad_neon_spandex": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "rad_skate_deck": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_tiger_stripe": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "rad_aerobics_gym": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "rad_airbrush_portrait": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "rad_rad_splatter_deck": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "rad_zebra_wrap": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "rad_neon_grip": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "rad_slap_bracelet": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "rad_puffy_paint": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "rad_trapper_sticker": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "rad_hypercolour": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "rad_big_hair_chrome": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "cbp_wet_asphalt": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "cbp_sodium_vapour": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_kanji_signage": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_holo_advert": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "cbp_night_market": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_acid_rain": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_taxi_panel": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_steam_grate": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "cbp_puddle_neon": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "cbp_shutter_tag": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_rain_screen": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "cbp_sodium_fog": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_vending_glow": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_neon_tube": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "cbp_overpass_sodium": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "cbp_subdermal_plate": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "cbp_neural_port": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "cbp_ceramic_limb": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "cbp_gunmetal_aug": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_wetware_membrane": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "cbp_gold_contact": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "cbp_carbon_limb": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "cbp_optic_implant": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "cbp_chrome_spine": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "cbp_skin_weave": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "cbp_ripperdoc_steel": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "cbp_porcelain_face": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "cbp_servo_housing": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_titanium_rib": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "cbp_mirror_shades": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "cbp_ice_wall": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "cbp_datastream": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "cbp_corrupt_memory": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_black_ice": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "cbp_trace_route": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "cbp_ghost_protocol": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "cbp_quantum_violet": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "cbp_daemon_red": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_packet_loss": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "cbp_firewall_grid": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "cbp_neural_static": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_deep_archive": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_worm_trail": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_encryption_lattice": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_root_access": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "cbp_corp_grey": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_rad_warning": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "cbp_scav_rust": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "cbp_duct_grime": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "cbp_concrete_rot": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "cbp_biohazard_bloom": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "cbp_oil_slick_puddle": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_rebar_skeleton": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "cbp_ash_fall": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "cbp_corp_glass": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "cbp_hazard_stripe": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "cbp_sewer_bloom": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "cbp_scrap_weld": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "cbp_static_screen": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "cbp_cracked_solar": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "fo_mirror_ball": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_lighted_floor": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "fo_lurex_gold": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "fo_lurex_rose": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "fo_roller_rink": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "fo_studio_gold": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "fo_hustle_teal": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "fo_glitter_ball_rain": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "fo_sequin_sheet": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "fo_boogie_neon": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "fo_velvet_rope": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "fo_platform_patent": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "fo_vinyl_groove": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_discotheque_haze": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "fo_saturday_chrome": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "fo_shag_avocado": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "fo_shag_harvest": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_conversation_pit": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "fo_wood_panel": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_macrame_hang": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_linoleum_teal": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "fo_popcorn_ceiling": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "fo_fondue_copper": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_corduroy_brown": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_tab_curtain": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_rattan_weave": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "fo_terrazzo_kitchen": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "fo_lava_lamp": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_smoked_glass": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "fo_formica_boomerang": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "fo_tooled_saddle": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "fo_basket_stamp": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_turquoise_silver": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_concho_row": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_rhinestone_suit": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "fo_raw_denim": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "fo_rodeo_dust": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "fo_black_hat": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "fo_snakeskin_boot": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_mesa_sunset": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "fo_barbed_wire": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "fo_longhorn_hide": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "fo_silver_buckle": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "fo_prairie_denim": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "fo_outlaw_chrome": {
+  "bands": "linear",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "fo_airbrush_mural": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_metalflake_blue": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "fo_metalflake_red": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "fo_candy_apple": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.14
+ },
+ "fo_pinstripe_kit": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "fo_sunset_stripe": {
+  "bands": "quantile",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_eagle_gold": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "fo_porthole_chrome": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "fo_shag_interior": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.07
+ },
+ "fo_cb_static": {
+  "bands": "linear",
+  "chips": 0.5,
+  "edge_max": 0.14
+ },
+ "fo_desert_scene": {
+  "bands": "quantile",
+  "chips": 0.5,
+  "edge_max": 0.07
+ },
+ "fo_flame_job": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_ghost_mural": {
+  "bands": "quantile",
+  "chips": 0.34,
+  "edge_max": 0.14
+ },
+ "fo_wheel_well_rust": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ },
+ "fo_tailgate_sunburst": {
+  "bands": "linear",
+  "chips": 0.0,
+  "edge_max": 0.07
+ }
+}

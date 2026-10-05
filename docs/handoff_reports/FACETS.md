@@ -1,0 +1,4 @@
+# FACETS (2026-10-03)
+scripts/ai_atlas/derive_facets.py derives controlled-vocab tags (animal, fire, era, weather/light, material) from deep.look_close, deep.look_far and item name. Clauses with negators are dropped; simile clauses are dropped for animal/fire tags; asks, `not`, avoid are never read. Result is stored as `facets` and appended to `syn` (idempotent, source = cards.before_facets_20261003.jsonl). 3.2k of 4.8k cards got at least one tag.
+Hand check of 20 random cards: about 60-65% of tags right; weak tags are glow, dust, stone, weave, fire.
+Measured with intricate_score (mad_asks, 610 rows): animal 0.57 -> 0.63, weather_light 0.35 -> 0.34, era_vibe 0.36 -> 0.42 (offline-path composite). The scorer reads facets from js/spb-ai-atlas-data.js tags, not the cards, so card tags only help ranking, not that metric.

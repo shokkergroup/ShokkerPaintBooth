@@ -1,0 +1,126 @@
+{"phase": "verify", "iter": 1, "fid": "elm_downpour", "name": "Downpour", "chapter": "rain", "sec": 1.8, "band": 0.4, "cover": 1.0, "shades": 10, "mats": 13, "fam": 3, "drift": 12.2}
+{"phase": "verify", "iter": 1, "fid": "elm_blizzard", "name": "Blizzard", "chapter": "frozen", "sec": 1.96, "band": 0.334, "cover": 1.0, "shades": 12, "mats": 11, "fam": 4, "drift": 20.9}
+{"phase": "verify", "iter": 1, "fid": "elm_black_ice", "name": "Black Ice", "chapter": "frozen", "sec": 2.47, "band": 0.614, "cover": 1.0, "shades": 12, "mats": 12, "fam": 4, "drift": 22.2}
+{"phase": "verify", "iter": 1, "fid": "elm_tornado_alley", "name": "Tornado Alley", "chapter": "storm", "sec": 2.28, "band": 0.328, "cover": 1.0, "shades": 12, "mats": 14, "fam": 5, "drift": 23.1}
+{"phase": "verify", "iter": 1, "fid": "elm_breaker", "name": "Breaker", "chapter": "water", "sec": 2.1, "band": 0.646, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.0}
+{"phase": "verify", "iter": 1, "fid": "elm_sandstorm", "name": "Sandstorm", "chapter": "dry", "sec": 2.0, "band": 0.354, "cover": 1.0, "shades": 12, "mats": 11, "fam": 3, "drift": 22.1}
+{"phase": "verify", "iter": 2, "fid": "elm_downpour", "name": "Downpour", "chapter": "rain", "sec": 1.78, "band": 0.483, "cover": 1.0, "shades": 9, "mats": 13, "fam": 3, "drift": 12.2}
+{"phase": "verify", "iter": 2, "fid": "elm_cloudburst", "name": "Cloudburst", "chapter": "rain", "sec": 1.74, "band": 0.357, "cover": 1.0, "shades": 11, "mats": 13, "fam": 3, "drift": 16.8}
+{"phase": "verify", "iter": 2, "fid": "elm_drizzle", "name": "Drizzle", "chapter": "rain", "sec": 1.95, "band": 0.68, "cover": 1.0, "shades": 12, "mats": 13, "fam": 3, "drift": 19.1}
+{"phase": "verify", "iter": 2, "fid": "elm_sheet_rain", "name": "Sheet Rain", "chapter": "rain", "sec": 1.84, "band": 0.604, "cover": 1.0, "shades": 11, "mats": 13, "fam": 3, "drift": 18.9}
+{"phase": "verify", "iter": 2, "fid": "elm_monsoon", "name": "Monsoon", "chapter": "rain", "sec": 1.89, "band": 0.56, "cover": 1.0, "shades": 11, "mats": 13, "fam": 3, "drift": 17.8}
+{"phase": "verify", "iter": 2, "fid": "elm_acid_rain", "name": "Acid Rain", "chapter": "rain", "sec": 1.77, "band": 0.458, "cover": 1.0, "shades": 11, "mats": 12, "fam": 3, "drift": 15.0}
+{"phase": "verify", "iter": 2, "fid": "elm_puddle_skin", "name": "Puddle Skin", "chapter": "rain", "sec": 2.15, "band": 0.238, "cover": 1.0, "shades": 12, "mats": 13, "fam": 3, "drift": 14.4}
+{"phase": "verify", "iter": 2, "fid": "elm_dew_field", "name": "Dew Field", "chapter": "rain", "sec": 1.77, "band": 0.88, "cover": 1.0, "shades": 12, "mats": 13, "fam": 3, "drift": 22.2}
+{"phase": "verify", "iter": 2, "fid": "elm_petrichor", "name": "Petrichor", "chapter": "rain", "sec": 1.87, "band": 0.722, "cover": 1.0, "shades": 12, "mats": 13, "fam": 3, "drift": 18.8}
+{"phase": "verify", "iter": 2, "fid": "elm_gutter_race", "name": "Gutter Race", "chapter": "rain", "sec": 2.12, "band": 0.494, "cover": 1.0, "shades": 12, "mats": 13, "fam": 3, "drift": 16.6}
+{"phase": "verify", "iter": 2, "fid": "elm_windscreen", "name": "Windscreen", "chapter": "rain", "sec": 1.84, "band": 0.441, "cover": 1.0, "shades": 11, "mats": 14, "fam": 3, "drift": 18.2}
+{"phase": "verify", "iter": 2, "fid": "elm_virga", "name": "Virga", "chapter": "rain", "sec": 2.3, "band": 0.623, "cover": 1.0, "shades": 12, "mats": 13, "fam": 3, "drift": 18.4}
+{"phase": "verify", "iter": 2, "fid": "elm_blizzard", "name": "Blizzard", "chapter": "frozen", "sec": 2.01, "band": 0.445, "cover": 1.0, "shades": 12, "mats": 11, "fam": 4, "drift": 23.4}
+{"phase": "verify", "iter": 2, "fid": "elm_snowdrift", "name": "Snowdrift", "chapter": "frozen", "sec": 1.84, "band": 0.721, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 26.1}
+{"phase": "verify", "iter": 2, "fid": "elm_sleet", "name": "Sleet", "chapter": "frozen", "sec": 1.71, "band": 0.447, "cover": 1.0, "shades": 11, "mats": 10, "fam": 4, "drift": 20.8}
+{"phase": "verify", "iter": 2, "fid": "elm_hail_damage", "name": "Hail Damage", "chapter": "frozen", "sec": 2.13, "band": 0.767, "cover": 1.0, "shades": 12, "mats": 12, "fam": 4, "drift": 20.7}
+{"phase": "verify", "iter": 2, "fid": "elm_hoarfrost", "name": "Hoarfrost", "chapter": "frozen", "sec": 1.83, "band": 0.463, "cover": 1.0, "shades": 11, "mats": 10, "fam": 4, "drift": 20.1}
+{"phase": "verify", "iter": 2, "fid": "elm_rime_ice", "name": "Rime Ice", "chapter": "frozen", "sec": 1.85, "band": 0.753, "cover": 1.0, "shades": 10, "mats": 13, "fam": 4, "drift": 26.1}
+{"phase": "verify", "iter": 2, "fid": "elm_black_ice", "name": "Black Ice", "chapter": "frozen", "sec": 2.81, "band": 0.614, "cover": 1.0, "shades": 12, "mats": 12, "fam": 4, "drift": 22.2}
+{"phase": "verify", "iter": 2, "fid": "elm_frost_fern", "name": "Frost Fern", "chapter": "frozen", "sec": 1.77, "band": 0.763, "cover": 1.0, "shades": 7, "mats": 12, "fam": 4, "drift": 25.9}
+{"phase": "verify", "iter": 2, "fid": "elm_diamond_dust", "name": "Diamond Dust", "chapter": "frozen", "sec": 1.74, "band": 0.677, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 25.6}
+{"phase": "verify", "iter": 2, "fid": "elm_permafrost", "name": "Permafrost", "chapter": "frozen", "sec": 2.61, "band": 0.597, "cover": 1.0, "shades": 12, "mats": 12, "fam": 4, "drift": 17.9}
+{"phase": "verify", "iter": 2, "fid": "elm_serac_field", "name": "Serac Field", "chapter": "frozen", "sec": 2.68, "band": 0.696, "cover": 1.0, "shades": 12, "mats": 11, "fam": 4, "drift": 19.6}
+{"phase": "verify", "iter": 2, "fid": "elm_graupel", "name": "Graupel", "chapter": "frozen", "sec": 1.96, "band": 0.58, "cover": 1.0, "shades": 12, "mats": 11, "fam": 4, "drift": 22.6}
+{"phase": "verify", "iter": 2, "fid": "elm_tornado_alley", "name": "Tornado Alley", "chapter": "storm", "sec": 2.21, "band": 0.295, "cover": 1.0, "shades": 7, "mats": 14, "fam": 5, "drift": 26.7}
+{"phase": "verify", "iter": 2, "fid": "elm_supercell", "name": "Supercell", "chapter": "storm", "sec": 2.24, "band": 0.518, "cover": 1.0, "shades": 12, "mats": 14, "fam": 5, "drift": 30.0}
+{"phase": "verify", "iter": 2, "fid": "elm_hurricane_eye", "name": "Hurricane Eye", "chapter": "storm", "sec": 1.77, "band": 0.523, "cover": 1.0, "shades": 8, "mats": 15, "fam": 5, "drift": 26.8}
+{"phase": "verify", "iter": 2, "fid": "elm_squall_line", "name": "Squall Line", "chapter": "storm", "sec": 1.82, "band": 0.669, "cover": 1.0, "shades": 11, "mats": 13, "fam": 5, "drift": 32.6}
+{"phase": "verify", "iter": 2, "fid": "elm_gust_front", "name": "Gust Front", "chapter": "storm", "sec": 1.97, "band": 0.636, "cover": 1.0, "shades": 12, "mats": 14, "fam": 5, "drift": 32.3}
+{"phase": "verify", "iter": 2, "fid": "elm_mammatus", "name": "Mammatus", "chapter": "storm", "sec": 1.98, "band": 0.59, "cover": 1.0, "shades": 12, "mats": 14, "fam": 5, "drift": 22.1}
+{"phase": "verify", "iter": 2, "fid": "elm_wall_cloud", "name": "Wall Cloud", "chapter": "storm", "sec": 2.19, "band": 0.39, "cover": 1.0, "shades": 9, "mats": 15, "fam": 5, "drift": 28.6}
+{"phase": "verify", "iter": 2, "fid": "elm_lightning_strike", "name": "Lightning Strike", "chapter": "storm", "sec": 1.83, "band": 0.678, "cover": 1.0, "shades": 7, "mats": 14, "fam": 5, "drift": 29.3}
+{"phase": "verify", "iter": 2, "fid": "elm_thunderhead", "name": "Thunderhead", "chapter": "storm", "sec": 2.08, "band": 0.631, "cover": 1.0, "shades": 12, "mats": 14, "fam": 5, "drift": 32.3}
+{"phase": "verify", "iter": 2, "fid": "elm_microburst", "name": "Microburst", "chapter": "storm", "sec": 1.85, "band": 0.333, "cover": 1.0, "shades": 7, "mats": 14, "fam": 5, "drift": 25.7}
+{"phase": "verify", "iter": 2, "fid": "elm_waterspout", "name": "Waterspout", "chapter": "storm", "sec": 1.8, "band": 0.397, "cover": 1.0, "shades": 8, "mats": 14, "fam": 5, "drift": 25.7}
+{"phase": "verify", "iter": 2, "fid": "elm_derecho", "name": "Derecho", "chapter": "storm", "sec": 1.92, "band": 0.774, "cover": 1.0, "shades": 12, "mats": 14, "fam": 5, "drift": 35.7}
+{"phase": "verify", "iter": 2, "fid": "elm_tsunami", "name": "Tsunami", "chapter": "water", "sec": 2.31, "band": 0.301, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.2}
+{"phase": "verify", "iter": 2, "fid": "elm_breaker", "name": "Breaker", "chapter": "water", "sec": 1.9, "band": 0.646, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.0}
+{"phase": "verify", "iter": 2, "fid": "elm_whitewater", "name": "Whitewater", "chapter": "water", "sec": 1.88, "band": 0.783, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.0}
+{"phase": "verify", "iter": 2, "fid": "elm_tide_race", "name": "Tide Race", "chapter": "water", "sec": 2.28, "band": 0.649, "cover": 1.0, "shades": 11, "mats": 10, "fam": 3, "drift": 5.3}
+{"phase": "verify", "iter": 2, "fid": "elm_storm_surge", "name": "Storm Surge", "chapter": "water", "sec": 1.88, "band": 0.332, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.3}
+{"phase": "verify", "iter": 2, "fid": "elm_riptide", "name": "Riptide", "chapter": "water", "sec": 2.26, "band": 0.671, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.3}
+{"phase": "verify", "iter": 2, "fid": "elm_spindrift", "name": "Spindrift", "chapter": "water", "sec": 1.94, "band": 0.625, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.3}
+{"phase": "verify", "iter": 2, "fid": "elm_whirlpool", "name": "Whirlpool", "chapter": "water", "sec": 2.25, "band": 0.209, "cover": 1.0, "shades": 8, "mats": 9, "fam": 3, "drift": 5.1}
+{"phase": "verify", "iter": 2, "fid": "elm_chop", "name": "Chop", "chapter": "water", "sec": 1.82, "band": 0.925, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.1}
+{"phase": "verify", "iter": 2, "fid": "elm_glassy_swell", "name": "Glassy Swell", "chapter": "water", "sec": 2.27, "band": 0.309, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.1}
+{"phase": "verify", "iter": 2, "fid": "elm_flood_line", "name": "Flood Line", "chapter": "water", "sec": 2.23, "band": 0.731, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.2}
+{"phase": "verify", "iter": 2, "fid": "elm_foam_lace", "name": "Foam Lace", "chapter": "water", "sec": 2.35, "band": 0.776, "cover": 1.0, "shades": 12, "mats": 11, "fam": 3, "drift": 5.5}
+{"phase": "verify", "iter": 2, "fid": "elm_sandstorm", "name": "Sandstorm", "chapter": "dry", "sec": 1.87, "band": 0.598, "cover": 1.0, "shades": 12, "mats": 11, "fam": 3, "drift": 25.2}
+{"phase": "verify", "iter": 2, "fid": "elm_haboob", "name": "Haboob", "chapter": "dry", "sec": 1.98, "band": 0.655, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 27.3}
+{"phase": "verify", "iter": 2, "fid": "elm_dust_devil", "name": "Dust Devil", "chapter": "dry", "sec": 1.9, "band": 0.398, "cover": 1.0, "shades": 9, "mats": 9, "fam": 3, "drift": 23.6}
+{"phase": "verify", "iter": 2, "fid": "elm_heat_shimmer", "name": "Heat Shimmer", "chapter": "dry", "sec": 2.13, "band": 0.588, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 26.4}
+{"phase": "verify", "iter": 2, "fid": "elm_drought_crack", "name": "Drought Crack", "chapter": "dry", "sec": 2.61, "band": 0.609, "cover": 1.0, "shades": 12, "mats": 12, "fam": 4, "drift": 23.0}
+{"phase": "verify", "iter": 2, "fid": "elm_mirage", "name": "Mirage", "chapter": "dry", "sec": 2.23, "band": 0.836, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 30.6}
+{"phase": "verify", "iter": 2, "fid": "elm_dust_veil", "name": "Dust Veil", "chapter": "dry", "sec": 1.94, "band": 0.705, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 27.9}
+{"phase": "verify", "iter": 2, "fid": "elm_salt_haze", "name": "Salt Haze", "chapter": "dry", "sec": 1.93, "band": 0.652, "cover": 1.0, "shades": 12, "mats": 12, "fam": 4, "drift": 23.3}
+{"phase": "verify", "iter": 2, "fid": "elm_harmattan", "name": "Harmattan", "chapter": "dry", "sec": 1.97, "band": 0.769, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 28.8}
+{"phase": "verify", "iter": 2, "fid": "elm_sirocco", "name": "Sirocco", "chapter": "dry", "sec": 2.21, "band": 0.659, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 27.7}
+{"phase": "verify", "iter": 2, "fid": "elm_loess", "name": "Loess", "chapter": "dry", "sec": 1.84, "band": 0.741, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 27.5}
+{"phase": "verify", "iter": 2, "fid": "elm_brownout", "name": "Brownout", "chapter": "dry", "sec": 2.35, "band": 0.483, "cover": 1.0, "shades": 10, "mats": 10, "fam": 3, "drift": 24.7}
+{"phase": "verify", "iter": 3, "fid": "elm_downpour", "name": "Downpour", "chapter": "rain", "sec": 1.84, "band": 0.483, "cover": 1.0, "shades": 9, "mats": 13, "fam": 3, "drift": 12.2}
+{"phase": "verify", "iter": 3, "fid": "elm_cloudburst", "name": "Cloudburst", "chapter": "rain", "sec": 2.39, "band": 0.652, "cover": 1.0, "shades": 12, "mats": 13, "fam": 3, "drift": 18.9}
+{"phase": "verify", "iter": 3, "fid": "elm_drizzle", "name": "Drizzle", "chapter": "rain", "sec": 2.15, "band": 0.68, "cover": 1.0, "shades": 12, "mats": 13, "fam": 3, "drift": 19.1}
+{"phase": "verify", "iter": 3, "fid": "elm_sheet_rain", "name": "Sheet Rain", "chapter": "rain", "sec": 1.9, "band": 0.604, "cover": 1.0, "shades": 11, "mats": 13, "fam": 3, "drift": 18.9}
+{"phase": "verify", "iter": 3, "fid": "elm_monsoon", "name": "Monsoon", "chapter": "rain", "sec": 1.91, "band": 0.56, "cover": 1.0, "shades": 11, "mats": 13, "fam": 3, "drift": 17.8}
+{"phase": "verify", "iter": 3, "fid": "elm_acid_rain", "name": "Acid Rain", "chapter": "rain", "sec": 1.82, "band": 0.458, "cover": 1.0, "shades": 11, "mats": 12, "fam": 3, "drift": 15.0}
+{"phase": "verify", "iter": 3, "fid": "elm_puddle_skin", "name": "Puddle Skin", "chapter": "rain", "sec": 2.14, "band": 0.595, "cover": 1.0, "shades": 12, "mats": 13, "fam": 3, "drift": 19.0}
+{"phase": "verify", "iter": 3, "fid": "elm_dew_field", "name": "Dew Field", "chapter": "rain", "sec": 1.7, "band": 0.88, "cover": 1.0, "shades": 12, "mats": 13, "fam": 3, "drift": 22.2}
+{"phase": "verify", "iter": 3, "fid": "elm_petrichor", "name": "Petrichor", "chapter": "rain", "sec": 1.87, "band": 0.722, "cover": 1.0, "shades": 12, "mats": 13, "fam": 3, "drift": 18.8}
+{"phase": "verify", "iter": 3, "fid": "elm_gutter_race", "name": "Gutter Race", "chapter": "rain", "sec": 2.25, "band": 0.494, "cover": 1.0, "shades": 12, "mats": 13, "fam": 3, "drift": 16.6}
+{"phase": "verify", "iter": 3, "fid": "elm_windscreen", "name": "Windscreen", "chapter": "rain", "sec": 2.41, "band": 0.652, "cover": 1.0, "shades": 12, "mats": 13, "fam": 3, "drift": 20.3}
+{"phase": "verify", "iter": 3, "fid": "elm_virga", "name": "Virga", "chapter": "rain", "sec": 1.99, "band": 0.623, "cover": 1.0, "shades": 12, "mats": 13, "fam": 3, "drift": 18.4}
+{"phase": "verify", "iter": 3, "fid": "elm_blizzard", "name": "Blizzard", "chapter": "frozen", "sec": 2.02, "band": 0.633, "cover": 1.0, "shades": 12, "mats": 12, "fam": 4, "drift": 25.8}
+{"phase": "verify", "iter": 3, "fid": "elm_snowdrift", "name": "Snowdrift", "chapter": "frozen", "sec": 1.87, "band": 0.721, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 26.1}
+{"phase": "verify", "iter": 3, "fid": "elm_sleet", "name": "Sleet", "chapter": "frozen", "sec": 1.89, "band": 0.623, "cover": 1.0, "shades": 12, "mats": 12, "fam": 4, "drift": 26.1}
+{"phase": "verify", "iter": 3, "fid": "elm_hail_damage", "name": "Hail Damage", "chapter": "frozen", "sec": 2.1, "band": 0.767, "cover": 1.0, "shades": 12, "mats": 12, "fam": 4, "drift": 20.7}
+{"phase": "verify", "iter": 3, "fid": "elm_hoarfrost", "name": "Hoarfrost", "chapter": "frozen", "sec": 1.8, "band": 0.463, "cover": 1.0, "shades": 11, "mats": 10, "fam": 4, "drift": 20.1}
+{"phase": "verify", "iter": 3, "fid": "elm_rime_ice", "name": "Rime Ice", "chapter": "frozen", "sec": 1.83, "band": 0.753, "cover": 1.0, "shades": 10, "mats": 13, "fam": 4, "drift": 26.1}
+{"phase": "verify", "iter": 3, "fid": "elm_black_ice", "name": "Black Ice", "chapter": "frozen", "sec": 2.37, "band": 0.614, "cover": 1.0, "shades": 12, "mats": 12, "fam": 4, "drift": 22.2}
+{"phase": "verify", "iter": 3, "fid": "elm_frost_fern", "name": "Frost Fern", "chapter": "frozen", "sec": 1.77, "band": 0.763, "cover": 1.0, "shades": 7, "mats": 12, "fam": 4, "drift": 25.9}
+{"phase": "verify", "iter": 3, "fid": "elm_diamond_dust", "name": "Diamond Dust", "chapter": "frozen", "sec": 1.85, "band": 0.677, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 25.6}
+{"phase": "verify", "iter": 3, "fid": "elm_permafrost", "name": "Permafrost", "chapter": "frozen", "sec": 2.7, "band": 0.597, "cover": 1.0, "shades": 12, "mats": 12, "fam": 4, "drift": 17.9}
+{"phase": "verify", "iter": 3, "fid": "elm_serac_field", "name": "Serac Field", "chapter": "frozen", "sec": 2.61, "band": 0.696, "cover": 1.0, "shades": 12, "mats": 11, "fam": 4, "drift": 19.6}
+{"phase": "verify", "iter": 3, "fid": "elm_graupel", "name": "Graupel", "chapter": "frozen", "sec": 1.75, "band": 0.58, "cover": 1.0, "shades": 12, "mats": 11, "fam": 4, "drift": 22.6}
+{"phase": "verify", "iter": 3, "fid": "elm_tornado_alley", "name": "Tornado Alley", "chapter": "storm", "sec": 2.15, "band": 0.596, "cover": 1.0, "shades": 11, "mats": 14, "fam": 5, "drift": 31.0}
+{"phase": "verify", "iter": 3, "fid": "elm_supercell", "name": "Supercell", "chapter": "storm", "sec": 2.18, "band": 0.518, "cover": 1.0, "shades": 12, "mats": 14, "fam": 5, "drift": 30.0}
+{"phase": "verify", "iter": 3, "fid": "elm_hurricane_eye", "name": "Hurricane Eye", "chapter": "storm", "sec": 1.79, "band": 0.523, "cover": 1.0, "shades": 8, "mats": 15, "fam": 5, "drift": 26.8}
+{"phase": "verify", "iter": 3, "fid": "elm_squall_line", "name": "Squall Line", "chapter": "storm", "sec": 1.78, "band": 0.669, "cover": 1.0, "shades": 11, "mats": 13, "fam": 5, "drift": 32.6}
+{"phase": "verify", "iter": 3, "fid": "elm_gust_front", "name": "Gust Front", "chapter": "storm", "sec": 2.05, "band": 0.636, "cover": 1.0, "shades": 12, "mats": 14, "fam": 5, "drift": 32.3}
+{"phase": "verify", "iter": 3, "fid": "elm_mammatus", "name": "Mammatus", "chapter": "storm", "sec": 1.76, "band": 0.59, "cover": 1.0, "shades": 12, "mats": 14, "fam": 5, "drift": 22.1}
+{"phase": "verify", "iter": 3, "fid": "elm_wall_cloud", "name": "Wall Cloud", "chapter": "storm", "sec": 2.09, "band": 0.6, "cover": 1.0, "shades": 11, "mats": 14, "fam": 5, "drift": 31.5}
+{"phase": "verify", "iter": 3, "fid": "elm_lightning_strike", "name": "Lightning Strike", "chapter": "storm", "sec": 1.87, "band": 0.678, "cover": 1.0, "shades": 7, "mats": 14, "fam": 5, "drift": 29.3}
+{"phase": "verify", "iter": 3, "fid": "elm_thunderhead", "name": "Thunderhead", "chapter": "storm", "sec": 1.99, "band": 0.631, "cover": 1.0, "shades": 12, "mats": 14, "fam": 5, "drift": 32.3}
+{"phase": "verify", "iter": 3, "fid": "elm_microburst", "name": "Microburst", "chapter": "storm", "sec": 1.8, "band": 0.511, "cover": 1.0, "shades": 11, "mats": 15, "fam": 5, "drift": 29.8}
+{"phase": "verify", "iter": 3, "fid": "elm_waterspout", "name": "Waterspout", "chapter": "storm", "sec": 1.84, "band": 0.596, "cover": 1.0, "shades": 12, "mats": 15, "fam": 5, "drift": 29.7}
+{"phase": "verify", "iter": 3, "fid": "elm_derecho", "name": "Derecho", "chapter": "storm", "sec": 1.93, "band": 0.774, "cover": 1.0, "shades": 12, "mats": 14, "fam": 5, "drift": 35.7}
+{"phase": "verify", "iter": 3, "fid": "elm_tsunami", "name": "Tsunami", "chapter": "water", "sec": 2.21, "band": 0.502, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.3}
+{"phase": "verify", "iter": 3, "fid": "elm_breaker", "name": "Breaker", "chapter": "water", "sec": 1.8, "band": 0.646, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.0}
+{"phase": "verify", "iter": 3, "fid": "elm_whitewater", "name": "Whitewater", "chapter": "water", "sec": 1.69, "band": 0.783, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.0}
+{"phase": "verify", "iter": 3, "fid": "elm_tide_race", "name": "Tide Race", "chapter": "water", "sec": 2.43, "band": 0.649, "cover": 1.0, "shades": 11, "mats": 10, "fam": 3, "drift": 5.3}
+{"phase": "verify", "iter": 3, "fid": "elm_storm_surge", "name": "Storm Surge", "chapter": "water", "sec": 1.83, "band": 0.528, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.3}
+{"phase": "verify", "iter": 3, "fid": "elm_riptide", "name": "Riptide", "chapter": "water", "sec": 2.31, "band": 0.671, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.3}
+{"phase": "verify", "iter": 3, "fid": "elm_spindrift", "name": "Spindrift", "chapter": "water", "sec": 1.92, "band": 0.625, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.3}
+{"phase": "verify", "iter": 3, "fid": "elm_whirlpool", "name": "Whirlpool", "chapter": "water", "sec": 2.23, "band": 0.605, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.4}
+{"phase": "verify", "iter": 3, "fid": "elm_chop", "name": "Chop", "chapter": "water", "sec": 1.72, "band": 0.925, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.1}
+{"phase": "verify", "iter": 3, "fid": "elm_glassy_swell", "name": "Glassy Swell", "chapter": "water", "sec": 2.22, "band": 0.47, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.3}
+{"phase": "verify", "iter": 3, "fid": "elm_flood_line", "name": "Flood Line", "chapter": "water", "sec": 1.86, "band": 0.731, "cover": 1.0, "shades": 12, "mats": 10, "fam": 3, "drift": 5.2}
+{"phase": "verify", "iter": 3, "fid": "elm_foam_lace", "name": "Foam Lace", "chapter": "water", "sec": 2.29, "band": 0.776, "cover": 1.0, "shades": 12, "mats": 11, "fam": 3, "drift": 5.5}
+{"phase": "verify", "iter": 3, "fid": "elm_sandstorm", "name": "Sandstorm", "chapter": "dry", "sec": 2.0, "band": 0.598, "cover": 1.0, "shades": 12, "mats": 11, "fam": 3, "drift": 25.2}
+{"phase": "verify", "iter": 3, "fid": "elm_haboob", "name": "Haboob", "chapter": "dry", "sec": 1.92, "band": 0.655, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 27.3}
+{"phase": "verify", "iter": 3, "fid": "elm_dust_devil", "name": "Dust Devil", "chapter": "dry", "sec": 1.85, "band": 0.691, "cover": 1.0, "shades": 12, "mats": 12, "fam": 4, "drift": 28.4}
+{"phase": "verify", "iter": 3, "fid": "elm_heat_shimmer", "name": "Heat Shimmer", "chapter": "dry", "sec": 2.12, "band": 0.588, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 26.4}
+{"phase": "verify", "iter": 3, "fid": "elm_drought_crack", "name": "Drought Crack", "chapter": "dry", "sec": 2.73, "band": 0.609, "cover": 1.0, "shades": 12, "mats": 12, "fam": 4, "drift": 23.0}
+{"phase": "verify", "iter": 3, "fid": "elm_mirage", "name": "Mirage", "chapter": "dry", "sec": 1.98, "band": 0.836, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 30.6}
+{"phase": "verify", "iter": 3, "fid": "elm_dust_veil", "name": "Dust Veil", "chapter": "dry", "sec": 1.86, "band": 0.705, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 27.9}
+{"phase": "verify", "iter": 3, "fid": "elm_salt_haze", "name": "Salt Haze", "chapter": "dry", "sec": 1.81, "band": 0.652, "cover": 1.0, "shades": 12, "mats": 12, "fam": 4, "drift": 23.3}
+{"phase": "verify", "iter": 3, "fid": "elm_harmattan", "name": "Harmattan", "chapter": "dry", "sec": 1.96, "band": 0.769, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 28.8}
+{"phase": "verify", "iter": 3, "fid": "elm_sirocco", "name": "Sirocco", "chapter": "dry", "sec": 2.29, "band": 0.659, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 27.7}
+{"phase": "verify", "iter": 3, "fid": "elm_loess", "name": "Loess", "chapter": "dry", "sec": 1.84, "band": 0.741, "cover": 1.0, "shades": 12, "mats": 13, "fam": 4, "drift": 27.5}
+{"phase": "verify", "iter": 3, "fid": "elm_brownout", "name": "Brownout", "chapter": "dry", "sec": 1.86, "band": 0.483, "cover": 1.0, "shades": 10, "mats": 10, "fam": 3, "drift": 24.7}

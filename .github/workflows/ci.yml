@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # ---- Fast gating checks (must pass) ------------------------------------
+      - name: Runtime mirror drift check
+        run: node scripts/sync-runtime-copies.js --check
+
+      - name: JS syntax checks
+        run: npm run check:js
+
+      # ---- JS lint (report-only) ---------------------------------------------
+      # Runner degrades gracefully if eslint is not installed, so this never
+      # hard-fails the build; it is informational signal only.
+      - name: JS lint (report-only)
+        continue-on-error: true
+        run: node scripts/check-js-lint.mjs
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest ruff black mypy
+
+      # ---- Full test suite ---------------------------------------------------
+      # NOTE: report-only (continue-on-error) while the base/pattern rebuild is
+      # in flight — catalog/quality tests churn as bad finishes are removed and
+      # rebuilt. Once the catalog settles and `pytest tests/` is green, flip
+      # continue-on-error to false to make this a hard gate.
+      - name: Full test suite
+        continue-on-error: true
+        run: python -m pytest tests/ -o addopts= -o filterwarnings= -p no:cacheprovider -q --tb=short -m "not gpu and not integration"
+
+      # ---- tests_v2 ground-up suite (report-only) ----------------------------
+      # The tests_v2/ suite was built ground-up (see SPB_WIKI.html). It runs
+      # with all repo pytest config neutralized so it cannot be affected by
+      # addopts/filterwarnings churn during the catalog rebuild.
+      - name: tests_v2 suite (report-only)
+        continue-on-error: true
+        run: python -m pytest tests_v2/ -o addopts= -o filterwarnings= -p no:cacheprovider -q
+
+      # ---- Catalog validation (HARD GATE 2026-06-03) -------------------------
+      # Promoted from report-only to a hard gate after the MC_DEFS brick: this is the
+      # cheapest check that catches a finish catalog that fails to build before it ships.
+      - name: Catalog validation
+        run: npm run check:catalog
+
+      # ---- Lint / format / types (report-only; never linted before) ----------
+      # These are configured in pyproject.toml but the codebase has never been
+      # run through them, so they start as informational signal. Tighten to
+      # gating incrementally (e.g. ruff first, then black, then mypy).
+      - name: Lint (ruff)
+        continue-on-error: true
+        run: ruff check .
+
+      - name: Format check (black)
+        continue-on-error: true
+        run: black --check .
+
+      - name: Type check (mypy)
+        continue-on-error: true
+        run: mypy engine
+
+      # ---- Dependency vulnerability scanning (report-only) -------------------
+      - name: Python dependency audit (pip-audit)
+        continue-on-error: true
+        run: |
+          pip install pip-audit
+          pip-audit -r requirements.txt
+
+      - name: Node dependency audit (npm audit)
+        continue-on-error: true
+        run: npm audit || true
+
+      # ---- New verification tools (report-only, WIN #45) ---------------------
+      # These run the newly added verification scripts as informational signal
+      # only. They are placed after "Install Python deps" so the doctor lane
+      # (which imports the engine) has its dependencies available. None of these
+      # ever hard-fail the build.
+      - name: Catalog report (report-only)
+        continue-on-error: true
+        run: python scripts/spb_catalog_report.py
+
+      - name: Format check, scripts (report-only)
+        continue-on-error: true
+        run: node scripts/check-format.mjs
+
+      - name: Doctor (report-only)
+        continue-on-error: true
+        run: python scripts/spb_doctor.py

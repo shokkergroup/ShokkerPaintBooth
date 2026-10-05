@@ -30,14 +30,12 @@ Click the **Sponsors** layer to make it active.
 
 Most users want to add their own sponsor logos, not the placeholders. Two ways to do it.
 
-**Method A — File menu:**
-1. `File → Import as Layer` (or `Ctrl+I`).
-2. Pick a PNG or SVG of your sponsor logo. PNG with transparency is best.
-3. The logo arrives as a new layer at the top of the stack, sized at original resolution.
+**Method A — the Layers panel (right column, LAYERS tab):**
+1. Click **+ Layer**.
+2. Pick a PNG, JPG, WebP or GIF of your sponsor logo. PNG with transparency is best.
+3. The logo arrives as a new image layer, sized at original resolution.
 
-**Method B — Drag and drop:**
-1. Drag a PNG file from Windows Explorer directly onto the canvas.
-2. Same result — a new layer at the top.
+**Do not drag the file onto the canvas.** Dropping a .tga/.png/.jpg onto the centre canvas area loads it as your WHOLE PAINT FILE and replaces what you have.
 
 For best results your logo PNG should:
 

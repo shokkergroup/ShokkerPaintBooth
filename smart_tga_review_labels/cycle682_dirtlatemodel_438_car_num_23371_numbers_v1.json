@@ -1,0 +1,3 @@
+{"version":1,"paint_label":"dirtlatemodel 438/car_num_23371.tga","inspection_records":"_smart_tga_runs/cycle682_dlm_instance_assembly_review/inspection_records.json","review_scope":"Cycle 682 source plus complete Number/Sponsor/Template/Paint sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[771,435,29,21],"target_layer":"sponsors","label":"swag_wordmark_fragment_false_number"}
+]}

@@ -1,0 +1,2942 @@
+{
+ "domain": "support",
+ "version": 1,
+ "articles": [
+  {
+   "id": "support.not_in_iracing",
+   "title": "My paint does not show up in iRacing",
+   "domain": "support",
+   "summary": "If iRacing shows the paint-shop colours or a white car, one of nine things is off, and the first three cause most cases: the User ID, the number switch and the car folder. Check them in this order, then press Ctrl+R in iRacing.",
+   "what": "SYMPTOM: you rendered, but in iRacing your car is white, shows the plain paint-shop colours, or still wears the old paint. iRacing never shows an error for this; it simply finds no file with your name on it and falls back. CAUSE: iRacing only loads a file whose name carries YOUR Customer ID, in the folder of the SAME car, with the file name your Hide Car Numbers setting asks for. Any mismatch looks identical on screen, so work down the list from the most likely cause.",
+   "when": [
+    "The car is white or shows the paint-shop colours after a render.",
+    "The car shows an old paint, not the new one.",
+    "Only you cannot see it, or only other drivers cannot see it."
+   ],
+   "how": [
+    "Press Check my setup in the Chat panel. It reads your live settings and the files in your car folder and puts a red mark on the first step that is wrong. Fix what it names, render again, then press Ctrl+R in iRacing. If you prefer to check by hand, continue with the steps below.",
+    "User ID: the iRacing User ID box at the top must hold your Customer ID (4 to 7 digits). In iRacing click the helmet icon top right, then Profile. It is NOT your car number. A wrong but valid ID renders fine and produces files iRacing never loads for you.",
+    "Number switch: in iRacing open Settings > Graphics and look at Hide Car Numbers. ON means iRacing loads car_num_<ID>.tga, so Shokker must be on Custom Number. OFF (the default) means iRacing loads car_<ID>.tga, so Shokker must be on Sim-Stamped Number. If unsure, render once in each mode: both files stay in the folder.",
+    "Car folder: iRacing Car Folder must be the folder of the car you are driving, not a file, not the main paint folder, not a helmet or suit folder. Open the car menu next to it, pick your car, and read the folder name. Run the car once in iRacing first if no folder exists yet.",
+    "Copy check: press RENDER and wait for the green Saved bar. Then press Show my files on that bar: your paint file and car_spec_<ID>.tga should be in the folder. No Saved bar, or no files, means the render failed (read the red message) or no car folder was set.",
+    "Reload: switch to iRacing, be in a session with your car, and press Ctrl+R (Reload Car Textures). In a replay your car must not be in its pit stall. If you changed Hide Car Numbers, restart iRacing first.",
+    "Size and format: the paint must be 2048 by 2048 (or 1024 by 1024) and a real TGA. A resized canvas or a renamed PNG is silently ignored. If the car shows black or partly missing, render again from the car template; cars with paintable glass need the glass alpha filled.",
+    "Trading Paints: if its Downloader is running with Update My Own Paints on, it may swap files in the same folder. Close it while you test. Other drivers cannot see your paint unless your files are in THEIR paint folder, which is what Trading Paints does."
+   ],
+   "controls": [
+    {
+     "label": "iRacing User ID",
+     "range": "4 to 7 digits",
+     "default": "empty",
+     "effect": "Your iRacing Customer ID. Names every file Shokker writes.",
+     "inv": "iracingId"
+    },
+    {
+     "label": "Custom Number / Sim-Stamped Number",
+     "range": "one of two",
+     "default": "see the switch",
+     "effect": "Only chooses the file name: car_num_<ID>.tga or car_<ID>.tga.",
+     "inv": "useCustomNumberCheckbox"
+    },
+    {
+     "label": "iRacing Car Folder",
+     "range": "a car folder",
+     "default": "empty",
+     "effect": "Where RENDER copies the files. Must be the folder of the car you drive.",
+     "inv": "outputDir"
+    },
+    {
+     "label": "Check my setup",
+     "range": "",
+     "default": "",
+     "effect": "Free offline checklist that reads your real settings and folder."
+    }
+   ],
+   "tips": [
+    "Render once on each number mode when you are not sure what iRacing wants; both files stay in the folder and iRacing picks the one it needs.",
+    "After Windows or iRacing updates, look at Hide Car Numbers again: updates can switch it back.",
+    "The checklist can offer one-click fixes: fill the ID from your folder, switch the number mode, open the car menu, switch template layers off."
+   ],
+   "pitfalls": [
+    "Do not type your car number into the ID box. The ID is your Customer ID.",
+    "Shokker cannot read iRacing settings such as Hide Car Numbers; only you can look at them.",
+    "Loading someone else's project can overwrite your ID and car folder with theirs. Check both after loading."
+   ],
+   "related": [
+    "preview_render.reload_in_iracing",
+    "preview_render.number_modes",
+    "preview_render.where_files_go",
+    "support.lost_files",
+    "support.trading_paints",
+    "support.error_messages",
+    "ui_shell.number_modes",
+    "ui_shell.car_folder"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "iracingId"
+    },
+    {
+     "do": "control",
+     "id": "useCustomNumberCheckbox"
+    },
+    {
+     "do": "control",
+     "id": "useSimStampedCheckbox",
+     "label": "SIM-STAMPED NUMBER switch"
+    },
+    {
+     "do": "control",
+     "id": "outputDir"
+    },
+    {
+     "do": "control",
+     "id": "carPickBtn",
+     "label": "Pick detected iRacing car button"
+    }
+   ],
+   "figures": [
+    "g10_file_naming",
+    "g09_render_export_flow"
+   ],
+   "covers": [
+    "iracingId",
+    "useCustomNumberCheckbox",
+    "useSimStampedCheckbox",
+    "outputDir",
+    "carPickBtn",
+    "doc.10.support_checklist_when_my_paint_does_not_show_in_iracing_mos"
+   ],
+   "sources": [
+    "docs/ai_knowledge/10_support_troubleshooting.md:11",
+    "docs/ai_knowledge/10_support_troubleshooting.md:14",
+    "docs/ai_knowledge/10_support_troubleshooting.md:17",
+    "docs/ai_knowledge/10_support_troubleshooting.md:20",
+    "docs/ai_knowledge/10_support_troubleshooting.md:23",
+    "docs/ai_knowledge/10_support_troubleshooting.md:26",
+    "js/spb-support.js:190",
+    "js/spb-support.js:199",
+    "js/spb-support.js:217",
+    "js/spb-chat-studio.js:40"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "paint does not show in iracing",
+    "my paint is not showing in iracing",
+    "paint not showing",
+    "white car in iracing",
+    "my car is white",
+    "car is white in iracing",
+    "shows paint shop colors",
+    "paint shop colours",
+    "not in iracing",
+    "nothing shows up in iracing",
+    "iracing not loading my paint",
+    "my skin is not showing",
+    "livery not showing in iracing",
+    "iracing shows old paint",
+    "my paint wont load",
+    "paint doesnt show up",
+    "iracing ignores my paint",
+    "wrong paint in iracing",
+    "default paint in iracing",
+    "paint not showing in iracing",
+    "iracing shows default paint",
+    "stock paint ingame",
+    "cant see my paint in iracing",
+    "paint missing ingame",
+    "default paint ingame"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Every cause, most likely first",
+     "body": "1. Wrong User ID (a car number or a made-up number instead of your Customer ID). 2. Number switch does not match iRacing Hide Car Numbers. 3. Car folder is not the folder of the car you are driving. 4. The render never finished or never copied (no green Saved bar). 5. You did not reload (Ctrl+R in iRacing) or did not restart iRacing after changing Hide Car Numbers. 6. The paint is the wrong size or not a real TGA. 7. Black or missing parts: the glass alpha was not filled. 8. Trading Paints Downloader swapped the files. 9. Someone else's project overwrote your ID and folder. iRacing shows no error for any of them."
+    },
+    {
+     "heading": "How to confirm the fix",
+     "body": "After RENDER press Show my files on the green Saved bar. You should see your paint (car_num_<ID>.tga or car_<ID>.tga) and car_spec_<ID>.tga, newer than your last change, and the ID in the file name must be yours. Then press Ctrl+R in iRacing with your car on track. If the car changes, it was a reload problem; if not, go back to the cause list."
+    },
+    {
+     "heading": "Why the order matters",
+     "body": "A wrong but valid ID renders perfectly and produces files iRacing never loads for you, so the render looks healthy while nothing appears. Fix the cheap checks (ID, switch, folder) first; they cause most cases."
+    }
+   ],
+   "examples": [
+    {
+     "title": "The car number typed as the ID",
+     "goal": "Find why a green render shows nothing",
+     "settings": {
+      "Symptom": "Saved bar is green, car is white in iRacing",
+      "Check": "iRacing User ID box holds the car number (for example 7)",
+      "Fix": "Type your Customer ID (4 to 7 digits, helmet icon > Profile in iRacing), RENDER again, Ctrl+R in iRacing"
+     },
+     "result": "The new files carry your ID and iRacing loads them."
+    },
+    {
+     "title": "Hide Car Numbers ON but Sim-Stamped selected",
+     "goal": "Match the number switch",
+     "settings": {
+      "iRacing": "Settings > Graphics > Hide Car Numbers ON",
+      "Shokker": "Switch to Custom Number (writes car_num_<ID>.tga)",
+      "Then": "RENDER, restart iRacing if you just changed the setting, Ctrl+R"
+     },
+     "result": "iRacing finds car_num_<ID>.tga and shows your paint."
+    },
+    {
+     "title": "Not sure which mode iRacing wants",
+     "goal": "Cover both cases",
+     "settings": {
+      "Do": "Render once in Custom Number, then once in Sim-Stamped Number"
+     },
+     "result": "Both files stay in the folder and iRacing loads the one it needs."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does iRacing not show an error?",
+     "a": "It simply finds no file with your name on it and falls back to the paint-shop colours."
+    },
+    {
+     "q": "Is the User ID my car number?",
+     "a": "No. It is your iRacing Customer ID, 4 to 7 digits."
+    },
+    {
+     "q": "Can Shokker read my Hide Car Numbers setting?",
+     "a": "No. Only you can look at it in iRacing."
+    },
+    {
+     "q": "Is there a quick way to check all this?",
+     "a": "Yes. Press Check my setup in the Chat panel; it reads your settings and folder and marks the first wrong step."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Paint appears for you but not for other drivers",
+     "cause": "iRacing only shows other drivers the files in their paint folder",
+     "fix": "That is what Trading Paints does; see the Trading Paints article."
+    },
+    {
+     "symptom": "Paint disappears after loading a friend's project",
+     "cause": "It overwrote your ID and car folder",
+     "fix": "Check both boxes after loading any project."
+    }
+   ],
+   "protips": [
+    "Do the checks in order and render after each fix. Changing three things at once hides which one mattered."
+   ],
+   "screens": [
+    "ui_header_rows"
+   ]
+  },
+  {
+   "id": "support.colours_differ",
+   "title": "My colours look different in iRacing",
+   "domain": "support",
+   "summary": "iRacing lights the car with sun, shadow and materials, and it multiplies paint by the metal in the spec map. So metal needs a light paint under it, chrome needs a bright sky, and template guide layers must be off.",
+   "what": "SYMPTOM: the car in iRacing looks darker, greyer, flatter or sparklier than the Shokker preview, or shows lines and numbers you did not paint. CAUSE: the Shokker preview is a quick flat picture. iRacing adds sun, shadows, reflections and its own stamped numbers and sponsors, and it combines your paint with the spec map. Most colour surprises come from the spec (metal and shine), from template guide layers left on, or from stamped items.",
+   "when": [
+    "Chrome or metal looks dark or flat in the sim.",
+    "There are template lines, masks or a wire outline on the car.",
+    "Numbers or sponsors appear twice, or look sparkly.",
+    "The colour looks right but duller or hotter than the preview."
+   ],
+   "how": [
+    "Chrome or metal looks dark: iRacing multiplies the paint by the metal, so the paint under a metallic part must be near white. Look at the R METAL view in the preview: metal should be bright red (about 255), and the G ROUGH view should be near black (roughness near 0). Blue 255 in the coat view means a dull coat.",
+    "Chrome looks grey on a cloudy track: flat mirror metal reflects the sky. That is correct behaviour; try the car on a track with a brighter sky before changing the finish.",
+    "Template lines or masks on the car: in the Layers panel switch OFF Wire, Mask, Car_Mandatory and everything in the group named Turn Off Before Exporting TGA. Render again.",
+    "Numbers or sponsors twice or sparkly: iRacing stamps its own numbers and sponsors on top. Switch off any number or sponsor layer of the template that you do not want painted, and remember that stamped items take the material of whatever the spec has under them. The Decal Rescue Kit (toolbar) puts a plain non-metal spec under stamped numbers and sponsors while keeping your paint.",
+    "No shine at all: check that car_spec_<ID>.tga exists and is new (Show my files after a render), then press Ctrl+R in iRacing. If the shine still looks old, move car_spec_<ID>.mip out of the folder and reload.",
+    "Render again after every fix and press Ctrl+R in iRacing. Judge the car at driving distance, not zoomed in."
+   ],
+   "controls": [
+    {
+     "label": "R METAL / G ROUGH / B COAT views",
+     "range": "",
+     "default": "COMBINED",
+     "effect": "Show each spec channel on its own so you can see metal, roughness and coat.",
+     "inv": "pro.preview.r_metal"
+    },
+    {
+     "label": "Decal Rescue Kit",
+     "range": "",
+     "default": "",
+     "effect": "Puts a flat, satin or gloss non-metal spec under stamped numbers and sponsors.",
+     "inv": "pro.toolbar.decal_rescue_kit"
+    }
+   ],
+   "tips": [
+    "Compare the spec channel views, not only the colour view; most differences hide in the spec.",
+    "If chrome looks dull, try a lighter body colour under it, or a Foundation chrome finish with Source colours kept."
+   ],
+   "pitfalls": [
+    "Do not repaint your colours to fix a lighting difference; fix the spec or the template layers first.",
+    "A spec file older than your last change makes the sim show old shine. Render, then Ctrl+R."
+   ],
+   "related": [
+    "spec.channel_r_metallic",
+    "spec.channel_g_roughness",
+    "spec.channel_b_clearcoat",
+    "spec.paint_spec_marriage",
+    "support.numbers_vanished",
+    "support.preview_render_mismatch",
+    "support.flat_or_shiny"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.toolbar.decal_rescue_kit"
+    }
+   ],
+   "figures": [
+    "g01_spec_channels",
+    "g16_foundation_spec_only"
+   ],
+   "covers": [
+    "pro.preview.r_metal",
+    "pro.preview.g_rough",
+    "pro.preview.b_coat",
+    "pro.toolbar.decal_rescue_kit",
+    "doc.10.support_the_paint_looks_different_in_iracing_than_in_shokker"
+   ],
+   "sources": [
+    "docs/ai_knowledge/10_support_troubleshooting.md:29",
+    "docs/ai_knowledge/10_support_troubleshooting.md:30",
+    "docs/ai_knowledge/10_support_troubleshooting.md:31",
+    "docs/ai_knowledge/10_support_troubleshooting.md:32",
+    "docs/ai_knowledge/10_support_troubleshooting.md:33",
+    "paint-booth-v2.html:2397",
+    "engine/SPEC_MAP_REFERENCE.md:15"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "colors look different in iracing",
+    "colours look different",
+    "colors dont match",
+    "colour mismatch",
+    "wrong colors in iracing",
+    "paint looks darker in iracing",
+    "chrome looks dark in iracing",
+    "chrome looks grey",
+    "chrome looks gray",
+    "metal looks dull in iracing",
+    "lines on my car",
+    "template lines on car",
+    "wire frame on car",
+    "wireframe showing in iracing",
+    "colors faded in iracing",
+    "paint looks washed out",
+    "colours look different ingame",
+    "colours dont match iracing",
+    "colours off in the sim",
+    "colours wrong ingame"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Every cause",
+     "body": "Darker or greyer: metal over a dark paint (iRacing multiplies paint by the metal), or a cloudy sky. Lines or masks on the car: template guide layers left on. Numbers twice or sparkly: iRacing stamps its own numbers and sponsors with the material of the spec under them. Sparkly or flat everywhere: the spec, not the colour. No shine: an old or missing spec file. The preview itself is only a quick flat picture."
+    },
+    {
+     "heading": "Where to look first",
+     "body": "Switch the preview views to R METAL, G ROUGH and B COAT. Metal should be bright red (about 255) on chrome and G ROUGH near black. Most differences hide in these views, not in the colour view."
+    },
+    {
+     "heading": "How to confirm",
+     "body": "After the fix, render again, press Ctrl+R in iRacing and judge at driving distance. A spec file newer than your last change in Show my files means the sim has the new shine."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Chrome hood looks dark",
+     "goal": "Make chrome read in the sim",
+     "settings": {
+      "Check": "R METAL bright red, G ROUGH near black",
+      "Fix": "Lighten the body colour under it, or use a Foundation chrome finish with Source colours kept",
+      "Then": "RENDER, Ctrl+R"
+     },
+     "result": "Brighter chrome. On an overcast track mirror chrome can still look grey; that is the sky."
+    },
+    {
+     "title": "Lines across the car",
+     "goal": "Remove guide lines",
+     "settings": {
+      "Layers panel": "Switch OFF Wire, Mask, Car_Mandatory and the group Turn Off Before Exporting TGA",
+      "Then": "RENDER again"
+     },
+     "result": "The lines are gone from the file."
+    },
+    {
+     "title": "Sparkly numbers",
+     "goal": "Calm stamped numbers",
+     "settings": {
+      "Where": "Decal Rescue Kit in the toolbar",
+      "Choose": "Flat, satin or gloss non-metal spec"
+     },
+     "result": "Numbers get a plain spec while your paint stays."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Should I repaint my colours to match?",
+     "a": "No. Fix the spec or the template layers first."
+    },
+    {
+     "q": "Why is mirror chrome grey on a cloudy track?",
+     "a": "Flat mirror metal reflects the sky. Try a track with a brighter sky."
+    },
+    {
+     "q": "What if there is no shine at all?",
+     "a": "Check car_spec_<ID>.tga exists and is new, then Ctrl+R. If it still looks old, move car_spec_<ID>.mip out of the folder and reload."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Judging colour from the zoomed-in preview",
+     "cause": "The sim adds light and shadow",
+     "fix": "Judge in the sim at driving distance."
+    },
+    {
+     "symptom": "Old shine in the sim",
+     "cause": "The spec file is older than your change",
+     "fix": "Render, then Ctrl+R."
+    }
+   ],
+   "protips": [
+    "Compare the three spec views, not only the colour view. Most surprises are in the spec."
+   ],
+   "screens": [
+    "pair_wire_mask_visible"
+   ]
+  },
+  {
+   "id": "support.flat_or_shiny",
+   "title": "The finish looks flat or too shiny",
+   "domain": "support",
+   "summary": "Shine lives in the spec map: green is roughness (0 is a mirror), blue is clearcoat (16 is the glossiest, higher is duller) and red is metal. Look at those three views, then change the finish or nudge the zone sliders.",
+   "what": "SYMPTOM: a finish that should be glossy looks dead and flat, or one that should be satin throws a harsh mirror shine. CAUSE: colour is only half of a finish; the spec map decides how shiny it is, and the numbers run in ways that surprise people. Roughness 0 is a perfect mirror and 255 is flat matte. Clearcoat is backwards: 16 is the glossiest coat, 255 is the dullest, and 0 means no coat. A zone can also be fading the spec on purpose, or another zone can sit above it.",
+   "when": [
+    "A candy or chrome zone looks like plain paint.",
+    "A matte or satin zone looks like a mirror.",
+    "Two zones that should differ look the same.",
+    "The preview looks glossy but the sim looks dull."
+   ],
+   "how": [
+    "Open the preview views G ROUGH and B COAT. In G ROUGH black is a mirror and white is matte; in B COAT dark is a glossy coat. This tells you which channel is off.",
+    "Open the zone and check SPEC STRENGTH. At 100 percent the finish spec is full; lower values fade it toward neutral, which looks flat. Raise it back in steps of 5.",
+    "Nudge the three SPEC sliders (R METAL, G ROUGH, B COAT) in steps of 5 until the preview views look right. Large shifts can cancel the finish, so prefer a better finish over big slider moves.",
+    "If the finish itself is wrong for the look, pick another: Chrome and Mirror finishes for mirror shine, Satin and Matte for low shine, Candy for deep clearcoat.",
+    "Check that no zone above it covers it, and that INDEPENDENT SPEC is not hiding a change you made on the base (see the zones article).",
+    "Render, press Ctrl+R in iRacing, and judge there. Flat mirror chrome on an overcast track can look grey; that is lighting, not a bug."
+   ],
+   "controls": [
+    {
+     "label": "SPEC STRENGTH",
+     "range": "0 to 100 percent, step 5",
+     "default": "100",
+     "effect": "Fades the finish spec toward neutral. Lower looks flatter.",
+     "inv": "zone.spec_strength"
+    },
+    {
+     "label": "R METAL / G ROUGH / B COAT",
+     "range": "-127 to 127, step 5",
+     "default": "0",
+     "effect": "Add to or subtract from the finish spec under the zone; the app then clips to safe limits.",
+     "inv": "zone.r_metal"
+    },
+    {
+     "label": "G ROUGH",
+     "range": "-127 to 127",
+     "default": "0",
+     "effect": "Negative values make it shinier, positive values make it duller.",
+     "inv": "zone.g_rough"
+    },
+    {
+     "label": "B COAT",
+     "range": "-127 to 127",
+     "default": "0",
+     "effect": "Moves the clearcoat; the glossiest coat is 16, higher is duller.",
+     "inv": "zone.b_coat"
+    }
+   ],
+   "tips": [
+    "Roughness reference points: chrome near 2, gloss near 30, satin near 95, Matte near 200.",
+    "Only mirror-level metal may go below roughness 15, and a coat value of 1 to 15 is lifted to 16 by Shokker."
+   ],
+   "pitfalls": [
+    "Strength 0 is neutral, not zero shine.",
+    "Resizing a spec picture in another program can create forbidden values; render again instead.",
+    "Do not judge shine in the colour view; it cannot show a mirror."
+   ],
+   "related": [
+    "spec.channel_g_roughness",
+    "spec.channel_b_clearcoat",
+    "spec.strength_and_independent",
+    "spec.channel_sliders",
+    "spec.iron_rules",
+    "support.colours_differ",
+    "support.zone_no_show"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.spec_strength"
+    },
+    {
+     "do": "control",
+     "id": "zone.r_metal"
+    },
+    {
+     "do": "control",
+     "id": "zone.g_rough"
+    },
+    {
+     "do": "control",
+     "id": "zone.b_coat"
+    }
+   ],
+   "figures": [
+    "g02_roughness_scale",
+    "g03_clearcoat_scale",
+    "g01_spec_channels"
+   ],
+   "covers": [
+    "zone.spec_strength",
+    "zone.r_metal",
+    "zone.g_rough",
+    "zone.b_coat",
+    "doc.03.recipe_why_does_it_look_flat_wrong_nothing_changed"
+   ],
+   "sources": [
+    "engine/SPEC_MAP_REFERENCE.md:7",
+    "engine/SPEC_MAP_REFERENCE.md:15",
+    "engine/SPEC_MAP_REFERENCE.md:36",
+    "docs/ai_knowledge/10_support_troubleshooting.md:48",
+    "data/encyclopedia/spec.json:2"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "finish looks flat",
+    "finish too shiny",
+    "too glossy",
+    "not shiny enough",
+    "no shine",
+    "looks dull",
+    "looks matte but should be glossy",
+    "chrome not shiny",
+    "candy looks flat",
+    "finish looks plain",
+    "finish looks like normal paint",
+    "metal not showing",
+    "gloss not working",
+    "shine not showing in iracing",
+    "why is my car not shiny",
+    "looks plastic",
+    "too shiny",
+    "too reflective",
+    "dull ingame",
+    "no shine ingame",
+    "car too reflective",
+    "paint dull in the sim",
+    "finish flat",
+    "spec map looks wrong",
+    "spec map looks wrong in iracing",
+    "spec looks wrong in the sim",
+    "spec map wrong in game",
+    "spec not working in iracing",
+    "shine looks wrong in iracing"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Every cause",
+     "body": "The finish is the wrong one for the look. SPEC STRENGTH is below 100 percent so the finish fades to neutral. A SPEC slider (R METAL, G ROUGH, B COAT) was pushed the wrong way. A zone above it covers it. INDEPENDENT SPEC is hiding a change made on the base. The preview colour view cannot show a mirror at all."
+    },
+    {
+     "heading": "The numbers",
+     "body": "Roughness 0 is a perfect mirror and 255 is flat matte; reference points are chrome near 2, gloss near 30, satin near 95, Matte near 200. Clearcoat is backwards: 16 is the glossiest, 255 the dullest, 0 means no coat. Metal is red, with 255 full metal."
+    },
+    {
+     "heading": "How to confirm",
+     "body": "Open G ROUGH and B COAT in the preview. Black in G ROUGH is a mirror; dark in B COAT is a glossy coat. When those match your intent, render and check in the sim."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Gloss that looks dead",
+     "goal": "Bring the shine back",
+     "settings": {
+      "SPEC STRENGTH": "Raise back to 100 in steps of 5",
+      "G ROUGH slider": "Negative values make it shinier",
+      "Check": "B COAT dark"
+     },
+     "result": "A tighter, brighter highlight."
+    },
+    {
+     "title": "Satin that throws a harsh mirror",
+     "goal": "Soften",
+     "settings": {
+      "Finish": "Satin or Matte",
+      "G ROUGH slider": "Positive values make it duller"
+     },
+     "result": "A soft sheen near roughness 95."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does Strength 0 mean no shine?",
+     "a": "No. Strength 0 is neutral, not zero shine."
+    },
+    {
+     "q": "Which slider range is there?",
+     "a": "-127 to 127 in steps of 5; Shokker then clips to safe limits."
+    },
+    {
+     "q": "Why change the finish rather than the sliders?",
+     "a": "Large slider moves can cancel the finish; a better finish is cleaner."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Spec looks wrong after resizing a spec picture elsewhere",
+     "cause": "Resizing can create forbidden values",
+     "fix": "Render again instead."
+    },
+    {
+     "symptom": "Coat value 1 to 15 does not stay",
+     "cause": "Shokker lifts 1 to 15 to 16",
+     "fix": "Use 0 for no coat or 16 and up."
+    }
+   ],
+   "protips": [
+    "Move one slider by 5 at a time and watch the spec views. Big jumps hide what each one does."
+   ],
+   "screens": [
+    "spec_wear"
+   ]
+  },
+  {
+   "id": "support.zone_no_show",
+   "title": "My zone does not show / nothing changed",
+   "domain": "support",
+   "summary": "When a zone seems to do nothing, check in this order: is it muted, does it have a colour and a finish, does a zone above it cover the same pixels, is it limited to a hidden layer, and is the preview stale (press F5).",
+   "what": "SYMPTOM: you set up a zone and the car looks the same. CAUSE: the zone is not claiming any pixels, or something else claims them first, or the finish only changes the spec and not the colour, or the picture on screen is stale. Zones are checked top to bottom and the LOWER zone number wins when two zones want the same pixel.",
+   "when": [
+    "You added a zone and the car did not change.",
+    "A finish looks right in the card but not on the car.",
+    "Only part of the area changed."
+   ],
+   "how": [
+    "Read the message on the zone card; it names the missing piece (colour, finish or area).",
+    "Click the eye icon: a muted zone is skipped by the preview and by RENDER.",
+    "Give the zone BOTH a colour (Pick + Add on the paint, or a layer or a box) AND a finish. A render with a zone missing either says: To render: pick a color on the paint (Pick + Add), then assign a Finish from the library to each zone. Both are required.",
+    "If another zone overlaps, drag your zone higher in the list (or mute the others to test). Everything Else must stay at the bottom.",
+    "If the colour only catches part of the area, raise the colour tolerance.",
+    "If the zone is limited to a layer, make sure that layer is visible and still exists. A zone limited to a missing layer paints nothing on purpose. Clear Restrict to layer to test.",
+    "Check Base Strength is above 0 (at 0 the finish adds nothing, so the zone looks unchanged) and that you did not pick a Foundation finish with Source colours kept: those change the shine only and leave the colour exactly as it was, on purpose.",
+    "Press F5 over the preview to rebuild it, then render. If you used Spec Sculpt, or imported a spec map, the main render may keep that spec and ignore your zones for shine; clear the imported spec map in Settings."
+   ],
+   "controls": [
+    {
+     "label": "Eye icon (mute)",
+     "range": "on or off",
+     "default": "on",
+     "effect": "A muted zone is skipped by the preview and by RENDER.",
+     "inv": "zone.mute"
+    },
+    {
+     "label": "Intensity",
+     "range": "10 to 100, in tens",
+     "default": "100",
+     "effect": "Shown as a percentage badge on the zone card. It is set by presets, Rand and Apply Finish to All; there is no slider for it, so it is almost never why a zone is hidden.",
+     "inv": "zone.intensity"
+    },
+    {
+     "label": "Colour mode",
+     "range": "",
+     "default": "",
+     "effect": "Foundation finishes with Source colours change only the spec map, by design.",
+     "inv": "zone.base_color_mode"
+    }
+   ],
+   "tips": [
+    "To test fast: mute every other zone and see whether this one shows.",
+    "A zone is a name for a set of pixels plus a look; if it claims no pixels, no finish can show."
+   ],
+   "pitfalls": [
+    "The RENDER button is never greyed for a missing zone; it shows the message instead.",
+    "Muted zones are skipped even in the render."
+   ],
+   "related": [
+    "zones.not_showing",
+    "zones.priority",
+    "zones.restrict_layers",
+    "zones.everything_else",
+    "zones.tolerance",
+    "support.preview_render_mismatch",
+    "support.error_messages"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.mute"
+    },
+    {
+     "do": "control",
+     "id": "zone.intensity"
+    },
+    {
+     "do": "control",
+     "id": "btnPreviewRefresh",
+     "label": "Refresh button"
+    }
+   ],
+   "figures": [
+    "g05_zone_priority",
+    "g06_zone_selectors"
+   ],
+   "covers": [
+    "zone.mute",
+    "zone.intensity",
+    "zone.base_color_mode",
+    "btnPreviewRefresh",
+    "doc.03.recipe_why_does_it_look_flat_wrong_nothing_changed"
+   ],
+   "sources": [
+    "docs/ai_knowledge/10_support_troubleshooting.md:36",
+    "js/spb-support-answers.js:145",
+    "js/spb-support-answers.js:155",
+    "paint-booth-5-api-render.js:3523",
+    "docs/ai_knowledge/09_field_playbook.md:28",
+    "js/spb-support.js:268",
+    "js/spb-support.js:276"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "my zone doesnt show",
+    "nothing changed",
+    "nothing happens",
+    "finish has no effect",
+    "zone has no effect",
+    "changes dont show",
+    "why is my zone invisible",
+    "my finish isnt showing",
+    "colour didnt change",
+    "color didnt change",
+    "zone paints nothing",
+    "render looks same as source",
+    "zone no show"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Every cause in order",
+     "body": "1. The eye icon has the zone muted. 2. It lacks a colour or a finish. 3. A zone higher in the list claims the same pixels (the lower number wins). 4. Colour tolerance catches only part of the area. 5. It is limited to a layer that is hidden or missing, which paints nothing on purpose. 6. Base Strength is 0. 7. The finish is a Foundation finish with Source colours kept, which changes the shine only. 8. The preview is stale. 9. A saved Spec Sculpt or imported spec map holds the shine."
+    },
+    {
+     "heading": "The fastest test",
+     "body": "Mute every other zone. If your zone shows, an overlap is the cause; drag it higher. If it still shows nothing, read the message on its card, which names the missing piece."
+    },
+    {
+     "heading": "How to confirm",
+     "body": "After the fix the preview changes. Press F5 to rebuild it, then RENDER. RENDER is never greyed for a missing zone; it shows a message instead."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Zone with a colour but no finish",
+     "goal": "Make it appear",
+     "settings": {
+      "Message": "To render: pick a color on the paint (Pick + Add), then assign a Finish from the library to each zone",
+      "Fix": "Pick a finish for the zone"
+     },
+     "result": "The zone claims pixels and shows."
+    },
+    {
+     "title": "Hidden by a zone above",
+     "goal": "Win the pixels",
+     "settings": {
+      "Fix": "Drag the zone higher in the list; keep Everything Else at the bottom"
+     },
+     "result": "Your zone wins the shared pixels."
+    },
+    {
+     "title": "Limited to a layer that is gone",
+     "goal": "Find the empty restriction",
+     "settings": {
+      "Test": "Clear Restrict to layer"
+     },
+     "result": "It paints again, which shows the restriction was the cause."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does a Foundation finish change nothing visible?",
+     "a": "By design it changes the shine only and leaves the colour as it was."
+    },
+    {
+     "q": "Does a muted zone render?",
+     "a": "No. It is skipped in the preview and in RENDER."
+    },
+    {
+     "q": "What does Base Strength 0 do?",
+     "a": "The finish adds nothing, so the zone looks like the paint under it even when it is set up correctly."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Only part of the area changes",
+     "cause": "Colour tolerance too low",
+     "fix": "Raise it."
+    },
+    {
+     "symptom": "Shine ignores your zones",
+     "cause": "A saved Spec Sculpt keeps its own spec",
+     "fix": "Clear the imported spec map in Settings."
+    }
+   ],
+   "protips": [
+    "A zone is a set of pixels plus a look. If it claims no pixels, no finish can show."
+   ],
+   "screens": [
+    "ui_toolbar_menus"
+   ]
+  },
+  {
+   "id": "support.render_slow_or_fails",
+   "title": "Render is slow or fails",
+   "domain": "support",
+   "summary": "A normal render takes seconds to about a minute. If RENDER will not start, the message names the first thing missing; if it fails, think too many zones, a busy engine or a file held by another program.",
+   "what": "SYMPTOM: the render never finishes, stops with a red message, or RENDER refuses to start. CAUSE: Shokker checks a fixed list before it starts (paint open, engine running, User ID, a zone with colour and finish). After it starts, time and memory depend on how many zones, masks and stacked effects you use. Shokker gives up after 5 minutes.",
+   "when": [
+    "RENDER does nothing or shows a short message.",
+    "The render takes more than two minutes.",
+    "A red banner appears after you press RENDER."
+   ],
+   "how": [
+    "If RENDER will not start, the checks run in this order: a render is already running (wait), the button says OPEN PAINT FIRST or LOADING PAINT (open the template and wait), the engine is offline (wait 10 seconds), Source Paint needs a full path, the iRacing User ID is empty or not 4 to 7 digits, no zone has both a colour and a finish.",
+    "If the render is slow, count your zones and merge zones that share one look. Every zone that has its own painted area (a region, a layer or a part) uses memory; about 20 is the limit.",
+    "Hide a zone with its eye icon to find the slow finish. Remove spec patterns you do not need.",
+    "If it is stuck, press Terminate when it appears, wait about a minute, then render again. Terminate only stops Shokker waiting; the engine still finishes and still copies the files into iRacing.",
+    "If a copy fails (permission error or copy verification failed), another program is holding the file. Close the iRacing paint preview or 3D Car Viewer and any image viewer that has the TGA open, then render again.",
+    "If it says the engine is not answering, wait 10 seconds. If it stays down, close Shokker fully and open it again. Antivirus software can block the paint engine.",
+    "Read the exact message and look it up in the error messages article. If one finish is far slower than the rest, use Settings gear then Report a Problem."
+   ],
+   "controls": [
+    {
+     "label": "RENDER",
+     "range": "",
+     "default": "",
+     "effect": "Starts the render after the pre-flight checks.",
+     "inv": "btnRender"
+    },
+    {
+     "label": "Terminate",
+     "range": "",
+     "default": "",
+     "effect": "Stops the app waiting; the engine still finishes.",
+     "inv": "support.terminate"
+    }
+   ],
+   "tips": [
+    "Fewer zones with a good colour tolerance beat many tiny zones.",
+    "Undo the last design if a render started failing right after it."
+   ],
+   "pitfalls": [
+    "Pressing RENDER again and again does not help; a new render during a running one says render_busy.",
+    "After 5 minutes the render times out: simplify the design."
+   ],
+   "related": [
+    "preview_render.render_slow",
+    "preview_render.render_button",
+    "support.error_messages",
+    "support.reporting_problem",
+    "support.lost_files"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "btnRender"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "btnRender",
+    "support.terminate",
+    "doc.10.support_the_render_button_will_not_start_guards_in_the_order"
+   ],
+   "sources": [
+    "docs/ai_knowledge/10_support_troubleshooting.md:36",
+    "docs/ai_knowledge/10_support_troubleshooting.md:39",
+    "js/spb-support-answers.js:143",
+    "js/spb-support-answers.js:148",
+    "js/spb-support-answers.js:149",
+    "js/spb-support-answers.js:150",
+    "paint-booth-5-api-render.js:3438",
+    "paint-booth-5-api-render.js:3523",
+    "server.py:5577"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "render fails",
+    "render stuck",
+    "render never finishes",
+    "render wont start",
+    "render button does nothing",
+    "render button not working",
+    "render timed out",
+    "render error",
+    "cant render",
+    "cannot render",
+    "why wont it render",
+    "render hangs",
+    "render freezes",
+    "render failed",
+    "render crashed",
+    "render crash",
+    "render problems"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Cannot start: the checks in order",
+     "body": "A render is already running; the button says OPEN PAINT FIRST or LOADING PAINT; the engine is offline (wait 10 seconds); Source Paint needs a full path; the User ID is empty or not 4 to 7 digits; no zone has both a colour and a finish. The message names the first one that fails."
+    },
+    {
+     "heading": "Starts but fails or crawls",
+     "body": "Too many zones with their own painted area (about 20 is the limit), a very slow stacked finish, a file held by another program (permission error, copy verification failed), or the 5-minute timeout. Terminate only stops Shokker waiting; the engine finishes and still copies the files."
+    },
+    {
+     "heading": "How to confirm",
+     "body": "A good render ends with the green Saved bar. Press Show my files and check that the files are new."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Too many zones",
+     "goal": "Make a slow design render",
+     "settings": {
+      "Count": "Zones with a region, layer or part",
+      "Fix": "Merge zones that share a look; hide a zone with its eye icon to find the slow finish"
+     },
+     "result": "Fewer painted areas and a faster render."
+    },
+    {
+     "title": "File held by another program",
+     "goal": "Clear a copy failure",
+     "settings": {
+      "Close": "iRacing paint preview, 3D Car Viewer and any image viewer with the TGA open",
+      "Then": "RENDER again"
+     },
+     "result": "The copy succeeds."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Should I press RENDER repeatedly?",
+     "a": "No. A second render during a running one says render_busy."
+    },
+    {
+     "q": "How long until it gives up?",
+     "a": "5 minutes."
+    },
+    {
+     "q": "What if the engine stays down?",
+     "a": "Close Shokker fully and open it again. Antivirus can block the engine."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Render stuck and you press Terminate",
+     "cause": "Terminate only stops waiting",
+     "fix": "Wait about a minute, then render again."
+    },
+    {
+     "symptom": "Many tiny zones are slow",
+     "cause": "Each painted area costs memory",
+     "fix": "Use fewer zones with a good tolerance."
+    }
+   ],
+   "protips": [
+    "If a render started failing right after a design change, Undo that change first."
+   ],
+   "screens": [
+    "ui_zone_empty_message"
+   ]
+  },
+  {
+   "id": "support.lost_files",
+   "title": "I lost my file / where did my files go",
+   "domain": "support",
+   "summary": "Shokker copies every render into your iRacing car folder and keeps only the two newest renders itself. Press Show my files on the Saved bar to open the folder, and use Save to keep or a saved project to protect anything you care about.",
+   "what": "SYMPTOM: you cannot find your paint, or an older version has gone. CAUSE: there are four different places a file can be. The iRacing car folder (where RENDER copies the finished paint and spec), Shokker's own render folder (only the two newest renders), a keep folder (copies you made on purpose) and your saved projects.",
+   "when": [
+    "You rendered but cannot find the TGA.",
+    "You want an earlier render back.",
+    "You are not sure which folder iRacing really reads."
+   ],
+   "how": [
+    "Press RENDER, wait for the green Saved bar, then press Show my files. File Explorer opens on the folder with your paint highlighted.",
+    "If no car folder was set, the render stayed in Shokker's own render folder. Set iRacing Car Folder and render again, or use Deploy Now under the render to send the last render to a car folder.",
+    "Look for car_num_<ID>.tga or car_<ID>.tga (the paint) and car_spec_<ID>.tga (the shine). Extra files named spec_..., paint_base and ORIGINAL_ are harmless backups of files Shokker replaced.",
+    "To get an older look back, open RENDER HISTORY on the top row and click a thumbnail: the whole recipe is rebuilt. Only the two newest renders remain as files, so older ones come back by rebuilding, not by file.",
+    "To keep a render for good, press Save to keep on the render card (it copies the render into its own folder), save a project with Save / Open, or Download the ZIP package.",
+    "If Documents is synced by OneDrive, check that the folder you picked is the one iRacing really uses; File Explorer can show a second, empty Documents folder.",
+    "If you typed a folder that does not exist but its parent does, Shokker may have saved into the parent folder and still reported success. Pick the car folder from the car menu instead."
+   ],
+   "controls": [
+    {
+     "label": "Show my files",
+     "range": "",
+     "default": "",
+     "effect": "Opens File Explorer on the folder with your paint selected."
+    },
+    {
+     "label": "Deploy Now",
+     "range": "",
+     "default": "",
+     "effect": "Sends the last render to another car folder.",
+     "inv": "pro.render.deploy_now"
+    },
+    {
+     "label": "Save to keep",
+     "range": "",
+     "default": "",
+     "effect": "Copies a render into its own folder so the next render cannot overwrite it.",
+     "inv": "btnSaveToKeep"
+    },
+    {
+     "label": "Download ZIP Package",
+     "range": "",
+     "default": "",
+     "effect": "Builds a ZIP you download from a link under the render. It is never copied into iRacing.",
+     "inv": "exportZipCheckbox"
+    }
+   ],
+   "tips": [
+    "Save a project at the end of each session; it keeps your layers and zones.",
+    "Only RENDER writes into iRacing. The live preview and auto-render never do."
+   ],
+   "pitfalls": [
+    "Deploy Now only works for the two newest renders; older ones say Job not found.",
+    "A saved project (.spb) is not an iRacing file."
+   ],
+   "related": [
+    "preview_render.where_files_go",
+    "preview_render.output_files",
+    "preview_render.render_history_stats",
+    "preview_render.saving_projects",
+    "support.not_in_iracing",
+    "ui_shell.render_results_panel"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.render.deploy_now"
+    },
+    {
+     "do": "control",
+     "id": "btnSaveToKeep"
+    },
+    {
+     "do": "control",
+     "id": "outputDir",
+     "label": "IRACING CAR FOLDER box"
+    }
+   ],
+   "figures": [
+    "g10_file_naming",
+    "g09_render_export_flow"
+   ],
+   "covers": [
+    "pro.render.deploy_now",
+    "btnSaveToKeep",
+    "exportZipCheckbox",
+    "outputDir"
+   ],
+   "sources": [
+    "docs/ai_knowledge/10_support_troubleshooting.md:17",
+    "docs/ai_knowledge/10_support_troubleshooting.md:20",
+    "js/spb-support.js:249",
+    "js/spb-support.js:250",
+    "js/spb-support.js:251",
+    "js/spb-support-answers.js:156",
+    "server_routes/support_routes.py:211"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "where did my files go",
+    "lost my file",
+    "i lost my paint",
+    "cant find my paint",
+    "where is my tga",
+    "where is my paint file",
+    "where do renders go",
+    "find my rendered file",
+    "file disappeared",
+    "old render gone",
+    "get my old render back",
+    "where is the output",
+    "where is my zip",
+    "where did my project go",
+    "lost file",
+    "missing project"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The four places",
+     "body": "The iRacing car folder (finished paint and spec copied by RENDER); Shokker's own render folder (only the two newest renders); the keep folder (copies you made with Save to keep); and your saved projects. A file you cannot find is in one of those or was never written."
+    },
+    {
+     "heading": "Every cause",
+     "body": "No car folder was set, so the render stayed in Shokker's own folder. A newer render replaced the older one. The folder you picked is not the one iRacing uses (OneDrive can show a second, empty Documents folder). A typed folder that does not exist may have saved into its parent. The file is the backup type (spec_..., paint_base, ORIGINAL_) you took for junk."
+    },
+    {
+     "heading": "How to confirm",
+     "body": "Press Show my files on the Saved bar. File Explorer opens on the folder with your paint highlighted; look for car_num_<ID>.tga or car_<ID>.tga and car_spec_<ID>.tga."
+    }
+   ],
+   "examples": [
+    {
+     "title": "No car folder was set",
+     "goal": "Get the last render into iRacing",
+     "settings": {
+      "Set": "iRacing Car Folder from the car menu",
+      "Then": "Deploy Now under the render, or RENDER again"
+     },
+     "result": "The files land in the car folder."
+    },
+    {
+     "title": "An older look is gone",
+     "goal": "Recover it",
+     "settings": {
+      "Press": "RENDER HISTORY on the top row, click the thumbnail"
+     },
+     "result": "The whole recipe is rebuilt; render to write the files again."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does the preview write to iRacing?",
+     "a": "No. Only RENDER does."
+    },
+    {
+     "q": "How many renders does Shokker keep?",
+     "a": "The two newest as files. Older ones come back by rebuilding from History."
+    },
+    {
+     "q": "Is a saved project an iRacing file?",
+     "a": "No. A project (.spb) is for Shokker only."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Deploy Now says Job not found",
+     "cause": "Only the two newest renders can be deployed",
+     "fix": "Render again, then Deploy Now."
+    },
+    {
+     "symptom": "You delete backup-looking files",
+     "cause": "They are backups of files Shokker replaced",
+     "fix": "They are harmless; keep them unless space matters."
+    }
+   ],
+   "protips": [
+    "Save a project at the end of each session and use Save to keep on any render you love."
+   ],
+   "screens": [
+    "ui_header_rows",
+    "ui_toolbar_right"
+   ]
+  },
+  {
+   "id": "support.numbers_vanished",
+   "title": "Numbers or sponsors vanished or got painted over",
+   "domain": "support",
+   "summary": "Numbers and sponsors usually live on their own layers, and a zone that covers Everything or the whole colour range paints over them. Limit the zone to the body layer, or use a Foundation finish with Source colours so the art stays pixel-identical.",
+   "what": "SYMPTOM: after a change the car number, a sponsor logo or the stripes are gone, recoloured or shiny when they should not be. CAUSE: a zone claimed their pixels. A zone set to Everything, Remaining or a loose colour match reaches every pixel of that colour on every layer, including the number. On the sim side, iRacing may also stamp its own number and sponsors, which causes doubles.",
+   "when": [
+    "The number or a logo disappeared after a body change.",
+    "A logo changed colour with the body.",
+    "Numbers appear twice on the car.",
+    "Chrome or candy made the numbers look wrong."
+   ],
+   "how": [
+    "Press Undo (Ctrl+Z) once to confirm which change caused it, or open Undo History and step back.",
+    "Open the zone that did it. Under its area choose the body layer only (for example Car Paint or Body): set Restrict to layer so numbers, sponsors, tape and logos on other layers stay exactly as they are.",
+    "If the colour match also catches the logo, add a layer restriction or a small box, and keep tolerance low.",
+    "For a shine-only change on a whole car, use a Foundation finish with Source colours: it changes only the spec and leaves every colour as painted, numbers included.",
+    "To make numbers or sponsors a different finish on purpose, give them their own zone selected by their layer name, placed ABOVE the body zone (the lower zone number wins).",
+    "Numbers twice: switch off the number or sponsor layer of the template if iRacing stamps its own, and keep Sim-Stamped Number as the file mode.",
+    "Stamped numbers looking metallic or sparkly: open the Decal Rescue Kit and apply a flat, satin or gloss non-metal spec under them.",
+    "If you asked the AI copilot for a change and a number moved, press Undo on that step in the chat. The AI never touches numbers, sponsors or logos unless you name them."
+   ],
+   "controls": [
+    {
+     "label": "Restrict to layer",
+     "range": "layer names",
+     "default": "none",
+     "effect": "Limits a zone to pixels that exist on the chosen PSD layers.",
+     "inv": "zone.restrict_layers"
+    },
+    {
+     "label": "Decal Rescue Kit",
+     "range": "",
+     "default": "",
+     "effect": "Flat, satin or gloss non-metal spec under stamped numbers and sponsors; keeps source paint.",
+     "inv": "pro.toolbar.decal_rescue_kit"
+    },
+    {
+     "label": "Undo",
+     "range": "Ctrl+Z",
+     "default": "",
+     "effect": "Steps back one edit.",
+     "inv": "pro.toolbar.undo_ctrl_z"
+    }
+   ],
+   "tips": [
+    "Select logos and numbers by layer name, not by colour: exact edges, no colour bleed.",
+    "Keep numbers readable: strong contrast, and no sparkle or colour shift directly behind them."
+   ],
+   "pitfalls": [
+    "There is no field to type a car number in Shokker. The number switches only choose the file name.",
+    "A whole-car zone with Everything or Remaining includes the decal layers unless you restrict it."
+   ],
+   "related": [
+    "zones.restrict_layers",
+    "zones.priority",
+    "tools.undo_redo",
+    "support.colours_differ",
+    "preview_render.number_modes",
+    "ai_copilot.what_ai_sees",
+    "recipes.edit_one_thing"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.toolbar.decal_rescue_kit"
+    },
+    {
+     "do": "control",
+     "id": "pro.toolbar.undo_ctrl_z"
+    }
+   ],
+   "figures": [
+    "g05_zone_priority",
+    "g06_zone_selectors",
+    "g07_layer_stack_roles"
+   ],
+   "covers": [
+    "pro.toolbar.decal_rescue_kit",
+    "pro.toolbar.undo_ctrl_z"
+   ],
+   "sources": [
+    "docs/ai_knowledge/03_recipes.md:33",
+    "docs/ai_knowledge/01_how_pro_works.md:11",
+    "docs/ai_knowledge/01_how_pro_works.md:33",
+    "docs/ai_knowledge/09_field_playbook.md:28",
+    "docs/ai_knowledge/10_support_troubleshooting.md:32",
+    "paint-booth-v2.html:2397"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "numbers vanished",
+    "number disappeared",
+    "my number is gone",
+    "sponsors disappeared",
+    "logo disappeared",
+    "logo got painted over",
+    "numbers painted over",
+    "numbers changed color",
+    "sponsor changed color",
+    "lost my numbers",
+    "number turned chrome",
+    "numbers showing twice",
+    "double numbers",
+    "decals gone",
+    "stripes disappeared",
+    "ai changed my number",
+    "ai removed my sponsors",
+    "numbers disappeared",
+    "sponsors painted over",
+    "logos covered",
+    "numbers gone",
+    "finish covered my logos",
+    "colour went over my numbers",
+    "my numbers are gone",
+    "paint covered the decals",
+    "sponsors vanished"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Every cause",
+     "body": "A zone set to Everything, Remaining or a loose colour match claimed the number or sponsor pixels. A colour match caught the logo colour. A whole-car finish with its own colour painted over everything. On the sim side, iRacing stamps its own number and sponsors, causing doubles. A metal spec under stamped items makes them sparkle."
+    },
+    {
+     "heading": "Find the culprit",
+     "body": "Press Undo (Ctrl+Z) once, or step back in Undo History, until the numbers return. The last undone step is the cause. Open that zone to fix it."
+    },
+    {
+     "heading": "How to confirm",
+     "body": "Re-apply the change with Restrict to layer set to the body layer only, check the CAR view, then render. The numbers should be exactly as before."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Whole-car candy covered the number",
+     "goal": "Keep the number",
+     "settings": {
+      "Zone": "Restrict to layer: Car Paint only",
+      "Or": "A Foundation finish with Source colours"
+     },
+     "result": "The body changes, the number stays pixel-identical."
+    },
+    {
+     "title": "Make the numbers gold on purpose",
+     "goal": "Different finish for decals",
+     "settings": {
+      "Zone": "Select the Numbers layer by name",
+      "Order": "Above the body zone (lower number wins)"
+     },
+     "result": "Only the numbers change."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Is there a field for my car number?",
+     "a": "No. The number switches only choose the file name."
+    },
+    {
+     "q": "Will the AI copilot touch numbers?",
+     "a": "Not unless you name them, and every step has Undo."
+    },
+    {
+     "q": "What about doubled numbers in the sim?",
+     "a": "Switch off the number or sponsor layer of the template and keep Sim-Stamped Number as the file mode."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Colour pick also hit the logo",
+     "cause": "Tolerance too high",
+     "fix": "Keep tolerance low and restrict to a layer."
+    },
+    {
+     "symptom": "Numbers sparkle in the sim",
+     "cause": "Metal spec under stamped items",
+     "fix": "Decal Rescue Kit."
+    }
+   ],
+   "protips": [
+    "Select logos and numbers by layer name, not colour: exact edges, no bleed."
+   ],
+   "screens": [
+    "ui_toolbar_menus",
+    "ui_header_rows"
+   ]
+  },
+  {
+   "id": "support.smeared_blobby",
+   "title": "The car looks smeared or blobby",
+   "domain": "support",
+   "summary": "Smeared or blobby almost always means the texture is too big for a whole car. Make the pattern and base scale smaller (below 1.0x), give fine detail a high-frequency finish, and check that the source paint is not a blurry JPEG.",
+   "what": "SYMPTOM: the finish looks like soft smears, big blobs or a low-resolution photo on the car instead of fine crisp texture. CAUSE: the paint is ONE 2048 by 2048 picture wrapped over a whole car, so a texture that looks medium in the preview can be the size of a door or a mirror in the sim. Fine detail needs small features. A flat source file that was already soft, or a JPEG with compression blur, also stays soft.",
+   "when": [
+    "Carbon, flake or camo looks huge on the car.",
+    "A pattern looks like blurry blobs.",
+    "Edges between colours look soft."
+   ],
+   "how": [
+    "Open the zone and find Scale (pattern) in PATTERN: lower it. 1.0x is normal; 0.5x is twice as fine (a finer weave, smaller scales, tighter camo). Buyers who say crushed down to 50 percent mean scale 0.5.",
+    "For the texture inside the finish (flake, weave, grain) use Base Scale in BASE: 0.05x to 5.0x, smaller is finer and busier. Spec Scale follows Base Scale unless Independent Spec is on.",
+    "Pick a finish whose look is made of small detail: the catalogue cards show the feature size. Large soft shapes read as smeared on a whole car.",
+    "Check the source: a JPEG or a resized flat file carries soft edges. Open the car template as a PSD/XCF/ORA or a clean TGA/PNG instead, at the normal 2048 size.",
+    "Soft colour edges can also come from a selection feather or a high colour tolerance. Lower the tolerance, or turn auto-feather down if you used a selection.",
+    "Render and check at 1:1 (zoom to 100 percent), not in the small fit-to-window picture: the fit view hides fine detail and blur alike."
+   ],
+   "controls": [
+    {
+     "label": "Scale (pattern)",
+     "range": "0.10x to 4.0x",
+     "default": "1.0x",
+     "effect": "Smaller means the pattern repeats more times and looks finer.",
+     "inv": "zone.pattern_scale"
+    },
+    {
+     "label": "Base Scale",
+     "range": "0.05x to 5.0x",
+     "default": "1.0x",
+     "effect": "Size of the finish texture inside the zone. Smaller means finer.",
+     "inv": "zone.base_scale"
+    },
+    {
+     "label": "Spec Scale",
+     "range": "",
+     "default": "follows Base Scale",
+     "effect": "Size of the spec texture; independent only when Independent Spec is on.",
+     "inv": "zone.spec_scale"
+    }
+   ],
+   "tips": [
+    "On a whole-car canvas, features of 4 to 8 pixels read as fine texture and 1 to 2 pixels as sparkle; 16 to 64 pixels is macro and reads big on the car.",
+    "Lower scale first, then judge. It is the cheapest fix."
+   ],
+   "pitfalls": [
+    "Base Scale scales the texture, not the colours or the whole car.",
+    "Solid-colour finishes have no texture to scale."
+   ],
+   "related": [
+    "spec.scale_rotation",
+    "zones.how_pixels_picked",
+    "support.tiny_or_huge",
+    "zones.tolerance"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.pattern_scale"
+    },
+    {
+     "do": "control",
+     "id": "zone.base_scale"
+    }
+   ],
+   "figures": [
+    "g19_scale_on_car"
+   ],
+   "covers": [
+    "zone.pattern_scale",
+    "zone.base_scale",
+    "zone.spec_scale"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:1656",
+    "SPB_WIKI.html:3515",
+    "docs/ai_knowledge/09_field_playbook.md:12"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "looks blobby",
+    "looks smeared",
+    "carbon looks huge",
+    "camo too big",
+    "blurry paint",
+    "paint looks blurry",
+    "pixelated",
+    "low resolution look",
+    "soft edges",
+    "fuzzy edges",
+    "texture looks blurry",
+    "crushed to 50",
+    "make the pattern smaller",
+    "looks blurry",
+    "smeared paint",
+    "blobby texture",
+    "smeared",
+    "blobby"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Every cause",
+     "body": "The pattern scale is too big for a whole car. The Base Scale of the finish texture is too big. The finish itself is made of large soft shapes. The source file is already soft (a JPEG or resized picture). Soft colour edges from a selection feather or high tolerance. Judging in the fit-to-window preview, which hides fine detail."
+    },
+    {
+     "heading": "The numbers",
+     "body": "On a 2048 canvas, features of 4 to 8 pixels read as fine texture, 1 to 2 pixels as sparkle, and 16 to 64 pixels as macro that reads big on the car. Pattern Scale runs 0.10x to 4.0x and Base Scale 0.05x to 5.0x; 0.5 is twice as fine."
+    },
+    {
+     "heading": "How to confirm",
+     "body": "Render and zoom to 100 percent. Fine features should now be crisp. If they are not, the source or the finish is the cause, not the scale."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Carbon looks like a net",
+     "goal": "Make a fine weave",
+     "settings": {
+      "Scale (pattern)": "0.5",
+      "Base Scale": "Lower for a finer base texture"
+     },
+     "result": "Twice as fine."
+    },
+    {
+     "title": "Soft source paint",
+     "goal": "Get a crisp start",
+     "settings": {
+      "Open": "The car template as PSD/XCF/ORA or a clean TGA/PNG at 2048"
+     },
+     "result": "No compression blur in the base."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What does crushed to 50 percent mean?",
+     "a": "Scale 0.5."
+    },
+    {
+     "q": "Which slider do I change first?",
+     "a": "Lower scale first; it is the cheapest fix."
+    },
+    {
+     "q": "Do plain finishes have a scale?",
+     "a": "Solid-colour finishes have no texture to scale."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Judging at fit-to-window",
+     "cause": "It hides fine detail and blur alike",
+     "fix": "Zoom to 100 percent."
+    },
+    {
+     "symptom": "Changing Base Scale for a pattern problem",
+     "cause": "They are separate sliders",
+     "fix": "Use Scale (pattern) for patterns."
+    }
+   ],
+   "protips": [
+    "Pick finishes whose catalogue card shows a small feature size. Large soft shapes always read as smeared."
+   ],
+   "screens": [
+    "ui_header_rows"
+   ]
+  },
+  {
+   "id": "support.preview_render_mismatch",
+   "title": "Preview and render do not match",
+   "domain": "support",
+   "summary": "The live preview is a quick flat view that never writes files. A mismatch usually means a stale preview (press F5), template guide layers that were on when you rendered, a Spec Sculpt or imported spec map holding the shine, or simply sun and stamps in iRacing.",
+   "what": "SYMPTOM: the preview shows one thing and the rendered paint, or iRacing, shows another. CAUSE: there are three different pictures. The preview is quick and approximate. The render is the full-quality build that goes to disk. The sim adds light, shadow, materials and stamped numbers on top of the render. A difference between the first two is usually a setting; a difference with the third is lighting.",
+   "when": [
+    "The render looks different from the preview.",
+    "The preview is blank, stuck or shows an old paint.",
+    "You changed a spec setting and the preview did not change."
+   ],
+   "how": [
+    "Press F5 over the preview, or click the red bar Preview failed - showing the LAST GOOD render. It rebuilds from your current settings.",
+    "If you opened a different PSD and the old picture is still showing, F5: the preview source did not refresh.",
+    "Check the Layers panel: Wire, Mask and Car_Mandatory (the Turn Off Before Exporting TGA group) must be off, or they are painted into the render.",
+    "Check Settings for an imported spec map, and check whether you saved from Spec Sculpt: after that, the main RENDER keeps that spec and ignores your zones for shine. Clear the imported spec map to go back to the zones.",
+    "Compare in the preview channel views (COMBINED, R METAL, G ROUGH, B COAT) rather than judging shine in the colour view.",
+    "If the preview itself is failing, the usual cause is more than about 20 zones with their own painted area, or the engine being offline. Undo the last change or merge zones. It retries by itself (Server busy - retrying) and times out after 18 seconds, then tries a faster one.",
+    "Remaining differences with iRacing come from sun, shadow, stamped numbers and the spec combining with the paint. Press Ctrl+R in iRacing after every render."
+   ],
+   "controls": [
+    {
+     "label": "Refresh",
+     "range": "",
+     "default": "",
+     "effect": "Rebuilds the live preview from your current settings (F5).",
+     "inv": "btnPreviewRefresh"
+    },
+    {
+     "label": "Before After",
+     "range": "",
+     "default": "",
+     "effect": "Compares the previous preview with the current one.",
+     "inv": "btnBeforeAfter"
+    }
+   ],
+   "tips": [
+    "The preview never writes into your iRacing folder; only RENDER does."
+   ],
+   "pitfalls": [
+    "A stale preview can look like a failed change. Refresh first, then diagnose."
+   ],
+   "related": [
+    "preview_render.preview_vs_render",
+    "ui_shell.preview_channel_views",
+    "support.colours_differ",
+    "support.zone_no_show",
+    "support.error_messages",
+    "spec_sculpt.what_is_spec_sculpt"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "btnPreviewRefresh"
+    }
+   ],
+   "figures": [
+    "g09_render_export_flow"
+   ],
+   "covers": [
+    "btnPreviewRefresh",
+    "btnBeforeAfter",
+    "doc.10.support_the_live_preview_is_stuck_blank_or_stale"
+   ],
+   "sources": [
+    "docs/ai_knowledge/10_support_troubleshooting.md:29",
+    "docs/ai_knowledge/10_support_troubleshooting.md:33",
+    "docs/ai_knowledge/10_support_troubleshooting.md:36",
+    "docs/ai_knowledge/10_support_troubleshooting.md:42",
+    "js/spb-support-answers.js:154",
+    "paint-booth-3-canvas.js:12078",
+    "paint-booth-3-canvas.js:11223"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "preview looks different",
+    "preview doesnt match render",
+    "render doesnt match preview",
+    "preview is blank",
+    "preview failed",
+    "last good render",
+    "preview shows old paint",
+    "preview wrong",
+    "preview broken",
+    "preview is black",
+    "preview and render dont match",
+    "render looks different from preview",
+    "render different from preview"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Three pictures",
+     "body": "The preview is quick and approximate. The render is the full build written to disk. The sim adds light, shadow, materials and stamped numbers. A mismatch between the first two is a setting; a mismatch with the third is lighting."
+    },
+    {
+     "heading": "Every cause between preview and render",
+     "body": "A stale preview (press F5 or click the red Preview failed bar). A different PSD whose old picture is still shown. Template guide layers on when you rendered. A saved Spec Sculpt or imported spec map that overrides zone shine. More than about 20 painted-area zones or an offline engine, so the preview fails and shows the last good one."
+    },
+    {
+     "heading": "How to confirm",
+     "body": "After F5, the preview rebuilds from current settings. Compare the channel views COMBINED, R METAL, G ROUGH and B COAT, not the colour view. Then render and press Ctrl+R in iRacing."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Stale preview after opening a new PSD",
+     "goal": "Refresh",
+     "settings": {
+      "Press": "F5 over the preview"
+     },
+     "result": "The preview rebuilds from the new file."
+    },
+    {
+     "title": "Shine ignores zones after Spec Sculpt",
+     "goal": "Go back to zone shine",
+     "settings": {
+      "Where": "Settings, clear the imported spec map"
+     },
+     "result": "RENDER uses your zones again."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does the preview write files?",
+     "a": "No, only RENDER does."
+    },
+    {
+     "q": "What does Server busy - retrying mean?",
+     "a": "The preview retries itself and times out after 18 seconds, then tries a faster one."
+    },
+    {
+     "q": "Can I compare before and after?",
+     "a": "Yes, with Before After."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You diagnose a failed change",
+     "cause": "The preview was stale",
+     "fix": "Refresh first, then diagnose."
+    },
+    {
+     "symptom": "Guide lines in the render",
+     "cause": "Wire, Mask or Car_Mandatory on",
+     "fix": "Switch them off and render again."
+    }
+   ],
+   "protips": [
+    "Judge shine in the channel views. The colour view cannot show a mirror."
+   ],
+   "screens": [
+    "pair_layer_hidden"
+   ]
+  },
+  {
+   "id": "support.wont_start_or_update",
+   "title": "The app will not start or update",
+   "domain": "support",
+   "summary": "If Shokker shows Server Failed, the paint engine could not start: the usual causes are antivirus software blocking it, a missing Microsoft Visual C++ Redistributable, or another program using its port. Updates install from the banner and need a full restart.",
+   "what": "SYMPTOM: Shokker Paint Booth opens to an error box, a blank window, or an old screen after an update. CAUSE: the window and the paint engine are two parts. If the engine does not start within about a minute, Shokker shows a Server Failed box that lists the common causes and the name of its debug log. After an update the window can briefly be newer or older than the engine.",
+   "when": [
+    "A box titled Server Failed appears when you open Shokker.",
+    "The window is blank or stuck on loading.",
+    "After an update the app acts strangely or shows a version warning.",
+    "The Download Update banner will not go away."
+   ],
+   "how": [
+    "Read the box. Server Failed lists three causes: antivirus blocking the paint engine, a missing Visual C++ Redistributable, and another app using the same port.",
+    "Antivirus: allow Shokker Paint Booth and its paint engine in your antivirus or Windows Security, then start Shokker again.",
+    "Missing Visual C++ Redistributable: install the Microsoft Visual C++ Redistributable for Windows, then start Shokker again.",
+    "Port in use: close other copies of Shokker (check the tray and Task Manager) and start again.",
+    "The box names the debug log. If it keeps failing, open Settings > Report a Problem (if the window opens) or send that log to Shokker support.",
+    "After an update: close Shokker fully and open it once. A message that says the app and screen versions differ means exactly this.",
+    "To update: save your work first, then click Download Update on the banner under the title bar and let the app restart when it asks. Remind Me Later hides the banner for now.",
+    "If the interface crashes, Shokker shows The interface crashed and reloads the window. Your project may be recoverable from the autosave; save a project once it is back.",
+    "If you close the window with unsaved changes, Shokker asks whether to quit anyway. Choose Cancel and save first."
+   ],
+   "controls": [
+    {
+     "label": "Download Update",
+     "range": "",
+     "default": "",
+     "effect": "Downloads the new version; install it when the app asks.",
+     "inv": "spbUpdateBannerDownload"
+    },
+    {
+     "label": "Remind Me Later",
+     "range": "",
+     "default": "",
+     "effect": "Hides the update banner for now.",
+     "inv": "spbUpdateBannerSnooze"
+    }
+   ],
+   "tips": [
+    "After every update, close and reopen Shokker once even if it seems to work.",
+    "Keep the Windows user name out of screenshots you send; the diagnostics report masks it, but screenshots do not."
+   ],
+   "pitfalls": [
+    "Installing an update restarts the app and can lose unsaved work.",
+    "A second copy of Shokker running in the background can keep the engine port busy."
+   ],
+   "related": [
+    "ui_shell.update_banner",
+    "workflows.install_update",
+    "support.reporting_problem",
+    "support.error_messages"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "spbUpdateBannerDownload"
+    },
+    {
+     "do": "control",
+     "id": "spbUpdateBannerSnooze"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "spbUpdateBannerDownload",
+    "spbUpdateBannerSnooze"
+   ],
+   "sources": [
+    "electron-app/main.js:2376",
+    "electron-app/main.js:3105",
+    "electron-app/main.js:3152",
+    "electron-app/main.js:3443",
+    "paint-booth-v2.html:1578",
+    "js/spb-support-answers.js:158",
+    "js/spb-support-answers.js:149"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "app wont start",
+    "shokker wont open",
+    "server failed",
+    "python engine failed to start",
+    "engine failed to start",
+    "blank window",
+    "white screen",
+    "app crashes on startup",
+    "will not launch",
+    "wont launch",
+    "update wont install",
+    "update failed",
+    "update loop",
+    "cant update",
+    "app version mismatch",
+    "antivirus blocking shokker",
+    "visual c",
+    "app wont open",
+    "wont start",
+    "stuck on loading",
+    "app not starting",
+    "app wont update"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Every cause",
+     "body": "Server Failed: antivirus blocking the paint engine, a missing Microsoft Visual C++ Redistributable, or another program (often a second copy of Shokker) using the engine port. After an update: the window and engine versions differ until you restart fully. A crash of the interface reloads the window."
+    },
+    {
+     "heading": "Fix steps",
+     "body": "Read the box. Allow Shokker and its engine in your antivirus or Windows Security. Install the Visual C++ Redistributable. Close other copies in the tray and Task Manager. The box names the debug log; send it to support if it keeps failing. After any update close and reopen Shokker once."
+    },
+    {
+     "heading": "How to confirm",
+     "body": "The main window opens, the engine status is ready and a render starts. A message that app and screen versions differ means a restart is still needed."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Server Failed after install",
+     "goal": "Start the engine",
+     "settings": {
+      "Check": "Antivirus, Visual C++ Redistributable, second copy running",
+      "Then": "Start Shokker again"
+     },
+     "result": "The engine starts within about a minute."
+    },
+    {
+     "title": "Updating safely",
+     "goal": "Update without losing work",
+     "settings": {
+      "Do": "Save a project, click Download Update, let the app restart when it asks"
+     },
+     "result": "The new version runs; Remind Me Later hides the banner for now."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Will an update lose my work?",
+     "a": "It restarts the app and can lose unsaved work. Save a project first."
+    },
+    {
+     "q": "What if the interface crashes?",
+     "a": "Shokker shows a message and reloads; your project may be recoverable from autosave. Save once it is back."
+    },
+    {
+     "q": "What happens if I close with unsaved changes?",
+     "a": "Shokker asks whether to quit anyway. Choose Cancel and save."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Engine port busy",
+     "cause": "A second copy runs in the background",
+     "fix": "Close it in the tray or Task Manager."
+    },
+    {
+     "symptom": "Old screen after update",
+     "cause": "Not fully restarted",
+     "fix": "Close Shokker fully and open it once."
+    }
+   ],
+   "protips": [
+    "Keep the Windows user name out of screenshots you send. The diagnostics report masks it; screenshots do not."
+   ],
+   "screens": [
+    "ui_update_banner"
+   ]
+  },
+  {
+   "id": "support.error_messages",
+   "title": "Error messages explained",
+   "domain": "support",
+   "summary": "Most red messages in Shokker have one plain cause and one fix. Paste the exact message into the chat and the helper explains it, or find it in this list.",
+   "what": "Shokker's error messages come from the render, the preview, the car folder and the paint engine. The Chat helper recognises each of them when you paste the text, and the Check my setup button reads your live settings instead of guessing. Each line below is: the message, what it means, and what to do.",
+   "when": [
+    "A red banner or toast appeared.",
+    "You want to know what a message means before you try fixes."
+   ],
+   "how": [
+    "Copy the exact message text (or take a screenshot).",
+    "Paste it into the Chat panel: the helper matches it to the list and answers in plain words.",
+    "Or find it below, do the fix, and render again.",
+    "If nothing matches, press Check my setup, then Settings gear > Report a Problem and send the report to Shokker support."
+   ],
+   "controls": [],
+   "tips": [
+    "A render is already running / render_busy: only one render at a time. Wait about a minute, then press RENDER again. If it never clears, close and reopen Shokker.",
+    "OPEN PAINT FIRST / LOADING PAINT / Set the Source Paint path / Source Paint needs a FULL path: open your car template with the PSD/XCF/ORA or TGA/PNG/JPEG button, wait until loading ends, or paste the full path, not just a file name.",
+    "Enter your iRacing User ID (4-7 digits): type your Customer ID (helmet icon > Profile in iRacing). It is not your car number.",
+    "To render: pick a color on the paint (Pick + Add), then assign a Finish: every zone needs a colour AND a finish. Muted zones are skipped. Also shown as No valid zones.",
+    "Paint engine is offline / Render server unreachable / engine hung: the engine restarts itself. Wait 10 seconds. If it stays down, close Shokker completely and reopen it; antivirus can block the engine.",
+    "Timed out after 5 minutes: the design is too heavy. Use fewer zones or simpler stacks.",
+    "aggregate RLE decode budget exceeded / decode failed / out of memory / too many zones: more than about 20 zones with their own painted area. Undo, merge zones, or say start over.",
+    "OUTPUT FOLDER ERROR / iRacing output folder not found / No active car configured / No iRacing folder set: the iRacing Car Folder is empty or wrong. Pick the car's folder with the car menu.",
+    "Failed to push / PermissionError / Copy verification failed: another program holds the file. Close the iRacing paint preview or 3D Car Viewer and any image viewer, then render again.",
+    "Unknown base / pattern id ... Did you mean: a zone uses a finish that was retired or renamed. Open that zone, pick another finish, render again.",
+    "Finish Pack needed: the finish lives in a downloadable pack that is not installed. Install it from the Finish Packs screen if your version has one, then restart, or pick another finish.",
+    "cross_origin_forbidden: you opened Shokker in a browser tab by hand. Use the Shokker Paint Booth window.",
+    "Job not found / Deploy to a different car: Shokker keeps only the two newest renders. Render again, then press Deploy Now.",
+    "iRacing TGA must be 2048 / strict 2048: this step needs an exact 2048 by 2048 paint. Open the car's own template at its normal size; do not resize the canvas.",
+    "Preview failed - showing the LAST GOOD render: press F5. If it repeats, undo the last change or merge zones.",
+    "Source layer is missing / restricted layer / painting nothing: the zone is limited to a hidden or missing layer. Show the layer or clear Restrict to layer.",
+    "Heads up: app v... vs ui v...: the screen is older or newer than the engine. Close and reopen Shokker fully.",
+    "Autosave is off for this design: the design is too big for automatic save. Save an SPB project now."
+   ],
+   "pitfalls": [
+    "A message can be a warning, not an error: yellow notes about PSD blend modes or layers are information.",
+    "Messages that mention a port, a path or a log mean the app wrote more detail to its debug log."
+   ],
+   "related": [
+    "support.render_slow_or_fails",
+    "support.not_in_iracing",
+    "support.reporting_problem",
+    "support.psd_wont_open",
+    "support.wont_start_or_update",
+    "support.zone_no_show"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "btnRender",
+     "label": "RENDER button"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "btnRender",
+    "doc.10.support_render_errors_and_what_they_mean"
+   ],
+   "sources": [
+    "js/spb-support-answers.js:143",
+    "js/spb-support-answers.js:144",
+    "js/spb-support-answers.js:145",
+    "js/spb-support-answers.js:146",
+    "js/spb-support-answers.js:147",
+    "js/spb-support-answers.js:148",
+    "js/spb-support-answers.js:149",
+    "js/spb-support-answers.js:150",
+    "js/spb-support-answers.js:151",
+    "js/spb-support-answers.js:152",
+    "js/spb-support-answers.js:153",
+    "js/spb-support-answers.js:154",
+    "js/spb-support-answers.js:155",
+    "js/spb-support-answers.js:156",
+    "js/spb-support-answers.js:157",
+    "js/spb-support-answers.js:158",
+    "js/spb-support-answers.js:159",
+    "docs/ai_knowledge/10_support_troubleshooting.md:39"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "error message",
+    "error messages",
+    "red banner",
+    "what does this error mean",
+    "cross origin forbidden",
+    "job not found",
+    "finish pack needed",
+    "failed to push",
+    "permission error",
+    "output folder error",
+    "copy verification failed",
+    "unknown base id",
+    "did you mean",
+    "out of memory",
+    "decode budget",
+    "paint engine is offline",
+    "render server unreachable",
+    "timed out after 5 minutes",
+    "too many zones",
+    "autosave is off",
+    "error popup",
+    "errors"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "How the list is organised",
+     "body": "Messages come from four places: render start checks (paint, User ID, zones), the engine (offline, timed out, out of memory), the car folder (folder not found, copy failed) and the finishes (unknown or missing). Match your message to the group, then use the fix on its line in the steps and tips."
+    },
+    {
+     "heading": "Warnings are not errors",
+     "body": "Yellow notes about PSD blend modes or layers are information. Messages that mention a port, a path or a log mean the app wrote more detail to its debug log."
+    },
+    {
+     "heading": "How to confirm",
+     "body": "After the fix, render again. A cleared problem ends with the green Saved bar and no red text."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Enter your iRacing User ID (4-7 digits)",
+     "goal": "Fix a start refusal",
+     "settings": {
+      "Fix": "Type your Customer ID (helmet icon > Profile in iRacing). It is not your car number."
+     },
+     "result": "RENDER starts."
+    },
+    {
+     "title": "Failed to push / Copy verification failed",
+     "goal": "Clear a held file",
+     "settings": {
+      "Fix": "Close the iRacing paint preview or 3D Car Viewer and any image viewer, then render again"
+     },
+     "result": "The copy completes."
+    },
+    {
+     "title": "Unknown base / pattern id",
+     "goal": "Replace a retired finish",
+     "settings": {
+      "Fix": "Open that zone, pick another finish, render again"
+     },
+     "result": "The zone renders."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can the helper read my error?",
+     "a": "Yes. Paste the exact text into the Chat panel and it explains it."
+    },
+    {
+     "q": "What if my message is not here?",
+     "a": "Press Check my setup, then Settings gear > Report a Problem."
+    },
+    {
+     "q": "What does cross_origin_forbidden mean?",
+     "a": "You opened Shokker in a browser tab by hand. Use the Shokker Paint Booth window."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Paraphrasing the message",
+     "cause": "The helper matches the exact wording",
+     "fix": "Copy the exact text or a screenshot."
+    },
+    {
+     "symptom": "Retrying instantly on render_busy",
+     "cause": "Only one render runs at a time",
+     "fix": "Wait about a minute."
+    }
+   ],
+   "protips": [
+    "A paste of the exact message into Chat is faster than reading the list."
+   ],
+   "screens": [
+    "ui_mode_pill"
+   ]
+  },
+  {
+   "id": "support.reporting_problem",
+   "title": "Reporting a problem",
+   "domain": "support",
+   "summary": "Settings gear > Report a Problem copies a plain-text report of what Shokker did and what went wrong, with secrets masked. Paste it to Shokker support, and add your User ID and number mode yourself because the report leaves those out.",
+   "what": "When something breaks and the fixes in this section do not help, support needs facts, not guesses. Report a Problem gathers them in one click: recent errors and warnings, a summary of your zones, your car folder and paint path, details of the app and engine, and the end of the debug logs. It never includes your licence key or passwords, and it masks anything that looks like a secret.",
+   "when": [
+    "A fix from this section did not work.",
+    "A finish is far slower than the rest.",
+    "The app showed an error you cannot match to the list."
+   ],
+   "how": [
+    "Open the Settings gear at the top right.",
+    "Press Report a Problem. A message says Diagnostics copied - paste it to Shokker support.",
+    "If it says it could not auto-copy, press Save .txt instead and send that file.",
+    "Paste the text into your message to support, and add what you see in the sim (white car, paint-shop colours, old paint, black parts), your iRacing User ID and your number mode (Custom Number or Sim-Stamped Number): the report does not contain them.",
+    "Before you report a render or iRacing problem, press Check my setup in the chat: its findings are what support will ask for first.",
+    "For licence or activation questions, the License section is also in the Settings gear. Rendering does not check the licence."
+   ],
+   "controls": [
+    {
+     "label": "Report a Problem",
+     "range": "",
+     "default": "",
+     "effect": "Copies a masked diagnostics report to the clipboard.",
+     "inv": "support.report_problem"
+    },
+    {
+     "label": "Save .txt",
+     "range": "",
+     "default": "",
+     "effect": "Saves the same report as a text file when copying is blocked."
+    }
+   ],
+   "tips": [
+    "Tell support what you expected and what happened in one line; the report supplies the rest.",
+    "You can read the report before sending it; it is plain text."
+   ],
+   "pitfalls": [
+    "The report does not include your iRacing User ID or number mode.",
+    "It cannot see what iRacing shows, so describe that yourself."
+   ],
+   "related": [
+    "support.error_messages",
+    "support.not_in_iracing",
+    "support.wont_start_or_update",
+    "settings.activation_license"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "settingsGearBtn",
+     "label": "Settings button"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "settingsGearBtn",
+    "support.report_problem",
+    "doc.10.support_how_to_help_a_buyer_with_a_render_or_iracing_problem"
+   ],
+   "sources": [
+    "js/diagnostics/spb-diag-report.js:574",
+    "js/diagnostics/spb-diag-report.js:578",
+    "js/diagnostics/spb-diag-report.js:633",
+    "js/diagnostics/spb-diag-report.js:653",
+    "paint-booth-v2.html:2220",
+    "docs/ai_knowledge/10_support_troubleshooting.md:51",
+    "js/spb-support-answers.js:122"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "report a problem",
+    "report a bug",
+    "send diagnostics",
+    "diagnostics for support",
+    "contact support",
+    "how do i contact support",
+    "get help",
+    "support report",
+    "bug report",
+    "copy diagnostics",
+    "save txt",
+    "save diagnostics",
+    "need help",
+    "talk to support",
+    "send feedback",
+    "problem report"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "What the report holds",
+     "body": "Recent errors and warnings, a summary of your zones, your car folder and paint path, app and engine details and the end of the debug logs. It masks secrets and never includes your licence key or passwords. It leaves out your User ID and number mode."
+    },
+    {
+     "heading": "What to add yourself",
+     "body": "What you expected and what you saw in the sim (white car, paint-shop colours, old paint, black parts), your User ID and your number mode. One line is enough."
+    },
+    {
+     "heading": "How to confirm",
+     "body": "A message says Diagnostics copied - paste it to Shokker support. If it could not copy, press Save .txt and send that file. You can read the text first; it is plain."
+    }
+   ],
+   "examples": [
+    {
+     "title": "A render problem",
+     "goal": "Get fast help",
+     "settings": {
+      "Do": "Press Check my setup, then Settings gear > Report a Problem, paste into your message",
+      "Add": "White car in iRacing, User ID, Sim-Stamped Number"
+     },
+     "result": "Support can answer without asking again."
+    },
+    {
+     "title": "Copy blocked",
+     "goal": "Send the report anyway",
+     "settings": {
+      "Press": "Save .txt and send the file"
+     },
+     "result": "The same report as a file."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does the report include my licence key?",
+     "a": "No, secrets are masked."
+    },
+    {
+     "q": "Where are licence questions?",
+     "a": "The License section is also in the Settings gear. Rendering does not check the licence."
+    },
+    {
+     "q": "Does it see what iRacing shows?",
+     "a": "No. Describe it yourself."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Support asks for your ID",
+     "cause": "The report omits it",
+     "fix": "Add your User ID and number mode."
+    },
+    {
+     "symptom": "Report sent without checks",
+     "cause": "Setup problems are common",
+     "fix": "Press Check my setup first."
+    }
+   ],
+   "protips": [
+    "Say what you expected and what happened in one line; the report supplies the rest."
+   ],
+   "screens": [
+    "ui_toolbar_right",
+    "ui_header_rows"
+   ]
+  },
+  {
+   "id": "support.trading_paints",
+   "title": "Trading Paints questions",
+   "domain": "support",
+   "summary": "Shokker only writes files on your PC; it does not upload to Trading Paints. Trading Paints is what shows your paint to other drivers, because iRacing never sends textures between drivers.",
+   "what": "SYMPTOM: you see your paint but nobody else does, or Trading Paints swaps your local test paint. CAUSE: iRacing shows other drivers only the files in THEIR paint folder, and the Trading Paints service and its Downloader are what put your files there. Shokker writes into your own iRacing paint folder only.",
+   "when": [
+    "Other drivers see a white or default car.",
+    "Your local test paint keeps getting replaced.",
+    "You are not sure which file type to upload."
+   ],
+   "how": [
+    "Render in Shokker with the right number mode: Sim-Stamped Number writes car_<ID>.tga, which Trading Paints calls a Sim-Stamped Number paint; Custom Number writes car_num_<ID>.tga, called a Custom Number paint (that needs Trading Paints Pro).",
+    "Upload the rendered paint and spec to Trading Paints from the Trading Paints site or app. Press Copy TP Desc on the render card if you want a ready description text.",
+    "For the shine, Trading Paints shares the car_spec_<ID>.mip that iRacing builds, not the .tga. Run the car once so iRacing builds it, then upload that.",
+    "While you test a local paint, close the Trading Paints Downloader or turn off Update My Own Paints. It may overwrite the files in your folder.",
+    "Give the car a plain paint-shop colour scheme in iRacing too, so drivers without your files do not see a white car.",
+    "If your Documents folder is synced by OneDrive, the Downloader can misbehave; keep iRacing's paint folder out of sync folders."
+   ],
+   "controls": [
+    {
+     "label": "Copy TP Desc",
+     "range": "",
+     "default": "",
+     "effect": "Copies a text description of the paint for Trading Paints. It does not upload.",
+     "inv": "pro.render.copy_tp_desc"
+    }
+   ],
+   "tips": [
+    "Trading Paints can only share the spec as the compiled .mip. The .tga spec is for your own car.",
+    "When the spec is final you can delete the spec .tga so iRacing stops rebuilding it at every start."
+   ],
+   "pitfalls": [
+    "Whether the Downloader overwrites a local file is not documented: treat it as likely.",
+    "Shokker has no automatic upload."
+   ],
+   "related": [
+    "preview_render.trading_paints_mip",
+    "preview_render.number_modes",
+    "support.not_in_iracing",
+    "support.lost_files"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.render.copy_tp_desc"
+    }
+   ],
+   "figures": [
+    "g11_mip_pipeline",
+    "g10_file_naming"
+   ],
+   "covers": [
+    "pro.render.copy_tp_desc",
+    "doc.10.support_trading_paints_other_drivers_and_sharing"
+   ],
+   "sources": [
+    "docs/ai_knowledge/10_support_troubleshooting.md:45",
+    "docs/ai_knowledge/10_support_troubleshooting.md:48",
+    "docs/ai_knowledge/10_support_troubleshooting.md:51",
+    "paint-booth-v2.html:3646"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "tp",
+    "trading paints not working",
+    "other drivers cant see my paint",
+    "others see white car",
+    "trading paints upload",
+    "trading paints downloader",
+    "trading paints overwrites",
+    "share my paint",
+    "how do others see my paint",
+    "trading paints pro",
+    "trading paints help",
+    "trading paints problem"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "What Shokker does and does not do",
+     "body": "Shokker writes files on your PC only. It does not upload. iRacing does not send textures between drivers; the Trading Paints service and its Downloader put your files in other drivers' paint folders."
+    },
+    {
+     "heading": "Number modes and the spec",
+     "body": "Sim-Stamped Number writes car_<ID>.tga, called a Sim-Stamped Number paint on Trading Paints. Custom Number writes car_num_<ID>.tga, a Custom Number paint that needs Trading Paints Pro. For the shine, Trading Paints shares the car_spec_<ID>.mip that iRacing builds, not the .tga."
+    },
+    {
+     "heading": "Why your test paint changes",
+     "body": "With Update My Own Paints on, the Downloader may overwrite files in your folder. Whether it does is not documented, so treat it as likely. Close it or turn that option off while you test."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Share a finished paint",
+     "goal": "Let others see it",
+     "settings": {
+      "Render": "Sim-Stamped Number (or Custom Number with Pro)",
+      "Run": "The car once so iRacing builds the .mip",
+      "Upload": "Paint and spec on the Trading Paints site or app, optional Copy TP Desc"
+     },
+     "result": "Other drivers see your paint through Trading Paints."
+    },
+    {
+     "title": "Test locally",
+     "goal": "Stop the swap",
+     "settings": {
+      "Do": "Close the Downloader or turn off Update My Own Paints"
+     },
+     "result": "Your local files stay."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can Shokker upload for me?",
+     "a": "No automatic upload exists."
+    },
+    {
+     "q": "Can Trading Paints share the .tga spec?",
+     "a": "No, only the compiled .mip. The .tga spec is for your own car."
+    },
+    {
+     "q": "Why do others see a white car?",
+     "a": "They do not have your files. Give the car a plain paint-shop colour scheme in iRacing too."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Uploading the .tga spec",
+     "cause": "Trading Paints reads the .mip",
+     "fix": "Run the car so iRacing builds the .mip, upload that."
+    },
+    {
+     "symptom": "Sync folder problems",
+     "cause": "OneDrive syncing the paint folder",
+     "fix": "Keep iRacing's paint folder out of sync folders."
+    }
+   ],
+   "protips": [
+    "When the spec is final you can delete the spec .tga so iRacing stops rebuilding it at every start."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "support.psd_wont_open",
+   "title": "PSD will not open or has wrong layers",
+   "domain": "support",
+   "summary": "Only .psd, .xcf and .ora files open with the PSD/XCF/ORA button. A big PSD can take up to a minute, and Shokker tells you how many layers loaded and which ones it could not import.",
+   "what": "SYMPTOM: the template will not open, loads slowly, or some layers are missing, flat or look different. CAUSE: the layered import reads Photoshop, GIMP and OpenRaster files and rebuilds each pixel layer. Layers that are not plain pixels (text, shapes, adjustment layers) cannot be imported, some blend modes are turned into Normal, and unusual group settings make Shokker open the flattened picture instead. A failed import leaves your previous paint unchanged.",
+   "when": [
+    "Nothing happens when you pick a file.",
+    "A toast says layers are missing.",
+    "The layered file looks different from Photoshop.",
+    "The file is very large."
+   ],
+   "how": [
+    "Use the PSD/XCF/ORA button next to Source Paint, and pick a file that ends in .psd, .xcf or .ora. A flat TGA, PNG or JPEG opens with the TGA/PNG/JPEG button instead, without layers.",
+    "Wait. A big PSD can take up to a minute; a Loading message shows at the bottom while it works.",
+    "Read the result toast. It says how many editable layers loaded (for example 12 of 12). If it says some layers are missing, or that it opened safely from its source composite, the picture is right but some layers are not editable; the names are listed.",
+    "Toast PSD note: blend modes not supported were imported as Normal: the look can differ a little; set those layers to Normal or a supported mode in Photoshop and re-open.",
+    "Toast PSD note: non-pixel layers could not be imported: text, shape and adjustment layers are skipped. Rasterize them in Photoshop (right-click the layer > Rasterize) and save again.",
+    "GIMP: use the .xcf directly, or File > Export As .ora or .psd. Krita: save as .ora.",
+    "Toast import error ... Previous source kept unchanged: the file is damaged or unusual. Re-save it from your editor as a new PSD and try again.",
+    "Open the template of the car you drive, at its normal 2048 size. Never resize the canvas first.",
+    "If it opens but a zone paints nothing, the zone may be limited to a layer name that the file does not have."
+   ],
+   "controls": [
+    {
+     "label": "PSD/XCF/ORA",
+     "range": ".psd .xcf .ora",
+     "default": "",
+     "effect": "Opens a layered file with its layers editable.",
+     "inv": "pro.header.psd_xcf_ora"
+    },
+    {
+     "label": "TGA/PNG/JPEG",
+     "range": "",
+     "default": "",
+     "effect": "Opens a flat paint without layers.",
+     "inv": "pro.header.tga_png_jpeg"
+    }
+   ],
+   "tips": [
+    "Layer names matter: Shokker recognises the car and its layers (Car Paint, Numbers, Sponsors) from the template.",
+    "Keep a copy of your original PSD before experimenting."
+   ],
+   "pitfalls": [
+    "Only pixel layers import. Rasterize text and shapes first.",
+    "Layers inside groups cannot be moved across a group border; flatten the group first."
+   ],
+   "related": [
+    "layers.open_psd",
+    "ui_shell.source_paint",
+    "workflows.loading_paint",
+    "support.error_messages",
+    "cars.choose_template"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.header.psd_xcf_ora"
+    },
+    {
+     "do": "control",
+     "id": "pro.header.tga_png_jpeg"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.header.psd_xcf_ora",
+    "pro.header.tga_png_jpeg"
+   ],
+   "sources": [
+    "paint-booth-3-canvas.js:21616",
+    "paint-booth-3-canvas.js:22295",
+    "paint-booth-3-canvas.js:22306",
+    "paint-booth-3-canvas.js:22316",
+    "paint-booth-3-canvas.js:22326",
+    "paint-booth-3-canvas.js:22347",
+    "js/spb-support-answers.js:110"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "psd wont open",
+    "cannot open psd",
+    "psd not loading",
+    "psd missing layers",
+    "wrong layers",
+    "layers missing",
+    "psd looks different",
+    "blend modes not supported",
+    "non pixel layers",
+    "cant open xcf",
+    "gimp file wont open",
+    "psd is slow",
+    "psd takes forever",
+    "psd import error",
+    "text layers missing",
+    "psd error",
+    "psd problem"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Every cause",
+     "body": "The wrong button (a flat TGA, PNG or JPEG opens with the TGA/PNG/JPEG button, layered files with PSD/XCF/ORA). The file is not .psd, .xcf or .ora. A big PSD is still loading (up to a minute). Non-pixel layers (text, shapes, adjustments) cannot import. Some blend modes become Normal. The file is damaged. The canvas was resized."
+    },
+    {
+     "heading": "Reading the result toast",
+     "body": "It says how many editable layers loaded (for example 12 of 12). A note about layers missing or opened from the source composite means the picture is right but some layers are not editable, and the names are listed. A failed import keeps your previous paint unchanged."
+    },
+    {
+     "heading": "How to confirm",
+     "body": "The layers appear in the Layers panel with the expected count and the preview shows your template. A zone limited to a layer name only works if the file has it."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Text layers skipped",
+     "goal": "Make text editable",
+     "settings": {
+      "Photoshop": "Right-click the layer > Rasterize, save again",
+      "Shokker": "Re-open with PSD/XCF/ORA"
+     },
+     "result": "The layer loads as pixels."
+    },
+    {
+     "title": "GIMP or Krita template",
+     "goal": "Open without Photoshop",
+     "settings": {
+      "GIMP": "Use the .xcf directly, or Export As .ora or .psd",
+      "Krita": "Save as .ora"
+     },
+     "result": "Layers import."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does a big PSD take so long?",
+     "a": "It can take up to a minute; a Loading message shows at the bottom."
+    },
+    {
+     "q": "Does a failed import break my paint?",
+     "a": "No. The previous source stays unchanged."
+    },
+    {
+     "q": "Can I resize the canvas first?",
+     "a": "No. Open the car template at its normal 2048 size."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Nothing in a zone after import",
+     "cause": "It is limited to a layer name the file lacks",
+     "fix": "Check the layer names."
+    },
+    {
+     "symptom": "Looks slightly different",
+     "cause": "Blend modes imported as Normal",
+     "fix": "Set them to Normal in Photoshop and re-open."
+    }
+   ],
+   "protips": [
+    "Keep a copy of your original PSD before experimenting."
+   ],
+   "screens": [
+    "sculpt_smart_separate"
+   ]
+  },
+  {
+   "id": "support.tiny_or_huge",
+   "title": "Everything looks tiny or huge (base scale)",
+   "domain": "support",
+   "summary": "If a texture looks microscopic or gigantic on the car, it is the zone's scale. Base Scale sets the finish texture (0.05x to 5.0x), Scale (pattern) sets a pattern (0.10x to 4.0x), and 1.0x is normal for both.",
+   "what": "SYMPTOM: flake looks like boulders, carbon looks like a fishing net, or a camo is so fine it reads as plain colour. CAUSE: the paint is one flat 2048 sheet over the whole car, so size is set per zone with scale sliders, not by zooming the picture. Three separate scales exist and they do not affect each other: the finish texture, the pattern, and the colour art of a gradient or borrowed special.",
+   "when": [
+    "A texture is far too big or small for the look you want.",
+    "You changed Base Scale and the colours did not change.",
+    "Spec and paint no longer line up."
+   ],
+   "how": [
+    "Click the zone card to open its panel. Find BASE for the finish texture, PATTERN for a pattern.",
+    "Base Scale: drag from 0.05x to 5.0x; 1.00x is the centre and the slider is not linear (left half 0.05 to 1, right half 1 to 5). 0.5 is twice as fine.",
+    "Scale (pattern): 0.10x to 4.0x. Go below 1.0x for fine detail on a whole car; above 1.0x for big bold shapes.",
+    "Color Scale and Color Rotation (only for From special or Custom gradient) zoom and rotate the colour art, not the material texture.",
+    "Spec Scale follows Base Scale unless Independent Spec is ticked. Tick it only if you want the spec on its own scale.",
+    "Render and judge on the car at 100 percent; the fit-to-window preview hides fine detail.",
+    "If the whole car looks small or large in the editor window, that is zoom, not scale: use the zoom controls."
+   ],
+   "controls": [
+    {
+     "label": "Base Scale",
+     "range": "0.05x to 5.0x",
+     "default": "1.0x",
+     "effect": "Size of the finish texture inside the zone.",
+     "inv": "zone.base_scale"
+    },
+    {
+     "label": "Scale (pattern)",
+     "range": "0.10x to 4.0x",
+     "default": "1.0x",
+     "effect": "Size of the pattern; smaller repeats more.",
+     "inv": "zone.pattern_scale"
+    },
+    {
+     "label": "Color Scale / Color Rotation",
+     "range": "0.05x to 5x; 0 to 355 degrees",
+     "default": "1.0x / 0",
+     "effect": "Zooms and rotates gradient or special colour art.",
+     "inv": "zone.color_scale_rotation"
+    },
+    {
+     "label": "Spec Scale",
+     "range": "",
+     "default": "follows Base Scale",
+     "effect": "Size of the spec texture.",
+     "inv": "zone.spec_scale"
+    }
+   ],
+   "tips": [
+    "Flat plain finishes have no texture to scale; the slider only matters for textured finishes.",
+    "On the whole-car sheet, a normal-size pattern usually reads big: start at 0.5x."
+   ],
+   "pitfalls": [
+    "Base Scale never changes the colours or the size of the car.",
+    "Pattern scale and spec-pattern scale are separate sliders."
+   ],
+   "related": [
+    "support.smeared_blobby",
+    "spec.scale_rotation",
+    "zones.card_controls",
+    "workflows.six_words"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.base_scale"
+    },
+    {
+     "do": "control",
+     "id": "zone.pattern_scale"
+    }
+   ],
+   "figures": [
+    "g19_scale_on_car"
+   ],
+   "covers": [
+    "zone.base_scale",
+    "zone.pattern_scale",
+    "zone.color_scale_rotation",
+    "zone.spec_scale"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:1656",
+    "docs/ai_knowledge/09_field_playbook.md:12",
+    "SPB_WIKI.html#finish_doctrine:3515"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "everything looks tiny",
+    "texture too small",
+    "texture too large",
+    "looks huge",
+    "scale too big",
+    "scale too small",
+    "base scale slider",
+    "pattern too tiny",
+    "flake too big",
+    "flake too small",
+    "carbon too big",
+    "make it smaller",
+    "make it bigger",
+    "finish scale",
+    "pattern huge on car",
+    "finish too small",
+    "too big or too small",
+    "base scale problem"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Three separate scales",
+     "body": "Base Scale (0.05x to 5.0x) sets the finish texture, Scale (pattern) (0.10x to 4.0x) sets a pattern, and Color Scale (0.05x to 5x) with Color Rotation (0 to 355 degrees) sets gradient or special colour art. They do not affect each other. Spec Scale follows Base Scale unless Independent Spec is on."
+    },
+    {
+     "heading": "Every cause",
+     "body": "Flake like boulders or a net-like weave: scale above 1.0 on a whole car. A camo too fine to read: scale below 0.5 with colours of similar value. A slider you moved on the wrong control. The editor zoom, which does not change scale."
+    },
+    {
+     "heading": "How to confirm",
+     "body": "Render and judge on the car at 100 percent. The Base Scale slider is not linear: left half 0.05 to 1, right half 1 to 5, centre 1.00x."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Carbon too coarse",
+     "goal": "Make the weave finer",
+     "settings": {
+      "Scale (pattern)": "0.5",
+      "Base Scale": "Lower if the finish has its own weave"
+     },
+     "result": "A finer weave."
+    },
+    {
+     "title": "Gradient too small",
+     "goal": "Enlarge colour art",
+     "settings": {
+      "Color Scale": "Above 1.0 for a custom gradient or borrowed special"
+     },
+     "result": "Bigger colour art; the material texture is unchanged."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does Base Scale change colours?",
+     "a": "No. It never changes colours or the car size."
+    },
+    {
+     "q": "Why is my whole car small in the window?",
+     "a": "That is editor zoom, not scale."
+    },
+    {
+     "q": "What is a good starting point?",
+     "a": "On a whole car, start at 0.5x."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Scale slider does nothing",
+     "cause": "A plain finish has no texture",
+     "fix": "Pick a textured finish."
+    },
+    {
+     "symptom": "Spec looks out of step with the texture",
+     "cause": "Independent Spec is on",
+     "fix": "Untick it so the spec follows Base Scale."
+    }
+   ],
+   "protips": [
+    "Change one scale at a time and render. Three scales at once make it impossible to see what helped."
+   ],
+   "screens": [
+    "ui_zone_card"
+   ]
+  },
+  {
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-05",
+   "controls": [],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "id": "support.image_files",
+   "title": "Opening TGA files in other editors, blurry logos and getting a PNG",
+   "domain": "support",
+   "level": "beginner",
+   "summary": "Shokker writes plain TGA files (the paint is 24-bit; the spec is 32-bit, because its alpha is the lighting mask); Export to Photoshop, Export PNG (canvas right-click) and Channel PNG Export get them into other tools. A blurry logo is almost always a small picture that was enlarged.",
+   "what": "The paint and spec files are plain, uncompressed TGA pictures at the size of the template you opened (2048 x 2048, or 1024 x 1024): the paint is 24-bit, and the spec is 32-bit because its alpha channel carries the lighting mask. Any picture editor that reads TGA can open them. For a round trip through Photoshop, the layer Actions menu has Export to Photoshop, which writes named TGA exchange files plus a manifest so the edited files come back in. Shokker has no TGA-to-PNG converter as such, but two exports give you PNG files: Export PNG on the canvas right-click menu downloads a PNG of the current paint, and Channel PNG Export (PNG Channels Export under MORE TOOLS in the ZONES column) writes paint_base.png, spec_full.png and the separated spec channels for inspection. Logos look blurry when a small picture is stretched over a big area of the 2048 x 2048 sheet; start from a bigger picture rather than enlarging it with Transform.",
+   "when": [
+    "Your editor will not open a TGA from Shokker.",
+    "You need a PNG of the paint or spec.",
+    "A logo or number looks soft or blurry on the car."
+   ],
+   "how": [
+    "1. To edit outside Shokker: layer Actions menu > Export to Photoshop, pick the car file name and an export folder, edit, then bring the files back.",
+    "2. For a PNG of what you see: right-click the canvas and choose Export PNG.",
+    "3. For the spec as PNGs: use PNG Channels Export (ZONES column > MORE TOOLS) or Channel PNG Export (in the SHOKK file library, for a saved SHOKK file), with an export folder; it writes paint_base.png, spec_full.png and one picture per channel.",
+    "4. For a sharp logo: add it with + Layer from a large PNG with a transparent background, then shrink it into place with Transform (Ctrl+T) instead of enlarging a small one.",
+    "5. Re-render and reload in iRacing (Ctrl+R) to see the sharp version."
+   ],
+   "tips": [
+    "Channel PNG Export is for looking at the files; it does not make the final iRacing TGA. Render does that."
+   ],
+   "pitfalls": [
+    "A paint TGA saved with the template's alpha channel can make parts of the car vanish or turn black in iRacing; keep the paint 24-bit (cars with paintable glass are the exception and need the glass alpha). The spec map is meant to carry alpha.",
+    "Enlarging a logo with Transform cannot add detail; it only spreads the pixels further."
+   ],
+   "related": [
+    "preview_render.output_files",
+    "layers.open_psd",
+    "help_howto_1.add_logo",
+    "help_howto_2.move_logo",
+    "support.not_in_iracing",
+    "workflows.loading_paint"
+   ],
+   "sources": [
+    "js/spb-support-answers.js:63",
+    "js/spb-support-answers.js:66",
+    "paint-booth-v2.html:5102-5125",
+    "paint-booth-v2.html:3853",
+    "paint-booth-3-canvas.js:30462-30471",
+    "paint-booth-3-canvas.js:17595-17606",
+    "paint-booth-v2.html:5014-5017",
+    "paint-booth-v2.html:2671",
+    "docs/ai_knowledge/how_do_i.md:794"
+   ],
+   "aliases": [
+    "photoshop wont open tga",
+    "open tga in photoshop",
+    "open tga in gimp",
+    "tga file wont open",
+    "edit the tga",
+    "convert tga to png",
+    "tga to png",
+    "save as png",
+    "export png",
+    "png of my paint",
+    "logo looks blurry",
+    "blurry logo",
+    "pixelated logo",
+    "logo is fuzzy",
+    "sponsor looks low res",
+    "low resolution logo",
+    "round trip photoshop"
+   ],
+   "deep": [
+    {
+     "heading": "What kind of file a TGA is",
+     "body": "TGA is an old, simple picture format. iRacing wants a 2048 x 2048 (or 1024 x 1024) paint TGA, and Shokker renders at the size of the template you open, saving the paint as a plain 24-bit TGA and the spec as a 32-bit TGA. If one editor refuses the file, another that reads TGA will open it; the safest route back into Shokker is the Export to Photoshop round trip or loading a PSD with Open Layered."
+    },
+    {
+     "heading": "Why logos go soft",
+     "body": "The whole car is one 2048 x 2048 picture, so a door logo might be several hundred pixels wide. A logo saved at 100 pixels and stretched to 400 becomes four times softer. Use a logo at least as large as it will appear on the sheet, ideally a PNG with transparency, and only ever shrink it with Transform."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Sharp sponsor on the door",
+     "goal": "A crisp logo instead of a blurry one",
+     "settings": {
+      "Source": "a large transparent PNG",
+      "Add": "+ Layer in the LAYERS column",
+      "Size": "Transform (Ctrl+T), shrinking only"
+     },
+     "result": "The logo keeps its edges on the car."
+    },
+    {
+     "title": "A PNG to post online",
+     "goal": "Share a picture of the paint",
+     "settings": {
+      "Canvas": "right-click > Export PNG"
+     },
+     "result": "A PNG of the current paint is saved."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why won't Photoshop open my TGA?",
+     "a": "The file is a standard uncompressed 24-bit TGA. Try Export to Photoshop from the layer Actions menu, or open it in another editor that reads TGA."
+    },
+    {
+     "q": "Can Shokker convert TGA to PNG?",
+     "a": "Not as a converter, but Export PNG (right-click the canvas) and Channel PNG Export both write PNG files."
+    },
+    {
+     "q": "Why does my logo look blurry?",
+     "a": "It was enlarged from a small picture. Start from a bigger PNG and only shrink it."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Parts of the car are black after editing the TGA elsewhere.",
+     "cause": "The editor saved an alpha channel (32-bit).",
+     "fix": "Save the paint as a 24-bit TGA, or bring the edit back through Shokker and render again."
+    },
+    {
+     "symptom": "The logo is sharp in the editor but soft on the car.",
+     "cause": "The logo picture is smaller than the area it covers on the 2048 sheet.",
+     "fix": "Use a larger source picture."
+    }
+   ],
+   "protips": [
+    "Keep your editable work as a PSD and let Shokker write the TGA: that avoids alpha-channel and size mistakes."
+   ],
+   "screens": [
+    "ui_export_photoshop"
+   ]
+  },
+  {
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-05",
+   "controls": [],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "id": "support.fps_and_performance",
+   "title": "Frame rate: does a custom paint slow iRacing down?",
+   "domain": "support",
+   "level": "beginner",
+   "summary": "Shokker cannot measure or change your frame rate in iRacing; it only writes files. Every render is the template's size (2048 or 1024 square) whatever finish you pick, so a busy finish does not make the paint bigger.",
+   "what": "Shokker runs outside iRacing and writes a paint and a spec map into the car folder. Their size is not a setting: it is the size of the template you opened, and iRacing paints are 2048 by 2048 or 1024 by 1024. A plain colour and the busiest finish give files of the same size in pixels. How iRacing handles custom paints is set in iRacing's own graphics options, for example its 2048 paint textures option, which needs an iRacing restart after you change it. Inside Shokker, what costs time is the render: more zones, big masks and heavy finishes take longer.",
+   "when": [
+    "You worry that a detailed paint costs frames in iRacing.",
+    "Your league asks about texture size.",
+    "Shokker itself feels slow while rendering."
+   ],
+   "how": [
+    "1. Keep the template size: never resize the canvas; Shokker renders at the size of the template you opened.",
+    "2. For iRacing performance, use iRacing's graphics options; after changing the 2048 paint textures option, restart iRacing.",
+    "3. If renders in Shokker are slow, merge zones that share one look and keep heavy finishes to the areas that need them.",
+    "4. If a render keeps running for minutes, follow the render slow or failing article."
+   ],
+   "tips": [
+    "Detail costs render time in Shokker, not pixels in the file: the file is the same size either way."
+   ],
+   "pitfalls": [
+    "Resizing the paint to save memory breaks it: iRacing ignores sizes other than 2048 or 1024 square.",
+    "Shokker cannot show your frame rate; check it in iRacing."
+   ],
+   "related": [
+    "preview_render.render_button",
+    "preview_render.render_slow",
+    "support.render_slow_or_fails",
+    "help_support_1.size_2048"
+   ],
+   "sources": [
+    "docs/ai_knowledge/10_support_troubleshooting.md:19",
+    "docs/ai_knowledge/10_support_troubleshooting.md:23",
+    "paint-booth-v2.html:3578",
+    "js/spb-support-answers.js:50-57",
+    "js/spb-support-answers.js:125"
+   ],
+   "aliases": [
+    "fps",
+    "frame rate",
+    "framerate",
+    "frames per second",
+    "fps drop",
+    "does a custom paint lower fps",
+    "paint performance in iracing",
+    "stutter",
+    "will my paint slow down iracing",
+    "texture size performance",
+    "2048 paint textures",
+    "lag in iracing"
+   ],
+   "deep": [
+    {
+     "heading": "Why the finish does not change the file size",
+     "body": "A render always fills the whole template, pixel for pixel. A flat colour and a micro-flake finish both produce a paint and a spec map of the template's size. The difference is only what the pixels say, not how many there are."
+    },
+    {
+     "heading": "Where the time goes in Shokker",
+     "body": "Rendering builds every zone at full size. More zones, big masks and heavy finishes take longer, which is why merging zones that share a look speeds renders up. None of that affects iRacing once the files are written."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Busy livery, same file",
+     "goal": "A detailed paint that is still a normal file",
+     "settings": {
+      "Template": "2048 by 2048",
+      "Zones": "as many as the design needs"
+     },
+     "result": "The paint and spec are 2048 by 2048, like any other paint."
+    },
+    {
+     "title": "Faster renders",
+     "goal": "Cut render time",
+     "settings": {
+      "Zones": "merge zones with the same look",
+      "Finishes": "heavy finishes only where needed"
+     },
+     "result": "Shorter renders with the same look."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Will a detailed paint lower my FPS?",
+     "a": "Shokker cannot measure that. The file is the template's size whatever the finish; frame rate is set by iRacing's graphics options."
+    },
+    {
+     "q": "Should I make a 1024 paint to save frames?",
+     "a": "Only if your car's template is 1024. Shokker renders at the size of the template you opened; never resize it."
+    },
+    {
+     "q": "Why is Shokker slow to render?",
+     "a": "More zones, big masks and heavy finishes take longer. Merge zones that share a look."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The paint shows default colours after resizing it.",
+     "cause": "iRacing ignores paints that are not 2048 or 1024 square.",
+     "fix": "Go back to the original template size and render again."
+    },
+    {
+     "symptom": "A changed iRacing texture option does nothing.",
+     "cause": "iRacing needs a restart after changing the 2048 paint textures option.",
+     "fix": "Restart iRacing."
+    }
+   ],
+   "protips": [
+    "Tune speed where it lives: render time in Shokker, frame rate in iRacing's graphics options."
+   ],
+   "screens": [
+    "ui_render_bar"
+   ]
+  }
+ ]
+}

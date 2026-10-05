@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_screen_burn",
+  "display_name": "Arcade: Screen Burn Echo",
+  "promise": "Faded cyan and pink raster ghosts beneath sharper orange phosphor strokes.",
+  "carrier_grammar": "Faded cyan and pink raster ghosts beneath sharper orange phosphor strokes. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for violet glass skin, cyan raster ghosts, pink burned outlines, orange live phosphor, unlit raster gaps is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Faded cyan and pink raster ghosts beneath sharper orange phosphor strokes. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_screen_burn.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "violet glass skin",
+      "role": "Actual shared paint and spec geometry: violet glass skin"
+    },
+    {
+      "name": "cyan raster ghosts",
+      "role": "Actual shared paint and spec geometry: cyan raster ghosts"
+    },
+    {
+      "name": "pink burned outlines",
+      "role": "Actual shared paint and spec geometry: pink burned outlines"
+    },
+    {
+      "name": "orange live phosphor",
+      "role": "Actual shared paint and spec geometry: orange live phosphor"
+    },
+    {
+      "name": "unlit raster gaps",
+      "role": "Actual shared paint and spec geometry: unlit raster gaps"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "violet glass skin",
+      "cyan raster ghosts",
+      "pink burned outlines",
+      "orange live phosphor",
+      "unlit raster gaps"
+    ],
+    "R": [
+      "violet glass skin",
+      "cyan raster ghosts",
+      "pink burned outlines",
+      "orange live phosphor",
+      "unlit raster gaps"
+    ],
+    "Cc": [
+      "violet glass skin",
+      "cyan raster ghosts",
+      "pink burned outlines",
+      "orange live phosphor",
+      "unlit raster gaps"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_dot_matrix",
+      "difference": "This finish uses Tiny offset phantom raster rectangles and stepped corner ghosts etched into violet arcade glass; faded cyan and dusty pink phosphor echoes overlaid with sharper orange active strokes, short local line scans at many angles. A visible double-exposure of microscopic screen-burn marks, no legible scores or screen border.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_vhs_tracking",
+      "difference": "This finish uses Tiny offset phantom raster rectangles and stepped corner ghosts etched into violet arcade glass; faded cyan and dusty pink phosphor echoes overlaid with sharper orange active strokes, short local line scans at many angles. A visible double-exposure of microscopic screen-burn marks, no legible scores or screen border.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "violet glass skin is visible in the authored geometry",
+      "cyan raster ghosts is visible in the authored geometry",
+      "pink burned outlines is visible in the authored geometry",
+      "orange live phosphor is visible in the authored geometry",
+      "unlit raster gaps is visible in the authored geometry"
+    ],
+    "source_sha256": "fd771156e51b63a0d1d4863b4cfe846c678fa6c6b24cc535e39701ecb33747cb",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_screen_burn-authored-Faded cyan and pink raster ghosts beneath sharper orange phosphor strokes. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_screen_burn-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 74.4,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "3a115f599371b4ebc092e073bedc9d85743a26e6a7ff2c047f9d85029d3f1942"
+}

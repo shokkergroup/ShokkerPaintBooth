@@ -1,0 +1,14 @@
+{
+  "version":1,
+  "paint_label":"dirtlatemodel 350/car_num_1050549.tga",
+  "inspection_records":"_smart_tga_runs/cycle660_dlm_template_position_canary/inspection_records.json",
+  "review_scope":"Cycle 660 manual source plus Number/Sponsor/Template/Paint/combined-owner and learned-position review.",
+  "component_labels":[
+    {"layer":"numbers","component_index":0,"expected_bbox":[129,2,164,75],"target_layer":"template","label":"fixed_blank_template_panel_false_number"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[317,31,161,88],"target_layer":"template","label":"fixed_blank_template_panel_false_number"},
+    {"layer":"numbers","component_index":2,"expected_bbox":[275,225,175,115],"target_layer":"numbers","label":"true_side_number","family_id":"number:18_white_black"},
+    {"layer":"numbers","component_index":3,"expected_bbox":[286,720,167,99],"target_layer":"numbers","label":"true_side_number","family_id":"number:18_white_black"},
+    {"layer":"numbers","component_index":4,"expected_bbox":[891,884,7,4],"target_layer":"numbers","label":"true_rear_number_fragment","family_id":"number:18_white_black"},
+    {"layer":"numbers","component_index":5,"expected_bbox":[891,899,30,37],"target_layer":"numbers","label":"true_rear_number_fragment","family_id":"number:18_white_black"}
+  ]
+}

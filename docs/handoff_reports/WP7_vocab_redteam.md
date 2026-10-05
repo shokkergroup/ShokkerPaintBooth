@@ -1,0 +1,19 @@
+# WP7 - offline helper vocabulary + red team (2026-10-03)
+
+Tools: `_easy_claude_work/pw/wp7_probe.js` (print parser signature for a batch file), `pw/wp7_add.js` (append a reviewed batch to `edit_corpus.js`), batch files `_easy_claude_work/eval/wp7_bN.txt`.
+t255 baseline saved: `_easy_claude_work/eval/wp7_t255_before.txt`.
+
+## Progress log
+- batch 1 (numbers / sponsors / stripes / exclusions / two jobs): 37 added, 0 mismatches (corpus 249). Parser changes: `digits` = numbers; "everything but the numbers" = exclusion (lookbehind `but`); "but keep the sponsors" / "leave the logos out of it" = exclusion; clauses that only say something stays ("body stays", "leave the rest") are dropped (STAYS_RE); "the number on the door" / "logos on the hood" no longer also chrome the whole door / hood (part after an element is a location, not a job).
+- batch 2 (spec / look words, painter slang, typos): 36 added (corpus 286), 0 mismatches. Parser: WORD_TYPOS gained short typos the 6-letter fuzz never reached (chrme, numbrs, sponsers, stipes, whtie ...). Note: expectation fixes - "carbon fiber" and colours not on the palette = ASK (corpus runs compile; probe now does too).
+- batch 3 (two jobs, word order, hex/rgb, pop / expensive / tone down): 34 added (corpus 320), 0 mismatches. Parser: 'purple numbers' / 'gold stripes' (bare colour + element = the colour they want); 'matte, the black' (look first, target second); rgb(r,g,b) -> hex; punch up / jazz up / spice up = pop. Bare 'pearl white', 'matte black', 'make it look expensive', 'tone it down', 'less shiny' are expected NULL (older handlers / ideas helper own them).
+- batch 4 (follow-ups in context, asks, must-stay-NULL): 45 added (corpus 364). Parser: 'now / and / also the X' = the last job on X; 'as well'; 'a little bit more' / 'a tad more' / 'not that much' / 'too much' / 'ease off' ladder steps; 'go back' reverts the last target; bare 'undo that / undo it' = regular Undo (NULL, was ASK); 'add a big number 7 on the roof' = NULL (new art, not an edit) unless a look word is present.
+- batch 5 (exclusions, element+look combos, relative / slang): 33 added (corpus 396 total, +184 vs the 212 baseline), 0 mismatches. Parser: 'but keep the numbers white' = exclusion; 'shine more' = rel-up.
+- red team (offline, 114 prompts, ARCA): found 5 QUESTIONS that edited the car (norm() drops the '?', 'whats' != 'what'); fixed with QWORD_RE/POLITE_RE guard; 'is it possible to make ...' stays an edit; 'more dull' = rel-down; 'matte except the roof should be glossy' not fixed (whole-car + part is the older handlers' job). Batch 6: 13 added (corpus 409).
+
+## Final (2026-10-03)
+- Corpus 212 -> 409 phrases (197 new), 0 mismatches; edit_req_test 17/17; edit_test runs clean. scan_ctrl 0. Token `spb-pro-edit-20261003wp7b`; sync --check: no drift.
+- Red team offline (114 edit-ish prompts of redteam_prompts_gen.json, ARCA, helper verified offline, 0 openrouter requests): before = edit 33 / asked 30 + unknown-look asks 12 / ideas-fallback 16 / manual-fallback 7 / other 12 / refused 4 (the 5 "question edited the car" cases are the fixed bug). After (107 re-run): the 5 questions no longer edit; "trim shinier, panels more dull" now edits. Files: eval/wp7_redteam_offline.jsonl (before), wp7_redteam_offline_after.jsonl (after), runner pw/wp7_redteam_offline.py.
+- Not fixed (older handlers own them): whole-car + part in one sentence ("matte except the roof should be glossy" -> ideas fallback), "make the hood like chrome / shiny metal" (part + base look = legacy by design), pro-painter jargon (blend modes, 500% roughness), gradients, "undo the last three".
+- Misses file `%APPDATA%\ShokkerPaintBooth\ai\ai_misses.jsonl`: absent (dir has only ledger.json + settings.json).
+- t255 before/after: identical (46 lines). Note: a first "after" attempt crashed on a Playwright dialog race caused by 7 leftover pages in Chrome 9444; closing them and rerunning gave identical output.

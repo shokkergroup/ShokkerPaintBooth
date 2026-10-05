@@ -1,0 +1,166 @@
+{
+  "category": "fable",
+  "entries": {
+    "fable_velvet_eclipse": {
+      "verdict": "keep",
+      "rating": 80,
+      "ai_rating": 86,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781053334521
+    },
+    "fable_wovenlight": {
+      "verdict": "keep",
+      "rating": 85,
+      "ai_rating": 76,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781053388796
+    },
+    "fable_ember_glass": {
+      "verdict": "keep",
+      "rating": 80,
+      "ai_rating": 63,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781073014068
+    },
+    "fable_glacier_core": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 54,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781096891334
+    },
+    "fable_tempered_dawn": {
+      "verdict": "keep",
+      "rating": 69,
+      "ai_rating": 61,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781097506654
+    },
+    "fable_sovereign_flip": {
+      "verdict": "keep",
+      "rating": 77,
+      "ai_rating": 58,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781097705100
+    },
+    "fable_aurora_travel": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781097883713
+    },
+    "fable_emberline_drift": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 54,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781098213712
+    },
+    "fable_abyss_lantern": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": 59,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781103885743
+    },
+    "fable_stained_aurora": {
+      "verdict": "keep",
+      "rating": 75,
+      "ai_rating": 65,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781103990754
+    },
+    "fable_pulse_alloy": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 51,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781104385131
+    },
+    "fable_duomorph": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": 47,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781104900875
+    },
+    "fable_prism_veil": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 70,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781118101436
+    },
+    "fable_oilforge": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": 53,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781118106576
+    },
+    "fable_static_bloom": {
+      "verdict": "keep",
+      "rating": 67,
+      "ai_rating": 65,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781118233307
+    },
+    "fable_saffron_circuit": {
+      "verdict": "keep",
+      "rating": 71,
+      "ai_rating": 64,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781118378566
+    },
+    "fable_quicksilver_garden": {
+      "verdict": "keep",
+      "rating": 68,
+      "ai_rating": 76,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781118509127
+    },
+    "fable_nightbloom": {
+      "verdict": "keep",
+      "rating": 75,
+      "ai_rating": 52,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781118572148
+    },
+    "fable_magnetite_flow": {
+      "verdict": "rebuild",
+      "rating": 41,
+      "ai_rating": 64,
+      "reasons": [],
+      "notes": "Pattern way too blotchy for car canvas. Remember our rules",
+      "ts": 1781118669454
+    },
+    "fable_comet_parade": {
+      "verdict": "rebuild",
+      "rating": 45,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "Nothing about this is exciting. It should be jumping off the screen but it's not working well for some reason",
+      "ts": 1781118762899
+    }
+  },
+  "updated": 1781118762
+}

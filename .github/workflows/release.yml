@@ -1,0 +1,66 @@
+name: Release
+
+# Build + publish a Windows installer when a tag like v6.3.0 is pushed.
+# electron-builder uploads:
+#   - ShokkerPaintBoothV6-<version>-Setup.exe
+#   - ShokkerPaintBoothV6-<version>-Setup.exe.blockmap  (for delta updates)
+#   - latest.yml                                       (electron-updater feed)
+# to the GitHub Release matching the tag. Owner can flip "draft" → published.
+#
+# NOTE: builds are UNSIGNED until a code-signing cert is added. The companion
+# in-app update banner (electron-app/update-check.js) handles unsigned-build
+# users by linking them to the GitHub release page.
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:   # allow manual runs from the Actions tab
+
+permissions:
+  contents: write       # required to upload release assets
+
+jobs:
+  build:
+    name: Build & Publish (Windows)
+    runs-on: windows-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies (electron-app)
+        working-directory: electron-app
+        run: npm install --no-audit --no-fund
+
+      - name: Copy server assets
+        working-directory: electron-app
+        run: npm run copy-server
+
+      - name: Build & publish via electron-builder
+        working-directory: electron-app
+        env:
+          # GITHUB_TOKEN is auto-provided by Actions; electron-builder uses it
+          # via the GH_TOKEN env var convention.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx electron-builder --win --x64 --publish always
+
+      - name: Upload build artifacts (debug / fallback)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spb-windows-dist
+          path: |
+            electron-app/dist/*.exe
+            electron-app/dist/*.exe.blockmap
+            electron-app/dist/latest.yml
+          if-no-files-found: warn
+          retention-days: 7

@@ -1,0 +1,86 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon_dual_glow",
+  "display_name": "Janus Lensfield",
+  "carrier": "black optical resin densely filled with irregular opposing-flank birefringent microlens packets",
+  "material_story": {
+    "M": "exposed cyan flanks, caustic pinpoints, reflective neck overlaps, and chipped exposure",
+    "R": "clipped equators, chipped edges, and black occlusion cuts with fractured reach",
+    "Cc": "intact resin lens bodies, opposing magenta flanks, buried ghosts, and healed necks"
+  },
+  "vetoes": [
+    "no yin-yang or eye icons",
+    "no bubbles, polka dots, fish scales, or confetti",
+    "no repeated capsules",
+    "no grids or rows",
+    "no simple two-color split wallpaper",
+    "no unrelated noise/spec underlay"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 2.095706,
+  "material_stats": {
+    "std": {
+      "M": 82.789963,
+      "R": 83.299171,
+      "Cc": 83.260788
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": -0.168065,
+      "M_Cc": 0.448827,
+      "R_Cc": -0.010294
+    }
+  },
+  "geometry_stats": {
+    "family_count": 9,
+    "families": {
+      "irregular_lens_bodies": 6275,
+      "opposing_cyan_flanks": 6275,
+      "opposing_magenta_flanks": 6275,
+      "clipped_equators": 4873,
+      "caustic_pinpoints": 4294,
+      "chipped_edges": 1878,
+      "short_lens_neck_overlaps": 2028,
+      "buried_ghost_lenses": 2993,
+      "black_occlusion_cuts": 5174
+    },
+    "width_native_min": 8.0,
+    "width_native_median": 9.0,
+    "width_native_p90": 28.0,
+    "width_native_max": 28.0,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "irregular_lens_bodies": 0.457603,
+    "opposing_cyan_flanks": 0.320812,
+    "opposing_magenta_flanks": 0.35803,
+    "clipped_equators": 0.172417,
+    "caustic_pinpoints": 0.072457,
+    "chipped_edges": 0.006666,
+    "short_lens_neck_overlaps": 0.076317,
+    "buried_ghost_lenses": 0.178245,
+    "black_occlusion_cuts": 0.191716
+  }
+}

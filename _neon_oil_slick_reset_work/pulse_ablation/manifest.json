@@ -1,0 +1,115 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_laser_web",
+  "display_name": "Pulse Ablation",
+  "carrier": "black coated metal packed with finite cyan/magenta pulse-ablation strike histories",
+  "material_story": {
+    "M": "ablated crater mouths and trenches expose metal while ejecta, re-solidified beads, and pinpoints retain metallic response",
+    "R": "carbonized pits, scorched trenches, oxide freckles, and interrupted gaps raise roughness while reflow beads and pinpoints smooth it",
+    "Cc": "intact coating and registered heat reflow retain clearcoat while crater, trench, gap, pit, and oxide rupture remove it"
+  },
+  "vetoes": [
+    "webs or spiderwebs",
+    "long rays or lines",
+    "starbursts",
+    "lightning",
+    "grids",
+    "crosshairs",
+    "laser-beam imagery",
+    "generic scratch noise",
+    "macro voids"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 2.088012,
+  "material_stats": {
+    "std": {
+      "M": 82.789467,
+      "R": 83.296173,
+      "Cc": 83.260818
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.629949,
+      "M_Cc": 0.305911,
+      "R_Cc": 0.018882
+    }
+  },
+  "geometry_stats": {
+    "family_count": 11,
+    "families": {
+      "angular ejecta chips": 729,
+      "black coated-metal facets": 5446,
+      "clipped angular crater mouths": 336,
+      "dark carbonized pits": 481,
+      "displaced cyan heat rims": 2294,
+      "displaced magenta heat rims": 2245,
+      "faceted re-solidified beads": 903,
+      "interrupted pulse gaps": 641,
+      "oxide microfreckles": 953,
+      "short scorched microtrenches": 2618,
+      "white-hot terminal pinpoints": 394
+    },
+    "width_native_min": 8.002,
+    "width_native_median": 17.557,
+    "width_native_p90": 25.572,
+    "width_native_max": 29.997,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "black coated-metal facets": 0.259655,
+    "short scorched microtrenches": 0.085821,
+    "displaced cyan heat rims": 0.063181,
+    "displaced magenta heat rims": 0.061337,
+    "faceted re-solidified beads": 0.020798,
+    "clipped angular crater mouths": 0.021211,
+    "oxide microfreckles": 0.014242,
+    "angular ejecta chips": 0.016364,
+    "interrupted pulse gaps": 0.011086,
+    "white-hot terminal pinpoints": 0.00575,
+    "dark carbonized pits": 0.015179,
+    "registered heat-reflow pools": 0.142697,
+    "intact coated-metal pools": 0.463392
+  },
+  "provenance": {
+    "ticket": "SPB-105",
+    "date": "2026-08-27",
+    "tick": "PA-P2",
+    "verdict": "PA-P1's low-energy shoulders collapsed toward dark platelets and scattered sequins; PA-P2 visibly separates cyan and magenta heat displacement across each finite trench while reducing detached clutter.",
+    "metric_movement": {
+      "picker_64_chroma_std": [
+        0.020037,
+        0.046946
+      ],
+      "picker_64_luma_std": [
+        0.039386,
+        0.061384
+      ],
+      "max_abs_material_correlation": [
+        0.691005,
+        0.629949
+      ]
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "review": "independent narrow review of offlinePartCoverage eligibility proof",
+  "review_date": "2026-10-03",
+  "source_snapshot": {
+    "js/spb-pro-design.js": "5C4EC49036A67FD3F30D738E31076B44204CDA942E3DDF249CADDE15B139C5A3"
+  },
+  "test": "tests/ai_offline_part_coverage_review_contract.cjs",
+  "method": "Recorded 20 novel intent-fact oracles before inspecting helper source. Each returned result is compared as a whole plan: ordered parts, region, color hex and finish; unsupported/mixed requests must return null. After the oracle was frozen, separately added the two parent-supplied counterexamples plus exact-plan controls. No dispatcher integration, native app, provider or mirror was used.",
+  "result": {
+    "comparisons": 33,
+    "passed": 31,
+    "failed": 2,
+    "fresh_oracle_cases": 20,
+    "fresh_cases_fail_closed": 20,
+    "control_cases": 11,
+    "control_cases_passed": 11,
+    "parent_supplied_counterexamples": 2,
+    "parent_counterexamples_failed": 2
+  },
+  "findings": [
+    {
+      "id": "W9-1",
+      "severity": "P1",
+      "case": "Do not make the hood red.",
+      "actual": "Returns complete=true with a red hood zone (#c8102e, base::gloss).",
+      "expected": "Return null because the only requested action is explicitly negated.",
+      "evidence": "The public offlinePart parser independently returns the same red-hood plan. The coverage residual allow-list consumes 'do not' without checking negation polarity.",
+      "risk": "If used as an offline-first eligibility gate, the helper can reverse a clear user instruction and apply the prohibited edit."
+    },
+    {
+      "id": "W9-2",
+      "severity": "P1",
+      "case": "Make the hood red, leave all other panels alone and make the roof blue.",
+      "actual": "Returns complete=true with only a red hood zone; the roof-blue instruction is absent.",
+      "expected": "Either return a complete two-zone plan (hood red and roof blue, both gloss) or return null.",
+      "evidence": "The preservation-clause regex consumes from 'leave all other panels alone' through the end of the sentence, including the later roof instruction.",
+      "risk": "A configured gate would silently drop a requested change while claiming its plan is complete."
+    },
+    {
+      "id": "W9-3",
+      "severity": "P2",
+      "case": "Same-color repeated targets and both-sides scope are rejected by the coverage wrapper.",
+      "actual": "offlinePartCoverage returns null for 'Make the hood and roof both red, with all other panels unchanged.' and 'Make both sides red.' The exported offlinePart function builds exact complete two-zone plans for both.",
+      "expected": "The wrapper may safely prove these plans if all part/color/finish associations are retained.",
+      "risk": "Safe, representable requests cannot use this coverage route."
+    }
+  ],
+  "integration_review": {
+    "dispatcher": "No production dispatcher integration was present in this source snapshot; this report makes no claim about runtime routing.",
+    "api_shape": "offlinePartCoverage returns kind, zones, parts, finish and complete. It does not return canonicalText, source spans, explicit-finish metadata, or preservation/scope evidence. The structured zones are the only normalized plan available to a caller.",
+    "color_only_finish": "A color-only request such as 'Make my hood blue, please.' is accepted with finish base::gloss. The API does not mark gloss as an inferred default. A consumer must prefer the existing exact-part/color-only path that preserves current finish, or carry explicit-finish provenance, before using this candidate plan.",
+    "safe_routing_boundary": "Do not route the original utterance merely because complete is true; both P1 examples demonstrate that complete can describe a lossy or polarity-reversed plan. A future caller should apply a validated structured plan or consume an independently verified canonical representation only after the false-positive cases are fixed."
+  },
+  "limitations": [
+    "The 20 pre-inspection cases focus on mixed scope, direction, unsupported parts/finish/color descriptors, negation and preservation language; most are intended to fail closed under the helper's deliberately narrow contract.",
+    "The existing producer contract/report was read for context but not modified. This reviewer did not run it because it writes the producer-owned report artifact.",
+    "The current source was stable at the recorded hash during the review."
+  ]
+}

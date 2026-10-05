@@ -1,0 +1,80 @@
+{
+  "id": "W31",
+  "status": "isolated-candidate-only",
+  "generated_utc": "2026-10-04T06:25:48.651Z",
+  "source_hashes": {
+    "task_entry_proAI": "b43d5f6cd4902db8872d862395b4d9ac8be77b22c0b883d01abada507f978dcd",
+    "post_parent_undo_fix_frozen_current": {
+      "spb-pro-ai.js": "609b8ec85228f15d2cc9b3ab82cd692eb2ea90d258cf5045fd36448ad3c46c6b",
+      "spb-pro-edit.js": "d940e6688b3ed5e8fa0514c8774e73a4a2b564ad723e507166248e3e97ac75d0",
+      "spb-pro-design.js": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8"
+    },
+    "candidate_proAI": "c5c68d2ba9d81411df712e55a097345eee603f5d65f552c2e89e058d54182e99",
+    "candidate_E": "bb265b823056af036f35376c8389728176513e3f332201e5fca35825d6c2b274",
+    "note": "Candidate was rebased from task-entry B43 to current 609 before patching, preserving parent unrelated Undo newline repair."
+  },
+  "fresh_cases": {
+    "count": 8,
+    "sha256": "d5e24e30ff726503bd27bf6fc7c33576491b6efc18093940438f8ff46d0743e5",
+    "results": [
+      {
+        "id": "W31-01",
+        "outcome": "PASS candidate compile: one same-UUID zoneEdit, exact whole-roof callback proof required"
+      },
+      {
+        "id": "W31-02",
+        "outcome": "PASS fail-closed contract: callback returned no acceptable proof and compiler emitted ask/no zones"
+      },
+      {
+        "id": "W31-03",
+        "outcome": "PASS fail-closed contract: callback returned no acceptable proof and compiler emitted ask/no zones"
+      },
+      {
+        "id": "W31-04",
+        "outcome": "PASS fail-closed contract: callback returned no acceptable proof and compiler emitted ask/no zones"
+      },
+      {
+        "id": "W31-05",
+        "outcome": "PASS fail-closed contract: callback returned no acceptable proof and compiler emitted ask/no zones"
+      },
+      {
+        "id": "W31-06",
+        "outcome": "PASS fail-closed contract: callback returned no acceptable proof and compiler emitted ask/no zones"
+      },
+      {
+        "id": "W31-07",
+        "outcome": "PASS fail-closed contract: callback returned no acceptable proof and compiler emitted ask/no zones"
+      },
+      {
+        "id": "W31-08",
+        "outcome": "PASS fail-closed contract: callback returned no acceptable proof and compiler emitted ask/no zones"
+      }
+    ]
+  },
+  "w23_oracle": {
+    "report_sha256": "daf2060420db29468bda205d5da12e882bd59f84ea495e208270493b780744d1",
+    "preserved": true
+  },
+  "w27_oracle": {
+    "same_14_case_recheck": "passed; no fresh credit",
+    "replay_output": "W27 same-oracle replay recorded 14 observations; scoped/mixed batch rejections=11; no fresh credit; report=_easy_claude_work\\ai14h_w31_candidate\\w27_replay.json",
+    "isolated_replay_report": "_easy_claude_work\\ai14h_w31_candidate\\w27_replay.json",
+    "existing_report_sha256_before_and_after": "6682a8f545022f12171aa2694b066e82b99c192eba713e5ec7b37e46b3a6faab",
+    "original_historical_report_sha256": "946f2021dd8be1fe340c9afab0633e990779a1737e8fd8372414071c07ade365",
+    "historical_report_note": "A prior unisolated W27 run refreshed the report timestamp; its original bytes are unavailable, so the original digest is recorded without fabricating restoration. This isolated replay preserved the already-refreshed report."
+  },
+  "candidate_invariants": [
+    "currentPartZoneOwners is a proAI callback, not a colour/name heuristic",
+    "one exact whole-part scope only; no portion, band, exclude, color selector, whole-body, element, or unknown part selector",
+    "requires registered _editReg owner, _aiPartProv, unique current zone with positive visible share, current car signature, unchanged zone mask/layout/element proof, and required CAR.maskFor mask",
+    "missing/multiple/stale/muted/manual/hidden proof fails closed",
+    "E.compile returns the same owner zone_id and retains partZoneProof on the compiled result"
+  ],
+  "limits": [
+    "This candidate is isolated and not installed in live modules.",
+    "Queue/apply must revalidate partZoneProof immediately before edit_zone mutation; this proof harness validates compilation only and does not establish that production integration guard.",
+    "Mask behavior is mocked; no live car renderer, native paint, or actual CAR mask implementation was exercised.",
+    "It does not establish source-palette overlap resolution when the requested color is also visible in the source paint.",
+    "No provider/browser/native tool calls."
+  ]
+}

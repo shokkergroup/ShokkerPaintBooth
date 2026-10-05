@@ -1,0 +1,244 @@
+# Encyclopedia knowledge digest (finishes, patterns, spec maps, spec overlays, Spec Sculpt Lab)
+Format: fact (exact numbers) | source file:line. Buyer-level only. M = metallic (red), R = roughness (green), CC = clearcoat (blue, inverted: 16 = max gloss), A = lighting mask (alpha).
+Abbrev: WIKI = SPB_WIKI.html, AIK = docs/ai_knowledge, SUP = js/spb-support-answers.js, BASE = engine/base_registry_data.py, SSL = spec-sculpt.html, EDIT = js/spb-pro-edit.js.
+
+## PROTIPS (non-obvious things)
+- The spec map is a second image beside the paint: red = metallic (0 plastic/paint, 255 bare metal/chrome), green = roughness (0 mirror, 255 matte), blue = clearcoat (inverted), alpha = lighting mask | AIK/02_spec_and_finishes.md:4 ; WIKI:3566-3573
+- Blue (clearcoat) is inverted: 16 = maximum gloss, 17-255 progressively duller, 255 = no clearcoat reflectivity. Blue 255 is the raw maximum but the clearcoat MINIMUM | engine/SPEC_MAP_REFERENCE.md:23-24 ; WIKI:3888
+- Avoid blue values 1-15 (iRacing treats them as no-coat/legacy; resizing or smoothing creates them; the app raises them to 16). Exactly 0 means coat disabled, but normal full renders raise 0 to 16 | engine/SPEC_MAP_REFERENCE.md:15-22 ; WIKI:3879
+- Roughness below 15 is only allowed on chrome-tier pixels (metallic 240 or more); everything else is floored to 15 | engine/SPEC_MAP_REFERENCE.md:34-35 ; WIKI:4285
+- Spec preview colours are packed bytes, not paint colour. Bright green means ROUGH (matte), not gloss; bright blue means weak clearcoat, not maximum coat; red = metal; yellow = rough metal; white = rough metal with coat off, not chrome | WIKI:3808-3816
+- Dark green-black in the spec preview (0,30,16) is the normal gloss neighbourhood; bright red (255,2,16) is the chrome neighbourhood | WIKI:3733-3745
+- iRacing multiplies the paint colour by the metal level in the spec. Silver chrome needs near-white paint underneath; any normal colour turned fully metallic goes dark | AIK/11_finish_advisor.md:25 ; SUP:37 ; WIKI:3850
+- Partial-metal finishes (metallic, pearl, satin chrome) keep their colour better than full chrome | AIK/11_finish_advisor.md:25
+- A dark paint with high metal is "buried": nearly black until the right reflection arrives | WIKI:3850
+- Alpha does not make anything matte. Matte comes from higher roughness and clearcoat bytes; alpha only masks the lighting response (255 = normal, keep it there; 128 reduced; 0 kills it) | WIKI:4385 ; WIKI:3896-3898
+- Metal reflection takes the paint colour; clearcoat highlights are close to white, which is why a white clearcoat flash can show over dark paint at night | WIKI:3796-3797
+- Smooth RGB gradients between two finishes invent unwanted in-between materials (accidental pearl/candy) and smear the highlight. Blend by area ratio of whole materials, or accept a deliberate continuous gradient | WIKI:4387 ; WIKI:4150-4175
+- Never blend clearcoat from 0 to 16 (creates the illegal 1-15 band); use a hard edge or blend from 16 upward | WIKI:4178
+- Quantised roughness steps make a highlight jump in controlled stages as the camera moves; one continuous high-roughness ramp tends to smear | WIKI:3868
+- Offsetting the clearcoat structure slightly from the metal/roughness structure gives a depth/motion cue because the two highlight lobes peak at different angles | WIKI:4182
+- The iRacing sheet is 2048x2048 wrapped over a WHOLE car. A pattern that looks medium in a square preview can be the size of a mirror or a door | WIKI:3515-3519
+- Fine detail rule: features of 8-32 px at 2048 read as texture on the car. If a finish "does not show up", add MORE small events and more channel contrast; do not make the marks bigger | WIKI:3492-3503
+- Scale bands at 2048: macro/mid 16-64 px, fine 4-8 px, micro 1-2 px (car-scale sparkle). When detail seems enough, push it another 25-40% finer | WIKI:3521-3533
+- A good finish stacks several different mark types (sweeps, spots, arcs, rings, flecks, hairlines, ridges, chips), not one repeated feature | WIKI:3504-3507
+- Good spec follows the paint's structures (hot edges, ridges, cracks, brush direction, wet pockets, worn valleys); flat channel fills and random noise do not | WIKI:3535-3556
+- Damage logic: oxidised areas lower metal, dirt/etch pits raise roughness, worn zones get duller clearcoat, rubbed edges stay polished | WIKI:3585-3587 ; WIKI:4113-4125
+- Carbon, brushed, flake and chrome only look right if the spec carries the structure; a gray weave pasted only into the paint reads fake | WIKI:3978
+- iRacing cannot do true hue-shifting paint. Perceived colour change comes from paint-tinted metal + environment-coloured clearcoat + roughness gating | WIKI:3455-3458 ; WIKI:3591-3593
+- Ghost Shift recipe (angle colour flash): use a Ghost Geometry finish as the BASE, pick a colour, drag brightness way down, view on a daytime track. Dark red flashes teal, purple flashes green, green flashes gold | WIKI:3444-3445 ; WIKI:3463-3464
+- Flash colours come from the track's sky and sun, so daytime tracks show them best; night and indoor lighting mute them | WIKI:3455-3456
+- Judge angle-reveal finishes on the curved hood, roof and fenders; a flat door can hold the base look longer. A good one reveals panel by panel, not the whole car flashing at once | WIKI:3604-3612
+- Colour-change finishes should show two named colours to a normal driver, reveal panel by panel, and survive shade, glare and replay distance | WIKI:3625-3631
+- Two angle-reveal routes: dark buried palette (any hue, best for warm/green/copper) vs bright cool base (blue/violet/magenta); warm bright bases blend into warm sun and lose the second colour | WIKI:3622-3623
+- Finishes are texture FIELDS across the whole canvas, not posters; a big centred motif reads as a decal on the car | WIKI:627
+- Small hidden motifs on a whole-car sheet should be 70-225 px with rotation and mirroring, or they read as stickers | WIKI:631
+- A finish name should match behaviour: a base called chrome must act like chrome; satin, ceramic, pearl, weathered, candy, carbon, matte should not secretly be gloss or chrome | WIKI:3639-3643
+- Thumbnails lie. The real test is the car on a track under sun, shade and night lights, plus replay distance, which averages tiny detail away | WIKI:3604 ; WIKI:4247-4254
+- The in-app preview is about 768 px for a 2048 px sheet, so fine flake, holographic grating and snakeskin at small scale average out and look flat. Zoom or read the spec view before deciding "it did nothing" | AIK/09_field_playbook.md:31
+- Candy, chrome and metal twists are invisible in the flat colour preview; confirm them on the spec map views | AIK/09_field_playbook.md:31
+- The preview shows the same colours and patterns as the render but not the same shine; shine comes from the spec file that iRacing reads separately | SUP:88
+- A render takes seconds to about a minute; a standard finish is meant to render in 2-3 seconds at 2048 | SUP:50 ; WIKI:3659-3663
+- Everyday words map to real Foundation finishes (spec only, paint stays): powder coat, wrinkle coat, plasti dip, stealth matte, cerakote, matte, satin, gloss, wet look, satin chrome, dark chrome, chrome, plated, matte metallic, metallic, satin pearl, pearl, candy, brushed, anodized, frosted, bead blasted, hammered, vinyl wrap, baked enamel, patina, galvanized, primer | EDIT:103-130
+- "Wet look", "ceramic coating", "glassy" -> Gel Coat; "plasti dip", "stealth", "primer", "cerakote" -> Soft Matte (plasti dip and stealth also push rough/clearcoat higher) | EDIT:105-107,111,130
+- Spec-only change: use a Foundation finish (base::f_*) with colour "source". It changes only the spec; measured 0% paint change. base::chrome / metallic / candy repaint the car (78-85% of a hood changed) | AIK/08_livery_design.md:22
+- Foundation bases are pure solid spec (flat, no grain/peel) and keep the source paint | BASE:421-461
+- A monolithic special given a SOLID colour keeps that colour flat and contributes only its spec texture (python skin in hot pink gave flat pink with a diamond scale pattern in the spec only) | AIK/09_field_playbook.md:28
+- Four kinds of finish: BASE (plain material for a zone), MONOLITHIC (complete look bringing its own colour and texture), PATTERN (paint-colour design on top), SPEC PATTERN (shine texture only, up to 5 stacked per zone) | AIK/02_spec_and_finishes.md:6-10
+- A zone may have a second base blended over the first (gloss body + pearl overlay at 40%); up to five layers | AIK/02_spec_and_finishes.md:11 ; AIK/how_do_i.md:218-222
+- Where two zones claim the same pixel, the one higher in the list wins (lower index = top); new zones go on top | AIK/sliders_and_controls.md:21
+- Exact brand colours: solid colour mode on a base that takes the zone colour (gloss, satin, matte, metallic, pearl, candy), never a finish that brings its own palette | AIK/05_design_and_taste.md:18 ; AIK/sliders_and_controls.md:6
+- Solid colour on an own-colour finish (camo, snake) paints it one flat colour and loses the pattern; shift hue/saturation instead, or use a take-colour base plus a pattern | AIK/sliders_and_controls.md:24
+- Hue shift is relative: measured on green, +180 = magenta, -150 = hot pink, +150 = purple. Greys have no hue and need a colour mode | AIK/sliders_and_controls.md:6
+- H/S/B tuning of own-colour finishes: too dark or navy brightness +30 to +40; leaning violet hue -15; grey looks tinted saturation -10 | AIK/09_field_playbook.md:25
+- Gradients run across the whole 2048 sheet, not along each part; a fade will not line up across panels. For "a little colour in the black" use a flake/sparkle material | AIK/09_field_playbook.md:19
+- Black with blue sparkle: Deep Space flake monolithic, brightness -45, hue -20, saturation +60 (about 55% pure black with blue flecks) | AIK/09_field_playbook.md:22
+- Paint patterns cannot take a custom colour (metal flake draws silver); use a flake monolithic or spec flake for coloured sparkle | AIK/09_field_playbook.md:22
+- Pattern Overlay mode draws the pattern's own colours; Blend keeps your paint colour and only modulates light/dark, so the base colour decides the camo hue | AIK/sliders_and_controls.md:12
+- Pattern scale: smaller number = MORE repeats = finer. 0.5 is twice as fine ("crushed to 50%"); 0.3x-0.6x is typical for fine detail on a whole-car sheet | AIK/sliders_and_controls.md:12 ; AIK/how_do_i.md:169-174
+- Base Scale is 0.05x-5.0x (1.00x normal): sets the finish's own flake/weave/grain size; does not change colour or resize the car; Spec Scale follows it unless "Independent Spec" is ticked | AIK/how_do_i.md:176-181 ; AIK/sliders_and_controls.md:9
+- Pattern rotation 0-359; pattern opacity 30-50 is subtle; up to 4 extra pattern layers, each with own opacity, scale, rotation and blend | AIK/sliders_and_controls.md:12
+- Spec patterns: up to 5 layers, each with opacity (default 50), scale (smaller = finer), rotation and channels M/R/C (Metal, Roughness, Clearcoat). They never change colour, so judge them on the spec preview. Setting spec patterns REPLACES the existing stack | AIK/sliders_and_controls.md:15 ; AIK/02_spec_and_finishes.md:10
+- Spec shift: metal, rough, clearcoat each -127..127. Rough + = duller, rough - = glossier; clearcoat + dulls. Satin = rough +40..+80 and clearcoat +30..+60 | AIK/sliders_and_controls.md:18
+- Right control for the job: "more subtle" -> base strength or intensity; "less shiny" -> spec strength; "smaller pattern" -> scale (not strength) | AIK/sliders_and_controls.md:9 ; AIK/09_field_playbook.md:13
+- Base strength 0-100: 0 = original paint, 100 = full finish. Spec strength math: M' = M x strength; R' = 128 + (R-128) x strength; CC' = 16 + (CC-16) x strength | AIK/sliders_and_controls.md:9 ; WIKI:4262-4267
+- Clearcoat quality: CC = 16 + (1 - quality) x 239 (quality 1.0 = CC 16 strongest; quality 0 = CC 255 none) | WIKI:4268-4274
+- Decal Rescue Kit (Spec Tools menu) puts a plain non-metal spec under stamped numbers and sponsors: Flat Vinyl, Satin Decal or Gloss Decal | AIK/how_do_i.md:443-447
+- Lighting Mask tool (Spec Tools menu): Use Source Alpha, Full Lighting, Reduced Lighting or Kill Lighting for fake vents and grille holes | AIK/how_do_i.md:449-453
+- Material Sampler (Spec Tools menu) shows exact M / R / CC at a clicked spot and can copy them to the active zone | AIK/how_do_i.md:437-441
+- Spec views under the live preview: COMBINED, R METAL, G ROUGH, B COAT; "Channels" gives exact numbers | AIK/how_do_i.md:431-435
+
+## MISTAKES (symptom -> cause -> fix)
+- Chrome looks dark/grey in iRacing -> paint under it is a normal colour (iRacing multiplies paint by metal) -> paint it white or nearly white; spec needs metal ~255, roughness near 0; blue 255 makes it dull | SUP:37 ; AIK/10_support_troubleshooting.md:29
+- Chrome looks like grey paint on an overcast or dark track -> metal has little to reflect -> judge on a sunny track | SUP:37
+- Chrome is dull even with white paint -> clearcoat byte high (255 = no coat) -> use CC 16 | SUP:37 ; WIKI:3888
+- Silver chrome comes out black -> gray or dark paint with high metal -> near-white neutral paint | WIKI:4238
+- Coloured chrome or candy is buried -> oversaturated dark paint -> bright, controlled coloured paint | WIKI:4239
+- Gloss black turns into dark metal -> metal raised accidentally -> keep metal 0 with wet-look gloss (0/22/16 or 0/30/16) | WIKI:4242
+- Matte colour not matte -> reduced alpha used as the matte control -> raise roughness and clearcoat bytes (e.g. 0/200/160), not alpha | WIKI:4243
+- No shine at all -> car_spec file missing or older than the change -> render again and press Ctrl+R in iRacing; if shine still looks old, move car_spec_<ID>.mip out of the folder and reload | AIK/10_support_troubleshooting.md:30 ; SUP:69
+- New spec does not show after render -> iRacing still using the compiled .mip -> Ctrl+R reloads car textures (car flashes white once); in a replay pick a moment when the car is not in the pit stall | SUP:19 ; SUP:69
+- Paint all black or parts missing -> TGA saved with the template's alpha channel (needs 24-bit RLE), or "2048 paint textures" off in iRacing -> re-export 24-bit; cars with paintable glass need 32-bit with glass alpha | SUP:66
+- iRacing shows paint-shop colours instead of the paint -> wrong size -> must be exactly 2048x2048 (or 1024x1024); open the car's own template and never resize | SUP:63
+- Numbers/sponsors look sparkly or dull under chrome or a special finish -> stamped items take the material of whatever spec is under them -> limit the body zone to the "Car Paint" layer (Restrict to Layers) and use Decal Rescue Kit | AIK/10_support_troubleshooting.md:32 ; AIK/how_do_i.md:758-764
+- Numbers/sponsors twice -> iRacing stamps its own; the template stamp layers must be off | AIK/10_support_troubleshooting.md:32
+- Other drivers do not see my paint/spec -> iRacing never shares textures; files must be in their folder (Trading Paints does that); Trading Paints spec needs .mip | SUP:72 ; SUP:45 ; AIK/10_support_troubleshooting.md:47-48
+- Pattern looks huge on the car -> scale 1.0 on a whole-car sheet -> drag Scale below 1.00x (0.3x-0.6x typical) | AIK/how_do_i.md:169-174
+- Lightning pattern on matte black reads as grey cracked glass at any scale -> pick a different pattern or lighter base | AIK/09_field_playbook.md:35
+- Spec overlay "does nothing" -> it changes shine only, so a flat colour preview looks identical -> check R METAL / G ROUGH / B COAT views | AIK/how_do_i.md:210-216 ; AIK/sliders_and_controls.md:15
+- Hot pink spec did not "flip" -> pink is only how the bytes pack (high metal + high CC byte + low roughness); the effect needs spatial pattern, crushed dark paint and lighting | WIKI:3745-3747 ; WIKI:4383
+- Fractured carrier is one flat magenta fill and looks dead -> use 6-8+ quantised carriers, crushed dark shades, black pits, thin bright veins | WIKI:4019-4020
+- Finish looks blobby despite high contrast -> big low-frequency blobs read as dirt; 8-32 px gates act like tiny material pixels the eye blends | WIKI:3607-3610
+- Zone looks flat/wrong/"nothing changed" -> higher zones cover it (visible share lower than share), colour/tolerance selects nothing, or intensity/base strength is low | AIK/03_recipes.md:27
+- Render fails "aggregate RLE decode budget exceeded" -> about 16 zones with their own painted area is the limit (256 MB of masks); up to 50 zones accepted | SUP:57 ; SUP:150
+- Chrome fill over gloss decals vanishes -> special zone is below the decal zone -> keep the special fill ABOVE the decal gloss zone | AIK/09_field_playbook.md:28
+- Zone gradient breaks at panel joins -> gradient lays over the full sheet -> one zone per panel, or use a flake material | AIK/09_field_playbook.md:19
+- Colour picker box also recolours body paint -> box without a layer limit grabs matching body paint -> limit the zone to the decal layer | AIK/09_field_playbook.md:16
+- Sculpted spec stays on the car -> main RENDER keeps the imported spec -> clear the imported spec map in Settings to go back to zone shine | AIK/how_do_i.md:775-778
+- Spec Sculpt "flat/whitewashed" warning -> clearcoat in the 1-15 dead band or metallic floor too low; the readout warns before you deploy | WIKI:4787
+
+## FAQ (buyer questions -> short answers)
+- What is the spec file? -> car_spec_<ID>.tga tells iRacing how each part reflects: red metallic, green roughness, blue clearcoat, alpha lighting mask. Without it iRacing uses the car's normal material and your colours still show | SUP:34
+- What is the .mip file? -> iRacing compiles your spec into a .mip next to the .tga on first load; after a new render Ctrl+R is enough; other drivers need the .mip (Trading Paints shares it) | SUP:69
+- Gloss vs satin vs matte? -> Gloss: standard shiny paint, sharp reflections, safe default under numbers and sponsors. Satin: low sheen between gloss and matte, hides small flaws. Matte: no clearcoat shine, soft flat colour, the stealth look | AIK/11_finish_advisor.md:22
+- Pearl vs metallic vs candy? -> Pearl: tiny pearlescent particles, soft shimmer, slight colour shift with angle. Metallic: fine aluminium flake, sparkle in sun. Candy: strongly tinted translucent coat over bright metal, so colour looks very deep | AIK/11_finish_advisor.md:23
+- Chrome, satin chrome, dark chrome, brushed, carbon? -> Chrome: mirror metal reflecting surroundings. Satin chrome: same metal, soft reflections. Dark chrome: chrome with a black cast. Brushed: fine grain like raw metal. Carbon: woven pattern under clearcoat | AIK/11_finish_advisor.md:24
+- Which finishes keep my colours? -> Foundation finishes (gloss, satin, matte, pearl, metallic, candy, chrome, satin chrome, brushed) with colour "source" change only shine; "takes the zone colour" finishes recolour; "brings its own colours" are complete looks | AIK/11_finish_advisor.md:12
+- How do I make something chrome? -> Base Material > Chrome (mirror) or Satin Chrome (softer); chrome repaints silver, so for colours kept use a Foundation chrome with "Use source paint (spec only)"; paint under metal near white | AIK/how_do_i.md:139-144
+- How do I make it matte? -> Base Material > Matte (Flat Black for the deadest look), keep colour with "Use source paint (spec only)", or push G Rough up; Satin is the in-between | AIK/how_do_i.md:132-137
+- How do I make it shinier without changing colour? -> Foundation finish + "Use source paint (spec only)", or lower G Rough and raise R Metal in Spec Sliders, or Auto-Pop; B Coat sets the glassy look | AIK/how_do_i.md:124-130 ; AIK/how_do_i.md:752-756
+- How do I add a shiny texture without changing colour? -> Base > Spec Overlays > + Add Spec Overlay (brushed, hammered, scratched ...); changes shine and metal only | AIK/how_do_i.md:210-216
+- How many spec patterns can I stack? -> Up to 5 per zone, each with its own opacity, scale, rotation and channels | AIK/sliders_and_controls.md:15
+- How do I make a holographic/rainbow finish? -> Reflective base (pearl, metallic or chrome) + a holographic spec pattern (e.g. holo prism shift), and/or a holographic monolithic | AIK/03_recipes.md:8-9 ; AIK/02_spec_and_finishes.md:18
+- How do I get sparkle/flake? -> Metallic-capable base plus a flake spec pattern from the Sparkle and Micro-Metal group | AIK/02_spec_and_finishes.md:17
+- How do I make it look worn/weathered? -> Raise roughness, lower clearcoat, add weathering spec patterns; browse Foundation EFX, Weathered Paint, Race Worn | AIK/02_spec_and_finishes.md:20 ; AIK/05_design_and_taste.md:28
+- Too shiny? Too flat? -> Too shiny: spec shift rough +40 or lower spec strength. Too flat: lower roughness, raise clearcoat, add a flake spec pattern. Colour too strong: lower base strength. Texture too big/small: scale | AIK/02_spec_and_finishes.md:22
+- Can I get glow in the dark? -> No: a paint file is a flat texture and cannot glow; use a phosphorescent-looking finish as the closest real thing | AIK/05_design_and_taste.md:30
+- Can paint change colour with angle? -> Not with a true shader; colour-shift finishes (Prizm, Spectrum Shift, FRACTURED NIGHTSHIFT) fake it with paint plus spec | WIKI:3591-3593 ; AIK/05_design_and_taste.md:28
+- Can the paint add text or pictures? -> Only if they already exist as layers; it cannot change the car's shape, windows or wheels beyond what the sheet paints | AIK/05_design_and_taste.md:30
+- Why does iRacing look different from the preview? -> The preview is a quick design view; iRacing lights the render with its own sun, shadows and materials and adds its own number and sponsor stamps | SUP:88
+- How big must the paint be? -> Exactly 2048x2048 (or 1024x1024), 24-bit TGA | SUP:63
+- Does a finish change how the car drives? -> No, only how it looks | AIK/11_finish_advisor.md:25
+- What finish for numbers? -> Gloss, satin or matte with strong colour contrast behind the digits; avoid chrome, glitter and colour-shifting finishes on numbers | AIK/11_finish_advisor.md:16 ; AIK/05_design_and_taste.md:7
+- What finish for thin stripes/accents? -> A different shine from the body (matte stripes on gloss body or the reverse), a bright satin-chrome edge, or candy glow; chrome is great on thin lines | AIK/11_finish_advisor.md:15
+- What finish for hood/roof/body? -> Pearl, candy, metallic, satin or gloss in the livery colour read premium; one real material (carbon, brushed) on one panel lifts the car | AIK/11_finish_advisor.md:17
+- Stealth? Show car? Old race car? -> Stealth: dark matte or satin with very low metal. Show car: mirror chrome or high-gloss candy. Old race car: weathered/worn looks, roughness up | AIK/05_design_and_taste.md:24
+- Deepest colour? -> Candy over a metallic base for deep wet colour; pearl for soft shimmer | AIK/05_design_and_taste.md:22
+- Can I change the body and keep numbers/sponsors? -> Yes: put the change on the body paint layer only; numbers, sponsors and tape sit on other layers and stay untouched | AIK/03_recipes.md:33 ; AIK/08_livery_design.md:16
+- Does finish advice need an AI key? -> No: the built-in advisor answers free and offline from cards of about 4,800 catalogue items | AIK/11_finish_advisor.md:9,27 ; SUP:109
+
+## WORKED SPEC VALUES (M / R / CC, exact)
+Foundation bases from the live registry (authoritative):
+- Soft gloss 0/42/22 | BASE:421
+- Gel coat (wet look) 0/15/16 | BASE:435
+- Baked enamel 0/18/20 | BASE:436
+- Soft matte 0/200/165 (plasti dip, primer, cerakote map here) | BASE:422
+- Matte 0/210/180 | BASE:452
+- Clear satin 0/100/75 | BASE:423
+- Satin pearl 100/90/60 | BASE:449
+- Silk 0/85/60 ; Eggshell 0/140/100 | BASE:407,409
+- Pure white 0/145/110 ; Pure black 0/240/190 ; Neutral grey 0/185/150 | BASE:418-420
+- Vinyl wrap 0/100/110 | BASE:434
+- Powder coat 10/120/145 ; Wrinkle coat 10/170/150 | BASE:432,455
+- Chrome 255/2/16 | BASE:425
+- Satin chrome 250/45/40 | BASE:426
+- Dark chrome 250/15/40 | BASE:451
+- Electroplate 245/8/16 ; PVD 230/15/16 ; Vapor deposit 240/10/16 | BASE:442-444
+- Metallic 200/50/16 | BASE:427
+- Candy 200/15/16 | BASE:441
+- Pearl 100/40/16 | BASE:428
+- Carbon fibre baseline 55/30/16 (add the carbon pattern for visible weave) | BASE:429
+- Brushed 180/75/65 (add a brushed spec pattern for grain) | BASE:430
+- Anodized 180/65/85 | BASE:433
+- Frozen 160/85/130 | BASE:431
+- Matte metallic 225/140/100 | BASE:450
+- Bead blast 180/160/140 ; Sand cast 150/140/120 ; Shot peen 190/130/110 | BASE:445,453,454
+- Galvanized 195/65/30 ; Hot dip 190/70/35 ; Mill scale 120/110/130 ; Patina 80/120/140 ; Thermal spray 160/100/90 ; Weathering steel 100/130/160 | BASE:456-461
+- Older quick values: gloss about M0 R20 CC16; matte M0 R215 CC215; metallic M200 R50 CC16. That card also lists chrome with CC0; the registry and spec guide use CC16, so quote CC16 | AIK/02_spec_and_finishes.md:4
+Spec guide anchor cards (starting points at neutral controls):
+- Liquid glaze 0/15/16 ; Wet look 0/22/16 ; Gloss 0/30/16 ; Soft gloss/decal gloss 0/42/22 ; Semi-gloss 0/55/40 | WIKI:3940-3944
+- Satin 0/95/70 ; Vinyl 0/100/110 (or 0/100/75 livelier) ; Eggshell 0/130/100 ; Matte 0/200/160 ; Clear matte 0/220/210 | WIKI:3945-3949
+- Flat black 0/248/220 ; Vantablack-style 0/255/240 (porous/void look, not real physics) | WIKI:3950-3951
+- Pearl 100/40/16 (dynamic pearl M80-200, R30-90, CC18-40) | WIKI:3957
+- Anodized 170/80/140 ; Brushed titanium 180/70/16 ; Metallic 200/50/16 ; Gunmetal 220/40/16 | WIKI:3958-3961
+- Galvanized 195/65/30 ; Antique chrome 220/18/50 ; Dark chrome 250/15/40 ; Chrome 255/2/16 | WIKI:3962-3965
+- Satin chrome 250/45/40 ; Mercury 255/3/16 ; Candy 200/15/16 ; Candy chrome 250/4/16 ; Spectraflame 245/15/16 | WIKI:3966-3970
+- Frozen metal 225/140/100 ; Bead blast 180/160/140 | WIKI:3971-3972
+- Gloss carbon 55/30/16 ; Satin carbon 55/110/120 ; Fiberglass 0/55/30 ; Powder coat 10/120/145 | WIKI:3978-3981
+- Ceramic gloss 10/15/16 ; Ceramic matte 10/195/160 ; Sea glass 0/55/40 ; Milk glass 0/45/30 ; Patina 80/120/140 ; Frozen technical film 160/85/130 | WIKI:3982-3987
+- Metal bands: 0-15 dielectric; 16-63 low metal/composite; 64-127 pearl/mixed; 128-175 strong pearl/anodized; 176-239 metallic; 240-255 chrome tier | WIKI:3843-3848
+- Roughness bands: 0-14 razor mirror (chrome only); 15-29 wet; 30-59 high gloss; 60-99 satin gloss; 100-129 satin/eggshell; 130-159 semi-matte; 160-199 matte/blasted; 200-229 flat; 230-255 dead/porous | WIKI:3858-3866
+- Clearcoat bands: 16 maximum; 17-31 very strong; 32-63 strong-medium; 64-127 satin/weak; 128-191 dull/trace; 192-254 almost none; 255 none | WIKI:3880-3886
+Dynamic (fine, non-flat) laws used by production renderers:
+- Chrome mirror M=245+10 x displacement, R=2+8 x displacement, CC=16 | WIKI:3995
+- Dark chrome M=230+20 x field, R=8+15 x field, CC=16 ; Black chrome M=248+7 x micro, R=3+6 x micro, CC=16 | WIKI:3996-3997
+- Satin chrome M=250, R=45+brush bundles (clipped 15-85), CC=40 | WIKI:3998
+- Metallic flake M=168+24 x body+14 x polish, R=22+18 x (1-polish), CC=16+9 x polish | WIKI:3999
+- Pearl layer M=90+55 x layer, R=max(15, 5+8 x layer), CC=16+5 x layer | WIKI:4000
+- Tinted clear M=0, R 15 to 32 from grain, CC=16 | WIKI:4001
+Mark recipes (what the spec should look like at 2048):
+- Brushed metal: alternate M170-220, R45-95, CC16-45 with occasional M245/R20/CC16 glints; dense 1-3 px strokes in 8-24 px bundles | WIKI:4129
+- Fine metallic flake: base metallic plus 8 metal tiers; 2-6 px points in 8-12 px clusters | WIKI:4130
+- Carbon weave: 8-20 px cells; resin lower metal and stronger coat | WIKI:4131
+- Orange peel/powder: roughness 95-155, CC 110-180, dense 8-16 px cells | WIKI:4132
+- Ceramic crackle: 1-3 px cracks forming 8-32 px fragments | WIKI:4133
+- Wet droplets: base 0/22/16, rims 0/15/16, roughness 35-70 under the lens; 8-24 px drops, 2-4 px rims | WIKI:4134
+- Scratched chrome: chrome base, brushed troughs, CC 80-255 scratches in 1-3 px lines | WIKI:4135
+- Rubber: roughness 200-255 (matte-to-dead cards), metal 0-20, CC 180-240, 8-24 px pores | WIKI:4137
+- Pearl travel: M 80-200, R 30-90, CC 18-40, 2-8 px flakes plus 8-24 px sweeps | WIKI:4138
+- Gradient stops: Rust-to-Ice 30/200/16 to 240/15/16 ; Magma-Freeze 245/15/16 -> 130/100/16 -> 20/200/16 ; Chrome Delete edge 255/2/16 with interior about 0/120/80 | WIKI:4190-4192
+- Fractured carrier: M 242-255, R 22-78, CC 246-255 (reads hot pink); white clearcoat razor 40/16/16 in thin 2-6 px lips | WIKI:4010-4040
+- Hologram-type multistate cells: 8-18 px cells taking discrete states (e.g. 250/14/248, 22/164/48, 206/84/184) | WIKI:4075-4090
+
+## COLOUR / CONTRAST ADVICE
+- Saturation alone does not pop. What pops: complementary neighbour contrast (deep blue beside warm gold, black beside hot pink, white beside red) or a clearly different value | AIK/05_design_and_taste.md:4
+- Make the spec the colour-opposite of the paint: warm paint on MATTE next to cool colour on METAL (and the reverse) reads richer than one shine everywhere | AIK/05_design_and_taste.md:4
+- One loud hero area (hood or big panel) with calm neighbours; fine texture (micro flake, weave) for depth, not big blobby patterns; mid-tone mud at thumbnail size stays mud on the car | AIK/05_design_and_taste.md:4
+- Adjacent areas must differ in colour OR shine (matte next to gloss, chrome next to dark) | AIK/02_spec_and_finishes.md:15
+- Limited palette: 2-3 colours plus one accent looks expensive; 5 colours looks cheap. Composition about 60% dominant, 30% accent, 10% trim | AIK/05_design_and_taste.md:7 ; AIK/08_livery_design.md:16
+- Big body areas: candy, pearl, metallic, satin or gloss in the livery colour read premium; chrome on a large area is loud and shows every flaw, so use it on accents, numbers, trim | AIK/02_spec_and_finishes.md:14
+- Flat (matte) paint with chrome trim lines is the modern retro look; gloss everywhere is the showroom look | AIK/08_livery_design.md:16
+- Metallic or candy blocks beside flat blocks create pop (opposite colour AND opposite shine) | AIK/08_livery_design.md:19
+- Make-it-pop recipe: deep glossy candy or pearl of its own colour on the biggest flat area, matte/satin or chrome accent on the contrast pair, subtle flake spec pattern at opacity 30-50 | AIK/03_recipes.md:24
+- Numbers/sponsors need strong contrast (light on dark or dark on light); no sparkle, strong pattern or chameleon shift directly behind them; keep the door centre calm | AIK/05_design_and_taste.md:7 ; AIK/08_livery_design.md:7
+- Premium palettes (body / accent / numbers): near-black #0d0d10 matte or satin + gold #d4a017 gloss/metal + white ; blue #0a3fd0 + gold #d4a017 + white ; stealth #1a1c20 matte, accents #3a3d44 satin, numbers #e8e8ea | AIK/05_design_and_taste.md:10-12
+- More palettes: orange #ff5a1f with cyan #00b7ff and black separators ; white #f2f2f2 gloss with red stripe #c8102e and black numbers ; retro cream #efe2c2, orange #e0731f, brown #6b3b1e ; Miami neon pink #ff2bd6, cyan #00e5ff, black base ; heritage red #c8102e with white numbers, silver accents | AIK/05_design_and_taste.md:13-17
+- Fractured flip paint: 6-8+ crushed near-black shades (about 10-18% lightness) so metal cells cross lighting thresholds at different times | WIKI:4223 ; WIKI:4240
+- Pearl: body hue plus lighter/darker flake colour families in the paint; a uniform paint leaves the spec looking pasted on | WIKI:4241
+- Coloured chrome/candy: bright controlled coloured paint; silver chrome: near-white neutral; gunmetal/black chrome: dark paint with chrome-tier spec (dark chrome 250/15/40) | WIKI:4238-4239 ; BASE:451
+- Patina/weathering: oxide paint colours should line up with the patina spec (80/120/140) and exposed-metal chips | WIKI:4244
+- A chrome pinstripe on a matte car reads as real chrome | AIK/08_livery_design.md:19 ; WIKI:4192
+- Throwback eras: 1960s-70s powder blue and orange, navy and white, harvest orange; 1970s-80s red/white/blue with chrome trim, black and gold; 1980s hot pink, cyan, purple; 1990s teal, purple, magenta; modern matte black plus one accent | AIK/08_livery_design.md:13
+- Side panel layout (height roof-line 0 to rocker 1): beltline 0.10-0.25, door centre with number 0.30-0.65, pinstripe 0.64-0.70, lower band 0.68-1.00 | AIK/08_livery_design.md:7
+
+## SPEC SCULPT TIPS
+- What it is: turns a finished livery paint into a valid iRacing spec map (Metallic / Roughness / Clearcoat) by reading your artwork, then exports clean 2048x2048 TGAs; the booth paints colour, Spec Sculpt sculpts how colour catches light | WIKI:4629-4631
+- Four steps: 1 Source (drop paint or paste path), 2 Look (pick a style or press Auto-Sculpt), 3 Generate (2048x2048), 4 Deploy to the iRacing car folder | SSL:774-777
+- The iRacing User ID (Customer ID) is required because it sets the export file name car_num_<ID>.tga | SSL:804
+- It cannot output an illegal spec: clearcoat kept at 16 or more, roughness floor 15 where metal is under 240 (mirror chrome may go lower) | WIKI:4766 ; WIKI:4668
+- Three modes: Scratch (121 procedural paint-aware styles, no catalogue needed), Catalog (blends real Paint Booth bases and monolithic specials), Fusion (mixes both with a weight slider, optionally per channel M / R / CC) | WIKI:4672-4676
+- Roster is 125 presets, each mapping to a real finish. Stack presets with per-layer weights, maximum 5 | WIKI:4714 ; WIKI:4710
+- Preset families include Gloss and chrome, Pearl and candy, Flake and interference, Brushed and machined, Carbon and weave, Glow and neon, Matte and velvet | WIKI:4782
+- Quick picks: "Wet + pearl" = candy + pearl + chrome outline; "Matte duo" = frozen matte + silk matte | SSL:903-904
+- Fusion Balanced = linear blend per channel; Showroom = metallic takes the shinier contribution per pixel so highlights do not go muddy. Roughness and clearcoat always blend smoothly | WIKI:4678 ; SSL:914-917
+- Catalog weight example: 71% in the main mix slider = catalog is about 71% of the final spec, scratch stacks share the other 29% | SSL:878
+- Catalog list = the booth registry (bases + monolithics). Spec patterns are zone overlays in the booth and are not listed in Spec Sculpt | SSL:883
+- FRACTURE ignition: near-chrome body (Metallic about 252) under maxed clearcoat (about 255) that flares at grazing angles, paint geometry traced as a woven roughness motif; paint untouched. Sliders: drama 0-2, ignition tightness 0.25-2, paint-geometry drive 0-2, off-motif roughness 14-110 (lower = glossier mirror body), channel separation 0-1 | SSL:839-854
+- CANDY DEPTH: bottomless wet-candy coat: dark/rich areas become deep glassy candy (max clearcoat, wet gloss), pale areas stay thin satin, flakes suspended so they read through the coat. Sliders: depth 0-1.5, flake amount 0-1, flake size 0.5-3 px, pool gloss 0-1, shallow roughness 0.15-0.8 | SSL:858-873
+- Paint response: emphasise spec where paint is bright (highlights), dark (shadows), saturated, desaturated or uniform; or pick a hue and match width. Strength 0 does nothing | WIKI:4722-4725 ; SSL:933
+- Eyedropper targeting: click a colour on your paint (e.g. the numbers) and the spec leans glossier/more metallic on matching pixels | WIKI:4784
+- Auto-Sculpt analyses the paint and picks mode, presets and settings in one click; it shows what it chose so it teaches | WIKI:4783
+- "Shokk the World" renders about 20 signature looks from one paint as a preview gallery; "More like this" gives 6 close variations of the current look | WIKI:4786 ; WIKI:4789
+- Saved looks store blend + settings (not your ID or car) and reapply to any livery; star favourites; the Recent looks strip re-applies exact settings | WIKI:4785 ; WIKI:4788 ; SSL:1070
+- Auto-levels checkbox normalises a washed-out paint before sculpting; the HSB recolour tunes the brightness that Fractured colour-shift finishes key off | SSL:983-991
+- Auto-detect decals (no PSD needed) finds numbers, sponsors and decals from a flat paint and keeps them flat while the base is sculpted; tune Detect strength and Protect edge/Feather and use Preview to see what is protected | SSL:995-1003
+- Detection limits: it is text-reading based, so graphic logos with no readable text fall into PAINT and can get sculpted; check the protect preview | WIKI:4874
+- Auto-build layers (Smart Separate) splits a flat TGA into numbers, sponsors, template, brand graphics and paint; the layers then work with "Restrict to layer" on zones | WIKI:4823 ; WIKI:4864-4865
+- Interior flatten (default 38%, 0-100) blends dark, low-detail areas toward matte so ink fields do not bloom metallic; Spec strength (default 100%) scales metallic globally | WIKI:4731 ; SSL:1044-1048
+- Void caps (defaults): metallic cap 92, roughness floor 158 (slider 120-220), clearcoat cap 44 (slider 15-90) on dark unprotected pixels; this kills fake chrome in empty panels | WIKI:4731 ; SSL:1044,1055-1064
+- Detail intensity (DS) default 1.59 matches shipped finishes; presets: Catalog signature 1.59 (interior 38%), Rich detail 1.78 (36%), Softer 1.36 (42%), Ink-heavy panels 1.52 (44%). Higher pushes ridges/dots harder (watch metallic clipping); lower calms busy skins | SSL:1027-1032
+- Preview tiles are false-colour diagnostics: Composite packs M to red, R to green, Cc to blue. A lime/orange tile means high roughness with moderate metal: expected, not a bug | WIKI:4770
+- A coarse preset can look huge on a 2048 body; presets flagged "too big" are tiled 2x; judge detail on a rendered contact sheet, not a quality number | WIKI:4716-4718
+- Cultural/illustrative finishes translate poorly to spec maps; material families (chrome, pearl, brushed, carbon) work best | WIKI:4718
+- After saving a Sculpt spec the main RENDER keeps it; clear the imported spec map in Settings to return to zone shine | AIK/how_do_i.md:775-778
+- Export is a 2048x2048 32-bit RGBA car_spec TGA; the file stores bytes as BGRA but tools show logical RGBA, so never swap channels by hand | WIKI:4307-4308

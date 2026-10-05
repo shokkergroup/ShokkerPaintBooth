@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_duct_grime",
+  "display_name": "Sprawl: Coolant Capillary",
+  "promise": "Tiny lime coolant channels thread through purple seals and copper mesh.",
+  "carrier_grammar": "Tiny lime coolant channels thread through purple seals and copper mesh. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for purple gasket material, lime coolant channels, copper mesh grains, turquoise fluid beads, ivory salt rings, black channel throats is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny lime coolant channels thread through purple seals and copper mesh. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_duct_grime.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "purple gasket material",
+      "role": "Actual shared paint and spec geometry: purple gasket material"
+    },
+    {
+      "name": "lime coolant channels",
+      "role": "Actual shared paint and spec geometry: lime coolant channels"
+    },
+    {
+      "name": "copper mesh grains",
+      "role": "Actual shared paint and spec geometry: copper mesh grains"
+    },
+    {
+      "name": "turquoise fluid beads",
+      "role": "Actual shared paint and spec geometry: turquoise fluid beads"
+    },
+    {
+      "name": "ivory salt rings",
+      "role": "Actual shared paint and spec geometry: ivory salt rings"
+    },
+    {
+      "name": "black channel throats",
+      "role": "Actual shared paint and spec geometry: black channel throats"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "purple gasket material",
+      "lime coolant channels",
+      "copper mesh grains",
+      "turquoise fluid beads",
+      "ivory salt rings",
+      "black channel throats"
+    ],
+    "R": [
+      "purple gasket material",
+      "lime coolant channels",
+      "copper mesh grains",
+      "turquoise fluid beads",
+      "ivory salt rings",
+      "black channel throats"
+    ],
+    "Cc": [
+      "purple gasket material",
+      "lime coolant channels",
+      "copper mesh grains",
+      "turquoise fluid beads",
+      "ivory salt rings",
+      "black channel throats"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_neon_tube",
+      "difference": "This finish uses Dense fine lime coolant capillary short branching channels in purple gasket material, copper mesh grains, turquoise fluid beads, ivory salt pin rings and black channel throats. Micro fluid channels and porous seals, no large pipes or grime-covered ducts, no long winding rivers.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_steam_grate",
+      "difference": "This finish uses Dense fine lime coolant capillary short branching channels in purple gasket material, copper mesh grains, turquoise fluid beads, ivory salt pin rings and black channel throats. Micro fluid channels and porous seals, no large pipes or grime-covered ducts, no long winding rivers.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "purple gasket material is visible in the authored geometry",
+      "lime coolant channels is visible in the authored geometry",
+      "copper mesh grains is visible in the authored geometry",
+      "turquoise fluid beads is visible in the authored geometry",
+      "ivory salt rings is visible in the authored geometry",
+      "black channel throats is visible in the authored geometry"
+    ],
+    "source_sha256": "4c6be1d012acc0aeed9a658b0e7e78f75459420c72b2c8e206695af118daec12",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_duct_grime-authored-Tiny lime coolant channels thread through purple seals and copper mesh. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_duct_grime-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 76.1,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "f45d0207e4b352393a3cb205ff73430d262944ccfad66f09ac4d2dec597d5282"
+}

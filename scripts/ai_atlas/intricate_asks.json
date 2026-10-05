@@ -1,0 +1,4009 @@
+[
+ {
+  "id": "ia001",
+  "ask": "matte black body with a fine carbon fibre pattern over it",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "matte",
+    "black",
+    "dark"
+   ],
+   "pattern_class": [
+    "carbon",
+    "weave"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia002",
+  "ask": "candy red paint with a hex mesh pattern on top",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "candy",
+    "red"
+   ],
+   "pattern_class": [
+    "hex",
+    "geometric",
+    "mesh"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia003",
+  "ask": "gloss white car with thin racing stripes over the paint",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "gloss",
+    "white"
+   ],
+   "pattern_class": [
+    "stripes"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia004",
+  "ask": "pearl white base and a subtle diamond pattern",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "pearl",
+    "white"
+   ],
+   "pattern_class": [
+    "diamond",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia005",
+  "ask": "brushed aluminium look with a faint scale texture over it",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "brushed",
+    "metallic",
+    "silver"
+   ],
+   "pattern_class": [
+    "scales"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia006",
+  "ask": "deep blue metallic with a camo pattern layered on",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "blue",
+    "metallic"
+   ],
+   "pattern_class": [
+    "camo"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia007",
+  "ask": "satin grey base, add a chevron pattern",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "satin",
+    "grey"
+   ],
+   "pattern_class": [
+    "chevron",
+    "stripes"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia008",
+  "ask": "black chrome with an art deco pattern across it",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "black",
+    "chrome"
+   ],
+   "pattern_class": [
+    "art",
+    "deco",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia009",
+  "ask": "forest green gloss with a subtle floral pattern",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "green",
+    "gloss"
+   ],
+   "pattern_class": [
+    "floral"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia010",
+  "ask": "a gold base with a greek key border pattern on it",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "gold",
+    "metallic"
+   ],
+   "pattern_class": [
+    "greek",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia011",
+  "ask": "flat black body plus a carbon weave spec layer so it only shows in the light",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "matte",
+    "black",
+    "dark"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "carbon",
+    "weave",
+    "matte"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia012",
+  "ask": "orange gloss base with a metallic flake spec pattern underneath",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "orange",
+    "gloss"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "sparkle",
+    "flake",
+    "metallic"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia013",
+  "ask": "plain white paint with a holographic spec pattern",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "white",
+    "gloss"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "holographic",
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia014",
+  "ask": "navy base and a glass-like spec pattern that catches reflections",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "blue",
+    "dark"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "glass",
+    "geometric"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia015",
+  "ask": "matte grey with a spec pattern of tiny hexagons",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "matte",
+    "grey"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "hex",
+    "geometric"
+   ],
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia016",
+  "ask": "red body and a dragon scale pattern layer",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "red"
+   ],
+   "pattern_class": [
+    "scales"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia017",
+  "ask": "cream colour base with a houndstooth style pattern over it",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "white",
+    "light",
+    "gloss"
+   ],
+   "pattern_class": [
+    "geometric",
+    "weave"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia018",
+  "ask": "chrome base with a barbed wire pattern wrapped around",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "chrome",
+    "metallic"
+   ],
+   "pattern_class": [
+    "barbed",
+    "wire",
+    "industrial"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia019",
+  "ask": "bright yellow with a diamond plate pattern",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "yellow",
+    "gloss"
+   ],
+   "pattern_class": [
+    "diamond",
+    "industrial",
+    "metallic"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia020",
+  "ask": "midnight purple pearl with a feather pattern",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "purple",
+    "pearl",
+    "dark"
+   ],
+   "pattern_class": [
+    "feather",
+    "organic"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia021",
+  "ask": "solid matte olive with a digital camo pattern on top",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "matte",
+    "green",
+    "tactical"
+   ],
+   "pattern_class": [
+    "camo"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia022",
+  "ask": "turquoise gloss with japanese wave pattern",
+  "class": "stack2",
+  "expect": {
+   "base_class": [
+    "blue",
+    "cyan",
+    "gloss"
+   ],
+   "pattern_class": [
+    "wave",
+    "japanese"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia023",
+  "ask": "matte black base, a carbon fibre pattern, and a sparkle spec layer",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "matte",
+    "black",
+    "dark"
+   ],
+   "pattern_class": [
+    "carbon",
+    "weave"
+   ],
+   "spec_class": [
+    "sparkle",
+    "flake"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia024",
+  "ask": "candy blue paint, hex pattern, with a chrome-ish spec pattern under it",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "candy",
+    "blue"
+   ],
+   "pattern_class": [
+    "hex",
+    "geometric"
+   ],
+   "spec_class": [
+    "chrome",
+    "metallic",
+    "glass"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia025",
+  "ask": "white pearl, with a subtle chevron pattern and a holographic spec pattern",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "pearl",
+    "white"
+   ],
+   "pattern_class": [
+    "chevron",
+    "stripes"
+   ],
+   "spec_class": [
+    "holographic",
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia026",
+  "ask": "gunmetal base, scale pattern on top, and a fine flake spec",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "grey",
+    "metallic",
+    "dark"
+   ],
+   "pattern_class": [
+    "scales"
+   ],
+   "spec_class": [
+    "flake",
+    "sparkle"
+   ],
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia027",
+  "ask": "red gloss, add a camo pattern and make the spec glittery",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "red",
+    "gloss"
+   ],
+   "pattern_class": [
+    "camo"
+   ],
+   "spec_class": [
+    "sparkle",
+    "glitter"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia028",
+  "ask": "gold base, an art deco pattern, and a brushed metal spec pattern",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "gold",
+    "metallic"
+   ],
+   "pattern_class": [
+    "art",
+    "deco",
+    "geometric"
+   ],
+   "spec_class": [
+    "brushed",
+    "metallic"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia029",
+  "ask": "green metallic with a floral pattern and matte spec accents",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "green",
+    "metallic"
+   ],
+   "pattern_class": [
+    "floral"
+   ],
+   "spec_class": [
+    "matte"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia030",
+  "ask": "black gloss with a diamond pattern and a glass spec layer",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "black",
+    "gloss",
+    "dark"
+   ],
+   "pattern_class": [
+    "diamond",
+    "geometric"
+   ],
+   "spec_class": [
+    "glass",
+    "geometric"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia031",
+  "ask": "orange paint, stripes pattern, and a carbon spec pattern",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "orange"
+   ],
+   "pattern_class": [
+    "stripes"
+   ],
+   "spec_class": [
+    "carbon",
+    "weave"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia032",
+  "ask": "silver base with feather pattern and an iridescent spec",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "silver",
+    "metallic"
+   ],
+   "pattern_class": [
+    "feather",
+    "organic"
+   ],
+   "spec_class": [
+    "iridescent",
+    "holographic",
+    "rainbow"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia033",
+  "ask": "navy blue body, a fine geometric pattern, and sparkle in the spec only",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "blue",
+    "dark"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": [
+    "sparkle"
+   ],
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia034",
+  "ask": "satin white, a japanese wave pattern, and a pearl spec pattern",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "white",
+    "satin",
+    "pearl"
+   ],
+   "pattern_class": [
+    "wave",
+    "japanese"
+   ],
+   "spec_class": [
+    "pearl",
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia035",
+  "ask": "purple candy with a greek key pattern and a neon spec pattern",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "purple",
+    "candy"
+   ],
+   "pattern_class": [
+    "greek",
+    "geometric"
+   ],
+   "spec_class": [
+    "neon",
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia036",
+  "ask": "matte army green, a camo pattern, and a rough weathered spec",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "matte",
+    "green",
+    "tactical"
+   ],
+   "pattern_class": [
+    "camo"
+   ],
+   "spec_class": [
+    "weathered",
+    "rough"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia037",
+  "ask": "copper metallic base with hammered pattern and flake spec",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "copper",
+    "metallic"
+   ],
+   "pattern_class": [
+    "hammered",
+    "metallic"
+   ],
+   "spec_class": [
+    "flake",
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia038",
+  "ask": "pink pearl, chain mail pattern over it, and a shimmer spec layer",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "pink",
+    "pearl"
+   ],
+   "pattern_class": [
+    "chainmail",
+    "scales",
+    "metallic"
+   ],
+   "spec_class": [
+    "shimmer",
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia039",
+  "ask": "steel grey, crosshatch pattern, brushed spec pattern under it",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "grey",
+    "metallic"
+   ],
+   "pattern_class": [
+    "crosshatch",
+    "weave"
+   ],
+   "spec_class": [
+    "brushed"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia040",
+  "ask": "yellow gloss with a chevron pattern and a carbon spec",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "yellow",
+    "gloss"
+   ],
+   "pattern_class": [
+    "chevron",
+    "stripes"
+   ],
+   "spec_class": [
+    "carbon",
+    "weave"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia041",
+  "ask": "cyan metallic base, dragon scale pattern, and a holographic spec layer",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "cyan",
+    "blue",
+    "metallic"
+   ],
+   "pattern_class": [
+    "scales"
+   ],
+   "spec_class": [
+    "holographic",
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia042",
+  "ask": "burgundy base with a diamond plate pattern and glitter in the spec",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "red",
+    "dark"
+   ],
+   "pattern_class": [
+    "diamond",
+    "industrial"
+   ],
+   "spec_class": [
+    "glitter",
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia043",
+  "ask": "jet black base with aztec pattern and a gold flake spec pattern",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "black",
+    "dark"
+   ],
+   "pattern_class": [
+    "aztec",
+    "geometric",
+    "cultural"
+   ],
+   "spec_class": [
+    "flake",
+    "sparkle",
+    "gold"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia044",
+  "ask": "chrome base, a hex pattern, and a matte spec layer to break it up",
+  "class": "stack3",
+  "expect": {
+   "base_class": [
+    "chrome",
+    "metallic"
+   ],
+   "pattern_class": [
+    "hex",
+    "geometric"
+   ],
+   "spec_class": [
+    "matte"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia045",
+  "ask": "very fine carbon fibre, crushed way down so it reads from track distance",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "carbon",
+    "black"
+   ],
+   "pattern_class": [
+    "carbon",
+    "weave"
+   ],
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia046",
+  "ask": "big coarse chunky hex pattern on a black base",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "black",
+    "dark"
+   ],
+   "pattern_class": [
+    "hex",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": "coarse",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia047",
+  "ask": "subtle flake, barely there, crushed to 20 percent",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "sparkle",
+    "metallic"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia048",
+  "ask": "huge broad stripes across the whole car",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "gloss"
+   ],
+   "pattern_class": [
+    "stripes"
+   ],
+   "spec_class": "none",
+   "scale": "coarse",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia049",
+  "ask": "tiny micro sparkle all over, like dust in the paint",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "sparkle",
+    "metallic"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia050",
+  "ask": "large bold camo blotches in matte greens",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "matte",
+    "green",
+    "tactical"
+   ],
+   "pattern_class": [
+    "camo"
+   ],
+   "spec_class": "none",
+   "scale": "coarse",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia051",
+  "ask": "fine grain brushed metal finish, very small scale",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "brushed",
+    "metallic"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia052",
+  "ask": "giant dragon scales, each one the size of a door panel",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "scales"
+   ],
+   "pattern_class": [
+    "scales"
+   ],
+   "spec_class": "none",
+   "scale": "coarse",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia053",
+  "ask": "micro texture that only shows up close, crushed to 30 percent",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "matte",
+    "carbon"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia054",
+  "ask": "medium sized diamonds repeated evenly",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "geometric"
+   ],
+   "pattern_class": [
+    "diamond",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": "medium",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia055",
+  "ask": "sharp tight checkerboard, small squares",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "black",
+    "white"
+   ],
+   "pattern_class": [
+    "checker",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia056",
+  "ask": "oversized floral print, bold and loud",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "red",
+    "pink"
+   ],
+   "pattern_class": [
+    "floral"
+   ],
+   "spec_class": "none",
+   "scale": "coarse",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia057",
+  "ask": "ultra fine pinstripe texture on dark paint",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "dark",
+    "black"
+   ],
+   "pattern_class": [
+    "stripes"
+   ],
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia058",
+  "ask": "big chunky glitter, large flakes you can see from across the track",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "glitter",
+    "sparkle"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": "coarse",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia059",
+  "ask": "tiny hex mesh at crushed 40 percent over a metallic base",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "metallic"
+   ],
+   "pattern_class": [
+    "hex",
+    "geometric",
+    "mesh"
+   ],
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia060",
+  "ask": "subtle small scale weave, nothing you notice at first",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "weave",
+    "carbon"
+   ],
+   "pattern_class": [
+    "weave",
+    "carbon"
+   ],
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia061",
+  "ask": "wide sweeping swirls that fill the whole hood",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "organic",
+    "gradient"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": "coarse",
+   "parts": [
+    "hood"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia062",
+  "ask": "make the pattern coarser and bolder on a white car",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "white",
+    "gloss"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": "coarse",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia063",
+  "ask": "finer finer finer texture, almost like sandpaper",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "matte",
+    "rough"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia064",
+  "ask": "medium wave pattern, not too busy and not too tiny",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "water",
+    "organic"
+   ],
+   "pattern_class": [
+    "wave"
+   ],
+   "spec_class": "none",
+   "scale": "medium",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia065",
+  "ask": "micro dots only visible when the sun hits, super fine",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "sparkle"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia066",
+  "ask": "broad soft gradient bands, nothing small",
+  "class": "scale",
+  "expect": {
+   "base_class": [
+    "gradient"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": "coarse",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia067",
+  "ask": "carbon fibre on the hood and roof, gloss black everywhere else",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "black",
+    "gloss"
+   ],
+   "pattern_class": [
+    "carbon",
+    "weave"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "hood",
+    "roof"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia068",
+  "ask": "chrome stripes down the middle and matte black on the sides",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "chrome",
+    "matte",
+    "black"
+   ],
+   "pattern_class": [
+    "stripes"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "stripes",
+    "sides"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia069",
+  "ask": "flake on the hood only, solid colour on the rest",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "sparkle",
+    "metallic"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "hood"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia070",
+  "ask": "put a hex pattern on the trunk and keep the body clean",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "gloss"
+   ],
+   "pattern_class": [
+    "hex",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "trunk"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia071",
+  "ask": "candy red on the body with a gold finish on the numbers",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "candy",
+    "red",
+    "gold"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "numbers"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia072",
+  "ask": "holographic on the roof and the spoiler, black everywhere else",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "holographic",
+    "black"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "roof",
+    "spoiler"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia073",
+  "ask": "give the rocker panels a brushed metal finish",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "brushed",
+    "metallic"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "rocker"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia074",
+  "ask": "matte hood with a glossy stripe down the centre",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "matte",
+    "gloss"
+   ],
+   "pattern_class": [
+    "stripes"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "hood",
+    "stripes"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia075",
+  "ask": "camo pattern on the lower doors fading out toward the roof",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "camo",
+    "tactical"
+   ],
+   "pattern_class": [
+    "camo"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "doors",
+    "sides"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia076",
+  "ask": "chrome on the bumpers and wing, pearl on the body",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "chrome",
+    "pearl"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "bumpers",
+    "wing"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia077",
+  "ask": "scale pattern only on the quarter panels",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "scales"
+   ],
+   "pattern_class": [
+    "scales"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "quarter"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia078",
+  "ask": "carbon spec pattern on the hood, glossy paint on the roof",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "gloss",
+    "carbon"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "carbon",
+    "weave"
+   ],
+   "scale": null,
+   "parts": [
+    "hood",
+    "roof"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia079",
+  "ask": "sparkle on the stripes only, not the body",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "sparkle"
+   ],
+   "pattern_class": [
+    "stripes"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "stripes"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia080",
+  "ask": "iridescent trunk lid, satin black everywhere else",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "iridescent",
+    "satin",
+    "black"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "trunk"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia081",
+  "ask": "matte numbers and sponsor areas, gloss body",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "matte",
+    "gloss"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "numbers"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia082",
+  "ask": "flames on the sides, solid black on the hood and roof",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "flames",
+    "black"
+   ],
+   "pattern_class": [
+    "flames"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "sides",
+    "hood",
+    "roof"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia083",
+  "ask": "diamond pattern on the front bumper and splitter",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "geometric"
+   ],
+   "pattern_class": [
+    "diamond",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "bumper",
+    "splitter"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia084",
+  "ask": "put the weave texture just on the roof",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "weave",
+    "carbon"
+   ],
+   "pattern_class": [
+    "weave",
+    "carbon"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "roof"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia085",
+  "ask": "gold leaf accents on the hood scoop, black elsewhere",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "gold",
+    "leaf",
+    "black"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "hood"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia086",
+  "ask": "racing stripes over the roof and trunk, pearl base",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "pearl",
+    "white"
+   ],
+   "pattern_class": [
+    "stripes"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "roof",
+    "trunk",
+    "stripes"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia087",
+  "ask": "neon on the lower sides and the splitter, dark car above",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "neon",
+    "dark"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "sides",
+    "splitter"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia088",
+  "ask": "brushed texture on the hood only and nowhere else",
+  "class": "placement",
+  "expect": {
+   "base_class": [
+    "brushed"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "hood"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia089",
+  "ask": "stealthy but with a flake that only shows in the sun",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "dark",
+    "black",
+    "matte",
+    "stealth"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "sparkle",
+    "flake"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia090",
+  "ask": "quiet classy black with a hint of pearl",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "black",
+    "dark",
+    "pearl"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia091",
+  "ask": "aggressive and loud red with a carbon weave",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "red"
+   ],
+   "pattern_class": [
+    "carbon",
+    "weave"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia092",
+  "ask": "elegant gold and white, nothing flashy but a fine texture",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "gold",
+    "white",
+    "luxury"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia093",
+  "ask": "moody dark blue with a subtle glass shimmer",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "blue",
+    "dark",
+    "glass"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "glass",
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia094",
+  "ask": "retro seventies orange with a groovy pattern",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "orange",
+    "retro"
+   ],
+   "pattern_class": [
+    "retro",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia095",
+  "ask": "military and tough, matte green with a rugged texture",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "matte",
+    "green",
+    "tactical"
+   ],
+   "pattern_class": [
+    "camo"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia096",
+  "ask": "cold icy white with frost crystals on top",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "white",
+    "ice",
+    "cold"
+   ],
+   "pattern_class": [
+    "ice"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia097",
+  "ask": "luxury black and gold, premium feel with a fine flake",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "black",
+    "gold",
+    "luxury"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "sparkle",
+    "flake"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia098",
+  "ask": "spooky halloween purple with a creepy pattern",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "purple",
+    "spooky"
+   ],
+   "pattern_class": [
+    "spooky"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia099",
+  "ask": "clean futuristic silver with a grid pattern",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "silver",
+    "futuristic"
+   ],
+   "pattern_class": [
+    "geometric",
+    "grid"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia100",
+  "ask": "warm sunset orange fading to pink with sparkle",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "orange",
+    "pink",
+    "sunset",
+    "warm"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia101",
+  "ask": "cyberpunk neon on dark with a data stream pattern",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "neon",
+    "cyber",
+    "dark"
+   ],
+   "pattern_class": [
+    "data",
+    "cyber"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia102",
+  "ask": "vintage 50s diner pastel with chrome trim",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "retro",
+    "vintage",
+    "chrome"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia103",
+  "ask": "tough industrial grey with diamond plate and brushed metal",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "grey",
+    "industrial",
+    "metallic",
+    "brushed"
+   ],
+   "pattern_class": [
+    "diamond",
+    "industrial"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia104",
+  "ask": "sophisticated deep green with a subtle texture",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "green",
+    "dark"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia105",
+  "ask": "wild and psychedelic with bright rainbow and a swirl pattern",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "rainbow",
+    "multicolor"
+   ],
+   "pattern_class": [
+    "swirl",
+    "organic"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia106",
+  "ask": "sleek and understated white, nothing loud, but with a soft pearl glow",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "white",
+    "pearl"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia107",
+  "ask": "patriotic red white and blue with stars and stripes pattern",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "patriotic",
+    "red",
+    "blue",
+    "white"
+   ],
+   "pattern_class": [
+    "stars",
+    "stripes"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia108",
+  "ask": "dangerous looking toxic green with a scales pattern",
+  "class": "mood_stack",
+  "expect": {
+   "base_class": [
+    "green",
+    "neon"
+   ],
+   "pattern_class": [
+    "scales"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia109",
+  "ask": "black carbon look but not shiny at all",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "black",
+    "carbon",
+    "matte"
+   ],
+   "pattern_class": [
+    "carbon",
+    "weave"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "chrome",
+    "mirror",
+    "high gloss"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia110",
+  "ask": "candy red with a pattern but no flames",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "candy",
+    "red"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "flames",
+    "fire"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia111",
+  "ask": "metallic blue with a texture, no glitter please",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "blue",
+    "metallic"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "glitter"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia112",
+  "ask": "a camo pattern but not green",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "camo"
+   ],
+   "pattern_class": [
+    "camo"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "green"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia113",
+  "ask": "white car with a pattern, anything but stripes",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "white"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "stripes"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia114",
+  "ask": "gold base with a layer on top, no chrome anywhere",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "gold"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "chrome"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia115",
+  "ask": "dark paint with a weave, nothing rainbow or holographic",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "dark",
+    "weave"
+   ],
+   "pattern_class": [
+    "weave",
+    "carbon"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "rainbow",
+    "holographic",
+    "iridescent"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia116",
+  "ask": "chrome base with a pattern, but not busy and no neon",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "chrome"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "neon"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia117",
+  "ask": "sparkle in the spec but keep the paint plain, no pattern in the colour",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "sparkle"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia118",
+  "ask": "blue pearl with a pattern but avoid anything spooky",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "blue",
+    "pearl"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "spooky"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia119",
+  "ask": "a scales pattern but no gold and no yellow",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "scales"
+   ],
+   "pattern_class": [
+    "scales"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "gold",
+    "yellow"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia120",
+  "ask": "matte base with a geometric layer, not carbon",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "matte"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "carbon"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia121",
+  "ask": "red car, stripes pattern, not too shiny, no candy",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "red"
+   ],
+   "pattern_class": [
+    "stripes"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "candy",
+    "chrome"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia122",
+  "ask": "orange with a flake spec, no black",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "orange",
+    "sparkle"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "sparkle",
+    "flake"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "black"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia123",
+  "ask": "pearl white plus a pattern, nothing floral",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "pearl",
+    "white"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "floral"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia124",
+  "ask": "green with a carbon layer, no metallic",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "green",
+    "carbon"
+   ],
+   "pattern_class": [
+    "carbon",
+    "weave"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "metallic",
+    "chrome"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia125",
+  "ask": "dark purple, a texture on top, without any glitter or sparkle",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "purple",
+    "dark"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "glitter",
+    "sparkle"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia126",
+  "ask": "silver look, honeycomb pattern, not gloss",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "silver",
+    "metallic"
+   ],
+   "pattern_class": [
+    "hex",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "gloss",
+    "high gloss",
+    "mirror"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia127",
+  "ask": "black with a texture over it but I do not want red or fire",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "black",
+    "dark"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "red",
+    "fire",
+    "flames"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia128",
+  "ask": "a diamond pattern on a blue car, not metallic",
+  "class": "negated_stack",
+  "expect": {
+   "base_class": [
+    "blue"
+   ],
+   "pattern_class": [
+    "diamond",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "metallic"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia129",
+  "ask": "like Undertow but with a fine carbon weave in the spec",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "sparkle"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "carbon",
+    "weave"
+   ],
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia130",
+  "ask": "like Midnight Pearl but with a stripes pattern",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "black",
+    "pearl",
+    "dark"
+   ],
+   "pattern_class": [
+    "stripes"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia131",
+  "ask": "like Carbon Fiber but with a sparkle layer",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "carbon",
+    "weave"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia132",
+  "ask": "something like Maelstrom but with a hex pattern on top",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "organic",
+    "sparkle",
+    "water"
+   ],
+   "pattern_class": [
+    "hex",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia133",
+  "ask": "like Hologram Metal but add a camo pattern",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "holographic",
+    "metallic"
+   ],
+   "pattern_class": [
+    "camo"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia134",
+  "ask": "like Dichroic Skin but with a subtle fine texture",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "holographic",
+    "luxury"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia135",
+  "ask": "like Truchet Glass but in a darker mood with a flake spec",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "glass",
+    "geometric",
+    "dark"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "sparkle",
+    "flake"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia136",
+  "ask": "like Cinder Pulse but calmer, with a carbon pattern",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "dark",
+    "sparkle"
+   ],
+   "pattern_class": [
+    "carbon",
+    "weave"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia137",
+  "ask": "like Black Chrome but with a diamond pattern over it",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "black",
+    "chrome"
+   ],
+   "pattern_class": [
+    "diamond",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia138",
+  "ask": "like Damascus Fold but with a glitter spec",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "dark",
+    "sparkle"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "glitter",
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia139",
+  "ask": "like Gold Leaf but with a floral pattern",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "gold",
+    "leaf",
+    "luxury"
+   ],
+   "pattern_class": [
+    "floral"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia140",
+  "ask": "like Cold Fire but with scales on top",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "flames",
+    "light"
+   ],
+   "pattern_class": [
+    "scales"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia141",
+  "ask": "like Blue Flame but with carbon fibre underneath",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "flames",
+    "blue"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "carbon",
+    "weave"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia142",
+  "ask": "like Wire Brushed but with a chevron pattern",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "brushed",
+    "industrial"
+   ],
+   "pattern_class": [
+    "chevron",
+    "stripes"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia143",
+  "ask": "like Hazard Chevron Weave but with a matte spec layer",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "weave",
+    "stripes"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "matte"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia144",
+  "ask": "like Candy Apple but with a hex pattern",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "candy",
+    "red"
+   ],
+   "pattern_class": [
+    "hex",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia145",
+  "ask": "like Switchblade Chevron but with a holographic spec",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "chrome",
+    "stripes"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "holographic",
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia146",
+  "ask": "like Oil Serpent but with a finer scale pattern added",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "organic",
+    "water"
+   ],
+   "pattern_class": [
+    "scales"
+   ],
+   "spec_class": "none",
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia147",
+  "ask": "similar to Stealth but with a flake that glints",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "matte",
+    "dark"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "sparkle",
+    "flake"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia148",
+  "ask": "like Steel Cyclone but add a weave pattern",
+  "class": "like_but_stack",
+  "expect": {
+   "base_class": [
+    "sparkle",
+    "metallic"
+   ],
+   "pattern_class": [
+    "weave"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia149",
+  "ask": "keep my paint colours exactly, just add a carbon weave in the shine",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "matte",
+    "gloss"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "carbon",
+    "weave"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia150",
+  "ask": "only change the shine, nothing about the colour, and add a fine flake",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "gloss",
+    "matte",
+    "metallic"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "sparkle",
+    "flake"
+   ],
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia151",
+  "ask": "spec only: make the stripes chrome and the body satin, same colours",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "chrome",
+    "satin"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "metallic"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia152",
+  "ask": "keep my colours, make the whole car a little more metallic",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "metallic"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia153",
+  "ask": "one loud thing only: make the hood wild, everything else calm",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "gloss",
+    "matte"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "hood"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia154",
+  "ask": "budget of loudness: quiet body, medium pattern, no sparkle",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "matte",
+    "satin"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [
+    "sparkle",
+    "glitter"
+   ],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia155",
+  "ask": "do not touch the paint, add a pearl spec layer only",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "pearl"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "pearl",
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia156",
+  "ask": "keep colours, make it matte but with a gloss pattern layer",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "matte"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia157",
+  "ask": "my colours stay, only the clearcoat changes, make it a wet look",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "gloss",
+    "high gloss"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia158",
+  "ask": "keep the design as is and just add subtle glitter in the shine",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "sparkle",
+    "glitter"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "sparkle",
+    "glitter"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia159",
+  "ask": "no new colours, texture only, a carbon look in satin",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "satin",
+    "carbon"
+   ],
+   "pattern_class": [
+    "carbon",
+    "weave"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia160",
+  "ask": "keep my numbers and sponsors untouched but make the body candy",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "candy"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "numbers"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia161",
+  "ask": "keep my red but make it look like brushed metal underneath",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "brushed",
+    "metallic"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "brushed"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia162",
+  "ask": "subtle only: a faint pattern and a faint spec, nothing screaming",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "matte",
+    "satin"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": [
+    "matte"
+   ],
+   "scale": "fine",
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia163",
+  "ask": "keep colour source, just give me a hammered metal finish effect",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "hammered",
+    "metallic"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia164",
+  "ask": "loud paint but quiet shine: bright colours with a plain matte spec",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "matte"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "matte"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia165",
+  "ask": "keep my livery, change only how shiny it is, and make the stripes mirror chrome",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "chrome"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "stripes"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia166",
+  "ask": "dont change my colours, just add a hex spec pattern",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "gloss"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "hex",
+    "geometric"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia167",
+  "ask": "keep my colours, make the roof matte and the rest gloss",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "matte",
+    "gloss"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "roof"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia168",
+  "ask": "stay inside two finishes total: a base and one pattern, nothing else",
+  "class": "constraint",
+  "expect": {
+   "base_class": [
+    "gloss",
+    "matte"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia169",
+  "ask": "what goes under a chrome stripe",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "chrome",
+    "matte",
+    "dark"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "stripes"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia170",
+  "ask": "what looks good over a matte black base",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "matte",
+    "black"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia171",
+  "ask": "what pattern goes with candy red",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "candy",
+    "red"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia172",
+  "ask": "what should I put under carbon fibre to make it pop",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "carbon",
+    "weave"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "sparkle"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia173",
+  "ask": "what goes well over pearl white",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "pearl",
+    "white"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia174",
+  "ask": "which spec pattern pairs with a gloss black body",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "black",
+    "gloss"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "carbon",
+    "glass",
+    "matte"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia175",
+  "ask": "what base works under a hex pattern",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "dark",
+    "matte",
+    "metallic"
+   ],
+   "pattern_class": [
+    "hex",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia176",
+  "ask": "what do I layer over gold to keep it classy",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "gold",
+    "luxury"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia177",
+  "ask": "what sits nicely on top of brushed aluminium",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "brushed",
+    "metallic"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia178",
+  "ask": "what goes under a camo pattern so it looks real",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "matte",
+    "tactical",
+    "green"
+   ],
+   "pattern_class": [
+    "camo"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia179",
+  "ask": "what should the stripes be if the body is satin grey",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "satin",
+    "grey"
+   ],
+   "pattern_class": [
+    "stripes"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "stripes"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia180",
+  "ask": "what looks right under a holographic layer",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "holographic",
+    "dark",
+    "black"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "holographic"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia181",
+  "ask": "what can go over a chrome base without looking cheap",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "chrome",
+    "metallic"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia182",
+  "ask": "which finish goes on the numbers over a white body",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "matte",
+    "gloss",
+    "black"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "numbers"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia183",
+  "ask": "what goes over deep blue metallic to make it look expensive",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "blue",
+    "metallic",
+    "luxury"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia184",
+  "ask": "what is a good spec layer for a red body",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "red"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "sparkle",
+    "carbon",
+    "matte"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia185",
+  "ask": "what goes beneath a diamond pattern on the hood",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "dark",
+    "matte"
+   ],
+   "pattern_class": [
+    "diamond",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [
+    "hood"
+   ],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia186",
+  "ask": "what would you put over flat black to make it interesting but still stealth",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "matte",
+    "black",
+    "dark"
+   ],
+   "pattern_class": [
+    "carbon",
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia187",
+  "ask": "what goes between a candy base and a flake layer",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "candy"
+   ],
+   "pattern_class": "none",
+   "spec_class": [
+    "sparkle",
+    "flake"
+   ],
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia188",
+  "ask": "what is the best base for a scales pattern",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "dark",
+    "metallic"
+   ],
+   "pattern_class": [
+    "scales"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia189",
+  "ask": "what goes over the top of a satin white car",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "satin",
+    "white"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia190",
+  "ask": "under what base does a neon pattern look best",
+  "class": "question",
+  "expect": {
+   "base_class": [
+    "black",
+    "dark",
+    "matte"
+   ],
+   "pattern_class": [
+    "neon"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": false
+  }
+ },
+ {
+  "id": "ia191",
+  "ask": "make it look cool",
+  "class": "ambiguous",
+  "expect": {
+   "base_class": [],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": true
+  }
+ },
+ {
+  "id": "ia192",
+  "ask": "something with a pattern and some shine",
+  "class": "ambiguous",
+  "expect": {
+   "base_class": [
+    "gloss"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": true
+  }
+ },
+ {
+  "id": "ia193",
+  "ask": "I want it like the one I saw last week",
+  "class": "ambiguous",
+  "expect": {
+   "base_class": [],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": true
+  }
+ },
+ {
+  "id": "ia194",
+  "ask": "make the car more interesting but not too much",
+  "class": "ambiguous",
+  "expect": {
+   "base_class": [],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": true
+  }
+ },
+ {
+  "id": "ia195",
+  "ask": "add something on top of the paint",
+  "class": "ambiguous",
+  "expect": {
+   "base_class": [
+    "gloss"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": true
+  }
+ },
+ {
+  "id": "ia196",
+  "ask": "the usual but better",
+  "class": "ambiguous",
+  "expect": {
+   "base_class": [],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": true
+  }
+ },
+ {
+  "id": "ia197",
+  "ask": "a mix of metal and matte somewhere",
+  "class": "ambiguous",
+  "expect": {
+   "base_class": [
+    "metallic",
+    "matte"
+   ],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": true
+  }
+ },
+ {
+  "id": "ia198",
+  "ask": "fancy",
+  "class": "ambiguous",
+  "expect": {
+   "base_class": [],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": true
+  }
+ },
+ {
+  "id": "ia199",
+  "ask": "pattern",
+  "class": "ambiguous",
+  "expect": {
+   "base_class": [
+    "gloss"
+   ],
+   "pattern_class": [
+    "geometric"
+   ],
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": true
+  }
+ },
+ {
+  "id": "ia200",
+  "ask": "make it pop but keep it subtle",
+  "class": "ambiguous",
+  "expect": {
+   "base_class": [],
+   "pattern_class": "none",
+   "spec_class": "none",
+   "scale": null,
+   "parts": [],
+   "must_not": [],
+   "ask_back": true
+  }
+ }
+]

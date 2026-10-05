@@ -1,0 +1,45 @@
+RESULT: PASS - owner install test in Windows Sandbox (clean machine), 2026-09-05; feed activated 19:10 local.
+
+SHOKKER PAINT BOOTH 10.0.1 (beta) - OWNER INSTALL TEST GATE
+=============================================================
+Written 2026-09-05 (Claude, BETA LAUNCH PREP). Run this on the REAL installed build,
+not the source tree. Every line must pass before `.\spb_release.ps1 -Phase activate`.
+
+WHICH FILE TO RUN
+  electron-app\dist\nsis-web\*10.0.1*Web-Setup.exe   (the stub; it pulls the ~4.9 GB payload)
+  Ignore anything older in _sandbox_share\ - run only the 10.0.1 stub.
+
+A. INSTALL / UPGRADE
+  [ ] Upgrading over the installed 10.0.0 completes without a "files in use" hang
+      (installer.nsh closes the running app by exe name).
+  [ ] App opens, title bar says v10.0.1, no red banner.
+
+B. THE THREE FIXES FROM 2026-09-05 (the reason for this beta)
+  [ ] FILE PICKER SETTING (Settings > Options > File Picker):
+      - Leave it on "Shokker Browser": header 📂 TGA/PNG/JPEG opens the in-app browser
+        with image previews. Tooltip on the button says "...in the Shokker Browser".
+      - Switch to "Windows File Explorer": the SAME button now opens the Windows chooser,
+        picking a TGA loads it as Source Paint. iRacing Car Folder 📂 opens the Windows
+        FOLDER chooser (Explorer style, "Select Folder" button) and sets the folder box.
+        Tooltips flip to "...in Windows File Explorer". Cancel does NOT open a second
+        picker. The choice survives a relaunch.
+      - Also try it from a plain browser tab (localhost:59876): same behaviour - the
+        server opens the Windows chooser itself.
+  [ ] VERSION NUMBER: small gold "V10.0.1" text bottom-right of the logo, beside
+      "PAINT BOOTH", above the orange EKG line, NOT touching the iRacing User ID box.
+      Check at full screen AND with the window shrunk to ~1100 px wide.
+  [ ] BASE COLOR LOCK: in the Zone Popout Panel > BASE > Base Color, the 🔒 Lock box is a
+      clearly visible 14 px square with a 2 px accent border. Clicking it fills the box
+      and shows a check; changing the base material then keeps the zone's colour.
+      Check in PRO and in EASY, and in at least one gallery Look.
+
+C. STANDING SMOKE (every release)
+  [ ] Load the canonical fixture (SPB Chevy Truck Starting Example PSD) and render.
+  [ ] Export to iRacing folder writes car_<id>.tga + car_spec_<id>.tga.
+  [ ] Easy Mode: pick a preset, render, save.
+  [ ] Pattern picker: every category shelf renders tiles (no blank shelves).
+
+D. PACKAGED-COPY PROOF (do not trust the source tree)
+  [ ] electron-app\dist\win-unpacked\resources\server\css\spb-beta-polish-20260905.css exists
+  [ ] ...\resources\server\server_routes\file_picker_routes.py contains '/api/native-dialog'
+  [ ] ...\resources\server\paint-booth-v2.html contains 'spb-native-file-dialogs-20260905a'

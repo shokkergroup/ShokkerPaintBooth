@@ -1,0 +1,5 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_1177452.tga","inspection_records":"_smart_tga_runs/cycle672_dlm_semantic_label_review/inspection_records.json","review_scope":"Cycle 672 byte-identical duplicate paint of 1173037; retained as a distinct real filename but not independent visual evidence.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[235,245,220,108],"target_layer":"numbers","family_id":"number:1","label":"true_custom_number_1_duplicate"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[297,714,176,95],"target_layer":"numbers","family_id":"number:1","label":"true_custom_number_1_duplicate"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[869,811,122,164],"target_layer":"numbers","family_id":"number:1","label":"true_custom_number_1_duplicate"}
+]}

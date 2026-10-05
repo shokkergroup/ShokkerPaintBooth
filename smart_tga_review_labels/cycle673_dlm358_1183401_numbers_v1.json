@@ -1,0 +1,6 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_1183401.tga","inspection_records":"_smart_tga_runs/cycle673_dlm_abstention_review/inspection_records.json","review_scope":"Cycle 673 source plus complete Number/Sponsor/Template/Paint sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[959,30,31,38],"target_layer":"template","label":"hardware_shape_false_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[951,409,20,65],"target_layer":"template","label":"hardware_strip_false_number"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[284,730,192,80],"target_layer":"numbers","family_id":"number:18","label":"true_custom_number_18"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[15,766,143,47],"target_layer":"sponsors","label":"morty_speedlabs_wordmark_false_number"}
+]}

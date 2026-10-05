@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_1008515.tga",
+  "inspection_records": "_smart_tga_runs/cycle658_dlm_palette_roles/inspection_records.json",
+  "review_scope": "Cycle 658 manual source, empty Number sheet, Sponsor, Template, Paint, all-owner, and suspect-sheet review.",
+  "component_labels": [
+    {"layer":"paint","component_index":null,"expected_bbox":[540,267,18,16],"target_layer":"sponsors","label":"missed_micro_sponsor_fragment"},
+    {"layer":"unassigned","component_index":null,"expected_bbox":[289,245,54,42],"target_layer":"numbers","label":"missed_true_number_instance","family_id":"number:18_petroff_style"},
+    {"layer":"unassigned","component_index":null,"expected_bbox":[299,742,55,40],"target_layer":"numbers","label":"missed_true_number_instance","family_id":"number:18_petroff_style"}
+  ]
+}

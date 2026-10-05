@@ -1,0 +1,122 @@
+{
+ "fnb_cyan_drift": {
+  "hue": 0.5087,
+  "fix": 0.0113,
+  "satA": 0.997,
+  "off": 0.023
+ },
+ "fnb_cyan_dustlane": {
+  "hue": 0.4891,
+  "fix": 0.0209,
+  "satA": 0.994,
+  "off": 0.008
+ },
+ "fnb_cyan_shockwave": {
+  "hue": 0.5939,
+  "fix": -0.0989,
+  "satA": 0.989,
+  "off": 0.296
+ },
+ "fnb_cyan_spiral": {
+  "hue": 0.4677,
+  "fix": 0.0323,
+  "satA": 0.99,
+  "off": 0.274
+ },
+ "fnb_gilded_shockfront": {
+  "hue": 0.0977,
+  "fix": 0.0023,
+  "satA": 0.829,
+  "off": 0.068
+ },
+ "fnb_gilded_veil": {
+  "hue": 0.1494,
+  "fix": -0.0444,
+  "satA": 0.996,
+  "off": 0.042
+ },
+ "fnb_golden_cluster": {
+  "hue": 0.1337,
+  "fix": -0.0337,
+  "satA": 0.761,
+  "off": 0.011
+ },
+ "fnb_golden_pinwheel": {
+  "hue": 0.0958,
+  "fix": 0.0042,
+  "satA": 0.839,
+  "off": 0.141
+ },
+ "fnb_magenta_emission": {
+  "hue": 0.8559,
+  "fix": 0.0191,
+  "satA": 0.993,
+  "off": 0.006
+ },
+ "fnb_magenta_remnant": {
+  "hue": 0.8728,
+  "fix": 0.0072,
+  "satA": 0.986,
+  "off": 0.019
+ },
+ "fnb_magenta_rift": {
+  "hue": 0.8954,
+  "fix": 0.0046,
+  "satA": 0.993,
+  "off": 0.034
+ },
+ "fnb_magenta_stardust": {
+  "hue": 0.8535,
+  "fix": 0.0365,
+  "satA": 0.995,
+  "off": 0.008
+ },
+ "fnb_teal_annulus": {
+  "hue": 0.4731,
+  "fix": -0.0031,
+  "satA": 0.995,
+  "off": 0.008
+ },
+ "fnb_teal_lagoon": {
+  "hue": 0.4419,
+  "fix": 0.0081,
+  "satA": 0.994,
+  "off": 0.01
+ },
+ "fnb_teal_rift": {
+  "hue": 0.4519,
+  "fix": -0.0019,
+  "satA": 0.996,
+  "off": 0.05
+ },
+ "fnb_teal_starfield": {
+  "hue": 0.4821,
+  "fix": -0.0221,
+  "satA": 0.992,
+  "off": 0.063
+ },
+ "fnb_violet_annulus": {
+  "hue": 0.8102,
+  "fix": -0.0452,
+  "satA": 0.813,
+  "off": 0.017
+ },
+ "fnb_violet_billows": {
+  "hue": 0.774,
+  "fix": -0.019,
+  "satA": 0.99,
+  "off": 0.027
+ },
+ "fnb_violet_galaxy": {
+  "hue": 0.7844,
+  "fix": -0.0194,
+  "satA": 0.995,
+  "off": 0.006
+ },
+ "fnb_violet_starglow": {
+  "hue": 0.7579,
+  "fix": -0.0029,
+  "satA": 0.902,
+  "off": 0.016
+ }
+}

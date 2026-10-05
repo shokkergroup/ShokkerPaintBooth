@@ -1,0 +1,85 @@
+{
+ "bases": {
+  "matte": {
+   "M": 0,
+   "R": 200,
+   "CC": 160
+  },
+  "satin": {
+   "M": 0,
+   "R": 95,
+   "CC": 70
+  },
+  "gloss": {
+   "M": 0,
+   "R": 30,
+   "CC": 16
+  }
+ },
+ "blend": {
+  "so0.0:normal": {
+   "paint_vs_normal": 0.0,
+   "spec_vs_normal": 0.0
+  },
+  "so0.0:multiply": {
+   "paint_vs_normal": 79.407,
+   "spec_vs_normal": 0.884
+  },
+  "so0.0:screen": {
+   "paint_vs_normal": 66.128,
+   "spec_vs_normal": 42.095
+  },
+  "so0.0:overlay": {
+   "paint_vs_normal": 126.741,
+   "spec_vs_normal": 0.884
+  },
+  "so0.6:normal": {
+   "paint_vs_normal": 0.0,
+   "spec_vs_normal": 0.0
+  },
+  "so0.6:multiply": {
+   "paint_vs_normal": 79.407,
+   "spec_vs_normal": 0.0
+  },
+  "so0.6:screen": {
+   "paint_vs_normal": 66.128,
+   "spec_vs_normal": 0.0
+  },
+  "so0.6:overlay": {
+   "paint_vs_normal": 126.741,
+   "spec_vs_normal": 0.0
+  }
+ },
+ "smap": {
+  "ones": {
+   "paint_vs_none": 0.224,
+   "spec_vs_none": 0.0,
+   "paint_left": 0.193,
+   "paint_right": 0.255
+  },
+  "zeros": {
+   "paint_vs_none": 128.838,
+   "spec_vs_none": 5.189,
+   "paint_left": 120.59,
+   "paint_right": 137.085
+  },
+  "left_off": {
+   "paint_vs_none": 60.422,
+   "spec_vs_none": 2.542,
+   "paint_left": 120.448,
+   "paint_right": 0.396
+  }
+ },
+ "fusion": {
+  "showroom": {
+   "spec_vs_linear": 20.058,
+   "R_mean": 161.3,
+   "R_mean_linear": 241.5
+  },
+  "split_m90": {
+   "spec_vs_linear": 4.798,
+   "R_mean": 222.3,
+   "R_mean_linear": 241.5
+  }
+ }
+}

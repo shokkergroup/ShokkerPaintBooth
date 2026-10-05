@@ -243,7 +243,9 @@ def test_layer_fill_gradient_source_guards():
     assert "function getLayerCanvasOrigin(layer)" in content
     assert "const fg = typeof _foregroundColor === 'string' ? _foregroundColor : '#000000';" in content
     assert "const bg = typeof _backgroundColor === 'string' ? _backgroundColor : '#ffffff';" in content
-    assert "function _drawLayerSpecialStamp(ctx, x, y, radius, opacity, hardness)" in content
+    # SPB-93 evolved the stamp signature (footprintArg added 2026-07); assert the prefix so the
+    # guard survives future optional-arg growth while still catching a rename/removal.
+    assert "function _drawLayerSpecialStamp(ctx, x, y, radius, opacity, hardness" in content
     assert "function _applyBakedSpecialFloodFill(data, visited, lw, lh, minX, minY, maxX, maxY, opacity)" in content
 
 
@@ -271,9 +273,13 @@ def test_layer_fill_gradient_undo_routing():
     )
     with open(canvas_path, "r", encoding="utf-8", errors="replace") as f:
         content = f.read()
-    assert "_pushLayerUndo(getSelectedLayer(), 'fill bucket on layer');" in content
-    assert "_pushLayerUndo(getSelectedLayer(), 'gradient on layer');" in content
+    # SPB-93 ticks 17-18: Fill/Gradient own undo only after result validation.
+    assert "_pushLayerUndo(layer, 'fill bucket on layer');" in content
+    assert "_pushLayerUndo(layer, 'gradient on layer');" in content
+    assert "_pushLayerUndo(targetLayer, 'gradient on layer');" not in content
     assert "window._gradientTargetLayerId = _selectedLayerId || null;" in content
+    assert "window._gradientTarget = { kind: 'zone', zoneIndex: selectedZoneIndex };" in content
+    assert "Gradient skipped: target already matches this result" in content
     assert "requireLayerToolbarTarget('Fill Bucket')" in content
     assert "requireZoneToolbarMode('Fill Bucket')" in content
     assert "requireLayerToolbarTarget('Gradient')" in content
@@ -319,7 +325,9 @@ def test_layer_effects_ui_reachable():
     with open(canvas_path, "r", encoding="utf-8", errors="replace") as f:
         content = f.read()
     assert "ondblclick=\"event.stopPropagation(); openLayerEffects('${l.id}')\"" in content
-    assert "<button onclick=\"openLayerEffects('${l.id}')\"" in content
+    # SPB-SIMPLIFY-2026-07-19 owner curation removed the per-card FX button (it was one of 4 entry
+    # points). Effects stay reachable via double-click (asserted above) and the context action bar:
+    assert "openSelectedLayerEffects()" in content
 
 
 def test_render_timeout_config():

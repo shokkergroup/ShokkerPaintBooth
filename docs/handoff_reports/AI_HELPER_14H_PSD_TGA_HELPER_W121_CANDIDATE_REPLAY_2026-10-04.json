@@ -1,0 +1,591 @@
+{
+  "workItem": "W121 customer PSD/TGA contextual helper route replay",
+  "status": "SEMANTIC_REVIEW_COMPLETE_WITH_GAPS",
+  "source": {
+    "controller": "_easy_claude_work/ai14h_w121_guidance_candidate/spb-pro-ai.js",
+    "sha256": "884FE1E2A8F039021D3E202ED0876F81F1BD866541DC1B38A065BD4E5E117C77",
+    "selfHelp": "E230A121127FC6B32C451C630028D3D2D10461B67819BF50F2B148195DB8DF4D",
+    "receipt": "25ABA5EE85E9C9FB7EFE3603FCE22B140CCB09D2CBD09A9303AC6AB00530EAC3",
+    "intentGuard": "3267DC263CF85BCB34B55588997ACBA737F4A47E7BDDE490FACE4D9D6271FB60",
+    "designBaseline": "_easy_claude_work/ai14h_generation3_audit/frozen-runtime11/js/spb-pro-design.js",
+    "designBaselineSha256": "4648DE3231015497CC9FF816612A542097A1AD14038A7210753F6CDBFD88D832",
+    "baselineController": "_easy_claude_work/ai14h_final_source_identity_candidate/browser-file-v2/spb-pro-ai.js",
+    "baselineControllerSha256": "FB63F5906E1C9FC9D49150F571D64FDE640E0A4630319C418FE4F9C2E7E5413A"
+  },
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w121_psd_tga_helper_scenarios/fresh-oracle.json",
+    "sha256": "BD73219E143CC2B62E0053F67144C4CE19F4C4BC4FF5759D767A47C922809049",
+    "cases": 20,
+    "frozenBeforeAnswers": true
+  },
+  "fixtureManifest": {
+    "path": "_easy_claude_work/ai14h_customer_psd_tga_inventory/manifest.json",
+    "sha256": "36EEC020BACB5A11CD2D419C844F039A4AA9A69B40584BEBB9406AA758BD43DB",
+    "selectedSamples": 22
+  },
+  "counts": {
+    "cases": 20,
+    "useful": 18,
+    "partial": 2,
+    "failure": 0,
+    "howto": 18,
+    "nonemptyQueues": 0,
+    "askForTicketCalls": 2,
+    "providerAttempts": 0,
+    "controlledEffects": 0,
+    "routeIssues": 0
+  },
+  "rows": [
+    {
+      "id": "offline-capability-no-provider",
+      "input": "What can I do here without connecting an AI provider?",
+      "configured": false,
+      "state": {
+        "source": "none"
+      },
+      "fixture": null,
+      "howto": true,
+      "selfHelpTopic": "offline_capabilities",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "Before connecting a provider, the built-in helper can answer supported how-to questions and handle supported local paint, part, finish, and material edits against the currently loaded paint. Scope and available controls depend on that paint; it cannot promise every design brief or automatically identify every element. Supported local edits do not require provider credits. This question made no changes.",
+      "semanticGrade": "useful",
+      "semanticNote": "Supported local how-to/edit boundary; no provider required for supported local work."
+    },
+    {
+      "id": "online-vs-offline-boundary",
+      "input": "What changes when my MCP provider is configured, and what still works offline?",
+      "configured": true,
+      "state": {
+        "source": "layered",
+        "sourceGeneration": 4
+      },
+      "fixture": {
+        "index": 0,
+        "path": "C:\\1Shokker Paint Car Examples\\ARCA\\SPB ARCA Chevy V3.psd",
+        "format": "PSD",
+        "dimensions": "2048x2048",
+        "recursiveLayerCount": 15
+      },
+      "howto": true,
+      "selfHelpTopic": "provider_vs_local_boundary",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "A configured MCP connection enables requests routed through that external assistant; availability and any charges depend on that provider. Supported built-in how-to and local paint/material edits still work without it when the current paint and target are supported. Provider setup does not prove car geometry or apply a change by itself. This question made no changes.",
+      "semanticGrade": "useful",
+      "semanticNote": "Distinguishes external MCP routing/charges from supported local help and edits."
+    },
+    {
+      "id": "unknown-flat-car-identification",
+      "input": "This baseplain TGA is loaded; which shape is the roof?",
+      "configured": false,
+      "state": {
+        "source": "flat-tga",
+        "sourceGeneration": 2,
+        "partMap": "unknown"
+      },
+      "fixture": {
+        "index": 13,
+        "path": "C:\\1Shokker Paint Car Examples\\ORIGINAL_1-baseplain.tga",
+        "format": "TGA",
+        "dimensions": "2048x2048",
+        "depth": 24
+      },
+      "howto": true,
+      "selfHelpTopic": "unknown_part_manual_selection",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "This paint does not yet have a verified named-part map, so I cannot tell which pixels are the roof or claim automatic recognition. Use the zone/selection controls to draw or select the intended area on the current image, inspect its visible mask, and name/confirm it only if those controls are available. Otherwise provide a clearer reference or use a supported mapped source. No region was learned or changed by this answer.",
+      "semanticGrade": "useful",
+      "semanticNote": "Says no named-part proof exists, offers manual current-image selection only if controls support it; no geometry claim."
+    },
+    {
+      "id": "teach-part-howto",
+      "input": "How do I teach the helper which region is the roof on this unknown paint?",
+      "configured": false,
+      "state": {
+        "source": "flat-tga",
+        "partMap": "unknown"
+      },
+      "fixture": {
+        "index": 13,
+        "format": "TGA",
+        "dimensions": "2048x2048"
+      },
+      "howto": true,
+      "selfHelpTopic": "unknown_part_manual_selection",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "This paint does not yet have a verified named-part map, so I cannot tell which pixels are the roof or claim automatic recognition. Use the zone/selection controls to draw or select the intended area on the current image, inspect its visible mask, and name/confirm it only if those controls are available. Otherwise provide a clearer reference or use a supported mapped source. No region was learned or changed by this answer.",
+      "semanticGrade": "useful",
+      "semanticNote": "Truthfully frames manual zone/selection and visual-mask inspection without asserting learned geometry."
+    },
+    {
+      "id": "unknown-finish-lookup",
+      "input": "What does the 'Blue Ice 7' finish look like on this truck?",
+      "configured": false,
+      "state": {
+        "source": "layered",
+        "finishCatalogMatch": false
+      },
+      "fixture": {
+        "index": 3,
+        "path": "C:\\1Shokker Paint Car Examples\\Trucks\\Monster High RAM Truck PSD.psd",
+        "format": "PSD",
+        "dimensions": "2048x2048",
+        "recursiveLayerCount": 12
+      },
+      "howto": true,
+      "selfHelpTopic": "unknown_finish_catalog_lookup",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "I cannot confirm “Blue Ice 7” as an available finish or show a preview from this question. Search the finish catalog by its displayed name; if it is not listed, choose a listed finish or provide a reference. I will not invent its appearance. This question made no changes.",
+      "semanticGrade": "useful",
+      "semanticNote": "Refuses to invent an unknown catalog look and directs catalog search."
+    },
+    {
+      "id": "unknown-color-source-inference",
+      "input": "Is the source paint on this ARCA TGA definitely dark green?",
+      "configured": false,
+      "state": {
+        "source": "flat-tga",
+        "partMap": "unknown",
+        "pixelInspection": false
+      },
+      "fixture": {
+        "index": 11,
+        "path": "C:\\1Shokker Paint Car Examples\\NEXT GEN\\ORIGINAL_77-Chilis-SPB.tga",
+        "format": "TGA",
+        "dimensions": "2048x2048",
+        "depth": 32,
+        "alphaBits": 8
+      },
+      "howto": false,
+      "selfHelpTopic": "",
+      "queue": 0,
+      "askForTicketCalls": 1,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "controlled downstream local route; no paint applied",
+      "semanticGrade": "useful",
+      "semanticNote": "Does not claim color from file metadata; says no visual inspection was performed."
+    },
+    {
+      "id": "question-hypothetical-no-execute",
+      "input": "What would happen if I made only the roof chrome? Do not change anything.",
+      "configured": true,
+      "state": {
+        "source": "layered",
+        "sourceGeneration": 7,
+        "uniqueRoofOwner": true
+      },
+      "fixture": {
+        "index": 0,
+        "format": "PSD",
+        "dimensions": "2048x2048"
+      },
+      "howto": true,
+      "selfHelpTopic": "hypothetical_finish_effect",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "Nothing was changed. Chrome means a strongly reflective metallic material response. A finish-only request on an existing, verified part is intended to change material response while keeping its current paint color. The app must still verify the current part and mask; if that scope cannot be proved, it should ask rather than broaden the edit.",
+      "semanticGrade": "useful",
+      "semanticNote": "Read-only hypothetical; no downstream action."
+    },
+    {
+      "id": "explicit-action-control-owner",
+      "input": "Could you make only the roof satin on the current paint?",
+      "configured": false,
+      "state": {
+        "source": "layered",
+        "sourceGeneration": 7,
+        "uniqueRoofOwner": true,
+        "ownerCurrent": true
+      },
+      "fixture": {
+        "index": 0,
+        "format": "PSD",
+        "dimensions": "2048x2048"
+      },
+      "howto": false,
+      "selfHelpTopic": "",
+      "queue": 0,
+      "askForTicketCalls": 1,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "controlled downstream local route; no paint applied",
+      "semanticGrade": "useful",
+      "semanticNote": "Polite imperative reaches exactly one controlled local handoff; no apply/provider."
+    },
+    {
+      "id": "explicit-action-refuse-unknown-part",
+      "input": "Can it turn just the roof blue on an unknown-car TGA without a verified roof map?",
+      "configured": false,
+      "state": {
+        "source": "flat-tga",
+        "sourceGeneration": 7,
+        "partMap": "unknown",
+        "uniqueRoofOwner": false
+      },
+      "fixture": {
+        "index": 3,
+        "format": "PSD",
+        "dimensions": "2048x2048",
+        "recursiveLayerCount": 12
+      },
+      "howto": true,
+      "selfHelpTopic": "unverified_part_action_refusal",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "Not safely until that part is identified on this current paint. The helper must not guess a roof mask from the car name or a flat image. Use the available zone/selection controls to identify and inspect the area, or load a source with a verified map; I made no change.",
+      "semanticGrade": "useful",
+      "semanticNote": "Refuses unverified roof action and states current part map is needed; no handoff."
+    },
+    {
+      "id": "grouped-layer-discovery",
+      "input": "The PSD has nested folders. How can I find and show the sponsor layer?",
+      "configured": false,
+      "state": {
+        "source": "layered",
+        "layers": [
+          {
+            "name": "Artwork",
+            "children": [
+              "Car Paint",
+              "Sponsors"
+            ],
+            "visible": true
+          },
+          {
+            "name": "Reference",
+            "children": [
+              "Wire",
+              "Mask"
+            ],
+            "visible": false
+          }
+        ]
+      },
+      "fixture": {
+        "index": 6,
+        "format": "PSD",
+        "dimensions": "2048x2048",
+        "recursiveLayerCount": 79
+      },
+      "howto": true,
+      "selfHelpTopic": "find_nested_layer",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "In the Layers panel, expand the parent folder with its disclosure arrow, then select the named child layer. Check the eye icon on the folder and child; a hidden ancestor can keep a visible child from showing. Use the layer search/filter if available. This explains where to look only; it does not change visibility or prove that a layer was imported.",
+      "semanticGrade": "useful",
+      "semanticNote": "Gives parent/child expansion, visibility, and optional filter guidance without changing state."
+    },
+    {
+      "id": "hidden-layer-selectability",
+      "input": "Why can't I paint on the sponsor layer if its folder is hidden?",
+      "configured": false,
+      "state": {
+        "source": "layered",
+        "layers": [
+          {
+            "name": "Sponsors",
+            "visible": false,
+            "locked": false
+          }
+        ]
+      },
+      "fixture": {
+        "index": 3,
+        "format": "PSD",
+        "dimensions": "2048x2048",
+        "recursiveLayerCount": 12
+      },
+      "howto": true,
+      "selfHelpTopic": "find_nested_layer",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "In the Layers panel, expand the parent folder with its disclosure arrow, then select the named child layer. Check the eye icon on the folder and child; a hidden ancestor can keep a visible child from showing. Use the layer search/filter if available. This explains where to look only; it does not change visibility or prove that a layer was imported.",
+      "semanticGrade": "useful",
+      "semanticNote": "Explains hidden ancestor/child visibility and lock/selection checks; no state changes."
+    },
+    {
+      "id": "imported-spec-map-identification",
+      "input": "After this PSD import, how can I tell whether clearcoat is on a layer or in the spec channels?",
+      "configured": false,
+      "state": {
+        "source": "layered",
+        "specImport": "unknown"
+      },
+      "fixture": {
+        "index": 6,
+        "format": "PSD",
+        "dimensions": "2048x2048",
+        "recursiveLayerCount": 79
+      },
+      "howto": true,
+      "selfHelpTopic": "inspect_imported_spec_state",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "A layer name or file header alone does not prove that pixels contain clearcoat data. Inspect the imported Layers panel, then use the spec-channel preview/control to see the current R metalness, G roughness, and B clearcoat channels. If the import mapping is unknown, treat it as unverified; alpha may be transparency rather than material data. This answer does not inspect the file.",
+      "semanticGrade": "useful",
+      "semanticNote": "Directs user to inspect imported layers and actual spec previews; no claim that import mapping is known."
+    },
+    {
+      "id": "tga-alpha-is-not-spec-proof",
+      "input": "This 32-bit TGA has alpha. Does that prove its transparent pixels are clearcoat?",
+      "configured": false,
+      "state": {
+        "source": "flat-tga",
+        "alphaMeaning": "unknown"
+      },
+      "fixture": {
+        "index": 10,
+        "path": "C:\\1Shokker Paint Car Examples\\Dirt Late Model TGAs\\bpierce.tga",
+        "format": "TGA",
+        "dimensions": "2048x2048",
+        "depth": 32,
+        "alphaBits": 8
+      },
+      "howto": true,
+      "selfHelpTopic": "tga_alpha_unverified",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "TGA bit depth, RLE encoding, and alpha-bit count describe the file layout; they do not establish that alpha is clearcoat or that this loader maps it to a spec channel. Import the file and inspect the resulting image and material-channel previews. Until verified, do not treat alpha as material data. This question made no changes.",
+      "semanticGrade": "useful",
+      "semanticNote": "Clearly separates alpha/header metadata from verified material-channel meaning."
+    },
+    {
+      "id": "rle-alpha-uncertainty",
+      "input": "Will the RLE 16-bit truck TGA keep its alpha as material data when I import it?",
+      "configured": false,
+      "state": {
+        "source": "tga",
+        "loaderFormatVerified": false,
+        "alphaMeaning": "unknown"
+      },
+      "fixture": {
+        "index": 18,
+        "path": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\protrucks pro4truck\\car_664623.tga",
+        "format": "TGA",
+        "imageType": 10,
+        "dimensions": "2048x2048",
+        "depth": 16,
+        "alphaBits": 1
+      },
+      "howto": true,
+      "selfHelpTopic": "tga_alpha_unverified",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "TGA bit depth, RLE encoding, and alpha-bit count describe the file layout; they do not establish that alpha is clearcoat or that this loader maps it to a spec channel. Import the file and inspect the resulting image and material-channel previews. Until verified, do not treat alpha as material data. This question made no changes.",
+      "semanticGrade": "useful",
+      "semanticNote": "Does not guarantee loader or alpha semantics from RLE/header metadata."
+    },
+    {
+      "id": "saved-raster-vs-original-psd",
+      "input": "If I save this Shokker project, does that update my original PSD too?",
+      "configured": false,
+      "state": {
+        "source": "layered",
+        "projectDirty": true,
+        "sourcePath": "C:/paint/car.psd"
+      },
+      "fixture": {
+        "index": 0,
+        "format": "PSD",
+        "dimensions": "2048x2048"
+      },
+      "howto": true,
+      "selfHelpTopic": "save_project_source_psd",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "**How do I save my project and come back later**\n1. Click \"Save / Open\" in the top toolbar (SPB Projects). It saves the project zones and layer state plus the source-paint path in one project file. Keep that source available at the saved path to reopen it.\n2. To reopen, click \"Save / Open\" again and load it.\nExact controls: Save / Open (Pro > top toolbar (tool row)); SAVE SHOKK (Pro > left column > ZONES > More (three-dot) menu).\nWhat would you like to change first - a colour, the shine, or the numbers? The SHOKK project stores its zones and layer state, including current layer pixel payload where available, and records the original source path; it does not bundle the original PSD. Keep that source file available at the saved path.",
+      "semanticGrade": "useful",
+      "semanticNote": "Distinguishes project pixels/layers from original PSD bytes and path."
+    },
+    {
+      "id": "unsaved-edit-receipt-vs-durable",
+      "input": "I just recolored the roof but haven't saved. Is that in my original layered file yet?",
+      "configured": false,
+      "state": {
+        "source": "layered",
+        "projectDirty": true,
+        "latestOperation": "applied",
+        "originalFileWritten": false
+      },
+      "fixture": {
+        "index": 3,
+        "format": "PSD",
+        "dimensions": "2048x2048"
+      },
+      "howto": true,
+      "selfHelpTopic": "unsaved_project_vs_source",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "An applied edit changes the current SPB project state, but an unsaved project edit is not written into the original PSD. Save the SHOKK project to preserve its current zones/layers; exporting or writing the original PSD is a separate operation. I cannot confirm an edit receipt from this question. This question made no changes.",
+      "semanticGrade": "partial",
+      "semanticNote": "Explains unsaved project versus source file but does not verify the actual controlled applied receipt."
+    },
+    {
+      "id": "changed-source-stale-owner",
+      "input": "I switched from ARCA Chevy V3 to V4; can I reuse the saved roof region?",
+      "configured": false,
+      "state": {
+        "source": "layered",
+        "sourceGeneration": 9,
+        "ownerRecordSourceGeneration": 8,
+        "ownerSourceShaMatches": false,
+        "ownerCurrent": false
+      },
+      "fixture": {
+        "before": {
+          "index": 0,
+          "path": "C:\\1Shokker Paint Car Examples\\ARCA\\SPB ARCA Chevy V3.psd",
+          "recursiveLayerCount": 15
+        },
+        "after": {
+          "index": 9,
+          "path": "C:\\1Shokker Paint Car Examples\\SPB ARCA Chevy V4.psd",
+          "recursiveLayerCount": 18
+        }
+      },
+      "howto": true,
+      "selfHelpTopic": "stale_part_memory",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "A saved part region from the earlier source is not proof for this car or authority for the newly loaded source. Recheck or teach the target on the current loaded paint and inspect its current mask; if the current source/layout proof is missing, leave the old record unused. Similar names or dimensions do not establish the same region, so do not transfer it automatically. This question made no changes.",
+      "semanticGrade": "useful",
+      "semanticNote": "Treats old-source region as inert pending current-source/mask proof."
+    },
+    {
+      "id": "missing-source-location",
+      "input": "Where is my loaded paint source path?",
+      "configured": false,
+      "state": {
+        "source": "none",
+        "sourceReady": false
+      },
+      "fixture": null,
+      "howto": true,
+      "selfHelpTopic": "source_path_status",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "I cannot read a loaded source path from this help answer. Check the Source Paint field at the top of the Pro window; if it is empty, use the TGA/PNG/JPEG or PSD/XCF/ORA load button first. A saved SHOKK project records its source path but does not bundle the original source file. This question made no changes.",
+      "semanticGrade": "useful",
+      "semanticNote": "States path cannot be read from answer and gives Source Paint load controls."
+    },
+    {
+      "id": "cold-reopen-layer-state",
+      "input": "I reopened the saved project, not the PSD. Should the imported layer folders still be editable?",
+      "configured": false,
+      "state": {
+        "source": "project-reopen",
+        "embeddedLayers": true,
+        "sourcePsdReloaded": false,
+        "sourceFingerprintCurrent": false
+      },
+      "fixture": {
+        "index": 6,
+        "format": "PSD",
+        "dimensions": "2048x2048",
+        "recursiveLayerCount": 79
+      },
+      "howto": true,
+      "selfHelpTopic": "layer_editability_limits",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "Check the imported Layers panel and select the layer to see whether its raster pixels are available. A flattened layer cannot be split back into its original parts, and unsupported or adjustment-layer content may not retain its original Photoshop behavior. Pixel layers can be editable without guaranteeing full PSD fidelity. This question made no changes.",
+      "semanticGrade": "useful",
+      "semanticNote": "Distinguishes embedded project layer state from original PSD bytes and current proof."
+    },
+    {
+      "id": "latest-actual-completion-after-source-change",
+      "input": "What did the helper actually finish most recently?",
+      "configured": true,
+      "state": {
+        "source": "changed",
+        "sourceGeneration": 11,
+        "receipt": {
+          "status": "applied",
+          "sourceGeneration": 10,
+          "lines": [
+            "Changed hood to gold"
+          ]
+        }
+      },
+      "fixture": {
+        "current": {
+          "index": 13,
+          "format": "TGA",
+          "dimensions": "2048x2048"
+        },
+        "prior": {
+          "index": 3,
+          "format": "PSD",
+          "dimensions": "2048x2048"
+        }
+      },
+      "howto": true,
+      "selfHelpTopic": "recent_change_receipt",
+      "queue": 0,
+      "askForTicketCalls": 0,
+      "providerAttempts": 0,
+      "error": "",
+      "text": "I do not have a current, verified apply receipt to explain, so I will not guess from a draft or generic success message. This question made no changes.",
+      "semanticGrade": "partial",
+      "semanticNote": "Question goes through controlled downstream stub; real receipt-helper stale source behavior is not demonstrated here."
+    }
+  ],
+  "routeIssues": [],
+  "limits": [
+    "Actual W119 public ask() and its contextual/preflight dependencies are extracted and run in a VM; provider/config metadata is controlled false/true. Provider-facing askCore is blocked by a throwing stub; askForTicket is a controlled downstream local-route stub that never invokes a provider or applies paint. Handoff counts therefore show public dispatch, not successful offline planning or action.",
+    "Customer fixtures are metadata only (PSD layer counts and TGA headers); state and receipts are controlled fixtures. No source bytes, masks, spec maps, CAR part geometry, save/open or pixel semantics are inferred from the inventory.",
+    "No provider, native application, HTTP server, browser or paint application was called.",
+    "The ask harness stubs askForTicket at the downstream local route boundary. W121 cases that hand off do not demonstrate actual offline planner behavior; all such answers are graded partial unless the contextual route now answers before handoff. Candidate controls prove no provider calls, no queue, and zero paint application in this harness, not native effects."
+  ],
+  "replay": {
+    "test": "tests/ai_psd_tga_helper_w121_guidance_candidate_contract.cjs",
+    "w119RegressionTest": "tests/ai_w121_guidance_w119_regression_contract.cjs",
+    "w119RegressionReport": "docs/handoff_reports/AI_HELPER_14H_PSD_TGA_W119_REGRESSION_2026-10-04.json",
+    "w119RegressionCases": 53,
+    "w119RegressionIssues": 0,
+    "meaning": "Retained frozen W119/W118/W116c public guidance and imperative controls passed after candidate changes."
+  },
+  "oracleMetadataCorrection": {
+    "supplement": "_easy_claude_work/ai14h_w121_guidance_candidate/w121-fixture-metadata-correction.json",
+    "reason": "Frozen W121 source oracle is untouched. Its explicit-action-refuse-unknown-part fixture.index=3 points at the Monster High RAM PSD, while state.source and expected wording specify an unknown flat TGA. The associated case was evaluated by its declared state for routing; fixture index is not treated as evidence of source geometry."
+  }
+}

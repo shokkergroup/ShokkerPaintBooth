@@ -1,0 +1,120 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_neon_spandex",
+  "display_name": "Radical: Neon Spandex",
+  "promise": "Smooth aerodynamic stretch ribbons: clean acid-lime, cyan and hot-pink elastic interlocks, taut curved seams, tiny contrasting stitch ladders, violet inset bands and clean satin highlights.",
+  "carrier_grammar": "Smooth aerodynamic stretch ribbons: clean acid-lime, cyan and hot-pink elastic interlocks, taut curved seams, tiny contrasting stitch ladders, violet inset bands and clean satin highlights. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "Dielectric satin stretch ribbons: smooth lime elastic, satin pink bands, separately coated cyan seam shoulders, dull violet insets and matte stitch gaps.",
+  "reference_physics": {
+    "mechanism": "Smooth aerodynamic stretch ribbons: clean acid-lime, cyan and hot-pink elastic interlocks, taut curved seams, tiny contrasting stitch ladders, violet inset bands and clean satin highlights. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_neon_spandex.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "satin stretch ribbons",
+      "role": "Actual shared paint and spec geometry: satin stretch ribbons"
+    },
+    {
+      "name": "lime elastic interlocks",
+      "role": "Actual shared paint and spec geometry: lime elastic interlocks"
+    },
+    {
+      "name": "pink printed bands",
+      "role": "Actual shared paint and spec geometry: pink printed bands"
+    },
+    {
+      "name": "cyan seam shoulders",
+      "role": "Actual shared paint and spec geometry: cyan seam shoulders"
+    },
+    {
+      "name": "violet inset seams",
+      "role": "Actual shared paint and spec geometry: violet inset seams"
+    },
+    {
+      "name": "dark stitch gaps",
+      "role": "Actual shared paint and spec geometry: dark stitch gaps"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "satin stretch ribbons",
+      "lime elastic interlocks",
+      "pink printed bands",
+      "cyan seam shoulders",
+      "violet inset seams",
+      "dark stitch gaps"
+    ],
+    "R": [
+      "satin stretch ribbons",
+      "lime elastic interlocks",
+      "pink printed bands",
+      "cyan seam shoulders",
+      "violet inset seams",
+      "dark stitch gaps"
+    ],
+    "Cc": [
+      "satin stretch ribbons",
+      "lime elastic interlocks",
+      "pink printed bands",
+      "cyan seam shoulders",
+      "violet inset seams",
+      "dark stitch gaps"
+    ]
+  },
+  "material_tiers": [
+    "satin stretch ribbons dielectric material with independent continuous roughness/coating response",
+    "lime elastic interlocks dielectric material with independent continuous roughness/coating response",
+    "pink printed bands dielectric material with independent continuous roughness/coating response",
+    "cyan seam shoulders dielectric material with independent continuous roughness/coating response",
+    "violet inset seams dielectric material with independent continuous roughness/coating response",
+    "dark stitch gaps dielectric material with independent continuous roughness/coating response",
+    "raised fiber tips and compressed seams"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_aerobics_gym",
+      "difference": "This finish uses Very fine hotpink spandex fabric with tiny turquoise knitted eyelet loops, electricblue seam filaments and small pale elastic thread highlights. Dense fine jersey-knit topology, many subtle short orientations, no large patches or ribbed tread. Smooth synthetic textile sheen, no metallic foil.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "at_neon_wetsuit",
+      "difference": "This finish uses Very fine hotpink spandex fabric with tiny turquoise knitted eyelet loops, electricblue seam filaments and small pale elastic thread highlights. Dense fine jersey-knit topology, many subtle short orientations, no large patches or ribbed tread. Smooth synthetic textile sheen, no metallic foil.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "satin stretch ribbons is visible in the authored geometry",
+      "lime elastic interlocks is visible in the authored geometry",
+      "pink printed bands is visible in the authored geometry",
+      "cyan seam shoulders is visible in the authored geometry",
+      "violet inset seams is visible in the authored geometry",
+      "dark stitch gaps is visible in the authored geometry"
+    ],
+    "source_sha256": "513845c4da9c25aa4032af0da699af47e857ddf3e029ab0f141c63f65df980ee",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_neon_spandex-authored-Smooth aerodynamic stretch ribbons: clean acid-lime, cyan and hot-pink elastic interlocks, taut curved seams, tiny contrasting stitch ladders, violet inset bands and clean satin highlights. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_neon_spandex-named-dielectric-textile-v1",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 65.2,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "a8ab585b00d20f91823420319092e201bff0c884b71b28aae214af58c2c1d9da"
+}

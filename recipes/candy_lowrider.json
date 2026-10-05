@@ -2,7 +2,7 @@
   "name": "Candy Lowrider",
   "description": "Full-on candy paint lowrider with heavy metal flake, gold leaf pinstripes, chrome everything, and pearl pattern overlays. A rolling sculpture built for slow cruising and cameras.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "impala, cadillac, cutlass, monte_carlo, any G-body classic",
   "notes": "Lowrider style LIVES in the paint depth — don't skimp on Pearl Overlay strength. Candy body responds strongly to lighting; adjust baseColor to match your crew/theme. Chrome should cover bumpers, trim, and mirrors.",
   "zones": [

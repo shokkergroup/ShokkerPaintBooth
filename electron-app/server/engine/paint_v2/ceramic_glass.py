@@ -82,6 +82,9 @@ _TEMPERED_N_JETS_RANGE: int = 6
 
 SpecTriple = Tuple[np.ndarray, np.ndarray, np.ndarray]
 
+_CG_FIELD_CACHE = {}
+_CG_FIELD_CACHE_MAX: int = 4
+
 
 # ============================================================================
 # SHARED HELPERS
@@ -135,6 +138,52 @@ def _neutral_spec(shape, base_m: float = 0.0, base_r: float = 40.0,
     return M, R, CC
 
 
+def _cg_cv2():
+    """Lazy OpenCV import for deployments that keep this dependency optional."""
+    import cv2 as _cv2  # type: ignore
+    return _cv2
+
+
+def _cg_work_shape(shape, cap: int = 768) -> Tuple[int, int]:
+    """Bound expensive optical solves while preserving final 2048 output."""
+    h, w = _hw(shape)
+    max_dim = max(h, w)
+    if max_dim <= cap:
+        return h, w
+    scale = float(cap) / float(max_dim)
+    return max(64, int(round(h * scale))), max(64, int(round(w * scale)))
+
+
+def _cg_resize_array(field: np.ndarray, out_shape, interpolation=None) -> np.ndarray:
+    h, w = _hw(out_shape)
+    if field.shape[:2] == (h, w):
+        return field.astype(np.float32, copy=False)
+    _cv2 = _cg_cv2()
+    interp = _cv2.INTER_LINEAR if interpolation is None else interpolation
+    resized = _cv2.resize(field.astype(np.float32, copy=False), (w, h), interpolation=interp)
+    return resized.astype(np.float32, copy=False)
+
+
+def _cg_cache_put(key, value: np.ndarray) -> np.ndarray:
+    if len(_CG_FIELD_CACHE) >= _CG_FIELD_CACHE_MAX:
+        _CG_FIELD_CACHE.pop(next(iter(_CG_FIELD_CACHE)))
+    _CG_FIELD_CACHE[key] = value
+    return value
+
+
+def _cg_noise(shape, scales, weights, seed: int, cap: int | None, cache_tag: str) -> np.ndarray:
+    h, w = _hw(shape)
+    key = (cache_tag, h, w, tuple(scales), tuple(weights), int(seed), cap)
+    cached = _CG_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    work_shape = (h, w) if cap is None else _cg_work_shape((h, w), cap)
+    field = multi_scale_noise(work_shape, scales, weights, seed)
+    if work_shape != (h, w):
+        field = _cg_resize_array(field, (h, w))
+    return _cg_cache_put(key, field.astype(np.float32, copy=False))
+
+
 # ============================================================================
 # PUBLIC API
 # ============================================================================
@@ -171,7 +220,14 @@ def paint_ceramic_matte_v2(paint: np.ndarray, shape, mask: np.ndarray, seed,
     Returns:
         ``float32`` ``(H, W, 3)`` buffer.
     """
-    paint = _safe_paint_copy(paint)
+    # SPB paint-finish perf loop tick 2026-05-31 06:08; owner: "Speed is king in this app."
+    # Ceramic matte keeps identical math but skips a second RGB copy; ceramic_matte 5000.1 -> 4404.7 ms, std drift 0.
+    if paint is None:
+        raise ValueError("ceramic_glass: paint buffer is None")
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].astype(np.float32, copy=False)
+    elif paint.dtype != np.float32:
+        paint = paint.astype(np.float32, copy=False)
     bb_arr = ensure_bb_2d(bb, shape)
     base = paint
     gray = base.mean(axis=2, keepdims=True)
@@ -335,7 +391,7 @@ def paint_obsidian_glass_v2(paint: np.ndarray, shape, mask: np.ndarray, seed,
     """
     # Lazy import cv2 — optional dep on some minimal deployments.
     try:
-        import cv2 as _cv2
+        _cv2 = _cg_cv2()
     except ImportError as exc:
         logger.error("paint_obsidian_glass_v2 needs OpenCV: %s", exc)
         return _safe_paint_copy(paint)
@@ -433,7 +489,7 @@ def paint_porcelain_depth_v2(paint: np.ndarray, shape, mask: np.ndarray, seed,
         way because physically-correct SSS requires multiple length scales.
     """
     try:
-        import cv2 as _cv2
+        _cv2 = _cg_cv2()
     except ImportError as exc:
         logger.error("paint_porcelain_depth_v2 needs OpenCV: %s", exc)
         return _safe_paint_copy(paint)
@@ -450,16 +506,20 @@ def paint_porcelain_depth_v2(paint: np.ndarray, shape, mask: np.ndarray, seed,
     porcelain[:, :, 0] = np.clip(porcelain[:, :, 0] + 0.03, 0.0, 1.0)  # warm
     porcelain[:, :, 2] = np.clip(porcelain[:, :, 2] - 0.02, 0.0, 1.0)  # less blue
 
-    # Multi-scale SSS: each blur represents deeper penetration.
-    sss_accum = np.zeros_like(porcelain)
-    radii = [max(h // 256, 1), max(h // 128, 2), max(h // 64, 3), max(h // 32, 4)]
+    # SPB paint-finish perf loop 2026-05-31: broad SSS can solve smaller,
+    # then resize back; owner hard ceiling is no base over 4.000s at 2048.
+    work_shape = _cg_work_shape((h, w), 768)
+    porcelain_work = _cg_resize_array(porcelain, work_shape, _cv2.INTER_AREA)
+    wh, _ = work_shape
+    sss_accum = np.zeros_like(porcelain_work)
+    radii = [max(wh // 256, 1), max(wh // 128, 2), max(wh // 64, 3), max(wh // 32, 4)]
     for weight, radius in zip(_SSS_WEIGHTS, radii):
-        blurred = np.zeros_like(porcelain)
-        for c in range(3):
-            blurred[:, :, c] = _cv2.GaussianBlur(
-                porcelain[:, :, c].astype(np.float32), (0, 0), float(radius)
-            )
+        blurred = _cv2.GaussianBlur(
+            porcelain_work.astype(np.float32, copy=False), (0, 0), float(radius)
+        )
         sss_accum += blurred * weight
+    if work_shape != (h, w):
+        sss_accum = _cg_resize_array(sss_accum, (h, w), _cv2.INTER_LINEAR)
 
     # Red scatters more in porcelain (long-wavelength penetration).
     sss_accum[:, :, 0] = np.clip(sss_accum[:, :, 0] * 1.08, 0.0, 1.0)
@@ -468,7 +528,7 @@ def paint_porcelain_depth_v2(paint: np.ndarray, shape, mask: np.ndarray, seed,
     surface_gloss = np.clip(porcelain * 0.3 + sss_accum * 0.7, 0.0, 1.0)
 
     # Fine craze pattern (very subtle on quality porcelain).
-    craze = multi_scale_noise((h, w), [1, 2], [0.5, 0.5], s + 241)
+    craze = _cg_noise((h, w), [1, 2], [0.5, 0.5], s + 241, None, "porcelain_craze")
     craze_lines = np.clip((craze - 0.85) * 10.0, 0.0, 0.05)
     surface_gloss = np.clip(surface_gloss - craze_lines[:, :, np.newaxis],
                             0.0, 1.0)
@@ -476,6 +536,8 @@ def paint_porcelain_depth_v2(paint: np.ndarray, shape, mask: np.ndarray, seed,
     effect = surface_gloss.astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     m3 = mask[:, :, np.newaxis]
+    if blend >= 0.999 and float(mask.min()) >= 0.999 and float(bb_arr.max()) <= EPS:
+        return effect
     result = np.clip(base * (1.0 - m3 * blend) + effect * (m3 * blend),
                      0.0, 1.0)
     return np.clip(result + bb_arr[:, :, np.newaxis] * 0.25 * pm * m3,
@@ -487,7 +549,7 @@ def spec_porcelain_depth(shape, seed, sm: float, base_m: float, base_r: float) -
     try:
         h, w = _hw(shape)
         s = _safe_seed(seed)
-        craze = multi_scale_noise((h, w), [1, 2], [0.5, 0.5], s + 241)
+        craze = _cg_noise((h, w), [1, 2], [0.5, 0.5], s + 241, None, "porcelain_craze")
         M = base_m * 0.05 + craze * 3.0 * sm
         R = 25.0 + craze * 20.0 * sm
         CC = CC_MIN + craze * 8.0
@@ -517,13 +579,15 @@ def paint_tempered_glass_v2(paint: np.ndarray, shape, mask: np.ndarray, seed,
     h, w = _hw(shape)
     s = _safe_seed(seed)
     base = paint
-    y, x = get_mgrid((h, w))
-    yn = y / max(h - 1, 1)
-    xn = x / max(w - 1, 1)
+    work_shape = _cg_work_shape((h, w), 768)
+    wh, ww = work_shape
+    y, x = get_mgrid(work_shape)
+    yn = y / max(wh - 1, 1)
+    xn = x / max(ww - 1, 1)
 
     # Multi-jet quench stress field.
     rng = np.random.RandomState(s + 250)
-    stress = np.zeros((h, w), dtype=np.float32)
+    stress = np.zeros(work_shape, dtype=np.float32)
     n_jets = _TEMPERED_N_JETS_MIN + (s % _TEMPERED_N_JETS_RANGE)
     for _ in range(n_jets):
         cy, cx = rng.uniform(0.1, 0.9), rng.uniform(0.1, 0.9)
@@ -566,10 +630,14 @@ def paint_tempered_glass_v2(paint: np.ndarray, shape, mask: np.ndarray, seed,
     gray = base.mean(axis=2, keepdims=True)
     glass_base = np.clip(gray * 0.85 + 0.08, 0.0, 1.0)
     bire = np.stack([bire_r, bire_g, bire_b], axis=-1).astype(np.float32)
+    if work_shape != (h, w):
+        bire = _cg_resize_array(bire, (h, w))
     effect = np.clip(glass_base * 0.7 + bire * 0.3, 0.0, 1.0).astype(np.float32)
 
     blend = np.clip(pm, 0.0, 1.0)
     m3 = mask[:, :, np.newaxis]
+    if blend >= 0.999 and float(mask.min()) >= 0.999 and float(bb_arr.max()) <= EPS:
+        return effect
     result = np.clip(base * (1.0 - m3 * blend) + effect * (m3 * blend),
                      0.0, 1.0)
     return np.clip(result + bb_arr[:, :, np.newaxis] * 0.25 * pm * m3,
@@ -581,7 +649,7 @@ def spec_tempered_glass(shape, seed, sm: float, base_m: float, base_r: float) ->
     try:
         h, w = _hw(shape)
         s = _safe_seed(seed)
-        stress = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], s + 250)
+        stress = _cg_noise((h, w), [16, 32], [0.5, 0.5], s + 250, 768, "tempered_spec")
         M = base_m * 0.05 + stress * 3.0 * sm
         R = 4.0 + stress * 8.0 * sm
         CC = 20.0 + stress * 10.0

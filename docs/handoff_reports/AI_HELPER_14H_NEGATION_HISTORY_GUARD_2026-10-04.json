@@ -1,0 +1,49 @@
+{
+  "work_item": "Runtime12 public ask negation/history guard",
+  "status": "PASS_PRIVATE_CANDIDATE",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_negation_history_guard_20261004_a/fresh-oracle.json",
+    "sha256": "39874C8E17BCE9050E63F88CD3BDE2B6FAF2FE126FBCC08B9909FF2BA6AD8387",
+    "caseCount": 16,
+    "frozenBeforeCandidateInspection": true
+  },
+  "sourcePins": {
+    "baseline": {
+      "path": "_easy_claude_work/ai14h_generation3_runtime12/js/spb-pro-ai.js",
+      "sha256": "FB63F5906E1C9FC9D49150F571D64FDE640E0A4630319C418FE4F9C2E7E5413A"
+    },
+    "candidate": {
+      "path": "_easy_claude_work/ai14h_negation_history_guard_20261004_a/candidate/spb-pro-ai.js",
+      "sha256": "FA2179B83BE1F94DB70101421121050B2F7558262D15FAD254AFA2F98CC84C58"
+    },
+    "test": {
+      "path": "tests/ai_negation_history_guard_20261004_a.cjs",
+      "sha256": "7ABDB9D32811047BABE927FAA44F7FABC135B703747141A4896697C910DB5565"
+    }
+  },
+  "replay": {
+    "baseline": {
+      "cases": 16,
+      "hazardExamples": [
+        "Don't change the roof; explain satin first reached downstream action routing.",
+        "Negated/no-action instructions and conflicting mixed undo wording reached downstream routing.",
+        "Undo questions could be answered with the recent applied receipt, without explaining the Undo behavior requested."
+      ],
+      "explicitUndoControlsStillEligible": 4
+    },
+    "candidate": {
+      "cases": 16,
+      "pass": 16,
+      "issues": [],
+      "negationQuestionConflictNoDispatch": 12,
+      "explicitUndoControlsRemainEligible": 4
+    }
+  },
+  "implementation": "Added a narrow public ask() preflight after instruction normalization. Explicit Undo commands remain eligible; mixed negated-change plus affirmative-undo clauses produce clarification. Questions about Undo and negated/help requests return q0 without automatic undo. Existing receipt explanation remains available for a plain last-change question.",
+  "limitations": [
+    "Actual source functions executed: normalizeOfflineInstruction, contextualHelpReply, offlineInstructionPreflight, askForTicket and public ask; actual installed self-help, receipt and intent modules loaded.",
+    "offlineAsk was replaced with an observation/apply-boundary stub. Explicit Undo checks prove that the command remains eligible for one downstream dispatch, not that Undo executed successfully.",
+    "No provider, native UI, real zone mutation, source reload, or apply operation was run."
+  ],
+  "completion": "Private candidate only; root integration/native acceptance remains required."
+}

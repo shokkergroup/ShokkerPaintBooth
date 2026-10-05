@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_corrupt_memory",
+  "display_name": "Netrun: Corrupt Memory",
+  "promise": "Memory checksum cascade: irregular ruby byte ladders interleaving electric-blue memory bars, acid-yellow missing-bit apertures, violet square spirals and cyan broken parity rings.",
+  "carrier_grammar": "Memory checksum cascade: irregular ruby byte ladders interleaving electric-blue memory bars, acid-yellow missing-bit apertures, violet square spirals and cyan broken parity rings. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for blue memory bars, ruby byte ladders, yellow missing bit apertures, violet square spirals, cyan parity rings, black bit voids is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Memory checksum cascade: irregular ruby byte ladders interleaving electric-blue memory bars, acid-yellow missing-bit apertures, violet square spirals and cyan broken parity rings. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_corrupt_memory.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "blue memory bars",
+      "role": "Actual shared paint and spec geometry: blue memory bars"
+    },
+    {
+      "name": "ruby byte ladders",
+      "role": "Actual shared paint and spec geometry: ruby byte ladders"
+    },
+    {
+      "name": "yellow missing bit apertures",
+      "role": "Actual shared paint and spec geometry: yellow missing bit apertures"
+    },
+    {
+      "name": "violet square spirals",
+      "role": "Actual shared paint and spec geometry: violet square spirals"
+    },
+    {
+      "name": "cyan parity rings",
+      "role": "Actual shared paint and spec geometry: cyan parity rings"
+    },
+    {
+      "name": "black bit voids",
+      "role": "Actual shared paint and spec geometry: black bit voids"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "blue memory bars",
+      "ruby byte ladders",
+      "yellow missing bit apertures",
+      "violet square spirals",
+      "cyan parity rings",
+      "black bit voids"
+    ],
+    "R": [
+      "blue memory bars",
+      "ruby byte ladders",
+      "yellow missing bit apertures",
+      "violet square spirals",
+      "cyan parity rings",
+      "black bit voids"
+    ],
+    "Cc": [
+      "blue memory bars",
+      "ruby byte ladders",
+      "yellow missing bit apertures",
+      "violet square spirals",
+      "cyan parity rings",
+      "black bit voids"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_corrupt_jpeg",
+      "difference": "This finish uses Dense microscopic violet memory cells with irregular red cyan displaced bit rectangles, yellow checksum dots, black missing-bit slots and white pixel tears. Sharp asymmetrical digital fault texture, short offset pixel stacks no broad scan bands, no generic confetti or identical grid.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_packet_loss",
+      "difference": "This finish uses Dense microscopic violet memory cells with irregular red cyan displaced bit rectangles, yellow checksum dots, black missing-bit slots and white pixel tears. Sharp asymmetrical digital fault texture, short offset pixel stacks no broad scan bands, no generic confetti or identical grid.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "blue memory bars is visible in the authored geometry",
+      "ruby byte ladders is visible in the authored geometry",
+      "yellow missing bit apertures is visible in the authored geometry",
+      "violet square spirals is visible in the authored geometry",
+      "cyan parity rings is visible in the authored geometry",
+      "black bit voids is visible in the authored geometry"
+    ],
+    "source_sha256": "613f8ea61591e53ba7a2c74c4ea2922764d0bffd6699d56b176517da68b45df6",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_corrupt_memory-authored-Memory checksum cascade: irregular ruby byte ladders interleaving electric-blue memory bars, acid-yellow missing-bit apertures, violet square spirals and cyan broken parity rings. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_corrupt_memory-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 78.9,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "484779c9c7f406e15ed23b6e8056228d38cb3cf7e9e5d591e7a9f15563722de5"
+}

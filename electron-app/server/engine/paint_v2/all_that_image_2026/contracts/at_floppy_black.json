@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_floppy_black",
+  "display_name": "Cdrom: Floppy Black",
+  "promise": "Anthracite matte magnetic-disk casing material, fragmented shutter-like brushed slivers, no recognizable floppy discs",
+  "carrier_grammar": "Anthracite matte magnetic-disk casing material, fragmented shutter-like brushed slivers, no recognizable floppy discs; single full-canvas image, no duplicated quadrants. Fine features: black molded housing, shutter steel, deep slot recesses, rib shoulders, worn shutter edges, rubbed ABS freckles",
+  "spec_grammar": "Feature-specific selectors partition black molded housing, shutter steel, deep slot recesses, rib shoulders, worn shutter edges, rubbed ABS freckles. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "black molded housing",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "shutter steel",
+      "role": "Material feature selected from artwork by g:>:0.64&s:<:0.18"
+    },
+    {
+      "name": "deep slot recesses",
+      "role": "Material feature selected from artwork by g:<:0.18"
+    },
+    {
+      "name": "rib shoulders",
+      "role": "Material feature selected from artwork by x:>:0.66"
+    },
+    {
+      "name": "worn shutter edges",
+      "role": "Material feature selected from artwork by edge:>:0.70&g:>:0.57"
+    },
+    {
+      "name": "rubbed ABS freckles",
+      "role": "Material feature selected from artwork by fine:>:0.81"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "black molded housing",
+      "shutter steel",
+      "deep slot recesses",
+      "rib shoulders",
+      "worn shutter edges",
+      "rubbed ABS freckles"
+    ],
+    "R": [
+      "black molded housing",
+      "shutter steel",
+      "deep slot recesses",
+      "rib shoulders",
+      "worn shutter edges",
+      "rubbed ABS freckles"
+    ],
+    "Cc": [
+      "black molded housing",
+      "shutter steel",
+      "deep slot recesses",
+      "rib shoulders",
+      "worn shutter edges",
+      "rubbed ABS freckles"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "black molded housing",
+      "range": [
+        [
+          0,
+          45,
+          25
+        ],
+        [
+          15,
+          125,
+          140
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "shutter steel",
+      "range": [
+        [
+          180,
+          30,
+          25
+        ],
+        [
+          240,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "deep slot recesses",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "rib shoulders",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "worn shutter edges",
+      "range": [
+        [
+          240,
+          0,
+          16
+        ],
+        [
+          255,
+          32,
+          90
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "rubbed ABS freckles",
+      "range": [
+        [
+          0,
+          130,
+          110
+        ],
+        [
+          22,
+          235,
+          245
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_beige_box",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_crt_blue_screen",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "black molded housing",
+      "shutter steel",
+      "deep slot recesses",
+      "rib shoulders",
+      "worn shutter edges",
+      "rubbed ABS freckles"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_floppy_black / Anthracite matte magnetic-disk casing material, fragmented shutter-like brushed slivers, no recognizable floppy discs",
+  "spec_key": "at_floppy_black / black molded housing all; shutter steel g:>:0.64&s:<:0.18; deep slot recesses g:<:0.18; rib shoulders x:>:0.66; worn shutter edges edge:>:0.70&g:>:0.57; rubbed ABS freckles fine:>:0.81",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

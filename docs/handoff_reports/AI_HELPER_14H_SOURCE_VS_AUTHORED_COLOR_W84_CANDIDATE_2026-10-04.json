@@ -1,0 +1,50 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "task": "W84 source paint vs authored solid-color guidance repair",
+  "date": "2026-10-04",
+  "baseline": {
+    "path": "_easy_claude_work/ai14h_generation3_runtime9/js/spb-self-help.js",
+    "sha256": "D1A76C2A5B8616133F8226602D43245BFC7DCC2B99B6BBEDEA68AF0641A2D6BE"
+  },
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_w84_sourcecolor_candidate/spb-self-help.js",
+    "sha256": "E230A121127FC6B32C451C630028D3D2D10461B67819BF50F2B148195DB8DF4D",
+    "howtoRecordsFixed": [
+      "hdi.spec_only_shine",
+      "hdi.make_matte",
+      "hdi.make_chrome",
+      "hdi.colour_not_applying",
+      "hdi.finish_kinds"
+    ],
+    "otherChange": "W84-only passive classifier for quoted matte/finish explanations without an edit, and source-paint color-change questions; authored solid state yields current mode and exact hex in these five HOWTO responses."
+  },
+  "knowledgeCopy": {
+    "path": "_easy_claude_work/ai14h_w84_sourcecolor_candidate/docs/ai_knowledge/how_do_i.md",
+    "sha256": "1AA6119D0B6BFE4B3394B37FC2F54BA75C0951899E13311F8E22DA830EC41170",
+    "sentencesFixed": 5
+  },
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w84_sourcecolor_review/fresh-oracle.json",
+    "sha256": "6460FB73D186C8D7AB211C47613FADA3683B5FE68B23CE58DAB2636359B73707",
+    "frozenCases": 4
+  },
+  "test": {
+    "path": "tests/ai_self_help_source_color_w84_contract.cjs",
+    "sha256": "F3E26DC769AC9E1FD6B363D9825CBCF5204EA010E9C586CE77F5253E2CB0E589",
+    "result": "6/6 candidate semantic PASS including two fresh authored hex values; baseline 1/6; all six actual handle replies doIt=null"
+  },
+  "cases": [
+    "Exact quoted matte wording that previously returned “Keep your colour: BASE COLOR Use source paint (spec only)” now routes to contextual passive W84 guidance and states selected Roof Solid #1450b4.",
+    "Matte and chrome HOWTOs identify the selected Solid mode and current hex and clarify source paint uses original imported image colors.",
+    "Why source paint changed picked color now receives the state-aware explanation; additional metallic/current-blue and chrome/current-green cases both retain their supplied authored hex in passive guidance."
+  ],
+  "limits": [
+    "Tests run actual SpbSelfHelp.handle/classify/howtoAnswer in a VM with an explicitly supplied zone state; no native app UI, renderer, provider or paint mutation.",
+    "The fixed documentation file is a private copy only; no shared docs or runtime files changed."
+  ],
+  "effects": {
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "paintApplications": 0
+  }
+}

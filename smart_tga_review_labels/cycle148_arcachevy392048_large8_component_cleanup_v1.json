@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "paint_label": "stockcars2 arcachevy25/car_num_392048.tga",
+  "inspection_records": "_smart_tga_runs/cycle146_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle146_route_pressure_v1/stockcars2_arcachevy25_car_num_392048/component_records.json",
+  "review_scope": "Cycle 148 focused ARCA Chevy 392048 cleanup: preserve and recover large red/pink 8 number bodies while rejecting nearby Pennzoil/Menards sponsor panels.",
+  "component_labels": [
+    {
+      "layer": "numbers",
+      "component_index": 8,
+      "expected_bbox": [303, 509, 252, 178],
+      "target_layer": "numbers",
+      "label": "true_large_number_8_body",
+      "note": "Large red/pink side-number 8 already in Numbers; should not be demoted to Paint."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 9,
+      "expected_bbox": [412, 845, 176, 123],
+      "target_layer": "numbers",
+      "label": "true_large_number_8_body",
+      "note": "Lower red/pink side-number 8 already in Numbers; should not be demoted to Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 21,
+      "expected_bbox": [412, 222, 176, 121],
+      "target_layer": "numbers",
+      "label": "true_large_number_8_body",
+      "note": "Large red/black side-number 8 body routed to Sponsors; should become Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 23,
+      "expected_bbox": [81, 301, 260, 71],
+      "target_layer": "sponsors",
+      "label": "pennzoil_wordmark_panel",
+      "note": "Wide Pennzoil wordmark panel; should remain Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 29,
+      "expected_bbox": [793, 425, 200, 343],
+      "target_layer": "sponsors",
+      "label": "large_pennzoil_sponsor_panel",
+      "note": "Large Pennzoil oval sponsor panel; not a race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 34,
+      "expected_bbox": [38, 487, 31, 200],
+      "target_layer": "sponsors",
+      "label": "menards_vertical_wordmark",
+      "note": "Vertical Menards wordmark; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 45,
+      "expected_bbox": [118, 819, 40, 58],
+      "target_layer": "sponsors",
+      "label": "pennzoil_wordmark_letters_false_number",
+      "note": "Vertical Pennzoil wordmark letter fragment; should stay Sponsors."
+    }
+  ]
+}

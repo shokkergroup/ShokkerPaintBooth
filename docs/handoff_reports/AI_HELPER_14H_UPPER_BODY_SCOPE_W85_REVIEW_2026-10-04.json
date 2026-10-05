@@ -1,0 +1,63 @@
+{
+  "work_item": "W85 ambiguous body scope and stale explicit-color owner audit",
+  "date": "2026-10-04",
+  "status": "PASS_WITH_LIMITS_PRIVATE_CANDIDATE",
+  "scope": "Read-only route audit plus isolated candidate/test only. No installed source, HTML, mirrors, Wiki, paint kernel, provider, native app, or renderer changes.",
+  "frozen_fresh_oracle": {
+    "path": "_easy_claude_work/ai14h_w85_review/fresh-oracle.json",
+    "sha256": "DED5D8A5C249024DEF2043F671D5E13498C33E4720E49ABE45BEB78F94B44971",
+    "case_count": 13,
+    "frozen_before_source_inspection": true,
+    "fresh_scope_cases": 9,
+    "whole_car_controls": 3,
+    "stale_roof_hood_case": "Make the roof and hood red."
+  },
+  "baseline_source_pins": {
+    "pro_ai": {
+      "path": "_easy_claude_work/ai14h_generation3_candidate/integration9/js/spb-pro-ai.js",
+      "sha256": "AAE99CDD02B00BDD78D1F02FED85C18BC72B82CAB9A66CEB7E0E3590EC3E8790"
+    },
+    "pro_design": {
+      "path": "_easy_claude_work/ai14h_generation3_runtime3/js/spb-pro-design.js",
+      "sha256": "0533393FF5F2170236F60D4ED489C7AE52F98805E12B0764DA67A967F756F2E8"
+    },
+    "pro_edit": {
+      "path": "_easy_claude_work/ai14h_generation3_runtime3/js/spb-pro-edit.js",
+      "sha256": "99703873013E198857D9ACEAA334821098E53DCAA9D55E14DBD1EC50E58604DE"
+    }
+  },
+  "private_candidate_pins": {
+    "pro_ai": {
+      "path": "_easy_claude_work/ai14h_w85_review/candidate/spb-pro-ai.js",
+      "sha256": "E7ECEAF11B2BFC1A39E48C86A07F8DAB95EC046C678087A8168B6E8CC016F70E",
+      "change": "queueEditZones atomically refuses a requested part when an existing exact edit-key owner is stale/unproved, before any add/edit callbacks run. It does not adopt a replacement zone."
+    },
+    "pro_design": {
+      "path": "_easy_claude_work/ai14h_w85_review/candidate/spb-pro-design.js",
+      "sha256": "4648DE3231015497CC9FF816612A542097A1AD14038A7210753F6CDBFD88D832",
+      "change": "offlinePart refuses relative extent/body aliases (upper/lower/top/bottom/front/rear/back portions) that the existing `body` whole-car token could otherwise broaden. Explicit whole-car wording remains available."
+    }
+  },
+  "test": {
+    "path": "tests/ai_upper_body_scope_w85_contract.cjs",
+    "sha256": "281F316AA19BFC73A3C1B51549C01E6E658AE0108DB2783D54F5410152791236",
+    "result": "PASS_WITH_LIMITS",
+    "checks": [
+      "Ran actual offlineAskCore, offlinePartAsk/offlineCoveredPartAsk, D/E planning and queueEditZones bodies with controlled tool callbacks.",
+      "All 9 frozen ambiguous extent/body requests queue zero under the candidate. Baseline `Make the upper body blue` queued region {everything:true}; front-body aliases also broadened to the whole car; upper-side requests expanded to full left/right sides.",
+      "Whole-car blue/red and supplemental `Make everything blue` remain explicit positive controls, queuing region {everything:true}.",
+      "Baseline stale roof+hood recolor queues two adds (hood and roof), each with finish `base::gloss`; candidate queues zero because the existing roof owner is stale and the request cannot be safely completed as a whole.",
+      "W79 producer contract rerun against candidate proAI: 12/12 PASS_WITH_LIMITS, including allowed unrelated/opposite-side/explicit-color controls.",
+      "Node syntax checks passed for both candidate modules and test."
+    ],
+    "provider_calls": 0,
+    "native_calls": 0
+  },
+  "limits": [
+    "Harness exercises real routing/planner/queue functions but mocks source identity, existing zone state and add/edit handlers; no mutation is applied or rendered and no mask overlap is measured.",
+    "Stale-owner case uses a prior-provenance/current-generation mismatch fixture; no real failed PSD load is performed.",
+    "`Make everything chrome` is unsupported by the exercised offline part-color route and safely queues nothing; it is not counted as a positive whole-car control.",
+    "The candidate is isolated and is not installed. W80/current parent integration work was not merged into this candidate; parent must reconcile changes before any promotion.",
+    "The route's known supported-part vocabulary remains limited; this does not add vehicle geometry or car-recognition semantics."
+  ]
+}

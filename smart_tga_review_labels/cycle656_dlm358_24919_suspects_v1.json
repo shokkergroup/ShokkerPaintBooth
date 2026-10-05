@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_24919.tga",
+  "inspection_records": "_smart_tga_runs/cycle656_dlm_embedding_batch/inspection_records.json",
+  "review_scope": "Cycle 656 manual source and all-owner sheet review of every emitted suspect bbox.",
+  "component_labels": [
+    {"layer":"paint","component_index":39,"expected_bbox":[708,1000,44,2],"target_layer":"template","label":"template_hardware_strip","note":"Fixed lower UV/hardware strip, not text or paint art."}
+  ]
+}

@@ -1,0 +1,4 @@
+# GEAR_MCP (2026-10-04)
+- js/spb-ai-core.js: "Sees" picture-model picker removed (row, loadmodels fill, change handler). Added "Repairs" input (escalateModel, empty by default; saves via /api/ai/settings, blank = 'off') labelled "Repair turns use a different model (optional)" + note "Picture checks run on your model if it can see pictures; otherwise the app checks the result itself." Token spb-ai-20261004gear.
+- mcp/server/tools.json spb_refinish: added `layer`. `anyway` NOT added: the in-app refinish tool definition has no `anyway` parameter (only the offline phrase "anyway" / req.anyway in spb-pro-edit.js), so adding it fails mcp_parity_test. Add to both if wanted.
+- index.js passes args through unchanged (no edit). Needs .mcpb rebuild + live restart by owner. Gates: node --check, parity PASS, scan_ctrl 0, sync check clean, gear screenshot (_easy_claude_work/pw/gear.png) viewed on 59879.

@@ -2,7 +2,7 @@
   "name": "Show Car Concours",
   "description": "Concours d'Elegance level presentation. Deep monochrome gloss body, every trim piece polished chrome, piano black undercarriage, gold mirror badging, pearl highlight on fender caps. No sponsors, no numbers — only the paint.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "any restored classic, pre-war luxury, 50s-70s restorations, concours builds",
   "notes": "Concours is about DEPTH. baseSpecStrength stays at 1 on body so reflections stack cleanly. If the car is photographed indoors, drop chrome tolerance to 25 to avoid chrome leaking into dark body paint.",
   "zones": [

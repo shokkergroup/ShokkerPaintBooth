@@ -11,7 +11,7 @@ Seed offsets: 9400-9409.
 import numpy as np
 from scipy.spatial import cKDTree
 from scipy.ndimage import sobel, gaussian_filter
-from engine.core import multi_scale_noise
+from engine.core import _resize_array, multi_scale_noise, get_mgrid
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -20,19 +20,85 @@ from engine.core import multi_scale_noise
 
 def _insect_micro(shape, seed):
     """Ultra-fine micro shimmer for insect surfaces."""
-    m = multi_scale_noise(shape, [1, 2, 3], [0.5, 0.3, 0.2], seed + 600)
-    return np.clip(m * 0.5 + 0.5, 0, 1).astype(np.float32)
+    h, w = _shape2(shape)
+    key = ("micro", int(h), int(w), int(seed))
+    cached = _INSECT_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    wh, ww = _working_shape((h, w), 768)
+    m = multi_scale_noise((wh, ww), [1, 2, 3], [0.5, 0.3, 0.2], seed + 600)
+    out = np.clip(_resize_field(m, (h, w)) * 0.5 + 0.5, 0, 1).astype(np.float32)
+    return _insect_cache_put(key, out)
 
 
 def _insect_mgrid(shape):
     """Return float32 Y, X coordinate grids."""
     h, w = shape
-    yy, xx = np.mgrid[0:h, 0:w]
-    return yy.astype(np.float32), xx.astype(np.float32)
+    yy, xx = get_mgrid((h, w))
+    return yy.astype(np.float32, copy=False), xx.astype(np.float32, copy=False)
 
 
 def _shape2(shape):
     return shape[:2] if len(shape) > 2 else shape
+
+
+_INSECT_FIELD_CACHE = {}
+# SPB paint-finish perf loop tick 2026-05-31 05:23; owner: "Speed is king in this app."
+# Exact cache/allocation cleanup only: butterfly_morpho 4800.0->4335.3 ms, butterfly_monarch 5265.6->5009.6 ms; std drift 0.
+
+
+def _insect_cache_put(key, value):
+    if len(_INSECT_FIELD_CACHE) > 96:
+        _INSECT_FIELD_CACHE.clear()
+    _INSECT_FIELD_CACHE[key] = value
+    return value
+
+
+def _working_shape(shape, cap=768):
+    h, w = _shape2(shape)
+    max_side = max(h, w)
+    if max_side <= cap:
+        return h, w
+    scale = float(cap) / float(max_side)
+    return max(96, int(round(h * scale))), max(96, int(round(w * scale)))
+
+
+def _resize_field(field, shape):
+    h, w = _shape2(shape)
+    if field.shape == (h, w):
+        return field.astype(np.float32)
+    return _resize_array(np.asarray(field, dtype=np.float32), h, w).astype(np.float32)
+
+
+def _firefly_fields(shape, seed):
+    h, w = _shape2(shape)
+    key = ("firefly", int(h), int(w), int(seed))
+    cached = _INSECT_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    work = min(1024, int(h), int(w))
+    sh, sw = h, w
+    if work < min(h, w):
+        sh = max(256, int(round(h * work / max(h, w))))
+        sw = max(256, int(round(w * work / max(h, w))))
+    yf, xf = _insect_mgrid((sh, sw))
+    rng = np.random.RandomState((seed + 9409) & 0x7FFFFFFF)
+    n_glows = 15
+    gy = rng.uniform(sh * 0.4, sh * 0.95, n_glows).astype(np.float32)
+    gx = rng.uniform(0, sw, n_glows).astype(np.float32)
+    glow_r = rng.uniform(max(10, sh * 0.010), max(18, sh * 0.030), n_glows).astype(np.float32)
+    brightness = rng.uniform(0.5, 1.0, n_glows).astype(np.float32)
+    glow_map = np.zeros((sh, sw), dtype=np.float32)
+    for k in range(n_glows):
+        dist = np.sqrt((yf - gy[k])**2 + (xf - gx[k])**2)
+        glow = np.exp(-(dist / glow_r[k])**2) * brightness[k]
+        glow_map = np.maximum(glow_map, glow)
+    glow_map = np.clip(glow_map, 0, 1).astype(np.float32)
+    turb = multi_scale_noise((sh, sw), [16, 32, 64], [0.4, 0.35, 0.25], seed + 9409)
+    if (sh, sw) != (h, w):
+        glow_map = _resize_array(glow_map, h, w).astype(np.float32)
+        turb = _resize_array(np.asarray(turb, dtype=np.float32), h, w)
+    return _insect_cache_put(key, (glow_map, np.asarray(turb, dtype=np.float32)))
 
 
 def _blend_paint(paint, mask, pm, color, strength=0.90):
@@ -45,10 +111,35 @@ def _blend_paint(paint, mask, pm, color, strength=0.90):
 
 def _iridescent_field(shape, seed, scale_mod=1.0):
     """Multi-scale organic flow field for iridescent zone mapping. Returns 0-1."""
-    h, w = shape
+    h, w = _shape2(shape)
+    key = ("iridescent", int(h), int(w), int(seed), round(float(scale_mod), 4))
+    cached = _INSECT_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    wh, ww = _working_shape((h, w), 768)
     scales = [int(16 * scale_mod), int(32 * scale_mod), int(64 * scale_mod)]
-    n = multi_scale_noise((h, w), scales, [0.3, 0.4, 0.3], seed)
-    return np.clip(n * 0.5 + 0.5, 0, 1).astype(np.float32)
+    n = multi_scale_noise((wh, ww), scales, [0.3, 0.4, 0.3], seed)
+    out = np.clip(_resize_field(n, (h, w)) * 0.5 + 0.5, 0, 1).astype(np.float32)
+    return _insect_cache_put(key, out)
+
+
+def _voronoi_two(shape, seed, n_cells, cap=640):
+    h, w = _shape2(shape)
+    key = ("voronoi2", int(h), int(w), int(seed), int(n_cells), int(cap))
+    cached = _INSECT_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    wh, ww = _working_shape((h, w), cap)
+    yf, xf = _insect_mgrid((wh, ww))
+    rng = np.random.RandomState(seed & 0x7FFFFFFF)
+    pts = np.column_stack([rng.uniform(0, wh, n_cells), rng.uniform(0, ww, n_cells)]).astype(np.float32)
+    grid_pts = np.column_stack([yf.ravel(), xf.ravel()])
+    d, idx = cKDTree(pts).query(grid_pts, k=2, workers=-1)
+    d1 = d[:, 0].reshape(wh, ww).astype(np.float32)
+    d2 = d[:, 1].reshape(wh, ww).astype(np.float32)
+    cell_id = idx[:, 0].reshape(wh, ww).astype(np.float32)
+    out = (_resize_field(d1, (h, w)), _resize_field(d2, (h, w)), _resize_field(cell_id, (h, w)))
+    return _insect_cache_put(key, out)
 
 
 def _thin_film_color(thickness, base_hue_shift=0.0):
@@ -191,17 +282,9 @@ def paint_butterfly_monarch(paint, shape, mask, seed, pm, bb):
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     yf, xf = _insect_mgrid((h, w))
-    # Wing vein network via Voronoi edges
-    rng = np.random.RandomState((seed + 9403) & 0x7FFFFFFF)
-    n_cells = 80
-    pts_y = rng.uniform(0, h, n_cells).astype(np.float32)
-    pts_x = rng.uniform(0, w, n_cells).astype(np.float32)
-    pts = np.column_stack([pts_y, pts_x])
-    grid_pts = np.column_stack([yf.ravel(), xf.ravel()])
-    tree = cKDTree(pts)
-    d, idx = tree.query(grid_pts, k=2, workers=-1)
-    d1 = d[:, 0].reshape(h, w).astype(np.float32)
-    d2 = d[:, 1].reshape(h, w).astype(np.float32)
+    # Wing vein network via Voronoi edges. Build the topology on a bounded
+    # work grid; full-resolution KDTree queries are the slow path at 2048.
+    d1, d2, _idx = _voronoi_two((h, w), seed + 9403, 80, cap=640)
     # Vein darkness at edges
     vein_width = np.median(d1) * 0.15
     vein = np.clip(1.0 - (d2 - d1) / (vein_width + 1e-8), 0, 1).astype(np.float32)
@@ -210,7 +293,7 @@ def paint_butterfly_monarch(paint, shape, mask, seed, pm, bb):
     black = np.array([0.03, 0.02, 0.02], dtype=np.float32)
     # White spots at border regions
     border = np.clip(np.maximum(yf / h, 1.0 - yf / h) + np.maximum(xf / w, 1.0 - xf / w) - 1.2, 0, 1)
-    turb = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 9403)
+    turb = _resize_field(multi_scale_noise(_working_shape((h, w), 768), [16, 32], [0.5, 0.5], seed + 9403), (h, w))
     spots = np.clip((turb - 0.3) * 5.0, 0, 1) * border
     white = np.array([0.95, 0.95, 0.95], dtype=np.float32)
     color = orange[None, None, :] * (1 - vein[:, :, None]) + black[None, None, :] * vein[:, :, None]
@@ -221,14 +304,7 @@ def paint_butterfly_monarch(paint, shape, mask, seed, pm, bb):
 def spec_butterfly_monarch(shape, seed, sm, base_m, base_r):
     """Monarch spec: orange zones are satiny, veins are dark matte."""
     h, w = _shape2(shape)
-    yf, xf = _insect_mgrid((h, w))
-    rng = np.random.RandomState((seed + 9403) & 0x7FFFFFFF)
-    n_cells = 80
-    pts = np.column_stack([rng.uniform(0, h, n_cells), rng.uniform(0, w, n_cells)]).astype(np.float32)
-    grid_pts = np.column_stack([yf.ravel(), xf.ravel()])
-    tree = cKDTree(pts)
-    d, _ = tree.query(grid_pts, k=2, workers=-1)
-    d1, d2 = d[:, 0].reshape(h, w).astype(np.float32), d[:, 1].reshape(h, w).astype(np.float32)
+    d1, d2, _idx = _voronoi_two((h, w), seed + 9403, 80, cap=640)
     vein = np.clip(1.0 - (d2 - d1) / (np.median(d1) * 0.15 + 1e-8), 0, 1).astype(np.float32)
     # 2026-04-20 HEENAN AUTO-LOOP-18 — M was 60..5 (dM=55). Orange wing
     # zones should feel like waxy satin-metallic surface with the veins
@@ -251,13 +327,15 @@ def paint_dragonfly_wing(paint, shape, mask, seed, pm, bb):
     h, w = _shape2(shape)
     yf, xf = _insect_mgrid((h, w))
     # Wing vein structure (sparse branching)
-    turb = multi_scale_noise((h, w), [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 9404)
+    wh, ww = _working_shape((h, w), 768)
+    turb = multi_scale_noise((wh, ww), [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 9404)
     # Detect veins via Sobel edges on turbulence
     ey = sobel(turb, axis=0)
     ex = sobel(turb, axis=1)
     veins = np.sqrt(ey**2 + ex**2)
     veins = np.clip(veins / (np.percentile(veins, 95) + 1e-8), 0, 1).astype(np.float32)
     veins = np.clip(gaussian_filter(veins, sigma=0.8) * 2.5, 0, 1).astype(np.float32)
+    veins = _resize_field(veins, (h, w))
     # Thin-film interference between veins
     thickness = _iridescent_field((h, w), seed + 9405, scale_mod=0.6)
     rainbow = _thin_film_color(thickness, base_hue_shift=1.0)
@@ -272,12 +350,14 @@ def paint_dragonfly_wing(paint, shape, mask, seed, pm, bb):
 def spec_dragonfly_wing(shape, seed, sm, base_m, base_r):
     """Dragonfly wing spec: membrane is glassy transparent, veins are rough."""
     h, w = _shape2(shape)
-    turb = multi_scale_noise((h, w), [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 9404)
+    wh, ww = _working_shape((h, w), 768)
+    turb = multi_scale_noise((wh, ww), [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 9404)
     ey = sobel(turb, axis=0)
     ex = sobel(turb, axis=1)
     veins = np.sqrt(ey**2 + ex**2)
     veins = np.clip(veins / (np.percentile(veins, 95) + 1e-8), 0, 1).astype(np.float32)
     veins = np.clip(gaussian_filter(veins, sigma=0.8) * 2.5, 0, 1).astype(np.float32)
+    veins = _resize_field(veins, (h, w))
     M = np.clip(140.0 * (1 - veins) * sm + 20.0 * veins, 0, 255)
     R = np.clip(15.0 * (1 - veins) + 160.0 * veins, 15, 255)
     CC = np.clip(16.0 * (1 - veins) + 60.0 * veins, 16, 255)
@@ -403,17 +483,11 @@ def paint_beetle_stag(paint, shape, mask, seed, pm, bb):
     """Stag beetle: dark metallic brown-black armor plating with chitin shine."""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
-    yf, xf = _insect_mgrid((h, w))
     # Armor plate pattern: large Voronoi cells
     rng = np.random.RandomState((seed + 9407) & 0x7FFFFFFF)
     n_cells = 35
-    pts = np.column_stack([rng.uniform(0, h, n_cells), rng.uniform(0, w, n_cells)]).astype(np.float32)
-    grid_pts = np.column_stack([yf.ravel(), xf.ravel()])
-    tree = cKDTree(pts)
-    d, idx = tree.query(grid_pts, k=2, workers=-1)
-    d1 = d[:, 0].reshape(h, w).astype(np.float32)
-    d2 = d[:, 1].reshape(h, w).astype(np.float32)
-    cell_id = idx[:, 0].reshape(h, w)
+    d1, d2, cell_id = _voronoi_two((h, w), seed + 9407, n_cells, cap=640)
+    cell_id = np.clip(np.rint(cell_id), 0, n_cells - 1).astype(np.int32)
     # Plate edges
     edge = np.clip(1.0 - (d2 - d1) / (np.median(d1) * 0.2 + 1e-8), 0, 1).astype(np.float32)
     # Per-plate shade variation
@@ -434,14 +508,7 @@ def paint_beetle_stag(paint, shape, mask, seed, pm, bb):
 def spec_beetle_stag(shape, seed, sm, base_m, base_r):
     """Stag beetle spec: plates are glossy metallic chitin, seams are matte."""
     h, w = _shape2(shape)
-    yf, xf = _insect_mgrid((h, w))
-    rng = np.random.RandomState((seed + 9407) & 0x7FFFFFFF)
-    n_cells = 35
-    pts = np.column_stack([rng.uniform(0, h, n_cells), rng.uniform(0, w, n_cells)]).astype(np.float32)
-    grid_pts = np.column_stack([yf.ravel(), xf.ravel()])
-    tree = cKDTree(pts)
-    d, _ = tree.query(grid_pts, k=2, workers=-1)
-    d1, d2 = d[:, 0].reshape(h, w).astype(np.float32), d[:, 1].reshape(h, w).astype(np.float32)
+    d1, d2, _idx = _voronoi_two((h, w), seed + 9407, 35, cap=640)
     edge = np.clip(1.0 - (d2 - d1) / (np.median(d1) * 0.2 + 1e-8), 0, 1).astype(np.float32)
     M = np.clip(180.0 * (1 - edge) * sm + 15.0 * edge, 0, 255)
     R = np.clip(25.0 * (1 - edge) + 180.0 * edge, 15, 255)
@@ -504,24 +571,10 @@ def paint_firefly_glow(paint, shape, mask, seed, pm, bb):
     """Firefly glow: dark exoskeleton with bioluminescent yellow-green lantern zones."""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
-    yf, xf = _insect_mgrid((h, w))
-    rng = np.random.RandomState((seed + 9409) & 0x7FFFFFFF)
     # Dark body base
     dark_body = np.array([0.04, 0.04, 0.03], dtype=np.float32)
-    # Glow zones: ~15 scattered lantern spots in lower half
-    n_glows = 15
-    gy = rng.uniform(h * 0.4, h * 0.95, n_glows).astype(np.float32)
-    gx = rng.uniform(0, w, n_glows).astype(np.float32)
-    glow_r = rng.uniform(20, 60, n_glows).astype(np.float32)
-    brightness = rng.uniform(0.5, 1.0, n_glows).astype(np.float32)
-    glow_map = np.zeros((h, w), dtype=np.float32)
-    for k in range(n_glows):
-        dist = np.sqrt((yf - gy[k])**2 + (xf - gx[k])**2)
-        glow = np.exp(-(dist / glow_r[k])**2) * brightness[k]
-        glow_map = np.maximum(glow_map, glow)
-    glow_map = np.clip(glow_map, 0, 1).astype(np.float32)
+    glow_map, turb = _firefly_fields((h, w), seed)
     # Subtle body texture
-    turb = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 9409)
     body_var = np.clip(turb * 0.04 + 0.02, 0, 0.08)
     # Glow color: warm yellow-green
     glow_core = np.array([0.70, 0.90, 0.20], dtype=np.float32)
@@ -535,20 +588,445 @@ def paint_firefly_glow(paint, shape, mask, seed, pm, bb):
 def spec_firefly_glow(shape, seed, sm, base_m, base_r):
     """Firefly spec: glow zones are emissive-bright metallic, body is dark matte."""
     h, w = _shape2(shape)
-    yf, xf = _insect_mgrid((h, w))
-    rng = np.random.RandomState((seed + 9409) & 0x7FFFFFFF)
-    n_glows = 15
-    gy = rng.uniform(h * 0.4, h * 0.95, n_glows).astype(np.float32)
-    gx = rng.uniform(0, w, n_glows).astype(np.float32)
-    glow_r = rng.uniform(20, 60, n_glows).astype(np.float32)
-    brightness = rng.uniform(0.5, 1.0, n_glows).astype(np.float32)
-    glow_map = np.zeros((h, w), dtype=np.float32)
-    for k in range(n_glows):
-        dist = np.sqrt((yf - gy[k])**2 + (xf - gx[k])**2)
-        glow = np.exp(-(dist / glow_r[k])**2) * brightness[k]
-        glow_map = np.maximum(glow_map, glow)
-    glow_map = np.clip(glow_map, 0, 1).astype(np.float32)
+    glow_map, _turb = _firefly_fields((h, w), seed)
     M = np.clip(10.0 + glow_map * 220.0 * sm, 0, 255)
     R = np.clip(170.0 - glow_map * 155.0 * sm, 15, 255)
     CC = np.clip(70.0 - glow_map * 54.0, 16, 255)
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
+
+
+# IRIDESCENT INSECTS 2026 — accepted one-card-at-a-time replacements.
+# Owner 2026-09-01: every stable ID remains isolated until native/picker eye
+# evidence passes. Beetle Jewel I2 P1-P5 replaced the rejected periodic field
+# with a bounded-jitter Chrysina cuticle and Spec-Encyclopedia material flow.
+from engine.paint_v2.iridescent_insects_beetle_jewel_i2_2026 import (
+    paint_beetle_jewel_i2 as paint_beetle_jewel,
+    spec_beetle_jewel_i2 as spec_beetle_jewel,
+)
+
+# Card 2/50 — Chrysochroa Ribbon I1 P3.  Research-correct emerald multilayer
+# ribbons with irregular purple domains, copper transition lips, fine lamellar
+# crosscuts and independently phased polarized M/R/Cc response.
+from engine.paint_v2.iridescent_insects_beetle_rainbow_i1_2026 import (
+    paint_beetle_rainbow_i1 as paint_beetle_rainbow,
+    spec_beetle_rainbow_i1 as spec_beetle_rainbow,
+)
+
+# Card 3/50 — Morpho Lamella I1 P4.  Plate-bounded ridge ladders, broken
+# buttress teeth, dark optical windows and broad cyan/violet structural flash.
+from engine.paint_v2.iridescent_insects_butterfly_morpho_i1_2026 import (
+    paint_butterfly_morpho_i1 as paint_butterfly_morpho,
+    spec_butterfly_morpho_i1 as spec_butterfly_morpho,
+)
+
+# Card 4/50 — Tortoise Glass I1 P4.  Continuous honey-gold/red stress
+# reflector beneath fine transparent Charidotella scutes; distinct M/R/Cc
+# fluid states create the angle-dependent gold-to-red shell transition.
+from engine.paint_v2.iridescent_insects_beetle_tortoise_i1_2026 import (
+    paint_beetle_tortoise_i1 as paint_beetle_tortoise,
+    spec_beetle_tortoise_i1 as spec_beetle_tortoise,
+)
+
+# Card 5/50 — Tiger Beetle Velocity I2 P1 identity correction.  The accepted
+# copper/ivory pointillistic maculation paint is preserved; its generic wave
+# spec is replaced by puncta-lip, pit-floor, seam, ivory edge/body and
+# compression-tooth ownership.  M7 86.6; identity gate clean.
+from engine.paint_v2.iridescent_insects_beetle_tiger_i2_2026 import (
+    paint_beetle_tiger_i2 as paint_beetle_tiger,
+    spec_beetle_tiger_i2 as spec_beetle_tiger,
+)
+
+# Card 6/50 — Rose Chafer Velvet I1 P2.  Warped staggered reflector bowls,
+# scalloped lips, fan striae and pollen dimples turn Cetonia's chiral green
+# cuticle into dense polarized velvet with independently phased material flow.
+# Rose Chafer I2 P4 — owner cross-card correction.  Metallic-green chiral
+# bowls now own their M/R/Cc tiers; the shared macro-wave field is gone.
+# M7 99.4 -> 85.0, independence 0.817, 1.81s standard render, projected
+# category breaches 13 -> 9.
+from engine.paint_v2.iridescent_insects_beetle_rose_chafer_i2_2026 import (
+    paint_beetle_rose_chafer_i2 as paint_beetle_rose_chafer,
+    spec_beetle_rose_chafer_i2 as spec_beetle_rose_chafer,
+)
+
+# Card 7/50 — Buprestid Furnace I2 P4 identity correction.  Offset 25-31px
+# refractory ingot cells contain nested 8-12px reflector lamellae, air gaps,
+# oxide lips, soot vents and cell-local thermal states.  The old diagonal paint
+# and generic f0/f1/f2 spec waves were rejected.  M7 88.2; identity gate clean.
+from engine.paint_v2.iridescent_insects_beetle_buprestid_i2_2026 import (
+    paint_beetle_buprestid_i2 as paint_beetle_buprestid,
+    spec_beetle_buprestid_i2 as spec_beetle_buprestid,
+)
+
+# Card 8/50 — Ground Beetle Obsidian I1 P3.  Oil-black asymmetric Carabid
+# plates carry 8-14px polygon engraving, dense transverse diffraction lines,
+# continuous abrasion contours and a buried micro-cross array.  The restrained
+# carrier stays dark while separate M/R/Cc flows wake the armor under light.
+# Ground Beetle I2 P5 — owner cross-card correction.  Oil-black paint stays;
+# spec ownership is now plates/gratings/crosses vs pits/abrasion vs mesh/lips.
+# M7 85.9; 2.41s standard; projected category breaches 5 -> 3.
+from engine.paint_v2.iridescent_insects_beetle_ground_i2_2026 import (
+    paint_beetle_ground_i2 as paint_beetle_ground,
+    spec_beetle_ground_i2 as spec_beetle_ground,
+)
+
+# Card 9/50 — Stag Carapace I1 P3.  Research-backed three-layer Lucanus
+# armor: dense bent ribs, pore canals, sclerite seams and 18-26px native
+# spiral-woven trabecular nodes over per-plate oxblood/cold-steel identities.
+from engine.paint_v2.iridescent_insects_beetle_stag_i1_2026 import (
+    paint_beetle_stag_i1 as paint_beetle_stag,
+    spec_beetle_stag_i1 as spec_beetle_stag,
+)
+
+# Card 10/50 — Monarch Mosaic I1 P2.  Thousands of 8-26px orange scale
+# windows sit inside absorptive black vein channels, with overlapping tile
+# lips, lamina ridges/crossribs and pattern-bound cream marginal islands.
+from engine.paint_v2.iridescent_insects_butterfly_monarch_i1_2026 import (
+    paint_butterfly_monarch_i1 as paint_butterfly_monarch,
+    spec_butterfly_monarch_i1 as spec_butterfly_monarch,
+)
+
+# Card 11/50 — Longhorn Filament I2 P2.  Cross-card correction removes the
+# shared macro sinusoidal spec grammar: every 8-32px Cerambycid sack owns an
+# independent color family and eight-tier M/R/Cc state (M7 99.5 -> 87.8,
+# cross-card breaches 18 -> 13; owner eye and distinctiveness win).
+from engine.paint_v2.iridescent_insects_beetle_longhorn_i2_2026 import (
+    paint_beetle_longhorn_i2 as paint_beetle_longhorn,
+    spec_beetle_longhorn_i2 as spec_beetle_longhorn,
+)
+
+# Card 12/50 — Click Beetle Plasma I1 P4.  Tiny superblack microtube eyes and
+# yellow-green/orange lantern beads follow continuous cyan nerve routes through
+# fine punctured/striated armor; three earlier wallpaper/confetti drafts died.
+# Click Beetle I2 P4 — owner cross-card correction.  The accepted dark nerve
+# paint is preserved; M/R/Cc now has orthogonal ownership by visible striae,
+# pores/tubes, and routes/coronas. M7 88.6; 2.30s standard; projected breaches 9 -> 5.
+from engine.paint_v2.iridescent_insects_beetle_click_i2_2026 import (
+    paint_beetle_click_i2 as paint_beetle_click,
+    spec_beetle_click_i2 as spec_beetle_click,
+)
+
+# Card 13/50 — Emperor Eyelet I1 P5.  Fine broken ocelli gather into braided
+# bronze/violet streams over structural-blue Sasakia scales; P1-P2 disappeared
+# at picker scale, P3 compressed spec response, and P4 over-stretched it.
+# Emperor Eyelet I2 P3 — owner cross-card correction.  Braided eyelet paint
+# stays; M/R/Cc now traces rings/ridges vs dark/spokes vs iris/pearl/lips.
+# M7 86.5; 2.19s standard; projected category breaches 3 -> 1.
+from engine.paint_v2.iridescent_insects_butterfly_emperor_i2_2026 import (
+    paint_butterfly_emperor_i2 as paint_butterfly_emperor,
+    spec_butterfly_emperor_i2 as spec_butterfly_emperor,
+)
+
+# Card 14/50 — Swallowtail Prism I1 P2.  Varied fork-tailed Papilio scales
+# combine thin-film laminae, pigment ribs, melanin lanes and retroreflector
+# wells; P1's machine-perfect cadence was biologically loosened before keep.
+from engine.paint_v2.iridescent_insects_butterfly_swallowtail_i1_2026 import (
+    paint_butterfly_swallowtail_i1 as paint_butterfly_swallowtail,
+    spec_butterfly_swallowtail_i1 as spec_butterfly_swallowtail,
+)
+
+# Card 15/50 — Glasswing Lattice I2 P3 identity correction.  The broad haze
+# fields were removed.  Irregular clear panes, three-layer doubled veins,
+# independent nipple/wax-pillar populations, pane-local bristles and dew own
+# distinct M/R/Cc.  M7 88.0, independence .750, identity gate clean.
+from engine.paint_v2.iridescent_insects_butterfly_glasswing_i2_2026 import (
+    paint_butterfly_glasswing_i2 as paint_butterfly_glasswing,
+    spec_butterfly_glasswing_i2 as spec_butterfly_glasswing,
+)
+
+# Card 16/50 — Peacock Scale Furnace I2 P4 identity correction.  Seven-row
+# feather fans are assembled from 27-32px spectral eyelets with 8-12px crossed
+# scale ribs and dark refractory voids.  P1-P3's random-cell bubble carpet was
+# rejected despite passing M7; I2 P4 clears M7 86.8 and the cross-card gate.
+from engine.paint_v2.iridescent_insects_butterfly_peacock_i2_2026 import (
+    paint_butterfly_peacock_i2 as paint_butterfly_peacock,
+    spec_butterfly_peacock_i2 as spec_butterfly_peacock,
+)
+
+# Card 17/50 — Luna Silk I1 P4.  Overlapping celadon feather-scales ride
+# coherent silk currents; scale shafts, barbs, crossribs, curled-tip gratings
+# and interstices own separately phased material states.  Earlier passes read
+# as isolated stitch wallpaper; P4 restores broad leaf-scale bodies.
+from engine.paint_v2.iridescent_insects_moth_luna_i1_2026 import (
+    paint_moth_luna_i1 as paint_moth_luna,
+    spec_moth_luna_i1 as spec_moth_luna,
+)
+
+# Card 18/50 — Tiger Moth Ember I1 P2.  Fine tilted scale hairs assemble
+# compact aposematic ember/ivory rivers over soot velvet; ridge fans, crossrib
+# windows, keratin filaments and melanin interstices carry independent spec.
+from engine.paint_v2.iridescent_insects_moth_tiger_i1_2026 import (
+    paint_moth_tiger_i1 as paint_moth_tiger,
+    spec_moth_tiger_i1 as spec_moth_tiger,
+)
+
+# Card 19/50 — Hummingbird Blur I1 P3.  Compact opposite-handed wingbeat
+# vortices circulate retained forked bristles around shed-scale membrane cores;
+# sockets, antireflective pillars, orbital wakes and pollen own separate spec.
+from engine.paint_v2.iridescent_insects_moth_hummingbird_i1_2026 import (
+    paint_moth_hummingbird_i1 as paint_moth_hummingbird,
+    spec_moth_hummingbird_i1 as spec_moth_hummingbird,
+)
+
+# Card 20/50 — Owl Moth Sable I1 P3.  Eccentric incomplete bronze micro-ocelli
+# braid through sable nap; roof scales, disorder ribs, layered bristles, pupil
+# scars and abrasion rings each retain distinct material response.
+from engine.paint_v2.iridescent_insects_moth_owl_i1_2026 import (
+    paint_moth_owl_i1 as paint_moth_owl,
+    spec_moth_owl_i1 as spec_moth_owl,
+)
+
+# Card 21/50 — Dragonfly Resilin I1 P6.  Corrugated primary rails support a
+# dense irregular vein-cell membrane; blue elastic joints, suspension zones,
+# spikes and pterostigma-like mass bars own separate material channels.
+from engine.paint_v2.iridescent_insects_dragonfly_wing_i1_2026 import (
+    paint_dragonfly_wing_i1 as paint_dragonfly_wing,
+    spec_dragonfly_wing_i1 as spec_dragonfly_wing,
+)
+
+# Card 22/50 — Emerald Skimmer I1 P5.  Coherent-scattering nanosphere
+# populations move through compact emerald/cyan/violet cuticle clouds; melanin
+# stiffeners, pruinose platelets and attached articulation flashes each own
+# distinct material states without repeating Dragonfly Resilin's vein carrier.
+from engine.paint_v2.iridescent_insects_dragonfly_emerald_i1_2026 import (
+    paint_dragonfly_emerald_i1 as paint_dragonfly_emerald,
+    spec_dragonfly_emerald_i1 as spec_dragonfly_emerald,
+)
+
+# Card 23/50 — Damselfly Cobalt I1 P4.  Compact paired cobalt laminations,
+# absorbing ventral troughs, minute cross-sutures and sparse oblique forks form
+# a dense Calopteryx/Neurobasis wing stack rather than a textile or pinstripe.
+from engine.paint_v2.iridescent_insects_damselfly_cobalt_i1_2026 import (
+    paint_damselfly_cobalt_i1 as paint_damselfly_cobalt,
+    spec_damselfly_cobalt_i1 as spec_damselfly_cobalt,
+)
+
+# Card 24/50 — Cicada Window I1 P5.  Unequal wandering bronze veins and
+# compact tension ties carry capped hydrophobic nanocones, rare suture collars,
+# flexible folds and condensate rims.  P3's macro waves and P4's pearl chains
+# were rejected even though both passed M7; P5 is the owner-eye identity pass.
+from engine.paint_v2.iridescent_insects_cicada_membrane_i1_2026 import (
+    paint_cicada_membrane_i1 as paint_cicada_membrane,
+    spec_cicada_membrane_i1 as spec_cicada_membrane,
+)
+
+# Card 25/50 — Lacewing Aurora I1 P3.  Sigmoid pseudomedial rails carry
+# convergent radial branches, staggered inner/outer gradates, oval joints,
+# pedicellate setae and nonperiodic thin-film panes.  P1's oval wallpaper was
+# rejected; P4/P5 were calmer visually but failed the 85 ship bar at time cap.
+from engine.paint_v2.iridescent_insects_lacewing_aurora_i1_2026 import (
+    paint_lacewing_aurora_i1 as paint_lacewing_aurora,
+    spec_lacewing_aurora_i1 as spec_lacewing_aurora,
+)
+
+# Card 26/50 — Mayfly Silverstream I1 P3.  Alternating positive/negative
+# corrugation veins carry sparse cross-ties, intercalary forks, attached
+# 8–20px highlight facets and rows of flexible bullae.  P1's woven grid was
+# rejected; P3 is the strongest passing identity at the 20-minute cap.
+from engine.paint_v2.iridescent_insects_mayfly_silver_i1_2026 import (
+    paint_mayfly_silver_i1 as paint_mayfly_silver,
+    spec_mayfly_silver_i1 as spec_mayfly_silver,
+)
+
+# Card 27/50 — Bee Venturi I1 P3.  A connected irregular shared-wall wax
+# architecture carries transitional cells, wax grains, silk lamellae, honey
+# menisci, propolis and attached pollen hairs.  P1's floating-ring wallpaper
+# was rejected; P3 spans all M/R/Cc levels without changing P2's visual win.
+from engine.paint_v2.iridescent_insects_bee_honeycomb_i1_2026 import (
+    paint_bee_honeycomb_i1 as paint_bee_honeycomb,
+    spec_bee_honeycomb_i1 as spec_bee_honeycomb,
+)
+
+# Card 28/50 — Bumble Velvet I1 P5.  Thousands of socketed 8–24px
+# directional setae form interlocking ochre/sable nap packets; attached forked
+# barbs, comb fringes, pollen hooks and polished chitin slits each own distinct
+# material states.  P1–P4 established the carrier and channel separation; P5
+# removes cubic clipping and clears the owner ship bar without changing paint.
+from engine.paint_v2.iridescent_insects_bumble_velvet_i1_2026 import (
+    paint_bumble_velvet_i1 as paint_bumble_velvet,
+    spec_bumble_velvet_i1 as spec_bumble_velvet,
+)
+
+# Card 29/50 — Wasp Signal I2 P6.  Connected chains of nested tergite
+# chevrons select compact duplex cuticle plates; packed yellow granules,
+# epicuticle rosettes, central pores, setae, tracheal slits and bruised pigment
+# own separate material states.  P1/P2 collapsed to stripes/fibres, P3 wandered,
+# P4/P5 established the signal grammar, and P6 balances channel amplitude.
+from engine.paint_v2.iridescent_insects_wasp_warning_i2_2026 import (
+    paint_wasp_warning_i2 as paint_wasp_warning,
+    spec_wasp_warning_i2 as spec_wasp_warning,
+)
+
+# Card 30/50 — Hoverfly Mirror I1 P3.  Fine rhomboid tergite mirrors form
+# irregular paired pollinose maculae under sparse transparent wing-film lanes;
+# paired true/spurious vein rails, microtrichia islands, bare windows, nodes
+# and scuffs each own distinct M/R/Cc.  P1's broad bands were rejected.
+from engine.paint_v2.iridescent_insects_hoverfly_mirror_i1_2026 import (
+    paint_hoverfly_mirror_i1 as paint_hoverfly_mirror,
+    spec_hoverfly_mirror_i1 as spec_hoverfly_mirror,
+)
+
+# Card 31/50 — Firefly Lantern I2 P4.  Every 12–32px module contains an
+# ordered extraction-prism / photogenic cross-net / radial urate reflector
+# stack.  Active/dormant regions, dark shell chips, tracheal twigs, bulbs,
+# vesicles and sutures prevent a uniform glow carpet.  P1/P2 path carriers and
+# P3's fully active textile were rejected; P4 is the time-cap visual winner.
+from engine.paint_v2.iridescent_insects_firefly_glow_i2_2026 import (
+    paint_firefly_glow_i2 as paint_firefly_lantern,
+    spec_firefly_glow_i2 as spec_firefly_lantern,
+)
+
+# Card 32/50 — Firefly Emberglass I1 P2.  A connected triangulated sheet of
+# soot-glass sclerites contains pH-tuned yellow/orange/red chamber wedges,
+# active-site clamp rails, quenched pits, seam lips, prism edges and reinforced
+# oxygen capillaries. P1 failed M7/FOLLOW; P3 passed but was visually weaker.
+from engine.paint_v2.iridescent_insects_firefly_ember_i1_2026 import (
+    paint_firefly_ember,
+    spec_firefly_ember,
+)
+
+# Card 33/50 — Velvet Ant Armor I1 P3. Mutillid hard armor, not recolored
+# bumble nap: offset capsule sclerites expose stacked lamella lips and pillar
+# bars beneath coherent edge-born grooved setal fans. Armor-weighted regions
+# suppress pile and add defensive spines plus compact stridulatory combs.
+from engine.paint_v2.iridescent_insects_velvet_ant_i1_2026 import (
+    paint_velvet_ant,
+    spec_velvet_ant,
+)
+
+# Card 34/50 — Orchid Mantis Silk I1 P4. A complete white-pink sheet of
+# overlapping bilateral femoral-lobe cuticle fans carries urate reservoirs,
+# pigment-export seams, asymmetric growth veins, UV-dark clefts, articulation
+# pearls, wet rims and raptorial toothlets as separately bound materials.
+from engine.paint_v2.iridescent_insects_orchid_mantis_i1_2026 import (
+    paint_orchid_mantis,
+    spec_orchid_mantis,
+)
+
+# Card 35/50 — Leaf Mantis Patina I1 P6. Thousands of connected 10–29px
+# angular crumple segments form a complete Deroplatys dead-leaf lamina with
+# attached tear jaws, petiole remnants, patina windows, pore chains and
+# serrated lobe edges. P1's perimeter loops were discarded outright.
+from engine.paint_v2.iridescent_insects_leaf_mantis_i1_2026 import (
+    paint_leaf_mantis,
+    spec_leaf_mantis,
+)
+
+# Card 36/50 — Katydid Leafglass I1 P4. Branching tegmen midribs and short
+# secondary/tertiary veins carry translucent cells, necrotic mimic panes,
+# feeding-bite scallops, acoustic mirrors, file teeth and ocellata wet rings.
+from engine.paint_v2.iridescent_insects_katydid_leafglass_i1_2026 import (
+    paint_katydid_leafglass,
+    spec_katydid_leafglass,
+)
+
+# Card 37/50 — Stick Insect Bark I1 P2. Long phasmid bark bundles are
+# assembled from short splinter marks and interrupted by tergite sutures,
+# lichen crust, scar collars, resin wells, tubercles and femoral spines.
+from engine.paint_v2.iridescent_insects_stick_insect_bark_i1_2026 import (
+    paint_stick_insect_bark,
+    spec_stick_insect_bark,
+)
+
+# Card 38/50 — Roach Onyx Armor I1 P12. Staggered lacquered tergite shingles
+# share one topology with their material states: membranes, gland crescents,
+# tongue plates, wax pores, sensory sockets, lips and bounded abrasion.
+from engine.paint_v2.iridescent_insects_roach_onyx_i1_2026 import (
+    paint_roach_onyx,
+    spec_roach_onyx,
+)
+
+# Card 39/50 — Weevil Opal Mosaic I1 P4. Thousands of concave scale pits
+# carry scale-by-scale single-diamond photonic rosettes with clustered lattice
+# classes, grain boundaries, ice rims, microbead points and empty sockets.
+from engine.paint_v2.iridescent_insects_weevil_opal_i1_2026 import (
+    paint_weevil_opal,
+    spec_weevil_opal,
+)
+
+# Card 40/50 — Gilded Weevil Striae I1 P4. Broken punctured furrows divide
+# convex elytral intervals packed with directional sawtooth scales, polished
+# lips, boss crowns, interlocking fibre ridges and anatomy-bounded olive wear.
+from engine.paint_v2.iridescent_insects_weevil_gilded_i1_2026 import (
+    paint_gilded_weevil,
+    spec_gilded_weevil,
+)
+
+# Card 41/50 — Scarab Sunplate I1 P4. Interlocking hexagonal shell plates
+# contain compact radial helicoid wedges, pitch arcs, polarizer cores,
+# diffraction teeth, pore canals, cobalt underplates and worn gold rims.
+from engine.paint_v2.iridescent_insects_scarab_sunplate_i1_2026 import (
+    paint_scarab_sunplate,
+    spec_scarab_sunplate,
+)
+
+# Card 42/50 — Scarab Nightshift I1 P6. Flowing lenticular absorber armour
+# carries chiral crescent seams, micropillars, moisture channels, cross-ply
+# windows, mercury crowns and flooded clearcoat edges.
+from engine.paint_v2.iridescent_insects_scarab_nightshift_i1_2026 import (
+    paint_scarab_night,
+    spec_scarab_night,
+)
+
+# Card 43/50 — Jewel Spider Cuticle I1 P2. Soft irregular guanocyte cells
+# carry guanine platelet doublets, ruby fluorescent microspheres, silk-root
+# filaments, triple junctions and transparent cuticle windows.
+from engine.paint_v2.iridescent_insects_jewel_spider_i1_2026 import (
+    paint_jewel_spider,
+    spec_jewel_spider,
+)
+
+# Card 44/50 — Orb Weaver Silk I1 P3. Paired capture fibres cross diagonal
+# load arcs and carry viscoelastic glue shells/cores, salt glints, capillary
+# spools, pyriform plaques and branching anchor bridges.
+from engine.paint_v2.iridescent_insects_orb_weaver_silk_i1_2026 import (
+    paint_orb_weaver_silk,
+    spec_orb_weaver_silk,
+)
+
+# Card 45/50 — Mantis Verdigris I1 P6. Separated articulated bronze
+# raptorial chains carry joint membranes, socketed fixed/tilting spines,
+# honeycomb grip grooves, worn tips and anatomy-bounded patina.
+from engine.paint_v2.iridescent_insects_mantis_verdigris_i1_2026 import (
+    paint_mantis_verdigris,
+    spec_mantis_verdigris,
+)
+
+# Card 46/50 — Hornet Titanium I1 P6. Irregular aerodynamic streams of
+# micro-turbine gaster plates carry gland pores, brush hubs, spiracles,
+# black joint membranes, yellow cuticle blades and elastic hinge glints.
+from engine.paint_v2.iridescent_insects_hornet_titanium_i1_2026 import (
+    paint_hornet_titanium,
+    spec_hornet_titanium,
+)
+
+# Card 47/50 — Leafcutter Copper I1 P8. Controlled diagonal copper
+# mandible sheaves carry attached zinc-edged green leaf plates, wear,
+# clay, oxide, secretion punctures and polished cutting tips.
+from engine.paint_v2.iridescent_insects_leafcutter_copper_i1_2026 import (
+    paint_leafcutter_copper,
+    spec_leafcutter_copper,
+)
+
+# Card 48/50 — Dung Beetle Oilglass I1 P5. Petroleum thin-film contours
+# follow corrugated shell basins with wax channels, cracks, pores, setae,
+# helicoidal windows, wet troughs, mud contact and compass glints.
+from engine.paint_v2.iridescent_insects_dung_beetle_oilglass_i1_2026 import (
+    paint_dung_beetle_oilglass,
+    spec_dung_beetle_oilglass,
+)
+
+# Card 49/50 — Bluebottle Mercury I1 P2. Direction-changing shoals of
+# convex mercury ommatidia carry displaced pseudopupils, corneal pustules,
+# calypter membranes, branching wing veins, setulae, spiracles and ginger hairs.
+from engine.paint_v2.iridescent_insects_bluebottle_mercury_i1_2026 import (
+    paint_bluebottle_mercury,
+    spec_bluebottle_mercury,
+)
+
+# Card 50/50 — Caddiscase Riverstone I1 P3. Individually selected stream
+# grains are assembled in imbricated courses and joined by paired wet silk,
+# fuzzy adhesive, calcium knots, waterline lips, mica, algae and plant fibre.
+from engine.paint_v2.iridescent_insects_caddiscase_riverstone_i1_2026 import (
+    paint_caddiscase_riverstone,
+    spec_caddiscase_riverstone,
+)

@@ -1,0 +1,5 @@
+{"version":1,"inspection_records":"_smart_tga_runs/cycle670_owner_neutral_appearance_canary_optimized/inspection_records.json","review_scope":"Cycle 670 visual/source review of newly preserved unassigned appearance instances. These labels cast no votes and grant no ownership.","casts_votes":false,"ownership_authority":false,"instance_labels":[
+ {"paint_label":"dirtlatemodel 350/car_num_1188936.tga","instance_id":"di:4fe37a000444ee81","bbox":[246,234,229,106],"target_layer":"numbers","label":"true_number_21_appearance_fragment","family_id":"number:21"},
+ {"paint_label":"dirtlatemodel 350/car_num_1191040.tga","instance_id":"di:b6d8510c99a1bf0d","bbox":[256,237,220,98],"target_layer":"numbers","label":"true_number_14_appearance_fragment","family_id":"number:14"},
+ {"paint_label":"dirtlatemodel 358/car_num_1157074.tga","instance_id":"di:c974c37feab505ed","bbox":[269,234,166,105],"target_layer":"numbers","label":"true_number_14_existing_sponsor_proposal","family_id":"number:14"}
+]}

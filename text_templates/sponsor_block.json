@@ -2,7 +2,7 @@
   "name": "Sponsor Block (Primary)",
   "description": "Primary sponsor name block — readable, bold, neutral letterforms. This is the main money-maker text on a livery: the primary title sponsor above the door, on the hood, or across the rear quarter. Clean sans-serif with subtle stroke and zero shadow keeps it corporate and brand-safe.",
   "category": "Sponsor",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "template": {
     "text": "SPONSOR",
     "font_family": "Helvetica Neue, Helvetica, Arial, sans-serif",

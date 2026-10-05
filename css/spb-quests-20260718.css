@@ -1,0 +1,221 @@
+/* ============================================================================
+   SPB TRAINING WHEELS — quest engine styles (2026-07-18)
+   Pairs with js/spb-quests.js. Design: docs/SPB_TRAINING_WHEELS_QUEST_ENGINE.md
+   The checklist panel reuses the coach's #spbGuidePanel shell + .spb-guide-*
+   classes (css/spb-guided-mode-20260704.css); this file adds the next-move
+   chip and the checklist rows. Zero effect until the engine creates the DOM.
+   ============================================================================ */
+
+/* ---- Next-move chip — bottom-right, above canvas chrome, under modals ------ */
+#spbGuidePanel, #spbTrainingChoice {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    width: min(300px, calc(100vw - 32px));
+    max-height: min(420px, 55vh);
+    overflow: auto;
+    z-index: 45000;
+}
+#spbGuidePanel .spb-guide-head { gap: 6px; flex-wrap: wrap; }
+#spbGuidePanel .spb-guide-head > span { flex: 1 1 auto; }
+#spbGuidePanel .spb-guide-compact { padding: 8px 12px; }
+#spbTrainingChoice {
+    box-sizing: border-box;
+    padding: 16px;
+    border: 1px solid #aa7a22;
+    border-radius: 12px;
+    background: #18140afa;
+    color: #f0ead8;
+    box-shadow: 0 8px 28px #0008;
+    font: 12px/1.5 'Segoe UI', sans-serif;
+}
+/* Opt-in help must also be reachable again from Easy mode. */
+body.spb-focus-on .header #spbGuideToggle { display: inline-flex !important; }
+#spbTrainingChoice h3 { margin: 0 16px 8px 0; font-size: 14px; color: #ffd166; }
+#spbTrainingChoice p { margin: 0 0 12px; }
+#spbTrainingChoice > .spb-guide-x { position: absolute; right: 7px; top: 7px; }
+#spbQuestChip {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    width: 300px;
+    z-index: 44000;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 179, 0, 0.4);
+    background: linear-gradient(180deg, rgba(24, 20, 10, 0.97), rgba(14, 12, 6, 0.97));
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.5);
+    color: #f0ead8;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    padding: 10px 12px 12px;
+}
+.spb-quest-chip-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: #ffd166;
+    margin-bottom: 4px;
+}
+.spb-quest-chip-hint {
+    font-size: 10.5px;
+    line-height: 1.5;
+    color: #cbbfa0;
+    margin-bottom: 9px;
+}
+.spb-quest-chip-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.spb-quest-chip-btn {
+    background: rgba(255, 179, 0, 0.12);
+    border: 1px solid rgba(255, 179, 0, 0.45);
+    color: #ffd166;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 10.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+}
+.spb-quest-chip-btn:hover { border-color: #ffd166; }
+.spb-quest-chip-btn.primary {
+    background: linear-gradient(90deg, #ffb300, #ff7a18);
+    border: none;
+    color: #1a1206;
+    font-weight: 800;
+}
+.spb-quest-chip-btn.primary:hover { filter: brightness(1.1); }
+.spb-quest-chip-x {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #b8a77a;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 2px 4px;
+    line-height: 1;
+}
+.spb-quest-chip-x:hover { color: #ffffff; }
+
+/* ---- Checklist rows (inside #spbGuidePanel) -------------------------------- */
+.spb-quest-list { max-height: 60vh; overflow-y: auto; }
+.spb-quest-group {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #b8a77a;
+    margin: 10px 0 5px;
+}
+.spb-quest-group:first-child { margin-top: 0; }
+.spb-quest-group-note { font-weight: 400; letter-spacing: 0; text-transform: none; }
+.spb-quest-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+    padding: 7px 9px;
+    margin-bottom: 4px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 179, 0, 0.22);
+    background: rgba(255, 179, 0, 0.05);
+    color: #f0ead8;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+}
+.spb-quest-row:hover { border-color: #ffd166; background: rgba(255, 179, 0, 0.11); }
+.spb-quest-row.done {
+    opacity: 0.62;
+    border-color: rgba(65, 211, 154, 0.35);
+    background: rgba(65, 211, 154, 0.06);
+    cursor: default;
+}
+.spb-quest-row.locked {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+.spb-quest-row.locked:hover { border-color: rgba(255, 179, 0, 0.22); background: rgba(255, 179, 0, 0.05); }
+.spb-quest-row-icon { flex-shrink: 0; width: 18px; text-align: center; }
+
+/* ---- Graduation banner (inside the checklist) ------------------------------ */
+.spb-quest-grad {
+    margin-top: 12px;
+    padding: 10px 11px;
+    border-radius: 10px;
+    border: 1px solid rgba(65, 211, 154, 0.45);
+    background: rgba(65, 211, 154, 0.08);
+}
+.spb-quest-grad-title { font-size: 12.5px; font-weight: 800; color: #41d39a; margin-bottom: 4px; }
+.spb-quest-grad-sub { font-size: 10.5px; color: #cbbfa0; line-height: 1.5; margin-bottom: 9px; }
+
+@media (prefers-reduced-motion: reduce) {
+    #spbQuestChip { transition: none; }
+}
+
+/* ---- Level disclosure note (phase 2): injected at the top of the zone popout
+   while wheels are on and level < 2. Removed for good via dismiss or level-up. */
+#spbLevelNote {
+    font-size: 10px;
+    line-height: 1.5;
+    color: #cbbfa0;
+    background: rgba(255, 179, 0, 0.07);
+    border: 1px solid rgba(255, 179, 0, 0.28);
+    border-radius: 8px;
+    padding: 7px 9px;
+    margin-bottom: 8px;
+}
+#spbLevelNote a { color: #ffd166; text-decoration: none; font-weight: 700; }
+#spbLevelNote a:hover { text-decoration: underline; }
+
+/* ---- Toolbar disclosure (level 1): the deep tool menus hide until the first
+   render (or a peek). Fail-open — selector misses mean nothing hides. -------- */
+body[data-spb-wheels-level="1"]:not([data-spb-toolbar-peek="1"]) #spbTopToolbar details.spb-tb-menu {
+    display: none;
+}
+#spbToolbarPeek {
+    color: #ffd166;
+    white-space: nowrap;
+    background: rgba(255, 179, 0, 0.10);
+    border: 1px dashed rgba(255, 179, 0, 0.5);
+    border-radius: 6px;
+    cursor: pointer;
+}
+#spbToolbarPeek:hover { border-color: #ffd166; border-style: solid; }
+
+/* ---- Easy Mode coexistence (2026-07-19): when the Easy Mode takeover is up,
+   park the chip + checklist (state preserved — they come back on exit). ------ */
+body.spb-easy-on #spbQuestChip,
+body.spb-easy-on #spbGuidePanel {
+    display: none !important;
+}
+
+/* ---- Quest progress meter (under the panel header) ------------------------- */
+.spb-quest-progress {
+    height: 3px;
+    background: rgba(255, 179, 0, 0.14);
+}
+.spb-quest-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffb300, #41d39a);
+    transition: width 0.4s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+    .spb-quest-progress-fill { transition: none; }
+}
+
+/* ---- Swatch picker coexistence: the picker is a full-screen takeover — park
+   chip + checklist while it's open (state preserved, restored on close). ----- */
+body.spb-picker-open #spbQuestChip,
+body.spb-picker-open #spbGuidePanel {
+    display: none !important;
+}
+
+/* ---- Panel footer (restart link) ------------------------------------------- */
+.spb-quest-foot { margin-top: 10px; text-align: right; }
+.spb-quest-foot a {
+    font-size: 9.5px;
+    color: #b8a77a;
+    text-decoration: none;
+}
+.spb-quest-foot a:hover { color: #ffd166; text-decoration: underline; }

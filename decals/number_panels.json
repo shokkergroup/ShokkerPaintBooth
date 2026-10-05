@@ -1,5 +1,5 @@
 {
-  "version": "6.2.0",
+  "version": "6.3.0",
   "description": "Standard number panel presets for racing liveries — placement and styling hints used by Shokker Paint Booth to suggest sizes, strokes, and shadows for the Numbers PSD layer.",
   "schema": {
     "id": "string — unique key",

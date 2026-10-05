@@ -95,6 +95,7 @@ const stateFns = [
 const renderFns = [
     '_zoneHasRenderableMaterial',
     '_applyBaseColorBranch',
+    '_zoneShouldFitIntoApplyArea',
     '_applyBaseColorMode',
 ].map((name) => extractFn(renderSrc, name));
 

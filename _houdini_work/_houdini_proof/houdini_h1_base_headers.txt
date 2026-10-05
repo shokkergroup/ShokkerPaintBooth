@@ -1,0 +1,9 @@
+HTTP/1.1 200 OK
+Server: Werkzeug/3.1.5 Python/3.13.5
+Date: Sun, 30 Aug 2026 04:33:12 GMT
+Cache-Control: public, max-age=31536000, immutable
+Content-Type: image/png
+Content-Length: 12393
+Access-Control-Allow-Origin: *
+Connection: close
+

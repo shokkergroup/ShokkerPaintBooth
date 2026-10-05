@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_vinyl_crate",
+  "display_name": "Fresh: Vinyl Crate",
+  "promise": "Worn charcoal paperboard and small black vinyl groove fragments with muted colorful sleeve-print scraps, no records covers objects or text",
+  "carrier_grammar": "Worn charcoal paperboard and small black vinyl groove fragments with muted colorful sleeve-print scraps, no records covers objects or text; single full-canvas image, no duplicated quadrants. Fine features: record sleeve paper, black vinyl grooves, colored sleeve ink, fine worn paper corners, record groove flashes, glue and laminate films",
+  "spec_grammar": "Feature-specific selectors partition record sleeve paper, black vinyl grooves, colored sleeve ink, fine worn paper corners, record groove flashes, glue and laminate films. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "record sleeve paper",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "black vinyl grooves",
+      "role": "Material feature selected from artwork by g:<:0.28"
+    },
+    {
+      "name": "colored sleeve ink",
+      "role": "Material feature selected from artwork by s:>:0.45"
+    },
+    {
+      "name": "fine worn paper corners",
+      "role": "Material feature selected from artwork by g:>:0.74&s:<:0.25"
+    },
+    {
+      "name": "record groove flashes",
+      "role": "Material feature selected from artwork by edge:>:0.68&g:<:0.5"
+    },
+    {
+      "name": "glue and laminate films",
+      "role": "Material feature selected from artwork by detail:>:0.78"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "record sleeve paper",
+      "black vinyl grooves",
+      "colored sleeve ink",
+      "fine worn paper corners",
+      "record groove flashes",
+      "glue and laminate films"
+    ],
+    "R": [
+      "record sleeve paper",
+      "black vinyl grooves",
+      "colored sleeve ink",
+      "fine worn paper corners",
+      "record groove flashes",
+      "glue and laminate films"
+    ],
+    "Cc": [
+      "record sleeve paper",
+      "black vinyl grooves",
+      "colored sleeve ink",
+      "fine worn paper corners",
+      "record groove flashes",
+      "glue and laminate films"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "record sleeve paper",
+      "range": [
+        [
+          0,
+          155,
+          170
+        ],
+        [
+          10,
+          245,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "black vinyl grooves",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "colored sleeve ink",
+      "range": [
+        [
+          0,
+          130,
+          150
+        ],
+        [
+          22,
+          225,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine worn paper corners",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "record groove flashes",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "glue and laminate films",
+      "range": [
+        [
+          0,
+          65,
+          55
+        ],
+        [
+          15,
+          180,
+          210
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_airbrush_tee",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_boombox_chrome",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "record sleeve paper",
+      "black vinyl grooves",
+      "colored sleeve ink",
+      "fine worn paper corners",
+      "record groove flashes",
+      "glue and laminate films"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_vinyl_crate / Worn charcoal paperboard and small black vinyl groove fragments with muted colorful sleeve-print scraps, no records covers objects or text",
+  "spec_key": "at_vinyl_crate / record sleeve paper all; black vinyl grooves g:<:0.28; colored sleeve ink s:>:0.45; fine worn paper corners g:>:0.74&s:<:0.25; record groove flashes edge:>:0.68&g:<:0.5; glue and laminate films detail:>:0.78",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

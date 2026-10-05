@@ -1,0 +1,3116 @@
+{
+  "schema_version": 1,
+  "description": "Low-usage context target database for Shokker Paint Booth. Agents should add focused slices here instead of opening monster files.",
+  "targets": {
+    "app-scripts": {
+      "domain": "frontend",
+      "description": "Script load order in paint-booth-v2.html.",
+      "slices": [
+        [
+          "paint-booth-v2.html",
+          2288,
+          2306
+        ]
+      ]
+    },
+    "canvas-dispatch": {
+      "domain": "canvas",
+      "description": "Tool dispatch source of truth and canvas guard fallback.",
+      "slices": [
+        [
+          "js/canvas/dispatch.js",
+          1,
+          230
+        ],
+        [
+          "paint-booth-3-canvas.js",
+          2976,
+          3038
+        ]
+      ]
+    },
+    "canvas-layer-target": {
+      "domain": "canvas",
+      "description": "Layer toolbar target guards and selected editable layer helpers.",
+      "slices": [
+        [
+          "paint-booth-3-canvas.js",
+          19340,
+          19378
+        ],
+        [
+          "paint-booth-3-canvas.js",
+          19491,
+          19527
+        ],
+        [
+          "js/canvas/dispatch.js",
+          99,
+          123
+        ]
+      ]
+    },
+    "canvas-pick-item": {
+      "domain": "canvas",
+      "description": "Unified Pick Item routing and layer/zone pick handling.",
+      "slices": [
+        [
+          "paint-booth-3-canvas.js",
+          3024,
+          3224
+        ],
+        [
+          "paint-booth-3-canvas.js",
+          19850,
+          19882
+        ]
+      ]
+    },
+    "canvas-wrappers": {
+      "domain": "canvas",
+      "description": "Legacy wrapper hooks for clone/colorbrush style tools.",
+      "slices": [
+        [
+          "paint-booth-3-canvas.js",
+          13920,
+          13970
+        ],
+        [
+          "paint-booth-3-canvas.js",
+          15755,
+          15810
+        ]
+      ]
+    },
+    "zone-rendering": {
+      "domain": "zones",
+      "description": "Zone list/detail/rendering entrypoints.",
+      "slices": [
+        [
+          "paint-booth-2-state-zones.js",
+          856,
+          930
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          1276,
+          1360
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          12362,
+          12480
+        ]
+      ]
+    },
+    "zone-base-material-controls": {
+      "domain": "zones",
+      "description": "Primary base/color/spec control panel layout, setters, align buttons, and render payload forwarding.",
+      "slices": [
+        [
+          "js/zones/base-material-controls.js",
+          1,
+          300
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          1910,
+          1970
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          2130,
+          2215
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8360,
+          8380
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8440,
+          8505
+        ],
+        [
+          "paint-booth-5-api-render.js",
+          80,
+          96
+        ],
+        [
+          "paint-booth-3-canvas.js",
+          7676,
+          7690
+        ],
+        [
+          "shokker_engine_v2.py",
+          18138,
+          18145
+        ],
+        [
+          "shokker_engine_v2.py",
+          18335,
+          18380
+        ],
+        [
+          "shokker_engine_v2.py",
+          18408,
+          18425
+        ],
+        [
+          "engine/compose.py",
+          3996,
+          4056
+        ]
+      ]
+    },
+    "zone-base-color-controls": {
+      "domain": "zones",
+      "description": "Base color mode, gradient editor, color source, strength, fit, and HSB adjustment handlers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-base-color-controls.js",
+          1,
+          390
+        ],
+        [
+          "paint-booth-v2.html",
+          2598,
+          2608
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          3188,
+          3228
+        ],
+        [
+          "scripts/spb_guard_zone_base_color_controls.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "zone-pattern-transform-controls": {
+      "domain": "zones",
+      "description": "Primary pattern opacity, strength, offset, flip, scale, and rotation controls extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/pattern-transform-controls.js",
+          1,
+          320
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          2288,
+          2322
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8238,
+          8460
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8640,
+          8690
+        ]
+      ]
+    },
+    "zone-base-overlay-state-controls": {
+      "domain": "zones",
+      "description": "Base overlay enable/mute state, minimap labels, pattern-react defaults, and unused-pattern allocation extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-base-overlay-state-controls.js",
+          1,
+          220
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          3120,
+          3165
+        ],
+        [
+          "scripts/spb_guard_zone_base_overlay_state_controls.js",
+          1,
+          130
+        ]
+      ]
+    },
+    "zone-material-assignment-controls": {
+      "domain": "zones",
+      "description": "Zone base/pattern/wear assignment and overlay pattern-react select helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-material-assignment-controls.js",
+          1,
+          180
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          3040,
+          3095
+        ],
+        [
+          "scripts/spb_guard_zone_material_assignment_controls.js",
+          1,
+          130
+        ]
+      ]
+    },
+    "zone-base-overlay-controls": {
+      "domain": "zones",
+      "description": "Overlay base controls extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/base-overlay-controls.js",
+          1,
+          600
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8278,
+          8355
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8410,
+          8565
+        ]
+      ]
+    },
+    "zone-base-overlay-hsb-controls": {
+      "domain": "zones",
+      "description": "Overlay base hue, saturation, brightness slider handlers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-base-overlay-hsb-controls.js",
+          1,
+          130
+        ],
+        [
+          "paint-booth-v2.html",
+          2598,
+          2608
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          3230,
+          3260
+        ],
+        [
+          "scripts/spb_guard_zone_base_overlay_hsb_controls.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "zone-placement-controls": {
+      "domain": "zones",
+      "description": "Placement workspace mode, banner, drag overlay, and base-overlay offset handlers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-placement-controls.js",
+          1,
+          470
+        ],
+        [
+          "paint-booth-v2.html",
+          2598,
+          2612
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          3335,
+          3365
+        ],
+        [
+          "scripts/spb_guard_zone_placement_controls.js",
+          1,
+          150
+        ]
+      ]
+    },
+    "zone-intensity-controls": {
+      "domain": "zones",
+      "description": "Zone finish setter, intensity sliders, pattern intensity, custom intensity, and slider disclosure extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-intensity-controls.js",
+          1,
+          240
+        ],
+        [
+          "paint-booth-v2.html",
+          2598,
+          2614
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          5840,
+          5870
+        ],
+        [
+          "scripts/spb_guard_zone_intensity_controls.js",
+          1,
+          140
+        ]
+      ]
+    },
+    "zone-auto-restore-controls": {
+      "domain": "zones",
+      "description": "Auto-restore session and paint-file helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-auto-restore-controls.js",
+          1,
+          240
+        ],
+        [
+          "paint-booth-v2.html",
+          2628,
+          2638
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          7436,
+          7458
+        ],
+        [
+          "scripts/spb_guard_zone_auto_restore_controls.js",
+          1,
+          140
+        ]
+      ]
+    },
+    "zone-config-zone-map-controls": {
+      "domain": "zones",
+      "description": "Per-zone config serialization and hydration defaults extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-config-zone-map-controls.js",
+          1,
+          460
+        ],
+        [
+          "paint-booth-v2.html",
+          2638,
+          2646
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          5800,
+          5865
+        ],
+        [
+          "scripts/spb_guard_zone_config_zone_map_controls.js",
+          1,
+          130
+        ]
+      ]
+    },
+    "zone-config-dom-controls": {
+      "domain": "zones",
+      "description": "Config DOM/settings shell and imported spec-map UI restore extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-config-dom-controls.js",
+          1,
+          220
+        ],
+        [
+          "paint-booth-v2.html",
+          2636,
+          2645
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          5810,
+          5850
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          6268,
+          6300
+        ],
+        [
+          "scripts/spb_guard_zone_config_dom_controls.js",
+          1,
+          125
+        ]
+      ]
+    },
+    "zone-config-preset-controls": {
+      "domain": "zones",
+      "description": "Config save/load and shareable .shokker preset actions extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-config-preset-controls.js",
+          1,
+          340
+        ],
+        [
+          "paint-booth-v2.html",
+          2630,
+          2638
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          6408,
+          6422
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          7136,
+          7165
+        ],
+        [
+          "scripts/spb_guard_zone_config_preset_controls.js",
+          1,
+          140
+        ]
+      ]
+    },
+    "zone-preset-gallery-controls": {
+      "domain": "zones",
+      "description": "Section collapse toggle and built-in preset gallery dispatcher extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-preset-gallery-controls.js",
+          1,
+          175
+        ],
+        [
+          "paint-booth-v2.html",
+          2638,
+          2645
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          5760,
+          5790
+        ],
+        [
+          "scripts/spb_guard_zone_preset_gallery_controls.js",
+          1,
+          125
+        ]
+      ]
+    },
+    "zone-thumbnail-controls": {
+      "domain": "zones",
+      "description": "Thumbnail refresh and hidden thumbnail-status banner controls extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-thumbnail-controls.js",
+          1,
+          120
+        ],
+        [
+          "paint-booth-v2.html",
+          2628,
+          2636
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          12,
+          45
+        ],
+        [
+          "scripts/spb_guard_zone_thumbnail_controls.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "zone-ui-mode-controls": {
+      "domain": "zones",
+      "description": "Simple/Advanced mode toggle and UI scale controls extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-ui-mode-controls.js",
+          1,
+          150
+        ],
+        [
+          "paint-booth-v2.html",
+          2630,
+          2637
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          44,
+          65
+        ],
+        [
+          "scripts/spb_guard_zone_ui_mode_controls.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "zone-overlay-special-picker-controls": {
+      "domain": "zones",
+      "description": "Overlay From-special picker expanded/toggle state extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-overlay-special-picker-controls.js",
+          1,
+          100
+        ],
+        [
+          "paint-booth-v2.html",
+          2630,
+          2638
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          44,
+          75
+        ],
+        [
+          "scripts/spb_guard_zone_overlay_special_picker_controls.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "zone-render-chrome-controls": {
+      "domain": "zones",
+      "description": "Render elapsed timer and output filename preview controls extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-render-chrome-controls.js",
+          1,
+          120
+        ],
+        [
+          "paint-booth-v2.html",
+          2632,
+          2639
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          58,
+          85
+        ],
+        [
+          "scripts/spb_guard_zone_render_chrome_controls.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "zone-state-shape-controls": {
+      "domain": "zones",
+      "description": "Zone id, clone, shape, mask, and legacy Zone 9 sanitizer helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-state-shape-controls.js",
+          1,
+          230
+        ],
+        [
+          "paint-booth-v2.html",
+          2633,
+          2640
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          80,
+          120
+        ],
+        [
+          "scripts/spb_guard_zone_state_shape_controls.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "zone-autosave-controls": {
+      "domain": "zones",
+      "description": "Zone autosave debounce, periodic save, badge update, and unload flush helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-autosave-controls.js",
+          1,
+          190
+        ],
+        [
+          "paint-booth-v2.html",
+          2634,
+          2642
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          6888,
+          6930
+        ],
+        [
+          "scripts/spb_guard_zone_autosave_controls.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "zone-toast-notification-controls": {
+      "domain": "zones",
+      "description": "Toast UI and render notification helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-toast-notification-controls.js",
+          1,
+          230
+        ],
+        [
+          "paint-booth-v2.html",
+          2634,
+          2643
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          6208,
+          6235
+        ],
+        [
+          "scripts/spb_guard_zone_toast_notification_controls.js",
+          1,
+          130
+        ]
+      ]
+    },
+    "zone-finish-assignment-controls": {
+      "domain": "zones",
+      "description": "Finish assignment, default base color, monolithic/base pick, and albedo hint helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-finish-assignment-controls.js",
+          1,
+          280
+        ],
+        [
+          "paint-booth-v2.html",
+          2634,
+          2644
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          5628,
+          5678
+        ],
+        [
+          "scripts/spb_guard_zone_finish_assignment_controls.js",
+          1,
+          130
+        ]
+      ]
+    },
+    "zone-legacy-controls": {
+      "domain": "zones",
+      "description": "Legacy v6 zone setters extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/legacy-zone-controls.js",
+          1,
+          120
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8278,
+          8358
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8430,
+          8490
+        ]
+      ]
+    },
+    "zone-spec-map-controls": {
+      "domain": "zones",
+      "description": "Imported global and per-zone spec-map controls extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/spec-map-controls.js",
+          1,
+          240
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          54,
+          70
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8300,
+          8325
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8440,
+          8485
+        ]
+      ]
+    },
+    "zone-productivity-controls": {
+      "domain": "zones",
+      "description": "Bulk selection/actions, presets, zone copy/paste/import/export, search/collapse, auto-name, lock, coverage, hue-duplicate, tolerance, and renumber controls extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/productivity-controls.js",
+          1,
+          540
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          1296,
+          1314
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          1398,
+          1408
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8320,
+          8355
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          13920,
+          13955
+        ]
+      ]
+    },
+    "zone-diagnostic-workflow-controls": {
+      "domain": "zones",
+      "description": "Zone validation warnings, statistics, missing-source-layer checks, recent finish V2 tracking, isolate/edit, batch tolerance, color pill, and workflow help helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/diagnostic-workflow-controls.js",
+          1,
+          210
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8320,
+          8395
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          13880,
+          13925
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          14145,
+          14210
+        ]
+      ]
+    },
+    "zone-export-script-controls": {
+      "domain": "zones",
+      "description": "Zone JSON export, script modal, clipboard copy, Python script download, robust BAT launcher download, and script auto-name helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/export-script-controls.js",
+          1,
+          160
+        ],
+        [
+          "paint-booth-v2.html",
+          2290,
+          2325
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8400,
+          8445
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          14100,
+          14155
+        ]
+      ]
+    },
+    "zone-workflow-controls": {
+      "domain": "zones",
+      "description": "Zone status/diagnostics, per-zone undo, keyboard shortcuts, local storage/export helpers, validation warnings, color suggestions, focus/empty-state, autosave badge, solo/reset/clone/filter workflow utilities extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/workflow-controls.js",
+          1,
+          530
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8320,
+          8385
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          13900,
+          13945
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          14420,
+          14495
+        ]
+      ]
+    },
+    "zone-advanced-workflow-controls": {
+      "domain": "zones",
+      "description": "Zone summary/import preview, render order, mute/tag, smart tolerance, color duplicate/shift, pattern suggestion, flash CSS, age/unrenderable, and import preview utilities extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/advanced-workflow-controls.js",
+          1,
+          320
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8320,
+          8405
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          13935,
+          14035
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          14170,
+          14235
+        ]
+      ]
+    },
+    "zone-catalog-workflow-controls": {
+      "domain": "zones",
+      "description": "Guided catalog quick actions, Ctrl/Cmd+K command palette, smart finish filter chips, and zone-card material sample polish extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/catalog-workflow-controls.js",
+          1,
+          410
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8360,
+          8425
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          11840,
+          11875
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          12580,
+          12625
+        ]
+      ]
+    },
+    "finish-picker": {
+      "domain": "finishes",
+      "description": "Finish picker, swatch helpers, and finish library rendering.",
+      "slices": [
+        [
+          "paint-booth-2-state-zones.js",
+          4390,
+          4545
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          11747,
+          11840
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          12362,
+          12480
+        ]
+      ]
+    },
+    "client-render-api": {
+      "domain": "frontend",
+      "description": "Client-side render API calls and polling.",
+      "slices": [
+        [
+          "paint-booth-5-api-render.js",
+          1,
+          180
+        ]
+      ]
+    },
+    "layer-flow": {
+      "domain": "layers",
+      "description": "PSD layer import, hierarchy-safe raster identity, source-preservation, and flow bootstrap.",
+      "slices": [
+        [
+          "js/canvas/layer/psd-import-safety.js",
+          1,
+          180
+        ],
+        [
+          "paint-booth-3-canvas.js",
+          19320,
+          19595
+        ],
+        [
+          "paint-booth-layer-flow.js",
+          1,
+          220
+        ]
+      ]
+    },
+    "server-routes": {
+      "domain": "server",
+      "description": "Legacy server route landmarks still inside server.py.",
+      "slices": [
+        [
+          "server.py",
+          1215,
+          1378
+        ],
+        [
+          "server.py",
+          2430,
+          2475
+        ],
+        [
+          "server.py",
+          4523,
+          4575
+        ],
+        [
+          "server.py",
+          5060,
+          5125
+        ]
+      ]
+    },
+    "server-diagnostics": {
+      "domain": "server",
+      "description": "Extracted diagnostics/health/debug route module.",
+      "slices": [
+        [
+          "server.py",
+          762,
+          774
+        ],
+        [
+          "server_routes/diagnostics.py",
+          1,
+          220
+        ]
+      ]
+    },
+    "server-static-pages": {
+      "domain": "server",
+      "description": "Extracted static HTML page routes.",
+      "slices": [
+        [
+          "server.py",
+          762,
+          776
+        ],
+        [
+          "server_routes/static_pages.py",
+          1,
+          80
+        ]
+      ]
+    },
+    "server-config": {
+      "domain": "server",
+      "description": "Extracted persistent config routes.",
+      "slices": [
+        [
+          "server.py",
+          1221,
+          1256
+        ],
+        [
+          "server_routes/config_routes.py",
+          1,
+          90
+        ]
+      ]
+    },
+    "server-render-monitoring": {
+      "domain": "server",
+      "description": "Extracted read-only render status/progress/statistics routes.",
+      "slices": [
+        [
+          "server.py",
+          1128,
+          1160
+        ],
+        [
+          "server_routes/render_monitoring.py",
+          1,
+          120
+        ]
+      ]
+    },
+    "server-system-status": {
+      "domain": "server",
+      "description": "Extracted build-check, health, and status routes.",
+      "slices": [
+        [
+          "server.py",
+          1286,
+          1310
+        ],
+        [
+          "server_routes/system_status.py",
+          1,
+          140
+        ]
+      ]
+    },
+    "server-thumbnail-status": {
+      "domain": "server",
+      "description": "Extracted thumbnail status route and missing-thumbnail helpers.",
+      "slices": [
+        [
+          "server.py",
+          1508,
+          1532
+        ],
+        [
+          "server_routes/thumbnail_status.py",
+          1,
+          130
+        ]
+      ]
+    },
+    "server-psd-import-routes": {
+      "domain": "server",
+      "description": "Extracted PSD layer-tree import and rasterization routes.",
+      "slices": [
+        [
+          "server.py",
+          188,
+          222
+        ],
+        [
+          "server.py",
+          1600,
+          1628
+        ],
+        [
+          "server_routes/psd_import_routes.py",
+          1,
+          260
+        ],
+        [
+          "server_routes/psd_import_tree.py",
+          1,
+          140
+        ],
+        [
+          "scripts/spb_guard_server_psd_import_routes.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "server-dual-shift-routes": {
+      "domain": "server",
+      "description": "Extracted custom dual color-shift preview and temporary finish registration routes.",
+      "slices": [
+        [
+          "server.py",
+          1618,
+          1632
+        ],
+        [
+          "server_routes/dual_shift_routes.py",
+          1,
+          180
+        ],
+        [
+          "scripts/spb_guard_server_dual_shift_routes.js",
+          1,
+          110
+        ]
+      ]
+    },
+    "server-legacy-apply-finish-routes": {
+      "domain": "server",
+      "description": "Extracted legacy multipart apply-finish compatibility route.",
+      "slices": [
+        [
+          "server.py",
+          6726,
+          6740
+        ],
+        [
+          "server_routes/legacy_apply_finish_routes.py",
+          1,
+          110
+        ],
+        [
+          "scripts/spb_guard_server_legacy_apply_finish_routes.js",
+          1,
+          110
+        ]
+      ]
+    },
+    "server-paint-recolor-support": {
+      "domain": "server",
+      "description": "Extracted shared paint recolor helper used by render and export endpoints.",
+      "slices": [
+        [
+          "server.py",
+          1620,
+          1665
+        ],
+        [
+          "server_routes/paint_recolor_support.py",
+          1,
+          130
+        ],
+        [
+          "scripts/spb_guard_server_paint_recolor_support.js",
+          1,
+          115
+        ]
+      ]
+    },
+    "server-paint-upload-routes": {
+      "domain": "server",
+      "description": "Extracted paint, decal, local image, and spec-map upload routes.",
+      "slices": [
+        [
+          "server.py",
+          5768,
+          5798
+        ],
+        [
+          "server_routes/paint_upload_routes.py",
+          1,
+          235
+        ],
+        [
+          "scripts/spb_guard_server_paint_upload_routes.js",
+          1,
+          115
+        ]
+      ]
+    },
+    "server-pattern-layer-routes": {
+      "domain": "server",
+      "description": "Extracted pattern-only overlay layer route.",
+      "slices": [
+        [
+          "server.py",
+          1718,
+          1740
+        ],
+        [
+          "server_routes/pattern_layer_routes.py",
+          1,
+          130
+        ],
+        [
+          "scripts/spb_guard_server_pattern_layer_routes.js",
+          1,
+          100
+        ]
+      ]
+    },
+    "server-cache-admin": {
+      "domain": "server",
+      "description": "Extracted cache clear, reload, thumbnail regen, and legacy debug admin routes.",
+      "slices": [
+        [
+          "server.py",
+          684,
+          706
+        ],
+        [
+          "server.py",
+          1300,
+          1338
+        ],
+        [
+          "scripts/spb_guard_server_cache_admin_routes.js",
+          1,
+          120
+        ],
+        [
+          "server_routes/cache_admin_routes.py",
+          1,
+          220
+        ]
+      ]
+    },
+    "server-swatch-review": {
+      "domain": "server",
+      "description": "Extracted For Review pattern list and review-swatch preview routes.",
+      "slices": [
+        [
+          "server.py",
+          3268,
+          3338
+        ],
+        [
+          "server_routes/swatch_review_routes.py",
+          1,
+          120
+        ],
+        [
+          "scripts/spb_guard_server_swatch_review_routes.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "server-photoshop-export-routes": {
+      "domain": "server",
+      "description": "Extracted Photoshop round-trip export route and bridge registration.",
+      "slices": [
+        [
+          "server.py",
+          4387,
+          4410
+        ],
+        [
+          "server_routes/photoshop_export_routes.py",
+          1,
+          300
+        ],
+        [
+          "scripts/spb_guard_server_photoshop_export_routes.js",
+          1,
+          110
+        ]
+      ]
+    },
+    "server-spec-channel-export-routes": {
+      "domain": "server",
+      "description": "Extracted Photoshop spec-channel export route and bridge registration.",
+      "slices": [
+        [
+          "server.py",
+          5910,
+          5920
+        ],
+        [
+          "server_routes/spec_channel_export_routes.py",
+          1,
+          180
+        ],
+        [
+          "scripts/spb_guard_server_spec_channel_export_routes.js",
+          1,
+          105
+        ]
+      ]
+    },
+    "server-psd-layer-export-routes": {
+      "domain": "server",
+      "description": "Extracted Photoshop PSD layer ZIP export route and bridge registration.",
+      "slices": [
+        [
+          "server.py",
+          5566,
+          5582
+        ],
+        [
+          "server_routes/psd_layer_export_routes.py",
+          1,
+          380
+        ],
+        [
+          "scripts/spb_guard_server_psd_layer_export_routes.js",
+          1,
+          115
+        ]
+      ]
+    },
+    "server-job-cleanup": {
+      "domain": "server",
+      "description": "Extracted startup job cleanup and background janitor helpers.",
+      "slices": [
+        [
+          "server.py",
+          5790,
+          5810
+        ],
+        [
+          "server_routes/job_cleanup.py",
+          1,
+          140
+        ],
+        [
+          "scripts/spb_guard_server_job_cleanup.js",
+          1,
+          80
+        ]
+      ]
+    },
+    "server-bootstrap": {
+      "domain": "server",
+      "description": "Extracted local server startup banner, prewarm, WSGI bind, and fallback handling.",
+      "slices": [
+        [
+          "server.py",
+          5800,
+          5825
+        ],
+        [
+          "server_routes/server_bootstrap.py",
+          1,
+          190
+        ],
+        [
+          "scripts/spb_guard_server_bootstrap.js",
+          1,
+          80
+        ]
+      ]
+    },
+    "server-spec-result-support": {
+      "domain": "server",
+      "description": "Extracted spec result normalization shared by render and Finish Viewer routes.",
+      "slices": [
+        [
+          "server.py",
+          5665,
+          5685
+        ],
+        [
+          "server_routes/spec_result_support.py",
+          1,
+          140
+        ],
+        [
+          "scripts/spb_guard_server_spec_result_support.js",
+          1,
+          80
+        ]
+      ]
+    },
+    "server-swatch-routes": {
+      "domain": "server",
+      "description": "Extracted live, split-picker, swatch-test, and legacy swatch thumbnail routes.",
+      "slices": [
+        [
+          "server.py",
+          4655,
+          4692
+        ],
+        [
+          "server_routes/swatch_routes.py",
+          1,
+          360
+        ],
+        [
+          "scripts/spb_guard_server_swatch_routes.js",
+          1,
+          90
+        ]
+      ]
+    },
+    "server-shokk-routes": {
+      "domain": "server",
+      "description": "Extracted .shokk library/package management routes.",
+      "slices": [
+        [
+          "server.py",
+          7288,
+          7314
+        ],
+        [
+          "server_routes/shokk_routes.py",
+          1,
+          360
+        ],
+        [
+          "scripts/spb_guard_server_shokk_routes.js",
+          1,
+          140
+        ]
+      ]
+    },
+    "server-custom-finish-routes": {
+      "domain": "server",
+      "description": "Extracted saved custom-finish metadata CRUD routes.",
+      "slices": [
+        [
+          "server.py",
+          6858,
+          6878
+        ],
+        [
+          "server_routes/custom_finish_routes.py",
+          1,
+          140
+        ],
+        [
+          "scripts/spb_guard_server_custom_finish_routes.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "server-user-import-routes": {
+      "domain": "server",
+      "description": "USER IMPORTS local library routes (paint/pattern/spec overlay).",
+      "slices": [
+        [
+          "server.py",
+          5630,
+          5655
+        ],
+        [
+          "server_routes/user_import_routes.py",
+          1,
+          180
+        ],
+        [
+          "engine/paint_v2/user_imports.py",
+          1,
+          120
+        ],
+        [
+          "scripts/spb_guard_server_user_import_routes.js",
+          1,
+          80
+        ]
+      ]
+    },
+    "server-custom-finish-mixer-routes": {
+      "domain": "server",
+      "description": "Extracted custom finish mixer preview routes.",
+      "slices": [
+        [
+          "server.py",
+          6868,
+          6882
+        ],
+        [
+          "server_routes/custom_finish_mixer_routes.py",
+          1,
+          230
+        ],
+        [
+          "scripts/spb_guard_server_custom_finish_routes.js",
+          1,
+          140
+        ]
+      ]
+    },
+    "server-finish-viewer-recent-routes": {
+      "domain": "server",
+      "description": "Extracted Finish Viewer latest-render map and full-DNA export status routes.",
+      "slices": [
+        [
+          "server.py",
+          5968,
+          6032
+        ],
+        [
+          "server_routes/finish_viewer_recent_routes.py",
+          1,
+          230
+        ],
+        [
+          "scripts/spb_guard_server_finish_viewer_recent_routes.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "server-finish-viewer-render-routes": {
+      "domain": "server",
+      "description": "Extracted Finish Viewer live render and monolithic preview routes.",
+      "slices": [
+        [
+          "server.py",
+          5170,
+          5230
+        ],
+        [
+          "server_routes/finish_viewer_render_routes.py",
+          1,
+          330
+        ],
+        [
+          "scripts/spb_guard_server_finish_viewer_render_routes.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "server-iracing-utility-routes": {
+      "domain": "server",
+      "description": "Extracted iRacing car discovery, viewer info, cleanup, and deploy routes.",
+      "slices": [
+        [
+          "server.py",
+          6220,
+          6275
+        ],
+        [
+          "server.py",
+          7068,
+          7104
+        ],
+        [
+          "server_routes/iracing_utility_routes.py",
+          1,
+          220
+        ],
+        [
+          "scripts/spb_guard_server_iracing_utility_routes.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "server-render": {
+      "domain": "server",
+      "description": "Heavy preview/full render endpoints. Use only when render execution is the task.",
+      "slices": [
+        [
+          "server.py",
+          4523,
+          4575
+        ],
+        [
+          "server.py",
+          5060,
+          5125
+        ],
+        [
+          "server.py",
+          9538,
+          9575
+        ]
+      ]
+    },
+    "engine-registry": {
+      "domain": "engine",
+      "description": "Registry bootstrap and merge landmarks.",
+      "slices": [
+        [
+          "engine/registry.py",
+          1,
+          130
+        ],
+        [
+          "engine/registry.py",
+          260,
+          330
+        ],
+        [
+          "engine/registry.py",
+          470,
+          510
+        ],
+        [
+          "shokker_engine_v2.py",
+          9080,
+          9125
+        ]
+      ]
+    },
+    "engine-render": {
+      "domain": "engine",
+      "description": "Engine render validation and render pipeline landmarks.",
+      "slices": [
+        [
+          "shokker_engine_v2.py",
+          14370,
+          14455
+        ],
+        [
+          "shokker_engine_v2.py",
+          14750,
+          14835
+        ],
+        [
+          "shokker_engine_v2.py",
+          16713,
+          16820
+        ],
+        [
+          "shokker_engine_v2.py",
+          18599,
+          18670
+        ]
+      ]
+    },
+    "finish-data": {
+      "domain": "finishes",
+      "description": "Finish data and base registry entrypoints.",
+      "slices": [
+        [
+          "paint-booth-0-finish-data.js",
+          1,
+          160
+        ],
+        [
+          "engine/base_registry_data.py",
+          1,
+          160
+        ]
+      ]
+    },
+    "smart-tga-adjudicator": {
+      "domain": "smart-tga",
+      "description": "Immutable Smart TGA pre-repair candidates, stable ownership atoms, evidence voting, one-pass ownership, and shadow telemetry.",
+      "slices": [
+        [
+          "engine/spec_sculpt/candidate_evidence.py",
+          1,
+          180
+        ],
+        [
+          "engine/spec_sculpt/candidate_evidence.py",
+          181,
+          380
+        ],
+        [
+          "engine/spec_sculpt/component_evidence.py",
+          465,
+          690
+        ],
+        [
+          "engine/spec_sculpt/component_evidence.py",
+          700,
+          820
+        ],
+        [
+          "engine/spec_sculpt/component_evidence.py",
+          850,
+          960
+        ]
+      ]
+    },
+    "runtime-sync": {
+      "domain": "tooling",
+      "description": "Runtime mirror manifest, sync script, and docs.",
+      "slices": [
+        [
+          "scripts/runtime-sync-manifest.json",
+          1,
+          120
+        ],
+        [
+          "scripts/sync-runtime-copies.js",
+          1,
+          220
+        ],
+        [
+          "scripts/RUNTIME_SYNC.md",
+          1,
+          180
+        ]
+      ]
+    },
+    "spb93": {
+      "domain": "tools",
+      "description": "SPB-93 low-usage protocol and tool architecture slices.",
+      "slices": [
+        [
+          "docs/SPB_93_LOW_USAGE_PROTOCOL.md",
+          1,
+          120
+        ],
+        [
+          "docs/TOOL_ARCHITECTURE.md",
+          1,
+          80
+        ],
+        [
+          "docs/TOOL_ARCHITECTURE.md",
+          131,
+          165
+        ]
+      ]
+    },
+    "low-usage": {
+      "domain": "tooling",
+      "description": "Repo-wide low-usage rules and AGENTS guardrail.",
+      "slices": [
+        [
+          "docs/SPB_LOW_USAGE_PROTOCOL.md",
+          1,
+          140
+        ],
+        [
+          "AGENTS.md",
+          1,
+          24
+        ]
+      ]
+    },
+    "linear-low-usage": {
+      "domain": "tooling",
+      "description": "Bounded Linear read workflow and compact local handoff mirrors.",
+      "slices": [
+        [
+          "docs/SPB_LINEAR_LOW_USAGE.md",
+          1,
+          100
+        ],
+        [
+          "SPB_LINEAR_HANDOFF.md",
+          1,
+          14
+        ]
+      ]
+    },
+    "spb103-handoff": {
+      "domain": "tooling",
+      "description": "Compact local handoff for SPB-103 token efficiency and modularization.",
+      "slices": [
+        [
+          "docs/SPB_103_TOKEN_EFFICIENCY_HANDOFF.md",
+          1,
+          140
+        ]
+      ]
+    },
+    "release-readiness": {
+      "domain": "tooling",
+      "description": "SPB-105 alpha release plan, release gauntlet, and handoff pointers.",
+      "slices": [
+        [
+          "docs/SPB_ALPHA_RELEASE_PLAN.md",
+          1,
+          125
+        ],
+        [
+          "docs/SPB_RELEASE_GAUNTLET.md",
+          1,
+          210
+        ],
+        [
+          "SPB_LINEAR_HANDOFF.md",
+          29,
+          86
+        ],
+        [
+          "scripts/spb_release_gate_status.js",
+          1,
+          80
+        ],
+        [
+          "scripts/spb_file_budget.js",
+          1,
+          90
+        ],
+        [
+          "scripts/spb_generated_drift_guard.js",
+          1,
+          90
+        ]
+      ]
+    },
+    "generated-drift": {
+      "domain": "tooling",
+      "description": "Ratchet guard for generated/spec monster files that keep driving token usage upward.",
+      "slices": [
+        [
+          "scripts/spb_generated_drift_guard.js",
+          1,
+          120
+        ],
+        [
+          "scripts/spb_file_budget.js",
+          1,
+          72
+        ],
+        [
+          "scripts/spb_line_count.js",
+          1,
+          40
+        ],
+        [
+          "scripts/spb_guard_line_count.js",
+          1,
+          45
+        ],
+        [
+          "scripts/spb_scorecard_drift_summary.py",
+          1,
+          120
+        ],
+        [
+          "docs/SPB_RELEASE_GAUNTLET.md",
+          103,
+          123
+        ],
+        [
+          "docs/SPB_ALPHA_RELEASE_PLAN.md",
+          43,
+          74
+        ]
+      ]
+    },
+    "zone-strength-map-controls": {
+      "domain": "zones",
+      "description": "Region mask RLE helpers and zone pattern strength-map canvas controls extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/strength-map-controls.js",
+          1,
+          260
+        ],
+        [
+          "paint-booth-v2.html",
+          2600,
+          2615
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          2328,
+          2360
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8420,
+          8445
+        ]
+      ]
+    },
+    "zone-fine-tuning-controls": {
+      "domain": "zones",
+      "description": "Fine Tuning panel open/close, section toggle, DOM clone retargeting, overlay-section build, and refresh helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/fine-tuning-controls.js",
+          1,
+          230
+        ],
+        [
+          "paint-booth-v2.html",
+          2230,
+          2250
+        ],
+        [
+          "paint-booth-v2.html",
+          2607,
+          2616
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          2448,
+          2462
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8428,
+          8452
+        ]
+      ]
+    },
+    "zone-finish-dna-controls": {
+      "domain": "zones",
+      "description": "Finish DNA extract, copy, parse, paste, and paste-input handlers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/finish-dna-controls.js",
+          1,
+          430
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          3630,
+          3650
+        ],
+        [
+          "paint-booth-v2.html",
+          2608,
+          2617
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8438,
+          8462
+        ]
+      ]
+    },
+    "zone-finish-mixer-controls": {
+      "domain": "zones",
+      "description": "Finish Mixer UI, mix preview/save/delete API handlers, base picker, and custom-finish loader extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/finish-mixer-controls.js",
+          1,
+          660
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          1850,
+          1862
+        ],
+        [
+          "paint-booth-v2.html",
+          2609,
+          2618
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8446,
+          8472
+        ]
+      ]
+    },
+    "zone-data-repair-controls": {
+      "domain": "zones",
+      "description": "Legacy finish-id migration, spec channel default normalization, and zone data repair controls extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-data-repair-controls.js",
+          1,
+          210
+        ],
+        [
+          "paint-booth-v2.html",
+          2611,
+          2619
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8454,
+          8484
+        ]
+      ]
+    },
+    "zone-keyboard-controls": {
+      "domain": "zones",
+      "description": "Zone hotkeys, lasso Backspace/Escape handling, and modal close shortcuts extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-keyboard-controls.js",
+          1,
+          120
+        ],
+        [
+          "paint-booth-v2.html",
+          2613,
+          2620
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8466,
+          8505
+        ]
+      ]
+    },
+    "zone-undo-history-controls": {
+      "domain": "zones",
+      "description": "Zone undo/redo, undo history panel, and global text-entry undo guard extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-undo-history-controls.js",
+          1,
+          280
+        ],
+        [
+          "paint-booth-v2.html",
+          2614,
+          2623
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          374,
+          418
+        ],
+        [
+          "scripts/spb_guard_zone_undo_history_controls.js",
+          1,
+          130
+        ]
+      ]
+    },
+    "zone-multi-color-controls": {
+      "domain": "zones",
+      "description": "Multi-color zone status text, chip rendering, add/remove/tolerance/clear handlers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-multi-color-controls.js",
+          1,
+          280
+        ],
+        [
+          "paint-booth-v2.html",
+          2614,
+          2624
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          1288,
+          1320
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          1548,
+          1590
+        ],
+        [
+          "scripts/spb_guard_zone_multi_color_controls.js",
+          1,
+          140
+        ]
+      ]
+    },
+    "zone-detail-polish-controls": {
+      "domain": "zones",
+      "description": "Zone-detail polish helpers for overlay grouping, finish-choice celebration, choice surface headers, heartbeat bar, and preview frame pulse extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-detail-polish-controls.js",
+          1,
+          340
+        ],
+        [
+          "paint-booth-v2.html",
+          2614,
+          2626
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          620,
+          680
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          724,
+          750
+        ],
+        [
+          "scripts/spb_guard_zone_detail_polish_controls.js",
+          1,
+          150
+        ]
+      ]
+    },
+    "zone-quick-view-source-controls": {
+      "domain": "zones",
+      "description": "Zone quick-view bar and imported spec-source section rendering extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-quick-view-source-controls.js",
+          1,
+          230
+        ],
+        [
+          "paint-booth-v2.html",
+          2616,
+          2628
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          840,
+          930
+        ],
+        [
+          "scripts/spb_guard_zone_quick_view_source_controls.js",
+          1,
+          130
+        ]
+      ]
+    },
+    "zone-list-action-controls": {
+      "domain": "zones",
+      "description": "Zone list/panel action handlers for select, rename, delete, reorder, drag/drop, mute, float, and collapse extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-list-action-controls.js",
+          1,
+          310
+        ],
+        [
+          "paint-booth-v2.html",
+          2616,
+          2628
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          2880,
+          2935
+        ],
+        [
+          "scripts/spb_guard_zone_list_action_controls.js",
+          1,
+          150
+        ]
+      ]
+    },
+    "zone-default-restore-controls": {
+      "domain": "zones",
+      "description": "Default 10-zone restore template and restore handler extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-default-restore-controls.js",
+          1,
+          150
+        ],
+        [
+          "paint-booth-v2.html",
+          2618,
+          2628
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          2918,
+          2995
+        ],
+        [
+          "scripts/spb_guard_zone_default_restore_controls.js",
+          1,
+          130
+        ]
+      ]
+    },
+    "zone-swatch-identity-controls": {
+      "domain": "zones",
+      "description": "Zone swatch tint, base display, and pattern display identity helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-swatch-identity-controls.js",
+          1,
+          120
+        ],
+        [
+          "paint-booth-v2.html",
+          2618,
+          2630
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          2976,
+          3025
+        ],
+        [
+          "scripts/spb_guard_zone_swatch_identity_controls.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "zone-create-duplicate-controls": {
+      "domain": "zones",
+      "description": "Zone add, duplicate, and apply-finish-to-all handlers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-create-duplicate-controls.js",
+          1,
+          390
+        ],
+        [
+          "paint-booth-v2.html",
+          2618,
+          2628
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          2976,
+          3025
+        ],
+        [
+          "scripts/spb_guard_zone_create_duplicate_controls.js",
+          1,
+          150
+        ]
+      ]
+    },
+    "zone-card-render-controls": {
+      "domain": "zones",
+      "description": "Collapsed zone-card finish summary, color dot, region badge, linked row, and mini swatch/EKG rendering extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-card-render-controls.js",
+          1,
+          300
+        ],
+        [
+          "paint-booth-v2.html",
+          2614,
+          2625
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          1116,
+          1140
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          1170,
+          1210
+        ],
+        [
+          "scripts/spb_guard_zone_card_render_controls.js",
+          1,
+          150
+        ]
+      ]
+    },
+    "zone-link-controls": {
+      "domain": "zones",
+      "description": "Zone link/unlink group helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/zone-link-controls.js",
+          1,
+          180
+        ],
+        [
+          "paint-booth-v2.html",
+          2613,
+          2622
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          4468,
+          4488
+        ],
+        [
+          "scripts/spb_guard_zone_link_controls.js",
+          1,
+          130
+        ]
+      ]
+    },
+    "zone-preview-controls": {
+      "domain": "zones",
+      "description": "Recent paint paths, spec preview channel visualization, spec map inspector, and before/after preview controls extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/preview-controls.js",
+          1,
+          380
+        ],
+        [
+          "paint-booth-v2.html",
+          2613,
+          2621
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          8178,
+          8188
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          12894,
+          12902
+        ]
+      ]
+    },
+    "zone-source-color-apply-controls": {
+      "domain": "zones",
+      "description": "Zone color/source-layer setters, hard-edge refresh helpers, apply-area controls, and fit-to-apply-area helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/source-color-apply-controls.js",
+          1,
+          540
+        ],
+        [
+          "paint-booth-v2.html",
+          2615,
+          2622
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          7681,
+          7725
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          1776,
+          1840
+        ]
+      ]
+    },
+    "zone-finish-library-enhancement-controls": {
+      "domain": "zones",
+      "description": "Finish library card enhancement, Inspire, and zone finish hover preview helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/finish-library-enhancement-controls.js",
+          1,
+          400
+        ],
+        [
+          "paint-booth-v2.html",
+          2617,
+          2623
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          7800,
+          7818
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          840,
+          865
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          10470,
+          10530
+        ]
+      ]
+    },
+    "zone-finish-library-state-controls": {
+      "domain": "zones",
+      "description": "Finish library recent, favorites, quick-access, and group expand/collapse helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/finish-library-state-controls.js",
+          1,
+          260
+        ],
+        [
+          "paint-booth-v2.html",
+          2618,
+          2624
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          7815,
+          7842
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          10035,
+          10055
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          10368,
+          10390
+        ]
+      ]
+    },
+    "zone-finish-library-guided-catalog-controls": {
+      "domain": "zones",
+      "description": "Finish library guided catalog search, category rail, featured/recent/favorite grouping, and visible-result grid helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/finish-library-guided-catalog-controls.js",
+          1,
+          250
+        ],
+        [
+          "paint-booth-v2.html",
+          2619,
+          2626
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          7828,
+          7870
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          10532,
+          10550
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          10543,
+          10558
+        ]
+      ]
+    },
+    "zone-finish-library-search-controls": {
+      "domain": "zones",
+      "description": "Finish library smart-search tokens, alias dictionary, word matching, and scoring helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/finish-library-search-controls.js",
+          1,
+          145
+        ],
+        [
+          "paint-booth-v2.html",
+          2619,
+          2627
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          4910,
+          5005
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          7818,
+          7865
+        ],
+        [
+          "scripts/spb_guard_zone_finish_library_search_controls.js",
+          1,
+          90
+        ]
+      ]
+    },
+    "zone-finish-library-dead-legacy-prune": {
+      "domain": "zones",
+      "description": "Finish library unreachable legacy accordion renderer prune after guided catalog became the active renderer.",
+      "slices": [
+        [
+          "paint-booth-2-state-zones.js",
+          10896,
+          10924
+        ],
+        [
+          "scripts/spb_guard_zone_finish_library_dead_legacy_prune.js",
+          1,
+          65
+        ],
+        [
+          "docs/SPB_RELEASE_GAUNTLET.md",
+          455,
+          480
+        ]
+      ]
+    },
+    "zone-finish-library-render-item-controls": {
+      "domain": "zones",
+      "description": "Finish library registry preload and finish item card renderer extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/finish-library-render-item-controls.js",
+          1,
+          230
+        ],
+        [
+          "paint-booth-v2.html",
+          2619,
+          2624
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          7828,
+          7868
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          10410,
+          10428
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          10834,
+          10844
+        ]
+      ]
+    },
+    "zone-finish-library-filter-controls": {
+      "domain": "zones",
+      "description": "Finish library family, collection, quality, browse-mode, and metadata sort helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/finish-library-filter-controls.js",
+          1,
+          210
+        ],
+        [
+          "paint-booth-v2.html",
+          2619,
+          2625
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          7854,
+          7886
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          10688,
+          10705
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          10704,
+          10716
+        ]
+      ]
+    },
+    "zone-finish-library-shell-controls": {
+      "domain": "zones",
+      "description": "Finish library context, quality metadata, and render orchestration shell extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/finish-library-shell-controls.js",
+          1,
+          260
+        ],
+        [
+          "paint-booth-v2.html",
+          2660,
+          2670
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          5682,
+          5775
+        ],
+        [
+          "scripts/spb_guard_zone_finish_library_shell_controls.js",
+          1,
+          130
+        ]
+      ]
+    },
+    "zone-finish-library-panel-controls": {
+      "domain": "zones",
+      "description": "Finish library header, browse tabs, quick-pick, quality/family/pattern filter panels, current-zone context, and pattern advisor panels extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/finish-library-panel-controls.js",
+          1,
+          250
+        ],
+        [
+          "paint-booth-v2.html",
+          2619,
+          2626
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          7828,
+          7890
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          10550,
+          10620
+        ],
+        [
+          "scripts/spb_guard_zone_finish_library_panel_controls.js",
+          1,
+          100
+        ]
+      ]
+    },
+    "zone-finish-library-render-flow-controls": {
+      "domain": "zones",
+      "description": "Finish library guided render-flow tail, deterministic group ordering, default group state, post-render hooks, search filter, and legacy category toggle extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/finish-library-render-flow-controls.js",
+          1,
+          155
+        ],
+        [
+          "paint-booth-v2.html",
+          2620,
+          2629
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          7750,
+          7805
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          10490,
+          10545
+        ],
+        [
+          "scripts/spb_guard_zone_finish_library_render_flow_controls.js",
+          1,
+          100
+        ]
+      ]
+    },
+    "zone-swatch-popup-filter-controls": {
+      "domain": "zones",
+      "description": "Swatch popup smart filtering, quick-search chips, filter buttons, sort buttons, and card sorting extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-filter-controls.js",
+          1,
+          210
+        ],
+        [
+          "paint-booth-v2.html",
+          2620,
+          2629
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          7675,
+          7696
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_filter_controls.js",
+          1,
+          105
+        ]
+      ]
+    },
+    "zone-swatch-popup-lane-controls": {
+      "domain": "zones",
+      "description": "Swatch popup filter chrome, curation lane definitions, lane badges, and lane counts extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-lane-controls.js",
+          1,
+          175
+        ],
+        [
+          "paint-booth-v2.html",
+          2620,
+          2630
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          7578,
+          7592
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          4900,
+          4935
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_lane_controls.js",
+          1,
+          105
+        ]
+      ]
+    },
+    "zone-swatch-popup-health-controls": {
+      "domain": "zones",
+      "description": "Swatch popup group health summaries and category-plan badges extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-health-controls.js",
+          1,
+          170
+        ],
+        [
+          "paint-booth-v2.html",
+          2620,
+          2631
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          4790,
+          4835
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_health_controls.js",
+          1,
+          105
+        ]
+      ]
+    },
+    "zone-swatch-popup-status-controls": {
+      "domain": "zones",
+      "description": "Swatch popup active-lane context, guided reset, plan-row jump, and status copy extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-status-controls.js",
+          1,
+          285
+        ],
+        [
+          "paint-booth-v2.html",
+          2622,
+          2634
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          7004,
+          7066
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_status_controls.js",
+          1,
+          125
+        ]
+      ]
+    },
+    "zone-swatch-popup-group-controls": {
+      "domain": "zones",
+      "description": "Swatch popup group health-badge updater and category-plan badge action extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-group-controls.js",
+          1,
+          150
+        ],
+        [
+          "paint-booth-v2.html",
+          2623,
+          2635
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          6983,
+          7038
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_group_controls.js",
+          1,
+          110
+        ]
+      ]
+    },
+    "zone-swatch-popup-selection-controls": {
+      "domain": "zones",
+      "description": "Swatch popup item-selection routing extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-selection-controls.js",
+          1,
+          155
+        ],
+        [
+          "paint-booth-v2.html",
+          2624,
+          2636
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          6970,
+          6993
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_selection_controls.js",
+          1,
+          135
+        ]
+      ]
+    },
+    "zone-swatch-popup-open-controls": {
+      "domain": "zones",
+      "description": "Swatch popup open/toggle shell, grid commit, card enhancement, positioning, search reset, and focus extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-open-controls.js",
+          1,
+          150
+        ],
+        [
+          "paint-booth-v2.html",
+          2626,
+          2638
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          2898,
+          2934
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_open_controls.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "zone-swatch-popup-current-selection-controls": {
+      "domain": "zones",
+      "description": "Swatch popup current-item selection resolver extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-current-selection-controls.js",
+          1,
+          120
+        ],
+        [
+          "paint-booth-v2.html",
+          2626,
+          2638
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          4328,
+          4352
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          4488,
+          4512
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_current_selection_controls.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "zone-swatch-popup-grid-builder-controls": {
+      "domain": "zones",
+      "description": "Swatch popup base/special/pattern grid HTML builder extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-grid-builder-controls.js",
+          1,
+          285
+        ],
+        [
+          "paint-booth-v2.html",
+          2626,
+          2639
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          4331,
+          4360
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          4358,
+          4398
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_grid_builder_controls.js",
+          1,
+          135
+        ]
+      ]
+    },
+    "zone-swatch-popup-lifecycle-controls": {
+      "domain": "zones",
+      "description": "Swatch popup close/reset, outside-click, Escape, and type-to-search lifecycle extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-lifecycle-controls.js",
+          1,
+          150
+        ],
+        [
+          "paint-booth-v2.html",
+          2625,
+          2637
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          4562,
+          4578
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_lifecycle_controls.js",
+          1,
+          110
+        ]
+      ]
+    },
+    "zone-swatch-popup-render-controls": {
+      "domain": "zones",
+      "description": "Swatch popup render/type helpers, swatch URL construction, overlay special picker HTML, and swatch dot/square rendering extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-render-controls.js",
+          1,
+          260
+        ],
+        [
+          "paint-booth-v2.html",
+          2620,
+          2631
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          4230,
+          4260
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          6948,
+          6970
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_render_controls.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "zone-swatch-popup-ranking-controls": {
+      "domain": "zones",
+      "description": "Swatch popup item lookup, catalog ranking, rank chips, search text, card rendering, and favorites group helpers extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-ranking-controls.js",
+          1,
+          620
+        ],
+        [
+          "paint-booth-v2.html",
+          2632,
+          2638
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          2960,
+          3005
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_ranking_controls.js",
+          1,
+          115
+        ]
+      ]
+    },
+    "zone-swatch-popup-review-controls": {
+      "domain": "zones",
+      "description": "Swatch popup ranking row collection, owner rating review export, owner-gap panel, and low-score review queue extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-review-controls.js",
+          1,
+          430
+        ],
+        [
+          "paint-booth-v2.html",
+          2634,
+          2639
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          2972,
+          3025
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_review_controls.js",
+          1,
+          115
+        ]
+      ]
+    },
+    "zone-swatch-popup-category-strategy-controls": {
+      "domain": "zones",
+      "description": "Swatch popup category strategy rows, consolidated proposal export, and category plan panel extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-category-strategy-controls.js",
+          1,
+          460
+        ],
+        [
+          "paint-booth-v2.html",
+          2634,
+          2640
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          2972,
+          3045
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_category_strategy_controls.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "zone-swatch-popup-action-controls": {
+      "domain": "zones",
+      "description": "Swatch popup review focus, low-score panel toggle, favorites toggle, and card enhancement extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-action-controls.js",
+          1,
+          270
+        ],
+        [
+          "paint-booth-v2.html",
+          2635,
+          2641
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          3019,
+          3075
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_action_controls.js",
+          1,
+          115
+        ]
+      ]
+    },
+    "zone-swatch-popup-preview-controls": {
+      "domain": "zones",
+      "description": "Swatch popup lazy image hydration, selected-item scroll, and preview-on-paint modal controls extracted from the zone monster file.",
+      "slices": [
+        [
+          "js/zones/swatch-popup-preview-controls.js",
+          1,
+          260
+        ],
+        [
+          "paint-booth-v2.html",
+          2620,
+          2631
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          4230,
+          4260
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          4550,
+          4562
+        ],
+        [
+          "scripts/spb_guard_swatch_popup_preview_controls.js",
+          1,
+          120
+        ]
+      ]
+    },
+    "zone-extracted-boot-contract": {
+      "domain": "tooling",
+      "description": "Guard and bounded context for extracted zone module boot order, cache tokens, runtime mirror coverage, and required installer globals.",
+      "slices": [
+        [
+          "scripts/spb_guard_zone_extracted_boot_contract.js",
+          1,
+          130
+        ],
+        [
+          "scripts/spb_smoke_zone_boot_http.js",
+          1,
+          120
+        ],
+        [
+          "paint-booth-v2.html",
+          2620,
+          2633
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          4230,
+          4260
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          4550,
+          4565
+        ],
+        [
+          "paint-booth-2-state-zones.js",
+          6948,
+          6970
+        ],
+        [
+          "scripts/runtime-sync-manifest.json",
+          28,
+          66
+        ]
+      ]
+    }
+  }
+}

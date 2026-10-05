@@ -1,0 +1,30 @@
+{
+  "version":1,
+  "paint_label":"dirtlatemodel 358/car_num_1027415.tga",
+  "inspection_records":"_smart_tga_runs/cycle660_dlm_template_position_canary/inspection_records.json",
+  "review_scope":"Cycle 660 manual source plus Number/Sponsor/Template/Paint/combined-owner and learned-position review.",
+  "component_labels":[
+    {"layer":"numbers","component_index":0,"expected_bbox":[952,115,46,35],"target_layer":"template","label":"fixed_blue_template_shape_false_number"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[932,233,61,16],"target_layer":"template","label":"fixed_blue_template_shape_false_number"},
+    {"layer":"numbers","component_index":2,"expected_bbox":[280,239,166,106],"target_layer":"numbers","label":"true_side_number","family_id":"number:9_twisted"},
+    {"layer":"numbers","component_index":3,"expected_bbox":[401,287,25,5],"target_layer":"numbers","label":"true_side_number_fragment","family_id":"number:9_twisted"},
+    {"layer":"numbers","component_index":4,"expected_bbox":[200,316,70,24],"target_layer":"sponsors","label":"nutrien_wordmark_false_number"},
+    {"layer":"numbers","component_index":5,"expected_bbox":[292,723,153,85],"target_layer":"numbers","label":"true_side_number","family_id":"number:9_twisted"},
+    {"layer":"numbers","component_index":6,"expected_bbox":[4,905,93,101],"target_layer":"template","label":"fixed_template_shape_false_number"},
+    {"layer":"numbers","component_index":7,"expected_bbox":[97,905,102,108],"target_layer":"template","label":"fixed_template_shape_false_number"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[200,316,70,24],"target_layer":"sponsors","label":"position_cue_sponsor_wordmark_false_number_proposal","instance_id":"di:721bec0b8a4b3e84"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[876,832,9,4],"target_layer":"numbers","label":"position_cue_true_rear_number_fragment","family_id":"number:9_twisted","instance_id":"di:15853d9e38e68e3b"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[816,841,5,21],"target_layer":"numbers","label":"position_cue_true_rear_number_fragment","family_id":"number:9_twisted","instance_id":"di:755b0f8c6bef8e62"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[799,858,13,27],"target_layer":"numbers","label":"position_cue_true_rear_number_fragment","family_id":"number:9_twisted","instance_id":"di:d0cb9333d08f2591"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[815,867,18,28],"target_layer":"numbers","label":"position_cue_true_rear_number_fragment","family_id":"number:9_twisted","instance_id":"di:fc6bb775c94bf4cd"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[804,889,7,11],"target_layer":"numbers","label":"position_cue_true_rear_number_fragment","family_id":"number:9_twisted","instance_id":"di:5f5f59bc6490d258"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[816,894,17,33],"target_layer":"numbers","label":"position_cue_true_rear_number_fragment","family_id":"number:9_twisted","instance_id":"di:026120321732486a"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[803,905,8,13],"target_layer":"numbers","label":"position_cue_true_rear_number_fragment","family_id":"number:9_twisted","instance_id":"di:8c9ed5a5736197c8"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[836,908,5,8],"target_layer":"numbers","label":"position_cue_true_rear_number_fragment","family_id":"number:9_twisted","instance_id":"di:f69969ba45e18702"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[803,921,8,11],"target_layer":"numbers","label":"position_cue_true_rear_number_fragment","family_id":"number:9_twisted","instance_id":"di:1d8792a47b1f56b7"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[815,926,17,16],"target_layer":"numbers","label":"position_cue_true_rear_number_fragment","family_id":"number:9_twisted","instance_id":"di:6771ba16d7f12fc5"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[799,936,11,10],"target_layer":"numbers","label":"position_cue_true_rear_number_fragment","family_id":"number:9_twisted","instance_id":"di:24cb6456ea3963ca"},
+    {"layer":"paint","component_index":null,"expected_bbox":[344,734,19,23],"target_layer":"paint","label":"diagonal_livery_accent_correct_paint"},
+    {"layer":"sponsors","component_index":null,"expected_bbox":[717,510,4,10],"target_layer":"uncertain","label":"tiny_unresolved_sponsor_or_livery_fragment"}
+  ]
+}

@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_mountain_topo",
+  "display_name": "Extreme: Mountain Topo",
+  "promise": "Dense abstract topographic cartography on faded cream paper with no text numbers map icons or large landmarks",
+  "carrier_grammar": "Dense abstract topographic cartography on faded cream paper with no text numbers map icons or large landmarks; single full-canvas image, no duplicated quadrants. Fine features: deep teal map print, cream contour lines, orange trail slivers, stream branch ink, etched contour edges, paper fiber abrasion",
+  "spec_grammar": "Feature-specific selectors partition deep teal map print, cream contour lines, orange trail slivers, stream branch ink, etched contour edges, paper fiber abrasion. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "deep teal map print",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "cream contour lines",
+      "role": "Material feature selected from artwork by g:>:0.64&s:<:0.45"
+    },
+    {
+      "name": "orange trail slivers",
+      "role": "Material feature selected from artwork by h:<:55&s:>:0.5"
+    },
+    {
+      "name": "stream branch ink",
+      "role": "Material feature selected from artwork by h:>:175&h:<:240&s:>:0.45"
+    },
+    {
+      "name": "etched contour edges",
+      "role": "Material feature selected from artwork by edge:>:0.68"
+    },
+    {
+      "name": "paper fiber abrasion",
+      "role": "Material feature selected from artwork by fine:>:0.83"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "deep teal map print",
+      "cream contour lines",
+      "orange trail slivers",
+      "stream branch ink",
+      "etched contour edges",
+      "paper fiber abrasion"
+    ],
+    "R": [
+      "deep teal map print",
+      "cream contour lines",
+      "orange trail slivers",
+      "stream branch ink",
+      "etched contour edges",
+      "paper fiber abrasion"
+    ],
+    "Cc": [
+      "deep teal map print",
+      "cream contour lines",
+      "orange trail slivers",
+      "stream branch ink",
+      "etched contour edges",
+      "paper fiber abrasion"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "deep teal map print",
+      "range": [
+        [
+          0,
+          130,
+          150
+        ],
+        [
+          22,
+          225,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cream contour lines",
+      "range": [
+        [
+          0,
+          155,
+          170
+        ],
+        [
+          10,
+          245,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "orange trail slivers",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "stream branch ink",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "etched contour edges",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "paper fiber abrasion",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_anodised_peg",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_bmx_dirt",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "deep teal map print",
+      "cream contour lines",
+      "orange trail slivers",
+      "stream branch ink",
+      "etched contour edges",
+      "paper fiber abrasion"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_mountain_topo / Dense abstract topographic cartography on faded cream paper with no text numbers map icons or large landmarks",
+  "spec_key": "at_mountain_topo / deep teal map print all; cream contour lines g:>:0.64&s:<:0.45; orange trail slivers h:<:55&s:>:0.5; stream branch ink h:>:175&h:<:240&s:>:0.45; etched contour edges edge:>:0.68; paper fiber abrasion fine:>:0.83",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

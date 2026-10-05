@@ -118,7 +118,7 @@ def test_spb30_chameleon_classics_use_owner_review_sources_and_have_fine_detail(
         assert float(spec[:, :, 2].max() - spec[:, :, 2].min()) > 8.0
 
 
-def test_spb30_gradient_owner_review_sources_cover_directional_vortex_and_extended():
+def test_spb30_gradient_overhaul_sources_cover_directional_vortex_and_extended():
     import shokker_engine_v2 as engine
 
     engine._ensure_expansions_loaded()
@@ -140,8 +140,8 @@ def test_spb30_gradient_owner_review_sources_cover_directional_vortex_and_extend
     fingerprints = []
     for finish_id in ids:
         spec_fn, paint_fn = engine.MONOLITHIC_REGISTRY[finish_id]
-        assert "owner_review_gradients" in getattr(spec_fn, "__module__", "")
-        assert "owner_review_gradients" in getattr(paint_fn, "__module__", "")
+        assert getattr(spec_fn, "__module__", "") == "engine.expansions.gradient_overhaul_2026"
+        assert getattr(paint_fn, "__module__", "") == "engine.expansions.gradient_overhaul_2026"
 
         size = 176
         paint = np.full((size, size, 3), 0.16, dtype=np.float32)

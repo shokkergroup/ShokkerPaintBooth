@@ -1,0 +1,179 @@
+{
+  "schema": "spb-additional-customer-psd-native/1",
+  "status": "PASS_WITH_LIMITS",
+  "profile": "ai14h-spec-only-root-native",
+  "session": "29fdfce3fd6f",
+  "providerAttempts": 0,
+  "records": [
+    {
+      "index": 4,
+      "path": "C:\\1Shokker Paint Car Examples\\Older Junk\\RW Legends AM PSD.psd",
+      "expectedOriginalSHA256": "032f59b6c78b1282125047b0fe082bcd5d630e8785f117554e29425acba3a15e",
+      "result": {
+        "fixture": null,
+        "result": {
+          "ok": true,
+          "requestedPath": "C:\\1Shokker Paint Car Examples\\Older Junk\\RW Legends AM PSD.psd",
+          "committedPath": "C:\\1Shokker Paint Car Examples\\Older Junk\\RW Legends AM PSD.psd",
+          "generation": 4,
+          "fingerprint": "d53d16fddec7fc318545739dfd20839c628c21848338e541bbf36d2726711e70",
+          "error": null
+        },
+        "elapsedMs": 6800,
+        "source": "d53d16fddec7fc318545739dfd20839c628c21848338e541bbf36d2726711e70",
+        "expectedSource": "file-sha256:032f59b6c78b1282125047b0fe082bcd5d630e8785f117554e29425acba3a15e",
+        "width": 2048,
+        "height": 2048,
+        "layerCount": 10,
+        "visibleLayers": 10,
+        "pixelLayers": 10,
+        "safety": null,
+        "zoneCount": 7,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5d1fb420ee0c68ec45f6152054d875e73d336b714981faca719b1bea3b3661cd"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "7d7a06a9bf9ce559e66abb24d953516ff370efe720380660502c5c30eeaac55e"
+        },
+        "providerAttempts": 0
+      }
+    },
+    {
+      "index": 7,
+      "path": "C:\\1Shokker Paint Car Examples\\SPB Chevy Truck Example PSD.psd",
+      "expectedOriginalSHA256": "0a2746ddfeb11d329076b93453499ce7dbf5e01169da4b9cf9e6c84be8f4525c",
+      "result": {
+        "settled": true,
+        "fixture": "Chevy Truck customer PSD",
+        "result": {
+          "ok": true,
+          "requestedPath": "C:\\1Shokker Paint Car Examples\\SPB Chevy Truck Example PSD.psd",
+          "committedPath": "C:\\1Shokker Paint Car Examples\\SPB Chevy Truck Example PSD.psd",
+          "generation": 5,
+          "fingerprint": "b0fcef4068ccf8ba289042a18e3c4dda9966ef29e66cb7dd6780b9d8619b620a",
+          "error": null
+        },
+        "elapsedMs": 11656,
+        "source": "b0fcef4068ccf8ba289042a18e3c4dda9966ef29e66cb7dd6780b9d8619b620a",
+        "expectedSource": "file-sha256:0a2746ddfeb11d329076b93453499ce7dbf5e01169da4b9cf9e6c84be8f4525c",
+        "width": 2048,
+        "height": 2048,
+        "layerCount": 11,
+        "visibleLayers": 10,
+        "pixelLayers": 11,
+        "safety": null,
+        "zoneCount": 7,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "e267ce97e32fa8d679c5a5329afadf3e7df1463fb16379bdbf90bfd78d22dff6"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "providerAttempts": 0
+      }
+    },
+    {
+      "index": 8,
+      "path": "C:\\1Shokker Paint Car Examples\\SPB Fractured Truck PSD.psd",
+      "expectedOriginalSHA256": "c8e644ed87f55079d2992baea4db52825657f68854bd5b74a25eec11ca22a004",
+      "result": {
+        "settled": true,
+        "fixture": "Fractured Truck customer PSD",
+        "result": {
+          "ok": true,
+          "requestedPath": "C:\\1Shokker Paint Car Examples\\SPB Fractured Truck PSD.psd",
+          "committedPath": "C:\\1Shokker Paint Car Examples\\SPB Fractured Truck PSD.psd",
+          "generation": 6,
+          "fingerprint": "d880f4c964fa1ba07c760239da297e6d6aaa02f3200bfa5894964af15a8022d2",
+          "error": null
+        },
+        "elapsedMs": 19089,
+        "source": "d880f4c964fa1ba07c760239da297e6d6aaa02f3200bfa5894964af15a8022d2",
+        "expectedSource": "file-sha256:c8e644ed87f55079d2992baea4db52825657f68854bd5b74a25eec11ca22a004",
+        "width": 2048,
+        "height": 2048,
+        "layerCount": 13,
+        "visibleLayers": 11,
+        "pixelLayers": 13,
+        "safety": null,
+        "zoneCount": 7,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "7f176a84cff74f9a3b10a9110a2bbaccaad6a6c37def998572cd10c3ad676e2b"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "7d7a06a9bf9ce559e66abb24d953516ff370efe720380660502c5c30eeaac55e"
+        },
+        "providerAttempts": 0
+      }
+    },
+    {
+      "index": 9,
+      "path": "C:\\1Shokker Paint Car Examples\\SPB ARCA Chevy V4.psd",
+      "expectedOriginalSHA256": "f5fd8cde957ac70a0155b14df6aa532e303e2cdc8a0280b6b19a8091c19e08d9",
+      "result": {
+        "settled": true,
+        "fixture": "ARCA Chevy V4 customer PSD",
+        "result": {
+          "ok": true,
+          "requestedPath": "C:\\1Shokker Paint Car Examples\\SPB ARCA Chevy V4.psd",
+          "committedPath": "C:\\1Shokker Paint Car Examples\\SPB ARCA Chevy V4.psd",
+          "generation": 7,
+          "fingerprint": "7a7506aad90b4b05a3e473ff3c546d024eaff96ace8349e029f982c5cd469ee0",
+          "error": null
+        },
+        "elapsedMs": 17025,
+        "source": "7a7506aad90b4b05a3e473ff3c546d024eaff96ace8349e029f982c5cd469ee0",
+        "expectedSource": "file-sha256:f5fd8cde957ac70a0155b14df6aa532e303e2cdc8a0280b6b19a8091c19e08d9",
+        "width": 2048,
+        "height": 2048,
+        "layerCount": 16,
+        "visibleLayers": 14,
+        "pixelLayers": 16,
+        "safety": null,
+        "zoneCount": 7,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "d8832bf4d044b79d2c7934043df75c91b6bdebf3e5f8402ded82db84cb1088ba"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "7d7a06a9bf9ce559e66abb24d953516ff370efe720380660502c5c30eeaac55e"
+        },
+        "providerAttempts": 0
+      }
+    }
+  ],
+  "selectedPsdActualImportCoverage": {
+    "priorGeneration3": 6,
+    "additionalCurrentRoot": 4,
+    "total": 10
+  },
+  "limits": [
+    "Current root backend and its existing composite source identity; not a raw-byte durable-owner test.",
+    "Layer counts are raster leaves, so PSD group counts are not directly comparable.",
+    "Successful actual imports and render/snapshot observations; no Photoshop text/adjustment editing equivalence claimed.",
+    "Private doc closed after read-only original imports; baseline project already preserved."
+  ]
+}

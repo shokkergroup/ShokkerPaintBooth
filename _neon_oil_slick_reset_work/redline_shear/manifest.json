@@ -1,0 +1,85 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon_red_alert",
+  "display_name": "Redline Shear",
+  "carrier": "fluorescent red lacquer compressed into staggered local 8-32px stress-front packets",
+  "material_story": {
+    "M": "exposed aluminum at varied white-hot pressure lips, microcuts, and torn micro-check fragments",
+    "R": "recoil scars, angular cavitation, and cut damage rise while compression-burnished fronts fall",
+    "Cc": "intact trailing lacquer pools and healed cooling tails rise while every rupture falls"
+  },
+  "vetoes": [
+    "gauges",
+    "circles",
+    "needles",
+    "numerals",
+    "checker banners",
+    "repeated annuli",
+    "recoverable large arcs",
+    "Oil Slick flow contours"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 1.229347,
+  "material_stats": {
+    "std": {
+      "M": 82.789734,
+      "R": 83.29921,
+      "Cc": 83.260773
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": -0.288813,
+      "M_Cc": 0.065658,
+      "R_Cc": -0.503391
+    }
+  },
+  "geometry_stats": {
+    "family_count": 7,
+    "families": {
+      "compression_front": 3734,
+      "magenta_cooling_tail": 2443,
+      "recoil_scar": 472,
+      "tick_comb_microcut": 1086,
+      "white_hot_pressure_lip": 310,
+      "angular_cavitation_pit": 331,
+      "sheared_microcheck_fragment": 56
+    },
+    "width_native_min": 9.045,
+    "width_native_median": 25.174,
+    "width_native_p90": 30.563,
+    "width_native_max": 31.998,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "compression fronts": 0.18918,
+    "white-hot lips": 0.01971,
+    "tick-comb cuts": 0.057229,
+    "recoil scars": 0.030577,
+    "cavitation pits": 0.02081,
+    "micro-check fragments": 0.001575,
+    "magenta cooling tails": 0.127351,
+    "intact clear pools": 0.558709
+  }
+}

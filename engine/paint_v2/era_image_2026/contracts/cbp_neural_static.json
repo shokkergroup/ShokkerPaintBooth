@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_neural_static",
+  "display_name": "Netrun: Neural Static",
+  "promise": "Fine yellow and pink synaptic specks branch between blue insulating grains.",
+  "carrier_grammar": "Fine yellow and pink synaptic specks branch between blue insulating grains. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for blue insulating grains, yellow synaptic specks, pink fork specks, violet dendrite hooks, white pulse points, black microscopic breaks is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Fine yellow and pink synaptic specks branch between blue insulating grains. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_neural_static.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "blue insulating grains",
+      "role": "Actual shared paint and spec geometry: blue insulating grains"
+    },
+    {
+      "name": "yellow synaptic specks",
+      "role": "Actual shared paint and spec geometry: yellow synaptic specks"
+    },
+    {
+      "name": "pink fork specks",
+      "role": "Actual shared paint and spec geometry: pink fork specks"
+    },
+    {
+      "name": "violet dendrite hooks",
+      "role": "Actual shared paint and spec geometry: violet dendrite hooks"
+    },
+    {
+      "name": "white pulse points",
+      "role": "Actual shared paint and spec geometry: white pulse points"
+    },
+    {
+      "name": "black microscopic breaks",
+      "role": "Actual shared paint and spec geometry: black microscopic breaks"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "blue insulating grains",
+      "yellow synaptic specks",
+      "pink fork specks",
+      "violet dendrite hooks",
+      "white pulse points",
+      "black microscopic breaks"
+    ],
+    "R": [
+      "blue insulating grains",
+      "yellow synaptic specks",
+      "pink fork specks",
+      "violet dendrite hooks",
+      "white pulse points",
+      "black microscopic breaks"
+    ],
+    "Cc": [
+      "blue insulating grains",
+      "yellow synaptic specks",
+      "pink fork specks",
+      "violet dendrite hooks",
+      "white pulse points",
+      "black microscopic breaks"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_daemon_red",
+      "difference": "This finish uses Dense ultrafine yellow pink synaptic fork specks, blue insulating micrograins, violet disconnected dendrite hooks, tiny white pulse points and black microscopic breaks. Organic branching stipple at tiny scale, no broad neural network or noisy rectangular glitch blocks.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_datastream",
+      "difference": "This finish uses Dense ultrafine yellow pink synaptic fork specks, blue insulating micrograins, violet disconnected dendrite hooks, tiny white pulse points and black microscopic breaks. Organic branching stipple at tiny scale, no broad neural network or noisy rectangular glitch blocks.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "blue insulating grains is visible in the authored geometry",
+      "yellow synaptic specks is visible in the authored geometry",
+      "pink fork specks is visible in the authored geometry",
+      "violet dendrite hooks is visible in the authored geometry",
+      "white pulse points is visible in the authored geometry",
+      "black microscopic breaks is visible in the authored geometry"
+    ],
+    "source_sha256": "fedb7b4df81fdf000ae333ce2b103d7902a5ab716c5fa0243d36fbfee4c4ca27",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_neural_static-authored-Fine yellow and pink synaptic specks branch between blue insulating grains. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_neural_static-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 83.9,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "c98b8d917be93f0ff59e725cf56200af8e927a0119bb6e66dc7f3a7e680af07c"
+}

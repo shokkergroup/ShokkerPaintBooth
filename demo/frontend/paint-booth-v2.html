@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; media-src 'self'; connect-src 'self' http://127.0.0.1:59886; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'">
+  <title>SHOKK DEMO — Shokker Paint Booth</title>
+  <link rel="stylesheet" href="/styles.css?v=demo13-color-20260906">
+  <link rel="stylesheet" href="/branding-recipe.css?v=demo13-color-20260906">
+</head>
+<body class="demo-startup-pending">
+  <div id="app" class="app-shell" aria-busy="true">
+    <header class="topbar">
+      <div class="brand" aria-label="Shokker Paint Booth Demo">
+        <div class="brand-mark">SPB</div>
+        <div><strong>SHOKKER</strong><span>PAINT BOOTH</span></div>
+        <b class="demo-badge">FREE DEMO</b>
+      </div>
+
+      <label class="compact-field user-field">
+        <span>iRACING USER ID</span>
+        <input id="iracingId" inputmode="numeric" maxlength="10" value="23371" aria-label="iRacing user ID">
+      </label>
+
+      <fieldset class="number-mode" aria-label="Car number mode">
+        <label><input id="customNumberMode" type="radio" name="number-mode" value="custom" checked> CUSTOM NUMBER</label>
+        <label><input id="simNumberMode" type="radio" name="number-mode" value="sim"> SIM-STAMPED NUMBER</label>
+        <input id="carNumber" inputmode="numeric" maxlength="3" value="24" aria-label="Custom car number">
+      </fieldset>
+
+      <div class="path-field source-field">
+        <span>SOURCE PAINT</span>
+        <button id="sourcePath" class="path-value" type="button" title="Choose a source paint">Loading starter paint…</button>
+        <button id="chooseSource" class="icon-btn folder-btn" type="button" aria-label="Choose source paint">▣</button>
+      </div>
+
+      <div class="path-field output-field">
+        <span>iRACING CAR FOLDER</span>
+        <button id="outputPath" class="path-value" type="button" title="Choose the iRacing output folder">Choose folder…</button>
+        <button id="chooseOutput" class="icon-btn folder-btn" type="button" aria-label="Choose iRacing folder">▣</button>
+      </div>
+
+      <div class="top-actions">
+        <button id="fractureButton" class="btn fracture-btn" type="button">✦ FRACTURE THIS PAINT</button>
+        <button id="unlockButton" class="btn upgrade-btn" type="button">UNLOCK FULL</button>
+        <button id="discordButton" class="btn ghost-btn" type="button">DISCORD</button>
+      </div>
+    </header>
+
+    <nav class="toolstrip" aria-label="Demo tools">
+      <div class="tool-group" role="group" aria-label="Selection tool">
+        <button id="pickTool" class="tool active" type="button" aria-pressed="true"><b>◎</b><span>PICK</span></button>
+        <button id="excludeTool" class="tool" type="button" aria-pressed="false"><b>✕</b><span>EXCLUDE</span></button>
+      </div>
+      <div id="toolHint" class="tool-hint">Pick Item: click the source to select a PSD layer. Use + Add Color to build a paint zone.</div>
+      <div id="excludeControls" class="exclude-controls" hidden>
+        <label for="excludeSize">SIZE</label><input id="excludeSize" type="range" min="1" max="512" value="80" aria-label="Exclusion brush diameter">
+        <input id="excludeSizeValue" type="number" min="1" max="512" value="80" aria-label="Exclusion brush diameter in source pixels"><span>px</span>
+        <button id="excludeUndo" type="button" disabled>UNDO</button><button id="excludeClear" type="button" disabled>CLEAR DRAWN</button>
+        <output id="excludeCoverage" aria-live="polite">No drawn exclusions</output>
+      </div>
+      <button id="renderButton" class="render-btn" type="button"><span>✦</span> RENDER</button>
+      <div class="render-meta"><span id="renderState">READY</span><small id="renderTime">No render yet</small></div>
+    </nav>
+
+    <main class="main-grid">
+      <aside class="zones-rail panel" aria-label="Zones">
+        <div class="panel-title"><span>ZONES</span><b id="zoneCount">5</b><small>TOP → BOTTOM</small></div>
+        <div id="zoneList" class="zone-list"></div>
+        <div class="rail-actions">
+          <button id="addZone" class="btn full" type="button">+ ADD ZONE</button>
+          <button id="resetZones" class="btn full ghost-btn" type="button">RESET ALL ZONES</button>
+        </div>
+      </aside>
+
+      <section class="zone-panel panel" aria-label="Zone popout panel">
+        <div class="panel-title"><span>ZONE POPOUT PANEL</span><button id="resetZone" class="mini-btn" type="button">↻ Reset Zone</button></div>
+        <div id="zoneEditor" class="zone-editor"></div>
+      </section>
+
+      <section class="workspace panel" aria-label="Paint previews">
+        <div class="map-strip" aria-label="Material map previews">
+          <button class="map-card active" data-map="combined" type="button"><canvas id="combinedCanvas"></canvas><span>COMBINED</span></button>
+          <button class="map-card" data-map="metal" type="button"><canvas id="metalCanvas"></canvas><span>R METAL</span></button>
+          <button class="map-card" data-map="rough" type="button"><canvas id="roughCanvas"></canvas><span>G ROUGH</span></button>
+          <button class="map-card" data-map="clearcoat" type="button"><canvas id="clearcoatCanvas"></canvas><span>B COAT</span></button>
+        </div>
+
+        <div class="preview-grid">
+          <article class="preview-card">
+            <div class="preview-label"><span>SOURCE</span><small id="sourceDimensions"></small></div>
+            <div class="viewport-zoom-controls" role="group" aria-label="Source zoom controls">
+              <button id="sourceZoomOut" type="button" aria-label="Zoom source out">−</button>
+              <output id="sourceZoomValue" aria-live="polite">100%</output>
+              <button id="sourceZoomIn" type="button" aria-label="Zoom source in">+</button>
+              <button id="sourceZoomFit" type="button" aria-label="Fit source in view">FIT</button>
+            </div>
+            <div class="canvas-stage" id="sourceStage"><div class="canvas-surface"><canvas id="sourceCanvas" tabindex="0" aria-label="Source paint canvas"></canvas><canvas id="sourceExcludeOverlay" class="exclusion-overlay" aria-hidden="true" hidden></canvas></div></div>
+          </article>
+          <article class="preview-card">
+            <div class="preview-label live"><span id="livePreviewLabel">LIVE PREVIEW</span><small id="previewNotice">waiting for source</small></div>
+            <div class="viewport-zoom-controls" role="group" aria-label="Live preview zoom controls">
+              <button id="liveZoomOut" type="button" aria-label="Zoom live preview out">−</button>
+              <output id="liveZoomValue" aria-live="polite">100%</output>
+              <button id="liveZoomIn" type="button" aria-label="Zoom live preview in">+</button>
+              <button id="liveZoomFit" type="button" aria-label="Fit live preview in view">FIT</button>
+            </div>
+            <div class="canvas-stage" id="liveStage"><div class="canvas-surface"><canvas id="liveCanvas" tabindex="0" aria-label="Live render preview"></canvas><canvas id="liveExcludeOverlay" class="exclusion-overlay" aria-hidden="true" hidden></canvas></div><div id="previewSpinner" class="spinner" hidden></div></div>
+          </article>
+        </div>
+
+        <div class="workspace-footer">
+          <span id="selectionStatus">No item selected</span>
+          <span class="demo-limit">DEMO · 29 HAND-PICKED FINISHES · 1 BASE LAYER · PICK + EXCLUDE</span>
+        </div>
+      </section>
+
+      <aside class="layers-panel panel" aria-label="PSD layers">
+        <div class="panel-title"><span>LAYERS</span><b id="layerCount">0</b><button id="reloadLayers" class="mini-btn" type="button">↻</button></div>
+        <div id="layerControls" class="layer-controls empty">Select a layer with PICK or click a layer card.</div>
+        <div id="layerList" class="layer-list"></div>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="finishDialog" class="finish-dialog">
+    <form method="dialog" class="dialog-shell">
+      <div class="dialog-title"><div><strong id="finishDialogTitle">CHOOSE A DEMO FINISH</strong><span id="finishDialogSubtitle">29 hand-picked materials from the full Shokker library</span></div><button value="cancel" aria-label="Close">×</button></div>
+      <label class="finish-search"><span>⌕</span><input id="finishSearch" autocomplete="off" placeholder="Search finishes or collections…"></label>
+      <div id="finishGroups" class="finish-groups"></div>
+      <div id="finishGrid" class="finish-grid"></div>
+      <footer><span>Want thousands more finishes, patterns, overlays and tools?</span><button id="dialogUnlock" type="button" class="btn upgrade-btn">GET THE FULL VERSION</button></footer>
+    </form>
+  </dialog>
+
+  <dialog id="renderDialog" class="render-dialog">
+    <div class="render-success">
+      <button id="closeRenderDialog" class="dialog-close" type="button" aria-label="Close">×</button>
+      <div class="success-icon">✓</div>
+      <h2>Your paint is rendered.</h2>
+      <p id="renderResultText">The demo output is ready.</p>
+      <div id="renderDownloads" class="render-downloads"></div>
+      <div class="taste-cta">
+        <strong>Like what SHOKK DEMO can do?</strong>
+        <span>The full Paint Booth unlocks the complete finish library, patterns, overlays and pro tools.</span>
+        <button id="renderUnlock" class="btn upgrade-btn" type="button">BUY THE FULL VERSION</button>
+        <button id="renderDiscord" class="btn ghost-btn" type="button">JOIN THE DISCORD</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="channelInspectDialog" class="channel-inspect-dialog" aria-labelledby="channelInspectTitle">
+    <div class="channel-inspect-shell">
+      <header>
+        <div><small>MATERIAL MAP</small><strong id="channelInspectTitle">COMBINED</strong></div>
+        <span>Full-screen inspection · press Esc to close</span>
+        <button id="closeChannelInspect" type="button" aria-label="Close material map inspection">×</button>
+      </header>
+      <div id="channelInspectStage" class="channel-inspect-stage">
+        <canvas id="channelInspectCanvas" aria-label="Full-screen material map inspection"></canvas>
+      </div>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="pickReticle" class="pick-reticle" hidden></div>
+  <div id="excludeCursor" class="exclude-cursor" aria-hidden="true" hidden></div>
+  <input id="browserSourceInput" type="file" accept=".psd,.psb,.tga,.png,.jpg,.jpeg" hidden>
+  <script type="module" src="/js/branding-recipe.js?v=demo13-color-20260906"></script>
+  <script type="module" src="/js/app.js?v=demo13-color-20260906"></script>
+</body>
+</html>

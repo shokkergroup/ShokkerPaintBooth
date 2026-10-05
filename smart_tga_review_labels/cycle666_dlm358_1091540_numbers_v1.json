@@ -1,0 +1,7 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_1091540.tga","inspection_records":"_smart_tga_runs/cycle666_dlm_exact_false_positive_analysis/inspection_records.json","review_scope":"Cycle 666 source plus complete Number/Sponsor/Template/Paint and physical-group sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[772,478,19,94],"target_layer":"sponsors","label":"sullivan_wordmark_fragment"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[736,566,48,31],"target_layer":"numbers","label":"true_small_number_fragment","family_id":"number:117"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[271,716,215,109],"target_layer":"numbers","label":"true_lower_number","family_id":"number:117"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[482,745,28,21],"target_layer":"sponsors","label":"cooks_sponsor_wordmark"},
+ {"layer":"numbers","component_index":4,"expected_bbox":[0,902,202,111],"target_layer":"template","label":"fixed_template_hardware"}
+]}

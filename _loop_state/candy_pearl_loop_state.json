@@ -1,0 +1,19 @@
+{
+  "group": "Candy & Pearl",
+  "ticks": [
+    {
+      "tick": 1,
+      "started_at": "2026-05-26T22:45:00.000Z",
+      "ended_at": "2026-05-26T22:46:00.000Z",
+      "bases": ["moonstone", "orange_peel_gloss", "hypershift_spectral"],
+      "note": "Owner REBUILD/MIXED — cabochon moonstone, true orange peel, dynamic hypershift 360"
+    },
+    {
+      "tick": 2,
+      "started_at": "2026-05-27T01:00:00.000Z",
+      "ended_at": "2026-05-27T01:01:00.000Z",
+      "bases": ["tinted_clear"],
+      "note": "Owner REBUILD — true tinted clear preserves base hue; lighter amber/smoke veil"
+    }
+  ]
+}

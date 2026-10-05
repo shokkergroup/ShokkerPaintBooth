@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_1135375.tga",
+  "inspection_records": "_smart_tga_runs/cycle654_dlm_batch_unique/inspection_records.json",
+  "review_scope": "Cycle 654 manual source and all-owner sheet review of every emitted suspect bbox.",
+  "component_labels": [
+    {"layer":"numbers","component_index":8,"expected_bbox":[823,799,132,180],"target_layer":"numbers","label":"true_number","note":"True outlined 44 decal."},
+    {"layer":"numbers","component_index":6,"expected_bbox":[755,408,57,221],"target_layer":"sponsors","label":"sponsor_wordmark","note":"Vertical HIGH PERFORMANCE sponsor wordmark."},
+    {"layer":"numbers","component_index":7,"expected_bbox":[449,715,146,49],"target_layer":"sponsors","label":"sponsor_wordmark","note":"ATLAS/VELO sponsor lockup."},
+    {"layer":"numbers","component_index":4,"expected_bbox":[447,276,138,52],"target_layer":"sponsors","label":"sponsor_wordmark","note":"Reflected ATLAS/VELO sponsor lockup."},
+    {"layer":"paint","component_index":78,"expected_bbox":[346,672,31,2],"target_layer":"sponsors","label":"sponsor_wordmark_fragment","note":"Tiny contingency text fragment."}
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "task": "W89 exact authored-part colour compile candidate",
+  "date": "2026-10-04",
+  "finding": {
+    "severity": "P1 scope correctness",
+    "summary": "When a named part has a current solid helper-owned colour and source paint elsewhere contains a matching color family, E.compile previously preferred source-color entries and bypassed currentPartZoneOwners. The compile could target source green on the roof rather than the current authored green zone; with missing or invalid owner proof it also fell through to that source region."
+  },
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w89_review/fresh_oracle.json",
+    "sha256": "3629af3aa5f3cacb48c0a67402338ab235c69697786de60b26162639a05215f4",
+    "frozenBeforeImplementation": true,
+    "cases": 12,
+    "plusPostImplementationControls": 3,
+    "sourcePins": {
+      "controller": "eedf2aa5f17772f72796f722af322ba93665ddc01a43880ab313f57355c5cd17",
+      "edit": "99703873013e198857d9aceaa334821098e53dcaa9d55e14dbd1ec50e58604de",
+      "design": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8"
+    }
+  },
+  "pins": {
+    "base": {
+      "controller": {
+        "path": "_easy_claude_work/ai14h_w89_review/base/spb-pro-ai.js",
+        "sha256": "eedf2aa5f17772f72796f722af322ba93665ddc01a43880ab313f57355c5cd17"
+      },
+      "edit": {
+        "path": "_easy_claude_work/ai14h_w89_review/base/spb-pro-edit.js",
+        "sha256": "99703873013e198857d9aceaa334821098e53dcaa9d55e14dbd1ec50e58604de"
+      }
+    },
+    "candidate": {
+      "controller": {
+        "path": "_easy_claude_work/ai14h_w89_review/candidate/spb-pro-ai.js",
+        "sha256": "fa51053ad77409aa677a9e2d8ef633fd6d6bcd20e5dcdf5628af40c65b37dc59"
+      },
+      "edit": {
+        "path": "_easy_claude_work/ai14h_w89_review/candidate/spb-pro-edit.js",
+        "sha256": "3696cf6c9bdf9a28a056ebf90a9ddd23cfe290134943c11beb4c7ec5485a173a"
+      }
+    },
+    "test": {
+      "path": "tests/ai_owned_scoped_colour_w89_contract.cjs",
+      "sha256": "d4c17d07538c770dbf03fbf03efdca413c5cebb2fbac73b968666fefe42e9f5a"
+    },
+    "patches": [
+      {
+        "path": "_easy_claude_work/ai14h_w89_review/W89-edit.patch",
+        "sha256": "060820b340144492ed1cded5dc3a60a9d64c28d2541ef045404b7fdc306c1b30"
+      },
+      {
+        "path": "_easy_claude_work/ai14h_w89_review/W89-controller.patch",
+        "sha256": "c3020030a50dbbcf826321b1e9cb80a4bb58bd213eb735bddf0707877745f586"
+      }
+    ]
+  },
+  "replay": {
+    "baseline": {
+      "frozenCases": 12,
+      "passed": 1,
+      "failed": 11,
+      "example": {
+        "id": "W89-01",
+        "actualZones": 1,
+        "ask": false,
+        "detail": "source:{\"colors\":[\"#01ff00\"],\"tolerance\":38,\"part\":\"roof\"}"
+      },
+      "invalidProofExample": {
+        "id": "W89-04",
+        "pass": false,
+        "actualZones": 1,
+        "ask": false,
+        "detail": "source/add fallback"
+      }
+    },
+    "candidate": {
+      "frozenCases": 12,
+      "passed": 12,
+      "failed": 0,
+      "postImplementationControls": 3,
+      "controlsPassed": true
+    }
+  },
+  "behavior": {
+    "ownerEdits": "One uniquely proven whole-part zone is edited with the exact new color; `_meta.zoneEdit` identifies the original zone and the existing finish is omitted (preserved). Source-palette hits outside the named part do not redirect the target.",
+    "refusal": "Any matching authored zone on the requested part requires one current proof matching zone ID and part, exact solid base hex, unmuted/useRegion state, default-full base color and finish strengths, strong source identity, matching region/part mask hash, unique source-layer binding, and fully visible footprint. Missing, malformed, mismatched, duplicated, partial, or overlapping evidence yields a no-change clarification.",
+    "sourceOnly": "If no authored zone hits, the existing source-color part region path remains unchanged."
+  },
+  "tests": {
+    "command": "node tests/ai_owned_scoped_colour_w89_contract.cjs",
+    "candidateReplay": "_easy_claude_work/ai14h_w89_review/candidate-replay.json",
+    "baselineReplay": "_easy_claude_work/ai14h_w89_review/baseline-replay.json",
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "serverCalls": 0
+  },
+  "limits": [
+    "Actual frozen SpbProDesign.plan and SpbProEdit.plan/compile execute. The test supplies a controlled currentPartZoneOwners proof callback; it does not execute proAI currentPartZoneOwners/queueEditZones/applyQueue or the actual saved project artifact.",
+    "The companion controller patch adds defaulted baseColorStrength/baseStrength fields to the private scoped appearance proof. Runtime/native compatibility remains for root to replay before merge.",
+    "Candidate remains isolated. No root/live production source was edited; no painting was applied."
+  ]
+}

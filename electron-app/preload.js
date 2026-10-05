@@ -8,8 +8,12 @@ const INVOKE_CHANNELS = new Set([
   'list-dir',
   'get-quick-navs',
   'show-folder-dialog',
+  'select-source-paint',
+  'select-iracing-car-folder',
   'app-version',
   'get-server-port',
+  'forge-import-psd',
+  'gpu-status',
   'open-external',
   'show-about',
   'show-error',
@@ -20,12 +24,21 @@ const INVOKE_CHANNELS = new Set([
   'request-hard-reload',
   'request-toggle-devtools',
   'log-renderer',
+  'iracing-native-status',
+  'iracing-native-attach',
+  'iracing-native-create',
+  'iracing-native-resize',
+  'iracing-native-load',
+  'iracing-native-paint',
+  'iracing-native-shutdown',
+  'start-update-download',
+  'install-update',
 ]);
 const SEND_CHANNELS = new Set([
   'renderer-ready',
-  'renderer-log',
   'renderer-crash-report',
-  'unsaved-state-changed',
+  // 2026-06-08: real restart so downloaded Finish Packs load (page reload alone leaves the old server running)
+  'spb-restart-app',
 ]);
 const ON_CHANNELS = new Set([
   'server-status',
@@ -34,6 +47,9 @@ const ON_CHANNELS = new Set([
   'menu-action',
   'before-quit',
   'theme-changed',
+  'update-banner',
+  'update-progress',
+  'update-ready',
 ]);
 
 function safeInvoke(channel, ...args) {
@@ -59,6 +75,16 @@ function safeOn(channel, listener) {
   return () => ipcRenderer.removeListener(channel, wrapped);
 }
 
+function boundedDialogPath(value) {
+  if (typeof value !== 'string') return '';
+  const pathValue = value.trim();
+  return pathValue.length <= 4096 && !pathValue.includes('\0') ? pathValue : '';
+}
+
+function sourcePaintKind(value) {
+  return value === 'layered' || value === 'all' ? value : 'flat';
+}
+
 // Disable the renderer's built-in zoom shortcuts (Ctrl+0/+/-) by pinning
 // the zoom factor; the main process menu also disables the accelerators.
 try {
@@ -72,14 +98,28 @@ contextBridge.exposeInMainWorld('electronAPI', {
   listDir: (dirPath, filter) => safeInvoke('list-dir', dirPath, filter),
   getQuickNavs: () => safeInvoke('get-quick-navs'),
   showFolderDialog: () => safeInvoke('show-folder-dialog'),
+  selectSourcePaint: (kind, defaultPath) => safeInvoke('select-source-paint', {
+    kind: sourcePaintKind(kind),
+    defaultPath: boundedDialogPath(defaultPath),
+  }),
+  selectIRacingCarFolder: (defaultPath) => safeInvoke('select-iracing-car-folder', {
+    defaultPath: boundedDialogPath(defaultPath),
+  }),
 
   // App / environment metadata
   getVersion: () => safeInvoke('app-version'),
   getServerPort: () => safeInvoke('get-server-port'),
+  importForgePSD: (psdPath) => safeInvoke('forge-import-psd', psdPath),
+  getGpuStatus: () => safeInvoke('gpu-status'),
   platform: process.platform,
 
   // External links open via main (default browser, never inside Electron)
   openExternal: (url) => safeInvoke('open-external', url),
+
+  // Auto-update: renderer triggers download/install; progress + ready arrive
+  // via the on('update-progress')/on('update-ready') subscriptions below.
+  startUpdateDownload: () => safeInvoke('start-update-download'),
+  installUpdate: () => safeInvoke('install-update'),
 
   // Dialogs
   showAbout: () => safeInvoke('show-about'),
@@ -97,13 +137,30 @@ contextBridge.exposeInMainWorld('electronAPI', {
   hardReload: () => safeInvoke('request-hard-reload'),
   toggleDevTools: () => safeInvoke('request-toggle-devtools'),
 
+  // 2026-06-08: full app restart (kills Python server + relaunches) so a freshly
+  // downloaded Finish Pack actually registers — a page reload alone does NOT.
+  restartApp: () => safeSend('spb-restart-app'),
+
   // Renderer log forwarding -> %APPDATA%/spb/logs/
   log: (level, ...parts) => safeInvoke('log-renderer', String(level || 'info'), parts.map(String).join(' ')),
+
+  // Experimental iRacing native preview bridge (local installed iRacing only)
+  iracingNativeStatus: () => safeInvoke('iracing-native-status'),
+  iracingNativeAttach: (payload) => safeInvoke('iracing-native-attach', payload || {}),
+  iracingNativeCreate: (payload) => safeInvoke('iracing-native-create', payload || {}),
+  iracingNativeResize: (payload) => safeInvoke('iracing-native-resize', payload || {}),
+  iracingNativeLoad: (payload) => safeInvoke('iracing-native-load', payload || {}),
+  iracingNativePaint: (payload) => safeInvoke('iracing-native-paint', payload || {}),
+  iracingNativeShutdown: () => safeInvoke('iracing-native-shutdown'),
 
   // Event subscriptions
   on: safeOn,
   send: safeSend,
 });
+
+// 2026-06-08: convenience global so the Finish Packs code can trigger a real
+// restart without knowing the electronAPI shape. No-op outside Electron.
+contextBridge.exposeInMainWorld('spbRestartApp', () => safeSend('spb-restart-app'));
 
 // Backwards-compat alias used by license.html
 contextBridge.exposeInMainWorld('electronLicense', {

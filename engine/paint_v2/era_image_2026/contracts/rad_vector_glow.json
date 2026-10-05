@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_vector_glow",
+  "display_name": "Arcade: Vector Glow",
+  "promise": "Cyan, violet and hot-pink wireframe fragments with bright beam junctions.",
+  "carrier_grammar": "Cyan, violet and hot-pink wireframe fragments with bright beam junctions. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for indigo vector glass, cyan vector runs, pink beam segments, violet frame ghosts, white beam junctions, dark vector gaps is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Cyan, violet and hot-pink wireframe fragments with bright beam junctions. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_vector_glow.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "indigo vector glass",
+      "role": "Actual shared paint and spec geometry: indigo vector glass"
+    },
+    {
+      "name": "cyan vector runs",
+      "role": "Actual shared paint and spec geometry: cyan vector runs"
+    },
+    {
+      "name": "pink beam segments",
+      "role": "Actual shared paint and spec geometry: pink beam segments"
+    },
+    {
+      "name": "violet frame ghosts",
+      "role": "Actual shared paint and spec geometry: violet frame ghosts"
+    },
+    {
+      "name": "white beam junctions",
+      "role": "Actual shared paint and spec geometry: white beam junctions"
+    },
+    {
+      "name": "dark vector gaps",
+      "role": "Actual shared paint and spec geometry: dark vector gaps"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "indigo vector glass",
+      "cyan vector runs",
+      "pink beam segments",
+      "violet frame ghosts",
+      "white beam junctions",
+      "dark vector gaps"
+    ],
+    "R": [
+      "indigo vector glass",
+      "cyan vector runs",
+      "pink beam segments",
+      "violet frame ghosts",
+      "white beam junctions",
+      "dark vector gaps"
+    ],
+    "Cc": [
+      "indigo vector glass",
+      "cyan vector runs",
+      "pink beam segments",
+      "violet frame ghosts",
+      "white beam junctions",
+      "dark vector gaps"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_phosphor_green",
+      "difference": "This finish uses Very fine tiny open wireframe diamonds and clipped triangular vector fragments in electric cyan violet hot pink, with white junction points and dark indigo glass. Thousands of disconnected short segments facing randomly, precise angular linework, no perspective horizon or giant neon web.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_vector_horizon",
+      "difference": "This finish uses Very fine tiny open wireframe diamonds and clipped triangular vector fragments in electric cyan violet hot pink, with white junction points and dark indigo glass. Thousands of disconnected short segments facing randomly, precise angular linework, no perspective horizon or giant neon web.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "indigo vector glass is visible in the authored geometry",
+      "cyan vector runs is visible in the authored geometry",
+      "pink beam segments is visible in the authored geometry",
+      "violet frame ghosts is visible in the authored geometry",
+      "white beam junctions is visible in the authored geometry",
+      "dark vector gaps is visible in the authored geometry"
+    ],
+    "source_sha256": "61f9f8ec82ad77a5f8298a26355fb0a57acd4b1c84a6e95b615691e72ebca81a",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_vector_glow-authored-Cyan, violet and hot-pink wireframe fragments with bright beam junctions. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_vector_glow-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 75.6,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "3c738746525e528d95cb7e7a8ae2f0a1a2ea9ee898deed96cab4ca5e58f3de68"
+}

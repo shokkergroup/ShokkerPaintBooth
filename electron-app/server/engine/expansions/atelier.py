@@ -18,6 +18,7 @@ get_mgrid(shape).
 
 import numpy as np
 from scipy.spatial import cKDTree
+from functools import lru_cache
 
 _engine = None
 
@@ -1187,7 +1188,7 @@ ATELIER_ENTRIES = [
 
 _ATELIER_EXTRA_DETAIL_GAIN = {
     "atelier_carbon_weave_micro": 0.85,
-    "atelier_cathedral_glass": 0.70,
+    "atelier_cathedral_glass": 0.98,
     "atelier_ceramic_glaze": 0.72,
     "atelier_fluid_metal": 0.82,
     "atelier_forged_iron_texture": 0.76,
@@ -1196,14 +1197,23 @@ _ATELIER_EXTRA_DETAIL_GAIN = {
 }
 
 
+@lru_cache(maxsize=32)
+def _atelier_wrap_detail_cached(h, w, seed):
+    e = _engine
+    shape = (int(h), int(w))
+    detail = e.multi_scale_noise(shape, [1, 2, 4, 8], [0.36, 0.30, 0.22, 0.12], int(seed) + 8841)
+    detail = np.clip((detail + 1.0) * 0.5, 0, 1).astype(np.float32)
+    needle = e.multi_scale_noise(shape, [1, 2, 3], [0.44, 0.34, 0.22], int(seed) + 8897).astype(np.float32)
+    return detail, needle
+
+
 def _atelier_detail_wrap(fid, spec_fn, paint_fn):
     def _spec(shape, mask, seed, sm):
         spec = spec_fn(shape, mask, seed, sm).astype(np.float32, copy=True)
-        e = _engine
-        detail = e.multi_scale_noise(shape, [1, 2, 4, 8], [0.36, 0.30, 0.22, 0.12], seed + 8841)
-        detail = np.clip((detail + 1.0) * 0.5, 0, 1)
+        h, w = shape[:2] if len(shape) > 2 else shape
+        detail, cached_needle = _atelier_wrap_detail_cached(int(h), int(w), int(seed))
         extra_gain = float(_ATELIER_EXTRA_DETAIL_GAIN.get(fid, 0.0))
-        needle = e.multi_scale_noise(shape, [1, 2, 3], [0.44, 0.34, 0.22], seed + 8897) if extra_gain > 0 else 0.0
+        needle = cached_needle if extra_gain > 0 else 0.0
         dust = np.clip((detail - 0.78) * 4.5, 0, 1)
         if "micro_flake" in fid or "gold_leaf" in fid:
             dust = np.maximum(dust, np.clip((detail - 0.66) * 2.5, 0, 1) * 0.55)
@@ -1215,11 +1225,10 @@ def _atelier_detail_wrap(fid, spec_fn, paint_fn):
 
     def _paint(paint, shape, mask, seed, pm, bb):
         out = paint_fn(paint, shape, mask, seed, pm, bb)
-        e = _engine
-        detail = e.multi_scale_noise(shape, [1, 2, 4, 8], [0.36, 0.30, 0.22, 0.12], seed + 8841)
-        detail = np.clip((detail + 1.0) * 0.5, 0, 1)
+        h, w = shape[:2] if len(shape) > 2 else shape
+        detail, cached_needle = _atelier_wrap_detail_cached(int(h), int(w), int(seed))
         extra_gain = float(_ATELIER_EXTRA_DETAIL_GAIN.get(fid, 0.0))
-        needle = e.multi_scale_noise(shape, [1, 2, 3], [0.44, 0.34, 0.22], seed + 8897) if extra_gain > 0 else 0.0
+        needle = cached_needle if extra_gain > 0 else 0.0
         dust = np.clip((detail - 0.78) * 4.5, 0, 1)
         tint = np.stack([dust * 0.08, dust * 0.065, dust * 0.035], axis=2)
         if "glass" in fid or "ceramic" in fid:

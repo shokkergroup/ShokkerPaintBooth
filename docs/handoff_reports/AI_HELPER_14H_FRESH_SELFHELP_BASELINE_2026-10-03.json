@@ -1,0 +1,502 @@
+{
+  "rows": [
+    {
+      "id": "H01",
+      "expected": "help",
+      "pass": false,
+      "intent": "how_do_i",
+      "topic": "save",
+      "cites": [
+        "save",
+        "spbProjectsButton",
+        "pro.zones_more.save_shokk"
+      ],
+      "preview": "**Save your work**\n1. Use Save / Open (top bar, SHOKK files): a SHOKK file keeps your zones, layers and settings.\n2. Open it later from the same place"
+    },
+    {
+      "id": "H02",
+      "expected": "help",
+      "pass": false,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "H03",
+      "expected": "help",
+      "pass": false,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "H04",
+      "expected": "help",
+      "pass": true,
+      "intent": "what_is",
+      "topic": "load_paint",
+      "cites": [
+        "hdi.blank_canvas",
+        "pro.center.blank_canvas"
+      ],
+      "preview": "**How do I start from a blank canvas with no paint file**\n1. On the empty centre canvas click \"Blank Canvas\".\n2. You get a plain white canvas to build"
+    },
+    {
+      "id": "H05",
+      "expected": "help",
+      "pass": true,
+      "intent": "where_is",
+      "topic": "wireframe",
+      "cites": [
+        "hdi.template_layers_off",
+        "layer.eye",
+        "easy.template_guides"
+      ],
+      "preview": "**How do I switch off the template lines (Mask, Wire, Car_Mandatory) before exporting**\n1. LAYERS tab: click the eye on Car_Mandatory, Mask and Wire ("
+    },
+    {
+      "id": "H06",
+      "expected": "help",
+      "pass": true,
+      "intent": "how_do_i",
+      "topic": "logo",
+      "cites": [
+        "hdi.add_logo",
+        "pro.layers.layer",
+        "layer.rename"
+      ],
+      "preview": "**How do I add a logo or sponsor picture**\n1. Open the LAYERS tab and click \"+ Layer\".\n2. Choose a PNG / JPG / WebP / GIF (transparent PNG is best).\n3"
+    },
+    {
+      "id": "H07",
+      "expected": "help",
+      "pass": false,
+      "intent": "how_do_i",
+      "topic": "logo",
+      "cites": [
+        "hdi.add_logo",
+        "pro.layers.layer",
+        "layer.rename"
+      ],
+      "preview": "**How do I add a logo or sponsor picture**\n1. Open the LAYERS tab and click \"+ Layer\".\n2. Choose a PNG / JPG / WebP / GIF (transparent PNG is best).\n3"
+    },
+    {
+      "id": "H08",
+      "expected": "help",
+      "pass": false,
+      "intent": "how_do_i",
+      "topic": "restrict_layer",
+      "cites": [
+        "hdi.recolour_numbers",
+        "zone.base_color_mode",
+        "zone.solid_color",
+        "pro.toolbar.color_replace",
+        "easy.tell_input"
+      ],
+      "preview": "**How do I recolour the numbers**\n1. Your selected zone is \"Zone 1\" (zone 1) - click another card in the ZONES list to work on that one instead.\n2. Ea"
+    },
+    {
+      "id": "H09",
+      "expected": "help",
+      "pass": true,
+      "intent": "how_do_i",
+      "topic": "layers_vis",
+      "cites": [
+        "hdi.layer_visibility",
+        "layer.eye"
+      ],
+      "preview": "**How do I turn a layer on or off**\n1. Open the LAYERS tab.\n2. Click the eye icon on the layer. Alt+click shows only that layer.\nAlso asked as: how do"
+    },
+    {
+      "id": "H10",
+      "expected": "help",
+      "pass": false,
+      "intent": "how_do_i",
+      "topic": "restrict_layer",
+      "cites": [
+        "hdi.load_psd",
+        "pro.header.psd_xcf_ora",
+        "onboardingImportPsdBtn",
+        "pro.layers.open_layered"
+      ],
+      "preview": "**How do I load a layered PSD template (so I get layers)**\n1. Choose your PSD (XCF and ORA also work) and confirm.\n2. Wait while the layers load, then"
+    },
+    {
+      "id": "H11",
+      "expected": "help",
+      "pass": true,
+      "intent": "how_do_i",
+      "topic": "pick_finish",
+      "cites": [
+        "hdi.finish_one_part",
+        "pro.zones.add_zone",
+        "zone.draw_box",
+        "zone.base_material"
+      ],
+      "preview": "**How do I put a finish on just one part of the car (the hood, the roof, one side)**\n1. Your selected zone is \"Zone 1\" (zone 1) - click another card i"
+    },
+    {
+      "id": "H12",
+      "expected": "help",
+      "pass": false,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "H13",
+      "expected": "help",
+      "pass": false,
+      "intent": "how_do_i",
+      "topic": "keep_paint",
+      "cites": [
+        "hdi.change_one_colour",
+        "zone.pick_color_from_car",
+        "zone.base_color_mode"
+      ],
+      "preview": "**How do I change only one colour of my livery (say all the red)**\n1. Your selected zone is \"Zone 1\" (zone 1) - click another card in the ZONES list t"
+    },
+    {
+      "id": "H14",
+      "expected": "help",
+      "pass": true,
+      "intent": "how_do_i",
+      "topic": "gradient",
+      "cites": [
+        "hdi.gradient",
+        "zone.base_color_mode",
+        "zone.gradient"
+      ],
+      "preview": "**How do I make a gradient (fade) between two colours**\n1. Your selected zone is \"Zone 1\" (zone 1) - click another card in the ZONES list to work on t"
+    },
+    {
+      "id": "H15",
+      "expected": "help",
+      "pass": false,
+      "intent": "where_is",
+      "topic": "pick_finish",
+      "cites": [
+        "base_material",
+        "zone_base_colour_mode",
+        "pick_finish",
+        "zone.base_material",
+        "zone.base_color_mode",
+        "finishSearch"
+      ],
+      "preview": "**Put a finish on a zone** - here is where:\n1. \"Zone 1\" (zone 1) is selected - these steps change it (click another card in the ZONES list (left colum"
+    },
+    {
+      "id": "H16",
+      "expected": "help",
+      "pass": false,
+      "intent": "how_do_i",
+      "topic": "pattern",
+      "cites": [
+        "zone_pattern_id",
+        "zone_pattern_paint_mode",
+        "zone_pattern_opacity",
+        "pattern",
+        "zone.pattern",
+        "zone.pattern_paint_mode",
+        "zone.pattern_opacity",
+        "zone.add_pattern_layer"
+      ],
+      "preview": "**Add a pattern**\n1. \"Zone 1\" (zone 1) is selected - these steps change it (click another card in the ZONES list (left column) to change that one inst"
+    },
+    {
+      "id": "H17",
+      "expected": "help",
+      "pass": false,
+      "intent": "how_do_i",
+      "topic": "pattern",
+      "cites": [
+        "hdi.add_pattern",
+        "zone.section_pattern",
+        "zone.pattern",
+        "zone.pattern_paint_mode"
+      ],
+      "preview": "**How do I add a pattern (carbon, flames, camo ...)**\n1. Your selected zone is \"Zone 1\" (zone 1) - click another card in the ZONES list to work on tha"
+    },
+    {
+      "id": "H18",
+      "expected": "help",
+      "pass": false,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "H19",
+      "expected": "help",
+      "pass": true,
+      "intent": "how_do_i",
+      "topic": "layers_vis",
+      "cites": [
+        "hdi.finish_less_strong",
+        "zone.base_strength",
+        "zone.spec_strength"
+      ],
+      "preview": "**How do I make a finish less strong (blend it with my paint)**\n1. Your selected zone is \"Zone 1\" (zone 1) - click another card in the ZONES list to w"
+    },
+    {
+      "id": "H20",
+      "expected": "help",
+      "pass": false,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "H21",
+      "expected": "help",
+      "pass": true,
+      "intent": "how_do_i",
+      "topic": "restrict_layer",
+      "cites": [
+        "hdi.teach_numbers",
+        "ai.panel",
+        "ai.input"
+      ],
+      "preview": "**How do I teach the app where the numbers are**\n1. Open the AI panel (the AI button bottom right) and ask for something on the numbers, e.g. \"make th"
+    },
+    {
+      "id": "H22",
+      "expected": "help",
+      "pass": true,
+      "intent": "how_do_i",
+      "topic": "layers_vis",
+      "cites": [
+        "hdi.teach_parts",
+        "ai.panel"
+      ],
+      "preview": "**How do I tell Shokker where the car's parts are (hood, roof, sides)**\n1. Ask the AI panel for a part change (\"make the roof black\"). If it does not "
+    },
+    {
+      "id": "H23",
+      "expected": "help",
+      "pass": true,
+      "intent": "how_do_i",
+      "topic": "undo",
+      "cites": [
+        "hdi.tutorial",
+        "spbGuideToggle",
+        "trainingWheelsCheckbox"
+      ],
+      "preview": "**How do I turn on the step-by-step tutorial (Training Wheels)**\n1. Click \"Tutorial\" in the top bar, or tick Training Wheels in Settings (the gear).\n2"
+    },
+    {
+      "id": "H24",
+      "expected": "help",
+      "pass": false,
+      "intent": "how_do_i",
+      "topic": "easy_pro",
+      "cites": [
+        "hdi.easy_to_pro",
+        "easy.pro_btn"
+      ],
+      "preview": "**How do I go from Easy to the full controls without losing my work**\n1. Click \"PRO MODE ->\" at the top right. The paint and zones carry over.\nAlso as"
+    },
+    {
+      "id": "H25",
+      "expected": "help",
+      "pass": false,
+      "intent": "what_is",
+      "topic": "load_paint",
+      "cites": [
+        "hdi.merge_flatten",
+        "layerActionsMenuBtn"
+      ],
+      "preview": "**How do I merge or flatten layers**\n1. You have a flat paint loaded (one picture, no layers), so this needs the layered PSD template: SOURCE PAINT > "
+    },
+    {
+      "id": "H26",
+      "expected": "help",
+      "pass": true,
+      "intent": "how_do_i",
+      "topic": "keep_paint",
+      "cites": [
+        "hdi.make_chrome",
+        "zone.base_material",
+        "zone.base_color_mode"
+      ],
+      "preview": "**How do I make something chrome**\n1. Your selected zone is \"Zone 1\" (zone 1) - click another card in the ZONES list to work on that one instead.\n2. S"
+    },
+    {
+      "id": "H27",
+      "expected": "help",
+      "pass": false,
+      "intent": "how_do_i",
+      "topic": "wireframe",
+      "cites": [
+        "hdi.export_iracing",
+        "iracingId",
+        "outputDir",
+        "btnRender"
+      ],
+      "preview": "**How do I export my paint to iRacing**\n1. Top row: enter your iRacing customer number (IRACING USER ID) and set IRACING CAR FOLDER (use the car list "
+    },
+    {
+      "id": "H28",
+      "expected": "help",
+      "pass": true,
+      "intent": "how_do_i",
+      "topic": "numbers",
+      "cites": [
+        "hdi.recolour_numbers",
+        "zone.base_color_mode",
+        "zone.solid_color",
+        "pro.toolbar.color_replace",
+        "easy.tell_input"
+      ],
+      "preview": "**How do I recolour the numbers**\n1. Your selected zone is \"Zone 1\" (zone 1) - click another card in the ZONES list to work on that one instead.\n2. Ea"
+    },
+    {
+      "id": "H29",
+      "expected": "help",
+      "pass": false,
+      "intent": "how_do_i",
+      "topic": "pick_finish",
+      "cites": [
+        "hdi.recolour_numbers",
+        "zone.base_color_mode",
+        "zone.solid_color",
+        "pro.toolbar.color_replace",
+        "easy.tell_input"
+      ],
+      "preview": "**How do I recolour the numbers**\n1. Your selected zone is \"Zone 1\" (zone 1) - click another card in the ZONES list to work on that one instead.\n2. Ea"
+    },
+    {
+      "id": "H30",
+      "expected": "help",
+      "pass": true,
+      "intent": "stuck",
+      "topic": "load_paint",
+      "cites": [
+        "hdi.what_now",
+        "load_paint",
+        "stuck"
+      ],
+      "preview": "No paint is loaded yet.\n1. Load your paint: drag the .tga or .psd onto SOURCE (or Open in the top bar).\n2. Then tell me in plain words what you want ("
+    },
+    {
+      "id": "G01",
+      "expected": "delegate",
+      "pass": true,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "G02",
+      "expected": "delegate",
+      "pass": true,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "G03",
+      "expected": "delegate",
+      "pass": true,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "G04",
+      "expected": "delegate",
+      "pass": true,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "G05",
+      "expected": "delegate",
+      "pass": true,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "G06",
+      "expected": "delegate",
+      "pass": true,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "G07",
+      "expected": "delegate",
+      "pass": true,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "G08",
+      "expected": "delegate",
+      "pass": true,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "G09",
+      "expected": "delegate",
+      "pass": true,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "G10",
+      "expected": "delegate",
+      "pass": true,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "G11",
+      "expected": "delegate",
+      "pass": true,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    },
+    {
+      "id": "G12",
+      "expected": "delegate",
+      "pass": true,
+      "intent": null,
+      "topic": null,
+      "cites": [],
+      "preview": null
+    }
+  ],
+  "help_pass": 13,
+  "help_total": 30,
+  "delegate_pass": 12,
+  "delegate_total": 12,
+  "providerAttempts": 0,
+  "fixture_sha256": "717c1c32fe214c172e1fb27b2be065e7cd20892cfabe94400e75d3278ccd4e9d",
+  "interpretation": "Strict expected-topic match13/30; manual review notes H01 save and H24 Easy-to-Pro are semantically correct aliases, making15/30 supported guidance; the immutable fixture is retained. Delegation12/12. Baseline used the already-loaded pre-sprint code in the actual MCP page; state variants are component query inputs, not pixel mutations."
+}

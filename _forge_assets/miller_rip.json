@@ -1,0 +1,212 @@
+{
+ "outdir": "_forge_assets/miller12",
+ "sheets": {
+  "contingency": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/DLM MOCKUPS/Miller High Life/ChatGPT Image Jul 14, 2026, 12_05_33 AM (2).png",
+  "branding": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/DLM MOCKUPS/Miller High Life/ChatGPT Image Jul 14, 2026, 12_05_33 AM (3).png",
+  "numbers": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/DLM MOCKUPS/Miller High Life/ChatGPT Image Jul 14, 2026, 12_05_34 AM (5).png",
+  "graphics": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/DLM MOCKUPS/Miller High Life/ChatGPT Image Jul 14, 2026, 12_05_34 AM (7).png",
+  "rear": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/DLM MOCKUPS/Miller High Life/ChatGPT Image Jul 14, 2026, 12_05_34 AM (8).png"
+ },
+ "assets": {
+  "num12": {
+   "sheet": "numbers",
+   "fbox": [
+    0.02,
+    0.12,
+    0.31,
+    0.44
+   ],
+   "cluster": true
+  },
+  "miller_lockup": {
+   "sheet": "branding",
+   "fbox": [
+    0.005,
+    0.14,
+    0.27,
+    0.46
+   ],
+   "cluster": true
+  },
+  "miller_script": {
+   "sheet": "branding",
+   "fbox": [
+    0.332,
+    0.115,
+    0.53,
+    0.32
+   ],
+   "cluster": true
+  },
+  "crest": {
+   "sheet": "branding",
+   "fbox": [
+    0.6,
+    0.06,
+    0.83,
+    0.5
+   ],
+   "cluster": true
+  },
+  "shokker_dark": {
+   "sheet": "contingency",
+   "fbox": [
+    0.585,
+    0.16,
+    0.78,
+    0.28
+   ],
+   "cluster": true
+  },
+  "hoosier": {
+   "sheet": "contingency",
+   "fbox": [
+    0.145,
+    0.34,
+    0.37,
+    0.47
+   ],
+   "cluster": true
+  },
+  "moroso": {
+   "sheet": "contingency",
+   "fbox": [
+    0.16,
+    0.52,
+    0.33,
+    0.605
+   ],
+   "cluster": true
+  },
+  "bilstein": {
+   "sheet": "contingency",
+   "fbox": [
+    0.375,
+    0.52,
+    0.51,
+    0.6
+   ],
+   "cluster": true
+  },
+  "edelbrock": {
+   "sheet": "contingency",
+   "fbox": [
+    0.555,
+    0.52,
+    0.74,
+    0.61
+   ],
+   "cluster": true
+  },
+  "acdelco": {
+   "sheet": "contingency",
+   "fbox": [
+    0.16,
+    0.665,
+    0.345,
+    0.775
+   ],
+   "cluster": true
+  },
+  "comp": {
+   "sheet": "contingency",
+   "fbox": [
+    0.37,
+    0.665,
+    0.53,
+    0.775
+   ],
+   "cluster": true
+  },
+  "vp": {
+   "sheet": "contingency",
+   "fbox": [
+    0.555,
+    0.66,
+    0.69,
+    0.785
+   ],
+   "cluster": true
+  },
+  "sweep_top": {
+   "sheet": "graphics",
+   "fbox": [
+    0.0,
+    0.005,
+    1.0,
+    0.175
+   ],
+   "cluster": true
+  },
+  "sweep_mid": {
+   "sheet": "graphics",
+   "fbox": [
+    0.0,
+    0.155,
+    1.0,
+    0.315
+   ],
+   "cluster": true
+  },
+  "rocker_stripe": {
+   "sheet": "graphics",
+   "fbox": [
+    0.0,
+    0.77,
+    1.0,
+    0.885
+   ],
+   "cluster": true
+  },
+  "spoiler_face": {
+   "sheet": "rear",
+   "fbox": [
+    0.025,
+    0.635,
+    0.235,
+    0.9
+   ],
+   "cluster": true
+  },
+  "plate_left": {
+   "sheet": "rear",
+   "fbox": [
+    0.27,
+    0.635,
+    0.435,
+    0.9
+   ],
+   "cluster": true
+  },
+  "plate_right": {
+   "sheet": "rear",
+   "fbox": [
+    0.625,
+    0.635,
+    0.79,
+    0.9
+   ],
+   "cluster": true
+  },
+  "rocker_stripe2": {
+   "sheet": "graphics",
+   "fbox": [
+    0.0,
+    0.885,
+    1.0,
+    0.995
+   ],
+   "cluster": true
+  },
+  "highlife": {
+   "sheet": "branding",
+   "fbox": [
+    0.005,
+    0.372,
+    0.295,
+    0.462
+   ],
+   "cluster": true
+  }
+ }
+}

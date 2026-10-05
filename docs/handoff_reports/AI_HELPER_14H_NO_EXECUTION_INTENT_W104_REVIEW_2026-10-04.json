@@ -1,0 +1,220 @@
+{
+  "work_item": "W104 independent global no-execution intent review",
+  "status": "PASS_WITH_LIMITS",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w104_review/fresh-oracle.json",
+    "sha256": "BEAC5E63917A1F7612DEE7F81ED36B0DD1C6398992D4C96070ECD8C1727AB5F2",
+    "cases": 14,
+    "frozenBeforeW104SourceReinspection": true
+  },
+  "sources": {
+    "controller": "FF90F9EB557FDE7D5011C5621431BE581A9E900EE143AD02521919165D968E0F",
+    "guardBase": "89E0D9E473C13309011D7318A81037C0C286D399B854938A37EDC14DAEDEFC83",
+    "guardCandidate": "D038EF90A8FF2578A4464D11094D8EDA44D95E443DFA2D0300A64BD6F46BD48B"
+  },
+  "offlineAsk": [
+    {
+      "id": "imperative-then-no-execution",
+      "expected": "No edit queue; explanation only. Global no-execution dominates earlier imperative.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "apply-wrapper-no-make",
+      "expected": "No queue; explain-only despite wrapper.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "explain-hypothetical",
+      "expected": "Read-only guidance; zero queue.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "hypothetical-question",
+      "expected": "Read-only guidance; zero queue.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "explain-without-applying",
+      "expected": "Suggestion/explanation only; zero queue.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "quoted-imperative",
+      "expected": "Quoted instruction remains content; zero queue.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I treated the quoted instruction as text to explain or transcribe, not as a paint command."
+    },
+    {
+      "id": "reported-instruction-prefix",
+      "expected": "Reported text is discussed only; zero queue.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "reported-with-apply-wrapper",
+      "expected": "No queue; outer wrapper does not override explanation/no-execute clauses.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I treated the quoted instruction as text to explain or transcribe, not as a paint command."
+    },
+    {
+      "id": "no-changes-tail",
+      "expected": "No queue; no applied/done claim.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "without-executing",
+      "expected": "No queue; explanation only.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "direct-imperative-positive",
+      "expected": "Direct imperative remains eligible; one roof operation.",
+      "queue": 1,
+      "region": {
+        "part": "roof"
+      },
+      "reply": "Done — the roof (35% of the car) is now recoloured blue."
+    },
+    {
+      "id": "apply-wrapper-positive",
+      "expected": "Explicit apply wrapper with direct command remains eligible; one roof operation.",
+      "queue": 1,
+      "region": {
+        "part": "roof"
+      },
+      "reply": "Done — the roof (35% of the car) is now recoloured blue."
+    },
+    {
+      "id": "polite-imperative-positive",
+      "expected": "Polite direct command remains eligible; one hood operation.",
+      "queue": 1,
+      "region": {
+        "part": "hood"
+      },
+      "reply": "Done — the hood (35% of the car) is now recoloured gold."
+    },
+    {
+      "id": "scoped-preservation-positive-control",
+      "expected": "Must not be classified as global read-only. Queue an exact safe edit or give a scope-specific clarification; never mutate the hood.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I can’t yet guarantee the requested roof change leaves the hood unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything."
+    }
+  ],
+  "canonicalSendPreflight": [
+    {
+      "id": "imperative-then-no-execution",
+      "finishes": 1,
+      "asks": 0,
+      "finishText": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "apply-wrapper-no-make",
+      "finishes": 1,
+      "asks": 0,
+      "finishText": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "explain-hypothetical",
+      "finishes": 1,
+      "asks": 0,
+      "finishText": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "hypothetical-question",
+      "finishes": 1,
+      "asks": 0,
+      "finishText": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "explain-without-applying",
+      "finishes": 1,
+      "asks": 0,
+      "finishText": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "quoted-imperative",
+      "finishes": 1,
+      "asks": 0,
+      "finishText": "Nothing was changed. I treated the quoted instruction as text to explain or transcribe, not as a paint command."
+    },
+    {
+      "id": "reported-instruction-prefix",
+      "finishes": 1,
+      "asks": 0,
+      "finishText": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "reported-with-apply-wrapper",
+      "finishes": 1,
+      "asks": 0,
+      "finishText": "Nothing was changed. I treated the quoted instruction as text to explain or transcribe, not as a paint command."
+    },
+    {
+      "id": "no-changes-tail",
+      "finishes": 1,
+      "asks": 0,
+      "finishText": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "without-executing",
+      "finishes": 1,
+      "asks": 0,
+      "finishText": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "direct-imperative-positive",
+      "finishes": 0,
+      "asks": 1,
+      "finishText": ""
+    },
+    {
+      "id": "apply-wrapper-positive",
+      "finishes": 0,
+      "asks": 1,
+      "finishText": ""
+    },
+    {
+      "id": "polite-imperative-positive",
+      "finishes": 0,
+      "asks": 1,
+      "finishText": ""
+    },
+    {
+      "id": "scoped-preservation-positive-control",
+      "finishes": 0,
+      "asks": 1,
+      "finishText": ""
+    }
+  ],
+  "issues": [],
+  "limitations": [
+    "The scoped roof command with a hood-preservation clause is not globally classified as read-only. Existing integration14 route safely clarifies the scope instead of queuing an edit; no claim of successful protected-scope editing is made.",
+    "Queue and ask callbacks are controlled local adapters; no apply, native app, or provider call occurred."
+  ],
+  "counts": {
+    "utterances": 14,
+    "passed": 14,
+    "failed": 0,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "applyCalls": 0
+  }
+}

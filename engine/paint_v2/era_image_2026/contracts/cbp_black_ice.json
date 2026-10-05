@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_black_ice",
+  "display_name": "Netrun: Black Ice",
+  "promise": "Black ICE security: dark polished jagged shields nested inside sharp cyan fractured circuit ice, ruby lock-shaped abstract apertures, gold fractured edge sparks and violet prismatic facets.",
+  "carrier_grammar": "Black ICE security: dark polished jagged shields nested inside sharp cyan fractured circuit ice, ruby lock-shaped abstract apertures, gold fractured edge sparks and violet prismatic facets. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for dark security glass, cyan fractured circuit ice, ruby lock apertures, gold edge sparks, violet prism facets, black shield recesses is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Black ICE security: dark polished jagged shields nested inside sharp cyan fractured circuit ice, ruby lock-shaped abstract apertures, gold fractured edge sparks and violet prismatic facets. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_black_ice.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "dark security glass",
+      "role": "Actual shared paint and spec geometry: dark security glass"
+    },
+    {
+      "name": "cyan fractured circuit ice",
+      "role": "Actual shared paint and spec geometry: cyan fractured circuit ice"
+    },
+    {
+      "name": "ruby lock apertures",
+      "role": "Actual shared paint and spec geometry: ruby lock apertures"
+    },
+    {
+      "name": "gold edge sparks",
+      "role": "Actual shared paint and spec geometry: gold edge sparks"
+    },
+    {
+      "name": "violet prism facets",
+      "role": "Actual shared paint and spec geometry: violet prism facets"
+    },
+    {
+      "name": "black shield recesses",
+      "role": "Actual shared paint and spec geometry: black shield recesses"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "dark security glass",
+      "cyan fractured circuit ice",
+      "ruby lock apertures",
+      "gold edge sparks",
+      "violet prism facets",
+      "black shield recesses"
+    ],
+    "R": [
+      "dark security glass",
+      "cyan fractured circuit ice",
+      "ruby lock apertures",
+      "gold edge sparks",
+      "violet prism facets",
+      "black shield recesses"
+    ],
+    "Cc": [
+      "dark security glass",
+      "cyan fractured circuit ice",
+      "ruby lock apertures",
+      "gold edge sparks",
+      "violet prism facets",
+      "black shield recesses"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_ice_wall",
+      "difference": "This finish uses Dense minuscule obsidian blade cleavage faces with bright cyan frozen edge needles, violet interference splinters, pink pin fractures, dark smooth facets and white edge sparks. Colored cleavage occupies half surface; no broad black rock field, no big shards or snowflakes.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_mirror_shades",
+      "difference": "This finish uses Dense minuscule obsidian blade cleavage faces with bright cyan frozen edge needles, violet interference splinters, pink pin fractures, dark smooth facets and white edge sparks. Colored cleavage occupies half surface; no broad black rock field, no big shards or snowflakes.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "dark security glass is visible in the authored geometry",
+      "cyan fractured circuit ice is visible in the authored geometry",
+      "ruby lock apertures is visible in the authored geometry",
+      "gold edge sparks is visible in the authored geometry",
+      "violet prism facets is visible in the authored geometry",
+      "black shield recesses is visible in the authored geometry"
+    ],
+    "source_sha256": "715cf0f8bc89ab069400d5d329f978626078926e79ddb529a1f1e11f9e2d4c2e",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_black_ice-authored-Black ICE security: dark polished jagged shields nested inside sharp cyan fractured circuit ice, ruby lock-shaped abstract apertures, gold fractured edge sparks and violet prismatic facets. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_black_ice-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 49.8,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "5d0f59d6583b134a96ca2204f12213479c34c60d408cbb8fbe30bbafa94d6e58"
+}

@@ -1,0 +1,114 @@
+{
+  "status": "CANDIDATE_READY_FOR_INDEPENDENT_REVIEW",
+  "task": "W38 isolated AI per-part ownership persistence integration prototype",
+  "date": "2026-10-04",
+  "scope": "Isolated candidate only; no live application source, canvas/kernel, dispatch, or native project files changed.",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w38_candidate/oracle/cases.json",
+    "count": 10,
+    "predeclaredBeforeImplementation": true,
+    "cases": [
+      {
+        "id": "valid-roundtrip",
+        "expect": "capture compact record; load stages inert record; rebind only after committed source and fresh proof"
+      },
+      {
+        "id": "same-content-new-generation",
+        "expect": "allow rebind only after fresh proof; replace runtime generation with current generation"
+      },
+      {
+        "id": "source-fingerprint-change",
+        "expect": "reject persisted memory"
+      },
+      {
+        "id": "canonical-path-change",
+        "expect": "reject persisted memory"
+      },
+      {
+        "id": "dimension-change",
+        "expect": "reject persisted memory"
+      },
+      {
+        "id": "missing-maskFor",
+        "expect": "reject even if element signature is empty"
+      },
+      {
+        "id": "element-signature-empty",
+        "expect": "allow only when actual current signature is exactly empty string and maskFor independently proves mask"
+      },
+      {
+        "id": "missing-or-null-element-signature",
+        "expect": "reject; no source fallback"
+      },
+      {
+        "id": "duplicate-or-muted-owner",
+        "expect": "reject; no registry adoption"
+      },
+      {
+        "id": "pending-or-uncommitted-source",
+        "expect": "stage but never rebind before successful source commit"
+      }
+    ]
+  },
+  "frozenInputs": {
+    "paint-booth-2-state-zones.js": {
+      "sha256": "E1EFA310757FBBDBF5EA5CB030DDC651BDAC1A6618A8388DA1535D00D8F3BC95",
+      "note": "source bounded getConfig/loadConfigFromObj extraction; unchanged frozen input"
+    },
+    "spb-ai-part-memory.js": {
+      "sha256": "6E0D1E1466FECA847D3A1C3300F32779BA610F3B6C72C7904A6C8FD97A6B3652",
+      "note": "current installed schema module"
+    },
+    "spb-pro-ai.js": {
+      "sha256": "609B8EC85228F15D2CC9B3AB82CD692EB2EA90D258CF5045FD36448AD3C46C6B",
+      "note": "task-entry snapshot, not the live current file"
+    }
+  },
+  "currentLiveProAI": {
+    "sha256": "7986424F203A303172B19EABC1D4F5FD52DBC2E25DE6D87C444BADD1434261B2",
+    "note": "differs from frozen 609 snapshot; no live route/integration acceptance is claimed"
+  },
+  "candidateFiles": {
+    "bridge": {
+      "path": "_easy_claude_work/ai14h_w38_candidate/candidate/js/spb-ai-part-memory-project.js",
+      "sha256": "E9A0C22F95DDC8B419D43D646BC6F1C2671A864C2A8F00CBA2D6376BFDD28D46"
+    },
+    "serializerClone": {
+      "path": "_easy_claude_work/ai14h_w38_candidate/candidate/js/paint-booth-2-state-zones.js",
+      "sha256": "13FCF98114782BE3252ADF025A96A9564AB847050F7124761001821769F41E76"
+    },
+    "test": {
+      "path": "tests/ai_part_memory_project_candidate_contract.cjs",
+      "sha256": "D20E5293A5F465A918D9A2BC13FBD67B05B36E409D12F0486A95D949261C61A2"
+    }
+  },
+  "behavior": {
+    "save": "Candidate getConfig field calls capture; installed SpbAIPartMemory.saveRecord sanitizes provenance and omits runtime generation and duplicated pixel/mask data.",
+    "load": "Candidate loadConfigFromObj stages only sanitized inert metadata; it does not assign _aiPartProv or register an owner.",
+    "rebind": "After explicit source-commit callback, candidate requires transaction current committed path/fingerprint/generation/dimensions, freshly validated owner and unique-owner callbacks, and unconditional CAR.maskFor part-mask proof. Only after proof succeeds does it attach provenance, call an atomic registry hook, and roll back provenance if registration fails. A successful rebind uses only the new runtime generation.",
+    "elementSignature": "Empty string is a valid exact element signature when independently re-proven; missing/null signatures fail schema validation."
+  },
+  "verification": {
+    "command": "node tests/ai_part_memory_project_candidate_contract.cjs",
+    "result": "PASS",
+    "frozenCases": 10,
+    "actualFunctionsExtractedFromFrozenSerializer": 2,
+    "additionalAssertions": 7,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "browserCalls": 0,
+    "sourceMutationCalls": 0
+  },
+  "requiredIntegrationBeforePromotion": [
+    "The current live proAI needs a bounded proof adapter that accepts candidate provenance without temporarily assigning it, validates current layout and element signatures, checks CAR.maskFor unconditionally, and counts both duplicate IDs and duplicate edit-key owners.",
+    "Call rebind only after source transaction commit and only when current zone masks are materialized; loadConfigFromObj remains staging-only.",
+    "The registry callback must be atomic and recheck the same committed source at its boundary; candidate attaches provenance only after prepareRestore succeeds and rolls it back if registration fails.",
+    "Test full live project save/load and helper follow-up route before install; this candidate does not prove actual rendering or native project save semantics."
+  ],
+  "limits": [
+    "Contract executes the actual frozen serializer functions, actual installed part-memory module, and candidate bridge in a VM with deterministic host callbacks.",
+    "CAR.maskFor, source transaction, layout and unique-zone callbacks are modeled runtime dependencies, not the native renderer or current live proAI closure.",
+    "Current live proAI differs from task-entry frozen 609 snapshot; no copy or mirror synchronization performed.",
+    "No browser, native app, provider, server write, rendering or repository-wide test suite was run."
+  ]
+}

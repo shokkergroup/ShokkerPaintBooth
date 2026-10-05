@@ -1,0 +1,367 @@
+/* ============================================================================
+   SPB UI-VNEXT POLISH — overnight run 2026-07-02 (Fable 5)
+   ----------------------------------------------------------------------------
+   CONTRACT (owner directive: better look + snappier, break NOTHING):
+   - This file is 100% ADDITIVE. No DOM, no JS, no layout-mode changes.
+   - Loads LAST in paint-booth-v2.html; remove that one <link> to revert the
+     entire night. Each §section below is independently deletable.
+   - Two rule styles on purpose:
+       additive  -> :where(...) selectors (zero specificity, can't fight
+                    existing rules; they only ADD properties nothing else sets)
+       override  -> plain/!important selectors, each with a comment naming the
+                    file+rule it overrides and WHY (perf or consistency).
+   - Ledger with the full change list: UI_VNEXT_OVERNIGHT_20260702.md
+   ============================================================================ */
+
+/* §1 — MOTION + ELEVATION TOKENS
+   One shared vocabulary so every interaction tonight feels like one system. */
+:root {
+    --vx-fast: 110ms;               /* press/hover response */
+    --vx-med: 190ms;                /* panel/popover motion */
+    --vx-slow: 320ms;               /* modal/large-surface motion */
+    --vx-ease: cubic-bezier(0.2, 0.8, 0.2, 1);        /* swift-out: fast start, soft landing */
+    --vx-spring: cubic-bezier(0.34, 1.4, 0.64, 1);    /* gentle overshoot for entrances */
+    --vx-ring: rgba(0, 229, 255, 0.65);
+    --vx-elev-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.25);
+    --vx-elev-2: 0 2px 6px rgba(0, 0, 0, 0.45), 0 8px 24px rgba(0, 0, 0, 0.35);
+    --vx-elev-3: 0 4px 12px rgba(0, 0, 0, 0.5), 0 16px 48px rgba(0, 0, 0, 0.45);
+}
+
+/* §2 — INSTANT PRESS FEEDBACK (biggest perceived-snappiness win)
+   Every click acknowledges the finger in <=110ms, before any JS work runs.
+   Plain selectors (not :where) so, at equal specificity, load order lets the
+   pressed state win over existing :hover transforms while held. */
+button:active,
+.vtool-btn:active,
+.zone-qv-chip:active,
+.tool-btn:active,
+.pill:active,
+[role="button"]:active,
+.section-header:active,
+.swatch-item:active,
+.finish-card:active {
+    transform: translateY(1px) scale(0.985);
+    transition: transform var(--vx-fast) var(--vx-ease);
+}
+/* Don't squash things that are disabled or busy — no fake acknowledgment. */
+button:disabled:active,
+button[aria-busy="true"]:active {
+    transform: none;
+}
+
+/* §3 — KEYBOARD FOCUS RINGS (modern + accessible, mouse users never see them)
+   :focus-visible only: click focus stays clean, tab focus gets a real ring.
+   !important on purpose (upgraded 06:23): several packs set outline:none on
+   :focus — keyboard accessibility out-ranks decoration, and this fires ONLY
+   for keyboard focus so mouse users never see it. */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible,
+[role="button"]:focus-visible {
+    outline: 2px solid var(--vx-ring) !important;
+    outline-offset: 2px !important;
+}
+
+/* §4 — SCROLLBARS (Chromium/Electron)
+   Thin, rounded, quiet at rest, visible on hover — reads modern instantly on
+   every scrolling panel (zone list, picker, popouts) without touching layout. */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(140, 160, 190, 0.28);
+    border-radius: 999px;
+    border: 2px solid transparent;   /* inset gutter so the thumb floats */
+    background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 229, 255, 0.45);
+    background-clip: padding-box;
+    border: 2px solid transparent;
+}
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* §5 — TEXT SELECTION — on-brand instead of browser default blue. */
+::selection {
+    background: rgba(0, 229, 255, 0.30);
+    color: #ffffff;
+}
+
+/* §6 — STEADY NUMERALS
+   Tabular figures body-wide: slider values, percentages, pixel counts and
+   timers stop wiggling as digits change width. Pure win for a numbers-heavy
+   tool; visually identical for standing text. */
+body {
+    font-variant-numeric: tabular-nums;
+}
+
+/* §8 — RETIRE ALWAYS-ON DECORATIVE ANIMATION LOOPS (perf: frame budget back to
+   the live preview). Every rule below overrides an infinite `animation` in
+   ui-modernization-20260510.css; the static art each loop painted REMAINS
+   (frozen at frame 0) — only the perpetual repainting stops. Revert any single
+   line by deleting it. KEPT on purpose: #renderFloat .btn-render "render heat"
+   (primary CTA emphasis), the empty-stage EKG set (runs only before a paint is
+   loaded, never competes with the preview), and all real loading spinners.
+
+   The two worst offenders here were `body::before` / `body::after`: FIXED
+   full-viewport overlays with mix-blend-mode:screen animated on 8s/5.5s loops
+   — a continuous whole-window composite for a barely-visible shimmer. */
+body::before,                        /* was: shokkerAmbientVoltage 8s infinite */
+body::after {                        /* was: shokkerNitroSweep 5.5s infinite */
+    animation: none !important;
+}
+.header::before {                    /* was: shokkerNitroScan 3.2s infinite (header-wide blend scan) */
+    animation: none !important;
+}
+.header::after {                     /* was: shokkerHeaderHeartbeatSweep 4.8s infinite (EKG stays, static) */
+    animation: none !important;
+    will-change: auto !important;    /* drop the now-pointless compositor layer */
+}
+.shokker-workbench-pulse,
+.header-brand::after {               /* was: shokkerWorkbenchPulseTravel + shokkerPulseGlow / shokkerBrandPulseBeat */
+    animation: none !important;
+}
+.header-brand::before {              /* was: shokkerFaceIgnite 2.2s infinite (scale+saturate filter pulse) */
+    animation: none !important;
+}
+.header h1,
+.header-brand h1 {                   /* was: shokkerTitleCharge 5.2s infinite (gradient text stays, static) */
+    animation: none !important;
+}
+.vtool-btn.active {                  /* was: shokkerToolPop 2.6s infinite (active tool keeps its static glow) */
+    animation: none !important;
+}
+.preview-inner > #previewSpecPane {  /* was: shokkerSpecTileCharge 3.8s infinite box-shadow pulse */
+    animation: none !important;
+}
+
+/* §9 — ALWAYS-ON LOOP RETIREMENT, round 2 (glow / depth-glass / ui-fixes packs).
+   Same contract as §8: static art stays, perpetual repainting stops.
+   KEPT deliberately (the "alive but purposeful" set): .brand-text wordmark
+   gradient slide (small text area — the one living header element),
+   #btnRender glow halo + #renderFloat render heat (CTAs, distinct elements),
+   ui-accent-system strips (2–4px rails/underlines, tiny paint areas),
+   progress bars + #liveLinkBadge (meaningful state), workbench pulse
+   (.preview-active/.preview-rendering — state-driven), everything scoped to
+   body[data-look] opt-in themes (only runs when that look is chosen). */
+
+/* ui-glow-polish-20260613.css: active tab + selected zone card "breathe" —
+   pulsing box-shadow forever on states that are already visually distinct. */
+.rp-tab.active,
+.zone-card.selected,
+.zone-card.active {
+    animation: none !important;
+}
+
+/* ui-glow-polish-20260613.css §5: 9s showroom sheen sweeping ACROSS the live
+   preview canvas (mix-blend-mode:screen, z-index 2, permanent will-change
+   layer). Sweeps over the actual paint art — perf cost + color-judgment noise. */
+.preview-living-frame::before {
+    animation: none !important;
+    will-change: auto !important;
+    opacity: 0 !important;   /* its resting frame is opacity:0 — keep it invisible, not frozen mid-sweep */
+}
+
+/* ui-depth-glass-20260613.css: stage aura box-shadow pulse around the preview
+   (7.5s, always) + a THIRD simultaneous pulse stacked on the render button
+   (non-!important, so this plain override reaches it everywhere; the two
+   CTA pulses above survive on their own higher-specificity rules). */
+.preview-living-frame,
+.preview-breathing-aura,
+.primary-render-action {
+    animation: none !important;
+}
+
+/* ui-fixes-20260511.css: Zone Popout section-header EKG rails — one animated
+   drop-shadow filter loop PER visible section header (often 6+ at once) in the
+   popout the painter works in most. Static rail gradient stays. */
+.zone-editor-float .section-collapsible > .section-header::before,
+.zone-editor-float .section-header::before,
+.zone-editor-float .section-collapsible > .section-header::after,
+.zone-editor-float .section-header::after {
+    animation: none !important;
+}
+
+/* §10 — BACKDROP-FILTER DIET (scroll smoothness)
+   backdrop-filter re-blurs on every frame the content behind it moves — on
+   sticky elements over scrolling lists that means jank exactly while the
+   painter scrolls. Two cases here are INVISIBLE blur (behind ~96%-opaque
+   fills) and go to none; the rest are radius cuts that keep the glass look.
+   depth-glass's own uses (toasts/modals/dropdowns) are transient + well
+   scoped — untouched. */
+.zone-toolbar {            /* ui-modernization-20260508.css: blur(12) behind rgba(...,0.96) — invisible */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+.swatch-group-label {      /* ui-modernization-20260508.css: blur(8) behind 0.96 fill on EVERY sticky
+                              group label in the finish picker (hundreds of groups) — invisible blur
+                              re-rendered while the picker scrolls. The picker-scroll jank fix. */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+#renderFloat.render-float { /* ui-modernization-20260510.css: blur(12) on the always-visible render bar */
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+}
+#zoneEditorFloat {          /* ui-modern-polish-20260613.css: blur(8) on the large, usually-open Zone Popout */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+#rpFinishesContent {        /* ui-modernization-20260509.css: blur(12) on a big scrolling right-panel surface */
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+}
+.swatch-popup-search {      /* ui-modernization-20260508.css: blur(12) sticky search over the scrolling picker */
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+}
+.zoom-controls {            /* ui-modernization-20260508.css: blur(10) always-visible canvas chrome */
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+}
+
+/* §11 — NATIVE CONTROL MODERNIZATION (one-line wins)
+   color-scheme:dark was only set on #rightPanel — native <select> dropdown
+   menus, autofill and system widgets rendered LIGHT everywhere else (the
+   jarring white popup menus). Making it global matches the app's reality.
+   accent-color brands native checkboxes/radios/range/progress where no pack
+   already overrides them (existing scoped accent-colors keep winning). */
+:root {
+    color-scheme: dark;
+    accent-color: #00e5ff;
+}
+:where(input, textarea)::placeholder {
+    color: rgba(174, 190, 214, 0.45);
+}
+:where(input, textarea, select) {
+    caret-color: #00e5ff;
+}
+/* Affordance: everything clickable shows a hand. :where() = zero specificity,
+   never beats an existing cursor rule. */
+:where(button, [role="button"], .section-header, .zone-qv-chip, .rp-tab,
+       .pill, .swatch-item, .finish-card, .vtool-btn, .tool-btn) {
+    cursor: pointer;
+}
+:where(button, input, select, textarea):disabled {
+    cursor: not-allowed;
+}
+
+/* §12 — ENTRANCE MOTION for transient surfaces (feels dynamic where it counts)
+   A 190ms fade+settle when popovers/modals/toasts APPEAR (CSS animations fire
+   on insertion/display-toggle, so this needs zero JS). Deliberately animates
+   `opacity` + the independent `scale` property — NOT `transform` — so surfaces
+   positioned via translate(-50%,-50%) can't jump mid-entrance. Static panels
+   are untouched; motion only happens at the moment the user summons something. */
+@keyframes vxEnter {
+    from {
+        opacity: 0;
+        scale: 0.985;
+    }
+}
+/* (.zone-editor-float removed after self-review 05:20: its content re-renders on
+   every zone click — an entrance replay on that hot path would read as lag.) */
+:where(.toast,
+       .spb-render-modal,
+       .settings-dropdown,
+       .recent-paths-dropdown,
+       .swatch-popup,
+       .tutorial-tooltip) {
+    animation: vxEnter var(--vx-med) var(--vx-ease);
+}
+
+/* §13 — TEXT RENDERING — subtle crispness on a dark UI (grayscale AA reads
+   sharper than subpixel on dark backgrounds in Chromium/Electron). */
+body {
+    -webkit-font-smoothing: antialiased;
+}
+
+/* §14 — LEGIBILITY + SCROLL FEEL
+   a) --text-dim floor: the app leans hard on 9-10px dim labels. Prelude set
+      #7080a0, ui-modern-polish-20260613 already lifted it to #8893ad (:root);
+      this nudges the DEFAULT look to #96a3c0 (~6:1 on the app's dark bg) —
+      still clearly "dim" next to --text #d8d8e8. Opt-in looks define their own
+      --text-dim on body[data-look] and are untouched.
+   b) overscroll containment: reaching the end of a list no longer scroll-chains
+      to the surface behind it (popout scrolling the page, picker scrolling the
+      booth) — the single most "web page vs real app" feel fix there is.
+   c) mouse-focus cleanup + a disabled-look default where no pack styles it. */
+:root {
+    --text-dim: #96a3c0;
+}
+:where(#zoneList, .swatch-popup-grid, #rpFinishesContent, .zone-editor-float,
+       .settings-dropdown, #looksGrid, .swatch-popup, .recent-paths-dropdown) {
+    overscroll-behavior: contain;
+}
+:where(button, [role="button"]):focus:not(:focus-visible) {
+    outline: none;
+}
+:where(button, .btn):disabled {
+    opacity: 0.6;
+}
+
+/* §15 — NO ACCIDENTAL TEXT SELECTION on controls
+   Fast repeated clicks on chips/headers/buttons were highlighting their label
+   text (classic web-page tell). Cards/names stay selectable for copying. */
+:where(button, .vtool-btn, .tool-btn, .zone-qv-chip, .pill, .section-header, .rp-tab) {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* §16 — BASE HSB ROWS: ↺ ON THE SLIDER LINE (owner 2026-07-04: "the base resets
+   are STILL on their own rows in the live app"). The popout's slider recipe in
+   ui-modernization-20260509.css pins .stack-slider width so the reset wrapped.
+   RESCOPED 2026-07-08 (owner: "2nd-5th BASE OVERLAY HSB sliders got much
+   bigger"): the broad :not(.zone-compact-row) selector also flexed the overlay
+   layers' .hsb-controls, which are multi-row CONTAINERS, not single rows —
+   inflating their sliders. Now scoped to the dedicated .spb-base-hsb-row class
+   carried only by the three Base Color Hue/Saturation/Brightness rows. */
+.zone-editor-float .hsb-controls.spb-base-hsb-row,
+.zone-detail-body .hsb-controls.spb-base-hsb-row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+}
+.zone-editor-float .hsb-controls.spb-base-hsb-row .stack-slider,
+.zone-detail-body .hsb-controls.spb-base-hsb-row .stack-slider {
+    flex: 1 1 40px !important;
+    width: auto !important;
+    min-width: 36px !important;
+}
+.zone-editor-float .hsb-controls.spb-base-hsb-row .stack-label-mini,
+.zone-editor-float .hsb-controls.spb-base-hsb-row .stack-step-btn,
+.zone-editor-float .hsb-controls.spb-base-hsb-row .stack-val,
+.zone-detail-body .hsb-controls.spb-base-hsb-row .stack-label-mini,
+.zone-detail-body .hsb-controls.spb-base-hsb-row .stack-step-btn,
+.zone-detail-body .hsb-controls.spb-base-hsb-row .stack-val {
+    flex: 0 0 auto !important;
+    width: auto !important;
+}
+
+/* §7 — REDUCED MOTION SAFETY NET for everything this file animates. */
+@media (prefers-reduced-motion: reduce) {
+    button:active,
+    .vtool-btn:active,
+    .zone-qv-chip:active,
+    .tool-btn:active,
+    .pill:active,
+    [role="button"]:active,
+    .section-header:active,
+    .swatch-item:active,
+    .finish-card:active {
+        transform: none;
+        transition: none;
+    }
+    :where(.toast, .spb-render-modal, .settings-dropdown, .recent-paths-dropdown,
+           .swatch-popup, .tutorial-tooltip) {
+        animation: none;
+    }
+}

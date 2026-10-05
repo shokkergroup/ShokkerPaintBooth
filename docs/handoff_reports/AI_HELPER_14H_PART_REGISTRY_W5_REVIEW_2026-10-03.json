@@ -1,0 +1,95 @@
+{
+  "contract": "spb-ai-part-registry-w5-review/1",
+  "date": "2026-10-03",
+  "lane": "W5 independent same-part registry lifecycle review",
+  "scope": "Independent review; reviewer edited only the two tests and this report. Production producer stopped at the recorded SHA and was not edited by reviewer.",
+  "production-source-sha256": "a5ed3023735381f1349f367699281749c4a96c54b0d61ab1e612ae780d5cfb88",
+  "sources": [
+    "js/spb-pro-ai.js",
+    "js/spb-pro-zone-kit.js"
+  ],
+  "method": "Contracts extract actual production queue/apply/registry/owner-validation/undo functions and actual offlineElementAsk route; load actual ZoneKit and call real batch/add/edit with bounded boundary fixtures. No arbitrary manual-zone adoption or raw-mask shortcuts.",
+  "findings": [
+    {
+      "case": "undo-cloned-zone-retry",
+      "result": "PASS",
+      "evidence": "Undo restored a cloned ZoneKit snapshot and the committed helper owner name; the next selector compiled to an edit."
+    },
+    {
+      "case": "explicit-new-stack-vs-update",
+      "result": "PASS",
+      "evidence": "The noReg route retained explicit add semantics for the same selector and did not claim helper ownership."
+    },
+    {
+      "case": "explicit-material-stack-vs-color-preservation",
+      "result": "PASS",
+      "evidence": "Explicit finish update changed the material and kept the existing red base color."
+    },
+    {
+      "case": "partial-batch",
+      "result": "PASS",
+      "evidence": "A successful first add received an owner; a failed second add did not."
+    },
+    {
+      "case": "compile-without-apply",
+      "result": "PASS_COMMIT_ONLY",
+      "evidence": "After the W6 source change, repeated abandoned part plans reuse the committed owner while _editReg and _editRegPendingBefore remain unchanged. Applying a later plan updates the owner only after ZoneKit succeeds.",
+      "before-after": {
+        "before": "W5 review of prior source found projected part ownership in _editReg before ZoneKit commit; abandonment left the projection live (UNSUPPORTED_STATE).",
+        "after": "Current frozen W6 source defers part-owner changes until successful apply; first and second no-apply compiles retain the committed mapping and no pending edit."
+      }
+    },
+    {
+      "case": "stale-commit",
+      "result": "PASS",
+      "evidence": "A changed element identity exited before ZoneKit and rolled pending selector state back."
+    },
+    {
+      "case": "later-registry-owner",
+      "result": "PASS_METADATA_ONLY",
+      "evidence": "Registry compare-before-restore preserved a later selector name. Out-of-order undo against the global ZoneKit stack is outside this contract."
+    },
+    {
+      "case": "duplicate-manual-mask-source-correction",
+      "result": "SAFE_REFUSAL",
+      "evidence": "Duplicate provenance fails the live uniqueness check; manual mask drift also invalidates provenance, so source-color correction is refused rather than adopting a zone."
+    },
+    {
+      "case": "manual-rename-source-correction",
+      "result": "SAFE_REFUSAL",
+      "evidence": "A renamed provenance zone was not adopted by name; source-color correction requested a named color or clarification."
+    },
+    {
+      "case": "muted-owner",
+      "result": "SAFE_REFUSAL",
+      "evidence": "Muted helper zone is excluded from reuse; its existing committed mapping cannot target it while muted."
+    },
+    {
+      "case": "different-panel-and-region-metadata",
+      "result": "PASS",
+      "evidence": "Other panel/portion selectors remained distinct and registry mutation stayed scoped to editKey."
+    }
+  ],
+  "parent-owned-native-cases": [
+    "Chrome UI interactions",
+    "Undo/retry",
+    "Color correction across changed source state"
+  ],
+  "validation": {
+    "commands": [
+      "node tests/ai_part_registry_w5_review_contract.cjs",
+      "node tests/ai_part_crossroute_review_contract.cjs",
+      "node tests/ai_part_registry_undo_contract.cjs"
+    ],
+    "result": "PASS",
+    "crossroute-coverage": [
+      "first and second no-apply plans retain committed ownership",
+      "older queued edit after newer committed owner is refused",
+      "partial ZoneKit batch records only the successful unique owner",
+      "same-car undo restores registry with cloned zone objects and retry succeeds",
+      "color-only route retains material",
+      "layout, mask, manual rename, mute and duplicate provenance fail safe reuse"
+    ]
+  },
+  "updated-source-hash-verified-after-tests": "a5ed3023735381f1349f367699281749c4a96c54b0d61ab1e612ae780d5cfb88"
+}

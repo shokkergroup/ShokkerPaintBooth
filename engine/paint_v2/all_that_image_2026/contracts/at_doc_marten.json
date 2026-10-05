@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_doc_marten",
+  "display_name": "Flannel: Doc Marten",
+  "promise": "Cherry oxblood leather with tiny sharp worn creases and small yellow stitch fragments, no boots or brand logo",
+  "carrier_grammar": "Cherry oxblood leather with tiny sharp worn creases and small yellow stitch fragments, no boots or brand logo; single full-canvas image, no duplicated quadrants. Fine features: oxblood polished leather, deep leather creases, raised leather grain, yellow boot stitching, fine leather scuff points, compressed crease shoulders",
+  "spec_grammar": "Feature-specific selectors partition oxblood polished leather, deep leather creases, raised leather grain, yellow boot stitching, fine leather scuff points, compressed crease shoulders. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "oxblood polished leather",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "deep leather creases",
+      "role": "Material feature selected from artwork by g:<:0.26"
+    },
+    {
+      "name": "raised leather grain",
+      "role": "Material feature selected from artwork by detail:>:0.64"
+    },
+    {
+      "name": "yellow boot stitching",
+      "role": "Material feature selected from artwork by h:>:30&h:<:80&s:>:0.38"
+    },
+    {
+      "name": "fine leather scuff points",
+      "role": "Material feature selected from artwork by fine:>:0.76"
+    },
+    {
+      "name": "compressed crease shoulders",
+      "role": "Material feature selected from artwork by edge:>:0.75"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "oxblood polished leather",
+      "deep leather creases",
+      "raised leather grain",
+      "yellow boot stitching",
+      "fine leather scuff points",
+      "compressed crease shoulders"
+    ],
+    "R": [
+      "oxblood polished leather",
+      "deep leather creases",
+      "raised leather grain",
+      "yellow boot stitching",
+      "fine leather scuff points",
+      "compressed crease shoulders"
+    ],
+    "Cc": [
+      "oxblood polished leather",
+      "deep leather creases",
+      "raised leather grain",
+      "yellow boot stitching",
+      "fine leather scuff points",
+      "compressed crease shoulders"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "oxblood polished leather",
+      "range": [
+        [
+          0,
+          55,
+          30
+        ],
+        [
+          20,
+          160,
+          190
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "deep leather creases",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "raised leather grain",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "yellow boot stitching",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine leather scuff points",
+      "range": [
+        [
+          0,
+          150,
+          140
+        ],
+        [
+          12,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "compressed crease shoulders",
+      "range": [
+        [
+          0,
+          65,
+          55
+        ],
+        [
+          15,
+          180,
+          210
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_band_tee_crack",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_basement_amp",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "oxblood polished leather",
+      "deep leather creases",
+      "raised leather grain",
+      "yellow boot stitching",
+      "fine leather scuff points",
+      "compressed crease shoulders"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_doc_marten / Cherry oxblood leather with tiny sharp worn creases and small yellow stitch fragments, no boots or brand logo",
+  "spec_key": "at_doc_marten / oxblood polished leather all; deep leather creases g:<:0.26; raised leather grain detail:>:0.64; yellow boot stitching h:>:30&h:<:80&s:>:0.38; fine leather scuff points fine:>:0.76; compressed crease shoulders edge:>:0.75",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

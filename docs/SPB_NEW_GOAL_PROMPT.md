@@ -7,7 +7,7 @@ deleted/paused so the new thread is not competing with stale context.
 /goal
 
 Workspace:
-E:\Koda\Shokker Paint Booth Gold to Platinum
+C:\DRIVE E BACKUP\Shokker Paint Booth Gold to Platinum
 
 Goal:
 Continue Shokker Paint Booth post-alpha hardening using Linear as the source of
@@ -88,4 +88,3 @@ After each category, stop and report:
 Do not run silently for days without checkpoints. Move fast, but keep the work
 reviewable.
 ```
-

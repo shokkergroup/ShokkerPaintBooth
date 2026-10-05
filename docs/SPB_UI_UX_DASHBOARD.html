@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shokker Paint Booth UI/UX Dashboard</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #05070d;
+      --panel: #0c111d;
+      --panel-2: #11192a;
+      --line: rgba(255,255,255,.12);
+      --muted: #8da0b8;
+      --text: #eef6ff;
+      --cyan: #00e5ff;
+      --green: #25f3c8;
+      --gold: #ffd166;
+      --pink: #ff4fa3;
+      --violet: #b76cff;
+      --orange: #ff8c42;
+      --red: #ff5d5d;
+      --shadow: 0 24px 70px rgba(0,0,0,.35);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        linear-gradient(130deg, rgba(0,229,255,.12), transparent 32%),
+        radial-gradient(circle at 80% 12%, rgba(183,108,255,.18), transparent 30%),
+        linear-gradient(180deg, #070a12 0%, var(--bg) 68%);
+    }
+
+    a { color: inherit; }
+
+    .shell {
+      width: min(1440px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+
+    .hero {
+      min-height: 360px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr);
+      gap: 26px;
+      align-items: end;
+      border-bottom: 1px solid var(--line);
+      padding: 34px 0 28px;
+    }
+
+    .brand-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--cyan);
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+
+    .brand-kicker::before {
+      content: "";
+      width: 54px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--cyan), var(--green));
+      box-shadow: 0 0 18px rgba(0,229,255,.55);
+    }
+
+    h1 {
+      max-width: 940px;
+      margin: 18px 0 14px;
+      font-size: clamp(44px, 7vw, 96px);
+      line-height: .88;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      max-width: 780px;
+      color: #c7d5e7;
+      font-size: 18px;
+      line-height: 1.55;
+    }
+
+    .hero-panel {
+      border: 1px solid rgba(0,229,255,.22);
+      background: linear-gradient(180deg, rgba(0,229,255,.10), rgba(12,17,29,.92));
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .hero-panel h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      min-height: 96px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.045);
+      padding: 12px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .section {
+      padding: 28px 0 8px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 14px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .section-title p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 760px;
+      line-height: 1.45;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .lane {
+      border: 1px solid var(--line);
+      background: rgba(10,15,26,.72);
+      box-shadow: 0 16px 46px rgba(0,0,0,.22);
+      min-height: 260px;
+    }
+
+    .lane-header {
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(255,255,255,.06), transparent);
+    }
+
+    .lane-header strong {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    .count {
+      min-width: 28px;
+      height: 24px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      color: #061018;
+      font-weight: 900;
+      background: var(--cyan);
+    }
+
+    .issue {
+      display: block;
+      margin: 12px;
+      padding: 13px;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.045);
+      transition: transform .16s ease, border-color .16s ease, background .16s ease;
+    }
+
+    .issue:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0,229,255,.45);
+      background: rgba(0,229,255,.08);
+    }
+
+    .issue-id {
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .issue-title {
+      display: block;
+      margin-top: 7px;
+      font-size: 14px;
+      line-height: 1.35;
+      font-weight: 760;
+    }
+
+    .issue-note {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .status-done .lane-header { border-top: 3px solid var(--green); }
+    .status-progress .lane-header { border-top: 3px solid var(--orange); }
+    .status-review .lane-header { border-top: 3px solid var(--gold); }
+    .status-open .lane-header { border-top: 3px solid var(--violet); }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .surface {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(10,15,26,.82));
+      padding: 18px;
+    }
+
+    .surface h3 {
+      margin: 0 0 10px;
+      font-size: 17px;
+    }
+
+    .surface p {
+      margin: 0;
+      color: #c8d5e6;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .check-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .check {
+      border: 1px solid rgba(37,243,200,.24);
+      background: rgba(37,243,200,.06);
+      padding: 10px 12px;
+      color: #d9fff7;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .warn {
+      border-color: rgba(255,209,102,.28);
+      background: rgba(255,209,102,.07);
+      color: #ffe7a6;
+    }
+
+    .danger {
+      border-color: rgba(255,93,93,.28);
+      background: rgba(255,93,93,.07);
+      color: #ffd1d1;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .event {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      padding: 12px;
+    }
+
+    .event time {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .event strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .event span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .link-button {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 8px 12px;
+      border: 1px solid rgba(0,229,255,.32);
+      background: rgba(0,229,255,.07);
+      text-decoration: none;
+      color: #e7fbff;
+      font-size: 13px;
+      font-weight: 760;
+    }
+
+    footer {
+      margin-top: 36px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1080px) {
+      .hero { grid-template-columns: 1fr; }
+      .board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .shell { width: min(100vw - 20px, 1440px); }
+      .board, .metric-grid, .check-list { grid-template-columns: 1fr; }
+      .event { grid-template-columns: 1fr; }
+      h1 { font-size: 42px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <span class="brand-kicker">Shokker Paint Booth</span>
+        <h1>UI/UX Dashboard</h1>
+        <p class="hero-copy">
+          A browser-first control surface for tracking product polish, Linear cleanup, visible verification,
+          and release-facing trust. Markdown remains the durable memory; this page is the visual map.
+        </p>
+        <div class="links">
+          <a class="link-button" href="../SPB_UI_UX_NEXT_THREAD_HANDOFF.md">UI/UX handoff</a>
+          <a class="link-button" href="../SPB_LINEAR_HANDOFF.md">Linear handoff</a>
+          <a class="link-button" href="../SPB_GOAL_OPERATING_BRIEF.md">Goal brief</a>
+          <a class="link-button" href="https://linear.app/shokker-poster-engine-gold/issue/SPB-70/redesign-finishbase-picker-and-prune-confusing-catalog-categories">SPB-70</a>
+        </div>
+      </div>
+      <aside class="hero-panel" aria-label="Current SPB UI/UX scoreboard">
+        <h2>Current Scoreboard</h2>
+        <div class="metric-grid">
+          <div class="metric"><strong>SPB-70</strong><span>Active UI/UX and picker modernization lane.</span></div>
+          <div class="metric"><strong>52</strong><span>Focused UI regression tests passing after the latest picker/overlay cleanup.</span></div>
+          <div class="metric"><strong>4</strong><span>Older issues moved to Done in the May 13 Linear cleanup batch.</span></div>
+          <div class="metric"><strong>0</strong><span>Client-visible SPB-67/Surgery/Needs Rating labels in the verified picker path.</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Linear Board Triage</h2>
+        <p>Snapshot from the May 13 audit. Done means implementation evidence exists; taste-only follow-up should become a smaller new issue instead of keeping broad parent issues open forever.</p>
+      </div>
+      <div class="board">
+        <section class="lane status-progress">
+          <div class="lane-header"><strong>Active</strong><span class="count">2</span></div>
+          <a class="issue" href="https://linear.app/shokker-poster-engine-gold/issue/SPB-70/redesign-finishbase-picker-and-prune-confusing-catalog-categories">
+            <span class="issue-id">SPB-70</span>
+            <span class="issue-title">Picker/category UX modernization</span>
+            <span class="issue-note">Keep active: major browsing hierarchy and zone workflow polish remain.</span>
+          </a>
+          <a class="issue" href="https://linear.app/shokker-poster-engine-gold/issue/SPB-67/catalog-wide-finish-performance-and-redundancy-sweep">
+            <span class="issue-id">SPB-67</span>
+            <span class="issue-title">Catalog-wide performance and redundancy sweep</span>
+            <span class="issue-note">Keep active: ongoing catalog quality/redundancy hardening.</span>
+          </a>
+        </section>
+
+        <section class="lane status-done">
+          <div class="lane-header"><strong>Moved Done</strong><span class="count">4</span></div>
+          <a class="issue" href="https://linear.app/shokker-poster-engine-gold/issue/SPB-4/rebuild-failed-regular-patterns-from-visual-grade-audit">
+            <span class="issue-id">SPB-4</span>
+            <span class="issue-title">Regular pattern rebuild audit</span>
+            <span class="issue-note">Quality audit reached 0 rebuild-required; residual visual taste should be scoped separately.</span>
+          </a>
+          <a class="issue" href="https://linear.app/shokker-poster-engine-gold/issue/SPB-7/fix-paint-technique-bases-that-render-as-no-ops">
+            <span class="issue-id">SPB-7</span>
+            <span class="issue-title">Paint Technique no-op fixes</span>
+            <span class="issue-note">All six Paint Technique bases have visible paint/spec guards and focused tests.</span>
+          </a>
+          <a class="issue" href="https://linear.app/shokker-poster-engine-gold/issue/SPB-30/overnight-visual-rebuild-wave-owner-selected-weak-base-categories">
+            <span class="issue-id">SPB-30</span>
+            <span class="issue-title">Owner-selected visual rebuild wave</span>
+            <span class="issue-note">Broad category wave is implemented; SPB-67 now carries ongoing catalog work.</span>
+          </a>
+          <a class="issue" href="https://linear.app/shokker-poster-engine-gold/issue/SPB-36/base-transform-controls-do-not-affect-transformed-finish-output">
+            <span class="issue-id">SPB-36</span>
+            <span class="issue-title">Base transform controls</span>
+            <span class="issue-note">Generic gradients and special/monolithic transforms are source-safe and covered by regressions.</span>
+          </a>
+        </section>
+
+        <section class="lane status-review">
+          <div class="lane-header"><strong>Hold Review</strong><span class="count">3</span></div>
+          <a class="issue" href="https://linear.app/shokker-poster-engine-gold/issue/SPB-9/prove-all-base-overlay-combinations-work">
+            <span class="issue-id">SPB-9</span>
+            <span class="issue-title">Base overlay matrix</span>
+            <span class="issue-note">Many fixes landed, but latest comments still carry live/restart validation caveats.</span>
+          </a>
+          <a class="issue" href="https://linear.app/shokker-poster-engine-gold/issue/SPB-8/fix-base-overlay-hsb-live-preview-parity">
+            <span class="issue-id">SPB-8</span>
+            <span class="issue-title">Overlay HSB live-preview parity</span>
+            <span class="issue-note">Payload/hash guards exist; needs visible slider smoke before closure.</span>
+          </a>
+          <a class="issue" href="https://linear.app/shokker-poster-engine-gold/issue/SPB-27/improve-toolbar-layer-and-overlay-free-transform-workflow">
+            <span class="issue-id">SPB-27</span>
+            <span class="issue-title">Toolbar transform workflow</span>
+            <span class="issue-note">Runtime harnesses pass; still wants real PSD/logo app smoke.</span>
+          </a>
+        </section>
+
+        <section class="lane status-open">
+          <div class="lane-header"><strong>Still Open</strong><span class="count">8</span></div>
+          <a class="issue" href="https://linear.app/shokker-poster-engine-gold/issue/SPB-13/resize-render-controls-and-protect-spec-preview-mini-map-visibility">
+            <span class="issue-id">SPB-13</span>
+            <span class="issue-title">Render command shelf / mini-map protection</span>
+            <span class="issue-note">User explicitly deferred bottom preview command shelf work.</span>
+          </a>
+          <a class="issue" href="https://linear.app/shokker-poster-engine-gold/issue/SPB-57/make-change-file-update-canonical-source-or-render-from-live-flat">
+            <span class="issue-id">SPB-57</span>
+            <span class="issue-title">Change File canonical source truth</span>
+            <span class="issue-note">No closure evidence found in this audit.</span>
+          </a>
+          <a class="issue" href="https://linear.app/shokker-poster-engine-gold/issue/SPB-71/shokke-spec-sculpt-paint-aware-standalone-spec-map-builder">
+            <span class="issue-id">SPB-71</span>
+            <span class="issue-title">Spec Sculpt product mode</span>
+            <span class="issue-note">Backlog product build, not part of the UI cleanup closure batch.</span>
+          </a>
+        </section>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Release-Facing Cleanup</h2>
+        <p>Guardrails for keeping internal scoring/review machinery out of the product surface.</p>
+      </div>
+      <div class="grid-3">
+        <article class="surface">
+          <h3>Picker Language</h3>
+          <p>Client-facing picker surfaces should say Showcase, Pro Picks, Strong, Sponsor Safe, High Spec, and Fast. Internal terms stay hidden unless the dev flag is re-enabled.</p>
+          <div class="check-list">
+            <div class="check">Review Queue hidden</div>
+            <div class="check">Category Plan hidden</div>
+            <div class="check">Spec Plan hidden</div>
+            <div class="check">Needs Review sort hidden</div>
+          </div>
+        </article>
+        <article class="surface">
+          <h3>Overlay Layer Scanning</h3>
+          <p>The 2nd-5th Base Overlay Layer stack now needs to behave like a map while scrolling, not a wall of identical controls.</p>
+          <div class="check-list">
+            <div class="check">2ND marker</div>
+            <div class="check">3RD marker</div>
+            <div class="check">4TH marker</div>
+            <div class="check">5TH marker</div>
+          </div>
+        </article>
+        <article class="surface">
+          <h3>Still Watch</h3>
+          <p>The old score system is intentionally not trusted as client-facing truth. Use it for developer triage only until the scoring model is rebuilt or replaced.</p>
+          <div class="check-list">
+            <div class="check warn">Ranking trust remains suspect</div>
+            <div class="check warn">Preview reliability deferred</div>
+            <div class="check danger">SPB-67 language must stay hidden</div>
+            <div class="check warn">Catalog groups still need pruning</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Recent Verification</h2>
+        <p>High-signal verification from the latest UI/UX slice and Linear cleanup.</p>
+      </div>
+      <div class="timeline">
+        <div class="event">
+          <time>May 13</time>
+          <div><strong>SPB-70 picker cleanup</strong><span>52 focused UI tests passed; runtime mirrors synced; live DOM QA confirmed internal review language absent from visible picker path.</span></div>
+        </div>
+        <div class="event">
+          <time>May 13</time>
+          <div><strong>Overlay layer landmarks</strong><span>Live Gloss zone check confirmed BASE OVERLAY LAYERS with 2ND/3RD/4TH/5TH markers and Material Properties/Spatial Selection absent.</span></div>
+        </div>
+        <div class="event">
+          <time>May 13</time>
+          <div><strong>Linear cleanup batch</strong><span>Moved SPB-4, SPB-7, SPB-30, and SPB-36 to Done with closure comments; left SPB-8/SPB-9/SPB-27 in review pending live-specific validation.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Generated for local SPB planning on 2026-05-13. This page is a visual dashboard,
+      not the sole source of truth. Keep Linear, the Markdown handoffs, and repo tests authoritative.
+    </footer>
+  </main>
+</body>
+</html>

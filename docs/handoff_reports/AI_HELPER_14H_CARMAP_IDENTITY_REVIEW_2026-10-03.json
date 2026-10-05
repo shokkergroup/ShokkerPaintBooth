@@ -1,0 +1,133 @@
+{
+  "title": "AI helper car-map identity review",
+  "generated_at": "2026-10-04T04:02:55.782Z",
+  "mode": "read-only source audit and actual-function VM checks with fake canvas/storage/fetch/chat; no native application or external calls",
+  "source_sha256": "4e2d851c7a43b072db10874b52c988f1deab6e0c9dfca0f541db0c6827c955d4",
+  "source_evidence": {
+    "signature": "js/spb-pro-carmap.js function signature(): paint dimensions and layer name + bbox tuples; excludes source path, source bytes/pixels, modification time, and explicit vehicle id.",
+    "cache_hit": "build00() reuses CACHE when CACHE.sig === signature() and labels are not required (lines 505-507 at audit time).",
+    "pending": "ensure() returns PENDING before comparing current signature; a pending default labelled build is shared with ensure(false).",
+    "layout_and_teaching": "layoutSig is a 32x32 thresholded paintable-area fingerprint. findTaught first uses exact layer signature, then reuses teaching at layout similarity >= 0.92. This is intentional cross-paint template reuse, not proof that two different real cars collide.",
+    "import_export": "exportTaught carries car/layoutSig/folder/sheet/parts. importTaught validates only format and parts shape, then calls setBox on the current CACHE; imported maps are explicit user actions but source/layout compatibility is not checked.",
+    "source_loader": "paint-booth-3-canvas.js getCurrentSourcePaintFile prefers _psdPath, then committed source path, then paintFile input. The car-map signature does not consume this value. No direct SpbProCar._reset caller was found in js/; js/spb-chat-studio.js calls ensure(false) on panel open."
+  },
+  "observations": {
+    "signature": {
+      "sameDimsLayerNamesBboxesDifferentPaths": true,
+      "cachedObjectReusedAfterSyntheticPaintChange": true,
+      "cachedSignature": "cm1ubceji",
+      "currentSignature": "cm1ubceji",
+      "inputs": "source path, bytes/pixels, mtime, and project/car id are absent; dimensions, layer names, and bboxes are included"
+    },
+    "folder": {
+      "loadedSource": "E:\\Other\\C.psd",
+      "outputDirectory": "C:\\Paints\\ARCA",
+      "folderKey": "arca",
+      "effectiveFolder": "arca",
+      "identityCaveat": "output-folder result is not itself car recognition; atlas matching uses separate layout/folder corroboration"
+    },
+    "ensureFalse": {
+      "fakeVisionCalls": 0,
+      "freshMapBuilt": true
+    },
+    "ensureDefault": {
+      "fakeVisionCalls": 1,
+      "fetchedLearningIndex": 1
+    },
+    "pending": {
+      "sourceASignature": "cm1ubceji",
+      "sourceBSignature": "cm1vtfo00",
+      "resultAfterSwitch": "cm1ubceji",
+      "ensureFalseJoinedDefault": true,
+      "subsequentEnsureSignature": "cm1vtfo00"
+    },
+    "teaching": {
+      "exportCarries": [
+        "car",
+        "layoutSig",
+        "folder",
+        "sheet"
+      ],
+      "sameLayoutAcrossSourcePathAutomaticallyReuses": true,
+      "dissimilarLayoutDoesNotAutomaticallyReuse": true,
+      "importFormatChecked": true,
+      "importChecksCurrentIdentity": false,
+      "importIsExplicitUserAction": true
+    },
+    "sameSignaturePersistence": {
+      "taughtRoofRestored": true,
+      "keying": "localStorage entry uses the source signature; signature is dimensions + layer names + bboxes"
+    },
+    "canonicalAliases": {
+      "bonnet": "hood",
+      "passenger side": "right side"
+    }
+  },
+  "frozen_cases": [
+    {
+      "id": "same-loaded-source-reuses-cache",
+      "expected": "reuse-cache-for-same-loaded-source",
+      "observed": "same signature takes cache-hit path; normal behavior"
+    },
+    {
+      "id": "different-car-same-size-generic-layers",
+      "expected": "do-not-reuse-source-A-map-by-dimensions-or-generic-layers",
+      "observed": "synthetic paths/content change with same dimensions/layer tuple yield same signature and reuse cache; proves signature behavior only, not a real-car collision"
+    },
+    {
+      "id": "changed-loaded-file-metadata",
+      "expected": "invalidate-or-rekey-old-source-cache",
+      "observed": "path, bytes, and mtime are absent from signature inputs; no real file metadata collision asserted"
+    },
+    {
+      "id": "loaded-source-vs-output-folder-label",
+      "expected": "loaded-paint-source-is-identity-authority",
+      "observed": "folderKey reads outputDir; effFolder prefers it when layoutSig is usable, but this alone does not control atlas recognition"
+    },
+    {
+      "id": "map-cache-bound-to-current-source",
+      "expected": "reuse-only-if-source-identity-matches",
+      "observed": "ensure(false) reused the exact cached map after synthetic current source and mask changed with same signature"
+    },
+    {
+      "id": "taught-parts-bound-to-current-source",
+      "expected": "do-not-apply-source-A-teaching-to-source-B",
+      "observed": "teaching is reused across distinct signatures when layoutSig similarity meets threshold; dissimilar test layout is not reused; manual import bypasses compatibility checks"
+    },
+    {
+      "id": "default-ensure-may-request-vision",
+      "expected": "may-invoke-recognition-path-once",
+      "observed": "default ensure made one call to the fake SpbAI.chat stub on a newly detected uncached map"
+    },
+    {
+      "id": "ensure-false-is-offline",
+      "expected": "must-not-invoke-recognition-or-provider-path",
+      "observed": "fresh ensure(false) made zero fake SpbAI.chat calls"
+    },
+    {
+      "id": "warmup-resolves-after-source-switch",
+      "expected": "stale-A-result-not-installable-as-B-current-map",
+      "observed": "ensure(false) joined pending default ensure; pending result for signature A remained cached after source changed to signature B until next ensure"
+    },
+    {
+      "id": "car-library-metadata-is-not-loaded-paint-identity",
+      "expected": "keep-loaded-source-identity-separate-from-label-and-folder",
+      "observed": "identity fields remain separate; no real atlas/native recognition assertion was made"
+    },
+    {
+      "id": "persisted-learning-source-match",
+      "expected": "allow-only-source-matched-teaching",
+      "observed": "same exact signature reloads taught boxes from localStorage"
+    },
+    {
+      "id": "same-metadata-different-content",
+      "expected": "metadata-only-collision-must-not-prove-source-equivalence",
+      "observed": "different synthetic paint-mask content under same layer tuple hit cache and skipped mask recomputation"
+    }
+  ],
+  "limitations": [
+    "Different path/same metadata and changed synthetic mask prove the cache-key behavior, not a wrong real vehicle mask. No real Chevrolet/ARCA identity conflict is alleged; owner-confirmed Silverado recognition remains authoritative.",
+    "The car atlas separately uses layout similarity and folder corroboration/proposal rules. This audit did not mutate the atlas or infer a real car from synthetic source labels.",
+    "Fake vision chat only counted calls and returned a stub error; no provider was reached."
+  ]
+}

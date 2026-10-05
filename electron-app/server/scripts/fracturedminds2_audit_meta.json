@@ -1,0 +1,452 @@
+[
+ {
+  "id": "fm_barbed_wire",
+  "name": "Barbed Wire",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 57,
+  "mip": 0.66,
+  "render_s": 1.31
+ },
+ {
+  "id": "fm_basketweave",
+  "name": "Basketweave",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 65,
+  "mip": 0.4,
+  "render_s": 1.27
+ },
+ {
+  "id": "fm_cable_knit",
+  "name": "Cable Knit",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 64,
+  "mip": 0.47,
+  "render_s": 1.36
+ },
+ {
+  "id": "fm_carbon_weave",
+  "name": "Carbon Weave",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 68,
+  "mip": 0.64,
+  "render_s": 1.25
+ },
+ {
+  "id": "fm_chainlink",
+  "name": "Chainlink",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 50,
+  "mip": 0.52,
+  "render_s": 1.32
+ },
+ {
+  "id": "fm_chainmail",
+  "name": "Chainmail",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 51,
+  "mip": 0.48,
+  "render_s": 1.35
+ },
+ {
+  "id": "fm_checkerflash",
+  "name": "Checkerflash",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 49,
+  "mip": 0.61,
+  "render_s": 1.22
+ },
+ {
+  "id": "fm_circuit_maze",
+  "name": "Circuit Maze",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 42,
+  "mip": 0.75,
+  "render_s": 1.3
+ },
+ {
+  "id": "fm_code_cascade",
+  "name": "Code Cascade",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 44,
+  "mip": 0.7,
+  "render_s": 1.36
+ },
+ {
+  "id": "fm_damascus",
+  "name": "Damascus",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 52,
+  "mip": 0.38,
+  "render_s": 1.32
+ },
+ {
+  "id": "fm_diamond_plate",
+  "name": "Diamond Plate",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 64,
+  "mip": 0.66,
+  "render_s": 1.39
+ },
+ {
+  "id": "fm_dragon_scale",
+  "name": "Dragon Scale",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 67,
+  "mip": 0.58,
+  "render_s": 1.23
+ },
+ {
+  "id": "fm_feather_fall",
+  "name": "Feather Fall",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 54,
+  "mip": 0.66,
+  "render_s": 1.15
+ },
+ {
+  "id": "fm_fiber_optic",
+  "name": "Fiber Optic",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 61,
+  "mip": 0.72,
+  "render_s": 1.21
+ },
+ {
+  "id": "fm_flame_helix",
+  "name": "Flame Helix",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 64,
+  "mip": 0.62,
+  "render_s": 1.36
+ },
+ {
+  "id": "fm_flame_lick",
+  "name": "Flame Lick",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 50,
+  "mip": 0.52,
+  "render_s": 1.37
+ },
+ {
+  "id": "fm_flame_wall",
+  "name": "Flame Wall",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 69,
+  "mip": 0.69,
+  "render_s": 1.93
+ },
+ {
+  "id": "fm_frost_feather",
+  "name": "Frost Feather",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 64,
+  "mip": 0.7,
+  "render_s": 1.42
+ },
+ {
+  "id": "fm_graphene",
+  "name": "Graphene",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 51,
+  "mip": 0.43,
+  "render_s": 1.37
+ },
+ {
+  "id": "fm_gyro_cage",
+  "name": "Gyro Cage",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 49,
+  "mip": 0.64,
+  "render_s": 1.36
+ },
+ {
+  "id": "fm_gyroid",
+  "name": "Gyroid",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 51,
+  "mip": 0.59,
+  "render_s": 1.25
+ },
+ {
+  "id": "fm_herringbone",
+  "name": "Herringbone",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 64,
+  "mip": 0.5,
+  "render_s": 1.23
+ },
+ {
+  "id": "fm_hexcore",
+  "name": "Hexcore",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 45,
+  "mip": 0.62,
+  "render_s": 1.32
+ },
+ {
+  "id": "fm_honeycomb",
+  "name": "Honeycomb",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 64,
+  "mip": 0.43,
+  "render_s": 1.23
+ },
+ {
+  "id": "fm_honeycomb_burst",
+  "name": "Honeycomb Burst",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 65,
+  "mip": 0.43,
+  "render_s": 1.48
+ },
+ {
+  "id": "fm_inferno_veins",
+  "name": "Inferno Veins",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 67,
+  "mip": 0.73,
+  "render_s": 1.65
+ },
+ {
+  "id": "fm_labyrinth",
+  "name": "Labyrinth",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 67,
+  "mip": 0.72,
+  "render_s": 1.51
+ },
+ {
+  "id": "fm_lattice",
+  "name": "Lattice",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 67,
+  "mip": 0.6,
+  "render_s": 1.12
+ },
+ {
+  "id": "fm_magma",
+  "name": "Magma",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 62,
+  "mip": 0.64,
+  "render_s": 1.43
+ },
+ {
+  "id": "fm_nanoweave",
+  "name": "Nanoweave",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 65,
+  "mip": 0.5,
+  "render_s": 1.22
+ },
+ {
+  "id": "fm_orbit_swarm",
+  "name": "Orbit Swarm",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 59,
+  "mip": 0.72,
+  "render_s": 1.16
+ },
+ {
+  "id": "fm_origami",
+  "name": "Origami",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 60,
+  "mip": 0.67,
+  "render_s": 1.45
+ },
+ {
+  "id": "fm_perforated",
+  "name": "Perforated",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 69,
+  "mip": 0.46,
+  "render_s": 1.24
+ },
+ {
+  "id": "fm_pin_matrix",
+  "name": "Pin Matrix",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 59,
+  "mip": 0.6,
+  "render_s": 1.22
+ },
+ {
+  "id": "fm_riverine",
+  "name": "Riverine",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 66,
+  "mip": 0.73,
+  "render_s": 1.51
+ },
+ {
+  "id": "fm_rivet_array",
+  "name": "Rivet Array",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 66,
+  "mip": 0.53,
+  "render_s": 1.28
+ },
+ {
+  "id": "fm_rope_coil",
+  "name": "Rope Coil",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 71,
+  "mip": 0.49,
+  "render_s": 1.21
+ },
+ {
+  "id": "fm_scale_armor",
+  "name": "Scale Armor",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 60,
+  "mip": 0.6,
+  "render_s": 1.28
+ },
+ {
+  "id": "fm_serpentine",
+  "name": "Serpentine",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 68,
+  "mip": 0.59,
+  "render_s": 1.19
+ },
+ {
+  "id": "fm_shatter_web",
+  "name": "Shatter Web",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 56,
+  "mip": 0.66,
+  "render_s": 1.43
+ },
+ {
+  "id": "fm_sonar",
+  "name": "Sonar",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 63,
+  "mip": 0.66,
+  "render_s": 1.25
+ },
+ {
+  "id": "fm_static_burst",
+  "name": "Static Burst",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 72,
+  "mip": 0.44,
+  "render_s": 1.12
+ },
+ {
+  "id": "fm_tessellate",
+  "name": "Tessellate",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 62,
+  "mip": 0.73,
+  "render_s": 1.42
+ },
+ {
+  "id": "fm_thorn_bramble",
+  "name": "Thorn Bramble",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 62,
+  "mip": 0.7,
+  "render_s": 1.3
+ },
+ {
+  "id": "fm_tiger_slash",
+  "name": "Tiger Slash",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 64,
+  "mip": 0.56,
+  "render_s": 1.42
+ },
+ {
+  "id": "fm_topo_lines",
+  "name": "Topo Lines",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 67,
+  "mip": 0.6,
+  "render_s": 1.33
+ },
+ {
+  "id": "fm_tread_plate",
+  "name": "Tread Plate",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 66,
+  "mip": 0.69,
+  "render_s": 1.25
+ },
+ {
+  "id": "fm_tsunami",
+  "name": "Tsunami",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 69,
+  "mip": 0.58,
+  "render_s": 1.35
+ },
+ {
+  "id": "fm_voronoi_silk",
+  "name": "Voronoi Silk",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 67,
+  "mip": 0.74,
+  "render_s": 1.52
+ },
+ {
+  "id": "fm_wiremesh",
+  "name": "Wiremesh",
+  "kind": "finish",
+  "desc": "PROCEDURAL \u2014 ",
+  "ai_rating": 68,
+  "mip": 0.5,
+  "render_s": 1.28
+ }
+]

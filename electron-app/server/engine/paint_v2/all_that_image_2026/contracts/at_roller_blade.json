@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_roller_blade",
+  "display_name": "Extreme: Roller Blade",
+  "promise": "Pearl gray purple teal technical molded-plastic finish with dense rounded micro-vents, no skate objects",
+  "carrier_grammar": "Pearl gray purple teal technical molded-plastic finish with dense rounded micro-vents, no skate objects; single full-canvas image, no duplicated quadrants. Fine features: violet cast urethane, orange wheel inserts, ground contact scratches, embedded air pockets, molded ridge shoulders, scuffed wheel powder",
+  "spec_grammar": "Feature-specific selectors partition violet cast urethane, orange wheel inserts, ground contact scratches, embedded air pockets, molded ridge shoulders, scuffed wheel powder. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "violet cast urethane",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "orange wheel inserts",
+      "role": "Material feature selected from artwork by h:<:55&s:>:0.45"
+    },
+    {
+      "name": "ground contact scratches",
+      "role": "Material feature selected from artwork by x:>:0.57"
+    },
+    {
+      "name": "embedded air pockets",
+      "role": "Material feature selected from artwork by detail:<:0.23"
+    },
+    {
+      "name": "molded ridge shoulders",
+      "role": "Material feature selected from artwork by edge:>:0.67"
+    },
+    {
+      "name": "scuffed wheel powder",
+      "role": "Material feature selected from artwork by fine:>:0.80"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "violet cast urethane",
+      "orange wheel inserts",
+      "ground contact scratches",
+      "embedded air pockets",
+      "molded ridge shoulders",
+      "scuffed wheel powder"
+    ],
+    "R": [
+      "violet cast urethane",
+      "orange wheel inserts",
+      "ground contact scratches",
+      "embedded air pockets",
+      "molded ridge shoulders",
+      "scuffed wheel powder"
+    ],
+    "Cc": [
+      "violet cast urethane",
+      "orange wheel inserts",
+      "ground contact scratches",
+      "embedded air pockets",
+      "molded ridge shoulders",
+      "scuffed wheel powder"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "violet cast urethane",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "orange wheel inserts",
+      "range": [
+        [
+          0,
+          75,
+          70
+        ],
+        [
+          15,
+          190,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "ground contact scratches",
+      "range": [
+        [
+          0,
+          130,
+          110
+        ],
+        [
+          22,
+          235,
+          245
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "embedded air pockets",
+      "range": [
+        [
+          0,
+          95,
+          85
+        ],
+        [
+          20,
+          205,
+          220
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "molded ridge shoulders",
+      "range": [
+        [
+          0,
+          45,
+          25
+        ],
+        [
+          15,
+          125,
+          140
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "scuffed wheel powder",
+      "range": [
+        [
+          0,
+          150,
+          140
+        ],
+        [
+          12,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_anodised_peg",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_bmx_dirt",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "violet cast urethane",
+      "orange wheel inserts",
+      "ground contact scratches",
+      "embedded air pockets",
+      "molded ridge shoulders",
+      "scuffed wheel powder"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_roller_blade / Pearl gray purple teal technical molded-plastic finish with dense rounded micro-vents, no skate objects",
+  "spec_key": "at_roller_blade / violet cast urethane all; orange wheel inserts h:<:55&s:>:0.45; ground contact scratches x:>:0.57; embedded air pockets detail:<:0.23; molded ridge shoulders edge:>:0.67; scuffed wheel powder fine:>:0.80",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

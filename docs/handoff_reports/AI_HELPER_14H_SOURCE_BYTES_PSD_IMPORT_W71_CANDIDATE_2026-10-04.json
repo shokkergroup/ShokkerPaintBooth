@@ -1,0 +1,51 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "task": "W71 isolated server-side PSD source-byte identity metadata repair",
+  "createdUtc": "2026-10-04T09:00:00Z",
+  "scope": "Private candidate only. No live server restart, source-tree production edit, PSD edit, provider, native app, browser or network operation.",
+  "frozenInputs": "_easy_claude_work/ai14h_w71_candidate/source-freeze.json",
+  "candidateFiles": {
+    "server_routes/psd_import_routes.py": "_easy_claude_work/ai14h_w71_candidate/server_routes/psd_import_routes.py",
+    "server.py": "_easy_claude_work/ai14h_w71_candidate/server.py",
+    "patch": "_easy_claude_work/ai14h_w71_candidate/AI_HELPER_14H_SOURCE_BYTES_PSD_IMPORT_W71.patch"
+  },
+  "changes": [
+    "Reuse server_routes.project_routes._source_fingerprint, which streams server-side SHA-256 in 1 MiB blocks; return only additive sourceBytesSha256 metadata, never source bytes.",
+    "Key the PSD-import response cache by normalized path, raw SHA-256, size, and thumbnail size.",
+    "Pass the digest into _get_cached_psd so its parsed-object cache cannot reuse an object for same-path/same-mtime replacement bytes. Existing no-digest callers retain mtime behavior.",
+    "Re-hash after parsing, layer extraction, and composite generation; return HTTP 409 and do not cache when source bytes or size changed across that work."
+  ],
+  "verification": {
+    "test": "tests/ai_source_bytes_psd_import_w71_contract.py",
+    "result": "PASS",
+    "cases": 5,
+    "evidence": [
+      "Executed the candidate's actual Flask /api/psd-import handler with a real temporary source file and the actual existing _source_fingerprint helper.",
+      "Executed the actual _get_cached_psd function extracted from candidate server.py with a controlled parser; identical source reused the response cache.",
+      "Replaced bytes at the same path while restoring exactly the same mtime; the digest-aware parser cache reparsed and response composite and sourceBytesSha256 matched the replacement.",
+      "Mutated source during handler parsing; candidate returned 409 and no sourceBytesSha256 success payload.",
+      "Legacy response fields remained present and tests confirmed raw test-file bytes were not echoed in the JSON/composite output."
+    ],
+    "syntax": "python -m py_compile passed for both candidate Python files."
+  },
+  "sourceHashes": {
+    "frozen psd_import_routes.py": "d9e0e2e65e7351da1d8564cc8b4652c320433997238099da92c2b477cdddeecdd",
+    "frozen server.py": "463e08123e9a88b9084897756a03dfd89912746756a3479443e30f314d93cb36",
+    "frozen project_routes.py helper": "8367c99a181b7da254a1ea2ebd2610157f336274196def623725f3231222ad0e",
+    "candidate psd_import_routes.py": "c0d17bd94bbbdd3a5e3b689421cb7622538681b7a05b7322b20cc81df8f89f44",
+    "candidate server.py": "fdc9ab9ef16c21e64e3130dcb170406aa45a1898872254f0c76c77c4300cfd75"
+  },
+  "limitations": [
+    "The focused handler harness substitutes a small PSD-like object/parser and composite encoder; it validates route lifecycle, fingerprint binding, and cache identity, not psd-tools fidelity or a real PSD import/render.",
+    "Hashing the full source once on each response-cache lookup is necessary to identify current bytes. Cache misses hash before and after parse/composite, adding two sequential file reads; for the 8.4 MB fixture this is modest versus PSD composition, but very large files pay a linear I/O cost.",
+    "The new response key is additive, so old clients that ignore unknown JSON fields remain compatible. The updated route callback now requires _get_cached_psd to accept source_fingerprint; any alternate route embedders with one-argument callbacks need the matching adapter update.",
+    "The existing _get_cached_psd mtime behavior remains for legacy callers that do not provide a digest; those other routes do not gain byte-identity guarantees from this candidate."
+  ],
+  "effects": {
+    "liveServer": 0,
+    "productionFiles": 0,
+    "rawFileTransfer": 0,
+    "native": 0,
+    "providers": 0
+  }
+}

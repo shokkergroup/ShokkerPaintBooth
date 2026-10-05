@@ -1,0 +1,293 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "spb-intent-assessment/1",
+  "title": "SPB finish assessment contract (proposal)",
+  "type": "object",
+  "required": [
+    "schema",
+    "key",
+    "display_name",
+    "identity_contract",
+    "promise",
+    "paint_policy",
+    "channel_duties",
+    "binding",
+    "optical_response",
+    "evidence",
+    "authority",
+    "calibration"
+  ],
+  "properties": {
+    "schema": {
+      "const": "spb-intent-assessment/1"
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^(base|monolithic):.+$"
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "identity_contract": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Source reference and hash for the existing spb-finish-identity/1 contract; null is unknown, not exempt."
+    },
+    "promise": {
+      "type": "object",
+      "required": [
+        "reference",
+        "visible_cues"
+      ],
+      "properties": {
+        "reference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "visible_cues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "avoid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "paint_policy": {
+      "enum": [
+        "source_preserving",
+        "authored_monochrome",
+        "authored_multicolor",
+        "tintable",
+        "unknown"
+      ]
+    },
+    "channel_duties": {
+      "type": "object",
+      "required": [
+        "M",
+        "Rough",
+        "Cc"
+      ],
+      "properties": {
+        "M": {
+          "$ref": "#/$defs/duty"
+        },
+        "Rough": {
+          "$ref": "#/$defs/duty"
+        },
+        "Cc": {
+          "$ref": "#/$defs/duty"
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "required": [
+        "mode",
+        "rationale"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "feature_owned",
+            "uniform_substrate",
+            "approved_independent",
+            "unknown"
+          ]
+        },
+        "rationale": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "feature_roles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "feature",
+              "material"
+            ],
+            "properties": {
+              "feature": {
+                "type": "string"
+              },
+              "material": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "optical_response": {
+      "type": "object",
+      "required": [
+        "promise",
+        "conditions"
+      ],
+      "properties": {
+        "promise": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "path",
+          "sha256",
+          "renderer_fingerprint"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "reference",
+              "served_standard",
+              "served_picker",
+              "native_composed",
+              "car_fixture",
+              "owner_review"
+            ]
+          },
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "renderer_fingerprint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "protected",
+        "owner_verdict",
+        "source"
+      ],
+      "properties": {
+        "protected": {
+          "type": "boolean"
+        },
+        "owner_verdict": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "calibration": {
+      "type": "object",
+      "required": [
+        "status",
+        "anchors",
+        "metric_version"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "unreviewed",
+            "proposed",
+            "owner_anchored",
+            "holdout_validated"
+          ]
+        },
+        "anchors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "metric_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "duty": {
+      "type": "object",
+      "required": [
+        "variation",
+        "rationale"
+      ],
+      "properties": {
+        "variation": {
+          "enum": [
+            "fixed",
+            "narrow",
+            "feature_varied",
+            "broad",
+            "unknown"
+          ]
+        },
+        "rationale": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target_band": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "number"
+          },
+          "description": "Calibrated outer low, ideal low, ideal high, outer high for an explicitly named metric; absent until calibrated."
+        },
+        "metric": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

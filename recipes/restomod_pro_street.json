@@ -2,7 +2,7 @@
   "name": "Restomod Pro Street",
   "description": "Show-quality deep gloss restomod — mirror-like paint, subtle metalflake, piano-black trim, chrome badges, and period-correct pinstripe accents. Trailer-queen beauty with modern depth.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "classic muscle, pro_touring, pro_street, pre-80s GM / Ford / Mopar bodies",
   "notes": "This recipe stacks gloss + subtle metalflake for that 'wet' deep-paint look judges pay attention to. Keep baseSpecStrength high (1.0) on Body — the whole point is reflections. Pinstripe color should match your interior.",
   "zones": [

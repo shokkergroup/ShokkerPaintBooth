@@ -1,0 +1,38 @@
+[
+  {
+    "id": "atp_airbrush_tee_code",
+    "port": 59877,
+    "standard_seconds": 0.651,
+    "split_seconds": 1.295
+  },
+  {
+    "id": "atp_airbrush_tee_image",
+    "port": 59877,
+    "standard_seconds": 0.644,
+    "split_seconds": 1.31
+  },
+  {
+    "id": "atp_flannel_red_code",
+    "port": 59877,
+    "standard_seconds": 0.351,
+    "split_seconds": 0.655
+  },
+  {
+    "id": "atp_flannel_red_image",
+    "port": 59877,
+    "standard_seconds": 0.348,
+    "split_seconds": 0.632
+  },
+  {
+    "id": "atp_holo_sticker_code",
+    "port": 59877,
+    "standard_seconds": 0.294,
+    "split_seconds": 0.695
+  },
+  {
+    "id": "atp_holo_sticker_image",
+    "port": 59877,
+    "standard_seconds": 0.285,
+    "split_seconds": 0.697
+  }
+]

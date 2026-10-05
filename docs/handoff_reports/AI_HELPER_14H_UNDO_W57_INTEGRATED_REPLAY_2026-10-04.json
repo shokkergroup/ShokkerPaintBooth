@@ -1,0 +1,301 @@
+{
+  "status": "REPAIR_REPLAY_PASS",
+  "utc": "2026-10-04T08:21:11.779Z",
+  "review": "W57 isolated minimal Undo repair replay. Existing W48/W41 oracle 19 cases and W55 fresh oracle 7 cases preserved; two repair controls added.",
+  "frozenSource": {
+    "path": "_easy_claude_work/ai14h_w10_phase6_sources/js/spb-pro-ai.js",
+    "sha256": "5ECB313E66BA26B91020367C148D11227DA1385925E144A41DDEBD6940EA53EB"
+  },
+  "originalW48Candidate": {
+    "path": "_easy_claude_work/ai14h_w48_candidate/candidate/js/spb-pro-ai.js",
+    "sha256": "AF0B96488E5BDCD13768971E0F283AAFF0771FF0F66264D4E7B508E1A17306F4",
+    "untouched": true
+  },
+  "candidate": {
+    "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_easy_claude_work\\ai14h_generation3_candidate\\rebase2\\js\\spb-pro-ai.js",
+    "sha256": "6952C11AD7ED954262BE19DD053B17D5FA7A60EC32A896C97D32251075B68451",
+    "installed": false
+  },
+  "reproduciblePatch": {
+    "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_easy_claude_work\\ai14h_w57_candidate\\apply_w57_region_dependency_patch.cjs",
+    "sha256": "E2A92D4C367AF9740751D31434CF15201E3B9CDD0CEA1A9F6C842E19A4117229"
+  },
+  "frozenW48Oracle": {
+    "count": 12,
+    "ids": [
+      "unchanged-fast-exact-undo",
+      "same-zone-manual-other-property-preserved",
+      "same-zone-manual-same-property-preserved",
+      "unrelated-zone-and-layer-change-preserved",
+      "added-zone-unchanged-removed",
+      "added-zone-manually-modified-retained",
+      "deleted-zone-restored-without-id-collision",
+      "mask-three-way-signature-preservation",
+      "layer-visible-opacity-blend-three-way",
+      "partial-undo-honest-copy",
+      "redo-after-partial-undo",
+      "source-guard-and-no-extra-after-mask-copy"
+    ]
+  },
+  "w41Oracle": {
+    "count": 12,
+    "ids": [
+      "undo-beyond-capped-history",
+      "restore-zone-id-order-selection-and-masks",
+      "preserve-unrelated-later-zone-layer-edits",
+      "same-zone-later-manual-edit",
+      "undo-layer-pixel-buffer-edit",
+      "redo-refuses-manual-document-change",
+      "redo-refuses-source-change",
+      "old-document-undo-redo-refused",
+      "noop-entry-no-destructive-undo",
+      "two-sequential-ai-edits-undo-lifo",
+      "partial-batch-undo-scope",
+      "exact-flag-source-guard-does-not-bypass-inverse"
+    ],
+    "layerPixelCases": "counterfactual only: exercised AI route applies visibility/opacity/blend metadata; no AI pixel-buffer operation is claimed"
+  },
+  "w55FreshOracle": [
+    {
+      "id": "region-enabled-by-ai-mask-later-manually-edited",
+      "want": "undo preserves the later mask bytes and keeps region selection enabled so those bytes remain effective; report partial"
+    },
+    {
+      "id": "spatial-enabled-by-ai-mask-later-manually-edited",
+      "want": "undo preserves later spatial mask bytes and the enabling flag required to use them; report partial"
+    },
+    {
+      "id": "manual-disable-after-ai-region-action",
+      "want": "a later manual disable remains disabled while unrelated AI-touched zone properties revert"
+    },
+    {
+      "id": "duplicate-live-zone-id-protects-both-identities",
+      "want": "ambiguous current stable IDs never cause undo to mutate the wrong live zone"
+    },
+    {
+      "id": "missing-live-id-never-restores-over-reused-id",
+      "want": "deleted-zone restoration refuses when its ID is now occupied and preserves the replacement"
+    },
+    {
+      "id": "dependent-conflict-partial-state-and-copy",
+      "want": "a retained effective manual mask dependency yields partial/not-full flags and truthful undo copy"
+    },
+    {
+      "id": "large-mask-after-state-stays-compact",
+      "want": "after-state stores compact mask signatures rather than raw mask bytes; this does not claim bounded scan time"
+    }
+  ],
+  "w57Controls": [
+    {
+      "id": "normal-AI-enable-region-undo-restores-disabled-before-state",
+      "want": "without later conflict, Undo fully restores useRegion false and prior mask state"
+    },
+    {
+      "id": "manual-region-disable-and-mask-edit-both-survive",
+      "want": "later manual useRegion false and mask content are retained while unrelated AI color is undone"
+    }
+  ],
+  "observations": [
+    {
+      "id": "exact-fast-restore-order-selection-masks",
+      "passed": true,
+      "undoFull": true
+    },
+    {
+      "id": "same-zone-manual-other-property-preserved",
+      "passed": true,
+      "partial": true
+    },
+    {
+      "id": "same-zone-manual-same-property-preserved",
+      "passed": true,
+      "color": "green",
+      "partial": true
+    },
+    {
+      "id": "unrelated-zone-and-layer-survive",
+      "passed": true
+    },
+    {
+      "id": "added-zone-unchanged-removed",
+      "passed": true
+    },
+    {
+      "id": "added-zone-manual-modification-retained",
+      "passed": true,
+      "partial": true
+    },
+    {
+      "id": "deleted-zone-restored-without-id-collision",
+      "passed": true,
+      "ids": [
+        "same",
+        "other"
+      ]
+    },
+    {
+      "id": "mask-three-way-manual-signature-preserved",
+      "passed": true,
+      "mask": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "full-mask-proof-catches-unsampled-later-pixel",
+      "passed": true,
+      "keptLaterPixel": 8,
+      "aiMaskRetainedConservatively": 7
+    },
+    {
+      "id": "layer-properties-three-way",
+      "passed": true,
+      "visible": true,
+      "opacity": 80,
+      "blend": "multiply"
+    },
+    {
+      "id": "partial-undo-copy-honest",
+      "passed": true,
+      "copy": "Undone: red. I kept later manual edits where they conflicted with that change."
+    },
+    {
+      "id": "redo-after-partial-retains-manual",
+      "passed": true,
+      "afterUndo": {
+        "color": "blue",
+        "finish": "chrome"
+      },
+      "afterRedo": {
+        "color": "red",
+        "finish": "chrome"
+      }
+    },
+    {
+      "id": "old-document-source-guard",
+      "passed": true,
+      "refused": true
+    },
+    {
+      "id": "after-state-has-no-raw-mask-copy",
+      "passed": true,
+      "maskSigOnly": true
+    },
+    {
+      "id": "layer-change-normal-and-two-step-undo",
+      "passed": true
+    },
+    {
+      "id": "W41-capped-history-invariant",
+      "passed": true
+    },
+    {
+      "id": "W41-redo-refuses-manual-and-source-changes",
+      "passed": true
+    },
+    {
+      "id": "W41-noop-entry-does-not-mutate",
+      "passed": true
+    },
+    {
+      "id": "W41-partial-batch-restores-only-ai-zone",
+      "passed": true
+    },
+    {
+      "id": "W55-region-enabled-by-AI-mask-later-manually-edited",
+      "passed": true,
+      "regionMask": [
+        9,
+        1,
+        1
+      ],
+      "useRegion": true,
+      "partial": true,
+      "full": false,
+      "effectiveManualMask": true
+    },
+    {
+      "id": "W55-spatial-mask-edit-remains-live-through-undo",
+      "passed": true,
+      "spatialMask": [
+        1,
+        1,
+        7
+      ],
+      "partial": true
+    },
+    {
+      "id": "W55-manual-region-disable-survives-AI-undo",
+      "passed": true,
+      "useRegion": false,
+      "partial": true
+    },
+    {
+      "id": "W55-duplicate-live-zone-id-does-not-select-wrong-object",
+      "passed": true,
+      "colors": [
+        "blue",
+        "manual"
+      ]
+    },
+    {
+      "id": "W55-missing-zone-id-not-restored-over-reused-id",
+      "passed": true,
+      "ids": [
+        "removed",
+        "other"
+      ],
+      "colors": [
+        "manual replacement",
+        "white"
+      ]
+    },
+    {
+      "id": "W55-dependent-conflict-partial-state-and-copy",
+      "passed": true,
+      "effectiveManualMask": true,
+      "partial": true,
+      "full": false,
+      "copy": "Undone: enable region. I kept later manual edits where they conflicted with that change."
+    },
+    {
+      "id": "W55-large-mask-after-state-is-compact",
+      "passed": true,
+      "rawMaskBytes": 1048576,
+      "afterStateBytes": 398
+    },
+    {
+      "id": "W57-normal-AI-enable-region-undo-restores-disabled-before-state",
+      "passed": true,
+      "useRegion": false,
+      "regionMask": null,
+      "full": true
+    },
+    {
+      "id": "W57-manual-region-disable-and-mask-edit-both-survive",
+      "passed": true,
+      "useRegion": false,
+      "regionMask": [
+        8,
+        0
+      ],
+      "partial": true
+    }
+  ],
+  "counts": {
+    "passed": 28,
+    "total": 28,
+    "providerCalls": 0,
+    "nativeCalls": 0
+  },
+  "patternStrengthMapDependency": {
+    "status": "not applicable to actual AI route found in frozen candidate; patternStrengthMap is only included in Undo signature/compare helpers and no AI edit assignment was found. No semantic claim about external/manual pattern-map controls."
+  },
+  "limits": [
+    "Undo helpers run in an isolated VM with mocked application arrays and render callbacks.",
+    "One-megabyte mask test checks compact after-state serialization only; no browser latency or peak-memory benchmark. undoMaskProof reads O(n) bytes at snapshot/seal/compare/Undo; sparse maskSig samples every seventh byte above 262144.",
+    "Native canvas/zone renderer, browser UI, and pixel-layer painting were not run. The W57 candidate is not installed.",
+    "Null-versus-missing normalization is not treated as a defect."
+  ]
+}

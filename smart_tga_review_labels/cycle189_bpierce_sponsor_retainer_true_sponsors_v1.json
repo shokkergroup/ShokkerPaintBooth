@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "paint_label": "1Shokker Paint Car Examples/bpierce.tga",
+  "inspection_records": "_smart_tga_runs/cycle184_sponsor_retainer_crosscar_routes_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle184_sponsor_retainer_crosscar_routes_v1/1Shokker_Paint_Car_Examples_bpierce/component_records.json",
+  "review_scope": "Cycle 189 reviewed Sponsor-retainer fixture pack from Cycle 185-188 offline rules and Cycle 188 contact-sheet visual review. Runtime Smart TGA masks are unchanged.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 4,
+      "expected_bbox": [
+        344,
+        261,
+        84,
+        15
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_textline_on_number_panel",
+      "note": "Visually reviewed thin sponsor textline on a number-panel area; keep as Sponsors while preserving adjacent Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 12,
+      "expected_bbox": [
+        614,
+        553,
+        115,
+        101
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_logo_graphic",
+      "note": "Visually reviewed sponsor logo/graphic from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 16,
+      "expected_bbox": [
+        513,
+        716,
+        103,
+        39
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_text_panel",
+      "note": "Visually reviewed sponsor text/logo panel from the Cycle 188 sponsor-retainer contact sheet; keep as Sponsors."
+    }
+  ]
+}

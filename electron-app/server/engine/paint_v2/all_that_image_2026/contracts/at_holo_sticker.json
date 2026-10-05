@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_holo_sticker",
+  "display_name": "Cdrom: Holo Sticker",
+  "promise": "Embossed hologram foil with fine spectral engraving and sharply reflective silver facets between satin interference cells.",
+  "carrier_grammar": "Embossed hologram foil with fine spectral engraving and sharply reflective silver facets between satin interference cells.; single full-canvas image, no duplicated quadrants. Fine features: micro embossed silver foil, colored interference cells, dark stamp recesses, sharp diffraction shoulders, silver facet sparks, fine lacquer abrasion",
+  "spec_grammar": "Feature-specific selectors partition micro embossed silver foil, colored interference cells, dark stamp recesses, sharp diffraction shoulders, silver facet sparks, fine lacquer abrasion. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "micro embossed silver foil",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "colored interference cells",
+      "role": "Material feature selected from artwork by s:>:0.24"
+    },
+    {
+      "name": "dark stamp recesses",
+      "role": "Material feature selected from artwork by g:<:0.23"
+    },
+    {
+      "name": "sharp diffraction shoulders",
+      "role": "Material feature selected from artwork by edge:>:0.54"
+    },
+    {
+      "name": "silver facet sparks",
+      "role": "Material feature selected from artwork by g:>:0.73&s:<:0.25"
+    },
+    {
+      "name": "fine lacquer abrasion",
+      "role": "Material feature selected from artwork by fine:>:0.86"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "micro embossed silver foil",
+      "colored interference cells",
+      "dark stamp recesses",
+      "sharp diffraction shoulders",
+      "silver facet sparks",
+      "fine lacquer abrasion"
+    ],
+    "R": [
+      "micro embossed silver foil",
+      "colored interference cells",
+      "dark stamp recesses",
+      "sharp diffraction shoulders",
+      "silver facet sparks",
+      "fine lacquer abrasion"
+    ],
+    "Cc": [
+      "micro embossed silver foil",
+      "colored interference cells",
+      "dark stamp recesses",
+      "sharp diffraction shoulders",
+      "silver facet sparks",
+      "fine lacquer abrasion"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "micro embossed silver foil",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "colored interference cells",
+      "range": [
+        [
+          110,
+          45,
+          40
+        ],
+        [
+          230,
+          155,
+          180
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dark stamp recesses",
+      "range": [
+        [
+          65,
+          110,
+          125
+        ],
+        [
+          185,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "sharp diffraction shoulders",
+      "range": [
+        [
+          240,
+          0,
+          170
+        ],
+        [
+          255,
+          30,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "silver facet sparks",
+      "range": [
+        [
+          240,
+          0,
+          16
+        ],
+        [
+          255,
+          32,
+          90
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine lacquer abrasion",
+      "range": [
+        [
+          0,
+          130,
+          110
+        ],
+        [
+          22,
+          235,
+          245
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_disc_rainbow",
+      "difference": "Optical continuous grating differs from this named material construction."
+    },
+    {
+      "finish_id": "at_flannel_forest",
+      "difference": "Woven windowpane cotton differs from this named material construction."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "micro embossed silver foil",
+      "colored interference cells",
+      "dark stamp recesses",
+      "sharp diffraction shoulders",
+      "silver facet sparks",
+      "fine lacquer abrasion"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_holo_sticker / Embossed hologram foil with fine spectral engraving and sharply reflective silver facets between satin interference cells.",
+  "spec_key": "at_holo_sticker / micro embossed silver foil all; colored interference cells s:>:0.24; dark stamp recesses g:<:0.23; sharp diffraction shoulders edge:>:0.54; silver facet sparks g:>:0.73&s:<:0.25; fine lacquer abrasion fine:>:0.86",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

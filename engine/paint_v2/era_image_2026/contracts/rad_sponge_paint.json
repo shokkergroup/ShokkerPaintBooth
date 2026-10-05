@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_sponge_paint",
+  "display_name": "Memphis: Tropical Sponge",
+  "promise": "Coral and turquoise sponge impressions with lemon glaze and fine porous edges.",
+  "carrier_grammar": "Coral and turquoise sponge impressions with lemon glaze and fine porous edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for mint wall paint, coral sponge deposits, turquoise sponge films, lemon glaze films, pinhole voids is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Coral and turquoise sponge impressions with lemon glaze and fine porous edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_sponge_paint.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "mint wall paint",
+      "role": "Actual shared paint and spec geometry: mint wall paint"
+    },
+    {
+      "name": "coral sponge deposits",
+      "role": "Actual shared paint and spec geometry: coral sponge deposits"
+    },
+    {
+      "name": "turquoise sponge films",
+      "role": "Actual shared paint and spec geometry: turquoise sponge films"
+    },
+    {
+      "name": "lemon glaze films",
+      "role": "Actual shared paint and spec geometry: lemon glaze films"
+    },
+    {
+      "name": "pinhole voids",
+      "role": "Actual shared paint and spec geometry: pinhole voids"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "mint wall paint",
+      "coral sponge deposits",
+      "turquoise sponge films",
+      "lemon glaze films",
+      "pinhole voids"
+    ],
+    "R": [
+      "mint wall paint",
+      "coral sponge deposits",
+      "turquoise sponge films",
+      "lemon glaze films",
+      "pinhole voids"
+    ],
+    "Cc": [
+      "mint wall paint",
+      "coral sponge deposits",
+      "turquoise sponge films",
+      "lemon glaze films",
+      "pinhole voids"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_speckle_wall",
+      "difference": "This finish uses Microscopic overlapping sponge impressions in bright coral turquoise and lemon, each tiny print has a delicate irregular cellular perimeter, thin dry edges and pinhole voids; mint undercoat. Very fine decorative rag-roll pigment, no broad cloud patches or large sponge cells.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_hypercolour",
+      "difference": "This finish uses Microscopic overlapping sponge impressions in bright coral turquoise and lemon, each tiny print has a delicate irregular cellular perimeter, thin dry edges and pinhole voids; mint undercoat. Very fine decorative rag-roll pigment, no broad cloud patches or large sponge cells.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "mint wall paint is visible in the authored geometry",
+      "coral sponge deposits is visible in the authored geometry",
+      "turquoise sponge films is visible in the authored geometry",
+      "lemon glaze films is visible in the authored geometry",
+      "pinhole voids is visible in the authored geometry"
+    ],
+    "source_sha256": "08f4a01e09f1231dcee184a2bfb8fde839544328700033d5b991dfdd01f23757",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_sponge_paint-authored-Coral and turquoise sponge impressions with lemon glaze and fine porous edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_sponge_paint-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 77.6,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "748f68880cc05319dd34dc9dc5fdd10cd0a9d5d50d7d644163a3be45f66ba0bd"
+}

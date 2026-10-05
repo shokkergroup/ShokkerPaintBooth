@@ -1,0 +1,104 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "fl_phased_array",
+  "display_name": "Phased Array \u2014 rebuilt inspection finish",
+  "promise": "rotated fan sectors divided into angular beams and curved range gates",
+  "carrier_grammar": "rotated fan sectors divided into angular beams and curved range gates; independently rotated, varied sites with edge-wrapped geometry.",
+  "spec_grammar": "Named sector wedges, range arcs, hot echo cells, dead beams, focus points carry independent metallic lips, rough interiors and continuous coat shoulders; no unrelated material overlay.",
+  "reference_physics": {
+    "mechanism": "rotated fan sectors divided into angular beams and curved range gates interpreted as a colored inspection visualization, not a literal photograph.",
+    "sources": [
+      "engine/paint_v2/flaw_lab_2026.py",
+      "SPB_WIKI.html#spec_guide",
+      "https://www.nasa.gov/glenn/research/flow-field-diagnostics/"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "composition_span_px": [
+    150,
+    384
+  ],
+  "mark_types": [
+    {
+      "name": "sector wedges",
+      "role": "Visible sector wedges geometry with its own local material transition."
+    },
+    {
+      "name": "range arcs",
+      "role": "Visible range arcs geometry with its own local material transition."
+    },
+    {
+      "name": "hot echo cells",
+      "role": "Visible hot echo cells geometry with its own local material transition."
+    },
+    {
+      "name": "dead beams",
+      "role": "Visible dead beams geometry with its own local material transition."
+    },
+    {
+      "name": "focus points",
+      "role": "Visible focus points geometry with its own local material transition."
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "sector wedges",
+      "range arcs",
+      "hot echo cells",
+      "dead beams",
+      "focus points"
+    ],
+    "R": [
+      "sector wedges",
+      "range arcs",
+      "hot echo cells",
+      "dead beams",
+      "focus points"
+    ],
+    "Cc": [
+      "sector wedges",
+      "range arcs",
+      "hot echo cells",
+      "dead beams",
+      "focus points"
+    ]
+  },
+  "material_tiers": [
+    "recess substrate",
+    "rough interior",
+    "satin shoulder",
+    "polished lip",
+    "fractured edge",
+    "gloss face",
+    "coat transition",
+    "bright inclusion"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "fl_penetrant_bleed",
+      "difference": "rotated fan sectors divided into angular beams and curved range gates differs in topology from branched fatigue fissures with capillary dye reservoirs"
+    },
+    {
+      "finish_id": "fl_brittle_lacquer",
+      "difference": "rotated fan sectors divided into angular beams and curved range gates differs in topology from ranked tensile crack combs with arrested tips and lifted lacquer lips"
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "sector wedges is explicitly constructed as part of rotated fan sectors divided into angular beams and curved range gates",
+      "range arcs is explicitly constructed as part of rotated fan sectors divided into angular beams and curved range gates",
+      "hot echo cells is explicitly constructed as part of rotated fan sectors divided into angular beams and curved range gates"
+    ],
+    "review_status": "Rendered paint/spec pairs visually reviewed together at picker scale on 2026-09-18; live output verified against the reviewed assets."
+  },
+  "construction_key": "flaw-r1-phased_array-rotated-fan-sectors-divided-into-angular-beams-and-curved-range-gates",
+  "spec_key": "flaw-r1-material-phased_array-sector wedges-range arcs-hot echo cells-dead beams-focus points",
+  "fine_detail_scale_px": [
+    1,
+    32
+  ]
+}

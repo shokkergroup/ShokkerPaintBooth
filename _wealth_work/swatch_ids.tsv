@@ -1,0 +1,921 @@
+🌊 FRACTURED ELEMENTS	elm_downpour
+🌊 FRACTURED ELEMENTS	elm_cloudburst
+🌊 FRACTURED ELEMENTS	elm_drizzle
+🌊 FRACTURED ELEMENTS	elm_sheet_rain
+🌊 FRACTURED ELEMENTS	elm_monsoon
+🌊 FRACTURED ELEMENTS	elm_acid_rain
+🌊 FRACTURED ELEMENTS	elm_puddle_skin
+🌊 FRACTURED ELEMENTS	elm_dew_field
+🌊 FRACTURED ELEMENTS	elm_petrichor
+🌊 FRACTURED ELEMENTS	elm_gutter_race
+🌊 FRACTURED ELEMENTS	elm_windscreen
+🌊 FRACTURED ELEMENTS	elm_virga
+🌊 FRACTURED ELEMENTS	elm_blizzard
+🌊 FRACTURED ELEMENTS	elm_snowdrift
+🌊 FRACTURED ELEMENTS	elm_sleet
+🌊 FRACTURED ELEMENTS	elm_hail_damage
+🌊 FRACTURED ELEMENTS	elm_hoarfrost
+🌊 FRACTURED ELEMENTS	elm_rime_ice
+🌊 FRACTURED ELEMENTS	elm_black_ice
+🌊 FRACTURED ELEMENTS	elm_frost_fern
+🌊 FRACTURED ELEMENTS	elm_diamond_dust
+🌊 FRACTURED ELEMENTS	elm_permafrost
+🌊 FRACTURED ELEMENTS	elm_serac_field
+🌊 FRACTURED ELEMENTS	elm_graupel
+🌊 FRACTURED ELEMENTS	elm_tornado_alley
+🌊 FRACTURED ELEMENTS	elm_supercell
+🌊 FRACTURED ELEMENTS	elm_hurricane_eye
+🌊 FRACTURED ELEMENTS	elm_squall_line
+🌊 FRACTURED ELEMENTS	elm_gust_front
+🌊 FRACTURED ELEMENTS	elm_mammatus
+🌊 FRACTURED ELEMENTS	elm_wall_cloud
+🌊 FRACTURED ELEMENTS	elm_lightning_strike
+🌊 FRACTURED ELEMENTS	elm_thunderhead
+🌊 FRACTURED ELEMENTS	elm_microburst
+🌊 FRACTURED ELEMENTS	elm_waterspout
+🌊 FRACTURED ELEMENTS	elm_derecho
+🌊 FRACTURED ELEMENTS	elm_tsunami
+🌊 FRACTURED ELEMENTS	elm_breaker
+🌊 FRACTURED ELEMENTS	elm_whitewater
+🌊 FRACTURED ELEMENTS	elm_tide_race
+🌊 FRACTURED ELEMENTS	elm_storm_surge
+🌊 FRACTURED ELEMENTS	elm_riptide
+🌊 FRACTURED ELEMENTS	elm_spindrift
+🌊 FRACTURED ELEMENTS	elm_whirlpool
+🌊 FRACTURED ELEMENTS	elm_chop
+🌊 FRACTURED ELEMENTS	elm_glassy_swell
+🌊 FRACTURED ELEMENTS	elm_flood_line
+🌊 FRACTURED ELEMENTS	elm_foam_lace
+🌊 FRACTURED ELEMENTS	elm_sandstorm
+🌊 FRACTURED ELEMENTS	elm_haboob
+🌊 FRACTURED ELEMENTS	elm_dust_devil
+🌊 FRACTURED ELEMENTS	elm_heat_shimmer
+🌊 FRACTURED ELEMENTS	elm_drought_crack
+🌊 FRACTURED ELEMENTS	elm_mirage
+🌊 FRACTURED ELEMENTS	elm_dust_veil
+🌊 FRACTURED ELEMENTS	elm_salt_haze
+🌊 FRACTURED ELEMENTS	elm_harmattan
+🌊 FRACTURED ELEMENTS	elm_sirocco
+🌊 FRACTURED ELEMENTS	elm_loess
+🌊 FRACTURED ELEMENTS	elm_brownout
+🌌 FRACTURED COSMOS	cos_saucer_alloy
+🌌 FRACTURED COSMOS	cos_hull_plating
+🌌 FRACTURED COSMOS	cos_glyph_script
+🌌 FRACTURED COSMOS	cos_crop_geometry
+🌌 FRACTURED COSMOS	cos_abduction_column
+🌌 FRACTURED COSMOS	cos_tractor_well
+🌌 FRACTURED COSMOS	cos_bio_mech_chitin
+🌌 FRACTURED COSMOS	cos_reactor_lattice
+🌌 FRACTURED COSMOS	cos_beacon_array
+🌌 FRACTURED COSMOS	cos_cloaking_field
+🌌 FRACTURED COSMOS	cos_probe_skin
+🌌 FRACTURED COSMOS	cos_signal_bloom
+🌌 FRACTURED COSMOS	cos_regolith
+🌌 FRACTURED COSMOS	cos_crater_field
+🌌 FRACTURED COSMOS	cos_ice_moon
+🌌 FRACTURED COSMOS	cos_sulfur_volcanics
+🌌 FRACTURED COSMOS	cos_gas_giant_bands
+🌌 FRACTURED COSMOS	cos_storm_oval
+🌌 FRACTURED COSMOS	cos_dune_sea
+🌌 FRACTURED COSMOS	cos_salt_flat
+🌌 FRACTURED COSMOS	cos_basalt_plain
+🌌 FRACTURED COSMOS	cos_methane_lake
+🌌 FRACTURED COSMOS	cos_ring_shadow
+🌌 FRACTURED COSMOS	cos_terminator
+🌌 FRACTURED COSMOS	cos_star_nursery
+🌌 FRACTURED COSMOS	cos_emission_nebula
+🌌 FRACTURED COSMOS	cos_dark_nebula
+🌌 FRACTURED COSMOS	cos_globular_cluster
+🌌 FRACTURED COSMOS	cos_spiral_arm
+🌌 FRACTURED COSMOS	cos_dust_lane
+🌌 FRACTURED COSMOS	cos_deep_field
+🌌 FRACTURED COSMOS	cos_reflection_nebula
+🌌 FRACTURED COSMOS	cos_planetary_nebula
+🌌 FRACTURED COSMOS	cos_filament_web
+🌌 FRACTURED COSMOS	cos_zodiacal_light
+🌌 FRACTURED COSMOS	cos_molecular_cloud
+🌌 FRACTURED COSMOS	cos_event_horizon
+🌌 FRACTURED COSMOS	cos_accretion_disc
+🌌 FRACTURED COSMOS	cos_gravitational_lens
+🌌 FRACTURED COSMOS	cos_wormhole_throat
+🌌 FRACTURED COSMOS	cos_supernova_remnant
+🌌 FRACTURED COSMOS	cos_pulsar_beam
+🌌 FRACTURED COSMOS	cos_magnetar_flare
+🌌 FRACTURED COSMOS	cos_relativistic_jet
+🌌 FRACTURED COSMOS	cos_bow_shock
+🌌 FRACTURED COSMOS	cos_tidal_stream
+🌌 FRACTURED COSMOS	cos_kilonova
+🌌 FRACTURED COSMOS	cos_frame_drag
+🌌 FRACTURED COSMOS	cos_heat_shield
+🌌 FRACTURED COSMOS	cos_mli_foil
+🌌 FRACTURED COSMOS	cos_solar_sail
+🌌 FRACTURED COSMOS	cos_radiator_panel
+🌌 FRACTURED COSMOS	cos_whipple_shield
+🌌 FRACTURED COSMOS	cos_thermal_blanket
+🌌 FRACTURED COSMOS	cos_sun_shade
+🌌 FRACTURED COSMOS	cos_mirror_segment
+🌌 FRACTURED COSMOS	cos_docking_ring
+🌌 FRACTURED COSMOS	cos_ablation_streak
+🌌 FRACTURED COSMOS	cos_cryo_tank
+🌌 FRACTURED COSMOS	cos_beacon_strobe
+🌗 FRACTURED NIGHTSHIFT	nsx_cyanide_hour
+🌗 FRACTURED NIGHTSHIFT	nsx_ember_verdict
+🌗 FRACTURED NIGHTSHIFT	nsx_violet_sentence
+🌗 FRACTURED NIGHTSHIFT	nsx_copper_confession
+🌗 FRACTURED NIGHTSHIFT	nsx_magenta_testimony
+🌗 FRACTURED NIGHTSHIFT	nsx_ice_to_rust
+🌗 FRACTURED NIGHTSHIFT	nsx_jade_reversal
+🌗 FRACTURED NIGHTSHIFT	nsx_sodium_trial
+🌗 FRACTURED NIGHTSHIFT	nsx_aqua_betrayal
+🌗 FRACTURED NIGHTSHIFT	nsx_chartreuse_alibi
+🌗 FRACTURED NIGHTSHIFT	nsx_slate_ember
+🌗 FRACTURED NIGHTSHIFT	nsx_harbour_amber
+🌗 FRACTURED NIGHTSHIFT	nsx_gunsmoke_coal
+🌗 FRACTURED NIGHTSHIFT	nsx_frost_filament
+🌗 FRACTURED NIGHTSHIFT	nsx_deep_water_forge
+🌗 FRACTURED NIGHTSHIFT	nsx_pewter_sunset
+🌗 FRACTURED NIGHTSHIFT	nsx_storm_copper
+🌗 FRACTURED NIGHTSHIFT	nsx_blue_hour_brass
+🌗 FRACTURED NIGHTSHIFT	nsx_cinder_vault
+🌗 FRACTURED NIGHTSHIFT	nsx_anchor_rust
+🌗 FRACTURED NIGHTSHIFT	nsx_rust_to_glacier
+🌗 FRACTURED NIGHTSHIFT	nsx_amber_cryonic
+🌗 FRACTURED NIGHTSHIFT	nsx_terracotta_freeze
+🌗 FRACTURED NIGHTSHIFT	nsx_bronze_nocturne
+🌗 FRACTURED NIGHTSHIFT	nsx_saffron_midnight
+🌗 FRACTURED NIGHTSHIFT	nsx_ochre_arctic
+🌗 FRACTURED NIGHTSHIFT	nsx_foundry_frost
+🌗 FRACTURED NIGHTSHIFT	nsx_marigold_abyss
+🌗 FRACTURED NIGHTSHIFT	nsx_sienna_signal
+🌗 FRACTURED NIGHTSHIFT	nsx_kiln_blue
+🌗 FRACTURED NIGHTSHIFT	nsx_venom_curfew
+🌗 FRACTURED NIGHTSHIFT	nsx_absinthe_night
+🌗 FRACTURED NIGHTSHIFT	nsx_toxic_recess
+🌗 FRACTURED NIGHTSHIFT	nsx_chlorine_watch
+🌗 FRACTURED NIGHTSHIFT	nsx_lime_interrogation
+🌗 FRACTURED NIGHTSHIFT	nsx_serpent_shift
+🌗 FRACTURED NIGHTSHIFT	nsx_uranium_dusk
+🌗 FRACTURED NIGHTSHIFT	nsx_wormwood_vigil
+🌗 FRACTURED NIGHTSHIFT	nsx_acid_testament
+🌗 FRACTURED NIGHTSHIFT	nsx_hemlock_hour
+🌗 FRACTURED NIGHTSHIFT	nsx_royal_nightfall
+🌗 FRACTURED NIGHTSHIFT	nsx_rose_assize
+🌗 FRACTURED NIGHTSHIFT	nsx_gilt_sentence
+🌗 FRACTURED NIGHTSHIFT	nsx_imperial_drift
+🌗 FRACTURED NIGHTSHIFT	nsx_orchid_curfew
+🌗 FRACTURED NIGHTSHIFT	nsx_cardinal_watch
+🌗 FRACTURED NIGHTSHIFT	nsx_amethyst_bench
+🌗 FRACTURED NIGHTSHIFT	nsx_coronation_blue
+🌗 FRACTURED NIGHTSHIFT	nsx_fuchsia_docket
+🌗 FRACTURED NIGHTSHIFT	nsx_last_session
+🔥 FRACTURED FLAMES	ffl_flashpoint
+🔥 FRACTURED FLAMES	ffl_char_creep
+🔥 FRACTURED FLAMES	ffl_tinder_bloom
+🔥 FRACTURED FLAMES	ffl_match_head
+🔥 FRACTURED FLAMES	ffl_smoulder_bed
+🔥 FRACTURED FLAMES	ffl_fuse_line
+🔥 FRACTURED FLAMES	ffl_kindle_lattice
+🔥 FRACTURED FLAMES	ffl_spark_shower
+🔥 FRACTURED FLAMES	ffl_ember_catch
+🔥 FRACTURED FLAMES	ffl_pilot_ring
+🔥 FRACTURED FLAMES	ffl_autoignition
+🔥 FRACTURED FLAMES	ffl_firebrand_scatter
+🔥 FRACTURED FLAMES	ffl_scorch_front
+🔥 FRACTURED FLAMES	ffl_ignition_delay
+🔥 FRACTURED FLAMES	ffl_touchpaper
+🔥 FRACTURED FLAMES	ffl_diffusion_sheet
+🔥 FRACTURED FLAMES	ffl_wrinkled_front
+🔥 FRACTURED FLAMES	ffl_darrieus_cell
+🔥 FRACTURED FLAMES	ffl_turbulent_braid
+🔥 FRACTURED FLAMES	ffl_flamelet_storm
+🔥 FRACTURED FLAMES	ffl_buoyant_fingers
+🔥 FRACTURED FLAMES	ffl_shear_tongue
+🔥 FRACTURED FLAMES	ffl_pool_puff
+🔥 FRACTURED FLAMES	ffl_candle_cone
+🔥 FRACTURED FLAMES	ffl_blowtorch
+🔥 FRACTURED FLAMES	ffl_backdraft_wrinkle
+🔥 FRACTURED FLAMES	ffl_fire_whirl_grain
+🔥 FRACTURED FLAMES	ffl_laminar_ladder
+🔥 FRACTURED FLAMES	ffl_crown_fire
+🔥 FRACTURED FLAMES	ffl_stoichiometric_seam
+🔥 FRACTURED FLAMES	ffl_arc_filament
+🔥 FRACTURED FLAMES	ffl_ionised_braid
+🔥 FRACTURED FLAMES	ffl_magnetised_jet
+🔥 FRACTURED FLAMES	ffl_corona_grain
+🔥 FRACTURED FLAMES	ffl_streamer_web
+🔥 FRACTURED FLAMES	ffl_townsend_cascade
+🔥 FRACTURED FLAMES	ffl_pinch_instability
+🔥 FRACTURED FLAMES	ffl_cathode_spot
+🔥 FRACTURED FLAMES	ffl_glow_discharge
+🔥 FRACTURED FLAMES	ffl_lichtenberg_burn
+🔥 FRACTURED FLAMES	ffl_plasma_sheath
+🔥 FRACTURED FLAMES	ffl_spectral_line
+🔥 FRACTURED FLAMES	ffl_electron_avalanche
+🔥 FRACTURED FLAMES	ffl_tokamak_ripple
+🔥 FRACTURED FLAMES	ffl_aurora_column
+🔥 FRACTURED FLAMES	ffl_pahoehoe_skin
+🔥 FRACTURED FLAMES	ffl_slag_crust
+🔥 FRACTURED FLAMES	ffl_lava_cell
+🔥 FRACTURED FLAMES	ffl_quench_craze
+🔥 FRACTURED FLAMES	ffl_vitrified_glaze
+🔥 FRACTURED FLAMES	ffl_weld_pool
+🔥 FRACTURED FLAMES	ffl_molten_drip
+🔥 FRACTURED FLAMES	ffl_crucible_skin
+🔥 FRACTURED FLAMES	ffl_basalt_column
+🔥 FRACTURED FLAMES	ffl_obsidian_chill
+🔥 FRACTURED FLAMES	ffl_foundry_spatter
+🔥 FRACTURED FLAMES	ffl_tuyere_glow
+🔥 FRACTURED FLAMES	ffl_slumped_glass
+🔥 FRACTURED FLAMES	ffl_magma_vesicle
+🔥 FRACTURED FLAMES	ffl_ropy_flow
+🔥 FRACTURED FLAMES	ffl_ember_bed
+🔥 FRACTURED FLAMES	ffl_ash_fall
+🔥 FRACTURED FLAMES	ffl_soot_bloom
+🔥 FRACTURED FLAMES	ffl_char_scale
+🔥 FRACTURED FLAMES	ffl_cinder_lattice
+🔥 FRACTURED FLAMES	ffl_fly_ash
+🔥 FRACTURED FLAMES	ffl_coke_cell
+🔥 FRACTURED FLAMES	ffl_clinker_crust
+🔥 FRACTURED FLAMES	ffl_ash_glaze
+🔥 FRACTURED FLAMES	ffl_dying_coal
+🔥 FRACTURED FLAMES	ffl_grey_front
+🔥 FRACTURED FLAMES	ffl_retained_heat
+🔥 FRACTURED FLAMES	ffl_powder_burn
+🔥 FRACTURED FLAMES	ffl_spall_field
+🔥 FRACTURED FLAMES	ffl_cold_ash
+🧠 FRACTURED MINDS	fm_basalt
+🧠 FRACTURED MINDS	fm_basketweave
+🧠 FRACTURED MINDS	fm_cable_knit
+🧠 FRACTURED MINDS	fm_carbon_weave
+🧠 FRACTURED MINDS	fm_chainlink
+🧠 FRACTURED MINDS	fm_chainmail
+🧠 FRACTURED MINDS	fm_checkerflash
+🧠 FRACTURED MINDS	fm_circuit_maze
+🧠 FRACTURED MINDS	fm_code_cascade
+🧠 FRACTURED MINDS	fm_croc_hide
+🧠 FRACTURED MINDS	fm_damascus
+🧠 FRACTURED MINDS	fm_diamond_plate
+🧠 FRACTURED MINDS	fm_diamondback
+🧠 FRACTURED MINDS	fm_dragon_scale
+🧠 FRACTURED MINDS	fm_dragonfly
+🧠 FRACTURED MINDS	fm_ebru_marble
+🧠 FRACTURED MINDS	fm_fiber_optic
+🧠 FRACTURED MINDS	fm_flame_helix
+🧠 FRACTURED MINDS	fm_flame_lick
+🧠 FRACTURED MINDS	fm_flame_wall
+🧠 FRACTURED MINDS	fm_frost_feather
+🧠 FRACTURED MINDS	fm_frost_lace
+🧠 FRACTURED MINDS	fm_geode_slice
+🧠 FRACTURED MINDS	fm_gila_bead
+🧠 FRACTURED MINDS	fm_glacier_core
+🧠 FRACTURED MINDS	fm_graphene
+🧠 FRACTURED MINDS	fm_gyro_cage
+🧠 FRACTURED MINDS	fm_gyroid
+🧠 FRACTURED MINDS	fm_herringbone
+🧠 FRACTURED MINDS	fm_hexcore
+🧠 FRACTURED MINDS	fm_honeycomb_burst
+🧠 FRACTURED MINDS	fm_inferno_veins
+🧠 FRACTURED MINDS	fm_ion_drift
+🧠 FRACTURED MINDS	fm_labyrinth
+🧠 FRACTURED MINDS	fm_lattice
+🧠 FRACTURED MINDS	fm_magma
+🧠 FRACTURED MINDS	fm_mudcrack
+🧠 FRACTURED MINDS	fm_nanoweave
+🧠 FRACTURED MINDS	fm_octo_suckers
+🧠 FRACTURED MINDS	fm_penrose
+🧠 FRACTURED MINDS	fm_petal_storm
+🧠 FRACTURED MINDS	fm_python_skin
+🧠 FRACTURED MINDS	fm_riverine
+🧠 FRACTURED MINDS	fm_rivet_array
+🧠 FRACTURED MINDS	fm_rope_coil
+🧠 FRACTURED MINDS	fm_static_burst
+🧠 FRACTURED MINDS	fm_stingray
+🧠 FRACTURED MINDS	fm_tessellate
+🧠 FRACTURED MINDS	fm_thousand_eyes
+🧠 FRACTURED MINDS	fm_tide_glass
+🧠 FRACTURED MINDS	fm_tiger_slash
+🧠 FRACTURED MINDS	fm_topo_lines
+🧠 FRACTURED MINDS	fm_tortoise
+🧠 FRACTURED MINDS	fm_tsunami
+🧠 FRACTURED MINDS	fm_witchlight
+💀 FRACTURED SOULS	fs_aurora_threads
+💀 FRACTURED SOULS	fs_blood_marble
+💀 FRACTURED SOULS	fs_carnival_night
+💀 FRACTURED SOULS	fs_circuit_soul
+💀 FRACTURED SOULS	fs_ember_drift
+💀 FRACTURED SOULS	fs_geode_vein
+💀 FRACTURED SOULS	fs_ghost_silk
+💀 FRACTURED SOULS	fs_guilloche_ghost
+💀 FRACTURED SOULS	fs_hex_hive
+💀 FRACTURED SOULS	fs_howl
+💀 FRACTURED SOULS	fs_moire_phantom
+💀 FRACTURED SOULS	fs_moth_dust
+💀 FRACTURED SOULS	fs_night_tide
+💀 FRACTURED SOULS	fs_nova_burst
+💀 FRACTURED SOULS	fs_oil_serpent
+💀 FRACTURED SOULS	fs_petrol_halo
+💀 FRACTURED SOULS	fs_phantom_lattice
+💀 FRACTURED SOULS	fs_serpent_scale
+💀 FRACTURED SOULS	fs_shatter_glass
+💀 FRACTURED SOULS	fs_shattered_prism
+💀 FRACTURED SOULS	fs_core_abyss
+💀 FRACTURED SOULS	fs_core_aurum
+💀 FRACTURED SOULS	fs_core_crimson
+💀 FRACTURED SOULS	fs_core_emerald
+💀 FRACTURED SOULS	fs_core_violet
+💀 FRACTURED SOULS	fs_soul_loom
+💀 FRACTURED SOULS	fs_star_chart
+💀 FRACTURED SOULS	fs_static_veins
+💀 FRACTURED SOULS	fs_widow_braid
+💀 FRACTURED SOULS	fs_wraith_veil
+⚛ FRACTURED FORGE	ff_abyssal_currents
+⚛ FRACTURED FORGE	ff_apollonia
+⚛ FRACTURED FORGE	ff_argyle_glass
+⚛ FRACTURED FORGE	ff_aurora_loom
+⚛ FRACTURED FORGE	ff_aurora_veil
+⚛ FRACTURED FORGE	ff_banded_agate
+⚛ FRACTURED FORGE	ff_brain_coral
+⚛ FRACTURED FORGE	ff_brickwork_prism
+⚛ FRACTURED FORGE	ff_catacomb_glass
+⚛ FRACTURED FORGE	ff_caustic_lace
+⚛ FRACTURED FORGE	ff_causticline
+⚛ FRACTURED FORGE	ff_cellwave
+⚛ FRACTURED FORGE	ff_conduit
+⚛ FRACTURED FORGE	ff_conformal_lattice
+⚛ FRACTURED FORGE	ff_cubist_prism
+⚛ FRACTURED FORGE	ff_dactyl
+⚛ FRACTURED FORGE	ff_dichroic_drift
+⚛ FRACTURED FORGE	ff_dragonscale
+⚛ FRACTURED FORGE	ff_drift_lattice
+⚛ FRACTURED FORGE	ff_fracture_web
+⚛ FRACTURED FORGE	ff_geode_facet
+⚛ FRACTURED FORGE	ff_ghost_coil
+⚛ FRACTURED FORGE	ff_gyre
+⚛ FRACTURED FORGE	ff_heartwood
+⚛ FRACTURED FORGE	ff_hivewake
+⚛ FRACTURED FORGE	ff_holo_grating
+⚛ FRACTURED FORGE	ff_hyperflora
+⚛ FRACTURED FORGE	ff_ion_bloom
+⚛ FRACTURED FORGE	ff_knurled_steel
+⚛ FRACTURED FORGE	ff_leaf_vein
+⚛ FRACTURED FORGE	ff_leviathan_filaments
+⚛ FRACTURED FORGE	ff_liquid_agate
+⚛ FRACTURED FORGE	ff_loomwork
+⚛ FRACTURED FORGE	ff_magma_current
+⚛ FRACTURED FORGE	ff_marble
+⚛ FRACTURED FORGE	ff_moire_vortex
+⚛ FRACTURED FORGE	ff_mycelinth
+⚛ FRACTURED FORGE	ff_nebula
+⚛ FRACTURED FORGE	ff_oilskin_weave
+⚛ FRACTURED FORGE	ff_parquet_glass
+⚛ FRACTURED FORGE	ff_peacock_optic
+⚛ FRACTURED FORGE	ff_pendulum_veil
+⚛ FRACTURED FORGE	ff_penrose_quartz
+⚛ FRACTURED FORGE	ff_pentangle
+⚛ FRACTURED FORGE	ff_phase_reliquary
+⚛ FRACTURED FORGE	ff_pinwheel_glass
+⚛ FRACTURED FORGE	ff_plasma_arc
+⚛ FRACTURED FORGE	ff_quasicrystal
+⚛ FRACTURED FORGE	ff_quasiflux
+⚛ FRACTURED FORGE	ff_quicksilver
+⚛ FRACTURED FORGE	ff_resonance
+⚛ FRACTURED FORGE	ff_resonant_cells
+⚛ FRACTURED FORGE	ff_resonant_tide
+⚛ FRACTURED FORGE	ff_ridgeline
+⚛ FRACTURED FORGE	ff_riptide
+⚛ FRACTURED FORGE	ff_rosetta_moire
+⚛ FRACTURED FORGE	ff_scale_mail
+⚛ FRACTURED FORGE	ff_scale_prism
+⚛ FRACTURED FORGE	ff_shardfield
+⚛ FRACTURED FORGE	ff_shroud_silk
+⚛ FRACTURED FORGE	ff_soliton_reef
+⚛ FRACTURED FORGE	ff_spectra_wheel
+⚛ FRACTURED FORGE	ff_spectral_hive
+⚛ FRACTURED FORGE	ff_spectral_ridge
+⚛ FRACTURED FORGE	ff_spectral_veil
+⚛ FRACTURED FORGE	ff_spiral_galaxy
+⚛ FRACTURED FORGE	ff_standing_field
+⚛ FRACTURED FORGE	ff_stormfork
+⚛ FRACTURED FORGE	ff_sunwheel
+⚛ FRACTURED FORGE	ff_tideglass_gyre
+⚛ FRACTURED FORGE	ff_tracewerk
+⚛ FRACTURED FORGE	ff_trihedra
+⚛ FRACTURED FORGE	ff_truchet_flow
+⚛ FRACTURED FORGE	ff_vortex_choir
+⚛ FRACTURED FORGE	ff_watered_silk
+⚛ FRACTURED FORGE	ff_wovencell
+⚛ FRACTURED FORGE	ff_ziggurat_glass
+⚛ FRACTURED FORGE	fml_basalt_colonnade
+⚛ FRACTURED FORGE	fml_glass_gold
+⚛ FRACTURED FORGE	fml_golden_pillows
+⚛ FRACTURED FORGE	fml_golden_seams
+⚛ FRACTURED FORGE	fml_obsidian_flow
+⚛ FRACTURED FORGE	fml_river_gold
+⚛ FRACTURED FORGE	fml_sulfur_delta
+⚛ FRACTURED FORGE	fml_sulfur_pillows
+⚛ FRACTURED FORGE	fml_sulfur_plates
+⚛ FRACTURED FORGE	fml_sulfur_web
+⚛ FRACTURED FORGE	fml_whitehot_glass
+🖤 FRACTURED OPALFIRE	fof_abyssal_vents
+🖤 FRACTURED OPALFIRE	fof_acid_circuit
+🖤 FRACTURED OPALFIRE	fof_amber_shardglass
+🖤 FRACTURED OPALFIRE	fof_argent_hammer
+🖤 FRACTURED OPALFIRE	fof_bronze_keels
+🖤 FRACTURED OPALFIRE	fof_copper_pahoehoe
+🖤 FRACTURED OPALFIRE	fof_crimson_columns
+🖤 FRACTURED OPALFIRE	fof_ember_reef
+🖤 FRACTURED OPALFIRE	fof_emerald_braid
+🖤 FRACTURED OPALFIRE	fof_frosted_pennies
+🖤 FRACTURED OPALFIRE	fof_gilded_abyss
+🖤 FRACTURED OPALFIRE	fof_gilded_pave
+🖤 FRACTURED OPALFIRE	fof_magenta_anticline
+🖤 FRACTURED OPALFIRE	fof_molten_core
+🖤 FRACTURED OPALFIRE	fof_nebula_swirls
+🖤 FRACTURED OPALFIRE	fof_orchid_kagome
+🖤 FRACTURED OPALFIRE	fof_patina_guilloche
+🖤 FRACTURED OPALFIRE	fof_petrol_swirl
+🖤 FRACTURED OPALFIRE	fof_regalia_roundels
+🖤 FRACTURED OPALFIRE	fof_royal_terraces
+🖤 FRACTURED OPALFIRE	fof_sapphire_shatter
+🖤 FRACTURED OPALFIRE	fof_teal_drainage
+🖤 FRACTURED OPALFIRE	fof_toxic_drips
+🖤 FRACTURED OPALFIRE	fof_treasure_facets
+🖤 FRACTURED OPALFIRE	fof_violet_burstfoam
+🖤 FRACTURED OPALFIRE	fsk_aurora_veil
+🖤 FRACTURED OPALFIRE	fsk_basket_weave
+🖤 FRACTURED OPALFIRE	fsk_carbon_weave
+🖤 FRACTURED OPALFIRE	fsk_chainmail
+🖤 FRACTURED OPALFIRE	fsk_chesterfield
+🖤 FRACTURED OPALFIRE	fsk_circuit_trace
+🖤 FRACTURED OPALFIRE	fsk_croc_hide
+🖤 FRACTURED OPALFIRE	fsk_damascus
+🖤 FRACTURED OPALFIRE	fsk_diamond_plate
+🖤 FRACTURED OPALFIRE	fsk_dragon_scale
+🖤 FRACTURED OPALFIRE	fsk_feather_mantle
+🖤 FRACTURED OPALFIRE	fsk_herringbone
+🖤 FRACTURED OPALFIRE	fsk_hex_mesh
+🖤 FRACTURED OPALFIRE	fsk_houndstooth
+🖤 FRACTURED OPALFIRE	fsk_knurl
+🖤 FRACTURED OPALFIRE	fsk_mosaic_glass
+🖤 FRACTURED OPALFIRE	fsk_nebula_prism
+🖤 FRACTURED OPALFIRE	fsk_oilslick_weave
+🖤 FRACTURED OPALFIRE	fsk_opal_pave
+🖤 FRACTURED OPALFIRE	fsk_prism_shatter
+🖤 FRACTURED OPALFIRE	fsk_scale_mail
+🖤 FRACTURED OPALFIRE	fsk_snakeskin
+🖤 FRACTURED OPALFIRE	fsk_spectrum_scales
+🖤 FRACTURED OPALFIRE	fsk_spider_silk
+🖤 FRACTURED OPALFIRE	fsk_stingray
+⚒ FRACTURED FOUNDRY	ffo_ladle_pour
+⚒ FRACTURED FOUNDRY	ffo_furnace_slag
+⚒ FRACTURED FOUNDRY	ffo_sand_cast
+⚒ FRACTURED FOUNDRY	ffo_chill_ingot
+⚒ FRACTURED FOUNDRY	ffo_forge_scale
+⚒ FRACTURED FOUNDRY	ffo_planished
+⚒ FRACTURED FOUNDRY	ffo_damascus_fold
+⚒ FRACTURED FOUNDRY	ffo_face_mill
+⚒ FRACTURED FOUNDRY	ffo_lathe_turn
+⚒ FRACTURED FOUNDRY	ffo_diamond_knurl
+⚒ FRACTURED FOUNDRY	ffo_belt_grind
+⚒ FRACTURED FOUNDRY	ffo_weld_bead
+⚒ FRACTURED FOUNDRY	ffo_plasma_cut
+⚒ FRACTURED FOUNDRY	ffo_zinc_spangle
+⚒ FRACTURED FOUNDRY	ffo_crucible_dross
+⚒ FRACTURED FOUNDRY	ffo_cast_spatter
+⚒ FRACTURED FOUNDRY	ffo_teeming_stream
+⚒ FRACTURED FOUNDRY	ffo_chill_shot
+⚒ FRACTURED FOUNDRY	ffo_bloom_iron
+⚒ FRACTURED FOUNDRY	ffo_tuyere_burn
+⚒ FRACTURED FOUNDRY	ffo_peened
+⚒ FRACTURED FOUNDRY	ffo_anvil_face
+⚒ FRACTURED FOUNDRY	ffo_drawn_taper
+⚒ FRACTURED FOUNDRY	ffo_upset_bulge
+⚒ FRACTURED FOUNDRY	ffo_swage_block
+⚒ FRACTURED FOUNDRY	ffo_fullered
+⚒ FRACTURED FOUNDRY	ffo_quench_check
+⚒ FRACTURED FOUNDRY	ffo_wire_edm
+⚒ FRACTURED FOUNDRY	ffo_honed_bore
+⚒ FRACTURED FOUNDRY	ffo_broached
+⚒ FRACTURED FOUNDRY	ffo_shot_peened
+⚒ FRACTURED FOUNDRY	ffo_cut_thread
+⚒ FRACTURED FOUNDRY	ffo_fly_cut
+⚒ FRACTURED FOUNDRY	ffo_tig_stack
+⚒ FRACTURED FOUNDRY	ffo_mig_spatter
+⚒ FRACTURED FOUNDRY	ffo_oxy_cut
+⚒ FRACTURED FOUNDRY	ffo_stitch_weld
+⚒ FRACTURED FOUNDRY	ffo_tack_row
+⚒ FRACTURED FOUNDRY	ffo_undercut
+⚒ FRACTURED FOUNDRY	ffo_arc_strike
+⚒ FRACTURED FOUNDRY	ffo_haz_bloom
+⚒ FRACTURED FOUNDRY	ffo_anodised
+⚒ FRACTURED FOUNDRY	ffo_rust_blued
+⚒ FRACTURED FOUNDRY	ffo_parkerised
+⚒ FRACTURED FOUNDRY	ffo_copper_patina
+⚒ FRACTURED FOUNDRY	ffo_powder_coat
+⚒ FRACTURED FOUNDRY	ffo_chrome_flash
+⚒ FRACTURED FOUNDRY	ffo_passivated
+⚒ FRACTURED FOUNDRY	ffo_mill_scale
+⚒ FRACTURED FOUNDRY	ffo_phosphated
+🔷 FRACTURED TESSERA	fts_penrose_reliquary
+🔷 FRACTURED TESSERA	fts_ammann_vault
+🔷 FRACTURED TESSERA	fts_dodeca_choir
+🔷 FRACTURED TESSERA	fts_hex_apiary
+🔷 FRACTURED TESSERA	fts_cairo_lantern
+🔷 FRACTURED TESSERA	fts_rhombille_cube
+🔷 FRACTURED TESSERA	fts_lloyd_froth
+🔷 FRACTURED TESSERA	fts_gilbert_shatter
+🔷 FRACTURED TESSERA	fts_truchet_braid
+🔷 FRACTURED TESSERA	fts_wang_current
+🔷 FRACTURED TESSERA	fts_girih_strap
+🔷 FRACTURED TESSERA	fts_herringbone_hall
+🔷 FRACTURED TESSERA	fts_shear_arcade
+🔷 FRACTURED TESSERA	fts_kagome_basket
+🔷 FRACTURED TESSERA	fts_snub_carousel
+🔷 FRACTURED TESSERA	fts_octagon_court
+🔷 FRACTURED TESSERA	fts_basket_weave
+🔷 FRACTURED TESSERA	fts_triangle_choir
+🔷 FRACTURED TESSERA	fts_pinwheel_infinite
+🔷 FRACTURED TESSERA	fts_sphinx_march
+🔷 FRACTURED TESSERA	fts_chair_recursion
+🔷 FRACTURED TESSERA	fts_mondrian_cut
+🔷 FRACTURED TESSERA	fts_slat_stretch
+🔷 FRACTURED TESSERA	fts_delaunay_web
+🔷 FRACTURED TESSERA	fts_bubble_raft
+🔷 FRACTURED TESSERA	fts_mudcrack_pan
+🔷 FRACTURED TESSERA	fts_crazed_glaze
+🔷 FRACTURED TESSERA	fts_basalt_column
+🔷 FRACTURED TESSERA	fts_cafe_wall
+🔷 FRACTURED TESSERA	fts_zigzag_ribbon
+🔷 FRACTURED TESSERA	fts_spiral_nave
+🔷 FRACTURED TESSERA	fts_conformal_bend
+🔷 FRACTURED TESSERA	fts_moire_beat
+🔷 FRACTURED TESSERA	fts_zellige_star
+🔷 FRACTURED TESSERA	fts_mashrabiya_screen
+🔷 FRACTURED TESSERA	fts_muqarnas_vault
+🔷 FRACTURED TESSERA	fts_woven_interlace
+🔷 FRACTURED TESSERA	fts_scalemail_coat
+🔷 FRACTURED TESSERA	fts_fishscale_roof
+🔷 FRACTURED TESSERA	fts_droste_well
+🔷 FRACTURED TESSERA	fts_fibonacci_course
+🔷 FRACTURED TESSERA	fts_laguerre_press
+🔷 FRACTURED TESSERA	fts_kite_and_dart
+🔷 FRACTURED TESSERA	fts_sevenfold_drift
+🔷 FRACTURED TESSERA	fts_flemish_bond
+🔷 FRACTURED TESSERA	fts_jali_pierce
+🔷 FRACTURED TESSERA	fts_hexstar_lantern
+🔷 FRACTURED TESSERA	fts_elongated_course
+🔷 FRACTURED TESSERA	fts_impact_shatter
+🔷 FRACTURED TESSERA	ff_truchet_glass
+PARADIGM	pdg_burlap_glaze
+PARADIGM	pdg_canvas_pearl
+PARADIGM	pdg_corduroy_liquid
+PARADIGM	pdg_denim_chrome
+PARADIGM	pdg_felt_carrier
+PARADIGM	pdg_hessian_mercury
+PARADIGM	pdg_knit_liquid
+PARADIGM	pdg_silk_carrier
+PARADIGM	pdg_tweed_mirror
+PARADIGM	pdg_wool_glass
+PARADIGM	pdg_bark_chrome
+PARADIGM	pdg_coral_glass
+PARADIGM	pdg_fur_carrier
+PARADIGM	pdg_hide_pearl
+PARADIGM	pdg_leaf_liquid
+PARADIGM	pdg_lichen_mercury
+PARADIGM	pdg_moss_glass
+PARADIGM	pdg_petal_liquid
+PARADIGM	pdg_root_mercury
+PARADIGM	pdg_spore_pearl
+PARADIGM	pdg_basalt_mirror
+PARADIGM	pdg_chalk_chrome
+PARADIGM	pdg_concrete_liquid
+PARADIGM	pdg_granite_mercury
+PARADIGM	pdg_grit_carrier
+PARADIGM	pdg_gypsum_glass
+PARADIGM	pdg_pumice_pearl
+PARADIGM	pdg_sandstone_liquid
+PARADIGM	pdg_slate_glass
+PARADIGM	pdg_terracotta_carrier
+PARADIGM	pdg_blotter_glass
+PARADIGM	pdg_card_pearl
+PARADIGM	pdg_chipboard_liquid
+PARADIGM	pdg_cork_pearl
+PARADIGM	pdg_corrugate_mercury
+PARADIGM	pdg_greyboard_carrier
+PARADIGM	pdg_kraft_chrome
+PARADIGM	pdg_newsprint_glass
+PARADIGM	pdg_plywood_liquid
+PARADIGM	pdg_sawdust_mirror
+PARADIGM	pdg_ash_chrome
+PARADIGM	pdg_cinder_mirror
+PARADIGM	pdg_corrosion_glass
+PARADIGM	pdg_decay_pearl
+PARADIGM	pdg_flake_carrier
+PARADIGM	pdg_mould_liquid
+PARADIGM	pdg_rust_mirror
+PARADIGM	pdg_soot_pearl
+PARADIGM	pdg_verdigris_glass
+PARADIGM	pdg_weathered_liquid
+★ COLORSHOXX	cx_inferno
+★ COLORSHOXX	cx_arctic
+★ COLORSHOXX	cx_venom
+★ COLORSHOXX	cx_solar
+★ COLORSHOXX	cx_phantom
+★ COLORSHOXX	cx_chrome_void
+★ COLORSHOXX	cx_blood_mercury
+★ COLORSHOXX	cx_neon_abyss
+★ COLORSHOXX	cx_glacier_fire
+★ COLORSHOXX	cx_obsidian_gold
+★ COLORSHOXX	cx_electric_storm
+★ COLORSHOXX	cx_rose_chrome
+★ COLORSHOXX	cx_toxic_chrome
+★ COLORSHOXX	cx_midnight_chrome
+★ COLORSHOXX	cx_white_lightning
+★ COLORSHOXX	cx_aurora_borealis
+★ COLORSHOXX	cx_dragon_scale
+★ COLORSHOXX	cx_frozen_nebula
+★ COLORSHOXX	cx_hellfire
+★ COLORSHOXX	cx_ocean_trench
+★ COLORSHOXX	cx_supernova
+★ COLORSHOXX	cx_prism_shatter
+★ COLORSHOXX	cx_acid_rain
+★ COLORSHOXX	cx_royal_spectrum
+★ COLORSHOXX	cx_apocalypse
+★ COLORSHOXX	cx_gold_green
+★ COLORSHOXX	cx_gold_purple
+★ COLORSHOXX	cx_teal_blue
+★ COLORSHOXX	cx_copper_rose
+★ COLORSHOXX	cx_gold_olive_emerald
+★ COLORSHOXX	cx_purple_plum_bronze
+★ COLORSHOXX	cx_blue_teal_cyan
+★ COLORSHOXX	cx_burgundy_wine_gold
+★ COLORSHOXX	cx_sunset_horizon
+★ COLORSHOXX	cx_northern_lights
+★ COLORSHOXX	cx_peacock_fan
+★ COLORSHOXX	cx_rainbow_stealth
+★ COLORSHOXX	cx_oil_slick
+★ COLORSHOXX	cx_molten_metal
+★ COLORSHOXX	cx_red_green_chaos
+★ COLORSHOXX	cx_orange_blue_electric
+★ COLORSHOXX	cx_pink_yellow_pop
+★ COLORSHOXX	cx_purple_gold_majesty
+★ COLORSHOXX	cx_custom_shift
+★ COLORSHOXX	cx_pink_to_gold
+★ COLORSHOXX	cx_blue_to_orange
+★ COLORSHOXX	cx_purple_to_green
+★ COLORSHOXX	cx_teal_to_magenta
+★ COLORSHOXX	cx_red_to_cyan
+★ COLORSHOXX	cx_sunset_shift
+★ COLORSHOXX	cx_emerald_ruby
+★ COLORSHOXX	cx_ice_fire
+★ COLORSHOXX	cx_hyperflip_red_blue
+★ COLORSHOXX	cx_hyperflip_pink_black
+★ COLORSHOXX	cx_hyperflip_orange_cyan
+★ COLORSHOXX	cx_hyperflip_lime_purple
+★ COLORSHOXX	cx_hyperflip_purple_gold
+★ COLORSHOXX	cx_hyperflip_electric_blue_copper
+★ COLORSHOXX	cx_hyperflip_bronze_teal
+★ COLORSHOXX	cx_hyperflip_silver_violet
+★ COLORSHOXX	cx_hyperflip_crimson_prism
+★ COLORSHOXX	cx_hyperflip_midnight_opal
+★ COLORSHOXX	cx_cotton_candy
+★ COLORSHOXX	cx_forest_fire
+★ COLORSHOXX	cx_deep_sea
+★ COLORSHOXX	cx_galaxy_dust
+★ COLORSHOXX	cx_autumn_blaze
+★ COLORSHOXX	cx_thunderstorm
+★ COLORSHOXX	cx_tropical_sunset
+★ COLORSHOXX	cx_black_ice
+★ COLORSHOXX	cx_cherry_blossom
+★ COLORSHOXX	cx_volcanic_glass
+★ COLORSHOXX	cx_neon_dreams
+★ COLORSHOXX	cx_champagne_toast
+★ COLORSHOXX	cx_emerald_city
+★ COLORSHOXX	cx_midnight_aurora
+★ COLORSHOXX	cx_bronze_age
+★ MORTAL SHOKK	ms_acid_veil_ambush
+★ MORTAL SHOKK	ms_blood_empress
+★ MORTAL SHOKK	ms_bone_sonata
+★ MORTAL SHOKK	ms_chainburst_inferno
+★ MORTAL SHOKK	ms_cinder_spiral
+★ MORTAL SHOKK	ms_crimson_dragon
+★ MORTAL SHOKK	ms_cryo_shard
+★ MORTAL SHOKK	ms_crystal_onslaught
+★ MORTAL SHOKK	ms_dragon_ascent
+★ MORTAL SHOKK	ms_dragon_soul
+★ MORTAL SHOKK	ms_emerald_scale_mirage
+★ MORTAL SHOKK	ms_fang_cataclysm
+★ MORTAL SHOKK	ms_frost_sentinel
+★ MORTAL SHOKK	ms_frozen_inferno
+★ MORTAL SHOKK	ms_lotus_ascention
+★ MORTAL SHOKK	ms_molten_sting
+★ MORTAL SHOKK	ms_porcelain_cipher
+★ MORTAL SHOKK	ms_serpent_haze_strike
+★ MORTAL SHOKK	ms_shadow_wraith
+★ MORTAL SHOKK	ms_soul_forge
+★ MORTAL SHOKK	ms_tempest_crown
+★ MORTAL SHOKK	ms_thunder_mandala
+★ MORTAL SHOKK	ms_toxic_labyrinth
+★ MORTAL SHOKK	ms_venom_eclipse
+★ MORTAL SHOKK	ms_venom_veil
+★ MORTAL SHOKK	ms_zero_hour
+★ MONEY SHOKK	msh_canary_coffin
+★ MONEY SHOKK	msh_magenta_widow
+★ MONEY SHOKK	msh_cerulean_cobra
+★ MONEY SHOKK	msh_lime_scorpion
+★ MONEY SHOKK	msh_hyperpink_torii
+★ MONEY SHOKK	msh_seafoam_piranha
+★ MONEY SHOKK	msh_orchid_kintsugi
+★ MONEY SHOKK	msh_peach_jellyshock
+★ MONEY SHOKK	msh_daffodil_bayou
+★ MONEY SHOKK	msh_neonice_rising
+★ MONEY SHOKK	mshc_tigerblood_voltage
+★ MONEY SHOKK	mshc_oxblood_seigaiha
+★ MONEY SHOKK	mshc_emerald_sharkbite
+★ MONEY SHOKK	mshc_amber_panther
+★ MONEY SHOKK	mshc_violet_kyoto
+★ MONEY SHOKK	mshc_acid_hornet
+★ MONEY SHOKK	mshc_oni_orchid_glass
+★ MONEY SHOKK	mshc_copper_jubilee
+★ MONEY SHOKK	mshc_canary_widow_redux
+★ MONEY SHOKK	mshc_rosethorn_bonsai
+★ MONEY SHOKK	msha_canary_gris_gris
+★ MONEY SHOKK	msha_emerald_brocade
+★ MONEY SHOKK	msha_fuji_neon_crest
+★ MONEY SHOKK	msha_volcanic_croc
+★ MONEY SHOKK	msha_cherry_blossom_flux
+★ MONEY SHOKK	msha_waxen_voodoo
+★ MONEY SHOKK	msha_hyperpink_threads
+★ MONEY SHOKK	msha_peach_burlap
+★ MONEY SHOKK	msha_seafoam_charm
+★ MONEY SHOKK	msha_solar_moss
+★ MONEY SHOKK	mshx_blueprint_jackpot
+★ MONEY SHOKK	mshx_venom_cashmere
+★ MONEY SHOKK	mshx_glacier_pinkslip
+★ MONEY SHOKK	mshx_lime_afterburner
+★ MONEY SHOKK	mshx_miami_blacklight
+★ MONEY SHOKK	mshx_royal_sunstroke
+★ MONEY SHOKK	mshx_kintsugi_ransom
+★ MONEY SHOKK	mshx_coral_sharkskin
+★ MONEY SHOKK	mshx_dover_jackpot
+★ MONEY SHOKK	mshx_prism_tipjar
+🌿 FRACTURED WILDS	fc_antler_bone
+🌿 FRACTURED WILDS	fc_bark_camo
+🌿 FRACTURED WILDS	fc_batwing
+🌿 FRACTURED WILDS	fc_bog_murk
+🌿 FRACTURED WILDS	fc_claw_rake
+🌿 FRACTURED WILDS	fc_coarse_hide
+🌿 FRACTURED WILDS	fc_crackle_eyeshine_glass
+🌿 FRACTURED WILDS	fc_dorsal_ridge
+🌿 FRACTURED WILDS	fc_dragon_hex_glass
+🌿 FRACTURED WILDS	fc_eyeshine
+🌿 FRACTURED WILDS	fc_feathered_wing
+🌿 FRACTURED WILDS	fc_gator_hide
+🌿 FRACTURED WILDS	fc_hide_scale_glass
+🌿 FRACTURED WILDS	fc_mossy_stone
+🌿 FRACTURED WILDS	fc_quill_bristle
+🌿 FRACTURED WILDS	fc_sasquatch_fur
+🌿 FRACTURED WILDS	fc_snakeskin
+🌿 FRACTURED WILDS	fc_toad_skin
+🌿 FRACTURED WILDS	fc_webbed_membrane
+🌿 FRACTURED WILDS	fc_will_o_wisp
+🌿 FRACTURED WILDS	fmo_abalone_drift
+🌿 FRACTURED WILDS	fmo_alexandrite_dusk
+🌿 FRACTURED WILDS	fmo_ammolite_skin
+🌿 FRACTURED WILDS	fmo_atlas_wing
+🌿 FRACTURED WILDS	fmo_black_opal
+🌿 FRACTURED WILDS	fmo_black_pearl
+🌿 FRACTURED WILDS	fmo_bornite_patina
+🌿 FRACTURED WILDS	fmo_cassowary_quill
+🌿 FRACTURED WILDS	fmo_chalcopyrite
+🌿 FRACTURED WILDS	fmo_chrysina_gold
+🌿 FRACTURED WILDS	fmo_duck_speculum
+🌿 FRACTURED WILDS	fmo_emperor_scale
+🌿 FRACTURED WILDS	fmo_fire_agate
+🌿 FRACTURED WILDS	fmo_firefly_shell
+🌿 FRACTURED WILDS	fmo_foam_film
+🌿 FRACTURED WILDS	fmo_glasswing
+🌿 FRACTURED WILDS	fmo_grackle_oil
+🌿 FRACTURED WILDS	fmo_ground_beetle
+🌿 FRACTURED WILDS	fmo_hummingbird_gorget
+🌿 FRACTURED WILDS	fmo_jewel_scarab
+🌿 FRACTURED WILDS	fmo_labradorite
+🌿 FRACTURED WILDS	fmo_ladybird_dome
+🌿 FRACTURED WILDS	fmo_luna_dust
+🌿 FRACTURED WILDS	fmo_magpie_wing
+🌿 FRACTURED WILDS	fmo_monarch_vein
+🌿 FRACTURED WILDS	fmo_moonstone_adular
+🌿 FRACTURED WILDS	fmo_morpho_blue
+🌿 FRACTURED WILDS	fmo_mother_of_pearl
+🌿 FRACTURED WILDS	fmo_mussel_shell
+🌿 FRACTURED WILDS	fmo_nacre_brick
+🌿 FRACTURED WILDS	fmo_oil_beetle
+🌿 FRACTURED WILDS	fmo_oil_slick
+🌿 FRACTURED WILDS	fmo_owl_eye
+🌿 FRACTURED WILDS	fmo_paua_storm
+🌿 FRACTURED WILDS	fmo_peacock_eye
+🌿 FRACTURED WILDS	fmo_pearl_oyster
+🌿 FRACTURED WILDS	fmo_pigeon_neck
+🌿 FRACTURED WILDS	fmo_raven_flash
+🌿 FRACTURED WILDS	fmo_scarab_horn
+🌿 FRACTURED WILDS	fmo_soap_bubble
+🌿 FRACTURED WILDS	fmo_spectrolite_vein
+🌿 FRACTURED WILDS	fmo_stag_carapace
+🌿 FRACTURED WILDS	fmo_starling_sheen
+🌿 FRACTURED WILDS	fmo_sunbird_throat
+🌿 FRACTURED WILDS	fmo_sunset_moth
+🌿 FRACTURED WILDS	fmo_sunstone_glitter
+🌿 FRACTURED WILDS	fmo_swallowtail
+🌿 FRACTURED WILDS	fmo_tiger_beetle
+🌿 FRACTURED WILDS	fmo_ulysses_flash
+🌿 FRACTURED WILDS	fmo_weevil_pit
+🌿 FRACTURED WILDS	fbl_butter_mosaic
+🌿 FRACTURED WILDS	fbl_butter_pollen
+🌿 FRACTURED WILDS	fbl_butter_whorl
+🌿 FRACTURED WILDS	fbl_coral_cluster
+🌿 FRACTURED WILDS	fbl_coral_stamen
+🌿 FRACTURED WILDS	fbl_coral_vine
+🌿 FRACTURED WILDS	fbl_leaf_whorl
+🌿 FRACTURED WILDS	fbl_leafvine_drape
+🌿 FRACTURED WILDS	fbl_lilac_rose
+🌿 FRACTURED WILDS	fbl_lilac_stamen
+🌿 FRACTURED WILDS	fbl_lilac_vine
+🌿 FRACTURED WILDS	fbl_magenta_mosaic
+🌿 FRACTURED WILDS	fbl_magenta_pollen
+🌿 FRACTURED WILDS	fbl_magenta_whorl
+🌿 FRACTURED WILDS	fbl_pink_pollen
+🌿 FRACTURED WILDS	fbl_pink_rose
+🌿 FRACTURED WILDS	fbl_pink_stamen
+🌿 FRACTURED WILDS	fbl_white_pollen
+🌿 FRACTURED WILDS	fbl_blush_rose
+🌿 FRACTURED WILDS	fbl_white_whorl
+🌿 FRACTURED WILDS	fpe_amber_agar
+🌿 FRACTURED WILDS	fpe_amber_diatom
+🌿 FRACTURED WILDS	fpe_amber_moldring
+🌿 FRACTURED WILDS	fpe_amber_plankton
+🌿 FRACTURED WILDS	fpe_cyan_colony
+🌿 FRACTURED WILDS	fpe_cyan_membrane
+🌿 FRACTURED WILDS	fpe_cyan_mold
+🌿 FRACTURED WILDS	fpe_cyan_spineball
+🌿 FRACTURED WILDS	fpe_lime_chains
+🌿 FRACTURED WILDS	fpe_lime_culture
+🌿 FRACTURED WILDS	fpe_lime_diatom
+🌿 FRACTURED WILDS	fpe_lime_mold
+🌿 FRACTURED WILDS	fpe_magenta_bloom
+🌿 FRACTURED WILDS	fpe_magenta_mosaic
+🌿 FRACTURED WILDS	fpe_magenta_plankton
+🌿 FRACTURED WILDS	fpe_magenta_radiolaria
+🌿 FRACTURED WILDS	fpe_violet_chains
+🌿 FRACTURED WILDS	fpe_violet_frustule
+🌿 FRACTURED WILDS	fpe_violet_garden
+🌿 FRACTURED WILDS	fpe_violet_membrane
+🏺 FRACTURED RELICS	frl_athanor_slag
+🏺 FRACTURED RELICS	frl_sulfur_crust
+🏺 FRACTURED RELICS	frl_herbarium
+🏺 FRACTURED RELICS	frl_transmutation
+🏺 FRACTURED RELICS	frl_verdigris
+🏺 FRACTURED RELICS	frl_apothecary_crust
+🏺 FRACTURED RELICS	frl_vitriol_etch
+🏺 FRACTURED RELICS	frl_quicksilver
+🏺 FRACTURED RELICS	frl_philosopher
+🏺 FRACTURED RELICS	frl_cinnabar
+🏺 FRACTURED RELICS	frl_blood_augur
+🏺 FRACTURED RELICS	frl_planchette
+🏺 FRACTURED RELICS	frl_casting_bones
+🏺 FRACTURED RELICS	frl_tasseomancy
+🏺 FRACTURED RELICS	frl_palm_line
+🏺 FRACTURED RELICS	frl_astrolabe
+🏺 FRACTURED RELICS	frl_ceromancy
+🏺 FRACTURED RELICS	frl_black_mirror
+🏺 FRACTURED RELICS	frl_ink_scry
+🏺 FRACTURED RELICS	frl_haruspex
+🏺 FRACTURED RELICS	frl_urn_slip
+🏺 FRACTURED RELICS	frl_bog_body
+🏺 FRACTURED RELICS	frl_coffin_varnish
+🏺 FRACTURED RELICS	frl_grave_wax
+🏺 FRACTURED RELICS	frl_shroud
+🏺 FRACTURED RELICS	frl_barrow_soil
+🏺 FRACTURED RELICS	frl_bone_ash
+🏺 FRACTURED RELICS	frl_barrow_frost
+🏺 FRACTURED RELICS	frl_ossuary
+🏺 FRACTURED RELICS	frl_corpse_candle
+🏺 FRACTURED RELICS	frl_wendigo_horn
+🏺 FRACTURED RELICS	frl_thunderbird_quill
+🏺 FRACTURED RELICS	frl_mothman_dust
+🏺 FRACTURED RELICS	frl_lake_serpent
+🏺 FRACTURED RELICS	frl_devil_hoof
+🏺 FRACTURED RELICS	frl_sasquatch_pelt
+🏺 FRACTURED RELICS	frl_chupacabra_spine
+🏺 FRACTURED RELICS	frl_grendel_hide
+🏺 FRACTURED RELICS	frl_kraken_sucker
+🏺 FRACTURED RELICS	frl_deep_one_gill
+🏺 FRACTURED RELICS	frl_hexfoil
+🏺 FRACTURED RELICS	frl_witch_bottle
+🏺 FRACTURED RELICS	frl_binding_knot
+🏺 FRACTURED RELICS	frl_coffin_nail
+🏺 FRACTURED RELICS	frl_salt_circle
+🏺 FRACTURED RELICS	frl_poppet_stitch
+🏺 FRACTURED RELICS	frl_hag_stone
+🏺 FRACTURED RELICS	frl_sigil_wax
+🏺 FRACTURED RELICS	frl_thread_cross
+🏺 FRACTURED RELICS	frl_iron_cage

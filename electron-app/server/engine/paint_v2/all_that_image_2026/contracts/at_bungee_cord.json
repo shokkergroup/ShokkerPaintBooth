@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_bungee_cord",
+  "display_name": "Extreme: Bungee Cord",
+  "promise": "Small multidirectional braided elastic-sheath fragments in mismatched orange teal white black, no whole rope objects",
+  "carrier_grammar": "Small multidirectional braided elastic-sheath fragments in mismatched orange teal white black, no whole rope objects; single full-canvas image, no duplicated quadrants. Fine features: black elastic cores, orange braided sheath, teal braided sheath, white frayed fibers, braid crossings, rubber core gaps",
+  "spec_grammar": "Feature-specific selectors partition black elastic cores, orange braided sheath, teal braided sheath, white frayed fibers, braid crossings, rubber core gaps. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "black elastic cores",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "orange braided sheath",
+      "role": "Material feature selected from artwork by h:<:45&s:>:0.45"
+    },
+    {
+      "name": "teal braided sheath",
+      "role": "Material feature selected from artwork by h:>:165&h:<:220&s:>:0.3"
+    },
+    {
+      "name": "white frayed fibers",
+      "role": "Material feature selected from artwork by g:>:0.66&s:<:0.3"
+    },
+    {
+      "name": "braid crossings",
+      "role": "Material feature selected from artwork by edge:>:0.64"
+    },
+    {
+      "name": "rubber core gaps",
+      "role": "Material feature selected from artwork by g:<:0.17"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "black elastic cores",
+      "orange braided sheath",
+      "teal braided sheath",
+      "white frayed fibers",
+      "braid crossings",
+      "rubber core gaps"
+    ],
+    "R": [
+      "black elastic cores",
+      "orange braided sheath",
+      "teal braided sheath",
+      "white frayed fibers",
+      "braid crossings",
+      "rubber core gaps"
+    ],
+    "Cc": [
+      "black elastic cores",
+      "orange braided sheath",
+      "teal braided sheath",
+      "white frayed fibers",
+      "braid crossings",
+      "rubber core gaps"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "black elastic cores",
+      "range": [
+        [
+          0,
+          75,
+          70
+        ],
+        [
+          15,
+          190,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "orange braided sheath",
+      "range": [
+        [
+          0,
+          40,
+          45
+        ],
+        [
+          18,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "teal braided sheath",
+      "range": [
+        [
+          0,
+          100,
+          130
+        ],
+        [
+          12,
+          195,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "white frayed fibers",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "braid crossings",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "rubber core gaps",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_anodised_peg",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_bmx_dirt",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "black elastic cores",
+      "orange braided sheath",
+      "teal braided sheath",
+      "white frayed fibers",
+      "braid crossings",
+      "rubber core gaps"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_bungee_cord / Small multidirectional braided elastic-sheath fragments in mismatched orange teal white black, no whole rope objects",
+  "spec_key": "at_bungee_cord / black elastic cores all; orange braided sheath h:<:45&s:>:0.45; teal braided sheath h:>:165&h:<:220&s:>:0.3; white frayed fibers g:>:0.66&s:<:0.3; braid crossings edge:>:0.64; rubber core gaps g:<:0.17",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

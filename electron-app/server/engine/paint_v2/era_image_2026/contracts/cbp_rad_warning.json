@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_rad_warning",
+  "display_name": "Sprawl: Reactor Enamel",
+  "promise": "Radiation pulse lacquer: yellow-orange interrupted radial arcs radiating among cobalt nested triangles, scarlet hazard notches, magenta ion tracks and bright cyan microdots.",
+  "carrier_grammar": "Radiation pulse lacquer: yellow-orange interrupted radial arcs radiating among cobalt nested triangles, scarlet hazard notches, magenta ion tracks and bright cyan microdots. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for cobalt nested triangles, yellow radial pulse arcs, scarlet hazard notches, magenta ion tracks, cyan pulse microdots, black pulse gaps is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Radiation pulse lacquer: yellow-orange interrupted radial arcs radiating among cobalt nested triangles, scarlet hazard notches, magenta ion tracks and bright cyan microdots. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_rad_warning.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "cobalt nested triangles",
+      "role": "Actual shared paint and spec geometry: cobalt nested triangles"
+    },
+    {
+      "name": "yellow radial pulse arcs",
+      "role": "Actual shared paint and spec geometry: yellow radial pulse arcs"
+    },
+    {
+      "name": "scarlet hazard notches",
+      "role": "Actual shared paint and spec geometry: scarlet hazard notches"
+    },
+    {
+      "name": "magenta ion tracks",
+      "role": "Actual shared paint and spec geometry: magenta ion tracks"
+    },
+    {
+      "name": "cyan pulse microdots",
+      "role": "Actual shared paint and spec geometry: cyan pulse microdots"
+    },
+    {
+      "name": "black pulse gaps",
+      "role": "Actual shared paint and spec geometry: black pulse gaps"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "cobalt nested triangles",
+      "yellow radial pulse arcs",
+      "scarlet hazard notches",
+      "magenta ion tracks",
+      "cyan pulse microdots",
+      "black pulse gaps"
+    ],
+    "R": [
+      "cobalt nested triangles",
+      "yellow radial pulse arcs",
+      "scarlet hazard notches",
+      "magenta ion tracks",
+      "cyan pulse microdots",
+      "black pulse gaps"
+    ],
+    "Cc": [
+      "cobalt nested triangles",
+      "yellow radial pulse arcs",
+      "scarlet hazard notches",
+      "magenta ion tracks",
+      "cyan pulse microdots",
+      "black pulse gaps"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_hazard_stripe",
+      "difference": "This finish uses Dense tiny chartreuse enamel wedges, violet isotope-like stipple specks, copper heat pits, ruby varnish nicks and black sharp micro seams. Abstract reactor casing paint, no actual radiation symbols or text, no broad hazard stripes; small wedge forms rather than panels.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_biohazard_bloom",
+      "difference": "This finish uses Dense tiny chartreuse enamel wedges, violet isotope-like stipple specks, copper heat pits, ruby varnish nicks and black sharp micro seams. Abstract reactor casing paint, no actual radiation symbols or text, no broad hazard stripes; small wedge forms rather than panels.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "cobalt nested triangles is visible in the authored geometry",
+      "yellow radial pulse arcs is visible in the authored geometry",
+      "scarlet hazard notches is visible in the authored geometry",
+      "magenta ion tracks is visible in the authored geometry",
+      "cyan pulse microdots is visible in the authored geometry",
+      "black pulse gaps is visible in the authored geometry"
+    ],
+    "source_sha256": "0617a9d18267dfd5c7a7dad29f12295e002bc7ce35e373258be2faec362d9fbf",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_rad_warning-authored-Radiation pulse lacquer: yellow-orange interrupted radial arcs radiating among cobalt nested triangles, scarlet hazard notches, magenta ion tracks and bright cyan microdots. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_rad_warning-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 68.8,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "de0e9d1b166cc59ea078469fa274f9e2d324d11836e61d10048147d4d160282b"
+}

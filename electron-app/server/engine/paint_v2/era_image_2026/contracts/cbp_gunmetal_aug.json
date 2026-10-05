@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_gunmetal_aug",
+  "display_name": "Chrome: Anodized Servo",
+  "promise": "Lime and violet machined microteeth with copper bearings and black lubricant pockets.",
+  "carrier_grammar": "Lime and violet machined microteeth with copper bearings and black lubricant pockets. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for lime servo teeth, violet toothed arcs, copper bearing rings, silver scraped tips, black lubricant pockets, cyan machining scores is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Lime and violet machined microteeth with copper bearings and black lubricant pockets. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_gunmetal_aug.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "lime servo teeth",
+      "role": "Actual shared paint and spec geometry: lime servo teeth"
+    },
+    {
+      "name": "violet toothed arcs",
+      "role": "Actual shared paint and spec geometry: violet toothed arcs"
+    },
+    {
+      "name": "copper bearing rings",
+      "role": "Actual shared paint and spec geometry: copper bearing rings"
+    },
+    {
+      "name": "silver scraped tips",
+      "role": "Actual shared paint and spec geometry: silver scraped tips"
+    },
+    {
+      "name": "black lubricant pockets",
+      "role": "Actual shared paint and spec geometry: black lubricant pockets"
+    },
+    {
+      "name": "cyan machining scores",
+      "role": "Actual shared paint and spec geometry: cyan machining scores"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "lime servo teeth",
+      "violet toothed arcs",
+      "copper bearing rings",
+      "silver scraped tips",
+      "black lubricant pockets",
+      "cyan machining scores"
+    ],
+    "R": [
+      "lime servo teeth",
+      "violet toothed arcs",
+      "copper bearing rings",
+      "silver scraped tips",
+      "black lubricant pockets",
+      "cyan machining scores"
+    ],
+    "Cc": [
+      "lime servo teeth",
+      "violet toothed arcs",
+      "copper bearing rings",
+      "silver scraped tips",
+      "black lubricant pockets",
+      "cyan machining scores"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_servo_housing",
+      "difference": "This finish uses Fine lime violet anodized servo microteeth: short staggered toothed arcs, copper bearing pin rings, silver scraped tooth tips, black lubricant pockets and cyan machining scorelines. No gunmetal gray field, no whole gears, no large mechanical plates.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_overpass_sodium",
+      "difference": "This finish uses Fine lime violet anodized servo microteeth: short staggered toothed arcs, copper bearing pin rings, silver scraped tooth tips, black lubricant pockets and cyan machining scorelines. No gunmetal gray field, no whole gears, no large mechanical plates.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "lime servo teeth is visible in the authored geometry",
+      "violet toothed arcs is visible in the authored geometry",
+      "copper bearing rings is visible in the authored geometry",
+      "silver scraped tips is visible in the authored geometry",
+      "black lubricant pockets is visible in the authored geometry",
+      "cyan machining scores is visible in the authored geometry"
+    ],
+    "source_sha256": "06f36d43a1cdce9645c8797ea48fecd45c7279b3be41d24c3c070e73ef504ef8",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_gunmetal_aug-authored-Lime and violet machined microteeth with copper bearings and black lubricant pockets. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_gunmetal_aug-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 68.5,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "12ad3fe7c18542f75c23548ecf884756e9981198cdd448aac0db68b737680aac"
+}

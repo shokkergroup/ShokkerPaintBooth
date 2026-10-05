@@ -1,0 +1,1047 @@
+/* ============================================================
+   SPB Look Overdrive Styles
+   Extracted from paint-booth-v2.css for SPB-105 file-budget work.
+   Loaded immediately after paint-booth-v2.css to preserve cascade order.
+   ============================================================ */
+
+/* ===== CYCLE 21: SIGNATURE MICRO-DETAILS + ULTRA-AGGRESSIVE CHROME OVERDRIVE ===== */
+/* Header command buttons, vertical toolbar buttons (the actual clickable shop tools), */
+/* the rendered preview surface environment overlays, and the Looks picker cards themselves */
+/* now receive the most extreme, unmistakable shop personality treatments possible. */
+/* This is the final "balls out" push so switching Looks feels like walking into four */
+/* completely different custom paint shops with zero subtlety. */
+
+body[data-look="warped-tour"] #header .header-command-btns button,
+body[data-look="warped-tour"] #header .header-command-btns .btn,
+body[data-look="warped-tour"] #settingsGearBtn {
+    background: linear-gradient(145deg, #2a1222, #1a0a14) !important;
+    border: 2px solid #ff1493 !important;
+    color: #ff1493 !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.5px !important;
+    text-shadow: 0 0 8px #ff1493, 0 0 16px #00f0ff !important;
+    box-shadow: 0 0 0 1px #ff00aa, 0 4px 16px rgba(255,20,147,0.5) !important;
+}
+body[data-look="warped-tour"] #header .header-command-btns button:hover,
+body[data-look="warped-tour"] #settingsGearBtn:hover {
+    background: linear-gradient(145deg, #3a1830, #220f1c) !important;
+    transform: scale(1.08) rotate(1deg) !important;
+    box-shadow: 0 0 0 2px #ff1493, 0 0 20px rgba(255,20,147,0.8) !important;
+}
+
+/* Warped Tour — vertical toolbar buttons: loud, spiked, energetic punk */
+body[data-look="warped-tour"] .vertical-toolbar .tb-btn,
+body[data-look="warped-tour"] .vertical-toolbar button {
+    border: 2px solid #ff1493 !important;
+    background: linear-gradient(180deg, rgba(255,20,147,0.12), rgba(0,240,255,0.06)) !important;
+    color: #ff1493 !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.8px !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 0 0 1px #ff00aa inset, 0 3px 12px rgba(255,20,147,0.4) !important;
+    border-radius: 3px !important;
+}
+body[data-look="warped-tour"] .vertical-toolbar .tb-btn:hover,
+body[data-look="warped-tour"] .vertical-toolbar button:hover {
+    background: linear-gradient(180deg, rgba(255,20,147,0.35), rgba(0,240,255,0.18)) !important;
+    transform: scale(1.12) !important;
+    box-shadow: 0 0 0 2px #ff1493, 0 0 24px rgba(255,20,147,0.7) !important;
+    color: #fff !important;
+}
+
+/* Electric Boogeyman — header chrome: heavy, menacing, blood horror */
+body[data-look="electric-boogeyman"] #header .header-command-btns button,
+body[data-look="electric-boogeyman"] #header .header-command-btns .btn,
+body[data-look="electric-boogeyman"] #settingsGearBtn {
+    background: linear-gradient(145deg, #2a1208, #140a04) !important;
+    border: 3px solid #ff3300 !important;
+    color: #ff6600 !important;
+    font-weight: 800 !important;
+    text-shadow: 0 0 10px #ff3300, 2px 2px 0 #000 !important;
+    box-shadow: 0 0 0 1px #661100, 0 6px 20px rgba(0,0,0,0.8) !important;
+    border-radius: 2px !important;
+}
+body[data-look="electric-boogeyman"] #header .header-command-btns button:hover,
+body[data-look="electric-boogeyman"] #settingsGearBtn:hover {
+    background: linear-gradient(145deg, #3a180c, #1f1008) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 0 0 2px #ff3300, 0 0 30px rgba(255,51,0,0.6) !important;
+}
+
+/* Electric Boogeyman — vertical toolbar: thick, heavy, horror tool feel */
+body[data-look="electric-boogeyman"] .vertical-toolbar .tb-btn,
+body[data-look="electric-boogeyman"] .vertical-toolbar button {
+    border: 3px solid #ff3300 !important;
+    background: linear-gradient(180deg, rgba(255,51,0,0.1), rgba(0,0,0,0.4)) !important;
+    color: #ff6600 !important;
+    font-weight: 800 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 4px 0 #661100 inset, 0 6px 18px rgba(0,0,0,0.7) !important;
+    border-radius: 1px !important;
+}
+body[data-look="electric-boogeyman"] .vertical-toolbar .tb-btn:hover,
+body[data-look="electric-boogeyman"] .vertical-toolbar button:hover {
+    background: linear-gradient(180deg, rgba(255,51,0,0.25), rgba(40,0,0,0.6)) !important;
+    transform: scale(1.05) translateY(-2px) !important;
+    box-shadow: 0 0 0 3px #ff3300, 0 0 26px rgba(255,0,0,0.5) !important;
+    color: #fff !important;
+}
+
+/* Neon Cyberpunk — header: razor thin neon, glitchy digital */
+body[data-look="neon-cyberpunk"] #header .header-command-btns button,
+body[data-look="neon-cyberpunk"] #header .header-command-btns .btn,
+body[data-look="neon-cyberpunk"] #settingsGearBtn {
+    background: linear-gradient(145deg, #0f0a22, #06040f) !important;
+    border: 1px solid #00ff85 !important;
+    color: #00ff85 !important;
+    font-weight: 700 !important;
+    letter-spacing: 1.5px !important;
+    text-shadow: 0 0 6px #00ff85, 0 0 14px #c026ff !important;
+    box-shadow: 0 0 0 1px #c026ff, 0 0 12px rgba(0,255,133,0.5) !important;
+    border-radius: 0 !important;
+}
+body[data-look="neon-cyberpunk"] #header .header-command-btns button:hover,
+body[data-look="neon-cyberpunk"] #settingsGearBtn:hover {
+    background: linear-gradient(145deg, #160f30, #0a0620) !important;
+    transform: scale(1.04) !important;
+    box-shadow: 0 0 0 2px #00ff85, 0 0 0 4px rgba(192,38,255,0.4), 0 0 22px rgba(0,255,133,0.7) !important;
+}
+
+/* Neon Cyberpunk — vertical toolbar: sharp, digital, HUD-like */
+body[data-look="neon-cyberpunk"] .vertical-toolbar .tb-btn,
+body[data-look="neon-cyberpunk"] .vertical-toolbar button {
+    border: 1px solid #00ff85 !important;
+    background: linear-gradient(180deg, rgba(0,255,133,0.08), rgba(192,38,255,0.04)) !important;
+    color: #00ff85 !important;
+    font-weight: 700 !important;
+    letter-spacing: 2px !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 0 0 1px #c026ff inset, 0 0 10px rgba(0,255,133,0.3) !important;
+    border-radius: 0 !important;
+}
+body[data-look="neon-cyberpunk"] .vertical-toolbar .tb-btn:hover,
+body[data-look="neon-cyberpunk"] .vertical-toolbar button:hover {
+    background: linear-gradient(180deg, rgba(0,255,133,0.22), rgba(192,38,255,0.12)) !important;
+    transform: scale(1.1) translateX(1px) !important;
+    box-shadow: 0 0 0 2px #00ff85, 0 0 18px rgba(192,38,255,0.6) !important;
+    color: #fff !important;
+}
+
+/* Swamp Thang — header: rich, ornate, voodoo luxury */
+body[data-look="swamp-thang"] #header .header-command-btns button,
+body[data-look="swamp-thang"] #header .header-command-btns .btn,
+body[data-look="swamp-thang"] #settingsGearBtn {
+    background: linear-gradient(145deg, #0f1a14, #070d0a) !important;
+    border: 2px solid #c9a227 !important;
+    color: #c9a227 !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.8px !important;
+    text-shadow: 0 0 8px #c9a227, 1px 1px 0 #5e2b8a !important;
+    box-shadow: 0 0 0 2px #5e2b8a, 0 5px 18px rgba(94,43,138,0.5) !important;
+    border-radius: 4px !important;
+}
+body[data-look="swamp-thang"] #header .header-command-btns button:hover,
+body[data-look="swamp-thang"] #settingsGearBtn:hover {
+    background: linear-gradient(145deg, #16261e, #0a120f) !important;
+    transform: scale(1.06) !important;
+    box-shadow: 0 0 0 3px #c9a227, 0 0 24px rgba(201,162,39,0.5) !important;
+}
+
+/* Swamp Thang — vertical toolbar: ornate, heavy, festival voodoo tools */
+body[data-look="swamp-thang"] .vertical-toolbar .tb-btn,
+body[data-look="swamp-thang"] .vertical-toolbar button {
+    border: 2px solid #c9a227 !important;
+    background: linear-gradient(180deg, rgba(201,162,39,0.12), rgba(94,43,138,0.08)) !important;
+    color: #c9a227 !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.6px !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 0 0 2px #5e2b8a inset, 0 4px 14px rgba(94,43,138,0.4) !important;
+    border-radius: 5px !important;
+}
+body[data-look="swamp-thang"] .vertical-toolbar .tb-btn:hover,
+body[data-look="swamp-thang"] .vertical-toolbar button:hover {
+    background: linear-gradient(180deg, rgba(201,162,39,0.28), rgba(94,43,138,0.18)) !important;
+    transform: scale(1.08) rotate(-1deg) !important;
+    box-shadow: 0 0 0 3px #c9a227, 0 0 22px rgba(201,162,39,0.6) !important;
+    color: #fff !important;
+}
+
+/* ===== CYCLE 21: EXTREME RENDERED PREVIEW ENVIRONMENT SIGNATURES ===== */
+/* The actual car paint preview now screams the shop floor it was painted in. */
+
+body[data-look="warped-tour"] .preview-image,
+body[data-look="warped-tour"] #previewImage,
+body[data-look="warped-tour"] .car-preview img,
+body[data-look="warped-tour"] .render-preview img {
+    box-shadow: 0 0 0 6px #ff1493, 0 0 0 13px #ff00aa, 0 0 0 18px #00f0ff, 0 30px 100px rgba(255,20,147,0.5) !important;
+    filter: contrast(1.08) saturate(1.35) brightness(1.06) !important;
+}
+body[data-look="electric-boogeyman"] .preview-image,
+body[data-look="electric-boogeyman"] #previewImage,
+body[data-look="electric-boogeyman"] .car-preview img,
+body[data-look="electric-boogeyman"] .render-preview img {
+    box-shadow: 0 0 0 8px #ff3300, 0 0 0 16px #661100, 0 40px 120px rgba(0,0,0,0.95) !important;
+    filter: contrast(0.92) saturate(0.85) brightness(0.88) hue-rotate(-8deg) !important;
+}
+body[data-look="neon-cyberpunk"] .preview-image,
+body[data-look="neon-cyberpunk"] #previewImage,
+body[data-look="neon-cyberpunk"] .car-preview img,
+body[data-look="neon-cyberpunk"] .render-preview img {
+    box-shadow: 0 0 0 5px #00ff85, 0 0 0 11px #c026ff, 0 0 0 17px #ff2e63, 0 28px 95px rgba(0,255,133,0.35) !important;
+    filter: contrast(1.12) saturate(1.25) brightness(1.04) !important;
+}
+body[data-look="swamp-thang"] .preview-image,
+body[data-look="swamp-thang"] #previewImage,
+body[data-look="swamp-thang"] .car-preview img,
+body[data-look="swamp-thang"] .render-preview img {
+    box-shadow: 0 0 0 6px #c9a227, 0 0 0 13px #5e2b8a, 0 0 0 19px #1a9c5e, 0 32px 105px rgba(94,43,138,0.45) !important;
+    filter: contrast(1.06) saturate(1.18) brightness(1.08) !important;
+}
+
+/* ===== CYCLE 21: LOOKS PICKER CARDS — LIVING SHOP IDENTITY ===== */
+/* When a Look is active, its own picker card becomes an unmistakable advertisement for that shop. */
+
+body[data-look="warped-tour"] #looksGrid .look-card[data-look="warped-tour"] {
+    border: 4px solid #ff1493 !important;
+    box-shadow: 0 0 0 2px #ff00aa, 0 0 30px rgba(255,20,147,0.6) !important;
+    background: linear-gradient(145deg, #1a0a14, #0f0812) !important;
+}
+body[data-look="warped-tour"] #looksGrid .look-card[data-look="warped-tour"] .look-name {
+    color: #ff1493 !important;
+    text-shadow: 0 0 10px #ff1493, 0 0 20px #00f0ff !important;
+    font-weight: 900 !important;
+    letter-spacing: 1px !important;
+}
+
+body[data-look="electric-boogeyman"] #looksGrid .look-card[data-look="electric-boogeyman"] {
+    border: 4px solid #ff3300 !important;
+    box-shadow: 0 0 0 3px #661100, 0 0 28px rgba(255,51,0,0.5) !important;
+    background: linear-gradient(145deg, #140a04, #0a0502) !important;
+}
+body[data-look="electric-boogeyman"] #looksGrid .look-card[data-look="electric-boogeyman"] .look-name {
+    color: #ff6600 !important;
+    text-shadow: 2px 2px 0 #000, 0 0 12px #ff3300 !important;
+    font-weight: 900 !important;
+}
+
+body[data-look="neon-cyberpunk"] #looksGrid .look-card[data-look="neon-cyberpunk"] {
+    border: 3px solid #00ff85 !important;
+    box-shadow: 0 0 0 2px #c026ff, 0 0 0 5px rgba(255,46,99,0.3), 0 0 24px rgba(0,255,133,0.5) !important;
+    background: linear-gradient(145deg, #0a0618, #04030c) !important;
+}
+body[data-look="neon-cyberpunk"] #looksGrid .look-card[data-look="neon-cyberpunk"] .look-name {
+    color: #00ff85 !important;
+    text-shadow: 0 0 8px #00ff85, 0 0 16px #c026ff !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.2px !important;
+}
+
+body[data-look="swamp-thang"] #looksGrid .look-card[data-look="swamp-thang"] {
+    border: 4px solid #c9a227 !important;
+    box-shadow: 0 0 0 3px #5e2b8a, 0 0 26px rgba(201,162,39,0.45) !important;
+    background: linear-gradient(145deg, #0a120f, #050a07) !important;
+}
+body[data-look="swamp-thang"] #looksGrid .look-card[data-look="swamp-thang"] .look-name {
+    color: #c9a227 !important;
+    text-shadow: 0 0 10px #c9a227, 1px 1px 0 #5e2b8a !important;
+    font-weight: 900 !important;
+}
+
+/* Final global button aggression per shop (the "I am in this shop" feeling on every click target) */
+body[data-look="warped-tour"] button:active,
+body[data-look="warped-tour"] .btn:active,
+body[data-look="warped-tour"] .tb-btn:active {
+    transform: scale(0.94) !important;
+    box-shadow: 0 0 0 3px #ff1493 !important;
+}
+body[data-look="electric-boogeyman"] button:active,
+body[data-look="electric-boogeyman"] .btn:active,
+body[data-look="electric-boogeyman"] .tb-btn:active {
+    transform: scale(0.96) translateY(2px) !important;
+    box-shadow: 0 0 0 4px #ff3300 !important;
+}
+body[data-look="neon-cyberpunk"] button:active,
+body[data-look="neon-cyberpunk"] .btn:active,
+body[data-look="neon-cyberpunk"] .tb-btn:active {
+    transform: scale(0.92) translateX(1px) !important;
+    box-shadow: 0 0 0 2px #00ff85, 0 0 0 5px #c026ff !important;
+}
+body[data-look="swamp-thang"] button:active,
+body[data-look="swamp-thang"] .btn:active,
+body[data-look="swamp-thang"] .tb-btn:active {
+    transform: scale(0.95) !important;
+    box-shadow: 0 0 0 3px #c9a227 !important;
+}
+
+/* ===== END CYCLE 21 BLOCK ===== */
+
+/* ===== CYCLE 22: ZONE CARDS + FINISH PICKER CARDS + ZONE WORKFLOW + MAIN PANELS ULTRA-AGGRESSIVE SHOP PERSONALITY ===== */
+/* The zone list, finish library, shokk library, zone toolbar/search/bulk, floating detail panel, */
+/* and left/right panels now receive completely distinct shop "workbench" and "parts bin" treatments. */
+/* Painters will feel they are digging through four totally different shops' hardware when browsing zones and finishes. */
+
+body[data-look="warped-tour"] .left-panel,
+body[data-look="warped-tour"] .right-panel {
+    background: linear-gradient(180deg, #120a10, #0a0610) !important;
+    border-right: 3px solid #ff1493 !important;
+    border-left: 3px solid #ff1493 !important;
+}
+body[data-look="electric-boogeyman"] .left-panel,
+body[data-look="electric-boogeyman"] .right-panel {
+    background: linear-gradient(180deg, #0f0804, #060301) !important;
+    border-right: 4px solid #ff3300 !important;
+    border-left: 4px solid #ff3300 !important;
+}
+body[data-look="neon-cyberpunk"] .left-panel,
+body[data-look="neon-cyberpunk"] .right-panel {
+    background: linear-gradient(180deg, #0a0618, #04030c) !important;
+    border-right: 2px solid #00ff85 !important;
+    border-left: 2px solid #00ff85 !important;
+}
+body[data-look="swamp-thang"] .left-panel,
+body[data-look="swamp-thang"] .right-panel {
+    background: linear-gradient(180deg, #0a140f, #050a07) !important;
+    border-right: 3px solid #c9a227 !important;
+    border-left: 3px solid #c9a227 !important;
+}
+
+/* ===== ZONE CARDS — COMPLETELY DIFFERENT SHOP DRAWERS ===== */
+body[data-look="warped-tour"] .zone-card {
+    background: linear-gradient(145deg, #1f0f18, #120a12) !important;
+    border: 2px solid #ff1493 !important;
+    border-left: 6px solid #ff00aa !important;
+    box-shadow: 0 4px 0 #ff1493, 0 8px 20px rgba(255,20,147,0.35) !important;
+    border-radius: 4px !important;
+}
+body[data-look="warped-tour"] .zone-card.selected,
+body[data-look="warped-tour"] .zone-card:hover {
+    border-color: #00f0ff !important;
+    box-shadow: 0 0 0 3px #ff1493, 0 0 0 6px #ff00aa, 0 12px 30px rgba(255,20,147,0.5) !important;
+    transform: translateY(-1px) !important;
+}
+body[data-look="warped-tour"] .zone-card-header {
+    background: linear-gradient(90deg, rgba(255,20,147,0.25), rgba(0,240,255,0.1)) !important;
+    border-bottom: 2px solid #ff1493 !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+}
+
+body[data-look="electric-boogeyman"] .zone-card {
+    background: linear-gradient(145deg, #1a0c06, #0c0502) !important;
+    border: 3px solid #ff3300 !important;
+    border-left: 8px solid #661100 !important;
+    box-shadow: 0 6px 0 #330000, 0 10px 28px rgba(0,0,0,0.75) !important;
+    border-radius: 2px !important;
+}
+body[data-look="electric-boogeyman"] .zone-card.selected,
+body[data-look="electric-boogeyman"] .zone-card:hover {
+    border-color: #ff6600 !important;
+    box-shadow: 0 0 0 4px #ff3300, 0 0 0 8px #661100, 0 14px 36px rgba(0,0,0,0.9) !important;
+}
+body[data-look="electric-boogeyman"] .zone-card-header {
+    background: linear-gradient(90deg, rgba(255,51,0,0.2), rgba(0,0,0,0.5)) !important;
+    border-bottom: 3px solid #ff3300 !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+
+body[data-look="neon-cyberpunk"] .zone-card {
+    background: linear-gradient(145deg, #0f0a20, #06040f) !important;
+    border: 1px solid #00ff85 !important;
+    border-left: 4px solid #c026ff !important;
+    box-shadow: 0 0 0 1px #ff2e63, 0 0 14px rgba(0,255,133,0.3) !important;
+    border-radius: 0 !important;
+}
+body[data-look="neon-cyberpunk"] .zone-card.selected,
+body[data-look="neon-cyberpunk"] .zone-card:hover {
+    border-color: #c026ff !important;
+    box-shadow: 0 0 0 2px #00ff85, 0 0 0 5px #c026ff, 0 0 20px rgba(192,38,255,0.5) !important;
+}
+body[data-look="neon-cyberpunk"] .zone-card-header {
+    background: linear-gradient(90deg, rgba(0,255,133,0.15), rgba(192,38,255,0.1)) !important;
+    border-bottom: 1px solid #00ff85 !important;
+    font-weight: 700 !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+}
+
+body[data-look="swamp-thang"] .zone-card {
+    background: linear-gradient(145deg, #0f1a12, #070d0a) !important;
+    border: 2px solid #c9a227 !important;
+    border-left: 7px solid #5e2b8a !important;
+    box-shadow: 0 5px 0 #3a2a0f, 0 9px 24px rgba(94,43,138,0.4) !important;
+    border-radius: 5px !important;
+}
+body[data-look="swamp-thang"] .zone-card.selected,
+body[data-look="swamp-thang"] .zone-card:hover {
+    border-color: #1a9c5e !important;
+    box-shadow: 0 0 0 3px #c9a227, 0 0 0 7px #5e2b8a, 0 12px 32px rgba(201,162,39,0.45) !important;
+}
+body[data-look="swamp-thang"] .zone-card-header {
+    background: linear-gradient(90deg, rgba(201,162,39,0.2), rgba(94,43,138,0.15)) !important;
+    border-bottom: 2px solid #c9a227 !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.6px !important;
+}
+
+/* ===== ZONE TOOLBAR + SEARCH + BULK ACTIONS — SHOP-SPECIFIC WORKBENCH BARS ===== */
+body[data-look="warped-tour"] .zone-toolbar {
+    background: linear-gradient(90deg, #1a0f16, #0f0812) !important;
+    border: 2px solid #ff1493 !important;
+    box-shadow: 0 0 0 1px #ff00aa inset !important;
+}
+body[data-look="warped-tour"] .zone-toolbar input,
+body[data-look="warped-tour"] .zone-toolbar .btn {
+    border-color: #ff1493 !important;
+    background: rgba(255,20,147,0.1) !important;
+}
+
+body[data-look="electric-boogeyman"] .zone-toolbar {
+    background: linear-gradient(90deg, #140a05, #080402) !important;
+    border: 3px solid #ff3300 !important;
+    box-shadow: 0 4px 0 #330000 inset !important;
+}
+body[data-look="electric-boogeyman"] .zone-toolbar input,
+body[data-look="electric-boogeyman"] .zone-toolbar .btn {
+    border-color: #ff3300 !important;
+    background: rgba(80,10,0,0.3) !important;
+}
+
+body[data-look="neon-cyberpunk"] .zone-toolbar {
+    background: linear-gradient(90deg, #0a0618, #04030c) !important;
+    border: 1px solid #00ff85 !important;
+    box-shadow: 0 0 0 1px #c026ff inset !important;
+}
+body[data-look="neon-cyberpunk"] .zone-toolbar input,
+body[data-look="neon-cyberpunk"] .zone-toolbar .btn {
+    border-color: #00ff85 !important;
+    background: rgba(0,255,133,0.06) !important;
+}
+
+body[data-look="swamp-thang"] .zone-toolbar {
+    background: linear-gradient(90deg, #0f160f, #070d0a) !important;
+    border: 2px solid #c9a227 !important;
+    box-shadow: 0 0 0 2px #5e2b8a inset !important;
+}
+body[data-look="swamp-thang"] .zone-toolbar input,
+body[data-look="swamp-thang"] .zone-toolbar .btn {
+    border-color: #c9a227 !important;
+    background: rgba(201,162,39,0.1) !important;
+}
+
+/* ===== FINISH CARDS + SHOKK CARDS — DISTINCT SHOP PARTS BIN AESTHETICS ===== */
+body[data-look="warped-tour"] .finish-card,
+body[data-look="warped-tour"] .shokk-card {
+    background: linear-gradient(145deg, #1a0f18, #0f0812) !important;
+    border: 2px solid #ff1493 !important;
+    box-shadow: 0 0 0 1px #ff00aa, 0 5px 16px rgba(255,20,147,0.3) !important;
+    border-radius: 3px !important;
+}
+body[data-look="warped-tour"] .finish-card:hover,
+body[data-look="warped-tour"] .shokk-card:hover {
+    border-color: #00f0ff !important;
+    box-shadow: 0 0 0 3px #ff1493, 0 8px 24px rgba(255,20,147,0.5) !important;
+    transform: scale(1.03) !important;
+}
+
+body[data-look="electric-boogeyman"] .finish-card,
+body[data-look="electric-boogeyman"] .shokk-card {
+    background: linear-gradient(145deg, #140a05, #080402) !important;
+    border: 3px solid #ff3300 !important;
+    box-shadow: 0 6px 0 #330000, 0 8px 22px rgba(0,0,0,0.7) !important;
+    border-radius: 1px !important;
+}
+body[data-look="electric-boogeyman"] .finish-card:hover,
+body[data-look="electric-boogeyman"] .shokk-card:hover {
+    border-color: #ff6600 !important;
+    box-shadow: 0 0 0 4px #ff3300, 0 10px 28px rgba(255,0,0,0.4) !important;
+}
+
+body[data-look="neon-cyberpunk"] .finish-card,
+body[data-look="neon-cyberpunk"] .shokk-card {
+    background: linear-gradient(145deg, #0a0618, #04030c) !important;
+    border: 1px solid #00ff85 !important;
+    box-shadow: 0 0 0 1px #c026ff, 0 0 12px rgba(0,255,133,0.25) !important;
+    border-radius: 0 !important;
+}
+body[data-look="neon-cyberpunk"] .finish-card:hover,
+body[data-look="neon-cyberpunk"] .shokk-card:hover {
+    border-color: #c026ff !important;
+    box-shadow: 0 0 0 2px #00ff85, 0 0 0 4px #ff2e63, 0 6px 18px rgba(192,38,255,0.4) !important;
+}
+
+body[data-look="swamp-thang"] .finish-card,
+body[data-look="swamp-thang"] .shokk-card {
+    background: linear-gradient(145deg, #0f160f, #070d0a) !important;
+    border: 2px solid #c9a227 !important;
+    box-shadow: 0 0 0 2px #5e2b8a, 0 6px 18px rgba(94,43,138,0.35) !important;
+    border-radius: 4px !important;
+}
+body[data-look="swamp-thang"] .finish-card:hover,
+body[data-look="swamp-thang"] .shokk-card:hover {
+    border-color: #1a9c5e !important;
+    box-shadow: 0 0 0 3px #c9a227, 0 0 0 6px #5e2b8a, 0 8px 22px rgba(201,162,39,0.45) !important;
+}
+
+/* ===== FLOATING ZONE DETAIL PANEL — SHOP-SPECIFIC WORKSTATION SURFACES ===== */
+body[data-look="warped-tour"] .zone-editor-float,
+body[data-look="warped-tour"] #zoneDetailPanel {
+    background: linear-gradient(160deg, #1a0f18, #0f0812) !important;
+    border: 3px solid #ff1493 !important;
+    box-shadow: 0 0 0 2px #ff00aa, 0 20px 60px rgba(255,20,147,0.4) !important;
+}
+body[data-look="electric-boogeyman"] .zone-editor-float,
+body[data-look="electric-boogeyman"] #zoneDetailPanel {
+    background: linear-gradient(160deg, #140a05, #080402) !important;
+    border: 4px solid #ff3300 !important;
+    box-shadow: 0 0 0 3px #661100, 0 24px 70px rgba(0,0,0,0.85) !important;
+}
+body[data-look="neon-cyberpunk"] .zone-editor-float,
+body[data-look="neon-cyberpunk"] #zoneDetailPanel {
+    background: linear-gradient(160deg, #0a0618, #04030c) !important;
+    border: 2px solid #00ff85 !important;
+    box-shadow: 0 0 0 2px #c026ff, 0 0 0 5px rgba(255,46,99,0.2), 0 18px 55px rgba(0,255,133,0.3) !important;
+}
+body[data-look="swamp-thang"] .zone-editor-float,
+body[data-look="swamp-thang"] #zoneDetailPanel {
+    background: linear-gradient(160deg, #0f160f, #070d0a) !important;
+    border: 3px solid #c9a227 !important;
+    box-shadow: 0 0 0 2px #5e2b8a, 0 20px 60px rgba(94,43,138,0.4) !important;
+}
+
+/* Inner rows and overlays in the detail panel get shop material treatment */
+body[data-look="warped-tour"] .zone-finish-row,
+body[data-look="warped-tour"] .base-overlay-layer {
+    border-color: #ff1493 !important;
+    background: rgba(255,20,147,0.08) !important;
+}
+body[data-look="electric-boogeyman"] .zone-finish-row,
+body[data-look="electric-boogeyman"] .base-overlay-layer {
+    border-color: #ff3300 !important;
+    background: rgba(255,51,0,0.07) !important;
+}
+body[data-look="neon-cyberpunk"] .zone-finish-row,
+body[data-look="neon-cyberpunk"] .base-overlay-layer {
+    border-color: #00ff85 !important;
+    background: rgba(0,255,133,0.06) !important;
+}
+body[data-look="swamp-thang"] .zone-finish-row,
+body[data-look="swamp-thang"] .base-overlay-layer {
+    border-color: #c9a227 !important;
+    background: rgba(201,162,39,0.08) !important;
+}
+
+/* ===== SPEC BANNER + OTHER INTERACTIVE ZONE ELEMENTS ===== */
+body[data-look="warped-tour"] #specCanvasBanner {
+    border-color: #ff1493 !important;
+    background: linear-gradient(135deg, rgba(255,20,147,0.2), rgba(0,240,255,0.1)) !important;
+}
+body[data-look="electric-boogeyman"] #specCanvasBanner {
+    border-color: #ff3300 !important;
+    background: linear-gradient(135deg, rgba(255,51,0,0.18), rgba(0,0,0,0.4)) !important;
+}
+body[data-look="neon-cyberpunk"] #specCanvasBanner {
+    border-color: #00ff85 !important;
+    background: linear-gradient(135deg, rgba(0,255,133,0.15), rgba(192,38,255,0.1)) !important;
+}
+body[data-look="swamp-thang"] #specCanvasBanner {
+    border-color: #c9a227 !important;
+    background: linear-gradient(135deg, rgba(201,162,39,0.18), rgba(94,43,138,0.12)) !important;
+}
+
+/* Final reinforcement on zone search input and bulk controls per shop */
+body[data-look="warped-tour"] #zoneSearchInput {
+    background: #1a0f16 !important;
+    border: 2px solid #ff1493 !important;
+    color: #ff1493 !important;
+    font-weight: 700 !important;
+}
+body[data-look="electric-boogeyman"] #zoneSearchInput {
+    background: #140a05 !important;
+    border: 3px solid #ff3300 !important;
+    color: #ff6600 !important;
+    font-weight: 800 !important;
+}
+body[data-look="neon-cyberpunk"] #zoneSearchInput {
+    background: #0a0618 !important;
+    border: 1px solid #00ff85 !important;
+    color: #00ff85 !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+}
+body[data-look="swamp-thang"] #zoneSearchInput {
+    background: #0f160f !important;
+    border: 2px solid #c9a227 !important;
+    color: #c9a227 !important;
+    font-weight: 700 !important;
+}
+
+/* ===== END CYCLE 22 BLOCK ===== */
+
+/* ===== CYCLE 23: SIGNATURE MICRO-DETAILS OVERDRIVE — EKG, GRUNGE SMILEY, CANVAS ENVIRONMENT, OUTPUT CONTROLS, PREVIEW FRAME ===== */
+/* The living identity elements (EKG heartbeat + Grunge Smiley) and the actual painting surface environment */
+/* now receive the most extreme, unmistakable shop-specific signatures possible. */
+/* These scream the Look's personality the instant the painter looks at the screen. */
+
+body[data-look="warped-tour"] .ekg-container,
+body[data-look="warped-tour"] .ekg,
+body[data-look="warped-tour"] .heartbeat,
+body[data-look="warped-tour"] .zone-heartbeat {
+    filter: drop-shadow(0 0 6px #ff1493) drop-shadow(0 0 14px #00f0ff) drop-shadow(0 0 24px #ff00aa) !important;
+    animation-duration: 0.55s !important;
+}
+body[data-look="warped-tour"] .ekg-line {
+    stroke: #ff1493 !important;
+    filter: drop-shadow(0 0 3px #ff1493) !important;
+}
+body[data-look="warped-tour"] .grunge-smiley {
+    color: #ff1493 !important;
+    filter: drop-shadow(0 0 8px #ff1493) drop-shadow(0 0 18px #00f0ff) saturate(1.4) contrast(1.15) !important;
+    transform: scale(1.02) !important;
+    transition: transform 0.1s ease, filter 0.2s ease !important;
+}
+body[data-look="warped-tour"] .grunge-smiley:hover {
+    transform: scale(1.12) rotate(3deg) !important;
+    filter: drop-shadow(0 0 12px #ff1493) drop-shadow(0 0 26px #00f0ff) !important;
+}
+
+body[data-look="electric-boogeyman"] .ekg-container,
+body[data-look="electric-boogeyman"] .ekg,
+body[data-look="electric-boogeyman"] .heartbeat,
+body[data-look="electric-boogeyman"] .zone-heartbeat {
+    filter: drop-shadow(0 0 8px #ff3300) drop-shadow(0 0 18px #ff0000) drop-shadow(0 0 30px #661100) !important;
+    animation-duration: 1.15s !important;
+}
+body[data-look="electric-boogeyman"] .ekg-line {
+    stroke: #ff3300 !important;
+    filter: drop-shadow(0 0 4px #ff3300) !important;
+}
+body[data-look="electric-boogeyman"] .grunge-smiley {
+    color: #ff6600 !important;
+    filter: drop-shadow(0 0 10px #ff3300) drop-shadow(0 0 22px #330000) contrast(0.95) brightness(0.92) !important;
+    transform: scale(0.98) !important;
+}
+body[data-look="electric-boogeyman"] .grunge-smiley:hover {
+    transform: scale(1.05) !important;
+    filter: drop-shadow(0 0 14px #ff3300) drop-shadow(0 0 28px #ff0000) !important;
+}
+
+body[data-look="neon-cyberpunk"] .ekg-container,
+body[data-look="neon-cyberpunk"] .ekg,
+body[data-look="neon-cyberpunk"] .heartbeat,
+body[data-look="neon-cyberpunk"] .zone-heartbeat {
+    filter: drop-shadow(0 0 5px #00ff85) drop-shadow(0 0 12px #c026ff) drop-shadow(0 0 22px #ff2e63) !important;
+    animation-duration: 0.42s !important;
+}
+body[data-look="neon-cyberpunk"] .ekg-line {
+    stroke: #00ff85 !important;
+    filter: drop-shadow(0 0 3px #c026ff) !important;
+}
+body[data-look="neon-cyberpunk"] .grunge-smiley {
+    color: #00ff85 !important;
+    filter: drop-shadow(0 0 6px #00ff85) drop-shadow(0 0 14px #c026ff) saturate(1.6) contrast(1.2) !important;
+    transform: scale(1.01) !important;
+}
+body[data-look="neon-cyberpunk"] .grunge-smiley:hover {
+    transform: scale(1.15) translateX(1px) !important;
+    filter: drop-shadow(0 0 10px #00ff85) drop-shadow(0 0 20px #c026ff) drop-shadow(0 0 30px #ff2e63) !important;
+}
+
+body[data-look="swamp-thang"] .ekg-container,
+body[data-look="swamp-thang"] .ekg,
+body[data-look="swamp-thang"] .heartbeat,
+body[data-look="swamp-thang"] .zone-heartbeat {
+    filter: drop-shadow(0 0 7px #c9a227) drop-shadow(0 0 16px #5e2b8a) drop-shadow(0 0 26px #1a9c5e) !important;
+    animation-duration: 0.85s !important;
+}
+body[data-look="swamp-thang"] .ekg-line {
+    stroke: #c9a227 !important;
+    filter: drop-shadow(0 0 4px #c9a227) !important;
+}
+body[data-look="swamp-thang"] .grunge-smiley {
+    color: #c9a227 !important;
+    filter: drop-shadow(0 0 9px #c9a227) drop-shadow(0 0 18px #5e2b8a) saturate(1.2) contrast(1.1) !important;
+    transform: scale(1.0) !important;
+}
+body[data-look="swamp-thang"] .grunge-smiley:hover {
+    transform: scale(1.08) rotate(-2deg) !important;
+    filter: drop-shadow(0 0 12px #c9a227) drop-shadow(0 0 24px #5e2b8a) !important;
+}
+
+/* ===== CYCLE 23: EXTREME CANVAS / PREVIEW FRAME SHOP ENVIRONMENT SIGNATURES (MICRO-DETAILS) ===== */
+/* Loud, animated or heavily styled ::before/::after that scream the shop floor the car was painted in. */
+
+body[data-look="warped-tour"] #canvasViewport::before {
+    content: "SPRAY • WARPED • CHAOS" !important;
+    position: absolute !important;
+    top: 8px !important;
+    right: 10px !important;
+    font-size: 9px !important;
+    font-weight: 900 !important;
+    letter-spacing: 2px !important;
+    color: #ff1493 !important;
+    text-shadow: 0 0 6px #ff1493, 0 0 12px #00f0ff !important;
+    opacity: 0.7 !important;
+    pointer-events: none !important;
+    z-index: 10 !important;
+    transform: rotate(2deg) !important;
+}
+body[data-look="warped-tour"] .preview-frame,
+body[data-look="warped-tour"] #canvasViewport {
+    box-shadow: 0 0 0 7px #ff1493, 0 0 0 14px #ff00aa, 0 0 0 21px #00f0ff, 0 35px 110px rgba(255,20,147,0.55) !important;
+}
+
+body[data-look="electric-boogeyman"] #canvasViewport::before {
+    content: "BLOOD • GARAGE • HORROR" !important;
+    position: absolute !important;
+    top: 6px !important;
+    right: 8px !important;
+    font-size: 8px !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.5px !important;
+    color: #ff3300 !important;
+    text-shadow: 1px 1px 0 #000, 0 0 8px #ff3300 !important;
+    opacity: 0.65 !important;
+    pointer-events: none !important;
+    z-index: 10 !important;
+}
+body[data-look="electric-boogeyman"] .preview-frame,
+body[data-look="electric-boogeyman"] #canvasViewport {
+    box-shadow: 0 0 0 9px #ff3300, 0 0 0 18px #661100, 0 45px 130px rgba(0,0,0,0.92) !important;
+}
+
+body[data-look="neon-cyberpunk"] #canvasViewport::before {
+    content: "GLITCH • HUD • CORRUPT" !important;
+    position: absolute !important;
+    top: 8px !important;
+    right: 10px !important;
+    font-size: 8px !important;
+    font-weight: 700 !important;
+    letter-spacing: 3px !important;
+    color: #00ff85 !important;
+    text-shadow: 0 0 4px #00ff85, 0 0 10px #c026ff !important;
+    opacity: 0.6 !important;
+    pointer-events: none !important;
+    z-index: 10 !important;
+    animation: cyber-glitch-text 1.2s infinite steps(1) !important;
+}
+body[data-look="neon-cyberpunk"] .preview-frame,
+body[data-look="neon-cyberpunk"] #canvasViewport {
+    box-shadow: 0 0 0 6px #00ff85, 0 0 0 12px #c026ff, 0 0 0 18px #ff2e63, 0 32px 100px rgba(0,255,133,0.4) !important;
+}
+
+body[data-look="swamp-thang"] #canvasViewport::before {
+    content: "VOODOO • BAYOU • GOLD" !important;
+    position: absolute !important;
+    top: 6px !important;
+    right: 8px !important;
+    font-size: 9px !important;
+    font-weight: 800 !important;
+    letter-spacing: 1px !important;
+    color: #c9a227 !important;
+    text-shadow: 0 0 6px #c9a227, 1px 1px 0 #5e2b8a !important;
+    opacity: 0.7 !important;
+    pointer-events: none !important;
+    z-index: 10 !important;
+}
+body[data-look="swamp-thang"] .preview-frame,
+body[data-look="swamp-thang"] #canvasViewport {
+    box-shadow: 0 0 0 7px #c9a227, 0 0 0 15px #5e2b8a, 0 0 0 22px #1a9c5e, 0 36px 115px rgba(94,43,138,0.5) !important;
+}
+
+/* ===== CYCLE 23: OUTPUT CONTROLS + RENDER BUTTONS + STATUS BARS — SHOP CONTROL PANEL AESTHETICS ===== */
+body[data-look="warped-tour"] .output-controls,
+body[data-look="warped-tour"] .render-controls,
+body[data-look="warped-tour"] .status-bar {
+    background: linear-gradient(90deg, #1a0f16, #0f0812) !important;
+    border: 2px solid #ff1493 !important;
+    box-shadow: 0 0 0 1px #ff00aa inset, 0 4px 14px rgba(255,20,147,0.3) !important;
+}
+body[data-look="warped-tour"] .output-controls button,
+body[data-look="warped-tour"] .render-controls button {
+    border-color: #ff1493 !important;
+    background: rgba(255,20,147,0.12) !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.5px !important;
+}
+
+body[data-look="electric-boogeyman"] .output-controls,
+body[data-look="electric-boogeyman"] .render-controls,
+body[data-look="electric-boogeyman"] .status-bar {
+    background: linear-gradient(90deg, #140a05, #080402) !important;
+    border: 3px solid #ff3300 !important;
+    box-shadow: 0 5px 0 #330000 inset, 0 6px 18px rgba(0,0,0,0.75) !important;
+}
+body[data-look="electric-boogeyman"] .output-controls button,
+body[data-look="electric-boogeyman"] .render-controls button {
+    border-color: #ff3300 !important;
+    background: rgba(80,10,0,0.4) !important;
+    font-weight: 800 !important;
+}
+
+body[data-look="neon-cyberpunk"] .output-controls,
+body[data-look="neon-cyberpunk"] .render-controls,
+body[data-look="neon-cyberpunk"] .status-bar {
+    background: linear-gradient(90deg, #0a0618, #04030c) !important;
+    border: 1px solid #00ff85 !important;
+    box-shadow: 0 0 0 1px #c026ff inset, 0 0 10px rgba(0,255,133,0.25) !important;
+}
+body[data-look="neon-cyberpunk"] .output-controls button,
+body[data-look="neon-cyberpunk"] .render-controls button {
+    border-color: #00ff85 !important;
+    background: rgba(0,255,133,0.08) !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+}
+
+body[data-look="swamp-thang"] .output-controls,
+body[data-look="swamp-thang"] .render-controls,
+body[data-look="swamp-thang"] .status-bar {
+    background: linear-gradient(90deg, #0f160f, #070d0a) !important;
+    border: 2px solid #c9a227 !important;
+    box-shadow: 0 0 0 2px #5e2b8a inset, 0 5px 16px rgba(94,43,138,0.35) !important;
+}
+body[data-look="swamp-thang"] .output-controls button,
+body[data-look="swamp-thang"] .render-controls button {
+    border-color: #c9a227 !important;
+    background: rgba(201,162,39,0.12) !important;
+    font-weight: 800 !important;
+}
+
+/* Final micro reinforcement on preview frame inner and center panel */
+body[data-look="warped-tour"] .preview-frame {
+    border: 3px solid #ff1493 !important;
+    background: #0a0810 !important;
+}
+body[data-look="electric-boogeyman"] .preview-frame {
+    border: 4px solid #ff3300 !important;
+    background: #060402 !important;
+}
+body[data-look="neon-cyberpunk"] .preview-frame {
+    border: 2px solid #00ff85 !important;
+    background: #080612 !important;
+}
+body[data-look="swamp-thang"] .preview-frame {
+    border: 3px solid #c9a227 !important;
+    background: #050a07 !important;
+}
+
+/* ===== END CYCLE 23 BLOCK ===== */
+
+/* ===== CYCLE 24: VERTICAL TOOLBAR USABILITY + PERSONALITY FIX ===== */
+/* The previous aggressive rules (especially the Cycle 21 ultra block) were breaking the vtool-btn grid. */
+/* This block uses higher-specificity selectors on the actual .vtool-btn class, removes destructive */
+/* properties (uppercase, heavy letter-spacing, large transforms/rotates), and delivers strong but */
+/* clean shop personality that keeps the toolbar fully usable and readable while still screaming */
+/* "different paint shop". */
+
+body[data-look="warped-tour"] .vertical-toolbar .vtool-btn {
+    border: 2px solid #ff1493 !important;
+    background: rgba(255, 20, 147, 0.09) !important;
+    color: #ff1493 !important;
+    font-weight: 700 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    box-shadow: 0 0 0 1px rgba(255, 0, 170, 0.3) inset !important;
+    border-radius: 4px !important;
+    transition: all 0.12s ease !important;
+}
+body[data-look="warped-tour"] .vertical-toolbar .vtool-btn:hover {
+    background: rgba(255, 20, 147, 0.22) !important;
+    box-shadow: 0 0 0 1px #ff1493, 0 0 14px rgba(255, 20, 147, 0.6) !important;
+    transform: scale(1.06) !important;
+    color: #fff !important;
+}
+body[data-look="warped-tour"] .vertical-toolbar .vtool-btn.active {
+    background: #ff1493 !important;
+    color: #000 !important;
+    border-color: #fff !important;
+    box-shadow: 0 0 0 2px #ff00aa, 0 0 16px #ff1493 !important;
+}
+
+body[data-look="electric-boogeyman"] .vertical-toolbar .vtool-btn {
+    border: 2px solid #ff3300 !important;
+    background: rgba(40, 10, 5, 0.65) !important;
+    color: #ff6600 !important;
+    font-weight: 700 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    box-shadow: 0 2px 0 #4a1500 inset !important;
+    border-radius: 2px !important;
+}
+body[data-look="electric-boogeyman"] .vertical-toolbar .vtool-btn:hover {
+    background: rgba(90, 18, 8, 0.85) !important;
+    box-shadow: 0 0 0 2px #ff3300, 0 0 12px rgba(255, 51, 0, 0.5) !important;
+    transform: scale(1.04) !important;
+    color: #fff !important;
+}
+body[data-look="electric-boogeyman"] .vertical-toolbar .vtool-btn.active {
+    background: #ff3300 !important;
+    color: #000 !important;
+    border-color: #ff9900 !important;
+    box-shadow: 0 0 0 2px #661100, 0 0 14px #ff3300 !important;
+}
+
+body[data-look="neon-cyberpunk"] .vertical-toolbar .vtool-btn {
+    border: 1px solid #00ff85 !important;
+    background: rgba(15, 12, 30, 0.75) !important;
+    color: #00ff85 !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px !important;
+    text-transform: none !important;
+    box-shadow: 0 0 0 1px #c026ff inset !important;
+    border-radius: 0 !important;
+}
+body[data-look="neon-cyberpunk"] .vertical-toolbar .vtool-btn:hover {
+    background: rgba(25, 18, 45, 0.9) !important;
+    box-shadow: 0 0 0 2px #00ff85, 0 0 0 4px rgba(192, 38, 255, 0.35), 0 0 14px rgba(0, 255, 133, 0.5) !important;
+    transform: scale(1.05) !important;
+    color: #fff !important;
+}
+body[data-look="neon-cyberpunk"] .vertical-toolbar .vtool-btn.active {
+    background: #00ff85 !important;
+    color: #000 !important;
+    border-color: #c026ff !important;
+    box-shadow: 0 0 0 2px #c026ff, 0 0 16px #00ff85 !important;
+}
+
+body[data-look="swamp-thang"] .vertical-toolbar .vtool-btn {
+    border: 2px solid #c9a227 !important;
+    background: rgba(18, 32, 22, 0.65) !important;
+    color: #c9a227 !important;
+    font-weight: 700 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    box-shadow: 0 0 0 1px #5e2b8a inset !important;
+    border-radius: 5px !important;
+}
+body[data-look="swamp-thang"] .vertical-toolbar .vtool-btn:hover {
+    background: rgba(35, 52, 38, 0.85) !important;
+    box-shadow: 0 0 0 2px #c9a227, 0 0 14px rgba(201, 162, 39, 0.5) !important;
+    transform: scale(1.05) !important;
+    color: #fff !important;
+}
+body[data-look="swamp-thang"] .vertical-toolbar .vtool-btn.active {
+    background: #c9a227 !important;
+    color: #000 !important;
+    border-color: #5e2b8a !important;
+    box-shadow: 0 0 0 2px #5e2b8a, 0 0 16px #c9a227 !important;
+}
+
+/* Ensure the toolbar container itself stays clean and the icon grid doesn't get pushed around */
+body[data-look="warped-tour"] .vertical-toolbar,
+body[data-look="electric-boogeyman"] .vertical-toolbar,
+body[data-look="neon-cyberpunk"] .vertical-toolbar,
+body[data-look="swamp-thang"] .vertical-toolbar {
+    padding: 6px 4px !important;
+}
+
+/* ===== END CYCLE 24 BLOCK ===== */
+
+/* ===== CYCLE 25: VERTICAL TOOLBAR — "COMPLETELY DIFFERENT SHOPS" BOLD PERSONALITY REFINEMENT ===== */
+/* Now that the toolbar is stable and usable, push much more obvious, in-your-face shop identity */
+/* into the actual tool buttons and groups so switching Looks feels like walking into four */
+/* different custom paint shops' tool walls. Strong borders, distinct hover aggression, */
+/* shop-specific active states, and group treatments — all without breaking layout or readability. */
+
+body[data-look="warped-tour"] .vertical-toolbar {
+    background: linear-gradient(180deg, #1a0a14, #0f0812) !important;
+    border-right: 3px solid #ff1493 !important;
+}
+body[data-look="warped-tour"] .vertical-toolbar .vtool-btn {
+    border: 2px solid #ff1493 !important;
+    background: linear-gradient(145deg, rgba(255,20,147,0.14), rgba(0,240,255,0.06)) !important;
+    box-shadow: 0 0 0 1px #ff00aa inset, 0 2px 4px rgba(255,20,147,0.3) !important;
+}
+body[data-look="warped-tour"] .vertical-toolbar .vtool-btn:hover {
+    background: linear-gradient(145deg, rgba(255,20,147,0.32), rgba(0,240,255,0.18)) !important;
+    box-shadow: 0 0 0 2px #ff1493, 0 0 18px rgba(255,20,147,0.7) !important;
+    transform: scale(1.07) !important;
+}
+body[data-look="warped-tour"] .vertical-toolbar .vtool-btn.active {
+    background: linear-gradient(145deg, #ff1493, #ff00aa) !important;
+    color: #000 !important;
+    border-color: #fff !important;
+    box-shadow: 0 0 0 3px #ff00aa, 0 0 20px #ff1493 !important;
+}
+body[data-look="warped-tour"] .vtool-group {
+    border-top: 1px dashed rgba(255,20,147,0.35) !important;
+}
+
+body[data-look="electric-boogeyman"] .vertical-toolbar {
+    background: linear-gradient(180deg, #140a06, #080402) !important;
+    border-right: 4px solid #ff3300 !important;
+}
+body[data-look="electric-boogeyman"] .vertical-toolbar .vtool-btn {
+    border: 2px solid #ff3300 !important;
+    background: linear-gradient(145deg, rgba(60,12,6,0.75), rgba(20,5,2,0.6)) !important;
+    box-shadow: 0 3px 0 #3a0f00 inset, 0 4px 8px rgba(0,0,0,0.6) !important;
+}
+body[data-look="electric-boogeyman"] .vertical-toolbar .vtool-btn:hover {
+    background: linear-gradient(145deg, rgba(100,20,8,0.9), rgba(40,8,3,0.75)) !important;
+    box-shadow: 0 0 0 3px #ff3300, 0 0 16px rgba(255,51,0,0.55) !important;
+    transform: scale(1.03) translateY(-1px) !important;
+}
+body[data-look="electric-boogeyman"] .vertical-toolbar .vtool-btn.active {
+    background: #ff3300 !important;
+    color: #000 !important;
+    border-color: #ff9900 !important;
+    box-shadow: 0 0 0 3px #661100, 0 0 18px #ff3300 !important;
+}
+body[data-look="electric-boogeyman"] .vtool-group {
+    border-top: 2px solid rgba(255,51,0,0.4) !important;
+}
+
+body[data-look="neon-cyberpunk"] .vertical-toolbar {
+    background: linear-gradient(180deg, #0a0618, #04030c) !important;
+    border-right: 2px solid #00ff85 !important;
+}
+body[data-look="neon-cyberpunk"] .vertical-toolbar .vtool-btn {
+    border: 1px solid #00ff85 !important;
+    background: linear-gradient(145deg, rgba(15,12,35,0.85), rgba(8,6,20,0.7)) !important;
+    box-shadow: 0 0 0 1px #c026ff inset, 0 0 6px rgba(0,255,133,0.2) !important;
+}
+body[data-look="neon-cyberpunk"] .vertical-toolbar .vtool-btn:hover {
+    background: linear-gradient(145deg, rgba(22,16,50,0.95), rgba(12,9,28,0.85)) !important;
+    box-shadow: 0 0 0 2px #00ff85, 0 0 0 5px rgba(192,38,255,0.4), 0 0 16px rgba(0,255,133,0.6) !important;
+    transform: scale(1.06) translateX(1px) !important;
+}
+body[data-look="neon-cyberpunk"] .vertical-toolbar .vtool-btn.active {
+    background: #00ff85 !important;
+    color: #000 !important;
+    border-color: #c026ff !important;
+    box-shadow: 0 0 0 2px #c026ff, 0 0 0 5px rgba(255,46,99,0.3), 0 0 18px #00ff85 !important;
+}
+body[data-look="neon-cyberpunk"] .vtool-group {
+    border-top: 1px solid rgba(192,38,255,0.3) !important;
+}
+
+body[data-look="swamp-thang"] .vertical-toolbar {
+    background: linear-gradient(180deg, #0f160f, #070d0a) !important;
+    border-right: 3px solid #c9a227 !important;
+}
+body[data-look="swamp-thang"] .vertical-toolbar .vtool-btn {
+    border: 2px solid #c9a227 !important;
+    background: linear-gradient(145deg, rgba(25,38,28,0.7), rgba(12,20,15,0.6)) !important;
+    box-shadow: 0 0 0 1px #5e2b8a inset, 0 3px 6px rgba(94,43,138,0.35) !important;
+}
+body[data-look="swamp-thang"] .vertical-toolbar .vtool-btn:hover {
+    background: linear-gradient(145deg, rgba(42,58,42,0.9), rgba(22,32,24,0.8)) !important;
+    box-shadow: 0 0 0 3px #c9a227, 0 0 16px rgba(201,162,39,0.55) !important;
+    transform: scale(1.05) !important;
+}
+body[data-look="swamp-thang"] .vertical-toolbar .vtool-btn.active {
+    background: #c9a227 !important;
+    color: #000 !important;
+    border-color: #5e2b8a !important;
+    box-shadow: 0 0 0 3px #5e2b8a, 0 0 18px #c9a227 !important;
+}
+body[data-look="swamp-thang"] .vtool-group {
+    border-top: 1px solid rgba(201,162,39,0.35) !important;
+}
+
+/* ===== END CYCLE 25 BLOCK ===== */

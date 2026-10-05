@@ -1,0 +1,9 @@
+{
+ "car": "superlatemodel",
+ "n_liveries_used": 31,
+ "n_total": 31,
+ "template_frac": 0.32,
+ "var_thr": 90.25,
+ "secs": 2.4,
+ "size": 512
+}

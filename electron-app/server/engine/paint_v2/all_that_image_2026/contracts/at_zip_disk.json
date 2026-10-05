@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_zip_disk",
+  "display_name": "Cdrom: Zip Disk",
+  "promise": "Saturated cobalt molded plastic with disciplined micro-ribbed engineering details, distinct from black floppy texture",
+  "carrier_grammar": "Saturated cobalt molded plastic with disciplined micro-ribbed engineering details, distinct from black floppy texture; single full-canvas image, no duplicated quadrants. Fine features: cobalt molded ABS, inset slot floors, rounded mold shoulders, fine flow welds, handling scuff points, polished molded dots",
+  "spec_grammar": "Feature-specific selectors partition cobalt molded ABS, inset slot floors, rounded mold shoulders, fine flow welds, handling scuff points, polished molded dots. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "cobalt molded ABS",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "inset slot floors",
+      "role": "Material feature selected from artwork by g:<:0.28"
+    },
+    {
+      "name": "rounded mold shoulders",
+      "role": "Material feature selected from artwork by edge:>:0.5&g:>:0.48"
+    },
+    {
+      "name": "fine flow welds",
+      "role": "Material feature selected from artwork by x:>:0.66"
+    },
+    {
+      "name": "handling scuff points",
+      "role": "Material feature selected from artwork by fine:>:0.81"
+    },
+    {
+      "name": "polished molded dots",
+      "role": "Material feature selected from artwork by detail:>:0.77&g:>:0.6"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "cobalt molded ABS",
+      "inset slot floors",
+      "rounded mold shoulders",
+      "fine flow welds",
+      "handling scuff points",
+      "polished molded dots"
+    ],
+    "R": [
+      "cobalt molded ABS",
+      "inset slot floors",
+      "rounded mold shoulders",
+      "fine flow welds",
+      "handling scuff points",
+      "polished molded dots"
+    ],
+    "Cc": [
+      "cobalt molded ABS",
+      "inset slot floors",
+      "rounded mold shoulders",
+      "fine flow welds",
+      "handling scuff points",
+      "polished molded dots"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "cobalt molded ABS",
+      "range": [
+        [
+          0,
+          45,
+          25
+        ],
+        [
+          15,
+          125,
+          140
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "inset slot floors",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "rounded mold shoulders",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine flow welds",
+      "range": [
+        [
+          0,
+          95,
+          85
+        ],
+        [
+          20,
+          205,
+          220
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "handling scuff points",
+      "range": [
+        [
+          0,
+          130,
+          110
+        ],
+        [
+          22,
+          235,
+          245
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "polished molded dots",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_beige_box",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_crt_blue_screen",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "cobalt molded ABS",
+      "inset slot floors",
+      "rounded mold shoulders",
+      "fine flow welds",
+      "handling scuff points",
+      "polished molded dots"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_zip_disk / Saturated cobalt molded plastic with disciplined micro-ribbed engineering details, distinct from black floppy texture",
+  "spec_key": "at_zip_disk / cobalt molded ABS all; inset slot floors g:<:0.28; rounded mold shoulders edge:>:0.5&g:>:0.48; fine flow welds x:>:0.66; handling scuff points fine:>:0.81; polished molded dots detail:>:0.77&g:>:0.6",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

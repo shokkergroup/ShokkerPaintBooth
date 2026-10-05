@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "paint_label": "skmodified tour/car_num_98671.tga",
+  "component_records": "_smart_tga_runs/cycle129_skmodified_route_feature_complete_v1/skmodified_tour_car_num_98671/component_records.json",
+  "review_scope": "Cycle 139 manual review of unlabeled subcomponent-number accepts from the eight-fixture probe; this pack marks logo/badge shapes that should stay Sponsors.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 18,
+      "expected_bbox": [33, 542, 106, 130],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo_badge",
+      "note": "Justin Williams memorial-style circular sponsor/logo badge; low-saturation and number-like, but not the car number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 19,
+      "expected_bbox": [954, 547, 34, 43],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo_mark_fragment",
+      "note": "Small dark sponsor/logo mark fragment beside the SK Modified livery stripe; not race-number content."
+    }
+  ]
+}

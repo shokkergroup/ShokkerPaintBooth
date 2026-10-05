@@ -1,0 +1,104 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "fl_acoustic_emission",
+  "display_name": "Acoustic Emission \u2014 rebuilt inspection finish",
+  "promise": "intersecting partial arrival rings and triangulated burst sites",
+  "carrier_grammar": "intersecting partial arrival rings and triangulated burst sites; independently rotated, varied sites with edge-wrapped geometry.",
+  "spec_grammar": "Named arrival rings, sensor vertices, triangulation chords, burst stars, attenuation dots carry independent metallic lips, rough interiors and continuous coat shoulders; no unrelated material overlay.",
+  "reference_physics": {
+    "mechanism": "intersecting partial arrival rings and triangulated burst sites interpreted as a colored inspection visualization, not a literal photograph.",
+    "sources": [
+      "engine/paint_v2/flaw_lab_2026.py",
+      "SPB_WIKI.html#spec_guide",
+      "https://www.nasa.gov/glenn/research/flow-field-diagnostics/"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "composition_span_px": [
+    150,
+    384
+  ],
+  "mark_types": [
+    {
+      "name": "arrival rings",
+      "role": "Visible arrival rings geometry with its own local material transition."
+    },
+    {
+      "name": "sensor vertices",
+      "role": "Visible sensor vertices geometry with its own local material transition."
+    },
+    {
+      "name": "triangulation chords",
+      "role": "Visible triangulation chords geometry with its own local material transition."
+    },
+    {
+      "name": "burst stars",
+      "role": "Visible burst stars geometry with its own local material transition."
+    },
+    {
+      "name": "attenuation dots",
+      "role": "Visible attenuation dots geometry with its own local material transition."
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "arrival rings",
+      "sensor vertices",
+      "triangulation chords",
+      "burst stars",
+      "attenuation dots"
+    ],
+    "R": [
+      "arrival rings",
+      "sensor vertices",
+      "triangulation chords",
+      "burst stars",
+      "attenuation dots"
+    ],
+    "Cc": [
+      "arrival rings",
+      "sensor vertices",
+      "triangulation chords",
+      "burst stars",
+      "attenuation dots"
+    ]
+  },
+  "material_tiers": [
+    "recess substrate",
+    "rough interior",
+    "satin shoulder",
+    "polished lip",
+    "fractured edge",
+    "gloss face",
+    "coat transition",
+    "bright inclusion"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "fl_penetrant_bleed",
+      "difference": "intersecting partial arrival rings and triangulated burst sites differs in topology from branched fatigue fissures with capillary dye reservoirs"
+    },
+    {
+      "finish_id": "fl_brittle_lacquer",
+      "difference": "intersecting partial arrival rings and triangulated burst sites differs in topology from ranked tensile crack combs with arrested tips and lifted lacquer lips"
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "arrival rings is explicitly constructed as part of intersecting partial arrival rings and triangulated burst sites",
+      "sensor vertices is explicitly constructed as part of intersecting partial arrival rings and triangulated burst sites",
+      "triangulation chords is explicitly constructed as part of intersecting partial arrival rings and triangulated burst sites"
+    ],
+    "review_status": "Rendered paint/spec pairs visually reviewed together at picker scale on 2026-09-18; live output verified against the reviewed assets."
+  },
+  "construction_key": "flaw-r1-acoustic_emission-intersecting-partial-arrival-rings-and-triangulated-burst-sites",
+  "spec_key": "flaw-r1-material-acoustic_emission-arrival rings-sensor vertices-triangulation chords-burst stars-attenuation dots",
+  "fine_detail_scale_px": [
+    1,
+    32
+  ]
+}

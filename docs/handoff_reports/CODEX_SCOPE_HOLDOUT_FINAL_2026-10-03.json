@@ -1,0 +1,3726 @@
+{
+  "purpose": "Settled-source independent semantic scope holdout; no live action applied. Ordinary recommendation cards use the UI entry target fallback; kit items use their own target.",
+  "fixture_path": "C:\\Users\\RICKY'~1\\AppData\\Local\\Temp\\spb_scope_holdout_luna_20261003.json",
+  "canonical_fixture": "docs/handoff_reports/CODEX_SCOPE_HOLDOUT_2026-10-03.json",
+  "fixture_sha256": "bbe422556fad7edaed2f81b329a16e38139ccddd9ea99ec2ab2333ff242a7867",
+  "source_hashes": {
+    "js/spb-pro-advisor.js": "e63f01463d349051d57f78a8fc2a1144ce68dfd8b0bcf58774ea3a265cc4f5d8",
+    "js/spb-pro-design.js": "8f74b76b78c05ecc2c6a5811315649cbbb98062b1a55bc9476342cde2c95f80b",
+    "js/spb-pro-ai.js": "c9db27a4a58c18340860094b7a554a16476645db90882ed389aa0add1721c5d5"
+  },
+  "ui_target_contract": {
+    "finish_card": "js/spb-pro-ai.js:1578 uses c.target || entry.fctarget || null; finish-card storage at :613 sets entry.fctarget=r.advice.target.",
+    "kit": "js/spb-pro-ai.js:1603,1605 calls A.applyPlan(it.card,it.target,env)."
+  },
+  "counts": {
+    "scope-compatible": 19,
+    "unsupported/no mutation plan": 6,
+    "recommendation-only, scoped": 2,
+    "partial: missing whole-body scope": 1
+  },
+  "exact_unsafe_phrases": [],
+  "rows": [
+    {
+      "id": "P01",
+      "phrase": "Paint just the hood gold and add a tight hex weave there; leave the rest of the car unchanged.",
+      "expected_scope": "part-only",
+      "expected_part": "hood",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the hood",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "monolithic::cx_gold_green",
+              "name": "CX Gold-Green Flake",
+              "why": "Bright yellow-gold satin with fine green-gold sparkle; reads as one flat warm gold from a… (satin, medium metal)",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {}
+            },
+            {
+              "layer": "pattern",
+              "key": "pattern::nanoweave",
+              "name": "Nanoweave",
+              "why": "paint pattern on top: Ultra-fine nano fiber weave, barely visible at distance, a subtle sparkle texture on any… — x0.66 size, 65% strength; pairs with gloss black, gunmetal",
+              "scale": 0.66,
+              "intensity": 65,
+              "adjust": {
+                "scale": 0.66,
+                "intensity": 65
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Hood CX Gold-Green Flake",
+                "region": {
+                  "part": "hood"
+                },
+                "finish": "monolithic::cx_gold_green",
+                "color": "finish",
+                "pattern": {
+                  "id": "nanoweave",
+                  "opacity": 65,
+                  "scale": 0.66
+                }
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "suggestTool apply",
+      "proposed_steps": [
+        {
+          "name": "Hood CX Gold-Green Flake",
+          "region": {
+            "part": "hood"
+          },
+          "finish": "monolithic::cx_gold_green",
+          "color": "finish",
+          "pattern": {
+            "id": "nanoweave",
+            "opacity": 65,
+            "scale": 0.66
+          }
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P02",
+      "phrase": "Only the roof should get a blue pearl finish with tiny snake scales.",
+      "expected_scope": "part-only",
+      "expected_part": "roof",
+      "compoundPlan": {
+        "zones": [
+          {
+            "name": "Pearl blue Snake Scales roof",
+            "region": {
+              "part": "roof"
+            },
+            "finish": "base::pearl",
+            "spec_patterns": [
+              "spec_snake_scales"
+            ]
+          }
+        ]
+      },
+      "result_type": "compound plan",
+      "proposed_steps": [
+        {
+          "region": {
+            "part": "roof"
+          }
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P03",
+      "phrase": "Exclusively recolor the hood matte black; keep every other panel as it is.",
+      "expected_scope": "part-only",
+      "expected_part": "hood",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the hood",
+          "apply": []
+        }
+      },
+      "result_type": "no actionable plan",
+      "proposed_steps": [],
+      "judgment": "unsupported/no mutation plan"
+    },
+    {
+      "id": "P04",
+      "phrase": "Put a fine carbon pattern on the roof only, in deep blue.",
+      "expected_scope": "part-only",
+      "expected_part": "roof",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": "recommend",
+        "intentTarget": {
+          "id": "roof",
+          "label": "the roof"
+        },
+        "answerKind": "stack",
+        "answerTarget": {
+          "id": "roof",
+          "label": "the roof"
+        },
+        "answerText": "A layered look: 2 layers in one zone on the roof:\n- **Base**: Sapphire Glass [hue -16] — Even deep sapphire-blue glass, high wet gloss, faint faceted sparkle, near-black in shadow. (high gloss); brings its own deep blue colours, so the hue slider turns them blue (hue -16)\n- **Pattern**: Carbon Alt 1 — paint pattern on top: Image-based carbon fiber weave with fine thread spacing and subtle reflection angle A… — x0.66 size, 65% strength; pairs with gloss black, matte grey\nSize: Carbon Alt 1 at \"fine\" = x0.66 (0.6 of its normal x1.1).\n2 alternative stacks below. **Use this kit** puts every layer on the roof in one step (one Undo); nothing changes until you press it.",
+        "answerKeys": [
+          "text",
+          "cards",
+          "kits",
+          "target",
+          "useLabel",
+          "colour",
+          "shown",
+          "kind",
+          "stack",
+          "next",
+          "last"
+        ],
+        "kits": [
+          {
+            "name": "Stack",
+            "items": [
+              {
+                "cardKey": "base::sapphire_glass",
+                "cardName": "Sapphire Glass",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the roof",
+                  "region": {
+                    "part": "roof"
+                  }
+                },
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Roof Sapphire Glass",
+                      "region": {
+                        "part": "roof"
+                      },
+                      "finish": "base::sapphire_glass",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "carbon_alt_1",
+                        "opacity": 65,
+                        "scale": 0.66
+                      },
+                      "hue": -16
+                    }
+                  }
+                ]
+              },
+              {
+                "cardKey": "pattern::carbon_alt_1",
+                "cardName": "Carbon Alt 1",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the roof",
+                  "region": {
+                    "part": "roof"
+                  }
+                },
+                "steps": []
+              }
+            ]
+          },
+          {
+            "name": "Alt stack 1",
+            "items": [
+              {
+                "cardKey": "base::bugatti_blue",
+                "cardName": "Bugatti Blue",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the roof",
+                  "region": {
+                    "part": "roof"
+                  }
+                },
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Roof Bugatti Blue",
+                      "region": {
+                        "part": "roof"
+                      },
+                      "finish": "base::bugatti_blue",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "hex_carbon",
+                        "opacity": 65,
+                        "scale": 0.66
+                      },
+                      "hue": -17,
+                      "brightness": 27
+                    }
+                  }
+                ]
+              },
+              {
+                "cardKey": "pattern::hex_carbon",
+                "cardName": "Hex Carbon",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the roof",
+                  "region": {
+                    "part": "roof"
+                  }
+                },
+                "steps": []
+              }
+            ]
+          },
+          {
+            "name": "Alt stack 2",
+            "items": [
+              {
+                "cardKey": "base::candy_cobalt",
+                "cardName": "Mariana Trench Resin",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the roof",
+                  "region": {
+                    "part": "roof"
+                  }
+                },
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Roof Mariana Trench Resin",
+                      "region": {
+                        "part": "roof"
+                      },
+                      "finish": "base::candy_cobalt",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "carbon_fiber",
+                        "opacity": 65,
+                        "scale": 0.66
+                      },
+                      "hue": -18,
+                      "brightness": 27
+                    }
+                  }
+                ]
+              },
+              {
+                "cardKey": "pattern::carbon_fiber",
+                "cardName": "Carbon Fiber",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the roof",
+                  "region": {
+                    "part": "roof"
+                  }
+                },
+                "steps": []
+              }
+            ]
+          }
+        ],
+        "cards": [
+          {
+            "cardKey": "base::sapphire_glass",
+            "cardName": "Sapphire Glass",
+            "target": {
+              "id": "stack_scope",
+              "label": "the roof",
+              "region": {
+                "part": "roof"
+              }
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Sapphire Glass",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "base::sapphire_glass",
+                  "color": "finish",
+                  "pattern": {
+                    "id": "carbon_alt_1",
+                    "opacity": 65,
+                    "scale": 0.66
+                  },
+                  "hue": -16
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "pattern::carbon_alt_1",
+            "cardName": "Carbon Alt 1",
+            "target": {
+              "id": "stack_scope",
+              "label": "the roof",
+              "region": {
+                "part": "roof"
+              }
+            },
+            "steps": []
+          },
+          {
+            "cardKey": "base::bugatti_blue",
+            "cardName": "Bugatti Blue",
+            "target": {
+              "id": "stack_scope",
+              "label": "the roof",
+              "region": {
+                "part": "roof"
+              }
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Bugatti Blue",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "base::bugatti_blue",
+                  "color": "finish",
+                  "pattern": {
+                    "id": "hex_carbon",
+                    "opacity": 65,
+                    "scale": 0.66
+                  },
+                  "hue": -17,
+                  "brightness": 27
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "pattern::hex_carbon",
+            "cardName": "Hex Carbon",
+            "target": {
+              "id": "stack_scope",
+              "label": "the roof",
+              "region": {
+                "part": "roof"
+              }
+            },
+            "steps": []
+          },
+          {
+            "cardKey": "base::candy_cobalt",
+            "cardName": "Mariana Trench Resin",
+            "target": {
+              "id": "stack_scope",
+              "label": "the roof",
+              "region": {
+                "part": "roof"
+              }
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Mariana Trench Resin",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "base::candy_cobalt",
+                  "color": "finish",
+                  "pattern": {
+                    "id": "carbon_fiber",
+                    "opacity": 65,
+                    "scale": 0.66
+                  },
+                  "hue": -18,
+                  "brightness": 27
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "pattern::carbon_fiber",
+            "cardName": "Carbon Fiber",
+            "target": {
+              "id": "stack_scope",
+              "label": "the roof",
+              "region": {
+                "part": "roof"
+              }
+            },
+            "steps": []
+          }
+        ],
+        "suggestTool": {
+          "part": "the roof",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "base::sapphire_glass",
+              "name": "Sapphire Glass",
+              "why": "Even deep sapphire-blue glass, high wet gloss, faint faceted sparkle, near-black in shadow. (high gloss); brings its own deep blue colours, so the hue slider turns them blue (hue -16)",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {
+                "hue_shift_deg": -16
+              }
+            },
+            {
+              "layer": "pattern",
+              "key": "pattern::carbon_alt_1",
+              "name": "Carbon Alt 1",
+              "why": "paint pattern on top: Image-based carbon fiber weave with fine thread spacing and subtle reflection angle A… — x0.66 size, 65% strength; pairs with gloss black, matte grey",
+              "scale": 0.66,
+              "intensity": 65,
+              "adjust": {
+                "scale": 0.66,
+                "intensity": 65
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Roof Sapphire Glass",
+                "region": {
+                  "part": "roof"
+                },
+                "finish": "base::sapphire_glass",
+                "color": "finish",
+                "pattern": {
+                  "id": "carbon_alt_1",
+                  "opacity": 65,
+                  "scale": 0.66
+                },
+                "hue": -16
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "Use-kit stack",
+      "proposed_steps": [
+        {
+          "name": "Roof Sapphire Glass",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "base::sapphire_glass",
+          "color": "finish",
+          "pattern": {
+            "id": "carbon_alt_1",
+            "opacity": 65,
+            "scale": 0.66
+          },
+          "hue": -16
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P05",
+      "phrase": "Make only my hood pearl white with a small hex texture.",
+      "expected_scope": "part-only",
+      "expected_part": "hood",
+      "compoundPlan": {
+        "zones": [
+          {
+            "name": "Pearl white hex hood",
+            "region": {
+              "part": "hood"
+            },
+            "finish": "base::pearl",
+            "pattern": "hex_carbon",
+            "spec_patterns": []
+          }
+        ]
+      },
+      "result_type": "compound plan",
+      "proposed_steps": [
+        {
+          "region": {
+            "part": "hood"
+          }
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P06",
+      "phrase": "Add gold snake skin to just the roof and preserve all other paint.",
+      "expected_scope": "part-only",
+      "expected_part": "roof",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the roof",
+          "apply": []
+        }
+      },
+      "result_type": "no actionable plan",
+      "proposed_steps": [],
+      "judgment": "unsupported/no mutation plan"
+    },
+    {
+      "id": "P07",
+      "phrase": "Change the hood to blue and nothing else on the body.",
+      "expected_scope": "part-only",
+      "expected_part": "hood",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the hood",
+          "apply": []
+        }
+      },
+      "result_type": "no actionable plan",
+      "proposed_steps": [],
+      "judgment": "unsupported/no mutation plan"
+    },
+    {
+      "id": "P08",
+      "phrase": "Give the roof a matte gold carbon look, exclusively on that panel.",
+      "expected_scope": "part-only",
+      "expected_part": "roof",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": "recommend",
+        "intentTarget": {
+          "id": "roof",
+          "label": "the roof"
+        },
+        "answerKind": "recommend",
+        "answerTarget": {
+          "id": "roof",
+          "label": "the roof"
+        },
+        "answerText": "For the roof: a few directions that work on an existing scheme. Your body is Gloss (high gloss). I searched the whole catalogue and picked shine-only options that keep your paint, complete looks whose palette suits your colours. Swatches are shown on gold.",
+        "answerKeys": [
+          "text",
+          "cards",
+          "target",
+          "useLabel",
+          "colour",
+          "shown",
+          "kind",
+          "goal",
+          "sup",
+          "lane",
+          "page",
+          "next",
+          "last"
+        ],
+        "kits": [],
+        "cards": [
+          {
+            "cardKey": "base::matte",
+            "cardName": "Matte",
+            "target": {
+              "id": "roof",
+              "label": "the roof"
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Matte",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "base::matte",
+                  "color": "#6fb7e9"
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "base::f_carbon_fiber",
+            "cardName": "Carbon Fiber",
+            "target": {
+              "id": "roof",
+              "label": "the roof"
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Carbon Fiber",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "base::f_carbon_fiber",
+                  "color": "#6fb7e9"
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "monolithic::multiscale_carbon_micro",
+            "cardName": "Multi Carbon Micro",
+            "target": {
+              "id": "roof",
+              "label": "the roof"
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Multi Carbon Micro",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "monolithic::multiscale_carbon_micro",
+                  "color": "#6fb7e9"
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "monolithic::carbon_raw",
+            "cardName": "Carbon Raw",
+            "target": {
+              "id": "roof",
+              "label": "the roof"
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Carbon Raw",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "monolithic::carbon_raw",
+                  "color": "#6fb7e9"
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "monolithic::materials2_carbon",
+            "cardName": "Carbon Twill Weave",
+            "target": {
+              "id": "roof",
+              "label": "the roof"
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Carbon Twill Weave",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "monolithic::materials2_carbon",
+                  "color": "finish"
+                }
+              }
+            ]
+          }
+        ],
+        "suggestTool": {
+          "part": "the roof",
+          "apply": []
+        }
+      },
+      "result_type": "recommendation only",
+      "proposed_steps": [
+        {
+          "name": "Roof Matte",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "base::matte",
+          "color": "#6fb7e9"
+        },
+        {
+          "name": "Roof Carbon Fiber",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "base::f_carbon_fiber",
+          "color": "#6fb7e9"
+        },
+        {
+          "name": "Roof Multi Carbon Micro",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "monolithic::multiscale_carbon_micro",
+          "color": "#6fb7e9"
+        },
+        {
+          "name": "Roof Carbon Raw",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "monolithic::carbon_raw",
+          "color": "#6fb7e9"
+        },
+        {
+          "name": "Roof Carbon Twill Weave",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "monolithic::materials2_carbon",
+          "color": "finish"
+        }
+      ],
+      "judgment": "recommendation-only, scoped"
+    },
+    {
+      "id": "P09",
+      "phrase": "Set the hood to #1247A8 with a subtle pearl sheen; leave the remaining panels alone.",
+      "expected_scope": "part-only",
+      "expected_part": "hood",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the hood",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "base::forged_blue",
+              "name": "Forged Blue",
+              "why": "Deep navy blue with broad diagonal marbled strand chunks, wet gloss — forged carbon under blue… (high gloss, medium metal); saturation +32 for a cleaner blue; brightness +20 toward blue",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {
+                "saturation": 32,
+                "brightness": 20
+              }
+            },
+            {
+              "layer": "spec",
+              "key": "spec::pearl_micro",
+              "name": "Pearl Micro",
+              "why": "shine texture (colours stay): Smooth undulating mother-of-pearl iridescence, soft micro sparkle, no anisotropy; gentle… — x1 size, 35% strength; pairs with gloss, metallic",
+              "scale": 1,
+              "intensity": 35,
+              "adjust": {
+                "scale": 1,
+                "intensity": 35
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Hood Forged Blue",
+                "region": {
+                  "part": "hood"
+                },
+                "finish": "base::forged_blue",
+                "color": "finish",
+                "spec_patterns": [
+                  {
+                    "id": "pearl_micro",
+                    "opacity": 35,
+                    "scale": 1
+                  }
+                ],
+                "saturation": 32,
+                "brightness": 20
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "suggestTool apply",
+      "proposed_steps": [
+        {
+          "name": "Hood Forged Blue",
+          "region": {
+            "part": "hood"
+          },
+          "finish": "base::forged_blue",
+          "color": "finish",
+          "spec_patterns": [
+            {
+              "id": "pearl_micro",
+              "opacity": 35,
+              "scale": 1
+            }
+          ],
+          "saturation": 32,
+          "brightness": 20
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P10",
+      "phrase": "Just apply #C9A227 and a fine snake pattern to the roof.",
+      "expected_scope": "part-only",
+      "expected_part": "roof",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the roof",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "monolithic::msk_leaf_gilding",
+              "name": "Asset: Leaf Gilding",
+              "why": "Bright yellow-gold fine flake, lighter and more yellow than its sibling, even satin sparkle. (satin, medium metal)",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {}
+            },
+            {
+              "layer": "pattern",
+              "key": "pattern::snake_skin",
+              "name": "Snake Skin",
+              "why": "paint pattern on top: Tiny dense overlapping oval scales, very low contrast, reading as a fine uniform reptile… — x0.66 size, 65% strength; pairs with candy red, chrome",
+              "scale": 0.66,
+              "intensity": 65,
+              "adjust": {
+                "scale": 0.66,
+                "intensity": 65
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Roof Asset: Leaf Gilding",
+                "region": {
+                  "part": "roof"
+                },
+                "finish": "monolithic::msk_leaf_gilding",
+                "color": "finish",
+                "pattern": {
+                  "id": "snake_skin",
+                  "opacity": 65,
+                  "scale": 0.66
+                }
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "suggestTool apply",
+      "proposed_steps": [
+        {
+          "name": "Roof Asset: Leaf Gilding",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "monolithic::msk_leaf_gilding",
+          "color": "finish",
+          "pattern": {
+            "id": "snake_skin",
+            "opacity": 65,
+            "scale": 0.66
+          }
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P11",
+      "phrase": "Carbon-fiber the hood in matte blue only; do not touch the roof or sides.",
+      "expected_scope": "part-only",
+      "expected_part": "hood",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the sides",
+          "apply": []
+        }
+      },
+      "result_type": "no actionable plan",
+      "proposed_steps": [],
+      "judgment": "unsupported/no mutation plan"
+    },
+    {
+      "id": "P12",
+      "phrase": "Only the roof gets a pearl gold base and little hex cells.",
+      "expected_scope": "part-only",
+      "expected_part": "roof",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": "recommend",
+        "intentTarget": {
+          "id": "roof",
+          "label": "the roof"
+        },
+        "answerKind": "stack",
+        "answerTarget": {
+          "id": "roof",
+          "label": "the roof"
+        },
+        "answerText": "A layered look: 3 layers in one zone on the roof:\n- **Base**: CF: Champagne Frost [brightness -24] — Pale champagne gold and cream pearl flake, bright and soft like frosted celebration paint. (high gloss, high metal); brightness -24 toward gold\n- **Pattern**: Hex Mesh — paint pattern on top: Dense fine honeycomb mesh with bright glowing cell edges, high contrast, tightly packed… — x0.42 size, 65% strength; pairs with matte black, gunmetal\n- **Shine**: Pearl Micro — shine texture (colours stay): Smooth undulating mother-of-pearl iridescence, soft micro sparkle, no anisotropy; gentle… — x1 size, 70% strength; pairs with gloss, metallic\nSize: Hex Mesh at \"little\" = x0.42 (0.6 of its normal x0.7).\n2 alternative stacks below. **Use this kit** puts every layer on the roof in one step (one Undo); nothing changes until you press it.",
+        "answerKeys": [
+          "text",
+          "cards",
+          "kits",
+          "target",
+          "useLabel",
+          "colour",
+          "shown",
+          "kind",
+          "stack",
+          "next",
+          "last"
+        ],
+        "kits": [
+          {
+            "name": "Stack",
+            "items": [
+              {
+                "cardKey": "monolithic::cf_champagne_frost",
+                "cardName": "CF: Champagne Frost",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the roof",
+                  "region": {
+                    "part": "roof"
+                  }
+                },
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Roof CF: Champagne Frost",
+                      "region": {
+                        "part": "roof"
+                      },
+                      "finish": "monolithic::cf_champagne_frost",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "hex_mesh",
+                        "opacity": 65,
+                        "scale": 0.42
+                      },
+                      "spec_patterns": [
+                        {
+                          "id": "pearl_micro",
+                          "opacity": 70,
+                          "scale": 1
+                        }
+                      ],
+                      "brightness": -24
+                    }
+                  }
+                ]
+              },
+              {
+                "cardKey": "pattern::hex_mesh",
+                "cardName": "Hex Mesh",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the roof",
+                  "region": {
+                    "part": "roof"
+                  }
+                },
+                "steps": []
+              },
+              {
+                "cardKey": "spec::pearl_micro",
+                "cardName": "Pearl Micro",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the roof",
+                  "region": {
+                    "part": "roof"
+                  }
+                },
+                "steps": []
+              }
+            ]
+          },
+          {
+            "name": "Alt stack 1",
+            "items": [
+              {
+                "cardKey": "base::pearl",
+                "cardName": "Pearl",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the roof",
+                  "region": {
+                    "part": "roof"
+                  }
+                },
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Roof Pearl",
+                      "region": {
+                        "part": "roof"
+                      },
+                      "finish": "base::pearl",
+                      "color": "#d7a72b",
+                      "pattern": {
+                        "id": "graphene_hex",
+                        "opacity": 65,
+                        "scale": 0.51
+                      },
+                      "spec_patterns": [
+                        {
+                          "id": "mother_of_pearl_inlay",
+                          "opacity": 70,
+                          "scale": 1
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "cardKey": "pattern::graphene_hex",
+                "cardName": "Graphene Hex",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the roof",
+                  "region": {
+                    "part": "roof"
+                  }
+                },
+                "steps": []
+              },
+              {
+                "cardKey": "spec::mother_of_pearl_inlay",
+                "cardName": "Mother of Pearl Inlay",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the roof",
+                  "region": {
+                    "part": "roof"
+                  }
+                },
+                "steps": []
+              }
+            ]
+          },
+          {
+            "name": "Alt stack 2",
+            "items": [
+              {
+                "cardKey": "base::f_pearl",
+                "cardName": "Pearl",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the roof",
+                  "region": {
+                    "part": "roof"
+                  }
+                },
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Roof Pearl",
+                      "region": {
+                        "part": "roof"
+                      },
+                      "finish": "base::f_pearl",
+                      "color": "#d7a72b",
+                      "pattern": {
+                        "id": "chainmail_hex",
+                        "opacity": 65,
+                        "scale": 0.42
+                      },
+                      "spec_patterns": [
+                        {
+                          "id": "spec_marble_flow_pearl",
+                          "opacity": 70,
+                          "scale": 1
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "cardKey": "pattern::chainmail_hex",
+                "cardName": "Chainmail Hex",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the roof",
+                  "region": {
+                    "part": "roof"
+                  }
+                },
+                "steps": []
+              },
+              {
+                "cardKey": "spec::spec_marble_flow_pearl",
+                "cardName": "SPEC Marble Flow Pearl",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the roof",
+                  "region": {
+                    "part": "roof"
+                  }
+                },
+                "steps": []
+              }
+            ]
+          }
+        ],
+        "cards": [
+          {
+            "cardKey": "monolithic::cf_champagne_frost",
+            "cardName": "CF: Champagne Frost",
+            "target": {
+              "id": "stack_scope",
+              "label": "the roof",
+              "region": {
+                "part": "roof"
+              }
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof CF: Champagne Frost",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "monolithic::cf_champagne_frost",
+                  "color": "finish",
+                  "pattern": {
+                    "id": "hex_mesh",
+                    "opacity": 65,
+                    "scale": 0.42
+                  },
+                  "spec_patterns": [
+                    {
+                      "id": "pearl_micro",
+                      "opacity": 70,
+                      "scale": 1
+                    }
+                  ],
+                  "brightness": -24
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "pattern::hex_mesh",
+            "cardName": "Hex Mesh",
+            "target": {
+              "id": "stack_scope",
+              "label": "the roof",
+              "region": {
+                "part": "roof"
+              }
+            },
+            "steps": []
+          },
+          {
+            "cardKey": "spec::pearl_micro",
+            "cardName": "Pearl Micro",
+            "target": {
+              "id": "stack_scope",
+              "label": "the roof",
+              "region": {
+                "part": "roof"
+              }
+            },
+            "steps": []
+          },
+          {
+            "cardKey": "base::pearl",
+            "cardName": "Pearl",
+            "target": {
+              "id": "stack_scope",
+              "label": "the roof",
+              "region": {
+                "part": "roof"
+              }
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Pearl",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "base::pearl",
+                  "color": "#d7a72b",
+                  "pattern": {
+                    "id": "graphene_hex",
+                    "opacity": 65,
+                    "scale": 0.51
+                  },
+                  "spec_patterns": [
+                    {
+                      "id": "mother_of_pearl_inlay",
+                      "opacity": 70,
+                      "scale": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "pattern::graphene_hex",
+            "cardName": "Graphene Hex",
+            "target": {
+              "id": "stack_scope",
+              "label": "the roof",
+              "region": {
+                "part": "roof"
+              }
+            },
+            "steps": []
+          },
+          {
+            "cardKey": "spec::mother_of_pearl_inlay",
+            "cardName": "Mother of Pearl Inlay",
+            "target": {
+              "id": "stack_scope",
+              "label": "the roof",
+              "region": {
+                "part": "roof"
+              }
+            },
+            "steps": []
+          },
+          {
+            "cardKey": "base::f_pearl",
+            "cardName": "Pearl",
+            "target": {
+              "id": "stack_scope",
+              "label": "the roof",
+              "region": {
+                "part": "roof"
+              }
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Pearl",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "base::f_pearl",
+                  "color": "#d7a72b",
+                  "pattern": {
+                    "id": "chainmail_hex",
+                    "opacity": 65,
+                    "scale": 0.42
+                  },
+                  "spec_patterns": [
+                    {
+                      "id": "spec_marble_flow_pearl",
+                      "opacity": 70,
+                      "scale": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "pattern::chainmail_hex",
+            "cardName": "Chainmail Hex",
+            "target": {
+              "id": "stack_scope",
+              "label": "the roof",
+              "region": {
+                "part": "roof"
+              }
+            },
+            "steps": []
+          },
+          {
+            "cardKey": "spec::spec_marble_flow_pearl",
+            "cardName": "SPEC Marble Flow Pearl",
+            "target": {
+              "id": "stack_scope",
+              "label": "the roof",
+              "region": {
+                "part": "roof"
+              }
+            },
+            "steps": []
+          }
+        ],
+        "suggestTool": {
+          "part": "the roof",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "monolithic::cf_champagne_frost",
+              "name": "CF: Champagne Frost",
+              "why": "Pale champagne gold and cream pearl flake, bright and soft like frosted celebration paint. (high gloss, high metal); brightness -24 toward gold",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {
+                "brightness": -24
+              }
+            },
+            {
+              "layer": "pattern",
+              "key": "pattern::hex_mesh",
+              "name": "Hex Mesh",
+              "why": "paint pattern on top: Dense fine honeycomb mesh with bright glowing cell edges, high contrast, tightly packed… — x0.42 size, 65% strength; pairs with matte black, gunmetal",
+              "scale": 0.42,
+              "intensity": 65,
+              "adjust": {
+                "scale": 0.42,
+                "intensity": 65
+              }
+            },
+            {
+              "layer": "spec",
+              "key": "spec::pearl_micro",
+              "name": "Pearl Micro",
+              "why": "shine texture (colours stay): Smooth undulating mother-of-pearl iridescence, soft micro sparkle, no anisotropy; gentle… — x1 size, 70% strength; pairs with gloss, metallic",
+              "scale": 1,
+              "intensity": 70,
+              "adjust": {
+                "scale": 1,
+                "intensity": 70
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Roof CF: Champagne Frost",
+                "region": {
+                  "part": "roof"
+                },
+                "finish": "monolithic::cf_champagne_frost",
+                "color": "finish",
+                "pattern": {
+                  "id": "hex_mesh",
+                  "opacity": 65,
+                  "scale": 0.42
+                },
+                "spec_patterns": [
+                  {
+                    "id": "pearl_micro",
+                    "opacity": 70,
+                    "scale": 1
+                  }
+                ],
+                "brightness": -24
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "Use-kit stack",
+      "proposed_steps": [
+        {
+          "name": "Roof CF: Champagne Frost",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "monolithic::cf_champagne_frost",
+          "color": "finish",
+          "pattern": {
+            "id": "hex_mesh",
+            "opacity": 65,
+            "scale": 0.42
+          },
+          "spec_patterns": [
+            {
+              "id": "pearl_micro",
+              "opacity": 70,
+              "scale": 1
+            }
+          ],
+          "brightness": -24
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P13",
+      "phrase": "Start with the hood only: make it matte blue with a fine carbon weave.",
+      "expected_scope": "part-only",
+      "expected_part": "hood",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": "recommend",
+        "intentTarget": {
+          "id": "hood",
+          "label": "the hood"
+        },
+        "answerKind": "stack",
+        "answerTarget": {
+          "id": "hood",
+          "label": "the hood"
+        },
+        "answerText": "A layered look: 2 layers in one zone on the hood:\n- **Base**: Jeans Dark Blue — Flat solid deep denim blue, no texture, no sparkle, even semi-matte sheen across the whole… (semi-matte)\n- **Pattern**: Carbon Fiber — paint pattern on top: Fine repeating diamond lattice at near-microscopic scale; low-contrast directional tone… — x0.66 size, 65% strength; pairs with graphite gray, pure white\nSize: Carbon Fiber at \"fine\" = x0.66 (0.6 of its normal x1.1).\n2 alternative stacks below. **Use this kit** puts every layer on the hood in one step (one Undo); nothing changes until you press it.",
+        "answerKeys": [
+          "text",
+          "cards",
+          "kits",
+          "target",
+          "useLabel",
+          "colour",
+          "shown",
+          "kind",
+          "stack",
+          "next",
+          "last"
+        ],
+        "kits": [
+          {
+            "name": "Stack",
+            "items": [
+              {
+                "cardKey": "monolithic::ui_jeans_dark_blue",
+                "cardName": "Jeans Dark Blue",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the hood",
+                  "region": {
+                    "part": "hood"
+                  }
+                },
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Hood Jeans Dark Blue",
+                      "region": {
+                        "part": "hood"
+                      },
+                      "finish": "monolithic::ui_jeans_dark_blue",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "carbon_fiber",
+                        "opacity": 65,
+                        "scale": 0.66
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "cardKey": "pattern::carbon_fiber",
+                "cardName": "Carbon Fiber",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the hood",
+                  "region": {
+                    "part": "hood"
+                  }
+                },
+                "steps": []
+              }
+            ]
+          },
+          {
+            "name": "Alt stack 1",
+            "items": [
+              {
+                "cardKey": "base::matte",
+                "cardName": "Matte",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the hood",
+                  "region": {
+                    "part": "hood"
+                  }
+                },
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Hood Matte",
+                      "region": {
+                        "part": "hood"
+                      },
+                      "finish": "base::matte",
+                      "color": "#1450b4",
+                      "pattern": {
+                        "id": "geo_weave",
+                        "opacity": 65,
+                        "scale": 0.42
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "cardKey": "pattern::geo_weave",
+                "cardName": "Geo Weave",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the hood",
+                  "region": {
+                    "part": "hood"
+                  }
+                },
+                "steps": []
+              }
+            ]
+          },
+          {
+            "name": "Alt stack 2",
+            "items": [
+              {
+                "cardKey": "monolithic::cx_deep_sea",
+                "cardName": "CX Deep Sea",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the hood",
+                  "region": {
+                    "part": "hood"
+                  }
+                },
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Hood CX Deep Sea",
+                      "region": {
+                        "part": "hood"
+                      },
+                      "finish": "monolithic::cx_deep_sea",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "basket_weave_alt",
+                        "opacity": 65,
+                        "scale": 0.51
+                      },
+                      "hue": 14
+                    }
+                  }
+                ]
+              },
+              {
+                "cardKey": "pattern::basket_weave_alt",
+                "cardName": "Basket Weave (Alt)",
+                "target": {
+                  "id": "stack_scope",
+                  "label": "the hood",
+                  "region": {
+                    "part": "hood"
+                  }
+                },
+                "steps": []
+              }
+            ]
+          }
+        ],
+        "cards": [
+          {
+            "cardKey": "monolithic::ui_jeans_dark_blue",
+            "cardName": "Jeans Dark Blue",
+            "target": {
+              "id": "stack_scope",
+              "label": "the hood",
+              "region": {
+                "part": "hood"
+              }
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Hood Jeans Dark Blue",
+                  "region": {
+                    "part": "hood"
+                  },
+                  "finish": "monolithic::ui_jeans_dark_blue",
+                  "color": "finish",
+                  "pattern": {
+                    "id": "carbon_fiber",
+                    "opacity": 65,
+                    "scale": 0.66
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "pattern::carbon_fiber",
+            "cardName": "Carbon Fiber",
+            "target": {
+              "id": "stack_scope",
+              "label": "the hood",
+              "region": {
+                "part": "hood"
+              }
+            },
+            "steps": []
+          },
+          {
+            "cardKey": "base::matte",
+            "cardName": "Matte",
+            "target": {
+              "id": "stack_scope",
+              "label": "the hood",
+              "region": {
+                "part": "hood"
+              }
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Hood Matte",
+                  "region": {
+                    "part": "hood"
+                  },
+                  "finish": "base::matte",
+                  "color": "#1450b4",
+                  "pattern": {
+                    "id": "geo_weave",
+                    "opacity": 65,
+                    "scale": 0.42
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "pattern::geo_weave",
+            "cardName": "Geo Weave",
+            "target": {
+              "id": "stack_scope",
+              "label": "the hood",
+              "region": {
+                "part": "hood"
+              }
+            },
+            "steps": []
+          },
+          {
+            "cardKey": "monolithic::cx_deep_sea",
+            "cardName": "CX Deep Sea",
+            "target": {
+              "id": "stack_scope",
+              "label": "the hood",
+              "region": {
+                "part": "hood"
+              }
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Hood CX Deep Sea",
+                  "region": {
+                    "part": "hood"
+                  },
+                  "finish": "monolithic::cx_deep_sea",
+                  "color": "finish",
+                  "pattern": {
+                    "id": "basket_weave_alt",
+                    "opacity": 65,
+                    "scale": 0.51
+                  },
+                  "hue": 14
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "pattern::basket_weave_alt",
+            "cardName": "Basket Weave (Alt)",
+            "target": {
+              "id": "stack_scope",
+              "label": "the hood",
+              "region": {
+                "part": "hood"
+              }
+            },
+            "steps": []
+          }
+        ],
+        "suggestTool": {
+          "part": "the hood",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "monolithic::ui_jeans_dark_blue",
+              "name": "Jeans Dark Blue",
+              "why": "Flat solid deep denim blue, no texture, no sparkle, even semi-matte sheen across the whole… (semi-matte)",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {}
+            },
+            {
+              "layer": "pattern",
+              "key": "pattern::carbon_fiber",
+              "name": "Carbon Fiber",
+              "why": "paint pattern on top: Fine repeating diamond lattice at near-microscopic scale; low-contrast directional tone… — x0.66 size, 65% strength; pairs with graphite gray, pure white",
+              "scale": 0.66,
+              "intensity": 65,
+              "adjust": {
+                "scale": 0.66,
+                "intensity": 65
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Hood Jeans Dark Blue",
+                "region": {
+                  "part": "hood"
+                },
+                "finish": "monolithic::ui_jeans_dark_blue",
+                "color": "finish",
+                "pattern": {
+                  "id": "carbon_fiber",
+                  "opacity": 65,
+                  "scale": 0.66
+                }
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "Use-kit stack",
+      "proposed_steps": [
+        {
+          "name": "Hood Jeans Dark Blue",
+          "region": {
+            "part": "hood"
+          },
+          "finish": "monolithic::ui_jeans_dark_blue",
+          "color": "finish",
+          "pattern": {
+            "id": "carbon_fiber",
+            "opacity": 65,
+            "scale": 0.66
+          }
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P14",
+      "phrase": "Finish everything on the roof in pearl gold, and leave the rest unchanged.",
+      "expected_scope": "part-only",
+      "expected_part": "roof",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": "recommend",
+        "intentTarget": {
+          "id": "roof",
+          "label": "the roof"
+        },
+        "answerKind": "recommend",
+        "answerTarget": {
+          "id": "roof",
+          "label": "the roof"
+        },
+        "answerText": "For the roof: a few directions that work on an existing scheme. Your body is Gloss (high gloss). I searched the whole catalogue and picked shine-only options that keep your paint, complete looks whose palette suits your colours. Swatches are shown on gold.",
+        "answerKeys": [
+          "text",
+          "cards",
+          "target",
+          "useLabel",
+          "colour",
+          "shown",
+          "kind",
+          "goal",
+          "sup",
+          "lane",
+          "page",
+          "next",
+          "last"
+        ],
+        "kits": [],
+        "cards": [
+          {
+            "cardKey": "base::f_pearl",
+            "cardName": "Pearl",
+            "target": {
+              "id": "roof",
+              "label": "the roof"
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Pearl",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "base::f_pearl",
+                  "color": "#6fb7e9"
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "base::pearl",
+            "cardName": "Pearl",
+            "target": {
+              "id": "roof",
+              "label": "the roof"
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Pearl",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "base::pearl",
+                  "color": "#6fb7e9"
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "monolithic::cf_champagne_frost",
+            "cardName": "CF: Champagne Frost",
+            "target": {
+              "id": "roof",
+              "label": "the roof"
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof CF: Champagne Frost",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "monolithic::cf_champagne_frost",
+                  "color": "finish"
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "monolithic::mother_of_pearl",
+            "cardName": "Mother Of Pearl",
+            "target": {
+              "id": "roof",
+              "label": "the roof"
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Mother Of Pearl",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "monolithic::mother_of_pearl",
+                  "color": "#6fb7e9"
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "base::dealer_pearl",
+            "cardName": "Dealer Pearl",
+            "target": {
+              "id": "roof",
+              "label": "the roof"
+            },
+            "steps": [
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Dealer Pearl",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "base::dealer_pearl",
+                  "color": "finish"
+                }
+              }
+            ]
+          }
+        ],
+        "suggestTool": {
+          "part": "the roof",
+          "apply": []
+        }
+      },
+      "result_type": "recommendation only",
+      "proposed_steps": [
+        {
+          "name": "Roof Pearl",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "base::f_pearl",
+          "color": "#6fb7e9"
+        },
+        {
+          "name": "Roof Pearl",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "base::pearl",
+          "color": "#6fb7e9"
+        },
+        {
+          "name": "Roof CF: Champagne Frost",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "monolithic::cf_champagne_frost",
+          "color": "finish"
+        },
+        {
+          "name": "Roof Mother Of Pearl",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "monolithic::mother_of_pearl",
+          "color": "#6fb7e9"
+        },
+        {
+          "name": "Roof Dealer Pearl",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "base::dealer_pearl",
+          "color": "finish"
+        }
+      ],
+      "judgment": "recommendation-only, scoped"
+    },
+    {
+      "id": "P15",
+      "phrase": "Make the whole car blue, then layer a gold snake pattern on the hood only.",
+      "expected_scope": "body+part",
+      "expected_part": "hood",
+      "compoundPlan": {
+        "zones": [
+          {
+            "name": "Blue body base",
+            "region": {
+              "everything": true,
+              "paintable": true
+            },
+            "finish": "base::gloss",
+            "spec_patterns": []
+          },
+          {
+            "name": "Gold snake skin hood",
+            "region": {
+              "part": "hood"
+            },
+            "finish": "base::gloss",
+            "pattern": "snake_skin",
+            "spec_patterns": []
+          }
+        ]
+      },
+      "result_type": "compound plan",
+      "proposed_steps": [
+        {
+          "region": {
+            "everything": true,
+            "paintable": true
+          }
+        },
+        {
+          "region": {
+            "part": "hood"
+          }
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P16",
+      "phrase": "Set a matte black base across the entire body and put pearl white hexes on just the roof.",
+      "expected_scope": "body+part",
+      "expected_part": "roof",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the body + the roof",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "base::matte",
+              "name": "Matte",
+              "why": "Matte body in the selected colour; light is absorbed, faint coat lobe keeps it from going dead. (matte); takes the zone colour, so the base colour is set to black (#111113)",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {
+                "base_colour": "#111113"
+              }
+            },
+            {
+              "layer": "spec",
+              "key": "spec::pearl_micro",
+              "name": "Pearl Micro",
+              "why": "shine texture (colours stay): Smooth undulating mother-of-pearl iridescence, soft micro sparkle, no anisotropy; gentle… — x1 size, 70% strength; pairs with gloss, metallic",
+              "scale": 1,
+              "intensity": 70,
+              "adjust": {
+                "scale": 1,
+                "intensity": 70
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z5",
+                "finish": "base::matte",
+                "color": "#111113"
+              }
+            },
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z6",
+                "finish": "base::matte",
+                "color": "#111113"
+              }
+            },
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Roof Pearl Micro",
+                "region": {
+                  "part": "roof"
+                },
+                "finish": "base::matte",
+                "color": "#111113",
+                "spec_patterns": [
+                  {
+                    "id": "pearl_micro",
+                    "opacity": 70,
+                    "scale": 1
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "suggestTool apply",
+      "proposed_steps": [
+        {
+          "zone_id": "z5",
+          "finish": "base::matte",
+          "color": "#111113"
+        },
+        {
+          "zone_id": "z6",
+          "finish": "base::matte",
+          "color": "#111113"
+        },
+        {
+          "name": "Roof Pearl Micro",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "base::matte",
+          "color": "#111113",
+          "spec_patterns": [
+            {
+              "id": "pearl_micro",
+              "opacity": 70,
+              "scale": 1
+            }
+          ]
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P17",
+      "phrase": "Paint the whole car #163A72; exclusively on the hood add a fine gold carbon layer.",
+      "expected_scope": "body+part",
+      "expected_part": "hood",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the body + the hood",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "monolithic::dkc_cobalt_night",
+              "name": "Cobalt Night",
+              "why": "Deep navy blue satin body with dense fine white sparkle, like a starfield sunk into dark glaze. (satin)",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {}
+            },
+            {
+              "layer": "pattern",
+              "key": "pattern::carbon_alt_1",
+              "name": "Carbon Alt 1",
+              "why": "paint pattern on top: Image-based carbon fiber weave with fine thread spacing and subtle reflection angle A… — x0.66 size, 65% strength; pairs with gloss black, matte grey",
+              "scale": 0.66,
+              "intensity": 65,
+              "adjust": {
+                "scale": 0.66,
+                "intensity": 65
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z5",
+                "finish": "monolithic::dkc_cobalt_night",
+                "color": "finish",
+                "pattern": {
+                  "id": "none"
+                }
+              }
+            },
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z6",
+                "finish": "monolithic::dkc_cobalt_night",
+                "color": "finish",
+                "pattern": {
+                  "id": "none"
+                }
+              }
+            },
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Hood Carbon Alt 1",
+                "region": {
+                  "part": "hood"
+                },
+                "finish": "monolithic::dkc_cobalt_night",
+                "color": "finish",
+                "pattern": {
+                  "id": "carbon_alt_1",
+                  "opacity": 65,
+                  "scale": 0.66
+                }
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "suggestTool apply",
+      "proposed_steps": [
+        {
+          "zone_id": "z5",
+          "finish": "monolithic::dkc_cobalt_night",
+          "color": "finish",
+          "pattern": {
+            "id": "none"
+          }
+        },
+        {
+          "zone_id": "z6",
+          "finish": "monolithic::dkc_cobalt_night",
+          "color": "finish",
+          "pattern": {
+            "id": "none"
+          }
+        },
+        {
+          "name": "Hood Carbon Alt 1",
+          "region": {
+            "part": "hood"
+          },
+          "finish": "monolithic::dkc_cobalt_night",
+          "color": "finish",
+          "pattern": {
+            "id": "carbon_alt_1",
+            "opacity": 65,
+            "scale": 0.66
+          }
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P18",
+      "phrase": "Give every panel a pearl gold base, then add blue snake scales only on the roof.",
+      "expected_scope": "body+part",
+      "expected_part": "roof",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the roof",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "monolithic::cf_champagne_frost",
+              "name": "CF: Champagne Frost",
+              "why": "Pale champagne gold and cream pearl flake, bright and soft like frosted celebration paint. (high gloss, high metal); brightness -24 toward gold",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {
+                "brightness": -24
+              }
+            },
+            {
+              "layer": "pattern",
+              "key": "pattern::snake_skin",
+              "name": "Snake Skin",
+              "why": "paint pattern on top: Tiny dense overlapping oval scales, very low contrast, reading as a fine uniform reptile… — x1.1 size, 65% strength; pairs with candy red, chrome",
+              "scale": 1.1,
+              "intensity": 65,
+              "adjust": {
+                "scale": 1.1,
+                "intensity": 65
+              }
+            },
+            {
+              "layer": "spec",
+              "key": "spec::pearl_micro",
+              "name": "Pearl Micro",
+              "why": "shine texture (colours stay): Smooth undulating mother-of-pearl iridescence, soft micro sparkle, no anisotropy; gentle… — x1 size, 70% strength; pairs with gloss, metallic",
+              "scale": 1,
+              "intensity": 70,
+              "adjust": {
+                "scale": 1,
+                "intensity": 70
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Roof CF: Champagne Frost",
+                "region": {
+                  "part": "roof"
+                },
+                "finish": "monolithic::cf_champagne_frost",
+                "color": "finish",
+                "pattern": {
+                  "id": "snake_skin",
+                  "opacity": 65,
+                  "scale": 1.1
+                },
+                "spec_patterns": [
+                  {
+                    "id": "pearl_micro",
+                    "opacity": 70,
+                    "scale": 1
+                  }
+                ],
+                "brightness": -24
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "suggestTool apply",
+      "proposed_steps": [
+        {
+          "name": "Roof CF: Champagne Frost",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "monolithic::cf_champagne_frost",
+          "color": "finish",
+          "pattern": {
+            "id": "snake_skin",
+            "opacity": 65,
+            "scale": 1.1
+          },
+          "spec_patterns": [
+            {
+              "id": "pearl_micro",
+              "opacity": 70,
+              "scale": 1
+            }
+          ],
+          "brightness": -24
+        }
+      ],
+      "judgment": "partial: missing whole-body scope"
+    },
+    {
+      "id": "P19",
+      "phrase": "First coat the body in matte blue, then put a gold hex overlay on the hood alone.",
+      "expected_scope": "body+part",
+      "expected_part": "hood",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the body + the hood",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "monolithic::ui_jeans_dark_blue",
+              "name": "Jeans Dark Blue",
+              "why": "Flat solid deep denim blue, no texture, no sparkle, even semi-matte sheen across the whole… (semi-matte)",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {}
+            },
+            {
+              "layer": "pattern",
+              "key": "pattern::chainmail_hex",
+              "name": "Chainmail Hex",
+              "why": "paint pattern on top: Tight grid of interlocking circular rings in hexagonal close-pack, fine repeating… — x0.7 size, 65% strength; pairs with dark grey base, gunmetal",
+              "scale": 0.7,
+              "intensity": 65,
+              "adjust": {
+                "scale": 0.7,
+                "intensity": 65
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z5",
+                "finish": "monolithic::ui_jeans_dark_blue",
+                "color": "finish",
+                "pattern": {
+                  "id": "none"
+                }
+              }
+            },
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z6",
+                "finish": "monolithic::ui_jeans_dark_blue",
+                "color": "finish",
+                "pattern": {
+                  "id": "none"
+                }
+              }
+            },
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Hood Chainmail Hex",
+                "region": {
+                  "part": "hood"
+                },
+                "finish": "monolithic::ui_jeans_dark_blue",
+                "color": "finish",
+                "pattern": {
+                  "id": "chainmail_hex",
+                  "opacity": 65,
+                  "scale": 0.7
+                }
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "suggestTool apply",
+      "proposed_steps": [
+        {
+          "zone_id": "z5",
+          "finish": "monolithic::ui_jeans_dark_blue",
+          "color": "finish",
+          "pattern": {
+            "id": "none"
+          }
+        },
+        {
+          "zone_id": "z6",
+          "finish": "monolithic::ui_jeans_dark_blue",
+          "color": "finish",
+          "pattern": {
+            "id": "none"
+          }
+        },
+        {
+          "name": "Hood Chainmail Hex",
+          "region": {
+            "part": "hood"
+          },
+          "finish": "monolithic::ui_jeans_dark_blue",
+          "color": "finish",
+          "pattern": {
+            "id": "chainmail_hex",
+            "opacity": 65,
+            "scale": 0.7
+          }
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P20",
+      "phrase": "Make the full car pearl white and add carbon weave to the roof only, leaving other parts at the base.",
+      "expected_scope": "body+part",
+      "expected_part": "roof",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the body + the roof",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "monolithic::cc_magma_freeze",
+              "name": "Color Clash: Magma Freeze",
+              "why": "Near-white cream body with a faint warm gold glow in the centre, very fine sparkle, subtle. (satin, full metal); brings its own white colours, so the hue slider turns them pearl white (hue -18)",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {
+                "hue_shift_deg": -18
+              }
+            },
+            {
+              "layer": "pattern",
+              "key": "pattern::carbon_weave_pattern",
+              "name": "Carbon Weave (Pattern)",
+              "why": "paint pattern on top: Broad soft-edged mottled patches drifting irregularly across the surface; cloudy organic… — x1.1 size, 65% strength; pairs with sky blue, warm sand",
+              "scale": 1.1,
+              "intensity": 65,
+              "adjust": {
+                "scale": 1.1,
+                "intensity": 65
+              }
+            },
+            {
+              "layer": "spec",
+              "key": "spec::pearl_micro",
+              "name": "Pearl Micro",
+              "why": "shine texture (colours stay): Smooth undulating mother-of-pearl iridescence, soft micro sparkle, no anisotropy; gentle… — x1 size, 90% strength; pairs with gloss, metallic",
+              "scale": 1,
+              "intensity": 90,
+              "adjust": {
+                "scale": 1,
+                "intensity": 90
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z5",
+                "finish": "monolithic::cc_magma_freeze",
+                "color": "finish",
+                "hue": -18,
+                "pattern": {
+                  "id": "none"
+                }
+              }
+            },
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z6",
+                "finish": "monolithic::cc_magma_freeze",
+                "color": "finish",
+                "hue": -18,
+                "pattern": {
+                  "id": "none"
+                }
+              }
+            },
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Roof Carbon Weave (Pattern)",
+                "region": {
+                  "part": "roof"
+                },
+                "finish": "monolithic::cc_magma_freeze",
+                "color": "finish",
+                "hue": -18,
+                "pattern": {
+                  "id": "carbon_weave_pattern",
+                  "opacity": 65,
+                  "scale": 1.1
+                },
+                "spec_patterns": [
+                  {
+                    "id": "pearl_micro",
+                    "opacity": 90,
+                    "scale": 1
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "suggestTool apply",
+      "proposed_steps": [
+        {
+          "zone_id": "z5",
+          "finish": "monolithic::cc_magma_freeze",
+          "color": "finish",
+          "hue": -18,
+          "pattern": {
+            "id": "none"
+          }
+        },
+        {
+          "zone_id": "z6",
+          "finish": "monolithic::cc_magma_freeze",
+          "color": "finish",
+          "hue": -18,
+          "pattern": {
+            "id": "none"
+          }
+        },
+        {
+          "name": "Roof Carbon Weave (Pattern)",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "monolithic::cc_magma_freeze",
+          "color": "finish",
+          "hue": -18,
+          "pattern": {
+            "id": "carbon_weave_pattern",
+            "opacity": 65,
+            "scale": 1.1
+          },
+          "spec_patterns": [
+            {
+              "id": "pearl_micro",
+              "opacity": 90,
+              "scale": 1
+            }
+          ]
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P21",
+      "phrase": "Color all body panels matte gold and add a blue pearl layer exclusively to the hood.",
+      "expected_scope": "body+part",
+      "expected_part": "hood",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the body + the hood",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "monolithic::cc_nuclear_dawn",
+              "name": "Color Clash: Nuclear Dawn",
+              "why": "Dense gold-yellow speckled matte surface, like rough sandpaper with heavy sparkle. (semi-matte, medium metal)",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {}
+            },
+            {
+              "layer": "spec",
+              "key": "spec::pearl_micro",
+              "name": "Pearl Micro",
+              "why": "shine texture (colours stay): Smooth undulating mother-of-pearl iridescence, soft micro sparkle, no anisotropy; gentle… — x1 size, 70% strength; pairs with gloss, metallic",
+              "scale": 1,
+              "intensity": 70,
+              "adjust": {
+                "scale": 1,
+                "intensity": 70
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z5",
+                "finish": "monolithic::cc_nuclear_dawn",
+                "color": "finish"
+              }
+            },
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z6",
+                "finish": "monolithic::cc_nuclear_dawn",
+                "color": "finish"
+              }
+            },
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Hood Pearl Micro",
+                "region": {
+                  "part": "hood"
+                },
+                "finish": "monolithic::cc_nuclear_dawn",
+                "color": "finish",
+                "spec_patterns": [
+                  {
+                    "id": "pearl_micro",
+                    "opacity": 70,
+                    "scale": 1
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "suggestTool apply",
+      "proposed_steps": [
+        {
+          "zone_id": "z5",
+          "finish": "monolithic::cc_nuclear_dawn",
+          "color": "finish"
+        },
+        {
+          "zone_id": "z6",
+          "finish": "monolithic::cc_nuclear_dawn",
+          "color": "finish"
+        },
+        {
+          "name": "Hood Pearl Micro",
+          "region": {
+            "part": "hood"
+          },
+          "finish": "monolithic::cc_nuclear_dawn",
+          "color": "finish",
+          "spec_patterns": [
+            {
+              "id": "pearl_micro",
+              "opacity": 70,
+              "scale": 1
+            }
+          ]
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P22",
+      "phrase": "Start with a whole-car #C9A227 base; last, place fine snake scales on only the roof.",
+      "expected_scope": "body+part",
+      "expected_part": "roof",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": "recommend",
+        "intentTarget": {
+          "id": "roof",
+          "label": "the roof"
+        },
+        "answerKind": "stack",
+        "answerTarget": {
+          "id": "roof",
+          "label": "the roof"
+        },
+        "answerText": "A layered look: 2 layers on the body + the roof:\n- **Base**: Asset: Leaf Gilding — Bright yellow-gold fine flake, lighter and more yellow than its sibling, even satin sparkle. (satin, medium metal)\n- **Pattern**: Snake Skin — paint pattern on top: Tiny dense overlapping oval scales, very low contrast, reading as a fine uniform reptile… — x0.66 size, 65% strength; pairs with candy red, chrome\nSize: Snake Skin at \"fine\" = x0.66 (0.6 of its normal x1.1).\nPlacement: the base covers the whole car; the Snake Skin layer goes only on the roof.\n2 alternative stacks below. **Use this kit** puts every layer on the body + the roof in one step (one Undo); nothing changes until you press it.",
+        "answerKeys": [
+          "text",
+          "cards",
+          "kits",
+          "target",
+          "useLabel",
+          "colour",
+          "shown",
+          "kind",
+          "stack",
+          "next",
+          "last"
+        ],
+        "kits": [
+          {
+            "name": "Stack",
+            "items": [
+              {
+                "cardKey": "monolithic::msk_leaf_gilding",
+                "cardName": "Asset: Leaf Gilding",
+                "target": {
+                  "id": "body",
+                  "label": "the body"
+                },
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "monolithic::msk_leaf_gilding",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "none"
+                      }
+                    }
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "monolithic::msk_leaf_gilding",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "none"
+                      }
+                    }
+                  },
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Roof Snake Skin",
+                      "region": {
+                        "part": "roof"
+                      },
+                      "finish": "monolithic::msk_leaf_gilding",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "snake_skin",
+                        "opacity": 65,
+                        "scale": 0.66
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "cardKey": "pattern::snake_skin",
+                "cardName": "Snake Skin",
+                "target": {
+                  "id": "body",
+                  "label": "the body"
+                },
+                "steps": []
+              }
+            ]
+          },
+          {
+            "name": "Alt stack 1",
+            "items": [
+              {
+                "cardKey": "monolithic::cx_gold_green",
+                "cardName": "CX Gold-Green Flake",
+                "target": {
+                  "id": "body",
+                  "label": "the body"
+                },
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "monolithic::cx_gold_green",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "none"
+                      }
+                    }
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "monolithic::cx_gold_green",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "none"
+                      }
+                    }
+                  },
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Roof Snake Skin 4",
+                      "region": {
+                        "part": "roof"
+                      },
+                      "finish": "monolithic::cx_gold_green",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "snake_skin_4",
+                        "opacity": 65,
+                        "scale": 0.66
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "cardKey": "pattern::snake_skin_4",
+                "cardName": "Snake Skin 4",
+                "target": {
+                  "id": "body",
+                  "label": "the body"
+                },
+                "steps": []
+              }
+            ]
+          },
+          {
+            "name": "Alt stack 2",
+            "items": [
+              {
+                "cardKey": "monolithic::microshift_gold_green",
+                "cardName": "Microshift Gold Green",
+                "target": {
+                  "id": "body",
+                  "label": "the body"
+                },
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "monolithic::microshift_gold_green",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "none"
+                      }
+                    }
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "monolithic::microshift_gold_green",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "none"
+                      }
+                    }
+                  },
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Roof Crocodile",
+                      "region": {
+                        "part": "roof"
+                      },
+                      "finish": "monolithic::microshift_gold_green",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "crocodile",
+                        "opacity": 65,
+                        "scale": 0.51
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "cardKey": "pattern::crocodile",
+                "cardName": "Crocodile",
+                "target": {
+                  "id": "body",
+                  "label": "the body"
+                },
+                "steps": []
+              }
+            ]
+          }
+        ],
+        "cards": [
+          {
+            "cardKey": "monolithic::msk_leaf_gilding",
+            "cardName": "Asset: Leaf Gilding",
+            "target": {
+              "id": "body",
+              "label": "the body"
+            },
+            "steps": [
+              {
+                "tool": "edit_zone",
+                "args": {
+                  "zone_id": "z5",
+                  "finish": "monolithic::msk_leaf_gilding",
+                  "color": "finish",
+                  "pattern": {
+                    "id": "none"
+                  }
+                }
+              },
+              {
+                "tool": "edit_zone",
+                "args": {
+                  "zone_id": "z6",
+                  "finish": "monolithic::msk_leaf_gilding",
+                  "color": "finish",
+                  "pattern": {
+                    "id": "none"
+                  }
+                }
+              },
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Snake Skin",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "monolithic::msk_leaf_gilding",
+                  "color": "finish",
+                  "pattern": {
+                    "id": "snake_skin",
+                    "opacity": 65,
+                    "scale": 0.66
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "pattern::snake_skin",
+            "cardName": "Snake Skin",
+            "target": {
+              "id": "body",
+              "label": "the body"
+            },
+            "steps": []
+          },
+          {
+            "cardKey": "monolithic::cx_gold_green",
+            "cardName": "CX Gold-Green Flake",
+            "target": {
+              "id": "body",
+              "label": "the body"
+            },
+            "steps": [
+              {
+                "tool": "edit_zone",
+                "args": {
+                  "zone_id": "z5",
+                  "finish": "monolithic::cx_gold_green",
+                  "color": "finish",
+                  "pattern": {
+                    "id": "none"
+                  }
+                }
+              },
+              {
+                "tool": "edit_zone",
+                "args": {
+                  "zone_id": "z6",
+                  "finish": "monolithic::cx_gold_green",
+                  "color": "finish",
+                  "pattern": {
+                    "id": "none"
+                  }
+                }
+              },
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Snake Skin 4",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "monolithic::cx_gold_green",
+                  "color": "finish",
+                  "pattern": {
+                    "id": "snake_skin_4",
+                    "opacity": 65,
+                    "scale": 0.66
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "pattern::snake_skin_4",
+            "cardName": "Snake Skin 4",
+            "target": {
+              "id": "body",
+              "label": "the body"
+            },
+            "steps": []
+          },
+          {
+            "cardKey": "monolithic::microshift_gold_green",
+            "cardName": "Microshift Gold Green",
+            "target": {
+              "id": "body",
+              "label": "the body"
+            },
+            "steps": [
+              {
+                "tool": "edit_zone",
+                "args": {
+                  "zone_id": "z5",
+                  "finish": "monolithic::microshift_gold_green",
+                  "color": "finish",
+                  "pattern": {
+                    "id": "none"
+                  }
+                }
+              },
+              {
+                "tool": "edit_zone",
+                "args": {
+                  "zone_id": "z6",
+                  "finish": "monolithic::microshift_gold_green",
+                  "color": "finish",
+                  "pattern": {
+                    "id": "none"
+                  }
+                }
+              },
+              {
+                "tool": "add_zone",
+                "args": {
+                  "name": "Roof Crocodile",
+                  "region": {
+                    "part": "roof"
+                  },
+                  "finish": "monolithic::microshift_gold_green",
+                  "color": "finish",
+                  "pattern": {
+                    "id": "crocodile",
+                    "opacity": 65,
+                    "scale": 0.51
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "cardKey": "pattern::crocodile",
+            "cardName": "Crocodile",
+            "target": {
+              "id": "body",
+              "label": "the body"
+            },
+            "steps": []
+          }
+        ],
+        "suggestTool": {
+          "part": "the body + the roof",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "monolithic::msk_leaf_gilding",
+              "name": "Asset: Leaf Gilding",
+              "why": "Bright yellow-gold fine flake, lighter and more yellow than its sibling, even satin sparkle. (satin, medium metal)",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {}
+            },
+            {
+              "layer": "pattern",
+              "key": "pattern::snake_skin",
+              "name": "Snake Skin",
+              "why": "paint pattern on top: Tiny dense overlapping oval scales, very low contrast, reading as a fine uniform reptile… — x0.66 size, 65% strength; pairs with candy red, chrome",
+              "scale": 0.66,
+              "intensity": 65,
+              "adjust": {
+                "scale": 0.66,
+                "intensity": 65
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z5",
+                "finish": "monolithic::msk_leaf_gilding",
+                "color": "finish",
+                "pattern": {
+                  "id": "none"
+                }
+              }
+            },
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z6",
+                "finish": "monolithic::msk_leaf_gilding",
+                "color": "finish",
+                "pattern": {
+                  "id": "none"
+                }
+              }
+            },
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Roof Snake Skin",
+                "region": {
+                  "part": "roof"
+                },
+                "finish": "monolithic::msk_leaf_gilding",
+                "color": "finish",
+                "pattern": {
+                  "id": "snake_skin",
+                  "opacity": 65,
+                  "scale": 0.66
+                }
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "Use-kit stack",
+      "proposed_steps": [
+        {
+          "zone_id": "z5",
+          "finish": "monolithic::msk_leaf_gilding",
+          "color": "finish",
+          "pattern": {
+            "id": "none"
+          }
+        },
+        {
+          "zone_id": "z6",
+          "finish": "monolithic::msk_leaf_gilding",
+          "color": "finish",
+          "pattern": {
+            "id": "none"
+          }
+        },
+        {
+          "name": "Roof Snake Skin",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "monolithic::msk_leaf_gilding",
+          "color": "finish",
+          "pattern": {
+            "id": "snake_skin",
+            "opacity": 65,
+            "scale": 0.66
+          }
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P23",
+      "phrase": "Apply blue pearl paint over the entire car, then carbon-fiber the hood only.",
+      "expected_scope": "body+part",
+      "expected_part": "hood",
+      "compoundPlan": {
+        "zones": [
+          {
+            "name": "Pearl blue body base",
+            "region": {
+              "everything": true,
+              "paintable": true
+            },
+            "finish": "base::pearl",
+            "spec_patterns": []
+          },
+          {
+            "name": "Black carbon fiber hood",
+            "region": {
+              "part": "hood"
+            },
+            "finish": "base::gloss",
+            "pattern": "carbon_fiber",
+            "spec_patterns": [
+              "spec_carbon_3k_fine"
+            ]
+          }
+        ]
+      },
+      "result_type": "compound plan",
+      "proposed_steps": [
+        {
+          "region": {
+            "everything": true,
+            "paintable": true
+          }
+        },
+        {
+          "region": {
+            "part": "hood"
+          }
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P24",
+      "phrase": "Paint the whole body matte black and put a gold hex layer on the roof alone.",
+      "expected_scope": "body+part",
+      "expected_part": "roof",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the body + the roof",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "base::matte",
+              "name": "Matte",
+              "why": "Matte body in the selected colour; light is absorbed, faint coat lobe keeps it from going dead. (matte); takes the zone colour, so the base colour is set to black (#111113)",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {
+                "base_colour": "#111113"
+              }
+            },
+            {
+              "layer": "pattern",
+              "key": "pattern::chainmail_hex",
+              "name": "Chainmail Hex",
+              "why": "paint pattern on top: Tight grid of interlocking circular rings in hexagonal close-pack, fine repeating… — x0.7 size, 65% strength; pairs with dark grey base, gunmetal",
+              "scale": 0.7,
+              "intensity": 65,
+              "adjust": {
+                "scale": 0.7,
+                "intensity": 65
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z5",
+                "finish": "base::matte",
+                "color": "#111113",
+                "pattern": {
+                  "id": "none"
+                }
+              }
+            },
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z6",
+                "finish": "base::matte",
+                "color": "#111113",
+                "pattern": {
+                  "id": "none"
+                }
+              }
+            },
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Roof Chainmail Hex",
+                "region": {
+                  "part": "roof"
+                },
+                "finish": "base::matte",
+                "color": "#111113",
+                "pattern": {
+                  "id": "chainmail_hex",
+                  "opacity": 65,
+                  "scale": 0.7
+                }
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "suggestTool apply",
+      "proposed_steps": [
+        {
+          "zone_id": "z5",
+          "finish": "base::matte",
+          "color": "#111113",
+          "pattern": {
+            "id": "none"
+          }
+        },
+        {
+          "zone_id": "z6",
+          "finish": "base::matte",
+          "color": "#111113",
+          "pattern": {
+            "id": "none"
+          }
+        },
+        {
+          "name": "Roof Chainmail Hex",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "base::matte",
+          "color": "#111113",
+          "pattern": {
+            "id": "chainmail_hex",
+            "opacity": 65,
+            "scale": 0.7
+          }
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P25",
+      "phrase": "Set the whole-car base to pearl blue; keep that base, then add matte gold to the hood only.",
+      "expected_scope": "body+part",
+      "expected_part": "hood",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the hood",
+          "apply": []
+        }
+      },
+      "result_type": "no actionable plan",
+      "proposed_steps": [],
+      "judgment": "unsupported/no mutation plan"
+    },
+    {
+      "id": "P26",
+      "phrase": "Make the entire car gold, then put a blue snake pattern exclusively on the roof.",
+      "expected_scope": "body+part",
+      "expected_part": "roof",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the body + the roof",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "monolithic::cx_gold_green",
+              "name": "CX Gold-Green Flake",
+              "why": "Bright yellow-gold satin with fine green-gold sparkle; reads as one flat warm gold from a… (satin, medium metal)",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {}
+            },
+            {
+              "layer": "pattern",
+              "key": "pattern::snake_skin",
+              "name": "Snake Skin",
+              "why": "paint pattern on top: Tiny dense overlapping oval scales, very low contrast, reading as a fine uniform reptile… — x1.1 size, 65% strength; pairs with candy red, chrome",
+              "scale": 1.1,
+              "intensity": 65,
+              "adjust": {
+                "scale": 1.1,
+                "intensity": 65
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z5",
+                "finish": "monolithic::cx_gold_green",
+                "color": "finish",
+                "pattern": {
+                  "id": "none"
+                }
+              }
+            },
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z6",
+                "finish": "monolithic::cx_gold_green",
+                "color": "finish",
+                "pattern": {
+                  "id": "none"
+                }
+              }
+            },
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Roof Snake Skin",
+                "region": {
+                  "part": "roof"
+                },
+                "finish": "monolithic::cx_gold_green",
+                "color": "finish",
+                "pattern": {
+                  "id": "snake_skin",
+                  "opacity": 65,
+                  "scale": 1.1
+                }
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "suggestTool apply",
+      "proposed_steps": [
+        {
+          "zone_id": "z5",
+          "finish": "monolithic::cx_gold_green",
+          "color": "finish",
+          "pattern": {
+            "id": "none"
+          }
+        },
+        {
+          "zone_id": "z6",
+          "finish": "monolithic::cx_gold_green",
+          "color": "finish",
+          "pattern": {
+            "id": "none"
+          }
+        },
+        {
+          "name": "Roof Snake Skin",
+          "region": {
+            "part": "roof"
+          },
+          "finish": "monolithic::cx_gold_green",
+          "color": "finish",
+          "pattern": {
+            "id": "snake_skin",
+            "opacity": 65,
+            "scale": 1.1
+          }
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P27",
+      "phrase": "Set the whole-car base color to #1247A8, then use the hood layer controls to add a pearl hex effect only there.",
+      "expected_scope": "body+part",
+      "expected_part": "hood",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the body + the hood",
+          "stack": [
+            {
+              "layer": "base",
+              "key": "base::pearl",
+              "name": "Pearl",
+              "why": "Glossy surface with soft colour-shifting iridescence; rainbow shimmer that changes hue as the… (high gloss, low metal)",
+              "scale": 1,
+              "intensity": 100,
+              "adjust": {}
+            },
+            {
+              "layer": "pattern",
+              "key": "pattern::hex_carbon",
+              "name": "Hex Carbon",
+              "why": "paint pattern on top: Fine hexagonal carbon weave, small bright honeycomb cells in neat diagonal rows, low… — x1.1 size, 65% strength; pairs with gloss black, dark grey",
+              "scale": 1.1,
+              "intensity": 65,
+              "adjust": {
+                "scale": 1.1,
+                "intensity": 65
+              }
+            }
+          ],
+          "apply": [
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z5",
+                "finish": "base::pearl",
+                "pattern": {
+                  "id": "none"
+                }
+              }
+            },
+            {
+              "tool": "edit_zone",
+              "args": {
+                "zone_id": "z6",
+                "finish": "base::pearl",
+                "color": "source",
+                "pattern": {
+                  "id": "none"
+                }
+              }
+            },
+            {
+              "tool": "add_zone",
+              "args": {
+                "name": "Hood Hex Carbon",
+                "region": {
+                  "part": "hood"
+                },
+                "finish": "base::pearl",
+                "pattern": {
+                  "id": "hex_carbon",
+                  "opacity": 65,
+                  "scale": 1.1
+                }
+              }
+            }
+          ]
+        }
+      },
+      "result_type": "suggestTool apply",
+      "proposed_steps": [
+        {
+          "zone_id": "z5",
+          "finish": "base::pearl",
+          "pattern": {
+            "id": "none"
+          }
+        },
+        {
+          "zone_id": "z6",
+          "finish": "base::pearl",
+          "color": "source",
+          "pattern": {
+            "id": "none"
+          }
+        },
+        {
+          "name": "Hood Hex Carbon",
+          "region": {
+            "part": "hood"
+          },
+          "finish": "base::pearl",
+          "pattern": {
+            "id": "hex_carbon",
+            "opacity": 65,
+            "scale": 1.1
+          }
+        }
+      ],
+      "judgment": "scope-compatible"
+    },
+    {
+      "id": "P28",
+      "phrase": "Keep a matte gold base on the full vehicle and use the roof layer controls for a blue carbon overlay just on the roof.",
+      "expected_scope": "body+part",
+      "expected_part": "roof",
+      "compoundPlan": null,
+      "advisor": {
+        "intentKind": null,
+        "intentTarget": null,
+        "answerKind": null,
+        "answerTarget": null,
+        "answerText": null,
+        "answerKeys": null,
+        "kits": [],
+        "cards": [],
+        "suggestTool": {
+          "part": "the roof",
+          "apply": []
+        }
+      },
+      "result_type": "no actionable plan",
+      "proposed_steps": [],
+      "judgment": "unsupported/no mutation plan"
+    }
+  ]
+}

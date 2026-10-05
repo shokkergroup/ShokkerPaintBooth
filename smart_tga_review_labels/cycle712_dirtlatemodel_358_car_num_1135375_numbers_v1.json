@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_1135375.tga",
+  "inspection_records": "_smart_tga_runs/cycle711_fresh_dlm_active_pool/inspection_records.json",
+  "review_scope": "Untouched Cycle 712 holdout; source, complete owner sheets, and proposal crops reviewed after model freeze.",
+  "evaluation_role": "untouched_cross_owner_holdout",
+  "component_labels": [
+    {"layer":"numbers","component_index":7,"expected_bbox":[823,799,132,180],"target_layer":"numbers","label":"true_number_44_rotated_copy"},
+    {"layer":"sponsors","component_index":34,"expected_bbox":[536,338,303,152],"target_layer":"sponsors","label":"sponsor_atlas_wordmark_false_number"},
+    {"layer":"sponsors","component_index":37,"expected_bbox":[277,353,166,232],"target_layer":"template","label":"tire_hardware_false_number"},
+    {"layer":"paint","component_index":0,"expected_bbox":[0,0,1024,1024],"target_layer":"paint","label":"whole_paint_false_number"}
+  ]
+}

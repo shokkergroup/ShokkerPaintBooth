@@ -1,0 +1,90 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon_ice_white",
+  "display_name": "Cryoglass Fiber",
+  "carrier": "deep graphite/blue-black resin packed with fractured translucent white and ice-blue microfibers",
+  "material_story": {
+    "M": "prismatic splinters, clipped clean ends, and compact crossing welds expose the brightest glass",
+    "R": "frost collars, delamination notches, black occlusion cuts, and clipped damage raise roughness",
+    "Cc": "intact resin/fiber pools, compact welds, and faceted trapped-air pockets retain coat while rupture loses it"
+  },
+  "vetoes": [
+    "snowflakes",
+    "icicles",
+    "long hairs or scratches",
+    "webs",
+    "starbursts",
+    "confetti",
+    "repeated X marks",
+    "generic white-noise carpet",
+    "macro voids"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 1.819635,
+  "material_stats": {
+    "std": {
+      "M": 82.78643,
+      "R": 83.299248,
+      "Cc": 83.260788
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": -0.230082,
+      "M_Cc": 0.474833,
+      "R_Cc": -0.62523
+    }
+  },
+  "geometry_stats": {
+    "family_count": 9,
+    "families": {
+      "black occlusion cuts": 969,
+      "clipped fiber ends": 701,
+      "crossing welds": 201,
+      "delamination notches": 1031,
+      "faceted trapped-air beads": 698,
+      "fractured translucent fibers": 4580,
+      "frost collars": 805,
+      "graphite resin facets": 4629,
+      "prismatic splinters": 1302
+    },
+    "width_native_min": 8.004,
+    "width_native_median": 18.709,
+    "width_native_p90": 28.819,
+    "width_native_max": 31.995,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "graphite/blue-black resin facets": 0.177468,
+    "fractured translucent fibers": 0.203011,
+    "prismatic splinters": 0.034709,
+    "frost collars": 0.02686,
+    "clipped fiber ends": 0.021827,
+    "faceted trapped-air beads": 0.018381,
+    "crossing welds": 0.006314,
+    "delamination notches": 0.020649,
+    "black occlusion cuts": 0.03864,
+    "intact resin/fiber pools": 0.243505
+  }
+}

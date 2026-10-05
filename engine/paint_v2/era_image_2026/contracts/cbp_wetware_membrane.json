@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_wetware_membrane",
+  "display_name": "Chrome: Wetware Gel",
+  "promise": "Tiny coral gel cells with lime membranes and violet suspended filaments.",
+  "carrier_grammar": "Tiny coral gel cells with lime membranes and violet suspended filaments. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for coral gel cells, lime membrane rims, violet suspended filaments, pale fluid lens points, dark pore throats is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny coral gel cells with lime membranes and violet suspended filaments. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_wetware_membrane.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "coral gel cells",
+      "role": "Actual shared paint and spec geometry: coral gel cells"
+    },
+    {
+      "name": "lime membrane rims",
+      "role": "Actual shared paint and spec geometry: lime membrane rims"
+    },
+    {
+      "name": "violet suspended filaments",
+      "role": "Actual shared paint and spec geometry: violet suspended filaments"
+    },
+    {
+      "name": "pale fluid lens points",
+      "role": "Actual shared paint and spec geometry: pale fluid lens points"
+    },
+    {
+      "name": "dark pore throats",
+      "role": "Actual shared paint and spec geometry: dark pore throats"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "coral gel cells",
+      "lime membrane rims",
+      "violet suspended filaments",
+      "pale fluid lens points",
+      "dark pore throats"
+    ],
+    "R": [
+      "coral gel cells",
+      "lime membrane rims",
+      "violet suspended filaments",
+      "pale fluid lens points",
+      "dark pore throats"
+    ],
+    "Cc": [
+      "coral gel cells",
+      "lime membrane rims",
+      "violet suspended filaments",
+      "pale fluid lens points",
+      "dark pore throats"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_biohazard_bloom",
+      "difference": "This finish uses Dense microscopic coral translucent gel cells with lime wrinkled membrane rims, violet suspended filament curls, pale fluid lens points and dark pore throats. Fine irregular soft biological gel texture, no actual organs, no large bubbles, no repeated honeycomb lattice.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_sewer_bloom",
+      "difference": "This finish uses Dense microscopic coral translucent gel cells with lime wrinkled membrane rims, violet suspended filament curls, pale fluid lens points and dark pore throats. Fine irregular soft biological gel texture, no actual organs, no large bubbles, no repeated honeycomb lattice.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "coral gel cells is visible in the authored geometry",
+      "lime membrane rims is visible in the authored geometry",
+      "violet suspended filaments is visible in the authored geometry",
+      "pale fluid lens points is visible in the authored geometry",
+      "dark pore throats is visible in the authored geometry"
+    ],
+    "source_sha256": "c5d448085a510e1007a851c4a0b14bae40c942752423a88de84f6a347b6f0286",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_wetware_membrane-authored-Tiny coral gel cells with lime membranes and violet suspended filaments. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_wetware_membrane-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 67.5,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "f4cc89a538b708bcfab6efe0f1752f546b66f4f9dc3641c92bc1b402a04d1a7c"
+}

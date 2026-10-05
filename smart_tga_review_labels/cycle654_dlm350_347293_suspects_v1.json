@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 350/car_num_347293.tga",
+  "inspection_records": "_smart_tga_runs/cycle654_dlm_batch_unique/inspection_records.json",
+  "review_scope": "Cycle 654 manual source and all-owner sheet review of every emitted suspect bbox.",
+  "component_labels": [
+    {"layer":"numbers","component_index":8,"expected_bbox":[19,710,156,58],"target_layer":"sponsors","label":"sponsor_logo","note":"Joel's Auto Sales / MB Customs sponsor lockup, not a car number."},
+    {"layer":"sponsors","component_index":18,"expected_bbox":[174,805,90,41],"target_layer":"paint","label":"paint_livery_arc","note":"Decorative red/black body arc."},
+    {"layer":"paint","component_index":10,"expected_bbox":[128,238,25,5],"target_layer":"sponsors","label":"sponsor_logo_fragment","note":"Small checkered sponsor-mark fragment."},
+    {"layer":"paint","component_index":11,"expected_bbox":[101,240,10,11],"target_layer":"sponsors","label":"sponsor_logo_fragment","note":"Small sponsor-mark fragment adjacent to the checkered logo."}
+  ]
+}

@@ -1,0 +1,10 @@
+{"version":1,"inspection_records":"_smart_tga_runs/cycle675_dlm_subtype_review/inspection_records.json","physical_group_audit":"_smart_tga_runs/cycle675_dlm_subtype_review/physical_groups/audit.json","review_scope":"Cycle 675 manual classification of every physical-group sheet bbox in immutable audit order after reviewing source and all four owner sheets.","casts_votes":false,"ownership_authority":false,"paint_group_targets":{
+ "dirtlatemodel 350/car_num_1308069.tga":["template","template","sponsors","template","sponsors","sponsors","sponsors","sponsors","sponsors","template","sponsors","paint","sponsors","template","sponsors","template","sponsors","sponsors","sponsors","sponsors","sponsors","paint","sponsors","sponsors","sponsors","paint","sponsors","sponsors","numbers","paint"],
+ "dirtlatemodel 350/car_num_1312918.tga":["sponsors","paint","paint","paint","sponsors","paint","sponsors","sponsors","sponsors","numbers","sponsors"],
+ "dirtlatemodel 350/car_num_1317463.tga":["uncertain","paint","paint","paint","sponsors","sponsors","template","sponsors","sponsors","sponsors","sponsors","template","sponsors","template","template","paint","paint","paint","numbers"],
+ "dirtlatemodel 350/car_num_1320723.tga":["paint","paint","sponsors","sponsors","paint","sponsors","paint","template","template"],
+ "dirtlatemodel 358/car_num_1194313.tga":["uncertain","sponsors","paint","paint","paint","template"],
+ "dirtlatemodel 358/car_num_1194450.tga":["paint","paint","numbers","template","paint","paint"],
+ "dirtlatemodel 358/car_num_1196651.tga":["sponsors","paint","paint","template","paint","paint","paint","sponsors","paint","sponsors","sponsors","paint","paint"],
+ "dirtlatemodel 358/car_num_1197281.tga":["paint","paint","sponsors","paint","paint","paint","paint","paint","numbers","numbers"]
+}}

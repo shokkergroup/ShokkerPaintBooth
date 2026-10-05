@@ -1,0 +1,5 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_60499.tga","inspection_records":"_smart_tga_runs/cycle682_dlm_instance_assembly_review/inspection_records.json","review_scope":"Cycle 682 source plus complete Number/Sponsor/Template/Paint sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[482,31,121,98],"target_layer":"paint","label":"body_panel_false_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[317,32,162,87],"target_layer":"paint","label":"body_panel_false_number"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[751,408,84,222],"target_layer":"sponsors","label":"drydene_wordmark_false_number"}
+]}

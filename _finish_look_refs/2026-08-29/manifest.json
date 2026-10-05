@@ -1,0 +1,848 @@
+{
+ "houdini_aurora_wolf": {
+  "paint_sha": "075fc8d23f921c8d52099cb70edb5ff08124c9bcac209671b66193147b0251c0",
+  "spec_sha": "bb89624801ee9eee9af1cf5f8aed0f6269bfd3fb0bf928d7bff1d15a0647f65e",
+  "paint_ms": 2398,
+  "spec_ms": 2558,
+  "total_ms": 4957,
+  "paint_stats": [
+   0.0879,
+   0.0662
+  ],
+  "over_budget": true,
+  "deterministic": true
+ },
+ "houdini_chroma_pyre": {
+  "paint_sha": "66ecfa5f34bb6274cd26249dd8e7f8071d6fabf51465fa100e187d7089263793",
+  "spec_sha": "34fd0696a5c2996af95a759573fea2642d9a0765eadcd1d9127889db6a45e9ac",
+  "paint_ms": 2644,
+  "spec_ms": 2850,
+  "total_ms": 5494,
+  "paint_stats": [
+   0.0415,
+   0.1074
+  ],
+  "over_budget": true,
+  "deterministic": true
+ },
+ "houdini_cinder_cross": {
+  "paint_sha": "2ff8c6d7210d7ab482a9ee63d2d084b85f5a5b23e0f2d42a39fcf884b54ad5f5",
+  "spec_sha": "7242de483a81fe3dc8d67d17044da2c5781f97a6e5fa34577f486ffcaf86e46a",
+  "paint_ms": 1247,
+  "spec_ms": 1499,
+  "total_ms": 2746,
+  "paint_stats": [
+   0.0401,
+   0.1136
+  ],
+  "over_budget": false,
+  "deterministic": true
+ },
+ "houdini_eclipse_veil": {
+  "paint_sha": "2d55fe8f916a2565789689f975bd5a67f76af43a82e4fecfb469519a3062cb89",
+  "spec_sha": "3591d2486881f479caeb6a04fc116fd7e5f1135b2d82aaf06da1e02793d1fab4",
+  "paint_ms": 2548,
+  "spec_ms": 2765,
+  "total_ms": 5313,
+  "paint_stats": [
+   0.058,
+   0.0731
+  ],
+  "over_budget": true
+ },
+ "houdini_ember_cipher": {
+  "paint_sha": "4ae4746a4471c94a4692386e684fa99cc8a9ba896addb4d0963b1d85a7e89429",
+  "spec_sha": "f5dc6f417605fde8a318d7948425921edff35a106a377c94f2375e8b4e1ab40c",
+  "paint_ms": 1336,
+  "spec_ms": 1274,
+  "total_ms": 2611,
+  "paint_stats": [
+   0.0467,
+   0.0706
+  ],
+  "over_budget": false
+ },
+ "houdini_ghost_spiral": {
+  "paint_sha": "17e2f8406555032693aff118266174527022022a2893008d4993ce7f0a139425",
+  "spec_sha": "ff1a6abb0481cc412b24578c78c3799a91ce22bad9767830ab2a6c36ec11efcf",
+  "paint_ms": 1464,
+  "spec_ms": 1468,
+  "total_ms": 2932,
+  "paint_stats": [
+   0.0341,
+   0.0563
+  ],
+  "over_budget": false
+ },
+ "houdini_gilded_crown": {
+  "paint_sha": "7a83fe330bf9dfd68f0d8377e9af98998858970bf66bbbe7cf215d2022a5d459",
+  "spec_sha": "de5b9e0b72c6b404109e7fc42ec6b9fd4a572fe0008cc92d6326c80208ac1440",
+  "paint_ms": 2189,
+  "spec_ms": 2101,
+  "total_ms": 4290,
+  "paint_stats": [
+   0.0709,
+   0.1525
+  ],
+  "over_budget": true
+ },
+ "houdini_glacier_eye": {
+  "paint_sha": "36003d86af808f08ac27568d5d36a143ffa86577b12a8daf205dc33c18aa83c7",
+  "spec_sha": "59884e863b7b7f7bcda2d113721053500db7b31c5242ed3cb9a92646f151f737",
+  "paint_ms": 2360,
+  "spec_ms": 2519,
+  "total_ms": 4879,
+  "paint_stats": [
+   0.116,
+   0.4344
+  ],
+  "over_budget": true
+ },
+ "houdini_lapis_scarab": {
+  "paint_sha": "1b3934f59f6fa4d3bd1b806fa8c7b9447fa427bb6c6dedaf4e86125cc18d2c08",
+  "spec_sha": "8d51b0675f4b8f7b53833b71192290ebb37a5a3578527adb5342e763f82a789e",
+  "paint_ms": 2231,
+  "spec_ms": 2278,
+  "total_ms": 4509,
+  "paint_stats": [
+   0.0751,
+   0.1174
+  ],
+  "over_budget": true
+ },
+ "houdini_marble_rose": {
+  "paint_sha": "fddc0a359b8e0da88bffe5e42336a7794c7040b10212ec589dc61b9a385d4321",
+  "spec_sha": "64e551cd5e28ec22a3e4ca344d59c8590540e20af32e8ee0d220db88791cc4a7",
+  "paint_ms": 2404,
+  "spec_ms": 2315,
+  "total_ms": 4720,
+  "paint_stats": [
+   0.0665,
+   0.5082
+  ],
+  "over_budget": true
+ },
+ "houdini_mirage_compass": {
+  "paint_sha": "1f7c36c0041b060a8613ff73cedb0e70f584d4aebd8dbd8d2f2df99ecb16542e",
+  "spec_sha": "c2b5bee5966f690e17ef767cd2aabce16f3580baa091aea225d4062b24001ba8",
+  "paint_ms": 2062,
+  "spec_ms": 2075,
+  "total_ms": 4138,
+  "paint_stats": [
+   0.0381,
+   0.0799
+  ],
+  "over_budget": true
+ },
+ "houdini_ouroboros": {
+  "paint_sha": "1b07c16fba9a236a904ce0537021194bff9b9f446a9e318121c8eea54200230d",
+  "spec_sha": "a46f313823ef6babaaa73092c5d028b82790eeabf96ace4beb461bdf66ada05a",
+  "paint_ms": 1221,
+  "spec_ms": 1352,
+  "total_ms": 2573,
+  "paint_stats": [
+   0.0437,
+   0.0853
+  ],
+  "over_budget": false
+ },
+ "houdini_phantom_comet": {
+  "paint_sha": "dc2a8a0b91f6c494bb7da6171065f07413dd33a6d819b7833f0443bea5260104",
+  "spec_sha": "70f41f56987f2afba8f304f721969ca897d2fa21aa6efc15dd50ef77549722d0",
+  "paint_ms": 2041,
+  "spec_ms": 2060,
+  "total_ms": 4101,
+  "paint_stats": [
+   0.0743,
+   0.0699
+  ],
+  "over_budget": true
+ },
+ "houdini_porcelain_cipher": {
+  "paint_sha": "dab129d4d4387bba75553e8686ce711bfd734bbd6092d5cd3bb62d87d975fe96",
+  "spec_sha": "f4638201c09b2889ebfeec608f3209873a8ee5fecf74f33df3633621d28a97ff",
+  "paint_ms": 2044,
+  "spec_ms": 1993,
+  "total_ms": 4038,
+  "paint_stats": [
+   0.0746,
+   0.4542
+  ],
+  "over_budget": true
+ },
+ "houdini_prism_moth": {
+  "paint_sha": "7d32eda8c57b188ad5ff8a229944bcf4e5391801054b3fda79608c839ca1b9e2",
+  "spec_sha": "205ec6e8519bdee1442989137a517d82c0ebabc25a1d9b4b2f12f8c04a2ddbab",
+  "paint_ms": 1902,
+  "spec_ms": 1844,
+  "total_ms": 3747,
+  "paint_stats": [
+   0.0614,
+   0.0783
+  ],
+  "over_budget": true
+ },
+ "houdini_quicksilver_helix": {
+  "paint_sha": "12be4a015f2e8faa466b3d3ce88db19d072be02468a6397250aa054fd8778b49",
+  "spec_sha": "7911a1fe1c07b9d333597d632be1b606783363dbe1c90f5fe5c636f0f763c82d",
+  "paint_ms": 2052,
+  "spec_ms": 2077,
+  "total_ms": 4130,
+  "paint_stats": [
+   0.0548,
+   0.2297
+  ],
+  "over_budget": true
+ },
+ "houdini_tidal_relic": {
+  "paint_sha": "c661126f41e59d5f53bbb0d45185149cf304a8d8a40ed6dfd1348bfb8b8d1ee1",
+  "spec_sha": "40e6cd2e150277c03fdc2e166a2cd57a5b6e2c6e00131a05dbf2fe4ee132b27a",
+  "paint_ms": 1935,
+  "spec_ms": 1929,
+  "total_ms": 3865,
+  "paint_stats": [
+   0.0759,
+   0.1366
+  ],
+  "over_budget": true
+ },
+ "houdini_veiled_skull": {
+  "paint_sha": "30bf65a13ffd2635ebcbdfe18c910cf4f407f80107cd2288b519b5beea3cf0f9",
+  "spec_sha": "101cae24a0a2797dd2cdf1c60b73d9f3d80139948c96a2b682a5130e3f1ad150",
+  "paint_ms": 1209,
+  "spec_ms": 1178,
+  "total_ms": 2388,
+  "paint_stats": [
+   0.0752,
+   0.1197
+  ],
+  "over_budget": false
+ },
+ "houdini_velvet_dagger": {
+  "paint_sha": "23cde9847569a1e3f5aee814c1415afc8df8eb1cdc2a3ef71ecd23264da8533d",
+  "spec_sha": "8b0f6008b2e75af842fc4e59a11cb0ab40fc98584d88aa01edcc0d8cef6378ec",
+  "paint_ms": 2020,
+  "spec_ms": 2087,
+  "total_ms": 4108,
+  "paint_stats": [
+   0.0938,
+   0.1301
+  ],
+  "over_budget": true
+ },
+ "houdini_verdigris_ankh": {
+  "paint_sha": "cd7168f0abdff50b3bb0c8a9d4a78e1ae4826d017a1a44deaf72d0e51586a23d",
+  "spec_sha": "b5e8f3769918a198aa879586d3197480aeaf964261dd00755f4b05f5bf981a1f",
+  "paint_ms": 2104,
+  "spec_ms": 2267,
+  "total_ms": 4372,
+  "paint_stats": [
+   0.1157,
+   0.1738
+  ],
+  "over_budget": true
+ },
+ "xlab_abyssal_lens": {
+  "paint_sha": "b423c59a47108cc87ec1568d093c69c40474dd56bf410dd064f983c5f46bd5ee",
+  "spec_sha": "136353ebd7d9498c95f08117dcc7cadd2209bd186bf4e2d236958f3253d29bb7",
+  "paint_ms": 2260,
+  "spec_ms": 126,
+  "total_ms": 2386,
+  "paint_stats": [
+   0.1985,
+   0.1968
+  ],
+  "over_budget": false
+ },
+ "xlab_aerogel_fire": {
+  "paint_sha": "46a060b6dd75f72c807b4f235fa1e8d5b0c7182dbc0cafda466d423e56e2c6a2",
+  "spec_sha": "9e3f3c2435082c5ab5b91066679e7fe719bfb0674772aa36f652370ad567b2be",
+  "paint_ms": 2741,
+  "spec_ms": 98,
+  "total_ms": 2840,
+  "paint_stats": [
+   0.185,
+   0.2365
+  ],
+  "over_budget": false
+ },
+ "xlab_afterimage_lacquer": {
+  "paint_sha": "68e440a28f43873c6b9019003f770e74602ae31d9ffb1dde2b69fe6f5528ce3d",
+  "spec_sha": "31a642c2e2141be3b633005be129b8fb3e6c6a3c25006e4d5b47a3b67f7e2cae",
+  "paint_ms": 2630,
+  "spec_ms": 101,
+  "total_ms": 2732,
+  "paint_stats": [
+   0.1044,
+   0.1079
+  ],
+  "over_budget": false
+ },
+ "xlab_anamorphic_pearl": {
+  "paint_sha": "3ecda5ae8c933e7ea9336569e2aa8d88437c26d1c5cc66dfd7101307fffb2698",
+  "spec_sha": "60962f5fc7a59f53575ac0cf54573d7dc14e2408421dfe8e8d7e69080bbcde70",
+  "paint_ms": 2584,
+  "spec_ms": 99,
+  "total_ms": 2683,
+  "paint_stats": [
+   0.1713,
+   0.2905
+  ],
+  "over_budget": false
+ },
+ "xlab_anti_gravity_foil": {
+  "paint_sha": "70f4228c5ea707891f9aee9dd185003aa0f4161e26db35afae6f681d9629d0a5",
+  "spec_sha": "40e22b4593a2295ce4ffd4e7d88cf38862a0c15d811e8cf51feca5b1a9c416b0",
+  "paint_ms": 3074,
+  "spec_ms": 103,
+  "total_ms": 3178,
+  "paint_stats": [
+   0.191,
+   0.1749
+  ],
+  "over_budget": true
+ },
+ "xlab_arc_weld_velvet": {
+  "paint_sha": "1b0fec00b03add18cb313de4b777e142bee588860be9740e3427a5698791b3fc",
+  "spec_sha": "927c33d1434d70bf29f66cd07de9602f37a0a589c9302664a1538291a9687863",
+  "paint_ms": 2124,
+  "spec_ms": 98,
+  "total_ms": 2223,
+  "paint_stats": [
+   0.1075,
+   0.0932
+  ],
+  "over_budget": false
+ },
+ "xlab_black_ice_orbit": {
+  "paint_sha": "bafdd4ac58770e3aa8190f3c61d10ec575635f4ec977e013e13848d4cd97a655",
+  "spec_sha": "a24c82dc9e44009d867a3910b48449b134da01abca715a6d82c3b22572b3c400",
+  "paint_ms": 2703,
+  "spec_ms": 99,
+  "total_ms": 2802,
+  "paint_stats": [
+   0.1196,
+   0.097
+  ],
+  "over_budget": false
+ },
+ "xlab_bloomglass": {
+  "paint_sha": "1108477ee7dba4005c6f90d3a0e4328d8d9b9f3f34574bca48f80251e3b8a9e3",
+  "spec_sha": "ebc34adc232344b5221240f3dff180d7abb258bbc234efcc930e3baec13b0d78",
+  "paint_ms": 5031,
+  "spec_ms": 125,
+  "total_ms": 5156,
+  "paint_stats": [
+   0.1532,
+   0.178
+  ],
+  "over_budget": true
+ },
+ "xlab_brunel_current": {
+  "paint_sha": "8ddeba845f24da6e237a0b2dcbe30253f2a34d653a9f521be133e5e66d51c22e",
+  "spec_sha": "b0f34fe7c1b2a11b8cf585b4002f2b3cad52b8d7f48d8d3ce1f21fb070c325ee",
+  "paint_ms": 2846,
+  "spec_ms": 126,
+  "total_ms": 2973,
+  "paint_stats": [
+   0.0974,
+   0.0777
+  ],
+  "over_budget": false
+ },
+ "xlab_caustic_engine": {
+  "paint_sha": "567afe9b71c3898777238cca34010a98aa9bd4e9b300a526b39ef0213b126cf5",
+  "spec_sha": "e94ec37c3519456388323d445b22d4d28500d049cfa0d531a1e07d7acffb8a5d",
+  "paint_ms": 2698,
+  "spec_ms": 118,
+  "total_ms": 2817,
+  "paint_stats": [
+   0.1799,
+   0.1814
+  ],
+  "over_budget": false
+ },
+ "xlab_ceramic_storm": {
+  "paint_sha": "bdc95cff430abbbf2f8e83e4d089749625c7a1109bd1545cb2f072c88ba017bc",
+  "spec_sha": "10f34cbd94529585d74348883d8d4171490538860a3f46aa85d285572e651aea",
+  "paint_ms": 2775,
+  "spec_ms": 164,
+  "total_ms": 2939,
+  "paint_stats": [
+   0.171,
+   0.2241
+  ],
+  "over_budget": false
+ },
+ "xlab_chiral_mercury": {
+  "paint_sha": "e055ea7064cd60ce17eaaa81e9134c7f4a6120820f139fa494cd1771b9ec759c",
+  "spec_sha": "91f2b2ff7aea97295f829008d9b44cdbb062f4c9324598e4fb7e2d995f39bb75",
+  "paint_ms": 2948,
+  "spec_ms": 154,
+  "total_ms": 3103,
+  "paint_stats": [
+   0.1662,
+   0.2155
+  ],
+  "over_budget": true
+ },
+ "xlab_chromatophore": {
+  "paint_sha": "c1e92bd01f7d039ddb1bc2936fb2d5d2b4c1d1568bc850bd458e28669f04ce23",
+  "spec_sha": "f7c27f24ae64ed4c59fc4fa5081568ed0bd635a2995d6cfbb6ee0f45fb0ddf85",
+  "paint_ms": 4712,
+  "spec_ms": 105,
+  "total_ms": 4817,
+  "paint_stats": [
+   0.1401,
+   0.1442
+  ],
+  "over_budget": true
+ },
+ "xlab_cinder_mirror": {
+  "paint_sha": "21c987315fc22e43048c121e5d5e32fe8d1512a7a4dcbcacd7c356327759eeae",
+  "spec_sha": "19a7a4a18ab34b41bafc01e7765ff7d54db9fc9c8d988f6cf634087b9f2fa0b0",
+  "paint_ms": 2807,
+  "spec_ms": 125,
+  "total_ms": 2933,
+  "paint_stats": [
+   0.1131,
+   0.0771
+  ],
+  "over_budget": false
+ },
+ "xlab_coral_voltage": {
+  "paint_sha": "605f3310f4fa1c0e7c3dacc3e033b87171b8a9257e127afda3a61826b86b70dc",
+  "spec_sha": "628be1c2cc5e25dd8a2ed28559cc0cfa2197f9ed21b9e5f0be58a54b1f2fd1f0",
+  "paint_ms": 3631,
+  "spec_ms": 109,
+  "total_ms": 3740,
+  "paint_stats": [
+   0.1311,
+   0.1137
+  ],
+  "over_budget": true
+ },
+ "xlab_cryogenic_sunset": {
+  "paint_sha": "c724907603300eddbdf7db5bc2f8ce5b7324533f676a7691094e5377b4a1ce78",
+  "spec_sha": "a6f5f8faf9ab567b1bacfdb94de62313a648fb54355596edf67a30fbad133579",
+  "paint_ms": 2704,
+  "spec_ms": 115,
+  "total_ms": 2819,
+  "paint_stats": [
+   0.1782,
+   0.1989
+  ],
+  "over_budget": false
+ },
+ "xlab_deep_time": {
+  "paint_sha": "714873ba425564b9f45ba9894b167599b6348a6553c7e0a1e7d9acc3e3594e0b",
+  "spec_sha": "1da0423e8d8284d3ef25b775711b9145dda18c5c60a0952daf3b8610e3ba6f45",
+  "paint_ms": 2587,
+  "spec_ms": 176,
+  "total_ms": 2763,
+  "paint_stats": [
+   0.1272,
+   0.1498
+  ],
+  "over_budget": false
+ },
+ "xlab_dichroic_skin": {
+  "paint_sha": "7ca34d51b15073801082c7c42a09eea6ebf1d507a299fc98a9f84c3f10f460b4",
+  "spec_sha": "a7dc2bb96c767e32564a5121505562e341cb1898cb3e4217800cbbfa5198de68",
+  "paint_ms": 2696,
+  "spec_ms": 116,
+  "total_ms": 2813,
+  "paint_stats": [
+   0.1979,
+   0.2479
+  ],
+  "over_budget": false
+ },
+ "xlab_electric_ink": {
+  "paint_sha": "d11d2c8cb02d18153ff5010af6f20bf539ed6843f5af0f1eac1c880b283d6199",
+  "spec_sha": "69cd2f3085bb9e1ff531411c4f0673d7e5d2500f97f3e53ae0921f274ae5f1e3",
+  "paint_ms": 2600,
+  "spec_ms": 119,
+  "total_ms": 2719,
+  "paint_stats": [
+   0.1408,
+   0.1433
+  ],
+  "over_budget": false
+ },
+ "xlab_ferrofluid_silk": {
+  "paint_sha": "00766f65c4d37d6cd06a80da203ec8eca59d5dee5161bffcab573a95dea6ee2b",
+  "spec_sha": "b25240f232323a020b87c51b33baa789fb9d3915f4e4b7d5c7309a52c1d81891",
+  "paint_ms": 2631,
+  "spec_ms": 116,
+  "total_ms": 2748,
+  "paint_stats": [
+   0.1152,
+   0.1041
+  ],
+  "over_budget": false
+ },
+ "xlab_ghost_transmission": {
+  "paint_sha": "ff9bb887017d8533d99d14dcc5b4109f807d893667bb5a2bcbea1a1c7a1f42b1",
+  "spec_sha": "ab010c208446266406190b2f823a8054947e1e887d17dc2c3f237cf7345f43d7",
+  "paint_ms": 3643,
+  "spec_ms": 112,
+  "total_ms": 3756,
+  "paint_stats": [
+   0.1092,
+   0.173
+  ],
+  "over_budget": true
+ },
+ "xlab_hologram_metal": {
+  "paint_sha": "3e8675325987ea6f170fb662f98a50c98f01398a70dcd3451b196ae833bc2880",
+  "spec_sha": "d4602bd9f5f56470da861d97d942977c13c5c28968c445e238d0b705da7cfb5e",
+  "paint_ms": 3694,
+  "spec_ms": 156,
+  "total_ms": 3851,
+  "paint_stats": [
+   0.1779,
+   0.2585
+  ],
+  "over_budget": true
+ },
+ "xlab_ion_bloom": {
+  "paint_sha": "d25c067621ca5db22a2023e2b2e22773e7624b64872fe76f05c09a262b825250",
+  "spec_sha": "3996d4424f3eacf10ccf5cd62e58fc338faaa9ff6db44a55bd1a49e4fd08bfdb",
+  "paint_ms": 3628,
+  "spec_ms": 121,
+  "total_ms": 3749,
+  "paint_stats": [
+   0.1738,
+   0.1701
+  ],
+  "over_budget": true
+ },
+ "xlab_laminar_magma": {
+  "paint_sha": "914482f2db070754377335ac8090cc2cc65600a3f0371f610c420e1f3dcd1999",
+  "spec_sha": "b4dd285ff69aaa1f69c936a779a1b76aff449ab0f32b5dac76169e3e2ae918bd",
+  "paint_ms": 2622,
+  "spec_ms": 178,
+  "total_ms": 2800,
+  "paint_stats": [
+   0.1579,
+   0.1139
+  ],
+  "over_budget": false
+ },
+ "xlab_luminous_carbon": {
+  "paint_sha": "a12212a32c8fb24a8eeed5024a6c8dc089c9fde36dabb5ae6f177fbef25c65a3",
+  "spec_sha": "ba3aa991ccda74659b690303cda3dd55153d2329ef2784a9acc06f3a6187834f",
+  "paint_ms": 3630,
+  "spec_ms": 110,
+  "total_ms": 3740,
+  "paint_stats": [
+   0.138,
+   0.1288
+  ],
+  "over_budget": true
+ },
+ "xlab_memory_glass": {
+  "paint_sha": "9670fb151978695b5de618d2ed5b343acc3376ac899b9fecb9ca6179c88cf7cc",
+  "spec_sha": "66bd23f71b80c58a4f422802c159146e358cefbf14a2ac1b0a4aaa43eb3c6d45",
+  "paint_ms": 2767,
+  "spec_ms": 117,
+  "total_ms": 2885,
+  "paint_stats": [
+   0.1759,
+   0.2181
+  ],
+  "over_budget": false
+ },
+ "xlab_nebula_ceramic": {
+  "paint_sha": "a92a3cd9d2a68b5440ce6b9501dc304d682c8da9c221c23f69aa58227f25ae9a",
+  "spec_sha": "ea9e160863ba5669729f6d491bc620b815d8c495eb2b13df8918b0c497d6cc02",
+  "paint_ms": 4536,
+  "spec_ms": 119,
+  "total_ms": 4656,
+  "paint_stats": [
+   0.1841,
+   0.2172
+  ],
+  "over_budget": true
+ },
+ "xlab_photon_patina": {
+  "paint_sha": "8ca3d9f475e365463807558937022402a81f3673b06e7ae5b7c4252d6dd92864",
+  "spec_sha": "b2ea3cf22bdee4b2e105e8c4941f0ef4df13a438202c42bf333a74fda6a5313e",
+  "paint_ms": 2607,
+  "spec_ms": 130,
+  "total_ms": 2737,
+  "paint_stats": [
+   0.1165,
+   0.1111
+  ],
+  "over_budget": false
+ },
+ "xlab_quantum_tide": {
+  "paint_sha": "4e4927e954005b02ade961e926f1889f8c7f9c3b2de675fc0e87e36702e0efd1",
+  "spec_sha": "9a0560ccfdb0e2bfff002003654be2b4576894d191916e5007e79dbd620714f1",
+  "paint_ms": 2421,
+  "spec_ms": 115,
+  "total_ms": 2536,
+  "paint_stats": [
+   0.1739,
+   0.1683
+  ],
+  "over_budget": false
+ },
+ "xlab_sonic_chrome": {
+  "paint_sha": "835fcbe863be3a1605c02207e298a61dce71f4cbb93b06587dd9567febfb4c19",
+  "spec_sha": "fc2e87f70269484e95c05b1eff6577e72a8c4b9c5110287fe3c21b0a7f33cdc7",
+  "paint_ms": 2648,
+  "spec_ms": 134,
+  "total_ms": 2783,
+  "paint_stats": [
+   0.1729,
+   0.1619
+  ],
+  "over_budget": false
+ },
+ "xlab_borealis_shards": {
+  "paint_sha": "578055c9a1236115143bef52f41813e6ca509bef7c338ae5ea770ec9d7fe0a69",
+  "spec_sha": "59abf9529f7fcd35db5ad13d25d6286b6a095076e8c0b3d1d8131350113a3342",
+  "paint_ms": 1919,
+  "spec_ms": 97,
+  "total_ms": 2017,
+  "paint_stats": [
+   0.3139,
+   0.4016
+  ],
+  "over_budget": false,
+  "deterministic": true
+ },
+ "xlab_chrono_strata": {
+  "paint_sha": "78976dcc58acc47fe947b89e32f26b68609a04ce5c73ac00ebbfe32f773195d1",
+  "spec_sha": "86616a769c60e4b41c27b5c7ae5d3399bf5e22d0dd12362f1fe4e574e5e97128",
+  "paint_ms": 2180,
+  "spec_ms": 140,
+  "total_ms": 2320,
+  "paint_stats": [
+   0.2497,
+   0.3365
+  ],
+  "over_budget": false,
+  "deterministic": true
+ },
+ "xlab_comet_terrace": {
+  "paint_sha": "c898e89cf6c6845bc46e49a8c6a6281a8faca5726aee41e905eb8622e43856b2",
+  "spec_sha": "607c948453a863e5a63a58553a4a13fe6b66db67e955947cb414fd9f436516ff",
+  "paint_ms": 2024,
+  "spec_ms": 127,
+  "total_ms": 2151,
+  "paint_stats": [
+   0.3121,
+   0.4002
+  ],
+  "over_budget": false,
+  "deterministic": true
+ },
+ "xlab_ember_weave": {
+  "paint_sha": "ee6348a46faf43b9cd2fc23763dd92122fe45a38d012d980b69d0f5e74de4183",
+  "spec_sha": "a9ac865d009a924f79f2bb8fd25366ffd0ac6ed815113559b9d083e2251fbaaa",
+  "paint_ms": 2050,
+  "spec_ms": 123,
+  "total_ms": 2173,
+  "paint_stats": [
+   0.2809,
+   0.3087
+  ],
+  "over_budget": false
+ },
+ "xlab_glacier_chord": {
+  "paint_sha": "def305aa17eb08ebb102ad5a4d075603702c3653d6ee8b2a713c5c23f2a694a1",
+  "spec_sha": "c19378f8ae6fab715fb9b6d3b4f9a2059410912126eb08abea5cbdf689c4e22c",
+  "paint_ms": 2185,
+  "spec_ms": 100,
+  "total_ms": 2286,
+  "paint_stats": [
+   0.295,
+   0.4594
+  ],
+  "over_budget": false
+ },
+ "xlab_hex_reliquary": {
+  "paint_sha": "86a8e23c9fe05d5aa4f451070ec31df6b93a615ad78ec458d713876ec85d63f0",
+  "spec_sha": "beb16ab41d566239cab41749da743cb0fde64f38fcfeb07302f681c0a408cd4b",
+  "paint_ms": 1876,
+  "spec_ms": 99,
+  "total_ms": 1976,
+  "paint_stats": [
+   0.2694,
+   0.3741
+  ],
+  "over_budget": false
+ },
+ "xlab_labyrinth_pulse": {
+  "paint_sha": "ce4a863d9bdcff8fd08c69e846a7a85e65b7b5c504ab354a0d3e31411fee845d",
+  "spec_sha": "a907c8edb8955e135ec4af98c701654b0e7f9452226e8196e9bb768431d65e76",
+  "paint_ms": 2263,
+  "spec_ms": 98,
+  "total_ms": 2361,
+  "paint_stats": [
+   0.2918,
+   0.3308
+  ],
+  "over_budget": false
+ },
+ "xlab_medusa_lattice": {
+  "paint_sha": "25dfba048091419a1dbb28a4ce3a7de06f08cdf2fb5360a42fa4ea188de7262d",
+  "spec_sha": "0c5b4d27dcdcc3942fd0e7870af5501c646d6689a8f3c1d1d8f5863719e848cd",
+  "paint_ms": 2188,
+  "spec_ms": 109,
+  "total_ms": 2297,
+  "paint_stats": [
+   0.2361,
+   0.2821
+  ],
+  "over_budget": false
+ },
+ "xlab_moire_reactor": {
+  "paint_sha": "c6df7b081e8ace845cb370ea3b388bf84cbeb72e8ce8e0a03fc4edbba525123e",
+  "spec_sha": "a0c9c3e50a9039cd791e81d6cb2d6c7acaefc2bf4b0ae40ac1fe5c738cfbb19c",
+  "paint_ms": 2297,
+  "spec_ms": 112,
+  "total_ms": 2410,
+  "paint_stats": [
+   0.2799,
+   0.3549
+  ],
+  "over_budget": false
+ },
+ "xlab_murmuration": {
+  "paint_sha": "fd7f6be6601238c99903ed97719aed410345b75d899f2d134421373a8c42d5c5",
+  "spec_sha": "7ac69be01fc01975c199c6baf80e57f5fe8eeed856fcbc519cb820d571effefd",
+  "paint_ms": 2333,
+  "spec_ms": 131,
+  "total_ms": 2465,
+  "paint_stats": [
+   0.1975,
+   0.2029
+  ],
+  "over_budget": false
+ },
+ "xlab_opal_tessellate": {
+  "paint_sha": "ccbca6ba1f04fe7136c7537898d8e6281f5d0f2ca8cbadc376585818845d91e8",
+  "spec_sha": "b3d60ed24072b47ed716427bc5ef5a3e2ea009d614e0090b7e1f1e033bb45f8a",
+  "paint_ms": 2226,
+  "spec_ms": 107,
+  "total_ms": 2333,
+  "paint_stats": [
+   0.2755,
+   0.4868
+  ],
+  "over_budget": false
+ },
+ "xlab_prism_ivy": {
+  "paint_sha": "f1587ede1f9d56e49b47866a707c3bf1eb02ba7fcd039715354e5d8a55d6409f",
+  "spec_sha": "6156cca7aca5a88da7e0123696e49856037f5a487084c34dd66b73cfc67c9bc4",
+  "paint_ms": 2197,
+  "spec_ms": 104,
+  "total_ms": 2301,
+  "paint_stats": [
+   0.1407,
+   0.1514
+  ],
+  "over_budget": false
+ },
+ "xlab_quasar_quilt": {
+  "paint_sha": "348b5e57bbfe4afd0e1ae365c70b6bec502ce6dc11d42cb27ffa24f15d100402",
+  "spec_sha": "d25e2f9ab22c464df1ef0d8f71dcfbf52af89341f530a5af01124c0cb1111011",
+  "paint_ms": 2507,
+  "spec_ms": 114,
+  "total_ms": 2622,
+  "paint_stats": [
+   0.311,
+   0.5174
+  ],
+  "over_budget": false
+ },
+ "xlab_riptide_parquet": {
+  "paint_sha": "a12b193f26788093567fbbeb4a9d46c94bccc42e9dcb55ee38a0498d5f8c20b0",
+  "spec_sha": "8af7f96777c15d9eaea143711aeb7a922ac444596b388f4c907cea2c7f7c113f",
+  "paint_ms": 2051,
+  "spec_ms": 99,
+  "total_ms": 2151,
+  "paint_stats": [
+   0.303,
+   0.3932
+  ],
+  "over_budget": false
+ },
+ "xlab_serpent_scales": {
+  "paint_sha": "ec494ca92928c169e927b09c48ada12231f1f826558ca472939b44bd0a7545af",
+  "spec_sha": "52168bbb9575158ac7f5bccbf48064a8889d1255520afe9f14da7b23eda46fb1",
+  "paint_ms": 1783,
+  "spec_ms": 127,
+  "total_ms": 1911,
+  "paint_stats": [
+   0.2865,
+   0.2968
+  ],
+  "over_budget": false
+ },
+ "xlab_shatter_royale": {
+  "paint_sha": "daa2b5a583cee95807b5feae5c8a26c4b8d1a55a518d03a227319da3d49a2acf",
+  "spec_sha": "c95c7de600e6621cda992fd8dfe3ff05c6db2a9e957cb27ace013ae460ddbf16",
+  "paint_ms": 2550,
+  "spec_ms": 105,
+  "total_ms": 2655,
+  "paint_stats": [
+   0.2985,
+   0.3676
+  ],
+  "over_budget": false
+ },
+ "xlab_singularity_bloom": {
+  "paint_sha": "c095b323cf70db526445441cf6bdb79854186afa32fe8b9e83e8727137b66304",
+  "spec_sha": "07ee5015cd752eb849e702bf2f3c0d6d4ac88f7bdea636704f54fd6b3121da2c",
+  "paint_ms": 1961,
+  "spec_ms": 99,
+  "total_ms": 2061,
+  "paint_stats": [
+   0.2669,
+   0.3864
+  ],
+  "over_budget": false
+ },
+ "xlab_stained_circuit": {
+  "paint_sha": "9754bd57a1d08a5756b2e3df0894fd24fa59ce4ff50a2625af9e3f9da7113e57",
+  "spec_sha": "af848328f29be62057a50bc2f7ff204601972a6d34354d67a8c52055c401861b",
+  "paint_ms": 2475,
+  "spec_ms": 101,
+  "total_ms": 2577,
+  "paint_stats": [
+   0.2415,
+   0.3053
+  ],
+  "over_budget": false
+ },
+ "xlab_static_bloom": {
+  "paint_sha": "066b5114551bec63ce1a7cf6f6011c2e7a2ddee7cc8f4776a1f9b5e74c76e42d",
+  "spec_sha": "59aa3d56ed9a2b01a9e75f198e0f26b3c4f99d5832dbb94b4bb4b48cf6be213b",
+  "paint_ms": 2153,
+  "spec_ms": 102,
+  "total_ms": 2256,
+  "paint_stats": [
+   0.3139,
+   0.3562
+  ],
+  "over_budget": false
+ },
+ "xlab_velvet_meteor": {
+  "paint_sha": "a986e8e93899dfb2b0edc9a7cf08244b105012e0cf497e5a6764abcd41481eb2",
+  "spec_sha": "f5f02a4274e7b5ad9c5d74cc886ff0526a9c5f5b578a411dbee504a3e3c2bffe",
+  "paint_ms": 2733,
+  "spec_ms": 108,
+  "total_ms": 2842,
+  "paint_stats": [
+   0.1504,
+   0.1333
+  ],
+  "over_budget": false
+ }
+}

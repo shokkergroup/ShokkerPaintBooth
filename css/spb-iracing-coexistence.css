@@ -1,0 +1,48 @@
+/*
+ * SPB / iRacing coexistence mode
+ *
+ * Paint Booth is intentionally used on one monitor while iRacing keeps drawing
+ * on another. The full visual theme contains hundreds of decorative infinite
+ * CSS animations and glass-blur compositor layers. They do not change paint
+ * output, but they can continuously consume a large share of the GPU process.
+ *
+ * `body.fx-off` is the app's existing reduced-effects contract. The synchronous
+ * body bootstrap enables it by default for the local booth; callers can opt out
+ * through `setSpbIracingPerformanceMode(false)` when iRacing is not in use.
+ */
+
+/* [SPB SPEED-TUNEUP 2026-08-30] `:not(#spbFxNever)` is a specificity booster:
+   :not() with an ID inside counts as ID specificity (1,1,1), so these rules
+   beat ANY decorative class-chain rule that also uses !important. Without it,
+   `.brand-signature .brand-text { animation: ... !important }` (0,2,0) in
+   ui-glow-polish-20260613.css and `renderGlowPulse ... !important` (v2.css)
+   ESCAPED the (0,1,1) kill below and kept repainting the (declutter-enlarged)
+   brand wordmark + RENDER button glow every frame — measured 104% of a CPU
+   core in the owner's live tab, felt as 0.5-1s input delay on everything.
+   #spbFxNever must never exist as a real element id. */
+body.fx-off,
+body.fx-off *,
+body.fx-off *::before,
+body.fx-off *::after,
+body.fx-off :not(#spbFxNever):not(#spbFxNever2):not(#spbFxNever3),
+body.fx-off :not(#spbFxNever):not(#spbFxNever2):not(#spbFxNever3)::before,
+body.fx-off :not(#spbFxNever):not(#spbFxNever2):not(#spbFxNever3)::after {
+    animation: none !important;
+    animation-delay: 0s !important;
+    animation-duration: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-delay: 0s !important;
+    transition-duration: 0s !important;
+    scroll-behavior: auto !important;
+    will-change: auto !important;
+}
+
+/* Glass blur forces extra off-screen compositor passes. Opaque/translucent
+   backgrounds remain in place, so controls stay legible without the GPU cost. */
+body.fx-off,
+body.fx-off *,
+body.fx-off :not(#spbFxNever):not(#spbFxNever2):not(#spbFxNever3) {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+}
+

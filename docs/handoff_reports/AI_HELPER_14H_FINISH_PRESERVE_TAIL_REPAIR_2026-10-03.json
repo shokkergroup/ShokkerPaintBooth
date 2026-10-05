@@ -1,0 +1,2190 @@
+{
+  "review": "W21 bounded finish-preservation tail repair contract",
+  "date": "2026-10-04",
+  "status": "PASS_WITH_LIMITS",
+  "frozen_oracle": {
+    "sha256": "B92DBDD01A56928E4160A29F3013C78C0083DA374A3DABAB26AED1B0AFBBF08F",
+    "fresh_cases": 16,
+    "separate_prior_W17_cases": 3,
+    "fresh": [
+      {
+        "id": "W21-F01",
+        "text": "Set only the roof to satin; keep its current red paint.",
+        "mode": "one_finish",
+        "part": "roof",
+        "finish": "satin"
+      },
+      {
+        "id": "W21-F02",
+        "text": "Make only the hood chrome and retain its current black paint.",
+        "mode": "one_finish",
+        "part": "hood",
+        "finish": "chrome"
+      },
+      {
+        "id": "W21-F03",
+        "text": "Please give the roof a brushed finish. Do not change its red paint color.",
+        "mode": "one_finish",
+        "part": "roof",
+        "finish": "brushed"
+      },
+      {
+        "id": "W21-F04",
+        "text": "Make the hood matte; leave its existing paint alone.",
+        "mode": "one_finish",
+        "part": "hood",
+        "finish": "matte"
+      },
+      {
+        "id": "W21-F05",
+        "text": "Only the roof should be satin; its paint should stay red.",
+        "mode": "one_finish",
+        "part": "roof",
+        "finish": "satin"
+      },
+      {
+        "id": "W21-F06",
+        "text": "Set the hood gloss while preserving its current blue paint.",
+        "mode": "one_finish",
+        "part": "hood",
+        "finish": "gloss"
+      },
+      {
+        "id": "W21-F07",
+        "text": "Turn the roof chrome and leave the roof red and its region alone.",
+        "mode": "one_finish",
+        "part": "roof",
+        "finish": "chrome"
+      },
+      {
+        "id": "W21-F08",
+        "text": "Make only the hood satin, keep the current black color, and leave its mask unchanged.",
+        "mode": "one_finish",
+        "part": "hood",
+        "finish": "satin"
+      },
+      {
+        "id": "W21-F09",
+        "text": "Set the roof to gloss, keeping the existing red paint and region mask intact.",
+        "mode": "one_finish",
+        "part": "roof",
+        "finish": "gloss"
+      },
+      {
+        "id": "W21-F10",
+        "text": "Give only the hood a brushed-aluminum finish; do not recolor it.",
+        "mode": "one_finish",
+        "part": "hood",
+        "finish": "brushed"
+      },
+      {
+        "id": "W21-N01",
+        "text": "Make the roof chrome and retain the hood current black paint.",
+        "mode": "clarify",
+        "part": "roof"
+      },
+      {
+        "id": "W21-N02",
+        "text": "Make the roof chrome and keep the whole body red.",
+        "mode": "clarify",
+        "part": "roof"
+      },
+      {
+        "id": "W21-N03",
+        "text": "Set the hood gloss; do not change its finish.",
+        "mode": "clarify",
+        "part": "hood"
+      },
+      {
+        "id": "W21-N04",
+        "text": "Make the roof chrome and keep its red paint, then add a gold carbon weave.",
+        "mode": "clarify",
+        "part": "roof"
+      },
+      {
+        "id": "W21-N05",
+        "text": "Make the roof chrome, keep its red paint, and repaint the hood blue.",
+        "mode": "clarify",
+        "part": "roof"
+      },
+      {
+        "id": "W21-N06",
+        "text": "Do not make the roof chrome; keep its red paint as it is.",
+        "mode": "no_mutation",
+        "part": "roof"
+      }
+    ],
+    "priorW17": [
+      {
+        "id": "W17-02",
+        "text": "Make only the hood chrome and retain its black paint.",
+        "mode": "one_finish",
+        "part": "hood",
+        "finish": "chrome"
+      },
+      {
+        "id": "W17-03",
+        "text": "Give only the roof a satin finish; leave its current red paint and region alone.",
+        "mode": "one_finish",
+        "part": "roof",
+        "finish": "satin"
+      },
+      {
+        "id": "W17-04",
+        "text": "Set the hood to gloss; don't change its current navy color.",
+        "mode": "one_finish",
+        "part": "hood",
+        "finish": "gloss"
+      }
+    ]
+  },
+  "source": {
+    "path": "js/spb-pro-edit.js",
+    "before_sha256": "A328A1EF5D8293E2F8CFC8A27F3E0C868A04842A07EE39243CBD0BD34513BDA7",
+    "after_sha256": "868E698DD0DC6A3424D5BCB2612BC0F8F21DC7C6CA3FFA6EA2524193CD76078E"
+  },
+  "implementation": {
+    "helper_lines": "446-468",
+    "pre_prohibition_guard_lines": "470-482",
+    "contract": "Only remove a final whitelisted same-part paint/color/mask-preservation clause after the preceding text independently parses as exactly one known named-part finish action. The unchanged prohibition guard then handles leading negative commands."
+  },
+  "counts": {
+    "fresh_positive": 10,
+    "prior_W17_replayed": 3,
+    "positive_passed": 12,
+    "safe_negative_no_exact_part": 6,
+    "out_of_scope": 1,
+    "failures": 0
+  },
+  "results": [
+    {
+      "id": "W21-F01",
+      "text": "Set only the roof to satin; keep its current red paint.",
+      "mode": "one_finish",
+      "plan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "roof",
+              "at": 14
+            },
+            "look": {
+              "id": "satin",
+              "label": "satin",
+              "words": [
+                "satin",
+                "eggshell",
+                "semi gloss",
+                "semi matte",
+                "low sheen",
+                "silky",
+                "soft sheen"
+              ],
+              "found": "base::f_clear_satin",
+              "about": "a soft sheen between gloss and matte"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "set only the roof to satin",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "Set only the roof to satin; keep its current red paint."
+      },
+      "compiled": {
+        "zones": [
+          {
+            "name": "Roof satin",
+            "finish": "base::f_clear_satin",
+            "color": "source",
+            "region": {
+              "part": "roof"
+            },
+            "_meta": {
+              "label": "roof",
+              "what": [
+                "satin"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "satin",
+              "parts": [
+                "roof"
+              ],
+              "kind": "part",
+              "about": "a soft sheen between gloss and matte"
+            }
+          }
+        ],
+        "missing": [],
+        "ask": null,
+        "notes": [],
+        "pal": [
+          {
+            "hex": "#c8102e",
+            "share": 60,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "red",
+            "l": 0.4235294117647059,
+            "s": 0.8518518518518519,
+            "h": 350.21739130434787,
+            "name": "red"
+          },
+          {
+            "hex": "#141416",
+            "share": 20,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "black",
+            "l": 0.08235294117647059,
+            "s": 0.04761904761904763,
+            "h": 240,
+            "name": "black"
+          },
+          {
+            "hex": "#1347a8",
+            "share": 10,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "blue",
+            "l": 0.36666666666666664,
+            "s": 0.7967914438502675,
+            "h": 219.06040268456377,
+            "name": "royal blue"
+          },
+          {
+            "hex": "#f2c500",
+            "share": 5,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "yellow",
+            "l": 0.4745098039215686,
+            "s": 1,
+            "h": 48.84297520661158,
+            "name": "yellow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "W21-F02",
+      "text": "Make only the hood chrome and retain its current black paint.",
+      "mode": "one_finish",
+      "plan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "hood",
+              "at": 15
+            },
+            "look": {
+              "id": "chrome",
+              "label": "chrome",
+              "words": [
+                "chrome",
+                "mirror",
+                "mirror chrome",
+                "mirror finish",
+                "mirrored"
+              ],
+              "found": "base::f_chrome",
+              "about": "full metal, perfectly smooth: a mirror"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "make only the hood chrome",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "Make only the hood chrome and retain its current black paint."
+      },
+      "compiled": {
+        "zones": [
+          {
+            "name": "Hood chrome",
+            "finish": "base::f_chrome",
+            "color": "source",
+            "region": {
+              "part": "hood"
+            },
+            "_meta": {
+              "label": "hood",
+              "what": [
+                "chrome"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "chrome",
+              "parts": [
+                "hood"
+              ],
+              "kind": "part",
+              "about": "full metal, perfectly smooth: a mirror"
+            }
+          }
+        ],
+        "missing": [],
+        "ask": null,
+        "notes": [],
+        "pal": [
+          {
+            "hex": "#c8102e",
+            "share": 60,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "red",
+            "l": 0.4235294117647059,
+            "s": 0.8518518518518519,
+            "h": 350.21739130434787,
+            "name": "red"
+          },
+          {
+            "hex": "#141416",
+            "share": 20,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "black",
+            "l": 0.08235294117647059,
+            "s": 0.04761904761904763,
+            "h": 240,
+            "name": "black"
+          },
+          {
+            "hex": "#1347a8",
+            "share": 10,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "blue",
+            "l": 0.36666666666666664,
+            "s": 0.7967914438502675,
+            "h": 219.06040268456377,
+            "name": "royal blue"
+          },
+          {
+            "hex": "#f2c500",
+            "share": 5,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "yellow",
+            "l": 0.4745098039215686,
+            "s": 1,
+            "h": 48.84297520661158,
+            "name": "yellow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "W21-F03",
+      "text": "Please give the roof a brushed finish. Do not change its red paint color.",
+      "mode": "one_finish",
+      "plan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "roof",
+              "at": 17
+            },
+            "look": {
+              "id": "brushed",
+              "label": "brushed metal",
+              "words": [
+                "brushed",
+                "brushed metal",
+                "brushed aluminum",
+                "brushed aluminium",
+                "brushed steel",
+                "machined",
+                "bare metal",
+                "raw aluminum"
+              ],
+              "found": "base::f_brushed",
+              "about": "metal with a brushed, rougher surface"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "please give the roof a brushed finish",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "Please give the roof a brushed finish. Do not change its red paint color."
+      },
+      "compiled": {
+        "zones": [
+          {
+            "name": "Roof brushed metal",
+            "finish": "base::f_brushed",
+            "color": "source",
+            "region": {
+              "part": "roof"
+            },
+            "_meta": {
+              "label": "roof",
+              "what": [
+                "brushed metal"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "brushed",
+              "parts": [
+                "roof"
+              ],
+              "kind": "part",
+              "about": "metal with a brushed, rougher surface"
+            }
+          }
+        ],
+        "missing": [],
+        "ask": null,
+        "notes": [],
+        "pal": [
+          {
+            "hex": "#c8102e",
+            "share": 60,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "red",
+            "l": 0.4235294117647059,
+            "s": 0.8518518518518519,
+            "h": 350.21739130434787,
+            "name": "red"
+          },
+          {
+            "hex": "#141416",
+            "share": 20,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "black",
+            "l": 0.08235294117647059,
+            "s": 0.04761904761904763,
+            "h": 240,
+            "name": "black"
+          },
+          {
+            "hex": "#1347a8",
+            "share": 10,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "blue",
+            "l": 0.36666666666666664,
+            "s": 0.7967914438502675,
+            "h": 219.06040268456377,
+            "name": "royal blue"
+          },
+          {
+            "hex": "#f2c500",
+            "share": 5,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "yellow",
+            "l": 0.4745098039215686,
+            "s": 1,
+            "h": 48.84297520661158,
+            "name": "yellow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "W21-F04",
+      "text": "Make the hood matte; leave its existing paint alone.",
+      "mode": "one_finish",
+      "plan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "hood",
+              "at": 10
+            },
+            "look": {
+              "id": "matte",
+              "label": "matte",
+              "words": [
+                "matte",
+                "flat",
+                "chalky",
+                "chalk",
+                "velvet",
+                "suede",
+                "no shine",
+                "no gloss",
+                "not shiny",
+                "non shiny",
+                "not glossy",
+                "low gloss",
+                "flatten"
+              ],
+              "found": "base::f_soft_matte",
+              "about": "no shine: rough surface, dull clearcoat"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "make the hood matte",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "Make the hood matte; leave its existing paint alone."
+      },
+      "compiled": {
+        "zones": [
+          {
+            "name": "Hood matte",
+            "finish": "base::f_soft_matte",
+            "color": "source",
+            "region": {
+              "part": "hood"
+            },
+            "_meta": {
+              "label": "hood",
+              "what": [
+                "matte"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "matte",
+              "parts": [
+                "hood"
+              ],
+              "kind": "part",
+              "about": "no shine: rough surface, dull clearcoat"
+            }
+          }
+        ],
+        "missing": [],
+        "ask": null,
+        "notes": [],
+        "pal": [
+          {
+            "hex": "#c8102e",
+            "share": 60,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "red",
+            "l": 0.4235294117647059,
+            "s": 0.8518518518518519,
+            "h": 350.21739130434787,
+            "name": "red"
+          },
+          {
+            "hex": "#141416",
+            "share": 20,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "black",
+            "l": 0.08235294117647059,
+            "s": 0.04761904761904763,
+            "h": 240,
+            "name": "black"
+          },
+          {
+            "hex": "#1347a8",
+            "share": 10,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "blue",
+            "l": 0.36666666666666664,
+            "s": 0.7967914438502675,
+            "h": 219.06040268456377,
+            "name": "royal blue"
+          },
+          {
+            "hex": "#f2c500",
+            "share": 5,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "yellow",
+            "l": 0.4745098039215686,
+            "s": 1,
+            "h": 48.84297520661158,
+            "name": "yellow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "W21-F05",
+      "text": "Only the roof should be satin; its paint should stay red.",
+      "mode": "one_finish",
+      "plan": null,
+      "compiled": null
+    },
+    {
+      "id": "W21-F06",
+      "text": "Set the hood gloss while preserving its current blue paint.",
+      "mode": "one_finish",
+      "plan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "hood",
+              "at": 9
+            },
+            "look": {
+              "id": "gloss",
+              "label": "gloss",
+              "words": [
+                "gloss",
+                "glossy",
+                "shiny",
+                "high gloss",
+                "show car",
+                "showroom",
+                "clearcoat",
+                "clear coat",
+                "clear coated",
+                "factory paint",
+                "factory finish"
+              ],
+              "found": "base::f_soft_gloss",
+              "about": "a deep, wet-looking gloss"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "set the hood gloss",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "Set the hood gloss while preserving its current blue paint."
+      },
+      "compiled": {
+        "zones": [
+          {
+            "name": "Hood gloss",
+            "finish": "base::f_soft_gloss",
+            "color": "source",
+            "region": {
+              "part": "hood"
+            },
+            "_meta": {
+              "label": "hood",
+              "what": [
+                "gloss"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "gloss",
+              "parts": [
+                "hood"
+              ],
+              "kind": "part",
+              "about": "a deep, wet-looking gloss"
+            }
+          }
+        ],
+        "missing": [],
+        "ask": null,
+        "notes": [],
+        "pal": [
+          {
+            "hex": "#c8102e",
+            "share": 60,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "red",
+            "l": 0.4235294117647059,
+            "s": 0.8518518518518519,
+            "h": 350.21739130434787,
+            "name": "red"
+          },
+          {
+            "hex": "#141416",
+            "share": 20,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "black",
+            "l": 0.08235294117647059,
+            "s": 0.04761904761904763,
+            "h": 240,
+            "name": "black"
+          },
+          {
+            "hex": "#1347a8",
+            "share": 10,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "blue",
+            "l": 0.36666666666666664,
+            "s": 0.7967914438502675,
+            "h": 219.06040268456377,
+            "name": "royal blue"
+          },
+          {
+            "hex": "#f2c500",
+            "share": 5,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "yellow",
+            "l": 0.4745098039215686,
+            "s": 1,
+            "h": 48.84297520661158,
+            "name": "yellow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "W21-F07",
+      "text": "Turn the roof chrome and leave the roof red and its region alone.",
+      "mode": "one_finish",
+      "plan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "roof",
+              "at": 10
+            },
+            "look": {
+              "id": "chrome",
+              "label": "chrome",
+              "words": [
+                "chrome",
+                "mirror",
+                "mirror chrome",
+                "mirror finish",
+                "mirrored"
+              ],
+              "found": "base::f_chrome",
+              "about": "full metal, perfectly smooth: a mirror"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "turn the roof chrome",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "Turn the roof chrome and leave the roof red and its region alone."
+      },
+      "compiled": {
+        "zones": [
+          {
+            "name": "Roof chrome",
+            "finish": "base::f_chrome",
+            "color": "source",
+            "region": {
+              "part": "roof"
+            },
+            "_meta": {
+              "label": "roof",
+              "what": [
+                "chrome"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "chrome",
+              "parts": [
+                "roof"
+              ],
+              "kind": "part",
+              "about": "full metal, perfectly smooth: a mirror"
+            }
+          }
+        ],
+        "missing": [],
+        "ask": null,
+        "notes": [],
+        "pal": [
+          {
+            "hex": "#c8102e",
+            "share": 60,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "red",
+            "l": 0.4235294117647059,
+            "s": 0.8518518518518519,
+            "h": 350.21739130434787,
+            "name": "red"
+          },
+          {
+            "hex": "#141416",
+            "share": 20,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "black",
+            "l": 0.08235294117647059,
+            "s": 0.04761904761904763,
+            "h": 240,
+            "name": "black"
+          },
+          {
+            "hex": "#1347a8",
+            "share": 10,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "blue",
+            "l": 0.36666666666666664,
+            "s": 0.7967914438502675,
+            "h": 219.06040268456377,
+            "name": "royal blue"
+          },
+          {
+            "hex": "#f2c500",
+            "share": 5,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "yellow",
+            "l": 0.4745098039215686,
+            "s": 1,
+            "h": 48.84297520661158,
+            "name": "yellow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "W21-F08",
+      "text": "Make only the hood satin, keep the current black color, and leave its mask unchanged.",
+      "mode": "one_finish",
+      "plan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "hood",
+              "at": 15
+            },
+            "look": {
+              "id": "satin",
+              "label": "satin",
+              "words": [
+                "satin",
+                "eggshell",
+                "semi gloss",
+                "semi matte",
+                "low sheen",
+                "silky",
+                "soft sheen"
+              ],
+              "found": "base::f_clear_satin",
+              "about": "a soft sheen between gloss and matte"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "make only the hood satin",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "Make only the hood satin, keep the current black color, and leave its mask unchanged."
+      },
+      "compiled": {
+        "zones": [
+          {
+            "name": "Hood satin",
+            "finish": "base::f_clear_satin",
+            "color": "source",
+            "region": {
+              "part": "hood"
+            },
+            "_meta": {
+              "label": "hood",
+              "what": [
+                "satin"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "satin",
+              "parts": [
+                "hood"
+              ],
+              "kind": "part",
+              "about": "a soft sheen between gloss and matte"
+            }
+          }
+        ],
+        "missing": [],
+        "ask": null,
+        "notes": [],
+        "pal": [
+          {
+            "hex": "#c8102e",
+            "share": 60,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "red",
+            "l": 0.4235294117647059,
+            "s": 0.8518518518518519,
+            "h": 350.21739130434787,
+            "name": "red"
+          },
+          {
+            "hex": "#141416",
+            "share": 20,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "black",
+            "l": 0.08235294117647059,
+            "s": 0.04761904761904763,
+            "h": 240,
+            "name": "black"
+          },
+          {
+            "hex": "#1347a8",
+            "share": 10,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "blue",
+            "l": 0.36666666666666664,
+            "s": 0.7967914438502675,
+            "h": 219.06040268456377,
+            "name": "royal blue"
+          },
+          {
+            "hex": "#f2c500",
+            "share": 5,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "yellow",
+            "l": 0.4745098039215686,
+            "s": 1,
+            "h": 48.84297520661158,
+            "name": "yellow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "W21-F09",
+      "text": "Set the roof to gloss, keeping the existing red paint and region mask intact.",
+      "mode": "one_finish",
+      "plan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "roof",
+              "at": 9
+            },
+            "look": {
+              "id": "gloss",
+              "label": "gloss",
+              "words": [
+                "gloss",
+                "glossy",
+                "shiny",
+                "high gloss",
+                "show car",
+                "showroom",
+                "clearcoat",
+                "clear coat",
+                "clear coated",
+                "factory paint",
+                "factory finish"
+              ],
+              "found": "base::f_soft_gloss",
+              "about": "a deep, wet-looking gloss"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "set the roof to gloss",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "Set the roof to gloss, keeping the existing red paint and region mask intact."
+      },
+      "compiled": {
+        "zones": [
+          {
+            "name": "Roof gloss",
+            "finish": "base::f_soft_gloss",
+            "color": "source",
+            "region": {
+              "part": "roof"
+            },
+            "_meta": {
+              "label": "roof",
+              "what": [
+                "gloss"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "gloss",
+              "parts": [
+                "roof"
+              ],
+              "kind": "part",
+              "about": "a deep, wet-looking gloss"
+            }
+          }
+        ],
+        "missing": [],
+        "ask": null,
+        "notes": [],
+        "pal": [
+          {
+            "hex": "#c8102e",
+            "share": 60,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "red",
+            "l": 0.4235294117647059,
+            "s": 0.8518518518518519,
+            "h": 350.21739130434787,
+            "name": "red"
+          },
+          {
+            "hex": "#141416",
+            "share": 20,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "black",
+            "l": 0.08235294117647059,
+            "s": 0.04761904761904763,
+            "h": 240,
+            "name": "black"
+          },
+          {
+            "hex": "#1347a8",
+            "share": 10,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "blue",
+            "l": 0.36666666666666664,
+            "s": 0.7967914438502675,
+            "h": 219.06040268456377,
+            "name": "royal blue"
+          },
+          {
+            "hex": "#f2c500",
+            "share": 5,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "yellow",
+            "l": 0.4745098039215686,
+            "s": 1,
+            "h": 48.84297520661158,
+            "name": "yellow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "W21-F10",
+      "text": "Give only the hood a brushed-aluminum finish; do not recolor it.",
+      "mode": "one_finish",
+      "plan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "hood",
+              "at": 15
+            },
+            "look": {
+              "id": "brushed",
+              "label": "brushed metal",
+              "words": [
+                "brushed",
+                "brushed metal",
+                "brushed aluminum",
+                "brushed aluminium",
+                "brushed steel",
+                "machined",
+                "bare metal",
+                "raw aluminum"
+              ],
+              "found": "base::f_brushed",
+              "about": "metal with a brushed, rougher surface"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "give only the hood a brushed aluminum finish",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "Give only the hood a brushed-aluminum finish; do not recolor it."
+      },
+      "compiled": {
+        "zones": [
+          {
+            "name": "Hood brushed metal",
+            "finish": "base::f_brushed",
+            "color": "source",
+            "region": {
+              "part": "hood"
+            },
+            "_meta": {
+              "label": "hood",
+              "what": [
+                "brushed metal"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "brushed",
+              "parts": [
+                "hood"
+              ],
+              "kind": "part",
+              "about": "metal with a brushed, rougher surface"
+            }
+          }
+        ],
+        "missing": [],
+        "ask": null,
+        "notes": [],
+        "pal": [
+          {
+            "hex": "#c8102e",
+            "share": 60,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "red",
+            "l": 0.4235294117647059,
+            "s": 0.8518518518518519,
+            "h": 350.21739130434787,
+            "name": "red"
+          },
+          {
+            "hex": "#141416",
+            "share": 20,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "black",
+            "l": 0.08235294117647059,
+            "s": 0.04761904761904763,
+            "h": 240,
+            "name": "black"
+          },
+          {
+            "hex": "#1347a8",
+            "share": 10,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "blue",
+            "l": 0.36666666666666664,
+            "s": 0.7967914438502675,
+            "h": 219.06040268456377,
+            "name": "royal blue"
+          },
+          {
+            "hex": "#f2c500",
+            "share": 5,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "yellow",
+            "l": 0.4745098039215686,
+            "s": 1,
+            "h": 48.84297520661158,
+            "name": "yellow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "W21-N01",
+      "text": "Make the roof chrome and retain the hood current black paint.",
+      "mode": "clarify",
+      "plan": {
+        "kind": "ask",
+        "protected_parts": [
+          "hood"
+        ],
+        "requested_parts": [
+          "roof"
+        ],
+        "text": "Nothing was changed. I can’t yet guarantee the requested roof change leaves the hood unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "chips": []
+      },
+      "compiled": null
+    },
+    {
+      "id": "W21-N02",
+      "text": "Make the roof chrome and keep the whole body red.",
+      "mode": "clarify",
+      "plan": null,
+      "compiled": null
+    },
+    {
+      "id": "W21-N03",
+      "text": "Set the hood gloss; do not change its finish.",
+      "mode": "clarify",
+      "plan": {
+        "kind": "ask",
+        "prohibited_edit": true,
+        "text": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request.",
+        "chips": []
+      },
+      "compiled": null
+    },
+    {
+      "id": "W21-N04",
+      "text": "Make the roof chrome and keep its red paint, then add a gold carbon weave.",
+      "mode": "clarify",
+      "plan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "roof",
+              "at": 10
+            },
+            "look": {
+              "id": "chrome",
+              "label": "chrome",
+              "words": [
+                "chrome",
+                "mirror",
+                "mirror chrome",
+                "mirror finish",
+                "mirrored"
+              ],
+              "found": "base::f_chrome",
+              "about": "full metal, perfectly smooth: a mirror"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          },
+          {
+            "target": {
+              "kind": "colour",
+              "word": "red",
+              "hex": "#c8102e",
+              "qual": null,
+              "at": 10,
+              "parts": null
+            },
+            "look": null,
+            "colour": {
+              "name": "gold",
+              "hex": "#d7a72b",
+              "at": 7,
+              "qual": null,
+              "exact": false
+            },
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": "keep"
+          }
+        ],
+        "alt": [],
+        "unknown": [
+          "keep"
+        ],
+        "text": "make the roof chrome and keep its red paint then add a gold carbon weave",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "raw": "Make the roof chrome and keep its red paint, then add a gold carbon weave."
+      },
+      "compiled": {
+        "zones": [
+          {
+            "name": "Roof chrome",
+            "finish": "base::f_chrome",
+            "color": "source",
+            "region": {
+              "part": "roof"
+            },
+            "_meta": {
+              "label": "roof",
+              "what": [
+                "chrome"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "chrome",
+              "parts": [
+                "roof"
+              ],
+              "kind": "part",
+              "about": "full metal, perfectly smooth: a mirror"
+            }
+          }
+        ],
+        "missing": [
+          {
+            "why": "look",
+            "query": "keep"
+          }
+        ],
+        "ask": {
+          "text": "I do not know a look called “keep”. Here is what I can do to the red (60% of the car):",
+          "chips": [
+            "Make the red matte",
+            "Make the red satin",
+            "Make the red gloss",
+            "Make the red powder coat",
+            "Make the red chrome"
+          ]
+        },
+        "notes": [],
+        "pal": [
+          {
+            "hex": "#c8102e",
+            "share": 60,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "red",
+            "l": 0.4235294117647059,
+            "s": 0.8518518518518519,
+            "h": 350.21739130434787,
+            "name": "red"
+          },
+          {
+            "hex": "#141416",
+            "share": 20,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "black",
+            "l": 0.08235294117647059,
+            "s": 0.04761904761904763,
+            "h": 240,
+            "name": "black"
+          },
+          {
+            "hex": "#1347a8",
+            "share": 10,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "blue",
+            "l": 0.36666666666666664,
+            "s": 0.7967914438502675,
+            "h": 219.06040268456377,
+            "name": "royal blue"
+          },
+          {
+            "hex": "#f2c500",
+            "share": 5,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "yellow",
+            "l": 0.4745098039215686,
+            "s": 1,
+            "h": 48.84297520661158,
+            "name": "yellow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "W21-N05",
+      "text": "Make the roof chrome, keep its red paint, and repaint the hood blue.",
+      "mode": "clarify",
+      "plan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "roof",
+              "at": 10
+            },
+            "look": {
+              "id": "chrome",
+              "label": "chrome",
+              "words": [
+                "chrome",
+                "mirror",
+                "mirror chrome",
+                "mirror finish",
+                "mirrored"
+              ],
+              "found": "base::f_chrome",
+              "about": "full metal, perfectly smooth: a mirror"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          },
+          {
+            "target": {
+              "kind": "colour",
+              "word": "red",
+              "hex": "#c8102e",
+              "qual": null,
+              "at": 10,
+              "parts": null
+            },
+            "look": null,
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": "keep"
+          },
+          {
+            "target": {
+              "kind": "part",
+              "part": "hood",
+              "at": 11
+            },
+            "look": null,
+            "colour": {
+              "name": "blue",
+              "hex": "#1450b4",
+              "at": 16,
+              "qual": null,
+              "exact": false
+            },
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [
+          "keep"
+        ],
+        "text": "make the roof chrome keep its red paint and paint the hood blue",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "raw": "Make the roof chrome, keep its red paint, and repaint the hood blue."
+      },
+      "compiled": {
+        "zones": [
+          {
+            "name": "Roof chrome",
+            "finish": "base::f_chrome",
+            "color": "source",
+            "region": {
+              "part": "roof"
+            },
+            "_meta": {
+              "label": "roof",
+              "what": [
+                "chrome"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "chrome",
+              "parts": [
+                "roof"
+              ],
+              "kind": "part",
+              "about": "full metal, perfectly smooth: a mirror"
+            }
+          }
+        ],
+        "missing": [
+          {
+            "why": "look",
+            "query": "keep"
+          }
+        ],
+        "ask": {
+          "text": "I do not know a look called “keep”. Here is what I can do to the red (60% of the car):",
+          "chips": [
+            "Make the red matte",
+            "Make the red satin",
+            "Make the red gloss",
+            "Make the red powder coat",
+            "Make the red chrome"
+          ]
+        },
+        "notes": [],
+        "pal": [
+          {
+            "hex": "#c8102e",
+            "share": 60,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "red",
+            "l": 0.4235294117647059,
+            "s": 0.8518518518518519,
+            "h": 350.21739130434787,
+            "name": "red"
+          },
+          {
+            "hex": "#141416",
+            "share": 20,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "black",
+            "l": 0.08235294117647059,
+            "s": 0.04761904761904763,
+            "h": 240,
+            "name": "black"
+          },
+          {
+            "hex": "#1347a8",
+            "share": 10,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "blue",
+            "l": 0.36666666666666664,
+            "s": 0.7967914438502675,
+            "h": 219.06040268456377,
+            "name": "royal blue"
+          },
+          {
+            "hex": "#f2c500",
+            "share": 5,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "yellow",
+            "l": 0.4745098039215686,
+            "s": 1,
+            "h": 48.84297520661158,
+            "name": "yellow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "W21-N06",
+      "text": "Do not make the roof chrome; keep its red paint as it is.",
+      "mode": "no_mutation",
+      "plan": {
+        "kind": "ask",
+        "prohibited_edit": true,
+        "text": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request.",
+        "chips": []
+      },
+      "compiled": null
+    },
+    {
+      "id": "W17-02",
+      "text": "Make only the hood chrome and retain its black paint.",
+      "mode": "one_finish",
+      "plan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "hood",
+              "at": 15
+            },
+            "look": {
+              "id": "chrome",
+              "label": "chrome",
+              "words": [
+                "chrome",
+                "mirror",
+                "mirror chrome",
+                "mirror finish",
+                "mirrored"
+              ],
+              "found": "base::f_chrome",
+              "about": "full metal, perfectly smooth: a mirror"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "make only the hood chrome",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "Make only the hood chrome and retain its black paint."
+      },
+      "compiled": {
+        "zones": [
+          {
+            "name": "Hood chrome",
+            "finish": "base::f_chrome",
+            "color": "source",
+            "region": {
+              "part": "hood"
+            },
+            "_meta": {
+              "label": "hood",
+              "what": [
+                "chrome"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "chrome",
+              "parts": [
+                "hood"
+              ],
+              "kind": "part",
+              "about": "full metal, perfectly smooth: a mirror"
+            }
+          }
+        ],
+        "missing": [],
+        "ask": null,
+        "notes": [],
+        "pal": [
+          {
+            "hex": "#c8102e",
+            "share": 60,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "red",
+            "l": 0.4235294117647059,
+            "s": 0.8518518518518519,
+            "h": 350.21739130434787,
+            "name": "red"
+          },
+          {
+            "hex": "#141416",
+            "share": 20,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "black",
+            "l": 0.08235294117647059,
+            "s": 0.04761904761904763,
+            "h": 240,
+            "name": "black"
+          },
+          {
+            "hex": "#1347a8",
+            "share": 10,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "blue",
+            "l": 0.36666666666666664,
+            "s": 0.7967914438502675,
+            "h": 219.06040268456377,
+            "name": "royal blue"
+          },
+          {
+            "hex": "#f2c500",
+            "share": 5,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "yellow",
+            "l": 0.4745098039215686,
+            "s": 1,
+            "h": 48.84297520661158,
+            "name": "yellow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "W17-03",
+      "text": "Give only the roof a satin finish; leave its current red paint and region alone.",
+      "mode": "one_finish",
+      "plan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "roof",
+              "at": 15
+            },
+            "look": {
+              "id": "satin",
+              "label": "satin",
+              "words": [
+                "satin",
+                "eggshell",
+                "semi gloss",
+                "semi matte",
+                "low sheen",
+                "silky",
+                "soft sheen"
+              ],
+              "found": "base::f_clear_satin",
+              "about": "a soft sheen between gloss and matte"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "give only the roof a satin finish",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "Give only the roof a satin finish; leave its current red paint and region alone."
+      },
+      "compiled": {
+        "zones": [
+          {
+            "name": "Roof satin",
+            "finish": "base::f_clear_satin",
+            "color": "source",
+            "region": {
+              "part": "roof"
+            },
+            "_meta": {
+              "label": "roof",
+              "what": [
+                "satin"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "satin",
+              "parts": [
+                "roof"
+              ],
+              "kind": "part",
+              "about": "a soft sheen between gloss and matte"
+            }
+          }
+        ],
+        "missing": [],
+        "ask": null,
+        "notes": [],
+        "pal": [
+          {
+            "hex": "#c8102e",
+            "share": 60,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "red",
+            "l": 0.4235294117647059,
+            "s": 0.8518518518518519,
+            "h": 350.21739130434787,
+            "name": "red"
+          },
+          {
+            "hex": "#141416",
+            "share": 20,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "black",
+            "l": 0.08235294117647059,
+            "s": 0.04761904761904763,
+            "h": 240,
+            "name": "black"
+          },
+          {
+            "hex": "#1347a8",
+            "share": 10,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "blue",
+            "l": 0.36666666666666664,
+            "s": 0.7967914438502675,
+            "h": 219.06040268456377,
+            "name": "royal blue"
+          },
+          {
+            "hex": "#f2c500",
+            "share": 5,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "yellow",
+            "l": 0.4745098039215686,
+            "s": 1,
+            "h": 48.84297520661158,
+            "name": "yellow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "W17-04",
+      "text": "Set the hood to gloss; don't change its current navy color.",
+      "mode": "one_finish",
+      "plan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "hood",
+              "at": 9
+            },
+            "look": {
+              "id": "gloss",
+              "label": "gloss",
+              "words": [
+                "gloss",
+                "glossy",
+                "shiny",
+                "high gloss",
+                "show car",
+                "showroom",
+                "clearcoat",
+                "clear coat",
+                "clear coated",
+                "factory paint",
+                "factory finish"
+              ],
+              "found": "base::f_soft_gloss",
+              "about": "a deep, wet-looking gloss"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "set the hood to gloss",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "Set the hood to gloss; don't change its current navy color."
+      },
+      "compiled": {
+        "zones": [
+          {
+            "name": "Hood gloss",
+            "finish": "base::f_soft_gloss",
+            "color": "source",
+            "region": {
+              "part": "hood"
+            },
+            "_meta": {
+              "label": "hood",
+              "what": [
+                "gloss"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "gloss",
+              "parts": [
+                "hood"
+              ],
+              "kind": "part",
+              "about": "a deep, wet-looking gloss"
+            }
+          }
+        ],
+        "missing": [],
+        "ask": null,
+        "notes": [],
+        "pal": [
+          {
+            "hex": "#c8102e",
+            "share": 60,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "red",
+            "l": 0.4235294117647059,
+            "s": 0.8518518518518519,
+            "h": 350.21739130434787,
+            "name": "red"
+          },
+          {
+            "hex": "#141416",
+            "share": 20,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "black",
+            "l": 0.08235294117647059,
+            "s": 0.04761904761904763,
+            "h": 240,
+            "name": "black"
+          },
+          {
+            "hex": "#1347a8",
+            "share": 10,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "blue",
+            "l": 0.36666666666666664,
+            "s": 0.7967914438502675,
+            "h": 219.06040268456377,
+            "name": "royal blue"
+          },
+          {
+            "hex": "#f2c500",
+            "share": 5,
+            "shown": null,
+            "where": "",
+            "cells": [],
+            "fam": "yellow",
+            "l": 0.4745098039215686,
+            "s": 1,
+            "h": 48.84297520661158,
+            "name": "yellow"
+          }
+        ]
+      }
+    }
+  ],
+  "failures": [],
+  "scope_limits": [
+    {
+      "id": "W21-F05",
+      "type": "outside_assigned_imperative_prefix_scope",
+      "text": "Only the roof should be satin; its paint should stay red.",
+      "observed": null
+    }
+  ],
+  "limits": [
+    "E.plan and E.compile were executed from the actual editor source; no proAI route, browser, native app, provider, renderer, or paint mutation was executed.",
+    "Current-part paint color consistency is not verifiable from the parser-only environment; the asserted contract is that preservation tails do not become color assignments and compile as one named-part zone with source color.",
+    "The fresh oracle and three W17 replay strings are reported separately. Original W17 files were not modified."
+  ]
+}

@@ -2,7 +2,7 @@
   "name": "Formula Drift Pro",
   "description": "Modern Formula Drift livery — loud, sponsor-saturated, high-contrast. Neon pink body, toxic green sponsor panels, electric blue roof stripe, chrome gold badging, carbon fiber hood, piano black window trim, plaid door pattern, red accent kick. Peak pro-drift chaos.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "modern drift chassis, 240SX, s14, s15, RX-7, E46, Mustang drift builds",
   "notes": "Drift liveries earn their loudness — don't be shy with baseStrength. The plaid door pattern is a deliberate chaos accent; if it clashes, swap to racing_stripe. Chrome gold should contrast hard with the pink body.",
   "zones": [

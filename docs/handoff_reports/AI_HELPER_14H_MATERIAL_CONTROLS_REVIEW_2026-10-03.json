@@ -1,0 +1,85 @@
+{
+  "review": "W8 independent material-controls module review",
+  "date": "2026-10-03",
+  "status": "module repair recheck passes; native integration not evaluated",
+  "scope": {
+    "source": "js/spb-ai-material-controls.js",
+    "source_sha256_before_repair": "947FFA45B9B37AAE68F62D08A3FD89DC66EE9EFC182B0CA0388264DF1783ACA9",
+    "source_sha256_after_repair": "6EA9409267809E89153453DEDA4BD9DD34E31376B184CE815B5A4A631D1A4356",
+    "source_sha256_current_after_diagnostic_prefix_gate": "1A8CE44BCFF196F63404D42B0654833C660B387CC550835081E018D3B8B14F70",
+    "allowed_changes": [
+      "tests/ai_material_controls_review_contract.cjs",
+      "docs/handoff_reports/AI_HELPER_14H_MATERIAL_CONTROLS_REVIEW_2026-10-03.json"
+    ],
+    "not_touched": ["production source", "HTML", "runtime mirrors", "SPB_WIKI.html", "providers", "native MCP"]
+  },
+  "fresh_cases_authored_before_source_inspection": 25,
+  "contract": {
+    "api": ["parse(text)", "buildEdit(zone, parsed)"],
+    "test_file": "tests/ai_material_controls_review_contract.cjs",
+    "independent_test_result_before_repair": "37/40 checks passed; three expected-safety checks failed",
+    "post_inspection_supplemental_result_before_repair": "0/5 syntax checks passed; all five malformed or unconsumed forms became edits",
+    "unchanged_test_result_after_repair": "40/40 checks passed; the original test file was not modified",
+    "post_inspection_supplemental_result_after_repair": "5/5 syntax checks passed; the original test file was not modified",
+    "current_rerun_after_prefix_gate": "40/40 and 5/5 passed; helper contract file remained unchanged",
+    "syntax_check": "node --check js/spb-ai-material-controls.js passed"
+  },
+  "findings": [
+    {
+      "id": "W8-MC-01",
+      "severity": "high at parser boundary; parent selector must block",
+      "finding": "A number in the target phrase is treated as part of the part name. `Lower clearcoat on roof 2.` returns an edit targeting `roof 2`, without an explicit amount, and uses the default -20-point delta.",
+      "evidence": "Test `number-not-amount` fails because parse returns kind=edit.",
+      "impact": "If the parent resolves loose names or falls through instead of requiring one current, exact helper-owned part match, an unrelated part could be selected."
+    },
+    {
+      "id": "W8-MC-02",
+      "severity": "high at parser boundary; parent selector must block",
+      "finding": "The parser accepts `rooftop decal` as an edit target even when it is only a substring or unrelated phrase, and buildEdit does not compare parsed.part to zone.name.",
+      "evidence": "Test `part-name-substring` fails; a separate builder case confirms an edit is produced for parsed part `rooftop decal` with zone name `Roof`.",
+      "impact": "The parent must bind the parsed target to exactly one currently available helper-owned part before enqueueing the edit. The helper itself does not establish target identity."
+    },
+    {
+      "id": "W8-MC-03",
+      "severity": "medium",
+      "finding": "A signed negative amount fails the unsigned amount regex, then silently falls back to the default. `Lower clearcoat on the roof by -10 points.` becomes a -20-point edit rather than a clarification.",
+      "evidence": "Test `negative-input` fails because parse returns kind=edit; it reports `amountSpecified=false` and delta=-20.",
+      "impact": "Malformed explicit quantities should not be interpreted as an omitted amount."
+    },
+    {
+      "id": "W8-MC-04",
+      "severity": "review note",
+      "finding": "A missing quantity defaults to 20 points. This supports the exact native C07 phrase `Everything is too shiny; lower clearcoat on roof only.` and produces a roof clearcoat delta of -20, but it also means omitted amounts are actionable by default.",
+      "evidence": "The native C07 wording test passes and reports `amountSpecified=false`.",
+      "impact": "The parent should preserve the intended default only where its command contract authorizes it."
+    },
+    {
+      "id": "W8-MC-05",
+      "severity": "review note",
+      "finding": "The parser accepts integer point offsets, rejects relative percent offsets with clarification, and rejects absolute percent targets with a distinct clarification. A 256-point request is accepted and the builder saturates the resulting channel offset at -127.",
+      "evidence": "Point/sign, relative-percent, absolute-percent, oversized-offset and builder-bound cases are included in the independent contract test.",
+      "impact": "Builder bounds are effective; accepted oversized requests are saturated rather than rejected."
+    },
+    {
+      "id": "W8-MC-06",
+      "severity": "positive module boundary",
+      "finding": "For valid edits, buildEdit accumulates against the current R/G/B offsets, maps metalness→metal, roughness→rough, clearcoat→clearcoat, returns the complete tuple, clamps each component to [-127,127], and does not mutate the zone. Its edit contains zone_id, spec_shift, and optional expect_name, with no finish, pattern, or color fields.",
+      "evidence": "Builder mapping, accumulation, both bounds, no-op, malformed-zone, and immutability cases pass."
+    },
+    {
+      "id": "W8-MC-07",
+      "severity": "integration boundary",
+      "finding": "The pure module can parse the C07 material sentence as a roof clearcoat shift, but it cannot establish that the native app routes the command before decorative finish lookup or queues it through normal edit and Undo handling.",
+      "evidence": "Baseline report says the live C07 request selected Flame Lapped Clearcoat as a decorative-pattern candidate and did not apply a material change. This review did not run native/browser/MCP integration.",
+      "impact": "Do not report an end-to-end or native PASS from this module review. Parent integration must retain the protected-parts question and the exact unique current part-selector guard before normal edit queue and Undo."
+    },
+    {
+      "id": "W8-MC-08",
+      "severity": "high at parser boundary; exact target and full-consumption checks required upstream",
+      "finding": "A post-inspection supplemental set tested unsupported absolute point syntax, dangling numbers, and unconsumed trailing words. All five became edits: `Lower clearcoat on the roof to 40 points.` and `... roof 40 points.` both became part strings containing the quantity with a default -20 delta; `... by 10 points please.`, `... by 10 points from the front.`, and `... by 10 points only.` retained extra words in the parsed part (the first two kept -10).",
+      "evidence": "Supplemental tests are explicitly marked post-inspection in the test file and report separately as 0/5, leaving the original 25-case fresh result unchanged.",
+      "impact": "The parent’s exact unique current-part matching should reject these polluted targets. An absolute target or dangling quantity must never silently inherit the default relative amount."
+    }
+  ],
+  "finish_slot": "W8 module review delivered. No production, HTML, mirror, provider, MCP, or Wiki changes were made."
+}

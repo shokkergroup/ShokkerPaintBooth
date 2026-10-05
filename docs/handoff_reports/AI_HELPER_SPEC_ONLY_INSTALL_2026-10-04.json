@@ -1,0 +1,63 @@
+{
+  "installedUTC": "2026-10-04T18:29:52.423847+00:00",
+  "status": "INSTALLED_SOURCE_AND_MIRROR_PASS",
+  "files": {
+    "paint-booth-2-state-zones.js": "ac971cebf3d52881945ce07f9c1398f86e161d361d32ea34e059070b003ba25a",
+    "paint-booth-3-canvas.js": "4807a76fc29c1dbc16d0aab8fbe9f94ce8d12c33339bc18d2f2978c12f183c3e",
+    "paint-booth-v2.html": "3a0be99763c55c91193e6980e7fa217d9b5cc925d93678401c4c721c063ee0b1"
+  },
+  "beforeRoot": {
+    "paint-booth-2-state-zones.js": "e1efa310757fbbdbf5ea5cb030ddc651bdac1a6618a8388da1535d00d8f3bc95",
+    "paint-booth-3-canvas.js": "f55880174d7aff86f44f8ee5b0c28aff31cddcde6491386d558ec16a27b98f56",
+    "paint-booth-v2.html": "f99e80b675f2998776b4444f90bba3f8b692191dd884dd652c6f4e7ce06be012"
+  },
+  "beforeMirror": {
+    "paint-booth-2-state-zones.js": "e1efa310757fbbdbf5ea5cb030ddc651bdac1a6618a8388da1535d00d8f3bc95",
+    "paint-booth-3-canvas.js": "f55880174d7aff86f44f8ee5b0c28aff31cddcde6491386d558ec16a27b98f56",
+    "paint-booth-v2.html": "7379d17385306c6f437d1b2734407ae4de7aa173678f1f154669738c9c22374b"
+  },
+  "independentReviewSHA256": "80187fc87312e99890eaa5d2f712e79a1f55b05c01243dd9cfb0d95188639ec1",
+  "nativeGateSHA256": "ca4bc1fd3b53bf0cb42a56189790a44289f3b006194468cbd31269dd15d412b8",
+  "backendRestarted": false,
+  "ownerDocumentTouched": false,
+  "installerBuilt": false,
+  "broaderAI13Installed": false,
+  "pending": [],
+  "verifiedUTC": "2026-10-04T18:36:42.831687+00:00",
+  "rootMirrorAndServed": {
+    "paint-booth-2-state-zones.js": {
+      "rootSHA256": "ac971cebf3d52881945ce07f9c1398f86e161d361d32ea34e059070b003ba25a",
+      "mirrorSHA256": "ac971cebf3d52881945ce07f9c1398f86e161d361d32ea34e059070b003ba25a",
+      "servedSHA256": "ac971cebf3d52881945ce07f9c1398f86e161d361d32ea34e059070b003ba25a",
+      "servedExact": true,
+      "historicalInstalledSHA256": "ac971cebf3d52881945ce07f9c1398f86e161d361d32ea34e059070b003ba25a"
+    },
+    "paint-booth-3-canvas.js": {
+      "rootSHA256": "4807a76fc29c1dbc16d0aab8fbe9f94ce8d12c33339bc18d2f2978c12f183c3e",
+      "mirrorSHA256": "4807a76fc29c1dbc16d0aab8fbe9f94ce8d12c33339bc18d2f2978c12f183c3e",
+      "servedSHA256": "4807a76fc29c1dbc16d0aab8fbe9f94ce8d12c33339bc18d2f2978c12f183c3e",
+      "servedExact": true,
+      "historicalInstalledSHA256": "4807a76fc29c1dbc16d0aab8fbe9f94ce8d12c33339bc18d2f2978c12f183c3e"
+    },
+    "paint-booth-v2.html": {
+      "rootSHA256": "10948eb044e2a686d9ed5a9e2dc7211facc1f06799c29491bb9e1a210ccea5c9",
+      "mirrorSHA256": "10948eb044e2a686d9ed5a9e2dc7211facc1f06799c29491bb9e1a210ccea5c9",
+      "servedSHA256": "a4a41a5dfd5eb849e0f50754ae32bdf70fb73c9e30676a9faeb9f05bed686b50",
+      "servedExact": false,
+      "historicalInstalledSHA256": "3a0be99763c55c91193e6980e7fa217d9b5cc925d93678401c4c721c063ee0b1",
+      "serverDiagnosticBuildCommentOnly": true,
+      "ownedTokensExact": true,
+      "contentLinesExactAfterKnownBuildComment": true
+    }
+  },
+  "checks": {
+    "scopedSyncWrite": "3/3",
+    "scopedSyncSHA256": "PASS",
+    "nodeSyntax": "2/2 PASS",
+    "activeBakedPickerContract": "PASS",
+    "independentSpecContract": "13/13 PASS",
+    "nativeCurrentRootOldBackend": "PASS"
+  },
+  "ownerLoadedDocumentReloaded": false,
+  "effectiveFor": "New page load or app page reload; existing owner document was not interrupted."
+}

@@ -6,10 +6,11 @@ import numpy as np
 import cv2
 from PIL import Image, ImageFilter
 from scipy.spatial import cKDTree
-from engine.core import multi_scale_noise, get_mgrid, hsv_to_rgb_vec, rgb_to_hsv_array
+from engine.core import multi_scale_noise, get_mgrid, hsv_to_rgb_vec, rgb_to_hsv_array, _resize_array
 
 # Alias for legacy carbon/ceramic/glass sections that use _noise shorthand
 _noise = multi_scale_noise
+_SPEC_FIELD_CACHE = {}
 
 
 def _ensure_3ch(paint):
@@ -39,6 +40,28 @@ def clamp_cc(cc_array):
     Values 0-15 are legacy/undefined — never output them.
     """
     return np.clip(cc_array, 16, 255)
+
+
+def _fast_noise(shape, scales, weights, seed, cap=1024):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    h, w = int(h), int(w)
+    key = ("noise", h, w, tuple(scales), tuple(weights), int(seed), int(cap))
+    cached = _SPEC_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    work = min(int(cap), h, w)
+    if work < min(h, w):
+        sh = max(8, int(round(h * work / max(h, w))))
+        sw = max(8, int(round(w * work / max(h, w))))
+        field = multi_scale_noise((sh, sw), scales, weights, seed)
+        field = _resize_array(np.asarray(field, dtype=np.float32), h, w)
+    else:
+        field = multi_scale_noise((h, w), scales, weights, seed)
+    if len(_SPEC_FIELD_CACHE) > 128:
+        _SPEC_FIELD_CACHE.clear()
+    field = np.asarray(field, dtype=np.float32)
+    _SPEC_FIELD_CACHE[key] = field
+    return field
 
 
 # SPEC MAP GENERATORS (identical to v1 - proven working)
@@ -2952,8 +2975,12 @@ def paint_cp_chameleon(paint, shape, mask, seed, pm, bb):
     h, w = shape
     mask3 = mask[:,:,np.newaxis]
 
-    # Spatial noise to prevent perfectly uniform shift (moderate frequency ~16 cycles)
-    n = multi_scale_noise(shape, [16, 32], [0.5, 0.5], seed + 7700)
+    # Spatial noise to prevent perfectly uniform shift (moderate frequency ~16 cycles).
+    # PERF (2026-06-04): _fast_noise caps the carrier at <=1024 then linearly upscales
+    # and memoizes in _SPEC_FIELD_CACHE. At scales [16,32] the field is smooth enough
+    # that the cap is visually invisible, but it avoids regenerating a full 2048^2 noise
+    # field on the cold (cache-miss) chameleon render -- bit-cheap, look-preserving.
+    n = _fast_noise(shape, [16, 32], [0.5, 0.5], seed + 7700)
     bb_2d = _ensure_bb_2d(bb, shape)
     angle_field = np.clip(bb_2d + n * 0.15, 0, 1)
 
@@ -2964,20 +2991,14 @@ def paint_cp_chameleon(paint, shape, mask, seed, pm, bb):
     # This creates the genuine chameleon two-tone color flip
     hue_shift = (t - 0.5) * (120.0 / 360.0)  # -60 to +60 degrees, normalized to 0-1 hue wheel
 
-    # Convert paint to HSV
-    r, g, b = paint[:,:,0], paint[:,:,1], paint[:,:,2]
-    cmax = np.maximum(np.maximum(r, g), b)
-    cmin = np.minimum(np.minimum(r, g), b)
-    delta = cmax - cmin + 1e-8
-    hue = np.zeros((h, w), dtype=np.float32)
-    m_r = (cmax == r)
-    m_g = (cmax == g) & ~m_r
-    m_b = ~m_r & ~m_g
-    hue[m_r] = ((g[m_r] - b[m_r]) / delta[m_r]) % 6 / 6
-    hue[m_g] = ((b[m_g] - r[m_g]) / delta[m_g] + 2) / 6
-    hue[m_b] = ((r[m_b] - g[m_b]) / delta[m_b] + 4) / 6
-    sat = delta / (cmax + 1e-8)
-    val = cmax
+    # Convert paint to HSV.
+    # PERF (2026-06-04): cv2-based rgb_to_hsv_array replaces the hand-rolled boolean-
+    # indexed decomposition (3 full-res masks + 3 fancy-index assignments). cv2 returns
+    # H in [0,1] (renormalized), S, V matching the previous hue/sat/val semantics, so the
+    # downstream hsv_to_rgb_vec reconstruction is look-identical to float precision while
+    # eliminating ~6 full-resolution temp allocations on the cold path.
+    hsv = rgb_to_hsv_array(paint[:, :, :3])
+    hue, sat, val = hsv[:, :, 0], hsv[:, :, 1], hsv[:, :, 2]
 
     # Rotate hue by angle-dependent shift, apply to masked area
     new_hue = (hue + hue_shift * mask) % 1.0
@@ -3889,7 +3910,7 @@ def paint_armor_plate_v2(paint, shape, mask, seed, pm, bb):
     )
     
     # Heavy rolling marks/scratches in the metal
-    marks = multi_scale_noise((h, w), [4, 16], [0.7, 0.3], seed + 50)
+    marks = _fast_noise((h, w), [4, 16], [0.7, 0.3], seed + 50)
     
     # Very slight green/brown oxidation in the recesses
     rust = np.where(marks < 0.3, 0.1, 0.0).astype(np.float32)
@@ -3931,8 +3952,8 @@ def paint_battleship_gray_v2(paint, shape, mask, seed, pm, bb):
     
     # Salt spray and vertical streaking from seawater
     y, x = get_mgrid((h,w))
-    streaks = np.sin(x * 0.1 + multi_scale_noise((h,w), [16], [1.0], seed) * 2.0) * 0.5 + 0.5
-    salt = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 10)
+    streaks = np.sin(x * 0.1 + _fast_noise((h,w), [16], [1.0], seed) * 2.0) * 0.5 + 0.5
+    salt = _fast_noise((h, w), [32, 64], [0.5, 0.5], seed + 10)
     weathering = (streaks * 0.6 + salt * 0.4)
     
     paint = np.clip(paint + (weathering - 0.5)[:,:,np.newaxis] * 0.1 * mask[:,:,np.newaxis] * blend, 0, 1)
@@ -3969,7 +3990,7 @@ def paint_gunship_gray_v2(paint, shape, mask, seed, pm, bb):
     )
     
     # Ultra-fine gritty RAM texture
-    ram_grit = multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 12)
+    ram_grit = _fast_noise((h, w), [1, 2], [0.6, 0.4], seed + 12)
     paint = np.clip(paint - ram_grit[:,:,np.newaxis] * 0.05 * mask[:,:,np.newaxis] * blend, 0, 1)
     
     # No bb highlight boost for radar absorbent
@@ -3978,7 +3999,7 @@ def paint_gunship_gray_v2(paint, shape, mask, seed, pm, bb):
 def spec_gunship_gray_v2(shape, seed, sm, base_m, base_r):
 
     h, w = shape[:2] if len(shape) > 2 else shape
-    ram_grit = multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 12)
+    ram_grit = _fast_noise((h, w), [1, 2], [0.6, 0.4], seed + 12)
     
     # RAM coating is highly porous/rough and barely metallic
     M = np.full((h, w), 5.0, dtype=np.float32)
@@ -4006,7 +4027,7 @@ def paint_mil_spec_od_v3(paint, shape, mask, seed, pm, bb):
     )
     
     # Heavy field dirt and mud smudging
-    field_grime = multi_scale_noise((h, w), [8, 16, 32], [0.5, 0.3, 0.2], seed + 100)
+    field_grime = _fast_noise((h, w), [8, 16, 32], [0.5, 0.3, 0.2], seed + 100)
     paint[:,:,0] = np.clip(paint[:,:,0] + field_grime * 0.05 * mask * blend, 0, 1)
     paint[:,:,1] = np.clip(paint[:,:,1] - field_grime * 0.10 * mask * blend, 0, 1) # Reduce green where muddy
     
@@ -4015,7 +4036,7 @@ def paint_mil_spec_od_v3(paint, shape, mask, seed, pm, bb):
 def spec_mil_spec_od_v3(shape, seed, sm, base_m, base_r):
 
     h, w = shape[:2] if len(shape) > 2 else shape
-    field_grime = multi_scale_noise((h, w), [8, 16, 32], [0.5, 0.3, 0.2], seed + 100)
+    field_grime = _fast_noise((h, w), [8, 16, 32], [0.5, 0.3, 0.2], seed + 100)
     
     # Flat durable military paint, dirt adds roughness
     M = np.full((h, w), 2.0, dtype=np.float32)
@@ -4043,14 +4064,14 @@ def paint_mil_spec_tan_v2(paint, shape, mask, seed, pm, bb):
     )
     
     # Dust accumulation
-    dust = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 200)
+    dust = _fast_noise((h, w), [16, 32], [0.6, 0.4], seed + 200)
     paint = np.clip(paint + dust[:,:,np.newaxis] * 0.1 * mask[:,:,np.newaxis] * blend, 0, 1)
     return np.clip(paint + bb * 0.08, 0, 1)
 
 def spec_mil_spec_tan_v2(shape, seed, sm, base_m, base_r):
 
     h, w = shape[:2] if len(shape) > 2 else shape
-    dust = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 200)
+    dust = _fast_noise((h, w), [16, 32], [0.6, 0.4], seed + 200)
     
     M = np.full((h, w), 0.0, dtype=np.float32)
     R = np.clip(200.0 + dust * 55.0 * sm, 15, 255)
@@ -4083,7 +4104,7 @@ def paint_submarine_black_v2(paint, shape, mask, seed, pm, bb):
     paint[:,:,2] = np.clip(paint[:,:,2] + grid * 0.08 * mask * blend, 0, 1)
     
     # Heavy rubber grain
-    rubber_grain = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 500)
+    rubber_grain = _fast_noise((h, w), [32, 64], [0.6, 0.4], seed + 500)
     paint = np.clip(paint + rubber_grain[:,:,np.newaxis] * 0.03 * mask[:,:,np.newaxis] * blend, 0, 1)
     
     # Absolutely no bb highlight boost on anechoic rubber
@@ -4096,7 +4117,7 @@ def spec_submarine_black_v2(shape, seed, sm, base_m, base_r):
     tile_size = 32
     y, x = np.mgrid[0:h, 0:w]
     grid = ((y % tile_size < 2) | (x % tile_size < 2)).astype(np.float32)
-    rubber_grain = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 500)
+    rubber_grain = _fast_noise((h, w), [32, 64], [0.6, 0.4], seed + 500)
     
     # Rubber is highly dielectric and extremely rough
     M = np.full((h, w), 0.0, dtype=np.float32)
@@ -4127,14 +4148,14 @@ def paint_blackout_v2(paint, shape, mask, seed, pm, bb):
         0, 1
     )
     # Faint thin layer streaking (from applying matte wraps)
-    streaks = multi_scale_noise((h, w), [4, 16], [0.8, 0.2], seed + 300)
+    streaks = _fast_noise((h, w), [4, 16], [0.8, 0.2], seed + 300)
     paint = np.clip(paint - streaks[:,:,np.newaxis] * 0.02 * mask[:,:,np.newaxis] * blend, 0, 1)
     return np.clip(paint + bb * 0.05, 0, 1)
 
 def spec_blackout_v2(shape, seed, sm, base_m, base_r):
 
     h, w = shape[:2] if len(shape) > 2 else shape
-    streaks = multi_scale_noise((h, w), [4, 16], [0.8, 0.2], seed + 300)
+    streaks = _fast_noise((h, w), [4, 16], [0.8, 0.2], seed + 300)
     
     # Highly dielectric, very rough, but varying slightly from wrap stretching
     M = np.full((h, w), 5.0, dtype=np.float32)
@@ -4226,7 +4247,7 @@ def paint_martian_regolith(paint, shape, mask, seed, pm, bb):
     )
     
     # Heavy dunes and dirt clumping
-    clumps = multi_scale_noise((h, w), [4, 8, 32], [0.4, 0.4, 0.2], seed + 303)
+    clumps = _fast_noise((h, w), [4, 8, 32], [0.4, 0.4, 0.2], seed + 303)
     paint = np.clip(paint - clumps[:,:,np.newaxis] * 0.3 * mask[:,:,np.newaxis] * blend, 0, 1)
     
     # Occasional oxidized black streaks
@@ -4237,8 +4258,8 @@ def paint_martian_regolith(paint, shape, mask, seed, pm, bb):
 def spec_martian_regolith(shape, seed, sm, base_m, base_r):
 
     h, w = shape[:2] if len(shape) > 2 else shape
-    clumps = multi_scale_noise((h, w), [4, 8, 32], [0.4, 0.4, 0.2], seed + 303)
-    glass_shards = multi_scale_noise((h, w), [1], [1.0], seed + 304)
+    clumps = _fast_noise((h, w), [4, 8, 32], [0.4, 0.4, 0.2], seed + 303)
+    glass_shards = _fast_noise((h, w), [1], [1.0], seed + 304)
     
     # Almost entirely rough dirt
     R = np.clip(220.0 + clumps * 35.0 * sm, 15, 255)
@@ -4262,7 +4283,7 @@ def spec_powder_coat_v2(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     
     # Heavy, thick orange-peel bubbling from cured polyester powder
-    peel = multi_scale_noise((h, w), [8, 16], [0.6, 0.4], seed + 305)
+    peel = _fast_noise((h, w), [8, 16], [0.6, 0.4], seed + 305)
     
     M = np.full((h, w), 10.0, dtype=np.float32)
     R = np.clip(90.0 + peel * 70.0 * sm, 15, 255)
@@ -4442,12 +4463,13 @@ def spec_anodized_exotic_base(shape, seed, sm, base_m, base_r):
     sy_hex = y_idx % cell
     dist_hex = np.sqrt((sx_hex - cell * 0.5) ** 2 + (sy_hex - cell * 0.5) ** 2)
     hex_pore = np.clip(dist_hex / (cell * 0.5), 0, 1)  # 0=center, 1=edge
+    hex_edge = np.clip(1.0 - np.abs(hex_pore - 0.82) * 6.0, 0, 1)
     # Pore modulation: ±15 amplitude
     pore_mod = (hex_pore - 0.5) * 15.0  # -7.5 to +7.5
 
-    M_arr  = np.clip( 80.0 + base_n * 60.0 * sm + pore_mod, 0, 255).astype(np.float32)
-    R_arr  = np.clip( 25.0 + base_n * 30.0 * sm + pore_mod * 0.5, 0, 255).astype(np.float32)
-    CC_arr = np.clip( 35.0 + base_n * 30.0      + pore_mod * 0.5, 16, 255).astype(np.float32)
+    M_arr  = np.clip(168.0 + base_n * 72.0 * sm + pore_mod * 2.2 + hex_edge * 48.0 * sm, 0, 255).astype(np.float32)
+    R_arr  = np.clip(22.0 + base_n * 24.0 * sm + pore_mod * 0.35 - hex_edge * 14.0 * sm, 15, 255).astype(np.float32)
+    CC_arr = np.clip(42.0 + base_n * 38.0 * sm + hex_edge * 36.0 * sm + pore_mod * 0.4, 16, 255).astype(np.float32)
     return M_arr, R_arr, CC_arr
 
 
@@ -4808,7 +4830,7 @@ def spec_velvet_floc_base(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     sh = (h, w)
     # Micro flock variation — flock pile has some height variation (narrow range)
-    flock_fbm = multi_scale_noise(sh, [32, 64], [0.6, 0.4], seed + 720)
+    flock_fbm = _fast_noise(sh, [32, 64], [0.6, 0.4], seed + 720)
     M_arr = np.zeros((h, w), dtype=np.float32)  # No metallic — pure light absorption
     # G: 245-255 — far above even deep matte, eliminates all specular
     R_arr = np.clip(245.0 + flock_fbm * 10.0, 15, 255).astype(np.float32)
@@ -4822,7 +4844,7 @@ def paint_velvet_floc(paint, shape, mask, seed, pm, bb):
     Desaturates and darkens to near-black. Micro flock pile texture via fine noise."""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    flock_fbm = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 720)
+    flock_fbm = _fast_noise((h, w), [32, 64], [0.6, 0.4], seed + 720)
     # Target: near-black (5-12 in 0-255 range = 0.020-0.047 float)
     black_r = np.clip(0.022 + flock_fbm * 0.018, 0, 1)
     black_g = np.clip(0.018 + flock_fbm * 0.018, 0, 1)
@@ -4842,10 +4864,11 @@ def spec_deep_pearl_base(shape, seed, sm, base_m, base_r):
     DISTINCT from single-stage pearl (M=100, R=40): true flop requires edge weighting."""
     h, w = shape[:2] if len(shape) > 2 else shape
     sh = (h, w)
-    # Three independent coat noise layers (different seeds)
-    base_coat   = multi_scale_noise(sh, [8,  16], [0.55, 0.45], seed + 730)   # metallic silver base
-    pearl_mid   = multi_scale_noise(sh, [20, 40], [0.55, 0.45], seed + 731)   # interference mica
-    clear_top   = multi_scale_noise(sh, [32, 64], [0.55, 0.45], seed + 732)   # gloss clearcoat
+    # Three independent coat layers. Keep low-frequency pearl motion smooth;
+    # the prior high-scale noise read as rectangular dirt blocks at 2048.
+    base_coat   = multi_scale_noise(sh, [4,  9], [0.58, 0.42], seed + 730)
+    pearl_mid   = multi_scale_noise(sh, [6, 14], [0.58, 0.42], seed + 731)
+    clear_top   = multi_scale_noise(sh, [8, 18], [0.58, 0.42], seed + 732)
     platelet    = multi_scale_noise(sh, [2, 4, 8], [0.42, 0.35, 0.23], seed + 733)
     platelet01  = np.clip((platelet + 1.0) * 0.5, 0, 1)
     # Edge weighting: simulate flop angle shift (smooth gradient across surface)
@@ -4854,7 +4877,8 @@ def spec_deep_pearl_base(shape, seed, sm, base_m, base_r):
     yy, xx = np.meshgrid(y_pos, x_pos, indexing='ij')
     edge_weight = np.clip(np.sin(yy * np.pi) * np.sin(xx * np.pi), 0, 1)
     # M: 80-100 with edge-weighted flop (face=80, edge=100)
-    M_arr = np.clip(80.0 + edge_weight * 18.0 + pearl_mid * 12.0 * sm + platelet01 * 34.0 * sm, 0, 255).astype(np.float32)
+    yy_wave = np.sin((xx * 10.0 + yy * 4.0) + pearl_mid * 2.4) * 0.5 + 0.5
+    M_arr = np.clip(80.0 + edge_weight * 18.0 + yy_wave * 12.0 * sm + platelet01 * 34.0 * sm, 0, 255).astype(np.float32)
     # R: 50-70 (pearl surface micro-roughness — distinctly rougher than standard pearl)
     R_arr = np.clip(48.0 + pearl_mid * 16.0 * sm + base_coat * 8.0 + (1.0 - platelet01) * 24.0 * sm, 15, 255).astype(np.float32)
     # CC: 16-20 (glossy tri-coat clear with slight pooling)
@@ -4868,20 +4892,22 @@ def paint_deep_pearl(paint, shape, mask, seed, pm, bb):
     Preserves base color but pushes lightness toward pearl range."""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    pearl_mid = multi_scale_noise((h, w), [20, 40], [0.55, 0.45], seed + 731)
-    clear_top  = multi_scale_noise((h, w), [32, 64], [0.55, 0.45], seed + 732)
+    pearl_mid = multi_scale_noise((h, w), [6, 14], [0.58, 0.42], seed + 731)
+    clear_top  = multi_scale_noise((h, w), [8, 18], [0.58, 0.42], seed + 732)
     platelet = multi_scale_noise((h, w), [2, 4, 8], [0.42, 0.35, 0.23], seed + 733)
     # Edge-weighted flop: warm gold hint at raking angles
     y_pos = np.linspace(0, 1, h, dtype=np.float32)
     x_pos = np.linspace(0, 1, w, dtype=np.float32)
     yy, xx = np.meshgrid(y_pos, x_pos, indexing='ij')
     edge_w = np.clip(1.0 - np.sin(yy * np.pi) * np.sin(xx * np.pi), 0, 1)
-    nacre = np.sin(xx * w * 0.16 + yy * h * 0.055 + pearl_mid * 3.5) * 0.5 + 0.5
+    nacre = np.sin(xx * 18.0 + yy * 7.0 + pearl_mid * 2.8) * 0.5 + 0.5
     platelet_flash = np.clip((platelet - 0.08) * 1.8, 0, 1)
-    # Gold flop color: (0.75, 0.60, 0.16)
-    flop_r = 0.58 * edge_w * pearl_mid + 0.1 + platelet_flash * 0.115 + nacre * 0.055
-    flop_g = 0.46 * edge_w * pearl_mid + 0.1 + platelet_flash * 0.088 + (1.0 - nacre) * 0.044
-    flop_b = 0.12 * edge_w * pearl_mid + 0.1 + platelet_flash * 0.135 + nacre * 0.070
+    # Warm/cool Type III pearl flop: champagne on one angle, blue-pink on another.
+    warm = np.clip(edge_w * pearl_mid, 0, 1)
+    cool = np.clip((1.0 - edge_w) * (1.0 - pearl_mid * 0.35) + nacre * 0.25, 0, 1)
+    flop_r = 0.18 + warm * 0.40 + cool * 0.12 + platelet_flash * 0.115 + nacre * 0.045
+    flop_g = 0.18 + warm * 0.30 + cool * 0.10 + platelet_flash * 0.088 + (1.0 - nacre) * 0.040
+    flop_b = 0.20 + warm * 0.10 + cool * 0.30 + platelet_flash * 0.135 + nacre * 0.060
     # Lighten base toward pearl-white
     white_lift = np.clip(clear_top * 0.3, 0, 0.3)
     blend_flop  = pm * 0.25 * mask

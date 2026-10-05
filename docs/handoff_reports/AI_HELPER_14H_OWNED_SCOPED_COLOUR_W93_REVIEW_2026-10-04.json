@@ -1,0 +1,151 @@
+{
+  "work_item": "W93 independent actual-owner proof review of W89 candidate",
+  "date": "2026-10-04",
+  "status": "PASS_WITH_LIMITS",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w93_review/fresh-oracle.json",
+    "sha256": "1d7655a63318d8384ec3e93a1ba4c5009f0635262b5f242ab1469ad85c7c4169",
+    "cases": 12,
+    "frozenBeforeInspection": true
+  },
+  "sources": {
+    "controller": {
+      "path": "_easy_claude_work/ai14h_w89_review/candidate/spb-pro-ai.js",
+      "sha256": "fa51053ad77409aa677a9e2d8ef633fd6d6bcd20e5dcdf5628af40c65b37dc59"
+    },
+    "edit": {
+      "path": "_easy_claude_work/ai14h_w89_review/candidate/spb-pro-edit.js",
+      "sha256": "3696cf6c9bdf9a28a056ebf90a9ddd23cfe290134943c11beb4c7ec5485a173a"
+    },
+    "design": {
+      "path": "_easy_claude_work/ai14h_w89_review/base/spb-pro-design.js",
+      "sha256": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8"
+    }
+  },
+  "counts": {
+    "freshCases": 15,
+    "passed": 15,
+    "failed": 0,
+    "providers": 0,
+    "native": 0
+  },
+  "rows": [
+    {
+      "id": "current-owner-with-source-green-conflict",
+      "pass": true,
+      "owner": "roof-owner-1",
+      "zoneEdit": {
+        "zone_id": "roof-owner-1",
+        "zone": "AI green roof",
+        "hex": "#1f8a3b"
+      },
+      "finishPreservedByOmission": true
+    },
+    {
+      "id": "finish-followup-targets-same-owner",
+      "pass": true,
+      "owner": "roof-owner-1"
+    },
+    {
+      "id": "edited-mask",
+      "pass": true,
+      "controllerProofs": 0,
+      "compiledZones": 0,
+      "asked": true
+    },
+    {
+      "id": "changed-layout",
+      "pass": true,
+      "controllerProofs": 0,
+      "compiledZones": 0,
+      "asked": true
+    },
+    {
+      "id": "changed-source",
+      "pass": true,
+      "controllerProofs": 0,
+      "compiledZones": 0,
+      "asked": true
+    },
+    {
+      "id": "hidden-layer",
+      "pass": true,
+      "controllerProofs": 0,
+      "compiledZones": 0,
+      "asked": true
+    },
+    {
+      "id": "muted-owner",
+      "pass": true,
+      "controllerProofs": 0,
+      "compiledZones": 0,
+      "asked": true
+    },
+    {
+      "id": "duplicate-id",
+      "pass": true,
+      "controllerProofs": 0,
+      "compiledZones": 0,
+      "asked": true
+    },
+    {
+      "id": "changed-solid-strength",
+      "pass": true,
+      "controllerProofs": 1,
+      "compiledZones": 0,
+      "asked": true
+    },
+    {
+      "id": "non-solid",
+      "pass": true,
+      "controllerProofs": 1,
+      "compiledZones": 0,
+      "asked": true
+    },
+    {
+      "id": "invisible-footprint",
+      "pass": true,
+      "controllerProofs": 0,
+      "compiledZones": 0,
+      "asked": true
+    },
+    {
+      "id": "partial-selector",
+      "pass": true,
+      "controllerProofs": 0,
+      "compiledZones": 0,
+      "asked": true
+    },
+    {
+      "id": "bad-layer-selector",
+      "pass": true,
+      "controllerProofs": 0,
+      "compiledZones": 0,
+      "asked": true
+    },
+    {
+      "id": "hit-color-mismatch-with-current-proof",
+      "pass": true,
+      "controllerProofs": 1,
+      "compiledZones": 0,
+      "asked": true
+    },
+    {
+      "id": "no-owner-source-color-control",
+      "pass": true,
+      "compiledZones": 1,
+      "selector": {
+        "colors": [
+          "#01ff00"
+        ],
+        "tolerance": 38,
+        "part": "roof"
+      }
+    }
+  ],
+  "limits": [
+    "Actual candidate controller functions partOwnerCurrent(), scopedPartProofCurrent() and currentPartZoneOwners() execute with real source/zone/layer/mask state fields; controlled CAR, transaction, layer lookup, and footprint readers provide deterministic fixtures.",
+    "Actual candidate E.plan()/E.compile() consume the real proof callback. Rendering, native UI, queued apply, saved artifact roundtrip, and runtime installation are not exercised.",
+    "No provider, browser, native paint, server, or live source calls."
+  ]
+}

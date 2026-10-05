@@ -2,7 +2,7 @@
   "name": "Lowrider Candy",
   "description": "East-LA style candy lowrider. Deep candy apple base with candy cobalt panels, heavy gold leaf scrollwork, chrome trim all over, piano black roof, pearl fades, and a celtic-knot etched accent. Rolling sculpture.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "impala, cutlass, monte_carlo, g-body lowriders, custom builds",
   "notes": "This is a dense recipe — the gold leaf pinstripe pattern is intentionally heavy. If the picker catches too much body, tighten yellow tolerance to 22. Candy bases wash out under low light; preview with bright sun setting.",
   "zones": [

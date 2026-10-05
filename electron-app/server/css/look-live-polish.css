@@ -1,0 +1,321 @@
+/* [SPB-DECLUTTER2 2026-08-29] the non-classic blocks below were written for the 4 retired
+   pre-7/28 looks; rescoped with :not(.spb-gallery-look) so the KEPT gallery looks stop
+   inheriting their legacy geometry (28px tools, shrunken zone buttons, 46px sliders). */
+/* ============================================================
+   SPB Look Live Polish
+   Owner request 2026-05-20: keep Classic unchanged, repair the new Looks'
+   left rail / zone toolbar usability, and add lively but quiet shop motion.
+   Kept separate from the large CSS files to protect the SPB-103 file budget.
+   ============================================================ */
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) {
+    --look-live-line: var(--accent-cyan, #00e5ff);
+    --look-live-fill: color-mix(in srgb, var(--accent, #ff3366) 18%, transparent);
+    --look-live-glow: color-mix(in srgb, var(--accent, #ff3366) 42%, transparent);
+}
+
+body[data-look="warped-tour"] {
+    --look-live-line: #00f0ff;
+    --look-live-fill: rgba(255, 20, 147, 0.14);
+    --look-live-glow: rgba(255, 20, 147, 0.34);
+}
+
+body[data-look="electric-boogeyman"] {
+    --look-live-line: #ff7a18;
+    --look-live-fill: rgba(255, 82, 18, 0.12);
+    --look-live-glow: rgba(255, 51, 0, 0.3);
+}
+
+body[data-look="neon-cyberpunk"] {
+    --look-live-line: #00ff85;
+    --look-live-fill: rgba(192, 38, 255, 0.12);
+    --look-live-glow: rgba(0, 255, 133, 0.32);
+}
+
+body[data-look="swamp-thang"] {
+    --look-live-line: #c9a227;
+    --look-live-fill: rgba(26, 156, 94, 0.12);
+    --look-live-glow: rgba(201, 162, 39, 0.3);
+}
+
+/* Far-left tool rail repair: personality comes from glow and color, not bulky boxes. */
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .vertical-toolbar {
+    padding: 5px 4px !important;
+    gap: 1px !important;
+    overflow-x: hidden !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .vertical-toolbar .vtool-group {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 2px !important;
+    width: 100% !important;
+    padding: 3px 4px !important;
+    border-top: 0 !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--look-live-line) 30%, transparent) !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .vertical-toolbar .vtool-label {
+    font-size: 8.5px !important;
+    line-height: 1 !important;
+    margin-bottom: 2px !important;
+    letter-spacing: 0.7px !important;
+    color: color-mix(in srgb, var(--look-live-line) 70%, #ffffff 15%) !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .vertical-toolbar .vtool-btn,
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .vertical-toolbar button.vtool-btn {
+    box-sizing: border-box !important;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 0 !important;
+    min-height: 28px !important;
+    padding: 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 5px !important;
+    background: linear-gradient(180deg, var(--look-live-fill), rgba(0, 0, 0, 0.14)) !important;
+    color: var(--look-live-line) !important;
+    font-size: 14px !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    text-shadow: 0 0 8px var(--look-live-glow) !important;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025) !important;
+    transform: none !important;
+    transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease, color 140ms ease !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .vertical-toolbar .vtool-btn:hover {
+    border-color: var(--look-live-line) !important;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--look-live-line) 18%, transparent), rgba(0, 0, 0, 0.18)) !important;
+    box-shadow: 0 0 0 1px var(--look-live-line), 0 0 12px var(--look-live-glow) !important;
+    color: #ffffff !important;
+    transform: translateY(-1px) !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .vertical-toolbar .vtool-btn.active,
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .vertical-toolbar .vtool-btn[aria-pressed="true"] {
+    border-color: #ffffff !important;
+    background: linear-gradient(180deg, var(--look-live-line), color-mix(in srgb, var(--look-live-line) 58%, #000000)) !important;
+    color: #020305 !important;
+    box-shadow: 0 0 0 1px #000000, 0 0 14px var(--look-live-glow) !important;
+}
+
+body[data-look="neon-cyberpunk"] .vertical-toolbar .vtool-btn {
+    border-radius: 1px !important;
+}
+
+body[data-look="electric-boogeyman"] .vertical-toolbar .vtool-btn {
+    border-radius: 3px !important;
+}
+
+body[data-look="swamp-thang"] .vertical-toolbar .vtool-btn {
+    border-radius: 7px !important;
+}
+
+/* Zones toolbar overflow fix: search gets its own row, actions become compact chips. */
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-toolbar {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    align-items: stretch !important;
+    gap: 4px !important;
+    padding: 6px !important;
+    overflow: hidden !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-toolbar > input#zoneSearchInput {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    font-size: 10px !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-toolbar > span[style*="flex:1"] {
+    display: none !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-toolbar > .btn.btn-sm {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: 24px !important;
+    padding: 2px 3px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: clip !important;
+    border-width: 1px !important;
+    border-radius: 5px !important;
+    font-size: 8.5px !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-toolbar > .btn.btn-sm:last-of-type {
+    grid-column: 1 / -1 !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-actions-stacked .zone-action-slim,
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-actions-stacked .zone-more-btn {
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+}
+
+/* Zone cards have many tiny action buttons; keep them touchable without heavy theme boxes. */
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card-actions {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 3px !important;
+    margin-left: auto !important;
+    min-width: 0 !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card-actions .zone-reorder-group {
+    display: inline-flex !important;
+    gap: 2px !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card-actions button,
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card .zone-move-btn,
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card .zone-mute-btn,
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card .zone-delete-btn {
+    box-sizing: border-box !important;
+    width: 20px !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    padding: 0 !important;
+    border-width: 1px !important;
+    border-color: color-mix(in srgb, var(--look-live-line) 35%, transparent) !important;
+    border-radius: 5px !important;
+    background: rgba(0, 0, 0, 0.18) !important;
+    color: color-mix(in srgb, var(--look-live-line) 82%, #ffffff 18%) !important;
+    font-size: 11px !important;
+    line-height: 1 !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card-actions button:hover {
+    border-color: var(--look-live-line) !important;
+    background: color-mix(in srgb, var(--look-live-line) 14%, rgba(0, 0, 0, 0.24)) !important;
+    box-shadow: 0 0 8px var(--look-live-glow) !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card-actions button:disabled {
+    opacity: 0.35 !important;
+    box-shadow: none !important;
+}
+
+/* Give collapsed zone names more room; reveal secondary actions on hover/selection. */
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card-collapsed:not(:hover):not(.selected) .zone-card-actions {
+    display: inline-flex !important;
+    gap: 2px !important;
+    width: 46px !important;
+    max-width: 46px !important;
+}
+
+html body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) #zoneList .zone-card.zone-card-collapsed:not(:hover):not(.selected) .zone-card-actions {
+    display: inline-flex !important;
+    width: 46px !important;
+    max-width: 46px !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card-collapsed:not(:hover):not(.selected) .zone-card-actions .zone-reorder-group,
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card-collapsed:not(:hover):not(.selected) .zone-card-actions .zone-move-btn {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    padding: 0 !important;
+    border-width: 0 !important;
+    opacity: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card-collapsed:not(:hover):not(.selected) .zone-card-actions .zone-mute-btn,
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card-collapsed:not(:hover):not(.selected) .zone-card-actions .zone-delete-btn {
+    width: 20px !important;
+    min-width: 20px !important;
+    max-width: 20px !important;
+    border-width: 1px !important;
+    opacity: 0.76 !important;
+    pointer-events: auto !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card-collapsed:hover .zone-card-actions .zone-reorder-group,
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card-collapsed.selected .zone-card-actions .zone-reorder-group {
+    width: auto !important;
+    min-width: 0 !important;
+    opacity: 1 !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card-collapsed:hover .zone-card-actions .zone-move-btn,
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .zone-card-collapsed.selected .zone-card-actions .zone-move-btn {
+    width: 20px !important;
+    min-width: 20px !important;
+    max-width: 20px !important;
+    border-width: 1px !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+/* Active look cards should read as selected even when the settings menu is dense. */
+body[data-look="warped-tour"] #looksGrid .look-card[data-look="warped-tour"],
+body[data-look="electric-boogeyman"] #looksGrid .look-card[data-look="electric-boogeyman"],
+body[data-look="neon-cyberpunk"] #looksGrid .look-card[data-look="neon-cyberpunk"],
+body[data-look="swamp-thang"] #looksGrid .look-card[data-look="swamp-thang"] {
+    outline: 1px solid rgba(255, 255, 255, 0.68) !important;
+    outline-offset: -4px !important;
+}
+
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) #looksGrid .look-card[data-look]::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none !important;
+    background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.12) 45%, transparent 56%) !important;
+    background-size: 220% 100% !important;
+    opacity: 0.3 !important;
+    animation: spbLookCardSheen 7s linear infinite !important;
+}
+
+@keyframes spbLookCardSheen {
+    0% { background-position: 160% 0; }
+    100% { background-position: -80% 0; }
+}
+
+/* Low-amplitude shimmer so the shop feels alive while the work stays readable. */
+body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .main-container::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+    opacity: 0.34 !important;
+    background:
+        linear-gradient(110deg, transparent 0%, color-mix(in srgb, var(--look-live-line) 12%, transparent) 48%, transparent 58%),
+        radial-gradient(circle at 18% 12%, var(--look-live-fill), transparent 28%),
+        radial-gradient(circle at 84% 78%, var(--look-live-fill), transparent 30%) !important;
+    background-size: 260% 100%, 100% 100%, 100% 100% !important;
+    mix-blend-mode: screen !important;
+    animation: spbLookQuietShimmer 16s linear infinite !important;
+}
+
+@keyframes spbLookQuietShimmer {
+    0% { background-position: 180% 0, 0 0, 0 0; }
+    100% { background-position: -80% 0, 0 0, 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) .main-container::after {
+        animation: none !important;
+    }
+
+    body:not(.spb-gallery-look)[data-look]:not([data-look="classic"]) #looksGrid .look-card[data-look]::after {
+        animation: none !important;
+    }
+}

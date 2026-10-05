@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_trapper_sticker",
+  "display_name": "Radical: Trapper Sticker",
+  "promise": "Tiny puffy vinyl and holographic sticker fragments in candy colors with silver foil edges.",
+  "carrier_grammar": "Tiny puffy vinyl and holographic sticker fragments in candy colors with silver foil edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for pink puffy vinyl, mint sticker cuts, violet vinyl pieces, white backing flecks, silver peel rims is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny puffy vinyl and holographic sticker fragments in candy colors with silver foil edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_trapper_sticker.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "pink puffy vinyl",
+      "role": "Actual shared paint and spec geometry: pink puffy vinyl"
+    },
+    {
+      "name": "mint sticker cuts",
+      "role": "Actual shared paint and spec geometry: mint sticker cuts"
+    },
+    {
+      "name": "violet vinyl pieces",
+      "role": "Actual shared paint and spec geometry: violet vinyl pieces"
+    },
+    {
+      "name": "white backing flecks",
+      "role": "Actual shared paint and spec geometry: white backing flecks"
+    },
+    {
+      "name": "silver peel rims",
+      "role": "Actual shared paint and spec geometry: silver peel rims"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "pink puffy vinyl",
+      "mint sticker cuts",
+      "violet vinyl pieces",
+      "white backing flecks",
+      "silver peel rims"
+    ],
+    "R": [
+      "pink puffy vinyl",
+      "mint sticker cuts",
+      "violet vinyl pieces",
+      "white backing flecks",
+      "silver peel rims"
+    ],
+    "Cc": [
+      "pink puffy vinyl",
+      "mint sticker cuts",
+      "violet vinyl pieces",
+      "white backing flecks",
+      "silver peel rims"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_holo_sticker",
+      "difference": "This finish uses Dense minuscule 1980s school-folder sticker material fragments: rounded mint pink violet puffy vinyl cuts, tiny rainbow-foil clipped diamonds, white backing flecks and silver peel rims. No readable stickers characters symbols or big decals. Mixed soft vinyl and foil, every piece tiny and differently rotated.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_puffy_paint",
+      "difference": "This finish uses Dense minuscule 1980s school-folder sticker material fragments: rounded mint pink violet puffy vinyl cuts, tiny rainbow-foil clipped diamonds, white backing flecks and silver peel rims. No readable stickers characters symbols or big decals. Mixed soft vinyl and foil, every piece tiny and differently rotated.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "pink puffy vinyl is visible in the authored geometry",
+      "mint sticker cuts is visible in the authored geometry",
+      "violet vinyl pieces is visible in the authored geometry",
+      "white backing flecks is visible in the authored geometry",
+      "silver peel rims is visible in the authored geometry"
+    ],
+    "source_sha256": "2c4112de4381bd7b36e3526edc72d300384121845ec1a0bb14107938f2015422",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_trapper_sticker-authored-Tiny puffy vinyl and holographic sticker fragments in candy colors with silver foil edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_trapper_sticker-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 71.8,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "620c7367a49a69ae0d44a43e67f492109fabe5e6333152b14af60235ce0b644c"
+}

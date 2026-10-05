@@ -1,0 +1,102 @@
+{
+  "category": "fracturedminds3",
+  "entries": {
+    "fm_barbed_wire": {
+      "verdict": "rebuild",
+      "rating": 23,
+      "ai_rating": 48,
+      "reasons": [],
+      "notes": "This one got so much worse. It's very bad. Just awful really. Sparse, lifeless. Wow",
+      "ts": 1781267681740
+    },
+    "fm_basalt": {
+      "verdict": "keep",
+      "rating": 69,
+      "ai_rating": 60,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781267907135
+    },
+    "fm_croc_hide": {
+      "verdict": "rebuild",
+      "rating": 45,
+      "ai_rating": 55,
+      "reasons": [],
+      "notes": "Right idea but the math isn't mathing apparently because there's very little change with the spec at all",
+      "ts": 1781268096960
+    },
+    "fm_diamondback": {
+      "verdict": "keep",
+      "rating": 68,
+      "ai_rating": 64,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781268281973
+    },
+    "fm_dragonfly": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 52,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781268753758
+    },
+    "fm_ebru_marble": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 64,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781268943026
+    },
+    "fm_feather_fall": {
+      "verdict": "replace",
+      "rating": 29,
+      "ai_rating": 49,
+      "reasons": [],
+      "notes": "This one is a bit boring and doesn't color flip/shift at all. We are getting too far away from Ghost Fracture on some of these and it's showing",
+      "ts": 1781269154704
+    },
+    "fm_gila_bead": {
+      "verdict": "keep",
+      "rating": 66,
+      "ai_rating": 59,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781269319083
+    },
+    "fm_herringbone": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 54,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781269638463
+    },
+    "fm_honeycomb": {
+      "verdict": "replace",
+      "rating": 37,
+      "ai_rating": 68,
+      "reasons": [],
+      "notes": "It's not giving off any dramatic spec shifting at all and we have another honeycomb so rebuild into something else. Horror inspired",
+      "ts": 1781269738467
+    },
+    "fm_inferno_veins": {
+      "verdict": "rebuild",
+      "rating": 57,
+      "ai_rating": 48,
+      "reasons": [],
+      "notes": "The spec isn't getting it to flip colors. I think the SPEC COMBINED - needs to be that pink color with very light blues and purples to make this really work. Everything else just isn't doing it. ",
+      "ts": 1781269923292
+    },
+    "fm_labyrinth": {
+      "verdict": "keep",
+      "rating": 81,
+      "ai_rating": 58,
+      "reasons": [],
+      "notes": "This is CLOSE to the formula. The pinks with the blues. This pink is probably too bright but it's close enough. The blue/purple little squares glisten in the sun correctly and do the color shift. THAT'S the ticket",
+      "ts": 1781270585068
+    }
+  },
+  "updated": 1781270585
+}

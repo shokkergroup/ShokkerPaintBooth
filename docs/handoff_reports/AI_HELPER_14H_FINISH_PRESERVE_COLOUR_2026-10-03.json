@@ -1,0 +1,63 @@
+{
+  "review": "W17 named-part finish with preserved-current-color parser review",
+  "date": "2026-10-04",
+  "status": "strict plan-level repair passes; native gen2 route not rerun",
+  "scope": {
+    "source": "js/spb-pro-edit.js",
+    "source_sha256_before_this_repair": "D4CDD87EFC9A0FFAB5AA923134C13BCBA722E68FB91F1F4899EA16D61B204F0C",
+    "source_sha256_current": "A328A1EF5D8293E2F8CFC8A27F3E0C868A04842A07EE39243CBD0BD34513BDA7",
+    "preserved_prior_w12_repair": true,
+    "allowed_changes": [
+      "js/spb-pro-edit.js within planCore preservation-tail parsing/exactPart proof",
+      "tests/ai_named_part_finish_preserve_colour_contract.cjs",
+      "docs/handoff_reports/AI_HELPER_14H_FINISH_PRESERVE_COLOUR_2026-10-03.json"
+    ],
+    "not_touched": [
+      "proAI/D/offlineSpec routing",
+      "HTML or runtime mirrors",
+      "SPB_WIKI.html",
+      "native app, backend, providers, renderer, canvas, tools/kernel"
+    ]
+  },
+  "fresh_oracle": {
+    "authored_before_reopening_plan_source": true,
+    "cases": 21,
+    "file": "tests/ai_named_part_finish_preserve_colour_contract.cjs",
+    "post_repair_result": "21/21 assertions passed",
+    "positive_finish_only_cases": 9,
+    "native_case": "Make only the roof chrome and keep its red paint color.",
+    "coverage": [
+      "same-part current/existing color or paint-color preservation",
+      "named current color preservation and British colour spelling",
+      "same-part current paint left alone and paint stays red",
+      "known negative, question, whole-car, unknown-part, two-part, cross-part-preservation, extra-texture, extra-pattern, and contradictory recolor guard cases"
+    ]
+  },
+  "finding": {
+    "id": "W17-E-01",
+    "severity": "P1 confirmed upstream; parser-only repair",
+    "before": "The native request “Make only the roof chrome and keep its red paint color” did not receive E's exactPart claim. Parent routing selected a Chrome Cross Colors decorative candidate, adding a new roof pattern layer and changing paint/spec across seven zones. Owner Undo removed the unintended edit.",
+    "repair": "Added an anchored whitelist for same-part preserve-current-paint/color tails. The preceding phrase must already parse as exactly one known named-part finish-only action with one look and no color, relative adjustment, extra action, unknown words, or leftovers. The tail is removed only from the planner input after that proof; the plan does not assign a color.",
+    "after": "Native phrase now plans one exact roof operation with chrome look and null color. Thus the existing finish-only reuse path can preserve the current red paint and existing zone identity.",
+    "safety": "Cross-part preservation remains a protected-parts ask. Mixed recolor/preserve, texture/pattern additions, multiple targets, questions, negatives, whole-car requests and unknown parts do not become exactPart plans."
+  },
+  "verification": {
+    "commands": [
+      "node tests/ai_named_part_finish_preserve_colour_contract.cjs",
+      "node tests/ai_named_part_recolor_preserve_contract.cjs",
+      "node tests/ai_named_part_commands_contract.cjs",
+      "node --check js/spb-pro-edit.js"
+    ],
+    "results": [
+      "21/21 fresh finish-preservation assertions passed",
+      "Prior W12 recolor-preservation oracle passed 21/21",
+      "Existing named-part command contract passed (12 simple plans, 6 non-claims, 3 unknown/material guards, 3 preservation/composition guards)",
+      "JavaScript syntax check passed"
+    ]
+  },
+  "limitations": [
+    "This verifies E.plan only; it does not verify live proAI precedence, current owner/provenance, queue, paint/spec output or Undo. Root owns the native integration rerun.",
+    "The alternate imperative “Apply a chrome finish only to the roof, preserving its existing red color” remains unsupported because its base command is not accepted by the existing parser; the preserve-tail repair does not broaden command grammar.",
+    "The named color in a preservation tail is not emitted as an assignment or compared with zone pixels here. Parent must retain existing unique-current-owner gating and the finish-only reuse path that preserves the current zone color."
+  ]
+}

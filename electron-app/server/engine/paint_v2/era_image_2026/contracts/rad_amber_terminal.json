@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_amber_terminal",
+  "display_name": "Arcade: Amber Terminal",
+  "promise": "Amber phosphor dashes, fading raster echoes and warm glass etched with tiny signal breaks.",
+  "carrier_grammar": "Amber phosphor dashes, fading raster echoes and warm glass etched with tiny signal breaks. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for smoked amber glass, unlit raster trenches, gold phosphor dashes, cream hot phosphor, diagonal raster bundles, vertical isolated phosphor ladders is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Amber phosphor dashes, fading raster echoes and warm glass etched with tiny signal breaks. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_amber_terminal.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "smoked amber glass",
+      "role": "Actual shared paint and spec geometry: smoked amber glass"
+    },
+    {
+      "name": "unlit raster trenches",
+      "role": "Actual shared paint and spec geometry: unlit raster trenches"
+    },
+    {
+      "name": "gold phosphor dashes",
+      "role": "Actual shared paint and spec geometry: gold phosphor dashes"
+    },
+    {
+      "name": "cream hot phosphor",
+      "role": "Actual shared paint and spec geometry: cream hot phosphor"
+    },
+    {
+      "name": "diagonal raster bundles",
+      "role": "Actual shared paint and spec geometry: diagonal raster bundles"
+    },
+    {
+      "name": "vertical isolated phosphor ladders",
+      "role": "Actual shared paint and spec geometry: vertical isolated phosphor ladders"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "smoked amber glass",
+      "unlit raster trenches",
+      "gold phosphor dashes",
+      "cream hot phosphor",
+      "diagonal raster bundles",
+      "vertical isolated phosphor ladders"
+    ],
+    "R": [
+      "smoked amber glass",
+      "unlit raster trenches",
+      "gold phosphor dashes",
+      "cream hot phosphor",
+      "diagonal raster bundles",
+      "vertical isolated phosphor ladders"
+    ],
+    "Cc": [
+      "smoked amber glass",
+      "unlit raster trenches",
+      "gold phosphor dashes",
+      "cream hot phosphor",
+      "diagonal raster bundles",
+      "vertical isolated phosphor ladders"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_phosphor_green",
+      "difference": "This finish uses Micro amber CRT raster: orange-gold broken strokes and pixel ladders in many local orientations across black-brown glass; sparse cream hot spots, burnt-orange persistence trails. Distinct straight discontinuous phosphor structures, not grain or whole terminal screens.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "at_dial_up_green",
+      "difference": "This finish uses Micro amber CRT raster: orange-gold broken strokes and pixel ladders in many local orientations across black-brown glass; sparse cream hot spots, burnt-orange persistence trails. Distinct straight discontinuous phosphor structures, not grain or whole terminal screens.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "smoked amber glass is visible in the authored geometry",
+      "unlit raster trenches is visible in the authored geometry",
+      "gold phosphor dashes is visible in the authored geometry",
+      "cream hot phosphor is visible in the authored geometry",
+      "diagonal raster bundles is visible in the authored geometry",
+      "vertical isolated phosphor ladders is visible in the authored geometry"
+    ],
+    "source_sha256": "392abd37a549daeed88f4d57d064e09b57dca8b759ecf09cb0d1ce89e1c8d130",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_amber_terminal-authored-Amber phosphor dashes, fading raster echoes and warm glass etched with tiny signal breaks. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_amber_terminal-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 88.6,
+    "M7_ship_bar_pass": true,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "235af30dc58c0476d47afcf2cd7ece7761e365bc0ed448fbbc65302bf57d517e"
+}

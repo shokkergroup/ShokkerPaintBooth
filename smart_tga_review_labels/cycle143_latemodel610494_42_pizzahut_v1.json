@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "paint_label": "latemodel/car_num_610494.tga",
+  "inspection_records": "_smart_tga_runs/cycle142_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle142_route_pressure_v1/latemodel_car_num_610494/component_records.json",
+  "review_scope": "Cycle 143 review of accepted subcomponent candidates on late model 610494: keep the true 42 number piece and reject Pizza Hut logo material.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 15,
+      "expected_bbox": [438, 553, 100, 110],
+      "target_layer": "numbers",
+      "label": "true_number_42_body",
+      "note": "Red/white race-number 42 body routed to Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 32,
+      "expected_bbox": [361, 920, 95, 78],
+      "target_layer": "sponsors",
+      "label": "pizza_hut_sponsor_logo_false_number",
+      "note": "Pizza Hut logo badge; should stay Sponsors."
+    }
+  ]
+}

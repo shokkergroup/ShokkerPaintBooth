@@ -1,0 +1,43 @@
+{
+  "review": "W112 preview-TGA backend route, isolated candidate only",
+  "decision": "REJECT_PENDING_SYNCHRONIZED_CACHE_EVICTION",
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_customer_psd_tga_inventory/private_route_candidate/server_routes/render_file_routes.py",
+    "sha256": "9E753DA227AE4C7E5FCE94D748D863E0E83C0A94E255CC212F69E694D1E40BBA"
+  },
+  "baselineSha256": "CD2B640EDA292171E1362720947B8536A4291B6C7F35AC10B4A5A0B745ADEBD1",
+  "reviewTest": {
+    "path": "tests/ai_preview_tga_route_w112_review_contract.py",
+    "sha256": "6BBE2519B6D65B3BA0BCC6AFE2889C555D4FA75C0D79927C5B4951B1F777CE2D",
+    "result": "4 passed, 1 confirmed finding; actual candidate Flask route with synthetic local TGA fixtures"
+  },
+  "findings": [
+    {
+      "severity": "P2",
+      "id": "concurrent-cache-bound-overflow",
+      "evidence": "With seven entries already present and the configured maximum of eight, two concurrent unique cache misses both returned 200 and left nine entries. The eviction/check/insert at candidate lines 251-254 has no lock; each request sees the pre-insert size of seven and both skip eviction.",
+      "impact": "The advertised item bound is not maintained under threaded Flask request concurrency. Repeated simultaneous misses can increase memory beyond the nominal cap.",
+      "minimalFix": "Protect lookup/eviction/insertion as one cache-lock operation, or use a bounded synchronized cache. Keep decode outside the lock if needed, then recheck before insertion and evict until size < max while holding the lock. Add this deterministic two-miss race to the candidate test."
+    },
+    {
+      "severity": "P2_LIMIT",
+      "id": "whole-source-memory-and-double-read",
+      "evidence": "A 56-byte fixture caused 112 source bytes to be read for both cache miss and hit: _read_tga_snapshot reads the full file into memory, then _tga_path_sha256 streams the file again before responding.",
+      "impact": "The implementation is content-correct but duplicates full-file I/O and keeps each source snapshot in memory for the request. No maximum source size is enforced. Large concurrent files multiply transient memory and I/O.",
+      "minimalFix": "Document/validate a supported TGA size bound, and consider streaming hash plus a bounded spooled snapshot used by Pillow so the exact hashed bytes are the decoded bytes. Do not hash one read then reopen a mutable path for decode."
+    }
+  ],
+  "verified": [
+    "Cache key includes real path and source content SHA-256, so equal-size/equal-mtime changed content is distinguished.",
+    "Image decode uses the captured raw bytes; a mutation after snapshot is detected by the post-decode hash and returns 409 without poisoning cache.",
+    "Synthetic alpha-bearing TGA preserves pixel/alpha output and returned X-Source-Bytes-SHA256 matches the decoded snapshot.",
+    "Response is image/png and exposes neither raw source bytes nor local path in body/headers.",
+    "Sequential 11-unique-source run leaves eight entries."
+  ],
+  "limits": [
+    "Backend route only. The Runtime11 client/header consumer and private launcher are not exercised end-to-end here.",
+    "No customer files, live server, provider, native app, or external endpoint was used.",
+    "Concurrency finding was deterministically injected at the candidate cache mapping while calling the actual candidate Flask route; no production source was changed."
+  ],
+  "counts": {"routeCases": 5, "passed": 4, "confirmedFindings": 1, "providerCalls": 0, "nativeCalls": 0, "customerFilesTouched": false}
+}

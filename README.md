@@ -1,5 +1,7 @@
 # Shokker Paint Booth (SPB)
 
+> **Start at [SPB_WIKI.html](SPB_WIKI.html) — the living source of truth** (overview, architecture, the 4 sideload apps, conventions, agent board, trouble log, daily log). Open it in any browser. When this README and the Wiki disagree, the Wiki wins.
+
 > The painter's painter for iRacing — real materials, real preview, real paint.
 
 Shokker Paint Booth is a purpose-built livery painter for iRacing that paints *paint*. Not pixels. Not flat colors. Paint — with metallics that flake, chrome that bends light, carbon fiber that weaves, anodized aluminum that shifts across the body, and candy coats that glow. All previewed in real time on a 3D-aware canvas, all exported in the exact TGA + spec map format iRacing expects.
@@ -29,7 +31,7 @@ If you have ever hand-painted a spec map in Photoshop at 2 a.m. wondering whethe
 9. **TGA export** at 2048x2048 — the exact format iRacing wants, with spec map baked and ready.
 10. **Live Preview** — render history polling keeps the preview in sync while you iterate.
 
-See [SPB_FEATURES.md](SPB_FEATURES.md) for the full feature catalog.
+See the [SPB Wiki](SPB_WIKI.html) for the full feature catalog.
 
 ---
 
@@ -39,7 +41,7 @@ See [SPB_FEATURES.md](SPB_FEATURES.md) for the full feature catalog.
 2. Run it. Windows SmartScreen may warn — click **More info → Run anyway**.
 3. Launch **Shokker Paint Booth** from the Start Menu.
 
-Full install guide: [SPB_GUIDE.md](SPB_GUIDE.md).
+Full install guide: see the [SPB Wiki](SPB_WIKI.html).
 
 > SPB is Windows-only. iRacing is Windows-only. No Mac/Linux builds are planned.
 
@@ -47,7 +49,7 @@ Full install guide: [SPB_GUIDE.md](SPB_GUIDE.md).
 
 ## Quickstart
 
-Render your first livery in five minutes with the step-by-step walkthrough: [SPB_QUICKSTART.md](SPB_QUICKSTART.md).
+Render your first livery in five minutes with the step-by-step walkthrough in the [SPB Wiki](SPB_WIKI.html).
 
 TL;DR:
 1. Launch SPB (Silverado demo PSD auto-loads).
@@ -64,8 +66,8 @@ SPB is an Electron desktop app with a Python Flask render server embedded via `p
 
 ```bash
 # Clone
-git clone https://github.com/shokkergroup/shokker-paint-booth.git
-cd shokker-paint-booth
+git clone https://github.com/shokkergroup/ShokkerPaintBooth.git
+cd ShokkerPaintBooth
 
 # Install JS deps
 cd electron-app
@@ -117,15 +119,10 @@ Third-party acknowledgements and credits: [AUTHORS.md](AUTHORS.md).
 ## Documentation Map
 
 **User-facing:**
-- [SPB_GUIDE.md](SPB_GUIDE.md) — the complete user guide
-- [SPB_QUICKSTART.md](SPB_QUICKSTART.md) — 5-minute walkthrough
-- [SPB_FEATURES.md](SPB_FEATURES.md) — every feature, documented
-- [SPB_WORKFLOW_EXAMPLES.md](SPB_WORKFLOW_EXAMPLES.md) — recipe book
-- [SPB_KEYBOARD_SHORTCUTS.md](SPB_KEYBOARD_SHORTCUTS.md) — cheat sheet
-- [SPB_SPEC_MAP_GUIDE.md](SPB_SPEC_MAP_GUIDE.md) — R/G/B/A spec map deep dive
-- [SPB_TROUBLESHOOTING.md](SPB_TROUBLESHOOTING.md) — common issues
-- [SPB_FAQ.md](SPB_FAQ.md) — frequently asked questions
+- [SPB_WIKI.html](SPB_WIKI.html) — **the living source of truth**: overview, the complete user guide, quickstart, full feature catalog, workflow recipes, keyboard shortcuts, the R/G/B/A spec map deep dive, troubleshooting, and FAQ
 - [SPB_RELEASE_NOTES.md](SPB_RELEASE_NOTES.md) — what's new per version
+
+> The standalone user-facing guides (SPB_GUIDE, SPB_QUICKSTART, SPB_FEATURES, SPB_WORKFLOW_EXAMPLES, SPB_KEYBOARD_SHORTCUTS, SPB_SPEC_MAP_GUIDE, SPB_TROUBLESHOOTING, SPB_FAQ) have been consolidated into the Wiki above.
 
 **Developer-facing:**
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — system architecture

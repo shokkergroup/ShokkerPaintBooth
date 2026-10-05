@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_mirror_shades",
+  "display_name": "Chrome: Spectral Lens",
+  "promise": "Fine orange and cyan optical slivers with violet anti-reflective rims and mirror glints.",
+  "carrier_grammar": "Fine orange and cyan optical slivers with violet anti-reflective rims and mirror glints. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for dichroic lens faces, cyan optical slivers, violet coated rims, black glass chips, pale mirror glints is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Fine orange and cyan optical slivers with violet anti-reflective rims and mirror glints. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_mirror_shades.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "dichroic lens faces",
+      "role": "Actual shared paint and spec geometry: dichroic lens faces"
+    },
+    {
+      "name": "cyan optical slivers",
+      "role": "Actual shared paint and spec geometry: cyan optical slivers"
+    },
+    {
+      "name": "violet coated rims",
+      "role": "Actual shared paint and spec geometry: violet coated rims"
+    },
+    {
+      "name": "black glass chips",
+      "role": "Actual shared paint and spec geometry: black glass chips"
+    },
+    {
+      "name": "pale mirror glints",
+      "role": "Actual shared paint and spec geometry: pale mirror glints"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "dichroic lens faces",
+      "cyan optical slivers",
+      "violet coated rims",
+      "black glass chips",
+      "pale mirror glints"
+    ],
+    "R": [
+      "dichroic lens faces",
+      "cyan optical slivers",
+      "violet coated rims",
+      "black glass chips",
+      "pale mirror glints"
+    ],
+    "Cc": [
+      "dichroic lens faces",
+      "cyan optical slivers",
+      "violet coated rims",
+      "black glass chips",
+      "pale mirror glints"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_optic_implant",
+      "difference": "This finish uses Dense microscopic curved optical lens slivers, orange dichroic faces shifting to cyan, violet anti-reflective thin rims, black glass chips, pale mirror glints and tiny concentric polish arcs. No whole sunglasses, no broad rainbow marble or large glass shards.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_holo_advert",
+      "difference": "This finish uses Dense microscopic curved optical lens slivers, orange dichroic faces shifting to cyan, violet anti-reflective thin rims, black glass chips, pale mirror glints and tiny concentric polish arcs. No whole sunglasses, no broad rainbow marble or large glass shards.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "dichroic lens faces is visible in the authored geometry",
+      "cyan optical slivers is visible in the authored geometry",
+      "violet coated rims is visible in the authored geometry",
+      "black glass chips is visible in the authored geometry",
+      "pale mirror glints is visible in the authored geometry"
+    ],
+    "source_sha256": "28b655ab2420dd204e5af457e74e92033b530e496ece0444fffe059eca161660",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_mirror_shades-authored-Fine orange and cyan optical slivers with violet anti-reflective rims and mirror glints. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_mirror_shades-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 66.1,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "b9081091f00a15ea4e94f1a24633c99cd4a0e33c8716744aa044f19ec04ba357"
+}

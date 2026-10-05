@@ -2,7 +2,7 @@
   "name": "IndyCar GP",
   "description": "Classic IndyCar grand prix livery with vertical sponsor stripes, gloss body, chrome numbers, and a clean aero-focused look. Suited for open-wheel and prototype chassis.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "dallara_ir18, generic_indycar, open_wheel_prototype",
   "notes": "Vertical stripes hit hardest when the car is in motion — pair with slight chamfer on stripe edges via patternIntensity 90. Keep sponsor zone white for max contrast in broadcast cameras.",
   "zones": [

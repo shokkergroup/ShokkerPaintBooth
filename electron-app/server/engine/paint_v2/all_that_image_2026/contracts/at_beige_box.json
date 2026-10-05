@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_beige_box",
+  "display_name": "Cdrom: Beige Box",
+  "promise": "Warm aged ivory injection-molded ABS, NOT fabric",
+  "carrier_grammar": "Warm aged ivory injection-molded ABS, NOT fabric; single full-canvas image, no duplicated quadrants. Fine features: molded ABS stipple, vent recesses, polished pore lips, oxidized amber flecks, mold flow ridges, abrasion freckles",
+  "spec_grammar": "Feature-specific selectors partition molded ABS stipple, vent recesses, polished pore lips, oxidized amber flecks, mold flow ridges, abrasion freckles. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "molded ABS stipple",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "vent recesses",
+      "role": "Material feature selected from artwork by g:<:0.28"
+    },
+    {
+      "name": "polished pore lips",
+      "role": "Material feature selected from artwork by edge:>:0.5&g:>:0.58"
+    },
+    {
+      "name": "oxidized amber flecks",
+      "role": "Material feature selected from artwork by s:>:0.38"
+    },
+    {
+      "name": "mold flow ridges",
+      "role": "Material feature selected from artwork by x:>:0.6"
+    },
+    {
+      "name": "abrasion freckles",
+      "role": "Material feature selected from artwork by fine:>:0.78"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "molded ABS stipple",
+      "vent recesses",
+      "polished pore lips",
+      "oxidized amber flecks",
+      "mold flow ridges",
+      "abrasion freckles"
+    ],
+    "R": [
+      "molded ABS stipple",
+      "vent recesses",
+      "polished pore lips",
+      "oxidized amber flecks",
+      "mold flow ridges",
+      "abrasion freckles"
+    ],
+    "Cc": [
+      "molded ABS stipple",
+      "vent recesses",
+      "polished pore lips",
+      "oxidized amber flecks",
+      "mold flow ridges",
+      "abrasion freckles"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "molded ABS stipple",
+      "range": [
+        [
+          0,
+          45,
+          25
+        ],
+        [
+          15,
+          125,
+          140
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "vent recesses",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "polished pore lips",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "oxidized amber flecks",
+      "range": [
+        [
+          0,
+          130,
+          110
+        ],
+        [
+          22,
+          235,
+          245
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "mold flow ridges",
+      "range": [
+        [
+          0,
+          95,
+          85
+        ],
+        [
+          20,
+          205,
+          220
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "abrasion freckles",
+      "range": [
+        [
+          0,
+          130,
+          110
+        ],
+        [
+          22,
+          235,
+          245
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_crt_blue_screen",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_corrupt_jpeg",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "molded ABS stipple",
+      "vent recesses",
+      "polished pore lips",
+      "oxidized amber flecks",
+      "mold flow ridges",
+      "abrasion freckles"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_beige_box / Warm aged ivory injection-molded ABS, NOT fabric",
+  "spec_key": "at_beige_box / molded ABS stipple all; vent recesses g:<:0.28; polished pore lips edge:>:0.5&g:>:0.58; oxidized amber flecks s:>:0.38; mold flow ridges x:>:0.6; abrasion freckles fine:>:0.78",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

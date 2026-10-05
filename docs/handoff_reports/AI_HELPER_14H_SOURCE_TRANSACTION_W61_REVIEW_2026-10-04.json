@@ -1,0 +1,54 @@
+{
+  "review_id": "W61",
+  "status": "ISOLATED_CANDIDATE_PASS_WITH_PIXEL_ROLLBACK_LIMIT",
+  "date": "2026-10-04",
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_w53_candidate/candidate/paint-booth-3-canvas.js",
+    "sha256": "159716b3150c785517bec3a1cf1b00a7318121885e7640276b5ffaf14fc91d9a",
+    "installed": false
+  },
+  "preserved_oracles": {
+    "w50": {
+      "path": "_easy_claude_work/ai14h_w50_review/oracle.json",
+      "sha256": "82eee6835d9d2bfe998db744f5cbc82e1acf28248ab6085041093db783d86644",
+      "cases": 12,
+      "status": "unchanged; original W53 contract re-run passed"
+    },
+    "w53": {
+      "test_path": "tests/ai_source_transaction_w53_completion_contract.cjs",
+      "test_sha256": "a1789bfdcc216eac96a2945126f1704788e1308f9d4896737732121b4b12eff9",
+      "report_path": "docs/handoff_reports/AI_HELPER_14H_SOURCE_TRANSACTION_W53_COMPLETION_CANDIDATE_2026-10-04.json",
+      "report_sha256": "a77a3ac541d24fafe3cbf6a3ae86cd25cc34c62cb317d8c6b6e0d1adbf2fb6bf",
+      "fresh_cases": 4,
+      "status": "unchanged; node tests/ai_source_transaction_w53_completion_contract.cjs passed"
+    }
+  },
+  "w61_review": {
+    "test_path": "tests/ai_source_transaction_w61_review_contract.cjs",
+    "test_sha256": "a22ae258478baad7a345cfa435312cbe60a5e8db40bb2dcb3b6e160b3219e171",
+    "fresh_cases": 8,
+    "result": "8/8 passed against actual extracted candidate callbacks",
+    "cases": [
+      {"id":"same-name-identical-content-reload","result":"pass","evidence":"Generation advanced; browser-file path and byte fingerprint remained stable; ready state returned after proof."},
+      {"id":"same-name-changed-content-reload","result":"pass","evidence":"Same browser-file path with changed bytes produced a different fingerprint and ready state."},
+      {"id":"same-name-pending-proof-is-not-ready","result":"pass","evidence":"During delayed byte proof, loading was true and isCommitted was false despite old same-path identity fields."},
+      {"id":"old-same-name-proof-cannot-overwrite-newer-load","result":"pass","evidence":"Delayed proof for prior same-name request did not replace newer fingerprint."},
+      {"id":"missing-browser-file-bytes-settle-failed","result":"pass","evidence":"No readable arrayBuffer settled with loading false and no committed identity."},
+      {"id":"programmatic-commit-throw-settles","result":"pass","evidence":"Controlled synchronous commit exception rejected loader, cleared loading, and did not mark requested source committed."},
+      {"id":"hash-failure-after-pixels-is-explicitly-nonrollback","result":"pass-with-known-limit","evidence":"Actual extracted loader drew once before delayed byte-hash failure; caller rejected, loading cleared, identity remained uncommitted. Drawn raster pixels were not rolled back."},
+      {"id":"no-canvas-still-settles-after-prior-source","result":"pass","evidence":"Missing-canvas browser callback settled with loading false, no new commit, and prior A identity retained."}
+    ]
+  },
+  "completion_contract": {
+    "programmatic_url_promise": "W53 unchanged case passed: the Promise remained pending until current-file byte fingerprint completed.",
+    "stale_generation": "W53 URL stale-A and W61 same-name stale-proof cases passed; older proof could not overwrite newer path/fingerprint.",
+    "failure_flags": "W53 URL hash/read failures and W61 missing-bytes/commit-throw/post-draw-hash-failure settled loading; unverified requested content did not become committed.",
+    "same_source_reload": "Verified same-name reloads through the browser-file callback; generation advanced, equal bytes retained equal fingerprint, changed bytes changed fingerprint."
+  },
+  "limits": [
+    "The review used deterministic FileReader, Image, fetch, File, canvas-commit, and byte-reader stubs while executing declarations extracted verbatim from the pinned candidate. It did not exercise browser scheduling, native canvas, live paint imports, server, providers, or production dispatch.",
+    "A byte-hash failure after raster drawing leaves the source transaction uncommitted and rejects the programmatic caller, but does not restore prior canvas pixels. No rollback claim is made; this is the same explicit scope limit in W53.",
+    "Missing-canvas retention of prior A is consistent with the unchanged W50/W53 oracle; no new B identity is claimed."
+  ],
+  "side_effects": {"providers": 0, "native_calls": 0, "live_sources_modified": false}
+}

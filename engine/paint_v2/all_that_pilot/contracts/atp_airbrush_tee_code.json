@@ -1,0 +1,104 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "atp_airbrush_tee_code",
+  "display_name": "Airbrush Tee / code",
+  "promise": "Abstract boardwalk sprayed pigment on finely textured cotton; no text or upright subject.",
+  "carrier_grammar": "Six kinds of local sprayed stamps with randomized centers and orientation; soft elliptical mist, crescent sweeps, pigment arcs, cotton tufts and fine dot clusters.",
+  "spec_grammar": "Each generated stamp owns its M/R/Cc alpha and local tier; cotton is low-metal and rough, foil tracks are metallic with sharp coat.",
+  "reference_physics": {
+    "mechanism": "Abstract boardwalk sprayed pigment on finely textured cotton; no text or upright subject. Material response is authored as an approximation; RGB M/R/Cc cannot encode optical diffraction or fabric geometry.",
+    "sources": [
+      "https://airbrushcustoms.net/"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "spray_sweeps",
+      "role": "Visible subject-specific spray sweeps"
+    },
+    {
+      "name": "overspray_halos",
+      "role": "Visible subject-specific overspray halos"
+    },
+    {
+      "name": "pigment_overlaps",
+      "role": "Visible subject-specific pigment overlaps"
+    },
+    {
+      "name": "curved_accents",
+      "role": "Visible subject-specific curved accents"
+    },
+    {
+      "name": "cotton_tufts",
+      "role": "Visible subject-specific cotton tufts"
+    },
+    {
+      "name": "mist_speckles",
+      "role": "Visible subject-specific mist speckles"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "spray_sweeps",
+      "overspray_halos",
+      "pigment_overlaps",
+      "curved_accents",
+      "cotton_tufts",
+      "mist_speckles"
+    ],
+    "R": [
+      "spray_sweeps",
+      "overspray_halos",
+      "pigment_overlaps",
+      "curved_accents",
+      "cotton_tufts",
+      "mist_speckles"
+    ],
+    "Cc": [
+      "spray_sweeps",
+      "overspray_halos",
+      "pigment_overlaps",
+      "curved_accents",
+      "cotton_tufts",
+      "mist_speckles"
+    ]
+  },
+  "material_tiers": [
+    0.18,
+    0.28,
+    0.38,
+    0.48,
+    0.58,
+    0.68,
+    0.78,
+    0.92
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_graffiti_fill",
+      "difference": "Soft pigment deposition and overspray replace hard graphic outlines or single-field noise."
+    },
+    {
+      "finish_id": "at_big_dog_print",
+      "difference": "Soft pigment deposition and overspray replace hard graphic outlines or single-field noise."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "Soft feathered pigment edges and overspray dots communicate spraying.",
+      "Overlapping translucent cyan, pink and violet strokes sit on a light cotton ground.",
+      "Small curved marks and mist remain abstract when rotated; no text or upright scene."
+    ],
+    "reviewer": "Codex visual construction review; not owner acceptance or blind-user validation.",
+    "limitations": "Fine picker filtering can obscure the weave or spray process; 2048 native-scale and cross-card production gates remain separate."
+  },
+  "construction_key": "atp_airbrush_tee_code_authored_v1",
+  "spec_key": "atp_airbrush_tee_code_feature_regions_v1",
+  "production_status": "comparison candidate only; no promotion",
+  "sampling_notes": "Repeated source tile; individual primitives target 8\u201332 pixels. Microtexture may be finer. Not a proof of full-map non-repetition."
+}

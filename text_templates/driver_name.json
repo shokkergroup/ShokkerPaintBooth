@@ -2,7 +2,7 @@
   "name": "Driver Nameplate",
   "description": "Driver name above the door — medium size, italic, authoritative but not overbearing. The driver name sits in the secondary hierarchy: readable at close range (pit-lane, TV close-ups) but not fighting the car number for attention. Italic conveys speed without being gimmicky.",
   "category": "Driver",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "template": {
     "text": "R. SHOKKER",
     "font_family": "Helvetica Neue, Arial, sans-serif",

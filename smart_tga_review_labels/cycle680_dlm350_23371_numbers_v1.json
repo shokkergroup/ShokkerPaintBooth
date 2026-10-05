@@ -1,0 +1,13 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_23371.tga","inspection_records":"_smart_tga_runs/cycle680_dlm_dominant_member_confirmation/inspection_records.json","review_scope":"Cycle 680 source plus complete owner sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[334,197,180,146],"target_layer":"numbers","family_id":"number:55","label":"true_custom_number_55"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[435,256,6,4],"target_layer":"numbers","family_id":"number:55","label":"true_number_trim_fragment"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[455,299,3,8],"target_layer":"numbers","family_id":"number:55","label":"true_number_trim_fragment"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[324,718,180,146],"target_layer":"numbers","family_id":"number:55","label":"true_custom_number_55"},
+ {"layer":"numbers","component_index":4,"expected_bbox":[434,727,12,4],"target_layer":"numbers","family_id":"number:55","label":"true_number_trim_fragment"},
+ {"layer":"numbers","component_index":5,"expected_bbox":[447,727,10,4],"target_layer":"numbers","family_id":"number:55","label":"true_number_trim_fragment"},
+ {"layer":"numbers","component_index":6,"expected_bbox":[380,753,3,8],"target_layer":"numbers","family_id":"number:55","label":"true_number_trim_fragment"},
+ {"layer":"numbers","component_index":7,"expected_bbox":[776,774,199,205],"target_layer":"numbers","family_id":"number:55","label":"true_custom_number_55"},
+ {"layer":"numbers","component_index":8,"expected_bbox":[454,796,5,5],"target_layer":"numbers","family_id":"number:55","label":"true_number_trim_fragment"},
+ {"layer":"numbers","component_index":9,"expected_bbox":[926,874,6,6],"target_layer":"numbers","family_id":"number:55","label":"true_number_trim_fragment"},
+ {"layer":"numbers","component_index":10,"expected_bbox":[868,893,7,4],"target_layer":"numbers","family_id":"number:55","label":"true_number_trim_fragment"}
+]}

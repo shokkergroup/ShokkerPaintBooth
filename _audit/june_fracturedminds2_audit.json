@@ -1,0 +1,329 @@
+{
+  "category": "fracturedminds2",
+  "entries": {
+    "fm_barbed_wire": {
+      "verdict": "rebuild",
+      "rating": 43,
+      "ai_rating": 57,
+      "reasons": [
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781222201673
+    },
+    "fm_basketweave": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 65,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781222289550
+    },
+    "fm_cable_knit": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": 64,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781222477817
+    },
+    "fm_carbon_weave": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 68,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781222572298
+    },
+    "fm_chainlink": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781222663172
+    },
+    "fm_chainmail": {
+      "verdict": "keep",
+      "rating": 68,
+      "ai_rating": 51,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781222806909
+    },
+    "fm_diamond_plate": {
+      "verdict": "keep",
+      "rating": 75,
+      "ai_rating": 64,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781222905021
+    },
+    "fm_dragon_scale": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 67,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781223585685
+    },
+    "fm_feather_fall": {
+      "verdict": "rebuild",
+      "rating": 40,
+      "ai_rating": 54,
+      "reasons": [
+        "Too blobby / macro",
+        "Not enough fine detail",
+        "No depth",
+        "Colors muddy"
+      ],
+      "notes": "",
+      "ts": 1781223688809
+    },
+    "fm_fiber_optic": {
+      "verdict": "keep",
+      "rating": 71,
+      "ai_rating": 61,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781239572823
+    },
+    "fm_code_cascade": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 44,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781239669221
+    },
+    "fm_flame_helix": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 64,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781239889449
+    },
+    "fm_flame_wall": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 69,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781240042185
+    },
+    "fm_frost_feather": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 64,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781240315111
+    },
+    "fm_inferno_veins": {
+      "verdict": "rebuild",
+      "rating": 42,
+      "ai_rating": 67,
+      "reasons": [
+        "Too blobby / macro",
+        "Too flat / boring",
+        "Not enough fine detail"
+      ],
+      "notes": "The way this one built it's not doing the color shift even with crushed down colors",
+      "ts": 1781240672864
+    },
+    "fm_labyrinth": {
+      "verdict": "rebuild",
+      "rating": null,
+      "ai_rating": 67,
+      "reasons": [],
+      "notes": "Pattern and spec won't let it do any color shifting here\n",
+      "ts": 1781240840707
+    },
+    "fm_magma": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 62,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781241010451
+    },
+    "fm_lattice": {
+      "verdict": "keep",
+      "rating": 70,
+      "ai_rating": 67,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781241161417
+    },
+    "fm_damascus": {
+      "verdict": "keep",
+      "rating": 77,
+      "ai_rating": 52,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781241473659
+    },
+    "fm_checkerflash": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 49,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781241483489
+    },
+    "fm_circuit_maze": {
+      "verdict": "keep",
+      "rating": 71,
+      "ai_rating": 42,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781241492088
+    },
+    "fm_flame_lick": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 50,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781241498624
+    },
+    "fm_graphene": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": 51,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781241504414
+    },
+    "fm_rope_coil": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 71,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781241651299
+    },
+    "fm_static_burst": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 72,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781242074259
+    },
+    "fm_tsunami": {
+      "verdict": "keep",
+      "rating": 71,
+      "ai_rating": 69,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781242640036
+    },
+    "fm_gyro_cage": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": 49,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781242654918
+    },
+    "fm_gyroid": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 51,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781242659486
+    },
+    "fm_herringbone": {
+      "verdict": "rebuild",
+      "rating": 53,
+      "ai_rating": 64,
+      "reasons": [
+        "Weak spec colors",
+        "Too similar to another",
+        "Not enough fine detail"
+      ],
+      "notes": "This one doesn't let the spec color shift come through well",
+      "ts": 1781242860848
+    },
+    "fm_hexcore": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": 45,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781242974315
+    },
+    "fm_honeycomb": {
+      "verdict": "rebuild",
+      "rating": 46,
+      "ai_rating": 64,
+      "reasons": [],
+      "notes": "Spec not really coming through and don't like the spec channel design",
+      "ts": 1781243059344
+    },
+    "fm_honeycomb_burst": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 65,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781243147161
+    },
+    "fm_nanoweave": {
+      "verdict": "rebuild",
+      "rating": 41,
+      "ai_rating": 65,
+      "reasons": [],
+      "notes": "Very weak all the way around. Spec design doesn't make sense for the pattern. Doesn't really want to color shift. Just weak all around",
+      "ts": 1781243250310
+    },
+    "fm_riverine": {
+      "verdict": "keep",
+      "rating": 70,
+      "ai_rating": 66,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781243406450
+    },
+    "fm_tessellate": {
+      "verdict": "keep",
+      "rating": 71,
+      "ai_rating": 62,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781243553491
+    },
+    "fm_topo_lines": {
+      "verdict": "rebuild",
+      "rating": 39,
+      "ai_rating": 67,
+      "reasons": [],
+      "notes": "Pattern in spec ALL WRONG for this. Just really bad",
+      "ts": 1781243774612
+    },
+    "fm_rivet_array": {
+      "verdict": "rebuild",
+      "rating": 38,
+      "ai_rating": 66,
+      "reasons": [],
+      "notes": "Spec makes no sense repeated design hate the spec",
+      "ts": 1781244057282
+    },
+    "fm_tiger_slash": {
+      "verdict": "rebuild",
+      "rating": 42,
+      "ai_rating": 64,
+      "reasons": [
+        "Low effort / lazy",
+        "Too similar to another"
+      ],
+      "notes": "Not coming through good don't like spec either",
+      "ts": 1781244135566
+    }
+  },
+  "updated": 1781244135
+}

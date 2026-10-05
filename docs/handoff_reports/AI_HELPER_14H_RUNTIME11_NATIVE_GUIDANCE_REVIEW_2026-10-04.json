@@ -1,0 +1,65 @@
+{
+  "work_item": "Independent semantic review of Runtime11 native contextual guidance",
+  "status": "PASS_WITH_ONE_MATERIAL_GAP",
+  "evidence": {
+    "answer_artifact": "integrations/spb-mcp/data/artifacts/39ca28ad5076/result-528e9d22d085.json",
+    "answer_sha256": "E495E758967EBC3B6B3B64FD86FBD653302B8E7DAEC5A5BCB8E8047CABBCDA8F",
+    "case_count": 30,
+    "artifact_reports": { "paintExact": true, "specExact": true, "zoneConfigExact": true, "layersExact": true, "providerAttempts": 0 },
+    "source_pins": {
+      "runtime11_manifest": "_easy_claude_work/ai14h_generation3_audit/frozen-runtime11/audit-manifest.json",
+      "runtime11_manifest_sha256": "5E51D782EEBF28C36347561A7F079F39641964E819CDCACEFC0BB57A17DDAEB0",
+      "pro_ai_sha256": "AEA057CB2965B714700304CA598C0E59AB25E02FFFB5575D5D29FC36CCD5FF76",
+      "self_help_sha256": "E230A121127FC6B32C451C630028D3D2D10461B67819BF50F2B148195DB8DF4D",
+      "receipt_explainer_sha256": "25ABA5EE85E9C9FB7EFE3603FCE22B140CCB09D2CBD09A9303AC6AB00530EAC3",
+      "intent_guard_sha256": "3267DC263CF85BCB34B55588997ACBA737F4A47E7BDDE490FACE4D9D6271FB60"
+    },
+    "semantic_references": [
+      { "path": "docs/handoff_reports/AI_HELPER_14H_GUIDANCE_W82_NATIVE_BASELINE_2026-10-04.json", "sha256": "980676DF601B524719E463C86A31EE51E372EB34E02B885103903BE84053D533" },
+      { "path": "docs/handoff_reports/AI_HELPER_14H_CONTEXTUAL_ROUTING_W117_FINAL_RECHECK_2026-10-04.json", "sha256": "A5FFC7C3A37443CE0564A3EDC2ABE9366B5D56591D1F9BEEDA0EE6B2E525DAB0" }
+    ]
+  },
+  "counts": { "useful": 25, "partial": 4, "failure": 1 },
+  "rows": [
+    { "id": "flatten-meaning", "grade": "useful", "note": "Clearly distinguishes flattened visible pixels from separate editable layers." },
+    { "id": "flatten-editability", "grade": "useful", "note": "Correctly says flattened pixels cannot reconstruct original layers and points to a layered project/PSD." },
+    { "id": "numbers-layer-location", "grade": "useful", "note": "Gives a concrete filter workflow and identifies the Full editor prerequisite." },
+    { "id": "numbers-layer-how", "grade": "useful", "note": "Provides a direct Numbers-layer search/select/visibility workflow." },
+    { "id": "coat-controls", "grade": "useful", "note": "Maps Clearcoat to B, Metalness to R, Roughness to G, and states they are separate; no changes." },
+    { "id": "coat-only-blue", "grade": "useful", "note": "Correctly distinguishes Clearcoat/B from blue paint and the other spec channels." },
+    { "id": "offline-caps", "grade": "partial", "note": "Confirms the built-in helper works without a key, but mostly gives provider setup instead of a useful inventory of offline capabilities." },
+    { "id": "offline-credits", "grade": "useful", "note": "Directly says supported built-in finish changes require neither provider key nor paid model call." },
+    { "id": "authored-color-retain", "grade": "useful", "note": "Tells the user to keep Solid mode/current value and change only finish; explicitly avoids Source Paint." },
+    { "id": "source-dropdown-effect", "grade": "useful", "note": "Correctly advises against switching to Source Paint when retaining authored Solid color." },
+    { "id": "undo-external", "grade": "useful", "note": "Gives the Full editor toolbar/history and AI-answer Undo controls." },
+    { "id": "undo-later-mask", "grade": "useful", "note": "Explains mask conflict preservation/refusal and limits the claim to safe AI-owned values, not a full-project restore." },
+    { "id": "explain-last", "grade": "useful", "note": "No current receipt is present in this fixture; it correctly refuses to infer a change from a draft." },
+    { "id": "preview-target", "grade": "failure", "note": "Describes Easy-mode color/finish selection but does not explain how to inspect the helper's proposed target before application." },
+    { "id": "uncertain-logo", "grade": "useful", "note": "Does not promise complete logo detection and directs the user to inspect and confirm candidates." },
+    { "id": "remembered-numbers", "grade": "useful", "note": "Explicitly says remembered number location from another paint is not confirmation for the current paint." },
+    { "id": "layer-save", "grade": "useful", "note": "Explains Save/Open, retained layer state/pixel payload, source path, and PSD/adjustment-layer limits." },
+    { "id": "unknown-tool", "grade": "useful", "note": "Accurately limits automatic tracing and describes importing/moving/scaling/rotating an image layer." },
+    { "id": "quoted-change", "grade": "partial", "note": "Safely distinguishes current authored Solid from Source Paint, but does not explain what matte means; no mutation occurred." },
+    { "id": "hypothetical-change", "grade": "partial", "note": "Explicitly says nothing changed and preserves ownership guards, but does not explain the likely chrome effect requested." },
+    { "id": "how-save-project", "grade": "useful", "note": "Gives Save/Open steps and accurately states that current layer payload is saved while original PSD bytes are not bundled." },
+    { "id": "can-i-see-applied", "grade": "useful", "note": "With no current verified receipt, it says it will not guess whether a change applied." },
+    { "id": "what-saved", "grade": "useful", "note": "Accurately describes saved zones/layer pixel payload, source path, and PSD adjustment-semantic limits." },
+    { "id": "where-undo", "grade": "useful", "note": "Gives direct Undo and Undo History navigation." },
+    { "id": "how-keep-paint", "grade": "useful", "note": "Correctly preserves current authored Solid color while changing finish only." },
+    { "id": "what-if-roof-blue", "grade": "partial", "note": "Confirms no action occurred but postpones the requested explanation to another turn." },
+    { "id": "repeat-suggestion", "grade": "useful", "note": "Correctly says a suggestion is not proof and requires a current verified receipt." },
+    { "id": "voice-howto-current", "grade": "useful", "note": "Distinguishes suggestion/preview from applied change and honestly reports no matching receipt." },
+    { "id": "blue-material-channel-fresh", "grade": "useful", "note": "Matches W117: identifies Clearcoat(B), separates it from paint hue, and says Roughness(G) remains unchanged." },
+    { "id": "latest-receipt-after-undo", "grade": "useful", "note": "After Undo leaves no current verified receipt, it declines to claim a completed change." }
+  ],
+  "material_findings": [
+    "No misleading application claim was found; all 30 recorded answers have queueLength 0.",
+    "The sole failure is preview-target: its answer still does not tell the user how to inspect the proposed helper area before applying. This is a usability/coverage gap, not an unsafe mutation in this run.",
+    "The matte and chrome hypotheticals remain read-only and safe, but their effect explanations are incomplete."
+  ],
+  "limits": [
+    "Grades are semantic review of this exact 30-answer native artifact against the W82/W117 meanings; wording need not match those reports verbatim.",
+    "Snapshot booleans are reported from the artifact and are reserved for root's independent verification; this review did not perform native actions.",
+    "No provider or native calls were made during review."
+  ]
+}

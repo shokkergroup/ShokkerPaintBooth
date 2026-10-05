@@ -1,0 +1,16 @@
+{
+ "zones": [
+  {
+   "name": "Thumb-houdini_prism_moth",
+   "color": "remaining",
+   "finish": "houdini_prism_moth",
+   "base_color_mode": "special",
+   "base_color_source": "mono:houdini_prism_moth",
+   "intensity": "100"
+  }
+ ],
+ "iracing_id": "23371",
+ "seed": 42,
+ "car_prefix": "car_num",
+ "paint_file": "_houdini_thumb_stage_20260830/_probe_src.png"
+}

@@ -1,0 +1,182 @@
+/* SPB EXPERIMENT — Pit Lane Live (auto-deploy mirror to the sim)
+   File: css/experiments/spb-exp-pit-lane-live.css (NEW file — zero edits to existing repo files)
+   All selectors are spb-exp-pll-* namespaced; uses the app's CSS variables with safe fallbacks. */
+
+.spb-exp-pll-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex: 0 0 auto;
+}
+
+/* Toggle — matches the render bar's Shortcuts-button look (paint-booth-v2.html:2396) */
+.spb-exp-pll-toggle {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-dim, #8a8a99);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+}
+
+.spb-exp-pll-toggle:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text-bright, #fff);
+}
+
+.spb-exp-pll-toggle.spb-exp-pll-on {
+    background: rgba(0, 255, 136, 0.12);
+    border-color: var(--success, #00ff88);
+    color: var(--success, #00ff88);
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.35);
+}
+
+.spb-exp-pll-caret {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-dim, #8a8a99);
+    font-size: 10px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.spb-exp-pll-caret:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text-bright, #fff);
+}
+
+/* Status pill — deployed 14:32 ✓ / failed ✗ / deploying… */
+.spb-exp-pll-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border, #2a2a38);
+    color: var(--text-dim, #8a8a99);
+    background: var(--bg-card, #14141d);
+    white-space: nowrap;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: default;
+}
+
+.spb-exp-pll-pill.is-live {
+    border-color: var(--success, #00ff88);
+    color: var(--success, #00ff88);
+}
+
+.spb-exp-pll-pill.is-busy {
+    border-color: var(--accent-blue, #3366ff);
+    color: var(--accent-blue, #6688ff);
+    animation: spbExpPllPulse 1s ease-in-out infinite;
+}
+
+.spb-exp-pll-pill.is-ok {
+    border-color: var(--success, #00ff88);
+    color: var(--success, #00ff88);
+    background: rgba(0, 255, 136, 0.08);
+}
+
+.spb-exp-pll-pill.is-fail {
+    border-color: var(--error, #ff4455);
+    color: var(--error, #ff4455);
+    background: rgba(255, 68, 85, 0.08);
+}
+
+@keyframes spbExpPllPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+}
+
+/* Car-picker popover — fixed, bottom/right anchored above the render bar */
+.spb-exp-pll-popover {
+    position: fixed;
+    z-index: 4000;
+    width: 280px;
+    max-width: calc(100vw - 16px);
+    padding: 10px;
+    background: var(--bg-card, #14141d);
+    border: 1px solid var(--accent-blue, #3366ff);
+    border-radius: 8px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+    font-size: 11px;
+    color: var(--text, #ccc);
+}
+
+.spb-exp-pll-pop-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: var(--accent-blue, #6688ff);
+    margin-bottom: 8px;
+}
+
+.spb-exp-pll-pop-select {
+    width: 100%;
+    font-size: 11px;
+    padding: 4px;
+    margin-bottom: 8px;
+    background: var(--bg-card, #14141d);
+    color: var(--text, #ccc);
+    border: 1px solid var(--border, #2a2a38);
+    border-radius: 3px;
+}
+
+.spb-exp-pll-pop-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.spb-exp-pll-pop-go {
+    background: rgba(0, 255, 136, 0.12);
+    border: 1px solid var(--success, #00ff88);
+    color: var(--success, #00ff88);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.spb-exp-pll-pop-go:hover {
+    background: rgba(0, 255, 136, 0.22);
+}
+
+.spb-exp-pll-pop-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-dim, #8a8a99);
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.spb-exp-pll-pop-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text-bright, #fff);
+}
+
+.spb-exp-pll-pop-note {
+    margin-top: 8px;
+    font-size: 9px;
+    line-height: 1.4;
+    color: var(--text-dim, #8a8a99);
+}

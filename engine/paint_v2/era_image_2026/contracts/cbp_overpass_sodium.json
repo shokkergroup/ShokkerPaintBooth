@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_overpass_sodium",
+  "display_name": "Street: Sodium Rivet",
+  "promise": "Sodium rivet mesh: many small amber rivet constellations and coral clipped structural brackets with cyan enamel ribs, purple recessed hatch ladders, scarlet warning notches, polished silver thin lips.",
+  "carrier_grammar": "Sodium rivet mesh: many small amber rivet constellations and coral clipped structural brackets with cyan enamel ribs, purple recessed hatch ladders, scarlet warning notches, polished silver thin lips. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for coral clipped brackets, amber rivet constellations, cyan enamel ribs, purple hatch ladders, scarlet warning notches, silver thin bracket lips is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Sodium rivet mesh: many small amber rivet constellations and coral clipped structural brackets with cyan enamel ribs, purple recessed hatch ladders, scarlet warning notches, polished silver thin lips. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_overpass_sodium.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "coral clipped brackets",
+      "role": "Actual shared paint and spec geometry: coral clipped brackets"
+    },
+    {
+      "name": "amber rivet constellations",
+      "role": "Actual shared paint and spec geometry: amber rivet constellations"
+    },
+    {
+      "name": "cyan enamel ribs",
+      "role": "Actual shared paint and spec geometry: cyan enamel ribs"
+    },
+    {
+      "name": "purple hatch ladders",
+      "role": "Actual shared paint and spec geometry: purple hatch ladders"
+    },
+    {
+      "name": "scarlet warning notches",
+      "role": "Actual shared paint and spec geometry: scarlet warning notches"
+    },
+    {
+      "name": "silver thin bracket lips",
+      "role": "Actual shared paint and spec geometry: silver thin bracket lips"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "coral clipped brackets",
+      "amber rivet constellations",
+      "cyan enamel ribs",
+      "purple hatch ladders",
+      "scarlet warning notches",
+      "silver thin bracket lips"
+    ],
+    "R": [
+      "coral clipped brackets",
+      "amber rivet constellations",
+      "cyan enamel ribs",
+      "purple hatch ladders",
+      "scarlet warning notches",
+      "silver thin bracket lips"
+    ],
+    "Cc": [
+      "coral clipped brackets",
+      "amber rivet constellations",
+      "cyan enamel ribs",
+      "purple hatch ladders",
+      "scarlet warning notches",
+      "silver thin bracket lips"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_sodium_vapour",
+      "difference": "This finish uses Dense minuscule irregular orange enamel rivet-ring impressions, brass tiny partial washers, violet heat oxide freckles, black fine seams and pale polished nicks. Warm sodium-lit industrial surface translated into abstract fine texture, not architecture, no big circles or metal panels.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_scrap_weld",
+      "difference": "This finish uses Dense minuscule irregular orange enamel rivet-ring impressions, brass tiny partial washers, violet heat oxide freckles, black fine seams and pale polished nicks. Warm sodium-lit industrial surface translated into abstract fine texture, not architecture, no big circles or metal panels.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "coral clipped brackets is visible in the authored geometry",
+      "amber rivet constellations is visible in the authored geometry",
+      "cyan enamel ribs is visible in the authored geometry",
+      "purple hatch ladders is visible in the authored geometry",
+      "scarlet warning notches is visible in the authored geometry",
+      "silver thin bracket lips is visible in the authored geometry"
+    ],
+    "source_sha256": "e8b239b9d71c67499382153a7d51f4846c754aedea71fd1590909cbcc9245231",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_overpass_sodium-authored-Sodium rivet mesh: many small amber rivet constellations and coral clipped structural brackets with cyan enamel ribs, purple recessed hatch ladders, scarlet warning notches, polished silver thin lips. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_overpass_sodium-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 81.3,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "b8bf8d46e596e786844d1266542ebca1382ff1f229474742928555a98be894fb"
+}

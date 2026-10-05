@@ -1,0 +1,22 @@
+{
+  "oracle": "independent W7 route review; authored before inspection of updated router source",
+  "date": "2026-10-03",
+  "cases": [
+    {"id":"R01","text":"Make the roof green.","expect":"one roof zone; set green; retain the existing chrome finish"},
+    {"id":"R02","text":"Paint the hood red, please.","expect":"one hood zone; set red; retain existing matte finish"},
+    {"id":"R03","text":"Give the roof a satin finish.","expect":"one roof zone; set satin; retain existing blue color"},
+    {"id":"R04","text":"Make only the roof glossier.","expect":"one roof adjustment operation on roof only; do not select a decorative clearcoat pattern"},
+    {"id":"R05","text":"How do I paint the roof green?","expect":"help answer only; no edit queue"},
+    {"id":"R06","text":"What green would look good on the roof?","expect":"recommendation only; no edit queue"},
+    {"id":"R07","text":"Can you suggest a finish for the hood?","expect":"advice only; no edit queue"},
+    {"id":"R08","text":"Everything is too shiny; lower clearcoat on the roof only.","expect":"clearcoat/material control or truthful clarification; never decorative-finish queue"},
+    {"id":"R09","text":"Lower the clearcoat on the hood.","expect":"clearcoat/material control or truthful clarification; never decorative-finish queue"},
+    {"id":"R10","text":"Make the roof green and add flame graphics.","expect":"compound/help owner or clarification; no exact-part shortcut and no partial roof edit"},
+    {"id":"R11","text":"Make the roof green with carbon weave on top.","expect":"layer/compound owner or clarification; no exact-part shortcut and no partial edit"},
+    {"id":"R12","text":"Make the roof green and the hood gold.","expect":"two explicitly named part jobs or clarification; no body widening"},
+    {"id":"R13","text":"Make the roof gold but keep the hood unchanged.","expect":"protected-part clarification before any mutation"},
+    {"id":"R14","text":"Change the blue on the roof to red.","expect":"source-color correction on roof only; retain existing finish"},
+    {"id":"R15","text":"Make only the passenger side green.","expect":"one passenger/right-side zone only; no body widening"},
+    {"id":"R16","text":"Paint the entire body green except make the hood gold.","expect":"explicit atomic body+hood composition or clarification; never exact-part shortcut"}
+  ]
+}

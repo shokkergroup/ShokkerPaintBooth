@@ -1,0 +1,136 @@
+{
+  "version": 2,
+  "render_scale": 0.5,
+  "output_size": 48,
+  "finishes": {
+    "monolithic:houdini_veiled_skull": {
+      "hash": "26fff0cd78b7",
+      "color_hex": "2288cc",
+      "generated": "2026-08-30T20:29:12.777128",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_ember_cipher": {
+      "hash": "a5b63e911d25",
+      "color_hex": "cc8822",
+      "generated": "2026-08-30T20:31:03.964031",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_ghost_spiral": {
+      "hash": "adc704b2498d",
+      "color_hex": "228844",
+      "generated": "2026-08-30T20:42:37.452721",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_cinder_cross": {
+      "hash": "1a90dcd9b962",
+      "color_hex": "8844aa",
+      "generated": "2026-08-30T20:37:34.615318",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_ouroboros": {
+      "hash": "6ca5d8b66821",
+      "color_hex": "cc6644",
+      "generated": "2026-08-30T20:40:22.122308",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_prism_moth": {
+      "hash": "062acd2fd8ec",
+      "color_hex": "aa8822",
+      "generated": "2026-08-30T20:48:12.807018",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_eclipse_veil": {
+      "hash": "469e47919ee9",
+      "color_hex": "44cc88",
+      "generated": "2026-08-30T21:00:57.181083",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_aurora_wolf": {
+      "hash": "47ff664d5c1d",
+      "color_hex": "88aa44",
+      "generated": "2026-08-30T21:01:04.106260",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_velvet_dagger": {
+      "hash": "a6979955116e",
+      "color_hex": "6644cc",
+      "generated": "2026-08-30T20:51:26.926979",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_marble_rose": {
+      "hash": "4183098c214b",
+      "color_hex": "cc6644",
+      "generated": "2026-08-30T21:51:03.579890",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_gilded_crown": {
+      "hash": "39137b418009",
+      "color_hex": "88aa44",
+      "generated": "2026-08-30T20:51:33.500405",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_glacier_eye": {
+      "hash": "575b703b8a1a",
+      "color_hex": "22aacc",
+      "generated": "2026-08-30T21:01:10.653325",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_phantom_comet": {
+      "hash": "6f29c81433bb",
+      "color_hex": "8844aa",
+      "generated": "2026-08-30T21:05:10.536307",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_verdigris_ankh": {
+      "hash": "7fd9245e5040",
+      "color_hex": "cc8822",
+      "generated": "2026-08-30T20:51:40.760806",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_porcelain_cipher": {
+      "hash": "f809869ee960",
+      "color_hex": "22aacc",
+      "generated": "2026-08-30T21:05:17.265448",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_mirage_compass": {
+      "hash": "e34b17cdddfd",
+      "color_hex": "cc44aa",
+      "generated": "2026-08-30T21:57:19.891530",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_quicksilver_helix": {
+      "hash": "30a16a279c30",
+      "color_hex": "88aa44",
+      "generated": "2026-08-30T22:04:01.943674",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_chroma_pyre": {
+      "hash": "53b91ab9a548",
+      "color_hex": "2288cc",
+      "generated": "2026-08-30T19:18:20.069165",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_tidal_relic": {
+      "hash": "5fd1471ea32c",
+      "color_hex": "6644cc",
+      "generated": "2026-08-30T19:18:21.688891",
+      "render_scale": 0.5
+    },
+    "monolithic:houdini_lapis_scarab": {
+      "hash": "f61108d00798",
+      "color_hex": "88aa44",
+      "generated": "2026-08-30T21:41:40.451930",
+      "render_scale": 0.5
+    }
+  },
+  "updated": "2026-08-30T22:04:01.943691",
+  "last_run": {
+    "generated": "2026-08-30T22:04:01.949400",
+    "baked": 1,
+    "skipped": 0,
+    "errors": 0,
+    "force": true,
+    "total_png_bytes": 129292
+  }
+}

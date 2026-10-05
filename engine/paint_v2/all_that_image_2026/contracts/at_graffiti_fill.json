@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_graffiti_fill",
+  "display_name": "Fresh: Graffiti Fill",
+  "promise": "Bold two-tone sprayed graffiti ink fragments with crisp charcoal outlines, absolutely no letters symbols or figures",
+  "carrier_grammar": "Bold two-tone sprayed graffiti ink fragments with crisp charcoal outlines, absolutely no letters symbols or figures; single full-canvas image, no duplicated quadrants. Fine features: layered spray enamel, black outline cuts, cyan sprayed hooks, magenta foil overprints, white cap sputter, dry overspray fringe",
+  "spec_grammar": "Feature-specific selectors partition layered spray enamel, black outline cuts, cyan sprayed hooks, magenta foil overprints, white cap sputter, dry overspray fringe. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "layered spray enamel",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "black outline cuts",
+      "role": "Material feature selected from artwork by g:<:0.22"
+    },
+    {
+      "name": "cyan sprayed hooks",
+      "role": "Material feature selected from artwork by h:>:160&h:<:220&s:>:0.5"
+    },
+    {
+      "name": "magenta foil overprints",
+      "role": "Material feature selected from artwork by h:>:275&s:>:0.5"
+    },
+    {
+      "name": "white cap sputter",
+      "role": "Material feature selected from artwork by g:>:0.78&s:<:0.25"
+    },
+    {
+      "name": "dry overspray fringe",
+      "role": "Material feature selected from artwork by fine:>:0.81"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "layered spray enamel",
+      "black outline cuts",
+      "cyan sprayed hooks",
+      "magenta foil overprints",
+      "white cap sputter",
+      "dry overspray fringe"
+    ],
+    "R": [
+      "layered spray enamel",
+      "black outline cuts",
+      "cyan sprayed hooks",
+      "magenta foil overprints",
+      "white cap sputter",
+      "dry overspray fringe"
+    ],
+    "Cc": [
+      "layered spray enamel",
+      "black outline cuts",
+      "cyan sprayed hooks",
+      "magenta foil overprints",
+      "white cap sputter",
+      "dry overspray fringe"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "layered spray enamel",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "black outline cuts",
+      "range": [
+        [
+          0,
+          130,
+          150
+        ],
+        [
+          22,
+          225,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cyan sprayed hooks",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "magenta foil overprints",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "white cap sputter",
+      "range": [
+        [
+          240,
+          0,
+          16
+        ],
+        [
+          255,
+          32,
+          90
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dry overspray fringe",
+      "range": [
+        [
+          0,
+          155,
+          170
+        ],
+        [
+          10,
+          245,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_airbrush_tee",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_boombox_chrome",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "layered spray enamel",
+      "black outline cuts",
+      "cyan sprayed hooks",
+      "magenta foil overprints",
+      "white cap sputter",
+      "dry overspray fringe"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_graffiti_fill / Bold two-tone sprayed graffiti ink fragments with crisp charcoal outlines, absolutely no letters symbols or figures",
+  "spec_key": "at_graffiti_fill / layered spray enamel all; black outline cuts g:<:0.22; cyan sprayed hooks h:>:160&h:<:220&s:>:0.5; magenta foil overprints h:>:275&s:>:0.5; white cap sputter g:>:0.78&s:<:0.25; dry overspray fringe fine:>:0.81",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

@@ -1,0 +1,319 @@
+{
+  "work_item": "Independent W118 Solid color modifier candidate review",
+  "status": "REJECT_PRIVATE_REVIEW",
+  "decision": "REJECT_FOR_INTEGRATION_PENDING_FALSE_ACCEPTANCE_FIX",
+  "pins": {
+    "candidate": {
+      "path": "_easy_claude_work/ai14h_w118_solid_color_modifier/candidate/spb-pro-design.js",
+      "sha256": "13E8C48134B4E3649D914EA1D1C1AAECC92D1728DA2A8C80C5826386DC14357C"
+    },
+    "baseline": {
+      "path": "_easy_claude_work/ai14h_generation3_audit/frozen-runtime11/js/spb-pro-design.js",
+      "sha256": "4648DE3231015497CC9FF816612A542097A1AD14038A7210753F6CDBFD88D832"
+    },
+    "frozenOracle": {
+      "path": "_easy_claude_work/ai14h_w118_solid_color_modifier_review/fresh-oracle.json",
+      "sha256": "337743318F206F4A9843233B9B45A8D2E5C2BEA20295CEB44F99E29ECC988D48",
+      "cases": 8
+    },
+    "producerOracle": {
+      "path": "_easy_claude_work/ai14h_w118_solid_color_modifier/fresh-oracle.json",
+      "sha256": "E8D00ACDA0FDCC114B028FF25586EFCBE2D6859F9893E552315DF60C09FB2E8D",
+      "cases": 5
+    }
+  },
+  "regressions": {
+    "producer5Case": "{",
+    "editRequest17": "17 requests, 0 mismatches",
+    "editCorpus477": "477 phrases, 0 mismatches",
+    "compound50andGuards22": "RESULT compound 50/50 | guards 22/22 | claimed first by SpbProEdit.plan (ai.js runs it before the designer): 26"
+  },
+  "counts": {
+    "freshCases": 8,
+    "confirmedFalseAcceptances": 3,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "paintApplications": 0
+  },
+  "rows": [
+    {
+      "id": "solid-known-part-color",
+      "input": "Paint just the hood solid violet.",
+      "look": null,
+      "coverage": {
+        "complete": true,
+        "parts": [
+          "hood"
+        ],
+        "zones": [
+          {
+            "part": "hood",
+            "color": "#7a3fc4",
+            "finish": "base::gloss"
+          }
+        ],
+        "canonicalText": "paint the hood violet"
+      },
+      "part": [
+        {
+          "part": "hood",
+          "color": "#7a3fc4",
+          "finish": "base::gloss"
+        }
+      ],
+      "spec": null,
+      "element": null,
+      "baselineLook": {
+        "query": "solid",
+        "parts": [
+          "hood"
+        ],
+        "layers": [],
+        "whole": false,
+        "colour": {
+          "name": "violet",
+          "hex": "#7a3fc4",
+          "at": 27
+        },
+        "finish": null
+      }
+    },
+    {
+      "id": "mixed-two-part-different-finishes",
+      "input": "Make only the roof solid red and the hood matte blue.",
+      "look": null,
+      "coverage": {
+        "complete": true,
+        "parts": [
+          "hood",
+          "roof"
+        ],
+        "zones": [
+          {
+            "part": "hood",
+            "color": "#1450b4",
+            "finish": "base::matte"
+          },
+          {
+            "part": "roof",
+            "color": "#c8102e",
+            "finish": "base::matte"
+          }
+        ],
+        "canonicalText": "paint the hood matte blue; paint the roof matte red"
+      },
+      "part": [
+        {
+          "part": "hood",
+          "color": "#1450b4",
+          "finish": "base::matte"
+        },
+        {
+          "part": "roof",
+          "color": "#c8102e",
+          "finish": "base::matte"
+        }
+      ],
+      "spec": null,
+      "element": null,
+      "baselineLook": {
+        "query": "solid",
+        "parts": [
+          "hood",
+          "roof"
+        ],
+        "layers": [],
+        "whole": false,
+        "colour": {
+          "name": "red",
+          "hex": "#c8102e",
+          "at": 26
+        },
+        "finish": "base::matte"
+      }
+    },
+    {
+      "id": "solid-unknown-look-token",
+      "input": "Make the roof solid Black Ice Nebula.",
+      "look": null,
+      "coverage": null,
+      "part": [
+        {
+          "part": "roof",
+          "color": "#111113",
+          "finish": "base::gloss"
+        }
+      ],
+      "spec": null,
+      "element": null,
+      "baselineLook": {
+        "query": "solid ice nebula",
+        "parts": [
+          "roof"
+        ],
+        "layers": [],
+        "whole": false,
+        "colour": {
+          "name": "black",
+          "hex": "#111113",
+          "at": 21
+        },
+        "finish": null
+      }
+    },
+    {
+      "id": "solid-ambiguous-part-scope",
+      "input": "Make the roof or hood solid red.",
+      "look": null,
+      "coverage": null,
+      "part": [
+        {
+          "part": "hood",
+          "color": "#c8102e",
+          "finish": "base::gloss"
+        },
+        {
+          "part": "roof",
+          "color": "#c8102e",
+          "finish": "base::gloss"
+        }
+      ],
+      "spec": null,
+      "element": null,
+      "baselineLook": {
+        "query": "or solid",
+        "parts": [
+          "hood",
+          "roof"
+        ],
+        "layers": [],
+        "whole": false,
+        "colour": {
+          "name": "red",
+          "hex": "#c8102e",
+          "at": 29
+        },
+        "finish": null
+      }
+    },
+    {
+      "id": "solid-modifier-quoted-question",
+      "input": "What does “solid red” mean? Do not change the paint.",
+      "look": null,
+      "coverage": null,
+      "part": null,
+      "spec": null,
+      "element": null,
+      "baselineLook": null
+    },
+    {
+      "id": "matte-flat-preservation-tail",
+      "input": "Make only the hood matte red, keep all other panels unchanged.",
+      "look": null,
+      "coverage": {
+        "complete": true,
+        "parts": [
+          "hood"
+        ],
+        "zones": [
+          {
+            "part": "hood",
+            "color": "#c8102e",
+            "finish": "base::matte"
+          }
+        ],
+        "canonicalText": "paint the hood matte red"
+      },
+      "part": null,
+      "spec": null,
+      "element": [
+        {
+          "part": "hood",
+          "color": "#c8102e",
+          "finish": "base::matte"
+        }
+      ],
+      "baselineLook": null
+    },
+    {
+      "id": "source-paint-color-retain",
+      "input": "Make just the roof matte while keeping its current source-paint color.",
+      "look": {
+        "query": "while keeping current source color",
+        "parts": [
+          "roof"
+        ],
+        "layers": [],
+        "whole": false,
+        "colour": null,
+        "finish": "base::matte"
+      },
+      "coverage": null,
+      "part": null,
+      "spec": [
+        {
+          "part": "roof",
+          "color": "source",
+          "finish": "base::f_soft_matte"
+        }
+      ],
+      "element": null,
+      "baselineLook": {
+        "query": "while keeping current source color",
+        "parts": [
+          "roof"
+        ],
+        "layers": [],
+        "whole": false,
+        "colour": null,
+        "finish": "base::matte"
+      }
+    },
+    {
+      "id": "unknown-solid-word",
+      "input": "Make only the hood solid iridescent dragon glass.",
+      "look": {
+        "query": "solid iridescent dragon glass",
+        "parts": [
+          "hood"
+        ],
+        "layers": [],
+        "whole": false,
+        "colour": null,
+        "finish": null
+      },
+      "coverage": null,
+      "part": null,
+      "spec": null,
+      "element": null,
+      "baselineLook": {
+        "query": "solid iridescent dragon glass",
+        "parts": [
+          "hood"
+        ],
+        "layers": [],
+        "whole": false,
+        "colour": null,
+        "finish": null
+      }
+    }
+  ],
+  "issues": [
+    "mixed-two-part-different-finishes: candidate accepts an incomplete/semantically wrong per-part finish plan",
+    "solid-unknown-look-token: lookRequest suppresses clarification while permissive offlinePart produces a black roof plan",
+    "solid-ambiguous-part-scope: lookRequest suppresses clarification while offlinePart expands “roof or hood” into both parts"
+  ],
+  "findings": [
+    {
+      "severity": "P1",
+      "finding": "Mixed per-part instructions are represented as a complete but wrong plan: the red “solid” roof is assigned matte because offlinePartCoverage applies the request-wide matte finish from the separate hood clause."
+    },
+    {
+      "severity": "P1",
+      "finding": "For malformed/ambiguous solid-color requests, the changed lookRequest returns null even though offlinePartCoverage rejects; the downstream offlinePart classifier still emits a partial or guessed action (black roof for “Black Ice Nebula”; both hood and roof for “roof or hood”). Frozen baseline lookRequest returned a look query for these examples, intercepting the fallback path."
+    }
+  ],
+  "limits": [
+    "This review loads the exact real SpbProDesign module API in a VM and invokes actual lookRequest/offlineSpec/offlinePart/offlineElement/offlinePartCoverage/compoundPlan classifiers. It does not load public SpbProAI dispatcher or owner/source proof, and does not claim an applied route. The observed fallback hazard is classifier-level and must be replayed in the eventual controller before integration acceptance. No providers, native app, browser, or paint application."
+  ]
+}

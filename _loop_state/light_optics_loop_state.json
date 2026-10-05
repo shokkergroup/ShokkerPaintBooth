@@ -1,0 +1,213 @@
+{
+  "group": "Light & Optics",
+  "ticks": [
+    {
+      "tick": 1,
+      "started_at": "2026-05-27T06:54:11Z",
+      "ended_at": "2026-05-27T06:54:11Z",
+      "bases": [
+        "wave_candy_flow",
+        "wave_chrome_tide",
+        "wave_circular_radar",
+        "wave_diagonal_sweep",
+        "wave_dual_frequency"
+      ],
+      "note": "SPB overnight tick \u2014 Light & Optics batch (5): global _lw_fields micro-glint boost active"
+    },
+    {
+      "tick": 2,
+      "started_at": "2026-05-27T06:57:03Z",
+      "ended_at": "2026-05-27T06:57:03Z",
+      "bases": [
+        "wave_metallic_pulse",
+        "wave_moire_metal",
+        "wave_pearl_current",
+        "wave_standing_chrome",
+        "wave_turbulent_flow"
+      ],
+      "note": "SPB overnight tick \u2014 Light & Optics batch (5): global _lw_fields micro-glint boost active"
+    },
+    {
+      "tick": 3,
+      "started_at": "2026-05-27T07:09:14Z",
+      "ended_at": "2026-05-27T07:09:14Z",
+      "bases": [
+        "spectral_complementary",
+        "spectral_dark_light",
+        "spectral_earth_sky",
+        "spectral_inverse_logic",
+        "spectral_mono_chrome"
+      ],
+      "note": "SPB overnight tick \u2014 Light & Optics batch (5): global _lw_fields micro-glint boost active"
+    },
+    {
+      "tick": 4,
+      "started_at": "2026-05-27T07:24:17Z",
+      "ended_at": "2026-05-27T07:24:17Z",
+      "bases": [
+        "spectral_neon_reactive",
+        "spectral_prismatic_flip",
+        "spectral_rainbow_metal",
+        "spectral_sat_metal",
+        "spectral_warm_cool"
+      ],
+      "note": "SPB overnight tick \u2014 Light & Optics batch (5): global _lw_fields micro-glint boost active"
+    },
+    {
+      "tick": 5,
+      "started_at": "2026-05-27T07:39:20Z",
+      "ended_at": "2026-05-27T07:39:20Z",
+      "bases": [
+        "halo_circle_pearl",
+        "halo_crack_chrome",
+        "halo_diamond_chrome",
+        "halo_grid_pearl",
+        "halo_hex_chrome"
+      ],
+      "note": "SPB overnight tick \u2014 Light & Optics batch (5): global _lw_fields micro-glint boost active"
+    },
+    {
+      "tick": 6,
+      "started_at": "2026-05-27T07:54:23Z",
+      "ended_at": "2026-05-27T07:54:23Z",
+      "bases": [
+        "halo_ripple_chrome",
+        "halo_scale_gold",
+        "halo_star_metal",
+        "halo_voronoi_metal",
+        "halo_wave_candy"
+      ],
+      "note": "SPB overnight tick \u2014 Light & Optics batch (5): global _lw_fields micro-glint boost active"
+    },
+    {
+      "tick": 7,
+      "started_at": "2026-05-27T08:09:26Z",
+      "ended_at": "2026-05-27T08:09:26Z",
+      "bases": [
+        "sparkle_champagne",
+        "sparkle_confetti",
+        "sparkle_constellation",
+        "sparkle_diamond_dust",
+        "sparkle_firefly"
+      ],
+      "note": "SPB overnight tick \u2014 Light & Optics batch (5): global _lw_fields micro-glint boost active"
+    },
+    {
+      "tick": 8,
+      "started_at": "2026-05-27T08:24:29Z",
+      "ended_at": "2026-05-27T08:24:29Z",
+      "bases": [
+        "sparkle_galaxy",
+        "sparkle_lightning_bug",
+        "sparkle_meteor",
+        "sparkle_snowfall",
+        "sparkle_starfield"
+      ],
+      "note": "SPB overnight tick \u2014 Light & Optics batch (5): global _lw_fields micro-glint boost active"
+    },
+    {
+      "tick": 9,
+      "started_at": "2026-05-27T14:55:48Z",
+      "ended_at": "2026-05-27T14:55:48Z",
+      "bases": [
+        "wave_candy_flow",
+        "wave_chrome_tide",
+        "wave_circular_radar",
+        "wave_diagonal_sweep",
+        "wave_dual_frequency"
+      ],
+      "note": "wave=10 \u2014 Light & Optics _lw_fields glint/sparkle wave \u2014 batch ['wave_candy_flow', 'wave_chrome_tide', 'wave_circular_radar', 'wave_diagonal_sweep', 'wave_dual_frequency']"
+    },
+    {
+      "tick": 10,
+      "started_at": "2026-05-27T15:10:51Z",
+      "ended_at": "2026-05-27T15:10:51Z",
+      "bases": [
+        "wave_metallic_pulse",
+        "wave_moire_metal",
+        "wave_pearl_current",
+        "wave_standing_chrome",
+        "wave_turbulent_flow"
+      ],
+      "note": "wave=11 \u2014 Light & Optics _lw_fields glint/sparkle wave \u2014 batch ['wave_metallic_pulse', 'wave_moire_metal', 'wave_pearl_current', 'wave_standing_chrome', 'wave_turbulent_flow']"
+    },
+    {
+      "tick": 11,
+      "started_at": "2026-05-27T15:25:53Z",
+      "ended_at": "2026-05-27T15:25:53Z",
+      "bases": [
+        "spectral_complementary",
+        "spectral_dark_light",
+        "spectral_earth_sky",
+        "spectral_inverse_logic",
+        "spectral_mono_chrome"
+      ],
+      "note": "wave=12 \u2014 Light & Optics _lw_fields glint/sparkle wave \u2014 batch ['spectral_complementary', 'spectral_dark_light', 'spectral_earth_sky', 'spectral_inverse_logic', 'spectral_mono_chrome']"
+    },
+    {
+      "tick": 12,
+      "started_at": "2026-05-27T15:40:55Z",
+      "ended_at": "2026-05-27T15:40:55Z",
+      "bases": [
+        "spectral_neon_reactive",
+        "spectral_prismatic_flip",
+        "spectral_rainbow_metal",
+        "spectral_sat_metal",
+        "spectral_warm_cool"
+      ],
+      "note": "wave=13 \u2014 Light & Optics _lw_fields glint/sparkle wave \u2014 batch ['spectral_neon_reactive', 'spectral_prismatic_flip', 'spectral_rainbow_metal', 'spectral_sat_metal', 'spectral_warm_cool']"
+    },
+    {
+      "tick": 13,
+      "started_at": "2026-05-27T15:55:58Z",
+      "ended_at": "2026-05-27T15:55:58Z",
+      "bases": [
+        "halo_circle_pearl",
+        "halo_crack_chrome",
+        "halo_diamond_chrome",
+        "halo_grid_pearl",
+        "halo_hex_chrome"
+      ],
+      "note": "wave=14 \u2014 Light & Optics _lw_fields glint/sparkle wave \u2014 batch ['halo_circle_pearl', 'halo_crack_chrome', 'halo_diamond_chrome', 'halo_grid_pearl', 'halo_hex_chrome']"
+    },
+    {
+      "tick": 14,
+      "started_at": "2026-05-27T16:11:00Z",
+      "ended_at": "2026-05-27T16:11:00Z",
+      "bases": [
+        "halo_ripple_chrome",
+        "halo_scale_gold",
+        "halo_star_metal",
+        "halo_voronoi_metal",
+        "halo_wave_candy"
+      ],
+      "note": "wave=15 \u2014 Light & Optics _lw_fields glint/sparkle wave \u2014 batch ['halo_ripple_chrome', 'halo_scale_gold', 'halo_star_metal', 'halo_voronoi_metal', 'halo_wave_candy']"
+    },
+    {
+      "tick": 15,
+      "started_at": "2026-05-27T16:26:03Z",
+      "ended_at": "2026-05-27T16:26:03Z",
+      "bases": [
+        "sparkle_champagne",
+        "sparkle_confetti",
+        "sparkle_constellation",
+        "sparkle_diamond_dust",
+        "sparkle_firefly"
+      ],
+      "note": "wave=16 \u2014 Light & Optics _lw_fields glint/sparkle wave \u2014 batch ['sparkle_champagne', 'sparkle_confetti', 'sparkle_constellation', 'sparkle_diamond_dust', 'sparkle_firefly']"
+    },
+    {
+      "tick": 16,
+      "started_at": "2026-05-27T16:41:05Z",
+      "ended_at": "2026-05-27T16:41:05Z",
+      "bases": [
+        "sparkle_galaxy",
+        "sparkle_lightning_bug",
+        "sparkle_meteor",
+        "sparkle_snowfall",
+        "sparkle_starfield"
+      ],
+      "note": "wave=17 \u2014 Light & Optics _lw_fields glint/sparkle wave \u2014 batch ['sparkle_galaxy', 'sparkle_lightning_bug', 'sparkle_meteor', 'sparkle_snowfall', 'sparkle_starfield']"
+    }
+  ]
+}

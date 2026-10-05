@@ -1,0 +1,241 @@
+{
+  "title": "AI helper offline part coverage contract",
+  "generated_at": "2026-10-04T15:25:48.192Z",
+  "mode": "diagnostic contract only; helper is not wired to routing; no provider/browser/live mutations",
+  "helper": "SpbProDesign.offlinePartCoverage(text)",
+  "source_sha256": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8",
+  "prior_helper_baseline": {
+    "source_sha256": "5c4ec49036a67fd3f30d738e31076b44204cda942e3ddf249cadde15b139c5a3",
+    "contract": "20 cases: 8 proven, 12 rejected",
+    "independent_review": "33 cases: 31 passed, 2 failed; failure P1s were explicit-negation false acceptance and preservation-clause swallowing a following roof edit."
+  },
+  "current_independent_review": {
+    "file": "tests/ai_offline_part_coverage_review_contract.cjs",
+    "result": "PASS offline part coverage review: 33/33; fresh=20, supplied-counterexamples=2, controls=11"
+  },
+  "metadata_contract": {
+    "finishExplicit": "true only if a supported finish word is stated; false means gloss is only the offlinePart default and must not be claimed as user intent.",
+    "canonicalText": "emitted only after complete coverage proof; uses exact planned part/color and includes finish only when the source explicitly specified it."
+  },
+  "proven_count": 10,
+  "rejected_count": 13,
+  "limitations": [
+    "Only simple part recolours with exact region/color mapping and a uniform supported finish are proven.",
+    "Ordered edits, whole-car plus part stacks, patterns/material layers, unsupported finish semantics, spec-only work, and arbitrary extras return null.",
+    "Preservation text is removed only within its bounded clause; a conjunction introducing another action ends that clause. Explicit negation and unresolved residual words fail closed.",
+    "finishExplicit distinguishes user-stated finishes from implicit gloss. canonicalText is emitted only after the original request passes full coverage validation.",
+    "The helper deliberately leaves general routing and the existing length guard untouched."
+  ],
+  "cases": [
+    {
+      "id": "frozen-S01-long",
+      "verdict": "proved",
+      "finishExplicit": true,
+      "canonicalText": "paint the hood matte blue",
+      "zones": [
+        {
+          "part": "hood",
+          "color": "#1450b4",
+          "finish": "base::matte"
+        }
+      ]
+    },
+    {
+      "id": "frozen-S05-long",
+      "verdict": "proved",
+      "finishExplicit": false,
+      "canonicalText": "paint the hood gold; paint the roof blue",
+      "zones": [
+        {
+          "part": "hood",
+          "color": "#d7a72b",
+          "finish": "base::gloss"
+        },
+        {
+          "part": "roof",
+          "color": "#1450b4",
+          "finish": "base::gloss"
+        }
+      ]
+    },
+    {
+      "id": "positive-roof",
+      "verdict": "proved",
+      "finishExplicit": false,
+      "canonicalText": "paint the roof blue",
+      "zones": [
+        {
+          "part": "roof",
+          "color": "#1450b4",
+          "finish": "base::gloss"
+        }
+      ]
+    },
+    {
+      "id": "positive-side",
+      "verdict": "proved",
+      "finishExplicit": true,
+      "canonicalText": "paint the left side matte red",
+      "zones": [
+        {
+          "part": "left side",
+          "color": "#c8102e",
+          "finish": "base::matte"
+        }
+      ]
+    },
+    {
+      "id": "positive-trunk",
+      "verdict": "proved",
+      "finishExplicit": false,
+      "canonicalText": "paint the trunk silver",
+      "zones": [
+        {
+          "part": "trunk",
+          "color": "#c3c7cc",
+          "finish": "base::gloss"
+        }
+      ]
+    },
+    {
+      "id": "positive-bonnet",
+      "verdict": "proved",
+      "finishExplicit": true,
+      "canonicalText": "paint the hood matte black",
+      "zones": [
+        {
+          "part": "hood",
+          "color": "#111113",
+          "finish": "base::matte"
+        }
+      ]
+    },
+    {
+      "id": "positive-courtesy-preserve",
+      "verdict": "proved",
+      "finishExplicit": true,
+      "canonicalText": "paint the hood satin green",
+      "zones": [
+        {
+          "part": "hood",
+          "color": "#1f8a3b",
+          "finish": "base::satin"
+        }
+      ]
+    },
+    {
+      "id": "positive-explicit-gloss",
+      "verdict": "proved",
+      "finishExplicit": true,
+      "canonicalText": "paint the hood gloss red",
+      "zones": [
+        {
+          "part": "hood",
+          "color": "#c8102e",
+          "finish": "base::gloss"
+        }
+      ]
+    },
+    {
+      "id": "positive-two-part",
+      "verdict": "proved",
+      "finishExplicit": false,
+      "canonicalText": "paint the hood gold; paint the roof blue",
+      "zones": [
+        {
+          "part": "hood",
+          "color": "#d7a72b",
+          "finish": "base::gloss"
+        },
+        {
+          "part": "roof",
+          "color": "#1450b4",
+          "finish": "base::gloss"
+        }
+      ]
+    },
+    {
+      "id": "negative-whole-car-plus-part",
+      "verdict": "rejected",
+      "reason": "whole-car instruction mixed with part plan"
+    },
+    {
+      "id": "negative-carbon-layer",
+      "verdict": "rejected",
+      "reason": "additional material/layer action"
+    },
+    {
+      "id": "negative-fine-hex",
+      "verdict": "rejected",
+      "reason": "unsupported finish and pattern details"
+    },
+    {
+      "id": "negative-correction",
+      "verdict": "rejected",
+      "reason": "ordered correction cannot be represented by one plan"
+    },
+    {
+      "id": "negative-except",
+      "verdict": "rejected",
+      "reason": "positive exception needs a more complete parser"
+    },
+    {
+      "id": "negative-conflict",
+      "verdict": "rejected",
+      "reason": "contradictory positive and preservation instructions"
+    },
+    {
+      "id": "negative-base-plus-part",
+      "verdict": "rejected",
+      "reason": "whole-car base and part layer stack"
+    },
+    {
+      "id": "negative-unsupported-pearl",
+      "verdict": "rejected",
+      "reason": "offlinePart would lose pearl finish semantics"
+    },
+    {
+      "id": "negative-spec-adjustment",
+      "verdict": "rejected",
+      "reason": "spec-only request, not a paint recolor"
+    },
+    {
+      "id": "negative-extra-action",
+      "verdict": "rejected",
+      "reason": "rotation is not covered by part recolor plan"
+    },
+    {
+      "id": "negative-side-effect",
+      "verdict": "rejected",
+      "reason": "extra stripe action"
+    },
+    {
+      "id": "negative-unknown",
+      "verdict": "rejected",
+      "reason": "unknown drawing/content instruction"
+    },
+    {
+      "id": "negative-explicit-negation",
+      "verdict": "rejected",
+      "reason": "explicit negative instruction"
+    },
+    {
+      "id": "positive-preservation-before-second-edit",
+      "verdict": "proved",
+      "finishExplicit": false,
+      "canonicalText": "paint the hood red; paint the roof blue",
+      "zones": [
+        {
+          "part": "hood",
+          "color": "#c8102e",
+          "finish": "base::gloss"
+        },
+        {
+          "part": "roof",
+          "color": "#1450b4",
+          "finish": "base::gloss"
+        }
+      ]
+    }
+  ]
+}

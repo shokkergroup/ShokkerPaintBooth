@@ -1,0 +1,67 @@
+{
+  "status": "CONFIRMED_INTERFACE_GAP_WITH_LIMITS",
+  "review": "W68 saved AI part-memory source fingerprint semantics",
+  "createdUtc": "2026-10-04T00:00:00Z",
+  "scope": "Read-only audit of immutable W53 canvas and Gen3 runtime1 helper snapshots. No live app, provider, native, server mutation, or PSD modification was performed.",
+  "frozenInputs": "_easy_claude_work/ai14h_w68_review/frozen/source-freeze.json",
+  "fixture": {
+    "path": "SPB Chevy Truck Starting Example PSD.psd",
+    "sizeBytes": 8375062,
+    "rawSha256": "7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf",
+    "nativeReportedCommittedFingerprint": "a91984f525ff7a67763cc32962759cc56c1f908fdde4fc99827b80392e79bc33",
+    "nativeFingerprintMeaning": "W53 canvas reports the committed fingerprint as SHA-256 of the layered composite payload text, not the PSD file bytes. The different values are expected because these digests cover different inputs."
+  },
+  "oracle": [
+    "Same source path, dimensions, flattened composite, and current owner proof across a new generation may restore and rebind to the new generation.",
+    "A changed flattened composite, dimensions, path, or current owner/mask proof must refuse restore.",
+    "If two PSD byte streams differ while producing the same returned composite and all current geometry/owner proofs remain equal, byte-level source ownership must not be represented as proven unless the byte digest participates in identity.",
+    "Uncommitted source and malformed/forged extra record fields must fail closed."
+  ],
+  "dynamicResults": {
+    "test": "tests/ai_part_memory_source_fingerprint_w68_contract.cjs",
+    "result": "PASS_WITH_LIMITS",
+    "checks": 11,
+    "details": [
+      "Executed the actual frozen canvas _spbFingerprintBytes/_spbFingerprintText functions in a VM using WebCrypto SHA-256.",
+      "Executed actual frozen spb-ai-part-memory saveRecord/prepareRestore functions: a valid same-composite source at generation 3 restored from generation 2 and rebound to generation 3.",
+      "Provided distinct synthetic raw-byte digests while holding the composite fingerprint constant; current saved-memory API accepted the restore because it has no raw-file digest field and receives no such value.",
+      "Changed composite digest, dimensions, zone ID, uncommitted source, and failed mask proof all refused restore.",
+      "Adding an unrecognized rawFingerprint field to the saved record was rejected by the strict record schema."
+    ],
+    "limit": "The different-byte/same-composite case is a synthetic contract counterexample, not a modified-PSD import or native reproduction. The test proves the current interface cannot distinguish that case when supplied current owner/mask proofs are otherwise equal; it does not prove a particular pair of PSD files actually has equal composites."
+  },
+  "sourceEvidence": [
+    {
+      "file": "_easy_claude_work/ai14h_w68_review/frozen/paint-booth-3-canvas.js",
+      "sha256": "159716b3150c785517bec3a1cf1b00a7318121885e7640276b5ffaf14fc91d9a",
+      "locations": "importPSD sends only psd_path and thumbnail_size to /api/psd-import; around line 22105 it computes _spbFingerprintText(data.composite), and around line 22250 commits that fingerprint."
+    },
+    {
+      "file": "_easy_claude_work/ai14h_w68_review/frozen/psd_import_routes.py",
+      "sha256": "d9e0e2e65e7351da1d8564cc8b4652c320433997238099da92c2b477cdddeecdd",
+      "locations": "The /api/psd-import response includes dimensions, layers, composite, and psd_path; it has no source byte digest. Its response cache key uses path, mtime, and thumbnail size around line 122."
+    },
+    {
+      "file": "_easy_claude_work/ai14h_w68_review/frozen/spb-ai-part-memory.js",
+      "sha256": "6e0d1e1466feca847d3a1c3300f32779ba610f3b6c72c7904a6c8fd97a6b3652",
+      "locations": "Persisted source schema at lines 98-105 contains only path, fingerprint, width, height; prepareRestore compares these and asks fresh owner/mask proofs. Generation is rebound at runtime and is not persisted."
+    },
+    {
+      "file": "_easy_claude_work/ai14h_w68_review/frozen/spb-ai-part-memory-project.js",
+      "sha256": "763d36addca501256e1346d58b797d339b15666d04273cbf5c4840b15c1c6fc1",
+      "locations": "currentSource reads committed path/fingerprint/generation and dimensions from the source transaction; it has no independent PSD-byte digest."
+    },
+    {
+      "file": "_easy_claude_work/ai14h_w68_review/frozen/project_routes.py",
+      "sha256": "8367c99a181b7da254a1ea2ebd2610157f336274196def623725f3231222ad0e",
+      "locations": "An existing _source_fingerprint helper streams a server-side SHA-256 in 1 MiB chunks, but it is used by saved-project source verification endpoints, not the generic /api/psd-import response or layered canvas transaction."
+    }
+  ],
+  "assessment": "Current saved part-memory binds to flattened-composite identity, dimensions, path, generation-at-runtime, and fresh geometry/owner/mask proof. This is strong for visible source equivalence but cannot establish identity of the original PSD byte stream. A same-path PSD replacement that preserves its composite yet changes layer contents/metadata could retain the same composite fingerprint; if current ownership proofs also remain equal, this interface has no source-byte discriminator.",
+  "recommendation": "Do not patch the helper alone: it cannot derive the digest from fields it never receives. Add a server-side streamed SHA-256 for the normalized import path to /api/psd-import (reuse the existing backend streaming pattern), return it as a distinct sourceBytesSha256 field, and include it in the PSD import response cache identity so same-path changes cannot receive stale identity. Bind the committed layered source transaction and persisted part-memory record to that digest while retaining a separate composite fingerprint for render/output checks. Do not send or duplicate the multi-megabyte PSD through the browser. On unavailable digest, refuse durable part-memory restore/save or retain only session-local composite semantics. This is a proposal for parent integration; no code changes were made.",
+  "artifacts": [
+    "tests/ai_part_memory_source_fingerprint_w68_contract.cjs",
+    "_easy_claude_work/ai14h_w68_review/frozen/source-freeze.json"
+  ],
+  "externalEffects": { "providers": 0, "native": 0, "serverWrites": 0, "livePSDChanges": 0 }
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon_cyber_yellow",
+  "display_name": "Voltage Plate",
+  "carrier": "dark conductive ceramic loaded with shear-yellow phosphor platelets",
+  "material_story": {
+    "M": "conductive ceramic exposure, copper pinpoints, and bridge deposits lead while dielectric phosphor stays low",
+    "R": "chipped corners, cross-shear scores, quenched gaps, and displaced afterimages rise independently",
+    "Cc": "fused glaze, charged rims, and intact platelet shoulders retain clear; chips, gaps, and scores break it"
+  },
+  "vetoes": [
+    "caution stripe or hazard-tape band",
+    "lightning bolt or circuitry network",
+    "grid, row, hex field, or macro lane",
+    "confetti or repeated capsule stamp",
+    "generic noise or unrelated texture underlay"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 1.821489,
+  "material_stats": {
+    "std": {
+      "M": 82.789871,
+      "R": 80.691772,
+      "Cc": 83.260521
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.373153,
+      "M_Cc": -0.040397,
+      "R_Cc": -0.17261
+    }
+  },
+  "geometry_stats": {
+    "family_count": 10,
+    "families": {
+      "bridge slivers": 997,
+      "charged rims": 1447,
+      "chipped corners": 533,
+      "conductive ceramic facets": 4356,
+      "copper pinpoints": 388,
+      "fused shoulder glaze": 558,
+      "offset afterimages": 625,
+      "quenched gaps": 498,
+      "shear fracture scores": 473,
+      "shear phosphor platelets": 3394
+    },
+    "width_native_min": 8.002,
+    "width_native_median": 17.304,
+    "width_native_p90": 26.438,
+    "width_native_max": 30.995,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "conductive ceramic facets": 0.242821,
+    "shear phosphor platelets": 0.189499,
+    "charged rims": 0.056961,
+    "bridge slivers": 0.03513,
+    "chipped corners": 0.010595,
+    "copper pinpoints": 0.006893,
+    "quenched gaps": 0.015718,
+    "offset afterimages": 0.022431,
+    "shear fracture scores": 0.021792,
+    "fused shoulder glaze": 0.020444
+  }
+}

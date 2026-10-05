@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_marquee_bulb",
+  "display_name": "Arcade: Marquee Chase",
+  "promise": "Ruby, amber and cyan prismatic lens fragments with bright glass ridges and dim recesses.",
+  "carrier_grammar": "Ruby, amber and cyan prismatic lens fragments with bright glass ridges and dim recesses. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for amber optical resin, ruby diffuser lenses, cyan prism lenses, unlit sockets, pearl optical points is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Ruby, amber and cyan prismatic lens fragments with bright glass ridges and dim recesses. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_marquee_bulb.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "amber optical resin",
+      "role": "Actual shared paint and spec geometry: amber optical resin"
+    },
+    {
+      "name": "ruby diffuser lenses",
+      "role": "Actual shared paint and spec geometry: ruby diffuser lenses"
+    },
+    {
+      "name": "cyan prism lenses",
+      "role": "Actual shared paint and spec geometry: cyan prism lenses"
+    },
+    {
+      "name": "unlit sockets",
+      "role": "Actual shared paint and spec geometry: unlit sockets"
+    },
+    {
+      "name": "pearl optical points",
+      "role": "Actual shared paint and spec geometry: pearl optical points"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "amber optical resin",
+      "ruby diffuser lenses",
+      "cyan prism lenses",
+      "unlit sockets",
+      "pearl optical points"
+    ],
+    "R": [
+      "amber optical resin",
+      "ruby diffuser lenses",
+      "cyan prism lenses",
+      "unlit sockets",
+      "pearl optical points"
+    ],
+    "Cc": [
+      "amber optical resin",
+      "ruby diffuser lenses",
+      "cyan prism lenses",
+      "unlit sockets",
+      "pearl optical points"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_insert_coin",
+      "difference": "This finish uses Many tiny jewel-like serrated diffuser lens fragments, alternating ruby amber cyan optical ridges, small off-black sockets and pearl pin highlights. A dense arcade marquee light-chase material, fine angular lens cuts rather than large round bulbs, every fragment orientation varied.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_neon_tube",
+      "difference": "This finish uses Many tiny jewel-like serrated diffuser lens fragments, alternating ruby amber cyan optical ridges, small off-black sockets and pearl pin highlights. A dense arcade marquee light-chase material, fine angular lens cuts rather than large round bulbs, every fragment orientation varied.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "amber optical resin is visible in the authored geometry",
+      "ruby diffuser lenses is visible in the authored geometry",
+      "cyan prism lenses is visible in the authored geometry",
+      "unlit sockets is visible in the authored geometry",
+      "pearl optical points is visible in the authored geometry"
+    ],
+    "source_sha256": "d25cf63cb66a5392b449d3e293119d0899a900302a8a69622635e24bbeb4defb",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_marquee_bulb-authored-Ruby, amber and cyan prismatic lens fragments with bright glass ridges and dim recesses. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_marquee_bulb-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 68.2,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "386ab58b161417b37f7269769dbbcad178fedf9137cc8df4da21db689a0c5cfa"
+}

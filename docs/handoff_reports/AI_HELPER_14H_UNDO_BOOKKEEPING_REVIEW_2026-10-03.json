@@ -1,0 +1,149 @@
+{
+  "status": "PASS_WITH_CONFIRMED_BASELINE_REGRESSION",
+  "task": "W29 independent Undo bookkeeping review",
+  "oracle": {
+    "frozenAt": "2026-10-04 before snapshot inspection",
+    "beforeSha256": "B43D5F6CD4902DB8872D862395B4D9AC8BE77B22C0B883D01ABADA507F978DCD",
+    "repairedSha256": "609B8EC85228F15D2CC9B3AB82CD692EB2EA90D258CF5045FD36448AD3C46C6B",
+    "cases": [
+      "queue-success-records-lines-recipe-and-undoable",
+      "undoable-requires-real-undo-depth-or-layer-undo",
+      "failed-queue-operations-are-recorded-as-notes",
+      "empty-queue-does-not-record-undoable-change"
+    ]
+  },
+  "snapshots": [
+    {
+      "id": "before",
+      "path": "_easy_claude_work/ai14h_w29_sources/js/spb-pro-ai.before.js",
+      "sha256": "B43D5F6CD4902DB8872D862395B4D9AC8BE77B22C0B883D01ABADA507F978DCD",
+      "bytes": 434828
+    },
+    {
+      "id": "repaired",
+      "path": "_easy_claude_work/ai14h_w29_sources/js/spb-pro-ai.js",
+      "sha256": "609B8EC85228F15D2CC9B3AB82CD692EB2EA90D258CF5045FD36448AD3C46C6B",
+      "bytes": 434840
+    }
+  ],
+  "snapshotDiff": {
+    "changedCharsBefore": 0,
+    "insertedChars": 12,
+    "insertionContext": "        // ROUTER-FIX: what this change did, per zone (kept for the last few changes: masks are big)\n           entry.lines="
+  },
+  "counts": {
+    "frozenCases": 4,
+    "beforeCasePasses": 1,
+    "beforeCaseFailures": 3,
+    "repairedCasePasses": 4,
+    "repairedCaseFailures": 0,
+    "providerCalls": 0,
+    "nativeCalls": 0
+  },
+  "before": {
+    "observed": "The swallowed assignment line leaves the newly-created entry at defaults: lines/notes/layerUndo/undoable bookkeeping is incomplete; recipe is established earlier and remains available.",
+    "failures": [
+      {
+        "id": "queue-success-records-lines-recipe-and-undoable",
+        "verdict": "fail",
+        "reason": "applied lines are retained\n+ actual - expected\n\n+ []\n- [\n-   'Updated hood color.'\n- ]\n",
+        "applyCalls": 1,
+        "undoDepth": 1
+      },
+      {
+        "id": "undoable-requires-real-undo-depth-or-layer-undo",
+        "verdict": "fail",
+        "reason": "Expected values to be strictly equal:\n\nundefined !== 0\n",
+        "applyCalls": 1,
+        "undoDepth": 0
+      },
+      {
+        "id": "failed-queue-operations-are-recorded-as-notes",
+        "verdict": "fail",
+        "reason": "layer undo count is retained\n\nundefined !== 2\n",
+        "applyCalls": 1,
+        "undoDepth": 0
+      }
+    ]
+  },
+  "repaired": [
+    {
+      "id": "queue-success-records-lines-recipe-and-undoable",
+      "verdict": "pass",
+      "entry": {
+        "lines": [
+          "Updated hood color."
+        ],
+        "undoable": true,
+        "layerUndo": 0,
+        "notes": [],
+        "recipe": [
+          {
+            "kind": "edit",
+            "zone": 0
+          }
+        ]
+      },
+      "applyCalls": 1,
+      "undoDepth": 1
+    },
+    {
+      "id": "undoable-requires-real-undo-depth-or-layer-undo",
+      "verdict": "pass",
+      "entry": {
+        "lines": [
+          "Updated hood color."
+        ],
+        "undoable": false,
+        "layerUndo": 0,
+        "notes": [],
+        "recipe": [
+          {
+            "kind": "edit",
+            "zone": 0
+          }
+        ]
+      },
+      "applyCalls": 1,
+      "undoDepth": 0
+    },
+    {
+      "id": "failed-queue-operations-are-recorded-as-notes",
+      "verdict": "pass",
+      "entry": {
+        "lines": [
+          "Updated hood color."
+        ],
+        "undoable": true,
+        "layerUndo": 2,
+        "notes": [
+          "Could not apply — roof: unsupported region"
+        ],
+        "recipe": [
+          {
+            "kind": "edit",
+            "zone": 0
+          }
+        ]
+      },
+      "applyCalls": 1,
+      "undoDepth": 0
+    },
+    {
+      "id": "empty-queue-does-not-record-undoable-change",
+      "verdict": "pass",
+      "entry": {
+        "lines": [],
+        "undoable": false,
+        "notes": []
+      },
+      "applyCalls": 0,
+      "undoDepth": 0
+    }
+  ],
+  "limits": [
+    "Both inputs are parent-prepared immutable temp snapshots; the production file was not read or edited.",
+    "Executed actual finish()/finishCore() source slices in a VM; controlled applyQueue/Undo/render/diagnostics dependencies were stubs.",
+    "No live provider, native application, renderer, MCP server, or external I/O was called. This verifies finish bookkeeping only, not real applyQueue or native Undo semantics."
+  ]
+}

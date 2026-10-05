@@ -1,0 +1,92 @@
+[
+ {
+  "id": "butterfly_morpho",
+  "name": "Butterfly Morpho",
+  "kind": "finish",
+  "desc": "Thousands of overlapping wing-scale shingles in curved rows \u2014 each a tiny ridged tile carrying structural-blue thin-film that travels cobalt\u2192violet\u2192teal across the rows; dark branching wing-veins show through and rare scales flare white.",
+  "ai_rating": 54,
+  "mip": 0.67,
+  "render_s": 1.42
+ },
+ {
+  "id": "moth_luna",
+  "name": "Moth Luna",
+  "kind": "finish",
+  "desc": "Pale jade luna-moth wing: downy radial fur striations, four concentric eyespot ocelli with gold rims and lilac crescents, pink leading-edge piping; glassy ocellus centers over matte fur.",
+  "ai_rating": 59,
+  "mip": 0.64,
+  "render_s": 1.65
+ },
+ {
+  "id": "fable_comet_parade",
+  "name": "Comet Parade",
+  "kind": "finish",
+  "desc": "A parade of comets across deep space: blown-out white-hot heads with prismatic dispersion and long chromatic tails (red leading \u2192 blue trailing), fine star-dust, faint violet nebula. The heads jump off the car.",
+  "ai_rating": 69,
+  "mip": 0.62,
+  "render_s": 1.34
+ },
+ {
+  "id": "fable_magnetite_flow",
+  "name": "Magnetite Flow",
+  "kind": "finish",
+  "desc": "Ferrofluid Rosensweig spikes \u2014 a dense field of SHARP peaked black-chrome spikes packed along the magnetic field, white-hot mirror tips, deep valleys, subtle violet polarity territories. All sharp peaks, zero blobs.",
+  "ai_rating": 69,
+  "mip": 0.52,
+  "render_s": 1.49
+ },
+ {
+  "id": "lfr_freedom_forge",
+  "name": "Freedom Forge",
+  "kind": "finish",
+  "desc": "Pattern-welded Damascus steel: flowing folded/watered grain of light polished bands and dark etched valleys with a cross-fold ladder, faint forge-heat glowing in the deepest etch lines.",
+  "ai_rating": 68,
+  "mip": 0.51,
+  "render_s": 0.85
+ },
+ {
+  "id": "lfr_rockets_red_glare",
+  "name": "Rockets Red Glare",
+  "kind": "finish",
+  "desc": "Layered night fireworks: chrysanthemum spokes with terminal dots, drooping willow trails, splitting crossettes, white-hot burst cores and dense spark fields in red/white/gold/blue over a deep blue night.",
+  "ai_rating": 67,
+  "mip": 0.56,
+  "render_s": 1.26
+ },
+ {
+  "id": "lfr_liberty_filigree",
+  "name": "Liberty Filigree",
+  "kind": "pattern",
+  "desc": "Fine engraved goldwork: interwoven logarithmic scroll-curls, mirrored C-scrolls and beadwork dots forming a dense antique-jewelry lace. Sharp thin metal linework, alpha-stamped.",
+  "ai_rating": 72,
+  "mip": 0.59,
+  "render_s": 1.05
+ },
+ {
+  "id": "lfr_eagle_crest",
+  "name": "Eagle Crest",
+  "kind": "pattern",
+  "desc": "Heraldic layered feather plumage: overlapping feathers each with a central shaft and fine angled barb lines, shingled into a crest. Bronze-gold metalwork, fine barbs.",
+  "ai_rating": 60,
+  "mip": 0.43,
+  "render_s": 1.51
+ },
+ {
+  "id": "lfr_constellation_field",
+  "name": "Constellation Field",
+  "kind": "pattern",
+  "desc": "Dense star cartography: thousands of magnitude-varied micro stars, bright anchor stars linked by thin constellation lines, faint nebula wash. Star-chart micro detail end to end.",
+  "ai_rating": 65,
+  "mip": 0.39,
+  "render_s": 0.63
+ },
+ {
+  "id": "lfr_distressed_flag",
+  "name": "Distressed Flag",
+  "kind": "pattern",
+  "desc": "Weathered battle-flag textile: over-under woven thread grid, sun-worn cracked paint patches, torn voids and frayed holes. Aged canvas realism, abstracted (no literal stripes).",
+  "ai_rating": 57,
+  "mip": 0.24,
+  "render_s": 0.93
+ }
+]

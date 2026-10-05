@@ -1,0 +1,89 @@
+{
+ "domain": "paths",
+ "version": 1,
+ "note": "Lives in data/encyclopedia/reader/ so the article gates (top-level *.json only) do not treat it as an article file. Learning paths for the SPB Encyclopedia reader (js/spb-encyclopedia-learn.js). Owned by the reader lane (OFFLINE_BUILDER FINAL 3, 2026-10-04). Each lesson is an EXISTING article id plus a short check; every quiz answer is taken from that article's own text. Validate with: node _easy_claude_work/enc_reader_smoke.js",
+ "paths": [
+  {
+   "id": "first_paint",
+   "title": "Your first paint",
+   "icon": "🚀",
+   "level": "beginner",
+   "blurb": "From an empty window to your own paint on the car in iRacing: the two settings that matter, zones, render and reload.",
+   "lessons": [
+    { "id": "workflows.what_is_shokker", "quiz": [
+      { "q": "iRacing reads two pictures for every car. Which two?", "a": ["The paint and the spec map", "The paint and a PSD file", "The number and the sponsor sheet"], "ok": 0, "why": "The paint holds the colours; the spec map says how metallic, rough and glossy each pixel is. Shokker builds both." } ] },
+    { "id": "workflows.user_id_and_folder", "quiz": [
+      { "q": "What goes in the iRacing User ID box?", "a": ["Your car number", "Your iRacing Customer ID", "Your Trading Paints login"], "ok": 1, "why": "It is your Customer ID, not your car number. Every file is named with it." },
+      { "q": "If the ID or the car folder is wrong, what does iRacing do?", "a": ["Shows an error message", "Silently shows the paint-shop colours", "Crashes the session"], "ok": 1, "why": "iRacing never reports it; it simply finds no file with your name and falls back." } ] },
+    { "id": "workflows.loading_paint", "quiz": [
+      { "q": "Which file keeps the numbers, logos and body paint apart so zones can target the body only?", "a": ["A flat TGA or PNG", "A layered PSD, XCF or ORA template", "A JPEG photo"], "ok": 1, "why": "A layered template keeps them on separate layers; a flat file can only be separated by colour." } ] },
+    { "id": "workflows.six_words", "quiz": [
+      { "q": "Which of the six words changes ONLY the shine?", "a": ["A pattern", "A spec pattern", "A monolithic"], "ok": 1, "why": "A pattern is a visible design; a spec pattern changes only the shine." } ] },
+    { "id": "zones.add_pick_colour", "quiz": [
+      { "q": "You add a zone and press PICK COLOR FROM CAR. What does clicking a colour on the paint do?", "a": ["Recolours that spot", "The zone grabs every pixel of that colour", "Deletes that colour"], "ok": 1, "why": "Each click adds another colour to the zone's catch; it chooses pixels, it does not recolour them." } ] },
+    { "id": "zones.priority", "quiz": [
+      { "q": "Two zones want the same pixel. Which one gets it?", "a": ["The zone higher in the list", "The zone added last", "The zone with the brighter colour"], "ok": 0, "why": "The first zone in the list has the highest priority; lower zones only get what is left." } ] },
+    { "id": "preview_render.render_button", "quiz": [
+      { "q": "What size does RENDER build?", "a": ["Always 4096", "The size of the template you opened (2048 or 1024)", "Whatever the preview shows"], "ok": 1, "why": "Size is not a setting: Shokker renders at the size of the template you opened." } ] },
+    { "id": "preview_render.reload_in_iracing", "quiz": [
+      { "q": "After a render, how do you see it in iRacing without restarting?", "a": ["Restart iRacing", "Press Ctrl+R in iRacing (Reload Car Textures)", "Re-download the car"], "ok": 1, "why": "Alt+Tab to iRacing and press Ctrl+R there; the car flashes white and shows the new files." } ] }
+   ]
+  },
+  {
+   "id": "spec_mastery",
+   "title": "Spec mastery",
+   "icon": "🔬",
+   "level": "intermediate",
+   "blurb": "The shine picture iRacing reads, channel by channel: metal, roughness, the backwards clearcoat, the lighting mask, the iron rules and the tools to read real values.",
+   "lessons": [
+    { "id": "spec.what_is_spec_map", "quiz": [
+      { "q": "What does the spec map tell iRacing?", "a": ["The colour of each spot", "How metallic, rough and glossy each spot is", "Where the numbers go"], "ok": 1, "why": "The colour file says what colour a spot is; the spec map says what it is made of." } ] },
+    { "id": "spec.channel_r_metallic", "quiz": [
+      { "q": "R (metallic) at 255 means…", "a": ["Plain paint", "Solid mirror metal", "No lighting"], "ok": 1, "why": "0 is plain paint, plastic or glass; 255 is solid mirror metal." },
+      { "q": "A real chrome needs which paint colour under it?", "a": ["Black", "A very light colour", "Any colour, it does not matter"], "ok": 1, "why": "Metal shows the paint colour in its reflection, so chrome needs a very light paint." } ] },
+    { "id": "spec.channel_g_roughness", "quiz": [
+      { "q": "G (roughness) 0 is…", "a": ["A perfect mirror", "Dead flat", "Half gloss"], "ok": 0, "why": "0 is a perfect mirror and 255 is dead flat." } ] },
+    { "id": "spec.channel_b_clearcoat", "quiz": [
+      { "q": "Which clearcoat value is MAXIMUM gloss?", "a": ["255", "16", "0"], "ok": 1, "why": "Blue runs backwards: 16 is the strongest, shiniest coat and bigger numbers get duller." },
+      { "q": "What do clearcoat values 0 to 15 mean?", "a": ["Extra gloss", "No clearcoat", "Chrome"], "ok": 1, "why": "0 to 15 mean no clearcoat; a normal Shokker render raises blue to at least 16." } ] },
+    { "id": "spec.channel_a_mask", "quiz": [
+      { "q": "Alpha 0 in the spec map means…", "a": ["The paint is transparent", "iRacing lighting is switched off for that spot", "Maximum shine"], "ok": 1, "why": "Alpha is not transparency: 255 is normal lighting, 128 reduced, 0 lighting killed." } ] },
+    { "id": "spec.iron_rules", "quiz": [
+      { "q": "Roughness may go below 15 only when…", "a": ["The coat is 255", "Metal is 240 or more (mirror chrome)", "Never"], "ok": 1, "why": "Rule two: roughness is at least 15 wherever metal is under 240; only mirror chrome may go lower." } ] },
+    { "id": "spec.metal_rough_grid", "quiz": [
+      { "q": "High metal and LOW roughness reads as…", "a": ["Chrome", "Flat paint", "Chalky raw metal"], "ok": 0, "why": "Low/low is wet paint, high metal + low roughness is chrome, low metal + high roughness is flat, high/high is chalky raw metal." } ] },
+    { "id": "spec.how_layers_combine", "quiz": [
+      { "q": "In a zone's stack, what comes LAST?", "a": ["The base finish", "The pattern", "The spec overlays (surface detail, no colour)"], "ok": 2, "why": "Base first, then patterns, then up to five spec overlays that touch only the spec." } ] },
+    { "id": "spec.presets_feels", "quiz": [
+      { "q": "What does a Feel do?", "a": ["Sets the three channel sliders at once", "Changes the paint colour", "Renders the car"], "ok": 0, "why": "Feels are one-click spec tweaks; the disk icon saves your own." } ] },
+    { "id": "spec.inspector", "quiz": [
+      { "q": "Where do you read exact spec values from a spot on the car?", "a": ["SPEC TOOLS > Material Sampler", "The Settings gear", "The render history"], "ok": 0, "why": "The Material Sampler shows each channel and the min, max and mean values of a sampled spot." } ] }
+   ]
+  },
+  {
+   "id": "pro_workflows",
+   "title": "Pro workflows",
+   "icon": "🏁",
+   "level": "pro",
+   "blurb": "Work the way the pros do: layered templates, zones locked to layers, vinyl-true decals, the right file names and Trading Paints.",
+   "lessons": [
+    { "id": "layers.open_psd", "quiz": [
+      { "q": "Which template should you open?", "a": ["Any car's template", "The template for the same car you drive", "A blank 4096 canvas"], "ok": 1, "why": "Pick the template for the car you drive; the layer tree then shows its guide layers." } ] },
+    { "id": "layers.lock_zone_to_layer", "quiz": [
+      { "q": "A zone locked to a layer owns pixels where…", "a": ["Anything on the car", "That layer is solid and the art above it is not", "Only the white parts"], "ok": 1, "why": "It owns pixels where the layer is solid (alpha 128+) and the art above it is under 128." } ] },
+    { "id": "recipes.change_body_keep_numbers", "quiz": [
+      { "q": "You want a candy body without touching numbers and logos. Where does the change go?", "a": ["On the whole car with no layer limit", "On the body paint layer only", "On the number layer"], "ok": 1, "why": "A zone limited to the body layer cannot touch the decals; a whole-car colour finish paints over them." } ] },
+    { "id": "layers.turn_off_before_export", "quiz": [
+      { "q": "Which guide layers must be OFF before you render?", "a": ["Wire and Mask", "Car Paint", "Numbers"], "ok": 0, "why": "Wire and Mask are guides; if visible they end up in your paint. Car_Mandatory stays as the template has it." } ] },
+    { "id": "layers.decal_rescue", "quiz": [
+      { "q": "Decal Rescue makes numbers and sponsors look like…", "a": ["Chrome", "Real vinyl: flat, satin or gloss", "Glow in the dark"], "ok": 1, "why": "You pick a vinyl type (Flat Vinyl, Satin Decal, Gloss Decal), each with its own metal, roughness and coat." } ] },
+    { "id": "preview_render.number_modes", "quiz": [
+      { "q": "Custom Number writes car_num_<ID>.tga. When does iRacing load it?", "a": ["Always", "Only when Graphics > Hide Car Numbers is ON", "Never online"], "ok": 1, "why": "car_num_ is loaded with Hide Car Numbers ON; car_<ID>.tga (Sim-Stamped) is the default." } ] },
+    { "id": "preview_render.output_files", "quiz": [
+      { "q": "What is the spec file called?", "a": ["car_spec_<ID>.tga", "spec_final.png", "car_<number>_spec.psd"], "ok": 0, "why": "Every render writes the paint plus car_spec_<ID>.tga, named with your Customer ID." } ] },
+    { "id": "preview_render.trading_paints_mip", "quiz": [
+      { "q": "What does Trading Paints take for the shine?", "a": ["The car_spec TGA", "A .mip file iRacing builds from car_spec_<ID>.tga", "Your Shokker project"], "ok": 1, "why": "Trading Paints takes your spec only as the .mip iRacing builds; never upload the Shokker project." } ] }
+   ]
+  }
+ ]
+}

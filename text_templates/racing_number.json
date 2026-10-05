@@ -2,7 +2,7 @@
   "name": "Racing Number (Large)",
   "description": "Standard racing number — bold, large, high-contrast. The iconic 2-3 digit car number that appears on doors, roof, and nose. Black stroke around white fill gives TV-camera legibility against any base paint. Drop shadow adds physical presence so the number reads as applied vinyl, not paint.",
   "category": "Numbers",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "template": {
     "text": "55",
     "font_family": "Impact, Arial Black, sans-serif",

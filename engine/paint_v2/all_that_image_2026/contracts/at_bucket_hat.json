@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_bucket_hat",
+  "display_name": "Fresh: Bucket Hat",
+  "promise": "Sand olive reversible cotton twill in small concentric stitching fragments, no hat object",
+  "carrier_grammar": "Sand olive reversible cotton twill in small concentric stitching fragments, no hat object; single full-canvas image, no duplicated quadrants. Fine features: khaki cotton twill, deep weave slots, raised diagonal threads, double stitched seams, short lint tufts, compressed weave islands",
+  "spec_grammar": "Feature-specific selectors partition khaki cotton twill, deep weave slots, raised diagonal threads, double stitched seams, short lint tufts, compressed weave islands. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "khaki cotton twill",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "deep weave slots",
+      "role": "Material feature selected from artwork by g:<:0.24"
+    },
+    {
+      "name": "raised diagonal threads",
+      "role": "Material feature selected from artwork by x:>:0.55"
+    },
+    {
+      "name": "double stitched seams",
+      "role": "Material feature selected from artwork by g:>:0.72&edge:>:0.39"
+    },
+    {
+      "name": "short lint tufts",
+      "role": "Material feature selected from artwork by fine:>:0.74"
+    },
+    {
+      "name": "compressed weave islands",
+      "role": "Material feature selected from artwork by detail:<:0.2"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "khaki cotton twill",
+      "deep weave slots",
+      "raised diagonal threads",
+      "double stitched seams",
+      "short lint tufts",
+      "compressed weave islands"
+    ],
+    "R": [
+      "khaki cotton twill",
+      "deep weave slots",
+      "raised diagonal threads",
+      "double stitched seams",
+      "short lint tufts",
+      "compressed weave islands"
+    ],
+    "Cc": [
+      "khaki cotton twill",
+      "deep weave slots",
+      "raised diagonal threads",
+      "double stitched seams",
+      "short lint tufts",
+      "compressed weave islands"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "khaki cotton twill",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "deep weave slots",
+      "range": [
+        [
+          0,
+          175,
+          190
+        ],
+        [
+          8,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "raised diagonal threads",
+      "range": [
+        [
+          0,
+          100,
+          130
+        ],
+        [
+          12,
+          195,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "double stitched seams",
+      "range": [
+        [
+          0,
+          40,
+          45
+        ],
+        [
+          18,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "short lint tufts",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "compressed weave islands",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_airbrush_tee",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_boombox_chrome",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "khaki cotton twill",
+      "deep weave slots",
+      "raised diagonal threads",
+      "double stitched seams",
+      "short lint tufts",
+      "compressed weave islands"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_bucket_hat / Sand olive reversible cotton twill in small concentric stitching fragments, no hat object",
+  "spec_key": "at_bucket_hat / khaki cotton twill all; deep weave slots g:<:0.24; raised diagonal threads x:>:0.55; double stitched seams g:>:0.72&edge:>:0.39; short lint tufts fine:>:0.74; compressed weave islands detail:<:0.2",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

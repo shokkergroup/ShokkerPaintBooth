@@ -1,0 +1,62 @@
+{
+ "heroes": [
+  {
+   "cat": "CANDY & PEARL",
+   "path": "_candy_pearl_thumbs\\hypershift_spectral_paint.png",
+   "name": "HYPERSHIFT SPECTRAL PAINT"
+  },
+  {
+   "cat": "EXOTIC METAL",
+   "path": "_exotic_metal_thumbs\\chromaflair.png",
+   "name": "CHROMAFLAIR"
+  },
+  {
+   "cat": "PRIZM",
+   "path": "_rate_prizm_thumbs\\prizm_chrome_rose.png",
+   "name": "PRIZM CHROME ROSE"
+  },
+  {
+   "cat": "CHAMELEON",
+   "path": "_rate_chameleon_thumbs\\chameleon_neon_paint.png",
+   "name": "CHAMELEON NEON PAINT"
+  },
+  {
+   "cat": "COLORSHOXX",
+   "path": "_rate_colorshoxx_thumbs\\cx_obsidian_gold.png",
+   "name": "CX OBSIDIAN GOLD"
+  },
+  {
+   "cat": "FORBIDDEN DRAGON",
+   "path": "_rate_forbidden_dragon_thumbs\\fd_imperial_gold_paint.png",
+   "name": "FD IMPERIAL GOLD PAINT"
+  },
+  {
+   "cat": "MONEY SHOKK",
+   "path": "_rate_money_shokk_thumbs\\msh_neonice_rising.png",
+   "name": "MSH NEONICE RISING"
+  },
+  {
+   "cat": "LIGHT OPTICS",
+   "path": "_rate_light_optics_thumbs\\spectral_inverse_logic_paint.png",
+   "name": "SPECTRAL INVERSE LOGIC PAINT"
+  }
+ ],
+ "strobe": [
+  "_rate10_thumbs/spec_terrain_erosion.png",
+  "_rate10_thumbs/alligator_hide.png",
+  "_rate_colorshoxx_thumbs/cx_chrome_void.png",
+  "_rate_colorshoxx_thumbs/cx_red_to_cyan_paint.png",
+  "_rate_colorshoxx_thumbs/cx_midnight_chrome.png",
+  "_rate_light_optics_thumbs/spectral_inverse_logic_paint.png",
+  "_rate_colorshoxx_thumbs/cx_white_lightning.png",
+  "_rate_light_optics_thumbs/spectral_rainbow_metal_paint.png",
+  "_rate_light_optics_thumbs/spectral_prismatic_flip_paint.png",
+  "_candy_pearl_thumbs/hypershift_spectral_paint.png",
+  "_rate_colorshoxx_thumbs/cx_obsidian_gold.png",
+  "_rate10_thumbs/galaxy_swirl.png",
+  "_rate10_thumbs/abstract_mondrian_grid.png",
+  "_rate10_thumbs/abstract_suprematism.png",
+  "_rate_chameleon_thumbs/chameleon_neon_paint.png",
+  "_rate10_thumbs/cc_edge_thin.png"
+ ]
+}

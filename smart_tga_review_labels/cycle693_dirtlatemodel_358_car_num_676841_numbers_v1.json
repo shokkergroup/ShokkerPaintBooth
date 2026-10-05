@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_676841.tga",
+  "inspection_records": "_smart_tga_runs/cycle693_dlm_forward_holdout/inspection_records.json",
+  "review_scope": "Cycle 693 source plus complete Number/Sponsor/Template/Paint sheets and physical groups.",
+  "component_labels": [
+    {"layer":"numbers","component_index":0,"expected_bbox":[0,0,291,240],"target_layer":"template","label":"template_panel_false_number"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[319,34,156,80],"target_layer":"paint","label":"livery_shape_false_number"},
+    {"layer":"numbers","component_index":2,"expected_bbox":[556,575,101,39],"target_layer":"sponsors","label":"wordmark_false_number"},
+    {"layer":"numbers","component_index":3,"expected_bbox":[655,657,185,110],"target_layer":"template","label":"hardware_false_number"},
+    {"layer":"numbers","component_index":4,"expected_bbox":[137,904,62,108],"target_layer":"template","label":"hardware_false_number"},
+    {"layer":"numbers","component_index":5,"expected_bbox":[4,908,94,94],"target_layer":"template","label":"hardware_false_number"}
+  ]
+}

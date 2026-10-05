@@ -1,0 +1,16 @@
+{"schema":"smart_tga_reviewed_missed_instances_v1","cycle":682,"inspection_records":"_smart_tga_runs/cycle682_dlm_instance_assembly_review/inspection_records.json","casts_votes":false,"ownership_authority":false,"review_note":"Approximate visual truth boxes for complete or incompletely assembled primary number copies; review/probe only.","instances":[
+ {"paint_label":"dirtlatemodel 350/car_num_50232.tga","family_id":"number:46","copy":"upper_side","bbox":[309,231,143,105],"status":"incomplete_final_number"},
+ {"paint_label":"dirtlatemodel 350/car_num_50232.tga","family_id":"number:46","copy":"deck","bbox":[795,833,168,109],"status":"incomplete_final_number"},
+ {"paint_label":"dirtlatemodel 350/car_num_60499.tga","family_id":"number:18","copy":"upper_side","bbox":[392,244,34,31],"status":"missing_final_number"},
+ {"paint_label":"dirtlatemodel 350/car_num_60499.tga","family_id":"number:18","copy":"lower_side","bbox":[394,728,34,31],"status":"missing_final_number"},
+ {"paint_label":"dirtlatemodel 350/car_num_72195.tga","family_id":"number:31","copy":"upper_side","bbox":[292,227,151,110],"status":"missing_final_number"},
+ {"paint_label":"dirtlatemodel 350/car_num_75098.tga","family_id":"number:89","copy":"upper_side","bbox":[298,225,147,98],"status":"missing_final_number"},
+ {"paint_label":"dirtlatemodel 358/car_num_39239.tga","family_id":"number:31","copy":"upper_side","bbox":[333,225,153,112],"status":"missing_final_number"},
+ {"paint_label":"dirtlatemodel 358/car_num_39239.tga","family_id":"number:31","copy":"lower_side","bbox":[315,716,151,108],"status":"missing_final_number"},
+ {"paint_label":"dirtlatemodel 358/car_num_45196.tga","family_id":"number:01","copy":"deck","bbox":[797,833,165,105],"status":"missing_final_number"},
+ {"paint_label":"dirtlatemodel 358/car_num_49398.tga","family_id":"number:12","copy":"upper_side","bbox":[301,226,153,112],"status":"missing_final_number"},
+ {"paint_label":"dirtlatemodel 358/car_num_49398.tga","family_id":"number:12","copy":"lower_side","bbox":[297,716,153,108],"status":"missing_final_number"},
+ {"paint_label":"dirtlatemodel 358/car_num_49398.tga","family_id":"number:12","copy":"deck","bbox":[797,833,166,108],"status":"missing_final_number"},
+ {"paint_label":"dirtlatemodel 438/car_num_23371.tga","family_id":"number:18","copy":"upper_side","bbox":[402,244,33,28],"status":"missing_final_number"},
+ {"paint_label":"dirtlatemodel 438/car_num_23371.tga","family_id":"number:18","copy":"lower_side","bbox":[402,729,33,28],"status":"missing_final_number"}
+]}

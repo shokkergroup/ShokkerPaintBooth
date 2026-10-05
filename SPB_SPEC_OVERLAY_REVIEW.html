@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shokker Paint Booth — Spec Overlay Review Lab</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f4f0e7;
+      --muted: #a8a49b;
+      --dim: #77746e;
+      --line: rgba(255,255,255,.105);
+      --line-hot: rgba(255,204,89,.38);
+      --panel: rgba(18,20,21,.9);
+      --panel-solid: #121415;
+      --orange: #ff7a1a;
+      --gold: #ffc857;
+      --red: #ff625d;
+      --green: #73db8a;
+      --blue: #72aaff;
+      --shadow: 0 24px 60px rgba(0,0,0,.38);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 82% -8%, rgba(255,122,26,.13), transparent 32rem),
+        radial-gradient(circle at 8% 14%, rgba(67,113,150,.11), transparent 28rem),
+        #0a0b0c;
+      font: 14px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input, select, textarea { font: inherit; }
+    button, select { cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 2px solid var(--gold); outline-offset: 2px;
+    }
+    .topbar {
+      position: sticky; top: 0; z-index: 30;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      padding: 14px clamp(18px, 3vw, 44px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(9,10,11,.86);
+      backdrop-filter: blur(18px);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .brand-mark {
+      display: grid; place-items: center; width: 38px; height: 38px;
+      border: 1px solid rgba(255,200,87,.5); border-radius: 11px;
+      background: linear-gradient(145deg, rgba(255,200,87,.22), rgba(255,122,26,.05));
+      color: var(--gold); font-weight: 900; letter-spacing: -.08em;
+      box-shadow: inset 0 0 18px rgba(255,122,26,.12);
+    }
+    .brand strong { display: block; letter-spacing: .07em; text-transform: uppercase; font-size: 12px; }
+    .brand span { display: block; color: var(--muted); font-size: 11px; }
+    .top-actions { display: flex; gap: 8px; align-items: center; }
+    .button {
+      border: 1px solid var(--line); border-radius: 9px; padding: 8px 11px;
+      background: rgba(255,255,255,.045); color: var(--ink);
+      transition: border-color .15s, background .15s, transform .15s;
+    }
+    .button:hover { border-color: rgba(255,255,255,.28); background: rgba(255,255,255,.08); }
+    .button:active { transform: translateY(1px); }
+    .button.primary { border-color: rgba(255,200,87,.45); background: rgba(255,200,87,.12); color: #ffe09a; }
+    .button.danger { color: #ffaaa7; }
+    .hero {
+      display: grid; grid-template-columns: minmax(0,1.2fr) minmax(300px,.8fr); gap: 38px;
+      padding: clamp(38px, 7vw, 88px) clamp(18px, 5vw, 72px) 38px;
+      max-width: 1720px; margin: 0 auto;
+    }
+    .eyebrow { color: var(--gold); font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+    h1 { margin: 10px 0 16px; max-width: 870px; font-size: clamp(38px, 6vw, 78px); line-height: .95; letter-spacing: -.055em; }
+    .lede { max-width: 720px; margin: 0; color: #c4c0b7; font-size: clamp(15px, 1.4vw, 19px); }
+    .hero-stats {
+      align-self: end; display: grid; grid-template-columns: repeat(2, minmax(0,1fr));
+      border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: rgba(255,255,255,.025);
+      box-shadow: var(--shadow);
+    }
+    .stat { padding: 18px 20px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .stat:nth-child(2n) { border-right: 0; }
+    .stat:nth-last-child(-n+2) { border-bottom: 0; }
+    .stat b { display: block; font-size: 27px; line-height: 1; }
+    .stat span { display: block; margin-top: 7px; color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    .legend {
+      max-width: 1720px; margin: 0 auto 24px; padding: 0 clamp(18px, 5vw, 72px);
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap; color: var(--muted); font-size: 12px;
+    }
+    .legend strong { color: var(--ink); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+    .filters-wrap {
+      position: sticky; top: 67px; z-index: 20;
+      border-block: 1px solid var(--line); background: rgba(12,13,14,.92); backdrop-filter: blur(16px);
+    }
+    .filters { max-width: 1720px; margin: auto; padding: 13px clamp(18px, 3vw, 44px); }
+    .filter-grid { display: grid; grid-template-columns: minmax(220px,2fr) repeat(4,minmax(128px,1fr)) auto; gap: 8px; }
+    .field {
+      width: 100%; min-width: 0; height: 39px; border: 1px solid var(--line); border-radius: 9px;
+      padding: 0 11px; background: #151718; color: var(--ink);
+    }
+    .filter-foot { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-top: 10px; color: var(--muted); font-size: 12px; }
+    .chips { display: flex; gap: 7px; flex-wrap: wrap; }
+    .chip { border: 1px solid var(--line); border-radius: 999px; padding: 4px 9px; background: transparent; color: var(--muted); }
+    .chip.active { border-color: var(--line-hot); background: rgba(255,200,87,.1); color: #ffe09a; }
+    main { max-width: 1720px; margin: auto; padding: 26px clamp(18px, 3vw, 44px) 130px; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill,minmax(318px,1fr)); gap: 16px; }
+    .gallery.compact { grid-template-columns: repeat(auto-fill,minmax(248px,1fr)); gap: 10px; }
+    .card {
+      position: relative; min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 15px;
+      background: linear-gradient(165deg, rgba(28,30,31,.96), rgba(16,18,19,.96)); box-shadow: 0 12px 34px rgba(0,0,0,.2);
+      transition: transform .18s, border-color .18s, box-shadow .18s;
+    }
+    .card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.22); box-shadow: 0 18px 45px rgba(0,0,0,.33); }
+    .card[data-verdict="love"] { border-color: rgba(255,98,93,.52); }
+    .card[data-verdict="keep"] { border-color: rgba(115,219,138,.42); }
+    .card[data-verdict="rework"] { border-color: rgba(255,200,87,.48); }
+    .card[data-verdict="reject"] { opacity: .66; }
+    .hero-preview { position: relative; aspect-ratio: 16/10; background: #050606; overflow: hidden; }
+    .panel-image { display: block; width: 100%; background-repeat: no-repeat; background-size: 500% 100%; background-position-y: 0; }
+    .panel-image[data-panel="0"] { background-position-x: 0%; }
+    .panel-image[data-panel="1"] { background-position-x: 25%; }
+    .panel-image[data-panel="2"] { background-position-x: 50%; }
+    .panel-image[data-panel="3"] { background-position-x: 75%; }
+    .panel-image[data-panel="4"] { background-position-x: 100%; }
+    .hero-preview .panel-image { position: absolute; inset: 0; }
+    .preview-badge { position: absolute; left: 10px; top: 10px; z-index: 2; padding: 5px 8px; border-radius: 7px; background: rgba(4,5,6,.76); color: #e8e4dc; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; backdrop-filter: blur(7px); }
+    .score { position: absolute; right: 10px; top: 10px; z-index: 2; display: grid; place-items: center; min-width: 42px; height: 30px; padding: 0 7px; border: 1px solid rgba(255,255,255,.19); border-radius: 8px; background: rgba(4,5,6,.76); font-weight: 800; }
+    .score.good { color: #95ecaa; }.score.watch { color: #ffd77f; }.score.low { color: #ff918d; }
+    .card-body { padding: 14px; }
+    .card-head { display: flex; justify-content: space-between; align-items: start; gap: 10px; }
+    .card h2 { margin: 0; font-size: 16px; line-height: 1.15; letter-spacing: -.015em; }
+    .id { margin-top: 4px; color: var(--dim); font: 10px/1.25 ui-monospace, SFMono-Regular, Consolas, monospace; overflow-wrap: anywhere; }
+    .compare-toggle { flex: 0 0 auto; width: 30px; height: 30px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--muted); }
+    .compare-toggle.active { border-color: var(--line-hot); background: rgba(255,200,87,.13); color: var(--gold); }
+    .tags { display: flex; gap: 5px; flex-wrap: wrap; margin: 11px 0; }
+    .tag { padding: 3px 7px; border-radius: 6px; background: rgba(255,255,255,.055); color: #aaa69d; font-size: 10px; text-transform: uppercase; letter-spacing: .05em; }
+    .description { min-height: 40px; margin: 0 0 12px; color: #aaa69f; font-size: 12px; }
+    .mini-panels { display: grid; grid-template-columns: repeat(4,1fr); gap: 5px; }
+    .mini { aspect-ratio: 1; border: 1px solid rgba(255,255,255,.08); border-radius: 7px; overflow: hidden; background-color: #080909; }
+    .mini span { display: block; width: 100%; height: 100%; }
+    .verdicts { display: grid; grid-template-columns: repeat(4,1fr); gap: 5px; margin-top: 12px; }
+    .verdict {
+      min-width: 0; border: 1px solid var(--line); border-radius: 7px; padding: 7px 2px;
+      background: rgba(255,255,255,.025); color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .04em;
+    }
+    .verdict:hover, .verdict.active { color: var(--ink); background: rgba(255,255,255,.09); }
+    .verdict[data-value="love"].active { color: #ffaaa7; border-color: rgba(255,98,93,.5); }
+    .verdict[data-value="keep"].active { color: #a6efb7; border-color: rgba(115,219,138,.46); }
+    .verdict[data-value="rework"].active { color: #ffe09a; border-color: rgba(255,200,87,.52); }
+    .verdict[data-value="reject"].active { color: #bdbab3; }
+    .note { width: 100%; min-height: 54px; resize: vertical; margin-top: 7px; border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: rgba(0,0,0,.2); color: var(--ink); font-size: 11px; }
+    .gallery.compact .description, .gallery.compact .note, .gallery.compact .mini-panels { display: none; }
+    .gallery.compact .hero-preview { aspect-ratio: 1; }
+    .empty { grid-column: 1/-1; padding: 80px 20px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 15px; }
+    .tray {
+      position: fixed; left: 50%; bottom: 18px; z-index: 40; width: min(780px,calc(100% - 28px)); transform: translateX(-50%) translateY(140%);
+      display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid rgba(255,200,87,.25); border-radius: 13px;
+      background: rgba(16,18,19,.94); box-shadow: var(--shadow); backdrop-filter: blur(18px); transition: transform .2s;
+    }
+    .tray.open { transform: translateX(-50%) translateY(0); }
+    .tray-items { display: flex; min-width: 0; flex: 1; gap: 6px; overflow: hidden; }
+    .tray-item { max-width: 145px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding: 7px 9px; border-radius: 7px; background: rgba(255,255,255,.055); color: #c9c5bd; font-size: 11px; }
+    dialog { width: min(1280px,calc(100% - 30px)); max-height: calc(100vh - 30px); padding: 0; border: 1px solid rgba(255,255,255,.16); border-radius: 17px; color: var(--ink); background: #111314; box-shadow: 0 28px 100px rgba(0,0,0,.68); }
+    dialog::backdrop { background: rgba(0,0,0,.74); backdrop-filter: blur(7px); }
+    .modal-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 17px 20px; border-bottom: 1px solid var(--line); background: rgba(17,19,20,.94); backdrop-filter: blur(12px); }
+    .modal-head h2 { margin: 0; font-size: 19px; }
+    .modal-body { padding: 20px; overflow: auto; }
+    .detail-grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 9px; }
+    .detail-panel { min-width: 0; }
+    .detail-panel .panel-image { aspect-ratio: 1; border: 1px solid var(--line); border-radius: 10px; }
+    .detail-panel b { display: block; margin: 7px 2px 0; font-size: 11px; color: #b9b5ad; }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit,minmax(110px,1fr)); gap: 8px; margin-top: 18px; }
+    .metric { padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: rgba(255,255,255,.025); }
+    .metric b { display: block; font-size: 18px; }.metric span { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .07em; }
+    .compare-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 14px; }
+    .compare-card { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: rgba(255,255,255,.025); }
+    .compare-card h3 { margin: 0; padding: 12px 13px; font-size: 14px; }
+    .compare-card .detail-grid { grid-template-columns: repeat(5,1fr); padding: 0 10px 11px; gap: 4px; }
+    .compare-card .detail-panel b { font-size: 8px; text-align: center; }
+    .fineprint { color: var(--dim); font-size: 11px; }
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }.hero-stats { max-width: 560px; }.filter-grid { grid-template-columns: repeat(3,1fr); }.filter-grid .search { grid-column: 1/-1; }
+    }
+    @media (max-width: 680px) {
+      .topbar { padding: 10px 13px; }.brand span, .top-actions .auto-label { display: none; }.hero { padding-top: 38px; }.filter-grid { grid-template-columns: 1fr 1fr; }.filter-grid .search { grid-column: 1/-1; }.filter-foot { align-items: flex-start; flex-direction: column; }.gallery { grid-template-columns: 1fr; }.detail-grid { grid-template-columns: 1fr 1fr; }.detail-grid .detail-panel:first-child { grid-column: 1/-1; }.modal-body { padding: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">SP</div><div><strong>Shokker Paint Booth</strong><span>Spec overlay review lab</span></div></div>
+    <div class="top-actions">
+      <button class="button" id="autoRefresh" type="button" title="Reload this page every 30 seconds while previews are being rebuilt"><span class="auto-label">Live refresh</span> <b>Off</b></button>
+      <button class="button primary" id="exportFeedback" type="button">Export feedback</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Owner review surface · current renderer output</div>
+      <h1>See the finish.<br>Shape the next pass.</h1>
+      <p class="lede">Every picker-visible spec overlay is shown as structure, combined material response, Metallic, Roughness, and Clearcoat. Mark what lands, flag what does not, and leave exact notes for the next polish round.</p>
+    </div>
+    <div class="hero-stats" aria-label="Review summary">
+      <div class="stat"><b id="statTotal">—</b><span>Current finishes</span></div>
+      <div class="stat"><b id="statReviewed">0</b><span>Reviewed</span></div>
+      <div class="stat"><b id="statLove">0</b><span>Loved</span></div>
+      <div class="stat"><b id="statWork">0</b><span>Needs work</span></div>
+    </div>
+  </section>
+
+  <div class="legend">
+    <strong>Material-response key</strong>
+    <span><i class="dot" style="background:var(--red)"></i>Red = Metallic</span>
+    <span><i class="dot" style="background:var(--green)"></i>Green = Roughness</span>
+    <span><i class="dot" style="background:var(--blue)"></i>Blue = Clearcoat</span>
+    <span>The combined view maps all three at once; green is inverted there so bright green reads as smooth.</span>
+  </div>
+
+  <section class="filters-wrap" aria-label="Gallery controls">
+    <div class="filters">
+      <div class="filter-grid">
+        <input class="field search" id="search" type="search" placeholder="Search name, ID, description…" autocomplete="off">
+        <select class="field" id="materialFilter" aria-label="Material family"><option value="">All materials</option></select>
+        <select class="field" id="grammarFilter" aria-label="Pattern grammar"><option value="">All grammars</option></select>
+        <select class="field" id="categoryFilter" aria-label="Picker category"><option value="">All categories</option></select>
+        <select class="field" id="verdictFilter" aria-label="Review verdict">
+          <option value="">All verdicts</option><option value="unreviewed">Unreviewed</option><option value="love">Love</option><option value="keep">Keep</option><option value="rework">Rework</option><option value="reject">Reject</option>
+        </select>
+        <select class="field" id="sort" aria-label="Sort finishes">
+          <option value="catalog">Picker order</option><option value="score-desc">Score: high first</option><option value="score-asc">Score: low first</option><option value="originality">Most original</option><option value="name">Name A–Z</option><option value="material">Material family</option>
+        </select>
+      </div>
+      <div class="filter-foot">
+        <div><b id="visibleCount">0</b> visible · feedback saves automatically in this browser</div>
+        <div class="chips" aria-label="Display density"><button class="chip active" type="button" data-density="full">Full cards</button><button class="chip" type="button" data-density="compact">Compact scan</button><button class="chip danger" id="clearFeedback" type="button">Clear feedback</button></div>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="gallery" id="gallery" aria-live="polite"></div>
+  </main>
+
+  <aside class="tray" id="compareTray" aria-label="Comparison tray">
+    <div class="tray-items" id="trayItems"></div>
+    <button class="button primary" id="openCompare" type="button">Compare <span id="compareCount">0</span></button>
+    <button class="button" id="clearCompare" type="button" aria-label="Clear comparison">×</button>
+  </aside>
+
+  <dialog id="detailDialog"><div id="detailContent"></div></dialog>
+  <dialog id="compareDialog"><div id="compareContent"></div></dialog>
+
+  <script src="_spec_overlay_review/manifest.js"></script>
+  <script>
+    (() => {
+      'use strict';
+      const DATA = window.SPB_SPEC_OVERLAY_REVIEW;
+      const STORE_KEY = 'spbSpecOverlayReviewV1';
+      const VIEW_KEY = 'spbSpecOverlayReviewViewV1';
+      const PANEL_NAMES = ['Structure', 'Combined M/R/CC', 'Metallic', 'Roughness', 'Clearcoat'];
+      const $ = (q, root = document) => root.querySelector(q);
+      const $$ = (q, root = document) => [...root.querySelectorAll(q)];
+      const esc = value => String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+      const readJSON = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch { return fallback; } };
+      let feedback = readJSON(STORE_KEY, {});
+      let view = Object.assign({density:'full', autoRefresh:false}, readJSON(VIEW_KEY, {}));
+      let compare = [];
+      let filtered = [];
+      let refreshTimer = null;
+
+      if (!DATA || !Array.isArray(DATA.items)) {
+        $('#gallery').innerHTML = '<div class="empty"><h2>Preview manifest not found</h2><p>Run <code>python scripts/build_spec_overlay_review_gallery.py</code>, then reopen this page.</p></div>';
+        return;
+      }
+
+      const byId = new Map(DATA.items.map(item => [item.id, item]));
+      const panel = (item, index, cls = '') => `<span class="panel-image ${cls}" data-panel="${index}" style="background-image:url('${encodeURI(item.asset)}')"></span>`;
+      const options = (id, values) => { const select = $(id); [...new Set(values)].sort((a,b) => a.localeCompare(b)).forEach(value => select.insertAdjacentHTML('beforeend', `<option value="${esc(value)}">${esc(value)}</option>`)); };
+      options('#materialFilter', DATA.items.map(x => x.material));
+      options('#grammarFilter', DATA.items.map(x => x.grammar));
+      options('#categoryFilter', DATA.items.map(x => x.category));
+      $('#statTotal').textContent = DATA.count;
+
+      function saveFeedback() { localStorage.setItem(STORE_KEY, JSON.stringify(feedback)); updateStats(); }
+      function entry(id) { return feedback[id] || (feedback[id] = {verdict:'', note:'', updatedAt:''}); }
+      function setVerdict(id, verdict) {
+        const row = entry(id); row.verdict = row.verdict === verdict ? '' : verdict; row.updatedAt = new Date().toISOString(); saveFeedback(); render();
+      }
+      function setNote(id, note) {
+        const row = entry(id); row.note = note; row.updatedAt = new Date().toISOString();
+        if (!row.verdict && !row.note) delete feedback[id];
+        saveFeedback();
+      }
+      function updateStats() {
+        const rows = Object.values(feedback).filter(x => x.verdict || x.note);
+        $('#statReviewed').textContent = rows.length;
+        $('#statLove').textContent = rows.filter(x => x.verdict === 'love').length;
+        $('#statWork').textContent = rows.filter(x => x.verdict === 'rework' || x.verdict === 'reject').length;
+      }
+      function scoreClass(score) { return score == null ? '' : score >= 85 ? 'good' : score >= 80 ? 'watch' : 'low'; }
+      function verdictButtons(item) {
+        const selected = feedback[item.id]?.verdict || '';
+        return ['love','keep','rework','reject'].map(value => `<button type="button" class="verdict ${selected === value ? 'active' : ''}" data-action="verdict" data-id="${esc(item.id)}" data-value="${value}">${value}</button>`).join('');
+      }
+      function card(item) {
+        const row = feedback[item.id] || {};
+        const selected = compare.includes(item.id);
+        return `<article class="card" data-id="${esc(item.id)}" data-verdict="${esc(row.verdict || '')}">
+          <div class="hero-preview" data-action="detail" data-id="${esc(item.id)}" tabindex="0" role="button" aria-label="Inspect ${esc(item.name)}">
+            ${panel(item,0)}<span class="preview-badge">Named pattern structure</span><span class="score ${scoreClass(item.score)}">${item.score ?? '—'}</span>
+          </div>
+          <div class="card-body">
+            <div class="card-head"><div><h2>${esc(item.name)}</h2><div class="id">${esc(item.id)}</div></div><button type="button" class="compare-toggle ${selected ? 'active' : ''}" data-action="compare" data-id="${esc(item.id)}" title="${selected ? 'Remove from' : 'Add to'} comparison">${selected ? '✓' : '+'}</button></div>
+            <div class="tags"><span class="tag">${esc(item.material)}</span><span class="tag">${esc(item.grammar)}</span><span class="tag">${esc(item.category)}</span></div>
+            <p class="description">${esc(item.description || 'No catalog description.')}</p>
+            <div class="mini-panels" aria-label="Channel previews">
+              ${[1,2,3,4].map(i => `<div class="mini" title="${PANEL_NAMES[i]}">${panel(item,i)}</div>`).join('')}
+            </div>
+            <div class="verdicts">${verdictButtons(item)}</div>
+            <textarea class="note" data-action="note" data-id="${esc(item.id)}" placeholder="What should change? Color, scale, density, finish…">${esc(row.note || '')}</textarea>
+          </div>
+        </article>`;
+      }
+      function currentItems() {
+        const query = $('#search').value.trim().toLowerCase();
+        const material = $('#materialFilter').value, grammar = $('#grammarFilter').value, category = $('#categoryFilter').value, verdict = $('#verdictFilter').value;
+        const items = DATA.items.filter(item => {
+          const row = feedback[item.id] || {};
+          const haystack = `${item.name} ${item.id} ${item.description} ${item.material} ${item.grammar} ${item.category}`.toLowerCase();
+          return (!query || haystack.includes(query)) && (!material || item.material === material) && (!grammar || item.grammar === grammar) && (!category || item.category === category) && (!verdict || (verdict === 'unreviewed' ? !row.verdict && !row.note : row.verdict === verdict));
+        });
+        const sort = $('#sort').value;
+        if (sort === 'score-desc') items.sort((a,b) => (b.score ?? -1) - (a.score ?? -1));
+        if (sort === 'score-asc') items.sort((a,b) => (a.score ?? 999) - (b.score ?? 999));
+        if (sort === 'originality') items.sort((a,b) => (b.originality ?? -1) - (a.originality ?? -1));
+        if (sort === 'name') items.sort((a,b) => a.name.localeCompare(b.name));
+        if (sort === 'material') items.sort((a,b) => a.material.localeCompare(b.material) || a.name.localeCompare(b.name));
+        return items;
+      }
+      function render() {
+        filtered = currentItems();
+        $('#visibleCount').textContent = filtered.length;
+        $('#gallery').classList.toggle('compact', view.density === 'compact');
+        $('#gallery').innerHTML = filtered.length ? filtered.map(card).join('') : '<div class="empty"><h2>No finishes match</h2><p>Clear a filter or try a broader search.</p></div>';
+        renderTray(); updateStats();
+      }
+      function toggleCompare(id) {
+        if (compare.includes(id)) compare = compare.filter(x => x !== id);
+        else if (compare.length < 4) compare.push(id);
+        else { compare.shift(); compare.push(id); }
+        render();
+      }
+      function renderTray() {
+        const tray = $('#compareTray'); tray.classList.toggle('open', compare.length > 0);
+        $('#compareCount').textContent = compare.length;
+        $('#trayItems').innerHTML = compare.map(id => `<span class="tray-item">${esc(byId.get(id)?.name || id)}</span>`).join('');
+      }
+      function metric(label, value, suffix = '') { return `<div class="metric"><b>${value ?? '—'}${value != null ? suffix : ''}</b><span>${label}</span></div>`; }
+      function modalPanels(item, compact = false) {
+        return `<div class="detail-grid">${PANEL_NAMES.map((name,i) => `<div class="detail-panel">${panel(item,i)}<b>${compact && i === 1 ? 'Combined' : name}</b></div>`).join('')}</div>`;
+      }
+      function openDetail(id) {
+        const item = byId.get(id); if (!item) return;
+        const stds = item.channelStds || [], spans = item.channelSpans || [];
+        $('#detailContent').innerHTML = `<div class="modal-head"><div><h2>${esc(item.name)}</h2><div class="id">${esc(item.id)}</div></div><button class="button" type="button" data-close="detail">Close</button></div>
+          <div class="modal-body">${modalPanels(item)}
+            <div class="tags"><span class="tag">${esc(item.material)}</span><span class="tag">${esc(item.grammar)}</span><span class="tag">${esc(item.category)}</span></div>
+            <p>${esc(item.description)}</p>
+            <div class="metrics">${metric('Composite score',item.score)}${metric('Detail',item.detail)}${metric('Wow',item.wow)}${metric('Physics',item.physics)}${metric('Originality',item.originality)}${metric('Render',item.renderMs,' ms')}${metric('M std',stds[0])}${metric('R std',stds[1])}${metric('CC std',stds[2])}${metric('M span',spans[0])}${metric('R span',spans[1])}${metric('CC span',spans[2])}</div>
+            <p class="fineprint">Nearest structural neighbor: ${esc(item.nearestId || '—')} · similarity ${item.nearestSimilarity ?? '—'} · maximum channel correlation ${item.channelCorrelation ?? '—'}</p>
+            <div class="verdicts">${verdictButtons(item)}</div>
+            <textarea class="note" data-action="note" data-id="${esc(item.id)}" placeholder="Review note…">${esc(feedback[item.id]?.note || '')}</textarea>
+          </div>`;
+        $('#detailDialog').showModal();
+      }
+      function openComparison() {
+        const items = compare.map(id => byId.get(id)).filter(Boolean); if (!items.length) return;
+        $('#compareContent').innerHTML = `<div class="modal-head"><h2>Side-by-side material comparison</h2><button class="button" type="button" data-close="compare">Close</button></div><div class="modal-body"><div class="compare-grid">${items.map(item => `<article class="compare-card"><h3>${esc(item.name)}</h3>${modalPanels(item,true)}<div style="padding:0 11px 12px"><div class="tags"><span class="tag">${esc(item.material)}</span><span class="tag">Score ${item.score ?? '—'}</span></div><div class="verdicts">${verdictButtons(item)}</div></div></article>`).join('')}</div></div>`;
+        $('#compareDialog').showModal();
+      }
+      function updateAutoRefresh() {
+        clearInterval(refreshTimer); refreshTimer = null;
+        $('#autoRefresh b').textContent = view.autoRefresh ? 'On' : 'Off';
+        $('#autoRefresh').classList.toggle('primary', view.autoRefresh);
+        if (view.autoRefresh) refreshTimer = setInterval(() => location.reload(), 30000);
+      }
+      function exportFeedback() {
+        const rows = DATA.items.filter(item => feedback[item.id]?.verdict || feedback[item.id]?.note).map(item => ({id:item.id,name:item.name,material:item.material,grammar:item.grammar,...feedback[item.id]}));
+        const payload = {galleryGeneratedAt:DATA.generatedAt, exportedAt:new Date().toISOString(), reviewed:rows.length, feedback:rows};
+        const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'})); link.download = `spb-spec-overlay-feedback-${new Date().toISOString().slice(0,10)}.json`; link.click(); setTimeout(() => URL.revokeObjectURL(link.href),1000);
+      }
+
+      ['#search','#materialFilter','#grammarFilter','#categoryFilter','#verdictFilter','#sort'].forEach(id => $(id).addEventListener(id === '#search' ? 'input' : 'change', render));
+      $('#gallery').addEventListener('click', event => {
+        const target = event.target.closest('[data-action]'); if (!target) return;
+        const {action,id,value} = target.dataset;
+        if (action === 'verdict') setVerdict(id,value);
+        if (action === 'compare') toggleCompare(id);
+        if (action === 'detail') openDetail(id);
+      });
+      $('#gallery').addEventListener('keydown', event => { if ((event.key === 'Enter' || event.key === ' ') && event.target.dataset.action === 'detail') { event.preventDefault(); openDetail(event.target.dataset.id); } });
+      document.addEventListener('input', event => { if (event.target.dataset.action === 'note') setNote(event.target.dataset.id,event.target.value); });
+      document.addEventListener('click', event => {
+        const verdict = event.target.closest('[data-action="verdict"]');
+        if (verdict && !verdict.closest('#gallery')) setVerdict(verdict.dataset.id,verdict.dataset.value);
+        if (event.target.closest('[data-close="detail"]')) $('#detailDialog').close();
+        if (event.target.closest('[data-close="compare"]')) $('#compareDialog').close();
+      });
+      [$('#detailDialog'),$('#compareDialog')].forEach(dialog => dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); }));
+      $$('.chip[data-density]').forEach(button => button.addEventListener('click', () => { view.density = button.dataset.density; localStorage.setItem(VIEW_KEY,JSON.stringify(view)); $$('.chip[data-density]').forEach(x => x.classList.toggle('active',x === button)); render(); }));
+      $('#autoRefresh').addEventListener('click', () => { view.autoRefresh = !view.autoRefresh; localStorage.setItem(VIEW_KEY,JSON.stringify(view)); updateAutoRefresh(); });
+      $('#exportFeedback').addEventListener('click', exportFeedback);
+      $('#clearFeedback').addEventListener('click', () => { if (confirm('Clear every saved verdict and note in this browser?')) { feedback = {}; saveFeedback(); render(); } });
+      $('#openCompare').addEventListener('click', openComparison);
+      $('#clearCompare').addEventListener('click', () => { compare = []; render(); });
+      $$('.chip[data-density]').forEach(x => x.classList.toggle('active',x.dataset.density === view.density));
+      updateAutoRefresh(); render();
+    })();
+  </script>
+</body>
+</html>

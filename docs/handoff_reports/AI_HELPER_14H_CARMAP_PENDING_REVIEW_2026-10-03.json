@@ -1,0 +1,84 @@
+{
+  "schema": "spb-carmap-pending-independent-review/1",
+  "date": "2026-10-03",
+  "reviewer": "GPT-6.1 SOL xhigh",
+  "scope": "Read-only production; seven oracle cases frozen before source reads. Complete actual source module executed unchanged in VM, fake fetch/Image/canvas/model I/O only.",
+  "oracle_initial_file_sha256": "ca299c3007cb8b27423a4733313016d0606bac2cbc5e7bb44743c2476e65d80e",
+  "source_sha256_before": "bb9e05373c11550d59155fc680d3771c8ca31de555726bb1219125159be505ce",
+  "source_sha256_after": "bb9e05373c11550d59155fc680d3771c8ca31de555726bb1219125159be505ce",
+  "test": "node tests/ai_carmap_pending_review_contract.cjs",
+  "result": {
+    "passed": 7,
+    "failed": 0,
+    "scenarios": 7
+  },
+  "promotion_assessment": "No blocker found within the seven frozen cases; this is controlled lifecycle/cache evidence, not native or real-car quality certification.",
+  "source_review": [
+    "sourceDescriptor compares actual lexical source-load generation, path, dimensions and canvas; it does not compare paintImageData or layer revision, so legitimate layered recompositing is not classified as a source switch.",
+    "ensure segregates vision/default pending work from ensure(false), and clears pending ownership only when its record still owns PENDING.",
+    "prefetchServerMask checks currentSource before response handling, before decoded-grid installation and on rejection. Explicit teaching persists through the separate geometry signature contract."
+  ],
+  "findings": [],
+  "rows": [
+    {
+      "id": "old-mask-after-new-source",
+      "verdict": "pass",
+      "fakeMaskRequests": 2,
+      "fakeImageDecodes": 2,
+      "currentMapPreserved": true,
+      "currentMaskPreserved": true
+    },
+    {
+      "id": "vision-pending-versus-offline-ensure",
+      "verdict": "pass",
+      "distinctPromise": true,
+      "offlineUnlabelled": true,
+      "additionalFakeVisionCalls": 0
+    },
+    {
+      "id": "same-path-generation-reload",
+      "verdict": "pass",
+      "generationInvalidatesPending": true,
+      "publicSignatureStable": true,
+      "currentMapPreserved": true
+    },
+    {
+      "id": "old-failure-after-new-install",
+      "verdict": "pass",
+      "lateFailurePreservesMapAndMask": true
+    },
+    {
+      "id": "layer-recomposite-same-source",
+      "verdict": "pass",
+      "compositeReferenceIgnoredForSourceIdentity": true,
+      "layerRevisionIgnoredForSourceIdentity": true,
+      "sharedPendingRetained": true
+    },
+    {
+      "id": "matching-pending-request-reuse",
+      "verdict": "pass",
+      "matchingPendingShared": true,
+      "duplicateBuilds": 0,
+      "fakeVisionCalls": 0
+    },
+    {
+      "id": "explicit-layout-teaching-reuse",
+      "verdict": "pass",
+      "newSourceRebuilt": true,
+      "signatureContractIntact": true,
+      "explicitTaughtBoxRetained": true
+    }
+  ],
+  "harness_correction": "Initial fake template-mask response used found:true; corrected to the actual documented server schema found:{mask:true,wire:false}. Scenario oracle and production source remained unchanged. Initial two decoder-not-started failures were fixture errors, not production defects.",
+  "limits": [
+    "Fake I/O supplies synthetic grids and layered documents; no actual provider/native/server calls.",
+    "Whole-source execution proves cache/pending/mask/teaching behavior in the controlled VM, not native loader parsing or real car-map quality.",
+    "The actual template-mask fetch/decode/build pipeline is exercised; compressed learned-island DecompressionStream I/O and real learned-cars payload parsing are not independently certified here.",
+    "Layer recomposite identity probe changes actual VM paintImageData and layer revision under stable source generation/path/canvas; it does not measure composite pixels.",
+    "Existing worker eight-case and prior twelve-case identity audits remain unmodified. Broader teaching import/library semantics and packaging are outside this review."
+  ],
+  "owned_artifacts": [
+    "tests/ai_carmap_pending_review_contract.cjs",
+    "docs/handoff_reports/AI_HELPER_14H_CARMAP_PENDING_REVIEW_2026-10-03.json"
+  ]
+}

@@ -1,0 +1,396 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "scope": "Cold private actual app/controller/render acceptance of frozen Gen3 runtime1; not installed. Later W48/W49/W53/W56 repairs are not certified by this older snapshot.",
+  "session": "77aed6b92219",
+  "url": "http://localhost:59880/",
+  "frozen": {
+    "installed": false,
+    "purpose": "Actual integrated saved-memory callback and scoped proof review; W48/W49/W50 not yet included",
+    "hashes": {
+      "js/spb-pro-ai.js": "3da5c98b7202288979efe0f53fe48818f31a6a5b5428bfb178caeba5c25e82d6",
+      "js/spb-pro-edit.js": "19cbb899006d625bd2649fdaf8903eda48d6bf8d9bd22be0d90db7c52673937e",
+      "js/spb-pro-zone-kit.js": "ea9e169b909a30a6431f7fd48b87658b8258d480f165d304cb0ca5dac8983af7",
+      "js/spb-ai-operation.js": "47587a1a53a35ce7e58825bac864bd75c2421d26c19791957f57bb199a7000c6",
+      "js/spb-ai-lease.js": "de276372a763310ec051db141fcb1d601e11dbf193843e2b21a405226f782134",
+      "js/spb-ai-part-memory.js": "6e0d1e1466feca847d3a1c3300f32779ba610f3b6c72c7904a6c8fd97a6b3652",
+      "js/spb-ai-part-memory-project.js": "763d36addca501256e1346d58b797d339b15666d04273cbf5c4840b15c1c6fc1",
+      "js/spb-ai-complete-instruction-guard.js": "ba0af1f9e217695ed733dde81c8dec1a735dd1f052e8c06b3098866d392a551c",
+      "paint-booth-2-state-zones.js": "710b4d8b1b7f229d334e06d1eb331ff48d9873a7cd139b276d2bab3ebfd591e7",
+      "paint-booth-3-canvas.js": "e7674f6c7ac16bc4bbda954c4664c0b5fd2333fd55a012625176e5cedfcc859d",
+      "js/spb-pro-design.js": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8"
+    }
+  },
+  "providerAttempts": 0,
+  "baseline": {
+    "count": 5,
+    "paint": {
+      "w": 1024,
+      "h": 1024,
+      "sha": "9b6fefa355210f54d8372158d96180b356d382b1f77c7310c8bb89751123693b"
+    },
+    "spec": {
+      "w": 1024,
+      "h": 1024,
+      "sha": "e0130250b8c93fb65eac241a4ef53527786a5a080e04fa8b212ed82adb0109b3"
+    },
+    "source": "a91984f525ff7a67763cc32962759cc56c1f908fdde4fc99827b80392e79bc33",
+    "attempts": 0
+  },
+  "results": {
+    "import": {
+      "operation": "09ec790e3e",
+      "done": true,
+      "result": {
+        "imported": {
+          "ok": true,
+          "requestedPath": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+          "committedPath": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+          "generation": 2,
+          "fingerprint": "a91984f525ff7a67763cc32962759cc56c1f908fdde4fc99827b80392e79bc33",
+          "error": null
+        },
+        "settled": true,
+        "layers": 11,
+        "zones": 5,
+        "source": {
+          "generation": 2,
+          "committedGeneration": 2,
+          "kind": "layered",
+          "ready": true,
+          "loading": false,
+          "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+          "fingerprint": "a91984f525ff7a67763cc32962759cc56c1f908fdde4fc99827b80392e79bc33"
+        },
+        "attempts": 0
+      }
+    },
+    "roofChrome": {
+      "operation": "9f718c907b",
+      "done": true,
+      "result": {
+        "queue": [
+          {
+            "kind": "add",
+            "zone": null,
+            "name": "Roof chrome",
+            "region": {
+              "layers": [
+                "Car Paint"
+              ],
+              "island": "roof"
+            },
+            "finish": "base::f_chrome",
+            "color": "source"
+          }
+        ],
+        "entry": null,
+        "settled": true,
+        "count": 6,
+        "paintUnchanged": true,
+        "specChanged": true,
+        "owned": [
+          {
+            "id": "zone_09f51432-1111-4e70-84c1-12ef4e2e79c3",
+            "name": "Roof chrome",
+            "base": "f_chrome",
+            "mode": "source",
+            "mask": "4194304:1du129g",
+            "prov": {
+              "r": "{\"layers\":[\"Car Paint\"],\"island\":\"roof\"}",
+              "z": "4194304:1du129g",
+              "p": "4194304:1du129g",
+              "l": "7ffdffc0bff9ffc43ff9ffc1ffffffc0fffe7fe0ffffffe0fc3ffff8fc7fffb4fffffffeffffffe4200e00e0ffccc7ffffedfff0fffde7f2ffffe7f9ffffe7f9fffffbfdfffffbfefffffbfefffffbfefffffbfdfffff7f9fff7e7fafffefff2ffcc1ffe3f9ce7fe7ffff009ffffffe1fe7fff78fffffc3e1ffffdff03bffdff",
+              "e": "",
+              "s": {
+                "generation": 2,
+                "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+                "fingerprint": "a91984f525ff7a67763cc32962759cc56c1f908fdde4fc99827b80392e79bc33",
+                "width": 2048,
+                "height": 2048
+              },
+              "car": "cm137f25p",
+              "layers": [
+                "psd_0"
+              ],
+              "layerState": [
+                {
+                  "id": "psd_0",
+                  "visible": true,
+                  "locked": false,
+                  "opacity": 255
+                }
+              ]
+            },
+            "source": {
+              "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+              "fingerprint": "a91984f525ff7a67763cc32962759cc56c1f908fdde4fc99827b80392e79bc33",
+              "generation": 2,
+              "width": 2048,
+              "height": 2048
+            },
+            "saved": true
+          }
+        ],
+        "attempts": 0
+      }
+    },
+    "roofRed": {
+      "operation": "a1f8162503",
+      "done": true,
+      "result": {
+        "queue": [
+          {
+            "kind": "edit",
+            "index": 0,
+            "proof": false,
+            "finish": null,
+            "color": "#c8102e",
+            "baseColor": null
+          }
+        ],
+        "text": "Done \u2014 the roof is now recoloured red. (I updated your earlier change to the same colour instead of stacking a new one on top.)\nNEXT: Undo | Make the black matte | Make the cyan metallic | Make the white pearl | Make the numbers metallic",
+        "last": {
+          "text": "Done \u2014 the roof is now recoloured red. (I updated your earlier change to the same colour instead of stacking a new one on top.)",
+          "lines": [
+            "Roof recoloured red: colour #c8102e"
+          ],
+          "undoable": true
+        },
+        "settled": true,
+        "count": 6,
+        "idSame": true,
+        "maskSame": true,
+        "finishSame": true,
+        "ownerColor": "#c8102e",
+        "ownerMode": "solid",
+        "paintChanged": true,
+        "specSame": false,
+        "saved": true,
+        "attempts": 0
+      }
+    },
+    "scopedRoofGreen": {
+      "operation": "ed27b5b55b",
+      "done": true,
+      "result": {
+        "queue": [
+          {
+            "kind": "edit",
+            "index": 0,
+            "proof": true,
+            "color": "#1f8a3b",
+            "baseColor": null
+          }
+        ],
+        "text": "Done \u2014 the red painted by \"Roof recoloured red\" (3% of the car) is now recoloured green.\nNEXT: Undo | Make the black matte | Make the cyan metallic | Make the white pearl | Make the numbers metallic",
+        "lines": [
+          "Roof recoloured red: colour #1f8a3b"
+        ],
+        "undoable": true,
+        "settled": true,
+        "count": 6,
+        "idSame": true,
+        "maskSame": true,
+        "finishSame": true,
+        "materialFieldsSame": true,
+        "ownerColor": "#1f8a3b",
+        "paintDiff": {
+          "changed": 29713,
+          "outsideRoof": 0,
+          "channels": [
+            29713,
+            29713,
+            29713,
+            0
+          ]
+        },
+        "specDiff": {
+          "changed": 0,
+          "outsideRoof": 0,
+          "channels": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "attempts": 0
+      }
+    },
+    "undoGreen": {
+      "operation": "ad9505b1be",
+      "done": true,
+      "result": {
+        "undoReturned": true,
+        "settled": true,
+        "redZonesExact": false,
+        "redPaintExact": true,
+        "redSpecExact": true,
+        "layersExact": true,
+        "count": 6,
+        "ownerSaved": 1,
+        "attempts": 0
+      }
+    },
+    "sameSourceReopen": {
+      "operation": "fe264b904f",
+      "done": true,
+      "result": {
+        "imported": {
+          "ok": true,
+          "requestedPath": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+          "committedPath": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+          "generation": 3,
+          "fingerprint": "a91984f525ff7a67763cc32962759cc56c1f908fdde4fc99827b80392e79bc33",
+          "error": null
+        },
+        "oldGeneration": 2,
+        "newGeneration": 3,
+        "sameFingerprint": true,
+        "sourceReady": true,
+        "stagedBeforeRequest": 1,
+        "activeBeforeRequest": 0,
+        "activeAfterRequest": 1,
+        "owner": {
+          "id": "zone_09f51432-1111-4e70-84c1-12ef4e2e79c3",
+          "bindingGeneration": 3,
+          "base": "f_chrome",
+          "color": "#c8102e",
+          "mask": "4194304:1du129g"
+        },
+        "queue": [],
+        "text": null,
+        "attempts": 0
+      }
+    },
+    "reopenedFollowup": {
+      "operation": "3462ac8862",
+      "done": true,
+      "result": {
+        "settled": true,
+        "generation": 3,
+        "ownerID": "zone_09f51432-1111-4e70-84c1-12ef4e2e79c3",
+        "ownerColor": "#1f8a3b",
+        "binding": 3,
+        "base": "f_chrome",
+        "mask": "4194304:1du129g",
+        "lines": [
+          "Roof recoloured red: colour #1f8a3b"
+        ],
+        "undoable": true,
+        "attempts": 0
+      }
+    },
+    "materialPoints": {
+      "operation": "c33de23826",
+      "done": true,
+      "result": {
+        "request": "Increase clearcoat on the roof by 20 points",
+        "queue": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "spec": {
+              "spec_shift": {
+                "metal": 0,
+                "rough": 0,
+                "clearcoat": 20
+              }
+            }
+          }
+        ],
+        "text": "Adjusting only the roof clearcoat up by 20 points.",
+        "lines": [
+          "Roof recoloured red: spec shift"
+        ],
+        "undoable": true,
+        "settled": true,
+        "maskSame": true,
+        "material": {
+          "before": {
+            "id": "zone_09f51432-1111-4e70-84c1-12ef4e2e79c3",
+            "mask": "4194304:1du129g",
+            "metal": 0,
+            "rough": 0,
+            "cc": 0
+          },
+          "after": {
+            "metal": 0,
+            "rough": 0,
+            "cc": 20
+          }
+        },
+        "paintExact": true,
+        "changedChannels": [
+          0,
+          0,
+          29713,
+          0
+        ],
+        "changedOutsideRoof": 0,
+        "clearcoatChangedDelta": {
+          "min": 20,
+          "max": 20
+        },
+        "attempts": 0
+      }
+    },
+    "materialUndo": {
+      "done": true,
+      "result": {
+        "paintExact": true,
+        "specExact": true,
+        "layerExact": true,
+        "attempts": 0
+      }
+    }
+  },
+  "atomicNegatives": {
+    "cases": [
+      {
+        "text": "Put matte black on the roof with a gold carbon-weave overlay, but keep the current paint",
+        "decision": {
+          "kind": "clarify",
+          "reason": "preserved-paint-with-overlay",
+          "text": "Nothing was changed. I could not safely resolve the paint-color and overlay instructions together. Please say whether the roof color should stay as it is or change, and describe the overlay separately."
+        },
+        "queue": 0,
+        "reply": "Nothing was changed. I could not safely resolve the paint-color and overlay instructions together. Please say whether the roof color should stay as it is or change, and describe the overlay separately.",
+        "error": null,
+        "zonesUnchanged": true,
+        "paintUnchanged": true,
+        "specUnchanged": true,
+        "layersUnchanged": true
+      },
+      {
+        "text": "Place matte black on the roof under a gold carbon-weave overlay, but preserve the current paint",
+        "decision": {
+          "kind": "clarify",
+          "reason": "preserved-paint-with-overlay",
+          "text": "Nothing was changed. I could not safely resolve the paint-color and overlay instructions together. Please say whether the roof color should stay as it is or change, and describe the overlay separately."
+        },
+        "queue": 0,
+        "reply": "Nothing was changed. I could not safely resolve the paint-color and overlay instructions together. Please say whether the roof color should stay as it is or change, and describe the overlay separately.",
+        "error": null,
+        "zonesUnchanged": true,
+        "paintUnchanged": true,
+        "specUnchanged": true,
+        "layersUnchanged": true
+      }
+    ],
+    "attempts": 0
+  },
+  "limits": [
+    "Private backend and frozen local UI only; no installer, live owner document or mirrored source acceptance.",
+    "First same-source reopen request rebound the owner but returned no queue; a repeated request produced a verified scoped edit and applied correctly. Fresh uncached operation revision fix W56 awaits cold native replay.",
+    "Undo returned exact red paint/spec/layer output; raw zone metadata differed only in ten missing-to-null spatialMask/patternStrengthMap fields across five default zones. Material/order/owner identity differences were not observed.",
+    "Initial source->solid roof recolor preserved finish/mask/material fields but spec preview hash changed. Subsequent owned red->green recolor showed zero spec pixel changes and zero paint pixels outside the roof.",
+    "Provider execution blocked at client and private proxy; observed attempts and proxy blocked requests remain zero."
+  ],
+  "sourceIdentity": {
+    "committedFingerprintKind": "SHA-256 of layered composite text (actual canvas line22105)",
+    "committedFingerprint": "a91984f525ff7a67763cc32962759cc56c1f908fdde4fc99827b80392e79bc33",
+    "fixtureFileSHA256": "7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf",
+    "limit": "Same visible layered composite can share this fingerprint despite changed hidden layer bytes or file metadata. W68 audit active; native stable reopen is not proof of whole-file byte identity."
+  }
+}

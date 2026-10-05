@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "paint_label": "skmodified tour/car_num_98671.tga",
+  "inspection_records": "_smart_tga_runs/cycle129_skmodified_route_feature_complete_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle129_skmodified_route_feature_complete_v1/skmodified_tour_car_num_98671/component_records.json",
+  "review_scope": "Cycle 161 SK Modified Template/Paint cleanup: retain dark/gray neutral car-template rails, window panels, and compact template details currently routed to Paint, while keeping pure-white body/livery strips as Paint hard negatives.",
+  "component_labels": [
+    {
+      "layer": "template",
+      "component_index": 1,
+      "expected_bbox": [365, 9, 371, 36],
+      "target_layer": "template",
+      "label": "long_dark_template_window_rail",
+      "note": "Long flat dark upper window/rail template strip; structural template part, not editable livery Paint."
+    },
+    {
+      "layer": "template",
+      "component_index": 4,
+      "expected_bbox": [957, 16, 27, 25],
+      "target_layer": "template",
+      "label": "pale_neutral_template_insert",
+      "note": "Small neutral pale template insert in the upper-right car-part cluster; should remain Template."
+    },
+    {
+      "layer": "template",
+      "component_index": 8,
+      "expected_bbox": [371, 73, 360, 9],
+      "target_layer": "template",
+      "label": "long_gray_template_rail",
+      "note": "Thin neutral gray rail/trim strip across the template cluster; should not be absorbed into Paint."
+    },
+    {
+      "layer": "template",
+      "component_index": 12,
+      "expected_bbox": [368, 88, 357, 24],
+      "target_layer": "template",
+      "label": "long_dark_template_lower_rail",
+      "note": "Long flat dark lower window/rail strip; structural template part, not livery Paint."
+    },
+    {
+      "layer": "template",
+      "component_index": 13,
+      "expected_bbox": [984, 106, 32, 30],
+      "target_layer": "template",
+      "label": "pale_round_template_insert",
+      "note": "Small neutral pale insert in the top-right template cluster; should stay Template."
+    },
+    {
+      "layer": "template",
+      "component_index": 14,
+      "expected_bbox": [994, 163, 24, 45],
+      "target_layer": "template",
+      "label": "vertical_gray_template_panel",
+      "note": "Compact vertical neutral gray template panel; should remain with car-template parts."
+    },
+    {
+      "layer": "template",
+      "component_index": 16,
+      "expected_bbox": [604, 586, 161, 40],
+      "target_layer": "template",
+      "label": "dark_side_window_template_panel",
+      "note": "Dark side window/structural panel currently classified as Paint; should remain Template."
+    },
+    {
+      "layer": "template",
+      "component_index": 21,
+      "expected_bbox": [665, 737, 181, 8],
+      "target_layer": "paint",
+      "label": "white_body_livery_strip_hard_negative",
+      "note": "Pure-white body/livery strip; keep as Paint and use as a hard negative for neutral strip retainers."
+    },
+    {
+      "layer": "template",
+      "component_index": 22,
+      "expected_bbox": [418, 754, 34, 2],
+      "target_layer": "paint",
+      "label": "white_body_livery_sliver_hard_negative",
+      "note": "Pure-white body/livery sliver; should stay Paint, not Template."
+    },
+    {
+      "layer": "template",
+      "component_index": 27,
+      "expected_bbox": [961, 884, 45, 126],
+      "target_layer": "template",
+      "label": "neutral_right_template_stack",
+      "note": "Right-edge neutral gray/white car-template stack; should stay Template rather than livery Paint."
+    }
+  ]
+}

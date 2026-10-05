@@ -1,0 +1,138 @@
+{
+  "version": "smart-tga-number-map-family-review-v1",
+  "review_scope": "all 20 active-learning families: every accepted family plus two nearest rejected families per untouched Cycle714 DLM paint",
+  "active_pool": "_smart_tga_runs/cycle714_map_family_active_learning/scored_pool/active_pool.json",
+  "review_sheet": "_smart_tga_runs/cycle714_map_family_active_learning/map_family_review.png",
+  "family_labels": [
+    {
+      "paint_label": "dirtlatemodel 350/car_num_296108.tga",
+      "family_id": "number-family:77f16640b5b457ab",
+      "semantic_class": "Number",
+      "review_label": "true_number_53_lower_copy_near_threshold"
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_296108.tga",
+      "family_id": "number-family:b2d2b79415f19e12",
+      "semantic_class": "Number",
+      "review_label": "true_number_53_deck_copy"
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_296108.tga",
+      "family_id": "number-family:d0b8f17d7d8e1d72",
+      "semantic_class": "Number",
+      "review_label": "true_number_53_upper_copy"
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_297710.tga",
+      "family_id": "number-family:588860ede195fc0b",
+      "semantic_class": "Number",
+      "review_label": "true_number_8_lower_copy_with_sponsors"
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_297710.tga",
+      "family_id": "number-family:74947ef55f6f8ccd",
+      "semantic_class": "Number",
+      "review_label": "true_number_8_upper_copy_with_sponsors"
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_297710.tga",
+      "family_id": "number-family:b9cc6ff2b672af61",
+      "semantic_class": "Paint",
+      "review_label": "blue_livery_swoosh_hard_negative"
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_297710.tga",
+      "family_id": "number-family:e0866a392d0fbd07",
+      "semantic_class": "Paint",
+      "review_label": "blue_red_livery_fragment_hard_negative"
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_300314.tga",
+      "family_id": "number-family:2af6aa5c1b0f1b36",
+      "semantic_class": "Number",
+      "review_label": "true_number_1_lower_copy_with_sponsors"
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_300314.tga",
+      "family_id": "number-family:3e0413ab73c996fa",
+      "semantic_class": "Number",
+      "review_label": "true_number_1_deck_copy"
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_300314.tga",
+      "family_id": "number-family:a4e5da47078a2029",
+      "semantic_class": "Sponsor",
+      "review_label": "valvoline_wordmark_large_hard_negative"
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_300314.tga",
+      "family_id": "number-family:c1029b59d0a4cf6b",
+      "semantic_class": "Sponsor",
+      "review_label": "valvoline_logo_small_hard_negative"
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_300314.tga",
+      "family_id": "number-family:f710d316e48e3ee8",
+      "semantic_class": "Number",
+      "review_label": "true_number_1_upper_copy_below_threshold"
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1261034.tga",
+      "family_id": "number-family:486e8cde97e32593",
+      "semantic_class": "Sponsor",
+      "review_label": "valvoline_wordmark_vertical_hard_negative"
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1261034.tga",
+      "family_id": "number-family:8ceeec61223e1b19",
+      "semantic_class": "Number",
+      "review_label": "true_number_1_small_copy_below_threshold"
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1261034.tga",
+      "family_id": "number-family:ab48df83ce491d43",
+      "semantic_class": "Sponsor",
+      "review_label": "cat_logo_vertical_hard_negative"
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1272196.tga",
+      "family_id": "number-family:52f6f25174e145d6",
+      "semantic_class": "Number",
+      "review_label": "true_number_52_upper_copy"
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1272196.tga",
+      "family_id": "number-family:5b29db6edcf1598c",
+      "semantic_class": "Number",
+      "review_label": "true_number_52_deck_copy"
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1272196.tga",
+      "family_id": "number-family:e61c6e1592c67257",
+      "semantic_class": "Number",
+      "review_label": "true_number_52_lower_copy_with_sponsors"
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1277704.tga",
+      "family_id": "number-family:c4912634019e9efa",
+      "semantic_class": "Number",
+      "review_label": "true_number_211_lower_copy_near_threshold"
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1277704.tga",
+      "family_id": "number-family:e586d3c592627fe6",
+      "semantic_class": "Number",
+      "review_label": "true_number_211_upper_copy"
+    }
+  ],
+  "reviewed_summary": {
+    "number_families": 14,
+    "hard_negative_families": 6,
+    "accepted_number_families": 11,
+    "accepted_hard_negative_families": 4,
+    "below_threshold_number_families": 3,
+    "below_threshold_hard_negative_families": 2
+  },
+  "casts_votes": false,
+  "ownership_authority": false
+}

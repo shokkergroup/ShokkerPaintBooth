@@ -2,7 +2,7 @@
   "name": "Rolling Smoke Burnout",
   "description": "Heavy burnout aesthetic — hot-rod body with smoke wash texture over the rear quarters, tire-scuff black on lower rockers, and candy flame accent. Built for the cloud.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "muscle_car, drag_car, g_body, fox_body",
   "notes": "Smoke texture works best when the car shape has visible rear quarter panels. Crank Smoke Wash intensity for a just-finished-a-3rd-gear-burnout look. Drop to 50 for morning cars-and-coffee.",
   "zones": [

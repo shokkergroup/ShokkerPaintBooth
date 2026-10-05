@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 350/car_num_348000.tga",
+  "inspection_records": "_smart_tga_runs/cycle654_dlm_batch_unique/inspection_records.json",
+  "review_scope": "Cycle 654 manual source and all-owner sheet review of every emitted suspect bbox.",
+  "component_labels": [
+    {"layer":"numbers","component_index":16,"expected_bbox":[252,913,340,87],"target_layer":"sponsors","label":"sponsor_wordmark","note":"Large inverted BRIETIEN/Wilchill sponsor panel, not 97."},
+    {"layer":"numbers","component_index":13,"expected_bbox":[18,306,174,47],"target_layer":"sponsors","label":"sponsor_wordmark","note":"Greto sponsor wordmark, not 97."},
+    {"layer":"sponsors","component_index":6,"expected_bbox":[545,432,235,178],"target_layer":"paint","label":"paint_livery_panel","note":"Large peach/white livery body panel."},
+    {"layer":"sponsors","component_index":1,"expected_bbox":[1001,118,23,586],"target_layer":"template","label":"template_edge_strip","note":"Tall fixed right-edge UV/template strip."},
+    {"layer":"paint","component_index":51,"expected_bbox":[726,511,4,38],"target_layer":"sponsors","label":"sponsor_wordmark_fragment","note":"Thin MEDIA wordmark fragment."},
+    {"layer":"paint","component_index":46,"expected_bbox":[728,493,3,17],"target_layer":"sponsors","label":"sponsor_wordmark_fragment","note":"Thin adjacent MEDIA wordmark fragment."}
+  ]
+}

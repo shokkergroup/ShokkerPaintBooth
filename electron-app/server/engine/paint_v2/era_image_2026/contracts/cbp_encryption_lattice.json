@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_encryption_lattice",
+  "display_name": "Netrun: Encryption Lattice",
+  "promise": "Tiny lime interlocking hooks form an irregular lattice over violet ceramic.",
+  "carrier_grammar": "Tiny lime interlocking hooks form an irregular lattice over violet ceramic. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for violet ceramic backing, lime bracket hooks, turquoise cross locks, orange broken notches, black narrow voids, pale contact glints is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny lime interlocking hooks form an irregular lattice over violet ceramic. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_encryption_lattice.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "violet ceramic backing",
+      "role": "Actual shared paint and spec geometry: violet ceramic backing"
+    },
+    {
+      "name": "lime bracket hooks",
+      "role": "Actual shared paint and spec geometry: lime bracket hooks"
+    },
+    {
+      "name": "turquoise cross locks",
+      "role": "Actual shared paint and spec geometry: turquoise cross locks"
+    },
+    {
+      "name": "orange broken notches",
+      "role": "Actual shared paint and spec geometry: orange broken notches"
+    },
+    {
+      "name": "black narrow voids",
+      "role": "Actual shared paint and spec geometry: black narrow voids"
+    },
+    {
+      "name": "pale contact glints",
+      "role": "Actual shared paint and spec geometry: pale contact glints"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "violet ceramic backing",
+      "lime bracket hooks",
+      "turquoise cross locks",
+      "orange broken notches",
+      "black narrow voids",
+      "pale contact glints"
+    ],
+    "R": [
+      "violet ceramic backing",
+      "lime bracket hooks",
+      "turquoise cross locks",
+      "orange broken notches",
+      "black narrow voids",
+      "pale contact glints"
+    ],
+    "Cc": [
+      "violet ceramic backing",
+      "lime bracket hooks",
+      "turquoise cross locks",
+      "orange broken notches",
+      "black narrow voids",
+      "pale contact glints"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_firewall_grid",
+      "difference": "This finish uses Dense fine lime interlocking bracket hooks with violet ceramic backing, turquoise cross-lock pins, orange broken notches, black narrow voids and pale contact glints. Irregular interlocked hook maze at micro scale, not a broad circuit board, no repeated square grid or text.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_root_access",
+      "difference": "This finish uses Dense fine lime interlocking bracket hooks with violet ceramic backing, turquoise cross-lock pins, orange broken notches, black narrow voids and pale contact glints. Irregular interlocked hook maze at micro scale, not a broad circuit board, no repeated square grid or text.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "violet ceramic backing is visible in the authored geometry",
+      "lime bracket hooks is visible in the authored geometry",
+      "turquoise cross locks is visible in the authored geometry",
+      "orange broken notches is visible in the authored geometry",
+      "black narrow voids is visible in the authored geometry",
+      "pale contact glints is visible in the authored geometry"
+    ],
+    "source_sha256": "71c685a295d22c9495d937866e8df1e40d25d90d020c4f120f303a213c8559bf",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_encryption_lattice-authored-Tiny lime interlocking hooks form an irregular lattice over violet ceramic. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_encryption_lattice-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 82.1,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "a6440f0974add1e5a9dfe2a607d489f404345a98a03e6647dd5a5df41287c2db"
+}

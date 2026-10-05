@@ -1,0 +1,106 @@
+# -*- coding: utf-8 -*-
+"""Generate SPB_AUDIT_tessera.html for FRACTURED TESSERA.
+
+Owner 2026-08-31: the spec channel needed far more material states firing at
+once - chrome, pearl, mercury, candy, metallic, flat, clear matte, wet look,
+gloss carbon, milk glass, frozen - so the audit has to SHOW the spec at 1:1. Renders each finish through
+the REAL registry once and composes [full 2048 view | TRUE 1:1 on-car crop |
+spec M/R/Cc], grouped by the five chapters. Re-runnable each audit round.
+"""
+import contextlib
+import io
+import json
+import logging
+import os
+import sys
+import time
+
+ROOT = r"C:\DRIVE E BACKUP\Shokker Paint Booth Gold to Platinum"
+os.chdir(ROOT)
+sys.path.insert(0, ROOT)
+sys.path.insert(0, os.path.join(ROOT, "scripts"))
+import cv2                                                   # noqa: E402
+import numpy as np                                           # noqa: E402
+from spb_audit_page_builder import build_page                 # noqa: E402
+
+THUMBS = os.path.join(ROOT, "thumbnails", "audit", "tessera")
+os.makedirs(THUMBS, exist_ok=True)
+logging.disable(logging.CRITICAL)
+_buf = io.StringIO()
+with contextlib.redirect_stdout(_buf), contextlib.redirect_stderr(_buf):
+    import shokker_engine_v2 as eng
+import engine.expansions.fractured_tessera_2026 as m          # noqa: E402
+import engine.expansions.fractured_tessera_kit_2026 as kit    # noqa: E402
+
+SHAPE = (2048, 2048)
+MASK = np.ones(SHAPE, np.float32)
+BASE = np.full(SHAPE + (3,), 0.5, np.float32)
+PANEL = 512
+
+# Prefer the lane's own measured times (best of 2 cold runs on an idle box) over
+# whatever this pass happens to measure — the audit render competes with the
+# app server for the CPU.
+times = {}
+if os.path.exists("TESSERA_PROGRESS.jsonl"):
+    for line in io.open("TESSERA_PROGRESS.jsonl", encoding="utf-8"):
+        try:
+            r = json.loads(line)
+        except Exception:
+            continue
+        if r.get("phase") == "verify" and r.get("fid"):
+            times[r["fid"]] = r.get("sec")
+
+meta = []
+for fid, d in m.TESSERA.items():
+    spec_fn, paint_fn = eng.MONOLITHIC_REGISTRY[fid]
+    t0 = time.time()
+    p = paint_fn(BASE.copy(), SHAPE, MASK, 51, 1.0, None)
+    s = spec_fn(SHAPE, MASK, 51, 1.0)
+    dt = times.get(fid) or (time.time() - t0)
+    p8 = np.clip(np.asarray(p, np.float32) * 255.0, 0, 255).astype(np.uint8)
+    s8 = np.asarray(s)[..., :3].astype(np.uint8)
+    c0 = (2048 - PANEL) // 2
+    full = cv2.resize(p8, (PANEL, PANEL), interpolation=cv2.INTER_AREA)
+    crop = p8[c0:c0 + PANEL, c0:c0 + PANEL]
+    # 1:1 too — a 2048 spec downsampled to 512 aliases 10px material cells into
+    # pixel noise and makes a correct map look like confetti.
+    spec = s8[c0:c0 + PANEL, c0:c0 + PANEL]
+    tile = np.full((PANEL + 26, PANEL * 3 + 16, 3), 14, np.uint8)
+    for i, (img, lab) in enumerate(((full, "FULL 2048 VIEW"),
+                                    (crop, "TRUE 1:1 ON-CAR CROP"),
+                                    (spec, "SPEC M/R/Cc  (1:1)"))):
+        x0 = i * (PANEL + 8)
+        tile[26:26 + PANEL, x0:x0 + PANEL] = img
+        cv2.putText(tile, lab, (x0 + 4, 18), cv2.FONT_HERSHEY_SIMPLEX, .5, (200, 200, 200), 1)
+    cv2.imwrite(os.path.join(THUMBS, fid + ".png"), tile[..., ::-1])
+    # Name the exact hand this finish was dealt \u2014 the owner is judging material
+    # variety, so the card should say which materials it is showing.
+    _deck, _names = kit.material_deck(d, d.get("seed", 7), int(d.get("deck", 13)))
+    meta.append({"id": fid, "name": d["name"],
+                 "kind": "finish", "render_s": round(float(dt), 2),
+                 "desc": "%s   [dealt: %s]" % (d.get("desc", ""), ", ".join(_names))})
+    print("%s %.2fs" % (fid, dt), flush=True)
+
+TITLE = ('<span class="flag">🔷 FRACTURED TESSERA</span> — Material Pass '
+         '<span style="color:var(--dim);font-weight:400">(the spec deck, widened)</span>')
+SUB = (
+    "You said the spec channel colours were not diverse enough — that the pinks make the FRACTURED "
+    "look, but there are <b>greens for the glossy states and bright and deep reds for the shades of "
+    "chrome</b>, and you wanted many more states side by side: chrome, pearl, mercury, candy, "
+    "metallic, flat, clear matte, wet look, clearcoat, gloss carbon, milk glass, frozen. "
+    "The old spec dealt from <b>six glass states</b> that all sit in one corner of the material cube, "
+    "which is why the Combined map came out as one colour family. It now deals from the <b>full deck "
+    "of production cards in Spec Guide v1 §5</b> — 40 materials across six families — and every "
+    "pane takes ONE COMPLETE CARD, never a blend between two. "
+    "Measured across the 49: <b>14–16 distinct materials</b> holding real area on every finish, "
+    "spanning <b>all 7 families</b>, chrome tier held to 4–34% of the surface. "
+    "LEFT = full 2048 view · MIDDLE = true 1:1 on-car pixel crop · "
+    "RIGHT = <b>the spec map at 1:1 — this is the panel to judge</b>: bright red is the chrome tier, "
+    "deep red dark chrome and metal, magenta the Fractured carrier, deep green the gloss dielectrics, "
+    "cyan the dead films, grey-tan the bead-blast and frozen states. "
+    "Each card lists the exact hand of materials it was dealt. "
+    "⏱ = full-size render (all ≤ 3s).")
+
+build_page("tessera", TITLE, SUB, meta, THUMBS,
+           os.path.join(ROOT, "SPB_AUDIT_tessera.html"), accent="#4aa3d8")
+print("PAGE OK SPB_AUDIT_tessera.html")

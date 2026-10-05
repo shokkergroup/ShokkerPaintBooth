@@ -1,0 +1,2451 @@
+{
+  "title": "AI helper offline coverage audit",
+  "generated_at": "2026-10-04T04:48:21.441Z",
+  "mode": "diagnostic only; no provider, browser, live paint, or production rebuild used",
+  "fixture": "tests/fixtures/ai_offline_coverage_20261003.json",
+  "fixture_sha256": "e8d76476621531983f0acb0154748d93cbd11ca5af78220b2ffaa15ff18f320f",
+  "source_hashes": {
+    "js/spb-pro-ai.js": "b07c905176c20b89f089172bd297ed655279204562c8f2d94ddbcbee10b0bc96",
+    "js/spb-pro-edit.js": "a328a1ef5d8293e2f8cfc8a27f3e0c868a04842a07ee39243cbd0bd34513bda7",
+    "js/spb-pro-design.js": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8",
+    "js/spb-pro-advisor.js": "e76c44edb5f613b2a6d5faf768c130f31097e58dc8c80c6d7e4c8907b513ec7e"
+  },
+  "routing_evidence": {
+    "offline_gate": "js/spb-pro-ai.js:1365-1384",
+    "ask_gate": "js/spb-pro-ai.js:1820-1822",
+    "extracted_function_sha256": "22da61ee48adaea91c4005e9c48c443af7ad8417dce5fdaecea51c0a0ae3dde6",
+    "offline_ask_priority_function_sha256": "02d14b6ca35519bf491cd21f6de2d3fd683146552a882ea58438bba710b24e42",
+    "offline_ask_priority": "Protected-part clarification first; then D.compoundPlan; then eligible E edit plan (unless editYieldsToStack); then advisor; otherwise offlineAskCore, whose order is look request, offlineSpec, offlinePart, offlineElement, offlinePlan.",
+    "setup_fallback": "js/spb-pro-ai.js:1671 and :2205 tell unconfigured users to paste an OpenRouter key when no local branch claims the ask.",
+    "provider_calls": 0
+  },
+  "route_counts": {
+    "provider-would-be-selected": 24
+  },
+  "prior_summary_preserved": {
+    "meaning": "The initial-pass summary is preserved here as a historical baseline. Its conclusion is superseded by the corrected oracle below; cases in this report show the rerun against the current source hash.",
+    "route_counts": {
+      "offline": 12,
+      "provider-would-be-selected": 12
+    },
+    "original_conclusion": "No fully scoped, complete supported long request was proven to route provider-ward solely because of length.",
+    "original_spb_pro_ai_sha256": "870b7a7b43672159df537c4f6d2e0d5dbbcd11e54cecd22651cad0d4cd20a1ca",
+    "current_spb_pro_ai_sha256": "b07c905176c20b89f089172bd297ed655279204562c8f2d94ddbcbee10b0bc96",
+    "current_route_counts": {
+      "provider-would-be-selected": 24
+    }
+  },
+  "corrected_scope_audit": {
+    "fixture_expectation_map": "Manual mapping from frozen fixture intent: S01 hood-only; S02 roof-only; S03 whole-car; S04 whole-car plus hood; S05 hood plus roof with other panels excluded; S06 final hood-only; S07 hood-only while roof preserved; S08 whole-car base plus roof layer; U01 animation/true emission capability limit; U02 missing-photo clarification; U03 email/save unsupported; U04 physical moving display clarification.",
+    "proven_length_only_offline_plans": [
+      {
+        "id": "S01-long",
+        "parser": "D.offlinePart",
+        "observed_scopes": [
+          "hood"
+        ],
+        "observed_finish": "base::matte",
+        "observed_color": "#1450b4",
+        "judgment": "complete for hood-only matte-blue request; no other region is in the executable plan"
+      },
+      {
+        "id": "S05-long",
+        "parser": "D.offlinePart",
+        "observed_scopes": [
+          "hood",
+          "roof"
+        ],
+        "observed_finishes": [
+          "base::gloss",
+          "base::gloss"
+        ],
+        "observed_colors": [
+          "#d7a72b",
+          "#1450b4"
+        ],
+        "judgment": "complete for hood-gold and roof-blue with other panels excluded; executable plan contains only the two requested parts"
+      }
+    ],
+    "formerly_misjudged_scope_case": {
+      "id": "S01-short",
+      "old_judgment": "misdirected/partial plan (incorrectly checked roof)",
+      "corrected_judgment": "full hood-only plan; the fixture asks for hood and compound plan region is hood"
+    },
+    "partial_or_unsupported_long_candidates": [
+      {
+        "id": "S04-long",
+        "judgment": "partial: offlinePart supplies hood snake request but misses required whole-car blue base"
+      },
+      {
+        "id": "S06-long",
+        "judgment": "partial: offlinePart produces hood red, while the final correction requires matte black"
+      },
+      {
+        "id": "S08-long",
+        "judgment": "partial: offlinePart produces roof matte black, missing whole-car matte-black base and blue carbon roof layer"
+      },
+      {
+        "id": "S02-long",
+        "judgment": "unsafe/overbroad candidate: offlinePart includes hood, roof, left side, and right side despite only-there roof scope; offline route is claimed by advisor/edit path, so do not count as complete"
+      },
+      {
+        "id": "S07-short",
+        "judgment": "unsafe/overbroad candidate: compound plan region includes both hood and roof though roof must stay blue"
+      }
+    ],
+    "conclusion": "Corrected oracle proves two genuinely supported long requests (S01-long and S05-long) are sent provider-ward under configured offline-first routing solely because the <=30 compound-plan / generic word gate rejects them, although offlineAskCore has exact executable D.offlinePart plans. This supports a narrow eligibility correction after safety validation: let a fully scoped, instruction-complete offlinePart plan claim supported long asks; do not remove the general length guard based on this evidence.",
+    "provider_calls": 0
+  },
+  "notes": [
+    "Initial-pass baseline (now superseded by corrected scope oracle below): 12 offline / 12 provider-ward, with the original conclusion that no fully scoped long request was proven to route provider-ward solely due to length. That conclusion was unsupported because the oracle failed to inspect D.offlinePart plans and inferred hood requests as roof requests.",
+    "Separate offline partials: S02-long produces a recommendation targeting the sides for a roof request; S03-long produces an unresolved/partial edit parse and an advisor stripe recommendation for a whole-car base request. Offline eligibility means a local branch claims the prompt, not that its suggested action fully satisfies intent.",
+    "Fallback copy opportunity: js/spb-pro-ai.js:1671 and :2205 ask users without configuration to paste an OpenRouter key. Clarify that local paint edits and clarification can work without a key, and mention connecting a key only for image interpretation or broader requests.",
+    "Parent-supplied bounded finding (not independently exercised here): js/spb-pro-carmap.js build00 lines 520-522 checks only for window.SpbAI before the default SpbProCar.ensure() labels path calls SpbAI.chat; cached configured:false prevented a network call in the reported audit. ensure(false) avoids that chat call. Review internal offline callers for default ensure() use separately.",
+    "Interpretation is diagnostic, not an acceptance gate: this audit runs parsers and actual card application plans against stable helper state; it does not call providers, render a car, or verify live app routing beyond the extracted offline gate and inspected ask gate."
+  ],
+  "cases": [
+    {
+      "id": "S01-short",
+      "pair": "S01",
+      "variant": "short",
+      "ask": "Paint only the hood matte blue.",
+      "word_count": 6,
+      "intended_scope": "part-only",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "misdirected/partial plan",
+      "scopeJudgment": "misdirected/partial plan",
+      "directSignals": {
+        "compoundPlan": {
+          "kind": "compound",
+          "zones": [
+            {
+              "name": "Matte blue hood",
+              "scope": "hood",
+              "finish": "base::matte"
+            }
+          ],
+          "layers": [
+            {}
+          ]
+        },
+        "editPlan": {
+          "kind": "ops",
+          "unknown": [],
+          "ops": [
+            {
+              "target": {
+                "kind": "part",
+                "part": "hood",
+                "at": 16
+              }
+            }
+          ]
+        },
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": null,
+        "offlineElement": true,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "S01-long",
+      "pair": "S01",
+      "variant": "long",
+      "ask": "For my next track day, please paint only the hood matte blue. Leave every other panel exactly as it is because I already like the current body color and do not want the rest changed.",
+      "word_count": 35,
+      "intended_scope": "part-only",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "unsupported/no complete offline plan demonstrated",
+      "scopeJudgment": "no mutation plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": null,
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": {
+          "zones": [
+            {
+              "name": "Blue hood",
+              "scope": "hood",
+              "finish": "base::matte"
+            }
+          ],
+          "layers": []
+        },
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "S02-short",
+      "pair": "S02",
+      "variant": "short",
+      "ask": "Make the roof pearl gold with fine hex cells only there.",
+      "word_count": 11,
+      "intended_scope": "part-only",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "full part-only plan",
+      "scopeJudgment": "full part-only plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": null,
+        "advisorIntent": {
+          "kind": "recommend",
+          "stack": true,
+          "target": "the roof"
+        },
+        "advisorAnswer": {
+          "kind": "stack",
+          "text": "A layered look: 3 layers in one zone on the roof:\n- **Base**: CF: Champagne Frost [brightness -24] — Pale champagne gold and cream pearl flake, bright and soft like frosted celebration paint. (high gloss, high metal); brightness -24 toward gold\n- **Pattern**: Hex Mesh — paint pattern on top: Dense fine honeycomb mesh with bright glowing cell edges, high contrast, tightly packed… — x0.42 size, 65% strength; pairs with matte black, gunmetal\n- **Shine**: Pearl Micro — shine texture (colours stay): Smooth undulating mother-of-pearl iridescence, soft micro sparkle, no anisotropy; gentle… — x1 size, 70% strength; pairs with gloss, metallic\nSize: Hex Mesh at \"fine\" = x0.42 (0.6 of its normal x0.7).\n2 alternative stacks below. **Use this kit** puts every layer on the roof in one step (one Undo); nothing changes until you press it.",
+          "target": {
+            "id": "roof",
+            "label": "the roof"
+          },
+          "cards": [
+            {
+              "key": "monolithic::cf_champagne_frost",
+              "target": {
+                "id": "stack_scope",
+                "label": "the roof",
+                "region": {
+                  "part": "roof"
+                }
+              },
+              "apply": {
+                "label": "the roof",
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Roof CF: Champagne Frost",
+                      "region": {
+                        "part": "roof"
+                      },
+                      "finish": "monolithic::cf_champagne_frost",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "hex_mesh",
+                        "opacity": 65,
+                        "scale": 0.42
+                      },
+                      "spec_patterns": [
+                        {
+                          "id": "pearl_micro",
+                          "opacity": 70,
+                          "scale": 1
+                        }
+                      ],
+                      "brightness": -24
+                    },
+                    "scope": "roof"
+                  }
+                ],
+                "scopes": [
+                  "roof"
+                ]
+              }
+            },
+            {
+              "key": "pattern::hex_mesh",
+              "target": {
+                "id": "stack_scope",
+                "label": "the roof",
+                "region": {
+                  "part": "roof"
+                }
+              },
+              "apply": {
+                "label": "the roof",
+                "steps": [],
+                "scopes": []
+              }
+            },
+            {
+              "key": "spec::pearl_micro",
+              "target": {
+                "id": "stack_scope",
+                "label": "the roof",
+                "region": {
+                  "part": "roof"
+                }
+              },
+              "apply": {
+                "label": "the roof",
+                "steps": [],
+                "scopes": []
+              }
+            },
+            {
+              "key": "base::pearl",
+              "target": {
+                "id": "stack_scope",
+                "label": "the roof",
+                "region": {
+                  "part": "roof"
+                }
+              },
+              "apply": {
+                "label": "the roof",
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Roof Pearl",
+                      "region": {
+                        "part": "roof"
+                      },
+                      "finish": "base::pearl",
+                      "color": "#d7a72b",
+                      "pattern": {
+                        "id": "graphene_hex",
+                        "opacity": 65,
+                        "scale": 0.51
+                      },
+                      "spec_patterns": [
+                        {
+                          "id": "mother_of_pearl_inlay",
+                          "opacity": 70,
+                          "scale": 1
+                        }
+                      ]
+                    },
+                    "scope": "roof"
+                  }
+                ],
+                "scopes": [
+                  "roof"
+                ]
+              }
+            },
+            {
+              "key": "pattern::graphene_hex",
+              "target": {
+                "id": "stack_scope",
+                "label": "the roof",
+                "region": {
+                  "part": "roof"
+                }
+              },
+              "apply": {
+                "label": "the roof",
+                "steps": [],
+                "scopes": []
+              }
+            },
+            {
+              "key": "spec::mother_of_pearl_inlay",
+              "target": {
+                "id": "stack_scope",
+                "label": "the roof",
+                "region": {
+                  "part": "roof"
+                }
+              },
+              "apply": {
+                "label": "the roof",
+                "steps": [],
+                "scopes": []
+              }
+            },
+            {
+              "key": "monolithic::cc_magma_freeze",
+              "target": {
+                "id": "stack_scope",
+                "label": "the roof",
+                "region": {
+                  "part": "roof"
+                }
+              },
+              "apply": {
+                "label": "the roof",
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Roof Color Clash: Magma Freeze",
+                      "region": {
+                        "part": "roof"
+                      },
+                      "finish": "monolithic::cc_magma_freeze",
+                      "color": "finish",
+                      "pattern": {
+                        "id": "chainmail_hex",
+                        "opacity": 65,
+                        "scale": 0.42
+                      },
+                      "spec_patterns": [
+                        {
+                          "id": "spec_marble_flow_pearl",
+                          "opacity": 70,
+                          "scale": 1
+                        }
+                      ],
+                      "hue": -12,
+                      "brightness": -52
+                    },
+                    "scope": "roof"
+                  }
+                ],
+                "scopes": [
+                  "roof"
+                ]
+              }
+            },
+            {
+              "key": "pattern::chainmail_hex",
+              "target": {
+                "id": "stack_scope",
+                "label": "the roof",
+                "region": {
+                  "part": "roof"
+                }
+              },
+              "apply": {
+                "label": "the roof",
+                "steps": [],
+                "scopes": []
+              }
+            },
+            {
+              "key": "spec::spec_marble_flow_pearl",
+              "target": {
+                "id": "stack_scope",
+                "label": "the roof",
+                "region": {
+                  "part": "roof"
+                }
+              },
+              "apply": {
+                "label": "the roof",
+                "steps": [],
+                "scopes": []
+              }
+            }
+          ],
+          "kits": [
+            {
+              "name": "Stack",
+              "items": [
+                {
+                  "role": "Base",
+                  "key": "monolithic::cf_champagne_frost",
+                  "target": {
+                    "id": "stack_scope",
+                    "label": "the roof",
+                    "region": {
+                      "part": "roof"
+                    }
+                  },
+                  "apply": {
+                    "label": "the roof",
+                    "steps": [
+                      {
+                        "tool": "add_zone",
+                        "args": {
+                          "name": "Roof CF: Champagne Frost",
+                          "region": {
+                            "part": "roof"
+                          },
+                          "finish": "monolithic::cf_champagne_frost",
+                          "color": "finish",
+                          "pattern": {
+                            "id": "hex_mesh",
+                            "opacity": 65,
+                            "scale": 0.42
+                          },
+                          "spec_patterns": [
+                            {
+                              "id": "pearl_micro",
+                              "opacity": 70,
+                              "scale": 1
+                            }
+                          ],
+                          "brightness": -24
+                        },
+                        "scope": "roof"
+                      }
+                    ],
+                    "scopes": [
+                      "roof"
+                    ]
+                  }
+                },
+                {
+                  "role": "Pattern (x0.42, 65%)",
+                  "key": "pattern::hex_mesh",
+                  "target": {
+                    "id": "stack_scope",
+                    "label": "the roof",
+                    "region": {
+                      "part": "roof"
+                    }
+                  },
+                  "apply": {
+                    "label": "the roof",
+                    "steps": [],
+                    "scopes": []
+                  }
+                },
+                {
+                  "role": "Shine (x1, 70%)",
+                  "key": "spec::pearl_micro",
+                  "target": {
+                    "id": "stack_scope",
+                    "label": "the roof",
+                    "region": {
+                      "part": "roof"
+                    }
+                  },
+                  "apply": {
+                    "label": "the roof",
+                    "steps": [],
+                    "scopes": []
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Alt stack 1",
+              "items": [
+                {
+                  "role": "Base",
+                  "key": "base::pearl",
+                  "target": {
+                    "id": "stack_scope",
+                    "label": "the roof",
+                    "region": {
+                      "part": "roof"
+                    }
+                  },
+                  "apply": {
+                    "label": "the roof",
+                    "steps": [
+                      {
+                        "tool": "add_zone",
+                        "args": {
+                          "name": "Roof Pearl",
+                          "region": {
+                            "part": "roof"
+                          },
+                          "finish": "base::pearl",
+                          "color": "#d7a72b",
+                          "pattern": {
+                            "id": "graphene_hex",
+                            "opacity": 65,
+                            "scale": 0.51
+                          },
+                          "spec_patterns": [
+                            {
+                              "id": "mother_of_pearl_inlay",
+                              "opacity": 70,
+                              "scale": 1
+                            }
+                          ]
+                        },
+                        "scope": "roof"
+                      }
+                    ],
+                    "scopes": [
+                      "roof"
+                    ]
+                  }
+                },
+                {
+                  "role": "Pattern (x0.51, 65%)",
+                  "key": "pattern::graphene_hex",
+                  "target": {
+                    "id": "stack_scope",
+                    "label": "the roof",
+                    "region": {
+                      "part": "roof"
+                    }
+                  },
+                  "apply": {
+                    "label": "the roof",
+                    "steps": [],
+                    "scopes": []
+                  }
+                },
+                {
+                  "role": "Shine (x1, 70%)",
+                  "key": "spec::mother_of_pearl_inlay",
+                  "target": {
+                    "id": "stack_scope",
+                    "label": "the roof",
+                    "region": {
+                      "part": "roof"
+                    }
+                  },
+                  "apply": {
+                    "label": "the roof",
+                    "steps": [],
+                    "scopes": []
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Alt stack 2",
+              "items": [
+                {
+                  "role": "Base",
+                  "key": "monolithic::cc_magma_freeze",
+                  "target": {
+                    "id": "stack_scope",
+                    "label": "the roof",
+                    "region": {
+                      "part": "roof"
+                    }
+                  },
+                  "apply": {
+                    "label": "the roof",
+                    "steps": [
+                      {
+                        "tool": "add_zone",
+                        "args": {
+                          "name": "Roof Color Clash: Magma Freeze",
+                          "region": {
+                            "part": "roof"
+                          },
+                          "finish": "monolithic::cc_magma_freeze",
+                          "color": "finish",
+                          "pattern": {
+                            "id": "chainmail_hex",
+                            "opacity": 65,
+                            "scale": 0.42
+                          },
+                          "spec_patterns": [
+                            {
+                              "id": "spec_marble_flow_pearl",
+                              "opacity": 70,
+                              "scale": 1
+                            }
+                          ],
+                          "hue": -12,
+                          "brightness": -52
+                        },
+                        "scope": "roof"
+                      }
+                    ],
+                    "scopes": [
+                      "roof"
+                    ]
+                  }
+                },
+                {
+                  "role": "Pattern (x0.42, 65%)",
+                  "key": "pattern::chainmail_hex",
+                  "target": {
+                    "id": "stack_scope",
+                    "label": "the roof",
+                    "region": {
+                      "part": "roof"
+                    }
+                  },
+                  "apply": {
+                    "label": "the roof",
+                    "steps": [],
+                    "scopes": []
+                  }
+                },
+                {
+                  "role": "Shine (x1, 70%)",
+                  "key": "spec::spec_marble_flow_pearl",
+                  "target": {
+                    "id": "stack_scope",
+                    "label": "the roof",
+                    "region": {
+                      "part": "roof"
+                    }
+                  },
+                  "apply": {
+                    "label": "the roof",
+                    "steps": [],
+                    "scopes": []
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "offlinePart": {
+          "zones": [
+            {
+              "name": "Gold roof",
+              "scope": "roof",
+              "finish": "base::gloss"
+            }
+          ],
+          "layers": []
+        },
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "S02-long",
+      "pair": "S02",
+      "variant": "long",
+      "ask": "For the next version of this design, make the roof pearl gold with fine hex cells only there. Keep the hood, doors, and every other painted surface as they currently are.",
+      "word_count": 31,
+      "intended_scope": "part-only",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "recommendation-only: misdirected/partial plan",
+      "scopeJudgment": "misdirected/partial plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": {
+          "kind": "ask",
+          "unknown": [],
+          "ops": []
+        },
+        "advisorIntent": {
+          "kind": "recommend",
+          "stack": false,
+          "target": "the sides"
+        },
+        "advisorAnswer": {
+          "kind": "recommend",
+          "text": "For the sides: a few directions that work on an existing scheme. Your body is Gloss (high gloss). I searched the whole catalogue and picked shine-only options that keep your paint, complete looks whose palette suits your colours. Swatches are shown on gold.",
+          "target": {
+            "id": "sides",
+            "label": "the sides"
+          },
+          "cards": [
+            {
+              "key": "base::f_pearl",
+              "apply": {
+                "label": "the sides",
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Sides Pearl",
+                      "region": {
+                        "part": [
+                          "left side",
+                          "right side"
+                        ]
+                      },
+                      "finish": "base::f_pearl",
+                      "color": "#6fb7e9"
+                    },
+                    "scope": "left side+right side"
+                  }
+                ],
+                "scopes": [
+                  "left side+right side"
+                ]
+              }
+            },
+            {
+              "key": "base::pearl",
+              "apply": {
+                "label": "the sides",
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Sides Pearl",
+                      "region": {
+                        "part": [
+                          "left side",
+                          "right side"
+                        ]
+                      },
+                      "finish": "base::pearl",
+                      "color": "#6fb7e9"
+                    },
+                    "scope": "left side+right side"
+                  }
+                ],
+                "scopes": [
+                  "left side+right side"
+                ]
+              }
+            },
+            {
+              "key": "monolithic::halo_hex_chrome",
+              "apply": {
+                "label": "the sides",
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Sides Halo Hex Chrome",
+                      "region": {
+                        "part": [
+                          "left side",
+                          "right side"
+                        ]
+                      },
+                      "finish": "monolithic::halo_hex_chrome",
+                      "color": "#6fb7e9"
+                    },
+                    "scope": "left side+right side"
+                  }
+                ],
+                "scopes": [
+                  "left side+right side"
+                ]
+              }
+            },
+            {
+              "key": "base::efx_nacre",
+              "apply": {
+                "label": "the sides",
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Sides Nacre",
+                      "region": {
+                        "part": [
+                          "left side",
+                          "right side"
+                        ]
+                      },
+                      "finish": "base::efx_nacre",
+                      "color": "#6fb7e9"
+                    },
+                    "scope": "left side+right side"
+                  }
+                ],
+                "scopes": [
+                  "left side+right side"
+                ]
+              }
+            },
+            {
+              "key": "base::dealer_pearl",
+              "apply": {
+                "label": "the sides",
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Sides Dealer Pearl",
+                      "region": {
+                        "part": [
+                          "left side",
+                          "right side"
+                        ]
+                      },
+                      "finish": "base::dealer_pearl",
+                      "color": "finish"
+                    },
+                    "scope": "left side+right side"
+                  }
+                ],
+                "scopes": [
+                  "left side+right side"
+                ]
+              }
+            }
+          ],
+          "kits": []
+        },
+        "offlinePart": {
+          "zones": [
+            {
+              "name": "Gold hood",
+              "scope": "hood",
+              "finish": "base::gloss"
+            },
+            {
+              "name": "Gold roof",
+              "scope": "roof",
+              "finish": "base::gloss"
+            },
+            {
+              "name": "Gold left side",
+              "scope": "left side",
+              "finish": "base::gloss"
+            },
+            {
+              "name": "Gold right side",
+              "scope": "right side",
+              "finish": "base::gloss"
+            }
+          ],
+          "layers": []
+        },
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "S03-short",
+      "pair": "S03",
+      "variant": "short",
+      "ask": "Set the whole car to silver.",
+      "word_count": 6,
+      "intended_scope": "whole-car",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "unsupported/no complete offline plan demonstrated",
+      "scopeJudgment": "no mutation plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": null,
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": {
+          "zones": [
+            {
+              "name": "Silver body",
+              "scope": "whole-body",
+              "finish": "base::gloss"
+            }
+          ],
+          "layers": []
+        },
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "S03-long",
+      "pair": "S03",
+      "variant": "long",
+      "ask": "For a clean new look before the weekend, set the whole car to silver. Please apply the same silver base across every painted body panel and do not add any stripes or patterns.",
+      "word_count": 33,
+      "intended_scope": "whole-car",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "full whole-car plan",
+      "scopeJudgment": "full whole-car plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": {
+          "kind": "ask",
+          "unknown": [],
+          "ops": []
+        },
+        "advisorIntent": {
+          "kind": "kit",
+          "stack": false,
+          "target": "the stripes"
+        },
+        "advisorAnswer": {
+          "kind": "kit",
+          "text": "Here are 3 finish kits for your whole car (body + stripes). In each kit the accents have a different shine from the body, the numbers stay plain, and no finish is used twice across the kits. A texture only changes the shine pattern: your colours stay. **Use this kit** applies the whole kit in one step (one Undo).\n- **Classic**: Body Wet Look, Stripes Satin. Proven finishes: calm, clean and easy to read.\n- **Premium**: Body Pearl, Stripes Brushed, Texture (hood) Carbon 2×2 Twill. Richer materials: pearl, metal and candy depth, still tasteful, plus a fine shine texture on the hood.\n- **Bold**: Body Metallic, Stripes Anodized, Hood (hero) Chameleon Fire, Texture (roof) Liquid Metal. A statement: stronger finishes, a complete-look hero panel on the hood and a texture on the roof.",
+          "target": {
+            "id": "body",
+            "label": "the body"
+          },
+          "cards": [
+            {
+              "key": "base::wet_look",
+              "target": {
+                "id": "body",
+                "label": "the body"
+              },
+              "apply": {
+                "label": "the body",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "base::wet_look"
+                    },
+                    "scope": "whole-body"
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "base::wet_look",
+                      "color": "source"
+                    },
+                    "scope": "whole-body"
+                  }
+                ],
+                "scopes": [
+                  "whole-body"
+                ]
+              }
+            },
+            {
+              "key": "base::satin",
+              "target": {
+                "id": "stripes",
+                "label": "the stripes"
+              },
+              "apply": {
+                "label": "the stripes",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z4",
+                      "finish": "base::satin"
+                    },
+                    "scope": "existing-zone"
+                  }
+                ],
+                "scopes": [
+                  "existing-zone"
+                ]
+              }
+            },
+            {
+              "key": "base::f_pearl",
+              "target": {
+                "id": "body",
+                "label": "the body"
+              },
+              "apply": {
+                "label": "the body",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "base::f_pearl"
+                    },
+                    "scope": "whole-body"
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "base::f_pearl",
+                      "color": "source"
+                    },
+                    "scope": "whole-body"
+                  }
+                ],
+                "scopes": [
+                  "whole-body"
+                ]
+              }
+            },
+            {
+              "key": "base::f_brushed",
+              "target": {
+                "id": "stripes",
+                "label": "the stripes"
+              },
+              "apply": {
+                "label": "the stripes",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z4",
+                      "finish": "base::f_brushed"
+                    },
+                    "scope": "existing-zone"
+                  }
+                ],
+                "scopes": [
+                  "existing-zone"
+                ]
+              }
+            },
+            {
+              "key": "spec::spec_carbon_2x2_twill",
+              "target": {
+                "id": "hood",
+                "label": "the hood"
+              },
+              "apply": {
+                "label": "the hood",
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Hood Carbon 2×2 Twill",
+                      "region": {
+                        "part": "hood"
+                      },
+                      "finish": "base::f_soft_gloss",
+                      "color": "source",
+                      "spec_patterns": [
+                        {
+                          "id": "spec_carbon_2x2_twill",
+                          "opacity": 70
+                        }
+                      ]
+                    },
+                    "scope": "hood"
+                  }
+                ],
+                "scopes": [
+                  "hood"
+                ]
+              }
+            },
+            {
+              "key": "base::f_metallic",
+              "target": {
+                "id": "body",
+                "label": "the body"
+              },
+              "apply": {
+                "label": "the body",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "base::f_metallic"
+                    },
+                    "scope": "whole-body"
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "base::f_metallic",
+                      "color": "source"
+                    },
+                    "scope": "whole-body"
+                  }
+                ],
+                "scopes": [
+                  "whole-body"
+                ]
+              }
+            },
+            {
+              "key": "base::f_anodized",
+              "target": {
+                "id": "stripes",
+                "label": "the stripes"
+              },
+              "apply": {
+                "label": "the stripes",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z4",
+                      "finish": "base::f_anodized"
+                    },
+                    "scope": "existing-zone"
+                  }
+                ],
+                "scopes": [
+                  "existing-zone"
+                ]
+              }
+            },
+            {
+              "key": "monolithic::chameleon_fire",
+              "target": {
+                "id": "hood",
+                "label": "the hood"
+              },
+              "apply": {
+                "label": "the hood",
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Hood Chameleon Fire",
+                      "region": {
+                        "part": "hood"
+                      },
+                      "finish": "monolithic::chameleon_fire",
+                      "color": "finish"
+                    },
+                    "scope": "hood"
+                  }
+                ],
+                "scopes": [
+                  "hood"
+                ]
+              }
+            },
+            {
+              "key": "spec::spec_liquid_metal",
+              "target": {
+                "id": "roof",
+                "label": "the roof"
+              },
+              "apply": {
+                "label": "the roof",
+                "steps": [
+                  {
+                    "tool": "add_zone",
+                    "args": {
+                      "name": "Roof Liquid Metal",
+                      "region": {
+                        "part": "roof"
+                      },
+                      "finish": "base::f_soft_gloss",
+                      "color": "source",
+                      "spec_patterns": [
+                        {
+                          "id": "spec_liquid_metal",
+                          "opacity": 70
+                        }
+                      ]
+                    },
+                    "scope": "roof"
+                  }
+                ],
+                "scopes": [
+                  "roof"
+                ]
+              }
+            }
+          ],
+          "kits": [
+            {
+              "name": "Classic",
+              "items": [
+                {
+                  "role": "Body",
+                  "key": "base::wet_look",
+                  "target": {
+                    "id": "body",
+                    "label": "the body"
+                  },
+                  "apply": {
+                    "label": "the body",
+                    "steps": [
+                      {
+                        "tool": "edit_zone",
+                        "args": {
+                          "zone_id": "z5",
+                          "finish": "base::wet_look"
+                        },
+                        "scope": "whole-body"
+                      },
+                      {
+                        "tool": "edit_zone",
+                        "args": {
+                          "zone_id": "z6",
+                          "finish": "base::wet_look",
+                          "color": "source"
+                        },
+                        "scope": "whole-body"
+                      }
+                    ],
+                    "scopes": [
+                      "whole-body"
+                    ]
+                  }
+                },
+                {
+                  "role": "Stripes",
+                  "key": "base::satin",
+                  "target": {
+                    "id": "stripes",
+                    "label": "the stripes"
+                  },
+                  "apply": {
+                    "label": "the stripes",
+                    "steps": [
+                      {
+                        "tool": "edit_zone",
+                        "args": {
+                          "zone_id": "z4",
+                          "finish": "base::satin"
+                        },
+                        "scope": "existing-zone"
+                      }
+                    ],
+                    "scopes": [
+                      "existing-zone"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Premium",
+              "items": [
+                {
+                  "role": "Body",
+                  "key": "base::f_pearl",
+                  "target": {
+                    "id": "body",
+                    "label": "the body"
+                  },
+                  "apply": {
+                    "label": "the body",
+                    "steps": [
+                      {
+                        "tool": "edit_zone",
+                        "args": {
+                          "zone_id": "z5",
+                          "finish": "base::f_pearl"
+                        },
+                        "scope": "whole-body"
+                      },
+                      {
+                        "tool": "edit_zone",
+                        "args": {
+                          "zone_id": "z6",
+                          "finish": "base::f_pearl",
+                          "color": "source"
+                        },
+                        "scope": "whole-body"
+                      }
+                    ],
+                    "scopes": [
+                      "whole-body"
+                    ]
+                  }
+                },
+                {
+                  "role": "Stripes",
+                  "key": "base::f_brushed",
+                  "target": {
+                    "id": "stripes",
+                    "label": "the stripes"
+                  },
+                  "apply": {
+                    "label": "the stripes",
+                    "steps": [
+                      {
+                        "tool": "edit_zone",
+                        "args": {
+                          "zone_id": "z4",
+                          "finish": "base::f_brushed"
+                        },
+                        "scope": "existing-zone"
+                      }
+                    ],
+                    "scopes": [
+                      "existing-zone"
+                    ]
+                  }
+                },
+                {
+                  "role": "Texture (hood)",
+                  "key": "spec::spec_carbon_2x2_twill",
+                  "target": {
+                    "id": "hood",
+                    "label": "the hood"
+                  },
+                  "apply": {
+                    "label": "the hood",
+                    "steps": [
+                      {
+                        "tool": "add_zone",
+                        "args": {
+                          "name": "Hood Carbon 2×2 Twill",
+                          "region": {
+                            "part": "hood"
+                          },
+                          "finish": "base::f_soft_gloss",
+                          "color": "source",
+                          "spec_patterns": [
+                            {
+                              "id": "spec_carbon_2x2_twill",
+                              "opacity": 70
+                            }
+                          ]
+                        },
+                        "scope": "hood"
+                      }
+                    ],
+                    "scopes": [
+                      "hood"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Bold",
+              "items": [
+                {
+                  "role": "Body",
+                  "key": "base::f_metallic",
+                  "target": {
+                    "id": "body",
+                    "label": "the body"
+                  },
+                  "apply": {
+                    "label": "the body",
+                    "steps": [
+                      {
+                        "tool": "edit_zone",
+                        "args": {
+                          "zone_id": "z5",
+                          "finish": "base::f_metallic"
+                        },
+                        "scope": "whole-body"
+                      },
+                      {
+                        "tool": "edit_zone",
+                        "args": {
+                          "zone_id": "z6",
+                          "finish": "base::f_metallic",
+                          "color": "source"
+                        },
+                        "scope": "whole-body"
+                      }
+                    ],
+                    "scopes": [
+                      "whole-body"
+                    ]
+                  }
+                },
+                {
+                  "role": "Stripes",
+                  "key": "base::f_anodized",
+                  "target": {
+                    "id": "stripes",
+                    "label": "the stripes"
+                  },
+                  "apply": {
+                    "label": "the stripes",
+                    "steps": [
+                      {
+                        "tool": "edit_zone",
+                        "args": {
+                          "zone_id": "z4",
+                          "finish": "base::f_anodized"
+                        },
+                        "scope": "existing-zone"
+                      }
+                    ],
+                    "scopes": [
+                      "existing-zone"
+                    ]
+                  }
+                },
+                {
+                  "role": "Hood (hero)",
+                  "key": "monolithic::chameleon_fire",
+                  "target": {
+                    "id": "hood",
+                    "label": "the hood"
+                  },
+                  "apply": {
+                    "label": "the hood",
+                    "steps": [
+                      {
+                        "tool": "add_zone",
+                        "args": {
+                          "name": "Hood Chameleon Fire",
+                          "region": {
+                            "part": "hood"
+                          },
+                          "finish": "monolithic::chameleon_fire",
+                          "color": "finish"
+                        },
+                        "scope": "hood"
+                      }
+                    ],
+                    "scopes": [
+                      "hood"
+                    ]
+                  }
+                },
+                {
+                  "role": "Texture (roof)",
+                  "key": "spec::spec_liquid_metal",
+                  "target": {
+                    "id": "roof",
+                    "label": "the roof"
+                  },
+                  "apply": {
+                    "label": "the roof",
+                    "steps": [
+                      {
+                        "tool": "add_zone",
+                        "args": {
+                          "name": "Roof Liquid Metal",
+                          "region": {
+                            "part": "roof"
+                          },
+                          "finish": "base::f_soft_gloss",
+                          "color": "source",
+                          "spec_patterns": [
+                            {
+                              "id": "spec_liquid_metal",
+                              "opacity": 70
+                            }
+                          ]
+                        },
+                        "scope": "roof"
+                      }
+                    ],
+                    "scopes": [
+                      "roof"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "offlinePart": null,
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": true
+      }
+    },
+    {
+      "id": "S04-short",
+      "pair": "S04",
+      "variant": "short",
+      "ask": "Make the whole car blue, then add gold snake scales to the hood only.",
+      "word_count": 14,
+      "intended_scope": "whole-car+hood",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "full body+part plan",
+      "scopeJudgment": "full body+part plan",
+      "directSignals": {
+        "compoundPlan": {
+          "kind": "compound",
+          "zones": [
+            {
+              "name": "Blue body base",
+              "scope": "whole-body",
+              "finish": "base::gloss"
+            },
+            {
+              "name": "Gold Snake Scales hood",
+              "scope": "hood",
+              "finish": "base::gloss"
+            }
+          ],
+          "layers": [
+            {},
+            {}
+          ]
+        },
+        "editPlan": null,
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": null,
+        "offlineElement": true,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "S04-long",
+      "pair": "S04",
+      "variant": "long",
+      "ask": "Start with a blue base across the whole car, then add gold snake scales to the hood only. Keep that order, and make sure the scale layer stays confined to the hood while the other panels remain blue.",
+      "word_count": 38,
+      "intended_scope": "whole-car+hood",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "offline clarification candidate",
+      "scopeJudgment": "no mutation plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": {
+          "kind": "ask",
+          "unknown": [],
+          "ops": []
+        },
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": {
+          "zones": [
+            {
+              "name": "Blue hood",
+              "scope": "hood",
+              "finish": "base::gloss"
+            }
+          ],
+          "layers": []
+        },
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "S05-short",
+      "pair": "S05",
+      "variant": "short",
+      "ask": "Make the roof blue and hood gold; leave all other panels alone.",
+      "word_count": 12,
+      "intended_scope": "multi-part-with-exclusion",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "full two-part plan",
+      "scopeJudgment": "full two-part plan",
+      "directSignals": {
+        "compoundPlan": {
+          "kind": "compound",
+          "zones": [
+            {
+              "name": "Blue roof",
+              "scope": "roof",
+              "finish": "base::gloss"
+            },
+            {
+              "name": "Gold hood",
+              "scope": "hood",
+              "finish": "base::gloss"
+            }
+          ],
+          "layers": [
+            {},
+            {}
+          ]
+        },
+        "editPlan": null,
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": null,
+        "offlineElement": true,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "S05-long",
+      "pair": "S05",
+      "variant": "long",
+      "ask": "Please make the roof blue and the hood gold, while leaving all other panels alone. I want those two named parts changed independently and the remaining body paint preserved exactly as it is now.",
+      "word_count": 34,
+      "intended_scope": "multi-part-with-exclusion",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "unsupported/no complete offline plan demonstrated",
+      "scopeJudgment": "no mutation plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": null,
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": {
+          "zones": [
+            {
+              "name": "Gold hood",
+              "scope": "hood",
+              "finish": "base::gloss"
+            },
+            {
+              "name": "Blue roof",
+              "scope": "roof",
+              "finish": "base::gloss"
+            }
+          ],
+          "layers": []
+        },
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "S06-short",
+      "pair": "S06",
+      "variant": "short",
+      "ask": "Turn the hood red, then correct it to matte black only.",
+      "word_count": 11,
+      "intended_scope": "correction-order-part-only",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "unsupported/no complete offline plan demonstrated",
+      "scopeJudgment": "no mutation plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": null,
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": {
+          "zones": [
+            {
+              "name": "Red hood",
+              "scope": "hood",
+              "finish": "base::matte"
+            }
+          ],
+          "layers": []
+        },
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "S06-long",
+      "pair": "S06",
+      "variant": "long",
+      "ask": "First turn the hood red, but that is a correction: the final request is matte black on the hood only. Keep the rest of the car unchanged and use the corrected color as the final result.",
+      "word_count": 36,
+      "intended_scope": "correction-order-part-only",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "partial edit parse; unresolved terms: first",
+      "scopeJudgment": "no mutation plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": {
+          "kind": "ops",
+          "unknown": [
+            "first"
+          ],
+          "ops": [
+            {
+              "target": {
+                "kind": "part",
+                "part": "hood",
+                "at": 16
+              }
+            },
+            {
+              "target": {
+                "kind": "colour",
+                "word": "black",
+                "hex": "#111113",
+                "qual": null,
+                "at": 43,
+                "parts": [
+                  "hood"
+                ]
+              }
+            }
+          ]
+        },
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": {
+          "zones": [
+            {
+              "name": "Red hood",
+              "scope": "hood",
+              "finish": "base::matte"
+            }
+          ],
+          "layers": []
+        },
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "S07-short",
+      "pair": "S07",
+      "variant": "short",
+      "ask": "Put a pearl white base on the hood only; keep the roof blue.",
+      "word_count": 13,
+      "intended_scope": "part-only-exclusion",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "partial/no requested-part plan",
+      "scopeJudgment": "partial/no requested-part plan",
+      "directSignals": {
+        "compoundPlan": {
+          "kind": "compound",
+          "zones": [
+            {
+              "name": "Pearl white hood + roof",
+              "scope": "hood+roof",
+              "finish": "base::pearl"
+            }
+          ],
+          "layers": [
+            {}
+          ]
+        },
+        "editPlan": {
+          "kind": "ask",
+          "unknown": [],
+          "ops": []
+        },
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": null,
+        "offlineElement": true,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "S07-long",
+      "pair": "S07",
+      "variant": "long",
+      "ask": "I want a pearl white base on the hood only, and the roof must stay blue. Preserve the current color on all remaining panels too, since this is a local hood change rather than a new full-car scheme.",
+      "word_count": 38,
+      "intended_scope": "part-only-exclusion",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "offline clarification candidate",
+      "scopeJudgment": "no mutation plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": {
+          "kind": "ask",
+          "unknown": [],
+          "ops": []
+        },
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": null,
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "S08-short",
+      "pair": "S08",
+      "variant": "short",
+      "ask": "Make the entire body matte black, then put a blue carbon layer on just the roof.",
+      "word_count": 16,
+      "intended_scope": "part-last-order",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "full body+part plan",
+      "scopeJudgment": "full body+part plan",
+      "directSignals": {
+        "compoundPlan": {
+          "kind": "compound",
+          "zones": [
+            {
+              "name": "Matte black body base",
+              "scope": "whole-body",
+              "finish": "base::matte"
+            },
+            {
+              "name": "Blue carbon fiber roof",
+              "scope": "roof",
+              "finish": "base::gloss",
+              "pattern": "carbon_fiber"
+            }
+          ],
+          "layers": [
+            {},
+            {}
+          ]
+        },
+        "editPlan": {
+          "kind": "ask",
+          "unknown": [],
+          "ops": []
+        },
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": null,
+        "offlineElement": true,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "S08-long",
+      "pair": "S08",
+      "variant": "long",
+      "ask": "Please make the entire body matte black first, then put a blue carbon layer on just the roof. The black base should cover the full car while the carbon finish remains limited to the roof panel.",
+      "word_count": 36,
+      "intended_scope": "part-last-order",
+      "expected_capability": "offline-supported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "offline clarification candidate",
+      "scopeJudgment": "no mutation plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": {
+          "kind": "ask",
+          "unknown": [],
+          "ops": []
+        },
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": {
+          "zones": [
+            {
+              "name": "Black roof",
+              "scope": "roof",
+              "finish": "base::matte"
+            }
+          ],
+          "layers": []
+        },
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "U01-short",
+      "pair": "U01",
+      "variant": "short",
+      "ask": "Make the paint glow in the dark and pulse.",
+      "word_count": 9,
+      "intended_scope": "unsupported-animation",
+      "expected_capability": "offline-clarify-or-capability-limit",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "recommendation/clarification only; no paint action applied",
+      "scopeJudgment": "scope review needed",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": null,
+        "advisorIntent": {
+          "kind": "recommend",
+          "stack": false,
+          "target": null
+        },
+        "advisorAnswer": {
+          "kind": "recommend",
+          "text": "For your car: a few directions that work on an existing scheme. Your body is Gloss (high gloss). I searched the whole catalogue and picked shine-only options that keep your paint, complete looks whose palette suits your colours. Heads-up: iRacing paint is static: nothing animates, flickers, glows by itself or turns invisible in daylight. These finishes can only LOOK the part in a still render (bright, saturated or reflective); tell the buyer so. Swatches are shown on your car's colour.",
+          "target": {
+            "id": "body",
+            "label": "the body"
+          },
+          "cards": [
+            {
+              "key": "monolithic::pulse",
+              "apply": {
+                "label": "the body",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "monolithic::pulse"
+                    },
+                    "scope": "whole-body"
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "monolithic::pulse",
+                      "color": "source"
+                    },
+                    "scope": "whole-body"
+                  }
+                ],
+                "scopes": [
+                  "whole-body"
+                ]
+              }
+            },
+            {
+              "key": "base::shokk_pulse",
+              "apply": {
+                "label": "the body",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "base::shokk_pulse",
+                      "color": "finish"
+                    },
+                    "scope": "whole-body"
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "base::shokk_pulse",
+                      "color": "finish"
+                    },
+                    "scope": "whole-body"
+                  }
+                ],
+                "scopes": [
+                  "whole-body"
+                ]
+              }
+            },
+            {
+              "key": "monolithic::reactive_pulse_metal",
+              "apply": {
+                "label": "the body",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "monolithic::reactive_pulse_metal",
+                      "color": "finish"
+                    },
+                    "scope": "whole-body"
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "monolithic::reactive_pulse_metal",
+                      "color": "finish"
+                    },
+                    "scope": "whole-body"
+                  }
+                ],
+                "scopes": [
+                  "whole-body"
+                ]
+              }
+            },
+            {
+              "key": "base::silk",
+              "apply": {
+                "label": "the body",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "base::silk"
+                    },
+                    "scope": "whole-body"
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "base::silk",
+                      "color": "source"
+                    },
+                    "scope": "whole-body"
+                  }
+                ],
+                "scopes": [
+                  "whole-body"
+                ]
+              }
+            },
+            {
+              "key": "monolithic::neon2_circuit_city",
+              "apply": {
+                "label": "the body",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "monolithic::neon2_circuit_city",
+                      "color": "finish"
+                    },
+                    "scope": "whole-body"
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "monolithic::neon2_circuit_city",
+                      "color": "finish"
+                    },
+                    "scope": "whole-body"
+                  }
+                ],
+                "scopes": [
+                  "whole-body"
+                ]
+              }
+            }
+          ],
+          "kits": []
+        },
+        "offlinePart": null,
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "U01-long",
+      "pair": "U01",
+      "variant": "long",
+      "ask": "For the night race, make the paint glow in the dark and pulse continuously. I need actual light emission and visible animation on track, rather than a still reflective finish that only resembles a glow.",
+      "word_count": 35,
+      "intended_scope": "unsupported-animation",
+      "expected_capability": "offline-clarify-or-capability-limit",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "recommendation/clarification only; no paint action applied",
+      "scopeJudgment": "scope review needed",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": null,
+        "advisorIntent": {
+          "kind": "recommend",
+          "stack": false,
+          "target": null
+        },
+        "advisorAnswer": {
+          "kind": "recommend",
+          "text": "For your car: a few directions that work on an existing scheme. Your body is Gloss (high gloss). I searched the whole catalogue and picked shine-only options that keep your paint, complete looks whose palette suits your colours. I am leaving out anything still reflective finish. Heads-up: iRacing paint is static: nothing animates, flickers, glows by itself or turns invisible in daylight. These finishes can only LOOK the part in a still render (bright, saturated or reflective); tell the buyer so. Swatches are shown on your car's colour.",
+          "target": {
+            "id": "body",
+            "label": "the body"
+          },
+          "cards": [
+            {
+              "key": "monolithic::night_race",
+              "apply": {
+                "label": "the body",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "monolithic::night_race"
+                    },
+                    "scope": "whole-body"
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "monolithic::night_race",
+                      "color": "source"
+                    },
+                    "scope": "whole-body"
+                  }
+                ],
+                "scopes": [
+                  "whole-body"
+                ]
+              }
+            },
+            {
+              "key": "monolithic::pulse",
+              "apply": {
+                "label": "the body",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "monolithic::pulse"
+                    },
+                    "scope": "whole-body"
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "monolithic::pulse",
+                      "color": "source"
+                    },
+                    "scope": "whole-body"
+                  }
+                ],
+                "scopes": [
+                  "whole-body"
+                ]
+              }
+            },
+            {
+              "key": "monolithic::neon_glow",
+              "apply": {
+                "label": "the body",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "monolithic::neon_glow",
+                      "color": "finish"
+                    },
+                    "scope": "whole-body"
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "monolithic::neon_glow",
+                      "color": "finish"
+                    },
+                    "scope": "whole-body"
+                  }
+                ],
+                "scopes": [
+                  "whole-body"
+                ]
+              }
+            },
+            {
+              "key": "monolithic::sparkle_lightning_bug",
+              "apply": {
+                "label": "the body",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "monolithic::sparkle_lightning_bug"
+                    },
+                    "scope": "whole-body"
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "monolithic::sparkle_lightning_bug",
+                      "color": "source"
+                    },
+                    "scope": "whole-body"
+                  }
+                ],
+                "scopes": [
+                  "whole-body"
+                ]
+              }
+            },
+            {
+              "key": "monolithic::uj_thames_after_dark",
+              "apply": {
+                "label": "the body",
+                "steps": [
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z5",
+                      "finish": "monolithic::uj_thames_after_dark",
+                      "color": "finish"
+                    },
+                    "scope": "whole-body"
+                  },
+                  {
+                    "tool": "edit_zone",
+                    "args": {
+                      "zone_id": "z6",
+                      "finish": "monolithic::uj_thames_after_dark",
+                      "color": "finish"
+                    },
+                    "scope": "whole-body"
+                  }
+                ],
+                "scopes": [
+                  "whole-body"
+                ]
+              }
+            }
+          ],
+          "kits": []
+        },
+        "offlinePart": null,
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "U02-short",
+      "pair": "U02",
+      "variant": "short",
+      "ask": "Copy the colors from the photo I meant to attach.",
+      "word_count": 10,
+      "intended_scope": "missing-reference-photo",
+      "expected_capability": "offline-clarify",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "unsupported/no complete offline plan demonstrated",
+      "scopeJudgment": "no mutation plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": null,
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": null,
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "U02-long",
+      "pair": "U02",
+      "variant": "long",
+      "ask": "Please copy the colors and sponsor placement from the reference photo I meant to attach. There is no image in this message, so use that missing photo as the source instead of guessing a palette or inventing its layout.",
+      "word_count": 39,
+      "intended_scope": "missing-reference-photo",
+      "expected_capability": "offline-clarify",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "partial edit parse; unresolved terms: copy, image message",
+      "scopeJudgment": "no mutation plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": {
+          "kind": "ops",
+          "unknown": [
+            "copy",
+            "image message"
+          ],
+          "ops": [
+            {
+              "target": {
+                "kind": "body"
+              }
+            },
+            {
+              "target": {
+                "kind": "sponsors",
+                "at": 1
+              }
+            }
+          ]
+        },
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": null,
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "U03-short",
+      "pair": "U03",
+      "variant": "short",
+      "ask": "Save this project and email it to the team.",
+      "word_count": 9,
+      "intended_scope": "external-save-email",
+      "expected_capability": "offline-unsupported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "unsupported/no complete offline plan demonstrated",
+      "scopeJudgment": "no mutation plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": null,
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": null,
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "U03-long",
+      "pair": "U03",
+      "variant": "long",
+      "ask": "When the repaint is finished, save the project file and email it to the whole team with a short note. Please send it to the usual address even though I have not provided an email address here.",
+      "word_count": 37,
+      "intended_scope": "external-save-email",
+      "expected_capability": "offline-unsupported",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "unsupported/no complete offline plan demonstrated",
+      "scopeJudgment": "no mutation plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": null,
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": null,
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "U04-short",
+      "pair": "U04",
+      "variant": "short",
+      "ask": "Replace the rear wing with a moving LED sign.",
+      "word_count": 9,
+      "intended_scope": "unknown-part-physical-change",
+      "expected_capability": "offline-clarify",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "offline clarification candidate",
+      "scopeJudgment": "no mutation plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": {
+          "kind": "ask",
+          "unknown": [],
+          "ops": []
+        },
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": null,
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    },
+    {
+      "id": "U04-long",
+      "pair": "U04",
+      "variant": "long",
+      "ask": "For this concept, replace the rear wing with a moving LED sign that animates during the race. Keep the rest of the car paint untouched; I mean a physical moving display, not a painted graphic that imitates one.",
+      "word_count": 38,
+      "intended_scope": "unknown-part-physical-change",
+      "expected_capability": "offline-clarify",
+      "offlineCanHandle": false,
+      "route_if_configured_and_offline_first": "provider-would-be-selected",
+      "directSupport": "partial edit parse; unresolved terms: concept, keep rest untouched",
+      "scopeJudgment": "no mutation plan",
+      "directSignals": {
+        "compoundPlan": null,
+        "editPlan": {
+          "kind": "ops",
+          "unknown": [
+            "concept",
+            "keep rest untouched"
+          ],
+          "ops": [
+            {
+              "target": {
+                "kind": "body"
+              }
+            },
+            {
+              "target": {
+                "kind": "part",
+                "part": "spoiler",
+                "at": 18
+              }
+            },
+            {
+              "target": {
+                "kind": "body",
+                "at": 18
+              }
+            },
+            {
+              "target": {
+                "kind": "accents",
+                "word": "graphic",
+                "at": 15
+              }
+            }
+          ]
+        },
+        "advisorIntent": null,
+        "advisorAnswer": null,
+        "offlinePart": null,
+        "offlineElement": false,
+        "offlineSpec": false,
+        "offlinePlan": false
+      }
+    }
+  ]
+}

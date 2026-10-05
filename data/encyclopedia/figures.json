@@ -1,0 +1,856 @@
+[
+ {
+  "id": "g01_spec_channels",
+  "title": "The spec map: four channels",
+  "caption": "The spec map is a second picture iRacing reads next to your paint. Red is metal, green is roughness (0 is a mirror), blue is clearcoat (16 is the glossiest, bigger is duller) and alpha is the mask that follows your zones.",
+  "file": "figures/g01_spec_channels.svg",
+  "kind": "svg",
+  "sources": [
+   "engine/SPEC_MAP_REFERENCE.md:13",
+   "scripts/ai_atlas/ui_map.json:5845",
+   "shokker_engine_v2.py:20",
+   "shokker_engine_v2.py:24",
+   "shokker_engine_v2.py:26",
+   "shokker_engine_v2.py:28"
+  ],
+  "alt": "Four cards for the spec map channels. R metallic from 0 plain paint to 255 bare metal. G roughness from 0 mirror to 255 matte. B clearcoat where 16 is maximum gloss and 255 is dull. A spec mask from 0 transparent to 255 active."
+ },
+ {
+  "id": "g02_roughness_scale",
+  "title": "Roughness scale",
+  "caption": "Roughness runs from 0 (a perfect mirror) to 255 (flat matte). Chrome sits near 2, gloss near 30, satin near 95, soft matte near 200. Only mirror-level metal may go below 15.",
+  "file": "figures/g02_roughness_scale.svg",
+  "kind": "svg",
+  "sources": [
+   "engine/SPEC_MAP_REFERENCE.md:10",
+   "engine/base_registry_data.py:383",
+   "engine/base_registry_data.py:399",
+   "engine/base_registry_data.py:422",
+   "engine/base_registry_data.py:425",
+   "shokker_engine_v2.py:270"
+  ],
+  "alt": "A bar from mirror on the left to matte on the right with four spheres whose highlight gets softer: Chrome G 2, Gloss G 30, Satin G 95, Soft matte G 200."
+ },
+ {
+  "id": "g03_clearcoat_scale",
+  "title": "Clearcoat scale (backwards)",
+  "caption": "Clearcoat is backwards: 16 is the glossiest coat and the number gets duller as it goes up to 255. 0 means no coat. Never use 1 to 15; Shokker lifts those to 16.",
+  "file": "figures/g03_clearcoat_scale.svg",
+  "kind": "svg",
+  "sources": [
+   "engine/SPEC_MAP_REFERENCE.md:20",
+   "engine/SPEC_MAP_REFERENCE.md:23",
+   "engine/base_registry_data.py:383",
+   "engine/base_registry_data.py:399",
+   "engine/base_registry_data.py:422",
+   "shokker_engine_v2.py:26",
+   "shokker_engine_v2.py:267"
+  ],
+  "alt": "A bar from 0 to 255. 0 is no coat, 1 to 15 is hatched red as never use, 16 is marked MAX GLOSS and 17 to 255 fades to dull. Gloss is 16, satin 70, soft matte 165 (catalogue values)."
+ },
+ {
+  "id": "g04_metal_rough_grid",
+  "title": "Metal x roughness map",
+  "caption": "Metal on the vertical, roughness across. Chrome is top-left, wet gloss paint bottom-left, matte paint bottom-right. The red strip is off limits: below roughness 15 only mirror metals are allowed.",
+  "file": "figures/g04_metal_rough_grid.svg",
+  "kind": "svg",
+  "sources": [
+   "engine/base_registry_data.py:383",
+   "engine/base_registry_data.py:399",
+   "engine/base_registry_data.py:422",
+   "engine/base_registry_data.py:425",
+   "engine/base_registry_data.py:426",
+   "engine/base_registry_data.py:427",
+   "engine/base_registry_data.py:428",
+   "engine/base_registry_data.py:430",
+   "shokker_engine_v2.py:270",
+   "shokker_engine_v2.py:274",
+   "shokker_engine_v2.py:34"
+  ],
+  "alt": "A plot with metallic up the side and roughness along the bottom. Chrome sits top left at 255 and 2, gloss bottom left, soft matte bottom right, with brushed, metallic, satin chrome and pearl between. A hatched strip marks the roughness-under-15 no-go zone."
+ },
+ {
+  "id": "g05_zone_priority",
+  "title": "Zone priority",
+  "caption": "The zone higher in the list wins any pixel two zones both claim, and Everything Else only gets what nobody above it took. Drag a zone up or down to change who wins.",
+  "file": "figures/g05_zone_priority.svg",
+  "kind": "svg",
+  "sources": [
+   "mcp/server/index.js:38",
+   "scripts/ai_atlas/ui_map.json:11000",
+   "scripts/ai_atlas/ui_map.json:11022",
+   "scripts/ai_atlas/ui_map.json:9779"
+  ],
+  "alt": "A stack of Zone 1, Zone 2 and Everything Else with a priority arrow. Two overlapping boxes show the overlap taking the colour of the higher zone, and the colour flips when the zones are swapped."
+ },
+ {
+  "id": "g06_zone_selectors",
+  "title": "How a zone picks pixels",
+  "caption": "A zone can pick pixels by colour, by PSD layer, by a box or lasso you draw, or take everything no other zone claims. Chat and the AI copilot can also place things on named parts like the hood.",
+  "file": "figures/g06_zone_selectors.svg",
+  "kind": "svg",
+  "sources": [
+   "mcp/server/index.js:37",
+   "scripts/ai_atlas/ui_map.json:9729",
+   "scripts/ai_atlas/ui_map.json:9754",
+   "scripts/ai_atlas/ui_map.json:9779",
+   "scripts/ai_atlas/ui_map.json:9825",
+   "scripts/ai_atlas/ui_map.json:9897",
+   "scripts/ai_atlas/ui_map.json:9921"
+  ],
+  "alt": "Four rows with small pictures: by colour with colour chips, by layer with stacked layers, by drawn area with a dashed box, and everything else as the catch-all, plus a note about named parts."
+ },
+ {
+  "id": "g07_layer_stack_roles",
+  "title": "Template layers and their jobs",
+  "caption": "Guide layers such as Wire, Mask and Car_Mandatory sit under Turn Off Before Exporting TGA: switch them off before you render or they get painted into the car. Your own art layers stay on.",
+  "file": "figures/g07_layer_stack_roles.svg",
+  "kind": "svg",
+  "sources": [
+   "js/spb-pro-carmap.js:146",
+   "js/spb-support-answers.js:16",
+   "scripts/ai_atlas/ui_map.json:11112",
+   "scripts/ai_atlas/ui_map.json:9729"
+  ],
+  "alt": "A layer list. The group Turn Off Before Exporting TGA holds Wire, Mask and Car_Mandatory, all with the eye off. Numbers, Sponsors and Car Paint have the eye on. Notes explain guides off, art on."
+ },
+ {
+  "id": "g08_uv_sheet_parts",
+  "title": "The car laid flat",
+  "caption": "The paint is one flat 2048 by 2048 picture of the whole car cut open: side panels, hood, roof, trunk, bumpers and spoiler. The layout changes from car to car; this one is the NASCAR Next Gen 2024 template.",
+  "file": "figures/g08_uv_sheet_parts.svg",
+  "kind": "svg",
+  "sources": [
+   "js/spb-pro-carmap.js:146",
+   "mcp/server/index.js:53",
+   "scripts/ai_atlas/car_atlas_clusters.json:490"
+  ],
+  "alt": "A square sheet with eight labelled boxes: front bumper, rear bumper, spoiler, right side, left side, hood, roof and trunk, with arrows showing which way the front faces.",
+  "meta": {
+   "template": "nextgen-camry-camaro-2024"
+  }
+ },
+ {
+  "id": "g09_render_export_flow",
+  "title": "Render to iRacing",
+  "caption": "Render in Shokker, the paint and spec files are copied into your iRacing car folder, then Alt+Tab to iRacing and press Ctrl+R. If no car folder is set, the files are not copied anywhere iRacing can see.",
+  "file": "figures/g09_render_export_flow.svg",
+  "kind": "svg",
+  "sources": [
+   "js/spb-support-answers.js:16",
+   "js/spb-support-answers.js:19",
+   "js/spb-support-answers.js:22",
+   "server.py:5634"
+  ],
+  "alt": "Five stacked steps: press Render, two TGA files are written, they are copied to the iRacing paint folder, Alt+Tab to iRacing, press Ctrl+R."
+ },
+ {
+  "id": "g10_file_naming",
+  "title": "car_num_ vs car_",
+  "caption": "Custom Number writes car_num_ID.tga and iRacing loads it when Hide Car Numbers is on. Sim-Stamped Number writes car_ID.tga, the iRacing default. The Shokker switch and the iRacing setting must agree.",
+  "file": "figures/g10_file_naming.svg",
+  "kind": "svg",
+  "sources": [
+   "js/spb-support-answers.js:28",
+   "server.py:5625",
+   "server.py:5634"
+  ],
+  "alt": "Two cards. Custom Number writes car_num_ID.tga and needs Hide Car Numbers ON. Sim-Stamped Number writes car_ID.tga, the default. Both also write car_spec_ID.tga."
+ },
+ {
+  "id": "g11_mip_pipeline",
+  "title": "TGA, .mip and Trading Paints",
+  "caption": "Shokker writes the paint and spec as TGA files. iRacing builds a .mip from the spec the first time it loads it. Trading Paints takes the paint as .tga or .png but the spec only as that .mip.",
+  "file": "figures/g11_mip_pipeline.svg",
+  "kind": "svg",
+  "sources": [
+   "js/spb-support-answers.js:34",
+   "js/spb-support-answers.js:45",
+   "server.py:6850"
+  ],
+  "alt": "Three columns. Shokker writes car_num or car TGA for paint and car_spec TGA. iRacing makes car_spec MIP. Trading Paints takes the paint TGA or PNG and only the spec MIP. A warning not to upload the project file."
+ },
+ {
+  "id": "g12_window_tour",
+  "title": "The Pro window",
+  "caption": "A map of the Pro window: header rows and the PRO / CHAT switch on top, the toolbar, ZONES on the left, your source paint and the live preview in the middle, the layer list on the right and the AI button bottom right.",
+  "file": "figures/g12_window_tour.svg",
+  "kind": "svg",
+  "sources": [
+   "scripts/ai_atlas/ui_map.json:135",
+   "scripts/ai_atlas/ui_map.json:167",
+   "scripts/ai_atlas/ui_map.json:184",
+   "scripts/ai_atlas/ui_map.json:265",
+   "scripts/ai_atlas/ui_map.json:288",
+   "scripts/ai_atlas/ui_map.json:340",
+   "scripts/ai_atlas/ui_map.json:416",
+   "scripts/ai_atlas/ui_map.json:448",
+   "scripts/ai_atlas/ui_map.json:527",
+   "scripts/ai_atlas/ui_map.json:559",
+   "scripts/ai_atlas/ui_map.json:591",
+   "scripts/ai_atlas/ui_map.json:615",
+   "scripts/ai_atlas/ui_map.json:866"
+  ],
+  "alt": "A simplified wireframe of the Pro window with fourteen numbered areas and a legend: header rows, mode switch, toolbar, settings, zones list, zone editor, source, live preview, tool options, selection bar, spec channel strip, render button, finishes and layers tabs, and the AI button."
+ },
+ {
+  "id": "g13_four_kinds_of_look",
+  "title": "Base, monolithic, pattern, spec pattern",
+  "caption": "Base finishes are plain materials. Monolithic finishes bring their own colour and texture. Patterns add a visible design on top. Spec patterns change only the shine, never the colour.",
+  "file": "figures/g13_four_kinds_of_look.svg",
+  "kind": "svg",
+  "sources": [
+   "docs/ai_knowledge/02_spec_and_finishes.md:10",
+   "docs/ai_knowledge/02_spec_and_finishes.md:6",
+   "scripts/ai_atlas/ui_map.json:10665",
+   "scripts/ai_atlas/ui_map.json:10844",
+   "scripts/ai_atlas/ui_map.json:10956"
+  ],
+  "alt": "Four cards. Base changes colour and shine. Monolithic changes both. Pattern changes colour and shine only a little. Spec pattern changes shine only. A note about second to fifth base overlays."
+ },
+ {
+  "id": "g14_colour_modes",
+  "title": "Zone colour modes",
+  "caption": "The BASE COLOR dropdown decides where a zone's colour comes from: the finish itself, your existing paint (spec only), one solid colour, another special finish, or a custom gradient.",
+  "file": "figures/g14_colour_modes.svg",
+  "kind": "svg",
+  "sources": [
+   "scripts/ai_atlas/app_controls.json:32",
+   "scripts/ai_atlas/ui_map.json:10104",
+   "scripts/ai_atlas/ui_map.json:10128",
+   "scripts/ai_atlas/ui_map.json:10150"
+  ],
+  "alt": "Five rows with small colour tiles: finish's own colour, source paint, solid colour, from special, custom gradient, each with a one-line meaning."
+ },
+ {
+  "id": "g15_surface_intent",
+  "title": "What a finish mainly controls",
+  "caption": "Finishes are grouped by what they mainly change: shine only, a pattern's shape, a pattern with its own colour, fine structural colour, or everything. Foundation finishes, for example, leave your paint alone.",
+  "file": "figures/g15_surface_intent.svg",
+  "kind": "svg",
+  "sources": [
+   "engine/paint_v2/surface_intent.py:100",
+   "engine/paint_v2/surface_intent.py:103",
+   "engine/paint_v2/surface_intent.py:104",
+   "engine/paint_v2/surface_intent.py:105",
+   "engine/paint_v2/surface_intent.py:121",
+   "engine/paint_v2/surface_intent.py:125",
+   "engine/paint_v2/surface_intent.py:129",
+   "engine/paint_v2/surface_intent.py:131",
+   "engine/paint_v2/surface_intent.py:134",
+   "engine/paint_v2/surface_intent.py:156",
+   "engine/paint_v2/surface_intent.py:176",
+   "engine/paint_v2/surface_intent.py:98"
+  ],
+  "alt": "Five stacked cards naming the families: shine only, pattern design, pattern with its own colour, fine structural colour, and everything, with example category names."
+ },
+ {
+  "id": "g16_foundation_spec_only",
+  "title": "Foundation: only the shine changes",
+  "caption": "A Foundation finish with the colour set to your source paint leaves the paint exactly as it is and changes only the spec numbers. Chrome, satin chrome and soft matte shown with their catalogue values.",
+  "file": "figures/g16_foundation_spec_only.svg",
+  "kind": "svg",
+  "sources": [
+   "engine/base_registry_data.py:422",
+   "engine/base_registry_data.py:425",
+   "engine/base_registry_data.py:426",
+   "mcp/server/index.js:56"
+  ],
+  "alt": "Three columns with an identical blue striped paint swatch. Below each, three bars for metal, roughness and clearcoat: chrome 255, 2, 16; satin chrome 250, 45, 40; soft matte 0, 200, 165."
+ },
+ {
+  "id": "g17_pick_a_door",
+  "title": "PRO or CHAT",
+  "caption": "PRO is the full paint shop. CHAT lets you say what you want in plain words. Both work on the same zones.",
+  "file": "figures/g17_pick_a_door.svg",
+  "kind": "svg",
+  "sources": [
+   "scripts/ai_atlas/ui_map.json:108",
+   "scripts/ai_atlas/ui_map.json:85"
+  ],
+  "alt": "Two cards. PRO for exact control, CHAT for typing what you want."
+ },
+ {
+  "id": "g18_iron_rules",
+  "title": "The three iron rules",
+  "caption": "Clearcoat is 16 or more (or exactly 0). Roughness is at least 15 unless the surface is a mirror metal (metal 240 or more). The spec mask follows your zones. Shokker enforces the first two for you.",
+  "file": "figures/g18_iron_rules.svg",
+  "kind": "svg",
+  "sources": [
+   "shokker_engine_v2.py:267",
+   "shokker_engine_v2.py:270",
+   "shokker_engine_v2.py:274",
+   "shokker_engine_v2.py:30",
+   "shokker_engine_v2.py:301",
+   "shokker_engine_v2.py:32",
+   "shokker_engine_v2.py:34",
+   "shokker_engine_v2.py:36"
+  ],
+  "alt": "Three cards. One: clearcoat 1 to 15 is not allowed and is raised to 16. Two: roughness has a floor of 15 except for mirror metals. Three: the spec mask follows the zones."
+ },
+ {
+  "id": "g19_scale_on_car",
+  "title": "Scale on the car",
+  "caption": "The 2048 pixel sheet covers a whole car, so a 256 pixel detail is a huge blob while a 32 pixel detail is about a side mirror. Lower the scale slider for finer texture.",
+  "file": "figures/g19_scale_on_car.svg",
+  "kind": "svg",
+  "sources": [
+   "CLAUDE.md:122",
+   "engine/paint_v2/surface_intent.py:108",
+   "scripts/ai_atlas/app_controls.json:237",
+   "scripts/ai_atlas/app_controls.json:484"
+  ],
+  "alt": "A sheet outline with the left side panel marked. An orange square shows a 256 pixel area and a small cyan square shows a 32 pixel detail, with a note about the scale slider."
+ },
+ {
+  "id": "g20_selection_modes",
+  "title": "Add, Replace and Subtract",
+  "caption": "Add keeps the old selection and adds the new one. Replace keeps only the new one. Subtract cuts the new one out of the old. With the Magic Wand, Shift adds and Alt subtracts.",
+  "file": "figures/g20_selection_modes.svg",
+  "kind": "svg",
+  "sources": [
+   "scripts/ai_atlas/ui_map.json:1655",
+   "scripts/ai_atlas/ui_map.json:3512"
+  ],
+  "alt": "Three cards each with a before and after picture of two overlapping circles. Add shows both, Replace shows only the new, Subtract shows the old with the new cut out."
+ },
+ {
+  "id": "r01_spec_sweep_RxG",
+  "title": "Metal x roughness sweep (real engine values)",
+  "caption": "Metal runs left to right and roughness top to bottom, all with the glossiest clearcoat. Top-right is a rough bare metal, bottom-left is wet paint, and the top row of the metal side is the mirror. These are lit balls drawn from the numbers the engine produced. Orange numbers show where the engine raised roughness to its floor of 15.",
+  "file": "figures/r01_spec_sweep_RxG.webp",
+  "kind": "render",
+  "sources": [
+   "scripts/ai_atlas/enc_figs_shade.py:82",
+   "shokker_engine_v2.py:20898",
+   "shokker_engine_v2.py:270",
+   "shokker_engine_v2.py:394"
+  ],
+  "alt": "An 8 by 8 grid of lit balls. Metal increases left to right and roughness increases top to bottom. Top-right balls are mirror-like metal, bottom-left are glossy red paint, bottom-right are flat matte.",
+  "meta": {
+   "cells_lifted_to_floor": 7,
+   "shading": "illustration, one studio light; not iRacing's lighting"
+  }
+ },
+ {
+  "id": "r02_clearcoat_sweep",
+  "title": "Clearcoat sweep",
+  "caption": "One semi-rough metallic red paint with only the clearcoat changed. 16 is the glossiest coat; the number gets duller as it goes up to 255. The balls use the values the engine returned for each setting.",
+  "file": "figures/r02_clearcoat_sweep.webp",
+  "kind": "render",
+  "sources": [
+   "shokker_engine_v2.py:20898",
+   "shokker_engine_v2.py:26",
+   "shokker_engine_v2.py:301"
+  ],
+  "alt": "Five lit red metallic balls from clearcoat 16 to 255. The 16 ball has the sharpest glossy reflection on top; the 255 ball has none.",
+  "meta": {
+   "shading": "illustration"
+  }
+ },
+ {
+  "id": "r03_roughness_sweep",
+  "title": "Roughness sweep",
+  "caption": "Roughness from a mirror (left) to flat matte (right), on bare metal (top) and on plain paint (bottom). Plain paint cannot go below roughness 15.",
+  "file": "figures/r03_roughness_sweep.webp",
+  "kind": "render",
+  "sources": [
+   "engine/SPEC_MAP_REFERENCE.md:10",
+   "shokker_engine_v2.py:20898",
+   "shokker_engine_v2.py:270"
+  ],
+  "alt": "Two rows of eight lit balls. The top row is metal and the bottom row is paint; roughness grows left to right, so the reflections go from sharp to a soft glow.",
+  "meta": {
+   "shading": "illustration"
+  }
+ },
+ {
+  "id": "r04_foundation_before_after",
+  "title": "Foundation: paint identical, only the shine changes",
+  "caption": "Three Foundation finishes (chrome, satin chrome, soft matte) with the colour set to source paint. The paint the engine returns is the same in all three; only the metal, roughness and clearcoat numbers change, shown on lit balls wearing that paint.",
+  "file": "figures/r04_foundation_before_after.webp",
+  "kind": "render",
+  "sources": [
+   "engine/base_registry_data.py:422",
+   "engine/base_registry_data.py:425",
+   "engine/base_registry_data.py:426",
+   "mcp/server/index.js:56",
+   "shokker_engine_v2.py:20898"
+  ],
+  "alt": "Three copies of the same blue striped car sheet above three balls wearing the same stripes, one chrome, one satin chrome and one matte.",
+  "meta": {
+   "max_pixel_difference_between_the_three_paints": 0,
+   "shading": "illustration"
+  }
+ },
+ {
+  "id": "r05_shelf_tiles",
+  "title": "One look from every shelf",
+  "caption": "A contact sheet with one real finish picked from each shelf in the finish picker, so you can see how different the shelves look.",
+  "file": "figures/r05_shelf_tiles.webp",
+  "kind": "render",
+  "sources": [
+   "_atlas_cards/items.json:1",
+   "_atlas_cards/ratings.jsonl:1"
+  ],
+  "alt": "A grid of small finish swatches, eight per row, each labelled with the name of its shelf.",
+  "meta": {
+   "tiles": [
+    {
+     "shelf": "All That",
+     "finish": "base::at_disc_rainbow",
+     "name": "Cdrom: Disc Rainbow"
+    },
+    {
+     "shelf": "Anime Inspired",
+     "finish": "monolithic::anime2_energy_aura",
+     "name": "Raiton Lightning"
+    },
+    {
+     "shelf": "Astra",
+     "finish": "base::astra_event_horizon",
+     "name": "Event Horizon"
+    },
+    {
+     "shelf": "Bad & Rad",
+     "finish": "base::rad_vector_glow",
+     "name": "Arcade: Vector Glow"
+    },
+    {
+     "shelf": "Color Clash",
+     "finish": "monolithic::cc_solar_clash",
+     "name": "Color Clash: Solar Clash"
+    },
+    {
+     "shelf": "Cyberpunk",
+     "finish": "base::cbp_kanji_signage",
+     "name": "Street: Neon Sign Enamel"
+    },
+    {
+     "shelf": "Dark City",
+     "finish": "monolithic::dkc_abyss_blue",
+     "name": "Abyss Blue"
+    },
+    {
+     "shelf": "Depth & Geometry",
+     "finish": "monolithic::depth_pillow",
+     "name": "Depth Pillow"
+    },
+    {
+     "shelf": "Fable",
+     "finish": "monolithic::fab_crown_jewel",
+     "name": "Crown Jewel"
+    },
+    {
+     "shelf": "Far Out",
+     "finish": "base::fo_candy_apple",
+     "name": "Van: Candy Apple"
+    },
+    {
+     "shelf": "Flames",
+     "finish": "base::flame_smoke",
+     "name": "Smoke & Fire"
+    },
+    {
+     "shelf": "Flaw Lab",
+     "finish": "base::fl_photoelastic_iso",
+     "name": "Isochromatic Fringe"
+    },
+    {
+     "shelf": "Forbidden Dragon",
+     "finish": "monolithic::fd_abyssal_sea",
+     "name": "Abyssal Sea"
+    },
+    {
+     "shelf": "Foundation",
+     "finish": "base::f_metallic",
+     "name": "Metallic"
+    },
+    {
+     "shelf": "Foundation EFX",
+     "finish": "base::efx_chunky_flake",
+     "name": "Chunky Metalflake"
+    },
+    {
+     "shelf": "Fractured Cosmos",
+     "finish": "monolithic::cos_beacon_strobe",
+     "name": "Vessel: Beacon Strobe"
+    },
+    {
+     "shelf": "Fractured Elements",
+     "finish": "monolithic::elm_glassy_swell",
+     "name": "Water: Glassy Swell"
+    },
+    {
+     "shelf": "Fractured Flames",
+     "finish": "monolithic::ffl_crown_fire",
+     "name": "Flame: Crown Fire"
+    },
+    {
+     "shelf": "Fractured Forge",
+     "finish": "monolithic::ff_abyssal_currents",
+     "name": "Abyssal Currents"
+    },
+    {
+     "shelf": "Fractured Foundry",
+     "finish": "monolithic::ffo_diamond_knurl",
+     "name": "Diamond Knurl"
+    },
+    {
+     "shelf": "Fractured Minds",
+     "finish": "monolithic::fm_dragonfly",
+     "name": "Dragonfly Wing"
+    },
+    {
+     "shelf": "Fractured Nightshift",
+     "finish": "monolithic::nsx_anchor_rust",
+     "name": "Anchor Rust"
+    },
+    {
+     "shelf": "Fractured Opalfire",
+     "finish": "monolithic::fsk_carbon_weave",
+     "name": "Carbon Weave"
+    },
+    {
+     "shelf": "Fractured Relics",
+     "finish": "monolithic::frl_black_mirror",
+     "name": "Black Mirror"
+    },
+    {
+     "shelf": "Fractured Shokk",
+     "finish": "monolithic::fsh_nacre_cascade",
+     "name": "R1 REJECTED — Nacre Cascade"
+    },
+    {
+     "shelf": "Fractured Souls",
+     "finish": "monolithic::fs_aurora_threads",
+     "name": "Aurora Threads — Green→Violet Curtains"
+    },
+    {
+     "shelf": "Fractured Tessera",
+     "finish": "monolithic::fts_droste_well",
+     "name": "Droste Well"
+    },
+    {
+     "shelf": "Fractured Wilds",
+     "finish": "monolithic::fbl_lilac_stamen",
+     "name": "Lilac Starburst"
+    },
+    {
+     "shelf": "Glass & Surface",
+     "finish": "monolithic::exotic_dark_glass",
+     "name": "Exotic Dark Glass"
+    },
+    {
+     "shelf": "Gradient Directional",
+     "finish": "monolithic::grad_ocean_depths",
+     "name": "Ocean Depths"
+    },
+    {
+     "shelf": "Gradient Extended",
+     "finish": "monolithic::grad_black_gold",
+     "name": "Black Gold"
+    },
+    {
+     "shelf": "Gradients",
+     "finish": "monolithic::grd_duotone_grain",
+     "name": "Duotone Grain Gradient"
+    },
+    {
+     "shelf": "Groovy Vibes",
+     "finish": "base::lava_lamp_groovy",
+     "name": "Lava Lamp Groovy"
+    },
+    {
+     "shelf": "Grunge & Fun",
+     "finish": "monolithic::gf_x_283511752_c9a714fc_a791_4c92_a2af_e3b8537ecaef",
+     "name": "Deep Blue Dot Fade"
+    },
+    {
+     "shelf": "Impossible Finishes",
+     "finish": "monolithic::impossible_hologram_ice",
+     "name": "Hologram Ice"
+    },
+    {
+     "shelf": "Iridescent Insects",
+     "finish": "base::beetle_click",
+     "name": "Click Beetle Plasma"
+    },
+    {
+     "shelf": "Let Freedom Ring",
+     "finish": "monolithic::lfr_eagle_ascendant",
+     "name": "Eagle Ascendant"
+    },
+    {
+     "shelf": "Light & Optics",
+     "finish": "monolithic::optics2_aurora",
+     "name": "Aurora Veil"
+    },
+    {
+     "shelf": "Materials & Physics",
+     "finish": "monolithic::materials2_engine",
+     "name": "Engine-Turned Metal"
+    },
+    {
+     "shelf": "Money Shokk",
+     "finish": "monolithic::msk_deposit_brass",
+     "name": "Vault: Deposit Brass"
+    },
+    {
+     "shelf": "More Bases",
+     "finish": "base::neon_red_alert",
+     "name": "Redline Rush"
+    },
+    {
+     "shelf": "More Specials",
+     "finish": "monolithic::ns2_singularity",
+     "name": "Ns2 Singularity"
+    },
+    {
+     "shelf": "Neon Underground",
+     "finish": "monolithic::neon2_laser_web",
+     "name": "Laser Lane"
+    },
+    {
+     "shelf": "Paradigm",
+     "finish": "monolithic::pdg_denim_chrome",
+     "name": "Woven: Denim Chrome"
+    },
+    {
+     "shelf": "Prism Forge",
+     "finish": "base::pf_bright_cerulean_pop",
+     "name": "PF: Bright Cerulean Pop"
+    },
+    {
+     "shelf": "Prizm",
+     "finish": "monolithic::prizm_phoenix",
+     "name": "Prizm Phoenix"
+    },
+    {
+     "shelf": "Rising Sun",
+     "finish": "monolithic::rs_kitsune_ember",
+     "name": "Kitsune Ember"
+    },
+    {
+     "shelf": "Shokk Works",
+     "finish": "base::wrap_ceramic_coat",
+     "name": "Ceramic Levelled Glaze"
+    },
+    {
+     "shelf": "Signal",
+     "finish": "monolithic::bioluminescent_wave",
+     "name": "Bioluminescent Wave"
+    },
+    {
+     "shelf": "Sock Hop",
+     "finish": "base::atomic_charcoal",
+     "name": "Atomic Charcoal"
+    },
+    {
+     "shelf": "Source Pattern Plates",
+     "finish": "monolithic::pp_marble_flow_pearl",
+     "name": "Marble Flow Pearl"
+    },
+    {
+     "shelf": "Spectrum Shift",
+     "finish": "monolithic::spectrum_star_temperature",
+     "name": "Star Temperature"
+    },
+    {
+     "shelf": "Surface & Grain",
+     "finish": "monolithic::aniso_spiral_mercury",
+     "name": "Aniso Spiral Mercury"
+    },
+    {
+     "shelf": "Tactical & Field",
+     "finish": "base::tac_carbon_handguard",
+     "name": "Hardware: Carbon Handguard"
+    },
+    {
+     "shelf": "Union Jacked",
+     "finish": "monolithic::uj_blueblood_beatline",
+     "name": "Blueblood Beatline"
+    },
+    {
+     "shelf": "Viva Mexico",
+     "finish": "monolithic::vm_cenote_lace",
+     "name": "Cenote Lace"
+    },
+    {
+     "shelf": "Wave & Flow",
+     "finish": "monolithic::wave_diagonal_sweep",
+     "name": "Wave Diagonal Sweep"
+    },
+    {
+     "shelf": "World of Color",
+     "finish": "monolithic::woc_aizome_vat",
+     "name": "Japan: Aizome Vat"
+    },
+    {
+     "shelf": "X Lab",
+     "finish": "monolithic::xlab_abyssal_lens",
+     "name": "Abyssal Lens"
+    }
+   ]
+  }
+ },
+ {
+  "id": "r06_pattern_scale",
+  "title": "Pattern scale",
+  "caption": "One pattern at three scales over the whole car sheet. Scale 0.25 repeats it four times as fine; scale 4 zooms right in. Smaller is finer.",
+  "file": "figures/r06_pattern_scale.webp",
+  "kind": "render",
+  "sources": [
+   "scripts/ai_atlas/app_controls.json:484",
+   "shokker_engine_v2.py:20898"
+  ],
+  "alt": "Three square tiles of a zig-zag chevron pattern: very fine at 0.25x, medium at 1x and large at 4x."
+ },
+ {
+  "id": "r07_pattern_rotation",
+  "title": "Pattern rotation",
+  "caption": "Rotate turns a directional pattern: 0, 45 and 90 degrees on the same chevron.",
+  "file": "figures/r07_pattern_rotation.webp",
+  "kind": "render",
+  "sources": [
+   "scripts/ai_atlas/app_controls.json:509",
+   "shokker_engine_v2.py:20898"
+  ],
+  "alt": "Three square tiles of the chevron pattern turned 0, 45 and 90 degrees."
+ },
+ {
+  "id": "r08_pattern_opacity_strength",
+  "title": "Pattern opacity vs spec amount",
+  "caption": "Opacity fades how much of the pattern you see. Spec amount decides how much of the pattern's own shine (shown here as the roughness channel) is added; it starts at 0.",
+  "file": "figures/r08_pattern_opacity_strength.webp",
+  "kind": "render",
+  "sources": [
+   "scripts/ai_atlas/app_controls.json:531",
+   "scripts/ai_atlas/ui_map.json:10844",
+   "shokker_engine_v2.py:20898"
+  ],
+  "alt": "Top row: the chevron fading from full to faint. Bottom row: the roughness channel, flat at 0 spec amount and showing the pattern at 50 and 100 percent."
+ },
+ {
+  "id": "r09_base_scale",
+  "title": "Base scale (what crushed means)",
+  "caption": "Base Scale shrinks or grows the texture inside a base finish. Shown here as the metal channel of carbon and chunky flake at 0.25x, 1x and 4x. Lower numbers are finer and busier.",
+  "file": "figures/r09_base_scale.webp",
+  "kind": "render",
+  "sources": [
+   "scripts/ai_atlas/app_controls.json:237",
+   "shokker_engine_v2.py:504"
+  ],
+  "alt": "Two rows of three black and white tiles. Carbon weave and chunky flake at 0.25x are very fine; at 1x medium; at 4x the weave is large and the flake chunky."
+ },
+ {
+  "id": "r10_colour_modes",
+  "title": "Zone colour modes",
+  "caption": "The same finish on the same livery under the five BASE COLOR choices: its own colour, your source paint, one solid colour, colours borrowed from another finish, and a custom gradient.",
+  "file": "figures/r10_colour_modes.webp",
+  "kind": "render",
+  "sources": [
+   "scripts/ai_atlas/app_controls.json:32",
+   "scripts/ai_atlas/ui_map.json:10104",
+   "shokker_engine_v2.py:20898"
+  ],
+  "alt": "Five car sheets in a row, each coloured a different way: green candy, the original blue livery, solid red, gold, and a red-orange-green gradient."
+ },
+ {
+  "id": "r11_colour_tolerance",
+  "title": "Colour tolerance",
+  "caption": "A zone that picks one blue and paints what it selects pink. Tolerance 6 grabs only that exact shade, 30 is a normal reach and 100 pulls in much more.",
+  "file": "figures/r11_colour_tolerance.webp",
+  "kind": "render",
+  "sources": [
+   "scripts/ai_atlas/ui_map.json:9754",
+   "scripts/ai_atlas/ui_map.json:9825"
+  ],
+  "alt": "Three car sheets where the pink area grows with tolerance: small patches at 6, most of the blue at 30, nearly everything blue at 100."
+ },
+ {
+  "id": "r12_zone_priority_demo",
+  "title": "Zone priority demo",
+  "caption": "Two zones both pick the body blue. Whichever sits higher in the list gets it; swap them and the car changes colour.",
+  "file": "figures/r12_zone_priority_demo.webp",
+  "kind": "render",
+  "sources": [
+   "mcp/server/index.js:38",
+   "scripts/ai_atlas/ui_map.json:11000"
+  ],
+  "alt": "Two car sheets. With zone A above B the body is green; with B above A it is orange."
+ },
+ {
+  "id": "r13_spec_channel_views",
+  "title": "Paint and spec channel views",
+  "caption": "A livery with chrome white stripes, matte red stripes and a metallic blue body, shown as the paint and then the four spec channels. Bright means a bigger number in that channel.",
+  "file": "figures/r13_spec_channel_views.webp",
+  "kind": "render",
+  "sources": [
+   "scripts/ai_atlas/ui_map.json:5632",
+   "scripts/ai_atlas/ui_map.json:5654",
+   "scripts/ai_atlas/ui_map.json:5676",
+   "scripts/ai_atlas/ui_map.json:5844",
+   "shokker_engine_v2.py:20898"
+  ],
+  "alt": "Five tiles: the paint, then greyscale R metal, G rough, B coat and A mask views. Chrome stripes are bright in metal and dark in rough; matte stripes the reverse."
+ },
+ {
+  "id": "r14_sculpt_before_after",
+  "title": "Spec Sculpt presets on neutral grey",
+  "caption": "The first tile is flat neutral grey paint. The next six are the app's own previews of Spec Sculpt presets on that grey. Presets change the shine and metal, and some bring their own pattern and colour effects.",
+  "file": "figures/r14_sculpt_before_after.webp",
+  "kind": "render",
+  "sources": [
+   "engine/spec_sculpt/presets.py:128",
+   "engine/spec_sculpt/presets.py:154",
+   "engine/spec_sculpt/presets.py:184",
+   "engine/spec_sculpt/presets.py:44",
+   "engine/spec_sculpt/presets.py:72",
+   "engine/spec_sculpt/presets.py:98",
+   "thumbnails/spec_sculpt_presets/_manifest.json:3",
+   "thumbnails/spec_sculpt_presets/_manifest.json:9"
+  ],
+  "alt": "Seven swatches: a flat grey one labelled Before, then six presets (Mirror Chrome, Satin Weave, Candy Poison, Chaos Flake, Arctic Chameleon, Neon Outline) on neutral grey paint.",
+  "meta": {
+   "presets": [
+    {
+     "id": "mirror_chrome",
+     "label": "Mirror Chrome",
+     "category": "Chrome & metal",
+     "finish_id": "enh_chrome"
+    },
+    {
+     "id": "satin_weave",
+     "label": "Satin Weave",
+     "category": "Carbon & matte",
+     "finish_id": "enh_clear_satin"
+    },
+    {
+     "id": "candy_poison",
+     "label": "Candy Poison",
+     "category": "Candy & pearl",
+     "finish_id": "cc_candy_poison"
+    },
+    {
+     "id": "chaos_flake",
+     "label": "Chaos Flake",
+     "category": "Flake & sparkle",
+     "finish_id": "quilt_random_chaos"
+    },
+    {
+     "id": "arctic_chameleon",
+     "label": "Arctic Chameleon",
+     "category": "Holo & shift",
+     "finish_id": "chameleon_arctic"
+    },
+    {
+     "id": "neon_outline",
+     "label": "Neon Outline",
+     "category": "Exotic & glow",
+     "finish_id": "anime_neon_outline"
+    }
+   ]
+  }
+ }
+]

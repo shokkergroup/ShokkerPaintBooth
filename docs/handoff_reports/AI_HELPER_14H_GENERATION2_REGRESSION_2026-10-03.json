@@ -1,0 +1,124 @@
+{
+  "schema": "spb-ai-sprint-checkpoint/1",
+  "utc": "2026-10-04T04:10:48Z",
+  "scope": "Pre-generation2 source regression, actual-function VM contracts; separate native acceptance pending",
+  "contracts": [
+    {
+      "file": "tests/ai_named_part_commands_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_named_part_recolor_preserve_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_named_part_route_review_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_material_controls_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_material_controls_review_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_material_route_review_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_part_registry_undo_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_part_registry_w5_review_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_part_crossroute_review_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_part_followup_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_part_followup_review_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_help_router_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_element_provenance_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_helper_w1_review_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_preservation_review_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_offline_preservation_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_request_composition_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_composition_w1_review_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_stack_scope_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_source_colour_scope_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_help_action_w3_review_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_self_help_w4_review_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_self_help_mode_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/ai_mcp_completion_contract.cjs",
+      "result": "PASS"
+    },
+    {
+      "file": "tests/codex_mcp_client_contract.cjs",
+      "result": "PASS"
+    }
+  ],
+  "pass_count": 25,
+  "source_sha256": {
+    "js/spb-pro-ai.js": "115f602d49e465b6f49530b07a4c2e4b81e8d6089c2d8204bcae9d57807690d4",
+    "js/spb-pro-edit.js": "d4cdd87efc9a0ffab5aa923134c13bcba722e68fb91f1f4899ea16d61b204f0c",
+    "js/spb-pro-design.js": "0f5a99f5ecca374c955df54ae31e6b1e4f4b5ea559284c396c84bf0c38bb2d7b",
+    "js/spb-ai-material-controls.js": "1a8ce44bcff196f63404d42b0654833c660b387cc550835081e018d3b8b14f70",
+    "js/spb-pro-zone-kit.js": "6968963fc8d382e3ecda629089a71a73a519270c0b577e98df03d9f7d48d68d0",
+    "js/spb-pro-elements.js": "5fce967a04b693e9b49416e211378c6f3b903be8ffbb4851265b9080c571ec7c",
+    "js/spb-pro-advisor.js": "e76c44edb5f613b2a6d5faf768c130f31097e58dc8c80c6d7e4c8907b513ec7e",
+    "js/spb-self-help.js": "af2219158b1c6fc307d8f18288b0aa8d766774f7c165f1a45e9bd383f7223e26"
+  },
+  "limitations": [
+    "W9 independent full-route F07 retest is a separate pending gate",
+    "W10 lifecycle module is not integrated or installed",
+    "W13 car-map async source binding is in a separate active lane"
+  ],
+  "paid_provider_calls": 0
+}

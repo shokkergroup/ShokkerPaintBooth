@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Car Intelligence Library — Shokker Paint Booth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080818; --cyan:#00e5ff; --gold:#ffaa00; --text:#d8d8e8;
+  --panel:#11112a; --muted:#8a8aa8;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:'Inter',system-ui,sans-serif; line-height:1.5;
+  padding:28px clamp(16px,4vw,48px);
+}
+h1,h2,h3 { font-family:'Rajdhani',sans-serif; letter-spacing:.5px; margin:0 0 .2em; }
+h1 { font-size:clamp(26px,4vw,40px); color:var(--cyan); text-transform:uppercase; }
+h2 { font-size:22px; color:var(--gold); margin-top:1.4em; }
+h3 { font-size:16px; color:var(--cyan); }
+a { color:var(--cyan); text-decoration:none; }
+a:hover { text-decoration:underline; }
+.muted { color:var(--muted); }
+.stat { color:var(--gold); font-weight:600; font-family:'Rajdhani',sans-serif; }
+.crumb { font-family:'Rajdhani',sans-serif; font-size:14px; margin-bottom:14px;
+  text-transform:uppercase; letter-spacing:1px; }
+.subtitle { color:var(--muted); font-size:15px; margin:.2em 0 1.4em; }
+.chips { display:flex; gap:10px; flex-wrap:wrap; margin:.4em 0 1.2em; }
+.chip { background:var(--panel); border:1px solid #26264a; border-radius:999px;
+  padding:6px 14px; font-size:13px; font-family:'Rajdhani',sans-serif;
+  letter-spacing:.5px; }
+.chip b { color:var(--gold); }
+.panel { background:var(--panel); border:1px solid #20203e; border-radius:14px;
+  padding:18px; margin:14px 0; }
+img { display:block; max-width:100%; }
+.maps { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px; margin:10px 0; }
+.mapcard { background:var(--panel); border:1px solid #20203e; border-radius:12px;
+  overflow:hidden; }
+.mapcard img { width:100%; aspect-ratio:1/1; object-fit:cover;
+  background:#000; border-bottom:1px solid #20203e; }
+.mapcard .cap { padding:12px 14px; }
+.mapcard .cap b { color:var(--cyan); font-family:'Rajdhani',sans-serif;
+  font-size:15px; letter-spacing:.5px; }
+.mapcard .cap p { margin:.35em 0 0; font-size:13px; color:var(--muted); }
+.gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:14px; margin:10px 0; }
+.shot { background:var(--panel); border:1px solid #20203e; border-radius:10px;
+  overflow:hidden; }
+.shot img { width:100%; aspect-ratio:1/1; object-fit:cover; background:#000; }
+.shot .name { padding:8px 10px; font-size:12px; color:var(--muted);
+  font-family:'Rajdhani',sans-serif; letter-spacing:.5px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.notes { font-size:15px; }
+.notes li { margin:.35em 0; }
+.cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:16px; margin:10px 0; }
+.car { display:block; background:var(--panel); border:1px solid #20203e;
+  border-radius:12px; overflow:hidden; transition:border-color .15s,transform .15s; }
+.car:hover { border-color:var(--cyan); transform:translateY(-3px); text-decoration:none; }
+.car img { width:100%; aspect-ratio:1/1; object-fit:cover; background:#000;
+  border-bottom:1px solid #20203e; }
+.car .meta { padding:12px 14px; }
+.car .meta b { color:var(--cyan); font-family:'Rajdhani',sans-serif; font-size:17px;
+  display:block; letter-spacing:.5px; }
+.car .meta span { color:var(--muted); font-size:13px; }
+.car .meta .tf { color:var(--gold); }
+.footer { margin-top:40px; padding-top:18px; border-top:1px solid #20203e;
+  color:var(--muted); font-size:13px; }
+</style>
+</head><body>
+<h1>Car Intelligence Library</h1>
+<p class="subtitle">Unsupervised per-car template learning across every iRacing livery — the
+consensus look, where the template lives, and where painters actually paint.</p>
+<div class="chips">
+  <span class="chip">Cars learned <b>67</b></span>
+  <span class="chip">Liveries analyzed <b>3,305</b></span>
+</div>
+<h2>Dirt Late Models <span class="muted" style="font-size:15px">(2)</span></h2><div class="cards">
+<a class="car" href="dirtlatemodel_350/index.html"><img src="dirtlatemodel_350/median.png" alt="dirtlatemodel 350" loading="lazy"><div class="meta"><b>dirtlatemodel 350</b><span>160 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="dirtlatemodel_358/index.html"><img src="dirtlatemodel_358/median.png" alt="dirtlatemodel 358" loading="lazy"><div class="meta"><b>dirtlatemodel 358</b><span>160 liveries · <span class="tf">32% template</span></span></div></a>
+</div>
+<h2>Stock Cars <span class="muted" style="font-size:15px">(14)</span></h2><div class="cards">
+<a class="car" href="stockcars2_arcachevy25/index.html"><img src="stockcars2_arcachevy25/median.png" alt="stockcars2 arcachevy25" loading="lazy"><div class="meta"><b>stockcars2 arcachevy25</b><span>160 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="stockcars2_arcaford25/index.html"><img src="stockcars2_arcaford25/median.png" alt="stockcars2 arcaford25" loading="lazy"><div class="meta"><b>stockcars2 arcaford25</b><span>160 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="stockcars2_chevy_gen4cup/index.html"><img src="stockcars2_chevy_gen4cup/median.png" alt="stockcars2 chevy gen4cup" loading="lazy"><div class="meta"><b>stockcars2 chevy gen4cup</b><span>160 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="stockcars_chevymontecarlo87/index.html"><img src="stockcars_chevymontecarlo87/median.png" alt="stockcars chevymontecarlo87" loading="lazy"><div class="meta"><b>stockcars chevymontecarlo87</b><span>160 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="stockcars_chevymontecarlo03/index.html"><img src="stockcars_chevymontecarlo03/median.png" alt="stockcars chevymontecarlo03" loading="lazy"><div class="meta"><b>stockcars chevymontecarlo03</b><span>130 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="stockcars2_arcatoyota25/index.html"><img src="stockcars2_arcatoyota25/median.png" alt="stockcars2 arcatoyota25" loading="lazy"><div class="meta"><b>stockcars2 arcatoyota25</b><span>99 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="stockcars_fordfusion/index.html"><img src="stockcars_fordfusion/median.png" alt="stockcars fordfusion" loading="lazy"><div class="meta"><b>stockcars fordfusion</b><span>47 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="stockcars_fordtaurus03/index.html"><img src="stockcars_fordtaurus03/median.png" alt="stockcars fordtaurus03" loading="lazy"><div class="meta"><b>stockcars fordtaurus03</b><span>32 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="stockcars_camarozl12018/index.html"><img src="stockcars_camarozl12018/median.png" alt="stockcars camarozl12018" loading="lazy"><div class="meta"><b>stockcars camarozl12018</b><span>29 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="stockcars2_nwford2013/index.html"><img src="stockcars2_nwford2013/median.png" alt="stockcars2 nwford2013" loading="lazy"><div class="meta"><b>stockcars2 nwford2013</b><span>21 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="stockcars_buicklesabre87/index.html"><img src="stockcars_buicklesabre87/median.png" alt="stockcars buicklesabre87" loading="lazy"><div class="meta"><b>stockcars buicklesabre87</b><span>18 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="stockcars_fordmustang2019/index.html"><img src="stockcars_fordmustang2019/median.png" alt="stockcars fordmustang2019" loading="lazy"><div class="meta"><b>stockcars fordmustang2019</b><span>12 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="stockcars2_camry2015/index.html"><img src="stockcars2_camry2015/median.png" alt="stockcars2 camry2015" loading="lazy"><div class="meta"><b>stockcars2 camry2015</b><span>11 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="stockcars_fordthunderbird87/index.html"><img src="stockcars_fordthunderbird87/median.png" alt="stockcars fordthunderbird87" loading="lazy"><div class="meta"><b>stockcars fordthunderbird87</b><span>6 liveries · <span class="tf">32% template</span></span></div></a>
+</div>
+<h2>Dirt (other) <span class="muted" style="font-size:15px">(8)</span></h2><div class="cards">
+<a class="car" href="dirtmodified_358/index.html"><img src="dirtmodified_358/median.png" alt="dirtmodified 358" loading="lazy"><div class="meta"><b>dirtmodified 358</b><span>160 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="dirtumpmod/index.html"><img src="dirtumpmod/median.png" alt="dirtumpmod" loading="lazy"><div class="meta"><b>dirtumpmod</b><span>117 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="dirtsprint_winged_360/index.html"><img src="dirtsprint_winged_360/median.png" alt="dirtsprint winged 360" loading="lazy"><div class="meta"><b>dirtsprint winged 360</b><span>54 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="dirtmidget/index.html"><img src="dirtmidget/median.png" alt="dirtmidget" loading="lazy"><div class="meta"><b>dirtmidget</b><span>48 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="dirtsprint_winged_305/index.html"><img src="dirtsprint_winged_305/median.png" alt="dirtsprint winged 305" loading="lazy"><div class="meta"><b>dirtsprint winged 305</b><span>39 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="dirtmodified_bigblock/index.html"><img src="dirtmodified_bigblock/median.png" alt="dirtmodified bigblock" loading="lazy"><div class="meta"><b>dirtmodified bigblock</b><span>20 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="dirtministock/index.html"><img src="dirtministock/median.png" alt="dirtministock" loading="lazy"><div class="meta"><b>dirtministock</b><span>15 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="dirtsprint_winged_410/index.html"><img src="dirtsprint_winged_410/median.png" alt="dirtsprint winged 410" loading="lazy"><div class="meta"><b>dirtsprint winged 410</b><span>9 liveries · <span class="tf">32% template</span></span></div></a>
+</div>
+<h2>Late Models &amp; Trucks <span class="muted" style="font-size:15px">(5)</span></h2><div class="cards">
+<a class="car" href="latemodel2023/index.html"><img src="latemodel2023/median.png" alt="latemodel2023" loading="lazy"><div class="meta"><b>latemodel2023</b><span>59 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="latemodel/index.html"><img src="latemodel/median.png" alt="latemodel" loading="lazy"><div class="meta"><b>latemodel</b><span>34 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="superlatemodel/index.html"><img src="superlatemodel/median.png" alt="superlatemodel" loading="lazy"><div class="meta"><b>superlatemodel</b><span>31 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="trucks_silverado2019/index.html"><img src="trucks_silverado2019/median.png" alt="trucks silverado2019" loading="lazy"><div class="meta"><b>trucks silverado2019</b><span>27 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="trucks_fordf150/index.html"><img src="trucks_fordf150/median.png" alt="trucks fordf150" loading="lazy"><div class="meta"><b>trucks fordf150</b><span>6 liveries · <span class="tf">32% template</span></span></div></a>
+</div>
+<h2>Other <span class="muted" style="font-size:15px">(38)</span></h2><div class="cards">
+<a class="car" href="skmodified/index.html"><img src="skmodified/median.png" alt="skmodified" loading="lazy"><div class="meta"><b>skmodified</b><span>146 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="skmodified_tour/index.html"><img src="skmodified_tour/median.png" alt="skmodified tour" loading="lazy"><div class="meta"><b>skmodified tour</b><span>134 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="streetstock/index.html"><img src="streetstock/median.png" alt="streetstock" loading="lazy"><div class="meta"><b>streetstock</b><span>108 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="protrucks_pro4truck/index.html"><img src="protrucks_pro4truck/median.png" alt="protrucks pro4truck" loading="lazy"><div class="meta"><b>protrucks pro4truck</b><span>91 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="dallarair18/index.html"><img src="dallarair18/median.png" alt="dallarair18" loading="lazy"><div class="meta"><b>dallarair18</b><span>68 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="legends_ford34c/index.html"><img src="legends_ford34c/median.png" alt="legends ford34c" loading="lazy"><div class="meta"><b>legends ford34c</b><span>63 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="protrucks_pro2lite/index.html"><img src="protrucks_pro2lite/median.png" alt="protrucks pro2lite" loading="lazy"><div class="meta"><b>protrucks pro2lite</b><span>61 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="formulair04/index.html"><img src="formulair04/median.png" alt="formulair04" loading="lazy"><div class="meta"><b>formulair04</b><span>59 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="formulavee/index.html"><img src="formulavee/median.png" alt="formulavee" loading="lazy"><div class="meta"><b>formulavee</b><span>58 liveries · <span class="tf">33% template</span></span></div></a>
+<a class="car" href="silvercrown/index.html"><img src="silvercrown/median.png" alt="silvercrown" loading="lazy"><div class="meta"><b>silvercrown</b><span>45 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="ferrari488gt3/index.html"><img src="ferrari488gt3/median.png" alt="ferrari488gt3" loading="lazy"><div class="meta"><b>ferrari488gt3</b><span>37 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="bmwm4gt3/index.html"><img src="bmwm4gt3/median.png" alt="bmwm4gt3" loading="lazy"><div class="meta"><b>bmwm4gt3</b><span>34 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="dallarap217/index.html"><img src="dallarap217/median.png" alt="dallarap217" loading="lazy"><div class="meta"><b>dallarap217</b><span>30 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="rt2000/index.html"><img src="rt2000/median.png" alt="rt2000" loading="lazy"><div class="meta"><b>rt2000</b><span>30 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="dallara/index.html"><img src="dallara/median.png" alt="dallara" loading="lazy"><div class="meta"><b>dallara</b><span>27 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="rufrt12r_track/index.html"><img src="rufrt12r_track/median.png" alt="rufrt12r track" loading="lazy"><div class="meta"><b>rufrt12r track</b><span>27 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="porsche992rgt3/index.html"><img src="porsche992rgt3/median.png" alt="porsche992rgt3" loading="lazy"><div class="meta"><b>porsche992rgt3</b><span>24 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="cadillacvseriesrgtp/index.html"><img src="cadillacvseriesrgtp/median.png" alt="cadillacvseriesrgtp" loading="lazy"><div class="meta"><b>cadillacvseriesrgtp</b><span>21 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="usf2000usf17/index.html"><img src="usf2000usf17/median.png" alt="usf2000usf17" loading="lazy"><div class="meta"><b>usf2000usf17</b><span>21 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="formulamazda/index.html"><img src="formulamazda/median.png" alt="formulamazda" loading="lazy"><div class="meta"><b>formulamazda</b><span>20 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="lamborghinievogt3/index.html"><img src="lamborghinievogt3/median.png" alt="lamborghinievogt3" loading="lazy"><div class="meta"><b>lamborghinievogt3</b><span>20 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="streetstock_streetstock2/index.html"><img src="streetstock_streetstock2/median.png" alt="streetstock streetstock2" loading="lazy"><div class="meta"><b>streetstock streetstock2</b><span>19 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="ferrarievogt3/index.html"><img src="ferrarievogt3/median.png" alt="ferrarievogt3" loading="lazy"><div class="meta"><b>ferrarievogt3</b><span>18 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="radical_sr8/index.html"><img src="radical_sr8/median.png" alt="radical sr8" loading="lazy"><div class="meta"><b>radical sr8</b><span>17 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="ministock/index.html"><img src="ministock/median.png" alt="ministock" loading="lazy"><div class="meta"><b>ministock</b><span>16 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="specracer/index.html"><img src="specracer/median.png" alt="specracer" loading="lazy"><div class="meta"><b>specracer</b><span>15 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="bmwm2csr/index.html"><img src="bmwm2csr/median.png" alt="bmwm2csr" loading="lazy"><div class="meta"><b>bmwm2csr</b><span>13 liveries · <span class="tf">33% template</span></span></div></a>
+<a class="car" href="legends_dirtford34c/index.html"><img src="legends_dirtford34c/median.png" alt="legends dirtford34c" loading="lazy"><div class="meta"><b>legends dirtford34c</b><span>13 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="porsche911rgt3/index.html"><img src="porsche911rgt3/median.png" alt="porsche911rgt3" loading="lazy"><div class="meta"><b>porsche911rgt3</b><span>12 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="c8rvettegte/index.html"><img src="c8rvettegte/median.png" alt="c8rvettegte" loading="lazy"><div class="meta"><b>c8rvettegte</b><span>11 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="mclaren720sgt3/index.html"><img src="mclaren720sgt3/median.png" alt="mclaren720sgt3" loading="lazy"><div class="meta"><b>mclaren720sgt3</b><span>11 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="porsche963gtp/index.html"><img src="porsche963gtp/median.png" alt="porsche963gtp" loading="lazy"><div class="meta"><b>porsche963gtp</b><span>11 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="mx5_mx52016/index.html"><img src="mx5_mx52016/median.png" alt="mx5 mx52016" loading="lazy"><div class="meta"><b>mx5 mx52016</b><span>8 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="audir8lmsevo2gt3/index.html"><img src="audir8lmsevo2gt3/median.png" alt="audir8lmsevo2gt3" loading="lazy"><div class="meta"><b>audir8lmsevo2gt3</b><span>7 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="ferrari499p/index.html"><img src="ferrari499p/median.png" alt="ferrari499p" loading="lazy"><div class="meta"><b>ferrari499p</b><span>7 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="nissangtpzxt/index.html"><img src="nissangtpzxt/median.png" alt="nissangtpzxt" loading="lazy"><div class="meta"><b>nissangtpzxt</b><span>7 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="fordmustanggt3/index.html"><img src="fordmustanggt3/median.png" alt="fordmustanggt3" loading="lazy"><div class="meta"><b>fordmustanggt3</b><span>6 liveries · <span class="tf">32% template</span></span></div></a>
+<a class="car" href="mercedesamgevogt3/index.html"><img src="mercedesamgevogt3/median.png" alt="mercedesamgevogt3" loading="lazy"><div class="meta"><b>mercedesamgevogt3</b><span>6 liveries · <span class="tf">32% template</span></span></div></a>
+</div>
+<div class="footer">Shokker Paint Booth · Car Intelligence · generated by _car_intel_html.py ·
+re-run any time to refresh as more cars finish learning.</div>
+</body></html>

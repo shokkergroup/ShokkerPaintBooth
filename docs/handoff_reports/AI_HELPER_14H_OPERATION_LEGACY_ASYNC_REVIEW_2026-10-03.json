@@ -1,0 +1,175 @@
+{
+  "status": "FINDINGS",
+  "task": "W28 legacy async/lifecycle source audit",
+  "oracle": {
+    "sha256": "0C8EE843BE22A9FC444E7FBEFC77EE7F3459159C0DD6A137ADD8A93DB3772A96",
+    "cases": [
+      {
+        "id": "support-send-source-switch",
+        "expected": "Late support reply cannot publish to replacement source."
+      },
+      {
+        "id": "warm-teach-source-switch",
+        "expected": "Old warm/teach continuation cannot initiate on replacement source."
+      },
+      {
+        "id": "finish-card-source-switch",
+        "expected": "Delayed finish-card completion is source bound."
+      },
+      {
+        "id": "kit-use-source-switch",
+        "expected": "Delayed kit completion is source bound."
+      },
+      {
+        "id": "refine-critic-late-rejection",
+        "expected": "Late refinement failure cannot undo replacement/current owner."
+      },
+      {
+        "id": "cancel-preview-A-start-B-late-A-restore",
+        "expected": "A cleanup cannot clear B owner/busy/controller or overwrite B."
+      },
+      {
+        "id": "cancel-preview-manual-revision-conflict",
+        "expected": "Cancel restore refuses newer manual revision."
+      },
+      {
+        "id": "self-help-doit-immediate-finish",
+        "expected": "Synchronous selfhelp action is source/owner bound."
+      },
+      {
+        "id": "external-lease-begin-rejection",
+        "expected": "Failed lease begin cannot mutate or release another owner."
+      },
+      {
+        "id": "external-lease-success-release",
+        "expected": "Successful internally acquired lease ends once."
+      }
+    ]
+  },
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_w10_candidate/js/spb-pro-ai.js (frozen temp snapshot)",
+    "sha256": "CA049670C26C7E24960A81B7D4AC6402362C4C2E4DB954DBE5774AABB0011200",
+    "bytes": 410178
+  },
+  "operationModule": {
+    "path": "js/spb-ai-operation.js",
+    "sha256": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6"
+  },
+  "counts": {
+    "freshCases": 10,
+    "executedChecks": 10,
+    "passed": 10,
+    "failed": 0,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "browserCalls": 0
+  },
+  "findings": [
+    {
+      "id": "support-send-source-switch",
+      "result": {
+        "observed": "late result finished against generation 2",
+        "calls": 1
+      }
+    },
+    {
+      "id": "refine-critic-late-rejection",
+      "result": {
+        "observed": "late refine re-asked on generation 2",
+        "asks": 1
+      }
+    },
+    {
+      "id": "finish-card-source-switch",
+      "result": {
+        "observed": "delayed finish-card queued on generation 2",
+        "finishes": 1
+      }
+    },
+    {
+      "id": "kit-use-source-switch",
+      "result": {
+        "observed": "delayed kit queued on generation 2",
+        "finishes": 1
+      }
+    },
+    {
+      "id": "external-lease-begin-rejection",
+      "result": {
+        "beginCalls": 1,
+        "endCalls": 0,
+        "ok": false
+      }
+    },
+    {
+      "id": "external-lease-success-release",
+      "result": {
+        "beginCalls": 1,
+        "endCalls": 1
+      }
+    },
+    {
+      "id": "finish-card-kit-warm-reentry",
+      "result": {
+        "finishCardDirectWarmReentry": true,
+        "kitDirectWarmReentry": true
+      }
+    },
+    {
+      "id": "cancel-preview-and-revision",
+      "result": {
+        "refineHasNoOperationTicket": true,
+        "limit": "the base preview/cancel operation path is covered by W24 16-case suite, not re-executed here"
+      }
+    },
+    {
+      "id": "self-help-doit-immediate-finish",
+      "result": {
+        "route": "synchronous finish; no preceding await in DoIt branch"
+      }
+    },
+    {
+      "id": "warm-teach-route-no-source-ticket",
+      "result": {
+        "observed": "warm completion calls teachAll/finish with no ticket/current-source check"
+      }
+    }
+  ],
+  "actionable": {
+    "high": [
+      {
+        "route": "supportSend",
+        "source": "candidate lines 2602-2612",
+        "issue": "No operation ticket/source snapshot is captured before S.handle; delayed helper completion calls finish with an unbound result, which binds a fresh ticket for whichever document is current.",
+        "sink": "the .then success path at supportSend -> finish({offline:true,...}, text, 'ask')"
+      },
+      {
+        "route": "refine",
+        "source": "candidate lines 2646-2654",
+        "issue": "refine waits for preview settlement without capturing source/revision/owner, then calls ask on the live document using the old entry.request; source replacement during wait re-targets the critique."
+      },
+      {
+        "route": "useFinishCard/useKit",
+        "source": "candidate lines 1976-1981, 1999-2004",
+        "issue": "CAR.ensure continuation clears shared busy/progress and recursively re-enters against the then-current document; card/kit operations have no operation ticket guard."
+      }
+    ],
+    "medium": [
+      {
+        "route": "mcpCall",
+        "source": "candidate lines 2109-2119",
+        "issue": "Wrapper acquires external lease and releases exactly once for success/failure; this audit tested rejection and resolve using a controlled lease stub, not concrete SpbAiLease persistence/timeout behavior."
+      }
+    ],
+    "notes": [
+      "DoIt branch is synchronous and calls finish immediately; no awaited stale continuation observed. Its finish sink starts/binds a fresh request; the request path itself is therefore not certified by this local callback check.",
+      "W24 CA049 candidate 16/16 report remains separate and unchanged; this W28 suite does not claim those cases again."
+    ]
+  },
+  "limits": [
+    "Candidate read from frozen temp snapshot and exact-byte hash checked; no moving source file used.",
+    "Actual candidate callback/function bodies and standalone operation module loaded. Only provider/native effects and external lease adapter were controlled stubs.",
+    "Queued preview A/B restore and manual revision conflict were source-checked here only; refer to separate W24 route report for broad cancellation/preview coverage.",
+    "No live provider, renderer, browser, MCP server or native application calls."
+  ]
+}

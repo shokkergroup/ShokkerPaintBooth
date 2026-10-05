@@ -1,0 +1,86 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon_blacklight",
+  "display_name": "Ultraviolet Bloom",
+  "carrier": "smoked UV resin packed with rupturing fluorescent microcapsules",
+  "material_story": {
+    "M": "exposed crescent lips, nuclei, and cleavage shards lead; quenched dimples fall",
+    "R": "rupture wedges, shards, dust, and squeeze debris roughen independently of smooth nuclei",
+    "Cc": "intact capsule skins and capillary necks retain clear; fractures and dust interrupt it"
+  },
+  "vetoes": [
+    "polka dots, macro blooms, flower silhouettes, or bubble wallpaper",
+    "floating confetti disconnected from capsule anatomy",
+    "generic noise or unrelated spec texture",
+    "any authored primitive outside 8\u201332px native"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 1.455138,
+  "material_stats": {
+    "std": {
+      "M": 82.790024,
+      "R": 83.299179,
+      "Cc": 83.260689
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.432683,
+      "M_Cc": 0.557109,
+      "R_Cc": 0.087999
+    }
+  },
+  "geometry_stats": {
+    "family_count": 10,
+    "families": {
+      "resin microfacets": 6561,
+      "capsule bodies": 5142,
+      "leading crescents": 5142,
+      "rupture wedges": 3426,
+      "fluorescent nuclei": 2945,
+      "capillary necks": 2177,
+      "satellite droplets": 5491,
+      "cleavage shards": 4140,
+      "uv dust": 2448,
+      "quench dimples": 1506
+    },
+    "width_native_min": 8.0,
+    "width_native_median": 9.7,
+    "width_native_p90": 14.227,
+    "width_native_max": 18.986,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "resin microfacets": 0.439833,
+    "capsule bodies": 0.318933,
+    "leading crescents": 0.142633,
+    "rupture wedges": 0.070046,
+    "fluorescent nuclei": 0.085859,
+    "capillary necks": 0.113027,
+    "satellite droplets": 0.112679,
+    "cleavage shards": 0.057231,
+    "quench dimples": 0.042488,
+    "uv dust": 0.046904
+  }
+}

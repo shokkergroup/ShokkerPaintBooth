@@ -1,0 +1,62 @@
+{
+  "review": "W10 independent lease/cancel lifecycle review",
+  "date_utc": "2026-10-03",
+  "scope": "Offline source-only audit of js/spb-ai-lease.js and bounded actual functions from js/spb-pro-ai.js. No production, mirror, Wiki, native UI, or provider changes were made.",
+  "source_freeze": {
+    "lease_sha256": "D765444136C8CAE6FD46C79BC0730D5B9266AD70EA832BFB08438AB77CA0AD75",
+    "pro_ai_sha256_tested": "115F602D49E465B6F49530B07A4C2E4B81E8D6089C2D8204BCAE9D57807690D4",
+    "pro_ai_sha256_first_observed": "66E3145C710FBBD228AF25C4492D7D2EADE0CD9456FB333FF4BDA5D9541748FB",
+    "note": "The pro-AI file hash changed after first observation and before test hash pinning, despite this review making no edits to it. The contract pins the later 115F… hash; findings should be rechecked against the source state intended for integration."
+  },
+  "test": {
+    "path": "tests/ai_lease_cancel_review_contract.cjs",
+    "command": "node tests/ai_lease_cancel_review_contract.cjs",
+    "result": "FAIL 7/10 scenarios passed; three lifecycle invariants failed.",
+    "harness": "Runs extracted actual runTurn/runTurn2/ask/finish/finishCore/mcpCall/previewOptions and the actual cancel-handler branch, plus the actual lease module in VM. Provider responses are fake controllable Promises. Tool-callback queue collection, renderer/UI effects, and applyQueue are test doubles; applyQueue records current doc id and queue. No actual provider, canvas mutation, or native browser was used."
+  },
+  "findings": [
+    {
+      "severity": "P1",
+      "id": "cancel-ignored-provider-response-can-write",
+      "verdict": "confirmed",
+      "evidence": "Actual Cancel branch at js/spb-pro-ai.js:2721 sets _cancelOpts=true and aborts _ctl. The ordinary runTurn2 path calls AI.run at js/spb-pro-ai.js:691 and handles successful completion without checking _cancelOpts at js/spb-pro-ai.js:692. Actual finishCore applies the returned queue at js/spb-pro-ai.js:748 without a cancellation-generation guard.",
+      "probe": "Fake provider intentionally ignores AbortSignal, resolves successfully after Cancel; the real extracted ask/runTurn2/finish path applies its queue (1 recorded write; expected 0).",
+      "impact": "If a provider does not promptly honor AbortSignal, a user-canceled request may still paint. Cancel currently behaves as best-effort transport abort rather than revoking request authority."
+    },
+    {
+      "severity": "P1",
+      "id": "sync-provider-throw-strands-busy",
+      "verdict": "confirmed",
+      "evidence": "AI.run(opts) is invoked at js/spb-pro-ai.js:691 before the Promise success/rejection handlers are attached at :692.",
+      "probe": "Fake AI.run throws synchronously. ask rejects, `_busy` remains true and `_ctl` remains set; expected busy false and controller cleared.",
+      "impact": "A synchronous adapter/configuration failure can leave the composer locked in its working state."
+    },
+    {
+      "severity": "P1",
+      "id": "ordinary-request-applies-after-document-switch",
+      "verdict": "confirmed within the extracted flow",
+      "evidence": "finishCore only applies document/element identity validation when `entryOpts.elementRunIdentity` exists (guard at js/spb-pro-ai.js:711 and element guard at :747). Ordinary requests reach unconditional applyQueue at :748.",
+      "probe": "Start an ordinary ask on doc-A, change the harness current document to doc-B before resolving the fake provider, then invoke actual finish. applyQueue receives a write while current doc id is doc-B (expected 0 writes). The same test with an elementRunIdentity correctly rejects the changed target.",
+      "impact": "A slow ordinary answer can be applied to whichever document is active at completion, rather than the document that supplied its context."
+    }
+  ],
+  "passing_checks": [
+    "Normal delayed provider completion invokes the apply path once and clears busy.",
+    "Abort-aware provider rejects on Stop; old request does not write and a subsequent request starts.",
+    "Asynchronous provider rejection returns an error and clears busy/controller.",
+    "Element-scoped delayed response rejects changed element identity before apply.",
+    "External lease stays exclusive through active work even after the nominal 120-second idle TTL; settlement releases busy and permits later takeover.",
+    "External MCP core rejection returns a failure and releases busy/lease even when render is missing.",
+    "Cancel during delayed option preview restores the snapshot, skips later previews, and clears busy."
+  ],
+  "limitations": [
+    "This is a bounded VM harness, not a full Electron/DOM or live app test. It cannot prove renderer usability or actual canvas mutation behavior.",
+    "The tool queue is injected after the fake provider response because no actual model tool callback is exercised; actual finishCore and its apply decision are exercised.",
+    "The document-switch finding proves the extracted helper invokes applyQueue in the new-document state; a real applyQueue implementation may have independent guards not included in this W10 boundary.",
+    "The lease helper has no timeout for an active call. The review confirmed active lease exclusivity but did not simulate browser process termination or abandoned active state recovery."
+  ],
+  "owned_artifacts": [
+    "tests/ai_lease_cancel_review_contract.cjs",
+    "docs/handoff_reports/AI_HELPER_14H_LEASE_CANCEL_REVIEW_2026-10-03.json"
+  ]
+}

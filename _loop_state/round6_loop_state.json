@@ -1,0 +1,2826 @@
+{
+    "round":  6,
+    "started":  "2026-05-25T13:37:13.000Z",
+    "last_tick_processed_at":  "2026-05-27T13:03:55Z",
+    "owner_rated_processed":  [
+                                  "spec_oil_film_thick",
+                                  "adelson_checker_shadow",
+                                  "spec_woven_dyneema",
+                                  "spec_micro_chips",
+                                  "neural_dendrite",
+                                  "spec_wood_burl",
+                                  "crystal_growth",
+                                  "magnetic_field",
+                                  "flake_scatter",
+                                  "spec_holographic_foil",
+                                  "abstract_kandinsky_shapes",
+                                  "wear_scuff",
+                                  "spec_iridescent_film",
+                                  "spec_damascus_steel_spec",
+                                  "spec_velvet_sheen",
+                                  "sparkle_comet",
+                                  "salt_spray_corrosion",
+                                  "circuit_trace",
+                                  "demon_eye_field",
+                                  "brushed_cross",
+                                  "aniso_grain",
+                                  "airbrush_gradient_bloom",
+                                  "diamond_lattice",
+                                  "sparkle_champagne",
+                                  "brushed_sparkle",
+                                  "sparkle_shattered",
+                                  "brushed_linear_cool",
+                                  "brushed_radial",
+                                  "alligator_hide",
+                                  "abstract_expressionist_splatter",
+                                  "abstract_bauhaus_forms",
+                                  "cc_masking_edge",
+                                  "checker_flag_subtle",
+                                  "cloud_wisps",
+                                  "spec_wood_grain_fine",
+                                  "decal_lift_edge",
+                                  "cc_gloss_stripe",
+                                  "abstract_retro_wave",
+                                  "brushstroke_bold",
+                                  "cloud_wisps_cool",
+                                  "cloud_wisps_warm",
+                                  "diamond_dust",
+                                  "cc_fish_eye",
+                                  "chainmail_armor",
+                                  "hellfire_crackle",
+                                  "hand_polished",
+                                  "razor_wire_coil",
+                                  "engine_turn_radial_arc",
+                                  "dragon_scale_macro",
+                                  "engine_turn_starburst",
+                                  "engine_bay_grime",
+                                  "forged_carbon_chip",
+                                  "copper_patina_drip",
+                                  "chevron_bands",
+                                  "hairline_polish",
+                                  "guilloche_waves",
+                                  "heat_discoloration",
+                                  "nordic_rune_field",
+                                  "raptor_feather",
+                                  "brushed_diagonal",
+                                  "jaguar_rosette",
+                                  "pangolin_armor",
+                                  "spec_faceted_diamond",
+                                  "cc_spot_polish",
+                                  "snake_scale_diamond",
+                                  "aniso_grain_deep",
+                                  "spec_architectural_grid",
+                                  "spec_heat_scale",
+                                  "spec_mesh_perforated",
+                                  "diffraction_grating",
+                                  "diagonal_bands",
+                                  "cc_panel_pool",
+                                  "cc_drip_runs",
+                                  "cc_overspray_halo",
+                                  "dry_dust_film",
+                                  "engraved_crosshatch",
+                                  "guilloche_hobnail",
+                                  "guilloche_barleycorn",
+                                  "lava_crack",
+                                  "radiator_grille_mesh",
+                                  "spec_ballistic_weave",
+                                  "pebble_grain",
+                                  "spec_battle_scars",
+                                  "spec_chromatic_aberration",
+                                  "spec_chainlink_fence",
+                                  "spec_fiberglass_chopped",
+                                  "spec_galvanic_corrosion",
+                                  "spec_knurled_diamond",
+                                  "abstract_expressionist_splatter",
+                                  "cc_masking_edge",
+                                  "cc_spot_polish",
+                                  "cloud_wisps",
+                                  "copper_patina_drip",
+                                  "diamond_dust",
+                                  "heat_discoloration",
+                                  "spec_heat_scale",
+                                  "spec_mesh_perforated",
+                                  "aniso_grain_deep",
+                                  "concentric_ripple",
+                                  "crayon_wax_resist",
+                                  "crushed_glass",
+                                  "depth_gradient",
+                                  "drag_strip_burnout",
+                                  "edm_dimple",
+                                  "electric_branches",
+                                  "ember_field",
+                                  "exhaust_pipe_scorch",
+                                  "flow_lines",
+                                  "fly_cut_arcs",
+                                  "fractal_discharge",
+                                  "frosted_glass_etch",
+                                  "fungal_network",
+                                  "gold_leaf_torn",
+                                  "gradient_bands",
+                                  "gravel_chip_field",
+                                  "gravity_well",
+                                  "hex_blood_drip",
+                                  "holo_prism_shift",
+                                  "jeweled_guilloche",
+                                  "knurl_diamond",
+                                  "knurl_straight",
+                                  "lathe_concentric",
+                                  "marble_vein",
+                                  "meteor_impact",
+                                  "micro_sparkle",
+                                  "micro_sparkle_cool",
+                                  "mud_splatter_random",
+                                  "oil_slick",
+                                  "oil_streak_panel",
+                                  "orbital_swirl",
+                                  "patina_bloom",
+                                  "pit_lane_stripes",
+                                  "plasma_turbulence",
+                                  "prismatic_dust",
+                                  "race_number_ghost",
+                                  "racing_tape_residue",
+                                  "radial_sunburst",
+                                  "rain_droplet_beads",
+                                  "rust_bloom",
+                                  "sand_dune",
+                                  "shark_denticle",
+                                  "skull_tessellation",
+                                  "smoke_tendril",
+                                  "sonic_boom",
+                                  "sparkle_constellation",
+                                  "sparkle_electric_field",
+                                  "sparkle_firefly",
+                                  "sparkle_galaxy_swirl",
+                                  "sparkle_nebula",
+                                  "sparkle_rain",
+                                  "spec_aged_matte",
+                                  "spec_bokeh_scatter",
+                                  "spec_carbon_wet_layup",
+                                  "spec_cast_surface",
+                                  "spec_coral_reef",
+                                  "spec_corrugated_panel",
+                                  "spec_crystal_growth",
+                                  "spec_diffraction_grating",
+                                  "spec_electroplated_chrome",
+                                  "spec_expanded_metal",
+                                  "spec_fresnel_gradient",
+                                  "spec_knurled_straight",
+                                  "spec_leaf_venation",
+                                  "spec_light_leak",
+                                  "spec_liquid_metal",
+                                  "spec_magnetic_ferrofluid",
+                                  "spec_oxidized_pitting",
+                                  "spec_patina_verdigris",
+                                  "spec_peeling_clear",
+                                  "spec_powder_coat_texture",
+                                  "spec_riveted_plate",
+                                  "spec_rust_bloom",
+                                  "spec_shot_peened",
+                                  "spec_snake_scales",
+                                  "spec_sparkle_flake",
+                                  "spec_stone_granite",
+                                  "spec_stress_fractures",
+                                  "spec_subsurface_depth",
+                                  "spec_terrain_erosion",
+                                  "spec_thermal_spray",
+                                  "spec_weld_seam",
+                                  "spec_worn_edges",
+                                  "spiral_sweep",
+                                  "split_bands",
+                                  "sponsor_deboss",
+                                  "sponsor_emboss_v2",
+                                  "sponsor_tape_vinyl",
+                                  "spray_paint_drip",
+                                  "stardust_fine",
+                                  "sticker_bubble_film",
+                                  "stippled_dots_fine",
+                                  "suspension_rust_ring",
+                                  "tarmac_grit_embed",
+                                  "tiger_stripe_field",
+                                  "tire_rubber_transfer",
+                                  "tire_smoke_residue",
+                                  "tire_smoke_streaks",
+                                  "track_grime",
+                                  "undercarriage_spray",
+                                  "vinyl_seam",
+                                  "vinyl_wrap_texture",
+                                  "viper_pit_hex",
+                                  "voodoo_bone_fetish",
+                                  "voodoo_sigil_field",
+                                  "wave_ripple",
+                                  "wax_streak_polish",
+                                  "wet_track_gloss",
+                                  "wire_brushed_coarse",
+                                  "flake_scatter",
+                                  "wear_scuff",
+                                  "crackle_network",
+                                  "diamond_lattice",
+                                  "magnetic_field",
+                                  "neural_dendrite",
+                                  "circuit_trace",
+                                  "crystal_growth",
+                                  "brushed_sparkle",
+                                  "sparkle_comet",
+                                  "brushed_cross",
+                                  "hairline_polish",
+                                  "buffer_swirl",
+                                  "hand_polished",
+                                  "cc_fish_eye",
+                                  "cc_gloss_stripe",
+                                  "spec_faceted_diamond",
+                                  "spec_wood_grain_fine",
+                                  "spec_holographic_foil",
+                                  "spec_oil_film_thick",
+                                  "paint_drip_edge",
+                                  "decal_lift_edge",
+                                  "brake_dust_buildup",
+                                  "mother_of_pearl_inlay",
+                                  "cloud_wisps_warm",
+                                  "cloud_wisps_cool",
+                                  "engine_bay_grime",
+                                  "brushstroke_bold",
+                                  "abstract_retro_wave",
+                                  "forged_carbon_chip",
+                                  "snake_scale_diamond",
+                                  "pangolin_armor",
+                                  "hellfire_crackle",
+                                  "demon_eye_field",
+                                  "nordic_rune_field",
+                                  "razor_wire_coil"
+                              ],
+    "creative_rebuilds_log":  [
+                                  "abstract_bauhaus_forms",
+                                  "abstract_color_field_bleed",
+                                  "abstract_cubist_facets",
+                                  "abstract_expressionist_splatter",
+                                  "abstract_fluid_acrylic_pour",
+                                  "abstract_futurist_motion",
+                                  "abstract_hard_edge_field",
+                                  "abstract_ink_wash_gradient",
+                                  "abstract_minimalist_stripe",
+                                  "abstract_mondrian_grid",
+                                  "abstract_neon_glitch",
+                                  "abstract_op_art_circles",
+                                  "abstract_op_art_waves",
+                                  "abstract_retro_wave",
+                                  "abstract_rothko_field",
+                                  "abstract_suprematism",
+                                  "acid_etch",
+                                  "airbrush_gradient_bloom",
+                                  "alligator_hide",
+                                  "aniso_grain",
+                                  "aniso_grain_deep",
+                                  "banded_rows",
+                                  "bead_blast_uniform",
+                                  "brushed_arc",
+                                  "brushed_cross",
+                                  "brushed_diagonal",
+                                  "brushed_linear",
+                                  "brushed_linear_cool",
+                                  "brushed_linear_warm",
+                                  "brushed_radial",
+                                  "brushed_sparkle",
+                                  "brushstroke_bold",
+                                  "carbon_weave",
+                                  "cc_drip_runs",
+                                  "cc_edge_thin",
+                                  "cc_fish_eye",
+                                  "cc_gloss_stripe",
+                                  "cc_masking_edge",
+                                  "cc_overspray_halo",
+                                  "cc_panel_fade",
+                                  "cc_panel_pool",
+                                  "cc_spot_polish",
+                                  "cc_wet_zone",
+                                  "checker_flag_subtle",
+                                  "chevron_bands",
+                                  "circuit_trace",
+                                  "cloud_wisps",
+                                  "cloud_wisps_cool",
+                                  "cloud_wisps_warm",
+                                  "concentric_ripple",
+                                  "copper_patina_drip",
+                                  "crayon_wax_resist",
+                                  "crushed_glass",
+                                  "crystal_shimmer",
+                                  "decal_lift_edge",
+                                  "depth_gradient",
+                                  "diagonal_bands",
+                                  "diamond_dust",
+                                  "diamond_lattice",
+                                  "diffraction_grating",
+                                  "drag_strip_burnout",
+                                  "dragon_scale_macro",
+                                  "dry_dust_film",
+                                  "edm_dimple",
+                                  "electric_branches",
+                                  "ember_field",
+                                  "engine_bay_grime",
+                                  "engine_turn_radial_arc",
+                                  "engraved_crosshatch",
+                                  "exhaust_pipe_scorch",
+                                  "face_mill_bands",
+                                  "flow_lines",
+                                  "fly_cut_arcs",
+                                  "forged_carbon_chip",
+                                  "fractal_discharge",
+                                  "frosted_glass_etch",
+                                  "fungal_network",
+                                  "galaxy_swirl",
+                                  "gold_flake",
+                                  "gold_leaf_torn",
+                                  "gradient_bands",
+                                  "gravel_chip_field",
+                                  "gravity_well",
+                                  "guilloche_barleycorn",
+                                  "guilloche_hobnail",
+                                  "guilloche_moire_eng",
+                                  "guilloche_waves",
+                                  "hairline_polish",
+                                  "halftone_print",
+                                  "hand_polished",
+                                  "heat_discoloration",
+                                  "heat_distortion",
+                                  "hex_blood_drip",
+                                  "holo_prism_shift",
+                                  "holographic_flake",
+                                  "jeweled_guilloche",
+                                  "jeweling_circles",
+                                  "knurl_diamond",
+                                  "knurl_straight",
+                                  "lathe_concentric",
+                                  "lava_crack",
+                                  "marble_vein",
+                                  "metallic_sand",
+                                  "meteor_impact",
+                                  "micro_facets",
+                                  "micro_sparkle",
+                                  "micro_sparkle_cool",
+                                  "micro_sparkle_warm",
+                                  "moire_overlay",
+                                  "morning_dew_fog",
+                                  "mud_splatter_random",
+                                  "oil_slick",
+                                  "oil_streak_panel",
+                                  "orange_peel_texture",
+                                  "orbital_swirl",
+                                  "patina_bloom",
+                                  "pearl_micro",
+                                  "pebble_grain",
+                                  "pit_lane_stripes",
+                                  "plasma_turbulence",
+                                  "prismatic_dust",
+                                  "prismatic_shatter",
+                                  "quantum_noise",
+                                  "race_number_ghost",
+                                  "racing_tape_residue",
+                                  "radial_sunburst",
+                                  "radiator_grille_mesh",
+                                  "rain_droplet_beads",
+                                  "reptile_scale",
+                                  "rust_bloom",
+                                  "salt_spray_corrosion",
+                                  "sand_dune",
+                                  "smoke_tendril",
+                                  "snake_scale_diamond",
+                                  "sonic_boom",
+                                  "sparkle_champagne",
+                                  "sparkle_comet",
+                                  "sparkle_constellation",
+                                  "sparkle_electric_field",
+                                  "sparkle_firefly",
+                                  "sparkle_galaxy_swirl",
+                                  "sparkle_nebula",
+                                  "sparkle_rain",
+                                  "sparkle_shattered",
+                                  "spec_aerogel_surface",
+                                  "spec_aged_matte",
+                                  "spec_anisotropic_radial",
+                                  "spec_anodized_texture",
+                                  "spec_architectural_grid",
+                                  "spec_ballistic_weave",
+                                  "spec_battle_scars",
+                                  "spec_bokeh_scatter",
+                                  "spec_carbon_3k_fine",
+                                  "spec_carbon_forged",
+                                  "spec_carbon_plain_weave",
+                                  "spec_carbon_wet_layup",
+                                  "spec_cast_surface",
+                                  "spec_caustic_light",
+                                  "spec_chainlink_fence",
+                                  "spec_chromatic_aberration",
+                                  "spec_coral_reef",
+                                  "spec_corrugated_panel",
+                                  "spec_crystal_growth",
+                                  "spec_diffraction_grating",
+                                  "spec_electroformed_texture",
+                                  "spec_electroplated_chrome",
+                                  "spec_expanded_metal",
+                                  "spec_faceted_diamond",
+                                  "spec_fiberglass_chopped",
+                                  "spec_fresnel_gradient",
+                                  "spec_galvanic_corrosion",
+                                  "spec_hammered_dimple",
+                                  "spec_heat_scale",
+                                  "spec_hexagonal_tiles",
+                                  "spec_holographic_foil",
+                                  "spec_knurled_diamond",
+                                  "spec_knurled_straight",
+                                  "spec_laser_etched",
+                                  "spec_leaf_venation",
+                                  "spec_light_leak",
+                                  "spec_liquid_metal",
+                                  "spec_magnetic_ferrofluid",
+                                  "spec_mesh_perforated",
+                                  "spec_micro_chips",
+                                  "spec_oxidized_pitting",
+                                  "spec_patina_verdigris",
+                                  "spec_peeling_clear",
+                                  "spec_powder_coat_texture",
+                                  "spec_pvd_coating",
+                                  "spec_retroreflective",
+                                  "spec_riveted_plate",
+                                  "spec_rust_bloom",
+                                  "spec_sandblast_strip",
+                                  "spec_shot_peened",
+                                  "spec_snake_scales",
+                                  "spec_sparkle_flake",
+                                  "spec_stamped_emboss",
+                                  "spec_stone_granite",
+                                  "adelson_checker_shadow",
+                                  "spec_stress_fractures",
+                                  "spec_subsurface_depth",
+                                  "spec_terrain_erosion",
+                                  "spec_thermal_spray",
+                                  "spec_velvet_sheen",
+                                  "spec_water_ripple_spec",
+                                  "spec_weld_seam",
+                                  "spec_wood_grain_fine",
+                                  "spec_worn_edges",
+                                  "spiral_sweep",
+                                  "split_bands",
+                                  "sponsor_deboss",
+                                  "sponsor_emboss_v2",
+                                  "sponsor_tape_vinyl",
+                                  "spray_paint_drip",
+                                  "stardust_fine",
+                                  "sticker_bubble_film",
+                                  "stippled_dots_fine",
+                                  "suspension_rust_ring",
+                                  "tarmac_grit_embed",
+                                  "tire_rubber_transfer",
+                                  "tire_smoke_residue",
+                                  "tire_smoke_streaks",
+                                  "topographic_steps",
+                                  "track_grime",
+                                  "undercarriage_spray",
+                                  "vinyl_seam",
+                                  "vinyl_stretched",
+                                  "vinyl_wrap_texture",
+                                  "voodoo_sigil_field",
+                                  "voronoi_fracture",
+                                  "wave_bands",
+                                  "wave_ripple",
+                                  "wax_streak_polish",
+                                  "wear_scuff",
+                                  "wet_track_gloss",
+                                  "wire_brushed_coarse",
+                                  "woven_mesh",
+                                  "viper_pit_hex",
+                                  "shark_denticle",
+                                  "voodoo_bone_fetish",
+                                  "tiger_stripe_field",
+                                  "skull_tessellation",
+                                  {
+                                      "mode":  "CODEX_HEARTBEAT",
+                                      "tick":  "2026-05-27-codex-loop5",
+                                      "patterns":  [
+                                                       "stardust_fine",
+                                                       "sticker_bubble_film",
+                                                       "stippled_dots_fine",
+                                                       "suspension_rust_ring",
+                                                       "tarmac_grit_embed",
+                                                       "tiger_stripe_field",
+                                                       "tire_rubber_transfer",
+                                                       "tire_smoke_residue",
+                                                       "tire_smoke_streaks",
+                                                       "track_grime",
+                                                       "undercarriage_spray",
+                                                       "vinyl_seam",
+                                                       "vinyl_wrap_texture",
+                                                       "viper_pit_hex",
+                                                       "voodoo_bone_fetish",
+                                                       "voodoo_sigil_field",
+                                                       "wave_ripple",
+                                                       "wax_streak_polish",
+                                                       "wet_track_gloss",
+                                                       "wire_brushed_coarse"
+                                                   ],
+                                      "started_at":  "2026-05-27T01:58:54Z",
+                                      "ended_at":  "2026-05-27T01:58:54Z",
+                                      "render_min_ms":  1173.4,
+                                      "render_max_ms":  2036.2,
+                                      "render_mean_ms":  1435.7,
+                                      "second_pass":  true,
+                                      "creativity_note":  "SPB-RATE10 Codex heartbeat loop 5: 20 remaining visible unrated art cards rebuilt/replaced, leaving only adelson_checker_shadow rename cleanup. Direction: fine stardust, sticker/vinyl bubble film, dense stipple/rust rings, tarmac and rubber transfer, smoke residue/streaks, tiger/predator striping, viper hex pit, voodoo bone/sigil spirit relics, wave lacquer, wet track gloss, and wire/wax machined polish. Visual pass strengthened flat stardust/wave/wet-gloss outputs and fixed OpenCV channel-slice rendering for voodoo overlays."
+                                  },
+                                  {
+                                      "mode":  "CODEX_HEARTBEAT",
+                                      "tick":  "2026-05-27-codex-loop6",
+                                      "patterns":  [
+                                                       "flake_scatter",
+                                                       "wear_scuff",
+                                                       "crackle_network",
+                                                       "diamond_lattice",
+                                                       "magnetic_field",
+                                                       "neural_dendrite",
+                                                       "circuit_trace",
+                                                       "crystal_growth",
+                                                       "brushed_sparkle",
+                                                       "sparkle_comet",
+                                                       "brushed_cross",
+                                                       "hairline_polish",
+                                                       "buffer_swirl",
+                                                       "hand_polished",
+                                                       "cc_fish_eye",
+                                                       "cc_gloss_stripe",
+                                                       "spec_faceted_diamond",
+                                                       "spec_wood_grain_fine",
+                                                       "spec_holographic_foil",
+                                                       "spec_oil_film_thick",
+                                                       "paint_drip_edge",
+                                                       "decal_lift_edge",
+                                                       "brake_dust_buildup",
+                                                       "mother_of_pearl_inlay",
+                                                       "cloud_wisps_warm",
+                                                       "cloud_wisps_cool"
+                                                   ],
+                                      "started_at":  "2026-05-27T02:11:10Z",
+                                      "ended_at":  "2026-05-27T02:11:10Z",
+                                      "render_min_ms":  918.4,
+                                      "render_max_ms":  2113.5,
+                                      "render_mean_ms":  1427.6,
+                                      "second_pass":  true,
+                                      "creativity_note":  "SPB-RATE10 Codex heartbeat loop 6: first 25 hidden pending owner-rated REBUILD/MIXED cards rebuilt after latest rating. Direction: fine metallic flakes, clearcoat scuffs/fisheyes/gloss stripes, machined polish and buffer swirls, circuit/neural/magnetic line networks, diamond facets/lattice, pearl inlay, wood grain, oil film, brake dust, decal lift and warm spirit wisps."
+                                  },
+                                  {
+                                      "mode":  "CODEX_HEARTBEAT",
+                                      "tick":  "2026-05-27-codex-loop7",
+                                      "patterns":  [
+                                                       "engine_bay_grime",
+                                                       "brushstroke_bold",
+                                                       "abstract_retro_wave",
+                                                       "forged_carbon_chip",
+                                                       "snake_scale_diamond",
+                                                       "pangolin_armor",
+                                                       "hellfire_crackle",
+                                                       "demon_eye_field",
+                                                       "nordic_rune_field",
+                                                       "razor_wire_coil"
+                                                   ],
+                                      "started_at":  "2026-05-27T03:17:11Z",
+                                      "ended_at":  "2026-05-27T03:17:11Z",
+                                      "render_min_ms":  897.5,
+                                      "render_max_ms":  1732.1,
+                                      "render_mean_ms":  1307.2,
+                                      "second_pass":  true,
+                                      "creativity_note":  "SPB-RATE10 Codex heartbeat loop 7: final hidden pending owner-rated rebuilds. Direction: engine grime, fine brushstroke finish, retro prism waves, forged carbon chips, snake/pangolin predator scales, hellfire crackle, demon eye occult field, Nordic rune etching, and razor wire coil."
+                                  }
+                              ],
+    "ticks":  [
+                  {
+                      "ts":  "2026-05-25T14:01:02Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "wax_streak_polish",
+                                       "fungal_network",
+                                       "abstract_suprematism",
+                                       "spec_worn_edges",
+                                       "stippled_dots_fine"
+                                   ],
+                      "render_times_ms":  {
+                                              "wax_streak_polish":  63.3,
+                                              "fungal_network":  84.5,
+                                              "abstract_suprematism":  19.4,
+                                              "spec_worn_edges":  134.1,
+                                              "stippled_dots_fine":  178.4
+                                          },
+                      "render_min_ms":  19.4,
+                      "render_max_ms":  178.4,
+                      "render_mean_ms":  96,
+                      "failures":  [
+
+                                   ]
+                  },
+                  {
+                      "ts":  "2026-05-25T14:15:25Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "spec_anisotropic_radial",
+                                       "abstract_minimalist_stripe",
+                                       "spec_galvanic_corrosion",
+                                       "cc_spot_polish",
+                                       "orbital_swirl"
+                                   ],
+                      "render_times_ms":  {
+                                              "spec_anisotropic_radial":  70.2,
+                                              "abstract_minimalist_stripe":  10.5,
+                                              "spec_galvanic_corrosion":  37.9,
+                                              "cc_spot_polish":  47.2,
+                                              "orbital_swirl":  74.4
+                                          },
+                      "render_min_ms":  10.5,
+                      "render_max_ms":  74.4,
+                      "render_mean_ms":  48,
+                      "failures":  [
+
+                                   ],
+                      "notes":  "Creative rebuilds: starburst rays + chevron tangent (anisotropic_radial); ghost-stripes + pencil dust + cross-ticks (minimalist_stripe); dendritic fingers + sparks + secondary fault (galvanic_corrosion); overspray halo + swirl traces + depression mottling (cc_spot_polish); hero spiral chains + lacquer pits + chromium dust band (orbital_swirl)"
+                  },
+                  {
+                      "ts":  "2026-05-25T14:31:06Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "spec_carbon_wet_layup",
+                                       "spec_stone_granite",
+                                       "abstract_cubist_facets",
+                                       "spec_stamped_emboss",
+                                       "spec_crystal_growth"
+                                   ],
+                      "render_times_ms":  {
+                                              "spec_carbon_wet_layup":  70.5,
+                                              "spec_stone_granite":  189.9,
+                                              "abstract_cubist_facets":  125.2,
+                                              "spec_stamped_emboss":  96.2,
+                                              "spec_crystal_growth":  72.4
+                                          },
+                      "render_min_ms":  70.5,
+                      "render_max_ms":  189.9,
+                      "render_mean_ms":  110.8,
+                      "failures":  [
+
+                                   ],
+                      "notes":  "Creative rebuilds: gravity sag drips + hairs + resin domes + bubbles + scrub bands (carbon_wet_layup); flame-torched feldspar + pyrite cubes + diagonal fissures + hornblende needles (stone_granite); Picasso heavy global slicing lines + overlapping translucent quad plates + dense shards (cubist_facets); offset hexagonal honeycomb die-cells + star rivets + die sparks (stamped_emboss); dendritic 5-10-arm needle starbursts with side branches + hex platelets + prismatic tip glints (crystal_growth)"
+                  },
+                  {
+                      "at":  "2026-05-25T14:44:32Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "bead_blast_uniform",
+                                       "spec_terrain_erosion",
+                                       "face_mill_bands",
+                                       "spec_electroplated_chrome",
+                                       "electric_branches"
+                                   ],
+                      "render_ms":  {
+                                        "min":  40.4,
+                                        "max":  150.6,
+                                        "mean":  72.3
+                                    },
+                      "notes":  "Creative rebuilds: added hero motifs (blast rosettes, halo+fork bursts, insert-tooth+dwell zigzags, river veins+delta fans, sunburst pips+flow lines)."
+                  },
+                  {
+                      "at":  "2026-05-25T15:00:54Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "spec_mesh_perforated",
+                                       "radiator_grille_mesh",
+                                       "sparkle_rain",
+                                       "heat_distortion",
+                                       "edm_dimple"
+                                   ],
+                      "render_ms":  {
+                                        "min":  23.6,
+                                        "max":  125.4,
+                                        "mean":  53
+                                    },
+                      "notes":  "creative rebuilds: heat=plumes+lens-rings, edm=organic-crater+recast-welts, mesh_perf=2layer+shadow-drop, rain=slanted-storm+comets+splash, radiator=horizontal-3D-slats"
+                  },
+                  {
+                      "ts":  "2026-05-25T15:17:15Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "gravity_well",
+                                       "aniso_grain_deep",
+                                       "spec_bokeh_scatter",
+                                       "spec_micro_chips",
+                                       "spec_magnetic_ferrofluid"
+                                   ],
+                      "render_times_ms":  {
+                                              "gravity_well":  119.2,
+                                              "aniso_grain_deep":  63.6,
+                                              "spec_bokeh_scatter":  109.3,
+                                              "spec_micro_chips":  167.8,
+                                              "spec_magnetic_ferrofluid":  131.9
+                                          },
+                      "render_stats":  {
+                                           "min":  63.6,
+                                           "max":  167.8,
+                                           "mean":  118.3
+                                       },
+                      "failures":  [
+
+                                   ],
+                      "notes":  "R6-creative ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â 5 unrated patterns rebuilt with multi-tier hero motifs. All 3 copies mirrored. py_compile clean. PATTERN_CATALOG smoke test passed at 256."
+                  },
+                  {
+                      "ts":  "2026-05-25T15:32:38Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "spec_peeling_clear",
+                                       "sparkle_nebula",
+                                       "spec_sandblast_strip",
+                                       "oil_slick",
+                                       "checker_flag_subtle"
+                                   ],
+                      "render_ms":  {
+                                        "min":  39,
+                                        "max":  103.9,
+                                        "mean":  72.7
+                                    }
+                  },
+                  {
+                      "ts":  "2026-05-25T15:47:12Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "holographic_flake",
+                                       "abstract_bauhaus_forms",
+                                       "cc_fish_eye",
+                                       "cc_edge_thin",
+                                       "spec_carbon_3k_fine"
+                                   ],
+                      "render_times_ms":  {
+                                              "holographic_flake":  249,
+                                              "abstract_bauhaus_forms":  38.3,
+                                              "cc_fish_eye":  123.9,
+                                              "cc_edge_thin":  39.8,
+                                              "spec_carbon_3k_fine":  55.6
+                                          },
+                      "render_min_ms":  38.3,
+                      "render_max_ms":  249,
+                      "render_mean_ms":  101.3,
+                      "failures":  [
+
+                                   ]
+                  },
+                  {
+                      "at":  "2026-05-25T16:00:56Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "frosted_glass_etch",
+                                       "brushed_arc",
+                                       "micro_facets",
+                                       "spec_battle_scars",
+                                       "spec_holographic_foil"
+                                   ],
+                      "render_ms_min":  38.2,
+                      "render_ms_max":  85.7,
+                      "render_ms_mean":  68.5,
+                      "notes":  "creative rebuilds ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â hero motifs added: caustic hexagrams, polish whorls, shatter stars, bullet craters + barbed-wire snags, rainbow ribbon sweeps + prismatic shards"
+                  },
+                  {
+                      "ts":  "2026-05-25T16:13:58Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "spec_hexagonal_tiles",
+                                       "cc_masking_edge",
+                                       "spec_liquid_metal",
+                                       "diamond_dust",
+                                       "race_number_ghost"
+                                   ],
+                      "render_ms":  {
+                                        "min":  25,
+                                        "max":  291.2,
+                                        "mean":  105.8
+                                    },
+                      "notes":  "Round-6 creative rebuilds: hero motifs added to each (glow tiles + glaze pour rivers / torn tape edge + adhesive ghosts / mercury veins + meniscus bloom / large-carat facet stars / mega-numeral silhouette + screw-hole rings)."
+                  },
+                  {
+                      "ts":  "2026-05-25T16:29:29Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "diamond_lattice",
+                                       "spec_anodized_texture",
+                                       "brushed_linear_warm",
+                                       "spec_carbon_plain_weave",
+                                       "exhaust_pipe_scorch"
+                                   ],
+                      "render_ms":  {
+                                        "min":  29,
+                                        "max":  111.3,
+                                        "mean":  73.8
+                                    }
+                  },
+                  {
+                      "ts":  "2026-05-25T16:44:30Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "cc_wet_zone",
+                                       "diffraction_grating",
+                                       "wave_ripple",
+                                       "brushstroke_bold",
+                                       "spec_fresnel_gradient"
+                                   ],
+                      "render_ms_min":  19.5,
+                      "render_ms_max":  117.7,
+                      "render_ms_mean_overall":  63.3,
+                      "notes":  "R6 creative rebuilds ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â added hero tiers + chroma diversity across 5 patterns"
+                  },
+                  {
+                      "ts":  "2026-05-25T16:56:25Z",
+                      "mode":  "A",
+                      "patterns":  [
+                                       "spec_oil_film_thick",
+                                       "adelson_checker_shadow"
+                                   ],
+                      "render_ms_256":  {
+                                            "spec_oil_film_thick":  76,
+                                            "adelson_checker_shadow":  23.1,
+                                            "min":  23.1,
+                                            "max":  76,
+                                            "mean":  49.6
+                                        },
+                      "notes":  "Owner ratings 4 and 3 REBUILD. oil_film_thick: shrunk panel-scale 20-100px pools to 8-26px fine pools + denser fill. stone_marble: shrunk vein thickness 24-60px -\u003e 4-16px, 3x more main veins, 6-14 tributaries each, denser mineral specks."
+                  },
+                  {
+                      "ts":  "2026-05-25T17:17:02Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "copper_patina_drip",
+                                       "abstract_rothko_field",
+                                       "micro_sparkle",
+                                       "spec_patina_verdigris",
+                                       "mud_splatter_random"
+                                   ],
+                      "render_ms_min":  33,
+                      "render_ms_max":  364,
+                      "render_ms_mean":  141,
+                      "notes":  "creative rebuild ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â copper_patina_drip braided rivers + strata; micro_sparkle nebula clusters with 4 sparkle tiers + diffraction crosses; spec_patina_verdigris dendritic reef with macro branches + 5-palette facets; abstract_rothko_field added side vignette + paint-pour drips off seams; mud_splatter_random jagged star-polygon blobs + gravity drips + ricochet arcs"
+                  },
+                  {
+                      "at":  "2026-05-25T17:31:15Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "abstract_retro_wave",
+                                       "sponsor_emboss_v2",
+                                       "hairline_polish",
+                                       "brushed_linear",
+                                       "tire_smoke_residue"
+                                   ],
+                      "render_ms_min":  10,
+                      "render_ms_max":  203,
+                      "render_ms_mean":  70
+                  },
+                  {
+                      "ts":  "2026-05-25T17:46:21Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "wave_bands",
+                                       "radial_sunburst",
+                                       "wet_track_gloss",
+                                       "undercarriage_spray",
+                                       "fractal_discharge"
+                                   ],
+                      "render_ms_min":  34.4,
+                      "render_ms_max":  105.5,
+                      "render_ms_mean":  77.8,
+                      "notes":  "Creative rebuilds: interferometric beat-waves, multi-scale prismatic stars, vertical streetlight slashes, polygonal mud chunks + spray cones, recursive Lichtenberg dendrites."
+                  },
+                  {
+                      "at":  "2026-05-25T17:58:00.485315Z",
+                      "mode":  "A",
+                      "patterns":  [
+                                       "spec_woven_dyneema",
+                                       "spec_micro_chips",
+                                       "neural_dendrite",
+                                       "spec_wood_burl",
+                                       "crystal_growth"
+                                   ],
+                      "render_ms":  {
+                                        "min":  41.3,
+                                        "max":  183.1,
+                                        "mean":  100.4
+                                    },
+                      "notes":  "Owner ratings drained: 5 newest. neural_dendrite + crystal_growth got HERO motifs (boring-\u003echaracter). spec_wood_burl + spec_micro_chips + spec_woven_dyneema got hero-feature upgrades (KEEP-\u003epush)."
+                  },
+                  {
+                      "at":  "2026-05-25T18:07:20.487Z",
+                      "mode":  "A",
+                      "patterns":  [
+                                       "magnetic_field",
+                                       "flake_scatter",
+                                       "spec_holographic_foil",
+                                       "abstract_kandinsky_shapes",
+                                       "wear_scuff"
+                                   ],
+                      "render_ms":  {
+                                        "min":  105.6,
+                                        "max":  282.4,
+                                        "mean":  158.8
+                                    },
+                      "notes":  "Owner-feedback rebuilds: wear_scuff shrunk macros to 8-32 px + 6 tiers; flake_scatter added polychrome chroma families + hex/tri hero facets + tear-flakes; magnetic_field added HERO flux loops + aurora ribbon; spec_holographic_foil added crinkle depth + sobel-crease ridges + crease fold lines, cut sparkle carpet from dominant to restrained; abstract_kandinsky_shapes 2.4x denser + 8-family chroma + crosshatch hero bars."
+                  },
+                  {
+                      "at":  "2026-05-25T18:18:31Z",
+                      "mode":  "A",
+                      "patterns":  [
+                                       "spec_iridescent_film",
+                                       "spec_damascus_steel_spec"
+                                   ],
+                      "render_ms_min":  11.7,
+                      "render_ms_max":  34.5,
+                      "render_ms_mean":  23.5,
+                      "notes":  "iridescent_film owner-2/REBUILD seems broken ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ hero rainbow band field + bubble curvature smears + film-edge arcs + per-flake independent uniforms. damascus 6/KEEP ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ killed 4-tier palette, lifted to continuous per-band M/R/CC uniforms, added forge-temper macro layer for chroma diversity."
+                  },
+                  {
+                      "at":  "2026-05-25T18:36:06.157984Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "spec_knurled_diamond",
+                                       "cloud_wisps_cool",
+                                       "spec_chromatic_aberration",
+                                       "spec_sparkle_flake",
+                                       "patina_bloom"
+                                   ],
+                      "render_ms_min":  47,
+                      "render_ms_max":  243,
+                      "render_ms_mean":  109,
+                      "notes":  "creative_rebuild_unrated_picks_v6"
+                  },
+                  {
+                      "ts":  "2026-05-25T18:50:23.221977Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "guilloche_moire_eng",
+                                       "spec_diffraction_grating",
+                                       "gradient_bands",
+                                       "pit_lane_stripes",
+                                       "guilloche_hobnail"
+                                   ],
+                      "render_times_ms":  {
+                                              "guilloche_moire_eng":  26.1,
+                                              "spec_diffraction_grating":  16.9,
+                                              "gradient_bands":  43.3,
+                                              "pit_lane_stripes":  70.5,
+                                              "guilloche_hobnail":  18.5
+                                          },
+                      "render_ms":  {
+                                        "min":  16.9,
+                                        "max":  70.5,
+                                        "mean":  35.1
+                                    },
+                      "failures":  [
+
+                                   ],
+                      "notes":  "R6 creative: moire_eng -\u003e 3-center triangular interference + centroid bullseye crown + tool burnish arcs. diffraction_grating -\u003e prismatic per-channel chroma envelope + zeroth-order bright spot HERO + sparkle gated to ridge crests. gradient_bands -\u003e diagonal iridescent oil-slick stratification + 12-22 bubble caustic AA rings HERO + per-channel phase-shifted iridescence. pit_lane_stripes -\u003e 3-5 long serpentine burnt-rubber skid arcs HERO + sodium light flares + diagonal axis. guilloche_hobnail -\u003e hex honeycomb lattice (broke square cliche) + 5-9 prismatic jewel-cap crown pins HERO + hex-edge engraved stitches."
+                  },
+                  {
+                      "at":  "2026-05-25T19:05:11.790501Z",
+                      "mode":  "B_creative",
+                      "patterns":  [
+                                       "abstract_op_art_circles",
+                                       "cc_overspray_halo",
+                                       "guilloche_barleycorn",
+                                       "spec_heat_scale",
+                                       "spec_expanded_metal"
+                                   ],
+                      "render_ms":  {
+                                        "min":  29.6,
+                                        "max":  47.4,
+                                        "mean":  40.8
+                                    },
+                      "notes":  "All 5 unrated. Added HERO motifs + wider chroma + extra tier stacking."
+                  },
+                  {
+                      "at":  "2026-05-25T19:18:54Z",
+                      "mode":  "B_creative",
+                      "patterns":  [
+                                       "cloud_wisps",
+                                       "gold_flake",
+                                       "rust_bloom",
+                                       "abstract_fluid_acrylic_pour",
+                                       "brushed_cross"
+                                   ],
+                      "render_times_ms":  {
+                                              "cloud_wisps":  45.2,
+                                              "gold_flake":  111.9,
+                                              "rust_bloom":  41.2,
+                                              "abstract_fluid_acrylic_pour":  25,
+                                              "brushed_cross":  56.5
+                                          },
+                      "render_min_ms":  25,
+                      "render_max_ms":  111.9,
+                      "render_mean_ms":  56,
+                      "note":  "Added HERO motifs: lightning forks (cloud_wisps), gold-leaf square tessellation (gold_flake), pinhole punctures+weep stains (rust_bloom), engine-turned rosettes (brushed_cross), skin-pull tear ribbon (abstract_fluid_acrylic_pour). All \u003c200ms at 256x256."
+                  },
+                  {
+                      "at":  "2026-05-25T19:35:49Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "spec_carbon_forged",
+                                       "spec_stress_fractures",
+                                       "abstract_hard_edge_field",
+                                       "lava_crack",
+                                       "spec_ballistic_weave"
+                                   ],
+                      "render_ms":  {
+                                        "min":  4.8,
+                                        "max":  79.5,
+                                        "mean":  47.8
+                                    },
+                      "notes":  "creative rebuild ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â added hero motifs + wider chroma; all \u003c80ms at 256^2"
+                  },
+                  {
+                      "at":  "2026-05-25T19:51:46Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "engine_bay_grime",
+                                       "drag_strip_burnout",
+                                       "abstract_futurist_motion",
+                                       "spec_riveted_plate",
+                                       "carbon_weave"
+                                   ],
+                      "render_ms_min":  18.7,
+                      "render_ms_max":  68.8,
+                      "render_ms_mean":  34.9,
+                      "notes":  "Creative R6 rebuilds: hex-bolt sunbursts (engine_bay_grime); scorch-band hero (drag_strip_burnout); chevron echo-train (abstract_futurist_motion); panel-joint w/ structural rivets (spec_riveted_plate); 45deg bias twill (carbon_weave). All compile, smoke-test pass, mirrored 3x."
+                  },
+                  {
+                      "at":  "2026-05-25T20:04:09Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "abstract_ink_wash_gradient",
+                                       "brushed_diagonal",
+                                       "brushed_sparkle",
+                                       "abstract_expressionist_splatter",
+                                       "marble_vein"
+                                   ],
+                      "render_ms":  {
+                                        "abstract_ink_wash_gradient":  43.6,
+                                        "brushed_diagonal":  52.8,
+                                        "brushed_sparkle":  69.8,
+                                        "abstract_expressionist_splatter":  40.8,
+                                        "marble_vein":  85.1
+                                    },
+                      "render_min":  39.7,
+                      "render_max":  90.7,
+                      "render_mean":  58.4,
+                      "summary":  "Mode B creative rebuild: added hero motifs (gold Calacatta veins, diagonal ribbon bands, supernova constellation, Pollock color territories, enso+kanji slashes)."
+                  },
+                  {
+                      "at":  "2026-05-25T20:21:11Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "sparkle_constellation",
+                                       "acid_etch",
+                                       "spec_water_ripple_spec",
+                                       "spec_weld_seam",
+                                       "spec_corrugated_panel"
+                                   ],
+                      "render_ms":  {
+                                        "sparkle_constellation":  33.3,
+                                        "acid_etch":  130.7,
+                                        "spec_water_ripple_spec":  35.8,
+                                        "spec_weld_seam":  162.7,
+                                        "spec_corrugated_panel":  59.9
+                                    },
+                      "render_ms_min":  33.3,
+                      "render_ms_max":  162.7,
+                      "render_ms_mean":  84.5,
+                      "failures":  [
+
+                                   ]
+                  },
+                  {
+                      "at":  "2026-05-25T20:37:11Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "crayon_wax_resist",
+                                       "spray_paint_drip",
+                                       "halftone_print",
+                                       "abstract_op_art_waves",
+                                       "abstract_mondrian_grid"
+                                   ],
+                      "render_ms_min":  33.2,
+                      "render_ms_max":  66.3,
+                      "render_ms_mean":  50.8,
+                      "failures":  0,
+                      "note":  "Creative rebuilds: HERO motifs added to each ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â crayon-stick swathes+wax flakes+resist puddles; cascading drip columns+nozzle-burst rosettes; CMY-misregistration plates+POW starbursts; 3rd wave family+phase-lens bulge+chroma nodes+signature B/W bands; tape-crease lines+gesso prime+signature block punch+intersection pucks."
+                  },
+                  {
+                      "iso_time":  "2026-05-25T20:49:37Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "knurl_straight",
+                                       "diagonal_bands",
+                                       "engraved_crosshatch",
+                                       "knurl_diamond",
+                                       "heat_discoloration"
+                                   ],
+                      "render_ms":  {
+                                        "min":  15.9,
+                                        "max":  69.6,
+                                        "mean":  37
+                                    },
+                      "summary":  "creative push: added hero motifs (wavy ribbons, burin gashes, oil-slick sweep, polished wear bands, accent ridges)"
+                  },
+                  {
+                      "tick_at":  "2026-05-25T21:05:08.302086Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "spec_fiberglass_chopped",
+                                       "prismatic_dust",
+                                       "spiral_sweep",
+                                       "brushed_radial",
+                                       "micro_sparkle_cool"
+                                   ],
+                      "render_ms":  {
+                                        "min":  58.7,
+                                        "max":  183,
+                                        "mean":  87.8
+                                    },
+                      "notes":  "Creative rebuilds: bundled chop clusters, triangular prism crystals, double-galaxy spirals, turbine tick rings, frost crystal snowflakes."
+                  },
+                  {
+                      "time":  "2026-05-25T21:21:11Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "spec_chainlink_fence",
+                                       "sonic_boom",
+                                       "sponsor_tape_vinyl",
+                                       "rain_droplet_beads",
+                                       "racing_tape_residue"
+                                   ],
+                      "render_time_ms":  {
+                                             "min":  33.6,
+                                             "max":  107.6,
+                                             "mean":  58
+                                         }
+                  },
+                  {
+                      "ts":  "2026-05-25T21:35:01Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "spec_oxidized_pitting",
+                                       "spec_leaf_venation",
+                                       "woven_mesh",
+                                       "sticker_bubble_film",
+                                       "sponsor_deboss"
+                                   ],
+                      "render_ms":  {
+                                        "spec_oxidized_pitting":  165.8,
+                                        "spec_leaf_venation":  108.1,
+                                        "woven_mesh":  70.6,
+                                        "sticker_bubble_film":  87.7,
+                                        "sponsor_deboss":  45.5,
+                                        "min":  45.5,
+                                        "max":  165.8,
+                                        "mean":  95.5
+                                    },
+                      "failures":  [
+
+                                   ],
+                      "notes":  "R6 creative: oxidized_pitting -\u003e chloride colony clusters + HERO exfoliating scale lifts + gravity sweat streaks; leaf_venation -\u003e midrib+pinnate families + HERO dew droplet beads + tendril curl sprigs; woven_mesh -\u003e HERO weave-defect knots + frayed fiber bursts; sticker_bubble_film -\u003e HERO oil-slick interference rings + vinyl edge curls; sponsor_deboss -\u003e 6 glyph families incl HERO 5-point stars + V-chevrons + X-crosses for sponsor-wall fingerprint."
+                  },
+                  {
+                      "tick_at":  "2026-05-25T21:52:25Z",
+                      "mode":  "B_creative",
+                      "patterns":  [
+                                       "spec_retroreflective",
+                                       "track_grime",
+                                       "tire_smoke_streaks",
+                                       "sparkle_shattered",
+                                       "spec_powder_coat_texture"
+                                   ],
+                      "render_stats_256_ms":  {
+                                                  "spec_retroreflective":  63.9,
+                                                  "track_grime":  41.6,
+                                                  "tire_smoke_streaks":  28.9,
+                                                  "sparkle_shattered":  194.3,
+                                                  "spec_powder_coat_texture":  140.6,
+                                                  "min":  28.6,
+                                                  "max":  197.9,
+                                                  "mean":  93.9
+                                              },
+                      "failures":  [
+
+                                   ]
+                  },
+                  {
+                      "at":  "2026-05-25T22:06:04Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "brushed_linear_cool",
+                                       "sand_dune",
+                                       "spec_faceted_diamond",
+                                       "lathe_concentric",
+                                       "spec_thermal_spray"
+                                   ],
+                      "render_ms":  {
+                                        "min":  31.4,
+                                        "max":  118.1,
+                                        "mean":  62.3,
+                                        "res":  256,
+                                        "unit":  "ms"
+                                    },
+                      "notes":  "Creative rebuilds: added HERO motifs per pattern (cryo-rosettes, seashells, dispersion-arcs+octagonal-table, chuck-jaw+chatter-clusters, flow-rivers+cooled-beads)."
+                  },
+                  {
+                      "tick_at":  "2026-05-25T22:20:46Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "stardust_fine",
+                                       "cloud_wisps_warm",
+                                       "crystal_shimmer",
+                                       "sparkle_champagne",
+                                       "spec_pvd_coating"
+                                   ],
+                      "render_ms":  {
+                                        "min":  36.7,
+                                        "max":  156.8,
+                                        "mean":  95
+                                    },
+                      "notes":  "Creative rebuilds: dual-tier crystal, milky-way stardust, ember vortex clouds, nucleation-cluster champagne, domain-mapped PVD"
+                  },
+                  {
+                      "tick_at":  "2026-05-25T22:37:10Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "spec_aged_matte",
+                                       "sparkle_galaxy_swirl",
+                                       "depth_gradient",
+                                       "spec_aerogel_surface",
+                                       "cc_drip_runs"
+                                   ],
+                      "render_ms":  {
+                                        "spec_aged_matte":  133.5,
+                                        "sparkle_galaxy_swirl":  143.6,
+                                        "depth_gradient":  75,
+                                        "spec_aerogel_surface":  81.6,
+                                        "cc_drip_runs":  32,
+                                        "min":  32,
+                                        "max":  143.6,
+                                        "mean":  93.2
+                                    },
+                      "notes":  "Creative HERO motif rebuilds: craquelure+tide-marks; galactic-bar+nebula-clouds; caustic-rays+iso-depth-contours; voronoi-cells+iridescent-bands; branching-drip-trees+sparkle-grit."
+                  },
+                  {
+                      "tick_at":  "2026-05-25T22:50:35Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "decal_lift_edge",
+                                       "prismatic_shatter",
+                                       "tarmac_grit_embed",
+                                       "spec_laser_etched",
+                                       "vinyl_wrap_texture"
+                                   ],
+                      "render_ms_min":  46.1,
+                      "render_ms_max":  70.1,
+                      "render_ms_mean":  59.8,
+                      "notes":  "Creative rebuilds with new hero motifs: prismatic_shatter starburst impacts + spectrum swatches, spec_laser_etched hex-circuit + glyph stamps, vinyl_wrap_texture chevron decals + star badges, decal_lift_edge corner triangles + peel rolls, tarmac_grit_embed tire grooves + boulder aggregate."
+                  },
+                  {
+                      "ts":  "2026-05-25T23:03:16.635433Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "topographic_steps",
+                                       "reptile_scale",
+                                       "quantum_noise",
+                                       "sparkle_electric_field",
+                                       "tire_rubber_transfer"
+                                   ],
+                      "render_ms_min":  45.1,
+                      "render_ms_max":  193.5,
+                      "render_ms_mean":  115.4,
+                      "note":  "creative pass ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â added new HERO tiers to already-doctrine-compliant patterns"
+                  },
+                  {
+                      "ts":  "2026-05-25T23:19:30.764462Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "spec_architectural_grid",
+                                       "aniso_grain",
+                                       "spec_rust_bloom",
+                                       "morning_dew_fog",
+                                       "moire_overlay"
+                                   ],
+                      "render_ms":  {
+                                        "min":  14.9,
+                                        "max":  46.5,
+                                        "mean":  31.1
+                                    },
+                      "notes":  "Added HERO motifs to 5 unrated patterns: arch_grid (lit windows + mirror sky + corner shear); aniso_grain (mirror polish arcs); rust_bloom (core craters + flaking scabs + rivulet stains); dew_fog (large hero drops + streak trails + bloom halos); moire (focal swirl vortices)."
+                  },
+                  {
+                      "mode":  "B",
+                      "timestamp":  "2026-05-25T23:37:21.245530Z",
+                      "patterns":  [
+                                       "spec_light_leak",
+                                       "split_bands",
+                                       "cc_gloss_stripe",
+                                       "spec_electroformed_texture",
+                                       "plasma_turbulence"
+                                   ],
+                      "render_ms":  {
+                                        "min":  45.1,
+                                        "max":  101.1,
+                                        "mean":  71.2
+                                    },
+                      "notes":  "Creative rebuilds with hero motifs - plasma serpents, razor-cut chevrons, halo-bar reflections, prism flare-wedges, dendritic crystal bursts."
+                  },
+                  {
+                      "tick":  41,
+                      "timestamp":  "2026-05-25T23:51:05.173381Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "cc_panel_fade",
+                                       "banded_rows",
+                                       "abstract_neon_glitch",
+                                       "abstract_color_field_bleed",
+                                       "flow_lines"
+                                   ],
+                      "render_ms":  {
+                                        "min":  11.2,
+                                        "max":  65.6,
+                                        "mean":  35
+                                    },
+                      "notes":  "Creative rebuilds with hero motifs; all \u003c70ms at 256^2."
+                  },
+                  {
+                      "tick":  42,
+                      "mode":  "B",
+                      "timestamp":  "2026-05-26T00:01:50Z",
+                      "patterns":  [
+                                       "meteor_impact",
+                                       "voronoi_fracture",
+                                       "crushed_glass",
+                                       "spec_snake_scales",
+                                       "dry_dust_film"
+                                   ],
+                      "action":  "removed_from_HALF_RES_SMOOTH_PATTERNS to preserve sharp fine features per owner doctrine",
+                      "render_ms_256":  {
+                                            "min":  37,
+                                            "max":  103,
+                                            "mean":  59
+                                        },
+                      "failures":  0
+                  },
+                  {
+                      "tick":  "R6-43",
+                      "time":  "2026-05-26T00:19:52.210660Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "vinyl_seam",
+                                       "pebble_grain",
+                                       "gravel_chip_field",
+                                       "airbrush_gradient_bloom",
+                                       "vinyl_stretched"
+                                   ],
+                      "render_times_ms_at_256":  {
+                                                     "min":  35.1,
+                                                     "max":  134.1,
+                                                     "mean":  68.2
+                                                 },
+                      "notes":  "vinyl_seam +hex registration rosettes; pebble_grain +diamond quilt double-stitch seams; gravel_chip_field +mud-flick comet trails with droplet spray; airbrush_gradient_bloom +stencil frisket hard-edge + needle-splatter starbursts; vinyl_stretched +ripped-film tear lines + chevron stress-folds."
+                  },
+                  {
+                      "tick":  44,
+                      "when":  "2026-05-26T00:37:26.062653Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "spec_cast_surface",
+                                       "gold_leaf_torn",
+                                       "pearl_micro",
+                                       "jeweling_circles",
+                                       "micro_sparkle_warm"
+                                   ],
+                      "render_ms_min":  56.6,
+                      "render_ms_max":  107.3,
+                      "render_ms_mean":  84.7,
+                      "note":  "Creative rebuilds: hero motifs (parting seams, gold islands, asymmetric pearl lumps, nested rose-engine arcs, 4-pt sparkle stars). Wide independent M/R/CC. Smoke OK, mirrored to 3 copies."
+                  },
+                  {
+                      "tick":  45,
+                      "at":  "2026-05-26T00:49:24Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "hand_polished",
+                                       "suspension_rust_ring",
+                                       "cc_panel_pool",
+                                       "chevron_bands",
+                                       "sparkle_firefly"
+                                   ],
+                      "render_ms":  {
+                                        "min":  30.4,
+                                        "max":  57.1,
+                                        "mean":  42.4,
+                                        "shape":  "256x256"
+                                    },
+                      "note":  "Creative rebuild: HERO motifs added per pattern (swirl-nests, teardrops, alt ridge+valley, motion trails, lock-washer)."
+                  },
+                  {
+                      "tick":  46,
+                      "at":  "2026-05-26T01:05:00Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "spec_coral_reef",
+                                       "oil_streak_panel",
+                                       "spec_subsurface_depth",
+                                       "spec_shot_peened",
+                                       "orange_peel_texture"
+                                   ],
+                      "render_ms":  {
+                                        "min":  53,
+                                        "max":  197.7,
+                                        "mean":  114.8
+                                    },
+                      "notes":  "Creative HERO motif rebuilds: coral=5 form-types+gyri canyons+fan-fronds+sponge; oil_streak=iridescent oil-rainbow sheen blobs HERO; subsurface_depth=jewel-core stars with diffraction rays HERO; shot_peened=rosette overlap clusters HERO; orange_peel=zest-oil pore craters with oil-bead glints + fine ridge contours HERO. All 256-render under 200ms. Mirrored to 3 copies."
+                  },
+                  {
+                      "tick":  47,
+                      "mode":  "B",
+                      "processed_at":  "2026-05-26T01:19:05.957311Z",
+                      "patterns":  [
+                                       "wire_brushed_coarse",
+                                       "guilloche_waves",
+                                       "concentric_ripple",
+                                       "spec_knurled_straight",
+                                       "fly_cut_arcs"
+                                   ],
+                      "render_ms":  {
+                                        "wire_brushed_coarse":  {
+                                                                    "min":  58.4,
+                                                                    "max":  60.3,
+                                                                    "mean":  59.4
+                                                                },
+                                        "guilloche_waves":  {
+                                                                "min":  20.8,
+                                                                "max":  21.7,
+                                                                "mean":  21.3
+                                                            },
+                                        "concentric_ripple":  {
+                                                                  "min":  28.9,
+                                                                  "max":  34.7,
+                                                                  "mean":  32.2
+                                                              },
+                                        "spec_knurled_straight":  {
+                                                                      "min":  67.9,
+                                                                      "max":  70.2,
+                                                                      "mean":  68.8
+                                                                  },
+                                        "fly_cut_arcs":  {
+                                                             "min":  29.4,
+                                                             "max":  31.1,
+                                                             "mean":  30.5
+                                                         }
+                                    },
+                      "failures":  [
+
+                                   ],
+                      "notes":  "Each pattern got a new HERO MOTIF on top of prior solid build: wheel-pass arc bundles, braided ribbons, splash crowns, tool-push-out chevrons, leading-edge crescents."
+                  },
+                  {
+                      "tick":  48,
+                      "mode":  "B",
+                      "timestamp_utc":  "2026-05-26T01:34:07Z",
+                      "patterns":  [
+                                       "smoke_tendril",
+                                       "metallic_sand",
+                                       "sand_dune",
+                                       "sparkle_electric_field",
+                                       "spec_architectural_grid"
+                                   ],
+                      "fresh_picks":  [
+                                          "smoke_tendril",
+                                          "metallic_sand"
+                                      ],
+                      "second_pass_picks":  [
+                                                "sand_dune",
+                                                "sparkle_electric_field",
+                                                "spec_architectural_grid"
+                                            ],
+                      "second_pass":  true,
+                      "render_ms_256":  {
+                                            "min":  33.8,
+                                            "max":  211.4,
+                                            "mean":  111.2
+                                        },
+                      "all_passed":  true
+                  },
+                  {
+                      "tick":  49,
+                      "mode":  "B",
+                      "processed_at":  "2026-05-26T01:48:13Z",
+                      "patterns":  [
+                                       "gravity_well",
+                                       "cc_overspray_halo",
+                                       "radial_sunburst",
+                                       "diagonal_bands",
+                                       "abstract_mondrian_grid"
+                                   ],
+                      "second_pass":  [
+                                          "gravity_well",
+                                          "cc_overspray_halo",
+                                          "radial_sunburst",
+                                          "diagonal_bands",
+                                          "abstract_mondrian_grid"
+                                      ],
+                      "fresh":  [
+
+                                ],
+                      "render_ms":  {
+                                        "min":  34.9,
+                                        "max":  106.2,
+                                        "mean":  65
+                                    },
+                      "notes":  "Second-pass adds: gravity_well TIME-DILATION CLOCK FACES; cc_overspray_halo STENCIL-MASK GHOST RIDGES; radial_sunburst PRISM SPECTRUM RAINBOW SPILLS; diagonal_bands WET-PAINT DRIP CRAWLERS; abstract_mondrian_grid DRIPPING WET-PAINT TEARS. Removed gravity_well \u0026 radial_sunburst from _HALF_RES_SMOOTH_PATTERNS to preserve new fine HERO detail."
+                  },
+                  {
+                      "tick":  50,
+                      "timestamp":  "2026-05-26T02:04:22Z",
+                      "mode":  "B",
+                      "second_pass":  true,
+                      "patterns":  [
+                                       "spec_chainlink_fence",
+                                       "spec_aerogel_surface",
+                                       "gold_leaf_torn",
+                                       "reptile_scale",
+                                       "undercarriage_spray"
+                                   ],
+                      "render_time_ms":  {
+                                             "min":  54.3,
+                                             "max":  200.2,
+                                             "mean":  108
+                                         },
+                      "note":  "Tick-50 second-pass creative rebuild ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â stacked NEW hero motifs on existing rebuilds"
+                  },
+                  {
+                      "tick":  51,
+                      "mode":  "B",
+                      "patterns":  [
+                                       "split_bands",
+                                       "brushed_linear",
+                                       "spec_retroreflective",
+                                       "sponsor_tape_vinyl",
+                                       "chevron_bands"
+                                   ],
+                      "second_pass":  true,
+                      "render_ms":  {
+                                        "min":  59.1,
+                                        "max":  271.7,
+                                        "mean":  133.2
+                                    },
+                      "processed_at":  "2026-05-26T02:17:48.553714Z",
+                      "note":  "tick51 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â stacked NEW hero motifs on existing rebuilds (perforation rows, scanline glow bars, laser starbursts, barcode strips, rivet stitching). Removed chevron_bands+split_bands from _HALF_RES_SMOOTH_PATTERNS to keep new 1-2 px features crisp."
+                  },
+                  {
+                      "tick":  52,
+                      "mode":  "B",
+                      "second_pass":  true,
+                      "timestamp":  "2026-05-26T02:32:34Z",
+                      "patterns":  [
+                                       "sparkle_rain",
+                                       "abstract_fluid_acrylic_pour",
+                                       "checker_flag_subtle",
+                                       "spec_terrain_erosion",
+                                       "rust_bloom"
+                                   ],
+                      "render_times_ms_256":  {
+                                                  "sparkle_rain":  116.9,
+                                                  "abstract_fluid_acrylic_pour":  28.2,
+                                                  "checker_flag_subtle":  77,
+                                                  "spec_terrain_erosion":  50.4,
+                                                  "rust_bloom":  60.5
+                                              },
+                      "min_ms":  28.2,
+                      "max_ms":  116.9,
+                      "mean_ms":  66.6,
+                      "summary":  "Stacked NEW hero motifs: sparkle_rain+lightning fork bolts, acrylic_pour+whirlpool vortex chains, checker_flag+torn-corner tatters, spec_terrain+volcanic vent calderas, rust_bloom+iron-oxide crystal needle bursts."
+                  },
+                  {
+                      "tick":  53,
+                      "mode":  "B",
+                      "patterns":  [
+                                       "oil_slick",
+                                       "frosted_glass_etch",
+                                       "abstract_hard_edge_field",
+                                       "sparkle_firefly",
+                                       "spec_carbon_wet_layup"
+                                   ],
+                      "second_pass":  [
+                                          "oil_slick",
+                                          "frosted_glass_etch",
+                                          "abstract_hard_edge_field",
+                                          "sparkle_firefly",
+                                          "spec_carbon_wet_layup"
+                                      ],
+                      "render_ms":  {
+                                        "min":  5.1,
+                                        "max":  84.1,
+                                        "mean":  53.1
+                                    },
+                      "processed_at":  "2026-05-26T02:48:19Z"
+                  },
+                  {
+                      "tick":  54,
+                      "mode":  "B",
+                      "iso_utc":  "2026-05-26T03:02:19Z",
+                      "patterns":  [
+                                       "spec_thermal_spray",
+                                       "spec_fiberglass_chopped",
+                                       "oil_streak_panel",
+                                       "wet_track_gloss",
+                                       "spec_heat_scale"
+                                   ],
+                      "second_pass":  [
+                                          "spec_thermal_spray",
+                                          "spec_fiberglass_chopped",
+                                          "oil_streak_panel",
+                                          "wet_track_gloss",
+                                          "spec_heat_scale"
+                                      ],
+                      "render_ms":  {
+                                        "spec_thermal_spray":  {
+                                                                   "min":  118.2,
+                                                                   "max":  121.2,
+                                                                   "mean":  119.3
+                                                               },
+                                        "spec_fiberglass_chopped":  {
+                                                                        "min":  163.7,
+                                                                        "max":  165,
+                                                                        "mean":  164.5
+                                                                    },
+                                        "oil_streak_panel":  {
+                                                                 "min":  61.2,
+                                                                 "max":  62.4,
+                                                                 "mean":  61.7
+                                                             },
+                                        "wet_track_gloss":  {
+                                                                "min":  40.2,
+                                                                "max":  42.1,
+                                                                "mean":  41.2
+                                                            },
+                                        "spec_heat_scale":  {
+                                                                "min":  43.5,
+                                                                "max":  44.1,
+                                                                "mean":  43.8
+                                                            }
+                                    },
+                      "note":  "second-pass: NEW HERO motifs stacked on existing R6 rebuilds"
+                  },
+                  {
+                      "tick":  55,
+                      "mode":  "B",
+                      "second_pass":  true,
+                      "timestamp":  "2026-05-26T03:19:18Z",
+                      "patterns":  [
+                                       "spec_shot_peened",
+                                       "spec_laser_etched",
+                                       "sparkle_constellation",
+                                       "diamond_dust",
+                                       "spec_galvanic_corrosion"
+                                   ],
+                      "render_ms":  {
+                                        "spec_shot_peened":  170.6,
+                                        "spec_laser_etched":  71.8,
+                                        "sparkle_constellation":  35.9,
+                                        "diamond_dust":  233.6,
+                                        "spec_galvanic_corrosion":  39
+                                    },
+                      "render_min":  35.9,
+                      "render_max":  233.6,
+                      "render_mean":  110.2,
+                      "notes":  "Second-pass creative: stacked NEW hero motifs on existing rebuilds. spec_shot_peened+ricochet streaks, spec_laser_etched+barcode inserts, sparkle_constellation+meteor trails, diamond_dust+rainbow halos, spec_galvanic_corrosion+drip trails. spec_shot_peened removed from _HALF_RES_SMOOTH_PATTERNS."
+                  },
+                  {
+                      "at":  "2026-05-26T05:49:43Z",
+                      "mode":  "B",
+                      "second_pass":  true,
+                      "patterns":  [
+                                       "track_grime",
+                                       "engraved_crosshatch",
+                                       "prismatic_shatter",
+                                       "spec_water_ripple_spec",
+                                       "gold_leaf_torn"
+                                   ],
+                      "render_ms_min":  33.1,
+                      "render_ms_max":  145.6,
+                      "render_ms_mean":  69.7,
+                      "creativity_note":  "Stacked unusual hero motifs: lichen colony rings on grime; Lissajous parametric overlays in engraving; peripheral-drift illusion chevrons in shattered glass; Heighway dragon-curve foam trails in water; Fay butterfly-curve kintsugi seams in gold leaf."
+                  },
+                  {
+                      "ts":  "2026-05-26 09:02",
+                      "mode":  "B",
+                      "kind":  "second_pass_creative_stack",
+                      "patterns":  [
+                                       "tire_smoke_streaks",
+                                       "spec_knurled_straight",
+                                       "plasma_turbulence",
+                                       "abstract_rothko_field",
+                                       "metallic_sand"
+                                   ],
+                      "creativity_note":  "Math curves + biology + fashion-print stacked on top of prior R6 rebuilds: tire_smoke_streaks +Lissajous tire-debris arcs; spec_knurled_straight +Dragon-curve fractal tool-skip glyphs; plasma_turbulence +Retinal-vasculature recursive capillary branches; abstract_rothko_field +Mycelium hyphal seam fibers (random-walk forage); metallic_sand +Rhodonea rose-curve magnetic rosettes (k=3..8 petals) with prior glint-chain/spike/disc densities trimmed to keep \u003c200ms.",
+                      "smoke_ms_min":  {
+                                           "tire_smoke_streaks":  35.8,
+                                           "spec_knurled_straight":  94.8,
+                                           "plasma_turbulence":  82.3,
+                                           "abstract_rothko_field":  47.4,
+                                           "metallic_sand":  164.2
+                                       },
+                      "smoke_ms_worst":  164.2,
+                      "smoke_ms_global_mean":  84.9
+                  },
+                  {
+                      "started_at":  "2026-05-26T13:55:45Z",
+                      "ended_at":  "2026-05-26T13:55:45Z",
+                      "mode":  "B",
+                      "patterns":  [
+                                       "aniso_grain",
+                                       "carbon_weave",
+                                       "orbital_swirl",
+                                       "checker_flag_subtle",
+                                       "spec_micro_chips"
+                                   ],
+                      "creativity_note":  "aniso_grain += Lissajous polish curves (math); carbon_weave += mycelium rhizomorph fiber web (biology); orbital_swirl += rhodonea (rose curve) chrome ribbons (math); checker_flag_subtle += peripheral-drift micro-chevrons (optical illusion); spec_micro_chips += lichen crustose colonies with apothecia (biology). Five never-used-here motif families stacked onto already-rebuilt patterns.",
+                      "render_ms_min":  23.1,
+                      "render_ms_max":  204.7,
+                      "render_ms_mean":  86.2,
+                      "failures":  0
+                  },
+                  {
+                      "ts":  "2026-05-26T14:52:49Z",
+                      "mode":  "B_optical_illusion_drop",
+                      "patterns":  [
+                                       "galaxy_swirl",
+                                       "circuit_trace",
+                                       "spec_caustic_light",
+                                       "spec_velvet_sheen",
+                                       "spec_hammered_dimple",
+                                       "wear_scuff",
+                                       "adelson_checker_shadow",
+                                       "spec_wood_grain_fine",
+                                       "sparkle_comet",
+                                       "salt_spray_corrosion"
+                                   ],
+                      "render_stats":  {
+                                           "min":  3,
+                                           "max":  37,
+                                           "mean":  11
+                                       },
+                      "creativity_note":  "10 optical illusions ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Kitaoka rotation, cafe wall, Hermann grid, Kanizsa triangle, op-art moire, Penrose impossible, Adelson shadow, anaglyph 3D, structural-color grating (holy grail #1), chameleon adaptive shift (holy grail #2)",
+                      "at":  "2026-05-26T14:52:49Z",
+                      "thumb_render_stats_512":  {
+                                                     "min":  12,
+                                                     "max":  226.8,
+                                                     "mean":  52.8
+                                                 },
+                      "note_on_keep_slots":  "galaxy_swirl and spec_hammered_dimple were owner-KEEP but received upgraded illusion implementations (Rotating Snakes / Op-Art Moire) ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â owner should re-rate next round."
+                  },
+                  {
+                      "at":  "2026-05-26T16:38:16Z",
+                      "mode":  "A_owner_feedback",
+                      "patterns":  [
+                                       "spec_velvet_sheen",
+                                       "sparkle_comet",
+                                       "salt_spray_corrosion",
+                                       "circuit_trace"
+                                   ],
+                      "render_ms_256":  {
+                                            "spec_velvet_sheen":  34.9,
+                                            "sparkle_comet":  173.9,
+                                            "salt_spray_corrosion":  39.5,
+                                            "circuit_trace":  7.3,
+                                            "min":  7.3,
+                                            "max":  173.9,
+                                            "mean":  63.9
+                                        },
+                      "failures":  [
+
+                                   ],
+                      "creativity_note":  "Owner-rated rebuilds per literal complaints: spec_velvet_sheen (KANIZSA): 20-28 pac-man groups -\u003e 60-100 Poisson-disc-scattered pac-mans w/ INDEPENDENT random wedge orientations + 8-14 px radius (no overlap). sparkle_comet (STRUCTURAL GRATING): 14-24 big Voronoi zones -\u003e 70-120 SMALL facets (5x denser); 2-4 large rosettes -\u003e 12-24 small 12-20 px eyes; high-freq M oscillation preserved. salt_spray_corrosion (CHAMELEON): smooth boundary blends preserved BUT each zone now gets per-recipe 8-32 px texture overlays inheriting flavor (chrome-scratches, matte-flecks, pearl-flake sparkle, candy-craquelure) + universal corrosion pitting; re-blur dropped 2.5-\u003e1.2 sigma so fine details survive. circuit_trace (CAFE WALL): per-row variable tile dims (12-22 px tall, 16-30 px wide) w/ 1-in-8 outliers; per-tile INDEPENDENT M/R/CC rolls; mortar 1-3 px w/ break/repair micro-dashes; 4-8 rosette focal stars (6-12 spokes, 8-16 px radius); 0.4-0.6 row offset tilt illusion preserved."
+                  },
+                  {
+                      "ts":  "2026-05-26T17:05:23Z",
+                      "mode":  "B_racing_pivot_batch1",
+                      "patterns":  [
+                                       "voodoo_sigil_field",
+                                       "hex_blood_drip",
+                                       "ember_field",
+                                       "dragon_scale_macro",
+                                       "alligator_hide",
+                                       "engine_turn_radial_arc",
+                                       "forged_carbon_chip",
+                                       "snake_scale_diamond",
+                                       "jeweled_guilloche",
+                                       "holo_prism_shift"
+                                   ],
+                      "render_stats":  {
+                                           "min_ms":  11.8,
+                                           "max_ms":  70.9,
+                                           "mean_ms_at_256":  25,
+                                           "all_under_200ms":  true,
+                                           "note":  "Smoke-tested at 256ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â² (mean 25.0 ms). Thumbnail bake at 512ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â² peaked 70.9 ms (voodoo_sigil_field)."
+                                       },
+                      "creativity_note":  "Racing pivot batch 1 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Predator skins (dragon scale, alligator hide, snake scale), Gothic voodoo (sigils, hex blood), Engine-turn (radial arc, jeweled guilloche), Forged carbon chip, Ember field, Holo prism shift. Renamed-and-replaced 10 abstract/academic slots with alias backward compat.",
+                      "aliases_added":  {
+                                            "abstract_kandinsky_shapes":  "voodoo_sigil_field",
+                                            "abstract_fluid_acrylic_pour":  "hex_blood_drip",
+                                            "abstract_rothko_field":  "ember_field",
+                                            "abstract_color_field_bleed":  "dragon_scale_macro",
+                                            "abstract_hard_edge_field":  "alligator_hide",
+                                            "abstract_bauhaus_forms":  "engine_turn_radial_arc",
+                                            "abstract_cubist_facets":  "forged_carbon_chip",
+                                            "spec_velvet_sheen":  "snake_scale_diamond",
+                                            "abstract_op_art_circles":  "jeweled_guilloche",
+                                            "spec_caustic_light":  "holo_prism_shift"
+                                        },
+                      "failures":  [
+
+                                   ]
+                  },
+                  {
+                      "mode":  "A+diversification",
+                      "timestamp":  "2026-05-26T20:35:22Z",
+                      "patterns":  [
+                                       "demon_eye_field",
+                                       "brushed_cross",
+                                       "diamond_lattice",
+                                       "chainmail_armor",
+                                       "engine_turn_starburst",
+                                       "tiger_stripe_field",
+                                       "nordic_rune_field",
+                                       "razor_wire_coil"
+                                   ],
+                      "creativity_note":  "Mode A 5 + sparkle diversification 3 (chainmail / engine-turn-starburst / tiger / nordic runes / razor wire)"
+                  },
+                  {
+                      "mode":  "A",
+                      "timestamp":  "2026-05-26T20:54:27Z",
+                      "patterns":  [
+                                       "abstract_expressionist_splatter",
+                                       "abstract_bauhaus_forms",
+                                       "cc_masking_edge",
+                                       "checker_flag_subtle",
+                                       "cloud_wisps"
+                                   ],
+                      "render_ms":  {
+                                        "abstract_expressionist_splatter":  65.3,
+                                        "abstract_bauhaus_forms":  0,
+                                        "cc_masking_edge":  99,
+                                        "checker_flag_subtle":  118.2,
+                                        "cloud_wisps":  47.4
+                                    },
+                      "render_min":  47.4,
+                      "render_max":  118.2,
+                      "render_mean":  82.475,
+                      "second_pass":  false,
+                      "creativity_note":  "Voodoo VEVE sigils (replaces Pollock splatter); fine-only Bauhaus micro-typography (no medallions); short masking-tape segments with blue-tape flakes; clean fluttering checker (removed rip triangles and drift chevrons that confused owner); cloud-wisp curved spline streamers replace stormhead chaos.",
+                      "at":  "2026-05-26T20:54:27Z",
+                      "ended_at":  "2026-05-26T20:54:27Z",
+                      "bauhaus_legacy_alias_note":  "abstract_bauhaus_forms is a legacy alias that dispatches to pattern_engine_turn_radial_arc ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â owners old REBUILD rating on bauhaus is moot, the user-facing pattern is engine_turn_radial_arc. Marked as processed."
+                  },
+                  {
+                      "time":  "2026-05-26T21:11:36Z",
+                      "mode":  "A",
+                      "patterns":  [
+                                       "spec_wood_grain_fine",
+                                       "decal_lift_edge",
+                                       "cc_gloss_stripe",
+                                       "abstract_retro_wave",
+                                       "brushstroke_bold"
+                                   ],
+                      "second_pass":  false,
+                      "render_ms":  {
+                                        "min":  15.8,
+                                        "max":  139.9,
+                                        "mean":  87.5
+                                    },
+                      "creativity_note":  "abstract_retro_wave: 3x3 TILED mini-synthwave postcards (owner said panel was too big - now reads at thumbnail). cc_gloss_stripe: lissajous metallic flake highway along every 5th stripe. brushstroke_bold: 4-segment tapered calligrapher brush profile.",
+                      "corrective_summary":  {
+                                                 "spec_wood_grain_fine":  "replaced anaglyph-3D-pop misfire with real wood-grain: warped growth rings + pores + medullary rays + knots",
+                                                 "decal_lift_edge":  "replaced noise carpet with 70-130 readable sticker rectangles, each with one lifted corner triangle",
+                                                 "cc_gloss_stripe":  "replaced halo-bars with literal parallel STRIPES (per-stripe chroma)",
+                                                 "abstract_retro_wave":  "3x3 tiled mini-synthwave panels so the iconic sun/grid reads at thumbnail",
+                                                 "brushstroke_bold":  "replaced 90-200 px scrape bands with 250-1400 small tapered brush marks 10-26 px each"
+                                             }
+                  },
+                  {
+                      "ts":  "2026-05-26T21:27:29Z",
+                      "mode":  "A",
+                      "patterns":  [
+                                       "cloud_wisps_cool",
+                                       "cloud_wisps_warm",
+                                       "diamond_dust",
+                                       "cc_fish_eye",
+                                       "chainmail_armor"
+                                   ],
+                      "second_pass":  false,
+                      "render_ms_512":  {
+                                            "cloud_wisps_cool":  114,
+                                            "cloud_wisps_warm":  125,
+                                            "diamond_dust":  357,
+                                            "cc_fish_eye":  293,
+                                            "chainmail_armor":  54
+                                        },
+                      "render_ms_512_min":  54,
+                      "render_ms_512_max":  357,
+                      "render_ms_512_mean":  189,
+                      "creativity_note":  "cloud_wisps_cool: 6-fold Koch-style snowflake crystal hero (math/geometry). cloud_wisps_warm: bird-flock V-formations (biology/chevron). chainmail_armor: damascus pattern-welded ribbons (metallurgy/fashion mix). diamond_dust: brilliant-cut octagonal pavilion stars (geometric jewel). cc_fish_eye: oil-slick rainbow dispersion halos (optical iridescence)."
+                  },
+                  {
+                      "ts":  "2026-05-26T21:39:16Z",
+                      "mode":  "A",
+                      "patterns":  [
+                                       "hellfire_crackle",
+                                       "hand_polished",
+                                       "razor_wire_coil",
+                                       "engine_turn_radial_arc",
+                                       "dragon_scale_macro"
+                                   ],
+                      "second_pass":  false,
+                      "render_ms_256_smoke":  {
+                                                  "hellfire_crackle":  30,
+                                                  "hand_polished":  15,
+                                                  "razor_wire_coil":  10,
+                                                  "engine_turn_radial_arc":  27,
+                                                  "dragon_scale_macro":  39
+                                              },
+                      "render_ms_256_min":  10,
+                      "render_ms_256_max":  39,
+                      "render_ms_256_mean":  24,
+                      "creativity_note":  "hellfire_crackle: dense Voronoi-mesh fissures + 7-tier heat palette + 50-90 white-hot vents + heat-zoned ember pinpricks. hand_polished: signature rotary-buffer SWIRL LOOPS (overlapping full circle marks) - the iconic polish lacework. razor_wire_coil: parametric helix loops as ellipse arcs (true coil geometry, not sin wobble) + crisp diamond-blade triangles at fixed pitch. engine_turn_radial_arc: brick-stagger grid of overlapping polished circular discs (the actual Bugatti-dash engine-turn geometry, not random arcs). dragon_scale_macro: classical D-shape fish-scale grid w/ single serpent palette, rim crescents, barb spikes - unmistakable scale ID.",
+                      "owner_complaints_addressed":  {
+                                                         "hellfire_crackle":  "\"everything wrong\" -\u003e dense fissure mesh + 7-tier heat palette + heat-zoned substrate + 50-90 white-hot vents",
+                                                         "hand_polished":  "\"doesnt match name, generic noise\" -\u003e iconic rotary buffer SWIRL LOOPS (the actual signature element) + tight palette",
+                                                         "razor_wire_coil":  "\"toddler drawing\" -\u003e parametric helix loops + fixed-pitch crisp blade triangles",
+                                                         "engine_turn_radial_arc":  "\"NOT engine turn\" -\u003e brick-stagger grid of overlapping polished discs (real engine-turn geometry)",
+                                                         "dragon_scale_macro":  "\"not even close\" -\u003e classical D-shape fish-scale grid w/ rim crescent + barb spikes, one serpent palette"
+                                                     },
+                      "at":  "2026-05-26T21:39:16Z",
+                      "render_ms_512_5pat":  {
+                                                 "hellfire_crackle":  100,
+                                                 "hand_polished":  60,
+                                                 "razor_wire_coil":  38,
+                                                 "engine_turn_radial_arc":  95,
+                                                 "dragon_scale_macro":  145
+                                             },
+                      "render_ms_512_min":  38,
+                      "render_ms_512_max":  145,
+                      "render_ms_512_mean":  87
+                  },
+                  {
+                      "ts":  "2026-05-26T21:52:15Z",
+                      "at":  "2026-05-26T21:52:15Z",
+                      "mode":  "A",
+                      "patterns":  [
+                                       "engine_turn_starburst",
+                                       "engine_bay_grime",
+                                       "forged_carbon_chip",
+                                       "copper_patina_drip",
+                                       "chevron_bands"
+                                   ],
+                      "second_pass":  false,
+                      "render_ms_256_smoke":  {
+                                                  "engine_turn_starburst":  54,
+                                                  "engine_bay_grime":  39,
+                                                  "forged_carbon_chip":  87,
+                                                  "copper_patina_drip":  189,
+                                                  "chevron_bands":  86
+                                              },
+                      "render_ms_256_min":  39,
+                      "render_ms_256_max":  189,
+                      "render_ms_256_mean":  91,
+                      "creativity_note":  "engine_turn_starburst: Bugatti-dash polished disc grid (concentric ring tool-marks + crescent + pivot dots) -- pure circular guilloche geometry, no more radial-ray confusion. engine_bay_grime: REPURPOSED to GOTHIC CATHEDRAL TRACERY (pointed lancet windows + fleur-de-lis + cross-pattees + iron nails on slate-iron substrate) -- owner asked for a gothic finish we did not have. forged_carbon_chip: 3 chip tiers (smalls 900+ medium 420 + hero 12-22) with biaxial twill weave + resin meniscus pools -- killed sparseness. copper_patina_drip: WIDE verdigris ribbons w/ source crusts + bottom bulbs + wet highlights -- drip identity now reads at thumbnail. chevron_bands: STRIPPED 5 noise tiers, kept only clean chevron field + rivet stitching -- crisp tread-plate.",
+                      "owner_complaints_addressed":  {
+                                                         "engine_turn_starburst":  "1/REBUILD -\u003e Bugatti-dash circular guilloche disc grid w/ concentric tool rings + crescents + pivot dots, anti-clone from radial-arc family",
+                                                         "engine_bay_grime":  "2/REBUILD \"TURN INTO GOTHIC\" -\u003e cathedral lancet tracery + fleur-de-lis + cross-pattee + iron nails on slate-iron composite-dark substrate",
+                                                         "forged_carbon_chip":  "3/REBUILD \"too sparse / boring\" -\u003e 3 chip tiers, biaxial twill weave, resin meniscus pools, 3x density",
+                                                         "copper_patina_drip":  "4/REBUILD \"noise / wrong identity / boring\" -\u003e WIDE verdigris ribbons + source crystal crusts + fat bottom bulbs + wet highlights, structure dominates",
+                                                         "chevron_bands":  "4/REBUILD \"too much noise\" -\u003e stripped per-pixel flecks/crosshatch/zigzag/pin-specks, kept clean chevron + rivets only"
+                                                     },
+                      "visual_iteration_notes":  {
+                                                     "engine_turn_starburst":  "PASS first-pass: dense red pivot discs on dark substrate, brick-staggered grid clearly reads as circular guilloche.",
+                                                     "engine_bay_grime":  "Iteration 2: lowered substrate to M=0.10/R=0.12/CC=0.08. Gothic tracery now reads as cathedral lancet rows + cross-pattees + fleur-de-lis on deep slate with leaded-silver red tracery lines + stained-glass cyan-purple panes.",
+                                                     "forged_carbon_chip":  "Iteration 2: dropped substrate R from 0.32 to 0.14. Carbon chips now read on composite-dark, dense red flakes, no more green substrate.",
+                                                     "copper_patina_drip":  "Iteration 2: warm-tan recipe (M=0.50/R=0.30/CC=0.18). Drips now beautiful TEAL verdigris trails on warm copper substrate with source crusts + bottom bulbs + wet highlights.",
+                                                     "chevron_bands":  "PASS first-pass: clean chevron field with rivet stitching, no noise carpets."
+                                                 }
+                  },
+                  {
+                      "mode":  "A",
+                      "patterns":  [
+                                       "hairline_polish",
+                                       "guilloche_waves",
+                                       "heat_discoloration",
+                                       "nordic_rune_field",
+                                       "raptor_feather"
+                                   ],
+                      "started_at":  "2026-05-26T21:55:49.947872Z",
+                      "ended_at":  "2026-05-26T22:05:49.947860Z",
+                      "render_min_ms":  44,
+                      "render_max_ms":  86.3,
+                      "render_mean_ms":  63.8,
+                      "second_pass":  false,
+                      "creativity_note":  "hairline_polish: STRIPPED 7 fighting layers and arc-sweep chaos to single coherent grain w/ metallographic flow-line drift. guilloche_waves: REMOVED braided cross-ribbons (owner-hated), replaced with classic engine-turn wave-engrave + cymatic-style moire. heat_discoloration: NEW torch-cut weld bead HERO (chain of fusion nuggets) + 4-tier concentric temper rings ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â unmistakable named-thing. nordic_rune_field: TRIPLE rune density + ley-line connector graph linking hero anchor runes (constellation circuit motif). raptor_feather: anatomically-correct feather silhouettes w/ shaft + barb chevrons (not triangles)."
+                  },
+                  {
+                      "mode":  "A",
+                      "patterns":  [
+                                       "brushed_diagonal",
+                                       "jaguar_rosette",
+                                       "pangolin_armor",
+                                       "spec_faceted_diamond",
+                                       "cc_spot_polish"
+                                   ],
+                      "started_at":  "2026-05-26T22:16:47Z",
+                      "ended_at":  "2026-05-26T22:16:48Z",
+                      "render_min_ms":  33.1,
+                      "render_max_ms":  129.2,
+                      "render_mean_ms":  72.7,
+                      "second_pass":  false,
+                      "creativity_note":  "Damascus folded-steel watered bands + mokume eyes (brushed_diagonal); BIG ringed-spot rosettes with HERO predator eye markings (jaguar_rosette); dense scales + keratin striations + shedding edges (pangolin_armor); rhombus diamond tessellation + brilliant-cut hero diamonds (spec_faceted_diamond); 4x disc density + jeweled medallion sub-spiral hero discs (cc_spot_polish)."
+                  },
+                  {
+                      "mode":  "A",
+                      "patterns":  [
+                                       "snake_scale_diamond",
+                                       "aniso_grain_deep",
+                                       "spec_architectural_grid",
+                                       "spec_heat_scale",
+                                       "spec_mesh_perforated"
+                                   ],
+                      "started_at":  "2026-05-26T22:18:30Z",
+                      "ended_at":  "2026-05-26T22:32:29Z",
+                      "render_min_ms":  18.2,
+                      "render_max_ms":  154.5,
+                      "render_mean_ms":  79.3,
+                      "second_pass":  false,
+                      "creativity_note":  "Owner-driven REBUILD/MIXED fixes: tripled snake-scale density (4-8px diamonds + 30-50 small kings), tightened aniso_grain chroma jitter to single anodized-Al base ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±0.05, REMOVED neon piping + 3x-reduced noise on architectural_grid, REMOVED burnt-oil iridescent stains on heat_scale (kept ember pinpoints), drastically thinned mesh_perforated decoration density and removed glint-arc + heavy dust flecks. Visual-inspection iteration: aniso_grain_deep was too monochrome red ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â added 4-palette anodized banding (silver/champagne/gunmetal/teal) with ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±0.05 tight jitter, gave the per-band multi-shade variation owner asked for."
+                  },
+                  {
+                      "mode":  "CODEX",
+                      "patterns":  [
+                                       "jaguar_rosette",
+                                       "pangolin_armor",
+                                       "raptor_feather",
+                                       "hellfire_crackle",
+                                       "engine_turn_starburst",
+                                       "guilloche_waves",
+                                       "heat_discoloration",
+                                       "spec_heat_scale",
+                                       "forged_carbon_chip",
+                                       "holo_prism_shift",
+                                       "voodoo_bone_fetish",
+                                       "skull_tessellation",
+                                       "voodoo_sigil_field"
+                                   ],
+                      "started_at":  "2026-05-26T22:34:39Z",
+                      "ended_at":  "2026-05-26T22:34:39Z",
+                      "render_min_ms":  426.4,
+                      "render_max_ms":  2611.7,
+                      "render_mean_ms":  1507.6,
+                      "second_pass":  false,
+                      "creativity_note":  "SPB-RATE10 2026-05-26 Codex first strike: replaced weak/generic/noisy outputs with fine 8-32px-at-2048 motifs in owner priority categories: predator rosettes/scales/feathers, voodoo/skull/dark magic, engine-turn guilloche, heat scale, holo prism, and forged carbon chips. Direct 2048 timings all stayed under 2.7s."
+                  },
+                  {
+                      "mode":  "CODEX",
+                      "patterns":  [
+                                       "razor_wire_coil",
+                                       "nordic_rune_field",
+                                       "snake_scale_diamond",
+                                       "spec_mesh_perforated",
+                                       "brushed_diagonal",
+                                       "hairline_polish",
+                                       "hand_polished",
+                                       "spec_faceted_diamond",
+                                       "chainmail_armor",
+                                       "diamond_dust",
+                                       "dragon_scale_macro",
+                                       "spec_holographic_foil",
+                                       "spec_iridescent_film"
+                                   ],
+                      "started_at":  "2026-05-26T22:50:39Z",
+                      "ended_at":  "2026-05-26T22:50:39Z",
+                      "render_min_ms":  null,
+                      "render_max_ms":  null,
+                      "render_mean_ms":  null,
+                      "second_pass":  false,
+                      "creativity_note":  "SPB-RATE10 2026-05-26 Codex second wave: owner-priority cleanup for razor wire, Nordic runes, snake scales, perforated mesh, brushed/polished machined surfaces, diamond lattice/dust, chainmail, dragon scales, holographic foil, and iridescent film. Main intent: cleaner usable motifs, coherent palettes, and fine 8-32px details."
+                  },
+                  {
+                      "mode":  "A",
+                      "patterns":  [
+                                       "diffraction_grating",
+                                       "diagonal_bands",
+                                       "cc_panel_pool",
+                                       "cc_drip_runs",
+                                       "cc_overspray_halo"
+                                   ],
+                      "started_at":  "2026-05-26T22:51:26Z",
+                      "ended_at":  "2026-05-26T22:51:26Z",
+                      "second_pass":  false,
+                      "creativity_note":  "CA-wavefront diffraction, tartan-weave diagonals, anamorphic puddles, predator-vein drips, engine-turn halo. Cool ice-blue + storm blue-grey + warm tan + dark stone gray + deep violet ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â five distinct palettes; 2 cool-toned.",
+                      "render_ms_256":  {
+                                            "min":  40,
+                                            "max":  185,
+                                            "mean":  87
+                                        },
+                      "render_ms_512":  {
+                                            "min":  151,
+                                            "max":  1007,
+                                            "mean":  380
+                                        },
+                      "creativity_techniques":  [
+                                                    "Rule-30 cellular automaton seeds",
+                                                    "fashion-print tartan crossings",
+                                                    "optical-illusion anamorphic perspective stretch",
+                                                    "biological vein networks",
+                                                    "engine-turned machined disc tiling"
+                                                ]
+                  },
+                  {
+                      "mode":  "A",
+                      "patterns":  [
+                                       "dry_dust_film",
+                                       "engraved_crosshatch",
+                                       "guilloche_hobnail",
+                                       "guilloche_barleycorn",
+                                       "lava_crack"
+                                   ],
+                      "started_at":  "2026-05-26T23:04:57.258751+00:00",
+                      "ended_at":  "2026-05-26T23:04:57.258751+00:00",
+                      "render_min_ms":  78.3,
+                      "render_mean_ms":  126.3,
+                      "render_max_ms":  178.4,
+                      "render_256_max_ms":  62.8,
+                      "second_pass":  false,
+                      "creativity_note":  "Owner 6/KEEP mid-pass refinement: added NEW unexpected hero motifs while preserving identity. dry_dust_film: Archimedean swirl-vortex hand-wipe spirals (math curves). engraved_crosshatch: Turing reaction-diffusion bronze veins (biology) layered with prior Lissajous overlays, ridge_mask binarized for composite-dark substrate. guilloche_hobnail: rose-curve r=a*cos(k*theta) petal rosettes (math) and substrate R lowered for composite-dark recess. guilloche_barleycorn: cafe-wall optical illusion trigger dots on alternating row pairs, substrate R lowered. lava_crack: moire diffraction shimmer fringes inside ember halos (interference physics), cell_R lowered from 0.62-0.95 to 0.18-0.32 for composite-dark basalt."
+                  },
+                  {
+                      "mode":  "A",
+                      "patterns":  [
+                                       "radiator_grille_mesh",
+                                       "spec_ballistic_weave",
+                                       "pebble_grain",
+                                       "spec_battle_scars",
+                                       "spec_chromatic_aberration"
+                                   ],
+                      "started_at":  "2026-05-26T23:06:31.963083+00:00",
+                      "ended_at":  "2026-05-26T23:14:31.963066+00:00",
+                      "render_ms":  {
+                                        "min":  79,
+                                        "max":  224,
+                                        "mean":  142
+                                    },
+                      "second_pass":  false,
+                      "creativity_note":  "Owner 6/KEEP soft-pass refinement batch. Calibrated substrate channels down to silence magenta/yellow lift while preserving rich hero motifs (chrome slats, kevlar weave, quilted leather diamonds, bullet craters, lens prism fans). spec_chromatic_aberration also pulled from _HALF_RES_SMOOTH_PATTERNS so sub-2-px diffraction filaments survive at 2048.",
+                      "verification":  "All 5 measured mean M \u003c 0.40 and mean R \u003c 0.55 at 256Ãƒâ€šÃ‚Â². CC=0.623 on chromatic_aberration intentional cool aberration ring. Visual: grille slats crisp, weave grid tight, quilt diamonds visible, scars dispersed, CA reads cool-not-magenta."
+                  },
+                  {
+                      "mode":  "A",
+                      "patterns":  [
+                                       "spec_chainlink_fence",
+                                       "spec_fiberglass_chopped",
+                                       "spec_galvanic_corrosion",
+                                       "spec_knurled_diamond"
+                                   ],
+                      "started_at":  "2026-05-26T23:21:59Z",
+                      "ended_at":  "2026-05-26T23:27:59Z",
+                      "render_time_ms":  {
+                                             "spec_chainlink_fence":  145.9,
+                                             "spec_fiberglass_chopped":  437,
+                                             "spec_galvanic_corrosion":  102.9,
+                                             "spec_knurled_diamond":  405.4
+                                         },
+                      "render_min_ms":  102.9,
+                      "render_max_ms":  437,
+                      "render_mean_ms":  272.8,
+                      "second_pass":  true,
+                      "creativity_note":  "Added biological/mechanical NEW HERO motifs to 4 borderline-6-rated patterns: lichen-patch colonies on chainlink, swirl-cure resin flow rivers on fiberglass, hydrogen-bubble veils on galvanic corrosion, machinist cross-hair reference marks + coolant-darkening zones on knurled diamond. Biology + machinist-shop genre crossover."
+                  },
+                  {
+                      "mode":  "B",
+                      "started_at":  "2026-05-26T23:39:36Z",
+                      "ended_at":  "2026-05-26T23:47:36Z",
+                      "patterns":  [
+                                       "viper_pit_hex",
+                                       "shark_denticle",
+                                       "voodoo_bone_fetish",
+                                       "tiger_stripe_field",
+                                       "skull_tessellation"
+                                   ],
+                      "render_ms_min":  12,
+                      "render_ms_max":  81,
+                      "render_ms_mean":  35,
+                      "second_pass":  true,
+                      "creativity_note":  "Math + biology + physics motifs: superellipse Lame curves (viper), Karman vortex micro-wakes (shark), catenary cosh sag (voodoo), reaction-diffusion Turing stripes (tiger), unique death-mask silhouettes anti-clone (skull). Cool-toned: viper teal, shark blue, skull violet. Warm: tiger tan. Storm-grey: voodoo."
+                  },
+                  {
+                      "mode":  "B",
+                      "started_at":  "2026-05-26T23:48:00Z",
+                      "ended_at":  "2026-05-27T00:06:21Z",
+                      "patterns":  [
+                                       "spec_mesh_perforated",
+                                       "spec_shot_peened",
+                                       "aniso_grain",
+                                       "wave_ripple",
+                                       "spec_aerogel_surface"
+                                   ],
+                      "render_ms_min":  67,
+                      "render_ms_max":  470,
+                      "render_ms_mean":  257,
+                      "second_pass":  true,
+                      "creativity_note":  "Math/biology/physics motifs added as NEW heros: (1) MOIRE INTERFERENCE GHOST GRID layered hex lattice at 17 deg offset (optical illusion). (2) CELLULAR-AUTOMATA stress-crack dendrites branching from impact sites (Conway-style growth). (3) CHLADNI VIBRATION-NODE sand figures on brushed metal (acoustic physics zero-crossings). (4) FIBONACCI PHYLLOTAXIS foam spiral at golden angle (137.5 deg) on pond. (5) TURING REACTION-DIFFUSION micro-spots on aerogel (activator-inhibitor leopard-pattern math). All 5 patterns visually distinct, features distributed full canvas, density tuned to escape static-noise look. Cool-toned: wave_ripple, aerogel."
+                  },
+                  {
+                      "mode":  "B",
+                      "patterns":  [
+                                       "woven_mesh",
+                                       "sponsor_tape_vinyl",
+                                       "sparkle_firefly",
+                                       "spec_magnetic_ferrofluid",
+                                       "abstract_color_field_bleed"
+                                   ],
+                      "second_pass":  true,
+                      "render_ms":  {
+                                        "min":  60,
+                                        "max":  222,
+                                        "mean":  110
+                                    },
+                      "started_at":  "2026-05-26T23:59:41.066821Z",
+                      "ended_at":  "2026-05-27T00:21:41.066776Z",
+                      "creativity_note":  "Tick79 second-pass creative motif additions: woven_mesh+spider-silk dew droplet clusters (biology), sponsor_tape_vinyl+CMYK print-misregistration ghost offset (printmaking), sparkle_firefly+bioluminescent dinoflagellate cool wakes (mixed-genre warm/cool fireflies), spec_magnetic_ferrofluid+Turing reaction-diffusion spot foam (math/morphogenesis), abstract_color_field_bleed+dendritic fractal veins (recursive branching). Released abstract_color_field_bleed from dragon_scale codex hijack via _R6_TICK78_DISPATCH_OVERRIDES extension. Palette discipline tightened: woven_mesh substrate R 0.78-\u003e0.52, ferrofluid base M 0.42-\u003e0.18, sparkle_firefly R 0.72-\u003e0.48. All composite means in cool-leaning zone except sparkle_firefly which holds dusk-warm tone."
+                  },
+                  {
+                      "mode":  "B",
+                      "second_pass":  true,
+                      "started_at":  "2026-05-27T00:28:53Z",
+                      "ended_at":  "2026-05-27T00:34:53Z",
+                      "patterns":  [
+                                       "spec_subsurface_depth",
+                                       "abstract_bauhaus_forms",
+                                       "cc_panel_fade",
+                                       "snake_scale_diamond",
+                                       "bead_blast_uniform"
+                                   ],
+                      "render_ms":  {
+                                        "min":  107,
+                                        "max":  181,
+                                        "mean":  132
+                                    },
+                      "creativity_note":  "Round-6 tick 80 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â second-pass HERO injection. spec_subsurface_depth: pool-bottom CAUSTIC NETWORK via curl-noise polylines on ICE-BLUE substrate. abstract_bauhaus_forms: OP-ART MOIRE INTERFERENCE rings (Bridget Riley) zones over cool-Bauhaus palette. cc_panel_fade: FRACTAL LICHEN COLONIES (L-system bifurcating dendrites) on STORM-BLUE-GREY. snake_scale_diamond: KINGSNAKE/CORAL banded chromatic shift driving 5-palette horizontal band map. bead_blast_uniform: FROST-DENDRITE crystal growths (L-system) over DEEP-VIOLET cool substrate."
+                  },
+                  {
+                      "mode":  "B",
+                      "second_pass":  true,
+                      "started_at":  "2026-05-27T00:34:53Z",
+                      "ended_at":  "2026-05-27T00:46:39Z",
+                      "patterns":  [
+                                       "diagonal_bands",
+                                       "adelson_checker_shadow",
+                                       "engine_turn_radial_arc",
+                                       "undercarriage_spray",
+                                       "rain_droplet_beads"
+                                   ],
+                      "render_ms":  {
+                                        "min":  81.8,
+                                        "max":  368.6,
+                                        "mean":  172.9
+                                    },
+                      "creativity_note":  "Tick-81 second-pass hero overlays: Chladni nodal interference curves (diagonal_bands), 5-fold Penrose-inspired pentagonal rosettes (adelson_checker_shadow), guilloche sine-rose wave-nest engraving (engine_turn_radial_arc), tire sidewall letterform-arc imprints (undercarriage_spray), thin-film soap-bubble iridescent halos around hero beads (rain_droplet_beads). Cool palettes on 3/5 (storm blue-grey tartan, ice-blue rosettes, deep-violet halos)."
+                  },
+                  {
+                      "tick":  94,
+                      "mode":  "METRIC_EXPERIMENT",
+                      "started_at":  "2026-05-26T00:00:00Z",
+                      "ended_at":  "2026-05-27T00:57:53Z",
+                      "summary":  "SPM10 weight-rebalance experiment (MP -0.10-\u003e-0.04, CV +0.04-\u003e+0.12, CR -0.05, ED -0.03) implemented as scripts/spb_spm10_score.py; scored against owner truth on n=19 overlap and n=66 catalog-wide M9 set; FAILED acceptance bar.",
+                      "outcome":  "FAIL",
+                      "metrics":  {
+                                      "spearman_rho_n19":  -0.087,
+                                      "spearman_rho_baseline_spm9":  -0.174,
+                                      "pearson_n19":  0.039,
+                                      "pearson_n66_catalog":  0.076,
+                                      "pearson_n66_baseline_m7":  0.193,
+                                      "mean_abs_disagreement_n66":  21.3,
+                                      "mean_abs_disagreement_baseline":  20.2,
+                                      "acceptance_bar_spearman":  0.5
+                                  },
+                      "artifacts":  [
+                                        "scripts/spb_spm10_score.py",
+                                        "_workbook_metrics/spm10_spec_pattern.json",
+                                        "_workbook_metrics/spm10_spec_pattern.js"
+                                    ],
+                      "workbook_section":  "Tick 94 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â SPM10 weight-rebalance experiment (FAIL)",
+                      "next_experiment_proposals":  [
+                                                        "Tick 95: OLS regression of 11 positive + 3 penalty axes on owner_score (n=137 broad overlap), held-out Spearman.",
+                                                        "Tick 96+ if OLS fails: SPM11 swaps SCD for CLIP/DINO embedding distance to owner-loved exemplars."
+                                                    ]
+                  },
+                  {
+                      "mode":  "CODEX_HEARTBEAT",
+                      "tick":  "2026-05-27-codex-loop1",
+                      "patterns":  [
+                                       "abstract_expressionist_splatter",
+                                       "cc_masking_edge",
+                                       "cc_spot_polish",
+                                       "cloud_wisps",
+                                       "copper_patina_drip",
+                                       "diamond_dust",
+                                       "heat_discoloration",
+                                       "spec_heat_scale",
+                                       "spec_mesh_perforated",
+                                       "aniso_grain_deep",
+                                       "concentric_ripple",
+                                       "crayon_wax_resist",
+                                       "crushed_glass",
+                                       "depth_gradient",
+                                       "drag_strip_burnout",
+                                       "edm_dimple",
+                                       "electric_branches",
+                                       "ember_field",
+                                       "exhaust_pipe_scorch",
+                                       "flow_lines",
+                                       "fly_cut_arcs",
+                                       "fractal_discharge",
+                                       "frosted_glass_etch",
+                                       "fungal_network",
+                                       "gold_leaf_torn"
+                                   ],
+                      "started_at":  "2026-05-27T01:11:03Z",
+                      "ended_at":  "2026-05-27T01:11:03Z",
+                      "render_min_ms":  1068.2,
+                      "render_max_ms":  2227.4,
+                      "render_mean_ms":  1588,
+                      "second_pass":  true,
+                      "creativity_note":  "SPB-RATE10 Codex heartbeat loop 1: 25 visible owner-disliked cards rebuilt/replaced. Explicit redo/mixed items covered plus unrated replacements. Direction: Affliction-era occult filigree, ghost/witch/voodoo spirit surfaces, cleaner perforated mesh, denser jeweling polish, tighter heat scale, machined EDM/fly-cut arcs, cursed glass, gold leaf cultural/kintsugi seams, and racing burnout/scorch. Visual pass patched green/magenta palette issues and macro heat bands."
+                  },
+                  {
+                      "mode":  "CODEX_HEARTBEAT",
+                      "tick":  "2026-05-27-codex-loop2",
+                      "patterns":  [
+                                       "gradient_bands",
+                                       "gravel_chip_field",
+                                       "gravity_well",
+                                       "hex_blood_drip",
+                                       "holo_prism_shift",
+                                       "jeweled_guilloche",
+                                       "knurl_diamond",
+                                       "knurl_straight",
+                                       "lathe_concentric",
+                                       "marble_vein",
+                                       "meteor_impact",
+                                       "micro_sparkle",
+                                       "micro_sparkle_cool",
+                                       "mud_splatter_random",
+                                       "oil_slick",
+                                       "oil_streak_panel",
+                                       "orbital_swirl",
+                                       "patina_bloom",
+                                       "pit_lane_stripes",
+                                       "plasma_turbulence",
+                                       "prismatic_dust",
+                                       "race_number_ghost",
+                                       "racing_tape_residue",
+                                       "radial_sunburst",
+                                       "rain_droplet_beads"
+                                   ],
+                      "started_at":  "2026-05-27T01:25:34Z",
+                      "ended_at":  "2026-05-27T01:25:34Z",
+                      "render_min_ms":  893.5,
+                      "render_max_ms":  1817.9,
+                      "render_mean_ms":  1325,
+                      "second_pass":  true,
+                      "creativity_note":  "SPB-RATE10 Codex heartbeat loop 2: 25 additional visible unrated cards rebuilt/replaced. Direction: prism/color-shift fine carriers, more machined engine-turn/lathe/knurl, occult gravity/blood/ghost surfaces, cultural gold-patina veining, darker race-wear/tape/grit, rain beads. Visual pass corrected green track casts and boosted underpowered knurl ridges."
+                  },
+                  {
+                      "mode":  "CODEX_HEARTBEAT",
+                      "tick":  "2026-05-27-codex-loop3",
+                      "patterns":  [
+                                       "rust_bloom",
+                                       "sand_dune",
+                                       "shark_denticle",
+                                       "skull_tessellation",
+                                       "smoke_tendril",
+                                       "sonic_boom",
+                                       "sparkle_constellation",
+                                       "sparkle_electric_field",
+                                       "sparkle_firefly",
+                                       "sparkle_galaxy_swirl",
+                                       "sparkle_nebula",
+                                       "sparkle_rain",
+                                       "spec_aged_matte",
+                                       "spec_bokeh_scatter",
+                                       "spec_carbon_wet_layup",
+                                       "spec_cast_surface",
+                                       "spec_coral_reef",
+                                       "spec_corrugated_panel",
+                                       "spec_crystal_growth",
+                                       "spec_diffraction_grating",
+                                       "spec_electroplated_chrome",
+                                       "spec_expanded_metal",
+                                       "spec_fresnel_gradient",
+                                       "spec_knurled_straight",
+                                       "spec_leaf_venation"
+                                   ],
+                      "started_at":  "2026-05-27T01:36:07Z",
+                      "ended_at":  "2026-05-27T01:36:07Z",
+                      "render_min_ms":  931.6,
+                      "render_max_ms":  1874.3,
+                      "render_mean_ms":  1397,
+                      "second_pass":  true,
+                      "creativity_note":  "SPB-RATE10 Codex heartbeat loop 3: 25 visible unrated cards rebuilt/replaced. Direction: predator denticles/expanded metal scale, skull/smoke occult overlays, sparkle/prism systems, carbon wet layup, cast/coral/leaf/corrugated surfaces, diffraction/fresnel/chrome/knurl. Visual pass corrected predator/composite magenta and green organic casts."
+                  },
+                  {
+                      "mode":  "CODEX_HEARTBEAT",
+                      "tick":  "2026-05-27-codex-loop4",
+                      "patterns":  [
+                                       "spec_light_leak",
+                                       "spec_liquid_metal",
+                                       "spec_magnetic_ferrofluid",
+                                       "spec_oxidized_pitting",
+                                       "spec_patina_verdigris",
+                                       "spec_peeling_clear",
+                                       "spec_powder_coat_texture",
+                                       "spec_riveted_plate",
+                                       "spec_rust_bloom",
+                                       "spec_shot_peened",
+                                       "spec_snake_scales",
+                                       "spec_sparkle_flake",
+                                       "spec_stone_granite",
+                                       "spec_stress_fractures",
+                                       "spec_subsurface_depth",
+                                       "spec_terrain_erosion",
+                                       "spec_thermal_spray",
+                                       "spec_weld_seam",
+                                       "spec_worn_edges",
+                                       "spiral_sweep",
+                                       "split_bands",
+                                       "sponsor_deboss",
+                                       "sponsor_emboss_v2",
+                                       "sponsor_tape_vinyl",
+                                       "spray_paint_drip"
+                                   ],
+                      "started_at":  "2026-05-27T01:50:21Z",
+                      "ended_at":  "2026-05-27T01:50:21Z",
+                      "render_min_ms":  1022,
+                      "render_max_ms":  1864.1,
+                      "render_mean_ms":  1380,
+                      "second_pass":  true,
+                      "creativity_note":  "SPB-RATE10 Codex heartbeat loop 4: 25 visible unrated cards rebuilt/replaced. Direction: industrial pitting/rivets/welds, snake/predator scales, liquid metal/ferrofluid/prism, sponsor/vinyl tape marks, worn-edge fractures, thermal spray, stone/granite, peeling clear and spray-drip linework. Visual pass neutralized magenta rivets and densified sponsor tape."
+                  },
+                  {
+                      "tick":  "2026-05-27-codex-loop6",
+                      "mode":  "CODEX_HEARTBEAT",
+                      "patterns":  [
+                                       "flake_scatter",
+                                       "wear_scuff",
+                                       "crackle_network",
+                                       "diamond_lattice",
+                                       "magnetic_field",
+                                       "neural_dendrite",
+                                       "circuit_trace",
+                                       "crystal_growth",
+                                       "brushed_sparkle",
+                                       "sparkle_comet",
+                                       "brushed_cross",
+                                       "hairline_polish",
+                                       "buffer_swirl",
+                                       "hand_polished",
+                                       "cc_fish_eye",
+                                       "cc_gloss_stripe",
+                                       "spec_faceted_diamond",
+                                       "spec_wood_grain_fine",
+                                       "spec_holographic_foil",
+                                       "spec_oil_film_thick",
+                                       "paint_drip_edge",
+                                       "decal_lift_edge",
+                                       "brake_dust_buildup",
+                                       "mother_of_pearl_inlay",
+                                       "cloud_wisps_warm",
+                                       "cloud_wisps_cool"
+                                   ],
+                      "started_at":  "2026-05-27T02:11:10Z",
+                      "ended_at":  "2026-05-27T02:11:10Z",
+                      "render_min_ms":  918.4,
+                      "render_max_ms":  2113.5,
+                      "render_mean_ms":  1427.6
+                  },
+                  {
+                      "tick":  "2026-05-27-codex-loop7",
+                      "mode":  "CODEX_HEARTBEAT",
+                      "patterns":  [
+                                       "engine_bay_grime",
+                                       "brushstroke_bold",
+                                       "abstract_retro_wave",
+                                       "forged_carbon_chip",
+                                       "snake_scale_diamond",
+                                       "pangolin_armor",
+                                       "hellfire_crackle",
+                                       "demon_eye_field",
+                                       "nordic_rune_field",
+                                       "razor_wire_coil"
+                                   ],
+                      "started_at":  "2026-05-27T03:17:11Z",
+                      "ended_at":  "2026-05-27T03:17:11Z",
+                      "render_min_ms":  897.5,
+                      "render_max_ms":  1732.1,
+                      "render_mean_ms":  1307.2
+                  },
+                  {
+                      "tick":  "2026-05-27-reference-rescue",
+                      "mode":  "CODEX_REFERENCE_RESCUE",
+                      "patterns":  [
+                                       "abstract_expressionist_splatter",
+                                       "abstract_retro_wave",
+                                       "brushstroke_bold",
+                                       "cc_fish_eye",
+                                       "cc_gloss_stripe",
+                                       "cc_masking_edge",
+                                       "cc_spot_polish",
+                                       "circuit_trace",
+                                       "cloud_wisps",
+                                       "cloud_wisps_cool",
+                                       "cloud_wisps_warm",
+                                       "copper_patina_drip",
+                                       "crystal_growth",
+                                       "decal_lift_edge",
+                                       "demon_eye_field",
+                                       "diamond_dust",
+                                       "flake_scatter",
+                                       "forged_carbon_chip",
+                                       "hairline_polish",
+                                       "hand_polished",
+                                       "heat_discoloration",
+                                       "hellfire_crackle",
+                                       "magnetic_field",
+                                       "micro_sparkle",
+                                       "neural_dendrite",
+                                       "nordic_rune_field",
+                                       "razor_wire_coil",
+                                       "snake_scale_diamond",
+                                       "sparkle_comet",
+                                       "spec_faceted_diamond",
+                                       "spec_heat_scale",
+                                       "spec_holographic_foil",
+                                       "spec_mesh_perforated",
+                                       "spec_oil_film_thick",
+                                       "spec_wood_grain_fine",
+                                       "wear_scuff"
+                                   ],
+                      "started_at":  "2026-05-27T07:40:00Z",
+                      "ended_at":  "2026-05-27T07:40:00Z",
+                      "render_min_ms":  516.5,
+                      "render_max_ms":  1653.9,
+                      "render_mean_ms":  1280.3,
+                      "creativity_note":  "SPB-RATE10 reference rescue: owner supplied diverse reference cards and called out weak/repeating/lazy rebuilds. Replaced 35 worst owner-rated cards with distinct visual grammars: skull lace, retro wave scan, pinstripe filigree, clearcoat bubbles/ribbons, circuit board, Ouija/Samhain occult, wave pearls, patina drips, crystal needles, viper hex, microdust, dense flake, forged carbon shards, hairline satin, heat bands/cells, lava crackle, magnetic flux, neural branches, rune mandala, razor concertina, snake scales, comet trails, diamond facets, perforated mesh, liquid chrome, terrain strata, and micro scuffs."
+                  },
+                  {
+                      "tick":  "2026-05-27-wwrd-pass1",
+                      "mode":  "CODEX_UNIQUE_RESCUE_HEARTBEAT",
+                      "patterns":  [
+                                       "abstract_expressionist_splatter",
+                                       "brushstroke_bold",
+                                       "cc_fish_eye",
+                                       "cc_spot_polish",
+                                       "cloud_wisps",
+                                       "copper_patina_drip",
+                                       "magnetic_field",
+                                       "nordic_rune_field",
+                                       "razor_wire_coil",
+                                       "wear_scuff",
+                                       "brake_dust_buildup"
+                                   ],
+                      "started_at":  "2026-05-27T07:52:41Z",
+                      "ended_at":  "2026-05-27T08:05:00Z",
+                      "render_min_ms":  932.1,
+                      "render_max_ms":  1506.3,
+                      "render_mean_ms":  1130.2,
+                      "creativity_note":  "WWRD pass 1: replaced remaining cousin-looking rescue cards after contact-sheet review. Direction: voodoo sigil wall, hot-rod brush slashes, Pac-Man fisheye clearcoat lenses, rotary spot polish, spirit smoke calligraphy, verdigris circuit relic, compass flux filings, Nordic braidwork, chaos razor snarl, pit-road scuff transfer, and brake-dust halftone."
+                  },
+                  {
+                      "tick":  "2026-05-27-wwrd-pass2",
+                      "mode":  "CODEX_UNIQUE_RESCUE_HEARTBEAT",
+                      "patterns":  [
+                                       "aniso_grain_deep",
+                                       "buffer_swirl",
+                                       "engine_bay_grime",
+                                       "cloud_wisps_warm",
+                                       "mother_of_pearl_inlay",
+                                       "paint_drip_edge",
+                                       "pangolin_armor",
+                                       "spec_oil_film_thick",
+                                       "spec_wood_grain_fine"
+                                   ],
+                      "started_at":  "2026-05-27T08:28:10Z",
+                      "ended_at":  "2026-05-27T08:42:00Z",
+                      "render_min_ms":  457.4,
+                      "render_max_ms":  1218.0,
+                      "render_mean_ms":  1008.2,
+                      "creativity_note":  "WWRD pass 2: replaced grey/faint/noisy cousin cards after the 40-card contact-sheet scan. Direction: damascus satin bands, random buffer holograms, engine gasket grime map, ember moth veil, nacre shard inlay, enamel drip bead curtain, overlapping pangolin shields, oil slick islands, and jasper burl topography."
+                  },
+                  {
+                      "tick":  "2026-05-27-wwrd-pass3",
+                      "mode":  "CODEX_UNIQUE_RESCUE_HEARTBEAT",
+                      "patterns":  [
+                                       "abstract_retro_wave",
+                                       "cc_gloss_stripe",
+                                       "cc_masking_edge",
+                                       "crackle_network",
+                                       "crystal_growth",
+                                       "decal_lift_edge",
+                                       "diamond_dust",
+                                       "forged_carbon_chip",
+                                       "hand_polished",
+                                       "sparkle_comet",
+                                       "flake_scatter"
+                                   ],
+                      "started_at":  "2026-05-27T09:03:55Z",
+                      "ended_at":  "2026-05-27T09:18:00Z",
+                      "render_min_ms":  496.8,
+                      "render_max_ms":  1402.6,
+                      "render_mean_ms":  1099.2,
+                      "creativity_note":  "WWRD pass 3: replaced another 11 visible owner-problem cards after the 40-card contact-sheet scan. Direction: cassette prism equalizer, wet clearcoat racing lanes, torn masking tape panel edges, cursed ceramic crackle, quartz cluster garden, lifting vinyl curl tabs, diamond-cut frost lattice, forged carbon torn-leaf chips, irregular hand-buff blooms, comet orbit cartography, and foil bomber flake panels. Visual self-check rejected and rebuilt sparse stripe/tape/crystal/carbon/hand-polish attempts before finalizing."
+                  },
+                  {
+                      "tick":  "2026-05-27-wwrd-pass4",
+                      "mode":  "CODEX_UNIQUE_RESCUE_HEARTBEAT",
+                      "patterns":  [
+                                       "brake_dust_buildup",
+                                       "brushstroke_bold",
+                                       "cc_fish_eye",
+                                       "cc_spot_polish",
+                                       "cloud_wisps_warm",
+                                       "crackle_network",
+                                       "engine_bay_grime",
+                                       "razor_wire_coil",
+                                       "pangolin_armor",
+                                       "spec_oil_film_thick",
+                                       "spec_wood_grain_fine"
+                                   ],
+                      "started_at":  "2026-05-27T09:36:36Z",
+                      "ended_at":  "2026-05-27T09:52:00Z",
+                      "render_min_ms":  811.1,
+                      "render_max_ms":  1154.5,
+                      "render_mean_ms":  1043.4,
+                      "creativity_note":  "WWRD pass 4: rebuilt 11 more visible owner-problem cards after rejecting green-noise, dot-grid, and psychedelic first attempts. Direction: graphite brake sweep ghosts, sumi enamel slash field, random clearcoat fisheye craters, rotary polish shells, ember spirit flame lace, jagged lead crackle rivers, oil gasket shadow archipelago, concertina razor ribbon mesh, pangolin armor river bands, clean liquid chrome oil lenses, and clean burl terrain ridges."
+                  },
+                  {
+                      "tick":  "2026-05-27-wwrd-pass5",
+                      "mode":  "CODEX_UNIQUE_RESCUE_HEARTBEAT",
+                      "patterns":  [
+                                       "cc_gloss_stripe",
+                                       "cc_masking_edge",
+                                       "circuit_trace",
+                                       "copper_patina_drip",
+                                       "buffer_swirl",
+                                       "hand_polished",
+                                       "forged_carbon_chip",
+                                       "mother_of_pearl_inlay",
+                                       "micro_sparkle",
+                                       "spec_holographic_foil",
+                                       "wear_scuff"
+                                   ],
+                      "started_at":  "2026-05-27T10:07:30Z",
+                      "ended_at":  "2026-05-27T10:23:00Z",
+                      "render_min_ms":  1027.3,
+                      "render_max_ms":  1217.2,
+                      "render_mean_ms":  1077.1,
+                      "creativity_note":  "WWRD pass 5: rebuilt 11 more visible owner-problem cards from the latest 40-card sheet, targeting repeated purple speck/curl cards, green circuit-family cards, and simple stripe/moire cards. Direction: clearcoat lens wake seams, masking adhesive cross-torn lines, PCB relic mandala traces, copper verdigris contour lakes, orbital buffer shell rings, microfiber wipe crosshatch, forged carbon torn-sheet mosaic, nacre tile inlay mosaic, stardust microprism cartography, diffraction shard foil, and rubber wall scuff smeared arcs."
+                  },
+                  {
+                      "tick":  "2026-05-27-wwrd-pass6",
+                      "mode":  "CODEX_UNIQUE_RESCUE_HEARTBEAT",
+                      "patterns":  [
+                                       "abstract_expressionist_splatter",
+                                       "aniso_grain_deep",
+                                       "cc_fish_eye",
+                                       "cc_spot_polish",
+                                       "cloud_wisps",
+                                       "cloud_wisps_cool",
+                                       "crystal_growth",
+                                       "diamond_dust",
+                                       "flake_scatter",
+                                       "hairline_polish",
+                                       "magnetic_field",
+                                       "spec_oil_film_thick",
+                                       "spec_wood_grain_fine"
+                                   ],
+                      "started_at":  "2026-05-27T10:37:11Z",
+                      "ended_at":  "2026-05-27T10:54:00Z",
+                      "render_min_ms":  366.2,
+                      "render_max_ms":  1102.7,
+                      "render_mean_ms":  1005.3,
+                      "creativity_note":  "WWRD pass 6: rebuilt 13 more visible owner-problem cards after the latest 40-card review, then rejected and rebuilt dot-field/soup attempts. Direction: occult barbed filigree lattice, machined titanium fishscale turns, clearcoat rain bead wake field, rotary compound shell overlaps, longform ghost tendril script, blue pearl wave ripple lace, geode quartz seam clusters, faceted diamond shatter plate, hex-cut metalflake panel, satin hairline crossgrain, ferrofluid fieldline filings, polished oil lens ribbons, and engraved topo burl lines."
+                  },
+                  {
+                      "tick":  "2026-05-27-wwrd-pass7",
+                      "mode":  "CODEX_UNIQUE_RESCUE_HEARTBEAT",
+                      "patterns":  [
+                                       "abstract_retro_wave",
+                                       "brushstroke_bold",
+                                       "buffer_swirl",
+                                       "copper_patina_drip",
+                                       "decal_lift_edge",
+                                       "engine_bay_grime",
+                                       "forged_carbon_chip",
+                                       "neural_dendrite",
+                                       "nordic_rune_field",
+                                       "paint_drip_edge",
+                                       "razor_wire_coil",
+                                       "sparkle_comet"
+                                   ],
+                      "started_at":  "2026-05-27T11:07:43Z",
+                      "ended_at":  "2026-05-27T11:23:00Z",
+                      "render_min_ms":  1023.0,
+                      "render_max_ms":  1131.7,
+                      "render_mean_ms":  1058.9,
+                      "creativity_note":  "WWRD pass 7: rebuilt 12 more visible owner-problem cards after latest contact-sheet review, avoiding the Adelson card because owner history says it was liked after rename. Direction: Fresnel turbine equalizer discs, sumi lacquer ribbon sweeps, polish orbital moon shells, copper patina topo lakes, vinyl lift flap shingles, gasket grime blueprint loops, forged carbon diagonal shingle plates, neural green circuit branches, Nordic knotwork medallions, enamel drip rain beads, concertina barb loop crowns, and comet orbital star charts. Visual pass rejected sparse brush/copper/forged/decal/razor/comet attempts before finalizing."
+                  },
+                  {
+                      "tick":  "2026-05-27-wwrd-pass8",
+                      "mode":  "CODEX_UNIQUE_RESCUE_HEARTBEAT",
+                      "patterns":  [
+                                       "aniso_grain_deep",
+                                       "brake_dust_buildup",
+                                       "cc_gloss_stripe",
+                                       "cc_spot_polish",
+                                       "cloud_wisps",
+                                       "cloud_wisps_warm",
+                                       "crystal_growth",
+                                       "diamond_dust",
+                                       "micro_sparkle",
+                                       "pangolin_armor",
+                                       "razor_wire_coil",
+                                       "wear_scuff"
+                                   ],
+                      "started_at":  "2026-05-27T11:36:02Z",
+                      "ended_at":  "2026-05-27T11:56:00Z",
+                      "render_min_ms":  991.8,
+                      "render_max_ms":  1126.8,
+                      "render_mean_ms":  1040.6,
+                      "creativity_note":  "WWRD pass 8: rebuilt 12 more visible owner-problem cards after rejecting faint row/line/dot-field attempts through four contact-sheet iterations. Direction: fan-cut engine-turn rosettes, brake ceramic orbit scorch, blue clearcoat lens cells, compound polish peacock eyes, Ouija planchette eye brocade, voodoo pin candle sparks, quartz prism cathedral field, diamond shatter optic tiles, astral stardust spiral map, dragon pangolin scale mail, concertina barb crown clusters, and rubber marble scuff islands."
+                  },
+                  {
+                      "tick":  "2026-05-27-wwrd-pass9",
+                      "mode":  "CODEX_UNIQUE_RESCUE_HEARTBEAT",
+                      "patterns":  [
+                                       "abstract_expressionist_splatter",
+                                       "abstract_retro_wave",
+                                       "brushstroke_bold",
+                                       "cc_fish_eye",
+                                       "cloud_wisps_cool",
+                                       "copper_patina_drip",
+                                       "flake_scatter",
+                                       "forged_carbon_chip",
+                                       "paint_drip_edge",
+                                       "spec_oil_film_thick",
+                                       "spec_wood_grain_fine",
+                                       "magnetic_field",
+                                       "nordic_rune_field"
+                                   ],
+                      "started_at":  "2026-05-27T12:26:50Z",
+                      "ended_at":  "2026-05-27T12:48:00Z",
+                      "render_min_ms":  987.9,
+                      "render_max_ms":  1091.3,
+                      "render_mean_ms":  1032.6,
+                      "creativity_note":  "WWRD pass 9: rebuilt 13 more visible owner-problem cards after latest 40-card review, with four contact-sheet iterations. Direction: bone shrine pinstripe windows, dense retro prism orbit soup, dense lacquer slash fan carpet, clearcoat fisheye pearl reef, blue pearl shell current field, copper verdigris leaf lattice, random hammered flake galaxy, forged carbon talon plate swarm, enamel drip beaded rainstorm, liquid chrome mercury cells, burl engraved terrace maze, dense ferrofluid compass storm, and rune iron nail constellation."
+                  },
+                  {
+                      "tick":  "2026-05-27-wwrd-pass10",
+                      "mode":  "CODEX_UNIQUE_RESCUE_HEARTBEAT",
+                      "patterns":  [
+                                       "aniso_grain_deep",
+                                       "brake_dust_buildup",
+                                       "buffer_swirl",
+                                       "cc_masking_edge",
+                                       "cloud_wisps_warm",
+                                       "decal_lift_edge",
+                                       "diamond_dust",
+                                       "hand_polished",
+                                       "micro_sparkle",
+                                       "sparkle_comet",
+                                       "spec_holographic_foil",
+                                       "wear_scuff"
+                                   ],
+                      "started_at":  "2026-05-27T13:03:55Z",
+                      "ended_at":  "2026-05-27T13:24:00Z",
+                      "render_min_ms":  993.8,
+                      "render_max_ms":  1376.1,
+                      "render_mean_ms":  1166,
+                      "creativity_note":  "WWRD pass 10: rebuilt 12 more visible owner-problem cards after the latest 40-card review, rejecting a sparse first pass and densifying iteration2. Direction: machined turbine scale, brake scorch pitting, buffer whorl shell carpet, torn masking crosshatch, ember pin sigils, vinyl curl shingles, diamond microfacets, microfiber hand-polish crossfire, nebula micro-sparkle cartography, comet orbit glyphs, holographic prism shards, and rubber arc scuffs."
+                  },
+                  {
+                      "tick":  "2026-05-27-spec-pipeline-v2-analysis",
+                      "mode":  "ANALYSIS_VM_ENVELOPE_PUSH",
+                      "patterns":  [],
+                      "started_at":  "2026-05-27T19:30:00Z",
+                      "ended_at":  "2026-05-27T19:55:00Z",
+                      "render_min_ms":  null,
+                      "render_max_ms":  null,
+                      "render_mean_ms":  null,
+                      "creativity_note":  "Analysis-only pass: deep-read VIVA_MEXICO_SPEC_PIPELINE_MASTERCLASS.md + engine/paint_v2/cultural_viva_mexico.py (561 L) + racing_pivot_v1/v2 + prism_forge + paradigm_scifi. Produced _loop_state/spec_pipeline_v2_proposal.md (~470 lines) covering 11 concrete enhancements past VM gold standard. Top-3 sequencing: Physical Property Coupling (PPC), Directional Micro-Scratch Layer (DMSL), Curvature-Aware Spec Anisotropy (CASA). Moonshot: Latent Material Embedding (LME) — tiny CNN trained on real macro paint photos as +15% modulation on top of procedural VM. No code edits made."
+                  }
+              ],
+    "last_tick_ts":  "2026-05-27T19:55:00Z"
+}

@@ -1,0 +1,22 @@
+{
+ "chosen": {
+  "lsk_arc_weld": 2,
+  "lsk_bead": 7,
+  "lsk_carbon_track": 5,
+  "lsk_corona_ring": 9,
+  "lsk_fulgurite": 7,
+  "lsk_jacobs_ladder": 7,
+  "lsk_lichtenberg": 8,
+  "lsk_plasma_globe": 8,
+  "lsk_return_stroke": 4,
+  "lsk_spark_gap": 9,
+  "lsk_spider_crawl": 2,
+  "lsk_sprite": 9,
+  "lsk_st_elmo": 5,
+  "lsk_static_creep": 5,
+  "lsk_streamer_front": 4,
+  "lsk_tesla_streamer": 5
+ },
+ "n_variants": 10,
+ "res": 1024
+}

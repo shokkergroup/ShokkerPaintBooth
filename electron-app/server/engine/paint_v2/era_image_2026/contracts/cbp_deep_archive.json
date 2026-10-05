@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_deep_archive",
+  "display_name": "Netrun: Archive Foil",
+  "promise": "Copper micro-engraved tabs with emerald index cuts and sapphire lacquer pores.",
+  "carrier_grammar": "Copper micro-engraved tabs with emerald index cuts and sapphire lacquer pores. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for copper archive tabs, emerald index cuts, sapphire lacquer pores, gold engraved dashes, black grooves is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Copper micro-engraved tabs with emerald index cuts and sapphire lacquer pores. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_deep_archive.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "copper archive tabs",
+      "role": "Actual shared paint and spec geometry: copper archive tabs"
+    },
+    {
+      "name": "emerald index cuts",
+      "role": "Actual shared paint and spec geometry: emerald index cuts"
+    },
+    {
+      "name": "sapphire lacquer pores",
+      "role": "Actual shared paint and spec geometry: sapphire lacquer pores"
+    },
+    {
+      "name": "gold engraved dashes",
+      "role": "Actual shared paint and spec geometry: gold engraved dashes"
+    },
+    {
+      "name": "black grooves",
+      "role": "Actual shared paint and spec geometry: black grooves"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "copper archive tabs",
+      "emerald index cuts",
+      "sapphire lacquer pores",
+      "gold engraved dashes",
+      "black grooves"
+    ],
+    "R": [
+      "copper archive tabs",
+      "emerald index cuts",
+      "sapphire lacquer pores",
+      "gold engraved dashes",
+      "black grooves"
+    ],
+    "Cc": [
+      "copper archive tabs",
+      "emerald index cuts",
+      "sapphire lacquer pores",
+      "gold engraved dashes",
+      "black grooves"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_root_access",
+      "difference": "This finish uses Dense microscopic copper micro engraved archive tabs, emerald tiny stepped index cuts, sapphire lacquer pores, gold engraved pin dashes and black groove shoulders. Fine nested comb tab construction with crisp micro etching, no books or paper sheets, no text.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_encryption_lattice",
+      "difference": "This finish uses Dense microscopic copper micro engraved archive tabs, emerald tiny stepped index cuts, sapphire lacquer pores, gold engraved pin dashes and black groove shoulders. Fine nested comb tab construction with crisp micro etching, no books or paper sheets, no text.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "copper archive tabs is visible in the authored geometry",
+      "emerald index cuts is visible in the authored geometry",
+      "sapphire lacquer pores is visible in the authored geometry",
+      "gold engraved dashes is visible in the authored geometry",
+      "black grooves is visible in the authored geometry"
+    ],
+    "source_sha256": "06d25a75f7b5aba59633f836e296f4ff42cace67a7910aa0224a66db5c4a0a1a",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_deep_archive-authored-Copper micro-engraved tabs with emerald index cuts and sapphire lacquer pores. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_deep_archive-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 53.0,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "967c1d920644bfb5ecff6a95f3cee8289618b7b2607190fa9754922622ba1d59"
+}

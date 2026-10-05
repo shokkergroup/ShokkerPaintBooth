@@ -1,0 +1,43 @@
+{
+  "status": "NATIVE_ATOMICITY_FAILURE_RECOVERED",
+  "scope": "Private experimental controller wire65ad plus newline-only Undo repair; actual rootD0533/E5e8. Not cold current acceptance.",
+  "case": {
+    "request": "Make the roof matte black with a gold carbon-weave overlay, but keep its current paint color.",
+    "text": "Done — the roof is now black carbon fiber. Your numbers and sponsors are untouched.\nNEXT: Make it a different colour | Do the roof too | Undo",
+    "queue": 1,
+    "howto": null,
+    "selfHelp": null,
+    "lastText": "Done — the roof is now black carbon fiber. Your numbers and sponsors are untouched.",
+    "aliasLeak": false,
+    "busy": false
+  },
+  "loaded": {
+    "js/spb-pro-design.js": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8",
+    "js/spb-pro-edit.js": "5e8cc8bb52825b4ebac672a991d6d927b0e5c1906c6d54e80970fb79e18ac456",
+    "js/spb-self-help.js": "b860c0acc0ab442f7b6477853c4438ab0b9e74e94fd87904e356768d2f97f7b2",
+    "js/spb-pro-ai.js": "65ad4705e818c5f1952b94c3a4b9e125ae854fea7ee64a90169f300eeb108138"
+  },
+  "proAIPrivatePatch": "adee9a752dbc2b9aa0b9d92a343cddfbc6f4d33b61125f9de3a9cc1fae3bd10e",
+  "observations": {
+    "appliedQueue": 1,
+    "recordedCarbonOnly": {
+      "id": 2,
+      "lines": [
+        "Carbon fiber roof: limited to layer Car Paint; covers everything on that layer; limited to the roof; finish Gloss; colour #111113; pattern Carbon Fiber; placed at the top of the stack (wins overlaps)"
+      ],
+      "undoable": true,
+      "undone": null,
+      "text": "Done — the roof is now black carbon fiber. Your numbers and sponsors are untouched."
+    },
+    "undoReturned": true,
+    "settledAfterUndo": true,
+    "metadataRestored": true,
+    "providerAttempts": 0
+  },
+  "limits": [
+    "Combined helper batch did not await preview settlement after compound edit; its paint/spec equality values are not acceptance evidence and are excluded.",
+    "This is a concrete route-level partial completion, not an inference from parser-only output.",
+    "Undo was called only after the recorded undoable compound mutation. Native pixel equality against a durable pre-edit baseline was not recorded for this case."
+  ],
+  "repair": "W34 dispatch preflight candidate active; no promotion or passing current compound acceptance claimed."
+}

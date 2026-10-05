@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_zebra_wrap",
+  "display_name": "Radical: Neon Zebra Wrap",
+  "promise": "Fine irregular black zebra stripes with pink and aqua edges on warm ivory vinyl.",
+  "carrier_grammar": "Fine irregular black zebra stripes with pink and aqua edges on warm ivory vinyl. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for ivory vinyl skin, black forked stripes, pink stripe offsets, aqua edge pinstripes, branching stripe junctions, tapered detached stripe needles is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Fine irregular black zebra stripes with pink and aqua edges on warm ivory vinyl. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_zebra_wrap.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "ivory vinyl skin",
+      "role": "Actual shared paint and spec geometry: ivory vinyl skin"
+    },
+    {
+      "name": "black forked stripes",
+      "role": "Actual shared paint and spec geometry: black forked stripes"
+    },
+    {
+      "name": "pink stripe offsets",
+      "role": "Actual shared paint and spec geometry: pink stripe offsets"
+    },
+    {
+      "name": "aqua edge pinstripes",
+      "role": "Actual shared paint and spec geometry: aqua edge pinstripes"
+    },
+    {
+      "name": "branching stripe junctions",
+      "role": "Actual shared paint and spec geometry: branching stripe junctions"
+    },
+    {
+      "name": "tapered detached stripe needles",
+      "role": "Actual shared paint and spec geometry: tapered detached stripe needles"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "ivory vinyl skin",
+      "black forked stripes",
+      "pink stripe offsets",
+      "aqua edge pinstripes",
+      "branching stripe junctions",
+      "tapered detached stripe needles"
+    ],
+    "R": [
+      "ivory vinyl skin",
+      "black forked stripes",
+      "pink stripe offsets",
+      "aqua edge pinstripes",
+      "branching stripe junctions",
+      "tapered detached stripe needles"
+    ],
+    "Cc": [
+      "ivory vinyl skin",
+      "black forked stripes",
+      "pink stripe offsets",
+      "aqua edge pinstripes",
+      "branching stripe junctions",
+      "tapered detached stripe needles"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_tiger_stripe",
+      "difference": "This finish uses Very fine zebra stripe microfragments: organically forked thin black taper strokes on ivory vinyl with delicate hotpink and aqua offset outlines. Densely spaced little forked stripe cuts, no giant zebra bands, no animal or whole jacket. Predominantly colorful edge accents and cream, not gray.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "at_sharpie_ink",
+      "difference": "This finish uses Very fine zebra stripe microfragments: organically forked thin black taper strokes on ivory vinyl with delicate hotpink and aqua offset outlines. Densely spaced little forked stripe cuts, no giant zebra bands, no animal or whole jacket. Predominantly colorful edge accents and cream, not gray.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "ivory vinyl skin is visible in the authored geometry",
+      "black forked stripes is visible in the authored geometry",
+      "pink stripe offsets is visible in the authored geometry",
+      "aqua edge pinstripes is visible in the authored geometry",
+      "branching stripe junctions is visible in the authored geometry",
+      "tapered detached stripe needles is visible in the authored geometry"
+    ],
+    "source_sha256": "f2fbd2f4f3683317369e4637eca1182a42bf7b37f5c0ba72c80e2f762d201164",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_zebra_wrap-authored-Fine irregular black zebra stripes with pink and aqua edges on warm ivory vinyl. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_zebra_wrap-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 60.0,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "afd772dff601d40c68c441026b4ed525e6bc302f5fd3e890242dec6238bde61e"
+}

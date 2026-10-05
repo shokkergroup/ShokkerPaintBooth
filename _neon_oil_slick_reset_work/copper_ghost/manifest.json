@@ -1,0 +1,87 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_circuit_city",
+  "display_name": "Copper Ghost",
+  "carrier": "black oxidized laminate densely loaded with overlapping organic 8-32px buried copper remnants",
+  "material_story": {
+    "M": "torn copper ledges, exposed pinpoints, clipped foil stubs, solder remnants, and buried overlap",
+    "R": "cyan verdigris margins, etched gaps, fractured solder, and underfilm shadow damage",
+    "Cc": "intact oxidized laminate, magenta dielectric ghosts, blister lips, and buried copper; low at exposure"
+  },
+  "vetoes": [
+    "no circuit boards, chips, or straight long traces",
+    "no city or skyline imagery",
+    "no grids, rows, maps, or barcodes",
+    "no random confetti",
+    "no unrelated noise/spec underlay"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 2.547879,
+  "material_stats": {
+    "std": {
+      "M": 82.790047,
+      "R": 83.299179,
+      "Cc": 83.260765
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.303184,
+      "M_Cc": 0.083035,
+      "R_Cc": 0.146671
+    }
+  },
+  "geometry_stats": {
+    "family_count": 10,
+    "families": {
+      "buried_copper_remnants": 10521,
+      "short_torn_foil_ledges": 3211,
+      "cyan_verdigris_margins": 3211,
+      "magenta_dielectric_ghosts": 3211,
+      "exposed_copper_pinpoints": 1268,
+      "clipped_trace_stubs": 1349,
+      "blister_lips": 2003,
+      "underfilm_shadows": 3211,
+      "fractured_solder_beads": 869,
+      "dark_etched_gaps": 1946
+    },
+    "width_native_min": 9.0,
+    "width_native_median": 10.0,
+    "width_native_p90": 28.0,
+    "width_native_max": 28.0,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "buried_copper_remnants": 0.3729,
+    "short_torn_foil_ledges": 0.261645,
+    "cyan_verdigris_margins": 0.260693,
+    "magenta_dielectric_ghosts": 0.187456,
+    "exposed_copper_pinpoints": 0.021005,
+    "clipped_trace_stubs": 0.064399,
+    "blister_lips": 0.097315,
+    "underfilm_shadows": 0.193901,
+    "fractured_solder_beads": 0.022243,
+    "dark_etched_gaps": 0.100138
+  }
+}

@@ -1,0 +1,958 @@
+{
+  "version": 1,
+  "metric": "M7 \u2014 Composite + STILL-WEAK list",
+  "generated": "2026-08-28T15:27:28",
+  "weights": {
+    "full": {
+      "m1": 0.2,
+      "m2": 0.2,
+      "m5": 0.25,
+      "m6": 0.35
+    },
+    "spec_driven": {
+      "m2": 0.2,
+      "m5": 0.3,
+      "m6": 0.5
+    },
+    "pattern_design": {
+      "m1": 0.3,
+      "m5": 0.2,
+      "m6": 0.5
+    },
+    "fine_structural_color": {
+      "m5": 0.375,
+      "m6": 0.625
+    }
+  },
+  "tierThresholds": {
+    "keeper": 80,
+    "ok": 65,
+    "watch": 50,
+    "fix": 35,
+    "critical": 0
+  },
+  "byFinish": {
+    "monolithic:xlab_abyssal_lens": {
+      "composite": 98.0,
+      "preCloneComposite": 98.0,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 98.0
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_afterimage_lacquer": {
+      "composite": 90.8,
+      "preCloneComposite": 90.8,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 90.8
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_aerogel_fire": {
+      "composite": 98.7,
+      "preCloneComposite": 98.7,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 98.7
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_anamorphic_pearl": {
+      "composite": 93.7,
+      "preCloneComposite": 93.7,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 93.7
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_anti_gravity_foil": {
+      "composite": 93.5,
+      "preCloneComposite": 93.5,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 93.5
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_arc_weld_velvet": {
+      "composite": 88.7,
+      "preCloneComposite": 88.7,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 88.7
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_black_ice_orbit": {
+      "composite": 91.4,
+      "preCloneComposite": 91.4,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 91.4
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_bloomglass": {
+      "composite": 89.7,
+      "preCloneComposite": 89.7,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 89.7
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_brunel_current": {
+      "composite": 90.7,
+      "preCloneComposite": 90.7,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 90.7
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_caustic_engine": {
+      "composite": 98.5,
+      "preCloneComposite": 98.5,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 98.5
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_ceramic_storm": {
+      "composite": 99.4,
+      "preCloneComposite": 99.4,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 99.4
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_chiral_mercury": {
+      "composite": 98.1,
+      "preCloneComposite": 98.1,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 98.1
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_chromatophore": {
+      "composite": 95.1,
+      "preCloneComposite": 95.1,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 95.1
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_cinder_mirror": {
+      "composite": 95.3,
+      "preCloneComposite": 95.3,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 95.3
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_coral_voltage": {
+      "composite": 95.3,
+      "preCloneComposite": 95.3,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 95.3
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_cryogenic_sunset": {
+      "composite": 99.2,
+      "preCloneComposite": 99.2,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 99.2
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_deep_time": {
+      "composite": 92.5,
+      "preCloneComposite": 92.5,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 92.5
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_dichroic_skin": {
+      "composite": 98.6,
+      "preCloneComposite": 98.6,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 98.6
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_electric_ink": {
+      "composite": 97.3,
+      "preCloneComposite": 97.3,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 97.3
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_ferrofluid_silk": {
+      "composite": 89.0,
+      "preCloneComposite": 89.0,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 89.0
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_ghost_transmission": {
+      "composite": 94.1,
+      "preCloneComposite": 94.1,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 94.1
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_hologram_metal": {
+      "composite": 88.8,
+      "preCloneComposite": 88.8,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 88.8
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_ion_bloom": {
+      "composite": 96.5,
+      "preCloneComposite": 96.5,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 96.5
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_laminar_magma": {
+      "composite": 93.6,
+      "preCloneComposite": 93.6,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 93.6
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_luminous_carbon": {
+      "composite": 93.5,
+      "preCloneComposite": 93.5,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 93.5
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_memory_glass": {
+      "composite": 100.0,
+      "preCloneComposite": 100.0,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 100.0
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_nebula_ceramic": {
+      "composite": 98.1,
+      "preCloneComposite": 98.1,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 98.1
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_photon_patina": {
+      "composite": 97.8,
+      "preCloneComposite": 97.8,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 97.8
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_quantum_tide": {
+      "composite": 98.6,
+      "preCloneComposite": 98.6,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 98.6
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    },
+    "monolithic:xlab_sonic_chrome": {
+      "composite": 99.9,
+      "preCloneComposite": 99.9,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 99.9
+      },
+      "componentsUsed": [
+        "m5"
+      ]
+    }
+  },
+  "byCategory": {
+    "X LAB": {
+      "count": 30,
+      "meanComposite": 95.1,
+      "tiers": {
+        "keeper": 30,
+        "ok": 0,
+        "watch": 0,
+        "fix": 0,
+        "critical": 0
+      }
+    }
+  },
+  "tierTotals": {
+    "keeper": 30,
+    "ok": 0,
+    "watch": 0,
+    "fix": 0,
+    "critical": 0
+  },
+  "stillWeak": [
+    {
+      "id": "monolithic:xlab_arc_weld_velvet",
+      "composite": 88.7,
+      "preCloneComposite": 88.7,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 88.7
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_hologram_metal",
+      "composite": 88.8,
+      "preCloneComposite": 88.8,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 88.8
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_ferrofluid_silk",
+      "composite": 89.0,
+      "preCloneComposite": 89.0,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 89.0
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_bloomglass",
+      "composite": 89.7,
+      "preCloneComposite": 89.7,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 89.7
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_brunel_current",
+      "composite": 90.7,
+      "preCloneComposite": 90.7,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 90.7
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_afterimage_lacquer",
+      "composite": 90.8,
+      "preCloneComposite": 90.8,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 90.8
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_black_ice_orbit",
+      "composite": 91.4,
+      "preCloneComposite": 91.4,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 91.4
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_deep_time",
+      "composite": 92.5,
+      "preCloneComposite": 92.5,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 92.5
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_anti_gravity_foil",
+      "composite": 93.5,
+      "preCloneComposite": 93.5,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 93.5
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_luminous_carbon",
+      "composite": 93.5,
+      "preCloneComposite": 93.5,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 93.5
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_laminar_magma",
+      "composite": 93.6,
+      "preCloneComposite": 93.6,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 93.6
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_anamorphic_pearl",
+      "composite": 93.7,
+      "preCloneComposite": 93.7,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 93.7
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_ghost_transmission",
+      "composite": 94.1,
+      "preCloneComposite": 94.1,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 94.1
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_chromatophore",
+      "composite": 95.1,
+      "preCloneComposite": 95.1,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 95.1
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_cinder_mirror",
+      "composite": 95.3,
+      "preCloneComposite": 95.3,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 95.3
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_coral_voltage",
+      "composite": 95.3,
+      "preCloneComposite": 95.3,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 95.3
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_ion_bloom",
+      "composite": 96.5,
+      "preCloneComposite": 96.5,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 96.5
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_electric_ink",
+      "composite": 97.3,
+      "preCloneComposite": 97.3,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 97.3
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_photon_patina",
+      "composite": 97.8,
+      "preCloneComposite": 97.8,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 97.8
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_abyssal_lens",
+      "composite": 98.0,
+      "preCloneComposite": 98.0,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 98.0
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_chiral_mercury",
+      "composite": 98.1,
+      "preCloneComposite": 98.1,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 98.1
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_nebula_ceramic",
+      "composite": 98.1,
+      "preCloneComposite": 98.1,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 98.1
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_caustic_engine",
+      "composite": 98.5,
+      "preCloneComposite": 98.5,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 98.5
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_dichroic_skin",
+      "composite": 98.6,
+      "preCloneComposite": 98.6,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 98.6
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_quantum_tide",
+      "composite": 98.6,
+      "preCloneComposite": 98.6,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 98.6
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_aerogel_fire",
+      "composite": 98.7,
+      "preCloneComposite": 98.7,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 98.7
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_cryogenic_sunset",
+      "composite": 99.2,
+      "preCloneComposite": 99.2,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 99.2
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_ceramic_storm",
+      "composite": 99.4,
+      "preCloneComposite": 99.4,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 99.4
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_sonic_chrome",
+      "composite": 99.9,
+      "preCloneComposite": 99.9,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 99.9
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    },
+    {
+      "id": "monolithic:xlab_memory_glass",
+      "composite": 100.0,
+      "preCloneComposite": 100.0,
+      "clonePenalty": 1.0,
+      "cloneSize": 1,
+      "intent": "full",
+      "tier": "keeper",
+      "components": {
+        "m5": 100.0
+      },
+      "componentsUsed": [
+        "m5"
+      ],
+      "category": "X LAB"
+    }
+  ]
+}

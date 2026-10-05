@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_carbon_limb",
+  "display_name": "Chrome: Conductive Carbon",
+  "promise": "Tiny carbon braid bundles interlock with turquoise conductors and crimson resin stitches.",
+  "carrier_grammar": "Tiny carbon braid bundles interlock with turquoise conductors and crimson resin stitches. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for carbon braid bundles, turquoise conductors, crimson resin nodes, silver fiber breaks, violet binder pockets is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny carbon braid bundles interlock with turquoise conductors and crimson resin stitches. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_carbon_limb.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "carbon braid bundles",
+      "role": "Actual shared paint and spec geometry: carbon braid bundles"
+    },
+    {
+      "name": "turquoise conductors",
+      "role": "Actual shared paint and spec geometry: turquoise conductors"
+    },
+    {
+      "name": "crimson resin nodes",
+      "role": "Actual shared paint and spec geometry: crimson resin nodes"
+    },
+    {
+      "name": "silver fiber breaks",
+      "role": "Actual shared paint and spec geometry: silver fiber breaks"
+    },
+    {
+      "name": "violet binder pockets",
+      "role": "Actual shared paint and spec geometry: violet binder pockets"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "carbon braid bundles",
+      "turquoise conductors",
+      "crimson resin nodes",
+      "silver fiber breaks",
+      "violet binder pockets"
+    ],
+    "R": [
+      "carbon braid bundles",
+      "turquoise conductors",
+      "crimson resin nodes",
+      "silver fiber breaks",
+      "violet binder pockets"
+    ],
+    "Cc": [
+      "carbon braid bundles",
+      "turquoise conductors",
+      "crimson resin nodes",
+      "silver fiber breaks",
+      "violet binder pockets"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_skin_weave",
+      "difference": "This finish uses Dense fine black carbon braid bundles in short varying orientations, bright turquoise embedded conductor filaments, crimson resin stitch nodes, silver fiber breaks and violet binder pockets. Colored conductors occupy half surface. No broad carbon checker weave or limb silhouette.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "at_denim_baggy",
+      "difference": "This finish uses Dense fine black carbon braid bundles in short varying orientations, bright turquoise embedded conductor filaments, crimson resin stitch nodes, silver fiber breaks and violet binder pockets. Colored conductors occupy half surface. No broad carbon checker weave or limb silhouette.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "carbon braid bundles is visible in the authored geometry",
+      "turquoise conductors is visible in the authored geometry",
+      "crimson resin nodes is visible in the authored geometry",
+      "silver fiber breaks is visible in the authored geometry",
+      "violet binder pockets is visible in the authored geometry"
+    ],
+    "source_sha256": "0f32dc8a5e70f14c7d7ba30016834221713aad86882e08b202f2ef376b46c991",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_carbon_limb-authored-Tiny carbon braid bundles interlock with turquoise conductors and crimson resin stitches. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_carbon_limb-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 68.0,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "023f6efe57df8b4eaac244b037abb80b13ab8701027c2504eea145beb54d48ee"
+}

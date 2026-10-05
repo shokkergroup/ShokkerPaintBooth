@@ -1,0 +1,104 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "fl_moire_deflect",
+  "display_name": "Moire Deflectometry \u2014 rebuilt inspection finish",
+  "promise": "two locally displaced Ronchi gratings with beat envelopes",
+  "carrier_grammar": "two locally displaced Ronchi gratings with beat envelopes; independently rotated, varied sites with edge-wrapped geometry.",
+  "spec_grammar": "Named first ruling, crossed ruling, beat knots, deflection seams, registration slits carry independent metallic lips, rough interiors and continuous coat shoulders; no unrelated material overlay.",
+  "reference_physics": {
+    "mechanism": "two locally displaced Ronchi gratings with beat envelopes interpreted as a colored inspection visualization, not a literal photograph.",
+    "sources": [
+      "engine/paint_v2/flaw_lab_2026.py",
+      "SPB_WIKI.html#spec_guide",
+      "https://www.nasa.gov/glenn/research/flow-field-diagnostics/"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "composition_span_px": [
+    150,
+    384
+  ],
+  "mark_types": [
+    {
+      "name": "first ruling",
+      "role": "Visible first ruling geometry with its own local material transition."
+    },
+    {
+      "name": "crossed ruling",
+      "role": "Visible crossed ruling geometry with its own local material transition."
+    },
+    {
+      "name": "beat knots",
+      "role": "Visible beat knots geometry with its own local material transition."
+    },
+    {
+      "name": "deflection seams",
+      "role": "Visible deflection seams geometry with its own local material transition."
+    },
+    {
+      "name": "registration slits",
+      "role": "Visible registration slits geometry with its own local material transition."
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "first ruling",
+      "crossed ruling",
+      "beat knots",
+      "deflection seams",
+      "registration slits"
+    ],
+    "R": [
+      "first ruling",
+      "crossed ruling",
+      "beat knots",
+      "deflection seams",
+      "registration slits"
+    ],
+    "Cc": [
+      "first ruling",
+      "crossed ruling",
+      "beat knots",
+      "deflection seams",
+      "registration slits"
+    ]
+  },
+  "material_tiers": [
+    "recess substrate",
+    "rough interior",
+    "satin shoulder",
+    "polished lip",
+    "fractured edge",
+    "gloss face",
+    "coat transition",
+    "bright inclusion"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "fl_penetrant_bleed",
+      "difference": "two locally displaced Ronchi gratings with beat envelopes differs in topology from branched fatigue fissures with capillary dye reservoirs"
+    },
+    {
+      "finish_id": "fl_brittle_lacquer",
+      "difference": "two locally displaced Ronchi gratings with beat envelopes differs in topology from ranked tensile crack combs with arrested tips and lifted lacquer lips"
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "first ruling is explicitly constructed as part of two locally displaced Ronchi gratings with beat envelopes",
+      "crossed ruling is explicitly constructed as part of two locally displaced Ronchi gratings with beat envelopes",
+      "beat knots is explicitly constructed as part of two locally displaced Ronchi gratings with beat envelopes"
+    ],
+    "review_status": "Rendered paint/spec pairs visually reviewed together at picker scale on 2026-09-18; live output verified against the reviewed assets."
+  },
+  "construction_key": "flaw-r1-moire_deflect-two-locally-displaced-Ronchi-gratings-with-beat-envelopes",
+  "spec_key": "flaw-r1-material-moire_deflect-first ruling-crossed ruling-beat knots-deflection seams-registration slits",
+  "fine_detail_scale_px": [
+    1,
+    32
+  ]
+}

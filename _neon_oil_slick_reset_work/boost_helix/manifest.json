@@ -1,0 +1,85 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_plasma_tubes",
+  "display_name": "Boost Helix",
+  "carrier": "black pressure-cured ceramic densely loaded with clipped organic 8-32px paired plasma-facet remnants",
+  "material_story": {
+    "M": "white compression nodes, cyan leading faces, oxide chips, clipped conductive ends, and buried overlap",
+    "R": "dark pressure gaps, oxide fractures, clipped ends, collapsed necks, and compressed junctions",
+    "Cc": "intact pressure-cured ceramic, violet sheath ghosts, magenta counterfaces, and buried overlaps; low at collapse"
+  },
+  "vetoes": [
+    "no tubes, long coils, spirals, springs, worms, or flow lines",
+    "no DNA icons, rows, grids, or repeated S/X stamps",
+    "no unrelated noise/spec underlay"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 2.40573,
+  "material_stats": {
+    "std": {
+      "M": 82.789948,
+      "R": 83.299133,
+      "Cc": 83.260788
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.461055,
+      "M_Cc": -0.062348,
+      "R_Cc": -0.319593
+    }
+  },
+  "geometry_stats": {
+    "family_count": 10,
+    "families": {
+      "pressure_cured_ceramic_facets": 9851,
+      "cyan_leading_faces": 2835,
+      "magenta_counterfaces": 2835,
+      "white_compression_nodes": 1748,
+      "clipped_filament_ends": 2835,
+      "collapsed_necks": 2835,
+      "violet_sheath_ghosts": 2835,
+      "oxide_chips": 2147,
+      "dark_pressure_gaps": 2835,
+      "buried_overlap_flashes": 9851
+    },
+    "width_native_min": 10.0,
+    "width_native_median": 18.0,
+    "width_native_p90": 28.0,
+    "width_native_max": 28.0,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "pressure_cured_ceramic_facets": 0.433897,
+    "cyan_leading_faces": 0.131097,
+    "magenta_counterfaces": 0.119464,
+    "white_compression_nodes": 0.043357,
+    "clipped_filament_ends": 0.125551,
+    "collapsed_necks": 0.144105,
+    "violet_sheath_ghosts": 0.191739,
+    "oxide_chips": 0.061859,
+    "dark_pressure_gaps": 0.13515,
+    "buried_overlap_flashes": 0.087905
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "paint_label": "trucks toyotatundra2022/car_num_612073.tga",
+  "inspection_records": "_smart_tga_runs/cycle146_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle146_route_pressure_v1/trucks_toyotatundra2022_car_num_612073/component_records.json",
+  "review_scope": "Cycle 164 routeproof Tundra large low-saturation sponsor/logo hard negative hit by the SK-derived retainer.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 35,
+      "expected_bbox": [
+        76,
+        852,
+        97,
+        121
+      ],
+      "target_layer": "sponsors",
+      "label": "large_low_sat_sponsor_logo",
+      "note": "Large grayscale character/logo sponsor block; should stay Sponsors, not Template."
+    }
+  ]
+}

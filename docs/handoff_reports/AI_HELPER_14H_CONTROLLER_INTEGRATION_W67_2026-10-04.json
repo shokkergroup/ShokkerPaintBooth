@@ -1,0 +1,45 @@
+{
+  "work_item": "W67 actual controller ask/send/finish integration",
+  "date": "2026-10-04",
+  "scope": "Isolated candidate only; no live source, native paint, browser, provider, server, Wiki, mirror, or renderer writes.",
+  "finding": {
+    "confirmed": true,
+    "baseline": "The real applyQueue returned a refusal for an uncommitted post-draw source, but finishCore retained the model's successful response text (for example, 'Done. Updated the roof.') and logged an AI completion. Failure notes existed, but did not remove the false primary claim.",
+    "repair": "In isolated finishCore, when applyQueue returns zero applied lines and one or more failures, replace the primary reply with 'I could not apply that change yet.' plus the bounded first failure reason; leave undoable false and delete the undo snapshot. Partial success keeps the existing reply and per-operation failure notes."
+  },
+  "pins": {
+    "frozen_w62_pro_ai_sha256": "3A193C10175F49841C398DD83D915061C1F25BBFCB4650F56A90588B2821FC17",
+    "w67_isolated_candidate_pro_ai_sha256": "136B437D194F389DF79EBC629EC931D6553D5DFBCC7F161531CC9F7B5954F779",
+    "w53_source_api_contract_sha256": "159716B3150C785517BEC3A1CF1B00A7318121885E7640276B5FFAF14FC91D9A",
+    "operation_module_sha256": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6",
+    "lease_module_sha256": "D765444136C8CAE6FD46C79BC0730D5B9266AD70EA832BFB08438AB77CA0AD75",
+    "frozen_test_oracle_sha256": "99F30CA577EF5EF70A73E9BB8A7B100200AA280A7EF17D785AD8DD0F4EBE0E74",
+    "integration_harness_sha256": "B042F15E32158AB26F395EF6C4BD3A8880D9AC17A4504A3C3E9757015AD4BB0C"
+  },
+  "verification": {
+    "candidate": "12/12 frozen W67 scenarios passed against extracted actual ask, askForTicket, send, finish, finishCore, operationDocument, operationRevision, applyQueue and actual SpbAiOperation/SpbAiLease modules.",
+    "unchanged_w62_oracle": "13/13 actual-controller checks passed.",
+    "baseline_replay": "10/12 passed; only uncommitted-post-draw-ask and send-path-no-false-done-on-refusal failed, both demonstrating the retained successful-copy defect.",
+    "syntax": "node --check passed on isolated candidate.",
+    "fixture_boundary": "9 deterministic local askCore stub calls across the harness; 0 AI/provider adapter calls. The tests do not contact an external provider."
+  },
+  "cases": [
+    "uncommitted post-draw source",
+    "uncached hash throws",
+    "uncached hash empty",
+    "uncached hash missing",
+    "source pending at publication",
+    "valid retained A after failed B",
+    "current-source positive queue and finish",
+    "busy released and lease takeover available after refusal",
+    "passive how-to without committed source",
+    "controller batch exception surfaced through send error reporting",
+    "send refusal does not publish a successful AI claim",
+    "provider adapter boundary with local stubs counted separately"
+  ],
+  "limits": [
+    "W53 source API was pinned from its frozen source; the test uses a deterministic in-memory adapter matching its public getter and readiness semantics rather than loading the full browser canvas module.",
+    "askCore's model-turn result is a local deterministic stub; the production controller routes, queue application guard, finish behavior, send error path, operation manager, and lease module are exercised.",
+    "No native canvas rendering or user paint was exercised; root owns integration and any native confirmation."
+  ]
+}

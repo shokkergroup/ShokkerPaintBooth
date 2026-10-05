@@ -1,0 +1,143 @@
+{
+  "status": "FINDINGS",
+  "task": "W42 replay of frozen W32 offline/async oracle",
+  "candidate": {
+    "requestedPath": "_easy_claude_work/ai14h_w42_sources/js/spb-pro-ai.js",
+    "runtimeSnapshotPath": "_easy_claude_work/ai14h_w42_sources/js/spb-pro-ai.js",
+    "sha256": "5ECB313E66BA26B91020367C148D11227DA1385925E144A41DDEBD6940EA53EB",
+    "bytes": 472462,
+    "operationModulePath": "_easy_claude_work/ai14h_w42_sources/js/spb-ai-operation.js",
+    "operationModuleSha256": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6",
+    "pathCorrection": "W42 supplied this immutable snapshot and matching SHA; only the harness source path/hash fields were adapted."
+  },
+  "oracle": {
+    "frozenAt": "2026-10-04 before candidate inspection",
+    "candidateSha256": "5ECB313E66BA26B91020367C148D11227DA1385925E144A41DDEBD6940EA53EB",
+    "candidatePath": "_easy_claude_work/ai14h_w42_sources/js/spb-pro-ai.js",
+    "cases": [
+      {
+        "id": "offline-refine-document-reload-during-preview",
+        "invariant": "old preview/refine continuation cannot mutate or become a current answer after source generation changes"
+      },
+      {
+        "id": "offline-part-lookup-replacement-during-await",
+        "invariant": "late part lookup cannot publish ownership or answer against a replacement document"
+      },
+      {
+        "id": "offline-spec-preview-manual-revision-conflict",
+        "invariant": "manual edit during awaited settled preview is preserved and stale generated edit is rejected"
+      },
+      {
+        "id": "offline-edit-delayed-answer-single-release",
+        "invariant": "delayed offline edit holds busy until completion, then releases once without clearing a later owner"
+      },
+      {
+        "id": "offline-look-preview-cancel-then-new-request",
+        "invariant": "cancelled look/refine continuation cannot clear or write over a newer request"
+      },
+      {
+        "id": "offline-ideas-picture-source-switch",
+        "invariant": "late ideas/picture analysis is fenced from a different committed source"
+      },
+      {
+        "id": "offline-material-plan-await-does-not-rebind",
+        "invariant": "material preview begun for source A cannot re-target source B after await"
+      },
+      {
+        "id": "ask-core-offline-selfhelp-delayed-completion",
+        "invariant": "async offline helper result keeps request ownership and does not strand or clobber composer state"
+      },
+      {
+        "id": "mark-elements-async-publication-source-change",
+        "invariant": "late mark_elements publication requires same source/document and selection identity"
+      },
+      {
+        "id": "refinish-and-add-graphic-late-callback-after-cancel-b",
+        "invariant": "late refinish/add_graphic callbacks from A cannot publish into B after cancellation"
+      }
+    ]
+  },
+  "oracleCasesSha256": "3AC8B88FBB07D057C92600047B52736D23D6CEB34DB8AF8BA39586DD27322274",
+  "counts": {
+    "frozenCases": 10,
+    "runtimeCases": 5,
+    "runtimeContractFailures": 2,
+    "runtimeConfirmedSinkReproductions": 1,
+    "runtimeConditionalOwnerHazards": 0,
+    "runtimePasses": 3,
+    "staleQueueProposals": 0,
+    "providers": 0,
+    "nativeCalls": 0
+  },
+  "runtime": [
+    {
+      "id": "offline-refine-document-reload-during-preview",
+      "verdict": "pass",
+      "undoCalls": [],
+      "resultHasQueue": false,
+      "sourceGeneration": 2
+    },
+    {
+      "id": "offline-part-lookup-replacement-during-await",
+      "verdict": "pass",
+      "busyAfterA": true,
+      "queueLength": 0,
+      "owner": "B"
+    },
+    {
+      "id": "offline-spec-preview-manual-revision-conflict",
+      "verdict": "fail",
+      "reason": "helper returns an unbound queue proposal after reload (not yet an applied write)\n\n0 !== 1\n"
+    },
+    {
+      "id": "outer-ask-cancel-a-then-b-stale-result-fence",
+      "verdict": "pass",
+      "staleResultDiscarded": true,
+      "boundTicket": 1
+    },
+    {
+      "id": "operation-tools-async-mark-callback-output-fence",
+      "verdict": "fail",
+      "reason": "stale asynchronous callback must not publish a side effect\n\ntrue !== false\n"
+    }
+  ],
+  "staticFindings": [
+    {
+      "caseId": "mark-elements-async-publication-source-change",
+      "severity": "confirmed by dynamic extracted-source probe",
+      "sink": "Actual markElements awaits El.analyse, then ordinary tool calls have no elementRunIdentity to bind the result to the operation ticket; teachBoxes mutates ownership before operationTools rejects the stale returned promise.",
+      "lines": [
+        76,
+        82,
+        495,
+        1346,
+        1368,
+        1370
+      ]
+    },
+    {
+      "caseId": "refinish-and-add-graphic-late-callback-after-cancel-b",
+      "severity": "not dynamically exercised",
+      "sink": "The generic wrapper cannot reverse a mutation performed inside an asynchronous handler before the handler promise settles. The W32 oracle includes refinish/add_graphic, but this bounded runtime harness did not invoke either handler.",
+      "lines": [
+        76,
+        82,
+        405,
+        498
+      ]
+    }
+  ],
+  "conclusions": [
+    "Offline ask wrapper has a final stale-ticket discard, which protects its returned result from reaching finish when ownership changed; the generic actual ask-wrapper scenario confirmed this containment.",
+    "The unchanged W32 stale-spec assertion expected a queued proposal after source-generation/revision change. On the frozen W42 source, the helper returns no queue, satisfying the rejection invariant more strongly; this remains recorded as an unchanged-oracle expectation mismatch.",
+    "The helper does not mutate zones in this probe. This is not a stale paint write; safe application relies on the outer ask ticket fence and the helper result is not independently source-bound.",
+    "The offline refine probe completed after the source generation changed and recorded no doUndo call. The W42 helper checks operationCurrent after warm and uses operationPublish for Undo, so the prior W32 negative claim about this path does not apply to this snapshot.",
+    "operationTools provides call-entry and result-return fences, but it cannot reverse mutations performed inside a delegated async handler before its promise settles. mark_elements delegates to markElements without passing an operation token; reproduction uses only a controlled fake downstream mutation."
+  ],
+  "limits": [
+    "Candidate is an exact parent-frozen temporary snapshot; live/shared production source was not read or edited.",
+    "Executed actual offlineRefineAsk, offlinePartAsk, offlineSpecAsk, ask wrapper, operationTools, markElements, and the exact mark_elements tool-handler source. Warm, CAR, and SpbProElements.teachBoxes are controlled callbacks. markElements itself reaches the async teachBoxes call after the stale boundary in the probe.",
+    "No real provider, browser, native app, renderer, MCP server, or external I/O was invoked. Refine/part helper effects do not prove a native paint write; queue publication is not the same as finish/apply.",
+    "The part busy-owner case injects B ownership before A resolves; ordinary typed ask blocks another ask while _busy remains true, so treat this as conditional takeover/alternate-owner evidence, not a demonstrated normal double-submit. Fresh oracle has ten cases, but only five runtime paths are directly exercised; five additional async paths are source-sink findings, not dynamic reproductions."
+  ]
+}

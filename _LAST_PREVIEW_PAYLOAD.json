@@ -1,0 +1,142 @@
+{
+ "paint_file": "C:/1Shokker Paint Car Examples/bloomq0.tga",
+ "seed": 51,
+ "preview_scale": 0.5,
+ "zones": [
+  {
+   "name": "Body Color 1",
+   "color": [
+    {
+     "color_rgb": [
+      247,
+      2,
+      2
+     ],
+     "tolerance": 40
+    },
+    {
+     "color_rgb": [
+      255,
+      0,
+      0
+     ],
+     "tolerance": 40
+    }
+   ],
+   "intensity": "100",
+   "finish": "flm_metaball_plumes_ignite_classic",
+   "finish_colors": {
+    "c1": "#ff6a1a",
+    "c2": null,
+    "c3": null,
+    "ghost": null
+   },
+   "base_spec_strength": 1,
+   "base_color_mode": "special",
+   "base_color_strength": 1,
+   "base_hue_offset": -74,
+   "base_color_source": "mono:flm_metaball_plumes_ignite_classic",
+   "hard_edge": true
+  },
+  {
+   "name": "Body Color 3",
+   "color": [
+    {
+     "color_rgb": [
+      230,
+      231,
+      232
+     ],
+     "tolerance": 40
+    },
+    {
+     "color_rgb": [
+      112,
+      113,
+      116
+     ],
+     "tolerance": 40
+    },
+    {
+     "color_rgb": [
+      148,
+      153,
+      142
+     ],
+     "tolerance": 40
+    },
+    {
+     "color_rgb": [
+      118,
+      121,
+      112
+     ],
+     "tolerance": 40
+    },
+    {
+     "color_rgb": [
+      195,
+      195,
+      195
+     ],
+     "tolerance": 40
+    },
+    {
+     "color_rgb": [
+      255,
+      255,
+      255
+     ],
+     "tolerance": 40
+    }
+   ],
+   "intensity": "100",
+   "base": "efx_holographic_drift",
+   "pattern": "none",
+   "base_spec_strength": 1,
+   "base_color_mode": "source",
+   "base_color_strength": 1,
+   "base_brightness_adjust": 37,
+   "hard_edge": true
+  },
+  {
+   "name": "Body Color 2",
+   "color": [
+    {
+     "color_rgb": [
+      0,
+      0,
+      0
+     ],
+     "tolerance": 40
+    }
+   ],
+   "intensity": "100",
+   "finish": "flm_metaball_plumes_ignite_classic",
+   "finish_colors": {
+    "c1": "#ff6a1a",
+    "c2": null,
+    "c3": null,
+    "ghost": null
+   },
+   "base_spec_strength": 1,
+   "base_color_mode": "special",
+   "base_color_strength": 1,
+   "base_hue_offset": 106,
+   "base_brightness_adjust": -35,
+   "base_color_source": "mono:flm_metaball_plumes_ignite_classic",
+   "hard_edge": true
+  },
+  {
+   "name": "Everything Else",
+   "color": "remaining",
+   "intensity": "50",
+   "base": "gloss",
+   "pattern": "none",
+   "base_spec_strength": 1,
+   "base_color_mode": "source",
+   "base_color_strength": 1,
+   "hard_edge": true
+  }
+ ]
+}

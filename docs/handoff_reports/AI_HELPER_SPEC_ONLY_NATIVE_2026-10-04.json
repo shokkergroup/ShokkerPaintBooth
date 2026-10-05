@@ -1,0 +1,257 @@
+{
+  "schema": "spb-native-spec-only/1",
+  "status": "PASS",
+  "installed": false,
+  "sourcePins": {
+    "paint-booth-2-state-zones.js": "ac971cebf3d52881945ce07f9c1398f86e161d361d32ea34e059070b003ba25a",
+    "paint-booth-3-canvas.js": "4807a76fc29c1dbc16d0aab8fbe9f94ce8d12c33339bc18d2f2978c12f183c3e"
+  },
+  "session": "29fdfce3fd6f",
+  "providerAttempts": 0,
+  "acceptance": {
+    "samePathSizeMtimeSpecReplacement": true,
+    "explicitNullProjectSpecReset": true,
+    "clearMapActualConfirm": true,
+    "fullPaintAndElevenLayerRastersPreserved": true,
+    "existingBackendCompatible": true
+  },
+  "results": {
+    "baseline": {
+      "settled": true,
+      "source": "7fb791701cf1b4e77d83dff827b5bfec50ac11c598dbad04448acf858e96cb68",
+      "paint": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "2e91a22aa7cb6274d1c3a5a5ddef9edddb2f81e6b7528de6673431a0bb6206d7"
+      },
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+      },
+      "paintFullSHA": "80702b73f6cc2c2a9beb5ff0bc6b81979dad42ab9890cb1b60a020ff0db9687c",
+      "layerRows": [
+        {
+          "id": "psd_0",
+          "name": "Car Paint",
+          "visible": true,
+          "opacity": 255,
+          "blend": "source-over",
+          "w": 2076,
+          "h": 2125,
+          "sha": "cb6cc03654534cfd78062191a09c5548e9239f9b137f63cf9ed47f5cb3fe3fcd"
+        },
+        {
+          "id": "psd_1",
+          "name": "Sponsors",
+          "visible": true,
+          "opacity": 255,
+          "blend": "source-over",
+          "w": 1739,
+          "h": 1827,
+          "sha": "fb8a30eeebe395e4337dfa5b02ddace5d60a5af13707bdf81e89d8ec82197725"
+        },
+        {
+          "id": "psd_2",
+          "name": "Numbers",
+          "visible": true,
+          "opacity": 255,
+          "blend": "source-over",
+          "w": 889,
+          "h": 1648,
+          "sha": "55a85db8840ad44a56d2e577a6267b7aca6045b55081ab7dd2d40811a8f28ab1"
+        },
+        {
+          "id": "psd_3",
+          "name": "Tape",
+          "visible": true,
+          "opacity": 255,
+          "blend": "source-over",
+          "w": 1620,
+          "h": 981,
+          "sha": "419a55d795a6d90beecf3e7e4106c16ffb728cde011c8df1e712642985242213"
+        },
+        {
+          "id": "psd_4",
+          "name": "Pitbox Colors",
+          "visible": true,
+          "opacity": 255,
+          "blend": "source-over",
+          "w": 22,
+          "h": 8,
+          "sha": "9ad2562e71e791320d7b886ac2440a306ae2ca40e3d0d7255b007fb16c46b362"
+        },
+        {
+          "id": "psd_5",
+          "name": "Color Change Logos",
+          "visible": true,
+          "opacity": 255,
+          "blend": "source-over",
+          "w": 1303,
+          "h": 1505,
+          "sha": "ffd44900aa7a54d161dd78e04597b4c067f2b7d9985cb1c78ef065db81deb98f"
+        },
+        {
+          "id": "psd_6",
+          "name": "Car_decal",
+          "visible": true,
+          "opacity": 255,
+          "blend": "source-over",
+          "w": 2026,
+          "h": 1981,
+          "sha": "4aa2ef7e34ae5c52c6cda8bf8a55e53ffd61a3e437cc9fb7c70b6e18db102a18"
+        },
+        {
+          "id": "psd_7",
+          "name": "Windshield Banner",
+          "visible": true,
+          "opacity": 255,
+          "blend": "source-over",
+          "w": 80,
+          "h": 401,
+          "sha": "37967e3b67bd0f18d4f56bb4ee27d738da0a31297e591ff7fcc6b4b6288fcf58"
+        },
+        {
+          "id": "psd_8",
+          "name": "Car_Mandatory",
+          "visible": true,
+          "opacity": 255,
+          "blend": "source-over",
+          "w": 2046,
+          "h": 2035,
+          "sha": "fe6cec22aadcb78fdf46f8bcd5c1703296fda7f6206ac540964e89fd2c3e36d7"
+        },
+        {
+          "id": "psd_9",
+          "name": "Mask",
+          "visible": false,
+          "opacity": 255,
+          "blend": "source-over",
+          "w": 2048,
+          "h": 2048,
+          "sha": "569f973711363d39d519e9c4d1dd4e20b3a2beca9427b00bc7c72dfaf3d8329a"
+        },
+        {
+          "id": "psd_10",
+          "name": "Wire",
+          "visible": true,
+          "opacity": 255,
+          "blend": "source-over",
+          "w": 2035,
+          "h": 2032,
+          "sha": "b34e24d74ffa0e11bd6b69bc3ee6601f1817106ad88974f0e9db13de4db0f888"
+        }
+      ],
+      "activeSpec": null,
+      "zoneMuted": [
+        {
+          "id": "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "muted": false
+        },
+        {
+          "id": "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "muted": false
+        },
+        {
+          "id": "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "muted": false
+        },
+        {
+          "id": "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "muted": false
+        },
+        {
+          "id": "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "muted": false
+        },
+        {
+          "id": "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "muted": false
+        },
+        {
+          "id": "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636",
+          "muted": false
+        }
+      ]
+    },
+    "mapA": {
+      "settled": true,
+      "activeSpec": "C:/DRIVE E BACKUP/Shokker Paint Booth Gold to Platinum/_release_evidence/ai14h-spec-only-root-native/output/spec-replacement/same-path-spec.tga",
+      "muted": 7,
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "a2bbfc3aa3c653f438e91b2cc7286dcfb3032b3afe2852350f09621cd1c97872"
+      },
+      "expectedMapPreview": true,
+      "paintFullExact": true,
+      "layersExact": true,
+      "sourceExact": true,
+      "providerAttempts": 0
+    },
+    "beforeReimport": {
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "a2bbfc3aa3c653f438e91b2cc7286dcfb3032b3afe2852350f09621cd1c97872"
+      },
+      "openPreviewStable": true
+    },
+    "mapB": {
+      "settled": true,
+      "activeSpec": "C:/DRIVE E BACKUP/Shokker Paint Booth Gold to Platinum/_release_evidence/ai14h-spec-only-root-native/output/spec-replacement/same-path-spec.tga",
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "fd0a1e63a1e7ba128b5ef1fc2edc94c75d913acf02baa9fcd637af0044ba6799"
+      },
+      "expectedReplacementPreview": true,
+      "paintFullExact": true,
+      "layersExact": true,
+      "sourceExact": true,
+      "providerAttempts": 0
+    },
+    "projectRestore": {
+      "loaded": true,
+      "settled": true,
+      "activeSpec": null,
+      "lexicalSpec": null,
+      "windowSpec": null,
+      "paint": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "2e91a22aa7cb6274d1c3a5a5ddef9edddb2f81e6b7528de6673431a0bb6206d7"
+      },
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+      },
+      "paintPreviewRestored": true,
+      "specPreviewRestored": true,
+      "paintFullExact": true,
+      "layersExact": true,
+      "zoneMutingRestored": true,
+      "sourceExact": true,
+      "clearDisabled": true,
+      "mapStatus": "No spec map - zones render on default base",
+      "providerAttempts": 0
+    },
+    "clear": {
+      "settled": true,
+      "activeSpec": null,
+      "windowSpec": null,
+      "paintPreviewRestored": true,
+      "specPreviewRestored": true,
+      "paintFullExact": true,
+      "layersExact": true,
+      "sourceExact": true,
+      "providerAttempts": 0
+    }
+  },
+  "limits": [
+    "Current root source fingerprint is an existing composite identity; this spec-only gate does not claim durable raw-file identity.",
+    "Private current-root app and current three-file backend; installation and loaded owner tab not yet verified.",
+    "Broader AI Runtime13 remains separately held."
+  ]
+}

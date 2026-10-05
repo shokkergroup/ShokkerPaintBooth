@@ -1,0 +1,9 @@
+{
+  "status": "REVISE_BEFORE_INTEGRATION",
+  "reviewedCandidateSHA256": "a9f7e502d47a8d9c027737537aa0613e75ba59b64aaaef6585f03e74ce286ee4",
+  "reason": "Warm preflight runs at the start of send before lease ownership, empty input and busy guards. operationStart can cancel an existing request and set busy state before those guards. The isolated route sentinel did not exercise the full downstream guard order.",
+  "requiredRevision": "Use the existing shared request ticket after the normal ownership/input gates. Warm current-source geometry, recheck ticket, rehydrate with existing proof requirements, rebuild fresh edit environment before compile. Cover internal ask and applicable MCP compiler paths or state the remaining limitation.",
+  "separateFinding": "An authored green roof and original-source green can bypass the verified-zone compiler branch. Exact hex wording also remained refused in native Runtime4; W89 reviews this separately.",
+  "productionWrites": 0,
+  "providerCalls": 0
+}

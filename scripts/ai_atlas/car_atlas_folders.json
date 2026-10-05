@@ -1,0 +1,125 @@
+{
+ "_about": "iRacing folder keys + corpus-measured fingerprints for library cars; written by _easy_claude_work/corpus/s7_folder_overlay.py",
+ "cars": {
+  "arca-ford-mustang": {
+   "folders": [
+    "stockcars2 arcaford25"
+   ],
+   "sigs": [
+    "7fffe03f7c1f7fffffffffff7fffffff7fffffff7fffffff103ffe1f1c3ffe1f7c3ffe0f7c3fff0f7ffffff07ffffff07fffffff53ffcfe07ffffbfe7ffffbfff0fffffff0fffffff0fffdfff0fffdfff0fffdfff1fffffff3fffbff0ffffbff37f87ff97ff9fffd7ffffffc7fffffec7ffffff67ffffff93ffffffb03ffffff"
+   ]
+  },
+  "arca-toyota-camry": {
+   "folders": [
+    "stockcars2 arcatoyota25"
+   ],
+   "sigs": [
+    "7e7e7feb7fffffffffffffff7fffffff63c7ffffffffffff07ffffffff7ffffffffffe1ffcfffe0bffffffe2fffff800ffd9e0003ef9eff87fd9fbfcfffffbfef0fffffef0fffdfff5fffdfff7fffdfff3fffdfff5fffffefffffbfe8ffffbfc70181ff8ff980ff8ffffffe0ffffffe0ffffffc0ffffffc07fffffc007fffd80"
+   ]
+  },
+  "lesabre-1987-ns": {
+   "folders": [
+    "stockcars buicklesabre87"
+   ],
+   "sigs": [
+    "ffdff7ffffffffffffffffffffffffffffffffffffff87ffff7ffecefc7ffedff87fffff7cfffffe7fffffff3ffffffc6f981fff01d83ffefcfffffef8ffeffffbfffffffffffffffffffdfffffffdfffffffffffbfffffff8ffeffffcfffffe01d9fffe8f987fff3ffffffc7ffffffe7fffff1efbfffe1ffffffe1f27bffe0e"
+   ]
+  },
+  "gbody-1987": {
+   "folders": [
+    "stockcars chevymontecarlo87"
+   ],
+   "sigs": [
+    "fe0003fffe0003ffff1ffffffffffc1ffffffffcfffffffcffeffdfcf93ffffffbbfffdfffffffde7ffffffe3ffffff87e3810001ff830007ef877fe787fd7fefefffbfefeffebffffffdffffcffdffff8ffdffffcffebfff1fffbfe7c7fd7fe7ff8700206fff7f007fc1bc07ffffffc7effff3efc7ffe1e783ffe1f003ffc1f"
+   ]
+  },
+  "cup-gen4-montecarlo": {
+   "folders": [
+    "stockcars chevymontecarlo03"
+   ],
+   "sigs": [
+    "00007fc07fff7fc07fff3fc07fff7fe07fff7fe001c07fe0000007e000febffe00fffffe003ffe00fcfffe007c7ffe007fffff207fffffc00dc8300073e83bfc3fefedfcf87ffdfefffff5fff7ffffffff7ffdffff7ff5fff77fe5fff07fe5fef9ffe3fc7f881bf8038de0007fffffe07ffffe04fffffe01fffffe7f03fffc7e"
+   ]
+  },
+  "cup-fusion-gen6": {
+   "folders": [
+    "stockcars fordfusion"
+   ],
+   "sigs": [
+    "7fffc4f8fffffdffffffffffffffffffffffe5ffffffe7ffffffe3ffffffe3fffffe03ff0c3ffb9f7c3ffbaf7c7ff8af3fffffbfbfffffcfe0f80000e3183c06ffdfffe4e07ff7f5e67ff7f1ee7ff7f0ee7ff7f7ee7ff7f7e67ff7f7e2fff7f7f79ff7e7c3183bffbff8001fbfffff86bfffff18fc7fff1cfc7fff3a003ffe3f"
+   ]
+  },
+  "cup-camry-gen6": {
+   "folders": [
+    "stockcars toyotacamry"
+   ],
+   "sigs": [
+    "7fffdf7fffffff7ffffff803ffffe47fffffe73fffffec87ffffffc7fffffff7fffffff7feffe3d3fefff1fbfefff1f9fdfff3f87fffff987fff8ff800f86ff80effffd2f7ff3fffe7ff3fffefff3fffefff3fffefffbfffe7ffbfffe7ffbffffffffff0f420ffbeffff1fa77fffff02fdfffbc8fffff1e9ffffe1e907ffe1c8"
+   ]
+  },
+  "super-late-model": {
+   "folders": [
+    "superlatemodel"
+   ],
+   "sigs": [
+    "0c06000307fc1ffb1fff3fff7fffffff7fffffff7fffe03effffc0fe04dfffff7fdfffffffdfff2b7f3fff9f7fffffff7ff8000109881ff9079cf3ff7ffff3fff3fffffff3fff3fff3fff3fff3fff3fff1fff3fff0fffffff8fff3fefffff3fe0f8c3ffc7ffe03f07ffffc007ffffffc7f3fff1cfe1fff707e1fff76041ffe76"
+   ]
+  },
+  "latemodel-montecarlo-ss": {
+   "folders": [
+    "latemodel"
+   ],
+   "sigs": [
+    "2fe6fffbcf7fffffafbffffde41ffffcfffffffc7ffbfffce01fff0d7e1fff0f7e1fff0e3fbfff9f3fffff0741fff7fce07fe0087ffffffc7ffffffefffffffefffffffffffffffffffffffffffffffffffffffffffffffffffffffe7ffffffe7ffffffc707fe0e871ffffff3ffffe0f3f3fff907e1fff087e1fff0c001fff0c"
+   ]
+  },
+  "cars-tour-lms-2024": {
+   "folders": [
+    "latemodel2023"
+   ],
+   "sigs": [
+    "0c0c000007f83fff3ff73fff7fffffff7fffbffffffff7ff1ffffe010c1ffe07fc1ffe03fe3ffe1fff7fff3d7fffffe77ff807e38bf837ff8ff8fffef9fffffef87ffffff9ffdffff9fffffff9fffffff9ffdffff87ffffef8fffffefff9e7ff7ff83ff37ff800007fffffc07f7fff38fe1ffe18fe1ffe000c1ffe00001ffe01"
+   ]
+  },
+  "street-stock-casino": {
+   "folders": [
+    "streetstock streetstock2"
+   ],
+   "sigs": [
+    "7ffdd3fffffffffffffff3feffffd7fffffff7ffffffffffffffffff7fbffffefffffddeffffffff7efffc7e7ffffffe3ffffffc1f0017007ffe1f007ffffffffffefffffffefffffffffffffffffffffffffffffffefffffffeffff7fffffff7ffe1f00000017003ffffffc7ffffffe7cfffc7ef87ffc3ff83ffc1e403ff800"
+   ]
+  },
+  "mini-stock": {
+   "folders": [
+    "dirtministock"
+   ],
+   "sigs": [
+    "3ff3fefc78f3fffc7ff3ff7effffff7effffff3e0f83fefe1c1f3e3f3c3ffe7e1c3fff7e1e3fff7e1ffffffe3ffffffe43f8f8c0001c79803ff3ff9e3ff1ff9f7ff1ff9e7ff1ff9e7ff1ff9e7ff1ff9e7ff1ff9e7ff1ff9e3ff1ff9e2077ff1e00f9ff804ffffdfe3ffffffe3e7ffffe3c3fff3e3c3fff7e3c1f7f66000000ff"
+   ]
+  },
+  "nascar-gen6-camaro": {
+   "folders": [
+    "stockcars camarozl12018"
+   ],
+   "sigs": [
+    "8000ff80ffffffc1ffffffc7ffffffc7ffffffc7f400ffc7ff3ffc07f9fffc3eff7ffc3efc7ffe267ffffff77ffffff779fbf3f747fb7ff87ffffffcf7ffeffef7ffeffee3fffffee3fffbfee3fffbfef3ffebfef1fffffefffffffcfffffffc03faff800c0ebf817fffffc17ffffff1feffffc1fffffcc3fffffcc307fffdc3"
+   ]
+  },
+  "arca-chevy-ss": {
+   "folders": [
+    "stockcars2 arcachevy25"
+   ],
+   "sigs": [
+    "ffff7fffffffffffffffffff7fffffffffffffff003fffff383fffcffc3ffe7ffc3ffe0fffffff2f7ffffff37fffffff10180fff06183ffcfffff9fefffff9fffbfffffff1fffdfff5fffdfff7fffdfff2fffffff5ffffff9ffff9fe0fdffbfc72183ffc7ffffffe7fffffe0ffffffe0ffffffc0ffffffe07ffffffe03ffffff"
+   ]
+  },
+  "chevy-silverado-truck": {
+   "folders": [
+    "trucks silverado2019"
+   ],
+   "sigs": [
+    "7ffdffc0fff9ffc47ffdffc3ffffffc1ffffffe0fffffff0fc3ffff8fc7fffb6fffffffffffffffd200e00e0ffffd7ffffeffffeffffe7faffffe7f9ffffe7fdfffffbfdfffffbfefffffbfefffffbfffffffffdfffff7f9ffffe7fbfffffff2ffce3ffe7f9ee7fe7ffff709ffffffe7fffffff8fffffe3e3fffffff03ffffff"
+   ]
+  }
+ }
+}

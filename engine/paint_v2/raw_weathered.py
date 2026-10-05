@@ -482,12 +482,18 @@ def paint_sandblasted_v2(paint, shape, mask, seed, pm, bb):
     base = paint.copy()
     
     # Impact crater distribution (clustered impacts)
-    impacts = multi_scale_noise((h, w), [1, 1, 2], [0.5, 0.4, 0.3], seed + 1514)
+    impacts = multi_scale_noise((min(h, 1024), min(w, 1024)), [1, 1, 2], [0.5, 0.4, 0.3], seed + 1514)
+    if impacts.shape != (h, w):
+        from engine.core import _resize_array
+        impacts = _resize_array(np.asarray(impacts, dtype=np.float32), h, w)
     impacts = np.maximum(0, impacts - 0.2) * 1.2
     impacts = np.clip(impacts, 0, 1)
     
     # Crater depth variation
-    depth = multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 1515)
+    depth = multi_scale_noise((min(h, 1024), min(w, 1024)), [1, 2], [0.6, 0.4], seed + 1515)
+    if depth.shape != (h, w):
+        from engine.core import _resize_array
+        depth = _resize_array(np.asarray(depth, dtype=np.float32), h, w)
     depth = (depth + 1.0) / 2.0
     
     # Surface roughening (whitening from exposure)
@@ -517,7 +523,10 @@ def spec_sandblasted(shape, seed, sm, base_m, base_r):
     M = np.full((h, w), np.clip(base_m - 0.4, 0.1, 1), dtype=np.float32)
     
     # Impact craters add significant roughness
-    impacts = multi_scale_noise((h, w), [1, 1], [0.45, 0.35], seed + 1514)
+    impacts = multi_scale_noise((min(h, 1024), min(w, 1024)), [1, 1], [0.45, 0.35], seed + 1514)
+    if impacts.shape != (h, w):
+        from engine.core import _resize_array
+        impacts = _resize_array(np.asarray(impacts, dtype=np.float32), h, w)
     M = np.clip(M - np.maximum(0, impacts - 0.2) * 0.25, 0.1, 1).astype(np.float32)
     
     # Very dull specular response

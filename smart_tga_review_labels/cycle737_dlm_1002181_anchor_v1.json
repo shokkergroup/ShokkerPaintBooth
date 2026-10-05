@@ -1,0 +1,26 @@
+{
+  "schema": "smart-tga-direct-anchor-review-v1",
+  "cycle": 737,
+  "purpose": "One direct clean Number-glyph anchor for truth-free active-learning scoring. No current exact-candidate outcome labels are consumed by the scorer.",
+  "ownership_authority": false,
+  "labels": [
+    {
+      "review_code": "H737-B000",
+      "paint": "dirtlatemodel 358/car_num_1002181.tga",
+      "candidate_index": 20,
+      "proposal_id": "number-tiled-palette:d5869d972d048df8",
+      "bbox_for_review_trace_only": [382, 252, 88, 68],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask_clean_complete_glyph_anchor_only",
+      "ownership_authority": false
+    }
+  ],
+  "safety": {
+    "current_exact_candidate_outcomes_opened_before_scoring": false,
+    "historical_family_annotations_existed_but_not_model_features": true,
+    "runtime_integrated": false,
+    "apply_locked": true,
+    "exact_reconstruction_affected": false
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0-demo.11",
+  "date": "2026-09-03",
+  "status": "built_for_owner_retest",
+  "installer": {
+    "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\electron-demo\\dist\\ShokkerPaintBooth-SHOKK-DEMO-1.0.0-demo.11-Setup.exe",
+    "bytes": 723915514,
+    "sha256": "4315ECF7EE1679846F1C4E6F12D6CD93B078F1605236552725354DF4DEBE074C",
+    "signature": "NotSigned"
+  },
+  "verification": {
+    "focused_tests_passed": 109,
+    "actual_capture_color_checks": 180,
+    "maximum_rgb_error": 0,
+    "resolutions": [
+      1024,
+      2048
+    ],
+    "preview_and_export_red": "#F10414",
+    "packaged_files_hash_verified": 997,
+    "packaged_tree_allowlist": "passed",
+    "portable_python_startup": "passed",
+    "visible_finishes": 29,
+    "renderable_finishes": 30,
+    "browser_smoke": [
+      "starter PSD loaded",
+      "five zones",
+      "four additions in picker",
+      "Color Lab enable/disable",
+      "legacy session restored"
+    ]
+  },
+  "notes": [
+    "Color Lab requires explicit opt-in; legacy 65% does not activate it.",
+    "Hidden intensity/baseColorStrength normalize to 100; visible Base Strength and HSB remain user-controlled.",
+    "No paid renderer or Main App changes. Installer not installed or published by this task."
+  ]
+}

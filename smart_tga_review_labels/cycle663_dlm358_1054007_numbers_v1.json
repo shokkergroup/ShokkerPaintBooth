@@ -1,0 +1,12 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_1054007.tga","inspection_records":"_smart_tga_runs/cycle663_dlm_group_semantic_holdout/inspection_records.json","review_scope":"Cycle 663 source, all owner/combined sheets, suspects, position cues, and physical groups.","component_labels":[
+  {"layer":"numbers","component_index":0,"expected_bbox":[269,235,200,103],"target_layer":"numbers","label":"true_upper_number","family_id":"number:88"},
+  {"layer":"numbers","component_index":1,"expected_bbox":[672,431,63,177],"target_layer":"sponsors","label":"ets_sponsor_false_number"},
+  {"layer":"numbers","component_index":2,"expected_bbox":[826,485,16,66],"target_layer":"sponsors","label":"vertex_sponsor_false_number"},
+  {"layer":"numbers","component_index":3,"expected_bbox":[279,725,194,81],"target_layer":"numbers","label":"true_lower_number","family_id":"number:88"},
+  {"layer":"numbers","component_index":4,"expected_bbox":[0,781,175,95],"target_layer":"sponsors","label":"vertex_sponsor_panel_false_number"},
+  {"layer":"sponsors","component_index":55,"expected_bbox":[47,801,36,6],"target_layer":"sponsors","label":"true_red_sponsor_detail"},
+  {"layer":"candidate","component_index":null,"expected_bbox":[442,262,27,21],"target_layer":"sponsors","label":"position_cue_true_sponsor"},
+  {"layer":"candidate","component_index":null,"expected_bbox":[759,428,49,182],"target_layer":"sponsors","label":"position_cue_true_sponsor"},
+  {"layer":"candidate","component_index":null,"expected_bbox":[672,431,61,177],"target_layer":"sponsors","label":"position_cue_true_sponsor"},
+  {"layer":"candidate","component_index":null,"expected_bbox":[810,820,170,145],"target_layer":"numbers","label":"missed_true_rear_number","family_id":"number:88"}
+]}

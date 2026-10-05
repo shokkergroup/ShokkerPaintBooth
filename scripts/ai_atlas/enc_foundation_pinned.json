@@ -1,0 +1,105 @@
+{
+"_doc": "Pinned flat Foundation spec (metal, roughness, coat) from engine.BASE_REGISTRY after the pinning pass; code wins over atlas measurements.",
+"pinned": {
+"wet_look": [
+0,
+15,
+16
+],
+"gloss": [
+0,
+30,
+16
+],
+"semi_gloss": [
+0,
+55,
+40
+],
+"satin": [
+0,
+95,
+70
+],
+"eggshell": [
+0,
+140,
+100
+],
+"matte": [
+0,
+200,
+160
+],
+"primer": [
+0,
+215,
+200
+],
+"flat_black": [
+0,
+250,
+255
+],
+"f_powder_coat": [
+10,
+120,
+145
+],
+"f_pearl": [
+100,
+40,
+16
+],
+"f_satin_pearl": [
+100,
+90,
+60
+],
+"f_metallic": [
+200,
+50,
+16
+],
+"f_matte_metallic": [
+225,
+140,
+100
+],
+"f_candy": [
+200,
+15,
+16
+],
+"f_brushed": [
+180,
+75,
+65
+],
+"f_frozen": [
+160,
+85,
+130
+],
+"f_bead_blast": [
+180,
+160,
+140
+],
+"f_chrome": [
+255,
+2,
+16
+],
+"f_dark_chrome": [
+250,
+15,
+40
+],
+"f_satin_chrome": [
+250,
+45,
+40
+]
+}
+}

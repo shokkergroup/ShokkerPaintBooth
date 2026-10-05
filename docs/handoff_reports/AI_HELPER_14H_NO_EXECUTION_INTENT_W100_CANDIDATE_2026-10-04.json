@@ -1,0 +1,124 @@
+{
+  "work_item": "W100 private no-execution instruction guard review/repair",
+  "status": "PASS_WITH_LIMITS",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w100_review/fresh-oracle.json",
+    "sha256": "0F4B1C1BFEF907329A6DDBC6F0373FF15BD7FF3811D610711812A5A6F0317135",
+    "cases": 9,
+    "frozenBeforeGuardInspection": true
+  },
+  "sources": {
+    "controller": "FF90F9EB557FDE7D5011C5621431BE581A9E900EE143AD02521919165D968E0F",
+    "guardBase": "89E0D9E473C13309011D7318A81037C0C286D399B854938A37EDC14DAEDEFC83",
+    "guardCandidate": "D038EF90A8FF2578A4464D11094D8EDA44D95E443DFA2D0300A64BD6F46BD48B"
+  },
+  "rows": [
+    {
+      "id": "explain-hypothetical-no-apply",
+      "expected": "Useful explanation, no edit plan/queue/apply.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "apply-wrapper-still-no-execute",
+      "expected": "Explicit global no-apply dominates wrapper; explain only, zero queue.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "semicolon-suggestion-no-apply",
+      "expected": "Suggestion/explanation only, zero queue.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "quoted-imperative-read-only",
+      "expected": "Quoted imperative is content, not authorization; zero queue.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I treated the quoted instruction as text to explain or transcribe, not as a paint command."
+    },
+    {
+      "id": "paraphrase-no-apply",
+      "expected": "Passive explanation and zero mutation.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "negative-after-apply-wrapper",
+      "expected": "No queue; no done/apply claim.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "valid-scoped-command-with-constraint",
+      "expected": "Authorized scoped roof edit remains eligible; hood constraint is preserved.",
+      "queue": 0,
+      "region": null,
+      "reply": "Nothing was changed. I can’t yet guarantee the requested roof change leaves the hood unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything."
+    },
+    {
+      "id": "valid-imperative",
+      "expected": "Authorized actual edit path remains eligible.",
+      "queue": 1,
+      "region": {
+        "part": "roof"
+      },
+      "reply": "Done — the roof (35% of the car) is now recoloured blue."
+    },
+    {
+      "id": "passive-current-state-help",
+      "expected": "Answer current state/guidance without an edit or source-side effect.",
+      "queue": 0,
+      "region": null,
+      "reply": "Here is what I can see on your car: black (42%), cyan (27%), green (10%). Tell me what to do with any of them, for example “make the black matte”."
+    }
+  ],
+  "typedSend": [
+    {
+      "id": "explain-hypothetical-no-apply",
+      "finishes": 1,
+      "asks": 0,
+      "finishText": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "negative-after-apply-wrapper",
+      "finishes": 1,
+      "asks": 0,
+      "finishText": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "valid-imperative",
+      "finishes": 0,
+      "asks": 1,
+      "finishText": ""
+    },
+    {
+      "id": "authorized-apply-wrapper-control",
+      "queue": 1,
+      "region": {
+        "part": "roof"
+      },
+      "finishes": 0,
+      "asks": 1
+    }
+  ],
+  "issues": [],
+  "limitations": [
+    "The direct command with an added hood-preservation constraint receives a safe clarification from existing integration14 scope checks rather than a queued roof edit. The new intent guard does not classify it as read-only, but this route does not meet the oracle’s eligible-edit expectation; this separate scope behavior was left unchanged.",
+    "Tests use actual integration14 controller offlineAsk and SEND functions with deterministic planner/queue adapters; they do not claim native paint application."
+  ],
+  "counts": {
+    "cases": 9,
+    "guardAndNoMutationChecksPassed": 9,
+    "failed": 0,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "applyCalls": 0
+  }
+}

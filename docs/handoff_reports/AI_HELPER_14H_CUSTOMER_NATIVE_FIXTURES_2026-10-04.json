@@ -1,0 +1,584 @@
+{
+  "schema": "spb-ai14h-customer-native-fixtures/1",
+  "createdUTC": "2026-10-04T14:51:48.994324+00:00",
+  "status": "IMPORTS_PASS_WITH_DOCUMENTED_LIMITS",
+  "installed": false,
+  "sourceFreezeSHA256": "50e2270db5a1e97d4f29a2a7a1ddd95f51cb70ea6accb79e5b978a7a833a0aa9",
+  "frontendHashes": {
+    "js/spb-ai-complete-instruction-guard.js": "ba0af1f9e217695ed733dde81c8dec1a735dd1f052e8c06b3098866d392a551c",
+    "js/spb-ai-instruction-intent-guard.js": "3267dc263cf85bcb34b55588997acba737f4a47e7bdde490face4d9d6271fb60",
+    "js/spb-ai-lease.js": "de276372a763310ec051db141fcb1d601e11dbf193843e2b21a405226f782134",
+    "js/spb-ai-material-controls.js": "8febce88b5e1e1f6e5d571037374a8c5a662b1f3d62c323b73b3ea1e5072544b",
+    "js/spb-ai-operation.js": "47587a1a53a35ce7e58825bac864bd75c2421d26c19791957f57bb199a7000c6",
+    "js/spb-ai-part-memory-project.js": "fff0127a7570c3fa8eaf2ad431f1ce2717763a2cd5b1688b15d18cc4f3c98d17",
+    "js/spb-ai-part-memory.js": "6e0d1e1466feca847d3a1c3300f32779ba610f3b6c72c7904a6c8fd97a6b3652",
+    "js/spb-ai-receipt-explainer.js": "25aba5ee85e9c9fb7efe3603fce22b140ccb09d2cbd09a9303ac6ab00530eac3",
+    "js/spb-pro-ai.js": "aea057cb2965b714700304ca598c0e59ab25e02fffb5575d5d29fc36ccd5ff76",
+    "js/spb-pro-design.js": "4648de3231015497cc9ff816612a542097a1ad14038a7210753f6cdbfd88d832",
+    "js/spb-pro-edit.js": "7d063444021f8f4144b96130800badfe62741cdefc9104417f3e99af65270767",
+    "js/spb-pro-zone-kit.js": "ea9e169b909a30a6431f7fd48b87658b8258d480f165d304cb0ca5dac8983af7",
+    "js/spb-self-help.js": "e230a121127fc6b32c451c630028d3d2d10461b67819bf50f2b148195db8df4d",
+    "paint-booth-2-state-zones.js": "710b4d8b1b7f229d334e06d1eb331ff48d9873a7cd139b276d2bab3ebfd591e7",
+    "paint-booth-3-canvas.js": "cb4cc4679f69cbe206e02dd512c7f197f971482b6bdb088e5b78a2f397d3cdc9"
+  },
+  "backendHashes": {
+    "server.py": "a845f7ee1cd96b9f87fe1af85d42a1b86dd2059e2a5893e47006a08d773ac2ce",
+    "server_routes/psd_import_routes.py": "6a0fce336fc5ef54eb80ef92a220abc0d81e5b22107b2bf3a4e3b0872f51a95d",
+    "server_routes/render_file_routes.py": "cd2b640eda292171e1362720947b8536a4291b6c7f35ac10b4a5a0b745adebd1"
+  },
+  "fixtureManifestSHA256": "36eec020bacb5a11cd2d419c844f039a4aa9a69b40584bebb9406aa758bd43db",
+  "rawNativeRecordsSHA256": "a28e76f2429bf0aadb404f3a2b6eb6c5d6349286b54ef9cccc1e05381dd486c5",
+  "actualNativeImports": {
+    "PSD": [
+      {
+        "fixtureIndex": 1,
+        "path": "C:\\1Shokker Paint Car Examples\\DLM PSD\\LUNAR_SURVEY_v009_3_LAYER_SIMPLE_FULL_ART.psd",
+        "sourceFingerprint": "file-sha256:a5d9537b59b86e8a6497ffa1d411537e7482ba29591c43edee1a3607b30a630a",
+        "nativeRasterLayerCount": 3,
+        "elapsedMs": 5611,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "importFallback": null
+      },
+      {
+        "fixtureIndex": 6,
+        "path": "C:\\1Shokker Paint Car Examples\\Older Junk\\Adamson DE Tribute Gold Standard PSD.psd",
+        "sourceFingerprint": "file-sha256:f6dace07011a1e7a94b654fcad209ed4a4d6309d6f1764a068bf6640912bd570",
+        "nativeRasterLayerCount": 72,
+        "elapsedMs": 22992,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "importFallback": null
+      },
+      {
+        "fixtureIndex": 0,
+        "path": "C:\\1Shokker Paint Car Examples\\ARCA\\SPB ARCA Chevy V3.psd",
+        "sourceFingerprint": "file-sha256:2599db8fdf8162b9b99b27e65089d1eb88b45b87ca7addae29a8d8d0131dd777",
+        "nativeRasterLayerCount": 13,
+        "elapsedMs": 12051,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "importFallback": null
+      },
+      {
+        "fixtureIndex": 2,
+        "path": "C:\\1Shokker Paint Car Examples\\NEXT GEN\\Miles NG Chevy HotDog PSD.psd",
+        "sourceFingerprint": "file-sha256:f5e8a153201175ff2b57e5e87da9cf395c769aaaa2db31a507b3333325281c58",
+        "nativeRasterLayerCount": 15,
+        "elapsedMs": 10304,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "importFallback": null
+      },
+      {
+        "fixtureIndex": 3,
+        "path": "C:\\1Shokker Paint Car Examples\\Trucks\\Monster High RAM Truck PSD.psd",
+        "sourceFingerprint": "file-sha256:185c63b770695f23208421a22db743b5c4593a30eec452e2df427ac256c0770c",
+        "nativeRasterLayerCount": 10,
+        "elapsedMs": 8520,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "importFallback": null
+      },
+      {
+        "fixtureIndex": 5,
+        "path": "C:\\1Shokker Paint Car Examples\\Older Junk\\Mayberry Blue Fox NG V2 PSD.psd",
+        "sourceFingerprint": "file-sha256:a369bc3a9d7100ded83d4750c87fe0be5e2796d2d94044309fd4504866d0a730",
+        "nativeRasterLayerCount": 22,
+        "elapsedMs": 9160,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "importFallback": null
+      }
+    ],
+    "TGA": [
+      {
+        "fixtureIndex": 10,
+        "path": "C:\\1Shokker Paint Car Examples\\Dirt Late Model TGAs\\bpierce.tga",
+        "sourceFingerprint": "6caa8a3c0dfac2e5585d1500d4167a6f120839f9956f66b569414f19820355a6",
+        "fingerprintClass": "legacy-preview-PNG-session-only",
+        "elapsedMs": 2292,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "alphaCounts": {
+          "zeros": 0,
+          "partial": 0,
+          "opaque": 4194304
+        },
+        "staleLayers": 0,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "newProviderAttempts": 0
+      },
+      {
+        "fixtureIndex": 11,
+        "path": "C:\\1Shokker Paint Car Examples\\NEXT GEN\\ORIGINAL_77-Chilis-SPB.tga",
+        "sourceFingerprint": "9246c8f9c5df999fce2d924bee43971934bcb3060dcad7e4c1be643e4e41f209",
+        "fingerprintClass": "legacy-preview-PNG-session-only",
+        "elapsedMs": 1951,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "alphaCounts": {
+          "zeros": 0,
+          "partial": 0,
+          "opaque": 4194304
+        },
+        "staleLayers": 0,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "newProviderAttempts": 0
+      },
+      {
+        "fixtureIndex": 12,
+        "path": "C:\\1Shokker Paint Car Examples\\Older Junk\\HotWheelsARCAChevy.tga",
+        "sourceFingerprint": "00fcb2a0fb02bfbecfefc0ec723fd4cc634af6d77c2bf6c0177cb81652cadafb",
+        "fingerprintClass": "legacy-preview-PNG-session-only",
+        "elapsedMs": 2322,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "alphaCounts": {
+          "zeros": 22620,
+          "partial": 9124,
+          "opaque": 4162560
+        },
+        "staleLayers": 0,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "newProviderAttempts": 0
+      },
+      {
+        "fixtureIndex": 13,
+        "path": "C:\\1Shokker Paint Car Examples\\ORIGINAL_1-baseplain.tga",
+        "sourceFingerprint": "2301401f21124a44c48876182313371410b347ad962260d6a2aea3399ab1e52d",
+        "fingerprintClass": "legacy-preview-PNG-session-only",
+        "elapsedMs": 1770,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "alphaCounts": {
+          "zeros": 0,
+          "partial": 0,
+          "opaque": 4194304
+        },
+        "staleLayers": 0,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "newProviderAttempts": 0
+      },
+      {
+        "fixtureIndex": 14,
+        "path": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\dirtlatemodel 358\\car_num_1023169.tga",
+        "sourceFingerprint": "aa29494b4106cdb3ca38b1affe583e67819c56d7fee9243180dca5ed5bd7867b",
+        "fingerprintClass": "legacy-preview-PNG-session-only",
+        "elapsedMs": 2454,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "alphaCounts": {
+          "zeros": 0,
+          "partial": 0,
+          "opaque": 4194304
+        },
+        "staleLayers": 0,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "newProviderAttempts": 0
+      },
+      {
+        "fixtureIndex": 15,
+        "path": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\stockcars2 arcachevy25\\car_decal_542493.tga",
+        "sourceFingerprint": "f9697ec7388ae1f667882f1a56da5bf72256c11668ef1eaa19103d125018dc3e",
+        "fingerprintClass": "legacy-preview-PNG-session-only",
+        "elapsedMs": 1823,
+        "sourceDimensions": [
+          1479,
+          1479
+        ],
+        "previewDimensions": [
+          739,
+          739
+        ],
+        "alphaCounts": {
+          "zeros": 1828687,
+          "partial": 35406,
+          "opaque": 323348
+        },
+        "staleLayers": 0,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "newProviderAttempts": 0
+      },
+      {
+        "fixtureIndex": 16,
+        "path": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\dirtmodified 358\\car_389371.tga",
+        "sourceFingerprint": "8dd4d9714a6a20f0b6869608f50e019b465b0a44717234ff0dddd86ed964793a",
+        "fingerprintClass": "legacy-preview-PNG-session-only",
+        "elapsedMs": 1988,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "alphaCounts": {
+          "zeros": 838547,
+          "partial": 89690,
+          "opaque": 3266067
+        },
+        "staleLayers": 0,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "newProviderAttempts": 0
+      },
+      {
+        "fixtureIndex": 17,
+        "path": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\streetstock\\car_408495.tga",
+        "sourceFingerprint": "5dce46e432212d8346ba1e4614b2fb193668936fae37fc6d2f4a21bdf3b4cd55",
+        "fingerprintClass": "legacy-preview-PNG-session-only",
+        "elapsedMs": 2402,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "alphaCounts": {
+          "zeros": 0,
+          "partial": 0,
+          "opaque": 4194304
+        },
+        "staleLayers": 0,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "newProviderAttempts": 0
+      },
+      {
+        "fixtureIndex": 18,
+        "path": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\protrucks pro4truck\\car_664623.tga",
+        "sourceFingerprint": "0de29dfaba052ddcd39c8462f36787118299298e35ec7d2d935b1de6df54cf20",
+        "fingerprintClass": "legacy-preview-PNG-session-only",
+        "elapsedMs": 1922,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "alphaCounts": {
+          "zeros": 0,
+          "partial": 0,
+          "opaque": 4194304
+        },
+        "staleLayers": 0,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "newProviderAttempts": 0
+      },
+      {
+        "fixtureIndex": 19,
+        "path": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\mercedesamgevogt3\\car_team_355549.tga",
+        "sourceFingerprint": "5109d377b2cfbfc7cc1980d781e55f4850bc72795fd51012145f01888575b7aa",
+        "fingerprintClass": "legacy-preview-PNG-session-only",
+        "elapsedMs": 1943,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "alphaCounts": {
+          "zeros": 0,
+          "partial": 0,
+          "opaque": 4194304
+        },
+        "staleLayers": 0,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "newProviderAttempts": 0
+      },
+      {
+        "fixtureIndex": 20,
+        "path": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\formulair04\\car_1153480.tga",
+        "sourceFingerprint": "3716dbe7ccc319e56e64eaa67f0a4735f7acabb598d8a96cfff0e3cca71839bb",
+        "fingerprintClass": "legacy-preview-PNG-session-only",
+        "elapsedMs": 1857,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "alphaCounts": {
+          "zeros": 0,
+          "partial": 0,
+          "opaque": 4194304
+        },
+        "staleLayers": 0,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "newProviderAttempts": 0
+      },
+      {
+        "fixtureIndex": 21,
+        "path": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\stockcars chevymontecarlo87\\car_1012749.tga",
+        "sourceFingerprint": "6d8266f54f3556c3dac17413a1c1f8f9b92359e222d9d3078350e80839e0191f",
+        "fingerprintClass": "legacy-preview-PNG-session-only",
+        "elapsedMs": 2277,
+        "sourceDimensions": [
+          2048,
+          2048
+        ],
+        "previewDimensions": [
+          1024,
+          1024
+        ],
+        "alphaCounts": {
+          "zeros": 0,
+          "partial": 0,
+          "opaque": 4194304
+        },
+        "staleLayers": 0,
+        "staleProofs": 0,
+        "pendingMemories": 0,
+        "newProviderAttempts": 0
+      }
+    ]
+  },
+  "originalHashesAfterNative": [
+    {
+      "fixtureIndex": 0,
+      "sha256": "2599db8fdf8162b9b99b27e65089d1eb88b45b87ca7addae29a8d8d0131dd777",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 1,
+      "sha256": "a5d9537b59b86e8a6497ffa1d411537e7482ba29591c43edee1a3607b30a630a",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 2,
+      "sha256": "f5e8a153201175ff2b57e5e87da9cf395c769aaaa2db31a507b3333325281c58",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 3,
+      "sha256": "185c63b770695f23208421a22db743b5c4593a30eec452e2df427ac256c0770c",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 4,
+      "sha256": "032f59b6c78b1282125047b0fe082bcd5d630e8785f117554e29425acba3a15e",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 5,
+      "sha256": "a369bc3a9d7100ded83d4750c87fe0be5e2796d2d94044309fd4504866d0a730",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 6,
+      "sha256": "f6dace07011a1e7a94b654fcad209ed4a4d6309d6f1764a068bf6640912bd570",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 7,
+      "sha256": "0a2746ddfeb11d329076b93453499ce7dbf5e01169da4b9cf9e6c84be8f4525c",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 8,
+      "sha256": "c8e644ed87f55079d2992baea4db52825657f68854bd5b74a25eec11ca22a004",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 9,
+      "sha256": "f5fd8cde957ac70a0155b14df6aa532e303e2cdc8a0280b6b19a8091c19e08d9",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 10,
+      "sha256": "0414248e68ea8b1e122b4cd89011db96feac0825d53f70a8671f1f6a2feb9bdc",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 11,
+      "sha256": "8c24916ccce1c50d1b1d17af68ad19d238d133418581344ec6bc619e6df2d6b4",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 12,
+      "sha256": "383d034fa754351fd9b36933a04a4071bce7429cf0892c08587095f36ad296b1",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 13,
+      "sha256": "fca18e7178e3644261fc896530cf1883b411ede23a4a9e1ea2483aa35f667b0c",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 14,
+      "sha256": "faa40433e6dada56fe218640c7e0c2370b93e5be2c58d8b3a56b3c024dbae65c",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 15,
+      "sha256": "893cd10d4bfbcfd51f403077c9dd12e80a7717dc9d18f04a003355b926f76b0a",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 16,
+      "sha256": "d3b9cd9c9f23ae486a9b5d83879005d1b348e6b5ee3f659be1ee8b6efef76e0b",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 17,
+      "sha256": "8fbe5a89f978cd3a54dde56a65a2296f81cf138a46144ba82c7e6c825bcaca86",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 18,
+      "sha256": "89eb44bd2f20d5f10928432e2ee9cfe4af497a24f5c9717f844c710b7444d57c",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 19,
+      "sha256": "d1b29658297301a05501f95bcb33d6081ccc80450d91055fc97f82c0bfc3af55",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 20,
+      "sha256": "dd62e52baa442033d4350c8ad0b245c98181058080ae6b0bf9430fa544fa66b5",
+      "unchanged": true
+    },
+    {
+      "fixtureIndex": 21,
+      "sha256": "591a411927303b24623e14557c3efec2b06eb226335d53e1870e7223195a21df",
+      "unchanged": true
+    }
+  ],
+  "providerAccounting": {
+    "actualCalls": 0,
+    "blockedHarnessOptionalVisionAttempts": 1,
+    "fixtureImportAndFollowupNewAttempts": 0,
+    "reason": "Root called SpbProCar.ensure() with optional vision default during a recognition probe. Page guard blocked it before HTTP/provider. Repeated probe used ensure(false)."
+  },
+  "knownSafeRefusals": {
+    "PSD5Roof": {
+      "text": "I could not do that: Roof recoloured blue: there is nothing to paint there on this template.",
+      "queueLength": 0,
+      "paintExact": true,
+      "specExact": true,
+      "zoneSnapshotExact": true,
+      "zoneIDsExact": true,
+      "changedConfigKeys": [
+        "zones"
+      ],
+      "newProviderAttempts": 0,
+      "totalBlockedAttempts": 1,
+      "attemptURLs": []
+    },
+    "unknownTgaRoof": {
+      "text": "Before I paint this I need to know where the parts of your car are on the sheet: every car is laid out differently and I cannot reliably read a sheet by eye, so I will not guess. It takes about a minute and I remember it for this car. Show me the roof first.",
+      "queueLength": 0,
+      "kinds": [],
+      "paintChanged": false,
+      "source": "00fcb2a0fb02bfbecfefc0ec723fd4cc634af6d77c2bf6c0177cb81652cadafb",
+      "owner": null,
+      "memories": 0,
+      "parts": [],
+      "newProviderAttempts": 0
+    }
+  },
+  "limits": [
+    "Import acceptance only: no claim all customer PSD adjustments or Photoshop semantics round-trip; six selected PSDs and twelve TGAs, not every file or car.",
+    "Native import records used prior private launcher; complete isolation flags inherited by those processes were not proven. They were stopped. Next launcher explicitly confines config/output/projects/MCP/settings. No original fixture file mutation detected.",
+    "TGA durable byte identity is not accepted by these old loader records; new immutable-byte cache/header/consumer must pass final native tests.",
+    "32-bit TGA with zero declared alpha attributes retained existing Pillow alpha semantics; iRacing alpha intent is unresolved and no alpha conversion was installed."
+  ]
+}

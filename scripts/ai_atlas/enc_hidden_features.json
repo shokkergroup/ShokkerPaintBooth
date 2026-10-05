@@ -1,0 +1,21 @@
+{
+  "features": ["easy_mode"],
+  "reason": "OWNER RULE 2026-10-04: Easy mode is HIDDEN on purpose (the EASY button is aria-hidden in paint-booth-v2.html), so nothing in the Encyclopedia may talk about that part of the app until the owner brings it back. To bring it back: remove the feature from this list, then re-run enc_inventory.py and every generator.",
+  "date": "2026-10-04",
+  "hidden_domains": ["easy_mode"],
+  "hidden_record_ids": ["^easy\\.", "^mode\\.easy$", "^spbModeEasyBtn$", "^hdi\\.easy_", "^hdi\\.use_easy$", "^topic\\.easy_pro$", "^sculpt\\.btnEasyMode$"],
+  "hidden_article_prefixes": ["easy_mode.", "controls_easy_mode_"],
+  "gate_text_patterns": [
+    {"re": "\\beasy[\\s-]*mode\\b", "flags": "i"},
+    {"re": "\\bEASY\\b", "flags": ""},
+    {"re": "\\bpro\\s*[|/,]\\s*(?:chat\\s*[|/,]?\\s*(?:and\\s+)?)?easy\\b", "flags": "i"},
+    {"re": "\\bpaint[\\s-]*by[\\s-]*numbers\\b", "flags": "i"},
+    {"re": "\\bREADY TO RACE\\b", "flags": ""},
+    {"re": "\\bWHERE IT GOES\\b", "flags": ""},
+    {"re": "\\bSAVE TO iRACING\\b", "flags": ""},
+    {"re": "\\bTell bar\\b", "flags": "i"},
+    {"re": "\\bcolou?r-parts rail\\b", "flags": "i"},
+    {"re": "\\b(?:in|of|from|to|with|into|on) Easy\\b(?![\\s-]*(?:to|way|for|and easy|enough))", "flags": ""},
+    {"re": "\\bEasy(?:'s|\u2019s)\\b", "flags": ""}
+  ]
+}

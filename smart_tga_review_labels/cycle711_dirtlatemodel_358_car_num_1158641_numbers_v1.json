@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_1158641.tga",
+  "inspection_records": "_smart_tga_runs/cycle711_fresh_dlm_active_pool/inspection_records.json",
+  "review_scope": "Cycle 711 frozen active-learning selection; source, owner sheets, context crops, and isolated proposal masks reviewed.",
+  "selection_policy": "frozen_cycle711_recovery_disagreement_uncertainty",
+  "component_labels": [
+    {"layer":"sponsors","component_index":23,"expected_bbox":[294,722,116,85],"target_layer":"numbers","label":"true_number_2_copy"},
+    {"layer":"sponsors","component_index":8,"expected_bbox":[18,314,62,45],"target_layer":"numbers","label":"true_number_2_stylized_fragment"},
+    {"layer":"template","component_index":18,"expected_bbox":[450,81,52,53],"target_layer":"template","label":"template_panel_fragment_false_number"},
+    {"layer":"sponsors","component_index":5,"expected_bbox":[295,250,84,90],"target_layer":"numbers","label":"true_number_2_copy"},
+    {"layer":"sponsors","component_index":4,"expected_bbox":[393,247,77,89],"target_layer":"numbers","label":"true_number_2_copy"},
+    {"layer":"sponsors","component_index":13,"expected_bbox":[29,394,90,226],"target_layer":"sponsors","label":"sponsor_mobil1_logo_false_number"},
+    {"layer":"numbers","component_index":0,"expected_bbox":[738,406,94,222],"target_layer":"sponsors","label":"sponsor_brenneisel_logo_false_number"},
+    {"layer":"paint","component_index":0,"expected_bbox":[0,0,1024,1024],"target_layer":"paint","label":"whole_paint_false_number"},
+    {"layer":"template","component_index":79,"expected_bbox":[916,610,73,91],"target_layer":"template","label":"template_panel_fragment_false_number"},
+    {"layer":"sponsors","component_index":24,"expected_bbox":[389,723,211,85],"target_layer":"numbers","label":"true_number_2_with_connected_sponsor"}
+  ]
+}

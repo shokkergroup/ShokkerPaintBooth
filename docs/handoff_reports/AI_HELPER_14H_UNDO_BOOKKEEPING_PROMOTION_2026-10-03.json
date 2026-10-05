@@ -1,0 +1,9 @@
+{
+  "status": "ROOT_SOURCE_REPAIRED",
+  "utc": "2026-10-04T06:01:16.599687+00:00",
+  "before_sha256": "b43d5f6cd4902db8872d862395b4d9ac8be77b22c0b883d01abada507f978dcd",
+  "after_sha256": "609b8ec85228f15d2cc9b3ab82cd692eb2ea90d258cf5045fd36448ad3c46c6b",
+  "patch": "newline and indentation only; external ROUTER-FIX preserved",
+  "mirror_status": "broader current-source promotion pending; mirror has no regression anchor",
+  "tests": "W29 frozen actual-finish VM baseline3fail/candidate4pass; experimental native actual apply/Undo exact"
+}

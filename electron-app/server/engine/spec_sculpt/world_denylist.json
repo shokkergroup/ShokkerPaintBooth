@@ -1,0 +1,4 @@
+{
+  "_note": "SHOKK THE WORLD owner curation. Finish IDs listed in 'exclude_ids' are removed from the diverse world picker (pick_diverse) — use this to drop looks you don't want offered (e.g. a finish that reads too 'blobby' / low-frequency on the car). EMPTY by default = no change. Get a finish's id from GET /api/spec-sculpt/world (the 'catalog' field) or the contact-sheet QA tool. Edit this file (keep all 3 copies in sync via scripts/sync-runtime-copies.js) and restart the server to apply.",
+  "exclude_ids": []
+}

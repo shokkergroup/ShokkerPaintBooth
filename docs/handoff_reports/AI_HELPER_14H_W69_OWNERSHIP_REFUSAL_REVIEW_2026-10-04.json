@@ -1,0 +1,181 @@
+{
+  "status": "PASS",
+  "task": "W69 independent controller ownership and refusal-copy review",
+  "date": "2026-10-04",
+  "frozenSources": {
+    "candidate": {
+      "path": "_easy_claude_work/ai14h_w69_review/frozen/spb-pro-ai.js",
+      "sha256": "136B437D194F389DF79EBC629EC931D6553D5DFBCC7F161531CC9F7B5954F779"
+    },
+    "w62Baseline": {
+      "path": "_easy_claude_work/ai14h_w69_review/frozen/spb-pro-ai-w62-baseline.js",
+      "sha256": "3A193C10175F49841C398DD83D915061C1F25BBFCB4650F56A90588B2821FC17"
+    },
+    "sourceApi": {
+      "path": "_easy_claude_work/ai14h_w69_review/frozen/paint-booth-3-canvas.js",
+      "sha256": "159716B3150C785517BEC3A1CF1B00A7318121885E7640276B5FFAF14FC91D9A"
+    },
+    "operation": {
+      "path": "_easy_claude_work/ai14h_w69_review/frozen/spb-ai-operation.js",
+      "sha256": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6"
+    },
+    "lease": {
+      "path": "_easy_claude_work/ai14h_w69_review/frozen/spb-ai-lease.js",
+      "sha256": "D765444136C8CAE6FD46C79BC0730D5B9266AD70EA832BFB08438AB77CA0AD75"
+    }
+  },
+  "retainedOracles": {
+    "w62": {
+      "path": "tests/ai_operation_w62_ownership_failure_contract.cjs",
+      "sha256": "4C29CEF2F786D3DA133A7B9B4F94558BE725AB8029CA0D39BCDFBF3275F65759",
+      "reviewHarness": "tests/ai_operation_w69_ownership_review_contract.cjs",
+      "status": "PASS 13/13"
+    },
+    "w67": {
+      "path": "tests/ai_operation_w67_controller_integration_contract.cjs",
+      "sha256": "99F30CA577EF5EF70A73E9BB8A7B100200AA280A7EF17D785AD8DD0F4EBE0E74",
+      "status": "12/12 retained scenarios passed"
+    }
+  },
+  "counts": {
+    "w62Passed": 13,
+    "w67RetainedPassed": 12,
+    "w69Fresh": 7,
+    "w69FreshPassed": 7,
+    "actualW53SourceApiCases": 4,
+    "actualW53SourceApiPassed": 4,
+    "localAskCoreStubCalls": 12,
+    "realProviderCalls": 0,
+    "nativeCalls": 0
+  },
+  "freshRows": [
+    {
+      "name": "document-switch-invalidates-late-pending-ask",
+      "pass": true,
+      "apply": 0,
+      "busy": false,
+      "lease": "internal"
+    },
+    {
+      "name": "foreign-external-lease-is-not-released",
+      "pass": true,
+      "apply": 0,
+      "localAskCoreCalls": 0,
+      "busy": false,
+      "leaseOwner": "external",
+      "foreignLeaseStillActive": true
+    },
+    {
+      "name": "fresh-uncached-hash-throw-refuses-truthfully",
+      "pass": true,
+      "apply": 0,
+      "undoable": false,
+      "error": "This request was cancelled or its paint changed.",
+      "text": "",
+      "busy": false
+    },
+    {
+      "name": "fresh-uncached-hash-empty-refuses-truthfully",
+      "pass": true,
+      "apply": 0,
+      "undoable": false,
+      "error": "This request was cancelled or its paint changed.",
+      "text": "",
+      "busy": false
+    },
+    {
+      "name": "fresh-post-draw-uncommitted-source-refuses",
+      "pass": true,
+      "apply": 0,
+      "undoable": false,
+      "text": "I could not apply that change yet. The source is not committed and ready. Wait for loading to finish, then ask again.",
+      "busy": false,
+      "leaseReleased": true
+    },
+    {
+      "name": "fresh-pending-source-refuses-at-publication",
+      "pass": true,
+      "apply": 0,
+      "undoable": false,
+      "text": "I could not apply that change yet. The source is not committed and ready. Wait for loading to finish, then ask again."
+    },
+    {
+      "name": "fresh-retained-A-and-current-A-positive-controls",
+      "pass": true,
+      "apply": 1,
+      "undoable": true,
+      "text": "Done. Updated the roof.",
+      "committedPath": "C:/paint/A.tga"
+    }
+  ],
+  "actualW53SourceApiRows": [
+    {
+      "name": "actual-W53-current-committed-source",
+      "pass": true,
+      "committed": true,
+      "generation": 4
+    },
+    {
+      "name": "actual-W53-pending-source-readiness",
+      "pass": true,
+      "pending": true,
+      "committed": false,
+      "generation": 5
+    },
+    {
+      "name": "actual-W53-failed-replacement-retains-A-with-fresh-commit",
+      "pass": true,
+      "failedResult": false,
+      "committed": true,
+      "path": "C:/paint/A.tga",
+      "fingerprint": "sha-A"
+    },
+    {
+      "name": "actual-W53-empty-postdraw-source-remains-uncommitted",
+      "pass": true,
+      "committed": false,
+      "fingerprint": ""
+    }
+  ],
+  "refusalChecks": {
+    "uncachedHashThrowEmptyMissing": [
+      {
+        "name": "uncached-hash-throws",
+        "pass": true
+      },
+      {
+        "name": "uncached-hash-empty",
+        "pass": true
+      },
+      {
+        "name": "uncached-hash-missing",
+        "pass": true
+      }
+    ],
+    "uncommittedPostDraw": [
+      {
+        "name": "uncommitted-post-draw-ask",
+        "pass": true
+      }
+    ],
+    "sendRefusalNoFalseDone": [
+      {
+        "name": "send-path-no-false-done-on-refusal",
+        "pass": true
+      }
+    ],
+    "busyLeaseRelease": [
+      {
+        "name": "refusal-releases-busy-and-lease",
+        "pass": true
+      }
+    ],
+    "foreignLease": []
+  },
+  "limitations": [
+    "The actual W53 source API begin/isCurrent/result functions and public getter object are extracted from the pinned source module and exercised in a VM; pixel loading/rendering and DOM integration are not run.",
+    "W67 retained controller tests use the documented deterministic source-state adapter; the separate W53 tests verify real source API pending/commit/failure semantics.",
+    "askCore is a counted deterministic local stub; AI/provider adapter calls are asserted zero. Apply, undo, operation ticket, controller send/finish, and actual lease/operation modules are source-extracted or loaded from the exact pinned files.",
+    "No live/native paint, browser, renderer, or user-document mutation occurred."
+  ]
+}

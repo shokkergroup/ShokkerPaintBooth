@@ -1,0 +1,190 @@
+{
+  "status": "PASS",
+  "task": "W65 independent late mark-elements and controller ownership regression review",
+  "date": "2026-10-04",
+  "frozenSource": {
+    "controller": {
+      "path": "_easy_claude_work/ai14h_w65_review/frozen/spb-pro-ai.js",
+      "sha256": "098237183363BBEEF6C8AF563C72CBEF24D341F87EB56CD7E034079F02FF8D57"
+    },
+    "operation": {
+      "path": "_easy_claude_work/ai14h_w65_review/frozen/spb-ai-operation.js",
+      "sha256": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6"
+    }
+  },
+  "retainedW49": {
+    "original_test": "tests/ai_operation_w49_mark_elements_repair_contract.cjs",
+    "original_test_sha256": "F04CB9EFE4EAF38F3A5180EA4FFB18593AAA546DAD5229709159E360B0F50F30",
+    "candidate_replay_path": "_easy_claude_work/ai14h_w65_review/w49-replay.json",
+    "candidate_replay_rows": [
+      {
+        "id": "w42-confirmed-stale-mark-elements-reproduction",
+        "verdict": "reproduced",
+        "result": {
+          "error": "This request no longer owns the paint."
+        },
+        "sinkCalls": 1,
+        "ticketCurrent": true,
+        "collection": 1
+      },
+      {
+        "id": "ready-before-analysis-resolves",
+        "verdict": "pass",
+        "result": {
+          "error": "This request no longer owns the paint."
+        },
+        "sinkCalls": 0,
+        "ticketCurrent": true,
+        "collection": 1,
+        "phase": "ready"
+      },
+      {
+        "id": "cancel-before-analysis-resolves",
+        "verdict": "pass",
+        "result": {
+          "error": "This request no longer owns the paint."
+        },
+        "sinkCalls": 0,
+        "ticketCurrent": false,
+        "collection": 1,
+        "phase": "collecting"
+      },
+      {
+        "id": "source-generation-switch-before-analysis-resolves",
+        "verdict": "pass",
+        "result": {
+          "error": "This request no longer owns the paint."
+        },
+        "sinkCalls": 0,
+        "ticketCurrent": false,
+        "collection": 1,
+        "phase": "collecting"
+      },
+      {
+        "id": "positive-current-mark-still-teaches",
+        "verdict": "pass",
+        "result": {
+          "ok": true,
+          "kind": "numbers",
+          "mode": "glyph",
+          "places_used": 1,
+          "glyph_colours_found": [
+            "white #ffffff"
+          ],
+          "colours_found": [
+            "white #ffffff"
+          ],
+          "share_of_the_sheet_pct": 2,
+          "per_box": [],
+          "places": [],
+          "remembered_for_this_car": true,
+          "next": "Then refinish({target:\"numbers\", colour / look}) changes exactly these pixels; check the image"
+        },
+        "sinkCalls": 1,
+        "ticketCurrent": true,
+        "collection": 1,
+        "phase": "collecting"
+      },
+      {
+        "id": "ready-before-none-analysis-resolves",
+        "verdict": "pass",
+        "error": "This request no longer owns the paint.",
+        "elemNoneRecorded": false,
+        "pendingCardClosed": false
+      },
+      {
+        "id": "positive-current-none-keeps-helpful-result",
+        "verdict": "pass",
+        "ok": true,
+        "elemNoneRecorded": true,
+        "pendingCardClosed": true
+      },
+      {
+        "id": "fresh-cancel-A-start-B-late-analysis-A",
+        "verdict": "pass",
+        "sinkCalls": 0,
+        "currentB": true,
+        "busyStillB": true,
+        "controllerStillB": true,
+        "lateError": "This request no longer owns the paint."
+      },
+      {
+        "id": "fresh-manual-layer-revision-during-analysis",
+        "verdict": "pass",
+        "sinkCalls": 0,
+        "current": false,
+        "lateError": "This request no longer owns the paint."
+      },
+      {
+        "id": "fresh-canceled-no-target-analysis-does-not-publish-none-or-close-card",
+        "verdict": "pass",
+        "sinkCalls": 0,
+        "elemNoneRecorded": false,
+        "pendingCardClosed": false,
+        "error": "This request no longer owns the paint."
+      }
+    ],
+    "unchanged_w42_baseline_reproduction_separate": true
+  },
+  "retainedW24Phase6": {
+    "original_oracle_sha256": "3293D6070258C895F67A21ECCFE0BBEE7FD000568196FF37A834303C128BDCEA",
+    "replay_path": "_easy_claude_work/ai14h_w65_review/w24-replay.json",
+    "status": "PASS",
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "real_provider_calls": 0,
+    "mocked_provider_invocations": 17,
+    "harness_adaptations": [
+      "Adapted the bounded extraction boundary for integrated makeTools(queue,sig,mode).",
+      "Added actual offlineInstructionPreflight helper to extracted route after the current candidate introduced that dependency.",
+      "Stubbed onlineMeasure/objectFollowup post-response helpers only; lifecycle, tools, operation module, queue/apply/Undo paths remain actual source functions."
+    ]
+  },
+  "counts": {
+    "freshW65": 3,
+    "freshW65Passed": 3,
+    "w49CandidateControls": 9,
+    "w24Phase6Passed": 16,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "browserCalls": 0
+  },
+  "freshRows": [
+    {
+      "id": "fresh-cancel-A-start-B-late-analysis-A",
+      "verdict": "pass",
+      "sinkCalls": 0,
+      "currentB": true,
+      "busyStillB": true,
+      "controllerStillB": true,
+      "lateError": "This request no longer owns the paint."
+    },
+    {
+      "id": "fresh-manual-layer-revision-during-analysis",
+      "verdict": "pass",
+      "sinkCalls": 0,
+      "current": false,
+      "lateError": "This request no longer owns the paint."
+    },
+    {
+      "id": "fresh-canceled-no-target-analysis-does-not-publish-none-or-close-card",
+      "verdict": "pass",
+      "sinkCalls": 0,
+      "elemNoneRecorded": false,
+      "pendingCardClosed": false,
+      "error": "This request no longer owns the paint."
+    }
+  ],
+  "finding": {
+    "baselineW42LateTeachReproductionObserved": true,
+    "w65CandidateLateCallbacksBlocked": true,
+    "positiveMarkElementsAndNone": true,
+    "normalFinishAndUndo": "PASS through retained W24 normal-action-and-undo case"
+  },
+  "limits": [
+    "The W42 baseline stale-collection reproduction remains an expected historical control, not a W65 candidate defect.",
+    "El.analyse and teachBoxes are controlled callbacks. markElements checks collection ownership after async analyse and before the synchronous teachBoxes mutation; teachBoxes itself has no async continuation.",
+    "W24 uses the actual pinned operation module and extracted controller lifecycle functions, with local provider, apply, preview and Undo effects mocked. No real provider, browser, native app, canvas renderer or paint mutation occurred."
+  ]
+}

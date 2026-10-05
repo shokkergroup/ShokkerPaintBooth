@@ -1,0 +1,3362 @@
+{
+  "revision": "ERA120-R1",
+  "local_owner_review": true,
+  "items": [
+    {
+      "id": "rad_amber_terminal",
+      "name": "Arcade: Amber Terminal",
+      "idea": "Amber phosphor dashes, fading raster echoes and warm glass etched with tiny signal breaks.",
+      "revision": "ERA120-PROCEDURAL-3adf024a8e0d",
+      "asset_sha256": {
+        "paint": "4235770b0031b0cc91550eec6bd9419cbc0e6d6ca42c19c9759e0cc24ef62947",
+        "spec": "3adf024a8e0d78a9b489a54cacf82ddfca33a0aff17dd5cf1248a8fb8acbabb1"
+      },
+      "source_sha256": "109b45e9028a3f1bc27da93e588f8ef273c7f1eb6e9f7d8686544fb5c0bc19db",
+      "material_median": [
+        33,
+        134,
+        113
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "235af30dc58c0476d47afcf2cd7ece7761e365bc0ed448fbbc65302bf57d517e",
+      "authoring_files": [
+        "rad_amber_terminal_paint.recipe.json.gz",
+        "rad_amber_terminal_spec.recipe.json.gz",
+        "rad_amber_terminal_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_amber_terminal_paint.recipe.json.gz": "d1bfa9d74248642df1c01277e7b2d685deb071db3b4321da07ff6f913bbe301d",
+        "rad_amber_terminal_spec.recipe.json.gz": "70ee80b5a14e695a78ad8058f294a042d622ff1b93aa712ab675ff4c923fa265",
+        "rad_amber_terminal_vector.py": "afdc80bc51857e0dc0b47e4c027ca7b5db65d9b4d7de089804ed162251aa4622"
+      }
+    },
+    {
+      "id": "rad_attract_mode",
+      "name": "Arcade: Attract Mode",
+      "idea": "Electric pixel comets and collision bursts on deep ultraviolet arcade glass.",
+      "revision": "ERA120-PROCEDURAL-2342130d73a4",
+      "asset_sha256": {
+        "paint": "2d3ca6ecf2eca4cf70015e7a78224863074084a13b520207400b58faeb50bd11",
+        "spec": "2342130d73a4881cbb7e6dc5b89f6077e133ee732dfefffdad7eea01a55eeb2c"
+      },
+      "source_sha256": "331b518aed641acdf68884660750892053451584d840789b7114f1a8d8bbff76",
+      "material_median": [
+        28,
+        139,
+        133
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "c099aa53ac91dc516d5a4bb9265b765a771ad49b236282bb6140db32da327fee",
+      "authoring_sha256": {
+        "rad_attract_mode_paint.recipe.json.gz": "cc919e24bebba11e01bfc73502bddca7ddca29990eea967941ac333754c89caf",
+        "rad_attract_mode_spec.recipe.json.gz": "380f0e2d528a5671d8054f19053724ca0d60c522e13a23128f76a982683829e4",
+        "rad_attract_mode_vector.py": "5ad9248deaeac61aa113aff73704baf07fa07c1c44730063885b15b48b21c7c7"
+      },
+      "authoring_files": [
+        "rad_attract_mode_paint.recipe.json.gz",
+        "rad_attract_mode_spec.recipe.json.gz",
+        "rad_attract_mode_vector.py"
+      ]
+    },
+    {
+      "id": "rad_bezel_black",
+      "name": "Arcade: Neon Bezel Inlay",
+      "idea": "Hot-pink and turquoise cabinet inlays set into finely stippled black arcade plastic.",
+      "revision": "ERA120-PROCEDURAL-a61570014921",
+      "asset_sha256": {
+        "paint": "e2efd63e5f43dd8fc1ac42ee1d39cab66e25925075adb8aca774edbc48af7e8a",
+        "spec": "a615700149210c8c47aa70f874cf5458c44c08e17714087d56d412da1ad0bbdc"
+      },
+      "source_sha256": "688150aa5f66812f4a06e97ba5418bdc7f13e97d697539df3751479ed2cd39db",
+      "material_median": [
+        35,
+        98,
+        129
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "fa72c9b19395ac22d033a3a6d1804ec778274af53a08147fb9fe4f4d23125582",
+      "authoring_files": [
+        "rad_bezel_black_paint.recipe.json.gz",
+        "rad_bezel_black_spec.recipe.json.gz",
+        "rad_bezel_black_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_bezel_black_paint.recipe.json.gz": "a63297d63f47310dfd52448fe257c1ab517c1d29f55cbd2c6c9010d5aefa3668",
+        "rad_bezel_black_spec.recipe.json.gz": "a9ee9a9bb111df1e94bcc1138fa502f16d061b0c4df375f3ac911245f3bf1ab8",
+        "rad_bezel_black_vector.py": "df186f6406efafc17e83b05bd77c73feff8979775eedaa2c734223fbd7c5ccfc"
+      }
+    },
+    {
+      "id": "rad_cabinet_side_art",
+      "name": "Arcade: Cabinet Side Art",
+      "idea": "Layered red, cyan and yellow screenprint lightning with scuffed vinyl edges.",
+      "revision": "ERA120-PROCEDURAL-d5e89f719d08",
+      "asset_sha256": {
+        "paint": "bbf240dd5b54ba93a789a03292f83975de5d984b452c60c90e6394ce8c4cc0b2",
+        "spec": "d5e89f719d08227520902d6be918939a027c358a16513314a4f1dfcf006ec31e"
+      },
+      "source_sha256": "459b7362e3ed541ed5b2c5156d026eeeb2946e8c83db5f7e99919076829e4fa1",
+      "material_median": [
+        21,
+        97,
+        161
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "57710710cdc6f309102117fd1bf281acc634dd5085a9a078954b59675f099d77",
+      "authoring_files": [
+        "rad_cabinet_side_art_paint.recipe.json.gz",
+        "rad_cabinet_side_art_spec.recipe.json.gz",
+        "rad_cabinet_side_art_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_cabinet_side_art_paint.recipe.json.gz": "30ba75d8ece82c09061b6dce291210dede97264c9184b606933cef2425dcb44d",
+        "rad_cabinet_side_art_spec.recipe.json.gz": "13ad9380580dffbde53bd0c014aea8a5b55409668419b724e4296e132ed1b704",
+        "rad_cabinet_side_art_vector.py": "f655a1230b2f52c6ad8a7c6ed1e198ba570e3369162bdaf7abcf6f072266c3cf"
+      }
+    },
+    {
+      "id": "rad_dot_matrix",
+      "name": "Arcade: Dot Matrix",
+      "idea": "RGB phosphor triads and tiny dark shadow-mask slots beneath violet-tinted glass.",
+      "revision": "ERA120-PROCEDURAL-13c55dd4e46c",
+      "asset_sha256": {
+        "paint": "b5e8fa06917d031b3b693a11fe1facdb81975fa973afda43a73e86795b77ac8b",
+        "spec": "13c55dd4e46c5e4cdd413c5b028397d4d578be608769e2da3d8e9d154bb5a9f7"
+      },
+      "source_sha256": "c57eaf8bb5a1a3c4c1dba42299201ed80cea4589b9ac208226b4bb808a9921d3",
+      "material_median": [
+        224,
+        45,
+        131
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "8601dc7b0c7014b819449c3f47ff2586b2ac0b6e83608f50aae4a8129d0e2f5e",
+      "authoring_files": [
+        "rad_dot_matrix_paint.recipe.json.gz",
+        "rad_dot_matrix_spec.recipe.json.gz",
+        "rad_dot_matrix_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_dot_matrix_paint.recipe.json.gz": "1b9af5b904cb069cfe657bee168fde162711265d62e84b31b65cab4a7f9d52fb",
+        "rad_dot_matrix_spec.recipe.json.gz": "e3b763db1b352528a520a30a3e2976626d2cd51658ac15986184dee0f364417a",
+        "rad_dot_matrix_vector.py": "18dae2d04d76712216954abee1ecb91a8a0354f21ff92b85199b674002b85576"
+      }
+    },
+    {
+      "id": "rad_high_score",
+      "name": "Arcade: High Score Confetti",
+      "idea": "Arcade crown circuitry: small sharp pixel CROWNS with stepped ruby gold cyan jewels, double outlines, segmented score ladders, diamond medals and pixel sparkle clusters.",
+      "revision": "ERA120-PROCEDURAL-58f1d4cba893",
+      "asset_sha256": {
+        "paint": "a2bee98ad57e6e51d6941f4b8e04e00bc4394917662d7aa688370b25ac2880ff",
+        "spec": "58f1d4cba893a3bb4bff54cb5e3748cb417b48be890f6c4152e4cf9f7347bb8f"
+      },
+      "source_sha256": "234fbe0ec8f9b3a61870adda547d4083c4f3f375e2f634413e32e9cefa07b476",
+      "material_median": [
+        36,
+        119,
+        113
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "f9e83124ea5dae940c7ad42c26f5a1610886d63cde8c1480ef68c7833ff590ea",
+      "authoring_files": [
+        "rad_high_score_paint.recipe.json.gz",
+        "rad_high_score_spec.recipe.json.gz",
+        "rad_high_score_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_high_score_paint.recipe.json.gz": "506664a7e8f2d3a2b71a2affdc87428549f8bf24ac0ef07548d35278705c8f50",
+        "rad_high_score_spec.recipe.json.gz": "b52d3dda79ebb60db1f98623fbd75ab1c124b5690a8ba1d782e240a9f66de3a7",
+        "rad_high_score_vector.py": "025d3d057f2df775b0b7c8bb612ed8137dddfa0c89588198f624f547d4bca60c"
+      }
+    },
+    {
+      "id": "rad_insert_coin",
+      "name": "Arcade: Coin Return Glow",
+      "idea": "Cherry-red coin-return lenses with amber ribbed windows and small polished latch details.",
+      "revision": "ERA120-PROCEDURAL-b1d39f1282d1",
+      "asset_sha256": {
+        "paint": "04979c0c8bfa34b08219ff0f7163ffcf41edb23cfb205c66ddc598e9708ca236",
+        "spec": "b1d39f1282d1d13a7928b91c5f33ecc90fb9734e4fea60ab9cb92cf83ecd990b"
+      },
+      "source_sha256": "6df2caa2cc8b744be341c0428055055d0ec1d6a1821bf58576170cf210a68122",
+      "material_median": [
+        48,
+        39,
+        125
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "71b4dd9e20601ff6376649872ae12e5140f5b31a5051d601dbfbf7af4d560770",
+      "authoring_files": [
+        "rad_insert_coin_paint.recipe.json.gz",
+        "rad_insert_coin_spec.recipe.json.gz",
+        "rad_insert_coin_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_insert_coin_paint.recipe.json.gz": "7ea67f61a2f99362efb37b74bc3d6f24c74a7ff61cf8ccd9651eed1bfc6f6226",
+        "rad_insert_coin_spec.recipe.json.gz": "e711450a01c4c888a35374257f18f8691fa4b8fa8c092b2a329f554909cd40f9",
+        "rad_insert_coin_vector.py": "4375c9c013147f974b66d7cfe93c3770d80dab0b25ec722e358384a66a718fc7"
+      }
+    },
+    {
+      "id": "rad_joystick_ball",
+      "name": "Arcade: Cherry Resin",
+      "idea": "Candy joystick resin: clean interlocking cherry-red domed disks with transparent amber crescents, cyan bearing collars, black recessed sockets, tiny white glint wedges and purple axial grooves.",
+      "revision": "ERA120-PROCEDURAL-b2d7222c3cea",
+      "asset_sha256": {
+        "paint": "53715948398ee1f44b50c8fab1aed87dbb6d80c0b3189d72f2ead962f7d19270",
+        "spec": "b2d7222c3cea2db9d9e97370cc88c8b73470af6d42afe98be2279f36d1b0215c"
+      },
+      "source_sha256": "9c2aca5db327f7a2d8bb7ec2cffc75d8578d424c8b56d17bac1140a497f6e4b4",
+      "material_median": [
+        20,
+        98,
+        132
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "333d099ec208b9952e65f5a281192d79a70dbf056c7870333d9d108e8c595c42",
+      "authoring_files": [
+        "rad_joystick_ball_paint.recipe.json.gz",
+        "rad_joystick_ball_spec.recipe.json.gz",
+        "rad_joystick_ball_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_joystick_ball_paint.recipe.json.gz": "fcaff4bb4259e58fca71bf6eaf8903655258b0614d3100106eefe7ced4a09be7",
+        "rad_joystick_ball_spec.recipe.json.gz": "61b3d1c546d61d27052d0705a02c8b98790135a27776751ef6bed6725b1c2a80",
+        "rad_joystick_ball_vector.py": "da1a082c406b627e6de658380e145c26c5338be119a8a1986f3abbeb6e22d495"
+      }
+    },
+    {
+      "id": "rad_marquee_bulb",
+      "name": "Arcade: Marquee Chase",
+      "idea": "Ruby, amber and cyan prismatic lens fragments with bright glass ridges and dim recesses.",
+      "revision": "ERA120-PROCEDURAL-7141062ba6a6",
+      "asset_sha256": {
+        "paint": "7d528e86f3cb31b30ec22e7851c21e59dbcf3344214b3bc16ab118dcbc851aaf",
+        "spec": "7141062ba6a651f0b4fb3905c84e1d9ecd447160f3a5c0cde556e20d30d52168"
+      },
+      "source_sha256": "b326fead4e423abe8ae9ae1a202b1180d9624fd3e65eb28de113f963f3b61eb1",
+      "material_median": [
+        43,
+        92,
+        133
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "386ab58b161417b37f7269769dbbcad178fedf9137cc8df4da21db689a0c5cfa",
+      "authoring_sha256": {
+        "rad_marquee_bulb_paint.recipe.json.gz": "9d499b10bdff788c16cd8f9b988eaf90252e14879849e8a4500f8032d36312af",
+        "rad_marquee_bulb_spec.recipe.json.gz": "432014da327a6eaa1379bfbff7bf11268b610307d5f48d2d0bceabaf0e1c59eb",
+        "rad_marquee_bulb_vector.py": "bd588c17389e9a50bfcbbe2f856344a2343e533e263c54542c18ac1b36131b7e"
+      },
+      "authoring_files": [
+        "rad_marquee_bulb_paint.recipe.json.gz",
+        "rad_marquee_bulb_spec.recipe.json.gz",
+        "rad_marquee_bulb_vector.py"
+      ]
+    },
+    {
+      "id": "rad_phosphor_green",
+      "name": "Arcade: Phosphor Green",
+      "idea": "Tiny lime phosphor-grain clusters with emerald afterglow and fine raster dropout.",
+      "revision": "ERA120-PROCEDURAL-cb2d2998e42d",
+      "asset_sha256": {
+        "paint": "1b0747b626b5044b9cae189bd1c4756f20dc46dae2c088cfa9335e98a4820b3b",
+        "spec": "cb2d2998e42da25fc7a47990aef7fc7c1be112c96969faf48926b1afb1d0378f"
+      },
+      "source_sha256": "8a5446dbb7af351ef88ad7ddb1d060be0fda38f30e332859e3a55c2d8e0e3a61",
+      "material_median": [
+        45,
+        113,
+        118
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "fc48bba00ed78ad02cd7cd00bcd106894fa342147413f226213c569a3d58a784",
+      "authoring_files": [
+        "rad_phosphor_green_paint.recipe.json.gz",
+        "rad_phosphor_green_spec.recipe.json.gz",
+        "rad_phosphor_green_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_phosphor_green_paint.recipe.json.gz": "705c0d2436dac3e7b745155877436e627fa67b57e03266a1487e54a117fcf2e8",
+        "rad_phosphor_green_spec.recipe.json.gz": "095aaaea7bfc969fd1bd83b4a9506e8c58aa9ba85bb6095d9f98a412b139eaef",
+        "rad_phosphor_green_vector.py": "f41d02b90a92e9b986400db7ad0955dae787c2632e5d8a6762634f4cd4a7801b"
+      }
+    },
+    {
+      "id": "rad_quarter_slot",
+      "name": "Arcade: Token Jackpot",
+      "idea": "Burnished gold token-edge teeth, red enamel arcs and polished nickel chips.",
+      "revision": "ERA120-PROCEDURAL-414a469b43fd",
+      "asset_sha256": {
+        "paint": "44e25da7ed7838fb45e4e200a735d7fe55e2eb89d326d200e7a0679a5d13d4cd",
+        "spec": "414a469b43fdc0eb99b50038bd66e6d3a65ffcbadc5e2f351828cff3dd14ac18"
+      },
+      "source_sha256": "d28e9cc690c4fd5ea4932c3e190d650018f2ff4aec67d97eb87ca006729493f3",
+      "material_median": [
+        197,
+        29,
+        97
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "856303fa2f31ccb959324b2a6994af0c1973edf68b7538ba89f61e3a6142c2e2",
+      "authoring_files": [
+        "rad_quarter_slot_paint.recipe.json.gz",
+        "rad_quarter_slot_spec.recipe.json.gz",
+        "rad_quarter_slot_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_quarter_slot_paint.recipe.json.gz": "542edef12b47c671c5e0381b4db1d3d4266ab73d15add78c8552ef3358a14141",
+        "rad_quarter_slot_spec.recipe.json.gz": "1d3a633b9c6e6af52d3da60ab0d721683c253e817e4649039f226f5f8f080c15",
+        "rad_quarter_slot_vector.py": "b7921f2680bb6e0e6c94b95382ff36d6d139c54fcbfc1c51eb8c79030767d660"
+      }
+    },
+    {
+      "id": "rad_screen_burn",
+      "name": "Arcade: Screen Burn Echo",
+      "idea": "Faded cyan and pink raster ghosts beneath sharper orange phosphor strokes.",
+      "revision": "ERA120-PROCEDURAL-4e82a9c674ea",
+      "asset_sha256": {
+        "paint": "e4f053b36178ee721c70fdf7cc1b9ee25994b92717cb173cbde6a24b645758c6",
+        "spec": "4e82a9c674eae40e39a01f4b216c6a4509bae50549a4127601042d6ffa03464b"
+      },
+      "source_sha256": "5416ba3c15f0625f7323816af41f71e7f5ad7a0a3a50c62f379f0f4b0757c84a",
+      "material_median": [
+        29,
+        135,
+        128
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "3a115f599371b4ebc092e073bedc9d85743a26e6a7ff2c047f9d85029d3f1942",
+      "authoring_files": [
+        "rad_screen_burn_paint.recipe.json.gz",
+        "rad_screen_burn_spec.recipe.json.gz",
+        "rad_screen_burn_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_screen_burn_paint.recipe.json.gz": "d579b33f51a14f060e611d6387bc7521cf6155c753fb384cf561e27b24e96335",
+        "rad_screen_burn_spec.recipe.json.gz": "de9f48f7537343b53ad285ea159572e7799935b091905db3709e46e74d940514",
+        "rad_screen_burn_vector.py": "855f4c5257d491b8d37460d7221a24b67eceb0a25a104e4327f4b195d9cbd309"
+      }
+    },
+    {
+      "id": "rad_sprite_sheet",
+      "name": "Arcade: Sprite Mosaic",
+      "idea": "Arcade power-up enamel: densely scattered tiny abstract pixel stars, stepped diamonds, nested square portals, zigzag energy trails and segmented rings in vermilion cyan yellow violet.",
+      "revision": "ERA120-PROCEDURAL-a0c2c2009c9b",
+      "asset_sha256": {
+        "paint": "fe099c2a3490d3155bc48123927a671378d372061b117311ab1ed79ed2848ef0",
+        "spec": "a0c2c2009c9b7f5365b40d1b89a261ef726b57dddccba1f365e7bb71639fd40e"
+      },
+      "source_sha256": "ddf9bf7e19abd12cb5c90ef2b1f28fdf198f9171e38fcd8cb765df1c53c733e9",
+      "material_median": [
+        34,
+        119,
+        117
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "f2fc7f5b5a70a55de4b27b2cdc2bc9849ac5f003e7d91247766aded08c7a015e",
+      "authoring_files": [
+        "rad_sprite_sheet_paint.recipe.json.gz",
+        "rad_sprite_sheet_spec.recipe.json.gz",
+        "rad_sprite_sheet_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_sprite_sheet_paint.recipe.json.gz": "a46adc65af1aee278468267053ff927397d0efa8a152ded70b2a20fd27a40bee",
+        "rad_sprite_sheet_spec.recipe.json.gz": "da54619660bdae74806300e1b9155ac9b8a19f6b96a6d372d0afcd0eb9b6bed1",
+        "rad_sprite_sheet_vector.py": "a59cd05d9a866afcdd231f2cc24695631bfba6c8765795f31d9f1455392e618c"
+      }
+    },
+    {
+      "id": "rad_trackball_wear",
+      "name": "Arcade: Trackball Swirl",
+      "idea": "Arcade pinball ricochet: flat abstract intersecting candy-red arcs, turquoise concentric target segments, gold triangular rebound patterns, violet dotted score trails, tiny white chrome glints.",
+      "revision": "ERA120-PROCEDURAL-95fa01b197d0",
+      "asset_sha256": {
+        "paint": "de12183c78f674004242ef7f6bb3f8cef2db2318437e6c1b1e257b83e0f7ba86",
+        "spec": "95fa01b197d0d69840fedd9e83117fb5911e0c2c5597a82d2722f48a1251ce34"
+      },
+      "source_sha256": "2024fddb23e4cdadeb748fad82dc9583c18ab36ecd0ccef562a022fd0517bbb4",
+      "material_median": [
+        47,
+        101,
+        101
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "66c6349ea1f581b47798c6c70df48f55cbbefa85dd8efba5f91527843d2b858f",
+      "authoring_files": [
+        "rad_trackball_wear_paint.recipe.json.gz",
+        "rad_trackball_wear_spec.recipe.json.gz",
+        "rad_trackball_wear_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_trackball_wear_paint.recipe.json.gz": "f7e055874ac317a58dc673b6c86409981713b015ea5be0a7fe6316d0365257d6",
+        "rad_trackball_wear_spec.recipe.json.gz": "9fbdaed5a3b13e8a1cde13a79701145ed8a4d8e137e59a73734cd277ea970590",
+        "rad_trackball_wear_vector.py": "8ab7d41cb0a48edc6935fcc9048de61774c347b09e49f2082a6cefc67515bd49"
+      }
+    },
+    {
+      "id": "rad_vector_glow",
+      "name": "Arcade: Vector Glow",
+      "idea": "Cyan, violet and hot-pink wireframe fragments with bright beam junctions.",
+      "revision": "ERA120-PROCEDURAL-3b07cfd111d1",
+      "asset_sha256": {
+        "paint": "5220dde05b2bfd2cea1c217712ca08adab60afc630556effa6ad00c72e75c7f5",
+        "spec": "3b07cfd111d1978f45e8f666a90ceb789f55cd85c498f2db1f3e885b37c079a0"
+      },
+      "source_sha256": "992d42a056c6878efb98d7f18f6a2be8e34c4aa522be18b32eb30db0c3757571",
+      "material_median": [
+        97,
+        34,
+        115
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "3c738746525e528d95cb7e7a8ae2f0a1a2ea9ee898deed96cab4ca5e58f3de68",
+      "authoring_sha256": {
+        "rad_vector_glow_paint.recipe.json.gz": "c15c32977186c28fe0a6c8d5d39e72435b29d3aeb8b9e2a7061c27af73dd0157",
+        "rad_vector_glow_spec.recipe.json.gz": "0c9af800cccd0cf4517d3da09f8cf24b8dbdec9fad468b9df94fd73678820a7d",
+        "rad_vector_glow_vector.py": "83cd124485587970edb7b9f60f03c4638bedbce5489dc8643cf4dd21c26ea31f"
+      },
+      "authoring_files": [
+        "rad_vector_glow_paint.recipe.json.gz",
+        "rad_vector_glow_spec.recipe.json.gz",
+        "rad_vector_glow_vector.py"
+      ]
+    },
+    {
+      "id": "rad_boombox_grille",
+      "name": "Grid: Equalizer Grille",
+      "idea": "Turquoise speaker perforations, magenta mesh and tiny amber meter bars.",
+      "revision": "ERA120-PROCEDURAL-25e858cacffc",
+      "asset_sha256": {
+        "paint": "ef76e8a5eb81a9a516da3f42d3f3044d25494eea67c7446a4daa0920d1a0f4d3",
+        "spec": "25e858cacffc054630421adf354d8a035842dd5835fbc5bb44937d3b5753f6ac"
+      },
+      "source_sha256": "5f60f85581fba06673ee54c0b2a362a9cac889f34bfe1ca65645970e634e0a26",
+      "material_median": [
+        21,
+        114,
+        178
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "55112a00f7e9e165528bd686386ad1da84ae2948a90a2350dfacf093120b117b",
+      "authoring_sha256": {
+        "rad_boombox_grille_paint.recipe.json.gz": "d1ed6d4819f0685bd368261e0765aec1bd6aa4d59b5c6a44f26b11e17579ccfe",
+        "rad_boombox_grille_spec.recipe.json.gz": "9c866b6117deb8b41db5056c3c71def5cea68dcab61651413d4ddd8aea7a8abb",
+        "rad_boombox_grille_vector.py": "7dba22d9b823709412dfe9cb76341a7f3d25a0db08a725df9aa367f8ae85ded0"
+      },
+      "authoring_files": [
+        "rad_boombox_grille_paint.recipe.json.gz",
+        "rad_boombox_grille_spec.recipe.json.gz",
+        "rad_boombox_grille_vector.py"
+      ]
+    },
+    {
+      "id": "rad_cassette_shell",
+      "name": "Grid: Mixtape Candy",
+      "idea": "Translucent fuchsia cassette plastic with cobalt ribs, orange leader strips and tiny metal guides.",
+      "revision": "ERA120-PROCEDURAL-22e0f33310ca",
+      "asset_sha256": {
+        "paint": "972fdce790aad055f1f32e2383b02ff58035b4b97dfc98e7fe1722bafc9afc6e",
+        "spec": "22e0f33310ca16136c2cbdf5747a39f11009c0160152e02e07a96788453a6962"
+      },
+      "source_sha256": "b6755abd2a26cbfb72989145682e25e8ce3d5a82eaddfaf93ef58e59756529b3",
+      "material_median": [
+        24,
+        90,
+        131
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "a5f8fbbf50cc388856f9ee7977b315a2d2d9150af38da05f4d5c6bbd3bc31449",
+      "authoring_files": [
+        "rad_cassette_shell_paint.recipe.json.gz",
+        "rad_cassette_shell_spec.recipe.json.gz",
+        "rad_cassette_shell_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_cassette_shell_paint.recipe.json.gz": "4d9831078355b17c6dd23204e3f46f2f682f98edd980fef43a0fffaed95fe8c5",
+        "rad_cassette_shell_spec.recipe.json.gz": "741d7018ca099b42d898fef515684ae028e1b8ce1090cc30840d7fe13b998fb9",
+        "rad_cassette_shell_vector.py": "764db6f5a05f61ac80e4661947fa2c886e54ee1b27c9ebb1ebe8488eb37bc396"
+      }
+    },
+    {
+      "id": "rad_chrome_type",
+      "name": "Grid: Chrome Bevel",
+      "idea": "Tiny blue-to-pink beveled strokes with sharp silver edges and purple enamel valleys.",
+      "revision": "ERA120-PROCEDURAL-d37c5899b877",
+      "asset_sha256": {
+        "paint": "590d97f46b017412f3db3acc5f1ed811a2adce2a258aa474030aa014c04fc9c9",
+        "spec": "d37c5899b877eaff80d5025a5bb3652ab3f49368d6f35e9dd014663f360dceb0"
+      },
+      "source_sha256": "672380965a6e4249e8aea4f6efec303113807ac33adba28b7a2e7a69bb63716c",
+      "material_median": [
+        36,
+        114,
+        127
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "7693aee2e701a18512b8127a61edf142382b72aea5619876add8c963f2b489a8",
+      "authoring_files": [
+        "rad_chrome_type.py"
+      ],
+      "authoring_sha256": {
+        "rad_chrome_type.py": "2b6797b9c62e3b465815f7cc13aa7b8764fbc7f95e462f0f2d3eccd708a941b6"
+      },
+      "owner_preserve_instruction": "REBUILD (except this one it's good to go)",
+      "M7_exception_scope": "Exact owner-approved procedural preview; do not rebuild or claim score qualification"
+    },
+    {
+      "id": "rad_digital_sunrise",
+      "name": "Grid: Digital Sunrise",
+      "idea": "Tangerine, pink and violet color bands broken into fine stepped sunrise fragments.",
+      "revision": "ERA120-PROCEDURAL-6d65eee5f8ca",
+      "asset_sha256": {
+        "paint": "5b408ce4c64dcc5424bfa6e4d461a5353ab333c2c3255ca54b0933bdf27cebfa",
+        "spec": "6d65eee5f8cab68d16ada38eaf34a95e07a5327a1da5e562311272e82644b8b7"
+      },
+      "source_sha256": "4386c0918da0819a514c500ea3b362db85ba963702e00fee615276b394efa3e2",
+      "material_median": [
+        29,
+        95,
+        162
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "d961effbb6e7638c9304be6bf89d3c365c4aec4529453eed0149dd6bf9b10530",
+      "authoring_files": [
+        "rad_digital_sunrise_paint.recipe.json.gz",
+        "rad_digital_sunrise_spec.recipe.json.gz",
+        "rad_digital_sunrise_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_digital_sunrise_paint.recipe.json.gz": "c35643f4a9e9f40f62bff29e0503994369835ad00fad90a67fe254ed4ab1e15c",
+        "rad_digital_sunrise_spec.recipe.json.gz": "eeda6b29e544ee59fb573e72da27ca1854c2910138bb7d2d65edd925ad7d80c4",
+        "rad_digital_sunrise_vector.py": "2d49a31105846cbdf3fe73e2025aa1ee5898f1b10c3171d49dc053180e2eaa25"
+      }
+    },
+    {
+      "id": "rad_grid_floor",
+      "name": "Grid: Laser Tile",
+      "idea": "Tiny magenta and cyan tiled diamonds with glossy dark faces and bright grout crossings.",
+      "revision": "ERA120-PROCEDURAL-b3aaaebc9748",
+      "asset_sha256": {
+        "paint": "ea1daa4592325956c5a510070cc3459490ee34a3ab5830575f42f4f55fade645",
+        "spec": "b3aaaebc974814856750427bc320bb2a9afcc7c5b198d474547b1aeb157abbab"
+      },
+      "source_sha256": "88871fbea131543003a5c9e6718894a2cf7c334e1642d9416d0352c26ba2a965",
+      "material_median": [
+        27,
+        101,
+        149
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "f8233679fc36fb0695d645fcd4c2c5753376162157b36234a8cbad078d917162",
+      "authoring_files": [
+        "rad_grid_floor_paint.recipe.json.gz",
+        "rad_grid_floor_spec.recipe.json.gz",
+        "rad_grid_floor_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_grid_floor_paint.recipe.json.gz": "d80feb90f31a214e78ebb0320261c1136bff54240f4678b14daf8cc7f6a0d699",
+        "rad_grid_floor_spec.recipe.json.gz": "4f411b3d6fd7f5d948a8a3f721386d77a96992b1c810e1ee849de341c3f02a8e",
+        "rad_grid_floor_vector.py": "6644a03dcc132bfc7f49a512289cfea917c66e12e0af7f7342025e3c2d114207"
+      }
+    },
+    {
+      "id": "rad_laser_grid",
+      "name": "Grid: Laser Crossfire",
+      "idea": "Fine red, electric-blue and lime laser strokes with smoky violet interference pockets.",
+      "revision": "ERA120-PROCEDURAL-c8b7fb54e3db",
+      "asset_sha256": {
+        "paint": "8c1d07f65732846a7fb81a039ff0ef8ee2a06fef9e7a70cb48d7a1e329114053",
+        "spec": "c8b7fb54e3dbcff56013dd5c607ea66050d836bc9e883e7a73fd6104e08c3c9e"
+      },
+      "source_sha256": "071bf07f631c9d4d23242834a792787f06768fbd858526a5df5edc4b4b5d4013",
+      "material_median": [
+        168,
+        27,
+        124
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "24e6c5a31d3b7378326b1830ae27d025cd56a3047c3ebf6e8d3df4d8ed0247f4",
+      "authoring_files": [
+        "rad_laser_grid_paint.recipe.json.gz",
+        "rad_laser_grid_spec.recipe.json.gz",
+        "rad_laser_grid_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_laser_grid_paint.recipe.json.gz": "63e90288d70feb21edb7b5a5fb1d29cd561b211848cb57ee5c3e59b1da2a550a",
+        "rad_laser_grid_spec.recipe.json.gz": "e69772bbd19f39187753bc3f950b9f6298ba5d3c80f4502bacd4f0f280142238",
+        "rad_laser_grid_vector.py": "9f571241fdcc3b62101da961dc9a5982f2d84cd5cb621706bef25014be4db577"
+      }
+    },
+    {
+      "id": "rad_laserdisc_rainbow",
+      "name": "Grid: Laserdisc Prism",
+      "idea": "Fine silver diffraction teeth and rainbow recording tracks with sharp foil flashes.",
+      "revision": "ERA120-PROCEDURAL-50d86fd8893c",
+      "asset_sha256": {
+        "paint": "2690710fbc15d06cb7d302b04aa097a47ec7d26d9e2e1a4ed83b31a036b1b677",
+        "spec": "50d86fd8893cae962772ea0d6749995068a50faf92e1b8f81a71f45be080a440"
+      },
+      "source_sha256": "4fdb6843750511ea598907c41e962ff4a23502476174acf4e3cb54e9c8cf5f2a",
+      "material_median": [
+        160,
+        56,
+        120
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "6ed4b39574532841a79f1376c9e1de7de8aeac326fead1069a77bbadafdad04b",
+      "authoring_files": [
+        "rad_laserdisc_rainbow_paint.recipe.json.gz",
+        "rad_laserdisc_rainbow_spec.recipe.json.gz",
+        "rad_laserdisc_rainbow_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_laserdisc_rainbow_paint.recipe.json.gz": "fdb796133fcb1abe2ea9f9d6e96972cdd0e9d80cfe7d5e50578ed7234570ae18",
+        "rad_laserdisc_rainbow_spec.recipe.json.gz": "4ecb493cd91a987f30ce12b85d3f74537be8ccc902f50ad6ecc7664fa81c389d",
+        "rad_laserdisc_rainbow_vector.py": "92cfd30b3f5d1d04aae3674678bb5420b377032e9b29ec0b68f9fccf99c7c1db"
+      }
+    },
+    {
+      "id": "rad_miami_pastel",
+      "name": "Grid: Miami Pastel",
+      "idea": "Flamingo, aqua and pale lemon stucco with fine stepped deco inlays.",
+      "revision": "ERA120-PROCEDURAL-cdb020d1e29b",
+      "asset_sha256": {
+        "paint": "a5ad5bd8eedb425b7d75c494ccdeb0d7afec308c3d30749c192de1c417e834b6",
+        "spec": "cdb020d1e29b0fcc4a73ddc1e190e051542b6a310d418bcd99f77d5dfc30a928"
+      },
+      "source_sha256": "5a92ed5b1e10f4bc08c607333e556621a74c29fbdb737229b5c1b178eaf4171f",
+      "material_median": [
+        34,
+        166,
+        166
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "9bc39804543712a083a6568b0dbc7e5bf031457ff0a8252addfef88d9782d456",
+      "authoring_files": [
+        "rad_miami_pastel_paint.recipe.json.gz",
+        "rad_miami_pastel_spec.recipe.json.gz",
+        "rad_miami_pastel_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_miami_pastel_paint.recipe.json.gz": "025dc4995df95c89a46a862e3f2ebc06354fa0558e4225773f14e18b42751b1c",
+        "rad_miami_pastel_spec.recipe.json.gz": "1386cc1e4e0dbdfea6c51ad3f773c1832dbdb48b0a85c67510623bedc0d1faf8",
+        "rad_miami_pastel_vector.py": "42d7edd78ebc1e9c9e7bb889753ece2934b2efb4d0b2494f3c511484acdac743"
+      }
+    },
+    {
+      "id": "rad_neon_tube",
+      "name": "Grid: Neon Candy Glass",
+      "idea": "Tiny pink and aqua bent-glass strokes with peach halos and clear polished rims.",
+      "revision": "ERA120-PROCEDURAL-162d79192afd",
+      "asset_sha256": {
+        "paint": "2fe7a7c9a0a2f43a06a7aca0954e5a81bd709afd41ce505d375392284966645a",
+        "spec": "162d79192afd98a9145d8bde42de0fa6b4473d117a11fbbedfb734b0535372ce"
+      },
+      "source_sha256": "0250923b21d863dac9a3378ed0043651d833116c86141d82c8892244d6d7ccf0",
+      "material_median": [
+        28,
+        107,
+        148
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "2ab52ec45b6817905f5eb404e8925ea2196bf1bc8b25cfb03fc6f31061ba6386",
+      "authoring_sha256": {
+        "rad_neon_tube_paint.recipe.json.gz": "19141da530b4864d8bd936ab8c28d49ecda3276c1880f072297e634d5f998b7a",
+        "rad_neon_tube_spec.recipe.json.gz": "86f97127f323ea97b29ee86b103e7a1a2dc3b8b15b362ca2f3e63c7de91987ff",
+        "rad_neon_tube_vector.py": "0075a000a532c9d0e63211626ac41efbf396af394b84979e843e51b8ddf2ae4c"
+      },
+      "authoring_files": [
+        "rad_neon_tube_paint.recipe.json.gz",
+        "rad_neon_tube_spec.recipe.json.gz",
+        "rad_neon_tube_vector.py"
+      ]
+    },
+    {
+      "id": "rad_outrun_stripe",
+      "name": "Grid: Outrun Stripe",
+      "idea": "Hot red and cyan speed chevrons with pink offsets and glossy midnight enamel.",
+      "revision": "ERA120-PROCEDURAL-2a0e53e19db3",
+      "asset_sha256": {
+        "paint": "f030547a39d4f82f82bdf3c941c090d4026e8d786cd95894b7abe87ff90f1501",
+        "spec": "2a0e53e19db3032daebb08ac0db696b353a83b84d6a103cc115bae45ae1d327a"
+      },
+      "source_sha256": "f3e142d0ce39ab2927eee6a70b7f217101c2d0cdd0d539802ffeba3bac00133e",
+      "material_median": [
+        27,
+        77,
+        122
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "091a99c97166beedab91beff324bae2e0c9875dbfb14c0c895888f12bbeca482",
+      "authoring_files": [
+        "rad_outrun_stripe_paint.recipe.json.gz",
+        "rad_outrun_stripe_spec.recipe.json.gz",
+        "rad_outrun_stripe_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_outrun_stripe_paint.recipe.json.gz": "3a64e38e58628360ebad4c5f7e6d40bab22eebad8ddbd1b89e3a01666a7bd8eb",
+        "rad_outrun_stripe_spec.recipe.json.gz": "c0c33337ce0eacafbb6d3ac69915f72fa388647efecc652f656061d174eb9d18",
+        "rad_outrun_stripe_vector.py": "9cdd5d80ffd22cf45244797ced95c1f297190a92285c45cdf1d7c36e2e87d21d"
+      }
+    },
+    {
+      "id": "rad_static_snow",
+      "name": "Grid: Chromatic Static",
+      "idea": "Tiny RGB interference flecks and vivid analog color tears beneath television glass.",
+      "revision": "ERA120-PROCEDURAL-46c4f913da49",
+      "asset_sha256": {
+        "paint": "6c1f3a1482a11d945ce9c3a48f148fd4d7a3a908323ab5bbf64b6bb4fe8fa796",
+        "spec": "46c4f913da499b426f2af589e570ec378d4287483cb0f3aa2da8cd51c8eb2f54"
+      },
+      "source_sha256": "45c89d1eb5c9a6ddb97e0f8bbff2ba624419eece14b9e7e98e3422b3f1072d92",
+      "material_median": [
+        12,
+        109,
+        106
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "947b7f85a2efd35c878ed1c484feb5774efde98136cb0645179fdb9fd2d85b63",
+      "authoring_files": [
+        "rad_static_snow_paint.recipe.json.gz",
+        "rad_static_snow_spec.recipe.json.gz",
+        "rad_static_snow_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_static_snow_paint.recipe.json.gz": "0d1e9378c0b57488b48e9f4fc5f7ef2005011602fb2b04e861c80b25b6357a73",
+        "rad_static_snow_spec.recipe.json.gz": "c13386b67d3664f4f7538e07f91af5fa7da3e19b29612e6b986f36d7a1afc82f",
+        "rad_static_snow_vector.py": "60535a87197d3d6895a92a9daa3dd1c287b5c300fcefbbae9372a912dd563ef2"
+      }
+    },
+    {
+      "id": "rad_sunset_bars",
+      "name": "Grid: Sunset Arcs",
+      "idea": "Fine curved coral and orange bands with berry-purple gaps and gold lacquer edges.",
+      "revision": "ERA120-PROCEDURAL-0e237786bb75",
+      "asset_sha256": {
+        "paint": "6d707e9465920dd21d4331f7b1370463b262eecc8a969c38553b791c47526bde",
+        "spec": "0e237786bb754435dd896a9e7989927119e8f8d9e0695d4c53eee83ebd9066dc"
+      },
+      "source_sha256": "63cfa54a58b9c7890d50c9bf1b1c94892f683650e3ec831f4838c59dfcdaef5e",
+      "material_median": [
+        32,
+        143,
+        156
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "ff8a03a2a185ed5975bc98af46c4c693584979ce76dbb1faeacf48d9a663161e",
+      "authoring_files": [
+        "rad_sunset_bars_paint.recipe.json.gz",
+        "rad_sunset_bars_spec.recipe.json.gz",
+        "rad_sunset_bars_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_sunset_bars_paint.recipe.json.gz": "aa19fabad43889c1d7136116fe82d6c063061f4a1b0d5d02c09b99616ab39235",
+        "rad_sunset_bars_spec.recipe.json.gz": "6c43d0e34fab3162ef775ff681801be6018f670870dc8e3be5176a42d093058d",
+        "rad_sunset_bars_vector.py": "74232b79044f96e3dce40743c5439bc0185472e26f47f46a894db47a2f5e9460"
+      }
+    },
+    {
+      "id": "rad_synth_key",
+      "name": "Grid: Synth Sequencer",
+      "idea": "Candy-colored sequencer pads, ivory key slivers and small amber indicator marks.",
+      "revision": "ERA120-PROCEDURAL-7dab5518cda4",
+      "asset_sha256": {
+        "paint": "290fa79a51d723b39699eb574fb46fddfe626bed9f93a9d72a9f183e7e0c3d26",
+        "spec": "7dab5518cda4a8e9ad0fd24b8a6a3530e865cc93e292ae3a917e408a6521aac4"
+      },
+      "source_sha256": "ae42f88ef3bf27302ec383e0e648da17fc4a37591067fbf15f04cef7bcdcb821",
+      "material_median": [
+        40,
+        116,
+        118
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "68da711fedd2cbb4304abe1f107a8bc6dadbdc61103c3f542b8f35916cc0c909",
+      "authoring_sha256": {
+        "rad_synth_key_paint.recipe.json.gz": "44642b56c6d56f5efea175aac7a4e42538451fab7a980b91c73f2c33df63e914",
+        "rad_synth_key_spec.recipe.json.gz": "db859c3c7504d8e37dc993b6319eea6231731f0732fa4b0f04fc02f280a50ec6",
+        "rad_synth_key_vector.py": "ea002f18644fff642685c379288cbb998f503b467bbb6b643746514cef61397a"
+      },
+      "authoring_files": [
+        "rad_synth_key_paint.recipe.json.gz",
+        "rad_synth_key_spec.recipe.json.gz",
+        "rad_synth_key_vector.py"
+      ]
+    },
+    {
+      "id": "rad_vhs_tracking",
+      "name": "Grid: VHS Tracking",
+      "idea": "Magenta and cyan tape tears with fine scanline offsets and warm head-switching flecks.",
+      "revision": "ERA120-PROCEDURAL-3398dd5a49b7",
+      "asset_sha256": {
+        "paint": "aa619fa507684e302db2fed0aacc2565d1631fc6f005777aa69846eaae31064f",
+        "spec": "3398dd5a49b70db47b4880eb207ab94f8061cb3c58737eb9cd8345c158bed1bf"
+      },
+      "source_sha256": "afc1fae693521bcfb52b920f40af8c84e295e78b9167e7af94476d28f6c045cb",
+      "material_median": [
+        40,
+        128,
+        173
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "4dc5e55488b873b4ccd4fcce08449bd5d817ba3b975f77eba7cfff7583642192",
+      "authoring_files": [
+        "rad_vhs_tracking_paint.recipe.json.gz",
+        "rad_vhs_tracking_spec.recipe.json.gz",
+        "rad_vhs_tracking_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_vhs_tracking_paint.recipe.json.gz": "a506de2cd3376ad2c2412894fca207e2acb0d32a5f3a9ed03cfc7dc25af8d5b0",
+        "rad_vhs_tracking_spec.recipe.json.gz": "7f0b0a3c6ffe58215ca0110f10f38f9318f4ed433d580f47e4a93f725ad778b7",
+        "rad_vhs_tracking_vector.py": "e6e42e6aa9bd9da31db86716917bae6886edd43972df149ce51275efbcc3cbfb"
+      }
+    },
+    {
+      "id": "rad_vector_horizon",
+      "name": "Grid: Vector Terrain",
+      "idea": "Tiny cyan and pink contour facets etched into violet glass with gold junction sparks.",
+      "revision": "ERA120-PROCEDURAL-755e8c1661ef",
+      "asset_sha256": {
+        "paint": "b194e520c822e63044ef8a897e5ff0f7ba6cbb3a0dbd5feb5d09f7855ccd5441",
+        "spec": "755e8c1661efdceec4432ba0fef21dc7570ad3d56a587b2f0857cf3e653bc515"
+      },
+      "source_sha256": "88b4fbd9f171e2ca6fcd3bece269dd1f3c45ccd0a13ad9ae1a4a8b800d6edbd8",
+      "material_median": [
+        28,
+        46,
+        167
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "101aebf5123eb61114ff67815bb7c84f194f0d595fbf5b1a10f138e6bbd60203",
+      "authoring_files": [
+        "rad_vector_horizon_paint.recipe.json.gz",
+        "rad_vector_horizon_spec.recipe.json.gz",
+        "rad_vector_horizon_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_vector_horizon_paint.recipe.json.gz": "29ea1cae7a794cddf8abb62ab3e02ce7ed55dcaca9e99deb53c65a724dbe125b",
+        "rad_vector_horizon_spec.recipe.json.gz": "462d53563c23a0e75ed835a29a2d9d6434579fe79d2c2cb2f2a986c3460fa213",
+        "rad_vector_horizon_vector.py": "90ff8063fc29d306acac4828de39cabbb1e70c35afe558f24d65ae03eebcce5e"
+      }
+    },
+    {
+      "id": "rad_anodised_trim",
+      "name": "Memphis: Anodised Trim",
+      "idea": "Aqua, rose and lemon aluminum trims with brushed faces and fine polished cuts.",
+      "revision": "ERA120-PROCEDURAL-6aa7d245c8fd",
+      "asset_sha256": {
+        "paint": "3ae221800c22ba3698dab599d287b499ca3b32a0da90dc0ccb43172383c2200c",
+        "spec": "6aa7d245c8fda8816a1bc1f65f1e15660de433b4c08864a1608f6c21655dfd80"
+      },
+      "source_sha256": "c9d6954ef7f24fdbc85eb75a736453c007179c54bce322fbf393bdc01426d65c",
+      "material_median": [
+        62,
+        63,
+        107
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "f0f2895a06b814dda2d32461f167bc79f7c01a081762b689c5af51bf1f0dd1dc",
+      "authoring_files": [
+        "rad_anodised_trim_paint.recipe.json.gz",
+        "rad_anodised_trim_spec.recipe.json.gz",
+        "rad_anodised_trim_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_anodised_trim_paint.recipe.json.gz": "b2eebde742725991590ee9f4d1fa91e8d576b04db0f062adfb0764748417b9dc",
+        "rad_anodised_trim_spec.recipe.json.gz": "8e000df8525b03720bccd8bef4cb5cfbe4b839309ab5751b60864cb94f9dbd70",
+        "rad_anodised_trim_vector.py": "ce5e7f73f218a9110862485b9f9eb6de44da3881d464f34f0bb07eaac68e074b"
+      }
+    },
+    {
+      "id": "rad_bacterio_print",
+      "name": "Memphis: Bacterio Pop",
+      "idea": "Tiny black bacteria-like squiggles, coral dots and teal commas under cream melamine.",
+      "revision": "ERA120-PROCEDURAL-70919d0771fe",
+      "asset_sha256": {
+        "paint": "1f3b907a802453ccafc467b002d7a4075e51ecd0bfbcdca73d46b34d68468380",
+        "spec": "70919d0771fe2bda7268bfdadd1e534dce61f65e16c44a0182cd30bbf2e827b7"
+      },
+      "source_sha256": "5f6d75c74482cdd77b5d74ac9ada6f9a45a6596ce0cbc7647d4229fd3f86ee31",
+      "material_median": [
+        28,
+        101,
+        206
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "fe503245ee9f84b5113d7f9ff1382fdd66745441f26caa2c6da600bc95882307",
+      "authoring_sha256": {
+        "rad_bacterio_print_paint.recipe.json.gz": "13cb93c1440b282052ddf6454d46f6c0acd1c1fe0162fb43f02bf7e87d61f5cf",
+        "rad_bacterio_print_spec.recipe.json.gz": "ff5c9114c3ba50d210f38b1968488f53c162434db9a5c153e245ae90b864337e",
+        "rad_bacterio_print_vector.py": "3b058efad139066535b2d908679636c246b6dbd49dbaa506c38ff4b4648251b4"
+      },
+      "authoring_files": [
+        "rad_bacterio_print_paint.recipe.json.gz",
+        "rad_bacterio_print_spec.recipe.json.gz",
+        "rad_bacterio_print_vector.py"
+      ]
+    },
+    {
+      "id": "rad_confetti_laminate",
+      "name": "Memphis: Confetti Laminate",
+      "idea": "Tiny primary-color confetti, black hatch marks and bright chips beneath glossy melamine.",
+      "revision": "ERA120-PROCEDURAL-475940cf3036",
+      "asset_sha256": {
+        "paint": "7b08b9efd6c11e621ae1ff00c08fcb659af3b1fa9fcc3b59ccbcddac77349275",
+        "spec": "475940cf30367eb53f059c3365a294ec351da74095aa5c4c30af215d8a8397cf"
+      },
+      "source_sha256": "c193d6e93f3467d2d76964484f827759b348eead0be861f3f34fde42721c99ff",
+      "material_median": [
+        24,
+        92,
+        180
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "68770ea1f5bb83b385ea243729d86eb825ed337cb8b901e7f107aeed4adf45d3",
+      "authoring_files": [
+        "rad_confetti_laminate_paint.recipe.json.gz",
+        "rad_confetti_laminate_spec.recipe.json.gz",
+        "rad_confetti_laminate_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_confetti_laminate_paint.recipe.json.gz": "e73bca664c1ac25e862f5a7ddcaf1b16911f4b44fa953af3759a74193aab246a",
+        "rad_confetti_laminate_spec.recipe.json.gz": "fb929a035d8e4912ff53cc2bcdb0fc466a65ede8071edaefac12284afecfb7cf",
+        "rad_confetti_laminate_vector.py": "f88fa2fbdc28467cb315d714652dd0d6d45150a921b9b0f05c5871add6fd22dc"
+      }
+    },
+    {
+      "id": "rad_glass_block",
+      "name": "Memphis: Candy Glass Flute",
+      "idea": "Aqua and rose fluted glass with lemon pin reflections and frosted seams.",
+      "revision": "ERA120-PROCEDURAL-0e5be09b7f43",
+      "asset_sha256": {
+        "paint": "f55dbd6af4a6a69cc15791637c5c8db6c0e4196e8c117aa6f27bae6d73c42e28",
+        "spec": "0e5be09b7f434e7e5ea790f694b59815f6dc13426274787e64bc43546db69d3d"
+      },
+      "source_sha256": "dda1f0c32aa4cb5e08723052be7074b50d96ede9150a07c78162d0f111d6a717",
+      "material_median": [
+        30,
+        92,
+        123
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "b1ad0c1a26d3159e0b2e8bea3911cadad7026ed07c7ed0c56961bf77abc5d4c3",
+      "authoring_files": [
+        "rad_glass_block_paint.recipe.json.gz",
+        "rad_glass_block_spec.recipe.json.gz",
+        "rad_glass_block_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_glass_block_paint.recipe.json.gz": "0b675b5ce496ea969154924b884a4043ff09a5496a69515e1613915876ed6f4d",
+        "rad_glass_block_spec.recipe.json.gz": "0b2c02706a290b6b77b98f1af0a98f1e004ba2c144eb5632b8b20b22c02d887c",
+        "rad_glass_block_vector.py": "b251693bb955065f971b8919e14f3800cf030fba48b35bb615852560d9cdcec1"
+      }
+    },
+    {
+      "id": "rad_grid_tile",
+      "name": "Memphis: Ceramic Mosaic",
+      "idea": "Tiny coral, teal and mustard ceramic tiles with fine grout and chipped glaze.",
+      "revision": "ERA120-PROCEDURAL-c5d9c19ac07d",
+      "asset_sha256": {
+        "paint": "875af268f9052eb39693a0250bbcf03b1b1414446d51d6be09ef5a55c463a3e6",
+        "spec": "c5d9c19ac07ddc9ad31a2c72413818c23f2ba637ab55835f6581884170c37373"
+      },
+      "source_sha256": "08c2ae678577cd04b9963e58aaea45d8dcc499bec7c466a4878584137179416e",
+      "material_median": [
+        30,
+        103,
+        135
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "ab19c4b5503bf536611e1930ecc3159782252014482a21fcde9aaa2d4cbeb0f3",
+      "authoring_files": [
+        "rad_grid_tile_paint.recipe.json.gz",
+        "rad_grid_tile_spec.recipe.json.gz",
+        "rad_grid_tile_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_grid_tile_paint.recipe.json.gz": "cf0dc2c6cd97f7ac5dbce0d647247c05196aa140b8bbae4a51043c6070796794",
+        "rad_grid_tile_spec.recipe.json.gz": "e76ad2c13ce87d5a10d5aa642e5b0a6c07ef986c27b93ff12ec023000bc90e5e",
+        "rad_grid_tile_vector.py": "4952de0f92701fc987d97f53c1a54ca4035f8c375600058da856f233a4bac1eb"
+      }
+    },
+    {
+      "id": "rad_jazz_cup",
+      "name": "Memphis: Electric Brush",
+      "idea": "Teal dry-brush hooks, violet wisps and coral overspray on fine cream paper.",
+      "revision": "ERA120-PROCEDURAL-fec193ffe5da",
+      "asset_sha256": {
+        "paint": "18fbc92a27e2aeb84d566766e9d4b77fec8f39339628729c4de91f05da19c2c1",
+        "spec": "fec193ffe5da1910cd72739e398594e7fd14e3d8d40adcaba31fb50f0114fe06"
+      },
+      "source_sha256": "4caf4ce2a93bfc01cf11e88c956868d6183c853418f57aee8389e670d211f041",
+      "material_median": [
+        19,
+        186,
+        215
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "c80ca115489c460f392cd0866e146243276a2aad0579daf775fb9c24f08ed9d1",
+      "authoring_files": [
+        "rad_jazz_cup_paint.recipe.json.gz",
+        "rad_jazz_cup_spec.recipe.json.gz",
+        "rad_jazz_cup_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_jazz_cup_paint.recipe.json.gz": "648171e959b3df6a3303d4c6b5acff5701becdec9128e0774369a0440675cf23",
+        "rad_jazz_cup_spec.recipe.json.gz": "7e651af84c1f7d6d513a4b57c658cd805eed662ab09368ecc0d9e0e6ae809ec7",
+        "rad_jazz_cup_vector.py": "0bfacba2f6c489aedc82ec084ca39324d521d5c64c66894d9aa4236375e51979"
+      }
+    },
+    {
+      "id": "rad_lacquer_cabinet",
+      "name": "Memphis: Primary Lacquer",
+      "idea": "Cherry-red, lemon and cobalt lacquer slivers with crisp black seams and polished corners.",
+      "revision": "ERA120-PROCEDURAL-696a19ade33d",
+      "asset_sha256": {
+        "paint": "646fdb27f09aa3207a9082c6828b97d5b9abf852f38ba413b5b3eec589dbd5a9",
+        "spec": "696a19ade33d80b69aa832ad84ed9d8347b72a7b717eada58b32eb71886f97de"
+      },
+      "source_sha256": "df56a9ccd68df165f35d64420a9b5b5d6c9b6017b41992ea04f3d7cebca507e8",
+      "material_median": [
+        29,
+        74,
+        131
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "f46285c53021639ac93b3aaaae89d1dbede83bd29e1454f24e383c25ea579d94",
+      "authoring_files": [
+        "rad_lacquer_cabinet_paint.recipe.json.gz",
+        "rad_lacquer_cabinet_spec.recipe.json.gz",
+        "rad_lacquer_cabinet_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_lacquer_cabinet_paint.recipe.json.gz": "b28bb3ea90e082e7c2023b95b0532cc59db9b7bd49100ebcd01e7b47afe3eb8b",
+        "rad_lacquer_cabinet_spec.recipe.json.gz": "3ed219fe3726919d2a70e2b7b6eb62f6500ac7cff94976ce1537542e11d54ff2",
+        "rad_lacquer_cabinet_vector.py": "af610c18ff4036375723382bb666a02a116860e49d48e8da515e820bdce0e0b2"
+      }
+    },
+    {
+      "id": "rad_milano_squiggle",
+      "name": "Memphis: Milano Squiggle",
+      "idea": "Thin cobalt coils, coral broken loops and mustard dash pairs under satin varnish.",
+      "revision": "ERA120-PROCEDURAL-57d01d70a29e",
+      "asset_sha256": {
+        "paint": "792598af2d82d9ab1dc515ab8de27426c76329b6f4d21a8c2e30ea52940752de",
+        "spec": "57d01d70a29e9718b4aad607e943110178624cd03a8d78587a07f2d8ad1d1989"
+      },
+      "source_sha256": "ffca603b63064206b8334e96f4a3a24d64008cd061887a312996a6217b5fcb8a",
+      "material_median": [
+        32,
+        96,
+        182
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "e456f8d1571cccad1045d736a5705738b37169423d7a2b8ead028b34c0149e17",
+      "authoring_files": [
+        "rad_milano_squiggle_paint.recipe.json.gz",
+        "rad_milano_squiggle_spec.recipe.json.gz",
+        "rad_milano_squiggle_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_milano_squiggle_paint.recipe.json.gz": "7627f23f8f7570242bab469d171d6d0f0a39ce2111ebe211d0dfc9df984b3ef3",
+        "rad_milano_squiggle_spec.recipe.json.gz": "edc2e8e6d2f5cbcad6bfa09b18c58d7692a0b9a9961bdaa98fdb85be2c5d0796",
+        "rad_milano_squiggle_vector.py": "2552f620d0d86710d6a4fb4b054b8fd09f0ec9221ee6a5c803ec7786fc638b9b"
+      }
+    },
+    {
+      "id": "rad_neon_wire_chair",
+      "name": "Memphis: Neon Wire Weave",
+      "idea": "1980s neon wire artwork: intricate offset magenta wire loops, cyan bent grids, yellow zigzag knots, purple curved mesh pockets and navy negative-space slits.",
+      "revision": "ERA120-PROCEDURAL-bbfeb09d8f6a",
+      "asset_sha256": {
+        "paint": "4f3248dd3710a19e2368eef2aa027f7d4f8566be9bed25b063081863aed051e4",
+        "spec": "bbfeb09d8f6a3865324db82fd6e766d51598c1beb9913879411c9a1ccf680ba9"
+      },
+      "source_sha256": "b61f8f2ceba4359c0ff84e1fe69eb2fd983835f8b3d8e4b67d8d07a2af55e8c6",
+      "material_median": [
+        176,
+        33,
+        127
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "498fff77b0c6d91e0872489136bc59cc6ac8cf54fc685f9fc65aa300961b4ef4",
+      "authoring_files": [
+        "rad_neon_wire_chair_paint.recipe.json.gz",
+        "rad_neon_wire_chair_spec.recipe.json.gz",
+        "rad_neon_wire_chair_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_neon_wire_chair_paint.recipe.json.gz": "19bef56de0eefca15ecddb2166b7c28522f5f266aa5a750ed24e1a93caefc410",
+        "rad_neon_wire_chair_spec.recipe.json.gz": "62688fd5b1dfe30d4226fea9ef3eaadaae6a8a1954e342f6341e280876e39824",
+        "rad_neon_wire_chair_vector.py": "74515714abe4a4d31a2a4cb87a46aa4c9cfd68961f5a2257e3101b3762fc3196"
+      }
+    },
+    {
+      "id": "rad_pastel_mint",
+      "name": "Memphis: Mint Inlay",
+      "idea": "Mint enamel with tiny black grout hooks, apricot inserts and creamy ceramic chips.",
+      "revision": "ERA120-PROCEDURAL-41261ed15316",
+      "asset_sha256": {
+        "paint": "04697b7db8f4b2ada32d32368939f789f8dbfd5310cd2698f430d02574a956e9",
+        "spec": "41261ed15316061df5a4af11dc5d865b1e37297f141a74b086dedbfbd6a246cc"
+      },
+      "source_sha256": "90e8b0891912b83a72a6581f86d06c14486f63d86d0bcccc68f7afb0c3e93310",
+      "material_median": [
+        30,
+        116,
+        148
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "a5152f1698a8fe452d00a45a020f15a28fd1968d4e224d32857c8233c35b638a",
+      "authoring_files": [
+        "rad_pastel_mint_paint.recipe.json.gz",
+        "rad_pastel_mint_spec.recipe.json.gz",
+        "rad_pastel_mint_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_pastel_mint_paint.recipe.json.gz": "0615bbfd89994f24a6a603d5925cea3c4daf6a1ca6174e05a2b33e8c707eba4d",
+        "rad_pastel_mint_spec.recipe.json.gz": "b58d289c0488d4f152996184fed0736916dbe50866c364cb22f71eae36cca165",
+        "rad_pastel_mint_vector.py": "18f969c3155d4d0d9a4e2cece9cae4c37b556e6b13f89a45caa71e3cef3a8f39"
+      }
+    },
+    {
+      "id": "rad_peach_fuzz",
+      "name": "Memphis: Peach Fuzz",
+      "idea": "Peach, coral and lilac flock fibers with soft crushed nap and fine woven peeks.",
+      "revision": "ERA120-PROCEDURAL-e9fb5fe2cdc8",
+      "asset_sha256": {
+        "paint": "3619eae2115b48f9fe44393c7cbd8808a5ed6624a6544bbc0915f14e9a22fb97",
+        "spec": "e9fb5fe2cdc8285c13de581b1b087f760e04323206a9a81f063d81c99a510f8a"
+      },
+      "source_sha256": "90577036d596327162c749370e21fe8e8d686caeb09aee7e59247cff12ec96a6",
+      "material_median": [
+        7,
+        221,
+        211
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "3ab1ded18b238ecafaf6ee429ad39fdf36ae77afb97f7bbb9736daac75420f6b",
+      "authoring_files": [
+        "rad_peach_fuzz_paint.recipe.json.gz",
+        "rad_peach_fuzz_spec.recipe.json.gz",
+        "rad_peach_fuzz_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_peach_fuzz_paint.recipe.json.gz": "cc3ecd6ea7019905e4574894660704e5809b02eed9c33296d206863a5f3c05cf",
+        "rad_peach_fuzz_spec.recipe.json.gz": "df92d99da5700f883ccfde406056a4feeb4b85d0683f970936cdd1e7b7f5eb4c",
+        "rad_peach_fuzz_vector.py": "676e55e237061bdb05d9891a7452eadd6eb3706d7252a7ed04191543a28e549d"
+      }
+    },
+    {
+      "id": "rad_speckle_wall",
+      "name": "Memphis: Party Speckle",
+      "idea": "Tiny coral, cobalt and lemon paint flecks over textured aqua plaster.",
+      "revision": "ERA120-PROCEDURAL-be318ddebfc8",
+      "asset_sha256": {
+        "paint": "5c27fdd2ae28409d24bffd0ea2dbf83681a7a1385fce32d6137aab1712e55221",
+        "spec": "be318ddebfc87acdf2d72cab4ba3fb59e299110196a4efec2d5bf6fb0f6ffa6e"
+      },
+      "source_sha256": "59d46e52515713d8a80d8ee4b12abac86b16950d69a0393118ebf88b127ba672",
+      "material_median": [
+        31,
+        186,
+        194
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "b143ba73b8177bdcba1ffa98b3ec5bf24eaad2d8afefbb28e3ce354b5c43feb6",
+      "authoring_files": [
+        "rad_speckle_wall_paint.recipe.json.gz",
+        "rad_speckle_wall_spec.recipe.json.gz",
+        "rad_speckle_wall_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_speckle_wall_paint.recipe.json.gz": "ad5492a114e05ab36f8feb869efafb40a8ba92d9c697e82e778d194959c2ce7a",
+        "rad_speckle_wall_spec.recipe.json.gz": "68c834a7146f8a86d2014d08ed62601cc96867f133aecabfc020cd7ca5d869c2",
+        "rad_speckle_wall_vector.py": "926cd6aada16c7ab3a38587c867c78a6b5c8711ce4166d6da154e31e6331e9d4"
+      }
+    },
+    {
+      "id": "rad_sponge_paint",
+      "name": "Memphis: Tropical Sponge",
+      "idea": "Coral and turquoise sponge impressions with lemon glaze and fine porous edges.",
+      "revision": "ERA120-PROCEDURAL-5ec6da76655e",
+      "asset_sha256": {
+        "paint": "8d08a473604626f44573c7ba169f930866fbd666e25ba9405e37380899f4fba3",
+        "spec": "5ec6da76655e7300424028452be7e5e72e7ce2d32befc2c276c32d94116990bf"
+      },
+      "source_sha256": "764c07a33aead4357384ce692a1717fd4db1ee6f086589b5b34edadfe0f13212",
+      "material_median": [
+        111,
+        55,
+        140
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "748f68880cc05319dd34dc9dc5fdd10cd0a9d5d50d7d644163a3be45f66ba0bd",
+      "authoring_files": [
+        "rad_sponge_paint_paint.recipe.json.gz",
+        "rad_sponge_paint_spec.recipe.json.gz",
+        "rad_sponge_paint_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_sponge_paint_paint.recipe.json.gz": "2edf134fce9b82895ce8f74e7bd27ff1e48f5945cd3aca2ee839c3017f97f1f5",
+        "rad_sponge_paint_spec.recipe.json.gz": "c6d05ecc8eee9f829492e9b81fb12d2ce65f94fd38ecbe748bdce61d0b4fefd0",
+        "rad_sponge_paint_vector.py": "ee26d27bfd6abc6fc6eed070be46067b2cecec278e04c12b1913fcf1cdef5a45"
+      }
+    },
+    {
+      "id": "rad_terrazzo_chip",
+      "name": "Memphis: Candy Terrazzo",
+      "idea": "Fine coral, mint and cobalt stone chips polished into lemon terrazzo.",
+      "revision": "ERA120-PROCEDURAL-11afb8c4367f",
+      "asset_sha256": {
+        "paint": "814bec39d326664307c3b97052500895f4278c1c9e7b32a7bff24b179214c0b0",
+        "spec": "11afb8c4367fb8c5815b0fec00dca31ab7ad50da57dbd2c798d49d4b36c3d394"
+      },
+      "source_sha256": "3ce88b52e339b68923062d2b39d0cbd2ab5d1f3e239c778c0055fed670e9ce50",
+      "material_median": [
+        42,
+        146,
+        157
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "3c81e9761157d0cb469a6f579d871432c1948ab2ad32437e74f371f0c32a30ae",
+      "authoring_files": [
+        "rad_terrazzo_chip_paint.recipe.json.gz",
+        "rad_terrazzo_chip_spec.recipe.json.gz",
+        "rad_terrazzo_chip_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_terrazzo_chip_paint.recipe.json.gz": "2acf789f581866c51cdbaa1c826b1863e292aaba2a5460d1f8d783e62f3fb040",
+        "rad_terrazzo_chip_spec.recipe.json.gz": "1897379389c327a6f4a661be2819762250063aac9dcd6eaa2bfb04d352c8a186",
+        "rad_terrazzo_chip_vector.py": "fca630860f5544ec55b299bf31c258e78bb62abbf2a270f15de65375005405c6"
+      }
+    },
+    {
+      "id": "rad_zigzag_runner",
+      "name": "Memphis: Zigzag Runner",
+      "idea": "Fine mustard, teal and raspberry woven zigzags with cream yarn knots.",
+      "revision": "ERA120-PROCEDURAL-e089e133f21b",
+      "asset_sha256": {
+        "paint": "3fa8cef0b516d788a6db9717b5d44062ff21893b6b07456e6f44f4ead3e7e0c8",
+        "spec": "e089e133f21ba55f5d3684723bf348da4ca6962faebefc25fc30e468cadf99d6"
+      },
+      "source_sha256": "4144e07b22dc1506f76235e6248bfec0fb3eda883cb6c35931415d4b94fa5161",
+      "material_median": [
+        6,
+        217,
+        204
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "91fd4421f6c0e4fa5515a84845d27aa3bb0a205b8c2e42203e1cf428f5372b49",
+      "authoring_files": [
+        "rad_zigzag_runner_paint.recipe.json.gz",
+        "rad_zigzag_runner_spec.recipe.json.gz",
+        "rad_zigzag_runner_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_zigzag_runner_paint.recipe.json.gz": "b5c4615e55523c78b3bab5b30555564ca618004bb04f577a944ad2f1f929f9d4",
+        "rad_zigzag_runner_spec.recipe.json.gz": "0b2c58d92506da14acb2d4c711d2577b3c5eb0df1cef520b19db4e82c1a7c313",
+        "rad_zigzag_runner_vector.py": "ba24d0d914f741ac426df658ca8f61bd1591611b5182d2b6853891c110bdacf7"
+      }
+    },
+    {
+      "id": "rad_aerobics_gym",
+      "name": "Radical: Aerobics Stripe",
+      "idea": "Fine coral, lime and violet athletic knit with tiny ribbed cuffs and elastic seams.",
+      "revision": "ERA120-PROCEDURAL-f6c218915635",
+      "asset_sha256": {
+        "paint": "8ef765fded8dadd4aff46e468b4411003b3685b1fe980a77d6c754a4787bbbd1",
+        "spec": "f6c218915635fad4416434dd44a187dde010427a1c1ff9268a19d16479fd7c05"
+      },
+      "source_sha256": "cafbf307f2aa2f953e2db9060a0bc65808275616600fc5f9a919fd68e05fb030",
+      "material_median": [
+        8,
+        184,
+        155
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "71ec75d94c97a84227cfcaf19a458f44979546dc5bdc6ca599ae69297855ad99",
+      "authoring_files": [
+        "rad_aerobics_gym_paint.recipe.json.gz",
+        "rad_aerobics_gym_spec.recipe.json.gz",
+        "rad_aerobics_gym_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_aerobics_gym_paint.recipe.json.gz": "864fc0b650d9d7fc7f93d96d1d1bbcf25ea332500053680240c434f544ee3e9e",
+        "rad_aerobics_gym_spec.recipe.json.gz": "67198c1b4e8dcbb09dc9fea4f1c2639e53b833603f7b19cb3e97b0ef5e0af030",
+        "rad_aerobics_gym_vector.py": "a38bf090f9e6f3f9049b78c1cce35bdbbf723222345582af32e48a3cd1245ee2"
+      }
+    },
+    {
+      "id": "rad_airbrush_portrait",
+      "name": "Radical: Airbrush Flare",
+      "idea": "Soft pink, aqua and peach spray crescents with tiny stenciled white highlights on satin cotton.",
+      "revision": "ERA120-PROCEDURAL-7f68dc6ab7a6",
+      "asset_sha256": {
+        "paint": "f78a2d52dce3d413c09e4ecfee50ca020f787e9cf7280ef99e94df7d641fed0f",
+        "spec": "7f68dc6ab7a6ff012bdbf4ef4fd9bf962fd53274888bdb6a80534ff91cd9dd2c"
+      },
+      "source_sha256": "b6b4ab41955f04284fe173a7bce412dba92543e7fa6341237130e3488285fb92",
+      "material_median": [
+        16,
+        184,
+        210
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "b337f5af3431c1c757b95c7fec2c79ba18bbc7c83ceded7a7cd1455b2a1355b0",
+      "authoring_files": [
+        "rad_airbrush_portrait_paint.recipe.json.gz",
+        "rad_airbrush_portrait_spec.recipe.json.gz",
+        "rad_airbrush_portrait_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_airbrush_portrait_paint.recipe.json.gz": "77a6ed0fc9ed0133d514150ca093d8f1236d3890e2f41d02acd06388a2b83742",
+        "rad_airbrush_portrait_spec.recipe.json.gz": "8f60fc499ab3b4dd3bb795cafef85bc998dae1046b531b9cc68dad9e874380a8",
+        "rad_airbrush_portrait_vector.py": "ef84469019e0ad8b2c5fe94662b67199e7c2330c34afe334cca1dfe4109f1b74"
+      }
+    },
+    {
+      "id": "rad_big_hair_chrome",
+      "name": "Radical: Glam Lightning Foil",
+      "idea": "Crimson and violet foil teeth with silver lightning cuts and tiny lacquer sparks.",
+      "revision": "ERA120-PROCEDURAL-959eb06d8d48",
+      "asset_sha256": {
+        "paint": "8ce4519615e96b8ec8fec1f573bdff4feb6ebe4c68dbfc66bd7711d5e8fc380f",
+        "spec": "959eb06d8d48dc171ca5865c67ffc76376bf1ddd8573e44e9b1ff4296e1ce6f5"
+      },
+      "source_sha256": "e90a27b286003c25ccceedb7f45d9e45c74f7dbb67624fdec480308e291e377b",
+      "material_median": [
+        209,
+        28,
+        111
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "98b3d76d5daf93b02c20f363cdd2252ed7e4404b849f648c3e4d71bde5dee6df",
+      "authoring_files": [
+        "rad_big_hair_chrome_paint.recipe.json.gz",
+        "rad_big_hair_chrome_spec.recipe.json.gz",
+        "rad_big_hair_chrome_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_big_hair_chrome_paint.recipe.json.gz": "80f7bf08b227ab7265bd22a10c7a9d6c10ba9a8e9258b4c696c5fea190c0d987",
+        "rad_big_hair_chrome_spec.recipe.json.gz": "1c0e9b0f32c5c7405ae47e6fce82682c6790cec1e9b581ae24ee598858f49eb7",
+        "rad_big_hair_chrome_vector.py": "50a74f71cb516a678adc55418c66ac51b932a2360e849b1389955cf95dfd3067"
+      }
+    },
+    {
+      "id": "rad_hair_metal",
+      "name": "Radical: Stage Glitter",
+      "idea": "Ruby, gold and amethyst stage glitter with fine mirror flakes and dark lacquer pockets.",
+      "revision": "ERA120-PROCEDURAL-88cbf3eb8ff1",
+      "asset_sha256": {
+        "paint": "ebc03a84a036ed6540498899f012aecbf479c983fccbd0fb7b38f7dffeae0455",
+        "spec": "88cbf3eb8ff149639551a46578ce7679a63ac98593f074ca4ef6078ec9a8f126"
+      },
+      "source_sha256": "538820fb4fe139f9c70ce66e2d57cde735cfb9405751b00b4983aa8b082a525a",
+      "material_median": [
+        195,
+        43,
+        142
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "d7a1bcf0512ae903ed9745df4b791ce5eb07beb237df4624a847b6b3712db2ed",
+      "authoring_files": [
+        "rad_hair_metal_paint.recipe.json.gz",
+        "rad_hair_metal_spec.recipe.json.gz",
+        "rad_hair_metal_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_hair_metal_paint.recipe.json.gz": "8029eee57d21edd901cba2ac93ed6a9d5d69bb7dcabab0bdc24b1ecf0cdc4b92",
+        "rad_hair_metal_spec.recipe.json.gz": "e42135efba823db4414dc7602d9939dcbae7a1ea9b26fe07273dfbb836c118a0",
+        "rad_hair_metal_vector.py": "8537afd08f226952ff54c7c781e311432180ee7b54174093f8541c952a30e839"
+      }
+    },
+    {
+      "id": "rad_hypercolour",
+      "name": "Radical: Heatwave Dye",
+      "idea": "Fine pink, orange and lime dye blooms with soft violet transitions in cotton fibers.",
+      "revision": "ERA120-PROCEDURAL-f33428830d4f",
+      "asset_sha256": {
+        "paint": "0e49eec56bbce492e431e036f8e3902aee4e770ef90a10b04e35e6102ce065db",
+        "spec": "f33428830d4f98e8fc4882247bba37520922029c0a60345ef4c739583fcc5edc"
+      },
+      "source_sha256": "97165af53179657528e032d2d458be3b3451c150cd01f83a4bfeb1ff9b903820",
+      "material_median": [
+        6,
+        213,
+        209
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "16373c25cc42284411d02ced729db1d546f7e2ab02d1d0f046cc0a94358ff5dd",
+      "authoring_files": [
+        "rad_hypercolour_paint.recipe.json.gz",
+        "rad_hypercolour_spec.recipe.json.gz",
+        "rad_hypercolour_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_hypercolour_paint.recipe.json.gz": "6af6d4c2f4a7ddac26dccee1a66c87d094f803115194e3f921d7535713f71529",
+        "rad_hypercolour_spec.recipe.json.gz": "0142d94f81e7cdf11563a812be533f5756bdb9de4e092ee94f644ee3d9f16c73",
+        "rad_hypercolour_vector.py": "7ddc3e78a93db33aa927635debb6fdec47390eed7f12f3177cc2f722bde69225"
+      }
+    },
+    {
+      "id": "rad_neon_grip",
+      "name": "Radical: Neon Grip",
+      "idea": "Lime rubber ribs with orange knurl nicks and violet recessed grooves.",
+      "revision": "ERA120-PROCEDURAL-376668fe3db7",
+      "asset_sha256": {
+        "paint": "3dfbc79635bd1bdb8e645ed5bdb8afa50034f648f0e16c2ba3d5f6b4ee360c36",
+        "spec": "376668fe3db739f613ab17f709511315fa3038621db20ca32df2312b60c5af39"
+      },
+      "source_sha256": "5cbccec0ba551cb25456d81f2bf490ac1a854984f6cac53600879fbaebce29cf",
+      "material_median": [
+        30,
+        176,
+        180
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "a1ac5ee4d0be535875b03ab1b2ce4656ee551f4d51573c4bc8c56d1ce23fea57",
+      "authoring_files": [
+        "rad_neon_grip_paint.recipe.json.gz",
+        "rad_neon_grip_spec.recipe.json.gz",
+        "rad_neon_grip_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_neon_grip_paint.recipe.json.gz": "68448c5101e8ce36cbede24d8c1a2743dddbfee06613a36f40fe3b599842e44f",
+        "rad_neon_grip_spec.recipe.json.gz": "638d3e818cbaf23dee048f8a1ea92a7a622aa166013c9e4d15e76baa14dd0bc1",
+        "rad_neon_grip_vector.py": "efdf41ae51f36f28761d9e7179a9cdba8f1996bd09d35ac3f1d44c9fbfa2b8a6"
+      }
+    },
+    {
+      "id": "rad_neon_spandex",
+      "name": "Radical: Neon Spandex",
+      "idea": "Smooth aerodynamic stretch ribbons: clean acid-lime, cyan and hot-pink elastic interlocks, taut curved seams, tiny contrasting stitch ladders, violet inset bands and clean satin highlights.",
+      "revision": "ERA120-PROCEDURAL-2db7ae59a945",
+      "asset_sha256": {
+        "paint": "0116142ab0e11bb6a91fdc615046dc45e9e053dd4b0c90e879c3aa0543b49b6b",
+        "spec": "2db7ae59a94521fcf5657534c0bc3c6f0e6ed36bc9137ab738bec55f3ad7db8f"
+      },
+      "source_sha256": "eeed450d1aae1cc0a64b6c1a7a406171c8095375df90d6fdc9094cb39828c571",
+      "material_median": [
+        3,
+        134,
+        147
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "a8ab585b00d20f91823420319092e201bff0c884b71b28aae214af58c2c1d9da",
+      "authoring_files": [
+        "rad_neon_spandex_paint.recipe.json.gz",
+        "rad_neon_spandex_spec.recipe.json.gz",
+        "rad_neon_spandex_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_neon_spandex_paint.recipe.json.gz": "0a1a8f891ffd5672b4971a7357eb60557846785c61df7df6347bf190b235d98f",
+        "rad_neon_spandex_spec.recipe.json.gz": "e55c6ffeebdd299f5c2f115916681430fffe159425f2e03486abede8fe68e377",
+        "rad_neon_spandex_vector.py": "638e2a4cb275007e11fa1cab78dc3b604e438133f66d1fbfd2bf28689ba309af"
+      }
+    },
+    {
+      "id": "rad_puffy_paint",
+      "name": "Radical: Puffy Paint",
+      "idea": "Tiny raised pink, teal and yellow paint curls on violet cotton.",
+      "revision": "ERA120-PROCEDURAL-7d72edb4e87d",
+      "asset_sha256": {
+        "paint": "a06ef91fb2484c0413e0c8489a2f0940ee998e1bb85b0f055bcbe7d497a59ec1",
+        "spec": "7d72edb4e87df74b9aa1d9046c4b6496290ae0ed2b11efa261c87584160dc08f"
+      },
+      "source_sha256": "1205f7cfb861169241e7322d441ca2e82cf4a48519436018479dcc1d0247e0d3",
+      "material_median": [
+        6,
+        140,
+        149
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "db4effe86bb6028f66a9a97ce950d80981cb39c16d6a44cb7ee790c271b15788",
+      "authoring_files": [
+        "rad_puffy_paint_paint.recipe.json.gz",
+        "rad_puffy_paint_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_puffy_paint_paint.recipe.json.gz": "e26c1ec1c58ffbc825cd31666484d54906b0ba31b7057a12c1b3c93aebf07fff",
+        "rad_puffy_paint_vector.py": "904eba08eaf4978545023268f9602499f05f4aedf6b883114f771e205d51c73e"
+      }
+    },
+    {
+      "id": "rad_rad_splatter_deck",
+      "name": "Radical: Rad Splatter Deck",
+      "idea": "Fine orange and lime splashes over cobalt deck lacquer with small scraped maple flecks.",
+      "revision": "ERA120-PROCEDURAL-ce9220d7f3dc",
+      "asset_sha256": {
+        "paint": "d58cca85c2f6b8eb3ef733f5b438886ed610863b3b32ce56d1d7112dca6b9d8d",
+        "spec": "ce9220d7f3dc94c201fe1729e420da54df1160f4d03f3771ebf42e0a33176e49"
+      },
+      "source_sha256": "44fef8f5715cb2ebf2eca9fe022d396936041af597304de23e8476bb321e7612",
+      "material_median": [
+        39,
+        71,
+        136
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "9f8aeec061dde3d7ffff1c964111aa02a0e0675fcccfa4fadf41c813a8164846",
+      "authoring_files": [
+        "rad_rad_splatter_deck_paint.recipe.json.gz",
+        "rad_rad_splatter_deck_spec.recipe.json.gz",
+        "rad_rad_splatter_deck_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_rad_splatter_deck_paint.recipe.json.gz": "c57d3cfb51e6a2177dcc14933464d4f06c3577f4a1571e7167e054f4467da2a7",
+        "rad_rad_splatter_deck_spec.recipe.json.gz": "ea482b2ddf6783c99565cc2a86b9671b402aa06a02124e5cc3985399cf0fc981",
+        "rad_rad_splatter_deck_vector.py": "c87f6175353a98059c0c8f01189019632351724235a21d9eeb71e9669e7b2404"
+      }
+    },
+    {
+      "id": "rad_skate_deck",
+      "name": "Radical: Deck Ripper",
+      "idea": "Fine magenta and acid-yellow torn print with teal slivers and scraped maple fibers.",
+      "revision": "ERA120-PROCEDURAL-187c3a9499cb",
+      "asset_sha256": {
+        "paint": "307376f42e21a6d85a0d729d2e770d86a6817ac4d44748224b6a905b1832c903",
+        "spec": "187c3a9499cb3cb8f57adbebe79432d816151c05af916d27581248eeba85d1ba"
+      },
+      "source_sha256": "5cc3ee5c3a886d9c96f115a6716f958b7fa9613d3ea700f753aea5b0bfd59824",
+      "material_median": [
+        25,
+        102,
+        139
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "9527098b6ab55410e8f24085ce9da0d0d477ad5117aa553377f29a024e9a2408",
+      "authoring_files": [
+        "rad_skate_deck_paint.recipe.json.gz",
+        "rad_skate_deck_spec.recipe.json.gz",
+        "rad_skate_deck_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_skate_deck_paint.recipe.json.gz": "736b8f5ce74d609c6f8a9d9e5ef8951217e3ad0655281731f044379541013cfc",
+        "rad_skate_deck_spec.recipe.json.gz": "92932915951064e05fc8f68756d17fa5cc01c1d4db57c07244073928e9c2a6e0",
+        "rad_skate_deck_vector.py": "b22a2e90fcfca4973bec85bda50f949aeb419d3f8030409302a8a732ca084d9e"
+      }
+    },
+    {
+      "id": "rad_slap_bracelet",
+      "name": "Radical: Sweatband Stripe",
+      "idea": "Fine terry loops in lemon, raspberry and aqua with short striped ribbing.",
+      "revision": "ERA120-PROCEDURAL-cf642ab31c95",
+      "asset_sha256": {
+        "paint": "1e77331204aeda114b9a9a47e1f821557704d8769067f1a67395bf19a22cedc2",
+        "spec": "cf642ab31c95f0831ac1b5ec42811fa9449123af0cbea9ae4b4efdb7d931accb"
+      },
+      "source_sha256": "7e5604b35397c7ef425b94ced3d886f7c19cb90948a3e1b10f051abc5a9c9270",
+      "material_median": [
+        15,
+        188,
+        212
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "e6c3a159830698a5e7b6162bc69eb7948294143490d220d11b673dcfbc340bc8",
+      "authoring_files": [
+        "rad_slap_bracelet_paint.recipe.json.gz",
+        "rad_slap_bracelet_spec.recipe.json.gz",
+        "rad_slap_bracelet_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_slap_bracelet_paint.recipe.json.gz": "c3ce0e82bfcf3a78c3cbe71f99d0fe3ba9353c5e33fd522314fe7b665ae057f5",
+        "rad_slap_bracelet_spec.recipe.json.gz": "496ca43914e444af7d92dd31fb30e95c4aa2b46daa7cc9c43c14ec8e877024f4",
+        "rad_slap_bracelet_vector.py": "4ae279d5c975988dbd464104e442d673b430bb81e2c8a100db47e13c998db767"
+      }
+    },
+    {
+      "id": "rad_splatter_tee",
+      "name": "Radical: Splatter Tee",
+      "idea": "Fine teal, purple and pink thrown paint with dry cotton showing between droplets.",
+      "revision": "ERA120-PROCEDURAL-24e0a70b110a",
+      "asset_sha256": {
+        "paint": "b8edd33dd7b6195e7ce3d6eeaaef94175aa1f62fce84534c8cce03fa12bc17e4",
+        "spec": "24e0a70b110a278962865eede369388f72a6cc559b22c2502bf4ea607433ec9e"
+      },
+      "source_sha256": "b5e542bdf60f434a417af01900d9c1a026e4f11282d7c40f5227e7383aeab63b",
+      "material_median": [
+        6,
+        229,
+        232
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "90f563d7259834de2c1612b347469e8e8f84a058b34be086cf90b14e46731e45",
+      "authoring_files": [
+        "rad_splatter_tee_paint.recipe.json.gz",
+        "rad_splatter_tee_spec.recipe.json.gz",
+        "rad_splatter_tee_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_splatter_tee_paint.recipe.json.gz": "dcdee556bf2455f420846dc47c5747342108619a13a8b548aae484950cb095e7",
+        "rad_splatter_tee_spec.recipe.json.gz": "ea99a0d4923da2dfcdec8af3f09c667644f9ec798e0b4df4f6db1fda1159d9d9",
+        "rad_splatter_tee_vector.py": "bea631f4945c17346d1cfc2e1d488f1d65c0334a6fb471a9920976bd7bed9499"
+      }
+    },
+    {
+      "id": "rad_tiger_stripe",
+      "name": "Radical: Tiger Stripe",
+      "idea": "Tiny tapered black tiger strokes over hot orange guitar lacquer with yellow airbrush edges.",
+      "revision": "ERA120-PROCEDURAL-bd89ada79c18",
+      "asset_sha256": {
+        "paint": "efa683d7546f91792b9458629ccbde633e07ae6a6a0b38185a5e7532150ca546",
+        "spec": "bd89ada79c1824dacd6942944eaccc1dbae6aef1ac4e3234b80985d6a6711770"
+      },
+      "source_sha256": "7f2ba3b62d06816a5c007c75176c64023966a235faa8d5f9a42253f823e930e1",
+      "material_median": [
+        25,
+        100,
+        193
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "2d946f300c43b501db9e29e8e30872fb6e786dcdf0014b979931a4ba2b86912f",
+      "authoring_files": [
+        "rad_tiger_stripe_paint.recipe.json.gz",
+        "rad_tiger_stripe_spec.recipe.json.gz",
+        "rad_tiger_stripe_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_tiger_stripe_paint.recipe.json.gz": "f9a30414d9219ceb9a388b7c954bef07f5eb762f3e180f74ea19d0329703e103",
+        "rad_tiger_stripe_spec.recipe.json.gz": "6b4cc0d2570463ab4474719d57657d60672f485bf134bd6f8a7a64b9c847497d",
+        "rad_tiger_stripe_vector.py": "b486bbbc4ff99cc698fa7c01ba25626881e7fd732ac80af4ef5280257fc35d0e"
+      }
+    },
+    {
+      "id": "rad_trapper_sticker",
+      "name": "Radical: Trapper Sticker",
+      "idea": "Tiny puffy vinyl and holographic sticker fragments in candy colors with silver foil edges.",
+      "revision": "ERA120-PROCEDURAL-0fa54f972c50",
+      "asset_sha256": {
+        "paint": "560911e731157991f61c0391ab817b6b2b5fbc9d52a9cc969193e96d0af913fe",
+        "spec": "0fa54f972c50219f926b872b6743a961de71b7c88ffb32323de7e6a3dcc1eaf3"
+      },
+      "source_sha256": "83eca7ecaa37761187cebb24942261baf24996b66670d75c098b7b30184cfd2a",
+      "material_median": [
+        50,
+        122,
+        122
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "620c7367a49a69ae0d44a43e67f492109fabe5e6333152b14af60235ce0b644c",
+      "authoring_files": [
+        "rad_trapper_sticker_paint.recipe.json.gz",
+        "rad_trapper_sticker_spec.recipe.json.gz",
+        "rad_trapper_sticker_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_trapper_sticker_paint.recipe.json.gz": "ac237e2cf79491897ccd93a7d4449430e0d0f9ee1356210afe97801a14811f08",
+        "rad_trapper_sticker_spec.recipe.json.gz": "8ad56df21b30692e1d6fa074a7ec00f05939da20c29d5242266f7bc1977c53f2",
+        "rad_trapper_sticker_vector.py": "97324a28dc80d5da609cba88b59e697dbae974647fafe955e9a4ef3ec8825cd1"
+      }
+    },
+    {
+      "id": "rad_zebra_wrap",
+      "name": "Radical: Neon Zebra Wrap",
+      "idea": "Fine irregular black zebra stripes with pink and aqua edges on warm ivory vinyl.",
+      "revision": "ERA120-PROCEDURAL-5ec0789e8b2f",
+      "asset_sha256": {
+        "paint": "12aff08f816713cd81ac9ca8c7885e79b107daae62344a6c794370fafffbe0fc",
+        "spec": "5ec0789e8b2f27da22fbc43ada54474e60a8c02fe3b6c97ff2fc3f575dff325a"
+      },
+      "source_sha256": "7cac87450ad4915c62a39d62f3ff7afd72a692c4c037f52ddd724ed6815c30cd",
+      "material_median": [
+        38,
+        83,
+        148
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "afd772dff601d40c68c441026b4ed525e6bc302f5fd3e890242dec6238bde61e",
+      "authoring_files": [
+        "rad_zebra_wrap_paint.recipe.json.gz",
+        "rad_zebra_wrap_spec.recipe.json.gz",
+        "rad_zebra_wrap_vector.py"
+      ],
+      "authoring_sha256": {
+        "rad_zebra_wrap_paint.recipe.json.gz": "4cd1a9c7943747a28155169e57cd3e67ed3c8d6ec5671be37440a3c945526ba1",
+        "rad_zebra_wrap_spec.recipe.json.gz": "1e52ef549963cb105fd2bb01dda6b8850a24fa1f17e2e49624310c7eabf5b2d9",
+        "rad_zebra_wrap_vector.py": "c93cefa5852d2759a7da4303cc22fd4f8a64792efdbf0252a069cdeb88b49ede"
+      }
+    },
+    {
+      "id": "cbp_acid_rain",
+      "name": "Street: Acid Rain",
+      "idea": "Lime corrosion pinholes and pink rain beads bite into cobalt enamel.",
+      "revision": "ERA120-PROCEDURAL-9fcd73da201a",
+      "asset_sha256": {
+        "paint": "9f95ab39305815af473df2009fd577571ddefc5c1a4654f3ebea211c7c0a60a3",
+        "spec": "9fcd73da201ae6fa381d412c462f014903b7d392be702aaa6c383a33bd5c484a"
+      },
+      "source_sha256": "a056e460a5fad3083981156e52831f63151969bfdbeb5e17b0b98a6d4af27e96",
+      "material_median": [
+        18,
+        129,
+        106
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "c46b4f2426f9905242b17efdf2df23a79e84d70f8021f384e4806f09d23a0389",
+      "authoring_files": [
+        "cbp_acid_rain_paint.recipe.json.gz",
+        "cbp_acid_rain_spec.recipe.json.gz",
+        "cbp_acid_rain_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_acid_rain_paint.recipe.json.gz": "844ffeeb9293b0ff7db0d054c318c60176489140dc25790080a4ad5e5f7bb9c9",
+        "cbp_acid_rain_spec.recipe.json.gz": "8c4b0093bd720b9423bb98d3c5aad50eeb62913939040df269c71f23c7d37ab4",
+        "cbp_acid_rain_vector.py": "1fc12b233f2827d8cbf9d20e635661a34c049a73b300d9dd8a8f5b79d00a298d"
+      }
+    },
+    {
+      "id": "cbp_holo_advert",
+      "name": "Street: Holo Advert Foil",
+      "idea": "Tiny cyan and rose lenticular foil slivers flash between violet enamel gaps.",
+      "revision": "ERA120-PROCEDURAL-d993594d893e",
+      "asset_sha256": {
+        "paint": "a59d364e109a12a85f8e0382029306681436e650a42a48ba27d40ec79a93aa1b",
+        "spec": "d993594d893ec18ff33773ddb7116b2937fb02571946a8afae86e1871f35a0c1"
+      },
+      "source_sha256": "4457df99cc46c89a56f66726681c7b2f1cefd6f78043b5c5728a611d7ea23200",
+      "material_median": [
+        181,
+        61,
+        167
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "a78e80a2a5bb07c2f27e2b22bf9297acf227c1624ee003c551a68fb536845c1b",
+      "authoring_files": [
+        "cbp_holo_advert_paint.recipe.json.gz",
+        "cbp_holo_advert_spec.recipe.json.gz",
+        "cbp_holo_advert_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_holo_advert_paint.recipe.json.gz": "e10d1685be0025850dde275eab3a529982111ed9e4dea1c25428be5936f5c7b4",
+        "cbp_holo_advert_spec.recipe.json.gz": "1dca61ebe94493b15a9b71574a031a2adbfd9cdffd86cb3f47287d688670cfe4",
+        "cbp_holo_advert_vector.py": "4474cecf388993c264ea4aad156503ea674dfb548528a7452cf8e6c60e021a2a"
+      }
+    },
+    {
+      "id": "cbp_kanji_signage",
+      "name": "Street: Neon Sign Enamel",
+      "idea": "Neon sign enamel: layered abstract magenta and scarlet enamel sign strokes, thin cyan double borders, tiny amber lamp lenses, violet mounting-slot groups and gold foil corner tabs.",
+      "revision": "ERA120-PROCEDURAL-50819f833eed",
+      "asset_sha256": {
+        "paint": "8f29d2462e37713e1a4e1cc8cecf635a9af949d0a3dc1d122145448190b44329",
+        "spec": "50819f833eed2040a7ddacb4ccd9f0435495b75df3ba2f8b99c23d4d5505b5c7"
+      },
+      "source_sha256": "d4feb0292153b2a937623b4f36fe2775366533422b6ac07bca2e43c4faf24042",
+      "material_median": [
+        46,
+        75,
+        125
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "aea32685c949b5628b147d431724e8324a92e1ef4e0249ad4aa21ee0a7519b6a",
+      "authoring_files": [
+        "cbp_kanji_signage_paint.recipe.json.gz",
+        "cbp_kanji_signage_spec.recipe.json.gz",
+        "cbp_kanji_signage_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_kanji_signage_paint.recipe.json.gz": "5c7ec2ece47eda8eea76a98f979bee7b4fb7789261ac6430ea05a57486d8cc36",
+        "cbp_kanji_signage_spec.recipe.json.gz": "51b080403fb70ccdfc2c4042b2dd80afdd05257c6389069c494da3a96aa9f0c0",
+        "cbp_kanji_signage_vector.py": "311f7c5f6e49b68360ccd96e71706fc3ad83eac1a9061f242588e2ac2f93d17e"
+      }
+    },
+    {
+      "id": "cbp_night_market",
+      "name": "Street: Night Market Vinyl",
+      "idea": "Tiny tangerine, fuchsia and turquoise vinyl overlaps with pearly crimped edges.",
+      "revision": "ERA120-PROCEDURAL-4f442015cc83",
+      "asset_sha256": {
+        "paint": "dcafcf2663254ebc625c054c0756fa1052d586cf7d08e640d817e5560a5b92c9",
+        "spec": "4f442015cc837bc0523e40cb1a4148c3703473031981b5222b3f6c8faf16b68e"
+      },
+      "source_sha256": "c7b01793348a29a19433afe9bb858ca40bf205b0c6e4e5ffb9f075ca75ef7714",
+      "material_median": [
+        32,
+        80,
+        142
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "b1dfaff024889435946c9c294e9b7f2c8a14a9956f9a30c4963ef3688cbc1802",
+      "authoring_files": [
+        "cbp_night_market_paint.recipe.json.gz",
+        "cbp_night_market_spec.recipe.json.gz",
+        "cbp_night_market_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_night_market_paint.recipe.json.gz": "8fd82ee003fad2a967bcb328fea45872b86ac8d6944431ef50f2b4eef8d88d79",
+        "cbp_night_market_spec.recipe.json.gz": "a8a1279b6808395756ab4d202b52c36f34128d5c4f392c3e96c3d3cbc9330377",
+        "cbp_night_market_vector.py": "c90c3e0785c30d5e448d8cfe6ce0af21150d17fed3dfff38b6acf1300ff781c0"
+      }
+    },
+    {
+      "id": "cbp_overpass_sodium",
+      "name": "Street: Sodium Rivet",
+      "idea": "Sodium rivet mesh: many small amber rivet constellations and coral clipped structural brackets with cyan enamel ribs, purple recessed hatch ladders, scarlet warning notches, polished silver thin lips.",
+      "revision": "ERA120-PROCEDURAL-815d5e5738bc",
+      "asset_sha256": {
+        "paint": "8844fccf7669007431fb01ed691d7b3b636b280246b1cd148d0f74da627ac1ff",
+        "spec": "815d5e5738bc8aa615a3b6bcad671103864bda8690868630660a05ba576c0ee1"
+      },
+      "source_sha256": "a37260ee85c144addbb1d5ed7af1641a7d30c22db07575ceee49b92a3dd5a69e",
+      "material_median": [
+        208,
+        30,
+        96
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "b8bf8d46e596e786844d1266542ebca1382ff1f229474742928555a98be894fb",
+      "authoring_files": [
+        "cbp_overpass_sodium_paint.recipe.json.gz",
+        "cbp_overpass_sodium_spec.recipe.json.gz",
+        "cbp_overpass_sodium_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_overpass_sodium_paint.recipe.json.gz": "f63f2f5e76966edbad9ac8dccdb8551886441ed009c09761bafb5cf77b77705e",
+        "cbp_overpass_sodium_spec.recipe.json.gz": "5a29cc023d9733235a3c68f782d65dfcf1e658678dcc3187e5c2b3ae79e71ea8",
+        "cbp_overpass_sodium_vector.py": "122f660d0a40f64eab2b87153c577b508c129bc62d7b9dcfcc6c32cc5847d028"
+      }
+    },
+    {
+      "id": "cbp_puddle_neon",
+      "name": "Street: Puddle Neon",
+      "idea": "Cyan, pink and electric-orange wet micro-ripples cross dark blue enamel.",
+      "revision": "ERA120-PROCEDURAL-6cc0366db589",
+      "asset_sha256": {
+        "paint": "d62c8c6053348eb1050a7a96f6e30c7fd36dacc54fa4d9f6a70bd5ed06dc2a20",
+        "spec": "6cc0366db5898dada5c73e3030cc8448395c3afd8538fed387f658d6453dbd7b"
+      },
+      "source_sha256": "986a61704db414e46be022abbd4d146740bd0d466effe47e6d83f283ad644ebe",
+      "material_median": [
+        47,
+        97,
+        91
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "e6a1d5b41fb2f0b116e4864680028cc4c18da41b08fa82a753eec5f8707cbe24",
+      "authoring_files": [
+        "cbp_puddle_neon_paint.recipe.json.gz",
+        "cbp_puddle_neon_spec.recipe.json.gz",
+        "cbp_puddle_neon_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_puddle_neon_paint.recipe.json.gz": "c677e28b43b4cc0b9dd9ab4cde729937bf65dc00e1eb9710220b823cec03dc3c",
+        "cbp_puddle_neon_spec.recipe.json.gz": "5a18f519cc753b254a49a1b672352a09202b626c1fd290996e6a5aca4d2a2347",
+        "cbp_puddle_neon_vector.py": "d57b6058459fd9708c077dbd87b56db094f6ccca365f0f2921526b5afd0729b1"
+      }
+    },
+    {
+      "id": "cbp_rain_screen",
+      "name": "Street: Rain Screen",
+      "idea": "Turquoise microbeads interrupt a sharp magenta and cobalt display mesh.",
+      "revision": "ERA120-PROCEDURAL-f83e95730de7",
+      "asset_sha256": {
+        "paint": "3cfb734d1e571ca28cb56671e86a36cc032465f71db0423e2340df04010b47b3",
+        "spec": "f83e95730de78d53a19f434a85494016246681ca15a39c0e94e8478e43e93520"
+      },
+      "source_sha256": "37d9ace7774e6274bc4ce6037339777b13d50645d62af9488fc50318c6c34032",
+      "material_median": [
+        22,
+        79,
+        133
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "8e159d65b5b10fffeaa6ebdecd1cbba647c43cc23f1b5208b54dfbddee292e5f",
+      "authoring_files": [
+        "cbp_rain_screen_paint.recipe.json.gz",
+        "cbp_rain_screen_spec.recipe.json.gz",
+        "cbp_rain_screen_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_rain_screen_paint.recipe.json.gz": "404eaff284176f3bc6f791f59a716c6471761d7af800e712f0d39a2f4b9db070",
+        "cbp_rain_screen_spec.recipe.json.gz": "910abedf923e8982f39db9739cf9c2a769795b53443d8f761d88b5c551c53e6d",
+        "cbp_rain_screen_vector.py": "f16810279c77a120f4d25ca6b37bf44916f13dc9c4bcbc3b41df137eb47e30d6"
+      }
+    },
+    {
+      "id": "cbp_shutter_tag",
+      "name": "Street: Shutter Tag",
+      "idea": "Lime paint-marker hooks and pink spray dots sit on fine violet shutter ribs.",
+      "revision": "ERA120-PROCEDURAL-818dc47da523",
+      "asset_sha256": {
+        "paint": "99e38fe615b082fcaf32de50f2df0596387d2e3b8943bb4cc941c3966c03e65f",
+        "spec": "818dc47da523d8427bdb525d453691a742f0fabba2b5e1dc11ede5da1c175fd0"
+      },
+      "source_sha256": "3f58b276a283d9033b6ff86e1ff010c5af2b9ae512364f9421478f9cdd8a4ae2",
+      "material_median": [
+        18,
+        107,
+        147
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "80ad9e4442d06416144aa0f6f99681f241afd1fa183705a5fbd69a78e7de428d",
+      "authoring_files": [
+        "cbp_shutter_tag_paint.recipe.json.gz",
+        "cbp_shutter_tag_spec.recipe.json.gz",
+        "cbp_shutter_tag_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_shutter_tag_paint.recipe.json.gz": "a5476e2dbd80abb34b9cf2c921b195d37d3307ae829a70c9dbd6bf0039ed50c5",
+        "cbp_shutter_tag_spec.recipe.json.gz": "d4e26cc39d7ef9961686c7cc145ab26ba8b272107ab6cbd83bd70e88b2999717",
+        "cbp_shutter_tag_vector.py": "50e61fc3ed51e2c1cdc22af47a8ea455f065383cd027eab97d1fbf43950e5edd"
+      }
+    },
+    {
+      "id": "cbp_sodium_fog",
+      "name": "Street: Vapor Dye",
+      "idea": "Sodium vapor dye: bold elegant amber flowing translucent loops threaded by sharp scarlet light slits, fine pink sparks, deep violet curved apertures, cyan prismatic ribbons and gold dotted channels.",
+      "revision": "ERA120-PROCEDURAL-3c7671b35c28",
+      "asset_sha256": {
+        "paint": "f7b85b7b3220b9122b2be5f3e68a6b06c436f01dc4cf4670603cf6b2461e8195",
+        "spec": "3c7671b35c28f2e6b26f5793b3fec46f67e34327a1c11f58a7074de5fdf41387"
+      },
+      "source_sha256": "bd04adb8b2ef3a2d6b173d88c8a60add50318b8f404522e674689f9314bf706f",
+      "material_median": [
+        211,
+        28,
+        131
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "90e8e8e6ffb31f005082f9354556f4eff4c07c3aebc804e10d4cbee585d9ea2b",
+      "authoring_files": [
+        "cbp_sodium_fog_paint.recipe.json.gz",
+        "cbp_sodium_fog_spec.recipe.json.gz",
+        "cbp_sodium_fog_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_sodium_fog_paint.recipe.json.gz": "6a2da7c03e1895206868d7f07007fd13ac96090e5449ed747fa383bc7b206ee6",
+        "cbp_sodium_fog_spec.recipe.json.gz": "253789ef0406f1109657ed8e8c01e2ed224044efc44980a84e15daf3d3282576",
+        "cbp_sodium_fog_vector.py": "8a6d0f32c353bdf46a72dc47b0f1bca25dacc6f17420a9f0b0bcbf7c982d817c"
+      }
+    },
+    {
+      "id": "cbp_sodium_vapour",
+      "name": "Street: Amber Discharge",
+      "idea": "Amber plasma filaments and violet glass specks form a fine branching discharge texture.",
+      "revision": "ERA120-PROCEDURAL-1f5b9ee7a324",
+      "asset_sha256": {
+        "paint": "196fedc5536be900f7f6db2ce10a51e6d4bcfe7e40935cc5ab2d36fc3838e071",
+        "spec": "1f5b9ee7a3246e0a05d603253f9f5adf66e0f6ebdaf4fccabe64e9c2dbaf1262"
+      },
+      "source_sha256": "bf7b4e33d3bd7aa620a8c7440d7a1955e82697dadefc7d8de7004e627f3547df",
+      "material_median": [
+        13,
+        93,
+        204
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "88dcd9e8a8207181fbb5be9a3809e2caf19e8587c28017623b718805ce66e8df",
+      "authoring_files": [
+        "cbp_sodium_vapour_paint.recipe.json.gz",
+        "cbp_sodium_vapour_spec.recipe.json.gz",
+        "cbp_sodium_vapour_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_sodium_vapour_paint.recipe.json.gz": "7ea985b3b7009bfb08a77fe1ff7b0a7ce9837581a22ca682b174f370644e833d",
+        "cbp_sodium_vapour_spec.recipe.json.gz": "c46afa5242966b3a0bb2bb7f9b300b6378bbc333bec27a7707a9790ac8c67994",
+        "cbp_sodium_vapour_vector.py": "8852e131f015271bb8e6878141260beae2f2efeb26785d23b550a4d80830a9cb"
+      }
+    },
+    {
+      "id": "cbp_steam_grate",
+      "name": "Street: Thermal Vent",
+      "idea": "Thermal vent fanwork: tightly arranged small spiral vent segments in copper orange, turquoise louver combs, magenta heat slots, violet ceramic gaskets and bright gold fastener rows.",
+      "revision": "ERA120-PROCEDURAL-8f53859c7db3",
+      "asset_sha256": {
+        "paint": "4f9a2b9259173d7d6231992f2c5fdfea96022c75b0a8f4a570cdf26a76e606af",
+        "spec": "8f53859c7db3e7d500abc4725b72749c0a649a3df73160190b5e9ebe2405d181"
+      },
+      "source_sha256": "2f69157dd6d764438f388355659e727585708097b3555197dd7a9c25c489a5c3",
+      "material_median": [
+        179,
+        45,
+        105
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "1467cf28bc673b5f2a66ed6a262335f560f53785d0c7823c124298ea1f9e7f43",
+      "authoring_files": [
+        "cbp_steam_grate_paint.recipe.json.gz",
+        "cbp_steam_grate_spec.recipe.json.gz",
+        "cbp_steam_grate_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_steam_grate_paint.recipe.json.gz": "905ce98ba288a09c096817d15dea9742717ca8ec7279c715e5474ec217dc4324",
+        "cbp_steam_grate_spec.recipe.json.gz": "819007adf30667f44919b1cef54e385c238a8b81b5bd7a202f3ce00b249f03d0",
+        "cbp_steam_grate_vector.py": "77704e27ff018057a595dd8c19d2d2ebde7e9a93dae6f3b5e193d24d02c94043"
+      }
+    },
+    {
+      "id": "cbp_taxi_panel",
+      "name": "Street: Taxi Signal Enamel",
+      "idea": "Cyber taxi enamel: vivid yellow-black checker fragments curving into compact racing-like wavelets, orange reflector ribs, blue capsule running lights, magenta circuit stitches and chrome thin edge rails.",
+      "revision": "ERA120-PROCEDURAL-eb99acf6a033",
+      "asset_sha256": {
+        "paint": "33eefb29038bb6acc1afd5955f09fe6d13f504d3d24beefd141a4d9c8229eb94",
+        "spec": "eb99acf6a0336134b7673a4e0f61c382efc3f0622322bf9db57cdc6f3df3a4d9"
+      },
+      "source_sha256": "868a16c6f6c7f0d40bd068358ad7f508cca4133bc13bab63e259dc2d7da43bf4",
+      "material_median": [
+        32,
+        101,
+        141
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "f8ae4eba32a4b37e5540c616e093ddf3ae31561d5297ce2565ab13b8ecd29960",
+      "authoring_files": [
+        "cbp_taxi_panel_paint.recipe.json.gz",
+        "cbp_taxi_panel_spec.recipe.json.gz",
+        "cbp_taxi_panel_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_taxi_panel_paint.recipe.json.gz": "0d0539d15e4084d5354b91893fe4e8e723bf738c73ffd9d8ce7c74c882ec011d",
+        "cbp_taxi_panel_spec.recipe.json.gz": "4aa13d29b79a07036d4cb72da9e0434a7e85e217d1c85eded0997b2790cf1586",
+        "cbp_taxi_panel_vector.py": "e19abe47a597b371383e25befb6e425b5e88ec1fcba1d8336f22160de5234b19"
+      }
+    },
+    {
+      "id": "cbp_vending_glow",
+      "name": "Street: Vending Glow",
+      "idea": "Lime acrylic lenses and pink ribbed windows sparkle between blue enamel dividers.",
+      "revision": "ERA120-PROCEDURAL-a3b7a7e570a0",
+      "asset_sha256": {
+        "paint": "1eeaa91cb8aabebd52849c00dd950b240e2b9081d361885652526d430c0f7bf5",
+        "spec": "a3b7a7e570a0d42dbf588144b065c961454920050beaf9661f4b1bc64fda088d"
+      },
+      "source_sha256": "c9071c7a37e9956bb1173be01d0083858c2363cffb336613db4adecad913ac59",
+      "material_median": [
+        36,
+        84,
+        124
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "bb6f248f853dda50aa82ec4072d8fed90bc72dafbd47df812d095e42d32f5408",
+      "authoring_files": [
+        "cbp_vending_glow_paint.recipe.json.gz",
+        "cbp_vending_glow_spec.recipe.json.gz",
+        "cbp_vending_glow_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_vending_glow_paint.recipe.json.gz": "931e26cc5323b75f9dc48c45c5748478d8d52c786c56969a6d1f75683df1edb7",
+        "cbp_vending_glow_spec.recipe.json.gz": "5d7b3f91982b93d71587387c80be9f8b57195fbf98a6840782db504702fdf788",
+        "cbp_vending_glow_vector.py": "3589c45c99ee401f4e52f2728ab06c3e7e3df4bd0283913c434c49d234ab0309"
+      }
+    },
+    {
+      "id": "cbp_wet_asphalt",
+      "name": "Street: Neon Aggregate",
+      "idea": "Cyan and fuchsia glass grit glints through dark petrol-blue wet aggregate.",
+      "revision": "ERA120-PROCEDURAL-ef58bebef4e0",
+      "asset_sha256": {
+        "paint": "d05986cee9763f32b8173462e6c6d3105b8ef6a93e4921819bc629bfd865cc52",
+        "spec": "ef58bebef4e00b529170ffa8c413baf0b838ada65643189a0dd4dc2b19a539cc"
+      },
+      "source_sha256": "58f6c34f8fc37a8d855f29eb993104ca7c11bf34cb3853aeb78c2845b97dd4d7",
+      "material_median": [
+        210,
+        27,
+        145
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "a4381592bb51dc7f978cd171ea3f8757b372e9fc8cd76c70094105569f5a4eea",
+      "authoring_files": [
+        "cbp_wet_asphalt_paint.recipe.json.gz",
+        "cbp_wet_asphalt_spec.recipe.json.gz",
+        "cbp_wet_asphalt_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_wet_asphalt_paint.recipe.json.gz": "29b97ae14c780118a5c809c474d5b80d8d55ad73ef46fd4b4aa6b5fed59486f7",
+        "cbp_wet_asphalt_spec.recipe.json.gz": "e401abce8857a72d440a3150607e031e0168c196f741a61d19c798621d206163",
+        "cbp_wet_asphalt_vector.py": "668451e5e430b18052e387ea6ce63e7f3f03d7015312bc01fe0d2c072b025694"
+      }
+    },
+    {
+      "id": "cbp_neon_tube",
+      "name": "Street: Neon Capillary",
+      "idea": "Fine turquoise capillary bends and ruby glass collars lie in violet enamel.",
+      "revision": "ERA120-PROCEDURAL-85e0622b76f8",
+      "asset_sha256": {
+        "paint": "483148b469ecd2a37386efa308a241f4fdbc9be015c6a2afdfd343d01b4219af",
+        "spec": "85e0622b76f8257a215db033ff180ae16a1f20ca570ff5fa910d8630a74a743d"
+      },
+      "source_sha256": "fdd3bf3706264192c3337a9ed5a13f1c6856f87badb1d1bc61426bbfab933315",
+      "material_median": [
+        25,
+        112,
+        116
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "eff368621f83e6a28d1aa921ca32a0213cd1375a0ac18f4949f3e7b2a8b7b663",
+      "authoring_sha256": {
+        "cbp_neon_tube_paint.recipe.json.gz": "b9519dafbff71f0528278e5a4da59baca053edf6cf2cb93a3c981d23924efc22",
+        "cbp_neon_tube_spec.recipe.json.gz": "84f9f6315f0352c19c1af32ab7ff99c6de4e7b49ffad7ff5d5316883aa69d0ee",
+        "cbp_neon_tube_vector.py": "6eb06b8c66137dab35d23a09d76132661026cbbc1ac0f725c9ed29da8cfe4d15"
+      },
+      "authoring_files": [
+        "cbp_neon_tube_paint.recipe.json.gz",
+        "cbp_neon_tube_spec.recipe.json.gz",
+        "cbp_neon_tube_vector.py"
+      ]
+    },
+    {
+      "id": "cbp_carbon_limb",
+      "name": "Chrome: Conductive Carbon",
+      "idea": "Tiny carbon braid bundles interlock with turquoise conductors and crimson resin stitches.",
+      "revision": "ERA120-PROCEDURAL-c5d585ac14d3",
+      "asset_sha256": {
+        "paint": "393e0b3a7e33a967abf6ab27801d0064d2d40d12d255efb16c584f80bea26382",
+        "spec": "c5d585ac14d38fc7f4cb338686bea7118f2297d2fb45a344039beb6c80283198"
+      },
+      "source_sha256": "b762943cd5693d6367b1e2394f1749d95e6603a00d257138ae5f0d73fd9b2ee8",
+      "material_median": [
+        42,
+        117,
+        125
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "023f6efe57df8b4eaac244b037abb80b13ab8701027c2504eea145beb54d48ee",
+      "authoring_files": [
+        "cbp_carbon_limb_paint.recipe.json.gz",
+        "cbp_carbon_limb_spec.recipe.json.gz",
+        "cbp_carbon_limb_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_carbon_limb_paint.recipe.json.gz": "0e9d600f37557cc4c3103b5a84256dfca9812d05bef9cab095a17e6940fd2c05",
+        "cbp_carbon_limb_spec.recipe.json.gz": "443acb4f4584922691b2b993167dc84607497248e753b7e30449a1f8a83e3e4b",
+        "cbp_carbon_limb_vector.py": "655c654d798644ae609143ef4cbf3414ac2b5b26851aafdb1372d7745419d4ba"
+      }
+    },
+    {
+      "id": "cbp_ceramic_limb",
+      "name": "Chrome: Ceramic Microarmor",
+      "idea": "Chrome ceramic microarmor: mostly brilliant silver curved overlapping ceramic scales with crisp pink chrome rims, cobalt slit inserts, gold rivet halos, turquoise hairline glaze cracks and polished white shoulders.",
+      "revision": "ERA120-PROCEDURAL-ef628cf46ea6",
+      "asset_sha256": {
+        "paint": "0357cbad4ba20f1c60b605da5d634317cec17c3c3ab0eb611cbe8b5d715f332b",
+        "spec": "ef628cf46ea6d86a2bcfb2ab8177ac4889cd9246f0a2b896e586595923f81879"
+      },
+      "source_sha256": "961f51d265eb230eb35f85e41a9f8ccd240dd5b7422d599b279c6c0eb542bd3c",
+      "material_median": [
+        236,
+        35,
+        125
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "d148922c203c1995e317585f5f040c7b3459ea6f30351fe71d94bc5bbcc65171",
+      "authoring_files": [
+        "cbp_ceramic_limb_paint.recipe.json.gz",
+        "cbp_ceramic_limb_spec.recipe.json.gz",
+        "cbp_ceramic_limb_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_ceramic_limb_paint.recipe.json.gz": "112a3a4f2d109c927b24c6c73da706244053fd5c5cd50b5715160dc6fef6f0f3",
+        "cbp_ceramic_limb_spec.recipe.json.gz": "c5c23be1e506dc1308bed3cf3d1b5fb42143bd5749ea068dc77fbee656dd4544",
+        "cbp_ceramic_limb_vector.py": "cc765a62e9bbb81c99504633c656db4590c8186fdb5a61d3692b6e058ef49533"
+      }
+    },
+    {
+      "id": "cbp_chrome_spine",
+      "name": "Chrome: Articulated Chrome",
+      "idea": "Tiny mirror hinges and cobalt sockets interlock with pink ceramic bearing pads.",
+      "revision": "ERA120-PROCEDURAL-0f77ce7e2d59",
+      "asset_sha256": {
+        "paint": "621eaf906c94b2f5cfea427cb8940ee988e46e282d40f973c09a95398994fc30",
+        "spec": "0f77ce7e2d59a5326790650ad98e30d4bf857ec647c2dd8bfa9f92e0782c8a54"
+      },
+      "source_sha256": "9f46ef5a0779cc564296fcbc2f17618bac02a114f9ae39d6a4222adcc61d580f",
+      "material_median": [
+        209,
+        65,
+        118
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "e613bb6e80903f1ddb6452024e42c3f876cfd14f2ce46dacd3d20a2e8defdb8a",
+      "authoring_files": [
+        "cbp_chrome_spine_paint.recipe.json.gz",
+        "cbp_chrome_spine_spec.recipe.json.gz",
+        "cbp_chrome_spine_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_chrome_spine_paint.recipe.json.gz": "d113cca09e2624273c453e72cc25e32996dd43c424ffb0320fd2051b4483f3b3",
+        "cbp_chrome_spine_spec.recipe.json.gz": "ca981889ad6de5fe984f87f4acab19d0825cd8c705950c5b2c88e22c5e2cce6e",
+        "cbp_chrome_spine_vector.py": "c1ace10b29f528861d34505e086786e0a1ddc760f5a29193337393c16108c437"
+      }
+    },
+    {
+      "id": "cbp_gold_contact",
+      "name": "Chrome: Gold Contact",
+      "idea": "Fine gold spring contacts cluster among emerald insulators and ruby resin dots.",
+      "revision": "ERA120-PROCEDURAL-8e7edb7a1aac",
+      "asset_sha256": {
+        "paint": "e94768ff5ae05f66789629df05ac4c1c15b38d836c9b40fbc1b2a3022800818d",
+        "spec": "8e7edb7a1aacc2a5cfcf8f203a1da36aac2f586999021f6b6545f213bba1f513"
+      },
+      "source_sha256": "ff8268f2a158b900013e9ed7c2c2e3f5e8ca204986f06d6a0b0b32653fd4863a",
+      "material_median": [
+        195,
+        74,
+        128
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "7237195afb4018f8735c9b370cf560916734a11ee27f17dd20b33e5b10cf7e48",
+      "authoring_files": [
+        "cbp_gold_contact_paint.recipe.json.gz",
+        "cbp_gold_contact_spec.recipe.json.gz",
+        "cbp_gold_contact_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_gold_contact_paint.recipe.json.gz": "a21991d636ee88cde0caf35dcdba4b10bdd25c3fd514f56e12d76441ed628325",
+        "cbp_gold_contact_spec.recipe.json.gz": "12eb998bdcc7669a082a4159ccef1ae19caf2d3ccd2c002a54bd369d55d1ed3f",
+        "cbp_gold_contact_vector.py": "0f63ae854b0b348415ba2350bd4b9e45eb2396f74455ae248e2742f5e5a84bd6"
+      }
+    },
+    {
+      "id": "cbp_gunmetal_aug",
+      "name": "Chrome: Anodized Servo",
+      "idea": "Lime and violet machined microteeth with copper bearings and black lubricant pockets.",
+      "revision": "ERA120-PROCEDURAL-bf9472f7a2f2",
+      "asset_sha256": {
+        "paint": "d5d8630ff9ecfefc1439d372bb8b888ae95dfb4ee90d30068a8be78c8c9d577e",
+        "spec": "bf9472f7a2f234791ccae7ec0fe52857b5b61beda07a71ad4d0a937b20d9d5f7"
+      },
+      "source_sha256": "e2065f5f7fadea7b95ee061fd05107c24085ee1e99d038d918a61a8a1916ccb5",
+      "material_median": [
+        199,
+        28,
+        83
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "12ad3fe7c18542f75c23548ecf884756e9981198cdd448aac0db68b737680aac",
+      "authoring_files": [
+        "cbp_gunmetal_aug_paint.recipe.json.gz",
+        "cbp_gunmetal_aug_spec.recipe.json.gz",
+        "cbp_gunmetal_aug_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_gunmetal_aug_paint.recipe.json.gz": "4cfe99cebd244483c7e3ff833360b7810fb89fa8a59366095ecf49b93cb4b798",
+        "cbp_gunmetal_aug_spec.recipe.json.gz": "e29384a9dfd5c55884ffcb2695d8ec1b89f497e7f92045e9d792fab894cc16ac",
+        "cbp_gunmetal_aug_vector.py": "8e3a050bcb60b7cbc7cb28566a9080340737b4a9fb89b93cef6d0fc3b01f986a"
+      }
+    },
+    {
+      "id": "cbp_mirror_shades",
+      "name": "Chrome: Spectral Lens",
+      "idea": "Fine orange and cyan optical slivers with violet anti-reflective rims and mirror glints.",
+      "revision": "ERA120-PROCEDURAL-9e92d6098c8c",
+      "asset_sha256": {
+        "paint": "0239ecc66e32be92978ece1b5a05e72928f69716fe54856e41642df5bde3e3bf",
+        "spec": "9e92d6098c8c97ddf9c95a42e8a2f85b82a33cb07a74fb94a93e94aee7b0efd2"
+      },
+      "source_sha256": "4660d1b42526e6947083756dd8fb0b4c85ede8948f6762bbf4a2c197ec645afe",
+      "material_median": [
+        187,
+        28,
+        85
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "b9081091f00a15ea4e94f1a24633c99cd4a0e33c8716744aa044f19ec04ba357",
+      "authoring_files": [
+        "cbp_mirror_shades_paint.recipe.json.gz",
+        "cbp_mirror_shades_spec.recipe.json.gz",
+        "cbp_mirror_shades_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_mirror_shades_paint.recipe.json.gz": "f1f52244e209775dd377d938fa0ce8f14e9ea436c59cad82eda2dcafc0369543",
+        "cbp_mirror_shades_spec.recipe.json.gz": "7f1317005c1c01923498e93b5b6436b4387e4ad1e8f6a816f744efc55f7f16b5",
+        "cbp_mirror_shades_vector.py": "d68eba29dadf8d9e1ef31af862a8e5f7b90b72d1a5096e1c648bab5bc79a77ae"
+      }
+    },
+    {
+      "id": "cbp_neural_port",
+      "name": "Chrome: Neural Port",
+      "idea": "Neural connector rosettes: intricate concentric copper and cobalt segmented socket rings with tiny pink contact pins, turquoise branching fiber roots, violet triangular insulator petals, black central slots and bright silver microbevels.",
+      "revision": "ERA120-PROCEDURAL-b92e1b3fc01f",
+      "asset_sha256": {
+        "paint": "1d4a2646d132e97a0e0c5345e760065babb412b98ef7c30b3bafe9f3d2d58f46",
+        "spec": "b92e1b3fc01ffae3896d6c7622f363d946f9b22c25015f39a9168938fb09253a"
+      },
+      "source_sha256": "cb74abb3b796ec3d0ab3aff280f9c7b584f8de9d8a8c31b3cf2f18d699756c44",
+      "material_median": [
+        202,
+        56,
+        111
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "48d6f68b84ea82506d61ea610c3a9c1289b1e07bce92550436c68c8983c50c35",
+      "authoring_files": [
+        "cbp_neural_port_paint.recipe.json.gz",
+        "cbp_neural_port_spec.recipe.json.gz",
+        "cbp_neural_port_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_neural_port_paint.recipe.json.gz": "a5b4ce200b7c7713c8f02f261bc766a0273c240b423174a511cc97ab1e97e6e0",
+        "cbp_neural_port_spec.recipe.json.gz": "0241590b388fa1dce80635be0f2de60b7299ec1858399e5e9b518da3bec41007",
+        "cbp_neural_port_vector.py": "24597397b2bab1efe3d91d9954522d2468de1cc037c911bb5f9b6fdd3e61553b"
+      }
+    },
+    {
+      "id": "cbp_optic_implant",
+      "name": "Chrome: Optic Iris",
+      "idea": "Tiny fuchsia iris wedges and cyan lens rings cluster around gold optical pinpoints.",
+      "revision": "ERA120-PROCEDURAL-c277cecb14a7",
+      "asset_sha256": {
+        "paint": "03f7d866b0edc115befaced885529157cb71d46749e0a501a20ed6f49790ddff",
+        "spec": "c277cecb14a7883ade5bb7bf19a8b995541496b77b56be3d94ffad4b4b022a85"
+      },
+      "source_sha256": "fdd2c8b49b997950c35bfb447c33eafb56d4bbb9c8608ccce4415d8821522fa0",
+      "material_median": [
+        123,
+        39,
+        106
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "90bbe6818a27a06f940ff6d6a785a0d3ec918adbef886ea6f6bb8795b6162bd8",
+      "authoring_files": [
+        "cbp_optic_implant_paint.recipe.json.gz",
+        "cbp_optic_implant_spec.recipe.json.gz",
+        "cbp_optic_implant_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_optic_implant_paint.recipe.json.gz": "6813f63bf513e254a56cf2e76b04174d520b1a5e0b835dded49c00cfd753d65e",
+        "cbp_optic_implant_spec.recipe.json.gz": "83c72364451bc22b76f6caaf1f0f0648594c70e40b087722c5444a159dc0c6f9",
+        "cbp_optic_implant_vector.py": "faeae3fa7f8eecf7fc8294ccb51ad0236ecbf38770c52ecc5589ebd75196e961"
+      }
+    },
+    {
+      "id": "cbp_porcelain_face",
+      "name": "Chrome: Opal Ceramic",
+      "idea": "Fine peach and aquamarine porcelain fragments with violet crazing and pearly edges.",
+      "revision": "ERA120-PROCEDURAL-e2e7175206fa",
+      "asset_sha256": {
+        "paint": "43557a29bdab1e364fb9c175438423a8ed5f625a926402cc517a14850b28929e",
+        "spec": "e2e7175206fa0e64309afc75f0f56b92006f3cecca4ab0954f0e85330aef2113"
+      },
+      "source_sha256": "c2127eedc19dbeb1156caae809d71b16487a9bbade261c74abb3f71c204dd3c5",
+      "material_median": [
+        30,
+        96,
+        128
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "36f6eba56d83edcafe9eabfacac48fd1feced3185b609732a5953f0c2adbd91d",
+      "authoring_files": [
+        "cbp_porcelain_face_paint.recipe.json.gz",
+        "cbp_porcelain_face_spec.recipe.json.gz",
+        "cbp_porcelain_face_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_porcelain_face_paint.recipe.json.gz": "a81552d7206186e149e87b627c60efefb12ef544f9fb6c0c744b2f42f1a0acb3",
+        "cbp_porcelain_face_spec.recipe.json.gz": "2120139bbba52b3b47b293e4fc48d5929a703eaa89612ff41380909e546661b5",
+        "cbp_porcelain_face_vector.py": "84d1d45a7e80ad5d85d6ba1fb0244f8fa3c91d9072fe74a39b79f73193a84c60"
+      }
+    },
+    {
+      "id": "cbp_ripperdoc_steel",
+      "name": "Chrome: Laser-Etched Alloy",
+      "idea": "Magenta and teal etched microgrooves with copper oxide dots and bright surgical edges.",
+      "revision": "ERA120-PROCEDURAL-37d90b871d81",
+      "asset_sha256": {
+        "paint": "fe5f4d8f311feb1b0ae5f2d81dc957b775980840d9c56d8cdf8b54ea7adf3bf2",
+        "spec": "37d90b871d819c01393450c814154ad07bfe8b547949583449b3660a249fb7f6"
+      },
+      "source_sha256": "1361736e2edbe06abb5a479bc104364222a3b5b9d622f52d03c932055373264d",
+      "material_median": [
+        209,
+        30,
+        110
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "a929781ddebcc7b15e254edc5fcc7a2dbdded2d84c07119b8f603b0d87c3a79f",
+      "authoring_files": [
+        "cbp_ripperdoc_steel_paint.recipe.json.gz",
+        "cbp_ripperdoc_steel_spec.recipe.json.gz",
+        "cbp_ripperdoc_steel_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_ripperdoc_steel_paint.recipe.json.gz": "a277b30f5851c3a50515e1f315ccab8e59f1174dd911c0260ffba243edb2c324",
+        "cbp_ripperdoc_steel_spec.recipe.json.gz": "1453844e1d7f327c2df0dca71b858350a78debf8a681525da64d7ed9edbb37cd",
+        "cbp_ripperdoc_steel_vector.py": "6a37009f3a753ec418aafeb1d5ecc362061fcdd1e033139d50e2560e03e2bff8"
+      }
+    },
+    {
+      "id": "cbp_servo_housing",
+      "name": "Chrome: Servo Honeycomb",
+      "idea": "Tiny orange rounded honeycomb sockets with blue gaskets and chrome locking tabs.",
+      "revision": "ERA120-PROCEDURAL-2c3a56978a6a",
+      "asset_sha256": {
+        "paint": "ec3922ca02b711618f4b6e9ec223040f1869ccd27e7b6947ced1c2fe711c2cc6",
+        "spec": "2c3a56978a6ae040ece5e7b1f92f767bfa4465893cd7274787b4b46175d59be9"
+      },
+      "source_sha256": "3119285a0ae24bb445bc2aea10adcec15765facbbfd644c13241f70c80b6fa89",
+      "material_median": [
+        23,
+        106,
+        160
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "a7960baf2451670a16ac10511ee62456041cdccc800a4c1e6371cb2ee81d4cf3",
+      "authoring_files": [
+        "cbp_servo_housing_paint.recipe.json.gz",
+        "cbp_servo_housing_spec.recipe.json.gz",
+        "cbp_servo_housing_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_servo_housing_paint.recipe.json.gz": "b212e03af85ef49c7d62fa31a54671e0698dd6a1771b6ce8c9142287ee0b6a56",
+        "cbp_servo_housing_spec.recipe.json.gz": "82f884fa016b9709073facb85cb447b60aee802c0436394dd63c4f9df536abb5",
+        "cbp_servo_housing_vector.py": "f12b37f2ff69a80a1fcdc28db0be33c2fad158b2e7024516a0651e7b4172ae74"
+      }
+    },
+    {
+      "id": "cbp_skin_weave",
+      "name": "Chrome: Signal Weave",
+      "idea": "Coral synthetic fibers cross turquoise conductive threads and tiny gold stitch nodes.",
+      "revision": "ERA120-PROCEDURAL-533b49c8de4e",
+      "asset_sha256": {
+        "paint": "c8b6d53db9e2eb7686678bf0a69f328c646af41f117d6016b929ebeac056dd47",
+        "spec": "533b49c8de4e3a1dcfc6f45c6e0f779b482ae963485c1d8dd81d626160c530c5"
+      },
+      "source_sha256": "edc23ded4f22ef0b9376cceb790da7f4436ebae45550ed1a1ecd27fd6df61652",
+      "material_median": [
+        9,
+        161,
+        166
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "0c104642848e0df81f73fd183161501bbca62feb297504a1a7751f4784114b9b",
+      "authoring_files": [
+        "cbp_skin_weave_paint.recipe.json.gz",
+        "cbp_skin_weave_spec.recipe.json.gz",
+        "cbp_skin_weave_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_skin_weave_paint.recipe.json.gz": "cb49d1401d55b59568a81823eb0d19a4d2c8e2db07eb22ca41ffda7b031c9d56",
+        "cbp_skin_weave_spec.recipe.json.gz": "94f844a7855812ce2fd07af086e9eb007d76d53d0b459980251be5ef03763a1e",
+        "cbp_skin_weave_vector.py": "cb2372bfc7a440fa71f7cc45b95bbf517321d9a50c3825ad22a70ab8d6758930"
+      }
+    },
+    {
+      "id": "cbp_subdermal_plate",
+      "name": "Chrome: Microplate Inlay",
+      "idea": "Fine emerald rhombus plates with ruby flexible joints and bright gold corners.",
+      "revision": "ERA120-PROCEDURAL-5f83d1f7e944",
+      "asset_sha256": {
+        "paint": "1561e5f100cb98b8ffd2a1c6a6fe85686311844bbe0ff113ae604b39d46f839c",
+        "spec": "5f83d1f7e944d30f936760f71299d8989c03c154fd3735713e7406995909286d"
+      },
+      "source_sha256": "20bf3abf793ad5e4406b14d145bbd271983199f7d8ab30d41ad3ed094cd40c24",
+      "material_median": [
+        120,
+        36,
+        113
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "69dccf46bbcf9821686d025e52c071ce82d33d5e865fdf4b7f3d77fc94e616af",
+      "authoring_files": [
+        "cbp_subdermal_plate_paint.recipe.json.gz",
+        "cbp_subdermal_plate_spec.recipe.json.gz",
+        "cbp_subdermal_plate_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_subdermal_plate_paint.recipe.json.gz": "d7962cce6d61830c20afb8d61f41c8355a04a6f3683f619fa0770d8ece851b65",
+        "cbp_subdermal_plate_spec.recipe.json.gz": "a06e5c2aad3e7a55c2d7cdfa21243b7ba57bfe092004cf0c60c531d527096e9b",
+        "cbp_subdermal_plate_vector.py": "3e4efb686b01c94fd9a40d38bb801c7bb45ca8da06c577a480e598db097db06e"
+      }
+    },
+    {
+      "id": "cbp_titanium_rib",
+      "name": "Chrome: Titanium Ribbon",
+      "idea": "Tiny blue and gold titanium ribbon folds with magenta oxide and mirror cut edges.",
+      "revision": "ERA120-PROCEDURAL-f9fe36c259d7",
+      "asset_sha256": {
+        "paint": "d62dcdac3534a5e1be5bb95331b45d2089fea1eee3947c79fe9ee37cc7b0ed00",
+        "spec": "f9fe36c259d77e016b1a91bc49b471da31d68e5a3721ce786832a82aba1dbce9"
+      },
+      "source_sha256": "9a7146a984de3b7c96efce4c7b0af41bce023e18548e18fd6e2676359b903ba3",
+      "material_median": [
+        53,
+        114,
+        123
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "fa84d0798a98781294f94cbf4c849e208158915981c797ab3c149ba177a33c59",
+      "authoring_files": [
+        "cbp_titanium_rib_paint.recipe.json.gz",
+        "cbp_titanium_rib_spec.recipe.json.gz",
+        "cbp_titanium_rib_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_titanium_rib_paint.recipe.json.gz": "6bb68009bf5c17dd78fd06487e9c95107b0d8bbffec664e06302d2a3f4ffe3d1",
+        "cbp_titanium_rib_spec.recipe.json.gz": "807f67ee1e252e9b0910ace343a2af04a8f6bd30ab57a9ff2bf6c4f5405f4c5a",
+        "cbp_titanium_rib_vector.py": "51acaa2b9a1034c24648ff5a9fc350911e31a3c09479c035f4bd179e715e40f7"
+      }
+    },
+    {
+      "id": "cbp_wetware_membrane",
+      "name": "Chrome: Wetware Gel",
+      "idea": "Tiny coral gel cells with lime membranes and violet suspended filaments.",
+      "revision": "ERA120-PROCEDURAL-07a26a1750ca",
+      "asset_sha256": {
+        "paint": "68700437ef027395820f7a4e52e2de545c781ed7e0cb3d5d25f13d880ac6717d",
+        "spec": "07a26a1750cad3c56ed906f0ab84dbc24f5b0458476cb845e421f74483bc66a4"
+      },
+      "source_sha256": "831e9972291d2ea4d579e747e618f04b8926328e282f14424c42907ff0dbd76b",
+      "material_median": [
+        26,
+        80,
+        167
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "f4cc89a538b708bcfab6efe0f1752f546b66f4f9dc3641c92bc1b402a04d1a7c",
+      "authoring_files": [
+        "cbp_wetware_membrane_paint.recipe.json.gz",
+        "cbp_wetware_membrane_spec.recipe.json.gz",
+        "cbp_wetware_membrane_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_wetware_membrane_paint.recipe.json.gz": "bfa9e84be5de0bd54b4fa0896e3f16b51540d4df15e7ca2256ae7dcc56ac2780",
+        "cbp_wetware_membrane_spec.recipe.json.gz": "7d822e73c4f8e6612560b9212425473f196078ac567217c5f46fe04b1991fe2a",
+        "cbp_wetware_membrane_vector.py": "5af2a5f3f7b8078c27000d683ab1926959fc9dea78c771aa7e4b99d5499ba1f5"
+      }
+    },
+    {
+      "id": "cbp_black_ice",
+      "name": "Netrun: Black Ice",
+      "idea": "Black ICE security: dark polished jagged shields nested inside sharp cyan fractured circuit ice, ruby lock-shaped abstract apertures, gold fractured edge sparks and violet prismatic facets.",
+      "revision": "ERA120-PROCEDURAL-5ddcaadbfaf4",
+      "asset_sha256": {
+        "paint": "ea1f40f5679859eb7ee152f99df447c98e89d184589ec434b9f906324c03bb36",
+        "spec": "5ddcaadbfaf40975e1d68160d978964d52fb086b6c589ba537c6a613165e5b34"
+      },
+      "source_sha256": "fdc8e6b27e9c3d29fbe03c25af2adba1b9155cae8df0459d15f9dc23a009d26b",
+      "material_median": [
+        132,
+        72,
+        136
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "5d0f59d6583b134a96ca2204f12213479c34c60d408cbb8fbe30bbafa94d6e58",
+      "authoring_files": [
+        "cbp_black_ice_paint.recipe.json.gz",
+        "cbp_black_ice_spec.recipe.json.gz",
+        "cbp_black_ice_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_black_ice_paint.recipe.json.gz": "c925b752346bc5505d225a199db162a6d90f0eb526723c0b82d24f47fbafdfe3",
+        "cbp_black_ice_spec.recipe.json.gz": "fb32eae09d61dd0aa27de3b93b83977aa64166ad0ab83f77a65db551785fe796",
+        "cbp_black_ice_vector.py": "b411b9ec781cb2a08a80a192970696e94e8d2428e3a019afa2eb59a573e60151"
+      }
+    },
+    {
+      "id": "cbp_corrupt_memory",
+      "name": "Netrun: Corrupt Memory",
+      "idea": "Memory checksum cascade: irregular ruby byte ladders interleaving electric-blue memory bars, acid-yellow missing-bit apertures, violet square spirals and cyan broken parity rings.",
+      "revision": "ERA120-PROCEDURAL-5aa25355c337",
+      "asset_sha256": {
+        "paint": "9921c2d699637d8ada673874dfcaec33049fab5360dcee1c2080391644db33b6",
+        "spec": "5aa25355c337989a0a7cac03919530ca41b486dd6d0fcee9d32774fe195f135f"
+      },
+      "source_sha256": "6994f45f68e7426bc3e79c08cec584c119abb1b26954286fbec18b71c466e33d",
+      "material_median": [
+        78,
+        76,
+        87
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "484779c9c7f406e15ed23b6e8056228d38cb3cf7e9e5d591e7a9f15563722de5",
+      "authoring_files": [
+        "cbp_corrupt_memory_paint.recipe.json.gz",
+        "cbp_corrupt_memory_spec.recipe.json.gz",
+        "cbp_corrupt_memory_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_corrupt_memory_paint.recipe.json.gz": "49d8b004219aea90e4cafd8a2f794ce8ad26ca11e8960342c40f3c961107bdca",
+        "cbp_corrupt_memory_spec.recipe.json.gz": "1f492df9eeacf488dfcd0d861f7792fef417c12937a602a58a9542f8376c49ce",
+        "cbp_corrupt_memory_vector.py": "c429ea0cf841711b7005314bbd59d4f2b8f29be045448e4df1c1899411a378fe"
+      }
+    },
+    {
+      "id": "cbp_daemon_red",
+      "name": "Netrun: Daemon Red",
+      "idea": "Crimson forked microglyphs with orange cores and violet etched tails.",
+      "revision": "ERA120-PROCEDURAL-24dc987b119b",
+      "asset_sha256": {
+        "paint": "b61c849e5bc1bd6f660f144785cf8c4e88ca4cc20c55812f8f3f96bdea7595b7",
+        "spec": "24dc987b119b61cfd8172c7f3bf971c6bd77291388256ed6e1ef7da35ddf2fe1"
+      },
+      "source_sha256": "2a53159aa2e67b9080d803faece17cb0538a6487ff80429475722007633dc0ae",
+      "material_median": [
+        22,
+        122,
+        145
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "e050d273859ccbf53d65e4bc506276839629f9fda3afd193ab4560315639b998",
+      "authoring_files": [
+        "cbp_daemon_red_paint.recipe.json.gz",
+        "cbp_daemon_red_spec.recipe.json.gz",
+        "cbp_daemon_red_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_daemon_red_paint.recipe.json.gz": "1d49029b522b02b13eb994521f2f57c0e0e0c320bfdddec7e12cf2713acd8c18",
+        "cbp_daemon_red_spec.recipe.json.gz": "83b62e23bbdedfb89fbe52d0b437c91293769cdc5cce3a5813b333cb04a1ec4c",
+        "cbp_daemon_red_vector.py": "9412caef3d158768d2fa4b19ef325f7595e2850bb9c27bb91ad4b05c51e65d43"
+      }
+    },
+    {
+      "id": "cbp_datastream",
+      "name": "Netrun: Data Braid",
+      "idea": "Fine turquoise pulse beads run through pink braided fiber-optic strands.",
+      "revision": "ERA120-PROCEDURAL-61529d6e146e",
+      "asset_sha256": {
+        "paint": "5936214105198c5585c3c8c92248d4ae17d216b3c0c44bc4f6da80c94a7cfa63",
+        "spec": "61529d6e146e3d27b6022fabe0a1dc3dd26f280c1dc21cce1a07da70bc15eb78"
+      },
+      "source_sha256": "c8cdbf7b681a01babdc04ec2141921f8fae6d56e222a9761fe6b0aebc77e0db5",
+      "material_median": [
+        44,
+        106,
+        95
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "a07c739ae2153a376ab346a52ff335719d6dbbbed3d8f42b2c1d40caf13cedd3",
+      "authoring_files": [
+        "cbp_datastream_paint.recipe.json.gz",
+        "cbp_datastream_spec.recipe.json.gz",
+        "cbp_datastream_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_datastream_paint.recipe.json.gz": "d0165b67dcc15cdefecd5872df75837437dda26875fe9ca6bb402722abf2353f",
+        "cbp_datastream_spec.recipe.json.gz": "4fbe5f60cc3c1896b265cb6c1fd0bcc318df76cfd5f65c6e8137ab9272efdf13",
+        "cbp_datastream_vector.py": "2af7b5ec31b569f20934ef8b997eca312f68ca7497cc0d17e965b0083ed24fa9"
+      }
+    },
+    {
+      "id": "cbp_deep_archive",
+      "name": "Netrun: Archive Foil",
+      "idea": "Copper micro-engraved tabs with emerald index cuts and sapphire lacquer pores.",
+      "revision": "ERA120-PROCEDURAL-18dcf6db5935",
+      "asset_sha256": {
+        "paint": "d0c30b27f926db1e6506a5da3307b944729bf9802c4575c24fcda0a87ae2f76a",
+        "spec": "18dcf6db5935fa6294dcf773f94e354d1c6c66a162df11156661d4663e8052af"
+      },
+      "source_sha256": "bd254299d92c44b081423e3d5ad3a1a5dfcafb71c62ac434e6462d713e5fb5e0",
+      "material_median": [
+        214,
+        47,
+        118
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "967c1d920644bfb5ecff6a95f3cee8289618b7b2607190fa9754922622ba1d59",
+      "authoring_files": [
+        "cbp_deep_archive_paint.recipe.json.gz",
+        "cbp_deep_archive_spec.recipe.json.gz",
+        "cbp_deep_archive_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_deep_archive_paint.recipe.json.gz": "933ff154b8a542e6249225a3b727b3ea2a5fa06bd8922f24bc32cc9518be1b52",
+        "cbp_deep_archive_spec.recipe.json.gz": "9ba46d9ee0d5c5b3fc33d90b6d757935c61eceda41b5b446ad5e9b60486e5ecc",
+        "cbp_deep_archive_vector.py": "5002422df648723ef686eee61660306e01f32b6674e089de7ada44f9f3a1e119"
+      }
+    },
+    {
+      "id": "cbp_encryption_lattice",
+      "name": "Netrun: Encryption Lattice",
+      "idea": "Tiny lime interlocking hooks form an irregular lattice over violet ceramic.",
+      "revision": "ERA120-PROCEDURAL-177180be5443",
+      "asset_sha256": {
+        "paint": "af71f794fae2552f28239d7849534612ff8e4084777791ca73d0e377fea36ccf",
+        "spec": "177180be5443013c8e9b52b01893e99170f4a7e5a6560060e781b9d7e77c6057"
+      },
+      "source_sha256": "eb2384bf26652e35489a6b6013cffca61fb3edd37a4fe9244913f5bace8d0fd7",
+      "material_median": [
+        27,
+        81,
+        128
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "a6440f0974add1e5a9dfe2a607d489f404345a98a03e6647dd5a5df41287c2db",
+      "authoring_files": [
+        "cbp_encryption_lattice_paint.recipe.json.gz",
+        "cbp_encryption_lattice_spec.recipe.json.gz",
+        "cbp_encryption_lattice_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_encryption_lattice_paint.recipe.json.gz": "3bf4ce51255304ff721ec33b377517998f5d044cbbdd97821402207e4310e8f6",
+        "cbp_encryption_lattice_spec.recipe.json.gz": "d010b64da74755b1795559309dde53f3e082084dbb112c22bc82c778bd72d597",
+        "cbp_encryption_lattice_vector.py": "221cebd3171e457b9a6c71824166adb63aa4445f4f3300109df9a3ac180f6a9e"
+      }
+    },
+    {
+      "id": "cbp_firewall_grid",
+      "name": "Netrun: Firewall Ceramic",
+      "idea": "Firewall labyrinth: vivid scarlet double-wall angular maze pathways enclosing varied blue octagonal bays, amber gates, magenta corner sparks, purple vent combs and mint stepped terminal dots.",
+      "revision": "ERA120-PROCEDURAL-731e8435564f",
+      "asset_sha256": {
+        "paint": "fbb99c276d01355a13b5bc57888c0c7b6b9648f83051e0ec565ab32b109723cc",
+        "spec": "731e8435564f50963374a9da39214dcfe9e7674912f2dd27addb507c3e6dac10"
+      },
+      "source_sha256": "21b22ad3f7d9cfe72cff66eb16f546e5d8e486c8ac31afbf443ed4a3cede1112",
+      "material_median": [
+        28,
+        89,
+        123
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "d48200b9b49ab74b931a03c1f33973a275bea7090123316941217ea3d8bf40b1",
+      "authoring_files": [
+        "cbp_firewall_grid_paint.recipe.json.gz",
+        "cbp_firewall_grid_spec.recipe.json.gz",
+        "cbp_firewall_grid_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_firewall_grid_paint.recipe.json.gz": "b23fc963353ae25fe48b182c6d3c8dc711c9159b0dcfa09d52ba28209ad81a36",
+        "cbp_firewall_grid_spec.recipe.json.gz": "98cd49587215f3f05682d191c25af0e5a11298082a49906aca029e84058fbcb1",
+        "cbp_firewall_grid_vector.py": "e4bc82d02a4c0742887b1705864d77e52b1d5ec5c483e097f816e3e8f0c41f91"
+      }
+    },
+    {
+      "id": "cbp_ghost_protocol",
+      "name": "Netrun: Ghost Protocol",
+      "idea": "Fine lilac translucent echoes overlap cyan etched fragments and rose pin glints.",
+      "revision": "ERA120-PROCEDURAL-eda1bddc9559",
+      "asset_sha256": {
+        "paint": "67b1636d179da9a7f21c940542c4eb6179de15ba006454551fdd93c74420a6f7",
+        "spec": "eda1bddc9559b385c83865ce8666420249ca178927d2449f3fd0a90643cb0d03"
+      },
+      "source_sha256": "dfe16d4b3d80c0d8aa220fecf2c827ede103a031feb3e753846076a7f5d5cbf0",
+      "material_median": [
+        110,
+        51,
+        219
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "02d57bc28545960d2651ac4fb57ef55623b20da9ed50862b99b285f2d7563b65",
+      "authoring_files": [
+        "cbp_ghost_protocol_paint.recipe.json.gz",
+        "cbp_ghost_protocol_spec.recipe.json.gz",
+        "cbp_ghost_protocol_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_ghost_protocol_paint.recipe.json.gz": "8c7208337cbd56c1efa10f43e782a60e63778c46dd9049f7f68108d7bfa03577",
+        "cbp_ghost_protocol_spec.recipe.json.gz": "24bbf2acd47a7d78c8e6a100d305c9da78c49fb7c6cd41e8a5383e81666e834c",
+        "cbp_ghost_protocol_vector.py": "ad25a640ded3d284697b28df851a2370a6b811563739821d71b64a13d3a574bb"
+      }
+    },
+    {
+      "id": "cbp_ice_wall",
+      "name": "Netrun: Cryo Prism",
+      "idea": "Fine turquoise frost needles grow between pink glass prisms and cobalt pores.",
+      "revision": "ERA120-PROCEDURAL-58697dcb4b85",
+      "asset_sha256": {
+        "paint": "1113d32759cecc81c1e6501436c25dfa3d340834b860b30e0b579d60588ad188",
+        "spec": "58697dcb4b8581d840a8722aa6ca5d855fe0cd958e4dff2429bc035db585d697"
+      },
+      "source_sha256": "10a6f2e2529310b55051d2447924e6d7027db3c7ef93f9274e5b770982e91b22",
+      "material_median": [
+        138,
+        69,
+        198
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "03f0e37d5454e0297702b56c08e31e8ae4a9df5650c8c964f4389f328501216a",
+      "authoring_files": [
+        "cbp_ice_wall_paint.recipe.json.gz",
+        "cbp_ice_wall_spec.recipe.json.gz",
+        "cbp_ice_wall_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_ice_wall_paint.recipe.json.gz": "3b39645ac5f00aae496bbe9190f80f78fdd2834591c43c1a0a6f1ce69fd9be02",
+        "cbp_ice_wall_spec.recipe.json.gz": "60ca76f9a8d74264700f8959b4a80dc0734a71c6e1b32a031e847e401d180ec2",
+        "cbp_ice_wall_vector.py": "149a6b48495613ced03174bc9e40d2126729435401153543ed894e7ed26ed980"
+      }
+    },
+    {
+      "id": "cbp_neural_static",
+      "name": "Netrun: Neural Static",
+      "idea": "Fine yellow and pink synaptic specks branch between blue insulating grains.",
+      "revision": "ERA120-PROCEDURAL-42dd3e1f5e65",
+      "asset_sha256": {
+        "paint": "ef8c8e888478d0b1f64549892c5c5d101844ce8037accedc6474ad8c13ea9be6",
+        "spec": "42dd3e1f5e6580d067d76befd6f260055fed7c75b0469745b9c4cf962c657036"
+      },
+      "source_sha256": "25ec8e98a3cb5119cc62336f3350a67cde476aa87900a964796b8171322a2149",
+      "material_median": [
+        22,
+        84,
+        122
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "c98b8d917be93f0ff59e725cf56200af8e927a0119bb6e66dc7f3a7e680af07c",
+      "authoring_files": [
+        "cbp_neural_static_paint.recipe.json.gz",
+        "cbp_neural_static_spec.recipe.json.gz",
+        "cbp_neural_static_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_neural_static_paint.recipe.json.gz": "c1b64b6c66864db1a428f3444282cff4a819d8a88f5b13059a40ea57dd5be821",
+        "cbp_neural_static_spec.recipe.json.gz": "12cc21b51d2840fe15e75bf7e0c2c38f6ccb67eb23f1c0187ac69329a6992a29",
+        "cbp_neural_static_vector.py": "732c53b7e1de2e83c8df130bdaced882d4a757e0ada3322401d7df9b699c0653"
+      }
+    },
+    {
+      "id": "cbp_packet_loss",
+      "name": "Netrun: Packet Loss",
+      "idea": "Fine orange punched pixels and cyan displaced slivers interrupt purple foil.",
+      "revision": "ERA120-PROCEDURAL-9db2ce483e4e",
+      "asset_sha256": {
+        "paint": "b477d7da87d7f96285dafdf0a2cdd354e54bf9b1b498c2bed19c2f912a6706e9",
+        "spec": "9db2ce483e4eb09f5689aa604e0bbdca032cfbf9dd75a13d7222cec500494fc0"
+      },
+      "source_sha256": "caa7bd06da9ae551e1f2cf4eb52069b13439adc713f5f628f0828ed265ee916e",
+      "material_median": [
+        166,
+        27,
+        64
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "980f21a5d82e1744365dfb3aa6844b4516b04e23893f17f39a4fd9d63d97129b",
+      "authoring_files": [
+        "cbp_packet_loss_paint.recipe.json.gz",
+        "cbp_packet_loss_spec.recipe.json.gz",
+        "cbp_packet_loss_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_packet_loss_paint.recipe.json.gz": "2ffdc9477c2360534c32b0abc53e5cb3057d4655ffff7d8037f2e68f38d1a8a6",
+        "cbp_packet_loss_spec.recipe.json.gz": "a7dbfbc01c43a079c2be68546ba446ddb95b3380394e7c2179abed069459adca",
+        "cbp_packet_loss_vector.py": "ba85776b583da1a84e45d64cd1e70017d6518b05bb626707ace7439e310c12b7"
+      }
+    },
+    {
+      "id": "cbp_quantum_violet",
+      "name": "Netrun: Quantum Violet",
+      "idea": "Tiny violet interference rings cross lime phase slivers and pink optical grains.",
+      "revision": "ERA120-PROCEDURAL-cdab7fa75410",
+      "asset_sha256": {
+        "paint": "b9d70962c277e4432687cb9c7cee0a8243433aa80e84767babbb46d748b4e253",
+        "spec": "cdab7fa75410c104e17bea07d528407655cbb9ca5fef9eb05e3e9a6277689f12"
+      },
+      "source_sha256": "f9a43124403fad76f949a7dc88fe633f6660525253da1c63d32ecd19b87bfdf3",
+      "material_median": [
+        142,
+        38,
+        142
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "885bf09a30c71bcf1112f83ce63dc6307a353d15ac47c694f246f5bbac15f066",
+      "authoring_files": [
+        "cbp_quantum_violet_paint.recipe.json.gz",
+        "cbp_quantum_violet_spec.recipe.json.gz",
+        "cbp_quantum_violet_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_quantum_violet_paint.recipe.json.gz": "c1703941e3b502dae46d73452a040f34c9dc6b8e55a60fe907adba93f895aba9",
+        "cbp_quantum_violet_spec.recipe.json.gz": "7d545557d921426c0e5eb1def09c3e23e4a5dc6662c60e3ddb96b3020b9e1f9a",
+        "cbp_quantum_violet_vector.py": "8d833d49416e779c000cd07bb9ee5acf897ff221a8994da8680ec62b0915dfe6"
+      }
+    },
+    {
+      "id": "cbp_root_access",
+      "name": "Netrun: Root Access",
+      "idea": "Tiny gold keyway cuts and red contact teeth lock into emerald enamel.",
+      "revision": "ERA120-PROCEDURAL-279ddfa07f7f",
+      "asset_sha256": {
+        "paint": "40580e856a601b02daffb205331deeaa42c2c7236a4f9bd5764940e3d41c1a34",
+        "spec": "279ddfa07f7f5d235c9a4e1eae8507a8dc212326e9066f53b2d757dc63719f01"
+      },
+      "source_sha256": "89986ae264ad77fbd4c6b1e61aa71b3a23fefb243b8fa5482640e15854e4dbed",
+      "material_median": [
+        24,
+        81,
+        153
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "93e711e7845d6b9319d4417cbcc0ab5aaaee63855209a2d30a3e3f335300e979",
+      "authoring_files": [
+        "cbp_root_access_paint.recipe.json.gz",
+        "cbp_root_access_spec.recipe.json.gz",
+        "cbp_root_access_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_root_access_paint.recipe.json.gz": "48a3604b1528948009c33fada2e3e42f603907c454075c83d6b9f2820478efb8",
+        "cbp_root_access_spec.recipe.json.gz": "c2496ba8bdf3cb3f8a77427cdd56a6a3221aacd1ae3f704e9201ada48bc6103a",
+        "cbp_root_access_vector.py": "26e2490f40dd6c948e9faa748bfd0224459e747c8de35549f29b293bff9670c3"
+      }
+    },
+    {
+      "id": "cbp_trace_route",
+      "name": "Netrun: Trace Route",
+      "idea": "Fine cyan right-angle traces link orange nodes across magenta etched enamel.",
+      "revision": "ERA120-PROCEDURAL-bee6145db8f9",
+      "asset_sha256": {
+        "paint": "ee9f7b14c2f23f77e1081cc3a9a5228c8a976a9d2fd1dbb28043ede7565f0284",
+        "spec": "bee6145db8f9a686ab6d6a564d992754492ac71d2347a519b3965cfc122476e9"
+      },
+      "source_sha256": "5e8b2b09b01a27c5c4c6c1cfadb8560b1aa4e77943695775c9fde1b2e17ae14d",
+      "material_median": [
+        21,
+        99,
+        142
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "d4fcc88c8a2cdf803353018fc2e80bd96a7d8ac25a87d0bbf06659c6cbe50645",
+      "authoring_files": [
+        "cbp_trace_route_paint.recipe.json.gz",
+        "cbp_trace_route_spec.recipe.json.gz",
+        "cbp_trace_route_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_trace_route_paint.recipe.json.gz": "4e4173aae1a8906a4b9438a6adafac5f29d28bf5b8cbb27bce4cbf549909ddf9",
+        "cbp_trace_route_spec.recipe.json.gz": "8647b5a09b33f62fab1d62b784ce83b89e0da4aabe1c15e5e477fa0c3f5fad17",
+        "cbp_trace_route_vector.py": "ef62c145364b80136dad85bf29ea1ca92d15b1501e68de8dc78a0c04494e156d"
+      }
+    },
+    {
+      "id": "cbp_worm_trail",
+      "name": "Netrun: Worm Trail",
+      "idea": "Fine lime segmented curls with pink etched teeth and copper node grains.",
+      "revision": "ERA120-PROCEDURAL-0f9585b351fe",
+      "asset_sha256": {
+        "paint": "a7ab36ed0533e9ab3f4cc1d7eaa97bce77730f1bcc247811b18e738418e7be15",
+        "spec": "0f9585b351fe087f995e18ce7b348212b8e7187d50adf6d629f50ebca149e6a3"
+      },
+      "source_sha256": "fbdc345bca8ce3b7e09ac8b375bed1dbf36bef0b1eac5b7b98ba8e576f0bca72",
+      "material_median": [
+        23,
+        92,
+        140
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "172dadaacad1bc8da9868423cbabe07c390e8e5847bc2b75830ab32885dbab48",
+      "authoring_files": [
+        "cbp_worm_trail_paint.recipe.json.gz",
+        "cbp_worm_trail_spec.recipe.json.gz",
+        "cbp_worm_trail_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_worm_trail_paint.recipe.json.gz": "7c9f94856609eea631a1eae0d8a91b661b88d76fede3ce0c6aa6289de8b43391",
+        "cbp_worm_trail_spec.recipe.json.gz": "bbebb8d2d7f931beae28abaf79b94bc32e0f72a71770b35785a6348d4f4d1c16",
+        "cbp_worm_trail_vector.py": "585db9d4af055a4a2d221c0920d3c12d0d00f44407f58056dbfaeef058540baf"
+      }
+    },
+    {
+      "id": "cbp_ash_fall",
+      "name": "Sprawl: Ember Fallout",
+      "idea": "Emberfall lacquer: densely interlocking electric-orange feather-like cinder blades, magenta heat borders, cyan crystalline spark clusters, purple carbon splinters and sharp dark gaps.",
+      "revision": "ERA120-PROCEDURAL-95e4613e97ce",
+      "asset_sha256": {
+        "paint": "05a4425289689e30cdcaa5757db4ffdf20a74e0de7e4ecb71eb79b0604ff1e3c",
+        "spec": "95e4613e97ce578cfe44ec5526c3fa224e1a6cb691267c130eb978531a2753a6"
+      },
+      "source_sha256": "a15b89745ebe02611e3c6950d5a5924209518398c18d47632fbfad64af2aa885",
+      "material_median": [
+        46,
+        90,
+        111
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "7c296a1011537c543822082378461a29a1ce858e944d89f010dd8b6ab88a2686",
+      "authoring_files": [
+        "cbp_ash_fall_paint.recipe.json.gz",
+        "cbp_ash_fall_spec.recipe.json.gz",
+        "cbp_ash_fall_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_ash_fall_paint.recipe.json.gz": "bf86a8f33404e7cd62120909585e6cbb9586af2fd4383cc215d7eb33d06874fd",
+        "cbp_ash_fall_spec.recipe.json.gz": "76d8fe336885f753c00f5fc5e121b076241fde0b15bb009d97cc74f3d600a017",
+        "cbp_ash_fall_vector.py": "3928592f73b600c1ffc35d9378fc564f1ee1f4e1d86f253e9dcf70245ff06340"
+      }
+    },
+    {
+      "id": "cbp_biohazard_bloom",
+      "name": "Sprawl: Biohazard Bloom",
+      "idea": "Lime spore rosettes and pink gel pores spread across cobalt polymer.",
+      "revision": "ERA120-PROCEDURAL-8b88b0dc50c1",
+      "asset_sha256": {
+        "paint": "5c2e8b633fb341e829274c2600f82d3476d6a61d8570d74a859a7225fa65fe6a",
+        "spec": "8b88b0dc50c1c5a68f04f2c8d47987fbfacb6e41fd7d5882c30d92883a7e3d68"
+      },
+      "source_sha256": "e58c7eeb174812317b2e26d7909b7a1dc4d9225d68ee34f8a4641dc43d7a56ee",
+      "material_median": [
+        32,
+        101,
+        132
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "cc13a24263972973714e79e1feef59e4239e25afa50216db0f5b20de52c855cd",
+      "authoring_files": [
+        "cbp_biohazard_bloom_paint.recipe.json.gz",
+        "cbp_biohazard_bloom_spec.recipe.json.gz",
+        "cbp_biohazard_bloom_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_biohazard_bloom_paint.recipe.json.gz": "df058a9744c27e9fae807be313224a289c96523c01e270ba695b25a30c1012d2",
+        "cbp_biohazard_bloom_spec.recipe.json.gz": "a7aca7398450b843a905e7ed0d09f40d4d5cf5a1118fb2b54de9922f43197fb8",
+        "cbp_biohazard_bloom_vector.py": "9848e2a35d1f53baa53077afc31069678eaaa0ac76062d56221a9bb88e0e41a5"
+      }
+    },
+    {
+      "id": "cbp_concrete_rot",
+      "name": "Sprawl: Reclaim Mosaic",
+      "idea": "Cyber aggregate repair: coral and turquoise narrow branching repair seams crossing angular indigo lacquer islands, embedded gold micro-grid screens, magenta hexagonal inspection plugs, white ceramic grit constellations.",
+      "revision": "ERA120-PROCEDURAL-12e29d427b46",
+      "asset_sha256": {
+        "paint": "59658791df818917742f90730ebfdea7cfe79dd247dc44686e7103aa9de19967",
+        "spec": "12e29d427b464fd228fac2fd3b103030b87a43ed7d4e9c332e1c0cec9f689d7e"
+      },
+      "source_sha256": "6ab3b96ef9f7c9be01dd80e8a66b84a9e916f7bf9edf813c3fcbe15fa86f10fe",
+      "material_median": [
+        19,
+        86,
+        140
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "59b7b4c9b5ed29b045f9e96123c1e297f50ead415444359d525b3e74e141a415",
+      "authoring_files": [
+        "cbp_concrete_rot_paint.recipe.json.gz",
+        "cbp_concrete_rot_spec.recipe.json.gz",
+        "cbp_concrete_rot_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_concrete_rot_paint.recipe.json.gz": "5f44418bc16b316c36676c2896df5c426922043df3cb12ef916953af7e63ba94",
+        "cbp_concrete_rot_spec.recipe.json.gz": "379b56db79cc868aeedf5601ab56cc7e60be63c97175880fe7a57395b3ee5760",
+        "cbp_concrete_rot_vector.py": "f3220d563623c61f40282ae91f9983e56738a4ced0e616061cdd4f42705c9ba5"
+      }
+    },
+    {
+      "id": "cbp_corp_glass",
+      "name": "Sprawl: Corporate Dichroic",
+      "idea": "Corporate prism lattice: emerald transparent polygon windows with layered internal gold filament grids, pink spectral bevels, cyan split corner brackets, violet microdot security bands.",
+      "revision": "ERA120-PROCEDURAL-855290e56393",
+      "asset_sha256": {
+        "paint": "fd99381e8d683b3c11cdd99ed9a7e6d191a77d140836364d12ba3a8a672f5bf8",
+        "spec": "855290e56393f53986f04a4a8da3c48d627bc276d76ac5f6ccdc5fe884a6a3ef"
+      },
+      "source_sha256": "74f67fddfde42d4a2c108e4aaf2c46019b2a6528e7a58405bdd067df44cf744a",
+      "material_median": [
+        23,
+        88,
+        119
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "2fc0992b439c626addc0e63806ba40ec9b5013e25e7a5bb21c58b3b7c5a42d87",
+      "authoring_files": [
+        "cbp_corp_glass_paint.recipe.json.gz",
+        "cbp_corp_glass_spec.recipe.json.gz",
+        "cbp_corp_glass_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_corp_glass_paint.recipe.json.gz": "ebab0a5465a26360a5cfab384c14d44ab9092aaf924723f47b2821188f30934b",
+        "cbp_corp_glass_spec.recipe.json.gz": "4b64ee3221b9dc1cce2c8fc3482fbb368c12d18056506f34d059c28ef2101bd4",
+        "cbp_corp_glass_vector.py": "a37beb93f381532f480ca622dcaeeb92e3fc29d725f33e2f12d3aa7ef4343aad"
+      }
+    },
+    {
+      "id": "cbp_corp_grey",
+      "name": "Sprawl: Security Foil",
+      "idea": "Fine vermilion guilloche curls with teal foil teeth and violet embossed dots.",
+      "revision": "ERA120-PROCEDURAL-3630fc882996",
+      "asset_sha256": {
+        "paint": "0e906b45ff4aae0845ad147014c388b9689c44894f3fe6c4b85e92f0d8f5a525",
+        "spec": "3630fc882996a3ab86e49fc1cecd8fbb2113fcec9f149d145e5125e75544942c"
+      },
+      "source_sha256": "2992f6c508d470eeda5ad0e5b124006f0fd75e7bb3584aafa817ba5269dd5d21",
+      "material_median": [
+        22,
+        96,
+        141
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "ca3c0d95f9de2f74d8c2c721cdec440b8d1c6472c90d924712879545d43f0571",
+      "authoring_files": [
+        "cbp_corp_grey_paint.recipe.json.gz",
+        "cbp_corp_grey_spec.recipe.json.gz",
+        "cbp_corp_grey_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_corp_grey_paint.recipe.json.gz": "980096f6a570f5a670b7d420861ec4345a18390a590dd8de3f2c8a91382eeb35",
+        "cbp_corp_grey_spec.recipe.json.gz": "e4a05f572573dc62dfd4e9f005ee3680627f73ee761eaaef2d2fe30618218a17",
+        "cbp_corp_grey_vector.py": "9792c310daed04014b2fdbc51e151c7cb2136492b1ac2a9f33ad74880c8176d4"
+      }
+    },
+    {
+      "id": "cbp_cracked_solar",
+      "name": "Sprawl: Solar Fracture",
+      "idea": "Tiny sapphire solar-cell shards with copper busbars and magenta fractured edges.",
+      "revision": "ERA120-PROCEDURAL-4f031c2356ec",
+      "asset_sha256": {
+        "paint": "09685942a5a2e3f1fd734020a8c54751c9adfbfd58af0e31dad496ac30e49875",
+        "spec": "4f031c2356ecb9fd62fb23fc8e4f83d8edfd06d83cdb9755b275a3a353c4db2a"
+      },
+      "source_sha256": "3331a77c8f0b9311f35a283dece02bd2190712aae5a5519905193e96182f52d5",
+      "material_median": [
+        48,
+        103,
+        185
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "a382f78c33a98bc81bfd79420d5be7bf8ee46be40d3c65c51b6751366c392a12",
+      "authoring_files": [
+        "cbp_cracked_solar_paint.recipe.json.gz",
+        "cbp_cracked_solar_spec.recipe.json.gz",
+        "cbp_cracked_solar_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_cracked_solar_paint.recipe.json.gz": "f70efaa62955c21d4cfcdd302226ab2041ca3a1181b344486028ee5a4519c2c9",
+        "cbp_cracked_solar_spec.recipe.json.gz": "33b7af2ad9e0cf144f191e96401c29aaf7d6bc410cfc56aa205ea4077418f094",
+        "cbp_cracked_solar_vector.py": "03359188c4204473b08c9c7e9d700a07936801e74576156311d28b9510b5f4f6"
+      }
+    },
+    {
+      "id": "cbp_duct_grime",
+      "name": "Sprawl: Coolant Capillary",
+      "idea": "Tiny lime coolant channels thread through purple seals and copper mesh.",
+      "revision": "ERA120-PROCEDURAL-9fea50d84168",
+      "asset_sha256": {
+        "paint": "c85f0b2000e5962eb031f79cdd057f3ab7b18b82196fadc48da868b83f5f5a76",
+        "spec": "9fea50d8416883b72b170b9dcb394180b8d0f9b7561661e61d8eb6ded58e6ab9"
+      },
+      "source_sha256": "cda42efd44da29bad1ea3075897ac34ea2d53be6659b20a7770ac3c322c0dcdf",
+      "material_median": [
+        41,
+        137,
+        146
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "f45d0207e4b352393a3cb205ff73430d262944ccfad66f09ac4d2dec597d5282",
+      "authoring_files": [
+        "cbp_duct_grime_paint.recipe.json.gz",
+        "cbp_duct_grime_spec.recipe.json.gz",
+        "cbp_duct_grime_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_duct_grime_paint.recipe.json.gz": "3bcd65afd21df92e040411dca9e8843f62ca5a49039a35cb5f5f5a800b09cc0b",
+        "cbp_duct_grime_spec.recipe.json.gz": "8dbfe866dc9559b4e6a05b86effd525512685980883aa064a75954957407c563",
+        "cbp_duct_grime_vector.py": "df5835bd4af8ecd90b1be0ea4e84294c0c9896a4b7350b4385ce10908aac3054"
+      }
+    },
+    {
+      "id": "cbp_hazard_stripe",
+      "name": "Sprawl: Hazard Microprint",
+      "idea": "Hazard origami enamel: interleaved tiny orange-black chevron fins with sharp cobalt folds, hot-pink edge wiring, gold warning studs, turquoise cutout triangles and violet recessed seams.",
+      "revision": "ERA120-PROCEDURAL-e0e23358d437",
+      "asset_sha256": {
+        "paint": "a16e6601c6bd72b3343de3facc2b64ccea28d856aee6ddfa2105d5486f52885b",
+        "spec": "e0e23358d437276a11254982eec246df187fdaa861622b5c7c9157456f649b02"
+      },
+      "source_sha256": "ff0b96020aee5ae831ea646ba004a353d91d76f72c44026925bd05a028a40dff",
+      "material_median": [
+        23,
+        97,
+        171
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "92b13fbcef2e67d9202e1320c8792e997117f6c4a0ea4fd89bf3da82b606a3f3",
+      "authoring_files": [
+        "cbp_hazard_stripe_paint.recipe.json.gz",
+        "cbp_hazard_stripe_spec.recipe.json.gz",
+        "cbp_hazard_stripe_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_hazard_stripe_paint.recipe.json.gz": "36b09c44a3055f340167ac1e6f898ed2b42f474b559360922780b116a23b4287",
+        "cbp_hazard_stripe_spec.recipe.json.gz": "41f6f5cd162cb275959abd73e4cb2048ad9fd7ca1b518f49591dac1c8200e673",
+        "cbp_hazard_stripe_vector.py": "127fd29b76a31b8d8e2799d6eb65313acfe487e7ec7b5a3c9e9246b29de6f798"
+      }
+    },
+    {
+      "id": "cbp_oil_slick_puddle",
+      "name": "Sprawl: Oil Interference",
+      "idea": "Fine rose, gold and teal oil-film loops with violet meniscus pits.",
+      "revision": "ERA120-PROCEDURAL-fa967b220b6c",
+      "asset_sha256": {
+        "paint": "0262f3f645521433b39f77f84f1ad90683a8b96a84ce513e21b7cea6a22afa09",
+        "spec": "fa967b220b6c3f74e7eca9aa39206f024cd987644dd04d191783b8b7da1a4ded"
+      },
+      "source_sha256": "1fa1ddf68530768f53d0cb6f5f2d68cc72b0e6ea20574056384fe653796d2c5b",
+      "material_median": [
+        25,
+        113,
+        103
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "8f98e6d5ab1ad19461950981f21286e6b424df6487d19d375eb8624de9c82ca0",
+      "authoring_files": [
+        "cbp_oil_slick_puddle_paint.recipe.json.gz",
+        "cbp_oil_slick_puddle_spec.recipe.json.gz",
+        "cbp_oil_slick_puddle_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_oil_slick_puddle_paint.recipe.json.gz": "95ddbdac1a053ecebd0b5e3be8b6ff819b5c10c51341251ef8b8853ae5ebbe22",
+        "cbp_oil_slick_puddle_spec.recipe.json.gz": "814533c4b235791b4e89a3adaee3cead324e3f7245cf3037a581ea18713e442d",
+        "cbp_oil_slick_puddle_vector.py": "9c38ae884970aa0692d09a88dd6dfc45c9eeccb4d56236de295cc1172607b50a"
+      }
+    },
+    {
+      "id": "cbp_rad_warning",
+      "name": "Sprawl: Reactor Enamel",
+      "idea": "Radiation pulse lacquer: yellow-orange interrupted radial arcs radiating among cobalt nested triangles, scarlet hazard notches, magenta ion tracks and bright cyan microdots.",
+      "revision": "ERA120-PROCEDURAL-b4d74b6ff09e",
+      "asset_sha256": {
+        "paint": "67619cba48eda37ce641ec034cee76cf6f503b4a1cea4501a4a6ee6eca801b0e",
+        "spec": "b4d74b6ff09ee136df2368785e0d4e199b3e11a956e4c9a2133dee6a9f40d23b"
+      },
+      "source_sha256": "f9688fa9f58fe9adde790462ead86055488ffe910f126c8b8fccf5d04cc32fdc",
+      "material_median": [
+        22,
+        95,
+        126
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "de0e9d1b166cc59ea078469fa274f9e2d324d11836e61d10048147d4d160282b",
+      "authoring_files": [
+        "cbp_rad_warning_paint.recipe.json.gz",
+        "cbp_rad_warning_spec.recipe.json.gz",
+        "cbp_rad_warning_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_rad_warning_paint.recipe.json.gz": "f11125ce790d13d3eeb2d27c12a69adb997b4f176929770133c9a90934febda4",
+        "cbp_rad_warning_spec.recipe.json.gz": "3c5ff9f550e16dfbb6c56506360f38c698b09bd131a5f12b7698d13edf9d9796",
+        "cbp_rad_warning_vector.py": "cc53389d3f1441db37b5e5524888ecb98252cc35019232c59c8f6f2c2e0efdc3"
+      }
+    },
+    {
+      "id": "cbp_rebar_skeleton",
+      "name": "Sprawl: Copper Reinforcement",
+      "idea": "Tiny ribbed copper struts cross turquoise ceramic grit and fuchsia resin collars.",
+      "revision": "ERA120-PROCEDURAL-070d36235faf",
+      "asset_sha256": {
+        "paint": "33859684cd8c8182fb966a062e29c0211d8e728b464f8c0e4c4b3ec7e1c3aebd",
+        "spec": "070d36235faf78b866129e3709dfaa0b5fffd1c1b1e56f35950a8ba947ef0716"
+      },
+      "source_sha256": "110aea28d2978b7ed96f0e61560c54fb519b03d261f30c4c08dba43bde2ca3d8",
+      "material_median": [
+        119,
+        111,
+        121
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "ad178082a147d3471961e79bd697e1897af96ae8bc5c2abb555616b78fa73766",
+      "authoring_files": [
+        "cbp_rebar_skeleton_paint.recipe.json.gz",
+        "cbp_rebar_skeleton_spec.recipe.json.gz",
+        "cbp_rebar_skeleton_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_rebar_skeleton_paint.recipe.json.gz": "7a025450671ddce81197750649273b92059f6fefd4ca22770be00acb4ee7b4d5",
+        "cbp_rebar_skeleton_spec.recipe.json.gz": "e2923cef9b3b9ce99ced2451fa974ce5be3c5cd683090ce82ff5f00d753d0bfb",
+        "cbp_rebar_skeleton_vector.py": "5c310366cb235a00adc77c7d9e88b276180c2255a202029b3b1c3f5adcd2c695"
+      }
+    },
+    {
+      "id": "cbp_scav_rust",
+      "name": "Sprawl: Salvage Patina",
+      "idea": "Fine orange oxide scales with turquoise verdigris and ruby surviving enamel.",
+      "revision": "ERA120-PROCEDURAL-3afccef97b20",
+      "asset_sha256": {
+        "paint": "7af783f182225563d70faa6831c87caef6bdc4c7c68c314b893aec58f759bc75",
+        "spec": "3afccef97b208c0bb9d1786eb683f4a34cc14b2cc3c994227db78ef420795bff"
+      },
+      "source_sha256": "d53f247854d6ebe4342653d363bfd2ae69dd314d61b5a6458d1d870636899616",
+      "material_median": [
+        43,
+        142,
+        119
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "ccd76e39bf24471eed6d31a8c1bf3c11735ce12ac5e866c2a2c174f9506c83b9",
+      "authoring_files": [
+        "cbp_scav_rust_paint.recipe.json.gz",
+        "cbp_scav_rust_spec.recipe.json.gz",
+        "cbp_scav_rust_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_scav_rust_paint.recipe.json.gz": "bb2f9d7373b1eb73dc714ecb6111233dfd752846db13022cef3ff1ba507e38ad",
+        "cbp_scav_rust_spec.recipe.json.gz": "bf75c0bed79be2c8f7f73daf4cea21f1baa30f14d1d5675685b5645d51730e84",
+        "cbp_scav_rust_vector.py": "9e5ff6ec1c55366ff8fd538a51f3148e1ce9279826e781c97f9133e1fab39472"
+      }
+    },
+    {
+      "id": "cbp_scrap_weld",
+      "name": "Sprawl: Weld Spectrum",
+      "idea": "Laser-weld candy metal: precise narrow electric-blue overlapping scalloped weld beads, copper pinstripes, magenta heat halos, gold-polished seams, violet recess fillets, sparse bright silver spark diamonds.",
+      "revision": "ERA120-PROCEDURAL-393bedf4d178",
+      "asset_sha256": {
+        "paint": "4677063a09e1aea34ee15c9b08eff74dc344af64330f944890eb9e1ae857b696",
+        "spec": "393bedf4d178c6d0136829d93106a750404e1d4dd45a80eab63736662c2c03ad"
+      },
+      "source_sha256": "262ff4ec55afc0c756a0fdab59a233480f1b4ff16dd00c685bc700afc61c3f3a",
+      "material_median": [
+        217,
+        52,
+        121
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "f611cb1fb8f21b85c748aa6f5b14ddd3131ab1cd079e2dd4208e86eb6c75bf3e",
+      "authoring_files": [
+        "cbp_scrap_weld_paint.recipe.json.gz",
+        "cbp_scrap_weld_spec.recipe.json.gz",
+        "cbp_scrap_weld_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_scrap_weld_paint.recipe.json.gz": "beb4b78c2b5cc0a028694ea3c5e6ddf3baf65225ff1e08e54e8ada91f8a6a7f7",
+        "cbp_scrap_weld_spec.recipe.json.gz": "33d542ac639c8a287a795c20197cb3b20476dcec53f00c2c941cee7be1d5616e",
+        "cbp_scrap_weld_vector.py": "0fe92de523415867e9825873d6b2d2b9ab5a804fac686a0d88666ee0d85fb0b1"
+      }
+    },
+    {
+      "id": "cbp_sewer_bloom",
+      "name": "Sprawl: Algae Circuit",
+      "idea": "Biolume microgarden: sharp teal branching fernlike capillaries with lime bulb tips, coral curled spore fans, cobalt honeycomb pores, violet root knots and fine gold microbeads.",
+      "revision": "ERA120-PROCEDURAL-93f8cb34e177",
+      "asset_sha256": {
+        "paint": "1eacc5bc250cd4e992ad71c41c23c34ae3888678c76385a8b2b5ae7ab1aa2aae",
+        "spec": "93f8cb34e1773f30b2423c5c2ace020593022fb8047ebba8f4355d98de7b799b"
+      },
+      "source_sha256": "e4ed0e43c7826aa8b9abbcfbde395a48a3cff02ee29de01fca3c214d6ca60d6a",
+      "material_median": [
+        26,
+        102,
+        124
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "810922d7099a087aaf7c3f76705eafaecb31a9feec00166b161c29f88c2c8e69",
+      "authoring_files": [
+        "cbp_sewer_bloom_paint.recipe.json.gz",
+        "cbp_sewer_bloom_spec.recipe.json.gz",
+        "cbp_sewer_bloom_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_sewer_bloom_paint.recipe.json.gz": "8319880987d606d61a0a44bc9cc612920f5925b38175b897421aaff97ee1585b",
+        "cbp_sewer_bloom_spec.recipe.json.gz": "ebac145cbed3123c6f5660ba2ed5a44dca551be9eabff6fba22a3745740140e6",
+        "cbp_sewer_bloom_vector.py": "79db040ca81330e68c724ab4bf37fe4a49586f910b8a7a4d818880ea73a47875"
+      }
+    },
+    {
+      "id": "cbp_static_screen",
+      "name": "Sprawl: Signal Shatter",
+      "idea": "Signal fracture glass: compact crisp irregular cobalt polygon displays filled with clean cyan dash matrices, sharp scarlet scan segments, violet nested rectangles, amber pixel constellations and silver fractured rims.",
+      "revision": "ERA120-PROCEDURAL-2d8802a9ec8b",
+      "asset_sha256": {
+        "paint": "3511dc71b897051148af29825924c93686107a964c28d2f11747653a741f89eb",
+        "spec": "2d8802a9ec8b253ce81fac576746d167be043dbdd96b2f79d358b041092f67ca"
+      },
+      "source_sha256": "f51e5e9cd2234caf7b3c5d4a3c2f05c0b16f3193812b7c3d20f14e20af048950",
+      "material_median": [
+        22,
+        88,
+        112
+      ],
+      "authoring": "Procedural geometry; baked runtime maps",
+      "owner_approved_concept_version": "4cc758786edc7b613beeab5602a9305e2dddb6f9ae1262627099a01e75349e53",
+      "authoring_files": [
+        "cbp_static_screen_paint.recipe.json.gz",
+        "cbp_static_screen_spec.recipe.json.gz",
+        "cbp_static_screen_vector.py"
+      ],
+      "authoring_sha256": {
+        "cbp_static_screen_paint.recipe.json.gz": "128a79d08417a118095e785b04153ad0f9fbb542f4e065ef997547c3f6a008b6",
+        "cbp_static_screen_spec.recipe.json.gz": "09168d974538d2bc69471c4de4c35d12dd7e53270515c56042140cf6f2c2eef5",
+        "cbp_static_screen_vector.py": "c005bfa188b4618ea68d3a664246d9efaae69af7b3c39b0573839af43c4bcde2"
+      }
+    }
+  ]
+}

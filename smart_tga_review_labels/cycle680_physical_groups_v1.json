@@ -1,0 +1,10 @@
+{"version":1,"inspection_records":"_smart_tga_runs/cycle680_dlm_dominant_member_confirmation/inspection_records.json","physical_group_audit":"_smart_tga_runs/cycle680_dlm_dominant_member_confirmation/physical_groups/audit.json","review_scope":"Cycle 680 manual classification of every physical-group sheet bbox in immutable audit order after reviewing source and all four owner sheets.","casts_votes":false,"ownership_authority":false,"paint_group_targets":{
+ "dirtlatemodel 350/car_num_23371.tga":["template","paint","paint","paint","sponsors","sponsors","paint","uncertain","paint","paint","paint","paint","paint","paint","paint","sponsors","uncertain","uncertain","template","uncertain","numbers","uncertain","sponsors","paint","uncertain","uncertain","uncertain","uncertain","sponsors","sponsors","sponsors","sponsors"],
+ "dirtlatemodel 350/car_num_244610.tga":["template","template","paint","sponsors","template","paint","sponsors","template","sponsors","paint","paint","paint","paint","sponsors","paint","paint","paint","paint","paint","paint","paint"],
+ "dirtlatemodel 350/car_num_25658.tga":["template","sponsors","paint","sponsors","sponsors","sponsors","sponsors","sponsors","numbers"],
+ "dirtlatemodel 350/car_num_263952.tga":["paint","sponsors","sponsors","paint","sponsors","paint","paint","paint","sponsors","paint","paint","paint","sponsors"],
+ "dirtlatemodel 358/car_num_1256704.tga":["paint","paint","sponsors","sponsors","uncertain","sponsors","paint"],
+ "dirtlatemodel 358/car_num_1260091.tga":["template","template","template","template","template","sponsors","template","sponsors","paint","sponsors","sponsors","paint"],
+ "dirtlatemodel 358/car_num_1261526.tga":["paint","sponsors","sponsors","sponsors","sponsors","paint","uncertain","uncertain","paint","sponsors","sponsors","sponsors","paint","paint","sponsors","sponsors","paint","paint","sponsors"],
+ "dirtlatemodel 358/car_num_1268390.tga":["paint","paint","sponsors","sponsors","sponsors","paint","paint","sponsors","sponsors","sponsors","sponsors","numbers","sponsors","sponsors","sponsors","sponsors","sponsors","sponsors","sponsors","template","sponsors","paint","paint"]
+}}

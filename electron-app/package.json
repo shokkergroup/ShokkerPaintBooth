@@ -1,7 +1,7 @@
 {
   "name": "shokker-paint-booth-v6",
-  "version": "6.2.0",
-  "description": "Shokker Paint Booth V6 — iRacing Spec Map Tool",
+  "version": "10.0.3",
+  "description": "Shokker Paint Booth V10 \u2014 iRacing Spec Map Tool",
   "main": "main.js",
   "author": "Shokker Group",
   "license": "UNLICENSED",
@@ -13,6 +13,7 @@
     "check-runtime-sync": "node ../scripts/sync-runtime-copies.js --check",
     "prebuild": "npm run copy-server",
     "build": "electron-builder --win --x64",
+    "build:contributors": "node build-contributor-package.js",
     "publish": "electron-builder --win --x64 --publish always"
   },
   "devDependencies": {
@@ -21,39 +22,78 @@
   },
   "build": {
     "appId": "com.shokker.paintbooth.v6",
-    "productName": "Shokker Paint Booth V6",
+    "productName": "Shokker Paint Booth V10",
+    "electronLanguages": [
+      "en-US",
+      "en-GB"
+    ],
     "directories": {
       "output": "dist"
     },
     "win": {
-      "target": "nsis",
+      "target": "nsis-web",
       "icon": "icon.ico",
-      "artifactName": "ShokkerPaintBoothV6-${version}-Setup.${ext}"
+      "artifactName": "ShokkerPaintBoothV10-${version}-Web-Setup.${ext}"
     },
     "nsis": {
       "oneClick": true,
       "allowToChangeInstallationDirectory": false,
       "createDesktopShortcut": true,
-      "shortcutName": "Shokker Paint Booth V6"
+      "shortcutName": "Shokker Paint Booth V10",
+      "differentialPackage": false,
+      "deleteAppDataOnUninstall": false,
+      "include": "installer.nsh"
     },
     "files": [
       "main.js",
       "preload.js",
       "license.html",
-      "license-preload.js"
+      "license-preload.js",
+      "update-check.js",
+      "spb-license-secrets.json"
     ],
     "extraResources": [
       {
         "from": "server",
         "to": "server",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*",
+          "!pyserver/**",
+          "!output/**",
+          "!_staging/**",
+          "!**/__pycache__/**",
+          "!**/*.pyc",
+          "!**/*.pyo",
+          "!**/*.log",
+          "!_copy-manifest.json",
+          "!server.exe",
+          "!shokker-paint-booth-v5.exe",
+          "!python/Lib/site-packages/**/tests/**",
+          "!python/Lib/site-packages/**/test/**",
+          "!python/Lib/site-packages/**/*.pyi",
+          "!python/Lib/site-packages/pip/**",
+          "!python/Lib/site-packages/pip-*.dist-info/**",
+          "!python/Lib/site-packages/**/*.a",
+          "!python/Lib/site-packages/**/*.lib",
+          "!assets/defaults/ORIGINAL_blank_canvas_2048_white.tga",
+          "!assets/patterns/80s/synthwave_pure.png",
+          "!assets/patterns/80s/synthwave_futureshock.png",
+          "!assets/patterns/80s/synthwave_future_pure.png",
+          "!image_forge/_originals/**",
+          "!thumbnails/audit/**",
+          "!thumbnails/_spb74_test/**",
+          "!assets/shokker-forge-showcase/source/**",
+          "!assets/reference_textures/colorshoxx/_wilds_source_contact.png",
+          "!assets/reference_textures/colorshoxx/ai_reference_2026_05_27/source/**",
+          "!thumbnails/base_spec_preview/**"
+        ]
       }
     ],
     "asar": true,
     "publish": {
-      "provider": "github",
-      "owner": "ShokkerGroup",
-      "repo": "ShokkerPaintBooth"
+      "provider": "generic",
+      "url": "https://pub-9969ab01838a4d69bb55822f42553904.r2.dev",
+      "channel": "latest"
     }
   },
   "dependencies": {

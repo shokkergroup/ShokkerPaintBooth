@@ -1,0 +1,155 @@
+{
+ "domain": "pattern_pages",
+ "version": 1,
+ "articles": [],
+ "generated": true,
+ "note": "One page per pattern; grouped by pattern group (sorted by key inside a group). Part files live in pages/.",
+ "pageCount": 317,
+ "bytes": 1187211,
+ "parts": [
+  {
+   "file": "pages/pattern_90s_skate_surf_1.json",
+   "domain": "pattern_90s_skate_surf_1",
+   "group": "90s, Skate & Surf",
+   "count": 18,
+   "bytes": 66564,
+   "firstKey": "pattern::Billabong_Board",
+   "lastKey": "pattern::decade_90s_chrome_bubble"
+  },
+  {
+   "file": "pages/pattern_90s_skate_surf_2.json",
+   "domain": "pattern_90s_skate_surf_2",
+   "group": "90s, Skate & Surf",
+   "count": 18,
+   "bytes": 67229,
+   "firstKey": "pattern::decade_90s_cross_colors",
+   "lastKey": "pattern::decade_90s_y2k_bug"
+  },
+  {
+   "file": "pages/pattern_abstract_fractal_paradigm_1.json",
+   "domain": "pattern_abstract_fractal_paradigm_1",
+   "group": "Abstract, Fractal & Paradigm",
+   "count": 21,
+   "bytes": 80586,
+   "firstKey": "pattern::Art_Deco",
+   "lastKey": "pattern::hypocycloid"
+  },
+  {
+   "file": "pages/pattern_abstract_fractal_paradigm_2.json",
+   "domain": "pattern_abstract_fractal_paradigm_2",
+   "group": "Abstract, Fractal & Paradigm",
+   "count": 23,
+   "bytes": 85621,
+   "firstKey": "pattern::interference",
+   "lastKey": "pattern::wave_standing"
+  },
+  {
+   "file": "pages/pattern_cultural_world_dark_1.json",
+   "domain": "pattern_cultural_world_dark_1",
+   "group": "Cultural, World & Dark",
+   "count": 19,
+   "bytes": 71648,
+   "firstKey": "pattern::aztec",
+   "lastKey": "pattern::mandala"
+  },
+  {
+   "file": "pages/pattern_cultural_world_dark_2.json",
+   "domain": "pattern_cultural_world_dark_2",
+   "group": "Cultural, World & Dark",
+   "count": 20,
+   "bytes": 74640,
+   "firstKey": "pattern::mandela_ornate",
+   "lastKey": "pattern::zigzag_bands"
+  },
+  {
+   "file": "pages/pattern_decades_50s_80s_1.json",
+   "domain": "pattern_decades_50s_80s_1",
+   "group": "Decades 50s-80s",
+   "count": 21,
+   "bytes": 79015,
+   "firstKey": "pattern::12155818_4903117",
+   "lastKey": "pattern::decade_50s_sputnik_orbit"
+  },
+  {
+   "file": "pages/pattern_decades_50s_80s_2.json",
+   "domain": "pattern_decades_50s_80s_2",
+   "group": "Decades 50s-80s",
+   "count": 23,
+   "bytes": 86587,
+   "firstKey": "pattern::decade_60s_caged_square",
+   "lastKey": "pattern::decade_80s_rubiks_cube_3"
+  },
+  {
+   "file": "pages/pattern_geometry_deco_op_art_1.json",
+   "domain": "pattern_geometry_deco_op_art_1",
+   "group": "Geometry, Deco & Op-Art",
+   "count": 21,
+   "bytes": 78705,
+   "firstKey": "pattern::argyle",
+   "lastKey": "pattern::greek_key"
+  },
+  {
+   "file": "pages/pattern_geometry_deco_op_art_2.json",
+   "domain": "pattern_geometry_deco_op_art_2",
+   "group": "Geometry, Deco & Op-Art",
+   "count": 23,
+   "bytes": 84579,
+   "firstKey": "pattern::greek_meander",
+   "lastKey": "pattern::twisted_rings"
+  },
+  {
+   "file": "pages/pattern_let_freedom_ring_1.json",
+   "domain": "pattern_let_freedom_ring_1",
+   "group": "Let Freedom Ring",
+   "count": 10,
+   "bytes": 38287,
+   "firstKey": "pattern::lfr_bunting_scallop",
+   "lastKey": "pattern::lfr_stripe_drift"
+  },
+  {
+   "file": "pages/pattern_nature_animals_weather_1.json",
+   "domain": "pattern_nature_animals_weather_1",
+   "group": "Nature, Animals & Weather",
+   "count": 17,
+   "bytes": 64110,
+   "firstKey": "pattern::ammonite_chambers",
+   "lastKey": "pattern::marble_veining"
+  },
+  {
+   "file": "pages/pattern_nature_animals_weather_2.json",
+   "domain": "pattern_nature_animals_weather_2",
+   "group": "Nature, Animals & Weather",
+   "count": 19,
+   "bytes": 69729,
+   "firstKey": "pattern::multicam",
+   "lastKey": "pattern::zebra"
+  },
+  {
+   "file": "pages/pattern_reactive_surface_accents_1.json",
+   "domain": "pattern_reactive_surface_accents_1",
+   "group": "Reactive & Surface Accents",
+   "count": 18,
+   "bytes": 67674,
+   "firstKey": "pattern::carbon_clearcoat_lock",
+   "lastKey": "pattern::uv_night_accent"
+  },
+  {
+   "file": "pages/pattern_tech_carbon_industrial_1.json",
+   "domain": "pattern_tech_carbon_industrial_1",
+   "group": "Tech, Carbon & Industrial",
+   "count": 22,
+   "bytes": 83036,
+   "firstKey": "pattern::basket_weave_alt",
+   "lastKey": "pattern::hammered"
+  },
+  {
+   "file": "pages/pattern_tech_carbon_industrial_2.json",
+   "domain": "pattern_tech_carbon_industrial_2",
+   "group": "Tech, Carbon & Industrial",
+   "count": 24,
+   "bytes": 89201,
+   "firstKey": "pattern::hex_carbon",
+   "lastKey": "pattern::wavy_carbon"
+  }
+ ]
+}

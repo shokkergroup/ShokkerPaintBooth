@@ -1,0 +1,851 @@
+{
+  "status": "HOLD",
+  "compatibilityCoreAccepted": true,
+  "releaseReady": false,
+  "runtime": "Legacy12",
+  "capturedUTC": "2026-10-04T16:18:11.907555+00:00",
+  "installed": false,
+  "frontendHashes": {
+    "js/spb-ai-complete-instruction-guard.js": "ba0af1f9e217695ed733dde81c8dec1a735dd1f052e8c06b3098866d392a551c",
+    "js/spb-ai-instruction-intent-guard.js": "3267dc263cf85bcb34b55588997acba737f4a47e7bdde490face4d9d6271fb60",
+    "js/spb-ai-lease.js": "de276372a763310ec051db141fcb1d601e11dbf193843e2b21a405226f782134",
+    "js/spb-ai-material-controls.js": "8febce88b5e1e1f6e5d571037374a8c5a662b1f3d62c323b73b3ea1e5072544b",
+    "js/spb-ai-operation.js": "47587a1a53a35ce7e58825bac864bd75c2421d26c19791957f57bb199a7000c6",
+    "js/spb-ai-part-memory-project.js": "fff0127a7570c3fa8eaf2ad431f1ce2717763a2cd5b1688b15d18cc4f3c98d17",
+    "js/spb-ai-part-memory.js": "6e0d1e1466feca847d3a1c3300f32779ba610f3b6c72c7904a6c8fd97a6b3652",
+    "js/spb-ai-receipt-explainer.js": "25aba5ee85e9c9fb7efe3603fce22b140ccb09d2cbd09a9303ac6ab00530eac3",
+    "js/spb-pro-ai.js": "fb63f5906e1c9fc9d49150f571d64fde640e0a4630319c418fe4f9c2e7e5413a",
+    "js/spb-pro-design.js": "4648de3231015497cc9ff816612a542097a1ad14038a7210753f6cdbfd88d832",
+    "js/spb-pro-edit.js": "7d063444021f8f4144b96130800badfe62741cdefc9104417f3e99af65270767",
+    "js/spb-pro-zone-kit.js": "ea9e169b909a30a6431f7fd48b87658b8258d480f165d304cb0ca5dac8983af7",
+    "js/spb-self-help.js": "e230a121127fc6b32c451c630028d3d2d10461b67819bf50f2b148195db8df4d",
+    "paint-booth-2-state-zones.js": "710b4d8b1b7f229d334e06d1eb331ff48d9873a7cd139b276d2bab3ebfd591e7",
+    "paint-booth-3-canvas.js": "d02a3dbfc72eda731d1d1c3a361910248797cc7c4e159ad99763882982c53a15"
+  },
+  "backendHashes": {
+    "server.py": "463e08123e9a88b9084897756a03dfd89912746756a3479443e30f314d93cb36",
+    "server_routes/psd_import_routes.py": "d9e0e2e65e7351da1d8564cc8b4652c320433997238099da92c2b477cddeecdd",
+    "server_routes/render_file_routes.py": "cd2b640eda292171e1362720947b8536a4291b6c7f35ac10b4a5a0b745adebd1"
+  },
+  "providerAttempts": 0,
+  "native": {
+    "coldLoad": {
+      "operation": "cce8a59ce8",
+      "done": true,
+      "result": {
+        "loaded": true,
+        "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a",
+        "kind": "layered",
+        "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+        "layers": 11,
+        "pending": 1,
+        "activeProofs": 0,
+        "durableCaptured": 0,
+        "paintPixelSHA": "80702b73f6cc2c2a9beb5ff0bc6b81979dad42ab9890cb1b60a020ff0db9687c",
+        "providerAttempts": 0
+      }
+    },
+    "coldRefusal": {
+      "operation": "74a6bc797a",
+      "done": true,
+      "result": {
+        "text": "I could not verify an existing zone for only the roof. A new finish could restore the source paint, so I have not queued a change. Select the intended zone to change its finish, or name the color to use.",
+        "queueLength": 0,
+        "queue": [],
+        "applied": false,
+        "ownerSame": true,
+        "idSame": true,
+        "color": "#1f8a3b",
+        "finish": "f_chrome",
+        "maskSame": true,
+        "pending": true,
+        "freshProof": false,
+        "paint": null,
+        "spec": null,
+        "paintExact": true,
+        "specExact": true,
+        "zoneConfigExact": true,
+        "layersExact": true,
+        "before": {
+          "paint": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "2e91a22aa7cb6274d1c3a5a5ddef9edddb2f81e6b7528de6673431a0bb6206d7"
+          },
+          "spec": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+          },
+          "ids": [
+            "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+            "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+            "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+            "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+          ],
+          "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a"
+        },
+        "after": {
+          "paint": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "2e91a22aa7cb6274d1c3a5a5ddef9edddb2f81e6b7528de6673431a0bb6206d7"
+          },
+          "spec": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+          },
+          "ids": [
+            "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+            "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+            "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+            "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+          ],
+          "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a"
+        },
+        "entry": null,
+        "providerAttempts": 0
+      }
+    },
+    "freshCreate": {
+      "operation": "c4023c0e30",
+      "done": true,
+      "result": {
+        "text": "I could not do that: The existing roof zone is stale, so I did not add a replacement that could change its finish. Reopen or re-confirm that part before recolouring it..",
+        "queueLength": 0,
+        "kinds": [],
+        "ownerIndex": -1,
+        "id": null,
+        "color": null,
+        "base": null,
+        "proof": false,
+        "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a",
+        "mask": null,
+        "paint": {
+          "changed": 0,
+          "outside": 0
+        },
+        "layersExact": true,
+        "durableMemories": 0,
+        "providerAttempts": 0
+      }
+    },
+    "coldKeepFinish": {
+      "operation": "d2c352a167",
+      "done": true,
+      "result": {
+        "text": "I could not verify an existing zone for only the roof. A new finish could restore the source paint, so I have not queued a change. Select the intended zone to change its finish, or name the color to use.",
+        "queueLength": 0,
+        "queue": [],
+        "applied": true,
+        "ownerSame": true,
+        "idSame": null,
+        "color": null,
+        "finish": null,
+        "maskSame": null,
+        "pending": false,
+        "freshProof": false,
+        "paint": null,
+        "spec": null,
+        "paintExact": true,
+        "specExact": true,
+        "zoneConfigExact": true,
+        "layersExact": true,
+        "before": {
+          "paint": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "2e91a22aa7cb6274d1c3a5a5ddef9edddb2f81e6b7528de6673431a0bb6206d7"
+          },
+          "spec": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+          },
+          "ids": [
+            "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+            "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+            "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+            "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+          ],
+          "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a"
+        },
+        "after": {
+          "paint": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "2e91a22aa7cb6274d1c3a5a5ddef9edddb2f81e6b7528de6673431a0bb6206d7"
+          },
+          "spec": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+          },
+          "ids": [
+            "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+            "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+            "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+            "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+          ],
+          "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a"
+        },
+        "entry": [
+          {
+            "lines": [],
+            "notes": [],
+            "undoable": false
+          }
+        ],
+        "providerAttempts": 0
+      }
+    },
+    "recoveryFreshCreate": {
+      "operation": "f6d2beeca0",
+      "done": true,
+      "result": {
+        "text": "Done \u2014 the roof (3% of the car) is now recoloured red.\nNEXT: Undo | Make the black matte | Make the cyan metallic | Make the white pearl | Make the numbers metallic",
+        "queueLength": 1,
+        "kinds": [
+          "add"
+        ],
+        "ownerIndex": 0,
+        "id": "zone_7bd8c5e6-6655-41df-905a-c6ae92c36f6c",
+        "color": "#c8102e",
+        "base": "gloss",
+        "proof": true,
+        "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a",
+        "mask": "4194304:q2srhw",
+        "paint": {
+          "changed": 29873,
+          "outside": 0
+        },
+        "layersExact": true,
+        "durableMemories": 0,
+        "providerAttempts": 0
+      }
+    },
+    "recoveryWasExplicitDeleteOfStalePrivateRoofZone": true,
+    "recoveryFinish": {
+      "operation": "26f03a797c",
+      "done": true,
+      "result": {
+        "text": "Done \u2014 the roof is now satin \u2014 a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched. (I updated your earlier change to the same colour instead of stacking a new one on top.)\nNEXT: Undo | A bit more | Show me options for the roof | Make the black matte | Make the cyan metallic",
+        "queueLength": 1,
+        "queue": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "proof": true,
+            "spec": {
+              "finish": "base::f_clear_satin"
+            }
+          }
+        ],
+        "applied": true,
+        "ownerSame": true,
+        "idSame": true,
+        "color": "#c8102e",
+        "finish": "f_clear_satin",
+        "maskSame": true,
+        "pending": false,
+        "freshProof": true,
+        "paint": {
+          "changed": 0,
+          "outside": 0,
+          "channels": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "spec": {
+          "changed": 29873,
+          "outside": 0,
+          "channels": [
+            0,
+            29873,
+            29873,
+            0
+          ]
+        },
+        "paintExact": true,
+        "specExact": false,
+        "zoneConfigExact": false,
+        "layersExact": true,
+        "before": {
+          "paint": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "3b67d640e7537261f6c164324653d795977595a564392f757fb2e288dc0e945e"
+          },
+          "spec": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "90aa607c204e4cbe1598b29c8eba98539c8944b7db358a5ad655abb411214973"
+          },
+          "ids": [
+            "zone_7bd8c5e6-6655-41df-905a-c6ae92c36f6c",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+            "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+            "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+            "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+          ],
+          "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a"
+        },
+        "after": {
+          "paint": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "3b67d640e7537261f6c164324653d795977595a564392f757fb2e288dc0e945e"
+          },
+          "spec": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "3f9ac346e82534bf81d6f2fa2f9f382775833d21c6066c3422456a3c8df57685"
+          },
+          "ids": [
+            "zone_7bd8c5e6-6655-41df-905a-c6ae92c36f6c",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+            "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+            "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+            "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+          ],
+          "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a"
+        },
+        "entry": [
+          {
+            "lines": [
+              "Roof recoloured red: finish Clear Satin"
+            ],
+            "notes": [],
+            "undoable": true
+          }
+        ],
+        "providerAttempts": 0
+      }
+    },
+    "finishUndo": {
+      "operation": "78ac94933b",
+      "done": true,
+      "result": {
+        "undoResult": true,
+        "restoredPaint": true,
+        "restoredSpec": true,
+        "restoredLayers": true,
+        "after": {
+          "paint": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "3b67d640e7537261f6c164324653d795977595a564392f757fb2e288dc0e945e"
+          },
+          "spec": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "90aa607c204e4cbe1598b29c8eba98539c8944b7db358a5ad655abb411214973"
+          },
+          "ids": [
+            "zone_7bd8c5e6-6655-41df-905a-c6ae92c36f6c",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+            "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+            "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+            "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+          ],
+          "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a"
+        },
+        "providerAttempts": 0
+      }
+    },
+    "material": {
+      "operation": "d9513e4065",
+      "done": true,
+      "result": {
+        "text": "Adjusting only the roof clearcoat up by 20 points.\nNEXT: Undo",
+        "queueLength": 1,
+        "queue": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "proof": false,
+            "spec": {
+              "spec_shift": {
+                "metal": 0,
+                "rough": 0,
+                "clearcoat": 20
+              }
+            }
+          }
+        ],
+        "applied": true,
+        "ownerSame": true,
+        "idSame": true,
+        "color": "#c8102e",
+        "finish": "gloss",
+        "maskSame": true,
+        "pending": false,
+        "freshProof": true,
+        "paint": {
+          "changed": 0,
+          "outside": 0,
+          "channels": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "spec": {
+          "changed": 29873,
+          "outside": 0,
+          "channels": [
+            0,
+            0,
+            29873,
+            0
+          ]
+        },
+        "paintExact": true,
+        "specExact": false,
+        "zoneConfigExact": false,
+        "layersExact": true,
+        "before": {
+          "paint": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "3b67d640e7537261f6c164324653d795977595a564392f757fb2e288dc0e945e"
+          },
+          "spec": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "90aa607c204e4cbe1598b29c8eba98539c8944b7db358a5ad655abb411214973"
+          },
+          "ids": [
+            "zone_7bd8c5e6-6655-41df-905a-c6ae92c36f6c",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+            "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+            "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+            "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+          ],
+          "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a"
+        },
+        "after": {
+          "paint": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "3b67d640e7537261f6c164324653d795977595a564392f757fb2e288dc0e945e"
+          },
+          "spec": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "fd01ec5fad3b4306a6f738efa149d8f27360c1d658af34dda56659852450abe8"
+          },
+          "ids": [
+            "zone_7bd8c5e6-6655-41df-905a-c6ae92c36f6c",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+            "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+            "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+            "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+          ],
+          "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a"
+        },
+        "entry": [
+          {
+            "lines": [
+              "Roof recoloured red: spec shift"
+            ],
+            "notes": [],
+            "undoable": true
+          }
+        ],
+        "providerAttempts": 0
+      }
+    },
+    "materialUndo": {
+      "operation": "d1ba8994dc",
+      "done": true,
+      "result": {
+        "undoResult": true,
+        "restoredPaint": true,
+        "restoredSpec": true,
+        "restoredLayers": true,
+        "after": {
+          "paint": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "3b67d640e7537261f6c164324653d795977595a564392f757fb2e288dc0e945e"
+          },
+          "spec": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "90aa607c204e4cbe1598b29c8eba98539c8944b7db358a5ad655abb411214973"
+          },
+          "ids": [
+            "zone_7bd8c5e6-6655-41df-905a-c6ae92c36f6c",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+            "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+            "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+            "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+          ],
+          "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a"
+        },
+        "providerAttempts": 0
+      }
+    },
+    "colour": {
+      "operation": "a736dc642b",
+      "done": true,
+      "result": {
+        "text": "Done \u2014 the roof is now recoloured blue. (I updated your earlier change to the same colour instead of stacking a new one on top.)\nNEXT: Undo | Make the black matte | Make the cyan metallic | Make the white pearl | Make the numbers metallic",
+        "queueLength": 1,
+        "queue": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "proof": false,
+            "spec": {
+              "name": "Roof recoloured blue",
+              "color": "#1450b4"
+            }
+          }
+        ],
+        "applied": true,
+        "ownerSame": true,
+        "idSame": true,
+        "color": "#1450b4",
+        "finish": "gloss",
+        "maskSame": true,
+        "pending": false,
+        "freshProof": true,
+        "paint": {
+          "changed": 29873,
+          "outside": 0,
+          "channels": [
+            29873,
+            29873,
+            29873,
+            0
+          ]
+        },
+        "spec": {
+          "changed": 0,
+          "outside": 0,
+          "channels": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "paintExact": false,
+        "specExact": true,
+        "zoneConfigExact": false,
+        "layersExact": true,
+        "before": {
+          "paint": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "3b67d640e7537261f6c164324653d795977595a564392f757fb2e288dc0e945e"
+          },
+          "spec": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "90aa607c204e4cbe1598b29c8eba98539c8944b7db358a5ad655abb411214973"
+          },
+          "ids": [
+            "zone_7bd8c5e6-6655-41df-905a-c6ae92c36f6c",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+            "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+            "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+            "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+          ],
+          "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a"
+        },
+        "after": {
+          "paint": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+          },
+          "spec": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "90aa607c204e4cbe1598b29c8eba98539c8944b7db358a5ad655abb411214973"
+          },
+          "ids": [
+            "zone_7bd8c5e6-6655-41df-905a-c6ae92c36f6c",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+            "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+            "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+            "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+          ],
+          "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a"
+        },
+        "entry": [
+          {
+            "lines": [
+              "Roof recoloured blue: colour #1450b4"
+            ],
+            "notes": [],
+            "undoable": true
+          }
+        ],
+        "providerAttempts": 0
+      }
+    },
+    "colourUndo": {
+      "operation": "61a9c7a793",
+      "done": true,
+      "result": {
+        "undoResult": true,
+        "restoredPaint": true,
+        "restoredSpec": true,
+        "restoredLayers": true,
+        "after": {
+          "paint": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "3b67d640e7537261f6c164324653d795977595a564392f757fb2e288dc0e945e"
+          },
+          "spec": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "90aa607c204e4cbe1598b29c8eba98539c8944b7db358a5ad655abb411214973"
+          },
+          "ids": [
+            "zone_7bd8c5e6-6655-41df-905a-c6ae92c36f6c",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+            "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+            "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+            "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+          ],
+          "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a"
+        },
+        "providerAttempts": 0
+      }
+    },
+    "conflictingFinishProposal": {
+      "done": true,
+      "result": {
+        "text": "Done \u2014 added a layered look (bottom to top: chrome base, then matte roof) on the roof. Your numbers and sponsors are untouched.\nNEXT: Make it thinner | Make it a different colour | Undo",
+        "queueLength": 2,
+        "queue": [
+          {
+            "kind": "add",
+            "zone": null,
+            "proof": false,
+            "spec": {
+              "name": "Chrome body base",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "everything": true,
+                "paintable": true,
+                "layers": [
+                  "Car Paint"
+                ]
+              }
+            }
+          },
+          {
+            "kind": "add",
+            "zone": null,
+            "proof": false,
+            "spec": {
+              "name": "Matte roof",
+              "finish": "base::f_soft_matte",
+              "color": "source",
+              "region": {
+                "layers": [
+                  "Car Paint"
+                ],
+                "island": "roof"
+              }
+            }
+          }
+        ],
+        "applied": false,
+        "ownerSame": true,
+        "idSame": true,
+        "color": "#c8102e",
+        "finish": "gloss",
+        "maskSame": true,
+        "pending": false,
+        "freshProof": true,
+        "paint": null,
+        "spec": null,
+        "paintExact": true,
+        "specExact": true,
+        "zoneConfigExact": true,
+        "layersExact": true,
+        "before": {
+          "paint": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "3b67d640e7537261f6c164324653d795977595a564392f757fb2e288dc0e945e"
+          },
+          "spec": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "90aa607c204e4cbe1598b29c8eba98539c8944b7db358a5ad655abb411214973"
+          },
+          "ids": [
+            "zone_7bd8c5e6-6655-41df-905a-c6ae92c36f6c",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+            "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+            "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+            "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+          ],
+          "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a"
+        },
+        "after": {
+          "paint": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "3b67d640e7537261f6c164324653d795977595a564392f757fb2e288dc0e945e"
+          },
+          "spec": {
+            "w": 1024,
+            "h": 1024,
+            "sha": "90aa607c204e4cbe1598b29c8eba98539c8944b7db358a5ad655abb411214973"
+          },
+          "ids": [
+            "zone_7bd8c5e6-6655-41df-905a-c6ae92c36f6c",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+            "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+            "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+            "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+            "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+          ],
+          "source": "composite-sha256:3d45a4c3f996cdf78696b8ed4c8bcd315707d681bb84d8989753331ff23a2b3a"
+        },
+        "entry": null,
+        "providerAttempts": 0
+      }
+    },
+    "guidance": {
+      "done": true,
+      "result": {
+        "answers": [
+          {
+            "text": "How do I undo an AI answer?",
+            "answer": "**How do I undo**\n1. Press Ctrl+Z, or the Undo button in the top toolbar (HISTORY menu).\n2. To go back several steps open \"Undo History...\".\n3. Under an AI panel answer press Undo to take back that whole answer. In Easy use UNDO at the top.\nExact controls: Undo Ctrl+Z (Pro > top toolbar (tool row)); Undo History\u2026 (Pro > top toolbar (tool row)); Undo (Shokker AI panel).\nDid that get you there, or is there something else you are trying to do?\nNEXT: I\u2019m still stuck",
+            "queueLength": 0
+          },
+          {
+            "text": "Where is redo?",
+            "answer": "**Redo** - where: Pro > centre > selection / mask bar under the canvas. Redo last undone action (Ctrl+Y / Ctrl+Shift+Z)\nDid that get you there, or is there something else you are trying to do?\nNEXT: I\u2019m still stuck",
+            "queueLength": 0
+          },
+          {
+            "text": "What did the helper actually apply most recently?",
+            "answer": "I could not turn that request into a safe built-in edit, so nothing was changed. Try naming the part and the change, such as \u201cmake only the hood matte blue\u201d, or ask how to use a tool. A connected external assistant can help with a broader brief; setting up an AI provider is optional.",
+            "queueLength": 0
+          },
+          {
+            "text": "Can I recover the Photoshop layers from a flat TGA?",
+            "answer": "**How do I load my paint file (a flat TGA, PNG or JPEG)**\n1. Pick your paint file in the window that opens, then confirm.\n2. Wait for the paint to appear in the SOURCE picture in the middle; the LIVE PREVIEW fills in next.\n3. You can also paste the full file path into the Source Paint box and press Enter.\nExact controls: SOURCE PAINT box (Pro > top of the window (header rows)); TGA/PNG/JPEG (Pro > top of the window (header rows)); Load TGA (Pro > centre > empty canvas (no paint loaded yet)).\nDid that get you there, or is there something else you are trying to do?\nNEXT: I\u2019m still stuck",
+            "queueLength": 0
+          },
+          {
+            "text": "Don't change the roof; explain satin first.",
+            "answer": "Found it: \u201cMake only the roof red.\u201d changed that (60% of it looked different on the preview). Done \u2014 switched off \u201cRoof recoloured red\u201d. Nothing else of yours was touched.\nNEXT: Undo | Undo the last change",
+            "queueLength": 1
+          },
+          {
+            "text": "If I import a spec map, will my source paint file be overwritten?",
+            "answer": "Nothing was changed. This reads as a how-to or hypothetical question. Give the change as a direct instruction when you want me to queue it.",
+            "queueLength": 0
+          },
+          {
+            "text": "What works here with no internet?",
+            "answer": "For your car: a few directions that work on an existing scheme. Your body is Gloss (high gloss). I searched the whole catalogue and picked shine-only options that keep your paint, complete looks whose palette suits your colours. Swatches are shown on your car's colour.\nNEXT: Show me more | Show complete looks that suit my colours | Add a texture on top",
+            "queueLength": 0
+          }
+        ],
+        "paintExact": true,
+        "specExact": true,
+        "zonesExact": true,
+        "layersExact": true,
+        "durableMemoryCount": 0,
+        "providerAttempts": 0
+      }
+    },
+    "legacyTgaColdLoad": {
+      "operation": "3e087473fb",
+      "done": true,
+      "result": {
+        "loaded": true,
+        "source": "1287964324bcc16fa98d613521560ce7a892a08396169c8d22eb44ca3403e893",
+        "kind": "flat",
+        "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_release_evidence\\ai14h-runtime12-native\\output\\source-replacement\\same-path.tga",
+        "layers": 0,
+        "pending": 0,
+        "activeProofs": 0,
+        "durableCaptured": 0,
+        "paintPixelSHA": "bc732309e2034d061097f49dc62ff889b21e2565b80e70c4f659b2d34503942c",
+        "providerAttempts": 0
+      }
+    }
+  },
+  "holds": [
+    {
+      "priority": "P1",
+      "request": "Make the roof matte and chrome.",
+      "actualQueueLength": 2,
+      "effect": "Unintended chrome body + matte roof plan",
+      "applied": false
+    },
+    {
+      "priority": "P1",
+      "request": "Don't change the roof; explain satin first.",
+      "actualQueueLength": 1,
+      "effect": "History toggle-off plan despite prohibition",
+      "applied": false
+    }
+  ],
+  "limits": [
+    "Scoped core passes do not establish release readiness. Two new actual unsupported scope/prohibition plans hold installation.",
+    "All customer originals read-only; private saved projects and a byte-modified private TGA copy only.",
+    "After direct source replacement the old PSD proof object can remain as inert metadata; current source guard refuses it and durable capture is zero. It is not described as cleared.",
+    "49 native passive questions were retained regressions, not a blind general accuracy score. Fresh wider questions found semantic gaps.",
+    "Three spec-map file-picker imports succeeded; visual spec application not yet accepted.",
+    "Actual paid provider calls zero. Earlier unrelated fixture setup made one blocked optional-vision attempt before HTTP/provider; retained in fixture report.",
+    "No owner59876 restart, installer/package/MCP bundle rebuild, export, or Git commit.",
+    "Cold strong record stays inactive under composite-only backend. Fresh semantic edit passed after explicit private UI deletion of stale test zone; no auto-deletion/rebinding is claimed.",
+    "Flat headerless TGA remains weak preview digest, exact pixels preserve, durable memory disabled."
+  ]
+}

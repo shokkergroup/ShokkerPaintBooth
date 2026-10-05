@@ -1,0 +1,112 @@
+/* ============================================================================
+   SPB EASY TELL — "Tell Shokker what you want" card (SPB-EASY-TELL 2026-09-19)
+   Lives inside the Easy AUTO rail (#spbEasyAutoTellMount, rail is ~470px wide).
+   Dark UI, orange accent #ff7a18, compact, chips wrap. NOTHING here is
+   position:fixed and nothing overlays the car. Loads right after
+   css/spb-easy-auto-20260919.css; the clean-default skin stays the last link.
+   ========================================================================== */
+
+.spb-easy-tell-card {
+    margin: 10px 0 8px; border: 1px solid rgba(255,122,24,0.35); border-radius: 12px;
+    background: linear-gradient(180deg, rgba(255,122,24,0.07), rgba(255,255,255,0.02));
+    color: #f1f1f4; font-size: 12.5px; line-height: 1.35; overflow: hidden;
+}
+.spb-easy-tell-head {
+    display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 9px 11px;
+    background: transparent; border: 0; color: inherit; font: inherit; font-weight: 700; letter-spacing: .03em;
+    text-align: left; cursor: pointer;
+}
+.spb-easy-tell-head:hover { background: rgba(255,255,255,0.05); }
+.spb-easy-tell-head span { opacity: .6; font-size: 12px; }
+.spb-easy-tell-body { padding: 0 10px 10px; display: flex; flex-direction: column; gap: 8px; }
+
+/* ------------------------------------------------------------- phrase box */
+.spb-easy-tell-phrase { display: flex; gap: 6px; }
+.spb-easy-tell-phrase input {
+    flex: 1; min-width: 0; padding: 7px 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(0,0,0,0.35); color: inherit; font: inherit; font-size: 12.5px;
+}
+.spb-easy-tell-phrase input:focus { outline: none; border-color: #ff7a18; box-shadow: 0 0 0 1px #ff7a18 inset; }
+.spb-easy-tell-go {
+    flex: 0 0 auto; padding: 0 12px; border-radius: 8px; border: 1px solid rgba(255,122,24,0.6);
+    background: rgba(255,122,24,0.18); color: #ffd7b8; font: inherit; font-weight: 700; cursor: pointer;
+}
+.spb-easy-tell-go:hover { background: rgba(255,122,24,0.32); }
+
+/* ------------------------------------------------- "I understood" read-out */
+.spb-easy-tell-understood {
+    padding: 6px 9px; border-radius: 8px; background: rgba(0,0,0,0.28); border: 1px dashed rgba(255,255,255,0.14);
+    font-size: 11.5px; color: #d9d9e0;
+}
+.spb-easy-tell-understood b { color: #fff; }
+.spb-easy-tell-understood small { opacity: .6; }
+.spb-easy-tell-note { margin-top: 3px; color: #ffc48f; }
+.spb-easy-tell-note i { color: #bfc3cc; font-style: normal; }
+.spb-easy-tell-need { color: #ff7a18; font-style: normal; font-weight: 700; }
+
+/* --------------------------------------------------------- the sentence */
+.spb-easy-tell-sentence { font-size: 13px; line-height: 2; }
+.spb-easy-tell-slot {
+    display: inline-block; vertical-align: baseline; max-width: 100%; padding: 2px 8px; margin: 0 1px;
+    border-radius: 999px; border: 1px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.07);
+    color: #fff; font: inherit; font-size: 12.5px; font-weight: 700; line-height: 1.5; cursor: pointer;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.spb-easy-tell-slot:hover { border-color: rgba(255,122,24,0.8); }
+.spb-easy-tell-slot.open { border-color: #ff7a18; box-shadow: 0 0 0 1px #ff7a18 inset; }
+.spb-easy-tell-slot.need { color: #ff7a18; border-style: dashed; border-color: rgba(255,122,24,0.7); background: rgba(255,122,24,0.08); }
+.spb-easy-tell-slot span { opacity: .55; font-size: 10px; }
+.spb-easy-tell-slot b { font-weight: 700; }
+.spb-easy-tell-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 0 4px -1px 0; border: 1px solid rgba(255,255,255,0.35); }
+
+/* ------------------------------------------------------------ chip panels */
+.spb-easy-tell-panel {
+    display: flex; flex-wrap: wrap; gap: 5px; align-items: center; padding: 7px 8px;
+    border-radius: 9px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+}
+.spb-easy-tell-sub { flex: 1 0 100%; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; opacity: .6; margin-top: 3px; }
+.spb-easy-tell-sub:first-child { margin-top: 0; }
+.spb-easy-tell-chip {
+    display: inline-flex; align-items: center; gap: 5px; max-width: 100%; padding: 4px 9px;
+    border-radius: 999px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.05);
+    color: #eee; font: inherit; font-size: 12px; line-height: 1.3; cursor: pointer; text-align: left;
+}
+.spb-easy-tell-chip:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,122,24,0.7); }
+.spb-easy-tell-chip.on { border-color: #ff7a18; background: rgba(255,122,24,0.2); color: #fff; box-shadow: 0 0 0 1px #ff7a18 inset; }
+.spb-easy-tell-chip.cand { border-color: rgba(255,122,24,0.9); border-style: dashed; animation: spbEasyTellPulse 1.2s ease-in-out 3; }
+.spb-easy-tell-chip small { opacity: .6; font-size: 10.5px; }
+.spb-easy-tell-chip.sq { padding: 4px 8px 4px 5px; }
+.spb-easy-tell-chip.fam { font-weight: 700; letter-spacing: .02em; }
+.spb-easy-tell-chip.pick input[type="color"] { width: 22px; height: 18px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.spb-easy-tell-sw { display: inline-block; width: 14px; height: 14px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.35); flex: 0 0 auto; }
+.spb-easy-tell-sw.none { background: repeating-linear-gradient(45deg, rgba(255,255,255,0.18) 0 3px, transparent 3px 6px); }
+.spb-easy-tell-thumb { width: 22px; height: 16px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(255,255,255,0.25); flex: 0 0 auto; }
+.spb-easy-tell-fams { display: flex; flex-wrap: wrap; gap: 4px; flex: 1 0 100%; }
+.spb-easy-tell-search {
+    flex: 1 0 100%; padding: 6px 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(0,0,0,0.35); color: inherit; font: inherit; font-size: 12px;
+}
+.spb-easy-tell-search:focus { outline: none; border-color: #ff7a18; }
+.spb-easy-tell-list { display: flex; flex-wrap: wrap; gap: 5px; flex: 1 0 100%; max-height: 190px; overflow: auto; }
+@keyframes spbEasyTellPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,122,24,0); } 50% { box-shadow: 0 0 0 3px rgba(255,122,24,0.35); } }
+
+/* -------------------------------------------------------- read-back + go */
+.spb-easy-tell-readback {
+    padding: 7px 9px; border-radius: 8px; background: rgba(255,122,24,0.1); border-left: 3px solid #ff7a18;
+    font-size: 12.5px; color: #fff;
+}
+.spb-easy-tell-readback b { color: #ffd7b8; }
+.spb-easy-tell-warn { display: flex; flex-direction: column; gap: 2px; font-size: 11px; color: #ffc48f; padding: 0 2px; }
+.spb-easy-tell-done { font-size: 11.5px; color: #9be29b; padding: 0 2px; }
+.spb-easy-tell-actions { display: flex; gap: 8px; align-items: center; }
+.spb-easy-tell-apply {
+    flex: 1; padding: 8px 12px; border-radius: 9px; border: 1px solid #ff7a18; background: #ff7a18; color: #1a0d03;
+    font: inherit; font-weight: 800; letter-spacing: .06em; cursor: pointer;
+}
+.spb-easy-tell-apply:hover { background: #ff8f3d; }
+.spb-easy-tell-apply[disabled] { opacity: .4; cursor: not-allowed; }
+.spb-easy-tell-clear { padding: 6px 10px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.16); background: transparent; color: #cfd0d6; font: inherit; font-size: 12px; cursor: pointer; }
+.spb-easy-tell-clear:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+/* Rail is narrow: keep the card's text from ever forcing horizontal scroll. */
+.spb-easy-tell-card, .spb-easy-tell-card * { box-sizing: border-box; min-width: 0; }

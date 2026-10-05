@@ -1,0 +1,180 @@
+{
+  "title": "AI helper 14h help/action mode audit",
+  "date": "2026-10-03",
+  "scope": "Read-only producer audit using js/spb-self-help.js, actual answer/handle APIs, and spies for its app-global controller callbacks. No browser, pixels, renderer, MCP, provider, HTML, mirror, or production writes.",
+  "summary": {
+    "passed": 15,
+    "failed": 0,
+    "total": 15
+  },
+  "findings": [
+    {
+      "severity": "passed",
+      "issue": "state() represents Chat Studio separately. Pro-only layer, zone, and selected-zone context answers name the visible “Full editor →” handoff; number/part teaching and plain-language zone edits remain in Chat Studio. Easy mode still names the Pro prerequisite.",
+      "evidence": "chat-mode cases in this report"
+    },
+    {
+      "severity": "passed",
+      "issue": "Pending actions are bound to the current document and intended zone object/name, safely follow an in-place zone reorder, and refuse stale, removed, renamed, paint-missing, or callback-missing targets. Actions remain one-shot and newer input replaces or clears pending work.",
+      "evidence": "controller-spy lifecycle cases in this report"
+    },
+    {
+      "severity": "passed",
+      "issue": "PSD-only help states the missing-paint and flat-paint prerequisites; “Check my setup” remains unclaimed by self-help for the support route.",
+      "evidence": "prerequisite/support cases in this report"
+    }
+  ],
+  "cases": [
+    {
+      "name": "chat studio is represented as its own mode",
+      "status": "PASS",
+      "detail": {
+        "expected": "chat",
+        "actual": "chat"
+      }
+    },
+    {
+      "name": "chat studio hands layer-only guidance through its visible Full editor control",
+      "status": "PASS",
+      "detail": {
+        "topic": "layers_vis",
+        "steps": [
+          "In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.",
+          "Open the LAYERS tab.",
+          "Click the eye icon on the layer. Alt+click shows only that layer."
+        ],
+        "text": "**How do I turn a layer on or off**\n1. In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.\n2. Open the LAYERS tab.\n3. Click the eye icon on the layer. Alt+click shows only that layer.\nExact controls: Layer eye icon (Pro > LAYERS tab > layer row).\nDid that get you there,"
+      }
+    },
+    {
+      "name": "chat studio prefixes Pro-only zone context with the visible editor handoff",
+      "status": "PASS",
+      "detail": {
+        "topic": "zone_order",
+        "text": "**Change which zone wins**\n1. In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.\n2. Drag the zone up in the ZONES list (left column) (or use its move up arrow).\n3. Position 1 (top) wins whe"
+      }
+    },
+    {
+      "name": "chat studio zone overview names the editor handoff while retaining chat as an option",
+      "status": "PASS",
+      "detail": {
+        "topic": "zone_tour",
+        "text": "**What you can do with \"Body\"**\nIn Chat Studio, click “Full editor →” to open these controls; or tell me the change in plain language and I can make it here.\n1. Colour: BASE COLOR dropdown (zone panel > BASE) - now \"solid \".\n2. Look: the ba"
+      }
+    },
+    {
+      "name": "number teaching stays in chat",
+      "status": "PASS",
+      "detail": {
+        "topic": "restrict_layer",
+        "steps": [
+          "Open the AI panel (the AI button bottom right) and ask for something on the numbers, e.g. \"make the numbers gold\".",
+          "It shows the car and asks. If its guess is right press \"Yes, that is right\".",
+          "If not press \"No, I will show you\", then draw a box around ONE number (a single one, not the whole panel). It finds the rest.",
+          "If the paint has none press \"There are none on this paint\"."
+        ]
+      }
+    },
+    {
+      "name": "part teaching stays in chat",
+      "status": "PASS",
+      "detail": {
+        "topic": "teach_parts",
+        "steps": [
+          "Ask the AI panel for a part change (\"make the roof black\"). If it does not know the car it shows the sheet and asks.",
+          "Draw a box around the part when asked (one part at a time) and say which part it is.",
+          "It remembers the car's parts from then on. The gear drawer can save or load a car map."
+        ]
+      }
+    },
+    {
+      "name": "Easy mode names the Pro prerequisite for layer controls",
+      "status": "PASS",
+      "detail": {
+        "mode": "easy",
+        "steps": [
+          "You are in a simplified view: switch to PRO with the PRO / CHAT pill at the top first.",
+          "Open the LAYERS tab.",
+          "Click the eye icon on the layer. Alt+click shows only that layer."
+        ]
+      }
+    },
+    {
+      "name": "missing paint is stated before PSD-only steps",
+      "status": "PASS",
+      "detail": {
+        "steps": [
+          "First load your layered PSD: SOURCE PAINT > \"PSD/XCF/ORA\" (or LAYERS tab > Open Layered).",
+          "Open the LAYERS tab.",
+          "Click the eye icon on the layer. Alt+click shows only that layer."
+        ]
+      }
+    },
+    {
+      "name": "flat paint explains why layers are unavailable",
+      "status": "PASS",
+      "detail": {
+        "steps": [
+          "You have a flat paint loaded (one picture, no layers), so this needs the layered PSD template: SOURCE PAINT > \"PSD/XCF/ORA\". No PSD? Tell me what to change (\"make the numbers white\") and I find it in the picture."
+        ]
+      }
+    },
+    {
+      "name": "setup support remains with the support controller",
+      "status": "PASS",
+      "detail": {
+        "selfHelpClassification": null
+      }
+    },
+    {
+      "name": "refresh action invokes the actual preview controller once",
+      "status": "PASS",
+      "detail": {
+        "result": {
+          "done": true,
+          "text": "Refreshing the LIVE PREVIEW now - give it a few seconds.\nDid it change?"
+        },
+        "calls": 1
+      }
+    },
+    {
+      "name": "completed action cannot be double-clicked",
+      "status": "PASS",
+      "detail": {
+        "calls": 1
+      }
+    },
+    {
+      "name": "only the newest offered action remains callable",
+      "status": "PASS",
+      "detail": {
+        "oldResult": null,
+        "newResult": {
+          "done": true,
+          "text": "Done - \"Body\" is selected; its settings are open in the ZONES list.\nWhat do you want to change on it?"
+        },
+        "selectCalls": [
+          0
+        ]
+      }
+    },
+    {
+      "name": "selection action is one-shot after callback",
+      "status": "PASS",
+      "detail": {
+        "secondResult": null,
+        "selectCalls": [
+          0
+        ]
+      }
+    },
+    {
+      "name": "a newer non-action help answer clears the old action",
+      "status": "PASS",
+      "detail": {
+        "topic": "spec_view",
+        "doIt": null
+      }
+    }
+  ]
+}

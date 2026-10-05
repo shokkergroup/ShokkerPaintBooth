@@ -1,0 +1,51 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "session": "a3a410494d32",
+  "runtime": "Frozen Runtime4",
+  "result": {
+    "applied": {
+      "settled": true,
+      "lines": [
+        "Roof recoloured red: spec shift"
+      ],
+      "notes": [],
+      "undoableBeforeUndo": true,
+      "paintExact": true,
+      "specChanges": [
+        0,
+        0,
+        29713
+      ],
+      "outsideRoof": 0,
+      "layersExact": true
+    },
+    "explanation": {
+      "role": "ai",
+      "text": "For this loaded paint, the last verified applied changes were: Roof recoloured red: spec shift.",
+      "lines": [],
+      "notes": [],
+      "paintExact": true,
+      "layersExact": true
+    },
+    "attempts": 0,
+    "undo": {
+      "undo": true,
+      "entryUndone": true,
+      "paintExact": true,
+      "specRestored": true,
+      "layersExact": true,
+      "explanation": "I do not have a current, verified apply receipt to explain, so I will not guess from a draft or generic success message. This question made no changes.",
+      "explanationAfterState": {
+        "paintExact": true,
+        "specRestored": true,
+        "layersExact": true
+      }
+    }
+  },
+  "limits": [
+    "Actual helper/controller finish and native Undo; 1024-square preview comparisons and 2048-square zone mask. No exported full-size asset claim.",
+    "The first send returned before its AI response; initial user-entry capture was excluded, then actual final AI entry was retrieved.",
+    "Receipt describes actual applied lines; this is recorded-operation explanation, not independent visual recognition.",
+    "Cold saved-owner and authored-color compiler gaps remain separate blockers; W86/W89 fixes pending."
+  ]
+}

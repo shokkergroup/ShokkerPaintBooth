@@ -1,0 +1,285 @@
+{
+  "review": "W9 actual long-part coverage route review",
+  "date": "2026-10-04",
+  "status": "PASS",
+  "oracle": {
+    "path": "docs/handoff_reports/AI_HELPER_14H_PART_COVERAGE_ROUTE_ORACLE_2026-10-03.json",
+    "sha256": "CFA122C3B99ED6911E3E29D508F3E1A258EACF53CDFBA4F1B4DE81FFB30C6C56",
+    "fresh_cases": 14,
+    "supplied_original_frozen_cases": 2
+  },
+  "production_hashes_sha256": {
+    "js/spb-pro-ai.js": "115F602D49E465B6F49530B07A4C2E4B81E8D6089C2D8204BCAE9D57807690D4",
+    "js/spb-pro-edit.js": "D4CDD87EFC9A0FFAB5AA923134C13BCBA722E68FB91F1F4899EA16D61B204F0C",
+    "js/spb-pro-design.js": "0F5A99F5ECCA374C955DF54AE31E6B1E4F4B5EA559284C396C84BF0C38BB2D7B"
+  },
+  "checks": {
+    "original_requests": {
+      "passed": 2,
+      "expected": 2,
+      "routes": {
+        "W9-F01": {
+          "proof": false,
+          "route": "ask",
+          "parts": [],
+          "text": ""
+        },
+        "W9-F02": {
+          "proof": false,
+          "route": "ask",
+          "parts": [],
+          "text": ""
+        },
+        "W9-F03": {
+          "proof": false,
+          "route": "ask",
+          "parts": [],
+          "text": ""
+        },
+        "W9-F04": {
+          "proof": false,
+          "route": "ask",
+          "parts": [],
+          "text": "Nothing was changed. I can’t yet guarantee the requested right side change leaves the hood and the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything."
+        },
+        "W9-F05": {
+          "proof": false,
+          "route": "ask",
+          "parts": [],
+          "text": ""
+        },
+        "W9-F06": {
+          "proof": false,
+          "route": "ask",
+          "parts": [],
+          "text": ""
+        },
+        "W9-F07": {
+          "proof": false,
+          "route": "edit",
+          "parts": [
+            "roof"
+          ],
+          "text": "Done — the roof is now recoloured green."
+        },
+        "W9-F08": {
+          "proof": false,
+          "route": "ask",
+          "parts": [],
+          "text": "Nothing was changed. I do not know a look called “keep current base”. Here is what I can do to the main colour:"
+        },
+        "W9-F09": {
+          "proof": false,
+          "route": "ask",
+          "parts": [],
+          "text": ""
+        },
+        "W9-F10": {
+          "proof": false,
+          "route": "ask",
+          "parts": [],
+          "text": ""
+        },
+        "W9-F11": {
+          "proof": false,
+          "route": "ask",
+          "parts": [],
+          "text": "Nothing was changed. The windows are not part of the paint on most iRacing cars (the sim draws the glass), and I cannot find a window layer in this file. I can change the body colours, the numbers, the sponsors, the stripes and the named panels."
+        },
+        "W9-F12": {
+          "proof": false,
+          "route": "ask",
+          "parts": [],
+          "text": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request."
+        },
+        "W9-F13": {
+          "proof": false,
+          "route": "ask",
+          "parts": [],
+          "text": ""
+        },
+        "W9-F14": {
+          "proof": false,
+          "route": "ask",
+          "parts": [],
+          "text": ""
+        },
+        "W9-O01": {
+          "proof": true,
+          "route": "edit",
+          "parts": [
+            "hood"
+          ],
+          "text": "Done — the hood is now blue, matte."
+        },
+        "W9-O02": {
+          "proof": true,
+          "route": "edit",
+          "parts": [
+            "hood",
+            "roof"
+          ],
+          "text": "Done — the hood is now gold; the roof is now blue."
+        }
+      }
+    },
+    "configured_ask_false_true": "PASS",
+    "offlineAskCore_original_two_part": "PASS",
+    "punctuation_supplement": {
+      "passed": 3,
+      "outcomes": [
+        {
+          "text": "Make the hood red. Leave all other panels alone. Make the roof blue.",
+          "proofComplete": true,
+          "proofParts": [
+            "hood",
+            "roof"
+          ],
+          "route": "edit",
+          "parts": [
+            "hood",
+            "roof"
+          ],
+          "textReply": "Done — the hood is now red; the roof is now blue."
+        },
+        {
+          "text": "Make the hood red, leave all other panels alone; make the roof blue.",
+          "proofComplete": true,
+          "proofParts": [
+            "hood",
+            "roof"
+          ],
+          "route": "edit",
+          "parts": [
+            "hood",
+            "roof"
+          ],
+          "textReply": "Done — the hood is now red; the roof is now blue."
+        },
+        {
+          "text": "Make the hood red, keep all other panels unchanged, paint the roof blue.",
+          "proofComplete": true,
+          "proofParts": [
+            "hood",
+            "roof"
+          ],
+          "route": "edit",
+          "parts": [
+            "hood",
+            "roof"
+          ],
+          "textReply": "Done — the hood is now red; the roof is now blue."
+        }
+      ]
+    },
+    "failed_target_atomicity": "PASS: roof add error returned no queue; zone and ownership registries unchanged",
+    "unsupported_mixed_target": "PASS: windshield+roof did not receive complete coverage proof and queued no partial edit",
+    "prohibition_advice_unknown_extra": "PASS: no queued mutations",
+    "layered_stack": {
+      "coverageClaimed": false,
+      "compound": {
+        "zones": [
+          {
+            "part": "hood",
+            "finish": "base::matte",
+            "color": "#111113"
+          }
+        ]
+      },
+      "route": "ask",
+      "parts": []
+    },
+    "owned_chrome_color_only": {
+      "compile": {
+        "ask": null,
+        "zones": [
+          {
+            "part": "roof",
+            "color": "#1f8a3b",
+            "finish": "base::gloss"
+          }
+        ]
+      },
+      "queued": {
+        "kind": "edit",
+        "partKey": "{\"x\":[],\"c\":[],\"l\":[],\"p\":\"roof\",\"e\":false,\"el\":\"\",\"pr\":\"{}\"}",
+        "spec": {
+          "name": "Roof recoloured green",
+          "color": "#1f8a3b"
+        }
+      },
+      "apply": {
+        "failed": [],
+        "state": {
+          "colour": "#1f8a3b",
+          "finish": "base::chrome",
+          "owner": "Roof recoloured green"
+        },
+        "undoMetadataPresent": true
+      },
+      "undo": {
+        "undone": true,
+        "colour": "#141416",
+        "finish": "base::chrome",
+        "owner": "Existing owned roof finish"
+      }
+    }
+  },
+  "blockers": [],
+  "before_after": {
+    "before_W12": {
+      "status": "BLOCKED",
+      "editor_sha256": "FD2E2365F45A9DD2751C6EB6701BFD78CFD57C3230D8CB999842AA5FADD79AC2",
+      "F07": {
+        "planKind": null,
+        "route": "No change.",
+        "queued": false
+      }
+    },
+    "after_W12": {
+      "status": "PASS",
+      "editor_sha256": "D4CDD87EFC9A0FFAB5AA923134C13BCBA722E68FB91F1F4899EA16D61B204F0C",
+      "F07": {
+        "compile": {
+          "ask": null,
+          "zones": [
+            {
+              "part": "roof",
+              "color": "#1f8a3b",
+              "finish": "base::gloss"
+            }
+          ]
+        },
+        "queued": {
+          "kind": "edit",
+          "partKey": "{\"x\":[],\"c\":[],\"l\":[],\"p\":\"roof\",\"e\":false,\"el\":\"\",\"pr\":\"{}\"}",
+          "spec": {
+            "name": "Roof recoloured green",
+            "color": "#1f8a3b"
+          }
+        },
+        "apply": {
+          "failed": [],
+          "state": {
+            "colour": "#1f8a3b",
+            "finish": "base::chrome",
+            "owner": "Roof recoloured green"
+          },
+          "undoMetadataPresent": true
+        },
+        "undo": {
+          "undone": true,
+          "colour": "#141416",
+          "finish": "base::chrome",
+          "owner": "Existing owned roof finish"
+        }
+      }
+    }
+  },
+  "limits": [
+    "No browser/native app or provider call was run. Actual production compile, offline route, queueEditZones, applyQueue, and doUndo orchestration were exercised; only the native Z.batch mutation and undoZoneChange effects were mocked.",
+    "offlineCanHandle was invoked directly for configured true/false; full send DOM handler was not executed. Its covered-request gate was source-checked.",
+    "The 14 fresh cases are independently frozen; actual outcome text/queue is recorded per case. Only the two supplied accepted long prompts and three post-freeze punctuation supplements are asserted as completed coverage.",
+    "Layered material request is conservative incomplete support: coverage does not claim it; compound omits the pearl layer, while the actual route asks and queues nothing. This is a capability gap, not an unsafe mutation."
+  ]
+}

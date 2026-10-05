@@ -1,0 +1,48 @@
+{
+  "version": "1.0.0-demo.12",
+  "date": "2026-09-04",
+  "status": "built_and_verified_for_owner_retest",
+  "installer": {
+    "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\electron-demo\\dist\\ShokkerPaintBooth-SHOKK-DEMO-1.0.0-demo.12-Setup.exe",
+    "bytes": 723910928,
+    "sha256": "957D8FD8154112D942619FA817777452BAADFFD8664E101C749E5AC587206F13",
+    "signature": "NotSigned"
+  },
+  "verification": {
+    "focused_tests_passed": 116,
+    "actual_capture_color_checks": 180,
+    "maximum_rgb_error": 0,
+    "color_resolutions": [1024, 2048],
+    "preview_and_export_red": "#F10414",
+    "packaged_files_hash_verified": 999,
+    "packaged_tree_allowlist": "passed",
+    "portable_python_startup": "passed",
+    "visible_finishes": 29,
+    "renderable_finishes": 30,
+    "builder_exit_code": 0,
+    "browser_smoke": [
+      "Before repair: SOURCE marker about 54px high; LIVE drag ignored",
+      "After repair: SOURCE and LIVE fit-view pointer centers match drag endpoints exactly",
+      "SOURCE wheel zoom and independent LIVE 120% zoom preserve alignment",
+      "Continuous spatial exclusions shown on both overlays and live rendered paint",
+      "Undo restores previous mask; Clear removes drawn exclusions",
+      "Packaged demo.12 loads starter ARCA PSD and five zones",
+      "Packaged numeric brush size updates active range and cursor diameter",
+      "Packaged saved PSD mask restores 81327 excluded pixels after reload",
+      "Packaged PSD BASE01 restriction to flat TGA becomes automatically checked flat scope"
+    ],
+    "automated_mask_gates": [
+      "Round capsule, fast stroke, edge clipping, RLE roundtrip and native coordinate transforms",
+      "Stroke commit once, Shift restore, Escape/pointercancel/blur/lost-capture rollback",
+      "Zone-switch stale-target rejection, Ctrl+Z, undoable Clear, numeric-size synchronization",
+      "Preview at 1x, 0.5x and 0.25x plus native TGA export preserve excluded source paint and neutral spec",
+      "Same-colored pixels outside exclusions still paint; later Remaining zone receives released pixels"
+    ]
+  },
+  "notes": [
+    "Changed/resized documents and fallback starter loads clear stale spatial coordinates.",
+    "No paid renderer or Main App changes. Installer not installed or published by this task.",
+    "Public itch.io replacement is held for owner acceptance testing.",
+    "SPB-93 Linear posting blocked by connector reauthentication; local handoff is docs/DEMO12_EXCLUDE_REPAIR.md."
+  ]
+}

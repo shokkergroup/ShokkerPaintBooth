@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_distressed_denim",
+  "display_name": "Flannel: Distressed Denim",
+  "promise": "Very dark indigo denim with many tiny frayed openings and exposed pale crossing yarns, no large rips",
+  "carrier_grammar": "Very dark indigo denim with many tiny frayed openings and exposed pale crossing yarns, no large rips; single full-canvas image, no duplicated quadrants. Fine features: worn indigo twill, white torn cotton threads, dark tear openings, raised frayed ridges, short loose stitch threads, powdered abrasion fibers",
+  "spec_grammar": "Feature-specific selectors partition worn indigo twill, white torn cotton threads, dark tear openings, raised frayed ridges, short loose stitch threads, powdered abrasion fibers. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "worn indigo twill",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "white torn cotton threads",
+      "role": "Material feature selected from artwork by g:>:0.59&s:<:0.27"
+    },
+    {
+      "name": "dark tear openings",
+      "role": "Material feature selected from artwork by g:<:0.24"
+    },
+    {
+      "name": "raised frayed ridges",
+      "role": "Material feature selected from artwork by edge:>:0.58"
+    },
+    {
+      "name": "short loose stitch threads",
+      "role": "Material feature selected from artwork by detail:>:0.75"
+    },
+    {
+      "name": "powdered abrasion fibers",
+      "role": "Material feature selected from artwork by fine:>:0.86"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "worn indigo twill",
+      "white torn cotton threads",
+      "dark tear openings",
+      "raised frayed ridges",
+      "short loose stitch threads",
+      "powdered abrasion fibers"
+    ],
+    "R": [
+      "worn indigo twill",
+      "white torn cotton threads",
+      "dark tear openings",
+      "raised frayed ridges",
+      "short loose stitch threads",
+      "powdered abrasion fibers"
+    ],
+    "Cc": [
+      "worn indigo twill",
+      "white torn cotton threads",
+      "dark tear openings",
+      "raised frayed ridges",
+      "short loose stitch threads",
+      "powdered abrasion fibers"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "worn indigo twill",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "white torn cotton threads",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dark tear openings",
+      "range": [
+        [
+          0,
+          175,
+          190
+        ],
+        [
+          8,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "raised frayed ridges",
+      "range": [
+        [
+          0,
+          100,
+          130
+        ],
+        [
+          12,
+          195,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "short loose stitch threads",
+      "range": [
+        [
+          0,
+          40,
+          45
+        ],
+        [
+          18,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "powdered abrasion fibers",
+      "range": [
+        [
+          0,
+          155,
+          170
+        ],
+        [
+          10,
+          245,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_band_tee_crack",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_basement_amp",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "worn indigo twill",
+      "white torn cotton threads",
+      "dark tear openings",
+      "raised frayed ridges",
+      "short loose stitch threads",
+      "powdered abrasion fibers"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_distressed_denim / Very dark indigo denim with many tiny frayed openings and exposed pale crossing yarns, no large rips",
+  "spec_key": "at_distressed_denim / worn indigo twill all; white torn cotton threads g:>:0.59&s:<:0.27; dark tear openings g:<:0.24; raised frayed ridges edge:>:0.58; short loose stitch threads detail:>:0.75; powdered abrasion fibers fine:>:0.86",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

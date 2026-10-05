@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_quarter_slot",
+  "display_name": "Arcade: Token Jackpot",
+  "promise": "Burnished gold token-edge teeth, red enamel arcs and polished nickel chips.",
+  "carrier_grammar": "Burnished gold token-edge teeth, red enamel arcs and polished nickel chips. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for gold token plating, cherry enamel ticks, purple lacquer residue, nickel wear chips, dark die recesses is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Burnished gold token-edge teeth, red enamel arcs and polished nickel chips. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_quarter_slot.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "gold token plating",
+      "role": "Actual shared paint and spec geometry: gold token plating"
+    },
+    {
+      "name": "cherry enamel ticks",
+      "role": "Actual shared paint and spec geometry: cherry enamel ticks"
+    },
+    {
+      "name": "purple lacquer residue",
+      "role": "Actual shared paint and spec geometry: purple lacquer residue"
+    },
+    {
+      "name": "nickel wear chips",
+      "role": "Actual shared paint and spec geometry: nickel wear chips"
+    },
+    {
+      "name": "dark die recesses",
+      "role": "Actual shared paint and spec geometry: dark die recesses"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "gold token plating",
+      "cherry enamel ticks",
+      "purple lacquer residue",
+      "nickel wear chips",
+      "dark die recesses"
+    ],
+    "R": [
+      "gold token plating",
+      "cherry enamel ticks",
+      "purple lacquer residue",
+      "nickel wear chips",
+      "dark die recesses"
+    ],
+    "Cc": [
+      "gold token plating",
+      "cherry enamel ticks",
+      "purple lacquer residue",
+      "nickel wear chips",
+      "dark die recesses"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_mouse_ball_grime",
+      "difference": "This finish uses Dense fine crescent segments of arcade token edges, tiny milled gold teeth, nickel notch fragments, cherry enamel jackpot tick marks and purple worn lacquer. No whole coins or lettering. Much finer and flatter than overlapping coin piles, distinctive short toothed semicircular fragments.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_high_score",
+      "difference": "This finish uses Dense fine crescent segments of arcade token edges, tiny milled gold teeth, nickel notch fragments, cherry enamel jackpot tick marks and purple worn lacquer. No whole coins or lettering. Much finer and flatter than overlapping coin piles, distinctive short toothed semicircular fragments.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "gold token plating is visible in the authored geometry",
+      "cherry enamel ticks is visible in the authored geometry",
+      "purple lacquer residue is visible in the authored geometry",
+      "nickel wear chips is visible in the authored geometry",
+      "dark die recesses is visible in the authored geometry"
+    ],
+    "source_sha256": "c3b8ffaf66cd3791ebc0603e5bcc51a53196e34ca7294ab8501f43aef25d5850",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_quarter_slot-authored-Burnished gold token-edge teeth, red enamel arcs and polished nickel chips. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_quarter_slot-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 69.2,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "856303fa2f31ccb959324b2a6994af0c1973edf68b7538ba89f61e3a6142c2e2"
+}

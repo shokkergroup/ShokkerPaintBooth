@@ -1,0 +1,80 @@
+{
+  "review": "W75 independent partial-batch and truthful-result review",
+  "date_utc": "2026-10-04",
+  "result": "PASS_WITH_LIMITS",
+  "scope": "Read-only review of frozen W70 offline/MCP controller, root integration8 controller, W40 ZoneKit batch implementation, and W36 generation lease. The only project artifacts authored are this report and tests/ai_operation_w75_partial_batch_review_contract.cjs.",
+  "source_freeze": {
+    "manifest": "_easy_claude_work/ai14h_w75_review/source-freeze.json",
+    "fresh_desired_oracle": {
+      "path": "_easy_claude_work/ai14h_w75_review/fresh-desired-oracle.json",
+      "sha256": "18F042C850DB9A1303FEEFF1E035DF78A008256DDCA31DC1A1450511E55A80C7"
+    },
+    "w70_controller": {
+      "path": "_easy_claude_work/ai14h_w75_review/frozen/spb-pro-ai.js",
+      "sha256": "FE0CE34905A3044F22C3DC91B8DAC9071DEF80F56A8346FC3D0B362BDA4D1223"
+    },
+    "integrated8_controller": {
+      "path": "_easy_claude_work/ai14h_w75_review/frozen/spb-pro-ai.integration8.js",
+      "sha256": "EEE47A9E461290F97893A721742CBEAC4F1FBB148B37CDFB8696CF9107520574"
+    },
+    "zonekit_w40": {
+      "path": "_easy_claude_work/ai14h_w75_review/frozen/spb-zone-kit.js",
+      "sha256": "EA9E169B909A30A6431F7FD48B87658B8258D480F165D304CB0CA5DAC8983AF7"
+    },
+    "lease_w36": {
+      "path": "_easy_claude_work/ai14h_w75_review/frozen/spb-ai-lease.generation-candidate.js",
+      "sha256": "DE276372A763310EC051DB141FCB1D601E11DBF193843E2B21A405226F782134"
+    },
+    "retained_w70_contract": {
+      "path": "_easy_claude_work/ai14h_w75_review/frozen/ai_operation_w70_partial_batch_contract.cjs",
+      "sha256": "56DA234573D0C8A67BAA2D47E23E37C93D566EA01358DC0F4353E581A55566D8"
+    }
+  },
+  "verification": {
+    "command": "node tests/ai_operation_w75_partial_batch_review_contract.cjs",
+    "result": "PASS",
+    "assertions": "18/18: all 12 retained W70 characterization cases plus 6 additional W75 fresh/integrated cases",
+    "review_test": "tests/ai_operation_w75_partial_batch_review_contract.cjs",
+    "tested_actual_functions": [
+      "offlinePartAsk",
+      "offlineElementAsk",
+      "makeTools handlers",
+      "finishCore",
+      "W40 ZoneKit apply/batch implementation",
+      "W36 generation lease checks on offline operation tickets"
+    ],
+    "coverage": [
+      "A requested part set containing one valid selector and one empty/missing selector queues zero edits and returns an explicit safe refusal.",
+      "A requested element set containing one available selector and one absent selector queues zero edits and returns an explicit safe refusal.",
+      "All-valid two-part and two-element controls preserve both queued operations and apply both through the actual W40 ZoneKit batch path; success replies enumerate both applied lines.",
+      "Single- and multi-edit MCP controls apply and report all valid operations; an invalid later operation is rejected before it enters the queue.",
+      "Malformed add, invalid edit after valid add, absent region, duplicate target, and mixed invalid batches retain their W70 characterized refusal/queue behavior.",
+      "A deliberately injected exception on ZoneKit add number two yields exactly one applied zone/line and a partial reply naming that line and the exact failed operation; it does not repeat the draft's full-success wording.",
+      "A deliberately injected first-add exception yields zero applied zones/lines and a failure reply, not a success claim.",
+      "The fresh W75 valid/partial-fault controls are repeated through integrated8 with the frozen W40 ZoneKit and W36 lease."
+    ]
+  },
+  "findings": [
+    {
+      "severity": "none found in tested scope",
+      "finding": "No false Done/success reply or untruthful partial application was observed in the covered offline part, offline element, MCP queue, and ZoneKit batch cases."
+    },
+    {
+      "severity": "expected injected failure; not a regression",
+      "finding": "ZoneKit application is sequential and is not transactional: when the second addZone is forced to throw, the first add remains. The controller correctly reports the exact successful line and exact failed operation as partial. This review does not claim rollback or atomicity."
+    }
+  ],
+  "limits": [
+    "All provider and host/application effects were deterministic VM mocks. No provider, browser, native app, server, or live project operation was used.",
+    "The report verifies the frozen W70 and integration8 snapshots only; it does not establish behavior of a later moving controller build.",
+    "The actual canvas pixels, real CAR/element detector behavior, browser UI rendering, and real external source-generation changes were outside this harness.",
+    "Fresh all-valid part/element cases and integration8 repetitions are W75 cases; the original 12 W70 characterization cases were loaded unchanged from the frozen copy."
+  ],
+  "effects": {
+    "production_source_edits": 0,
+    "wiki_or_mirror_edits": 0,
+    "provider_calls": 0,
+    "native_calls": 0,
+    "server_calls": 0
+  }
+}

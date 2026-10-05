@@ -1,0 +1,162 @@
+{
+ "fpe_amber_agar": {
+  "hue": 0.0932,
+  "dom": 0.125,
+  "sat": 0.985,
+  "lum": 0.438,
+  "target": 0.09,
+  "fix": -0.0032
+ },
+ "fpe_amber_diatom": {
+  "hue": 0.1013,
+  "dom": 0.0972,
+  "sat": 0.982,
+  "lum": 0.286,
+  "target": 0.09,
+  "fix": -0.0113
+ },
+ "fpe_amber_moldring": {
+  "hue": 0.0965,
+  "dom": 0.0694,
+  "sat": 0.994,
+  "lum": 0.253,
+  "target": 0.09,
+  "fix": -0.0065
+ },
+ "fpe_amber_plankton": {
+  "hue": 0.0976,
+  "dom": 0.125,
+  "sat": 0.987,
+  "lum": 0.386,
+  "target": 0.09,
+  "fix": -0.0076
+ },
+ "fpe_cyan_colony": {
+  "hue": 0.5063,
+  "dom": 0.5139,
+  "sat": 0.988,
+  "lum": 0.435,
+  "target": 0.5,
+  "fix": -0.0063
+ },
+ "fpe_cyan_membrane": {
+  "hue": 0.4941,
+  "dom": 0.4861,
+  "sat": 0.991,
+  "lum": 0.398,
+  "target": 0.5,
+  "fix": 0.0059
+ },
+ "fpe_cyan_mold": {
+  "hue": 0.5084,
+  "dom": 0.4583,
+  "sat": 0.985,
+  "lum": 0.288,
+  "target": 0.5,
+  "fix": -0.0084
+ },
+ "fpe_cyan_spineball": {
+  "hue": 0.5097,
+  "dom": 0.5139,
+  "sat": 0.995,
+  "lum": 0.506,
+  "target": 0.5,
+  "fix": -0.0097
+ },
+ "fpe_lime_chains": {
+  "hue": 0.2291,
+  "dom": 0.2083,
+  "sat": 0.978,
+  "lum": 0.259,
+  "target": 0.22,
+  "fix": -0.0091
+ },
+ "fpe_lime_culture": {
+  "hue": 0.2239,
+  "dom": 0.2361,
+  "sat": 0.992,
+  "lum": 0.285,
+  "target": 0.22,
+  "fix": -0.0039
+ },
+ "fpe_lime_diatom": {
+  "hue": 0.2266,
+  "dom": 0.2361,
+  "sat": 0.994,
+  "lum": 0.332,
+  "target": 0.22,
+  "fix": -0.0066
+ },
+ "fpe_lime_mold": {
+  "hue": 0.217,
+  "dom": 0.2361,
+  "sat": 0.992,
+  "lum": 0.266,
+  "target": 0.22,
+  "fix": 0.003
+ },
+ "fpe_magenta_bloom": {
+  "hue": 0.8811,
+  "dom": 0.8472,
+  "sat": 0.985,
+  "lum": 0.228,
+  "target": 0.87,
+  "fix": -0.0111
+ },
+ "fpe_magenta_mosaic": {
+  "hue": 0.8597,
+  "dom": 0.875,
+  "sat": 0.985,
+  "lum": 0.235,
+  "target": 0.87,
+  "fix": 0.0103
+ },
+ "fpe_magenta_plankton": {
+  "hue": 0.8796,
+  "dom": 0.875,
+  "sat": 0.992,
+  "lum": 0.273,
+  "target": 0.87,
+  "fix": -0.0096
+ },
+ "fpe_magenta_radiolaria": {
+  "hue": 0.8598,
+  "dom": 0.8472,
+  "sat": 0.993,
+  "lum": 0.258,
+  "target": 0.87,
+  "fix": 0.0102
+ },
+ "fpe_violet_chains": {
+  "hue": 0.7559,
+  "dom": 0.7361,
+  "sat": 0.965,
+  "lum": 0.149,
+  "target": 0.75,
+  "fix": -0.0059
+ },
+ "fpe_violet_frustule": {
+  "hue": 0.759,
+  "dom": 0.7361,
+  "sat": 0.987,
+  "lum": 0.202,
+  "target": 0.75,
+  "fix": -0.009
+ },
+ "fpe_violet_garden": {
+  "hue": 0.7565,
+  "dom": 0.7917,
+  "sat": 0.931,
+  "lum": 0.301,
+  "target": 0.75,
+  "fix": -0.0065
+ },
+ "fpe_violet_membrane": {
+  "hue": 0.7571,
+  "dom": 0.7361,
+  "sat": 0.964,
+  "lum": 0.187,
+  "target": 0.75,
+  "fix": -0.0071
+ }
+}

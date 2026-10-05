@@ -8,6 +8,7 @@ REGISTRY_PATCH = {
     "candy_burgundy": "paint_candy_burgundy_v2",
     "candy_chrome": "paint_candy_chrome_v2",
     "candy_emerald": "paint_candy_emerald_v2",
+    "deep_pearl": "paint_deep_pearl_white_v2",
     "hydrographic": "paint_hydrographic_v2",
     "hypershift_spectral": "paint_hypershift_spectral_v2",
     "jelly_pearl": "paint_jelly_pearl_v2",
@@ -23,10 +24,11 @@ REGISTRY_PATCH = {
 
 SPEC_PATCH = {
     "candy": "spec_candy",
-    "candy_apple": "spec_candy",             # WEAK-036 FIX: reuses generic candy spec (M=230/R=2 gives bright sparse flake)
+    "candy_apple": "spec_candy_apple",       # SPB-67: name-faithful wet crimson candy spec
     "candy_burgundy": "spec_candy_burgundy",
     "candy_chrome": "spec_candy_chrome",
     "candy_emerald": "spec_candy_emerald",
+    "deep_pearl": "spec_deep_pearl_white",
     "hydrographic": "spec_hydrographic",
     "hypershift_spectral": "spec_hypershift_spectral",
     "jelly_pearl": "spec_jelly_pearl",

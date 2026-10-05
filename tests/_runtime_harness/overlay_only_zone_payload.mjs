@@ -29,17 +29,49 @@ function extractTopLevelFunction(src, funcName) {
 }
 
 const block = [
+  extractTopLevelFunction(API_RENDER_SRC, '_encodeZoneApplyMasks'),
   extractTopLevelFunction(API_RENDER_SRC, '_applyBaseColorBranch'),
   extractTopLevelFunction(API_RENDER_SRC, '_zoneShouldPreserveScopedBrushExactColorPayload'),
   extractTopLevelFunction(API_RENDER_SRC, '_applyBlendBaseOverlay'),
+  extractTopLevelFunction(API_RENDER_SRC, '_normalizeExtraBaseOverlayPatternValue'),
+  extractTopLevelFunction(API_RENDER_SRC, '_extraBaseOverlayInheritsPrimaryPattern'),
+  extractTopLevelFunction(API_RENDER_SRC, '_extraBaseOverlayBlendModeRequiresPattern'),
+  extractTopLevelFunction(API_RENDER_SRC, '_extraBaseOverlayNumberOrInherited'),
   extractTopLevelFunction(API_RENDER_SRC, '_applyExtraBaseOverlay'),
   extractTopLevelFunction(API_RENDER_SRC, '_applyAllExtraBaseOverlays'),
+  // [SPB-OVERLAY-PARITY 2026-08-20] _zoneHasMaterialStack was added to
+  // buildServerZonesForRender's dependencies but never to this extraction
+  // list, so the harness died on a ReferenceError before asserting anything.
+  extractTopLevelFunction(API_RENDER_SRC, '_zoneHasMaterialStack'),
   extractTopLevelFunction(API_RENDER_SRC, '_zoneHasActiveBaseOverlay'),
   extractTopLevelFunction(API_RENDER_SRC, '_zoneNeedsNeutralBaseAnchor'),
+  extractTopLevelFunction(API_RENDER_SRC, '_zoneHasImportedSpecSource'),
+  extractTopLevelFunction(API_RENDER_SRC, '_zoneSpecSourceStrength'),
+  extractTopLevelFunction(API_RENDER_SRC, '_applyZoneSpecSource'),
   extractTopLevelFunction(API_RENDER_SRC, '_zoneHasRenderableMaterial'),
   extractTopLevelFunction(API_RENDER_SRC, '_applyBaseColorMode'),
+  extractTopLevelFunction(API_RENDER_SRC, '_zoneShouldFitIntoApplyArea'),
+  // [SPB-OVERLAY-PARITY 2026-08-20] every top-level helper the extracted set
+  // transitively calls - computed, not guessed; the harness had drifted 12
+  // functions behind the real buildServerZonesForRender.
+  extractTopLevelFunction(API_RENDER_SRC, '_applyAllSpecPatternStacks'),
+  extractTopLevelFunction(API_RENDER_SRC, '_applyCustomIntensity'),
+  extractTopLevelFunction(API_RENDER_SRC, '_applySpecLightingMask'),
+  extractTopLevelFunction(API_RENDER_SRC, '_applySpecMaterialOverride'),
+  extractTopLevelFunction(API_RENDER_SRC, '_applySpecMaterialRemap'),
+  extractTopLevelFunction(API_RENDER_SRC, '_applyZoneMaterialStack'),
+  extractTopLevelFunction(API_RENDER_SRC, '_attachSourceLayerCacheHints'),
+  extractTopLevelFunction(API_RENDER_SRC, '_isSuppressedLegacyZone'),
+  extractTopLevelFunction(API_RENDER_SRC, '_mapPatternStack'),
+  extractTopLevelFunction(API_RENDER_SRC, '_normalizeZoneMaterialStack'),
+  extractTopLevelFunction(API_RENDER_SRC, '_resolveFinishColors'),
+  extractTopLevelFunction(API_RENDER_SRC, 'formatColorForServer'),
   extractTopLevelFunction(API_RENDER_SRC, 'buildServerZonesForRender'),
 ].join('\n\n');
+// [SPB-OVERLAY-PARITY 2026-08-20] module-level const the helpers iterate over;
+// lifted verbatim from the source file so it cannot drift.
+const CONSTS_SRC = API_RENDER_SRC.match(/const SPEC_PATTERN_STACK_TIERS = \[[\s\S]*?\];/)[0];
+const fullBlock = CONSTS_SRC + '\n\n' + block;
 
 const ctx = {
   window: {},
@@ -76,7 +108,7 @@ const ctx = {
   parseInt,
 };
 vm.createContext(ctx);
-vm.runInContext(block, ctx, { filename: 'overlay_only_zone_payload.runtime.js' });
+vm.runInContext(fullBlock, ctx, { filename: 'overlay_only_zone_payload.runtime.js' });
 
 const overlayOnlyZone = {
   name: 'Zone 2',
@@ -155,6 +187,54 @@ const regularOverlaySpecialColorZone = {
   secondBaseColorSource: 'mono:firefly_glow',
 };
 
+const patternReactiveOverlayZone = {
+  name: 'Pattern reactive overlay inherits primary pattern',
+  color: 'remaining',
+  intensity: '100',
+  base: 'gloss',
+  pattern: 'speed_lines',
+  secondBase: 'pf_bright_orchid_pulse',
+  secondBaseColor: '#dd88ff',
+  secondBaseStrength: 1.0,
+  secondBaseSpecStrength: 1.0,
+  secondBaseColorSource: 'overlay',
+  secondBaseBlendMode: 'pattern-vivid',
+};
+
+const patternReactiveThirdOverlayZone = {
+  name: '3rd overlay inherits scaled primary Art Deco pattern',
+  color: 'remaining',
+  intensity: '100',
+  base: 'gloss',
+  pattern: 'art_deco',
+  scale: 0.35,
+  rotation: 25,
+  patternOpacity: 70,
+  patternOffsetX: 0.62,
+  patternOffsetY: 0.44,
+  patternFlipH: true,
+  thirdBase: 'f_metallic',
+  thirdBaseColor: '#2255ff',
+  thirdBaseStrength: 1.0,
+  thirdBaseSpecStrength: 1.0,
+  thirdBaseColorSource: 'solid',
+  thirdBaseBlendMode: 'pattern-vivid',
+  thirdBasePatternHarden: true,
+};
+
+const staleIndependentPatternReactiveThirdOverlayZone = {
+  ...patternReactiveThirdOverlayZone,
+  name: '3rd pattern-pop overlay repairs stale explicit None',
+  thirdBasePattern: '__none__',
+};
+
+const tintIndependentThirdOverlayZone = {
+  ...patternReactiveThirdOverlayZone,
+  name: '3rd tint overlay keeps explicit None independent',
+  thirdBaseBlendMode: 'tint',
+  thirdBasePattern: '__none__',
+};
+
 const fifthLayerSpecialColorZone = {
   name: 'Fifth layer special color',
   color: 'remaining',
@@ -181,6 +261,10 @@ const result = {
   special_overlay_solid_color: ctx.buildServerZonesForRender([specialOverlaySolidColorZone]),
   legacy_special_overlay_solid_color: ctx.buildServerZonesForRender([legacySpecialOverlaySolidColorZone]),
   regular_overlay_special_color: ctx.buildServerZonesForRender([regularOverlaySpecialColorZone]),
+  pattern_reactive_overlay: ctx.buildServerZonesForRender([patternReactiveOverlayZone]),
+  pattern_reactive_third_overlay: ctx.buildServerZonesForRender([patternReactiveThirdOverlayZone]),
+  stale_independent_pattern_reactive_third_overlay: ctx.buildServerZonesForRender([staleIndependentPatternReactiveThirdOverlayZone]),
+  tint_independent_third_overlay: ctx.buildServerZonesForRender([tintIndependentThirdOverlayZone]),
   fifth_layer_special_color: ctx.buildServerZonesForRender([fifthLayerSpecialColorZone]),
   empty_zone_count: ctx.buildServerZonesForRender([emptyZone]).length,
 };

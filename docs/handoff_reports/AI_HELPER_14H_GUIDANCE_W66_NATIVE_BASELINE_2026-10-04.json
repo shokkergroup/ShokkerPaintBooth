@@ -1,0 +1,60 @@
+{
+  "status": "SAFE_BUT_SEMANTIC_GAPS",
+  "scope": "Cold frozen Runtime1 actual ask path; no finish was called and no queued effects occurred.",
+  "session": "77aed6b92219",
+  "result": {
+    "done": true,
+    "result": {
+      "replies": [
+        {
+          "request": "How do I save this as a layered project?",
+          "queue": 0,
+          "text": "**How do I save my project and come back later**\n1. In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.\n2. Click \"Save / Open\" in the top toolbar (SPB Projects). It saves the paint (PSD included), every zone and layer settings in one file.\n3. To reopen, click \"Save / Open\" again and load it.\nExact controls: Save / Open (Pro > top toolbar (tool row)); SAVE SHOKK (Pro > left column > ZONES > More (three-dot) menu).\nDid that get you there, or is there something else you are trying to do?\nNEXT: I’m ",
+          "cancelled": false
+        },
+        {
+          "request": "What does flattened mean?",
+          "queue": 0,
+          "text": "**How do I merge or flatten layers**\n1. In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.\n2. LAYERS tab > \"Actions\".\n3. \"Merge visible\" combines the visible layers (hidden ones survive); \"Flatten document\" makes one layer and loses separation.\nExact controls: Actions (Pro > right column > LAYERS tab).\nDid that get you there, or is there something else you are trying to do?\nNEXT: I’m still stuck",
+          "cancelled": false
+        },
+        {
+          "request": "How can I change only the clearcoat?",
+          "queue": 0,
+          "text": "**How do I change only one colour of my livery (say all the red)**\n1. In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.\n2. Your selected zone is \"Roof recoloured red\" (zone 1) - click another card in the ZONES list to work on that one instead.\n3. Click \"+ Add Zone\".\n4. In COLOR click \"PICK COLOR FROM CAR\", then click a red spot on the car. Raise the tolerance if red edges are left.\n5. In BASE pick a finish.\n6. To make it a different colour set the BASE COLOR dropdown to \"Use solid color\" and c",
+          "cancelled": false
+        },
+        {
+          "request": "How do I keep the current paint when making the roof chrome?",
+          "queue": 0,
+          "text": "**How do I make something chrome**\n1. In Chat Studio, click “Full editor →” to open these Pro controls, then continue with the steps below.\n2. Your selected zone is \"Roof recoloured red\" (zone 1) - click another card in the ZONES list to work on that one instead.\n3. Select the zone, BASE > Base Material > Chrome (mirror) or Satin Chrome (softer).\n4. Chrome repaints the zone silver. To keep your colours and only get the shine, use a Foundation chrome with \"Use source paint (spec only)\".\n5. In iRacing the paint under a metal part should be near w",
+          "cancelled": false
+        },
+        {
+          "request": "How do I find the number layer?",
+          "queue": 0,
+          "text": "For the numbers: you want clean edges and no glare. Your body is Gloss (high gloss). Avoid chrome, glitter and colour-shifting finishes on numbers: they break up the digit edges at speed. Swatches are shown on your car's colour.\nNEXT: Show me more | Show complete looks that suit my colours | Add a texture on top",
+          "cancelled": false
+        },
+        {
+          "request": "What can the offline helper do without an API key?",
+          "queue": 0,
+          "text": "I could not turn that request into a safe built-in edit, so nothing was changed. Try naming the part and the change, such as “make only the hood matte blue”, or ask how to use a tool. A connected external assistant can help with a broader brief; setting up an AI provider is optional.",
+          "cancelled": false
+        }
+      ],
+      "zonesExact": true,
+      "paintExact": true,
+      "specExact": true,
+      "layersExact": true,
+      "attempts": 0
+    }
+  },
+  "findings": [
+    "Flattened question gives flatten operations before a definition",
+    "Clearcoat-only how-to incorrectly gives colour replacement",
+    "Finding number layer incorrectly gives finish recommendations",
+    "Offline capability question gets safe-edit fallback instead of capabilities"
+  ],
+  "next": "W66 isolated semantic routing and wording repair; native acceptance still required"
+}

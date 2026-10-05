@@ -1,0 +1,8 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_268864.tga","inspection_records":"_smart_tga_runs/cycle683_dlm_owner_evidence_review/inspection_records.json","review_scope":"Cycle 683 source plus complete owner sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[266,259,105,85],"target_layer":"numbers","family_id":"number:28","label":"true_upper_number_28_fragment"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[578,315,49,16],"target_layer":"sponsors","label":"wordmark_false_number"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[693,701,60,32],"target_layer":"template","label":"template_hardware_false_number"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[716,701,126,63],"target_layer":"template","label":"template_hardware_false_number"},
+ {"layer":"numbers","component_index":4,"expected_bbox":[270,715,153,83],"target_layer":"numbers","family_id":"number:28","label":"true_custom_number_28"},
+ {"layer":"numbers","component_index":5,"expected_bbox":[911,908,60,73],"target_layer":"numbers","family_id":"number:28","label":"true_deck_number_28_fragment"}
+]}

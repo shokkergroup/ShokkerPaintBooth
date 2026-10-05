@@ -1,0 +1,194 @@
+{
+  "schema": "spb-neon-oil-slick-pilot-audit/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_frequency_fault",
+  "seed": 4074774566,
+  "builder_elapsed_seconds": 2.083592,
+  "native_paint_spec_elapsed_seconds": 2.137159,
+  "repeat_elapsed_seconds": 2.496076,
+  "deterministic": true,
+  "paint_sha256": "92489cd5beb140b363677e39395cb05eea5f1abce1e6cfcd60bcb0a285103eb8",
+  "spec_sha256": "2211b4a5f1c6d441d597ed81be849db187645b7831fd3fc7e02831dda9a4267e",
+  "material_stats_native": {
+    "std": {
+      "M": 82.790001,
+      "R": 83.053764,
+      "Cc": 83.260635
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.056772,
+      "M_Cc": 0.73788,
+      "R_Cc": -0.038071
+    }
+  },
+  "geometry_stats": {
+    "family_count": 10,
+    "families": {
+      "conductive microbars": 6401,
+      "dielectric gaps": 766,
+      "encapsulant bridges": 603,
+      "fractured terminations": 848,
+      "intact bar shoulders": 3699,
+      "offset conductive echoes": 1032,
+      "peak deposits": 936,
+      "skipped bar ghosts": 450,
+      "solder nicks": 677,
+      "squeeze-out lips": 1129
+    },
+    "width_native_min": 8.039,
+    "width_native_median": 15.56,
+    "width_native_p90": 25.668,
+    "width_native_max": 30.0,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "conductive microbars": 0.328675,
+    "intact bar shoulders": 0.12695,
+    "squeeze-out lips": 0.041578,
+    "skipped bar ghosts": 0.018108,
+    "offset conductive echoes": 0.037141,
+    "peak deposits": 0.019377,
+    "fractured terminations": 0.025432,
+    "dielectric gaps": 0.021691,
+    "solder nicks": 0.012104,
+    "encapsulant bridges": 0.035952
+  },
+  "max_unmarked_void_native_px": 26.0,
+  "seam_ratios_vs_local_neighbor_change": {
+    "paint_x_to_local_ratio": 1.13676,
+    "paint_y_to_local_ratio": 1.387323,
+    "M_x_to_local_ratio": 1.056642,
+    "M_y_to_local_ratio": 0.79716,
+    "R_x_to_local_ratio": 1.245482,
+    "R_y_to_local_ratio": 1.588409,
+    "Cc_x_to_local_ratio": 1.091094,
+    "Cc_y_to_local_ratio": 0.900759
+  },
+  "picker_luma_std": {
+    "64": 11.174065,
+    "128": 16.816318
+  },
+  "checks": {
+    "deterministic": true,
+    "native_paint_spec_under_3_seconds": true,
+    "repeat_under_3_seconds": true,
+    "ten_attached_families": true,
+    "all_dimensions_8_32_native": true,
+    "eight_tiers_each_channel": true,
+    "std_at_least_30_each_channel": true,
+    "channels_not_copied_or_inverse": true,
+    "full_canvas_no_void_over_64px": true,
+    "picker_64_survives": true,
+    "picker_128_survives": true,
+    "periodic_seams_below_3x_local_change": true
+  },
+  "all_mechanical_checks_green": true,
+  "catalog_m7": "PENDING isolated official workbook harness",
+  "mapped_car": "PENDING; three-position material light proxy supplied for owner screening",
+  "manifest": {
+    "schema": "spb-neon-oil-slick-pilot/1",
+    "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+    "finish_id": "neon2_frequency_fault",
+    "display_name": "Frequency Fault",
+    "carrier": "dark encapsulated conductive film with locally deposited microbar packets",
+    "material_story": {
+      "M": "conductive microbars, solder nicks, and peak deposits lead; dielectric omissions and exposed breaks fall",
+      "R": "squeeze-out, fractured terminations, skipped/eroded bar ghosts, and offset damage rise independently",
+      "Cc": "encapsulant bridges, dielectric windows, and intact bar shoulders retain clear; exposed fractures break it"
+    },
+    "vetoes": [
+      "waveform, chart, equalizer, or music UI silhouette",
+      "barcode, uniform grid, repeated rows, or macro lanes",
+      "floating disconnected ornaments",
+      "generic noise or unrelated texture underlay",
+      "any authored dimension outside 8\u201332px native"
+    ],
+    "native_size": [
+      2048,
+      2048
+    ],
+    "builder_elapsed_seconds": 2.083592,
+    "material_stats": {
+      "std": {
+        "M": 82.790001,
+        "R": 83.053764,
+        "Cc": 83.260635
+      },
+      "range": {
+        "M": [
+          7,
+          253
+        ],
+        "R": [
+          8,
+          251
+        ],
+        "Cc": [
+          6,
+          254
+        ]
+      },
+      "tier_count": {
+        "M": 8,
+        "R": 8,
+        "Cc": 8
+      },
+      "correlation": {
+        "M_R": 0.056772,
+        "M_Cc": 0.73788,
+        "R_Cc": -0.038071
+      }
+    },
+    "geometry_stats": {
+      "family_count": 10,
+      "families": {
+        "conductive microbars": 6401,
+        "dielectric gaps": 766,
+        "encapsulant bridges": 603,
+        "fractured terminations": 848,
+        "intact bar shoulders": 3699,
+        "offset conductive echoes": 1032,
+        "peak deposits": 936,
+        "skipped bar ghosts": 450,
+        "solder nicks": 677,
+        "squeeze-out lips": 1129
+      },
+      "width_native_min": 8.039,
+      "width_native_median": 15.56,
+      "width_native_p90": 25.668,
+      "width_native_max": 30.0,
+      "fine_8_32_fraction": 1.0
+    },
+    "causal_mask_coverage": {
+      "conductive microbars": 0.328675,
+      "intact bar shoulders": 0.12695,
+      "squeeze-out lips": 0.041578,
+      "skipped bar ghosts": 0.018108,
+      "offset conductive echoes": 0.037141,
+      "peak deposits": 0.019377,
+      "fractured terminations": 0.025432,
+      "dielectric gaps": 0.021691,
+      "solder nicks": 0.012104,
+      "encapsulant bridges": 0.035952
+    }
+  }
+}

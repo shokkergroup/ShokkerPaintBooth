@@ -1,0 +1,237 @@
+{
+  "status": "FINDINGS",
+  "task": "W33 delayed-helper and MCP candidate recheck",
+  "date": "2026-10-04",
+  "oracle": {
+    "sha256": "A9A7F06CCF23EF98F7180EFB551614C0B75D6889871E70CFF5C0239234183663",
+    "count": 15,
+    "cases": [
+      {
+        "id": "support-send-source-switch",
+        "expect": "A delayed support helper result must not finish/apply against a replacement source."
+      },
+      {
+        "id": "warm-teach-source-switch",
+        "expect": "A delayed warm/teach continuation must not initiate or publish on a replacement source."
+      },
+      {
+        "id": "finish-card-source-switch",
+        "expect": "A delayed finish-card continuation must not finish/apply to a replacement source."
+      },
+      {
+        "id": "kit-use-source-switch",
+        "expect": "A delayed kit continuation must not finish/apply to a replacement source."
+      },
+      {
+        "id": "refine-critic-late-rejection",
+        "expect": "A delayed refine/critic continuation must not re-ask, publish, or undo against a replacement source/current owner."
+      },
+      {
+        "id": "cancel-preview-A-start-B-late-A-restore",
+        "expect": "Late preview A cleanup cannot overwrite B, clear B owner/busy/controller, or publish A."
+      },
+      {
+        "id": "cancel-preview-manual-revision-conflict",
+        "expect": "Cancel restore refuses to overwrite a newer manual revision in the same document."
+      },
+      {
+        "id": "self-help-doit-immediate-finish",
+        "expect": "Synchronous self-help/DoIt completion remains bound to its starting source and operation."
+      },
+      {
+        "id": "external-lease-begin-rejection",
+        "expect": "A rejected external lease acquisition does not end/release another owner."
+      },
+      {
+        "id": "external-lease-success-release",
+        "expect": "A successful externally-owned operation releases its lease exactly once after completion."
+      },
+      {
+        "id": "mcp-pending-tool-source-replacement",
+        "expect": "A pending MCP tool may not apply after the committed source changes."
+      },
+      {
+        "id": "mcp-source-switch-during-preview",
+        "expect": "A preview begun for source A cannot return an image from replacement source B as A result."
+      },
+      {
+        "id": "mcp-cancel-A-start-B-late-A",
+        "expect": "Cancel A then start B; late A completion cannot clear B busy/controller/lease or publish."
+      },
+      {
+        "id": "mcp-async-throw-release-once",
+        "expect": "An asynchronous MCP core throw releases a successfully acquired lease exactly once and settles."
+      },
+      {
+        "id": "actual-lease-reject-not-end-foreign",
+        "expect": "Actual SpbAiLease adapter rejects foreign ownership without calling end or releasing that owner."
+      }
+    ]
+  },
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_w10_pre_rebase/js/spb-pro-ai.js (byte-pinned copy)",
+    "sha256": "A656E3A2E55BD8E6D893BE47C12D3686CE30B682405DC33D170C354398DEE183",
+    "bytes": 414272
+  },
+  "operationModule": {
+    "path": "js/spb-ai-operation.js",
+    "sha256": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6"
+  },
+  "leaseAdapter": {
+    "path": "js/spb-ai-lease.js",
+    "sha256": "D765444136C8CAE6FD46C79BC0730D5B9266AD70EA832BFB08438AB77CA0AD75"
+  },
+  "counts": {
+    "oracleCases": 15,
+    "concreteChecks": 11,
+    "staticOnlyChecks": 8,
+    "assertionErrors": 0,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "browserCalls": 0
+  },
+  "results": [
+    {
+      "id": "support-send-source-switch",
+      "mode": "concrete",
+      "finishCalls": 0,
+      "busy": false
+    },
+    {
+      "id": "warm-teach-source-switch",
+      "mode": "concrete",
+      "teachCalls": 0,
+      "finishCalls": 0
+    },
+    {
+      "id": "finish-card-source-switch",
+      "mode": "concrete",
+      "finishCalls": 0,
+      "sourceGeneration": 11
+    },
+    {
+      "id": "kit-use-source-switch",
+      "mode": "concrete",
+      "finishCalls": 0,
+      "sourceGeneration": 11
+    },
+    {
+      "id": "refine-critic-late-rejection",
+      "mode": "concrete",
+      "asks": 0,
+      "finishCalls": 0
+    },
+    {
+      "id": "mcp-pending-tool-source-replacement",
+      "mode": "concrete",
+      "applies": 0,
+      "sourceGeneration": 11
+    },
+    {
+      "id": "mcp-source-switch-during-preview",
+      "mode": "concrete",
+      "ok": false,
+      "images": [],
+      "sampled": [
+        10
+      ],
+      "lateImageSampling": [
+        11
+      ]
+    },
+    {
+      "id": "mcp-cancel-A-start-B-late-A",
+      "mode": "concrete",
+      "busy": true,
+      "ownerId": 2,
+      "applies": 0,
+      "lease": "not installed for this isolated operation-owner replay"
+    },
+    {
+      "id": "mcp-cancel-A-start-B-late-A",
+      "mode": "supplemental-real-lease-rotation",
+      "candidateHasLeaseGeneration": false,
+      "bAcquired": true,
+      "staleReleaseEndCalls": 2,
+      "staleAReleasedB": true,
+      "observation": "candidate captures null generation because actual lease exposes no generation(); late A release calls end(null), which releases whichever same-owner lease is active"
+    },
+    {
+      "id": "actual-lease-reject-not-end-foreign",
+      "mode": "concrete",
+      "ok": false,
+      "owner": "external",
+      "foreignLeaseStillActive": true
+    },
+    {
+      "id": "mcp-async-throw-release-once",
+      "mode": "concrete",
+      "ok": false,
+      "controlledError": "controlled preview rejection",
+      "leaseReacquired": true,
+      "busy": false
+    },
+    {
+      "id": "external-lease-success-release",
+      "mode": "concrete",
+      "ok": true,
+      "leaseReacquired": true,
+      "busy": false
+    },
+    {
+      "id": "warm-teach-source-switch",
+      "mode": "static-only",
+      "result": "route contract verified in actual candidate function text"
+    },
+    {
+      "id": "finish-card-source-switch",
+      "mode": "static-only",
+      "result": "route contract verified in actual candidate function text"
+    },
+    {
+      "id": "kit-use-source-switch",
+      "mode": "static-only",
+      "result": "route contract verified in actual candidate function text"
+    },
+    {
+      "id": "refine-critic-late-rejection",
+      "mode": "static-only",
+      "result": "route contract verified in actual candidate function text"
+    },
+    {
+      "id": "self-help-doit-immediate-finish",
+      "mode": "static-only",
+      "result": "route contract verified in actual candidate function text"
+    },
+    {
+      "id": "cancel-preview-manual-revision-conflict",
+      "mode": "static-only",
+      "result": "route contract verified in actual candidate function text"
+    },
+    {
+      "id": "external-lease-success-release",
+      "mode": "static-only",
+      "result": "route contract verified in actual candidate function text"
+    },
+    {
+      "id": "mcp-source-and-apply-guards",
+      "mode": "static-only",
+      "result": "route contract verified in actual candidate function text"
+    }
+  ],
+  "findings": [],
+  "reviewFindings": [
+    {
+      "severity": "P1 lifecycle/interface gap",
+      "where": "candidate mcpCall at lines 2125-2136; js/spb-ai-lease.js end/begin lines 6-13",
+      "issue": "Candidate tries lease.generation() but the actual SpbAiLease API exposes no generation; candidate therefore captures null and calls unscoped end(null). In an adversarial lease rotation, late A cleanup calls end while same-owner B is active and deactivates B. Actual cancel does not release the lease itself, so ordinary B admission remains blocked; if a separate cancellation/takeover lifecycle retires A and reacquires B before A settles, cleanup can release the replacement. Give lease acquisitions a generation/token and require matching-token end, or only end when candidate still owns the current generation."
+    }
+  ],
+  "limits": [
+    "Candidate exact bytes copied to a temp snapshot and SHA verified; no moving candidate loaded.",
+    "Actual candidate helper/MCP functions, standalone operation module, and actual lease adapter loaded in VM; only provider/native/app paint effects are mocked.",
+    "The MCP source-switch preview case verifies public wrapper rejects the result after a replacement; its core samples a B preview image while assembling a response, but the stale wrapper returns no image/result to caller.",
+    "The finish-card/kit/refine/warm routes were dynamically delayed and source-switched. Cancel/manual-revision and self-help assertions are static-only source checks; no UI/native path was run.",
+    "No live renderer/provider, native app, project load, external MCP server, or browser run."
+  ]
+}

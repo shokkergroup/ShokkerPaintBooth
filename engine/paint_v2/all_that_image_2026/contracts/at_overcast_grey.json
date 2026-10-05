@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_overcast_grey",
+  "display_name": "Flannel: Blacklight Gig",
+  "promise": "Fluorescent violet cyan lime gig-poster ink abstractions on velvety near-black, dense tiny lively marks",
+  "carrier_grammar": "Fluorescent violet cyan lime gig-poster ink abstractions on velvety near-black, dense tiny lively marks; single full-canvas image, no duplicated quadrants. Fine features: blacklight matte ground, cyan fluorescent curls, violet overprint films, lime stencil fragments, sharp ink cut shoulders, dry halftone spray",
+  "spec_grammar": "Feature-specific selectors partition blacklight matte ground, cyan fluorescent curls, violet overprint films, lime stencil fragments, sharp ink cut shoulders, dry halftone spray. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "blacklight matte ground",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "cyan fluorescent curls",
+      "role": "Material feature selected from artwork by h:>:165&h:<:225&s:>:0.4"
+    },
+    {
+      "name": "violet overprint films",
+      "role": "Material feature selected from artwork by h:>:255&s:>:0.35"
+    },
+    {
+      "name": "lime stencil fragments",
+      "role": "Material feature selected from artwork by h:>:50&h:<:155&s:>:0.4"
+    },
+    {
+      "name": "sharp ink cut shoulders",
+      "role": "Material feature selected from artwork by edge:>:0.66"
+    },
+    {
+      "name": "dry halftone spray",
+      "role": "Material feature selected from artwork by fine:>:0.81"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "blacklight matte ground",
+      "cyan fluorescent curls",
+      "violet overprint films",
+      "lime stencil fragments",
+      "sharp ink cut shoulders",
+      "dry halftone spray"
+    ],
+    "R": [
+      "blacklight matte ground",
+      "cyan fluorescent curls",
+      "violet overprint films",
+      "lime stencil fragments",
+      "sharp ink cut shoulders",
+      "dry halftone spray"
+    ],
+    "Cc": [
+      "blacklight matte ground",
+      "cyan fluorescent curls",
+      "violet overprint films",
+      "lime stencil fragments",
+      "sharp ink cut shoulders",
+      "dry halftone spray"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "blacklight matte ground",
+      "range": [
+        [
+          0,
+          175,
+          190
+        ],
+        [
+          8,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cyan fluorescent curls",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "violet overprint films",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "lime stencil fragments",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "sharp ink cut shoulders",
+      "range": [
+        [
+          240,
+          0,
+          170
+        ],
+        [
+          255,
+          30,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dry halftone spray",
+      "range": [
+        [
+          0,
+          155,
+          170
+        ],
+        [
+          10,
+          245,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_band_tee_crack",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_basement_amp",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "blacklight matte ground",
+      "cyan fluorescent curls",
+      "violet overprint films",
+      "lime stencil fragments",
+      "sharp ink cut shoulders",
+      "dry halftone spray"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_overcast_grey / Fluorescent violet cyan lime gig-poster ink abstractions on velvety near-black, dense tiny lively marks",
+  "spec_key": "at_overcast_grey / blacklight matte ground all; cyan fluorescent curls h:>:165&h:<:225&s:>:0.4; violet overprint films h:>:255&s:>:0.35; lime stencil fragments h:>:50&h:<:155&s:>:0.4; sharp ink cut shoulders edge:>:0.66; dry halftone spray fine:>:0.81",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

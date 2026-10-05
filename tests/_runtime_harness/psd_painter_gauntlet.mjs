@@ -167,10 +167,14 @@ function gauntletContext() {
     return ctx;
 }
 
+// Shared real helper that the selection modifiers (growSelection etc.) call
+// unguarded — extract its genuine definition so the function under test resolves.
+const REFRESH_SELECTION_MODIFIER_RESULT = extractFunction('refreshSelectionModifierResult');
+
 function runFn(ctx, funcName, ...args) {
     const body = extractFunction(funcName);
     const argList = args.map(JSON.stringify).join(', ');
-    const script = body + '\n;' + funcName + '(' + argList + ');';
+    const script = REFRESH_SELECTION_MODIFIER_RESULT + '\n\n' + body + '\n;' + funcName + '(' + argList + ');';
     try {
         vm.runInContext(script, ctx, { filename: funcName + '.runtime.js', timeout: 2000 });
     } catch (e) {

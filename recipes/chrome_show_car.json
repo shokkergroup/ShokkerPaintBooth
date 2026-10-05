@@ -2,7 +2,7 @@
   "name": "Chrome Show Car",
   "description": "Trailer-queen full chrome body, candy-colored accents, and deep piano-black trim. Built for the lights, not the track.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "any chassis, optimized for show cars / display builds",
   "notes": "Full chrome is visually aggressive and can flood sensors in spec-heavy scenes. Drop Body baseSpecStrength to 0.8 if reflections feel over-amplified in your track environment.",
   "zones": [

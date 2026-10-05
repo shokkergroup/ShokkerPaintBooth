@@ -1,0 +1,38 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "shokker-paint-booth-local",
+  "version": "0.1.0",
+  "description": "Private local pilot: guide an assistant through the existing Shokker Paint Booth MCP bridge on a Windows buyer's computer.",
+  "author": {
+    "name": "Shokker Group"
+  },
+  "license": "Proprietary",
+  "keywords": [
+    "iracing",
+    "paint",
+    "livery",
+    "shokker",
+    "local"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Shokker Paint Booth Local Pilot",
+        "shortDescription": "Design paints with SPB",
+        "longDescription": "Control an already-running Shokker Paint Booth through its existing local MCP bridge. Includes SPB painting instructions and the dependency-free Node adapter. Requires Windows, Node.js, SPB Pro mode and the assistant bridge enabled. This private pilot does not embed the SPB editor or connect ChatGPT web to your computer.",
+        "developerName": "Shokker Group",
+        "category": "Productivity",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "defaultPrompt": [
+          "Using Shokker Paint Booth, inspect my current car and suggest a livery using real finishes from its catalog.",
+          "Using Shokker Paint Booth, help me edit my paint and inspect the paint and spec previews after each change."
+        ],
+        "logo": "./assets/icon.png",
+        "composerIcon": "./assets/icon.png"
+      }
+    }
+  }
+}

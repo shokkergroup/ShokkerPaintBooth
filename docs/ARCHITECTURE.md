@@ -121,17 +121,18 @@ def texture_NAME(shape, mask, seed, sm):
 - **R = Metallic** (0 = dielectric, 255 = full metal)
 - **G = Roughness** (0 = mirror, 255 = matte)
 - **B = Clearcoat** (0–15 = none, **16 = max gloss**, 255 = dull) — *inverted from intuition*
-- **A = Specular Mask** (rarely used; no consumer tool exposes it yet)
+- **A = Specular / lighting mask** (255 = full response; lower only for intentional fake-depth/unlit effects)
 
 Key finish reference values:
 
 | Finish | R | G | B |
 |---|---:|---:|---:|
-| Chrome | 255 | 0 | 16 |
-| Metallic | 255 | 85 | 0 |
-| Matte | 0 | 220 | 15 |
+| Chrome | 255 | 2 | 16 |
+| Metallic | 200 | 50 | 16 |
+| Matte | 0 | 200 | 160 |
+| Clear Matte | 0 | 220 | 210 |
 
-Full details: [../SPB_SPEC_MAP_GUIDE.md](../SPB_SPEC_MAP_GUIDE.md).
+Full details: [Living Wiki RGB Spec Finish Encyclopedia](../SPB_WIKI.html#spec_guide).
 
 ---
 

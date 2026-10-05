@@ -1,0 +1,52 @@
+{
+  "status": "FINDINGS",
+  "task": "W76 independent W72 client source-byte identity and durable part-memory route review",
+  "date": "2026-10-04",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w76_review_fresh_oracle.json",
+    "sha256": "C0F06D9E7AF26C38ECA1CFDC610F2DA2EBAB72B69DB7B152DB1BF007F03FE136",
+    "cases": 10,
+    "frozenBeforeSourceInspection": true
+  },
+  "frozenInputs": {
+    "canvas": {"path": "_easy_claude_work/ai14h_w76_review/frozen/paint-booth-3-canvas.js", "sha256": "1BD43BAF7D1BDAC1E07417D6FF6B30F71E78F1FF9169987C03198DD63DC2D4DA"},
+    "controller": {"path": "_easy_claude_work/ai14h_w76_review/frozen/spb-pro-ai.js", "sha256": "9709D6A2EC1A72376D07E9A8E07D2252C95888B2E365540F2AD0C6EFD73E3BD1"},
+    "projectBridge": {"path": "_easy_claude_work/ai14h_w76_review/frozen/spb-ai-part-memory-project.js", "sha256": "763D36ADDCA501256E1346D58B797D339B15666D04273CBF5C4840B15C1C6FC1"},
+    "partMemoryModule": {"path": "_easy_claude_work/ai14h_w76_review/frozen/spb-ai-part-memory.js", "sha256": "6E0D1E1466FECA847D3A1C3300F32779BA610F3B6C72C7904A6C8FD97A6B3652"},
+    "currentW36Lease": {"path": "_easy_claude_work/ai14h_w76_review/frozen/spb-ai-lease.js", "sha256": "DE276372A763310EC051DB141FCB1D601E11DBF193843E2B21A405226F782134"}
+  },
+  "reviewHarness": {
+    "test": "tests/ai_source_bytes_part_memory_w76_review_contract.cjs",
+    "sha256": "536F6D5F4A86CB9AA9D3983CFD6D4E7D27350FD15FBDDE963DFF7BED4CB1E441",
+    "output": "_easy_claude_work/ai14h_w76_review/test-output.json",
+    "outputSha256": "C2F432EAA2B19794CB70D0CE8D1A045C4EE28547F2A97DBAE3C72E15A64CA288",
+    "result": "FINDINGS: five functional groups pass; one P1 queue-scope gap reproduced."
+  },
+  "checks": {
+    "digestSelectionAndValidation": "PASS: valid sourceBytesSha256 selects file-sha256:<digest>; malformed present digests fail closed (null, empty, uppercase, nonhex, wrong length); absent digest keeps explicitly tagged composite SHA-256 or FNV-1a identity.",
+    "weakVsStrongDurability": "PASS: actual candidate scopedPartSourceNow returns a usable committed weak layered source for current-session work, while the actual candidate runtime + W53 project bridge + part-memory module passes null source to durable capture. Strong current file-sha256 reaches capture; mismatched and pending sources do not. Failed replacement settles and retains source A at the new generation.",
+    "invalidDigestRouteBoundary": "PASS: actual candidate _doPSDImport closure rejected a malformed present digest before flattening/staging; old committed path/fingerprint remained, transaction settled, and no success digest or partial commit was published.",
+    "pendingPartQueue": "PARTIAL: exact same pending roof selector blocks source-color add with a clarification; unrelated pending hood does not block roof. Whole-roof vs upper-roof variants reveal the finding below.",
+    "lease": "PASS: exact W36 DE276372... lease adapter prevents stale generation A from ending same-owner generation B."
+  },
+  "finding": {
+    "severity": "P1 safety gap",
+    "where": "_easy_claude_work/ai14h_w76_review/frozen/spb-pro-ai.js:1501-1507 and 1566-1569 (candidate matches W72 controller SHA above)",
+    "requestSetup": "Pending inert saved roof provenance is unresolved and records region {part:'roof', portion:'upper'}. A new source-color request targets {part:'roof'}; in the reverse direction, pending {part:'roof'} and request {part:'roof', portion:'upper'}.",
+    "actualQueueOutput": "queueEditZones invoked addFn once in each direction with color:'source'. The exact same {part:'roof'} selector correctly returned zero adds and a clarification; pending {part:'hood'} correctly allowed the roof add.",
+    "impact": "The saved and requested regions overlap by containment, but hasPriorPartIdentity compares editKey for exact region equality. The pending saved part therefore fails to block a source-colored zone with a different portion/band qualifier. If that zone is later applied above the saved paint, pixels in the overlap can be repainted from the original source.",
+    "narrowSafeResolution": "For source-color additions, fail closed on any unresolved pending selector for the same part/island when the candidate scope cannot prove non-overlap; retain unrelated-part eligibility. Alternatively require current mask intersection proof and block only intersecting scopes. Do not relax/replace the exact-selector owner reuse checks for live provenance."
+  },
+  "existingGuardSuites": {
+    "w72": {"test": "tests/ai_source_bytes_part_memory_w72_contract.cjs", "result": "PASS", "cases": 21},
+    "w36": {"test": "tests/ai_lease_generation_contract.cjs", "result": "PASS", "checks": 12},
+    "ownSyntax": "node --check passed"
+  },
+  "limits": [
+    "The W72 candidate queueEditZones is executed with controlled add/edit handlers; this verifies that an unsafe source-color add enters the candidate queue, not that native pixels were actually painted. No apply/native/browser/provider/server path was exercised.",
+    "The W72 queue fixture has no authoritative car mask implementation; whole-versus-upper overlap follows selector containment semantics, not a measured pixel intersection. A final integration check should include actual CAR.maskFor proof if the repair uses mask overlap.",
+    "The invalid-digest route replay stubs network and rendering effects and terminates at the actual candidate's pre-staging digest guard; it does not execute the full PSD raster pipeline.",
+    "The W72 candidate is frozen and separate from the current native Runtime3. Current W36 generation lease is included and tested, but this review does not certify any other integrated controller/canvas combination."
+  ],
+  "effects": {"productionEdits": 0, "candidateEdits": 0, "projectWrites": 0, "providerCalls": 0, "native": 0, "browser": 0, "serverRestarts": 0}
+}

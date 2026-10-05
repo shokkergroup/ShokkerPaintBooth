@@ -1,0 +1,185 @@
+/* ============================================================================
+   SPB BENCH LAYOUTS — 2026-07-28 (Kimi, phase 2)
+   ----------------------------------------------------------------------------
+   CSS-driven LAYOUT variants, orthogonal to the 18 color looks. Scoped to
+   body[data-layout="<id>"]; 'default' (or no attribute) = the bench you know.
+   Works under classic AND gallery looks (no dependency on spb-gallery-look).
+
+   Hard rules honored here:
+   - Everything stays VISIBLE: Source, Live Preview, 4 spec channel cells,
+     Zones rail + Zone popout, Layers, all tools. Only position/size changes.
+   - No display:none on functional panels, no JS-behavior changes. Flex order,
+     widths, and absolute re-anchoring only. applyLayout() nudges a window
+     resize so the canvas fit recalculates.
+
+   Revert: delete this <link> + the LAYOUTS entries in paint-booth-v2.html.
+
+   Layouts:
+     cinema    — Preview Max: slim rails, biggest possible Source/Live area
+     mirror    — Mirror Bench: Zones right, Layers left, popout docks right
+     cockpit   — Floating translucent rails over an edge-to-edge canvas
+     top-zones — Spread: Zones as a top bar, preview full-width below
+     dock      — Bottom Layers: Layers become a bottom dock, preview above
+   ========================================================================== */
+
+/* ======================= cinema — Preview Max ============================= */
+body[data-layout="cinema"] #leftPanel {
+    flex: 0 0 152px !important;
+    width: 152px !important;
+    min-width: 140px !important;
+}
+body[data-layout="cinema"] #rightPanel {
+    flex: 0 0 224px !important;
+    width: 224px !important;
+    min-width: 210px !important;
+}
+body[data-layout="cinema"] #zoneEditorFloat {
+    left: 152px !important;
+}
+
+/* ======================= mirror — Mirror Bench ============================ */
+body[data-layout="mirror"] #leftPanel  { order: 3 !important; }
+body[data-layout="mirror"] #rightPanel { order: 1 !important; }
+body[data-layout="mirror"] #centerPanel { order: 2 !important; }
+body[data-layout="mirror"] #zoneEditorFloat {
+    left: auto !important;
+    right: 192px !important;
+}
+
+/* ======================= cockpit — Floating Rails ========================= */
+body[data-layout="cockpit"] #leftPanel {
+    position: absolute !important;
+    left: 0; top: 0; bottom: 0;
+    z-index: 60;
+    width: 200px !important;
+    flex: none !important;
+    background: var(--bg-panel) !important;
+    background: color-mix(in srgb, var(--bg-panel) 88%, transparent) !important;
+    backdrop-filter: blur(10px);
+    border-right: 1px solid var(--border-subtle) !important;
+}
+body[data-layout="cockpit"] #rightPanel {
+    position: absolute !important;
+    right: 0; top: 0; bottom: 0;
+    z-index: 60;
+    width: 260px !important;
+    flex: none !important;
+    background: var(--bg-panel) !important;
+    background: color-mix(in srgb, var(--bg-panel) 88%, transparent) !important;
+    backdrop-filter: blur(10px);
+    border-left: 1px solid var(--border-subtle) !important;
+}
+body[data-layout="cockpit"] #zoneEditorFloat {
+    left: 208px !important;
+    top: 96px !important;   /* clear the command bar (rails are overlays now) */
+    z-index: 55;
+}
+
+/* ======================= top-zones — Spread =============================== */
+/* Bar overlays the top via absolute positioning; both panels get padding-top
+   so nothing is hidden. Deterministic — no flex-wrap line-height weirdness. */
+body[data-layout="top-zones"] #leftPanel {
+    position: absolute !important;
+    left: 0 !important; right: 0 !important; top: 0 !important;
+    width: auto !important;              /* beat inline .left-panel width:192px */
+    height: 190px !important;
+    z-index: 50 !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    overflow: hidden !important;
+    background: var(--bg-panel) !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border-subtle) !important;
+}
+body[data-layout="top-zones"] #centerPanel {
+    padding-top: 190px !important;
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+}
+body[data-layout="top-zones"] #rightPanel {
+    padding-top: 190px !important;
+}
+body[data-layout="top-zones"] #leftPanel #specmapModeContent {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    gap: 8px !important;
+}
+body[data-layout="top-zones"] #leftPanel .zone-studio-header {
+    flex: 0 0 auto !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    border-bottom: none !important;
+    border-right: 1px solid var(--border-subtle) !important;
+    padding: 0 10px !important;
+}
+body[data-layout="top-zones"] #leftPanel #zoneList {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    flex: 1 1 auto !important;
+    padding: 6px !important;
+}
+body[data-layout="top-zones"] #leftPanel #zoneList .zone-card {
+    flex: 0 0 208px !important;
+    min-width: 208px !important;
+    max-height: 172px !important;
+    overflow: hidden !important;
+}
+body[data-layout="top-zones"] #zoneEditorFloat {
+    top: 194px !important;
+    left: 4px !important;
+}
+/* the bottom-of-rail action bar doesn't fit the horizontal bar — keep it as a row */
+body[data-layout="top-zones"] #leftPanel .zone-actions-compact {
+    flex-direction: column !important;
+    justify-content: center !important;
+}
+
+/* ======================= dock — Bottom Layers ============================= */
+body[data-layout="dock"] .main-container {
+    flex-wrap: wrap !important;
+    align-content: stretch !important;
+}
+body[data-layout="dock"] #leftPanel  { order: 0 !important; }
+body[data-layout="dock"] #centerPanel {
+    order: 1 !important;
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+}
+body[data-layout="dock"] #rightPanel {
+    order: 2 !important;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 236px !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    border-left: none !important;
+    border-top: 1px solid var(--border-subtle) !important;
+}
+body[data-layout="dock"] #rightPanel #rpLayersContent,
+body[data-layout="dock"] #rightPanel #rpFinishesContent {
+    overflow-y: auto !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+}
+
+/* ============================================================================
+   WIDTH-CAP OVERRIDES — the inline simplify block (paint-booth-v2.html:620)
+   pins .left-panel to 170-220px and .right-panel to ~252-300px with !important.
+   Layouts that resize/rails must release those caps. Appended last so equal
+   specificity resolves here.
+   ========================================================================== */
+body[data-layout="cinema"] #leftPanel  { min-width: 140px !important; max-width: 152px !important; }
+body[data-layout="cinema"] #rightPanel { min-width: 210px !important; max-width: 224px !important; }
+body[data-layout="cockpit"] #leftPanel  { min-width: 0 !important; max-width: 200px !important; }
+body[data-layout="cockpit"] #rightPanel { min-width: 0 !important; max-width: 260px !important; }
+body[data-layout="top-zones"] #leftPanel { min-width: 0 !important; max-width: none !important; }
+body[data-layout="dock"] #rightPanel { min-width: 0 !important; max-width: none !important; }

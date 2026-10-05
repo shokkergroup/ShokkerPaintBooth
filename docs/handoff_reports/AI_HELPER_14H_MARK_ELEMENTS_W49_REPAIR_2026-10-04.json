@@ -1,0 +1,121 @@
+{
+  "status": "FINDINGS",
+  "task": "W49 isolated stale mark_elements async callback repair",
+  "date": "2026-10-04",
+  "sources": {
+    "baselinePath": "_easy_claude_work/ai14h_w42_sources/js/spb-pro-ai.js",
+    "baselineSha256": "5ECB313E66BA26B91020367C148D11227DA1385925E144A41DDEBD6940EA53EB",
+    "candidatePath": "_easy_claude_work/ai14h_w49_candidate/js/spb-pro-ai.js",
+    "candidateSha256": "20382491B7541E16DDFE9BEA6CA303BF5AED09AE1E80F3C25943CC21427DD634",
+    "operationPath": "_easy_claude_work/ai14h_w42_sources/js/spb-ai-operation.js",
+    "operationSha256": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6",
+    "minimalPatchPath": "docs/handoff_reports/AI_HELPER_14H_W49_MARK_ELEMENTS_MINIMAL_PATCH_2026-10-04.patch",
+    "minimalPatchSha256": "B0595278054073993600324436EAF7DDF3CA3DDE9768BA07F0A4A0CF5B8F096C",
+    "testPath": "tests/ai_operation_w49_mark_elements_repair_contract.cjs",
+    "testSha256": "F04CB9EFE4EAF38F3A5180EA4FFB18593AAA546DAD5229709159E360B0F50F30"
+  },
+  "repair": "markElements now captures operation ticket collection and requires manager.collecting(ticket,collection) at entry and after each asynchronous analyse await, before either none-state publication or teachBoxes. This separates phase-current ticket ownership from active tool-collection permission.",
+  "patchValidation": "The minimal unified diff was applied with git apply --check and replayed against a disposable copy of the frozen baseline; its SHA matched the isolated candidate.",
+  "counts": {
+    "cases": 8,
+    "baselineDefects": 1,
+    "candidatePositiveAndStaleControls": 6,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "serverWrites": 0
+  },
+  "rows": [
+    {
+      "id": "w42-confirmed-stale-mark-elements-reproduction",
+      "verdict": "reproduced",
+      "result": {
+        "error": "This request no longer owns the paint."
+      },
+      "sinkCalls": 1,
+      "ticketCurrent": true,
+      "collection": 1
+    },
+    {
+      "id": "ready-before-analysis-resolves",
+      "verdict": "pass",
+      "result": {
+        "error": "This request no longer owns the paint."
+      },
+      "sinkCalls": 0,
+      "ticketCurrent": true,
+      "collection": 1,
+      "phase": "ready"
+    },
+    {
+      "id": "cancel-before-analysis-resolves",
+      "verdict": "pass",
+      "result": {
+        "error": "This request no longer owns the paint."
+      },
+      "sinkCalls": 0,
+      "ticketCurrent": false,
+      "collection": 1,
+      "phase": "collecting"
+    },
+    {
+      "id": "source-generation-switch-before-analysis-resolves",
+      "verdict": "pass",
+      "result": {
+        "error": "This request no longer owns the paint."
+      },
+      "sinkCalls": 0,
+      "ticketCurrent": false,
+      "collection": 1,
+      "phase": "collecting"
+    },
+    {
+      "id": "positive-current-mark-still-teaches",
+      "verdict": "pass",
+      "result": {
+        "ok": true,
+        "kind": "numbers",
+        "mode": "glyph",
+        "places_used": 1,
+        "glyph_colours_found": [
+          "white #ffffff"
+        ],
+        "colours_found": [
+          "white #ffffff"
+        ],
+        "share_of_the_sheet_pct": 2,
+        "per_box": [],
+        "places": [],
+        "remembered_for_this_car": true,
+        "next": "Then refinish({target:\"numbers\", colour / look}) changes exactly these pixels; check the image"
+      },
+      "sinkCalls": 1,
+      "ticketCurrent": true,
+      "collection": 1,
+      "phase": "collecting"
+    },
+    {
+      "id": "ready-before-none-analysis-resolves",
+      "verdict": "pass",
+      "error": "This request no longer owns the paint.",
+      "elemNoneRecorded": false,
+      "pendingCardClosed": false
+    },
+    {
+      "id": "positive-current-none-keeps-helpful-result",
+      "verdict": "pass",
+      "ok": true,
+      "elemNoneRecorded": true,
+      "pendingCardClosed": true
+    },
+    {
+      "id": "unchanged-w42-stale-spec-expectation-mismatch",
+      "verdict": "retained-expectation-mismatch",
+      "observed": "frozen W42 helper returned no stale queue; no direct zone mutation was observed"
+    }
+  ],
+  "limits": [
+    "Actual mark_elements handler, operationTools, markElements and operation manager are evaluated from source in VM. El.analyse and teachBoxes are controlled deferred/fake callbacks.",
+    "No browser, native app, provider, server, real image or paint buffer was used. The test proves callback gating and preserves a positive helper call, not visual correctness of box detection.",
+    "The unchanged W42 stale-spec mismatch is read from the frozen W42 replay report and retained separately; W49 does not alter its assertion or claim it is a paint defect."
+  ]
+}

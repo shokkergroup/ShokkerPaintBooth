@@ -1,0 +1,35 @@
+{
+  "_doc": "Owner mandate 2026-08-31. Finishes here are LOCKED. Do not edit their renderers, their recipes, their palettes or their spec decks. Do not 'improve', 'optimise', 're-gate' or re-bake them. If a change is unavoidable (an engine-wide contract change), it requires an explicit owner ask in conversation, and the reference bake must be re-approved by the owner's eye. Owner: 'It needs to be protected and NEVER CHANGED - at all costs.'",
+
+  "locked": {
+    "xlab_hologram_metal": {
+      "name": "Hologram Metal",
+      "why": "Owner: 'one of my gold standards right now for how it stands out and what it does. It needs to be protected and NEVER CHANGED - at all costs.'",
+      "measured": {"fine": 0.231, "paint_band": 0.050, "spec_band": 0.231, "amp_corr": -0.004}
+    },
+    "xlab_dichroic_skin": {
+      "name": "Dichroic Skin",
+      "why": "Owner: 'Same goes for Dichroic Skin.' Gold standard, never change.",
+      "measured": {"fine": 0.441, "paint_band": 0.040, "spec_band": 0.441, "amp_corr": 0.539}
+    },
+    "ff_truchet_glass": {
+      "name": "Truchet Glass",
+      "why": "Owner: 'a design that 1000x percent works ... UNIQUE design with a spec map that follows the design - good all around. GREAT ALL AROUND. We need MORE like this.' This is the reference implementation of the FOLLOW axis - highest amp_corr in the calibration set.",
+      "measured": {"fine": 0.443, "paint_band": 0.443, "spec_band": 0.188, "amp_corr": 0.844}
+    },
+    "impossible_cinder_pulse": {
+      "name": "Cinder Pulse",
+      "why": "Owner: 'in IMPOSSIBLE FINISHES there's only 2 right now but both really stand up because of how much they have going for them.'",
+      "measured": {"fine": 0.383, "paint_band": 0.383, "spec_band": 0.364, "amp_corr": 0.462}
+    },
+    "impossible_hologram_noir": {
+      "name": "Hologram Noir",
+      "why": "Owner: same verdict as Cinder Pulse - 'both really stand up'.",
+      "measured": {"fine": 0.218, "paint_band": 0.148, "spec_band": 0.218, "amp_corr": 0.610}
+    }
+  },
+
+  "follow_exempt": {
+    "xlab_hologram_metal": "The mechanism IS spec-independence: micro-zones of contrasting spec materials that make colour shift and dance, deliberately not keyed to the paint's own structure. It measures amp_corr -0.004 and the owner calls it a gold standard, so FOLLOW does not apply. This is the ONLY finish in the catalog with this exemption as of 2026-08-31; adding another requires an owner verdict quoted in this file, not an agent's judgement."
+  }
+}

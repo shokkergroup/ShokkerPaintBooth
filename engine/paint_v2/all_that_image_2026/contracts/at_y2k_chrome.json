@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_y2k_chrome",
+  "display_name": "Cdrom: Y2K Chrome",
+  "promise": "Liquid silver inflatable chrome fragments scattered evenly, no letters or objects",
+  "carrier_grammar": "Liquid silver inflatable chrome fragments scattered evenly, no letters or objects; single full-canvas image, no duplicated quadrants. Fine features: liquid chrome lobes, narrow dark necks, mirror bead crests, folded metal lips, micro polish traces, pinhole recesses",
+  "spec_grammar": "Feature-specific selectors partition liquid chrome lobes, narrow dark necks, mirror bead crests, folded metal lips, micro polish traces, pinhole recesses. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "liquid chrome lobes",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "narrow dark necks",
+      "role": "Material feature selected from artwork by g:<:0.27"
+    },
+    {
+      "name": "mirror bead crests",
+      "role": "Material feature selected from artwork by g:>:0.68"
+    },
+    {
+      "name": "folded metal lips",
+      "role": "Material feature selected from artwork by edge:>:0.63"
+    },
+    {
+      "name": "micro polish traces",
+      "role": "Material feature selected from artwork by fine:>:0.66"
+    },
+    {
+      "name": "pinhole recesses",
+      "role": "Material feature selected from artwork by detail:<:0.17"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "liquid chrome lobes",
+      "narrow dark necks",
+      "mirror bead crests",
+      "folded metal lips",
+      "micro polish traces",
+      "pinhole recesses"
+    ],
+    "R": [
+      "liquid chrome lobes",
+      "narrow dark necks",
+      "mirror bead crests",
+      "folded metal lips",
+      "micro polish traces",
+      "pinhole recesses"
+    ],
+    "Cc": [
+      "liquid chrome lobes",
+      "narrow dark necks",
+      "mirror bead crests",
+      "folded metal lips",
+      "micro polish traces",
+      "pinhole recesses"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "liquid chrome lobes",
+      "range": [
+        [
+          240,
+          0,
+          16
+        ],
+        [
+          255,
+          32,
+          90
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "narrow dark necks",
+      "range": [
+        [
+          65,
+          110,
+          125
+        ],
+        [
+          185,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "mirror bead crests",
+      "range": [
+        [
+          240,
+          0,
+          170
+        ],
+        [
+          255,
+          30,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "folded metal lips",
+      "range": [
+        [
+          180,
+          30,
+          25
+        ],
+        [
+          240,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "micro polish traces",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "pinhole recesses",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_beige_box",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_crt_blue_screen",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "liquid chrome lobes",
+      "narrow dark necks",
+      "mirror bead crests",
+      "folded metal lips",
+      "micro polish traces",
+      "pinhole recesses"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_y2k_chrome / Liquid silver inflatable chrome fragments scattered evenly, no letters or objects",
+  "spec_key": "at_y2k_chrome / liquid chrome lobes all; narrow dark necks g:<:0.27; mirror bead crests g:>:0.68; folded metal lips edge:>:0.63; micro polish traces fine:>:0.66; pinhole recesses detail:<:0.17",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

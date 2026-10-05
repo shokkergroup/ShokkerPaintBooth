@@ -1,0 +1,111 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_peach_fuzz",
+  "display_name": "Memphis: Peach Fuzz",
+  "promise": "Peach, coral and lilac flock fibers with soft crushed nap and fine woven peeks.",
+  "carrier_grammar": "Peach, coral and lilac flock fibers with soft crushed nap and fine woven peeks. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "Dielectric peach fibers, satin compressed coral nap, matte lilac pockets, rough fiber tips and dull deep seams. All textile fields stay low-metal; no metallic tuft faces.",
+  "reference_physics": {
+    "mechanism": "Peach, coral and lilac flock fibers with soft crushed nap and fine woven peeks. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_peach_fuzz.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "peach flock fibers",
+      "role": "Actual shared paint and spec geometry: peach flock fibers"
+    },
+    {
+      "name": "coral compressed nap",
+      "role": "Actual shared paint and spec geometry: coral compressed nap"
+    },
+    {
+      "name": "lilac tuft pockets",
+      "role": "Actual shared paint and spec geometry: lilac tuft pockets"
+    },
+    {
+      "name": "ivory fiber tips",
+      "role": "Actual shared paint and spec geometry: ivory fiber tips"
+    },
+    {
+      "name": "deep pile seams",
+      "role": "Actual shared paint and spec geometry: deep pile seams"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "peach flock fibers",
+      "coral compressed nap",
+      "lilac tuft pockets",
+      "ivory fiber tips",
+      "deep pile seams"
+    ],
+    "R": [
+      "peach flock fibers",
+      "coral compressed nap",
+      "lilac tuft pockets",
+      "ivory fiber tips",
+      "deep pile seams"
+    ],
+    "Cc": [
+      "peach flock fibers",
+      "coral compressed nap",
+      "lilac tuft pockets",
+      "ivory fiber tips",
+      "deep pile seams"
+    ]
+  },
+  "material_tiers": [
+    "rough peach fibers",
+    "compressed coral satin nap",
+    "matte lilac tuft pocket",
+    "dull raised fiber tip",
+    "deep low-metal seam",
+    "partly compressed fiber shoulder"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_velour_rose",
+      "difference": "This finish uses Ultra fine peach and coral flocked fibers, small lilac compressed nap flecks, tiny ivory fiber tips and sparse warm shadow seams. Dense true velvety fuzzy texture, 80s plush upholstery, no peach fruit, no large folds or flower petals. Almost solid peach at a distance with rich microscopic variation.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_sponge_paint",
+      "difference": "This finish uses Ultra fine peach and coral flocked fibers, small lilac compressed nap flecks, tiny ivory fiber tips and sparse warm shadow seams. Dense true velvety fuzzy texture, 80s plush upholstery, no peach fruit, no large folds or flower petals. Almost solid peach at a distance with rich microscopic variation.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "peach flock fibers is visible in the authored geometry",
+      "coral compressed nap is visible in the authored geometry",
+      "lilac tuft pockets is visible in the authored geometry",
+      "ivory fiber tips is visible in the authored geometry",
+      "deep pile seams is visible in the authored geometry"
+    ],
+    "source_sha256": "3dadc8e59c1688754f7d6d503e84139c28fbf5090e450552a6ef375e24a7c8a3",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_peach_fuzz-authored-Peach, coral and lilac flock fibers with soft crushed nap and fine woven peeks. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_peach_fuzz-matte-fiber-anatomy-v1",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 64.0,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "3ab1ded18b238ecafaf6ee429ad39fdf36ae77afb97f7bbb9736daac75420f6b"
+}

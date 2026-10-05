@@ -1,0 +1,518 @@
+{
+  "schema": "spb-helper-router-probes/1",
+  "state": "actual default PSD loaded in private live MCP document",
+  "note": "ask() compilation only; question-to-mutation plans are flagged pending actual send() confirmation.",
+  "rows": [
+    {
+      "id": "H01",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "save",
+        "cites": [
+          "save",
+          "spbProjectsButton",
+          "pro.zones_more.save_shokk"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**Save your work**\n1. Use Save / Open (top bar, SHOKK files): a SHOKK file keeps your zones, layers and settings.\n2. Open it later from the same place",
+      "calls": 0
+    },
+    {
+      "id": "H02",
+      "queueLength": 0,
+      "tools": [],
+      "selfHelp": null,
+      "asked": false,
+      "error": "AI is not set up yet — paste your OpenRouter key above (or press ⚙). Without a key I can still lay out a scheme from a short description: try “retro red white and blue stripes” or “black and gold two-tone”.",
+      "preview": "",
+      "calls": 0
+    },
+    {
+      "id": "H03",
+      "queueLength": 0,
+      "tools": [],
+      "selfHelp": null,
+      "asked": false,
+      "error": "AI is not set up yet — paste your OpenRouter key above (or press ⚙). Without a key I can still lay out a scheme from a short description: try “retro red white and blue stripes” or “black and gold two-tone”.",
+      "preview": "",
+      "calls": 0
+    },
+    {
+      "id": "H04",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "what_is",
+        "topic": "load_paint",
+        "cites": [
+          "hdi.blank_canvas",
+          "pro.center.blank_canvas"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**How do I start from a blank canvas with no paint file**\n1. On the empty centre canvas click \"Blank Canvas\".\n2. You get a plain white canvas to build",
+      "calls": 0
+    },
+    {
+      "id": "H05",
+      "queueLength": 0,
+      "tools": [],
+      "selfHelp": null,
+      "asked": false,
+      "error": null,
+      "preview": "I have not changed lines (nothing of mine to take back). To go back further, open the Versions strip under the preview.\nNEXT: What colours do I have?",
+      "calls": 0
+    },
+    {
+      "id": "H06",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "logo",
+        "cites": [
+          "hdi.add_logo",
+          "pro.layers.layer",
+          "layer.rename"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**How do I add a logo or sponsor picture**\n1. Open the LAYERS tab and click \"+ Layer\".\n2. Choose a PNG / JPG / WebP / GIF (transparent PNG is best).\n3",
+      "calls": 0
+    },
+    {
+      "id": "H07",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "logo",
+        "cites": [
+          "hdi.add_logo",
+          "pro.layers.layer",
+          "layer.rename"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**How do I add a logo or sponsor picture**\n1. Open the LAYERS tab and click \"+ Layer\".\n2. Choose a PNG / JPG / WebP / GIF (transparent PNG is best).\n3",
+      "calls": 0
+    },
+    {
+      "id": "H08",
+      "queueLength": 0,
+      "tools": [
+        "advisor"
+      ],
+      "selfHelp": null,
+      "asked": false,
+      "error": null,
+      "preview": "For the numbers: you want clean edges and no glare. Your body is Gloss (high gloss). Avoid chrome, glitter and colour-shifting finishes on numbers: th",
+      "calls": 0
+    },
+    {
+      "id": "H09",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "layers_vis",
+        "cites": [
+          "hdi.layer_visibility",
+          "layer.eye"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**How do I turn a layer on or off**\n1. Open the LAYERS tab.\n2. Click the eye icon on the layer. Alt+click shows only that layer.\nAlso asked as: how do",
+      "calls": 0
+    },
+    {
+      "id": "H10",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "restrict_layer",
+        "cites": [
+          "hdi.load_psd",
+          "pro.header.psd_xcf_ora",
+          "onboardingImportPsdBtn",
+          "pro.layers.open_layered"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**How do I load a layered PSD template (so I get layers)**\n1. Choose your PSD (XCF and ORA also work) and confirm.\n2. Wait while the layers load, then",
+      "calls": 0
+    },
+    {
+      "id": "H11",
+      "queueLength": 0,
+      "tools": [
+        "advisor"
+      ],
+      "selfHelp": null,
+      "asked": false,
+      "error": null,
+      "preview": "For the hood: a few directions that work on an existing scheme. Your body is Gloss (high gloss). I searched the whole catalogue and picked shine-only ",
+      "calls": 0
+    },
+    {
+      "id": "H12",
+      "queueLength": 0,
+      "tools": [],
+      "selfHelp": null,
+      "asked": false,
+      "error": null,
+      "preview": "I do not see any blue on this car, but I do see cyan (34% of the car). Is that the one? Otherwise tell me which: black (41%), cyan (34%), white (9%), ",
+      "calls": 0
+    },
+    {
+      "id": "H13",
+      "queueLength": 0,
+      "tools": [
+        "advisor"
+      ],
+      "selfHelp": null,
+      "asked": false,
+      "error": null,
+      "preview": "For the body: a few directions that work on an existing scheme. Your body is Gloss (high gloss). These are the proven choices for that. Want something",
+      "calls": 0
+    },
+    {
+      "id": "H14",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "gradient",
+        "cites": [
+          "hdi.gradient",
+          "zone.base_color_mode",
+          "zone.gradient"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**How do I make a gradient (fade) between two colours**\n1. Your selected zone is \"Zone 1\" (zone 1) - click another card in the ZONES list to work on t",
+      "calls": 0
+    },
+    {
+      "id": "H15",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "where_is",
+        "topic": "pick_finish",
+        "cites": [
+          "base_material",
+          "zone_base_colour_mode",
+          "pick_finish",
+          "zone.base_material",
+          "zone.base_color_mode",
+          "finishSearch"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**Put a finish on a zone** - here is where:\n1. \"Zone 1\" (zone 1) is selected - these steps change it (click another card in the ZONES list (left colum",
+      "calls": 0
+    },
+    {
+      "id": "H16",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "pattern",
+        "cites": [
+          "zone_pattern_id",
+          "zone_pattern_paint_mode",
+          "zone_pattern_opacity",
+          "pattern",
+          "zone.pattern",
+          "zone.pattern_paint_mode",
+          "zone.pattern_opacity",
+          "zone.add_pattern_layer"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**Add a pattern**\n1. \"Zone 1\" (zone 1) is selected - these steps change it (click another card in the ZONES list (left column) to change that one inst",
+      "calls": 0
+    },
+    {
+      "id": "H17",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "pattern",
+        "cites": [
+          "hdi.add_pattern",
+          "zone.section_pattern",
+          "zone.pattern",
+          "zone.pattern_paint_mode"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**How do I add a pattern (carbon, flames, camo ...)**\n1. Your selected zone is \"Zone 1\" (zone 1) - click another card in the ZONES list to work on tha",
+      "calls": 0
+    },
+    {
+      "id": "H18",
+      "queueLength": 0,
+      "tools": [
+        "manual"
+      ],
+      "selfHelp": null,
+      "asked": false,
+      "error": null,
+      "preview": "**Finish kits: a finish plan for the whole car in one step**\nAsk \"suggest a finish combo for the whole car\" (or \"what finishes go together\", \"finish p",
+      "calls": 0
+    },
+    {
+      "id": "H19",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "layers_vis",
+        "cites": [
+          "hdi.finish_less_strong",
+          "zone.base_strength",
+          "zone.spec_strength"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**How do I make a finish less strong (blend it with my paint)**\n1. Your selected zone is \"Zone 1\" (zone 1) - click another card in the ZONES list to w",
+      "calls": 0
+    },
+    {
+      "id": "H20",
+      "queueLength": 0,
+      "tools": [],
+      "selfHelp": null,
+      "asked": false,
+      "error": "AI is not set up yet — paste your OpenRouter key above (or press ⚙). Without a key I can still lay out a scheme from a short description: try “retro red white and blue stripes” or “black and gold two-tone”.",
+      "preview": "",
+      "calls": 0
+    },
+    {
+      "id": "H21",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "restrict_layer",
+        "cites": [
+          "hdi.teach_numbers",
+          "ai.panel",
+          "ai.input"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**How do I teach the app where the numbers are**\n1. Open the AI panel (the AI button bottom right) and ask for something on the numbers, e.g. \"make th",
+      "calls": 0
+    },
+    {
+      "id": "H22",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "layers_vis",
+        "cites": [
+          "hdi.teach_parts",
+          "ai.panel"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**How do I tell Shokker where the car's parts are (hood, roof, sides)**\n1. Ask the AI panel for a part change (\"make the roof black\"). If it does not ",
+      "calls": 0
+    },
+    {
+      "id": "H23",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "undo",
+        "cites": [
+          "hdi.tutorial",
+          "spbGuideToggle",
+          "trainingWheelsCheckbox"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**How do I turn on the step-by-step tutorial (Training Wheels)**\n1. Click \"Tutorial\" in the top bar, or tick Training Wheels in Settings (the gear).\n2",
+      "calls": 0
+    },
+    {
+      "id": "H24",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "easy_pro",
+        "cites": [
+          "hdi.easy_to_pro",
+          "easy.pro_btn"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**How do I go from Easy to the full controls without losing my work**\n1. Click \"PRO MODE ->\" at the top right. The paint and zones carry over.\nAlso as",
+      "calls": 0
+    },
+    {
+      "id": "H25",
+      "queueLength": 7,
+      "tools": [
+        "apply_scheme"
+      ],
+      "selfHelp": null,
+      "asked": false,
+      "error": null,
+      "preview": "Done — Colour block on your Chevrolet Silverado truck: black with red and charcoal, gloss paint with chrome trim. Your numbers and sponsors are untouc",
+      "calls": 0
+    },
+    {
+      "id": "H26",
+      "queueLength": 1,
+      "tools": [
+        "add_zone"
+      ],
+      "selfHelp": null,
+      "asked": false,
+      "error": null,
+      "preview": "Done — the whole car now has a mirror chrome shine. Only the shine changed: your paint colours are untouched.\nNEXT: Make it satin instead | Do the roo",
+      "calls": 0
+    },
+    {
+      "id": "H27",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "wireframe",
+        "cites": [
+          "hdi.export_iracing",
+          "iracingId",
+          "outputDir",
+          "btnRender"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**How do I export my paint to iRacing**\n1. Top row: enter your iRacing customer number (IRACING USER ID) and set IRACING CAR FOLDER (use the car list ",
+      "calls": 0
+    },
+    {
+      "id": "H28",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "numbers",
+        "cites": [
+          "hdi.recolour_numbers",
+          "zone.base_color_mode",
+          "zone.solid_color",
+          "pro.toolbar.color_replace",
+          "easy.tell_input"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "**How do I recolour the numbers**\n1. Your selected zone is \"Zone 1\" (zone 1) - click another card in the ZONES list to work on that one instead.\n2. Ea",
+      "calls": 0
+    },
+    {
+      "id": "H29",
+      "queueLength": 0,
+      "tools": [
+        "advisor"
+      ],
+      "selfHelp": null,
+      "asked": false,
+      "error": null,
+      "preview": "For the numbers: you want clean edges and no glare. Your body is Gloss (high gloss). Avoid chrome, glitter and colour-shifting finishes on numbers: th",
+      "calls": 0
+    },
+    {
+      "id": "H30",
+      "queueLength": 0,
+      "tools": [
+        "self_help"
+      ],
+      "selfHelp": {
+        "intent": "stuck",
+        "topic": "load_paint",
+        "cites": [
+          "hdi.what_now",
+          "spbGuideToggle",
+          "mode.easy",
+          "mode.chat",
+          "hdi.tutorial"
+        ]
+      },
+      "asked": false,
+      "error": null,
+      "preview": "You have a layered PSD with 11 layers: Car Paint (body paint), Sponsors (sponsors), Numbers (numbers), Tape (tape / stripes), Pitbox Colors (decals / ",
+      "calls": 0
+    }
+  ],
+  "questionsWithMutationPlans": [
+    "H25",
+    "H26"
+  ],
+  "providerAttempts": 0,
+  "busy": false
+}

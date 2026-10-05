@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_1000488.tga",
+  "inspection_records": "_smart_tga_runs/cycle657_dlm_crosspaint_embeddings/inspection_records.json",
+  "review_scope": "Cycle 657 manual source and all-owner sheet review of every suspect plus repeated Eibach family.",
+  "component_labels": [
+    {"layer":"numbers","component_index":1,"expected_bbox":[286,246,181,88],"target_layer":"numbers","label":"true_number","family_id":"number:99_eibach_style"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[4,904,196,108],"target_layer":"template","label":"fixed_lower_hardware"},
+    {"layer":"sponsors","component_index":32,"expected_bbox":[748,381,97,270],"target_layer":"sponsors","label":"sponsor_wordmark","family_id":"logo:eibach"},
+    {"layer":"sponsors","component_index":5,"expected_bbox":[630,44,53,24],"target_layer":"sponsors","label":"sponsor_logo","family_id":"logo:lsr"},
+    {"layer":"sponsors","component_index":22,"expected_bbox":[42,307,148,41],"target_layer":"sponsors","label":"sponsor_wordmark","family_id":"logo:eibach"},
+    {"layer":"sponsors","component_index":28,"expected_bbox":[45,719,145,39],"target_layer":"sponsors","label":"sponsor_wordmark","family_id":"logo:eibach"},
+    {"layer":"sponsors","component_index":29,"expected_bbox":[369,721,89,88],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:99_eibach_style"}
+  ]
+}

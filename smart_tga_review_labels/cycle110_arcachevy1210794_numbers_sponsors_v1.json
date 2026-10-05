@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "paint_label": "stockcars2 arcachevy25/car_num_1210794.tga",
+  "inspection_records": "_smart_tga_runs/cycle110_arcachevy1210794_component_baseline_v1/inspection_records.json",
+  "review_scope": "Cycle 110 manual visual review of stockcar baseline: true race-number 8s are in Sponsors/Paint, while current Numbers are sponsor/contingency fragments.",
+  "component_labels": [
+    {
+      "layer": "numbers",
+      "component_index": 0,
+      "expected_bbox": [987, 27, 21, 128],
+      "target_layer": "sponsors",
+      "label": "sponsor_text_panel",
+      "note": "Vertical MENARDS sponsor panel, not race number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 1,
+      "expected_bbox": [332, 262, 71, 19],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo_fragment",
+      "note": "Jockey/Kubota/Busch sponsor cluster fragment, not race number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 2,
+      "expected_bbox": [611, 314, 45, 13],
+      "target_layer": "sponsors",
+      "label": "contingency_fragment",
+      "note": "Small contingency text fragment in decal stack."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 3,
+      "expected_bbox": [700, 872, 45, 16],
+      "target_layer": "sponsors",
+      "label": "contingency_fragment",
+      "note": "Small contingency text fragment in lower decal stack."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 16,
+      "expected_bbox": [445, 220, 152, 135],
+      "target_layer": "numbers",
+      "label": "true_number",
+      "note": "Upper side white race-number 8."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 32,
+      "expected_bbox": [435, 838, 153, 134],
+      "target_layer": "numbers",
+      "label": "true_number",
+      "note": "Lower side white race-number 8."
+    },
+    {
+      "layer": "paint",
+      "component_index": 0,
+      "expected_bbox": [0, 0, 1024, 1024],
+      "review_bbox": [300, 480, 270, 215],
+      "foreground": {
+        "mode": "local_color_distance",
+        "color_distance": 24,
+        "edge_color_distance": 14,
+        "edge_dilate": 1,
+        "close": 1,
+        "min_area": 30
+      },
+      "target_layer": "numbers",
+      "label": "true_number_submask",
+      "note": "Large dark center race-number 8 extracted from the main Paint mass without pulling the whole black panel."
+    },
+    {
+      "layer": "paint",
+      "component_index": 1,
+      "expected_bbox": [252, 325, 31, 13],
+      "target_layer": "sponsors",
+      "label": "sponsor_wordmark_fragment",
+      "note": "Missed BUSCH wordmark fragment."
+    },
+    {
+      "layer": "paint",
+      "component_index": 2,
+      "expected_bbox": [226, 326, 56, 36],
+      "target_layer": "sponsors",
+      "label": "sponsor_wordmark_fragment",
+      "note": "Missed BUSCH wordmark fragment."
+    },
+    {
+      "layer": "paint",
+      "component_index": 3,
+      "expected_bbox": [305, 332, 21, 22],
+      "target_layer": "sponsors",
+      "label": "sponsor_wordmark_fragment",
+      "note": "Missed BUSCH wordmark fragment."
+    },
+    {
+      "layer": "paint",
+      "component_index": 4,
+      "expected_bbox": [159, 334, 41, 20],
+      "target_layer": "sponsors",
+      "label": "sponsor_wordmark_fragment",
+      "note": "Missed BUSCH wordmark fragment."
+    },
+    {
+      "layer": "paint",
+      "component_index": 5,
+      "expected_bbox": [231, 350, 12, 11],
+      "target_layer": "sponsors",
+      "label": "sponsor_wordmark_fragment",
+      "note": "Missed BUSCH wordmark fragment."
+    },
+    {
+      "layer": "paint",
+      "component_index": 0,
+      "expected_bbox": [0, 0, 1024, 1024],
+      "review_bbox": [0, 165, 170, 105],
+      "target_layer": "paint",
+      "label": "paint_livery_texture",
+      "note": "Upper-left icy blue body texture with no reviewed sponsor/number target; keep as Paint."
+    },
+    {
+      "layer": "paint",
+      "component_index": 0,
+      "expected_bbox": [0, 0, 1024, 1024],
+      "review_bbox": [518, 150, 145, 95],
+      "target_layer": "paint",
+      "label": "paint_livery_texture",
+      "note": "Central light-blue livery texture between number and decal stack; keep as Paint."
+    },
+    {
+      "layer": "paint",
+      "component_index": 0,
+      "expected_bbox": [0, 0, 1024, 1024],
+      "review_bbox": [0, 812, 145, 170],
+      "target_layer": "paint",
+      "label": "paint_livery_texture",
+      "note": "Lower-left mountain/ice body texture; keep as Paint."
+    }
+  ]
+}

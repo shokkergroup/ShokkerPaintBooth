@@ -90,14 +90,44 @@ _BLEND_MODE_ALIASES = {
     "marble":            {"marble", "swirl", "liquid"},
     "pattern_edges":     {"pattern_edges", "uniform", "pattern-edges", "edges"},
     "pattern_peaks":     {"pattern_peaks", "pattern-peaks", "peaks"},
-    "pattern_contour":   {"pattern_contour", "pattern-contour", "contour"},
-    "pattern_screen":    {"pattern_screen", "pattern-screen", "screen"},
-    "pattern_threshold": {"pattern_threshold", "pattern-threshold", "threshold"},
+    "pattern_glow":      {"pattern_glow", "pattern-glow", "glow", "halo", "bloom"},
+    "pattern_fresnel":   {"pattern_fresnel", "pattern-fresnel", "fresnel", "rim", "grazing"},
+    "pattern_flow":      {"pattern_flow", "pattern-flow", "flow", "brushed", "anisotropic"},
+    "pattern_shatter":   {"pattern_shatter", "pattern-shatter", "shatter", "crack", "forged", "flake"},
 }
 # Inverted lookup: alias -> canonical id (built once at import).
 _ALIAS_TO_CANONICAL = {alias: canonical
                        for canonical, aliases in _BLEND_MODE_ALIASES.items()
                        for alias in aliases}
+_PATTERN_REQUIRED_BLEND_MODES = {
+    "pattern",
+    "pattern_vivid",
+    "pattern_edges",
+    "pattern_peaks",
+    "pattern_glow",
+    "pattern_fresnel",
+    "pattern_flow",
+    "pattern_shatter",
+}
+
+# 2026-06-02 BASE-OVERLAY blend grid rethink: 3 redundant pattern modes were cut
+# from the UI (pattern_screen, pattern_threshold, pattern_contour). Saved looks
+# may still reference them, so the normalizer remaps the dead ids to a kept mode
+# instead of falling through to "dust". screen->pattern (both follow brightness),
+# threshold->pattern_vivid (both isolate highlights), contour->pattern_peaks (both
+# react to pattern transitions/detail).
+_REMOVED_MODE_REMAP = {
+    "pattern_screen":    "pattern",
+    "pattern_threshold": "pattern_vivid",
+    "pattern_contour":   "pattern_peaks",
+    # accept dashed / bare aliases of the removed ids too
+    "pattern-screen":    "pattern",
+    "pattern-threshold": "pattern_vivid",
+    "pattern-contour":   "pattern_peaks",
+    "screen":            "pattern",
+    "threshold":         "pattern_vivid",
+    "contour":           "pattern_peaks",
+}
 
 
 def _normalize_second_base_blend_mode(mode: Optional[str]) -> str:
@@ -109,12 +139,20 @@ def _normalize_second_base_blend_mode(mode: Optional[str]) -> str:
 
     Returns:
         Canonical mode id, one of: dust, marble, pattern, pattern_vivid, tint,
-        pattern_edges, pattern_peaks, pattern_contour, pattern_screen,
-        pattern_threshold. Unknown inputs fall back to "dust".
+        pattern_edges, pattern_peaks, pattern_glow, pattern_fresnel,
+        pattern_flow, pattern_shatter. Unknown inputs fall back to "dust".
+
+        BACKWARD-COMPAT: the 3 removed ids (pattern_screen, pattern_threshold,
+        pattern_contour) are remapped to a kept mode so older saved looks render
+        instead of erroring or washing out as "dust".
     """
     if mode is None:
         return "dust"
-    return _ALIAS_TO_CANONICAL.get(str(mode).strip().lower(), "dust")
+    key = str(mode).strip().lower()
+    # Remap removed ids first so they survive even if their aliases were dropped.
+    if key in _REMOVED_MODE_REMAP:
+        return _REMOVED_MODE_REMAP[key]
+    return _ALIAS_TO_CANONICAL.get(key, "dust")
 
 
 def _blur_2d(arr: np.ndarray, sigma: float = 2.0) -> np.ndarray:
@@ -161,12 +199,13 @@ def get_base_overlay_alpha(shape: Tuple[int, int],
 
     Used by both spec and paint blend pipelines. Callers apply the alpha as:
         result = primary * (1 - alpha) + secondary * alpha
-    (or a screen blend for pattern_screen).
+    (a straight linear over-blend for every kept mode).
 
     Args:
         shape: (H, W) target shape.
-        strength: Slider value in [0, 1]. Internally re-mapped per blend mode
-            using a perceptual curve so low slider values remain visible.
+        strength: Slider value in [0, 1]. This is a literal final mix amount:
+            0 means primary only, 0.5 means half overlay contribution, and 1
+            means full overlay contribution wherever the mode mask is active.
         blend_mode: One of the canonical blend mode ids (see
             _normalize_second_base_blend_mode). Aliases accepted.
         noise_scale: Feature size in pixels for noise-driven modes (dust, marble).
@@ -180,8 +219,9 @@ def get_base_overlay_alpha(shape: Tuple[int, int],
     Returns:
         Float32 (H, W) alpha array, clipped to [0, 1].
 
-    v6.0.1: Improved slider curves so low values (5-30%) still show visible
-    effect. Uses perceptual power curves instead of linear multiplication.
+    v6.2 post-alpha: keep mode masks expressive, but make strength a linear
+    contract. Older perceptual boosts made 10-20% overlays show too strongly
+    and could leak overlay spec even near 0%.
     """
     H, W = int(shape[0]), int(shape[1])
     if H <= 0 or W <= 0:
@@ -196,10 +236,17 @@ def get_base_overlay_alpha(shape: Tuple[int, int],
         _s = 0.5
     overlay_scale = max(OVERLAY_SCALE_MIN, min(OVERLAY_SCALE_MAX, float(overlay_scale)))
     noise_scale = max(OVERLAY_NOISE_SCALE_MIN, int(noise_scale if noise_scale else 24))
-    # Perceptual strength: sqrt curve so low slider values still produce visible alpha
-    # strength=0.05 -> 0.22, 0.10 -> 0.32, 0.25 -> 0.50, 0.50 -> 0.71, 1.0 -> 1.0
-    _ps = np.sqrt(max(0.0, _s))  # perceptual strength for modes that need it
     logger.debug("get_base_overlay_alpha: mode='%s' strength=%.3f overlay_scale=%.2f", blend_mode, _s, overlay_scale)
+    if _s <= _EPSILON:
+        return np.zeros((H, W), dtype=np.float32)
+    # 2026-05-30 (owner bug: "solid red 2nd base overlay + hue shift does NOTHING"): pattern-reactive
+    # blend modes — pattern / pattern_vivid (Pattern-Pop, the DEFAULT for a new 2nd base) / pattern_edges
+    # / pattern_peaks / pattern_glow / pattern_fresnel / pattern_flow / pattern_shatter — used to RETURN
+    # ZERO ALPHA here when no pattern was present, so the overlay was silently INVISIBLE and its HSB got
+    # masked to nothing (the visible-result HSB mask is hard_mask * overlay_alpha → 0). Now fall THROUGH to
+    # the uniform `else: alpha = np.ones` branch below (then × strength), so a pattern-mode overlay with NO
+    # pattern shows as a uniform color wash (like Tint) and IS recolorable. With a pattern present each mode
+    # still reacts exactly as before (those branches require pattern_mask is not None).
 
     if blend_mode == "dust" and noise_fn is not None:
         # FRACTAL DUST v2 — per-pixel metallic flake scatter with density variation
@@ -228,13 +275,12 @@ def get_base_overlay_alpha(shape: Tuple[int, int],
         except cv2.error as e:
             # Previously tried to except cv2.error with cv2 not yet imported -- latent bug fixed
             logger.warning("dust flake blur failed: %s", e)
-        # Normalize and apply strength
+        # Normalize to a full-strength feature mask. Strength is applied once
+        # at the end so Spec Strength remains an honest linear mix.
         fmax = float(flakes.max())
         if fmax > 1e-8:
             flakes /= fmax
-        dust_strength_multiplier = 2.0    # How much strength amplifies dust
-        dust_strength_offset = 0.15       # Minimum visible dust even at 0% strength
-        alpha = np.clip(flakes * (_s * dust_strength_multiplier + dust_strength_offset), 0, 1).astype(np.float32)
+        alpha = np.clip(flakes, 0, 1).astype(np.float32)
         if pattern_mask is not None:
             alpha = np.clip(alpha * pattern_mask, 0, 1).astype(np.float32)
 
@@ -261,63 +307,55 @@ def get_base_overlay_alpha(shape: Tuple[int, int],
         # Stretch contrast
         mn, mx = float(marble.min()), float(marble.max())
         if mx > mn: marble = (marble - mn) / (mx - mn)
-        alpha = np.clip(marble * (_s * 2.2 + 0.12), 0, 1).astype(np.float32)
+        alpha = np.clip(marble, 0, 1).astype(np.float32)
         if pattern_mask is not None:
             alpha = np.clip(alpha * pattern_mask, 0, 1).astype(np.float32)
 
     elif blend_mode == "pattern" and pattern_mask is not None:
-        # Perceptual: at 5% strength you still see a hint
-        alpha = np.clip(pattern_mask * _ps, 0, 1).astype(np.float32)
+        alpha = np.clip(pattern_mask, 0, 1).astype(np.float32)
 
     elif blend_mode == "tint" and pattern_mask is not None:
-        # TINT v2 with pattern: color influence shaped by pattern, with perceptual curve
-        # At low strength (5-20%), gives subtle color wash following pattern contours
-        # At high strength (60-100%), strong color override following pattern density
-        # Uses sqrt for low end, linear for high end — smooth ramp
-        tint_strength = _ps * 0.6 if _s < 0.4 else _s * 0.7
-        alpha = np.clip(pattern_mask * tint_strength, 0, 1).astype(np.float32)
+        # TINT with pattern: color influence shaped by the pattern. Strength
+        # is applied once at the end as a linear mix scalar.
+        alpha = np.clip(pattern_mask, 0, 1).astype(np.float32)
 
     elif blend_mode == "tint" and pattern_mask is None:
         # TINT v2 without pattern: uniform color wash over entire zone
         # Perceptual curve: 10% feels like 10%, not invisible
         # Uses cubic ease for natural color influence feel
-        tint_val = _s * _s * (3.0 - 2.0 * _s)  # smoothstep: 0→0, 0.5→0.5, 1→1
-        alpha = np.full((H, W), tint_val * 0.75, dtype=np.float32)  # cap at 75% max to never fully replace
+        # Uniform tint should honor 100% as full replacement.
+        alpha = np.ones((H, W), dtype=np.float32)
 
     elif blend_mode == "pattern_vivid" and pattern_mask is not None:
-        # Pattern-Pop: at low strength, use soft blend instead of hard threshold
-        # Smooth transition: low strength = gentle overlay, high strength = hard cutoff
-        if _s < 0.5:
-            # Soft mode: multiply pattern by boosted strength (visible even at 5%)
-            alpha = np.clip(pattern_mask * _ps * 1.5, 0, 1).astype(np.float32)
-        else:
-            # Hard mode: threshold-based cutoff with softer edge width at mid-range
-            threshold = np.clip(1.0 - _s, 0.0, 1.0)
-            edge_width = 0.15 + (1.0 - _s) * 0.2  # wider edge at lower strength
-            alpha = np.clip((pattern_mask - threshold) / max(edge_width, 1e-4), 0.0, 1.0).astype(np.float32)
+        # Pattern-Pop: percentile-stretch then bias alpha toward mask *highlights*.
+        # Older builds used gamma 0.65 (<1), which *lifts* mid-gray toward full
+        # alpha — woven / plait masks (e.g. Celtic Plait) then read as a flat
+        # second-base wash instead of "ink on the bright threads / dots".
+        pm = pattern_mask.astype(np.float32)
+        p5 = np.percentile(pm, 5)
+        p95 = np.percentile(pm, 95)
+        if p95 - p5 > 0.05:
+            pm = np.clip((pm - p5) / (p95 - p5), 0, 1)
+        # Gamma > 1 keeps plateaus dim and concentrates tint on upper percentiles.
+        alpha = np.clip(np.power(pm, 1.45), 0, 1).astype(np.float32)
 
-    elif blend_mode == "pattern_edges":
+    elif blend_mode == "pattern_edges" and pattern_mask is not None:
         # PATTERN EDGES v2 — Crisp edge detection with controllable width
-        if pattern_mask is not None:
-            pm = pattern_mask.astype(np.float64)
-            # Sobel in both directions for true edge magnitude
-            gy, gx = np.gradient(pm)
-            mag = np.sqrt(gx * gx + gy * gy).astype(np.float32)
-            m_min, m_max = float(mag.min()), float(mag.max())
-            if m_max - m_min > 1e-8:
-                mag = (mag - m_min) / (m_max - m_min)
-            # Adaptive threshold: at low strength, only strongest edges show
-            # At high strength, more subtle edges appear
-            threshold = 0.30 - _s * 0.25  # 0.30 at 0% → 0.05 at 100%
-            sharpness = 6.0 + _s * 4.0  # steeper cutoff at high strength
-            edges = np.clip((mag - threshold) * sharpness, 0, 1)
-            # Subtle inner glow (1-2px, not blurry 3px) for anti-aliasing only
-            if _s > 0.3:
-                edges_aa = _blur_2d(edges, sigma=1.0)
-                edges = np.clip(edges * 0.8 + edges_aa * 0.2, 0, 1)
-            alpha = np.clip(edges * (_s * 2.0 + 0.2), 0, 1).astype(np.float32)
-        else:
-            alpha = np.full((H, W), _ps, dtype=np.float32)
+        pm = pattern_mask.astype(np.float64)
+        # Sobel in both directions for true edge magnitude
+        gy, gx = np.gradient(pm)
+        mag = np.sqrt(gx * gx + gy * gy).astype(np.float32)
+        m_min, m_max = float(mag.min()), float(mag.max())
+        if m_max - m_min > 1e-8:
+            mag = (mag - m_min) / (m_max - m_min)
+        # Fixed edge mask; strength only controls final blend amount.
+        threshold = 0.12
+        sharpness = 9.0
+        edges = np.clip((mag - threshold) * sharpness, 0, 1)
+        # Subtle inner glow (1-2px, not blurry 3px) for anti-aliasing only
+        edges_aa = _blur_2d(edges, sigma=1.0)
+        edges = np.clip(edges * 0.8 + edges_aa * 0.2, 0, 1)
+        alpha = np.clip(edges, 0, 1).astype(np.float32)
 
     elif blend_mode == "pattern_peaks" and pattern_mask is not None:
         # PATTERN PEAKS v2 — unsharp mask peak isolation
@@ -338,51 +376,134 @@ def get_base_overlay_alpha(shape: Tuple[int, int],
             features /= f_max
         # Power curve for contrast: makes peaks POP
         features = np.power(features, 0.7)
-        alpha = np.clip(features * (_s * 2.5 + 0.2), 0, 1).astype(np.float32)
+        alpha = np.clip(features, 0, 1).astype(np.float32)
 
-    elif blend_mode == "pattern_contour" and pattern_mask is not None:
-        # PATTERN CONTOUR v2 — crisp topographic iso-lines with consistent pixel-width
-        pm_f = pattern_mask.astype(np.float32)
-        n_contours = max(4, int(6 + _s * 14))  # 6-20 contour lines
-        # Scale pattern to n_contours levels, detect transitions between levels
-        scaled = pm_f * n_contours
-        # Distance to nearest integer = distance to nearest contour line
-        frac = scaled - np.floor(scaled)
-        dist_to_line = np.minimum(frac, 1.0 - frac)
-        # Line width in pattern-space: ~1-2 pixels worth at current resolution
-        line_width = 0.04 + (1.0 - _s) * 0.04  # 0.04 at high strength, 0.08 at low
-        contours = np.clip(1.0 - dist_to_line / line_width, 0, 1)
-        # Anti-alias: slight blur for smooth line edges
-        contours = _blur_2d(contours, sigma=0.5) if min(H, W) >= 512 else contours
-        alpha = np.clip(contours * (_s * 1.8 + 0.25), 0, 1).astype(np.float32)
-
-    elif blend_mode == "pattern_screen" and pattern_mask is not None:
-        # PATTERN SCREEN v2 — Photoshop-style screen blend via pattern
-        # Screen = 1-(1-A)(1-B). At low strength, lightens where pattern is bright.
-        # At high strength, dramatic lightening effect that preserves dark pattern areas.
-        pm_f = pattern_mask.astype(np.float32)
-        # Adaptive contrast: stretch pattern to use more of the 0-1 range
-        p5 = np.percentile(pm_f, 5)
-        p95 = np.percentile(pm_f, 95)
+    elif blend_mode == "pattern_glow" and pattern_mask is not None:
+        # PATTERN GLOW — material BLEEDS past the pattern edges via an outward
+        # gaussian halo. Distinct from Pattern-Reactive (which stops at the mask)
+        # and from Pattern Edges (which only inks the boundary): here the overlay
+        # spec/colour spills OUTWARD into a soft bloom so the pattern looks lit /
+        # backlit ("the material glows past the threads"). The pattern core stays
+        # full alpha; a multi-scale blur extends a falling halo beyond the rim.
+        pm = pattern_mask.astype(np.float32)
+        # Stretch so the bloom keys off the real pattern highlights, not noise.
+        p5 = np.percentile(pm, 5)
+        p95 = np.percentile(pm, 95)
         if p95 - p5 > 0.05:
-            pm_f = np.clip((pm_f - p5) / (p95 - p5), 0, 1)
-        # Screen alpha: pattern brightness × strength with perceptual curve
-        alpha = np.clip(pm_f * (_s * 1.6 + 0.15), 0, 1).astype(np.float32)
+            pm = np.clip((pm - p5) / (p95 - p5), 0, 1)
+        # Halo radius scales with canvas so the bleed reads at any resolution.
+        _core_sigma = max(1.5, min(H, W) / 256.0)    # tight inner feather
+        _halo_sigma = max(6.0, min(H, W) / 48.0)     # broad outward bloom
+        halo_near = _blur_2d(pm, sigma=_core_sigma)
+        halo_far = _blur_2d(pm, sigma=_halo_sigma)
+        # Combine: keep the hard pattern core, then add the spreading glow that
+        # reaches well past the original edge. max() guarantees the halo only
+        # ADDS coverage (material bleeds out), never erodes the pattern.
+        glow = np.maximum(pm, halo_near * 0.85)
+        glow = np.maximum(glow, halo_far * 0.55)
+        # Gentle lift so faint bloom tails remain visible without going flat.
+        alpha = np.clip(np.power(glow, 0.8), 0, 1).astype(np.float32)
 
-    elif blend_mode == "pattern_threshold" and pattern_mask is not None:
-        # PATTERN THRESHOLD v2 — crisp binary mask from pattern with adjustable cutoff
-        # Low strength = only brightest pattern areas (highlights). High = most of pattern.
-        pm_f = pattern_mask.astype(np.float32)
-        # Threshold slides from 0.95 (strength=0, almost nothing passes) to 0.05 (strength=1, almost everything)
-        threshold = 0.95 - _s * 0.90
-        # Edge width: very sharp at high strength (poster effect), softer at low (feathered highlights)
-        edge = 0.02 + (1.0 - _s) * 0.08
-        alpha = np.clip((pm_f - threshold) / max(edge, 1e-4), 0, 1).astype(np.float32)
+    elif blend_mode == "pattern_fresnel" and pattern_mask is not None:
+        # PATTERN FRESNEL — grazing-rim concentration. Alpha is driven by the
+        # pattern-gradient magnitude (where the surface "turns away" — i.e. the
+        # pattern's slopes/rims) combined with a radial falloff from the zone
+        # centre, so the overlay material concentrates at grazing angles / the
+        # outer edges of the zone and thins through the flat centre. Reads like
+        # a fresnel sheen riding the pattern's relief, very different from the
+        # flat fills of Pattern / Pattern-Pop.
+        pm = pattern_mask.astype(np.float32)
+        # Pattern-relief term: gradient magnitude = the pattern's grazing slopes.
+        gy, gx = np.gradient(pm.astype(np.float64))
+        relief = np.sqrt(gx * gx + gy * gy).astype(np.float32)
+        r_max = float(relief.max())
+        if r_max > 1e-8:
+            relief = relief / r_max
+        relief = _blur_2d(relief, sigma=max(1.0, min(H, W) / 384.0))
+        # Radial falloff: 0 at centre -> 1 at the rim (grazing angle proxy).
+        yy, xx = np.mgrid[0:H, 0:W]
+        cy, cx = (H - 1) / 2.0, (W - 1) / 2.0
+        rr = np.sqrt(((yy - cy) / max(cy, 1.0)) ** 2 +
+                     ((xx - cx) / max(cx, 1.0)) ** 2).astype(np.float32)
+        rim = np.clip(rr, 0, 1)
+        rim = np.power(rim, 1.8)   # fresnel-like sharpening toward the edge
+        # Material rides where pattern relief AND grazing rim coincide, but the
+        # rim alone still gives a clean edge sheen on flat/no-relief patterns.
+        fres = np.clip(relief * 0.65 + rim * 0.55, 0, 1)
+        # Keep it pattern-aware so it never tints fully blank areas: gate softly
+        # by the (stretched) pattern itself with a floor so rims survive.
+        gate = np.clip(pm * 0.6 + 0.4, 0, 1)
+        alpha = np.clip(fres * gate, 0, 1).astype(np.float32)
+
+    elif blend_mode == "pattern_flow" and pattern_mask is not None:
+        # PATTERN FLOW — anisotropic brushed-metal smear. Computes the pattern
+        # gradient, then SMEARS the alpha ALONG the iso-lines (perpendicular to
+        # the gradient) by sampling the pattern at offsets that follow the local
+        # flow direction. Produces directional streaks like brushed aluminium /
+        # combed flake, with the grain bending around the pattern's features.
+        pm = pattern_mask.astype(np.float32)
+        gy, gx = np.gradient(pm.astype(np.float64))
+        gmag = np.sqrt(gx * gx + gy * gy) + 1e-6
+        # Iso-line (flow) direction = gradient rotated 90deg, unit length.
+        fx = (-gy / gmag).astype(np.float32)
+        fy = (gx / gmag).astype(np.float32)
+        yy, xx = np.mgrid[0:H, 0:W]
+        # Streak length scales with canvas; longer = silkier brushed grain.
+        n_taps = 9
+        step = max(1.0, min(H, W) / 220.0)
+        acc = np.zeros((H, W), dtype=np.float32)
+        wsum = 0.0
+        for t in range(-(n_taps // 2), n_taps // 2 + 1):
+            w = float(np.cos((t / (n_taps / 2.0)) * (np.pi / 2.0)))  # taper ends
+            sx = np.clip((xx + fx * (t * step)).round().astype(np.int64), 0, W - 1)
+            sy = np.clip((yy + fy * (t * step)).round().astype(np.int64), 0, H - 1)
+            acc += pm[sy, sx] * w
+            wsum += w
+        if wsum > 1e-6:
+            acc /= wsum
+        # Stretch the smeared field so the streaks read with contrast.
+        mn, mx = float(acc.min()), float(acc.max())
+        if mx - mn > 1e-8:
+            acc = (acc - mn) / (mx - mn)
+        alpha = np.clip(acc, 0, 1).astype(np.float32)
+
+    elif blend_mode == "pattern_shatter" and pattern_mask is not None:
+        # PATTERN SHATTER — cracked-glass / forged-carbon cells. Threshold the
+        # pattern into discrete cells, label them, then use the distance
+        # transform of the cell interiors so each cell fills toward its centre
+        # while hard, dark CRACKS sit on the cell boundaries (forged-flake /
+        # shattered look). cv2 is already imported at module scope.
+        pm = pattern_mask.astype(np.float32)
+        thr = float(np.percentile(pm, 55))
+        cells = (pm > thr).astype(np.uint8)
+        # Distance transform: bright toward cell interiors, ~0 at every edge.
+        try:
+            dist = cv2.distanceTransform(cells, cv2.DIST_L2, 3).astype(np.float32)
+        except cv2.error as e:
+            logger.warning("pattern_shatter distanceTransform failed: %s; using cells", e)
+            dist = cells.astype(np.float32)
+        d_max = float(dist.max())
+        if d_max > 1e-8:
+            dist /= d_max
+        # Hard crack mask: pattern gradient picks the fracture lines between
+        # cells; subtract so boundaries read as dark seams.
+        gy, gx = np.gradient(pm.astype(np.float64))
+        cracks = np.sqrt(gx * gx + gy * gy).astype(np.float32)
+        c_max = float(cracks.max())
+        if c_max > 1e-8:
+            cracks = np.clip(cracks / c_max, 0, 1)
+        # Sharpen cracks into thin hard seams.
+        cracks = np.clip((cracks - 0.18) * 6.0, 0, 1)
+        # Faceted fill (power curve gives a hard flake plateau) minus the seams.
+        facets = np.power(np.clip(dist, 0, 1), 0.6)
+        shatter = np.clip(facets - cracks * 0.85, 0, 1)
+        alpha = np.clip(shatter, 0, 1).astype(np.float32)
 
     else:
-        # Default fallback: linear strength (15% = 15% blend, not sqrt-boosted)
-        alpha = np.full((H, W), _s, dtype=np.float32)
+        alpha = np.ones((H, W), dtype=np.float32)
 
+    alpha = _validate_alpha(alpha, name=f"{blend_mode}-feature")
+    alpha = np.clip(alpha * _s, 0, 1).astype(np.float32)
     if zone_mask is not None and zone_mask.shape[:2] == (H, W):
         # In-place multiply where possible to avoid an extra full-canvas alloc
         zm = np.clip(zone_mask.astype(np.float32, copy=False), 0, 1)
@@ -429,7 +550,8 @@ def blend_dual_base_spec(spec_primary: np.ndarray,
         strength:       0.0-1.0 - global blend amount.
         blend_mode:     UI mode string (normalized internally). One of
             dust, marble, pattern, pattern_vivid, tint, pattern_edges,
-            pattern_peaks, pattern_contour, pattern_screen, pattern_threshold.
+            pattern_peaks, pattern_glow, pattern_fresnel, pattern_flow,
+            pattern_shatter.
         noise_scale:    Feature size in pixels for noise modes.
         seed:           Deterministic seed.
         pattern_mask:   (H, W) float32 in [0, 1] for pattern-driven modes.
@@ -457,7 +579,10 @@ def blend_dual_base_spec(spec_primary: np.ndarray,
                            spec_primary.shape, spec_secondary.shape)
             # cv2 hoisted to module scope -- no per-call import overhead
             spec_secondary = cv2.resize(spec_secondary, (W, H), interpolation=cv2.INTER_NEAREST)
+        # Normalized id kept for logging / future per-mode branches; the blend
+        # math below is uniform (linear over) for every kept mode.
         bm = _normalize_second_base_blend_mode(blend_mode)
+        logger.debug("blend_dual_base_spec: mode=%s -> canonical=%s", blend_mode, bm)
         strength = max(OVERLAY_STRENGTH_MIN, min(OVERLAY_STRENGTH_MAX, float(strength)))
 
         alpha = get_base_overlay_alpha(
@@ -471,17 +596,12 @@ def blend_dual_base_spec(spec_primary: np.ndarray,
         # Pre-allocate result as float32 and blend in-place to avoid extra allocations
         result = spec_primary.astype(np.float32)
         inv_alpha4 = 1.0 - alpha4
-        if bm == "pattern_screen":
-            # Screen blend: a + b - a*b/255 (integer math avoids float conversion of secondary)
-            p = result
-            s = spec_secondary.astype(np.float32)
-            screened = np.clip(p + s - p * s / 255.0, 0, _CHANNEL_MAX)
-            result *= inv_alpha4
-            result += screened * alpha4
-        else:
-            ss = spec_secondary.astype(np.float32)
-            result *= inv_alpha4
-            result += ss * alpha4
+        # All kept modes use a straight linear over-blend; the alpha shape carries
+        # the mode character. (The former pattern_screen special-case was removed
+        # along with that mode in the 2026-06-02 blend-grid rethink.)
+        ss = spec_secondary.astype(np.float32)
+        result *= inv_alpha4
+        result += ss * alpha4
         # Enforce PBR floors on blended spec in-place using local constants.
         # CC floor: every CC>0 pixel must be at least the clearcoat minimum.
         np.maximum(result[:, :, 2], _CC_FLOOR, out=result[:, :, 2])

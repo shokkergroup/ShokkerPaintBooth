@@ -1,0 +1,83 @@
+[
+ {
+  "id": "fm_frost_lace",
+  "name": "Frost Lace",
+  "kind": "finish",
+  "desc": "PASTEL REBUILD (your r63 note) \u2014 the light-blue pane now keeps METAL HIGH so your body color explodes through it (that was the missing piece: dark blue = env mirror only; light blue = your color + env). Light-gray lace, light-pink tips.",
+  "ai_rating": 52,
+  "mip": 0.55,
+  "render_s": 1.38
+ },
+ {
+  "id": "fm_geode_slice",
+  "name": "Geode Slice",
+  "kind": "finish",
+  "desc": "PASTEL REBUILD (your note: 'Needs to be LIGHT PINK and LIGHT blue') \u2014 light-pink agate bands, LIGHT-blue rings and cores, light-purple druzy, rare gold ember sparks.",
+  "ai_rating": 59,
+  "mip": 0.35,
+  "render_s": 1.31
+ },
+ {
+  "id": "fm_glacier_core",
+  "name": "Glacier Core",
+  "kind": "finish",
+  "desc": "PASTEL \u2014 light-blue ice field, light-purple crevasses, light-pink frost ridges, light-gray grain shimmer.",
+  "ai_rating": 48,
+  "mip": 0.68,
+  "render_s": 1.58
+ },
+ {
+  "id": "fm_inferno_veins",
+  "name": "Inferno Veins",
+  "kind": "finish",
+  "desc": "PASTEL \u2014 light-pink plates, light-purple veins, light-blue halo rivers + REAL ORANGE embers inside the veins (the red/orange concoction: max metal + low clearcoat + mid rough).",
+  "ai_rating": 53,
+  "mip": 0.71,
+  "render_s": 1.74
+ },
+ {
+  "id": "fm_ion_drift",
+  "name": "Ion Drift",
+  "kind": "finish",
+  "desc": "PASTEL \u2014 light-blue plasma field, light-purple stream cores, light-pink pulse heads, light-gray stars.",
+  "ai_rating": 45,
+  "mip": 0.54,
+  "render_s": 1.19
+ },
+ {
+  "id": "fm_petal_storm",
+  "name": "Petal Storm",
+  "kind": "finish",
+  "desc": "NEW (replaces Barbed Wire, your r14: 'make something else. Anything.') \u2014 a storm of drifting flower petals at every angle, each with a midrib vein. PASTEL spec: light-pink air, light-blue petals, light-purple ribs.",
+  "ai_rating": 52,
+  "mip": 0.65,
+  "render_s": 1.38
+ },
+ {
+  "id": "fm_thousand_eyes",
+  "name": "Thousand Eyes",
+  "kind": "finish",
+  "desc": "PASTEL horror \u2014 light-pink sclera, LIGHT-blue irises with light-purple spokes, light-gray veins; pupils stay dead-black voids for the stare.",
+  "ai_rating": 51,
+  "mip": 0.54,
+  "render_s": 1.48
+ },
+ {
+  "id": "fm_tide_glass",
+  "name": "Tide Glass",
+  "kind": "finish",
+  "desc": "PASTEL \u2014 light-blue pool floor, light-purple caustic web, light-pink nodes, light-gray depth swell.",
+  "ai_rating": 59,
+  "mip": 0.73,
+  "render_s": 1.62
+ },
+ {
+  "id": "fm_witchlight",
+  "name": "Witchlight",
+  "kind": "finish",
+  "desc": "PASTEL \u2014 light blue-gray mist, light-blue halos, light-pink orb cores, light-purple wisp tails.",
+  "ai_rating": 49,
+  "mip": 0.64,
+  "render_s": 1.7
+ }
+]

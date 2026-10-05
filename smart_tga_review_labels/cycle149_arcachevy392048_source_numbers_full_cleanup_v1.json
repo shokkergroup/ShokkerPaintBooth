@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "paint_label": "stockcars2 arcachevy25/car_num_392048.tga",
+  "inspection_records": "_smart_tga_runs/cycle146_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle146_route_pressure_v1/stockcars2_arcachevy25_car_num_392048/component_records.json",
+  "review_scope": "Cycle 149 full source-Numbers cleanup for ARCA Chevy 392048: keep the true 8 bodies/highlights and move Pennzoil/contingency sponsor fragments out of Numbers.",
+  "component_labels": [
+    {
+      "layer": "numbers",
+      "component_index": 0,
+      "expected_bbox": [459, 254, 70, 25],
+      "target_layer": "numbers",
+      "label": "true_number_8_inner_highlight",
+      "note": "Small horizontal highlight inside the central 8; should remain editable with the number graphics."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 1,
+      "expected_bbox": [652, 270, 36, 19],
+      "target_layer": "sponsors",
+      "label": "contingency_stack_fragment_false_number",
+      "note": "Small sponsor/contingency fragment near the side number stack; not race-number content."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 2,
+      "expected_bbox": [605, 277, 40, 12],
+      "target_layer": "sponsors",
+      "label": "contingency_stack_fragment_false_number",
+      "note": "Small bright sponsor/contingency strip in the stack beside the 8; should be Sponsors."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 3,
+      "expected_bbox": [307, 301, 40, 62],
+      "target_layer": "sponsors",
+      "label": "pennzoil_wordmark_letter_false_number",
+      "note": "Dark Pennzoil wordmark letter fragment that was incorrectly left in Numbers."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 4,
+      "expected_bbox": [274, 303, 35, 60],
+      "target_layer": "sponsors",
+      "label": "pennzoil_wordmark_letter_false_number",
+      "note": "Dark Pennzoil wordmark letter fragment; should be Sponsors, not Template or Numbers."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 5,
+      "expected_bbox": [125, 309, 37, 60],
+      "target_layer": "sponsors",
+      "label": "pennzoil_wordmark_letter_false_number",
+      "note": "Dark Pennzoil wordmark letter fragment that was incorrectly left in Numbers."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 6,
+      "expected_bbox": [161, 308, 39, 59],
+      "target_layer": "sponsors",
+      "label": "pennzoil_wordmark_letter_false_number",
+      "note": "Dark Pennzoil wordmark letter fragment; should be Sponsors, not Template or Numbers."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 7,
+      "expected_bbox": [47, 311, 39, 38],
+      "target_layer": "sponsors",
+      "label": "pennzoil_logo_dot_false_number",
+      "note": "Black sponsor-logo dot from the Pennzoil wordmark area; not a race-number component."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 8,
+      "expected_bbox": [303, 509, 252, 178],
+      "target_layer": "numbers",
+      "label": "true_large_number_8_body",
+      "note": "Large red/pink side-number 8 already in Numbers; should not be demoted to Paint."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 9,
+      "expected_bbox": [412, 845, 176, 123],
+      "target_layer": "numbers",
+      "label": "true_large_number_8_body",
+      "note": "Lower red/pink side-number 8 already in Numbers; should not be demoted to Sponsors."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 10,
+      "expected_bbox": [211, 951, 39, 13],
+      "target_layer": "numbers",
+      "label": "true_small_number_8_highlight",
+      "note": "Small horizontal highlight inside the small red/orange 8 mark; should stay with Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 21,
+      "expected_bbox": [412, 222, 176, 121],
+      "target_layer": "numbers",
+      "label": "true_large_number_8_body",
+      "note": "Large red/black side-number 8 body routed to Sponsors; should become Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 23,
+      "expected_bbox": [81, 301, 260, 71],
+      "target_layer": "sponsors",
+      "label": "pennzoil_wordmark_panel",
+      "note": "Wide Pennzoil wordmark panel; should remain Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 29,
+      "expected_bbox": [793, 425, 200, 343],
+      "target_layer": "sponsors",
+      "label": "large_pennzoil_sponsor_panel",
+      "note": "Large Pennzoil oval sponsor panel; not a race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 34,
+      "expected_bbox": [38, 487, 31, 200],
+      "target_layer": "sponsors",
+      "label": "menards_vertical_wordmark",
+      "note": "Vertical Menards wordmark; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 45,
+      "expected_bbox": [118, 819, 40, 58],
+      "target_layer": "sponsors",
+      "label": "pennzoil_wordmark_letters_false_number",
+      "note": "Vertical Pennzoil wordmark letter fragment; should stay Sponsors."
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_148935.tga","inspection_records":"_smart_tga_runs/cycle684_dlm_intrinsic_hardware_review/inspection_records.json","review_scope":"Cycle 684 source plus complete owner sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[0,0,615,306],"target_layer":"paint","label":"mixed_livery_composite_false_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[305,2,716,124],"target_layer":"template","label":"hardware_composite_false_number"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[319,33,157,83],"target_layer":"sponsors","label":"wordmark_false_number"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[605,34,118,94],"target_layer":"paint","label":"livery_shape_false_number"},
+ {"layer":"numbers","component_index":4,"expected_bbox":[787,135,22,26],"target_layer":"sponsors","label":"wordmark_fragment_false_number"},
+ {"layer":"numbers","component_index":5,"expected_bbox":[613,136,114,93],"target_layer":"paint","label":"livery_shape_false_number"},
+ {"layer":"numbers","component_index":6,"expected_bbox":[865,214,21,26],"target_layer":"sponsors","label":"wordmark_fragment_false_number"},
+ {"layer":"numbers","component_index":7,"expected_bbox":[515,238,48,9],"target_layer":"sponsors","label":"wordmark_false_number"},
+ {"layer":"numbers","component_index":8,"expected_bbox":[486,241,25,8],"target_layer":"sponsors","label":"wordmark_fragment_false_number"},
+ {"layer":"numbers","component_index":9,"expected_bbox":[264,246,173,91],"target_layer":"numbers","label":"true_primary_number"},
+ {"layer":"numbers","component_index":10,"expected_bbox":[15,255,135,50],"target_layer":"sponsors","label":"wordmark_false_number"},
+ {"layer":"numbers","component_index":11,"expected_bbox":[21,707,189,52],"target_layer":"sponsors","label":"wordmark_false_number"},
+ {"layer":"numbers","component_index":12,"expected_bbox":[418,723,10,3],"target_layer":"sponsors","label":"wordmark_fragment_false_number"},
+ {"layer":"numbers","component_index":13,"expected_bbox":[269,725,180,82],"target_layer":"numbers","label":"true_primary_number"},
+ {"layer":"numbers","component_index":14,"expected_bbox":[442,805,11,4],"target_layer":"sponsors","label":"wordmark_fragment_false_number"},
+ {"layer":"numbers","component_index":15,"expected_bbox":[137,904,63,109],"target_layer":"paint","label":"livery_shape_false_number"},
+ {"layer":"numbers","component_index":16,"expected_bbox":[263,915,53,27],"target_layer":"sponsors","label":"wordmark_false_number"},
+ {"layer":"numbers","component_index":17,"expected_bbox":[531,915,57,27],"target_layer":"sponsors","label":"wordmark_false_number"},
+ {"layer":"numbers","component_index":18,"expected_bbox":[458,916,39,26],"target_layer":"sponsors","label":"wordmark_false_number"}
+]}

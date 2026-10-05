@@ -1,0 +1,401 @@
+{
+  "workItem": "Independent W111 clearcoat grammar and builder review",
+  "status": "CANDIDATE_HAS_GAPS",
+  "pins": {
+    "candidate": "_easy_claude_work/ai14h_material_grammar_w111_successor/candidate/spb-ai-material-controls.js",
+    "candidateSha256": "797D3B845DD1C1BFC714BD4A4327CF5271820B8DED298A000ECFC153603D87D8",
+    "oracle": "_easy_claude_work/ai14h_w111_independent_review/own-oracle.json",
+    "oracleSha256": "86CF1149CD3E03DD8F1D13C80EA29F5513B2F745A4DAA88FF7453BC452AD639C",
+    "producerOracle": "_easy_claude_work/ai14h_material_grammar_w111_successor/fresh-oracle.json",
+    "producerOracleSha256": "1F3A5511CAB1BE5C6C508264CEB48B19178D5D2A59D78F7BE16F7D53C7BFE335"
+  },
+  "counts": {
+    "cases": 20,
+    "expectedEdits": 7,
+    "parsedEdits": 3,
+    "builderExecuted": 3,
+    "builderChannelPreserved": 1,
+    "issues": 7,
+    "providerCalls": 0,
+    "nativeCalls": 0
+  },
+  "rows": [
+    {
+      "id": "polite-roof-down-12",
+      "input": "Could you lower clearcoat on the roof by 12 points, please?",
+      "expected": {
+        "decision": "edit",
+        "target": "roof",
+        "channel": "clearcoat",
+        "delta": -12,
+        "colorFinishMask": "unchanged"
+      },
+      "parsed": {
+        "kind": "delegate",
+        "reason": "question-or-howto"
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "natural-hood-reduce-blue-coat",
+      "input": "Please take 15 points off the hood's blue coat.",
+      "expected": {
+        "decision": "edit",
+        "target": "hood",
+        "channel": "clearcoat",
+        "delta": -15,
+        "colorFinishMask": "unchanged"
+      },
+      "parsed": {
+        "kind": "delegate",
+        "reason": "no-explicit-channel-adjustment"
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "left-side-raise",
+      "input": "Raise the left side's clearcoat by 7 points.",
+      "expected": {
+        "decision": "edit",
+        "target": "left side",
+        "channel": "clearcoat",
+        "delta": 7,
+        "colorFinishMask": "unchanged"
+      },
+      "parsed": {
+        "kind": "clarify",
+        "reason": "missing-or-unsupported-channel",
+        "question": "Which channel should change: metalness, roughness, or clearcoat?"
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "trunk-down-five",
+      "input": "Reduce clearcoat on the trunk by 5 points.",
+      "expected": {
+        "decision": "edit",
+        "target": "trunk",
+        "channel": "clearcoat",
+        "delta": -5,
+        "colorFinishMask": "unchanged"
+      },
+      "parsed": {
+        "kind": "edit",
+        "channel": "clearcoat",
+        "part": "trunk",
+        "delta": -5,
+        "amountSpecified": true,
+        "amountUnit": "points",
+        "verb": "reduce"
+      },
+      "builder": {
+        "kind": "edit",
+        "zone_id": "z-trunk-down-five",
+        "spec_shift": {
+          "metal": 13,
+          "rough": 27,
+          "clearcoat": 26
+        }
+      },
+      "tuplePreserved": true,
+      "immutable": true
+    },
+    {
+      "id": "roof-coat-decrease",
+      "input": "Could you decrease the roof coat by 21 points?",
+      "expected": {
+        "decision": "edit",
+        "target": "roof",
+        "channel": "clearcoat",
+        "delta": -21,
+        "colorFinishMask": "unchanged"
+      },
+      "parsed": {
+        "kind": "delegate",
+        "reason": "question-or-howto"
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "keep-roughness-alone",
+      "input": "Please lower clearcoat on the roof by 9 points and leave roughness alone.",
+      "expected": {
+        "decision": "edit",
+        "target": "roof",
+        "channel": "clearcoat",
+        "delta": -9,
+        "preserve": "roughness and all other channels"
+      },
+      "parsed": {
+        "kind": "clarify",
+        "reason": "missing-relative-amount",
+        "question": "Nothing was changed. Please give the relative change in points, such as “by 20 points”."
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "keep-paint-color-alone",
+      "input": "Would you lower roof clearcoat by 11 points but keep its paint color exactly as it is?",
+      "expected": {
+        "decision": "edit",
+        "target": "roof",
+        "channel": "clearcoat",
+        "delta": -11,
+        "preserve": "base color, finish, mask, other channels"
+      },
+      "parsed": {
+        "kind": "delegate",
+        "reason": "question-or-howto"
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "amount-without-unit",
+      "input": "Please reduce clearcoat on the roof by 12.",
+      "expected": {
+        "decision": "clarify",
+        "reason": "unit omitted; no assumed points"
+      },
+      "parsed": {
+        "kind": "clarify",
+        "reason": "relative-amount-needs-points",
+        "question": "Nothing was changed. I read clearcoat on the roof. Please give a relative amount in points, such as “by 20 points”."
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "definition-question",
+      "input": "How do I lower clearcoat on the roof by 12 points?",
+      "expected": {
+        "decision": "clarify-or-guidance",
+        "reason": "interrogative must not silently mutate"
+      },
+      "parsed": {
+        "kind": "delegate",
+        "reason": "question-or-howto"
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "hypothetical",
+      "input": "What would lowering clearcoat on the roof by 12 points do? Do not apply it.",
+      "expected": {
+        "decision": "read-only",
+        "reason": "no queue or builder mutation"
+      },
+      "parsed": {
+        "kind": "delegate",
+        "reason": "question-or-howto"
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "negated-request",
+      "input": "Do not lower clearcoat on the roof by 12 points.",
+      "expected": {
+        "decision": "read-only",
+        "reason": "explicit negation"
+      },
+      "parsed": {
+        "kind": "delegate",
+        "reason": "negative-or-prohibition"
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "double-negation",
+      "input": "Don't not lower the roof clearcoat by 12 points.",
+      "expected": {
+        "decision": "clarify",
+        "reason": "ambiguous double negation"
+      },
+      "parsed": {
+        "kind": "delegate",
+        "reason": "negative-or-prohibition"
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "two-channels",
+      "input": "Lower clearcoat on the roof by 12 points and raise roughness by 4 points.",
+      "expected": {
+        "decision": "refuse-atomic",
+        "reason": "unsupported multi-channel compound; zero partial edit"
+      },
+      "parsed": {
+        "kind": "clarify",
+        "reason": "unconsumed-number-in-target",
+        "question": "Which exact part and material channel should I adjust? I can change only metalness, roughness, or clearcoat."
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "two-channels-metal",
+      "input": "Reduce roof clearcoat 10 points and reduce metalness 6 points.",
+      "expected": {
+        "decision": "refuse-atomic",
+        "reason": "unsupported multi-channel compound; zero partial edit"
+      },
+      "parsed": {
+        "kind": "clarify",
+        "reason": "missing-or-unsupported-channel",
+        "question": "Which channel should change: metalness, roughness, or clearcoat?"
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "two-targets",
+      "input": "Lower roof clearcoat by 10 points and raise hood clearcoat by 8 points.",
+      "expected": {
+        "decision": "refuse-atomic",
+        "reason": "multiple targets must not be collapsed"
+      },
+      "parsed": {
+        "kind": "clarify",
+        "reason": "missing-or-unsupported-channel",
+        "question": "Which channel should change: metalness, roughness, or clearcoat?"
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "extra-color-action",
+      "input": "Lower roof clearcoat by 10 points and paint the hood blue.",
+      "expected": {
+        "decision": "refuse-atomic",
+        "reason": "mixed material/paint actions; no partial edit"
+      },
+      "parsed": {
+        "kind": "clarify",
+        "reason": "missing-or-unsupported-channel",
+        "question": "Which channel should change: metalness, roughness, or clearcoat?"
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "missing-target",
+      "input": "Please reduce clearcoat by 10 points.",
+      "expected": {
+        "decision": "clarify",
+        "reason": "target omitted"
+      },
+      "parsed": {
+        "kind": "clarify",
+        "reason": "missing-exact-part",
+        "question": "Which exact named part should I adjust?"
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "zero-delta",
+      "input": "Lower clearcoat on the roof by 0 points.",
+      "expected": {
+        "decision": "refuse-noop",
+        "reason": "zero amount must not queue"
+      },
+      "parsed": {
+        "kind": "edit",
+        "channel": "clearcoat",
+        "part": "roof",
+        "delta": 0,
+        "amountSpecified": true,
+        "amountUnit": "points",
+        "verb": "lower"
+      },
+      "builder": {
+        "kind": "noop"
+      },
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "over-range",
+      "input": "Lower clearcoat on the roof by 140 points.",
+      "expected": {
+        "decision": "refuse-or-clamp-explicitly",
+        "reason": "never silently change requested magnitude"
+      },
+      "parsed": {
+        "kind": "edit",
+        "channel": "clearcoat",
+        "part": "roof",
+        "delta": -140,
+        "amountSpecified": true,
+        "amountUnit": "points",
+        "verb": "lower"
+      },
+      "builder": {
+        "kind": "edit",
+        "zone_id": "range-over-range",
+        "spec_shift": {
+          "metal": 13,
+          "rough": 22,
+          "clearcoat": -127
+        }
+      },
+      "tuplePreserved": null,
+      "immutable": null
+    },
+    {
+      "id": "ambiguous-number",
+      "input": "Lower clearcoat on the roof by about ten points.",
+      "expected": {
+        "decision": "clarify",
+        "reason": "approximate amount not exact supported grammar"
+      },
+      "parsed": {
+        "kind": "clarify",
+        "reason": "missing-relative-amount",
+        "question": "Nothing was changed. Please give the relative change in points, such as “by 20 points”."
+      },
+      "builder": null,
+      "tuplePreserved": null,
+      "immutable": null
+    }
+  ],
+  "issues": [
+    "polite-roof-down-12: expected one exact clearcoat edit, parsed delegate (question-or-howto)",
+    "natural-hood-reduce-blue-coat: expected one exact clearcoat edit, parsed delegate (no-explicit-channel-adjustment)",
+    "left-side-raise: expected one exact clearcoat edit, parsed clarify (missing-or-unsupported-channel)",
+    "roof-coat-decrease: expected one exact clearcoat edit, parsed delegate (question-or-howto)",
+    "keep-roughness-alone: expected one exact clearcoat edit, parsed clarify (missing-relative-amount)",
+    "keep-paint-color-alone: expected one exact clearcoat edit, parsed delegate (question-or-howto)",
+    "over-range: builder clamps requested -140 points to -127 at baseline channel 0"
+  ],
+  "limits": [
+    "Directly invokes the candidate module actual parse/buildEdit APIs; no controller route, current-owner validation, provider, native UI, or paint application.",
+    "The seven positive phrases deliberately include polite/natural variants outside the producer’s exact target-first grammar; failures show parser coverage boundaries and should not be read as action dispatch effects.",
+    "Builder fixture is synthetic and verifies full spec tuple, base color, finish, mask immutability only. It does not prove a current real zone or render behavior."
+  ]
+}

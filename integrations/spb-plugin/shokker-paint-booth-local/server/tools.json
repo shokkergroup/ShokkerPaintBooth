@@ -1,0 +1,1331 @@
+[
+ {
+  "name": "spb_edit_layer",
+  "description": "Change how a PSD LAYER shows: visible (true/false), opacity (0-100), blend (source-over|multiply|screen|overlay|darken|lighten|color-dodge|color-burn|hard-light|soft-light|difference|exclusion|hue|saturation|color|luminosity). Layer names are in STATE (layers). Template layers named Mask / Wire / Car_Mandatory are meant to be OFF before exporting. Do not hide the body paint layer unless the buyer asks.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "layer": {
+     "type": "string"
+    },
+    "visible": {
+     "type": "boolean"
+    },
+    "opacity": {
+     "type": "number"
+    },
+    "blend": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "layer"
+   ]
+  }
+ },
+ {
+  "name": "spb_design_recipes",
+  "description": "The built-in DESIGN LIBRARY: how real liveries are built. Returns scheme PRESETS (retro lower band, classic twin stripes, two-tone, colour block, bookends, stealth), the ELEMENTS they are made of (lower band, pinstripe, twin stripes, centre stripe, bumpers, roof, hood...), proportions, composition rules, and - when the query names an era, brand style, theme or mood (\"Pepsi\", \"Gulf\", \"70s\", \"80s neon\", \"stealth\", \"Halloween\") - the matching PALETTE (base / a / b / c / trim colours) with suggested presets. Call it FIRST for any livery / scheme / throwback / \"X down the sides\" request, then build with apply_scheme.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "query": {
+     "type": "string",
+     "description": "the buyer's theme in a few words"
+    }
+   }
+  }
+ },
+ {
+  "name": "spb_apply_scheme",
+  "description": "Lay out a whole paint SCHEME on the car's NAMED PARTS in one call; placement is exact (the library knows the bands). Pass a preset id OR your own list of elements, plus the palette (roles base / a / b / c / trim as #hex or colour names, or a palette_id from design_recipes) and finishes (paint_finish e.g. \"base::matte\" for flat, \"base::gloss\", \"base::satin\"; trim_finish e.g. \"base::chrome\"). The first zone is the BASE colour; later zones stack above it. The car's parts must be known (get_car_map); skipped elements are reported. Use this for ALL colour blocks, bands and stripes; use add_zone / edit_zone only for tweaks and for finish or spec work. Describe the result to the buyer FROM the returned list.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "scale": {
+     "type": "number",
+     "description": "stripe / band thickness multiplier (1 = normal, 0.6 = thinner, 1.5 = thicker)"
+    },
+    "preset": {
+     "type": "string",
+     "description": "retro_lower_band | classic_stripes | two_tone | colour_block | bookends | stealth"
+    },
+    "palette_id": {
+     "type": "string"
+    },
+    "palette": {
+     "type": "object",
+     "properties": {
+      "base": {
+       "type": "string"
+      },
+      "a": {
+       "type": "string"
+      },
+      "b": {
+       "type": "string"
+      },
+      "c": {
+       "type": "string"
+      },
+      "trim": {
+       "type": "string"
+      }
+     }
+    },
+    "elements": {
+     "type": "array",
+     "description": "optional custom list; each {id, colour (hex, name or role), colour2, from, to, at, width, trim}",
+     "items": {
+      "type": "object",
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "colour": {
+        "type": "string"
+       },
+       "colour2": {
+        "type": "string"
+       },
+       "from": {
+        "type": "number"
+       },
+       "to": {
+        "type": "number"
+       },
+       "at": {
+        "type": "number"
+       },
+       "width": {
+        "type": "number"
+       },
+       "trim": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "paint_finish": {
+     "type": "string"
+    },
+    "trim_finish": {
+     "type": "string"
+    }
+   }
+  }
+ },
+ {
+  "name": "spb_add_graphic",
+  "description": "DRAW a design graphic on named car parts (crisp shapes, not paint colours): rings = concentric arcs (\"sonic rings\", ripples, radar), speed_lines = tapered streaks along the car, stripes = parallel stripes at ANY angle (diagonal slashes, curved), waves = flow bands, chevrons = V / arrow shapes, checker = checkered flag block, dots = halftone dots, rays = sunburst, lightning = bolt. Coordinates are PART space: u = 0..1 along the car from the FRONT to the REAR, v = 0..1 from the ROOF-LINE down to the ROCKER (on the hood / roof / trunk, v runs across). The same spec lands correctly on the left side, the right side and any car, so give both sides at once with part:[\"left side\",\"right side\"] (default). colours (1-3 #hex) are cycled over the strokes, one zone per colour; paint_finish like \"base::pearl\" / \"base::gloss\" / \"base::chrome\" is the finish of the strokes. Typical: rings {cu:0.38, cv:0.6, r0:0.1, r1:0.95, n:8, facing:\"front\", span:150} + speed_lines {u0:0.4, u1:0.95, v0:0.15, v1:0.85, n:16}. Place graphics ABOVE a base colour (apply_scheme first). Returns the zones it made; describe the result FROM that list.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "rings | speed_lines | stripes | waves | chevrons | checker | dots | rays | lightning"
+    },
+    "part": {
+     "description": "part name or list; default both sides",
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      }
+     ]
+    },
+    "colours": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "1-3 colours as #rrggbb (cycled over the strokes)"
+    },
+    "paint_finish": {
+     "type": "string"
+    },
+    "cu": {
+     "type": "number"
+    },
+    "cv": {
+     "type": "number"
+    },
+    "r0": {
+     "type": "number"
+    },
+    "r1": {
+     "type": "number"
+    },
+    "n": {
+     "type": "number"
+    },
+    "w0": {
+     "type": "number"
+    },
+    "w1": {
+     "type": "number"
+    },
+    "w": {
+     "type": "number"
+    },
+    "facing": {
+     "type": "string"
+    },
+    "span": {
+     "type": "number"
+    },
+    "gap": {
+     "type": "number"
+    },
+    "tail": {
+     "type": "number"
+    },
+    "u0": {
+     "type": "number"
+    },
+    "u1": {
+     "type": "number"
+    },
+    "v0": {
+     "type": "number"
+    },
+    "v1": {
+     "type": "number"
+    },
+    "wmin": {
+     "type": "number"
+    },
+    "wmax": {
+     "type": "number"
+    },
+    "lenmin": {
+     "type": "number"
+    },
+    "lenmax": {
+     "type": "number"
+    },
+    "taper": {
+     "type": "string"
+    },
+    "angle": {
+     "type": "number"
+    },
+    "curve": {
+     "type": "number"
+    },
+    "at": {
+     "type": "number"
+    },
+    "amp": {
+     "type": "number"
+    },
+    "wavelength": {
+     "type": "number"
+    },
+    "spacing": {
+     "type": "number"
+    },
+    "size": {
+     "type": "number"
+    },
+    "depth": {
+     "type": "number"
+    },
+    "direction": {
+     "type": "string"
+    },
+    "fade": {
+     "type": "string"
+    },
+    "duty": {
+     "type": "number"
+    },
+    "jag": {
+     "type": "number"
+    },
+    "bolts": {
+     "type": "number"
+    },
+    "seed": {
+     "type": "number"
+    },
+    "radii": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     },
+     "description": "rings: explicit radii (fractions of the part height)"
+    },
+    "widths": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     }
+    },
+    "spans": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     }
+    },
+    "seq": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     },
+     "description": "rings: colour index per ring"
+    },
+    "items": {
+     "type": "array",
+     "items": {
+      "type": "object"
+     },
+     "description": "kind strokes: [{u0,u1,v,w0,w1,c}]"
+    }
+   },
+   "required": [
+    "kind",
+    "colours"
+   ]
+  }
+ },
+ {
+  "name": "spb_get_state",
+  "description": "Current zones (what each covers, how much of the paint it actually wins, what blocks it, its look), PSD layers, the paint's main colours with grid cells, plus any changes already queued this turn. Already supplied at the start; call only to double-check.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {}
+  }
+ },
+ {
+  "name": "spb_manual",
+  "description": "Look up the built-in manual: how Pro and zones work, spec maps (metal/roughness/clearcoat), worked recipes (gradients, chrome flake accents, holographic, matte/gloss combos...), what you can and cannot do, where things are in the app, tutorials. Ask in plain words.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "query": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "query"
+   ]
+  }
+ },
+ {
+  "name": "spb_find_finishes",
+  "description": "Search the WHOLE catalogue (about 4,800 looks) by meaning. Pass a natural query and/or facets. Returns up to 10 rows {key, name, shelf, look (colour, shine, metal, texture, sparkle), about, quality, colour_mode}. Facets: colour (a word like \"deep blue\"/\"gold\" or #hex), shine (mirror|gloss|satin|matte), metal (none|low|medium|high|full), sparkle (true), texture (flat|broad|medium|fine|micro), own (\"own\" = brings its own colours, \"takes\" = takes the zone colour), shelf (a shelf name from the catalogue map), type (finish|base|monolithic), tags (e.g. carbon, camo, holographic, weave), min_quality (0-100), exclude (keys already seen). Explore with SEVERAL differently-worded queries; do not settle for the first obvious name.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "query": {
+     "type": "string"
+    },
+    "colour": {
+     "type": "string"
+    },
+    "shine": {
+     "type": "string"
+    },
+    "metal": {
+     "type": "string"
+    },
+    "sparkle": {
+     "type": "boolean"
+    },
+    "texture": {
+     "type": "string"
+    },
+    "own": {
+     "type": "string"
+    },
+    "shelf": {
+     "type": "string"
+    },
+    "type": {
+     "type": "string"
+    },
+    "tags": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "min_quality": {
+     "type": "number"
+    },
+    "exclude": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "limit": {
+     "type": "integer"
+    }
+   }
+  }
+ },
+ {
+  "name": "spb_browse_catalog",
+  "description": "The catalogue map: all shelves with what each one is about (no argument), or one shelf's best items (shelf name). Use it to discover looks you would not think to search for.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "shelf": {
+     "type": "string"
+    }
+   }
+  }
+ },
+ {
+  "name": "spb_finish_details",
+  "description": "The full spec sheet of ONE finish (key from find_finishes, or its name): palette, whether it brings its own colour or takes the zone colour, measured metal / roughness / clearcoat, texture scale, sparkle, quality, what it is best for. Includes deep notes: up close / far / in light / what stacks over it / what it is not.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "key": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "key"
+   ]
+  }
+ },
+ {
+  "name": "spb_compare_finishes",
+  "description": "Side-by-side facts for up to 6 finishes (keys).",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "keys": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   },
+   "required": [
+    "keys"
+   ]
+  }
+ },
+ {
+  "name": "spb_find_spec_patterns",
+  "description": "Find SPEC patterns (textures that change how a surface reflects: flake, sparkle, brushed metal, holographic prism, weave, weathering...) by words or effect. Returns up to 10 {id, name, group, effect, about}. Use id in spec_patterns.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "query": {
+     "type": "string"
+    },
+    "limit": {
+     "type": "integer"
+    }
+   },
+   "required": [
+    "query"
+   ]
+  }
+ },
+ {
+  "name": "spb_find_patterns",
+  "description": "Find visible PAINT patterns (shapes drawn on top of a finish: carbon weave, flames, stripes, camo...) by words. Returns up to 10 {id, name, effect, about}. Use id in pattern.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "query": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "query"
+   ]
+  }
+ },
+ {
+  "name": "spb_get_car_map",
+  "description": "The car's layout: what each PSD layer is (body paint / numbers / sponsors / tape / decals / template layers to switch off before export) and the separate PANELS of the unwrapped car with their grid cells, shapes and sizes. It returns the NAMED PARTS of this car (left side, right side, hood, roof, trunk, bumpers, spoiler: where they are, which end is the front, which edge is the roof-line) when the car is recognised or the buyer showed them; parts_not_known_yet lists what is missing: call spb_request_parts for those before designing.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {}
+  }
+ },
+ {
+  "name": "spb_edit_zone",
+  "description": "Change an EXISTING zone by stable zone_id or unique zone_name (preferred), or index with expect_name from STATE. Pass only what should change. Can change its region, finish, colour or gradient, pattern, spec patterns, second base, strengths, spec shifts, name, mute, priority. Returns what a new region would select.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "zone": {
+     "type": "integer",
+     "description": "zone index; use expect_name to guard against reordered zones"
+    },
+    "zone_id": {
+     "type": "string",
+     "description": "stable id from spb_get_zones, preferred"
+    },
+    "zone_name": {
+     "type": "string",
+     "description": "exact unique zone name"
+    },
+    "expect_name": {
+     "type": "string",
+     "description": "fail if the resolved zone has a different name"
+    },
+    "name": {
+     "type": "string",
+     "description": "string — rename the zone"
+    },
+    "muted": {
+     "type": "boolean",
+     "description": "boolean — temporarily switch the zone off (or on)"
+    },
+    "intensity": {
+     "type": "number",
+     "description": "number 0-100 — overall strength of the zone (100 = full)"
+    },
+    "finish": {
+     "type": "string",
+     "description": "string — a finish key from search_finishes: \"base::<id>\" (plain material) or \"monolithic::<id>\" (complete special look). Replaces the zone's base material / special."
+    },
+    "color": {
+     "type": "string",
+     "description": "string — \"#rrggbb\" (paint the zone this solid colour), \"source\" (keep the car's own paint colour, change only the spec/shine), or \"finish\" (use the finish's own colour)"
+    },
+    "gradient": {
+     "type": "object",
+     "description": "object {stops:[{pos:0-100,color:\"#rrggbb\"},...2-10 stops], direction:\"horizontal\"|\"vertical\"|\"diagonal_down\"|\"diagonal_up\"|\"radial\"|\"angular\"} — colour the zone with a gradient (turns colour mode to gradient)",
+     "properties": {
+      "stops": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "properties": {
+         "pos": {
+          "type": "number"
+         },
+         "color": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "direction": {
+       "type": "string"
+      }
+     }
+    },
+    "hue": {
+     "type": "number",
+     "description": "number -180..180 — rotate the base colour"
+    },
+    "saturation": {
+     "type": "number",
+     "description": "number -100..100 — base colour saturation adjust"
+    },
+    "brightness": {
+     "type": "number",
+     "description": "number -100..200 — base colour brightness adjust"
+    },
+    "base_strength": {
+     "type": "number",
+     "description": "number 0-200 (%) — fade the finish over the original paint (0 = original paint, 100 = full finish)"
+    },
+    "spec_strength": {
+     "type": "number",
+     "description": "number 0-200 (%) — overall strength of the spec (shine/metal) map"
+    },
+    "scale": {
+     "type": "number",
+     "description": "number 0.05-5 — size of the base material texture (1 = normal)"
+    },
+    "rotation": {
+     "type": "number",
+     "description": "number 0-359 — rotate the base material"
+    },
+    "pattern": {
+     "type": "object",
+     "description": "object {id|\"none\", opacity:0-100, scale:0.05-5, rotation:0-359} — a paint PATTERN on top (ids from search_patterns)",
+     "properties": {
+      "id": {
+       "type": "string"
+      },
+      "opacity": {
+       "type": "number"
+      },
+      "scale": {
+       "type": "number"
+      },
+      "rotation": {
+       "type": "number"
+      }
+     }
+    },
+    "spec_patterns": {
+     "type": "array",
+     "description": "array (max 5) of {id, opacity:0-100, scale, rotation, channels:\"M\"|\"R\"|\"C\" letters (Metal/Rough/Clearcoat)} — SPEC pattern layers that change how the surface reflects (ids from search_spec_patterns). Replaces the existing spec pattern stack.",
+     "items": {
+      "type": "object",
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "opacity": {
+        "type": "number"
+       },
+       "scale": {
+        "type": "number"
+       },
+       "rotation": {
+        "type": "number"
+       },
+       "channels": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "second_base": {
+     "type": "object",
+     "description": "object {id|\"none\", color:\"#rrggbb\", strength:0-100} — a second material blended over the first (ids like finish keys)",
+     "properties": {
+      "id": {
+       "type": "string"
+      },
+      "color": {
+       "type": "string"
+      },
+      "strength": {
+       "type": "number"
+      }
+     }
+    },
+    "spec_shift": {
+     "type": "object",
+     "description": "object {metal:-127..127, rough:-127..127, clearcoat:-127..127} — push the zone's metallic / roughness / clearcoat channels up or down",
+     "properties": {
+      "metal": {
+       "type": "number"
+      },
+      "rough": {
+       "type": "number"
+      },
+      "clearcoat": {
+       "type": "number"
+      }
+     }
+    },
+    "priority": {
+     "type": "string",
+     "description": "for add_zone / move: \"top\" (default for a new zone; wins overlaps), \"bottom\", or a position number 0.. (0 = top). LOWER position wins where zones overlap, so a zone that must show on pixels other zones also select has to sit ABOVE them."
+    },
+    "region": {
+     "type": "object",
+     "description": "object — WHICH PIXELS the zone covers: {colors:[\"#rrggbb\",...], tolerance:6-100, layers:[\"layer name or id\",...], part:\"left side\" (or a list [\"left side\",\"right side\"]: a NAMED PART of the car from get_car_map — the way to put anything on a specific place) with portion:\"front third\"|\"rear half\"|\"lower third\"|\"upper half\"... OR band:{axis:\"height\"|\"length\", from:0..1, to:0..1} (a stripe: height = measured from the ROOF-LINE (0) down to the ROCKER (1) of a side panel; length = from the FRONT (0) to the REAR (1)), cells:\"B3:D5\" or rect:{x0,y0,x1,y1 as 0-1 fractions} (ONLY for small details under ~12% of the sheet; a big box cuts across panels and is refused), clear_box:true, remaining:true (catch everything not claimed), everything:true, paintable:true (with everything: limits it to the car's paintable area; use it for a whole-car BASE colour)}",
+     "properties": {
+      "colors": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "tolerance": {
+       "type": "number"
+      },
+      "layers": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "cells": {
+       "type": "string"
+      },
+      "remaining": {
+       "type": "boolean"
+      },
+      "everything": {
+       "type": "boolean"
+      },
+      "clear_box": {
+       "type": "boolean"
+      },
+      "island": {
+       "type": "string"
+      },
+      "portion": {
+       "type": "string"
+      }
+     }
+    }
+   },
+   "anyOf": [
+    {
+     "required": [
+      "zone"
+     ]
+    },
+    {
+     "required": [
+      "zone_id"
+     ]
+    },
+    {
+     "required": [
+      "zone_name"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "name": "spb_add_zone",
+  "description": "Create a NEW zone for an area no zone covers or that needs a different treatment. region is required: colours (+tolerance), layers, a box of cells, or remaining/everything. New zones go on TOP (win overlaps) unless priority says otherwise. Returns what the region selects and which zones it takes pixels from.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "name": {
+     "type": "string",
+     "description": "string — rename the zone"
+    },
+    "muted": {
+     "type": "boolean",
+     "description": "boolean — temporarily switch the zone off (or on)"
+    },
+    "intensity": {
+     "type": "number",
+     "description": "number 0-100 — overall strength of the zone (100 = full)"
+    },
+    "finish": {
+     "type": "string",
+     "description": "string — a finish key from search_finishes: \"base::<id>\" (plain material) or \"monolithic::<id>\" (complete special look). Replaces the zone's base material / special."
+    },
+    "color": {
+     "type": "string",
+     "description": "string — \"#rrggbb\" (paint the zone this solid colour), \"source\" (keep the car's own paint colour, change only the spec/shine), or \"finish\" (use the finish's own colour)"
+    },
+    "gradient": {
+     "type": "object",
+     "description": "object {stops:[{pos:0-100,color:\"#rrggbb\"},...2-10 stops], direction:\"horizontal\"|\"vertical\"|\"diagonal_down\"|\"diagonal_up\"|\"radial\"|\"angular\"} — colour the zone with a gradient (turns colour mode to gradient)",
+     "properties": {
+      "stops": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "properties": {
+         "pos": {
+          "type": "number"
+         },
+         "color": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "direction": {
+       "type": "string"
+      }
+     }
+    },
+    "hue": {
+     "type": "number",
+     "description": "number -180..180 — rotate the base colour"
+    },
+    "saturation": {
+     "type": "number",
+     "description": "number -100..100 — base colour saturation adjust"
+    },
+    "brightness": {
+     "type": "number",
+     "description": "number -100..200 — base colour brightness adjust"
+    },
+    "base_strength": {
+     "type": "number",
+     "description": "number 0-200 (%) — fade the finish over the original paint (0 = original paint, 100 = full finish)"
+    },
+    "spec_strength": {
+     "type": "number",
+     "description": "number 0-200 (%) — overall strength of the spec (shine/metal) map"
+    },
+    "scale": {
+     "type": "number",
+     "description": "number 0.05-5 — size of the base material texture (1 = normal)"
+    },
+    "rotation": {
+     "type": "number",
+     "description": "number 0-359 — rotate the base material"
+    },
+    "pattern": {
+     "type": "object",
+     "description": "object {id|\"none\", opacity:0-100, scale:0.05-5, rotation:0-359} — a paint PATTERN on top (ids from search_patterns)",
+     "properties": {
+      "id": {
+       "type": "string"
+      },
+      "opacity": {
+       "type": "number"
+      },
+      "scale": {
+       "type": "number"
+      },
+      "rotation": {
+       "type": "number"
+      }
+     }
+    },
+    "spec_patterns": {
+     "type": "array",
+     "description": "array (max 5) of {id, opacity:0-100, scale, rotation, channels:\"M\"|\"R\"|\"C\" letters (Metal/Rough/Clearcoat)} — SPEC pattern layers that change how the surface reflects (ids from search_spec_patterns). Replaces the existing spec pattern stack.",
+     "items": {
+      "type": "object",
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "opacity": {
+        "type": "number"
+       },
+       "scale": {
+        "type": "number"
+       },
+       "rotation": {
+        "type": "number"
+       },
+       "channels": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "second_base": {
+     "type": "object",
+     "description": "object {id|\"none\", color:\"#rrggbb\", strength:0-100} — a second material blended over the first (ids like finish keys)",
+     "properties": {
+      "id": {
+       "type": "string"
+      },
+      "color": {
+       "type": "string"
+      },
+      "strength": {
+       "type": "number"
+      }
+     }
+    },
+    "spec_shift": {
+     "type": "object",
+     "description": "object {metal:-127..127, rough:-127..127, clearcoat:-127..127} — push the zone's metallic / roughness / clearcoat channels up or down",
+     "properties": {
+      "metal": {
+       "type": "number"
+      },
+      "rough": {
+       "type": "number"
+      },
+      "clearcoat": {
+       "type": "number"
+      }
+     }
+    },
+    "priority": {
+     "type": "string",
+     "description": "for add_zone / move: \"top\" (default for a new zone; wins overlaps), \"bottom\", or a position number 0.. (0 = top). LOWER position wins where zones overlap, so a zone that must show on pixels other zones also select has to sit ABOVE them."
+    },
+    "region": {
+     "type": "object",
+     "description": "object — WHICH PIXELS the zone covers: {colors:[\"#rrggbb\",...], tolerance:6-100, layers:[\"layer name or id\",...], part:\"left side\" (or a list [\"left side\",\"right side\"]: a NAMED PART of the car from get_car_map — the way to put anything on a specific place) with portion:\"front third\"|\"rear half\"|\"lower third\"|\"upper half\"... OR band:{axis:\"height\"|\"length\", from:0..1, to:0..1} (a stripe: height = measured from the ROOF-LINE (0) down to the ROCKER (1) of a side panel; length = from the FRONT (0) to the REAR (1)), cells:\"B3:D5\" or rect:{x0,y0,x1,y1 as 0-1 fractions} (ONLY for small details under ~12% of the sheet; a big box cuts across panels and is refused), clear_box:true, remaining:true (catch everything not claimed), everything:true, paintable:true (with everything: limits it to the car's paintable area; use it for a whole-car BASE colour)}",
+     "properties": {
+      "colors": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "tolerance": {
+       "type": "number"
+      },
+      "layers": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "cells": {
+       "type": "string"
+      },
+      "remaining": {
+       "type": "boolean"
+      },
+      "everything": {
+       "type": "boolean"
+      },
+      "clear_box": {
+       "type": "boolean"
+      },
+      "island": {
+       "type": "string"
+      },
+      "portion": {
+       "type": "string"
+      }
+     }
+    }
+   },
+   "required": [
+    "region"
+   ]
+  }
+ },
+ {
+  "name": "spb_duplicate_zone",
+  "description": "Copy an existing zone (the copy sits just below it), optionally changing settings on the copy.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "zone": {
+     "type": "integer"
+    },
+    "name": {
+     "type": "string",
+     "description": "string — rename the zone"
+    },
+    "muted": {
+     "type": "boolean",
+     "description": "boolean — temporarily switch the zone off (or on)"
+    },
+    "intensity": {
+     "type": "number",
+     "description": "number 0-100 — overall strength of the zone (100 = full)"
+    },
+    "finish": {
+     "type": "string",
+     "description": "string — a finish key from search_finishes: \"base::<id>\" (plain material) or \"monolithic::<id>\" (complete special look). Replaces the zone's base material / special."
+    },
+    "color": {
+     "type": "string",
+     "description": "string — \"#rrggbb\" (paint the zone this solid colour), \"source\" (keep the car's own paint colour, change only the spec/shine), or \"finish\" (use the finish's own colour)"
+    },
+    "gradient": {
+     "type": "object",
+     "description": "object {stops:[{pos:0-100,color:\"#rrggbb\"},...2-10 stops], direction:\"horizontal\"|\"vertical\"|\"diagonal_down\"|\"diagonal_up\"|\"radial\"|\"angular\"} — colour the zone with a gradient (turns colour mode to gradient)",
+     "properties": {
+      "stops": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "properties": {
+         "pos": {
+          "type": "number"
+         },
+         "color": {
+          "type": "string"
+         }
+        }
+       }
+      },
+      "direction": {
+       "type": "string"
+      }
+     }
+    },
+    "hue": {
+     "type": "number",
+     "description": "number -180..180 — rotate the base colour"
+    },
+    "saturation": {
+     "type": "number",
+     "description": "number -100..100 — base colour saturation adjust"
+    },
+    "brightness": {
+     "type": "number",
+     "description": "number -100..200 — base colour brightness adjust"
+    },
+    "base_strength": {
+     "type": "number",
+     "description": "number 0-200 (%) — fade the finish over the original paint (0 = original paint, 100 = full finish)"
+    },
+    "spec_strength": {
+     "type": "number",
+     "description": "number 0-200 (%) — overall strength of the spec (shine/metal) map"
+    },
+    "scale": {
+     "type": "number",
+     "description": "number 0.05-5 — size of the base material texture (1 = normal)"
+    },
+    "rotation": {
+     "type": "number",
+     "description": "number 0-359 — rotate the base material"
+    },
+    "pattern": {
+     "type": "object",
+     "description": "object {id|\"none\", opacity:0-100, scale:0.05-5, rotation:0-359} — a paint PATTERN on top (ids from search_patterns)",
+     "properties": {
+      "id": {
+       "type": "string"
+      },
+      "opacity": {
+       "type": "number"
+      },
+      "scale": {
+       "type": "number"
+      },
+      "rotation": {
+       "type": "number"
+      }
+     }
+    },
+    "spec_patterns": {
+     "type": "array",
+     "description": "array (max 5) of {id, opacity:0-100, scale, rotation, channels:\"M\"|\"R\"|\"C\" letters (Metal/Rough/Clearcoat)} — SPEC pattern layers that change how the surface reflects (ids from search_spec_patterns). Replaces the existing spec pattern stack.",
+     "items": {
+      "type": "object",
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "opacity": {
+        "type": "number"
+       },
+       "scale": {
+        "type": "number"
+       },
+       "rotation": {
+        "type": "number"
+       },
+       "channels": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "second_base": {
+     "type": "object",
+     "description": "object {id|\"none\", color:\"#rrggbb\", strength:0-100} — a second material blended over the first (ids like finish keys)",
+     "properties": {
+      "id": {
+       "type": "string"
+      },
+      "color": {
+       "type": "string"
+      },
+      "strength": {
+       "type": "number"
+      }
+     }
+    },
+    "spec_shift": {
+     "type": "object",
+     "description": "object {metal:-127..127, rough:-127..127, clearcoat:-127..127} — push the zone's metallic / roughness / clearcoat channels up or down",
+     "properties": {
+      "metal": {
+       "type": "number"
+      },
+      "rough": {
+       "type": "number"
+      },
+      "clearcoat": {
+       "type": "number"
+      }
+     }
+    },
+    "priority": {
+     "type": "string",
+     "description": "for add_zone / move: \"top\" (default for a new zone; wins overlaps), \"bottom\", or a position number 0.. (0 = top). LOWER position wins where zones overlap, so a zone that must show on pixels other zones also select has to sit ABOVE them."
+    },
+    "region": {
+     "type": "object",
+     "description": "object — WHICH PIXELS the zone covers: {colors:[\"#rrggbb\",...], tolerance:6-100, layers:[\"layer name or id\",...], part:\"left side\" (or a list [\"left side\",\"right side\"]: a NAMED PART of the car from get_car_map — the way to put anything on a specific place) with portion:\"front third\"|\"rear half\"|\"lower third\"|\"upper half\"... OR band:{axis:\"height\"|\"length\", from:0..1, to:0..1} (a stripe: height = measured from the ROOF-LINE (0) down to the ROCKER (1) of a side panel; length = from the FRONT (0) to the REAR (1)), cells:\"B3:D5\" or rect:{x0,y0,x1,y1 as 0-1 fractions} (ONLY for small details under ~12% of the sheet; a big box cuts across panels and is refused), clear_box:true, remaining:true (catch everything not claimed), everything:true, paintable:true (with everything: limits it to the car's paintable area; use it for a whole-car BASE colour)}",
+     "properties": {
+      "colors": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "tolerance": {
+       "type": "number"
+      },
+      "layers": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "cells": {
+       "type": "string"
+      },
+      "remaining": {
+       "type": "boolean"
+      },
+      "everything": {
+       "type": "boolean"
+      },
+      "clear_box": {
+       "type": "boolean"
+      },
+      "island": {
+       "type": "string"
+      },
+      "portion": {
+       "type": "string"
+      }
+     }
+    }
+   },
+   "required": [
+    "zone"
+   ]
+  }
+ },
+ {
+  "name": "spb_check_setup",
+  "description": "Read the buyer's LIVE render and iRacing setup and return findings: iRacing User ID (valid? matches the files already in their paint folders?), number mode (Custom Number car_num_ vs Sim-Stamped car_), car folder (exists? really a car folder? typo?), the files actually in that folder (paint, spec, age, other ID, compiled .mip), template layers visible, zones ready, RENDER button state, preview state, paint size, engine health. Call this FIRST when the buyer says their paint will not render, does not show in iRacing or looks different in the sim, then explain the one or two likeliest causes (spb_manual has the 'Support:' cards). Their ID digits and Windows user name are blanked out. Read-only.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {}
+  }
+ },
+ {
+  "name": "spb_suggest_finishes",
+  "description": "THE tool for \"what finish should I use for X\": scores the WHOLE catalogue (about 4,800 looks) for THIS painter's situation and returns ranked suggestions in three lanes: keep (shine-only finishes that keep the paint colours), complete (complete looks ranked by palette harmony with the scheme) and texture (spec / paint patterns to layer). Pass part (stripes|hood|roof|sides|body|numbers|lower band|bumpers|spoiler|trunk), goal (pop|premium|shimmer|deep|retro|stealth|readable|subtle), ask (the painter's OWN words, best the whole sentence: mood, car class, era, a real-world thing it should resemble; a described look such as \"molten orange panel with flowing loops\" leads with the best whole-sentence matches, and negations (no glitter, anything but chrome, not too shiny) are honoured; part / goal / colour are read from the words when you leave them out), novelty (safe|balanced|wild), lane (keep|complete|texture, default all), exclude (keys already shown: pass them to get NEW options every time), page. Each row has look, why, loud/busy 1-5, pair, avoid and an apply hint. Call it again with exclude for more options; never settle for the first page when the painter wants variety. LIKE MODE: pass like (a finish key or name) and optional mods (array: calm, bold, darker, lighter, glossier, flatter, sparklier, smoother, metalmore, metalless, warmer, cooler, vivid, muted, simpler, busier, finer, coarser) and optional colour to get the closest looks to that finish bent that way (\"something like Undertow but calmer\", \"like chrome but darker\"): the right call when the painter points at a finish they already like. LEAVE OUT: pass leave_out (array of traits the painter does NOT want: glitter, chrome, matte, holographic, candy, wrap, neon, camo, carbon ...) and every row avoids them. A layered ask returns stack + apply: run the apply calls as given.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "part": {
+     "type": "string"
+    },
+    "goal": {
+     "type": "string"
+    },
+    "ask": {
+     "type": "string"
+    },
+    "novelty": {
+     "type": "string"
+    },
+    "lane": {
+     "type": "string"
+    },
+    "colour": {
+     "type": "string"
+    },
+    "exclude": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "page": {
+     "type": "integer"
+    },
+    "limit": {
+     "type": "integer"
+    },
+    "like": {
+     "type": "string"
+    },
+    "mods": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "leave_out": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "stack": {
+     "type": "boolean",
+     "description": "Default: on. When the ask names 2+ layers, the result carries stack (layers with adjust = base_colour / hue_shift_deg / saturation / brightness / spec_strength / scale / intensity), alternatives (2 more stacks) and apply (the exact add_zone / edit_zone calls for ONE zone). false = plain single-finish rows."
+    }
+   }
+  }
+ },
+ {
+  "name": "spb_describe_paint",
+  "description": "READ what this paint really shows, in the words a painter uses: its colours (\"black\", \"navy\", \"gold\": share of the car, hex, where), the numbers / sponsors / stripes layers, and the looks spb_refinish understands (powder coat, plasti dip, cerakote, wet look, matte, satin, chrome, pearl, candy ...). Call this FIRST when the buyer wants to change what the car ALREADY shows (\"make the black matte\", \"numbers purple and metallic\", \"the yellow powder coat looking\", \"make it pop\").",
+  "inputSchema": {
+   "type": "object",
+   "properties": {}
+  }
+ },
+ {
+  "name": "spb_refinish",
+  "description": "CHANGE WHAT THE CAR ALREADY SHOWS, in one call: a target that is ON the car and what it should become. target = a colour on the car (\"black\", \"dark blue\", \"yellow\"), \"numbers\", \"sponsors\", \"stripes\", \"main colour\" or a part name. look = matte | satin | gloss | wet look | powder coat | plasti dip | cerakote | wrinkle coat | chrome | satin chrome | dark chrome | metallic | pearl | candy | brushed | anodized | vinyl wrap | frosted | bead blasted | patina ... A look ALONE changes only the finish (the paint colours stay exactly as they are). colour = an optional NEW colour (repaints exactly those pixels). relative = \"glossier\" | \"duller\". keep_colours = true to change only the finish. Repeat calls for several targets. Prefer this over spb_add_zone / spb_edit_zone for anything about colours, numbers or sponsors that already exist on the car. On a FLAT paint, numbers / sponsors / stripes as the TARGET without boxes are NOT changed until the buyer confirms the app's guess: status \"needs_confirmation\" = tell them to answer the card; never claim a change, a count or that you found them.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "target": {
+     "type": "string",
+     "description": "a colour on the car (from spb_describe_paint), numbers, sponsors, stripes, main colour, or a part name"
+    },
+    "look": {
+     "type": "string"
+    },
+    "colour": {
+     "type": "string",
+     "description": "NEW colour name or #rrggbb"
+    },
+    "relative": {
+     "type": "string",
+     "description": "glossier | duller"
+    },
+    "keep_colours": {
+     "type": "boolean"
+    },
+    "slightly": {
+     "type": "boolean"
+    },
+    "boxes": {
+     "type": "array",
+     "items": {
+      "type": "array",
+      "items": {
+       "type": "number"
+      }
+     },
+     "description": "only for numbers / sponsors / stripes on a flat paint: loose boxes [x0,y0,x1,y1] (fractions of the sheet) around each one YOU can see; same as spb_mark_elements"
+    },
+    "exclude": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "what must NOT change: any of numbers, sponsors, stripes (\"black matte but leave the numbers alone\"); on a flat paint call spb_mark_elements first so the app knows where they are"
+    },
+    "mark_mode": {
+     "type": "string",
+     "enum": [
+      "auto",
+      "glyph",
+      "logo",
+      "colour_in_region"
+     ],
+     "description": "with boxes: how spb_mark_elements reads them (auto = numbers glyph, sponsors logo, stripes colour_in_region)"
+    },
+    "mark_colour": {
+     "type": "string",
+     "description": "with boxes, colour_in_region: the colour the stripe has NOW (\"auto\" or #rrggbb), not the new colour"
+    },
+    "spread": {
+     "type": "string",
+     "enum": [
+      "connected",
+      "box",
+      "sheet"
+     ],
+     "description": "with boxes, colour_in_region: connected (default) follows the stripe past the box edge, capped"
+    },
+    "layer": {
+     "type": "string",
+     "description": "optional: limit a COLOUR target to one PSD layer (\"all the pink in the Numbers layer\" = target \"pink\", layer \"Numbers\")"
+    },
+    "part": {
+     "type": "string",
+     "description": "optional: limit a COLOUR target to a PLACE: a part (\"rear bumper\", \"trunk\", \"hood\") or a place (\"rear of the car\", \"back of each side\"); several = comma-separated. Only that colour INSIDE the place changes, never the whole place (\"the black near the rear of the car and back bumper\" = target \"black\", part \"rear of the car, rear bumper\")"
+    },
+    "object": {
+     "type": "string",
+     "description": "optional: a THING the buyer named that holds the target colour (\"the yellow on the spray can\" = target \"yellow\", object \"spray can\"). The app shows the buyer the layers that hold that colour (logo / decal layers too: naming it is consent) and a box to draw; nothing changes until they pick"
+    }
+   },
+   "required": [
+    "target"
+   ]
+  }
+ },
+ {
+  "name": "spb_mark_elements",
+  "description": "TELL the app where numbers / sponsors / stripes are on a FLAT paint, from what YOU see (spb_look_at_paint); none:true = there are none. boxes = [[x0,y0,x1,y1],...] sheet fractions. mode (default by kind): glyph for numbers = a loose box per number with some paint around it; logo for sponsors = all in the box unlike the paint around it (lettering:true keeps the plate); colour_in_region for stripes = box says where, colour (#rrggbb or auto) says which, follows the stripe past the box. Check per_box (capped, warning, note) + the image; candidates: LOOK, add with replace:false.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "numbers | sponsors | stripes"
+    },
+    "boxes": {
+     "type": "array",
+     "items": {
+      "type": "array",
+      "items": {
+       "type": "number"
+      }
+     },
+     "description": "[x0,y0,x1,y1] fractions 0..1, each at most ~10% of the sheet (logos 12%)"
+    },
+    "mode": {
+     "type": "string",
+     "enum": [
+      "auto",
+      "glyph",
+      "logo",
+      "colour_in_region"
+     ],
+     "description": "auto = numbers glyph, sponsors logo, stripes colour_in_region"
+    },
+    "colour": {
+     "type": "string",
+     "description": "colour_in_region only: \"auto\" (default) or \"#rrggbb\" (or up to 3 hex, comma separated) = the colour the element has NOW"
+    },
+    "spread": {
+     "type": "string",
+     "enum": [
+      "connected",
+      "box",
+      "sheet"
+     ],
+     "description": "colour_in_region only; connected (default) = follow the stripe past the box edge (capped), box = only inside the box, sheet = also every look-alike stripe of that colour"
+    },
+    "tolerance": {
+     "type": "integer",
+     "description": "optional colour tolerance 8-80 (default adaptive)"
+    },
+    "lettering": {
+     "type": "boolean",
+     "description": "logo only: true = keep the decal plate / tile, take only the lettering"
+    },
+    "none": {
+     "type": "boolean",
+     "description": "true (boxes not needed) = there are NONE of this kind on this paint"
+    },
+    "replace": {
+     "type": "boolean",
+     "description": "default true = forget earlier marks of this kind; false = add to them"
+    }
+   },
+   "required": [
+    "kind"
+   ]
+  }
+ },
+ {
+  "name": "spb_look_at_paint",
+  "description": "SEE the flat paint: returns the whole unwrapped paint as an image with a 0.1 ruler (so you can read positions as fractions of the sheet) plus a second image tinted with the app's own guess of where the numbers (pink), sponsors / logos (blue) and stripes (yellow) are. Use it for numbers / sponsors / stripes on a flat paint (no layers), then spb_mark_elements with boxes you read off the picture. Small digits: call again with region [x0,y0,x1,y1] to see that part at full resolution.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "region": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     },
+     "description": "optional [x0,y0,x1,y1] as fractions of the whole sheet: returns that part at full resolution (the ruler stays in whole-sheet fractions)"
+    },
+    "app_guess": {
+     "type": "boolean",
+     "description": "false = do not include the app's own guess (default true for the whole sheet, false for a zoom)"
+    }
+   }
+  }
+ }
+]

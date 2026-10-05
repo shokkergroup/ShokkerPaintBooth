@@ -1,0 +1,457 @@
+{
+  "work_item": "W114 independent W113 voice-help routing review",
+  "status": "PASS_WITH_LIMITS",
+  "candidateReviewCompleted": true,
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w114_review/fresh-oracle.json",
+    "sha256": "2AB9FC4B20E0C88C5D941EF2A94939E95465096E87350077E1A0BE11F4160D36",
+    "cases": 12,
+    "frozenBeforeW113ImplementationRead": true
+  },
+  "sources": {
+    "controller": "9B05B98526687D18E2D6FB9E06A8FB7B5CE686ED5E98FE9B7EED14C687C90DB4",
+    "selfHelp": "D1A76C2A5B8616133F8226602D43245BFC7DCC2B99B6BBEDEA68AF0641A2D6BE",
+    "receiptExplainer": "3CB4CCE4513FDC1E70A54156A7FDC9F98CE35605FDB33ADE1F5C66F24F8542A9",
+    "guard": "3267DC263CF85BCB34B55588997ACBA737F4A47E7BDDE490FACE4D9D6271FB60",
+    "design": "4648DE3231015497CC9FF816612A542097A1AD14038A7210753F6CDBFD88D832",
+    "edit": "7D063444021F8F4144B96130800BADFE62741CDEFC9104417F3E99AF65270767"
+  },
+  "rows": [
+    {
+      "id": "how-save-project",
+      "route": "offlineAsk",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "save_project_source_psd",
+        "cites": [
+          "save",
+          "load_psd"
+        ]
+      },
+      "reply": "**How do I save my project and come back later**\n1. Click \"Save / Open\" in the top toolbar (SPB Projects). It saves the project zones and layer state plus the source-paint path in one project file. Keep that source available at the saved path to reopen it.\n2. To reopen, click \"Save / Open\" again and load it.\nExact controls: Save / Open (Pro > top toolbar (tool row)); SAVE SHOKK (Pro > left column > ZONES > More (three-dot) menu).\nDid th"
+    },
+    {
+      "id": "how-save-project",
+      "route": "offlineAskCore",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": "save_project_source_psd",
+        "cites": [
+          "save",
+          "load_psd"
+        ]
+      },
+      "reply": "**How do I save my project and come back later**\n1. Click \"Save / Open\" in the top toolbar (SPB Projects). It saves the project zones and layer state plus the source-paint path in one project file. Keep that source available at the saved path to reopen it.\n2. To reopen, click \"Save / Open\" again and load it.\nExact controls: Save / Open (Pro > top toolbar (tool row)); SAVE SHOKK (Pro > left column > ZONES > More (three-dot) menu).\nDid th"
+    },
+    {
+      "id": "how-save-project",
+      "route": "send",
+      "queue": 0,
+      "asks": 0,
+      "finishes": 1,
+      "reply": "**How do I save my project and come back later**\n1. Click \"Save / Open\" in the top toolbar (SPB Projects). It saves the project zones and layer state plus the source-paint path in one project file. Keep that source available at the saved path to reopen it.\n2. To reopen, click \"Save / Open\" again and load it.\nExact controls: Save / Open (Pro > top toolbar (tool row)); SAVE SHOKK (Pro > left column > ZONES > More (three-dot) menu).\nDid th"
+    },
+    {
+      "id": "can-i-see-applied",
+      "route": "offlineAsk",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": {
+        "intent": "explain_state",
+        "topic": "recent_change_receipt",
+        "cites": [
+          "ai.undo"
+        ]
+      },
+      "reply": "I do not see a current verified apply receipt for this loaded paint. Check the applied-change entry for this same paint; a draft or preview alone does not confirm that a change was applied. This question made no changes."
+    },
+    {
+      "id": "can-i-see-applied",
+      "route": "offlineAskCore",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": {
+        "intent": "explain_state",
+        "topic": "recent_change_receipt",
+        "cites": [
+          "ai.undo"
+        ]
+      },
+      "reply": "I do not see a current verified apply receipt for this loaded paint. Check the applied-change entry for this same paint; a draft or preview alone does not confirm that a change was applied. This question made no changes."
+    },
+    {
+      "id": "can-i-see-applied",
+      "route": "send",
+      "queue": 0,
+      "asks": 0,
+      "finishes": 1,
+      "reply": "I do not see a current verified apply receipt for this loaded paint. Check the applied-change entry for this same paint; a draft or preview alone does not confirm that a change was applied. This question made no changes."
+    },
+    {
+      "id": "what-saved",
+      "route": "offlineAsk",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": {
+        "intent": "explain_state",
+        "topic": "saved_layer_pixels",
+        "cites": [
+          "save",
+          "load_psd"
+        ]
+      },
+      "reply": "A SHOKK project stores zones and layer state, including current raster pixel payload for layers that have pixels. It does not bundle the original PSD file bytes; it records the source path. Original adjustment-layer semantics are not guaranteed, so keep the PSD available and verify the reopened layers and preview."
+    },
+    {
+      "id": "what-saved",
+      "route": "offlineAskCore",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": {
+        "intent": "explain_state",
+        "topic": "saved_layer_pixels",
+        "cites": [
+          "save",
+          "load_psd"
+        ]
+      },
+      "reply": "A SHOKK project stores zones and layer state, including current raster pixel payload for layers that have pixels. It does not bundle the original PSD file bytes; it records the source path. Original adjustment-layer semantics are not guaranteed, so keep the PSD available and verify the reopened layers and preview."
+    },
+    {
+      "id": "what-saved",
+      "route": "send",
+      "queue": 0,
+      "asks": 0,
+      "finishes": 1,
+      "reply": "A SHOKK project stores zones and layer state, including current raster pixel payload for layers that have pixels. It does not bundle the original PSD file bytes; it records the source path. Original adjustment-layer semantics are not guaranteed, so keep the PSD available and verify the reopened layers and preview."
+    },
+    {
+      "id": "where-undo",
+      "route": "offlineAsk",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": {
+        "intent": "where_is",
+        "topic": "numbers",
+        "cites": [
+          "hdi.undo",
+          "pro.toolbar.undo_ctrl_z",
+          "pro.toolbar.undo_history",
+          "ai.undo",
+          "easy.undo"
+        ]
+      },
+      "reply": "**How do I undo**\n1. Press Ctrl+Z, or the Undo button in the top toolbar (HISTORY menu).\n2. To go back several steps open \"Undo History...\".\n3. Under an AI panel answer press Undo to take back that whole answer. In Easy use UNDO at the top.\nExact controls: Undo Ctrl+Z (Pro > top toolbar (tool row)); Undo History… (Pro > top toolbar (tool row)); Undo (Shokker AI panel).\nDid that get you there, or is there something else you are trying to"
+    },
+    {
+      "id": "where-undo",
+      "route": "offlineAskCore",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": {
+        "intent": "where_is",
+        "topic": "numbers",
+        "cites": [
+          "hdi.undo",
+          "pro.toolbar.undo_ctrl_z",
+          "pro.toolbar.undo_history",
+          "ai.undo",
+          "easy.undo"
+        ]
+      },
+      "reply": "**How do I undo**\n1. Press Ctrl+Z, or the Undo button in the top toolbar (HISTORY menu).\n2. To go back several steps open \"Undo History...\".\n3. Under an AI panel answer press Undo to take back that whole answer. In Easy use UNDO at the top.\nExact controls: Undo Ctrl+Z (Pro > top toolbar (tool row)); Undo History… (Pro > top toolbar (tool row)); Undo (Shokker AI panel).\nDid that get you there, or is there something else you are trying to"
+    },
+    {
+      "id": "where-undo",
+      "route": "send",
+      "queue": 0,
+      "asks": 0,
+      "finishes": 1,
+      "reply": "**How do I undo**\n1. Press Ctrl+Z, or the Undo button in the top toolbar (HISTORY menu).\n2. To go back several steps open \"Undo History...\".\n3. Under an AI panel answer press Undo to take back that whole answer. In Easy use UNDO at the top.\nExact controls: Undo Ctrl+Z (Pro > top toolbar (tool row)); Undo History… (Pro > top toolbar (tool row)); Undo (Shokker AI panel).\nDid that get you there, or is there something else you are trying to"
+    },
+    {
+      "id": "how-keep-paint",
+      "route": "offlineAsk",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": null,
+        "cites": [
+          "zone_base_colour_mode",
+          "zone_solid_colour"
+        ]
+      },
+      "reply": "“Use source paint (spec only)” uses colors from the original imported paint image; it does not retain an authored solid-color hex. The selected Roof solid green zone currently uses “Use solid color” with #1f8a3b. To keep this current authored color while changing material/finish, leave “Use solid color” selected and leave its hex unchanged. Use source paint only when you want the original imported image colors.\nNEXT: I’m still stuck"
+    },
+    {
+      "id": "how-keep-paint",
+      "route": "offlineAskCore",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": {
+        "intent": "how_do_i",
+        "topic": null,
+        "cites": [
+          "zone_base_colour_mode",
+          "zone_solid_colour"
+        ]
+      },
+      "reply": "“Use source paint (spec only)” uses colors from the original imported paint image; it does not retain an authored solid-color hex. The selected Roof solid green zone currently uses “Use solid color” with #1f8a3b. To keep this current authored color while changing material/finish, leave “Use solid color” selected and leave its hex unchanged. Use source paint only when you want the original imported image colors.\nNEXT: I’m still stuck"
+    },
+    {
+      "id": "how-keep-paint",
+      "route": "send",
+      "queue": 0,
+      "asks": 0,
+      "finishes": 1,
+      "reply": "“Use source paint (spec only)” uses colors from the original imported paint image; it does not retain an authored solid-color hex. The selected Roof solid green zone currently uses “Use solid color” with #1f8a3b. To keep this current authored color while changing material/finish, leave “Use solid color” selected and leave its hex unchanged. Use source paint only when you want the original imported image colors.\nNEXT: I’m still stuck"
+    },
+    {
+      "id": "what-if-roof-blue",
+      "route": "offlineAsk",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": null,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "what-if-roof-blue",
+      "route": "offlineAskCore",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": null,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "what-if-roof-blue",
+      "route": "send",
+      "queue": 0,
+      "asks": 0,
+      "finishes": 1,
+      "reply": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    },
+    {
+      "id": "repeat-suggestion",
+      "route": "offlineAsk",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": {
+        "intent": "explain_state",
+        "topic": "unapplied_suggestion",
+        "cites": [
+          "ai.undo"
+        ]
+      },
+      "reply": "I cannot determine whether that earlier suggestion was applied without a current, verified apply receipt. The suggestion itself is not proof of a paint change; this question made no changes."
+    },
+    {
+      "id": "repeat-suggestion",
+      "route": "offlineAskCore",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": {
+        "intent": "explain_state",
+        "topic": "unapplied_suggestion",
+        "cites": [
+          "ai.undo"
+        ]
+      },
+      "reply": "I cannot determine whether that earlier suggestion was applied without a current, verified apply receipt. The suggestion itself is not proof of a paint change; this question made no changes."
+    },
+    {
+      "id": "repeat-suggestion",
+      "route": "send",
+      "queue": 0,
+      "asks": 0,
+      "finishes": 1,
+      "reply": "I cannot determine whether that earlier suggestion was applied without a current, verified apply receipt. The suggestion itself is not proof of a paint change; this question made no changes."
+    },
+    {
+      "id": "voice-howto-current",
+      "route": "offlineAsk",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": {
+        "intent": "explain_state",
+        "topic": "recent_change_receipt",
+        "cites": [
+          "ai.undo"
+        ]
+      },
+      "reply": "A suggestion or preview is not proof that a change was applied. I do not have a current verified receipt matching the requested target and look, so I cannot tell whether it is still a draft or was applied. This question made no changes."
+    },
+    {
+      "id": "voice-howto-current",
+      "route": "offlineAskCore",
+      "queue": 0,
+      "howto": true,
+      "selfHelp": {
+        "intent": "explain_state",
+        "topic": "recent_change_receipt",
+        "cites": [
+          "ai.undo"
+        ]
+      },
+      "reply": "A suggestion or preview is not proof that a change was applied. I do not have a current verified receipt matching the requested target and look, so I cannot tell whether it is still a draft or was applied. This question made no changes."
+    },
+    {
+      "id": "voice-howto-current",
+      "route": "send",
+      "queue": 0,
+      "asks": 0,
+      "finishes": 1,
+      "reply": "A suggestion or preview is not proof that a change was applied. I do not have a current verified receipt matching the requested target and look, so I cannot tell whether it is still a draft or was applied. This question made no changes."
+    },
+    {
+      "id": "polite-can-make",
+      "route": "offlineAsk",
+      "queue": 0,
+      "howto": false,
+      "selfHelp": null,
+      "reply": ""
+    },
+    {
+      "id": "polite-can-make",
+      "route": "offlineAskCore",
+      "queue": 0,
+      "howto": false,
+      "selfHelp": null,
+      "reply": ""
+    },
+    {
+      "id": "polite-can-make",
+      "route": "send",
+      "queue": 0,
+      "asks": 1,
+      "finishes": 1,
+      "reply": "[object Object]"
+    },
+    {
+      "id": "polite-could-make",
+      "route": "offlineAsk",
+      "queue": 1,
+      "howto": false,
+      "selfHelp": null,
+      "reply": "Done — the hood (35% of the car) is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched."
+    },
+    {
+      "id": "polite-could-make",
+      "route": "offlineAskCore",
+      "queue": 1,
+      "howto": false,
+      "selfHelp": null,
+      "reply": "Done — the hood (35% of the car) is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched."
+    },
+    {
+      "id": "polite-could-make",
+      "route": "send",
+      "queue": 1,
+      "asks": 0,
+      "finishes": 0,
+      "reply": ""
+    },
+    {
+      "id": "polite-would-make",
+      "route": "offlineAsk",
+      "queue": 1,
+      "howto": false,
+      "selfHelp": null,
+      "reply": "Done — the roof (35% of the car) is now matte, in black — no shine: rough surface, dull clearcoat."
+    },
+    {
+      "id": "polite-would-make",
+      "route": "offlineAskCore",
+      "queue": 1,
+      "howto": false,
+      "selfHelp": null,
+      "reply": "Done — the roof (35% of the car) is now matte, in black — no shine: rough surface, dull clearcoat."
+    },
+    {
+      "id": "polite-would-make",
+      "route": "send",
+      "queue": 1,
+      "asks": 0,
+      "finishes": 0,
+      "reply": ""
+    },
+    {
+      "id": "direct-imperative-control",
+      "route": "offlineAsk",
+      "queue": 1,
+      "howto": false,
+      "selfHelp": null,
+      "reply": "Done — the hood (35% of the car) is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched."
+    },
+    {
+      "id": "direct-imperative-control",
+      "route": "offlineAskCore",
+      "queue": 1,
+      "howto": false,
+      "selfHelp": null,
+      "reply": "Done — the hood (35% of the car) is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched."
+    },
+    {
+      "id": "direct-imperative-control",
+      "route": "send",
+      "queue": 1,
+      "asks": 0,
+      "finishes": 0,
+      "reply": ""
+    }
+  ],
+  "sourceLessEvidence": {
+    "offlineAsk": {
+      "queue": 0,
+      "hasSaveGuidance": true,
+      "reply": "**How do I save my project and come back later**\n1. First load a paint: SOURCE PAINT in the top row (\"TGA/PNG/JPEG\" or \"PSD/XCF/ORA\"), or drop the file on the canvas.\n2. Click \"Save / Open\" in the top toolbar (SPB Projects). It saves the project zones and layer state plus the source-paint path in one project file. Keep"
+    },
+    "offlineAskCore": {
+      "queue": 0,
+      "hasSaveGuidance": true,
+      "reply": "**How do I save my project and come back later**\n1. First load a paint: SOURCE PAINT in the top row (\"TGA/PNG/JPEG\" or \"PSD/XCF/ORA\"), or drop the file on the canvas.\n2. Click \"Save / Open\" in the top toolbar (SPB Projects). It saves the project zones and layer state plus the source-paint path in one project file. Keep"
+    },
+    "send": {
+      "queue": 0,
+      "asks": 0,
+      "finishes": 1,
+      "uncommittedSource": true
+    }
+  },
+  "reviewFindings": [],
+  "semanticObservations": {
+    "savedProjectPixels": {
+      "offlineAsk": "A SHOKK project stores zones and layer state, including current raster pixel payload for layers that have pixels. It does not bundle the original PSD file bytes; it records the source path. Original adjustment-layer semantics are not guaranteed, so keep the PSD available and verify the reopened layers and preview.",
+      "offlineAskCore": "A SHOKK project stores zones and layer state, including current raster pixel payload for layers that have pixels. It does not bundle the original PSD file bytes; it records the source path. Original adjustment-layer semantics are not guaranteed, so keep the PSD available and verify the reopened layers and preview.",
+      "send": "A SHOKK project stores zones and layer state, including current raster pixel payload for layers that have pixels. It does not bundle the original PSD file bytes; it records the source path. Original adjustment-layer semantics are not guaranteed, so keep the PSD available and verify the reopened layers and preview."
+    },
+    "appliedState": {
+      "offlineAsk": "I do not see a current verified apply receipt for this loaded paint. Check the applied-change entry for this same paint; a draft or preview alone does not confirm that a change was applied. This question made no changes.",
+      "offlineAskCore": "I do not see a current verified apply receipt for this loaded paint. Check the applied-change entry for this same paint; a draft or preview alone does not confirm that a change was applied. This question made no changes.",
+      "send": "I do not see a current verified apply receipt for this loaded paint. Check the applied-change entry for this same paint; a draft or preview alone does not confirm that a change was applied. This question made no changes."
+    },
+    "undoLocation": {
+      "offlineAsk": "**How do I undo**\n1. Press Ctrl+Z, or the Undo button in the top toolbar (HISTORY menu).\n2. To go back several steps open \"Undo History...\".\n3. Under an AI panel answer press Undo to take back that whole answer. In Easy use UNDO at the top.\nExact controls: Undo Ctrl+Z (Pro > top toolbar (tool row)); Undo History… (Pro > top toolbar (tool row)); Undo (Shokker AI panel).\nDid that get you there, or is there something else you are trying to",
+      "offlineAskCore": "**How do I undo**\n1. Press Ctrl+Z, or the Undo button in the top toolbar (HISTORY menu).\n2. To go back several steps open \"Undo History...\".\n3. Under an AI panel answer press Undo to take back that whole answer. In Easy use UNDO at the top.\nExact controls: Undo Ctrl+Z (Pro > top toolbar (tool row)); Undo History… (Pro > top toolbar (tool row)); Undo (Shokker AI panel).\nDid that get you there, or is there something else you are trying to",
+      "send": "**How do I undo**\n1. Press Ctrl+Z, or the Undo button in the top toolbar (HISTORY menu).\n2. To go back several steps open \"Undo History...\".\n3. Under an AI panel answer press Undo to take back that whole answer. In Easy use UNDO at the top.\nExact controls: Undo Ctrl+Z (Pro > top toolbar (tool row)); Undo History… (Pro > top toolbar (tool row)); Undo (Shokker AI panel).\nDid that get you there, or is there something else you are trying to"
+    }
+  },
+  "limitations": [
+    "Reviewed the immutable isolated W113 controller snapshot; no live source changes. The candidate provides accurate project/source pixel distinctions, target-bound suggestion receipt language, and the current Solid-versus-Source guidance.",
+    "A source-less operation fixture (empty zones/layers; transaction uncommitted) confirmed Save/Open setup guidance on offlineAsk/offlineAskCore and no ask/paint queue through send. This is controller-level guidance, not a native UI or save/open test.",
+    "The VM exercises candidate offlineAsk/offlineAskCore/send with controlled operation and queue adapters. It stubs offlineLookAsk, so the polite roof-solid-blue queue outcome cannot be proven here; polite hood-chrome and roof-matte-black controls queue successfully. No app save/open/paint application was performed.",
+    "Receipt questions ran without seeded production receipt history; verification covers honest “no current receipt” messaging, not operation IDs or actual recent-history lookup. The test finish adapter records sends but does not emulate the complete UI renderer. Native renderer, browser, providers, and external services were not used."
+  ],
+  "counts": {
+    "utterances": 12,
+    "routedChecks": 39,
+    "reviewFindings": 0,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "applyCalls": 0
+  }
+}

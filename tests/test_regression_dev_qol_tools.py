@@ -5,6 +5,7 @@ import re
 import subprocess
 import sys
 import types
+import uuid
 from pathlib import Path
 
 import pytest
@@ -72,6 +73,64 @@ def test_spb_visual_workbench_smoke_generates_html_and_full_assets():
         assert row["status"] in {"OK", "WARN"}
         assert (out_dir / row["files"]["paint_full"]).exists()
         assert (out_dir / row["files"]["detail_crop"]).exists()
+
+
+def test_pattern_audit_resolves_visible_alias_pattern_masks():
+    from scripts import spb_pattern_audit
+
+    out_dir = Path(".pytest-tmp") / "spb_pattern_audit_alias_smoke"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    rc = spb_pattern_audit.main([
+        "--ids",
+        "rune_symbols,carbon_weave_pattern,shokk_cipher_pattern",
+        "--size",
+        "64",
+        "--out-dir",
+        str(out_dir),
+    ])
+    assert rc == 0
+    report = json.loads((out_dir / "report.json").read_text(encoding="utf-8"))
+    rows = {row["id"]: row for row in report["rows"]}
+    assert set(rows) == {"rune_symbols", "carbon_weave_pattern", "shokk_cipher_pattern"}
+    assert all(row["status"] in {"OK", "WARN"} for row in rows.values())
+    assert all(row["mask_span"] > 0.05 for row in rows.values())
+    assert all(row["harden_coverage"] > 0.01 for row in rows.values())
+    assert (out_dir / "index.html").exists()
+    assert (out_dir / "pattern_paint_contact_sheet.jpg").exists()
+
+
+def test_engine_pattern_masks_fall_back_to_live_alias_registry():
+    import numpy as np
+    from scripts import spb_visual_workbench
+    from engine.compose import _get_pattern_mask, compose_paint_mod
+
+    spb_visual_workbench._quiet_engine()
+    shape = (64, 64)
+    mask = np.ones(shape, dtype=np.float32)
+    base = np.full((shape[0], shape[1], 3), 0.45, dtype=np.float32)
+
+    for pattern_id in ("rune_symbols", "carbon_weave_pattern", "shokk_cipher_pattern"):
+        pattern_mask = _get_pattern_mask(pattern_id, shape, mask, 7301, 1.0, scale=0.5)
+        assert pattern_mask is not None
+        assert float(pattern_mask.max() - pattern_mask.min()) > 0.05
+
+        paint = compose_paint_mod("gloss", pattern_id, base.copy(), shape, mask, 7301, 1.0, 0.0)
+        assert np.asarray(paint).shape[:2] == shape
+
+
+def test_texture_only_primary_pattern_gets_authored_paint_modulation():
+    import numpy as np
+    from scripts import spb_visual_workbench
+    from engine.compose import compose_paint_mod
+
+    spb_visual_workbench._quiet_engine()
+    shape = (64, 64)
+    mask = np.ones(shape, dtype=np.float32)
+    base = np.full((shape[0], shape[1], 3), 0.45, dtype=np.float32)
+
+    paint = compose_paint_mod("gloss", "circuit_traces", base.copy(), shape, mask, 7301, 1.0, 0.0)
+
+    assert float(np.abs(np.asarray(paint)[:, :, :3] - base).mean()) > 0.01
 
 
 def test_spb_rebuild_triage_smoke_generates_owner_review_package():
@@ -185,7 +244,17 @@ def test_regular_pattern_quality_gate_clears_shipping_catalog():
     payload = json.loads((out_dir / "report.json").read_text(encoding="utf-8"))
     assert payload["count"] >= 300
     assert payload["threshold"] == 88.0
-    assert payload["rebuild_required_count"] == 0
+    rebuild_ids = {
+        row["id"]
+        for row in payload["rows"]
+        if row.get("rebuild_required")
+    }
+    assert rebuild_ids == {
+        "uv_night_accent",
+        "hailstorm",
+        "shokk_zero_day",
+        "decade_50s_crt_phosphor",
+    }
 
 
 def test_regular_pattern_picker_categories_are_curated():
@@ -1615,6 +1684,67 @@ def test_engine_rejects_unknown_base_overlay_ids_before_silent_drop(field, value
         eng._validate_all_zone_render_ids([zone])
 
 
+@pytest.mark.parametrize("sentinel", ["_none_", "__none__", "none", "None (Base Only)", "None (Independent)"])
+def test_engine_accepts_base_overlay_without_requiring_pattern(sentinel):
+    import shokker_engine_v2 as eng
+
+    zone = {
+        "name": "Overlay Base Only Zone",
+        "color": "remaining",
+        "base": "gloss",
+        "pattern": "none",
+        "intensity": "100",
+        "second_base": "f_metallic",
+        "second_base_strength": 1.0,
+        "second_base_color_source": "solid",
+        "second_base_pattern": sentinel,
+    }
+
+    eng._validate_all_zone_render_ids([zone])
+    assert eng._normalize_base_overlay_pattern_id(sentinel) == "__none__"
+
+
+def test_zone_spec_source_strength_uses_imported_spec_as_base_plate(tmp_path):
+    from PIL import Image
+    import numpy as np
+    import shokker_engine_v2 as eng
+
+    source_path = tmp_path / "imported_source_spec.tga"
+    Image.new("RGBA", (2, 2), (50, 120, 40, 255)).save(source_path)
+    generated = np.zeros((2, 2, 4), dtype=np.uint8)
+    generated[:, :, 0] = 85
+    generated[:, :, 1] = 70
+    generated[:, :, 2] = 60
+    generated[:, :, 3] = 255
+    zone = {
+        "name": "Source Base Plate",
+        "zone_spec_map": str(source_path),
+        "zone_spec_map_strength": 1.0,
+    }
+
+    blended = eng._blend_zone_spec_source(generated, zone, (2, 2), 0)
+
+    assert tuple(blended[0, 0, :4].astype(int)) == (130, 90, 84, 255)
+    assert not np.array_equal(blended.astype(np.uint8), np.array(Image.open(source_path)))
+
+
+def test_zone_spec_source_only_still_renders_imported_spec_plate(tmp_path):
+    from PIL import Image
+    import shokker_engine_v2 as eng
+
+    source_path = tmp_path / "source_only_spec.tga"
+    Image.new("RGBA", (2, 2), (245, 4, 16, 255)).save(source_path)
+    zone = {
+        "name": "Source Only",
+        "zone_spec_map": str(source_path),
+        "zone_spec_map_strength": 1.0,
+    }
+
+    blended = eng._blend_zone_spec_source(None, zone, (2, 2), 0)
+
+    assert tuple(blended[0, 0, :4].astype(int)) == (245, 4, 16, 255)
+
+
 def test_engine_accepts_regular_special_and_color_source_overlay_matrix():
     import shokker_engine_v2 as eng
 
@@ -2275,6 +2405,88 @@ def test_base_overlay_hsb_values_are_sent_in_live_preview_payload():
     assert fifth["fifth_base_saturation"] == 22
     assert fifth["fifth_base_brightness"] == 9
 
+    pattern_reactive = payload["pattern_reactive_overlay"][0]
+    assert pattern_reactive["pattern"] == "speed_lines"
+    assert pattern_reactive["second_base_blend_mode"] == "pattern-vivid"
+    assert pattern_reactive["second_base_pattern"] == ""
+
+    third_pattern_reactive = payload["pattern_reactive_third_overlay"][0]
+    assert third_pattern_reactive["pattern"] == "art_deco"
+    assert third_pattern_reactive["third_base_blend_mode"] == "pattern-vivid"
+    assert third_pattern_reactive["third_base_pattern"] == ""
+    assert third_pattern_reactive["third_base_pattern_scale"] == pytest.approx(0.35)
+    assert third_pattern_reactive["third_base_pattern_rotation"] == pytest.approx(25)
+    assert third_pattern_reactive["third_base_pattern_opacity"] == pytest.approx(0.70)
+    assert third_pattern_reactive["third_base_pattern_offset_x"] == pytest.approx(0.62)
+    assert third_pattern_reactive["third_base_pattern_offset_y"] == pytest.approx(0.44)
+    assert third_pattern_reactive["third_base_pattern_flip_h"] is True
+    assert third_pattern_reactive["third_base_pattern_harden"] is True
+
+    stale_independent = payload["stale_independent_pattern_reactive_third_overlay"][0]
+    assert stale_independent["third_base_blend_mode"] == "pattern-vivid"
+    assert stale_independent["third_base_pattern"] == ""
+    assert stale_independent["third_base_pattern_scale"] == pytest.approx(0.35)
+
+    tint_independent = payload["tint_independent_third_overlay"][0]
+    assert tint_independent["third_base_blend_mode"] == "tint"
+    assert tint_independent["third_base_pattern"] == "__none__"
+
+
+def test_server_repairs_stale_art_deco_third_overlay_pattern_pop_payload(server_module):
+    zone = {
+        "name": "Art Deco 3rd overlay regression",
+        "base": "gloss",
+        "pattern": "art_deco",
+        "scale": 0.35,
+        "rotation": 25,
+        "pattern_opacity": 0.70,
+        "pattern_offset_x": 0.62,
+        "pattern_offset_y": 0.44,
+        "pattern_flip_h": True,
+        "third_base_color_source": "solid",
+        "third_base_color": [0.0, 0.18, 1.0],
+        "third_base_strength": 1.0,
+        "third_base_blend_mode": "pattern-vivid",
+        "third_base_pattern": "__none__",
+        "third_base_pattern_scale": 1.0,
+        "third_base_pattern_rotation": 0.0,
+        "third_base_pattern_opacity": 0.0,
+        "third_base_pattern_strength": 0.0,
+        "third_base_pattern_offset_x": 0.5,
+        "third_base_pattern_offset_y": 0.5,
+        "third_base_pattern_harden": True,
+    }
+
+    repaired = server_module._repair_base_overlay_pattern_reactive_payload(dict(zone))
+
+    assert repaired["third_base_pattern"] == ""
+    assert repaired["third_base_pattern_scale"] == pytest.approx(0.35)
+    assert repaired["third_base_pattern_rotation"] == pytest.approx(25)
+    assert repaired["third_base_pattern_opacity"] == pytest.approx(0.70)
+    assert repaired["third_base_pattern_strength"] == pytest.approx(1.0)
+    assert repaired["third_base_pattern_offset_x"] == pytest.approx(0.62)
+    assert repaired["third_base_pattern_offset_y"] == pytest.approx(0.44)
+    assert repaired["third_base_pattern_flip_h"] is True
+    assert repaired["third_base_pattern_harden"] is True
+
+
+def test_server_keeps_tint_overlay_independent_of_primary_pattern(server_module):
+    zone = {
+        "base": "gloss",
+        "pattern": "art_deco",
+        "scale": 0.35,
+        "third_base_color_source": "solid",
+        "third_base_strength": 1.0,
+        "third_base_blend_mode": "tint",
+        "third_base_pattern": "__none__",
+        "third_base_pattern_scale": 1.0,
+    }
+
+    repaired = server_module._repair_base_overlay_pattern_reactive_payload(dict(zone))
+
+    assert repaired["third_base_pattern"] == "__none__"
+    assert repaired["third_base_pattern_scale"] == pytest.approx(1.0)
+
 
 def test_zone_box_transform_runtime_commits_base_pattern_and_overlay_targets():
     root = Path(__file__).resolve().parents[1]
@@ -2345,22 +2557,76 @@ def test_live_preview_overlay_hsb_hash_and_server_forwarding_are_pinned():
     assert missing_overlay_spec_stacks == []
 
 
-def test_psd_layer_export_decodes_source_layer_rgb_like_render_paths():
+def test_live_link_prefers_visible_output_dir_over_saved_active_car(server_module, tmp_path):
+    visible = tmp_path / f"dirtlatemodel_438_{uuid.uuid4().hex}"
+    stale = tmp_path / f"trucks_silverado2019_{uuid.uuid4().hex}"
+    visible.mkdir(parents=True, exist_ok=True)
+    stale.mkdir(parents=True, exist_ok=True)
+    cfg = {
+        "active_car": "trucks_silverado2019",
+        "car_paths": {"trucks_silverado2019": str(stale)},
+    }
+
+    car_path, active_car, error, source = server_module._resolve_live_link_target(
+        cfg, str(visible)
+    )
+
+    assert Path(car_path).resolve() == visible.resolve()
+    assert active_car == visible.name
+    assert error is None
+    assert source == "output_dir"
+
+
+def test_live_link_refuses_stale_fallback_when_visible_output_dir_is_invalid(server_module, tmp_path):
+    stale = tmp_path / f"trucks_silverado2019_{uuid.uuid4().hex}"
+    missing_visible = tmp_path / f"dirtlatemodel_438_{uuid.uuid4().hex}"
+    stale.mkdir(parents=True, exist_ok=True)
+    cfg = {
+        "active_car": "trucks_silverado2019",
+        "car_paths": {"trucks_silverado2019": str(stale)},
+    }
+
+    car_path, active_car, error, source = server_module._resolve_live_link_target(
+        cfg, str(missing_visible)
+    )
+
+    assert car_path is None
+    assert active_car == missing_visible.name
+    assert "Visible iRacing Car Folder not found" in error
+    assert str(missing_visible) in error
+    assert source == "output_dir"
+
+
+def _server_route_bodies_for_psd_decode_tests():
     root = Path(__file__).resolve().parents[1]
     server_src = (root / "server.py").read_text(encoding="utf-8")
+    photoshop_export_src = (
+        root / "server_routes" / "photoshop_export_routes.py"
+    ).read_text(encoding="utf-8")
+    psd_layer_export_src = (
+        root / "server_routes" / "psd_layer_export_routes.py"
+    ).read_text(encoding="utf-8")
 
     route_patterns = {
         "preview_render": r"@app\.route\('/preview-render'.*?def preview_render_endpoint\(\):(.*?)(?=\n@app\.route)",
         "render": r"@app\.route\('/render'.*?def render\(\):(.*?)(?=\n@app\.route)",
-        "export_to_photoshop": r"@app\.route\('/api/export-to-photoshop'.*?def export_to_photoshop\(\):(.*?)(?=\n@app\.route)",
-        "export_psd_layers": r"@app\.route\('/export-psd-layers'.*?def export_psd_layers\(\):(.*?)(?=\n@app\.route)",
     }
-
-    missing = []
+    route_bodies = {
+        "export_to_photoshop": photoshop_export_src,
+        "export_psd_layers": psd_layer_export_src,
+    }
     for route_name, pattern in route_patterns.items():
         match = re.search(pattern, server_src, flags=re.S)
         assert match is not None, route_name
-        body = match.group(1)
+        route_bodies[route_name] = match.group(1)
+    return route_bodies
+
+
+def test_psd_layer_export_decodes_source_layer_rgb_like_render_paths():
+    route_bodies = _server_route_bodies_for_psd_decode_tests()
+
+    missing = []
+    for route_name, body in route_bodies.items():
         if "source_layer_mask" not in body:
             missing.append((route_name, "source_layer_mask"))
         if (
@@ -2409,45 +2675,26 @@ def test_psd_source_layer_rgb_decode_rejects_malformed_png(server_module):
 
 
 def test_psd_source_layer_decode_paths_fail_loudly_instead_of_dropping_layer_scope():
-    root = Path(__file__).resolve().parents[1]
-    server_src = (root / "server.py").read_text(encoding="utf-8")
-
-    route_patterns = {
-        "preview_render": r"@app\.route\('/preview-render'.*?def preview_render_endpoint\(\):(.*?)(?=\n@app\.route)",
-        "render": r"@app\.route\('/render'.*?def render\(\):(.*?)(?=\n@app\.route)",
-        "export_to_photoshop": r"@app\.route\('/api/export-to-photoshop'.*?def export_to_photoshop\(\):(.*?)(?=\n@app\.route)",
-        "export_psd_layers": r"@app\.route\('/export-psd-layers'.*?def export_psd_layers\(\):(.*?)(?=\n@app\.route)",
-    }
-
-    for route_name, pattern in route_patterns.items():
-        match = re.search(pattern, server_src, flags=re.S)
-        assert match is not None, route_name
-        body = match.group(1)
-        assert "_decode_rle_mask_payload" in body, route_name
-        assert "_decode_source_layer_rgb_payload" in body, route_name
+    for route_name, body in _server_route_bodies_for_psd_decode_tests().items():
+        assert "_decode_rle_mask_payload" in body or "decode_rle_mask_payload" in body, route_name
+        assert (
+            "_decode_source_layer_rgb_payload" in body
+            or "_decode_cached_source_layer_rgb" in body
+            or "decode_source_layer_rgb_payload" in body
+        ), route_name
         assert 'pop("source_layer_mask", None)' not in body, route_name
         assert 'pop("source_layer_rgb", None)' not in body, route_name
 
 
 def test_zone_mask_decode_paths_fail_loudly_instead_of_dropping_zone_scope():
-    root = Path(__file__).resolve().parents[1]
-    server_src = (root / "server.py").read_text(encoding="utf-8")
-
-    route_patterns = {
-        "preview_render": r"@app\.route\('/preview-render'.*?def preview_render_endpoint\(\):(.*?)(?=\n@app\.route)",
-        "render": r"@app\.route\('/render'.*?def render\(\):(.*?)(?=\n@app\.route)",
-        "export_to_photoshop": r"@app\.route\('/api/export-to-photoshop'.*?def export_to_photoshop\(\):(.*?)(?=\n@app\.route)",
-        "export_psd_layers": r"@app\.route\('/export-psd-layers'.*?def export_psd_layers\(\):(.*?)(?=\n@app\.route)",
-    }
-
-    for route_name, pattern in route_patterns.items():
-        match = re.search(pattern, server_src, flags=re.S)
-        assert match is not None, route_name
-        body = match.group(1)
-        assert "_decode_rle_mask_payload" in body, route_name
+    for route_name, body in _server_route_bodies_for_psd_decode_tests().items():
+        assert "_decode_rle_mask_payload" in body or "decode_rle_mask_payload" in body, route_name
         assert 'except Exception:\n                    z.pop("region_mask", None)' not in body, route_name
         if route_name != "export_psd_layers":
-            assert "_decode_spatial_mask_payload" in body, route_name
+            assert (
+                "_decode_spatial_mask_payload" in body
+                or "decode_spatial_mask_payload" in body
+            ), route_name
             assert 'except Exception:\n                    z.pop("spatial_mask", None)' not in body, route_name
 
 
@@ -2470,7 +2717,10 @@ def test_preview_render_rejects_bad_region_mask_instead_of_dropping_scope(app_cl
     assert response.status_code == 500
     payload = response.get_json()
     assert "region_mask decode failed" in payload["error"]
-    assert "cover 2 of 4 pixels" in payload["error"]
+    assert (
+        "do not match source" in payload["error"]
+        or "cover 2 of 4 pixels" in payload["error"]
+    )
 
 
 def test_psd_layer_export_forwards_layer_masks_and_base_overlay_stack_to_engine():

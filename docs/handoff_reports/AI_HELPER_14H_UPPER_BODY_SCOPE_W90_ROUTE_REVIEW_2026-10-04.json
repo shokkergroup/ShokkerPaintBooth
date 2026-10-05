@@ -1,0 +1,55 @@
+{
+  "status": "PASS_WITH_LIMITS_PRIVATE_W90_SHARED_SCOPE_GUARD",
+  "date": "2026-10-04",
+  "base": {
+    "path": "_easy_claude_work/ai14h_generation3_candidate/integration9/js/spb-pro-ai.js",
+    "sha256": "AAE99CDD02B00BDD78D1F02FED85C18BC72B82CAB9A66CEB7E0E3590EC3E8790"
+  },
+  "previousCandidate": {
+    "path": "_easy_claude_work/ai14h_w90_review/candidate/spb-pro-ai.js",
+    "sha256": "3EAA2D22CF26DEBF9E7FD580DF096D02F21C6FE8CABF78FF91F59B36668454B6"
+  },
+  "routeCandidate": {
+    "path": "_easy_claude_work/ai14h_w90_review/route_candidate/spb-pro-ai.js",
+    "sha256": "731DE3916044C61F0277DCFE0FDB412EB313C600221229F5498A28205F3F317B"
+  },
+  "test": {
+    "path": "tests/ai_upper_body_scope_w90_route_review_contract.cjs",
+    "sha256": "8F5391C850B27A32BF0B731F852469F36445E95398BDAE2362DDDBA76424AFFE",
+    "status": "PASS",
+    "frozenOriginalCases": 20,
+    "frozenExceptionSupplement": 5,
+    "ambiguousRelativeExtentAsks": 12,
+    "exactNamedPartControls": 3,
+    "originalExplicitWholeVehicleControls": 2,
+    "wholeExclusionRefusals": 3,
+    "wholeScopePositiveControls": 2,
+    "staleAtomicityCases": 2,
+    "baselineStaleQueue": 2,
+    "candidateStaleQueue": 0,
+    "publicOfflineAskControlledLookBeforeQueue": 1,
+    "afterSharedGuardQueue": 0,
+    "providerCalls": 0,
+    "nativeCalls": 0
+  },
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w90_review/fresh-oracle.json",
+    "sha256": "9A970B1A02E1E7F034F0BBAA2B075FA8E5EC9F620A3CBCC8889FED1B68DDCD82"
+  },
+  "supplementalOracle": {
+    "path": "_easy_claude_work/ai14h_w90_review/supplemental-whole-exclusion-oracle.json",
+    "sha256": "FEEEC3849C125EAF844CC03FED40AB6705F1DB097C03E7F33081CBE65EFC85CF"
+  },
+  "findings": [
+    "One shared relative-body-extent preflight is executed by actual offlineAsk and offlineAskCore after operation/element identity checks and before design/advisor/look fallbacks.",
+    "Public offlineAsk on W85 with a controlled successful look resolution queued one everything:true region; route candidate returns q0 clarification before advisorIntent or resolveLook.",
+    "Whole-car except upper body, whole-car but leave front section, and Apply-this-request with upper-body exclusion all clarify q0; plain whole-body and entire-car controls retain whole scope."
+  ],
+  "limits": [
+    "Private isolated source candidate only; no root production change or live app run.",
+    "Controlled look callback demonstrates route amplification, not actual catalog entry availability.",
+    "Whole-scope positive controls validate queued scope label only; no geometry proof or paint application.",
+    "Stale-owner fixture tests queue atomicity only; no real source-load failure.",
+    "The route candidate should be cherry-picked/merged narrowly into current integration generation after root source coordination."
+  ]
+}

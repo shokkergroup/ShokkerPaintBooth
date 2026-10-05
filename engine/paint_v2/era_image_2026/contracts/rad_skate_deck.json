@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_skate_deck",
+  "display_name": "Radical: Deck Ripper",
+  "promise": "Fine magenta and acid-yellow torn print with teal slivers and scraped maple fibers.",
+  "carrier_grammar": "Fine magenta and acid-yellow torn print with teal slivers and scraped maple fibers. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for magenta deck print, acid yellow cutouts, teal serrated slivers, exposed maple fibers, black scrape cracks is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Fine magenta and acid-yellow torn print with teal slivers and scraped maple fibers. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_skate_deck.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "magenta deck print",
+      "role": "Actual shared paint and spec geometry: magenta deck print"
+    },
+    {
+      "name": "acid yellow cutouts",
+      "role": "Actual shared paint and spec geometry: acid yellow cutouts"
+    },
+    {
+      "name": "teal serrated slivers",
+      "role": "Actual shared paint and spec geometry: teal serrated slivers"
+    },
+    {
+      "name": "exposed maple fibers",
+      "role": "Actual shared paint and spec geometry: exposed maple fibers"
+    },
+    {
+      "name": "black scrape cracks",
+      "role": "Actual shared paint and spec geometry: black scrape cracks"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "magenta deck print",
+      "acid yellow cutouts",
+      "teal serrated slivers",
+      "exposed maple fibers",
+      "black scrape cracks"
+    ],
+    "R": [
+      "magenta deck print",
+      "acid yellow cutouts",
+      "teal serrated slivers",
+      "exposed maple fibers",
+      "black scrape cracks"
+    ],
+    "Cc": [
+      "magenta deck print",
+      "acid yellow cutouts",
+      "teal serrated slivers",
+      "exposed maple fibers",
+      "black scrape cracks"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_skatepark_concrete",
+      "difference": "This finish uses 1980s skateboard underside graphic material, dense tiny torn magenta teeth, acidyellow triangular ink cuts, teal serrated slivers, black scrape cracks and ivory maple fibers. Aggressive sharp micro screenprint fragments, no big illustrated figures or boards; glossy ink against dry wood.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_cabinet_side_art",
+      "difference": "This finish uses 1980s skateboard underside graphic material, dense tiny torn magenta teeth, acidyellow triangular ink cuts, teal serrated slivers, black scrape cracks and ivory maple fibers. Aggressive sharp micro screenprint fragments, no big illustrated figures or boards; glossy ink against dry wood.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "magenta deck print is visible in the authored geometry",
+      "acid yellow cutouts is visible in the authored geometry",
+      "teal serrated slivers is visible in the authored geometry",
+      "exposed maple fibers is visible in the authored geometry",
+      "black scrape cracks is visible in the authored geometry"
+    ],
+    "source_sha256": "5bd86791b5ebf922f50aae513bca7782338d74b6c093aca99fa0d2b8f6fe4c14",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_skate_deck-authored-Fine magenta and acid-yellow torn print with teal slivers and scraped maple fibers. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_skate_deck-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 65.9,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "9527098b6ab55410e8f24085ce9da0d0d477ad5117aa553377f29a024e9a2408"
+}

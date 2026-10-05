@@ -106,8 +106,43 @@ def _detect():
 
     print("[GPU] No GPU acceleration available -- using CPU (numpy)")
 
-# Run detection at import
-_detect()
+# [2026-09-05 codebase-health F10] Detection is LAZY. Importing cupy + cupyx.scipy.ndimage cost
+# 1.24 s of every engine boot and every gate script (measured), yet nothing consumes it:
+# _GPU_COMPUTE_ENABLED is False so `xp` is numpy, is_gpu() is False, and no renderer calls
+# gpu_blur(). The first call to gpu_info()/enable_gpu_compute()/gpu_blur()/to_gpu()/is_gpu()
+# runs the same detection as before (same prints, same results); render output is unchanged
+# (golden net: bit-exact). SHOKKER_NO_GPU is still honoured inside _detect().
+_DETECTED = False
+_gpu_blur_available = False
+_cupyx_gaussian = None
+
+
+def _init_gpu_blur():
+    """GPU-assisted blur: needs only CuPy, not _GPU_COMPUTE_ENABLED (cv2 fallback otherwise)."""
+    global _gpu_blur_available, _cupyx_gaussian
+    try:
+        if _cupy is not None:
+            from cupyx.scipy.ndimage import gaussian_filter as _cupyx_gaussian_fn
+            _cupyx_gaussian = _cupyx_gaussian_fn
+            _gpu_blur_available = True
+            print(f"[GPU] GPU-assisted blur available (cupyx.scipy.ndimage)")
+    except ImportError:
+        pass
+    except Exception:
+        pass
+
+
+def _ensure_detected():
+    """Run GPU detection once, on first use (was: at import)."""
+    global _DETECTED
+    if _DETECTED:
+        return
+    _DETECTED = True
+    _detect()
+    if GPU_BACKEND in ('cuda', 'rocm') and _cupy is not None:
+        print(f"[GPU] Detected {GPU_NAME} ({GPU_VRAM_MB}MB) — using CPU (noise cache + optimized blurs)")
+    _init_gpu_blur()
+
 
 # GPU compute toggle. When True AND CuPy is available, compose.py uses GPU arrays.
 # Can be toggled at runtime via enable_gpu_compute() / disable_gpu_compute().
@@ -115,18 +150,13 @@ _GPU_COMPUTE_ENABLED = False
 
 # GPU compute disabled — CPU with noise cache is stable and tested.
 # GPU architecture (get_array_module, gpu_blur) ready for future per-function testing.
-if GPU_BACKEND in ('cuda', 'rocm') and _cupy is not None:
-    print(f"[GPU] Detected {GPU_NAME} ({GPU_VRAM_MB}MB) — using CPU (noise cache + optimized blurs)")
-
-if _GPU_COMPUTE_ENABLED and _cupy is not None:
-    xp = _cupy
-else:
-    xp = np
+xp = np
 
 
 def enable_gpu_compute():
     """Enable GPU acceleration at runtime. Returns True if successful."""
     global _GPU_COMPUTE_ENABLED, xp, _cupy
+    _ensure_detected()
     if _cupy is not None:
         _GPU_COMPUTE_ENABLED = True
         xp = _cupy
@@ -203,6 +233,8 @@ def install_cupy_async(callback=None):
 
 def to_gpu(arr):
     """Transfer numpy array to GPU. No-op if GPU compute is off."""
+    if _GPU_COMPUTE_ENABLED:
+        _ensure_detected()
     if _GPU_COMPUTE_ENABLED and _cupy is not None and isinstance(arr, np.ndarray):
         return _cupy.asarray(arr)
     return arr
@@ -217,6 +249,7 @@ def to_cpu(arr):
 
 def gpu_info():
     """Return dict of GPU status for UI display."""
+    _ensure_detected()
     return {
         'backend': GPU_BACKEND,
         'name': GPU_NAME,
@@ -237,19 +270,7 @@ def is_gpu():
 # No type mismatches because input/output are always numpy.
 # Falls back to cv2 if CuPy unavailable or any error occurs.
 # ================================================================
-_gpu_blur_available = False
-_cupyx_gaussian = None
-
-try:
-    if _cupy is not None:
-        from cupyx.scipy.ndimage import gaussian_filter as _cupyx_gaussian_fn
-        _cupyx_gaussian = _cupyx_gaussian_fn
-        _gpu_blur_available = True
-        print(f"[GPU] GPU-assisted blur available (cupyx.scipy.ndimage)")
-except ImportError:
-    pass
-except Exception:
-    pass
+# (blur availability is initialised by _ensure_detected() -> _init_gpu_blur(), see above)
 
 
 def gpu_blur(arr, sigma):
@@ -258,6 +279,7 @@ def gpu_blur(arr, sigma):
     SAFE to call anywhere — always accepts numpy, always returns numpy.
     ~3-5x faster than cv2 for 2048x2048 arrays on RTX 4060 Ti.
     """
+    _ensure_detected()
     if _gpu_blur_available and _cupy is not None and sigma > 0.5:
         try:
             gpu_arr = _cupy.asarray(arr.astype(np.float32))

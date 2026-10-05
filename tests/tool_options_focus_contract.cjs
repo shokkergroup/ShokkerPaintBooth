@@ -1,0 +1,41 @@
+const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
+const frames=[], listeners=new Map();
+const input={value:'9',tagName:'INPUT',hasAttribute:k=>k==='data-transform-field'}, nextInput={}, applyButton={tagName:'BUTTON',innerHTML:'Clear Sub-Piece',attributes:{onclick:'clear()'},getAttribute(k){return this.attributes[k]??null;},setAttribute(k,v){this.attributes[k]=v;},removeAttribute(k){delete this.attributes[k];},hasAttribute:()=>false}, outside={};
+const fresh={value:'9',tagName:'INPUT',className:'live',disabled:false};
+const freshButton={tagName:'BUTTON',innerHTML:'Set Sub-Piece',className:'ready',disabled:false,getAttribute:k=>({onclick:'set()',title:'Set isolation'})[k]??null};
+const inside=new Set([input,nextInput,applyButton]);
+const container={innerHTML:'original',contains:e=>inside.has(e),querySelectorAll:()=>[input,applyButton],
+ addEventListener:(type,fn)=>listeners.set(type,fn),
+ removeEventListener:(type,fn)=>{if(listeners.get(type)===fn)listeners.delete(type);}};
+const root={document:{activeElement:input,createElement:()=>({content:{querySelectorAll:()=>[fresh,freshButton]}})},requestAnimationFrame:fn=>frames.push(fn)};
+vm.runInNewContext(fs.readFileSync('js/canvas/tool-options-focus.js','utf8'),{window:root});
+const api=root.SPBToolOptionsFocus;let refreshes=0;
+root.document.activeElement=applyButton;
+assert.equal(api.setMarkup(container,'original',()=>{}),true,'activation button must not suppress the initial transform controls');
+root.document.activeElement=input;
+assert.equal(api.setMarkup(container,'preview 9',()=>refreshes++),false);
+input.value+='0';
+assert.equal(api.setMarkup(container,'preview 90',()=>refreshes+=10),false);
+assert.equal(input.value,'90');assert.equal(container.innerHTML,'original');
+function transfer(target){listeners.get('focusout')();root.document.activeElement=target;frames.shift()();}
+transfer(nextInput);
+assert.equal(refreshes,0,'Tab to another field must retain its node');
+assert.equal(container.innerHTML,'original');
+transfer(applyButton);
+assert.equal(refreshes,0,'pointer focus must retain the button until click');
+fresh.value='0';
+assert.equal(api.setMarkup(container,'button focused',()=>refreshes+=20),false);
+assert.equal(input.value,'0','a button action updates numeric values without replacing focused controls');
+assert.equal(applyButton.innerHTML,'Set Sub-Piece');assert.equal(applyButton.attributes.onclick,'set()');assert.equal(applyButton.attributes.title,'Set isolation');assert.equal(root.document.activeElement,applyButton);
+transfer(outside);
+assert.equal(refreshes,20,'one latest refresh after focus leaves the whole bar');
+assert.equal(listeners.size,0);
+assert.equal(api.setMarkup(container,'refreshed',()=>{}),true);
+root.document.activeElement=input;
+api.setMarkup(container,'preview',()=>refreshes+=100);
+listeners.get('focusout')();root.document.activeElement=applyButton;
+assert.equal(api.setMarkup(container,'session ended',()=>{},false),true);
+assert.equal(container.innerHTML,'session ended');frames.shift()();
+assert.equal(refreshes,20,'queued blur work cannot resurrect ended controls');
+assert.equal(listeners.size,0);
+console.log('Transform focus: typing, internal Tab/button transfer retained; latest outside refresh; Apply/Cancel invalidate queued work.');

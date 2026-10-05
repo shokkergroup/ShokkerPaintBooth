@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "paint_label": "trucks toyotatundra2022/car_num_612073.tga",
+  "inspection_records": "_smart_tga_runs/cycle146_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle146_route_pressure_v1/trucks_toyotatundra2022_car_num_612073/component_records.json",
+  "review_scope": "Cycle 146 review of accepted Sponsor-routed candidate on Toyota Tundra 612073: reject front headlight/grille/template chunk as a number.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 0,
+      "expected_bbox": [441, 0, 157, 135],
+      "target_layer": "template",
+      "label": "front_clip_grille_headlight_false_number",
+      "note": "Front clip with grille/headlight/template detail plus decals; should be Car Template/Sponsors, not Numbers."
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_quarter_mile_weave",
+  "builder_seconds": 1.52677,
+  "rerun_seconds": 2.454606,
+  "material_stats": {
+    "std": {
+      "M": 82.7901,
+      "R": 83.301437,
+      "Cc": 83.26078
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.675075,
+      "M_Cc": 0.723269,
+      "R_Cc": 0.600086
+    }
+  },
+  "unique_mrc_triples": 461,
+  "geometry": {
+    "family_count": 11,
+    "families": {
+      "warp/weft cell": 17956,
+      "two-cell local slip packet": 2550,
+      "burnished slip lip": 2550,
+      "broken thread gap": 713,
+      "exposed thread end": 1426,
+      "timing hairline": 483,
+      "two-stage micro-ladder": 301,
+      "rubber pickup packet": 874,
+      "resin bridge": 940,
+      "reflective stitch knot": 1007,
+      "torn 2x2 micro-check cell": 1174
+    },
+    "width_native_min": 8.0,
+    "width_native_median": 16.0,
+    "width_native_p90": 32.0,
+    "width_native_max": 32.0,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "segmented weave cells": 0.844209,
+    "local slip packets": 0.08904,
+    "burnished slip lips": 0.054684,
+    "broken thread gaps": 0.010731,
+    "exposed thread ends": 0.0157,
+    "timing hairlines": 0.011631,
+    "micro-ladders": 0.004622,
+    "rubber pickup": 0.016588,
+    "resin bridges": 0.019258,
+    "reflective knots": 0.009414,
+    "micro-check cues": 0.055936
+  },
+  "edge_continuity": {
+    "edge_to_global_gradient_ratio": 1.007488,
+    "pass": true
+  },
+  "picker_survival": {
+    "contacts": {
+      "128": {
+        "luma_std": 0.048171,
+        "red_green_chroma_std": 0.072638,
+        "pass": true
+      },
+      "64": {
+        "luma_std": 0.03,
+        "red_green_chroma_std": 0.041616,
+        "pass": true
+      }
+    },
+    "pass": true
+  },
+  "mechanical_gates": {
+    "builder_under_3s": true,
+    "deterministic_paint": true,
+    "deterministic_spec": true,
+    "rerun_under_3s": true,
+    "five_plus_anatomy_families": true,
+    "all_geometry_8_to_32_native": true,
+    "eight_tiers_each": true,
+    "material_std_at_least_30": true,
+    "channels_not_copied_or_inverse": true,
+    "many_material_triples": true,
+    "edge_continuity": true,
+    "picker_128_64_survival": true
+  },
+  "mechanical_gates_pass": true,
+  "official_m7": null,
+  "official_m7_note": "Unwired isolated pilot; no registry/workbook record exists, so no composite is fabricated."
+}

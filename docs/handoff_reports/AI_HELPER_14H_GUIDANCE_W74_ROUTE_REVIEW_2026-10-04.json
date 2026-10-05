@@ -1,0 +1,69 @@
+{
+  "id": "AI_HELPER_14H_GUIDANCE_W74_ROUTE_REVIEW_2026-10-04",
+  "status": "PASS_PRIVATE_CANDIDATE",
+  "date": "2026-10-04",
+  "scope": "Private guidance helper and Runtime1 offlineAskCore route candidate only; no live source, UI, provider, native, or paint mutation.",
+  "frozen_inputs": {
+    "w74_oracle": {
+      "path": "_easy_claude_work/ai14h_w74_review/fresh-oracle.json",
+      "sha256": "640FB0E88FF2103488B1CED7636CA8793C5DD78E585087C210F04515382C9206",
+      "cases": 12
+    },
+    "w66_oracle": {
+      "path": "_easy_claude_work/ai14h_w66_review/fresh-oracle.json",
+      "sha256": "B5635F27BA42F7EB3C47A5C3A79AFE87826931FC70216BBAEA6398A7193EB5EA",
+      "cases": 12
+    },
+    "runtime1_controller": {
+      "path": "_easy_claude_work/ai14h_generation3_audit/frozen-runtime1/js/spb-pro-ai.js",
+      "sha256": "3DA5C98B7202288979EFE0F53FE48818F31A6A5B5428BFB178CAEBA5C25E82D6"
+    },
+    "material_controls": {
+      "path": "_easy_claude_work/ai14h_generation3_audit/frozen-runtime1/js/spb-ai-material-controls.js",
+      "sha256": "1A8CE44BCFF196F63404D42B0654833C660B387CC550835081E018D3B8B14F70"
+    },
+    "source_readiness_api": {
+      "path": "_easy_claude_work/ai14h_w53_candidate/candidate/paint-booth-3-canvas.js",
+      "sha256": "159716B3150C785517BEC3A1CF1B00A7318121885E7640276B5FFAF14FC91D9A"
+    }
+  },
+  "candidate": {
+    "helper": {
+      "path": "_easy_claude_work/ai14h_w74_review/candidate/spb-self-help.js",
+      "sha256": "A25FEBD091B6D13EE2B3AAF3713F21A2FA720C0F240A6B042CD6DEFD023CF783"
+    },
+    "controller_route": {
+      "path": "_easy_claude_work/ai14h_w74_review/candidate/spb-pro-ai.js",
+      "sha256": "51F9584E201C83F8527444CBE0DDBADDBB7BF829808BCB9B384C1B2B2518463D"
+    }
+  },
+  "test": {
+    "path": "tests/ai_guidance_w74_route_review_contract.cjs",
+    "sha256": "10B5D6F3CCE3C1FC1C3AA739AD36385C6F352FBD142D04A4DD8A7FF48D4F1878",
+    "result": "12/12 W74 cases pass; passive guidance produces zero queued operations; imperative clearcoat and scoped paint requests remain delegated to their material/edit owners; provider calls 0.",
+    "coverage": [
+      "layered-project save guidance",
+      "flattening definition and visible-layer merge",
+      "clearcoat-only guidance with Chat Studio Full editor prerequisite",
+      "number-layer location and number-finish recommendation",
+      "offline helper capability and optional provider setup",
+      "logo positioning",
+      "imperative material/edit requests remain action routes"
+    ]
+  },
+  "retained_checks": {
+    "command": "node tests/ai_self_help_w66_semantic_review_contract.cjs",
+    "result": "PASS: W66 12/12; 4 retained compatibility suites; provider calls 0; native calls 0."
+  },
+  "changes": [
+    "The private self-help candidate recognizes bounded question/definition phrasings for W74 guidance topics without turning imperative edit requests into help answers.",
+    "The private Runtime1 offlineAskCore candidate dispatches classified passive help before generic material/number/manual fallbacks, addressing the observed number-layer question routing to finish advice.",
+    "Clearcoat guidance adds the Chat Studio Full editor prerequisite."
+  ],
+  "limits": [
+    "The route contract evaluates the actual frozen offlineAskCore and self-help functions, but terminal material/edit owners and source-readiness state are controlled test fixtures. It proves routing and no-queue behavior, not native application or rendered effects.",
+    "No provider or native calls were made.",
+    "Advice for keeping an authored current zone color while changing its finish requires state-bound ownership/current-color evidence and is not implemented by this semantic-only guidance candidate. Avoid recommending source-paint/Foundation settings as equivalent to preserving that authored color.",
+    "The W66 helper's prior 12-case semantic result is retained separately; W74's 12 cases are fresh route coverage, not native acceptance."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "paint_label": "stockcars2 arcaford25/car_num_293480.tga",
+  "inspection_records": "_smart_tga_runs/cycle142_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle142_route_pressure_v1/stockcars2_arcaford25_car_num_293480/component_records.json",
+  "review_scope": "Cycle 193 reviewed Sponsor-retainer fixture from the Cycle 192 broad preflight extra candidate. Runtime Smart TGA masks are unchanged.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 27,
+      "expected_bbox": [
+        348,
+        306,
+        52,
+        21
+      ],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_small_neutral_contingency_fragment",
+      "note": "Visually reviewed small sponsor/contingency decal fragment from stockcars2 arcaford25/car_num_293480.tga; keep as Sponsors, not Numbers, Template, or Paint."
+    }
+  ]
+}

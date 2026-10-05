@@ -1,0 +1,19 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_1102863.tga","inspection_records":"_smart_tga_runs/cycle667_dlm_v3_intrinsic_review/inspection_records.json","review_scope":"Cycle 667 source and complete Number/Sponsor/Template/Paint/group sheets; central 74 is split across eleven exact components.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[875,28,149,293],"target_layer":"template","label":"fixed_template_hardware"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[34,62,86,14],"target_layer":"sponsors","label":"wild_child_wordmark"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[139,707,44,42],"target_layer":"sponsors","label":"bilstein_baseball_mark"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[306,734,10,21],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:74"},
+ {"layer":"numbers","component_index":4,"expected_bbox":[383,735,11,29],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:74"},
+ {"layer":"numbers","component_index":5,"expected_bbox":[412,734,8,7],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:74"},
+ {"layer":"numbers","component_index":6,"expected_bbox":[426,734,19,71],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:74"},
+ {"layer":"numbers","component_index":7,"expected_bbox":[302,763,26,5],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:74"},
+ {"layer":"numbers","component_index":8,"expected_bbox":[344,763,6,6],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:74"},
+ {"layer":"numbers","component_index":9,"expected_bbox":[302,771,40,47],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:74"},
+ {"layer":"numbers","component_index":10,"expected_bbox":[389,771,16,14],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:74"},
+ {"layer":"numbers","component_index":11,"expected_bbox":[327,790,106,49],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:74"},
+ {"layer":"numbers","component_index":12,"expected_bbox":[815,821,68,72],"target_layer":"numbers","label":"true_rear_number","family_id":"number:74"},
+ {"layer":"numbers","component_index":13,"expected_bbox":[294,822,28,16],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:74"},
+ {"layer":"numbers","component_index":14,"expected_bbox":[173,853,44,24],"target_layer":"paint","label":"purple_livery_panel"},
+ {"layer":"numbers","component_index":15,"expected_bbox":[859,869,90,92],"target_layer":"sponsors","label":"jbm_brand_mark"},
+ {"layer":"numbers","component_index":16,"expected_bbox":[0,902,202,111],"target_layer":"template","label":"fixed_template_hardware"}
+]}

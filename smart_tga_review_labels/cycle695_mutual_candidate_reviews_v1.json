@@ -1,0 +1,15 @@
+{
+  "schema": "smart-tga-mutual-candidate-reviews-v1",
+  "cycle": 695,
+  "model_version": "cycle694-dlm-spatial-mutual-v3",
+  "inspection_records": "_smart_tga_runs/cycle695_dlm_v3_fresh_confirmation/inspection_records.json",
+  "reviews": [
+    {"paint_label":"dirtlatemodel 350/car_num_404799.tga","anchor_id":"di:809d115e6ed46401","anchor_bbox":[40,902,162,110],"anchor_class":"Template/hardware","candidate_id":"di:234e28da93bf5cfa","candidate_bbox":[483,30,120,99],"candidate_class":"uncertain","mutual_score":0.109184,"same_number_family":false},
+    {"paint_label":"dirtlatemodel 350/car_num_495420.tga","anchor_id":"di:adac7376ec6732df","anchor_bbox":[646,927,117,66],"anchor_class":"Template/hardware","candidate_id":"di:23aadfef0d956a8e","candidate_bbox":[736,379,113,71],"candidate_class":"Sponsor","mutual_score":0.357518,"same_number_family":false},
+    {"paint_label":"dirtlatemodel 350/car_num_495420.tga","anchor_id":"di:42d10e071318a6ad","anchor_bbox":[834,822,125,118],"anchor_class":"Number","candidate_id":"di:2e753bff363c6ab7","candidate_bbox":[694,421,87,183],"candidate_class":"Sponsor","mutual_score":0.296254,"same_number_family":false},
+    {"paint_label":"dirtlatemodel 358/car_num_920837.tga","anchor_id":"di:c54b64ce58c16c1e","anchor_bbox":[250,912,343,88],"anchor_class":"Sponsor","candidate_id":"di:3a8a5369dcebafa0","candidate_bbox":[264,240,183,99],"candidate_class":"Number","mutual_score":0.327873,"same_number_family":false},
+    {"paint_label":"dirtlatemodel 358/car_num_894277.tga","anchor_id":"di:9b94415afd52fa77","anchor_bbox":[133,6,157,69],"anchor_class":"Template/hardware","candidate_id":"di:6f6d2a3d813589d2","candidate_bbox":[635,611,200,57],"candidate_class":"Sponsor","mutual_score":0.291896,"same_number_family":false},
+    {"paint_label":"dirtlatemodel 358/car_num_894277.tga","anchor_id":"di:d812d0cab620e10f","anchor_bbox":[4,905,196,108],"anchor_class":"Template/hardware","candidate_id":"di:940d4bb9dadb4536","candidate_bbox":[596,728,176,138],"candidate_class":"Sponsor","mutual_score":0.290528,"same_number_family":false}
+  ],
+  "summary": {"mutual_candidate_pairs_reviewed":6,"true_same_number_family":0,"false_same_number_family":6,"accepted_above_threshold":0}
+}

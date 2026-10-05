@@ -1,0 +1,194 @@
+{
+  "schema": "spb-neon-oil-slick-pilot-audit/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon_cyber_yellow",
+  "seed": 2685870118,
+  "builder_elapsed_seconds": 1.821489,
+  "native_paint_spec_elapsed_seconds": 1.8586,
+  "repeat_elapsed_seconds": 2.174964,
+  "deterministic": true,
+  "paint_sha256": "4d22d72d080cdcdccfc03fe18ff999c1e9163dd52dfe35b7ad9d3d119d020b06",
+  "spec_sha256": "e9b9a9c9025040405055fe00fd7dec739e082ec6f44e05bdb58a14ba30b4027c",
+  "material_stats_native": {
+    "std": {
+      "M": 82.789871,
+      "R": 80.691772,
+      "Cc": 83.260521
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.373153,
+      "M_Cc": -0.040397,
+      "R_Cc": -0.17261
+    }
+  },
+  "geometry_stats": {
+    "family_count": 10,
+    "families": {
+      "bridge slivers": 997,
+      "charged rims": 1447,
+      "chipped corners": 533,
+      "conductive ceramic facets": 4356,
+      "copper pinpoints": 388,
+      "fused shoulder glaze": 558,
+      "offset afterimages": 625,
+      "quenched gaps": 498,
+      "shear fracture scores": 473,
+      "shear phosphor platelets": 3394
+    },
+    "width_native_min": 8.002,
+    "width_native_median": 17.304,
+    "width_native_p90": 26.438,
+    "width_native_max": 30.995,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "conductive ceramic facets": 0.242821,
+    "shear phosphor platelets": 0.189499,
+    "charged rims": 0.056961,
+    "bridge slivers": 0.03513,
+    "chipped corners": 0.010595,
+    "copper pinpoints": 0.006893,
+    "quenched gaps": 0.015718,
+    "offset afterimages": 0.022431,
+    "shear fracture scores": 0.021792,
+    "fused shoulder glaze": 0.020444
+  },
+  "max_unmarked_void_native_px": 26.788,
+  "seam_ratios_vs_local_neighbor_change": {
+    "paint_x_to_local_ratio": 1.76869,
+    "paint_y_to_local_ratio": 1.210296,
+    "M_x_to_local_ratio": 1.401703,
+    "M_y_to_local_ratio": 0.935198,
+    "R_x_to_local_ratio": 1.671406,
+    "R_y_to_local_ratio": 1.025747,
+    "Cc_x_to_local_ratio": 1.227268,
+    "Cc_y_to_local_ratio": 0.998908
+  },
+  "picker_luma_std": {
+    "64": 16.472572,
+    "128": 27.000242
+  },
+  "checks": {
+    "deterministic": true,
+    "native_paint_spec_under_3_seconds": true,
+    "repeat_under_3_seconds": true,
+    "ten_attached_families": true,
+    "all_dimensions_8_32_native": true,
+    "eight_tiers_each_channel": true,
+    "std_at_least_30_each_channel": true,
+    "channels_not_copied_or_inverse": true,
+    "full_canvas_no_void_over_64px": true,
+    "picker_64_survives": true,
+    "picker_128_survives": true,
+    "periodic_seams_below_3x_local_change": true
+  },
+  "all_mechanical_checks_green": true,
+  "catalog_m7": "PENDING isolated official workbook harness",
+  "mapped_car": "PENDING; three-position material light proxy supplied for owner screening",
+  "manifest": {
+    "schema": "spb-neon-oil-slick-pilot/1",
+    "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+    "finish_id": "neon_cyber_yellow",
+    "display_name": "Voltage Plate",
+    "carrier": "dark conductive ceramic loaded with shear-yellow phosphor platelets",
+    "material_story": {
+      "M": "conductive ceramic exposure, copper pinpoints, and bridge deposits lead while dielectric phosphor stays low",
+      "R": "chipped corners, cross-shear scores, quenched gaps, and displaced afterimages rise independently",
+      "Cc": "fused glaze, charged rims, and intact platelet shoulders retain clear; chips, gaps, and scores break it"
+    },
+    "vetoes": [
+      "caution stripe or hazard-tape band",
+      "lightning bolt or circuitry network",
+      "grid, row, hex field, or macro lane",
+      "confetti or repeated capsule stamp",
+      "generic noise or unrelated texture underlay"
+    ],
+    "native_size": [
+      2048,
+      2048
+    ],
+    "builder_elapsed_seconds": 1.821489,
+    "material_stats": {
+      "std": {
+        "M": 82.789871,
+        "R": 80.691772,
+        "Cc": 83.260521
+      },
+      "range": {
+        "M": [
+          7,
+          253
+        ],
+        "R": [
+          8,
+          251
+        ],
+        "Cc": [
+          6,
+          254
+        ]
+      },
+      "tier_count": {
+        "M": 8,
+        "R": 8,
+        "Cc": 8
+      },
+      "correlation": {
+        "M_R": 0.373153,
+        "M_Cc": -0.040397,
+        "R_Cc": -0.17261
+      }
+    },
+    "geometry_stats": {
+      "family_count": 10,
+      "families": {
+        "bridge slivers": 997,
+        "charged rims": 1447,
+        "chipped corners": 533,
+        "conductive ceramic facets": 4356,
+        "copper pinpoints": 388,
+        "fused shoulder glaze": 558,
+        "offset afterimages": 625,
+        "quenched gaps": 498,
+        "shear fracture scores": 473,
+        "shear phosphor platelets": 3394
+      },
+      "width_native_min": 8.002,
+      "width_native_median": 17.304,
+      "width_native_p90": 26.438,
+      "width_native_max": 30.995,
+      "fine_8_32_fraction": 1.0
+    },
+    "causal_mask_coverage": {
+      "conductive ceramic facets": 0.242821,
+      "shear phosphor platelets": 0.189499,
+      "charged rims": 0.056961,
+      "bridge slivers": 0.03513,
+      "chipped corners": 0.010595,
+      "copper pinpoints": 0.006893,
+      "quenched gaps": 0.015718,
+      "offset afterimages": 0.022431,
+      "shear fracture scores": 0.021792,
+      "fused shoulder glaze": 0.020444
+    }
+  }
+}

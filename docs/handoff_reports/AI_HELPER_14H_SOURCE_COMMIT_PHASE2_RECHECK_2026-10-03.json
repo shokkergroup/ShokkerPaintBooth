@@ -1,0 +1,82 @@
+{
+  "utc": "2026-10-04T07:14:51.261Z",
+  "status": "CANDIDATE_PASS",
+  "candidate": {
+    "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_easy_claude_work\\ai14h_w44_candidate\\phase2\\paint-booth-3-canvas.js",
+    "sha256": "e7674f6c7ac16bc4bbda954c4664c0b5fd2333fd55a012625176e5cedfcc859d",
+    "installed": false
+  },
+  "oracle": [
+    "no committed source is not ready",
+    "pending begin invalidates previously committed readiness",
+    "current successful result makes actual committed metadata ready",
+    "stale successful result cannot clear replacement load",
+    "stale failed result cannot clear replacement load",
+    "current failed load keeps existing document usable at fresh generation",
+    "result without a transaction cannot clear an in-flight load",
+    "missing source fingerprint cannot grant committed proof",
+    "restored document uses a new current generation",
+    "browser-selected bytes commit after actual fingerprint completion",
+    "late browser hash cannot publish over a newer load",
+    "failed browser fingerprint cannot grant ownership"
+  ],
+  "rows": [
+    {
+      "case": "no committed source is not ready",
+      "passed": true
+    },
+    {
+      "case": "pending begin invalidates previously committed readiness",
+      "passed": true
+    },
+    {
+      "case": "current successful result makes actual committed metadata ready",
+      "passed": true
+    },
+    {
+      "case": "stale successful result cannot clear replacement load",
+      "passed": true
+    },
+    {
+      "case": "stale failed result cannot clear replacement load",
+      "passed": true
+    },
+    {
+      "case": "current failed load keeps existing document usable at fresh generation",
+      "passed": true
+    },
+    {
+      "case": "result without a transaction cannot clear an in-flight load",
+      "passed": true
+    },
+    {
+      "case": "missing source fingerprint cannot grant committed proof",
+      "passed": true
+    },
+    {
+      "case": "restored document uses a new current generation",
+      "passed": true
+    },
+    {
+      "case": "browser-selected bytes commit after actual fingerprint completion",
+      "passed": true
+    },
+    {
+      "case": "late browser hash cannot publish over a newer load",
+      "passed": true
+    },
+    {
+      "case": "failed browser fingerprint cannot grant ownership",
+      "passed": true
+    }
+  ],
+  "counts": {
+    "passed": 12,
+    "total": 12,
+    "provider_calls": 0
+  },
+  "limits": [
+    "Actual transaction and Change File helper functions run in a VM. Pixel commit, document restoration, file reads and byte fingerprint computation are modeled locally.",
+    "No native file picker, source loader, renderer, browser, server or provider ran. Flat-file integration and rollback require independent and native checks before promotion."
+  ]
+}

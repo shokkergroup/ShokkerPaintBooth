@@ -1,0 +1,55 @@
+{
+  "review": "W36 generation-bound lease candidate",
+  "date": "2026-10-04",
+  "status": "candidate-ready-for-independent-review; not installed",
+  "frozen_production_inputs": {
+    "js/spb-ai-lease.js": "D765444136C8CAE6FD46C79BC0730D5B9266AD70EA832BFB08438AB77CA0AD75",
+    "js/spb-ai-core.js": "F3D2A343B190F801A689A268F70BE222CBDB965DDFD2C8E2864E5019305C024F"
+  },
+  "candidate_outputs": {
+    "_easy_claude_work/ai14h_w36_candidate/spb-ai-lease.generation-candidate.js": "DE276372A763310EC051DB141FCB1D601E11DBF193843E2B21A405226F782134",
+    "_easy_claude_work/ai14h_w36_candidate/spb-ai-core.generation-candidate.js": "B3000CB4323075CCCD11F532F4437937C31CAB5E1027FEBF95E562DEEFBB2B36"
+  },
+  "oracle": {
+    "path": "tests/ai_lease_generation_contract.cjs",
+    "sha256_of_frozen_case_list": "61998ECA962627CE0BC505762196DFBE609523F4839EF5652C6C75D0213AB904",
+    "cases": 10,
+    "assertion_groups_passed": 12,
+    "additional_checks": [
+      "late-core-completion-cannot-release-successor",
+      "core-synchronous-throw-releases-own-generation"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "integration-blocker-before-install",
+      "source": "js/spb-ai-lease.js:11,14",
+      "detail": "The live end() is unscoped and holdInternal() can mark an already active internal operation active again. A late completion from retired same-owner work can therefore release a successor lease."
+    },
+    {
+      "severity": "integration-gap",
+      "source": "js/spb-ai-core.js:52,186",
+      "detail": "Live SpbAI.run has no lease acquisition/release wrapper. The isolated candidate wraps run(), captures generation synchronously after successful holdInternal(), and releases that captured generation on both resolve and reject. The real API converts fetch abort/offline outcomes into resolved error objects; those paths were exercised with controlled fetch responses."
+    },
+    {
+      "severity": "remaining-live-callers",
+      "source": "js/spb-pro-ai.js:774-775,2265-2272",
+      "detail": "Outer finish and MCP cleanup still call legacy end() without a generation. Preserve no-argument compatibility for now, but integrate those callers with captured tokens before relying on generation safety end-to-end. Do not infer full-system safety from this isolated candidate."
+    }
+  ],
+  "candidate_semantics": {
+    "begin": "Retains boolean success/failure and permits only one active lease; every successful acquisition gets a monotonically increasing token.",
+    "holdInternal": "Retains boolean result, rejects when any lease is already active, and creates a new token on success.",
+    "generation": "Returns the active token, or 0 when inactive.",
+    "end_expected_generation": "Returns false and changes no state when the token is stale or there is no active token; returns true and releases the exact active token on match.",
+    "end_without_argument": "Retains legacy release behavior for unconverted callers; this remains unsafe for stale callers and is explicitly listed as an integration gap.",
+    "core_wrapper": "Attempts holdInternal before invoking the asynchronous tool loop, captures generation before provider-await, and ends only that generation on completion/rejection. If acquisition fails, the existing core behavior continues without claiming a lease so nested externally/outer-owned calls remain compatible."
+  },
+  "validation": {
+    "command": "node tests/ai_lease_generation_contract.cjs",
+    "result": "PASS, 12 assertion groups; controlled fetch only; zero provider calls, zero native calls.",
+    "frozen_input_copy_hashes_match": true,
+    "production_sources_modified": false,
+    "scope_limit": "Isolated candidate behavior only. Parent must integrate candidate and tokenized outer callers, then run native/MCP lifecycle acceptance."
+  }
+}

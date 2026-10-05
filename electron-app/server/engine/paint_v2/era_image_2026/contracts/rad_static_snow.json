@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_static_snow",
+  "display_name": "Grid: Chromatic Static",
+  "promise": "Tiny RGB interference flecks and vivid analog color tears beneath television glass.",
+  "carrier_grammar": "Tiny RGB interference flecks and vivid analog color tears beneath television glass. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "Cold television glass/dropout pits, independently graded RGB interference families and polished chroma-tear lips.",
+  "reference_physics": {
+    "mechanism": "Tiny RGB interference flecks and vivid analog color tears beneath television glass. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_static_snow.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "blue analog glass",
+      "role": "Actual shared paint and spec geometry: blue analog glass"
+    },
+    {
+      "name": "red interference flecks",
+      "role": "Actual shared paint and spec geometry: red interference flecks"
+    },
+    {
+      "name": "green signal grains",
+      "role": "Actual shared paint and spec geometry: green signal grains"
+    },
+    {
+      "name": "magenta chroma tears",
+      "role": "Actual shared paint and spec geometry: magenta chroma tears"
+    },
+    {
+      "name": "yellow ghost flecks",
+      "role": "Actual shared paint and spec geometry: yellow ghost flecks"
+    },
+    {
+      "name": "signal dropout pits",
+      "role": "Actual shared paint and spec geometry: signal dropout pits"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "blue analog glass",
+      "red interference flecks",
+      "green signal grains",
+      "magenta chroma tears",
+      "yellow ghost flecks",
+      "signal dropout pits"
+    ],
+    "R": [
+      "blue analog glass",
+      "red interference flecks",
+      "green signal grains",
+      "magenta chroma tears",
+      "yellow ghost flecks",
+      "signal dropout pits"
+    ],
+    "Cc": [
+      "blue analog glass",
+      "red interference flecks",
+      "green signal grains",
+      "magenta chroma tears",
+      "yellow ghost flecks",
+      "signal dropout pits"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_vhs_tracking",
+      "difference": "This finish uses Fine saturated analog chroma snow, minuscule red green blue specks, yellow ghost flecks, clipped magenta pixel tears and nearblack signal pits. Controlled microscopic interrupted jagged rows in many short orientations; vibrant colored TV interference rather than gray noise or huge glitch blocks.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_static_screen",
+      "difference": "This finish uses Fine saturated analog chroma snow, minuscule red green blue specks, yellow ghost flecks, clipped magenta pixel tears and nearblack signal pits. Controlled microscopic interrupted jagged rows in many short orientations; vibrant colored TV interference rather than gray noise or huge glitch blocks.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "blue analog glass is visible in the authored geometry",
+      "red interference flecks is visible in the authored geometry",
+      "green signal grains is visible in the authored geometry",
+      "magenta chroma tears is visible in the authored geometry",
+      "yellow ghost flecks is visible in the authored geometry",
+      "signal dropout pits is visible in the authored geometry"
+    ],
+    "source_sha256": "f6f707462f6f02cf415c05ec515e0ca80e15357a3402d8c3f2314810e69e29c3",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_static_snow-authored-Tiny RGB interference flecks and vivid analog color tears beneath television glass. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_static_snow-named-signal-materials-v1",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 83.3,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "947b7f85a2efd35c878ed1c484feb5774efde98136cb0645179fdb9fd2d85b63"
+}

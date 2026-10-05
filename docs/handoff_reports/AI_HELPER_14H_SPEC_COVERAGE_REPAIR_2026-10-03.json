@@ -1,0 +1,35 @@
+{
+  "contract": "spb-ai-offline-spec-coverage-repair/1",
+  "date": "2026-10-04",
+  "scope": "D.offlineSpec only; conservative instruction-coverage guard",
+  "source": "js/spb-pro-design.js",
+  "source_sha256_before": "0f5a99f5ecca374c955df54ae31e6b1e4f4b5ea559284c396c84bf0c38bb2d7b",
+  "source_sha256_after": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8",
+  "change": "offlineSpec now declines when the same utterance contains a parsed paint color or explicit overlay/pattern/weave/texture/stripe/flame/camo/marble/decal/repaint/recolor instruction, even when a keep-color phrase would otherwise make it look spec-only. Existing compoundPlan precedence remains intact.",
+  "frozen_oracle": {
+    "fresh_counterexamples": 13,
+    "owner_supplied_p1_separate": true,
+    "source_inspected_after_cases_frozen": true,
+    "expected_behavior": "Return null rather than claim partial spec-only ownership of compound, conflicting, or unsupported paint instructions."
+  },
+  "preserved_paths": [
+    "Standalone roof matte finish remains a source-color spec-only plan.",
+    "A complete matte-black plus fine-hex roof stack remains with compoundPlan; offlineSpec does not steal it.",
+    "The supplied native P1 now returns null from offlineSpec instead of returning only the matte fragment."
+  ],
+  "verification": [
+    { "command": "node --check js/spb-pro-design.js", "result": "PASS" },
+    { "command": "node tests/ai_offline_spec_coverage_contract.cjs", "result": "PASS: 13 frozen cases, separate P1, finish-only and full-stack ownership" },
+    { "command": "node tests/ai_offline_coverage_audit.cjs", "result": "PASS: 24 cases; provider calls=0" },
+    { "command": "node tests/ai_offline_part_coverage_contract.cjs", "result": "PASS: 23 cases (10 proven, 13 rejected); review 33/33" },
+    { "command": "node tests/ai_stack_scope_contract.cjs", "result": "PASS" },
+    { "command": "node tests/ai_request_composition_contract.cjs", "result": "PASS" },
+    { "command": "node tests/ai_source_colour_scope_contract.cjs", "result": "PASS" },
+    { "command": "node tests/ai_offline_preservation_contract.cjs", "result": "PASS" }
+  ],
+  "limits": [
+    "This is a conservative local eligibility guard, not a complete natural-language parser; unsupported or compound instructions fall through to other routes.",
+    "No dispatcher, ownership lookup, queue, Undo, native paint, provider, mirror, or browser integration was changed or claimed by this lane.",
+    "The W14 frozen proof/report was left untouched."
+  ]
+}

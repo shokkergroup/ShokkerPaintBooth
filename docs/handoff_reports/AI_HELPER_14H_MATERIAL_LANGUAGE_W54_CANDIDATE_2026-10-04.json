@@ -1,0 +1,53 @@
+{
+  "task": "W54 material-language review and isolated candidate",
+  "date": "2026-10-04",
+  "scope": "Frozen generation-3 runtime-1 helper snapshot; no live source, browser, renderer, provider, server, or canvas calls",
+  "frozen_source": {
+    "manifest": {
+      "path": "_easy_claude_work/ai14h_generation3_audit/frozen-runtime1/audit-manifest.json",
+      "sha256": "C6EF714541E85A12CD913E2D8FBBFD9EF6411599EDFE7AA8AA46F44365E5CDBC",
+      "generation": "gen3-runtime1",
+      "candidate": true
+    },
+    "material_controls_sha256": "1A8CE44BCFF196F63404D42B0654833C660B387CC550835081E018D3B8B14F70",
+    "pro_ai_sha256": "3DA5C98B7202288979EFE0F53FE48818F31A6A5B5428BFB178CAEBA5C25E82D6"
+  },
+  "candidate": {
+    "material_controls_path": "_easy_claude_work/ai14h_w54_candidate/js/spb-ai-material-controls.js",
+    "material_controls_sha256": "A6F50C22C2D3A4F6F9707505D66C6C30B9D2CC0E04D78F00F0D103F38A49919D",
+    "pro_ai_path": "_easy_claude_work/ai14h_w54_candidate/js/spb-pro-ai.js",
+    "pro_ai_sha256": "3DA5C98B7202288979EFE0F53FE48818F31A6A5B5428BFB178CAEBA5C25E82D6",
+    "change": "When a material channel is paired with comparative or preservation language that the single-channel parser cannot represent, clarify before decoration routing. A bare relative amount such as 'by 20' stays rejected but now asks for points while retaining parsed channel and part."
+  },
+  "fresh_cases": {
+    "file": "tests/ai_material_language_w54_candidate_contract.cjs",
+    "oracle_file": "tests/ai_material_language_w54_candidate_contract.cjs",
+    "frozen_before_source_review": 14,
+    "wording_adjustment": "After first test execution, the positive relative-clearcoat case was corrected from 'Reduce roof clearcoat by 10 points' to the established supported grammar 'Reduce clearcoat on the roof by 10 points'; the former omits the parser's required 'on' scope marker.",
+    "post_freeze_probe": "The parent supplied the native phrase 'Increase clearcoat on the roof by 20'. Candidate clarification retains clearcoat and roof and asks for a points unit; it does not infer an offset or queue an edit.",
+    "passed": 21,
+    "coverage": [
+      "negative and double-negative requests",
+      "preserve/lock language with clearcoat, roughness, or metalness",
+      "multi-channel and contradictory same-channel instructions",
+      "relative point controls and question delegation",
+      "actual frozen offlineMaterialPlan plus offlineMaterialAsk clarification early-return",
+      "single-channel builder preserves the other two spec offsets and does not mutate its zone input"
+    ]
+  },
+  "validation": {
+    "candidate_contract": "PASS 21 W54 frozen-oracle/material-route checks",
+    "node_check_material_controls": "PASS",
+    "node_check_pro_ai": "PASS"
+  },
+  "existing_evidence_not_recredited": [
+    "The earlier 33-case material route evidence remains prior evidence and was not rerun or counted here.",
+    "The earlier native clearcoat positive is prior evidence and was not repeated in this isolated candidate task."
+  ],
+  "limits": [
+    "This is an isolated candidate against a frozen runtime-1 snapshot, not installation or current-live acceptance.",
+    "The comparative/preservation enhancement is intentionally fail-closed; supported grammar still performs one channel edit at a time.",
+    "A clarification is a safe response, not proof of queue behavior on an installed browser runtime; helper early-return was exercised directly with controlled stubs.",
+    "No current-pixel measurement, native paint, Undo, or rendering validation was performed."
+  ]
+}

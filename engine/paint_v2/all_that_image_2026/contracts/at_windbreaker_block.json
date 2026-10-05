@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_windbreaker_block",
+  "display_name": "Extreme: Windbreaker Block",
+  "promise": "Teal purple coral nylon color blocking expressed as many small angular panels, no garment silhouette",
+  "carrier_grammar": "Teal purple coral nylon color blocking expressed as many small angular panels, no garment silhouette; single full-canvas image, no duplicated quadrants. Fine features: nylon jacket ground, purple nylon blocks, teal nylon blocks, fine seam divisions, ripstop thread intersections, abraded nylon filaments",
+  "spec_grammar": "Feature-specific selectors partition nylon jacket ground, purple nylon blocks, teal nylon blocks, fine seam divisions, ripstop thread intersections, abraded nylon filaments. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "nylon jacket ground",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "purple nylon blocks",
+      "role": "Material feature selected from artwork by h:>:245&s:>:0.4"
+    },
+    {
+      "name": "teal nylon blocks",
+      "role": "Material feature selected from artwork by h:>:145&h:<:215&s:>:0.4"
+    },
+    {
+      "name": "fine seam divisions",
+      "role": "Material feature selected from artwork by g:<:0.23"
+    },
+    {
+      "name": "ripstop thread intersections",
+      "role": "Material feature selected from artwork by edge:>:0.61"
+    },
+    {
+      "name": "abraded nylon filaments",
+      "role": "Material feature selected from artwork by fine:>:0.8"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "nylon jacket ground",
+      "purple nylon blocks",
+      "teal nylon blocks",
+      "fine seam divisions",
+      "ripstop thread intersections",
+      "abraded nylon filaments"
+    ],
+    "R": [
+      "nylon jacket ground",
+      "purple nylon blocks",
+      "teal nylon blocks",
+      "fine seam divisions",
+      "ripstop thread intersections",
+      "abraded nylon filaments"
+    ],
+    "Cc": [
+      "nylon jacket ground",
+      "purple nylon blocks",
+      "teal nylon blocks",
+      "fine seam divisions",
+      "ripstop thread intersections",
+      "abraded nylon filaments"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "nylon jacket ground",
+      "range": [
+        [
+          0,
+          40,
+          45
+        ],
+        [
+          18,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "purple nylon blocks",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "teal nylon blocks",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine seam divisions",
+      "range": [
+        [
+          0,
+          75,
+          70
+        ],
+        [
+          15,
+          190,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "ripstop thread intersections",
+      "range": [
+        [
+          0,
+          100,
+          130
+        ],
+        [
+          12,
+          195,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "abraded nylon filaments",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_anodised_peg",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_bmx_dirt",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "nylon jacket ground",
+      "purple nylon blocks",
+      "teal nylon blocks",
+      "fine seam divisions",
+      "ripstop thread intersections",
+      "abraded nylon filaments"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_windbreaker_block / Teal purple coral nylon color blocking expressed as many small angular panels, no garment silhouette",
+  "spec_key": "at_windbreaker_block / nylon jacket ground all; purple nylon blocks h:>:245&s:>:0.4; teal nylon blocks h:>:145&h:<:215&s:>:0.4; fine seam divisions g:<:0.23; ripstop thread intersections edge:>:0.61; abraded nylon filaments fine:>:0.8",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

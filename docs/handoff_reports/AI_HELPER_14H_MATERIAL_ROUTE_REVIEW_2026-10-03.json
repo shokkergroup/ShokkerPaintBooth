@@ -1,0 +1,102 @@
+{
+  "review": "W8 independent material-control actual-route review",
+  "date": "2026-10-03",
+  "status": "PASS for isolated offline route and ZoneKit contract; native integration remains parent-owned",
+  "frozen_oracle": {
+    "test_file": "tests/ai_material_route_review_contract.cjs",
+    "fresh_cases_authored_before_source_inspection": 20,
+    "fresh_scenarios": [
+      "C07 default shift",
+      "preserve R/G offsets",
+      "preserve finish and color",
+      "preserve pattern and mask",
+      "missing part",
+      "muted part",
+      "renamed part",
+      "stale part provenance",
+      "ambiguous owner",
+      "unknown or subpart target",
+      "stale offset plan",
+      "successful edit and Undo",
+      "failed stale queue and Undo semantics",
+      "protected part ask priority",
+      "configured eligibility",
+      "mixed decorative action",
+      "question/how-to",
+      "decorative pattern request",
+      "non-material request",
+      "stale part-owner registry"
+    ],
+    "post_oracle_cases_reported_separately": {
+      "mixed diagnostic prefixes": 2,
+      "declined negative/question intents": 2,
+      "metalness/roughness route key mapping": 2,
+      "material-plan zone UUID binding": 1
+    }
+  },
+  "source_hashes_at_test_run": {
+    "js/spb-ai-material-controls.js": "1A8CE44BCFF196F63404D42B0654833C660B387CC550835081E018D3B8B14F70",
+    "js/spb-pro-ai.js": "115F602D49E465B6F49530B07A4C2E4B81E8D6089C2D8204BCAE9D57807690D4",
+    "js/spb-pro-zone-kit.js": "6968963FC8D382E3ECDA629089A71A73A519270C0B577E98DF03D9F7D48D68D0"
+  },
+  "execution": {
+    "result": "33 actual-route checks passed",
+    "validated_production_functions": [
+      "offlineMaterialPlan",
+      "offlineMaterialAsk",
+      "offlineCanHandle",
+      "offlineAsk",
+      "offlineAskCore",
+      "ask",
+      "makeTools.doEdit",
+      "normaliseSpec",
+      "protectDecals",
+      "editKey",
+      "partOwnerCurrent",
+      "applyQueue",
+      "doUndo",
+      "SpbProZone.batch"
+    ],
+    "mocked": "Native UI, provider calls, and MCP effects; deterministic CAR/E.plan fixture only.",
+    "verification": "node tests/ai_material_route_review_contract.cjs passed; node --check tests/ai_material_route_review_contract.cjs passed"
+  },
+  "findings": [
+    {
+      "id": "W8-MR-01",
+      "result": "PASS after parent repair",
+      "finding": "The exact C07 sentence queues one ordinary edit_zone operation with clearcoat B lowered by the default 20 points. Its spec contains only the full spec_shift tuple; R/G, finish, color, pattern, opacity, and region mask remain unchanged after actual ZoneKit batch apply. Undo restores all three original offsets.",
+      "evidence": "Real makeTools.doEdit, applyQueue, ZoneKit.batch, and doUndo execute in the VM harness. The queued private material guard records zone UUID and the original metal/rough/clearcoat tuple."
+    },
+    {
+      "id": "W8-MR-02",
+      "result": "PASS",
+      "finding": "Missing, muted, renamed, stale-provenance, duplicate-owner, and unknown/subpart targets produce no edit queue. The test uses actual partOwnerCurrent provenance and owner registry functions against a ZoneKit-created helper part.",
+      "evidence": "Six negative ownership/selector cases pass with an empty queue and no edit_zone tool result."
+    },
+    {
+      "id": "W8-MR-03",
+      "result": "PASS",
+      "finding": "The queued operation refuses to apply after either current material offsets or the zone UUID change. Both checks stop before ZoneKit batch and add no undo snapshot. Successful operations use the normal edit queue and can be undone through the production undo function.",
+      "evidence": "Stale tuple and stale UUID cases each assert a failed result, zero ZoneKit batch calls, and unchanged Undo depth."
+    },
+    {
+      "id": "W8-MR-04",
+      "result": "PASS",
+      "finding": "Both offlineAsk and offlineAskCore route protected-part questions before material routing, then material edits before exact-part/compound/advisor routes. ask() honors configured-provider and offline-first eligibility. send() classifies material plans in the unconfigured-provider guard.",
+      "evidence": "Production offlineAsk/Core/ask execute with controlled spies; bounded send-source assertions confirm `_mat0` classification and guard use."
+    },
+    {
+      "id": "W8-MR-05",
+      "result": "PASS after parent repair; prior defect preserved as evidence",
+      "finding": "The first harness run showed makeTools.doEdit/protectDecals adding `region:{layers:['Body Paint']}` to the material-only edit because the helper zone was classified as catch-all. That could replace the zone's existing region mask. Parent repaired doEdit to preserve the existing selector for an exact registered/current helper-owned part update. The unchanged route oracle now requires a spec-only queue and proves mask preservation through ZoneKit batch.",
+      "evidence": "Before repair, the captured queue spec had an added region selector. After the parent patch, the 33-check route contract passes and the actual zone mask equals its pre-edit snapshot."
+    },
+    {
+      "id": "W8-MR-06",
+      "result": "PASS after parent repair",
+      "finding": "Negative and question-form explicit material intents are converted to safe clarification before a decorative look/pattern route can claim them. Mixed paint-action diagnostic prefixes are rejected by the module and produce no material queue. Metalness and roughness route values land in the R and G tuple slots.",
+      "evidence": "Two mixed-prefix module+route cases, two declined-intent whole-router cases, and two channel-map cases pass separately from the frozen oracle."
+    }
+  ],
+  "finish_slot": "W8 route review delivered to parent. Parent owns the remaining native C07 validation; this report does not claim native UI/MCP acceptance."
+}

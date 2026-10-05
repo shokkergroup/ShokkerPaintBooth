@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "paint_label": "trucks silverado2019/car_1002478.tga",
+  "component_records": "_smart_tga_runs/cycle134_fresh_unreviewed_route_fixtures_v1/trucks_silverado2019_car_1002478/component_records.json",
+  "review_scope": "Cycle 137 manual review of the Silverado vertical sponsor/name-letter stack that fooled the whole-component number foreground gate before vertical-stack demotion.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 8,
+      "expected_bbox": [731, 444, 39, 39],
+      "target_layer": "sponsors",
+      "label": "vertical_sponsor_word_stack_letter",
+      "note": "Digit-sized grayscale sponsor/name letter in a vertical word stack; not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 10,
+      "expected_bbox": [732, 482, 33, 37],
+      "target_layer": "sponsors",
+      "label": "vertical_sponsor_word_stack_letter",
+      "note": "Digit-sized grayscale sponsor/name letter in a vertical word stack; not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 11,
+      "expected_bbox": [732, 521, 33, 38],
+      "target_layer": "sponsors",
+      "label": "vertical_sponsor_word_stack_letter",
+      "note": "Digit-sized grayscale sponsor/name letter in a vertical word stack; not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 12,
+      "expected_bbox": [732, 562, 34, 40],
+      "target_layer": "sponsors",
+      "label": "vertical_sponsor_word_stack_letter",
+      "note": "Digit-sized grayscale sponsor/name letter in a vertical word stack; not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 13,
+      "expected_bbox": [731, 603, 35, 36],
+      "target_layer": "sponsors",
+      "label": "vertical_sponsor_word_stack_letter",
+      "note": "Digit-sized grayscale sponsor/name letter in a vertical word stack; not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 14,
+      "expected_bbox": [733, 642, 33, 30],
+      "target_layer": "sponsors",
+      "label": "vertical_sponsor_word_stack_letter",
+      "note": "Digit-sized grayscale sponsor/name letter in a vertical word stack; not race-number content."
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_1144819.tga","inspection_records":"_smart_tga_runs/cycle666_dlm_exact_false_positive_analysis/inspection_records.json","review_scope":"Cycle 666 source plus complete Number/Sponsor/Template/Paint and physical-group sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[604,316,40,14],"target_layer":"sponsors","label":"small_sponsor_wordmark"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[70,425,146,165],"target_layer":"sponsors","label":"large_circular_brand_mark"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[299,815,47,16],"target_layer":"sponsors","label":"weld_sponsor_wordmark"}
+]}

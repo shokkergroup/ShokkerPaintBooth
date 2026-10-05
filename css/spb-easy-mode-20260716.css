@@ -1,0 +1,2704 @@
+/* ============================================================================
+   SPB EASY MODE — guided whole-car finish flow styles (v2, 2026-07-16)
+   Pairs with js/spb-easy-mode.js (v2). Owner rejected the v1 look-card
+   storefront same day: "We need it to function EXACTLY like the hard mode but
+   it should just walk people through shit... make the entire car one finish
+   (spec type). Just the spec not the pattern over it."
+   V2 rail = STEP 2 finish picker: search + curated Top-50 shelf ⇄ full
+   catalog (BASE_GROUPS sections), every row showing the finish DESCRIPTION —
+   same visual language as the hard-mode Finish Library (swatch chip from the
+   BASES[].swatch color/gradient).
+
+   Scoping law: every selector lives under #spbEasyRoot / body.spb-easy-on.
+   Never touches .main-container / .left-panel geometry (ResizeObserver math).
+   Motion ≤180ms, gated :not(.fx-off) + prefers-reduced-motion.
+   [hidden] guards are LOAD-BEARING: author display rules beat the hidden
+   attribute — without them an invisible layer eats every click (found live
+   2026-07-16 in v1).
+   ============================================================================ */
+
+/* ── Root overlay: opaque cover ABOVE the Pro UI (not display:none on Pro —
+      the live-preview pipeline keeps rendering under the cover). Z 20000 sits
+      above all working chrome (finish library 1300, shokk modal 12000) and
+      below the toast tier (100100). ─────────────────────────────────────── */
+#spbEasyRoot {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    display: none;
+    flex-direction: column;
+    background:
+        radial-gradient(1200px 700px at 78% -10%, rgba(51, 102, 255, 0.14), transparent 60%),
+        radial-gradient(900px 600px at -10% 110%, rgba(255, 51, 102, 0.10), transparent 55%),
+        var(--bg-dark, #080818);
+    color: var(--text, #d8d8e8);
+    font-family: var(--font-body, 'Inter', 'Segoe UI', sans-serif);
+    overflow: hidden;
+}
+/* The covered Pro toolbar is intentionally wider than very small desktop
+   windows. Freeze the background document while Easy owns the viewport so a
+   hidden Pro control cannot create a stray horizontal scrollbar underneath. */
+body.spb-easy-on { overflow: hidden !important; }
+body.spb-easy-on #spbEasyRoot { display: flex; }
+
+/* While Easy is up: its own file-picker flow must appear ABOVE the cover
+   (overlay normally sits at z 1100), and the Pro render-results modal is
+   suppressed — Easy shows its own friendly success card instead. */
+body.spb-easy-on .file-picker-overlay { z-index: 21000; }
+/* SPB-EASY-DIRECT-RESULT-20260721: Pro's panel and its separate z-99990
+   backdrop must both stay suppressed while Easy owns completion. Hiding only
+   the panel left a full-screen blur above Easy that required an empty click. */
+body.spb-easy-on #renderResultsPanel.spb-render-modal,
+body.spb-easy-on #renderResultsBackdrop { display: none !important; }
+
+/* ── Top bar ─────────────────────────────────────────────────────────────── */
+.spb-easy-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--border, #1a1a3a);
+    background: rgba(8, 8, 24, 0.55);
+    flex: 0 0 auto;
+}
+.spb-easy-brand {
+    font-family: var(--font-display, 'Rajdhani', sans-serif);
+    font-weight: 700;
+    font-size: 19px;
+    letter-spacing: 0.10em;
+    color: var(--text-bright, #f0f0ff);
+    white-space: nowrap;
+}
+.spb-easy-brand b { color: var(--accent-cyan, #00e5ff); font-weight: 700; }
+.spb-easy-tagline {
+    font-size: 11.5px;
+    color: var(--text-dim, #7080a0);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.spb-easy-probtn {
+    flex: 0 0 auto;
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--border-normal, rgba(255,255,255,0.12));
+    background: transparent;
+    color: var(--text-dim, #7080a0);
+    font-family: var(--font-display, 'Rajdhani', sans-serif);
+    font-weight: 700;
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.spb-easy-probtn:hover { color: var(--text-bright, #f0f0ff); border-color: var(--accent-cyan, #00e5ff); }
+
+/* ── Main split: preview stage (hero) + control rail ─────────────────────── */
+.spb-easy-main {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+.spb-easy-stage {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 22px;
+}
+#spbEasyPreviewImg {
+    max-width: min(100%, 1100px);   /* bounded — never stretched past native res */
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(0,0,0,0.6));
+    background: var(--bg-card, #0e0e22);
+}
+#spbEasyPreviewImg[hidden] { display: none; }
+.spb-easy-stage-hint {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: var(--text-dim, #7080a0);
+    background: rgba(8, 8, 24, 0.75);
+    border: 1px solid var(--border, #1a1a3a);
+    border-radius: 999px;
+    padding: 4px 12px;
+    pointer-events: none;
+    white-space: nowrap;
+}
+/* "Painting your car…" badge — shown while the live preview spinner is on. */
+.spb-easy-painting-badge {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 229, 255, 0.45);
+    background: rgba(8, 12, 30, 0.9);
+    color: var(--accent-cyan, #00e5ff);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+}
+/* [GAUNTLET C-toast 2026-08-20] The badge is a sibling of .spb-easy-proof and had
+   no z-index, so the proof cards painted straight over it: mid-render the buyer
+   saw a sliver of ghost text ("...ng live proof...") in the 30px gutter BETWEEN
+   the two cards and nothing else - see _easy_gauntlet/shots/toastpos. It has to
+   sit above the cards (their local indexes top out at 6) and far below the
+   overlays (21000+). */
+.spb-easy-painting-badge { z-index: 12; }
+.spb-easy-stage.spb-easy-painting .spb-easy-painting-badge { display: flex; }
+.spb-easy-painting-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent-cyan, #00e5ff);
+}
+body:not(.fx-off) .spb-easy-painting-dot { animation: spbEasyBlink 0.9s ease-in-out infinite; }
+@keyframes spbEasyBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+/* ── Control rail ────────────────────────────────────────────────────────── */
+.spb-easy-rail {
+    /* [2026-08-08 E40] MEASURED: a fixed 430-470px rail left the car only 58%
+       of a 1024px screen (61% at 1100, 63% at 1280). clamp keeps the owner's
+       1680px layout byte-identical (30vw = 504 -> clamped back to 470) while
+       narrow screens give the car back ~50px. */
+    flex: 0 0 clamp(340px, 30vw, 470px);
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;   /* [2026-08-06 easy-loop] rail scrolls when content > viewport */
+    /* [2026-08-08 E33] The action row is position:sticky;bottom:0 with z-index 5,
+       so anything scrolled to the very bottom edge lands UNDERNEATH it. Measured:
+       scrollIntoView put the number-choice button at y=950 in a 1000px viewport
+       and elementFromPoint returned spbEasySave, i.e. a real click would have hit
+       the SAVE button instead. Scroll padding makes every scroll-into-view — the
+       browser's own, and keyboard Tab focus — stop short of the sticky row. */
+    scroll-padding-bottom: 92px;
+    border-left: 1px solid var(--border, #1a1a3a);
+    background: rgba(10, 10, 28, 0.72);
+}
+.spb-easy-step-label {
+    font-family: var(--font-display, 'Rajdhani', sans-serif);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    color: var(--accent-gold, #ffaa00);
+    padding: 14px 16px 8px;
+    flex: 0 0 auto;
+}
+.spb-easy-step-label small {
+    display: block;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-weight: 400;
+    font-size: 10.5px;
+    letter-spacing: 0.02em;
+    color: var(--text-dim, #7080a0);
+    margin-top: 2px;
+    text-transform: none;
+}
+.spb-easy-step-tight { padding: 0 0 6px; }
+
+/* Search + catalog toggle */
+.spb-easy-finder {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 10px;
+    flex: 0 0 auto;
+}
+.spb-easy-finder input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 8px 12px;
+    border-radius: 9px;
+    border: 1px solid var(--border, #1a1a3a);
+    background: var(--bg-card, #0e0e22);
+    color: var(--text-bright, #f0f0ff);
+    font-size: 12.5px;
+}
+.spb-easy-finder input:focus { outline: none; border-color: var(--accent-cyan, #00e5ff); }
+.spb-easy-finder input::placeholder { color: var(--text-dim, #7080a0); }
+#spbEasyCatalogToggle {
+    flex: 0 0 auto;
+    padding: 8px 12px;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 170, 0, 0.45);
+    background: rgba(255, 170, 0, 0.10);
+    color: var(--accent-gold, #ffaa00);
+    font-family: var(--font-display, 'Rajdhani', sans-serif);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    white-space: nowrap;
+}
+#spbEasyCatalogToggle:hover { background: rgba(255, 170, 0, 0.18); }
+
+/* ── The finish list — rows with visible DESCRIPTIONS (the point of v2) ──── */
+.spb-easy-finishes {
+    flex: 1 1 auto;
+    /* [2026-08-06 easy-loop] was min-height:140px — at laptop heights (768px)
+       the look list shrank to a ~110px sliver showing ONE of the 50 starter
+       looks. The list is the PRIMARY choice surface: it now claims a third of
+       the viewport and the rail scrolls (rule below) so SAVE stays reachable. */
+    min-height: clamp(200px, 34vh, 480px);
+    overflow-y: auto;
+    padding: 0 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.spb-easy-finish {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    width: 100%;
+    text-align: left;
+    padding: 8px 10px;
+    border-radius: 11px;
+    border: 2px solid var(--border, #1a1a3a);
+    background: var(--bg-card, #0e0e22);
+    color: inherit;
+    font-family: inherit;
+    cursor: pointer;
+}
+body:not(.fx-off) .spb-easy-finish { transition: border-color 140ms ease, background 140ms ease; }
+.spb-easy-finish:hover { border-color: var(--text-dim, #7080a0); background: var(--bg-hover, #161636); }
+.spb-easy-finish.selected {
+    border-color: var(--accent-cyan, #00e5ff);
+    box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.18);
+}
+.spb-easy-finish-chip {
+    flex: 0 0 auto;
+    width: 108px;  /* complete 96x48 authored PAINT | SPEC tile, never cropped */
+    height: 58px;
+    position: relative;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: #080818;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 6px rgba(0,0,0,0.4);
+}
+.spb-easy-finish-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.spb-easy-finish-name {
+    font-family: var(--font-display, 'Rajdhani', sans-serif);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    color: var(--text-bright, #f0f0ff);
+}
+.spb-easy-finish.selected .spb-easy-finish-name { color: var(--accent-cyan, #00e5ff); }
+.spb-easy-finish-name em {
+    font-style: normal;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--success, #00ff88);
+    letter-spacing: 0.02em;
+}
+.spb-easy-finish-desc {
+    font-size: 10.5px;
+    line-height: 1.45;
+    color: var(--text-dim, #7080a0);
+    /* full description visible — clamp to 3 lines so one verbose entry can't
+       eat the shelf, but never hide it behind a hover */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.spb-easy-finish-group {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    margin-top: 8px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(14, 14, 40, 0.97);
+    border: 1px solid var(--border, #1a1a3a);
+    font-family: var(--font-display, 'Rajdhani', sans-serif);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.10em;
+    color: var(--accent-gold, #ffaa00);
+}
+.spb-easy-finish-group span { color: var(--text-dim, #7080a0); font-size: 10.5px; }
+.spb-easy-finish-none {
+    padding: 18px 10px;
+    font-size: 12px;
+    color: var(--text-dim, #7080a0);
+    text-align: center;
+}
+.spb-easy-finish-none b { color: var(--accent-gold, #ffaa00); }
+
+/* ── Bottom control cluster (always visible): step 3 save ────────────────── */
+.spb-easy-controls {
+    flex: 0 0 auto;
+    border-top: 1px solid var(--border, #1a1a3a);
+    padding: 10px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: rgba(8, 8, 24, 0.6);
+}
+
+/* iRacing ID inline field (only shown until valid) */
+/* [GAUNTLET C8 2026-08-20] The row now carries a one-line explanation of what
+   the number does, so it wraps. */
+.spb-easy-id-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.spb-easy-id-row small {
+    flex: 1 1 100%;
+    font-size: 10px;
+    line-height: 1.35;
+    color: var(--text-dim, #7080a0);
+}
+.spb-easy-id-row-bad input { border-color: var(--accent-gold, #ffb300) !important; }
+.spb-easy-id-row-bad label { color: var(--accent-gold, #ffb300); }
+.spb-easy-id-row[hidden] { display: none; }
+.spb-easy-id-row label { font-size: 11px; color: var(--text-dim, #7080a0); white-space: nowrap; }
+.spb-easy-id-row input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border, #1a1a3a);
+    background: var(--bg-card, #0e0e22);
+    color: var(--text-bright, #f0f0ff);
+    font-size: 13px;
+    font-family: var(--font-mono, 'Consolas', monospace);
+}
+.spb-easy-id-row input:focus { outline: none; border-color: var(--accent-cyan, #00e5ff); }
+
+/* Save progress */
+.spb-easy-progress { display: none; flex-direction: column; gap: 5px; }
+.spb-easy-progress.active { display: flex; }
+.spb-easy-progress-track {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--bg-hover, #161636);
+    border: 1px solid var(--border, #1a1a3a);
+    overflow: hidden;
+}
+.spb-easy-progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #ffb300, #ff7a18);
+}
+body:not(.fx-off) .spb-easy-progress-fill { transition: width 180ms ease; }
+.spb-easy-progress-text { font-size: 11px; color: var(--text-dim, #7080a0); text-align: center; }
+
+/* Action row: dice + save */
+.spb-easy-actions { display: flex; gap: 9px; align-items: stretch; }
+.spb-easy-dice {
+    flex: 0 0 auto;
+    padding: 12px 16px;
+    border-radius: 11px;
+    border: 1px solid rgba(51, 102, 255, 0.55);
+    background: rgba(51, 102, 255, 0.14);
+    color: #9db4ff;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.spb-easy-dice:hover { background: rgba(51, 102, 255, 0.24); color: #c3d1ff; }
+.spb-easy-save {
+    flex: 1 1 auto;
+    padding: 12px 14px;
+    border-radius: 11px;
+    border: none;
+    background: linear-gradient(90deg, #ffb300, #ff7a18);
+    color: #1a1206;
+    font-family: var(--font-display, 'Rajdhani', sans-serif);
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.spb-easy-save:hover { filter: brightness(1.1); }
+.spb-easy-save:disabled { filter: grayscale(0.7) brightness(0.7); cursor: default; }
+
+/* Teach-me footer link */
+.spb-easy-teach {
+    background: none;
+    border: none;
+    color: var(--text-dim, #7080a0);
+    font-size: 11px;
+    cursor: pointer;
+    text-align: center;
+    padding: 2px;
+}
+.spb-easy-teach:hover { color: var(--accent-gold, #ffaa00); }
+
+/* ── Empty state (no paint loaded) ───────────────────────────────────────── */
+/* [hidden] guards: our display:flex declarations would otherwise BEAT the UA's
+   [hidden]{display:none} — an invisible full-stage/backdrop layer that still
+   eats every click (found live 2026-07-16 in v1). LOAD-BEARING. */
+.spb-easy-empty[hidden] { display: none !important; }
+.spb-easy-result-backdrop[hidden] { display: none !important; }
+.spb-easy-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    max-width: 430px;
+    text-align: center;
+    padding: 30px;
+}
+.spb-easy-empty-icon { font-size: 46px; line-height: 1; }
+.spb-easy-empty-title {
+    font-family: var(--font-display, 'Rajdhani', sans-serif);
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: 0.04em;
+    color: var(--text-bright, #f0f0ff);
+}
+.spb-easy-empty-sub { font-size: 12.5px; line-height: 1.6; color: var(--text-dim, #7080a0); }
+.spb-easy-empty-actions { display: flex; flex-direction: column; gap: 9px; width: 100%; max-width: 330px; margin-top: 4px; }
+.spb-easy-empty-actions button {
+    padding: 13px 16px;
+    border-radius: 11px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.spb-easy-open-paint {
+    border: none;
+    background: linear-gradient(90deg, #ffb300, #ff7a18);
+    color: #1a1206;
+}
+.spb-easy-open-paint:hover { filter: brightness(1.1); }
+.spb-easy-blank-canvas {
+    border: 1px solid var(--border-normal, rgba(255,255,255,0.12));
+    background: var(--bg-card, #0e0e22);
+    color: var(--text, #d8d8e8);
+}
+.spb-easy-blank-canvas:hover { border-color: var(--accent-cyan, #00e5ff); color: var(--accent-cyan, #00e5ff); }
+
+/* ── Result card (success / failure) ─────────────────────────────────────── */
+.spb-easy-result-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(4, 4, 14, 0.72);
+}
+.spb-easy-result {
+    width: min(430px, 88vw);
+    border-radius: 16px;
+    border: 1px solid var(--border-normal, rgba(255,255,255,0.12));
+    background: linear-gradient(180deg, var(--bg-card, #0e0e22), var(--bg-dark, #080818));
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(0,0,0,0.6));
+    padding: 26px 26px 22px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.spb-easy-result-icon { font-size: 42px; line-height: 1; }
+.spb-easy-result-title {
+    font-family: var(--font-display, 'Rajdhani', sans-serif);
+    font-weight: 700;
+    font-size: 21px;
+    letter-spacing: 0.04em;
+    color: var(--text-bright, #f0f0ff);
+}
+.spb-easy-result.success .spb-easy-result-title { color: var(--success, #00ff88); }
+.spb-easy-result.failure .spb-easy-result-title { color: var(--accent-red, #ff4444); }
+.spb-easy-result-body { font-size: 12.5px; line-height: 1.65; color: var(--text, #d8d8e8); }
+.spb-easy-result-body b { color: var(--accent-gold, #ffaa00); }
+.spb-easy-result-actions { display: flex; gap: 9px; justify-content: center; margin-top: 8px; }
+.spb-easy-result-actions button {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.spb-easy-result-done {
+    border: none;
+    background: linear-gradient(90deg, #ffb300, #ff7a18);
+    color: #1a1206;
+}
+.spb-easy-result-done:hover { filter: brightness(1.1); }
+.spb-easy-result-secondary {
+    border: 1px solid var(--border-normal, rgba(255,255,255,0.12));
+    background: transparent;
+    color: var(--text, #d8d8e8);
+}
+.spb-easy-result-secondary:hover { border-color: var(--accent-cyan, #00e5ff); color: var(--accent-cyan, #00e5ff); }
+/* [2026-08-08 E32] The DONE panel printed the destination and left the buyer to
+   go find it. This opens it. Shares the actions row's sizing. */
+.spb-easy-result-folder {
+    border: 1px solid rgba(110, 231, 168, 0.5);
+    background: rgba(110, 231, 168, 0.12);
+    color: #b6f5d4;
+}
+.spb-easy-result-folder:hover { filter: brightness(1.15); }
+.spb-easy-result-folder[hidden] { display: none; }
+.spb-easy-result-folder:disabled { opacity: 0.6; cursor: default; }
+
+/* ── The ✨ Easy Mode button in the Pro toolbar (beside 🎓 Tutorial) ──────── */
+#spbEasySwitchBtn {
+    color: var(--accent-cyan, #00e5ff);
+    white-space: nowrap;
+}
+#spbEasySwitchBtn:hover { color: #a7f3ff; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   V3 ADDITIONS (2026-07-16): fork, by-color wizard, real thumbnails, pick
+   canvas. [hidden] guards on every toggled element — LOAD-BEARING (author
+   display rules beat the hidden attribute).
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Real engine thumbnail inside the row chip (96x48 paint|spec split).
+   Both authored halves stay visible; never replace this with a generated dot. */
+.spb-easy-finish-chip { overflow: hidden; }
+.spb-easy-finish-chip img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 8px;
+}
+.spb-easy-swatch-labels { position:absolute; z-index:2; left:3px; right:3px; bottom:3px; display:grid; grid-template-columns:1fr 1fr; gap:3px; pointer-events:none; }
+.spb-easy-swatch-labels i { padding:2px 3px; border-radius:3px; background:rgba(2,2,14,.82); color:#fff; font:800 7px/1 var(--font-display,'Rajdhani',sans-serif); letter-spacing:.08em; text-align:center; text-shadow:0 1px 2px #000; }
+.spb-easy-thumb-unavailable { position:absolute; z-index:3; inset:0; display:flex; align-items:center; justify-content:center; padding:6px; background:#111327; color:var(--text-dim,#7080a0); font:800 8px/1.2 var(--font-display,'Rajdhani',sans-serif); letter-spacing:.06em; text-align:center; }
+.spb-easy-thumb-unavailable[hidden] { display:none !important; }
+.spb-easy-finish-name i {
+    font-style: normal;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--accent-gold, #ffaa00);
+    border: 1px solid rgba(255, 170, 0, 0.4);
+    border-radius: 4px;
+    padding: 1px 4px;
+    vertical-align: 1px;
+}
+
+/* WHOLE CAR specials-behavior toggle: keep my paint vs finish's full look */
+.spb-easy-wholemode {
+    flex: 0 0 auto;
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 10px;
+}
+.spb-easy-wholemode button {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    align-items: center;
+    padding: 8px 6px;
+    border-radius: 10px;
+    border: 1px solid var(--border-normal, rgba(255,255,255,0.12));
+    background: var(--bg-card, #0e0e22);
+    color: var(--text-dim, #7080a0);
+    font-family: var(--font-display, 'Rajdhani', sans-serif);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+}
+.spb-easy-wholemode button small {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-weight: 400;
+    font-size: 9px;
+    letter-spacing: 0.02em;
+    text-transform: none;
+}
+.spb-easy-wholemode button:hover { border-color: var(--text-dim, #7080a0); }
+.spb-easy-wholemode button.on {
+    border-color: var(--accent-cyan, #00e5ff);
+    color: var(--accent-cyan, #00e5ff);
+    box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.16);
+}
+
+/* SPB-EASY-WHOLE-MIX-20260721: Whole Car is a paint-preserving material
+   composer. One pick remains the instant path; four compact rows are the
+   ceiling so power never turns into a control-room wall. */
+.spb-easy-whole-promise {
+    flex: 0 0 auto;
+    margin: 0 16px 9px;
+    padding: 9px 11px;
+    border: 1px solid rgba(0,255,136,.28);
+    border-radius: 10px;
+    background: rgba(0,255,136,.055);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.spb-easy-whole-promise b { color:var(--success,#00ff88); font:800 10px/1.2 var(--font-display,'Rajdhani',sans-serif); letter-spacing:.09em; }
+.spb-easy-whole-promise span { color:var(--text-dim,#7080a0); font-size:10px; line-height:1.35; }
+.spb-easy-whole-promise small { color:var(--accent-cyan,#00e5ff); font-size:8.5px; line-height:1.3; }
+.spb-easy-whole-stack {
+    flex: 0 0 auto;
+    /* 292px could not hold what the feature advertises. Measured 2026-08-09 at
+       1680x1000 with four materials: content is 432px, so "4. Pearl" was
+       sliced by 37px and both master dials were invisible. The mix is CAPPED AT
+       FOUR, so this panel has a hard maximum - 433px at 1680, 470px at the 1100
+       minimum where the narrower rail wraps more. Sizing to that bound means
+       nothing scrolls and nothing is hidden at any material count. 384px was
+       tried first and looked fine by measurement while the pinned dials still
+       covered rows 3-4 on screen. The rail remains the escape scroll on short
+       viewports (max-height:820px block below). */
+    max-height: 490px;
+    overflow-y: auto;
+    margin: 0 16px 8px;
+    border: 1px solid var(--border,#1a1a3a);
+    border-radius: 12px;
+    background: rgba(12,12,32,.82);
+}
+/* FINISH STRENGTH and DETAIL SIZE drive the WHOLE blend, so a list scroller
+   must never be the thing that hides them - at four materials it hid both.
+   Pinned to the floor of the scroller, they survive any material count.
+   The backgrounds are deliberately OPAQUE: a see-through sticky lets the rows
+   bleed through and reads as a rendering fault. */
+.spb-easy-whole-stack .spb-easy-mix-scale {
+    position: sticky;
+    z-index: 2;
+    background: rgba(12,12,32,.97);
+}
+.spb-easy-whole-stack .spb-easy-mix-strength {
+    bottom: 52px;
+    border-top: 1px solid rgba(255,255,255,.07);
+}
+.spb-easy-whole-stack .spb-easy-mix-scale:last-child { bottom: 0; }
+.spb-easy-mix-empty { padding:12px; display:flex; flex-direction:column; gap:3px; }
+.spb-easy-mix-empty b { color:var(--accent-gold,#ffaa00); font:800 12px/1.2 var(--font-display,'Rajdhani',sans-serif); letter-spacing:.08em; }
+.spb-easy-mix-empty span { color:var(--text-dim,#7080a0); font-size:10px; line-height:1.4; }
+.spb-easy-mix-head { padding:8px 10px 6px; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; border-bottom:1px solid rgba(255,255,255,.07); }
+.spb-easy-mix-head > span { display:flex; flex-direction:column; gap:1px; }
+.spb-easy-mix-head b { color:var(--accent-cyan,#00e5ff); font:800 11px/1 var(--font-display,'Rajdhani',sans-serif); letter-spacing:.09em; }
+.spb-easy-mix-head small { color:var(--success,#00ff88); font:800 8px/1 var(--font-body,'Inter',sans-serif); letter-spacing:.06em; }
+.spb-easy-mix-head em { max-width:190px; color:var(--text-dim,#7080a0); font-size:9px; line-height:1.3; font-style:normal; text-align:right; }
+.spb-easy-mix-row {
+    display:grid;
+    grid-template-columns:78px minmax(0,1fr) 28px;
+    grid-template-rows:auto auto;
+    align-items:center;
+    column-gap:9px;
+    row-gap:2px;
+    padding:7px 8px;
+    border-bottom:1px solid rgba(255,255,255,.055);
+}
+.spb-easy-mix-row.pulse { box-shadow:inset 0 0 0 2px rgba(0,229,255,.65); }
+body:not(.fx-off) .spb-easy-mix-row.pulse { animation:spbEasyMixPulse .7s ease-out; }
+@keyframes spbEasyMixPulse { 0%{background:rgba(0,229,255,.22)} 100%{background:transparent} }
+.spb-easy-mix-thumb { grid-column:1; grid-row:1 / span 2; width:76px; height:42px; border-radius:7px; }
+.spb-easy-mix-copy { grid-column:2; grid-row:1; min-width:0; display:flex; flex-direction:column; gap:1px; }
+.spb-easy-mix-copy b { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-bright,#f0f0ff); font:800 11px/1.2 var(--font-display,'Rajdhani',sans-serif); letter-spacing:.03em; }
+.spb-easy-mix-copy small { color:var(--text-dim,#7080a0); font-size:8px; letter-spacing:.05em; }
+.spb-easy-mix-copy i { color:var(--accent-cyan,#00e5ff); font-style:normal; font-weight:800; }
+.spb-easy-mix-row input[type="range"] { grid-column:2; grid-row:2; width:100%; min-width:0; margin:2px 0 0; accent-color:var(--accent-cyan,#00e5ff); }
+.spb-easy-mix-row input[type="range"]:disabled { opacity:.42; }
+.spb-easy-mix-row > button { grid-column:3; grid-row:1 / span 2; width:26px; height:30px; border:1px solid rgba(255,90,90,.28); border-radius:7px; background:rgba(255,60,60,.06); color:#ff7a7a; font-size:17px; line-height:1; cursor:pointer; }
+.spb-easy-mix-row > button:hover { border-color:#ff6666; background:rgba(255,60,60,.15); }
+.spb-easy-mix-scale { padding:8px 10px 9px; display:grid; grid-template-columns:155px 1fr; align-items:center; gap:10px; }
+.spb-easy-mix-scale label { color:var(--text,#d8d8e8); font:800 9px/1.2 var(--font-display,'Rajdhani',sans-serif); letter-spacing:.06em; }
+.spb-easy-mix-scale label b { color:var(--accent-cyan,#00e5ff); }
+.spb-easy-mix-scale label small { display:block; margin-top:2px; color:var(--text-dim,#7080a0); font:400 8px/1.2 var(--font-body,'Inter',sans-serif); letter-spacing:0; }
+.spb-easy-mix-scale input { width:100%; accent-color:var(--accent-cyan,#00e5ff); }
+.spb-easy-mix-strength { border-bottom:1px solid rgba(255,255,255,.055); background:rgba(0,229,255,.025); }
+.spb-easy-mix-notice { flex:0 0 auto; min-height:14px; padding:0 16px 5px; color:var(--accent-gold,#ffaa00); font-size:9px; line-height:1.25; }
+
+/* Cursor color loupe on the pick canvas */
+.spb-easy-loupe[hidden] { display: none; }
+.spb-easy-loupe {
+    position: absolute;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 9px 4px 5px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(8, 8, 24, 0.92);
+    color: var(--text-bright, #f0f0ff);
+    font-family: var(--font-mono, 'Consolas', monospace);
+    font-size: 11px;
+    pointer-events: none;
+    white-space: nowrap;
+}
+.spb-easy-loupe-dot {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.5);
+    display: inline-block;
+}
+
+/* Rail head with back button */
+.spb-easy-rail-head { display: flex; align-items: flex-start; gap: 4px; flex: 0 0 auto; }
+.spb-easy-head-label { flex: 1 1 auto; }
+.spb-easy-back {
+    flex: 0 0 auto;
+    margin: 12px 0 0 10px;
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    border: 1px solid var(--border-normal, rgba(255,255,255,0.12));
+    background: var(--bg-card, #0e0e22);
+    color: var(--text, #d8d8e8);
+    font-size: 15px;
+    cursor: pointer;
+}
+.spb-easy-back:hover { border-color: var(--accent-cyan, #00e5ff); color: var(--accent-cyan, #00e5ff); }
+
+/* Fork cards */
+.spb-easy-fork {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 4px 16px 14px;
+    overflow-y: auto;
+}
+.spb-easy-fork-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+    padding: 16px 16px 14px;
+    border-radius: 14px;
+    border: 2px solid var(--border, #1a1a3a);
+    background: var(--bg-card, #0e0e22);
+    color: inherit;
+    font-family: inherit;
+    cursor: pointer;
+}
+body:not(.fx-off) .spb-easy-fork-card { transition: border-color 140ms ease, transform 140ms ease; }
+.spb-easy-fork-card:hover { border-color: var(--accent-cyan, #00e5ff); }
+body:not(.fx-off) .spb-easy-fork-card:hover { transform: translateY(-2px); }
+.spb-easy-fork-icon { font-size: 30px; line-height: 1; }
+.spb-easy-fork-title {
+    font-family: var(--font-display, 'Rajdhani', sans-serif);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.10em;
+    color: var(--text-bright, #f0f0ff);
+}
+.spb-easy-fork-desc { font-size: 11.5px; line-height: 1.55; color: var(--text-dim, #7080a0); }
+.spb-easy-fork-desc b { color: var(--accent-gold, #ffaa00); }
+
+/* Source-pixel pick canvas + banner */
+#spbEasyPickCanvas[hidden] { display: none; }
+#spbEasyPickCanvas {
+    max-width: min(100%, 1100px);
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(0,0,0,0.6));
+    background: var(--bg-card, #0e0e22);
+    cursor: crosshair;
+}
+.spb-easy-pick-banner[hidden] { display: none; }
+.spb-easy-pick-banner {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 170, 0, 0.55);
+    background: rgba(20, 14, 2, 0.92);
+    color: var(--accent-gold, #ffaa00);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    pointer-events: none;
+    z-index: 5;
+    white-space: nowrap;
+}
+
+/* By-color wizard cards */
+.spb-easy-bc-card {
+    flex: 0 0 auto;
+    margin: 0 16px 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border, #1a1a3a);
+    background: var(--bg-card, #0e0e22);
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+.spb-easy-bc-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display, 'Rajdhani', sans-serif);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.03em;
+    color: var(--text-bright, #f0f0ff);
+}
+.spb-easy-bc-copy { font-size: 11px; line-height: 1.6; color: var(--text-dim, #7080a0); }
+.spb-easy-bc-copy b { color: var(--accent-gold, #ffaa00); }
+.spb-easy-bc-choice { display: flex; gap: 8px; flex-wrap: wrap; }
+.spb-easy-bc-primary,
+.spb-easy-bc-secondary {
+    padding: 9px 13px;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.spb-easy-bc-primary {
+    border: none;
+    background: linear-gradient(90deg, #ffb300, #ff7a18);
+    color: #1a1206;
+    flex: 1 1 auto;
+}
+.spb-easy-bc-primary:hover { filter: brightness(1.1); }
+.spb-easy-bc-secondary {
+    border: 1px solid var(--border-normal, rgba(255,255,255,0.12));
+    background: transparent;
+    color: var(--text, #d8d8e8);
+}
+.spb-easy-bc-secondary:hover { border-color: var(--accent-cyan, #00e5ff); color: var(--accent-cyan, #00e5ff); }
+.spb-easy-bc-secondary.on {
+    border-color: var(--accent-cyan, #00e5ff);
+    color: var(--accent-cyan, #00e5ff);
+    box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.16);
+}
+
+/* Tolerance / slider rows */
+.spb-easy-tol-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--text, #d8d8e8);
+}
+.spb-easy-tol-row label { flex: 0 0 92px; color: var(--text-dim, #7080a0); font-weight: 700; }
+.spb-easy-tol-row label b { color: var(--accent-cyan, #00e5ff); }
+.spb-easy-tol-row input[type="range"] { flex: 1 1 auto; min-width: 0; accent-color: var(--accent-cyan, #00e5ff); }
+.spb-easy-tol-row input[type="color"] {
+    width: 44px; height: 30px;
+    padding: 0; border: 1px solid var(--border-normal, rgba(255,255,255,0.12));
+    border-radius: 7px; background: transparent; cursor: pointer;
+}
+
+/* Recolor panel */
+.spb-easy-recolor[hidden] { display: none !important; }
+.spb-easy-recolor {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px dashed rgba(0, 229, 255, 0.35);
+    background: rgba(0, 229, 255, 0.05);
+}
+
+/* Zone chips ("your colors so far") */
+.spb-easy-zchips {
+    flex: 0 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 0 16px 10px;
+}
+.spb-easy-zchip {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 7px 5px 6px;
+    border-radius: 999px;
+    border: 1px solid var(--border, #1a1a3a);
+    background: var(--bg-card, #0e0e22);
+    font-size: 11px;
+    color: var(--text, #d8d8e8);
+    cursor: pointer;
+}
+.spb-easy-zchip:hover { border-color: var(--text-dim, #7080a0); }
+.spb-easy-zchip.current { border-color: var(--accent-cyan, #00e5ff); box-shadow: 0 0 0 2px rgba(0,229,255,0.16); }
+.spb-easy-zchip-swatch {
+    flex: 0 0 auto;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.35);
+    display: inline-block;
+}
+.spb-easy-zchip-text { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.spb-easy-zchip-x {
+    border: none; background: none;
+    color: var(--text-dim, #7080a0);
+    font-size: 14px; line-height: 1;
+    padding: 0 2px; cursor: pointer;
+}
+.spb-easy-zchip-x:hover { color: var(--accent-red, #ff4444); }
+
+/* ── Reduced motion: kill everything animated above ──────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .spb-easy-painting-dot { animation: none; }
+    .spb-easy-finish,
+    .spb-easy-fork-card,
+    .spb-easy-fork-card:hover,
+    .spb-easy-progress-fill { transition: none; transform: none; }
+    .spb-easy-mix-row.pulse { animation: none !important; }
+}
+
+/* 2026-07-20 owner-feedback pass: visible source/live/spec proof, collapsed finish
+   families, and a truthful in-flow iRacing destination contract. */
+.spb-easy-stage { align-items: stretch; padding: 16px; }
+.spb-easy-proof { width: 100%; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+.spb-easy-proof-main { min-height: 0; display: flex; align-items: center; justify-content: center; gap: 14px; flex: 1 1 auto; }
+.spb-easy-proof-card { min-width: 0; max-height: 100%; display: flex; flex-direction: column; gap: 3px; padding: 10px; border: 1px solid var(--border,#1a1a3a); border-radius: 13px; background:rgba(10,10,28,.72); }
+.spb-easy-proof-card > b, .spb-easy-channel > b { font:700 11px/1 var(--font-display,'Rajdhani',sans-serif); letter-spacing:.1em; color:var(--accent-cyan,#00e5ff); }
+.spb-easy-proof-card > span { font-size:9.5px; color:var(--text-dim,#7080a0); }
+.spb-easy-proof-media { position:relative; min-height:0; aspect-ratio:1; display:grid; place-items:center; overflow:hidden; border-radius:9px; background:#05050d; }
+.spb-easy-material-sim-note { position:absolute; z-index:4; right:8px; bottom:8px; padding:4px 7px; border:1px solid rgba(0,229,255,.38); border-radius:999px; background:rgba(4,7,20,.86); color:var(--accent-cyan,#00e5ff); font:800 7px/1 var(--font-display,'Rajdhani',sans-serif); letter-spacing:.08em; font-style:normal; pointer-events:none; }
+.spb-easy-material-sim-note[hidden] { display:none !important; }
+.spb-easy-source-card { display:none; }
+.spb-easy-live-card { flex:0 1 min(78vh,900px); width:min(78vh,900px); }
+.spb-easy-proof-on .spb-easy-source-card, .spb-easy-proof-on .spb-easy-live-card { display:flex; flex:1 1 0; width:auto; }
+#spbEasySourceCanvas, #spbEasyLiveCanvas, #spbEasyPreviewImg, #spbEasyPickCanvas { display:block; width:100%; height:100%; max-width:none; max-height:none; object-fit:contain; border-radius:8px; box-shadow:none; }
+/* SPB-EASY-LIVE-20260721: the author-level display:block rule above used to
+   override HTML's hidden presentation for the untouched live canvas. Both the
+   old source copy and the real rendered image stayed in this grid, so the first
+   one visually covered every Color By Base Type / HSB update. Hidden must win. */
+#spbEasySourceCanvas[hidden], #spbEasyLiveCanvas[hidden], #spbEasyPreviewImg[hidden] { display:none !important; }
+#spbEasyPickCanvas { position:absolute; inset:0; z-index:3; cursor:crosshair; }
+#spbEasyPickCanvas:focus-visible { outline:3px solid #7af3ff; outline-offset:-3px; }
+#spbEasyPickCanvas[hidden] { display:none; }
+.spb-easy-channel-strip { display:none; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; flex:0 0 128px; }
+.spb-easy-proof-on .spb-easy-channel-strip, .spb-easy-haspaint .spb-easy-channel-strip { display:grid; }
+.spb-easy-channel { min-width:0; display:flex; flex-direction:column; gap:5px; padding:8px; border:1px solid var(--border,#1a1a3a); border-radius:10px; background:rgba(10,10,28,.82); }
+.spb-easy-channel canvas { width:100%; min-height:0; height:88px; object-fit:contain; image-rendering:auto; border-radius:6px; background:#05050d; }
+.spb-easy-pick-banner { top:14px; }
+.spb-easy-stage-hint { bottom:8px; }
+.spb-easy-finishes { gap:8px; }
+.spb-easy-finish-section { flex:0 0 auto; border:1px solid var(--border,#1a1a3a); border-radius:10px; background:rgba(14,14,40,.75); overflow:hidden; }
+.spb-easy-finish-section > summary { list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; }
+.spb-easy-finish-section > summary::-webkit-details-marker { display:none; }
+.spb-easy-finish-section > summary span { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.spb-easy-finish-section > summary b { font:700 12px/1.1 var(--font-display,'Rajdhani',sans-serif); letter-spacing:.08em; color:var(--accent-gold,#ffaa00); }
+.spb-easy-finish-section > summary small { font-size:9.5px; line-height:1.3; color:var(--text-dim,#7080a0); }
+.spb-easy-finish-section > summary em { flex:0 0 auto; font-style:normal; font-size:9.5px; color:var(--accent-cyan,#00e5ff); }
+.spb-easy-finish-section[open] > summary { border-bottom:1px solid var(--border,#1a1a3a); }
+.spb-easy-finish-section-rows { display:flex; flex-direction:column; gap:6px; padding:8px; }
+.spb-easy-destination { display:flex; flex-direction:column; gap:6px; padding:9px; border:1px solid rgba(255,170,0,.32); border-radius:10px; background:rgba(255,170,0,.05); }
+.spb-easy-destination label { display:flex; flex-direction:column; gap:4px; font:700 10px/1 var(--font-display,'Rajdhani',sans-serif); letter-spacing:.08em; color:var(--accent-gold,#ffaa00); }
+.spb-easy-destination select, .spb-easy-destination input[type="search"], .spb-easy-color-source select { width:100%; min-width:0; padding:7px 9px; border:1px solid var(--border-normal,rgba(255,255,255,.12)); border-radius:7px; background:var(--bg-card,#0e0e22); color:var(--text-bright,#f0f0ff); font-size:11px; }
+.spb-easy-destination > small, .spb-easy-file-proof { color:var(--text-dim,#7080a0); font-size:9.5px; line-height:1.35; }
+.spb-easy-file-proof b { color:var(--success,#00ff88); }
+.spb-easy-number-choice { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.spb-easy-number-choice button { padding:7px; border:1px solid var(--border-normal,rgba(255,255,255,.12)); border-radius:7px; background:transparent; color:var(--text-dim,#7080a0); font:700 10px/1.1 var(--font-display,'Rajdhani',sans-serif); cursor:pointer; }
+.spb-easy-number-choice button small { display:block; margin-top:2px; font:400 9px/1 var(--font-body,'Inter',sans-serif); }
+.spb-easy-number-choice button.on { border-color:var(--accent-cyan,#00e5ff); color:var(--accent-cyan,#00e5ff); background:rgba(0,229,255,.07); }
+.spb-easy-bc-eyebrow { font:700 9px/1 var(--font-display,'Rajdhani',sans-serif); letter-spacing:.13em; color:var(--accent-gold,#ffaa00); }
+.spb-easy-bc-big-choice > button { flex:1 1 0; min-height:54px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; }
+.spb-easy-bc-big-choice small { font-size:9px; font-weight:400; color:var(--text-dim,#7080a0); }
+.spb-easy-color-source[hidden] { display:none !important; }
+.spb-easy-color-source label { display:flex; align-items:center; gap:10px; font-size:10px; color:var(--text-dim,#7080a0); }
+.spb-easy-color-source label input[type=color] { width:54px; height:32px; }
+.spb-easy-color-source label select { flex:1 1 auto; }
+.spb-easy-base-choice { width:100%; min-height:74px; display:flex; align-items:center; gap:10px; padding:7px; border:1px solid var(--accent-cyan,#00e5ff); border-radius:9px; background:rgba(0,229,255,.055); color:var(--text-bright,#f0f0ff); font-family:inherit; text-align:left; cursor:pointer; }
+.spb-easy-base-choice:hover { background:rgba(0,229,255,.10); box-shadow:0 0 0 2px rgba(0,229,255,.10); }
+.spb-easy-base-choice > span:last-child { min-width:0; display:flex; flex:1 1 auto; flex-direction:column; gap:4px; }
+.spb-easy-base-choice b { font:800 12px/1.1 var(--font-display,'Rajdhani',sans-serif); letter-spacing:.04em; color:var(--text-bright,#f0f0ff); }
+.spb-easy-base-choice small { font-size:8.5px; line-height:1.25; color:var(--accent-cyan,#00e5ff); }
+.spb-easy-base-choice.empty { min-height:58px; flex-direction:column; align-items:flex-start; justify-content:center; padding:10px 12px; border-style:dashed; }
+.spb-easy-base-choice-thumb { width:108px; height:54px; }
+.spb-easy-base-finishes .spb-easy-finish-chip { box-shadow:0 0 0 1px rgba(0,229,255,.08), 0 2px 6px rgba(0,0,0,.4); }
+@media (max-width:1100px) {
+  .spb-easy-rail { flex-basis: clamp(320px, 32vw, 430px); }
+  .spb-easy-channel-strip { flex-basis:108px; gap:6px; }
+  .spb-easy-channel canvas { height:68px; }
+}
+
+/* Beta laptop safety: four materials, the real catalog, and the iRacing
+   destination must remain reachable on a short desktop viewport. Compact the
+   fixed pieces first; at extreme heights the rail itself becomes the escape
+   scroll instead of silently clipping SAVE TO iRACING below the fold. */
+@media (max-height:820px) {
+  .spb-easy-topbar { padding-top:6px; padding-bottom:6px; }
+  .spb-easy-rail { overflow-y:auto; }
+  .spb-easy-step-label { padding-top:8px; padding-bottom:5px; }
+  .spb-easy-whole-promise { margin-bottom:5px; padding:6px 9px; }
+  .spb-easy-whole-promise small { display:none; }
+  .spb-easy-whole-stack { max-height:210px; margin-bottom:5px; }
+  .spb-easy-mix-row { padding-top:5px; padding-bottom:5px; }
+  .spb-easy-mix-scale { padding-top:5px; padding-bottom:6px; }
+  .spb-easy-finder { padding-bottom:6px; }
+  .spb-easy-controls { gap:6px; padding-top:7px; padding-bottom:8px; }
+  .spb-easy-destination { gap:4px; padding:6px; }
+  .spb-easy-save { padding-top:9px; padding-bottom:9px; }
+}
+@media (max-height:700px) {
+  .spb-easy-rail { overflow-y:auto; }
+  .spb-easy-whole-stack { max-height:170px; }
+  .spb-easy-finishes { flex:0 0 auto; min-height:clamp(160px, 30vh, 300px); }   /* was 110px — one-look sliver */
+  .spb-easy-whole-promise span,
+  .spb-easy-step-label small,
+  .spb-easy-file-proof,
+  .spb-easy-teach { display:none; }
+}
+
+/* [2026-08-06 easy-loop] Buyers must never see the dev error counter while in
+   Easy Mode — errors still record (Ctrl+Shift+E) and Pro still shows the badge. */
+body.spb-easy-on #spbErrorBadge { display: none !important; }
+
+/* The pick-flash overlay needs the source media box as its positioning parent. */
+.spb-easy-proof-media { position: relative; }
+
+/* [2026-08-06 easy-loop #4] STEP 1 card on the fork rail. */
+body.spb-easy-on .spb-easy-step1-card {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin: 0 0 14px 0; padding: 12px 14px;
+  border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px;
+  background: rgba(14, 26, 45, 0.55);
+}
+body.spb-easy-on .spb-easy-step1-card .spb-easy-step1-info { min-width: 0; }
+body.spb-easy-on .spb-easy-step1-card b {
+  display: block; font-size: 12px; letter-spacing: 1.5px; color: #fbbf24;
+}
+body.spb-easy-on .spb-easy-step1-card small {
+  display: block; margin-top: 3px; font-size: 11.5px; color: #9fb2d9;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+body.spb-easy-on #spbEasyLoadPaint {
+  flex: 0 0 auto; padding: 10px 16px; border-radius: 10px; cursor: pointer;
+  border: 1px solid rgba(56, 189, 248, 0.55); color: #dff3ff; font-weight: 700;
+  font-size: 12.5px; letter-spacing: 0.6px;
+  background: linear-gradient(180deg, rgba(24, 48, 82, 0.9), rgba(12, 26, 48, 0.95));
+}
+body.spb-easy-on #spbEasyLoadPaint small {
+  display: block; margin-top: 2px; font-size: 9.5px; font-weight: 500;
+  letter-spacing: 1px; color: #8fb8d8;
+}
+body.spb-easy-on #spbEasyLoadPaint:hover { border-color: #38bdf8; }
+
+/* [2026-08-08 easy-loop iter5] The rail scrolls now (iter4) — which means the
+   SAVE TO iRACING button could sit just below the fold once a look is applied
+   (caught by playing the save endgame: the click landed outside the viewport).
+   The action row is STICKY inside the scrolling rail: the middle content
+   scrolls, the primary CTA never leaves the screen. */
+body.spb-easy-on .spb-easy-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  background: linear-gradient(180deg, rgba(10, 10, 28, 0), rgba(10, 10, 28, 0.94) 34%);
+}
+
+/* [2026-08-08 E1/E3/E5] Safety controls in the Easy topbar: undo/redo/start-over
+   plus the quiet "Saved" reassurance. Sits between the tagline and PRO MODE. */
+body.spb-easy-on .spb-easy-history {
+  display: flex; align-items: center; gap: 6px; margin-left: auto; margin-right: 10px;
+}
+body.spb-easy-on .spb-easy-histbtn {
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+  min-width: 62px; padding: 6px 10px; cursor: pointer;
+  border: 1px solid rgba(120, 150, 220, 0.34); border-radius: 9px;
+  background: rgba(14, 22, 40, 0.72); color: #cfe0ff;
+  font: 700 10.5px/1.05 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.09em;
+}
+body.spb-easy-on .spb-easy-histbtn small {
+  display: block; margin-top: 2px; max-width: 108px; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+  font: 500 9px/1.1 system-ui, sans-serif; letter-spacing: 0.02em; color: #8fa6cc;
+}
+body.spb-easy-on .spb-easy-histbtn:hover:not(:disabled) { border-color: #38bdf8; color: #eaf6ff; }
+body.spb-easy-on .spb-easy-histbtn:disabled { opacity: 0.34; cursor: default; }
+body.spb-easy-on .spb-easy-startover { border-color: rgba(255, 122, 24, 0.42); color: #ffcf9e; }
+body.spb-easy-on .spb-easy-startover:hover { border-color: #ff7a18; color: #fff0e0; }
+body.spb-easy-on .spb-easy-saved {
+  font: 700 10px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.1em;
+  color: #6ee7a8; padding: 0 4px;
+}
+body.spb-easy-on .spb-easy-result-retry {
+  padding: 9px 18px; border-radius: 10px; cursor: pointer;
+  border: 1px solid #ffb300; background: linear-gradient(90deg, #ffb300, #ff7a18);
+  color: #1a1206; font: 700 13px/1 var(--font-display, 'Rajdhani', sans-serif);
+  letter-spacing: 0.06em;
+}
+body.spb-easy-on .spb-easy-result-retry:hover { filter: brightness(1.08); }
+@media (max-width: 1200px) {
+  body.spb-easy-on .spb-easy-tagline { display: none; }
+  body.spb-easy-on .spb-easy-histbtn small { display: none; }
+}
+
+/* [2026-08-08 E6/E7] INSPECT — full-screen zoom + before/after wipe. */
+body.spb-easy-on .spb-easy-inspect-btn {
+  position: absolute; top: 8px; right: 8px; z-index: 4;
+  padding: 5px 10px; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(120, 200, 255, 0.42); background: rgba(6, 12, 24, 0.82);
+  color: #cfeaff; font: 700 10px/1 var(--font-display, 'Rajdhani', sans-serif);
+  letter-spacing: 0.1em; opacity: 0.85;
+}
+body.spb-easy-on .spb-easy-inspect-btn:hover { opacity: 1; border-color: #38bdf8; color: #eaf8ff; }
+body.spb-easy-on .spb-easy-proof-card { position: relative; }
+
+body.spb-easy-on .spb-easy-inspect-backdrop {
+  position: fixed; inset: 0; z-index: 21500; background: rgba(3, 4, 10, 0.93);
+  display: flex; align-items: center; justify-content: center;
+}
+body.spb-easy-on .spb-easy-inspect-backdrop[hidden] { display: none; }
+body.spb-easy-on .spb-easy-inspect {
+  width: 96vw; height: 94vh; display: flex; flex-direction: column;
+  border: 1px solid rgba(120, 150, 220, 0.3); border-radius: 14px;
+  background: #0a0a14; box-shadow: 0 24px 80px rgba(0, 0, 0, 0.8); overflow: hidden;
+}
+body.spb-easy-on .spb-easy-inspect-head {
+  display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+  border-bottom: 1px solid rgba(120, 150, 220, 0.22);
+}
+body.spb-easy-on .spb-easy-inspect-head b {
+  font: 800 13px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.12em; color: #ffd27a;
+}
+body.spb-easy-on .spb-easy-inspect-head span { font-size: 11px; color: #8fa6cc; }
+body.spb-easy-on .spb-easy-inspect-spacer { flex: 1 1 auto; }
+body.spb-easy-on .spb-easy-inspect-head button {
+  padding: 6px 12px; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(120, 150, 220, 0.4); background: rgba(14, 22, 40, 0.8);
+  color: #cfe0ff; font: 700 11px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.08em;
+}
+body.spb-easy-on .spb-easy-inspect-head button:hover { border-color: #38bdf8; color: #eaf6ff; }
+body.spb-easy-on .spb-easy-inspect-stage {
+  position: relative; flex: 1 1 auto; min-height: 0; cursor: grab; overflow: hidden;
+}
+body.spb-easy-on .spb-easy-inspect-stage.is-panning { cursor: grabbing; }
+body.spb-easy-on .spb-easy-inspect-stage canvas { display: block; }
+body.spb-easy-on .spb-easy-inspect-zoom {
+  position: absolute; left: 12px; bottom: 12px; padding: 4px 9px; border-radius: 7px;
+  background: rgba(4, 8, 16, 0.82); color: #9fd4ff;
+  font: 700 11px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.08em;
+  pointer-events: none;
+}
+body.spb-easy-on .spb-easy-inspect-foot {
+  display: flex; align-items: center; gap: 14px; padding: 10px 16px;
+  border-top: 1px solid rgba(120, 150, 220, 0.22);
+}
+body.spb-easy-on .spb-easy-inspect-foot[hidden] { display: none; }
+body.spb-easy-on .spb-easy-inspect-foot label {
+  display: flex; align-items: center; gap: 10px; flex: 1 1 auto;
+  font: 700 10.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.1em; color: #9fb2d9;
+}
+body.spb-easy-on .spb-easy-inspect-foot input[type="range"] { flex: 1 1 auto; }
+body.spb-easy-on .spb-easy-inspect-foot button {
+  padding: 7px 14px; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(120, 150, 220, 0.4); background: rgba(14, 22, 40, 0.8);
+  color: #cfe0ff; font: 700 11px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.08em;
+}
+
+/* [E9] plain-language captions under each spec channel */
+body.spb-easy-on .spb-easy-channel i {
+  display: block; margin-top: 2px; font-style: normal;
+  font: 500 9px/1.25 system-ui, sans-serif; color: #7f93b5; letter-spacing: 0.02em;
+}
+
+/* [2026-08-08 E11/E12/E17] favourites hearts, and the MY LOOKS reuse row. */
+body.spb-easy-on .spb-easy-fav {
+  position: absolute; top: 6px; right: 8px; z-index: 3; line-height: 1;
+  font-size: 15px; color: #6c7f9e; cursor: pointer; user-select: none;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+body.spb-easy-on .spb-easy-fav:hover { color: #ff8fb0; transform: scale(1.12); }
+body.spb-easy-on .spb-easy-fav.on { color: #ff5f8d; }
+body.spb-easy-on .spb-easy-finish { position: relative; }
+
+body.spb-easy-on .spb-easy-myloooks { padding: 0 16px 10px; }
+body.spb-easy-on .spb-easy-mylooks-row { display: flex; align-items: center; gap: 8px; }
+body.spb-easy-on .spb-easy-mylooks-row button,
+body.spb-easy-on .spb-easy-mylooks-row select {
+  padding: 8px 12px; border-radius: 9px; cursor: pointer;
+  border: 1px solid rgba(120, 150, 220, 0.36); background: rgba(14, 22, 40, 0.78);
+  color: #cfe0ff; font: 700 11px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.07em;
+}
+body.spb-easy-on #spbEasySaveLook { flex: 0 0 auto; border-color: rgba(255, 179, 0, 0.45); color: #ffd7a1; }
+body.spb-easy-on #spbEasySaveLook:hover { border-color: #ffb300; color: #fff1d8; }
+body.spb-easy-on #spbEasyLoadLook { flex: 1 1 auto; min-width: 0; }
+body.spb-easy-on #spbEasyDeleteLook { flex: 0 0 auto; padding: 8px 10px; }
+body.spb-easy-on .spb-easy-mylooks-empty {
+  flex: 1 1 auto; font-size: 10.5px; color: #7f93b5; letter-spacing: 0.04em;
+}
+
+/* [2026-08-08 E21] THE PLAN — every picked colour, its finish, its coverage. */
+body.spb-easy-on .spb-easy-planlist {
+  display: flex; flex-direction: column; gap: 6px; padding: 0 16px 12px;
+}
+body.spb-easy-on .spb-easy-planrow {
+  display: flex; align-items: center; gap: 10px; width: 100%; cursor: pointer;
+  padding: 8px 10px; border-radius: 10px; text-align: left;
+  border: 1px solid rgba(120, 150, 220, 0.2); background: rgba(12, 18, 34, 0.6);
+}
+body.spb-easy-on .spb-easy-planrow:hover { border-color: rgba(56, 189, 248, 0.55); }
+body.spb-easy-on .spb-easy-planrow.current {
+  border-color: #38bdf8; background: rgba(20, 44, 74, 0.72);
+}
+body.spb-easy-on .spb-easy-planrow i {
+  flex: 0 0 auto; width: 20px; height: 20px; border-radius: 6px;
+  background: var(--plan-color, #888); border: 1px solid rgba(255,255,255,0.25);
+}
+body.spb-easy-on .spb-easy-planrow-main { flex: 1 1 auto; min-width: 0; }
+body.spb-easy-on .spb-easy-planrow-main b {
+  display: block; font: 700 12px/1.2 var(--font-display, 'Rajdhani', sans-serif);
+  letter-spacing: 0.05em; color: #e8f1ff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+body.spb-easy-on .spb-easy-planrow-main small {
+  display: block; margin-top: 2px; font-size: 10px; color: #8fa6cc; letter-spacing: 0.02em;
+}
+body.spb-easy-on .spb-easy-planrow em {
+  flex: 0 0 auto; font-style: normal;
+  font: 700 9.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.12em; color: #7fd7ff;
+}
+
+/* [2026-08-08 E8] COMPARE — real renders held side by side, pick one to restore. */
+body.spb-easy-on .spb-easy-compare-row { margin-bottom: 6px; }
+body.spb-easy-on #spbEasyCompareAdd { flex: 1 1 auto; border-color: rgba(110, 231, 168, 0.4); color: #b6f5d4; }
+body.spb-easy-on #spbEasyCompareAdd:hover { border-color: #6ee7a8; color: #e8fff4; }
+body.spb-easy-on #spbEasyCompareOpen { flex: 0 0 auto; border-color: rgba(56, 189, 248, 0.5); color: #cfeaff; }
+body.spb-easy-on #spbEasyCompareOpen[hidden] { display: none; }
+
+body.spb-easy-on .spb-easy-compare-backdrop {
+  position: fixed; inset: 0; z-index: 21600; background: rgba(3, 4, 10, 0.93);
+  display: flex; align-items: center; justify-content: center;
+}
+body.spb-easy-on .spb-easy-compare-backdrop[hidden] { display: none; }
+body.spb-easy-on .spb-easy-compare {
+  width: 94vw; height: 92vh; display: flex; flex-direction: column;
+  border: 1px solid rgba(120, 150, 220, 0.3); border-radius: 14px;
+  background: #0a0a14; box-shadow: 0 24px 80px rgba(0, 0, 0, 0.8); overflow: hidden;
+}
+body.spb-easy-on .spb-easy-compare-head {
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  border-bottom: 1px solid rgba(120, 150, 220, 0.22);
+}
+body.spb-easy-on .spb-easy-compare-head b {
+  font: 800 14px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.12em; color: #ffd27a;
+}
+body.spb-easy-on .spb-easy-compare-head span { font-size: 11.5px; color: #8fa6cc; }
+body.spb-easy-on .spb-easy-compare-spacer { flex: 1 1 auto; }
+body.spb-easy-on .spb-easy-compare-head button {
+  padding: 7px 13px; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(120, 150, 220, 0.4); background: rgba(14, 22, 40, 0.8);
+  color: #cfe0ff; font: 700 11px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.08em;
+}
+body.spb-easy-on .spb-easy-compare-grid {
+  flex: 1 1 auto; min-height: 0; overflow: auto; padding: 16px;
+  display: grid; gap: 16px; align-content: start;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+}
+body.spb-easy-on .spb-easy-compare-card {
+  margin: 0; border: 1px solid rgba(120, 150, 220, 0.26); border-radius: 12px;
+  background: rgba(12, 18, 34, 0.7); overflow: hidden; display: flex; flex-direction: column;
+}
+body.spb-easy-on .spb-easy-compare-card img { width: 100%; height: auto; display: block; background: #06060d; }
+body.spb-easy-on .spb-easy-compare-card figcaption {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  border-top: 1px solid rgba(120, 150, 220, 0.2);
+}
+body.spb-easy-on .spb-easy-compare-card figcaption b {
+  flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font: 700 12px/1.2 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.05em; color: #e8f1ff;
+}
+body.spb-easy-on .spb-easy-compare-card figcaption span { display: flex; gap: 6px; flex: 0 0 auto; }
+body.spb-easy-on .spb-easy-compare-card button {
+  padding: 6px 12px; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(56, 189, 248, 0.45); background: rgba(14, 30, 52, 0.85);
+  color: #cfeaff; font: 700 10.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.08em;
+}
+body.spb-easy-on .spb-easy-compare-card button:hover { border-color: #38bdf8; color: #eaf8ff; }
+
+/* [2026-08-08] Compact one-line toolbar: COMPARE + SAVE LOOK + load. The two
+   separate labelled blocks pushed the save panel 170px down and put COMPARE
+   below the fold at 1920x1000 (measured y=1138). */
+body.spb-easy-on .spb-easy-mylooks-bar {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 0 16px 8px;
+}
+body.spb-easy-on .spb-easy-mylooks-bar button,
+body.spb-easy-on .spb-easy-mylooks-bar select {
+  padding: 6px 10px; border-radius: 8px; cursor: pointer; min-height: 30px;
+  border: 1px solid rgba(120, 150, 220, 0.34); background: rgba(14, 22, 40, 0.76);
+  color: #cfe0ff; font: 700 10.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.07em;
+}
+body.spb-easy-on .spb-easy-mylooks-bar #spbEasyCompareAdd { border-color: rgba(110, 231, 168, 0.4); color: #b6f5d4; }
+body.spb-easy-on .spb-easy-mylooks-bar #spbEasyCompareOpen { border-color: rgba(56, 189, 248, 0.55); color: #d3efff; }
+body.spb-easy-on .spb-easy-mylooks-bar #spbEasySaveLook { border-color: rgba(255, 179, 0, 0.42); color: #ffd7a1; }
+body.spb-easy-on .spb-easy-mylooks-bar #spbEasyLoadLook { flex: 1 1 120px; min-width: 0; }
+body.spb-easy-on .spb-easy-mylooks-bar button:hover { filter: brightness(1.15); }
+
+/* [2026-08-08 E10] Lighting switcher over the material preview. */
+body.spb-easy-on .spb-easy-lights {
+  display: flex; gap: 6px; padding: 0 16px 8px;
+}
+body.spb-easy-on .spb-easy-light {
+  flex: 1 1 0; padding: 7px 6px; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(120, 150, 220, 0.3); background: rgba(12, 18, 34, 0.66);
+  color: #9fb2d9; font: 700 10px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.09em;
+}
+body.spb-easy-on .spb-easy-light:hover { border-color: rgba(56, 189, 248, 0.55); color: #d6ecff; }
+body.spb-easy-on .spb-easy-light.on {
+  border-color: #ffb300; color: #1a1206;
+  background: linear-gradient(180deg, #ffd27a, #ffb300);
+}
+
+/* [2026-08-08 E13] Buyer-language filter chips above the look list. */
+body.spb-easy-on .spb-easy-tagbar {
+  position: sticky; top: 0; z-index: 2;
+  display: flex; flex-wrap: wrap; gap: 5px; padding: 2px 0 8px;
+  background: linear-gradient(180deg, rgba(10,10,28,0.97) 70%, rgba(10,10,28,0));
+}
+body.spb-easy-on .spb-easy-tag {
+  padding: 5px 9px; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgba(120, 150, 220, 0.32); background: rgba(14, 22, 40, 0.7);
+  color: #a8bbdd; font: 700 9.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.09em;
+}
+body.spb-easy-on .spb-easy-tag:hover { border-color: rgba(56,189,248,0.6); color: #dcefff; }
+body.spb-easy-on .spb-easy-tag.on {
+  border-color: #38bdf8; color: #04121e;
+  background: linear-gradient(180deg, #7fd7ff, #38bdf8);
+}
+body.spb-easy-on .spb-easy-tag-clear { border-color: rgba(255,122,24,0.45); color: #ffcf9e; }
+
+/* [2026-08-08 E14] "More like this" chip leads the filter bar. */
+body.spb-easy-on .spb-easy-tag-like {
+  border-color: rgba(196, 132, 252, 0.5); color: #e6d3ff;
+}
+body.spb-easy-on .spb-easy-tag-like:hover { border-color: #c084fc; color: #f6efff; }
+body.spb-easy-on .spb-easy-tag-like.on {
+  border-color: #c084fc; color: #1a0b28;
+  background: linear-gradient(180deg, #e2c6ff, #c084fc);
+}
+
+/* [2026-08-08 E16] the picked colour's chip inside the FOR THIS COLOR header */
+body.spb-easy-on .spb-easy-fitchip {
+  display: inline-block; width: 11px; height: 11px; border-radius: 3px;
+  vertical-align: -1px; margin-left: 2px;
+  background: var(--fit-color, #888); border: 1px solid rgba(255,255,255,0.3);
+}
+
+/* [2026-08-08 E18] "Also save to" — one look, several cars. */
+body.spb-easy-on .spb-easy-alsocars { margin-top: 6px; }
+body.spb-easy-on .spb-easy-alsocars-row { display: flex; align-items: center; gap: 8px; }
+body.spb-easy-on .spb-easy-alsocars-row label {
+  flex: 0 0 auto; font: 700 9.5px/1 var(--font-display, 'Rajdhani', sans-serif);
+  letter-spacing: 0.11em; color: #8fa6cc;
+}
+body.spb-easy-on #spbEasyAlsoPick {
+  flex: 1 1 auto; min-width: 0; padding: 6px 8px; border-radius: 7px;
+  border: 1px solid rgba(120, 150, 220, 0.32); background: rgba(14, 22, 40, 0.75);
+  color: #cfe0ff; font-size: 11px;
+}
+body.spb-easy-on .spb-easy-alsocars-chips {
+  display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px;
+}
+body.spb-easy-on .spb-easy-alsocar {
+  display: inline-flex; align-items: center; gap: 5px; padding: 3px 6px 3px 9px;
+  border-radius: 999px; border: 1px solid rgba(110, 231, 168, 0.42);
+  background: rgba(12, 34, 26, 0.7); color: #b6f5d4;
+  font: 700 9.5px/1.4 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.05em;
+}
+body.spb-easy-on .spb-easy-alsocar button {
+  border: 0; background: none; color: #7fcfa8; cursor: pointer; font-size: 11px; padding: 0 2px;
+}
+body.spb-easy-on .spb-easy-alsocar button:hover { color: #fff; }
+body.spb-easy-on .spb-easy-warn { color: #ffb4b4; }
+
+/* [2026-08-08 E19] Share-a-look dialog. */
+body.spb-easy-on #spbEasyShareBtn { border-color: rgba(196,132,252,0.45); color: #e6d3ff; }
+body.spb-easy-on .spb-easy-share-backdrop {
+  position: fixed; inset: 0; z-index: 21700; background: rgba(3,4,10,0.9);
+  display: flex; align-items: center; justify-content: center;
+}
+body.spb-easy-on .spb-easy-share-backdrop[hidden] { display: none; }
+body.spb-easy-on .spb-easy-share {
+  width: min(92vw, 560px); padding: 16px; display: flex; flex-direction: column; gap: 10px;
+  border: 1px solid rgba(120,150,220,0.32); border-radius: 14px; background: #0c0c18;
+  box-shadow: 0 22px 70px rgba(0,0,0,0.8);
+}
+body.spb-easy-on .spb-easy-share-head { display: flex; align-items: center; gap: 12px; }
+body.spb-easy-on .spb-easy-share-head b {
+  flex: 1 1 auto; font: 800 14px/1 var(--font-display, 'Rajdhani', sans-serif);
+  letter-spacing: 0.12em; color: #e6d3ff;
+}
+body.spb-easy-on .spb-easy-share label {
+  display: flex; flex-direction: column; gap: 5px;
+  font: 700 9.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.11em; color: #8fa6cc;
+}
+body.spb-easy-on .spb-easy-share textarea {
+  width: 100%; resize: vertical; padding: 8px; border-radius: 8px;
+  border: 1px solid rgba(120,150,220,0.3); background: rgba(8,12,22,0.9);
+  color: #cfe0ff; font: 400 11px/1.45 ui-monospace, Consolas, monospace; word-break: break-all;
+}
+body.spb-easy-on .spb-easy-share button {
+  padding: 9px 14px; border-radius: 9px; cursor: pointer;
+  border: 1px solid rgba(120,150,220,0.4); background: rgba(14,22,40,0.8);
+  color: #cfe0ff; font: 700 11px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.08em;
+}
+body.spb-easy-on .spb-easy-share button:hover:not(:disabled) { border-color: #c084fc; color: #f3e9ff; }
+body.spb-easy-on .spb-easy-share button:disabled { opacity: 0.4; cursor: default; }
+body.spb-easy-on .spb-easy-share-msg { min-height: 15px; font-size: 11px; color: #9fe8c0; }
+
+/* [2026-08-08 E20] "Use this setup on <another colour>" row. */
+body.spb-easy-on .spb-easy-copyrow { display: flex; align-items: center; gap: 8px; margin: 8px 0 2px; }
+body.spb-easy-on .spb-easy-copyrow label {
+  flex: 0 0 auto; font: 700 9.5px/1 var(--font-display, 'Rajdhani', sans-serif);
+  letter-spacing: 0.1em; color: #8fa6cc;
+}
+body.spb-easy-on #spbEasyCopyTo {
+  flex: 1 1 auto; min-width: 0; padding: 6px 8px; border-radius: 7px;
+  border: 1px solid rgba(120, 150, 220, 0.32); background: rgba(14, 22, 40, 0.75);
+  color: #cfe0ff; font-size: 11px;
+}
+body.spb-easy-on #spbEasyCopyTo:hover { border-color: #38bdf8; }
+
+/* [2026-08-08 E23] The loupe now magnifies the real pixels, so it becomes a
+   small panel rather than a pill: zoom window on top, colour + hex beneath. */
+body.spb-easy-on .spb-easy-loupe {
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 10px;
+}
+body.spb-easy-on .spb-easy-loupe-zoom {
+  display: block;
+  width: 132px; height: 132px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: #05070d;
+  image-rendering: pixelated;
+}
+body.spb-easy-on .spb-easy-loupe > span:last-child { letter-spacing: 0.04em; }
+body.spb-easy-on .spb-easy-loupe .spb-easy-loupe-dot { width: 13px; height: 13px; }
+
+/* [2026-08-08 E24] The live preview is pickable during the colour step too. */
+body.spb-easy-on .spb-easy-live-pickable { cursor: crosshair; }
+body.spb-easy-on .spb-easy-live-pickable::after {
+  content: 'PICK FROM HERE TOO';
+  position: absolute; left: 8px; bottom: 8px; z-index: 5; pointer-events: none;
+  padding: 3px 8px; border-radius: 999px;
+  background: rgba(6, 12, 24, 0.86); border: 1px solid rgba(120, 200, 255, 0.42);
+  color: #cfeaff; font: 700 9px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.11em;
+}
+
+/* [2026-08-08 E25] KEEP PARTS UNPAINTED -- the Easy answer to Pro's exclude
+   brush. The chip strip only exists once something is protected (or while the
+   buyer is protecting), so it costs zero height in the normal flow. */
+body.spb-easy-on .spb-easy-mylooks-bar #spbEasyProtectBtn {
+  border-color: rgba(255, 96, 120, 0.45); color: #ffc2cd;
+}
+body.spb-easy-on .spb-easy-mylooks-bar #spbEasyProtectBtn.on {
+  background: rgba(255, 72, 100, 0.22); border-color: rgba(255, 120, 140, 0.85); color: #fff0f3;
+  box-shadow: 0 0 0 1px rgba(255, 120, 140, 0.3) inset;
+}
+body.spb-easy-on .spb-easy-protect-chips {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 0 16px 8px;
+}
+body.spb-easy-on .spb-easy-protect-chips > b {
+  color: #ffb7c3; font: 700 9.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.09em;
+}
+body.spb-easy-on .spb-easy-protect-chip {
+  display: inline-flex; align-items: center; gap: 5px; padding: 3px 4px 3px 5px; border-radius: 7px;
+  border: 1px solid rgba(255, 96, 120, 0.4); background: rgba(48, 14, 22, 0.66);
+  color: #ffd3da; font: 700 9.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.08em;
+}
+body.spb-easy-on .spb-easy-protect-chip i {
+  width: 11px; height: 11px; border-radius: 3px; border: 1px solid rgba(255, 255, 255, 0.35);
+}
+body.spb-easy-on .spb-easy-protect-chip button {
+  border: 0; background: none; cursor: pointer; padding: 0 2px; line-height: 1;
+  color: #ff9bad; font-size: 11px; min-height: 0;
+}
+body.spb-easy-on .spb-easy-protect-chip button:hover { color: #fff; }
+
+/* [2026-08-08 E27] Quick splits + a typed share. The blend was drag-only, so
+   an exact 50/50 was a matter of luck with the mouse. */
+body.spb-easy-on .spb-easy-mix-presets {
+  display: flex; align-items: center; gap: 5px; flex-wrap: wrap; padding: 0 0 7px;
+}
+body.spb-easy-on .spb-easy-mix-presets > span {
+  color: #7f92b8; font: 700 9px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.11em;
+}
+body.spb-easy-on .spb-easy-mix-presets button {
+  padding: 4px 8px; border-radius: 7px; cursor: pointer; min-height: 24px;
+  border: 1px solid rgba(120, 150, 220, 0.32); background: rgba(14, 22, 40, 0.72);
+  color: #c8d9ff; font: 700 10px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.06em;
+}
+body.spb-easy-on .spb-easy-mix-presets button:hover { filter: brightness(1.18); }
+body.spb-easy-on .spb-easy-mix-presets button.on {
+  border-color: rgba(255, 179, 0, 0.7); background: rgba(255, 179, 0, 0.16); color: #ffd7a1;
+}
+body.spb-easy-on .spb-easy-mix-num {
+  width: 42px; padding: 1px 3px; margin-right: 2px; border-radius: 5px; text-align: right;
+  border: 1px solid rgba(120, 150, 220, 0.34); background: rgba(8, 14, 28, 0.8);
+  color: #e6efff; font: 700 10px/1.35 var(--font-display, 'Rajdhani', sans-serif);
+}
+body.spb-easy-on .spb-easy-mix-num:focus {
+  outline: none; border-color: rgba(56, 189, 248, 0.8); background: rgba(10, 20, 40, 0.95);
+}
+body.spb-easy-on .spb-easy-mix-num:disabled { opacity: 0.5; }
+
+/* [2026-08-08 E28] SHOW ME WHERE — the engine's own material routing, drawn
+   over the buyer's source paint with a legend. */
+body.spb-easy-on .spb-easy-map-row {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 0 0 7px;
+}
+body.spb-easy-on .spb-easy-map-row button {
+  padding: 4px 9px; border-radius: 7px; cursor: pointer; min-height: 24px;
+  border: 1px solid rgba(56, 189, 248, 0.42); background: rgba(10, 26, 44, 0.78);
+  color: #cfeaff; font: 700 10px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.07em;
+}
+body.spb-easy-on .spb-easy-map-row button:hover { filter: brightness(1.18); }
+body.spb-easy-on .spb-easy-map-row button.on {
+  background: rgba(56, 189, 248, 0.2); border-color: rgba(56, 189, 248, 0.85); color: #eaf7ff;
+}
+body.spb-easy-on .spb-easy-map-key {
+  display: inline-flex; align-items: center; gap: 4px;
+  color: #a9bcdf; font: 600 9.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.05em;
+}
+body.spb-easy-on .spb-easy-map-key i {
+  width: 10px; height: 10px; border-radius: 3px; border: 1px solid rgba(255, 255, 255, 0.3);
+}
+body.spb-easy-on .spb-easy-map-key b { color: #e6efff; }
+body.spb-easy-on #spbEasyMapOverlay { object-fit: contain; image-rendering: auto; }
+
+/* [2026-08-08 E30] YOUR CARS — the two or three folders a buyer actually
+   paints, instead of hunting a 179-entry dropdown every single save. */
+body.spb-easy-on .spb-easy-recent-cars {
+  display: flex; align-items: center; gap: 5px; flex-wrap: wrap; padding: 4px 0 0;
+}
+body.spb-easy-on .spb-easy-recent-cars > span {
+  color: #7f92b8; font: 700 9px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.11em;
+}
+body.spb-easy-on .spb-easy-recent-cars button {
+  padding: 4px 8px; border-radius: 7px; cursor: pointer; min-height: 24px; max-width: 100%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  border: 1px solid rgba(120, 150, 220, 0.3); background: rgba(14, 22, 40, 0.7);
+  color: #c8d9ff; font: 700 10px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.05em;
+}
+body.spb-easy-on .spb-easy-recent-cars button:hover { filter: brightness(1.18); }
+body.spb-easy-on .spb-easy-recent-cars button.on {
+  border-color: rgba(110, 231, 168, 0.75); background: rgba(110, 231, 168, 0.16); color: #d6ffe9;
+}
+
+/* [2026-08-08 E31] Overwrite preflight. Saving replaces a real file on the
+   buyer's disk; that deserves a sentence before it happens, not after. */
+body.spb-easy-on .spb-easy-ow-backdrop {
+  position: fixed; inset: 0; z-index: 100060; display: flex; align-items: center; justify-content: center;
+  background: rgba(4, 8, 18, 0.82); backdrop-filter: blur(3px); padding: 24px;
+}
+/* LOAD-BEARING (see the header note): display:flex above beats the UA's
+   [hidden]{display:none}, leaving an invisible full-screen layer that eats
+   every click in Easy Mode. Measured: it swallowed the SAVE button. */
+body.spb-easy-on .spb-easy-ow-backdrop[hidden] { display: none; }
+body.spb-easy-on .spb-easy-ow {
+  width: min(520px, 96vw); border-radius: 14px; overflow: hidden;
+  border: 1px solid rgba(255, 179, 0, 0.5); background: #0b1226;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+}
+body.spb-easy-on .spb-easy-ow-head {
+  padding: 12px 16px; background: rgba(255, 179, 0, 0.14);
+  border-bottom: 1px solid rgba(255, 179, 0, 0.32);
+  color: #ffd7a1; font: 800 12px/1.2 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.09em;
+}
+body.spb-easy-on .spb-easy-ow-body { padding: 14px 16px; color: #cfe0ff; font-size: 12.5px; line-height: 1.5; }
+body.spb-easy-on .spb-easy-ow-body p { margin: 0 0 9px; }
+body.spb-easy-on .spb-easy-ow-files { margin: 0 0 9px; padding-left: 18px; }
+body.spb-easy-on .spb-easy-ow-files li { margin: 2px 0; }
+body.spb-easy-on .spb-easy-ow-files span { color: #8fa4cc; }
+body.spb-easy-on .spb-easy-ow-good { color: #b6f5d4; }
+body.spb-easy-on .spb-easy-ow-how { color: #a9bcdf; font-size: 11.5px; }
+body.spb-easy-on .spb-easy-ow-where {
+  color: #7f92b8; font-size: 10.5px; word-break: break-all; margin: 0;
+}
+body.spb-easy-on .spb-easy-ow-actions {
+  display: flex; gap: 8px; padding: 0 16px 14px; justify-content: flex-end;
+}
+body.spb-easy-on .spb-easy-ow-actions button {
+  padding: 9px 14px; border-radius: 9px; cursor: pointer;
+  font: 800 11px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.08em;
+  border: 1px solid rgba(120, 150, 220, 0.36); background: rgba(14, 22, 40, 0.8); color: #cfe0ff;
+}
+body.spb-easy-on #spbEasyOverwriteGo {
+  border-color: rgba(255, 179, 0, 0.7); background: rgba(255, 179, 0, 0.9); color: #1a1200;
+}
+body.spb-easy-on .spb-easy-ow-actions button:hover { filter: brightness(1.12); }
+
+/* [2026-08-08 E33] The number choice used to be two iRacing filename prefixes.
+   Picking wrong puts two numbers on the car, or none — so it gets a sentence. */
+body.spb-easy-on .spb-easy-number-why {
+  display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; margin: 6px 0 0;
+  border-radius: 9px; border: 1px solid rgba(120, 150, 220, 0.24);
+  background: rgba(10, 17, 33, 0.6);
+}
+body.spb-easy-on .spb-easy-number-why b {
+  color: #9fd2ff; font: 800 9.5px/1.2 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.1em;
+}
+body.spb-easy-on .spb-easy-number-why span { color: #cfe0ff; font-size: 11.5px; line-height: 1.45; }
+body.spb-easy-on .spb-easy-number-why em {
+  color: #8fa4cc; font-size: 10.5px; font-style: normal; line-height: 1.4;
+}
+
+/* [2026-08-08 E35] A tour that stays INSIDE Easy. The spotlight is one div with
+   a huge spread shadow — everything outside the cut-out dims, no canvas, no
+   per-element z-index surgery. */
+body.spb-easy-on .spb-easy-tour-backdrop {
+  position: fixed; inset: 0; z-index: 100080;
+}
+/* LOAD-BEARING (see header note): without this the fixed layer above sits over
+   the whole app invisibly and swallows every click. */
+body.spb-easy-on .spb-easy-tour-backdrop[hidden] { display: none; }
+body.spb-easy-on .spb-easy-tour-spot {
+  position: fixed; border-radius: 12px; pointer-events: none;
+  border: 2px solid rgba(56, 189, 248, 0.95);
+  box-shadow: 0 0 0 9999px rgba(4, 8, 18, 0.72), 0 0 24px rgba(56, 189, 248, 0.5);
+  transition: left 0.18s ease, top 0.18s ease, width 0.18s ease, height 0.18s ease;
+}
+body.spb-easy-on .spb-easy-tour-card {
+  position: fixed; width: 320px; padding: 13px 14px; border-radius: 13px;
+  border: 1px solid rgba(56, 189, 248, 0.5); background: #0b1226;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+body.spb-easy-on .spb-easy-tour-head {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;
+}
+body.spb-easy-on .spb-easy-tour-head span {
+  color: #7f92b8; font: 700 9.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.12em;
+}
+body.spb-easy-on .spb-easy-tour-head button {
+  border: 0; background: none; color: #8fa4cc; cursor: pointer; font-size: 13px; padding: 0 2px;
+}
+body.spb-easy-on .spb-easy-tour-head button:hover { color: #fff; }
+body.spb-easy-on .spb-easy-tour-card b {
+  display: block; color: #9fd2ff; margin-bottom: 5px;
+  font: 800 12px/1.25 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.07em;
+}
+body.spb-easy-on .spb-easy-tour-card p {
+  margin: 0 0 11px; color: #cfe0ff; font-size: 12.5px; line-height: 1.5;
+}
+body.spb-easy-on .spb-easy-tour-actions { display: flex; gap: 7px; justify-content: flex-end; }
+body.spb-easy-on .spb-easy-tour-actions button {
+  padding: 8px 12px; border-radius: 9px; cursor: pointer;
+  border: 1px solid rgba(120, 150, 220, 0.36); background: rgba(14, 22, 40, 0.8); color: #cfe0ff;
+  font: 800 10.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.08em;
+}
+body.spb-easy-on #spbEasyTourNext {
+  border-color: rgba(56, 189, 248, 0.8); background: rgba(56, 189, 248, 0.9); color: #04121e;
+}
+body.spb-easy-on #spbEasyTourPro { border-color: rgba(255, 179, 0, 0.6); color: #ffd7a1; }
+body.spb-easy-on .spb-easy-tour-actions button:disabled { opacity: 0.4; cursor: default; }
+body.spb-easy-on .spb-easy-tour-actions button:not(:disabled):hover { filter: brightness(1.14); }
+
+/* [2026-08-08 E36] SHOW ME AN EXAMPLE — a worked example for the buyer who has
+   not yet learned what the choices mean, plus the note that explains it. */
+body.spb-easy-on .spb-easy-demo {
+  display: block; width: 100%; margin: 4px 0 0; padding: 11px 14px; border-radius: 11px;
+  cursor: pointer; text-align: center;
+  border: 1px solid rgba(110, 231, 168, 0.45); background: rgba(110, 231, 168, 0.1);
+  color: #b6f5d4; font: 800 11.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.08em;
+}
+body.spb-easy-on .spb-easy-demo:hover { filter: brightness(1.16); }
+body.spb-easy-on .spb-easy-demo-note {
+  position: relative; display: flex; flex-direction: column; gap: 4px;
+  padding: 9px 30px 10px 11px; margin: 0 0 9px; border-radius: 10px;
+  border: 1px solid rgba(110, 231, 168, 0.4); background: rgba(12, 34, 26, 0.6);
+}
+body.spb-easy-on .spb-easy-demo-note > b {
+  color: #b6f5d4; font: 800 9.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.11em;
+}
+body.spb-easy-on .spb-easy-demo-note span { color: #cfe0ff; font-size: 11.5px; line-height: 1.45; }
+body.spb-easy-on .spb-easy-demo-note span b { color: #eaf7ff; }
+body.spb-easy-on #spbEasyDemoDismiss {
+  position: absolute; top: 6px; right: 7px; border: 0; background: none; cursor: pointer;
+  color: #7fd3a8; font-size: 12px; line-height: 1; padding: 2px;
+}
+body.spb-easy-on #spbEasyDemoDismiss:hover { color: #fff; }
+
+/* [2026-08-08 E37] Plain-language meanings for the words this screen actually
+   shows: METAL / ROUGH / COAT on the channel strips, CANDY & PEARL on the
+   chips, satin and carbon in every finish name. */
+body.spb-easy-on .spb-easy-gloss-backdrop {
+  position: fixed; inset: 0; z-index: 100070; display: flex; align-items: center;
+  justify-content: center; background: rgba(4, 8, 18, 0.84); backdrop-filter: blur(3px); padding: 24px;
+}
+/* LOAD-BEARING (see header note) — display:flex above beats [hidden]. */
+body.spb-easy-on .spb-easy-gloss-backdrop[hidden] { display: none; }
+body.spb-easy-on .spb-easy-gloss {
+  width: min(620px, 96vw); max-height: 84vh; display: flex; flex-direction: column;
+  border-radius: 14px; overflow: hidden; border: 1px solid rgba(120, 150, 220, 0.42);
+  background: #0b1226; box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+}
+body.spb-easy-on .spb-easy-gloss-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 12px 16px; border-bottom: 1px solid rgba(120, 150, 220, 0.24);
+  background: rgba(56, 189, 248, 0.1);
+}
+body.spb-easy-on .spb-easy-gloss-head b {
+  color: #9fd2ff; font: 800 12px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.1em;
+}
+body.spb-easy-on .spb-easy-gloss-head button {
+  padding: 6px 10px; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(120, 150, 220, 0.36); background: rgba(14, 22, 40, 0.8); color: #cfe0ff;
+  font: 700 10px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.08em;
+}
+body.spb-easy-on .spb-easy-gloss-body {
+  margin: 0; padding: 14px 16px 16px; overflow-y: auto;
+}
+body.spb-easy-on .spb-easy-gloss-body dt {
+  color: #ffd7a1; margin-top: 11px;
+  font: 800 10.5px/1.2 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.08em;
+}
+body.spb-easy-on .spb-easy-gloss-body dt:first-child { margin-top: 0; }
+body.spb-easy-on .spb-easy-gloss-body dd {
+  margin: 3px 0 0; color: #cfe0ff; font-size: 12.5px; line-height: 1.5;
+}
+body.spb-easy-on .spb-easy-gloss-link {
+  display: block; width: 100%; margin: 6px 0 0; padding: 8px 10px; border-radius: 9px;
+  cursor: pointer; text-align: center; border: 1px dashed rgba(120, 150, 220, 0.34);
+  background: none; color: #9fb2d9; font-size: 11px;
+}
+body.spb-easy-on .spb-easy-gloss-link:hover { color: #cfe0ff; border-color: rgba(120, 150, 220, 0.6); }
+
+/* [2026-08-08 E38] "SHOW N MORE" — long sections arrive a chunk at a time so
+   the list box does not hold thousands of rows nobody scrolled to. */
+body.spb-easy-on .spb-easy-more-rows {
+  display: block; width: 100%; margin: 6px 0 2px; padding: 9px 10px; border-radius: 9px;
+  cursor: pointer; border: 1px dashed rgba(120, 150, 220, 0.4);
+  background: rgba(14, 22, 40, 0.6); color: #9fd2ff;
+  font: 800 10.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.08em;
+}
+body.spb-easy-on .spb-easy-more-rows:hover {
+  border-color: rgba(56, 189, 248, 0.7); color: #eaf7ff; background: rgba(56, 189, 248, 0.12);
+}
+
+/* [2026-08-08 E40] BIGGER PICTURE — the rail folds away so the car gets the
+   whole window. The button stays pinned to the same edge either way, so the
+   way back is exactly where the way out was. */
+body.spb-easy-on .spb-easy-railtoggle {
+  position: fixed; top: 50%; right: 0; transform: translateY(-50%);
+  z-index: 60; width: 22px; padding: 14px 0; cursor: pointer;
+  border: 1px solid var(--border, #1a1a3a); border-right: 0;
+  border-radius: 8px 0 0 8px; background: rgba(10, 10, 28, 0.94); color: #9fb2d9;
+  font: 700 10px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.1em;
+  writing-mode: vertical-rl; text-orientation: mixed;
+}
+body.spb-easy-on .spb-easy-railtoggle:hover { color: #eaf7ff; border-color: rgba(56, 189, 248, 0.6); }
+body.spb-easy-on.spb-easy-rail-hidden .spb-easy-rail { display: none; }
+body.spb-easy-on.spb-easy-rail-hidden .spb-easy-stage { padding-right: 26px; }
+
+/* [2026-08-08 E41] Keyboard focus has to be VISIBLE or roving focus is just
+   invisible focus. :focus-visible so mouse users never see a ring. */
+body.spb-easy-on .spb-easy-finish:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: -2px;
+  background: rgba(56, 189, 248, 0.1);
+}
+body.spb-easy-on .spb-easy-fav:focus-visible {
+  outline: 2px solid #38bdf8; outline-offset: 1px; border-radius: 4px;
+}
+
+/* [2026-08-08 E42] The list/listitem wrappers exist for screen readers only —
+   display:contents keeps the rows as the flex items they already were, so the
+   layout is byte-identical. (Verified in the a11y tree, not assumed: older
+   engines used to drop display:contents nodes from it.) */
+body.spb-easy-on .spb-easy-rowlist,
+body.spb-easy-on .spb-easy-rowli { display: contents; }
+
+/* ==========================================================================
+   SPB-EASY-2026-08-19 — owner mandate: "Easy Mode needs to be much easier to
+   use" + "make Easy Mode easier to see maybe? Or an option when they first
+   install." Pro STAYS the boot default (SPB-FIX-2026-07-23) — this block only
+   adds (a) a visible mode switch and (b) a one-time first-run choice card.
+   ========================================================================== */
+
+/* --- (a) PRO | EASY segmented switch, app-chrome header ------------------ */
+.spb-mode-pill {
+  display: inline-flex; align-items: stretch; gap: 0;
+  border: 1px solid rgba(56, 189, 248, 0.55);
+  border-radius: 999px; overflow: hidden;
+  background: rgba(8, 12, 30, 0.85);
+  margin: 0 6px; vertical-align: middle;
+}
+.spb-mode-pill .spb-mode-opt {
+  appearance: none; border: 0; cursor: pointer;
+  padding: 5px 13px; margin: 0;
+  background: transparent; color: #9fb2d9;
+  font: 700 11px/1 var(--font-display, 'Rajdhani', sans-serif);
+  letter-spacing: 0.09em; white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+.spb-mode-pill .spb-mode-opt:hover { color: #eaf7ff; background: rgba(56, 189, 248, 0.16); }
+.spb-mode-pill .spb-mode-opt.on {
+  background: var(--accent-cyan, #00e5ff); color: #04121c;
+  text-shadow: none; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+.spb-mode-pill .spb-mode-opt:focus-visible { outline: 2px solid #38bdf8; outline-offset: -2px; }
+/* The switch is a mode control, so it stays reachable while Easy Mode's opaque
+   cover is up — Easy's own topbar carries its own PRO MODE button, so we simply
+   let the header pill sit under the cover rather than fight its z-index. */
+
+/* --- (b) first-run choice card ------------------------------------------ */
+#spbFirstRun {
+  position: fixed; inset: 0; z-index: 30000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  background: radial-gradient(circle at 50% 30%, rgba(12, 22, 48, 0.98), rgba(4, 6, 16, 0.99));
+  font-family: var(--font-body, 'Inter', system-ui, sans-serif);
+}
+#spbFirstRun[hidden] { display: none !important; }
+.spb-fr-card {
+  width: min(920px, 100%); max-height: 100%; overflow: auto;
+  border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 16px;
+  background: rgba(9, 13, 30, 0.96);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.65);
+  padding: 30px 30px 24px;
+}
+.spb-fr-brand {
+  font: 700 12px/1 var(--font-display, 'Rajdhani', sans-serif);
+  letter-spacing: 0.22em; color: #7f93bd; margin-bottom: 10px;
+}
+.spb-fr-brand b { color: var(--accent-cyan, #00e5ff); }
+.spb-fr-title {
+  font: 700 26px/1.15 var(--font-display, 'Rajdhani', sans-serif);
+  letter-spacing: 0.04em; color: #f0f6ff; margin: 0 0 6px;
+}
+.spb-fr-sub { font-size: 13.5px; line-height: 1.55; color: #a9bcdd; margin: 0 0 22px; max-width: 62ch; }
+.spb-fr-doors { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 780px) { .spb-fr-doors { grid-template-columns: 1fr; } }
+.spb-fr-door {
+  display: block; width: 100%; text-align: left; cursor: pointer;
+  border: 1px solid rgba(120, 145, 190, 0.34); border-radius: 13px;
+  background: rgba(14, 20, 42, 0.9); color: #dbe6f8;
+  padding: 20px 20px 18px;
+  transition: border-color 0.16s, background 0.16s, transform 0.16s;
+}
+.spb-fr-door:hover { border-color: var(--accent-cyan, #00e5ff); background: rgba(20, 32, 62, 0.95); transform: translateY(-2px); }
+.spb-fr-door:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+/* Pro is pre-highlighted (owner: Pro stays the front door) — Enter picks it. */
+.spb-fr-door.recommended { border-color: rgba(0, 229, 255, 0.75); background: rgba(16, 34, 60, 0.95); }
+.spb-fr-badge {
+  display: inline-block; margin-bottom: 10px; padding: 3px 9px; border-radius: 999px;
+  font: 700 9.5px/1.35 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.14em;
+  background: rgba(0, 229, 255, 0.16); color: var(--accent-cyan, #00e5ff);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+}
+.spb-fr-door.easy .spb-fr-badge { background: rgba(255, 170, 0, 0.14); color: var(--accent-gold, #ffaa00); border-color: rgba(255, 170, 0, 0.34); }
+.spb-fr-door h3 {
+  margin: 0 0 7px; font: 700 19px/1.15 var(--font-display, 'Rajdhani', sans-serif);
+  letter-spacing: 0.05em; color: #f4f9ff;
+}
+.spb-fr-door p { margin: 0 0 12px; font-size: 12.8px; line-height: 1.5; color: #a9bcdd; }
+.spb-fr-door ul { margin: 0; padding-left: 17px; }
+.spb-fr-door li { font-size: 12px; line-height: 1.65; color: #93a8cd; }
+.spb-fr-foot {
+  margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(120, 145, 190, 0.2);
+  font-size: 12px; line-height: 1.55; color: #8598bd;
+}
+.spb-fr-foot b { color: #cfe0f7; }
+
+/* ==========================================================================
+   SPB-EASY-2026-08-19 — BROWSE LAYOUT + HORIZONTAL SHELVES
+   Owner: "I don't want to HIDE all of these finishes... it defeats the purpose
+   if they go into Easy Mode and can't even pick from all the finishes."
+   MEASURED BEFORE: the finish list was a 367px porthole (258px at 1100x760)
+   inside a 470px rail, over 4,903px of content -> TWO finishes fully visible at
+   1920x1080, ONE at the 1100px minimum, out of 2,834. Easy Mode was already
+   hiding the catalog - by accident, through its container.
+   AFTER: the window restacks to car-on-top / catalog-below-full-width and the
+   list becomes horizontal shelves of tiles -> ~48 finishes visible at once,
+   whole catalog two scrolls away. Nothing removed from the catalog.
+   ========================================================================== */
+
+/* --- the restack: car on top, catalog below, both full width ------------- */
+body.spb-easy-browse .spb-easy-main { flex-direction: column; }
+body.spb-easy-browse .spb-easy-stage {
+  /* [SPB-EASY-STAGE 2026-08-26] owner: the car views are SIGNIFICANTLY important — big,
+     square, always. Was clamp(230px, 40vh, 460px), which crushed the 2048x2048 sheets
+     into letterbox strips. */
+  flex: 0 0 clamp(340px, 54vh, 720px);
+  min-height: 0;
+  padding: 12px 16px 6px;
+}
+/* [SPB-EASY-STAGE 2026-08-26] square proof panes + always-on 2x2 channel grid beside them */
+/* [SPB-EASY-STAGE2 2026-08-27] Owner: "LIVE PREVIEW needs to sit beside YOUR PAINT (SOURCE)...
+   the big 4 boxes of SPECS smaller and pushed off to the right side (2x2)... We have SPACE on the
+   left of YOUR PAINT for something... wasting so much space." Row = bench card | SOURCE | LIVE
+   ...... compact 2x2 channel block docked hard right. Centering removed; SOURCE no longer hides
+   pre-finish (that hid the pair and let the channel boxes balloon to pane size in his screenshot). */
+body.spb-easy-browse .spb-easy-proof { flex-direction: row; align-items: stretch; justify-content: flex-start; gap: 16px; position: relative; height: 100%; flex: 1 1 auto; min-width: 0; }
+body.spb-easy-browse .spb-easy-proof-main { flex: 0 1 auto; gap: 16px; height: 100%; min-width: 0; }
+body.spb-easy-browse .spb-easy-proof-card { height: 100%; flex: 0 1 auto; min-width: 0; }
+body.spb-easy-browse .spb-easy-proof-media { flex: 0 0 auto; min-height: 0; height: auto; width: var(--spb-pane, 100%); aspect-ratio: 1 / 1; max-width: 40vw; align-self: center; } /* width pinned by sizeBrowsePanes() so the card hugs the art */
+body.spb-easy-browse .spb-easy-haspaint .spb-easy-source-card { display: flex; }
+body.spb-easy-browse .spb-easy-haspaint .spb-easy-live-card { flex: 0 1 auto; width: auto; }
+body.spb-easy-browse .spb-easy-channel-strip { grid-template-columns: repeat(2, clamp(96px, 8vw, 170px)); align-content: center; align-self: center; gap: 10px; flex: 0 0 auto; margin-left: auto; }
+body.spb-easy-browse .spb-easy-channel canvas { height: auto; aspect-ratio: 1 / 1; }
+body.spb-easy-browse .spb-easy-specpeek { position: absolute; right: 8px; bottom: 4px; z-index: 6; }
+/* the owner's "space on the left of YOUR PAINT" — bench facts + what-am-I-looking-at legend */
+.spb-easy-stage-side { display: none; }
+body.spb-easy-browse .spb-easy-haspaint .spb-easy-stage-side { display: flex; flex-direction: column; gap: 7px; flex: 0 1 clamp(150px, 13vw, 220px); min-width: 0; align-self: center; max-height: 100%; overflow: hidden; padding: 12px; border: 1px solid var(--border, #1a1a3a); border-radius: 13px; background: rgba(10, 10, 28, 0.72); }
+.spb-easy-stage-side > b { font: 700 11px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.1em; color: var(--accent-gold, #ffaa00); }
+.spb-easy-side-row { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.spb-easy-side-row i { font-style: normal; font: 700 8.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.14em; color: var(--text-dim, #7080a0); }
+.spb-easy-side-row span { font-size: 11px; color: var(--text-bright, #f0f0ff); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.spb-easy-side-tip { font-size: 9.5px; line-height: 1.45; color: var(--text-dim, #7080a0); border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 7px; }
+@media (max-width: 1420px) { body.spb-easy-browse .spb-easy-stage-side { display: none !important; } }
+body.spb-easy-browse .spb-easy-rail {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  padding-left: 18px; padding-right: 18px;
+}
+/* The fold-away toggle is a side-rail affordance; meaningless once the rail is
+   the bottom half of the window. */
+body.spb-easy-browse .spb-easy-railtoggle { display: none; }
+body.spb-easy-browse.spb-easy-rail-hidden .spb-easy-rail { display: flex; }
+
+/* Search gets real estate and reads as the primary tool it is. */
+body.spb-easy-browse .spb-easy-finder { max-width: 780px; }
+
+/* The shelves are the scrolling region; everything else stays put. */
+body.spb-easy-browse .spb-easy-finishes {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* --- tiles: same card markup, laid out as a tile instead of a row -------- */
+body.spb-easy-browse .spb-easy-rowlist,
+body.spb-easy-browse .spb-easy-finish-section-rows {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 2px 10px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+}
+body.spb-easy-browse .spb-easy-rowlist::-webkit-scrollbar,
+body.spb-easy-browse .spb-easy-finish-section-rows::-webkit-scrollbar { height: 8px; }
+body.spb-easy-browse .spb-easy-rowlist::-webkit-scrollbar-thumb,
+body.spb-easy-browse .spb-easy-finish-section-rows::-webkit-scrollbar-thumb {
+  background: rgba(120, 145, 190, 0.35); border-radius: 99px;
+}
+body.spb-easy-browse .spb-easy-finish {
+  flex: 0 0 auto;
+  width: 158px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  padding: 8px;
+  scroll-snap-align: start;
+}
+body.spb-easy-browse .spb-easy-finish-chip {
+  width: 100%;
+  height: 96px;
+  flex: 0 0 auto;
+}
+body.spb-easy-browse .spb-easy-finish-chip img { width: 100%; height: 100%; object-fit: cover; }
+body.spb-easy-browse .spb-easy-finish-text { min-width: 0; }
+body.spb-easy-browse .spb-easy-finish-name {
+  font-size: 12px; line-height: 1.25; white-space: normal;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+/* The description is why the owner wanted descriptions visible at all - keep it,
+   clamped, so a tile stays a tile. Full text is still in the title/hover. */
+body.spb-easy-browse .spb-easy-finish-desc {
+  font-size: 10.5px; line-height: 1.35; white-space: normal;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+body.spb-easy-browse .spb-easy-fav { top: 6px; right: 6px; }
+
+/* Shelf headers sit above their strip, not inline with it. */
+/* [GAUNTLET A4 2026-08-20] These two rules were the bug. The base sheet makes a
+   shelf header `position:sticky; top:0`, and my browse override re-declared
+   `position: sticky; left: 0` - which resets `top` to auto and silently killed
+   vertical stickiness. So while scrolling 2,834 finishes the buyer had NOTHING
+   telling them which shelf or family they were in. Restore top-stickiness, give
+   both an opaque background (tiles scroll UNDER them), and stack the z-indexes
+   so a family header parks below a shelf header rather than through it. */
+body.spb-easy-browse .spb-easy-finish-group {
+  margin: 12px 0 5px;
+  position: sticky; top: 0; z-index: 4;
+  background: rgba(11, 12, 32, 0.98);
+}
+body.spb-easy-browse .spb-easy-finish-section { margin-bottom: 4px; overflow: visible; }
+body.spb-easy-browse .spb-easy-finish-section > summary {
+  position: sticky; top: 0; z-index: 3;
+  background: rgba(14, 14, 40, 0.98);
+  border-radius: 10px;
+}
+body.spb-easy-browse .spb-easy-finish-section[open] > summary { border-radius: 10px 10px 0 0; }
+
+/* The empty "1. PICK A MATERIAL BELOW" placeholder repeats the page header now
+   that PICK A FINISH is the title - drop it while the mix is empty. */
+body.spb-easy-browse .spb-easy-mix-empty { display: none; }
+body.spb-easy-browse .spb-easy-whole-stack:empty { display: none; }
+
+/* --- side doors: the old fork, demoted to options ----------------------- */
+.spb-easy-sidedoors {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin: 10px 0 4px;
+}
+.spb-easy-sidedoors button {
+  appearance: none; cursor: pointer;
+  border: 1px solid rgba(120, 145, 190, 0.34); border-radius: 999px;
+  background: rgba(14, 20, 42, 0.75); color: #b6c8e6;
+  padding: 7px 14px;
+  font: 700 10.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.09em;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.spb-easy-sidedoors button:hover {
+  border-color: var(--accent-cyan, #00e5ff); color: #eaf7ff; background: rgba(20, 32, 62, 0.9);
+}
+.spb-easy-sidedoors button:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+
+/* --- drawers: demote, never remove -------------------------------------- */
+.spb-easy-drawer {
+  margin: 10px 0 6px;
+  border: 1px solid rgba(120, 145, 190, 0.22); border-radius: 10px;
+  background: rgba(10, 15, 32, 0.55);
+}
+.spb-easy-drawer > summary {
+  cursor: pointer; list-style: none;
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px;
+  font: 700 10.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.11em;
+  color: #9fb2d9;
+}
+.spb-easy-drawer > summary::-webkit-details-marker { display: none; }
+.spb-easy-drawer > summary:hover { color: #eaf7ff; }
+.spb-easy-drawer > summary:focus-visible { outline: 2px solid #38bdf8; outline-offset: -2px; border-radius: 10px; }
+.spb-easy-drawer-title { flex: 0 0 auto; color: var(--accent-cyan, #00e5ff); }
+.spb-easy-drawer-value {
+  flex: 1 1 auto; min-width: 0; text-align: right;
+  font: 600 11px/1.3 var(--font-body, 'Inter', system-ui, sans-serif);
+  letter-spacing: 0; color: #8ea3c9;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.spb-easy-drawer-caret { flex: 0 0 auto; transition: transform 0.15s; }
+.spb-easy-drawer[open] > summary .spb-easy-drawer-caret { transform: rotate(180deg); }
+.spb-easy-drawer > *:not(summary) { padding-left: 12px; padding-right: 12px; }
+.spb-easy-drawer > *:last-child { padding-bottom: 12px; }
+
+/* In the browse layout the drawers sit side by side under the shelves rather
+   than stacking another two screens of column. */
+body.spb-easy-browse .spb-easy-controls { padding-top: 4px; }
+
+/* --- SPB-EASY-2026-08-19 fix pass: give the shelves the space, compact the rest
+   MEASURED on first build: the rail's other children summed to 715px inside a
+   594px rail, so `flex:1 1 auto` crushed the catalog to 14px and the tiles
+   stretched to a 12px cross-size. Three corrections:
+   1. the catalog gets a floor it cannot be squeezed below,
+   2. tiles stop stretching to the strip's cross-size,
+   3. the mix panel and the action block stop eating half the window.        */
+/* [SPB-EASY-STAGE 2026-08-26] owner overrides the 2026-08-19 space balance: the car views
+   are SIGNIFICANTLY important — big square panes win; the catalog keeps its 320px floor. */
+body.spb-easy-browse .spb-easy-stage { flex: 0 0 clamp(340px, 54vh, 720px); }
+
+body.spb-easy-browse .spb-easy-finishes { min-height: 320px; }
+
+/* Tiles are fixed-size cards, not stretch-to-fit rows. */
+body.spb-easy-browse .spb-easy-rowlist,
+body.spb-easy-browse .spb-easy-finish-section-rows { align-items: flex-start; }
+
+/* The mix panel is feedback ("what did I pick"), not the main event. Keep every
+   row and slider - just cap it and let it scroll internally. */
+body.spb-easy-browse .spb-easy-whole-stack {
+  max-height: 172px; overflow-y: auto; flex: 0 0 auto;
+}
+
+/* One compact, always-reachable action bar instead of 279px of stacked block.
+   Everything that was here is still here - SAVE, the dice, COMPARE / SAVE LOOK /
+   SHARE / KEEP PARTS UNPAINTED, the tour and the glossary - laid out in a row
+   and pinned to the bottom so the way to finish is never scrolled away. */
+body.spb-easy-browse .spb-easy-controls {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 7px 12px;
+  position: sticky; bottom: 0; z-index: 6;
+  margin-top: 6px; padding: 8px 0 7px;
+  border-top: 1px solid rgba(120, 145, 190, 0.2);
+  background: linear-gradient(180deg, rgba(8, 10, 24, 0.82), rgba(8, 10, 24, 0.97));
+  backdrop-filter: blur(6px);
+}
+body.spb-easy-browse .spb-easy-senddrawer { flex: 1 1 300px; margin: 0; }
+body.spb-easy-browse .spb-easy-myloooks { flex: 0 1 auto; margin: 0; }
+body.spb-easy-browse .spb-easy-myloooks .spb-easy-mylooks-bar { flex-wrap: wrap; }
+body.spb-easy-browse .spb-easy-actions { flex: 0 0 auto; margin: 0 0 0 auto; }
+body.spb-easy-browse .spb-easy-progress { flex: 1 1 100%; }
+body.spb-easy-browse .spb-easy-teach,
+body.spb-easy-browse .spb-easy-gloss-link {
+  flex: 0 0 auto; margin: 0; padding: 2px 4px; font-size: 10px;
+}
+/* The rail already scroll-pads for a sticky action row; keep that true here. */
+body.spb-easy-browse .spb-easy-rail { scroll-padding-bottom: 120px; }
+
+/* --- SPB-EASY-2026-08-19 fix pass 2 ---------------------------------------
+   `.spb-easy-controls` is `flex-direction:column` in the base sheet, so the
+   browse rule's `flex:1 1 300px` on the drawer was read as a 300px HEIGHT and
+   the action block ballooned to 494px. Set the axis explicitly, then hand every
+   leftover pixel to the catalog by making the browse rail a fixed-height flex
+   column instead of one long scroller. */
+body.spb-easy-browse .spb-easy-controls { flex-direction: row; }
+
+body.spb-easy-browse .spb-easy-rail { overflow: hidden; }
+body.spb-easy-browse .spb-easy-rail-head,
+body.spb-easy-browse .spb-easy-finder,
+body.spb-easy-browse .spb-easy-whole-stack,
+body.spb-easy-browse .spb-easy-mix-notice,
+body.spb-easy-browse .spb-easy-sidedoors,
+body.spb-easy-browse .spb-easy-tunedrawer,
+body.spb-easy-browse .spb-easy-controls { flex: 0 0 auto; }
+/* The catalog is the one thing allowed to grow, and it never drops below a
+   usable two-shelf floor. */
+body.spb-easy-browse .spb-easy-finishes { flex: 1 1 auto; min-height: 240px; }
+/* Header copy is a one-time orientation line, not a permanent banner. */
+body.spb-easy-browse .spb-easy-rail-head { padding-top: 6px; padding-bottom: 4px; }
+body.spb-easy-browse .spb-easy-rail-head small { display: block; max-width: 92ch; }
+
+/* --- SPB-EASY-2026-08-19 fix pass 3: tighten so more shelves fit ----------
+   Measured at 1920x1080 after pass 2: rail 659px, fixed blocks 485px, catalog
+   pinned at its 240px floor. Trim the preview, the header and the tile so the
+   catalog gets real rows instead of one. */
+/* [SPB-EASY-STAGE 2026-08-26] owner overrides fix-pass-3 too: car views win the space war. */
+body.spb-easy-browse .spb-easy-stage { flex: 0 0 clamp(340px, 54vh, 720px); padding: 10px 16px 4px; }
+body.spb-easy-browse .spb-easy-rail-head { padding-top: 4px; padding-bottom: 2px; }
+body.spb-easy-browse .spb-easy-whole-stack { max-height: 132px; }
+/* An empty mix panel is 172px of nothing on a first-time buyer's screen. */
+body.spb-easy-browse .spb-easy-whole-stack:not(:has(.spb-easy-mix-row)) { display: none; }
+/* :has() fallback for any shell on an older Chromium: the empty-state child is
+   already display:none, so at minimum collapse the container's own box. */
+body.spb-easy-browse .spb-easy-whole-stack { padding-top: 0; padding-bottom: 0; }
+
+body.spb-easy-browse .spb-easy-finish { width: 148px; }
+body.spb-easy-browse .spb-easy-finish-chip { height: 84px; }
+body.spb-easy-browse .spb-easy-finish-desc { -webkit-line-clamp: 2; }
+body.spb-easy-browse .spb-easy-finish-group { margin: 8px 0 4px; }
+
+/* --- SPB-EASY-2026-08-19 fix pass 4: grid the shelf, strip the families ----
+   Measured: one 50-card strip in a 418px box showed 12 across and wasted three
+   rows of height. The two lists have different jobs, so they get different
+   shapes:
+   · the landing shelves (starter / favourites / recently used / for this color)
+     WRAP into a grid and fill the box - most finishes on screen at once;
+   · the FULL CATALOG's 62 families stay single-row strips that scroll sideways,
+     so you can skim family after family vertically. That is the shelf model the
+     owner picked, applied where it actually helps. */
+body.spb-easy-browse .spb-easy-rowlist {
+  flex-wrap: wrap;
+  overflow-x: hidden;
+  overflow-y: visible;
+  scroll-snap-type: none;
+}
+body.spb-easy-browse .spb-easy-finish-section-rows { flex-wrap: nowrap; }
+
+/* --- SPB-EASY-2026-08-19 fix pass 5 ---------------------------------------
+   Setting overflow-x:hidden on the wrapping shelf made the browser compute
+   overflow-y:auto, so the shelf became its OWN 315px scroller nested inside the
+   catalog's scroller. One scroller only: the shelf grows, `.spb-easy-finishes`
+   scrolls. Then trim the tile height so three rows fit instead of two. */
+body.spb-easy-browse .spb-easy-rowlist { overflow: visible; }
+body.spb-easy-browse .spb-easy-finish { gap: 5px; padding: 7px; }
+body.spb-easy-browse .spb-easy-finish-chip { height: 78px; }
+body.spb-easy-browse .spb-easy-finish-name { font-size: 11.5px; -webkit-line-clamp: 1; }
+
+/* --- SPB-EASY-2026-08-19 fix pass 6: reclaim chrome for the catalog ------- */
+body.spb-easy-browse .spb-easy-rail-head small { max-width: none; }
+body.spb-easy-browse .spb-easy-mix-notice:empty { display: none; }
+
+/* --- SPB-EASY-2026-08-19: the spec-map reveal ----------------------------- */
+.spb-easy-specpeek {
+  align-self: center;
+  margin: 6px auto 2px;
+  appearance: none; cursor: pointer;
+  border: 1px solid rgba(120, 145, 190, 0.32); border-radius: 999px;
+  background: rgba(12, 18, 38, 0.7); color: #9fb2d9;
+  padding: 5px 14px;
+  font: 700 10px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.11em;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.spb-easy-specpeek:hover { border-color: var(--accent-cyan, #00e5ff); color: #eaf7ff; }
+.spb-easy-specpeek.on { border-color: rgba(0, 229, 255, 0.6); color: var(--accent-cyan, #00e5ff); }
+.spb-easy-specpeek:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+
+/* --- SPB-EASY-2026-08-19 fix pass 7: the mix panel stops eating the catalog
+   MEASURED: with one finish picked the mix panel took 132px and the catalog
+   dropped from 452px (22 tiles) to 309px (11). The panel's own controls all
+   stay - only its explanatory prose is dropped in the browse layout, where the
+   page header already says what this screen does. Every one of these sentences
+   is still on the control's title/hover.                                     */
+@media (max-width: 1179px) {
+  body.spb-easy-browse .spb-easy-whole-stack { max-height: 112px; }
+  body.spb-easy-browse .spb-easy-mix-head em,
+  body.spb-easy-browse .spb-easy-mix-scale small,
+  body.spb-easy-browse .spb-easy-mix-copy small { display: none; }
+  body.spb-easy-browse .spb-easy-mix-head { padding-bottom: 2px; }
+}
+
+/* --- SPB-EASY-2026-08-19 fix pass 8: catalog LEFT, controls RIGHT ----------
+   Stacking head / finder / mix / catalog / side doors / tune / save in one
+   column meant the catalog was always the loser: MEASURED 452px with an empty
+   mix, 328px once a finish was picked and a RECENTLY USED shelf appeared - so
+   the buyer was back to 1-2 tiles in view. The secondary blocks do not need to
+   be ABOVE and BELOW the catalog; they need to be BESIDE it. Two columns: the
+   catalog owns the left column's full height, everything else stacks in a
+   narrow right column. Nothing is removed or hidden by this - it is purely
+   where things sit. Narrow windows keep the single-column stack.            */
+@media (min-width: 1180px) {
+  body.spb-easy-browse .spb-easy-rail {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(290px, 24vw, 390px);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    column-gap: 18px;
+  }
+  body.spb-easy-browse .spb-easy-rail-head { grid-column: 1; grid-row: 1; align-self: start; }
+  body.spb-easy-browse .spb-easy-finder    { grid-column: 1; grid-row: 2; align-self: start; }
+  body.spb-easy-browse .spb-easy-finishes  { grid-column: 1; grid-row: 3; min-height: 0; }
+  /* Everything that is not the catalog lives in one right-hand column that
+     scrolls on its own, so the catalog keeps the full height of the window. */
+  body.spb-easy-browse .spb-easy-browse-side {
+    grid-column: 2; grid-row: 1 / span 3;
+    display: flex; flex-direction: column; gap: 6px;
+    min-height: 0; overflow-y: auto; padding-right: 2px;
+  }
+  body.spb-easy-browse .spb-easy-whole-stack { max-height: 240px; }
+  /* In its own column the action block is a normal stack again, and the sticky
+     pin is unnecessary because nothing scrolls past it. */
+  body.spb-easy-browse .spb-easy-controls {
+    flex-direction: column; align-items: stretch;
+    position: static; background: none; backdrop-filter: none;
+    margin-top: 0;
+  }
+  body.spb-easy-browse .spb-easy-senddrawer,
+  body.spb-easy-browse .spb-easy-myloooks,
+  body.spb-easy-browse .spb-easy-actions { flex: 0 0 auto; margin: 0; }
+  body.spb-easy-browse .spb-easy-sidedoors { margin-top: 6px; }
+}
+
+/* --- SPB-EASY-2026-08-19 screenshot pass ---------------------------------- */
+/* The Training Wheels panel and quest chip render above the first-run backdrop.
+   A first-time buyer should meet ONE thing on launch, not a modal plus an
+   11-item checklist. */
+body.spb-firstrun-open #spbGuidePanel,
+body.spb-firstrun-open #spbQuestChip,
+body.spb-firstrun-open #spbLevelNote { display: none !important; }
+
+/* Narrow (stacked) browse layout: the action block is a row of wrapped items,
+   so let the destination drawer take a full line of its own instead of fighting
+   the SAVE button for horizontal space. */
+@media (max-width: 1179px) {
+  body.spb-easy-browse .spb-easy-senddrawer { flex: 1 1 100%; }
+  body.spb-easy-browse .spb-easy-myloooks { flex: 1 1 100%; }
+}
+
+/* --- SPB-EASY-2026-08-20 screenshot pass 2 --------------------------------
+   1. The floating stage hint ("Tap any finish below - your paint colors stay
+      untouched") is absolutely positioned at the bottom of the stage and landed
+      ON TOP of the new SHOW ME THE SPEC MAP button. It is also a word-for-word
+      duplicate of the PICK A FINISH header two inches below it, so in the browse
+      layout it is dropped rather than repositioned. (Every other view keeps it.)
+   2. Narrow windows: let the rail scroll again so the side doors and TUNE IT are
+      reachable, and give the catalog room for two rows instead of one.        */
+body.spb-easy-browse .spb-easy-stage-hint { display: none; }
+
+@media (max-width: 1179px) {
+  body.spb-easy-browse .spb-easy-rail { overflow-y: auto; }
+  body.spb-easy-browse .spb-easy-finishes { min-height: 320px; overflow-y: visible; }
+  body.spb-easy-browse .spb-easy-stage { flex: 0 0 clamp(240px, 34vh, 420px); } /* [SPB-EASY-STAGE] narrow windows still get square-readable panes */
+}
+
+/* COMPARE was flex-growing to fill the row in the narrow action bar; these four
+   are peer buttons, not a primary action. */
+body.spb-easy-browse .spb-easy-mylooks-bar > * { flex: 0 0 auto; }
+
+/* --- SPB-EASY-2026-08-20: the missing [hidden] guard ----------------------
+   Caught by a screenshot, not by the DOM: the spec-peek toggle set the strip's
+   `hidden` attribute and the JS state was right (button still read SHOW ME THE
+   SPEC MAP) - but `.spb-easy-proof-on .spb-easy-channel-strip { display: grid }`
+   has no `!important` competitor, so the author rule beat the attribute and the
+   four channels reappeared the moment a finish was picked, squashing the SOURCE
+   and MATERIAL PREVIEW cards to zero height. This is exactly the LOAD-BEARING
+   [hidden]-guard trap called out at the top of this file; the strip never had
+   one because nothing used to toggle it. */
+.spb-easy-channel-strip[hidden] { display: none !important; }
+
+/* The spec-map reveal only has anything to reveal once a finish is applied
+   (the channels are painted from the live proof). Offering the button before
+   that gives a toggle that visibly does nothing. */
+.spb-easy-specpeek { display: none; }
+.spb-easy-proof-on .spb-easy-specpeek { display: inline-block; }
+
+/* ==========================================================================
+   GAUNTLET A1 (2026-08-20) — family rows carry real swatches
+   Opening FULL CATALOG used to swap a wall of swatches for 62 lines of text.
+   Five real paint|spec chips per family make the list scannable, so browsing
+   all 2,834 finishes still feels like shopping.
+   NOTE: `.spb-easy-finish-section > summary span` is display:flex/column in the
+   base sheet, so the preview strip must re-declare its own axis.
+   ========================================================================== */
+.spb-easy-finish-section > summary > span.spb-easy-secpreview {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+.spb-easy-secchip {
+  display: block;
+  width: 34px; height: 24px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 0 0 1px rgba(120, 145, 190, 0.22);
+  flex: 0 0 auto;
+}
+.spb-easy-secchip img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+/* The title block should take the slack, not the preview strip. */
+.spb-easy-finish-section > summary > span:not(.spb-easy-secpreview) { flex: 1 1 auto; }
+/* An open family already shows its real rows - the peek is redundant there. */
+.spb-easy-finish-section[open] > summary > .spb-easy-secpreview { opacity: 0.28; }
+@media (max-width: 1179px) {
+  .spb-easy-secchip { width: 28px; height: 20px; }
+  .spb-easy-finish-section > summary > span.spb-easy-secpreview > .spb-easy-secchip:nth-child(n+4) { display: none; }
+}
+
+/* GAUNTLET A1b (2026-08-20) — the peek chip shows the PAINT side only.
+   The catalog thumbnail is a paint|spec split; at 34px wide that is two 17px
+   slivers and reads as an abstract colour bar. The real tiles keep the full
+   split (the owner wants the spec side visible) — but a 34px family peek has
+   one job: tell you what colour world this family lives in. Doubling the image
+   width inside an overflow-hidden chip crops it to the paint half. */
+.spb-easy-secchip img { width: 200%; }
+
+/* [GAUNTLET A4b 2026-08-20] The sticky headers were see-through: tile hearts and
+   swatch fragments scrolled straight over them. Cause — `.spb-easy-fav` is
+   `z-index:3` and `.spb-easy-finish` is `position:relative` with `z-index:auto`,
+   which does NOT open a stacking context, so the heart's 3 competed directly
+   with the header's 3 and won on DOM order (rows come after the summary).
+   Give the tile its own stacking context so the heart is trapped inside it, and
+   lift the headers clear. */
+body.spb-easy-on .spb-easy-finish { z-index: 0; }
+body.spb-easy-browse .spb-easy-finish-group { z-index: 7; }
+body.spb-easy-browse .spb-easy-finish-section > summary { z-index: 6; }
+
+/* ==========================================================================
+   GAUNTLET A6 (2026-08-20) — search exits
+   The × sits inside the field (the finder is a flex row, so the field gets a
+   relative wrapper via padding rather than a new DOM node), and a zero-result
+   query now offers real clickable starting points instead of one grey apology.
+   ========================================================================== */
+.spb-easy-finder { position: relative; }
+.spb-easy-search-clear {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  /* 16px container padding + the toggle button's width + its 8px gap */
+  right: calc(16px + 8px + var(--spb-cat-toggle-w, 150px));
+  width: 22px; height: 22px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 50%;
+  background: rgba(120, 145, 190, 0.18);
+  color: #b6c8e6; font-size: 11px; line-height: 1; cursor: pointer;
+  z-index: 2;
+}
+.spb-easy-search-clear:hover { background: rgba(255, 95, 141, 0.28); color: #fff; }
+.spb-easy-search-clear:focus-visible { outline: 2px solid #38bdf8; outline-offset: 1px; }
+.spb-easy-search-clear[hidden] { display: none !important; }
+/* Keep typed text from running under the ×. */
+.spb-easy-finder input { padding-right: 30px; }
+
+.spb-easy-finish-none b {
+  display: block; margin-bottom: 4px;
+  font: 700 13px/1.3 var(--font-display, 'Rajdhani', sans-serif);
+  letter-spacing: 0.05em; color: #dbe6f8;
+}
+.spb-easy-finish-none span { display: block; font-size: 11.5px; color: var(--text-dim, #7080a0); }
+.spb-easy-none-ideas {
+  display: flex !important; flex-wrap: wrap; justify-content: center;
+  gap: 6px; margin-top: 12px;
+}
+.spb-easy-none-idea {
+  appearance: none; cursor: pointer;
+  border: 1px solid rgba(0, 229, 255, 0.34); border-radius: 999px;
+  background: rgba(0, 229, 255, 0.08); color: var(--accent-cyan, #00e5ff);
+  padding: 5px 12px;
+  font: 700 10.5px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.08em;
+}
+.spb-easy-none-idea:hover { background: rgba(0, 229, 255, 0.2); color: #eaf7ff; }
+.spb-easy-none-idea:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+
+/* [GAUNTLET B1 2026-08-20] The number mode is now answered from the file name.
+   This line says so, and names the file, so the default is transparent rather
+   than mysterious. */
+.spb-easy-number-auto {
+  margin-top: 6px; padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 229, 255, 0.28);
+  background: rgba(0, 229, 255, 0.07);
+  font-size: 10.5px; line-height: 1.45;
+  color: #9fd8e6;
+}
+
+/* [GAUNTLET C1 2026-08-20] The mix-panel explainer was squeezed into the right
+   half of the header and wrapped to three cramped lines. In the browse layout's
+   narrow right column it reads better on its own line under the title. */
+body.spb-easy-browse .spb-easy-mix-head { display: block; }
+body.spb-easy-browse .spb-easy-mix-head > span { display: flex; align-items: baseline; gap: 6px; }
+body.spb-easy-browse .spb-easy-mix-head > em {
+  display: block; margin-top: 4px; text-align: left;
+  font-style: normal; font-size: 10px; line-height: 1.45;
+}
+
+/* ==========================================================================
+   GAUNTLET B2 (2026-08-20) — the finish line
+   The next action is the hero; the file receipt is small print behind a
+   disclosure. It is still one click away, because "did it really save?" is a
+   real question — it just is not the FIRST question.
+   ========================================================================== */
+.spb-easy-result-next {
+  margin: 4px 0 12px; padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  background: rgba(0, 229, 255, 0.09);
+}
+.spb-easy-result-next b {
+  display: block;
+  font: 700 17px/1.2 var(--font-display, 'Rajdhani', sans-serif);
+  letter-spacing: 0.04em; color: var(--accent-cyan, #00e5ff);
+}
+.spb-easy-result-next span {
+  display: block; margin-top: 4px;
+  font-size: 12px; line-height: 1.45; color: #a9bcdd;
+}
+.spb-easy-result-where { font-size: 13px; line-height: 1.5; color: #cfe0f7; }
+.spb-easy-result-where b { color: #fff; }
+.spb-easy-result-extra { margin-top: 6px; font-size: 11.5px; color: #a9bcdd; }
+.spb-easy-result-extra.spb-easy-warn { color: var(--accent-gold, #ffaa00); }
+.spb-easy-result-proof { margin-top: 12px; text-align: left; }
+.spb-easy-result-proof > summary {
+  cursor: pointer; list-style: none;
+  font: 700 10px/1 var(--font-display, 'Rajdhani', sans-serif);
+  letter-spacing: 0.1em; color: #7f93bd; padding: 4px 0;
+}
+.spb-easy-result-proof > summary::-webkit-details-marker { display: none; }
+.spb-easy-result-proof > summary:hover { color: #b6c8e6; }
+.spb-easy-result-proof > div {
+  margin-top: 6px; padding: 8px 10px;
+  border-radius: 7px; background: rgba(0, 0, 0, 0.25);
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 10.5px; line-height: 1.6; color: #8ea3c9;
+  word-break: break-all;
+}
+
+/* [GAUNTLET B9 2026-08-20] Overwrite guard: reassurance leads, restore procedure
+   is a disclosure (it is a later question), path is quiet. */
+.spb-easy-ow-good {
+  margin: 0 0 12px; padding: 10px 12px;
+  border-radius: 9px;
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  background: rgba(74, 222, 128, 0.09);
+  font-size: 12px; line-height: 1.5; color: #bfe8cd;
+}
+.spb-easy-ow-good b { color: #86efac; }
+details.spb-easy-ow-how { margin: 10px 0 6px; }
+details.spb-easy-ow-how > summary {
+  cursor: pointer; list-style: none;
+  font: 700 10px/1 var(--font-display, 'Rajdhani', sans-serif);
+  letter-spacing: 0.09em; color: #8ea3c9; padding: 4px 0;
+}
+details.spb-easy-ow-how > summary::-webkit-details-marker { display: none; }
+details.spb-easy-ow-how > summary:hover { color: #cfe0f7; }
+details.spb-easy-ow-how > div {
+  margin-top: 6px; font-size: 11.5px; line-height: 1.55; color: #a9bcdd;
+}
+
+/* ==========================================================================
+   GAUNTLET E0 (2026-08-20) — Easy Mode's own confirm/prompt
+   Replaces three window.confirm/prompt calls. Native dialogs cannot be styled,
+   ignore the app's stacking context, look like an error inside Electron, and
+   block automation hard enough that one hung a screenshot probe for 4 minutes.
+   ========================================================================== */
+.spb-easy-ask-backdrop {
+  position: fixed; inset: 0; z-index: 21500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  background: rgba(4, 6, 16, 0.72);
+  backdrop-filter: blur(3px);
+}
+.spb-easy-ask-backdrop[hidden] { display: none !important; }
+.spb-easy-ask {
+  width: min(430px, 100%);
+  border: 1px solid rgba(120, 145, 190, 0.34); border-radius: 14px;
+  background: rgba(12, 16, 34, 0.98);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+  padding: 20px 20px 16px;
+}
+.spb-easy-ask-title {
+  font: 700 17px/1.25 var(--font-display, 'Rajdhani', sans-serif);
+  letter-spacing: 0.03em; color: #f0f6ff; margin-bottom: 7px;
+}
+.spb-easy-ask-body { font-size: 12.5px; line-height: 1.55; color: #a9bcdd; }
+.spb-easy-ask-body[hidden] { display: none !important; }
+.spb-easy-ask-input {
+  width: 100%; margin-top: 12px; padding: 9px 12px;
+  border: 1px solid rgba(120, 145, 190, 0.4); border-radius: 9px;
+  background: rgba(6, 9, 22, 0.9); color: #eaf2ff;
+  font-size: 13px;
+}
+.spb-easy-ask-input[hidden] { display: none !important; }
+.spb-easy-ask-input:focus { outline: none; border-color: var(--accent-cyan, #00e5ff); }
+.spb-easy-ask-actions {
+  display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;
+}
+.spb-easy-ask-actions button {
+  appearance: none; cursor: pointer;
+  border: 1px solid rgba(120, 145, 190, 0.34); border-radius: 999px;
+  background: rgba(14, 20, 42, 0.9); color: #cfe0f7;
+  padding: 8px 16px;
+  font: 700 11px/1 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.09em;
+}
+.spb-easy-ask-actions button:hover { border-color: var(--accent-cyan, #00e5ff); color: #fff; }
+.spb-easy-ask-actions button:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+#spbEasyAskYes {
+  background: var(--accent-cyan, #00e5ff); border-color: transparent; color: #04121c;
+}
+#spbEasyAskYes:hover { filter: brightness(1.08); color: #04121c; }
+#spbEasyAskYes.danger { background: #ff5f6d; color: #fff; }
+
+/* [GAUNTLET E1 2026-08-20] The extras bar is toggled with the hidden attribute,
+   and author display rules beat it — the LOAD-BEARING guard this file warns
+   about at the top. Without this the gate silently does nothing. */
+.spb-easy-myloooks[hidden] { display: none !important; }
+
+/* [GAUNTLET E2 2026-08-20] The way out of "N colors still need a finish" for a
+   buyer who used FIND MY COLORS FOR ME and only wanted one of them. */
+.spb-easy-dropunfinished {
+  display: block; width: 100%; margin-top: 8px;
+  appearance: none; cursor: pointer;
+  border: 1px dashed rgba(255, 170, 0, 0.45); border-radius: 9px;
+  background: rgba(255, 170, 0, 0.07); color: var(--accent-gold, #ffaa00);
+  padding: 8px 10px;
+  font: 700 10px/1.3 var(--font-display, 'Rajdhani', sans-serif); letter-spacing: 0.08em;
+}
+.spb-easy-dropunfinished:hover { background: rgba(255, 170, 0, 0.15); color: #ffd48a; }
+.spb-easy-dropunfinished:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+.spb-easy-dropunfinished[hidden] { display: none !important; }
+
+/* [GAUNTLET E3 2026-08-20] Warns when a picked color covers so little of the car
+   that a finish on it will look like nothing happened. */
+.spb-easy-bc-tiny {
+  margin: 8px 0 2px; padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 170, 0, 0.4);
+  background: rgba(255, 170, 0, 0.08);
+  font-size: 11px; line-height: 1.5; color: #ffd48a;
+}
+.spb-easy-bc-tiny b { color: #fff; }
+
+/* [GAUNTLET E3 2026-08-20] A colour covering almost nothing, flagged where the
+   number already lives — so it shows for auto-detected colours too, which skip
+   the keep-or-change card entirely. */
+.spb-easy-planrow-tiny { color: var(--accent-gold, #ffaa00); font-weight: 700; }
+
+/* ==========================================================================
+   GAUNTLET F1b (2026-08-20) — toasts were invisible in Easy Mode
+   MEASURED: #toast is z-index:5000; Easy Mode's cover is z-index:20000, so
+   elementFromPoint over a live toast returned Easy Mode content. Every toast
+   Easy Mode has ever fired was rendered BEHIND the cover — the save-look
+   confirmation, "nothing to clear yet", the protect-spot warning, and the two
+   this gauntlet added. A whole feedback channel, silently swallowed.
+   Only lifted while Easy owns the screen, so Pro's stacking is untouched.
+   ========================================================================== */
+/* The competing rule is `body #toast.toast { z-index:5000 !important }` in the
+   page's own inline <style>, which is EQUAL specificity (0,1,1,1) and later in
+   source order — so it won. Matching its shape plus one class beats it. */
+body.spb-easy-on #toast.toast { z-index: 21800 !important; }
+
+/* [GAUNTLET C-toast 2026-08-20] ...and then the now-visible toast landed square
+   on top of SAVE TO iRACING. Pro docks toasts bottom-RIGHT (bottom:118px, under
+   the layers panel); in Easy Mode bottom-right is where the finish line lives -
+   the screenshot in _easy_gauntlet/shots/toast2 shows "Your paint is open and
+   ready." covering the one button the whole app exists to get pressed.
+   Easy Mode docks them bottom-LEFT instead, over the catalog, where the worst
+   case is a briefly hidden finish tile. Specificity (0,1,2,1) beats the page's
+   own `body #toast.toast` (0,1,1,1) without touching Pro. */
+body.spb-easy-on #toast.toast {
+    left: 20px !important;
+    right: auto !important;
+    bottom: 20px !important;
+}
+
+/* [GAUNTLET H2 2026-08-20] The mix panel was too short for its own content once
+   more than one finish was in play. MEASURED with 2 finishes: panel capped at
+   240px, content 440px — and the two master sliders are `position:sticky`
+   (bottom 0 / 52px, by design, so they stay reachable while rows scroll), so
+   they permanently occupied 105px of the 240. That left ~135px for an 88px
+   header plus two 93px rows: the rows the buyer had just chosen were almost
+   entirely hidden behind the sliders.
+   The right column already scrolls, so give the panel room to actually show a
+   blend, and trim the header prose that C1 moved onto its own line. */
+@media (min-width: 1180px) {
+  body.spb-easy-browse .spb-easy-whole-stack { max-height: 400px; }
+  body.spb-easy-browse .spb-easy-mix-head > em {
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* [SPB-LAYER-GAUNTLET C6 2026-08-21] CAR PARTS drawer - layered-paint eyes in
+   Easy Mode. Same drawer chrome as TUNE IT / WHERE IT GOES. */
+.spb-easy-carpart-rows { display: flex; flex-direction: column; gap: 3px; max-height: 180px; overflow-y: auto; padding: 6px 2px 2px; }
+.spb-easy-carpart {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 9px; border-radius: 8px;
+    border: 1px solid var(--border, #1a1a3a);
+    background: var(--bg-card, #0e0e22);
+    color: var(--text-dim, #8a96b3);
+    font: 700 11px/1.2 var(--font-display, 'Rajdhani', sans-serif);
+    letter-spacing: 0.03em; cursor: pointer; text-align: left;
+}
+.spb-easy-carpart.on { color: var(--text-bright, #f0f0ff); border-color: rgba(0, 229, 255, 0.35); }
+.spb-easy-carpart.part { color: var(--text, #c9d4ea); border-color: rgba(255, 179, 0, 0.35); }
+.spb-easy-carpart:hover { border-color: var(--accent-cyan, #00e5ff); }
+.spb-easy-carpart-eye { flex: 0 0 auto; width: 16px; text-align: center; }
+.spb-easy-carpart-name { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.spb-easy-carpart-count { flex: 0 0 auto; font-size: 9px; color: var(--text-dim, #8a96b3); }
+.spb-easy-carpart-hint { display: block; padding: 4px 2px 2px; font-size: 9px; color: var(--text-dim, #8a96b3); }
+
+/* [SPB-EASY-READY 2026-08-26] save-readiness checklist: every blocker visible, every unmet
+   row is a button that opens its own fix. Sits directly above SAVE TO iRACING. */
+.spb-easy-readiness { margin: 10px 0 4px; display: flex; flex-direction: column; gap: 4px; }
+.spb-easy-ready-head { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; color: var(--accent-gold, #ffb000); margin: 0 0 2px 2px; }
+.spb-easy-ready-row { display: grid; grid-template-columns: 18px auto 1fr; align-items: center; gap: 8px;
+  width: 100%; text-align: left; padding: 6px 9px; border-radius: 9px; cursor: pointer;
+  background: rgba(255, 176, 0, 0.07); border: 1px solid rgba(255, 176, 0, 0.28); color: #f2ead2; }
+.spb-easy-ready-row i { font-style: normal; font-weight: 900; color: #ffb000; }
+.spb-easy-ready-row b { font-size: 11.5px; font-weight: 800; white-space: nowrap; }
+.spb-easy-ready-row small { font-size: 10.5px; color: rgba(242, 234, 210, 0.65); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+.spb-easy-ready-row:not(.ok):hover { background: rgba(255, 176, 0, 0.16); border-color: rgba(255, 176, 0, 0.55); }
+.spb-easy-ready-row.ok { background: rgba(0, 224, 138, 0.05); border-color: rgba(0, 224, 138, 0.22); color: rgba(220, 240, 228, 0.75); cursor: default; }
+.spb-easy-ready-row.ok i { color: #00e08a; }

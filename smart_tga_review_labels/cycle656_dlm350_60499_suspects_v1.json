@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 350/car_num_60499.tga",
+  "inspection_records": "_smart_tga_runs/cycle656_dlm_embedding_batch/inspection_records.json",
+  "review_scope": "Cycle 656 manual source and all-owner sheet review of every emitted suspect bbox plus all three Number components.",
+  "component_labels": [
+    {"layer":"numbers","component_index":0,"expected_bbox":[482,31,121,98],"target_layer":"template","label":"fixed_panel","note":"Fixed upper template/body panel, not the tiny custom 18."},
+    {"layer":"numbers","component_index":1,"expected_bbox":[317,32,162,87],"target_layer":"template","label":"fixed_panel","note":"Fixed upper template/body panel, not the tiny custom 18."},
+    {"layer":"numbers","component_index":2,"expected_bbox":[751,408,84,222],"target_layer":"sponsors","label":"sponsor_wordmark","family_id":"logo:drydene","note":"Large vertical DRYDENE wordmark, not a car number."},
+    {"layer":"sponsors","component_index":53,"expected_bbox":[833,589,48,95],"target_layer":"paint","label":"decorative_livery_arc","note":"Curved red/white livery accent."},
+    {"layer":"sponsors","component_index":34,"expected_bbox":[834,359,44,92],"target_layer":"paint","label":"decorative_livery_arc","note":"Mirrored curved red/white livery accent."},
+    {"layer":"sponsors","component_index":41,"expected_bbox":[762,408,68,193],"target_layer":"sponsors","label":"sponsor_wordmark_fragment","family_id":"logo:drydene","note":"DRYDENE letter material."},
+    {"layer":"sponsors","component_index":46,"expected_bbox":[823,418,13,201],"target_layer":"sponsors","label":"sponsor_wordmark_fragment","family_id":"logo:drydene","note":"Narrow DRYDENE outline/letter material."},
+    {"layer":"sponsors","component_index":60,"expected_bbox":[750,615,79,17],"target_layer":"paint","label":"decorative_livery_arc","note":"Lower curved livery accent, not sponsor text."}
+  ]
+}

@@ -1,0 +1,464 @@
+{
+ "outdir": "_forge_assets/mrzogs55",
+ "sheets": {
+  "numbers": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/ARCA Chevy Mockups/Mr Zogs/ChatGPT Image Jul 18, 2026, 02_05_20 AM (6).png",
+  "branding": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/ARCA Chevy Mockups/Mr Zogs/ChatGPT Image Jul 18, 2026, 02_05_21 AM (7).png",
+  "contingency": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/ARCA Chevy Mockups/Mr Zogs/ChatGPT Image Jul 18, 2026, 02_05_22 AM (8).png",
+  "graphics": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/ARCA Chevy Mockups/Mr Zogs/ChatGPT Image Jul 18, 2026, 02_05_23 AM (9).png",
+  "rear": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/ARCA Chevy Mockups/Mr Zogs/ChatGPT Image Jul 18, 2026, 02_05_18 AM (5).png",
+  "front": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/ARCA Chevy Mockups/Mr Zogs/ChatGPT Image Jul 18, 2026, 02_05_17 AM (4).png",
+  "top": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/ARCA Chevy Mockups/Mr Zogs/ChatGPT Image Jul 18, 2026, 02_05_15 AM (3).png"
+ },
+ "assets": {
+  "num55_left": {
+   "sheet": "numbers",
+   "fbox": [
+    0.02,
+    0.118,
+    0.271,
+    0.373
+   ],
+   "cluster": true
+  },
+  "num55_right": {
+   "sheet": "numbers",
+   "fbox": [
+    0.271,
+    0.118,
+    0.524,
+    0.373
+   ],
+   "cluster": true
+  },
+  "num55_roof": {
+   "sheet": "numbers",
+   "fbox": [
+    0.522,
+    0.118,
+    0.774,
+    0.373
+   ],
+   "cluster": true
+  },
+  "num55_oval": {
+   "sheet": "numbers",
+   "fbox": [
+    0.77,
+    0.118,
+    0.984,
+    0.373
+   ],
+   "cluster": true
+  },
+  "num55_nose": {
+   "sheet": "numbers",
+   "fbox": [
+    0.22,
+    0.466,
+    0.348,
+    0.587
+   ],
+   "cluster": true
+  },
+  "num55_rear": {
+   "sheet": "numbers",
+   "fbox": [
+    0.625,
+    0.466,
+    0.73,
+    0.587
+   ],
+   "cluster": true
+  },
+  "sexwax_circle": {
+   "sheet": "branding",
+   "fbox": [
+    0.027,
+    0.074,
+    0.298,
+    0.58
+   ],
+   "cluster": true
+  },
+  "sexwax_circle_med": {
+   "sheet": "branding",
+   "fbox": [
+    0.299,
+    0.074,
+    0.507,
+    0.58
+   ],
+   "cluster": true
+  },
+  "zoggs_wordmark": {
+   "sheet": "branding",
+   "fbox": [
+    0.646,
+    0.074,
+    0.998,
+    0.31
+   ],
+   "cluster": true
+  },
+  "bestwax": {
+   "sheet": "branding",
+   "fbox": [
+    0.646,
+    0.31,
+    0.998,
+    0.45
+   ],
+   "cluster": true
+  },
+  "since71": {
+   "sheet": "branding",
+   "fbox": [
+    0.646,
+    0.45,
+    0.998,
+    0.58
+   ],
+   "cluster": true
+  },
+  "sexwax_banner": {
+   "sheet": "branding",
+   "fbox": [
+    0.021,
+    0.582,
+    0.498,
+    0.86
+   ],
+   "cluster": true
+  },
+  "wave_crest_banner": {
+   "sheet": "branding",
+   "fbox": [
+    0.491,
+    0.582,
+    0.957,
+    0.76
+   ],
+   "cluster": true
+  },
+  "menards": {
+   "sheet": "contingency",
+   "fbox": [
+    0.035,
+    0.083,
+    0.245,
+    0.24
+   ],
+   "cluster": true
+  },
+  "generaltire": {
+   "sheet": "contingency",
+   "fbox": [
+    0.513,
+    0.083,
+    0.655,
+    0.24
+   ],
+   "cluster": true
+  },
+  "cometic": {
+   "sheet": "contingency",
+   "fbox": [
+    0.025,
+    0.244,
+    0.25,
+    0.356
+   ],
+   "cluster": true
+  },
+  "holley": {
+   "sheet": "contingency",
+   "fbox": [
+    0.515,
+    0.244,
+    0.655,
+    0.356
+   ],
+   "cluster": true
+  },
+  "ilmor": {
+   "sheet": "contingency",
+   "fbox": [
+    0.03,
+    0.36,
+    0.26,
+    0.46
+   ],
+   "cluster": true
+  },
+  "lincoln": {
+   "sheet": "contingency",
+   "fbox": [
+    0.513,
+    0.36,
+    0.669,
+    0.46
+   ],
+   "cluster": true
+  },
+  "arp": {
+   "sheet": "contingency",
+   "fbox": [
+    0.03,
+    0.47,
+    0.223,
+    0.577
+   ],
+   "cluster": true
+  },
+  "comp": {
+   "sheet": "contingency",
+   "fbox": [
+    0.506,
+    0.47,
+    0.703,
+    0.577
+   ],
+   "cluster": true
+  },
+  "bilstein": {
+   "sheet": "contingency",
+   "fbox": [
+    0.03,
+    0.571,
+    0.208,
+    0.699
+   ],
+   "cluster": true
+  },
+  "vp": {
+   "sheet": "contingency",
+   "fbox": [
+    0.509,
+    0.571,
+    0.612,
+    0.699
+   ],
+   "cluster": true
+  },
+  "weld": {
+   "sheet": "contingency",
+   "fbox": [
+    0.037,
+    0.699,
+    0.177,
+    0.777
+   ],
+   "cluster": true
+  },
+  "floracing": {
+   "sheet": "contingency",
+   "fbox": [
+    0.44,
+    0.72,
+    0.68,
+    0.84
+   ],
+   "cluster": true
+  },
+  "goodyear": {
+   "sheet": "contingency",
+   "fbox": [
+    0.027,
+    0.785,
+    0.259,
+    0.976
+   ],
+   "cluster": true
+  },
+  "wave_big": {
+   "sheet": "graphics",
+   "fbox": [
+    0.0,
+    0.095,
+    0.62,
+    0.312
+   ],
+   "cluster": true
+  },
+  "wave_small": {
+   "sheet": "graphics",
+   "fbox": [
+    0.62,
+    0.095,
+    1.0,
+    0.312
+   ],
+   "cluster": true
+  },
+  "sunburst": {
+   "sheet": "graphics",
+   "fbox": [
+    0.295,
+    0.318,
+    0.52,
+    0.768
+   ],
+   "cluster": true
+  },
+  "fender_arc_a": {
+   "sheet": "graphics",
+   "fbox": [
+    0.005,
+    0.318,
+    0.295,
+    0.768
+   ],
+   "cluster": true
+  },
+  "stripes_a": {
+   "sheet": "graphics",
+   "fbox": [
+    0.0,
+    0.79,
+    1.0,
+    0.868
+   ],
+   "cluster": true
+  },
+  "stripes_b": {
+   "sheet": "graphics",
+   "fbox": [
+    0.0,
+    0.872,
+    1.0,
+    0.968
+   ],
+   "cluster": true
+  },
+  "spoiler_face": {
+   "sheet": "rear",
+   "fbox": [
+    0.02,
+    0.58,
+    0.5,
+    0.72
+   ],
+   "cluster": true
+  },
+  "rear_banner": {
+   "sheet": "rear",
+   "fbox": [
+    0.02,
+    0.74,
+    0.5,
+    0.95
+   ],
+   "cluster": true
+  },
+  "lq_end": {
+   "sheet": "rear",
+   "fbox": [
+    0.52,
+    0.6,
+    0.66,
+    0.9
+   ],
+   "cluster": true
+  },
+  "rq_end": {
+   "sheet": "rear",
+   "fbox": [
+    0.66,
+    0.6,
+    0.8,
+    0.9
+   ],
+   "cluster": true
+  },
+  "hood_graphic": {
+   "sheet": "front",
+   "fbox": [
+    0.02,
+    0.55,
+    0.3,
+    0.95
+   ],
+   "cluster": true
+  },
+  "splitter_stripe": {
+   "sheet": "front",
+   "fbox": [
+    0.32,
+    0.6,
+    0.72,
+    0.78
+   ],
+   "cluster": true
+  },
+  "lf_fender_accent": {
+   "sheet": "front",
+   "fbox": [
+    0.598,
+    0.715,
+    0.705,
+    0.99
+   ],
+   "cluster": true
+  },
+  "rf_fender_accent": {
+   "sheet": "front",
+   "fbox": [
+    0.718,
+    0.715,
+    0.828,
+    0.99
+   ],
+   "cluster": true
+  },
+  "hood_panel_flat": {
+   "sheet": "top",
+   "fbox": [
+    0.52,
+    0.06,
+    0.76,
+    0.55
+   ],
+   "cluster": true
+  },
+  "roof_panel_flat": {
+   "sheet": "top",
+   "fbox": [
+    0.78,
+    0.04,
+    0.99,
+    0.6
+   ],
+   "cluster": true
+  },
+  "deck_flat": {
+   "sheet": "top",
+   "fbox": [
+    0.52,
+    0.58,
+    0.9,
+    0.97
+   ],
+   "cluster": true
+  },
+  "num55_final": {
+   "sheet": "numbers",
+   "fbox": [
+    0.826,
+    0.675,
+    0.995,
+    0.853
+   ],
+   "cluster": true
+  },
+  "since71_clean": {
+   "sheet": "branding",
+   "fbox": [
+    0.492,
+    0.505,
+    0.652,
+    0.612
+   ],
+   "cluster": true
+  }
+ }
+}

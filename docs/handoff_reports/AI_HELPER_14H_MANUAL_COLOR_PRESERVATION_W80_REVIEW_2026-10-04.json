@@ -1,0 +1,55 @@
+{
+  "id": "AI_HELPER_14H_MANUAL_COLOR_PRESERVATION_W80_REVIEW_2026-10-04",
+  "status": "PRIVATE_GUARD_CANDIDATE_PASS_WITH_CONSERVATIVE_REFUSAL",
+  "date": "2026-10-04",
+  "scope": "Independent W79 candidate review; read-only source and queue proposal test. No production edits or pixel application.",
+  "frozen_fresh_oracle": {
+    "path": "_easy_claude_work/ai14h_w80_review/fresh-oracle.json",
+    "sha256": "773912FBA0EF84D428CFBE20E21302DB11A9F3D6F7194810DB952113468D06EB",
+    "case_count": 12,
+    "freeze_order": "Created before inspection of W79 source, with explicit keep-current-paint, valid helper-owner, ambiguous/manual owner, explicit source paint and whole-car controls."
+  },
+  "source_pins": {
+    "w79_pro_ai": {
+      "path": "_easy_claude_work/ai14h_generation3_candidate/w79_overlap/js/spb-pro-ai.js",
+      "sha256": "B4A519D02419F6E5B21A9BC0DE6488C3124D7F3FC1BB2B52738F27B2F0617D1E"
+    },
+    "runtime3_edit_planner": {
+      "path": "_easy_claude_work/ai14h_generation3_runtime3/js/spb-pro-edit.js",
+      "sha256": "99703873013E198857D9ACEAA334821098E53DCAA9D55E14DBD1EC50E58604DE"
+    },
+    "runtime3_design_module": {
+      "path": "_easy_claude_work/ai14h_generation3_runtime3/js/spb-pro-design.js",
+      "sha256": "0533393FF5F2170236F60D4ED489C7AE52F98805E12B0764DA67A967F756F2E8"
+    }
+  },
+  "private_candidate": {
+    "path": "_easy_claude_work/ai14h_w80_review/candidate/spb-pro-ai.js",
+    "sha256": "3AD59719F47562ECC36C1C18FCD517D45F46ED28D79B6141BEBB9D86ABC8EAD9",
+    "base": "W79 proAI source pinned above; no live file changed."
+  },
+  "reproduction": {
+    "test_path": "tests/ai_manual_colour_preservation_w80_route_contract.cjs",
+    "test_sha256": "100729FFA5A662AC2FAC0CA735218B6A2802A37A6244E67CF7C48A3011EA0C93",
+    "route": "Actual W79 offlineAskCore and offlineEditAsk functions, actual Runtime3 SpbProEdit.plan/compile, and actual queueEditZones function. Terminal tool handlers record queue entries but do not apply them.",
+    "fixture": "One manual solid-green roof zone with a region mask, no _aiPartProv and no _editReg owner; a separate manual side zone is present. The current authored roof color is also supplied in the current zoneColours shape.",
+    "baseline_result": "For both 'Make only the roof chrome, keep its current paint.' and 'Make the roof chrome while keeping its current paint.', E emits a new Roof chrome spec with color='source', finish='base::f_chrome', region={part:'roof'}, and no zoneEdit or partZoneProof. W79 offline route queues one add.",
+    "candidate_result": "Private W80 controller refuses the same request with zero queue entries and explains that a source-color finish could reveal original paint. It requires one unique current helper-owned owner before permitting that preservation promise.",
+    "controls": ["An ordinary scoped chrome request still queues one add.", "An explicit roof-blue request still queues one add with #1450b4.", "A registered owner whose current-owner predicate succeeds still queues one finish-only edit with no color field."],
+    "side_effects": "No queue operation was applied; add/edit callbacks only recorded proposed specs. Provider calls 0; native calls 0."
+  },
+  "independent_w79_gate": {
+    "command": "node tests/ai_pending_part_overlap_w79_contract.cjs",
+    "result": "PASS_WITH_LIMITS: 12/12 W79 overlap cases; the changed selector/provenance guards behave as expected for the existing oracle."
+  },
+  "finding": {
+    "statement": "W79's ownership guards correctly avoid adopting the manual zone, but a finish-only request that explicitly promises to keep current paint can still enqueue a new source-color part zone when no verified helper owner exists. The source comment in the design compiler warns that a new source-color zone can reveal original template art over lower repaint zones. Therefore current green preservation is unproven, and the proposed queue can conflict with the user's explicit preservation instruction. The private W80 guard refuses that unsafe proposal while allowing ordinary edits and a registered-owner finish-only edit.",
+    "evidence_limit": "The source/compiler/queue proposal is directly exercised. No renderer or native apply was run, so this report does not claim measured pixels or that the proposed zone was actually applied."
+  },
+  "recommended_narrow_guard": "When the request explicitly says to keep/preserve the current paint on a named part, refuse or ask for clarification if compilation would add a color='source' part zone and there is no unique, current, verified owner. Do not adopt arbitrary manual zones by matching name, mask shape, or coverage. A weaker save/reopen with no durable owner record should take this safe refusal path unless fresh source/layout/mask proof re-establishes ownership.",
+  "limits": [
+    "The 12-case oracle is frozen, but the W80 route contract executes four route controls; it is not a 12/12 W80 behavioral pass. The verified-owner positive is a controlled owner-verification predicate, not full source/layout/mask proof reconstruction.",
+    "Explicit user requests for a new source-paint Foundation overlay have separate semantics; they do not establish preservation of an existing authored solid color.",
+    "This review does not test apply/Undo, native zone-mask overlap, or weaker-backend saved configuration rehydration."
+  ]
+}

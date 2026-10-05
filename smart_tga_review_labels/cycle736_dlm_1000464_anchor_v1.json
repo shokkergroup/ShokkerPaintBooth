@@ -1,0 +1,26 @@
+{
+  "schema": "smart-tga-direct-anchor-review-v1",
+  "cycle": 736,
+  "purpose": "One direct clean Number-glyph anchor for predeclared external-holdout inference after the baseline-purity calibration gate passed. Historical family annotations exist for this paint, but no current exact-candidate outcome labels are loaded by the scorer.",
+  "ownership_authority": false,
+  "labels": [
+    {
+      "review_code": "H736-A000",
+      "paint": "dirtlatemodel 358/car_num_1000464.tga",
+      "candidate_index": 6,
+      "proposal_id": "number-tiled-palette:e7c7034e47fee8bd",
+      "bbox_for_review_trace_only": [354, 247, 86, 86],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask_clean_complete_glyph_anchor_only",
+      "ownership_authority": false
+    }
+  ],
+  "safety": {
+    "current_exact_candidate_outcomes_opened_before_scoring": false,
+    "historical_family_annotations_existed_but_not_model_features": true,
+    "runtime_integrated": false,
+    "apply_locked": true,
+    "exact_reconstruction_affected": false
+  }
+}

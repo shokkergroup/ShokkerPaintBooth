@@ -1,0 +1,74 @@
+{
+  "name": "shokker-paint-booth-shokk-demo",
+  "version": "1.0.0-demo.13",
+  "description": "Standalone SHOKK DEMO for Shokker Paint Booth",
+  "private": true,
+  "main": ".stage/app/main.js",
+  "scripts": {
+    "stage": "node stage.js",
+    "prestart": "npm run stage",
+    "start": "electron .",
+    "prebuild": "npm run stage",
+    "build": "electron-builder --win --x64",
+    "publish": "electron-builder --win --x64 --publish always"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.3"
+  },
+  "devDependencies": {
+    "electron": "44.1.1",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "com.shokker.paintbooth.shokkdemo",
+    "productName": "Shokker Paint Booth - SHOKK DEMO",
+    "executableName": "ShokkerPaintBoothShokkDemo",
+    "electronLanguages": [
+      "en-US",
+      "en-GB"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      ".stage/app/**/*",
+      "!node_modules/**/*.map"
+    ],
+    "extraResources": [
+      {
+        "from": ".stage/server",
+        "to": "shokk-demo-server",
+        "filter": [
+          "**/*",
+          "!**/__pycache__/**",
+          "!**/*.pyc",
+          "!**/*.pyo",
+          "!**/*.log"
+        ]
+      }
+    ],
+    "asar": true,
+    "compression": "maximum",
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico",
+      "artifactName": "ShokkerPaintBooth-SHOKK-DEMO-${version}-Setup.${ext}"
+    },
+    "nsis": {
+      "guid": "1af98625-2cd1-4d66-baf3-d878c7d2c90e",
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Shokker Paint Booth - SHOKK DEMO",
+      "uninstallDisplayName": "Shokker Paint Booth - SHOKK DEMO",
+      "deleteAppDataOnUninstall": false,
+      "differentialPackage": false
+    },
+    "publish": {
+      "provider": "generic",
+      "url": "https://pub-9969ab01838a4d69bb55822f42553904.r2.dev/shokk-demo",
+      "channel": "shokk-demo"
+    }
+  }
+}

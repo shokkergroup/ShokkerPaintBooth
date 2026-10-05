@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_pipes_screensaver",
+  "display_name": "Cdrom: Pipes Screensaver",
+  "promise": "Interlocking tiny polished chrome pipe segments bending in many directions, no horizon or large pipe scene",
+  "carrier_grammar": "Interlocking tiny polished chrome pipe segments bending in many directions, no horizon or large pipe scene; single full-canvas image, no duplicated quadrants. Fine features: colored enamel pipe faces, dark pipe interstices, yellow tube shoulders, cyan metallic tubes, coupling collars, polished elbow crests",
+  "spec_grammar": "Feature-specific selectors partition colored enamel pipe faces, dark pipe interstices, yellow tube shoulders, cyan metallic tubes, coupling collars, polished elbow crests. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "colored enamel pipe faces",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "dark pipe interstices",
+      "role": "Material feature selected from artwork by g:<:0.23"
+    },
+    {
+      "name": "yellow tube shoulders",
+      "role": "Material feature selected from artwork by h:>:35&h:<:75&s:>:0.4"
+    },
+    {
+      "name": "cyan metallic tubes",
+      "role": "Material feature selected from artwork by h:>:170&h:<:215&s:>:0.4"
+    },
+    {
+      "name": "coupling collars",
+      "role": "Material feature selected from artwork by edge:>:0.57"
+    },
+    {
+      "name": "polished elbow crests",
+      "role": "Material feature selected from artwork by g:>:0.78&s:<:0.25"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "colored enamel pipe faces",
+      "dark pipe interstices",
+      "yellow tube shoulders",
+      "cyan metallic tubes",
+      "coupling collars",
+      "polished elbow crests"
+    ],
+    "R": [
+      "colored enamel pipe faces",
+      "dark pipe interstices",
+      "yellow tube shoulders",
+      "cyan metallic tubes",
+      "coupling collars",
+      "polished elbow crests"
+    ],
+    "Cc": [
+      "colored enamel pipe faces",
+      "dark pipe interstices",
+      "yellow tube shoulders",
+      "cyan metallic tubes",
+      "coupling collars",
+      "polished elbow crests"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "colored enamel pipe faces",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dark pipe interstices",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "yellow tube shoulders",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cyan metallic tubes",
+      "range": [
+        [
+          110,
+          45,
+          40
+        ],
+        [
+          230,
+          155,
+          180
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "coupling collars",
+      "range": [
+        [
+          180,
+          30,
+          25
+        ],
+        [
+          240,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "polished elbow crests",
+      "range": [
+        [
+          240,
+          0,
+          16
+        ],
+        [
+          255,
+          32,
+          90
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_beige_box",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_crt_blue_screen",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "colored enamel pipe faces",
+      "dark pipe interstices",
+      "yellow tube shoulders",
+      "cyan metallic tubes",
+      "coupling collars",
+      "polished elbow crests"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_pipes_screensaver / Interlocking tiny polished chrome pipe segments bending in many directions, no horizon or large pipe scene",
+  "spec_key": "at_pipes_screensaver / colored enamel pipe faces all; dark pipe interstices g:<:0.23; yellow tube shoulders h:>:35&h:<:75&s:>:0.4; cyan metallic tubes h:>:170&h:<:215&s:>:0.4; coupling collars edge:>:0.57; polished elbow crests g:>:0.78&s:<:0.25",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

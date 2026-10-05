@@ -1,0 +1,58 @@
+{
+  "work_item": "W110 isolated explicit clearcoat point-grammar repair",
+  "date": "2026-10-04",
+  "status": "PASS_ISOLATED_CANDIDATE",
+  "scope": "Private material-controls candidate and new review contract only; no production edits.",
+  "source_pins": {
+    "candidate": {
+      "path": "_easy_claude_work/ai14h_w110_candidate/spb-ai-material-controls.js",
+      "sha256": "8FEBCE88B5E1E1F6E5D571037374A8C5A662B1F3D62C323B73B3EA1E5072544B"
+    },
+    "contract": {
+      "path": "tests/ai_material_grammar_w110_contract.cjs",
+      "sha256": "C9E62878B8E5683ED11F7CFDC26A6424E7C3029B962150C6DAAA378A9173C4BC"
+    },
+    "w101_oracle": {
+      "path": "_easy_claude_work/ai14h_w101_review/fresh_oracle.json",
+      "sha256": "E4A84B29C4C9B2A00B25F3777E635B70A37529463F5F5E448BFF19AD532FBCAA"
+    },
+    "w106_oracle": {
+      "path": "_easy_claude_work/ai14h_w106_review/fresh-oracle.json",
+      "sha256": "75F2F276159DB73956FED6431570B3A036736F82A78BF8BAB1FEF6554A54DDC4"
+    },
+    "controller": {
+      "path": "_easy_claude_work/ai14h_w101_review/spb-pro-ai.candidate.js",
+      "sha256": "D05FD03D8E50151F7888D7E32C0D92AC661864EB989A3B7F9F9541C7692AE4E2"
+    }
+  },
+  "changes": [
+    "Adds anchored target-first \u201cOn the roof, raise the clearcoat channel 20 points\u201d and \u201cShift roof clearcoat up by 20 points\u201d normalization into existing relative-point parser.",
+    "Accepts explicit \u201cclearcoat channel\u201d as a channel synonym in channel-first, part-first and the two anchored shorthand shapes.",
+    "Malformed shift-shaped clearcoat requests remain material clarifications; no default amount or decorative-look fallthrough."
+  ],
+  "verification": {
+    "contract": "node --check tests/ai_material_grammar_w110_contract.cjs; node tests/ai_material_grammar_w110_contract.cjs",
+    "counts": {
+      "total": 44,
+      "passed": 44,
+      "failed": 0,
+      "w110_new_cases": 10,
+      "w101_frozen_cases": 18,
+      "w106_frozen_cases": 16
+    },
+    "existing_guard": "node tests/ai_material_controls_contract.cjs PASS: 11 explicit parser cases, 23 safe non-edit cases, 7 pure builder bounds/immutability cases.",
+    "route_proof": "The two requested shapes and two explicit clearcoat-channel forms each exercise the pinned offlineMaterialPlan/offlineAsk route excerpt, create one exact roof edit_zone queue entry, and alter only the clearcoat slot. Malformed, multiple-action, negative, percent and unsupported-target cases clarify and queue zero edits.",
+    "effects": {
+      "provider_calls": 0,
+      "native_calls": 0,
+      "server_calls": 0,
+      "paint_applications": 0
+    }
+  },
+  "known_limits": [
+    "Candidate is isolated under _easy_claude_work; this is not installed/runtime acceptance.",
+    "W106-15 \u201cHow do I increase clearcoat on the roof by 20 points?\u201d still receives an edit clarification with zero queue rather than passive guidance; this is outside W110 grammar scope and was sent to the W108 help-routing reviewer.",
+    "W106-16 reaches the existing adjustment guide but the guide does not directly define what the clearcoat channel does; also reported to W108.",
+    "Harness executes actual pinned controller function excerpts with controlled current-zone/operation/effect fixtures; it does not invoke a provider, native UI, server, or paint application."
+  ]
+}

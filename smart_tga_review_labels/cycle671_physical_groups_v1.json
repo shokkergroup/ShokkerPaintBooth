@@ -1,0 +1,10 @@
+{"version":1,"inspection_records":"_smart_tga_runs/cycle671_dlm_unassigned_assembly_review/inspection_records.json","physical_group_audit":"_smart_tga_runs/cycle671_dlm_unassigned_assembly_review/physical_group_review/audit.json","review_scope":"Cycle 671 manual classification of every baseline physical-group sheet bbox in immutable audit order.","casts_votes":false,"ownership_authority":false,"paint_group_targets":{
+ "dirtlatemodel 350/car_num_1205342.tga":["sponsors","template","template","template","template","template","sponsors","sponsors","sponsors","sponsors","sponsors","sponsors","uncertain","uncertain","sponsors","template","template","paint","template","template","sponsors","sponsors","paint","paint","sponsors","sponsors","uncertain"],
+ "dirtlatemodel 350/car_num_1206799.tga":["template","template","uncertain","template"],
+ "dirtlatemodel 350/car_num_1213904.tga":["template","template","paint","template","sponsors","uncertain"],
+ "dirtlatemodel 350/car_num_1219247.tga":["template","template","template","paint","paint","numbers","sponsors","sponsors","paint","paint","template","paint"],
+ "dirtlatemodel 358/car_num_1167838.tga":["sponsors","sponsors","numbers","template","template","numbers","sponsors","sponsors","sponsors","paint","sponsors","template"],
+ "dirtlatemodel 358/car_num_1168325.tga":["template","template","template","template","paint","template","template","template","sponsors","paint","paint","template","template","sponsors","paint","sponsors","sponsors","sponsors","sponsors","template","sponsors","sponsors","template","template","sponsors","paint","template","template","template","sponsors","sponsors","sponsors","paint","template","paint","paint","template","numbers","paint","template"],
+ "dirtlatemodel 358/car_num_1169157.tga":["paint","template","paint","numbers","paint"],
+ "dirtlatemodel 358/car_num_1171722.tga":["template","template","template","template","template","sponsors","sponsors","sponsors","paint","sponsors","sponsors","sponsors","sponsors","template","sponsors","template"]
+}}

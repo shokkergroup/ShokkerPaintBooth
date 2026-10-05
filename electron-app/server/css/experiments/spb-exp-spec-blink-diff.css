@@ -1,0 +1,164 @@
+/* ============================================================================
+ * SPB EXPERIMENT — SPEC BLINK DIFF (spb-exp-spec-blink-diff.css)
+ * ----------------------------------------------------------------------------
+ * Optional stylesheet for js/experiments/spb-exp-spec-blink-diff.js.
+ * The JS module carries an IDENTICAL inline copy of these rules and injects
+ * them as <style id="spbExpBlinkStyle"> ONLY if this file was not linked
+ * (detected via link[href*="spb-exp-spec-blink-diff"]). Loading this file is
+ * therefore optional — link it with a ?v= cache token if you prefer real CSS.
+ * Look & feel mirrors the recall panel (.recent-renders-* in paint-booth-v2.css
+ * :5975-6017); z-index 100060 sits above the recall overlay (100050).
+ * ========================================================================== */
+
+.spb-exp-blink-overlay {
+    position: fixed; inset: 0; z-index: 100060;
+    background: rgba(2, 4, 10, 0.74);
+    backdrop-filter: blur(3px);
+    display: flex; align-items: center; justify-content: center;
+}
+.spb-exp-blink-card {
+    width: min(1080px, 96vw); max-height: 92vh;
+    display: flex; flex-direction: column;
+    background: #0d0d16; border: 2px solid #7a5cff;
+    border-radius: 12px; box-shadow: 0 24px 80px rgba(0, 0, 0, 0.72); overflow: hidden;
+}
+.spb-exp-blink-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; border-bottom: 1px solid var(--border, #2a2a4a);
+}
+.spb-exp-blink-header h3 { margin: 0; font-size: 13px; letter-spacing: 1px; color: #b9a4ff; }
+.spb-exp-blink-header .spb-exp-blink-spacer { flex: 1 1 auto; }
+.spb-exp-blink-body {
+    padding: 12px; overflow: auto;
+    display: flex; flex-direction: column; gap: 10px;
+}
+
+/* --- render picker strip (A/B) --- */
+.spb-exp-blink-strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.spb-exp-blink-pick {
+    flex: 0 0 auto; width: 136px;
+    background: var(--bg-card, #14142a); border: 1px solid var(--border, #2a2a4a);
+    border-radius: 8px; padding: 6px;
+    display: flex; flex-direction: column; gap: 4px;
+    font-size: 9px; color: var(--text, #c8cce0); position: relative;
+}
+.spb-exp-blink-pick img {
+    width: 100%; aspect-ratio: 1 / 1; object-fit: contain;
+    background: #000; border-radius: 4px; border: 1px solid var(--border, #2a2a4a);
+}
+.spb-exp-blink-pick.is-a { border-color: var(--accent-gold, #ffb000); }
+.spb-exp-blink-pick.is-b { border-color: var(--accent-blue, #3366ff); }
+.spb-exp-blink-pick .spb-exp-blink-when { color: var(--text-dim, #6b7787); }
+.spb-exp-blink-pick .spb-exp-blink-summary {
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.spb-exp-blink-pick .spb-exp-blink-abtag {
+    position: absolute; top: 10px; left: 10px;
+    font-size: 10px; font-weight: 800; padding: 1px 7px; border-radius: 4px;
+    background: rgba(0, 0, 0, 0.72); pointer-events: none;
+}
+.spb-exp-blink-pick.is-a .spb-exp-blink-abtag { color: var(--accent-gold, #ffb000); }
+.spb-exp-blink-pick.is-b .spb-exp-blink-abtag { color: #6da3ff; }
+.spb-exp-blink-pickbtns { display: flex; gap: 4px; }
+.spb-exp-blink-pickbtns button {
+    flex: 1 1 0; font-size: 10px; font-weight: 700; padding: 2px 0;
+    border-radius: 4px; border: 1px solid var(--border, #2a2a4a);
+    background: #08080f; color: var(--text, #c8cce0); cursor: pointer;
+}
+.spb-exp-blink-pickbtns button.active-a {
+    background: var(--accent-gold, #ffb000); border-color: var(--accent-gold, #ffb000); color: #0a0a14;
+}
+.spb-exp-blink-pickbtns button.active-b {
+    background: var(--accent-blue, #3366ff); border-color: var(--accent-blue, #3366ff); color: #fff;
+}
+.spb-exp-blink-pickbtns button[disabled] { opacity: 0.35; cursor: not-allowed; }
+
+/* --- chip rows (view / channel / speed / gain) --- */
+.spb-exp-blink-chips {
+    display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+    font-size: 10px; color: var(--text-dim, #6b7787);
+}
+.spb-exp-blink-chips .spb-exp-blink-chiplabel {
+    font-size: 9px; letter-spacing: 0.8px; text-transform: uppercase; margin-left: 6px;
+}
+.spb-exp-blink-chip {
+    font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 12px;
+    border: 1px solid var(--border, #2a2a4a); background: #08080f;
+    color: var(--text, #c8cce0); cursor: pointer;
+}
+.spb-exp-blink-chip.active { background: #b9a4ff; border-color: #b9a4ff; color: #0a0a14; }
+/* Channel chips wear the channel-dock Photoshop hues (SPEC_DOCK_TINTS,
+   paint-booth-2-state-zones.js:3912 — R=metallic red, G=roughness green, B=clearcoat blue). */
+.spb-exp-blink-chip[data-ch="m"].active { background: #ff5252; border-color: #ff5252; color: #0a0a14; }
+.spb-exp-blink-chip[data-ch="r"].active { background: #4dff7a; border-color: #4dff7a; color: #0a0a14; }
+.spb-exp-blink-chip[data-ch="c"].active { background: #5c8aff; border-color: #5c8aff; color: #0a0a14; }
+
+/* --- viewer --- */
+.spb-exp-blink-viewwrap {
+    position: relative; background: #05050b;
+    border: 1px solid var(--border, #2a2a4a); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 280px; overflow: hidden;
+}
+.spb-exp-blink-canvas { max-width: 100%; max-height: 56vh; display: block; }
+.spb-exp-blink-badge {
+    position: absolute; top: 8px; left: 8px;
+    font-size: 11px; font-weight: 800; letter-spacing: 0.8px;
+    padding: 2px 9px; border-radius: 4px;
+    background: rgba(0, 0, 0, 0.68); color: var(--accent-gold, #ffb000);
+    pointer-events: none;
+}
+.spb-exp-blink-badge.is-b { color: #6da3ff; }
+.spb-exp-blink-badge.is-delta { color: #b9a4ff; }
+.spb-exp-blink-readout {
+    position: absolute; bottom: 8px; left: 8px;
+    font-size: 10px; font-family: ui-monospace, Consolas, monospace;
+    padding: 2px 8px; border-radius: 4px;
+    background: rgba(0, 0, 0, 0.68); color: var(--text, #c8cce0);
+    pointer-events: none; display: none; white-space: nowrap;
+}
+.spb-exp-blink-status { font-size: 11px; color: var(--text-dim, #6b7787); }
+.spb-exp-blink-status.is-error { color: #ff6b6b; }
+
+/* --- per-zone impact report --- */
+.spb-exp-blink-impact { display: flex; flex-direction: column; gap: 4px; }
+.spb-exp-blink-impact-head {
+    font-size: 10px; font-weight: 800; letter-spacing: 0.8px;
+    color: #b9a4ff; text-transform: uppercase;
+}
+.spb-exp-blink-impact-note { font-size: 10px; color: var(--text-dim, #6b7787); }
+.spb-exp-blink-impact-row {
+    display: flex; gap: 8px; align-items: center;
+    background: var(--bg-card, #14142a); border: 1px solid var(--border, #2a2a4a);
+    border-radius: 6px; padding: 5px 8px; font-size: 11px; color: var(--text, #c8cce0);
+}
+.spb-exp-blink-impact-row img.spb-exp-blink-swatch {
+    width: 22px; height: 22px; border-radius: 4px; flex: 0 0 auto;
+    border: 1px solid rgba(255, 255, 255, 0.25); background: #000; object-fit: cover;
+}
+.spb-exp-blink-impact-zone {
+    font-weight: 700; color: var(--text-bright, #e8ecff);
+    min-width: 90px; flex: 0 0 auto;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.spb-exp-blink-impact-text { flex: 1 1 auto; min-width: 0; }
+.spb-exp-blink-impact-pct { flex: 0 0 auto; font-weight: 800; color: var(--accent-gold, #ffb000); }
+.spb-exp-blink-impact-pct.is-quiet { color: var(--text-dim, #6b7787); }
+
+/* --- footer actions --- */
+.spb-exp-blink-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.spb-exp-blink-revert {
+    border-color: var(--success, #00ff88) !important; color: var(--success, #00ff88) !important;
+}
+.spb-exp-blink-revert[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+/* --- fallback floating launcher (only if the Experimental Features menu is absent) --- */
+.spb-exp-blink-float {
+    position: fixed; right: 14px; bottom: 14px; z-index: 9500;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.4px;
+    padding: 6px 12px; border-radius: 16px; cursor: pointer;
+    background: rgba(122, 92, 255, 0.14); color: #b9a4ff;
+    border: 1px solid rgba(122, 92, 255, 0.55);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+.spb-exp-blink-float:hover { background: rgba(122, 92, 255, 0.28); }

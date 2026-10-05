@@ -1,0 +1,48 @@
+{
+  "work_item": "W116 independent semantic review of Runtime9 native guidance",
+  "status": "PASS_WITH_MATERIAL_GUIDANCE_GAPS",
+  "source": {
+    "path": "_easy_claude_work/ai14h_generation3_audit/runtime9-native-guidance.json",
+    "sha256": "B65398F58D02E8A20584A653F4EDB39F2CE274A06587E1B36D7F3948DDDEA5A9",
+    "rows": 20,
+    "native_observations": "All 20 responses have queueLength 0. Input records paintExact, specExact, zoneConfigExact, layersExact true and providerAttempts 0. These are tuned regression prompts, not a fresh holdout set."
+  },
+  "comparison_evidence": {
+    "report": "docs/handoff_reports/AI_HELPER_14H_CONTEXTUAL_ROUTING_W109_REVIEW_2026-10-04.json",
+    "sha256": "34558E125EC71E6E889960F29AC132A7476841092D7A60D2ED63EBB52D1B3065",
+    "relevant_fact": "Source Paint uses original imported paint colors; it does not preserve an authored Solid hex. The native9 fixture's current Roof Solid color is #1450b4."
+  },
+  "counts": { "useful": 8, "partial": 7, "failure": 5 },
+  "rows": [
+    { "id": "flatten-meaning", "grade": "useful", "note": "Correctly defines flattening as combining visible pixels and losing separate editable layers." },
+    { "id": "flatten-editability", "grade": "useful", "note": "Correctly says a flattened PNG cannot reconstruct original layer separation and points to a saved layered project or PSD." },
+    { "id": "numbers-layer-location", "grade": "useful", "note": "Gives concrete layer-filter steps and the Full editor prerequisite." },
+    { "id": "numbers-layer-how", "grade": "partial", "note": "Useful layer-name/visibility steps, but omits the Full editor prerequisite present in the companion answer." },
+    { "id": "coat-controls", "grade": "partial", "note": "Explains spec-only versus repainting finishes but does not identify the requested coat slider or how to leave metal and roughness untouched." },
+    { "id": "coat-only-blue", "grade": "failure", "note": "Interprets a blue coat channel as a red paint-color match and gives unrelated color-zone instructions." },
+    { "id": "offline-caps", "grade": "useful", "note": "Clearly says the built-in helper works without a provider key." },
+    { "id": "offline-credits", "grade": "partial", "note": "Shows local finish selection, but never answers whether local changes require AI credits." },
+    { "id": "authored-color-retain", "grade": "partial", "note": "Opens the finish picker but does not explain retaining the current authored Solid color; it also ignores that the live roof is blue despite the prompt's green premise." },
+    { "id": "source-dropdown-effect", "grade": "useful", "note": "Accurately distinguishes original Source Paint from the current authored Solid #1450b4 and gives the safe preservation step." },
+    { "id": "undo-external", "grade": "useful", "note": "Provides Full editor, toolbar, history, and AI-answer Undo controls." },
+    { "id": "undo-later-mask", "grade": "partial", "note": "Documents mask-bar stroke Undo but does not answer how AI Undo interacts with a mask drawn afterward." },
+    { "id": "explain-last", "grade": "failure", "note": "Returns generic follow-up suggestions instead of explaining the latest change or stating whether a verified receipt exists." },
+    { "id": "preview-target", "grade": "partial", "note": "Describes Easy mode generally but not how to inspect the proposed target before application." },
+    { "id": "uncertain-logo", "grade": "failure", "note": "Does not answer whether logos can be reliably identified and offers sponsor-changing chips despite the identification uncertainty." },
+    { "id": "remembered-numbers", "grade": "partial", "note": "Safely confirms nothing changed, but does not explain that cross-paint number boxes are proposals requiring current-paint confirmation." },
+    { "id": "layer-save", "grade": "failure", "note": "Answers what layers are and how to load a PSD, not how to save/reopen tomorrow with editable layers preserved." },
+    { "id": "unknown-tool", "grade": "useful", "note": "Honestly limits automatic tracing claims and describes supported image-layer placement controls." },
+    { "id": "quoted-change", "grade": "failure", "note": "The user asked for explanation only and queue is zero, but the guide's 'Keep your colour' step recommends Use Source Paint. W109 confirms that this selects original imported colors, not the current authored Solid #1450b4, so following the advice can reset the current roof color." },
+    { "id": "hypothetical-change", "grade": "useful", "note": "Explicitly confirms no change and describes ownership checking before a separate direct instruction." }
+  ],
+  "material_findings": [
+    "For the exact request 'Explain the phrase \"make the roof matte\" without making that change,' the response is a how-to whose step 4 says to keep color by selecting Use Source Paint. W109 confirms Source Paint is not equivalent to retaining the current authored Solid color. No mutation occurred in this probe; risk is if the user follows the steps. The parent reports a private helper-card correction is in progress; this report grades the pinned Runtime9 answer only.",
+    "Coat-only-blue conflates material-channel wording with paint color and routes to an irrelevant color-matching workflow.",
+    "Uncertain-logo offers action chips instead of explaining identification limits; they could encourage changes when the user asked about recognition reliability."
+  ],
+  "limits": [
+    "This is semantic grading of the supplied 20 tuned Runtime9 prompts, not a new holdout evaluation or proof about other cars/projects.",
+    "Native evidence records exact no-mutation state and zero provider attempts; it does not establish that users followed or would follow any suggested manual step.",
+    "The parent reports native current roof Solid #1450b4 and exact paint/spec/zone/layer invariants; this review did not re-run native UI actions."
+  ]
+}

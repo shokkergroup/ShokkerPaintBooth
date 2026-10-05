@@ -2,7 +2,7 @@
   "name": "Muscle Car Stripe",
   "description": "Deep gloss body with twin matte-black over-the-top stripes and chrome trim. The classic American musclecar look.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "any chassis, best on coupes and fastbacks",
   "notes": "Pairs Shelby/Mach-1 style stripes with deep gloss. For Plymouth/Mopar vibe swap Body baseColor to #0f6a2b (sublime green) or #ff6b00 (hemi orange).",
   "zones": [

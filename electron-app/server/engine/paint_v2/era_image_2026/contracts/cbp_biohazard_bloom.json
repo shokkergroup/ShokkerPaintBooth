@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_biohazard_bloom",
+  "display_name": "Sprawl: Biohazard Bloom",
+  "promise": "Lime spore rosettes and pink gel pores spread across cobalt polymer.",
+  "carrier_grammar": "Lime spore rosettes and pink gel pores spread across cobalt polymer. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for cobalt polymer substrate, lime spore rosettes, pink gel pores, orange micro hyphae, pale spore beads, dark colony pores is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Lime spore rosettes and pink gel pores spread across cobalt polymer. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_biohazard_bloom.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "cobalt polymer substrate",
+      "role": "Actual shared paint and spec geometry: cobalt polymer substrate"
+    },
+    {
+      "name": "lime spore rosettes",
+      "role": "Actual shared paint and spec geometry: lime spore rosettes"
+    },
+    {
+      "name": "pink gel pores",
+      "role": "Actual shared paint and spec geometry: pink gel pores"
+    },
+    {
+      "name": "orange micro hyphae",
+      "role": "Actual shared paint and spec geometry: orange micro hyphae"
+    },
+    {
+      "name": "pale spore beads",
+      "role": "Actual shared paint and spec geometry: pale spore beads"
+    },
+    {
+      "name": "dark colony pores",
+      "role": "Actual shared paint and spec geometry: dark colony pores"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "cobalt polymer substrate",
+      "lime spore rosettes",
+      "pink gel pores",
+      "orange micro hyphae",
+      "pale spore beads",
+      "dark colony pores"
+    ],
+    "R": [
+      "cobalt polymer substrate",
+      "lime spore rosettes",
+      "pink gel pores",
+      "orange micro hyphae",
+      "pale spore beads",
+      "dark colony pores"
+    ],
+    "Cc": [
+      "cobalt polymer substrate",
+      "lime spore rosettes",
+      "pink gel pores",
+      "orange micro hyphae",
+      "pale spore beads",
+      "dark colony pores"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_wetware_membrane",
+      "difference": "This finish uses Dense tiny lime spore rosettes with pink wet gel pores, cobalt polymer substrate, orange branching micro hyphae and pale spore rim beads. Micro biological growth with minute lobed rosettes, no flowers or actual hazard symbols, no big cells.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_sewer_bloom",
+      "difference": "This finish uses Dense tiny lime spore rosettes with pink wet gel pores, cobalt polymer substrate, orange branching micro hyphae and pale spore rim beads. Micro biological growth with minute lobed rosettes, no flowers or actual hazard symbols, no big cells.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "cobalt polymer substrate is visible in the authored geometry",
+      "lime spore rosettes is visible in the authored geometry",
+      "pink gel pores is visible in the authored geometry",
+      "orange micro hyphae is visible in the authored geometry",
+      "pale spore beads is visible in the authored geometry",
+      "dark colony pores is visible in the authored geometry"
+    ],
+    "source_sha256": "cad574afee48ef6d397603f9c67f6a80a5f58beeaf64da8921d6202ac99070c3",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_biohazard_bloom-authored-Lime spore rosettes and pink gel pores spread across cobalt polymer. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_biohazard_bloom-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 65.6,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "cc13a24263972973714e79e1feef59e4239e25afa50216db0f5b20de52c855cd"
+}

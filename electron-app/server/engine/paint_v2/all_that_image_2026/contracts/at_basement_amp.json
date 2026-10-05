@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_basement_amp",
+  "display_name": "Flannel: Basement Amp",
+  "promise": "Dark charcoal amp tolex with small crushed corners and dense embossed pebble patterns, no amp objects",
+  "carrier_grammar": "Dark charcoal amp tolex with small crushed corners and dense embossed pebble patterns, no amp objects; single full-canvas image, no duplicated quadrants. Fine features: pebbled black tolex, deep vinyl pores, brown backing tears, speaker grille threads, silver trim fragments, fine burned tolex freckles",
+  "spec_grammar": "Feature-specific selectors partition pebbled black tolex, deep vinyl pores, brown backing tears, speaker grille threads, silver trim fragments, fine burned tolex freckles. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "pebbled black tolex",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "deep vinyl pores",
+      "role": "Material feature selected from artwork by g:<:0.24"
+    },
+    {
+      "name": "brown backing tears",
+      "role": "Material feature selected from artwork by h:<:55&s:>:0.32"
+    },
+    {
+      "name": "speaker grille threads",
+      "role": "Material feature selected from artwork by x:>:0.62"
+    },
+    {
+      "name": "silver trim fragments",
+      "role": "Material feature selected from artwork by g:>:0.72&s:<:0.2"
+    },
+    {
+      "name": "fine burned tolex freckles",
+      "role": "Material feature selected from artwork by fine:>:0.83"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "pebbled black tolex",
+      "deep vinyl pores",
+      "brown backing tears",
+      "speaker grille threads",
+      "silver trim fragments",
+      "fine burned tolex freckles"
+    ],
+    "R": [
+      "pebbled black tolex",
+      "deep vinyl pores",
+      "brown backing tears",
+      "speaker grille threads",
+      "silver trim fragments",
+      "fine burned tolex freckles"
+    ],
+    "Cc": [
+      "pebbled black tolex",
+      "deep vinyl pores",
+      "brown backing tears",
+      "speaker grille threads",
+      "silver trim fragments",
+      "fine burned tolex freckles"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "pebbled black tolex",
+      "range": [
+        [
+          0,
+          55,
+          30
+        ],
+        [
+          20,
+          160,
+          190
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "deep vinyl pores",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "brown backing tears",
+      "range": [
+        [
+          0,
+          115,
+          140
+        ],
+        [
+          18,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "speaker grille threads",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "silver trim fragments",
+      "range": [
+        [
+          180,
+          30,
+          25
+        ],
+        [
+          240,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine burned tolex freckles",
+      "range": [
+        [
+          0,
+          150,
+          140
+        ],
+        [
+          12,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_band_tee_crack",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_cassette_tape",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "pebbled black tolex",
+      "deep vinyl pores",
+      "brown backing tears",
+      "speaker grille threads",
+      "silver trim fragments",
+      "fine burned tolex freckles"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_basement_amp / Dark charcoal amp tolex with small crushed corners and dense embossed pebble patterns, no amp objects",
+  "spec_key": "at_basement_amp / pebbled black tolex all; deep vinyl pores g:<:0.24; brown backing tears h:<:55&s:>:0.32; speaker grille threads x:>:0.62; silver trim fragments g:>:0.72&s:<:0.2; fine burned tolex freckles fine:>:0.83",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

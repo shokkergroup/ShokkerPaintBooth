@@ -1,0 +1,27 @@
+--- a/js/spb-pro-ai.js
++++ b/js/spb-pro-ai.js
+@@ -1411,13 +1411,13 @@
+     // an AI (online model or MCP) that READ the paint picture tells the app where the numbers / logos / stripes are: loose boxes; the app finds the exact pixels inside them
+     // WP5 2026-10-03: modes - glyph (numbers, default), logo (sponsors, default: everything in the box that is not the paint around it), colour_in_region (stripes, default: the box says where, colour says which; follows the stripe past the box edge, capped)
+     function markElements(kindIn, boxes, replace, extra) {
+-        extra=extra||{};var ticket=operationTicket(extra);if(!operationCurrent(ticket))return Promise.resolve({error:"This request no longer owns the paint."});
++        extra=extra||{};var ticket=operationTicket(extra),collection=extra._spbCollection!=null?extra._spbCollection:(ticket&&ticket.collection),manager=operationManager();function collectionCurrent(){return !!manager&&manager.collecting(ticket,collection);}if(!collectionCurrent())return Promise.resolve({error:"This request no longer owns the paint."});
+         var elementIdentity = _elemRunIdentity;
+         var El = window.SpbProElements, kd = String(kindIn || '').toLowerCase(), kind = /^number/.test(kd) ? 'numbers' : (/^(stripe|tape|pinstripe)/.test(kd) ? 'stripes' : (/^(sponsor|logo|decal)/.test(kd) ? 'sponsors' : ''));
+         if (!El || !El.analyse) return Promise.resolve({ error: 'not available' });
+         if (!kind) return Promise.resolve({ error: 'kind must be numbers, sponsors or stripes' });
+         if (extra.none) return El.analyse().then(function () {
+-            if(!operationCurrent(ticket))return {error:'This request no longer owns the paint.'};          // WP3 defect 7: "there are none on this paint" (same as the card's None button): recorded for this paint, pending cards closed, nothing changed
++            if(!collectionCurrent())return {error:'This request no longer owns the paint.'};          // WP3 defect 7: "there are none on this paint" (same as the card's None button): recorded for this paint, pending cards closed, nothing changed
+             if (elementIdentity && !elementRunCurrent(elementIdentity)) return elementPaintChangedResult();
+             var sg = ''; try { sg = El.sig(); } catch (e0) {} _elemNone[kind] = sg; var closed = 0;
+             _log.forEach(function (m) { if (m && m.role === 'ai' && m.elem && m.elem.kind === kind && !m.elem.done) { m.elem.done = true; closed++; } });
+@@ -1434,7 +1434,7 @@
+             return c;
+         });
+         return El.analyse().then(function () {
+-            if(!operationCurrent(ticket))return {error:'This request no longer owns the paint.'};
++            if(!collectionCurrent())return {error:'This request no longer owns the paint.'};
+             if (elementIdentity && !elementRunCurrent(elementIdentity)) return elementPaintChangedResult();
+             var r = El.teachBoxes(kind, boxes, { replace: replace !== false, mode: mode, colour: colour, spread: extra.spread, tolerance: extra.tolerance, lettering: !!extra.lettering }); delete _elemNone[kind];
+             if (!r || !r.used.length) return { error: 'none of those boxes could be used' + (r && r.skipped.length ? ': ' + r.skipped.map(function (q) { return JSON.stringify(q.box) + ' ' + q.why; }).join('; ') : '') + '. Look at the picture again and give ' + (mode === 'colour_in_region' ? 'a box over part of the stripe with a little paint around it (and its colour)' : (mode === 'logo' ? 'one box around each logo' : 'tighter boxes, one glyph each')) + '.', mode: r && r.mode, timing_ms: r && r.timing_ms };

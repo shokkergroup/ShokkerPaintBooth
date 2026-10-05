@@ -1,0 +1,80 @@
+{
+  "status": "PASS_WITH_LIMITS_PRIVATE_CANDIDATE",
+  "task": "W98 current-session scoped-part color proof compatibility",
+  "date": "2026-10-04",
+  "finding": {
+    "severity": "P1 compatibility",
+    "summary": "The W89 E compile validator accepted only file-sha256 although the W76 client uses tagged composite-sha256 or composite-fnv1a32 fingerprints when the legacy backend omits sourceBytesSha256. That rejected exact proof-backed current-session color-only edits on legacy paths. The mismatch was in the E proof-shape gate; durable part-memory identity remains file-SHA-only for layered sources.",
+    "changedPath": "_easy_claude_work/ai14h_w98_review/candidate/spb-pro-edit.js",
+    "changedRange": "verifiedPartColourOwner near lines 872-882",
+    "change": "Accept only file-sha256:<64 hex>, composite-sha256:<64 hex>, or composite-fnv1a32:fnv1a32-<8 hex>-<byte length> on a current-session proof. Preserve exact source/stored path, fingerprint, generation, dimensions, masks, layers, layout, unique owner, appearance strengths, and full-footprint checks. No PartMemory/controller source changes."
+  },
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w98_review/fresh-oracle.json",
+    "sha256": "15413B4795CE8759B6A4CB15AAC6CED628B6089C757EFCE99B481E20430F67B1",
+    "cases": 10,
+    "frozenBeforeW89SourceInspection": true
+  },
+  "pins": {
+    "editBase": {
+      "path": "_easy_claude_work/ai14h_w89_review/candidate/spb-pro-edit.js",
+      "sha256": "3696CF6C9BDF9A28A056EBF90A9DDD23CFE290134943C11BEB4C7EC5485A173A"
+    },
+    "editCandidate": {
+      "path": "_easy_claude_work/ai14h_w98_review/candidate/spb-pro-edit.js",
+      "sha256": "7D063444021F8F4144B96130800BADFE62741CDEFC9104417F3E99AF65270767"
+    },
+    "design": {
+      "path": "_easy_claude_work/ai14h_w89_review/base/spb-pro-design.js",
+      "sha256": "0533393FF5F2170236F60D4ED489C7AE52F98805E12B0764DA67A967F756F2E8"
+    },
+    "proofController": {
+      "path": "_easy_claude_work/ai14h_w89_review/candidate/spb-pro-ai.js",
+      "sha256": "FA51053AD77409AA677A9E2D8EF633FD6D6BCD20E5DCDF5628AF40C65B37DC59"
+    },
+    "currentClientFingerprint": {
+      "path": "_easy_claude_work/ai14h_w76_review/frozen/paint-booth-3-canvas.js",
+      "sha256": "1BD43BAF7D1BDAC1E07417D6FF6B30F71E78F1FF9169987C03198DD63DC2D4DA"
+    },
+    "test": {
+      "path": "tests/ai_owned_scoped_colour_w98_compat_contract.cjs",
+      "sha256": "4B34EE3843E0372E5F45ED94A1A46E4CF5438F3E69F148CCDDD6D0835E02F077"
+    }
+  },
+  "results": {
+    "candidateStatus": "PASS_WITH_LIMITS_PRIVATE_W98_COMPATIBILITY",
+    "candidateCurrentCompositeShaAccepted": 1,
+    "candidateCurrentCompositeFnvAccepted": 1,
+    "baselineBothCompositeFormatsRefused": true,
+    "fileShaCurrentOwnerPositive": 1,
+    "proofGateNegativeControls": 16,
+    "sourceOnlyFallbackPreserved": 1,
+    "pendingOriginalSourcePaintAsk": 1,
+    "durableLayeredMemoryCompositeRejected": true,
+    "durableLayeredFileShaAccepted": true,
+    "clientFingerprintTags": [
+      "file-sha256:<64hex>",
+      "composite-sha256:<64hex>",
+      "composite-fnv1a32:fnv1a32-<8hex>-<byteLength>"
+    ],
+    "clientMalformedPresentShaRejected": true,
+    "w89RegressionCommand": "node tests/ai_owned_scoped_colour_w89_contract.cjs",
+    "w89RegressionResult": "PASS candidate: 12/12 frozen + 3/3 post-implementation controls",
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "serverCalls": 0
+  },
+  "tests": {
+    "syntax": "node --check passed for candidate and contract test",
+    "w89": "node tests/ai_owned_scoped_colour_w89_contract.cjs PASS",
+    "w98": "node tests/ai_owned_scoped_colour_w98_compat_contract.cjs PASS"
+  },
+  "limits": [
+    "SpbProEdit.plan/compile and its proof-shape validator run against controlled owner-proof callbacks. Production currentPartZoneOwners proof construction and paint application are not run here.",
+    "Sixteen negatives keep source path/fingerprint/generation/dimensions, part and zone masks, car/layout signatures, layer IDs/states, unique proof owner, color mode/strength and full-footprint checks strict.",
+    "The pending keep-original-source-paint case supplies no current owner proof and verifies E compile asks with zero compiled zones; it does not run the durable-memory project-load lifecycle.",
+    "The frozen W76 client fingerprint selector runs directly: file digest, both tagged composite fallbacks, and malformed-present-digest refusal.",
+    "The durable predicate from frozen W89 controller is checked for layered-source records: composite identifiers reject, file-SHA accepts. No durable save/load round-trip or native interaction occurred.",
+    "Candidate remains isolated; no live/root source was modified."
+  ]
+}

@@ -1,0 +1,7 @@
+# build intermediates — regenerate with: python build_video.py all
+frames/
+cache/
+stills/
+audio.wav
+# heavyweight CRF18 master (keep the FB cut only)
+SPB_Alpha_Ad_60s_1080.mp4

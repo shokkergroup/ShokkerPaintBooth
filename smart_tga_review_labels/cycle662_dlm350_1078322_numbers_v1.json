@@ -1,0 +1,31 @@
+{
+  "version":1,
+  "paint_label":"dirtlatemodel 350/car_num_1078322.tga",
+  "inspection_records":"_smart_tga_runs/cycle662_dlm_group_features_holdout/inspection_records.json",
+  "review_scope":"Cycle 662 source plus all owner/combined sheets, suspects, position cues, and physical-group review.",
+  "component_labels":[
+    {"layer":"numbers","component_index":0,"expected_bbox":[296,254,144,85],"target_layer":"numbers","label":"true_upper_side_number","family_id":"number:10"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[282,721,151,78],"target_layer":"numbers","label":"true_lower_side_number","family_id":"number:10"},
+    {"layer":"candidate_group","component_index":null,"expected_bbox":[161,198,279,141],"target_layer":"uncertain","label":"mixed_true_number_sponsor_and_panel","family_id":"number:10","group_id":"pdg:f8281307eac6ae40"},
+    {"layer":"candidate_group","component_index":null,"expected_bbox":[282,721,151,78],"target_layer":"numbers","label":"intrinsic_physical_group_true_lower_number","family_id":"number:10","group_id":"pdg:1c4b1600e221fe57"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[282,721,151,78],"target_layer":"numbers","label":"position_cue_true_number_family","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[362,740,14,5],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[363,741,32,40],"target_layer":"numbers","label":"position_cue_true_number_digit","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[377,741,1,1],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[369,745,21,33],"target_layer":"numbers","label":"position_cue_true_number_digit","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[364,747,1,1],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[365,749,1,2],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[366,752,1,1],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[367,754,1,1],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[368,756,1,1],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[369,758,1,2],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[370,761,1,1],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[371,763,1,1],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[372,765,1,1],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[373,767,1,1],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[374,769,1,1],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[375,771,1,1],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[376,773,1,2],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[377,776,1,1],"target_layer":"numbers","label":"position_cue_true_number_outline","family_id":"number:10"}
+  ]
+}

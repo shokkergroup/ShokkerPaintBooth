@@ -1,0 +1,159 @@
+{
+  "group": "Prizm",
+  "ticks": [
+    {
+      "tick": 1,
+      "started_at": "2026-05-27T08:39:32Z",
+      "ended_at": "2026-05-27T08:39:32Z",
+      "bases": [
+        "prizm_adaptive",
+        "prizm_alien_skin",
+        "prizm_arctic",
+        "prizm_aurora_shift",
+        "prizm_black_rainbow"
+      ],
+      "note": "SPB overnight tick \u2014 Prizm batch (5): prizm spec micro-flake pass"
+    },
+    {
+      "tick": 2,
+      "started_at": "2026-05-27T08:54:36Z",
+      "ended_at": "2026-05-27T08:54:36Z",
+      "bases": [
+        "prizm_blood_moon",
+        "prizm_candy_paint",
+        "prizm_chrome_rose",
+        "prizm_copper_flame",
+        "prizm_cosmos"
+      ],
+      "note": "SPB overnight tick \u2014 Prizm batch (5): prizm spec micro-flake pass"
+    },
+    {
+      "tick": 3,
+      "started_at": "2026-05-27T09:09:39Z",
+      "ended_at": "2026-05-27T09:09:39Z",
+      "bases": [
+        "prizm_dark_matter",
+        "prizm_deep_space",
+        "prizm_duochrome",
+        "prizm_ember",
+        "prizm_fire_ice"
+      ],
+      "note": "SPB overnight tick \u2014 Prizm batch (5): prizm spec micro-flake pass"
+    },
+    {
+      "tick": 4,
+      "started_at": "2026-05-27T09:24:42Z",
+      "ended_at": "2026-05-27T09:24:42Z",
+      "bases": [
+        "prizm_galaxy_dust",
+        "prizm_holographic",
+        "prizm_iridescent",
+        "prizm_midnight",
+        "prizm_mystichrome"
+      ],
+      "note": "SPB overnight tick \u2014 Prizm batch (5): prizm spec micro-flake pass"
+    },
+    {
+      "tick": 5,
+      "started_at": "2026-05-27T09:39:44Z",
+      "ended_at": "2026-05-27T09:39:44Z",
+      "bases": [
+        "prizm_neon",
+        "prizm_oceanic",
+        "prizm_phoenix",
+        "prizm_solar",
+        "prizm_spectrum"
+      ],
+      "note": "SPB overnight tick \u2014 Prizm batch (5): prizm spec micro-flake pass"
+    },
+    {
+      "tick": 6,
+      "started_at": "2026-05-27T09:54:47Z",
+      "ended_at": "2026-05-27T09:54:47Z",
+      "bases": [
+        "prizm_sunset_strip",
+        "prizm_titanium",
+        "prizm_toxic_waste",
+        "prizm_venom"
+      ],
+      "note": "SPB overnight tick \u2014 Prizm batch (4): prizm spec micro-flake pass"
+    },
+    {
+      "tick": 7,
+      "started_at": "2026-05-27T16:56:09Z",
+      "ended_at": "2026-05-27T16:56:09Z",
+      "bases": [
+        "prizm_adaptive",
+        "prizm_alien_skin",
+        "prizm_arctic",
+        "prizm_aurora_shift",
+        "prizm_black_rainbow"
+      ],
+      "note": "wave=18 \u2014 Prizm pin/dot spec wave \u2014 batch ['prizm_adaptive', 'prizm_alien_skin', 'prizm_arctic', 'prizm_aurora_shift', 'prizm_black_rainbow']"
+    },
+    {
+      "tick": 8,
+      "started_at": "2026-05-27T17:11:12Z",
+      "ended_at": "2026-05-27T17:11:12Z",
+      "bases": [
+        "prizm_blood_moon",
+        "prizm_candy_paint",
+        "prizm_chrome_rose",
+        "prizm_copper_flame",
+        "prizm_cosmos"
+      ],
+      "note": "wave=19 \u2014 Prizm pin/dot spec wave \u2014 batch ['prizm_blood_moon', 'prizm_candy_paint', 'prizm_chrome_rose', 'prizm_copper_flame', 'prizm_cosmos']"
+    },
+    {
+      "tick": 9,
+      "started_at": "2026-05-27T17:26:15Z",
+      "ended_at": "2026-05-27T17:26:15Z",
+      "bases": [
+        "prizm_dark_matter",
+        "prizm_deep_space",
+        "prizm_duochrome",
+        "prizm_ember",
+        "prizm_fire_ice"
+      ],
+      "note": "wave=20 \u2014 Prizm pin/dot spec wave \u2014 batch ['prizm_dark_matter', 'prizm_deep_space', 'prizm_duochrome', 'prizm_ember', 'prizm_fire_ice']"
+    },
+    {
+      "tick": 10,
+      "started_at": "2026-05-27T17:41:18Z",
+      "ended_at": "2026-05-27T17:41:18Z",
+      "bases": [
+        "prizm_galaxy_dust",
+        "prizm_holographic",
+        "prizm_iridescent",
+        "prizm_midnight",
+        "prizm_mystichrome"
+      ],
+      "note": "wave=21 \u2014 Prizm pin/dot spec wave \u2014 batch ['prizm_galaxy_dust', 'prizm_holographic', 'prizm_iridescent', 'prizm_midnight', 'prizm_mystichrome']"
+    },
+    {
+      "tick": 11,
+      "started_at": "2026-05-27T17:56:21Z",
+      "ended_at": "2026-05-27T17:56:21Z",
+      "bases": [
+        "prizm_neon",
+        "prizm_oceanic",
+        "prizm_phoenix",
+        "prizm_solar",
+        "prizm_spectrum"
+      ],
+      "note": "wave=22 \u2014 Prizm pin/dot spec wave \u2014 batch ['prizm_neon', 'prizm_oceanic', 'prizm_phoenix', 'prizm_solar', 'prizm_spectrum']"
+    },
+    {
+      "tick": 12,
+      "started_at": "2026-05-27T18:11:24Z",
+      "ended_at": "2026-05-27T18:11:24Z",
+      "bases": [
+        "prizm_sunset_strip",
+        "prizm_titanium",
+        "prizm_toxic_waste",
+        "prizm_venom"
+      ],
+      "note": "wave=23 \u2014 Prizm pin/dot spec wave \u2014 batch ['prizm_sunset_strip', 'prizm_titanium', 'prizm_toxic_waste', 'prizm_venom']"
+    }
+  ]
+}

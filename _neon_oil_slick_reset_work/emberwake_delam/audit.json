@@ -1,0 +1,120 @@
+{
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_emberwake_delam",
+  "display_name": "Emberwake Delam",
+  "builder_seconds": 1.811356,
+  "under_three_seconds": true,
+  "determinism": {
+    "paint_byte_identical": true,
+    "spec_byte_identical": true,
+    "rerun_seconds": 2.245251,
+    "pass": true
+  },
+  "material_stats_working": {
+    "std": {
+      "M": 82.789642,
+      "R": 83.299179,
+      "Cc": 83.260788
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": -0.2082,
+      "M_Cc": 0.219038,
+      "R_Cc": -0.554084
+    }
+  },
+  "unique_mrc_triples": 373,
+  "geometry": {
+    "family_count": 16,
+    "families": {
+      "broken colony peel bevels": 369,
+      "broken peel bevels": 646,
+      "char microflakes": 794,
+      "cooled magenta/violet shoulders": 862,
+      "exposed foil nicks": 321,
+      "faceted adhesive blisters": 536,
+      "fluorescent foil plates": 1988,
+      "isolated foil scales": 5209,
+      "isolated oxide shards": 639,
+      "isolated snap-back scars": 1294,
+      "oxide beads/shards": 809,
+      "quench freckles": 638,
+      "snap-back scars": 648,
+      "soot fissure shards": 628,
+      "soot fissures": 819,
+      "torn edge chips": 643
+    },
+    "width_native_min": 8.001,
+    "width_native_median": 15.768,
+    "width_native_p90": 23.812,
+    "width_native_max": 31.997,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "fluorescent foil plates": 0.262226,
+    "broken peel lips": 0.042651,
+    "snap-back scars": 0.050494,
+    "soot fissures": 0.056099,
+    "faceted adhesive blisters": 0.020474,
+    "oxide beads/shards": 0.023302,
+    "char microflakes": 0.016673,
+    "exposed foil nicks": 0.037065,
+    "cooled magenta/violet shoulders": 0.051437,
+    "intact foil/adhesive pockets": 0.098394
+  },
+  "visible_family_coverage_count": 9,
+  "edge_continuity": {
+    "edge_to_global_gradient_ratio": 1.000719,
+    "edge_dark_void_fraction": 0.0,
+    "pass": true
+  },
+  "picker_survival": {
+    "sizes": {
+      "128": {
+        "luma_std": 0.076382,
+        "chroma_std": 0.093198,
+        "luma_p95_minus_p05": 0.220991,
+        "pass": true
+      },
+      "64": {
+        "luma_std": 0.051786,
+        "chroma_std": 0.061066,
+        "luma_p95_minus_p05": 0.156588,
+        "pass": true
+      }
+    },
+    "pass": true
+  },
+  "mechanical_gates": {
+    "five_plus_anatomy_families": true,
+    "five_plus_family_masks_above_half_percent": true,
+    "all_geometry_8_to_32_native": true,
+    "eight_tiers_each": true,
+    "material_std_at_least_30": true,
+    "channels_not_copied_or_inverse": true,
+    "many_material_triples": true,
+    "edge_continuity": true,
+    "picker_survival_128_and_64": true
+  },
+  "mechanical_gates_pass": true,
+  "official_m7": null,
+  "official_m7_note": "Unwired isolated pilot; no registry/workbook record exists, so no composite is fabricated."
+}

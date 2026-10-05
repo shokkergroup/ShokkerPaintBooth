@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_titanium_rib",
+  "display_name": "Chrome: Titanium Ribbon",
+  "promise": "Tiny blue and gold titanium ribbon folds with magenta oxide and mirror cut edges.",
+  "carrier_grammar": "Tiny blue and gold titanium ribbon folds with magenta oxide and mirror cut edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for blue titanium ribbons, gold fold faces, magenta oxide creases, dark fold interiors, mirror cut ends, turquoise brush scratches is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny blue and gold titanium ribbon folds with magenta oxide and mirror cut edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_titanium_rib.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "blue titanium ribbons",
+      "role": "Actual shared paint and spec geometry: blue titanium ribbons"
+    },
+    {
+      "name": "gold fold faces",
+      "role": "Actual shared paint and spec geometry: gold fold faces"
+    },
+    {
+      "name": "magenta oxide creases",
+      "role": "Actual shared paint and spec geometry: magenta oxide creases"
+    },
+    {
+      "name": "dark fold interiors",
+      "role": "Actual shared paint and spec geometry: dark fold interiors"
+    },
+    {
+      "name": "mirror cut ends",
+      "role": "Actual shared paint and spec geometry: mirror cut ends"
+    },
+    {
+      "name": "turquoise brush scratches",
+      "role": "Actual shared paint and spec geometry: turquoise brush scratches"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "blue titanium ribbons",
+      "gold fold faces",
+      "magenta oxide creases",
+      "dark fold interiors",
+      "mirror cut ends",
+      "turquoise brush scratches"
+    ],
+    "R": [
+      "blue titanium ribbons",
+      "gold fold faces",
+      "magenta oxide creases",
+      "dark fold interiors",
+      "mirror cut ends",
+      "turquoise brush scratches"
+    ],
+    "Cc": [
+      "blue titanium ribbons",
+      "gold fold faces",
+      "magenta oxide creases",
+      "dark fold interiors",
+      "mirror cut ends",
+      "turquoise brush scratches"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_chrome_spine",
+      "difference": "This finish uses Dense micro titanium ribbon folds, very short blue gold narrow folded strips with magenta oxide creases, dark fold interiors, pale mirror cut ends and turquoise brushed scratches. Small folded metal curls, not long ribs or whole anatomy, no broad foil ribbons.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_big_hair_chrome",
+      "difference": "This finish uses Dense micro titanium ribbon folds, very short blue gold narrow folded strips with magenta oxide creases, dark fold interiors, pale mirror cut ends and turquoise brushed scratches. Small folded metal curls, not long ribs or whole anatomy, no broad foil ribbons.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "blue titanium ribbons is visible in the authored geometry",
+      "gold fold faces is visible in the authored geometry",
+      "magenta oxide creases is visible in the authored geometry",
+      "dark fold interiors is visible in the authored geometry",
+      "mirror cut ends is visible in the authored geometry",
+      "turquoise brush scratches is visible in the authored geometry"
+    ],
+    "source_sha256": "4cd501e791cbeb71d4f1bf4faf0f5043c63190f0314365cd182451fb0bf177af",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_titanium_rib-authored-Tiny blue and gold titanium ribbon folds with magenta oxide and mirror cut edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_titanium_rib-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 68.2,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "fa84d0798a98781294f94cbf4c849e208158915981c797ab3c149ba177a33c59"
+}

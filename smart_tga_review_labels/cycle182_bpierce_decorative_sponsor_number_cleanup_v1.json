@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "paint_label": "1Shokker Paint Car Examples/bpierce.tga",
+  "inspection_records": "_smart_tga_runs/cycle181_decorative_review_route_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle181_decorative_review_route_v1/1Shokker_Paint_Car_Examples_bpierce/component_records.json",
+  "review_scope": "Cycle 182 bpierce cleanup for decorative livery/character art stranded in Sponsors, roof-number warm stroke leftovers, and true sponsor text/logo hard negatives.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 10,
+      "expected_bbox": [798, 484, 69, 70],
+      "target_layer": "paint",
+      "label": "decorative_flower_livery_motif",
+      "note": "Isolated flower illustration on the livery; it is paint/design art, not a sponsor logo."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 11,
+      "expected_bbox": [700, 486, 54, 28],
+      "target_layer": "paint",
+      "label": "small_character_livery_motif",
+      "note": "Small gray illustrated character piece near the themed body art; keep with Paint/livery design."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 13,
+      "expected_bbox": [706, 569, 59, 58],
+      "target_layer": "paint",
+      "label": "gray_character_livery_motif",
+      "note": "Gray character illustration fragment; should not be editable as Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 14,
+      "expected_bbox": [569, 610, 50, 53],
+      "target_layer": "paint",
+      "label": "decorative_flower_livery_motif",
+      "note": "Second isolated flower motif; part of the themed livery art."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 15,
+      "expected_bbox": [426, 717, 104, 116],
+      "target_layer": "paint",
+      "label": "large_character_livery_art",
+      "note": "Large illustrated character/dog body art; it visually belongs with the livery design, not Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 22,
+      "expected_bbox": [945, 875, 30, 32],
+      "target_layer": "paint",
+      "label": "small_decorative_flower_livery_motif",
+      "note": "Small flower motif beside the roof art; treat as Paint/livery decoration."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 23,
+      "expected_bbox": [863, 893, 68, 40],
+      "target_layer": "numbers",
+      "label": "roof_number_warm_stroke_leftover",
+      "note": "Warm diagonal stroke fragment inside the roof number area; belongs with the roof Number layer."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 24,
+      "expected_bbox": [822, 899, 48, 27],
+      "target_layer": "numbers",
+      "label": "roof_number_tiny_stroke_leftover",
+      "note": "Tiny warm stroke fragment in the roof-number cluster; keep with Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 25,
+      "expected_bbox": [823, 913, 72, 41],
+      "target_layer": "numbers",
+      "label": "roof_number_warm_stroke_leftover",
+      "note": "Second warm diagonal stroke fragment inside the roof number area; belongs with Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 4,
+      "expected_bbox": [344, 261, 84, 15],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_textline_on_number_panel",
+      "note": "Small textline on the side-number panel; keep as Sponsors, not Paint or Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 8,
+      "expected_bbox": [36, 390, 115, 173],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_phrase_text",
+      "note": "Large phrase/text decal; even though it is themed, it is editable sponsor/text content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 12,
+      "expected_bbox": [614, 553, 115, 101],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_logo_graphic",
+      "note": "FIRST SPEAR graphic logo decal; keep as Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 16,
+      "expected_bbox": [513, 716, 103, 39],
+      "target_layer": "sponsors",
+      "label": "true_sponsor_logo_text_panel",
+      "note": "Hoker Trucking/Base sponsor panel; keep with Sponsors even though decorative art is nearby."
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_phosphor_green",
+  "display_name": "Arcade: Phosphor Green",
+  "promise": "Tiny lime phosphor-grain clusters with emerald afterglow and fine raster dropout.",
+  "carrier_grammar": "Tiny lime phosphor-grain clusters with emerald afterglow and fine raster dropout. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for dark green glass, emerald afterglow rims, lime phosphor grains, lemon raster dots, raster dropout pores is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny lime phosphor-grain clusters with emerald afterglow and fine raster dropout. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_phosphor_green.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "dark green glass",
+      "role": "Actual shared paint and spec geometry: dark green glass"
+    },
+    {
+      "name": "emerald afterglow rims",
+      "role": "Actual shared paint and spec geometry: emerald afterglow rims"
+    },
+    {
+      "name": "lime phosphor grains",
+      "role": "Actual shared paint and spec geometry: lime phosphor grains"
+    },
+    {
+      "name": "lemon raster dots",
+      "role": "Actual shared paint and spec geometry: lemon raster dots"
+    },
+    {
+      "name": "raster dropout pores",
+      "role": "Actual shared paint and spec geometry: raster dropout pores"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "dark green glass",
+      "emerald afterglow rims",
+      "lime phosphor grains",
+      "lemon raster dots",
+      "raster dropout pores"
+    ],
+    "R": [
+      "dark green glass",
+      "emerald afterglow rims",
+      "lime phosphor grains",
+      "lemon raster dots",
+      "raster dropout pores"
+    ],
+    "Cc": [
+      "dark green glass",
+      "emerald afterglow rims",
+      "lime phosphor grains",
+      "lemon raster dots",
+      "raster dropout pores"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_vector_glow",
+      "difference": "This finish uses Actual green CRT phosphor deposition: dense microscopic lime pin-grain clusters, soft emerald afterglow rims, tiny lemon raster dot pairs, black-green dropout pores and faint glass microdust. Stippled optical grains form tiny broken raster islands, no vector lines or polygons, no lightning, no glass shards, no long dashes. Each cluster under15pixels wide.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "at_dial_up_green",
+      "difference": "This finish uses Actual green CRT phosphor deposition: dense microscopic lime pin-grain clusters, soft emerald afterglow rims, tiny lemon raster dot pairs, black-green dropout pores and faint glass microdust. Stippled optical grains form tiny broken raster islands, no vector lines or polygons, no lightning, no glass shards, no long dashes. Each cluster under15pixels wide.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "dark green glass is visible in the authored geometry",
+      "emerald afterglow rims is visible in the authored geometry",
+      "lime phosphor grains is visible in the authored geometry",
+      "lemon raster dots is visible in the authored geometry",
+      "raster dropout pores is visible in the authored geometry"
+    ],
+    "source_sha256": "5ab335ecf685dbf1259d22ec334f8768b33a981c9cc75b16d3aaae3390033908",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_phosphor_green-authored-Tiny lime phosphor-grain clusters with emerald afterglow and fine raster dropout. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_phosphor_green-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 70.3,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "fc48bba00ed78ad02cd7cd00bcd106894fa342147413f226213c569a3d58a784"
+}

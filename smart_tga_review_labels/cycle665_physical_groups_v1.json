@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "inspection_records": "_smart_tga_runs/cycle665_dlm_semantic_number_coverage/inspection_records.json",
+  "physical_group_audit": "_smart_tga_runs/cycle665_dlm_semantic_number_coverage/physical_group_review/audit.json",
+  "review_scope": "Cycle 665 manual visual classification of every physical-group sheet bbox; arrays follow the immutable audit order and are count-validated by the bank builder.",
+  "casts_votes": false,
+  "ownership_authority": false,
+  "paint_group_targets": {
+    "dirtlatemodel 350/car_num_1133016.tga": [
+      "template","paint","paint","template","paint","uncertain","sponsors","sponsors","sponsors","sponsors","paint","paint"
+    ],
+    "dirtlatemodel 350/car_num_1135812.tga": [
+      "paint","paint","paint","paint","paint","sponsors","paint","sponsors","sponsors","uncertain","uncertain","paint","paint","paint","paint","paint","paint","paint"
+    ],
+    "dirtlatemodel 350/car_num_1135835.tga": [
+      "sponsors","sponsors","paint","uncertain","paint","sponsors","sponsors","paint","paint","paint","paint","paint","paint","sponsors"
+    ],
+    "dirtlatemodel 350/car_num_1135857.tga": [
+      "paint","paint","paint","paint","paint","uncertain","uncertain","paint","paint"
+    ],
+    "dirtlatemodel 358/car_num_1071381.tga": [
+      "paint","template","sponsors","uncertain","paint","template","paint","paint","paint","uncertain","paint","paint","template","template","paint","template","paint"
+    ],
+    "dirtlatemodel 358/car_num_1071731.tga": [
+      "sponsors","uncertain","template","paint","uncertain","paint","template","paint","uncertain","paint","paint","paint","sponsors","template","template","uncertain","sponsors"
+    ],
+    "dirtlatemodel 358/car_num_1074180.tga": [
+      "paint","paint","uncertain","sponsors","paint","sponsors","paint","template","paint","paint","sponsors","paint","paint","template","paint","paint"
+    ],
+    "dirtlatemodel 358/car_num_1078321.tga": [
+      "paint","sponsors","sponsors","uncertain","paint","paint","paint","uncertain","uncertain","paint","paint","uncertain"
+    ]
+  }
+}

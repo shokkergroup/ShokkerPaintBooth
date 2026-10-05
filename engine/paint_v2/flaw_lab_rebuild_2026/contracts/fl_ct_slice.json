@@ -1,0 +1,104 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "fl_ct_slice",
+  "display_name": "CT Slice \u2014 rebuilt inspection finish",
+  "promise": "asymmetric hollow sections with detector ring artifacts and metal streaks",
+  "carrier_grammar": "asymmetric hollow sections with detector ring artifacts and metal streaks; independently rotated, varied sites with edge-wrapped geometry.",
+  "spec_grammar": "Named section walls, internal cavities, detector rings, metal streaks, density islands carry independent metallic lips, rough interiors and continuous coat shoulders; no unrelated material overlay.",
+  "reference_physics": {
+    "mechanism": "asymmetric hollow sections with detector ring artifacts and metal streaks interpreted as a colored inspection visualization, not a literal photograph.",
+    "sources": [
+      "engine/paint_v2/flaw_lab_2026.py",
+      "SPB_WIKI.html#spec_guide",
+      "https://www.nasa.gov/glenn/research/flow-field-diagnostics/"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "composition_span_px": [
+    150,
+    384
+  ],
+  "mark_types": [
+    {
+      "name": "section walls",
+      "role": "Visible section walls geometry with its own local material transition."
+    },
+    {
+      "name": "internal cavities",
+      "role": "Visible internal cavities geometry with its own local material transition."
+    },
+    {
+      "name": "detector rings",
+      "role": "Visible detector rings geometry with its own local material transition."
+    },
+    {
+      "name": "metal streaks",
+      "role": "Visible metal streaks geometry with its own local material transition."
+    },
+    {
+      "name": "density islands",
+      "role": "Visible density islands geometry with its own local material transition."
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "section walls",
+      "internal cavities",
+      "detector rings",
+      "metal streaks",
+      "density islands"
+    ],
+    "R": [
+      "section walls",
+      "internal cavities",
+      "detector rings",
+      "metal streaks",
+      "density islands"
+    ],
+    "Cc": [
+      "section walls",
+      "internal cavities",
+      "detector rings",
+      "metal streaks",
+      "density islands"
+    ]
+  },
+  "material_tiers": [
+    "recess substrate",
+    "rough interior",
+    "satin shoulder",
+    "polished lip",
+    "fractured edge",
+    "gloss face",
+    "coat transition",
+    "bright inclusion"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "fl_penetrant_bleed",
+      "difference": "asymmetric hollow sections with detector ring artifacts and metal streaks differs in topology from branched fatigue fissures with capillary dye reservoirs"
+    },
+    {
+      "finish_id": "fl_brittle_lacquer",
+      "difference": "asymmetric hollow sections with detector ring artifacts and metal streaks differs in topology from ranked tensile crack combs with arrested tips and lifted lacquer lips"
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "section walls is explicitly constructed as part of asymmetric hollow sections with detector ring artifacts and metal streaks",
+      "internal cavities is explicitly constructed as part of asymmetric hollow sections with detector ring artifacts and metal streaks",
+      "detector rings is explicitly constructed as part of asymmetric hollow sections with detector ring artifacts and metal streaks"
+    ],
+    "review_status": "Rendered paint/spec pairs visually reviewed together at picker scale on 2026-09-18; live output verified against the reviewed assets."
+  },
+  "construction_key": "flaw-r1-ct_slice-asymmetric-hollow-sections-with-detector-ring-artifacts-and-metal-streaks",
+  "spec_key": "flaw-r1-material-ct_slice-section walls-internal cavities-detector rings-metal streaks-density islands",
+  "fine_detail_scale_px": [
+    1,
+    32
+  ]
+}

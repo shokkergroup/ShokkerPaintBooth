@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "paint_label": "stockcars2 arcachevy25/car_num_392048.tga",
+  "inspection_records": "_smart_tga_runs/cycle146_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle146_route_pressure_v1/stockcars2_arcachevy25_car_num_392048/component_records.json",
+  "review_scope": "Cycle 146 review of accepted Sponsor-routed candidates on ARCA Chevy 392048: keep the true 8 number body and reject Pennzoil wordmark letters.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 21,
+      "expected_bbox": [412, 222, 176, 121],
+      "target_layer": "numbers",
+      "label": "true_number_8_body",
+      "note": "Large red/black side-number 8 body routed to Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 45,
+      "expected_bbox": [118, 819, 40, 58],
+      "target_layer": "sponsors",
+      "label": "pennzoil_wordmark_letters_false_number",
+      "note": "Vertical Pennzoil wordmark letter fragment; should stay Sponsors."
+    }
+  ]
+}

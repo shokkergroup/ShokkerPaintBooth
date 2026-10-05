@@ -1,0 +1,485 @@
+{
+  "category": "fractured_ship",
+  "entries": {
+    "fd_bioluminescence": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "Need about 100x the amount of circles they are much too blotchy",
+      "ts": 1781722399
+    },
+    "fd_maelstrom": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "That's 4 tiled patterns don't like the look of it",
+      "ts": 1781722418
+    },
+    "fd_brine_glass": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "We have way way way too many voronoi like finishes already. Redo this one to anything else",
+      "ts": 1781722450
+    },
+    "fd_glasssquid": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Too similar to another"
+      ],
+      "notes": "",
+      "ts": 1781722472
+    },
+    "fc_eyeshine": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Pattern too big",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781722498
+    },
+    "fc_feathered_wing": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Not enough fine detail",
+        "Palette boring"
+      ],
+      "notes": "",
+      "ts": 1781722528
+    },
+    "fc_antler_bone": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "Tiled - need to be more abstract. This looks way too tiled",
+      "ts": 1781722554
+    },
+    "fc_will_o_wisp": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "Too much of the tiled look showing up",
+      "ts": 1781722580
+    },
+    "fc_batwing": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern doesn't match name",
+        "Wrong vibe for name"
+      ],
+      "notes": "",
+      "ts": 1781722591
+    },
+    "fc_hide_scale_glass": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "No more voronoi ",
+      "ts": 1781722607
+    },
+    "fc_crackle_eyeshine_glass": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Pattern too big",
+        "Too blobby / macro",
+        "Not enough fine detail",
+        "Palette boring"
+      ],
+      "notes": "",
+      "ts": 1781722628
+    },
+    "fu_plasma_drive": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Pattern too big",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781722653
+    },
+    "fu_crop_circle": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Pattern too big",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781722665
+    },
+    "fu_hyperspace": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "Too tiled looking for sure. Needs to be much more abstract",
+      "ts": 1781722682
+    },
+    "fu_biomech_skin": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Too similar to another",
+        "Low effort / lazy",
+        "Palette boring"
+      ],
+      "notes": "",
+      "ts": 1781722698
+    },
+    "fu_stargate": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "Tiled look again - we can't have them looking this tiled ",
+      "ts": 1781722715
+    },
+    "fu_scanner_sweep": {
+      "verdict": "replace",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "Don't like the pattern",
+      "ts": 1781722728
+    },
+    "fu_glyph_cells": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Not unique enough",
+        "Too similar to another",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781722756
+    },
+    "fr_prism_shatter": {
+      "verdict": "replace",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "no more voronoi",
+      "ts": 1781722771
+    },
+    "fr_spectrum_voronoi": {
+      "verdict": "replace",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "no more voronoi",
+      "ts": 1781722781
+    },
+    "fr_hex_hive": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781722800
+    },
+    "fr_chroma_rings": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781722806
+    },
+    "fr_prism_wheel": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781722812
+    },
+    "fr_opal_fire": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781722819
+    },
+    "fr_spectral_spiral": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "tiled - THIS ONE LOOKS BAD!",
+      "ts": 1781725061
+    },
+    "fr_chroma_ripple": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "tILED TOO OBVIOUS",
+      "ts": 1781725078
+    },
+    "fo_cobweb_lace": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781725122
+    },
+    "fo_bone_branch": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Pattern too big",
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781725143
+    },
+    "fo_spider_lattice": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Not unique enough",
+        "Too similar to another",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781725177
+    },
+    "fo_raven_feather": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Pattern too big",
+        "Not unique enough",
+        "Too flat / boring",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781725198
+    },
+    "fo_cracked_tomb": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern doesn't match name",
+        "Pattern too big",
+        "Not unique enough",
+        "Too similar to another",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781725225
+    },
+    "fo_vampire_damask": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Pattern too big",
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781725245
+    },
+    "fo_glyph_cells": {
+      "verdict": "replace",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "NO MORE VORONOI",
+      "ts": 1781725256
+    },
+    "fo_crimson_cells": {
+      "verdict": "replace",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "NO MORE VORONOI",
+      "ts": 1781725267
+    },
+    "fo_stained_chapel": {
+      "verdict": "replace",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "NO MORE VORONOI",
+      "ts": 1781725275
+    },
+    "ff_prism_glass": {
+      "verdict": "remove",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781725290
+    },
+    "ff_spectral_hive": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Too similar to another",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781725310
+    },
+    "ff_prism_shatter": {
+      "verdict": "remove",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781725312
+    },
+    "ff_mosaic_drift": {
+      "verdict": "remove",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781725316
+    },
+    "ff_aura_rings": {
+      "verdict": "remove",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781725330
+    },
+    "ff_spiral_prism": {
+      "verdict": "remove",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781725334
+    },
+    "ff_newton_bloom": {
+      "verdict": "remove",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781725339
+    },
+    "ff_aurora_basins": {
+      "verdict": "remove",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781725350
+    },
+    "ff_prism_facet": {
+      "verdict": "remove",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781725356
+    },
+    "ff_crackle_glaze": {
+      "verdict": "remove",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781725365
+    },
+    "ff_plumage": {
+      "verdict": "remove",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781725376
+    },
+    "ff_dendrite_frost": {
+      "verdict": "remove",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781725378
+    },
+    "ff_guilloche": {
+      "verdict": "remove",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781725393
+    },
+    "ff_cobble_glass": {
+      "verdict": "remove",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781725395
+    },
+    "ff_iceshard": {
+      "verdict": "remove",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781725399
+    },
+    "ff_tartan_glass": {
+      "verdict": "remove",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781725403
+    }
+  },
+  "updated": 1781725403
+}

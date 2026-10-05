@@ -37,25 +37,11 @@ from engine.paint_v2.structural_color import (
     paint_cx_acid_rain, spec_cx_acid_rain,
     paint_cx_royal_spectrum, spec_cx_royal_spectrum,
     paint_cx_apocalypse, spec_cx_apocalypse,
-)
-
-# MORTAL SHOKK — fighting-game-inspired married paint+spec finishes
-from engine.paint_v2.mortal_shokkbat import (
-    paint_ms_frozen_fury, spec_ms_frozen_fury,
-    paint_ms_venom_strike, spec_ms_venom_strike,
-    paint_ms_thunder_lord, spec_ms_thunder_lord,
-    paint_ms_chrome_cage, spec_ms_chrome_cage,
-    paint_ms_dragon_flame, spec_ms_dragon_flame,
-    paint_ms_royal_edge, spec_ms_royal_edge,
-    paint_ms_feral_grin, spec_ms_feral_grin,
-    paint_ms_acid_scale, spec_ms_acid_scale,
-    paint_ms_soul_drain, spec_ms_soul_drain,
-    paint_ms_emerald_shadow, spec_ms_emerald_shadow,
-    paint_ms_void_walker, spec_ms_void_walker,
-    paint_ms_ghost_vapor, spec_ms_ghost_vapor,
-    paint_ms_shape_shift, spec_ms_shape_shift,
-    paint_ms_titan_bronze, spec_ms_titan_bronze,
-    paint_ms_war_hammer, spec_ms_war_hammer,
+    # Wave 4 angle-reveal overrides (see docs/COLORSHOXX_ANGLE_REVEAL.md)
+    paint_cx_black_ice, spec_cx_black_ice,
+    paint_cx_cotton_candy, spec_cx_cotton_candy,
+    paint_cx_emerald_city, spec_cx_emerald_city,
+    paint_cx_emerald_ruby, spec_cx_emerald_ruby,
 )
 
 # NEON UNDERGROUND — blacklight reactive neon-glow married paint+spec finishes
@@ -90,11 +76,53 @@ from engine.paint_v2.anime_style import (
 from engine.paint_v2.iridescent_insects import (
     paint_beetle_jewel, spec_beetle_jewel,
     paint_beetle_rainbow, spec_beetle_rainbow,
+    paint_beetle_tortoise, spec_beetle_tortoise,
+    paint_beetle_tiger, spec_beetle_tiger,
+    paint_beetle_rose_chafer, spec_beetle_rose_chafer,
+    paint_beetle_buprestid, spec_beetle_buprestid,
+    paint_beetle_ground, spec_beetle_ground,
+    paint_beetle_longhorn, spec_beetle_longhorn,
+    paint_beetle_click, spec_beetle_click,
+    paint_butterfly_emperor, spec_butterfly_emperor,
+    paint_butterfly_swallowtail, spec_butterfly_swallowtail,
+    paint_butterfly_glasswing, spec_butterfly_glasswing,
+    paint_butterfly_peacock, spec_butterfly_peacock,
     paint_butterfly_morpho, spec_butterfly_morpho,
     paint_butterfly_monarch, spec_butterfly_monarch,
     paint_dragonfly_wing, spec_dragonfly_wing,
+    paint_dragonfly_emerald, spec_dragonfly_emerald,
+    paint_damselfly_cobalt, spec_damselfly_cobalt,
+    paint_cicada_membrane, spec_cicada_membrane,
+    paint_lacewing_aurora, spec_lacewing_aurora,
+    paint_mayfly_silver, spec_mayfly_silver,
+    paint_bee_honeycomb, spec_bee_honeycomb,
+    paint_bumble_velvet, spec_bumble_velvet,
+    paint_hoverfly_mirror, spec_hoverfly_mirror,
+    paint_firefly_lantern, spec_firefly_lantern,
+    paint_firefly_ember, spec_firefly_ember,
+    paint_velvet_ant, spec_velvet_ant,
+    paint_orchid_mantis, spec_orchid_mantis,
+    paint_leaf_mantis, spec_leaf_mantis,
+    paint_katydid_leafglass, spec_katydid_leafglass,
+    paint_stick_insect_bark, spec_stick_insect_bark,
+    paint_roach_onyx, spec_roach_onyx,
+    paint_weevil_opal, spec_weevil_opal,
+    paint_gilded_weevil, spec_gilded_weevil,
+    paint_scarab_sunplate, spec_scarab_sunplate,
+    paint_scarab_night, spec_scarab_night,
+    paint_jewel_spider, spec_jewel_spider,
+    paint_orb_weaver_silk, spec_orb_weaver_silk,
+    paint_mantis_verdigris, spec_mantis_verdigris,
+    paint_hornet_titanium, spec_hornet_titanium,
+    paint_leafcutter_copper, spec_leafcutter_copper,
+    paint_dung_beetle_oilglass, spec_dung_beetle_oilglass,
+    paint_bluebottle_mercury, spec_bluebottle_mercury,
+    paint_caddiscase_riverstone, spec_caddiscase_riverstone,
     paint_scarab_gold, spec_scarab_gold,
     paint_moth_luna, spec_moth_luna,
+    paint_moth_tiger, spec_moth_tiger,
+    paint_moth_hummingbird, spec_moth_hummingbird,
+    paint_moth_owl, spec_moth_owl,
     paint_beetle_stag, spec_beetle_stag,
     paint_wasp_warning, spec_wasp_warning,
     paint_firefly_glow, spec_firefly_glow,
@@ -326,6 +354,19 @@ from engine.paint_v2.candy_special import (
 # Enhanced Foundation — 30 premium bases with real spec+paint functions
 from engine.paint_v2.foundation_enhanced import ENHANCED_FOUNDATION
 
+# Enhanced Foundation EXOTIC — 20 new spec-driven multi-finish recipes (SPB-76).
+# Net-new lineup per owner directive 2026-05-15. Lives alongside the legacy
+# enh_* IDs (which stay for backward compat) so painters can compare side
+# by side in the picker until the legacy lineup is sunset.
+try:
+    from engine.paint_v2.enhanced_foundation_exotic import ENHANCED_FOUNDATION_EXOTIC
+except Exception as _efx_exc:
+    ENHANCED_FOUNDATION_EXOTIC = {}
+    import logging as _logging
+    _logging.getLogger(__name__).warning(
+        "ENHANCED_FOUNDATION_EXOTIC import failed: %s — falling back to legacy enh_* only", _efx_exc
+    )
+
 # --- BASE MATERIAL REGISTRY ---
 # 96+ bases. BLEND_BASES (10) are merged by registry.py from monolith.
 BASE_REGISTRY = {
@@ -351,7 +392,7 @@ BASE_REGISTRY = {
     # with zero noise. Add micro-perlin so the "fresh wax" surface has
     # visible flow-out variation; CC stays at max gloss but the spec
     # response now shows subtle wave-like depth.
-    "wet_look":         {"M": 0,   "R": 22,  "CC": 16,  "paint_fn": paint_none,    "desc": "Deep wet clearcoat — fresh-waxed flow-out variation with concours depth (HARDMODE-FOUND-2: added micro-perlin)",
+    "wet_look":         {"M": 0,   "R": 15,  "CC": 16,  "paint_fn": paint_none,    "desc": "Deep wet clearcoat — fresh-waxed flow-out variation with concours depth (HARDMODE-FOUND-2: added micro-perlin)",
                          "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.4, "perlin_lacunarity": 2.0, "noise_M": 4, "noise_R": 6},
     "semi_gloss":       {"M": 0,   "R": 55,  "CC": 40,  "paint_fn": paint_none,  "desc": "Semi-gloss - slight sheen, CC=40 mild dulling. FLAT-FIX: added perlin noise.",
                          "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.5, "perlin_lacunarity": 2.0, "noise_M": 15, "noise_R": 8},
@@ -365,7 +406,7 @@ BASE_REGISTRY = {
     # mid-CC dielectric.
     "silk":             {"M": 0,   "R": 85,  "CC": 60,  "paint_fn": paint_none,        "desc": "Silk — smooth low-reflection sheen with fabric-soft directional micro-variation (HARDMODE-FOUND-4: added fine-grain noise)",
                          "noise_scales": [32, 64, 128], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 6, "noise_R": 12},
-    "eggshell":         {"M": 0,   "R": 130, "CC": 100, "paint_fn": paint_none,    "desc": "Eggshell - low sheen wall-paint finish, CC=100. FLAT-FIX: added perlin noise.",
+    "eggshell":         {"M": 0,   "R": 140, "CC": 100, "paint_fn": paint_none,    "desc": "Eggshell - low sheen wall-paint finish, CC=100. FLAT-FIX: added perlin noise.",
                          "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.5, "perlin_lacunarity": 2.0, "noise_M": 15, "noise_R": 8},
     # Foundation Bases — 2026-04-21 painter fix: ALL f_* entries are FLAT.
     # No noise_*, no perlin, no noise_scales/weights. A Foundation Base is
@@ -393,6 +434,31 @@ BASE_REGISTRY = {
     "f_vinyl_wrap":     {"M": 0,   "R": 100, "CC": 110, "paint_fn": paint_none,  "desc": "Foundation vinyl wrap - vinyl material finish, CC=110 no clearcoat, flat"},
     "f_gel_coat":       {"M": 0,   "R": 15,  "CC": 16,  "paint_fn": paint_none,  "desc": "Foundation gel coat - fiberglass gelcoat high-gloss, flat"},
     "f_baked_enamel":   {"M": 0,   "R": 18,  "CC": 20,  "paint_fn": paint_none,  "desc": "Foundation baked enamel - hard baked traditional enamel, flat"},
+    # Factory / industrial foundations (mirrors shokker_engine_v2._FACTORY_FOUNDATION_BASES).
+    # engine.registry builds BASE_REGISTRY from this file + BLEND_BASES only; without these
+    # rows, external catalog tools and swatch renderers that do not re-run the legacy merge
+    # see "unknown base" for the same IDs the app registers at runtime in shokker_engine_v2.
+    "f_candy":          {"M": 200, "R": 15,  "CC": 16,  "paint_fn": paint_none,  "desc": "Foundation candy - transparent glass over metallic base, flat"},
+    "f_electroplate":   {"M": 245, "R": 8,   "CC": 16,  "paint_fn": paint_none,  "desc": "Foundation electroplate - electroplated metal coating, flat"},
+    "f_pvd_coating":    {"M": 230, "R": 15,  "CC": 16,  "paint_fn": paint_none,  "desc": "Foundation PVD coating - physical vapor deposition metallic, flat"},
+    "f_vapor_deposit":  {"M": 240, "R": 10,  "CC": 16,  "paint_fn": paint_none,  "desc": "Foundation vapor deposit - thin-film vacuum deposition, flat"},
+    "f_bead_blast":     {"M": 180, "R": 160, "CC": 140, "paint_fn": paint_none,  "desc": "Foundation bead blast - glass bead blasted metal surface, flat"},
+    # FOUNDATION ONE (owner 2026-09-03): three new flat cells from Spec Guide v1 s5 cards.
+    # Every BASES-shelf pair must differ by >=40 M, >=0.5 octave of Rough, or >=40 Cc
+    # (rule fitted to the owner Living Matte ~ Matte verdict). Gate: scripts/spb_foundation_ladder_gate.py
+    "f_satin_pearl":    {"M": 100, "R": 90,  "CC": 60,  "paint_fn": paint_none,  "desc": "Foundation satin pearl - soft pearl/mica body with a satin highlight, flat"},
+    "f_matte_metallic": {"M": 225, "R": 140, "CC": 100, "paint_fn": paint_none,  "desc": "Foundation matte metallic - rough hazed metal (Spec Guide M-15 frozen metal card), flat"},
+    "f_dark_chrome":    {"M": 250, "R": 15,  "CC": 40,  "paint_fn": paint_none,  "desc": "Foundation dark chrome - chrome-tier response with a weaker coat; pick a dark colour for gunmetal/black chrome, flat"},
+    "f_matte":          {"M": 0,   "R": 210, "CC": 180, "paint_fn": paint_none,  "desc": "Foundation matte - dead flat matte finish, flat"},
+    "f_sand_cast":      {"M": 150, "R": 140, "CC": 120, "paint_fn": paint_none,  "desc": "Foundation sand cast - rough sand casting material, flat (add a rough Spec Pattern for cast grain)"},
+    "f_shot_peen":      {"M": 190, "R": 130, "CC": 110, "paint_fn": paint_none,  "desc": "Foundation shot peen - dimpled peened metal, flat (add a dimple Spec Pattern for visible peen)"},
+    "f_wrinkle_coat":   {"M": 10,  "R": 170, "CC": 150, "paint_fn": paint_none,  "desc": "Foundation wrinkle coat - wrinkle-textured powder coating, flat"},
+    "f_galvanized":     {"M": 195, "R": 65,  "CC": 30,  "paint_fn": paint_none,  "desc": "Foundation galvanized - hot-dip zinc coating, flat"},
+    "f_hot_dip":        {"M": 190, "R": 70,  "CC": 35,  "paint_fn": paint_none,  "desc": "Foundation hot dip - hot-dip galvanized zinc material, flat"},
+    "f_mill_scale":     {"M": 120, "R": 110, "CC": 130, "paint_fn": paint_none,  "desc": "Foundation mill scale - iron oxide scale material, flat"},
+    "f_patina":         {"M": 80,  "R": 120, "CC": 140, "paint_fn": paint_none,  "desc": "Foundation patina - oxidation patina material, flat (add a weathering Spec Pattern for corrosion)"},
+    "f_thermal_spray":  {"M": 160, "R": 100, "CC": 90,  "paint_fn": paint_none,  "desc": "Foundation thermal spray - plasma-sprayed metal material, flat"},
+    "f_weathering_steel": {"M": 100, "R": 130, "CC": 160, "paint_fn": paint_none, "desc": "Foundation weathering steel - Cor-Ten material, flat"},
     # ── METALLIC & FLAKE ──────────────────────────────────────────────
     "copper":           {"M": 190, "R": 55,  "CC": 16, "paint_fn": paint_warm_metal,      "desc": "Warm oxidized copper metallic",
                          "noise_scales": [16, 32, 64], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 35, "noise_R": 20},
@@ -505,7 +571,7 @@ BASE_REGISTRY = {
     # noise-less. Real military matte black has subtle organic micro-pore
     # variation. Add fine perlin noise to give the surface chalky organic
     # character without breaking the dead-flat reading.
-    "flat_black":       {"M": 0,   "R": 248, "CC": 220, "paint_fn": paint_none,  "desc": "Dead flat zero-sheen black with organic chalky micro-pore variation — military/rat-rod authentic (HARDMODE-FOUND-5: added pore noise)",
+    "flat_black":       {"M": 0,   "R": 250, "CC": 255, "paint_fn": paint_none,  "desc": "Dead flat zero-sheen black with organic chalky micro-pore variation — military/rat-rod authentic (HARDMODE-FOUND-5: added pore noise)",
                          "perlin": True, "perlin_octaves": 4, "perlin_persistence": 0.45, "perlin_lacunarity": 2.1, "noise_M": 2, "noise_R": 12},
     # ⚠️ FIXED 2026-03-08: frozen CC was 0 - BMW Frozen paints have a matte clear over them.
     "frozen":           {"M": 225, "R": 140, "CC": 100, "paint_fn": paint_subtle_flake,  "desc": "Frozen icy metallic — WEAK-017 FIX: ice-crystal Worley spec, blue iridescence in paint (via registry_patches) — BASE-025 FIX: CC=100 (BMW Frozen matte/satin clear)",
@@ -588,7 +654,7 @@ BASE_REGISTRY = {
     # zero noise. Real raw primer has visible sand-grit and coverage
     # variation. Add gritty noise so the unfinished-build aesthetic reads
     # as actual primer instead of just a flat grey shape.
-    "primer":           {"M": 0,   "R": 210, "CC": 180, "paint_fn": paint_none,     "desc": "Raw grey primer with sand-grit + coverage variation — unfinished build / project-car authenticity (HARDMODE-FOUND-6: added grit noise)",
+    "primer":           {"M": 0,   "R": 215, "CC": 200, "paint_fn": paint_none,     "desc": "Raw grey primer with sand-grit + coverage variation — unfinished build / project-car authenticity (HARDMODE-FOUND-6: added grit noise)",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.4, 0.4, 0.2], "noise_M": 3, "noise_R": 18},
     "satin_wrap":       {"M": 0,   "R": 130, "CC": 60,  "paint_fn": paint_satin_wrap,      "desc": "Vinyl wrap satin surface - the film IS the coat layer (CC=60)"},
     # ── ORGANIC / PERLIN NOISE ───────────────────────────────────────
@@ -905,57 +971,49 @@ BASE_REGISTRY = {
     "cx_royal_spectrum":  { "base_spec_fn": spec_cx_royal_spectrum, "M": 195, "R": 28, "CC": 20, "paint_fn": paint_cx_royal_spectrum, "desc": "Royal Spectrum — chrome silver + sapphire blue + ruby red + emerald green. Crown jewels."},
     "cx_apocalypse":     { "base_spec_fn": spec_cx_apocalypse, "M": 120, "R": 80, "CC": 70, "paint_fn": paint_cx_apocalypse, "desc": "Apocalypse — scorching white chrome + blood red + rust orange + dead black. End times."},
 
-    # ══════════════════════════════════════════════════════════════════════
-    # ★ MORTAL SHOKK — Fighting-game-inspired married paint+spec (2026-03-31)
-    # ══════════════════════════════════════════════════════════════════════
-
-    "ms_frozen_fury":    { "base_spec_fn": spec_ms_frozen_fury, "M": 150, "R": 50, "CC": 30, "paint_fn": paint_ms_frozen_fury, "desc": "Frozen Fury — ice blue + frozen white chrome. White zones flash at specular, blue holds steady."},
-    "ms_venom_strike":   { "base_spec_fn": spec_ms_venom_strike, "M": 120, "R": 100, "CC": 80, "paint_fn": paint_ms_venom_strike, "desc": "Venom Strike — deep gold metallic flash + black matte fire zones. Scorpion heat."},
-    "ms_thunder_lord":   { "base_spec_fn": spec_ms_thunder_lord, "M": 140, "R": 60, "CC": 40, "paint_fn": paint_ms_thunder_lord, "desc": "Thunder Lord — electric blue + white lightning veins on dark navy base."},
-    "ms_chrome_cage":    { "base_spec_fn": spec_ms_chrome_cage, "M": 185, "R": 30, "CC": 22, "paint_fn": paint_ms_chrome_cage, "desc": "Chrome Cage — Hollywood gold chrome + green energy shimmer."},
-    "ms_dragon_flame":   { "base_spec_fn": spec_ms_dragon_flame, "M": 130, "R": 70, "CC": 55, "paint_fn": paint_ms_dragon_flame, "desc": "Dragon Flame — red + orange fire gradient with ember particles on dark smoke."},
-    "ms_royal_edge":     { "base_spec_fn": spec_ms_royal_edge, "M": 155, "R": 45, "CC": 30, "paint_fn": paint_ms_royal_edge, "desc": "Royal Edge — royal blue silk + silver steel blade streaks."},
-    "ms_feral_grin":     { "base_spec_fn": spec_ms_feral_grin, "M": 155, "R": 55, "CC": 35, "paint_fn": paint_ms_feral_grin, "desc": "Feral Grin — hot pink + venomous purple. Aggressive contrast."},
-    "ms_acid_scale":     { "base_spec_fn": spec_ms_acid_scale, "M": 115, "R": 75, "CC": 55, "paint_fn": paint_ms_acid_scale, "desc": "Acid Scale — acid green + dark scale cell pattern. Voronoi-like reptile skin."},
-    "ms_soul_drain":     { "base_spec_fn": spec_ms_soul_drain, "M": 105, "R": 120, "CC": 100, "paint_fn": paint_ms_soul_drain, "desc": "Soul Drain — glowing red energy mist on absolute black void."},
-    "ms_emerald_shadow": { "base_spec_fn": spec_ms_emerald_shadow, "M": 85, "R": 100, "CC": 70, "paint_fn": paint_ms_emerald_shadow, "desc": "Emerald Shadow — deep emerald + shadow black stealth zones."},
-    "ms_void_walker":    { "base_spec_fn": spec_ms_void_walker, "M": 40, "R": 130, "CC": 120, "paint_fn": paint_ms_void_walker, "desc": "Void Walker — absolute black with faint shadow duplicate shimmer."},
-    "ms_ghost_vapor":    { "base_spec_fn": spec_ms_ghost_vapor, "M": 150, "R": 65, "CC": 50, "paint_fn": paint_ms_ghost_vapor, "desc": "Ghost Vapor — gray smoke wisps + chrome peek-through."},
-    "ms_shape_shift":    { "base_spec_fn": spec_ms_shape_shift, "M": 160, "R": 45, "CC": 30, "paint_fn": paint_ms_shape_shift, "desc": "Shape Shift — morphing 3-color zones: mystic green + amber + deep purple."},
-    "ms_titan_bronze":   { "base_spec_fn": spec_ms_titan_bronze, "M": 135, "R": 85, "CC": 65, "paint_fn": paint_ms_titan_bronze, "desc": "Titan Bronze — massive bronze metallic + dark brutal texture."},
-    "ms_war_hammer":     { "base_spec_fn": spec_ms_war_hammer, "M": 105, "R": 95, "CC": 70, "paint_fn": paint_ms_war_hammer, "desc": "War Hammer — dark armor plate + blood red accent veins."},
+    # ── COLORSHOXX WAVE 4: angle-reveal overrides (override monolithic micro-flake) ──
+    "cx_black_ice":      { "base_spec_fn": spec_cx_black_ice, "M": 195, "R": 85, "CC": 75, "paint_fn": paint_cx_black_ice,
+                          "desc": "Black Ice — mostly black; ice-white and blue frost buried until glancing light reveals them."},
+    "cx_cotton_candy":   { "base_spec_fn": spec_cx_cotton_candy, "M": 228, "R": 55, "CC": 45, "paint_fn": paint_cx_cotton_candy,
+                          "desc": "Cotton Candy — carnival pastels buried; pink/cyan/violet flash from different pan directions."},
+    "cx_emerald_city":   { "base_spec_fn": spec_cx_emerald_city, "M": 220, "R": 60, "CC": 50, "paint_fn": paint_cx_emerald_city,
+                          "desc": "Emerald City — Oz palette buried in dark emerald; gold road and ruby slipper reveal by angle."},
+    "cx_emerald_ruby":   { "base_spec_fn": spec_cx_emerald_ruby, "M": 215, "R": 65, "CC": 55, "paint_fn": paint_cx_emerald_ruby,
+                          "desc": "Emerald Ruby — jewel tones buried in dark base; emerald vs ruby reveal on different pan axes."},
 
     # ══════════════════════════════════════════════════════════════════════
     # ★ NEON UNDERGROUND — blacklight reactive neon-glow finishes (2026-04-03)
     # Seeds 9200-9209.  High M (240+), low R (15-20), CC=16.
     # ══════════════════════════════════════════════════════════════════════
 
-    "neon_pink_blaze":    { "base_spec_fn": spec_neon_pink_blaze, "M": 242, "R": 16, "CC": 16, "paint_fn": paint_neon_pink_blaze, "desc": "Neon Pink Blaze — hot pink neon with concentric pulsing glow zones."},
-    "neon_toxic_green":   { "base_spec_fn": spec_neon_toxic_green, "M": 245, "R": 15, "CC": 16, "paint_fn": paint_neon_toxic_green, "desc": "Neon Toxic Green — radioactive green with Geiger-counter scatter particles."},
-    "neon_electric_blue": { "base_spec_fn": spec_neon_electric_blue, "M": 240, "R": 17, "CC": 16, "paint_fn": paint_neon_electric_blue, "desc": "Neon Electric Blue — deep UV blue with plasma discharge veins."},
-    "neon_blacklight":    { "base_spec_fn": spec_neon_blacklight, "M": 244, "R": 18, "CC": 16, "paint_fn": paint_neon_blacklight, "desc": "Neon Blacklight — UV-reactive purple that glows in dark zones."},
-    "neon_orange_hazard": { "base_spec_fn": spec_neon_orange_hazard, "M": 240, "R": 15, "CC": 16, "paint_fn": paint_neon_orange_hazard, "desc": "Neon Orange Hazard — construction orange with diagonal warning stripe pattern."},
-    "neon_red_alert":     { "base_spec_fn": spec_neon_red_alert, "M": 243, "R": 15, "CC": 16, "paint_fn": paint_neon_red_alert, "desc": "Neon Red Alert — emergency red with siren-like concentric rings."},
-    "neon_cyber_yellow":  { "base_spec_fn": spec_neon_cyber_yellow, "M": 240, "R": 16, "CC": 16, "paint_fn": paint_neon_cyber_yellow, "desc": "Neon Cyber Yellow — cyberpunk yellow with circuit trace PCB pattern."},
-    "neon_ice_white":     { "base_spec_fn": spec_neon_ice_white, "M": 248, "R": 15, "CC": 16, "paint_fn": paint_neon_ice_white, "desc": "Neon Ice White — cold white neon with frost crystallization dendrites."},
-    "neon_dual_glow":     { "base_spec_fn": spec_neon_dual_glow, "M": 242, "R": 16, "CC": 16, "paint_fn": paint_neon_dual_glow, "desc": "Neon Dual Glow — two-color neon (pink+blue) split by warped spatial field."},
-    "neon_rainbow_tube":  { "base_spec_fn": spec_neon_rainbow_tube, "M": 245, "R": 15, "CC": 16, "paint_fn": paint_neon_rainbow_tube, "desc": "Neon Rainbow Tube — full spectrum neon tube with horizontal banding."},
+    "neon_pink_blaze":    { "base_spec_fn": spec_neon_pink_blaze, "M": 242, "R": 16, "CC": 16, "paint_fn": paint_neon_pink_blaze, "desc": "Pink Quench — thermally shocked ruby fluorescent glass-flake lacquer."},
+    "neon_toxic_green":   { "base_spec_fn": spec_neon_toxic_green, "M": 245, "R": 15, "CC": 16, "paint_fn": paint_neon_toxic_green, "desc": "Radium Capillary — green phosphor precipitating along capillary drainage microchannels."},
+    "neon_electric_blue": { "base_spec_fn": spec_neon_electric_blue, "M": 240, "R": 17, "CC": 16, "paint_fn": paint_neon_electric_blue, "desc": "Blue Breakdown — controlled dielectric breakdown packets in dark ceramic clearcoat."},
+    "neon_blacklight":    { "base_spec_fn": spec_neon_blacklight, "M": 244, "R": 18, "CC": 16, "paint_fn": paint_neon_blacklight, "desc": "Ultraviolet Bloom — fluorescent microcapsules rupturing through black UV-cured resin."},
+    "neon_orange_hazard": { "base_spec_fn": spec_neon_orange_hazard, "M": 240, "R": 15, "CC": 16, "paint_fn": paint_neon_orange_hazard, "desc": "Sodium Scuff — retroreflective orange microbeads burnished through black polyurethane."},
+    "neon_red_alert":     { "base_spec_fn": spec_neon_red_alert, "M": 243, "R": 15, "CC": 16, "paint_fn": paint_neon_red_alert, "desc": "Redline Shear — staggered fluorescent compression-front packets with racing rhythm."},
+    "neon_cyber_yellow":  { "base_spec_fn": spec_neon_cyber_yellow, "M": 240, "R": 16, "CC": 16, "paint_fn": paint_neon_cyber_yellow, "desc": "Voltage Plate — shear-aligned yellow phosphor platelets in smoked resin."},
+    "neon_ice_white":     { "base_spec_fn": spec_neon_ice_white, "M": 248, "R": 15, "CC": 16, "paint_fn": paint_neon_ice_white, "desc": "Cryoglass Fiber — emissive microfibers under frost-etched clear."},
+    "neon_dual_glow":     { "base_spec_fn": spec_neon_dual_glow, "M": 242, "R": 16, "CC": 16, "paint_fn": paint_neon_dual_glow, "desc": "Janus Lensfield — birefringent micro-lenses splitting cyan and magenta."},
+    "neon_rainbow_tube":  { "base_spec_fn": spec_neon_rainbow_tube, "M": 245, "R": 15, "CC": 16, "paint_fn": paint_neon_rainbow_tube, "desc": "Prism Fault — embossed microprism packets with orientation-driven spectral flips."},
 
     # ══════════════════════════════════════════════════════════════════════
     # ★ ANIME INSPIRED — anime/manga-style finishes (Pack #7)
+    # [SPB ANIME OVERHAUL 2026-08-25] all 10 rebuilt as anime_math married paint+spec structures
+    # (previous gen scored M7 55.9-72.3, all below the 75 floor). Ledger: docs/ANIME_OVERHAUL_2026-08-25.md
     # Seeds 9300-9309.  Married paint+spec, cel shading, speed lines, sparkle.
     # ══════════════════════════════════════════════════════════════════════
 
-    "anime_cel_shade_chrome": { "base_spec_fn": spec_anime_cel_shade_chrome, "M": 200, "R": 30, "CC": 20, "paint_fn": paint_anime_cel_shade_chrome, "desc": "Anime Cel Shade Chrome — flat cel-shaded bands with sharp metallic highlight steps."},
-    "anime_speed_lines":      { "base_spec_fn": spec_anime_speed_lines, "M": 180, "R": 40, "CC": 30, "paint_fn": paint_anime_speed_lines, "desc": "Anime Speed Lines — radial motion lines from focal point. White streaks on dark."},
-    "anime_sparkle_burst":    { "base_spec_fn": spec_anime_sparkle_burst, "M": 220, "R": 20, "CC": 25, "paint_fn": paint_anime_sparkle_burst, "desc": "Anime Sparkle Burst — 4-pointed starburst sparkle clusters on midnight base."},
-    "anime_gradient_hair":    { "base_spec_fn": spec_anime_gradient_hair, "M": 140, "R": 35, "CC": 20, "paint_fn": paint_anime_gradient_hair, "desc": "Anime Gradient Hair — vivid magenta-pink top fading to deep indigo bottom."},
-    "anime_mecha_plate":      { "base_spec_fn": spec_anime_mecha_plate, "M": 190, "R": 40, "CC": 22, "paint_fn": paint_anime_mecha_plate, "desc": "Anime Mecha Plate — hard geometric panel grid with metallic zones and dark seams."},
-    "anime_sakura_scatter":   { "base_spec_fn": spec_anime_sakura_scatter, "M": 100, "R": 45, "CC": 20, "paint_fn": paint_anime_sakura_scatter, "desc": "Anime Sakura Scatter — cherry blossom petal scatter on soft pink background."},
-    "anime_energy_aura":      { "base_spec_fn": spec_anime_energy_aura, "M": 210, "R": 25, "CC": 22, "paint_fn": paint_anime_energy_aura, "desc": "Anime Energy Aura — radial power glow field with energy rays and bright core."},
-    "anime_comic_halftone":   { "base_spec_fn": spec_anime_comic_halftone, "M": 50, "R": 90, "CC": 45, "paint_fn": paint_anime_comic_halftone, "desc": "Anime Comic Halftone — Ben-Day dot pattern with size variation on paper base."},
-    "anime_neon_outline":     { "base_spec_fn": spec_anime_neon_outline, "M": 200, "R": 30, "CC": 25, "paint_fn": paint_anime_neon_outline, "desc": "Anime Neon Outline — dark base with bright cyan-magenta neon edge highlights."},
-    "anime_crystal_facet":    { "base_spec_fn": spec_anime_crystal_facet, "M": 210, "R": 25, "CC": 20, "paint_fn": paint_anime_crystal_facet, "desc": "Anime Crystal Facet — large angular Voronoi crystalline facets with jewel colors."},
+    "anime_cel_shade_chrome": { "base_spec_fn": spec_anime_cel_shade_chrome, "M": 200, "R": 30, "CC": 20, "paint_fn": paint_anime_cel_shade_chrome, "desc": "Anime Cel Terminator — multi-light posterized cel bands, SDF ink terminators, hatch penumbras, chrome rim streaks."},
+    "anime_speed_lines":      { "base_spec_fn": spec_anime_speed_lines, "M": 180, "R": 40, "CC": 30, "paint_fn": paint_anime_speed_lines, "desc": "Anime Speed-Line Storm — interfering multi-focal radial line systems with density waves and crimson accents."},
+    "anime_sparkle_burst":    { "base_spec_fn": spec_anime_sparkle_burst, "M": 220, "R": 20, "CC": 25, "paint_fn": paint_anime_sparkle_burst, "desc": "Anime Shoujo Sparkle — star sparkles, prism flares, bubble bokeh and glitter dust on nebula midnight."},
+    "anime_gradient_hair":    { "base_spec_fn": spec_anime_gradient_hair, "M": 140, "R": 35, "CC": 20, "paint_fn": paint_anime_gradient_hair, "desc": "Anime Ink-Brush Strands — anisotropic strand flow with an angle-mapped sheen band and flyaways."},
+    "anime_mecha_plate":      { "base_spec_fn": spec_anime_mecha_plate, "M": 190, "R": 40, "CC": 22, "paint_fn": paint_anime_mecha_plate, "desc": "Anime Mecha Greeble — chamfered panels, rivets, vents, warning chevrons, glowing seams, hero-color plates."},
+    "anime_sakura_scatter":   { "base_spec_fn": spec_anime_sakura_scatter, "M": 100, "R": 45, "CC": 20, "paint_fn": paint_anime_sakura_scatter, "desc": "Anime Sakura Hurricane — curl-advected notched petals in three depth layers over a dusk-rose sky."},
+    "anime_energy_aura":      { "base_spec_fn": spec_anime_energy_aura, "M": 210, "R": 25, "CC": 22, "paint_fn": paint_anime_energy_aura, "desc": "Anime Ki Corona — hard aura shells (gold core, cyan edge), electric filaments, rising embers."},
+    "anime_comic_halftone":   { "base_spec_fn": spec_anime_comic_halftone, "M": 50, "R": 90, "CC": 45, "paint_fn": paint_anime_comic_halftone, "desc": "Anime Screentone Moire — interfering Ben-Day lattices, tone-graded dots, hatch pockets, red spot dots."},
+    "anime_neon_outline":     { "base_spec_fn": spec_anime_neon_outline, "M": 200, "R": 30, "CC": 25, "paint_fn": paint_anime_neon_outline, "desc": "Anime Neo-Tokyo Glow — aerial night city: street grid, lit windows, neon signage, wet reflections."},
+    "anime_crystal_facet":    { "base_spec_fn": spec_anime_crystal_facet, "M": 210, "R": 25, "CC": 20, "paint_fn": paint_anime_crystal_facet, "desc": "Anime Crystal Shards — voronoi shards with refraction stripes, prism edges, glints and facet dust."},
 
     # ══════════════════════════════════════════════════════════════════════
     # ★ IRIDESCENT INSECTS — insect-inspired structural-color finishes (Pack #9)
@@ -964,18 +1022,109 @@ BASE_REGISTRY = {
 
     "beetle_jewel":       { "base_spec_fn": spec_beetle_jewel, "M": 200, "R": 25, "CC": 18, "paint_fn": paint_beetle_jewel, "desc": "Beetle Jewel — Chrysina green-gold iridescent shell with organic flow zones."},
     "beetle_rainbow":     { "base_spec_fn": spec_beetle_rainbow, "M": 220, "R": 20, "CC": 18, "paint_fn": paint_beetle_rainbow, "desc": "Beetle Rainbow — Chrysochroa full-spectrum wing case via thin-film interference."},
+    "beetle_tortoise":    { "base_spec_fn": spec_beetle_tortoise, "M": 155, "R": 55, "CC": 35, "paint_fn": paint_beetle_tortoise, "desc": "Tortoise Glass — transparent Charidotella shell over a pore-controlled gold-to-red reflector."},
+    "beetle_tiger":       { "base_spec_fn": spec_beetle_tiger, "M": 170, "R": 48, "CC": 28, "paint_fn": paint_beetle_tiger, "desc": "Tiger Beetle Velocity — white racing maculations over a pointillistic copper, green and violet epicuticle."},
+    "beetle_rose_chafer": { "base_spec_fn": spec_beetle_rose_chafer, "M": 185, "R": 42, "CC": 24, "paint_fn": paint_beetle_rose_chafer, "desc": "Rose Chafer Velvet — polarized metallic-green reflector bowls with fan striae, gold lips and pollen dimples."},
+    "beetle_buprestid":   { "base_spec_fn": spec_beetle_buprestid, "M": 190, "R": 45, "CC": 22, "paint_fn": paint_beetle_buprestid, "desc": "Buprestid Furnace — thermosensitive jewel-beetle multilayers with dense green, ember, cobalt and violet furnace ribbons."},
+    "beetle_ground":      { "base_spec_fn": spec_beetle_ground, "M": 175, "R": 55, "CC": 20, "paint_fn": paint_beetle_ground, "desc": "Ground Beetle Obsidian — oil-black Carabid armor with engraved polygon mesh, diffraction gratings and abrasion tracks."},
+    "beetle_longhorn":    { "base_spec_fn": spec_beetle_longhorn, "M": 180, "R": 42, "CC": 24, "paint_fn": paint_beetle_longhorn, "desc": "Longhorn Filament — individually tilted Cerambycid sack-scales with ordered and disordered photonic layers."},
+    "beetle_click":       { "base_spec_fn": spec_beetle_click, "M": 165, "R": 48, "CC": 24, "paint_fn": paint_beetle_click, "desc": "Click Beetle Plasma — superblack microtube eyes and living lantern beads threaded along cyan nerve routes."},
+    "butterfly_emperor":  { "base_spec_fn": spec_butterfly_emperor, "M": 170, "R": 46, "CC": 26, "paint_fn": paint_butterfly_emperor, "desc": "Emperor Eyelet — braided bronze and violet micro-ocelli over structural-blue purple-emperor scales."},
+    "butterfly_swallowtail": { "base_spec_fn": spec_butterfly_swallowtail, "M": 165, "R": 44, "CC": 28, "paint_fn": paint_butterfly_swallowtail, "desc": "Swallowtail Prism — fork-tailed Papilio scale tapestry with lemon, teal and black optical families."},
+    "butterfly_glasswing": { "base_spec_fn": spec_butterfly_glasswing, "M": 95, "R": 34, "CC": 38, "paint_fn": paint_butterfly_glasswing, "desc": "Glasswing Lattice — translucent Greta oto membrane cells with silver veins and anti-reflective nanopillar relief."},
+    "butterfly_peacock": { "base_spec_fn": spec_butterfly_peacock, "M": 160, "R": 48, "CC": 24, "paint_fn": paint_butterfly_peacock, "desc": "Peacock Scale Furnace — cobalt and emerald micro-rosette glass corridors between ultra-black absorber lanes."},
     "butterfly_morpho":   { "base_spec_fn": spec_butterfly_morpho, "M": 230, "R": 20, "CC": 16, "paint_fn": paint_butterfly_morpho, "desc": "Butterfly Morpho — brilliant Morpho blue structural color with angle-dependent flash."},
-    "butterfly_monarch":  { "base_spec_fn": spec_butterfly_monarch, "M": 55, "R": 80, "CC": 30, "paint_fn": paint_butterfly_monarch, "desc": "Butterfly Monarch — orange-black monarch wing pattern with Voronoi vein network."},
-    "dragonfly_wing":     { "base_spec_fn": spec_dragonfly_wing, "M": 130, "R": 20, "CC": 18, "paint_fn": paint_dragonfly_wing, "desc": "Dragonfly Wing — transparent wing membrane with rainbow interference and dark veins."},
+    "butterfly_monarch":  { "base_spec_fn": spec_butterfly_monarch, "M": 55, "R": 80, "CC": 30, "paint_fn": paint_butterfly_monarch, "desc": "Monarch Mosaic — orange scale windows inside absorptive black vein channels with overlapping lips and cream islands."},
+    "dragonfly_wing":     { "base_spec_fn": spec_dragonfly_wing, "M": 118, "R": 64, "CC": 112, "paint_fn": paint_dragonfly_wing, "desc": "Dragonfly Resilin — corrugated Odonata rails, irregular vein cells, blue elastic joints and weighted amber mass bars over interference membrane."},
+    "dragonfly_emerald":  { "base_spec_fn": spec_dragonfly_emerald, "M": 145, "R": 58, "CC": 96, "paint_fn": paint_dragonfly_emerald, "desc": "Emerald Skimmer — compact emerald, cyan and violet structural-colour clouds built from quasi-ordered nanospheres, melanin stiffeners and pruinose articulation flashes."},
+    "damselfly_cobalt":   { "base_spec_fn": spec_damselfly_cobalt, "M": 138, "R": 62, "CC": 92, "paint_fn": paint_damselfly_cobalt, "desc": "Damselfly Cobalt — compact paired cobalt wing laminations over melanin troughs with steel cross-sutures, violet forks and wet seam flashes."},
+    "cicada_membrane":    { "base_spec_fn": spec_cicada_membrane, "M": 126, "R": 58, "CC": 118, "paint_fn": paint_cicada_membrane, "desc": "Cicada Window — unequal bronze wing veins and compact tension ties over hydrophobic nanocone glass, rare suture collars and turquoise interference panes."},
+    "lacewing_aurora":    { "base_spec_fn": spec_lacewing_aurora, "M": 132, "R": 64, "CC": 122, "paint_fn": paint_lacewing_aurora, "desc": "Lacewing Aurora — sigmoid pseudomedial rails, convergent radial branches and staggered gradates over rose-green thin-film panes with oval joints and vein setae."},
+    "mayfly_silver":      { "base_spec_fn": spec_mayfly_silver, "M": 146, "R": 60, "CC": 116, "paint_fn": paint_mayfly_silver, "desc": "Mayfly Silverstream — alternating convex and concave corrugation veins with sparse cross-ties, intercalary forks, fine silver facets and flexible blue bullae."},
+    "bee_honeycomb":      { "base_spec_fn": spec_bee_honeycomb, "M": 154, "R": 68, "CC": 124, "paint_fn": paint_bee_honeycomb, "desc": "Bee Venturi — connected irregular wax-cell armor with transitional shared walls, honey menisci, cocoon silk, propolis plugs, wax grains and pollen-set hairs."},
+    "bumble_velvet":      { "base_spec_fn": spec_bumble_velvet, "M": 142, "R": 84, "CC": 104, "paint_fn": paint_bumble_velvet, "desc": "Bumble Velvet — interlocking ochre and sable directional pile built from socketed branched setae, comb fringes, pollen hooks and polished black-chitin slits."},
+    "hoverfly_mirror":    { "base_spec_fn": spec_hoverfly_mirror, "M": 176, "R": 62, "CC": 126, "paint_fn": paint_hoverfly_mirror, "desc": "Hoverfly Mirror — paired pollinose maculae assembled from fine mirror tergite plates beneath transparent wing film, true/spurious vein rails, microtrichia islands and bare windows."},
+    "firefly_lantern":    { "base_spec_fn": spec_firefly_lantern, "M": 138, "R": 72, "CC": 142, "paint_fn": paint_firefly_lantern, "desc": "Firefly Lantern — active and dormant three-layer light-organ modules combining jagged extraction prisms, photogenic cross-nets, radial urate reflectors, tracheal twigs, bulbs and dark shell sutures."},
+    "firefly_ember":      { "base_spec_fn": spec_firefly_ember, "M": 156, "R": 74, "CC": 136, "paint_fn": paint_firefly_ember, "desc": "Firefly Emberglass — pH-tuned ember wedges trapped in soot-glass sclerite facets with active-site clamp rails, quenched pits, copper seam lips, wet prism edges and reinforced oxygen capillaries."},
+    "ant_velvet":         { "base_spec_fn": spec_velvet_ant, "M": 148, "R": 82, "CC": 118, "paint_fn": paint_velvet_ant, "desc": "Velvet Ant Armor — ultrablack overlapping mutillid sclerites with stacked lamella lips, connective pillars, edge-born grooved warning setae, defensive spines and stridulatory combs."},
+    "mantis_orchid":      { "base_spec_fn": spec_orchid_mantis, "M": 122, "R": 96, "CC": 154, "paint_fn": paint_orchid_mantis, "desc": "Orchid Mantis Silk — overlapping bilateral femoral-lobe cuticle fans with urate-white reservoirs, pink pigment-export seams, growth veins, UV-dark clefts, articulation pearls, wet rims and raptorial toothlets."},
+    "mantis_leaf":        { "base_spec_fn": spec_leaf_mantis, "M": 146, "R": 112, "CC": 126, "paint_fn": paint_leaf_mantis, "desc": "Leaf Mantis Patina — a complete ripped and crumpled Deroplatys dead-leaf lamina built from connected angular crease segments, torn margins, petiole remnants, bounded verdigris decay, pore chains and serrated lobe edges."},
+    "katydid_leafglass":  { "base_spec_fn": spec_katydid_leafglass, "M": 138, "R": 82, "CC": 158, "paint_fn": paint_katydid_leafglass, "desc": "Katydid Leafglass — branching leaf-mimic tegmen midribs and fine reticulate veins around translucent panes, necrotic cells, feeding-bite scallops, resonant mirrors, file teeth and skeletonized ocellata."},
+    "stick_insect_bark": { "base_spec_fn": spec_stick_insect_bark, "M": 132, "R": 126, "CC": 102, "paint_fn": paint_stick_insect_bark, "desc": "Stick Insect Bark — segmented phasmid bark-cuticle bundles assembled from fine splinters with tergite sutures, scar collars, lichen rosettes, resin wells, hydrophobic tubercles and femoral spine burrs."},
+    "cockroach_onyx":   { "base_spec_fn": spec_roach_onyx, "M": 158, "R": 98, "CC": 142, "paint_fn": paint_roach_onyx, "desc": "Roach Onyx Armor — overlapping black-mahogany abdominal tergite shingles with flexible membranes, wax pores, gland crescents, tongue plates, campaniform sockets, polished lips and plate-bounded abrasion."},
+    "weevil_opal":      { "base_spec_fn": spec_weevil_opal, "M": 146, "R": 118, "CC": 174, "paint_fn": paint_weevil_opal, "desc": "Weevil Opal Mosaic — thousands of concave scale pits holding individually tuned single-diamond photonic rosettes, grain boundaries, ice rims, microbead points and occasional empty sockets."},
+    "weevil_gilded":    { "base_spec_fn": spec_gilded_weevil, "M": 168, "R": 126, "CC": 112, "paint_fn": paint_gilded_weevil, "desc": "Gilded Weevil Striae — broken longitudinal puncture furrows dividing convex elytral intervals packed with directional gold sawtooth scales, polished lips, boss crowns, interlocking ridges and olive wear."},
+    "scarab_sunplate":  { "base_spec_fn": spec_scarab_sunplate, "M": 174, "R": 116, "CC": 148, "paint_fn": paint_scarab_sunplate, "desc": "Scarab Sunplate — interlocking golden shell plates filled with compact radial helicoid wedges, graded-pitch arcs, polarizer cores, diffraction teeth, pore canals, cobalt underplates and worn rims."},
+    "scarab_night":     { "base_spec_fn": spec_scarab_night, "M": 158, "R": 142, "CC": 136, "paint_fn": paint_scarab_night, "desc": "Scarab Nightshift — flowing near-black lenticular absorber armour with chiral blue-violet crescent seams, ellipsoidal micropillars, moisture pits and channels, cross-ply windows, mercury crowns and flooded clear edges."},
+    "jewel_spider":     { "base_spec_fn": spec_jewel_spider, "M": 164, "R": 126, "CC": 152, "paint_fn": paint_jewel_spider, "desc": "Jewel Spider Cuticle — a transparent emerald cuticle over soft-packed guanocyte cells, silver guanine platelet doublets, ruby fluorescent microspheres, absorptive cores, silk-root filaments and wet optical windows."},
+    "orb_weaver_silk":  { "base_spec_fn": spec_orb_weaver_silk, "M": 152, "R": 112, "CC": 182, "paint_fn": paint_orb_weaver_silk, "desc": "Orb Weaver Silk — flowing paired silver-blue capture fibres crossed by diagonal load silk and carrying aqueous glue pearls, amber glycoprotein cores, salt glints, capillary spools and branching pyriform anchors."},
+    "praying_mantis_verdigris": { "base_spec_fn": spec_mantis_verdigris, "M": 172, "R": 128, "CC": 144, "paint_fn": paint_mantis_verdigris, "desc": "Mantis Verdigris — separated chains of articulated bronze femur/tibia plates with dark hinges, elongated sockets, fixed and tiltable spine teeth, honeycomb grip grooves, pale contact wear and bounded blue-green patina."},
+    "hornet_titanium": { "base_spec_fn": spec_hornet_titanium, "M": 184, "R": 116, "CC": 156, "paint_fn": paint_hornet_titanium, "desc": "Hornet Titanium — irregular aerodynamic streams of fine titanium gaster turbines with yellow cuticle blades, black articulation membranes, pore-reservoir hubs, hyaline brushes, spiracles and blue-violet elastic hinge glints."},
+    "leafcutter_copper": { "base_spec_fn": spec_leafcutter_copper, "M": 176, "R": 134, "CC": 148, "paint_fn": paint_leafcutter_copper, "desc": "Leafcutter Copper — controlled diagonal copper mandible sheaves carrying hundreds of attached green cut-leaf plates with zinc saw margins, tooth wedges, wear midribs, clay, red oxide, secretion punctures and polished tips."},
+    "dung_beetle_oil": { "base_spec_fn": spec_dung_beetle_oilglass, "M": 166, "R": 122, "CC": 188, "paint_fn": paint_dung_beetle_oilglass, "desc": "Dung Beetle Oilglass — petroleum thin-film contours flowing through corrugated elytral basins with wax channels, microcracks, pore collars, flat setae, helicoidal windows, wet troughs, mud contact and polarization glints."},
+    "bluebottle_mercury": { "base_spec_fn": spec_bluebottle_mercury, "M": 178, "R": 116, "CC": 176, "paint_fn": paint_bluebottle_mercury, "desc": "Bluebottle Mercury — direction-changing shoals of liquid-metal ommatidia with steel rims, dark pseudopupils, pustulate lens dust, calypter membranes, branching wing veins, stem setulae, spiracles and ginger facial hairs."},
+    "caddiscase_river": { "base_spec_fn": spec_caddiscase_riverstone, "M": 132, "R": 166, "CC": 154, "paint_fn": paint_caddiscase_riverstone, "desc": "Caddiscase Riverstone — selected stream grains in imbricated courses, joined by paired underwater silk tape, fuzzy adhesive coats, calcium-phosphate knots, wet waterline lips, mica, algae and plant fibre."},
     "scarab_gold":        { "base_spec_fn": spec_scarab_gold, "M": 210, "R": 25, "CC": 18, "paint_fn": paint_scarab_gold, "desc": "Scarab Gold — Egyptian scarab golden-green iridescent shift with shell texture."},
-    "moth_luna":          { "base_spec_fn": spec_moth_luna, "M": 40, "R": 120, "CC": 70, "paint_fn": paint_moth_luna, "desc": "Moth Luna — pale green Luna moth with concentric eye-spot patterns. Soft matte."},
-    "beetle_stag":        { "base_spec_fn": spec_beetle_stag, "M": 170, "R": 30, "CC": 20, "paint_fn": paint_beetle_stag, "desc": "Beetle Stag — dark metallic stag beetle armor plates with chitin shine."},
-    "wasp_warning":       { "base_spec_fn": spec_wasp_warning, "M": 80, "R": 50, "CC": 30, "paint_fn": paint_wasp_warning, "desc": "Wasp Warning — yellow-black aposematic banding with metallic shimmer."},
+    "moth_luna":          { "base_spec_fn": spec_moth_luna, "M": 90, "R": 76, "CC": 92, "paint_fn": paint_moth_luna, "desc": "Luna Silk — flowing celadon and lilac feather-scales with curled-tip diffraction, crossrib relief and wet silk flashes."},
+    "moth_tiger":         { "base_spec_fn": spec_moth_tiger, "M": 150, "R": 66, "CC": 82, "paint_fn": paint_moth_tiger, "desc": "Tiger Moth Ember — compact ember and ivory warning rivers assembled from fine tilted scale hairs over soot velvet."},
+    "moth_hummingbird":   { "base_spec_fn": spec_moth_hummingbird, "M": 105, "R": 60, "CC": 108, "paint_fn": paint_moth_hummingbird, "desc": "Hummingbird Blur — compact wingbeat vortices of retained bristles, clear Hemaris membrane, shed sockets and pollen wake."},
+    "moth_owl":           { "base_spec_fn": spec_moth_owl, "M": 128, "R": 78, "CC": 72, "paint_fn": paint_moth_owl, "desc": "Owl Moth Sable — dense broken bronze micro-ocelli braided through absorptive sable nap with disorder ribs and pearl pupil scars."},
+    "beetle_stag":        { "base_spec_fn": spec_beetle_stag, "M": 170, "R": 30, "CC": 20, "paint_fn": paint_beetle_stag, "desc": "Stag Carapace — layered Lucanus armor with oxblood sclerites, bent ribs, pore canals and spiral-woven nodes."},
+    "wasp_warning":       { "base_spec_fn": spec_wasp_warning, "M": 146, "R": 86, "CC": 98, "paint_fn": paint_wasp_warning, "desc": "Wasp Signal — connected tergite-chevron chains assembled from duplex yellow/black cuticle plates with pigment granules, pore rosettes, setae and tracheal slits."},
     "firefly_glow":       { "base_spec_fn": spec_firefly_glow, "M": 160, "R": 40, "CC": 30, "paint_fn": paint_firefly_glow, "desc": "Firefly Glow — dark exoskeleton with bioluminescent yellow-green lantern zones."},
 }
 
 # Merge Enhanced Foundation (30 premium bases with real spec+paint functions)
 BASE_REGISTRY.update(ENHANCED_FOUNDATION)
+
+# Merge Enhanced Foundation EXOTIC — 20 new spec-driven exotic finishes
+# including 8 multi-finish recipes (SPB-76, owner brief 2026-05-15).
+BASE_REGISTRY.update(ENHANCED_FOUNDATION_EXOTIC)
+
+# FOUNDATION EFX shelf (owner 2026-09-03, Phase B): textured foundations that carry paint AND spec.
+# Built by engine/paint_v2/foundation_efx_2026.py; overrides the reworked efx_* ids and
+# chalky_base, never the locked keeper (efx_holographic_drift). Import failure degrades to
+# the legacy EFX renderers so the picker never goes dark.
+try:
+    from engine.paint_v2.foundation_efx_2026 import install as _install_foundation_efx
+    _install_foundation_efx(BASE_REGISTRY)
+except Exception as _efx2_exc:  # pragma: no cover
+    _logging.getLogger(__name__).warning("FOUNDATION EFX install failed: %s", _efx2_exc)
+
+# ★ PRISM FORGE — interference-phase spectral bases + married spec (2026-05-12)
+try:
+    from engine.paint_v2.prism_forge import PRISM_FORGE_BASE_REGISTRY as _PRISM_FORGE
+    BASE_REGISTRY.update(_PRISM_FORGE)
+except Exception as _pf_exc:
+    print(f"[PRISM FORGE] Load failed: {_pf_exc}")
+
+# ★ MONEY SHOKK — angle-reveal color-change monolithics (2026-05-27 breakthrough)
+try:
+    from engine.paint_v2.money_shokk import MONEY_SHOKK_BASE_REGISTRY as _MONEY_SHOKK
+    BASE_REGISTRY.update(_MONEY_SHOKK)
+except Exception as _msh_exc:
+    print(f"[MONEY SHOKK] Load failed: {_msh_exc}")
+
+# ★ MONEY SHOKK CLAUDE — Claude Opus 4.7 bake-off entry (2026-05-27)
+try:
+    from engine.paint_v2.money_shokk_claude import MONEY_SHOKK_CLAUDE_BASE_REGISTRY as _MONEY_SHOKK_CLAUDE
+    BASE_REGISTRY.update(_MONEY_SHOKK_CLAUDE)
+except Exception as _mshc_exc:
+    print(f"[MONEY SHOKK CLAUDE] Load failed: {_mshc_exc}")
+
+# ★ MONEY SHOKK ANTIGRAVITY — Antigravity bake-off entry (2026-05-27)
+try:
+    from engine.paint_v2.money_shokk_antigravity import MONEY_SHOKK_ANTIGRAVITY_BASE_REGISTRY as _MONEY_SHOKK_ANTIGRAVITY
+    BASE_REGISTRY.update(_MONEY_SHOKK_ANTIGRAVITY)
+except Exception as _msha_exc:
+    print(f"[MONEY SHOKK ANTIGRAVITY] Load failed: {_msha_exc}")
+
+# ★ MONEY SHOKK CODEX — Codex bake-off entry (2026-05-27)
+try:
+    from engine.paint_v2.money_shokk_codex import MONEY_SHOKK_CODEX_BASE_REGISTRY as _MONEY_SHOKK_CODEX
+    BASE_REGISTRY.update(_MONEY_SHOKK_CODEX)
+except Exception as _mshx_exc:
+    print(f"[MONEY SHOKK CODEX] Load failed: {_mshx_exc}")
 
 # ── SHOKK SERIES v2 - 20 color-shift PBR bases ──────────────────────────────
 try:
@@ -989,8 +1138,25 @@ except Exception as _shokk_exc:
 def _apply_staging_registry_patches():
     """Patch BASE_REGISTRY with v2 implementations from engine.paint_v2 (no _staging dependency)."""
     try:
+        from collections import OrderedDict
         import numpy as np
         import importlib
+
+        _bb_array_cache = OrderedDict()
+        _BB_ARRAY_CACHE_MAX = 8
+
+        def _cached_scalar_bb_array(h, w, value):
+            key = (int(h), int(w), float(value))
+            cached = _bb_array_cache.get(key)
+            if cached is not None:
+                _bb_array_cache.move_to_end(key)
+                return cached
+            out = np.full((int(h), int(w)), float(value), dtype=np.float32)
+            _bb_array_cache[key] = out
+            _bb_array_cache.move_to_end(key)
+            while len(_bb_array_cache) > _BB_ARRAY_CACHE_MAX:
+                _bb_array_cache.popitem(last=False)
+            return out
 
         def _adapt_paint_fn_for_scalar_bb(fn):
             def _wrapped(paint, shape, mask, seed, pm, bb):
@@ -999,7 +1165,10 @@ def _apply_staging_registry_patches():
                 try:
                     h, w = shape[:2] if isinstance(shape, (tuple, list)) and len(shape) >= 2 else paint.shape[:2]
                     if np.isscalar(bb) or (hasattr(bb, "ndim") and bb.ndim == 0):
-                        bb_val = np.full((int(h), int(w)), float(bb), dtype=np.float32)
+                        # SPB paint-finish perf loop tick 2026-05-31 06:08; owner: "Speed is king in this app."
+                        # Exact scalar-BB reuse removes repeated 2048² constant-array allocation in regular-base renderers;
+                        # latest 8-base overlap 20.356s -> 19.372s, paint/spec std drift 0.
+                        bb_val = _cached_scalar_bb_array(h, w, bb)
                     elif hasattr(bb, "ndim") and bb.ndim == 3:
                         bb_val = np.mean(bb[:int(h), :int(w), :3], axis=2).astype(np.float32)
                     elif hasattr(bb, "ndim") and bb.ndim == 2:
@@ -1041,6 +1210,250 @@ def _apply_staging_registry_patches():
 _apply_staging_registry_patches()
 
 
+# ── CANDY & PEARL 2026 rebuild (owner mandate 2026-06-14): 5 new diverse finishes +
+#    married fine-detail paint/spec for all 20. Runs AFTER staging patches so it wins;
+#    the shokker_engine_v2 lazy overrides carry the same fns at render time. ──
+try:
+    from engine.paint_v2 import candy_pearl_2026 as _cp26
+    _CP26_NEW = {
+        "candy_gold":   {"M": 195, "R": 15, "CC": 16, "desc": "Candy Gold — liquid amber candy over bright gold flake, deep wet gloss"},
+        "candy_lime":   {"M": 175, "R": 15, "CC": 16, "desc": "Candy Lime — vivid chartreuse candy over silver-green flake"},
+        "candy_aqua":   {"M": 185, "R": 15, "CC": 16, "desc": "Candy Aqua — beachy turquoise candy over silver flake, deep wet depth"},
+        "copper_pearl": {"M": 150, "R": 34, "CC": 16, "desc": "Copper Pearl — warm copper/bronze mica pearl with fine platelet shift"},
+        "coral_pearl":  {"M": 120, "R": 38, "CC": 16, "desc": "Coral Pearl — beachy coral/peach mica pearl, soft warm shimmer"},
+    }
+    for _nid, _meta in _CP26_NEW.items():
+        BASE_REGISTRY.setdefault(_nid, {})
+        BASE_REGISTRY[_nid].update(_meta)
+    for _cid in ("candy_burgundy", "satin_candy", "orange_peel_gloss", "candy_gold",
+                 "candy_lime", "candy_emerald", "candy_aqua", "candy_cobalt", "jelly_pearl",
+                 "spectraflame", "tinted_clear", "hypershift_spectral", "tri_coat_pearl",
+                 "deep_pearl", "copper_pearl", "coral_pearl", "moonstone", "opal",
+                 "chameleon", "iridescent"):
+        _e = BASE_REGISTRY.setdefault(_cid, {"M": 150, "R": 15, "CC": 16, "desc": _cid})
+        _e["paint_fn"] = getattr(_cp26, "paint_" + _cid)
+        _e["base_spec_fn"] = getattr(_cp26, "spec_" + _cid)
+except Exception as _cp26_exc:
+    print(f"[CANDY&PEARL 2026] wiring skipped: {_cp26_exc}")
+
+
+# ── CARBON & COMPOSITE 2026 rebuild (owner mandate 2026-06-14): 10 new + married
+#    woven fine-detail paint/spec for all 20. ──
+try:
+    from engine.paint_v2 import carbon_composite_2026 as _cc26
+    _CC26_NEW = {
+        "carbon_3k_fine":  {"M": 60, "R": 30,  "CC": 16,  "desc": "Carbon 3K Fine — tight high-frequency ±45° twill, aerospace small-weave"},
+        "carbon_satin":    {"M": 55, "R": 110, "CC": 120, "desc": "Carbon Satin — matte-clear 2x2 twill, OEM stealth carbon"},
+        "carbon_red":      {"M": 60, "R": 30,  "CC": 16,  "desc": "Carbon Red — candy-red tinted carbon twill under deep wet clear"},
+        "carbon_blue":     {"M": 60, "R": 30,  "CC": 16,  "desc": "Carbon Blue — candy-blue tinted carbon twill under deep wet clear"},
+        "spread_tow":      {"M": 65, "R": 30,  "CC": 16,  "desc": "Spread-Tow — wide flat carbon ribbons, modern large-weave"},
+        "forged_blue":     {"M": 70, "R": 40,  "CC": 16,  "desc": "Forged Blue — chopped forged carbon in blue resin, marbled"},
+        "nomex_honeycomb": {"M": 45, "R": 100, "CC": 70,  "desc": "Nomex Honeycomb — gold aramid honeycomb core, hex cells"},
+        "kevlar_red":      {"M": 70, "R": 60,  "CC": 16,  "desc": "Kevlar Red Hybrid — carbon + red aramid interwoven tracer tows"},
+        "basalt_weave":    {"M": 70, "R": 60,  "CC": 40,  "desc": "Basalt Weave — bronze-grey volcanic basalt fiber twill"},
+        "dyneema_white":   {"M": 18, "R": 120, "CC": 110, "desc": "Dyneema White — white UHMWPE technical weave, matte"},
+    }
+    for _nid, _meta in _CC26_NEW.items():
+        BASE_REGISTRY.setdefault(_nid, {})
+        BASE_REGISTRY[_nid].update(_meta)
+    for _cid in ("carbon_base", "carbon_weave", "carbon_3k_fine", "carbon_satin", "carbon_red",
+                 "carbon_blue", "spread_tow", "carbon_ceramic", "forged_carbon_vis",
+                 "forged_composite", "forged_blue", "graphene", "nomex_honeycomb", "aramid",
+                 "kevlar_base", "kevlar_red", "hybrid_weave", "basalt_weave", "dyneema_white",
+                 "fiberglass"):
+        _e = BASE_REGISTRY.setdefault(_cid, {"M": 60, "R": 30, "CC": 16, "desc": _cid})
+        _e["paint_fn"] = getattr(_cc26, "paint_" + _cid)
+        _e["base_spec_fn"] = getattr(_cc26, "spec_" + _cid)
+except Exception as _cc26_exc:
+    print(f"[CARBON&COMPOSITE 2026] wiring skipped: {_cc26_exc}")
+
+
+# ── CERAMIC & GLASS 2026 rebuild (owner mandate 2026-06-14): 12 new + married
+#    dielectric depth/microfacet/crackle paint+spec for all 20. ──
+try:
+    from engine.paint_v2 import ceramic_glass_2026 as _cg26
+    _CG26_NEW = {
+        "cathedral_glass":  {"M": 0,  "R": 16, "CC": 16, "desc": "Cathedral Glass — stained violet leaded glass, deep colored depth + facets"},
+        "sea_glass":        {"M": 0,  "R": 55, "CC": 40, "desc": "Sea Glass — frosted beachy seafoam, soft tumbled glass"},
+        "sapphire_glass":   {"M": 0,  "R": 17, "CC": 16, "desc": "Sapphire Glass — deep blue faceted gem glass, wet depth"},
+        "ruby_glass":       {"M": 0,  "R": 17, "CC": 16, "desc": "Ruby Glass — deep red faceted gem glass, wet depth"},
+        "emerald_glass":    {"M": 0,  "R": 17, "CC": 16, "desc": "Emerald Glass — deep green faceted gem glass, wet depth"},
+        "amber_glass":      {"M": 0,  "R": 18, "CC": 16, "desc": "Amber Glass — warm honey gem glass, wet depth"},
+        "smoked_glass":     {"M": 0,  "R": 17, "CC": 16, "desc": "Smoked Glass — charcoal translucent glass, deep tint"},
+        "milk_glass":       {"M": 0,  "R": 45, "CC": 30, "desc": "Milk Glass — opaque milky white glass, soft subsurface"},
+        "mercury_glass":    {"M": 90, "R": 24, "CC": 16, "desc": "Mercury Glass — antique silvered mottle, blotchy metallic patches"},
+        "crackle_glaze":    {"M": 0,  "R": 24, "CC": 16, "desc": "Raku Crackle — teal celadon glaze with fine Voronoi crack network"},
+        "liquid_glaze":     {"M": 0,  "R": 15, "CC": 16, "desc": "Liquid Glaze — cobalt ultra-wet glaze, maximum gloss depth"},
+        "terracotta_glaze": {"M": 0,  "R": 28, "CC": 16, "desc": "Terracotta Glaze — warm earthy glazed terracotta"},
+    }
+    for _nid, _meta in _CG26_NEW.items():
+        BASE_REGISTRY.setdefault(_nid, {})
+        BASE_REGISTRY[_nid].update(_meta)
+    for _cid in ("crystal_clear", "tempered_glass", "cathedral_glass", "sea_glass", "sapphire_glass",
+                 "ruby_glass", "emerald_glass", "amber_glass", "smoked_glass", "milk_glass",
+                 "mercury_glass", "obsidian", "ceramic", "ceramic_matte", "enamel", "porcelain",
+                 "crackle_glaze", "liquid_glaze", "terracotta_glaze", "piano_black"):
+        _e = BASE_REGISTRY.setdefault(_cid, {"M": 0, "R": 16, "CC": 16, "desc": _cid})
+        _e["paint_fn"] = getattr(_cg26, "paint_" + _cid)
+        _e["base_spec_fn"] = getattr(_cg26, "spec_" + _cid)
+except Exception as _cg26_exc:
+    print(f"[CERAMIC&GLASS 2026] wiring skipped: {_cg26_exc}")
+
+
+# ── TACTICAL & CYBERPUNK 2026 (owner mandate 2026-06-14): 20 NEW full-design finishes
+#    (reconception of Industrial & Tactical; all new ids — nothing else claims them). ──
+try:
+    from engine.paint_v2 import tactical_cyberpunk_2026 as _tc26
+    _TC26 = {
+        "multicam": 165, "marpat_woodland": 175, "tiger_stripe": 168, "kryptek_typhon": 160,
+        "m81_woodland": 175, "desert_dpm": 175, "urban_digital": 170, "od_drab": 185,
+        "coyote_fde": 185, "blackout_ops": 205, "neon_circuit": 120, "tron_grid": 130,
+        "synthwave": 70, "data_rain": 160, "glitch_rgb": 120, "hex_tech": 130,
+        "holo_vapor": 40, "chrome_neon": 40, "plasma_pulse": 90, "cyber_camo": 90,
+    }
+    for _tid, _r in _TC26.items():
+        _e = BASE_REGISTRY.setdefault(_tid, {})
+        _e.update({"M": 8, "R": _r, "CC": 16, "desc": _tid.replace("_", " ").title()})
+        _e["paint_fn"] = getattr(_tc26, "paint_" + _tid)
+        _e["base_spec_fn"] = getattr(_tc26, "spec_" + _tid)
+except Exception as _tc26_exc:
+    print(f"[TACTICAL&CYBERPUNK 2026] wiring skipped: {_tc26_exc}")
+
+
+# ── ★ OPTIC LAB 2026 (owner mandate 2026-06-15): 5 lanes x 10 = 50 new finishes ──
+try:
+    from engine.paint_v2 import (flash_stone_2026 as _fs26, night_bloom_2026 as _nb26,
+                                 two_face_2026 as _tf26, fluid_pour_2026 as _fp26,
+                                 sequin_disco_2026 as _sq26)
+    _OPTIC_LANES = {
+        _fs26: ["labradorite", "spectrolite", "ammolite", "tiger_eye", "dichroic_glass",
+                "fire_agate", "malachite", "azurite", "black_opal", "sunstone"],
+        _nb26: ["retroreflective_silver", "hi_vis_lime", "cats_eye_beaded", "diamond_grade",
+                "ghost_graphic", "amber_hazard", "tribal_blaze", "big_kahuna", "chevron_blaze",
+                "starfield_reflective"],
+        _tf26: ["twoface_blue_copper", "twoface_purple_gold", "twoface_green_magenta",
+                "twoface_teal_orange", "twoface_red_cyan", "twoface_silver_void",
+                "twoface_pink_teal", "twoface_gold_emerald", "twoface_violet_lime",
+                "twoface_crimson_navy"],
+        _fp26: ["pour_ocean", "pour_lava", "pour_galaxy", "pour_gold_marble", "pour_tropical",
+                "pour_rose", "ink_emerald", "ink_copper", "pour_monochrome", "pour_neon"],
+        _sq26: ["sequin_silver", "sequin_gold", "sequin_rose", "sequin_emerald", "sequin_copper",
+                "sequin_ice", "sequin_rainbow", "sequin_holographic", "disco_black_diamond",
+                "sequin_mardi_gras"],
+    }
+    for _mod, _ids in _OPTIC_LANES.items():
+        for _id in _ids:
+            _e = BASE_REGISTRY.setdefault(_id, {"M": 60, "R": 28, "CC": 16,
+                                                "desc": _id.replace("_", " ").title()})
+            _e["paint_fn"] = getattr(_mod, "paint_" + _id)
+            _e["base_spec_fn"] = getattr(_mod, "spec_" + _id)
+except Exception as _optic_exc:
+    print(f"[OPTIC LAB 2026] wiring skipped: {_optic_exc}")
+
+
+# ── THE DECADE SHELVES + THE TACTICAL/CYBERPUNK SPLIT (2026-08-31) ──
+# Owner: flip ★ OPTIC LAB to the 1970s and Marble & Onyx to the 1980s, add a
+# 1990s shelf, and split TACTICAL & CYBERPUNK into two 60-finish categories.
+# Each module generates its own paint_<id>/spec_<id> from a recipe table
+# (engine/paint_v2/era_base_2026.py), so the wiring below is the same shape as
+# every other block here — it just does not need 600 hand-written functions.
+try:
+    from engine.paint_v2 import era_base_2026 as _erb
+    from engine.paint_v2 import (era_1970s_2026 as _e70, era_1980s_2026 as _e80,
+                                 era_1990s_2026 as _e90, tactical_2026 as _etac,
+                                 cyberpunk_2026 as _ecbp)
+    _ERA_SHELVES = ((_e70, _e70.FAR_OUT), (_e80, _e80.BAD_AND_RAD),
+                    (_e90, _e90.ALL_THAT), (_etac, _etac.TACTICAL),
+                    (_ecbp, _ecbp.CYBERPUNK))
+    _era_n = 0
+    for _mod, _table in _ERA_SHELVES:
+        for _id, _row in _erb.registry_rows(_table).items():
+            _e = BASE_REGISTRY.setdefault(_id, dict(_row))
+            _e.update(_row)
+            _e["paint_fn"] = getattr(_mod, "paint_" + _id)
+            _e["base_spec_fn"] = getattr(_mod, "spec_" + _id)
+            _era_n += 1
+    print(f"[ERA SHELVES 2026] {_era_n} finishes wired across 5 categories")
+except Exception as _era_exc:
+    print(f"[ERA SHELVES 2026] wiring skipped: {_era_exc}")
+
+# SPB-105 / AT-R2 / owner16Sep: local LIVE install; individual image/spec pairs.
+# Stable IDs retain saved paints and favorites. Metrics before/after are recorded
+# in docs/finish_audits/all_that_2026-09-16/R2_LIVE_REPORT.md; not a release claim.
+try:
+    from engine.paint_v2.all_that_image_2026 import register as _register_at_r2
+    print(f"[ALL THAT R2] {_register_at_r2(BASE_REGISTRY)} image/material pairs wired")
+except FileNotFoundError as _at_r2_exc:
+    print(f"[ALL THAT R2] assets not installed yet: {_at_r2_exc}")
+
+
+
+# SPB-105 ERA120 tick2: owner-approved local image/material rebuild.
+try:
+    from engine.paint_v2.era_image_2026 import register as _register_era120
+    print("[base-registry] ERA120 image finishes:", _register_era120(BASE_REGISTRY))
+except FileNotFoundError:
+    pass
+
+# ── FLAMES 2026 (replaces OEM Automotive): 20 flame finishes ──
+try:
+    from engine.paint_v2 import flames_2026 as _flm26
+    for _id in ("flame_hotrod", "flame_true_fire", "flame_blue", "flame_green", "flame_purple",
+                "flame_ghost", "flame_inferno", "flame_white_hot", "flame_rainbow", "flame_ember",
+                "flame_candy", "flame_plasma", "flame_cold", "flame_lava", "flame_phoenix",
+                "flame_toxic", "flame_pink", "flame_smoke", "flame_tribal", "flame_dragon"):
+        _e = BASE_REGISTRY.setdefault(_id, {"M": 40, "R": 24, "CC": 16, "desc": _id.replace("_", " ").title()})
+        _e["paint_fn"] = getattr(_flm26, "paint_" + _id)
+        _e["base_spec_fn"] = getattr(_flm26, "spec_" + _id)
+except Exception as _flm_exc:
+    print(f"[FLAMES 2026] wiring skipped: {_flm_exc}")
+
+
+# ── MARBLE&ONYX / SOCK HOP / GROOVY VIBES 2026 (replace Premium Luxury / Satin&Wrap / Weathered&Aged) ──
+try:
+    from engine.paint_v2 import (marble_onyx_2026 as _mb26, sock_hop_2026 as _shp26,
+                                 groovy_vibes_2026 as _grv26)
+    _REWORK_2026 = {
+        _mb26: ["marble_carrara", "marble_calacatta", "marble_nero", "marble_portoro", "onyx_emerald", "agate_blue", "marble_rose", "travertine", "marble_verde_alpi", "marble_rosso", "onyx_honey", "marble_statuario", "onyx_pink", "lapis_lazuli", "amethyst", "tiger_iron", "marble_bardiglio", "onyx_white", "marble_fusion", "obsidian_gold"],
+        _shp26: ["diner_checker", "soda_check", "cherry_polka", "lemon_polka", "bubblegum_dot", "mint_stripe", "coral_stripe", "gingham_red", "atomic_starburst", "atomic_charcoal", "googie_orbit", "vinyl_groove", "harlequin", "argyle_pastel", "terrazzo_cream", "formica_boomerang", "jukebox_neon", "pink_fleck", "turquoise_fleck", "chrome_diner"],
+        _grv26: ["tie_dye_spiral", "tie_dye_crumple", "melting_rainbow", "psychedelic_swirl", "oil_slick_groove", "sunburst_60s", "kaleido_rings", "acid_swirl", "trippy_concentric", "hippie_rainbow", "groovy_marble", "peace_tie_dye", "warp_op", "liquid_light", "groovy_zigzag", "lava_lamp_purple", "lava_lamp_groovy", "mushroom_fade", "neon_acid_blob", "flower_power"],
+    }
+    for _mod, _ids in _REWORK_2026.items():
+        for _id in _ids:
+            _e = BASE_REGISTRY.setdefault(_id, {"M": 20, "R": 24, "CC": 16, "desc": _id.replace("_", " ").title()})
+            _e["paint_fn"] = getattr(_mod, "paint_" + _id)
+            _e["base_spec_fn"] = getattr(_mod, "spec_" + _id)
+except Exception as _rwk_exc:
+    print(f"[REWORK 2026] wiring skipped: {_rwk_exc}")
+
+
+# SPB-105 / owner scale audit / 2026-08-29. These replacements preserve their
+# public IDs after direct native render and pattern-bound channel screens.
+try:
+    from engine.expansions import sock_hop_googie_orbit_i3_2026 as _sh_googie_i3
+    from engine.expansions import sock_hop_formica_boomerang_i2_2026 as _sh_formica_i2
+    from engine.expansions import sock_hop_atomic_starburst_i3_2026 as _sh_atomic_i3
+    from engine.expansions import groovy_sunburst_60s_i2_2026 as _gv_sunburst_i2
+    from engine.expansions import groovy_flower_power_i5_2026 as _gv_flower_i5
+    from engine.expansions import groovy_melting_rainbow_i2_2026 as _gv_melting_i2
+    from engine.expansions import groovy_zigzag_i2_2026 as _gv_zigzag_i2
+    from engine.expansions import groovy_oil_slick_groove_i2_2026 as _gv_oil_i2
+    from engine.expansions import sock_hop_soda_check_i5_2026 as _sh_soda_i5
+    for _id, _mod in (("googie_orbit", _sh_googie_i3),
+                      ("formica_boomerang", _sh_formica_i2),
+                      ("atomic_starburst", _sh_atomic_i3),
+                      ("sunburst_60s", _gv_sunburst_i2),
+                      ("flower_power", _gv_flower_i5),
+                      ("melting_rainbow", _gv_melting_i2),
+                      ("groovy_zigzag", _gv_zigzag_i2),
+                      ("oil_slick_groove", _gv_oil_i2),
+                      ("soda_check", _sh_soda_i5)):
+        BASE_REGISTRY[_id]["paint_fn"] = getattr(_mod, "paint_" + _id)
+        BASE_REGISTRY[_id]["base_spec_fn"] = getattr(_mod, "spec_" + _id)
+except Exception as _scale_i2_exc:
+    print(f"[SCALE I2 2026] wiring skipped: {_scale_i2_exc}")
+
+
 def _spec_foundation_flat(shape, seed, sm, base_m, base_r):
     """Return flat M/R channels for vanilla Foundation picker entries."""
     import numpy as np
@@ -1062,9 +1475,8 @@ def _normalize_classic_foundation_contract():
     baked-in per-pixel texture on the spec map.
     """
     classic_foundation_ids = {
-        "ceramic",
+        # "ceramic", "piano_black" REMOVED 2026-06-14 — rebuilt as bespoke Ceramic & Glass
         "gloss",
-        "piano_black",
         "wet_look",
         "semi_gloss",
         "satin",
@@ -1076,7 +1488,7 @@ def _normalize_classic_foundation_contract():
         "flat_black",
         "matte",
         "living_matte",
-        "chalky_base",
+        # "chalky_base" -> FOUNDATION EFX "Chalked Paint" (2026-09-03): textured, keeps its paint_fn
     }
     noise_keys = {
         "noise_M", "noise_R", "noise_CC",
@@ -1094,3 +1506,201 @@ def _normalize_classic_foundation_contract():
 
 
 _normalize_classic_foundation_contract()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FOUNDATION SPEC = PURE CONSTANTS  (owner mandate 2026-09-30, restores 2026-04-21)
+#
+# Owner 2026-09-30: "These colors in the spec maps in the regular FOUNDATION
+# category are not supposed to have ANY grain/grit etc. They are supposed to be
+# PURE COLORS. So Gloss (green looking) is just a SOLID GREEN COLOR. We have MANY
+# categories with spec effects including an ENHANCED FOUNDATION category. The
+# REGULAR foundations SHOULD BE PURE."
+#
+# History: a 2026-09-04 pass (under this same function name) layered orange peel
+# (~8px), clearcoat flow-out (~70px) and micro-grain (~2.5px) onto every cell,
+# re-applied dead-last in three places, so f_metallic rendered M 200±7 / R 50±7 and
+# matte R 200±19 — visible grit on the thumbnails and the car. That was a misread
+# of "maybe it opens the door for more color movement"; texture belongs on the EFX
+# shelf and the other spec-effect categories, never on the flat BASES shelf.
+#
+# Kept from that pass: the spec returns THREE channels (M, R, CC). The older
+# _spec_foundation_flat returned (M, R) only, which crashed the Finish Law runner.
+# Every channel is now a constant — the registry M/R/CC, nothing else.
+# Gate: tests/test_regression_foundation_spec_flatness.py (compose spread <= 1).
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def _spec_foundation_pure(shape, seed, sm, base_m, base_r, base_cc=None):
+    """Constant M/R/CC for a flat Foundation cell. `seed` and `sm` are ignored on
+    purpose: a Foundation is one material value across the whole canvas."""
+    import numpy as np
+
+    h, w = (shape[:2] if len(shape) > 2 else shape)
+    m0 = float(base_m)
+    r0 = float(base_r) if m0 >= 240 else max(float(base_r), 15.0)   # iron R-floor
+    c0 = 16.0 if base_cc is None else float(base_cc)
+    return (np.full((h, w), m0, np.float32),
+            np.full((h, w), r0, np.float32),
+            np.full((h, w), c0, np.float32))
+
+
+def _make_foundation_spec(m, r, cc):
+    """Bind one Foundation entry's constants into a three-channel flat spec callable."""
+
+    def _spec(shape, seed, sm, base_m, base_r):
+        return _spec_foundation_pure(
+            shape, seed, sm,
+            base_m if base_m is not None else m,
+            base_r if base_r is not None else r,
+            base_cc=cc,
+        )
+
+    _spec.__name__ = "_spec_foundation_pure_bound"
+    return _spec
+
+
+def _upgrade_foundation_material_spec(registry=None):
+    """Pin every flat Foundation entry to a PURE three-channel constant spec.
+
+    Name kept for the three dead-last callers (shokker_engine_v2 x2, engine/registry.py);
+    each registry is its own dict, so each must be pinned.
+    """
+    reg = BASE_REGISTRY if registry is None else registry
+    foundation_ids = [
+        "wet_look", "gloss", "semi_gloss", "satin", "eggshell", "matte", "primer",
+        "flat_black", "scuffed_satin", "silk", "clear_matte", "living_matte",
+        "f_powder_coat", "f_pearl", "f_satin_pearl", "f_metallic", "f_matte_metallic",
+        "f_candy", "f_brushed", "f_frozen", "f_bead_blast", "f_chrome",
+        "f_dark_chrome", "f_satin_chrome",
+    ]
+    noise_keys = ("noise_M", "noise_R", "noise_CC", "noise_scales", "noise_weights",
+                  "perlin", "perlin_octaves", "perlin_persistence", "perlin_lacunarity")
+    pinned = 0
+    for base_id in foundation_ids:
+        entry = reg.get(base_id)
+        if not entry:
+            continue
+        m = float(entry.get("M", 0) or 0)
+        r = float(entry.get("R", 100) or 100)
+        cc = float(entry.get("CC", 16) or 16)
+        entry["base_spec_fn"] = _make_foundation_spec(m, r, cc)
+        entry["paint_fn"] = paint_none            # Foundation never touches colour
+        for key in noise_keys:
+            entry.pop(key, None)
+        pinned += 1
+    print(f"  [Foundation Pure Spec] {pinned} Foundation finishes pinned to constant M/R/CC")
+
+
+_upgrade_foundation_material_spec()
+
+
+# SPB-105 tick NU-25-LIVE-1 — dead-last direct-import authority for the ten
+# compatibility bases. Owner verdict "Claude's rebuild has failed miserably";
+# v3 isolated M7 moved the replacement slate to 25/25 >=85 (85.2-88.9).
+from engine.expansions.neon_catalog_2026 import install_base_entries as _install_neon_v3_bases
+
+_install_neon_v3_bases(BASE_REGISTRY)
+
+
+# ============================================================================
+# FOUNDATION ONE -- retired base ids redirect to their surviving cell.
+# Owner 2026-09-03: three Foundation categories collapsed into ONE (two shelves:
+# flat BASES + paint+spec EFX). The 30 Enhanced entries were flat too (2026-04-21
+# painter mandate), so they and the near-duplicate flat cells are retired. Their
+# ids stay resolvable -- a saved project that names `enh_gloss` renders `gloss`.
+# Applied DEAD-LAST in every registry (here, engine/registry.py, shokker_engine_v2)
+# because later passes replace entry dicts; the alias must point at the final one.
+# Keep in sync with BASE_ID_ALIASES in paint-booth-0-finish-data.js.
+# ============================================================================
+BASE_ID_ALIASES = {
+    # flat near-duplicates (max channel delta <= 20 from the survivor)
+    "living_matte": "matte", "f_soft_matte": "matte", "f_neutral_grey": "matte",
+    "clear_matte": "primer", "f_pure_black": "primer",
+    "f_gel_coat": "wet_look", "f_baked_enamel": "gloss", "f_soft_gloss": "gloss",
+    "silk": "satin", "f_clear_satin": "satin", "f_vinyl_wrap": "satin",
+    "f_warm_white": "eggshell", "f_pure_white": "eggshell", "scuffed_satin": "eggshell",
+    "f_anodized": "f_brushed",
+    # Enhanced Foundation (30) -- retired shelf
+    "enh_gloss": "gloss", "enh_matte": "matte", "enh_satin": "satin",
+    "enh_metallic": "f_metallic", "enh_pearl": "f_pearl", "enh_chrome": "f_chrome",
+    "enh_satin_chrome": "f_satin_chrome", "enh_anodized": "f_brushed",
+    "enh_baked_enamel": "gloss", "enh_brushed": "f_brushed",
+    "enh_carbon_fiber": "f_carbon_fiber", "enh_frozen": "f_frozen",
+    "enh_gel_coat": "wet_look", "enh_powder_coat": "f_powder_coat",
+    "enh_vinyl_wrap": "satin", "enh_soft_gloss": "gloss", "enh_soft_matte": "matte",
+    "enh_warm_white": "eggshell", "enh_ceramic_glaze": "wet_look", "enh_silk": "satin",
+    "enh_eggshell": "eggshell", "enh_primer": "primer", "enh_clear_matte": "primer",
+    "enh_semi_gloss": "semi_gloss", "enh_wet_look": "wet_look",
+    "enh_piano_black": "wet_look", "enh_living_matte": "matte",
+    "enh_neutral_grey": "matte", "enh_clear_satin": "satin", "enh_pure_black": "primer",
+    # EFX mashup recipes (7) -- redirect to their primary ingredient
+    "efx_aurora_obsidian_veil": "efx_aurora_skin", "efx_damascus_trinity": "efx_damascus_fold",
+    "efx_cathedral_holographic": "efx_cathedral_veil", "efx_tempered_quattro": "efx_tempered_spectrum",
+    "efx_crystalline_triad": "efx_frost_fractal", "efx_volcanic_triad": "efx_volcanic_obsidian",
+    "efx_aurora_fold": "efx_aurora_skin",
+}
+
+
+def apply_base_id_aliases(registry, aliases=None):
+    """Point every retired id at its survivor's entry dict (same object, so later
+    in-place edits stay visible). Returns the number of aliases applied."""
+    aliases = BASE_ID_ALIASES if aliases is None else aliases
+    applied = 0
+    for old, new in aliases.items():
+        target = registry.get(new)
+        if target is None:
+            continue
+        if registry.get(old) is target:
+            continue
+        registry[old] = target
+        applied += 1
+    return applied
+
+
+
+# NOTE: the alias pass is NOT applied here at import. shokker_engine_v2 merges this
+# dict and then wraps entries BY ID with per-group texture ("Regular Base Quality");
+# if `enh_metallic` already pointed at f_metallic's dict at that moment, the Enhanced
+# group's micro-signature wrapper landed on the flat f_metallic cell (M spread 45 —
+# caught by tests/test_regression_foundation_spec_flatness.py). Aliases are applied
+# dead-last only: engine/registry.py (V5) and shokker_engine_v2 (legacy / server).
+
+
+# The 20 flat cells on the FOUNDATION BASES shelf (picker order). THIS FILE is the single
+# source of truth for their M/R/CC: shokker_engine_v2 historically carried its own copies
+# of gloss/wet_look/satin/matte/primer/flat_black/f_candy with different numbers, so the
+# server rendered values nobody had gated. apply_foundation_cells() is run dead-last in
+# the legacy engine to enforce these cells in place (paint untouched, spec flat).
+FOUNDATION_BASES_SHELF = [
+    "wet_look", "gloss", "semi_gloss", "satin", "eggshell", "matte", "primer", "flat_black",
+    "f_powder_coat", "f_pearl", "f_satin_pearl", "f_metallic", "f_matte_metallic", "f_candy",
+    "f_brushed", "f_frozen", "f_bead_blast", "f_chrome", "f_dark_chrome", "f_satin_chrome",
+]
+
+
+def apply_foundation_cells(registry, flat_spec_fn=None):
+    """Copy each shelf cell's M/R/CC from this module into `registry` IN PLACE and pin the
+    flat contract (paint_none + flat spec). Returns the number of entries changed."""
+    changed = 0
+    for bid in FOUNDATION_BASES_SHELF:
+        src = BASE_REGISTRY.get(bid)
+        dst = registry.get(bid)
+        if src is None or dst is None:
+            continue
+        before = (dst.get("M"), dst.get("R"), dst.get("CC"), dst.get("paint_fn"), dst.get("base_spec_fn"))
+        dst["M"], dst["R"], dst["CC"] = src["M"], src["R"], src["CC"]
+        dst["paint_fn"] = paint_none
+        # Only the caller that owns the flat dispatcher (shokker_engine_v2) pins the spec fn.
+        # This module's own _spec_foundation_flat returns (M, R) only; handing it to compose
+        # ahead of the legacy factory loop textured every flat cell (M spread 45 on f_metallic).
+        spec = dst.get("base_spec_fn")
+        if flat_spec_fn is not None and getattr(spec, "__name__", "") != "_spec_foundation_flat":
+            dst["base_spec_fn"] = flat_spec_fn
+        for key in ("noise_M", "noise_R", "noise_CC", "noise_scales", "noise_weights",
+                    "perlin", "perlin_octaves", "perlin_persistence", "perlin_lacunarity"):
+            dst.pop(key, None)
+        after = (dst.get("M"), dst.get("R"), dst.get("CC"), dst.get("paint_fn"), dst.get("base_spec_fn"))
+        if before != after:
+            changed += 1
+    return changed

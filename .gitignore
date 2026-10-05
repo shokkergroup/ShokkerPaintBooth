@@ -12,6 +12,12 @@
 # 8-character lowercase-alphanumeric (with optional underscore) pattern at
 # repo root only — this won't shadow legit subfolder files. Kill on sight.
 /[a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_]
+# 2026-05-30 FIX: the 8-char sentinel pattern above matches the dir name
+# 'tests_v2' (exactly 8 chars), which ignored the WHOLE tests_v2/ suite and
+# blocked any !tests_v2/test_*.py re-include (can't un-ignore inside an
+# excluded dir). Re-include the directory itself so the suite is tracked.
+!/tests_v2/
+!/tests_v2/**
 /.codex-tmp/
 /.pytest-tmp/
 
@@ -50,8 +56,14 @@ logs/
 server_err.txt
 server_log.txt
 server_log.txt.*
+.spb_supervisor/
 server_out.txt
 build_log*.txt
+
+# ----- Generated perf / report scratch (SPB-RELEASE-PREP 2026-06-02) ----------
+# ~424MB of perf-trial renders + report dirs — generated analysis, not source.
+_perf/
+reports/
 build_output.txt
 _server_stdout.txt
 _server_stderr.txt
@@ -73,6 +85,7 @@ rebuild_log.txt
 node_modules/
 electron-app/dist/
 electron-app/dist-sandbox-*/
+electron-app/dist-contributor*/
 electron-app/node_modules/
 electron-app/_build_*.txt
 electron-app/_build_*.log
@@ -80,6 +93,14 @@ electron-app/out/
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+
+# ----- Release evidence / human-smoke outputs -------------------------------
+/_release_evidence/
+/_forge_out/
+/_payhip_*/
+/_sandbox_share/
+/SPB_*_sandbox.wsb
+/*-Payhip.zip
 
 # ----- Electron-builder outputs ---------------------------------------------
 dist_electron/
@@ -92,10 +113,18 @@ output/
 swatches/
 audit/
 audit_images/
+_workbook_metrics/
+SPB_AUDIT.html
+SPB_PATTERN_AUDIT.html
+SPB_PATTERN_QUALITY_REVIEW.html
 chameleon_test_output/
 test_improvements_imgs/
 spec_check/
 thumbnails/
+_workbench/
+GETTING_STARTED.pdf
+Fractured PROMO/
+*tempv2_at_*
 
 # ----- Test / preview images (allow docs + assets) --------------------------
 *.png
@@ -103,11 +132,31 @@ thumbnails/
 !assets/*.png
 !assets/**/*.png
 
+# ----- Visual-diff / golden-image harness (_visual_diff/) -------------------
+# baselines/ + baselines_manifest.json are COMMITTED golden references and must
+# stay tracked (the broad *.png rule above would otherwise ignore the baseline
+# PNGs, so re-allow them explicitly). current/ + report.* are regenerated on
+# every harness run and must NOT be tracked.
+!_visual_diff/baselines/
+!_visual_diff/baselines/**
+!_visual_diff/baselines/*.png
+!_visual_diff/baselines_manifest.json
+_visual_diff/current/
+_visual_diff/report.html
+_visual_diff/report.json
+
+# ----- Local-copy / win47 scratch (regenerated dev debris) ------------------
+*_localcopy*.js
+win47_*
+
 # ----- Temp / scratch files --------------------------------------------------
 .server_port
 last_render_request.json
 *.BACKUP_PRE_AUDIT
 *.tmp
+*.tmp.*
+_*.npy
+_rebench_*/
 *.swp
 *.swo
 *~
@@ -124,6 +173,7 @@ last_render_request.json
 
 # ----- Archive / staging / abandoned -----------------------------------------
 _archive/
+_dev_asset_masters/
 _staging/
 _deprecated/
 _scratch/
@@ -148,6 +198,12 @@ test_*.py
 !tests/test_regression_effects_vision_owner_review.py
 !tests/test_regression_atmosphere_owner_review.py
 !tests/test_regression_spb30_visual_wave.py
+# 2026-05-30 FIX: the broad `test_*.py` rule above (intended for ROOT one-off
+# scratch scripts) was silently ignoring the REAL pytest suites, leaving
+# tests/ (2400+ tests) AND tests_v2/ untracked. Re-include the suite test files.
+!tests/test_*.py
+!tests/**/test_*.py
+!tests_v2/test_*.py
 test_*.txt
 upgrade_*.py
 sync_*.py
@@ -211,6 +267,7 @@ pyinst_check.txt
 *_CHANGELOG*.md
 *_DISCUSSION*.md
 *_DEMO*.md
+!docs/SHOKK_DEMO_LAUNCH_2026-09-02.md
 *_REPORT*.md
 *_RESEARCH*.md
 PROJECT_STRUCTURE.md
@@ -226,6 +283,22 @@ PayHip-upload/
 *.jpg
 !assets/*.jpg
 !assets/**/*.jpg
+
+# ----- SPB bulk reference/media imports -------------------------------------
+# Keep these local until the owner-approved Git LFS plan is executed.
+/assets/reference_textures/spec_overlays/ricky_reference_batch2/
+/assets/reference_textures/cultural/forbidden_dragon/
+/assets/reference_textures/colorshoxx/ai_reference_2026_05_27/
+/assets/reference_textures/pattern_plates/
+/assets/patterns/spec_overlay_patterns/
+/electron-app/server/assets/reference_textures/spec_overlays/ricky_reference_batch2/
+/electron-app/server/assets/reference_textures/cultural/forbidden_dragon/
+/electron-app/server/assets/reference_textures/colorshoxx/ai_reference_2026_05_27/
+/electron-app/server/assets/reference_textures/pattern_plates/
+/electron-app/server/pyserver/_internal/assets/reference_textures/spec_overlays/ricky_reference_batch2/
+/electron-app/server/pyserver/_internal/assets/reference_textures/cultural/forbidden_dragon/
+/electron-app/server/pyserver/_internal/assets/reference_textures/colorshoxx/ai_reference_2026_05_27/
+/electron-app/server/pyserver/_internal/assets/reference_textures/pattern_plates/
 
 # ----- Editor / IDE ---------------------------------------------------------
 .vscode/
@@ -261,6 +334,10 @@ spb-user.json
 api_keys.json
 credentials.json
 secrets.yaml
+# Payhip merchant secret + AES license key + early-access password hashes (loaded by
+# electron-app/main.js, bundled into the build via package.json build.files). NEVER commit.
+spb-license-secrets.json
+**/spb-license-secrets.json
 
 # ----- Profiling / tracing --------------------------------------------------
 *.prof
@@ -289,3 +366,94 @@ tests/_runtime_harness/tmp_path/with_override/*
 !scripts/audit_pattern_quality.py
 !scripts/audit_renderer_performance.py
 scripts/.runtime-sync.lock
+
+# ----- Load-bearing modules wrongly caught by broad patterns above ----------
+# These are imported by live code (e.g. base_registry_data.py imports the
+# shokker_*_expansion shims); a clean clone must include them or it can't boot.
+# Negations must come after the ignore patterns they override.
+!server_health.py
+!clean_boot.py
+!finish_colors_lookup.py
+!finish_ids_canonical.json
+!finish_colors.json
+!shokk_manager.py
+!shokker_color_monolithics.py
+!shokker_specials_overhaul.py
+!shokker_*_expansion.py
+_spb_user_active.heartbeat
+
+# R2 deploy credentials - DPAPI-encrypted, user+machine bound. NEVER commit.
+.r2_credentials.xml
+
+# SHOKK DEMO ships only its reviewed, generated 25+1 material thumbnails.
+!demo/backend/assets/thumbnails/
+!demo/backend/assets/thumbnails/*.png
+
+# ----- Golden-image regression net (scripts/spb_golden_net.py, 2026-09-05) -----
+# manifest lives in scripts/golden_manifest.json (tracked); refs/diffs are regenerable
+_golden/
+
+# [2026-09-05 BETA 10.0.1 release snapshot] The release evidence gate requires a clean candidate tree, so the
+# ~17 GB of lane scratch, caches, model weights and harness output below are ignored instead of committed.
+# They stay on disk and keep working; the installer packages electron-app/server from disk, not from git.
+/_dlm_rebuild_work/
+/_dlm_dossier/cache/
+/_iridescent_insects_2026/
+/_arca_forge_work/
+/_logo_data/
+/_verify/
+/_smart_tga_runs/
+/demo/backend/assets/snapshots/
+**/engine/spec_sculpt/models/*.joblib
+/tests/_runtime_harness/original_simple_build_overnight/
+/tests/_runtime_harness/tmp_path/
+# [2026-09-05] server-written render traces (mutated on every render) - never part of a release candidate
+/_audit/last_render_trace.json
+/_audit/render_trace_history.jsonl
+# [2026-09-09 10.0.2 hotfix snapshot] lane scratch (video renders, tool-lane outputs, drops sources, website assets)
+/_hype_video_work/
+/_tools_simplification_work/
+/_shokk_drops_lyons_work/
+/_website_work/
+/_demo_color_parity_work/
+/_spec_overlays_v2_work/
+# 2026-09-09: the release handoff + scripts/release helpers are durable release tooling, not lane scratch
+!/docs/RELEASE_HANDOFF_CODEX_2026-09-09.md
+!/scripts/release/
+
+# ASTRA R2 lane work (Claude, 2026-09-27): renders, gate logs, review-page images
+/_astra_claude_work/
+
+# EASY MODE 10-hour run (Claude, 2026-09-30): backups, shots, scratch
+/_easy_claude_work/
+
+# 2026-10-05 commit sweep (Claude): lane scratch / render dumps / poster tarballs stay on disk, out of git (GitHub 100 MB file + 2 GB push limits)
+/_srs_posters_2026/
+/_atlas_deep/
+/_era120_work/
+/_core_works_20260930_work/
+/_codex_work/
+/_codex_mcp_work/
+/_all_that_pilot_work/
+/_astra_rebuild_20260922_work/
+/_astra_learning_20260930_work/
+/_enc_work/
+/_shokker_dlm_viewer_work/
+/_flaw_lab_rebuild_work/
+/_easy_auto_work/
+/_inspiration_recovery_work/
+/_snakeskin_work/
+/_arca_halloween_work/
+/date.exe.stackdump
+/_ctl.json
+# _atlas_cards is the SOURCE of js/spb-ai-cards-data.js: keep the data, drop backups / logs / review images
+/_atlas_cards/cards.before_*
+/_atlas_cards/*.log
+/_atlas_cards/lsa_check.txt
+/_atlas_cards/thumbs/
+/_atlas_cards/sheets/
+# ERA image finishes: runtime = assets/*.png + *.py + manifest + contracts; the 2.9 GB authoring recipes / SVGs stay on disk
+engine/paint_v2/era_image_2026/authoring/*.gz
+engine/paint_v2/era_image_2026/authoring/*.svg
+electron-app/server/engine/paint_v2/era_image_2026/authoring/*.gz
+electron-app/server/engine/paint_v2/era_image_2026/authoring/*.svg

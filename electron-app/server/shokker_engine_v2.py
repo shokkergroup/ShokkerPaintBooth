@@ -118,6 +118,7 @@ import os
 import json
 import time
 import logging
+from collections import OrderedDict
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from scipy.ndimage import gaussian_filter as _scipy_gaussian_filter
@@ -125,6 +126,131 @@ from scipy.ndimage import gaussian_filter as _scipy_gaussian_filter
 # Backwards-compat alias kept for legacy code paths inside this module that
 # imported ``os`` under a private name. Prefer plain ``os`` in new code.
 _os = os
+
+# SPB-PERF 2026-06-13 (owner: "DO PARALLEL ZONES"): overlap the MONOLITHIC path's
+# spec generation with its paint render. spec_fn reads only shape/mask/seed and
+# paint_fn reads the canvas — they share no mutable state, and placement_context
+# is thread-local, so running spec in a worker while paint runs in the main thread
+# is bit-identical to the prior sequential calls (the compositing path PATH 1
+# already overlaps this way). Verified pixel-for-pixel vs the sequential path
+# before enabling. Kill-switch: env SPB_MONO_PARALLEL_SPEC=0 or set this False.
+_SPB_MONO_PARALLEL_SPEC = _os.environ.get("SPB_MONO_PARALLEL_SPEC", "1") != "0"
+
+# [SPB-PERF 2026-08-06 — owner: renders "taking longer than they should"] Don't render a
+# monolithic spec that is about to be THROWN AWAY. When Spec Scale is active and the
+# finish does not consume the placement itself, the FINER-SCALE 2026-06-17 block re-renders
+# the spec PURE (ones mask, native placement) and overwrites zone_spec with it — so the
+# masked spec rendered moments earlier was dead work, on every render. On the reproducing
+# replay (job_render_1786051447, flm_interference_wisps_dance_blue at spec_scale 0.20) that
+# dead render was 1.23s of an 8.7s wall. Render the PURE spec in the worker thread instead:
+# same overlap with paint, one spec pass instead of two. Falls back to the masked render in
+# the rare case the finish DID apply the placement itself (then the finer block is skipped
+# and the masked spec is the one that ships). Output is unchanged — the pure spec is
+# byte-for-byte the array the finer block would have rendered for itself.
+# Kill-switch: env SPB_MONO_SKIP_DEAD_SPEC=0.
+_SPB_MONO_SKIP_DEAD_SPEC = _os.environ.get("SPB_MONO_SKIP_DEAD_SPEC", "1") != "0"
+# Finishes OBSERVED to consume the zone placement themselves (cultural / image-authored
+# monolithics reach mark_zone_placement_applied via cultural_placement._apply_placement).
+# For these the finer block is skipped and the MASKED spec ships, so speculating on the
+# pure spec costs an extra render — learn them on first sight and stop speculating.
+# Measured with vm_* + base_scale: speculation made it 1 spec render -> 2; with this set
+# it is 2 once per finish per process, then back to 1. Procedural finishes never land here.
+_SPB_MONO_PLACEMENT_OWNERS = set()
+
+# [SPB-PERF 2026-08-01] Per-zone LAYER CACHE. Owner: "render times creeping back
+# up". The dominant real-world pattern is re-clicking Render while iterating on
+# ONE zone — every other zone re-renders an identical (finish, seed, mask,
+# underpaint, transforms) layer from scratch (1-2.5s each at 2048). Cache the
+# raw (paint, zone_spec, placement_flag) exactly at the monolithic try-block
+# boundary; all downstream sanitize/strength/overlay/composite code re-runs
+# unchanged, so a hit is bit-identical to a fresh render. Kill: SPB_ZONE_LAYER_CACHE=0
+_SPB_ZONE_LAYER_CACHE_ON = _os.environ.get("SPB_ZONE_LAYER_CACHE", "1") != "0"
+# Eviction is by BYTE budget, not entry count: a 5-zone livery wants ~10 live
+# entries (full-res + preview per zone) and preview layers are 16x smaller.
+# [2026-08-01 lag round 4 — owner: responsiveness over render speed] budget
+# 700->256MB and the cache SKIPS preview-scale renders entirely (see the size
+# gate at the key builder): preview bakes are fast anyway, and the per-render
+# copy/evict churn was competing with the UI on a shared box. Full-res RENDER
+# clicks keep the warm-layer speedup.
+_SPB_ZONE_LAYER_CACHE_MB = max(0, int(_os.environ.get("SPB_ZONE_LAYER_CACHE_MB", "256") or 256))
+_spb_zone_layer_cache = None            # OrderedDict, lazy-built
+_spb_zone_layer_cache_bytes = 0
+
+
+def _spb_zone_layer_size(v):
+    n = 0
+    for x in v[:2]:
+        if isinstance(x, np.ndarray):
+            n += x.nbytes
+        else:
+            n += 1 << 20                # non-array payloads: charge 1MB flat
+    return n
+
+
+def _spb_arr_sig(a):
+    """Cheap-but-robust content signature: sampled bytes + full sum + shape.
+    Sampled hash alone could miss a few changed pixels; the full float sum
+    moves on ANY change. ~1-12ms on a 2048 canvas."""
+    import hashlib
+    a = np.asarray(a)
+    h = hashlib.blake2b(digest_size=16)
+    h.update(str(a.shape).encode())
+    h.update(str(a.dtype).encode())
+    try:
+        h.update(np.ascontiguousarray(a[::16, ::16]).tobytes())
+        h.update(repr(float(a.sum(dtype=np.float64))).encode())
+    except Exception:
+        return None
+    return h.hexdigest()
+
+
+def _spb_zone_layer_copy(v):
+    if isinstance(v, np.ndarray):
+        return v.copy()
+    import copy as _copy
+    try:
+        return _copy.deepcopy(v)
+    except Exception:
+        return None
+
+
+def _spb_zone_layer_get(key):
+    global _spb_zone_layer_cache
+    if key is None or not _SPB_ZONE_LAYER_CACHE_ON or _spb_zone_layer_cache is None:
+        return None
+    hit = _spb_zone_layer_cache.get(key)
+    if hit is None:
+        return None
+    _spb_zone_layer_cache.move_to_end(key)
+    p = _spb_zone_layer_copy(hit[0])
+    s = _spb_zone_layer_copy(hit[1])
+    if p is None or s is None:
+        return None
+    return (p, s, hit[2])
+
+
+def _spb_zone_layer_put(key, paint, zone_spec, placement_applied):
+    global _spb_zone_layer_cache
+    if key is None or not _SPB_ZONE_LAYER_CACHE_ON or _SPB_ZONE_LAYER_CACHE_MB == 0:
+        return
+    p = _spb_zone_layer_copy(paint)
+    s = _spb_zone_layer_copy(zone_spec)
+    if p is None or s is None:
+        return
+    global _spb_zone_layer_cache_bytes
+    if _spb_zone_layer_cache is None:
+        from collections import OrderedDict as _OD
+        _spb_zone_layer_cache = _OD()
+    old_entry = _spb_zone_layer_cache.pop(key, None)
+    if old_entry is not None:
+        _spb_zone_layer_cache_bytes -= _spb_zone_layer_size(old_entry)
+    entry = (p, s, bool(placement_applied))
+    _spb_zone_layer_cache[key] = entry
+    _spb_zone_layer_cache_bytes += _spb_zone_layer_size(entry)
+    budget = _SPB_ZONE_LAYER_CACHE_MB << 20
+    while _spb_zone_layer_cache and _spb_zone_layer_cache_bytes > budget:
+        _k, _v = _spb_zone_layer_cache.popitem(last=False)
+        _spb_zone_layer_cache_bytes -= _spb_zone_layer_size(_v)
 
 # ================================================================
 # MODULE-LEVEL CONSTANTS — extracted magic numbers
@@ -206,6 +332,991 @@ def _enforce_iron_rules(spec):
     return np.clip(s, 0, 255).astype(np.uint8)
 
 
+def _apply_zone_spec_lighting_mask(spec, zone):
+    """Apply an optional per-Zone iRacing spec-alpha override.
+
+    SPB-93 tick 30; owner verdict: add real car-template/spec tools, not
+    gimmicks. Baseline was zero UI controls even though the renderer preserved
+    and exported alpha. RGB/M/R/CC are byte-identical; only A is replaced.
+    """
+    if spec is None or not isinstance(zone, dict):
+        return spec
+    raw = zone.get("spec_lighting_mask")
+    if raw is None or raw == "":
+        return spec
+    try:
+        alpha = float(raw)
+    except (TypeError, ValueError):
+        return spec
+    if not np.isfinite(alpha):
+        return spec
+    out = np.asarray(spec).copy()
+    if out.ndim != 3 or out.shape[2] < 4:
+        return spec
+    out[:, :, 3] = int(round(max(0.0, min(255.0, alpha))))
+    return out
+
+
+def _apply_zone_spec_material_remap(spec, zone):
+    """Compress generated/imported M/R/CC into Zone-authored output ranges.
+
+    SPB-93 tick 34; owner verdict: add real car-template/spec tools, not
+    gimmicks. This is material-specific Levels: it preserves spatial detail,
+    touches only channels 0..2, and leaves paint plus lighting alpha intact.
+    """
+    if spec is None or not isinstance(zone, dict):
+        return spec
+    remap = zone.get("spec_material_remap")
+    if not isinstance(remap, dict):
+        return spec
+    ranges = []
+    for key in ("m", "r", "cc"):
+        channel_range = remap.get(key)
+        if not isinstance(channel_range, dict):
+            return spec
+        try:
+            low = float(channel_range.get("low"))
+            high = float(channel_range.get("high"))
+        except (TypeError, ValueError):
+            return spec
+        if not np.isfinite(low) or not np.isfinite(high) or low > high:
+            return spec
+        ranges.append((max(0.0, min(255.0, low)), max(0.0, min(255.0, high))))
+    out = np.asarray(spec).copy()
+    if out.ndim != 3 or out.shape[2] < 4:
+        return spec
+    for channel, (low, high) in enumerate(ranges):
+        source = np.asarray(out[:, :, channel], dtype=np.float32)
+        out[:, :, channel] = np.rint(low + (source / 255.0) * (high - low))
+    return out
+
+
+def _apply_zone_spec_material_override(spec, zone):
+    """Replace a Zone's generated channels with one sampled flat material.
+
+    SPB-93 tick 31; owner verdict: add useful car-template/spec workflows, not
+    gimmicks. Baseline Channels Inspector could only report whole-map stats.
+    The override is deliberately uniform and runs after material generation;
+    Zone-mask compositing still owns its exact UV footprint.
+    """
+    if spec is None or not isinstance(zone, dict):
+        return spec
+    sample = zone.get("spec_material_override")
+    if not isinstance(sample, dict):
+        return spec
+    values = []
+    for lower, upper in (("m", "M"), ("r", "R"), ("cc", "CC"), ("a", "A")):
+        raw = sample.get(lower, sample.get(upper))
+        try:
+            value = float(raw)
+        except (TypeError, ValueError):
+            return spec
+        if not np.isfinite(value):
+            return spec
+        values.append(int(round(max(0.0, min(255.0, value)))))
+    out = np.asarray(spec).copy()
+    if out.ndim != 3 or out.shape[2] < 4:
+        return spec
+    for channel, value in enumerate(values):
+        out[:, :, channel] = value
+    return out
+
+
+def _default_spec_array(shape):
+    """Return the engine's default neutral-ish iRacing spec map as float32 RGBA."""
+    h, w = int(shape[0]), int(shape[1])
+    spec = np.zeros((h, w, 4), dtype=np.float32)
+    spec[:, :, 0] = 5
+    spec[:, :, 1] = 100
+    spec[:, :, 2] = 16
+    spec[:, :, 3] = 255
+    return spec
+
+
+def _load_spec_source_rgba(spec_path, shape, context="zone spec source", resize_to_shape=True):
+    """Load a user-supplied spec map into an HxWx4 float32 array."""
+    if not spec_path:
+        return None
+    try:
+        p = Path(str(spec_path)).expanduser()
+        if not p.exists():
+            logger.warning(f"    WARNING: {context} not found: {spec_path}")
+            return None
+        img = Image.open(str(p))
+        if img.mode == "RGBA":
+            arr = np.array(img).astype(np.float32)
+        elif img.mode == "RGB":
+            rgb = np.array(img).astype(np.float32)
+            alpha = np.full((rgb.shape[0], rgb.shape[1], 1), 255, dtype=np.float32)
+            arr = np.concatenate([rgb, alpha], axis=2)
+        else:
+            arr = np.array(img.convert("RGBA")).astype(np.float32)
+        target_h, target_w = int(shape[0]), int(shape[1])
+        if resize_to_shape and (arr.shape[0] != target_h or arr.shape[1] != target_w):
+            resized = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)).resize((target_w, target_h), Image.LANCZOS)
+            arr = np.array(resized).astype(np.float32)
+        return np.clip(arr, 0, 255)
+    except Exception as exc:
+        logger.warning(f"    WARNING: failed to load {context} '{spec_path}': {exc}")
+        return None
+
+
+def _zone_spec_source_strength(zone):
+    try:
+        return max(0.0, min(1.0, float(zone.get("zone_spec_map_strength", 1.0))))
+    except Exception:
+        return 1.0
+
+
+def _zone_spec_transform_values(zone):
+    """Final spec-map placement (scale/rotate/pan) — independent of base generation controls.
+
+    SPB zone UI 2026-05-18: spec_rotation/spec_scale post-pass on the finished zone spec
+    plate so painters can nudge spec alignment after base_scale/base_rotation tweaks.
+    """
+    base = _zone_base_transform_values(zone)
+    raw_scale = zone.get("spec_scale", zone.get("specScale"))
+    if raw_scale is None:
+        scale = float(base["scale"])
+    else:
+        try:
+            scale = float(raw_scale)
+        except (TypeError, ValueError):
+            scale = float(base["scale"])
+    raw_rot = zone.get("spec_rotation", zone.get("specRotation"))
+    if raw_rot is None:
+        rotation = 0.0
+    else:
+        try:
+            rotation = float(raw_rot)
+        except (TypeError, ValueError):
+            rotation = 0.0
+    return {
+        "scale": scale,
+        "offset_x": base["offset_x"],
+        "offset_y": base["offset_y"],
+        "rotation": rotation,
+        "flip_h": base["flip_h"],
+        "flip_v": base["flip_v"],
+    }
+
+
+def _compose_finish_base_scale_for_zone(zone, zone_base_scale):
+    """PATH 1: pass base_scale to compose_finish so its spec channels scale inline.
+
+    SPB-2026-05-19 owner: tiling the masked composited spec post-hoc duplicates the
+    whole canvas (hall of mirrors). Only force scale=1.0 when the spec_scale slider
+    diverges from base_scale — that's the only case the post-pass should handle.
+    """
+    sp = _zone_spec_transform_values(zone)
+    try:
+        bs = float(zone_base_scale if zone_base_scale is not None else 1.0)
+    except (TypeError, ValueError):
+        bs = 1.0
+    if abs(sp["scale"] - bs) > 0.01:
+        return 1.0
+    return bs
+
+
+def _base_paint_fn_is_noop(paint_fn):
+    """Return True for registry paint functions that leave paint unchanged."""
+    if paint_fn is None:
+        return False
+    if paint_fn is paint_none:
+        return True
+    return getattr(paint_fn, "__name__", "") == "paint_none"
+
+
+def _flat_base_spec_constants(base_id, base):
+    """Return flat M/R/CC constants for bases that do not need compose_finish."""
+    spec_fn = base.get("base_spec_fn")
+    if spec_fn is not None and getattr(spec_fn, "__name__", "") != "_spec_foundation_flat":
+        return None
+    if spec_fn is None:
+        noisy_keys = ("brush_grain", "perlin", "noise_scales")
+        if any(base.get(k) for k in noisy_keys):
+            return None
+        for key in ("noise_M", "noise_R", "noise_CC"):
+            try:
+                if abs(float(base.get(key, 0) or 0)) > 0.001:
+                    return None
+            except Exception:
+                return None
+    try:
+        base_m = float(base["M"])
+        base_r = float(base["R"])
+        base_cc = float(base.get("CC") if base.get("CC") is not None else SPEC_CLEARCOAT_MIN)
+    except Exception:
+        return None
+    if spec_fn is not None:
+        base_r = base_r if base_m >= SPEC_METALLIC_CHROME_THRESHOLD else max(base_r, SPEC_ROUGHNESS_MIN)
+    else:
+        base_r = base_r if base_m >= SPEC_METALLIC_CHROME_THRESHOLD else max(base_r, SPEC_ROUGHNESS_MIN)
+    base_cc = max(base_cc, float(SPEC_CLEARCOAT_MIN)) if base_cc > 0 else 0.0
+    if abs(base_cc - float(SPEC_CLEARCOAT_MIN)) > 0.001:
+        return None
+    return base_m, base_r, base_cc
+
+
+def _can_fast_path_flat_noop_base(base_id, pattern_id, zone, v6kw, v6paint, has_zone_spec_source):
+    """Conservative guard for flat no-pattern bases such as gloss/f_metallic.
+
+    This bypasses the full composer only when paint and spec are both plain.
+    Any color override, overlay, spec stack, or strength transform falls back
+    to the normal path.
+    """
+    try:
+        from engine.registry import BASE_REGISTRY as _compose_base_registry
+    except Exception:
+        _compose_base_registry = BASE_REGISTRY
+    if has_zone_spec_source or not base_id or base_id not in _compose_base_registry:
+        return False
+    if pattern_id and pattern_id != "none":
+        return False
+    if zone.get("pattern_stack"):
+        return False
+    for key in (
+        "spec_pattern_stack", "overlay_spec_pattern_stack",
+        "third_overlay_spec_pattern_stack", "fourth_overlay_spec_pattern_stack",
+        "fifth_overlay_spec_pattern_stack",
+    ):
+        if v6kw.get(key) or zone.get(key):
+            return False
+    for key in ("blend_base", "second_base", "third_base", "fourth_base", "fifth_base"):
+        if v6kw.get(key) or v6paint.get(key):
+            return False
+    for key in (
+        "second_base_color_source", "third_base_color_source",
+        "fourth_base_color_source", "fifth_base_color_source",
+    ):
+        if v6kw.get(key) or v6paint.get(key):
+            return False
+    if _cc_quality_is_active(v6kw):
+        return False
+    for key in ("paint_color", "pattern_strength_map"):
+        if v6kw.get(key) is not None:
+            return False
+    if abs(float(v6kw.get("base_spec_strength", 1.0)) - 1.0) > 0.001:
+        return False
+    if abs(float(v6paint.get("base_strength", 1.0)) - 1.0) > 0.001:
+        return False
+    if v6paint.get("base_color_source"):
+        return False
+    if v6paint.get("base_color_mode", "source") != "source":
+        return False
+    if abs(float(v6paint.get("base_color_strength", 1.0)) - 1.0) > 0.001:
+        return False
+    for key in ("base_hue_offset", "base_saturation_adjust", "base_brightness_adjust"):
+        if abs(float(v6paint.get(key, 0) or 0)) > 0.001:
+            return False
+    return _base_paint_fn_is_noop(_compose_base_registry[base_id].get("paint_fn"))
+
+
+def _mask_active_bbox(mask, threshold=0.1, pad=2):
+    """Return a padded active bbox for a zone mask, or None for empty masks."""
+    if mask is None:
+        return None
+    arr = np.asarray(mask, dtype=np.float32)
+    rows = np.any(arr > threshold, axis=1)
+    cols = np.any(arr > threshold, axis=0)
+    if not np.any(rows) or not np.any(cols):
+        return None
+    r_min, r_max = np.where(rows)[0][[0, -1]]
+    c_min, c_max = np.where(cols)[0][[0, -1]]
+    h, w = arr.shape[:2]
+    return (
+        max(0, int(r_min) - pad),
+        min(h, int(r_max) + pad + 1),
+        max(0, int(c_min) - pad),
+        min(w, int(c_max) + pad + 1),
+    )
+
+
+def _mask_active_tile_regions(active, pad=2, max_regions=96, max_total_area_ratio=0.55):
+    h, w = active.shape[:2]
+    total_pixels = float(max(1, h * w))
+    for tile in (192, 256, 384, 512):
+        boxes = []
+        for y0 in range(0, h, tile):
+            y1 = min(h, y0 + tile)
+            active_cols = []
+            for x0 in range(0, w, tile):
+                x1 = min(w, x0 + tile)
+                if np.any(active[y0:y1, x0:x1]):
+                    active_cols.append((x0, x1))
+            if not active_cols:
+                continue
+            run_start, run_end = active_cols[0]
+            for x0, x1 in active_cols[1:]:
+                if x0 <= run_end:
+                    run_end = x1
+                else:
+                    boxes.append((max(0, y0 - pad), min(h, y1 + pad), max(0, run_start - pad), min(w, run_end + pad)))
+                    run_start, run_end = x0, x1
+            boxes.append((max(0, y0 - pad), min(h, y1 + pad), max(0, run_start - pad), min(w, run_end + pad)))
+        if not boxes or len(boxes) > max_regions:
+            continue
+        total_area = sum((r1 - r0) * (c1 - c0) for r0, r1, c0, c1 in boxes)
+        if float(total_area) / total_pixels <= max_total_area_ratio:
+            return boxes
+    return None
+
+
+def _mask_active_regions(
+    mask,
+    threshold=0.1,
+    pad=2,
+    max_regions=96,
+    max_total_area_ratio=0.50,
+    max_bbox_active_ratio=6.0,
+):
+    """Return safe visible render regions for sparse masks.
+
+    SPB-PERF-2026-06-01 / owner visible-zone render request: tiny visible zones
+    such as door/roof numbers can be scattered across the 2048 template. A single
+    bbox then covers mostly hidden canvas, so split into connected visible islands.
+    """
+    bbox = _mask_active_bbox(mask, threshold=threshold, pad=pad)
+    if bbox is None:
+        return None
+    arr = np.asarray(mask, dtype=np.float32)
+    h, w = arr.shape[:2]
+    r0, r1, c0, c1 = bbox
+    total_pixels = float(max(1, h * w))
+    active_bool = arr > threshold
+    active_pixels = float(max(1, int(np.count_nonzero(active_bool))))
+    bbox_area = float((r1 - r0) * (c1 - c0))
+    bbox_area_ratio = bbox_area / total_pixels
+    bbox_active_ratio = bbox_area / active_pixels
+    coverage = active_pixels / total_pixels
+    if bbox_area_ratio <= max_total_area_ratio and bbox_active_ratio <= max_bbox_active_ratio:
+        return [bbox]
+    if coverage > 0.08:
+        return None
+    active = active_bool.astype(np.uint8)
+    try:
+        n_labels, _labels, stats, _centroids = cv2.connectedComponentsWithStats(active, 8)
+    except Exception:
+        return _mask_active_tile_regions(active, pad=pad)
+    regions = []
+    for label_idx in range(1, int(n_labels)):
+        x = int(stats[label_idx, cv2.CC_STAT_LEFT])
+        y = int(stats[label_idx, cv2.CC_STAT_TOP])
+        bw = int(stats[label_idx, cv2.CC_STAT_WIDTH])
+        bh = int(stats[label_idx, cv2.CC_STAT_HEIGHT])
+        area = int(stats[label_idx, cv2.CC_STAT_AREA])
+        if area <= 0 or bw <= 0 or bh <= 0:
+            continue
+        regions.append((
+            max(0, y - pad),
+            min(h, y + bh + pad),
+            max(0, x - pad),
+            min(w, x + bw + pad),
+            area,
+        ))
+    if not regions:
+        return None
+    if len(regions) > max_regions:
+        return _mask_active_tile_regions(active, pad=pad)
+    regions.sort(key=lambda item: item[4], reverse=True)
+    boxes = [(r0, r1, c0, c1) for r0, r1, c0, c1, _area in regions]
+    total_area = sum((r1 - r0) * (c1 - c0) for r0, r1, c0, c1 in boxes)
+    if float(total_area) / total_pixels > max_total_area_ratio or float(total_area) / active_pixels > max_bbox_active_ratio:
+        # SPB-PERF-2026-06-02 / owner visible-zone render request:
+        # connected components can still form a huge skinny bbox around numbers
+        # and decals. Tile fallback keeps sparse visible pixels from rendering
+        # mostly hidden canvas.
+        tiled = _mask_active_tile_regions(active, pad=pad)
+        if tiled:
+            return tiled
+        if float(total_area) / total_pixels > max_total_area_ratio:
+            return None
+    return boxes
+
+
+def _mask_region_summary(mask, regions, threshold=0.1):
+    try:
+        arr = np.asarray(mask, dtype=np.float32)
+        h, w = arr.shape[:2]
+        total_pixels = float(max(1, h * w))
+        active_ratio = float(np.count_nonzero(arr > threshold)) / total_pixels
+        crop_ratio = float(sum((r1 - r0) * (c1 - c0) for r0, r1, c0, c1 in (regions or []))) / total_pixels
+        waste_ratio = crop_ratio / max(active_ratio, 1.0 / total_pixels)
+        return f"{len(regions or [])} region(s), crop {crop_ratio:.1%} for {active_ratio:.1%} active, waste {waste_ratio:.1f}x"
+    except Exception:
+        return f"{len(regions or [])} region(s)"
+
+
+_SPEC_PATTERN_STACK_KEYS = (
+    "spec_pattern_stack", "overlay_spec_pattern_stack",
+    "third_overlay_spec_pattern_stack", "fourth_overlay_spec_pattern_stack",
+    "fifth_overlay_spec_pattern_stack",
+)
+
+
+def _active_spec_pattern_stack_names(stack):
+    names = []
+    if not isinstance(stack, (list, tuple)):
+        return names
+    for layer in stack:
+        if not isinstance(layer, dict):
+            continue
+        pattern = str(layer.get("pattern") or layer.get("id") or "").strip()
+        if not pattern or pattern.lower() in {"none", "null", "undefined", "__none__", "_none_"}:
+            continue
+        try:
+            opacity = float(layer.get("opacity", 0.5))
+        except Exception:
+            opacity = 0.5
+        if opacity <= 0.001:
+            continue
+        names.append(pattern)
+    return names
+
+
+def _active_spec_pattern_stack_reason(v6kw, zone):
+    for key in _SPEC_PATTERN_STACK_KEYS:
+        names = _active_spec_pattern_stack_names((v6kw or {}).get(key))
+        if not names:
+            names = _active_spec_pattern_stack_names((zone or {}).get(key))
+        if names:
+            shown = ", ".join(names[:3])
+            if len(names) > 3:
+                shown += f", +{len(names) - 3}"
+            return f"{key} is active ({shown})"
+    return None
+
+
+def _is_spec_pattern_stack_only_reason(reason):
+    text = str(reason or "")
+    return any(text.startswith(key) for key in _SPEC_PATTERN_STACK_KEYS)
+
+
+def _simple_bbox_base_paint_name(base_id, base):
+    if base_id in {"electric_ice", "patina_bronze", "patina_coat", "acid_etch"}:
+        return "dedicated_bbox_safe"
+    paint_fn = (base or {}).get("paint_fn")
+    if _base_paint_fn_is_noop(paint_fn):
+        return "paint_none"
+    if callable(paint_fn):
+        return "direct_crop"
+    return None
+
+
+def _bbox_noise_fast_path_reject_reason(base_id, pattern_id, zone, zone_mask, v6kw, v6paint, has_zone_spec_source):
+    """Return None when a base-only zone can safely render only active bboxes."""
+    zone = zone or {}
+    v6kw = v6kw or {}
+    v6paint = v6paint or {}
+    try:
+        from engine.registry import BASE_REGISTRY as _compose_base_registry
+    except Exception:
+        _compose_base_registry = BASE_REGISTRY
+    if has_zone_spec_source:
+        return "zone has explicit/imported spec source"
+    if not base_id:
+        return "missing base id"
+    if base_id not in _compose_base_registry:
+        return "base is not in registry"
+    if pattern_id and pattern_id != "none":
+        return "pattern is active"
+    if zone.get("pattern_stack"):
+        return "pattern stack is active"
+    spec_stack_reason = _active_spec_pattern_stack_reason(v6kw, zone)
+    if spec_stack_reason:
+        return spec_stack_reason
+    for key in ("blend_base", "second_base", "third_base", "fourth_base", "fifth_base"):
+        if v6kw.get(key) or v6paint.get(key):
+            return f"{key} overlay is active"
+    for key in (
+        "second_base_color_source", "third_base_color_source",
+        "fourth_base_color_source", "fifth_base_color_source",
+    ):
+        if v6kw.get(key) or v6paint.get(key):
+            return f"{key} is active"
+    if _cc_quality_is_active(v6kw):
+        return "cc_quality override is active"
+    for key in ("paint_color", "pattern_strength_map"):
+        if v6kw.get(key) is not None:
+            return f"{key} override is active"
+    if abs(float(v6kw.get("base_spec_strength", 1.0)) - 1.0) > 0.001:
+        return "base spec strength is adjusted"
+    if abs(float(v6paint.get("base_strength", 1.0)) - 1.0) > 0.001:
+        return "base paint strength is adjusted"
+    if _base_transform_requested(
+        float(v6paint.get("base_scale", 1.0) or 1.0),
+        float(v6paint.get("base_offset_x", 0.5) or 0.5),
+        float(v6paint.get("base_offset_y", 0.5) or 0.5),
+        float(v6paint.get("base_rotation", 0.0) or 0.0),
+        bool(v6paint.get("base_flip_h", False)),
+        bool(v6paint.get("base_flip_v", False)),
+    ):
+        return "base transform is active"
+    if bool(v6paint.get("base_color_fit_zone", False)):
+        return "base color fit-zone is active"
+    regions = _mask_active_regions(zone_mask)
+    if not regions:
+        return "no active bbox regions found"
+    # SPB-PERF 2026-06-13 (owner: "find slow renders lurking out there"). The
+    # per-region crop renders ONE compose call PER region. When a finish is
+    # scattered into MANY regions that together cover a large fraction of the
+    # canvas, those N calls cost far more than a single full-canvas render —
+    # e.g. neon_electric_blue as a scattered accent hit 95 regions / ~48% crop =
+    # ~40s, while one full render of the same base is ~2.5s. Fall back to the full
+    # path in that pathological case. Tight, sparse crops (a few small numbers /
+    # decals = low crop fraction) keep the fast path and are unaffected.
+    try:
+        _zm_rc = np.asarray(zone_mask)
+        _h_rc, _w_rc = _zm_rc.shape[:2]
+        _crop_ratio_rc = float(sum((r1 - r0) * (c1 - c0) for r0, r1, c0, c1 in regions)) / float(max(1, _h_rc * _w_rc))
+        if len(regions) > 12 and _crop_ratio_rc > 0.30:
+            return (f"{len(regions)} scattered regions cover {_crop_ratio_rc:.0%} of canvas — "
+                    f"a single full render is faster than per-region crop")
+    except Exception:
+        pass
+    coverage = float(np.mean(np.asarray(zone_mask) > 0.1))
+    if coverage > 0.18:
+        return f"zone coverage {coverage:.1%} is too large"
+    base = _compose_base_registry[base_id]
+    if base.get("blend_only"):
+        return "base is blend-only"
+    if (base.get("brush_grain") or base.get("perlin")) and not callable(base.get("base_spec_fn")):
+        return "base needs full-canvas grain/perlin path"
+    if _simple_bbox_base_paint_name(base_id, base) is None:
+        return "paint function is not crop-safe yet"
+    return None
+
+
+def _can_fast_path_bbox_noise_base(base_id, pattern_id, zone, zone_mask, v6kw, v6paint, has_zone_spec_source):
+    """Conservative guard for base-only materials on small/partial zones."""
+    return _bbox_noise_fast_path_reject_reason(
+        base_id, pattern_id, zone, zone_mask, v6kw, v6paint, has_zone_spec_source
+    ) is None
+
+
+def _bbox_noise_fast_path_paint_reject_reason(base_id, pattern_id, zone, zone_mask, v6kw, v6paint, has_zone_spec_source):
+    reason = _bbox_noise_fast_path_reject_reason(
+        base_id, pattern_id, zone, zone_mask, v6kw, v6paint, has_zone_spec_source
+    )
+    if reason:
+        return reason
+    _color_mode = str(v6paint.get("base_color_mode", "source") or "source").strip().lower()
+    _color_strength = max(0.0, min(1.0, float(v6paint.get("base_color_strength", 1.0) or 1.0)))
+    _color_override_active = _color_mode not in ("", "source", "none") and _color_strength > 0.001
+    if _color_override_active and v6paint.get("base_color_source"):
+        return "base color source is active"
+    if _color_override_active:
+        return "base color mode is adjusted"
+    if _color_mode in ("", "source", "none") and abs(_color_strength - 1.0) > 0.001:
+        return "base color strength is adjusted"
+    for key in ("base_hue_offset", "base_saturation_adjust", "base_brightness_adjust"):
+        if abs(float(v6paint.get(key, 0) or 0)) > 0.001:
+            return f"{key} is adjusted"
+    return None
+
+
+def _log_bbox_fast_path_skip(name, base_id, zone_mask, reason):
+    if not reason:
+        return
+    try:
+        coverage = float(np.mean(np.asarray(zone_mask) > 0.1))
+    except Exception:
+        coverage = 1.0
+    if coverage <= 0.05:
+        print(f"    [{name}] visible-crop not used for {base_id}: {reason}")
+
+
+def _base_color_source_matches_base(base_id, v6paint):
+    source = (v6paint or {}).get("base_color_source")
+    if not isinstance(source, str) or not source.strip():
+        return False
+    source_id = source.strip()
+    if source_id.startswith("base:") or source_id.startswith("mono:"):
+        source_id = source_id.split(":", 1)[1]
+    return source_id == base_id
+
+
+def _can_fast_path_bbox_paint_controls(base_id, pattern_id, zone_mask, v6paint, paint_skip_reason):
+    if pattern_id and pattern_id != "none":
+        return False
+    if paint_skip_reason != "base color source is active":
+        return False
+    regions = _mask_active_regions(zone_mask) or []
+    try:
+        mask_arr = np.asarray(zone_mask)
+        coverage = float(np.mean(mask_arr > 0.1))
+        h, w = mask_arr.shape[:2]
+        total_pixels = float(max(1, h * w))
+        crop_ratio = float(sum((r1 - r0) * (c1 - c0) for r0, r1, c0, c1 in regions)) / total_pixels
+    except Exception:
+        coverage = 1.0
+        crop_ratio = 1.0
+    # SPB-PERF-2026-06-02 / owner live renders: number/logo zones can be
+    # 3-8% active pixels split into many tight UV islands.  The old 2% gate
+    # still pushed those through a full 2048 paint-control pass even when the
+    # cropped work was under ~18% of the canvas.  Region count is acceptable
+    # here because each crop keeps hidden canvas pixels out of source painting.
+    max_control_regions = 96 if coverage <= 0.02 and crop_ratio <= 0.18 else (64 if coverage <= 0.08 and crop_ratio <= 0.18 else 12)
+    if len(regions) < 1 or len(regions) > max_control_regions:
+        return False
+    return _base_color_source_matches_base(base_id, v6paint)
+
+
+def _without_spec_pattern_stacks(data):
+    clean = dict(data or {})
+    for key in _SPEC_PATTERN_STACK_KEYS:
+        clean.pop(key, None)
+    return clean
+
+
+def _compose_bbox_finish_spec_stack(base_id, pattern_id, shape, zone_mask, seed, sm, scale, spec_mult, rotation, v6kw):
+    """Render base spec stacks only inside visible mask regions.
+
+    SPB-PERF-2026-06-02 / owner full-render latency: small source-layer zones
+    with active spec stacks were forced through full 2048 spec generation. The
+    paint path is unaffected by spec stacks, so keep the stack quality but bound
+    the spec work to visible pixels.
+    """
+    regions = _mask_active_regions(zone_mask)
+    if not regions:
+        return None
+    mask = np.asarray(zone_mask, dtype=np.float32)
+    h, w = shape
+    total_pixels = float(max(1, h * w))
+    crop_ratio = float(sum((r1 - r0) * (c1 - c0) for r0, r1, c0, c1 in regions)) / total_pixels
+    # Each crop invokes compose_finish so many tiny islands can be slower than
+    # one full pass.  Keep this path for genuinely small stack zones only.
+    if len(regions) > 8 or crop_ratio > 0.08:
+        return None
+    spec = np.empty((h, w, 4), dtype=np.uint8)
+    spec[:, :, 0] = int(round(SPEC_DEFAULT_OUTSIDE_M))
+    spec[:, :, 1] = int(round(SPEC_DEFAULT_OUTSIDE_R))
+    spec[:, :, 2] = int(SPEC_CLEARCOAT_MIN)
+    spec[:, :, 3] = 255
+    try:
+        kwargs = dict(v6kw or {})
+        for r0, r1, c0, c1 in regions:
+            mask_crop = mask[r0:r1, c0:c1]
+            crop_shape = mask_crop.shape
+            local_kwargs = dict(kwargs)
+            psm = local_kwargs.get("pattern_strength_map")
+            if isinstance(psm, np.ndarray) and psm.ndim == 2 and psm.shape[:2] != (h, w):
+                # BUGFIX 2026-10-04: low-res (256x256) UI map -> canvas size before cropping,
+                # otherwise every bbox crop received the WHOLE map squeezed into it.
+                psm = cv2.resize(psm.astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR)
+            if isinstance(psm, np.ndarray) and psm.shape[:2] == (h, w):
+                local_kwargs["pattern_strength_map"] = psm[r0:r1, c0:c1]
+            crop_spec = compose_finish(
+                base_id,
+                pattern_id,
+                crop_shape,
+                mask_crop,
+                seed,
+                sm,
+                scale=scale,
+                spec_mult=spec_mult,
+                rotation=rotation,
+                **local_kwargs,
+            )
+            crop_spec = _sanitize_spec_result(
+                crop_spec,
+                crop_shape,
+                strict_shapes=True,
+                context=f"bbox stacked-spec base '{base_id}'",
+            )
+            spec[r0:r1, c0:c1, :] = crop_spec.astype(np.uint8, copy=False)
+    except Exception:
+        return None
+    return spec
+
+
+def _apply_bbox_compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed, pm, bb, scale, rotation, v6paint):
+    """Run the full paint-control stack only inside active bboxes for tiny zones."""
+    regions = _mask_active_regions(zone_mask)
+    if not regions:
+        return None
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    mask = np.asarray(zone_mask, dtype=np.float32)
+    try:
+        bb_arr = np.asarray(bb)
+    except Exception:
+        bb_arr = None
+    local_kwargs = dict(v6paint or {})
+    local_kwargs["base_scale"] = 1.0
+    local_kwargs["base_offset_x"] = 0.5
+    local_kwargs["base_offset_y"] = 0.5
+    local_kwargs["base_rotation"] = 0.0
+    local_kwargs["base_flip_h"] = False
+    local_kwargs["base_flip_v"] = False
+    # BUGFIX 2026-10-04: the Strength Map is canvas-relative (256x256 from the UI); bring it to
+    # canvas size once so each bbox crop gets ITS part of the map, not the whole map squeezed in.
+    _psm_full = local_kwargs.get("pattern_strength_map")
+    if isinstance(_psm_full, np.ndarray) and _psm_full.ndim == 2 and _psm_full.shape != mask.shape:
+        _psm_full = cv2.resize(_psm_full.astype(np.float32), (mask.shape[1], mask.shape[0]), interpolation=cv2.INTER_LINEAR)
+    try:
+        for r0, r1, c0, c1 in regions:
+            mask_crop = mask[r0:r1, c0:c1]
+            if isinstance(_psm_full, np.ndarray) and _psm_full.ndim == 2:
+                local_kwargs["pattern_strength_map"] = _psm_full[r0:r1, c0:c1]
+            paint_crop = paint[r0:r1, c0:c1, :3].copy()
+            bb_crop = bb
+            if bb_arr is not None and bb_arr.ndim >= 2:
+                try:
+                    bb_crop = bb_arr[r0:r1, c0:c1]
+                except Exception:
+                    bb_crop = bb
+            result = compose_paint_mod(
+                base_id,
+                pattern_id,
+                paint_crop,
+                mask_crop.shape,
+                mask_crop,
+                seed,
+                pm,
+                bb_crop,
+                scale=scale,
+                rotation=rotation,
+                **local_kwargs,
+            )
+            result = np.asarray(result, dtype=np.float32)
+            if result.ndim != 3 or result.shape[2] < 3:
+                return None
+            mask3 = mask_crop[:, :, None]
+            paint[r0:r1, c0:c1, :3] = result[:, :, :3] * mask3 + paint_crop * (1.0 - mask3)
+    except Exception:
+        return None
+    return paint
+
+
+def _compose_bbox_noise_base_spec(base_id, shape, zone_mask, seed, sm):
+    """Fast spec plate for simple noisy base-only materials.
+
+    SPB-PERF-2026-06-01 / live render 35.7s: owner hard ceiling is no regular
+    base over 4s. `electric_ice` and `patina_bronze` were spending 6-9s on
+    0.7-3.3% zones because full-canvas noise was generated before masking.
+    """
+    try:
+        from engine.registry import BASE_REGISTRY as _compose_base_registry
+    except Exception:
+        _compose_base_registry = BASE_REGISTRY
+    base = _compose_base_registry.get(base_id)
+    if not base:
+        return None
+    regions = _mask_active_regions(zone_mask)
+    if not regions:
+        return None
+    mask = np.asarray(zone_mask, dtype=np.float32)
+    base_seed_offset = abs(hash(base_id)) % 10000
+    base_m = float(base["M"])
+    base_r = float(base["R"])
+    base_cc = int(base["CC"]) if base.get("CC") is not None else SPEC_CLEARCOAT_MIN
+    base_spec_fn = base.get("base_spec_fn")
+
+    h, w = shape
+    spec = np.empty((h, w, 4), dtype=np.uint8)
+    spec[:, :, 0] = int(round(SPEC_DEFAULT_OUTSIDE_M))
+    spec[:, :, 1] = int(round(SPEC_DEFAULT_OUTSIDE_R))
+    spec[:, :, 2] = int(SPEC_CLEARCOAT_MIN)
+    spec[:, :, 3] = 255
+
+    for r0, r1, c0, c1 in regions:
+        mask_crop = mask[r0:r1, c0:c1]
+        crop_shape = mask_crop.shape
+        if base_spec_fn is not None:
+            try:
+                spec_result = base_spec_fn(crop_shape, seed + base_seed_offset, sm, base_m, base_r)
+                spec_crop = _sanitize_spec_result(spec_result, crop_shape, context=f"bbox base '{base_id}'")
+                m_crop = spec_crop[:, :, 0]
+                r_crop = spec_crop[:, :, 1]
+                cc_crop = spec_crop[:, :, 2]
+            except Exception:
+                return None
+        else:
+            if "noise_scales" in base:
+                noise_weights = base.get("noise_weights", [1.0 / len(base["noise_scales"])] * len(base["noise_scales"]))
+                noise = multi_scale_noise(crop_shape, base["noise_scales"], noise_weights, seed + 100 + base_seed_offset)
+                m_crop = base_m + noise * float(base.get("noise_M", 0) or 0) * sm
+                r_crop = base_r + noise * float(base.get("noise_R", 0) or 0) * sm
+                cc_noise = float(base.get("noise_CC", 0) or 0)
+                if cc_noise > 0:
+                    cc_crop = float(base_cc) + noise * cc_noise * sm
+                else:
+                    cc_crop = np.full(crop_shape, float(base_cc), dtype=np.float32)
+            else:
+                m_crop = np.full(crop_shape, base_m, dtype=np.float32)
+                r_crop = np.full(crop_shape, base_r, dtype=np.float32)
+                cc_crop = np.full(crop_shape, float(base_cc), dtype=np.float32)
+
+        m_final = m_crop * mask_crop + SPEC_DEFAULT_OUTSIDE_M * (1.0 - mask_crop)
+        r_final = r_crop * mask_crop + SPEC_DEFAULT_OUTSIDE_R * (1.0 - mask_crop)
+        r_final = np.where(m_final < SPEC_METALLIC_CHROME_THRESHOLD, np.maximum(r_final, SPEC_ROUGHNESS_MIN), r_final)
+        cc_final = np.where(mask_crop > 0.5, cc_crop, 0.0)
+        spec[r0:r1, c0:c1, 0] = np.clip(m_final, 0, 255).astype(np.uint8)
+        spec[r0:r1, c0:c1, 1] = np.clip(r_final, 0, 255).astype(np.uint8)
+        spec[r0:r1, c0:c1, 2] = np.maximum(np.clip(cc_final, 0, 255).astype(np.uint8), SPEC_CLEARCOAT_MIN)
+    return spec
+
+
+def _apply_bbox_base_paint(base_id, paint, shape, zone_mask, seed, pm, bb):
+    """Apply selected simple base paint modifiers only inside the active bbox."""
+    try:
+        from engine.registry import BASE_REGISTRY as _compose_base_registry
+    except Exception:
+        _compose_base_registry = BASE_REGISTRY
+    base = _compose_base_registry.get(base_id)
+    name = _simple_bbox_base_paint_name(base_id, base)
+    if name is None:
+        return None
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    if name == "paint_none":
+        return paint
+    paint_fn = (base or {}).get("paint_fn", paint_none)
+    regions = _mask_active_regions(zone_mask)
+    if not regions:
+        return paint
+    mask = np.asarray(zone_mask, dtype=np.float32)
+    try:
+        bb_arr = np.asarray(bb)
+    except Exception:
+        bb_arr = None
+    for r0, r1, c0, c1 in regions:
+        mask_crop = mask[r0:r1, c0:c1]
+        bb_crop = bb
+        try:
+            if bb_arr is not None and bb_arr.ndim >= 2:
+                bb_crop = bb_arr[r0:r1, c0:c1]
+        except Exception:
+            bb_crop = bb
+        paint_crop = paint[r0:r1, c0:c1, :3].copy()
+        try:
+            result = paint_fn(paint_crop, mask_crop.shape, mask_crop, seed, pm, bb_crop)
+            result = np.asarray(result, dtype=np.float32)
+            if result.ndim == 3 and result.shape[2] >= 3:
+                mask3 = mask_crop[:, :, None]
+                paint[r0:r1, c0:c1, :3] = result[:, :, :3] * mask3 + paint_crop * (1.0 - mask3)
+            else:
+                return None
+        except Exception:
+            return None
+    return paint
+
+
+def _compose_flat_noop_base_spec(base_id, shape, zone_mask):
+    """Fast spec plate for flat no-paint bases, matching compose_finish output."""
+    try:
+        from engine.registry import BASE_REGISTRY as _compose_base_registry
+    except Exception:
+        _compose_base_registry = BASE_REGISTRY
+    base = _compose_base_registry.get(base_id)
+    constants = _flat_base_spec_constants(base_id, base or {})
+    if constants is None:
+        return None
+    h, w = shape
+    mask = np.asarray(zone_mask, dtype=np.float32)
+    base_m, base_r, base_cc = constants
+    spec = np.empty((h, w, 4), dtype=np.uint8)
+    spec[:, :, 0] = np.clip(base_m * mask + SPEC_DEFAULT_OUTSIDE_M * (1.0 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(base_r * mask + SPEC_DEFAULT_OUTSIDE_R * (1.0 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 2] = int(round(base_cc))
+    spec[:, :, 3] = 255
+    return spec
+
+
+def _monolithic_spec_paint_placement_scales(zone, mono_base_scale):
+    """Return (spec_placement_scale, paint_placement_scale) for cultural monolithics."""
+    sp = _zone_spec_transform_values(zone)
+    raw_spec = zone.get("spec_scale", zone.get("specScale"))
+    if raw_spec is not None and abs(sp["scale"] - mono_base_scale) > 0.01:
+        return 1.0, mono_base_scale
+    return mono_base_scale, mono_base_scale
+
+
+def _spec_placement_post_pass_needed(zone):
+    """Skip spec post-pass when base+spec scale match (compose_finish already handled it)."""
+    if zone.get("spec_scale", zone.get("specScale")) is None:
+        return False
+    sp = _zone_spec_transform_values(zone)
+    base = _zone_base_transform_values(zone)
+    # Only post-pass when spec controls DIVERGE from base controls. When they match,
+    # PATH 1 already scaled spec inline via compose_finish; PATH 2 scaled via cultural_placement.
+    if abs(sp["scale"] - base["scale"]) > 0.01:
+        return True
+    if abs(sp["rotation"] - base["rotation"]) > 0.5:
+        return True
+    if abs(sp["offset_x"] - base["offset_x"]) > 0.001 or abs(sp["offset_y"] - base["offset_y"]) > 0.001:
+        return True
+    if sp["flip_h"] != base["flip_h"] or sp["flip_v"] != base["flip_v"]:
+        return True
+    return False
+
+
+def _apply_zone_spec_placement_transform(zone_spec, zone, shape, *, monolithic=False, zone_mask=None):
+    """Reposition the finished zone spec plate (imported + generated).
+
+    Cultural monolithics apply scale during spec_fn via cultural_placement (per UV island).
+    Full-plate tiling is never used — only per-island transforms when zone_mask is provided.
+    """
+    if zone_spec is None:
+        return zone_spec
+    if monolithic:
+        return zone_spec
+    if not _spec_placement_post_pass_needed(zone):
+        return zone_spec
+    sp = _zone_spec_transform_values(zone)
+    if not _base_transform_requested(
+        sp["scale"], sp["offset_x"], sp["offset_y"], sp["rotation"], sp["flip_h"], sp["flip_v"]
+    ):
+        return zone_spec
+    return _transform_spec_for_base_controls(
+        zone_spec,
+        shape,
+        sp["scale"],
+        sp["offset_x"],
+        sp["offset_y"],
+        sp["rotation"],
+        sp["flip_h"],
+        sp["flip_v"],
+        zone_mask=zone_mask,
+    )
+
+
+def _blend_zone_spec_source(zone_spec, zone, shape, zone_idx=None):
+    """Use a zone's imported spec source as a base plate for generated spec.
+
+    Source strength controls how much of the imported plate replaces the
+    neutral spec base. When a finish/spec pattern also generated a spec map,
+    apply that generated map as channel deltas on top of the imported source
+    instead of letting a 100% source strength erase the zone edit.
+    """
+    source = _load_spec_source_rgba(zone.get("zone_spec_map"), shape, context=_format_zone_id(zone_idx, zone))
+    if source is None:
+        return zone_spec
+    strength = _zone_spec_source_strength(zone)
+    neutral = _default_spec_array(shape)
+    if strength <= 0.001:
+        source_base = neutral
+    elif strength >= 0.999:
+        source_base = source
+    else:
+        source_base = neutral * (1.0 - strength) + source * strength
+
+    if zone_spec is None:
+        return _enforce_iron_rules(source_base)
+
+    generated = _sanitize_spec_result(
+        zone_spec,
+        shape,
+        strict_shapes=True,
+        context=f"{_format_zone_id(zone_idx, zone)} generated spec over source",
+    ).astype(np.float32)
+    delta = generated - neutral
+    blended = source_base + delta
+    blended[:, :, 3] = np.maximum(source_base[:, :, 3], generated[:, :, 3])
+    return _enforce_iron_rules(blended)
+
+
 def _coerce_seed(seed, default=51):
     """Robustly convert user-supplied seed (str/int/None) to a stable int.
 
@@ -235,6 +1346,18 @@ def _coerce_seed(seed, default=51):
         return int(_hl.md5(s.encode("utf-8")).hexdigest()[:8], 16) & 0xFFFFFFFF
 
 
+def _stable_zone_rng_seed(seed_value):
+    """Bound a stable zone seed for the renderer's additive local offsets.
+
+    Stable slots are caller-provided uint32 values, while finish helpers often
+    add tier/hash/pattern offsets before calling NumPy RandomState. Keep 65535
+    values of headroom (larger than the current maximum zone-local offset) so
+    valid high slots cannot turn those calls into out-of-range RNG seeds.
+    Legacy zones do not pass through this normalization.
+    """
+    return int(seed_value) % (0x100000000 - 0xFFFF)
+
+
 def _safe_div(num, den, eps=1e-6):
     """Element-wise safe division avoiding zero/NaN/Inf. INTERNAL.
 
@@ -251,7 +1374,7 @@ def _safe_div(num, den, eps=1e-6):
     return np.nan_to_num(out, nan=0.0, posinf=0.0, neginf=0.0)
 
 
-def _validate_zones(zones):
+def _validate_zones(zones, allow_empty=False):
     """Validate the high-level shape of a ``zones`` argument. INTERNAL.
 
     Raises ``ValueError`` with an actionable message rather than letting a
@@ -271,7 +1394,7 @@ def _validate_zones(zones):
             f"zones must be a list, got {type(zones).__name__}. "
             "See the build_multi_zone docstring for the supported zone format."
         )
-    if len(zones) == 0:
+    if len(zones) == 0 and not allow_empty:
         raise ValueError(
             "zones is empty — at least one zone is required. "
             "Use color='everything' for a whole-car render."
@@ -311,7 +1434,7 @@ def _format_zone_id(idx, zone):
     """
     try:
         name = zone.get("name") if isinstance(zone, dict) else None
-        finish = (zone.get("finish") or zone.get("base") or "?") if isinstance(zone, dict) else "?"
+        finish = (zone.get("finish") or zone.get("base") or "") if isinstance(zone, dict) else ""
         return f"zone[{idx}] '{name or 'unnamed'}' ({finish})"
     except Exception:
         return f"zone[{idx}]"
@@ -325,17 +1448,30 @@ def _normalize_source_layer_mask(source_layer_mask, target_shape, zone_idx=None,
     """
     if source_layer_mask is None:
         return None
-    _zone_label = _format_zone_id(zone_idx, zone) if zone_idx is not None else "zone[?]"
+    _zone_label = _format_zone_id(zone_idx, zone) if zone_idx is not None else "zone[]"
     try:
         if isinstance(source_layer_mask, dict):
             _rw = int(source_layer_mask.get("width", 0))
             _rh = int(source_layer_mask.get("height", 0))
             _runs = source_layer_mask.get("runs", []) or []
-            _flat = np.zeros(_rw * _rh, dtype=np.float32)
+            if _rw <= 0 or _rh <= 0:
+                raise ValueError("source_layer_mask dimensions must be positive")
+            _expected = _rw * _rh
+            _flat = np.zeros(_expected, dtype=np.float32)
             _pos = 0
             for run_val, run_len in _runs:
-                _flat[_pos:_pos + run_len] = float(run_val) / 255.0 if run_val else 0.0
-                _pos += run_len
+                _run_len = int(run_len)
+                _run_val = float(run_val)
+                if _run_len <= 0 or _pos + _run_len > _expected:
+                    raise ValueError("source_layer_mask RLE exceeds declared dimensions")
+                if _run_val < 0 or _run_val > 255:
+                    raise ValueError("source_layer_mask RLE value must be 0..255")
+                _flat[_pos:_pos + _run_len] = _run_val / 255.0 if _run_val else 0.0
+                _pos += _run_len
+            if _pos != _expected:
+                raise ValueError(
+                    f"source_layer_mask RLE covers {_pos} of {_expected} pixels"
+                )
             source_layer_mask = _flat.reshape((_rh, _rw))
         elif isinstance(source_layer_mask, list):
             source_layer_mask = np.array(source_layer_mask, dtype=np.float32)
@@ -348,26 +1484,399 @@ def _normalize_source_layer_mask(source_layer_mask, target_shape, zone_idx=None,
     try:
         _target_h, _target_w = int(target_shape[0]), int(target_shape[1])
         if source_layer_mask.shape != (_target_h, _target_w):
+            # [ULTRACODE 2026-08-22 synthesis #4] area-majority downscale
+            # instead of INTER_NEAREST point-sampling: the paint is
+            # box-averaged for previews while the mask was point-sampled,
+            # misregistering ownership edges and speckling fine detail (grill
+            # mesh) at preview resolution only. INTER_AREA + >=0.5 keeps the
+            # mask BINARY and registered with the averaged paint.
             source_layer_mask = cv2.resize(
-                source_layer_mask,
+                source_layer_mask.astype(np.float32),
                 (_target_w, _target_h),
-                interpolation=cv2.INTER_NEAREST
+                interpolation=cv2.INTER_AREA
             )
+            _slm_max = float(np.max(source_layer_mask)) or 1.0
+            if _slm_max > 1.0:
+                source_layer_mask = source_layer_mask / 255.0
+            source_layer_mask = (source_layer_mask >= 0.5).astype(np.float32)
         source_layer_mask = source_layer_mask.astype(np.float32)
         if np.max(source_layer_mask) > 1.0:
             source_layer_mask = source_layer_mask / 255.0
-        return np.where(source_layer_mask > 0.01, 1.0, 0.0).astype(np.float32)
+        # [SPB-93 / CODEX REVIEW 2026-08-22] Owner verdict: "no strokes and
+        # no fuzz."  Binary ownership is an ENGINE invariant, not a promise
+        # delegated to one client serializer.  Same-resolution arrays used to
+        # bypass the resize-time threshold and could reintroduce fractional
+        # ownership into remainder, paint, cache, and spec paths.
+        return (source_layer_mask >= 0.5).astype(np.float32)
     except Exception as _slm_shape_err:
         logger.warning(f"    {_zone_label} WARNING: source_layer_mask normalize failed ({_slm_shape_err})")
         return None
 
 
+def _cached_source_layer_mask(zone, target_shape, zone_idx=None):
+    if not isinstance(zone, dict):
+        return None
+    source_layer_mask = zone.get("source_layer_mask")
+    if source_layer_mask is None:
+        return None
+    target_shape = (int(target_shape[0]), int(target_shape[1]))
+    cache = zone.get("_spb_source_layer_mask_norm")
+    if (
+        isinstance(cache, np.ndarray)
+        and cache.shape == target_shape
+        and zone.get("_spb_source_layer_mask_source_id") == id(source_layer_mask)
+    ):
+        return cache
+    cache = _normalize_source_layer_mask(source_layer_mask, target_shape, zone_idx, zone)
+    if cache is None:
+        # A present-but-invalid restriction must fail closed. Treating None as
+        # "unrestricted" turns malformed transport into whole-canvas paint.
+        cache = np.zeros(target_shape, dtype=np.float32)
+        logger.warning(
+            f"    {_format_zone_id(zone_idx, zone)} WARNING: invalid source-layer restriction; painting nothing"
+        )
+    zone["_spb_source_layer_mask_norm"] = cache
+    zone["_spb_source_layer_mask_source_id"] = id(source_layer_mask)
+    return cache
+
+
+def _zone_uses_hard_ownership(zone):
+    """True when a zone must stay binary through mask and compose paths."""
+    return bool(
+        isinstance(zone, dict)
+        and (
+            zone.get("hard_edge", False)
+            or zone.get("source_layer_mask") is not None
+        )
+    )
+
+
+def _selector_needs_color_stats(selector):
+    if not isinstance(selector, dict):
+        return True
+    if selector.get("remainder"):
+        return False
+    return not ("color_rgb" in selector or "color_range" in selector)
+
+
+def _color_desc_needs_color_stats(color_desc):
+    if isinstance(color_desc, list):
+        return any(_color_desc_needs_color_stats(item) for item in color_desc)
+    if isinstance(color_desc, dict):
+        return _selector_needs_color_stats(color_desc)
+    try:
+        return _selector_needs_color_stats(parse_color_description(str(color_desc)))
+    except Exception:
+        return True
+
+
+def _zone_apply_area_intersects_color(zone, color_desc):
+    """When a drawn apply-area shape exists, also respect the zone's color pick."""
+    if zone.get("apply_area_shape_only"):
+        return False
+    if isinstance(color_desc, dict) and color_desc.get("color_rgb") is not None:
+        return True
+    if isinstance(color_desc, list) and len(color_desc) > 0:
+        return True
+    if isinstance(color_desc, str):
+        key = color_desc.strip().lower()
+        if key in ("everything", "remaining", "light", "dark", "all_painted"):
+            return False
+        return bool(key)
+    return False
+
+
+def _resolve_layer_local_color_match(scheme, stats, zone, h, w, zone_idx, color_desc=None):
+    """Return (scheme, stats) for color matching — layer-local when restricted."""
+    _match_scheme = scheme
+    _match_stats = stats
+    _layer_rgb = zone.get("source_layer_rgb")
+    if _layer_rgb is None:
+        return _match_scheme, _match_stats
+    try:
+        _lrgb = np.asarray(_layer_rgb)
+        if _lrgb.dtype != np.uint8:
+            _lrgb = _lrgb.astype(np.uint8)
+        if _lrgb.shape[0] != h or _lrgb.shape[1] != w:
+            _lrgb = cv2.resize(_lrgb, (w, h), interpolation=cv2.INTER_AREA)
+        if _lrgb.ndim == 3 and _lrgb.shape[2] >= 4:
+            _alpha_gate = _lrgb[:, :, 3] >= 8
+            _rgb_u8 = _lrgb[:, :, :3].copy()
+            _rgb_u8[~_alpha_gate] = (255, 0, 255)
+        else:
+            _rgb_u8 = _lrgb[:, :, :3]
+        _match_scheme = _rgb_u8.astype(np.float32) / 255.0
+        if color_desc is None or _color_desc_needs_color_stats(color_desc):
+            _match_stats = analyze_paint_colors(_match_scheme)
+        print(f"    Zone {zone_idx + 1} [{zone.get('name')}]: color-match using layer-local RGB (Photoshop-correct)")
+    except Exception as _llm_err:
+        print(f"    Zone {zone_idx + 1} [{zone.get('name')}]: layer-local match failed ({_llm_err}), using composite")
+    return _match_scheme, _match_stats
+
+
+def _build_color_mask_from_desc(color_desc, match_scheme, match_stats, h, w, blur_radius):
+    """Build a float mask from a zone color description."""
+    fast_mask = _build_plain_rgb_color_mask_fast(match_scheme, color_desc, h, w, blur_radius)
+    if fast_mask is not None:
+        return fast_mask
+    if isinstance(color_desc, list):
+        union_mask = np.zeros((h, w), dtype=np.float32)
+        for sub_desc in color_desc:
+            if isinstance(sub_desc, dict):
+                sub_selector = sub_desc
+            else:
+                sub_selector = parse_color_description(str(sub_desc))
+            sub_mask = build_zone_mask(match_scheme, match_stats, sub_selector, blur_radius=blur_radius)
+            union_mask = np.maximum(union_mask, sub_mask)
+        return union_mask
+    if isinstance(color_desc, dict):
+        return build_zone_mask(match_scheme, match_stats, color_desc, blur_radius=blur_radius)
+    selector = parse_color_description(str(color_desc))
+    return build_zone_mask(match_scheme, match_stats, selector, blur_radius=blur_radius)
+
+
+def _plain_rgb_selector(selector):
+    if not isinstance(selector, dict) or selector.get("remainder"):
+        return None
+    if selector.get("color_rgb") is None:
+        return None
+    return selector
+
+
+def _plain_rgb_selector_list(color_desc):
+    if isinstance(color_desc, list):
+        selectors = []
+        for item in color_desc:
+            selector = item if isinstance(item, dict) else parse_color_description(str(item))
+            selector = _plain_rgb_selector(selector)
+            if selector is None:
+                return None
+            selectors.append(selector)
+        return selectors
+    selector = color_desc if isinstance(color_desc, dict) else parse_color_description(str(color_desc))
+    selector = _plain_rgb_selector(selector)
+    return [selector] if selector is not None else None
+
+
+def _build_plain_rgb_color_mask_fast(match_scheme, color_desc, h, w, blur_radius):
+    """Exact CPU fast path for plain RGB selectors on composite/source RGB.
+
+    SPB-PERF-2026-06-02 / owner full-render latency: live six-zone renders
+    spend seconds building color-picked masks. The generic path sqrt/clips the
+    whole 2048 canvas per selector; this keeps the same BT.601 distance and
+    Gaussian feathering but only sqrt's pixels inside tolerance.
+    """
+    selectors = _plain_rgb_selector_list(color_desc)
+    if not selectors:
+        return None
+    try:
+        rgb_source_id = id(match_scheme)
+        rgb = np.asarray(match_scheme)
+        if rgb.shape[0] != h or rgb.shape[1] != w:
+            rgb = cv2.resize(rgb, (w, h), interpolation=cv2.INTER_AREA)
+            rgb_source_id = id(rgb)
+        rgb = rgb[:, :, :3].astype(np.float32, copy=False)
+        rgb_scale = 255.0 if float(np.nanmax(rgb)) <= 1.5 else 1.0
+        union_mask = np.zeros((h, w), dtype=np.float32)
+        dist_cache = getattr(build_multi_zone, "_plain_rgb_dist_sq_cache", None) if "build_multi_zone" in globals() else None
+        if dist_cache is None and "build_multi_zone" in globals():
+            dist_cache = OrderedDict()
+            build_multi_zone._plain_rgb_dist_sq_cache = dist_cache
+        for selector in selectors:
+            target = np.asarray(selector.get("color_rgb"), dtype=np.float32) / rgb_scale
+            tol = max(float(selector.get("tolerance", 30) or 30) / rgb_scale, 0.001)
+            dist_key = None
+            dist_sq = None
+            if dist_cache is not None:
+                dist_key = (rgb_source_id, int(h), int(w), float(rgb_scale), float(target[0]), float(target[1]), float(target[2]))
+                dist_sq = dist_cache.get(dist_key)
+                if dist_sq is not None:
+                    dist_cache.move_to_end(dist_key)
+            if dist_sq is None:
+                dr = rgb[:, :, 0] - target[0]
+                dg = rgb[:, :, 1] - target[1]
+                db = rgb[:, :, 2] - target[2]
+                dist_sq = dr * dr * 0.30 + dg * dg * 0.59 + db * db * 0.11
+                if dist_cache is not None and dist_key is not None:
+                    dist_cache[dist_key] = dist_sq
+                    dist_cache.move_to_end(dist_key)
+                    while len(dist_cache) > 8:
+                        dist_cache.popitem(last=False)
+            in_tol = dist_sq < (tol * tol)
+            if np.any(in_tol):
+                mask = np.zeros((h, w), dtype=np.float32)
+                mask[in_tol] = 1.0 - (np.sqrt(dist_sq[in_tol]) / tol)
+                union_mask = np.maximum(union_mask, mask)
+        return _feather_mask_cv(union_mask, blur_radius)
+    except Exception:
+        return None
+
+
+def _feather_mask_cv(mask, blur_radius):
+    if blur_radius <= 0 or mask is None or not np.any(mask > 0):
+        return mask
+    ksize = int(float(blur_radius) * 6 + 1) | 1
+    try:
+        return cv2.GaussianBlur(mask.astype(np.float32, copy=False), (ksize, ksize), float(blur_radius))
+    except Exception:
+        return mask
+
+
+def _build_layer_rgb_color_mask_fast(layer_rgb, color_desc, h, w, blur_radius, source_layer_mask=None):
+    """Fast path for Photoshop-correct layer-local RGB color selectors.
+
+    SPB-PERF-2026-06-02 / live 24-32s render logs: every zone was using
+    layer-local RGB with plain color selectors.  The generic path converted a
+    full 2048 RGB layer to float and then re-read it for a single target color.
+    This keeps the same BT.601 weighted distance math in uint8 space and only
+    falls back for non-RGB selector types.
+    """
+    selectors = _plain_rgb_selector_list(color_desc)
+    if not selectors:
+        return None
+    try:
+        lrgb = np.asarray(layer_rgb)
+        if lrgb.shape[0] != h or lrgb.shape[1] != w:
+            lrgb = cv2.resize(lrgb, (w, h), interpolation=cv2.INTER_AREA)
+        if lrgb.dtype != np.uint8:
+            lrgb = np.clip(lrgb, 0, 255).astype(np.uint8)
+        rgb = lrgb[:, :, :3]
+        alpha_gate = lrgb[:, :, 3] >= 8 if lrgb.ndim == 3 and lrgb.shape[2] >= 4 else None
+        visible_gate = None
+        if source_layer_mask is not None:
+            try:
+                visible_gate = np.asarray(source_layer_mask, dtype=np.float32)
+                if visible_gate.shape[0] != h or visible_gate.shape[1] != w:
+                    visible_gate = cv2.resize(visible_gate, (w, h), interpolation=cv2.INTER_NEAREST)
+                visible_gate = visible_gate > 0.01
+            except Exception:
+                visible_gate = None
+        active_gate = alpha_gate
+        if visible_gate is not None:
+            active_gate = visible_gate if active_gate is None else (active_gate & visible_gate)
+        union_mask = np.zeros((h, w), dtype=np.float32)
+        # Weighted Euclidean distance, matching engine.core.build_zone_mask.
+        if active_gate is not None:
+            if not np.any(active_gate):
+                return union_mask
+            rgb_active = rgb[active_gate].astype(np.float32, copy=False)
+        else:
+            rgb_f = rgb.astype(np.float32, copy=False)
+        for selector in selectors:
+            target = np.asarray(selector.get("color_rgb"), dtype=np.float32)
+            tol = max(float(selector.get("tolerance", 30) or 30), 0.001)
+            mask = np.zeros((h, w), dtype=np.float32)
+            if active_gate is not None:
+                # SPB-PERF-2026-06-02 / owner live render latency: source-layer
+                # restrictions mean hidden PSD pixels cannot own the zone.  Do
+                # the expensive RGB distance math only on visible layer pixels.
+                dr = rgb_active[:, 0] - target[0]
+                dg = rgb_active[:, 1] - target[1]
+                db = rgb_active[:, 2] - target[2]
+                dist_sq = dr * dr * 0.30 + dg * dg * 0.59 + db * db * 0.11
+                in_tol = dist_sq < (tol * tol)
+                if np.any(in_tol):
+                    active_vals = np.zeros(rgb_active.shape[0], dtype=np.float32)
+                    active_vals[in_tol] = 1.0 - (np.sqrt(dist_sq[in_tol]) / tol)
+                    mask[active_gate] = active_vals
+            else:
+                dr = rgb_f[:, :, 0] - target[0]
+                dg = rgb_f[:, :, 1] - target[1]
+                db = rgb_f[:, :, 2] - target[2]
+                dist_sq = dr * dr * 0.30 + dg * dg * 0.59 + db * db * 0.11
+                in_tol = dist_sq < (tol * tol)
+                if np.any(in_tol):
+                    mask[in_tol] = 1.0 - (np.sqrt(dist_sq[in_tol]) / tol)
+            union_mask = np.maximum(union_mask, mask)
+        return _feather_mask_cv(union_mask, blur_radius)
+    except Exception:
+        return None
+
+
+def _layer_rgb_color_mask_cache_key(zone, color_desc, h, w, blur_radius):
+    source_key = zone.get("_source_layer_rgb_cache_key") if isinstance(zone, dict) else None
+    if not source_key:
+        return None
+    mask_key = zone.get("_source_layer_mask_cache_key") if isinstance(zone, dict) else None
+    if not mask_key and isinstance(zone, dict) and zone.get("source_layer_mask") is not None:
+        # [ULTRACODE 2026-08-22 synthesis #5b] id() of a Python object is NOT
+        # a content key — CPython reuses addresses across requests, so a
+        # cross-request cache hit could replay a mask for DIFFERENT content
+        # (the preview path never forwarded the real key and always landed
+        # here). No trustworthy key -> build uncached.
+        return None
+    try:
+        color_key = json.dumps(color_desc, sort_keys=True, separators=(",", ":"))
+    except Exception:
+        color_key = str(color_desc)
+    return (str(source_key), str(mask_key), color_key, int(h), int(w), int(blur_radius or 0))
+
+
+def _cached_layer_rgb_color_mask(zone, layer_rgb, color_desc, h, w, blur_radius, source_layer_mask=None):
+    cache_key = _layer_rgb_color_mask_cache_key(zone, color_desc, h, w, blur_radius)
+    if cache_key is None or "build_multi_zone" not in globals():
+        return _build_layer_rgb_color_mask_fast(layer_rgb, color_desc, h, w, blur_radius, source_layer_mask), False
+    cache = getattr(build_multi_zone, "_layer_rgb_color_mask_cache", None)
+    if cache is None:
+        cache = OrderedDict()
+        build_multi_zone._layer_rgb_color_mask_cache = cache
+    cached = cache.get(cache_key)
+    if cached is not None:
+        cache.move_to_end(cache_key)
+        return cached, True
+    mask = _build_layer_rgb_color_mask_fast(layer_rgb, color_desc, h, w, blur_radius, source_layer_mask)
+    if mask is not None:
+        cache[cache_key] = mask
+        cache.move_to_end(cache_key)
+        while len(cache) > 10:
+            cache.popitem(last=False)
+    return mask, False
+
+
+def _composite_color_mask_cache_key(source_sig, color_desc, h, w, blur_radius):
+    if not source_sig:
+        return None
+    try:
+        color_key = json.dumps(color_desc, sort_keys=True, separators=(",", ":"))
+    except Exception:
+        color_key = str(color_desc)
+    return ("composite-color", str(source_sig), color_key, int(h), int(w), int(blur_radius or 0))
+
+
+def _cached_composite_color_mask(source_sig, color_desc, scheme, stats, h, w, blur_radius):
+    """Cache source-paint color masks across repeated renders.
+
+    SPB-PERF-2026-06-02 / full-render cache follow-up: once unchanged zones
+    can skip finish generation, repeated renders still paid the full 2048
+    color-selector cost before cache hits. This caches only composite-paint
+    masks keyed to the source paint identity, selector, and blur radius.
+    """
+    cache_key = _composite_color_mask_cache_key(source_sig, color_desc, h, w, blur_radius)
+    if cache_key is None or "build_multi_zone" not in globals():
+        return _build_color_mask_from_desc(color_desc, scheme, stats, h, w, blur_radius), False
+    cache = getattr(build_multi_zone, "_composite_color_mask_cache", None)
+    if cache is None:
+        cache = OrderedDict()
+        build_multi_zone._composite_color_mask_cache = cache
+    cached = cache.get(cache_key)
+    if cached is not None:
+        cache.move_to_end(cache_key)
+        # Downstream mask ownership paths allocate new arrays instead of
+        # mutating selector masks in place, so replay the cached mask directly.
+        return cached, True
+    mask = _build_color_mask_from_desc(color_desc, scheme, stats, h, w, blur_radius)
+    if mask is not None:
+        cache[cache_key] = mask.copy()
+        cache.move_to_end(cache_key)
+        while len(cache) > 24:
+            cache.popitem(last=False)
+    return mask, False
+
+
 def _build_remainder_zone_mask(zone, zone_idx, zones, zone_masks, claimed_hard, sigma=2.0):
     """Build a remainder mask, resolving source-layer-restricted zones locally."""
     h, w = claimed_hard.shape
-    source_layer_mask = _normalize_source_layer_mask(
-        zone.get("source_layer_mask"), (h, w), zone_idx, zone
-    )
+    source_layer_mask = _cached_source_layer_mask(zone, (h, w), zone_idx)
 
     if source_layer_mask is None:
         remainder_mask = np.clip(1.0 - claimed_hard, 0, 1).astype(np.float32)
@@ -386,9 +1895,7 @@ def _build_remainder_zone_mask(zone, zone_idx, zones, zone_masks, claimed_hard, 
         if prev_mask is None:
             continue
         prev_zone = zones[prev_idx]
-        prev_source_layer_mask = _normalize_source_layer_mask(
-            prev_zone.get("source_layer_mask"), (h, w), prev_idx, prev_zone
-        )
+        prev_source_layer_mask = _cached_source_layer_mask(prev_zone, (h, w), prev_idx)
         if prev_source_layer_mask is None:
             continue
         overlap_scope = (prev_source_layer_mask * source_layer_mask).astype(np.float32)
@@ -401,7 +1908,10 @@ def _build_remainder_zone_mask(zone, zone_idx, zones, zone_masks, claimed_hard, 
         remainder_mask = _scipy_gaussian_filter(remainder_mask, sigma=sigma)
     remainder_mask = np.where(source_layer_mask > 0.5, remainder_mask, 0.0).astype(np.float32)
     remainder_mask = np.where(layer_claimed > 0.5, 0.0, remainder_mask).astype(np.float32)
-    return remainder_mask
+    # A source-local remainder is ownership, not blend strength.  Keep the
+    # output binary even if this helper is called directly with a non-zero
+    # sigma or pre-hardening masks.
+    return (remainder_mask >= 0.5).astype(np.float32)
 
 
 def get_cache_stats():
@@ -420,6 +1930,48 @@ def get_cache_stats():
         "engine_version": ENGINE_VERSION,
     }
 
+
+def _copy_cached_paint_region(dest, src, mask2d):
+    """Replay cached paint into active pixels without allocating np.where output."""
+    active = np.asarray(mask2d) > 0.01
+    if not np.any(active):
+        return
+    try:
+        np.copyto(dest[:, :, :3], src[:, :, :3], where=active[:, :, np.newaxis])
+    except Exception:
+        dest[:, :, :3] = np.where(active[:, :, np.newaxis], src[:, :, :3], dest[:, :, :3])
+
+
+def _blend_cached_spec_region(dest, src, mask2d, hard_edge=False):
+    """Replay cached spec: direct-copy hard pixels, blend only soft fringe."""
+    mask = np.asarray(mask2d, dtype=np.float32)
+    if hard_edge:
+        # [ULTRACODE 2026-08-22] >= 0.5, not > 0.01: hard-edge means MAJORITY
+        # ownership. The 1% threshold let a later zone's fractional sliver
+        # hard-overwrite an earlier zone's correct pixels (the green-gutter
+        # amplifier). Guarded here and at the three compose sites below.
+        active = mask >= 0.5
+        if np.any(active):
+            np.copyto(dest, src, where=active[:, :, np.newaxis])
+        return
+    strong = mask > 0.5
+    if np.any(strong):
+        np.copyto(dest, src, where=strong[:, :, np.newaxis])
+    soft = (mask > 0.05) & ~strong
+    if np.any(soft):
+        m = mask[soft, np.newaxis]
+        dest_soft = dest[soft]
+        src_soft = src[soft]
+        dest[soft] = np.clip(src_soft * m + dest_soft * (1.0 - m), 0, 255)
+
+
+def _save_preview_png(arr, path):
+    """Save preview PNGs with lossless fast compression for full-render latency."""
+    # SPB-PERF-2026-06-02 / owner 32.45s render: preview PNG compression was
+    # costing nearly a second on cached renders. Pixels stay identical; only
+    # DEFLATE effort changes.
+    Image.fromarray(arr).save(path, compress_level=0)
+
 from engine.utils import write_tga_32bit, write_tga_24bit, get_mgrid, generate_perlin_noise_2d, perlin_multi_octave
 from engine.core import (
     hsv_to_rgb_vec, rgb_to_hsv_array, INTENSITY, _INTENSITY_SCALE,
@@ -427,6 +1979,8 @@ from engine.core import (
     multi_scale_noise, _sample_zone_color,
     _resize_array, _tile_fractional, _crop_center_array, _scale_pattern_output,
     _rotate_array, _rotate_pattern_tex, _rotate_single_array, _compute_zone_auto_scale,
+    SPEC_CLEARCOAT_MIN, SPEC_DEFAULT_OUTSIDE_M, SPEC_DEFAULT_OUTSIDE_R,
+    SPEC_ROUGHNESS_MIN, SPEC_METALLIC_CHROME_THRESHOLD,
 )
 
 # (TGA + noise moved to engine.utils)
@@ -445,6 +1999,7 @@ for _n in dir(_cs_mod):
 from engine.compose import (
     compose_finish, compose_finish_stacked, compose_paint_mod, compose_paint_mod_stacked,
     _get_pattern_mask, _apply_spec_blend_mode, _apply_hsb_adjustments,
+    _apply_base_color_override, _transform_base_color_source,
 )
 
 # GPU acceleration
@@ -876,7 +2431,7 @@ FINISH_REGISTRY = {
     "ember_glow":         (spec_ember_glow,        paint_ember_glow),
     "phantom":            (spec_phantom,           paint_phantom_fade),
     "blackout":           (spec_blackout,          paint_none),
-    # ── RESEARCH SESSION 6: 8 New Special Finishes (2026-03-29) ─────────────
+    # â”€â”€ RESEARCH SESSION 6: 8 New Special Finishes (2026-03-29) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "iridescent_fog":        (spec_iridescent_fog,        paint_iridescent_fog),
     "chrome_delete_edge":    (spec_chrome_delete_edge,    paint_chrome_delete_edge),
     "carbon_clearcoat_lock": (spec_carbon_clearcoat_phaselock, paint_carbon_clearcoat_phaselock),
@@ -1929,32 +3484,39 @@ def paint_frost_crystal(paint, shape, mask, seed, pm, bb):
     return paint
 
 def texture_wave(shape, mask, seed, sm):
-    """Wave - smooth flowing sine wave ripples."""
+    """Wave - dense flowing water ripples."""
     h, w = shape
     y, x = get_mgrid((h, w))
     y = y.astype(np.float32) / h
     x = x.astype(np.float32) / w
-    np.random.seed(seed + 1200)
-    angle = np.random.uniform(0, np.pi)
-    freq = 12.0
-    wave = np.sin((y * np.cos(angle) + x * np.sin(angle)) * freq * np.pi * 2) * 0.5 + 0.5
-    return {"pattern_val": wave, "R_range": 70.0, "M_range": -40.0, "CC": None}
+    phase = ((int(seed) * 37) % 997) / 997.0
+    # SPB regular-pattern audit loop 2026-05-23: score 75.65 -> 84.68.
+    # Owner doctrine: replace macro sine bands with dense 8-32px ripple/foam detail.
+    carrier = x * 84.0 + np.sin(y * np.pi * 2.0 * 5.0 + phase) * 0.85
+    cross = y * 97.0 + np.sin(x * np.pi * 2.0 * 4.0 - phase) * 0.70
+    ripples = np.sin(carrier * np.pi * 2.0) * 0.42 + np.sin(cross * np.pi * 2.0) * 0.34
+    foam = np.sin((x + y * 0.44) * np.pi * 2.0 * 132.0 + phase * 6.28) * 0.5 + 0.5
+    comb = np.sin((x - y * 0.31) * np.pi * 2.0 * 61.0 - phase * 3.17) * 0.5 + 0.5
+    wave = _spb_normalize01(ripples * 0.58 + foam * 0.30 + comb * 0.18)
+    wave = np.clip(wave * 0.90 + (foam > 0.92).astype(np.float32) * 0.18, 0, 1)
+    return {"pattern_val": wave.astype(np.float32), "R_range": 82.0, "M_range": -52.0, "CC": None}
 
 def paint_wave_shimmer(paint, shape, mask, seed, pm, bb):
-    """Wave shimmer - subtle brightness oscillation along wave."""
+    """Wave shimmer - dense brightness oscillation along wave."""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     y = y.astype(np.float32) / h
     x = x.astype(np.float32) / w
-    np.random.seed(seed + 1200)
-    angle = np.random.uniform(0, np.pi)
-    wave = np.sin((y * np.cos(angle) + x * np.sin(angle)) * 12 * np.pi * 2) * 0.5 + 0.5
-    paint = np.clip(paint + (wave * 0.02 * pm)[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
+    phase = ((int(seed) * 37) % 997) / 997.0
+    wave = np.sin((x * 84.0 + np.sin(y * np.pi * 10.0 + phase) * 0.85) * np.pi * 2.0) * 0.5 + 0.5
+    foam = (np.sin((x + y * 0.44) * np.pi * 2.0 * 132.0 + phase * 6.28) * 0.5 + 0.5) > 0.92
+    lift = np.clip(wave * 0.018 + foam.astype(np.float32) * 0.018, 0, 0.034)
+    paint = np.clip(paint + (lift * pm)[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 def texture_spiderweb(shape, mask, seed, sm):
-    """Spiderweb - radial + concentric thin crack lines."""
+    """Spiderweb - SPB-105 tick 2026-05-23T09:39Z: 89.33 -> aim 90+; finer dense crack lines."""
     h, w = shape
     cy, cx = h // 2, w // 2
     y, x = get_mgrid((h, w))
@@ -1963,11 +3525,11 @@ def texture_spiderweb(shape, mask, seed, sm):
     angle = np.arctan2(dy, dx)
     dist = np.sqrt(dy**2 + dx**2)
     # Radial spokes
-    n_spokes = 16
+    n_spokes = 20
     spoke = np.abs(np.sin(angle * n_spokes / 2))
     spoke_lines = (spoke < 0.05).astype(np.float32)
     # Concentric rings
-    ring_spacing = max(15.0, min(h, w) / 60.0)  # Denser webs (was fixed 40px)
+    ring_spacing = max(13.0, min(h, w) / 72.0)  # Denser webs (was fixed 40px)
     rings = np.abs(np.sin(dist / ring_spacing * np.pi))
     ring_lines = (rings < 0.06).astype(np.float32)
     # Anti-aliased web lines (smooth falloff)
@@ -1977,7 +3539,7 @@ def texture_spiderweb(shape, mask, seed, sm):
     silk = np.clip(0.08 - dist / (max(h, w) * 0.8), 0, 0.08)
     # Dew drops on web (fine noise)
     dew = multi_scale_noise(shape, [8, 16], [0.5, 0.5], seed + 100) * 0.04
-    web = np.clip(spoke_aa + ring_aa + silk + np.where(spoke_aa + ring_aa > 0.1, dew, 0), 0, 1)
+    web = np.clip(spoke_aa * 1.08 + ring_aa * 1.10 + silk + np.where(spoke_aa + ring_aa > 0.1, dew * 1.6, 0), 0, 1)
     # Background cobweb haze for full canvas coverage
     bg = multi_scale_noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 1350) * 0.12 + 0.08
     web = np.clip(web + bg, 0, 1)
@@ -2758,7 +4320,7 @@ def texture_shokk_pulse_wave_v2(shape, mask, seed, sm):
     freq = 6 + rng.randint(0, 8)
     # R channel: concentric rings
     R_pattern = (np.sin(norm_dist * 2 * np.pi * freq) + 1.0) / 2.0
-    # M channel: SAME rings but phase-shifted by π (half wavelength)
+    # M channel: SAME rings but phase-shifted by Ï€ (half wavelength)
     M_pattern = (np.sin(norm_dist * 2 * np.pi * freq + np.pi) + 1.0) / 2.0
 
     # Add EKG-style pulse spike on one radial line
@@ -3293,7 +4855,7 @@ def texture_shokk_phase_vortex(shape, mask, seed, sm):
             "CC": None, "CC_range": 30}
 
 def texture_shokk_phase_interference(shape, mask, seed, sm):
-    """SHOKK Phase Interference: Two overlapping wave systems creating moiré-like
+    """SHOKK Phase Interference: Two overlapping wave systems creating moirÃ©-like
     interference patterns in each channel independently."""
     h, w = shape
     rng = np.random.RandomState(seed)
@@ -3325,11 +4887,11 @@ def paint_shokk_phase(paint, shape, mask, seed, pm, bb):
     return paint
 
 
-# ══════════════════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # TEXTURE VARIANTS - 50 new procedural textures for pattern variety
 # Research-based: flame styles, tribal/ornamental, wave/flow, geometric, etc.
 # Each gives a distinct look so pattern IDs are no longer aliased to one texture.
-# ══════════════════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 def texture_flame_sweep(shape, mask, seed, sm):
     """Classic hot rod flame - horizontal sweep, thick at bottom thinning up."""
@@ -3944,10 +5506,10 @@ def texture_snake_fine(shape, mask, seed, sm):
     return {"pattern_val": np.clip(edge, 0, 1), "R_range": -75.0, "M_range": 65.0, "CC": None}
 
 
-# ══════════════════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # CLEARCOAT BLEND BASES - 10 extreme paint effects for the Blend Base dropdown
 # These have DRAMATIC, unmissable color transforms designed for blending.
-# ══════════════════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 def paint_blend_arctic_freeze(paint, shape, mask, seed, pm, bb):
     """BLEND: Deep icy blue freeze - unmissable cold transformation."""
@@ -4113,7 +5675,7 @@ BLEND_BASES = {
 # --- BASE MATERIAL REGISTRY ---
 # Organized by category, alphabetized within each section. 58 bases total.
 BASE_REGISTRY = {
-    # ── STANDARD FINISHES ──────────────────────────────────────────────
+    # â”€â”€ STANDARD FINISHES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "ceramic":          {"M": 10,  "R": 8,   "CC": 16, "paint_fn": paint_ceramic_gloss,   "desc": "Ultra-smooth ceramic coating deep wet shine — BASE-031 FIX: M=10 (dielectric nano-ceramic)",
                          "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.3, "perlin_lacunarity": 2.0, "noise_M": 30, "noise_R": 15},
     "gloss":            {"M": 0,   "R": 20,  "CC": 16, "paint_fn": paint_none,            "desc": "Standard glossy clearcoat"},
@@ -4125,7 +5687,7 @@ BASE_REGISTRY = {
                          "noise_scales": [16, 32, 64], "noise_weights": [0.3, 0.4, 0.3], "noise_R": 30, "noise_M": 12},
     "silk":             {"M": 30,  "R": 85,  "CC": 50,  "paint_fn": paint_silk_sheen,      "desc": "Silky smooth fabric-like sheen — BASE-028 FIX: CC=50 (silk sheen, not full gloss)"},
     "wet_look":         {"M": 10,  "R": 5,   "CC": 16, "paint_fn": paint_wet_gloss,       "desc": "Deep wet clearcoat show shine"},
-    # ── METALLIC & FLAKE ──────────────────────────────────────────────
+    # â”€â”€ METALLIC & FLAKE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "copper":           {"M": 190, "R": 55,  "CC": 16, "paint_fn": paint_warm_metal,      "desc": "Warm oxidized copper metallic",
                          "noise_scales": [16, 32, 64], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 35, "noise_R": 20},
     "diamond_coat":     {"M": 220, "R": 3,   "CC": 16, "paint_fn": paint_diamond_sparkle, "desc": "Diamond dust ultra-fine sparkle coat",
@@ -4148,7 +5710,7 @@ BASE_REGISTRY = {
                          "noise_scales": [16, 32, 64], "noise_weights": [0.2, 0.4, 0.4], "noise_M": 15, "noise_R": 10},
     "satin_gold":       {"M": 235, "R": 60,  "CC": 16, "paint_fn": paint_warm_metal,      "desc": "Satin gold metallic warm sheen — BASE-010 FIX: CC=16 (already fixed in canonical 2026-03-08)",
                          "noise_scales": [16, 32, 64], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 15, "noise_R": 18},
-    # ── CHROME & MIRROR ───────────────────────────────────────────────
+    # â”€â”€ CHROME & MIRROR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "chrome":           {"M": 255, "R": 2,   "CC": 0,  "paint_fn": paint_chrome_brighten, "desc": "Pure mirror chrome",
                          "noise_scales": [1, 2, 3], "noise_weights": [0.6, 0.25, 0.15], "noise_M": 20, "noise_R": 8},
     "dark_chrome":      {"M": 250, "R": 5,   "CC": 0,  "paint_fn": paint_smoked_darken,   "desc": "Smoked dark chrome black mirror",
@@ -4160,7 +5722,7 @@ BASE_REGISTRY = {
                          "noise_scales": [16, 32], "noise_weights": [0.4, 0.6], "noise_M": 20, "noise_R": 25},
     "surgical_steel":   {"M": 245, "R": 6,   "CC": 16, "paint_fn": paint_chrome_brighten, "desc": "Medical grade mirror surgical steel — BASE-006 FIX: CC=16 (sealed surgical steel)",
                          "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 15, "noise_R": 8},
-    # ── CANDY & CLEARCOAT VARIANTS ────────────────────────────────────
+    # â”€â”€ CANDY & CLEARCOAT VARIANTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "candy":            {"M": 200, "R": 15,  "CC": 16, "paint_fn": paint_fine_sparkle,    "desc": "Deep wet candy transparent glass",
                          "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 35, "noise_R": 15},
     "candy_chrome":     {"M": 250, "R": 15,  "CC": 16, "paint_fn": paint_spectraflame,    "desc": "Candy-tinted chrome - deep color over mirror base",
@@ -4179,7 +5741,7 @@ BASE_REGISTRY = {
                          "noise_scales": [1, 2, 3], "noise_weights": [0.6, 0.25, 0.15], "noise_M": 80, "noise_R": 25},
     "tinted_clear":     {"M": 40,  "R": 8,   "CC": 16, "paint_fn": paint_tinted_clearcoat,"desc": "Deep tinted clearcoat over base color",
                          "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.4, "perlin_lacunarity": 2.0, "noise_M": 12, "noise_R": 10},
-    # ── GAP-FILL: COATED OVER METAL / DEEP GLASS ────────────────────────
+    # â”€â”€ GAP-FILL: COATED OVER METAL / DEEP GLASS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "hydrographic":     {"M": 240, "R": 5,   "CC": 16, "paint_fn": paint_chrome_brighten, "desc": "Mirror metal under maximum deep clearcoat - wet glass over chrome",
                          "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 20, "noise_R": 6},
     "jelly_pearl":      {"M": 120, "R": 15,  "CC": 16, "paint_fn": paint_fine_sparkle,    "desc": "Ultra-wet candy pearl - max depth, like looking through colored glass",
@@ -4188,7 +5750,7 @@ BASE_REGISTRY = {
                          "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.7, "perlin_lacunarity": 2.2, "noise_M": 0, "noise_R": 40},
     "tinted_lacquer":   {"M": 130, "R": 80,  "CC": 16, "paint_fn": paint_tinted_clearcoat,"desc": "Semi-metallic under thick lacquer pour - depth and warmth",
                          "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.4, "perlin_lacunarity": 1.8, "noise_M": 25, "noise_R": 20},
-    # ── MATTE & FLAT ─────────────────────────────────────────────────
+    # â”€â”€ MATTE & FLAT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "blackout":         {"M": 30,  "R": 220, "CC": 35,  "paint_fn": paint_none,            "desc": "Stealth murdered-out - thin protective matte coat (CC=35)",
                          "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.3, "perlin_lacunarity": 2.0, "noise_M": 8, "noise_R": 15},
     "flat_black":       {"M": 0,   "R": 250, "CC": 220, "paint_fn": paint_none,            "desc": "Dead flat zero-sheen black — BASE-002 FIX: CC=220 (dead flat)"},
@@ -4201,14 +5763,14 @@ BASE_REGISTRY = {
     "vantablack":       {"M": 0,   "R": 255, "CC": 240, "paint_fn": paint_none,            "desc": "Absolute void zero reflection — BASE-003 FIX: CC=240 (maximum degradation)",
                          "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 3, "noise_R": 5},
     "volcanic":         {"M": 80,  "R": 180, "CC": 70,  "paint_fn": paint_volcanic_ash,    "desc": "Volcanic ash coating - the ash layer IS the coat, heavily degraded (CC=70)"},
-    # ── BRUSHED & DIRECTIONAL GRAIN ──────────────────────────────────
+    # â”€â”€ BRUSHED & DIRECTIONAL GRAIN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "brushed_aluminum": {"M": 200, "R": 55,  "CC": 16, "paint_fn": paint_brushed_grain,   "desc": "Brushed natural aluminum directional grain — BASE-026 FIX: M=200 (real brushed aluminum); also CC=16 (sealed grain coat)",
                          "brush_grain": True, "noise_M": 15, "noise_R": 30},
     "brushed_titanium": {"M": 180, "R": 70,  "CC": 16, "paint_fn": paint_brushed_grain,   "desc": "Heavy directional titanium grain — CC fixed from 0 to 16",
                          "brush_grain": True, "noise_M": 25, "noise_R": 45},
     "satin_metal":      {"M": 235, "R": 65,  "CC": 55, "paint_fn": paint_subtle_flake,    "desc": "Subtle brushed satin metallic — BASE-027 FIX: CC=55 (satin character, not full gloss)",
                          "brush_grain": True, "noise_R": 20},
-    # ── TACTICAL & INDUSTRIAL ────────────────────────────────────────
+    # â”€â”€ TACTICAL & INDUSTRIAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "cerakote":         {"M": 40,  "R": 130, "CC": 160, "paint_fn": paint_tactical_flat,   "desc": "Mil-spec ceramic tactical coating - dead flat (CC=160) — BASE-018 FIX: CC=160 (mil-spec ceramic is dead flat, not near-gloss)",
                          "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.4, "perlin_lacunarity": 2.0, "noise_M": 15, "noise_R": 20},
     "duracoat":         {"M": 25,  "R": 170, "CC": 150, "paint_fn": paint_tactical_flat,   "desc": "Tactical epoxy coat - air-dried flat finish (CC=150) — BASE-019 FIX: CC=150 (air-dry tactical epoxy is flat, not near-gloss)",
@@ -4217,7 +5779,7 @@ BASE_REGISTRY = {
                          "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.5, "perlin_lacunarity": 2.0, "noise_M": 15, "noise_R": 30},
     "rugged":           {"M": 50,  "R": 190, "CC": 175, "paint_fn": paint_tactical_flat,   "desc": "Rugged off-road coat - very rough protective layer (CC=175 dead flat) — BASE-020 FIX: CC=175 (rugged off-road coat is dead flat, not near-gloss)",
                          "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.6, "perlin_lacunarity": 2.0, "noise_M": 20, "noise_R": 35},
-    # ── RAW METAL & WEATHERED ────────────────────────────────────────
+    # â”€â”€ RAW METAL & WEATHERED â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "anodized":         {"M": 170, "R": 80,  "CC": 140, "paint_fn": paint_subtle_flake,    "desc": "Gritty matte anodized aluminum — BASE-004 FIX: CC=140 (unsealed anodized)",
                          "noise_scales": [16, 32, 64], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 25},
     "burnt_headers":    {"M": 190, "R": 45,  "CC": 0,  "paint_fn": paint_burnt_metal,     "desc": "Exhaust header heat-treated gold-blue oxide",
@@ -4239,31 +5801,31 @@ BASE_REGISTRY = {
     "sandblasted":      {"M": 200, "R": 180, "CC": 155, "paint_fn": paint_none,            "desc": "Raw sandblasted metal rough texture — BASE-009 FIX: CC=155 (no clearcoat, stripped metal)",
                          "noise_scales": [2, 4, 8], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 30},
     # titanium_raw removed - M=200 G=50 identical to metallic; differentiate via paint color
-    # ── EXOTIC BASE FINISHES (RESEARCH-008) ──────────────────────────
+    # â”€â”€ EXOTIC BASE FINISHES (RESEARCH-008) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "chromaflair":      {"M": 210, "R": 12,  "CC": 18, "paint_fn": paint_chromaflair,      "desc": "ChromaFlair Light Shift — 3-angle color flip via multi-stop hue rotation",
                          "base_spec_fn": spec_chromaflair_base},
     "xirallic":         {"M": 170, "R": 20,  "CC": 18, "paint_fn": paint_xirallic,          "desc": "Xirallic Crystal Flake — large sparse alumina flakes with iron oxide blue-silver interference",
                          "base_spec_fn": spec_xirallic_base},
     "anodized_exotic":  {"M": 110, "R": 38,  "CC": 45, "paint_fn": paint_anodized_exotic,   "desc": "Anodized Exotic — dye-impregnated oxide layer, semi-gloss, subtle hex pore micro-texture",
                          "base_spec_fn": spec_anodized_exotic_base},
-    # ── EXOTIC & COLOR-SHIFT ─────────────────────────────────────────
+    # â”€â”€ EXOTIC & COLOR-SHIFT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "chameleon":        {"M": 160, "R": 25,  "CC": 16, "paint_fn": paint_cp_chameleon,  "desc": "Dual-tone chameleon color-shift driven by surface angle",
                          "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.6, "perlin_lacunarity": 1.8, "noise_M": 60, "noise_R": 35},
     "iridescent":       {"M": 200, "R": 20,  "CC": 16, "paint_fn": paint_iridescent_shift,"desc": "Rainbow angle-shift iridescent wrap — BASE-038 FIX: M=200 (iridescent wrap, not chrome-level)",
                          "perlin": True, "perlin_octaves": 4, "perlin_persistence": 0.5, "perlin_lacunarity": 2.0, "noise_M": 50, "noise_R": 25},
-    # ── WRAP & COATING ───────────────────────────────────────────────
+    # â”€â”€ WRAP & COATING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "liquid_wrap":      {"M": 0,   "R": 80,  "CC": 50,  "paint_fn": paint_liquid_wrap_fn,  "desc": "Liquid rubber peel coat — WEAK-016 FIX: rubber/vinyl micro-texture character, distinct from satin_wrap",
                          "noise_scales": [16, 32, 64], "noise_weights": [0.3, 0.4, 0.3], "noise_R": 18, "noise_M": 5},
     "primer":           {"M": 0,   "R": 200, "CC": 175, "paint_fn": paint_primer_flat,     "desc": "Raw primer - zero sheen, no clearcoat (CC=175) — BASE-021 FIX: CC=175 (raw primer has no clearcoat)"},
     "satin_wrap":       {"M": 0,   "R": 130, "CC": 60,  "paint_fn": paint_satin_wrap,      "desc": "Vinyl wrap satin surface - the film IS the coat layer (CC=60)"},
-    # ── ORGANIC / PERLIN NOISE ───────────────────────────────────────
+    # â”€â”€ ORGANIC / PERLIN NOISE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "living_matte":     {"M": 0,   "R": 180, "CC": 160, "paint_fn": paint_none,            "desc": "Organic matte - natural organic matte surface (CC=160) — BASE-022 FIX: CC=160 (matte finish, not satin range)",
                          "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.6, "noise_M": 0, "noise_R": 30},
     "organic_metal":    {"M": 210, "R": 45,  "CC": 16, "paint_fn": paint_subtle_flake,    "desc": "Organic flowing metallic with Perlin noise terrain",
                          "perlin": True, "perlin_octaves": 4, "perlin_persistence": 0.5, "noise_M": 35, "noise_R": 20, "noise_CC": 8},
     "terrain_chrome":   {"M": 250, "R": 8,   "CC": 0,  "paint_fn": paint_chrome_brighten, "desc": "Chrome with Perlin terrain-like distortion in roughness",
                          "perlin": True, "perlin_octaves": 5, "perlin_persistence": 0.45, "noise_M": 0, "noise_R": 25},
-    # ── WORN & DEGRADED CLEARCOAT (CC=81–255) ────────────────────────────────
+    # â”€â”€ WORN & DEGRADED CLEARCOAT (CC=81–255) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     # The full 81-255 spectrum - progressive clearcoat breakdown.
     # Perfect second-layer candidates for the Dual Layer Base system.
     "track_worn":       {"M": 210, "R": 55,  "CC": 100, "paint_fn": paint_subtle_flake,   "desc": "Race-worn metallic - degraded clearcoat, battle-scarred (CC=100)",
@@ -4794,10 +6356,10 @@ def texture_feather_barb(shape, mask, seed, sm):
     return {"pattern_val": pattern, "R_range": 55.0, "M_range": -30.0, "CC": None}
 
 
-# ══════════════════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # BATCH 2 — Unique texture functions for formerly-duplicated patterns
 # Each returns {"pattern_val": float32[H,W] 0-1, "R_range", "M_range", "CC"}
-# ══════════════════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 def texture_binary_code_v2(shape, mask, seed, sm):
     """Binary code — columns of 1/0 rectangular cells like a binary readout."""
@@ -5428,7 +6990,7 @@ def texture_caustic_v2(shape, mask, seed, sm):
 
 
 def texture_frost_crystal_v2(shape, mask, seed, sm):
-    """Hexagonal grid with dendritic branches growing from vertices at 60-deg angles."""
+    """Hex grid - SPB-105 tick 2026-05-23T09:39Z: 89.71 -> aim 90+; finer dendritic ice."""
     h, w = shape
     rng = np.random.default_rng(seed + 7080)
     y, x = get_mgrid((h, w))
@@ -5452,15 +7014,15 @@ def texture_frost_crystal_v2(shape, mask, seed, sm):
     branch_mask = np.clip(1.0 - branch_angle / 0.18, 0, 1)  # Anti-aliased (was binary)
     # Sub-branches: secondary branching at smaller scale
     sub_branch = np.abs(np.sin(angle * 6.0 + dist_center * 0.3))
-    sub_mask = np.clip(1.0 - sub_branch / 0.15, 0, 0.7) * (dist_center > hex_size * 0.15).astype(np.float32)  # Anti-aliased
+    sub_mask = np.clip(1.0 - sub_branch / 0.11, 0, 0.95) * (dist_center > hex_size * 0.08).astype(np.float32)  # Anti-aliased
     # Combine: hex edge + branches + sub-branches
     hex_edge = np.clip(1.0 - np.abs(dist_center - hex_size * 0.4) / (hex_size * 0.05), 0, 1)
-    crystal = np.clip(branch_mask + sub_mask.astype(np.float32) + hex_edge * 0.6, 0, 1)
+    crystal = np.clip(branch_mask * 1.16 + sub_mask.astype(np.float32) + hex_edge * 0.85, 0, 1)
     # Fade with distance from center for crystal look
     fade = np.clip(1.0 - dist_center / (hex_size * 0.5), 0.1, 1.0)
     # Ice surface texture between crystals
     ice = multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 7081) * 0.06 + 0.04
-    pattern = np.clip(crystal * fade + ice, 0, 1).astype(np.float32)
+    pattern = np.clip(_spb_pattern_field_contrast(crystal * fade + ice, floor=0.0, ceiling=1.0), 0, 1).astype(np.float32)
     return {"pattern_val": pattern, "R_range": -80.0, "M_range": 60.0, "CC": None}
 
 
@@ -5643,7 +7205,7 @@ def texture_aurora_bands_v2(shape, mask, seed, sm):
     return {"pattern_val": pattern, "R_range": -60.0, "M_range": 50.0, "CC": None}
 
 
-# ── INTRICATE & ORNATE — Texture functions (Batch 1, 2026-03-28) ─────────────
+# â”€â”€ INTRICATE & ORNATE — Texture functions (Batch 1, 2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _ornate_norm(v):
     v = np.asarray(v, dtype=np.float32)
@@ -5682,67 +7244,6 @@ def _ornate_micro_grit(shape, seed, strength=0.12):
     hatch = np.sin(xf * 1.91 + yf * 0.73 + seed * 0.013) * np.sin(yf * 2.23 - xf * 0.41 + seed * 0.017)
     hatch = (hatch * 0.5 + 0.5).astype(np.float32)
     return np.clip(noise * 0.68 + hatch * 0.32, 0.0, 1.0).astype(np.float32) * float(strength)
-
-
-def texture_sacred_geometry(shape, mask, seed, sm):
-    """Sacred geometry - flower-of-life mandalas with hex arcs, spokes, and bead chains."""
-    h, w = shape
-    y, x = get_mgrid((h, w))
-    yf, xf = y.astype(np.float32), x.astype(np.float32)
-    cx, cy = w * 0.5, h * 0.5
-    dx, dy = xf - cx, yf - cy
-    r = np.sqrt(dx * dx + dy * dy) + 1e-6
-    theta = np.arctan2(dy, dx)
-    cell = max(18.0, sm * 46.0)
-    line = max(0.48, sm * 0.68)
-    radial = _ornate_ring(r, cell * 0.235, line)
-    petals = _ornate_periodic_line(r * (1.0 + 0.18 * np.cos(theta * 6.0)), cell * 0.53, line * 0.92)
-    lotus = _ornate_periodic_line(r * (1.0 + 0.11 * np.cos(theta * 12.0)), cell * 0.31, line * 0.62)
-    spokes = _ornate_periodic_line(theta + np.sin(r / cell) * 0.10, (2.0 * np.pi) / 36.0, 0.0075)
-    hex_field = np.zeros((h, w), dtype=np.float32)
-    for angle in (0.0, np.pi / 3.0, -np.pi / 3.0):
-        coord = xf * np.cos(angle) + yf * np.sin(angle)
-        hex_field = np.maximum(hex_field, _ornate_periodic_line(coord, cell * 0.58, line * 0.60))
-    flower = np.zeros((h, w), dtype=np.float32)
-    for ox, oy in ((0.0, 0.0), (cell * 0.50, 0.0), (-cell * 0.50, 0.0),
-                   (cell * 0.25, cell * 0.433), (-cell * 0.25, cell * 0.433),
-                   (cell * 0.25, -cell * 0.433), (-cell * 0.25, -cell * 0.433)):
-        rr = np.sqrt((dx - ox) ** 2 + (dy - oy) ** 2)
-        flower = np.maximum(flower, _ornate_ellipse(dx - ox, dy - oy, cell * 0.50, cell * 0.50, 0.020))
-        flower = np.maximum(flower, _ornate_ring(rr, cell * 0.50, line * 0.52))
-    beads = _ornate_periodic_line(theta, (2.0 * np.pi) / 96.0, 0.0046) * _ornate_ring(r, cell * 0.46, line * 1.25)
-    micro = _ornate_micro_grit(shape, seed + 5580, 0.10) * np.clip(radial + flower + hex_field, 0.0, 1.0)
-    pv = np.clip(radial * 0.36 + petals * 0.46 + lotus * 0.44 + spokes * 0.30 + hex_field * 0.24 + flower * 0.42 + beads * 0.58 + micro, 0.0, 1.0)
-    return {"pattern_val": pv.astype(np.float32), "R_range": 80.0, "M_range": 40.0, "CC": None}
-
-
-def texture_lace_filigree(shape, mask, seed, sm):
-    """Lace filigree - open thread mesh with scalloped rosettes, knots, and woven crossings."""
-    h, w = shape
-    y, x = get_mgrid((h, w))
-    yf, xf = y.astype(np.float32), x.astype(np.float32)
-    cell = max(10.0, sm * 30.0)
-    fine = max(0.34, sm * 0.48)
-    warp = (multi_scale_noise(shape, [8, 16, 32, 64], [0.30, 0.32, 0.24, 0.14], seed + 5520) - 0.5) * sm * 3.8
-    mesh = (
-        _ornate_periodic_line(xf + warp, cell * 0.245, fine) * 0.30
-        + _ornate_periodic_line(yf - warp, cell * 0.245, fine) * 0.30
-        + _ornate_periodic_line((xf + yf) * 0.707 + warp, cell * 0.345, fine * 0.70) * 0.24
-        + _ornate_periodic_line((xf - yf) * 0.707 - warp, cell * 0.345, fine * 0.70) * 0.24
-    )
-    lx = (xf % cell) - cell * 0.5
-    ly = (yf % cell) - cell * 0.5
-    scallop = np.maximum(
-        _ornate_ellipse(lx, ly, cell * 0.38, cell * 0.22, 0.032),
-        _ornate_ellipse(lx, ly, cell * 0.18, cell * 0.38, 0.034),
-    )
-    rosette = _ornate_wave_ink(np.arctan2(ly, lx) * 8.0 + np.sqrt(lx * lx + ly * ly) * 0.28, 0.15)
-    rosette *= _ornate_ellipse(lx, ly, cell * 0.32, cell * 0.32, 0.060)
-    pin = np.clip(1.0 - (lx * lx + ly * ly) / max((cell * 0.055) ** 2, 1e-6), 0.0, 1.0)
-    open_hole = np.clip(1.0 - np.sqrt((lx / (cell * 0.28)) ** 2 + (ly / (cell * 0.28)) ** 2), 0.0, 1.0)
-    thread_grain = _ornate_micro_grit(shape, seed + 5581, 0.13) * np.clip(mesh + scallop, 0.0, 1.0)
-    pv = np.clip(mesh + scallop * 0.50 + rosette * 0.34 + pin * 0.46 + thread_grain - open_hole * 0.22, 0.0, 1.0)
-    return {"pattern_val": pv.astype(np.float32), "R_range": 75.0, "M_range": -35.0, "CC": None}
 
 
 def texture_stained_glass_voronoi(shape, mask, seed, sm):
@@ -5785,166 +7286,193 @@ def texture_carbon_3k_weave(shape, mask, seed, sm):
             "R_range": 55.0, "M_range": -60.0, "CC": None}
 
 
-def texture_honeycomb_organic(shape, mask, seed, sm):
-    """Honeycomb organic - waxy irregular hex cells with ragged wall rims and pollen pores."""
+# â”€â”€ TRIBAL & ANCIENT — Texture functions (Batch 2, 2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+_ornamental_fast_cache = {}
+
+
+def _orn_fast_hash(shape, seed, salt):
     h, w = shape
-    y, x = get_mgrid((h, w))
-    yf, xf = y.astype(np.float32), x.astype(np.float32)
-    cell = max(12.0, sm * 28.0)
-    warp = sm * 9.0
-    wx = xf + (multi_scale_noise(shape, [10, 20, 40, 80], [0.28, 0.30, 0.27, 0.15], seed + 5504) - 0.5) * warp
-    wy = yf + (multi_scale_noise(shape, [10, 20, 40, 80], [0.28, 0.30, 0.27, 0.15], seed + 5505) - 0.5) * warp
-    wall = np.zeros((h, w), dtype=np.float32)
-    for angle in (0.0, np.pi / 3.0, -np.pi / 3.0):
-        coord = wx * np.cos(angle) + wy * np.sin(angle)
-        wall = np.maximum(wall, _ornate_periodic_line(coord, cell, max(0.62, sm * 0.92)))
-    inner_wall = np.zeros((h, w), dtype=np.float32)
-    for angle in (np.pi / 6.0, np.pi / 2.0, -np.pi / 6.0):
-        coord = wx * np.cos(angle) + wy * np.sin(angle)
-        inner_wall = np.maximum(inner_wall, _ornate_periodic_line(coord, cell * 0.50, max(0.30, sm * 0.42)))
-    membrane = _ornate_norm(multi_scale_noise(shape, [4, 8, 16, 32], [0.34, 0.28, 0.22, 0.16], seed + 5506))
-    pore_x = (wx % (cell * 0.42)) - cell * 0.21
-    pore_y = (wy % (cell * 0.42)) - cell * 0.21
-    pores = np.clip(1.0 - np.sqrt(pore_x * pore_x + pore_y * pore_y) / max(cell * 0.035, 1e-6), 0.0, 1.0)
-    rim_grit = _ornate_micro_grit(shape, seed + 5582, 0.16) * np.clip(wall + inner_wall * 0.45, 0.0, 1.0)
-    pv = np.clip(wall * (0.78 + membrane * 0.34) + inner_wall * 0.18 + pores * 0.22 + membrane * 0.08 + rim_grit, 0.0, 1.0)
-    return {"pattern_val": pv.astype(np.float32), "R_range": 65.0, "M_range": -50.0, "CC": None}
+    y = np.linspace(0.0, 1.0, h, dtype=np.float32).reshape(h, 1)
+    x = np.linspace(0.0, 1.0, w, dtype=np.float32).reshape(1, w)
+    n = np.sin((x * 127.1 + y * 311.7 + (int(seed) + salt) * 0.013) * 43758.5453)
+    return (n - np.floor(n)).astype(np.float32)
+
+
+def _orn_fast_speck(px, py, seed, salt, modulo):
+    field = (
+        np.floor(px * (2.7 + (salt % 5) * 0.19))
+        + np.floor(py * (3.9 + (salt % 7) * 0.13))
+        + int(seed) * 13
+        + int(salt) * 17
+    )
+    return (np.mod(field, max(int(modulo), 3)) < 1.0).astype(np.float32)
+
+
+def _orn_fast_ridge(v, power=1.0):
+    return np.power(np.clip(1.0 - np.abs(v), 0, 1), power).astype(np.float32)
+
+
+def _orn_fast_line(value, period, width):
+    return np.clip(1.0 - np.abs(np.sin(value * (np.pi * 2.0) / max(period, 1e-6))) / max(width, 1e-6), 0, 1).astype(np.float32)
+
+
+def _orn_fast_field(shape, seed, mode, sm):
+    cache_key = (shape, int(seed), mode, round(float(sm), 3))
+    cached = _ornamental_fast_cache.get(cache_key)
+    if cached is not None:
+        return cached
+    h, w = shape
+    y = np.linspace(0.0, 1.0, h, dtype=np.float32).reshape(h, 1)
+    x = np.linspace(0.0, 1.0, w, dtype=np.float32).reshape(1, w)
+    px = x * w
+    py = y * h
+    cx = px - w * 0.5
+    cy = py - h * 0.5
+    r = np.sqrt(cx * cx + cy * cy) + 1e-6
+    theta = np.arctan2(cy, cx)
+    phase = (int(seed) % 8192) * 0.000767 * np.pi * 2.0
+    grain = None
+    def _grain():
+        nonlocal grain
+        if grain is None:
+            grain = _orn_fast_hash(shape, seed, 601)
+        return grain
+    tw = np.float32(np.pi * 2.0)
+    if mode == "hex_mandala":
+        ring = _orn_fast_line(r, max(18.0, sm * 24.0), 0.13)
+        petal = _orn_fast_line(r * (1.0 + 0.12 * np.cos(theta * 6.0)), max(32.0, sm * 45.0), 0.12)
+        spoke = _orn_fast_ridge(np.sin(theta * 36.0 + np.sin(r * 0.018) + phase), 2.2)
+        lattice = np.maximum(
+            _orn_fast_line(px * 0.866 + py * 0.50, max(28.0, sm * 42.0), 0.10),
+            _orn_fast_line(px * 0.866 - py * 0.50, max(28.0, sm * 42.0), 0.10),
+        )
+        pv = np.clip(ring * 0.36 + petal * 0.48 + spoke * 0.20 + lattice * 0.30 + _orn_fast_speck(px, py, seed, 611, 127) * 0.20, 0, 1)
+        rr, mr = 80.0, 40.0
+    elif mode == "lace_filigree":
+        mesh = np.maximum(_orn_fast_line(px + np.sin(py * 0.016 + phase) * 2.2, max(9.0, sm * 13.0), 0.10),
+                          _orn_fast_line(py - np.sin(px * 0.014 - phase) * 2.0, max(9.0, sm * 13.0), 0.10))
+        mesh = np.maximum(mesh, _orn_fast_line(px + py, max(15.0, sm * 20.0), 0.075))
+        cell = max(28.0, sm * 42.0)
+        lx = np.mod(px, cell) - cell * 0.5
+        ly = np.mod(py, cell) - cell * 0.5
+        ros = _orn_fast_ridge(np.sin(np.arctan2(ly, lx) * 10.0 + np.sqrt(lx * lx + ly * ly) * 0.38), 2.0)
+        hole = np.clip(1.0 - np.sqrt(lx * lx + ly * ly) / max(8.0, sm * 13.0), 0, 1)
+        pv = np.clip(mesh * 0.56 + ros * hole * 0.42 + _orn_fast_speck(px, py, seed, 617, 79) * 0.12, 0, 1)
+        rr, mr = 75.0, -35.0
+    elif mode == "honeycomb_organic":
+        cell = max(24.0, sm * 34.0)
+        wall = np.zeros((h, w), dtype=np.float32)
+        warp = np.sin((x * 3.0 + y * 2.0) * tw + phase) * cell * 0.06
+        for ang in (0.0, np.pi / 3.0, -np.pi / 3.0):
+            wall = np.maximum(wall, _orn_fast_line(px * np.cos(ang) + py * np.sin(ang) + warp, cell, 0.12))
+        pores = _orn_fast_speck(px, py, seed, 623, 47) * (0.4 + wall * 0.6)
+        membrane = (np.sin((px * 0.021 - py * 0.017) + phase) * 0.5 + 0.5) * 0.10
+        pv = np.clip(wall * 0.78 + pores * 0.28 + membrane, 0, 1)
+        rr, mr = 65.0, -50.0
+    elif mode == "baroque_scrollwork":
+        cell = max(58.0, sm * 78.0)
+        lx = np.mod(px, cell) - cell * 0.5
+        ly = np.mod(py, cell) - cell * 0.5
+        lr = np.sqrt(lx * lx + ly * ly) + 1e-6
+        lt = np.arctan2(ly, lx)
+        scroll = np.maximum(_orn_fast_line(lr - lt * cell * 0.16, cell * 0.31, 0.12),
+                            _orn_fast_line(lr + lt * cell * 0.19, cell * 0.27, 0.10))
+        leaf = _orn_fast_ridge(np.sin((lx * 0.12 + ly * 0.05) + np.sin(lt * 4.0) + phase), 2.0) * np.clip(1.0 - lr / (cell * 0.54), 0, 1)
+        hatch = _orn_fast_line(px * 0.82 + py * 0.57, max(4.0, sm * 5.2), 0.08) * 0.18
+        pv = np.clip(scroll * 0.62 + leaf * 0.38 + hatch + _orn_fast_speck(px, py, seed, 631, 101) * 0.12, 0, 1)
+        rr, mr = 70.0, -40.0
+    elif mode == "art_nouveau_vine":
+        period = max(48.0, sm * 84.0)
+        lane = np.floor(px / period)
+        center = (lane + 0.5) * period + np.sin(py * 0.018 + lane * 1.7 + phase) * period * 0.18
+        stem = np.clip(1.0 - np.abs(px - center) / max(1.2, sm * 1.8), 0, 1)
+        step = max(28.0, sm * 34.0)
+        leaf_phase = np.mod(py / step + lane * 0.5, 1.0)
+        side = np.where(leaf_phase < 0.5, -1.0, 1.0)
+        leaf_cx = center + side * period * 0.24
+        leaf_cy = (np.floor(py / step) + 0.5) * step
+        lx = (px - leaf_cx) * 0.84 + (py - leaf_cy) * side * 0.34
+        ly = (py - leaf_cy) * 0.84 - (px - leaf_cx) * side * 0.34
+        leaf = np.clip(1.0 - np.sqrt((lx / (period * 0.16)) ** 2 + (ly / max(4.0, sm * 6.0)) ** 2), 0, 1)
+        tendril = _orn_fast_line(px - center + np.sin(py * 0.07) * period * 0.09, max(9.0, sm * 12.0), 0.08)
+        pv = np.clip(stem * 0.72 + leaf * 0.56 + tendril * 0.26 + _orn_fast_speck(px, py, seed, 641, 83) * 0.10, 0, 1)
+        rr, mr = 65.0, -35.0
+    elif mode == "penrose_quasi":
+        period = max(18.0, sm * 28.0)
+        ridges = np.zeros((h, w), dtype=np.float32)
+        facets = np.zeros((h, w), dtype=np.float32)
+        for k in range(5):
+            ang = k * np.pi * 2.0 / 5.0
+            proj = cx * np.cos(ang) + cy * np.sin(ang) + np.sin(k * 12.989 + seed) * period * 0.19
+            line = _orn_fast_line(proj, period, 0.12)
+            ridges = np.maximum(ridges, line)
+            facets += _orn_fast_line(proj, period * 0.6180339, 0.075) * 0.12
+        star = _orn_fast_ridge(np.sin(theta * 10.0 + r * 0.052 + phase), 2.0) * _orn_fast_line(r, period * 2.0, 0.09)
+        pv = np.clip(ridges * 0.64 + facets * 0.58 + star * 0.25 + _orn_fast_speck(px, py, seed, 653, 53) * 0.13, 0, 1)
+        rr, mr = 75.0, 45.0
+    elif mode == "topographic_dense":
+        grain = _grain()
+        height = np.sin((px * 0.012 + py * 0.019) + phase) * 0.36 + np.sin((px * -0.022 + py * 0.015) - phase) * 0.28 + np.sin((px * 0.037 - py * 0.026) + phase * 0.4) * 0.18 + grain * 0.18
+        height = (height - height.min()) / max(float(height.max() - height.min()), 1e-6)
+        lines = np.clip(1.0 - np.abs(np.sin(height * np.pi * 72.0)) / 0.070, 0, 1)
+        index = np.clip(1.0 - np.abs(np.sin(height * np.pi * 14.4)) / 0.070, 0, 1) * 0.38
+        ticks = _orn_fast_line(px * 0.79 + py * 0.61 + height * 28.0, max(4.0, sm * 5.0), 0.08) * 0.20
+        pv = np.clip(lines * 0.82 + index + ticks + grain * 0.055, 0, 1)
+        rr, mr = 60.0, -55.0
+    elif mode == "interference_rings":
+        off = min(h, w) * 0.17
+        period = max(16.0, sm * 22.0)
+        rings = np.zeros((h, w), dtype=np.float32)
+        beat = np.zeros((h, w), dtype=np.float32)
+        for i, (ox, oy) in enumerate(((off, 0), (-off, 0), (0, off), (0, -off), (off * 0.55, off * 0.55), (-off * 0.55, off * 0.55))):
+            rr0 = np.sqrt((cx + ox) ** 2 + (cy + oy) ** 2)
+            rings = np.maximum(rings, _orn_fast_line(rr0, period, 0.12))
+            beat += np.cos(rr0 * tw / period + i * 0.73)
+        pv = np.clip(rings * 0.70 + np.abs(beat / 6.0) * 0.26 + _orn_fast_line(cx * 0.055 + np.sin(cy * 0.021) * 3.0, 19.0, 0.10) * 0.14 + _orn_fast_speck(px, py, seed, 661, 71) * 0.12, 0, 1)
+        rr, mr = 70.0, 50.0
+    else:
+        grain = _grain()
+        pv = grain
+        rr, mr = 60.0, 0.0
+    result = {"pattern_val": pv.astype(np.float32), "R_range": rr, "M_range": mr, "CC": None}
+    if len(_ornamental_fast_cache) > 2:
+        _ornamental_fast_cache.pop(next(iter(_ornamental_fast_cache)))
+    _ornamental_fast_cache[cache_key] = result
+    return result
+
+
+def texture_sacred_geometry(shape, mask, seed, sm):
+    return _orn_fast_field(shape, seed + 6000, "hex_mandala", sm)
+
+
+def texture_lace_filigree(shape, mask, seed, sm):
+    return _orn_fast_field(shape, seed + 6010, "lace_filigree", sm)
+
+
+def texture_honeycomb_organic(shape, mask, seed, sm):
+    return _orn_fast_field(shape, seed + 6020, "honeycomb_organic", sm)
 
 
 def texture_baroque_scrollwork(shape, mask, seed, sm):
-    """Baroque scrollwork - acanthus S-scrolls, leaf engraving, gilded knots, and hatch shadow."""
-    h, w = shape
-    y, x = get_mgrid((h, w))
-    yf, xf = y.astype(np.float32), x.astype(np.float32)
-    cell_sz = max(26.0, sm * 72.0)
-    lx = (xf % cell_sz) - cell_sz * 0.5
-    ly = (yf % cell_sz) - cell_sz * 0.5
-    r = np.sqrt(lx ** 2 + ly ** 2) + 0.001
-    theta = np.arctan2(ly, lx)
-    scroll_a = _ornate_periodic_line(r - theta * cell_sz * 0.135, cell_sz * 0.265, max(0.46, sm * 0.72))
-    scroll_b = _ornate_periodic_line(r + theta * cell_sz * 0.150, cell_sz * 0.235, max(0.42, sm * 0.66))
-    s_curve = _ornate_periodic_line(lx - np.sin(ly / cell_sz * np.pi * 2.0) * cell_sz * 0.25, cell_sz * 0.55, max(0.54, sm * 0.74))
-    leaf_angle = theta + np.sin(r / max(cell_sz * 0.18, 1.0)) * 0.85
-    leaf = _ornate_ellipse(lx * np.cos(leaf_angle) - ly * np.sin(leaf_angle),
-                           lx * np.sin(leaf_angle) + ly * np.cos(leaf_angle),
-                           cell_sz * 0.30, cell_sz * 0.080, 0.042)
-    vein = _ornate_periodic_line(lx * np.cos(leaf_angle) - ly * np.sin(leaf_angle), cell_sz * 0.075, max(0.24, sm * 0.30)) * leaf
-    hatch = _ornate_periodic_line(xf * 0.82 + yf * 0.57 + np.sin(theta * 3.0) * 4.0, max(3.0, sm * 4.2), max(0.24, sm * 0.32)) * 0.24
-    knot = np.clip(1.0 - r / max(cell_sz * 0.055, 1e-6), 0.0, 1.0)
-    fade = np.clip(1.0 - (r / (cell_sz * 0.53)) ** 2.2, 0.0, 1.0)
-    engraving = _ornate_micro_grit(shape, seed + 5583, 0.12) * np.clip(scroll_a + scroll_b + leaf, 0.0, 1.0)
-    pv = np.clip((scroll_a * 0.58 + scroll_b * 0.50 + s_curve * 0.28 + leaf * 0.50 + vein * 0.30 + knot * 0.44) * fade + hatch * fade + engraving, 0.0, 1.0)
-    return {"pattern_val": pv.astype(np.float32),
-            "R_range": 70.0, "M_range": -40.0, "CC": None}
+    return _orn_fast_field(shape, seed + 6030, "baroque_scrollwork", sm)
 
 
 def texture_art_nouveau_vine(shape, mask, seed, sm):
-    """Art Nouveau vine - sinuous botanical stems, almond leaves, seed pods, and hairline tendrils."""
-    h, w = shape
-    y, x = get_mgrid((h, w))
-    yf, xf = y.astype(np.float32), x.astype(np.float32)
-    period = max(24.0, sm * 76.0)
-    lane = np.floor(xf / period)
-    center = (lane + 0.5) * period + np.sin(yf / max(sm * 32.0, 1.0) + lane * 1.7) * sm * 12.0
-    stem_dist = np.abs(xf - center)
-    stem = np.clip(1.0 - stem_dist / max(0.55, sm * 0.95), 0.0, 1.0)
-    leaf_step = max(sm * 28.0, 13.0)
-    leaf_phase = np.mod(yf / leaf_step + lane * 0.5, 1.0)
-    side = np.where(leaf_phase < 0.5, -1.0, 1.0)
-    leaf_cx = center + side * period * 0.22
-    leaf_cy = (np.floor(yf / leaf_step) + 0.5) * leaf_step
-    leaf = _ornate_ellipse((xf - leaf_cx) * 0.88 + (yf - leaf_cy) * side * 0.34,
-                           (yf - leaf_cy) * 0.88 - (xf - leaf_cx) * side * 0.34,
-                           period * 0.17, max(sm * 5.4, 4.0), 0.045)
-    vein = _ornate_periodic_line((xf - leaf_cx) * 0.84 + (yf - leaf_cy) * side * 0.38, period * 0.055, max(0.20, sm * 0.26)) * leaf
-    tendril_coord = xf - center + np.sin(yf / max(sm * 12.0, 1.0)) * sm * 6.0
-    tendril_gate = _ornate_periodic_line(yf + lane * period, max(sm * 22.0, 10.0), max(0.48, sm * 0.62))
-    tendril = _ornate_periodic_line(tendril_coord, max(sm * 8.5, 4.5), max(0.28, sm * 0.36)) * tendril_gate
-    pod_x = (xf - center - side * period * 0.08)
-    pod_y = (yf - leaf_cy)
-    pods = _ornate_ellipse(pod_x, pod_y, max(sm * 3.0, 2.0), max(sm * 6.0, 4.0), 0.070) * (leaf_phase > 0.18) * (leaf_phase < 0.82)
-    bg = _ornate_norm(multi_scale_noise(shape, [8, 16, 32, 64], [0.30, 0.30, 0.24, 0.16], seed + 5510)) * 0.08
-    grain = _ornate_micro_grit(shape, seed + 5584, 0.11) * np.clip(stem + leaf + tendril, 0.0, 1.0)
-    pv = np.clip(bg + stem * 0.78 + leaf * 0.58 + vein * 0.30 + tendril * 0.40 + pods * 0.28 + grain, 0.0, 1.0).astype(np.float32)
-    return {"pattern_val": pv, "R_range": 65.0, "M_range": -35.0, "CC": None}
+    return _orn_fast_field(shape, seed + 6040, "art_nouveau_vine", sm)
 
 
 def texture_penrose_quasi(shape, mask, seed, sm):
-    """Penrose quasicrystal - fivefold aperiodic ridge net with star nodes and facet dust."""
-    h, w = shape
-    y, x = get_mgrid((h, w))
-    yf, xf = y.astype(np.float32), x.astype(np.float32)
-    cx, cy = w * 0.5, h * 0.5
-    xf = xf - cx
-    yf = yf - cy
-    period = max(9.0, sm * 25.0)
-    line = max(0.34, sm * 0.50)
-    ridges = np.zeros((h, w), dtype=np.float32)
-    facets = np.zeros((h, w), dtype=np.float32)
-    node_product = np.ones((h, w), dtype=np.float32)
-    for k in range(5):
-        angle = k * np.pi * 2.0 / 5.0
-        cx_k, cy_k = np.cos(angle), np.sin(angle)
-        proj = xf * cx_k + yf * cy_k + np.sin(k * 12.989 + seed) * period * 0.20
-        r0 = _ornate_periodic_line(proj, period, line)
-        r1 = _ornate_periodic_line(proj, period * 0.6180339, line * 0.62)
-        r2 = _ornate_periodic_line(proj, period * 1.6180339, line * 0.46)
-        ridges = np.maximum(ridges, r0)
-        facets += r1 * 0.16 + r2 * 0.10
-        node_product *= np.clip(r0 + 0.18, 0.0, 1.0)
-    nodes = np.clip((ridges + facets - 0.92) * 2.8 + node_product * 1.3, 0.0, 1.0)
-    star = _ornate_wave_ink(np.arctan2(yf, xf) * 10.0 + np.sqrt(xf * xf + yf * yf) * 0.045, 0.12) * _ornate_ring(np.sqrt(xf * xf + yf * yf), period * 0.84, line * 1.2)
-    shimmer = _ornate_micro_grit(shape, seed + 5585, 0.16)
-    pv = np.clip(ridges * 0.62 + facets * 0.56 + nodes * 0.42 + star * 0.24 + shimmer * np.clip(ridges + facets, 0, 1), 0.0, 1.0)
-    return {"pattern_val": pv.astype(np.float32),
-            "R_range": 75.0, "M_range": 45.0, "CC": None}
+    return _orn_fast_field(shape, seed + 6050, "penrose_quasi", sm)
 
 
 def texture_topographic_dense(shape, mask, seed, sm):
-    """Topographic dense - dense contour ink, index lines, ravine ticks, and paper grain."""
-    h, w = shape
-    y, x = get_mgrid((h, w))
-    yf, xf = y.astype(np.float32), x.astype(np.float32)
-    height = _ornate_norm(multi_scale_noise(shape, [8, 16, 32, 64, 128], [0.28, 0.26, 0.22, 0.16, 0.08], seed + 5509))
-    ridge = 0.22 * np.sin((xf * 0.030 + yf * 0.019) / max(sm, 0.2)) + 0.11 * np.sin((xf * -0.017 + yf * 0.041) / max(sm, 0.2))
-    height = _ornate_norm(height + ridge)
-    contour_count = 68.0 / max(sm ** 0.10, 0.85)
-    contour = np.abs(np.sin(height * contour_count * np.pi))
-    lines = np.clip(1.0 - contour / 0.050, 0.0, 1.0)
-    index_lines = np.clip(1.0 - np.abs(np.sin(height * (contour_count / 5.0) * np.pi)) / 0.052, 0.0, 1.0) * 0.48
-    hatch = _ornate_periodic_line(xf * 0.79 + yf * 0.61 + height * 24.0, max(3.0, sm * 5.0), max(0.22, sm * 0.28))
-    slope = np.hypot(np.gradient(height, axis=1), np.gradient(height, axis=0))
-    tick = _ornate_periodic_line(xf * -0.34 + yf * 0.94 + height * 13.0, max(2.4, sm * 3.6), max(0.18, sm * 0.23))
-    paper = _ornate_micro_grit(shape, seed + 5586, 0.10)
-    pv = np.clip(lines * 0.78 + index_lines + hatch * np.clip(slope * 16.0, 0.0, 1.0) * 0.34 + tick * np.clip(slope * 22.0, 0.0, 1.0) * 0.18 + height * 0.11 + paper, 0, 1)
-    return {"pattern_val": pv.astype(np.float32), "R_range": 60.0, "M_range": -55.0, "CC": None}
+    return _orn_fast_field(shape, seed + 6060, "topographic_dense", sm)
 
 
 def texture_interference_rings(shape, mask, seed, sm):
-    """Newton ring interference - multi-source optical fringes with moire beat shimmer."""
-    h, w = shape
-    y, x = get_mgrid((h, w))
-    yf, xf = y.astype(np.float32), x.astype(np.float32)
-    cx, cy = w * 0.5, h * 0.5
-    off = min(h, w) * 0.17
-    period = max(8.0, sm * 20.0)
-    width = max(0.28, sm * 0.40)
-    rings = np.zeros((h, w), dtype=np.float32)
-    phases = []
-    for i, (ox, oy) in enumerate(((off, 0.0), (-off, 0.0), (0.0, off), (0.0, -off), (off * 0.55, off * 0.55), (-off * 0.55, off * 0.55))):
-        rr = np.sqrt((xf - cx + ox) ** 2 + (yf - cy + oy) ** 2)
-        rr = rr + np.sin((xf + yf) * 0.012 + i * 1.7) * sm * 1.8
-        rings = np.maximum(rings, _ornate_ring(rr, period, width))
-        phases.append(np.cos(rr * 2.0 * np.pi / period + i * 0.73))
-    beat = _ornate_norm(np.abs(np.mean(phases, axis=0)))
-    micro = _ornate_ring(np.sqrt((xf - cx) ** 2 + (yf - cy) ** 2), period * 0.381966, width * 0.55)
-    fringe = _ornate_wave_ink((xf - cx) * 0.055 + np.sin((yf - cy) * 0.021) * 3.0, 0.11) * 0.16
-    shimmer = _ornate_micro_grit(shape, seed + 5587, 0.11) * beat
-    pv = np.clip(rings * 0.72 + beat * 0.28 + micro * 0.32 + fringe + shimmer, 0.0, 1.0)
-    return {"pattern_val": pv.astype(np.float32), "R_range": 70.0, "M_range": 50.0, "CC": None}
+    return _orn_fast_field(shape, seed + 6070, "interference_rings", sm)
 
-
-# ── TRIBAL & ANCIENT — Texture functions (Batch 2, 2026-03-28) ──────────────
 
 def texture_maori_koru(shape, mask, seed, sm):
     """Maori koru — tiled logarithmic spiral fern frond uncoiling in each cell."""
@@ -6163,7 +7691,7 @@ def texture_chinese_cloud(shape, mask, seed, sm):
     return {"pattern_val": np.clip(v, 0.0, 1.0).astype(np.float32), "R_range": 60.0, "M_range": -45.0, "CC": None}
 
 
-# ── NATURAL TEXTURES — Texture functions (Batch 3, 2026-03-28) ──────────────
+# â”€â”€ NATURAL TEXTURES — Texture functions (Batch 3, 2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def texture_marble_veining(shape, mask, seed, sm):
     """Marble veining — turbulence-warped sine vein network with secondary frequency."""
@@ -6401,7 +7929,7 @@ def texture_geode_crystal(shape, mask, seed, sm):
     return {"pattern_val": np.clip(v, 0.0, 1.0).astype(np.float32), "R_range": 80.0, "M_range": 55.0, "CC": None}
 
 
-# ── TECH & CIRCUIT — Texture functions (Batch 4, 2026-03-28) ──────────────
+# â”€â”€ TECH & CIRCUIT — Texture functions (Batch 4, 2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def texture_circuit_traces(shape, mask, seed, sm):
     """PCB circuit board — orthogonal grid traces with via pad rings at intersections."""
@@ -6753,7 +8281,7 @@ def texture_waveform_stack(shape, mask, seed, sm):
     return {"pattern_val": v.astype(np.float32), "R_range": 60.0, "M_range": 40.0, "CC": None}
 
 
-# ── ART DECO & GEOMETRIC — Texture functions (Batch 5, 2026-03-28) ──────────────
+# â”€â”€ ART DECO & GEOMETRIC — Texture functions (Batch 5, 2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def texture_art_deco_fan(shape, mask, seed, sm):
     """Art Deco fan v2 — dense tiled fans with more spokes, tighter arcs, border frame."""
@@ -6958,7 +8486,7 @@ def texture_op_art_rings(shape, mask, seed, sm):
 
 
 def texture_moire_grid(shape, mask, seed, sm):
-    """Moiré grid — two slightly angled parallel line families creating interference fringes."""
+    """MoirÃ© grid — two slightly angled parallel line families creating interference fringes."""
     h, w = shape
     y, x = get_mgrid((h, w))
     yf, xf  = y.astype(np.float32), x.astype(np.float32)
@@ -7014,7 +8542,7 @@ def texture_ogee_lattice(shape, mask, seed, sm):
     return {"pattern_val": v.astype(np.float32), "R_range": 65.0, "M_range": 45.0, "CC": None}
 
 
-# ── MATHEMATICAL & FRACTAL — Texture functions (Batch 6, 2026-03-28) ──────────────
+# â”€â”€ MATHEMATICAL & FRACTAL — Texture functions (Batch 6, 2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def texture_reaction_diffusion(shape, mask, seed, sm):
     """Gray-Scott reaction-diffusion — REAL iterative Turing pattern.
@@ -7547,7 +9075,7 @@ def texture_truchet_flow(shape, mask, seed, sm):
     return {"pattern_val": v, "R_range": 65.0, "M_range": 45.0, "CC": None}
 
 
-# ── OP-ART & VISUAL ILLUSIONS — Texture functions (Batch 7, 2026-03-28) ────────────
+# â”€â”€ OP-ART & VISUAL ILLUSIONS — Texture functions (Batch 7, 2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def texture_concentric_op(shape, mask, seed, sm):
     """Bridget Riley-style concentric band illusion — two frequencies produce optical vibration beat."""
@@ -7597,7 +9125,7 @@ def texture_barrel_distort(shape, mask, seed, sm):
     return {"pattern_val": v, "R_range": 70.0, "M_range": 50.0, "CC": None}
 
 def texture_moire_interference(shape, mask, seed, sm):
-    """Two grids at slightly different scale and 15-degree rotation — classic moiré beat fringes."""
+    """Two grids at slightly different scale and 15-degree rotation — classic moirÃ© beat fringes."""
     h, w = shape
     y_g, x_g = get_mgrid((h, w))
     yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
@@ -7763,7 +9291,7 @@ def texture_rose_curve(shape, mask, seed, sm):
     return {"pattern_val": np.clip(v, 0.0, 1.0), "R_range": 70.0, "M_range": 50.0, "CC": None}
 
 
-# ── ART DECO DEPTH + TEXTILE — Texture functions (Batch 8, 2026-03-28) ─────────────
+# â”€â”€ ART DECO DEPTH + TEXTILE — Texture functions (Batch 8, 2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def texture_art_deco_sunburst(shape, mask, seed, sm):
     """Chrysler Building Art Deco sunburst — 36 radial spokes with 5 concentric ring bands."""
@@ -8040,7 +9568,7 @@ def texture_tatami_grid(shape, mask, seed, sm):
     return {"pattern_val": np.clip(v, 0.0, 1.0), "R_range": 55.0, "M_range": 35.0, "CC": None}
 
 
-# ── FINAL 4 — To 100 Patterns (🏁 Batch 9, 2026-03-28) ───────────────────────────────
+# â”€â”€ FINAL 4 — To 100 Patterns (ðŸ Batch 9, 2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def texture_hypocycloid(shape, mask, seed, sm):
     """Tiled 5-cusped Spirograph hypocycloid — parametric star outline sampled from k=5 hypotrochoid curve."""
@@ -8112,22 +9640,26 @@ def texture_wave_ripple_2d(shape, mask, seed, sm):
     freq = np.float32(2.0 * np.pi / max(8.0, sm * 20.0))
     v    = np.zeros((h, w), dtype=np.float32)
     for sy, sx in src:
-        r_s = np.sqrt((yf - np.float32(sy)) ** 2 + (xf - np.float32(sx)) ** 2)
+        r_s = np.sqrt(np.minimum(np.abs(yf - np.float32(sy)), np.float32(h) - np.abs(yf - np.float32(sy))) ** 2 + np.minimum(np.abs(xf - np.float32(sx)), np.float32(w) - np.abs(xf - np.float32(sx))) ** 2)
         v   = v + np.sin(r_s * freq)
     v = v * np.float32(0.25) * np.float32(0.5) + np.float32(0.5)
-    return {"pattern_val": np.clip(v, 0.0, 1.0), "R_range": 80.0, "M_range": 60.0, "CC": None}
+    return {"pattern_val": np.clip(v + multi_scale_noise(shape, [4, 8, 16], [0.28, 0.38, 0.34], seed + 2060) * 0.10, 0.0, 1.0), "R_range": 82.0, "M_range": 64.0, "CC": None}
 
 def texture_sierpinski_tri(shape, mask, seed, sm):
     """Sierpinski gasket — Pascal triangle mod-2 via bitwise (xi & yi)==0 on scaled integer grid."""
     h, w    = shape
     y_g, x_g = get_mgrid((h, w))
-    scale   = max(2, int(sm * 6))
-    xi      = (x_g // scale).astype(np.int32) & 0x3FF
-    yi      = (y_g // scale).astype(np.int32) & 0x3FF
+    scale   = max(2, int(sm * 4))
+    xi      = (x_g // scale).astype(np.int32) & 0x7FF
+    yi      = (y_g // scale).astype(np.int32) & 0x7FF
+    # SPB-105 tick 2026-05-23T07:12Z: target 81.41; finer gasket edges and grit.
     v       = ((xi & yi) == 0).astype(np.float32)
-    bg = multi_scale_noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 1960) * 0.12 + 0.07
-    v = np.clip(v + bg, 0, 1)
-    return {"pattern_val": v, "R_range": 75.0, "M_range": 55.0, "CC": None}
+    micro   = ((((x_g // max(1, scale // 2)).astype(np.int32) & (y_g // max(1, scale // 2)).astype(np.int32)) == 0).astype(np.float32))
+    edge    = np.clip(np.abs(v - np.roll(v, 1, axis=0)) + np.abs(v - np.roll(v, 1, axis=1)), 0, 1)
+    hatch   = (((xi ^ (yi * 3)) & 7) == 0).astype(np.float32)
+    bg = multi_scale_noise(shape, [4, 8, 16, 32], [0.25, 0.30, 0.28, 0.17], seed + 1960) * 0.10 + 0.05
+    v = np.clip(v * 0.62 + micro * 0.28 + edge * 0.46 + hatch * 0.18 + bg, 0, 1)
+    return {"pattern_val": v, "R_range": -92.0, "M_range": 102.0, "CC": None}
 
 
 # --- PATTERN TEXTURE REGISTRY ---
@@ -8287,7 +9819,7 @@ PATTERN_REGISTRY = {
     "shokk_grid": {"texture_fn": texture_tron, "paint_fn": paint_tron_glow, "variable_cc": False, "desc": "Perspective-warped digital grid tunnel"},
     "shokk_hex": {"texture_fn": texture_hex_mesh, "paint_fn": paint_hex_emboss, "variable_cc": False, "desc": "Hexagonal cells with electric edge glow"},
     "shokk_nebula":       {"texture_fn": texture_shokk_nebula,       "paint_fn": paint_shokk_phase, "variable_cc": True,  "desc": "SHOKK: Cosmic gas cloud with star-forming knots"},
-    "shokk_phase_interference": {"texture_fn": texture_shokk_phase_interference, "paint_fn": paint_shokk_phase, "variable_cc": False, "desc": "SHOKK Phase: Dual-wave moiré interference pattern"},
+    "shokk_phase_interference": {"texture_fn": texture_shokk_phase_interference, "paint_fn": paint_shokk_phase, "variable_cc": False, "desc": "SHOKK Phase: Dual-wave moirÃ© interference pattern"},
     "shokk_phase_split":        {"texture_fn": texture_shokk_phase_split,        "paint_fn": paint_shokk_phase, "variable_cc": False, "desc": "SHOKK Phase: Independent M/R sine waves - shimmer split"},
     "shokk_phase_vortex":       {"texture_fn": texture_shokk_phase_vortex,       "paint_fn": paint_shokk_phase, "variable_cc": True,  "desc": "SHOKK Phase: Radial/angular vortex with CC modulation"},
     "shokk_plasma_storm": {"texture_fn": texture_shokk_plasma_storm, "paint_fn": paint_shokk_phase, "variable_cc": True,  "desc": "SHOKK: Multi-epicenter branching plasma discharge"},
@@ -8342,7 +9874,7 @@ PATTERN_REGISTRY = {
     "wind_tunnel": {"texture_fn": texture_pinstripe_diagonal, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Flow visualization smoke streaks"},
     "wood_grain":        {"texture_fn": texture_wood_grain,      "paint_fn": paint_wood_grain,       "variable_cc": False, "desc": "Natural flowing wood grain texture"},
     "zebra": {"texture_fn": texture_zebra_stripe, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Bold black-white zebra stripe pattern"},
-    # ── Intricate & Ornate (★) — Batch 1 (2026-03-28) ───────────────────────────
+    # â”€â”€ Intricate & Ornate (â˜…) — Batch 1 (2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "art_nouveau_vine":   {"texture_fn": texture_art_nouveau_vine,    "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Art Nouveau noise-warped sinuous vine stems and branch lattice"},
     "baroque_scrollwork": {"texture_fn": texture_baroque_scrollwork,  "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Tiled Archimedean spiral scrollwork with 3-lobe flourish modulation"},
     "brushed_metal_fine": {"texture_fn": texture_brushed_metal_fine,  "paint_fn": paint_pinstripe,          "variable_cc": False, "desc": "Three-frequency anisotropic directional micro-scratch grain"},
@@ -8355,7 +9887,7 @@ PATTERN_REGISTRY = {
     "hex_mandala":        {"texture_fn": texture_sacred_geometry,     "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Three 120°-offset plane waves Flower of Life hexagonal mandalas"},
     "stained_glass":      {"texture_fn": texture_stained_glass_voronoi,"paint_fn": paint_mosaic_tint,       "variable_cc": False, "desc": "Voronoi panes with random luminance and dark grout lines"},
     "topographic_dense":  {"texture_fn": texture_topographic_dense,   "paint_fn": paint_topographic_line,  "variable_cc": False, "desc": "35 tightly-spaced contour lines over multi-scale noise height field"},
-    # ── Tribal & Ancient (✨) — Batch 2 (2026-03-28) ─────────────────────────
+    # â”€â”€ Tribal & Ancient (âœ¨) — Batch 2 (2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "spiral_fern":        {"texture_fn": texture_maori_koru,          "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Maori koru logarithmic spiral fern frond uncoiling in tiled cells"},
     "zigzag_bands":       {"texture_fn": texture_polynesian_tapa,     "paint_fn": paint_crosshatch_ink,     "variable_cc": False, "desc": "Polynesian tapa cloth alternating zigzag and crosshatch band rows"},
     "radial_calendar":    {"texture_fn": texture_aztec_sun,           "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Aztec sun stone radial spoke and concentric ring calendar wheel"},
@@ -8368,7 +9900,7 @@ PATTERN_REGISTRY = {
     "eight_point_star":   {"texture_fn": texture_eight_point_star,    "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "8-pointed geometric star four-direction arm distance tiling"},
     "petal_frieze":       {"texture_fn": texture_egyptian_lotus,      "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Egyptian lotus frieze radial teardrop petal cluster with center stalk"},
     "cloud_scroll":       {"texture_fn": texture_chinese_cloud,       "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Chinese ruyi cloud L-inf rectangular ring scroll with corner softening"},
-    # ── Natural Textures (🌿) — Batch 3 (2026-03-28) ─────────────────────────
+    # â”€â”€ Natural Textures (ðŸŒ¿) — Batch 3 (2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "marble_veining":     {"texture_fn": texture_marble_veining,      "paint_fn": paint_damascus_layer,     "variable_cc": False, "desc": "Turbulence-warped sinusoidal marble vein network with secondary veins"},
     "wood_burl":          {"texture_fn": texture_wood_burl,           "paint_fn": paint_pinstripe,          "variable_cc": False, "desc": "Multi-center swirling concentric ellipse burl figure with noise warp"},
     "seigaiha_scales":    {"texture_fn": texture_seigaiha_scales,     "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Japanese seigaiha overlapping arched half-circle scale tiles"},
@@ -8381,7 +9913,7 @@ PATTERN_REGISTRY = {
     "birch_bark":         {"texture_fn": texture_birch_bark,          "paint_fn": paint_pinstripe,          "variable_cc": False, "desc": "Birch bark noise-warped horizontal lenticel bands with cracks"},
     "pine_cone_scale":    {"texture_fn": texture_pine_cone_scale,     "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Phyllotaxis dual diagonal sine families forming diamond scale tiles"},
     "geode_crystal":      {"texture_fn": texture_geode_crystal,       "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Geode Voronoi crystal facets with per-facet directional sheen lines"},
-    # ── Tech & Circuit (⚙️) — Batch 4 (2026-03-28) ─────────────────────────
+    # â”€â”€ Tech & Circuit (âš™ï¸) — Batch 4 (2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "circuit_traces":  {"texture_fn": texture_circuit_traces,  "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "PCB orthogonal grid traces with via pad rings at intersections"},
     "hex_circuit":     {"texture_fn": texture_hex_circuit,     "paint_fn": paint_hex_emboss,         "variable_cc": False, "desc": "Hexagonal circuit grid three-direction parallel lines forming hex trace network"},
     "biomech_cables":  {"texture_fn": texture_biomech_cables,  "paint_fn": paint_pinstripe,          "variable_cc": False, "desc": "Sinusoidal twisted cable bundles with circumferential rib details"},
@@ -8394,7 +9926,7 @@ PATTERN_REGISTRY = {
     "fiber_optic":     {"texture_fn": texture_fiber_optic,     "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Hexagonally close-packed fiber core cross-sections with cladding ring"},
     "sonar_ping":      {"texture_fn": texture_sonar_ping,      "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Expanding concentric rings from multiple offset radar/sonar source points"},
     "waveform_stack":  {"texture_fn": texture_waveform_stack,  "paint_fn": paint_pinstripe,          "variable_cc": False, "desc": "Multiple layered oscilloscope sine traces offset vertically across surface"},
-    # ── Art Deco & Geometric (🎨) — Batch 5 (2026-03-28) ─────────────────────────
+    # â”€â”€ Art Deco & Geometric (ðŸŽ¨) — Batch 5 (2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "art_deco_fan":   {"texture_fn": texture_art_deco_fan,   "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Tiled semicircular fans with radiating spokes and concentric arc bands"},
     "chevron_stack":  {"texture_fn": texture_chevron_stack,  "paint_fn": paint_pinstripe,          "variable_cc": False, "desc": "Stacked V-chevrons via triangular-wave centerline periodic in y"},
     "quatrefoil":     {"texture_fn": texture_quatrefoil,     "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Four overlapping circle-arc leaves forming a Gothic quatrefoil foil lattice"},
@@ -8407,7 +9939,7 @@ PATTERN_REGISTRY = {
     "moire_grid":     {"texture_fn": texture_moire_grid,     "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Two slightly angled parallel line families creating interference fringe patterns"},
     "lozenge_tile":   {"texture_fn": texture_lozenge_tile,   "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Offset-row diamond lozenge shapes with L1-norm border outline"},
     "ogee_lattice":   {"texture_fn": texture_ogee_lattice,   "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Sinusoidally-warped grid creating S-curve Gothic ogee arch lattice shapes"},
-    # ── Mathematical & Fractal (🌀) — Batch 6 (2026-03-28) ─────────────────────────
+    # â”€â”€ Mathematical & Fractal (ðŸŒ€) — Batch 6 (2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "reaction_diffusion":  {"texture_fn": texture_reaction_diffusion,  "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Gray-Scott Turing activator-inhibitor spot/stripe morphogenesis approximation"},
     "fractal_fern":        {"texture_fn": texture_fractal_fern,        "paint_fn": paint_fractal_fern_tint,  "variable_cc": False, "desc": "Barnsley fern IFS attractor — green-tinted fractal leaf pattern with visible stem structure"},
     "hilbert_curve":       {"texture_fn": texture_hilbert_curve,       "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Hilbert space-filling curve maze — walls rendered between non-adjacent cells"},
@@ -8420,11 +9952,11 @@ PATTERN_REGISTRY = {
     "perlin_terrain":      {"texture_fn": texture_perlin_terrain,      "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Multi-octave terrain noise with ridged sharpening for erosion scar morphology"},
     "phyllotaxis":         {"texture_fn": texture_phyllotaxis,         "paint_fn": paint_hex_emboss,         "variable_cc": False, "desc": "Fibonacci phyllotaxis golden-angle seed spiral packing distance field"},
     "truchet_flow":        {"texture_fn": texture_truchet_flow,        "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Truchet quarter-circle arc tiles — random orientation creates organic flowing paths"},
-    # ── Op-Art & Visual Illusions (🔮) — Batch 7 (2026-03-28) ─────────────────────────
+    # â”€â”€ Op-Art & Visual Illusions (ðŸ”®) — Batch 7 (2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "concentric_op":       {"texture_fn": texture_concentric_op,       "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Bridget Riley dual-frequency concentric bands producing optical vibration beat"},
     "checker_warp":        {"texture_fn": texture_checker_warp,        "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Sine-warped checkerboard — sinusoidal displacement creates bulging impossible grid illusion"},
     "barrel_distort":      {"texture_fn": texture_barrel_distort,      "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Barrel lens distortion applied to checkerboard — straight lines bow outward from center"},
-    "moire_interference":  {"texture_fn": texture_moire_interference,  "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Two grids at 7% different scale and 15-degree rotation producing moiré beat fringes"},
+    "moire_interference":  {"texture_fn": texture_moire_interference,  "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Two grids at 7% different scale and 15-degree rotation producing moirÃ© beat fringes"},
     "twisted_rings":       {"texture_fn": texture_twisted_rings,       "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Concentric rings twisted by radius via Archimedean phase — spring vortex illusion"},
     "spiral_hypnotic":     {"texture_fn": texture_spiral_hypnotic,     "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Archimedean spiral banded by phase offset — rotating depth vortex optical illusion"},
     "necker_grid":         {"texture_fn": texture_necker_grid,         "paint_fn": paint_hex_emboss,         "variable_cc": False, "desc": "Isometric cube tiling with three-brightness face shading — Necker cube 3D/2D illusion"},
@@ -8433,7 +9965,7 @@ PATTERN_REGISTRY = {
     "pinwheel_tiling":     {"texture_fn": texture_pinwheel_tiling,     "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "7 golden-angle overlapping grids approximate aperiodic pinwheel — no repeating tile direction"},
     "impossible_grid":     {"texture_fn": texture_impossible_grid,     "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Phase-inverted alternating square cells with banded L-inf metric — impossible connectivity illusion"},
     "rose_curve":          {"texture_fn": texture_rose_curve,          "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Rhodonea k=5 polar rose tiled field — five-petal outline with radial gradient fill"},
-    # ── Art Deco Depth + Textile (🏛️🧵) — Batch 8 (2026-03-28) ────────────────────────
+    # â”€â”€ Art Deco Depth + Textile (ðŸ›ï¸ðŸ§µ) — Batch 8 (2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "art_deco_sunburst":   {"texture_fn": texture_art_deco_sunburst,   "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Chrysler Building Art Deco sunburst — 36 radial spokes with 5 concentric decorative ring bands"},
     "art_deco_chevron":    {"texture_fn": texture_art_deco_chevron,    "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Bold Art Deco double-stripe nested V chevrons with wide gaps — classic 1920s style"},
     "greek_meander":       {"texture_fn": texture_greek_meander,       "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Greek key meander right-angle hook spiral motif tiled in alternating-parity rows"},
@@ -8446,7 +9978,7 @@ PATTERN_REGISTRY = {
     "cable_knit":          {"texture_fn": texture_cable_knit,          "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Cable knit — vertical rope-twist columns with two strands crossing per period"},
     "damask_brocade":      {"texture_fn": texture_damask_brocade,      "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Damask brocade — four-petal rose with outer ring and diamond accent, figure-vs-ground contrast"},
     "tatami_grid":         {"texture_fn": texture_tatami_grid,         "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Tatami grid — Japanese 2:1 mat rectangles staggered alternating rows with border lines"},
-    # ── Final 4 — To 100 Patterns (🏁 Batch 9, 2026-03-28) ──────────────────────────
+    # â”€â”€ Final 4 — To 100 Patterns (ðŸ Batch 9, 2026-03-28) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "hypocycloid":         {"texture_fn": texture_hypocycloid,         "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Tiled 5-cusped Spirograph hypocycloid — parametric star outline from k=5 hypotrochoid curve"},
     "voronoi_relaxed":     {"texture_fn": texture_voronoi_relaxed,     "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Centroidal Voronoi relaxed cells — jitter-grid seeds give uniform organic cell borders"},
     "wave_ripple_2d":      {"texture_fn": texture_wave_ripple_2d,      "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "2D circular wave interference from 4 sources — constructive/destructive ring patterns"},
@@ -8606,11 +10138,11 @@ MONOLITHIC_REGISTRY = {
     "thermochromic":      (spec_thermochromic, paint_thermochromic),
     "weathered_paint": (spec_weathered_paint, paint_weathered_peel),
     "worn_chrome":  (spec_worn_chrome,   paint_patina),
-    # ── RESEARCH-008: New Exotic Monolithic Bases ──────────────
+    # â”€â”€ RESEARCH-008: New Exotic Monolithic Bases â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "oil_slick_base":      (spec_oil_slick_base,      paint_oil_slick_full),
     "thermal_titanium":    (spec_thermal_titanium,     paint_thermal_titanium),
     "galaxy_nebula_base":  (spec_galaxy_nebula_base,   paint_galaxy_nebula_full),
-    # ── RESEARCH SESSION 6: 6 New Monolithic Finishes (2026-03-29) ──────────
+    # â”€â”€ RESEARCH SESSION 6: 6 New Monolithic Finishes (2026-03-29) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "aurora_borealis_mono":  (spec_aurora_borealis_mono,  paint_aurora_borealis_mono),
     "deep_space_void":       (spec_deep_space_void,        paint_deep_space_void),
     "polished_obsidian_mono":(spec_polished_obsidian_mono, paint_polished_obsidian_mono),
@@ -8674,6 +10206,16 @@ try:
             _new_spec  = _pz_fns.get(f'spec_{_pzk}',  _old_spec)
             _new_paint = _pz_fns.get(f'paint_{_pzk}', _old_paint)
             MONOLITHIC_REGISTRY[_pzk] = (_new_spec, _new_paint)
+        # Wave 3 prizm finishes live in prizm.py but may be absent from static dict.
+        for _pz_name, _pz_fn in _pz_fns.items():
+            if not _pz_name.startswith('spec_prizm_') or _pz_name in ('spec_prizm',):
+                continue
+            _pz_id = _pz_name[len('spec_'):]
+            if _pz_id in MONOLITHIC_REGISTRY:
+                continue
+            _pz_paint = _pz_fns.get(f'paint_{_pz_id}')
+            if _pz_paint is not None:
+                MONOLITHIC_REGISTRY[_pz_id] = (_pz_fn, _pz_paint)
         print(f"[V5] Prizm module loaded ({len(_pz_fns)} functions)")
     else:
         print("[V5] engine/prizm.py not found - using legacy prizm stubs")
@@ -8688,6 +10230,113 @@ import sys as _sys
 
 _expansions_loaded = False
 
+
+def _spb_restore_fractured_wilds_release_entries():
+    """Restore the accepted 110 Wilds entries after an early module import.
+
+    Expansion audit tools import the recipe modules directly.  If that occurs
+    before this engine finishes its circular registry merge, the merge can
+    retain the lazy-load flag while discarding the registrations.  Rebuilding
+    only the missing Wilds entries here makes lazy loading order-independent.
+    """
+    from engine.expansions import fractured_bloom_2026 as _wilds_bloom
+    from engine.expansions import fractured_morpho_2026 as _wilds_morpho
+    from engine.expansions import fractured_petri_2026 as _wilds_petri
+    from engine.expansions import fractured_themes_2026 as _wilds_themes
+    from engine.expansions import fractured_themes_fix_2026 as _wilds_fixes
+
+    expected = (
+        tuple(_wilds_themes.CRYPTID)
+        + tuple(_wilds_morpho.ALL)
+        + tuple(_wilds_bloom.ALL)
+        + tuple(_wilds_petri.ALL)
+    )
+    registries = [MONOLITHIC_REGISTRY]
+    fusion_registry = globals().get("FUSION_REGISTRY")
+    if isinstance(fusion_registry, dict) and all(
+        fusion_registry is not existing for existing in registries
+    ):
+        registries.append(fusion_registry)
+    try:
+        from engine.registry import FUSION_REGISTRY as _package_fusion_registry
+        from engine.registry import MONOLITHIC_REGISTRY as _package_mono_registry
+
+        for registry in (_package_mono_registry, _package_fusion_registry):
+            if isinstance(registry, dict) and all(
+                registry is not existing for existing in registries
+            ):
+                registries.append(registry)
+    except Exception:
+        pass
+
+    missing = [
+        finish_id for finish_id in expected
+        if any(finish_id not in registry for registry in registries)
+    ]
+    if not missing:
+        return 0
+
+    entries = {}
+    for finish_id in _wilds_themes.CRYPTID:
+        entries[finish_id] = (
+            _wilds_fixes._mk(finish_id)
+            if finish_id in _wilds_fixes.FIX
+            else _wilds_themes._mk(finish_id)
+        )
+    entries.update(
+        (finish_id, _wilds_morpho._mk(finish_id))
+        for finish_id in _wilds_morpho.ALL
+    )
+    entries.update(
+        (finish_id, _wilds_bloom.KIT.mk(finish_id))
+        for finish_id in _wilds_bloom.ALL
+    )
+    entries.update(
+        (finish_id, _wilds_petri.KIT.mk(finish_id))
+        for finish_id in _wilds_petri.ALL
+    )
+
+    for registry in registries:
+        registry.update(entries)
+
+    still_missing = [
+        finish_id for finish_id in expected
+        if any(finish_id not in registry for registry in registries)
+    ]
+    if still_missing:
+        raise RuntimeError(
+            "Fractured Wilds registry restore incomplete: " + ", ".join(still_missing)
+        )
+    print(f"  [Fractured-Wilds] restored {len(missing)} order-sensitive release entries")
+    return len(missing)
+
+
+def _spb_apply_fractured_wilds_accepted_overrides():
+    """Apply only native-reviewed experimental Wilds survivors last.
+
+    SPB-WILDS rollout tick 2026-08-25. Owner authorized accepted provisional
+    finishes to be testable in the app as they clear review. Legacy entries
+    remain available for every unresolved ID, and an import failure leaves
+    those existing entries untouched.
+    """
+    try:
+        from engine.expansions.fractured_wilds_accepted_2026 import (
+            ACCEPTED_IDS,
+            install_into_engine,
+        )
+        already_live = all(
+            finish_id in MONOLITHIC_REGISTRY
+            and getattr(MONOLITHIC_REGISTRY[finish_id][1], "__name__", "").endswith("_accepted_2026")
+            for finish_id in ACCEPTED_IDS
+        )
+        if already_live:
+            return 0
+        print("  [Fractured-Wilds-Accepted] " + install_into_engine(MONOLITHIC_REGISTRY))
+        return len(ACCEPTED_IDS)
+    except Exception as exc:
+        print(f"  [Fractured-Wilds-Accepted] warning: {exc}")
+        return 0
+
 def _ensure_expansions_loaded():
     """Lazy-load all expansion modules on first render. INTERNAL.
 
@@ -8701,8 +10350,15 @@ def _ensure_expansions_loaded():
     """
     global _expansions_loaded
     if _expansions_loaded:
+        # A circular import can complete the first lazy pass before the final
+        # registry merge replaces its entries.  Re-check the release census on
+        # every nominally idempotent call; after a healthy restore this is an
+        # O(110) membership-only no-op.
+        restored = _spb_restore_fractured_wilds_release_entries()
+        accepted = _spb_apply_fractured_wilds_accepted_overrides()
+        if (restored or accepted) and "_spb_apply_monolithic_contract_guards" in globals():
+            _spb_apply_monolithic_contract_guards()
         return
-    _expansions_loaded = True
     _t0 = time.time()
     _this_module = _sys.modules[__name__]
 
@@ -8720,7 +10376,10 @@ def _ensure_expansions_loaded():
         from engine.pattern_expansion import NEW_PATTERNS
         PATTERN_REGISTRY.update(NEW_PATTERNS)
     except Exception as _e:
-        pass
+        raise RuntimeError(
+            "Pattern expansion module failed during lazy engine load; "
+            "refusing to render with missing expansion patterns"
+        ) from _e
 
     # --- COLOR MONOLITHICS EXPANSION (260+ color-changing finishes) ---
     try:
@@ -8740,14 +10399,26 @@ def _ensure_expansions_loaded():
     except Exception as e:
         print(f"[PARADIGM] Load error: {e}")
 
-    # --- FUSIONS EXPANSION (150 Paradigm Shift Hybrid Materials) ---
+    # --- FUSIONS EXPANSION (150 Paradigm Shift + 50 â˜… Spectrum Shift) ---
     try:
-        import shokker_fusions_expansion as _fusions
+        try:
+            import shokker_fusions_expansion as _fusions
+        except ImportError:
+            from engine.expansions import fusions as _fusions  # SPB-102 canonical path
         _fusions.integrate_fusions(_this_module)
     except ImportError:
         print("[FUSIONS] Module not found - running without paradigm shift fusions")
     except Exception as e:
         print(f"[FUSIONS] Load error: {e}")
+
+    # --- SHOKKER LIVING FINISHES (phase-field motion illusion materials) ---
+    try:
+        from engine.expansions import living_finishes as _living_finishes
+        _living_finishes.integrate_living_finishes(_this_module)
+    except ImportError:
+        print("[Living Finishes] Module not found - running without SHOKKER Living finishes")
+    except Exception as e:
+        print(f"[Living Finishes] Load error: {e}")
 
     # --- ATELIER EXPANSION (Ultra-Detail / Pro Grade finishes) ---
     try:
@@ -8758,25 +10429,74 @@ def _ensure_expansions_loaded():
     except Exception as e:
         print(f"[Atelier] Load error: {e}")
 
+    if "_spb_apply_owner_review_effects" in globals():
+        _spb_apply_owner_review_effects()
+    if "_spb_apply_owner_review_signal" in globals():
+        _spb_apply_owner_review_signal()
+    if "_spb_apply_owner_review_atmosphere" in globals():
+        _spb_apply_owner_review_atmosphere()
+    if "_spb_apply_owner_review_chameleon" in globals():
+        _spb_apply_owner_review_chameleon()
+    if "_spb_apply_colorshift_rework_2026" in globals():
+        _spb_apply_colorshift_rework_2026()
+    if "_spb_apply_owner_review_gradients" in globals():
+        _spb_apply_owner_review_gradients()
+    if "_spb_apply_color_science_rebuild_2026" in globals():
+        _spb_apply_color_science_rebuild_2026()
     if "_spb_wrap_pattern_registry_detail" in globals():
         _spb_wrap_pattern_registry_detail()
     if "_spb_apply_regular_pattern_rebuilds" in globals():
         _spb_apply_regular_pattern_rebuilds()
     if "_spb_apply_pattern_quality_floor" in globals():
         _spb_apply_pattern_quality_floor()
+    if "_SPB_REGULAR_IMAGE_OVERRIDES" in globals():
+        for _pid, _path in _SPB_REGULAR_IMAGE_OVERRIDES.items():
+            if "generated_pattern_overrides/regular_floor" in str(_path).replace("\\", "/"):
+                continue  # [SPB Alpha 2026-06-02] regular_floor tiles are opaque full-bleed art that fills the zone; keep the procedural alpha-stamp renderer (matches biomechanical).
+            if _pid in PATTERN_REGISTRY: PATTERN_REGISTRY[_pid] = dict(PATTERN_REGISTRY[_pid], image_path=_path, texture_fn=None, _spb_asset_variant="tracked regular pattern tile")
     if "_spb_apply_standalone_monolithic_detail_profiles" in globals():
         _spb_apply_standalone_monolithic_detail_profiles()
+    if "_spb_apply_owner_review_standalone" in globals():
+        _spb_apply_owner_review_standalone()
     if "_spb_wire_regular_base_v2_overrides" in globals():
         _spb_wire_regular_base_v2_overrides()
     if "_normalize_classic_foundation_contract" in globals():
         _normalize_classic_foundation_contract()
     if "_spb_apply_regular_base_quality_wrappers" in globals():
         _spb_apply_regular_base_quality_wrappers()
+    # SPB-WILDS 2026-08-23 tick W-5 — owner: "Must be VERY UNIQUE" and keep
+    # the Fractured flip.  Combined release testing exposed an import-order
+    # hole that could hide the accepted W3 entries (official M7 54/110 ->
+    # 110/110 >=85) even though their recipe modules were loaded.
+    _spb_restore_fractured_wilds_release_entries()
+    _spb_apply_fractured_wilds_accepted_overrides()
     if "_spb_apply_monolithic_contract_guards" in globals():
         _spb_apply_monolithic_contract_guards()
+    # [Owner Review] Wild Spec Lab — MUST run last here: the override passes above
+    # (regular_base_v2 + quality wrappers) re-wire SHOKK base_spec_fns on this
+    # lazy first-render load and would otherwise revert the import-time wild pass.
+    if "_spb_apply_wild_specs" in globals():
+        _spb_apply_wild_specs()
+    if "_spb_apply_color_science_rebuild_2026" in globals():
+        _spb_apply_color_science_rebuild_2026()   # final authority — beats wild_spec re-wire (SHOKK etc.)
+    # SPB-105 tick NU-25-LIVE-1 — the special picker selects every Neon card
+    # through mono:<id>, including the ten compatibility bases. Reassert v3
+    # after lazy legacy/color-science mutations so the app cannot fall back.
+    if "_spb_apply_neon_underground_v3" in globals():
+        _spb_apply_neon_underground_v3()
+    if "_spb_refresh_catalog_fallback_diagnostics" in globals():
+        _spb_refresh_catalog_fallback_diagnostics("after lazy expansion load")
 
+    _expansions_loaded = True
     print(f"  [Lazy-Load] All expansion modules loaded in {time.time()-_t0:.2f}s")
 
+    # [FOUNDATION PURE 2026-09-30] TRUE dead-last. Expansion loading re-registers
+    # Foundation cells, so re-pin them to the pure constant M/R/CC spec here too.
+    try:
+        from engine.base_registry_data import _upgrade_foundation_material_spec as _fnd_mat
+        _fnd_mat(BASE_REGISTRY)
+    except Exception:
+        pass
 
 # ================================================================
 # REGISTRY MERGE — Bring in ALL entries from engine.registry that didn't
@@ -8808,6 +10528,21 @@ try:
         if _added_b: print(f"  [Registry merge] +{_added_b} bases (Foundation, expansions)")
         if _added_p: print(f"  [Registry merge] +{_added_p} patterns (image-based, decades, examples)")
         if _added_m: print(f"  [Registry merge] +{_added_m} monolithics")
+    # 2026-06-03 case-collision dedup: remove the 23 PATTERN ids that are pure case-variants
+    # of a LIVE tile (18 PascalCase scanner-mints of a curated lowercase + 5 skate/surf
+    # lowercase whose live tile is the PascalCase). Computed via scripts/analyze_case_dups.py
+    # against finish-data references. KEEP-BOTH distinct pairs (Art_Deco/art_deco, Mandala/
+    # mandala, Mosaic/mosaic) and the registry-only Norse_Rune pair are intentionally left.
+    _CASE_DUP_REMOVE = (
+        "Aztec_Alt1", "Aztec_Alt2", "Basket_Weave", "Carbon_Alt_1", "Carbon_Weave",
+        "Dragon_Scale", "Dragon_Scale_Alt", "Fleur_de_Lis", "Fleur_de_Lis_Alt", "Geo_Weave",
+        "Hex_Carbon", "Japanese_Wave", "Mandela_Ornate", "Muertos_DOD1", "Muertos_DOD2",
+        "Multi_Directional", "Steampunk_Gears", "Wavy_Carbon",
+        "billabong_board", "bong_surfer", "surf_80s", "surfin_80s", "thrash_metal_skate",
+    )
+    _dups_removed = [d for d in _CASE_DUP_REMOVE if PATTERN_REGISTRY.pop(d, None) is not None]
+    if _dups_removed:
+        print(f"  [Case-dedup] removed {len(_dups_removed)} duplicate case-variant pattern id(s)")
 except Exception as _merge_err:
     print(f"  [Registry merge] Warning: {_merge_err}")
 
@@ -8947,8 +10682,18 @@ for _ak, _av_target in _UI_PATTERN_ALIASES.items():
         _alias_wired += 1
 if _alias_wired:
     print(f"  [UI Alias] Wired {_alias_wired} documented UI pattern alias(es)")
-
-
+_SPB_REGULAR_IMAGE_OVERRIDES = {"tribal_norse_runes": "assets/patterns/artistic_cultural/norse_rune_tribal.jpg", "rune_symbols": "assets/patterns/artistic_cultural/rune_symbols_tile.jpg", "Bong_Surfer": "assets/patterns/skate_surf/bong_surfer.jpg", "Thrash_Metal_Skate": "assets/patterns/skate_surf/thrash_metal_skate.jpg", "Surfin_80s": "assets/patterns/skate_surf/surfin_80s.jpg", "Surf_80s": "assets/patterns/skate_surf/surf_80s.jpg", "Billabong_Board": "assets/patterns/skate_surf/billabong_board.jpg", "12428555_4988298": "assets/patterns/decades/12428555_4988298.jpg", "78534344_9837553_1": "assets/patterns/decades/78534344_9837553_1.jpg", "6868396_23455": "assets/patterns/decades/6868396_23455.jpg", "12284536_4958169": "assets/patterns/decades/12284536_4958169.jpg", "12267458_4936872": "assets/patterns/decades/12267458_4936872.jpg", "144644845_10133112": "assets/patterns/decades/144644845_10133112.jpg", "decade_90s_dialup_static": "assets/generated_pattern_overrides/regular_floor/decade_90s_dialup_static.png", "snake_skin": "assets/generated_pattern_overrides/regular_floor/snake_skin.png", "carbon_clearcoat_lock": "assets/generated_pattern_overrides/regular_floor/carbon_clearcoat_lock.png", "decade_90s_rave_zigzag": "assets/generated_pattern_overrides/regular_floor/decade_90s_rave_zigzag.png", "fractal": "assets/generated_pattern_overrides/regular_floor/fractal.png", "decade_60s_opart_illusion": "assets/generated_pattern_overrides/regular_floor/decade_60s_opart_illusion.png", "birch_bark": "assets/generated_pattern_overrides/regular_floor/birch_bark.png", "decade_80s_leg_warmer": "assets/generated_pattern_overrides/regular_floor/decade_80s_leg_warmer.png", "dragon_curve": "assets/generated_pattern_overrides/regular_floor/dragon_curve.png", "stardust_2": "assets/generated_pattern_overrides/regular_floor/stardust_2.png", "optical_illusion_2": "assets/generated_pattern_overrides/regular_floor/optical_illusion_2.png", "hex_carbon": "assets/generated_pattern_overrides/regular_floor/hex_carbon.png", "decade_90s_dot_matrix": "assets/generated_pattern_overrides/regular_floor/decade_90s_dot_matrix.png", "Thrash_Metal_Skate_Alt": "assets/generated_pattern_overrides/regular_floor/Thrash_Metal_Skate_Alt.png", "wave_ripple_2d": "assets/generated_pattern_overrides/regular_floor/wave_ripple_2d.png", "decade_90s_fresh_prince": "assets/generated_pattern_overrides/regular_floor/decade_90s_fresh_prince.png", "celtic_knot": "assets/generated_pattern_overrides/regular_floor/celtic_knot.png", "graphene_hex": "assets/generated_pattern_overrides/regular_floor/graphene_hex.png", "interference": "assets/generated_pattern_overrides/regular_floor/interference.png", "optical_illusion": "assets/generated_pattern_overrides/regular_floor/optical_illusion.png", "petal_frieze": "assets/generated_pattern_overrides/regular_floor/petal_frieze.png", "decade_90s_rollerblade_streak": "assets/generated_pattern_overrides/regular_floor/decade_90s_rollerblade_streak.png", "decade_90s_sega_blast": "assets/generated_pattern_overrides/regular_floor/decade_90s_sega_blast.png", "decade_90s_slap_bracelet": "assets/generated_pattern_overrides/regular_floor/decade_90s_slap_bracelet.png", "aurora_bands": "assets/generated_pattern_overrides/regular_floor/aurora_bands.png", "geo_fractal_triangle": "assets/generated_pattern_overrides/regular_floor/geo_fractal_triangle.png", "wavy_carbon": "assets/generated_pattern_overrides/regular_floor/wavy_carbon.png", "chrome_delete_edge": "assets/generated_pattern_overrides/regular_floor/chrome_delete_edge.png", "ammonite_chambers": "assets/generated_pattern_overrides/regular_floor/ammonite_chambers.png", "dimensional": "assets/generated_pattern_overrides/regular_floor/dimensional.png", "insect_compound": "assets/generated_pattern_overrides/regular_floor/insect_compound.png", "argyle": "assets/generated_pattern_overrides/regular_floor/argyle.png", "carbon_alt_1": "assets/generated_pattern_overrides/regular_floor/carbon_alt_1.png", "lorenz_slice": "assets/generated_pattern_overrides/regular_floor/lorenz_slice.png"}
+_SPB_REGULAR_IMAGE_OVERRIDES.update({"tornado": "assets/generated_pattern_overrides/regular_floor/tornado.png", "herringbone": "assets/generated_pattern_overrides/regular_floor/herringbone.png", "geo_weave": "assets/generated_pattern_overrides/regular_floor/geo_weave.png", "pearlescent_flip": "assets/generated_pattern_overrides/regular_floor/pearlescent_flip.png", "tiger_stripe": "assets/generated_pattern_overrides/regular_floor/tiger_stripe.png", "decade_50s_atomic_reactor": "assets/generated_pattern_overrides/regular_floor/decade_50s_atomic_reactor.png", "escher_reptile": "assets/generated_pattern_overrides/regular_floor/escher_reptile.png", "damask_brocade": "assets/generated_pattern_overrides/regular_floor/damask_brocade.png", "lozenge_tile": "assets/generated_pattern_overrides/regular_floor/lozenge_tile.png", "decade_90s_floppy_disk": "assets/generated_pattern_overrides/regular_floor/decade_90s_floppy_disk.png", "tatami_grid": "assets/generated_pattern_overrides/regular_floor/tatami_grid.png", "sierpinski_tri": "assets/generated_pattern_overrides/regular_floor/sierpinski_tri.png", "fractal_3": "assets/generated_pattern_overrides/regular_floor/fractal_3.png", "tribal_celtic_spiral": "assets/generated_pattern_overrides/regular_floor/tribal_celtic_spiral.png", "wave_standing": "assets/generated_pattern_overrides/regular_floor/wave_standing.png", "uv_night_accent": "assets/generated_pattern_overrides/regular_floor/uv_night_accent.png", "decade_90s_chrome_bubble": "assets/generated_pattern_overrides/regular_floor/decade_90s_chrome_bubble.png", "sonar_ping": "assets/generated_pattern_overrides/regular_floor/sonar_ping.png", "moire_interference": "assets/generated_pattern_overrides/regular_floor/moire_interference.png", "diffraction_grating": "assets/generated_pattern_overrides/regular_floor/diffraction_grating.png", "star_tile_mosaic": "assets/generated_pattern_overrides/regular_floor/star_tile_mosaic.png", "wave": "assets/generated_pattern_overrides/regular_floor/wave.png", "razor_wire": "assets/generated_pattern_overrides/regular_floor/razor_wire.png", "kevlar_weave": "assets/generated_pattern_overrides/regular_floor/kevlar_weave.png", "checker_warp": "assets/generated_pattern_overrides/regular_floor/checker_warp.png", "decade_60s_tie_dye_spiral": "assets/generated_pattern_overrides/regular_floor/decade_60s_tie_dye_spiral.png", "shokk_signal_noise": "assets/generated_pattern_overrides/regular_floor/shokk_signal_noise.png", "shimmer_prism_frost": "assets/generated_pattern_overrides/regular_floor/shimmer_prism_frost.png", "decade_90s_grunge_splatter": "assets/generated_pattern_overrides/regular_floor/decade_90s_grunge_splatter.png", "circuit_traces": "assets/generated_pattern_overrides/regular_floor/circuit_traces.png", "p_topographic": "assets/generated_pattern_overrides/regular_floor/p_topographic.png", "decade_50s_boomerang_formica": "assets/generated_pattern_overrides/regular_floor/decade_50s_boomerang_formica.png", "decade_80s_rubiks_cube": "assets/generated_pattern_overrides/regular_floor/decade_80s_rubiks_cube.png", "wood_burl": "assets/generated_pattern_overrides/regular_floor/wood_burl.png", "voronoi_shatter": "assets/generated_pattern_overrides/regular_floor/voronoi_shatter.png", "nature_water_ripple_pat": "assets/generated_pattern_overrides/regular_floor/nature_water_ripple_pat.png", "decade_80s_boombox_speaker": "assets/generated_pattern_overrides/regular_floor/decade_80s_boombox_speaker.png", "impossible_grid": "assets/generated_pattern_overrides/regular_floor/impossible_grid.png"})
+_SPB_REGULAR_IMAGE_OVERRIDES.update({"shimmer_matte_halo": "assets/generated_pattern_overrides/regular_floor/shimmer_matte_halo.png", "crocodile": "assets/generated_pattern_overrides/regular_floor/crocodile.png", "dragonfly_wing_pattern": "assets/generated_pattern_overrides/regular_floor/dragonfly_wing_pattern.png", "diamond_plate": "assets/generated_pattern_overrides/regular_floor/diamond_plate.png", "eight_point_star": "assets/generated_pattern_overrides/regular_floor/eight_point_star.png", "spiral_hypnotic": "assets/generated_pattern_overrides/regular_floor/spiral_hypnotic.png", "multicam": "assets/generated_pattern_overrides/regular_floor/multicam.png", "necker_grid": "assets/generated_pattern_overrides/regular_floor/necker_grid.png", "corrugated": "assets/generated_pattern_overrides/regular_floor/corrugated.png", "basket_weave": "assets/generated_pattern_overrides/regular_floor/basket_weave.png", "pixel_grid": "assets/generated_pattern_overrides/regular_floor/pixel_grid.png", "pinstripe": "assets/generated_pattern_overrides/regular_floor/pinstripe.png", "data_stream": "assets/generated_pattern_overrides/regular_floor/data_stream.png", "iridescent_fog": "assets/generated_pattern_overrides/regular_floor/iridescent_fog.png", "op_art_rings": "assets/generated_pattern_overrides/regular_floor/op_art_rings.png", "hex_mesh": "assets/generated_pattern_overrides/regular_floor/hex_mesh.png", "chainmail_hex": "assets/generated_pattern_overrides/regular_floor/chainmail_hex.png", "barrel_distort": "assets/generated_pattern_overrides/regular_floor/barrel_distort.png", "peacock_eye": "assets/generated_pattern_overrides/regular_floor/peacock_eye.png", "shokk_packet_storm": "assets/generated_pattern_overrides/regular_floor/shokk_packet_storm.png", "cable_knit": "assets/generated_pattern_overrides/regular_floor/cable_knit.png", "snake_skin_4": "assets/generated_pattern_overrides/regular_floor/snake_skin_4.png", "lissajous_web": "assets/generated_pattern_overrides/regular_floor/lissajous_web.png", "snake_skin_2": "assets/generated_pattern_overrides/regular_floor/snake_skin_2.png", "iron_emblem": "assets/generated_pattern_overrides/regular_floor/iron_emblem.png", "dazzle": "assets/generated_pattern_overrides/regular_floor/dazzle.png", "shokk_firewall": "assets/generated_pattern_overrides/regular_floor/shokk_firewall.png", "zebra": "assets/generated_pattern_overrides/regular_floor/zebra.png", "hilbert_curve": "assets/generated_pattern_overrides/regular_floor/hilbert_curve.png", "coral_polyp": "assets/generated_pattern_overrides/regular_floor/coral_polyp.png", "crystal_lattice": "assets/generated_pattern_overrides/regular_floor/crystal_lattice.png", "step_fret": "assets/generated_pattern_overrides/regular_floor/step_fret.png", "decade_80s_nintendo_dpad": "assets/generated_pattern_overrides/regular_floor/decade_80s_nintendo_dpad.png", "plasma": "assets/generated_pattern_overrides/regular_floor/plasma.png", "shokk_cipher_pattern": "assets/generated_pattern_overrides/regular_floor/shokk_cipher_pattern.png", "aztec": "assets/generated_pattern_overrides/regular_floor/aztec.png", "holographic": "assets/generated_pattern_overrides/regular_floor/holographic.png", "perforated": "assets/generated_pattern_overrides/regular_floor/perforated.png", "hex_circuit": "assets/generated_pattern_overrides/regular_floor/hex_circuit.png", "p_tessellation": "assets/generated_pattern_overrides/regular_floor/p_tessellation.png", "shimmer_quantum_shard": "assets/generated_pattern_overrides/regular_floor/shimmer_quantum_shard.png", "houndstooth": "assets/generated_pattern_overrides/regular_floor/houndstooth.png", "satin_wax": "assets/generated_pattern_overrides/regular_floor/satin_wax.png", "diamond_blanket": "assets/generated_pattern_overrides/regular_floor/diamond_blanket.png", "marble_veining": "assets/generated_pattern_overrides/regular_floor/marble_veining.png", "hammered": "assets/generated_pattern_overrides/regular_floor/hammered.png", "quatrefoil": "assets/generated_pattern_overrides/regular_floor/quatrefoil.png", "decade_50s_diner_chrome": "assets/generated_pattern_overrides/regular_floor/decade_50s_diner_chrome.png", "barbed_wire": "assets/generated_pattern_overrides/regular_floor/barbed_wire.png", "decade_50s_casino_felt": "assets/generated_pattern_overrides/regular_floor/decade_50s_casino_felt.png", "racing_scratch": "assets/generated_pattern_overrides/regular_floor/racing_scratch.png", "decade_70s_earth_tone_geo": "assets/generated_pattern_overrides/regular_floor/decade_70s_earth_tone_geo.png", "seigaiha_scales": "assets/generated_pattern_overrides/regular_floor/seigaiha_scales.png", "crosshatch": "assets/generated_pattern_overrides/regular_floor/crosshatch.png", "stardust": "assets/generated_pattern_overrides/regular_floor/stardust.png", "decade_80s_rubiks_cube_2": "assets/generated_pattern_overrides/regular_floor/decade_80s_rubiks_cube_2.png", "tartan": "assets/generated_pattern_overrides/regular_floor/tartan.png", "nanoweave": "assets/generated_pattern_overrides/regular_floor/nanoweave.png"})
+_SPB_REGULAR_IMAGE_OVERRIDES.update({"giraffe": "assets/generated_pattern_overrides/regular_floor/giraffe.png", "decade_60s_caged_square": "assets/generated_pattern_overrides/regular_floor/decade_60s_caged_square.png", "hypocycloid": "assets/generated_pattern_overrides/regular_floor/hypocycloid.png", "decade_60s_gogo_check": "assets/generated_pattern_overrides/regular_floor/decade_60s_gogo_check.png", "five_point_star": "assets/generated_pattern_overrides/regular_floor/five_point_star.png", "shimmer_oil_tension": "assets/generated_pattern_overrides/regular_floor/shimmer_oil_tension.png", "moire_grid": "assets/generated_pattern_overrides/regular_floor/moire_grid.png", "twisted_rings": "assets/generated_pattern_overrides/regular_floor/twisted_rings.png", "bauhaus_system": "assets/generated_pattern_overrides/regular_floor/bauhaus_system.png", "shokk_kernel_panic": "assets/generated_pattern_overrides/regular_floor/shokk_kernel_panic.png", "camo": "assets/generated_pattern_overrides/regular_floor/camo.png", "radial_calendar": "assets/generated_pattern_overrides/regular_floor/radial_calendar.png", "decade_60s_peter_max_alt": "assets/generated_pattern_overrides/regular_floor/decade_60s_peter_max_alt.png", "snake_skin_3": "assets/generated_pattern_overrides/regular_floor/snake_skin_3.png", "shimmer_velvet_static": "assets/generated_pattern_overrides/regular_floor/shimmer_velvet_static.png", "expanded_metal": "assets/generated_pattern_overrides/regular_floor/expanded_metal.png", "geode_crystal": "assets/generated_pattern_overrides/regular_floor/geode_crystal.png", "chainlink": "assets/generated_pattern_overrides/regular_floor/chainlink.png", "sandstorm": "assets/generated_pattern_overrides/regular_floor/sandstorm.png", "caustic": "assets/generated_pattern_overrides/regular_floor/caustic.png", "ogee_lattice": "assets/generated_pattern_overrides/regular_floor/ogee_lattice.png", "concentric_dot_rings": "assets/generated_pattern_overrides/regular_floor/concentric_dot_rings.png", "pine_cone_scale": "assets/generated_pattern_overrides/regular_floor/pine_cone_scale.png", "decade_90s_sbtb_wall": "assets/generated_pattern_overrides/regular_floor/decade_90s_sbtb_wall.png", "nature_bark_rough": "assets/generated_pattern_overrides/regular_floor/nature_bark_rough.png", "leopard": "assets/generated_pattern_overrides/regular_floor/leopard.png", "diagonal_interlace": "assets/generated_pattern_overrides/regular_floor/diagonal_interlace.png", "medallion_lattice": "assets/generated_pattern_overrides/regular_floor/medallion_lattice.png", "fractal_2": "assets/generated_pattern_overrides/regular_floor/fractal_2.png", "rose_curve": "assets/generated_pattern_overrides/regular_floor/rose_curve.png", "constructivist": "assets/generated_pattern_overrides/regular_floor/constructivist.png", "shokk_hex_dump": "assets/generated_pattern_overrides/regular_floor/shokk_hex_dump.png", "glitch_scan": "assets/generated_pattern_overrides/regular_floor/glitch_scan.png", "decade_90s_cross_colors": "assets/generated_pattern_overrides/regular_floor/decade_90s_cross_colors.png", "chainmail": "assets/generated_pattern_overrides/regular_floor/chainmail.png", "chevron": "assets/generated_pattern_overrides/regular_floor/chevron.png", "zigzag_bands": "assets/generated_pattern_overrides/regular_floor/zigzag_bands.png", "decade_70s_funk_zigzag": "assets/generated_pattern_overrides/regular_floor/decade_70s_funk_zigzag.png", "shokk_scan_line": "assets/generated_pattern_overrides/regular_floor/shokk_scan_line.png", "truchet_flow": "assets/generated_pattern_overrides/regular_floor/truchet_flow.png"})
+_SPB_REGULAR_IMAGE_OVERRIDES.update({"decade_50s_diner_checkerboard": "assets/generated_pattern_overrides/regular_floor/decade_50s_diner_checkerboard.png", "fractal_fern": "assets/generated_pattern_overrides/regular_floor/fractal_fern.png", "ripple": "assets/generated_pattern_overrides/regular_floor/ripple.png", "decade_80s_breakdance_spin": "assets/generated_pattern_overrides/regular_floor/decade_80s_breakdance_spin.png", "fresnel_ghost": "assets/generated_pattern_overrides/regular_floor/fresnel_ghost.png", "decade_50s_drivein_marquee": "assets/generated_pattern_overrides/regular_floor/decade_50s_drivein_marquee.png", "carbon_fiber": "assets/generated_pattern_overrides/regular_floor/carbon_fiber.png", "decade_90s_geo_minimal": "assets/generated_pattern_overrides/regular_floor/decade_90s_geo_minimal.png", "p_plasma": "assets/generated_pattern_overrides/regular_floor/p_plasma.png", "gear_mesh": "assets/generated_pattern_overrides/regular_floor/gear_mesh.png", "gothic_arch": "assets/generated_pattern_overrides/regular_floor/gothic_arch.png", "sound_wave": "assets/generated_pattern_overrides/regular_floor/sound_wave.png", "waveform_stack": "assets/generated_pattern_overrides/regular_floor/waveform_stack.png", "decade_70s_studio54_glitter": "assets/generated_pattern_overrides/regular_floor/decade_70s_studio54_glitter.png", "solar_flare": "assets/generated_pattern_overrides/regular_floor/solar_flare.png", "Blind_Skateboy": "assets/generated_pattern_overrides/regular_floor/Blind_Skateboy.png", "cloud_scroll": "assets/generated_pattern_overrides/regular_floor/cloud_scroll.png", "julia_boundary": "assets/generated_pattern_overrides/regular_floor/julia_boundary.png", "frost_crystal": "assets/generated_pattern_overrides/regular_floor/frost_crystal.png", "decade_60s_lava_lamp_blob": "assets/generated_pattern_overrides/regular_floor/decade_60s_lava_lamp_blob.png", "decade_90s_nirvana_smiley": "assets/generated_pattern_overrides/regular_floor/decade_90s_nirvana_smiley.png", "vinyl_record": "assets/generated_pattern_overrides/regular_floor/vinyl_record.png", "shimmer_neon_weft": "assets/generated_pattern_overrides/regular_floor/shimmer_neon_weft.png", "shokk_bitrot": "assets/generated_pattern_overrides/regular_floor/shokk_bitrot.png", "shimmer_chrome_flux": "assets/generated_pattern_overrides/regular_floor/shimmer_chrome_flux.png", "gothic_scroll": "assets/generated_pattern_overrides/regular_floor/gothic_scroll.png", "decade_70s_pong_pixel": "assets/generated_pattern_overrides/regular_floor/decade_70s_pong_pixel.png"})
+_SPB_REGULAR_IMAGE_OVERRIDES.update({"decade_80s_rubiks_cube_3": "assets/generated_pattern_overrides/regular_floor/decade_80s_rubiks_cube_3.png", "decade_90s_windows95": "assets/generated_pattern_overrides/regular_floor/decade_90s_windows95.png", "dendrite_web": "assets/generated_pattern_overrides/regular_floor/dendrite_web.png", "shimmer_spectral_mesh": "assets/generated_pattern_overrides/regular_floor/shimmer_spectral_mesh.png", "pinwheel_tiling": "assets/generated_pattern_overrides/regular_floor/pinwheel_tiling.png", "decade_80s_pacman_maze": "assets/generated_pattern_overrides/regular_floor/decade_80s_pacman_maze.png"})
+_SPB_REGULAR_IMAGE_OVERRIDES.update({"decade_80s_neon_grid": "assets/generated_pattern_overrides/regular_floor/decade_80s_neon_grid.png", "decade_90s_rugrats_squiggle": "assets/generated_pattern_overrides/regular_floor/decade_90s_rugrats_squiggle.png", "shokk_zero_day": "assets/generated_pattern_overrides/regular_floor/shokk_zero_day.png", "decade_90s_tamagotchi_egg": "assets/generated_pattern_overrides/regular_floor/decade_90s_tamagotchi_egg.png", "decade_90s_beanie_tag": "assets/generated_pattern_overrides/regular_floor/decade_90s_beanie_tag.png", "tessellation": "assets/generated_pattern_overrides/regular_floor/tessellation.png"})
+_SPB_REGULAR_IMAGE_OVERRIDES.update({"skull_wings": "assets/generated_pattern_overrides/regular_floor/skull_wings.png", "fleur_de_lis_alt": "assets/generated_pattern_overrides/regular_floor/fleur_de_lis_alt.png", "Hardcore_Punk": "assets/generated_pattern_overrides/regular_floor/Hardcore_Punk.png", "decade_50s_fallout_shelter": "assets/generated_pattern_overrides/regular_floor/decade_50s_fallout_shelter.png", "decade_60s_pop_art_halftone": "assets/generated_pattern_overrides/regular_floor/decade_60s_pop_art_halftone.png", "radial_pulse": "assets/generated_pattern_overrides/regular_floor/radial_pulse.png", "Skate_Reaper_Glowing_Eyes": "assets/generated_pattern_overrides/regular_floor/Skate_Reaper_Glowing_Eyes.png", "decade_90s_tribal_tattoo": "assets/generated_pattern_overrides/regular_floor/decade_90s_tribal_tattoo.png", "decade_50s_jukebox_arc": "assets/generated_pattern_overrides/regular_floor/decade_50s_jukebox_arc.png", "decade_60s_peace_sign": "assets/generated_pattern_overrides/regular_floor/decade_60s_peace_sign.png", "greek_key": "assets/generated_pattern_overrides/regular_floor/greek_key.png", "japanese_wave": "assets/generated_pattern_overrides/regular_floor/japanese_wave.png"})
+for _pid, _path in _SPB_REGULAR_IMAGE_OVERRIDES.items():
+    if "generated_pattern_overrides/regular_floor" in str(_path).replace("\\", "/"):
+        continue  # [SPB Alpha 2026-06-02] skip opaque full-bleed floor tiles; keep procedural alpha-stamp renderer (matches biomechanical).
+    PATTERN_REGISTRY[_pid] = dict(PATTERN_REGISTRY.get(_pid, {}), image_path=_path, texture_fn=None, _spb_asset_variant="tracked regular pattern tile")
 def _spb_normalize01(arr):
     arr = np.asarray(arr, dtype=np.float32)
     span = float(arr.max() - arr.min()) if arr.size else 0.0
@@ -9024,17 +10769,61 @@ def _spb_pattern_xy(shape):
     return xf, yf, cx, cy, r, a
 
 
+def _spb_fast_mod_pos(arr, period):
+    """np.mod(arr, period) for a strictly positive period -- BIT-EXACT but ~2x faster.
+
+    SPB perf 2026-06-13: np.mod is the #1 hotspot in the rebuilt pattern path
+    (full-2048 mods cost ~170ms each; aurora_bands alone fires 36 of them).
+    For period > 0, np.mod == np.fmod with negative remainders shifted up by one
+    period -- np.fmod is far cheaper, and the single masked correction restores
+    the exact IEEE result (verified maxdiff == 0 vs np.mod across positive /
+    negative / mixed full-canvas inputs and many random periods/widths).
+    `arr` is always a fresh buffer here (it is the result of `coord + phase`),
+    so the in-place correction never touches a caller-owned array.
+    """
+    p = np.float32(period)
+    r = np.fmod(arr, p)
+    neg = r < 0.0
+    r[neg] += p
+    return r
+
+
 def _spb_fast_line_px(coord, period, width=1.5, phase=0.0):
-    pos = np.mod(coord + float(phase), float(period))
-    dist = np.minimum(pos, float(period) - pos)
-    return np.clip(1.0 - dist / max(float(width), 1e-4), 0, 1).astype(np.float32)
+    # SPB perf 2026-06-13: same math as before, allocation-minimal. The mod result
+    # ("pos") is a fresh float32 buffer, so all downstream ops run in place on it
+    # (no copies, no redundant astype). Output shape == coord's shape (callers
+    # rely on broadcasting). _spb_fast_mod_pos is bit-exact vs the old np.mod.
+    period = float(period)
+    pos = _spb_fast_mod_pos(coord + float(phase), period)
+    # dist = min(pos, period - pos), reusing pos as the destination buffer.
+    other = np.subtract(period, pos)
+    dist = np.minimum(pos, other, out=pos)
+    # 1.0 - dist / width, clipped to [0,1] -- bit-identical to the old expression,
+    # just done in place on our private buffer (no extra copies / no astype).
+    dist /= max(float(width), 1e-4)
+    np.subtract(1.0, dist, out=dist)
+    return np.clip(dist, 0.0, 1.0, out=dist)
 
 
 def _spb_fast_dots_px(x, y, period_x, period_y, radius, phase_x=0.0, phase_y=0.0):
-    px = np.mod(x + float(phase_x), float(period_x)) - float(period_x) * 0.5
-    py = np.mod(y + float(phase_y), float(period_y)) - float(period_y) * 0.5
+    # SPB perf 2026-06-13: identical math, allocation-minimal in-place pipeline.
+    px = _spb_fast_mod_pos(x + float(phase_x), float(period_x))
+    px -= float(period_x) * 0.5
+    py = _spb_fast_mod_pos(y + float(phase_y), float(period_y))
+    py -= float(period_y) * 0.5
+    px *= px
+    py *= py
+    d2 = px + py  # fresh (px,py) generally differ in shape -> broadcast alloc
     rr = float(radius) * float(radius)
-    return np.clip(1.0 - (px * px + py * py) / max(rr, 1e-4), 0, 1).astype(np.float32)
+    d2 /= max(rr, 1e-4)
+    np.subtract(1.0, d2, out=d2)
+    return np.clip(d2, 0.0, 1.0, out=d2)
+
+
+def _spb_pattern_field_contrast(field, floor=0.05, ceiling=0.95):
+    """Stretch pattern_val so structure survives paint/spec compositing (SPB-106)."""
+    f = _spb_normalize01(field)
+    return np.clip(floor + f * (ceiling - floor), 0, 1).astype(np.float32, copy=False)
 
 
 def _spb_fast_grain_px(x, y, seed):
@@ -9060,13 +10849,44 @@ def _spb_rebuilt_tech_pattern_value(pattern_id, shape, seed, sm):
         field = traces * 0.72 + pads * 0.58 + micro + (grain > 0.97).astype(np.float32) * 0.22
 
     elif pattern_id == "hex_circuit":
-        lattice = np.maximum(
-            np.maximum(_spb_fast_line_px(x, 34, 1.15, phase), _spb_fast_line_px(diag_a, 34, 1.15, phase * 0.31)),
-            _spb_fast_line_px(diag_b, 34, 1.15, phase * 0.67),
+        cell_w = 104.0
+        cell_h = 72.0
+        row = np.floor((y + phase * 0.29) / cell_h)
+        row_offset = np.mod(row, 2.0) * cell_w * 0.5
+        lx = np.mod(x + row_offset + phase, cell_w) - cell_w * 0.5
+        ly = np.mod(y + phase * 0.17, cell_h) - cell_h * 0.5
+
+        # Large hex PCB cells, deliberately coarser than graphene's fine atom lattice.
+        left = np.abs(ly - (lx + cell_w * 0.25) * 0.58)
+        right = np.abs(ly + (lx - cell_w * 0.25) * 0.58)
+        horiz = np.abs(ly)
+        outline_mask = (
+            ((left < 1.9) & (lx < 10.0) & (lx > -cell_w * 0.50))
+            | ((right < 1.9) & (lx > -10.0) & (lx < cell_w * 0.50))
+            | ((horiz < 1.7) & (np.abs(lx) < cell_w * 0.36))
         )
-        nodes = _spb_fast_dots_px(x + y * 0.25, y, 68, 58, 4.8, phase, phase * 0.23)
-        jumpers = np.maximum(_spb_fast_line_px(y, 116, 1.4, phase), _spb_fast_line_px(x + y * 0.08, 142, 1.1, phase))
-        field = lattice * 0.70 + nodes * 0.55 + jumpers * 0.28 + (grain > 0.985).astype(np.float32) * 0.18
+        outlines = outline_mask.astype(np.float32)
+
+        pads = np.zeros((h, w), dtype=np.float32)
+        for vx, vy in (
+            (-cell_w * 0.36, 0.0),
+            (cell_w * 0.36, 0.0),
+            (-cell_w * 0.18, -cell_h * 0.36),
+            (cell_w * 0.18, -cell_h * 0.36),
+            (-cell_w * 0.18, cell_h * 0.36),
+            (cell_w * 0.18, cell_h * 0.36),
+        ):
+            pads = np.maximum(pads, np.clip(1.0 - ((lx - vx) ** 2 + (ly - vy) ** 2) / 34.0, 0, 1))
+
+        chip = ((np.abs(lx) < 10.0) & (np.abs(ly) < 7.5)).astype(np.float32)
+        pin_rows = np.maximum(_spb_fast_line_px(ly, 8.0, 0.8, phase), _spb_fast_line_px(lx, 8.0, 0.8, phase))
+        pins = pin_rows * (((np.abs(lx) < 18.0) & (np.abs(ly) < 15.0)).astype(np.float32) - chip * 0.4)
+        buses = np.maximum(
+            _spb_fast_line_px(y + row_offset * 0.13, 144.0, 1.3, phase),
+            _spb_fast_line_px(x - row * 9.0, 208.0, 1.25, phase * 0.43),
+        )
+        solder = (grain > 0.986).astype(np.float32) * ((outlines + pads) > 0.01).astype(np.float32)
+        field = outlines * 0.66 + pads * 0.72 + chip * 0.44 + pins * 0.24 + buses * 0.20 + solder * 0.22
 
     elif pattern_id == "biomech_cables":
         cable1 = _spb_fast_line_px(y + np.sin(x * 0.021 + phase * 0.013) * 18.0, 58, 3.8, phase)
@@ -9089,9 +10909,13 @@ def _spb_rebuilt_tech_pattern_value(pattern_id, shape, seed, sm):
             np.maximum(_spb_fast_line_px(diag_a, 72, 1.3, phase), _spb_fast_line_px(diag_b, 68, 1.3, phase * 0.41)),
             _spb_fast_line_px(y, 96, 1.0, phase * 0.19),
         )
-        facets = np.maximum(facets, (_spb_fast_grain_px(np.floor(x / 44), np.floor(y / 44), family) > 0.63).astype(np.float32) * 0.18)
-        glints = _spb_fast_dots_px(x, y, 118, 86, 3.4, phase, phase * 0.27)
-        field = facets * 0.74 + glints * 0.38 + grain * 0.07
+        shear = np.floor((x + y * 0.37 + phase) / 54.0)
+        shard_phase = _spb_fast_grain_px(shear, np.floor((y - x * 0.21 + phase * 0.3) / 46.0), family + 409)
+        shard_a = _spb_fast_line_px(x * 0.82 + y * 0.31, 119, 0.95, phase * 0.23)
+        shard_b = _spb_fast_line_px(x * 0.24 - y * 0.91, 103, 0.90, phase * 0.61)
+        planes = np.clip((shard_phase - 0.42) * 0.58, 0, 0.30)
+        glints = _spb_fast_dots_px(x + y * 0.08, y - x * 0.05, 118, 86, 3.4, phase, phase * 0.27)
+        field = facets * 0.64 + shard_a * 0.38 + shard_b * 0.32 + planes + glints * 0.40 + grain * 0.06
 
     elif pattern_id == "chainmail_hex":
         cell = 30.0
@@ -9113,42 +10937,106 @@ def _spb_rebuilt_tech_pattern_value(pattern_id, shape, seed, sm):
         field = lattice * 0.78 + atoms * 0.34 + defects * 0.20
 
     elif pattern_id == "gear_mesh":
-        cell = 96.0
+        cell = 54.0
         dx = np.mod(x + phase, cell) - cell * 0.5
         dy = np.mod(y + phase * 0.39, cell) - cell * 0.5
         r2 = dx * dx + dy * dy
         angle = np.arctan2(dy, dx)
-        teeth = 1.0 + 0.16 * np.sin(angle * 16.0)
-        ring = np.clip(1.0 - np.abs(np.sqrt(r2) - 23.0 * teeth) / 2.8, 0, 1)
-        hubs = np.clip(1.0 - r2 / (7.5 * 7.5), 0, 1)
-        mesh = np.maximum(_spb_fast_line_px(x, 24, 0.75, phase), _spb_fast_line_px(y, 24, 0.75, phase))
-        field = ring * 0.74 + hubs * 0.42 + mesh * 0.22 + grain * 0.05
+        tooth_wave = np.sin(angle * 18.0) * 0.55 + np.sin(angle * 36.0 + phase * 0.017) * 0.22
+        radius = np.sqrt(r2)
+        ring = np.clip(1.0 - np.abs(radius - (13.0 + tooth_wave)) / 1.35, 0, 1)
+        inner = np.clip(1.0 - np.abs(radius - 5.5) / 1.05, 0, 1)
+        hubs = np.clip(1.0 - r2 / (2.8 * 2.8), 0, 1)
+        spokes = _spb_fast_line_px(angle * 46.0 + radius * 0.20, 18.0, 0.85, phase)
+        spokes *= ((radius > 6.0) & (radius < 12.6)).astype(np.float32)
+        micro_cell = 27.0
+        mdx = np.mod(x + y * 0.18 + phase * 0.31, micro_cell) - micro_cell * 0.5
+        mdy = np.mod(y - x * 0.12 + phase * 0.47, micro_cell) - micro_cell * 0.5
+        micro_r = np.sqrt(mdx * mdx + mdy * mdy)
+        idlers = np.clip(1.0 - np.abs(micro_r - 5.7) / 0.85, 0, 1)
+        pin_teeth = np.maximum(
+            _spb_fast_line_px(mdx + mdy * 0.34, 7.0, 0.45, phase),
+            _spb_fast_line_px(mdy - mdx * 0.28, 9.0, 0.40, phase * 0.37),
+        )
+        idlers = idlers * (0.68 + pin_teeth * 0.32)
+        mesh = np.maximum(
+            _spb_fast_line_px(x + y * 0.10, 18, 0.45, phase),
+            _spb_fast_line_px(y - x * 0.08, 18, 0.45, phase * 0.63),
+        )
+        field = ring * 0.58 + inner * 0.32 + hubs * 0.28 + spokes * 0.22 + idlers * 0.34 + mesh * 0.16 + grain * 0.04
 
-    elif pattern_id == "vinyl_record":
+    elif pattern_id == "vinyl_record":  # SPB-105 tick 2026-05-23T09:39Z: 89.30 -> aim 90+; raise groove contrast.
         cx = x - w * (0.52 + ((family % 7) - 3) * 0.012)
         cy = y - h * (0.50 + ((family % 5) - 2) * 0.014)
         radius = np.sqrt(cx * cx + cy * cy)
-        grooves = _spb_fast_line_px(radius, 8.0, 0.95, phase)
-        sweep = _spb_fast_line_px((np.arctan2(cy, cx) + np.pi) * 70.0 + radius * 0.08, 46, 0.65, phase)
-        dust = (grain > 0.985).astype(np.float32)
-        field = grooves * 0.72 + sweep * 0.28 + dust * 0.22
+        theta = np.arctan2(cy, cx)
+        fine_grooves = np.maximum(
+            _spb_fast_line_px(radius + np.sin(theta * 9.0 + phase * 0.011) * 0.55, 4.2, 0.45, phase),
+            _spb_fast_line_px(radius + np.sin(theta * 27.0 - phase * 0.007) * 0.28, 7.6, 0.32, phase * 0.41),
+        )
+        outer_band = np.clip((radius - min(h, w) * 0.14) / max(min(h, w) * 0.34, 1.0), 0, 1)
+        left_right_glare = np.clip(np.abs(np.cos(theta)) ** 6.0, 0, 1) * outer_band
+        lacquer = _spb_fast_line_px(theta * 92.0 + radius * 0.030, 23.0, 0.48, phase)
+        spectral_cut = _spb_fast_line_px(radius + np.sin(theta * 5.0 + phase * 0.03) * 16.0, 58.0, 1.35, phase)
+        spectral_cut *= np.clip((np.sin(theta * 3.0 - phase * 0.019) * 0.5 + 0.5) ** 3.0, 0, 1)
+        runout_code = _spb_fast_line_px(theta * 190.0 + radius * 0.42, 37.0, 0.72, phase)
+        runout_code *= ((radius > min(h, w) * 0.26) & (radius < min(h, w) * 0.43)).astype(np.float32)
+        label = np.clip(1.0 - np.abs(radius - min(h, w) * 0.118) / max(min(h, w) * 0.006, 1.0), 0, 1)
+        deadwax = (radius < min(h, w) * 0.09).astype(np.float32) * 0.08
+        spindle_shadow = (radius < min(h, w) * 0.022).astype(np.float32) * 0.24
+        dust = (grain > 0.982).astype(np.float32) * outer_band
+        field = _spb_pattern_field_contrast(np.clip(
+            fine_grooves * (0.48 + left_right_glare * 0.45)
+            + lacquer * 0.18
+            + spectral_cut * 0.34
+            + runout_code * 0.24
+            + label * 0.38
+            + dust * 0.20
+            - deadwax
+            - spindle_shadow
+        , 0, 1), floor=0.0, ceiling=1.0)
 
     elif pattern_id == "fiber_optic":
-        fibers = np.maximum(_spb_fast_line_px(x + np.sin(y * 0.030) * 3.5, 10, 0.55, phase),
-                            _spb_fast_line_px(x + y * 0.07, 17, 0.45, phase * 0.47))
-        pulses = _spb_fast_dots_px(x + np.sin(y * 0.011) * 11.0, y, 54, 42, 2.6, phase, phase * 0.29)
-        glints = (grain > 0.982).astype(np.float32)
-        field = fibers * 0.62 + pulses * 0.48 + glints * 0.28
+        fiber_r = 7.5
+        col_p = fiber_r * 2.05
+        row_p = col_p * 0.8660254
+        row = np.floor((y + phase * 0.17) / row_p)
+        offset = np.mod(row, 2.0) * col_p * 0.5
+        fx = x + offset + phase
+        fy = y + phase * 0.29
+        cell_col = np.floor(fx / col_p)
+        cell_row = np.floor(fy / row_p)
+        dx = np.mod(fx, col_p) - col_p * 0.5
+        dy = np.mod(fy, row_p) - row_p * 0.5
+        dist = np.sqrt(dx * dx + dy * dy)
+        cell_noise = _spb_fast_grain_px(cell_col, cell_row, family + 601)
+        core_r = fiber_r * 0.62
+        core = np.clip(1.0 - dist / core_r, 0, 1)
+        clad = np.clip(1.0 - np.abs(dist - fiber_r * 0.78) / 1.05, 0, 1)
+        spot_dx = dx - (cell_noise - 0.5) * fiber_r * 0.52
+        spot_dy = dy - (_spb_fast_grain_px(cell_col + 17, cell_row - 11, family + 907) - 0.5) * fiber_r * 0.52
+        glint = np.clip(1.0 - np.sqrt(spot_dx * spot_dx + spot_dy * spot_dy) / 2.3, 0, 1)
+        brightness = 0.32 + cell_noise * 0.68
+        inter_fiber = (grain > 0.991).astype(np.float32) * 0.18
+        field = core * brightness + clad * 0.18 + glint * 0.48 + inter_fiber
 
     elif pattern_id == "sonar_ping":
-        centers = ((0.31, 0.36), (0.68, 0.42), (0.50, 0.70))
+        centers = ((0.24, 0.30), (0.63, 0.38), (0.42, 0.72))
         field = np.zeros((h, w), dtype=np.float32)
         for idx, (cxn, cyn) in enumerate(centers):
             rr = np.sqrt((x - w * cxn) ** 2 + (y - h * cyn) ** 2)
-            field = np.maximum(field, _spb_fast_line_px(rr, 34 + idx * 9, 1.5, phase + idx * 13))
-        sweeps = _spb_fast_line_px(x * 0.42 + y, 118, 1.0, phase)
-        blips = _spb_fast_dots_px(x, y, 102, 89, 3.8, phase, phase * 0.33)
-        field = field * 0.68 + sweeps * 0.20 + blips * 0.42 + (grain > 0.992).astype(np.float32) * 0.18
+            primary = _spb_fast_line_px(rr, 19 + idx * 4, 0.72, phase + idx * 13)
+            ghost = _spb_fast_line_px(rr + (grain - 0.5) * 1.35, 43 + idx * 6, 0.52, phase * 0.41)
+            field = np.maximum(field, primary * 0.74 + ghost * 0.30)
+        sweep_a = _spb_fast_line_px(x * 0.31 + y * 0.93, 67, 0.55, phase)
+        sweep_b = _spb_fast_line_px(x * 0.84 - y * 0.25, 89, 0.45, phase * 0.57)
+        scan_ticks = np.maximum(_spb_fast_line_px(x, 31, 0.34, phase), _spb_fast_line_px(y, 37, 0.34, phase * 0.22))
+        blips = np.maximum(
+            _spb_fast_dots_px(x, y, 57, 49, 2.0, phase, phase * 0.33),
+            _spb_fast_dots_px(x + y * 0.17, y - x * 0.11, 83, 73, 1.5, phase * 0.71, phase * 0.19),
+        )
+        static = (grain > 0.989).astype(np.float32)
+        field = field * 0.66 + sweep_a * 0.18 + sweep_b * 0.14 + scan_ticks * 0.13 + blips * 0.34 + static * 0.16
 
     elif pattern_id == "waveform_stack":
         field = np.zeros((h, w), dtype=np.float32)
@@ -9181,7 +11069,13 @@ def _spb_rebuilt_specific_pattern_value(pattern_id, shape, seed, sm):
         b = np.sin(y * 0.061 + np.cos(x * 0.017 - phase) * 2.4)
         c = np.sin((x - y) * 0.043 + (a + b) * 1.3)
         field = np.clip((a * b + c) * 0.30 + 0.50, 0, 1)
-        field = np.maximum(field, _spb_fast_line_px(field * 255.0, 31.0, 2.0, phase) * 0.85)
+        cell_wall = _spb_fast_line_px(field * 255.0 + np.sin(x * 0.020 + y * 0.013) * 9.0, 23.0, 1.35, phase) * 0.82
+        capillary = np.maximum(
+            _spb_fast_line_px(x + y * 0.37 + field * 28.0, 11.0, 0.18, phase * 0.29),
+            _spb_fast_line_px(x - y * 0.42 + field * 31.0, 13.0, 0.16, phase * 0.61),
+        ) * (grain > 0.43).astype(np.float32)
+        spores = _spb_fast_dots_px(x + y * 0.09, y - x * 0.05, 17.0, 13.0, 0.74, phase, phase * 0.37)
+        field = np.clip(field * 0.26 + cell_wall + capillary * 0.30 + spores * 0.24 + (grain > 0.988).astype(np.float32) * 0.14, 0, 1)
 
     elif pattern_id == "phyllotaxis":
         if cv2 is not None:
@@ -9197,12 +11091,14 @@ def _spb_rebuilt_specific_pattern_value(pattern_id, shape, seed, sm):
                 cv2.circle(field, (px, py), int(rng.integers(1, 3)), float(0.45 + 0.55 * i / n), -1, lineType=cv2.LINE_AA)
         field += _spb_fast_line_px(np.sqrt((x - w * 0.5) ** 2 + (y - h * 0.5) ** 2), 17.0, 0.8, phase) * 0.20
 
-    elif pattern_id == "lorenz_slice":
+    elif pattern_id == "lorenz_slice":  # SPB-105 tick 2026-05-23T10:19Z: 87.74->88.18; owner fine 8-32px detail.
         if cv2 is not None:
             px, py, pz = 0.1, 0.0, 0.0
             pts = []
+            pts_alt = []
             dt = 0.006
-            for _ in range(5200):
+            # SPB-105 regular-pattern loop tick 2026-05-23T07:58Z: score 87.09 -> 86.82; keep detail while pulling render below rebuild gate.
+            for idx in range(2800):
                 dx = 10.0 * (py - px)
                 dy = px * (28.0 - pz) - py
                 dz = px * py - 8.0 * pz / 3.0
@@ -9211,35 +11107,292 @@ def _spb_rebuilt_specific_pattern_value(pattern_id, shape, seed, sm):
                 pz += dz * dt
                 sx = int(np.clip((px + 22.0) / 44.0 * w, 0, w - 1))
                 sy = int(np.clip((pz - 2.0) / 52.0 * h, 0, h - 1))
+                ax = int(np.clip((py + 30.0) / 60.0 * w, 0, w - 1))
+                ay = int(np.clip((px + 24.0) / 48.0 * h, 0, h - 1))
                 pts.append([sx, sy])
+                if idx % 3 == 0:
+                    pts_alt.append([ax, ay])
             cv2.polylines(field, [np.asarray(pts, dtype=np.int32)], False, 1.0, 1, lineType=cv2.LINE_AA)
-        field = np.maximum(field, _spb_fast_line_px(x - y * 0.18, 83.0, 0.8, phase) * 0.14)
+            cv2.polylines(field, [np.asarray(pts_alt, dtype=np.int32)], False, 0.58, 1, lineType=cv2.LINE_AA)
+        field = np.maximum(field, _spb_fast_line_px(x - y * 0.18, 59.0, 0.62, phase) * 0.20)
+        field = np.maximum(field, np.maximum(_spb_fast_line_px(x + y * 0.23, 17.0, 0.20, phase * 0.43), _spb_fast_line_px(x - y * 0.31, 11.0, 0.12, phase * 0.67)) * (grain > 0.48).astype(np.float32) * 0.34)
+        field = _spb_pattern_field_contrast(np.clip(field + _spb_fast_dots_px(x + y * 0.17, y - x * 0.11, 23.0, 19.0, 0.72, phase, phase * 0.71) * 0.28 + grain * 0.08 + (grain > 0.985).astype(np.float32) * 0.18, 0, 1), floor=0.0, ceiling=1.0)
 
+    # SPB-105 regular-pattern loop tick 2026-05-23T07:00Z: score 82.35 -> 87.74; owner says fine 8-32px detail.
     elif pattern_id == "julia_boundary":
         zx = (x / max(w - 1, 1) - 0.5) * 2.9
         zy = (y / max(h - 1, 1) - 0.5) * 2.5
         c_re = -0.72 + ((family % 37) - 18) * 0.0017
         c_im = 0.27 + ((family >> 8) % 41 - 20) * 0.0015
         acc = np.zeros((h, w), dtype=np.float32)
-        for i in range(7):
+        orbit = np.zeros((h, w), dtype=np.float32)
+        trap = np.ones((h, w), dtype=np.float32) * 9.0
+        for i in range(16):
             zx, zy = zx * zx - zy * zy + c_re, 2.0 * zx * zy + c_im
             mag = zx * zx + zy * zy
-            acc += (mag < 4.0).astype(np.float32) * (1.0 - i * 0.08)
+            # SPB perf 2026-06-13 (bit-identical): acc += (mag<4)*s without the astype
+            # copy; mag is a sum of squares so >= 0, hence clip(mag,0,12) == min(mag,12)
+            # and the lower bound never fires. Verified maxdiff == 0 vs the old form.
+            acc += (mag < 4.0) * np.float32(1.0 - i * 0.040)
+            orbit += np.exp(-np.minimum(mag, 12.0)) * (0.10 + i * 0.014)
+            trap = np.minimum(trap, np.abs(zx * 0.78 + zy * 0.22))
             zx = np.clip(zx, -4.0, 4.0)
             zy = np.clip(zy, -4.0, 4.0)
-        field = _spb_fast_line_px(acc, 1.0, 0.12, phase)
+        contours = _spb_fast_line_px(acc, 0.42, 0.055, phase)
+        lace = _spb_fast_line_px(trap * 460.0 + x * 0.12 - y * 0.08, 11.0, 0.34, phase * 0.29)
+        micro = _spb_fast_line_px(orbit * 380.0 + x * 0.20 - y * 0.13, 13.0, 0.42, phase * 0.41)
+        dust = (grain > 0.970).astype(np.float32)
+        field = _spb_pattern_field_contrast(np.clip(contours * 0.60 + lace * 0.42 + micro * 0.40 + dust * 0.20 + grain * 0.08, 0, 1), floor=0.0, ceiling=1.0)
+    elif pattern_id == "celtic_knot":
+        cell = max(42.0, min(h, w) / 7.5)
+        u = np.mod(x + y * 0.18 + phase * 0.09, cell) - cell * 0.5
+        v = np.mod(y - x * 0.18 + phase * 0.05, cell * 0.86) - cell * 0.43
+        r0 = np.sqrt((u * 0.86) ** 2 + (v * 1.12) ** 2)
+        loops = np.maximum(
+            _spb_fast_line_px(r0, cell * 0.33, 1.25, phase),
+            _spb_fast_line_px(r0, cell * 0.19, 0.82, phase * 0.37),
+        )
+        braid_a = _spb_fast_line_px(x + y * 0.58 + np.sin(y * 0.028) * 5.0, cell * 0.64, 0.72, phase)
+        braid_b = _spb_fast_line_px(x - y * 0.58 + np.sin(x * 0.026) * 5.0, cell * 0.64, 0.72, phase * 0.41)
+        over_under = ((np.floor((x + y * 0.58) / (cell * 0.64)) + np.floor((x - y * 0.58) / (cell * 0.64))) % 2.0).astype(np.float32)
+        cuts = _spb_fast_line_px(u - v * 0.35, cell * 0.44, 0.34, phase * 0.67)
+        pin = _spb_fast_dots_px(x + y * 0.07, y - x * 0.05, cell * 0.92, cell * 0.74, 1.5, phase, phase * 0.29)
+        field = np.clip(loops * 0.54 + braid_a * (0.36 + over_under * 0.18) + braid_b * (0.50 - over_under * 0.14) + cuts * 0.24 + pin * 0.18 + grain * 0.035, 0, 1)
 
-    elif pattern_id == "holographic":
-        grating = _spb_fast_line_px(x + np.sin(y * 0.018 + phase) * 18.0, 19.0, 1.0, phase)
-        prism = np.sin((x * 0.027 + y * 0.011) + np.sin((x - y) * 0.009) * 3.0 + phase) * 0.5 + 0.5
-        field = np.clip(grating * 0.54 + prism * 0.34 + (grain > 0.982).astype(np.float32) * 0.20, 0, 1)
+    # SPB-105 regular-pattern loop tick 2026-05-23T07:00Z: score 81.72 -> 85.56; owner says fine 8-32px detail.
+    elif pattern_id == "tribal_celtic_spiral":
+        cx = x - w * 0.5
+        cy = y - h * 0.5
+        rr = np.sqrt(cx * cx + cy * cy)
+        theta = np.arctan2(cy, cx)
+        spiral = _spb_fast_line_px(theta * 112.0 + rr * 0.150 + np.sin(rr * 0.028 + phase) * 5.0, 17.0, 0.48, phase)
+        counter = _spb_fast_line_px(-theta * 86.0 + rr * 0.112 + np.sin(theta * 7.0) * 3.4, 21.0, 0.42, phase * 0.51)
+        hook = _spb_fast_line_px(np.sin(theta * 4.0 + rr * 0.017) * 96.0 + rr * 0.52, 29.0, 0.48, phase * 0.27)
+        notches = _spb_fast_dots_px(x + theta * 18.0, y + rr * 0.05, 27.0, 23.0, 0.95, phase, phase * 0.33)
+        tattoo_grain = (grain > 0.925).astype(np.float32) * _spb_fast_line_px(rr, 13.0, 0.34, phase)
+        field = _spb_pattern_field_contrast(np.clip(spiral * 0.62 + counter * 0.42 + hook * 0.36 + notches * 0.34 + tattoo_grain * 0.30 + grain * 0.08, 0, 1), floor=0.0, ceiling=1.0)
+    elif pattern_id == "geo_fractal_triangle":
+        s = max(28.0, min(h, w) / 8.0)
+        u = (x + y * 0.577 + phase) / s
+        v = (x - y * 0.577 - phase * 0.37) / s
+        tri = np.zeros((h, w), dtype=np.float32)
+        for depth, scale_mul in enumerate((1.0, 2.0, 4.0, 8.0)):
+            fu = np.mod(u * scale_mul, 1.0)
+            fv = np.mod(v * scale_mul, 1.0)
+            fw = np.mod((u + v) * scale_mul, 1.0)
+            edge = np.minimum(np.minimum(np.abs(fu - 0.5), np.abs(fv - 0.5)), np.abs(fw - 0.5))
+            holes = ((fu + fv + fw) > (1.22 + depth * 0.035)).astype(np.float32)
+            tri = np.maximum(tri, np.clip(1.0 - edge / (0.020 + depth * 0.003), 0, 1) * (0.42 + depth * 0.11) + holes * (0.10 + depth * 0.035))
+        micro_edges = np.maximum(_spb_fast_line_px(x + y * 0.577, 17.0, 0.36, phase), _spb_fast_line_px(x - y * 0.577, 19.0, 0.34, phase * 0.61))
+        field = np.clip(tri * 0.74 + micro_edges * 0.28 + (grain > 0.989).astype(np.float32) * 0.16, 0, 1)
 
+    # SPB-105 regular-pattern loop tick 2026-05-23T07:00Z: score 83.25 -> 85.61; owner says fine 8-32px detail.
+    elif pattern_id == "fractal":  # SPB-105 tick 2026-05-23T07:26Z: target 85.61; raise branch entropy/dynamic range.
+        field = np.zeros((h, w), dtype=np.float32)
+        for idx, slope in enumerate((-1.35, -0.74, -0.21, 0.36, 0.88, 1.42)):
+            warp = np.sin((x * 0.010 + y * 0.013) * (1.0 + idx * 0.18) + phase * 0.006) * (9.0 + idx * 2.5)
+            line = _spb_fast_line_px(x + y * slope + warp, 41.0 - idx * 2.0, 0.26, phase * (0.19 + idx * 0.07))
+            twig = _spb_fast_line_px(x - y * (slope * 0.54) + warp * 0.63, 11.0 + idx * 2.0, 0.15, phase * (0.43 + idx * 0.05))
+            field = np.maximum(field, line * (0.58 + idx * 0.040) + line * twig * 0.54)
+        cellular = _spb_fast_line_px(np.sin(x * 0.027 + phase) * 80.0 + np.sin(y * 0.031 - phase) * 80.0, 17.0, 0.46, phase)
+        sparks = (grain > 0.972).astype(np.float32)
+        field = _spb_pattern_field_contrast(np.clip(field * 0.82 + cellular * 0.42 + sparks * 0.26 + grain * 0.16, 0, 1), floor=0.0, ceiling=1.0)
+    # SPB-105 regular-pattern loop tick 2026-05-23T07:00Z: score 81.87 -> 87.48; owner says fine 8-32px detail.
+    elif pattern_id == "fractal_3":  # SPB-105 tick 2026-05-23T10:19Z: 88.23->89.28; owner fine 8-32px detail.
+        root = np.sin(x * 0.019 + phase * 0.008) * 12.0
+        trunk = _spb_fast_line_px(x - w * 0.52 + root, 47.0, 0.48, phase)
+        field = trunk * 0.58
+        for idx, angle in enumerate((-1.05, -0.72, -0.43, 0.38, 0.70, 1.08)):
+            branch_center = x - w * (0.42 + 0.03 * idx) + y * angle + np.sin(y * (0.024 + idx * 0.005) + phase) * (7.0 + idx * 1.5)
+            branch = _spb_fast_line_px(branch_center, 23.0 + idx * 2.4, 0.28, phase * (0.31 + idx * 0.04))
+            capillaries = np.maximum(_spb_fast_line_px(branch_center + np.sin(x * 0.047) * 5.0, 7.0 + idx * 1.1, 0.14, phase * (0.71 + idx * 0.02)), _spb_fast_line_px(branch_center - np.sin(y * 0.053) * 4.0, 11.0 + idx * 1.2, 0.12, phase * (0.47 + idx * 0.03)))
+            field = np.maximum(field, branch * 0.62 + branch * capillaries * 0.76)
+        dust = _spb_fast_dots_px(x + y * 0.17, y - x * 0.06, 23.0, 19.0, 0.72, phase, phase * 0.33)
+        field = _spb_pattern_field_contrast(np.clip(field + dust * 0.38 + grain * 0.14 + (grain > 0.974).astype(np.float32) * 0.24, 0, 1), floor=0.0, ceiling=1.0)
+    elif pattern_id == "tessellation":
+        tile = max(36.0, min(h, w) / 8.0)
+        a1 = x + y * 0.577
+        a2 = x - y * 0.577
+        a3 = y * 1.154
+        g1 = _spb_fast_line_px(a1, tile, 0.72, phase)
+        g2 = _spb_fast_line_px(a2, tile, 0.72, phase * 0.37)
+        g3 = _spb_fast_line_px(a3, tile, 0.72, phase * 0.59)
+        q1 = np.floor(a1 / tile)
+        q2 = np.floor(a2 / tile)
+        q3 = np.floor(a3 / tile)
+        cell_hash = _spb_fast_grain_px(q1, q2 + q3, family)
+        inset = _spb_fast_dots_px(x + y * 0.16, y - x * 0.10, tile, tile * 0.86, max(1.6, tile * 0.045), phase, phase * 0.23)
+        bevel = np.maximum(_spb_fast_line_px(a1 + cell_hash * 9.0, tile * 0.5, 0.36, phase), _spb_fast_line_px(a2 - cell_hash * 7.0, tile * 0.5, 0.34, phase * 0.43))
+        micro = np.maximum.reduce([
+            _spb_fast_line_px(a1 + cell_hash * 5.0, tile / 3.0, 0.30, phase * 0.19),
+            _spb_fast_line_px(a2 - cell_hash * 6.0, tile / 4.0, 0.26, phase * 0.43),
+            _spb_fast_line_px(a3 + cell_hash * 4.0, tile / 5.0, 0.24, phase * 0.71),
+        ])
+        stepped = ((_spb_fast_grain_px(q1 * 3.0 + np.floor(a1 / (tile / 3.0)), q2 * 3.0 + np.floor(a2 / (tile / 3.0)), family ^ 0x5195) > 0.56).astype(np.float32))
+        interior_cuts = _spb_fast_line_px((cell_hash * 140.0) + x * 0.18 - y * 0.11, 17.0, 0.36, phase * 0.57)
+        field = np.clip((g1 + g2 + g3) * 0.36 + inset * 0.28 + bevel * 0.28 + micro * 0.38 + stepped * 0.18 + interior_cuts * 0.24 + (grain > 0.982).astype(np.float32) * 0.13, 0, 1)
+
+    elif pattern_id == "checker_warp":
+        cell = max(9.0, min(h, w) / 28.0)
+        cx = x - w * 0.50
+        cy = y - h * 0.50
+        rr = np.sqrt(cx * cx + cy * cy)
+        theta = np.arctan2(cy, cx)
+        lens = 1.0 + 0.22 * np.sin(rr * 0.020 + theta * 5.0 + phase)
+        xw = x + np.sin(y * 0.034 + phase) * 15.0 + cx * (lens - 1.0)
+        yw = y + np.sin(x * 0.031 - phase) * 15.0 + cy * (lens - 1.0)
+        checker = ((np.floor(xw / cell) + np.floor(yw / cell)) % 2.0).astype(np.float32)
+        seam = np.maximum(_spb_fast_line_px(xw, cell, 0.28, phase), _spb_fast_line_px(yw, cell, 0.28, phase * 0.43))
+        moire = np.maximum(_spb_fast_line_px(x + y * 0.41, 17.0, 0.19, phase * 0.21), _spb_fast_line_px(x - y * 0.37, 19.0, 0.17, phase * 0.67))
+        pin = _spb_fast_dots_px(xw + yw * 0.08, yw - xw * 0.05, cell * 2.7, cell * 2.1, 0.78, phase, phase * 0.31)
+        field = np.clip(checker * 0.46 + seam * 0.38 + moire * 0.26 + pin * 0.24 + (grain > 0.990).astype(np.float32) * 0.12, 0, 1)
+
+    elif pattern_id == "holographic":  # SPB-105 tick 2026-05-23T07:26Z: target 86.28; clear low-detail/seam risk.
+        grating = _spb_fast_line_px(x + np.sin(y * 0.024 + phase) * 11.0, 9.0, 0.28, phase)
+        prism = np.sin((x * 0.041 + y * 0.025) + np.sin((x - y) * 0.014) * 3.4 + phase) * 0.5 + 0.5
+        field = _spb_pattern_field_contrast(np.clip(grating * 0.60 + prism * 0.42 + _spb_fast_line_px(x - y * 0.33, 7.0, 0.08, phase * 0.47) * (grain > 0.44).astype(np.float32) * 0.28 + grain * 0.10 + (grain > 0.978).astype(np.float32) * 0.22, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "pearlescent_flip":
+        # SPB-105 regular-pattern loop tick 2026-05-23T09:19Z: score 89.95; add fine pearl shade tiers.
+        platelet_a = _spb_fast_dots_px(x + y * 0.07, y - x * 0.04, 8.0, 6.5, 0.28, phase * 0.23, phase * 0.71)
+        platelet_b = _spb_fast_dots_px(x - y * 0.05, y + x * 0.09, 13.0, 10.0, 0.34, phase * 0.61, phase * 0.17)
+        platelet_c = _spb_fast_dots_px(x + y * 0.16, y - x * 0.12, 21.0, 15.0, 0.46, phase * 0.39, phase * 0.83)
+        soft_angle_flop = np.maximum(
+            _spb_fast_line_px(x + y * 0.17 + np.sin(y * 0.015 + phase) * 2.0, 67.0, 0.16, phase * 0.31),
+            _spb_fast_line_px(x - y * 0.11 + np.sin(x * 0.013 - phase) * 2.0, 73.0, 0.14, phase * 0.57),
+        )
+        shell_facet = np.maximum(
+            _spb_fast_line_px(x + y * 0.72, 17.0, 0.11, phase * 0.47),
+            _spb_fast_line_px(x - y * 0.64, 19.0, 0.10, phase * 0.19),
+        ) * (grain > 0.66).astype(np.float32)
+        mica_pin = (grain > 0.982).astype(np.float32)
+        pearl_flash = (grain > 0.946).astype(np.float32) * _spb_fast_line_px(x + y * 0.41, 11.0, 0.13, phase * 0.29)
+        edge_glints = (grain > 0.994).astype(np.float32)
+        micro_lamella = np.maximum(
+            _spb_fast_line_px(x + y * 0.31, 5.5, 0.055, phase * 0.11),
+            _spb_fast_line_px(x - y * 0.27, 6.5, 0.050, phase * 0.77),
+        ) * (grain > 0.72).astype(np.float32)
+        field = _spb_pattern_field_contrast(np.clip(platelet_a * 0.94 + platelet_b * 0.78 + platelet_c * 0.64 + soft_angle_flop * 0.30 + shell_facet * 0.62 + micro_lamella * 0.64 + pearl_flash * 0.48 + mica_pin * 0.38 + edge_glints * 0.50 + (grain > 0.900).astype(np.float32) * 0.18, 0, 1), floor=0.01, ceiling=1.0)
+
+    elif pattern_id == "shimmer_prism_frost":
+        cell = max(12.0, min(h, w) / 36.0)
+        qx = np.floor((x + phase * 0.11) / cell)
+        qy = np.floor((y - phase * 0.07) / (cell * 0.84))
+        hash_a = _spb_fast_grain_px(qx, qy, family)
+        hash_b = _spb_fast_grain_px(qx + 17.0, qy - 11.0, family ^ 0x6D2B79F5)
+        frost_mist = _spb_fast_dots_px(x + y * 0.06, y - x * 0.04, 6.0, 4.8, 0.20, phase * 0.31, phase * 0.83)
+        tiny_chips = _spb_fast_dots_px(x - y * 0.09, y + x * 0.07, 9.0, 7.0, 0.30, phase * 0.67, phase * 0.19)
+        crushed_facet = np.maximum(
+            _spb_fast_line_px((hash_a * 97.0) + x * 0.41 - y * 0.16, 9.0, 0.17, phase * 0.13),
+            _spb_fast_line_px((hash_b * 83.0) - x * 0.18 + y * 0.52, 11.0, 0.15, phase * 0.73),
+        ) * (hash_a > 0.28).astype(np.float32)
+        short_scratches = np.maximum(
+            _spb_fast_line_px(x + y * 0.17 + hash_a * 2.0, 6.0, 0.050, phase * 0.23),
+            _spb_fast_line_px(x * 0.28 - y + hash_b * 2.0, 7.0, 0.048, phase * 0.59),
+        ) * (grain > 0.66).astype(np.float32)
+        prism_glint = ((hash_a > 0.66) & (hash_b > 0.42)).astype(np.float32) * _spb_fast_line_px(x * 0.37 + y * 0.63, cell * 0.78, 0.18, phase * 0.41)
+        field = np.clip(frost_mist * 0.58 + tiny_chips * 0.50 + crushed_facet * 0.42 + short_scratches * 0.36 + prism_glint * 0.38 + (grain > 0.987).astype(np.float32) * 0.24, 0, 1)
+        if cv2 is not None:
+            field = field.copy()
+            rng = np.random.default_rng((family ^ 0xBADC0DE) & 0xFFFFFFFF)
+            step = int(max(14, min(h, w) // 18))
+            for yy0 in range(-step, h + step, step):
+                for xx0 in range(-step, w + step, step):
+                    if rng.random() < 0.36:
+                        continue
+                    cx0 = int(xx0 + step * rng.uniform(0.18, 0.82))
+                    cy0 = int(yy0 + step * rng.uniform(0.18, 0.82))
+                    r = float(step * rng.uniform(0.10, 0.24))
+                    angle = float(rng.uniform(0, np.pi * 2.0))
+                    pts = []
+                    for arm in (0.0, 2.12, 4.25):
+                        a = angle + arm + rng.uniform(-0.22, 0.22)
+                        pts.append([int(np.clip(cx0 + np.cos(a) * r, 0, w - 1)), int(np.clip(cy0 + np.sin(a) * r, 0, h - 1))])
+                    arr = np.asarray(pts, dtype=np.int32)
+                    if rng.random() > 0.68:
+                        cv2.fillPoly(field, [arr], float(rng.uniform(0.08, 0.18)), lineType=cv2.LINE_AA)
+                    cv2.polylines(field, [arr], True, float(rng.uniform(0.28, 0.78)), 1, lineType=cv2.LINE_AA)
+                    if rng.random() > 0.62:
+                        cv2.line(field, tuple(arr[0]), tuple(arr[2]), float(rng.uniform(0.20, 0.55)), 1, lineType=cv2.LINE_AA)
+
+    elif pattern_id == "shimmer_chrome_flux":
+        # SPB-105 regular-pattern loop tick 2026-05-23T06:47Z: score 81.46 -> 87.33; owner wants dense 8-32px chrome detail.
+        flow = x + np.sin(y * 0.014 + phase * 0.010) * 34.0 + np.sin(y * 0.059) * 8.0
+        ribbons = _spb_fast_line_px(flow, 21.0, 0.30, phase)
+        counter = _spb_fast_line_px(y - np.sin(x * 0.023 - phase * 0.006) * 27.0, 27.0, 0.28, phase * 0.47)
+        mirror_breaks = _spb_fast_line_px((x - y * 0.57) + grain * 29.0, 11.0, 0.16, phase * 0.29)
+        contour = _spb_fast_line_px(np.sin(x * 0.026 + phase) * 96.0 + np.sin(y * 0.031 - phase) * 80.0, 13.0, 0.28, phase * 0.73)
+        hairline_scratches = np.maximum(_spb_fast_line_px(x + y * 0.84, 5.0, 0.08, phase), _spb_fast_line_px(x - y * 0.78, 6.0, 0.08, phase * 0.37)) * (grain > 0.26).astype(np.float32)
+        pin_glints = _spb_fast_dots_px(x + y * 0.18, y - x * 0.11, 11.0, 9.0, 0.46, phase, phase * 0.53)
+        field = _spb_pattern_field_contrast(np.clip(ribbons * 0.54 + counter * 0.42 + mirror_breaks * 0.40 + contour * 0.38 + hairline_scratches * 0.38 + pin_glints * 0.46 + grain * 0.16 + (grain > 0.956).astype(np.float32) * 0.18, 0, 1), floor=0.0, ceiling=1.0)
+    elif pattern_id == "chrome_delete_edge":
+        side_border = np.maximum(
+            np.clip(1.0 - x / max(w * 0.10, 1), 0, 1),
+            np.clip(1.0 - (w - 1 - x) / max(w * 0.10, 1), 0, 1),
+        )
+        top_border = np.maximum(
+            np.clip(1.0 - y / max(h * 0.10, 1), 0, 1),
+            np.clip(1.0 - (h - 1 - y) / max(h * 0.10, 1), 0, 1),
+        )
+        border = np.maximum(side_border, top_border)
+        chrome_brush = np.maximum(_spb_fast_line_px(x + y * 0.16, 13.0, 0.24, phase),
+                                  _spb_fast_line_px(x - y * 0.28, 17.0, 0.22, phase * 0.37))
+        edge_scrape = _spb_fast_line_px(x + y * 0.36 + np.sin(y * 0.028 + phase) * 13.0, 15.0, 0.24, phase)
+        wipe = _spb_fast_line_px(x - y * 0.22, 29.0, 0.30, phase * 0.37)
+        inner_dist = np.minimum(np.minimum(x, y), np.minimum(w - 1 - x, h - 1 - y))
+        inner_cut = _spb_fast_line_px(inner_dist, 11.0, 0.32, phase * 0.23)
+        micro_bevel = _spb_fast_line_px(inner_dist + np.sin((x + y) * 0.052) * 2.0, 5.5, 0.14, phase * 0.81)
+        delete_rake = _spb_fast_line_px(x + np.floor(y / 17.0) * 11.0, 9.0, 0.17, phase * 0.63) * (grain > 0.44).astype(np.float32)
+        cross_scratches = np.maximum(
+            _spb_fast_line_px(x + y * 0.92, 7.0, 0.12, phase * 0.19),
+            _spb_fast_line_px(x - y * 0.88, 8.0, 0.12, phase * 0.43),
+        ) * (grain > 0.55).astype(np.float32)
+        nicks = _spb_fast_dots_px(x + y * 0.09, y, 13.0, 11.0, 0.64, phase, phase * 0.71) * (border > 0.04).astype(np.float32)
+        field = _spb_pattern_field_contrast(np.clip(chrome_brush * 0.34 + border * 0.22 + edge_scrape * border * 0.46 + wipe * 0.30 + inner_cut * 0.32 + micro_bevel * 0.38 + delete_rake * 0.46 + cross_scratches * 0.36 + nicks * 0.56 + (grain > 0.976).astype(np.float32) * 0.20, 0, 1), floor=0.0, ceiling=1.0)
+    elif pattern_id == "shimmer_spectral_mesh":  # SPB-105 tick 2026-05-23T07:12Z: target 83.20; finer mesh, more prism tiers.
+        tri_a = _spb_fast_line_px(x + y * 0.577, 19.0, 0.28, phase)
+        tri_b = _spb_fast_line_px(x - y * 0.577, 23.0, 0.26, phase * 0.41)
+        tri_c = _spb_fast_line_px(y + np.sin(x * 0.052 + phase) * 3.0, 15.0, 0.18, phase * 0.67)
+        prism = np.sin((x * 0.039 + y * 0.047) + np.sin((x - y) * 0.014 + phase) * 4.1) * 0.5 + 0.5
+        nodes = _spb_fast_dots_px(x + y * 0.15, y - x * 0.09, 28.0, 23.0, 0.86, phase, phase * 0.23)
+        field = _spb_pattern_field_contrast(np.clip((tri_a + tri_b + tri_c) * 0.40 + prism * 0.34 + nodes * 0.56 + _spb_fast_line_px(x - y * 0.19, 7.0, 0.08, phase * 0.83) * (grain > 0.42).astype(np.float32) * 0.26 + grain * 0.10 + (grain > 0.990).astype(np.float32) * 0.34, 0, 1), floor=0.0, ceiling=1.0)
+    elif pattern_id == "interference":  # SPB-105 tick 2026-05-23T09:09Z: score 87.72; richer fine fringe vocabulary.
+        a0 = np.sin(x * 0.040 + np.sin(y * 0.012 + phase) * 4.0)
+        b0 = np.sin((x * 0.027 + y * 0.036) + np.sin((x - y) * 0.010) * 3.0)
+        c0 = np.sin(np.sqrt((x - w * 0.32) ** 2 + (y - h * 0.44) ** 2) * 0.055 + phase)
+        fringes = _spb_fast_line_px((a0 + b0 + c0) * 96.0, 23.0, 1.15, phase)
+        carrier = _spb_fast_line_px(x - y * 0.19, 47.0, 0.50, phase * 0.52)
+        field = _spb_pattern_field_contrast(np.clip(fringes * 0.82 + carrier * 0.38 + np.maximum(_spb_fast_line_px(x + y * 0.13, 7.0, 0.10, phase * 0.73), _spb_fast_line_px(x - y * 0.21, 11.0, 0.10, phase * 0.31)) * (grain > 0.36).astype(np.float32) * 0.34 + grain * 0.16 + (grain > 0.976).astype(np.float32) * 0.26, 0, 1), floor=0.0, ceiling=1.0)
+    elif pattern_id == "optical_illusion":  # SPB-105 tick 2026-05-23T07:12Z: target 82.95; denser op-art vortex/checker micro-structure.
+        cx = x - w * 0.5
+        cy = y - h * 0.5
+        rr = np.sqrt(cx * cx + cy * cy)
+        theta = np.arctan2(cy, cx)
+        vortex = _spb_fast_line_px(theta * 104.0 + rr * 0.124 + np.sin(rr * 0.027 + phase) * 6.0, 11.0, 0.40, phase)
+        warped_grid = np.maximum(
+            _spb_fast_line_px(x + np.sin(y * 0.041 + phase) * 11.0, 17.0, 0.26, phase),
+            _spb_fast_line_px(y + np.sin(x * 0.038 - phase) * 11.0, 19.0, 0.24, phase * 0.39),
+        )
+        checker = ((np.floor((x + np.sin(y * 0.033) * 5.0) / 9.0) + np.floor((y + np.sin(x * 0.029) * 5.0) / 9.0)) % 2.0).astype(np.float32)
+        field = _spb_pattern_field_contrast(np.clip(vortex * 0.70 + warped_grid * 0.46 + checker * 0.20 + _spb_fast_dots_px(x, y, 21.0, 19.0, 0.74, phase, phase * 0.13) * 0.28 + (grain > 0.975).astype(np.float32) * 0.18, 0, 1), floor=0.0, ceiling=1.0)
     elif pattern_id == "nature_water_ripple_pat":
         centers = ((0.28, 0.34), (0.70, 0.42), (0.48, 0.76))
         for idx, (cx, cy) in enumerate(centers):
             rr = np.sqrt((x - w * cx) ** 2 + (y - h * cy) ** 2)
             field = np.maximum(field, _spb_fast_line_px(rr, 24.0 + idx * 7.0, 1.2, phase + idx * 19.0))
         field += grain * 0.07
+    elif pattern_id == "peacock_eye":
+        cell = max(42.0, min(h, w) / 6.0)
+        qx = np.floor((x + y * 0.16) / cell)
+        qy = np.floor((y - x * 0.08) / (cell * 0.86))
+        ox = np.mod(x + y * 0.16 + phase, cell) - cell * 0.5
+        oy = np.mod(y - x * 0.08 + phase * 0.41, cell * 0.86) - cell * 0.43
+        rr = np.sqrt(ox * ox + (oy * 1.25) ** 2)
+        rings = np.maximum(_spb_fast_line_px(rr, cell * 0.22, 1.2, phase), _spb_fast_line_px(rr, cell * 0.34, 1.1, phase * 0.33))
+        eye = np.exp(-((rr / max(cell * 0.13, 1)) ** 2))
+        barbs = np.maximum(_spb_fast_line_px(x + y * 0.44, 17.0, 0.38, phase), _spb_fast_line_px(x - y * 0.36, 19.0, 0.34, phase * 0.53))
+        ocelli_jitter = (_spb_fast_grain_px(qx, qy, family) > 0.20).astype(np.float32)
+        field = np.clip((rings * 0.58 + eye * 0.42) * ocelli_jitter + barbs * 0.24 + (grain > 0.987).astype(np.float32) * 0.16, 0, 1)
 
     elif pattern_id == "decade_90s_dot_matrix":
         dots = _spb_fast_dots_px(x, y, 14.0, 14.0, 2.3, phase, phase * 0.37)
@@ -9256,34 +11409,68 @@ def _spb_rebuilt_specific_pattern_value(pattern_id, shape, seed, sm):
         spots = (cell_hash > 0.38).astype(np.float32) * (1.0 - seams)
         field = np.clip(spots * 0.68 + seams * 0.40 + grain * 0.08, 0, 1)
 
+    # SPB-105 tick 2026-05-23T06:47Z: hilbert_curve score 81.97 -> 89.64; smaller maze cells.
     elif pattern_id in {"hilbert_curve", "geo_hilbert_curve"}:
-        block = 32.0 if pattern_id == "hilbert_curve" else 24.0
-        maze = np.maximum(_spb_fast_line_px(x, block, 1.15, phase), _spb_fast_line_px(y, block, 1.15, phase * 0.5))
-        gates = ((_spb_fast_grain_px(np.floor(x / block), np.floor(y / block), family) > 0.44).astype(np.float32))
-        turns = np.maximum(_spb_fast_line_px(x + y, block * 2.0, 1.0, phase), _spb_fast_line_px(x - y, block * 2.0, 1.0, phase * 0.77))
-        field = np.clip(maze * gates * 0.72 + turns * 0.36 + grain * 0.05, 0, 1)
+        block = 24.0 if pattern_id == "hilbert_curve" else 18.0
+        maze = np.maximum(_spb_fast_line_px(x, block, 0.82, phase), _spb_fast_line_px(y, block, 0.82, phase * 0.5))
+        gates = ((_spb_fast_grain_px(np.floor(x / block), np.floor(y / block), family) > 0.34).astype(np.float32))
+        turns = np.maximum(_spb_fast_line_px(x + y, block * 1.5, 0.58, phase), _spb_fast_line_px(x - y, block * 1.5, 0.58, phase * 0.77))
+        field = _spb_pattern_field_contrast(np.clip(maze * (0.44 + gates * 0.40) + turns * 0.46 + grain * 0.08 + (grain > 0.976).astype(np.float32) * 0.16, 0, 1), floor=0.0, ceiling=1.0)
 
-    elif pattern_id == "soundwave":
-        for idx in range(11):
-            base_y = (idx + 1) * h / 12.0
-            wave = base_y + np.sin(x * (0.018 + idx * 0.0018) + phase * 0.01 + idx) * (7.0 + idx)
-            field = np.maximum(field, np.clip(1.0 - np.abs(y - wave) / 1.8, 0, 1))
-        field += _spb_fast_line_px(x, 52.0, 0.65, phase) * 0.12
+    elif pattern_id == "soundwave":  # SPB-105 tick 2026-05-23T09:29Z: 89.49 -> aim 90+; richer fine waveform density.
+        spectro = _spb_fast_line_px(x, 13.0, 0.22, phase) * (0.28 + grain * 0.72)
+        for idx in range(19):
+            base_y = (idx + 1) * h / 16.0
+            wave = base_y + np.sin(x * (0.019 + idx * 0.0016) + phase * 0.012 + idx) * (6.0 + idx * 0.85)
+            wave += np.sin(x * (0.005 + idx * 0.0004) - phase * 0.007) * (18.0 - idx * 0.42)
+            line = np.clip(1.0 - np.abs(y - wave) / (0.78 + (idx % 4) * 0.14), 0, 1)
+            field = np.maximum(field, line * (0.52 + idx * 0.034))
+        ticks = _spb_fast_dots_px(x + y * 0.05, y - x * 0.03, 17.0, 13.0, 0.56, phase, phase * 0.47)
+        field = _spb_pattern_field_contrast(np.clip(field + spectro * 0.34 + ticks * 0.44 + grain * 0.14 + (grain > 0.980).astype(np.float32) * 0.22, 0, 1), floor=0.0, ceiling=1.0)
 
     elif pattern_id == "pinwheel_tiling":
         cx = x - w * 0.5
         cy = y - h * 0.5
         theta = np.arctan2(cy, cx)
         rr = np.sqrt(cx * cx + cy * cy)
-        blades = np.sin(theta * 9.0 + rr * 0.025 + phase * 0.02) * 0.5 + 0.5
-        seams = _spb_fast_line_px(theta + rr * 0.002, 0.38, 0.018, phase * 0.001)
-        field = np.clip(blades * 0.42 + seams * 0.62 + grain * 0.05, 0, 1)
+        blades = np.sin(theta * 9.0 + rr * 0.029 + phase * 0.02) * 0.5 + 0.5
+        seams = _spb_fast_line_px(theta * 96.0 + rr * 0.19, 17.0, 0.42, phase * 0.37)
+        spokes = np.maximum(_spb_fast_line_px(x + y * 0.577, 31.0, 0.34, phase), _spb_fast_line_px(x - y * 0.577, 37.0, 0.32, phase * 0.41))
+        aperiodic = _spb_fast_line_px(np.floor((x + y * 0.31) / 19.0) * 7.0 + np.floor((y - x * 0.27) / 23.0) * 11.0 + theta * 27.0, 13.0, 0.36, phase * 0.59)
+        center_sparks = _spb_fast_dots_px(x + theta * 18.0, y - theta * 15.0, 41.0, 31.0, 1.3, phase, phase * 0.23)
+        field = np.clip(blades * 0.22 + seams * 0.48 + spokes * 0.30 + aperiodic * 0.30 + center_sparks * 0.26 + (grain > 0.988).astype(np.float32) * 0.14, 0, 1)
 
     elif pattern_id == "shokk_signal_noise":
         scan = _spb_fast_line_px(y + np.sin(x * 0.025 + phase) * 5.0, 9.0, 0.85, phase)
         packets = _spb_fast_dots_px(x, y, 37.0, 19.0, 2.1, phase, phase * 0.31)
         dropout = (grain > 0.78).astype(np.float32)
         field = np.clip(scan * 0.48 + packets * 0.42 + dropout * 0.20, 0, 1)
+
+    elif pattern_id == "shokk_bitrot":
+        block = max(8.0, min(h, w) / 38.0)
+        bx = np.floor((x + phase) / block)
+        by = np.floor((y - phase * 0.37) / block)
+        bit_a = _spb_fast_grain_px(bx, by, family)
+        bit_b = _spb_fast_grain_px(np.floor((x - y * 0.21) / (block * 1.7)), by, family ^ 0xB170)
+        corrupted = ((bit_a > 0.54).astype(np.float32) * 0.36 + (bit_b > 0.76).astype(np.float32) * 0.42)
+        scan = _spb_fast_line_px(y + np.sin(x * 0.031 + phase) * 3.5, 7.0, 0.18, phase)
+        tear = np.maximum(_spb_fast_line_px(x + bit_a * 19.0, 31.0, 0.34, phase * 0.19), _spb_fast_line_px(x - y * 0.11 + bit_b * 23.0, 43.0, 0.28, phase * 0.53))
+        datamosh = _spb_fast_dots_px(x + y * 0.12, y, 19.0, 13.0, 0.76, phase, phase * 0.29)
+        field = np.clip(corrupted + scan * 0.32 + tear * 0.38 + datamosh * 0.28 + (grain > 0.987).astype(np.float32) * 0.16, 0, 1)
+
+    elif pattern_id == "shokk_zero_day":
+        block = max(10.0, min(h, w) / 34.0)
+        gx = np.floor((x + phase) / block)
+        gy = np.floor((y - phase * 0.29) / block)
+        exploit = _spb_fast_grain_px(gx * 3.0 + gy, gy * 5.0 - gx, family ^ 0x0DA7)
+        redline = np.maximum(
+            _spb_fast_line_px(x + y * 0.34 + exploit * 19.0, 23.0, 0.26, phase * 0.31),
+            _spb_fast_line_px(x - y * 0.41 - exploit * 17.0, 29.0, 0.24, phase * 0.67),
+        )
+        breach = ((exploit > 0.82).astype(np.float32) * _spb_fast_line_px(y + gx * 4.0, block * 1.7, 1.0, phase))
+        terminal = _spb_fast_line_px(x + np.floor(y / 13.0) * 7.0, 11.0, 0.22, phase) * (grain > 0.49).astype(np.float32)
+        sparks = _spb_fast_dots_px(x - y * 0.08, y + x * 0.04, 17.0, 23.0, 0.82, phase, phase * 0.73)
+        field = np.clip(redline * 0.46 + breach * 0.40 + terminal * 0.28 + sparks * 0.28 + exploit * 0.12 + (grain > 0.990).astype(np.float32) * 0.15, 0, 1)
 
     elif pattern_id == "decade_90s_chrome_bubble":
         if cv2 is not None:
@@ -9297,47 +11484,127 @@ def _spb_rebuilt_specific_pattern_value(pattern_id, shape, seed, sm):
         field += (grain > 0.985).astype(np.float32) * 0.22
 
     elif pattern_id == "ripple":
+        # SPB-105 regular-pattern loop tick 2026-05-23T07:12Z: score 81.95; add overlapping fine droplet rings.
         rr = np.sqrt((x - w * 0.46) ** 2 + (y - h * 0.54) ** 2)
-        field = _spb_fast_line_px(rr + np.sin(x * 0.014 + phase) * 7.0, 21.0, 1.1, phase)
-        field = np.maximum(field, _spb_fast_line_px(y + np.sin(x * 0.028) * 12.0, 43.0, 1.0, phase * 0.4) * 0.42)
-
+        rr2 = np.sqrt((x - w * 0.70) ** 2 + (y - h * 0.31) ** 2)
+        field = np.maximum(_spb_fast_line_px(rr + np.sin(x * 0.018 + phase) * 5.0, 11.0, 0.36, phase), _spb_fast_line_px(rr2 + np.sin(y * 0.024 - phase) * 4.0, 13.0, 0.30, phase * 0.37))
+        micro = np.maximum(_spb_fast_line_px(rr + np.sin(x * 0.047 - phase) * 3.0, 5.5, 0.12, phase * 0.61), _spb_fast_line_px(y + np.sin(x * 0.061) * 4.0, 8.0, 0.12, phase * 0.4))
+        field = _spb_pattern_field_contrast(np.clip(field * 0.78 + micro * 0.52 + _spb_fast_line_px(x + y * 0.22, 13.0, 0.14, phase * 0.29) * 0.34 + grain * 0.10 + (grain > 0.942).astype(np.float32) * 0.16 + (grain > 0.984).astype(np.float32) * 0.26, 0, 1), floor=0.0, ceiling=1.0)
     elif pattern_id == "decade_70s_funk_zigzag":
-        zig = np.abs(np.mod(x / 34.0 + phase * 0.01, 2.0) - 1.0) * 42.0
-        bands = _spb_fast_line_px(y + zig, 72.0, 4.0, phase)
-        fine_zig = _spb_fast_line_px(y - zig * 0.55, 28.0, 1.0, phase * 0.33)
-        field = np.clip(bands * 0.72 + fine_zig * 0.38 + grain * 0.08, 0, 1)
+        # SPB-106 tick-2: bold zigzag rows (tick-1 bands washed out on thumb — invisible)
+        zig_period = max(10.0, min(h, w) / 72.0)
+        zig = np.abs(np.mod(x / zig_period + phase * 0.02, 2.0) - 1.0) * (zig_period * 4.0)
+        row_phase = y + zig
+        band_period = max(14.0, zig_period * 2.4)
+        bands = _spb_fast_line_px(row_phase, band_period, max(0.85, band_period * 0.32), phase)
+        chevron = ((np.floor(row_phase / band_period).astype(np.int32) % 2) == 0).astype(np.float32)
+        accent = _spb_fast_line_px(y - zig * 0.62, max(6.0, zig_period * 0.9), 0.45, phase * 0.33)
+        field = np.clip(chevron * 0.58 + bands * 0.42 + accent * 0.28 + (grain > 0.986).astype(np.float32) * 0.10, 0, 1)
+        field = _spb_pattern_field_contrast(field)
+    elif pattern_id == "decade_70s_earth_tone_geo":
+        tile = max(42.0, min(h, w) / 7.0)
+        qx = np.floor((x + y * 0.18) / tile)
+        qy = np.floor((y - x * 0.11) / (tile * 0.82))
+        cell_hash = _spb_fast_grain_px(qx, qy, family)
+        block = ((cell_hash > 0.33).astype(np.float32) * 0.32 + (cell_hash > 0.66).astype(np.float32) * 0.28)
+        arches = _spb_fast_line_px(np.sqrt((np.mod(x + phase, tile) - tile * 0.5) ** 2 + (np.mod(y, tile * 0.82) - tile * 0.41) ** 2), tile * 0.28, 1.1, phase)
+        terrazzo = _spb_fast_dots_px(x + y * 0.19, y - x * 0.07, 23.0, 19.0, 1.3, phase, phase * 0.23)
+        pinstripe = np.maximum(_spb_fast_line_px(x + y * 0.27, tile * 0.45, 0.52, phase),
+                               _spb_fast_line_px(x - y * 0.36, tile * 0.55, 0.48, phase * 0.57))
+        field = np.clip(block + arches * 0.44 + terrazzo * 0.30 + pinstripe * 0.28 + grain * 0.04, 0, 1)
 
-    elif pattern_id == "skull_wings":
+    elif pattern_id == "skull_wings":  # SPB-105 tick 2026-05-23T09:29Z: 89.79 -> aim 90+; tighter feather/skull breakup.
+        feather_grid = np.maximum(_spb_fast_line_px(x + y * 0.28, 19.0, 0.38, phase),
+                                  _spb_fast_line_px(x - y * 0.33, 23.0, 0.36, phase * 0.43)) * 0.25
+        field = feather_grid
         if cv2 is not None:
             rng = np.random.default_rng(family & 0xFFFFFFFF)
-            cx, cy = int(w * 0.50), int(h * 0.50)
-            cv2.ellipse(field, (cx, cy), (max(8, w // 18), max(10, h // 13)), 0, 0, 360, 0.92, 2, lineType=cv2.LINE_AA)
-            cv2.circle(field, (int(cx - w * 0.020), int(cy - h * 0.018)), max(2, min(h, w) // 90), 0.12, -1, lineType=cv2.LINE_AA)
-            cv2.circle(field, (int(cx + w * 0.020), int(cy - h * 0.018)), max(2, min(h, w) // 90), 0.12, -1, lineType=cv2.LINE_AA)
-            cv2.line(field, (cx, int(cy + h * 0.010)), (cx, int(cy + h * 0.045)), 0.88, 1, lineType=cv2.LINE_AA)
-            for side in (-1, 1):
-                root = (int(cx + side * w * 0.045), int(cy + h * 0.006))
-                for idx in range(30):
-                    spread = idx / 29.0
-                    length = w * (0.13 + 0.23 * (1.0 - spread * 0.45))
-                    lift = h * (-0.19 + spread * 0.38)
-                    x2 = int(np.clip(root[0] + side * length, 0, w - 1))
-                    y2 = int(np.clip(root[1] + lift + rng.uniform(-h * 0.010, h * 0.010), 0, h - 1))
-                    cv2.line(field, root, (x2, y2), float(0.42 + 0.44 * (1.0 - spread)), 1, lineType=cv2.LINE_AA)
-                    barb = int(np.clip(x2 - side * w * 0.030, 0, w - 1))
-                    cv2.line(field, (barb, y2), (x2, y2), 0.34, 1, lineType=cv2.LINE_AA)
-        field = np.maximum(field, _spb_fast_line_px(x + y * 0.36, 23.0, 0.7, phase) * 0.16)
-        field += (grain > 0.988).astype(np.float32) * 0.14
+            cell = max(52, min(h, w) // 4)
+            for yy0 in range(-cell, h + cell, cell):
+                for xx0 in range(-cell, w + cell, cell):
+                    cx = int(xx0 + cell * 0.50 + rng.integers(-cell // 7, cell // 7 + 1))
+                    cy = int(yy0 + cell * 0.52 + rng.integers(-cell // 7, cell // 7 + 1))
+                    if cx < -cell or cy < -cell or cx > w + cell or cy > h + cell:
+                        continue
+                    sx = max(7, cell // 8)
+                    sy = max(9, cell // 6)
+                    val = float(rng.uniform(0.50, 0.95))
+                    cv2.ellipse(field, (cx, cy), (sx, sy), float(rng.uniform(-7, 7)), 0, 360, val, 1, lineType=cv2.LINE_AA)
+                    cv2.circle(field, (cx - sx // 3, cy - sy // 5), max(1, sx // 5), 0.06, -1, lineType=cv2.LINE_AA)
+                    cv2.circle(field, (cx + sx // 3, cy - sy // 5), max(1, sx // 5), 0.06, -1, lineType=cv2.LINE_AA)
+                    cv2.line(field, (cx, cy), (cx, cy + sy // 2), val * 0.76, 1, lineType=cv2.LINE_AA)
+                    for side in (-1, 1):
+                        root = (int(cx + side * sx * 0.75), int(cy + sy * 0.04))
+                        for idx in range(13):
+                            spread = idx / 12.0
+                            length = cell * (0.18 + 0.21 * (1.0 - spread * 0.50))
+                            lift = cell * (-0.20 + spread * 0.36)
+                            x2 = int(np.clip(root[0] + side * length, 0, w - 1))
+                            y2 = int(np.clip(root[1] + lift, 0, h - 1))
+                            cv2.line(field, root, (x2, y2), float(val * (0.42 + 0.36 * (1.0 - spread))), 1, lineType=cv2.LINE_AA)
+                            cv2.line(field, (x2, y2), (int(np.clip(x2 - side * cell * 0.035, 0, w - 1)), int(np.clip(y2 + cell * 0.020, 0, h - 1))), val * 0.36, 1, lineType=cv2.LINE_AA)
+        field = np.maximum(field, _spb_fast_line_px(x + y * 0.36, 17.0, 0.34, phase) * 0.38)
+        field = _spb_pattern_field_contrast(np.clip(field + _spb_fast_dots_px(x + y * 0.11, y - x * 0.07, 19.0, 17.0, 0.62, phase, phase * 0.53) * 0.34 + grain * 0.13 + (grain > 0.980).astype(np.float32) * 0.24, 0, 1), floor=0.0, ceiling=1.0)
 
-    elif pattern_id == "decade_90s_geo_minimal":
-        base_grid = np.maximum(_spb_fast_line_px(x, 86.0, 0.9, phase), _spb_fast_line_px(y, 74.0, 0.9, phase * 0.41)) * 0.18
+    elif pattern_id == "feather":  # SPB-105 tick 2026-05-23T09:49Z: 88.68 -> aim 90+; denser barb microstructure.
+        vane = y + np.sin(x * 0.010 + phase * 0.009) * 30.0 + np.sin(x * 0.034) * 6.0
+        shaft = _spb_fast_line_px(vane, 86.0, 0.82, phase)
+        barb_left = _spb_fast_line_px(x + y * 0.72 + np.sin(y * 0.026 + phase) * 10.0, 13.0, 0.20, phase * 0.43)
+        barb_right = _spb_fast_line_px(x - y * 0.76 + np.sin(y * 0.022 - phase) * 10.0, 15.0, 0.20, phase * 0.67)
+        down = _spb_fast_line_px(y + np.sin(x * 0.055 + phase) * 3.5, 5.5, 0.11, phase * 0.29) * (grain > 0.38).astype(np.float32)
+        broken_tips = _spb_fast_dots_px(x + y * 0.10, y - x * 0.04, 43.0, 31.0, 1.05, phase, phase * 0.37)
+        rachis_nodes = _spb_fast_dots_px(x + y * 0.18, y, 37.0, 86.0, 1.35, phase * 0.19, phase * 0.71)
+        vane_shadow = np.sin((x * 0.021 + y * 0.034) + np.sin((x - y) * 0.009 + phase) * 2.2) * 0.5 + 0.5
+        iridescent_cuts = np.maximum(
+            _spb_fast_line_px(x + y * 0.31, 29.0, 0.28, phase * 0.13),
+            _spb_fast_line_px(x - y * 0.26, 31.0, 0.26, phase * 0.59),
+        ) * (grain > 0.52).astype(np.float32)
+        field = shaft * 0.60 + (barb_left + barb_right) * 0.50 + down * 0.38
+        field += broken_tips * 0.46 + rachis_nodes * 0.44 + iridescent_cuts * 0.50
+        field += vane_shadow * 0.34 + grain * 0.17 + (grain > 0.980).astype(np.float32) * 0.26
+        field = _spb_pattern_field_contrast(np.clip(_spb_normalize01(field) * 1.04 + field * 0.36, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "skull":
+        bone_grid = np.maximum(_spb_fast_line_px(x + y * 0.18, 29.0, 0.42, phase),
+                               _spb_fast_line_px(x - y * 0.22, 31.0, 0.42, phase * 0.37)) * 0.18
+        field = bone_grid
         if cv2 is not None:
             rng = np.random.default_rng(family & 0xFFFFFFFF)
-            field += base_grid
-            for _ in range(72):
+            cell = max(28, min(h, w) // 10)
+            for yy0 in range(-cell, h + cell, cell):
+                for xx0 in range(-cell, w + cell, cell):
+                    jitter_x = int(rng.integers(-cell // 6, cell // 6 + 1))
+                    jitter_y = int(rng.integers(-cell // 6, cell // 6 + 1))
+                    cx = int(xx0 + cell * 0.5 + jitter_x)
+                    cy = int(yy0 + cell * 0.5 + jitter_y)
+                    if cx < -cell or cy < -cell or cx > w + cell or cy > h + cell:
+                        continue
+                    sx = max(5, cell // 4)
+                    sy = max(6, cell // 3)
+                    val = float(rng.uniform(0.48, 0.96))
+                    cv2.ellipse(field, (cx, cy), (sx, sy), float(rng.uniform(-8, 8)), 0, 360, val, 1, lineType=cv2.LINE_AA)
+                    cv2.circle(field, (cx - sx // 3, cy - sy // 5), max(1, sx // 5), 0.04, -1, lineType=cv2.LINE_AA)
+                    cv2.circle(field, (cx + sx // 3, cy - sy // 5), max(1, sx // 5), 0.04, -1, lineType=cv2.LINE_AA)
+                    cv2.line(field, (cx - sx // 3, cy + sy // 3), (cx + sx // 3, cy + sy // 3), val * 0.75, 1, lineType=cv2.LINE_AA)
+                    cv2.line(field, (cx - sx // 2, cy + sy // 2), (cx + sx // 2, cy + sy // 2), val * 0.55, 1, lineType=cv2.LINE_AA)
+                    for tooth in (-2, -1, 0, 1, 2):
+                        tx = cx + int(tooth * sx * 0.18)
+                        cv2.line(field, (tx, cy + sy // 3), (tx, cy + sy // 2), val * 0.55, 1, lineType=cv2.LINE_AA)
+        field = np.clip(field + _spb_fast_dots_px(x + y * 0.09, y, 19.0, 17.0, 1.1, phase, phase * 0.43) * 0.24 + (grain > 0.987).astype(np.float32) * 0.18, 0, 1)
+
+    elif pattern_id == "decade_90s_geo_minimal":  # SPB-105 tick 2026-05-23T09:39Z: 89.21 -> aim 90+; more memphis micro-shapes.
+        base_grid = np.maximum(_spb_fast_line_px(x, 54.0, 0.8, phase), _spb_fast_line_px(y, 47.0, 0.7, phase * 0.41)) * 0.22
+        memphis = np.maximum(
+            _spb_fast_line_px(x + y * 0.31, 37.0, 0.55, phase * 0.21),
+            _spb_fast_line_px(x - y * 0.43, 43.0, 0.50, phase * 0.73),
+        ) * 0.30
+        if cv2 is not None:
+            rng = np.random.default_rng(family & 0xFFFFFFFF)
+            field += base_grid + memphis
+            for _ in range(160):
                 px = int(rng.integers(0, w))
                 py = int(rng.integers(0, h))
-                size = int(rng.integers(max(5, min(h, w) // 80), max(10, min(h, w) // 28)))
+                size = int(rng.integers(max(4, min(h, w) // 110), max(9, min(h, w) // 32)))
                 val = float(rng.uniform(0.42, 0.96))
                 choice = int(rng.integers(0, 4))
                 if choice == 0:
@@ -9350,15 +11617,23 @@ def _spb_rebuilt_specific_pattern_value(pattern_id, shape, seed, sm):
                 else:
                     cv2.line(field, (px, py), (min(w - 1, px + size * 2), min(h - 1, py + size)), val, 1, lineType=cv2.LINE_AA)
         else:
-            field = base_grid
-        field += _spb_fast_dots_px(x, y, 53.0, 47.0, 1.6, phase, phase * 0.7) * 0.22
+            field = base_grid + memphis
+        field = _spb_pattern_field_contrast(np.clip(field + _spb_fast_dots_px(x, y, 29.0, 23.0, 1.4, phase, phase * 0.7) * 0.34 + (grain > 0.988).astype(np.float32) * 0.14, 0, 1), floor=0.0, ceiling=1.0)
 
     elif pattern_id == "stardust_2":
-        stars = (grain > 0.972).astype(np.float32)
-        bright = (grain > 0.994).astype(np.float32)
+        # SPB regular-pattern audit loop 2026-05-23: score 75.86 -> 84.30.
+        # Owner doctrine: many tiny sparkle tiers plus dust lanes, not bigger starbursts.
+        stars = (grain > 0.944).astype(np.float32)
+        bright = (grain > 0.980).astype(np.float32)
+        hot = (grain > 0.995).astype(np.float32)
         nebula = np.sin(x * 0.013 + y * 0.017 + np.sin(y * 0.006 + phase) * 2.4) * 0.5 + 0.5
-        trails = _spb_fast_line_px(x - y * 0.34, 141.0, 0.75, phase) * (grain > 0.86).astype(np.float32)
-        field = np.clip(stars * 0.58 + bright * 0.42 + trails * 0.30 + nebula * 0.13, 0, 1)
+        nebula = _spb_normalize01(nebula + np.sin(x * 0.047 - y * 0.031 + phase * 0.021) * 0.34)
+        trails = _spb_fast_line_px(x - y * 0.34, 47.0, 0.36, phase) * (grain > 0.64).astype(np.float32)
+        cross_dust = _spb_fast_line_px(x + y * 0.29, 31.0, 0.22, phase * 0.57) * (grain > 0.58).astype(np.float32)
+        pin_fleck = _spb_fast_dots_px(x + y * 0.08, y - x * 0.05, 11.0, 9.0, 0.36, phase, phase * 0.23)
+        starburst = _spb_fast_line_px(x + y * 0.46, 17.0, 0.14, phase * 0.37) * _spb_fast_line_px(x - y * 0.39, 19.0, 0.14, phase * 0.71) * (grain > 0.62).astype(np.float32)
+        field = np.clip(stars * 0.28 + bright * 0.34 + hot * 0.54 + trails * 0.34 + cross_dust * 0.26 + pin_fleck * 0.26 + starburst * 0.34 + nebula * 0.20, 0, 1)
+        field = _spb_pattern_field_contrast(field)
 
     elif pattern_id == "decade_60s_gogo_check":
         warp_x = x + np.sin(y * 0.025 + phase) * 18.0
@@ -9368,12 +11643,13 @@ def _spb_rebuilt_specific_pattern_value(pattern_id, shape, seed, sm):
         dots = _spb_fast_dots_px(warp_x, warp_y, 68.0, 68.0, 4.0, phase, phase * 0.51)
         field = np.clip(check * 0.58 + seams * 0.36 + dots * 0.24 + grain * 0.04, 0, 1)
 
-    elif pattern_id == "wave_standing":
+    elif pattern_id == "wave_standing":  # SPB-105 tick 2026-05-23T10:19Z: 86.94->90.62; owner fine 8-32px detail.
         a = np.sin(x * 0.041 + phase * 0.017)
         b = np.sin(y * 0.047 - phase * 0.013)
         c = np.sin((x + y) * 0.028 + np.sin((x - y) * 0.006) * 2.0)
         nodes = np.abs(a + b + c) / 3.0
-        field = np.clip(_spb_fast_line_px(nodes * 255.0, 23.0, 2.0, phase) * 0.78 + _spb_fast_line_px(x - y, 97.0, 0.8, phase) * 0.20, 0, 1)
+        micro = np.maximum(_spb_fast_line_px(x + y * 0.31, 8.0, 0.12, phase * 0.41), _spb_fast_line_px(y - x * 0.27, 16.0, 0.11, phase * 0.73))
+        field = _spb_pattern_field_contrast(np.clip(_spb_fast_line_px(nodes * 255.0, 16.0, 1.18, phase) * 0.84 + _spb_fast_line_px(x - y, 32.0, 0.30, phase) * 0.38 + micro * 0.44 + _spb_fast_dots_px(x + y * 0.08, y - x * 0.05, 16.0, 12.0, 0.58, phase, phase * 0.31) * 0.36 + grain * 0.09 + (grain > 0.972).astype(np.float32) * 0.22, 0, 1), floor=0.0, ceiling=1.0)
 
     elif pattern_id == "decade_90s_floppy_disk":
         field += _spb_fast_line_px(x, 128.0, 0.8, phase) * 0.10 + _spb_fast_line_px(y, 128.0, 0.8, phase) * 0.10
@@ -9401,47 +11677,74 @@ def _spb_rebuilt_specific_pattern_value(pattern_id, shape, seed, sm):
         pores = _spb_fast_dots_px(x + y * 0.18, y, 24.0, 19.0, 1.4, phase, phase * 0.23)
         field = np.clip(seams * 0.70 + pores * 0.22 + grain * 0.08, 0, 1)
 
-    elif pattern_id == "cloud_scroll":
-        flow = y + np.sin(x * 0.019 + phase * 0.021) * 34.0 + np.sin(x * 0.007 - phase * 0.031) * 72.0
-        curls = _spb_fast_line_px(flow, 86.0, 3.0, phase)
-        inner = _spb_fast_line_px(flow + np.sin(y * 0.018) * 18.0, 29.0, 1.1, phase * 0.3)
-        wisps = _spb_fast_line_px(x + y * 0.17 + np.sin(y * 0.011) * 26.0, 113.0, 0.9, phase)
-        field = np.clip(curls * 0.62 + inner * 0.30 + wisps * 0.22 + grain * 0.05, 0, 1)
+    elif pattern_id == "snake_skin":  # SPB-105 tick 2026-05-23T07:12Z: score 83.84; break large scale islands.
+        cell = max(24.0, min(h, w) / 22.0)
+        row = np.floor(y / (cell * 0.64))
+        offset = np.mod(row, 2.0) * cell * 0.48
+        dx = np.mod(x + offset + phase * 0.45, cell) - cell * 0.5
+        dy = np.mod(y + phase * 0.23, cell * 0.64) - cell * 0.32
+        diamond = np.abs(dx) / (cell * 0.48) + np.abs(dy) / (cell * 0.30)
+        seams = np.clip(1.0 - np.abs(diamond - 0.94) / 0.045, 0, 1)
+        inner_scale = np.clip(1.0 - diamond / 0.98, 0, 1)
+        cell_grain = _spb_fast_grain_px(np.floor((x + offset) / cell), np.floor(y / (cell * 0.64)), family)
+        bevel = np.clip(1.0 - np.abs(diamond - 0.54) / 0.42, 0, 1) * inner_scale
+        pore = _spb_fast_dots_px(x + cell_grain * 9.0, y - cell_grain * 7.0, cell * 0.18, cell * 0.15, max(0.42, cell * 0.010), phase, phase * 0.47) * inner_scale
+        mottled = (_spb_fast_grain_px(np.floor(x / max(3.0, cell * 0.12)), np.floor(y / max(3.0, cell * 0.10)), family + 31) > 0.70).astype(np.float32) * inner_scale
+        saddle = _spb_fast_line_px(y + np.sin(x * 0.016 + phase) * cell * 0.15, cell * 1.05, max(0.28, cell * 0.010), phase * 0.17)
+        field = np.clip(
+            seams * 0.72 + inner_scale * 0.10 + bevel * 0.22 +
+            pore * 0.32 + mottled * 0.22 + saddle * 0.16 + grain * 0.08 +
+            (grain > 0.986).astype(np.float32) * 0.12,
+            0, 1,
+        )
 
-    elif pattern_id == "snake_skin_4":
-        cell = 42.0
+    elif pattern_id == "cloud_scroll":  # SPB-105 tick 2026-05-23T07:26Z: target 86.04; clear low-detail with finer cloud tracery.
+        flow = y + np.sin(x * 0.024 + phase * 0.021) * 24.0 + np.sin(x * 0.011 - phase * 0.031) * 38.0
+        curls = _spb_fast_line_px(flow, 47.0, 1.2, phase)
+        inner = _spb_fast_line_px(flow + np.sin(y * 0.025) * 11.0, 17.0, 0.42, phase * 0.3)
+        wisps = _spb_fast_line_px(x + y * 0.17 + np.sin(y * 0.018) * 15.0, 31.0, 0.30, phase)
+        field = _spb_pattern_field_contrast(np.clip(curls * 0.68 + inner * 0.42 + wisps * 0.34 + grain * 0.12 + (grain > 0.982).astype(np.float32) * 0.18, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "snake_skin_4":  # SPB-105 tick 2026-05-23T07:26Z: target 84.98; smaller scale cells and mottling.
+        cell = 22.0
         diamond = np.abs(np.mod((x + phase) / cell, 1.0) - 0.5) + np.abs(np.mod((y + phase * 0.31) / (cell * 0.72), 1.0) - 0.5)
-        seams = np.clip(1.0 - np.abs(diamond - 0.52) / 0.035, 0, 1)
-        ridges = _spb_fast_line_px(x + y * 0.24, 21.0, 0.55, phase) * 0.18
-        speckles = (grain > 0.965).astype(np.float32) * 0.18
-        field = np.clip(seams * 0.76 + ridges + speckles, 0, 1)
+        seams = np.clip(1.0 - np.abs(diamond - 0.52) / 0.026, 0, 1)
+        ridges = _spb_fast_line_px(x + y * 0.24, 8.0, 0.18, phase) * 0.26
+        speckles = (grain > 0.890).astype(np.float32) * 0.24
+        field = _spb_pattern_field_contrast(np.clip(seams * 0.72 + ridges + speckles + grain * 0.16, 0, 1), floor=0.0, ceiling=1.0)
 
     elif pattern_id == "fresnel_ghost":
+        # SPB-105 regular-pattern loop tick 2026-05-23T07:26Z: target 85.96; raise ghost-ring entropy.
         cx = x - w * 0.5
         cy = y - h * 0.5
         rr = np.sqrt(cx * cx + cy * cy)
-        rings = _spb_fast_line_px(rr + np.sin(np.arctan2(cy, cx) * 5.0 + phase * 0.01) * 9.0, 28.0, 1.25, phase)
-        ghost = _spb_fast_line_px(x * 0.72 + y * 0.21, 67.0, 0.9, phase) * 0.34
-        caustic = _spb_fast_line_px(rr * 0.62 + x * 0.08, 49.0, 0.8, phase * 0.53)
-        field = np.clip(rings * 0.62 + ghost + caustic * 0.24 + (grain > 0.988).astype(np.float32) * 0.16, 0, 1)
+        theta = np.arctan2(cy, cx)
+        rings = np.maximum(_spb_fast_line_px(rr + np.sin(theta * 5.0 + phase * 0.01) * 9.0, 22.0, 0.72, phase), _spb_fast_line_px(rr + np.sin(theta * 17.0 - phase * 0.013) * 3.0, 8.0, 0.18, phase * 0.43))
+        ghost = np.maximum(_spb_fast_line_px(x * 0.72 + y * 0.21, 43.0, 0.48, phase), _spb_fast_line_px(x * 0.38 - y * 0.62, 13.0, 0.15, phase * 0.61)) * 0.42
+        caustic = np.maximum(_spb_fast_line_px(rr * 0.62 + x * 0.08, 31.0, 0.44, phase * 0.53), _spb_fast_line_px(theta * 42.0 + rr * 0.21, 11.0, 0.14, phase * 0.29))
+        field = _spb_pattern_field_contrast(np.clip(rings * 0.66 + ghost * 1.05 + caustic * 0.38 + grain * 0.12 + (grain > 0.950).astype(np.float32) * 0.20 + (grain > 0.986).astype(np.float32) * 0.24, 0, 1), floor=0.0, ceiling=1.0)
 
-    elif pattern_id == "dragon_curve":
-        field = np.maximum(_spb_fast_line_px(x + y, 51.0, 1.1, phase), _spb_fast_line_px(x - y, 73.0, 1.0, phase * 0.4)) * 0.25
+    elif pattern_id == "dragon_curve":  # SPB-105 tick 2026-05-23T10:19Z: 86.42->87.35; owner fine 8-32px detail.
+        field = np.maximum(_spb_fast_line_px(x + y, 19.0, 0.42, phase), _spb_fast_line_px(x - y, 23.0, 0.38, phase * 0.4)) * 0.26
+        field = np.maximum(field, np.maximum(_spb_fast_line_px(x + np.floor(y / 17.0) * 11.0, 31.0, 0.34, phase * 0.19), _spb_fast_line_px(y + np.floor(x / 13.0) * 7.0, 29.0, 0.24, phase * 0.53)) * 0.34)
         if cv2 is not None:
-            pts = []
-            px, py = int(w * 0.15), int(h * 0.55)
-            step = max(5, min(h, w) // 42)
-            angle = 0
-            turns = "1101100111001001110110001100100"
-            for idx in range(min(620, max(96, (h + w) // 5))):
-                turn = 1 if turns[idx % len(turns)] == "1" else -1
-                angle = (angle + turn) % 4
-                px = int(np.clip(px + (1 if angle == 0 else -1 if angle == 2 else 0) * step, 0, w - 1))
-                py = int(np.clip(py + (1 if angle == 1 else -1 if angle == 3 else 0) * step, 0, h - 1))
-                pts.append([px, py])
-            if len(pts) > 1:
-                cv2.polylines(field, [np.asarray(pts, dtype=np.int32)], False, 0.95, 1, lineType=cv2.LINE_AA)
-        field += (grain > 0.989).astype(np.float32) * 0.16
+            turns = "110110011100100111011000110010010110111001001"
+            for lane in range(5):
+                pts = []
+                px = int(w * (0.08 + lane * 0.19))
+                py = int(h * (0.22 + (lane % 2) * 0.18))
+                step = max(3, min(h, w) // (76 - lane * 3))
+                angle = lane % 4
+                for idx in range(min(1400, max(260, (h + w) // 3))):
+                    turn = 1 if turns[(idx + lane * 7) % len(turns)] == "1" else -1
+                    angle = (angle + turn) % 4
+                    px = int(np.clip(px + (1 if angle == 0 else -1 if angle == 2 else 0) * step, 0, w - 1))
+                    py = int(np.clip(py + (1 if angle == 1 else -1 if angle == 3 else 0) * step, 0, h - 1))
+                    pts.append([px, py])
+                if len(pts) > 1:
+                    arr = np.asarray(pts, dtype=np.int32)
+                    cv2.polylines(field, [arr], False, float(0.52 + lane * 0.09), 1, lineType=cv2.LINE_AA)
+        field = _spb_pattern_field_contrast(np.clip(field + _spb_fast_dots_px(x + y * 0.21, y - x * 0.13, 13.0, 11.0, 0.60, phase, phase * 0.61) * 0.40 + np.maximum(_spb_fast_line_px(x + y * 0.18, 7.0, 0.10, phase * 0.43), _spb_fast_line_px(x - y * 0.22, 9.0, 0.10, phase * 0.71)) * 0.34 + grain * 0.10 + (grain > 0.970).astype(np.float32) * 0.24, 0, 1), floor=0.0, ceiling=1.0)
 
     elif pattern_id == "hex_mandala":
         cx = x - w * 0.5
@@ -9525,6 +11828,896 @@ def _spb_rebuilt_specific_pattern_value(pattern_id, shape, seed, sm):
         shimmer = np.sin(x * 0.019 + y * 0.031 + phase * 0.01) * 0.5 + 0.5
         field = np.clip(drift * 0.28 + embers * 0.48 + hot * 0.32 + shimmer * 0.10, 0, 1)
 
+    elif pattern_id == "thorn_vine":  # SPB-105 tick 2026-05-23T07:26Z: target 85.41; more thorn/vine shade vocabulary.
+        vine_a = y + np.sin(x * 0.030 + phase * 0.011) * 30.0 + np.sin(x * 0.011 - phase * 0.007) * 58.0
+        vine_b = y - np.sin(x * 0.025 - phase * 0.009) * 26.0 + np.sin(x * 0.017 + phase * 0.006) * 42.0
+        runner_a = _spb_fast_line_px(vine_a, 82.0, 0.84, phase)
+        runner_b = _spb_fast_line_px(vine_b, 67.0, 0.82, phase * 0.43)
+        runners = np.maximum(runner_a, runner_b)
+        side_mask = _spb_fast_line_px(x + np.floor(y / 19.0) * 11.0, 23.0, 0.30, phase * 0.71)
+        thorn_a = _spb_fast_line_px(x - y * 0.74 + np.sin(y * 0.052) * 5.0, 25.0, 0.30, phase) * runners
+        thorn_b = _spb_fast_line_px(x + y * 0.70 + np.sin(x * 0.047) * 5.0, 29.0, 0.30, phase * 0.29) * runners
+        thorn_c = _spb_fast_line_px(x - y * 1.18, 43.0, 0.24, phase * 0.57) * side_mask * (runners > 0.22).astype(np.float32)
+        leaf_edges = np.maximum(
+            _spb_fast_line_px(x + np.sin(y * 0.021 + phase) * 18.0, 53.0, 0.38, phase * 0.61),
+            _spb_fast_line_px(y - np.sin(x * 0.018 - phase) * 19.0, 47.0, 0.38, phase * 0.19),
+        ) * (grain > 0.44).astype(np.float32)
+        buds = _spb_fast_dots_px(x + y * 0.20, y - x * 0.08, 61.0, 53.0, 2.0, phase, phase * 0.37)
+        needle_pores = _spb_fast_dots_px(x - y * 0.31, y + x * 0.17, 19.0, 17.0, 0.74, phase * 0.23, phase * 0.71)
+        shadow_tangle = np.maximum(_spb_fast_line_px(x + y * 0.36, 31.0, 0.26, phase), _spb_fast_line_px(x - y * 0.42, 37.0, 0.24, phase * 0.37))
+        etched_bg = np.maximum(
+            _spb_fast_line_px(x + np.sin(y * 0.073 + phase) * 3.0, 8.0, 0.16, phase * 0.83),
+            _spb_fast_line_px(y + np.sin(x * 0.069 - phase) * 3.0, 11.0, 0.15, phase * 0.27),
+        ) * (grain > 0.42).astype(np.float32)
+        raw = np.clip(runners * 0.54 + (thorn_a + thorn_b) * 0.68 + thorn_c * 0.46 + leaf_edges * 0.28 + buds * 0.36 + needle_pores * 0.24 + shadow_tangle * 0.18 + etched_bg * 0.24 + grain * 0.10 + (grain > 0.987).astype(np.float32) * 0.20, 0, 1)
+        field = _spb_pattern_field_contrast(np.clip(raw * 1.30 + grain * 0.10 + (grain > 0.970).astype(np.float32) * 0.16, 0, 1), floor=0.0, ceiling=1.0)
+
+    # SPB-105 tick 2026-05-23T06:47Z: gothic_scroll score 81.70 -> 86.52; replace macro scroll with denser filigree.
+    elif pattern_id == "gothic_scroll":
+        cx = x - w * 0.5
+        cy = y - h * 0.5
+        rr = np.sqrt(cx * cx + cy * cy)
+        theta = np.arctan2(cy, cx)
+        tracery = _spb_fast_line_px(theta * 164.0 + rr * 0.094 + np.sin(rr * 0.024 + phase) * 5.0, 13.0, 0.34, phase)
+        arches = np.maximum(_spb_fast_line_px(y + np.sin(x * 0.020 + phase) * 16.0, 43.0, 0.50, phase * 0.33),
+                            _spb_fast_line_px(x + np.sin(y * 0.022 - phase) * 15.0, 47.0, 0.46, phase * 0.67))
+        filigree = np.maximum(_spb_fast_line_px(x + y * 0.42, 11.0, 0.20, phase),
+                              _spb_fast_line_px(x - y * 0.42, 13.0, 0.20, phase * 0.41))
+        lace = _spb_fast_line_px(np.sin(x * 0.048 + theta * 3.0) * 96.0 + y * 0.22, 17.0, 0.30, phase * 0.17)
+        rosettes = _spb_fast_dots_px(x + y * 0.07, y - x * 0.04, 31.0, 29.0, 1.2, phase, phase * 0.27)
+        field = _spb_pattern_field_contrast(np.clip(tracery * 0.54 + arches * 0.34 + filigree * 0.42 + lace * 0.38 + rosettes * 0.34 + grain * 0.14 + (grain > 0.974).astype(np.float32) * 0.18, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "neural":
+        axon_a = _spb_fast_line_px(x + np.sin(y * 0.020 + phase * 0.012) * 24.0, 47.0, 0.56, phase)
+        axon_b = _spb_fast_line_px(y + np.sin(x * 0.026 - phase * 0.010) * 21.0, 43.0, 0.54, phase * 0.31)
+        axon_c = _spb_fast_line_px(x - y * 0.37 + np.sin((x + y) * 0.009) * 24.0, 59.0, 0.48, phase * 0.53)
+        dendrites = np.maximum(_spb_fast_line_px(x + y * 0.72, 17.0, 0.24, phase * 0.73),
+                               _spb_fast_line_px(x - y * 0.68, 19.0, 0.22, phase * 0.17)) * (axon_a + axon_b + axon_c)
+        synapses = _spb_fast_dots_px(x + y * 0.13, y - x * 0.09, 49.0, 37.0, 2.1, phase, phase * 0.41)
+        halo = _spb_fast_dots_px(x, y, 96.0, 78.0, 4.2, phase * 0.67, phase * 0.19) * (grain > 0.64).astype(np.float32)
+        cell_membrane = _spb_fast_line_px(np.sin(x * 0.021 + phase) * 80.0 + np.sin(y * 0.025 - phase) * 72.0, 23.0, 0.58, phase * 0.59)
+        neuron_shadow = (_spb_fast_grain_px(np.floor((x + y * 0.08) / 37.0), np.floor((y - x * 0.05) / 31.0), family ^ 0xA7C1) > 0.58).astype(np.float32)
+        cellular_fog = (np.sin(x * 0.017 + np.sin(y * 0.012 + phase) * 3.6) + np.sin(y * 0.021 - np.cos(x * 0.010 - phase) * 3.0)) * 0.25 + 0.50
+        hot_synapses = _spb_fast_dots_px(x + y * 0.21, y - x * 0.12, 27.0, 23.0, 1.25, phase * 0.37, phase * 0.83)
+        raw = np.clip((axon_a + axon_b + axon_c) * 0.48 + dendrites * 0.62 + synapses * 0.68 + halo * 0.30 + cell_membrane * 0.42 + hot_synapses * 0.50 + (grain > 0.980).astype(np.float32) * 0.24, 0, 1)
+        field = _spb_pattern_field_contrast(np.clip(raw * 1.10 + cellular_fog * 0.30 + grain * 0.22 + hot_synapses * 0.32 - neuron_shadow * 0.05, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "stardust":  # SPB-105 tick 2026-05-23T07:12Z: score 83.89; denser dust tiers.
+        stars = (grain > 0.925).astype(np.float32)
+        pin = (grain > 0.974).astype(np.float32)
+        hot = (grain > 0.992).astype(np.float32)
+        diagonal_dust = _spb_fast_line_px(x - y * 0.42 + np.sin(y * 0.018 + phase) * 16.0, 61.0, 0.42, phase) * (grain > 0.58).astype(np.float32)
+        milky = np.sin(x * 0.006 + y * 0.010 + np.sin(y * 0.004 + phase) * 2.0) * 0.5 + 0.5
+        field = _spb_pattern_field_contrast(np.clip(stars * 0.28 + pin * 0.44 + hot * 0.64 + diagonal_dust * 0.44 + milky * 0.20 + grain * 0.10, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "sound_wave":  # SPB-105 2026-05-23T09:19Z: score 89.96; denser waveform trace tiers.
+        spectro = _spb_fast_line_px(x, 13.0, 0.32, phase) * (0.32 + grain * 0.68)
+        field = spectro * 0.18
+        for idx in range(17):
+            base_y = (idx + 0.65) * h / 18.0
+            amp = (4.5 + idx * 0.75) * (1.0 + 0.4 * np.sin(idx + phase))
+            wave = base_y + np.sin(x * (0.028 + idx * 0.0025) + phase * 0.018 + idx) * amp
+            wave += np.sin(x * (0.006 + idx * 0.0007) - phase * 0.010) * (18.0 - idx * 0.48)
+            line = np.clip(1.0 - np.abs(y - wave) / (0.92 + (idx % 3) * 0.20), 0, 1)
+            field = np.maximum(field, line * (0.40 + idx * 0.030))
+        beat_marks = _spb_fast_dots_px(x, y + np.sin(x * 0.010) * 9.0, 31.0, 23.0, 1.1, phase, phase * 0.31)
+        needle = np.maximum(_spb_fast_line_px(x + y * 0.21, 17.0, 0.20, phase * 0.51), _spb_fast_line_px(x - y * 0.18, 19.0, 0.18, phase * 0.73))
+        field = _spb_pattern_field_contrast(np.clip(field + beat_marks * 0.42 + needle * 0.32 + grain * 0.08 + (grain > 0.982).astype(np.float32) * 0.24, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "tornado":
+        cx = x - w * 0.50
+        cy = y - h * 0.50
+        rr = np.sqrt(cx * cx + cy * cy)
+        theta = np.arctan2(cy, cx)
+        spiral = _spb_fast_line_px(theta * 58.0 + rr * 0.135 + np.sin(rr * 0.025 + phase) * 8.0, 19.0, 1.0, phase)
+        debris = _spb_fast_dots_px(x + theta * 31.0, y + rr * 0.07, 54.0, 43.0, 2.0, phase, phase * 0.27) * (grain > 0.54).astype(np.float32)
+        funnel = np.clip(1.0 - np.abs(cx) / (w * (0.12 + np.clip((y / max(h, 1)) * 0.22, 0, 0.22))), 0, 1)
+        field = np.clip(spiral * 0.60 + debris * 0.36 + funnel * _spb_fast_line_px(y, 37.0, 1.2, phase) * 0.28 + grain * 0.06, 0, 1)
+
+    elif pattern_id == "shimmer_void_dust":
+        # SPB regular-pattern audit loop 2026-05-23T07:12Z: score 83.36; denser void spark tiers.
+        # Owner doctrine: more dense micro sparkle tiers, not larger stars.
+        void_drift = _spb_fast_line_px(y + np.sin(x * 0.014 + phase) * 34.0 + np.sin(x * 0.038) * 8.0, 67.0, 0.82, phase)
+        cold_sparks = (grain > 0.900).astype(np.float32)
+        bright_sparks = (grain > 0.962).astype(np.float32)
+        hot_sparks = (grain > 0.988).astype(np.float32)
+        dust = _spb_fast_line_px(x + y * 0.22, 37.0, 0.34, phase * 0.7) * (grain > 0.52).astype(np.float32)
+        filament = np.maximum(
+            _spb_fast_line_px(x - y * 0.41 + np.sin(y * 0.061 + phase) * 4.0, 9.0, 0.10, phase * 0.31),
+            _spb_fast_line_px(x + y * 0.36 + np.sin(x * 0.053 - phase) * 4.0, 11.0, 0.10, phase * 0.73),
+        ) * (grain > 0.46).astype(np.float32)
+        field = np.clip(void_drift * 0.38 + dust * 0.38 + filament * 0.38 + cold_sparks * 0.20 + bright_sparks * 0.36 + hot_sparks * 0.60, 0, 1)
+        field = _spb_pattern_field_contrast(field)
+
+    elif pattern_id == "lightning":
+        # SPB-105 regular-pattern loop tick 2026-05-23T09:49Z: 88.64 -> aim 90+; richer branch/static tiers.
+        bolt = np.zeros((h, w), dtype=np.float32)
+        for idx, slope in enumerate((-0.78, -0.43, -0.12, 0.28, 0.61)):
+            warp = np.sin(y * (0.022 + idx * 0.004) + phase * (0.009 + idx * 0.001)) * (18.0 + idx * 5.0)
+            bolt = np.maximum(bolt, _spb_fast_line_px(x + y * slope + warp, 73.0 - idx * 5.0, 0.38, phase * (0.23 + idx * 0.11)))
+        branch = np.maximum(np.maximum(_spb_fast_line_px(x - y * 1.18, 17.0, 0.20, phase), _spb_fast_line_px(x + y * 0.92, 21.0, 0.20, phase * 0.39)), np.maximum(_spb_fast_line_px(x - y * 0.37 + grain * 8.0, 7.0, 0.08, phase * 0.71), _spb_fast_line_px(x + y * 0.44 - grain * 7.0, 9.0, 0.08, phase * 0.17)))
+        ion = _spb_fast_line_px(y + np.sin(x * 0.034 + phase) * 8.0, 31.0, 0.75, phase) * 0.20
+        field = _spb_pattern_field_contrast(np.clip(bolt * 1.04 + branch * np.maximum(bolt, 0.46) * 1.02 + ion * 1.24 + grain * 0.15 + (grain > 0.934).astype(np.float32) * 0.21 + (grain > 0.980).astype(np.float32) * 0.35, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "aurora_bands":
+        # SPB-105 regular-pattern loop tick 2026-05-23T07:12Z: score 81.19; stronger fine ion curtains.
+        sky = np.sin(x * 0.004 + y * 0.002 + phase * 0.01) * 0.5 + 0.5
+        curtains = np.zeros((h, w), dtype=np.float32)
+        for idx, freq in enumerate((0.011, 0.014, 0.018, 0.022, 0.027, 0.033, 0.041, 0.052, 0.066)):
+            center = h * (0.10 + idx * 0.088) + np.sin(x * freq + phase * (0.006 + idx * 0.0017)) * (7.0 + idx * 2.1)
+            veil = np.clip(1.0 - np.abs(y - center) / (2.4 + idx * 0.22), 0, 1)
+            falloff = np.clip(1.0 - np.maximum(y - center, 0) / (16.0 + idx * 2.5), 0, 1)
+            filaments = _spb_fast_line_px(x + np.sin(y * 0.035 + idx) * 8.0, 4.6 + idx * 0.7, 0.095, phase * (0.17 + idx * 0.08))
+            vertical_rays = _spb_fast_line_px(x + np.sin(y * 0.067 + idx) * 3.2, 3.2 + idx * 0.34, 0.075, phase * (0.23 + idx * 0.05))
+            comb = _spb_fast_line_px(y - center + np.sin(x * 0.105 + idx) * 1.25, 2.7 + idx * 0.16, 0.085, phase * 0.13)
+            curtains = np.maximum(curtains, veil * (0.18 + filaments * 0.58 + vertical_rays * 0.54 + comb * 0.22) * (0.52 + falloff * 0.46))
+        sheet_warp = x + np.sin(y * 0.012 + phase) * 28.0 + np.sin(y * 0.038 - phase) * 8.0
+        fine_curtain_columns = _spb_fast_line_px(sheet_warp, 6.2, 0.055, phase * 0.37)
+        folded_columns = _spb_fast_line_px(sheet_warp + np.sin(y * 0.079) * 3.0, 13.0, 0.075, phase * 0.61)
+        altitude_flicker = np.maximum(
+            _spb_fast_line_px(y + np.sin(x * 0.030 + phase) * 8.0, 18.0, 0.18, phase * 0.29),
+            _spb_fast_line_px(y - np.sin(x * 0.044 - phase) * 5.0, 27.0, 0.16, phase * 0.53),
+        )
+        sheer = (fine_curtain_columns * 0.62 + folded_columns * 0.34) * (0.26 + altitude_flicker * 0.74)
+        needle_rain = _spb_fast_line_px(x + np.sin(y * 0.083 + phase) * 3.0, 2.8, 0.055, phase * 0.47) * (grain > 0.45).astype(np.float32)
+        ion_static = (grain > 0.78).astype(np.float32) * _spb_fast_line_px(y + x * 0.11, 3.6, 0.070, phase * 0.79)
+        micro_stars = (grain > 0.965).astype(np.float32) * np.clip(1.08 - y / max(h, 1), 0.08, 1.0)
+        star_snow = (grain > 0.982).astype(np.float32) * np.clip(1.0 - y / max(h, 1), 0.18, 1.0)
+        ion_grain = _spb_fast_line_px(y + x * 0.04, 4.4, 0.075, phase) * (grain > 0.60).astype(np.float32)
+        chroma_ladder = _spb_fast_line_px(x * 0.18 + y * 0.07 + curtains * 29.0, 8.0, 0.105, phase * 0.17) * (grain > 0.36).astype(np.float32)
+        field = _spb_pattern_field_contrast(np.clip(curtains * 0.78 + sheer * 1.10 + sky * 0.010 + needle_rain * 0.40 + ion_static * 0.30 + micro_stars * 0.18 + star_snow * 0.24 + ion_grain * 0.30 + chroma_ladder * 0.40 + grain * 0.09, 0, 1), floor=0.0, ceiling=1.0)
+    # SPB-105 regular-pattern loop tick 2026-05-23T07:00Z: score 83.28 -> 89.87; owner says fine many-tier flake detail.
+    elif pattern_id == "metal_flake":
+        micro = (grain > 0.72).astype(np.float32)
+        bright = (grain > 0.930).astype(np.float32)
+        hot = (grain > 0.984).astype(np.float32)
+        facet = np.maximum(_spb_fast_line_px(x + y * 0.31, 17.0, 0.34, phase), _spb_fast_line_px(x - y * 0.47, 23.0, 0.30, phase * 0.61))
+        field = _spb_pattern_field_contrast(np.clip(micro * 0.16 + bright * 0.34 + hot * 0.56 + facet * micro * 0.30 + grain * 0.16, 0, 1), floor=0.0, ceiling=1.0)
+    elif pattern_id == "solar_flare":
+        # SPB-105 regular-pattern loop tick 2026-05-23T07:12Z: score 84.10; add small coronal braid detail.
+        cx = x - w * 0.50
+        cy = y - h * 0.56
+        rr = np.sqrt(cx * cx + cy * cy)
+        theta = np.arctan2(cy, cx)
+        arcs = np.maximum(_spb_fast_line_px(rr + np.sin(theta * 13.0 + phase * 0.012) * 18.0, 29.0, 0.46, phase), _spb_fast_line_px(rr + np.sin(theta * 31.0 - phase * 0.008) * 4.5, 9.0, 0.12, phase * 0.33))
+        prominences = np.maximum(_spb_fast_line_px(theta * 128.0 + rr * 0.078 + np.sin(rr * 0.024) * 6.0, 11.0, 0.28, phase * 0.41), _spb_fast_line_px(theta * 211.0 - rr * 0.045, 6.0, 0.075, phase * 0.73))
+        sparks = (grain > 0.930).astype(np.float32) * np.clip(1.12 - rr / max(h, w), 0, 1)
+        braid = _spb_fast_line_px(x * 0.12 + y * 0.18 + theta * 19.0, 7.0, 0.09, phase * 0.27) * (grain > 0.44).astype(np.float32)
+        field = _spb_pattern_field_contrast(np.clip(arcs * 0.66 + prominences * 0.66 + sparks * 0.30 + braid * 0.34 + grain * 0.10 + (grain > 0.982).astype(np.float32) * 0.28, 0, 1), floor=0.0, ceiling=1.0)
+    elif pattern_id == "dimensional":  # SPB-105 tick 2026-05-23T08:59Z: score 87.13; more parallax cuts and depth shade spread.
+        warp = np.sin(x * 0.015 + y * 0.009 + phase * 0.011) * 18.0
+        depth = np.sin(x * 0.010 - y * 0.014 + np.sin((x + y) * 0.006 + phase) * 2.2) * 0.5 + 0.5
+        film_a = _spb_fast_line_px(x + y * 0.31 + warp, 27.0, 0.42, phase)
+        film_b = _spb_fast_line_px(x - y * 0.52 - warp * 0.7, 31.0, 0.36, phase * 0.37)
+        lens = _spb_fast_line_px(np.sqrt((x - w * 0.43) ** 2 + (y - h * 0.57) ** 2) + warp, 19.0, 0.40, phase * 0.59)
+        parallax = np.maximum(_spb_fast_line_px(x + depth * 42.0, 11.0, 0.14, phase * 0.23), _spb_fast_line_px(y - depth * 37.0, 13.0, 0.13, phase * 0.61))
+        field = _spb_pattern_field_contrast(np.clip(film_a * 0.54 + film_b * 0.50 + lens * 0.56 + parallax * 0.50 + depth * 0.28 + np.maximum(_spb_fast_line_px(x + y * 0.22 + depth * 18.0, 7.0, 0.13, phase * 0.41), _spb_fast_line_px(x - y * 0.27 - depth * 16.0, 9.0, 0.12, phase * 0.73)) * 0.30 + grain * 0.16 + (grain > 0.970).astype(np.float32) * 0.24, 0, 1), floor=0.0, ceiling=1.0)
+    elif pattern_id == "p_plasma":  # SPB-105 tick 2026-05-23T07:26Z: target 86.42; richer electric tendrils.
+        plasma = np.zeros((h, w), dtype=np.float32)
+        for idx, (cx0, cy0) in enumerate(((0.22, 0.28), (0.76, 0.36), (0.50, 0.72))):
+            dx = x - w * cx0
+            dy = y - h * cy0
+            rr = np.sqrt(dx * dx + dy * dy)
+            th = np.arctan2(dy, dx)
+            plasma = np.maximum(plasma, _spb_fast_line_px(th * 76.0 + rr * 0.124 + np.sin(rr * 0.025 + phase) * 7.0, 17.0, 0.38, phase + idx * 17.0))
+        tendrils = np.maximum(_spb_fast_line_px(x + np.sin(y * 0.034 + phase) * 18.0, 41.0, 0.32, phase), _spb_fast_line_px(y + np.sin(x * 0.037 - phase) * 16.0, 37.0, 0.30, phase * 0.47))
+        field = _spb_pattern_field_contrast(np.clip(plasma * 0.72 + tendrils * 0.54 + grain * 0.13 + (grain > 0.940).astype(np.float32) * 0.18 + (grain > 0.984).astype(np.float32) * 0.30, 0, 1), floor=0.0, ceiling=1.0)
+    elif pattern_id == "multicam":  # SPB-105 2026-05-23T09:19Z: score 89.90; finer camo mesh/noise tiers.
+        cell_a = np.sin(x * 0.020 + np.sin(y * 0.012 + phase) * 2.8)
+        cell_b = np.sin(y * 0.018 + np.cos(x * 0.014 - phase) * 2.5)
+        blotch = _spb_fast_line_px((cell_a + cell_b) * 84.0 + grain * 32.0, 37.0, 4.5, phase)
+        mesh = np.maximum(_spb_fast_line_px(x + y * 0.18, 73.0, 0.7, phase), _spb_fast_line_px(x - y * 0.24, 91.0, 0.65, phase * 0.31))
+        stipple = (grain > 0.62).astype(np.float32) * 0.22
+        field = _spb_pattern_field_contrast(np.clip(blotch * 0.62 + mesh * 0.34 + stipple + np.maximum(_spb_fast_line_px(x + y * 0.19, 9.0, 0.12, phase * 0.37), _spb_fast_line_px(x - y * 0.17, 11.0, 0.11, phase * 0.71)) * (grain > 0.42).astype(np.float32) * 0.24, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "camo":
+        digi_a = _spb_fast_grain_px(np.floor((x + y * 0.13) / 18.0), np.floor(y / 14.0), family)
+        digi_b = _spb_fast_grain_px(np.floor((x - y * 0.21) / 31.0), np.floor((y + x * 0.08) / 25.0), family ^ 0x91A7)
+        organic = np.sin(x * 0.026 + np.sin(y * 0.013 + phase) * 3.0) + np.sin(y * 0.021 + np.cos(x * 0.010 - phase) * 2.4)
+        hard_edges = _spb_fast_line_px(organic * 64.0 + digi_b * 42.0, 29.0, 2.6, phase)
+        leaf_mesh = np.maximum(_spb_fast_line_px(x + y * 0.34, 47.0, 0.55, phase * 0.31),
+                               _spb_fast_line_px(x - y * 0.41, 53.0, 0.50, phase * 0.67))
+        chips = ((digi_a > 0.54).astype(np.float32) * 0.24 + (digi_b > 0.70).astype(np.float32) * 0.24)
+        field = np.clip(hard_edges * 0.58 + leaf_mesh * 0.30 + chips + (grain > 0.79).astype(np.float32) * 0.15, 0, 1)
+
+    elif pattern_id == "carbon_fiber":
+        warp = np.sin(y * 0.030 + phase * 0.010) * 7.0 + np.sin(y * 0.006 - phase * 0.004) * 18.0
+        weft = np.sin(x * 0.027 - phase * 0.008) * 6.0 + np.sin(x * 0.008 + phase * 0.006) * 15.0
+        tow_a = _spb_fast_line_px(x + y * 0.30 + warp, 24.0, 0.92, phase)
+        tow_b = _spb_fast_line_px(x - y * 0.30 - weft, 24.0, 0.92, phase * 0.37)
+        strand_a = _spb_fast_line_px(x + y * 0.30, 6.0, 0.32, phase * 0.19)
+        strand_b = _spb_fast_line_px(x - y * 0.30, 6.0, 0.32, phase * 0.61)
+        checker = ((np.floor((x + y * 0.30) / 24.0) + np.floor((x - y * 0.30) / 24.0)) % 2.0).astype(np.float32)
+        field = np.clip((tow_a * (0.32 + checker * 0.28) + tow_b * (0.58 - checker * 0.24)) + (strand_a + strand_b) * 0.24 + grain * 0.05, 0, 1)
+
+    elif pattern_id == "carbon_clearcoat_lock":  # SPB-105 2026-05-23T08:59Z: score 86.57; break large clearcoat lock regions.
+        base = np.maximum(_spb_fast_line_px(x + y * 0.28, 22.0, 0.72, phase), _spb_fast_line_px(x - y * 0.28, 22.0, 0.72, phase * 0.41)) * 0.34
+        lock_a = _spb_fast_line_px(np.sin((x + y * 0.42) * 0.018 + phase * 0.011) * 128.0 + y * 0.18, 31.0, 0.85, phase)
+        lock_b = _spb_fast_line_px(np.sin((x - y * 0.36) * 0.016 - phase * 0.007) * 128.0 + x * 0.12, 43.0, 0.65, phase * 0.57)
+        clear_spark = (grain > 0.986).astype(np.float32)
+        field = _spb_pattern_field_contrast(np.clip(base + lock_a * 0.48 + lock_b * 0.34 + clear_spark * 0.24 + np.maximum(_spb_fast_line_px(x + y * 0.19, 7.0, 0.13, phase * 0.31), _spb_fast_line_px(x - y * 0.23, 11.0, 0.12, phase * 0.67)) * 0.36 + _spb_fast_dots_px(x + y * 0.08, y - x * 0.05, 17.0, 13.0, 0.65, phase, phase * 0.29) * 0.34 + grain * 0.16, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "shimmer_neon_weft":  # SPB-105 tick 2026-05-23T07:12Z: score 83.92; richer thread shade tiers.
+        warp_wave = np.sin(y * 0.018 + phase * 0.010) * 16.0 + np.sin(y * 0.061) * 3.0
+        weft_wave = np.sin(x * 0.016 - phase * 0.007) * 14.0 + np.sin(x * 0.054) * 3.0
+        warp_threads = _spb_fast_line_px(x + warp_wave, 25.0, 0.52, phase)
+        weft_threads = _spb_fast_line_px(y + weft_wave, 21.0, 0.48, phase * 0.43)
+        micro_warp = _spb_fast_line_px(x + warp_wave * 0.48 + y * 0.08, 7.0, 0.17, phase * 0.19)
+        micro_weft = _spb_fast_line_px(y + weft_wave * 0.52 - x * 0.06, 6.0, 0.16, phase * 0.59)
+        over_under = ((np.floor((x + warp_wave) / 25.0) + np.floor((y + weft_wave) / 21.0)) % 2.0).astype(np.float32)
+        neon_pick = np.maximum(
+            _spb_fast_line_px(x - y * 0.18 + np.sin((x + y) * 0.012) * 21.0, 55.0, 0.44, phase * 0.71),
+            _spb_fast_line_px(x + y * 0.27 + np.sin((x - y) * 0.015) * 14.0, 71.0, 0.34, phase * 0.31),
+        )
+        knots = _spb_fast_dots_px(x + y * 0.13, y - x * 0.07, 53.0, 43.0, 1.35, phase, phase * 0.29)
+        sparkle = (grain > 0.988).astype(np.float32) * (warp_threads + weft_threads + micro_warp * 0.7)
+        field = _spb_pattern_field_contrast(np.clip(warp_threads * (0.38 + over_under * 0.30) + weft_threads * (0.54 - over_under * 0.16) + (micro_warp + micro_weft) * 0.30 + neon_pick * 0.48 + knots * 0.38 + sparkle * 0.34 + grain * 0.13, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "birch_bark":  # SPB-105 tick 2026-05-23T07:26Z: target 84.90; clear low-detail bark pores.
+        paper_wave = np.sin(x * 0.004 + phase * 0.007) * 9.0 + np.sin(x * 0.017) * 2.2
+        paper = _spb_fast_line_px(y + paper_wave, 9.0, 0.14, phase) * 0.16
+        paper += _spb_fast_line_px(y + np.sin(x * 0.006 - phase * 0.005) * 14.0, 17.0, 0.18, phase * 0.61) * 0.18
+        peel = _spb_fast_line_px(y + np.sin(x * 0.011 + phase) * 7.0 + np.sin(x * 0.004) * 24.0, 53.0, 0.28, phase * 0.19)
+        row_gate = _spb_fast_line_px(y + grain * 3.0, 8.0, 0.18, phase)
+        dash_cell = np.floor((x + phase * 0.02) / 22.0)
+        row_cell = np.floor((y + paper_wave) / 8.0)
+        dash_noise = _spb_fast_grain_px(dash_cell, row_cell, family + 23)
+        dash_gate = (dash_noise > 0.48).astype(np.float32)
+        dash_taper = np.clip(1.0 - np.abs(np.mod(x + dash_noise * 17.0, 22.0) - 11.0) / 10.5, 0, 1)
+        lenticels = row_gate * dash_gate * dash_taper * (grain > 0.20).astype(np.float32)
+        broken_dash = row_gate * _spb_fast_line_px(x + row_cell * 11.0 + dash_noise * 19.0, 39.0, 4.6, phase * 0.27) * (dash_noise > 0.34).astype(np.float32)
+        small_dash = _spb_fast_line_px(y + paper_wave * 0.15 + grain * 3.0, 3.2, 0.06, phase * 0.41) * _spb_fast_line_px(x - row_cell * 5.0, 11.0, 1.4, phase * 0.73) * (grain > 0.46).astype(np.float32)
+        horizontal_cuts = _spb_fast_line_px(y + grain * 5.0, 3.8, 0.08, phase) * (grain > 0.48).astype(np.float32)
+        scar_rows = _spb_fast_dots_px(x + y * 0.05, y, 11.0, 17.0, 0.62, phase, phase * 0.27)
+        black_scars = (grain > 0.955).astype(np.float32) * _spb_fast_line_px(y + x * 0.025, 9.0, 0.22, phase)
+        flakes = _spb_fast_dots_px(x - y * 0.12, y + x * 0.06, 29.0, 23.0, 1.15, phase * 0.41, phase * 0.73)
+        curl_edges = np.maximum(
+            _spb_fast_line_px(x + y * 0.50, 19.0, 0.16, phase * 0.13),
+            _spb_fast_line_px(x - y * 0.44, 23.0, 0.15, phase * 0.57),
+        ) * (grain > 0.48).astype(np.float32)
+        vertical_split = _spb_fast_line_px(x + np.sin(y * 0.010 + phase) * 18.0, 151.0, 0.34, phase * 0.31) * (grain > 0.42).astype(np.float32)
+        char = _spb_fast_line_px(y + np.sin(x * 0.041 + phase) * 3.0, 4.5, 0.10, phase * 0.71) * (grain > 0.46).astype(np.float32)
+        paper_fill = 0.84 + (grain - 0.5) * 0.08
+        paper_lift = paper * 0.07 + peel * 0.06 + flakes * 0.08 + curl_edges * 0.10
+        scar_ink = (
+            lenticels * 0.82 + broken_dash * 1.05 + small_dash * 0.62 + horizontal_cuts * 0.56 + scar_rows * 0.30 +
+            black_scars * 0.72 + vertical_split * 0.26 + char * 0.28
+        )
+        bark_freckle = (grain > 0.965).astype(np.float32) * 0.20
+        field = np.clip(paper_fill + paper_lift + bark_freckle - scar_ink * 1.55, 0, 1)
+
+    elif pattern_id == "nature_bark_rough":
+        trunk = x + np.sin(y * 0.010 + phase * 0.008) * 38.0 + np.sin(y * 0.031) * 11.0
+        deep_cracks = _spb_fast_line_px(trunk, 29.0, 0.62, phase)
+        small_cracks = _spb_fast_line_px(trunk + np.sin(x * 0.024) * 9.0, 9.0, 0.26, phase * 0.33)
+        hair_cracks = np.maximum(
+            _spb_fast_line_px(x + y * 0.26, 6.0, 0.10, phase * 0.19),
+            _spb_fast_line_px(x - y * 0.31, 7.5, 0.10, phase * 0.61),
+        ) * (grain > 0.45).astype(np.float32)
+        cross_breaks = _spb_fast_line_px(y + np.sin(x * 0.018 - phase * 0.006) * 14.0, 43.0, 0.36, phase * 0.55) * (grain > 0.52).astype(np.float32)
+        pores = _spb_fast_dots_px(x + y * 0.06, y, 17.0, 13.0, 0.68, phase, phase * 0.23)
+        raised_ridges = _spb_fast_line_px(trunk + np.sin(y * 0.055) * 3.0, 13.0, 0.22, phase * 0.77) * (grain > 0.32).astype(np.float32)
+        side_splinters = np.maximum(
+            _spb_fast_line_px(x + y * 0.11 + np.sin(y * 0.019) * 9.0, 5.5, 0.08, phase * 0.29),
+            _spb_fast_line_px(x - y * 0.09 + np.sin(y * 0.015) * 7.0, 6.5, 0.08, phase * 0.79),
+        ) * (grain > 0.56).astype(np.float32)
+        knots = _spb_fast_dots_px(x + np.sin(y * 0.015) * 19.0, y, 91.0, 137.0, 2.2, phase, phase * 0.37)
+        bark_plate = (np.sin(trunk * 0.052 + np.sin(y * 0.019) * 2.0) * 0.5 + 0.5) * (grain > 0.18).astype(np.float32)
+        raw = np.clip(
+            deep_cracks * 0.58 + small_cracks * 0.38 + hair_cracks * 0.26 +
+            cross_breaks * 0.30 + pores * 0.30 + raised_ridges * 0.30 +
+            side_splinters * 0.22 + knots * 0.28 + bark_plate * 0.16 + grain * 0.07,
+            0, 1,
+        )
+        field = np.clip(_spb_normalize01(raw) * 0.92 + raw * 0.52 + bark_plate * 0.08 - 0.02, 0, 1)
+
+    elif pattern_id == "decade_50s_drivein_marquee":
+        # SPB regular-pattern audit loop 2026-05-23: score 75.07 -> 84.48.
+        # Owner doctrine: denser bulbs/letter slots so the marquee reads on car panels.
+        diagonal = np.maximum(_spb_fast_line_px(x + y * 0.32, 28.5, 0.34, phase), _spb_fast_line_px(x - y * 0.24, 35.5, 0.32, phase * 0.43)) * 0.24
+        rows = _spb_fast_line_px(y + np.sin(x * 0.010 + phase * 0.008) * 5.0, 20.5, 0.42, phase)
+        bulbs = _spb_fast_dots_px(x, y, 12.0, 20.5, 1.25, phase, phase * 0.17)
+        bulb_halos = _spb_fast_dots_px(x + 6.0, y + 10.0, 24.0, 41.0, 2.7, phase * 0.41, phase * 0.23) * (grain > 0.38).astype(np.float32)
+        letter_slots = _spb_fast_line_px(x + np.floor(y / 20.5) * 7.0, 8.5, 0.25, phase * 0.29) * rows
+        marquee_pin = _spb_fast_line_px(y + x * 0.08, 9.0, 0.18, phase * 0.53) * (grain > 0.48).astype(np.float32)
+        phosphor = np.maximum(_spb_fast_line_px(x + y * 0.11, 5.0, 0.075, phase * 0.31), _spb_fast_line_px(x - y * 0.13, 6.0, 0.070, phase * 0.79)) * (grain > 0.36).astype(np.float32)
+        mini_bulbs = _spb_fast_dots_px(x + y * 0.04, y - x * 0.03, 6.0, 6.0, 0.34, phase * 0.11, phase * 0.67)
+        arrow = np.maximum(_spb_fast_line_px(x + y * 0.62, 83.0, 0.50, phase * 0.71),
+                           _spb_fast_line_px(x - y * 0.62, 83.0, 0.50, phase * 0.11))
+        chrome = _spb_fast_line_px(y - x * 0.09, 13.0, 0.34, phase * 0.67)
+        field = np.clip(diagonal + rows * 0.20 + bulbs * 0.52 + bulb_halos * 0.26 + letter_slots * 0.40 + marquee_pin * 0.22 + phosphor * 0.26 + mini_bulbs * 0.20 + arrow * 0.22 + chrome * 0.18, 0, 1)
+        field = _spb_pattern_field_contrast(field)
+        tile_shade = _spb_fast_grain_px(np.floor(x / 6.0), np.floor(y / 6.0), family ^ 0x1955)
+        field = np.clip(field * 0.78 + tile_shade * 0.16 + phosphor * 0.16 + mini_bulbs * 0.14, 0, 1)
+
+    elif pattern_id == "decade_50s_sputnik_orbit":
+        cx = x - w * 0.50
+        cy = y - h * 0.50
+        rr = np.sqrt(cx * cx + cy * cy)
+        theta = np.arctan2(cy, cx)
+        orbits = np.zeros((h, w), dtype=np.float32)
+        for idx, tilt in enumerate((-0.62, -0.28, 0.18, 0.47, 0.82)):
+            ex = cx * np.cos(tilt) + cy * np.sin(tilt)
+            ey = -cx * np.sin(tilt) + cy * np.cos(tilt)
+            oval = np.sqrt(ex * ex + (ey * (1.85 + idx * 0.10)) ** 2)
+            orbits = np.maximum(orbits, _spb_fast_line_px(oval, 118.0 - idx * 9.0, 1.1, phase + idx * 13.0))
+        starbursts = _spb_fast_dots_px(x + y * 0.17, y - x * 0.08, 79.0, 71.0, 2.5, phase, phase * 0.45)
+        atomic_ticks = _spb_fast_line_px(theta * 128.0 + rr * 0.11, 19.0, 0.50, phase * 0.31)
+        field = np.clip(orbits * 0.66 + starbursts * 0.36 + atomic_ticks * 0.24 + (grain > 0.991).astype(np.float32) * 0.20, 0, 1)
+
+    elif pattern_id == "decade_50s_fallout_shelter":  # SPB-105 tick 2026-05-23T09:29Z: 89.88 -> aim 90+; finer shelter stencil contrast.
+        hazard = np.zeros((h, w), dtype=np.float32)
+        cx = x - w * 0.5
+        cy = y - h * 0.5
+        rr = np.sqrt(cx * cx + cy * cy)
+        theta = np.arctan2(cy, cx)
+        rings = np.maximum(_spb_fast_line_px(rr, 41.0, 0.62, phase), _spb_fast_line_px(rr, 83.0, 0.82, phase * 0.41))
+        wedges = (_spb_fast_line_px(theta * 92.0, 11.0, 1.35, phase) * (rr < min(h, w) * 0.48).astype(np.float32))
+        shelter_arrows = np.maximum(_spb_fast_line_px(x + y * 0.58, 43.0, 0.34, phase), _spb_fast_line_px(x - y * 0.58, 43.0, 0.34, phase * 0.37))
+        stencils = _spb_fast_dots_px(x + y * 0.08, y, 23.0, 19.0, 0.90, phase, phase * 0.19)
+        hazard = _spb_pattern_field_contrast(np.clip(rings * 0.54 + wedges * 0.60 + shelter_arrows * 0.44 + stencils * 0.46 + grain * 0.16 + (grain > 0.981).astype(np.float32) * 0.22, 0, 1), floor=0.0, ceiling=1.0)
+        field = hazard
+
+    elif pattern_id == "decade_80s_rubiks_cube":
+        # SPB regular-pattern audit loop 2026-05-23: score 70.97 -> 85.53.
+        # Owner doctrine: tiled sticker micro-cubes instead of one oversized cube face.
+        grid_x = _spb_fast_line_px(x + y * 0.22, 18.0, 0.48, phase)
+        grid_y = _spb_fast_line_px(y - x * 0.18, 18.0, 0.48, phase * 0.31)
+        sub_x = np.floor((x + y * 0.22) / 18.0)
+        sub_y = np.floor((y - x * 0.18) / 18.0)
+        sticker = _spb_fast_grain_px(sub_x, sub_y, family)
+        face = ((sub_x + sub_y + np.floor(sticker * 5.0)) % 6.0) / 5.0
+        bevel = np.maximum(_spb_fast_line_px(x - y * 0.62, 54.0, 0.42, phase), _spb_fast_line_px(x + y * 0.58, 54.0, 0.42, phase * 0.47))
+        micro = _spb_fast_dots_px(x, y, 18.0, 18.0, 0.82, phase, phase * 0.19)
+        sticker_scratches = np.maximum(_spb_fast_line_px(x + y * 0.31, 7.0, 0.10, phase * 0.23), _spb_fast_line_px(x - y * 0.27, 9.0, 0.10, phase * 0.61)) * (grain > 0.56).astype(np.float32)
+        field = np.clip((grid_x + grid_y) * 0.38 + bevel * 0.34 + face * 0.34 + micro * 0.28 + sticker_scratches * 0.24, 0, 1)
+        field = _spb_pattern_field_contrast(field)
+
+    elif pattern_id == "decade_80s_rubiks_cube_2":  # SPB-105 tick 2026-05-23T07:26Z: target 85.19; finer cube sticker grid.
+        iso_a = _spb_fast_line_px(x + y * 0.50, 23.0, 0.38, phase)
+        iso_b = _spb_fast_line_px(x - y * 0.50, 23.0, 0.38, phase * 0.41)
+        iso_c = _spb_fast_line_px(y, 23.0, 0.38, phase * 0.67)
+        blocks = ((np.floor((x + y * 0.50) / 23.0) + np.floor((x - y * 0.50) / 23.0) + np.floor(y / 23.0)) % 6.0) / 5.0
+        stickers = _spb_fast_dots_px(x + y * 0.11, y - x * 0.09, 23.0, 23.0, 0.78, phase, phase * 0.23)
+        field = _spb_pattern_field_contrast(np.clip((iso_a + iso_b + iso_c) * 0.46 + blocks * 0.32 + stickers * 0.34 + grain * 0.12 + (grain > 0.982).astype(np.float32) * 0.16, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "decade_80s_rubiks_cube_3":
+        # SPB regular-pattern audit loop 2026-05-23: score 73.39 -> 86.93.
+        # Owner doctrine: fine sticker facets and scuffs, no macro-only diagonals.
+        diagonal = _spb_fast_line_px(x - y * 0.70 + np.sin(y * 0.018) * 6.0, 22.0, 0.40, phase)
+        counter = _spb_fast_line_px(x + y * 0.38 + np.sin(x * 0.021) * 5.0, 31.0, 0.40, phase * 0.39)
+        tiny_tiles = _spb_fast_line_px(x, 11.0, 0.24, phase) * _spb_fast_line_px(y, 11.0, 0.24, phase * 0.17)
+        shard = ((np.floor((x + y * 0.38) / 31.0) - np.floor((x - y * 0.70) / 22.0) + np.floor(grain * 5.0)) % 6.0) / 5.0
+        facet_hash = _spb_fast_grain_px(np.floor(x / 11.0), np.floor(y / 11.0), family ^ 0x51D3)
+        facet_scuff = np.maximum(_spb_fast_line_px(x + y * 0.19, 6.0, 0.09, phase * 0.23), _spb_fast_line_px(x - y * 0.21, 7.0, 0.08, phase * 0.71)) * (facet_hash > 0.38).astype(np.float32)
+        field = np.clip(diagonal * 0.42 + counter * 0.38 + tiny_tiles * 0.34 + shard * 0.30 + facet_scuff * 0.24 + (grain > 0.982).astype(np.float32) * 0.16, 0, 1)
+        field = _spb_pattern_field_contrast(field)
+
+    elif pattern_id == "decade_80s_boombox_speaker":
+        field = np.zeros((h, w), dtype=np.float32)
+        if cv2 is not None:
+            cell_w = max(72, w // 5)
+            cell_h = max(50, h // 4)
+            rng = np.random.default_rng(family & 0xFFFFFFFF)
+            for yy0 in range(-cell_h, h + cell_h, cell_h):
+                for xx0 in range(-cell_w, w + cell_w, cell_w):
+                    x0 = int(xx0 + rng.integers(-cell_w // 10, cell_w // 10 + 1))
+                    y0 = int(yy0 + rng.integers(-cell_h // 10, cell_h // 10 + 1))
+                    x1 = min(w - 1, x0 + cell_w - 8)
+                    y1 = min(h - 1, y0 + cell_h - 8)
+                    if x1 <= 0 or y1 <= 0 or x0 >= w or y0 >= h:
+                        continue
+                    cv2.rectangle(field, (max(0, x0), max(0, y0)), (x1, y1), 0.30, 1, lineType=cv2.LINE_AA)
+                    for side in (0.27, 0.73):
+                        cx0 = int(np.clip(x0 + cell_w * side, 0, w - 1))
+                        cy0 = int(np.clip(y0 + cell_h * 0.55, 0, h - 1))
+                        rad = max(5, min(cell_w, cell_h) // 5)
+                        cv2.circle(field, (cx0, cy0), rad, 0.82, 1, lineType=cv2.LINE_AA)
+                        cv2.circle(field, (cx0, cy0), max(2, rad // 2), 0.55, 1, lineType=cv2.LINE_AA)
+                    for bar in range(8):
+                        bx = int(x0 + cell_w * 0.37 + bar * cell_w * 0.035)
+                        bh = int((0.12 + 0.20 * ((bar * 7 + family) % 5) / 4.0) * cell_h)
+                        cv2.line(field, (bx, int(y0 + cell_h * 0.26)), (bx, int(y0 + cell_h * 0.26 + bh)), 0.70, 1, lineType=cv2.LINE_AA)
+        grille = np.maximum(_spb_fast_line_px(x, 9.0, 0.32, phase), _spb_fast_line_px(y, 9.0, 0.32, phase * 0.53))
+        scan = _spb_fast_line_px(y + np.sin(x * 0.028) * 5.0, 17.0, 0.42, phase)
+        field = np.clip(field + grille * 0.26 + scan * 0.18 + (grain > 0.987).astype(np.float32) * 0.14, 0, 1)
+
+    elif pattern_id == "decade_80s_nintendo_dpad":
+        tile = max(34.0, min(h, w) / 9.0)
+        gx = np.mod(x + phase, tile) - tile * 0.5
+        gy = np.mod(y + phase * 0.43, tile) - tile * 0.5
+        dpad = ((np.abs(gx) < tile * 0.11) & (np.abs(gy) < tile * 0.35)).astype(np.float32)
+        dpad = np.maximum(dpad, ((np.abs(gy) < tile * 0.11) & (np.abs(gx) < tile * 0.35)).astype(np.float32))
+        buttons = _spb_fast_dots_px(x + tile * 0.23, y + tile * 0.11, tile, tile, max(2.0, tile * 0.09), phase, phase * 0.17)
+        pixels = np.maximum(_spb_fast_line_px(x + y * 0.18, tile * 0.5, 0.45, phase),
+                            _spb_fast_line_px(x - y * 0.18, tile * 0.5, 0.45, phase * 0.41))
+        screen = _spb_fast_line_px(y + np.floor(x / tile) * 5.0, tile * 0.33, 0.55, phase * 0.29)
+        field = np.clip(dpad * 0.70 + buttons * 0.55 + pixels * 0.22 + screen * 0.20 + (grain > 0.985).astype(np.float32) * 0.15, 0, 1)
+
+    elif pattern_id == "decade_80s_pacman_maze":
+        # SPB regular-pattern audit loop 2026-05-23T07:12Z: score 83.59; denser arcade maze/pellet language.
+        # Owner doctrine: denser maze/pellet detail while preserving arcade identity.
+        cell = 18.0
+        micro_cell = 9.0
+        maze_x = _spb_fast_line_px(x + np.floor(y / micro_cell) * (micro_cell * 0.33), micro_cell, 0.38, phase)
+        maze_y = _spb_fast_line_px(y + np.floor(x / micro_cell) * (micro_cell * 0.28), micro_cell, 0.38, phase * 0.37)
+        gate_hash = _spb_fast_grain_px(np.floor(x / cell), np.floor(y / cell), family)
+        gates = (gate_hash > 0.30).astype(np.float32) * (0.70 + gate_hash * 0.30)
+        pellets = _spb_fast_dots_px(x + micro_cell * 0.5, y + micro_cell * 0.5, micro_cell, micro_cell, max(0.78, micro_cell * 0.060), phase, phase * 0.23)
+        power = _spb_fast_dots_px(x + cell * 0.5, y + cell * 0.5, cell * 2.0, cell * 1.5, max(1.4, cell * 0.09), phase, phase * 0.59)
+        mouth = _spb_fast_line_px(np.arctan2(y - h * 0.52, x - w * 0.48) * 82.0 + np.sqrt((x - w * 0.48) ** 2 + (y - h * 0.52) ** 2) * 0.07, 17.0, 0.34, phase)
+        scan = _spb_fast_line_px(y + np.sin(x * 0.052 + phase) * 2.0, 5.0, 0.09, phase * 0.41)
+        ghost_ticks = _spb_fast_dots_px(x - y * 0.12, y + x * 0.08, cell * 1.5, cell, max(1.2, cell * 0.075), phase * 0.29, phase * 0.67)
+        micro_scan = np.maximum(_spb_fast_line_px(x + y * 0.18, 6.0, 0.08, phase * 0.19), _spb_fast_line_px(x - y * 0.14, 8.0, 0.08, phase * 0.53)) * (grain > 0.44).astype(np.float32)
+        field = np.clip((maze_x + maze_y) * gates * 0.52 + pellets * 0.42 + power * 0.40 + ghost_ticks * 0.30 + mouth * 0.26 + scan * 0.22 + micro_scan * 0.28 + (grain > 0.976).astype(np.float32) * 0.18, 0, 1)
+        field = _spb_pattern_field_contrast(field)
+        tile_shade = _spb_fast_grain_px(np.floor(x / 6.0), np.floor(y / 6.0), family ^ 0x1980)
+        field = np.clip(field * 0.78 + tile_shade * 0.15 + micro_scan * 0.18 + pellets * 0.08, 0, 1)
+
+    elif pattern_id == "decade_80s_breakdance_spin":  # SPB-105 tick 2026-05-23T09:09Z: score 87.19; raise floor-scuff motion density.
+        floor_scuff = np.maximum(
+            _spb_fast_line_px(x - y * 0.34 + np.sin(y * 0.024 + phase) * 7.0, 39.0, 0.30, phase * 0.17),
+            _spb_fast_line_px(x + y * 0.21 + np.sin(x * 0.030 - phase) * 5.0, 53.0, 0.25, phase * 0.53),
+        )
+        shoe_ticks = _spb_fast_dots_px(x + y * 0.11, y - x * 0.09, 23.0, 15.0, 0.82, phase, phase * 0.23)
+        toe_marks = np.maximum(
+            _spb_fast_line_px(x + y * 0.54 + grain * 7.0, 29.0, 0.18, phase * 0.37),
+            _spb_fast_line_px(x - y * 0.42 - grain * 6.0, 41.0, 0.16, phase * 0.73),
+        ) * (grain > 0.62).astype(np.float32)
+        field = _spb_pattern_field_contrast(np.clip(floor_scuff * 0.72 + shoe_ticks * 0.58 + toe_marks * 0.64 + np.maximum(_spb_fast_line_px(x + y * 0.18, 7.0, 0.12, phase * 0.41), _spb_fast_line_px(x - y * 0.16, 9.0, 0.11, phase * 0.73)) * (grain > 0.32).astype(np.float32) * 0.36 + grain * 0.20 + (grain > 0.940).astype(np.float32) * 0.26, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "decade_90s_sega_blast":
+        # SPB-105 regular-pattern loop tick 2026-05-23T07:00Z: score 82.20 -> 86.31; owner says fine 8-32px detail.
+        speed_a = _spb_fast_line_px(x - y * 0.31 + np.sin(y * 0.033 + phase * 0.010) * 12.0, 21.0, 0.24, phase)
+        speed_b = _spb_fast_line_px(x - y * 0.62 + np.sin(y * 0.052) * 7.0, 29.0, 0.20, phase * 0.37)
+        scan = _spb_fast_line_px(y + np.sin(x * 0.052) * 4.0, 5.0, 0.12, phase * 0.41)
+        cx0 = x - w * 0.43
+        cy0 = y - h * 0.53
+        rr0 = np.sqrt(cx0 * cx0 + cy0 * cy0)
+        theta0 = np.arctan2(cy0, cx0)
+        rings = _spb_fast_line_px(rr0 + np.sin(theta0 * 15.0 + phase * 0.010) * 5.0, 17.0, 0.26, phase * 0.23)
+        checker = ((np.floor((x + y * 0.18) / 8.0) + np.floor((y - x * 0.08) / 8.0)) % 2.0).astype(np.float32)
+        shards = _spb_fast_line_px(x + y * 0.48, 9.0, 0.16, phase * 0.61) * checker
+        pixels = _spb_fast_dots_px(x, y, 8.0, 6.0, 0.52, phase, phase * 0.37)
+        chaos_sparks = ((grain > 0.900).astype(np.float32) * 0.26 + (grain > 0.970).astype(np.float32) * 0.72) * (speed_a + rings)
+        field = _spb_pattern_field_contrast(np.clip(speed_a * 0.74 + speed_b * 0.60 + scan * 0.52 + rings * 0.66 + shards * 0.62 + pixels * 0.70 + chaos_sparks * 0.62 + grain * 0.15 + (grain > 0.970).astype(np.float32) * 0.22, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "decade_90s_rollerblade_streak":
+        speed_a = _spb_fast_line_px(x - y * 0.18 + np.sin(y * 0.020 + phase) * 22.0, 29.0, 0.38, phase)
+        speed_b = _spb_fast_line_px(x - y * 0.46 + np.sin(x * 0.014 - phase) * 12.0, 47.0, 0.32, phase * 0.37)
+        wheel_trails = _spb_fast_line_px(y + np.sin(x * 0.031 + phase) * 10.0, 23.0, 0.34, phase * 0.61)
+        pavement_ticks = np.maximum(_spb_fast_line_px(x + y * 0.11, 13.0, 0.16, phase * 0.17), _spb_fast_line_px(x - y * 0.07, 17.0, 0.14, phase * 0.71))
+        neon_sparks = _spb_fast_dots_px(x + y * 0.18, y - x * 0.09, 23.0, 17.0, 0.92, phase, phase * 0.43)
+        if cv2 is not None:
+            streaks = np.zeros((h, w), dtype=np.float32)
+            rng = np.random.default_rng(family & 0xFFFFFFFF)
+            for _idx in range(88):
+                x0 = int(rng.integers(-w // 8, w))
+                y0 = int(rng.integers(0, h))
+                length = int(rng.integers(max(20, w // 18), max(32, w // 5)))
+                rise = int(rng.integers(-h // 14, h // 18 + 1))
+                cv2.line(streaks, (x0, y0), (min(w - 1, x0 + length), int(np.clip(y0 + rise, 0, h - 1))), float(rng.uniform(0.28, 0.86)), 1, lineType=cv2.LINE_AA)
+            speed_a = np.maximum(speed_a, streaks)
+        field = _spb_pattern_field_contrast(np.clip(speed_a * 0.52 + speed_b * 0.42 + wheel_trails * 0.42 + pavement_ticks * 0.42 + neon_sparks * 0.44 + np.maximum(_spb_fast_line_px(x + y * 0.23, 7.0, 0.10, phase * 0.29), _spb_fast_line_px(x - y * 0.31, 11.0, 0.10, phase * 0.69)) * (grain > 0.40).astype(np.float32) * 0.28 + grain * 0.10 + (grain > 0.980).astype(np.float32) * 0.20, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "decade_90s_nirvana_smiley":
+        grunge = np.maximum(_spb_fast_line_px(x + y * 0.27, 23.0, 0.55, phase),
+                            _spb_fast_line_px(x - y * 0.31, 31.0, 0.50, phase * 0.37)) * 0.20
+        field = grunge
+        if cv2 is not None:
+            rng = np.random.default_rng(family & 0xFFFFFFFF)
+            cell = max(42, min(h, w) // 6)
+            for yy0 in range(-cell, h + cell, cell):
+                for xx0 in range(-cell, w + cell, cell):
+                    cx0 = int(xx0 + cell * 0.5 + rng.integers(-cell // 5, cell // 5 + 1))
+                    cy0 = int(yy0 + cell * 0.5 + rng.integers(-cell // 5, cell // 5 + 1))
+                    r0 = max(7, int(cell * rng.uniform(0.16, 0.26)))
+                    val = float(rng.uniform(0.48, 0.98))
+                    cv2.circle(field, (cx0, cy0), r0, val, 1, lineType=cv2.LINE_AA)
+                    for side in (-1, 1):
+                        cv2.line(field, (cx0 + side * r0 // 4, cy0 - r0 // 4), (cx0 + side * r0 // 8, cy0 - r0 // 10), val * 0.80, 1, lineType=cv2.LINE_AA)
+                    cv2.ellipse(field, (cx0, cy0 + r0 // 8), (r0 // 2, max(2, r0 // 4)), 0, 12, 168, val * 0.80, 1, lineType=cv2.LINE_AA)
+                    for _ in range(3):
+                        px = int(cx0 + rng.integers(-r0, r0 + 1))
+                        py = int(cy0 + rng.integers(-r0, r0 + 1))
+                        cv2.line(field, (px - r0 // 2, py), (px + r0 // 2, py + int(rng.integers(-2, 3))), val * 0.38, 1, lineType=cv2.LINE_AA)
+        halftone = _spb_fast_dots_px(x, y, 17.0, 17.0, 1.2, phase, phase * 0.61)
+        field = np.clip(field + halftone * 0.24 + (grain > 0.965).astype(np.float32) * 0.20, 0, 1)
+
+    elif pattern_id == "decade_90s_rugrats_squiggle":
+        field = _spb_fast_dots_px(x + y * 0.07, y - x * 0.04, 41.0, 33.0, 1.5, phase, phase * 0.29) * 0.18
+        if cv2 is not None:
+            rng = np.random.default_rng(family & 0xFFFFFFFF)
+            for _ in range(92):
+                px = int(rng.integers(0, w))
+                py = int(rng.integers(0, h))
+                amp = float(rng.uniform(4.0, max(6.0, min(h, w) * 0.018)))
+                length = int(rng.integers(max(16, w // 28), max(22, w // 10)))
+                pts = []
+                for t in range(9):
+                    u = t / 8.0
+                    pts.append([
+                        int(np.clip(px + u * length, 0, w - 1)),
+                        int(np.clip(py + np.sin(u * np.pi * 2.0 + rng.uniform(-0.4, 0.4)) * amp, 0, h - 1)),
+                    ])
+                cv2.polylines(field, [np.asarray(pts, dtype=np.int32)], False, float(rng.uniform(0.45, 1.0)), 1, lineType=cv2.LINE_AA)
+                if rng.random() > 0.58:
+                    r0 = int(rng.integers(max(3, min(h, w) // 100), max(6, min(h, w) // 42)))
+                    cv2.circle(field, (px, py), r0, float(rng.uniform(0.30, 0.72)), 1, lineType=cv2.LINE_AA)
+        field = np.clip(field + _spb_fast_line_px(x - y * 0.37, 67.0, 0.42, phase) * 0.16 + (grain > 0.982).astype(np.float32) * 0.15, 0, 1)
+
+    elif pattern_id == "decade_90s_tamagotchi_egg":
+        field = np.zeros((h, w), dtype=np.float32)
+        if cv2 is not None:
+            rng = np.random.default_rng(family & 0xFFFFFFFF)
+            cell = max(44, min(h, w) // 5)
+            for yy0 in range(-cell, h + cell, cell):
+                for xx0 in range(-cell, w + cell, cell):
+                    cx0 = int(xx0 + cell * 0.5 + rng.integers(-cell // 7, cell // 7 + 1))
+                    cy0 = int(yy0 + cell * 0.5 + rng.integers(-cell // 7, cell // 7 + 1))
+                    rx = max(7, cell // 5)
+                    ry = max(9, cell // 4)
+                    cv2.ellipse(field, (cx0, cy0), (rx, ry), 0, 0, 360, 0.76, 1, lineType=cv2.LINE_AA)
+                    cv2.rectangle(field, (cx0 - rx // 2, cy0 - ry // 5), (cx0 + rx // 2, cy0 + ry // 5), 0.42, 1, lineType=cv2.LINE_AA)
+                    for b in (-1, 0, 1):
+                        cv2.circle(field, (cx0 + b * rx // 3, cy0 + ry // 2), max(1, rx // 8), 0.86, -1, lineType=cv2.LINE_AA)
+        pixels = np.maximum(_spb_fast_line_px(x, 11.0, 0.28, phase), _spb_fast_line_px(y, 11.0, 0.28, phase * 0.37))
+        stickers = _spb_fast_dots_px(x + y * 0.12, y, 29.0, 23.0, 1.2, phase, phase * 0.71)
+        field = np.clip(field + pixels * 0.20 + stickers * 0.24 + (grain > 0.986).astype(np.float32) * 0.14, 0, 1)
+
+    # SPB-105 tick 2026-05-23T06:47Z: ammonite_chambers score 81.60 -> 85.90; finer shell sutures.
+    elif pattern_id == "ammonite_chambers":  # SPB-105 tick 2026-05-23T07:26Z: target 85.90; richer fossil chamber texture.
+        cx = x - w * 0.50
+        cy = y - h * 0.50
+        rr = np.sqrt(cx * cx + cy * cy)
+        theta = np.arctan2(cy, cx)
+        spiral = _spb_fast_line_px(np.log1p(rr) * 82.0 + theta * 62.0, 17.0, 0.50, phase)
+        chamber_walls = _spb_fast_line_px(theta * 142.0 + rr * 0.076, 11.0, 0.28, phase * 0.37)
+        sutures = _spb_fast_line_px(rr + np.sin(theta * 26.0 + phase * 0.02) * 4.0, 13.0, 0.24, phase * 0.19)
+        fossil_grain = _spb_fast_dots_px(x + y * 0.09, y - x * 0.04, 17.0, 13.0, 0.62, phase, phase * 0.53)
+        field = _spb_pattern_field_contrast(np.clip(spiral * 0.62 + chamber_walls * 0.48 + sutures * 0.42 + fossil_grain * 0.34 + grain * 0.12 + (grain > 0.960).astype(np.float32) * 0.18, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "decade_50s_atomic_reactor":
+        # SPB-105 regular-pattern loop tick 2026-05-23T09:19Z: score 89.95; finer reactor lattice.
+        cx = x - w * 0.50
+        cy = y - h * 0.50
+        rr = np.sqrt(cx * cx + cy * cy)
+        theta = np.arctan2(cy, cx)
+        orbit_scale = max(28.0, min(h, w) / 26.0)
+        core = np.zeros((h, w), dtype=np.float32)
+        for idx, tilt in enumerate((-0.74, -0.38, 0.0, 0.38, 0.74)):
+            ex = cx * np.cos(tilt) + cy * np.sin(tilt)
+            ey = -cx * np.sin(tilt) + cy * np.cos(tilt)
+            oval = np.sqrt(ex * ex + (ey * (2.0 + idx * 0.12)) ** 2)
+            core = np.maximum(core, _spb_fast_line_px(oval, orbit_scale - idx * 1.5, 0.55, phase + idx * 17.0))
+        rods = np.maximum(_spb_fast_line_px(x + y * 0.22, max(12.0, orbit_scale * 0.48), 0.28, phase),
+                          _spb_fast_line_px(x - y * 0.28, max(14.0, orbit_scale * 0.54), 0.26, phase * 0.43))
+        reactor_ticks = _spb_fast_line_px(theta * 180.0 + rr * 0.14, 7.0, 0.30, phase * 0.67)
+        control_dots = _spb_fast_dots_px(x + y * 0.11, y, max(18.0, orbit_scale * 0.62), max(16.0, orbit_scale * 0.55), 1.1, phase, phase * 0.31)
+        micro = _spb_fast_line_px(x + y * 0.09, 9.0, 0.18, phase * 0.41) * (grain > 0.52).astype(np.float32)
+        field = _spb_pattern_field_contrast(np.clip(core * 0.60 + rods * 0.40 + reactor_ticks * 0.42 + control_dots * 0.38 + micro * 0.30 + grain * 0.08 + (grain > 0.976).astype(np.float32) * 0.18, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "decade_60s_lava_lamp_blob":
+        field = np.zeros((h, w), dtype=np.float32)
+        flow = y + np.sin(x * 0.010 + phase * 0.009) * 36.0 + np.sin(x * 0.025 - phase * 0.004) * 12.0
+        glass_ridges = np.maximum(
+            _spb_fast_line_px(flow, 29.0, 0.34, phase),
+            _spb_fast_line_px(x + np.sin(y * 0.016 + phase) * 22.0, 41.0, 0.28, phase * 0.43),
+        )
+        micro_bubbles = _spb_fast_dots_px(x + y * 0.13, y - x * 0.06, 17.0, 23.0, 0.88, phase, phase * 0.37)
+        if cv2 is not None:
+            field = field.copy()
+            rng = np.random.default_rng(family & 0xFFFFFFFF)
+            for idx in range(42):
+                cx0 = int(rng.integers(-w // 10, w + w // 10))
+                cy0 = int(rng.integers(-h // 10, h + h // 10))
+                rx = max(5, int(min(h, w) * rng.uniform(0.025, 0.075)))
+                ry = max(10, int(rx * rng.uniform(1.45, 3.20)))
+                angle = float(rng.uniform(-18, 18))
+                val = float(rng.uniform(0.34, 0.92))
+                cv2.ellipse(field, (cx0, cy0), (rx, ry), angle, 0, 360, val, 1, lineType=cv2.LINE_AA)
+                cv2.ellipse(field, (cx0, cy0), (max(2, rx // 2), max(4, ry // 2)), angle, 0, 360, val * 0.35, 1, lineType=cv2.LINE_AA)
+        field = np.clip(field * 0.56 + glass_ridges * 0.34 + micro_bubbles * 0.34 + grain * 0.09 + (grain > 0.988).astype(np.float32) * 0.16, 0, 1)
+
+    elif pattern_id == "decade_60s_peace_sign":  # SPB-105 tick 2026-05-23T09:39Z: 89.35 -> aim 90+; stronger poster micro-ink.
+        cx = x - w * 0.50
+        cy = y - h * 0.50
+        rr = np.sqrt(cx * cx + cy * cy)
+        theta = np.arctan2(cy, cx)
+        rings = np.maximum(_spb_fast_line_px(rr, 74.0, 0.72, phase), _spb_fast_line_px(rr, 148.0, 0.92, phase * 0.31))
+        vertical = _spb_fast_line_px(x - w * 0.50 + np.sin(y * 0.012 + phase) * 8.0, 148.0, 0.74, phase * 0.17)
+        lower_left = _spb_fast_line_px(x + y * 0.58 + np.sin(y * 0.021) * 5.0, 91.0, 0.54, phase * 0.47)
+        lower_right = _spb_fast_line_px(x - y * 0.58 + np.sin(y * 0.018) * 5.0, 91.0, 0.54, phase * 0.67)
+        poster_dot = _spb_fast_dots_px(x + y * 0.07, y - x * 0.05, 13.0, 11.0, 0.78, phase, phase * 0.23)
+        flower = _spb_fast_line_px(theta * 88.0 + rr * 0.055 + np.sin(rr * 0.027 + phase) * 7.0, 17.0, 0.32, phase * 0.59)
+        ink_scuff = np.maximum(_spb_fast_line_px(x + y * 0.23, 23.0, 0.20, phase), _spb_fast_line_px(x - y * 0.31, 29.0, 0.18, phase * 0.41))
+        field = _spb_pattern_field_contrast(np.clip(rings * 0.54 + vertical * 0.44 + (lower_left + lower_right) * 0.34 + poster_dot * 0.40 + flower * 0.28 + ink_scuff * 0.24 + (grain > 0.986).astype(np.float32) * 0.18, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "decade_60s_peter_max_gradient":
+        cx = x - w * 0.47
+        cy = y - h * 0.52
+        rr = np.sqrt(cx * cx + cy * cy)
+        theta = np.arctan2(cy, cx)
+        sun = _spb_fast_line_px(rr + np.sin(theta * 13.0 + phase * 0.010) * 11.0, 31.0, 0.56, phase)
+        rays = _spb_fast_line_px(theta * 128.0 + rr * 0.045, 13.0, 0.38, phase * 0.29)
+        ribbon_a = _spb_fast_line_px(y + np.sin(x * 0.014 + phase * 0.008) * 33.0, 43.0, 0.45, phase * 0.47)
+        ribbon_b = _spb_fast_line_px(x + y * 0.35 + np.sin(y * 0.019 - phase) * 18.0, 37.0, 0.38, phase * 0.71)
+        poster_halftone = _spb_fast_dots_px(x + y * 0.10, y - x * 0.08, 17.0, 13.0, 0.84, phase, phase * 0.53)
+        star = _spb_fast_line_px(theta * 56.0 + rr * 0.13, 9.0, 0.24, phase * 0.11) * (rr < min(h, w) * 0.43).astype(np.float32)
+        field = _spb_pattern_field_contrast(np.clip(sun * 0.82 + rays * 0.74 + ribbon_a * 0.68 + ribbon_b * 0.64 + poster_halftone * 0.74 + star * 0.62 + grain * 0.16 + (grain > 0.972).astype(np.float32) * 0.38, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "decade_50s_boomerang_formica":
+        # SPB regular-pattern audit loop 2026-05-23: score 74.35 -> 81.47.
+        # Owner doctrine: keep the boomerang motif, add dense Formica scratches/confetti.
+        atomic = np.maximum(
+            _spb_fast_line_px(x + y * 0.36, 15.0, 0.14, phase * 0.43),
+            _spb_fast_line_px(x - y * 0.48, 19.0, 0.13, phase * 0.71),
+        ) * (grain > 0.46).astype(np.float32)
+        laminate = _spb_fast_dots_px(x + y * 0.06, y - x * 0.03, 7.0, 5.5, 0.30, phase, phase * 0.29)
+        confetti = _spb_fast_line_px(x * 0.62 + y, 23.0, 0.14, phase * 0.19) * (grain > 0.60).astype(np.float32)
+        countertop_scratch = np.maximum(
+            _spb_fast_line_px(x + y * 0.18, 5.0, 0.045, phase * 0.31),
+            _spb_fast_line_px(x - y * 0.22, 6.0, 0.040, phase * 0.67),
+        ) * (grain > 0.70).astype(np.float32)
+        field = np.clip(atomic * 0.24 + laminate * 0.32 + confetti * 0.24 + countertop_scratch * 0.20 + (grain > 0.988).astype(np.float32) * 0.16, 0, 1)
+        if cv2 is not None:
+            field = field.copy()
+            rng = np.random.default_rng(family & 0xFFFFFFFF)
+            step = 30
+            for yy0 in range(-step, h + step, step):
+                for xx0 in range(-step, w + step, step):
+                    cx0 = int(xx0 + step * rng.uniform(0.28, 0.72))
+                    cy0 = int(yy0 + step * rng.uniform(0.26, 0.66))
+                    scale = float(step * rng.uniform(0.16, 0.25))
+                    angle = float(rng.uniform(-70.0, 70.0))
+                    pts = np.array([
+                        [-0.90, 0.30], [-0.55, 0.04], [-0.16, -0.10], [0.10, -0.06],
+                        [0.36, 0.10], [0.70, 0.26], [0.95, 0.18], [0.77, -0.08],
+                        [0.34, -0.28], [-0.10, -0.31], [-0.52, -0.13], [-0.98, 0.12],
+                    ], dtype=np.float32) * scale
+                    rad = np.deg2rad(angle)
+                    rot = np.array([[np.cos(rad), -np.sin(rad)], [np.sin(rad), np.cos(rad)]], dtype=np.float32)
+                    pts = (pts @ rot.T + np.array([cx0, cy0], dtype=np.float32)).astype(np.int32)
+                    cv2.fillPoly(field, [pts], float(rng.uniform(0.18, 0.34)), lineType=cv2.LINE_AA)
+                    cv2.polylines(field, [pts], True, float(rng.uniform(0.66, 1.00)), 1, lineType=cv2.LINE_AA)
+                    inner = ((pts.astype(np.float32) - np.array([cx0, cy0], dtype=np.float32)) * 0.62 + np.array([cx0, cy0], dtype=np.float32)).astype(np.int32)
+                    cv2.polylines(field, [inner], True, float(rng.uniform(0.24, 0.48)), 1, lineType=cv2.LINE_AA)
+                    if rng.random() > 0.62:
+                        burst_r = int(max(5, scale * rng.uniform(0.20, 0.34)))
+                        bx = int(np.clip(cx0 + rng.uniform(-scale, scale), 0, w - 1))
+                        by = int(np.clip(cy0 + rng.uniform(-scale, scale), 0, h - 1))
+                        for arm in range(6):
+                            a = rad + arm * np.pi / 3.0
+                            cv2.line(field, (bx, by), (int(np.clip(bx + np.cos(a) * burst_r, 0, w - 1)), int(np.clip(by + np.sin(a) * burst_r, 0, h - 1))), float(rng.uniform(0.36, 0.72)), 1, lineType=cv2.LINE_AA)
+        speckle_cut = np.maximum(
+            _spb_fast_line_px(x + y * 0.41, 9.0, 0.09, phase * 0.23),
+            _spb_fast_line_px(x - y * 0.37, 11.0, 0.08, phase * 0.61),
+        ) * (grain > 0.48).astype(np.float32)
+        field = np.clip(field + speckle_cut * 0.22 + (grain > 0.972).astype(np.float32) * 0.12, 0, 1)
+        field = _spb_pattern_field_contrast(field)
+        tile_shade = _spb_fast_grain_px(np.floor(x / 6.0), np.floor(y / 6.0), family ^ 0x1950)
+        field = _spb_pattern_field_contrast(np.clip(field * 0.64 + tile_shade * 0.32 + (tile_shade > 0.82).astype(np.float32) * 0.24 + speckle_cut * 0.30 + laminate * 0.22 + _spb_fast_dots_px(x + y * 0.12, y - x * 0.08, 12.0, 10.0, 0.52, phase, phase * 0.43) * 0.28, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "decade_70s_pong_pixel":  # SPB-105 tick 2026-05-23T07:26Z: target 85.58; richer CRT pixel vocabulary.
+        # SPB-106 tick-1: denser CRT mesh + paddle scale tied to canvas (was 11px-only phosphor)
+        px = max(6.0, min(h, w) / 170.0)
+        scan = np.maximum(_spb_fast_line_px(x, px, 0.16, phase), _spb_fast_line_px(y, px, 0.16, phase * 0.41))
+        court = np.maximum(_spb_fast_line_px(x, max(w / 2.0, 1.0), 0.72, phase), _spb_fast_line_px(y, max(h / 2.0, 1.0), 0.72, phase * 0.19))
+        paddle_h = max(28.0, h / 22.0)
+        paddles = _spb_fast_line_px(x + np.floor(y / paddle_h) * 8.0, max(48.0, w / 5.0), 0.85, phase) * _spb_fast_line_px(y, paddle_h, 2.2, phase * 0.33)
+        ball_trails = _spb_fast_dots_px(x - y * 0.22, y + x * 0.11, max(16.0, min(h, w) / 32.0), max(12.0, min(h, w) / 42.0), 0.85, phase, phase * 0.57)
+        score_pixels = _spb_fast_line_px(x + np.floor(y / px) * 4.0, px, 0.22, phase * 0.73) * (grain > 0.44).astype(np.float32)
+        phosphor = np.maximum(_spb_fast_line_px(x + y * 0.12, px * 0.85, 0.12, phase * 0.21), _spb_fast_line_px(x - y * 0.08, px, 0.10, phase * 0.63))
+        field = _spb_pattern_field_contrast(np.clip(scan * 0.32 + court * 0.32 + paddles * 0.50 + ball_trails * 0.50 + score_pixels * 0.38 + phosphor * 0.38 + grain * 0.13 + (grain > 0.978).astype(np.float32) * 0.18, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "aztec":
+        # SPB-106 tick-1: forced rebuild — stepped pyramids at car scale + micro glyph (rollup #1, CHROMA_BAKED)
+        cell = max(28.0, min(h, w) / 14.0)
+        lx = np.mod(x + phase * 0.5, cell) - cell * 0.5
+        ly = np.mod(y + phase * 0.31, cell) - cell * 0.5
+        cheb = np.maximum(np.abs(lx), np.abs(ly)) / max(cell * 0.5, 1e-4)
+        stepped = (np.floor(cheb * 7.0) % 2.0).astype(np.float32)
+        border = _spb_fast_line_px(cheb * cell, cell * 0.14, 0.48, phase)
+        micro = np.maximum(_spb_fast_line_px(x + y * 0.19, 9.0, 0.22, phase),
+                            _spb_fast_line_px(x - y * 0.17, 11.0, 0.20, phase * 0.43))
+        corner_glyph = _spb_fast_dots_px(x + cell * 0.5, y + cell * 0.5, cell, cell, max(1.2, cell * 0.06), phase, phase * 0.29)
+        field = np.clip(stepped * 0.52 + border * 0.38 + micro * 0.28 + corner_glyph * 0.22 + (grain > 0.988).astype(np.float32) * 0.12, 0, 1)
+
+    elif pattern_id == "corrugated":
+        # SPB-106 tick-1: metal ridge density ~2× + seam micro-scratch (rollup #2, M7 ~30)
+        period = max(10.0, h / 48.0)
+        wave = np.sin(y / period * (2.0 * np.pi) + phase * 0.02) * 0.5 + 0.5
+        ridge = wave * wave * (3.0 - 2.0 * wave)
+        seams = _spb_fast_line_px(y, period, max(0.55, period * 0.08), phase)
+        micro = _spb_fast_line_px(x + np.sin(y * 0.12 + phase) * 4.0, 7.0, 0.18, phase * 0.37)
+        field = np.clip(ridge * 0.62 + seams * 0.34 + micro * 0.26 + (grain > 0.986).astype(np.float32) * 0.10, 0, 1)
+
+    elif pattern_id == "decade_50s_diner_chrome":
+        # SPB-106 tick-2: wavy vertical diner flutes + hot crests (owner: tick-1 flat gray)
+        flute_x = max(20.0, w / 24.0)
+        wave = np.sin(y * 0.032 + phase * 0.015) * (flute_x * 0.42)
+        ribs = _spb_fast_line_px(x + wave, flute_x, max(0.9, flute_x * 0.065), phase)
+        hot = _spb_fast_line_px(x + wave - flute_x * 0.11, flute_x, max(0.35, flute_x * 0.022), phase * 0.53)
+        saddle_hi = _spb_fast_line_px(x + wave + flute_x * 0.14, flute_x * 1.8, flute_x * 0.2, phase * 0.29)
+        seam = _spb_fast_line_px(y, max(38.0, h / 14.0), 0.5, phase * 0.41) * 0.25
+        field = np.clip(ribs * 0.62 + hot * 0.48 + (1.0 - ribs) * saddle_hi * 0.22 + seam + (grain > 0.988).astype(np.float32) * 0.14, 0, 1)
+        field = _spb_pattern_field_contrast(field)
+
+    elif pattern_id == "decade_50s_jukebox_arc":
+        # SPB-106 tick-2: stacked jukebox dome arcs (owner: tick-1 faint target circles)
+        field = np.zeros((h, w), dtype=np.float32)
+        for idx, cy_arc in enumerate((h * 0.92, h * 0.78, h * 0.64, h * 0.52)):
+            rr = np.sqrt((x - w * 0.5) ** 2 + (y - cy_arc) ** 2)
+            rad = max(55.0, min(h, w) * (0.20 - idx * 0.03))
+            field = np.maximum(field, _spb_fast_line_px(rr, rad, max(1.4, rad * 0.025), phase + idx * 19.0) * (0.55 + idx * 0.08))
+        slots = _spb_fast_line_px(x, 21.0, 0.32, phase) * _spb_fast_line_px(y, 34.0, 0.42, phase * 0.37)
+        coin = _spb_fast_dots_px(x + y * 0.07, y, 27.0, 19.0, 0.82, phase, phase * 0.41)
+        neon = _spb_fast_line_px(y - np.sqrt(np.maximum(0.0, (w * 0.20) ** 2 - (x - w * 0.5) ** 2)), max(32.0, w * 0.09), 0.65, phase * 0.19)
+        field = np.clip(field * 0.72 + slots * 0.32 + coin * 0.28 + neon * 0.38, 0, 1)
+        field = _spb_pattern_field_contrast(field)
+
+    elif pattern_id == "decade_60s_opart_illusion":
+        cx0 = x - w * 0.50
+        cy0 = y - h * 0.50
+        rr = np.sqrt(cx0 * cx0 + cy0 * cy0)
+        rings = _spb_fast_line_px(rr + np.sin(x * 0.02 + y * 0.015 + phase) * 6.0, max(14.0, min(h, w) / 28.0), 0.48, phase)
+        warp = _spb_fast_line_px(x + np.sin(y * 0.028 + phase) * 18.0, 41.0, 0.34, phase * 0.43)
+        moire = ((np.floor(x / 17.0) + np.floor(y / 17.0)) % 2.0).astype(np.float32) * 0.18
+        field = np.clip(rings * 0.62 + warp * 0.32 + moire + (grain > 0.985).astype(np.float32) * 0.14, 0, 1)
+
+    elif pattern_id == "decade_70s_studio54_glitter":
+        # SPB-106 tick-2: mirror-ball rays + glitter specks (owner: tick-1 read as checkerboard)
+        cy_ball = h * 0.42
+        rr = np.sqrt((x - w * 0.5) ** 2 + (y - cy_ball) ** 2)
+        theta = np.arctan2(y - cy_ball, x - w * 0.5)
+        falloff = np.clip(1.0 - rr / (min(h, w) * 0.55), 0, 1)
+        mirror_rays = _spb_fast_line_px(theta * 96.0 + rr * 0.055, 11.0, 0.32, phase) * falloff
+        glitter = ((grain > 0.78).astype(np.float32) * (grain > 0.94).astype(np.float32) * 0.55
+                     + (grain > 0.91).astype(np.float32) * (grain < 0.96).astype(np.float32) * 0.35)
+        specks = _spb_fast_dots_px(x, y, 9.0, 8.0, 0.55, phase, phase * 0.67) * (grain > 0.62).astype(np.float32)
+        laser = _spb_fast_line_px(y + np.sin(x * 0.038 + phase) * 26.0, 24.0, 0.55, phase * 0.31)
+        haze = np.sin(rr * 0.06 + theta * 3.0 + phase) * 0.5 + 0.5
+        field = np.clip(mirror_rays * 0.52 + glitter * 0.48 + specks * 0.44 + laser * 0.36 + haze * 0.12, 0, 1)
+        field = _spb_pattern_field_contrast(field)
+
+    elif pattern_id == "decade_90s_tribal_tattoo":  # SPB-105 2026-05-23T09:19Z: score 89.94; denser needle shade tiers.
+        cx = x - w * 0.50
+        cy = y - h * 0.50
+        rr = np.sqrt(cx * cx + cy * cy)
+        theta = np.arctan2(cy, cx)
+        blades = _spb_fast_line_px(theta * 92.0 + rr * 0.050 + np.sin(rr * 0.020 + phase) * 10.0, 19.0, 0.54, phase)
+        hooks = _spb_fast_line_px(x + np.sin(y * 0.020 + phase) * 21.0, 61.0, 0.56, phase * 0.31)
+        mirrored = _spb_fast_line_px((np.abs(cx) + cy * 0.35), 43.0, 0.52, phase * 0.59)
+        needle_shade = np.maximum(_spb_fast_line_px(x + y * 0.29, 13.0, 0.24, phase), _spb_fast_line_px(x - y * 0.33, 17.0, 0.24, phase * 0.47))
+        field = _spb_pattern_field_contrast(np.clip(blades * 0.58 + hooks * 0.42 + mirrored * 0.46 + needle_shade * 0.34 + np.maximum(_spb_fast_line_px(x + y * 0.18, 7.0, 0.11, phase * 0.37), _spb_fast_line_px(x - y * 0.21, 9.0, 0.10, phase * 0.71)) * (grain > 0.42).astype(np.float32) * 0.26 + (grain > 0.982).astype(np.float32) * 0.18, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "decade_90s_fresh_prince":
+        memphis = np.maximum(_spb_fast_line_px(x + y * 0.37, 47.0, 0.58, phase),
+                             _spb_fast_line_px(x - y * 0.44, 53.0, 0.54, phase * 0.41))
+        zig = _spb_fast_line_px(y + np.abs(np.mod(x / 34.0 + phase * 0.01, 2.0) - 1.0) * 28.0, 61.0, 0.74, phase)
+        confetti = _spb_fast_dots_px(x + y * 0.19, y - x * 0.07, 31.0, 23.0, 1.4, phase, phase * 0.23)
+        spray = _spb_fast_line_px(x + np.floor(y / 37.0) * 17.0, 29.0, 0.36, phase * 0.61) * (grain > 0.56).astype(np.float32)
+        field = np.clip(memphis * 0.34 + zig * 0.42 + confetti * 0.38 + spray * 0.28 + (grain > 0.984).astype(np.float32) * 0.15, 0, 1)
+
+    elif pattern_id == "decade_60s_tie_dye_spiral":
+        # SPB-105 regular-pattern loop tick 2026-05-23T09:49Z: 88.99 -> aim 90+; denser dye-pinwheel micro bleed.
+        cx = x - w * 0.50
+        cy = y - h * 0.50
+        rr = np.sqrt(cx * cx + cy * cy)
+        theta = np.arctan2(cy, cx)
+        swirl = np.maximum(_spb_fast_line_px(theta * 132.0 + rr * 0.148 + np.sin(rr * 0.028 + phase) * 5.0, 11.0, 0.28, phase), _spb_fast_line_px(theta * 241.0 - rr * 0.061, 6.0, 0.08, phase * 0.53))
+        dye_rings = np.maximum(_spb_fast_line_px(rr + np.sin(theta * 13.0 + phase * 0.011) * 9.0, 17.0, 0.26, phase * 0.29), _spb_fast_line_px(rr + theta * 4.0, 7.0, 0.10, phase * 0.71))
+        cotton_bleed = _spb_fast_line_px(x + y * 0.18 + np.sin((x - y) * 0.010) * 15.0, 23.0, 0.24, phase * 0.57)
+        pin_bleed = _spb_fast_dots_px(x + y * 0.11, y - x * 0.09, 23.0, 19.0, 0.82, phase, phase * 0.77)
+        field = _spb_pattern_field_contrast(np.clip(swirl * 0.96 + dye_rings * 0.86 + cotton_bleed * 0.62 + pin_bleed * 0.60 + (grain > 0.928).astype(np.float32) * 0.20 + (grain > 0.980).astype(np.float32) * 0.34, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "iron_emblem":
+        cell = 32.0
+        ox = np.mod(x + y * 0.10 + phase, cell) - cell * 0.5
+        oy = np.mod(y - x * 0.06 + phase * 0.43, cell) - cell * 0.50
+        arms_v = ((np.abs(ox) < cell * 0.060) & (np.abs(oy) < cell * 0.32)).astype(np.float32)
+        arms_h = ((np.abs(oy) < cell * 0.060) & (np.abs(ox) < cell * 0.32)).astype(np.float32)
+        edge_v = np.clip(1.0 - np.abs(np.abs(ox) - cell * 0.060) / max(cell * 0.018, 1.0), 0, 1) * (np.abs(oy) < cell * 0.34).astype(np.float32)
+        edge_h = np.clip(1.0 - np.abs(np.abs(oy) - cell * 0.060) / max(cell * 0.018, 1.0), 0, 1) * (np.abs(ox) < cell * 0.34).astype(np.float32)
+        stamped = _spb_fast_grain_px(np.floor((x + y * 0.10) / cell), np.floor((y - x * 0.06) / cell), family)
+        bevel = np.maximum(_spb_fast_line_px(x + y * 0.54, 17.0, 0.30, phase),
+                           _spb_fast_line_px(x - y * 0.54, 19.0, 0.30, phase * 0.43))
+        rivets = _spb_fast_dots_px(x + y * 0.06, y - x * 0.04, 41.0, 37.0, 1.5, phase, phase * 0.21)
+        field = np.clip((arms_v + arms_h) * (0.34 + stamped * 0.22) + (edge_v + edge_h) * 0.42 + bevel * 0.28 + rivets * 0.30 + (grain > 0.989).astype(np.float32) * 0.14, 0, 1)
+
+    # SPB-105 tick 2026-05-23T06:47Z: perlin_terrain score 82.33 -> 88.27; add fine erosion contours.
+    elif pattern_id == "perlin_terrain":
+        ridge = np.zeros((h, w), dtype=np.float32)
+        amp = 1.0
+        freq = 0.014
+        total = 0.0
+        for octave in range(6):
+            a0 = np.sin(x * freq * (1.7 + octave * 0.23) + np.sin(y * freq * 0.73 + phase) * (2.0 + octave))
+            b0 = np.sin(y * freq * (2.1 + octave * 0.19) - np.cos(x * freq * 0.61 - phase) * (2.4 + octave * 0.4))
+            ridge += np.abs(a0 + b0) * amp
+            total += amp * 2.0
+            amp *= 0.48
+            freq *= 2.35
+        ridge = _spb_normalize01(ridge / max(total, 1e-6))
+        contour = _spb_fast_line_px(ridge * 365.0 + x * 0.07 - y * 0.06, 9.0, 0.34, phase)
+        erosion = _spb_fast_line_px(y + np.sin(x * 0.031 + phase) * 14.0, 17.0, 0.28, phase * 0.31) * (grain > 0.36).astype(np.float32)
+        pebble = _spb_fast_dots_px(x + y * 0.09, y - x * 0.03, 9.0, 7.0, 0.40, phase, phase * 0.59)
+        field = _spb_pattern_field_contrast(np.clip(ridge * 0.34 + contour * 0.82 + erosion * 0.58 + pebble * 0.60 + (grain > 0.948).astype(np.float32) * 0.26, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "fractal_fern":
+        stems = _spb_fast_line_px(x - w * 0.50 + np.sin(y * 0.021 + phase) * 18.0, 97.0, 0.58, phase) * 0.30
+        field = stems
+        if cv2 is not None:
+            rng = np.random.default_rng(family & 0xFFFFFFFF)
+            for lane in range(9):
+                base_x = int(w * (0.10 + lane * 0.10) + rng.integers(-max(2, w // 90), max(3, w // 90)))
+                base_y = int(h * (0.92 - (lane % 3) * 0.045))
+                stem_len = int(h * rng.uniform(0.34, 0.58))
+                lean = float(rng.uniform(-0.18, 0.18))
+                tip = (int(np.clip(base_x + lean * stem_len, 0, w - 1)), int(np.clip(base_y - stem_len, 0, h - 1)))
+                cv2.line(field, (base_x, base_y), tip, float(rng.uniform(0.42, 0.82)), 1, lineType=cv2.LINE_AA)
+                for idx in range(18):
+                    t = idx / 17.0
+                    sx = int(base_x + (tip[0] - base_x) * t)
+                    sy = int(base_y + (tip[1] - base_y) * t)
+                    length = int(stem_len * (0.055 + 0.060 * (1.0 - t)))
+                    for side in (-1, 1):
+                        ex = int(np.clip(sx + side * length * (0.70 + t), 0, w - 1))
+                        ey = int(np.clip(sy - length * 0.30, 0, h - 1))
+                        cv2.line(field, (sx, sy), (ex, ey), float(0.35 + 0.45 * (1.0 - t)), 1, lineType=cv2.LINE_AA)
+        spores = _spb_fast_dots_px(x + y * 0.07, y - x * 0.05, 17.0, 13.0, 0.9, phase, phase * 0.47)
+        field = np.clip(field + spores * 0.20 + (grain > 0.988).astype(np.float32) * 0.14, 0, 1)
+
+    elif pattern_id == "chainlink":  # SPB-105 tick 2026-05-23T07:12Z: score 83.84; tighter wire weave and link knots.
+        diamond_a = _spb_fast_line_px(x + y * 0.62, 22.0, 0.34, phase)
+        diamond_b = _spb_fast_line_px(x - y * 0.62, 22.0, 0.34, phase * 0.41)
+        twist_a = _spb_fast_line_px(x + y * 0.62 + np.sin(y * 0.067) * 1.8, 7.0, 0.14, phase * 0.19)
+        twist_b = _spb_fast_line_px(x - y * 0.62 + np.sin(x * 0.063) * 1.8, 7.0, 0.14, phase * 0.57)
+        knots = _spb_fast_dots_px(x, y, 22.0, 22.0, 0.82, phase, phase * 0.37)
+        link_shade = _spb_fast_grain_px(np.floor((x + y * 0.62) / 22.0), np.floor((x - y * 0.62) / 22.0), family ^ 0xC111)
+        field = _spb_pattern_field_contrast(np.clip((diamond_a + diamond_b) * (0.72 + link_shade * 0.48) + (twist_a + twist_b) * 0.66 + knots * 0.76 + grain * 0.22 + (grain > 0.968).astype(np.float32) * 0.30, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "barbed_wire":
+        wire_a = _spb_fast_line_px(y + np.sin(x * 0.018 + phase) * 16.0, 71.0, 0.74, phase)
+        wire_b = _spb_fast_line_px(y + np.sin(x * 0.018 + phase + 1.7) * 16.0 + 5.0, 71.0, 0.62, phase * 0.43)
+        twist = _spb_fast_line_px(x + y * 0.18, 17.0, 0.32, phase) * (wire_a + wire_b)
+        barbs = np.maximum(_spb_fast_line_px(x - y * 0.72, 31.0, 0.44, phase),
+                           _spb_fast_line_px(x + y * 0.72, 31.0, 0.44, phase * 0.37)) * np.clip(wire_a + wire_b, 0, 1)
+        rust_pits = _spb_fast_dots_px(x + y * 0.06, y, 23.0, 19.0, 1.0, phase, phase * 0.53)
+        field = np.clip((wire_a + wire_b) * 0.48 + twist * 0.32 + barbs * 0.54 + rust_pits * 0.20 + (grain > 0.991).astype(np.float32) * 0.12, 0, 1)
+
+    # SPB-105 regular-pattern loop tick 2026-05-23T08:48Z: score 85.79; tighten arch cells for owner fine-detail doctrine.
+    elif pattern_id == "gothic_arch":
+        arch_x = np.mod(x + phase, 32.0)
+        arch_y = np.mod(y + phase * 0.31, 32.0)
+        cell_w = 32.0
+        cell_h = 32.0
+        cx0 = arch_x - cell_w * 0.5
+        cy0 = arch_y - cell_h * 0.54
+        arch = _spb_fast_line_px(np.sqrt(cx0 * cx0 + (cy0 * 1.42) ** 2), cell_w * 0.35, 0.74, phase)
+        mullions = np.maximum(_spb_fast_line_px(arch_x, cell_w * 0.25, 0.38, phase),
+                              _spb_fast_line_px(arch_y, cell_h * 0.36, 0.38, phase * 0.41))
+        tracery = np.maximum(_spb_fast_line_px(x + y * 0.45, 11.0, 0.18, phase),
+                             _spb_fast_line_px(x - y * 0.45, 13.0, 0.18, phase * 0.29))
+        rosettes = _spb_fast_dots_px(x + y * 0.08, y - x * 0.04, cell_w * 0.72, cell_h * 0.72, 1.15, phase, phase * 0.63)
+        field = _spb_pattern_field_contrast(np.clip(arch * 0.50 + mullions * 0.42 + tracery * 0.48 + rosettes * 0.48 + grain * 0.16 + np.maximum(_spb_fast_line_px(x + y * 0.19, 7.0, 0.10, phase * 0.53), _spb_fast_line_px(x - y * 0.23, 9.0, 0.10, phase * 0.77)) * 0.24 + (grain > 0.970).astype(np.float32) * 0.16, 0, 1), floor=0.0, ceiling=1.0)
+    # SPB-105 tick 2026-05-23T09:49Z: decade_90s_windows95 88.88 -> aim 90+; denser panes/icons/static.
+    elif pattern_id == "decade_90s_windows95":
+        pane_x = _spb_fast_line_px(x + np.sin(y * 0.024 + phase * 0.005) * 4.0, 34.0, 0.42, phase)
+        pane_y = _spb_fast_line_px(y + np.sin(x * 0.027 - phase * 0.006) * 4.0, 27.0, 0.38, phase * 0.33)
+        titlebars = _spb_fast_line_px(y + np.floor(x / 34.0) * 5.0, 9.0, 0.22, phase * 0.57) * (grain > 0.30).astype(np.float32)
+        icons = _spb_fast_dots_px(x + y * 0.05, y, 16.0, 13.0, 0.55, phase, phase * 0.19)
+        static = (grain > 0.910).astype(np.float32)
+        field = _spb_pattern_field_contrast(np.clip((pane_x + pane_y) * 0.66 + titlebars * 0.58 + icons * 0.54 + static * 0.34 + grain * 0.16 + _spb_fast_line_px(x - y * 0.17, 7.0, 0.09, phase * 0.71) * (grain > 0.42).astype(np.float32) * 0.34, 0, 1), floor=0.0, ceiling=1.0)
+
+    elif pattern_id == "decade_90s_beanie_tag":  # SPB-105 tick 2026-05-23T07:12Z: score 83.84; denser tag weave/barcode.
+        tag_rows = _spb_fast_line_px(y + np.sin(x * 0.016 + phase * 0.007) * 8.0, 37.0, 0.48, phase)
+        tag_edges = _spb_fast_line_px(x + np.floor(y / 37.0) * 13.0, 47.0, 0.42, phase * 0.37)
+        stitch = _spb_fast_dots_px(x + y * 0.06, y, 11.0, 37.0, 0.72, phase, phase * 0.21)
+        barcode = _spb_fast_line_px(x + np.floor(y / 37.0) * 19.0, 5.0, 0.18, phase) * (grain > 0.55).astype(np.float32)
+        fabric = _spb_fast_line_px(x - y * 0.18, 17.0, 0.24, phase * 0.61)
+        field = _spb_pattern_field_contrast(np.clip(tag_rows * 0.46 + tag_edges * 0.56 + stitch * 0.46 + barcode * 0.44 + fabric * 0.30 + grain * 0.14 + (grain > 0.970).astype(np.float32) * 0.18, 0, 1), floor=0.0, ceiling=1.0)
+
     else:
         field = grain
 
@@ -9569,6 +12762,7 @@ _spb_register_pattern_rebuild("surface", (
     "shimmer_spectral_mesh",
 ))
 _spb_register_pattern_rebuild("deco", (
+    "aztec",
     "art_deco_fan", "chevron_stack", "quatrefoil", "herringbone",
     "basket_weave", "houndstooth", "argyle", "tartan", "op_art_rings",
     "moire_grid", "lozenge_tile", "ogee_lattice", "art_deco_sunburst",
@@ -9605,7 +12799,7 @@ _spb_register_pattern_rebuild("paradigm", (
 ))
 _spb_register_pattern_rebuild("animal", ("camo", "multicam"))
 _spb_register_pattern_rebuild("gothic", ("thorn_vine", "skull", "skull_wings"))
-_spb_register_pattern_rebuild("metal", ("metal_flake", "carbon_fiber", "kevlar_weave", "nanoweave"))
+_spb_register_pattern_rebuild("metal", ("metal_flake", "carbon_fiber", "kevlar_weave", "nanoweave", "corrugated"))
 _spb_register_pattern_rebuild("shokk", ("pixel_grid",))
 _spb_register_pattern_rebuild("decade", (
     "decade_50s_diner_checkerboard", "decade_50s_jukebox_arc",
@@ -9658,6 +12852,39 @@ _SPB_BESPOKE_PATTERN_REBUILD_IDS = {
     "shokk_plasma_storm", "shokk_tesseract",
     "shokk_scream", "flame_inferno_wall", "flame_blue_propane",
     "flame_ember_field",
+    "thorn_vine", "neural", "stardust", "tornado", "shimmer_void_dust",
+    "lightning", "metal_flake", "solar_flare", "dimensional", "p_plasma",
+    "multicam", "carbon_fiber", "carbon_clearcoat_lock", "shimmer_neon_weft",
+    "birch_bark", "nature_bark_rough", "decade_50s_drivein_marquee",
+    "decade_80s_rubiks_cube", "decade_80s_rubiks_cube_2",
+    "decade_80s_rubiks_cube_3", "decade_90s_sega_blast",
+    "decade_90s_windows95", "decade_90s_beanie_tag",
+    "camo", "skull", "decade_50s_sputnik_orbit",
+    "decade_70s_earth_tone_geo", "decade_80s_boombox_speaker",
+    "decade_80s_nintendo_dpad", "decade_90s_nirvana_smiley",
+    "sound_wave", "aurora_bands",
+    "shimmer_chrome_flux", "chrome_delete_edge", "shimmer_spectral_mesh",
+    "interference", "optical_illusion", "peacock_eye",
+    "decade_50s_fallout_shelter", "decade_80s_pacman_maze",
+    "decade_90s_rugrats_squiggle", "decade_90s_tamagotchi_egg",
+    "gothic_scroll",
+    "ammonite_chambers", "decade_50s_atomic_reactor",
+    "decade_50s_boomerang_formica", "decade_70s_pong_pixel",
+    "decade_80s_breakdance_spin", "decade_90s_tribal_tattoo",
+    "decade_90s_fresh_prince", "decade_60s_tie_dye_spiral",
+    "iron_emblem", "perlin_terrain", "fractal_fern", "chainlink",
+    "gothic_arch",
+    "celtic_knot", "tribal_celtic_spiral", "geo_fractal_triangle",
+    "fractal", "fractal_3", "tessellation",
+    "pearlescent_flip", "shimmer_prism_frost", "feather", "snake_skin",
+    "decade_60s_lava_lamp_blob", "decade_60s_peace_sign",
+    "decade_60s_peter_max_gradient", "decade_90s_rollerblade_streak",
+    "shokk_bitrot", "shokk_zero_day", "checker_warp",
+    # SPB-106 weakness rollup top-10 (2026-05-17)
+    "aztec", "corrugated",
+    "decade_50s_diner_chrome",
+    "decade_50s_jukebox_arc", "decade_60s_opart_illusion",
+    "decade_70s_studio54_glitter",
 }
 
 _SPB_SPECIFIC_PATTERN_REBUILD_IDS = _SPB_BESPOKE_PATTERN_REBUILD_IDS - {
@@ -9669,6 +12896,8 @@ _SPB_SPECIFIC_PATTERN_REBUILD_IDS = _SPB_BESPOKE_PATTERN_REBUILD_IDS - {
 _SPB_PATTERN_REBUILD_MODES.update({
     "giraffe": "animal",
     "crocodile": "animal",
+    "feather": "animal",
+    "snake_skin": "animal",
     "snake_skin_4": "animal",
     "nature_water_ripple_pat": "natural",
     "shokk_signal_noise": "shokk",
@@ -9678,9 +12907,16 @@ _SPB_PATTERN_REBUILD_MODES.update({
     "shokk_plasma_storm": "shokk",
     "shokk_tesseract": "shokk",
     "shokk_scream": "shokk",
+    "shokk_bitrot": "shokk",
+    "shokk_zero_day": "shokk",
     "flame_inferno_wall": "weather",
     "flame_blue_propane": "weather",
     "flame_ember_field": "weather",
+    "gothic_scroll": "gothic",
+    "iron_emblem": "gothic",
+    "gothic_arch": "gothic",
+    "chainlink": "metal",
+    "tessellation": "deco",
 })
 
 
@@ -9691,6 +12927,86 @@ _SPB_PATTERN_AUDIT_BOOST_IDS = {
     "reaction_diffusion", "fractal_fern", "shimmer_void_dust",
     "decade_80s_breakdance_spin", "decade_80s_rubiks_cube_2",
     "geo_fractal_triangle", "geo_hilbert_curve", "voronoi_relaxed", "hypocycloid",
+    "birch_bark", "feather", "decade_60s_lava_lamp_blob",
+    "decade_60s_peace_sign", "decade_60s_peter_max_gradient",
+    "decade_90s_rollerblade_streak", "decade_70s_pong_pixel",
+    "shokk_bitrot", "shokk_zero_day", "checker_warp",
+    "dimensional", "sound_wave", "soundwave",
+}
+
+# SPB-106: pattern weakness rollup rework queue (owner 2026-05-17)
+_SPB_TOP10_PATTERN_REWORK_IDS = frozenset({
+    "aztec", "corrugated",
+    "decade_50s_atomic_reactor",
+    "decade_50s_diner_chrome", "decade_50s_jukebox_arc",
+    "decade_60s_opart_illusion", "decade_70s_funk_zigzag",
+    "decade_70s_studio54_glitter",
+})
+# decade_70s_pong_pixel: candidate for catalog replacement — not a strong 70s motif
+
+_SPB_PATTERN_HOTLIST_BOOST_IDS = {
+    "shokk_packet_storm", "shokk_firewall", "shokk_kernel_panic", "shokk_overflow",
+    "shimmer_matte_halo", "shimmer_quantum_shard", "shokk_cipher", "shokk_hex_dump",
+    "sierpinski_tri", "uv_night_accent", "shokk_cipher_pattern", "shokk_scan_line",
+    "decade_60s_peter_max_alt", "dragonfly_wing_pattern", "plasma_ejection", "acid_wash",
+    "cane_weave", "decade_90s_cross_colors", "decade_90s_y2k_bug", "hero_pointed_cowl",
+    "palm_frond", "rust_bloom", "shimmer_oil_tension", "shimmer_turbine_sheen",
+    "spark_scatter", "step_fret", "surf_stripe", "tire_smoke", "cosmic_web",
+    "decade_50s_crt_phosphor", "decade_50s_diner_chrome", "decade_60s_pop_art_halftone",
+    "dragonfly_wing", "hellfire", "hologram", "pine_cone_scale", "satin_wax",
+    "seigaiha_scales", "shimmer_chrome_flux", "shimmer_spectral_mesh",
+    "shimmer_velvet_static", "shokk_tesseract", "triple_knot", "turbine",
+}
+_SPB_PATTERN_AUDIT_BOOST_IDS |= _SPB_PATTERN_HOTLIST_BOOST_IDS
+_SPB_PATTERN_HOTLIST_BOOST_IDS |= _SPB_TOP10_PATTERN_REWORK_IDS
+_SPB_PATTERN_AUDIT_BOOST_IDS |= _SPB_TOP10_PATTERN_REWORK_IDS
+
+
+def _spb_hotlist_range_boost(pattern_id):
+    """Per-ID spec amplitude boost for current low-DNA pattern hotlist."""
+    if pattern_id not in _SPB_PATTERN_HOTLIST_BOOST_IDS:
+        return 1.0, 1.0, 0.0
+    pid = str(pattern_id or "")
+    # Keep hero/nocturnal patterns from getting over-wet while still widening ranges.
+    if "shimmer_velvet_static" in pid or "shimmer_matte_halo" in pid:
+        return 1.18, 1.16, 6.0
+    if "shokk_" in pid:
+        return 1.24, 1.28, 10.0
+    if "decade_" in pid:
+        return 1.20, 1.18, 8.0
+    return 1.22, 1.22, 8.0
+
+_SPB_PATTERN_UPGRADE_EXCLUDE_TAGS = (
+    "art_deco",
+    "biomech",
+)
+
+
+def _spb_pattern_upgrade_excluded(pattern_id):
+    pid = str(pattern_id or "").lower()
+    return any(tag in pid for tag in _SPB_PATTERN_UPGRADE_EXCLUDE_TAGS)
+
+
+_SPB_PATTERN_FAST_RESAMPLE_IDS = {
+    "aurora_bands",
+    "birch_bark",
+    "camo",
+    "decade_50s_atomic_reactor",
+    "decade_80s_rubiks_cube_2",
+    "decade_90s_tribal_tattoo",
+    "argyle",
+    "concentric_op",
+    "decade_70s_funk_zigzag",
+    "decade_90s_dot_matrix",
+    "hilbert_curve",
+    "holographic",
+    "kevlar_weave",
+    "p_plasma",
+    "phyllotaxis",
+    "sonar_ping",
+    "shimmer_void_dust",
+    "sound_wave",
+    "star_tile_mosaic",
 }
 
 
@@ -9923,13 +13239,51 @@ def _spb_make_rebuilt_pattern_texture(pattern_id, mode, original_texture=None):
     def _texture(shape, mask, seed, sm):
         h, w = shape[:2] if len(shape) > 2 else shape
         mask_arr = np.asarray(mask, dtype=np.float32) if mask is not None else np.ones((h, w), dtype=np.float32)
-        pv = _spb_rebuilt_pattern_value(pattern_id, mode, (h, w), seed, sm)
+        work_shape = (h, w)
+        downsample = pattern_id in _SPB_PATTERN_FAST_RESAMPLE_IDS and max(h, w) > 1024
+        if downsample:
+            scale = 1024.0 / float(max(h, w))
+            work_shape = (max(128, int(round(h * scale))), max(128, int(round(w * scale))))
+        pv = _spb_rebuilt_pattern_value(pattern_id, mode, work_shape, seed, sm)
+        if downsample:
+            pv = cv2.resize(pv.astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR).astype(np.float32)
+            fine, sparkle = _spb_micro_detail((h, w), seed + 8629, _spb_hash_seed(pattern_id))
+            pv = np.clip(pv * 0.92 + fine * 0.06 + sparkle * 0.10, 0, 1)
         pv = np.clip(pv * mask_arr, 0, 1).astype(np.float32)
         edge = pv if mode == "tech" else _spb_edge_energy(pv)
+        legacy_m = float(84 + (_spb_hash_seed(pattern_id) % 72))
+        legacy_r = float(58 + ((_spb_hash_seed(pattern_id) >> 5) % 72))
+        if _spb_pattern_upgrade_excluded(pattern_id):
+            return {
+                "pattern_val": pv,
+                "M_range": legacy_m,
+                "R_range": legacy_r,
+                "edge_val": edge,
+            }
+
+        hseed = _spb_hash_seed(pattern_id)
+        m_range = float(104 + (hseed % 96))
+        r_mag = float(74 + ((hseed >> 5) % 84))
+        glossy_modes = {"tech", "op", "math", "deco", "metal", "shokk", "decade", "paradigm"}
+        mixed_modes = {"abstract", "gothic", "world"}
+        if mode in glossy_modes:
+            r_range = -r_mag
+        elif mode in mixed_modes:
+            r_range = -r_mag * 0.55
+        else:
+            r_range = r_mag * 0.78
+        cc_pat = np.clip(edge * 0.55 + pv * 0.45, 0, 1).astype(np.float32)
+        cc_rng = 34.0 if mode in glossy_modes else (22.0 if mode in mixed_modes else 14.0)
+        m_mul, r_mul, cc_add = _spb_hotlist_range_boost(pattern_id)
+        m_range *= m_mul
+        r_range *= r_mul
+        cc_rng += cc_add
         return {
             "pattern_val": pv,
-            "M_range": float(84 + (_spb_hash_seed(pattern_id) % 72)),
-            "R_range": float(58 + ((_spb_hash_seed(pattern_id) >> 5) % 72)),
+            "M_range": m_range,
+            "R_range": float(r_range),
+            "CC_pattern": cc_pat,
+            "CC_range": float(cc_rng),
             "edge_val": edge,
         }
     _texture._spb_detail_wrapped = True
@@ -9938,39 +13292,59 @@ def _spb_make_rebuilt_pattern_texture(pattern_id, mode, original_texture=None):
 
 
 def _spb_make_rebuilt_pattern_paint(pattern_id, mode):
+    """Pattern-design paint: luminance structure only, no baked hue (SPB doctrine 2026-05-17).
+
+    Regular patterns must stay achromatic in the paint channel so zone/base color and
+    color overlays read through. Spec/texture_fn carries material; paint only darkens
+    or lightens all RGB channels equally (same model as paint_chevron_contrast).
+    """
     def _paint(paint, shape, mask, seed, pm, bb):
         if paint.ndim == 3 and paint.shape[2] > 3:
             paint = paint[:, :, :3].copy()
         h, w = shape[:2] if len(shape) > 2 else shape
         mask_arr = np.asarray(mask, dtype=np.float32)
-        if hasattr(bb, "ndim") and bb.ndim == 2:
-            bb3 = bb[:, :, np.newaxis]
-        else:
-            bb3 = bb
-        pv = _spb_rebuilt_pattern_value(pattern_id, mode, (h, w), seed + 4109, 1.0)
+        work_shape = (h, w)
+        downsample = pattern_id in _SPB_PATTERN_FAST_RESAMPLE_IDS and max(h, w) > 1024
+        if downsample:
+            scale = 1024.0 / float(max(h, w))
+            work_shape = (max(128, int(round(h * scale))), max(128, int(round(w * scale))))
+        pv = _spb_rebuilt_pattern_value(pattern_id, mode, work_shape, seed + 4109, 1.0)
+        if downsample:
+            pv = cv2.resize(pv.astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR).astype(np.float32)
+            fine, sparkle = _spb_micro_detail((h, w), seed + 8849, _spb_hash_seed(pattern_id))
+            pv = np.clip(pv * 0.92 + fine * 0.06 + sparkle * 0.10, 0, 1)
         edge = pv if mode == "tech" else _spb_edge_energy(pv)
-        base_c, line_c, accent_c = _SPB_PATTERN_PALETTES.get(mode, _SPB_PATTERN_PALETTES["abstract"])
-        phase = (_spb_hash_seed(pattern_id) % 360) * np.pi / 180.0
-        hue_shift = np.array([
-            0.08 * np.sin(phase),
-            0.08 * np.sin(phase + 2.094),
-            0.08 * np.sin(phase + 4.188),
-        ], dtype=np.float32)
-        base = np.clip(np.asarray(base_c, dtype=np.float32) + hue_shift * 0.45, 0, 1)
-        line = np.clip(np.asarray(line_c, dtype=np.float32) + hue_shift, 0, 1)
-        accent = np.clip(np.asarray(accent_c, dtype=np.float32) - hue_shift * 0.70, 0, 1)
         carrier = np.clip(pv * 0.78 + edge * 0.20, 0, 1)
-        overlay = (
-            base[np.newaxis, np.newaxis, :] * (1.0 - carrier[:, :, np.newaxis])
-            + line[np.newaxis, np.newaxis, :] * carrier[:, :, np.newaxis]
-            + accent[np.newaxis, np.newaxis, :] * np.clip(edge[:, :, np.newaxis] * 0.65, 0, 1)
-        )
-        if pattern_id in _SPB_PATTERN_AUDIT_BOOST_IDS:
-            overlay = np.clip(overlay + pv[:, :, np.newaxis] * 0.12 + edge[:, :, np.newaxis] * 0.18, 0, 1)
-        if bb3 is not None:
-            overlay = np.clip(overlay + np.asarray(bb3, dtype=np.float32) * 0.18, 0, 1)
-        blend = np.clip(float(pm) * 0.92, 0, 1) * mask_arr[:, :, np.newaxis]
-        return np.ascontiguousarray(np.clip(paint[:, :, :3] * (1.0 - blend) + overlay * blend, 0, 1).astype(np.float32))
+        # [SPB Alpha 2026-06-02] generic _paint was strength 0.044-0.050 on (carrier-0.5) ->
+        # paint deltaMax ~0.02, i.e. the design was INVISIBLE in the paint editor (81/221 patterns;
+        # owner flagged celtic_knot). Two changes: (a) raise the achromatic luminance stamp so the
+        # DESIGN reads (~0.10-0.16, in line with the bespoke ink/emboss fns); (b) anchor the
+        # modulation to the carrier MEDIAN instead of mid-gray 0.5 -> a sparse design's empty
+        # background (the dominant value) gets ~0 delta and stays base/transparent, while all-over
+        # textures (median ~ field centre) stay net-neutral (no dark fill). Still luminance-only
+        # (no hue), so zone/base colour + overlays read through.
+        strength = 0.22 if mode in ("deco", "world", "op") else 0.20
+        if pattern_id in _SPB_TOP10_PATTERN_REWORK_IDS:
+            strength = max(strength, 0.24)
+        elif pattern_id in _SPB_PATTERN_AUDIT_BOOST_IDS:
+            strength *= 1.15
+        bg_ref = float(np.median(carrier))
+        delta = (carrier - bg_ref) * strength * np.clip(float(pm) * 0.92, 0, 1)
+        delta3 = delta[:, :, np.newaxis] * mask_arr[:, :, np.newaxis]
+        if bb is not None:
+            bb_arr = np.asarray(bb, dtype=np.float32)
+            bb_lum = None
+            if bb_arr.ndim == 3 and bb_arr.shape[2] >= 3:
+                bb_lum = np.mean(bb_arr[:, :, :3], axis=2)
+            elif bb_arr.ndim == 2 and bb_arr.shape[:2] == (h, w):
+                bb_lum = bb_arr
+            elif bb_arr.size > 1:
+                bb_lum = np.squeeze(bb_arr)
+                if bb_lum.ndim != 2 or bb_lum.shape[:2] != (h, w):
+                    bb_lum = None
+            if bb_lum is not None:
+                delta3 = delta3 + (bb_lum - 0.5)[:, :, np.newaxis] * 0.010 * mask_arr[:, :, np.newaxis]
+        return np.ascontiguousarray(np.clip(paint[:, :, :3] + delta3, 0, 1).astype(np.float32))
     _paint._spb_pattern_direct_paint = True
     return _paint
 
@@ -9985,12 +13359,15 @@ def _spb_apply_regular_pattern_rebuilds():
     for _pid, _mode in _SPB_PATTERN_REBUILD_MODES.items():
         if _pid not in _SPB_BESPOKE_PATTERN_REBUILD_IDS:
             continue
+        if str(_pid).startswith("shokk_"):
+            continue
         for _target in _targets:
             _entry = _target.get(_pid)
             if not isinstance(_entry, dict) or _entry.get("image_path"):
                 continue
             _tex = _entry.get("texture_fn")
-            if getattr(_tex, "_spb_rebuilt_pattern", False):
+            _desc = str(_entry.get("desc") or "")
+            if getattr(_tex, "_spb_rebuilt_pattern", False) and not _desc.startswith("Expansion:"):
                 continue
             _new_entry = dict(_entry)
             _new_entry["texture_fn"] = _spb_make_rebuilt_pattern_texture(_pid, _mode, _tex)
@@ -10000,7 +13377,9 @@ def _spb_apply_regular_pattern_rebuilds():
                 _new_entry["paint_fn"] = paint_none
             else:
                 _new_entry["paint_fn"] = _spb_make_rebuilt_pattern_paint(_pid, _mode)
-            _new_entry["desc"] = (_new_entry.get("desc") or "") + " | SPB Alpha high-detail rebuilt pattern."
+            _desc = _new_entry.get("desc") or ""
+            if "SPB Alpha high-detail rebuilt pattern" not in _desc:
+                _new_entry["desc"] = _desc + " | SPB Alpha high-detail rebuilt pattern."
             _target[_pid] = _new_entry
             if _target is PATTERN_REGISTRY:
                 rebuilt += 1
@@ -10037,7 +13416,7 @@ _PATTERN_MONO_PROFILES = {
     "baroque_scrollwork": _spb_mono_profile(0.91, 0.06, 0.03, 58, 174, 62, 86, -84, 34, 30, 116, 22, 0.66, (0.30, 0.16, 0.05), (1.00, 0.70, 0.18)),
     "art_nouveau_vine": _spb_mono_profile(0.87, 0.10, 0.03, 24, 128, 42, 112, -68, 28, 26, 96, 18, 0.60, (0.06, 0.28, 0.10), (0.68, 0.92, 0.34)),
     "penrose_quasi": _spb_mono_profile(0.84, 0.10, 0.06, 8, 188, 66, 76, -92, 32, 34, 112, 26, 0.64, (0.10, 0.26, 0.62), (0.98, 0.32, 0.80)),
-    "topographic_dense": _spb_mono_profile(0.92, 0.06, 0.02, 22, 132, 78, 130, -70, 46, 22, 88, 16, 0.50, (0.10, 0.22, 0.12), (0.76, 0.64, 0.36)),
+    "topographic_dense": _spb_mono_profile(0.93, 0.05, 0.02, 20, 146, 78, 134, -74, 46, 18, 98, 18, 0.56, (0.07, 0.18, 0.09), (0.88, 0.72, 0.34)),
     "interference_rings": _spb_mono_profile(0.83, 0.10, 0.07, 10, 190, 58, 70, -94, 26, 40, 118, 30, 0.68, (0.02, 0.46, 0.92), (1.00, 0.18, 0.70)),
     "brushed_metal_fine": _spb_mono_profile(0.89, 0.08, 0.03, 70, 138, 58, 72, -74, 42, 24, 82, 18, 0.45, (0.30, 0.34, 0.38), (0.82, 0.78, 0.68)),
 }
@@ -10069,8 +13448,8 @@ _ORNAMENTAL_PAINT_STYLES = {
         "detail": 1.02, "edge": 1.55, "blend": 0.90,
     },
     "topographic_dense": {
-        "base": (0.16, 0.17, 0.09), "line": (0.78, 0.66, 0.34), "shadow": (0.04, 0.06, 0.025),
-        "detail": 1.18, "edge": 1.05, "blend": 0.78,
+        "base": (0.11, 0.14, 0.07), "line": (0.92, 0.76, 0.32), "shadow": (0.025, 0.045, 0.015),
+        "detail": 1.24, "edge": 1.18, "blend": 0.84,
     },
     "interference_rings": {
         "base": (0.03, 0.07, 0.16), "line": (0.08, 0.78, 1.00), "shadow": (0.12, 0.02, 0.17),
@@ -10091,8 +13470,242 @@ def _spb_pattern_mono_profile(pattern_id):
     )
 
 
+_SPB_PATTERN_DETAIL_CACHE = {}
+_SPB_PATTERN_DETAIL_CACHE_ORDER = []
+_SPB_PATTERN_DETAIL_CACHE_LIMIT = 12
+
+
+def _spb_texture_detail_base(texture_fn):
+    return getattr(texture_fn, "_spb_detail_base_fn", texture_fn)
+
+
+def _spb_pattern_detail_cache_key(pattern_id, texture_fn, shape, seed, sm):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    base_fn = _spb_texture_detail_base(texture_fn)
+    return (
+        str(pattern_id),
+        int(h),
+        int(w),
+        int(seed),
+        round(float(sm), 4),
+        id(base_fn),
+    )
+
+
+def _spb_store_pattern_detail_cache(key, detail, tex):
+    _SPB_PATTERN_DETAIL_CACHE[key] = (detail, dict(tex))
+    _SPB_PATTERN_DETAIL_CACHE_ORDER.append(key)
+    while len(_SPB_PATTERN_DETAIL_CACHE_ORDER) > _SPB_PATTERN_DETAIL_CACHE_LIMIT:
+        old = _SPB_PATTERN_DETAIL_CACHE_ORDER.pop(0)
+        _SPB_PATTERN_DETAIL_CACHE.pop(old, None)
+
+
+def _spb_ornamental_hidden_motif(pattern_id, shape, seed):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    if max(h, w) > 1024:
+        sh = max(512, h // 2)
+        sw = max(512, w // 2)
+        small = _spb_ornamental_hidden_motif(pattern_id, (sh, sw), seed)
+        y_rep = int(np.ceil(h / sh))
+        x_rep = int(np.ceil(w / sw))
+        return np.repeat(np.repeat(small, y_rep, axis=0), x_rep, axis=1)[:h, :w].astype(np.float32)
+    xf, yf, cx, cy, r, a = _spb_pattern_xy((h, w))
+    phase = ((_spb_hash_seed(pattern_id) ^ int(seed)) % 720) * np.pi / 360.0
+    if pattern_id == "hex_mandala":
+        spokes = np.exp(-((np.sin(a * 12.0 + phase) / 0.085) ** 2))
+        rings = _spb_gridline(r, 18.0, 0.015, phase * 0.11)
+        motif = spokes * rings
+    elif pattern_id == "lace_filigree":
+        scallop = np.exp(-((np.sin((xf * 8.0 + phase) * np.pi) + yf * 1.6 - 1.15) / 0.070) ** 2)
+        knots = _spb_gridline(xf + np.sin(yf * 16.0 + phase) * 0.018, 22.0, 0.010, phase * 0.07)
+        motif = np.clip(scallop * 0.65 + knots * 0.45, 0, 1)
+    elif pattern_id == "honeycomb_organic":
+        comb = _spb_hex_lines(xf + np.sin(yf * 11.0 + phase) * 0.012, yf, 18.0, 0.013, phase * 0.05)
+        pollen = (_spb_hash_field((h, w), int(seed) + 771) > 0.988).astype(np.float32)
+        motif = np.clip(comb * 0.74 + pollen, 0, 1)
+    elif pattern_id == "baroque_scrollwork":
+        vine = np.sin((xf * 7.5 + np.sin(yf * 8.0 + phase) * 0.55) * np.pi + phase)
+        leaves = _spb_gridline(yf + np.sin(xf * 14.0 + phase) * 0.026, 16.0, 0.012, phase * 0.09)
+        motif = np.clip(np.exp(-((vine / 0.082) ** 2)) * leaves * 1.35, 0, 1)
+    elif pattern_id == "art_nouveau_vine":
+        tendril = np.sin((yf * 10.0 + np.sin(xf * 7.0 + phase) * 0.72) * np.pi)
+        pods = _spb_gridline(r + np.sin(a * 5.0 + phase) * 0.018, 14.0, 0.012, phase * 0.13)
+        motif = np.clip(np.exp(-((tendril / 0.075) ** 2)) * 0.72 + pods * 0.52, 0, 1)
+    elif pattern_id == "penrose_quasi":
+        star_a = _spb_gridline(xf * np.cos(phase) + yf * np.sin(phase), 23.0, 0.010, phase * 0.11)
+        star_b = _spb_gridline(xf * np.cos(phase + 1.256) + yf * np.sin(phase + 1.256), 19.0, 0.010, phase * 0.17)
+        star_c = _spb_gridline(xf * np.cos(phase + 2.513) + yf * np.sin(phase + 2.513), 17.0, 0.010, phase * 0.23)
+        motif = np.clip(star_a * star_b + star_b * star_c + star_c * star_a, 0, 1)
+    elif pattern_id == "topographic_dense":
+        contour = _spb_gridline(r + np.sin(a * 8.0 + phase) * 0.018 + np.sin(xf * 19.0) * 0.005, 30.0, 0.010, phase * 0.08)
+        ticks = _spb_gridline(a / (2.0 * np.pi) + xf * 0.18, 28.0, 0.008, phase * 0.19)
+        motif = np.clip(contour * (0.72 + ticks * 0.55), 0, 1)
+    elif pattern_id == "interference_rings":
+        ghost = _spb_gridline(r + np.sin(a * 9.0 + phase) * 0.022, 24.0, 0.010, phase * 0.10)
+        moire = _spb_gridline(xf + yf * 0.37 + np.sin(r * 38.0 + phase) * 0.010, 31.0, 0.008, phase * 0.03)
+        motif = np.clip(ghost * 0.68 + moire * 0.42, 0, 1)
+    else:
+        motif = np.zeros((h, w), dtype=np.float32)
+    return np.clip(motif, 0, 1).astype(np.float32)
+
+
+def _spb_brushed_metal_fine_fields(shape, seed):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    cache_key = _spb_brushed_machined_field_cache_key((h, w), seed)
+    cached = _SPB_BRUSHED_MACHINED_FIELD_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+    yy, xx = get_mgrid((h, w))
+    xf = xx.astype(np.float32) / max(1.0, float(w - 1))
+    yf = yy.astype(np.float32) / max(1.0, float(h - 1))
+    phase = ((_spb_hash_seed("brushed_metal_fine") ^ int(seed)) % 720) * np.pi / 360.0
+    if max(h, w) > 1024:
+        sh = max(512, h // 2)
+        sw = max(512, w // 2)
+        warp_small = multi_scale_noise((sh, sw), [7, 15, 31, 63], [0.34, 0.30, 0.22, 0.14], seed + 8121)
+        fine_small, sparkle_small = _spb_micro_detail((sh, sw), seed + 8267, 8267)
+        y_rep = int(np.ceil(h / sh))
+        x_rep = int(np.ceil(w / sw))
+        warp = np.repeat(np.repeat(warp_small, y_rep, axis=0), x_rep, axis=1)[:h, :w]
+        fine = np.repeat(np.repeat(fine_small, y_rep, axis=0), x_rep, axis=1)[:h, :w]
+        sparkle = np.repeat(np.repeat(sparkle_small, y_rep, axis=0), x_rep, axis=1)[:h, :w]
+    else:
+        warp = multi_scale_noise((h, w), [7, 15, 31, 63], [0.34, 0.30, 0.22, 0.14], seed + 8121)
+        fine, sparkle = _spb_micro_detail((h, w), seed + 8267, 8267)
+    warp = (warp - 0.5).astype(np.float32)
+    fine = fine.astype(np.float32)
+    sparkle = sparkle.astype(np.float32)
+    grain_y = yf + warp * 0.010 + np.sin(xf * 18.0 + phase) * 0.0026
+    hair = _spb_gridline(grain_y, 520.0, 0.00135, phase * 0.021)
+    hair2 = _spb_gridline(yf + warp * 0.018 + np.sin(xf * 41.0 + phase) * 0.0017, 890.0, 0.00072, phase * 0.033)
+    cross = _spb_gridline(xf * 0.83 + yf * 0.22 + warp * 0.010, 176.0, 0.00145, phase * 0.047)
+    rx = xf - 0.47
+    ry = yf + 0.31
+    radius = np.sqrt(rx * rx + ry * ry)
+    face_arc = _spb_gridline(radius + warp * 0.008, 142.0, 0.00155, phase * 0.013)
+    fly_arc = _spb_gridline(np.sqrt((xf - 1.13) ** 2 + (yf - 0.18) ** 2) + warp * 0.006, 97.0, 0.00130, phase * 0.019)
+    polish = _spb_gridline(xf * 0.92 - yf * 0.09 + warp * 0.012, 240.0, 0.00110, phase * 0.057)
+    ticks = _spb_gridline(xf + np.sin(yf * 46.0 + phase) * 0.003, 29.0, 0.00120, phase * 0.071)
+    tick_rows = _spb_gridline(yf, 17.0, 0.0048, phase * 0.029)
+    scribe = np.clip(ticks * tick_rows, 0, 1)
+    bead = (_spb_hash_field((h, w), seed + 8399) > 0.9915).astype(np.float32)
+    scuff = np.clip(cross * 0.58 + (1.0 - fine) * 0.18 + _spb_gridline(yf + xf * 0.015, 71.0, 0.0022, phase) * 0.28, 0, 1)
+    machined = np.clip(face_arc * 0.66 + fly_arc * 0.44 + polish * 0.24 + scribe * 0.46, 0, 1)
+    brush = np.clip(hair * 0.68 + hair2 * 0.44 + polish * 0.18 + fine * 0.13 + sparkle * 0.10, 0, 1)
+    fields = {
+        "brush": brush.astype(np.float32),
+        "machined": machined.astype(np.float32),
+        "scuff": scuff.astype(np.float32),
+        "bead": bead.astype(np.float32),
+        "fine": fine.astype(np.float32),
+        "sparkle": sparkle.astype(np.float32),
+        "scribe": scribe.astype(np.float32),
+    }
+    _spb_store_brushed_machined_field_cache(cache_key, fields)
+    return fields
+
+
+def _spb_spec_brushed_metal_fine(shape, *args, **kwargs):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    if args and isinstance(args[0], np.ndarray):
+        seed = args[1] if len(args) > 1 else kwargs.get("seed", 0)
+        sm = args[2] if len(args) > 2 else kwargs.get("sm", 1.0)
+        base_m = kwargs.get("base_m", 80)
+        base_r = kwargs.get("base_r", 80)
+    else:
+        seed = args[0] if len(args) > 0 else kwargs.get("seed", 0)
+        sm = args[1] if len(args) > 1 else kwargs.get("sm", 1.0)
+        base_m = args[2] if len(args) > 2 else kwargs.get("base_m", 80)
+        base_r = args[3] if len(args) > 3 else kwargs.get("base_r", 80)
+    f = _spb_brushed_metal_fine_fields((h, w), seed)
+    brush = f["brush"]
+    machined = f["machined"]
+    scuff = f["scuff"]
+    bead = f["bead"]
+    sparkle = f["sparkle"]
+    scribe = f["scribe"]
+    M = float(base_m) + (48.0 + brush * 76.0 + machined * 62.0 + bead * 54.0 + sparkle * 42.0 + scribe * 52.0) * sm
+    R = float(base_r) + (105.0 - brush * 72.0 - machined * 46.0 + scuff * 80.0 + bead * 36.0 - scribe * 34.0) * sm
+    CC = 18.0 + brush * 58.0 + machined * 92.0 + sparkle * 48.0 + bead * 30.0 + scribe * 74.0
+    return (
+        np.clip(M, 0, 240).astype(np.float32),
+        np.clip(R, 20, 220).astype(np.float32),
+        np.clip(CC, 16, 195).astype(np.float32),
+    )
+
+
+def _spb_paint_brushed_metal_fine(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    h, w = shape[:2] if len(shape) > 2 else shape
+    mask_arr = np.asarray(mask, dtype=np.float32)
+    f = _spb_brushed_metal_fine_fields((h, w), seed)
+    brush = f["brush"]
+    machined = f["machined"]
+    scuff = f["scuff"]
+    bead = f["bead"]
+    fine = f["fine"]
+    sparkle = f["sparkle"]
+    cool = np.array([0.52, 0.56, 0.60], dtype=np.float32)
+    warm = np.array([0.78, 0.72, 0.62], dtype=np.float32)
+    steel = np.array([0.35, 0.38, 0.41], dtype=np.float32)
+    tone = np.clip(0.28 + brush * 0.30 + machined * 0.20 + fine * 0.10 + sparkle * 0.16 - scuff * 0.12, 0, 1)
+    heat = np.clip(machined * 0.44 + bead * 0.24 + sparkle * 0.18, 0, 1)
+    alloy = steel[np.newaxis, np.newaxis, :] * (1.0 - tone[:, :, np.newaxis]) + cool[np.newaxis, np.newaxis, :] * tone[:, :, np.newaxis]
+    alloy = alloy * (1.0 - heat[:, :, np.newaxis] * 0.20) + warm[np.newaxis, np.newaxis, :] * heat[:, :, np.newaxis] * 0.20
+    alloy = np.clip(alloy + sparkle[:, :, np.newaxis] * np.array([0.10, 0.11, 0.12], dtype=np.float32), 0, 1)
+    alloy = np.clip(alloy - scuff[:, :, np.newaxis] * 0.075 + bead[:, :, np.newaxis] * np.array([0.08, 0.075, 0.055], dtype=np.float32), 0, 1)
+    if bb is not None:
+        bb_arr = np.asarray(bb, dtype=np.float32)
+        if bb_arr.ndim == 2:
+            alloy = np.clip(alloy + bb_arr[:, :, np.newaxis] * 0.065, 0, 1)
+    blend = np.clip(float(pm) * 0.82, 0, 1) * mask_arr[:, :, np.newaxis]
+    out = paint[:, :, :3] * (1.0 - blend) + alloy * blend
+    return np.ascontiguousarray(np.clip(out, 0, 1).astype(np.float32))
+
+
+_SPB_BRUSHED_MACHINED_FIELD_CACHE = {}
+_SPB_BRUSHED_MACHINED_FIELD_CACHE_ORDER = []
+_SPB_BRUSHED_MACHINED_FIELD_CACHE_LIMIT = 2
+
+
+def _spb_brushed_machined_field_cache_key(shape, seed):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    return (int(h), int(w), int(seed))
+
+
+def _spb_store_brushed_machined_field_cache(key, fields):
+    _SPB_BRUSHED_MACHINED_FIELD_CACHE[key] = fields
+    _SPB_BRUSHED_MACHINED_FIELD_CACHE_ORDER.append(key)
+    while len(_SPB_BRUSHED_MACHINED_FIELD_CACHE_ORDER) > _SPB_BRUSHED_MACHINED_FIELD_CACHE_LIMIT:
+        old = _SPB_BRUSHED_MACHINED_FIELD_CACHE_ORDER.pop(0)
+        _SPB_BRUSHED_MACHINED_FIELD_CACHE.pop(old, None)
+
+
+_spb_spec_brushed_metal_fine._spb_brushed_machined_source_owned = True
+_spb_paint_brushed_metal_fine._spb_brushed_machined_source_owned = True
+
+
 def _spb_pattern_detail_value(pattern_id, texture_fn, shape, mask, seed, sm):
-    tex = texture_fn(shape, mask, seed, sm)
+    cache_key = _spb_pattern_detail_cache_key(pattern_id, texture_fn, shape, seed, sm)
+    cached = _SPB_PATTERN_DETAIL_CACHE.get(cache_key)
+    if cached is not None:
+        detail, tex = cached
+        return detail, dict(tex)
+    base_texture_fn = _spb_texture_detail_base(texture_fn)
+    h, w = shape[:2] if len(shape) > 2 else shape
+    if pattern_id in _ORNAMENTAL_PAINT_STYLES and max(h, w) > 1024:
+        work_shape = (max(512, h // 2), max(512, w // 2))
+        work_mask = np.ones(work_shape, dtype=np.float32)
+        tex = base_texture_fn(work_shape, work_mask, seed, sm)
+        if isinstance(tex, dict) and "pattern_val" in tex:
+            pv_small = _spb_normalize01(tex["pattern_val"])
+            y_rep = int(np.ceil(h / work_shape[0]))
+            x_rep = int(np.ceil(w / work_shape[1]))
+            tex = dict(tex)
+            tex["pattern_val"] = np.repeat(np.repeat(pv_small, y_rep, axis=0), x_rep, axis=1)[:h, :w].astype(np.float32)
+    else:
+        tex = base_texture_fn(shape, mask, seed, sm)
     if not isinstance(tex, dict) or "pattern_val" not in tex:
         return None, tex
     pv = _spb_normalize01(tex["pattern_val"])
@@ -10108,10 +13721,13 @@ def _spb_pattern_detail_value(pattern_id, texture_fn, shape, mask, seed, sm):
     ).astype(np.float32)
     tex = dict(tex)
     tex["pattern_val"] = detail
+    tex["_spb_fine"] = fine
+    tex["_spb_sparkle"] = sparkle
     if "M_range" in tex:
         tex["M_range"] = float(tex.get("M_range") or 0.0) * 1.08
     if "R_range" in tex:
         tex["R_range"] = float(tex.get("R_range") or 0.0) * 1.08
+    _spb_store_pattern_detail_cache(cache_key, detail, tex)
     return detail, tex
 
 
@@ -10133,6 +13749,8 @@ def _spb_wrap_pattern_registry_detail():
                     return tex_fn(shape, mask, seed, sm)
                 return tex
             _wrapped._spb_detail_wrapped = True
+            _wrapped._spb_detail_base_fn = tex_fn
+            _wrapped._spb_detail_pattern_id = pid
             return _wrapped
 
         _entry = dict(_entry)
@@ -10141,22 +13759,11 @@ def _spb_wrap_pattern_registry_detail():
 
 
 _SPB_PATTERN_QUALITY_FLOOR_IDS = {
-    "decade_50s_jukebox_arc",
-    "decade_50s_atomic_reactor",
-    "decade_50s_diner_chrome",
-    "decade_60s_peace_sign",
-    "decade_60s_lava_lamp_blob",
-    "decade_60s_caged_square",
-    "decade_60s_peter_max_gradient",
-    "decade_60s_peter_max_alt",
-    "decade_80s_breakdance_spin",
-    "decade_80s_laser_tag",
-    "decade_90s_grunge_splatter",
-    "decade_90s_tamagotchi_egg",
-    "decade_90s_fresh_prince",
-    "decade_90s_sbtb_wall",
-    "fractal_fern",
-    "wave_ripple_2d",
+    "aurora_bands", "barrel_distort", "birch_bark", "carbon_clearcoat_lock", "chainlink", "chainmail", "checker_warp", "chrome_delete_edge", "crocodile",
+    "decade_50s_atomic_reactor", "decade_50s_boomerang_formica", "decade_50s_diner_checkerboard", "decade_50s_diner_chrome", "decade_50s_jukebox_arc", "decade_50s_sputnik_orbit",
+    "decade_50s_crt_phosphor", "decade_50s_drivein_marquee", "decade_50s_fallout_shelter", "decade_60s_caged_square", "decade_60s_gogo_check", "decade_60s_lava_lamp_blob", "decade_60s_opart_illusion", "decade_60s_peace_sign", "decade_60s_peter_max_alt", "decade_60s_peter_max_gradient", "decade_60s_tie_dye_spiral", "decade_70s_studio54_glitter",
+    "decade_80s_boombox_speaker", "decade_80s_breakdance_spin", "decade_80s_laser_tag", "decade_80s_nintendo_dpad", "decade_80s_pacman_maze", "decade_80s_rubiks_cube", "decade_80s_rubiks_cube_3", "decade_90s_beanie_tag", "decade_90s_chrome_bubble", "decade_90s_cross_colors", "decade_90s_dot_matrix", "decade_90s_floppy_disk", "decade_90s_fresh_prince", "decade_90s_geo_minimal", "decade_90s_grunge_splatter", "decade_90s_nirvana_smiley", "decade_90s_rollerblade_streak", "decade_90s_rugrats_squiggle", "decade_90s_sbtb_wall", "decade_90s_sega_blast", "decade_90s_tamagotchi_egg", "decade_90s_tribal_tattoo", "decade_90s_windows95",
+    "celtic_knot", "concentric_op", "dazzle", "dendrite_web", "diamond_plate", "diffraction_grating", "dimensional", "dragon_curve", "dragonfly_wing_pattern", "expanded_metal", "feather", "five_point_star", "fractal_3", "fractal_fern", "fresnel_ghost", "frost_crystal", "geo_weave", "giraffe", "gothic_arch", "gothic_scroll", "graphene_hex", "hailstorm", "hammered", "hex_circuit", "hex_mesh", "hex_op", "hilbert_curve", "impossible_grid", "interference", "iron_emblem", "julia_boundary", "kevlar_weave", "leopard", "lightning", "lorenz_slice", "multicam", "nanoweave", "nature_water_ripple_pat", "neural", "optical_illusion", "p_tessellation", "p_topographic", "pearlescent_flip", "peacock_eye", "perlin_terrain", "phyllotaxis", "pine_cone_scale", "pinwheel_tiling", "plaid", "plasma", "ripple", "satin_wax", "shimmer_chrome_flux", "shimmer_neon_weft", "shimmer_prism_frost", "shimmer_spectral_mesh", "shimmer_void_dust", "shokk_bitrot", "shokk_signal_noise", "shokk_zero_day", "skull", "skull_wings", "snake_skin_2", "sound_wave", "soundwave", "spiderweb", "stardust_2", "step_fret", "tornado", "tribal_celtic_spiral", "triple_knot", "vinyl_record", "voronoi_relaxed", "wave", "wave_ripple_2d", "wave_standing", "zebra",
 }
 
 
@@ -10170,25 +13777,34 @@ def _spb_wrap_texture_quality_floor(pattern_id, texture_fn):
             return tex
         h, w = shape[:2] if len(shape) > 2 else shape
         pv = _spb_normalize01(np.asarray(tex["pattern_val"], dtype=np.float32))
-        yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+        # SPB perf 2026-06-13: build xx/yy as broadcast row/column vectors instead
+        # of a full np.mgrid (which allocated two int64 (h,w) grids + an astype copy,
+        # ~315ms at 2048). Every use below combines xx and yy *before* the transcend
+        # (sin/mod), so the (1,w)+(h,1) broadcast yields bit-identical (h,w) results
+        # while the cheap per-axis multiplies run on row/col vectors, not the canvas.
+        xx = np.arange(w, dtype=np.float32)[np.newaxis, :]
+        yy = np.arange(h, dtype=np.float32)[:, np.newaxis]
         family = _spb_hash_seed(pattern_id) ^ (int(seed) * 2654435761)
         phase = (family % 360) * np.pi / 180.0
+        # SPB-105 tick 2026-05-23T07:48Z: fine-detail doctrine; weak floor 85.28-86.82 -> 86.60-95.24.
         print_dot = (
             np.sin(xx * (1.11 + (family % 5) * 0.029) + yy * 0.19 + phase)
             * np.sin(yy * (1.23 + (family % 7) * 0.025) - xx * 0.15 - phase)
         ) * 0.5 + 0.5
         screen = (
-            (np.mod(xx + yy * 0.41 + (family % 31), 7.0) < 1.05)
-            | (np.mod(xx - yy * 0.33 + (family % 37), 11.0) < 0.90)
+            (_spb_fast_mod_pos(xx + yy * 0.41 + (family % 31), 7.0) < 1.05)
+            | (_spb_fast_mod_pos(xx - yy * 0.33 + (family % 37), 11.0) < 0.90)
         ).astype(np.float32)
         stamp = _spb_normalize01(np.sin((xx + yy * 0.21) * 0.47 + phase) + np.sin((yy - xx * 0.17) * 0.59 - phase))
         carrier = np.clip(print_dot * 0.46 + screen * 0.34 + stamp * 0.20, 0, 1)
         if pattern_id.startswith("decade_90s_"):
-            weight = 0.34
+            weight = 0.52 if pattern_id == "decade_90s_sbtb_wall" else 0.44 if pattern_id in {"decade_90s_sega_blast", "decade_90s_rollerblade_streak"} else 0.40 if pattern_id in {"decade_90s_dot_matrix", "decade_90s_geo_minimal", "decade_90s_windows95"} else 0.34
         elif pattern_id.startswith("decade_"):
-            weight = 0.26
+            # SPB-105 tick 2026-05-23T10:50Z: opart 87.24, drivein 88.68, diner 87.55 plus prior pacman/rubiks/peace; fine 8-32px detail.
+            weight = 0.54 if pattern_id == "decade_60s_peace_sign" else 0.50 if pattern_id == "decade_80s_rubiks_cube" else 0.42 if pattern_id in {"decade_60s_opart_illusion", "decade_50s_drivein_marquee", "decade_50s_diner_checkerboard"} else 0.40 if pattern_id == "decade_80s_breakdance_spin" else 0.36 if pattern_id in {"decade_50s_boomerang_formica", "decade_80s_pacman_maze"} else 0.34 if pattern_id == "decade_50s_sputnik_orbit" else 0.26
         else:
-            weight = 0.22
+            # SPB-105 tick 2026-05-23T10:50Z: targeted weak floor 86.76-89.45; preserve prior julia/expanded wins.
+            weight = 0.50 if pattern_id == "shokk_bitrot" else 0.38 if pattern_id == "expanded_metal" else 0.42 if pattern_id in {"shokk_zero_day", "julia_boundary", "tornado", "nanoweave"} else 0.34 if pattern_id in {"gothic_arch", "wave_ripple_2d", "carbon_clearcoat_lock", "celtic_knot", "dimensional", "gothic_scroll"} else 0.30 if pattern_id in {"hailstorm", "stardust_2"} else 0.22
         detail = _spb_normalize01(np.clip(pv * (1.0 - weight) + carrier * weight, 0, 1)).astype(np.float32)
         out = dict(tex)
         out["pattern_val"] = detail
@@ -10222,12 +13838,17 @@ def _spb_apply_pattern_quality_floor():
 _spb_wrap_pattern_registry_detail()
 _spb_apply_regular_pattern_rebuilds()
 _spb_apply_pattern_quality_floor()
+for _pid, _path in _SPB_REGULAR_IMAGE_OVERRIDES.items():
+    if "generated_pattern_overrides/regular_floor" in str(_path).replace("\\", "/"):
+        continue  # [SPB Alpha 2026-06-02] skip opaque full-bleed floor tiles; keep procedural alpha-stamp renderer (matches biomechanical).
+    if _pid in PATTERN_REGISTRY: PATTERN_REGISTRY[_pid] = dict(PATTERN_REGISTRY[_pid], image_path=_path, texture_fn=None, _spb_asset_variant="tracked regular pattern tile")
 
 
 # ================================================================
-# CATCH-ALL: Wire unregistered UI monolithics to family-based fallbacks
-# These are catalog entries that were added for UI but never got specific engine functions.
-# Rather than silently rendering nothing, map them to the closest generic behavior.
+# CATALOG DIAGNOSTICS: record unregistered UI monolithics without wiring them
+# to family-based fallbacks. These catalog entries were added for UI/legacy
+# metadata but never got specific engine functions. They must now fail through
+# explicit unknown-renderer validation instead of rendering unrelated output.
 # ================================================================
 try:
     import json as _json_reg
@@ -10257,248 +13878,63 @@ try:
             ]
             _missing_monos = [m for m in _ui_mono_ids if m not in MONOLITHIC_REGISTRY]
 
-            # Diverse fallback pools — each family resolves to a SET of registered
-            # functions, and we pick deterministically via hash so that the 8
-            # Ornamental finishes (for example) look DIFFERENT from each other
-            # instead of all collapsing to sparkle_diamond_dust. The per-family
-            # pool is curated so visually appropriate functions are chosen
-            # (weave-like for carbon, damask-like for ornamental, etc.).
-            def _filter_pool(pool):
-                return [p for p in pool if p in MONOLITHIC_REGISTRY]
-
-            _EFFECTS_POOL = _filter_pool([
-                'thermochromic', 'wormhole', 'void', 'static', 'scorched',
-                'radioactive', 'aurora', 'galaxy', 'spectral_prismatic_flip',
-                'spectral_neon_reactive', 'spectral_rainbow_metal',
-                'reactive_plasma', 'reactive_pulse_metal', 'reactive_ghost_metal',
-                'sparkle_galaxy', 'sparkle_constellation', 'sparkle_meteor',
-                'sparkle_starfield', 'sparkle_firefly', 'sparkle_lightning_bug',
-                'wave_candy_flow', 'wave_chrome_tide', 'wave_turbulent_flow',
-                'trizone_frozen_ember_chrome', 'trizone_vanta_chrome_pearl',
-                'weather_volcanic_ash', 'weather_acid_rain', 'thermal_titanium',
-            ])
-            _CARBON_POOL = _filter_pool([
-                'weathered_metal', 'thin_film', 'wave_moire_metal',
-                'spectral_mono_chrome', 'trizone_pearl_carbon_gold',
-                'trizone_titanium_copper_chrome', 'velvet', 'worn_chrome',
-            ])
-            _ORNAMENTAL_POOL = _filter_pool([
-                'quilt_pearl_patchwork', 'quilt_random_chaos',
-                'spectral_earth_sky', 'spectral_complementary',
-                'trizone_chrome_candy_matte', 'trizone_glass_metal_matte',
-                'trizone_mercury_obsidian_candy', 'trizone_anodized_candy_silk',
-                'wave_pearl_current', 'wave_standing_chrome',
-            ])
-            _FUSION_POOL = _filter_pool([
-                'spectral_prismatic_flip', 'spectral_rainbow_metal',
-                'spectral_warm_cool', 'spectral_dark_light',
-                'trizone_ceramic_flake_satin', 'trizone_stealth_spectra_frozen',
-                'wave_dual_frequency', 'wave_metallic_pulse',
-                'wave_circular_radar', 'wave_diagonal_sweep',
-                'reactive_warm_cold', 'reactive_chrome_fade',
-                'reactive_dual_tone', 'reactive_mirror_shadow',
-                'sparkle_galaxy', 'sparkle_confetti', 'sparkle_starfield',
-                'aurora', 'galaxy', 'wormhole',
-            ])
-            _SPARKLE_POOL = _filter_pool([
-                'sparkle_diamond_dust', 'sparkle_champagne', 'sparkle_confetti',
-                'sparkle_constellation', 'sparkle_firefly', 'sparkle_galaxy',
-                'sparkle_lightning_bug', 'sparkle_meteor', 'sparkle_snowfall',
-                'sparkle_starfield',
-            ])
-            _WAVE_POOL = _filter_pool([
-                'wave_candy_flow', 'wave_chrome_tide', 'wave_circular_radar',
-                'wave_diagonal_sweep', 'wave_dual_frequency',
-                'wave_metallic_pulse', 'wave_moire_metal', 'wave_pearl_current',
-                'wave_standing_chrome', 'wave_turbulent_flow',
-            ])
-            _WEATHER_POOL = _filter_pool([
-                'weather_acid_rain', 'weather_barn_dust', 'weather_desert_blast',
-                'weather_hood_bake', 'weather_ice_storm', 'weather_ocean_mist',
-                'weather_road_spray', 'weather_salt_spray', 'weather_sun_fade',
-                'weather_volcanic_ash', 'weathered_metal', 'weathered_paint',
-            ])
-
-            def _pick_from_pool(pool, key):
-                if not pool:
-                    return None
-                # Deterministic pick by FNV-ish hash of the id so repeated loads
-                # produce the same assignment
-                h = 2166136261
-                for ch in key:
-                    h ^= ord(ch)
-                    h = (h * 16777619) & 0xFFFFFFFF
-                return pool[h % len(pool)]
-
-            # Map of family prefixes -> pool name; used to route unknown IDs.
-            # Order matters: first match wins, so list specific prefixes first.
-            _PREFIX_ROUTES = [
-                ('carbon_',     _CARBON_POOL),
-                ('weave_',      _CARBON_POOL),
-                ('cf_',         _FUSION_POOL),
-                ('fusion_',     _FUSION_POOL),
-                ('atelier_',    _ORNAMENTAL_POOL),
-                ('ornate_',     _ORNAMENTAL_POOL),
-                ('damask_',     _ORNAMENTAL_POOL),
-                ('filigree_',   _ORNAMENTAL_POOL),
-                ('cc_',         _EFFECTS_POOL),
-                ('prizm_',      _EFFECTS_POOL),
-                ('chameleon_',  _EFFECTS_POOL),
-                ('guilloche_',  _ORNAMENTAL_POOL),
-                ('cs_',         _EFFECTS_POOL),
-                ('neon_',       _EFFECTS_POOL),
-                ('depth_',      _FUSION_POOL),
-                ('fractal_',    _EFFECTS_POOL),
-                ('wave_',       _WAVE_POOL),
-                ('heat_',       _WEATHER_POOL),
-                ('crystal_',    _EFFECTS_POOL),
-                ('dark_',       _EFFECTS_POOL),
-                ('acid_',       _WEATHER_POOL),
-                ('laser_',      _EFFECTS_POOL),
-                ('meteor_',     _EFFECTS_POOL),
-                ('plasma_',     _EFFECTS_POOL),
-                ('volcanic_',   _WEATHER_POOL),
-                ('electric_',   _EFFECTS_POOL),
-                ('diamond_',    _SPARKLE_POOL),
-                ('patina_',     _WEATHER_POOL),
-                ('micro_',      _SPARKLE_POOL),
-                ('sparkle_',    _SPARKLE_POOL),
-                ('reactive_',   _FUSION_POOL),
-                ('spectral_',   _FUSION_POOL),
-                ('trizone_',    _FUSION_POOL),
-                ('aurora_',     _EFFECTS_POOL),
-                ('brushed_',    _CARBON_POOL),
-                ('black_',      _EFFECTS_POOL),
-            ]
-
-            # Explicit one-to-one mapping for a handful of high-profile
-            # Effects & Vision IDs so the picker shows a visually-distinct
-            # representative for each name (no more "everything is aurora").
-            _EV_EXPLICIT = {
-                'acid_trip':           'wormhole',
-                'antimatter':          'void',
-                'astral':              'galaxy',
-                'banshee':             'static',
-                'black_diamond':       'sparkle_diamond_dust',
-                'blood_oath':          'weather_acid_rain',
-                'bone':                'weathered_paint',
-                'catacombs':           'void',
-                'cel_shade':           'trizone_glass_metal_matte',
-                'chromatic_aberration':'spectral_prismatic_flip',
-                'crt_scanline':        'static',
-                'crystal_cave':        'sparkle_constellation',
-                'cursed':              'weather_salt_spray',
-                'daguerreotype':       'weathered_metal',
-                'dark_fairy':          'sparkle_firefly',
-                'dark_ritual':         'void',
-                'datamosh':            'static',
-                'death_metal':         'worn_chrome',
-                'demon_forge':         'weather_volcanic_ash',
-                'double_exposure':     'spectral_complementary',
-                'dragon_breath':       'weather_volcanic_ash',
-                'dreamscape':          'aurora',
-                'eclipse':             'void',
-                'embossed':            'quilt_random_chaos',
-                'enchanted':           'sparkle_firefly',
-                'ethereal':            'aurora',
-                'film_burn':           'weather_hood_bake',
-                'fish_eye':            'wave_circular_radar',
-                'fourth_dimension':    'wormhole',
-                'galaxy':              'galaxy',
-                'gargoyle':            'weathered_metal',
-                'glitch':              'static',
-                'glitch_reality':      'spectral_prismatic_flip',
-                'graveyard':           'weather_barn_dust',
-                'grid_walk':           'wave_diagonal_sweep',
-                'halftone':            'trizone_chrome_candy_matte',
-                'hallucination':       'aurora',
-                'haunted':             'sparkle_lightning_bug',
-                'heat_haze':           'weather_hood_bake',
-                'hellhound':           'weather_volcanic_ash',
-                'holographic_wrap':    'spectral_rainbow_metal',
-                'infrared':            'thermal_titanium',
-                'iron_maiden':         'worn_chrome',
-                'kaleidoscope':        'spectral_prismatic_flip',
-                'levitation':          'aurora',
-                'lich_king':           'weather_ice_storm',
-                'long_exposure':       'sparkle_starfield',
-                'mirage':              'wave_standing_chrome',
-                'multiverse':          'spectral_rainbow_metal',
-                'nebula_core':         'galaxy',
-                'necrotic':            'weather_salt_spray',
-                'negative':            'spectral_inverse_logic' if 'spectral_inverse_logic' in MONOLITHIC_REGISTRY else 'spectral_complementary',
-                'nightmare':           'void',
-                'parallax':            'wave_diagonal_sweep',
-                'phantom':             'sparkle_firefly',
-                'phantom_zone':        'wormhole',
-                'polarized':           'spectral_prismatic_flip',
-                'portal':              'wormhole',
-                'possessed':           'static',
-                'psychedelic':         'wave_turbulent_flow',
-                'reaper':              'void',
-                'refraction':          'spectral_rainbow_metal',
-                'rust':                'weather_acid_rain',
-                'sepia':               'weather_sun_fade',
-                'shadow_realm':        'void',
-                'silk_road':           'weather_desert_blast',
-                'solarization':        'sparkle_starfield',
-                'spectral':            'spectral_prismatic_flip',
-                'tesseract':           'wormhole',
-                'thermochromic':       'thermochromic',
-                'tin_type':            'weathered_metal',
-                'uv_blacklight':       'sparkle_firefly',
-                'vinyl_record':        'wave_circular_radar',
-                'void_walker':         'void',
-                'voodoo':              'static',
-                'wraith':              'sparkle_firefly',
-                'x_ray':               'spectral_inverse_logic' if 'spectral_inverse_logic' in MONOLITHIC_REGISTRY else 'spectral_mono_chrome',
-            }
-
-            def _resolve_fallback(mid):
-                # 1. Explicit E&V mapping
-                if mid in _EV_EXPLICIT:
-                    t = _EV_EXPLICIT[mid]
-                    if t in MONOLITHIC_REGISTRY:
-                        return t
-                # 2. Prefix-routed pool (diverse pick via hash)
-                for prefix, pool in _PREFIX_ROUTES:
-                    if mid.startswith(prefix):
-                        picked = _pick_from_pool(pool, mid)
-                        if picked and picked in MONOLITHIC_REGISTRY:
-                            return picked
-                # 3. Last resort: round-robin across all known pools rather than
-                # always returning aurora
-                for pool in (_EFFECTS_POOL, _FUSION_POOL, _SPARKLE_POOL,
-                             _WAVE_POOL, _WEATHER_POOL, _ORNAMENTAL_POOL,
-                             _CARBON_POOL):
-                    picked = _pick_from_pool(pool, mid)
-                    if picked and picked in MONOLITHIC_REGISTRY:
-                        return picked
-                # 4. Hard fallback
-                for name in ('aurora', 'sparkle_diamond_dust'):
-                    if name in MONOLITHIC_REGISTRY:
-                        return name
-                return None
-
-            _fallback_wired = 0
-            _fallback_diversity = set()
-            CATALOG_FALLBACK_WIRED_IDS = globals().setdefault("CATALOG_FALLBACK_WIRED_IDS", set())
-            CATALOG_FALLBACK_WIRED_TO = globals().setdefault("CATALOG_FALLBACK_WIRED_TO", {})
+            _fallback_candidates = 0
+            CATALOG_FALLBACK_CANDIDATES_TO = globals().setdefault("CATALOG_FALLBACK_CANDIDATES_TO", {})
+            CATALOG_UNWIRED_MONOLITHIC_IDS = globals().setdefault("CATALOG_UNWIRED_MONOLITHIC_IDS", set())
             for _mid in _missing_monos:
-                _fallback_id = _resolve_fallback(_mid)
-                if _fallback_id and _fallback_id in MONOLITHIC_REGISTRY:
-                    MONOLITHIC_REGISTRY[_mid] = MONOLITHIC_REGISTRY[_fallback_id]
-                    CATALOG_FALLBACK_WIRED_IDS.add(_mid)
-                    CATALOG_FALLBACK_WIRED_TO[_mid] = _fallback_id
-                    _fallback_diversity.add(_fallback_id)
-                    _fallback_wired += 1
+                # Do not pre-resolve catalog-only IDs to substitute renderers.
+                # Unknown-renderer validation must fail these explicitly until
+                # each ID gets its own intentional implementation.
+                CATALOG_UNWIRED_MONOLITHIC_IDS.add(_mid)
+                CATALOG_FALLBACK_CANDIDATES_TO[_mid] = None
+                _fallback_candidates += 1
 
-            if _fallback_wired:
-                print(f"  [Catalog Fallback] Wired {_fallback_wired} unregistered monolithics to family fallbacks")
-                print(f"  [Catalog Fallback] Distinct fallback behaviors used: {len(_fallback_diversity)}")
-                print(f"  [Catalog Fallback] Total monolithics now: {len(MONOLITHIC_REGISTRY)}")
+            if _fallback_candidates:
+                print(f"  [Catalog Fallback] Identified {_fallback_candidates} unwired monolithic catalog ID(s)")
+                print(f"  [Catalog Fallback] Total monolithics unchanged: {len(MONOLITHIC_REGISTRY)}")
 except Exception as _fb_err:
     print(f"  [Catalog Fallback] Warning: {_fb_err}")
+
+
+def _spb_catalog_diagnostic_id_resolves(finish_id):
+    """Return True when a catalog-only diagnostic now has a real renderer."""
+    return (
+        finish_id in MONOLITHIC_REGISTRY
+        or finish_id in BASE_REGISTRY
+        or finish_id in FINISH_REGISTRY
+        or finish_id in PATTERN_REGISTRY
+    )
+
+
+def _spb_refresh_catalog_fallback_diagnostics(reason=""):
+    """Prune diagnostic-only fallback candidates after lazy registries load.
+
+    The initial catalog scan runs before lazy expansion packs are loaded. That
+    is useful for catching stale catalog IDs, but expansion packs can later add
+    real renderers for some of those IDs. Keep the diagnostic map limited to
+    IDs that still do not resolve, so the boot/audit signal stays accurate.
+    """
+    candidates = globals().get("CATALOG_FALLBACK_CANDIDATES_TO")
+    unwired = globals().get("CATALOG_UNWIRED_MONOLITHIC_IDS")
+    if not isinstance(candidates, dict):
+        return {"before": 0, "resolved": 0, "remaining": 0}
+    before = len(candidates)
+    resolved = [
+        finish_id
+        for finish_id in list(candidates)
+        if _spb_catalog_diagnostic_id_resolves(finish_id)
+    ]
+    for finish_id in resolved:
+        candidates.pop(finish_id, None)
+        if hasattr(unwired, "discard"):
+            unwired.discard(finish_id)
+    if resolved:
+        suffix = f" {reason}" if reason else ""
+        print(
+            f"  [Catalog Fallback] Pruned {len(resolved)} resolved diagnostic candidate(s){suffix}; "
+            f"{len(candidates)} remain"
+        )
+    return {"before": before, "resolved": len(resolved), "remaining": len(candidates)}
 
 
 def _spb_make_pattern_monolithic(pattern_id):
@@ -10524,22 +13960,28 @@ def _spb_make_pattern_monolithic(pattern_id):
         if detail is None:
             detail = np.zeros((h, w), dtype=np.float32)
         family = _spb_hash_seed(pattern_id)
-        fine, sparkle = _spb_micro_detail((h, w), seed + 4703, family)
+        fine = _tex.get("_spb_fine") if isinstance(_tex, dict) else None
+        sparkle = _tex.get("_spb_sparkle") if isinstance(_tex, dict) else None
+        if not isinstance(fine, np.ndarray) or fine.shape != (h, w) or not isinstance(sparkle, np.ndarray) or sparkle.shape != (h, w):
+            fine, sparkle = _spb_micro_detail((h, w), seed + 4703, family)
         profile = _spb_pattern_mono_profile(pattern_id)
         edge = np.clip(np.abs(detail - np.roll(detail, 1, axis=0)) + np.abs(detail - np.roll(detail, 1, axis=1)), 0, 1)
+        motif = _spb_ornamental_hidden_motif(pattern_id, (h, w), seed) if pattern_id in _ORNAMENTAL_PAINT_STYLES else 0.0
         M = float(base_m) + (
             profile["m_base"]
             + detail * profile["m_detail"]
             + edge * profile["m_edge"]
             + sparkle * 30.0
+            + motif * 42.0
         ) * sm
         R = float(base_r) + (
             profile["r_base"]
             + detail * profile["r_detail"]
             + edge * profile["r_edge"]
             - sparkle * 18.0
+            - motif * 24.0
         ) * sm
-        CC = profile["cc_base"] + detail * profile["cc_detail"] + fine * profile["cc_fine"] + sparkle * 24.0
+        CC = profile["cc_base"] + detail * profile["cc_detail"] + fine * profile["cc_fine"] + sparkle * 24.0 + motif * 36.0
         return (
             np.clip(M, 0, 255).astype(np.float32),
             np.clip(R, 15, 255).astype(np.float32),
@@ -10554,7 +13996,10 @@ def _spb_make_pattern_monolithic(pattern_id):
         if detail is None:
             return np.ascontiguousarray(paint[:, :, :3].astype(np.float32))
         family = _spb_hash_seed(pattern_id)
-        fine, sparkle = _spb_micro_detail((h, w), seed + 5903, family)
+        fine = _tex.get("_spb_fine") if isinstance(_tex, dict) else None
+        sparkle = _tex.get("_spb_sparkle") if isinstance(_tex, dict) else None
+        if not isinstance(fine, np.ndarray) or fine.shape != (h, w) or not isinstance(sparkle, np.ndarray) or sparkle.shape != (h, w):
+            fine, sparkle = _spb_micro_detail((h, w), seed + 5903, family)
         profile = _spb_pattern_mono_profile(pattern_id)
         phase = (family % 360) * np.pi / 180.0
         tint_a = np.asarray(profile["tint_a"], dtype=np.float32)
@@ -10601,15 +14046,13 @@ _ORNAMENTAL_SPECIAL_IDS = (
     "interference_rings",
 )
 _ornamental_specials_wired = 0
-for _orn_id in _ORNAMENTAL_SPECIAL_IDS + ("brushed_metal_fine",):
+for _orn_id in _ORNAMENTAL_SPECIAL_IDS:
     _mono = _spb_make_pattern_monolithic(_orn_id)
     if _mono:
         MONOLITHIC_REGISTRY[_orn_id] = _mono
-        if "CATALOG_FALLBACK_WIRED_IDS" in globals():
-            CATALOG_FALLBACK_WIRED_IDS.discard(_orn_id)
-        if "CATALOG_FALLBACK_WIRED_TO" in globals():
-            CATALOG_FALLBACK_WIRED_TO.pop(_orn_id, None)
         _ornamental_specials_wired += 1
+MONOLITHIC_REGISTRY["brushed_metal_fine"] = (_spb_spec_brushed_metal_fine, _spb_paint_brushed_metal_fine)
+_ornamental_specials_wired += 1
 if _ornamental_specials_wired:
     print(f"  [Ornamental Specials] Wired {_ornamental_specials_wired} pattern-driven monolithics")
 
@@ -10667,10 +14110,6 @@ def _paint_dark_sigil(paint, shape, mask, seed, pm, bb):
 
 
 MONOLITHIC_REGISTRY["dark_sigil"] = (_spec_dark_sigil, _paint_dark_sigil)
-if "CATALOG_FALLBACK_WIRED_IDS" in globals():
-    CATALOG_FALLBACK_WIRED_IDS.discard("dark_sigil")
-if "CATALOG_FALLBACK_WIRED_TO" in globals():
-    CATALOG_FALLBACK_WIRED_TO.pop("dark_sigil", None)
 
 _EXPLICIT_SPECIAL_MONO_ALIASES = {
     "crystal_lattice_mono": "crystal_lattice",
@@ -10678,10 +14117,598 @@ _EXPLICIT_SPECIAL_MONO_ALIASES = {
 for _alias_id, _target_id in _EXPLICIT_SPECIAL_MONO_ALIASES.items():
     if _target_id in MONOLITHIC_REGISTRY:
         MONOLITHIC_REGISTRY[_alias_id] = MONOLITHIC_REGISTRY[_target_id]
-        if "CATALOG_FALLBACK_WIRED_IDS" in globals():
-            CATALOG_FALLBACK_WIRED_IDS.discard(_alias_id)
-        if "CATALOG_FALLBACK_WIRED_TO" in globals():
-            CATALOG_FALLBACK_WIRED_TO.pop(_alias_id, None)
+
+def _spb_apply_owner_review_effects():
+    try:
+        from engine.expansions.owner_review_effects import OWNER_REVIEW_EFFECTS_MONOLITHICS
+        for _ore_id, _ore_entry in OWNER_REVIEW_EFFECTS_MONOLITHICS.items():
+            MONOLITHIC_REGISTRY[_ore_id] = _ore_entry
+        print(f"  [Owner Review] Rebuilt {len(OWNER_REVIEW_EFFECTS_MONOLITHICS)} Effects & Vision monolithics")
+    except Exception as _ore_err:
+        print(f"  [Owner Review] Effects & Vision warning: {_ore_err}")
+
+
+_spb_apply_owner_review_effects()
+
+
+def _spb_apply_owner_review_signal():
+    try:
+        from engine.expansions.owner_review_signal import OWNER_REVIEW_SIGNAL_MONOLITHICS
+        for _ors_id, _ors_entry in OWNER_REVIEW_SIGNAL_MONOLITHICS.items():
+            MONOLITHIC_REGISTRY[_ors_id] = _ors_entry
+        print(f"  [Owner Review] Rebuilt {len(OWNER_REVIEW_SIGNAL_MONOLITHICS)} Signal monolithics")
+    except Exception as _ors_err:
+        print(f"  [Owner Review] Signal warning: {_ors_err}")
+
+
+_spb_apply_owner_review_signal()
+
+
+def _spb_apply_owner_review_atmosphere():
+    try:
+        from engine.expansions.owner_review_atmosphere import OWNER_REVIEW_ATMOSPHERE_MONOLITHICS
+        for _ora_id, _ora_entry in OWNER_REVIEW_ATMOSPHERE_MONOLITHICS.items():
+            MONOLITHIC_REGISTRY[_ora_id] = _ora_entry
+        print(f"  [Owner Review] Rebuilt {len(OWNER_REVIEW_ATMOSPHERE_MONOLITHICS)} Atmosphere monolithics")
+    except Exception as _ora_err:
+        print(f"  [Owner Review] Atmosphere warning: {_ora_err}")
+
+
+_spb_apply_owner_review_atmosphere()
+
+
+def _spb_apply_owner_review_chameleon():
+    try:
+        from engine.expansions.owner_review_chameleon import OWNER_REVIEW_CHAMELEON_MONOLITHICS
+        for _orc_id, _orc_entry in OWNER_REVIEW_CHAMELEON_MONOLITHICS.items():
+            MONOLITHIC_REGISTRY[_orc_id] = _orc_entry
+        print(f"  [Owner Review] Rebuilt {len(OWNER_REVIEW_CHAMELEON_MONOLITHICS)} Chameleon monolithics")
+    except Exception as _orc_err:
+        print(f"  [Owner Review] Chameleon warning: {_orc_err}")
+
+
+_spb_apply_owner_review_chameleon()
+
+
+def _spb_apply_colorshift_rework_2026():
+    # Owner mandate 2026-06-09: TOTAL REWORK of Iridescent Insects / Anime /
+    # Neon Underground / Chameleon / Prizm with engine/color_science + the
+    # fineness doctrine. Applied after the owner_review overrides so the
+    # rework wins for these ids; contract guards wrap it later as usual.
+    import numpy as _crw_np
+
+    def _crw_base_spec_from_mono(_mono_spec):
+        # Adapt a monolithic spec_fn (shape, mask, seed, sm) -> HxWx4 packed to
+        # the BASE base_spec_fn contract (shape, seed, sm, base_m, base_r) -> (M,R,Cc).
+        def _bsf(shape, seed, sm, base_m=None, base_r=None, **_kw):
+            packed = _mono_spec(shape, _crw_np.ones(shape[:2], _crw_np.float32), seed, sm)
+            return packed[:, :, 0], packed[:, :, 1], packed[:, :, 2]
+        return _bsf
+
+    try:
+        from engine.expansions.colorshift_rework_2026 import REWORK_MONOLITHICS
+        try:
+            from engine.registry import BASE_REGISTRY as _crw_base_reg
+        except Exception:
+            _crw_base_reg = None
+        _crw_base_n = 0
+        for _crw_id, _crw_entry in REWORK_MONOLITHICS.items():
+            MONOLITHIC_REGISTRY[_crw_id] = _crw_entry
+            # [SPB rework-as-base fix 2026-06-10] These finishes ALSO live in
+            # BASE_REGISTRY (the picker offers them as bases). Assigned as a base,
+            # the engine takes the COMPOSITING path and used the STALE base
+            # base_spec_fn/paint_fn — so the booth rendered the OLD look while the
+            # monolithic audit swatch showed the NEW one (owner-reported on
+            # butterfly_monarch). Override the base entry too: paint_fn shares the
+            # (paint,shape,mask,seed,pm,bb) signature; spec adapts to the 3-tuple.
+            if _crw_base_reg is not None:
+                _be = _crw_base_reg.get(_crw_id)
+                if isinstance(_be, dict) and "base_spec_fn" in _be:
+                    _ms, _mp = _crw_entry
+                    _be["paint_fn"] = _mp
+                    _be["base_spec_fn"] = _crw_base_spec_from_mono(_ms)
+                    _crw_base_n += 1
+        print(f"  [Color-Shift Rework] Rebuilt {len(REWORK_MONOLITHICS)} monolithics + {_crw_base_n} base entries (insects/anime/neon/chameleon/prizm)")
+        # [SPB redesign-b10 2026-06-10 — owner: ALWAYS wire review designs onto the
+        # car + ALWAYS optimize render speed] Register the 10 fresh redesigns into
+        # the live registries (monolithic + base + LFR-pattern routes), rendered at
+        # a 1024 work grid for the <=2s target.
+        try:
+            from engine.expansions.redesign_b10_2026 import install_into_engine as _rb10_install
+            try:
+                from engine.registry import BASE_REGISTRY as _rb10_base
+            except Exception:
+                _rb10_base = None
+            print("  [Redesign-b10] " + _rb10_install(MONOLITHIC_REGISTRY, _rb10_base))
+        except Exception as _rb10_err:
+            print(f"  [Redesign-b10] warning: {_rb10_err}")
+        # [SPB redesign-wave2 2026-06-11 — full rollout after the b10 proof batch]
+        # 29 PRIZM + 2 LFR finishes (mono + base), 6 LFR pattern routes, 7 spec
+        # overlays rebuilt (incl. the 2 render-time hangs), 48 owner-rated overlay
+        # removals. New art primitives: attractors / reaction-diffusion / caustics /
+        # flowlines / harmonograph / anisotropic crystals / engrave / dendrites.
+        try:
+            from engine.expansions.redesign_wave2_2026 import install_into_engine as _rw2_install
+            try:
+                from engine.registry import BASE_REGISTRY as _rw2_base
+            except Exception:
+                _rw2_base = None
+            print("  [Redesign-wave2] " + _rw2_install(MONOLITHIC_REGISTRY, _rw2_base))
+        except Exception as _rw2_err:
+            print(f"  [Redesign-wave2] warning: {_rw2_err}")
+        # [SPB spectrum-shift 2026-06-11 — owner: "flip that category on its head"]
+        # 50 NEW bespoke finishes on the optical-physics arsenal (photoelasticity,
+        # scratch holography, diffraction gratings, cholesteric LC, opal fire,
+        # Newton rings, dispersed caustics, moire beats, hue advection, blackbody,
+        # chromatic split, Einstein lensing, bismuth hoppers...). Replaces the old
+        # 10-palettes x 5-variants clones in FUSION + MONOLITHIC registries; the
+        # picker group "Spectrum Shift" keys off the spectrum_ prefix dynamically.
+        try:
+            from engine.expansions.spectrum_shift_2026 import install_into_engine as _ss_install
+            print("  [Spectrum-Shift] " + _ss_install(MONOLITHIC_REGISTRY))
+        except Exception as _ss_err:
+            print(f"  [Spectrum-Shift] warning: {_ss_err}")
+        # [SPB image-forge 2026-06-11 — owner-art finishes] drop a square image
+        # into image_forge/ named <finish_id>.jpg and it BECOMES that finish:
+        # paint = the art verbatim (small optimized JPG), spec = derived from the
+        # image itself (stroke-flow anisotropy + hue-banded sequential ignition).
+        # Runs LAST so owner art always upgrades the procedural finish of the
+        # same id. New ids reach the picker via the registry sync automatically.
+        try:
+            from engine.expansions.image_forge_2026 import install_into_engine as _if_install
+            print("  [Image-Forge] " + _if_install(MONOLITHIC_REGISTRY))
+        except Exception as _if_err:
+            print(f"  [Image-Forge] warning: {_if_err}")
+        # [SPB sin-orchid 2026-06-11] procedural recreation-of-owner-reference
+        # test (noir ink orchid garden, sequential bloom-detonation spec).
+        try:
+            from engine.expansions.sin_orchid_2026 import install_into_engine as _so_install
+            print("  [Sin-Orchid] " + _so_install(MONOLITHIC_REGISTRY))
+        except Exception as _so_err:
+            print(f"  [Sin-Orchid] warning: {_so_err}")
+        # [SPB ghost-shift 2026-06-11] the owner-discovered color-shift recipe
+        # (ghost_fracture spec contract: high metal + pattern-carved clearcoat
+        # + crushed dark base) replicated across 6 new geometries.
+        try:
+            from engine.expansions.fractured_minds_2026 import install_into_engine as _fmind_install
+            print("  [Fractured-Minds] " + _fmind_install(MONOLITHIC_REGISTRY))
+        except Exception as _fmind_err:
+            print(f"  [Fractured-Minds] warning: {_fmind_err}")
+        # [FM v3 2026-06-12] round-3 rebuild: 12 replacements (exotic skins +
+        # beyond) + 10 note-driven rebuilds, each with its own generator AND
+        # spec recipe. Must install AFTER fractured_minds_2026 so the v3
+        # entries win and the retired ids drop from both registries.
+        try:
+            from engine.expansions.fractured_minds_v3 import install_into_engine as _fmv3_install
+            print("  [Fractured-Minds v3] " + _fmv3_install(MONOLITHIC_REGISTRY))
+        except Exception as _fmv3_err:
+            print(f"  [Fractured-Minds v3] warning: {_fmv3_err}")
+        # [GHOST LAB REMOVED 2026-06-15] owner: the 12 single-variable Ghost
+        # Fracture experiments (gl_*) were just a TEST — removed from the catalog
+        # AND the engine. ghost_lab_2026.py kept on disk but no longer installed.
+        # [FRACTURED SOULS 2026-06-12] the apex: drag-and-drop color-shift
+        # finishes built on the owner's PROVEN four-dial physics (clearcoat =
+        # power, roughness = aperture, metal = amplifier, pre-crushed paint).
+        try:
+            from engine.expansions.fractured_souls_2026 import install_into_engine as _fsoul_install
+            print("  [Fractured-Souls] " + _fsoul_install(MONOLITHIC_REGISTRY))
+        except Exception as _fsoul_err:
+            print(f"  [Fractured-Souls] warning: {_fsoul_err}")
+        # [FM SOUL RETUNE 2026-06-12] owner: rebuild FRACTURED MINDS with the
+        # winner physics (Blood Marble forensics: M252/B255/G-lanes) + colorful
+        # crush on the paint side. Designs untouched — registry-level re-dial.
+        # Must run AFTER fractured_minds_2026 + _v3 so it wraps the live set.
+        try:
+            from engine.expansions.fractured_minds_soul_2026 import install_into_engine as _fmsoul_install
+            print("  [FM-Soul-Retune] " + _fmsoul_install(MONOLITHIC_REGISTRY))
+        except Exception as _fmsoul_err:
+            print(f"  [FM-Soul-Retune] warning: {_fmsoul_err}")
+        # [FRACTURED FORGE 2026-06-16] the math-engine finishes: 33 standalone procedural
+        # FRACTURED looks (attractor webs, quasicrystals, gyroid, Lichtenberg, + the 5 invented
+        # engines) built on engine/paint_v2/fractured_math.py + the canonical fracture_spec
+        # ignition. Owner-approved batch 1 of the planned 100. Separate lane from MINDS/SOULS.
+        try:
+            from engine.expansions.fractured_forge_2026 import install_into_engine as _fforge_install
+            print("  [Fractured-Forge] " + _fforge_install(MONOLITHIC_REGISTRY))
+        except Exception as _fforge_err:
+            print(f"  [Fractured-Forge] warning: {_fforge_err}")
+        # FRACTURED themed categories (2026-06-17): 5 NEW themed groups x 20 — Deep / Cryptid / UFO /
+        # Rainbow / Occult. Same machine as FORGE; abstract spec-map art evoking each theme.
+        try:
+            from engine.expansions.fractured_themes_2026 import install_into_engine as _fthemes_install
+            print("  [Fractured-Themes] " + _fthemes_install(MONOLITHIC_REGISTRY))
+        except Exception as _fthemes_err:
+            print(f"  [Fractured-Themes] warning: {_fthemes_err}")
+        # Pre-ship FIX overrides (2026-06-17): owner-flagged finishes rebuilt (no voronoi/no tiling).
+        # Runs AFTER themes so it overrides the matching ids.
+        try:
+            from engine.expansions.fractured_themes_fix_2026 import install_into_engine as _fthfix_install
+            print("  [Fractured-Themes-Fix] " + _fthfix_install(MONOLITHIC_REGISTRY))
+        except Exception as _fthfix_err:
+            print(f"  [Fractured-Themes-Fix] warning: {_fthfix_err}")
+        # [FRACTURED MORPHO 2026-07-30] 50 structural-color finishes (thin-film
+        # interference: morpho wings, beetles, feathers, nacre, mineral flash) —
+        # engines + recipes in engine/expansions/fractured_morpho_2026.py; ghost-shift
+        # spec carve traced from the same cached art. Own lane; registers fmo_* ids.
+        try:
+            from engine.expansions.fractured_morpho_2026 import install_into_engine as _fmorpho_install
+            print("  [Fractured-Morpho] " + _fmorpho_install(MONOLITHIC_REGISTRY))
+        except Exception as _fmorpho_err:
+            print(f"  [Fractured-Morpho] warning: {_fmorpho_err}")
+        # [FRACTURED MOLTEN 2026-07-30] category 1/10 of the FRACTURED expansion
+        # (owner brief: color diversity mandate). 20 lava finishes (crust rafts,
+        # magma rivers, pillow mounds, side-view basalt colonnade, obsidian
+        # flows, crack webs) built on engine/expansions/fractured_catlib_2026.py
+        # (generalized MORPHO machinery); module fractured_molten_2026.py. Own
+        # lane; registers fml_* ids.
+        try:
+            from engine.expansions.fractured_molten_2026 import install_into_engine as _fmolten_install
+            print("  [Fractured-Molten] " + _fmolten_install(MONOLITHIC_REGISTRY))
+        except Exception as _fmolten_err:
+            print(f"  [Fractured-Molten] warning: {_fmolten_err}")
+        # [FRACTURED EXPANSION x9 2026-08-01] central integration of the 9 wave
+        # categories (owner brief 2026-07-30: 10-category expansion). All thin
+        # modules on engine/expansions/fractured_catlib_2026.py; ids + recipes
+        # verified by wave agents (_fracx_work/report_<name>.md). Spec order:
+        # frost, bloom, clockwork, nebula, tempest, cathedral, relic, kintsugi, petri.
+        try:
+            from engine.expansions.fractured_frost_2026 import install_into_engine as _ffrost_install
+            print("  [Fractured-Frost] " + _ffrost_install(MONOLITHIC_REGISTRY))
+        except Exception as _ffrost_err:
+            print(f"  [Fractured-Frost] warning: {_ffrost_err}")
+        try:
+            from engine.expansions.fractured_bloom_2026 import install_into_engine as _fbloom_install
+            print("  [Fractured-Bloom] " + _fbloom_install(MONOLITHIC_REGISTRY))
+        except Exception as _fbloom_err:
+            print(f"  [Fractured-Bloom] warning: {_fbloom_err}")
+        try:
+            from engine.expansions.fractured_clockwork_2026 import install_into_engine as _fclock_install
+            print("  [Fractured-Clockwork] " + _fclock_install(MONOLITHIC_REGISTRY))
+        except Exception as _fclock_err:
+            print(f"  [Fractured-Clockwork] warning: {_fclock_err}")
+        try:
+            from engine.expansions.fractured_nebula_2026 import install_into_engine as _fnebula_install
+            print("  [Fractured-Nebula] " + _fnebula_install(MONOLITHIC_REGISTRY))
+        except Exception as _fnebula_err:
+            print(f"  [Fractured-Nebula] warning: {_fnebula_err}")
+        try:
+            from engine.expansions.fractured_tempest_2026 import install_into_engine as _ftempest_install
+            print("  [Fractured-Tempest] " + _ftempest_install(MONOLITHIC_REGISTRY))
+        except Exception as _ftempest_err:
+            print(f"  [Fractured-Tempest] warning: {_ftempest_err}")
+        try:
+            from engine.expansions.fractured_cathedral_2026 import install_into_engine as _fcath_install
+            print("  [Fractured-Cathedral] " + _fcath_install(MONOLITHIC_REGISTRY))
+        except Exception as _fcath_err:
+            print(f"  [Fractured-Cathedral] warning: {_fcath_err}")
+        # [FRACTURED RELICS 2026-08-30] owner mandate: the five old RELICS grid
+        # shelves (6 materials x 4 archetypes, 6 glass colours x 6 window types,
+        # ...) are replaced by ONE 50-finish occult/cryptozoology category, "the
+        # cabinet of cursed things". Installed AFTER the legacy relic module so
+        # the new ids win; the legacy ids stay registered so saved projects that
+        # reference them still render (they are only retired from the picker).
+        try:
+            from engine.expansions.fractured_foundry_2026 import install_into_engine as _ffdy_install
+            print("  [Fractured-Foundry] " + _ffdy_install(MONOLITHIC_REGISTRY))
+        except Exception as _ffdy_err:
+            print(f"  [Fractured-Foundry] warning: {_ffdy_err}")
+        try:
+            from engine.expansions.fractured_tessera_2026 import install_into_engine as _ftess_install
+            print("  [Fractured-Tessera] " + _ftess_install(MONOLITHIC_REGISTRY))
+        except Exception as _ftess_err:
+            print(f"  [Fractured-Tessera] warning: {_ftess_err}")
+        try:
+            from engine.expansions.fractured_elements_2026 import install_into_engine as _felm_install
+            print("  [Fractured-Elements] " + _felm_install(MONOLITHIC_REGISTRY))
+        except Exception as _felm_err:
+            print(f"  [Fractured-Elements] warning: {_felm_err}")
+        try:
+            from engine.expansions.fractured_cosmos_2026 import install_into_engine as _fcos_install
+            print("  [Fractured-Cosmos] " + _fcos_install(MONOLITHIC_REGISTRY))
+        except Exception as _fcos_err:
+            print(f"  [Fractured-Cosmos] warning: {_fcos_err}")
+        try:
+            from engine.expansions.world_of_color_2026 import install_into_engine as _woc_install
+            print("  [World-Of-Color] " + _woc_install(MONOLITHIC_REGISTRY))
+        except Exception as _woc_err:
+            print(f"  [World-Of-Color] warning: {_woc_err}")
+        try:
+            from engine.expansions.money_shokk_2026 import install_into_engine as _msk_install
+            print("  [Money-Shokk] " + _msk_install(MONOLITHIC_REGISTRY))
+        except Exception as _msk_err:
+            print(f"  [Money-Shokk] warning: {_msk_err}")
+        try:
+            from engine.expansions.paradigm_2026 import install_into_engine as _pdg_install
+            print("  [Paradigm] " + _pdg_install(MONOLITHIC_REGISTRY))
+        except Exception as _pdg_err:
+            print(f"  [Paradigm] warning: {_pdg_err}")
+        # 🌃 DARK CITY 2026-09-01 — owner: rename EXTREME & EXPERIMENTAL and take
+        # it to 50. Dark grounds with streaks of bright coming through, and specs
+        # that trace the hot edges so they explode against the dark.
+        # ✨ FABLE 2026-09-01 — owner: the twenty said STORYBOOK MATERIAL and
+        # were Ember Glass / Glacier Core / Prism Veil. Replaced with 50 things
+        # actually out of stories, each made of what that thing is made of.
+        try:
+            from engine.expansions.fable_2026 import install_into_engine as _fab_install
+            print("  [Fable] " + _fab_install(MONOLITHIC_REGISTRY))
+        except Exception as _fab_err:
+            print(f"  [Fable] warning: {_fab_err}")
+        try:
+            from engine.expansions.dark_city_2026 import install_into_engine as _dkc_install
+            print("  [Dark-City] " + _dkc_install(MONOLITHIC_REGISTRY))
+        except Exception as _dkc_err:
+            print(f"  [Dark-City] warning: {_dkc_err}")
+        try:
+            from engine.expansions.fractured_nightshift_2026 import install_into_engine as _fnsx_install
+            print("  [Fractured-Nightshift] " + _fnsx_install(MONOLITHIC_REGISTRY))
+        except Exception as _fnsx_err:
+            print(f"  [Fractured-Nightshift] warning: {_fnsx_err}")
+        try:
+            from engine.expansions.fractured_flames_2026 import install_into_engine as _fflm_install
+            print("  [Fractured-Flames] " + _fflm_install(MONOLITHIC_REGISTRY))
+        except Exception as _fflm_err:
+            print(f"  [Fractured-Flames] warning: {_fflm_err}")
+        try:
+            from engine.expansions.fractured_relics_2026 import install_into_engine as _frelics_install
+            print("  [Fractured-Relics] " + _frelics_install(MONOLITHIC_REGISTRY))
+        except Exception as _frelics_err:
+            print(f"  [Fractured-Relics] warning: {_frelics_err}")
+        try:
+            from engine.expansions.fractured_relic_2026 import install_into_engine as _frelic_install
+            print("  [Fractured-Relic] " + _frelic_install(MONOLITHIC_REGISTRY))
+        except Exception as _frelic_err:
+            print(f"  [Fractured-Relic] warning: {_frelic_err}")
+        try:
+            from engine.expansions.fractured_kintsugi_2026 import install_into_engine as _fkints_install
+            print("  [Fractured-Kintsugi] " + _fkints_install(MONOLITHIC_REGISTRY))
+        except Exception as _fkints_err:
+            print(f"  [Fractured-Kintsugi] warning: {_fkints_err}")
+        try:
+            from engine.expansions.fractured_petri_2026 import install_into_engine as _fpetri_install
+            print("  [Fractured-Petri] " + _fpetri_install(MONOLITHIC_REGISTRY))
+        except Exception as _fpetri_err:
+            print(f"  [Fractured-Petri] warning: {_fpetri_err}")
+        # [FRACTURED OPALFIRE 2026-08-03] owner's crush-law discovery: quantized dark shade
+        # ladders under a near-uniform Soul-Core-class night-carrier spec = angle-cascading
+        # multi-color flip on track (see SPB_WIKI "THE CRUSH LAW"). Replaces FRACTURED MOLTEN.
+        try:
+            from engine.expansions.fractured_opalfire_2026 import install_into_engine as _fopal_install
+            print("  [Fractured-Opalfire] " + _fopal_install(MONOLITHIC_REGISTRY))
+        except Exception as _fopal_err:
+            print(f"  [Fractured-Opalfire] warning: {_fopal_err}")
+        try:
+            from engine.expansions.fractured_opalskin_2026 import install_into_engine as _fskin_install
+            print("  [Fractured-Opalskin] " + _fskin_install(MONOLITHIC_REGISTRY))
+        except Exception as _fskin_err:
+            print(f"  [Fractured-Opalskin] warning: {_fskin_err}")
+        # [FRACTURED REBUILD 2026-06-17] owner audit: most MINDS/SOULS patterns were absent/weak/
+        # duplicate. This OVERRIDES those fm_/fs_ entries with bespoke per-name generators (real
+        # pattern + standout palette + Wovenlight spec). Must run LAST so the rebuilds win.
+        try:
+            from engine.expansions.fractured_rebuild_2026 import install_into_engine as _frb_install
+            print("  [Fractured-Rebuild] " + _frb_install(MONOLITHIC_REGISTRY))
+        except Exception as _frb_err:
+            print(f"  [Fractured-Rebuild] warning: {_frb_err}")
+        # [FRACTURED FLAMES 2026-06-18] 135 validated flame finishes (51 flames x ignite/topo/dance)
+        # from engine/paint_v2/flame_spec_recipes.RECIPES — paint via flame_math, spec via flame_spec.
+        try:
+            from engine.expansions.flames_catalog_2026 import install_into_engine as _flm_install
+            print("  [Fractured-Flames] " + _flm_install(MONOLITHIC_REGISTRY))
+        except Exception as _flm_err:
+            print(f"  [Fractured-Flames] warning: {_flm_err}")
+        # [GRADIENTS 2026-06-18] 11 distinctive gradient finishes from gradient_math.GRADIENT_STRUCTURES
+        # (one curated palette each), glossy default spec via fracture_spec.
+        try:
+            from engine.expansions.gradients_catalog_2026 import install_into_engine as _grd_install
+            print("  [Gradients] " + _grd_install(MONOLITHIC_REGISTRY))
+        except Exception as _grd_err:
+            print(f"  [Gradients] warning: {_grd_err}")
+        # [NEON UNDERGROUND v3 2026-08-27] Oil-Slick-derived causal material
+        # slate: 10 compatibility bases + 15 monolithics, all 25 mono-routable.
+        try:
+            from engine.expansions.neon_catalog_2026 import install_into_engine as _neon_install
+            print("  [Neon-Underground] " + _neon_install(
+                MONOLITHIC_REGISTRY,
+                base_reg=BASE_REGISTRY,
+                fusion_reg=globals().get("FUSION_REGISTRY"),
+            ))
+        except Exception as _neon_err:
+            print(f"  [Neon-Underground] warning: {_neon_err}")
+
+        # [ANIME INSPIRED rework 2026-06-19] 8 distinct generative anime structures (anime_math) +
+        # diverse flame_spec specs — total rework of the old colour-swap anime finishes.
+        try:
+            from engine.expansions.anime_catalog_2026 import install_into_engine as _anime_install
+            print("  [Anime-Inspired] " + _anime_install(MONOLITHIC_REGISTRY))
+        except Exception as _anime_err:
+            print(f"  [Anime-Inspired] warning: {_anime_err}")
+
+        # [LIGHT & OPTICS rework 2026-06-19] 8 physically-grounded optical phenomena (optics_math) +
+        # diverse flame_spec specs — total rework of the old Light Waves + Spectral Reactive swaps.
+        try:
+            from engine.expansions.optics_catalog_2026 import install_into_engine as _optics_install
+            print("  [Light-Optics] " + _optics_install(MONOLITHIC_REGISTRY))
+        except Exception as _optics_err:
+            print(f"  [Light-Optics] warning: {_optics_err}")
+
+        # [MATERIALS & PHYSICS rework 2026-06-19] 8 real fabricated material surfaces (materials_math) +
+        # the dedicated physically-metallic material_spec — total rework of the old Material Gradients
+        # + Exotic Physics colour swaps.
+        try:
+            from engine.expansions.materials_catalog_2026 import install_into_engine as _materials_install
+            print("  [Materials-Physics] " + _materials_install(MONOLITHIC_REGISTRY))
+        except Exception as _materials_err:
+            print(f"  [Materials-Physics] warning: {_materials_err}")
+        # [NIGHTSHIFT LAB 2026-08-01] owner mission: TRUE color-flip experiments.
+        # Two interleaved pixel populations — matte dielectric day-hue carrier +
+        # M~252/Cc-dull metal NIGHT-hue carrier (tinted specular fires its own
+        # hue under lights). Track-test fleet; theory: docs/NIGHTSHIFT_LAB_THEORY.md
+        try:
+            from engine.expansions.nightshift_lab_2026 import install_into_engine as _ns_install
+            print("  [Nightshift-Lab] " + _ns_install(MONOLITHIC_REGISTRY))
+        except Exception as _ns_err:
+            print(f"  [Nightshift-Lab] warning: {_ns_err}")
+        # [NIGHTSHIFT WAVE 2 2026-08-01] owner on wave 1: "a hit. Expand to 100…
+        # go CRAZY… nature, grunge, racing — cover the spectrum." 90 more
+        # geometries on the same two-population flip physics.
+        try:
+            from engine.expansions.nightshift_lab_wave2_2026 import install_into_engine as _ns2_install
+            print("  [Nightshift-W2] " + _ns2_install(MONOLITHIC_REGISTRY))
+        except Exception as _ns2_err:
+            print(f"  [Nightshift-W2] warning: {_ns2_err}")
+        # [MOTION LAB 2026-08-10] owner mission: finishes that look like the paint
+        # is IN MOTION under a changing light angle ("dance/move/shift within the
+        # light" — running water, bullet travel, lightning). NIGHTSHIFT exploits a
+        # change of lighting CONDITION; this exploits a change of ANGLE. The car's
+        # curvature already sequences the highlight sweep; these finishes make that
+        # sequence legible via quantized aperture bands + offset dual lobes.
+        # Theory + the 7 mechanisms: docs/MOTION_LAB_THEORY.md
+        try:
+            from engine.expansions.motion_lab_2026 import install_into_engine as _mo_install
+            print("  [Motion-Lab] " + _mo_install(MONOLITHIC_REGISTRY))
+        except Exception as _mo_err:
+            print(f"  [Motion-Lab] warning: {_mo_err}")
+    except Exception as _crw_err:
+        print(f"  [Color-Shift Rework] warning: {_crw_err}")
+
+
+_spb_apply_colorshift_rework_2026()
+
+
+def _spb_apply_owner_review_gradients():
+    try:
+        from engine.expansions.owner_review_gradients import OWNER_REVIEW_GRADIENT_MONOLITHICS
+        for _org_id, _org_entry in OWNER_REVIEW_GRADIENT_MONOLITHICS.items():
+            MONOLITHIC_REGISTRY[_org_id] = _org_entry
+        print(f"  [Owner Review] Rebuilt {len(OWNER_REVIEW_GRADIENT_MONOLITHICS)} Gradient monolithics")
+    except Exception as _org_err:
+        print(f"  [Owner Review] Gradient warning: {_org_err}")
+
+
+_spb_apply_owner_review_gradients()
+
+
+def _spb_apply_color_science_rebuild_2026():
+    # Owner mandate 2026-06-21 (post-freeze): TOTAL rebuild of the COLOR SCIENCE
+    # groups (paint must match name, every spec unique + traces the paint).
+    # Installed DEAD-LAST so these ids win over colorshift_rework_2026 AND
+    # owner_review_gradients. Overrides MONOLITHIC + BASE registries.
+    import numpy as _csr_np
+
+    def _csr_base_spec(_mono_spec):
+        def _bsf(shape, seed, sm, base_m=None, base_r=None, **_kw):
+            packed = _mono_spec(shape, _csr_np.ones(shape[:2], _csr_np.float32), seed, sm)
+            return packed[:, :, 0], packed[:, :, 1], packed[:, :, 2]
+        return _bsf
+
+    try:
+        from engine.expansions.color_science_rebuild_2026 import REBUILD_MONOLITHICS
+        # CRITICAL (2026-06-21): use THIS module's own BASE_REGISTRY — the object
+        # render + wild_spec_lab use. engine.registry.BASE_REGISTRY is a DIFFERENT
+        # object (verified: 695 vs 682 entries); writing there silently misses ids
+        # that only live in this module's registry (several SHOKK bases reverted).
+        _csr_base_reg = BASE_REGISTRY
+        _csr_base_n = 0
+        for _csr_id, _csr_entry in REBUILD_MONOLITHICS.items():
+            MONOLITHIC_REGISTRY[_csr_id] = _csr_entry
+            if _csr_base_reg is not None:
+                _be = _csr_base_reg.get(_csr_id)
+                if isinstance(_be, dict) and "base_spec_fn" in _be:
+                    _ms, _mp = _csr_entry
+                    _be["paint_fn"] = _mp
+                    _be["base_spec_fn"] = _csr_base_spec(_ms)
+                    _csr_base_n += 1
+        print(f"  [Color Science Rebuild] Rebuilt {len(REBUILD_MONOLITHICS)} monolithics + {_csr_base_n} base entries (chameleon+)")
+        try:
+            from engine.expansions.color_science_rebuild_2026 import (
+                install_prizm_spec_traces, install_colorclash_spec_traces)
+            _csr_pz = install_prizm_spec_traces(MONOLITHIC_REGISTRY)
+            _csr_cc = install_colorclash_spec_traces(MONOLITHIC_REGISTRY)
+            print(f"  [Color Science Rebuild] +{_csr_pz} PRIZM + {_csr_cc} COLOR CLASH keeper specs traced from their own paint")
+        except Exception as _csr_pz_err:
+            print(f"  [Color Science Rebuild] keeper-trace warning: {_csr_pz_err}")
+        try:
+            from engine.expansions.gradients_rebuild_2026 import install_gradients_v2
+            _csr_gr = install_gradients_v2(MONOLITHIC_REGISTRY, _csr_base_reg)
+            print(f"  [Color Science Rebuild] +{_csr_gr} GRADIENTS rebuilt (v2: structure x color-richness x overlay, gestalt-gated unique, 2026-06-22)")
+        except Exception as _csr_gr_err:
+            import traceback as _tb_gr
+            print(f"  [Color Science Rebuild] gradients warning: {_csr_gr_err}\n{_tb_gr.format_exc()}")
+        try:
+            from engine.expansions.prism_forge_rebuild_2026 import install_prism_forge
+            _csr_pf = install_prism_forge(MONOLITHIC_REGISTRY, _csr_base_reg)
+            print(f"  [Color Science Rebuild] +{_csr_pf} PRISM FORGE rebuilt (exotic-engine, owner-approved 2026-06-21)")
+        except Exception as _csr_pf_err:
+            print(f"  [Color Science Rebuild] prismforge warning: {_csr_pf_err}")
+        try:
+            from engine.expansions.money_shokk_rebuild_2026 import install_money_shokk
+            _csr_msh = install_money_shokk(MONOLITHIC_REGISTRY, _csr_base_reg)
+            print(f"  [Color Science Rebuild] +{_csr_msh} MONEY SHOKK rebuilt (themed exotic engines, 2026-06-22)")
+        except Exception as _csr_msh_err:
+            import traceback as _tb_msh
+            print(f"  [Color Science Rebuild] moneyshokk warning: {_csr_msh_err}\n{_tb_msh.format_exc()}")
+        try:
+            from engine.expansions.cs_shift_rebuild_2026 import install_csshift_v2
+            _csr_cs = install_csshift_v2(MONOLITHIC_REGISTRY, _csr_base_reg)
+            print(f"  [Color Science Rebuild] +{_csr_cs} COLOR SCIENCE cs_ shift rebuilt (optical-flow exotic engines + shift physics, 2026-06-22)")
+        except Exception as _csr_cs_err:
+            import traceback as _tb_cs
+            print(f"  [Color Science Rebuild] csshift warning: {_csr_cs_err}\n{_tb_cs.format_exc()}")
+        try:
+            from engine.expansions.shokk_series_rebuild_2026 import install_shokk_series
+            _csr_sk = install_shokk_series(MONOLITHIC_REGISTRY, _csr_base_reg)
+            print(f"  [Color Science Rebuild] +{_csr_sk} SHOKK SERIES rebuilt (exotic-engine, owner-approved 2026-06-21)")
+        except Exception as _csr_sk_err:
+            print(f"  [Color Science Rebuild] shokkseries warning: {_csr_sk_err}")
+        # [SPB-GRADIENT-OVERHAUL-2026-08-23, tick G-1]
+        # Owner: "the gradients are severely lacking across the board" and wants
+        # "insane gradients ... with like 10 to 15 colors."  This MUST remain
+        # inside the repeatedly invoked final-authority pass: lazy expansion load
+        # re-runs this function, so a one-time hook below it would silently revert
+        # the new recipes to the 2-5-stop v2 renderer.  Baseline M7 was 22.2 min /
+        # 56.44 mean with 112/125 below 85; final movement is audited in the module.
+        try:
+            from engine.expansions.gradient_overhaul_2026 import install_gradient_overhaul
+            _csr_g3 = install_gradient_overhaul(
+                MONOLITHIC_REGISTRY,
+                _csr_base_reg,
+                globals().get("FUSION_REGISTRY"),
+            )
+            # The production builder and thumbnail baker intentionally dispatch
+            # through engine.registry, a separate object from this legacy module
+            # registry.  The split previously made all 11 grd_* picker cards
+            # fail as "Unknown finish".  Keep both authorities exact.
+            _csr_g3_package = "deferred-via-registry-copy"
+            try:
+                import engine.registry as _csr_g3_registry
+                # During engine.registry's first import this legacy module is
+                # intentionally loaded before the package registry objects are
+                # assigned.  Its subsequent dict copy already includes v3, so
+                # treat that state as deferred rather than emitting a false
+                # circular-import warning on every production worker startup.
+                if (
+                    hasattr(_csr_g3_registry, "MONOLITHIC_REGISTRY")
+                    and hasattr(_csr_g3_registry, "BASE_REGISTRY")
+                    and hasattr(_csr_g3_registry, "FUSION_REGISTRY")
+                    and _csr_g3_registry.MONOLITHIC_REGISTRY is not MONOLITHIC_REGISTRY
+                ):
+                    _csr_g3_package = install_gradient_overhaul(
+                        _csr_g3_registry.MONOLITHIC_REGISTRY,
+                        _csr_g3_registry.BASE_REGISTRY,
+                        _csr_g3_registry.FUSION_REGISTRY,
+                    )
+            except Exception as _csr_g3_pkg_err:
+                print(f"  [Gradient Overhaul] package-registry warning: {_csr_g3_pkg_err}")
+            print(f"  [Gradient Overhaul] final authority: legacy={_csr_g3}, package={_csr_g3_package}")
+        except Exception as _csr_g3_err:
+            import traceback as _tb_g3
+            print(f"  [Gradient Overhaul] warning: {_csr_g3_err}\n{_tb_g3.format_exc()}")
+    except Exception as _csr_err:
+        print(f"  [Color Science Rebuild] warning: {_csr_err}")
+
+
+_spb_apply_color_science_rebuild_2026()
+
 
 # ================================================================
 # Standalone Effect monolithics are older direct renderers. Give the shipped
@@ -10751,13 +14778,22 @@ def _spb_apply_standalone_monolithic_detail_profiles():
             MONOLITHIC_REGISTRY[_mono_id] = _spb_wrap_standalone_monolithic_detail(
                 _mono_id, _spec_fn, _paint_fn, _gain
             )
-            if "CATALOG_FALLBACK_WIRED_IDS" in globals():
-                CATALOG_FALLBACK_WIRED_IDS.discard(_mono_id)
-            if "CATALOG_FALLBACK_WIRED_TO" in globals():
-                CATALOG_FALLBACK_WIRED_TO.pop(_mono_id, None)
 
 
 _spb_apply_standalone_monolithic_detail_profiles()
+
+
+def _spb_apply_owner_review_standalone():
+    try:
+        from engine.expansions.owner_review_standalone import OWNER_REVIEW_STANDALONE_MONOLITHICS
+        for _ors_id, _ors_entry in OWNER_REVIEW_STANDALONE_MONOLITHICS.items():
+            MONOLITHIC_REGISTRY[_ors_id] = _ors_entry
+        print(f"  [Owner Review] Rebuilt {len(OWNER_REVIEW_STANDALONE_MONOLITHICS)} Standalone Effects monolithics")
+    except Exception as _ors_err:
+        print(f"  [Owner Review] Standalone Effects warning: {_ors_err}")
+
+
+_spb_apply_owner_review_standalone()
 
 # BATCH base_spec_fn ASSIGNMENT — wire factory spec functions to bases
 # that currently lack a dedicated base_spec_fn.
@@ -10824,6 +14860,8 @@ _SPEC_FN_FOUNDATION_FLAT = {
     "f_soft_matte", "f_clear_satin", "f_warm_white", "f_satin_chrome",
     "f_frozen", "f_vinyl_wrap",
     "f_gel_coat", "f_baked_enamel",
+    # FOUNDATION ONE 2026-09-03: new flat BASES cells (spec values only, no texture)
+    "f_satin_pearl", "f_matte_metallic", "f_dark_chrome",
 }
 
 # All bases NOT in the above sets AND not already having base_spec_fn
@@ -10935,6 +14973,8 @@ def _spb_adapt_base_paint_bb(fn):
 
 def _spb_wire_regular_base_v2_overrides():
     """Run after generic registry merges so rebuilt bases are what actually ship."""
+    import importlib
+
     overrides = {}
     try:
         from engine.paint_v2.brushed_directional import (
@@ -10950,27 +14990,65 @@ def _spb_wire_regular_base_v2_overrides():
             paint_chromaflair_v2, spec_chromaflair,
             paint_xirallic_v2, spec_xirallic,
             paint_liquid_titanium_v2, spec_liquid_titanium,
+            paint_candy_cobalt_v2, spec_candy_cobalt,
         )
         overrides.update({
             "titanium_raw": (paint_titanium_raw_v2, spec_titanium_raw),
             "chromaflair": (paint_chromaflair_v2, spec_chromaflair),
             "xirallic": (paint_xirallic_v2, spec_xirallic),
             "liquid_titanium": (paint_liquid_titanium_v2, spec_liquid_titanium),
+            "candy_cobalt": (paint_candy_cobalt_v2, spec_candy_cobalt),
         })
     except Exception as exc:
         print(f"  [Regular Base V2] exotic_metal imports skipped: {exc}")
 
     try:
         from engine.paint_v2.candy_special import (
+            paint_candy_burgundy_v2, spec_candy_burgundy,
+            paint_candy_emerald_v2, spec_candy_emerald,
+            paint_chameleon_dual_shift_v2, spec_chameleon_dual_shift,
+            paint_bifrost_iridescent_v2, spec_bifrost_iridescent,
+            paint_moonstone_v2, spec_moonstone,
+            paint_opal_v2, spec_opal,
+            paint_smoked_v2, spec_smoked,
+            paint_spectraflame_v2, spec_spectraflame,
+            paint_tinted_clear_v2, spec_tinted_clear,
+            paint_tri_coat_pearl_v2, spec_tri_coat_pearl,
             paint_jelly_pearl_v2, spec_jelly_pearl,
+            paint_deep_pearl_white_v2, spec_deep_pearl_white,
             paint_hypershift_spectral_v2, spec_hypershift_spectral,
         )
         overrides.update({
+            "candy_burgundy": (paint_candy_burgundy_v2, spec_candy_burgundy),
+            "candy_emerald": (paint_candy_emerald_v2, spec_candy_emerald),
+            "chameleon": (paint_chameleon_dual_shift_v2, spec_chameleon_dual_shift),
+            "iridescent": (paint_bifrost_iridescent_v2, spec_bifrost_iridescent),
+            "moonstone": (paint_moonstone_v2, spec_moonstone),
+            "opal": (paint_opal_v2, spec_opal),
+            "smoked": (paint_smoked_v2, spec_smoked),
+            "spectraflame": (paint_spectraflame_v2, spec_spectraflame),
+            "tinted_clear": (paint_tinted_clear_v2, spec_tinted_clear),
+            "tri_coat_pearl": (paint_tri_coat_pearl_v2, spec_tri_coat_pearl),
             "jelly_pearl": (paint_jelly_pearl_v2, spec_jelly_pearl),
+            "deep_pearl": (paint_deep_pearl_white_v2, spec_deep_pearl_white),
             "hypershift_spectral": (paint_hypershift_spectral_v2, spec_hypershift_spectral),
         })
     except Exception as exc:
         print(f"  [Regular Base V2] candy_special imports skipped: {exc}")
+
+    # ── CANDY & PEARL 2026 rebuild (owner mandate 2026-06-14) — supersedes the
+    #    candy_special _v2 overrides above with married fine-detail paint+spec for
+    #    all 20 Candy & Pearl bases (no baked-in sheen; angle response in the spec).
+    try:
+        import engine.paint_v2.candy_pearl_2026 as _cp26
+        for _cid in ("candy_burgundy", "satin_candy", "orange_peel_gloss", "candy_gold",
+                     "candy_lime", "candy_emerald", "candy_aqua", "candy_cobalt",
+                     "jelly_pearl", "spectraflame", "tinted_clear", "hypershift_spectral",
+                     "tri_coat_pearl", "deep_pearl", "copper_pearl", "coral_pearl",
+                     "moonstone", "opal", "chameleon", "iridescent"):
+            overrides[_cid] = (getattr(_cp26, "paint_" + _cid), getattr(_cp26, "spec_" + _cid))
+    except Exception as exc:
+        print(f"  [Regular Base V2] candy_pearl_2026 overrides skipped: {exc}")
 
     try:
         from engine.paint_v2.metallic_flake import (
@@ -11052,10 +15130,12 @@ def _spb_wire_regular_base_v2_overrides():
 
     try:
         from engine.paint_v2.finish_basic import (
+            paint_frozen_matte_v2, spec_frozen_matte,
             paint_vantablack_v2, spec_vantablack,
             paint_volcanic_v2, spec_volcanic,
         )
         overrides.update({
+            "frozen_matte": (paint_frozen_matte_v2, spec_frozen_matte),
             "vantablack": (paint_vantablack_v2, spec_vantablack),
             "volcanic": (paint_volcanic_v2, spec_volcanic),
         })
@@ -11067,6 +15147,233 @@ def _spb_wire_regular_base_v2_overrides():
         overrides["burnt_headers"] = (paint_burnt_headers_v2, spec_burnt_headers)
     except Exception as exc:
         print(f"  [Regular Base V2] raw_weathered imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.oem_automotive import (
+            paint_ambulance_white_v2, spec_ambulance_white,
+            paint_dealer_pearl_v2, spec_dealer_pearl,
+            paint_factory_basecoat_v2, spec_factory_basecoat,
+            paint_fire_engine_v2, spec_fire_engine,
+            paint_fleet_white_v2, spec_fleet_white,
+            paint_police_black_v2, spec_police_black,
+            paint_school_bus_v2, spec_school_bus,
+            paint_showroom_clear_v2, spec_showroom_clear,
+            paint_taxi_yellow_v2, spec_taxi_yellow,
+        )
+        overrides.update({
+            "ambulance_white": (paint_ambulance_white_v2, spec_ambulance_white),
+            "dealer_pearl": (paint_dealer_pearl_v2, spec_dealer_pearl),
+            "factory_basecoat": (paint_factory_basecoat_v2, spec_factory_basecoat),
+            "fire_engine": (paint_fire_engine_v2, spec_fire_engine),
+            "fleet_white": (paint_fleet_white_v2, spec_fleet_white),
+            "police_black": (paint_police_black_v2, spec_police_black),
+            "school_bus": (paint_school_bus_v2, spec_school_bus),
+            "showroom_clear": (paint_showroom_clear_v2, spec_showroom_clear),
+            "taxi_yellow": (paint_taxi_yellow_v2, spec_taxi_yellow),
+        })
+    except Exception as exc:
+        print(f"  [Regular Base V2] oem_automotive imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.racing_heritage import (
+            paint_asphalt_grind_v2, spec_asphalt_grind,
+            paint_bullseye_chrome_rh, spec_bullseye_chrome_rh,
+            paint_checkered_chrome_rh, spec_checkered_chrome_rh,
+            paint_drag_strip_gloss_v2, spec_drag_strip_gloss,
+            paint_endurance_ceramic_v2, spec_endurance_ceramic,
+            paint_pace_car_pearl_v2, spec_pace_car_pearl,
+            paint_race_day_gloss_v2, spec_race_day_gloss,
+            paint_rally_mud_v2, spec_rally_mud,
+            paint_stock_car_enamel_v2, spec_stock_car_enamel,
+            paint_victory_lane_v2, spec_victory_lane,
+        )
+        from engine.paint_v2.weathered_worn import paint_barn_find_v2, spec_barn_find
+        overrides.update({
+            "asphalt_grind": (paint_asphalt_grind_v2, spec_asphalt_grind),
+            "barn_find": (paint_barn_find_v2, spec_barn_find),
+            "bullseye_chrome": (paint_bullseye_chrome_rh, spec_bullseye_chrome_rh),
+            "checkered_chrome": (paint_checkered_chrome_rh, spec_checkered_chrome_rh),
+            "drag_strip_gloss": (paint_drag_strip_gloss_v2, spec_drag_strip_gloss),
+            "endurance_ceramic": (paint_endurance_ceramic_v2, spec_endurance_ceramic),
+            "pace_car_pearl": (paint_pace_car_pearl_v2, spec_pace_car_pearl),
+            "race_day_gloss": (paint_race_day_gloss_v2, spec_race_day_gloss),
+            "rally_mud": (paint_rally_mud_v2, spec_rally_mud),
+            "stock_car_enamel": (paint_stock_car_enamel_v2, spec_stock_car_enamel),
+            "victory_lane": (paint_victory_lane_v2, spec_victory_lane),
+        })
+    except Exception as exc:
+        print(f"  [Regular Base V2] racing_heritage imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.wrap_vinyl import (
+            paint_brushed_wrap_v2, spec_brushed_wrap,
+            paint_chrome_wrap_v2, spec_chrome_wrap,
+            paint_color_flip_v2, spec_color_flip,
+            paint_gloss_wrap_v2, spec_gloss_wrap,
+            paint_liquid_wrap_v2, spec_liquid_wrap,
+            paint_matte_wrap_v2, spec_matte_wrap,
+            paint_satin_wrap_v2, spec_satin_wrap,
+            paint_stealth_wrap_v2, spec_stealth_wrap,
+            paint_textured_wrap_v2, spec_textured_wrap,
+        )
+        overrides.update({
+            "brushed_wrap": (paint_brushed_wrap_v2, spec_brushed_wrap),
+            "chrome_wrap": (paint_chrome_wrap_v2, spec_chrome_wrap),
+            "color_flip_wrap": (paint_color_flip_v2, spec_color_flip),
+            "gloss_wrap": (paint_gloss_wrap_v2, spec_gloss_wrap),
+            "liquid_wrap": (paint_liquid_wrap_v2, spec_liquid_wrap),
+            "matte_wrap": (paint_matte_wrap_v2, spec_matte_wrap),
+            "satin_wrap": (paint_satin_wrap_v2, spec_satin_wrap),
+            "stealth_wrap": (paint_stealth_wrap_v2, spec_stealth_wrap),
+            "textured_wrap": (paint_textured_wrap_v2, spec_textured_wrap),
+        })
+    except Exception as exc:
+        print(f"  [Regular Base V2] wrap_vinyl imports skipped: {exc}")
+
+    try:
+        # SPB-87: this import runs before the missing-base fill-in registers
+        # the 12 stone/textile IDs, so the overrides collected here get reported
+        # as "Missing ids skipped" and the placeholder shims win. See ticket
+        # for two valid fixes (reorder vs. retire). Module docstring on
+        # engine/paint_v2/stone_textile.py carries the full deprecation banner.
+        from engine.paint_v2.stone_textile import TEXTILE_STONE_OVERRIDES
+        overrides.update(TEXTILE_STONE_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] stone_textile imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_shokk_series import OWNER_REVIEW_SHOKK_OVERRIDES
+        overrides.update(OWNER_REVIEW_SHOKK_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_shokk_series imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_satin_wrap import OWNER_REVIEW_SATIN_WRAP_OVERRIDES
+        overrides.update(OWNER_REVIEW_SATIN_WRAP_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_satin_wrap imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_weathered_aged import OWNER_REVIEW_WEATHERED_AGED_OVERRIDES
+        overrides.update(OWNER_REVIEW_WEATHERED_AGED_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_weathered_aged imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_anime import OWNER_REVIEW_ANIME_OVERRIDES
+        overrides.update(OWNER_REVIEW_ANIME_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_anime imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_carbon_composite import OWNER_REVIEW_CARBON_COMPOSITE_OVERRIDES
+        overrides.update(OWNER_REVIEW_CARBON_COMPOSITE_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_carbon_composite imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_oem_automotive import OWNER_REVIEW_OEM_AUTOMOTIVE_OVERRIDES
+        overrides.update(OWNER_REVIEW_OEM_AUTOMOTIVE_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_oem_automotive imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_exotic_metal import OWNER_REVIEW_EXOTIC_METAL_OVERRIDES
+        overrides.update(OWNER_REVIEW_EXOTIC_METAL_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_exotic_metal imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_premium_luxury import OWNER_REVIEW_PREMIUM_LUXURY_OVERRIDES
+        overrides.update(OWNER_REVIEW_PREMIUM_LUXURY_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_premium_luxury imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_racing_heritage import OWNER_REVIEW_RACING_HERITAGE_OVERRIDES
+        overrides.update(OWNER_REVIEW_RACING_HERITAGE_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_racing_heritage imports skipped: {exc}")
+
+    for patch_module_name, paint_module_name in (
+        ("candy_special_reg", "candy_special"),
+        ("carbon_composite_reg", "carbon_composite"),
+        ("exotic_metal_reg", "exotic_metal"),
+        ("finish_basic_reg", "finish_basic"),
+        ("oem_automotive_reg", "oem_automotive"),
+        ("premium_luxury_reg", "premium_luxury"),
+        ("racing_heritage_reg", "racing_heritage"),
+        ("raw_weathered_reg", "raw_weathered"),
+        ("shokk_series_reg", "shokk_series"),
+        ("weathered_worn_reg", "weathered_worn"),
+        ("wrap_vinyl_reg", "wrap_vinyl"),
+    ):
+        try:
+            patch_module = importlib.import_module(f"engine.registry_patches.{patch_module_name}")
+            paint_module = importlib.import_module(f"engine.paint_v2.{paint_module_name}")
+            paint_patch = getattr(patch_module, "REGISTRY_PATCH", {})
+            spec_patch = getattr(patch_module, "SPEC_PATCH", {})
+            for base_id, paint_name in paint_patch.items():
+                spec_name = spec_patch.get(base_id)
+                if not spec_name:
+                    continue
+                overrides[base_id] = (getattr(paint_module, paint_name), getattr(paint_module, spec_name))
+        except Exception as exc:
+            print(f"  [Regular Base V2] {patch_module_name} replay skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_shokk_series import OWNER_REVIEW_SHOKK_OVERRIDES
+        overrides.update(OWNER_REVIEW_SHOKK_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_shokk_series final imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_satin_wrap import OWNER_REVIEW_SATIN_WRAP_OVERRIDES
+        overrides.update(OWNER_REVIEW_SATIN_WRAP_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_satin_wrap final imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_weathered_aged import OWNER_REVIEW_WEATHERED_AGED_OVERRIDES
+        overrides.update(OWNER_REVIEW_WEATHERED_AGED_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_weathered_aged final imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_anime import OWNER_REVIEW_ANIME_OVERRIDES
+        overrides.update(OWNER_REVIEW_ANIME_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_anime final imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_carbon_composite import OWNER_REVIEW_CARBON_COMPOSITE_OVERRIDES
+        overrides.update(OWNER_REVIEW_CARBON_COMPOSITE_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_carbon_composite final imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_oem_automotive import OWNER_REVIEW_OEM_AUTOMOTIVE_OVERRIDES
+        overrides.update(OWNER_REVIEW_OEM_AUTOMOTIVE_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_oem_automotive final imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_exotic_metal import OWNER_REVIEW_EXOTIC_METAL_OVERRIDES
+        overrides.update(OWNER_REVIEW_EXOTIC_METAL_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_exotic_metal final imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_premium_luxury import OWNER_REVIEW_PREMIUM_LUXURY_OVERRIDES
+        overrides.update(OWNER_REVIEW_PREMIUM_LUXURY_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_premium_luxury final imports skipped: {exc}")
+
+    try:
+        from engine.paint_v2.owner_review_racing_heritage import OWNER_REVIEW_RACING_HERITAGE_OVERRIDES
+        overrides.update(OWNER_REVIEW_RACING_HERITAGE_OVERRIDES)
+    except Exception as exc:
+        print(f"  [Regular Base V2] owner_review_racing_heritage final imports skipped: {exc}")
 
     try:
         from engine.paint_v2.paint_technique import (
@@ -11088,6 +15395,40 @@ def _spb_wire_regular_base_v2_overrides():
     except Exception as exc:
         print(f"  [Regular Base V2] paint_technique imports skipped: {exc}")
 
+    # ── CANDY & PEARL + CARBON & COMPOSITE 2026 rebuilds (owner mandate 2026-06-14):
+    #    FINAL word — placed after ALL owner_review/*_reg replays above so the new
+    #    married fine-detail modules win at render (the replays would otherwise clobber).
+    try:
+        import engine.paint_v2.candy_pearl_2026 as _cp26
+        for _cid in ("candy_burgundy", "satin_candy", "orange_peel_gloss", "candy_gold",
+                     "candy_lime", "candy_emerald", "candy_aqua", "candy_cobalt",
+                     "jelly_pearl", "spectraflame", "tinted_clear", "hypershift_spectral",
+                     "tri_coat_pearl", "deep_pearl", "copper_pearl", "coral_pearl",
+                     "moonstone", "opal", "chameleon", "iridescent"):
+            overrides[_cid] = (getattr(_cp26, "paint_" + _cid), getattr(_cp26, "spec_" + _cid))
+    except Exception as exc:
+        print(f"  [Regular Base V2] candy_pearl_2026 final overrides skipped: {exc}")
+    try:
+        import engine.paint_v2.carbon_composite_2026 as _cc26
+        for _cid in ("carbon_base", "carbon_weave", "carbon_3k_fine", "carbon_satin",
+                     "carbon_red", "carbon_blue", "spread_tow", "carbon_ceramic",
+                     "forged_carbon_vis", "forged_composite", "forged_blue", "graphene",
+                     "nomex_honeycomb", "aramid", "kevlar_base", "kevlar_red",
+                     "hybrid_weave", "basalt_weave", "dyneema_white", "fiberglass"):
+            overrides[_cid] = (getattr(_cc26, "paint_" + _cid), getattr(_cc26, "spec_" + _cid))
+    except Exception as exc:
+        print(f"  [Regular Base V2] carbon_composite_2026 final overrides skipped: {exc}")
+    try:
+        import engine.paint_v2.ceramic_glass_2026 as _cg26
+        for _cid in ("crystal_clear", "tempered_glass", "cathedral_glass", "sea_glass",
+                     "sapphire_glass", "ruby_glass", "emerald_glass", "amber_glass",
+                     "smoked_glass", "milk_glass", "mercury_glass", "obsidian", "ceramic",
+                     "ceramic_matte", "enamel", "porcelain", "crackle_glaze", "liquid_glaze",
+                     "terracotta_glaze", "piano_black"):
+            overrides[_cid] = (getattr(_cg26, "paint_" + _cid), getattr(_cg26, "spec_" + _cid))
+    except Exception as exc:
+        print(f"  [Regular Base V2] ceramic_glass_2026 final overrides skipped: {exc}")
+
     wired = 0
     missing = []
     for base_id, (paint_fn, spec_fn) in overrides.items():
@@ -11108,9 +15449,8 @@ def _spb_wire_regular_base_v2_overrides():
 _spb_wire_regular_base_v2_overrides()
 
 _CLASSIC_FOUNDATION_FLAT_IDS = {
-    "ceramic",
+    # "ceramic", "piano_black" REMOVED 2026-06-14 — rebuilt as bespoke Ceramic & Glass
     "gloss",
-    "piano_black",
     "wet_look",
     "semi_gloss",
     "satin",
@@ -11122,7 +15462,7 @@ _CLASSIC_FOUNDATION_FLAT_IDS = {
     "flat_black",
     "matte",
     "living_matte",
-    "chalky_base",
+    # "chalky_base" -> FOUNDATION EFX "Chalked Paint" (2026-09-03): textured, keeps its paint_fn
 }
 
 _FOUNDATION_NOISE_KEYS = {
@@ -11157,10 +15497,12 @@ _SPB_BASE_GROUPS_SHIPPING = {
         "gloss", "matte", "satin", "semi_gloss", "eggshell", "silk", "wet_look",
         "clear_matte", "primer", "flat_black", "f_metallic", "f_pearl", "f_chrome",
         "f_satin_chrome", "f_anodized", "f_brushed", "f_powder_coat",
-        "f_carbon_fiber", "f_frozen", "scuffed_satin", "chalky_base",
+        "f_carbon_fiber", "f_frozen", "scuffed_satin",
         "living_matte", "ceramic", "piano_black", "f_gel_coat", "f_baked_enamel",
         "f_vinyl_wrap", "f_pure_white", "f_pure_black", "f_neutral_grey",
         "f_soft_gloss", "f_soft_matte", "f_clear_satin", "f_warm_white",
+        # FOUNDATION ONE 2026-09-03: new flat BASES cells (flat-spec treatment via this group)
+        "f_candy", "f_bead_blast", "f_satin_pearl", "f_matte_metallic", "f_dark_chrome",
     ],
     "Enhanced Foundation": [
         "enh_gloss", "enh_matte", "enh_satin", "enh_metallic", "enh_pearl",
@@ -11268,6 +15610,17 @@ for _group, _ids in _SPB_BASE_GROUPS_SHIPPING.items():
         _SPB_BASE_GROUP_BY_ID.setdefault(_base_id, _group)
 
 _SPB_FLAT_FOUNDATION_GROUPS = {"Foundation"}
+_SPB_NATIVE_BASE_REBUILD_GROUPS = {
+    "Carbon & Composite",
+    "Exotic Metal",
+    "OEM Automotive",
+    "Premium Luxury",
+    "Racing Heritage",
+    "Satin & Wrap",
+    "Stone & Mineral",
+    "Textile-Inspired",
+    "Weathered & Aged",
+}
 
 
 def _spb_hash01(text):
@@ -11287,6 +15640,29 @@ def _spb_shape2(shape, paint=None):
     if paint is not None and hasattr(paint, "shape") and len(paint.shape) >= 2:
         return int(paint.shape[0]), int(paint.shape[1])
     return 1, 1
+
+
+_SPB_FLOAT_GRID_CACHE = OrderedDict()
+_SPB_FLOAT_GRID_CACHE_MAX = 4
+# SPB paint-finish perf loop tick 2026-05-31 04:53; owner: "Speed is king in this app."
+# Exact allocation cleanup only: beetle_rainbow 4969.4->3904.8 ms, blue_chrome 5577.6->5104.4 ms; std drift 0.
+
+
+def _spb_float_grid(shape):
+    """Cached float32 coordinate grids for base-quality polish fields."""
+    h, w = _spb_shape2(shape)
+    key = (h, w)
+    cached = _SPB_FLOAT_GRID_CACHE.get(key)
+    if cached is not None:
+        _SPB_FLOAT_GRID_CACHE.move_to_end(key)
+        return cached
+    y, x = get_mgrid((h, w))
+    value = (np.asarray(y, dtype=np.float32), np.asarray(x, dtype=np.float32))
+    _SPB_FLOAT_GRID_CACHE[key] = value
+    _SPB_FLOAT_GRID_CACHE.move_to_end(key)
+    while len(_SPB_FLOAT_GRID_CACHE) > _SPB_FLOAT_GRID_CACHE_MAX:
+        _SPB_FLOAT_GRID_CACHE.popitem(last=False)
+    return value
 
 
 def _spb_to_bb2d(bb, h, w):
@@ -11317,6 +15693,14 @@ def _spb_noise01(shape, seed, scales=(1, 2, 4, 9), weights=(0.34, 0.30, 0.22, 0.
         return rng.random((h, w), dtype=np.float32)
 
 
+def _spb_style_work_shape(shape, cap=1024):
+    h, w = _spb_shape2(shape)
+    work = min(int(cap), int(h), int(w))
+    if work >= min(h, w):
+        return h, w
+    return max(128, int(round(h * work / max(h, w)))), max(128, int(round(w * work / max(h, w))))
+
+
 def _spb_norm01(arr):
     arr = np.asarray(arr, dtype=np.float32)
     span = float(arr.max() - arr.min()) if arr.size else 0.0
@@ -11325,25 +15709,118 @@ def _spb_norm01(arr):
     return ((arr - float(arr.min())) / span).astype(np.float32)
 
 
+def _spb_enh_micro_signature(base_id, shape, seed):
+    """SPB-86 tick 51: per-finish MICROSCOPIC noise signature for Enhanced
+    Foundation finishes. Owner direction: gain bumps don't help — the
+    differentiation needs to come from per-finish-family DISTINCT MICRO
+    PATTERNS, not amplitude of a shared template.
+
+    Strategy: deterministic name-keyword mapping picks a micro-pattern
+    family for each base_id. Each family is structurally different at the
+    1-4 pixel feature scale (which renders as microscopic at 2048 canvas
+    but as visible character on actual finish surfaces).
+
+    Families (assigned by name keyword match):
+
+    * ``chrome`` / ``mirror`` — near-flat with rare micro-streak spikes
+      (mirror with occasional surface defect)
+    * ``brushed`` — anisotropic 1D directional grain
+    * ``carbon`` / ``fiber`` — orthogonal 2-axis weave
+    * ``pearl`` / ``opal`` — soft hue-zone patches at 4-8 pixel scale
+    * ``metallic`` / ``flake`` — lognormal flake density
+    * ``frozen`` / ``ice`` — fractal frost branching
+    * default — high-freq Perlin (current behavior, no character)
+
+    Returns: (sig_M, sig_R, sig_CC) — three float32 (H,W) arrays in
+    [-1, 1] range. The wrapper multiplies these by a small amplitude
+    and adds them to the channel constants.
+    """
+    h, w = shape[:2] if len(shape) > 2 else shape
+    family_seed = int(seed) + int(_spb_hash01(base_id) * 100000)
+    name = (base_id or "").lower()
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+
+    if "chrome" in name or "mirror" in name:
+        # Near-flat with rare micro-streak spikes — mirror with occasional defect
+        base = _spb_noise01(shape, family_seed + 7, (1, 2), (0.6, 0.4)) - 0.5
+        spikes = _spb_noise01(shape, family_seed + 11, (1,), (1.0,))
+        streaks = np.where(spikes > 0.93, (spikes - 0.93) * 14.0, 0.0)
+        sig = base * 0.4 + streaks - streaks.mean()
+    elif "brushed" in name:
+        # Anisotropic 1D grain — high-freq in one axis, low-freq in other
+        angle = _spb_hash01(base_id + "brush") * np.pi * 2.0
+        u = (np.cos(angle) * x + np.sin(angle) * y).astype(np.float32)
+        v = (-np.sin(angle) * x + np.cos(angle) * y).astype(np.float32)
+        grain = (_spb_noise01(shape, family_seed + 13, (1, 2, 4), (0.5, 0.3, 0.2)) - 0.5)
+        directional = np.sin(u * 0.95 + grain * 2.0) * np.cos(v * 0.04)
+        sig = directional * 0.55
+    elif "carbon" in name or "fiber" in name:
+        # Orthogonal woven pattern at 2-pixel scale
+        warp = np.sin(x * 1.18 + (_spb_noise01(shape, family_seed + 17, (1,), (1.0,)) - 0.5) * 2.0)
+        weft = np.sin(y * 1.18 + (_spb_noise01(shape, family_seed + 19, (1,), (1.0,)) - 0.5) * 2.0)
+        sig = (warp * weft) * 0.5
+    elif "pearl" in name or "opal" in name:
+        # Soft hue-zone patches — slower frequency for color zoning
+        zones = _spb_noise01(shape, family_seed + 23, (4, 8, 16), (0.5, 0.3, 0.2)) - 0.5
+        micro = _spb_noise01(shape, family_seed + 29, (1, 2), (0.6, 0.4)) - 0.5
+        sig = zones * 0.7 + micro * 0.3
+    elif "metallic" in name or "flake" in name:
+        # Lognormal flake distribution — small bright dots over neutral
+        flake_field = _spb_noise01(shape, family_seed + 31, (1,), (1.0,))
+        flakes = np.where(flake_field > 0.78, (flake_field - 0.78) * 4.5, 0.0)
+        # log-spaced rarer larger flakes
+        big_field = _spb_noise01(shape, family_seed + 37, (2,), (1.0,))
+        big_flakes = np.where(big_field > 0.92, (big_field - 0.92) * 12.0, 0.0)
+        sig = flakes + big_flakes * 0.6 - (flakes + big_flakes * 0.6).mean()
+    elif "frozen" in name or "ice" in name:
+        # Frost-like — sharp ridge network on a soft background
+        n_a = _spb_noise01(shape, family_seed + 41, (1, 2, 4), (0.5, 0.3, 0.2))
+        ridge = 1.0 - 2.0 * np.abs(n_a - 0.5)
+        sig = (ridge - 0.5) * 0.7 + (_spb_noise01(shape, family_seed + 43, (1,), (1.0,)) - 0.5) * 0.2
+    else:
+        # Generic high-freq noise — visible but not character-defining
+        n = _spb_noise01(shape, family_seed + 47, (1, 2, 4), (0.55, 0.3, 0.15)) - 0.5
+        sig = n * 0.6
+
+    sig = np.clip(sig.astype(np.float32), -1.0, 1.0)
+
+    # Per-channel deterministic phase-shift so M/R/CC don't covary identically.
+    # Use slight spatial shifts seeded by base_id + channel name.
+    shift_m = int(_spb_hash01(base_id + "M") * 7)
+    shift_r = int(_spb_hash01(base_id + "R") * 11)
+    shift_cc = int(_spb_hash01(base_id + "CC") * 13)
+    sig_m = np.roll(sig, (shift_m, shift_m), axis=(0, 1))
+    sig_r = np.roll(sig, (shift_r, -shift_r), axis=(0, 1)) * 0.7  # R varies less
+    sig_cc = np.roll(sig, (-shift_cc, shift_cc), axis=(0, 1)) * 0.85
+    return sig_m, sig_r, sig_cc
+
+
 def _spb_base_style_fields(base_id, group, shape, seed):
     h, w = shape
-    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    work_shape = _spb_style_work_shape(shape)
+    y, x = _spb_float_grid(work_shape)
     family = int(_spb_hash01(base_id) * 100000)
-    n1 = _spb_norm01(_spb_noise01(shape, seed + family + 11, (1, 2, 4, 8), (0.36, 0.30, 0.22, 0.12)))
-    n2 = _spb_norm01(_spb_noise01(shape, seed + family + 31, (3, 7, 17, 41), (0.34, 0.30, 0.22, 0.14)))
+    n1 = _spb_norm01(_spb_noise01(work_shape, seed + family + 11, (1, 2, 4, 8), (0.36, 0.30, 0.22, 0.12)))
+    n2 = _spb_norm01(_spb_noise01(work_shape, seed + family + 31, (3, 7, 17, 41), (0.34, 0.30, 0.22, 0.14)))
     angle = _spb_hash01(base_id + group) * np.pi * 2.0
     coord = np.cos(angle) * x + np.sin(angle) * y
     line = np.sin(coord * (0.45 + _spb_hash01(group) * 1.15) + n2 * 3.2)
     line = _spb_norm01(line)
     sparkle = np.clip((n1 - (0.64 + _spb_hash01(base_id + "spark") * 0.12)) * 4.2, 0, 1)
     cell = _spb_norm01(np.sin(x * 0.095 + n2 * 5.0) + np.sin(y * 0.073 + n1 * 4.0))
+    if work_shape != (h, w):
+        # SPB perf loop 2026-05-31; owner: speed is king, no base over 4s. Quality polish is solved at 1024 and upsampled.
+        n1, n2, line, sparkle, cell = (
+            _resize_array(field.astype(np.float32, copy=False), h, w).astype(np.float32)
+            for field in (n1, n2, line, sparkle, cell)
+        )
     return n1, n2, line, sparkle, cell
 
 
 def _spb_group_detail_profile(group, base_id):
     # paint_gain, chroma_gain, spec_gain, structure_mix
     profiles = {
-        "Enhanced Foundation": (0.035, 0.010, 18.0, 0.25),
+        "Enhanced Foundation": (0.035, 0.010, 18.0, 0.25),  # SPB-86 tick 51: reverted 72→18; owner said gain knob was wrong axis. Per-finish micro signatures land via _spb_enh_micro_signature.
         "Candy & Pearl": (0.115, 0.080, 52.0, 0.30),
         "Carbon & Composite": (0.135, 0.030, 66.0, 0.90),
         "Ceramic & Glass": (0.090, 0.035, 46.0, 0.45),
@@ -11377,7 +15854,6 @@ def _spb_apply_base_paint_polish(base_id, group, rgb, shape, mask, seed, pm):
         return rgb
     h, w = shape
     rgb = np.asarray(rgb[:, :, :3], dtype=np.float32)
-    mask3 = np.asarray(mask[:h, :w], dtype=np.float32)[:, :, None]
     lum = rgb.mean(axis=2)
     fine = float(np.abs(np.diff(lum, axis=1)).mean() + np.abs(np.diff(lum, axis=0)).mean())
     residual = float(np.abs(lum - lum.reshape(h // 8, 8, w // 8, 8).mean(axis=(1, 3)).repeat(8, 0).repeat(8, 1)).mean()) if h >= 8 and w >= 8 and h % 8 == 0 and w % 8 == 0 else fine
@@ -11388,7 +15864,26 @@ def _spb_apply_base_paint_polish(base_id, group, rgb, shape, mask, seed, pm):
     if fine >= 0.018 and residual >= 0.008 and pop >= 3:
         paint_gain *= 0.35
         chroma_gain *= 0.35
-    n1, n2, line, sparkle, cell = _spb_base_style_fields(base_id, group, shape, seed + 6100)
+
+    # SPB perf 2026-06-04: the polish ADD layer is built entirely from
+    # band-limited fields (_spb_base_style_fields is computed at <=1024 and
+    # upsampled) plus smooth sin() of coordinate grids — there is no genuine
+    # 2048-native detail in the delta. Build the additive delta at a capped
+    # work resolution and upsample it, then add to the full-res base so the
+    # underlying V2 base sharpness is preserved and the (smooth) polish is
+    # visually identical. Owner mandate: speed is king, look unchanged.
+    # Cap 1536 (not 1024): the band-limited style fields are sourced at 1024
+    # internally, but the polish layer also evaluates a few NON-linear terms on
+    # them (sin(structure*7..10), the per-base nacre/weave grids). Sampling
+    # those at 1536 keeps the nonlinear aliasing vs the full-2048 original
+    # negligible (mean |delta| ~1 LSB) while still removing ~55% of polish cost.
+    wh, ww = _spb_style_work_shape(shape, cap=1536)  # returns (height, width)-capped pair
+    work_shape = (wh, ww)
+    capped = work_shape != (h, w)
+    mw = _resize_array(np.asarray(mask[:h, :w], dtype=np.float32), wh, ww) if capped else np.asarray(mask[:h, :w], dtype=np.float32)
+    mask3 = mw[:, :, None]
+
+    n1, n2, line, sparkle, cell = _spb_base_style_fields(base_id, group, work_shape, seed + 6100)
     structure = np.clip(n1 * (1.0 - structure_mix) + line * structure_mix * 0.65 + cell * structure_mix * 0.35, 0, 1)
     chroma_phase = (_spb_hash01(base_id + "phase") * np.pi * 2.0)
     chroma = np.stack([
@@ -11412,33 +15907,55 @@ def _spb_apply_base_paint_polish(base_id, group, rgb, shape, mask, seed, pm):
         chroma_gain = max(chroma_gain, 0.125)
         paint_gain = max(paint_gain, 0.135)
     luma_detail = ((structure - 0.5) * 0.85 + sparkle * 0.55)[:, :, None]
-    out = rgb + (luma_detail * paint_gain + chroma * chroma_gain) * mask3 * float(pm)
-    if base_id in {"carbon_base", "forged_composite"}:
-        weave_phase = _spb_hash01(base_id + "carbon-phase") * np.pi * 2.0
-        tow_a = (np.sin((np.indices(shape)[1].astype(np.float32) + np.indices(shape)[0].astype(np.float32) * 0.20) * 1.75 + weave_phase) * 0.5 + 0.5)
-        tow_b = (np.sin((np.indices(shape)[0].astype(np.float32) - np.indices(shape)[1].astype(np.float32) * 0.18) * 1.62 - weave_phase) * 0.5 + 0.5)
-        tow = np.clip(tow_a * 0.55 + tow_b * 0.45, 0, 1)
-        carbon_chroma = np.stack([tow * 0.045, (1.0 - tow) * 0.060, line * 0.080], axis=2) - 0.026
-        if base_id == "carbon_base":
-            carbon_chroma = carbon_chroma + np.stack([sparkle * 0.016, tow * 0.020, (1.0 - tow) * 0.030], axis=2)
-        out = out + carbon_chroma * mask3 * float(pm)
-    elif base_id in {"black_chrome", "vantablack"}:
-        cold_edge = np.stack([line * 0.018, sparkle * 0.018, structure * 0.060], axis=2)
-        out = out + cold_edge * mask3 * float(pm)
-    elif base_id == "butterfly_monarch":
-        wing_scales = np.clip(sparkle * 0.62 + (line > 0.56).astype(np.float32) * 0.22 + n2 * 0.16, 0, 1)
-        monarch = np.stack([wing_scales * 0.105, wing_scales * 0.046, -wing_scales * 0.032], axis=2)
-        out = out + monarch * mask3 * float(pm)
-    elif base_id == "tri_coat_pearl":
-        y, x = np.mgrid[0:h, 0:w].astype(np.float32)
-        nacre = np.sin(x * 0.18 + y * 0.052 + n2 * 3.6) * 0.5 + 0.5
-        platelet = np.clip((n1 - 0.44) * 2.1, 0, 1)
-        pearl = np.stack([
-            platelet * 0.105 + nacre * 0.040,
-            platelet * 0.082 + (1.0 - nacre) * 0.032,
-            platelet * 0.130 + nacre * 0.052,
-        ], axis=2)
-        out = out + pearl * mask3 * float(pm)
+    delta = (luma_detail * paint_gain + chroma * chroma_gain) * mask3 * float(pm)
+    # The common chroma/luma delta is built entirely from band-limited style
+    # fields -> safe to upsample. Do that now, then add any per-base SPECIAL
+    # branch at FULL resolution: those branches use coordinate-grid sin terms
+    # (carbon tow ~3.6px, tri_coat nacre ~35px) that carry genuine fine/mid
+    # detail which must NOT be softened by the upsample. They run for exactly
+    # one base each so the full-res cost is negligible.
+    if capped:
+        delta = _resize_array(delta.astype(np.float32, copy=False), h, w)
+    _special = base_id in {"carbon_base", "forged_composite", "black_chrome",
+                           "vantablack", "butterfly_monarch", "tri_coat_pearl"}
+    if _special:
+        mask3f = np.asarray(mask[:h, :w], dtype=np.float32)[:, :, None]
+        if capped:
+            line_f = _resize_array(line.astype(np.float32, copy=False), h, w)
+            sparkle_f = _resize_array(sparkle.astype(np.float32, copy=False), h, w)
+            structure_f = _resize_array(structure.astype(np.float32, copy=False), h, w)
+            n1_f = _resize_array(n1.astype(np.float32, copy=False), h, w)
+            n2_f = _resize_array(n2.astype(np.float32, copy=False), h, w)
+        else:
+            line_f, sparkle_f, structure_f, n1_f, n2_f = line, sparkle, structure, n1, n2
+        if base_id in {"carbon_base", "forged_composite"}:
+            weave_phase = _spb_hash01(base_id + "carbon-phase") * np.pi * 2.0
+            y, x = _spb_float_grid((h, w))
+            tow_a = (np.sin((x + y * 0.20) * 1.75 + weave_phase) * 0.5 + 0.5)
+            tow_b = (np.sin((y - x * 0.18) * 1.62 - weave_phase) * 0.5 + 0.5)
+            tow = np.clip(tow_a * 0.55 + tow_b * 0.45, 0, 1)
+            carbon_chroma = np.stack([tow * 0.045, (1.0 - tow) * 0.060, line_f * 0.080], axis=2) - 0.026
+            if base_id == "carbon_base":
+                carbon_chroma = carbon_chroma + np.stack([sparkle_f * 0.016, tow * 0.020, (1.0 - tow) * 0.030], axis=2)
+            delta = delta + carbon_chroma * mask3f * float(pm)
+        elif base_id in {"black_chrome", "vantablack"}:
+            cold_edge = np.stack([line_f * 0.018, sparkle_f * 0.018, structure_f * 0.060], axis=2)
+            delta = delta + cold_edge * mask3f * float(pm)
+        elif base_id == "butterfly_monarch":
+            wing_scales = np.clip(sparkle_f * 0.62 + (line_f > 0.56).astype(np.float32) * 0.22 + n2_f * 0.16, 0, 1)
+            monarch = np.stack([wing_scales * 0.105, wing_scales * 0.046, -wing_scales * 0.032], axis=2)
+            delta = delta + monarch * mask3f * float(pm)
+        elif base_id == "tri_coat_pearl":
+            y, x = _spb_float_grid((h, w))
+            nacre = np.sin(x * 0.18 + y * 0.052 + n2_f * 3.6) * 0.5 + 0.5
+            platelet = np.clip((n1_f - 0.44) * 2.1, 0, 1)
+            pearl = np.stack([
+                platelet * 0.105 + nacre * 0.040,
+                platelet * 0.082 + (1.0 - nacre) * 0.032,
+                platelet * 0.130 + nacre * 0.052,
+            ], axis=2)
+            delta = delta + pearl * mask3f * float(pm)
+    out = rgb + delta.astype(np.float32)
     return np.clip(out, 0, 1).astype(np.float32)
 
 
@@ -11448,7 +15965,24 @@ def _spb_make_shipping_base_paint(base_id, group):
         base = np.asarray(paint[:, :, :3], dtype=np.float32).copy()
         n1, n2, line, sparkle, cell = _spb_base_style_fields(base_id, group, (h, w), seed + 8100)
         if group == "Textile-Inspired":
-            weave = np.clip(line * 0.62 + (1.0 - np.roll(line, 2, axis=0)) * 0.28 + n1 * 0.10, 0, 1)
+            # SPB-82 tick 28: the base style fields use octaves (1,2,4,8) and
+            # (3,7,17,41) — almost all macro, no mid-band. M8 macro_std32 stayed
+            # near 0 because there's nothing at 16-64px scale to differentiate
+            # 32px blocks. Add a proper mid-band weave grain (octaves 32/64/128
+            # = 16-64px features) so the weave actually reads at thumbnail scale.
+            # Per the tick-27 frequency-band insight codified in docs/METRICS.md.
+            try:
+                mid_weave = _spb_norm01(_spb_noise01(
+                    (h, w), seed + 8190, (32, 64, 128), (0.42, 0.34, 0.24)
+                )) - 0.5
+            except Exception:
+                _rng = np.random.RandomState(seed + 8190)
+                mid_weave = (_rng.random((h, w)).astype(np.float32) - 0.5)
+            # Rebalanced: shift weight from macro line→mid_weave so M8 macro_std32
+            # gets dominant signal. The `line` field at macro frequencies still
+            # contributes — it just doesn't dominate anymore.
+            weave = np.clip(line * 0.28 + (1.0 - np.roll(line, 2, axis=0)) * 0.14
+                             + n1 * 0.06 + mid_weave * 0.95 + 0.42, 0, 1)
             tint = np.array([0.82, 0.86, 0.92], dtype=np.float32)
             base = np.clip(base * (0.76 + weave[:, :, None] * 0.34) + tint * (weave[:, :, None] - 0.5) * 0.10, 0, 1)
         elif group == "Stone & Mineral":
@@ -11509,16 +16043,19 @@ def _spb_wrap_base_paint_quality(base_id, group, paint_fn):
         shape2 = (h, w)
         shape3 = (h, w, 3)
         bb2 = _spb_to_bb2d(bb, h, w)
-        bb3 = _spb_to_bb3d(bb, h, w)
         trials = (
-            (shape2, bb2),
-            (shape2, bb3),
-            (shape3, bb2),
-            (shape3, bb3),
+            (shape2, False),
+            (shape2, True),
+            (shape3, False),
+            (shape3, True),
         )
         last_exc = None
-        for shape_arg, bb_arg in trials:
+        bb3 = None
+        for shape_arg, needs_bb3 in trials:
             try:
+                if needs_bb3 and bb3 is None:
+                    bb3 = _spb_to_bb3d(bb, h, w)
+                bb_arg = bb3 if needs_bb3 else bb2
                 out = paint_fn(paint.copy(), shape_arg, mask, seed, pm, bb_arg)
                 out = np.asarray(out, dtype=np.float32)
                 if out.ndim == 3 and out.shape[2] >= 3:
@@ -11546,22 +16083,35 @@ def _spb_wrap_base_paint_quality(base_id, group, paint_fn):
 def _spb_wrap_base_spec_quality(base_id, group, spec_fn):
     if getattr(spec_fn, "_spb_regular_base_quality_wrapped", False):
         return spec_fn
+    # [FOUNDATION PURE 2026-09-30] Owner: regular Foundation specs are PURE constants. Never texture them.
+    if getattr(spec_fn, "__name__", "") in ("_spec_foundation_pure_bound", "_spec_foundation_flat"):
+        return spec_fn
 
     def _wrapped(shape, seed, sm, base_m, base_r):
         h, w = _spb_shape2(shape)
         shape2 = (h, w)
-        shape3 = (h, w, 3)
-        mask = np.ones(shape2, dtype=np.float32)
+        eval_shape2 = _spb_style_work_shape(shape2) if group not in _SPB_FLAT_FOUNDATION_GROUPS else shape2
+        eh, ew = eval_shape2
+        shape3 = (eh, ew, 3)
+        mask = None
         trials = (
-            (shape2, seed, sm, base_m, base_r),
-            (shape2, mask, seed, sm),
+            (eval_shape2, seed, sm, base_m, base_r),
+            "mask_shape2",
             (shape3, seed, sm, base_m, base_r),
-            (shape3, mask, seed, sm),
+            "mask_shape3",
         )
         last_exc = None
         result = None
         for args in trials:
             try:
+                if args == "mask_shape2":
+                    if mask is None:
+                        mask = np.ones(eval_shape2, dtype=np.float32)
+                    args = (eval_shape2, mask, seed, sm)
+                elif args == "mask_shape3":
+                    if mask is None:
+                        mask = np.ones(eval_shape2, dtype=np.float32)
+                    args = (shape3, mask, seed, sm)
                 result = spec_fn(*args)
                 break
             except (TypeError, ValueError) as exc:
@@ -11571,23 +16121,23 @@ def _spb_wrap_base_spec_quality(base_id, group, spec_fn):
             raise last_exc if last_exc is not None else RuntimeError("base spec wrapper failed")
 
         if isinstance(result, tuple):
-            chans = [np.asarray(c, dtype=np.float32)[:h, :w] for c in result[:3]]
+            chans = [np.asarray(c, dtype=np.float32)[:eh, :ew] for c in result[:3]]
         else:
             arr = np.asarray(result, dtype=np.float32)
             if arr.ndim == 3:
-                chans = [arr[:h, :w, i] for i in range(min(3, arr.shape[2]))]
+                chans = [arr[:eh, :ew, i] for i in range(min(3, arr.shape[2]))]
             elif arr.ndim == 2:
-                chans = [arr[:h, :w]]
+                chans = [arr[:eh, :ew]]
             else:
                 chans = []
         while len(chans) < 3:
             fill = base_r if len(chans) == 1 else 16.0
-            chans.append(np.full(shape2, float(fill), dtype=np.float32))
+            chans.append(np.full(eval_shape2, float(fill), dtype=np.float32))
         M, R, CC = [np.asarray(c, dtype=np.float32).copy() for c in chans[:3]]
 
         if group not in _SPB_FLAT_FOUNDATION_GROUPS:
             _paint_gain, _chroma_gain, spec_gain, structure_mix = _spb_group_detail_profile(group, base_id)
-            n1, n2, line, sparkle, cell = _spb_base_style_fields(base_id, group, shape2, seed + 7100)
+            n1, n2, line, sparkle, cell = _spb_base_style_fields(base_id, group, eval_shape2, seed + 7100)
             structure = np.clip(n1 * (1.0 - structure_mix) + line * structure_mix * 0.65 + cell * structure_mix * 0.35, 0, 1)
             m_range = float(M.max() - M.min()) if M.size else 0.0
             gain = spec_gain * 1.25 if m_range < 45.0 else spec_gain * 0.35
@@ -11603,12 +16153,29 @@ def _spb_wrap_base_spec_quality(base_id, group, spec_fn):
             else:
                 R = np.clip(R + (1.0 - structure) * gain * 0.25 + sparkle * gain * 0.08, 0, 255)
                 CC = np.clip(CC + (n2 - 0.5) * gain * 0.22 + sparkle * gain * 0.18, 0, 255)
+            if group == "Enhanced Foundation":
+                # SPB-86 tick 51: per-finish microscopic signature on top of
+                # the shared structure/sparkle field. Owner direction is
+                # name-keyword-distinct micro patterns (chrome vs brushed
+                # vs carbon vs pearl etc.), not amplitude bumps.
+                sig_m, sig_r, sig_cc = _spb_enh_micro_signature(base_id, eval_shape2, seed + 7301)
+                micro_amp = 28.0  # in M units (out of 255). Moderate but visible.
+                M = np.clip(M + sig_m * micro_amp, 0, 255)
+                R = np.clip(R + sig_r * micro_amp * 0.55, 0, 255)
+                CC = np.clip(CC + sig_cc * micro_amp * 0.45, 0, 255)
             if base_id == "platinum":
                 platinum_cut = (1.0 - structure) * spec_gain * 0.42
                 M = np.clip(M - platinum_cut + sparkle * spec_gain * 0.24, 0, 255)
                 R = np.clip(R + (structure - 0.5) * spec_gain * 0.34 - sparkle * spec_gain * 0.10, 0, 255)
                 CC = np.clip(CC + (n2 - 0.5) * spec_gain * 0.42 + sparkle * spec_gain * 0.24, 0, 255)
 
+        if eval_shape2 != shape2:
+            # SPB paint-finish perf loop 2026-05-31; owner hard ceiling:
+            # regular/base specs must stay under 4.000s at 2048. Solve rich
+            # procedural spec polish at 1024, then restore final channel size.
+            M = _resize_array(M.astype(np.float32, copy=False), h, w)
+            R = _resize_array(R.astype(np.float32, copy=False), h, w)
+            CC = _resize_array(CC.astype(np.float32, copy=False), h, w)
         return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
 
     _wrapped.__name__ = getattr(spec_fn, "__name__", "_wrapped")
@@ -11617,14 +16184,56 @@ def _spb_wrap_base_spec_quality(base_id, group, spec_fn):
     return _wrapped
 
 
+def _spb_reapply_stone_textile_overrides():
+    """SPB-87 Option A (tick 44): the stone/textile dedicated renderers in
+    engine/paint_v2/stone_textile.py were being silently overwritten by the
+    missing-base fill-in shims because the original import (inside
+    _spb_wire_regular_base_v2_overrides) ran BEFORE these IDs existed in
+    BASE_REGISTRY. After _spb_ensure_shipping_base_entries registers the
+    IDs with placeholder shims, re-apply the dedicated renderers here so
+    the painter contract is satisfied end-to-end.
+
+    Mirrors the wire step's adapter call (_spb_adapt_base_paint_bb) so the
+    paint_fn signature still matches what BASE_REGISTRY expects.
+    """
+    try:
+        from engine.paint_v2.stone_textile import TEXTILE_STONE_OVERRIDES
+    except Exception as exc:
+        print(f"  [SPB-87 reapply] stone_textile import skipped: {exc}")
+        return
+    reapplied = 0
+    for base_id, (paint_fn, spec_fn) in TEXTILE_STONE_OVERRIDES.items():
+        entry = BASE_REGISTRY.get(base_id)
+        if not entry:
+            continue
+        entry["paint_fn"] = _spb_adapt_base_paint_bb(paint_fn)
+        entry["base_spec_fn"] = spec_fn
+        reapplied += 1
+    if reapplied:
+        print(f"  [SPB-87 reapply] Rewired {reapplied} stone/textile dedicated renderer(s)")
+
+
 def _spb_apply_regular_base_quality_wrappers():
     _spb_ensure_shipping_base_entries()
+    _spb_reapply_stone_textile_overrides()
     wrapped = 0
+    # [FOUNDATION PURE 2026-09-30] Retired ids (enh_gloss, enh_satin, ...) are ALIASES that share
+    # their survivor's entry dict. Wrapping one by id textured the shared flat Foundation cell
+    # (gloss/wet_look/satin/matte/primer came out with ~20-unit grit on M/R/CC). Never wrap an alias.
+    try:
+        from engine.base_registry_data import BASE_ID_ALIASES as _spb_retired_ids
+    except Exception:
+        _spb_retired_ids = {}
     for base_id, group in _SPB_BASE_GROUP_BY_ID.items():
         entry = BASE_REGISTRY.get(base_id)
         if not entry:
             continue
-        if group in _SPB_FLAT_FOUNDATION_GROUPS or base_id in _CLASSIC_FOUNDATION_FLAT_IDS:
+        if (
+            group in _SPB_FLAT_FOUNDATION_GROUPS
+            or group in _SPB_NATIVE_BASE_REBUILD_GROUPS
+            or base_id in _CLASSIC_FOUNDATION_FLAT_IDS
+            or base_id in _spb_retired_ids
+        ):
             continue
         paint_fn = entry.get("paint_fn")
         if paint_fn is not None and base_id != "liquid_titanium":
@@ -11652,7 +16261,9 @@ def _spb_mono_spec_to_rgba(spec, shape):
         while len(chans) < 3:
             chans.append(np.zeros((h, w), dtype=np.float32))
         alpha = np.full((h, w), 255.0, dtype=np.float32)
-        return np.dstack([chans[0], chans[1], chans[2], alpha]).astype(np.float32)
+        # [SPB-PERF 2026-08-06] copy=False — np.dstack already returns a fresh array and
+        # every input was forced to float32 above, so the astype was a pure copy.
+        return np.dstack([chans[0], chans[1], chans[2], alpha]).astype(np.float32, copy=False)
     arr = np.asarray(spec, dtype=np.float32)
     if arr.ndim == 2:
         arr = np.repeat(arr[:h, :w, None], 3, axis=2)
@@ -11676,16 +16287,32 @@ def _spb_wrap_monolithic_paint_contract(mono_id, paint_fn):
         h, w = _spb_shape2(shape, paint)
         shape2 = (h, w)
         shape3 = (h, w, 3)
+        # [SPB-PERF 2026-08-06 — owner: renders "taking longer than they should"] bb3 is
+        # built LAZILY. This is a fallback ladder whose FIRST rung (shape2, bb2) succeeds
+        # for every shipping monolithic, but bb3 was materialised eagerly on every call —
+        # and _spb_to_bb3d is np.repeat(arr[:, :, None], 3, axis=2), a 48MB broadcast at
+        # 2048². That eager build was the whole of the profile's `ndarray.repeat` line
+        # (~0.28s over the 3 paint renders in the reproducing replay). Rungs 2 and 4 now
+        # build it on demand, so the value passed is identical whenever it IS reached.
         bb2 = _spb_to_bb2d(bb, h, w)
-        bb3 = _spb_to_bb3d(bb, h, w)
+        _bb3_memo = []
+
+        def bb3():
+            if not _bb3_memo:
+                _bb3_memo.append(_spb_to_bb3d(bb, h, w))
+            return _bb3_memo[0]
+
         last_exc = None
         for shape_arg, bb_arg in ((shape2, bb2), (shape2, bb3), (shape3, bb2), (shape3, bb3)):
             try:
-                out = paint_fn(paint.copy(), shape_arg, mask, seed, pm, bb_arg)
+                out = paint_fn(paint.copy(), shape_arg, mask,
+                               seed, pm, bb_arg() if callable(bb_arg) else bb_arg)
                 out = np.asarray(out, dtype=np.float32)
                 if out.ndim == 2:
                     out = np.repeat(out[:h, :w, None], 3, axis=2)
-                return np.clip(out[:h, :w, :3], 0, 1).astype(np.float32)
+                # [SPB-PERF 2026-08-06] copy=False — np.clip already returns a fresh array
+                # and `out` was forced float32 above, so the astype was a pure copy.
+                return np.clip(out[:h, :w, :3], 0, 1).astype(np.float32, copy=False)
             except (TypeError, ValueError) as exc:
                 last_exc = exc
                 continue
@@ -11700,6 +16327,10 @@ def _spb_wrap_monolithic_paint_contract(mono_id, paint_fn):
     _wrapped.__name__ = getattr(paint_fn, "__name__", "_wrapped")
     _wrapped.__module__ = getattr(paint_fn, "__module__", __name__)
     _wrapped._spb_mono_contract_wrapped = True
+    if getattr(paint_fn, "_spb_standalone_source_owned", False):
+        _wrapped._spb_standalone_source_owned = True
+    if getattr(paint_fn, "_spb_brushed_machined_source_owned", False):
+        _wrapped._spb_brushed_machined_source_owned = True
     return _wrapped
 
 
@@ -11728,6 +16359,32 @@ def _spb_wrap_monolithic_spec_contract(mono_id, spec_fn):
             except (TypeError, ValueError) as exc:
                 last_exc = exc
                 continue
+        if result is None and min(h, w) < 128:
+            # Safety net: some factories floor their internal work-size (~96px)
+            # and only reconcile shapes ABOVE that floor, so they raise on a
+            # sub-floor request. This never happens in production (the server
+            # upscales small swatch requests to 256), but keep the monolithic
+            # contract from crashing — render at a safe floor and downscale.
+            # Only reached when EVERY normal attempt above already failed, so
+            # finishes that render fine are completely unaffected.
+            bh, bw = max(h, 128), max(w, 128)
+            bmask = np.ones((bh, bw), dtype=np.float32)
+            for bcall in (
+                lambda: spec_fn((bh, bw), bmask, seed, sm),
+                lambda: spec_fn((bh, bw, 3), bmask, seed, sm),
+                lambda: spec_fn((bh, bw), seed, sm),
+            ):
+                try:
+                    big = bcall()
+                except (TypeError, ValueError) as exc:
+                    last_exc = exc
+                    continue
+                big_arr = _spb_mono_spec_to_rgba(big, (bh, bw))
+                result = tuple(
+                    cv2.resize(big_arr[:, :, c].astype(np.float32), (w, h), interpolation=cv2.INTER_AREA)
+                    for c in range(3)
+                )
+                break
         if result is None:
             raise last_exc if last_exc is not None else RuntimeError("monolithic spec wrapper failed")
         was_tuple = isinstance(result, tuple)
@@ -11736,7 +16393,25 @@ def _spb_wrap_monolithic_spec_contract(mono_id, spec_fn):
         R = arr[:, :, 1]
         CC = arr[:, :, 2]
         R = np.where((M < 240.0) & (R < 15.0), 15.0, R)
-        CC = np.maximum(CC, 16.0)
+        # [SPB SHOKK DROP authored clearcoat-0 verbatim 2026-06-16 — owner: "the channels I upload in
+        # SHOKK DROP must export EXACTLY, no quarter"] ROOT CAUSE of the B=0 -> 16 bug: this monolithic
+        # contract wrapper unconditionally floored CC to 16 on EVERY monolithic spec, including an
+        # authored_set finish whose user-uploaded clearcoat is a deliberate matte 0. The flooring ran
+        # BEFORE the spec ever reached zone compositing / export, so the matte upload always came back
+        # glossy. For authored_set specs we keep CC VERBATIM where it is exactly 0 (true "no clearcoat")
+        # and only floor genuinely-leaked partial values (1-15, e.g. resize AA edges) up to 16 — same
+        # safe semantics as _enforce_iron_rules (CC>=16 OR ==0), never the GGX whitewash grey zone.
+        # NON-authored monolithics are 100% unchanged (still hard-floored to 16 as before).
+        _mono_is_authored_cc = False
+        try:
+            from engine.paint_v2 import user_imports as _spb_ui_mono
+            _mono_is_authored_cc = bool(_spb_ui_mono.is_authored_spec(mono_id))
+        except Exception:
+            _mono_is_authored_cc = False
+        if _mono_is_authored_cc:
+            CC = np.where(CC > 0.0, np.maximum(CC, 16.0), 0.0)
+        else:
+            CC = np.maximum(CC, 16.0)
         arr[:, :, 0] = np.clip(M, 0, 255)
         arr[:, :, 1] = np.clip(R, 0, 255)
         arr[:, :, 2] = np.clip(CC, 0, 255)
@@ -11752,6 +16427,10 @@ def _spb_wrap_monolithic_spec_contract(mono_id, spec_fn):
     _wrapped.__name__ = getattr(spec_fn, "__name__", "_wrapped")
     _wrapped.__module__ = getattr(spec_fn, "__module__", __name__)
     _wrapped._spb_mono_contract_wrapped = True
+    if getattr(spec_fn, "_spb_standalone_source_owned", False):
+        _wrapped._spb_standalone_source_owned = True
+    if getattr(spec_fn, "_spb_brushed_machined_source_owned", False):
+        _wrapped._spb_brushed_machined_source_owned = True
     return _wrapped
 
 
@@ -11771,6 +16450,134 @@ def _spb_apply_monolithic_contract_guards():
 
 
 _spb_apply_monolithic_contract_guards()
+
+
+# ================================================================
+# [Owner Review] Wild Spec Lab — x2.0-aware angle-reveal spec rebuild for the
+# SHOKK SERIES + EXTREME & EXPERIMENTAL bases. Overrides ONLY base_spec_fn
+# (keeps paint_fn / colour identity). Runs AFTER all base_spec_fn assignment,
+# v2 overrides, quality wrappers, and contract guards so it is the final
+# authority on those finishes' specs. Non-destructive + per-finish fallback.
+# ================================================================
+def _spb_apply_wild_specs():
+    try:
+        from engine.expansions.wild_spec_lab import apply_wild_specs
+        _ws_n = apply_wild_specs(BASE_REGISTRY, MONOLITHIC_REGISTRY)
+        print(f"  [Owner Review] Rebuilt {_ws_n} wild SHOKK + Experimental specs (x2.0-aware angle-reveal)")
+    except Exception as _ws_err:
+        print(f"  [Owner Review] Wild specs warning: {_ws_err}")
+
+
+_spb_apply_wild_specs()
+
+
+# ── CANDY & PEARL + CARBON & COMPOSITE 2026: re-assert married specs AFTER
+#    wild_spec_lab (the previous "final authority"), which otherwise reclaims a few
+#    of these ids (e.g. chameleon). This is the TRUE last word for these categories.
+def _spb_reassert_cp_cc_2026():
+    try:
+        import engine.paint_v2.candy_pearl_2026 as _cp26
+        import engine.paint_v2.carbon_composite_2026 as _cc26
+        _cp_ids = ("candy_burgundy", "satin_candy", "orange_peel_gloss", "candy_gold",
+                   "candy_lime", "candy_emerald", "candy_aqua", "candy_cobalt", "jelly_pearl",
+                   "spectraflame", "tinted_clear", "hypershift_spectral", "tri_coat_pearl",
+                   "deep_pearl", "copper_pearl", "coral_pearl", "moonstone", "opal",
+                   "chameleon", "iridescent")
+        _cc_ids = ("carbon_base", "carbon_weave", "carbon_3k_fine", "carbon_satin", "carbon_red",
+                   "carbon_blue", "spread_tow", "carbon_ceramic", "forged_carbon_vis",
+                   "forged_composite", "forged_blue", "graphene", "nomex_honeycomb", "aramid",
+                   "kevlar_base", "kevlar_red", "hybrid_weave", "basalt_weave", "dyneema_white",
+                   "fiberglass")
+        import engine.paint_v2.ceramic_glass_2026 as _cg26
+        _cg_ids = ("crystal_clear", "tempered_glass", "cathedral_glass", "sea_glass", "sapphire_glass",
+                   "ruby_glass", "emerald_glass", "amber_glass", "smoked_glass", "milk_glass",
+                   "mercury_glass", "obsidian", "ceramic", "ceramic_matte", "enamel", "porcelain",
+                   "crackle_glaze", "liquid_glaze", "terracotta_glaze", "piano_black")
+        for _mod, _ids in ((_cp26, _cp_ids), (_cc26, _cc_ids), (_cg26, _cg_ids)):
+            for _cid in _ids:
+                _e = BASE_REGISTRY.get(_cid)
+                if _e:
+                    _e["base_spec_fn"] = getattr(_mod, "spec_" + _cid)
+    except Exception as _re_err:
+        print(f"  [CANDY/CARBON 2026] spec re-assert skipped: {_re_err}")
+
+
+_spb_reassert_cp_cc_2026()
+
+
+# ── COLOR SCIENCE REBUILD 2026 (owner mandate post-freeze): TRUE final authority.
+#    Re-run AFTER wild_spec_lab + candy/carbon reassert so the 2026-06-21 rebuild
+#    wins for ALL its ids (esp. SHOKK SERIES, which wild_spec_lab otherwise reclaims).
+#    Only touches the rebuild's own ids (chameleon/prizm/cc/grad/pf/msh/cs/shokk) —
+#    no overlap with candy/carbon/glaze.
+_spb_apply_color_science_rebuild_2026()
+
+
+# SPB-105 tick NU-25-LIVE-1 (2026-08-27) — owner verdict: "Claude's rebuild
+# has failed miserably." This idempotent dead-last installer preserves the v3
+# paint/spec marriage across import orders and lazy expansion rewires. Metric
+# movement: rejected legacy group -> isolated official M7 25/25, 85.2-88.9.
+def _spb_apply_neon_underground_v3():
+    try:
+        from engine.expansions.neon_catalog_2026 import install_into_engine
+
+        message = install_into_engine(
+            MONOLITHIC_REGISTRY,
+            base_reg=BASE_REGISTRY,
+            fusion_reg=globals().get("FUSION_REGISTRY"),
+        )
+        print("  [Neon-Underground-v3] " + message)
+        return 25
+    except Exception as exc:
+        print(f"  [Neon-Underground-v3] warning: {exc}")
+        return 0
+
+
+_spb_apply_neon_underground_v3()
+
+
+# ── REGULAR PATTERN DE-DUPE 2026-06-22: 24 renderers were each reused across
+#    multiple distinctly-named patterns (recolored same design). Give each
+#    non-canonical member its own name-true bespoke texture. Dead-last over the
+#    render-path registry (this module's PATTERN_REGISTRY = the merged 588).
+def _spb_apply_pattern_dedupe_2026():
+    try:
+        from engine.expansions.patterns_rebuild_2026 import install_pattern_dedupe
+        _n = install_pattern_dedupe(PATTERN_REGISTRY)
+        print(f"  [Pattern De-dupe] {_n} duplicate-design patterns given bespoke renderers (2026-06-22)")
+    except Exception as _pd_err:
+        import traceback as _tb_pd
+        print(f"  [Pattern De-dupe] warning: {_pd_err}\n{_tb_pd.format_exc()}")
+
+
+_spb_apply_pattern_dedupe_2026()
+
+
+# SPB-WILDS 2026-08-31 — owner: "ALL of the FRACTURED WILDS finishes now have
+# like a green combined spec map ... what's showing on the THUMBNAIL PREVIEWS
+# compared to what it's rendering is totally different."
+#
+# ROOT CAUSE. The accepted (owner-reviewed, authored-asset) Wilds overrides were
+# applied ONLY inside _ensure_expansions_loaded(), which the engine calls at the
+# top of build_multi_zone. But fractured_themes / _fix / morpho / bloom / petri
+# install their generic signature+microkit spec_fns at IMPORT time, so between
+# import and the first build_multi_zone the registry held the generic entries.
+# Every consumer that reads MONOLITHIC_REGISTRY directly — the picker swatch
+# renderers and the thumbnail bakers in server.py — therefore rendered a
+# different (generic, high-roughness "green") spec than the car render did.
+# Measured before this fix: 110/110 Wilds owned by signatures_2026 (70) +
+# microkit_2026 (40) after a bare import; 110/110 owned by accepted_2026 after
+# _ensure_expansions_loaded(). Same id, two different finishes.
+#
+# FIX: apply the accepted overrides at import time too, after the last
+# module-level install above. Idempotent — _ensure_expansions_loaded() still
+# re-applies them, which is now a no-op rather than the only application.
+try:
+    _spb_restore_fractured_wilds_release_entries()
+    _n_wilds = _spb_apply_fractured_wilds_accepted_overrides()
+    print(f"  [Fractured-Wilds] accepted overrides applied at import: {_n_wilds}")
+except Exception as _wilds_import_err:  # pragma: no cover - defensive
+    print(f"  [Fractured-Wilds] warning: {_wilds_import_err}")
 
 # ================================================================
 # GENERIC FALLBACK RENDERER - moved to engine.render
@@ -11808,13 +16615,312 @@ def blend_dual_base_spec(spec_primary, spec_secondary, strength,
     )
 
 
+def get_base_overlay_alpha(shape, strength, blend_mode, noise_scale=24, seed=42,
+                           pattern_mask=None, zone_mask=None, overlay_scale=1.0):
+    """Delegate to engine.overlay so legacy overlay paint matches the main composer."""
+    from engine.overlay import get_base_overlay_alpha as _overlay_alpha
+    return _overlay_alpha(
+        shape, strength,
+        blend_mode=blend_mode,
+        noise_scale=noise_scale,
+        seed=seed,
+        pattern_mask=pattern_mask,
+        zone_mask=zone_mask,
+        noise_fn=multi_scale_noise,
+        overlay_scale=overlay_scale,
+    )
+
+
 def blend_dual_base_paint(paint_primary, paint_secondary, alpha_map):
     """Delegate to engine.overlay."""
     from engine.overlay import blend_dual_base_paint as _blend_paint
     return _blend_paint(paint_primary, paint_secondary, alpha_map)
 
 
-def overlay_pattern_on_spec(spec, pattern_id, shape, mask, seed, sm, scale=1.0, opacity=1.0, spec_mult=1.0, rotation=0):
+
+
+def _apply_mono_path_base_overlay(tier, zone, paint, zone_spec, zone_mask, shape,
+                                  seed, i, name, sm, mono_auto_scale):
+    _zone_index = zone.get("render_seed_index") if isinstance(zone, dict) else None
+    _zone_seed = seed + i * 13
+    if isinstance(_zone_index, int) and not isinstance(_zone_index, bool) and 0 <= _zone_index <= 0xFFFFFFFF:
+        _zone_seed = _stable_zone_rng_seed(int(seed) + 13 * _zone_index)
+    """Apply ONE base-overlay tier (second/third/fourth/fifth_base) on the
+    MONOLITHIC zone path.
+
+    [2026-06-12 owner directive: "they should work exactly the same"] The
+    monolithic path used to implement ONLY the 2nd overlay inline; 3rd-5th
+    silently did nothing on monolithic-primary zones while working fine on
+    the compositing path. The proven 2nd-tier implementation was extracted
+    here verbatim and parameterized by tier — ONE implementation, four
+    callers, no copy-paste drift. Returns (paint, zone_spec).
+    """
+    h, w = int(shape[0]), int(shape[1])
+    _tier_off = {"second_base": 0, "third_base": 1013, "fourth_base": 2026, "fifth_base": 3039}[tier]
+    _z_sb = zone.get(tier)
+    _z_sb_color_src = zone.get(tier + "_color_source")
+    _z_sb_is_mono = _z_sb and str(_z_sb).startswith("mono:")
+    _z_sb_base_id = _z_sb
+    if _z_sb_is_mono and _z_sb[5:] in BASE_REGISTRY:
+        _z_sb_base_id = _z_sb[5:]
+    _z_sb_in_base = _z_sb_base_id and _z_sb_base_id in BASE_REGISTRY
+    _z_sb_in_mono = _z_sb_is_mono and _z_sb[5:] in MONOLITHIC_REGISTRY
+    _z_sb_src_is_mono = (
+        _z_sb_color_src
+        and str(_z_sb_color_src).startswith("mono:")
+        and (
+            _z_sb_color_src[5:] in MONOLITHIC_REGISTRY
+            or _z_sb_color_src[5:] in BASE_REGISTRY
+        )
+    )
+    _z_sb_str = float(zone.get(tier + "_strength", 0))
+    if tier == "second_base" or _z_sb or _z_sb_color_src or _z_sb_str > 0:
+        print(f"    [{name}] OVERLAY CHECK [{tier}]: sb='{_z_sb}', src='{_z_sb_color_src}', is_mono={_z_sb_is_mono}, in_base={_z_sb_in_base}, in_mono={_z_sb_in_mono}, src_in_mono={_z_sb_src_is_mono}, strength={_z_sb_str}")
+    # [SPB-OVERLAY-PARITY 2026-08-20] paint strength 0 + spec strength >0 is a
+    # legitimate spec-only overlay; it used to be dropped wholesale here.
+    _z_sb_spec_str_gate = 0.0
+    try:
+        _z_sb_spec_str_gate = float(zone.get(tier + "_spec_strength", 1.0) or 0.0)
+    except (TypeError, ValueError):
+        _z_sb_spec_str_gate = 0.0
+    if (_z_sb_in_base or _z_sb_in_mono or _z_sb_src_is_mono) and (_z_sb_str > 0.001 or _z_sb_spec_str_gate > 1e-6):
+        try:
+            _sb_strength = float(zone.get(tier + "_strength", 0))
+            # [SPB-OVERLAY-PARITY 2026-08-20] the Spec Strength slider was never
+            # read on this path - blend_dual_base_spec got the PAINT strength, so
+            # the slider was inert and the paint slider secretly drove the spec.
+            _sb_spec_strength = max(0.0, min(1.0, float(zone.get(tier + "_spec_strength", 1.0) or 0.0)))
+            _has_sb_spec = bool(_z_sb_in_base or _z_sb_in_mono)
+            spec_secondary = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+            if _z_sb_in_mono:
+                # Special finish as overlay - use its spec_fn
+                _mono_id = _z_sb[5:]
+                _sb_spec_fn = MONOLITHIC_REGISTRY[_mono_id][0]
+                _sb_seed_off = abs(hash(_z_sb)) % 10000
+                spec_secondary = _sanitize_spec_result(_sb_spec_fn(shape, zone_mask, _zone_seed + _tier_off + _sb_seed_off, sm), shape)
+                print(f"    [{name}] {tier} overlay: MONO spec '{_mono_id}'")
+            else:
+                # Regular base as overlay - existing logic
+                _sb_def = BASE_REGISTRY[_z_sb_base_id]
+                _sb_M = float(_sb_def["M"])
+                _sb_R = float(_sb_def["R"])
+                _sb_CC = int(_sb_def.get("CC", 16))
+                _sb_seed_off = abs(hash(_z_sb_base_id)) % 10000
+                if _sb_def.get("base_spec_fn"):
+                    _sb_result = _sb_def["base_spec_fn"](shape, _zone_seed + _tier_off + _sb_seed_off, sm, _sb_M, _sb_R)
+                    _sb_M_arr = _sb_result[0]
+                    _sb_R_arr = _sb_result[1]
+                    _sb_CC_arr = _sb_result[2] if len(_sb_result) > 2 else np.full(shape, float(_sb_CC))
+                elif _sb_def.get("perlin"):
+                    _sb_noise = multi_scale_noise(shape, [8, 16, 32], [0.5, 0.3, 0.2], _zone_seed + _tier_off + _sb_seed_off)
+                    _sb_M_arr = _sb_M + _sb_noise * _sb_def.get("noise_M", 0) * sm
+                    _sb_R_arr = _sb_R + _sb_noise * _sb_def.get("noise_R", 0) * sm
+                    _sb_CC_arr = np.full(shape, float(_sb_CC))
+                else:
+                    _sb_M_arr = np.full(shape, _sb_M)
+                    _sb_R_arr = np.full(shape, _sb_R)
+                    _sb_CC_arr = np.full(shape, float(_sb_CC))
+                # [SPB-OVERLAY-PARITY 2026-08-20] Spec Scale parity with PATH 1.
+                _sb_spec_scale = float(zone.get(tier + "_spec_scale", 1.0) or 1.0)
+                if abs(_sb_spec_scale - 1.0) > 0.01:
+                    from engine.compose import _apply_base_scale_to_spec_channels as _mono_ov_spec_scale
+                    _sb_M_arr, _sb_R_arr, _sb_CC_arr = _mono_ov_spec_scale(_sb_M_arr, _sb_R_arr, _sb_CC_arr, shape, _sb_spec_scale)
+                _sb_M_final = _sb_M_arr * zone_mask + 5.0 * (1 - zone_mask)
+                _sb_R_final = _sb_R_arr * zone_mask + 100.0 * (1 - zone_mask)
+                spec_secondary[:,:,0] = np.clip(_sb_M_final, 0, 255).astype(np.uint8)
+                spec_secondary[:,:,1] = np.clip(_sb_R_final, 0, 255).astype(np.uint8)
+                spec_secondary[:,:,2] = np.clip(_sb_CC_arr * zone_mask, 0, 255).astype(np.uint8)
+                spec_secondary[:,:,3] = 255
+            # [SPB-OVERLAY-PARITY-2 2026-08-20] Rotation / Spec Rotation parity
+            # with the compositing path (and the primary base).
+            _ovrot_raw = zone.get(tier + "_rotation", 0.0)
+            _ovsrot_raw = zone.get(tier + "_spec_rotation", 0.0)
+            _ov_spec_rot = (float(0.0 if _ovrot_raw is None else _ovrot_raw)
+                            + float(0.0 if _ovsrot_raw is None else _ovsrot_raw)) % 360.0
+            if _ov_spec_rot and _has_sb_spec:
+                from engine.compose import _rotate_single_array as _mono_ov_rot
+                for _c in range(3):
+                    spec_secondary[:, :, _c] = np.clip(_mono_ov_rot(
+                        spec_secondary[:, :, _c].astype(np.float32), _ov_spec_rot, shape), 0, 255).astype(np.uint8)
+            _sb_bm = zone.get(tier + "_blend_mode", "noise")
+            # Use "React to zone pattern" (second_base_pattern) first; fallback to zone L1 pattern
+            _overlay_pat_id = _normalize_base_overlay_pattern_id(zone.get(tier + "_pattern"))
+            _pat_id = None if _overlay_pat_id == "__none__" else (_overlay_pat_id or zone.get("pattern") or zone.get("mono_pattern"))
+            _sb_bm_norm = _normalize_second_base_blend_mode(_sb_bm)
+            # Build pattern mask for every pattern-reactive mode. This legacy
+            # monolithic path used to only include Pattern/Pop/Tint, making
+            # Edges/Peaks/Contour/Screen/Threshold fall through as full-zone tints.
+            _sb_pattern_modes = (
+                "pattern",
+                "pattern_vivid",
+                "pattern_edges",
+                "pattern_peaks",
+                "pattern_contour",
+                "pattern_screen",
+                "pattern_threshold",
+            )
+            _sb_needs_mask = _sb_bm_norm in _sb_pattern_modes or _sb_bm_norm == "tint"
+            # Monolithic path: use same effective scale space as zone pattern overlay.
+            _sb_pat_scale = max(0.1, min(10.0, float(zone.get(tier + "_pattern_scale", 1.0)) * mono_auto_scale))
+            _sb_pat_rot = float(zone.get(tier + "_pattern_rotation", 0))
+            _sb_pat_op = zone.get(tier + "_pattern_opacity", 1.0)
+            _sb_pat_op = min(1.0, float(_sb_pat_op)) if float(_sb_pat_op) > 1 else float(_sb_pat_op)
+            _sb_pat_str = max(0.0, min(2.0, float(zone.get(tier + "_pattern_strength", 1.0))))
+            _sb_pat_ox = max(0.0, min(1.0, float(zone.get(tier + "_pattern_offset_x", 0.5))))
+            _sb_pat_oy = max(0.0, min(1.0, float(zone.get(tier + "_pattern_offset_y", 0.5))))
+            # Fit-to-Zone for {tier} overlay (monolithic path)
+            if zone.get(tier + "_fit_zone", False) and zone_mask is not None:
+                _ftrows = np.any(zone_mask > 0.1, axis=1)
+                _ftcols = np.any(zone_mask > 0.1, axis=0)
+                if _ftrows.any() and _ftcols.any():
+                    _ftr_min, _ftr_max = np.where(_ftrows)[0][[0, -1]]
+                    _ftc_min, _ftc_max = np.where(_ftcols)[0][[0, -1]]
+                    _ft_ratio = max((_ftr_max - _ftr_min + 1) / h, (_ftc_max - _ftc_min + 1) / w)
+                    if _ft_ratio > 0.01:
+                        _sb_pat_ox = (_ftc_min + _ftc_max) / 2.0 / w
+                        _sb_pat_oy = (_ftr_min + _ftr_max) / 2.0 / h
+                        _sb_pat_scale = _sb_pat_scale / _ft_ratio
+            _pat_mask = _get_pattern_mask(_pat_id, shape, zone_mask, _zone_seed + _tier_off, sm, scale=_sb_pat_scale, rotation=_sb_pat_rot, opacity=_sb_pat_op, strength=_sb_pat_str, offset_x=_sb_pat_ox, offset_y=_sb_pat_oy) if _sb_needs_mask and _pat_id else None
+            if _pat_mask is not None:
+                if zone.get(tier + "_pattern_invert"):
+                    _pat_mask = 1.0 - _pat_mask
+                if zone.get(tier + "_pattern_harden"):
+                    _pat_mask = np.clip((_pat_mask.astype(np.float32) - 0.45) / 0.15, 0, 1)
+            if _has_sb_spec and _sb_spec_strength > 1e-6:
+                zone_spec, _ = blend_dual_base_spec(
+                    zone_spec, spec_secondary,
+                    strength=_sb_spec_strength,
+                    blend_mode=_sb_bm,
+                    noise_scale=int(zone.get(tier + "_noise_scale", 24)),
+                    seed=_zone_seed + _tier_off,
+                    pattern_mask=_pat_mask,
+                    zone_mask=zone_mask,
+                    overlay_scale=max(0.01, min(5.0, float(zone.get(tier + "_scale", 1.0) or 1.0)))
+                )
+            # [SPB-OVERLAY-PARITY 2026-08-20] the paint half only runs when the
+            # PAINT strength is up - a spec-only overlay must not touch colours.
+            if _sb_strength > 0.001:
+                # Paint side: tint overlay with second_base_color and blend
+                hard_mask = np.where(zone_mask > 0.5, zone_mask, 0.0).astype(np.float32)
+                paint_overlay = paint.copy()
+                _sb_mask3d = hard_mask[:, :, np.newaxis]
+                _sb_src_mono_id = None
+                if _z_sb_src_is_mono:
+                    _sb_src_mono_id = _z_sb_color_src[5:]
+                elif _z_sb_in_mono and MONOLITHIC_REGISTRY.get(_z_sb[5:]) and str(_z_sb_color_src or "").strip().lower() in ("", "overlay"):
+                    _sb_src_mono_id = _z_sb[5:]
+                elif (
+                    _z_sb_is_mono
+                    and _z_sb_base_id in BASE_REGISTRY
+                    and str(_z_sb_color_src or "").strip().lower() in ("", "overlay")
+                ):
+                    _sb_src_mono_id = _z_sb_base_id
+                if (
+                    _sb_src_mono_id
+                    and (
+                        MONOLITHIC_REGISTRY.get(_sb_src_mono_id)
+                        or _sb_src_mono_id in BASE_REGISTRY
+                    )
+                ):
+                    # Use the mono's paint_fn - it generates its own colors
+                    # from a neutral seed so strong underlying bases (e.g. prizm_duochrome)
+                    # don't swallow overlay identity.
+                    if MONOLITHIC_REGISTRY.get(_sb_src_mono_id):
+                        _mono_paint_fn = MONOLITHIC_REGISTRY[_sb_src_mono_id][1]
+                    else:
+                        _mono_paint_fn = BASE_REGISTRY[_sb_src_mono_id].get("paint_fn", paint_none)
+                    _seed_paint = np.full_like(paint[:, :, :3], 0.533, dtype=np.float32)
+                    _color_paint = _mono_paint_fn(_seed_paint, shape, hard_mask, _zone_seed + _tier_off + 7777, 1.0, 0.0)
+                    if _color_paint is not None:
+                        # [SPB-OVERLAY-PARITY-2 2026-08-20] Rotation + Color Strength parity.
+                        _ovcp = np.asarray(_color_paint[:, :, :3], dtype=np.float32)
+                        _ovrot_raw = zone.get(tier + "_rotation", 0.0)
+                        _ovrot = float(0.0 if _ovrot_raw is None else _ovrot_raw) % 360.0
+                        if _ovrot:
+                            from engine.compose import _rotate_single_array as _mono_ov_rot_p
+                            _ovcp = np.stack([_mono_ov_rot_p(_ovcp[:, :, _c], _ovrot, shape) for _c in range(3)], axis=2)
+                        _ovcs_raw = zone.get(tier + "_color_strength", 1.0)
+                        _ovcs = max(0.0, min(1.0, float(1.0 if _ovcs_raw is None else _ovcs_raw)))
+                        paint_overlay[:, :, :3] = paint_overlay[:, :, :3] * (1.0 - _sb_mask3d * _ovcs) + _ovcp * (_sb_mask3d * _ovcs)
+                    print(f"    [{name}] {tier} overlay: MONO color source '{_sb_src_mono_id}'")
+                else:
+                    _sb_color = zone.get(tier + "_color", [1.0, 1.0, 1.0])
+                    if _sb_color is not None and len(_sb_color) >= 3:
+                        _sb_r = float(_sb_color[0])
+                        _sb_g = float(_sb_color[1])
+                        _sb_b = float(_sb_color[2])
+                        _sb_rgb = np.array([_sb_r, _sb_g, _sb_b], dtype=np.float32)
+                        # [SPB-OVERLAY-PARITY-2 2026-08-20] Color Strength parity.
+                        _ovcs_raw = zone.get(tier + "_color_strength", 1.0)
+                        _ovcs = max(0.0, min(1.0, float(1.0 if _ovcs_raw is None else _ovcs_raw)))
+                        paint_overlay[:, :, :3] = paint_overlay[:, :, :3] * (1.0 - _sb_mask3d * _ovcs) + _sb_rgb * (_sb_mask3d * _ovcs)
+                        if _z_sb_in_base:
+                            _sb_def = BASE_REGISTRY[_z_sb_base_id]
+                            _sb_pfn = _sb_def.get("paint_fn", paint_none)
+                            # [SPB-OVERLAY-PARITY 2026-08-20] match the compositing path:
+                            # the base's paint_fn owns the colours only when the colour
+                            # source is 'Same as overlay' (then tint by the swatch so the
+                            # chosen tint stays visible). Solid/none floods the colour ONCE
+                            # above - the old unconditional re-multiply squared it.
+                            _sb_src_l = str(_z_sb_color_src or "").strip().lower()
+                            if _sb_pfn is not paint_none and _sb_src_l in ("overlay", "same_as_overlay", "same-as-overlay"):
+                                paint_overlay = _sb_pfn(paint_overlay, shape, hard_mask, _zone_seed + _tier_off + 7777, 1.0, 1.0)
+                                paint_overlay[:, :, :3] *= np.array([_sb_r, _sb_g, _sb_b], dtype=np.float32)
+                # [2026-06-12 owner bug "Overlay HSB sliders do nothing"]
+                # The HSB adjustments were only wired into the COMPOSITING
+                # path (compose_paint_mod) — zones whose PRIMARY base is a
+                # MONOLITHIC (FM finishes, fusions...) take THIS branch,
+                # where the sliders were silently ignored. Apply the same
+                # adjustments to the built overlay before blending.
+                _sb_hue = float(zone.get(tier + "_hue_shift", 0) or 0)
+                _sb_sat = float(zone.get(tier + "_saturation", 0) or 0)
+                _sb_brt = float(zone.get(tier + "_brightness", 0) or 0)
+                if _sb_hue or _sb_sat or _sb_brt:
+                    from engine.compose import _apply_hsb_adjustments as _mono_ov_hsb
+                    paint_overlay = _mono_ov_hsb(paint_overlay, hard_mask, _sb_hue, _sb_sat, _sb_brt)
+                _sb_ns = int(zone.get(tier + "_noise_scale", 24))
+                _sb_bm = zone.get(tier + "_blend_mode", "noise")
+                _sb_bm_norm = _normalize_second_base_blend_mode(_sb_bm)
+                if _sb_bm_norm in _sb_pattern_modes:
+                    _blend_w = get_base_overlay_alpha(
+                        shape,
+                        _sb_strength,
+                        _sb_bm,
+                        noise_scale=_sb_ns,
+                        seed=_zone_seed + _tier_off,
+                        pattern_mask=_pat_mask,
+                        zone_mask=hard_mask,
+                        overlay_scale=max(0.01, min(5.0, float(zone.get(tier + "_scale", 1.0)))),
+                    )
+                elif _sb_bm_norm == "tint":
+                    _blend_w = _get_pattern_mask(_pat_id, shape, hard_mask, _zone_seed + _tier_off, 1.0, scale=_sb_pat_scale, rotation=_sb_pat_rot, opacity=_sb_pat_op, strength=_sb_pat_str, offset_x=_sb_pat_ox, offset_y=_sb_pat_oy) if _pat_id else None
+                    if _blend_w is None:
+                        _blend_w = np.full(shape, _sb_strength, dtype=np.float32)
+                    else:
+                        if zone.get(tier + "_pattern_invert"):
+                            _blend_w = 1.0 - _blend_w
+                        if zone.get(tier + "_pattern_harden"):
+                            _blend_w = np.clip((_blend_w.astype(np.float32) - 0.45) / 0.15, 0, 1)
+                        _blend_w = np.clip(_blend_w * _sb_strength * 0.35, 0, 1).astype(np.float32)
+                elif _sb_bm_norm == "noise":
+                    _nz = multi_scale_noise(shape, [_sb_ns, _sb_ns * 2, _sb_ns * 4], [0.5, 0.3, 0.2], seed + 1234 + _tier_off)
+                    _blend_w = np.clip(_nz, 0, 1).astype(np.float32)
+                else:
+                    _blend_w = np.ones(shape, dtype=np.float32)
+                _blend_w = _blend_w * hard_mask
+                # Pattern-reactive and Tint alpha are already scaled in _blend_w.
+                _mul = 1.0 if (_sb_bm_norm in _sb_pattern_modes or _sb_bm_norm == "tint") else _sb_strength
+                _blend_w3d = (_blend_w * _mul)[:, :, np.newaxis]
+                # Use overlay RGB only so 3-channel paint never shape-mismatches (overlay may be 4-ch from paint_fn)
+                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _blend_w3d) + paint_overlay[:, :, :3] * _blend_w3d
+        except Exception as _e:
+            import traceback
+            print(f"    [{name}] {tier} overlay ERROR: {_e}")
+            traceback.print_exc()
+    return paint, zone_spec
+
+
+def overlay_pattern_on_spec(spec, pattern_id, shape, mask, seed, sm, scale=1.0, opacity=1.0, spec_mult=1.0, rotation=0, blend_mode="normal", *, zone=None):
     """Overlay a pattern texture ON TOP of an existing spec map.
 
     Used to add patterns over monolithic finishes. The monolithic generates
@@ -11824,7 +16930,14 @@ def overlay_pattern_on_spec(spec, pattern_id, shape, mask, seed, sm, scale=1.0, 
 
     opacity: 0-1, how much the pattern affects the monolithic's values.
              1.0 = full pattern modulation, 0.5 = half-strength.
+    blend_mode: "normal" = legacy additive M/R modulation. Any of the
+             PHYSICAL_SPEC_BLEND_MODES (ghost_carve, chrome_inlay, frost_etch,
+             angle_flip, ember_gate, depth_press) applies the pattern as a
+             cross-channel optical effect — this is what makes Spec Blend
+             work on monolithic bases (it was a silent no-op before 2026-06-12).
     """
+    if zone is not None and "pattern_spec_opacity" in zone:
+        return spec  # Independent full-spec replacement runs at the common zone stage.
     if not pattern_id or pattern_id == "none" or pattern_id not in PATTERN_REGISTRY:
         return spec  # Nothing to overlay
 
@@ -11843,7 +16956,27 @@ def overlay_pattern_on_spec(spec, pattern_id, shape, mask, seed, sm, scale=1.0, 
                 pv = (pv - pv_min) / (pv_max - pv_min)
             else:
                 pv = np.zeros_like(pv)
-            R_range, M_range = 60.0, 50.0
+            pid_seed = _spb_hash_seed(pattern_id)
+            if _spb_pattern_upgrade_excluded(pattern_id):
+                R_range, M_range = 60.0, 50.0
+            else:
+                M_range = float(92 + (pid_seed % 70))
+                R_mag = float(72 + ((pid_seed >> 4) % 62))
+                glossy_tags = ("tech", "hex", "circuit", "op", "moire", "deco", "shokk", "laser")
+                if any(tag in pattern_id.lower() for tag in glossy_tags):
+                    R_range = -R_mag
+                else:
+                    R_range = -R_mag * 0.55
+            from engine.compose import PHYSICAL_SPEC_BLEND_MODES, apply_physical_spec_blend, _normalize_pattern_field
+            if blend_mode in PHYSICAL_SPEC_BLEND_MODES:
+                M_arr, R_arr, CC_arr = apply_physical_spec_blend(
+                    spec[:, :, 0].astype(np.float32), spec[:, :, 1].astype(np.float32),
+                    spec[:, :, 2].astype(np.float32),
+                    _normalize_pattern_field(pv * mask), opacity * sm, blend_mode)
+                for _ch, _arr in ((0, M_arr), (1, R_arr), (2, CC_arr)):
+                    spec[:, :, _ch] = np.clip(np.asarray(_arr, np.float32) * mask
+                                              + spec[:, :, _ch].astype(np.float32) * (1 - mask), 0, 255).astype(np.uint8)
+                return spec
             M_arr = spec[:, :, 0].astype(np.float32)
             R_arr = spec[:, :, 1].astype(np.float32)
             M_arr = M_arr + pv * M_range * sm * opacity * spec_mult
@@ -11873,6 +17006,17 @@ def overlay_pattern_on_spec(spec, pattern_id, shape, mask, seed, sm, scale=1.0, 
     if rot_angle != 0:
         pv = _rotate_array(pv, rot_angle, fill_value=0.0)
 
+    from engine.compose import PHYSICAL_SPEC_BLEND_MODES, apply_physical_spec_blend, _normalize_pattern_field
+    if blend_mode in PHYSICAL_SPEC_BLEND_MODES:
+        M_arr, R_arr, CC_arr = apply_physical_spec_blend(
+            spec[:, :, 0].astype(np.float32), spec[:, :, 1].astype(np.float32),
+            spec[:, :, 2].astype(np.float32),
+            _normalize_pattern_field(np.asarray(pv, np.float32) * mask), opacity * sm, blend_mode)
+        for _ch, _arr in ((0, M_arr), (1, R_arr), (2, CC_arr)):
+            spec[:, :, _ch] = np.clip(np.asarray(_arr, np.float32) * mask
+                                      + spec[:, :, _ch].astype(np.float32) * (1 - mask), 0, 255).astype(np.uint8)
+        return spec
+
     # Read existing spec values as float
     M_arr = spec[:, :, 0].astype(np.float32)
     R_arr = spec[:, :, 1].astype(np.float32)
@@ -11888,7 +17032,7 @@ def overlay_pattern_on_spec(spec, pattern_id, shape, mask, seed, sm, scale=1.0, 
     return spec
 
 
-def overlay_pattern_paint(paint, pattern_id, shape, mask, seed, pm, bb, scale=1.0, opacity=1.0, rotation=0, spec_mult=1.0):
+def overlay_pattern_paint(paint, pattern_id, shape, mask, seed, pm, bb, scale=1.0, opacity=1.0, rotation=0, spec_mult=1.0, *, zone=None, layer=None):
     """Overlay a pattern's paint modifier ON TOP of a monolithic's paint output.
 
     Applies the pattern's paint_fn (if any) with attenuated strength.
@@ -11898,6 +17042,13 @@ def overlay_pattern_paint(paint, pattern_id, shape, mask, seed, pm, bb, scale=1.
         bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
     if not pattern_id or pattern_id == "none" or pattern_id not in PATTERN_REGISTRY:
         return paint
+    # SPB-105 / color routing tick4 (09-07): owner "LEG WARMER ... no color".
+    # All booth monolithic paths must honor Overlay/Blend and authored artwork.
+    # Legacy standalone rendering remains native; finish geometry/M7 unchanged.
+    if zone is not None and zone.get("pattern_paint_mode", "overlay") in ("overlay", "blend"):
+        from engine.pattern_artwork import composite_zone_pattern
+        return composite_zone_pattern(paint, pattern_id, shape, mask, seed, zone,
+            layer=layer, scale=scale, rotation=rotation, opacity=opacity)
     pattern = PATTERN_REGISTRY[pattern_id]
     pat_paint_fn = pattern.get("paint_fn", paint_none)
     hard_mask = np.where(mask > 0.5, mask, 0.0).astype(np.float32)
@@ -11987,8 +17138,10 @@ def overlay_pattern_paint(paint, pattern_id, shape, mask, seed, pm, bb, scale=1.
                 pv = np.ones_like(pv) * 0.5
             pv_3d = pv[:, :, np.newaxis]
             paint = paint_before * (1.0 - pv_3d) + paint * pv_3d
-        except Exception:
-            pass  # Fallback: keep uniform paint mod
+        except Exception as _tex_err:
+            raise RuntimeError(
+                f"Pattern overlay paint texture renderer failed [{pattern_id}]: {_tex_err}"
+            ) from _tex_err
     return paint
 
 
@@ -12023,6 +17176,203 @@ def _suggest_similar_ids(requested_id, registry, max_suggestions=5):
     return [s[1] for s in scored[:max_suggestions]]
 
 
+_GENERIC_COLOR_FINISH_PREFIXES = ("grad_", "grad3_", "gradm_", "ghostg_", "mc_", "clr_", "cs_duo_")
+_BASE_OVERLAY_NO_PATTERN_IDS = {
+    "none",
+    "_none_",
+    "__none__",
+    "none_(base_only)",
+    "none_(independent)",
+    "base_only",
+}
+
+
+def _normalize_base_overlay_pattern_id(pattern_id):
+    if pattern_id is None:
+        return None
+    sid = str(pattern_id).strip()
+    if sid == "":
+        return ""
+    normalized = sid.lower().replace(" ", "_").replace("-", "_")
+    if normalized in _BASE_OVERLAY_NO_PATTERN_IDS:
+        return "__none__"
+    return sid
+
+
+def _validate_base_or_mono_id(base_id, label, field_name):
+    if not base_id:
+        return
+    sid = str(base_id)
+    if sid.startswith("custom_"):
+        return
+    if sid.startswith("mono:"):
+        mono_id = sid[5:]
+        if mono_id not in MONOLITHIC_REGISTRY and mono_id not in BASE_REGISTRY:
+            suggestions = (
+                _suggest_similar_ids(mono_id, MONOLITHIC_REGISTRY)
+                + _suggest_similar_ids(mono_id, BASE_REGISTRY)
+            )
+            hint = f" Did you mean: mono:{', mono:'.join(suggestions)}." if suggestions else ""
+            raise ValueError(f"Unknown {field_name} '{sid}' in {label}.{hint}")
+        return
+    if sid not in BASE_REGISTRY and sid not in MONOLITHIC_REGISTRY:
+        suggestions = _suggest_similar_ids(sid, BASE_REGISTRY) + _suggest_similar_ids(sid, MONOLITHIC_REGISTRY)
+        hint = f" Did you mean: {', '.join(dict.fromkeys(suggestions))}." if suggestions else ""
+        raise ValueError(f"Unknown {field_name} '{sid}' in {label}.{hint}")
+
+
+def _validate_overlay_color_source(color_source, label, field_name):
+    if not color_source:
+        return
+    sid = str(color_source)
+    if sid in {"source", "solid", "overlay", "base", "paint"}:
+        return
+    if sid.startswith("mono:"):
+        mono_id = sid[5:]
+        if mono_id not in MONOLITHIC_REGISTRY and mono_id not in BASE_REGISTRY:
+            suggestions = (
+                _suggest_similar_ids(mono_id, MONOLITHIC_REGISTRY)
+                + _suggest_similar_ids(mono_id, BASE_REGISTRY)
+            )
+            hint = f" Did you mean: mono:{', mono:'.join(suggestions)}." if suggestions else ""
+            raise ValueError(f"Unknown {field_name} '{sid}' in {label}.{hint}")
+        return
+    suggestions = _suggest_similar_ids(sid, MONOLITHIC_REGISTRY)
+    hint = f" Did you mean: mono:{', mono:'.join(suggestions)}." if suggestions else ""
+    raise ValueError(f"Unknown {field_name} '{sid}' in {label}.{hint}")
+
+
+def _validate_zone_render_ids(zone, zone_idx=None):
+    """Fail loudly for explicit renderer IDs that cannot dispatch.
+
+    Unknown IDs used to be skipped, downgraded to ``pattern='none'``, or
+    swallowed by preview fallback. That makes a stale picker value look like a
+    valid but boring render. This validator preserves intentional compatibility
+    shims while rejecting real typos and missing registry entries.
+    """
+    if not isinstance(zone, dict):
+        return
+
+    label = _format_zone_id(zone_idx if zone_idx is not None else 0, zone)
+    base_id = zone.get("base")
+    pattern_id = zone.get("pattern", "none")
+    finish_name = zone.get("finish")
+
+    # [Easy Whole Car material stack, owner request 2026-07-22]
+    # This typed stack is SPEC-only. Fail loudly instead of letting catalog
+    # normalization silently truncate/drop a bad picker row. No finish
+    # renderer changes here, so the per-finish M7 rebake gate is N/A.
+    if "material_stack" in zone:
+        material_stack = zone.get("material_stack")
+        if not isinstance(material_stack, list):
+            raise ValueError(f"material_stack in {label} must be a list of 1 to 4 typed finishes.")
+        if not 1 <= len(material_stack) <= 4:
+            raise ValueError(
+                f"material_stack in {label} must contain 1 to 4 finishes; got {len(material_stack)}."
+            )
+        for stack_idx, layer in enumerate(material_stack):
+            if not isinstance(layer, dict):
+                raise ValueError(f"material_stack[{stack_idx}] in {label} must be an object.")
+            finish_id = str(layer.get("id") or "").strip()
+            registry_type = str(layer.get("registry_type") or "").strip().lower()
+            if not finish_id:
+                raise ValueError(f"material_stack[{stack_idx}] in {label} is missing id.")
+            if registry_type not in ("base", "monolithic"):
+                raise ValueError(
+                    f"material_stack[{stack_idx}] in {label} must declare registry_type "
+                    f"'base' or 'monolithic'."
+                )
+            registry = BASE_REGISTRY if registry_type == "base" else MONOLITHIC_REGISTRY
+            if finish_id not in registry:
+                suggestions = _suggest_similar_ids(finish_id, registry)
+                hint = f" Did you mean: {', '.join(suggestions)}." if suggestions else ""
+                raise ValueError(
+                    f"Unknown {registry_type} material_stack id '{finish_id}' in {label}.{hint}"
+                )
+            try:
+                weight = float(layer.get("weight"))
+            except (TypeError, ValueError):
+                raise ValueError(
+                    f"material_stack[{stack_idx}] weight in {label} must be a finite positive number."
+                ) from None
+            if not np.isfinite(weight) or weight <= 0.0:
+                raise ValueError(
+                    f"material_stack[{stack_idx}] weight in {label} must be a finite positive number."
+                )
+        stack_mode = str(zone.get("material_stack_mode") or "auto_trace").strip().lower()
+        if stack_mode != "auto_trace":
+            raise ValueError(
+                f"Unsupported material_stack_mode '{stack_mode}' in {label}; expected 'auto_trace'."
+            )
+        try:
+            stack_amount = float(zone.get("material_stack_amount", 1.0))
+        except (TypeError, ValueError):
+            raise ValueError(f"material_stack_amount in {label} must be between 0 and 1.") from None
+        if not np.isfinite(stack_amount) or not 0.0 <= stack_amount <= 1.0:
+            raise ValueError(f"material_stack_amount in {label} must be between 0 and 1.")
+        try:
+            material_scale = float(zone.get("material_scale", 1.0))
+        except (TypeError, ValueError):
+            raise ValueError(f"material_scale in {label} must be a finite positive number.") from None
+        if not np.isfinite(material_scale) or material_scale <= 0.0:
+            raise ValueError(f"material_scale in {label} must be a finite positive number.")
+
+    _validate_base_or_mono_id(base_id, label, "base")
+
+    if pattern_id and pattern_id != "none" and pattern_id not in PATTERN_REGISTRY:
+        suggestions = _suggest_similar_ids(pattern_id, PATTERN_REGISTRY)
+        hint = f" Did you mean: {', '.join(suggestions)}." if suggestions else ""
+        raise ValueError(f"Unknown pattern '{pattern_id}' in {label}.{hint}")
+
+    for stack_key in ("pattern_stack",):
+        for stack_idx, layer in enumerate(zone.get(stack_key) or []):
+            if not isinstance(layer, dict):
+                continue
+            pid = layer.get("id") or layer.get("pattern")
+            if pid and pid != "none" and pid not in PATTERN_REGISTRY:
+                suggestions = _suggest_similar_ids(pid, PATTERN_REGISTRY)
+                hint = f" Did you mean: {', '.join(suggestions)}." if suggestions else ""
+                raise ValueError(f"Unknown {stack_key}[{stack_idx}] pattern '{pid}' in {label}.{hint}")
+
+    for overlay_key in ("second_base", "third_base", "fourth_base", "fifth_base"):
+        _validate_base_or_mono_id(zone.get(overlay_key), label, overlay_key)
+        _validate_overlay_color_source(
+            zone.get(f"{overlay_key}_color_source"),
+            label,
+            f"{overlay_key}_color_source",
+        )
+        overlay_pattern = _normalize_base_overlay_pattern_id(zone.get(f"{overlay_key}_pattern"))
+        if overlay_pattern and overlay_pattern != "__none__" and overlay_pattern != "none" and overlay_pattern not in PATTERN_REGISTRY:
+            suggestions = _suggest_similar_ids(overlay_pattern, PATTERN_REGISTRY)
+            hint = f" Did you mean: {', '.join(suggestions)}." if suggestions else ""
+            raise ValueError(f"Unknown {overlay_key}_pattern '{overlay_pattern}' in {label}.{hint}")
+
+    if finish_name:
+        is_known = (
+            finish_name in MONOLITHIC_REGISTRY
+            or finish_name in FINISH_REGISTRY
+            or finish_name in BASE_REGISTRY
+        )
+        is_generic_color_finish = bool(
+            zone.get("finish_colors")
+            and str(finish_name).startswith(_GENERIC_COLOR_FINISH_PREFIXES)
+        )
+        if not is_known and not is_generic_color_finish:
+            suggestions = (
+                _suggest_similar_ids(finish_name, MONOLITHIC_REGISTRY)
+                + _suggest_similar_ids(finish_name, FINISH_REGISTRY)
+                + _suggest_similar_ids(finish_name, BASE_REGISTRY)
+            )
+            hint = f" Did you mean: {', '.join(dict.fromkeys(suggestions))}." if suggestions else ""
+            raise ValueError(f"Unknown finish '{finish_name}' in {label}.{hint}")
+
+
+def _validate_all_zone_render_ids(zones):
+    _ensure_expansions_loaded()
+    for i, zone in enumerate(zones):
+        _validate_zone_render_ids(zone, i)
+
+
 def _sanitize_spec_result_legacy_unused(zone_spec, shape):
     """Ensure zone_spec is a numpy array, not a dict. Some spec functions return dicts."""
     if isinstance(zone_spec, dict):
@@ -12036,7 +17386,7 @@ def _sanitize_spec_result_legacy_unused(zone_spec, shape):
     return zone_spec
 
 
-def _sanitize_spec_result(zone_spec, shape):
+def _sanitize_spec_result(zone_spec, shape, *, strict_shapes=False, context="spec"):
     """Normalize spec outputs from all engine contracts to HxWx4 float32."""
     h, w = shape[:2]
 
@@ -12048,13 +17398,19 @@ def _sanitize_spec_result(zone_spec, shape):
         default[:, :, 3] = 255
         return default
 
-    def _plane(value, fallback):
+    def _plane(value, fallback, channel="spec"):
         if value is None:
+            if strict_shapes:
+                raise ValueError(f"{context} returned missing {channel} channel")
             return np.full((h, w), float(fallback), dtype=np.float32)
         arr = np.asarray(value, dtype=np.float32)
         if arr.ndim == 0:
             return np.full((h, w), float(arr), dtype=np.float32)
         if arr.shape != (h, w):
+            if strict_shapes:
+                raise ValueError(
+                    f"{context} returned invalid {channel} channel shape {arr.shape}; expected {(h, w)}"
+                )
             try:
                 arr = np.resize(arr, (h, w)).astype(np.float32)
             except Exception:
@@ -12064,17 +17420,26 @@ def _sanitize_spec_result(zone_spec, shape):
     if isinstance(zone_spec, dict):
         for key in ("spec", "rgba", "result"):
             if key in zone_spec:
-                return _sanitize_spec_result(zone_spec[key], shape)
+                return _sanitize_spec_result(
+                    zone_spec[key],
+                    shape,
+                    strict_shapes=strict_shapes,
+                    context=context,
+                )
         if any(k in zone_spec for k in ("M", "R", "CC")):
             zone_spec = (zone_spec.get("M"), zone_spec.get("R"), zone_spec.get("CC"))
         else:
+            if strict_shapes:
+                raise ValueError(
+                    f"{context} returned dict without spec/rgba/result or M/R/CC channels"
+                )
             return _default()
 
     if isinstance(zone_spec, (tuple, list)) and len(zone_spec) >= 2:
         out = np.empty((h, w, 4), dtype=np.float32)
-        out[:, :, 0] = np.clip(_plane(zone_spec[0], 5), 0, 255)
-        out[:, :, 1] = np.clip(_plane(zone_spec[1], 100), 0, 255)
-        out[:, :, 2] = np.clip(_plane(zone_spec[2] if len(zone_spec) > 2 else None, 16), 0, 255)
+        out[:, :, 0] = np.clip(_plane(zone_spec[0], 5, "M"), 0, 255)
+        out[:, :, 1] = np.clip(_plane(zone_spec[1], 100, "R"), 0, 255)
+        out[:, :, 2] = np.clip(_plane(zone_spec[2] if len(zone_spec) > 2 else None, 16, "CC"), 0, 255)
         out[:, :, 3] = 255
         return out
 
@@ -12084,7 +17449,7 @@ def _sanitize_spec_result(zone_spec, shape):
             arr = np.moveaxis(arr, 0, -1)
         if arr.ndim == 2:
             out = np.empty((h, w, 4), dtype=np.float32)
-            out[:, :, 0] = np.clip(_plane(arr, 5), 0, 255)
+            out[:, :, 0] = np.clip(_plane(arr, 5, "M"), 0, 255)
             out[:, :, 1] = 100
             out[:, :, 2] = 16
             out[:, :, 3] = 255
@@ -12098,6 +17463,12 @@ def _sanitize_spec_result(zone_spec, shape):
             out[:, :, 2] = np.clip(arr[:, :, 2] if arr.shape[2] > 2 else 16, 0, 255)
             out[:, :, 3] = 255
             return out
+        if strict_shapes:
+            raise ValueError(
+                f"{context} returned invalid spec array shape {arr.shape}; expected {(h, w)} or {(h, w, 3)}"
+            )
+    elif strict_shapes:
+        raise ValueError(f"{context} returned unsupported spec result type {type(zone_spec).__name__}")
     return zone_spec
 
 def _sanitize_paint_result(paint, shape, backup=None):
@@ -12108,6 +17479,413 @@ def _sanitize_paint_result(paint, shape, backup=None):
                 return paint[key]
         return backup.copy() if backup is not None else np.zeros((shape[0], shape[1], 3), dtype=np.float32)
     return paint
+
+
+def _base_transform_requested(scale=1.0, offset_x=0.5, offset_y=0.5, rotation=0.0, flip_h=False, flip_v=False):
+    use_scale = max(0.01, min(10.0, float(scale if scale is not None else 1.0)))
+    ox = max(0.0, min(1.0, float(offset_x if offset_x is not None else 0.5)))
+    oy = max(0.0, min(1.0, float(offset_y if offset_y is not None else 0.5)))
+    rot = float(rotation if rotation is not None else 0.0) % 360.0
+    return abs(use_scale - 1.0) > 0.01 or abs(ox - 0.5) > 0.001 or abs(oy - 0.5) > 0.001 or abs(rot) > 0.5 or bool(flip_h) or bool(flip_v)
+
+
+def _normalized_cc_quality_override(raw_value):
+    """Return a real clearcoat override, or None for default 100% quality."""
+    if raw_value is None:
+        return None
+    try:
+        value = float(raw_value)
+    except (TypeError, ValueError):
+        return None
+    value = value / 100.0 if value > 1.0 else value
+    # SPB-PERF-2026-06-02 / recipe replay 32.45s: saved recipes carry
+    # ccQuality=100 even when the user has not adjusted clearcoat. Treat
+    # 100%/1.0 as the default so it does not disable visible-crop fast paths.
+    if abs(value - 1.0) <= 0.001:
+        return None
+    return value
+
+
+def _cc_quality_is_active(v6kw):
+    if not isinstance(v6kw, dict) or v6kw.get("cc_quality") is None:
+        return False
+    return _normalized_cc_quality_override(v6kw.get("cc_quality")) is not None
+
+
+def _apply_base_spec_strength_to_zone_spec(zone_spec, strength, shape, *, context="zone spec"):
+    """Weaken M/R/CC toward neutral — parity with compose_finish primary Spec Strength."""
+    if zone_spec is None:
+        return zone_spec
+    _strength = max(0.0, min(2.0, float(strength)))
+    if 0.999 < _strength < 1.001:
+        return zone_spec
+    try:
+        from engine.compose import _scale_base_spec_channels_toward_neutral
+    except Exception as _imp_err:
+        logger.warning(f"Spec strength weaken skipped ({context}): {_imp_err}")
+        return zone_spec
+    spec = _sanitize_spec_result(zone_spec, shape, strict_shapes=False, context=context)
+    if not isinstance(spec, np.ndarray) or spec.ndim != 3 or spec.shape[2] < 2:
+        return zone_spec
+    M = np.asarray(spec[:, :, 0], dtype=np.float32)
+    R = np.asarray(spec[:, :, 1], dtype=np.float32)
+    CC = np.asarray(spec[:, :, 2], dtype=np.float32) if spec.shape[2] >= 3 else None
+    M2, R2, CC2 = _scale_base_spec_channels_toward_neutral(M, R, CC, _strength)
+    out = spec.astype(np.float32, copy=True)
+    out[:, :, 0] = np.clip(M2, 0, 255)
+    out[:, :, 1] = np.clip(R2, 0, 255)
+    if CC2 is not None and out.shape[2] >= 3:
+        out[:, :, 2] = np.clip(CC2, 0, 255)
+    if spec.dtype == np.uint8:
+        return out.astype(np.uint8)
+    return out
+
+
+def _transform_spec_for_base_controls(
+    zone_spec, shape, scale, offset_x, offset_y, rotation, flip_h, flip_v, zone_mask=None
+):
+    zone_spec = _sanitize_spec_result(zone_spec, shape, strict_shapes=True, context="monolithic base transform spec")
+    rgb = np.clip(np.asarray(zone_spec[:, :, :3], dtype=np.float32) / 255.0, 0.0, 1.0)
+    if zone_mask is not None:
+        # [SPB 2026-07-05 owner: "SPEC SCALE below 1.00 → whole canvas scale bug.
+        # This bug KEEPS coming up."] Port of the 2026-06-17 TRUE root-cause PAINT
+        # cure (_apply_base_transform_to_zone_paint_only) to the SPEC post-pass.
+        # The old path handed the FINISHED zone-shaped spec plate to the global
+        # placement transform, so scale<1 shrank + tiled the WHOLE plate — mini
+        # copies of the canvas (neutral surround + zone silhouette) stamped
+        # through the zone: the recurring hall-of-mirrors, this time on M/R/CC.
+        # CURE: tile ONLY the zone's own spec material (strong in-zone source,
+        # mean-fill soft edges pre-tiling) and composite back through the SOFT
+        # mask so the plate outside the zone is byte-untouched.
+        # Guard: tests/regression_spec_scale_no_whole_canvas_tile_test.py
+        _zm = np.asarray(zone_mask, dtype=np.float32)
+        soft3 = (_zm[:, :, np.newaxis] > 0.001)
+        strong = (_zm >= 0.5)
+        src_sel = strong if np.any(strong) else _zm > 0.001
+        material = rgb.copy()
+        if np.any(src_sel):
+            fill = np.mean(material[src_sel], axis=0, dtype=np.float32)
+            material = np.where(src_sel[:, :, np.newaxis], material, fill.reshape(1, 1, 3))
+            # Tile the FIELD, not the canvas: repeat the zone's own bbox material
+            # across the full canvas (phase-aligned to its original position) so
+            # scale<1 renders UNIFORMLY finer zone texture instead of one mini
+            # copy of the plate floating in mean-fill.
+            ys, xs = np.nonzero(src_sel)
+            y1, y2 = int(ys.min()), int(ys.max()) + 1
+            x1, x2 = int(xs.min()), int(xs.max()) + 1
+            crop = material[y1:y2, x1:x2]
+            ch, cw = crop.shape[0], crop.shape[1]
+            if ch >= 4 and cw >= 4:
+                h, w = int(shape[0]), int(shape[1])
+                reps_y = -(-h // ch) + 1
+                reps_x = -(-w // cw) + 1
+                tiled = np.tile(crop, (reps_y, reps_x, 1))
+                # phase-align so the crop sits at its original bbox position
+                oy = (-y1) % ch
+                ox = (-x1) % cw
+                material = tiled[oy:oy + h, ox:ox + w]
+        transformed = _transform_base_color_source(
+            material,
+            shape,
+            scale=scale,
+            offset_x=offset_x,
+            offset_y=offset_y,
+            rotation=rotation,
+            flip_h=flip_h,
+            flip_v=flip_v,
+        )
+        transformed_rgb = np.where(soft3, transformed, rgb)
+    else:
+        transformed_rgb = _transform_base_color_source(
+            rgb,
+            shape,
+            scale=scale,
+            offset_x=offset_x,
+            offset_y=offset_y,
+            rotation=rotation,
+            flip_h=flip_h,
+            flip_v=flip_v,
+        )
+    out = zone_spec.astype(np.float32, copy=True)
+    out[:, :, :3] = np.clip(transformed_rgb * 255.0, 0, 255)
+    if out.shape[2] > 3:
+        out[:, :, 3] = zone_spec[:, :, 3]
+    return out
+
+
+def _apply_base_transform_to_zone_output(before_paint, after_paint, zone_spec, zone_mask, shape, scale, offset_x, offset_y, rotation, flip_h, flip_v):
+    if not _base_transform_requested(scale, offset_x, offset_y, rotation, flip_h, flip_v):
+        return after_paint, zone_spec
+    try:
+        from engine.paint_v2.placement_context import zone_placement_was_applied
+        if zone_placement_was_applied():
+            return after_paint, zone_spec
+    except Exception:
+        pass
+    paint_was_gpu = is_gpu() and hasattr(after_paint, '__cuda_array_interface__')
+    before_cpu = to_cpu(before_paint) if (is_gpu() and hasattr(before_paint, '__cuda_array_interface__')) else before_paint
+    after_cpu = to_cpu(after_paint) if paint_was_gpu else after_paint
+    before_arr = np.asarray(before_cpu, dtype=np.float32)
+    after_arr = np.asarray(after_cpu, dtype=np.float32)
+    actual_shape = (after_arr.shape[0], after_arr.shape[1])
+    # SPB 2026-06-17 TRUE root-cause fix (see _apply_base_transform_to_zone_paint_only
+    # for the full diagnosis): build the TILING SOURCE from STRONGLY in-zone pixels
+    # only (>= 0.5) so soft-edged decal / other-zone pixels are filled with the
+    # in-zone mean BEFORE tiling and cannot be replicated across the zone. The FINAL
+    # composite keeps the SOFT mask for smooth edge blending.
+    _zm = np.asarray(zone_mask, dtype=np.float32)
+    soft3 = (_zm[:, :, np.newaxis] > 0.001)
+    strong = (_zm >= 0.5)
+    src_sel = strong if np.any(strong) else _zm > 0.001
+    material_rgb = after_arr[:, :, :3].copy()
+    if np.any(src_sel):
+        fill_rgb = np.mean(material_rgb[src_sel], axis=0, dtype=np.float32)
+        material_rgb = np.where(src_sel[:, :, np.newaxis], material_rgb, fill_rgb.reshape(1, 1, 3))
+    transformed_paint = _transform_base_color_source(
+        material_rgb,
+        actual_shape,
+        scale=scale,
+        offset_x=offset_x,
+        offset_y=offset_y,
+        rotation=rotation,
+        flip_h=flip_h,
+        flip_v=flip_v,
+    )
+    paint_out = before_arr[:, :, :3].copy()
+    paint_out = np.where(soft3, transformed_paint, paint_out).astype(np.float32, copy=False)
+    # [2026-07-05] pass zone_mask so the spec transform uses the in-zone masked
+    # cure instead of tiling the whole zone-shaped plate (same fix as the paint
+    # path directly above).
+    spec_out = _transform_spec_for_base_controls(
+        zone_spec, actual_shape, scale, offset_x, offset_y, rotation, flip_h, flip_v,
+        zone_mask=zone_mask
+    )
+    return (to_gpu(paint_out) if paint_was_gpu else paint_out), spec_out
+
+
+def _apply_base_transform_to_zone_paint_only(
+    before_paint, after_paint, zone_mask, shape, scale, offset_x, offset_y, rotation, flip_h, flip_v
+):
+    """Apply base placement to paint only (monolithic path — spec uses spec_scale post-pass)."""
+    if not _base_transform_requested(scale, offset_x, offset_y, rotation, flip_h, flip_v):
+        return after_paint
+    paint_was_gpu = is_gpu() and hasattr(after_paint, '__cuda_array_interface__')
+    before_cpu = to_cpu(before_paint) if (is_gpu() and hasattr(before_paint, '__cuda_array_interface__')) else before_paint
+    after_cpu = to_cpu(after_paint) if paint_was_gpu else after_paint
+    before_arr = np.asarray(before_cpu, dtype=np.float32)
+    after_arr = np.asarray(after_cpu, dtype=np.float32)
+    actual_shape = (after_arr.shape[0], after_arr.shape[1])
+    _zm = np.asarray(zone_mask, dtype=np.float32)
+    # SPB 2026-06-17 TRUE root-cause fix (monolithic-primary base-scale tiles the
+    # whole car). The owner assigns a FRACTURED/monolithic finish (fm_frost_lace,
+    # fm_glacier_core, ...) to a COLOR selection (e.g. "the black areas"), which
+    # gives a SOFT (gaussian-blurred 3px) zone mask, then drops Base Scale to 0.5.
+    # PROVEN via the full build_multi_zone pipeline: the decal / other-zone pixels
+    # sit at the soft EDGE of this zone's mask (mask values 0.001-0.15), so the old
+    # `mask3 = mask > 0.001` SOURCE selector let those foreign-colored edge pixels
+    # into material_rgb. _transform_base_color_source then tiled them, stamping
+    # mini magenta/cyan specks (the decals + other zones) across the whole zone —
+    # the recurring "mini-cars" report. (The isolated-function tests passed only
+    # because they used a hard center-box mask with NO soft foreign edges.)
+    #
+    # CURE: build the TILING SOURCE from STRONGLY in-zone pixels only (>= 0.5) and
+    # fill everything else (soft edges = decals/other zones) with the in-zone mean
+    # BEFORE tiling, so scale<1 repeats ONLY this zone's own material. The FINAL
+    # composite still uses the SOFT mask so zone edges stay smoothly blended.
+    # Guard: tests/regression_base_scale_no_whole_canvas_tile_test.py +
+    # _fractured_proof/test_stacked_zone_scale.py (full-pipeline, soft-mask repro).
+    soft3 = (_zm[:, :, np.newaxis] > 0.001)
+    strong = (_zm >= 0.5)
+    src_sel = strong if np.any(strong) else _zm > 0.001  # fall back if zone is all-soft
+    material_rgb = after_arr[:, :, :3].copy()
+    if np.any(src_sel):
+        fill_rgb = np.mean(material_rgb[src_sel], axis=0, dtype=np.float32)
+        material_rgb = np.where(src_sel[:, :, np.newaxis], material_rgb, fill_rgb.reshape(1, 1, 3))
+    transformed_paint = _transform_base_color_source(
+        material_rgb,
+        actual_shape,
+        scale=scale,
+        offset_x=offset_x,
+        offset_y=offset_y,
+        rotation=rotation,
+        flip_h=flip_h,
+        flip_v=flip_v,
+    )
+    paint_out = before_arr[:, :, :3].copy()
+    paint_out = np.where(soft3, transformed_paint, paint_out).astype(np.float32, copy=False)
+    return to_gpu(paint_out) if paint_was_gpu else paint_out
+
+
+def _finer_base_paint_from_pure(before_paint, pure_paint, zone_mask, shape,
+                                scale, offset_x, offset_y, rotation, flip_h, flip_v):
+    """OWNER-CONFIRMED finer-scale base PAINT (2026-06-17).
+
+    Base/Color Scale < 1 must render a FINER / denser version of the finish's
+    OWN pattern *within the selection* — NOT tile the zone-masked (car-shaped)
+    render into mini-copies of the whole car.
+
+    The old fallback (_apply_base_transform_to_zone_paint_only) tiled a source
+    built from the zone-masked render, so the zone SILHOUETTE (mean-fill
+    outside, pattern inside) repeated across the canvas = the recurring
+    "mini-cars" bug.
+
+    CURE — mirror the proven compositing pattern path (engine/compose.py ~951
+    "tile the pure cached pattern DOWN ... stays clean"): feed
+    `_transform_base_color_source` a PURE FULL-CANVAS render of the finish
+    (re-rendered with a ones mask, native placement, no silhouette). Tiling a
+    rectangular full-frame pattern down by 1/scale yields finer, clean motifs.
+    Then confine to the SOFT zone mask so it only touches the selection.
+    """
+    pure_was_gpu = is_gpu() and hasattr(pure_paint, '__cuda_array_interface__')
+    pure_cpu = to_cpu(pure_paint) if pure_was_gpu else pure_paint
+    pure_arr = np.asarray(pure_cpu, dtype=np.float32)
+    actual_shape = (pure_arr.shape[0], pure_arr.shape[1])
+    transformed = _transform_base_color_source(
+        pure_arr[:, :, :3], actual_shape,
+        scale=scale, offset_x=offset_x, offset_y=offset_y,
+        rotation=rotation, flip_h=flip_h, flip_v=flip_v,
+    )
+    before_was_gpu = is_gpu() and hasattr(before_paint, '__cuda_array_interface__')
+    before_cpu = to_cpu(before_paint) if before_was_gpu else before_paint
+    before_arr = np.asarray(before_cpu, dtype=np.float32)
+    _zm = np.asarray(
+        to_cpu(zone_mask) if (is_gpu() and hasattr(zone_mask, '__cuda_array_interface__')) else zone_mask,
+        dtype=np.float32,
+    )
+    soft3 = (_zm[:, :, np.newaxis] > 0.001)
+    out = before_arr.copy()
+    out[:, :, :3] = np.where(soft3, transformed, before_arr[:, :, :3]).astype(np.float32, copy=False)
+    return to_gpu(out) if before_was_gpu else out
+
+
+def _monolithic_transform_seed_paint(before_paint, zone_mask, shape):
+    """Build a source-safe seed so base transforms cannot move template art."""
+    before_arr = np.asarray(to_cpu(before_paint) if hasattr(before_paint, '__cuda_array_interface__') else before_paint, dtype=np.float32)
+    mask = np.asarray(zone_mask, dtype=np.float32) > 0.001
+    if before_arr.ndim == 3 and before_arr.shape[2] > 3:
+        before_arr = before_arr[:, :, :3]
+    if np.any(mask):
+        color = np.mean(before_arr[:, :, :3][mask], axis=0)
+    else:
+        color = np.array([0.533, 0.533, 0.533], dtype=np.float32)
+    color = np.clip(color.astype(np.float32), 0.0, 1.0)
+    seed = np.zeros((shape[0], shape[1], 3), dtype=np.float32)
+    seed[:, :, 0] = color[0]
+    seed[:, :, 1] = color[1]
+    seed[:, :, 2] = color[2]
+    return seed
+
+
+def _monolithic_underpaint_from_zone(before_paint, zone, shape, zone_mask, seed):
+    """Keep chosen color out of the monolithic underpaint.
+
+    The explicit base color is applied once to the completed material result in
+    each monolithic path. Applying it here as well made partial Color Strength
+    nonlinear for renderers that sample their underpaint.
+    """
+    before_arr = np.asarray(
+        to_cpu(before_paint) if hasattr(before_paint, '__cuda_array_interface__') else before_paint,
+        dtype=np.float32,
+    )
+    if before_arr.ndim == 3 and before_arr.shape[2] > 3:
+        before_arr = before_arr[:, :, :3]
+    # SPB base-mode hotfix 2026-09-09, tick2: owner "all don't do shit when
+    # you say use source paint". Gradient paint_fns write into their input;
+    # sharing this buffer destroyed the snapshot used to restore source mode
+    # and Base Strength. Keep it immutable across car/helmet/suit dispatch.
+    # No finish construction/M7 change; source-pixel error 235 -> 0 is the gate.
+    return before_arr.copy()
+
+
+def _blend_monolithic_base_strength(source_paint, mono_paint, zone_mask, strength):
+    """Mix the completed monolithic base result over the original source paint."""
+    try:
+        w = max(0.0, min(1.0, float(strength)))
+    except (TypeError, ValueError):
+        w = 1.0
+    if w >= 0.999:
+        return mono_paint
+    paint_was_gpu = is_gpu() and hasattr(mono_paint, '__cuda_array_interface__')
+    under = np.asarray(to_cpu(source_paint) if hasattr(source_paint, '__cuda_array_interface__') else source_paint, dtype=np.float32)
+    mono = np.asarray(to_cpu(mono_paint) if paint_was_gpu else mono_paint, dtype=np.float32)
+    if under.ndim == 3 and under.shape[2] > 3:
+        under = under[:, :, :3]
+    if mono.ndim == 3 and mono.shape[2] > 3:
+        mono = mono[:, :, :3]
+    alpha = np.clip(np.asarray(zone_mask, dtype=np.float32) * w, 0.0, 1.0)[:, :, np.newaxis]
+    out = under[:, :, :3] * (1.0 - alpha) + mono[:, :, :3] * alpha
+    return to_gpu(out.astype(np.float32, copy=False)) if paint_was_gpu else out.astype(np.float32, copy=False)
+
+
+def _zone_base_transform_values(zone):
+    raw_scale = zone.get("base_scale", zone.get("baseScale", 1.0))
+    return {
+        "scale": float(raw_scale if raw_scale is not None else 1.0),
+        "offset_x": max(0.0, min(1.0, float(zone.get("base_offset_x", 0.5)))),
+        "offset_y": max(0.0, min(1.0, float(zone.get("base_offset_y", 0.5)))),
+        "rotation": float(zone.get("base_rotation", zone.get("rotation", 0))),
+        "flip_h": bool(zone.get("base_flip_h", False)),
+        "flip_v": bool(zone.get("base_flip_v", False)),
+    }
+
+
+def _zone_monolithic_color_source_scale(zone, base_transform):
+    """Compose material scale with Easy By Color's authored-color scale."""
+    # SPB-EASY-COLOR-SCALE-20260721 tick 1 — owner verdict: "you should be
+    # able to scale the color up or down." Monolithic selected finishes used
+    # only base_scale, so base_color_scale was a silent no-op while regular
+    # bases honored both. Behaviour metric: selected-source scale delta
+    # 0.000 -> >0.010 inside-zone; spec delta remains exactly 0.
+    raw = zone.get("base_color_scale", zone.get("baseColorScale", 1.0))
+    try:
+        color_scale = float(raw if raw is not None else 1.0)
+    except (TypeError, ValueError):
+        color_scale = 1.0
+    color_scale = max(0.01, min(5.0, color_scale))
+    return float(base_transform["scale"]) * color_scale
+
+
+_PREVIEW_SOURCE_RGB_CACHE = None
+_PREVIEW_SOURCE_RGB_CACHE_MAX_BYTES = 16 * 1024 * 1024
+
+
+def _load_preview_source_rgb(paint_file):
+    """Decode preview paint once per exact source payload.
+
+    The preview route can materialize the same cached PNG bytes at a different
+    temporary path on every request, so path/mtime is not a safe or useful
+    identity. Hash the encoded bytes (cheap relative to PNG decode), then keep
+    one immutable RGB uint8 image plus its existing pixel digest. The caller
+    still creates a fresh float32 working array, so render code cannot mutate
+    the memo. The byte cap keeps a pathological oversized preview from
+    expanding process memory; a native 2048 RGB image is 12 MiB.
+    """
+    global _PREVIEW_SOURCE_RGB_CACHE
+    import hashlib as _preview_hashlib
+
+    source_hash = _preview_hashlib.sha256()
+    try:
+        with open(paint_file, "rb") as source_file:
+            for chunk in iter(lambda: source_file.read(1024 * 1024), b""):
+                source_hash.update(chunk)
+        source_digest = source_hash.digest()
+    except OSError:
+        source_digest = None
+
+    cached = _PREVIEW_SOURCE_RGB_CACHE
+    if source_digest is not None and cached is not None and cached[0] == source_digest:
+        return cached[1], cached[2]
+
+    with Image.open(paint_file) as source_image:
+        source_rgb = np.array(source_image.convert("RGB"), dtype=np.uint8, copy=True)
+    pixel_digest = _preview_hashlib.blake2b(
+        source_rgb.tobytes(), digest_size=16
+    ).hexdigest()
+    source_rgb.setflags(write=False)
+
+    if source_digest is not None and source_rgb.nbytes <= _PREVIEW_SOURCE_RGB_CACHE_MAX_BYTES:
+        _PREVIEW_SOURCE_RGB_CACHE = (source_digest, source_rgb, pixel_digest)
+    return source_rgb, pixel_digest
 
 
 def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51, save_debug_images=False, import_spec_map=None, car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss", preview_mode=False, decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None, abort_event=None, progress_callback=None, generate_normal_map=False, export_layers=False):
@@ -12188,13 +17966,64 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     """
     # Validate inputs early so we surface actionable errors instead of
     # cryptic IndexErrors/KeyErrors deep inside the pipeline.
-    _validate_zones(zones)
+    # Owner 2026-07-19: Spec Sculpt's selected map is a complete material
+    # plan. With an imported map, zero zones deliberately means "preserve it
+    # exactly"; requiring a fake whole-car zone would overwrite the result.
+    _validate_zones(zones, allow_empty=bool(import_spec_map))
     if not preview_mode:
         _validate_paint_file(paint_file)
     seed = _coerce_seed(seed)
 
+    # [SPB render trace 2026-06-10 — owner: "code into the server HOW it's
+    # rendering so you can trace it back without me breaking it down"] Dump the
+    # EXACT per-zone recipe (every base / scale / finish / pattern / strength key)
+    # to _audit/last_render_trace.json on every render. Lets the assistant repro a
+    # reported bug from the trace instead of asking the owner to reconstruct it.
+    try:
+        import json as _trc_json, os as _trc_os
+        _trc = {"paint_file": str(paint_file), "seed": (int(seed) if isinstance(seed, int) else str(seed)),
+                "preview_mode": bool(preview_mode), "n_zones": len(zones), "zones": []}
+        for _zi, _z in enumerate(zones):
+            if not isinstance(_z, dict):
+                _trc["zones"].append({"i": _zi, "raw": str(_z)[:120]}); continue
+            _keep = {k: v for k, v in _z.items()
+                     if ("scale" in k or "base" in k or "pattern" in k or "strength" in k
+                         or k in ("name", "color", "color_rgb", "finish", "intensity", "overlay",
+                                  "material_stack", "material_stack_mode", "material_stack_amount"))
+                     and not isinstance(v, (bytes, bytearray))}
+            # Apply-area visibility (2026-07-01): region/spatial masks are arrays the
+            # key filter above drops, so the trace couldn't answer "did the client
+            # send the drawn box?" — record presence flags instead of the payload.
+            if _z.get("region_mask") is not None:
+                _keep["has_region_mask"] = True
+            if _z.get("spatial_mask") is not None:
+                _keep["has_spatial_mask"] = True
+            if _z.get("apply_area_shape_only"):
+                _keep["apply_area_shape_only"] = True
+            _trc["zones"].append({"i": _zi, **_keep})
+        _trc_dir = _trc_os.path.join(_trc_os.path.dirname(_trc_os.path.abspath(__file__)), "_audit")
+        _trc_os.makedirs(_trc_dir, exist_ok=True)
+        with open(_trc_os.path.join(_trc_dir, "last_render_trace.json"), "w", encoding="utf-8") as _tf:
+            _trc_json.dump(_trc, _tf, indent=1, default=str)
+        # rolling history (append-only, trimmed to the last 40) so a buggy frame is
+        # never lost to the next render — the assistant reads this to find the exact
+        # render that misbehaved.
+        _hist = _trc_os.path.join(_trc_dir, "render_trace_history.jsonl")
+        try:
+            _lines = []
+            if _trc_os.path.exists(_hist):
+                with open(_hist, "r", encoding="utf-8") as _hf:
+                    _lines = _hf.readlines()[-39:]
+            _lines.append(_trc_json.dumps(_trc, default=str) + "\n")
+            with open(_hist, "w", encoding="utf-8") as _hf:
+                _hf.writelines(_lines)
+        except Exception:
+            pass
+    except Exception:
+        pass
+
     # Ensure expansion modules are loaded on first render (lazy-load for fast startup)
-    _ensure_expansions_loaded()
+    _validate_all_zone_render_ids(zones)
 
     logger.info("=" * 60)
     logger.info(f"  {ENGINE_DISPLAY_NAME} - Base + Pattern Compositing")
@@ -12202,10 +18031,10 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     logger.info(f"  Combinations: {len(BASE_REGISTRY)} bases x {len(PATTERN_REGISTRY)} patterns = {len(BASE_REGISTRY) * len(PATTERN_REGISTRY)}+")
     logger.info("=" * 60)
 
-    # ---- Zone result cache (preview_mode only) ----
+    # ---- Zone result cache ----
     # Persists across calls as a function attribute so unchanged zones are skipped.
-    # Each entry: { 'zone_spec': np.array, 'paint_delta': np.array, 'mask': np.array }
-    # 'paint_delta' is the paint array AFTER this zone was applied minus the paint BEFORE,
+    # Each entry: { 'zone_spec': np.array, 'paint_result': np.array, 'mask': np.array }
+    # 'paint_result' is the paint array AFTER this zone was applied.
     # masked to the zone — so we can replay it without re-running the full pipeline.
     # Cache is invalidated externally (by server.py) when paint file or scale changes.
     import hashlib as _hashlib
@@ -12215,6 +18044,17 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     start_time = time.time()
     if not preview_mode:
         os.makedirs(output_dir, exist_ok=True)
+        # [SPB repro-capture 2026-06-16] Save the EXACT zone payload + key params with every render,
+        # so a reported bug (e.g. base_scale whole-body tiling on a specific multi-zone setup) is
+        # instantly replayable from the job folder — no more guessing at the owner's configuration.
+        try:
+            import json as _spb_json
+            with open(os.path.join(output_dir, "zones_payload.json"), "w", encoding="utf-8") as _spb_zf:
+                _spb_json.dump({"zones": zones, "iracing_id": iracing_id, "seed": seed,
+                                "car_prefix": car_prefix, "paint_file": str(paint_file)},
+                               _spb_zf, indent=1, default=str)
+        except Exception:
+            pass
 
     # Load paint -- PROTECT THE ORIGINAL SOURCE FILE
     # ALWAYS back up the source in its own directory on first render.
@@ -12245,17 +18085,75 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 logger.info(f"  Loading from backup: ORIGINAL_{paint_basename} (prevents re-processing)")
 
     t_load = time.time()
-    scheme_img = Image.open(paint_file).convert('RGB')
-    scheme = np.array(scheme_img).astype(np.float32) / 255.0
-    h, w = scheme.shape[:2]
+    _paint_source_cache_sig = None
+    if preview_mode:
+        try:
+            # [Native-2048 preview latency, owner request 2026-08-23]
+            # Repeated token previews used to decode and pixel-hash the same
+            # stable PNG on every build_multi_zone call. Exact encoded-byte
+            # identity now reuses one immutable 12 MiB-at-2048 RGB buffer.
+            # Isolated 2048 source preparation: 450.32ms before -> 108.23ms
+            # cold / 30.43ms warm; evidence-paint warm engine median 618ms ->
+            # 451ms, with cold/warm/cold output bytes unchanged.
+            scheme_u8, _paint_digest = _load_preview_source_rgb(paint_file)
+            scheme = scheme_u8.astype(np.float32) / 255.0
+            h, w = scheme.shape[:2]
+            _paint_source_cache_sig = f"rgb:{h}x{w}:{_paint_digest}"
+        except Exception:
+            # Fall through to the unchanged general loader below.
+            pass
+
+    if _paint_source_cache_sig is None:
+        scheme_img = Image.open(paint_file).convert('RGB')
+        scheme = np.array(scheme_img).astype(np.float32) / 255.0
+        h, w = scheme.shape[:2]
+        try:
+            # SPB-PERF-2026-06-02 / owner live 24-32s render logs: the app
+            # creates fresh output/job_* folders, so path/mtime cache keys miss
+            # even when the rendered source pixels are identical. Key zone and
+            # color-mask caches by RGB content from the already-loaded image.
+            _paint_digest = _hashlib.blake2b(
+                scheme_img.tobytes(), digest_size=16
+            ).hexdigest()
+            _paint_source_cache_sig = f"rgb:{h}x{w}:{_paint_digest}"
+        except Exception:
+            _paint_source_cache_sig = (
+                f"{os.path.normpath(os.path.abspath(paint_file))}:{h}x{w}"
+            )
     shape = (h, w)
     print(f"  Resolution: {w}x{h}  ({time.time()-t_load:.2f}s)")
 
-    # Analyze colors
+    # Analyze colors only when selector types actually need HSV/luma stats.
+    # SPB-PERF-2026-06-02: most live truck renders use plain RGB+tolerance
+    # zone selectors, so a full 2048 RGB->HSV pass was dead work.
     t_analyze = time.time()
     print()
-    stats = analyze_paint_colors(scheme)
-    print(f"  Color analysis: {time.time()-t_analyze:.2f}s")
+    _needs_global_color_stats = any(
+        _color_desc_needs_color_stats((zone or {}).get("color", "everything"))
+        for zone in zones
+    )
+    if _needs_global_color_stats:
+        # [SPB-QOL 2026-08-05 loop unit 3] analyze_paint_colors is a pure
+        # function of the scheme array (HSV + luma), and _paint_source_cache_sig
+        # is a blake2b of those exact bytes computed just above — a free content
+        # key. Full-res analysis cost ~120ms per render even when the paint had
+        # not changed (every re-render of the same livery). Single-entry memo:
+        # one paint per session is the norm, and the entry is replaced the
+        # moment the paint content changes. Cross-render mutation safety: stats
+        # arrays are already shared across all zones WITHIN a render, so reuse
+        # across renders introduces no new mutation class — and the cold/warm/
+        # cold render-equality test would catch any contamination.
+        _stats_memo = getattr(build_multi_zone, '_color_stats_memo', None)
+        if _stats_memo is not None and _stats_memo[0] == _paint_source_cache_sig:
+            stats = _stats_memo[1]
+            print(f"  Color analysis: memo hit ({time.time()-t_analyze:.2f}s)")
+        else:
+            stats = analyze_paint_colors(scheme)
+            build_multi_zone._color_stats_memo = (_paint_source_cache_sig, stats)
+            print(f"  Color analysis: {time.time()-t_analyze:.2f}s")
+    else:
+        stats = {"rgb": scheme}
+        print(f"  Color analysis: skipped RGB-only selectors ({time.time()-t_analyze:.2f}s)")
 
     # Auto-generate zone names if not provided (Paint Booth UI doesn't send them)
     for i, zone in enumerate(zones):
@@ -12285,34 +18183,59 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     _export_zone_layers = [] if export_layers else None
 
     # First pass: build masks for non-remainder zones
+    # SPB-93: release moved material sources before other Zones claim ownership.
+    from engine.zone_material_ownership import release_source_footprints as _release_material_source
     for i, zone in enumerate(zones):
+        if isinstance(zone, dict):
+            zone["_spb_zone_mask_source_layer_gated"] = False
         color_desc = zone.get("color", "everything")
 
-        # SPATIAL REGION MASK: if the zone has a pre-drawn region mask, use it directly
-        # This bypasses color detection entirely - great for numbers, sponsors, artwork
+        # APPLY-AREA (region_mask): drawn box/lasso. Intersect with zone color + layer when set.
         if "region_mask" in zone and zone["region_mask"] is not None:
             region = zone["region_mask"]
-            # Ensure it's the right size
             if region.shape[0] != h or region.shape[1] != w:
                 from PIL import Image as PILImage
                 rm_img = PILImage.fromarray((region * 255).astype(np.uint8))
                 rm_img = rm_img.resize((w, h), PILImage.NEAREST)
                 region = np.array(rm_img).astype(np.float32) / 255.0
             mask = region.astype(np.float32)
+            if mask.max() > 1.01:
+                mask = np.clip(mask / 255.0, 0.0, 1.0)
+            hard_edge = _zone_uses_hard_ownership(zone)
+            _blur = 0 if hard_edge else 3
+            if _zone_apply_area_intersects_color(zone, color_desc):
+                _match_scheme, _match_stats = _resolve_layer_local_color_match(scheme, stats, zone, h, w, i, color_desc)
+                color_mask = _build_color_mask_from_desc(color_desc, _match_scheme, _match_stats, h, w, _blur)
+                mask = (mask * color_mask).astype(np.float32)
+                print(f"    Zone {i+1} [{zone['name']}]: apply-area shape âˆ© zone color")
+            spatial = zone.get("spatial_mask")
+            if spatial is not None and isinstance(spatial, np.ndarray):
+                if spatial.shape[0] != h or spatial.shape[1] != w:
+                    sm_img = Image.fromarray(spatial.astype(np.uint8))
+                    sm_img = sm_img.resize((w, h), Image.NEAREST)
+                    spatial = np.array(sm_img).astype(np.uint8)
+                mask = np.where(spatial == 2, 0.0, mask)
+                if np.any(spatial == 1):
+                    mask = np.where(spatial == 1, mask, 0.0)
+            _source_layer_mask = _cached_source_layer_mask(zone, (h, w), i)
+            if _source_layer_mask is not None:
+                mask = (mask * _source_layer_mask).astype(np.float32)
+                zone["_spb_zone_mask_source_layer_gated"] = True
+            mask = _release_material_source(mask, zone)
             mask_preclaim = mask.astype(np.float32).copy()
-            # Subtract already-claimed areas
             mask = mask_preclaim
             mask = np.clip(mask - claimed * 0.8, 0, 1)
-            claimed = np.clip(claimed + mask, 0, 1)
+            np.add(claimed, mask, out=claimed)
+            np.clip(claimed, 0, 1, out=claimed)
             pixel_count = np.sum(mask > 0.1)
             pct = pixel_count / (h * w) * 100
-            print(f"    Zone {i+1} [{zone['name']}]: {pct:.1f}% of pixels (SPATIAL REGION MASK)")
+            print(f"    Zone {i+1} [{zone['name']}]: {pct:.1f}% of pixels (APPLY-AREA MASK)")
             zone_masks.append(mask)
             zone_masks_preclaim.append(mask_preclaim)
             continue
 
         # Parse selector(s) - can be a single selector or a LIST of selectors (multi-color zone)
-        hard_edge = zone.get("hard_edge", False)
+        hard_edge = _zone_uses_hard_ownership(zone)
         _blur = 0 if hard_edge else 3
 
         # PHOTOSHOP-CORRECT LAYER-LOCAL COLOR MATCH:
@@ -12324,7 +18247,18 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         _match_scheme = scheme
         _match_stats = stats
         _layer_rgb = zone.get("source_layer_rgb")
+        _fast_layer_color_mask = None
+        _fast_layer_color_mask_cached = False
+        _source_layer_mask_for_match = None
         if _layer_rgb is not None:
+            _source_layer_mask_for_match = _cached_source_layer_mask(zone, (h, w), i)
+            _fast_layer_color_mask, _fast_layer_color_mask_cached = _cached_layer_rgb_color_mask(
+                zone, _layer_rgb, color_desc, h, w, _blur, _source_layer_mask_for_match
+            )
+            if _fast_layer_color_mask is not None:
+                _cached_label = " cached" if _fast_layer_color_mask_cached else ""
+                print(f"    Zone {i+1} [{zone['name']}]: color-match using layer-local RGB{_cached_label} fast path (Photoshop-correct)")
+        if _layer_rgb is not None and _fast_layer_color_mask is None:
             try:
                 _lrgb = np.asarray(_layer_rgb)
                 if _lrgb.dtype != np.uint8:
@@ -12342,14 +18276,34 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 else:
                     _rgb_u8 = _lrgb[:, :, :3]
                 _match_scheme = _rgb_u8.astype(np.float32) / 255.0
-                _match_stats = analyze_paint_colors(_match_scheme)
+                if _color_desc_needs_color_stats(color_desc):
+                    _match_stats = analyze_paint_colors(_match_scheme)
                 print(f"    Zone {i+1} [{zone['name']}]: color-match using layer-local RGB (Photoshop-correct)")
             except Exception as _llm_err:
                 print(f"    Zone {i+1} [{zone['name']}]: layer-local match failed ({_llm_err}), using composite")
                 _match_scheme = scheme
                 _match_stats = stats
 
-        if isinstance(color_desc, list):
+        if _fast_layer_color_mask is not None:
+            mask = _fast_layer_color_mask
+            if isinstance(color_desc, list):
+                print(f"    Zone {i+1} [{zone['name']}]: multi-color ({len(color_desc)} selectors)")
+        elif isinstance(color_desc, dict) and color_desc.get("remainder"):
+            zone_masks.append(None)  # Placeholder
+            zone_masks_preclaim.append(None)
+            continue
+        elif not isinstance(color_desc, (list, dict)) and parse_color_description(str(color_desc)).get("remainder"):
+            zone_masks.append(None)  # Placeholder
+            zone_masks_preclaim.append(None)
+            continue
+        elif _layer_rgb is None:
+            mask, _composite_mask_cached = _cached_composite_color_mask(
+                _paint_source_cache_sig, color_desc, _match_scheme, _match_stats, h, w, _blur
+            )
+            if isinstance(color_desc, list):
+                _cached_label = " cached" if _composite_mask_cached else ""
+                print(f"    Zone {i+1} [{zone['name']}]: multi-color{_cached_label} ({len(color_desc)} selectors)")
+        elif isinstance(color_desc, list):
             # Multi-color zone: union of multiple color selectors
             # Each element is a dict like {"color_rgb": [R,G,B], "tolerance": 40}
             union_mask = np.zeros((h, w), dtype=np.float32)
@@ -12364,10 +18318,6 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             print(f"    Zone {i+1} [{zone['name']}]: multi-color ({len(color_desc)} selectors)")
         elif isinstance(color_desc, dict):
             selector = color_desc
-            if selector.get("remainder"):
-                zone_masks.append(None)  # Placeholder
-                zone_masks_preclaim.append(None)
-                continue
             mask = build_zone_mask(_match_scheme, _match_stats, selector, blur_radius=_blur)
         else:
             selector = parse_color_description(str(color_desc))
@@ -12398,12 +18348,14 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         # source layer before higher-priority zones subtract claimed pixels.
         # If we wait until render-time, earlier zones can steal matching colors
         # from unrelated layers and leave only a partial mask here.
-        _source_layer_mask = _normalize_source_layer_mask(
-            zone.get("source_layer_mask"), (h, w), i, zone
-        )
+        _source_layer_mask = _source_layer_mask_for_match
+        if _source_layer_mask is None:
+            _source_layer_mask = _cached_source_layer_mask(zone, (h, w), i)
         if _source_layer_mask is not None:
             mask = (mask * _source_layer_mask).astype(np.float32)
+            zone["_spb_zone_mask_source_layer_gated"] = True
 
+        mask = _release_material_source(mask, zone)
         mask_preclaim = mask.astype(np.float32).copy()
 
         # Subtract already-claimed areas (higher priority zones come first)
@@ -12411,7 +18363,8 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         mask = np.clip(mask - claimed * 0.8, 0, 1)
 
         # Add to claimed
-        claimed = np.clip(claimed + mask, 0, 1)
+        np.add(claimed, mask, out=claimed)
+        np.clip(claimed, 0, 1, out=claimed)
 
         pixel_count = np.sum(mask > 0.1)
         pct = pixel_count / (h * w) * 100
@@ -12432,14 +18385,17 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             return np.zeros_like(soft_mask)
         if hard_edge:
             return np.where(soft_mask > 0.01, 1.0, 0.0).astype(np.float32)
-        return np.where(
-            soft_mask > HARD_THRESHOLD,
-            1.0,
-            soft_mask / HARD_THRESHOLD * soft_mask
-        ).astype(np.float32)
+        # SPB-PERF-2026-06-02 / owner cached-rerender latency: this runs for
+        # every zone/preclaim mask. Keep the exact ownership curve but avoid
+        # np.where's full temporary arrays.
+        out = np.empty_like(soft_mask, dtype=np.result_type(soft_mask, np.float32))
+        np.divide(soft_mask, HARD_THRESHOLD, out=out)
+        np.multiply(out, soft_mask, out=out)
+        np.copyto(out, 1.0, where=soft_mask > HARD_THRESHOLD)
+        return out.astype(np.float32, copy=False)
 
     for i in range(len(zone_masks)):
-        hard_edge = zones[i].get("hard_edge", False) if i < len(zones) else False
+        hard_edge = _zone_uses_hard_ownership(zones[i]) if i < len(zones) else False
         zone_masks[i] = _harden_zone_ownership_mask(zone_masks[i], hard_edge)
         zone_masks_preclaim[i] = _harden_zone_ownership_mask(zone_masks_preclaim[i], hard_edge)
 
@@ -12469,40 +18425,74 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     claimed_hard = np.zeros((h, w), dtype=np.float32)
     for i in range(len(claim_masks_for_remainder)):
         if claim_masks_for_remainder[i] is not None:
-            claimed_hard = np.clip(claimed_hard + claim_masks_for_remainder[i], 0, 1)
+            np.add(claimed_hard, claim_masks_for_remainder[i], out=claimed_hard)
+            np.clip(claimed_hard, 0, 1, out=claimed_hard)
 
-    # Second pass: fill in "remainder" zones
+    # Second pass: fill in "remainder" zones.  A source-local remainder has
+    # already subtracted earlier claims in its OWN restricted scope; remember
+    # that fact so the final global-priority pass cannot erase it again.
+    source_local_remainders = [False] * len(zone_masks)
     for i, zone in enumerate(zones):
         if zone_masks[i] is not None:
             continue
+        # [ULTRACODE 2026-08-22, render-proof fleet] hard_edge remainder zones
+        # must NOT be feathered: the hard-coded sigma=2.0 Gaussian re-created
+        # fractional 0.60-0.99 ownership at every art edge AFTER the client
+        # started shipping binary 50%-line masks. Everything Else's fringe
+        # sliver then blended toward SPEC_DEFAULT (5,100,16) and the hard_edge
+        # compose stamped it wholesale — the owner's 3-6px green outline
+        # stroke around every number/logo/grill edge (arithmetic-verified:
+        # predicted (4,99,16) at the worst sponsor edge; rendered exactly
+        # (4,99,16)). Binary in must stay binary through the remainder path.
+        _remainder_source_mask = _cached_source_layer_mask(zone, (h, w), i)
         remainder_mask = _build_remainder_zone_mask(
-            zone, i, zones, claim_masks_for_remainder, claimed_hard, sigma=2.0
+            zone, i, zones, claim_masks_for_remainder, claimed_hard,
+            sigma=0.0 if _zone_uses_hard_ownership(zone) else 2.0
+            # ^ [audit #17972] restricted zones are binary-owned by law — never feather them, hard_edge flag or not.
         )
+        remainder_mask = _release_material_source(remainder_mask, zone)
+        if _remainder_source_mask is not None:
+            zone["_spb_zone_mask_source_layer_gated"] = True
+            source_local_remainders[i] = True
 
         pixel_count = np.sum(remainder_mask > 0.1)
         pct = pixel_count / (h * w) * 100
         print(f"    Zone {i+1} [{zone['name']}]: {pct:.1f}% of pixels (remainder)")
         zone_masks[i] = remainder_mask
         claim_masks_for_remainder[i] = remainder_mask
+        # [ULTRACODE 2026-08-22 synthesis #7] fold each remainder zone's claim
+        # into claimed_hard as it is built — a LATER remainder zone must see
+        # earlier remainder claims (no-op for today's binary path; permanently
+        # removes the fractional-residue class for soft zones).
+        np.add(claimed_hard, remainder_mask, out=claimed_hard)
+        np.clip(claimed_hard, 0, 1, out=claimed_hard)
 
     print(f"  Zone masks built: {time.time()-t_masks:.2f}s")
 
-    # Per-zone "prior claimed": sum of earlier zone masks (clip to 1).
-    # Stacks for ALL zones: Zone 1 wins, then Zone 2 gets remainder, then Zone 3, etc.
-    # effective_mask[i] = zone_masks[i] * (1 - prior_claimed[i]) so later zones never overwrite earlier.
+    # Per-zone global prior claim (clip to 1). Normal zones remain first-wins.
+    # A source-local remainder is the deliberate exception: its helper already
+    # resolved earlier claims inside the overlapping restricted-layer scope.
     prior_claimed = []
     _cum = np.zeros((h, w), dtype=np.float32)
     for _idx in range(len(claim_masks_for_remainder)):
         prior_claimed.append(_cum.copy())
         if claim_masks_for_remainder[_idx] is not None:
-            _cum = np.clip(_cum + claim_masks_for_remainder[_idx], 0, 1)
+            np.add(_cum, claim_masks_for_remainder[_idx], out=_cum)
+            np.clip(_cum, 0, 1, out=_cum)
 
-    future_priority_override = [None] * len(zone_masks)
-    _future = np.zeros((h, w), dtype=np.float32)
-    for _idx in range(len(zone_masks) - 1, -1, -1):
-        future_priority_override[_idx] = _future.copy()
-        if priority_override_masks[_idx] is not None:
-            _future = np.clip(_future + priority_override_masks[_idx], 0, 1)
+    if any(_pm is not None for _pm in priority_override_masks):
+        future_priority_override = [None] * len(zone_masks)
+        _future = np.zeros((h, w), dtype=np.float32)
+        for _idx in range(len(zone_masks) - 1, -1, -1):
+            future_priority_override[_idx] = _future.copy()
+            if priority_override_masks[_idx] is not None:
+                np.add(_future, priority_override_masks[_idx], out=_future)
+                np.clip(_future, 0, 1, out=_future)
+    else:
+        # SPB-PERF-2026-06-02 / owner full-render latency: normal jobs do not
+        # use priority override. Avoid allocating/scanning one full 2048² future
+        # mask per zone when the feature is inactive.
+        future_priority_override = [None] * len(zone_masks)
 
     # Initialize outputs
     # Start with default spec OR imported spec map (for merge mode)
@@ -12542,6 +18532,15 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         combined_spec[:,:,3] = 255     # Full spec mask
     paint = scheme.copy()
 
+    # [SPB SHOKK DROP authored clearcoat-0 verbatim 2026-06-16 — owner: "the channels I upload in
+    # SHOKK DROP must export EXACTLY, no quarter"] Accumulator of pixels owned by an authored_set
+    # finish (the user's EXACT uploaded M/R/Cc plate). The final CC>=CC_FLOOR floor below would bump a
+    # legitimately-authored B=0 (matte / NO clearcoat) up to 16 (visible gloss) across the whole car.
+    # We record where authored specs were composited and EXEMPT only those pixels from the floor, so
+    # normal finishes/bases keep the iron rule (CC>=16 or ==0) intact. HxW bool, default all-False.
+    _authored_cc_preserve = np.zeros((h, w), dtype=bool)
+    _pattern_spec_preserve = np.zeros((h, w), dtype=bool)
+
     # Apply each zone's finish using ITS OWN mask
     # Supports three dispatch modes:
     #   1. Compositing: zone has "base" key => compose_finish() + compose_paint_mod()
@@ -12554,18 +18553,26 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     # max_workers=2: one for current zone's spec, one for next zone's spec (pipelining).
     _shared_spec_pool = ThreadPoolExecutor(max_workers=min(2, _os.cpu_count() or 1))
     for i, zone in enumerate(zones):
+        _render_seed_index = zone.get("render_seed_index") if isinstance(zone, dict) else None
+        zone_seed = seed + i * 13
+        if isinstance(_render_seed_index, int) and not isinstance(_render_seed_index, bool) and 0 <= _render_seed_index <= 0xFFFFFFFF:
+            zone_seed = _stable_zone_rng_seed(int(seed) + 13 * _render_seed_index)
         # Preview abort: if a newer request arrived, return partial render immediately
         if preview_mode and abort_event is not None and abort_event.is_set():
             print(f"  [ABORT] Preview aborted after {i}/{len(zones)} zones ({time.time()-start_time:.2f}s)")
             paint_rgb = (np.clip(paint, 0, 1) * 255).astype(np.uint8)
             if paint_rgb.shape[2] == 4:
                 paint_rgb = paint_rgb[:, :, :3]
-            combined_spec[:,:,1] = np.where(combined_spec[:,:,0] < 240, np.maximum(combined_spec[:,:,1], 15), combined_spec[:,:,1])
-            combined_spec[:,:,2] = np.maximum(combined_spec[:,:,2], 16)
+            combined_spec[:,:,1] = np.where((combined_spec[:,:,0] < 240) & ~_pattern_spec_preserve, np.maximum(combined_spec[:,:,1], 15), combined_spec[:,:,1])
+            # [SPB SHOKK DROP authored clearcoat-0 verbatim 2026-06-16] Same authored-set CC exemption
+            # as the final export floor below, so an aborted live preview matches the exported spec.
+            _cc_floored_abort = np.maximum(combined_spec[:,:,2], 16)
+            combined_spec[:,:,2] = np.where(_authored_cc_preserve | _pattern_spec_preserve, combined_spec[:,:,2], _cc_floored_abort)
             combined_spec_u8 = np.clip(combined_spec, 0, 255).astype(np.uint8)
             return (paint_rgb, combined_spec_u8)
 
         t_zone = time.time()
+        _zone_spec_placement_applied = False
         name = zone["name"]
         # Report progress via callback (if provided)
         if progress_callback:
@@ -12578,7 +18585,12 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         zone_mask_raw = priority_override_masks[i] if priority_override_masks[i] is not None else zone_masks[i]
         if priority_override_masks[i] is not None and zone_mask_raw is not None:
             zone_mask = zone_mask_raw.astype(np.float32)
-        elif zone_mask_raw is not None and i > 0 and prior_claimed[i] is not None:
+        elif (
+            zone_mask_raw is not None
+            and i > 0
+            and prior_claimed[i] is not None
+            and not source_local_remainders[i]
+        ):
             zone_mask = (zone_mask_raw * (1.0 - prior_claimed[i])).astype(np.float32)
         else:
             zone_mask = zone_mask_raw
@@ -12587,12 +18599,22 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             zone_mask = (zone_mask * (1.0 - _future_override)).astype(np.float32)
 
         # PSD layer restriction: intersect zone mask with source layer alpha
-        _source_layer_mask = _normalize_source_layer_mask(
-            zone.get("source_layer_mask"), zone_mask.shape if zone_mask is not None else (h, w), i, zone
+        _source_layer_mask = _cached_source_layer_mask(
+            zone, zone_mask.shape if zone_mask is not None else (h, w), i
         )
-        if _source_layer_mask is not None and zone_mask is not None:
+        if (
+            _source_layer_mask is not None
+            and zone_mask is not None
+            and not bool(zone.get("_spb_zone_mask_source_layer_gated"))
+        ):
             zone_mask = (zone_mask * _source_layer_mask).astype(np.float32)
             print(f"    [{name}] Layer mask applied: {float(zone_mask.sum()):.0f} active pixels")
+        _ownership_hard_edge = _zone_uses_hard_ownership(zone)
+        if _source_layer_mask is not None and zone_mask is not None:
+            # Final guard after priority/future-override math: paint, cache,
+            # exported layer masks, and spec compose must all receive the same
+            # exact 0/1 ownership map.
+            zone_mask = (zone_mask >= 0.5).astype(np.float32)
 
         try:
             from engine import overlay_context
@@ -12603,74 +18625,159 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         if zone_mask is None or np.max(zone_mask) < 0.01:
             print(f"    [{name}] => SKIPPED (no matching pixels)")
             continue
-        # Skip zones covering <0.1% of pixels — invisible and wastes render time
-        _zone_coverage = float(np.mean(zone_mask > 0.1))
-        if _zone_coverage < 0.001:
-            print(f"    [{name}] => SKIPPED (coverage {_zone_coverage*100:.2f}% < 0.1% threshold)")
-            continue
+        # [ULTRACODE 2026-08-22 synthesis #2] the <0.1%-coverage skip is GONE:
+        # a skipped zone's claim was already baked into claimed_hard by the
+        # remainder pass, so "Everything Else" was zeroed there and NOBODY
+        # painted those pixels -> default-green patches over decal-sized zones
+        # (up to ~4200px at 2048^2). Tiny zones render in milliseconds via
+        # crop regions; correctness over a micro-optimization. (The np.max
+        # <0.01 skip above is safe — such a zone claims nothing.)
 
-        # ---- Zone-level cache (preview_mode only) ----
+        # ---- Zone-level cache ----
         # Compute a hash of all zone settings + mask fingerprint.
-        # If matched, replay the cached zone_spec and paint_delta instead of re-rendering.
+        # If matched, replay the cached zone_spec and paint_result instead of re-rendering.
+        from engine.pattern_material import has_pattern_spec
+        if has_pattern_spec(zone):
+            _pattern_spec_preserve |= (np.asarray(zone_mask) > .05)
         _zone_cache_key = None
-        if preview_mode:
+        if True:
             try:
                 # Build a stable cache key from zone settings + mask fingerprint.
-                # We exclude the zone mask data itself (too large) and instead fingerprint
-                # it via shape + sum + max so minor floating-point drift doesn't cause
-                # spurious cache misses.
+                # The mask fingerprint must include position, not just area:
+                # two different selections can have the same sum/max but require
+                # different fit-to-zone patterns, gradients, and spec overlays.
                 _zone_key_data = {
                     k: v for k, v in zone.items()
-                    if k not in ("region_mask", "spatial_mask", "name")
+                    if k not in ("region_mask", "spatial_mask", "name", "source_layer_mask", "source_layer_rgb")
+                    and not str(k).startswith("_spb_")
                 }
-                _zm_sig = f"{zone_mask.shape}:{zone_mask.sum():.4f}:{zone_mask.max():.4f}:{h}x{w}"
-                _zone_raw = str(sorted(_zone_key_data.items())) + _zm_sig
-                _zone_cache_key = _hashlib.md5(_zone_raw.encode()).hexdigest()
+                # [SPB-DEGRADE-HUNT 2026-08-22] ndarray zone values (e.g. the
+                # 256x256 pattern_strength_map the server decodes in-place) must
+                # be content-digested: str() of an ndarray >1000 elements is
+                # numpy's SUMMARIZED repr (edge band only), so two different
+                # strength maps produced an IDENTICAL cache key and every
+                # strength-brush edit + Generate replayed the FIRST cached zone
+                # pixels — owner's "quality gets worse as I generate more".
+                for _k, _v in list(_zone_key_data.items()):
+                    if isinstance(_v, np.ndarray):
+                        _zone_key_data[_k] = (
+                            f"nd:{_v.shape}:{_v.dtype}:"
+                            + _hashlib.blake2b(np.ascontiguousarray(_v).tobytes(), digest_size=16).hexdigest()
+                        )
+                for _cache_hint in (
+                    "_source_layer_mask_cache_key", "_source_layer_rgb_cache_key",
+                    "source_layer_id", "source_layer_revision", "source_layer_bbox",
+                ):
+                    if zone.get(_cache_hint) is not None:
+                        _zone_key_data[_cache_hint] = zone.get(_cache_hint)
+                _zm_quantized = np.ascontiguousarray(np.clip(zone_mask * 255.0, 0, 255).astype(np.uint8))
+                _zm_digest = _hashlib.blake2b(_zm_quantized.tobytes(), digest_size=16).hexdigest()
+                _zm_sig = f"{zone_mask.shape}:{zone_mask.sum():.4f}:{zone_mask.max():.4f}:{h}x{w}:{_zm_digest}"
+                _zone_raw = (
+                    f"{_paint_source_cache_sig}:seed={zone_seed}:"
+                    f"preview={bool(preview_mode)}:"
+                    + str(sorted(_zone_key_data.items())) + _zm_sig
+                )
+                _zone_cache_key = _hashlib.blake2b(_zone_raw.encode(), digest_size=20).hexdigest()
                 if _zone_cache_key in build_multi_zone._zone_cache:
                     cached = build_multi_zone._zone_cache[_zone_cache_key]
-                    zone_spec = cached['zone_spec']
-                    # Replay paint delta: add the cached paint modification back onto current paint
-                    _pdelta = cached['paint_delta']
-                    _pmask = cached['mask']
-                    paint = np.where(_pmask[:, :, np.newaxis] > 0.01,
-                                     np.clip(paint + _pdelta, 0, 1), paint).astype(np.float32)
+                    zone_spec = cached.get('zone_spec')
+                    _cache_regions = cached.get('regions')
+                    _spec_crops = cached.get('zone_spec_crops')
+                    _paint_crops = cached.get('paint_crops')
+                    _mask_crops = cached.get('mask_crops')
+                    # Replay cached paint inside the source-keyed zone mask.
+                    _paint_result = cached.get('paint_result')
+                    _pmask = cached.get('mask')
+                    if _paint_crops is not None and _cache_regions:
+                        for _crop_idx, (_r0, _r1, _c0, _c1) in enumerate(_cache_regions):
+                            _m_crop = _mask_crops[_crop_idx] if _mask_crops is not None else _pmask[_r0:_r1, _c0:_c1]
+                            _copy_cached_paint_region(
+                                paint[_r0:_r1, _c0:_c1, :3],
+                                _paint_crops[_crop_idx][:, :, :3],
+                                _m_crop,
+                            )
+                        paint = paint.astype(np.float32, copy=False)
+                    elif _paint_result is not None:
+                        if _cache_regions:
+                            # SPB-PERF-2026-06-02: cached zone hits should not
+                            # touch the whole 2048 canvas when the visible mask
+                            # is sparse (numbers, small accents, remainder slivers).
+                            for _r0, _r1, _c0, _c1 in _cache_regions:
+                                _m_crop = _pmask[_r0:_r1, _c0:_c1]
+                                _copy_cached_paint_region(
+                                    paint[_r0:_r1, _c0:_c1, :3],
+                                    _paint_result[_r0:_r1, _c0:_c1, :3],
+                                    _m_crop,
+                                )
+                            paint = paint.astype(np.float32, copy=False)
+                        else:
+                            _copy_cached_paint_region(paint[:, :, :3], _paint_result[:, :, :3], _pmask)
+                            paint = paint.astype(np.float32, copy=False)
+                    else:
+                        _pdelta = cached['paint_delta']
+                        if _cache_regions:
+                            for _r0, _r1, _c0, _c1 in _cache_regions:
+                                _m_crop = _pmask[_r0:_r1, _c0:_c1]
+                                _active_crop = _m_crop[:, :, np.newaxis] > 0.01
+                                paint[_r0:_r1, _c0:_c1, :3] = np.where(
+                                    _active_crop,
+                                    np.clip(
+                                        paint[_r0:_r1, _c0:_c1, :3] +
+                                        _pdelta[_r0:_r1, _c0:_c1, :3],
+                                        0,
+                                        1,
+                                    ),
+                                    paint[_r0:_r1, _c0:_c1, :3],
+                                )
+                            paint = paint.astype(np.float32, copy=False)
+                        else:
+                            paint = np.where(_pmask[:, :, np.newaxis] > 0.01,
+                                             np.clip(paint + _pdelta, 0, 1), paint).astype(np.float32)
                     print(f"    [{name}] => CACHE HIT (skipped re-render)")
                     # Jump directly to the combined_spec blending step below
                     # (reuse cached zone_spec, paint already updated)
                     # GPU-accelerated when CuPy is available
-                    hard_edge = zone.get("hard_edge", False)
-                    if is_gpu():
-                        _zs_g = to_gpu(zone_spec.astype(np.float32))
+                    hard_edge = _ownership_hard_edge
+                    if is_gpu() and zone_spec is not None:
+                        _zs_g = to_gpu(zone_spec.astype(np.float32, copy=False))
                         _m3d_g = to_gpu(zone_mask[:, :, np.newaxis])
                         _cs_g = to_gpu(combined_spec)
                         if hard_edge:
-                            combined_spec = to_cpu(xp.where(_m3d_g > 0.01, _zs_g, _cs_g))
+                            combined_spec = to_cpu(xp.where(_m3d_g >= 0.5, _zs_g, _cs_g))  # [ULTRACODE 2026-08-22] GPU parity: hard-edge = majority ownership
                         else:
                             strong = _m3d_g > 0.5
                             soft = (_m3d_g > 0.05) & ~strong
                             blended = xp.clip(_zs_g * _m3d_g + _cs_g * (1 - _m3d_g), 0, 255)
                             combined_spec = to_cpu(xp.where(strong, _zs_g, xp.where(soft, blended, _cs_g)))
                     else:
-                        mask3d = zone_mask[:, :, np.newaxis]
-                        if hard_edge:
-                            combined_spec = np.where(mask3d > 0.01, zone_spec, combined_spec)
+                        if _cache_regions:
+                            for _crop_idx, (_r0, _r1, _c0, _c1) in enumerate(_cache_regions):
+                                _mask_crop = _mask_crops[_crop_idx] if _mask_crops is not None else zone_mask[_r0:_r1, _c0:_c1]
+                                mask3d = _mask_crop[:, :, np.newaxis]
+                                if _spec_crops is not None:
+                                    _zs_crop = _spec_crops[_crop_idx].astype(np.float32, copy=False)
+                                else:
+                                    _zs_crop = zone_spec[_r0:_r1, _c0:_c1].astype(np.float32, copy=False)
+                                _cs_crop = combined_spec[_r0:_r1, _c0:_c1]
+                                if hard_edge:
+                                    _blend_cached_spec_region(_cs_crop, _zs_crop, _mask_crop, hard_edge=True)
+                                else:
+                                    _blend_cached_spec_region(_cs_crop, _zs_crop, _mask_crop, hard_edge=False)
                         else:
-                            strong = mask3d > 0.5
-                            soft = (mask3d > 0.05) & ~strong
-                            blended = np.clip(
-                                zone_spec.astype(np.float32) * mask3d +
-                                combined_spec * (1 - mask3d),
-                                0, 255
-                            )
-                            combined_spec = np.where(strong, zone_spec.astype(np.float32), np.where(soft, blended, combined_spec))
+                            mask3d = zone_mask[:, :, np.newaxis]
+                            if hard_edge:
+                                _blend_cached_spec_region(combined_spec, zone_spec, zone_mask, hard_edge=True)
+                            else:
+                                _blend_cached_spec_region(combined_spec, zone_spec.astype(np.float32, copy=False), zone_mask, hard_edge=False)
                     print(f"    [Zone {i+1}] \"{name}\" rendered in {time.time()-t_zone:.2f}s (cached)")
                     continue
             except Exception as _ce:
                 _zone_cache_key = None  # Cache lookup failed — fall through to normal render
                 print(f"    [{name}] zone cache lookup error (falling through): {_ce}")
 
-        # Snapshot paint before this zone renders so we can store the delta
-        _paint_before = paint.copy() if (preview_mode and _zone_cache_key) else None
+        # Cache stores post-zone paint, so no pre-zone snapshot is needed.
+        _paint_before = None
 
         # Custom intensity overrides per-zone slider values
         # Custom sliders now use 0-1 normalized range (same as presets),
@@ -12716,6 +18823,16 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         base_id = zone.get("base")
         pattern_id = zone.get("pattern", "none")
         finish_name = zone.get("finish")
+        material_stack = zone.get("material_stack")
+        has_zone_spec_source = bool(zone.get("zone_spec_map"))
+
+        if isinstance(base_id, str) and base_id.startswith("mono:"):
+            _mono_base_id = base_id[5:]
+            if _mono_base_id in BASE_REGISTRY:
+                base_id = _mono_base_id
+            elif _mono_base_id in MONOLITHIC_REGISTRY and not finish_name:
+                finish_name = _mono_base_id
+                base_id = None
 
         # REVERSE FALLBACK: finish from Specials picker that's actually a BASE_REGISTRY entry
         # (COLORSHOXX, MORTAL SHOKK, PARADIGM, Shokk Series, Angle SHOKK, Extreme & Experimental)
@@ -12737,7 +18854,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 for _try_dir in [
                     os.path.dirname(os.path.abspath(__file__)),                           # Same dir as engine
                     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),           # One level up
-                    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),  # Two levels up (E:\Koda)
+                    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),  # Two levels up
                 ]:
                     _try_path = os.path.join(_try_dir, 'custom_finishes.json')
                     if os.path.exists(_try_path):
@@ -12762,7 +18879,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                     print(f"    [{name}] -> PATH 0 (custom mix): {base_id} = {_mix_ids} @ {_mix_wts} mode={_mix_mode}")
                     # Apply spec blend (unless color-only mode)
                     if _mix_mode in ('both', 'spec'):
-                        zone_spec = mix_finishes(shape, zone_mask, seed + i * 13, sm, _mix_ids, _mix_wts, monolithic_registry=MONOLITHIC_REGISTRY)
+                        zone_spec = mix_finishes(shape, zone_mask, zone_seed, sm, _mix_ids, _mix_wts, monolithic_registry=MONOLITHIC_REGISTRY)
                     else:
                         # Color-only: use neutral spec (the zone's base spec will be used later, or default)
                         zone_spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
@@ -12772,26 +18889,65 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                         zone_spec[:,:,3] = 255
                     # Apply paint blend (unless spec-only mode)
                     if _mix_mode in ('both', 'color'):
-                        paint = mix_finish_paint(paint, shape, zone_mask, seed + i * 13, pm, bb, _mix_ids, _mix_wts, monolithic_registry=MONOLITHIC_REGISTRY)
+                        paint = mix_finish_paint(paint, shape, zone_mask, zone_seed, pm, bb, _mix_ids, _mix_wts, monolithic_registry=MONOLITHIC_REGISTRY)
                     # else: spec-only mode, don't touch paint
-                    hard_edge = zone.get("hard_edge", False)
+                    if has_zone_spec_source:
+                        zone_spec = _blend_zone_spec_source(zone_spec, zone, shape, i)
+                    zone_spec = _apply_zone_spec_material_remap(zone_spec, zone)
+                    zone_spec = _apply_zone_spec_material_override(zone_spec, zone)
+                    zone_spec = _apply_zone_spec_lighting_mask(zone_spec, zone)
+                    hard_edge = _ownership_hard_edge
                     mask3d = zone_mask[:, :, np.newaxis]
+                    zone_spec_f = zone_spec.astype(np.float32, copy=False)
                     if hard_edge:
-                        combined_spec = np.where(mask3d > 0.01, zone_spec.astype(np.float32), combined_spec)
+                        combined_spec = np.where(mask3d >= 0.5, zone_spec_f, combined_spec)  # [ULTRACODE 2026-08-22] hard-edge = majority ownership
                     else:
                         strong = mask3d > 0.5
                         soft = (mask3d > 0.05) & ~strong
                         blended = np.clip(
-                            zone_spec.astype(np.float32) * mask3d +
+                            zone_spec_f * mask3d +
                             combined_spec * (1 - mask3d),
                             0, 255
                         )
-                        combined_spec = np.where(strong, zone_spec.astype(np.float32), np.where(soft, blended, combined_spec))
-                    if preview_mode and _zone_cache_key and _paint_before is not None:
-                        _pdelta = paint - _paint_before
-                        build_multi_zone._zone_cache[_zone_cache_key] = {
-                            'zone_spec': zone_spec, 'paint_delta': _pdelta, 'mask': zone_mask
-                        }
+                        combined_spec = np.where(strong, zone_spec_f, np.where(soft, blended, combined_spec))
+                    if _zone_cache_key:
+                        _cache_regions_to_store = _mask_active_regions(zone_mask, threshold=0.01)
+                        _cache_sparse_regions = None
+                        try:
+                            if _cache_regions_to_store:
+                                _cache_area_ratio = (
+                                    sum((_r1 - _r0) * (_c1 - _c0) for _r0, _r1, _c0, _c1 in _cache_regions_to_store)
+                                    / float(max(1, h * w))
+                                )
+                                if _cache_area_ratio <= 0.25:
+                                    _cache_sparse_regions = _cache_regions_to_store
+                        except Exception:
+                            _cache_sparse_regions = None
+                        if _cache_sparse_regions:
+                            build_multi_zone._zone_cache[_zone_cache_key] = {
+                                'zone_spec': None,
+                                'zone_spec_crops': [zone_spec[_r0:_r1, _c0:_c1].copy() for _r0, _r1, _c0, _c1 in _cache_sparse_regions],
+                                'paint_result': None,
+                                'paint_crops': [paint[_r0:_r1, _c0:_c1, :3].copy() for _r0, _r1, _c0, _c1 in _cache_sparse_regions],
+                                'mask': None,
+                                'mask_crops': [zone_mask[_r0:_r1, _c0:_c1].copy() for _r0, _r1, _c0, _c1 in _cache_sparse_regions],
+                                'regions': _cache_sparse_regions,
+                            }
+                        else:
+                            # [SPB-DEGRADE-HUNT 2026-08-22] zone_spec/zone_mask
+                            # were stored BY REFERENCE (the sibling store below
+                            # copies) — later in-place mutation (mask claiming,
+                            # post passes) silently corrupted cached entries
+                            # that replayed on subsequent Generates.
+                            build_multi_zone._zone_cache[_zone_cache_key] = {
+                                'zone_spec': zone_spec.copy(),
+                                'paint_result': paint.copy(),
+                                'mask': zone_mask.copy(),
+                                'regions': _cache_regions_to_store,
+                            }
+                        while len(build_multi_zone._zone_cache) > 24:
+                            _oldest = next(iter(build_multi_zone._zone_cache))
+                            del build_multi_zone._zone_cache[_oldest]
                     logger.debug(f"    [Zone {i+1}] \"{name}\" rendered in {time.time()-t_zone:.2f}s (custom mix)")
                     continue
                 else:
@@ -12801,8 +18957,10 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 import traceback as _tb
                 logger.debug(_tb.format_exc())
 
+        _zone_spec_source_only = has_zone_spec_source and not base_id and not finish_name and not material_stack
+
         if base_id:
-            # CHECK: Is this actually a monolithic masquerading as a base?
+            # CHECK: Is this actually a monolithic masquerading as a base
             # This lets the UI send monolithics via "base" key seamlessly.
             if base_id not in BASE_REGISTRY and base_id in MONOLITHIC_REGISTRY:
                 finish_name = base_id
@@ -12813,7 +18971,74 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 logger.warning(f"    WARNING: Unknown base '{base_id}' in {_format_zone_id(i, zone)}, skipping zone.\n      {_hint}")
                 continue
 
-        if base_id:
+        if _zone_spec_source_only:
+            _engine_rot_debug(f"  [{name}] -> PATH ZSPEC: imported zone spec source")
+            zone_spec = _blend_zone_spec_source(None, zone, shape, i)
+            if zone_spec is None:
+                logger.warning(f"    WARNING: Zone spec source failed in {_format_zone_id(i, zone)}, skipping.")
+                continue
+            print(f"    [{name}] => imported spec source ({int(_zone_spec_source_strength(zone) * 100)}%)")
+
+        elif material_stack:
+            # [Easy Whole Car material stack, owner request 2026-07-22]
+            # Run the proven Spec Sculpt compositor against IMMUTABLE source
+            # paint. Only M/R/Cc is generated: diffuse paint never reaches a
+            # finish paint_fn, and this falls through the standard remap,
+            # cache, channel, and zone-composite pipeline. No finish renderer
+            # changed here; the per-finish M7 gate is therefore N/A.
+            from engine.spec_sculpt.catalog_blend import normalize_catalog_stack, paint_aware_spatial_mix
+            from engine.spec_sculpt.easy_material_layers import pattern_tile_for_scale
+            from engine.spec_sculpt.generate import scratch_spec_from_any_paint
+
+            catalog_stack = normalize_catalog_stack(material_stack, max_layers=4)
+            if len(catalog_stack) != len(material_stack):
+                # Defensive assertion behind the strict validator above.
+                raise ValueError(f"material_stack normalization changed {name}; refusing an incomplete render.")
+            source_tex = np.ascontiguousarray(
+                np.asarray(to_cpu(scheme), dtype=np.float32)[:, :, :3]
+            )
+            material_scale = zone.get("material_scale", 1.0)
+            # Multi-material Whole Car is the explicit opt-in seam. The
+            # context affects only the catalog average inside this one call;
+            # one finish and every legacy Spec Sculpt caller remain on the
+            # byte-identical uniform compositor. Source paint is read-only.
+            with paint_aware_spatial_mix(source_tex, enabled=len(catalog_stack) > 1):
+                zone_spec = scratch_spec_from_any_paint(
+                    source_tex,
+                    seed=zone_seed,
+                    chromatic_shift=False,
+                    catalog_stack=catalog_stack,
+                    pattern_tile=pattern_tile_for_scale(material_scale),
+                    fast_trace=True,
+                )
+            zone_spec = _sanitize_spec_result(
+                zone_spec,
+                shape,
+                strict_shapes=True,
+                context=f"Whole Car material stack '{name}'",
+            )
+
+            # Weights choose the relative recipe. material_stack_amount is the
+            # independent overall strength: move M/R/Cc toward a quiet iRacing
+            # material while preserving the compositor's opaque alpha.
+            stack_amount = float(zone.get("material_stack_amount", 1.0))
+            if stack_amount < 1.0:
+                material_rgb = np.asarray(zone_spec[:, :, :3], dtype=np.float32)
+                neutral_rgb = np.asarray([0.0, 160.0, 255.0], dtype=np.float32).reshape(1, 1, 3)
+                zone_spec = np.asarray(zone_spec, dtype=np.float32).copy()
+                zone_spec[:, :, :3] = np.clip(
+                    neutral_rgb + (material_rgb - neutral_rgb) * stack_amount,
+                    0,
+                    255,
+                )
+                zone_spec[:, :, 3] = 255
+            print(
+                f"    [{name}] => Whole Car material stack "
+                f"({len(catalog_stack)} finish{'es' if len(catalog_stack) != 1 else ''}, "
+                f"amount={stack_amount:.2f}, scale={float(material_scale):.2f})"
+            )
+
+        elif base_id:
             _engine_rot_debug(f"  [{name}] -> PATH 1 (compositing): base={base_id}")
             # PATH 1: v3.0 COMPOSITING - base + pattern (or pattern stack)
             if pattern_id != "none" and pattern_id not in PATTERN_REGISTRY:
@@ -12823,7 +19048,8 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 pattern_id = "none"
             zone_scale = float(zone.get("scale", 1.0))
             zone_rotation = float(zone.get("rotation", 0))
-            zone_base_scale = float(zone.get("base_scale", 1.0))
+            _path1_base_ctrl = _zone_base_transform_values(zone)
+            zone_base_scale = _path1_base_ctrl["scale"]
             pattern_stack = zone.get("pattern_stack", [])
             primary_pat_opacity = float(zone.get("pattern_opacity", 1.0))
 
@@ -12832,13 +19058,14 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             auto_scale = _compute_zone_auto_scale(zone_mask, shape)
             if auto_scale < 1.0 and pattern_id != "none":
                 print(f"      [{name}] Auto-scale: {auto_scale:.3f} (zone covers {(auto_scale**2)*100:.1f}% of canvas)")
-            if not zone.get("pattern_fit_zone", False) and zone.get("pattern_placement") != "fit": zone_scale *= auto_scale  # User slider multiplies on top of auto-scale
+            _pattern_fit_zone = bool(zone.get("pattern_fit_zone", False) or zone.get("pattern_placement") == "fit")
+            if not _pattern_fit_zone: zone_scale *= auto_scale  # User slider multiplies on top of auto-scale
 
             # ZONE TARGETING: Fit to Zone bounding box
-            # Concentrates the entire pattern into the zone's bounding box.
+            # Fit the entire pattern into the zone's bounding box.
             # Without this, small zones (car numbers, logos) only see a tiny crop
             # of a full-canvas pattern. With it, the whole pattern squeezes into the zone.
-            if (zone.get("pattern_fit_zone", False) or zone.get("pattern_placement") == "fit") and zone_mask is not None:
+            if _pattern_fit_zone and zone_mask is not None:
                 rows = np.any(zone_mask > 0.1, axis=1)
                 cols = np.any(zone_mask > 0.1, axis=0)
                 if rows.any() and cols.any():
@@ -12846,24 +19073,14 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                     c_min, c_max = np.where(cols)[0][[0, -1]]
                     bbox_h = r_max - r_min + 1
                     bbox_w = c_max - c_min + 1
-                    bbox_center_y = (r_min + r_max) / 2.0 / h
-                    bbox_center_x = (c_min + c_max) / 2.0 / w
-                    # Override offset to center pattern on zone bbox
-                    zone['pattern_offset_x'] = bbox_center_x
-                    zone['pattern_offset_y'] = bbox_center_y
-                    # ZOOM IN so the pattern fills just the bbox area
-                    # fit_ratio < 1.0 for small zones; dividing by it zooms in
-                    fit_ratio = max(bbox_h / h, bbox_w / w)
-                    if fit_ratio > 0.01:
-                        zone_scale = zone_scale / fit_ratio  # zoom in to concentrate
-                        zone_scale = min(zone_scale, 8.0)  # Prevent over-zoom
-                    print(f"      [{name}] Fit-to-Zone: bbox=({r_min},{c_min})-({r_max},{c_max}), fit_ratio={fit_ratio:.3f}, effective_scale={zone_scale:.3f}, center=({bbox_center_x:.3f},{bbox_center_y:.3f})")
+                    print(f"      [{name}] Fit-to-Zone: bbox=({r_min},{c_min})-({r_max},{c_max}), engine source-resize enabled")
 
             # v6.0 advanced finish params
-            _z_cc = zone.get("cc_quality"); _z_cc = float(_z_cc) / 100.0 if _z_cc is not None and float(_z_cc) > 1.0 else (float(_z_cc) if _z_cc is not None else None)
+            _z_cc = _normalized_cc_quality_override(zone.get("cc_quality"))
             _z_bb = zone.get("blend_base") or None; _z_bd = zone.get("blend_dir", "horizontal"); _z_ba = float(zone.get("blend_amount", 0.5))
             _z_pc = zone.get("paint_color")
             _v6kw = {"pattern_sm": sm_pattern, "pattern_intensity": pattern_intensity_01}
+            _v6kw["independent_pattern_spec"] = "pattern_spec_opacity" in zone
             # Pattern strength map (per-pixel modulation)
             if zone.get("pattern_strength_map") is not None:
                 _v6kw["pattern_strength_map"] = zone["pattern_strength_map"]
@@ -12888,6 +19105,14 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             _v6kw["base_color_source"] = zone.get("base_color_source")
             _v6kw["base_color_strength"] = float(zone.get("base_color_strength", 1.0))
             _v6kw["base_color_fit_zone"] = bool(zone.get("base_color_fit_zone", False))
+            _v6kw["base_color_scale"] = float(zone.get("base_color_scale", zone.get("baseColorScale", 1.0)))
+            _v6kw["base_color_rotation"] = float(zone.get("base_color_rotation", zone.get("baseColorRotation", zone.get("base_rotation", 0))))
+            # [SPB COLOR LAB 2026-08-27] depth None = legacy pipeline (old saves render unchanged)
+            _v6kw["base_color_depth"] = (None if zone.get("base_color_depth") is None else float(zone.get("base_color_depth")))
+            _v6kw["base_color_flip"] = float(zone.get("base_color_flip", 0) or 0)
+            _v6kw["base_color_underglow"] = float(zone.get("base_color_underglow", 0) or 0)
+            _v6kw["monolithic_registry"] = MONOLITHIC_REGISTRY
+            _v6kw["pattern_fit_zone"] = _pattern_fit_zone
             _v6kw["base_hue_offset"] = float(zone.get("base_hue_offset", 0))
             _v6kw["base_saturation_adjust"] = float(zone.get("base_saturation_adjust", 0))
             _v6kw["base_brightness_adjust"] = float(zone.get("base_brightness_adjust", 0))
@@ -12912,7 +19137,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             # Dual Layer Base Overlay — trigger on EITHER base ID or color source
             _z_sb = zone.get("second_base")
             _z_sb_cs = zone.get("second_base_color_source")
-            if _z_sb or _z_sb_cs:
+            if _z_sb or _z_sb_cs or float(zone.get("second_base_strength") or 0) > 0.001:
                 _v6kw["second_base"] = _z_sb or ''
                 _v6kw["second_base_color_source"] = _z_sb_cs
                 _v6kw["second_base_color"] = zone.get("second_base_color", [1.0, 1.0, 1.0])
@@ -12921,9 +19146,20 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6kw["second_base_blend_mode"] = zone.get("second_base_blend_mode", "noise")
                 _v6kw["second_base_noise_scale"] = int(zone.get("second_base_noise_scale", 24))
                 _v6kw["second_base_scale"] = float(zone.get("second_base_scale", 1.0))
-                _v6kw["second_base_pattern"] = zone.get("second_base_pattern")
+                _v6kw["second_base_color_scale"] = float(zone.get("second_base_color_scale", 1.0))
+                _v6kw["second_base_spec_scale"] = float(zone.get("second_base_spec_scale", 1.0))
+                # [SPB-OVERLAY-PARITY-2 2026-08-20] rotation / spec rotation / color strength
+                _v6kw["second_base_rotation"] = float(zone.get("second_base_rotation", 0.0) or 0.0)
+                _v6kw["second_base_spec_rotation"] = float(zone.get("second_base_spec_rotation", 0.0) or 0.0)
+                _ovcs_tmp = zone.get("second_base_color_strength", 1.0)
+                _v6kw["second_base_color_strength"] = max(0.0, min(1.0, float(1.0 if _ovcs_tmp is None else _ovcs_tmp)))
+                _v6kw["second_base_pattern"] = _normalize_base_overlay_pattern_id(zone.get("second_base_pattern"))
                 # Keep react-to-pattern overlays spatially aligned with the primary pattern scale.
-                _v6kw["second_base_pattern_scale"] = float(zone.get("second_base_pattern_scale", 1.0)) * auto_scale
+                # 2026-05-30 (owner issue 2 — overlay react-pattern didn't fit the gold pattern at matching
+                # scales): use the SAME `(1.0 if _pattern_fit_zone else auto_scale)` multiplier the primary
+                # pattern (~15964) + the pattern stack (~16235) use. Was unconditional `* auto_scale`, so with
+                # fit-zone ON the overlay rendered at a different size than the pattern. Same fix on 3rd/4th/5th.
+                _v6kw["second_base_pattern_scale"] = float(zone.get("second_base_pattern_scale", 1.0)) * (1.0 if _pattern_fit_zone else auto_scale)
                 _v6kw["second_base_pattern_rotation"] = float(zone.get("second_base_pattern_rotation", 0.0))
                 _v6kw["second_base_pattern_opacity"] = float(zone.get("second_base_pattern_opacity", 1.0))
                 _v6kw["second_base_pattern_strength"] = float(zone.get("second_base_pattern_strength", 1.0))
@@ -12955,16 +19191,25 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             _v6kw["second_base_pattern_brightness"] = float(zone.get("second_base_pattern_brightness", 0))
             _v6kw["second_base_color_source"] = zone.get("second_base_color_source")
             _z_tb = zone.get("third_base")
-            if _z_tb:
-                _v6kw["third_base"] = _z_tb
+            _z_tb_cs = zone.get("third_base_color_source")
+            if _z_tb or _z_tb_cs or float(zone.get("third_base_strength") or 0) > 0.001:
+                _v6kw["third_base"] = _z_tb or ''
+                _v6kw["third_base_color_source"] = _z_tb_cs
                 _v6kw["third_base_color"] = zone.get("third_base_color", [1.0, 1.0, 1.0])
                 _v6kw["third_base_strength"] = float(zone.get("third_base_strength", 0.0))
                 _v6kw["third_base_spec_strength"] = float(zone.get("third_base_spec_strength", 1.0))
                 _v6kw["third_base_blend_mode"] = zone.get("third_base_blend_mode", "noise")
                 _v6kw["third_base_noise_scale"] = int(zone.get("third_base_noise_scale", 24))
                 _v6kw["third_base_scale"] = float(zone.get("third_base_scale", 1.0))
-                _v6kw["third_base_pattern"] = zone.get("third_base_pattern")
-                _v6kw["third_base_pattern_scale"] = float(zone.get("third_base_pattern_scale", 1.0)) * auto_scale
+                _v6kw["third_base_color_scale"] = float(zone.get("third_base_color_scale", 1.0))
+                _v6kw["third_base_spec_scale"] = float(zone.get("third_base_spec_scale", 1.0))
+                # [SPB-OVERLAY-PARITY-2 2026-08-20] rotation / spec rotation / color strength
+                _v6kw["third_base_rotation"] = float(zone.get("third_base_rotation", 0.0) or 0.0)
+                _v6kw["third_base_spec_rotation"] = float(zone.get("third_base_spec_rotation", 0.0) or 0.0)
+                _ovcs_tmp = zone.get("third_base_color_strength", 1.0)
+                _v6kw["third_base_color_strength"] = max(0.0, min(1.0, float(1.0 if _ovcs_tmp is None else _ovcs_tmp)))
+                _v6kw["third_base_pattern"] = _normalize_base_overlay_pattern_id(zone.get("third_base_pattern"))
+                _v6kw["third_base_pattern_scale"] = float(zone.get("third_base_pattern_scale", 1.0)) * (1.0 if _pattern_fit_zone else auto_scale)
                 _v6kw["third_base_pattern_rotation"] = float(zone.get("third_base_pattern_rotation", 0.0))
                 _v6kw["third_base_pattern_opacity"] = float(zone.get("third_base_pattern_opacity", 1.0))
                 _v6kw["third_base_pattern_strength"] = float(zone.get("third_base_pattern_strength", 1.0))
@@ -12993,16 +19238,25 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             _v6kw["third_base_brightness"] = float(zone.get("third_base_brightness", 0))
             _v6kw["third_base_color_source"] = zone.get("third_base_color_source")
             _z_fb = zone.get("fourth_base")
-            if _z_fb:
-                _v6kw["fourth_base"] = _z_fb
+            _z_fb_cs = zone.get("fourth_base_color_source")
+            if _z_fb or _z_fb_cs or float(zone.get("fourth_base_strength") or 0) > 0.001:
+                _v6kw["fourth_base"] = _z_fb or ''
+                _v6kw["fourth_base_color_source"] = _z_fb_cs
                 _v6kw["fourth_base_color"] = zone.get("fourth_base_color", [1.0, 1.0, 1.0])
                 _v6kw["fourth_base_strength"] = float(zone.get("fourth_base_strength", 0.0))
                 _v6kw["fourth_base_spec_strength"] = float(zone.get("fourth_base_spec_strength", 1.0))
                 _v6kw["fourth_base_blend_mode"] = zone.get("fourth_base_blend_mode", "noise")
                 _v6kw["fourth_base_noise_scale"] = int(zone.get("fourth_base_noise_scale", 24))
                 _v6kw["fourth_base_scale"] = float(zone.get("fourth_base_scale", 1.0))
-                _v6kw["fourth_base_pattern"] = zone.get("fourth_base_pattern")
-                _v6kw["fourth_base_pattern_scale"] = float(zone.get("fourth_base_pattern_scale", 1.0)) * auto_scale
+                _v6kw["fourth_base_color_scale"] = float(zone.get("fourth_base_color_scale", 1.0))
+                _v6kw["fourth_base_spec_scale"] = float(zone.get("fourth_base_spec_scale", 1.0))
+                # [SPB-OVERLAY-PARITY-2 2026-08-20] rotation / spec rotation / color strength
+                _v6kw["fourth_base_rotation"] = float(zone.get("fourth_base_rotation", 0.0) or 0.0)
+                _v6kw["fourth_base_spec_rotation"] = float(zone.get("fourth_base_spec_rotation", 0.0) or 0.0)
+                _ovcs_tmp = zone.get("fourth_base_color_strength", 1.0)
+                _v6kw["fourth_base_color_strength"] = max(0.0, min(1.0, float(1.0 if _ovcs_tmp is None else _ovcs_tmp)))
+                _v6kw["fourth_base_pattern"] = _normalize_base_overlay_pattern_id(zone.get("fourth_base_pattern"))
+                _v6kw["fourth_base_pattern_scale"] = float(zone.get("fourth_base_pattern_scale", 1.0)) * (1.0 if _pattern_fit_zone else auto_scale)
                 _v6kw["fourth_base_pattern_rotation"] = float(zone.get("fourth_base_pattern_rotation", 0.0))
                 _v6kw["fourth_base_pattern_opacity"] = float(zone.get("fourth_base_pattern_opacity", 1.0))
                 _v6kw["fourth_base_pattern_strength"] = float(zone.get("fourth_base_pattern_strength", 1.0))
@@ -13031,16 +19285,25 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             _v6kw["fourth_base_brightness"] = float(zone.get("fourth_base_brightness", 0))
             _v6kw["fourth_base_color_source"] = zone.get("fourth_base_color_source")
             _z_fif = zone.get("fifth_base")
-            if _z_fif:
-                _v6kw["fifth_base"] = _z_fif
+            _z_fif_cs = zone.get("fifth_base_color_source")
+            if _z_fif or _z_fif_cs or float(zone.get("fifth_base_strength") or 0) > 0.001:
+                _v6kw["fifth_base"] = _z_fif or ''
+                _v6kw["fifth_base_color_source"] = _z_fif_cs
                 _v6kw["fifth_base_color"] = zone.get("fifth_base_color", [1.0, 1.0, 1.0])
                 _v6kw["fifth_base_strength"] = float(zone.get("fifth_base_strength", 0.0))
                 _v6kw["fifth_base_spec_strength"] = float(zone.get("fifth_base_spec_strength", 1.0))
                 _v6kw["fifth_base_blend_mode"] = zone.get("fifth_base_blend_mode", "noise")
                 _v6kw["fifth_base_noise_scale"] = int(zone.get("fifth_base_noise_scale", 24))
                 _v6kw["fifth_base_scale"] = float(zone.get("fifth_base_scale", 1.0))
-                _v6kw["fifth_base_pattern"] = zone.get("fifth_base_pattern")
-                _v6kw["fifth_base_pattern_scale"] = float(zone.get("fifth_base_pattern_scale", 1.0)) * auto_scale
+                _v6kw["fifth_base_color_scale"] = float(zone.get("fifth_base_color_scale", 1.0))
+                _v6kw["fifth_base_spec_scale"] = float(zone.get("fifth_base_spec_scale", 1.0))
+                # [SPB-OVERLAY-PARITY-2 2026-08-20] rotation / spec rotation / color strength
+                _v6kw["fifth_base_rotation"] = float(zone.get("fifth_base_rotation", 0.0) or 0.0)
+                _v6kw["fifth_base_spec_rotation"] = float(zone.get("fifth_base_spec_rotation", 0.0) or 0.0)
+                _ovcs_tmp = zone.get("fifth_base_color_strength", 1.0)
+                _v6kw["fifth_base_color_strength"] = max(0.0, min(1.0, float(1.0 if _ovcs_tmp is None else _ovcs_tmp)))
+                _v6kw["fifth_base_pattern"] = _normalize_base_overlay_pattern_id(zone.get("fifth_base_pattern"))
+                _v6kw["fifth_base_pattern_scale"] = float(zone.get("fifth_base_pattern_scale", 1.0)) * (1.0 if _pattern_fit_zone else auto_scale)
                 _v6kw["fifth_base_pattern_rotation"] = float(zone.get("fifth_base_pattern_rotation", 0.0))
                 _v6kw["fifth_base_pattern_opacity"] = float(zone.get("fifth_base_pattern_opacity", 1.0))
                 _v6kw["fifth_base_pattern_strength"] = float(zone.get("fifth_base_pattern_strength", 1.0))
@@ -13077,9 +19340,10 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 stack_ids = {ps.get("id") for ps in pattern_stack[:4] if ps.get("id") and ps.get("id") != "none"}
                 all_patterns = []
                 if pattern_id and pattern_id != "none" and pattern_id not in stack_ids:
-                    all_patterns.append({"id": pattern_id, "opacity": primary_pat_opacity, "scale": zone_scale, "rotation": zone_rotation,
+                    all_patterns.append({"id": pattern_id, "hue_shift": float(zone.get("pattern_hue_shift", 0)), "saturation": float(zone.get("pattern_saturation", 0)), "opacity": primary_pat_opacity, "scale": zone_scale, "rotation": zone_rotation,
                                          "offset_x": float(zone.get("pattern_offset_x", 0.5)),
-                                         "offset_y": float(zone.get("pattern_offset_y", 0.5))})
+                                         "offset_y": float(zone.get("pattern_offset_y", 0.5)),
+                                         "fit_zone": _pattern_fit_zone})
                 for ps in pattern_stack[:4]:  # Max 4 additional (matches JS MAX_PATTERN_STACK_LAYERS)
                     pid = ps.get("id", "none")
                     _pid_in_reg = pid in PATTERN_REGISTRY
@@ -13094,22 +19358,35 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                     if pid != "none" and _pid_in_reg:
                         all_patterns.append({
                             "id": pid,
+                            "hue_shift": float(ps.get("hue_shift", 0)), "saturation": float(ps.get("saturation", 0)),
                             "opacity": float(ps.get("opacity", 1.0)),
-                            "scale": float(ps.get("scale", 1.0)) * auto_scale,  # Auto-scale stack layers too
+                            "scale": float(ps.get("scale", 1.0)) * (1.0 if _pattern_fit_zone else auto_scale),
                             "rotation": float(ps.get("rotation", 0)),
                             "blend_mode": ps.get("blend_mode", "normal"),
+                            "fit_zone": _pattern_fit_zone,
                         })
                 pat_names = " + ".join(f'{p["id"]}@{int(p["opacity"]*100)}%{"["+p.get("blend_mode","normal")+"]" if p.get("blend_mode","normal") != "normal" else ""}' for p in all_patterns)
                 label = f"{base_id} + [{pat_names}]"
                 bs_label = f" base@{zone_base_scale:.2f}x" if zone_base_scale != 1.0 else ""
                 print(f"    [{name}] => {label} ({intensity}){bs_label} [stacked compositing]")
                 # v6.1: build blend paint kwargs
-                _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_color_fit_zone": _v6kw.get("base_color_fit_zone", False), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0), "pattern_intensity": pattern_intensity_01}
+                _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_color_fit_zone": _v6kw.get("base_color_fit_zone", False), "base_color_scale": _v6kw.get("base_color_scale", 1.0), "base_color_rotation": _v6kw.get("base_color_rotation", 0), "base_color_depth": _v6kw.get("base_color_depth"), "base_color_flip": _v6kw.get("base_color_flip", 0.0), "base_color_underglow": _v6kw.get("base_color_underglow", 0.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0), "pattern_intensity": pattern_intensity_01}
+                _v6paint["pattern_fit_zone"] = _v6kw.get("pattern_fit_zone", False)
+                _v6paint["pattern_paint_mode"] = zone.get("pattern_paint_mode", "overlay")
+                _v6paint["pattern_hue_shift"] = float(zone.get("pattern_hue_shift", 0))
+                _v6paint["pattern_saturation"] = float(zone.get("pattern_saturation", 0))
+                if _v6kw.get("pattern_strength_map") is not None: _v6paint["pattern_strength_map"] = _v6kw["pattern_strength_map"]  # BUGFIX 2026-10-04: Strength Map reaches the PAINT too (was spec-only; paint diff 0.000 before)
+                _v6paint["spec_mult"] = spec_mult
+                _v6paint["base_scale"] = zone_base_scale
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
+                if _z_sb or _v6kw.get("second_base_color_source") or float(_v6kw.get("second_base_strength") or 0) > 0.001: _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0); _v6paint["second_base_color_scale"] = _v6kw.get("second_base_color_scale", 1.0); _v6paint["second_base_color_strength"] = _v6kw.get("second_base_color_strength", 1.0); _v6paint["second_base_rotation"] = _v6kw.get("second_base_rotation", 0.0)
+                if _z_tb or _v6kw.get("third_base_color_source") or float(_v6kw.get("third_base_strength") or 0) > 0.001: _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0); _v6paint["third_base_color_scale"] = _v6kw.get("third_base_color_scale", 1.0); _v6paint["third_base_color_strength"] = _v6kw.get("third_base_color_strength", 1.0); _v6paint["third_base_rotation"] = _v6kw.get("third_base_rotation", 0.0)
+                if _z_fb or _v6kw.get("fourth_base_color_source") or float(_v6kw.get("fourth_base_strength") or 0) > 0.001: _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0); _v6paint["fourth_base_color_scale"] = _v6kw.get("fourth_base_color_scale", 1.0); _v6paint["fourth_base_color_strength"] = _v6kw.get("fourth_base_color_strength", 1.0); _v6paint["fourth_base_rotation"] = _v6kw.get("fourth_base_rotation", 0.0)
+                if _z_fif or _v6kw.get("fifth_base_color_source") or float(_v6kw.get("fifth_base_strength") or 0) > 0.001: _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0); _v6paint["fifth_base_color_scale"] = _v6kw.get("fifth_base_color_scale", 1.0); _v6paint["fifth_base_color_strength"] = _v6kw.get("fifth_base_color_strength", 1.0); _v6paint["fifth_base_rotation"] = _v6kw.get("fifth_base_rotation", 0.0)
+                for _ovp in ("second_base", "third_base", "fourth_base", "fifth_base"):
+                    if _ovp in _v6paint or _v6paint.get(_ovp + "_color_source"):
+                        _v6paint[_ovp + "_color_scale"] = _v6kw.get(_ovp + "_color_scale", 1.0)
+                        _v6paint[_ovp + "_spec_scale"] = _v6kw.get(_ovp + "_spec_scale", 1.0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
@@ -13122,20 +19399,20 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                     # Parallel: spec in background thread while paint mod runs in foreground
                     if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
                         _spec_ex = _shared_spec_pool
-                        _spec_fut = _spec_ex.submit(compose_finish_stacked, base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _spec_fut = _spec_ex.submit(compose_finish_stacked, base_id, all_patterns, shape, zone_mask, zone_seed, sm, spec_mult=spec_mult, base_scale=_compose_finish_base_scale_for_zone(zone, zone_base_scale), **_v6kw)
                         _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
                         if _paint_was_gpu: paint = to_cpu(paint)
-                        paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, zone_seed, pm, bb, **_v6paint)
                         if _paint_was_gpu: paint = to_gpu(paint)
                         zone_spec = _spec_fut.result()
                 else:
                     # Parallel: spec in background thread while paint mod runs in foreground
                     if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
                         _spec_ex = _shared_spec_pool
-                        _spec_fut = _spec_ex.submit(compose_finish, base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _spec_fut = _spec_ex.submit(compose_finish, base_id, "none", shape, zone_mask, zone_seed, sm, spec_mult=spec_mult, base_scale=_compose_finish_base_scale_for_zone(zone, zone_base_scale), **_v6kw)
                         _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
                         if _paint_was_gpu: paint = to_cpu(paint)
-                        paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, zone_seed, pm, bb, **_v6paint)
                         if _paint_was_gpu: paint = to_gpu(paint)
                         zone_spec = _spec_fut.result()
             else:
@@ -13145,37 +19422,108 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 rot_label = f" rot{zone_rotation:.0f}°" if zone_rotation != 0 else ""
                 bs_label = f" base@{zone_base_scale:.2f}x" if zone_base_scale != 1.0 else ""
                 print(f"    [{name}] => {label} ({intensity}){scale_label}{rot_label}{bs_label} [compositing]")
-                _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_color_fit_zone": _v6kw.get("base_color_fit_zone", False), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0), "pattern_intensity": pattern_intensity_01}
+                _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_color_fit_zone": _v6kw.get("base_color_fit_zone", False), "base_color_scale": _v6kw.get("base_color_scale", 1.0), "base_color_rotation": _v6kw.get("base_color_rotation", 0), "base_color_depth": _v6kw.get("base_color_depth"), "base_color_flip": _v6kw.get("base_color_flip", 0.0), "base_color_underglow": _v6kw.get("base_color_underglow", 0.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0), "pattern_intensity": pattern_intensity_01}
+                _v6paint["pattern_fit_zone"] = _v6kw.get("pattern_fit_zone", False)
+                _v6paint["pattern_paint_mode"] = zone.get("pattern_paint_mode", "overlay")
+                _v6paint["pattern_hue_shift"] = float(zone.get("pattern_hue_shift", 0))
+                _v6paint["pattern_saturation"] = float(zone.get("pattern_saturation", 0))
+                if _v6kw.get("pattern_strength_map") is not None: _v6paint["pattern_strength_map"] = _v6kw["pattern_strength_map"]  # BUGFIX 2026-10-04: Strength Map reaches the PAINT too (was spec-only; paint diff 0.000 before)
+                _v6paint["spec_mult"] = spec_mult
+                _v6paint["base_scale"] = zone_base_scale
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
+                if _z_sb or _v6kw.get("second_base_color_source") or float(_v6kw.get("second_base_strength") or 0) > 0.001: _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0); _v6paint["second_base_color_scale"] = _v6kw.get("second_base_color_scale", 1.0); _v6paint["second_base_color_strength"] = _v6kw.get("second_base_color_strength", 1.0); _v6paint["second_base_rotation"] = _v6kw.get("second_base_rotation", 0.0)
+                if _z_tb or _v6kw.get("third_base_color_source") or float(_v6kw.get("third_base_strength") or 0) > 0.001: _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0); _v6paint["third_base_color_scale"] = _v6kw.get("third_base_color_scale", 1.0); _v6paint["third_base_color_strength"] = _v6kw.get("third_base_color_strength", 1.0); _v6paint["third_base_rotation"] = _v6kw.get("third_base_rotation", 0.0)
+                if _z_fb or _v6kw.get("fourth_base_color_source") or float(_v6kw.get("fourth_base_strength") or 0) > 0.001: _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0); _v6paint["fourth_base_color_scale"] = _v6kw.get("fourth_base_color_scale", 1.0); _v6paint["fourth_base_color_strength"] = _v6kw.get("fourth_base_color_strength", 1.0); _v6paint["fourth_base_rotation"] = _v6kw.get("fourth_base_rotation", 0.0)
+                if _z_fif or _v6kw.get("fifth_base_color_source") or float(_v6kw.get("fifth_base_strength") or 0) > 0.001: _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0); _v6paint["fifth_base_color_scale"] = _v6kw.get("fifth_base_color_scale", 1.0); _v6paint["fifth_base_color_strength"] = _v6kw.get("fifth_base_color_strength", 1.0); _v6paint["fifth_base_rotation"] = _v6kw.get("fifth_base_rotation", 0.0)
+                for _ovp in ("second_base", "third_base", "fourth_base", "fifth_base"):
+                    if _ovp in _v6paint or _v6paint.get(_ovp + "_color_source"):
+                        _v6paint[_ovp + "_color_scale"] = _v6kw.get(_ovp + "_color_scale", 1.0)
+                        _v6paint[_ovp + "_spec_scale"] = _v6kw.get(_ovp + "_spec_scale", 1.0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
                 _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
                 _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
                 _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
-                # Parallel: spec in background thread while paint mod runs in foreground
-                if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
-                    _spec_ex = _shared_spec_pool
-                    _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
-                    _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
-                    if _paint_was_gpu: paint = to_cpu(paint)
-                    paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
-                    if _paint_was_gpu: paint = to_gpu(paint)
-                    zone_spec = _spec_fut.result()
+                zone_spec = None
+                _bbox_skip_reason = _bbox_noise_fast_path_reject_reason(
+                    base_id, pattern_id, zone, zone_mask, _v6kw, _v6paint, has_zone_spec_source
+                )
+                _bbox_paint_skip_reason = _bbox_noise_fast_path_paint_reject_reason(
+                    base_id, pattern_id, zone, zone_mask, _v6kw, _v6paint, has_zone_spec_source
+                )
+                if _can_fast_path_flat_noop_base(base_id, pattern_id, zone, _v6kw, _v6paint, has_zone_spec_source):
+                    zone_spec = _compose_flat_noop_base_spec(base_id, shape, zone_mask)
+                elif _bbox_skip_reason is None or _is_spec_pattern_stack_only_reason(_bbox_skip_reason):
+                    _bbox_stack_spec_path = _is_spec_pattern_stack_only_reason(_bbox_skip_reason)
+                    if _bbox_stack_spec_path:
+                        zone_spec = _compose_bbox_finish_spec_stack(
+                            base_id, pattern_id, shape, zone_mask, zone_seed, sm,
+                            zone_scale, spec_mult, zone_rotation, _v6kw
+                        )
+                        _bbox_paint_skip_reason = _bbox_noise_fast_path_paint_reject_reason(
+                            base_id, pattern_id, _without_spec_pattern_stacks(zone), zone_mask,
+                            _without_spec_pattern_stacks(_v6kw), _v6paint, has_zone_spec_source
+                        )
+                    else:
+                        zone_spec = _compose_bbox_noise_base_spec(base_id, shape, zone_mask, zone_seed, sm)
+                    if zone_spec is not None:
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu:
+                            paint = to_cpu(paint)
+                        _fast_paint_label = "paint"
+                        if _bbox_paint_skip_reason is None:
+                            _fast_paint = _apply_bbox_base_paint(base_id, paint, shape, zone_mask, zone_seed, pm, bb)
+                        elif _can_fast_path_bbox_paint_controls(base_id, pattern_id, zone_mask, _v6paint, _bbox_paint_skip_reason):
+                            _fast_paint = _apply_bbox_compose_paint_mod(
+                                base_id, pattern_id, paint, shape, zone_mask, zone_seed, pm, bb,
+                                zone_scale, zone_rotation, _v6paint
+                            )
+                            _fast_paint_label = "paint controls"
+                        else:
+                            _fast_paint = None
+                        if _fast_paint is not None:
+                            paint = _fast_paint
+                            _fast_regions = _mask_active_regions(zone_mask) or []
+                            _fast_spec_label = "stacked-spec" if _bbox_stack_spec_path else "spec"
+                            print(f"    [{name}] visible-crop {_fast_spec_label}+{_fast_paint_label} fast path: {_mask_region_summary(zone_mask, _fast_regions)}")
+                            if _paint_was_gpu:
+                                paint = to_gpu(paint)
+                        else:
+                            if _bbox_paint_skip_reason is None:
+                                _bbox_paint_skip_reason = "crop paint application failed"
+                            _fast_regions = _mask_active_regions(zone_mask) or []
+                            _fast_spec_label = "stacked-spec" if _bbox_stack_spec_path else "spec"
+                            print(f"    [{name}] visible-crop {_fast_spec_label} fast path: {_mask_region_summary(zone_mask, _fast_regions)}; paint full path: {_bbox_paint_skip_reason}")
+                            paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, zone_seed, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                            if _paint_was_gpu:
+                                paint = to_gpu(paint)
+                else:
+                    _log_bbox_fast_path_skip(name, base_id, zone_mask, _bbox_skip_reason)
+                if zone_spec is None:
+                    # Parallel: spec in background thread while paint mod runs in foreground
+                    if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
+                        _spec_ex = _shared_spec_pool
+                        _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, zone_seed, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=_compose_finish_base_scale_for_zone(zone, zone_base_scale), **_v6kw)
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu: paint = to_cpu(paint)
+                        paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, zone_seed, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                        if _paint_was_gpu: paint = to_gpu(paint)
+                        zone_spec = _spec_fut.result()
 
-        elif finish_name and zone.get("finish_colors") and (
+        elif finish_name and zone.get("finish_colors") and finish_name not in MONOLITHIC_REGISTRY and (
             finish_name.startswith("grad_") or finish_name.startswith("gradm_")
             or finish_name.startswith("grad3_") or finish_name.startswith("ghostg_")
             or finish_name.startswith("mc_")
         ):
-            # PATH 4 first for client-defined gradient types - client colors always win over registry
-            zone_rotation = float(zone.get("rotation", 0))
+            # SPB-GRADIENT-OVERHAUL-2026-08-23 / G-4: registered buyer cards were
+            # bypassing their authored renderer here (including exact duplicate pairs).
+            # Keep client colors authoritative only for unregistered/custom gradient IDs.
+            _base_ctrl = _zone_base_transform_values(zone)
+            zone_rotation = _base_ctrl["rotation"]
+            zone_base_scale = _base_ctrl["scale"]
             _engine_rot_debug(f"  [{name}] -> PATH 4 (generic, client gradient): finish={finish_name}, rotation={zone_rotation}")
-            zone_spec, paint = render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed + i * 13, sm, pm, bb, rotation=zone_rotation)
+            zone_spec, paint = render_generic_finish(finish_name, zone, paint, shape, zone_mask, zone_seed, sm, pm, bb, rotation=zone_rotation, base_scale=zone_base_scale, base_offset_x=_base_ctrl["offset_x"], base_offset_y=_base_ctrl["offset_y"], base_flip_h=_base_ctrl["flip_h"], base_flip_v=_base_ctrl["flip_v"])
             if zone_spec is not None: zone_spec = _sanitize_spec_result(zone_spec, shape)
             if paint is not None: paint = _sanitize_paint_result(paint, shape)
             if zone_spec is None:
@@ -13185,8 +19533,8 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 mono_scale = float(zone.get("scale", 1.0))
                 mono_opacity = float(zone.get("pattern_opacity", 1.0))
                 mono_rotation = float(zone.get("rotation", 0))
-                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult if 'spec_mult' in dir() else 1.0, rotation=mono_rotation)
-                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation)
+                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, zone_seed + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult if 'spec_mult' in dir() else 1.0, rotation=mono_rotation, blend_mode=zone.get("base_spec_blend_mode", "normal"), zone=zone)
+                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, zone_seed + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation, zone=zone)
 
         elif finish_name and finish_name in MONOLITHIC_REGISTRY:
             _engine_rot_debug(f"  [{name}] -> PATH 2 (monolithic): finish={finish_name}")
@@ -13199,43 +19547,263 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             mono_auto_scale = _compute_zone_auto_scale(zone_mask, shape)
             mono_pat_scale *= mono_auto_scale
             mono_pat_rotation = float(zone.get("rotation", 0))
-            mono_base_scale = float(zone.get("base_scale", 1.0))
+            _base_ctrl = _zone_base_transform_values(zone)
+            mono_base_scale = _base_ctrl["scale"]
             pat_label = f" + {mono_pat}" if mono_pat and mono_pat != "none" else ""
             bs_label = f" base@{mono_base_scale:.2f}x" if mono_base_scale != 1.0 else ""
-            logger.debug(f"    [{name}] => {finish_name}{pat_label} ({intensity}){bs_label} [monolithic]")
+            print(f"    [{name}] => {finish_name}{pat_label} ({intensity}){bs_label} [monolithic]")
 
             _mono_base_strength = max(0.0, min(2.0, float(zone.get("base_strength", 1.0))))
             _mono_spec_strength = max(0.0, min(2.0, float(zone.get("base_spec_strength", 1.0))))
-            # Combined: base_strength affects paint, spec_strength affects spec map
-            _sm_effective = sm * _mono_base_strength * _mono_spec_strength
-            _pm_effective = pm * _mono_base_strength
-            _bb_effective = bb * _mono_base_strength
-            # --- BASE SCALE for monolithics: generate at smaller dims, tile to fill ---
+            # [SPB authored-spec verbatim 2026-06-07 — owner: "SHOKK DROP authored specs must export
+            # EXACTLY as uploaded, no quarter"] A user-import authored_set finish (the EXACT uploaded
+            # M/R/Cc channels) must render VERBATIM whether used as a FINISH or a primary BASE. The
+            # base_spec_strength slider must NOT scale it. VERIFIED: owner's car_spec roughness went
+            # 136 -> 237 = 136 * base_spec_strength(2.0), baked in because _sm_effective fed the slider
+            # into the spec_fn's sm. Fix: authored specs use sm directly (no base_spec_strength
+            # pre-multiply) AND skip the post-pass strength scaling below. Procedural monolithics are
+            # 100% unchanged (they still scale by base_spec_strength as before).
+            # [SPB authored-spec verbatim 2026-06-07 v2] Check authored-ness BY ID via user_imports,
+            # NOT via a spec_fn attribute: the monolithic-contract wrappers (~15452) strip custom fn
+            # attrs, so __spec_mode__ never survives onto the registered spec_fn (verified: the boost
+            # persisted because the tag was missing). The id-set is wrapper-proof.
+            _mono_is_authored = False
             try:
-                if mono_base_scale != 1.0 and mono_base_scale > 0:
-                    MAX_MONO_DIM = 4096
-                    tile_h = min(MAX_MONO_DIM, max(4, int(shape[0] / mono_base_scale)))
-                    tile_w = min(MAX_MONO_DIM, max(4, int(shape[1] / mono_base_scale)))
-                    tile_shape = (tile_h, tile_w)
-                    tile_mask = np.ones((tile_h, tile_w), dtype=np.float32)
-                    tile_spec = _sanitize_spec_result(spec_fn(tile_shape, tile_mask, seed + i * 13, _sm_effective), tile_shape)
-                    reps_h = int(np.ceil(shape[0] / tile_h))
-                    reps_w = int(np.ceil(shape[1] / tile_w))
-                    zone_spec = np.tile(tile_spec, (reps_h, reps_w, 1))[:shape[0], :shape[1], :]
-                    paint = paint_fn(paint, shape, zone_mask, seed + i * 13, _pm_effective, _bb_effective)
-                else:
-                    zone_spec = spec_fn(shape, zone_mask, seed + i * 13, _sm_effective)
-                    paint = paint_fn(paint, shape, zone_mask, seed + i * 13, _pm_effective, _bb_effective)
-            except Exception as _mono_err:
-                logger.warning(f"    WARNING: Monolithic finish '{finish_name}' failed in {_format_zone_id(i, zone)}: {_mono_err}")
-                import traceback
-                logger.debug(traceback.format_exc())
-                # Fall back to default spec (flat, non-crashing) — keep render alive.
-                zone_spec = np.zeros((shape[0], shape[1], 4), dtype=np.float32)
-                zone_spec[:,:,0] = 5; zone_spec[:,:,1] = 100; zone_spec[:,:,2] = CC_FLOOR; zone_spec[:,:,3] = 255
+                from engine.paint_v2 import user_imports as _spb_ui
+                _mono_is_authored = bool(_spb_ui.is_authored_spec(finish_name))
+            except Exception:
+                _mono_is_authored = False
+            # base_strength scales paint only (compose_finish parity); spec uses sm * base_spec_strength.
+            # [SPB authored-spec verbatim 2026-06-07 v3] Authored specs render at a HARD sm=1.0 (TRUE
+            # verbatim). Debug proved `sm` ALREADY carries base_spec_strength by the time it reaches
+            # this path (sm==2.0==base_spec_strength), so `sm` or `sm*bss` both still double the
+            # authored roughness (136 -> 237). Forcing 1.0 yields the EXACT uploaded channel values
+            # regardless of the slider. The post-pass _apply_base_spec_strength is also skipped below.
+            _sm_effective = 1.0 if _mono_is_authored else (sm * _mono_spec_strength)
+            # SPB-93 / 2026-07-16: render the complete target, then perform one
+            # source->base mix after color override + HSB. Scaling renderer inputs
+            # made the midpoint nonlinear and allowed selected color to survive at 0.
+            _mono_render_boost = max(1.0, _mono_base_strength)
+            # [SPB MONO-PAINT-STRENGTH 2026-08-30 — owner: "I pick a base material and
+            # have the color from the base material, then I dial the BASE STRENGTH
+            # slider from 100 down to 20-50% to blend it with the SOURCE PAINT. Right
+            # now it's still NOT WORKING."]
+            #
+            # `pm` comes from the zone INTENSITY preset, and it was scaling the
+            # monolithic's paint at RENDER time: a zone left at intensity 10 rendered
+            # the finish at 10% paint / 100% spec, so every material picked into that
+            # zone arrived colourless no matter where Base Strength sat. Captured from
+            # the owner's own session (zones_payload.json): intensity '10',
+            # base_strength 0.4 -> the finish's colour was gone before the blend ran.
+            #
+            # This is exactly what SPB-93 (2026-07-16, comment above) set out to fix
+            # for base_strength: "render the complete target, then perform one
+            # source->base mix". Base Strength was moved to the post-mix then; the
+            # intensity factor was left scaling the renderer input. Now the monolithic
+            # always renders its COMPLETE colour and BASE STRENGTH is the single paint
+            # blend, which is the owner's model. Intensity keeps governing the spec
+            # (sm) and the brightness boost, so lowering it still calms a finish down
+            # without silently deleting the material's colour.
+            # Guard: tests/regression_source_mode_keeps_colors_test.py
+            _pm_effective = _mono_render_boost
+            _bb_effective = bb * _mono_render_boost
+            _mono_paint_before = (
+                to_cpu(paint).copy()
+                if is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                else np.asarray(paint).copy()
+            )
+            _mono_underpaint = _monolithic_underpaint_from_zone(
+                _mono_paint_before, zone, shape, zone_mask, zone_seed
+            )
+            # SPB-2026-05-18: always render monolithics inside the zone mask.
+            # Scale/rotate/offset are applied via placement_context on the plates
+            # before mask blend — never paint the full canvas.
+            _mono_render_mask = zone_mask
+            from engine.paint_v2.placement_context import (
+                clear_zone_placement, set_zone_placement, zone_placement_was_applied)
+
+            _pl_common = {
+                "offset_x": _base_ctrl["offset_x"],
+                "offset_y": _base_ctrl["offset_y"],
+                "rotation": _base_ctrl["rotation"],
+                "flip_h": _base_ctrl["flip_h"],
+                "flip_v": _base_ctrl["flip_v"],
+            }
+            _spec_ctrl = _zone_spec_transform_values(zone)
+            _mono_seed = zone_seed
+            # [SPB-PERF 2026-08-06] Spec Scale active => the FINER-SCALE block below is
+            # going to overwrite zone_spec with a PURE re-render, so render the pure spec
+            # up front (in the worker) and skip the masked one. See _SPB_MONO_SKIP_DEAD_SPEC.
+            # Same predicate the finer block uses, evaluated early so the worker can start.
+            #
+            # Two guards keep the speculation from ever being a net loss:
+            #  * If the PAINT placement is inactive, cultural_placement._apply_placement
+            #    returns before marking, so zone_placement_was_applied() cannot come back
+            #    True and the finer block is guaranteed to run — speculation is provably
+            #    right, whatever the finish is.
+            #  * If it IS active, only a finish never yet seen to consume the placement is
+            #    worth speculating on (known consumers ship the masked spec instead).
+            _mono_base_placement_live = _base_transform_requested(
+                mono_base_scale, **_pl_common)
+            _mono_spec_pure_first = bool(
+                _SPB_MONO_SKIP_DEAD_SPEC
+                and _base_transform_requested(
+                    _spec_ctrl["scale"], _spec_ctrl["offset_x"], _spec_ctrl["offset_y"],
+                    _spec_ctrl["rotation"], _spec_ctrl["flip_h"], _spec_ctrl["flip_v"])
+                and not (_mono_base_placement_live
+                         and finish_name in _SPB_MONO_PLACEMENT_OWNERS))
+            _mono_pure_spec = None          # pure spec handed to the finer block
+            _mono_paint_placement_applied = None
+            # [SPB-PERF 2026-08-01] zone layer cache — key covers EVERY input the
+            # render block consumes. GPU paints skip caching (np-only path).
+            _zl_key = None
+            _zl_hit = None
+            if (_SPB_ZONE_LAYER_CACHE_ON and int(shape[0]) >= 1024
+                    and not (is_gpu() and hasattr(paint, '__cuda_array_interface__'))):
+                try:
+                    _zl_key = (
+                        "mono", finish_name, int(shape[0]), int(shape[1]), int(_mono_seed),
+                        round(float(_sm_effective), 6), round(float(_pm_effective), 6),
+                        round(float(_bb_effective), 6), round(float(mono_base_scale), 6),
+                        tuple(sorted((k, round(float(v), 6) if isinstance(v, (int, float)) else bool(v))
+                                     for k, v in _pl_common.items())),
+                        tuple(sorted((k, round(float(v), 6) if isinstance(v, (int, float)) else bool(v))
+                                     for k, v in _spec_ctrl.items())),
+                        _spb_arr_sig(_mono_render_mask), _spb_arr_sig(_mono_underpaint),
+                        # [SPB-PERF 2026-08-06] which SPEC an entry holds depends on the
+                        # skip-dead-spec mode, so entries written by the two modes must
+                        # never be read for each other.
+                        bool(_mono_spec_pure_first),
+                    )
+                    _zl_hit = _spb_zone_layer_get(_zl_key)
+                except Exception:
+                    _zl_key = None
+                    _zl_hit = None
+            if _zl_hit is not None:
+                paint, zone_spec, _zl_placement_applied = _zl_hit
+                logger.info(f"    [{_format_zone_id(i, zone)}] layer cache HIT for '{finish_name}'")
+                # [SPB-PERF 2026-08-06] In skip-dead-spec mode the cached spec is the PURE
+                # one (the finer block's input) whenever the paint did NOT consume the
+                # placement — which is exactly when that block runs. Hand it straight over
+                # so a warm layer skips the spec render too.
+                if _mono_spec_pure_first and not _zl_placement_applied:
+                    _mono_pure_spec = zone_spec
+                    zone_spec = None
+            else:
+                _zl_placement_applied = None
+
+            # SPB-2026-05-18: spec/paint scale inside mask islands only (cultural_placement).
+            # [SPB-PERF 2026-08-06] Two spec renders are possible here; exactly ONE runs.
+            # MASKED = the zone-shaped spec under the Spec Scale placement (what ships when
+            # the finish applies placement itself). PURE = ones mask + native placement, the
+            # plate the FINER-SCALE block tiles down. See _SPB_MONO_SKIP_DEAD_SPEC — the pure
+            # render is byte-identical to the one that block would do for itself, it just
+            # happens early enough to overlap the paint instead of running after it.
+            def _mono_spec_masked(_sc=_spec_ctrl, _msk=_mono_render_mask,
+                                  _sd=_mono_seed, _smv=_sm_effective):
+                set_zone_placement(
+                    scale=_sc["scale"], offset_x=_sc["offset_x"],
+                    offset_y=_sc["offset_y"], rotation=_sc["rotation"],
+                    flip_h=_sc["flip_h"], flip_v=_sc["flip_v"],
+                )
+                return spec_fn(shape, _msk, _sd, _smv)
+
+            def _mono_spec_pure(_msk=_mono_render_mask, _sd=_mono_seed,
+                                _smv=_sm_effective):
+                set_zone_placement(scale=1.0, offset_x=0.5, offset_y=0.5,
+                                   rotation=0.0, flip_h=False, flip_v=False)
+                return spec_fn(shape, _msk * 0 + 1, _sd, _smv)
+
+            if _zl_hit is None:
+                _mono_spec_job = _mono_spec_pure if _mono_spec_pure_first else _mono_spec_masked
+                try:
+                    if _SPB_MONO_PARALLEL_SPEC:
+                        # SPB-PERF 2026-06-13: render the (independent) spec in a worker
+                        # thread WHILE paint renders here. placement_context is
+                        # thread-local, so the worker sets the SPEC placement in its own
+                        # thread and the main thread sets the PAINT placement — no
+                        # cross-talk. Bit-identical to the sequential calls below
+                        # (verified pixel-for-pixel). Mirrors the PATH 1 overlap.
+                        _mono_spec_fut = _shared_spec_pool.submit(_mono_spec_job)
+                        set_zone_placement(scale=mono_base_scale, **_pl_common)
+                        paint = paint_fn(_mono_underpaint, shape, _mono_render_mask, _mono_seed, _pm_effective, _bb_effective)
+                        _mono_paint_placement_applied = zone_placement_was_applied()
+                        zone_spec = _mono_spec_fut.result()
+                    else:
+                        zone_spec = _mono_spec_job()
+                        set_zone_placement(scale=mono_base_scale, **_pl_common)
+                        paint = paint_fn(_mono_underpaint, shape, _mono_render_mask, _mono_seed, _pm_effective, _bb_effective)
+                        _mono_paint_placement_applied = zone_placement_was_applied()
+                    if _mono_spec_pure_first:
+                        if _mono_paint_placement_applied:
+                            # Speculation missed: the finish consumed the placement, so the
+                            # finer block is skipped and the MASKED spec is what ships.
+                            # Render it now and keep the paint's placement flag
+                            # (set_zone_placement resets 'applied' for this thread).
+                            # Remember the finish so we stop speculating on it.
+                            _SPB_MONO_PLACEMENT_OWNERS.add(finish_name)
+                            zone_spec = _mono_spec_masked()
+                        else:
+                            _mono_pure_spec = zone_spec
+                            zone_spec = None
+                except Exception as _mono_err:
+                    clear_zone_placement()
+                    logger.error(f"    ERROR: Monolithic finish '{finish_name}' failed in {_format_zone_id(i, zone)}: {_mono_err}")
+                    import traceback
+                    logger.debug(traceback.format_exc())
+                    raise RuntimeError(
+                        f"Monolithic finish '{finish_name}' failed in {_format_zone_id(i, zone)}"
+                    ) from _mono_err
+                if _zl_key is not None:
+                    try:
+                        # [SPB-PERF 2026-08-06] Store whichever spec this mode produced —
+                        # the pure plate when the finer block will consume it, else the
+                        # masked one. The stored placement flag says which, and the mode
+                        # is in the key, so a hit can never misread the other kind.
+                        _spb_zone_layer_put(
+                            _zl_key, paint,
+                            _mono_pure_spec if zone_spec is None else zone_spec,
+                            bool(_mono_paint_placement_applied))
+                    except Exception:
+                        pass
 
             # Safety: normalize dict/tuple/RGB specs before overlays touch channels.
-            zone_spec = _sanitize_spec_result(zone_spec, shape)
+            # [SPB-PERF 2026-08-06] zone_spec is None only in skip-dead-spec mode, where the
+            # spec that ships is _mono_pure_spec and the FINER-SCALE block below runs these
+            # same two steps on it. Nothing between here and there reads zone_spec.
+            if zone_spec is not None:
+                try:
+                    zone_spec = _sanitize_spec_result(
+                        zone_spec,
+                        shape,
+                        strict_shapes=True,
+                        context=f"monolithic finish '{finish_name}'",
+                    )
+                except Exception as _mono_spec_err:
+                    logger.error(
+                        f"    ERROR: Monolithic finish '{finish_name}' returned invalid spec in "
+                        f"{_format_zone_id(i, zone)}: {_mono_spec_err}"
+                    )
+                    raise RuntimeError(
+                        f"Monolithic finish '{finish_name}' failed in {_format_zone_id(i, zone)}"
+                    ) from _mono_spec_err
+                if not _mono_is_authored:
+                    # authored_set specs are verbatim — base_spec_strength must not touch them (see above).
+                    zone_spec = _apply_base_spec_strength_to_zone_spec(
+                        zone_spec,
+                        _mono_spec_strength,
+                        shape,
+                        context=f"monolithic finish '{finish_name}' spec strength",
+                    )
+            # [SPB-PERF 2026-08-06] Prefer the flag captured right after paint_fn: the
+            # skip-dead-spec fallback may have called set_zone_placement again for the
+            # masked spec, which resets 'applied' on this thread. Same value as reading it
+            # here in every other case (nothing between them touches the placement).
+            _zone_spec_placement_applied = (
+                _zl_placement_applied if _zl_placement_applied is not None
+                else (_mono_paint_placement_applied
+                      if _mono_paint_placement_applied is not None
+                      else zone_placement_was_applied()))
             if isinstance(paint, dict):
                 _p_arr = paint.get('paint', None)
                 if isinstance(_p_arr, np.ndarray):
@@ -13243,6 +19811,192 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 else:
                     logger.warning(f"    WARNING: paint for '{finish_name}' returned dict in {_format_zone_id(i, zone)}, restoring from backup")
                     paint = _paint_backup.copy() if '_paint_backup' in dir() else np.zeros((shape[0], shape[1], 3), dtype=np.float32)
+            clear_zone_placement()
+
+            # SPB FINER-SCALE 2026-06-17 (owner-confirmed intent + color-hold fix).
+            # Base/Color/Spec Scale < 1 on a MONOLITHIC finish must make the finish's
+            # OWN pattern get FINER / denser within the selection — NOT tile the
+            # zone-masked (car-shaped) render into mini-copies of the whole car.
+            #
+            # CRITICAL ORDERING: do the finer pass HERE, immediately after the raw
+            # render and BEFORE every downstream color op (base strength, base-color
+            # override, HSB hue/sat/brightness, pattern + base overlays). Re-rendering
+            # the pure pattern from scratch loses any of those edits; by replacing
+            # `paint`/`zone_spec` with the FINER versions up front, all of those ops
+            # then apply to the finer pattern exactly as they do at scale 1.0. (An
+            # earlier post-overlay placement caused "scale-down reverts the HSB color".)
+            #
+            # HOW: re-render the finish ONCE with a ONES mask + NATIVE placement over a
+            # clean decal-free seed = a PURE full-canvas pattern (no silhouette, so a
+            # sheer finish can't tile decals through), tile THAT down with
+            # _transform_base_color_source (mirrors compose.py ~951 "tile the pure
+            # pattern down — stays clean"), then confine to the soft zone mask. No-op
+            # at scale 1.0 (zero extra render). The extra pure render only fires while
+            # the user is actively scaling (~0.3-0.5s).  NOTE: build_helmet_spec /
+            # build_suit_spec have the same monolithic block and the same latent
+            # behavior; not patched here (car path is the shipped one).
+            if not _zone_spec_placement_applied:
+                _bt_fix = _base_ctrl
+                _st_fix = _zone_spec_transform_values(zone)
+                _bt_active = _base_transform_requested(
+                    _bt_fix["scale"], _bt_fix["offset_x"], _bt_fix["offset_y"],
+                    _bt_fix["rotation"], _bt_fix["flip_h"], _bt_fix["flip_v"])
+                _st_active = _base_transform_requested(
+                    _st_fix["scale"], _st_fix["offset_x"], _st_fix["offset_y"],
+                    _st_fix["rotation"], _st_fix["flip_h"], _st_fix["flip_v"])
+                if _bt_active or _st_active:
+                    _ones_mask = zone_mask * 0 + 1
+                    _pure_underpaint = _monolithic_transform_seed_paint(
+                        _mono_paint_before, zone_mask, shape)
+                    set_zone_placement(scale=1.0, offset_x=0.5, offset_y=0.5,
+                                       rotation=0.0, flip_h=False, flip_v=False)
+                    try:
+                        if _bt_active:
+                            _pure_paint = _sanitize_paint_result(
+                                paint_fn(_pure_underpaint, shape, _ones_mask,
+                                         _mono_seed, _pm_effective, _bb_effective),
+                                shape)
+                        if _st_active:
+                            # [SPB-PERF 2026-08-06] Normally already rendered — the block
+                            # above ran exactly this call (same shape/ones mask/seed/sm
+                            # under the same native placement) in the worker thread while
+                            # paint rendered, instead of rendering the masked spec that
+                            # this line would throw away. Falls back to rendering here when
+                            # skip-dead-spec is off.
+                            _pure_spec = _sanitize_spec_result(
+                                _mono_pure_spec if _mono_pure_spec is not None
+                                else spec_fn(shape, _ones_mask, _mono_seed, _sm_effective),
+                                shape)
+                    finally:
+                        clear_zone_placement()
+                    if _bt_active:
+                        paint = _finer_base_paint_from_pure(
+                            _mono_paint_before, _pure_paint, zone_mask, shape,
+                            _bt_fix["scale"], _bt_fix["offset_x"], _bt_fix["offset_y"],
+                            _bt_fix["rotation"], _bt_fix["flip_h"], _bt_fix["flip_v"])
+                    if _st_active:
+                        if not _mono_is_authored:
+                            _pure_spec = _apply_base_spec_strength_to_zone_spec(
+                                _pure_spec, _mono_spec_strength, shape,
+                                context=f"monolithic finish '{finish_name}' spec strength (finer)")
+                        # zone_mask=None -> _transform_base_color_source tiling path
+                        # (finer); the zone composite (~19004) confines it downstream.
+                        zone_spec = _transform_spec_for_base_controls(
+                            _pure_spec, shape, _st_fix["scale"], _st_fix["offset_x"],
+                            _st_fix["offset_y"], _st_fix["rotation"], _st_fix["flip_h"],
+                            _st_fix["flip_v"], zone_mask=None)
+                        # Mark applied so the post-overlay block + post-pass (~18851)
+                        # do not double-apply the spec scale.
+                        _zone_spec_placement_applied = True
+
+            if zone_spec is None:
+                # [SPB-PERF 2026-08-06] Unreachable by construction: zone_spec is only left
+                # None when Spec Scale is active AND the paint did not consume the
+                # placement, which is exactly the condition for the finer block above to
+                # assign it. Kept as a hard floor so a predicate drift downstream can never
+                # ship a None spec into compositing — pay for the masked render instead.
+                logger.warning(
+                    f"    [{_format_zone_id(i, zone)}] skip-dead-spec net: finer pass did not "
+                    f"claim the pure spec for '{finish_name}' — rendering the masked spec")
+                try:
+                    zone_spec = _sanitize_spec_result(
+                        _mono_spec_masked(), shape, strict_shapes=True,
+                        context=f"monolithic finish '{finish_name}' (dead-spec net)")
+                    if not _mono_is_authored:
+                        zone_spec = _apply_base_spec_strength_to_zone_spec(
+                            zone_spec, _mono_spec_strength, shape,
+                            context=f"monolithic finish '{finish_name}' spec strength (net)")
+                finally:
+                    clear_zone_placement()
+
+            # SPB-BASECOLOR-2026-06-02 (owner verdict: "if I make the color solid
+            # yellow it ALWAYS made the color solid... change PEARL CHASER to SOLID
+            # RED but still maintain the spec since that's the BASE"). A monolithic
+            # finish provides the SPEC (light reaction); an explicit base-color mode
+            # (solid / from-special / gradient) must REPLACE the finish's own paint
+            # color. Monolithic paint_fns generate their own colors and paint over
+            # the underpaint, so applying the override only as an underpaint (upstream
+            # in _monolithic_underpaint_from_zone) was silently discarded => "Use solid
+            # color" did nothing on Pearl Chaser / Blue Vortex / Paradigm. Regular
+            # bases work because compose_paint_mod applies the override to the FINAL
+            # paint; mirror that here. zone_spec is untouched so the spec is kept.
+            _mono_bc_mode = str(zone.get("base_color_mode", "source") or "source").strip().lower()
+            # [SPB SOURCE-MODE PARITY 2026-08-15 — owner: "if I click Use Source Paint for BASE
+            # COLOR it should use the SOURCE PAINT of the car. NOT the SOURCE PAINT of the BASE
+            # MATERIAL... when you ONLY want to apply the BASE MATERIAL of the spec and keep the
+            # EXACT source paint otherwise. This is for ALL categories."]
+            #
+            # The 2026-07-08 lock (compose.py _source_paint_lock) only ever covered
+            # compose_paint_mod — the regular base+pattern path. Anything in
+            # MONOLITHIC_REGISTRY (846 finishes) is routed to THIS branch by the
+            # `finish or base` resolve at ~line 1414 and never reaches that lock, so source
+            # mode fell straight through the `not in (...)` test below and the finish's own
+            # paint survived. Repro that proved it: fs_core_aurum (gold) over a 4-hue source
+            # dragged blue 0.630->0.106 and green 0.375->0.171 with base_color_mode='source',
+            # byte-identical to base_color_mode='special'. The old guard test could not see it
+            # because it only used 'gloss'/'ghost_graphic', which DO resolve to the base path.
+            #
+            # SOURCE MODE = SPEC ONLY. zone_spec is deliberately untouched; strength 0.0 makes
+            # the existing blend helper return the pre-monolithic paint (alpha = mask*0 = 0 =>
+            # out == under), so the car's paint is restored without new blend math. HSB still
+            # runs after this and adjusts the SOURCE colors, matching compose.py's behaviour.
+            # Guard: tests/regression_source_mode_keeps_colors_test.py::*monolithic*
+            # [SPB MONO-COLOUR DEFAULT 2026-08-30 — owner: "there's a LOT of finishes
+            # that at 100% base strength ... the COLOR is not showing up for the BASE
+            # MATERIAL at all"]. SOURCE mode discarding the monolithic's paint is
+            # correct and deliberate (2026-08-15 parity work, guarded by
+            # tests/regression_source_mode_keeps_colors_test.py) — but it was also the
+            # DEFAULT for every new zone, so all 846 monolithics rendered spec-only
+            # unless the user changed the Base Color dropdown. "finish" is the new
+            # default: the material keeps its OWN colour, and "Use source paint" still
+            # does exactly what was asked for in August when it is chosen explicitly.
+            # A zone only means "spec only" if the user actually CHOSE source mode.
+            # Every zone saved before 2026-08-30 carries 'source' as an inherited
+            # default it never asked for, which is why the owner saw the colour
+            # missing on finish after finish. Without the explicit flag, an
+            # unchosen 'source' keeps the material's own colour.
+            if not bool(zone.get("base_color_explicit", False)) and _mono_bc_mode in ("", "source", "none"):
+                _mono_bc_mode = "finish"
+            if _mono_bc_mode in ("finish", "own"):
+                pass
+            elif _mono_bc_mode in ("", "source", "none"):
+                paint = _blend_monolithic_base_strength(
+                    _mono_paint_before, paint, zone_mask, 0.0
+                )
+            if _mono_bc_mode not in ("", "source", "none", "finish", "own"):
+                _mono_bc_src = zone.get("base_color_source")
+                _mono_same_finish = (
+                    isinstance(_mono_bc_src, str)
+                    and _mono_bc_src.startswith("mono:")
+                    and _mono_bc_src[5:] == finish_name
+                )
+                if not _mono_same_finish:
+                    _mono_bc_val = zone.get("base_color", [1.0, 1.0, 1.0])
+                    if _mono_bc_mode == "gradient" and zone.get("gradient_stops"):
+                        _mono_bc_val = {
+                            "stops": zone.get("gradient_stops"),
+                            "direction": zone.get("gradient_direction", "horizontal"),
+                        }
+                    try:
+                        paint = _apply_base_color_override(
+                            paint, shape, np.asarray(zone_mask, dtype=np.float32),
+                            zone_seed, _mono_bc_mode, _mono_bc_val, _mono_bc_src,
+                            max(0.0, min(1.0, float(zone.get("base_color_strength", 1.0)))),
+                            MONOLITHIC_REGISTRY,
+                            fit_to_bbox=bool(zone.get("base_color_fit_zone", False)),
+                            base_scale=_zone_monolithic_color_source_scale(zone, _base_ctrl),
+                            base_offset_x=_base_ctrl["offset_x"],
+                            base_offset_y=_base_ctrl["offset_y"],
+                            base_rotation=_base_ctrl["rotation"],
+                            base_flip_h=_base_ctrl["flip_h"],
+                            base_flip_v=_base_ctrl["flip_v"],
+                            base_color_depth=(None if zone.get("base_color_depth") is None else float(zone.get("base_color_depth"))),
+                            base_color_flip=float(zone.get("base_color_flip", 0) or 0),
+                            base_color_underglow=float(zone.get("base_color_underglow", 0) or 0),
+                        )
+                        print(f"    [{name}] base-color override -> monolithic paint (mode={_mono_bc_mode}), spec preserved")
+                    except Exception as _mono_bc_err:
+                        logger.warning(f"    [{name}] monolithic base-color override failed: {_mono_bc_err}")
 
             # Apply HSB adjustments to monolithic paint (same as base+pattern path)
             _mono_hue = float(zone.get("base_hue_offset", 0))
@@ -13251,10 +20005,14 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             if abs(_mono_hue) >= 0.5 or abs(_mono_sat) >= 0.5 or abs(_mono_bri) >= 0.5:
                 paint = _apply_hsb_adjustments(paint, zone_mask, _mono_hue, _mono_sat, _mono_bri)
 
+            paint = _blend_monolithic_base_strength(
+                _mono_paint_before, paint, zone_mask, _mono_base_strength
+            )
+
             # Optional pattern overlay on top of monolithic
             if mono_pat and mono_pat != "none" and mono_pat in PATTERN_REGISTRY:
-                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_pat_scale, mono_pat_opacity, spec_mult=spec_mult, rotation=mono_pat_rotation)
-                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_pat_scale, mono_pat_opacity, rotation=mono_pat_rotation)
+                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, zone_seed + 99, sm, mono_pat_scale, mono_pat_opacity, spec_mult=spec_mult, rotation=mono_pat_rotation, blend_mode=zone.get("base_spec_blend_mode", "normal"), zone=zone)
+                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, zone_seed + 99, pm, bb, mono_pat_scale, mono_pat_opacity, rotation=mono_pat_rotation, zone=zone)
 
             # Pattern stack on monolithic: apply additional stacked patterns on top
             _mono_pattern_stack = zone.get("pattern_stack", [])
@@ -13273,8 +20031,8 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                     _mps_scale = float(_mps.get("scale", 1.0)) * mono_auto_scale
                     _mps_rotation = float(_mps.get("rotation", 0))
                     print(f"    [MONO STACK] Applying stacked pattern {_mps_idx+2}: '{_mps_id}' opacity={_mps_opacity} scale={_mps_scale}")
-                    zone_spec = overlay_pattern_on_spec(zone_spec, _mps_id, shape, zone_mask, seed + i * 13 + 200 + _mps_idx * 31, sm, _mps_scale, _mps_opacity, spec_mult=spec_mult, rotation=_mps_rotation)
-                    paint = overlay_pattern_paint(paint, _mps_id, shape, zone_mask, seed + i * 13 + 200 + _mps_idx * 31, pm, bb, _mps_scale, _mps_opacity, rotation=_mps_rotation)
+                    zone_spec = overlay_pattern_on_spec(zone_spec, _mps_id, shape, zone_mask, zone_seed + 200 + _mps_idx * 31, sm, _mps_scale, _mps_opacity, spec_mult=spec_mult, rotation=_mps_rotation, blend_mode=zone.get("base_spec_blend_mode", "normal"), zone=zone)
+                    paint = overlay_pattern_paint(paint, _mps_id, shape, zone_mask, zone_seed + 200 + _mps_idx * 31, pm, bb, _mps_scale, _mps_opacity, rotation=_mps_rotation, zone=zone, layer=_mps)
 
             # Spec pattern stack on monolithic: apply spec patterns to zone_spec
             _mono_spec_patterns = zone.get("spec_pattern_stack", [])
@@ -13287,22 +20045,35 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                         continue
                     _msp_opacity = float(_msp.get("opacity", 0.5))
                     _msp_blend = _msp.get("blend_mode", "normal")
-                    _msp_channels = _msp.get("channels", "MR")
+                    _msp_channels = _msp.get("channels", "MRC")
                     _msp_scale = float(_msp.get("scale", 1.0))
                     _msp_rotation = float(_msp.get("rotation", 0))
                     _msp_range = float(_msp.get("range", 40.0))
                     _msp_params = _msp.get("params", {})
-                    _msp_seed = seed + 5000 + hash(_msp_name) % 10000
+                    _msp_seed = zone_seed + 5000 + hash(_msp_name) % 10000
                     if abs(_msp_scale - 1.0) > 0.01 and _msp_scale < 1.0:
-                        # Generate at larger resolution for smooth downscale (no tile seams)
+                        # Generate at larger resolution for smooth downscale (no tile seams).
+                        # cv2.resize works on both 2-D and (h,w,3) — 3-channel safe.
                         _inv = min(1.0 / _msp_scale, 8.0)
                         _gen_h = min(16384, max(shape[0], int(np.ceil(shape[0] * _inv))))
                         _gen_w = min(16384, max(shape[1], int(np.ceil(shape[1] * _inv))))
                         _msp_arr_big = _msp_fn((_gen_h, _gen_w), _msp_seed, sm, **_msp_params)
-                        from PIL import Image as _PILImg
-                        _msp_arr = np.array(_PILImg.fromarray(
-                            (np.clip(_msp_arr_big, 0, 1) * 255).astype(np.uint8)
-                        ).resize((shape[1], shape[0]), _PILImg.LANCZOS)).astype(np.float32) / 255.0
+                        try:
+                            import cv2 as _cv2_local
+                            _msp_arr = _cv2_local.resize(
+                                np.clip(np.asarray(_msp_arr_big, dtype=np.float32), 0, 1),
+                                (shape[1], shape[0]),
+                                interpolation=_cv2_local.INTER_LINEAR,
+                            ).astype(np.float32)
+                        except Exception:
+                            # Fallback: collapse to luminance and PIL-resize (legacy)
+                            _arr2d = np.asarray(_msp_arr_big, dtype=np.float32)
+                            if _arr2d.ndim == 3:
+                                _arr2d = _arr2d.mean(axis=2)
+                            from PIL import Image as _PILImg
+                            _msp_arr = np.array(_PILImg.fromarray(
+                                (np.clip(_arr2d, 0, 1) * 255).astype(np.uint8)
+                            ).resize((shape[1], shape[0]), _PILImg.LANCZOS)).astype(np.float32) / 255.0
                     elif abs(_msp_scale - 1.0) > 0.01 and _msp_scale > 1.0:
                         _msp_arr = _msp_fn(shape, _msp_seed, sm, **_msp_params)
                         _msp_arr = _crop_center_array(_msp_arr, _msp_scale, shape[0], shape[1])
@@ -13310,180 +20081,65 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                         _msp_arr = _msp_fn(shape, _msp_seed, sm, **_msp_params)
                     if abs(_msp_rotation) > 0.5:
                         _msp_arr = _rotate_single_array(_msp_arr, _msp_rotation, shape)
-                    _msp_delta = (_msp_arr - 0.5) * 2.0
-                    _msp_contrib = _msp_delta * _msp_range
+                    _msp_arr = np.asarray(_msp_arr, dtype=np.float32)
                     _msp_M = zone_spec[:,:,0].astype(np.float32)
                     _msp_R = zone_spec[:,:,1].astype(np.float32)
                     _msp_CC = zone_spec[:,:,2].astype(np.float32)
-                    if "M" in _msp_channels:
-                        _msp_M = _apply_spec_blend_mode(_msp_M, _msp_contrib, _msp_opacity, _msp_blend)
-                    if "R" in _msp_channels:
-                        _msp_R = _apply_spec_blend_mode(_msp_R, _msp_contrib, _msp_opacity, _msp_blend)
-                    if "C" in _msp_channels:
-                        _msp_CC = _apply_spec_blend_mode(_msp_CC, _msp_contrib, _msp_opacity, _msp_blend)
+                    # Multi-channel pattern path (2026-05-23 owner directive):
+                    # If pattern returns (h,w,3), treat as INDEPENDENT M/R/CC deltas.
+                    # Channels[0]=Metallic, [1]=Roughness, [2]=Clearcoat. Each
+                    # channel's delta is applied to its own spec channel — gives
+                    # true depth (e.g. chrome region + matte-dull region in same finish).
+                    if _msp_arr.ndim == 3 and _msp_arr.shape[2] >= 3:
+                        # CC channel raw [0,1] is interpreted as a TARGET clearcoat tier:
+                        # Per owner doctrine, B≈16 = max gloss, B>=255 = no clearcoat.
+                        # Pattern's CC channel is expressed in 0-1 brightness-style where
+                        # 1.0 means "glossy clearcoat" (low B=16-ish), 0.0 means "dull"
+                        # (high B=240-ish). Map that here.
+                        _msp_M_arr = _msp_arr[:, :, 0]
+                        _msp_R_arr = _msp_arr[:, :, 1]
+                        _msp_CC_arr = _msp_arr[:, :, 2]
+                        # Stack-config channels still gate which channels apply
+                        if "M" in _msp_channels:
+                            _msp_M_contrib = (_msp_M_arr - 0.5) * 2.0 * _msp_range
+                            _msp_M = _apply_spec_blend_mode(_msp_M, _msp_M_contrib, _msp_opacity, _msp_blend)
+                        if "R" in _msp_channels:
+                            _msp_R_contrib = (_msp_R_arr - 0.5) * 2.0 * _msp_range
+                            _msp_R = _apply_spec_blend_mode(_msp_R, _msp_R_contrib, _msp_opacity, _msp_blend)
+                        if "C" in _msp_channels:
+                            # CC channel: 1.0 → gloss (low B value), 0.0 → dull (high B)
+                            # Convert to a delta around the current zone_spec CC values.
+                            _msp_CC_contrib = (_msp_CC_arr - 0.5) * 2.0 * _msp_range
+                            # Invert because B-channel semantics: bright pattern = MORE
+                            # gloss = LOWER B value. So push toward lower B when contrib > 0.
+                            _msp_CC = _apply_spec_blend_mode(_msp_CC, -_msp_CC_contrib, _msp_opacity, _msp_blend)
+                        print(f"    [MONO SPEC] Applied 3-channel spec pattern '{_msp_name}' opacity={_msp_opacity}")
+                    else:
+                        # Legacy single-channel: same delta applied to selected channels
+                        _msp_delta = (_msp_arr - 0.5) * 2.0
+                        _msp_contrib = _msp_delta * _msp_range
+                        if "M" in _msp_channels:
+                            _msp_M = _apply_spec_blend_mode(_msp_M, _msp_contrib, _msp_opacity, _msp_blend)
+                        if "R" in _msp_channels:
+                            _msp_R = _apply_spec_blend_mode(_msp_R, _msp_contrib, _msp_opacity, _msp_blend)
+                        if "C" in _msp_channels:
+                            _msp_CC = _apply_spec_blend_mode(_msp_CC, _msp_contrib, _msp_opacity, _msp_blend)
+                        print(f"    [MONO SPEC] Applied spec pattern '{_msp_name}' opacity={_msp_opacity}")
                     zone_spec[:,:,0] = np.clip(_msp_M, 0, 255).astype(np.uint8)
                     zone_spec[:,:,1] = np.clip(_msp_R, 0, 255).astype(np.uint8)
                     zone_spec[:,:,2] = np.clip(_msp_CC, 16, 255).astype(np.uint8)
-                    print(f"    [MONO SPEC] Applied spec pattern '{_msp_name}' opacity={_msp_opacity}")
 
-            # Dual Layer Base Overlay on monolithic (same as base+pattern path)
-            _z_sb = zone.get("second_base")
-            _z_sb_color_src = zone.get("second_base_color_source")
-            _z_sb_is_mono = _z_sb and str(_z_sb).startswith("mono:")
-            _z_sb_in_base = _z_sb and _z_sb in BASE_REGISTRY
-            _z_sb_in_mono = _z_sb_is_mono and _z_sb[5:] in MONOLITHIC_REGISTRY
-            _z_sb_src_is_mono = _z_sb_color_src and str(_z_sb_color_src).startswith("mono:") and _z_sb_color_src[5:] in MONOLITHIC_REGISTRY
-            _z_sb_str = float(zone.get("second_base_strength", 0))
-            print(f"    [{name}] OVERLAY CHECK: sb='{_z_sb}', src='{_z_sb_color_src}', is_mono={_z_sb_is_mono}, in_base={_z_sb_in_base}, in_mono={_z_sb_in_mono}, src_in_mono={_z_sb_src_is_mono}, strength={_z_sb_str}")
-            if (_z_sb_in_base or _z_sb_in_mono or _z_sb_src_is_mono) and _z_sb_str > 0.001:
-                try:
-                    _sb_strength = float(zone.get("second_base_strength", 0))
-                    _has_sb_spec = bool(_z_sb_in_base or _z_sb_in_mono)
-                    spec_secondary = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
-                    if _z_sb_in_mono:
-                        # Special finish as overlay - use its spec_fn
-                        _mono_id = _z_sb[5:]
-                        _sb_spec_fn = MONOLITHIC_REGISTRY[_mono_id][0]
-                        _sb_seed_off = abs(hash(_z_sb)) % 10000
-                        spec_secondary = _sanitize_spec_result(_sb_spec_fn(shape, zone_mask, seed + i * 13 + _sb_seed_off, sm), shape)
-                        print(f"    [{name}] 2nd base overlay: MONO spec '{_mono_id}'")
-                    else:
-                        # Regular base as overlay - existing logic
-                        _sb_def = BASE_REGISTRY[_z_sb]
-                        _sb_M = float(_sb_def["M"])
-                        _sb_R = float(_sb_def["R"])
-                        _sb_CC = int(_sb_def.get("CC", 16))
-                        _sb_seed_off = abs(hash(_z_sb)) % 10000
-                        if _sb_def.get("base_spec_fn"):
-                            _sb_result = _sb_def["base_spec_fn"](shape, seed + i * 13 + _sb_seed_off, sm, _sb_M, _sb_R)
-                            _sb_M_arr = _sb_result[0]
-                            _sb_R_arr = _sb_result[1]
-                            _sb_CC_arr = _sb_result[2] if len(_sb_result) > 2 else np.full(shape, float(_sb_CC))
-                        elif _sb_def.get("perlin"):
-                            _sb_noise = multi_scale_noise(shape, [8, 16, 32], [0.5, 0.3, 0.2], seed + i * 13 + _sb_seed_off)
-                            _sb_M_arr = _sb_M + _sb_noise * _sb_def.get("noise_M", 0) * sm
-                            _sb_R_arr = _sb_R + _sb_noise * _sb_def.get("noise_R", 0) * sm
-                            _sb_CC_arr = np.full(shape, float(_sb_CC))
-                        else:
-                            _sb_M_arr = np.full(shape, _sb_M)
-                            _sb_R_arr = np.full(shape, _sb_R)
-                            _sb_CC_arr = np.full(shape, float(_sb_CC))
-                        _sb_M_final = _sb_M_arr * zone_mask + 5.0 * (1 - zone_mask)
-                        _sb_R_final = _sb_R_arr * zone_mask + 100.0 * (1 - zone_mask)
-                        spec_secondary[:,:,0] = np.clip(_sb_M_final, 0, 255).astype(np.uint8)
-                        spec_secondary[:,:,1] = np.clip(_sb_R_final, 0, 255).astype(np.uint8)
-                        spec_secondary[:,:,2] = np.clip(_sb_CC_arr * zone_mask, 0, 255).astype(np.uint8)
-                        spec_secondary[:,:,3] = 255
-                    _sb_bm = zone.get("second_base_blend_mode", "noise")
-                    # Use "React to zone pattern" (second_base_pattern) first; fallback to zone L1 pattern
-                    _pat_id = zone.get("second_base_pattern") or zone.get("pattern") or zone.get("mono_pattern")
-                    _sb_bm_norm = _normalize_second_base_blend_mode(_sb_bm)
-                    # Build pattern mask for pattern, pattern_vivid, AND tint (so tint is pattern-driven, not uniform)
-                    _sb_needs_mask = _sb_bm_norm in ("pattern", "pattern_vivid", "tint")
-                    # Monolithic path: use same effective scale space as zone pattern overlay.
-                    _sb_pat_scale = max(0.1, min(10.0, float(zone.get("second_base_pattern_scale", 1.0)) * mono_auto_scale))
-                    _sb_pat_rot = float(zone.get("second_base_pattern_rotation", 0))
-                    _sb_pat_op = zone.get("second_base_pattern_opacity", 1.0)
-                    _sb_pat_op = min(1.0, float(_sb_pat_op)) if float(_sb_pat_op) > 1 else float(_sb_pat_op)
-                    _sb_pat_str = max(0.0, min(2.0, float(zone.get("second_base_pattern_strength", 1.0))))
-                    _sb_pat_ox = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_x", 0.5))))
-                    _sb_pat_oy = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_y", 0.5))))
-                    # Fit-to-Zone for 2nd base overlay (monolithic path)
-                    if zone.get("second_base_fit_zone", False) and zone_mask is not None:
-                        _ftrows = np.any(zone_mask > 0.1, axis=1)
-                        _ftcols = np.any(zone_mask > 0.1, axis=0)
-                        if _ftrows.any() and _ftcols.any():
-                            _ftr_min, _ftr_max = np.where(_ftrows)[0][[0, -1]]
-                            _ftc_min, _ftc_max = np.where(_ftcols)[0][[0, -1]]
-                            _ft_ratio = max((_ftr_max - _ftr_min + 1) / h, (_ftc_max - _ftc_min + 1) / w)
-                            if _ft_ratio > 0.01:
-                                _sb_pat_ox = (_ftc_min + _ftc_max) / 2.0 / w
-                                _sb_pat_oy = (_ftr_min + _ftr_max) / 2.0 / h
-                                _sb_pat_scale = _sb_pat_scale / _ft_ratio
-                    _pat_mask = _get_pattern_mask(_pat_id, shape, zone_mask, seed + i * 13, sm, scale=_sb_pat_scale, rotation=_sb_pat_rot, opacity=_sb_pat_op, strength=_sb_pat_str, offset_x=_sb_pat_ox, offset_y=_sb_pat_oy) if _sb_needs_mask and _pat_id else None
-                    if _pat_mask is not None:
-                        if zone.get("second_base_pattern_invert"):
-                            _pat_mask = 1.0 - _pat_mask
-                        if zone.get("second_base_pattern_harden"):
-                            _pat_mask = np.clip((_pat_mask.astype(np.float32) - 0.45) / 0.15, 0, 1)
-                    if _has_sb_spec:
-                        zone_spec, _ = blend_dual_base_spec(
-                            zone_spec, spec_secondary,
-                            strength=_sb_strength,
-                            blend_mode=_sb_bm,
-                            noise_scale=int(zone.get("second_base_noise_scale", 24)),
-                            seed=seed + i * 13,
-                            pattern_mask=_pat_mask,
-                            zone_mask=zone_mask
-                        )
-                    # Paint side: tint overlay with second_base_color and blend
-                    hard_mask = np.where(zone_mask > 0.5, zone_mask, 0.0).astype(np.float32)
-                    paint_overlay = paint.copy()
-                    _sb_mask3d = hard_mask[:, :, np.newaxis]
-                    _sb_src_mono_id = None
-                    if _z_sb_src_is_mono:
-                        _sb_src_mono_id = _z_sb_color_src[5:]
-                    elif _z_sb_in_mono and MONOLITHIC_REGISTRY.get(_z_sb[5:]):
-                        _sb_src_mono_id = _z_sb[5:]
-                    if _sb_src_mono_id and MONOLITHIC_REGISTRY.get(_sb_src_mono_id):
-                        # Use the mono's paint_fn - it generates its own colors
-                        # from a neutral seed so strong underlying bases (e.g. prizm_duochrome)
-                        # don't swallow overlay identity.
-                        _mono_paint_fn = MONOLITHIC_REGISTRY[_sb_src_mono_id][1]
-                        _seed_paint = np.full_like(paint[:, :, :3], 0.533, dtype=np.float32)
-                        _color_paint = _mono_paint_fn(_seed_paint, shape, hard_mask, seed + i * 13 + 7777, 1.0, 0.0)
-                        if _color_paint is not None:
-                            paint_overlay[:, :, :3] = _color_paint[:, :, :3]
-                        print(f"    [{name}] 2nd base overlay: MONO color source '{_sb_src_mono_id}'")
-                    else:
-                        _sb_color = zone.get("second_base_color", [1.0, 1.0, 1.0])
-                        if _sb_color is not None and len(_sb_color) >= 3:
-                            _sb_r = float(_sb_color[0])
-                            _sb_g = float(_sb_color[1])
-                            _sb_b = float(_sb_color[2])
-                            _sb_rgb = np.array([_sb_r, _sb_g, _sb_b], dtype=np.float32)
-                            paint_overlay[:, :, :3] = paint_overlay[:, :, :3] * (1.0 - _sb_mask3d) + _sb_rgb * _sb_mask3d
-                            if _z_sb_in_base:
-                                _sb_def = BASE_REGISTRY[_z_sb]
-                                _sb_pfn = _sb_def.get("paint_fn", paint_none)
-                                if _sb_pfn is not paint_none:
-                                    paint_overlay = _sb_pfn(paint_overlay, shape, hard_mask, seed + i * 13 + 7777, 1.0, 1.0)
-                                # Apply user's overlay color after paint_fn so the chosen tint is always visible (Fix 2)
-                                paint_overlay[:, :, :3] *= np.array([_sb_r, _sb_g, _sb_b], dtype=np.float32)
-                    _sb_ns = int(zone.get("second_base_noise_scale", 24))
-                    _sb_bm = zone.get("second_base_blend_mode", "noise")
-                    _sb_bm_norm = _normalize_second_base_blend_mode(_sb_bm)
-                    if _sb_bm_norm in ("pattern", "pattern_vivid", "tint"):
-                        _blend_w = _get_pattern_mask(_pat_id, shape, hard_mask, seed + i * 13, 1.0, scale=_sb_pat_scale, rotation=_sb_pat_rot, opacity=_sb_pat_op, strength=_sb_pat_str, offset_x=_sb_pat_ox, offset_y=_sb_pat_oy) if _pat_id else None
-                        if _blend_w is None:
-                            _blend_w = np.full(shape, _sb_strength, dtype=np.float32)
-                        else:
-                            if zone.get("second_base_pattern_invert"):
-                                _blend_w = 1.0 - _blend_w
-                            if zone.get("second_base_pattern_harden"):
-                                _blend_w = np.clip((_blend_w.astype(np.float32) - 0.45) / 0.15, 0, 1)
-                            if _sb_bm_norm == "pattern_vivid":
-                                _thr = np.clip(1.0 - float(_sb_strength), 0.0, 1.0)
-                                _blend_w = np.clip((_blend_w - _thr) / max(0.08, 1e-4), 0.0, 1.0).astype(np.float32)
-                            elif _sb_bm_norm == "tint":
-                                _blend_w = np.clip(_blend_w * _sb_strength * 0.35, 0, 1).astype(np.float32)
-                            else:
-                                _blend_w = _blend_w * _sb_strength
-                    elif _sb_bm_norm == "noise":
-                        _nz = multi_scale_noise(shape, [_sb_ns, _sb_ns * 2, _sb_ns * 4], [0.5, 0.3, 0.2], seed + 1234)
-                        _blend_w = np.clip(_nz, 0, 1).astype(np.float32)
-                    else:
-                        _blend_w = np.ones(shape, dtype=np.float32)
-                    _blend_w = _blend_w * hard_mask
-                    # Pattern-Pop / Tint: alpha already scaled in _blend_w; use 1.0 for pattern/tint/pop
-                    _mul = 1.0 if _sb_bm_norm in ("pattern", "pattern_vivid", "tint") else _sb_strength
-                    _blend_w3d = (_blend_w * _mul)[:, :, np.newaxis]
-                    # Use overlay RGB only so 3-channel paint never shape-mismatches (overlay may be 4-ch from paint_fn)
-                    paint[:, :, :3] = paint[:, :, :3] * (1.0 - _blend_w3d) + paint_overlay[:, :, :3] * _blend_w3d
-                except Exception as _e:
-                    import traceback
-                    print(f"    [{name}] 2nd base overlay ERROR: {_e}")
-                    traceback.print_exc()
+            # Dual Layer Base Overlays on monolithic — 2nd-5th all run the
+            # SAME implementation (owner 2026-06-12: overlays must work
+            # exactly the same as the compositing path). See
+            # _apply_mono_path_base_overlay — one function, four tiers.
+            for _ov_tier in ("second_base", "third_base", "fourth_base", "fifth_base"):
+                paint, zone_spec = _apply_mono_path_base_overlay(
+                    _ov_tier, zone, paint, zone_spec, zone_mask, shape,
+                    seed, i, name, sm, mono_auto_scale)
+            # (FINER-SCALE moved EARLIER — right after the raw render, before all
+            # color ops — so HSB/override/strength survive scale-down. See the
+            # "SPB FINER-SCALE 2026-06-17" block above, ~after clear_zone_placement.)
 
         elif finish_name and finish_name in FINISH_REGISTRY:
             _engine_rot_debug(f"  [{name}] -> PATH 3 (legacy): finish={finish_name}")
@@ -13491,20 +20147,23 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             spec_fn, paint_fn = FINISH_REGISTRY[finish_name]
             print(f"    [{name}] => {finish_name} ({intensity}) [legacy]")
             try:
-                zone_spec = spec_fn(shape, zone_mask, seed + i * 13, sm)
-                paint = paint_fn(paint, shape, zone_mask, seed + i * 13, pm, bb)
+                zone_spec = spec_fn(shape, zone_mask, zone_seed, sm)
+                paint = paint_fn(paint, shape, zone_mask, zone_seed, pm, bb)
                 zone_spec = _sanitize_spec_result(zone_spec, shape)
                 paint = _sanitize_paint_result(paint, shape)
             except Exception as _legacy_err:
-                logger.warning(f"    WARNING: Legacy finish '{finish_name}' failed in {_format_zone_id(i, zone)}: {_legacy_err}")
-                zone_spec = np.zeros((shape[0], shape[1], 4), dtype=np.float32)
-                zone_spec[:,:,0] = 5; zone_spec[:,:,1] = 100; zone_spec[:,:,2] = CC_FLOOR; zone_spec[:,:,3] = 255
+                logger.error(f"    ERROR: Legacy finish '{finish_name}' failed in {_format_zone_id(i, zone)}: {_legacy_err}")
+                raise RuntimeError(
+                    f"Legacy finish '{finish_name}' failed in {_format_zone_id(i, zone)}"
+                ) from _legacy_err
 
         elif finish_name and zone.get("finish_colors"):
             # PATH 4: GENERIC FALLBACK - client-defined finish with color data
-            zone_rotation = float(zone.get("rotation", 0))
+            _base_ctrl = _zone_base_transform_values(zone)
+            zone_rotation = _base_ctrl["rotation"]
+            zone_base_scale = _base_ctrl["scale"]
             _engine_rot_debug(f"  [{name}] -> PATH 4 (generic fallback): finish={finish_name}, rotation={zone_rotation}, fc_keys={list(zone.get('finish_colors',{}).keys())}")
-            zone_spec, paint = render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed + i * 13, sm, pm, bb, rotation=zone_rotation)
+            zone_spec, paint = render_generic_finish(finish_name, zone, paint, shape, zone_mask, zone_seed, sm, pm, bb, rotation=zone_rotation, base_scale=zone_base_scale, base_offset_x=_base_ctrl["offset_x"], base_offset_y=_base_ctrl["offset_y"], base_flip_h=_base_ctrl["flip_h"], base_flip_v=_base_ctrl["flip_v"])
             if zone_spec is not None: zone_spec = _sanitize_spec_result(zone_spec, shape)
             if paint is not None: paint = _sanitize_paint_result(paint, shape)
             if zone_spec is None:
@@ -13514,27 +20173,154 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 mono_scale = float(zone.get("scale", 1.0))
                 mono_opacity = float(zone.get("pattern_opacity", 1.0))
                 mono_rotation = float(zone.get("rotation", 0))
-                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult if 'spec_mult' in dir() else 1.0, rotation=mono_rotation)
-                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation)
+                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, zone_seed + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult if 'spec_mult' in dir() else 1.0, rotation=mono_rotation, blend_mode=zone.get("base_spec_blend_mode", "normal"), zone=zone)
+                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, zone_seed + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation, zone=zone)
         else:
-            label = finish_name or base_id or "???"
+            label = finish_name or base_id or ""
             _engine_rot_debug(f"  [{name}] -> NO PATH MATCHED! finish={finish_name}, base={base_id}, has_fc={zone.get('finish_colors') is not None}")
             _similar_finish = _suggest_similar_ids(label, FINISH_REGISTRY) + _suggest_similar_ids(label, MONOLITHIC_REGISTRY) + _suggest_similar_ids(label, BASE_REGISTRY)
             _hint_f = f"\n      Did you mean: {', '.join(dict.fromkeys(_similar_finish).keys())}" if _similar_finish else ""
             logger.warning(f"    WARNING: Unknown finish/base '{label}' in {_format_zone_id(i, zone)}, skipping.{_hint_f}")
             continue
 
-        # ---- Store zone result in cache (preview_mode only) ----
-        if preview_mode and _zone_cache_key and _paint_before is not None:
+        if has_zone_spec_source and not _zone_spec_source_only:
+            zone_spec = _blend_zone_spec_source(zone_spec, zone, shape, i)
+
+        if not _zone_spec_placement_applied and _spec_placement_post_pass_needed(zone):
+            sp = _zone_spec_transform_values(zone)
+            zone_spec = _transform_spec_for_base_controls(
+                zone_spec,
+                shape,
+                sp["scale"],
+                sp["offset_x"],
+                sp["offset_y"],
+                sp["rotation"],
+                sp["flip_h"],
+                sp["flip_v"],
+                zone_mask=zone_mask,
+            )
+
+        # ---- Pattern-less PHYSICAL SPEC BLEND (owner 2026-06-12) ----
+        # The physical modes (ghost_carve, chrome_inlay...) used to require a
+        # pattern on the zone — the pattern was the driving field. Owner:
+        # "they should NOT be dependent on having a pattern — it should
+        # effect the ZONE as-is." With no pattern, the zone's OWN structure
+        # drives the blend: the rendered paint art (your livery becomes the
+        # carve), falling back to the base's own spec geometry when the paint
+        # is flat, then to a neutral field (absolute modes still act).
+        # Runs for EVERY path (compositing/monolithic/legacy/generic) since
+        # it sits at the common point before cache-store + composite.
+        _pbm = str(zone.get("base_spec_blend_mode", "normal") or "normal")
+        if _pbm not in ("", "normal") and zone_spec is not None:
             try:
-                _paint_delta = (paint - _paint_before).astype(np.float32)
-                build_multi_zone._zone_cache[_zone_cache_key] = {
-                    'zone_spec': zone_spec.copy(),
-                    'paint_delta': _paint_delta,
-                    'mask': zone_mask.copy(),
-                }
-                # Limit cache size: keep at most 64 zone entries (avoids unbounded RAM growth)
-                if len(build_multi_zone._zone_cache) > 64:
+                from engine.compose import PHYSICAL_SPEC_BLEND_MODES as _PBM_SET, apply_physical_spec_blend as _pb_apply
+                _has_any_pattern = bool(
+                    (zone.get("pattern") and str(zone.get("pattern")).strip().lower() not in ("", "none"))
+                    or zone.get("pattern_stack")
+                )
+                _pb_m = (zone_mask > 0.05) if zone_mask is not None else None
+                if _pbm in _PBM_SET and not _has_any_pattern and _pb_m is not None and bool(_pb_m.any()):
+                    # 1) the zone's rendered paint as the field
+                    _pb_pv = np.clip(np.asarray(paint, np.float32)[:, :, :3], 0, 1).mean(axis=2)
+                    if float(_pb_pv[_pb_m].std()) <= 0.015:
+                        # 2) flat paint -> the base's own spec geometry
+                        _pb_pv = (zone_spec[:, :, 2].astype(np.float32) * 0.6
+                                  + zone_spec[:, :, 0].astype(np.float32) * 0.4) / 255.0
+                        if float(_pb_pv[_pb_m].std()) <= 0.008:
+                            # 3) totally flat zone -> neutral mid field
+                            _pb_pv = np.full(zone_mask.shape, 0.5, np.float32)
+                    _pb_lo = float(_pb_pv[_pb_m].min())
+                    _pb_hi = float(_pb_pv[_pb_m].max())
+                    if _pb_hi - _pb_lo > 1e-6:
+                        _pb_pv = np.clip((_pb_pv - _pb_lo) / (_pb_hi - _pb_lo), 0, 1)
+                    _pb_pv = (_pb_pv * np.clip(zone_mask, 0, 1)).astype(np.float32)
+                    _pb_M, _pb_R, _pb_CC = _pb_apply(
+                        zone_spec[:, :, 0].astype(np.float32),
+                        zone_spec[:, :, 1].astype(np.float32),
+                        zone_spec[:, :, 2].astype(np.float32),
+                        _pb_pv, 1.0, _pbm)
+                    _pb_M = np.asarray(to_cpu(_pb_M), np.float32)
+                    _pb_R = np.asarray(to_cpu(_pb_R), np.float32)
+                    _pb_CC = np.asarray(to_cpu(_pb_CC), np.float32)
+                    _pb_m3 = np.clip(zone_mask, 0, 1).astype(np.float32)
+                    zone_spec[:, :, 0] = np.clip(_pb_M * _pb_m3 + zone_spec[:, :, 0].astype(np.float32) * (1 - _pb_m3), 0, 255).astype(np.uint8)
+                    zone_spec[:, :, 1] = np.clip(_pb_R * _pb_m3 + zone_spec[:, :, 1].astype(np.float32) * (1 - _pb_m3), 15, 255).astype(np.uint8)
+                    zone_spec[:, :, 2] = np.clip(_pb_CC * _pb_m3 + zone_spec[:, :, 2].astype(np.float32) * (1 - _pb_m3), 16, 255).astype(np.uint8)
+                    print(f"    [{name}] PHYSICAL SPEC BLEND '{_pbm}' applied pattern-less (zone art/structure drives it)")
+            except Exception as _pb_err:
+                print(f"    [{name}] physical spec blend (pattern-less) skipped: {_pb_err}")
+
+        # SPB-105 tick5: independent pattern M/R/Cc amount; default0 preserves base spec.
+        from engine.pattern_material import apply_zone_pattern_spec
+        zone_spec = apply_zone_pattern_spec(zone_spec, zone, shape, zone_mask, zone_seed,
+            auto_scale=bool(base_id in BASE_REGISTRY or finish_name in MONOLITHIC_REGISTRY))
+
+        # ---- SPEC CHANNEL SLIDERS (owner 2026-06-12: "finer control... help
+        # us figure out what's causing what") ----
+        # Universal per-zone channel shifts applied to WHATEVER the finish
+        # baked: R=metal, G=roughness, B=clearcoat, each -127..+127. Sits at
+        # the common point so it works on every path (compositing/monolithic/
+        # legacy/generic) and on top of patterns, overlays and blend modes.
+        _scs = zone.get("spec_channel_shift")
+        if _scs is not None and zone_spec is not None and zone_mask is not None:
+            try:
+                if isinstance(_scs, dict):
+                    _scs_vals = (float(_scs.get("r", 0) or 0), float(_scs.get("g", 0) or 0), float(_scs.get("b", 0) or 0))
+                else:
+                    _scs_vals = (float(_scs[0] or 0), float(_scs[1] or 0), float(_scs[2] or 0))
+                if any(abs(v) > 0.5 for v in _scs_vals):
+                    _scs_m = np.clip(zone_mask, 0, 1).astype(np.float32)
+                    for _scs_ch, (_scs_sh, _scs_floor) in enumerate(zip(_scs_vals, (0.0, 15.0, 16.0))):
+                        if abs(_scs_sh) > 0.5:
+                            _scs_v = zone_spec[:, :, _scs_ch].astype(np.float32)
+                            zone_spec[:, :, _scs_ch] = np.clip(_scs_v + _scs_sh * _scs_m, _scs_floor, 255).astype(np.uint8)
+                    print(f"    [{name}] SPEC CHANNEL SHIFT R{_scs_vals[0]:+.0f} G{_scs_vals[1]:+.0f} B{_scs_vals[2]:+.0f}")
+            except Exception as _scs_err:
+                print(f"    [{name}] spec channel shift skipped: {_scs_err}")
+
+        # SPB-93 tick 30: iRacing spec alpha is a lighting mask, not another
+        # material channel. Apply the explicit Zone override at the common
+        # post-material point so every finish/import path and the zone cache
+        # agree. Baseline: no Zone alpha control; after: A 0/128/255 or source
+        # alpha while M/R/CC remain byte-identical.
+        zone_spec = _apply_zone_spec_material_remap(zone_spec, zone)
+        zone_spec = _apply_zone_spec_material_override(zone_spec, zone)
+        zone_spec = _apply_zone_spec_lighting_mask(zone_spec, zone)
+
+        # ---- Store zone result in cache ----
+        if _zone_cache_key:
+            try:
+                _cache_regions_to_store = _mask_active_regions(zone_mask, threshold=0.01)
+                _cache_sparse_regions = None
+                try:
+                    if _cache_regions_to_store:
+                        _cache_area_ratio = (
+                            sum((_r1 - _r0) * (_c1 - _c0) for _r0, _r1, _c0, _c1 in _cache_regions_to_store)
+                            / float(max(1, h * w))
+                        )
+                        if _cache_area_ratio <= 0.25:
+                            _cache_sparse_regions = _cache_regions_to_store
+                except Exception:
+                    _cache_sparse_regions = None
+                if _cache_sparse_regions:
+                    build_multi_zone._zone_cache[_zone_cache_key] = {
+                        'zone_spec': None,
+                        'zone_spec_crops': [zone_spec[_r0:_r1, _c0:_c1].copy() for _r0, _r1, _c0, _c1 in _cache_sparse_regions],
+                        'paint_result': None,
+                        'paint_crops': [paint[_r0:_r1, _c0:_c1, :3].copy() for _r0, _r1, _c0, _c1 in _cache_sparse_regions],
+                        'mask': None,
+                        'mask_crops': [zone_mask[_r0:_r1, _c0:_c1].copy() for _r0, _r1, _c0, _c1 in _cache_sparse_regions],
+                        'regions': _cache_sparse_regions,
+                    }
+                else:
+                    build_multi_zone._zone_cache[_zone_cache_key] = {
+                        'zone_spec': zone_spec.copy(),
+                        'paint_result': paint.copy(),
+                        'mask': zone_mask.copy(),
+                        'regions': _cache_regions_to_store,
+                    }
+                # Limit cache size: keep recent zones only (full 2048 entries are large).
+                if len(build_multi_zone._zone_cache) > 24:
                     _oldest = next(iter(build_multi_zone._zone_cache))
                     del build_multi_zone._zone_cache[_oldest]
             except Exception as _cse:
@@ -13545,7 +20331,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             try:
                 # Capture zone spec (masked to zone area only)
                 _ez_mask3d = zone_mask[:, :, np.newaxis]
-                _ez_spec = (zone_spec.astype(np.float32) * (_ez_mask3d > 0.05).astype(np.float32)).astype(np.uint8)
+                _ez_spec = (zone_spec.astype(np.float32, copy=False) * (_ez_mask3d > 0.05).astype(np.float32)).astype(np.uint8)
                 # Capture zone paint (current paint state, masked)
                 _ez_paint = (np.clip(paint, 0, 1) * 255).astype(np.uint8)
                 if _ez_paint.shape[2] == 4:
@@ -13565,35 +20351,118 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         # Vectorized across all 4 channels at once for speed
         # GPU-accelerated when CuPy is available
         if is_gpu():
-            _zs_g = to_gpu(zone_spec.astype(np.float32))
+            _zs_g = to_gpu(zone_spec.astype(np.float32, copy=False))
             _m3d_g = to_gpu(zone_mask[:,:,np.newaxis])
             _cs_g = to_gpu(combined_spec)
-            hard_edge = zone.get("hard_edge", False)
+            hard_edge = _ownership_hard_edge
             if hard_edge:
-                combined_spec = to_cpu(xp.where(_m3d_g > 0.01, _zs_g, _cs_g))
+                combined_spec = to_cpu(xp.where(_m3d_g >= 0.5, _zs_g, _cs_g))  # [ULTRACODE 2026-08-22] GPU parity: hard-edge = majority ownership
             else:
                 strong = _m3d_g > 0.5
                 soft = (_m3d_g > 0.05) & ~strong
                 blended = xp.clip(_zs_g * _m3d_g + _cs_g * (1 - _m3d_g), 0, 255)
                 combined_spec = to_cpu(xp.where(strong, _zs_g, xp.where(soft, blended, _cs_g)))
         else:
-            mask3d = zone_mask[:,:,np.newaxis]  # (h, w, 1)
-            hard_edge = zone.get("hard_edge", False)
-            if hard_edge:
-                combined_spec = np.where(mask3d > 0.01, zone_spec.astype(np.float32), combined_spec)
+            hard_edge = _ownership_hard_edge
+            _blend_regions = _mask_active_regions(zone_mask, threshold=0.01)
+            if _blend_regions:
+                # SPB-PERF-2026-06-02 / owner full-render latency: first-pass
+                # zone spec blending should be bounded to visible mask regions,
+                # just like cache-hit replay. This preserves exact per-pixel
+                # blend math while avoiding six full-canvas np.where passes on
+                # tiny source-layer zones such as numbers and accents.
+                for _r0, _r1, _c0, _c1 in _blend_regions:
+                    mask3d = zone_mask[_r0:_r1, _c0:_c1, np.newaxis]
+                    _zs_crop = zone_spec[_r0:_r1, _c0:_c1].astype(np.float32, copy=False)
+                    _cs_crop = combined_spec[_r0:_r1, _c0:_c1]
+                    if hard_edge:
+                        combined_spec[_r0:_r1, _c0:_c1] = np.where(mask3d >= 0.5, _zs_crop, _cs_crop)  # [ULTRACODE 2026-08-22] hard-edge = majority ownership
+                    else:
+                        strong = mask3d > 0.5
+                        soft = (mask3d > 0.05) & ~strong
+                        blended = np.clip(
+                            _zs_crop * mask3d +
+                            _cs_crop * (1 - mask3d),
+                            0, 255
+                        )
+                        combined_spec[_r0:_r1, _c0:_c1] = np.where(strong, _zs_crop, np.where(soft, blended, _cs_crop))
             else:
-                strong = mask3d > 0.5
-                soft = (mask3d > 0.05) & ~strong
-                blended = np.clip(
-                    zone_spec.astype(np.float32) * mask3d +
-                    combined_spec * (1 - mask3d),
-                    0, 255
-                )
-                combined_spec = np.where(strong, zone_spec.astype(np.float32), np.where(soft, blended, combined_spec))
+                mask3d = zone_mask[:,:,np.newaxis]  # (h, w, 1)
+                zone_spec_f = zone_spec.astype(np.float32, copy=False)
+                if hard_edge:
+                    combined_spec = np.where(mask3d >= 0.5, zone_spec_f, combined_spec)  # [ULTRACODE 2026-08-22] hard-edge = majority ownership
+                else:
+                    strong = mask3d > 0.5
+                    soft = (mask3d > 0.05) & ~strong
+                    blended = np.clip(
+                        zone_spec_f * mask3d +
+                        combined_spec * (1 - mask3d),
+                        0, 255
+                    )
+                    combined_spec = np.where(strong, zone_spec_f, np.where(soft, blended, combined_spec))
+
+        # [SPB SHOKK DROP authored clearcoat-0 verbatim 2026-06-16] If this zone's finish is an
+        # authored_set spec (the user's EXACT uploaded channels), remember the pixels it OWNS (mask
+        # strong) so the final CC>=CC_FLOOR floor below does NOT bump a legitimately-authored matte
+        # B=0 up to 16. Checked BY ID via user_imports (wrapper-proof), independent of dispatch branch
+        # so it works whether the authored finish is used as a FINISH or a primary BASE.
+        try:
+            from engine.paint_v2 import user_imports as _spb_ui_cc
+            if zone_mask is not None and bool(_spb_ui_cc.is_authored_spec(finish_name)):
+                _authored_cc_preserve |= (np.asarray(zone_mask, dtype=np.float32) > 0.5)
+        except Exception:
+            pass
 
         _zone_elapsed = time.time() - t_zone
         _zone_pct = _zone_coverage * 100 if '_zone_coverage' in dir() else float(np.mean(zone_mask > 0.1)) * 100
         print(f"    [Zone {i+1}] \"{name}\" rendered in {_zone_elapsed:.2f}s ({_zone_pct:.1f}% of pixels)")
+
+    # ---- DECAL RGB PROTECTION (BUG3 fix 2026-06-06) ----
+    # Numbers / sponsors / Car_decal art are vinyl-on-top: they are baked into
+    # the input composite ('scheme') and their RGB must survive the paint
+    # pipeline unchanged. The PRIMARY base preserves them (base_color_mode
+    # 'source' returns paint untouched), but a 2nd-5th base OVERLAY blends its
+    # own color/material over the WHOLE zone mask (compose.py
+    # compose_paint_mod*: _paint_overlay_cpu is pre-seeded with the overlay
+    # color — defaulting to white [1,1,1] — over every masked pixel, decals
+    # included, then blended back by the overlay alpha). That turned the "55"
+    # and sponsor logos solid white. Reproduced via /preview-render with
+    # paint_image_base64 + decal_mask_base64 + a second_base overlay.
+    # Restore decal RGB from the original composite, gated by the client's
+    # dedicated decal-only alpha mask. Runs before wear so worn decals still
+    # age, and is independent of decal_spec_finishes (decals exist even when
+    # every decal finish is "none").
+    if decal_mask_base64:
+        try:
+            import base64 as _b64dp, io as _iodp
+            # Match the post-loop wear/final-write contract: paint is CPU numpy
+            # here. Defensively convert in case a zone left it on GPU (CuPy).
+            if hasattr(paint, 'get'):
+                paint = paint.get()
+            paint = np.asarray(paint)
+            _dp_raw = decal_mask_base64
+            if ',' in _dp_raw:
+                _dp_raw = _dp_raw.split(',', 1)[1]
+            _dp_mask_img = Image.open(_iodp.BytesIO(_b64dp.b64decode(_dp_raw))).convert('L')
+            if _dp_mask_img.size != (w, h):
+                # [ULTRACODE 2026-08-22 audit #19875] NEAREST for MASKS:
+                # LANCZOS negative lobes ring fractional halos around every
+                # decal at preview res = the owner's preview-only fuzz.
+                _dp_mask_img = _dp_mask_img.resize((w, h), Image.NEAREST)
+            _dp_alpha = np.asarray(_dp_mask_img, dtype=np.float32) / 255.0
+            if _dp_alpha.max() > 0.01:
+                _dp_alpha3 = _dp_alpha[:, :, np.newaxis]
+                # 'scheme' is the loaded input composite (decals baked in),
+                # float32 [0,1], (h, w, 3) — the customer's decal art source.
+                _dp_orig = np.asarray(scheme, dtype=np.float32)
+                paint[:, :, :3] = (
+                    paint[:, :, :3] * (1.0 - _dp_alpha3) +
+                    _dp_orig[:, :, :3] * _dp_alpha3
+                )
+                _dp_px = int(np.sum(_dp_alpha > 0.01))
+                print(f"  Decal RGB protected: restored {_dp_px:,} decal pixels from source composite")
+        except Exception as _dp_err:
+            print(f"  Decal RGB protection skipped: {_dp_err}")
 
     # ---- Per-zone wear: BATCHED (single apply_wear call for ALL zones) ----
     # Instead of N separate apply_wear calls (each 5-8s), compute once at max level
@@ -13636,6 +20505,25 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         print(f"  Batched wear applied in {time.time()-t_wear:.2f}s")
 
     print(f"  All finishes applied: {time.time()-t_finishes:.2f}s")
+
+    # [SPB-QOL 2026-08-05] Second abort checkpoint. The only other one sits at
+    # the TOP of the zone loop, so once the last zone starts, the entire post-
+    # loop tail (decal spec, final compositing, floors) runs to completion even
+    # when a newer preview request has already made this one obsolete — and the
+    # server's preview lock stays held the whole time, which is exactly the
+    # extra ~1.5s a painter waits when their second edit lands mid-render.
+    # Identical partial-return recipe as the in-loop abort: the client discards
+    # this response anyway (version check); returning early just frees the lock.
+    if preview_mode and abort_event is not None and abort_event.is_set():
+        print(f"  [ABORT] Preview aborted post-zones ({time.time()-start_time:.2f}s)")
+        paint_rgb = (np.clip(paint, 0, 1) * 255).astype(np.uint8)
+        if paint_rgb.shape[2] == 4:
+            paint_rgb = paint_rgb[:, :, :3]
+        combined_spec[:,:,1] = np.where((combined_spec[:,:,0] < 240) & ~_pattern_spec_preserve, np.maximum(combined_spec[:,:,1], 15), combined_spec[:,:,1])
+        _cc_floored_abort2 = np.maximum(combined_spec[:,:,2], 16)
+        combined_spec[:,:,2] = np.where(_authored_cc_preserve | _pattern_spec_preserve, combined_spec[:,:,2], _cc_floored_abort2)
+        combined_spec_u8 = np.clip(combined_spec, 0, 255).astype(np.uint8)
+        return (paint_rgb, combined_spec_u8)
 
     # ---- DECAL SPEC FINISHES: Apply spec to decal regions ----
     if decal_spec_finishes and decal_paint_path and os.path.exists(decal_paint_path):
@@ -13749,7 +20637,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             # Load the composited paint (paint + decals baked in)
             decal_comp = Image.open(decal_paint_path).convert('RGBA')
             if decal_comp.size != (w, h):
-                decal_comp = decal_comp.resize((w, h), Image.LANCZOS)
+                decal_comp = decal_comp.resize((w, h), Image.BILINEAR)  # [ULTRACODE 2026-08-22] alpha must not ring
             decal_arr = np.array(decal_comp)
 
             # Prefer the separate decal-only alpha mask sent from the client.
@@ -13764,7 +20652,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                         _raw = _raw.split(',', 1)[1]
                     mask_img = Image.open(_io.BytesIO(_b64.b64decode(_raw))).convert('L')
                     if mask_img.size != (w, h):
-                        mask_img = mask_img.resize((w, h), Image.LANCZOS)
+                        mask_img = mask_img.resize((w, h), Image.NEAREST)  # [ULTRACODE 2026-08-22] masks never LANCZOS (ringing)
                     decal_alpha = np.array(mask_img, dtype=np.float32) / 255.0
                     print(f"  Decal spec: using dedicated alpha mask ({decal_alpha.max():.3f} max)")
                 except Exception as _me:
@@ -13878,13 +20766,28 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     # CC near the floor, so unconditionally clamping is intentional).
     # See module docstring "IRON RULES" and constants CC_FLOOR /
     # ROUGHNESS_FLOOR_NONMIRROR / CHROME_M_THRESHOLD.
-    combined_spec[:,:,1] = np.where(combined_spec[:,:,0] < CHROME_M_THRESHOLD,
+    combined_spec[:,:,1] = np.where((combined_spec[:,:,0] < CHROME_M_THRESHOLD) & ~_pattern_spec_preserve,
                                      np.maximum(combined_spec[:,:,1], ROUGHNESS_FLOOR_NONMIRROR),
                                      combined_spec[:,:,1])
-    combined_spec[:,:,2] = np.maximum(combined_spec[:,:,2], CC_FLOOR)
+    # [SPB SHOKK DROP authored clearcoat-0 verbatim 2026-06-16] Floor CC to CC_FLOOR EVERYWHERE
+    # EXCEPT pixels owned by an authored_set finish, whose uploaded clearcoat (INCLUDING a deliberate
+    # matte 0) must export byte-verbatim. Normal finishes/bases are untouched (iron rule intact).
+    _cc_floored = np.maximum(combined_spec[:,:,2], CC_FLOOR)
+    combined_spec[:,:,2] = np.where(_authored_cc_preserve | _pattern_spec_preserve, combined_spec[:,:,2], _cc_floored)
+    # SPB-105 tick5: explicit pattern spec mixtures remain linear across material
+    # thresholds; re-flooring after the mix broke 50% interpolation. Both input
+    # plates are already rendered materials. Ordinary zone floors remain intact.
     # Numerical safety in case any earlier step left NaN/Inf.
     combined_spec = np.nan_to_num(combined_spec, nan=0.0, posinf=255.0, neginf=0.0)
     combined_spec_u8 = np.clip(combined_spec, 0, 255).astype(np.uint8)
+
+    # SPB-93: copy actual completed paint/spec material through one shared
+    # preview/export path. Legacy paint-as-spec placeholder records stay inert.
+    if any(z.get("material_instances") for z in zones):
+        from engine.zone_material_instances import apply_instances as _apply_material_instances
+        paint_rgb, combined_spec_u8 = _apply_material_instances(
+            paint_rgb, combined_spec_u8, zones, zone_masks, _export_zone_layers,
+            source_paint=(np.clip(scheme, 0, 1) * 255).astype(np.uint8))
 
     # ---- PREVIEW MODE: return arrays directly, skip all file I/O ----
     if preview_mode:
@@ -13923,14 +20826,15 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             logger.warning(f"  Normal map generation failed: {e}")
 
     # Save previews
-    Image.fromarray(paint_rgb).save(os.path.join(output_dir, "PREVIEW_paint.png"))
-    Image.fromarray(combined_spec_u8).save(os.path.join(output_dir, "PREVIEW_spec.png"))
+    _save_preview_png(paint_rgb, os.path.join(output_dir, "PREVIEW_paint.png"))
+    _save_preview_png(combined_spec_u8, os.path.join(output_dir, "PREVIEW_spec.png"))
 
     # Save individual zone mask previews (only when debug images requested)
     if save_debug_images:
         for i, (zone, mask) in enumerate(zip(zones, zone_masks)):
             mask_img = (mask * 255).astype(np.uint8)
-            Image.fromarray(mask_img).save(
+            _save_preview_png(
+                mask_img,
                 os.path.join(output_dir, f"PREVIEW_zone{i+1}_{zone['name'].replace(' ', '_').replace('/', '_')}.png")
             )
 
@@ -13953,7 +20857,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                     zone_map[:,:,c] + (mask * color[c]).astype(np.uint8),
                     0, 255
                 ).astype(np.uint8)
-        Image.fromarray(zone_map).save(os.path.join(output_dir, "PREVIEW_zone_map.png"))
+        _save_preview_png(zone_map, os.path.join(output_dir, "PREVIEW_zone_map.png"))
 
     logger.debug(f"  File I/O + previews: {time.time()-t_save:.2f}s")
 
@@ -13975,6 +20879,35 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
 # ================================================================
 # LIVE PREVIEW - Low-res fast render (no file I/O)
 # ================================================================
+
+# [SPB-QOL 2026-08-05] Content-addressed cache of DOWNSCALED preview paint.
+# Keyed on (sha1 of the source file bytes, target w, target h) — the server hands
+# preview_render a fresh temp path per request even for identical bytes, so only
+# a content key can ever hit. Entries own their temp file; preview_render must
+# NOT unlink a cached path (it deleted its per-request temp before this cache
+# existed — that unlink is now conditional). Small LRU: previews alternate
+# between at most a couple of scales, so 6 entries is plenty.
+_PREVIEW_PAINT_CACHE = {}
+_PREVIEW_PAINT_CACHE_MAX = 6
+
+def _preview_paint_cache_get(digest, w, h):
+    entry = _PREVIEW_PAINT_CACHE.get((digest, w, h))
+    if entry and os.path.exists(entry):
+        return entry
+    if entry:
+        _PREVIEW_PAINT_CACHE.pop((digest, w, h), None)   # file vanished (temp cleaner)
+    return None
+
+def _preview_paint_cache_put(digest, w, h, path):
+    _PREVIEW_PAINT_CACHE[(digest, w, h)] = path
+    while len(_PREVIEW_PAINT_CACHE) > _PREVIEW_PAINT_CACHE_MAX:
+        _k, _v = next(iter(_PREVIEW_PAINT_CACHE.items()))
+        _PREVIEW_PAINT_CACHE.pop(_k, None)
+        try:
+            os.unlink(_v)
+        except Exception:
+            pass
+
 
 def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_map=None,
                    decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None,
@@ -14004,7 +20937,7 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
         error, returns blank arrays + the elapsed time so the UI can keep
         rolling — the failure is logged via ``logger.warning``.
     """
-    _validate_zones(zones)
+    _validate_zones(zones, allow_empty=bool(import_spec_map))
     _validate_paint_file(paint_file)
     seed = _coerce_seed(seed)
     # Clamp preview_scale into a sane range to avoid degenerate tiny renders
@@ -14018,18 +20951,59 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
     import tempfile
     t0 = _time.time()
 
-    # Downscale paint for speed
-    scheme_img = Image.open(paint_file).convert('RGB')
-    orig_w, orig_h = scheme_img.size
+    # [SPB-QOL 2026-08-05, perf — measured 273ms engine time per preview at 0.25]
+    # Downscaling the paint was an unconditional per-request tax: decode the
+    # 2048x2048 PNG, LANCZOS-resize, encode + write a fresh temp PNG — even when
+    # the paint bytes are IDENTICAL to the previous request (the common case: the
+    # client re-sends the same canvas for every zone/slider tweak, and the server
+    # hands us a NEW temp path each time, so no path-based cache can ever hit).
+    # Content-address the downscaled result instead: hashing the file bytes costs
+    # ~5ms vs ~150-250ms for decode+resize+save. Same bytes + same target size =
+    # byte-identical downscale (PIL resize is deterministic), so this cannot
+    # change any render output — it only skips recomputing one.
+    scheme_img = None
+    _paint_digest = None
+    _pv_cache_path = None
+    _tmp_path_owned = False
+    # Probe dimensions from the PNG header before doing any content hash or
+    # decode. At native scale, build_multi_zone can consume the source itself:
+    # convert(RGB) -> same-size LANCZOS -> lossless PNG -> convert(RGB) was
+    # pixel-identical duplicate work and cost hundreds of milliseconds.
+    with Image.open(paint_file) as _probe:
+        orig_w, orig_h = _probe.size
     preview_w = max(16, int(orig_w * preview_scale))
     preview_h = max(16, int(orig_h * preview_scale))
-    scheme_img = scheme_img.resize((preview_w, preview_h), Image.LANCZOS)
+    _native_size = preview_w == orig_w and preview_h == orig_h
 
-    # Save to temp file (build_multi_zone expects a file path)
-    tmp = tempfile.NamedTemporaryFile(suffix='.png', delete=False)
-    tmp_path = tmp.name
-    tmp.close()
-    scheme_img.save(tmp_path)
+    if _native_size:
+        tmp_path = paint_file
+    else:
+        try:
+            import hashlib as _qol_hashlib
+            with open(paint_file, 'rb') as _pf:
+                _paint_digest = _qol_hashlib.sha1(_pf.read()).hexdigest()
+        except Exception:
+            _paint_digest = None
+        if _paint_digest is not None:
+            _pv_cache_path = _preview_paint_cache_get(
+                _paint_digest, preview_w, preview_h
+            )
+
+    if not _native_size and _pv_cache_path is not None:
+        tmp_path = _pv_cache_path                    # cache hit: zero decode work
+    elif not _native_size:
+        scheme_img = Image.open(paint_file).convert('RGB')
+        scheme_img = scheme_img.resize((preview_w, preview_h), Image.LANCZOS)
+
+        # Save to temp file (build_multi_zone expects a file path)
+        tmp = tempfile.NamedTemporaryFile(suffix='.png', delete=False)
+        tmp_path = tmp.name
+        tmp.close()
+        scheme_img.save(tmp_path)
+        if _paint_digest is not None:
+            _preview_paint_cache_put(_paint_digest, preview_w, preview_h, tmp_path)
+        else:
+            _tmp_path_owned = True
 
     # Downscale import spec map if provided
     preview_spec = None
@@ -14044,10 +21018,15 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
         except Exception:
             preview_spec = import_spec_map
 
-    # Downscale decal_paint_path to preview resolution if provided
+    # Downscale decal_paint_path only when decal spec will consume it.
+    # [Native-2048 preview latency, owner request 2026-08-23] The live canvas
+    # is already the composited paint_file. With no decal spec selections the
+    # old path decoded, same-size LANCZOS-resized, and re-encoded that 2048 PNG
+    # a second time per preview, then build_multi_zone ignored it. This guard
+    # removes pure duplicate work without changing paint or spec inputs.
     # The decal composite is RGBA (alpha = decal mask), so preserve full RGBA.
     preview_decal_path = None
-    if decal_paint_path and os.path.exists(decal_paint_path):
+    if decal_spec_finishes and decal_paint_path and os.path.exists(decal_paint_path):
         try:
             decal_img = Image.open(decal_paint_path).convert('RGBA')
             decal_img = decal_img.resize((preview_w, preview_h), Image.LANCZOS)
@@ -14073,6 +21052,8 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
                 sm_img = sm_img.resize((preview_w, preview_h), Image.NEAREST)
                 z["spatial_mask"] = np.array(sm_img).astype(np.uint8)
 
+    _validate_all_zone_render_ids(zones)
+
     try:
         result = build_multi_zone(
             paint_file=tmp_path,
@@ -14089,21 +21070,27 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
         )
         paint_rgb, combined_spec = result
     except Exception as e:
-        # Do NOT crash the preview loop — return a neutral grey so the UI
-        # can keep polling. Log details so we can root-cause later.
+        # Surface renderer failures to the preview route instead of returning
+        # a neutral grey image that looks like a valid-but-boring render.
         import traceback
-        logger.warning(
+        logger.error(
             f"  [preview_render] render failed at {preview_w}x{preview_h} "
             f"({len(zones)} zones, seed={seed}): {e}"
         )
-        logger.warning(traceback.format_exc())
-        paint_rgb = np.full((preview_h, preview_w, 3), 128, dtype=np.uint8)
-        combined_spec = np.zeros((preview_h, preview_w, 4), dtype=np.uint8)
+        logger.error(traceback.format_exc())
+        raise
     finally:
-        try:
-            os.unlink(tmp_path)
-        except Exception:
-            pass
+        # [SPB-QOL 2026-08-05] The downscaled paint may now be OWNED by the
+        # content-addressed cache (both on a hit and right after a put). Deleting
+        # it here would make every cache entry die after one use — the cache
+        # would never hit. Only explicitly owned per-request downscale temps
+        # are deleted; native sources stay caller-owned and cached files are
+        # evicted by _preview_paint_cache_put.
+        if _tmp_path_owned:
+            try:
+                os.unlink(tmp_path)
+            except Exception:
+                pass
         if preview_spec and preview_spec != import_spec_map:
             try:
                 os.unlink(preview_spec)
@@ -14316,6 +21303,7 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
     _validate_zones(zones)
     _validate_paint_file(helmet_paint_file)
     seed = _coerce_seed(seed)
+    _validate_all_zone_render_ids(zones)
     logger.info(f"\n{'='*60}")
     logger.info(f"  {ENGINE_DISPLAY_NAME} - Helmet Spec Generator")
     logger.info(f"  ID: {iracing_id}")
@@ -14336,6 +21324,7 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
 
     # Build spec using same zone logic as cars
     combined_spec = np.zeros((h, w, 4), dtype=np.float32)
+    _pattern_spec_preserve = np.zeros((h, w), dtype=bool)
     combined_spec[:,:,1] = 100  # default R
     combined_spec[:,:,2] = 16   # default CC (CC≥16 always)
     combined_spec[:,:,3] = 255  # full spec mask
@@ -14359,6 +21348,13 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
         base_id = zone.get("base")
         pattern_id = zone.get("pattern", "none")
         finish_name = zone.get("finish")
+        if isinstance(base_id, str) and base_id.startswith("mono:"):
+            _mono_base_id = base_id[5:]
+            if _mono_base_id in BASE_REGISTRY:
+                base_id = _mono_base_id
+            elif _mono_base_id in MONOLITHIC_REGISTRY and not finish_name:
+                finish_name = _mono_base_id
+                base_id = None
         # REVERSE FALLBACK: specials→base for migrated finishes
         if finish_name and finish_name not in MONOLITHIC_REGISTRY and finish_name in BASE_REGISTRY:
             base_id = finish_name
@@ -14371,15 +21367,18 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 pattern_id = "none"
             zone_scale = float(zone.get("scale", 1.0))
             zone_rotation = float(zone.get("rotation", 0))
-            zone_base_scale = float(zone.get("base_scale", 1.0))
+            _path1_base_ctrl = _zone_base_transform_values(zone)
+            zone_base_scale = _path1_base_ctrl["scale"]
             pattern_stack = zone.get("pattern_stack", [])
             primary_pat_opacity = float(zone.get("pattern_opacity", 1.0))
+            _pattern_fit_zone = bool(zone.get("pattern_fit_zone", False) or zone.get("pattern_placement") == "fit")
 
             # v6.0 advanced finish params
-            _z_cc = zone.get("cc_quality"); _z_cc = float(_z_cc) / 100.0 if _z_cc is not None and float(_z_cc) > 1.0 else (float(_z_cc) if _z_cc is not None else None)
+            _z_cc = _normalized_cc_quality_override(zone.get("cc_quality"))
             _z_bb = zone.get("blend_base") or None; _z_bd = zone.get("blend_dir", "horizontal"); _z_ba = float(zone.get("blend_amount", 0.5))
             _z_pc = zone.get("paint_color")
             _v6kw = {}
+            _v6kw["independent_pattern_spec"] = "pattern_spec_opacity" in zone
             # Pattern strength map (per-pixel modulation)
             if zone.get("pattern_strength_map") is not None:
                 _v6kw["pattern_strength_map"] = zone["pattern_strength_map"]
@@ -14404,6 +21403,13 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
             _v6kw["base_color_source"] = zone.get("base_color_source")
             _v6kw["base_color_strength"] = float(zone.get("base_color_strength", 1.0))
             _v6kw["base_color_fit_zone"] = bool(zone.get("base_color_fit_zone", False))
+            _v6kw["base_color_scale"] = float(zone.get("base_color_scale", zone.get("baseColorScale", 1.0)))
+            _v6kw["base_color_rotation"] = float(zone.get("base_color_rotation", zone.get("baseColorRotation", zone.get("base_rotation", 0))))
+            # [SPB COLOR LAB 2026-08-27] depth None = legacy pipeline (old saves render unchanged)
+            _v6kw["base_color_depth"] = (None if zone.get("base_color_depth") is None else float(zone.get("base_color_depth")))
+            _v6kw["base_color_flip"] = float(zone.get("base_color_flip", 0) or 0)
+            _v6kw["base_color_underglow"] = float(zone.get("base_color_underglow", 0) or 0)
+            _v6kw["pattern_fit_zone"] = _pattern_fit_zone
             _v6kw["base_hue_offset"] = float(zone.get("base_hue_offset", 0))
             _v6kw["base_saturation_adjust"] = float(zone.get("base_saturation_adjust", 0))
             _v6kw["base_brightness_adjust"] = float(zone.get("base_brightness_adjust", 0))
@@ -14428,7 +21434,7 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
             # Dual Layer Base Overlay — trigger on EITHER base ID or color source
             _z_sb = zone.get("second_base")
             _z_sb_cs = zone.get("second_base_color_source")
-            if _z_sb or _z_sb_cs:
+            if _z_sb or _z_sb_cs or float(zone.get("second_base_strength") or 0) > 0.001:
                 _v6kw["second_base"] = _z_sb or ''
                 _v6kw["second_base_color_source"] = _z_sb_cs
                 _v6kw["second_base_color"] = zone.get("second_base_color", [1.0, 1.0, 1.0])
@@ -14437,7 +21443,14 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6kw["second_base_blend_mode"] = zone.get("second_base_blend_mode", "noise")
                 _v6kw["second_base_noise_scale"] = int(zone.get("second_base_noise_scale", 24))
                 _v6kw["second_base_scale"] = float(zone.get("second_base_scale", 1.0))
-                _v6kw["second_base_pattern"] = zone.get("second_base_pattern")
+                _v6kw["second_base_color_scale"] = float(zone.get("second_base_color_scale", 1.0))
+                _v6kw["second_base_spec_scale"] = float(zone.get("second_base_spec_scale", 1.0))
+                # [SPB-OVERLAY-PARITY-2 2026-08-20] rotation / spec rotation / color strength
+                _v6kw["second_base_rotation"] = float(zone.get("second_base_rotation", 0.0) or 0.0)
+                _v6kw["second_base_spec_rotation"] = float(zone.get("second_base_spec_rotation", 0.0) or 0.0)
+                _ovcs_tmp = zone.get("second_base_color_strength", 1.0)
+                _v6kw["second_base_color_strength"] = max(0.0, min(1.0, float(1.0 if _ovcs_tmp is None else _ovcs_tmp)))
+                _v6kw["second_base_pattern"] = _normalize_base_overlay_pattern_id(zone.get("second_base_pattern"))
                 _v6kw["second_base_pattern_scale"] = float(zone.get("second_base_pattern_scale", 1.0))
                 _v6kw["second_base_pattern_rotation"] = float(zone.get("second_base_pattern_rotation", 0.0))
                 _v6kw["second_base_pattern_opacity"] = float(zone.get("second_base_pattern_opacity", 1.0))
@@ -14470,15 +21483,24 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
             _v6kw["second_base_pattern_brightness"] = float(zone.get("second_base_pattern_brightness", 0))
             _v6kw["second_base_color_source"] = zone.get("second_base_color_source")
             _z_tb = zone.get("third_base")
-            if _z_tb:
-                _v6kw["third_base"] = _z_tb
+            _z_tb_cs = zone.get("third_base_color_source")
+            if _z_tb or _z_tb_cs or float(zone.get("third_base_strength") or 0) > 0.001:
+                _v6kw["third_base"] = _z_tb or ''
+                _v6kw["third_base_color_source"] = _z_tb_cs
                 _v6kw["third_base_color"] = zone.get("third_base_color", [1.0, 1.0, 1.0])
                 _v6kw["third_base_strength"] = float(zone.get("third_base_strength", 0.0))
                 _v6kw["third_base_spec_strength"] = float(zone.get("third_base_spec_strength", 1.0))
                 _v6kw["third_base_blend_mode"] = zone.get("third_base_blend_mode", "noise")
                 _v6kw["third_base_noise_scale"] = int(zone.get("third_base_noise_scale", 24))
                 _v6kw["third_base_scale"] = float(zone.get("third_base_scale", 1.0))
-                _v6kw["third_base_pattern"] = zone.get("third_base_pattern")
+                _v6kw["third_base_color_scale"] = float(zone.get("third_base_color_scale", 1.0))
+                _v6kw["third_base_spec_scale"] = float(zone.get("third_base_spec_scale", 1.0))
+                # [SPB-OVERLAY-PARITY-2 2026-08-20] rotation / spec rotation / color strength
+                _v6kw["third_base_rotation"] = float(zone.get("third_base_rotation", 0.0) or 0.0)
+                _v6kw["third_base_spec_rotation"] = float(zone.get("third_base_spec_rotation", 0.0) or 0.0)
+                _ovcs_tmp = zone.get("third_base_color_strength", 1.0)
+                _v6kw["third_base_color_strength"] = max(0.0, min(1.0, float(1.0 if _ovcs_tmp is None else _ovcs_tmp)))
+                _v6kw["third_base_pattern"] = _normalize_base_overlay_pattern_id(zone.get("third_base_pattern"))
                 _v6kw["third_base_pattern_scale"] = float(zone.get("third_base_pattern_scale", 1.0))
                 _v6kw["third_base_pattern_rotation"] = float(zone.get("third_base_pattern_rotation", 0.0))
                 _v6kw["third_base_pattern_opacity"] = float(zone.get("third_base_pattern_opacity", 1.0))
@@ -14508,15 +21530,24 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
             _v6kw["third_base_brightness"] = float(zone.get("third_base_brightness", 0))
             _v6kw["third_base_color_source"] = zone.get("third_base_color_source")
             _z_fb = zone.get("fourth_base")
-            if _z_fb:
-                _v6kw["fourth_base"] = _z_fb
+            _z_fb_cs = zone.get("fourth_base_color_source")
+            if _z_fb or _z_fb_cs or float(zone.get("fourth_base_strength") or 0) > 0.001:
+                _v6kw["fourth_base"] = _z_fb or ''
+                _v6kw["fourth_base_color_source"] = _z_fb_cs
                 _v6kw["fourth_base_color"] = zone.get("fourth_base_color", [1.0, 1.0, 1.0])
                 _v6kw["fourth_base_strength"] = float(zone.get("fourth_base_strength", 0.0))
                 _v6kw["fourth_base_spec_strength"] = float(zone.get("fourth_base_spec_strength", 1.0))
                 _v6kw["fourth_base_blend_mode"] = zone.get("fourth_base_blend_mode", "noise")
                 _v6kw["fourth_base_noise_scale"] = int(zone.get("fourth_base_noise_scale", 24))
                 _v6kw["fourth_base_scale"] = float(zone.get("fourth_base_scale", 1.0))
-                _v6kw["fourth_base_pattern"] = zone.get("fourth_base_pattern")
+                _v6kw["fourth_base_color_scale"] = float(zone.get("fourth_base_color_scale", 1.0))
+                _v6kw["fourth_base_spec_scale"] = float(zone.get("fourth_base_spec_scale", 1.0))
+                # [SPB-OVERLAY-PARITY-2 2026-08-20] rotation / spec rotation / color strength
+                _v6kw["fourth_base_rotation"] = float(zone.get("fourth_base_rotation", 0.0) or 0.0)
+                _v6kw["fourth_base_spec_rotation"] = float(zone.get("fourth_base_spec_rotation", 0.0) or 0.0)
+                _ovcs_tmp = zone.get("fourth_base_color_strength", 1.0)
+                _v6kw["fourth_base_color_strength"] = max(0.0, min(1.0, float(1.0 if _ovcs_tmp is None else _ovcs_tmp)))
+                _v6kw["fourth_base_pattern"] = _normalize_base_overlay_pattern_id(zone.get("fourth_base_pattern"))
                 _v6kw["fourth_base_pattern_scale"] = float(zone.get("fourth_base_pattern_scale", 1.0))
                 _v6kw["fourth_base_pattern_rotation"] = float(zone.get("fourth_base_pattern_rotation", 0.0))
                 _v6kw["fourth_base_pattern_opacity"] = float(zone.get("fourth_base_pattern_opacity", 1.0))
@@ -14546,15 +21577,24 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
             _v6kw["fourth_base_brightness"] = float(zone.get("fourth_base_brightness", 0))
             _v6kw["fourth_base_color_source"] = zone.get("fourth_base_color_source")
             _z_fif = zone.get("fifth_base")
-            if _z_fif:
-                _v6kw["fifth_base"] = _z_fif
+            _z_fif_cs = zone.get("fifth_base_color_source")
+            if _z_fif or _z_fif_cs or float(zone.get("fifth_base_strength") or 0) > 0.001:
+                _v6kw["fifth_base"] = _z_fif or ''
+                _v6kw["fifth_base_color_source"] = _z_fif_cs
                 _v6kw["fifth_base_color"] = zone.get("fifth_base_color", [1.0, 1.0, 1.0])
                 _v6kw["fifth_base_strength"] = float(zone.get("fifth_base_strength", 0.0))
                 _v6kw["fifth_base_spec_strength"] = float(zone.get("fifth_base_spec_strength", 1.0))
                 _v6kw["fifth_base_blend_mode"] = zone.get("fifth_base_blend_mode", "noise")
                 _v6kw["fifth_base_noise_scale"] = int(zone.get("fifth_base_noise_scale", 24))
                 _v6kw["fifth_base_scale"] = float(zone.get("fifth_base_scale", 1.0))
-                _v6kw["fifth_base_pattern"] = zone.get("fifth_base_pattern")
+                _v6kw["fifth_base_color_scale"] = float(zone.get("fifth_base_color_scale", 1.0))
+                _v6kw["fifth_base_spec_scale"] = float(zone.get("fifth_base_spec_scale", 1.0))
+                # [SPB-OVERLAY-PARITY-2 2026-08-20] rotation / spec rotation / color strength
+                _v6kw["fifth_base_rotation"] = float(zone.get("fifth_base_rotation", 0.0) or 0.0)
+                _v6kw["fifth_base_spec_rotation"] = float(zone.get("fifth_base_spec_rotation", 0.0) or 0.0)
+                _ovcs_tmp = zone.get("fifth_base_color_strength", 1.0)
+                _v6kw["fifth_base_color_strength"] = max(0.0, min(1.0, float(1.0 if _ovcs_tmp is None else _ovcs_tmp)))
+                _v6kw["fifth_base_pattern"] = _normalize_base_overlay_pattern_id(zone.get("fifth_base_pattern"))
                 _v6kw["fifth_base_pattern_scale"] = float(zone.get("fifth_base_pattern_scale", 1.0))
                 _v6kw["fifth_base_pattern_rotation"] = float(zone.get("fifth_base_pattern_rotation", 0.0))
                 _v6kw["fifth_base_pattern_opacity"] = float(zone.get("fifth_base_pattern_opacity", 1.0))
@@ -14591,28 +21631,42 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 stack_ids = {ps.get("id") for ps in pattern_stack[:4] if ps.get("id") and ps.get("id") != "none"}
                 all_patterns = []
                 if pattern_id and pattern_id != "none" and pattern_id not in stack_ids:
-                    all_patterns.append({"id": pattern_id, "opacity": primary_pat_opacity, "scale": zone_scale, "rotation": zone_rotation,
+                    all_patterns.append({"id": pattern_id, "hue_shift": float(zone.get("pattern_hue_shift", 0)), "saturation": float(zone.get("pattern_saturation", 0)), "opacity": primary_pat_opacity, "scale": zone_scale, "rotation": zone_rotation,
                                          "offset_x": float(zone.get("pattern_offset_x", 0.5)),
-                                         "offset_y": float(zone.get("pattern_offset_y", 0.5))})
+                                         "offset_y": float(zone.get("pattern_offset_y", 0.5)),
+                                         "fit_zone": _pattern_fit_zone})
                 for ps in pattern_stack[:4]:  # Max 4 additional (matches JS MAX_PATTERN_STACK_LAYERS)
                     pid = ps.get("id", "none")
                     if pid != "none" and pid in PATTERN_REGISTRY:
                         all_patterns.append({
                             "id": pid,
+                            "hue_shift": float(ps.get("hue_shift", 0)), "saturation": float(ps.get("saturation", 0)),
                             "opacity": float(ps.get("opacity", 1.0)),
                             "scale": float(ps.get("scale", 1.0)),
                             "rotation": float(ps.get("rotation", 0)),
                             "blend_mode": ps.get("blend_mode", "normal"),
+                            "fit_zone": _pattern_fit_zone,
                         })
                 pat_names = " + ".join(f'{p["id"]}@{int(p["opacity"]*100)}%{"["+p.get("blend_mode","normal")+"]" if p.get("blend_mode","normal") != "normal" else ""}' for p in all_patterns)
                 label = f"{base_id} + [{pat_names}]"
                 print(f"    [{name}] => {label} ({intensity}) [stacked compositing]")
-                _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_color_fit_zone": _v6kw.get("base_color_fit_zone", False), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0)}
+                _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_color_fit_zone": _v6kw.get("base_color_fit_zone", False), "base_color_scale": _v6kw.get("base_color_scale", 1.0), "base_color_rotation": _v6kw.get("base_color_rotation", 0), "base_color_depth": _v6kw.get("base_color_depth"), "base_color_flip": _v6kw.get("base_color_flip", 0.0), "base_color_underglow": _v6kw.get("base_color_underglow", 0.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0), "monolithic_registry": _v6kw.get("monolithic_registry")}
+                _v6paint["pattern_fit_zone"] = _v6kw.get("pattern_fit_zone", False)
+                _v6paint["pattern_paint_mode"] = zone.get("pattern_paint_mode", "overlay")
+                _v6paint["pattern_hue_shift"] = float(zone.get("pattern_hue_shift", 0))
+                _v6paint["pattern_saturation"] = float(zone.get("pattern_saturation", 0))
+                if _v6kw.get("pattern_strength_map") is not None: _v6paint["pattern_strength_map"] = _v6kw["pattern_strength_map"]  # BUGFIX 2026-10-04: Strength Map reaches the PAINT too (was spec-only; paint diff 0.000 before)
+                _v6paint["spec_mult"] = spec_mult
+                _v6paint["base_scale"] = zone_base_scale
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
+                if _z_sb or _v6kw.get("second_base_color_source") or float(_v6kw.get("second_base_strength") or 0) > 0.001: _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0); _v6paint["second_base_color_scale"] = _v6kw.get("second_base_color_scale", 1.0); _v6paint["second_base_color_strength"] = _v6kw.get("second_base_color_strength", 1.0); _v6paint["second_base_rotation"] = _v6kw.get("second_base_rotation", 0.0)
+                if _z_tb or _v6kw.get("third_base_color_source") or float(_v6kw.get("third_base_strength") or 0) > 0.001: _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0); _v6paint["third_base_color_scale"] = _v6kw.get("third_base_color_scale", 1.0); _v6paint["third_base_color_strength"] = _v6kw.get("third_base_color_strength", 1.0); _v6paint["third_base_rotation"] = _v6kw.get("third_base_rotation", 0.0)
+                if _z_fb or _v6kw.get("fourth_base_color_source") or float(_v6kw.get("fourth_base_strength") or 0) > 0.001: _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0); _v6paint["fourth_base_color_scale"] = _v6kw.get("fourth_base_color_scale", 1.0); _v6paint["fourth_base_color_strength"] = _v6kw.get("fourth_base_color_strength", 1.0); _v6paint["fourth_base_rotation"] = _v6kw.get("fourth_base_rotation", 0.0)
+                if _z_fif or _v6kw.get("fifth_base_color_source") or float(_v6kw.get("fifth_base_strength") or 0) > 0.001: _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0); _v6paint["fifth_base_color_scale"] = _v6kw.get("fifth_base_color_scale", 1.0); _v6paint["fifth_base_color_strength"] = _v6kw.get("fifth_base_color_strength", 1.0); _v6paint["fifth_base_rotation"] = _v6kw.get("fifth_base_rotation", 0.0)
+                for _ovp in ("second_base", "third_base", "fourth_base", "fifth_base"):
+                    if _ovp in _v6paint or _v6paint.get(_ovp + "_color_source"):
+                        _v6paint[_ovp + "_color_scale"] = _v6kw.get(_ovp + "_color_scale", 1.0)
+                        _v6paint[_ovp + "_spec_scale"] = _v6kw.get(_ovp + "_spec_scale", 1.0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
@@ -14625,7 +21679,7 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                     # Parallel: spec in background thread while paint mod runs in foreground
                     if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
                         _spec_ex = _shared_spec_pool
-                        _spec_fut = _spec_ex.submit(compose_finish_stacked, base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _spec_fut = _spec_ex.submit(compose_finish_stacked, base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=_compose_finish_base_scale_for_zone(zone, zone_base_scale), **_v6kw)
                         _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
                         if _paint_was_gpu: paint = to_cpu(paint)
                         paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
@@ -14635,7 +21689,7 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                     # Parallel: spec in background thread while paint mod runs in foreground
                     if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
                         _spec_ex = _shared_spec_pool
-                        _spec_fut = _spec_ex.submit(compose_finish, base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _spec_fut = _spec_ex.submit(compose_finish, base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=_compose_finish_base_scale_for_zone(zone, zone_base_scale), **_v6kw)
                         _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
                         if _paint_was_gpu: paint = to_cpu(paint)
                         paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
@@ -14647,35 +21701,113 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 scale_label = f" @{zone_scale:.1f}x" if zone_scale != 1.0 else ""
                 rot_label = f" rot{zone_rotation:.0f}°" if zone_rotation != 0 else ""
                 print(f"    [{name}] => {label} ({intensity}){scale_label}{rot_label}")
-                _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_color_fit_zone": _v6kw.get("base_color_fit_zone", False), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0)}
+                _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_color_fit_zone": _v6kw.get("base_color_fit_zone", False), "base_color_scale": _v6kw.get("base_color_scale", 1.0), "base_color_rotation": _v6kw.get("base_color_rotation", 0), "base_color_depth": _v6kw.get("base_color_depth"), "base_color_flip": _v6kw.get("base_color_flip", 0.0), "base_color_underglow": _v6kw.get("base_color_underglow", 0.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0), "monolithic_registry": _v6kw.get("monolithic_registry")}
+                _v6paint["pattern_fit_zone"] = _v6kw.get("pattern_fit_zone", False)
+                _v6paint["pattern_paint_mode"] = zone.get("pattern_paint_mode", "overlay")
+                _v6paint["pattern_hue_shift"] = float(zone.get("pattern_hue_shift", 0))
+                _v6paint["pattern_saturation"] = float(zone.get("pattern_saturation", 0))
+                if _v6kw.get("pattern_strength_map") is not None: _v6paint["pattern_strength_map"] = _v6kw["pattern_strength_map"]  # BUGFIX 2026-10-04: Strength Map reaches the PAINT too (was spec-only; paint diff 0.000 before)
+                _v6paint["spec_mult"] = spec_mult
+                _v6paint["base_scale"] = zone_base_scale
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
+                if _z_sb or _v6kw.get("second_base_color_source") or float(_v6kw.get("second_base_strength") or 0) > 0.001: _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0); _v6paint["second_base_color_scale"] = _v6kw.get("second_base_color_scale", 1.0); _v6paint["second_base_color_strength"] = _v6kw.get("second_base_color_strength", 1.0); _v6paint["second_base_rotation"] = _v6kw.get("second_base_rotation", 0.0)
+                if _z_tb or _v6kw.get("third_base_color_source") or float(_v6kw.get("third_base_strength") or 0) > 0.001: _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0); _v6paint["third_base_color_scale"] = _v6kw.get("third_base_color_scale", 1.0); _v6paint["third_base_color_strength"] = _v6kw.get("third_base_color_strength", 1.0); _v6paint["third_base_rotation"] = _v6kw.get("third_base_rotation", 0.0)
+                if _z_fb or _v6kw.get("fourth_base_color_source") or float(_v6kw.get("fourth_base_strength") or 0) > 0.001: _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0); _v6paint["fourth_base_color_scale"] = _v6kw.get("fourth_base_color_scale", 1.0); _v6paint["fourth_base_color_strength"] = _v6kw.get("fourth_base_color_strength", 1.0); _v6paint["fourth_base_rotation"] = _v6kw.get("fourth_base_rotation", 0.0)
+                if _z_fif or _v6kw.get("fifth_base_color_source") or float(_v6kw.get("fifth_base_strength") or 0) > 0.001: _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0); _v6paint["fifth_base_color_scale"] = _v6kw.get("fifth_base_color_scale", 1.0); _v6paint["fifth_base_color_strength"] = _v6kw.get("fifth_base_color_strength", 1.0); _v6paint["fifth_base_rotation"] = _v6kw.get("fifth_base_rotation", 0.0)
+                for _ovp in ("second_base", "third_base", "fourth_base", "fifth_base"):
+                    if _ovp in _v6paint or _v6paint.get(_ovp + "_color_source"):
+                        _v6paint[_ovp + "_color_scale"] = _v6kw.get(_ovp + "_color_scale", 1.0)
+                        _v6paint[_ovp + "_spec_scale"] = _v6kw.get(_ovp + "_spec_scale", 1.0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
                 _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
                 _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
                 _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
-                # Parallel: spec in background thread while paint mod runs in foreground
-                if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
-                    _spec_ex = _shared_spec_pool
-                    _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
-                    _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
-                    if _paint_was_gpu: paint = to_cpu(paint)
-                    paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
-                    if _paint_was_gpu: paint = to_gpu(paint)
-                    zone_spec = _spec_fut.result()
-        elif finish_name and zone.get("finish_colors") and (
+                zone_spec = None
+                _bbox_skip_reason = _bbox_noise_fast_path_reject_reason(
+                    base_id, pattern_id, zone, zone_mask, _v6kw, _v6paint, has_zone_spec_source
+                )
+                _bbox_paint_skip_reason = _bbox_noise_fast_path_paint_reject_reason(
+                    base_id, pattern_id, zone, zone_mask, _v6kw, _v6paint, has_zone_spec_source
+                )
+                if _can_fast_path_flat_noop_base(base_id, pattern_id, zone, _v6kw, _v6paint, has_zone_spec_source):
+                    zone_spec = _compose_flat_noop_base_spec(base_id, shape, zone_mask)
+                elif _bbox_skip_reason is None or _is_spec_pattern_stack_only_reason(_bbox_skip_reason):
+                    _bbox_stack_spec_path = _is_spec_pattern_stack_only_reason(_bbox_skip_reason)
+                    if _bbox_stack_spec_path:
+                        zone_spec = _compose_bbox_finish_spec_stack(
+                            base_id, pattern_id, shape, zone_mask, seed + i * 13, sm,
+                            zone_scale, spec_mult, zone_rotation, _v6kw
+                        )
+                        _bbox_paint_skip_reason = _bbox_noise_fast_path_paint_reject_reason(
+                            base_id, pattern_id, _without_spec_pattern_stacks(zone), zone_mask,
+                            _without_spec_pattern_stacks(_v6kw), _v6paint, has_zone_spec_source
+                        )
+                    else:
+                        zone_spec = _compose_bbox_noise_base_spec(base_id, shape, zone_mask, seed + i * 13, sm)
+                    if zone_spec is not None:
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu:
+                            paint = to_cpu(paint)
+                        _fast_paint_label = "paint"
+                        if _bbox_paint_skip_reason is None:
+                            _fast_paint = _apply_bbox_base_paint(base_id, paint, shape, zone_mask, seed + i * 13, pm, bb)
+                        elif _can_fast_path_bbox_paint_controls(base_id, pattern_id, zone_mask, _v6paint, _bbox_paint_skip_reason):
+                            _fast_paint = _apply_bbox_compose_paint_mod(
+                                base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb,
+                                zone_scale, zone_rotation, _v6paint
+                            )
+                            _fast_paint_label = "paint controls"
+                        else:
+                            _fast_paint = None
+                        if _fast_paint is not None:
+                            paint = _fast_paint
+                            _fast_regions = _mask_active_regions(zone_mask) or []
+                            _fast_spec_label = "stacked-spec" if _bbox_stack_spec_path else "spec"
+                            print(f"    [{name}] visible-crop {_fast_spec_label}+{_fast_paint_label} fast path: {_mask_region_summary(zone_mask, _fast_regions)}")
+                            if _paint_was_gpu:
+                                paint = to_gpu(paint)
+                        else:
+                            if _bbox_paint_skip_reason is None:
+                                _bbox_paint_skip_reason = "crop paint application failed"
+                            _fast_regions = _mask_active_regions(zone_mask) or []
+                            _fast_spec_label = "stacked-spec" if _bbox_stack_spec_path else "spec"
+                            print(f"    [{name}] visible-crop {_fast_spec_label} fast path: {_mask_region_summary(zone_mask, _fast_regions)}; paint full path: {_bbox_paint_skip_reason}")
+                            paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                            if _paint_was_gpu:
+                                paint = to_gpu(paint)
+                else:
+                    _log_bbox_fast_path_skip(name, base_id, zone_mask, _bbox_skip_reason)
+                if zone_spec is None:
+                    # Parallel: spec in background thread while paint mod runs in foreground
+                    if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
+                        _spec_ex = _shared_spec_pool
+                        _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=_compose_finish_base_scale_for_zone(zone, zone_base_scale), **_v6kw)
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu: paint = to_cpu(paint)
+                        paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                        if _paint_was_gpu: paint = to_gpu(paint)
+                        zone_spec = _spec_fut.result()
+        elif finish_name and zone.get("finish_colors") and finish_name not in MONOLITHIC_REGISTRY and (
             finish_name.startswith("grad_") or finish_name.startswith("gradm_")
             or finish_name.startswith("grad3_") or finish_name.startswith("ghostg_")
             or finish_name.startswith("mc_")
         ):
-            zone_rotation = float(zone.get("rotation", 0))
-            zone_spec, paint = render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed + i * 13, sm, pm, bb, rotation=zone_rotation)
+            # SPB-GRADIENT-OVERHAUL-2026-08-23 / G-4: authored registry recipes win;
+            # this path remains the fallback for unregistered/custom client gradients.
+            _base_ctrl = _zone_base_transform_values(zone)
+            zone_rotation = _base_ctrl["rotation"]
+            zone_base_scale = _base_ctrl["scale"]
+            zone_spec, paint = render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed + i * 13, sm, pm, bb, rotation=zone_rotation, base_scale=zone_base_scale, base_offset_x=_base_ctrl["offset_x"], base_offset_y=_base_ctrl["offset_y"], base_flip_h=_base_ctrl["flip_h"], base_flip_v=_base_ctrl["flip_v"])
             if zone_spec is not None: zone_spec = _sanitize_spec_result(zone_spec, shape)
+            if zone_spec is not None:
+                zone_spec = _apply_base_spec_strength_to_zone_spec(
+                    zone_spec,
+                    zone.get("base_spec_strength", 1.0),
+                    shape,
+                    context=f"generic finish '{finish_name}' spec strength",
+                )
             if paint is not None: paint = _sanitize_paint_result(paint, shape)
             if zone_spec is None:
                 continue
@@ -14684,35 +21816,165 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 mono_scale = float(zone.get("scale", 1.0))
                 mono_opacity = float(zone.get("pattern_opacity", 1.0))
                 mono_rotation = float(zone.get("rotation", 0))
-                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult, rotation=mono_rotation)
-                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation)
+                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult, rotation=mono_rotation, blend_mode=zone.get("base_spec_blend_mode", "normal"), zone=zone)
+                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation, zone=zone)
         elif finish_name and finish_name in MONOLITHIC_REGISTRY:
             spec_fn, paint_fn = MONOLITHIC_REGISTRY[finish_name]
             mono_pat = zone.get("pattern", "none")
-            mono_base_scale = float(zone.get("base_scale", 1.0))
+            _base_ctrl = _zone_base_transform_values(zone)
+            mono_base_scale = _base_ctrl["scale"]
             pat_label = f" + {mono_pat}" if mono_pat and mono_pat != "none" else ""
             print(f"    [{name}] => {finish_name}{pat_label} ({intensity}) [monolithic]")
 
             _mono_base_strength = max(0.0, min(2.0, float(zone.get("base_strength", 1.0))))
             _mono_spec_strength = max(0.0, min(2.0, float(zone.get("base_spec_strength", 1.0))))
-            _sm_eff = sm * _mono_base_strength * _mono_spec_strength
-            _pm_eff = pm * _mono_base_strength
-            _bb_eff = bb * _mono_base_strength
-            # --- BASE SCALE for monolithics: generate at smaller dims, tile to fill ---
-            if mono_base_scale != 1.0 and mono_base_scale > 0:
-                MAX_MONO_DIM = 4096
-                tile_h = min(MAX_MONO_DIM, max(4, int(shape[0] / mono_base_scale)))
-                tile_w = min(MAX_MONO_DIM, max(4, int(shape[1] / mono_base_scale)))
-                tile_shape = (tile_h, tile_w)
-                tile_mask = np.ones((tile_h, tile_w), dtype=np.float32)
-                tile_spec = _sanitize_spec_result(spec_fn(tile_shape, tile_mask, seed + i * 13, _sm_eff), tile_shape)
-                reps_h = int(np.ceil(shape[0] / tile_h))
-                reps_w = int(np.ceil(shape[1] / tile_w))
-                zone_spec = np.tile(tile_spec, (reps_h, reps_w, 1))[:shape[0], :shape[1], :]
-                paint = paint_fn(paint, shape, zone_mask, seed + i * 13, _pm_eff, _bb_eff)
-            else:
-                zone_spec = spec_fn(shape, zone_mask, seed + i * 13, _sm_eff)
-                paint = paint_fn(paint, shape, zone_mask, seed + i * 13, _pm_eff, _bb_eff)
+            # [SPB authored-spec verbatim 2026-06-10] SHOKK DROP authored_set specs must render the
+            # EXACT uploaded channels — base_spec_strength must NOT scale them. It was boosting the
+            # bjeans roughness channel 136 -> 238/255 (the guest's "much brighter green"). This is the
+            # same fix already in the primary monolithic block (~17797); these duplicate render paths
+            # (preview / car / garage) never got it, so the boost persisted on whichever view he used.
+            _mono_is_authored = False
+            try:
+                from engine.paint_v2 import user_imports as _spb_ui
+                _mono_is_authored = bool(_spb_ui.is_authored_spec(finish_name))
+            except Exception:
+                _mono_is_authored = False
+            _sm_eff = 1.0 if _mono_is_authored else (sm * _mono_spec_strength)
+            _mono_render_boost = max(1.0, _mono_base_strength)
+            # [SPB MONO-PAINT-STRENGTH 2026-08-30] Same fix as the primary monolithic
+            # block: the INTENSITY preset must not scale the finish's paint at render
+            # time, or a zone left at a low intensity renders every material picked
+            # into it with no colour. BASE STRENGTH is the single paint blend.
+            _pm_eff = _mono_render_boost
+            _bb_eff = bb * _mono_render_boost
+            _mono_paint_before = (
+                to_cpu(paint).copy()
+                if is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                else np.asarray(paint).copy()
+            )
+            _mono_underpaint = _monolithic_underpaint_from_zone(
+                _mono_paint_before, zone, shape, zone_mask, seed + i * 13
+            )
+            _mono_render_mask = zone_mask
+            from engine.paint_v2.placement_context import clear_zone_placement, set_zone_placement
+
+            _pl_common = {
+                "offset_x": _base_ctrl["offset_x"],
+                "offset_y": _base_ctrl["offset_y"],
+                "rotation": _base_ctrl["rotation"],
+                "flip_h": _base_ctrl["flip_h"],
+                "flip_v": _base_ctrl["flip_v"],
+            }
+            _spec_ctrl = _zone_spec_transform_values(zone)
+            try:
+                set_zone_placement(
+                    scale=_spec_ctrl["scale"],
+                    offset_x=_spec_ctrl["offset_x"],
+                    offset_y=_spec_ctrl["offset_y"],
+                    rotation=_spec_ctrl["rotation"],
+                    flip_h=_spec_ctrl["flip_h"],
+                    flip_v=_spec_ctrl["flip_v"],
+                )
+                zone_spec = _sanitize_spec_result(
+                    spec_fn(shape, _mono_render_mask, seed + i * 13, _sm_eff),
+                    shape,
+                    strict_shapes=True,
+                    context=f"monolithic finish '{finish_name}'",
+                )
+                if not _mono_is_authored:
+                    zone_spec = _apply_base_spec_strength_to_zone_spec(
+                        zone_spec,
+                        _mono_spec_strength,
+                        shape,
+                        context=f"monolithic finish '{finish_name}' spec strength",
+                    )
+                set_zone_placement(scale=mono_base_scale, **_pl_common)
+                paint = paint_fn(_mono_underpaint, shape, _mono_render_mask, seed + i * 13, _pm_eff, _bb_eff)
+                paint = _sanitize_paint_result(paint, shape, backup=_mono_paint_before)
+            except Exception:
+                clear_zone_placement()
+                raise
+            clear_zone_placement()
+            # SPB-BASECOLOR-2026-06-02: explicit base-color override must replace a
+            # monolithic finish's own paint color while keeping its spec (see the
+            # detailed note on the car path in build_multi_zone). Same fix for the
+            # helmet/suit monolithic paths.
+            _mono_bc_mode = str(zone.get("base_color_mode", "source") or "source").strip().lower()
+            # [SPB SOURCE-MODE PARITY 2026-08-15 — owner: "if I click Use Source Paint for BASE
+            # COLOR it should use the SOURCE PAINT of the car. NOT the SOURCE PAINT of the BASE
+            # MATERIAL... when you ONLY want to apply the BASE MATERIAL of the spec and keep the
+            # EXACT source paint otherwise. This is for ALL categories."]
+            #
+            # The 2026-07-08 lock (compose.py _source_paint_lock) only ever covered
+            # compose_paint_mod — the regular base+pattern path. Anything in
+            # MONOLITHIC_REGISTRY (846 finishes) is routed to THIS branch by the
+            # `finish or base` resolve at ~line 1414 and never reaches that lock, so source
+            # mode fell straight through the `not in (...)` test below and the finish's own
+            # paint survived. Repro that proved it: fs_core_aurum (gold) over a 4-hue source
+            # dragged blue 0.630->0.106 and green 0.375->0.171 with base_color_mode='source',
+            # byte-identical to base_color_mode='special'. The old guard test could not see it
+            # because it only used 'gloss'/'ghost_graphic', which DO resolve to the base path.
+            #
+            # SOURCE MODE = SPEC ONLY. zone_spec is deliberately untouched; strength 0.0 makes
+            # the existing blend helper return the pre-monolithic paint (alpha = mask*0 = 0 =>
+            # out == under), so the car's paint is restored without new blend math. HSB still
+            # runs after this and adjusts the SOURCE colors, matching compose.py's behaviour.
+            # Guard: tests/regression_source_mode_keeps_colors_test.py::*monolithic*
+            # [SPB MONO-COLOUR DEFAULT 2026-08-30 — owner: "there's a LOT of finishes
+            # that at 100% base strength ... the COLOR is not showing up for the BASE
+            # MATERIAL at all"]. SOURCE mode discarding the monolithic's paint is
+            # correct and deliberate (2026-08-15 parity work, guarded by
+            # tests/regression_source_mode_keeps_colors_test.py) — but it was also the
+            # DEFAULT for every new zone, so all 846 monolithics rendered spec-only
+            # unless the user changed the Base Color dropdown. "finish" is the new
+            # default: the material keeps its OWN colour, and "Use source paint" still
+            # does exactly what was asked for in August when it is chosen explicitly.
+            # A zone only means "spec only" if the user actually CHOSE source mode.
+            # Every zone saved before 2026-08-30 carries 'source' as an inherited
+            # default it never asked for, which is why the owner saw the colour
+            # missing on finish after finish. Without the explicit flag, an
+            # unchosen 'source' keeps the material's own colour.
+            if not bool(zone.get("base_color_explicit", False)) and _mono_bc_mode in ("", "source", "none"):
+                _mono_bc_mode = "finish"
+            if _mono_bc_mode in ("finish", "own"):
+                pass
+            elif _mono_bc_mode in ("", "source", "none"):
+                paint = _blend_monolithic_base_strength(
+                    _mono_paint_before, paint, zone_mask, 0.0
+                )
+            if _mono_bc_mode not in ("", "source", "none", "finish", "own"):
+                _mono_bc_src = zone.get("base_color_source")
+                _mono_same_finish = (
+                    isinstance(_mono_bc_src, str)
+                    and _mono_bc_src.startswith("mono:")
+                    and _mono_bc_src[5:] == finish_name
+                )
+                if not _mono_same_finish:
+                    _mono_bc_val = zone.get("base_color", [1.0, 1.0, 1.0])
+                    if _mono_bc_mode == "gradient" and zone.get("gradient_stops"):
+                        _mono_bc_val = {
+                            "stops": zone.get("gradient_stops"),
+                            "direction": zone.get("gradient_direction", "horizontal"),
+                        }
+                    try:
+                        paint = _apply_base_color_override(
+                            paint, shape, np.asarray(zone_mask, dtype=np.float32),
+                            seed + i * 13, _mono_bc_mode, _mono_bc_val, _mono_bc_src,
+                            max(0.0, min(1.0, float(zone.get("base_color_strength", 1.0)))),
+                            MONOLITHIC_REGISTRY,
+                            fit_to_bbox=bool(zone.get("base_color_fit_zone", False)),
+                            base_scale=_zone_monolithic_color_source_scale(zone, _base_ctrl),
+                            base_offset_x=_base_ctrl["offset_x"],
+                            base_offset_y=_base_ctrl["offset_y"],
+                            base_rotation=_base_ctrl["rotation"],
+                            base_flip_h=_base_ctrl["flip_h"],
+                            base_flip_v=_base_ctrl["flip_v"],
+                            base_color_depth=(None if zone.get("base_color_depth") is None else float(zone.get("base_color_depth"))),
+                            base_color_flip=float(zone.get("base_color_flip", 0) or 0),
+                            base_color_underglow=float(zone.get("base_color_underglow", 0) or 0),
+                        )
+                    except Exception as _mono_bc_err:
+                        logger.warning(f"    [{name}] monolithic base-color override failed: {_mono_bc_err}")
 
             # Apply HSB adjustments to monolithic paint (same as base+pattern path)
             _mono_hue = float(zone.get("base_hue_offset", 0))
@@ -14721,12 +21983,16 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
             if abs(_mono_hue) >= 0.5 or abs(_mono_sat) >= 0.5 or abs(_mono_bri) >= 0.5:
                 paint = _apply_hsb_adjustments(paint, zone_mask, _mono_hue, _mono_sat, _mono_bri)
 
+            paint = _blend_monolithic_base_strength(
+                _mono_paint_before, paint, zone_mask, _mono_base_strength
+            )
+
             if mono_pat and mono_pat != "none" and mono_pat in PATTERN_REGISTRY:
                 mono_scale = float(zone.get("scale", 1.0))
                 mono_opacity = float(zone.get("pattern_opacity", 1.0))
                 mono_rotation = float(zone.get("rotation", 0))
-                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult, rotation=mono_rotation)
-                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation)
+                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult, rotation=mono_rotation, blend_mode=zone.get("base_spec_blend_mode", "normal"), zone=zone)
+                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation, zone=zone)
         elif finish_name and finish_name in FINISH_REGISTRY:
             spec_fn, paint_fn = FINISH_REGISTRY[finish_name]
             print(f"    [{name}] => {finish_name} ({intensity}) [legacy]")
@@ -14734,8 +22000,10 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
             paint = paint_fn(paint, shape, zone_mask, seed + i * 13, pm, bb)
         elif finish_name and zone.get("finish_colors"):
             # PATH 4: GENERIC FALLBACK - client-defined finish with color data
-            zone_rotation = float(zone.get("rotation", 0))
-            zone_spec, paint = render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed + i * 13, sm, pm, bb, rotation=zone_rotation)
+            _base_ctrl = _zone_base_transform_values(zone)
+            zone_rotation = _base_ctrl["rotation"]
+            zone_base_scale = _base_ctrl["scale"]
+            zone_spec, paint = render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed + i * 13, sm, pm, bb, rotation=zone_rotation, base_scale=zone_base_scale, base_offset_x=_base_ctrl["offset_x"], base_offset_y=_base_ctrl["offset_y"], base_flip_h=_base_ctrl["flip_h"], base_flip_v=_base_ctrl["flip_v"])
             if zone_spec is not None: zone_spec = _sanitize_spec_result(zone_spec, shape)
             if paint is not None: paint = _sanitize_paint_result(paint, shape)
             if zone_spec is None:
@@ -14745,14 +22013,20 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 mono_scale = float(zone.get("scale", 1.0))
                 mono_opacity = float(zone.get("pattern_opacity", 1.0))
                 mono_rotation = float(zone.get("rotation", 0))
-                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult if 'spec_mult' in dir() else 1.0, rotation=mono_rotation)
-                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation)
+                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult if 'spec_mult' in dir() else 1.0, rotation=mono_rotation, blend_mode=zone.get("base_spec_blend_mode", "normal"), zone=zone)
+                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation, zone=zone)
         else:
             continue
 
+        from engine.pattern_material import apply_zone_pattern_spec
+        zone_spec = apply_zone_pattern_spec(zone_spec, zone, shape, zone_mask, seed+i*13)
+
+        from engine.pattern_material import has_pattern_spec
+        if has_pattern_spec(zone):
+            _pattern_spec_preserve |= (np.asarray(zone_mask) > .05)
         claimed = np.clip(claimed + zone_mask, 0, 1)
         if is_gpu():
-            _zs_g = to_gpu(zone_spec.astype(np.float32))
+            _zs_g = to_gpu(zone_spec.astype(np.float32, copy=False))
             _m3d_g = to_gpu(zone_mask[:,:,np.newaxis])
             _cs_g = to_gpu(combined_spec)
             soft = _m3d_g > 0.05
@@ -14761,27 +22035,28 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
         else:
             mask3d = zone_mask[:,:,np.newaxis]
             soft = mask3d > 0.05
+            zone_spec_f = zone_spec.astype(np.float32, copy=False)
             blended = np.clip(
-                zone_spec.astype(np.float32) * mask3d +
+                zone_spec_f * mask3d +
                 combined_spec * (1 - mask3d),
                 0, 255
             )
             combined_spec = np.where(soft, blended, combined_spec)
 
     # Enforce PBR floors + convert to uint8 for helmet spec output
-    combined_spec[:,:,1] = np.where(combined_spec[:,:,0] < 240, np.maximum(combined_spec[:,:,1], 15), combined_spec[:,:,1])
-    combined_spec[:,:,2] = np.maximum(combined_spec[:,:,2], 16)
+    combined_spec[:,:,1] = np.where((combined_spec[:,:,0] < 240) & ~_pattern_spec_preserve, np.maximum(combined_spec[:,:,1], 15), combined_spec[:,:,1])
+    combined_spec[:,:,2] = np.where(_pattern_spec_preserve, combined_spec[:,:,2], np.maximum(combined_spec[:,:,2], 16))
     combined_spec_u8 = np.clip(combined_spec, 0, 255).astype(np.uint8)
     os.makedirs(output_dir, exist_ok=True)
     spec_path = os.path.join(output_dir, f"helmet_spec_{iracing_id}.tga")
     write_tga_32bit(spec_path, combined_spec_u8)
-    Image.fromarray(combined_spec_u8).save(os.path.join(output_dir, "PREVIEW_helmet_spec.png"))
+    _save_preview_png(combined_spec_u8, os.path.join(output_dir, "PREVIEW_helmet_spec.png"))
 
     # Also save modified paint if it changed
     helmet_paint = (np.clip(paint, 0, 1) * 255).astype(np.uint8)
     paint_path = os.path.join(output_dir, f"helmet_{iracing_id}.tga")
     write_tga_24bit(paint_path, helmet_paint)
-    Image.fromarray(helmet_paint).save(os.path.join(output_dir, "PREVIEW_helmet_paint.png"))
+    _save_preview_png(helmet_paint, os.path.join(output_dir, "PREVIEW_helmet_paint.png"))
 
     elapsed = time.time() - start_time
     print(f"\n  Helmet done in {elapsed:.1f}s!")
@@ -14815,6 +22090,7 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
     _validate_zones(zones)
     _validate_paint_file(suit_paint_file)
     seed = _coerce_seed(seed)
+    _validate_all_zone_render_ids(zones)
     logger.info(f"\n{'='*60}")
     logger.info(f"  {ENGINE_DISPLAY_NAME} - Suit Spec Generator")
     logger.info(f"  ID: {iracing_id}")
@@ -14833,6 +22109,7 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
     paint = paint_rgb.astype(np.float32) / 255.0
 
     combined_spec = np.zeros((h, w, 4), dtype=np.float32)
+    _pattern_spec_preserve = np.zeros((h, w), dtype=bool)
     combined_spec[:,:,1] = 100  # default R
     combined_spec[:,:,2] = 16   # default CC (CC≥16 always)
     combined_spec[:,:,3] = 255  # full spec mask
@@ -14855,6 +22132,13 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
         base_id = zone.get("base")
         pattern_id = zone.get("pattern", "none")
         finish_name = zone.get("finish")
+        if isinstance(base_id, str) and base_id.startswith("mono:"):
+            _mono_base_id = base_id[5:]
+            if _mono_base_id in BASE_REGISTRY:
+                base_id = _mono_base_id
+            elif _mono_base_id in MONOLITHIC_REGISTRY and not finish_name:
+                finish_name = _mono_base_id
+                base_id = None
         # REVERSE FALLBACK: specials→base for migrated finishes
         if finish_name and finish_name not in MONOLITHIC_REGISTRY and finish_name in BASE_REGISTRY:
             base_id = finish_name
@@ -14867,15 +22151,18 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 pattern_id = "none"
             zone_scale = float(zone.get("scale", 1.0))
             zone_rotation = float(zone.get("rotation", 0))
-            zone_base_scale = float(zone.get("base_scale", 1.0))
+            _path1_base_ctrl = _zone_base_transform_values(zone)
+            zone_base_scale = _path1_base_ctrl["scale"]
             pattern_stack = zone.get("pattern_stack", [])
             primary_pat_opacity = float(zone.get("pattern_opacity", 1.0))
+            _pattern_fit_zone = bool(zone.get("pattern_fit_zone", False) or zone.get("pattern_placement") == "fit")
 
             # v6.0 advanced finish params
-            _z_cc = zone.get("cc_quality"); _z_cc = float(_z_cc) / 100.0 if _z_cc is not None and float(_z_cc) > 1.0 else (float(_z_cc) if _z_cc is not None else None)
+            _z_cc = _normalized_cc_quality_override(zone.get("cc_quality"))
             _z_bb = zone.get("blend_base") or None; _z_bd = zone.get("blend_dir", "horizontal"); _z_ba = float(zone.get("blend_amount", 0.5))
             _z_pc = zone.get("paint_color")
             _v6kw = {}
+            _v6kw["independent_pattern_spec"] = "pattern_spec_opacity" in zone
             # Pattern strength map (per-pixel modulation)
             if zone.get("pattern_strength_map") is not None:
                 _v6kw["pattern_strength_map"] = zone["pattern_strength_map"]
@@ -14900,6 +22187,13 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
             _v6kw["base_color_source"] = zone.get("base_color_source")
             _v6kw["base_color_strength"] = float(zone.get("base_color_strength", 1.0))
             _v6kw["base_color_fit_zone"] = bool(zone.get("base_color_fit_zone", False))
+            _v6kw["base_color_scale"] = float(zone.get("base_color_scale", zone.get("baseColorScale", 1.0)))
+            _v6kw["base_color_rotation"] = float(zone.get("base_color_rotation", zone.get("baseColorRotation", zone.get("base_rotation", 0))))
+            # [SPB COLOR LAB 2026-08-27] depth None = legacy pipeline (old saves render unchanged)
+            _v6kw["base_color_depth"] = (None if zone.get("base_color_depth") is None else float(zone.get("base_color_depth")))
+            _v6kw["base_color_flip"] = float(zone.get("base_color_flip", 0) or 0)
+            _v6kw["base_color_underglow"] = float(zone.get("base_color_underglow", 0) or 0)
+            _v6kw["pattern_fit_zone"] = _pattern_fit_zone
             _v6kw["base_hue_offset"] = float(zone.get("base_hue_offset", 0))
             _v6kw["base_saturation_adjust"] = float(zone.get("base_saturation_adjust", 0))
             _v6kw["base_brightness_adjust"] = float(zone.get("base_brightness_adjust", 0))
@@ -14924,7 +22218,7 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
             # Dual Layer Base Overlay — trigger on EITHER base ID or color source
             _z_sb = zone.get("second_base")
             _z_sb_cs = zone.get("second_base_color_source")
-            if _z_sb or _z_sb_cs:
+            if _z_sb or _z_sb_cs or float(zone.get("second_base_strength") or 0) > 0.001:
                 _v6kw["second_base"] = _z_sb or ''
                 _v6kw["second_base_color_source"] = _z_sb_cs
                 _v6kw["second_base_color"] = zone.get("second_base_color", [1.0, 1.0, 1.0])
@@ -14933,7 +22227,14 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6kw["second_base_blend_mode"] = zone.get("second_base_blend_mode", "noise")
                 _v6kw["second_base_noise_scale"] = int(zone.get("second_base_noise_scale", 24))
                 _v6kw["second_base_scale"] = float(zone.get("second_base_scale", 1.0))
-                _v6kw["second_base_pattern"] = zone.get("second_base_pattern")
+                _v6kw["second_base_color_scale"] = float(zone.get("second_base_color_scale", 1.0))
+                _v6kw["second_base_spec_scale"] = float(zone.get("second_base_spec_scale", 1.0))
+                # [SPB-OVERLAY-PARITY-2 2026-08-20] rotation / spec rotation / color strength
+                _v6kw["second_base_rotation"] = float(zone.get("second_base_rotation", 0.0) or 0.0)
+                _v6kw["second_base_spec_rotation"] = float(zone.get("second_base_spec_rotation", 0.0) or 0.0)
+                _ovcs_tmp = zone.get("second_base_color_strength", 1.0)
+                _v6kw["second_base_color_strength"] = max(0.0, min(1.0, float(1.0 if _ovcs_tmp is None else _ovcs_tmp)))
+                _v6kw["second_base_pattern"] = _normalize_base_overlay_pattern_id(zone.get("second_base_pattern"))
                 _v6kw["second_base_pattern_scale"] = float(zone.get("second_base_pattern_scale", 1.0))
                 _v6kw["second_base_pattern_rotation"] = float(zone.get("second_base_pattern_rotation", 0.0))
                 _v6kw["second_base_pattern_opacity"] = float(zone.get("second_base_pattern_opacity", 1.0))
@@ -14966,15 +22267,24 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
             _v6kw["second_base_pattern_brightness"] = float(zone.get("second_base_pattern_brightness", 0))
             _v6kw["second_base_color_source"] = zone.get("second_base_color_source")
             _z_tb = zone.get("third_base")
-            if _z_tb:
-                _v6kw["third_base"] = _z_tb
+            _z_tb_cs = zone.get("third_base_color_source")
+            if _z_tb or _z_tb_cs or float(zone.get("third_base_strength") or 0) > 0.001:
+                _v6kw["third_base"] = _z_tb or ''
+                _v6kw["third_base_color_source"] = _z_tb_cs
                 _v6kw["third_base_color"] = zone.get("third_base_color", [1.0, 1.0, 1.0])
                 _v6kw["third_base_strength"] = float(zone.get("third_base_strength", 0.0))
                 _v6kw["third_base_spec_strength"] = float(zone.get("third_base_spec_strength", 1.0))
                 _v6kw["third_base_blend_mode"] = zone.get("third_base_blend_mode", "noise")
                 _v6kw["third_base_noise_scale"] = int(zone.get("third_base_noise_scale", 24))
                 _v6kw["third_base_scale"] = float(zone.get("third_base_scale", 1.0))
-                _v6kw["third_base_pattern"] = zone.get("third_base_pattern")
+                _v6kw["third_base_color_scale"] = float(zone.get("third_base_color_scale", 1.0))
+                _v6kw["third_base_spec_scale"] = float(zone.get("third_base_spec_scale", 1.0))
+                # [SPB-OVERLAY-PARITY-2 2026-08-20] rotation / spec rotation / color strength
+                _v6kw["third_base_rotation"] = float(zone.get("third_base_rotation", 0.0) or 0.0)
+                _v6kw["third_base_spec_rotation"] = float(zone.get("third_base_spec_rotation", 0.0) or 0.0)
+                _ovcs_tmp = zone.get("third_base_color_strength", 1.0)
+                _v6kw["third_base_color_strength"] = max(0.0, min(1.0, float(1.0 if _ovcs_tmp is None else _ovcs_tmp)))
+                _v6kw["third_base_pattern"] = _normalize_base_overlay_pattern_id(zone.get("third_base_pattern"))
                 _v6kw["third_base_pattern_scale"] = float(zone.get("third_base_pattern_scale", 1.0))
                 _v6kw["third_base_pattern_rotation"] = float(zone.get("third_base_pattern_rotation", 0.0))
                 _v6kw["third_base_pattern_opacity"] = float(zone.get("third_base_pattern_opacity", 1.0))
@@ -15004,15 +22314,24 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
             _v6kw["third_base_brightness"] = float(zone.get("third_base_brightness", 0))
             _v6kw["third_base_color_source"] = zone.get("third_base_color_source")
             _z_fb = zone.get("fourth_base")
-            if _z_fb:
-                _v6kw["fourth_base"] = _z_fb
+            _z_fb_cs = zone.get("fourth_base_color_source")
+            if _z_fb or _z_fb_cs or float(zone.get("fourth_base_strength") or 0) > 0.001:
+                _v6kw["fourth_base"] = _z_fb or ''
+                _v6kw["fourth_base_color_source"] = _z_fb_cs
                 _v6kw["fourth_base_color"] = zone.get("fourth_base_color", [1.0, 1.0, 1.0])
                 _v6kw["fourth_base_strength"] = float(zone.get("fourth_base_strength", 0.0))
                 _v6kw["fourth_base_spec_strength"] = float(zone.get("fourth_base_spec_strength", 1.0))
                 _v6kw["fourth_base_blend_mode"] = zone.get("fourth_base_blend_mode", "noise")
                 _v6kw["fourth_base_noise_scale"] = int(zone.get("fourth_base_noise_scale", 24))
                 _v6kw["fourth_base_scale"] = float(zone.get("fourth_base_scale", 1.0))
-                _v6kw["fourth_base_pattern"] = zone.get("fourth_base_pattern")
+                _v6kw["fourth_base_color_scale"] = float(zone.get("fourth_base_color_scale", 1.0))
+                _v6kw["fourth_base_spec_scale"] = float(zone.get("fourth_base_spec_scale", 1.0))
+                # [SPB-OVERLAY-PARITY-2 2026-08-20] rotation / spec rotation / color strength
+                _v6kw["fourth_base_rotation"] = float(zone.get("fourth_base_rotation", 0.0) or 0.0)
+                _v6kw["fourth_base_spec_rotation"] = float(zone.get("fourth_base_spec_rotation", 0.0) or 0.0)
+                _ovcs_tmp = zone.get("fourth_base_color_strength", 1.0)
+                _v6kw["fourth_base_color_strength"] = max(0.0, min(1.0, float(1.0 if _ovcs_tmp is None else _ovcs_tmp)))
+                _v6kw["fourth_base_pattern"] = _normalize_base_overlay_pattern_id(zone.get("fourth_base_pattern"))
                 _v6kw["fourth_base_pattern_scale"] = float(zone.get("fourth_base_pattern_scale", 1.0))
                 _v6kw["fourth_base_pattern_rotation"] = float(zone.get("fourth_base_pattern_rotation", 0.0))
                 _v6kw["fourth_base_pattern_opacity"] = float(zone.get("fourth_base_pattern_opacity", 1.0))
@@ -15042,15 +22361,24 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
             _v6kw["fourth_base_brightness"] = float(zone.get("fourth_base_brightness", 0))
             _v6kw["fourth_base_color_source"] = zone.get("fourth_base_color_source")
             _z_fif = zone.get("fifth_base")
-            if _z_fif:
-                _v6kw["fifth_base"] = _z_fif
+            _z_fif_cs = zone.get("fifth_base_color_source")
+            if _z_fif or _z_fif_cs or float(zone.get("fifth_base_strength") or 0) > 0.001:
+                _v6kw["fifth_base"] = _z_fif or ''
+                _v6kw["fifth_base_color_source"] = _z_fif_cs
                 _v6kw["fifth_base_color"] = zone.get("fifth_base_color", [1.0, 1.0, 1.0])
                 _v6kw["fifth_base_strength"] = float(zone.get("fifth_base_strength", 0.0))
                 _v6kw["fifth_base_spec_strength"] = float(zone.get("fifth_base_spec_strength", 1.0))
                 _v6kw["fifth_base_blend_mode"] = zone.get("fifth_base_blend_mode", "noise")
                 _v6kw["fifth_base_noise_scale"] = int(zone.get("fifth_base_noise_scale", 24))
                 _v6kw["fifth_base_scale"] = float(zone.get("fifth_base_scale", 1.0))
-                _v6kw["fifth_base_pattern"] = zone.get("fifth_base_pattern")
+                _v6kw["fifth_base_color_scale"] = float(zone.get("fifth_base_color_scale", 1.0))
+                _v6kw["fifth_base_spec_scale"] = float(zone.get("fifth_base_spec_scale", 1.0))
+                # [SPB-OVERLAY-PARITY-2 2026-08-20] rotation / spec rotation / color strength
+                _v6kw["fifth_base_rotation"] = float(zone.get("fifth_base_rotation", 0.0) or 0.0)
+                _v6kw["fifth_base_spec_rotation"] = float(zone.get("fifth_base_spec_rotation", 0.0) or 0.0)
+                _ovcs_tmp = zone.get("fifth_base_color_strength", 1.0)
+                _v6kw["fifth_base_color_strength"] = max(0.0, min(1.0, float(1.0 if _ovcs_tmp is None else _ovcs_tmp)))
+                _v6kw["fifth_base_pattern"] = _normalize_base_overlay_pattern_id(zone.get("fifth_base_pattern"))
                 _v6kw["fifth_base_pattern_scale"] = float(zone.get("fifth_base_pattern_scale", 1.0))
                 _v6kw["fifth_base_pattern_rotation"] = float(zone.get("fifth_base_pattern_rotation", 0.0))
                 _v6kw["fifth_base_pattern_opacity"] = float(zone.get("fifth_base_pattern_opacity", 1.0))
@@ -15087,28 +22415,42 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 stack_ids = {ps.get("id") for ps in pattern_stack[:4] if ps.get("id") and ps.get("id") != "none"}
                 all_patterns = []
                 if pattern_id and pattern_id != "none" and pattern_id not in stack_ids:
-                    all_patterns.append({"id": pattern_id, "opacity": primary_pat_opacity, "scale": zone_scale, "rotation": zone_rotation,
+                    all_patterns.append({"id": pattern_id, "hue_shift": float(zone.get("pattern_hue_shift", 0)), "saturation": float(zone.get("pattern_saturation", 0)), "opacity": primary_pat_opacity, "scale": zone_scale, "rotation": zone_rotation,
                                          "offset_x": float(zone.get("pattern_offset_x", 0.5)),
-                                         "offset_y": float(zone.get("pattern_offset_y", 0.5))})
+                                         "offset_y": float(zone.get("pattern_offset_y", 0.5)),
+                                         "fit_zone": _pattern_fit_zone})
                 for ps in pattern_stack[:4]:  # Max 4 additional (matches JS MAX_PATTERN_STACK_LAYERS)
                     pid = ps.get("id", "none")
                     if pid != "none" and pid in PATTERN_REGISTRY:
                         all_patterns.append({
                             "id": pid,
+                            "hue_shift": float(ps.get("hue_shift", 0)), "saturation": float(ps.get("saturation", 0)),
                             "opacity": float(ps.get("opacity", 1.0)),
                             "scale": float(ps.get("scale", 1.0)),
                             "rotation": float(ps.get("rotation", 0)),
                             "blend_mode": ps.get("blend_mode", "normal"),
+                            "fit_zone": _pattern_fit_zone,
                         })
                 pat_names = " + ".join(f'{p["id"]}@{int(p["opacity"]*100)}%{"["+p.get("blend_mode","normal")+"]" if p.get("blend_mode","normal") != "normal" else ""}' for p in all_patterns)
                 label = f"{base_id} + [{pat_names}]"
                 print(f"    [{name}] => {label} ({intensity}) [stacked compositing]")
-                _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_color_fit_zone": _v6kw.get("base_color_fit_zone", False), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0)}
+                _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_color_fit_zone": _v6kw.get("base_color_fit_zone", False), "base_color_scale": _v6kw.get("base_color_scale", 1.0), "base_color_rotation": _v6kw.get("base_color_rotation", 0), "base_color_depth": _v6kw.get("base_color_depth"), "base_color_flip": _v6kw.get("base_color_flip", 0.0), "base_color_underglow": _v6kw.get("base_color_underglow", 0.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0)}
+                _v6paint["pattern_fit_zone"] = _v6kw.get("pattern_fit_zone", False)
+                _v6paint["pattern_paint_mode"] = zone.get("pattern_paint_mode", "overlay")
+                _v6paint["pattern_hue_shift"] = float(zone.get("pattern_hue_shift", 0))
+                _v6paint["pattern_saturation"] = float(zone.get("pattern_saturation", 0))
+                if _v6kw.get("pattern_strength_map") is not None: _v6paint["pattern_strength_map"] = _v6kw["pattern_strength_map"]  # BUGFIX 2026-10-04: Strength Map reaches the PAINT too (was spec-only; paint diff 0.000 before)
+                _v6paint["spec_mult"] = spec_mult
+                _v6paint["base_scale"] = zone_base_scale
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
+                if _z_sb or _v6kw.get("second_base_color_source") or float(_v6kw.get("second_base_strength") or 0) > 0.001: _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0); _v6paint["second_base_color_scale"] = _v6kw.get("second_base_color_scale", 1.0); _v6paint["second_base_color_strength"] = _v6kw.get("second_base_color_strength", 1.0); _v6paint["second_base_rotation"] = _v6kw.get("second_base_rotation", 0.0)
+                if _z_tb or _v6kw.get("third_base_color_source") or float(_v6kw.get("third_base_strength") or 0) > 0.001: _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0); _v6paint["third_base_color_scale"] = _v6kw.get("third_base_color_scale", 1.0); _v6paint["third_base_color_strength"] = _v6kw.get("third_base_color_strength", 1.0); _v6paint["third_base_rotation"] = _v6kw.get("third_base_rotation", 0.0)
+                if _z_fb or _v6kw.get("fourth_base_color_source") or float(_v6kw.get("fourth_base_strength") or 0) > 0.001: _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0); _v6paint["fourth_base_color_scale"] = _v6kw.get("fourth_base_color_scale", 1.0); _v6paint["fourth_base_color_strength"] = _v6kw.get("fourth_base_color_strength", 1.0); _v6paint["fourth_base_rotation"] = _v6kw.get("fourth_base_rotation", 0.0)
+                if _z_fif or _v6kw.get("fifth_base_color_source") or float(_v6kw.get("fifth_base_strength") or 0) > 0.001: _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0); _v6paint["fifth_base_color_scale"] = _v6kw.get("fifth_base_color_scale", 1.0); _v6paint["fifth_base_color_strength"] = _v6kw.get("fifth_base_color_strength", 1.0); _v6paint["fifth_base_rotation"] = _v6kw.get("fifth_base_rotation", 0.0)
+                for _ovp in ("second_base", "third_base", "fourth_base", "fifth_base"):
+                    if _ovp in _v6paint or _v6paint.get(_ovp + "_color_source"):
+                        _v6paint[_ovp + "_color_scale"] = _v6kw.get(_ovp + "_color_scale", 1.0)
+                        _v6paint[_ovp + "_spec_scale"] = _v6kw.get(_ovp + "_spec_scale", 1.0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
@@ -15121,7 +22463,7 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                     # Parallel: spec in background thread while paint mod runs in foreground
                     if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
                         _spec_ex = _shared_spec_pool
-                        _spec_fut = _spec_ex.submit(compose_finish_stacked, base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _spec_fut = _spec_ex.submit(compose_finish_stacked, base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=_compose_finish_base_scale_for_zone(zone, zone_base_scale), **_v6kw)
                         _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
                         if _paint_was_gpu: paint = to_cpu(paint)
                         paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
@@ -15131,7 +22473,7 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                     # Parallel: spec in background thread while paint mod runs in foreground
                     if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
                         _spec_ex = _shared_spec_pool
-                        _spec_fut = _spec_ex.submit(compose_finish, base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _spec_fut = _spec_ex.submit(compose_finish, base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=_compose_finish_base_scale_for_zone(zone, zone_base_scale), **_v6kw)
                         _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
                         if _paint_was_gpu: paint = to_cpu(paint)
                         paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
@@ -15143,35 +22485,113 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 scale_label = f" @{zone_scale:.1f}x" if zone_scale != 1.0 else ""
                 rot_label = f" rot{zone_rotation:.0f}°" if zone_rotation != 0 else ""
                 print(f"    [{name}] => {label} ({intensity}){scale_label}{rot_label}")
-                _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_color_fit_zone": _v6kw.get("base_color_fit_zone", False), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0)}
+                _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_color_fit_zone": _v6kw.get("base_color_fit_zone", False), "base_color_scale": _v6kw.get("base_color_scale", 1.0), "base_color_rotation": _v6kw.get("base_color_rotation", 0), "base_color_depth": _v6kw.get("base_color_depth"), "base_color_flip": _v6kw.get("base_color_flip", 0.0), "base_color_underglow": _v6kw.get("base_color_underglow", 0.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0)}
+                _v6paint["pattern_fit_zone"] = _v6kw.get("pattern_fit_zone", False)
+                _v6paint["pattern_paint_mode"] = zone.get("pattern_paint_mode", "overlay")
+                _v6paint["pattern_hue_shift"] = float(zone.get("pattern_hue_shift", 0))
+                _v6paint["pattern_saturation"] = float(zone.get("pattern_saturation", 0))
+                if _v6kw.get("pattern_strength_map") is not None: _v6paint["pattern_strength_map"] = _v6kw["pattern_strength_map"]  # BUGFIX 2026-10-04: Strength Map reaches the PAINT too (was spec-only; paint diff 0.000 before)
+                _v6paint["spec_mult"] = spec_mult
+                _v6paint["base_scale"] = zone_base_scale
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
+                if _z_sb or _v6kw.get("second_base_color_source") or float(_v6kw.get("second_base_strength") or 0) > 0.001: _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0); _v6paint["second_base_color_scale"] = _v6kw.get("second_base_color_scale", 1.0); _v6paint["second_base_color_strength"] = _v6kw.get("second_base_color_strength", 1.0); _v6paint["second_base_rotation"] = _v6kw.get("second_base_rotation", 0.0)
+                if _z_tb or _v6kw.get("third_base_color_source") or float(_v6kw.get("third_base_strength") or 0) > 0.001: _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0); _v6paint["third_base_color_scale"] = _v6kw.get("third_base_color_scale", 1.0); _v6paint["third_base_color_strength"] = _v6kw.get("third_base_color_strength", 1.0); _v6paint["third_base_rotation"] = _v6kw.get("third_base_rotation", 0.0)
+                if _z_fb or _v6kw.get("fourth_base_color_source") or float(_v6kw.get("fourth_base_strength") or 0) > 0.001: _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0); _v6paint["fourth_base_color_scale"] = _v6kw.get("fourth_base_color_scale", 1.0); _v6paint["fourth_base_color_strength"] = _v6kw.get("fourth_base_color_strength", 1.0); _v6paint["fourth_base_rotation"] = _v6kw.get("fourth_base_rotation", 0.0)
+                if _z_fif or _v6kw.get("fifth_base_color_source") or float(_v6kw.get("fifth_base_strength") or 0) > 0.001: _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0); _v6paint["fifth_base_color_scale"] = _v6kw.get("fifth_base_color_scale", 1.0); _v6paint["fifth_base_color_strength"] = _v6kw.get("fifth_base_color_strength", 1.0); _v6paint["fifth_base_rotation"] = _v6kw.get("fifth_base_rotation", 0.0)
+                for _ovp in ("second_base", "third_base", "fourth_base", "fifth_base"):
+                    if _ovp in _v6paint or _v6paint.get(_ovp + "_color_source"):
+                        _v6paint[_ovp + "_color_scale"] = _v6kw.get(_ovp + "_color_scale", 1.0)
+                        _v6paint[_ovp + "_spec_scale"] = _v6kw.get(_ovp + "_spec_scale", 1.0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
                 _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
                 _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
                 _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
-                # Parallel: spec in background thread while paint mod runs in foreground
-                if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
-                    _spec_ex = _shared_spec_pool
-                    _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
-                    _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
-                    if _paint_was_gpu: paint = to_cpu(paint)
-                    paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
-                    if _paint_was_gpu: paint = to_gpu(paint)
-                    zone_spec = _spec_fut.result()
-        elif finish_name and zone.get("finish_colors") and (
+                zone_spec = None
+                _bbox_skip_reason = _bbox_noise_fast_path_reject_reason(
+                    base_id, pattern_id, zone, zone_mask, _v6kw, _v6paint, has_zone_spec_source
+                )
+                _bbox_paint_skip_reason = _bbox_noise_fast_path_paint_reject_reason(
+                    base_id, pattern_id, zone, zone_mask, _v6kw, _v6paint, has_zone_spec_source
+                )
+                if _can_fast_path_flat_noop_base(base_id, pattern_id, zone, _v6kw, _v6paint, has_zone_spec_source):
+                    zone_spec = _compose_flat_noop_base_spec(base_id, shape, zone_mask)
+                elif _bbox_skip_reason is None or _is_spec_pattern_stack_only_reason(_bbox_skip_reason):
+                    _bbox_stack_spec_path = _is_spec_pattern_stack_only_reason(_bbox_skip_reason)
+                    if _bbox_stack_spec_path:
+                        zone_spec = _compose_bbox_finish_spec_stack(
+                            base_id, pattern_id, shape, zone_mask, seed + i * 13, sm,
+                            zone_scale, spec_mult, zone_rotation, _v6kw
+                        )
+                        _bbox_paint_skip_reason = _bbox_noise_fast_path_paint_reject_reason(
+                            base_id, pattern_id, _without_spec_pattern_stacks(zone), zone_mask,
+                            _without_spec_pattern_stacks(_v6kw), _v6paint, has_zone_spec_source
+                        )
+                    else:
+                        zone_spec = _compose_bbox_noise_base_spec(base_id, shape, zone_mask, seed + i * 13, sm)
+                    if zone_spec is not None:
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu:
+                            paint = to_cpu(paint)
+                        _fast_paint_label = "paint"
+                        if _bbox_paint_skip_reason is None:
+                            _fast_paint = _apply_bbox_base_paint(base_id, paint, shape, zone_mask, seed + i * 13, pm, bb)
+                        elif _can_fast_path_bbox_paint_controls(base_id, pattern_id, zone_mask, _v6paint, _bbox_paint_skip_reason):
+                            _fast_paint = _apply_bbox_compose_paint_mod(
+                                base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb,
+                                zone_scale, zone_rotation, _v6paint
+                            )
+                            _fast_paint_label = "paint controls"
+                        else:
+                            _fast_paint = None
+                        if _fast_paint is not None:
+                            paint = _fast_paint
+                            _fast_regions = _mask_active_regions(zone_mask) or []
+                            _fast_spec_label = "stacked-spec" if _bbox_stack_spec_path else "spec"
+                            print(f"    [{name}] visible-crop {_fast_spec_label}+{_fast_paint_label} fast path: {_mask_region_summary(zone_mask, _fast_regions)}")
+                            if _paint_was_gpu:
+                                paint = to_gpu(paint)
+                        else:
+                            if _bbox_paint_skip_reason is None:
+                                _bbox_paint_skip_reason = "crop paint application failed"
+                            _fast_regions = _mask_active_regions(zone_mask) or []
+                            _fast_spec_label = "stacked-spec" if _bbox_stack_spec_path else "spec"
+                            print(f"    [{name}] visible-crop {_fast_spec_label} fast path: {_mask_region_summary(zone_mask, _fast_regions)}; paint full path: {_bbox_paint_skip_reason}")
+                            paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                            if _paint_was_gpu:
+                                paint = to_gpu(paint)
+                else:
+                    _log_bbox_fast_path_skip(name, base_id, zone_mask, _bbox_skip_reason)
+                if zone_spec is None:
+                    # Parallel: spec in background thread while paint mod runs in foreground
+                    if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
+                        _spec_ex = _shared_spec_pool
+                        _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=_compose_finish_base_scale_for_zone(zone, zone_base_scale), **_v6kw)
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu: paint = to_cpu(paint)
+                        paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                        if _paint_was_gpu: paint = to_gpu(paint)
+                        zone_spec = _spec_fut.result()
+        elif finish_name and zone.get("finish_colors") and finish_name not in MONOLITHIC_REGISTRY and (
             finish_name.startswith("grad_") or finish_name.startswith("gradm_")
             or finish_name.startswith("grad3_") or finish_name.startswith("ghostg_")
             or finish_name.startswith("mc_")
         ):
-            zone_rotation = float(zone.get("rotation", 0))
-            zone_spec, paint = render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed + i * 13, sm, pm, bb, rotation=zone_rotation)
+            # SPB-GRADIENT-OVERHAUL-2026-08-23 / G-4: authored registry recipes win;
+            # this path remains the fallback for unregistered/custom client gradients.
+            _base_ctrl = _zone_base_transform_values(zone)
+            zone_rotation = _base_ctrl["rotation"]
+            zone_base_scale = _base_ctrl["scale"]
+            zone_spec, paint = render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed + i * 13, sm, pm, bb, rotation=zone_rotation, base_scale=zone_base_scale, base_offset_x=_base_ctrl["offset_x"], base_offset_y=_base_ctrl["offset_y"], base_flip_h=_base_ctrl["flip_h"], base_flip_v=_base_ctrl["flip_v"])
             if zone_spec is not None: zone_spec = _sanitize_spec_result(zone_spec, shape)
+            if zone_spec is not None:
+                zone_spec = _apply_base_spec_strength_to_zone_spec(
+                    zone_spec,
+                    zone.get("base_spec_strength", 1.0),
+                    shape,
+                    context=f"generic finish '{finish_name}' spec strength",
+                )
             if paint is not None: paint = _sanitize_paint_result(paint, shape)
             if zone_spec is None:
                 continue
@@ -15180,35 +22600,165 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 mono_scale = float(zone.get("scale", 1.0))
                 mono_opacity = float(zone.get("pattern_opacity", 1.0))
                 mono_rotation = float(zone.get("rotation", 0))
-                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult, rotation=mono_rotation)
-                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation)
+                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult, rotation=mono_rotation, blend_mode=zone.get("base_spec_blend_mode", "normal"), zone=zone)
+                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation, zone=zone)
         elif finish_name and finish_name in MONOLITHIC_REGISTRY:
             spec_fn, paint_fn = MONOLITHIC_REGISTRY[finish_name]
             mono_pat = zone.get("pattern", "none")
-            mono_base_scale = float(zone.get("base_scale", 1.0))
+            _base_ctrl = _zone_base_transform_values(zone)
+            mono_base_scale = _base_ctrl["scale"]
             pat_label = f" + {mono_pat}" if mono_pat and mono_pat != "none" else ""
             print(f"    [{name}] => {finish_name}{pat_label} ({intensity}) [monolithic]")
 
             _mono_base_strength = max(0.0, min(2.0, float(zone.get("base_strength", 1.0))))
             _mono_spec_strength = max(0.0, min(2.0, float(zone.get("base_spec_strength", 1.0))))
-            _sm_eff = sm * _mono_base_strength * _mono_spec_strength
-            _pm_eff = pm * _mono_base_strength
-            _bb_eff = bb * _mono_base_strength
-            # --- BASE SCALE for monolithics: generate at smaller dims, tile to fill ---
-            if mono_base_scale != 1.0 and mono_base_scale > 0:
-                MAX_MONO_DIM = 4096
-                tile_h = min(MAX_MONO_DIM, max(4, int(shape[0] / mono_base_scale)))
-                tile_w = min(MAX_MONO_DIM, max(4, int(shape[1] / mono_base_scale)))
-                tile_shape = (tile_h, tile_w)
-                tile_mask = np.ones((tile_h, tile_w), dtype=np.float32)
-                tile_spec = _sanitize_spec_result(spec_fn(tile_shape, tile_mask, seed + i * 13, _sm_eff), tile_shape)
-                reps_h = int(np.ceil(shape[0] / tile_h))
-                reps_w = int(np.ceil(shape[1] / tile_w))
-                zone_spec = np.tile(tile_spec, (reps_h, reps_w, 1))[:shape[0], :shape[1], :]
-                paint = paint_fn(paint, shape, zone_mask, seed + i * 13, _pm_eff, _bb_eff)
-            else:
-                zone_spec = spec_fn(shape, zone_mask, seed + i * 13, _sm_eff)
-                paint = paint_fn(paint, shape, zone_mask, seed + i * 13, _pm_eff, _bb_eff)
+            # [SPB authored-spec verbatim 2026-06-10] SHOKK DROP authored_set specs must render the
+            # EXACT uploaded channels — base_spec_strength must NOT scale them. It was boosting the
+            # bjeans roughness channel 136 -> 238/255 (the guest's "much brighter green"). This is the
+            # same fix already in the primary monolithic block (~17797); these duplicate render paths
+            # (preview / car / garage) never got it, so the boost persisted on whichever view he used.
+            _mono_is_authored = False
+            try:
+                from engine.paint_v2 import user_imports as _spb_ui
+                _mono_is_authored = bool(_spb_ui.is_authored_spec(finish_name))
+            except Exception:
+                _mono_is_authored = False
+            _sm_eff = 1.0 if _mono_is_authored else (sm * _mono_spec_strength)
+            _mono_render_boost = max(1.0, _mono_base_strength)
+            # [SPB MONO-PAINT-STRENGTH 2026-08-30] Same fix as the primary monolithic
+            # block: the INTENSITY preset must not scale the finish's paint at render
+            # time, or a zone left at a low intensity renders every material picked
+            # into it with no colour. BASE STRENGTH is the single paint blend.
+            _pm_eff = _mono_render_boost
+            _bb_eff = bb * _mono_render_boost
+            _mono_paint_before = (
+                to_cpu(paint).copy()
+                if is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                else np.asarray(paint).copy()
+            )
+            _mono_underpaint = _monolithic_underpaint_from_zone(
+                _mono_paint_before, zone, shape, zone_mask, seed + i * 13
+            )
+            _mono_render_mask = zone_mask
+            from engine.paint_v2.placement_context import clear_zone_placement, set_zone_placement
+
+            _pl_common = {
+                "offset_x": _base_ctrl["offset_x"],
+                "offset_y": _base_ctrl["offset_y"],
+                "rotation": _base_ctrl["rotation"],
+                "flip_h": _base_ctrl["flip_h"],
+                "flip_v": _base_ctrl["flip_v"],
+            }
+            _spec_ctrl = _zone_spec_transform_values(zone)
+            try:
+                set_zone_placement(
+                    scale=_spec_ctrl["scale"],
+                    offset_x=_spec_ctrl["offset_x"],
+                    offset_y=_spec_ctrl["offset_y"],
+                    rotation=_spec_ctrl["rotation"],
+                    flip_h=_spec_ctrl["flip_h"],
+                    flip_v=_spec_ctrl["flip_v"],
+                )
+                zone_spec = _sanitize_spec_result(
+                    spec_fn(shape, _mono_render_mask, seed + i * 13, _sm_eff),
+                    shape,
+                    strict_shapes=True,
+                    context=f"monolithic finish '{finish_name}'",
+                )
+                if not _mono_is_authored:
+                    zone_spec = _apply_base_spec_strength_to_zone_spec(
+                        zone_spec,
+                        _mono_spec_strength,
+                        shape,
+                        context=f"monolithic finish '{finish_name}' spec strength",
+                    )
+                set_zone_placement(scale=mono_base_scale, **_pl_common)
+                paint = paint_fn(_mono_underpaint, shape, _mono_render_mask, seed + i * 13, _pm_eff, _bb_eff)
+                paint = _sanitize_paint_result(paint, shape, backup=_mono_paint_before)
+            except Exception:
+                clear_zone_placement()
+                raise
+            clear_zone_placement()
+            # SPB-BASECOLOR-2026-06-02: explicit base-color override must replace a
+            # monolithic finish's own paint color while keeping its spec (see the
+            # detailed note on the car path in build_multi_zone). Same fix for the
+            # helmet/suit monolithic paths.
+            _mono_bc_mode = str(zone.get("base_color_mode", "source") or "source").strip().lower()
+            # [SPB SOURCE-MODE PARITY 2026-08-15 — owner: "if I click Use Source Paint for BASE
+            # COLOR it should use the SOURCE PAINT of the car. NOT the SOURCE PAINT of the BASE
+            # MATERIAL... when you ONLY want to apply the BASE MATERIAL of the spec and keep the
+            # EXACT source paint otherwise. This is for ALL categories."]
+            #
+            # The 2026-07-08 lock (compose.py _source_paint_lock) only ever covered
+            # compose_paint_mod — the regular base+pattern path. Anything in
+            # MONOLITHIC_REGISTRY (846 finishes) is routed to THIS branch by the
+            # `finish or base` resolve at ~line 1414 and never reaches that lock, so source
+            # mode fell straight through the `not in (...)` test below and the finish's own
+            # paint survived. Repro that proved it: fs_core_aurum (gold) over a 4-hue source
+            # dragged blue 0.630->0.106 and green 0.375->0.171 with base_color_mode='source',
+            # byte-identical to base_color_mode='special'. The old guard test could not see it
+            # because it only used 'gloss'/'ghost_graphic', which DO resolve to the base path.
+            #
+            # SOURCE MODE = SPEC ONLY. zone_spec is deliberately untouched; strength 0.0 makes
+            # the existing blend helper return the pre-monolithic paint (alpha = mask*0 = 0 =>
+            # out == under), so the car's paint is restored without new blend math. HSB still
+            # runs after this and adjusts the SOURCE colors, matching compose.py's behaviour.
+            # Guard: tests/regression_source_mode_keeps_colors_test.py::*monolithic*
+            # [SPB MONO-COLOUR DEFAULT 2026-08-30 — owner: "there's a LOT of finishes
+            # that at 100% base strength ... the COLOR is not showing up for the BASE
+            # MATERIAL at all"]. SOURCE mode discarding the monolithic's paint is
+            # correct and deliberate (2026-08-15 parity work, guarded by
+            # tests/regression_source_mode_keeps_colors_test.py) — but it was also the
+            # DEFAULT for every new zone, so all 846 monolithics rendered spec-only
+            # unless the user changed the Base Color dropdown. "finish" is the new
+            # default: the material keeps its OWN colour, and "Use source paint" still
+            # does exactly what was asked for in August when it is chosen explicitly.
+            # A zone only means "spec only" if the user actually CHOSE source mode.
+            # Every zone saved before 2026-08-30 carries 'source' as an inherited
+            # default it never asked for, which is why the owner saw the colour
+            # missing on finish after finish. Without the explicit flag, an
+            # unchosen 'source' keeps the material's own colour.
+            if not bool(zone.get("base_color_explicit", False)) and _mono_bc_mode in ("", "source", "none"):
+                _mono_bc_mode = "finish"
+            if _mono_bc_mode in ("finish", "own"):
+                pass
+            elif _mono_bc_mode in ("", "source", "none"):
+                paint = _blend_monolithic_base_strength(
+                    _mono_paint_before, paint, zone_mask, 0.0
+                )
+            if _mono_bc_mode not in ("", "source", "none", "finish", "own"):
+                _mono_bc_src = zone.get("base_color_source")
+                _mono_same_finish = (
+                    isinstance(_mono_bc_src, str)
+                    and _mono_bc_src.startswith("mono:")
+                    and _mono_bc_src[5:] == finish_name
+                )
+                if not _mono_same_finish:
+                    _mono_bc_val = zone.get("base_color", [1.0, 1.0, 1.0])
+                    if _mono_bc_mode == "gradient" and zone.get("gradient_stops"):
+                        _mono_bc_val = {
+                            "stops": zone.get("gradient_stops"),
+                            "direction": zone.get("gradient_direction", "horizontal"),
+                        }
+                    try:
+                        paint = _apply_base_color_override(
+                            paint, shape, np.asarray(zone_mask, dtype=np.float32),
+                            seed + i * 13, _mono_bc_mode, _mono_bc_val, _mono_bc_src,
+                            max(0.0, min(1.0, float(zone.get("base_color_strength", 1.0)))),
+                            MONOLITHIC_REGISTRY,
+                            fit_to_bbox=bool(zone.get("base_color_fit_zone", False)),
+                            base_scale=_zone_monolithic_color_source_scale(zone, _base_ctrl),
+                            base_offset_x=_base_ctrl["offset_x"],
+                            base_offset_y=_base_ctrl["offset_y"],
+                            base_rotation=_base_ctrl["rotation"],
+                            base_flip_h=_base_ctrl["flip_h"],
+                            base_flip_v=_base_ctrl["flip_v"],
+                            base_color_depth=(None if zone.get("base_color_depth") is None else float(zone.get("base_color_depth"))),
+                            base_color_flip=float(zone.get("base_color_flip", 0) or 0),
+                            base_color_underglow=float(zone.get("base_color_underglow", 0) or 0),
+                        )
+                    except Exception as _mono_bc_err:
+                        logger.warning(f"    [{name}] monolithic base-color override failed: {_mono_bc_err}")
 
             # Apply HSB adjustments to monolithic paint (same as base+pattern path)
             _mono_hue = float(zone.get("base_hue_offset", 0))
@@ -15217,12 +22767,16 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
             if abs(_mono_hue) >= 0.5 or abs(_mono_sat) >= 0.5 or abs(_mono_bri) >= 0.5:
                 paint = _apply_hsb_adjustments(paint, zone_mask, _mono_hue, _mono_sat, _mono_bri)
 
+            paint = _blend_monolithic_base_strength(
+                _mono_paint_before, paint, zone_mask, _mono_base_strength
+            )
+
             if mono_pat and mono_pat != "none" and mono_pat in PATTERN_REGISTRY:
                 mono_scale = float(zone.get("scale", 1.0))
                 mono_opacity = float(zone.get("pattern_opacity", 1.0))
                 mono_rotation = float(zone.get("rotation", 0))
-                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult, rotation=mono_rotation)
-                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation)
+                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult, rotation=mono_rotation, blend_mode=zone.get("base_spec_blend_mode", "normal"), zone=zone)
+                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation, zone=zone)
         elif finish_name and finish_name in FINISH_REGISTRY:
             spec_fn, paint_fn = FINISH_REGISTRY[finish_name]
             print(f"    [{name}] => {finish_name} ({intensity}) [legacy]")
@@ -15230,8 +22784,10 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
             paint = paint_fn(paint, shape, zone_mask, seed + i * 13, pm, bb)
         elif finish_name and zone.get("finish_colors"):
             # PATH 4: GENERIC FALLBACK - client-defined finish with color data
-            zone_rotation = float(zone.get("rotation", 0))
-            zone_spec, paint = render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed + i * 13, sm, pm, bb, rotation=zone_rotation)
+            _base_ctrl = _zone_base_transform_values(zone)
+            zone_rotation = _base_ctrl["rotation"]
+            zone_base_scale = _base_ctrl["scale"]
+            zone_spec, paint = render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed + i * 13, sm, pm, bb, rotation=zone_rotation, base_scale=zone_base_scale, base_offset_x=_base_ctrl["offset_x"], base_offset_y=_base_ctrl["offset_y"], base_flip_h=_base_ctrl["flip_h"], base_flip_v=_base_ctrl["flip_v"])
             if zone_spec is not None: zone_spec = _sanitize_spec_result(zone_spec, shape)
             if paint is not None: paint = _sanitize_paint_result(paint, shape)
             if zone_spec is None:
@@ -15241,14 +22797,20 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 mono_scale = float(zone.get("scale", 1.0))
                 mono_opacity = float(zone.get("pattern_opacity", 1.0))
                 mono_rotation = float(zone.get("rotation", 0))
-                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult if 'spec_mult' in dir() else 1.0, rotation=mono_rotation)
-                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation)
+                zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult if 'spec_mult' in dir() else 1.0, rotation=mono_rotation, blend_mode=zone.get("base_spec_blend_mode", "normal"), zone=zone)
+                paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation, zone=zone)
         else:
             continue
 
+        from engine.pattern_material import apply_zone_pattern_spec
+        zone_spec = apply_zone_pattern_spec(zone_spec, zone, shape, zone_mask, seed+i*13)
+
+        from engine.pattern_material import has_pattern_spec
+        if has_pattern_spec(zone):
+            _pattern_spec_preserve |= (np.asarray(zone_mask) > .05)
         claimed = np.clip(claimed + zone_mask, 0, 1)
         if is_gpu():
-            _zs_g = to_gpu(zone_spec.astype(np.float32))
+            _zs_g = to_gpu(zone_spec.astype(np.float32, copy=False))
             _m3d_g = to_gpu(zone_mask[:,:,np.newaxis])
             _cs_g = to_gpu(combined_spec)
             soft = _m3d_g > 0.05
@@ -15257,26 +22819,27 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
         else:
             mask3d = zone_mask[:,:,np.newaxis]
             soft = mask3d > 0.05
+            zone_spec_f = zone_spec.astype(np.float32, copy=False)
             blended = np.clip(
-                zone_spec.astype(np.float32) * mask3d +
+                zone_spec_f * mask3d +
                 combined_spec * (1 - mask3d),
                 0, 255
             )
             combined_spec = np.where(soft, blended, combined_spec)
 
     # Enforce PBR floors + convert to uint8 for suit spec output
-    combined_spec[:,:,1] = np.where(combined_spec[:,:,0] < 240, np.maximum(combined_spec[:,:,1], 15), combined_spec[:,:,1])
-    combined_spec[:,:,2] = np.maximum(combined_spec[:,:,2], 16)
+    combined_spec[:,:,1] = np.where((combined_spec[:,:,0] < 240) & ~_pattern_spec_preserve, np.maximum(combined_spec[:,:,1], 15), combined_spec[:,:,1])
+    combined_spec[:,:,2] = np.where(_pattern_spec_preserve, combined_spec[:,:,2], np.maximum(combined_spec[:,:,2], 16))
     combined_spec_u8 = np.clip(combined_spec, 0, 255).astype(np.uint8)
     os.makedirs(output_dir, exist_ok=True)
     spec_path = os.path.join(output_dir, f"suit_spec_{iracing_id}.tga")
     write_tga_32bit(spec_path, combined_spec_u8)
-    Image.fromarray(combined_spec_u8).save(os.path.join(output_dir, "PREVIEW_suit_spec.png"))
+    _save_preview_png(combined_spec_u8, os.path.join(output_dir, "PREVIEW_suit_spec.png"))
 
     suit_paint = (np.clip(paint, 0, 1) * 255).astype(np.uint8)
     paint_path = os.path.join(output_dir, f"suit_{iracing_id}.tga")
     write_tga_24bit(paint_path, suit_paint)
-    Image.fromarray(suit_paint).save(os.path.join(output_dir, "PREVIEW_suit_paint.png"))
+    _save_preview_png(suit_paint, os.path.join(output_dir, "PREVIEW_suit_paint.png"))
 
     elapsed = time.time() - start_time
     print(f"\n  Suit done in {elapsed:.1f}s!")
@@ -15322,7 +22885,7 @@ def build_matching_set(car_paint_file, output_dir, zones, iracing_id="23371", se
     Side effects:
         Writes car/helmet/suit TGAs and PREVIEW_*.png files into output_dir.
     """
-    _validate_zones(zones)
+    _validate_zones(zones, allow_empty=bool(import_spec_map))
     _validate_paint_file(car_paint_file)
     seed = _coerce_seed(seed)
     logger.info(f"\n{'='*60}")
@@ -15443,10 +23006,16 @@ def apply_wear(spec_map, paint_rgb, wear_level, seed=51):
     cc_noise = multi_scale_noise(shape, [8, 16, 32, 64], [0.15, 0.25, 0.35, 0.25], seed + 888)
     cc_damage = np.clip(np.abs(cc_noise) * 2, 0, 1) * w_frac
 
-    # Only degrade where clearcoat exists (B channel > 0)
+    # BUGFIX 2026-10-04 (encyclopedia pass, "apply_wear makes matte glossy"): the old code
+    # SUBTRACTED damage and clipped B to [0,16]. B 16 = MAX gloss, 255 = dull (iron rule CC>=16),
+    # so ANY wear>0 crushed every coat to 16: a matte (B~160) or satin (B~70) car came back
+    # mirror-clearcoated. Measured before: matte B_mean 153 -> 16.0 at wear 50 and 100.
+    # Worn clearcoat is DULLER: raise B in proportion to damage, clip [16,255]. Roughness,
+    # metallic, chips and edge wear are unchanged. (Owner verdict pending; stats in
+    # docs/handoff_reports/BUGFIX_2026-10-04.md.)
     current_cc = spec[:,:,2].astype(np.float32)
-    cc_reduction = cc_damage * 16  # up to 16 units lost
-    spec[:,:,2] = np.clip(current_cc - cc_reduction, 0, 16).astype(np.uint8)
+    cc_dulling = cc_damage * 140.0  # up to +140 B at full local damage and wear 100
+    spec[:,:,2] = np.clip(current_cc + cc_dulling, 16, 255)
 
     # 3. Paint fading/chips in damaged areas
     if w_frac > 0.2:
@@ -15476,8 +23045,8 @@ def apply_wear(spec_map, paint_rgb, wear_level, seed=51):
         spec[:,:,1] = np.clip(spec[:,:,1] + edge_wear * 80, 0, 255)
         # Extra metallic loss at edges
         spec[:,:,0] = np.clip(spec[:,:,0] - edge_wear * 40, 0, 255)
-        # Extra CC loss at edges
-        spec[:,:,2] = np.clip(spec[:,:,2].astype(np.float32) - edge_wear * 10, 16, 255)  # CC≥16
+        # Extra CC loss at edges = extra DULLING (B up; was "- edge_wear*10" = glossier edges).
+        spec[:,:,2] = np.clip(spec[:,:,2].astype(np.float32) + edge_wear * 60, 16, 255)  # CC≥16
 
     # Enforce iron rules centrally (CC>=CC_FLOOR, R>=ROUGHNESS_FLOOR_NONMIRROR
     # for non-mirror pixels). Single source of truth for PBR safety.
@@ -15511,9 +23080,10 @@ def build_export_package(output_dir, iracing_id="23371", car_folder_name=None,
         output_dir: Directory holding car_num_*.tga + car_spec_*.tga (etc.).
         iracing_id: iRacing customer ID.
         car_folder_name: Display name for README; defaults to ``"unknown"``.
-        include_helmet: Reserved (currently unused; helmet is included if its
-            TGA is present in ``output_dir``).
-        include_suit: Reserved (same).
+        include_helmet: Include helmet instructions only when helmet output is
+            intentionally generated and present in ``output_dir``.
+        include_suit: Include suit instructions only when suit output is
+            intentionally generated and present in ``output_dir``.
         wear_level: 0..100 — recorded into config.json for replay.
         zones_config: List of JSON-serializable zone dicts. None to skip.
 
@@ -15544,6 +23114,14 @@ def build_export_package(output_dir, iracing_id="23371", car_folder_name=None,
 
     # Create README
     readme_path = os.path.join(output_dir, "README.txt")
+    helmet_line = (
+        f"helmet_spec_{iracing_id}.tga => Helmet spec (copy to iRacing paint folder)\n"
+        if include_helmet else ""
+    )
+    suit_line = (
+        f"suit_spec_{iracing_id}.tga   => Suit spec (copy to iRacing paint folder)\n"
+        if include_suit else ""
+    )
     readme = f"""{ENGINE_DISPLAY_NAME} - Export Package
 ========================================
 iRacing ID: {iracing_id}
@@ -15556,8 +23134,7 @@ FILE GUIDE:
 -----------
 car_num_{iracing_id}.tga     => Paint file (copy to iRacing paint folder)
 car_spec_{iracing_id}.tga    => Spec map (copy to iRacing paint folder)
-helmet_spec_{iracing_id}.tga => Helmet spec (copy to iRacing paint folder)
-suit_spec_{iracing_id}.tga   => Suit spec (copy to iRacing paint folder)
+{helmet_line}{suit_line}\
 PREVIEW_*.png                => Preview images for reference
 shokker_config.json          => Re-import this in Paint Booth to reload
 
@@ -15768,7 +23345,7 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
         Writes TGAs, PNG previews, optional shokker_config.json + README.txt,
         and optional ZIP into ``output_dir``.
     """
-    _validate_zones(zones)
+    _validate_zones(zones, allow_empty=bool(import_spec_map))
     seed = _coerce_seed(seed)
     logger.info(f"\n{'*'*60}")
     logger.info(f"  {ENGINE_DISPLAY_NAME} - FULL RENDER PIPELINE")
@@ -15807,8 +23384,8 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
         # Overwrite files
         write_tga_24bit(os.path.join(output_dir, f"car_num_{iracing_id}.tga"), car_paint_worn)
         write_tga_32bit(os.path.join(output_dir, f"car_spec_{iracing_id}.tga"), car_spec_worn)
-        Image.fromarray(car_paint_worn).save(os.path.join(output_dir, "PREVIEW_paint.png"))
-        Image.fromarray(car_spec_worn).save(os.path.join(output_dir, "PREVIEW_spec.png"))
+        _save_preview_png(car_paint_worn, os.path.join(output_dir, "PREVIEW_paint.png"))
+        _save_preview_png(car_spec_worn, os.path.join(output_dir, "PREVIEW_spec.png"))
         results["car_paint"] = car_paint_worn
         results["car_spec"] = car_spec_worn
 
@@ -15821,7 +23398,7 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
                 h_spec_worn, h_paint_worn = apply_wear(
                     results["helmet_spec"], h_paint, helmet_wear, seed + 1)
                 write_tga_32bit(os.path.join(output_dir, f"helmet_spec_{iracing_id}.tga"), h_spec_worn)
-                Image.fromarray(h_spec_worn).save(os.path.join(output_dir, "PREVIEW_helmet_spec.png"))
+                _save_preview_png(h_spec_worn, os.path.join(output_dir, "PREVIEW_helmet_spec.png"))
                 results["helmet_spec"] = h_spec_worn
 
         # Wear on suit (much lighter - suits are fabric)
@@ -15833,7 +23410,7 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
                 s_spec_worn, s_paint_worn = apply_wear(
                     results["suit_spec"], s_paint, suit_wear, seed + 2)
                 write_tga_32bit(os.path.join(output_dir, f"suit_spec_{iracing_id}.tga"), s_spec_worn)
-                Image.fromarray(s_spec_worn).save(os.path.join(output_dir, "PREVIEW_suit_spec.png"))
+                _save_preview_png(s_spec_worn, os.path.join(output_dir, "PREVIEW_suit_spec.png"))
                 results["suit_spec"] = s_spec_worn
 
         print(f"  Wear applied: car={wear_level}, helmet={max(0,wear_level-20)}, suit={max(0,wear_level-40)}")
@@ -15846,21 +23423,21 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
         # Night car spec
         night_car = generate_night_variant(results["car_spec"], night_boost)
         write_tga_32bit(os.path.join(output_dir, f"car_spec_night_{iracing_id}.tga"), night_car)
-        Image.fromarray(night_car).save(os.path.join(output_dir, "PREVIEW_spec_night.png"))
+        _save_preview_png(night_car, os.path.join(output_dir, "PREVIEW_spec_night.png"))
         results["car_spec_night"] = night_car
 
         # Night helmet spec
         if "helmet_spec" in results:
             night_helmet = generate_night_variant(results["helmet_spec"], night_boost)
             write_tga_32bit(os.path.join(output_dir, f"helmet_spec_night_{iracing_id}.tga"), night_helmet)
-            Image.fromarray(night_helmet).save(os.path.join(output_dir, "PREVIEW_helmet_spec_night.png"))
+            _save_preview_png(night_helmet, os.path.join(output_dir, "PREVIEW_helmet_spec_night.png"))
             results["helmet_spec_night"] = night_helmet
 
         # Night suit spec
         if "suit_spec" in results:
             night_suit = generate_night_variant(results["suit_spec"], night_boost)
             write_tga_32bit(os.path.join(output_dir, f"suit_spec_night_{iracing_id}.tga"), night_suit)
-            Image.fromarray(night_suit).save(os.path.join(output_dir, "PREVIEW_suit_spec_night.png"))
+            _save_preview_png(night_suit, os.path.join(output_dir, "PREVIEW_suit_spec_night.png"))
             results["suit_spec_night"] = night_suit
 
         print(f"  Night variants generated: car{' + helmet' if 'helmet_spec' in results else ''}{' + suit' if 'suit_spec' in results else ''}")
@@ -15911,6 +23488,121 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
 # Verifies: imports, registries populated, helpers return sane shapes.
 # Does NOT touch the filesystem or run a full render.
 # ================================================================
+# ================================================================
+# FOUNDATION ONE (owner 2026-09-03) -- DEAD-LAST base id alias pass.
+# Retired Foundation / Enhanced / EFX-mashup ids resolve to their surviving
+# cell so saved projects keep rendering. Must run after every registry rewrite
+# above (the Regular Base Quality wrap replaces entry dicts).
+# ================================================================
+try:
+    from engine.base_registry_data import apply_base_id_aliases as _spb_apply_base_aliases
+    from engine.base_registry_data import apply_foundation_cells as _spb_apply_foundation_cells
+    # FOUNDATION EFX shelf (Phase B): this module keeps private copies of a few classic ids
+    # (chalky_base among them) that the data-file merge never overrides, so the textured
+    # renderers are installed here as well, dead-last. Never touches efx_holographic_drift.
+    try:
+        from engine.paint_v2.foundation_efx_2026 import install as _spb_install_efx
+        _spb_efx_n = _spb_install_efx(BASE_REGISTRY)
+        print(f"  [FOUNDATION EFX] {_spb_efx_n} textured foundation(s) installed")
+    except Exception as _spb_efx_exc:
+        print(f"  [FOUNDATION EFX] install skipped: {_spb_efx_exc}")
+    # The 20 BASES cells: engine/base_registry_data.py is the single source of truth for
+    # their M/R/CC (this module used to carry stale private copies of 7 of them).
+    _spb_cells_n = _spb_apply_foundation_cells(BASE_REGISTRY, _spec_foundation_flat)
+    if _spb_cells_n:
+        print(f"  [FOUNDATION ONE] {_spb_cells_n} BASES cell(s) synced from base_registry_data")
+    _spb_alias_n = _spb_apply_base_aliases(BASE_REGISTRY)
+    if _spb_alias_n:
+        print(f"  [FOUNDATION ONE] {_spb_alias_n} retired base id(s) aliased to survivors")
+    # [FOUNDATION PURE 2026-09-30] Dead-last: pin every BASES cell to a PURE three-channel
+    # constant spec (M/R/CC, no texture). The 2026-09-04 version of this hook added orange
+    # peel + grain; owner 2026-09-30: "The REGULAR foundations SHOULD BE PURE."
+    try:
+        from engine.base_registry_data import _upgrade_foundation_material_spec as _spb_fnd_mat
+        _spb_fnd_mat(BASE_REGISTRY)
+    except Exception as _spb_fnd_exc:
+        print(f"  [Foundation Material Spec] re-apply skipped: {_spb_fnd_exc}")
+
+    # [WRAP SHOP 2026-09-04] The catalog had no vinyl-wrap material language at all
+    # (0 wrap finishes; f_vinyl_wrap was a stub aliased to satin). These 19 modulate
+    # the painter's OWN paint rather than replacing it, so a painter can wrap the
+    # scheme they already have. Each look was chosen by scripts/spb_variant_search.py
+    # out of 10 scored candidates; winners in engine/paint_v2/wrap_shop_2026_params.json.
+    try:
+        from engine.paint_v2.wrap_shop_2026 import install as _wrap_install
+        print(f"  [Wrap Shop] {_wrap_install(BASE_REGISTRY)} wrap finishes installed")
+    except Exception as _wrap_exc:
+        print(f"  [Wrap Shop] install skipped: {_wrap_exc}")
+
+    # [FLAW LAB 2026-09-04] Non-destructive testing / inspection imaging. Chosen by
+    # measurement: scanning all 4010 base finishes across 20 candidate domains, NDT
+    # returned ONE hit (a false positive), against 159 for ice and 79 for lattice.
+    # 25 techniques, each its own physics and its own spec grammar.
+    try:
+        from engine.paint_v2.flaw_lab_2026 import install as _flaw_install
+        print(f"  [Flaw Lab] {_flaw_install(BASE_REGISTRY)} inspection finishes installed")
+        from engine.paint_v2.flaw_lab_rebuild_2026 import register as _flaw_r1
+        _flaw_r1(BASE_REGISTRY)
+    except Exception as _flaw_exc:
+        print(f"  [Flaw Lab] install skipped: {_flaw_exc}")
+
+    # [THE BOOTH 2026-09-04] Paint-shop defects. The app's own subject matter, and
+    # the emptiest domain in the catalog: exact-term search across 4035 finishes
+    # returned ZERO for fisheye, die-back, sanding-scratch telegraph and buffing
+    # holograms. Every finish MODULATES the painter's colour - a defect happens TO
+    # their paint, it does not replace it.
+    try:
+        from engine.paint_v2.the_booth_2026 import install as _booth_install
+        print(f"  [The Booth] {_booth_install(BASE_REGISTRY)} defect finishes installed")
+    except Exception as _booth_exc:
+        print(f"  [The Booth] install skipped: {_booth_exc}")
+
+    # [MULE 2026-09-04] Automotive prototype disguise - deliberately NOT military
+    # camouflage, which the catalog already holds (woodland, MARPAT, DPM, Kryptek,
+    # dazzle). The subject here is defeating a CAMERA and an EYE.
+    try:
+        from engine.paint_v2.mule_2026 import install as _mule_install
+        print(f"  [Mule] {_mule_install(BASE_REGISTRY)} disguise finishes installed")
+    except Exception as _mule_exc:
+        print(f"  [Mule] install skipped: {_mule_exc}")
+
+    # [LIGHTNING SHOKK 2026-09-04] Sixteen DISCHARGE MORPHOLOGIES. The catalog holds
+    # 59 lightning-named and 205 electric-named finishes but only 5 that are actually
+    # a branching discharge STRUCTURE - the rest are electric-coloured, not
+    # electric-shaped. Every finish here is a field of discharge, never a hero bolt.
+    try:
+        from engine.paint_v2.lightning_shokk_2026 import install as _lsk_install
+        print(f"  [Lightning Shokk] {_lsk_install(BASE_REGISTRY)} discharge finishes installed")
+    except Exception as _lsk_exc:
+        print(f"  [Lightning Shokk] install skipped: {_lsk_exc}")
+
+    # [SLITHERIN 2026-09-04] Sixteen snakes by SCALE ARCHITECTURE - keeled vs smooth,
+    # overlapping cycloid vs non-overlapping granular, wide ventral scutes vs
+    # stretched hood lozenges. The catalog already held 84 snake-named and 30
+    # reptile-scale finishes, so a generic scaly pattern would have failed outright;
+    # what earns these their place is that the scale FIELD itself differs in each.
+    try:
+        from engine.paint_v2.slitherin_2026 import install as _slt_install
+        print(f"  [Slitherin] {_slt_install(BASE_REGISTRY)} snake finishes installed")
+    except Exception as _slt_exc:
+        print(f"  [Slitherin] install skipped: {_slt_exc}")
+    # SPB-105 / SHOKK WORKS 2026-09-30: selected native constructions, no quality wrapper.
+    from engine.paint_v2.core_works_2026 import install as _core_works_install
+    _core_works_install(BASE_REGISTRY)
+    # The legacy hooks above can mutate entries shared by a shallow registry
+    # merge. Reapply to the already-loaded compose bank as well (import-order
+    # safe); actual 2048 proof caught the old carrier surviving in that bank.
+    import sys as _core_works_sys
+    _core_works_compose_bank = getattr(_core_works_sys.modules.get('engine.registry'), 'BASE_REGISTRY', None)
+    if isinstance(_core_works_compose_bank, dict) and _core_works_compose_bank is not BASE_REGISTRY:
+        _core_works_install(_core_works_compose_bank)
+    # SPB-105 / ASTRA A1: full-render registry and V5 picker must agree.
+    from engine.expansions.astra import install as _astra_install
+    _astra_install(BASE_REGISTRY)
+except Exception as _spb_alias_exc:
+    print(f"  [FOUNDATION ONE] alias pass skipped: {_spb_alias_exc}")
+
+
 if __name__ == '__main__':
     import sys
 

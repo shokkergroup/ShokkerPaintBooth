@@ -1,0 +1,7 @@
+# K - app controls as knowledge - worker report
+
+Status log (newest last)
+- 2026-10-03: app_controls.json v1 published (36 controls, zone-level, 6 UI-vs-engine disagreements). Next: render verification R1-R4, prose chunk, build + sync.
+- 2026-10-03 (final): app_controls.json v2 = 35 controls (colour 8, base_material 6, spec_direct 4, pattern 7, spec_pattern 1, region 2, order 2, second_base 1, paint_global 1) + 6 UI-vs-engine disagreements + `_meta.render_verification` (R1-R4 numbers). Prose card docs/ai_knowledge/sliders_and_controls.md (8 chunks incl. the pink-camo-rattlesnake recipe) built into js/spb-ai-knowledge.js (177 chunks), node --check OK, ?v=spb-ai-kb-20261003ctrl, synced.
+- Render verification (private Chrome 9601 because the shared 9444 driver crashed on dialog handling; scripts _easy_claude_work/pw/wpk_*.py, images eval/wpk_controls/): R1 green hue 110: +180 -> 311 magenta, -150 -> 338 hot pink, +150 -> purple 278. R2 mc_blue_camo: solid pink -> flat pink (recolours AND flattens; contradicts the earlier "should not recolour"), hue +110 -> 339 (structure not viewed). R3 snake_skin_3 scale 0.5 = dense mesh (viewed), Overlay mode paints its own brown, base pink not visible; autocorrelation metric invalid; 1.0 image not compared. R4 spec_snake_scales clearcoat-channel std 21.7 none / 32.6 @30 / 58.7 @100.
+- Not verified: kit-written pattern scale <0.10 vs UI clamp, blend mode on pattern recolour, second-base controls, region kinds, Easy-mode mapping, 4 other payload builders.

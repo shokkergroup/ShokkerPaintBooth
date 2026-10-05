@@ -3,8 +3,32 @@
 MILITARY & TACTICAL -- 12 bases, each with unique paint_fn + spec_fn
 """
 import numpy as np
-from engine.core import multi_scale_noise, get_mgrid
+from engine.core import multi_scale_noise, get_mgrid, _resize_array
 from engine.paint_v2 import ensure_bb_2d
+
+_TACTICAL_FIELD_CACHE = {}
+
+
+def _tactical_noise(shape, scales, weights, seed, cap=1024):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    h, w = int(h), int(w)
+    key = ("noise", h, w, tuple(scales), tuple(weights), int(seed), int(cap))
+    cached = _TACTICAL_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    work = min(int(cap), h, w)
+    if work < min(h, w):
+        sh = max(8, int(round(h * work / max(h, w))))
+        sw = max(8, int(round(w * work / max(h, w))))
+        field = multi_scale_noise((sh, sw), scales, weights, seed)
+        field = _resize_array(np.asarray(field, dtype=np.float32), h, w)
+    else:
+        field = multi_scale_noise((h, w), scales, weights, seed)
+    if len(_TACTICAL_FIELD_CACHE) > 64:
+        _TACTICAL_FIELD_CACHE.clear()
+    field = np.asarray(field, dtype=np.float32)
+    _TACTICAL_FIELD_CACHE[key] = field
+    return field
 
 def paint_armor_plate_v2(paint, shape, mask, seed, pm, bb):
     """Rolled homogeneous armor plate with directional rolling marks and hardness variation."""
@@ -13,8 +37,8 @@ def paint_armor_plate_v2(paint, shape, mask, seed, pm, bb):
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Rolled homogeneous armor: directional rolling marks + hardness variation
-    roll_dir = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 1300)
-    hardness = multi_scale_noise((h, w), [8, 16], [0.5, 0.5], seed + 1301)
+    roll_dir = _tactical_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 1300)
+    hardness = _tactical_noise((h, w), [8, 16], [0.5, 0.5], seed + 1301)
     gray = base.mean(axis=2)
     armor = np.clip(gray * 0.15 + 0.32, 0, 1)
     roll_mark = roll_dir * 0.03
@@ -25,7 +49,7 @@ def paint_armor_plate_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_armor_plate(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    roll = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 1300)
+    roll = _tactical_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 1300)
     M = np.clip(170.0 + roll * 40.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(22.0 + roll * 18.0 * sm, 15, 255)
     CC = np.clip(16.0 + roll * 3.0, 16, 255).astype(np.float32)
@@ -38,9 +62,9 @@ def paint_battleship_gray_v2(paint, shape, mask, seed, pm, bb):
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Haze gray anti-corrosion coating with salt spray pitting
-    salt_pit = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 1310)
+    salt_pit = _tactical_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 1310)
     pits = np.clip((salt_pit - 0.7) * 5.0, 0, 1) * 0.04
-    base_coat = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 1311)
+    base_coat = _tactical_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 1311)
     gray_val = 0.42 + base_coat * 0.03
     effect = np.stack([
         np.clip(gray_val - pits, 0, 1),
@@ -53,7 +77,7 @@ def paint_battleship_gray_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_battleship_gray(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    pit = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 1310)
+    pit = _tactical_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 1310)
     M = np.clip(15.0 + pit * 10.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(25.0 + pit * 20.0 * sm, 15, 255)
     CC = np.clip(16.0 + pit * 4.0, 16, 255).astype(np.float32)
@@ -276,12 +300,11 @@ def paint_sub_black_v2(paint, shape, mask, seed, pm, bb):
     y, x = get_mgrid((h, w))
     tile_x = (x / tile_size).astype(int)
     tile_y = (y / tile_size).astype(int)
-    # Each tile has slight variation (manufacturing tolerance)
-    rng = np.random.RandomState(seed + 1390)
+    # Each tile has slight variation (manufacturing tolerance). Vectorized for
+    # SPB render budget: the old per-tile Python loop made Sub Black exceed 4s.
     tile_ids = (tile_y * 100 + tile_x) % 997
-    tile_var = np.zeros((h, w), dtype=np.float32)
-    for tid in np.unique(tile_ids):
-        tile_var[tile_ids == tid] = rng.rand() * 0.02
+    tile_hash = np.sin(tile_ids.astype(np.float32) * 12.9898 + (int(seed) + 1390) * 0.017) * 43758.5453
+    tile_var = (tile_hash - np.floor(tile_hash)).astype(np.float32) * 0.02
     dark = 0.05 + tile_var
     # Tile seams
     seam_x = np.abs(np.mod(x, tile_size) - tile_size/2) / (tile_size/2)
@@ -308,9 +331,9 @@ def paint_submarine_black_v2(paint, shape, mask, seed, pm, bb):
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Deep-dive pressure hull coating: anti-fouling + corrosion resistant
-    fouling = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1395)
+    fouling = _tactical_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1395)
     bio_growth = np.clip((fouling - 0.6) * 3.0, 0, 1) * 0.03
-    hull_var = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 1396)
+    hull_var = _tactical_noise((h, w), [32, 64], [0.5, 0.5], seed + 1396)
     dark = 0.06 + hull_var * 0.015
     effect = np.stack([
         np.clip(dark + bio_growth * 0.3, 0, 1),
@@ -323,7 +346,7 @@ def paint_submarine_black_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_submarine_black(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    fouling = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1395)
+    fouling = _tactical_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1395)
     M = np.clip(4.0 + fouling * 5.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(45.0 + fouling * 25.0 * sm, 15, 255)
     CC = np.clip(16.0 + fouling * 3.0, 16, 255).astype(np.float32)

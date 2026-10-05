@@ -1,0 +1,122 @@
+{
+ "fte_ball_lightning": {
+  "hue": 0.5316,
+  "fix": -0.0016,
+  "satA": 0.751,
+  "off": 0.003
+ },
+ "fte_blue_bolt": {
+  "hue": 0.574,
+  "fix": 0.026,
+  "satA": 0.84,
+  "off": 0.015
+ },
+ "fte_green_strike": {
+  "hue": 0.2873,
+  "fix": 0.0477,
+  "satA": 0.974,
+  "off": 0.064
+ },
+ "fte_green_supercell": {
+  "hue": 0.3337,
+  "fix": -0.0037,
+  "satA": 0.973,
+  "off": 0.234
+ },
+ "fte_gustfront_green": {
+  "hue": 0.3718,
+  "fix": -0.0268,
+  "satA": 0.992,
+  "off": 0.024
+ },
+ "fte_lichtenberg_crown": {
+  "hue": 0.5562,
+  "fix": 0.1238,
+  "satA": 0.898,
+  "off": 0.714
+ },
+ "fte_slate_billows": {
+  "hue": 0.6378,
+  "fix": -0.0128,
+  "satA": 0.794,
+  "off": 0.211
+ },
+ "fte_slate_hailfield": {
+  "hue": 0.5877,
+  "fix": 0.0223,
+  "satA": 0.754,
+  "off": 0.07
+ },
+ "fte_slate_squall": {
+  "hue": 0.6034,
+  "fix": 0.0016,
+  "satA": 0.822,
+  "off": 0.064
+ },
+ "fte_slate_vortex": {
+  "hue": 0.598,
+  "fix": 0.022,
+  "satA": 0.85,
+  "off": 0.017
+ },
+ "fte_steel_cyclone": {
+  "hue": 0.579,
+  "fix": 0.011,
+  "satA": 0.996,
+  "off": 0.011
+ },
+ "fte_steel_downpour": {
+  "hue": 0.5773,
+  "fix": 0.0077,
+  "satA": 0.997,
+  "off": 0.012
+ },
+ "fte_steel_rain": {
+  "hue": 0.552,
+  "fix": 0.023,
+  "satA": 0.997,
+  "off": 0.002
+ },
+ "fte_storm_cell": {
+  "hue": 0.4567,
+  "fix": -0.0267,
+  "satA": 0.735,
+  "off": 0.109
+ },
+ "fte_thunderhead_white": {
+  "hue": 0.5594,
+  "fix": 0.0206,
+  "satA": 0.685,
+  "off": 0.244
+ },
+ "fte_violet_cumulonimbus": {
+  "hue": 0.7831,
+  "fix": -0.0281,
+  "satA": 0.993,
+  "off": 0.178
+ },
+ "fte_violet_hail": {
+  "hue": 0.8009,
+  "fix": -0.0609,
+  "satA": 0.97,
+  "off": 0.003
+ },
+ "fte_violet_twister": {
+  "hue": 0.8039,
+  "fix": -0.0539,
+  "satA": 0.893,
+  "off": 0.055
+ },
+ "fte_white_arc": {
+  "hue": 0.5792,
+  "fix": -0.0092,
+  "satA": 0.786,
+  "off": 0.007
+ },
+ "fte_whiteout_hail": {
+  "hue": 0.5531,
+  "fix": 0.0119,
+  "satA": 0.753,
+  "off": 0.015
+ }
+}

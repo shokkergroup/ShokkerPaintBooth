@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_chain_link",
+  "display_name": "Extreme: Chain Link",
+  "promise": "Fine galvanized diamond-wire mesh without a background scene, tiny diamonds",
+  "carrier_grammar": "Fine galvanized diamond-wire mesh without a background scene, tiny diamonds; single full-canvas image, no duplicated quadrants. Fine features: galvanized wire faces, dark mesh openings, drawn wire shoulders, interlocking wire bends, zinc bloom islands, deep twist seams",
+  "spec_grammar": "Feature-specific selectors partition galvanized wire faces, dark mesh openings, drawn wire shoulders, interlocking wire bends, zinc bloom islands, deep twist seams. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "galvanized wire faces",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "dark mesh openings",
+      "role": "Material feature selected from artwork by g:<:0.27"
+    },
+    {
+      "name": "drawn wire shoulders",
+      "role": "Material feature selected from artwork by detail:>:0.68"
+    },
+    {
+      "name": "interlocking wire bends",
+      "role": "Material feature selected from artwork by edge:>:0.62"
+    },
+    {
+      "name": "zinc bloom islands",
+      "role": "Material feature selected from artwork by fine:>:0.7&g:>:0.48"
+    },
+    {
+      "name": "deep twist seams",
+      "role": "Material feature selected from artwork by detail:<:0.17"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "galvanized wire faces",
+      "dark mesh openings",
+      "drawn wire shoulders",
+      "interlocking wire bends",
+      "zinc bloom islands",
+      "deep twist seams"
+    ],
+    "R": [
+      "galvanized wire faces",
+      "dark mesh openings",
+      "drawn wire shoulders",
+      "interlocking wire bends",
+      "zinc bloom islands",
+      "deep twist seams"
+    ],
+    "Cc": [
+      "galvanized wire faces",
+      "dark mesh openings",
+      "drawn wire shoulders",
+      "interlocking wire bends",
+      "zinc bloom islands",
+      "deep twist seams"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "galvanized wire faces",
+      "range": [
+        [
+          180,
+          30,
+          25
+        ],
+        [
+          240,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dark mesh openings",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "drawn wire shoulders",
+      "range": [
+        [
+          240,
+          0,
+          16
+        ],
+        [
+          255,
+          32,
+          90
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "interlocking wire bends",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "zinc bloom islands",
+      "range": [
+        [
+          65,
+          110,
+          125
+        ],
+        [
+          185,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "deep twist seams",
+      "range": [
+        [
+          10,
+          145,
+          160
+        ],
+        [
+          90,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_anodised_peg",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_bmx_dirt",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "galvanized wire faces",
+      "dark mesh openings",
+      "drawn wire shoulders",
+      "interlocking wire bends",
+      "zinc bloom islands",
+      "deep twist seams"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_chain_link / Fine galvanized diamond-wire mesh without a background scene, tiny diamonds",
+  "spec_key": "at_chain_link / galvanized wire faces all; dark mesh openings g:<:0.27; drawn wire shoulders detail:>:0.68; interlocking wire bends edge:>:0.62; zinc bloom islands fine:>:0.7&g:>:0.48; deep twist seams detail:<:0.17",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

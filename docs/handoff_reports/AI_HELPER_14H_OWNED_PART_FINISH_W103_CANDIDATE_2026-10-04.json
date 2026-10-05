@@ -1,0 +1,58 @@
+{
+  "work_item": "W103 isolated repair of W97 owned-part finish alias guards",
+  "date": "2026-10-04",
+  "status": "PASS_WITH_LIMITS_PRIVATE_CANDIDATE",
+  "baseline": {
+    "candidate": "_easy_claude_work/ai14h_w97_review/candidate-spb-pro-ai.js",
+    "sha256": "e6840fc79cdcd7e0e11ccad677a34eb7ab86cd903bbe0652089769187da19909",
+    "W102_report": "docs/handoff_reports/AI_HELPER_14H_OWNED_PART_FINISH_W102_REVIEW_2026-10-04.json"
+  },
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_w103_candidate/spb-pro-ai.js",
+    "sha256": "93c5eb8aa3e6ba823f55f278b7b53369f021f0de616ad95c73121185655fa061",
+    "design_sha256": "4648de3231015497cc9ff816612a542097a1ad14038a7210753f6cdbfd88d832",
+    "edit_compiler_path": "_easy_claude_work/ai14h_w98_review/candidate/spb-pro-edit.js",
+    "edit_compiler_sha256": "7d063444021f8f4144b96130800badfe62741cdefc9104417f3e99af65270767"
+  },
+  "changes": [
+    "Current-session owner proof accepts exactly the W98 tagged formats: file-sha256, composite-sha256, and composite-fnv1a32. Exact current/stored source path, fingerprint, and generation equality plus all remaining freshness, owner, mask, layer, appearance, and footprint checks remain required. No durable saved-memory gate changed.",
+    "Before replacing a planned region with the proved owner selector, require a whole-part selector containing only part/island/layers and an optional paintable:true qualifier. Explicit layers must resolve uniquely and equal the exact proof layer IDs. paintable:false and portion, band, exclude, colors, element, and other fields refuse before queueing."
+  ],
+  "verification": {
+    "contract": "tests/ai_part_finish_owner_w103_contract.cjs",
+    "contract_sha256": "a931abaa793562224aeed6f8c7b717ff4b0ca9047045e4bcc06ae284a48e693a",
+    "original_w97_cases": {
+      "file_sha256": { "cases": 12, "passed": 11, "failed": 1 },
+      "composite_sha256": { "cases": 12, "passed": 11, "failed": 1 },
+      "composite_fnv1a32": { "cases": 12, "passed": 11, "failed": 1 },
+      "sole_failure": "The frozen E.plan gloss-without-repainting case remains unrecognized, unchanged and outside this ownership lane."
+    },
+    "selector_supplements": {
+      "cases": 8,
+      "passed": 8,
+      "failed": 0,
+      "results": {
+        "generic whole roof and exact Car Paint layer": "one edit to existing owner, proof attached, no add-zone",
+        "paintable:true": "one edit to existing owner; treated as equivalent body-only qualifier when exact proof layer IDs match",
+        "explicit Number Paint layer": "zero edits/adds; truthful selector mismatch refusal",
+        "paintable:false, portion, exclude, colors, band": "each zero edits/adds; truthful selector mismatch refusal"
+      }
+    },
+    "actual_edit_compiler": {
+      "path": "_easy_claude_work/ai14h_w98_review/candidate/spb-pro-edit.js",
+      "sha256": "7d063444021f8f4144b96130800badfe62741cdefc9104417f3e99af65270767",
+      "generic_whole_roof_plan_region": { "island": "roof", "layers": ["Car Paint"] },
+      "note": "The pinned E.plan/E.compile path emits the full body layer selector but does not itself emit paintable:true. The true qualifier was tested directly at the actual queue boundary to cover Runtime5's native selector shape."
+    },
+    "parser_probes": {
+      "explicit_other_layer_wording": "E.plan returned ops but E.compile produced zero zones; not counted as a dynamic alternate-layer route pass.",
+      "partial_front_half_roof": "E.plan did not recognize the wording; no queue. Direct compiled selectors verify the queue refuses scope amplification."
+    },
+    "syntax": "node --check passed for isolated controller and contract test."
+  },
+  "proof_carry_and_scope": {
+    "unchanged": "Fresh owner proof remains attached to the edit request and the frozen W97 makeTools/apply-queue paths source-review revalidate it before enqueue/apply.",
+    "limits": "No actual makeTools/applyQueue call, native currentPartZoneOwners lifecycle, native app, renderer, provider, server, or project save/load ran. Layer/portion constraint values supplement actual E.plan/E.compile and actual queueEditZones because the parser did not emit these selectors in our probes."
+  },
+  "effects": { "live_or_shared_source_changed": 0, "native_calls": 0, "provider_calls": 0, "apply_calls": 0, "wiki_changes": 0 }
+}

@@ -1,0 +1,27 @@
+{
+  "version":1,
+  "paint_label":"dirtlatemodel 350/car_num_1071077.tga",
+  "inspection_records":"_smart_tga_runs/cycle661_dlm_intrinsic_grouping_holdout/inspection_records.json",
+  "review_scope":"Cycle 661 source plus all owner/combined sheets, suspects, position cues, and physical-group review.",
+  "component_labels":[
+    {"layer":"numbers","component_index":0,"expected_bbox":[695,703,55,28],"target_layer":"template","label":"fixed_gray_template_shape_false_number"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[782,704,58,29],"target_layer":"template","label":"fixed_gray_template_shape_false_number"},
+    {"layer":"numbers","component_index":2,"expected_bbox":[505,723,51,50],"target_layer":"sponsors","label":"rbs1_logo_false_number"},
+    {"layer":"numbers","component_index":3,"expected_bbox":[309,730,76,88],"target_layer":"numbers","label":"true_side_number_fragment","family_id":"number:11j_matjoulis"},
+    {"layer":"numbers","component_index":4,"expected_bbox":[718,738,102,62],"target_layer":"paint","label":"green_black_livery_panel_false_number"},
+    {"layer":"numbers","component_index":5,"expected_bbox":[4,905,196,108],"target_layer":"template","label":"fixed_template_shape_false_number"},
+    {"layer":"candidate_group","component_index":null,"expected_bbox":[293,215,206,126],"target_layer":"numbers","label":"intrinsic_physical_group_true_upper_number","family_id":"number:11j_matjoulis","group_id":"pdg:419c0e3e1e91e215"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[320,222,94,114],"target_layer":"numbers","label":"position_cue_true_number_digit","family_id":"number:11j_matjoulis"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[398,222,92,111],"target_layer":"numbers","label":"position_cue_true_number_digit","family_id":"number:11j_matjoulis"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[402,245,16,16],"target_layer":"numbers","label":"position_cue_true_number_outline_fragment","family_id":"number:11j_matjoulis"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[300,248,42,19],"target_layer":"numbers","label":"position_cue_true_number_outline_fragment","family_id":"number:11j_matjoulis"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[313,271,17,5],"target_layer":"numbers","label":"position_cue_true_number_outline_fragment","family_id":"number:11j_matjoulis"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[324,281,2,7],"target_layer":"numbers","label":"position_cue_true_number_outline_fragment","family_id":"number:11j_matjoulis"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[399,298,4,7],"target_layer":"numbers","label":"position_cue_true_number_outline_fragment","family_id":"number:11j_matjoulis"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[368,313,61,28],"target_layer":"numbers","label":"position_cue_true_number_suffix","family_id":"number:11j_matjoulis"},
+    {"layer":"candidate_group","component_index":null,"expected_bbox":[309,729,169,89],"target_layer":"numbers","label":"intrinsic_physical_group_true_lower_number","family_id":"number:11j_matjoulis","group_id":"pdg:93a39d94e3c51cea"},
+    {"layer":"candidate_group","component_index":null,"expected_bbox":[803,831,158,117],"target_layer":"numbers","label":"intrinsic_physical_group_true_rear_number","family_id":"number:11j_matjoulis","group_id":"pdg:6022b4f06b764a4b"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[300,713,190,111],"target_layer":"numbers","label":"partially_missed_true_side_number","family_id":"number:11j_matjoulis"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[799,813,177,169],"target_layer":"numbers","label":"missed_true_rear_number","family_id":"number:11j_matjoulis"}
+  ]
+}

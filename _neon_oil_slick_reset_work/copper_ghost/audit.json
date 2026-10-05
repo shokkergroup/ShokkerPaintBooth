@@ -1,0 +1,29 @@
+{
+  "schema": "spb-neon-oil-slick-pilot-audit/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_circuit_city",
+  "deterministic_4_of_4": true,
+  "paint_sha256": "89d29255c3c4f57fa2f48a206621d140c67b54d8ba834cc3c12937463e8533bf",
+  "spec_sha256": "5ca73606a6617ae08e39611f805812e74e3987021a25eebd1cc6e71b44ab6b7a",
+  "builder_timings_seconds": [
+    2.547879,
+    2.845432,
+    3.179963,
+    3.184791
+  ],
+  "builder_max_seconds": 3.184791,
+  "all_causal_union_coverage": 0.552315,
+  "edge_union_coverage": 0.553695,
+  "interior_union_coverage": 0.552224,
+  "max_abs_material_correlation": 0.303184,
+  "official_m7": "UNAVAILABLE_WHILE_ISOLATED_AND_UNREGISTERED",
+  "visual_contacts": [
+    "paint_2048.png",
+    "detail_1to1_1024.png",
+    "material_contact.png",
+    "light_sweep_contact.png",
+    "causal_masks_contact.png",
+    "paint_128.png",
+    "paint_64.png"
+  ]
+}

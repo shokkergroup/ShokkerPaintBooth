@@ -44,6 +44,7 @@ FIX GUIDE:
 
 import math
 import logging
+import os
 import numpy as np
 from PIL import Image
 import struct
@@ -51,6 +52,10 @@ import cv2
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 logger = logging.getLogger("engine.core")
+
+# [SPB-PERF 2026-08-06] Exact fast paths for _tile_fractional (see that function).
+# Bit-identical to the tile-then-resize original; flip to 0 to fall back.
+_SPB_TILE_FAST = os.environ.get("SPB_TILE_FAST", "1") != "0"
 
 # Engine version constant -- single source of truth, bumped on public API changes.
 CORE_ENGINE_VERSION = "6.1.2-platinum"
@@ -410,8 +415,8 @@ def multi_scale_noise(shape: Tuple[int, int],
 
     Notes:
         - Same seed + shape + scales + weights -> identical output (deterministic).
-        - Internally uses cv2.INTER_NEAREST for ~2x speedup vs linear; the noise
-          is already coarse so interpolation quality is irrelevant.
+        - Internally uses cv2.INTER_LINEAR so procedural renderer fields do not
+          expose hard square cells at 2048 canvas scale.
     """
     if len(scales) != len(weights):
         logger.warning("multi_scale_noise: scales/weights length mismatch (%d vs %d)",
@@ -440,15 +445,20 @@ def multi_scale_noise(shape: Tuple[int, int],
             # Structured noise: blur random to create coherent features
             k = max(3, (min(sh, sw) // 2) * 2 + 1)  # odd kernel
             small = cv2.GaussianBlur(small, (k, k), 0)
-        try:
-            # INTER_NEAREST is ~2x faster than INTER_LINEAR for upscaling noise.
-            # Since we're upscaling random data, interpolation quality is irrelevant --
-            # the noise is already smoothed by the scale-based grid size.
-            arr = cv2.resize(small, (w, h), interpolation=cv2.INTER_NEAREST)
-        except cv2.error as e:
-            logger.warning("multi_scale_noise: cv2.resize failed (scale=%d, sh=%d, sw=%d, target=(%d,%d)): %s",
-                           scale, sh, sw, w, h, e)
-            arr = np.zeros((h, w), dtype=np.float32)
+        if sh == h and sw == w:
+            # SPB perf loop 2026-05-31: scale=1 layers are already full size.
+            # Skipping same-size cv2.resize is bit-identical and protects the
+            # owner mandate for fine 1-3px finish detail while cutting render cost.
+            arr = small
+        else:
+            try:
+                # Linear upsampling avoids visible square-cell artifacts in 2048 paint
+                # renders while keeping the cached noise path fast enough for previews.
+                arr = cv2.resize(small, (w, h), interpolation=cv2.INTER_LINEAR)
+            except cv2.error as e:
+                logger.warning("multi_scale_noise: cv2.resize failed (scale=%d, sh=%d, sw=%d, target=(%d,%d)): %s",
+                               scale, sh, sw, w, h, e)
+                arr = np.zeros((h, w), dtype=np.float32)
         # In-place accumulate avoids creating arr*weight as a temp array
         if weight != 0.0:
             result += arr * float(weight)
@@ -1311,6 +1321,23 @@ def _resize_array(arr: np.ndarray, target_h: int, target_w: int) -> np.ndarray:
                       (target_w, target_h), interpolation=cv2.INTER_LINEAR)
 
 
+def _tile_fractional_taps(n_out: int, s: float, period: int, limit: int):
+    """Source taps cv2 INTER_LINEAR reads for one axis, folded into the tile period.
+
+    cv2 maps output index i to source coordinate ``(i + 0.5) * s - 0.5``, clamps it
+    to the source extent, and blends ``floor()`` with ``floor()+1``. Because the
+    source here is a tiled canvas, index ``y`` is just ``arr[y % period]``.
+
+    Returns:
+        ``(idx, frac)`` -- the floor tap folded into ``period``, and its blend weight.
+    """
+    f = (np.arange(n_out, dtype=np.float64) + 0.5) * s - 0.5
+    i0 = np.floor(f)
+    frac = f - i0
+    idx = np.clip(i0.astype(np.int64), 0, limit - 1) % period
+    return idx, frac
+
+
 def _tile_fractional(arr: np.ndarray, factor: float, target_h: int, target_w: int) -> np.ndarray:
     """Tile a 2D array by a fractional factor and resize to target dims.
 
@@ -1325,10 +1352,48 @@ def _tile_fractional(arr: np.ndarray, factor: float, target_h: int, target_w: in
     """
     h, w = arr.shape[:2]
     reps = min(10, max(2, int(math.ceil(factor))))
-    tiled = np.tile(arr, (reps, reps))
-    crop_h = min(tiled.shape[0], max(4, int(round(h * factor))))
-    crop_w = min(tiled.shape[1], max(4, int(round(w * factor))))
-    tiled = tiled[:crop_h, :crop_w]
+    crop_h = min(h * reps, max(4, int(round(h * factor))))
+    crop_w = min(w * reps, max(4, int(round(w * factor))))
+
+    # [SPB-PERF 2026-08-06 — owner: renders "taking longer than they should"]
+    # This built the whole tiled canvas — np.tile(arr, (reps, reps)), up to 100x the
+    # source (a 2048² float32 plate becomes 10240² = 419 MB at spec_scale 0.20) — and
+    # then handed it to cv2 INTER_LINEAR, which reads at most 2 taps per axis out of
+    # it. Materialising the canvas WAS the cost: np.repeat/np.tile was 1.26s of an
+    # 8.7s replay render (job_render_1786051447, two scaled zones). The sampling is
+    # unchanged; only the arithmetic path is.
+    #
+    # Two shortcuts, both verified BIT-IDENTICAL (np.array_equal, zero diffs) against
+    # the old tile-then-resize over a 134-case matrix of shapes, factors and target
+    # dims — see tests/regression_tile_fractional_fast_path_test.py. These are exact
+    # rewrites, NOT approximations:
+    #   1. DECIMATE — when every cv2 tap lands exactly on an integer row/col (odd
+    #      integer crop/target ratio, e.g. spec_scale 0.20 -> factor 5), the resize is
+    #      a pure gather. Index straight out of the source modulo the tile period.
+    #      2048² factor 5: 162ms -> 19ms.
+    #   2. SEPARABLE — otherwise tile and resize ONE AXIS AT A TIME. cv2 resizes
+    #      horizontally then vertically internally, so splitting the passes reproduces
+    #      its arithmetic exactly while peak allocation drops from reps² to reps.
+    #      2048² factor 4: 96ms -> 62ms.
+    # The owner-mandated "SPEC SCALE below 1.00 whole canvas scale bug" fix above this
+    # layer is untouched — this only changes HOW the same pixels are produced;
+    # tests/regression_spec_scale_no_whole_canvas_tile_test.py stays green.
+    # Kill-switch: env SPB_TILE_FAST=0 restores the original tile-then-resize.
+    if _SPB_TILE_FAST and arr.ndim == 2:
+        if crop_h != target_h or crop_w != target_w:
+            sy = crop_h / float(target_h)
+            sx = crop_w / float(target_w)
+            if sy >= 1.0 and sx >= 1.0:
+                y0, fy = _tile_fractional_taps(target_h, sy, h, crop_h)
+                if not fy.any():
+                    x0, fx = _tile_fractional_taps(target_w, sx, w, crop_w)
+                    if not fx.any():
+                        return np.ascontiguousarray(arr[np.ix_(y0, x0)]).astype(
+                            np.float32, copy=False)
+        horiz = _resize_array(np.tile(arr, (1, reps))[:, :crop_w], h, target_w)
+        return _resize_array(np.tile(horiz, (reps, 1))[:crop_h, :], target_h, target_w)
+
+    tiled = np.tile(arr, (reps, reps))[:crop_h, :crop_w]
     return _resize_array(tiled, target_h, target_w)
 
 

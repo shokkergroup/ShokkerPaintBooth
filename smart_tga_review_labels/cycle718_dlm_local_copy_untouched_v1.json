@@ -1,0 +1,73 @@
+{
+  "schema": "smart-tga-reviewed-local-family-candidates-v1",
+  "cycle": 718,
+  "reviewed_at": "2026-07-13",
+  "review_method": "visual source plus route layers plus every local_candidate_review crop",
+  "scope": "six previously untouched numbered DLM paints; active-learning development set after the first false positive was diagnosed",
+  "source_copy_ledger": [
+    {"paint": "dirtlatemodel 350/car_num_327705.tga", "visible_number_copies": 3, "route_complete_correct": 0},
+    {"paint": "dirtlatemodel 350/car_num_331993.tga", "visible_number_copies": 3, "route_complete_correct": 0},
+    {"paint": "dirtlatemodel 350/car_num_343044.tga", "visible_number_copies": 4, "route_complete_correct": 2},
+    {"paint": "dirtlatemodel 358/car_num_1321255.tga", "visible_number_copies": 3, "route_complete_correct": 2},
+    {"paint": "dirtlatemodel 358/car_num_1328151.tga", "visible_number_copies": 2, "route_complete_correct": 1},
+    {"paint": "dirtlatemodel 358/car_num_197595.tga", "visible_number_copies": 4, "route_complete_correct": 0}
+  ],
+  "source_totals": {"visible_number_copies": 19, "route_complete_correct": 5},
+  "candidate_labels": [
+    {"paint":"dirtlatemodel 350/car_num_327705.tga","family_id":"number-family:0c6599ecce079e4d","bbox":[325,227,96,109],"semantic":"Number","complete_copy":false,"physical_copy":"327705-upper","note":"B5 glyph fragment"},
+    {"paint":"dirtlatemodel 350/car_num_327705.tga","family_id":"number-family:4667f496d69e2c78","bbox":[257,920,43,21],"semantic":"Sponsor","complete_copy":false,"physical_copy":null,"note":"small non-B5 wordmark"},
+    {"paint":"dirtlatemodel 350/car_num_327705.tga","family_id":"number-family:7d4af35ec60bc8d9","bbox":[332,208,116,96],"semantic":"Number","complete_copy":true,"physical_copy":"327705-upper","note":"complete B5"},
+    {"paint":"dirtlatemodel 350/car_num_327705.tga","family_id":"number-family:a4aed14dd988f553","bbox":[340,720,16,1],"semantic":"Sponsor","complete_copy":false,"physical_copy":null,"note":"one-pixel-height decal residue"},
+    {"paint":"dirtlatemodel 350/car_num_327705.tga","family_id":"number-family:c9f036691c36c5b4","bbox":[904,772,73,96],"semantic":"uncertain","complete_copy":false,"physical_copy":"327705-roof","note":"number fragment plus adjacent wordmark"},
+    {"paint":"dirtlatemodel 350/car_num_327705.tga","family_id":"number-family:e4f58ee7afd4c581","bbox":[336,752,121,77],"semantic":"Number","complete_copy":true,"physical_copy":"327705-lower","note":"complete B5"},
+
+    {"paint":"dirtlatemodel 350/car_num_331993.tga","family_id":"number-family:38ac3807f778d8ff","bbox":[259,922,49,19],"semantic":"Sponsor","complete_copy":false,"physical_copy":null,"note":"small non-11 wordmark"},
+    {"paint":"dirtlatemodel 350/car_num_331993.tga","family_id":"number-family:94de0df481fabe9f","bbox":[265,238,327,109],"semantic":"uncertain","complete_copy":false,"physical_copy":"331993-upper","note":"11 and multiple sponsor marks in one proposal"},
+    {"paint":"dirtlatemodel 350/car_num_331993.tga","family_id":"number-family:a4e137a04a1f0617","bbox":[444,784,4,5],"semantic":"Sponsor","complete_copy":false,"physical_copy":null,"note":"tiny logo residue"},
+    {"paint":"dirtlatemodel 350/car_num_331993.tga","family_id":"number-family:aa69127dcefb2a00","bbox":[3,236,432,100],"semantic":"uncertain","complete_copy":false,"physical_copy":"331993-upper","note":"11 and sponsor row in one proposal"},
+    {"paint":"dirtlatemodel 350/car_num_331993.tga","family_id":"number-family:bce0056f7f63771a","bbox":[848,828,112,104],"semantic":"Number","complete_copy":true,"physical_copy":"331993-roof","note":"roof 11 with surrounding paint"},
+    {"paint":"dirtlatemodel 350/car_num_331993.tga","family_id":"number-family:c16a93be5a9f0f87","bbox":[286,214,313,29],"semantic":"Sponsor","complete_copy":false,"physical_copy":null,"note":"horizontal sponsor strip"},
+    {"paint":"dirtlatemodel 350/car_num_331993.tga","family_id":"number-family:ca2139c115df9f71","bbox":[272,712,148,108],"semantic":"Number","complete_copy":true,"physical_copy":"331993-lower","note":"lower 11"},
+
+    {"paint":"dirtlatemodel 350/car_num_343044.tga","family_id":"number-family:0177285cb3f3bb0e","bbox":[369,720,143,88],"semantic":"Number","complete_copy":true,"physical_copy":"343044-lower","note":"large 44"},
+    {"paint":"dirtlatemodel 350/car_num_343044.tga","family_id":"number-family:03af24375a99e7ef","bbox":[297,777,154,53],"semantic":"Number","complete_copy":false,"physical_copy":"343044-lower","note":"lower portion of 44"},
+    {"paint":"dirtlatemodel 350/car_num_343044.tga","family_id":"number-family:1e8df8fc96255ef0","bbox":[808,842,150,88],"semantic":"Number","complete_copy":true,"physical_copy":"343044-roof","note":"complete roof 44; clean local recovery"},
+    {"paint":"dirtlatemodel 350/car_num_343044.tga","family_id":"number-family:2ef146026977b440","bbox":[812,874,132,86],"semantic":"Number","complete_copy":false,"physical_copy":"343044-roof","note":"roof 44 fragment"},
+    {"paint":"dirtlatemodel 350/car_num_343044.tga","family_id":"number-family:bc2711d4e91ad917","bbox":[0,288,512,79],"semantic":"uncertain","complete_copy":false,"physical_copy":"343044-upper","note":"44 plus livery and sponsor row"},
+    {"paint":"dirtlatemodel 350/car_num_343044.tga","family_id":"number-family:ca7d7995be92c070","bbox":[296,736,184,72],"semantic":"Number","complete_copy":true,"physical_copy":"343044-lower","note":"complete lower 44"},
+    {"paint":"dirtlatemodel 350/car_num_343044.tga","family_id":"number-family:cb4a03e4878990c8","bbox":[268,917,51,25],"semantic":"Number","complete_copy":true,"physical_copy":"343044-rear","note":"tiny complete 44"},
+
+    {"paint":"dirtlatemodel 358/car_num_1321255.tga","family_id":"number-family:0511c424265b7989","bbox":[308,917,12,7],"semantic":"Sponsor","complete_copy":false,"physical_copy":null,"note":"tiny contingency logo"},
+    {"paint":"dirtlatemodel 358/car_num_1321255.tga","family_id":"number-family:11a80e2b0117134e","bbox":[56,716,316,100],"semantic":"uncertain","complete_copy":false,"physical_copy":"1321255-lower","note":"number 1 plus sponsor row"},
+    {"paint":"dirtlatemodel 358/car_num_1321255.tga","family_id":"number-family:2bee57f2d0a0b2bb","bbox":[820,888,112,112],"semantic":"Number","complete_copy":true,"physical_copy":"1321255-roof","note":"flag-styled roof 1"},
+    {"paint":"dirtlatemodel 358/car_num_1321255.tga","family_id":"number-family:42ad33b4176ae832","bbox":[404,748,80,76],"semantic":"Number","complete_copy":false,"physical_copy":"1321255-lower","note":"right portion of lower 1"},
+    {"paint":"dirtlatemodel 358/car_num_1321255.tga","family_id":"number-family:67bed28ace78e194","bbox":[800,880,144,71],"semantic":"Number","complete_copy":false,"physical_copy":"1321255-roof","note":"roof 1 fragment"},
+    {"paint":"dirtlatemodel 358/car_num_1321255.tga","family_id":"number-family:6babf189ace5a3bc","bbox":[304,726,137,73],"semantic":"Number","complete_copy":true,"physical_copy":"1321255-lower","note":"complete lower 1"},
+    {"paint":"dirtlatemodel 358/car_num_1321255.tga","family_id":"number-family:75deec403227f593","bbox":[416,238,53,78],"semantic":"Number","complete_copy":false,"physical_copy":"1321255-upper","note":"upper 1 fragment"},
+    {"paint":"dirtlatemodel 358/car_num_1321255.tga","family_id":"number-family:a93c8dbba0222265","bbox":[265,235,107,109],"semantic":"Number","complete_copy":false,"physical_copy":"1321255-upper","note":"left portion of upper 1"},
+    {"paint":"dirtlatemodel 358/car_num_1321255.tga","family_id":"number-family:dc8b1250643529d4","bbox":[773,816,171,76],"semantic":"Number","complete_copy":false,"physical_copy":"1321255-roof","note":"roof 1 fragment"},
+    {"paint":"dirtlatemodel 358/car_num_1321255.tga","family_id":"number-family:dd7fb3f45e61dcfd","bbox":[296,252,156,84],"semantic":"Number","complete_copy":true,"physical_copy":"1321255-upper","note":"complete upper 1"},
+
+    {"paint":"dirtlatemodel 358/car_num_1328151.tga","family_id":"number-family:598950424f3424f9","bbox":[780,900,140,69],"semantic":"Sponsor","complete_copy":false,"physical_copy":null,"note":"Forty Nine Apparel bird/logo fragment"},
+    {"paint":"dirtlatemodel 358/car_num_1328151.tga","family_id":"number-family:e999c1165a9f69b4","bbox":[870,811,107,160],"semantic":"Sponsor","complete_copy":false,"physical_copy":null,"note":"Forty Nine Apparel logo; prior false acceptance"},
+    {"paint":"dirtlatemodel 358/car_num_1328151.tga","family_id":"number-family:f21cfdaca100ab8f","bbox":[267,921,5,13],"semantic":"Sponsor","complete_copy":false,"physical_copy":null,"note":"tiny contingency mark"},
+
+    {"paint":"dirtlatemodel 358/car_num_197595.tga","family_id":"number-family:07953ad3210be29b","bbox":[305,238,91,92],"semantic":"Number","complete_copy":false,"physical_copy":"197595-upper","note":"one digit of upper 88"},
+    {"paint":"dirtlatemodel 358/car_num_197595.tga","family_id":"number-family:43ea3ae8380898a2","bbox":[272,256,42,55],"semantic":"Paint/livery","complete_copy":false,"physical_copy":null,"note":"black livery wedge"},
+    {"paint":"dirtlatemodel 358/car_num_197595.tga","family_id":"number-family:6716713fdd9025df","bbox":[296,936,16,6],"semantic":"Number","complete_copy":true,"physical_copy":"197595-rear","note":"tiny complete 88"},
+    {"paint":"dirtlatemodel 358/car_num_197595.tga","family_id":"number-family:f0f8bd7db2171221","bbox":[320,239,153,73],"semantic":"Number","complete_copy":true,"physical_copy":"197595-upper","note":"complete upper 88; clean local recovery"}
+  ],
+  "candidate_totals": {"all": 37, "Number": 22, "Sponsor": 9, "Template/hardware": 0, "Paint/livery": 1, "uncertain": 5},
+  "hard_negative_controls": [
+    "327705:4667f496d69e2c78",
+    "327705:a4aed14dd988f553",
+    "331993:38ac3807f778d8ff",
+    "331993:a4e137a04a1f0617",
+    "331993:c16a93be5a9f0f87",
+    "1321255:0511c424265b7989",
+    "1328151:598950424f3424f9",
+    "1328151:e999c1165a9f69b4",
+    "1328151:f21cfdaca100ab8f",
+    "197595:43ea3ae8380898a2"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "version":1,
+  "paint_label":"dirtlatemodel 438/car_num_23371.tga",
+  "inspection_records":"_smart_tga_runs/cycle659_dlm_foreground_instances/inspection_records.json",
+  "review_scope":"Cycle 659 manual source plus all owner and suspect-sheet review.",
+  "component_labels":[
+    {"layer":"numbers","component_index":0,"expected_bbox":[771,435,29,21],"target_layer":"sponsors","label":"sponsor_wordmark_fragment_false_number"},
+    {"layer":"unassigned","component_index":null,"expected_bbox":[493,220,55,54],"target_layer":"numbers","label":"missed_true_number_instance","family_id":"number:18_drydene_skull_style"},
+    {"layer":"unassigned","component_index":null,"expected_bbox":[493,712,55,54],"target_layer":"numbers","label":"missed_true_number_instance","family_id":"number:18_drydene_skull_style"},
+    {"layer":"paint","component_index":null,"expected_bbox":[321,235,8,3],"target_layer":"sponsors","label":"missed_micro_sponsor_text"}
+  ]
+}

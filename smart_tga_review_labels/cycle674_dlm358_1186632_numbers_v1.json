@@ -1,0 +1,4 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_1186632.tga","inspection_records":"_smart_tga_runs/cycle674_dlm_strict_confirmation_review/inspection_records.json","review_scope":"Cycle 674 source plus complete Number/Sponsor/Template/Paint sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[249,911,346,92],"target_layer":"sponsors","label":"rocket_chub_frank_panel_false_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[470,974,9,4],"target_layer":"sponsors","label":"sponsor_trim_false_number"}
+]}

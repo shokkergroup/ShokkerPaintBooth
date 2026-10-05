@@ -1,0 +1,67 @@
+{
+  "schema": "spb-offline-named-panel-preservation/1",
+  "recorded_utc": "2026-10-04T01:43:16Z",
+  "scope": "W3 offline edit preservation; no provider calls",
+  "baseline": "docs/handoff_reports/AI_HELPER_14H_ROUTER_SCOPE_GAPS_2026-10-03.json",
+  "frozen_fixture": "unchanged",
+  "plan_outcomes": [
+    {
+      "id": "S14",
+      "before": {
+        "request": "Make the entire car teal metallic except the hood, leave that unchanged.",
+        "outcome": "queued teal metallic on hood (preserved panel changed)"
+      },
+      "after": {
+        "edit_plan": "ask",
+        "executable_ops": 0,
+        "offlineAsk_dispatch": "edit clarification",
+        "advisor_or_legacy_fallthrough": false,
+        "scope": "no zones queued; asks the user to name the panel(s) to change"
+      }
+    },
+    {
+      "id": "S18",
+      "before": {
+        "request": "Leave the hood carbon and turn only the roof bright gold.",
+        "outcome": "queued gold/carbon look on both hood and roof"
+      },
+      "after": {
+        "edit_plan": "ask",
+        "executable_ops": 0,
+        "offlineAsk_dispatch": "edit clarification",
+        "advisor_or_legacy_fallthrough": false,
+        "scope": "no zones queued; does not reinterpret the preserved hood look as a new edit"
+      }
+    },
+    {
+      "id": "positive_compound_guard",
+      "request": "matte black with orange pearl flakes",
+      "after": {
+        "designer_compound_plan": "recognized",
+        "offlineAsk_dispatch": "legacy compound handling path",
+        "edit_guard_intercepted": false
+      }
+    }
+  ],
+  "recommendations": [
+    {
+      "status": "parent integration completed",
+      "detail": "The top-level offlineAsk dispatch must accept edit-plan kind ask. Parent added this branch; the whole-router contract verifies it prevents Advisor and legacy-core fallthrough."
+    },
+    {
+      "status": "future capability",
+      "detail": "Keep clarification behavior until the live region contract can precisely exclude named panels; current region.exclude support is limited to numbers, sponsors and stripes."
+    }
+  ],
+  "verification": {
+    "tests": {
+      "tests/ai_offline_preservation_contract.cjs": "PASS; nine mixed preserve cases plus actual offlineAsk dispatch and positive compound guard",
+      "_easy_claude_work/edit_test.js": "PASS; 77 phrases",
+      "_easy_claude_work/edit_req_test.js": "PASS; 17 requests, 0 mismatches",
+      "_easy_claude_work/design_compound_test.js": "PASS; compound 50/50, guards 22/22",
+      "tests/ai_stack_scope_contract.cjs": "PASS",
+      "_easy_claude_work/route_test.js": "PASS; true edits stolen 0/5, unknown-look stack hits 4/4"
+    },
+    "provider_attempts": 0
+  }
+}

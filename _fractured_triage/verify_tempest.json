@@ -1,0 +1,176 @@
+{
+ "module": "tempest",
+ "finishes": {
+  "fte_ball_lightning": {
+   "band": 0.6276,
+   "fine": 9.61,
+   "cov": 64,
+   "hue": 11,
+   "t": 0.791,
+   "ok": true
+  },
+  "fte_blue_bolt": {
+   "band": 0.7077,
+   "fine": 8.81,
+   "cov": 64,
+   "hue": 8,
+   "t": 0.758,
+   "ok": true
+  },
+  "fte_green_strike": {
+   "band": 0.823,
+   "fine": 16.73,
+   "cov": 64,
+   "hue": 10,
+   "t": 1.006,
+   "ok": true
+  },
+  "fte_green_supercell": {
+   "band": 0.6982,
+   "fine": 14.99,
+   "cov": 64,
+   "hue": 9,
+   "t": 0.879,
+   "ok": true
+  },
+  "fte_gustfront_green": {
+   "band": 0.6526,
+   "fine": 7.23,
+   "cov": 64,
+   "hue": 10,
+   "t": 0.758,
+   "ok": true
+  },
+  "fte_lichtenberg_crown": {
+   "band": 0.6515,
+   "fine": 10.92,
+   "cov": 64,
+   "hue": 12,
+   "t": 0.66,
+   "ok": true
+  },
+  "fte_slate_billows": {
+   "band": 0.7275,
+   "fine": 16.9,
+   "cov": 64,
+   "hue": 12,
+   "t": 1.164,
+   "ok": true
+  },
+  "fte_slate_hailfield": {
+   "band": 0.8383,
+   "fine": 21.16,
+   "cov": 64,
+   "hue": 10,
+   "t": 1.083,
+   "ok": true
+  },
+  "fte_slate_squall": {
+   "band": 0.8374,
+   "fine": 14.9,
+   "cov": 64,
+   "hue": 12,
+   "t": 0.664,
+   "ok": true
+  },
+  "fte_slate_vortex": {
+   "band": 0.6217,
+   "fine": 12.63,
+   "cov": 64,
+   "hue": 11,
+   "t": 0.73,
+   "ok": true
+  },
+  "fte_steel_cyclone": {
+   "band": 0.6921,
+   "fine": 13.91,
+   "cov": 64,
+   "hue": 9,
+   "t": 0.904,
+   "ok": true
+  },
+  "fte_steel_downpour": {
+   "band": 0.5768,
+   "fine": 15.93,
+   "cov": 64,
+   "hue": 11,
+   "t": 0.833,
+   "ok": true
+  },
+  "fte_steel_rain": {
+   "band": 0.6556,
+   "fine": 11.28,
+   "cov": 64,
+   "hue": 7,
+   "t": 0.756,
+   "ok": true
+  },
+  "fte_storm_cell": {
+   "band": 0.7148,
+   "fine": 17.67,
+   "cov": 64,
+   "hue": 13,
+   "t": 1.192,
+   "ok": true
+  },
+  "fte_thunderhead_white": {
+   "band": 0.5916,
+   "fine": 19.6,
+   "cov": 64,
+   "hue": 12,
+   "t": 0.732,
+   "ok": true
+  },
+  "fte_violet_cumulonimbus": {
+   "band": 0.8727,
+   "fine": 16.77,
+   "cov": 64,
+   "hue": 13,
+   "t": 0.756,
+   "ok": true
+  },
+  "fte_violet_hail": {
+   "band": 0.6931,
+   "fine": 11.66,
+   "cov": 64,
+   "hue": 11,
+   "t": 0.839,
+   "ok": true
+  },
+  "fte_violet_twister": {
+   "band": 0.6023,
+   "fine": 7.61,
+   "cov": 64,
+   "hue": 12,
+   "t": 0.94,
+   "ok": true
+  },
+  "fte_white_arc": {
+   "band": 0.7575,
+   "fine": 7.9,
+   "cov": 64,
+   "hue": 8,
+   "t": 0.949,
+   "ok": true
+  },
+  "fte_whiteout_hail": {
+   "band": 0.5939,
+   "fine": 8.89,
+   "cov": 64,
+   "hue": 10,
+   "t": 0.857,
+   "ok": true
+  }
+ },
+ "summary": {
+  "band_median": 0.6926,
+  "band_min": 0.5768,
+  "worst_pair": [
+   "fte_slate_squall",
+   "fte_violet_twister",
+   0.181
+  ],
+  "n_ok": 20,
+  "n": 20
+ }
+}

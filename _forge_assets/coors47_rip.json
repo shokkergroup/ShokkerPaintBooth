@@ -1,0 +1,110 @@
+{
+ "outdir": "_forge_assets/coors47",
+ "sheets": {
+  "4": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/DLM MOCKUPS/Coors DLM/ChatGPT Image Jul 13, 2026, 12_07_26 PM (4).png",
+  "5": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/DLM MOCKUPS/Coors DLM/ChatGPT Image Jul 13, 2026, 12_07_26 PM (5).png",
+  "6": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/DLM MOCKUPS/Coors DLM/ChatGPT Image Jul 13, 2026, 12_07_26 PM (6).png",
+  "8": "C:/DRIVE E BACKUP/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/EXAMPLE PSD's/DLM MOCKUPS/Coors DLM/ChatGPT Image Jul 13, 2026, 12_07_27 PM (8).png"
+ },
+ "assets": {
+  "roof47": {
+   "sheet": 4,
+   "fbox": [
+    0.5515,
+    0.094,
+    0.972,
+    0.415
+   ]
+  },
+  "nose47": {
+   "sheet": 4,
+   "fbox": [
+    0.188,
+    0.505,
+    0.332,
+    0.66
+   ]
+  },
+  "coors_script": {
+   "sheet": 5,
+   "fbox": [
+    0.23,
+    0.085,
+    0.5,
+    0.25
+   ]
+  },
+  "banquet_badge": {
+   "sheet": 5,
+   "fbox": [
+    0.538,
+    0.105,
+    0.698,
+    0.255
+   ]
+  },
+  "legend_panel": {
+   "sheet": 5,
+   "fbox": [
+    0.275,
+    0.335,
+    0.475,
+    0.525
+   ]
+  },
+  "circular_badge": {
+   "sheet": 5,
+   "fbox": [
+    0.772,
+    0.33,
+    0.938,
+    0.59
+   ]
+  },
+  "shokker_boxed": {
+   "sheet": 5,
+   "fbox": [
+    0.045,
+    0.6,
+    0.225,
+    0.75
+   ]
+  },
+  "mountain_left": {
+   "sheet": 6,
+   "fbox": [
+    0.022,
+    0.198,
+    0.518,
+    0.318
+   ]
+  },
+  "mountain_right": {
+   "sheet": 6,
+   "fbox": [
+    0.035,
+    0.358,
+    0.518,
+    0.478
+   ]
+  },
+  "spoiler_top": {
+   "sheet": 8,
+   "fbox": [
+    0.26,
+    0.1,
+    0.748,
+    0.235
+   ]
+  },
+  "legend_plate": {
+   "sheet": 8,
+   "fbox": [
+    0.025,
+    0.348,
+    0.238,
+    0.612
+   ]
+  }
+ }
+}

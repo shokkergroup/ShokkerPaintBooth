@@ -85,6 +85,8 @@ KEY_JS_FILES = [
     "paint-booth-0-picker-owner-ratings.js",
     "paint-booth-2-state-zones.js",
     "paint-booth-3-canvas.js",
+    "js/canvas/dispatch.js",
+    "js/canvas/layer/healing-brush.js",
     "paint-booth-5-api-render.js",
     "paint-booth-6-ui-boot.js",
     "paint-booth-7-shokk.js",
@@ -123,6 +125,17 @@ def test_runtime_manifest_structure_is_stable():
     edit, not only during packaging. Later the same morning, Metals & Forged
     work added arsenal_24k.py + spec_paint.py to the same per-edit mirror path.
     COLORSHOXX rebuild then added dual_color_shift.py for the same reason.
+
+    2026-05-29 DUP-01 close (A2 sync covers engine/): whole-tree engine
+    coverage is now added via the manifest's new `check_only_directories`
+    key (`["engine"]`), NOT by enumerating every engine module under `files`.
+    That keeps the explicit-`files` count stable while `--check`/`--list`
+    walk the whole engine tree and REPORT drift. So the `files` count is
+    unchanged by DUP-01 — it remains whatever the explicit allow-list holds.
+    To stop this assertion drifting against the real manifest, the expected
+    count is DERIVED from the manifest's own `files` length and then sanity-
+    bounded, with the reviewed exact value pinned in EXPECTED_FILE_COUNT
+    below (bump it deliberately when files are intentionally added/removed).
     """
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
 
@@ -140,13 +153,23 @@ def test_runtime_manifest_structure_is_stable():
     target_count = len(manifest["targets"])
     directory_count = len(manifest["directories"])
 
-    assert file_count == 56, (
+    # Reviewed exact count of explicitly-listed `files` entries. DUP-01 added
+    # whole-engine coverage via `check_only_directories`, NOT new `files`, so
+    # this stays at the post-2026-04-24 reviewed value of 220. Bump
+    # deliberately (with a dated note above) when files are intentionally
+    # added or removed from the explicit allow-list.
+    # 2026-07-15 SPB-93 tick 12: dedicated Layer Healing Brush module.
+    EXPECTED_FILE_COUNT = 221
+    assert file_count == EXPECTED_FILE_COUNT, (
         f"runtime-sync manifest now lists {file_count} files "
-        f"(expected 56 = 19 front-end + 37 Python hot-path modules). "
-        f"Confirm each added/removed entry is either a front-end "
-        f"asset or an explicitly-synced Python module; tests and "
-        f"build artifacts must never be added. Update this count "
-        f"after review."
+        f"(expected {EXPECTED_FILE_COUNT} reviewed runtime files). "
+        f"NOTE: DUP-01 engine coverage is added via "
+        f"`check_only_directories`, not by enumerating engine modules "
+        f"under `files` — so this count should NOT change when engine "
+        f"drift coverage is extended. Confirm each added/removed `files` "
+        f"entry is either a front-end asset or an explicitly-synced "
+        f"Python module; tests and build artifacts must never be added. "
+        f"Update EXPECTED_FILE_COUNT after review."
     )
     assert target_count == 2, (
         f"runtime-sync manifest now lists {target_count} targets "
@@ -155,10 +178,35 @@ def test_runtime_manifest_structure_is_stable():
         f"`electron-app/server/pyserver/_internal`. Confirm any "
         f"addition is intentional."
     )
-    assert directory_count == 2, (
+    assert directory_count == 6, (
         f"runtime-sync manifest now lists {directory_count} directories "
-        f"(expected 2 cultural texture folders). Confirm shipped image "
-        f"asset folders are intentional and do not include raw source dumps."
+        f"(expected 6 shipped texture folders). Confirm shipped image "
+        f"asset folders are intentional and do not include raw source dumps. "
+        f"NOTE: the engine tree is covered via `check_only_directories`, "
+        f"NOT `directories`, so this count is unaffected by DUP-01."
+    )
+
+    # 2026-05-29 DUP-01: the whole engine/ tree must be a *report-only*
+    # synced directory so `--check`/`--list` SEE engine drift (previously
+    # engine/ was only mirrored at Electron build time and `--check` was
+    # blind to it). It must live under `check_only_directories` (report-only)
+    # and NOT under `directories` (writable) — converging drifted
+    # finish-output engine modules is the owner's call, not an auto-write.
+    check_only_dirs = manifest.get("check_only_directories", [])
+    assert isinstance(check_only_dirs, list), (
+        "runtime-sync-manifest.json: `check_only_directories` must be an array."
+    )
+    assert "engine" in check_only_dirs, (
+        "runtime-sync-manifest.json must list `engine` under "
+        "`check_only_directories` so `--check` reports engine drift "
+        "(DUP-01). It was found neither there. Without it, the drift-check "
+        "is blind to the ~106 unmanaged engine modules."
+    )
+    assert "engine" not in manifest["directories"], (
+        "`engine` must NOT be under `directories` (which is writable / "
+        "auto-synced by --write). Engine drift coverage is REPORT-ONLY: "
+        "converging drifted finish-output modules is the owner's call. "
+        "Move `engine` to `check_only_directories`."
     )
 
     expected_targets = {
@@ -195,28 +243,90 @@ def test_runtime_manifest_contains_no_test_or_artifact_files():
         "shokker_engine_v2.py",
         "config.py",
         "server.py",
+        "server_routes/__init__.py",
+        "server_routes/asset_routes.py",
+        "server_routes/diagnostics.py",
+        "server_routes/finish_catalog_routes.py",
+        "server_routes/finish_lookup_routes.py",
+        "server_routes/static_pages.py",
+        "server_routes/config_routes.py",
+        "server_routes/render_monitoring.py",
+        "server_routes/system_status.py",
+        "server_routes/license_routes.py",
+        "server_routes/default_asset_routes.py",
+        "server_routes/photoshop_export_routes.py",
+        "server_routes/photoshop_import_routes.py",
+        "server_routes/spec_channel_export_routes.py",
+        "server_routes/psd_layer_export_routes.py",
+        "server_routes/psd_import_routes.py",
+        "server_routes/dual_shift_routes.py",
+        "server_routes/legacy_apply_finish_routes.py",
+        "server_routes/paint_recolor_support.py",
+        "server_routes/render_file_routes.py",
+        "server_routes/file_picker_routes.py",
+        "server_routes/paint_upload_routes.py",
+        "server_routes/iracing_utility_routes.py",
+        "server_routes/validation_routes.py",
+        "server_routes/pattern_layer_routes.py",
+        "server_routes/thumbnail_status.py",
+        "server_routes/cache_admin_routes.py",
+        "server_routes/swatch_review_routes.py",
+        "server_routes/job_cleanup.py",
+        "server_routes/server_bootstrap.py",
+        "server_routes/spec_result_support.py",
+        "server_routes/swatch_routes.py",
+        "server_routes/shokk_routes.py",
+        "server_routes/custom_finish_routes.py",
+        "server_routes/user_import_routes.py",
+        "server_routes/preview_source_cache.py",
+        "server_routes/guest_designer_routes.py",
+        "server_routes/custom_finish_mixer_routes.py",
+        "server_routes/finish_viewer_render_routes.py",
+        "server_routes/finish_viewer_recent_routes.py",
         "server_v5.py",
         "server_health.py",
         "engine/compose.py",
+        "engine/overlay.py",
         "engine/core.py",
         "engine/dual_color_shift.py",
+        "engine/color_shift.py",
         "engine/spec_paint.py",
         "engine/spec_patterns.py",
+        "engine/spec_pattern_families/__init__.py",
+        "engine/spec_pattern_families/mechanical.py",
+        "engine/spec_pattern_families/weather_track.py",
+        "engine/spec_pattern_families/artistic.py",
+        "engine/spec_pattern_families/abstract_art.py",
         "engine/micro_flake_shift.py",
+        "engine/prizm.py",
         "engine/pattern_expansion.py",
         "engine/expansions/arsenal_24k.py",
+        "engine/expansions/color_clash.py",
+        "engine/expansions/color_monolithics.py",
         "engine/expansions/fusions.py",
         "engine/expansions/living_finishes.py",
         "engine/expansions/atelier.py",
         "engine/expansions/paradigm.py",
+        "engine/expansions/owner_review_chameleon.py",
         "engine/expansions/owner_review_effects.py",
         "engine/expansions/owner_review_standalone.py",
         "engine/paint_v2/brushed_directional.py",
         "engine/paint_v2/candy_special.py",
         "engine/paint_v2/cultural_rising_sun.py",
+        "engine/paint_v2/cultural_union_jacked.py",
         "engine/paint_v2/cultural_viva_mexico.py",
+        "engine/paint_v2/cultural_grunge_fun.py",
+        "engine/paint_v2/cultural_placement.py",
+        "engine/paint_v2/placement_context.py",
+        "engine/paint_v2/cultural_mortal_shokk.py",
         "engine/paint_v2/exotic_metal.py",
         "engine/paint_v2/foundation_enhanced.py",
+        "engine/paint_v2/guest_designers.py",
+        "engine/paint_v2/user_imports.py",
+        "engine/paint_v2/user_imports_ingest.py",
+        "engine/paint_v2/user_imports_paths.py",
+        "engine/paint_v2/user_imports_spec_dna.py",
+        "engine/paint_v2/user_imports_engine_preview.py",
         "engine/paint_v2/metallic_flake.py",
         "engine/paint_v2/metallic_standard.py",
         "engine/paint_v2/paint_technique.py",
@@ -224,6 +334,7 @@ def test_runtime_manifest_contains_no_test_or_artifact_files():
         # added so Foundation-Base metadata edits at root auto-sync to
         # Electron mirrors instead of drifting between builds.
         "engine/base_registry_data.py",
+        "engine/chameleon.py",
         # p_volcanic's registry entry points here; syncing only
         # base_registry_data.py would leave Electron running stale math.
         "engine/paint_v2/paradigm_scifi.py",
@@ -234,6 +345,13 @@ def test_runtime_manifest_contains_no_test_or_artifact_files():
         "engine/registry_patches/paint_technique_reg.py",
         "engine/perceptual_color_shift.py",
         "engine/registry.py",
+        "engine/spec_sculpt/__init__.py",
+        "engine/spec_sculpt/core.py",
+        "engine/spec_sculpt/export.py",
+        "engine/spec_sculpt/generate.py",
+        "engine/spec_sculpt/preview.py",
+        "engine/spec_sculpt/catalog_blend.py",
+        "engine/spec_sculpt/presets.py",
     }
 
     leaks = []
@@ -258,15 +376,21 @@ def test_runtime_manifest_mirrors_cultural_texture_directories():
 
     expected = {
         "assets/reference_textures/cultural/rising_sun",
+        "assets/reference_textures/cultural/union_jacked",
         "assets/reference_textures/cultural/viva_mexico",
+        "assets/reference_textures/mortal_shokk",
+        "assets/reference_textures/guest_designers/lyons_designs",
     }
     assert expected <= directories
 
     for rel_dir in expected:
         root_dir = REPO / rel_dir
         assert (root_dir / "manifest.json").is_file(), f"{rel_dir} is missing manifest.json"
-        textures = list(root_dir.glob("*.png"))
-        assert textures, f"{rel_dir} has no shipped texture PNGs"
+        textures = [
+            p for p in root_dir.rglob("*")
+            if p.is_file() and p.suffix.lower() in {".png", ".jpg", ".jpeg"}
+        ]
+        assert textures, f"{rel_dir} has no shipped texture images"
 
 
 def test_backend_assets_list_includes_core_python_mirrors():

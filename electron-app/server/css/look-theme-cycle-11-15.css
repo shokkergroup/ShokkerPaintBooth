@@ -1,0 +1,751 @@
+/* ============================================================
+   SPB Look Theme Cycle 11-15 Styles
+   Extracted from paint-booth-v2.css for SPB-105 file-budget work.
+   Loaded after paint-booth-v2.css and before later look-overdrive modules.
+   ============================================================ */
+
+/* ===== CYCLE 11: RADICAL HEADER "SHOP SIGN" TREATMENT + EXTREME CANVAS/PREVIEW MICRO-DETAILS ===== */
+/* The top bar (always visible) now feels like four completely different custom paint shop storefronts. Bold, in-your-face, no subtlety. */
+
+body[data-look="warped-tour"] .header {
+    background: linear-gradient(180deg, #1f0c18 0%, #120912 100%) !important;
+    border-bottom: 5px solid #ff1493 !important;
+    box-shadow: 0 8px 40px rgba(255,20,147,0.35), inset 0 -2px 0 #ff00aa !important;
+    position: relative !important;
+}
+body[data-look="warped-tour"] .header::after {
+    content: "★ WARPED TOUR PUNK SHOP ★" !important;
+    position: absolute !important;
+    bottom: -2px !important;
+    right: 20px !important;
+    font-size: 9px !important;
+    font-weight: 900 !important;
+    letter-spacing: 2px !important;
+    color: #ff1493 !important;
+    text-shadow: 0 0 8px #ff1493 !important;
+    pointer-events: none !important;
+}
+body[data-look="warped-tour"] .header h1,
+body[data-look="warped-tour"] .header .studio-title,
+body[data-look="warped-tour"] .spb-brand {
+    background: linear-gradient(90deg, #ff1493, #ff00aa, #00f0ff, #ff1493) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    font-weight: 950 !important;
+    letter-spacing: 1.5px !important;
+    text-shadow: 0 0 20px rgba(255,20,147,0.6) !important;
+}
+
+body[data-look="electric-boogeyman"] .header {
+    background: linear-gradient(180deg, #140c08 0%, #090503 100%) !important;
+    border-bottom: 5px solid #ff3300 !important;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.85), inset 0 -3px 0 #661100 !important;
+    position: relative !important;
+}
+body[data-look="electric-boogeyman"] .header::after {
+    content: "☠ ELECTRIC BOOGEYMAN GARAGE ☠" !important;
+    position: absolute !important;
+    bottom: -2px !important;
+    right: 20px !important;
+    font-size: 9px !important;
+    font-weight: 900 !important;
+    letter-spacing: 1.5px !important;
+    color: #ff3300 !important;
+    text-shadow: 0 0 10px #ff3300 !important;
+    pointer-events: none !important;
+}
+body[data-look="electric-boogeyman"] .header h1,
+body[data-look="electric-boogeyman"] .header .studio-title,
+body[data-look="electric-boogeyman"] .spb-brand {
+    color: #ff6600 !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.5px !important;
+    text-shadow: 0 0 15px rgba(255,51,0,0.7), 2px 2px 0 #000 !important;
+}
+
+body[data-look="neon-cyberpunk"] .header {
+    background: linear-gradient(180deg, #120c20 0%, #090712 100%) !important;
+    border-bottom: 4px solid #00ff85 !important;
+    box-shadow: 0 6px 35px rgba(192,38,255,0.4), inset 0 -1px 0 #c026ff !important;
+    position: relative !important;
+}
+body[data-look="neon-cyberpunk"] .header::after {
+    content: "◉ NEON CYBERPUNK DATA DEN ◉" !important;
+    position: absolute !important;
+    bottom: -2px !important;
+    right: 20px !important;
+    font-size: 9px !important;
+    font-weight: 800 !important;
+    letter-spacing: 3px !important;
+    color: #00ff85 !important;
+    text-shadow: 0 0 12px #00ff85, 0 0 22px #c026ff !important;
+    pointer-events: none !important;
+}
+body[data-look="neon-cyberpunk"] .header h1,
+body[data-look="neon-cyberpunk"] .header .studio-title,
+body[data-look="neon-cyberpunk"] .spb-brand {
+    background: linear-gradient(90deg, #00ff85, #c026ff, #ff2e63, #00ff85) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    font-weight: 800 !important;
+    letter-spacing: 2px !important;
+    text-shadow: 0 0 15px rgba(0,255,133,0.5) !important;
+}
+
+body[data-look="swamp-thang"] .header {
+    background: linear-gradient(180deg, #0f1c14 0%, #070b08 100%) !important;
+    border-bottom: 5px solid #c9a227 !important;
+    box-shadow: 0 8px 40px rgba(94,43,138,0.35), inset 0 -2px 0 #5e2b8a !important;
+    position: relative !important;
+}
+body[data-look="swamp-thang"] .header::after {
+    content: "✦ SWAMP THANG VOODOO BAYOU ✦" !important;
+    position: absolute !important;
+    bottom: -2px !important;
+    right: 20px !important;
+    font-size: 9px !important;
+    font-weight: 900 !important;
+    letter-spacing: 1.5px !important;
+    color: #c9a227 !important;
+    text-shadow: 0 0 10px #c9a227, 0 0 18px #5e2b8a !important;
+    pointer-events: none !important;
+}
+body[data-look="swamp-thang"] .header h1,
+body[data-look="swamp-thang"] .header .studio-title,
+body[data-look="swamp-thang"] .spb-brand {
+    color: #c9a227 !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.8px !important;
+    text-shadow: 0 0 12px rgba(201,162,39,0.6), 1px 1px 0 #3a1f0f !important;
+}
+
+/* Extra radical header micro-details — different top accent bars */
+body[data-look="warped-tour"] .header::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 2px !important;
+    background: linear-gradient(to right, #ff1493, #00f0ff, #ff1493) !important;
+}
+body[data-look="electric-boogeyman"] .header::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 3px !important;
+    background: linear-gradient(to right, #ff3300, #661100, #ff3300) !important;
+}
+body[data-look="neon-cyberpunk"] .header::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 1px !important;
+    background: repeating-linear-gradient(90deg, #00ff85, #c026ff 4px, #00ff85 8px) !important;
+}
+body[data-look="swamp-thang"] .header::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 2px !important;
+    background: linear-gradient(to right, #c9a227, #5e2b8a, #c9a227) !important;
+}
+
+/* Extreme canvas viewport + center panel shop floor reinforcement */
+body[data-look="warped-tour"] #canvasViewport,
+body[data-look="warped-tour"] .centerPanel {
+    border: 3px solid #ff1493 !important;
+    box-shadow: 0 0 0 1px #000, 0 0 25px rgba(255,20,147,0.3) !important;
+}
+body[data-look="electric-boogeyman"] #canvasViewport,
+body[data-look="electric-boogeyman"] .centerPanel {
+    border: 4px solid #ff3300 !important;
+    box-shadow: 0 0 0 2px #220000, 0 15px 50px rgba(0,0,0,0.9) !important;
+}
+body[data-look="neon-cyberpunk"] #canvasViewport,
+body[data-look="neon-cyberpunk"] .centerPanel {
+    border: 2px solid #00ff85 !important;
+    box-shadow: 0 0 0 1px #c026ff, 0 0 30px rgba(192,38,255,0.25) !important;
+}
+body[data-look="swamp-thang"] #canvasViewport,
+body[data-look="swamp-thang"] .centerPanel {
+    border: 3px solid #c9a227 !important;
+    box-shadow: 0 0 0 1px #3a1f0f, 0 10px 40px rgba(94,43,138,0.3) !important;
+}
+
+/* ===== END CYCLE 11 BLOCK ===== */
+
+/* ===== CYCLE 12: EXTREME VERTICAL TOOLBAR + BUTTONS "DIFFERENT SHOPS" POLISH ===== */
+/* The left toolbar is one of the most used structural pieces — now it feels like four completely different workshops. Maximum aggression and personality. */
+
+/* Warped Tour — Chaotic, energetic, punk rock tool wall */
+body[data-look="warped-tour"] .vertical-toolbar {
+    background: linear-gradient(180deg, #1a0a14 0%, #0c0610 100%) !important;
+    border-right: 5px solid #ff1493 !important;
+    box-shadow: inset -3px 0 0 #ff00aa, 4px 0 20px rgba(255,20,147,0.25) !important;
+}
+body[data-look="warped-tour"] .vertical-toolbar .vtool-btn {
+    border: 2px solid #ff1493 !important;
+    border-radius: 4px 12px 4px 12px !important; /* jagged chaotic shape */
+    background: rgba(255,20,147,0.06) !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.5px !important;
+    transition: all 0.1s cubic-bezier(0.23, 1.0, 0.32, 1) !important;
+}
+body[data-look="warped-tour"] .vertical-toolbar .vtool-btn:hover {
+    background: rgba(255,20,147,0.22) !important;
+    border-color: #00f0ff !important;
+    transform: scale(1.12) rotate(2deg) !important;
+    box-shadow: 0 0 0 3px #ff1493, 0 0 18px #ff1493 !important;
+}
+body[data-look="warped-tour"] .vertical-toolbar .vtool-btn.active,
+body[data-look="warped-tour"] .vertical-toolbar .vtool-btn[aria-pressed="true"] {
+    background: #ff1493 !important;
+    color: #000 !important;
+    border-color: #00f0ff !important;
+    box-shadow: 0 0 0 4px #ff1493, inset 0 3px 0 rgba(255,255,255,0.4) !important;
+    transform: scale(0.96) !important;
+}
+
+/* Electric Boogeyman — Heavy, menacing, horror workshop */
+body[data-look="electric-boogeyman"] .vertical-toolbar {
+    background: linear-gradient(180deg, #140c08 0%, #080402 100%) !important;
+    border-right: 6px solid #ff3300 !important;
+    box-shadow: inset -4px 0 0 #661100, 6px 0 30px rgba(0,0,0,0.85) !important;
+}
+body[data-look="electric-boogeyman"] .vertical-toolbar .vtool-btn {
+    border: 3px solid #ff3300 !important;
+    border-radius: 2px !important; /* brutal square */
+    background: rgba(255,51,0,0.05) !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.3px !important;
+    box-shadow: inset 0 2px 0 rgba(255,255,255,0.08) !important;
+}
+body[data-look="electric-boogeyman"] .vertical-toolbar .vtool-btn:hover {
+    background: rgba(255,51,0,0.18) !important;
+    border-color: #ff6600 !important;
+    transform: translateY(-1px) scale(1.04) !important;
+    box-shadow: 0 0 0 3px #ff3300, 0 8px 0 #220000 !important;
+}
+body[data-look="electric-boogeyman"] .vertical-toolbar .vtool-btn.active,
+body[data-look="electric-boogeyman"] .vertical-toolbar .vtool-btn[aria-pressed="true"] {
+    background: #ff3300 !important;
+    color: #000 !important;
+    border-color: #ff6600 !important;
+    box-shadow: 0 0 0 4px #ff3300, inset 0 4px 0 #000 !important;
+    transform: translateY(2px) !important;
+}
+
+/* Neon Cyberpunk — Sharp, glitchy, digital HUD rack */
+body[data-look="neon-cyberpunk"] .vertical-toolbar {
+    background: linear-gradient(180deg, #120c20 0%, #090712 100%) !important;
+    border-right: 3px solid #00ff85 !important;
+    box-shadow: inset -2px 0 0 #c026ff, 0 0 25px rgba(192,38,255,0.2) !important;
+}
+body[data-look="neon-cyberpunk"] .vertical-toolbar .vtool-btn {
+    border: 1px solid #00ff85 !important;
+    border-radius: 0 !important; /* razor sharp */
+    background: rgba(0,255,133,0.04) !important;
+    font-weight: 700 !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+}
+body[data-look="neon-cyberpunk"] .vertical-toolbar .vtool-btn:hover {
+    background: rgba(192,38,255,0.15) !important;
+    border-color: #c026ff !important;
+    transform: translateX(2px) scale(1.08) !important;
+    box-shadow: 0 0 0 2px #00ff85, 0 0 20px #c026ff !important;
+    filter: hue-rotate(10deg) !important;
+}
+body[data-look="neon-cyberpunk"] .vertical-toolbar .vtool-btn.active,
+body[data-look="neon-cyberpunk"] .vertical-toolbar .vtool-btn[aria-pressed="true"] {
+    background: #00ff85 !important;
+    color: #000 !important;
+    border-color: #c026ff !important;
+    box-shadow: 0 0 0 3px #00ff85, 0 0 25px #c026ff !important;
+    transform: scale(0.95) translateX(-1px) !important;
+}
+
+/* Swamp Thang — Ornate, rich, voodoo bayou workbench */
+body[data-look="swamp-thang"] .vertical-toolbar {
+    background: linear-gradient(180deg, #0f1c14 0%, #070b08 100%) !important;
+    border-right: 5px solid #c9a227 !important;
+    box-shadow: inset -3px 0 0 #5e2b8a, 0 8px 35px rgba(94,43,138,0.25) !important;
+}
+body[data-look="swamp-thang"] .vertical-toolbar .vtool-btn {
+    border: 2px solid #c9a227 !important;
+    border-radius: 999px 4px 999px 4px !important; /* ornate rounded */
+    background: rgba(201,162,39,0.06) !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.8px !important;
+}
+body[data-look="swamp-thang"] .vertical-toolbar .vtool-btn:hover {
+    background: rgba(201,162,39,0.2) !important;
+    border-color: #5e2b8a !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 0 3px #c9a227, 0 0 16px #c9a227 !important;
+}
+body[data-look="swamp-thang"] .vertical-toolbar .vtool-btn.active,
+body[data-look="swamp-thang"] .vertical-toolbar .vtool-btn[aria-pressed="true"] {
+    background: #c9a227 !important;
+    color: #000 !important;
+    border-color: #5e2b8a !important;
+    box-shadow: 0 0 0 4px #c9a227, inset 0 3px 0 rgba(255,255,255,0.35) !important;
+    transform: scale(0.97) !important;
+}
+
+/* Group separators / labels also get the full treatment */
+body[data-look="warped-tour"] .vertical-toolbar .vtool-group {
+    border-top: 2px dashed #ff1493 !important;
+}
+body[data-look="electric-boogeyman"] .vertical-toolbar .vtool-group {
+    border-top: 3px solid #ff3300 !important;
+}
+body[data-look="neon-cyberpunk"] .vertical-toolbar .vtool-group {
+    border-top: 1px dotted #00ff85 !important;
+}
+body[data-look="swamp-thang"] .vertical-toolbar .vtool-group {
+    border-top: 2px solid #c9a227 !important;
+}
+
+/* ===== END CYCLE 12 BLOCK ===== */
+
+/* ===== CYCLE 13: EXTREME MAIN PANELS + FLOATING DETAIL PANEL + SIGNATURE WORKSPACE MICRO-DETAILS ===== */
+/* The core workspace (left/right panels + center preview + floating zone editor) now feels like four completely different custom paint shops. Bold, high-specificity overrides. */
+
+body[data-look="warped-tour"] .left-panel,
+body[data-look="warped-tour"] .right-panel {
+    background: linear-gradient(180deg, #120a14, #0a0610) !important;
+    border-color: #ff1493 !important;
+    box-shadow: inset 0 0 60px rgba(255,20,147,0.12), 0 0 0 1px #ff1493 !important;
+}
+body[data-look="warped-tour"] .left-panel::before,
+body[data-look="warped-tour"] .right-panel::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: repeating-linear-gradient(135deg, rgba(255,20,147,0.06) 0px, transparent 4px) !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+body[data-look="warped-tour"] #centerPanel,
+body[data-look="warped-tour"] .preview-frame {
+    background: #0a0810 !important;
+    border: 4px solid #ff1493 !important;
+    box-shadow: 0 0 0 2px #000, 0 0 40px rgba(255,20,147,0.25) !important;
+}
+
+/* Electric Boogeyman — dark menacing garage panels */
+body[data-look="electric-boogeyman"] .left-panel,
+body[data-look="electric-boogeyman"] .right-panel {
+    background: linear-gradient(180deg, #0c0806, #050302) !important;
+    border-color: #ff3300 !important;
+    box-shadow: inset 0 0 80px rgba(0,0,0,0.7), 0 0 0 2px #ff3300 !important;
+}
+body[data-look="electric-boogeyman"] .left-panel::before,
+body[data-look="electric-boogeyman"] .right-panel::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: radial-gradient(circle at 30% 20%, rgba(255,51,0,0.08) 0%, transparent 60%) !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+body[data-look="electric-boogeyman"] #centerPanel,
+body[data-look="electric-boogeyman"] .preview-frame {
+    background: #060402 !important;
+    border: 5px solid #ff3300 !important;
+    box-shadow: 0 0 0 3px #220000, 0 20px 70px rgba(0,0,0,0.9) !important;
+}
+
+/* Neon Cyberpunk — glitchy digital workspace */
+body[data-look="neon-cyberpunk"] .left-panel,
+body[data-look="neon-cyberpunk"] .right-panel {
+    background: linear-gradient(180deg, #0f0a1a, #080612) !important;
+    border-color: #00ff85 !important;
+    box-shadow: inset 0 0 50px rgba(192,38,255,0.15), 0 0 0 1px #c026ff !important;
+}
+body[data-look="neon-cyberpunk"] .left-panel::before,
+body[data-look="neon-cyberpunk"] .right-panel::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: repeating-linear-gradient(0deg, rgba(0,255,133,0.05) 0px, transparent 2px, rgba(192,38,255,0.04) 3px) !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+body[data-look="neon-cyberpunk"] #centerPanel,
+body[data-look="neon-cyberpunk"] .preview-frame {
+    background: #080612 !important;
+    border: 3px solid #00ff85 !important;
+    box-shadow: 0 0 0 2px #c026ff, 0 0 35px rgba(0,255,133,0.2), 0 0 55px rgba(192,38,255,0.15) !important;
+}
+
+/* Swamp Thang — rich voodoo bayou panels */
+body[data-look="swamp-thang"] .left-panel,
+body[data-look="swamp-thang"] .right-panel {
+    background: linear-gradient(180deg, #0a140f, #050a07) !important;
+    border-color: #c9a227 !important;
+    box-shadow: inset 0 0 60px rgba(94,43,138,0.18), 0 0 0 1px #5e2b8a !important;
+}
+body[data-look="swamp-thang"] .left-panel::before,
+body[data-look="swamp-thang"] .right-panel::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: radial-gradient(circle at 70% 30%, rgba(201,162,39,0.07) 0%, transparent 55%) !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+body[data-look="swamp-thang"] #centerPanel,
+body[data-look="swamp-thang"] .preview-frame {
+    background: #050a07 !important;
+    border: 4px solid #c9a227 !important;
+    box-shadow: 0 0 0 2px #3a1f0f, 0 15px 50px rgba(94,43,138,0.25) !important;
+}
+
+/* Floating zone detail / editor panel — extreme shop framing */
+body[data-look="warped-tour"] .zone-editor-float,
+body[data-look="warped-tour"] #zoneDetailPanel {
+    background: linear-gradient(180deg, #1a0a14, #0f0812) !important;
+    border: 4px solid #ff1493 !important;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.85), 0 0 0 2px #ff00aa, 0 0 40px rgba(255,20,147,0.3) !important;
+}
+body[data-look="electric-boogeyman"] .zone-editor-float,
+body[data-look="electric-boogeyman"] #zoneDetailPanel {
+    background: linear-gradient(180deg, #140c08, #080402) !important;
+    border: 5px solid #ff3300 !important;
+    box-shadow: 0 30px 90px rgba(0,0,0,0.95), 0 0 0 3px #661100, 0 0 50px rgba(255,51,0,0.35) !important;
+}
+body[data-look="neon-cyberpunk"] .zone-editor-float,
+body[data-look="neon-cyberpunk"] #zoneDetailPanel {
+    background: linear-gradient(180deg, #120c20, #090712) !important;
+    border: 3px solid #00ff85 !important;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.9), 0 0 0 2px #c026ff, 0 0 45px rgba(0,255,133,0.25), 0 0 65px rgba(192,38,255,0.2) !important;
+}
+body[data-look="swamp-thang"] .zone-editor-float,
+body[data-look="swamp-thang"] #zoneDetailPanel {
+    background: linear-gradient(180deg, #0f1c14, #070b08) !important;
+    border: 4px solid #c9a227 !important;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.9), 0 0 0 2px #5e2b8a, 0 0 40px rgba(201,162,39,0.25) !important;
+}
+
+/* Signature micro-details on remaining interactive chrome (render buttons, status areas) */
+body[data-look="warped-tour"] .btn[data-action*="render"],
+body[data-look="warped-tour"] .render-btn,
+body[data-look="warped-tour"] .output-path {
+    border-color: #ff1493 !important;
+    box-shadow: 0 0 0 2px rgba(255,20,147,0.3) !important;
+}
+body[data-look="electric-boogeyman"] .btn[data-action*="render"],
+body[data-look="electric-boogeyman"] .render-btn,
+body[data-look="electric-boogeyman"] .output-path {
+    border-color: #ff3300 !important;
+    box-shadow: 0 0 0 3px rgba(255,51,0,0.25) !important;
+}
+body[data-look="neon-cyberpunk"] .btn[data-action*="render"],
+body[data-look="neon-cyberpunk"] .render-btn,
+body[data-look="neon-cyberpunk"] .output-path {
+    border-color: #00ff85 !important;
+    box-shadow: 0 0 0 2px rgba(0,255,133,0.3), 0 0 15px rgba(192,38,255,0.2) !important;
+}
+body[data-look="swamp-thang"] .btn[data-action*="render"],
+body[data-look="swamp-thang"] .render-btn,
+body[data-look="swamp-thang"] .output-path {
+    border-color: #c9a227 !important;
+    box-shadow: 0 0 0 2px rgba(201,162,39,0.3) !important;
+}
+
+/* ===== END CYCLE 13 BLOCK ===== */
+
+/* ===== CYCLE 14: NUCLEAR HIGH-SPECIFICITY POLISH ON ZONE CARDS + FINISH PICKER CARDS + LOOKS PICKER ===== */
+/* The card surfaces (zone list, finish library, shokk cards, and the Looks picker grid) now feel like they were built in four completely different custom paint shops. Maximum aggression to beat any remaining !important rules. */
+
+body[data-look="warped-tour"] .zone-card,
+body[data-look="warped-tour"] .finish-card,
+body[data-look="warped-tour"] .shokk-card {
+    border: 3px solid #ff1493 !important;
+    border-radius: 6px 2px 6px 2px !important; /* jagged punk shape */
+    background: linear-gradient(145deg, #120a14, #0a0610) !important;
+    box-shadow: 0 0 0 1px #ff00aa, 0 4px 20px rgba(255,20,147,0.25) !important;
+}
+body[data-look="warped-tour"] .zone-card:hover,
+body[data-look="warped-tour"] .finish-card:hover,
+body[data-look="warped-tour"] .shokk-card:hover {
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: 0 0 0 3px #ff1493, 0 0 25px rgba(255,20,147,0.5) !important;
+}
+body[data-look="warped-tour"] .zone-card.selected,
+body[data-look="warped-tour"] .finish-card.selected,
+body[data-look="warped-tour"] .shokk-card.selected,
+body[data-look="warped-tour"] .shokk-card.active-choice {
+    border-color: #00f0ff !important;
+    box-shadow: 0 0 0 4px #ff1493, 0 0 35px rgba(255,20,147,0.6) !important;
+    background: linear-gradient(145deg, #1a0a14, #0f0812) !important;
+}
+
+/* Electric Boogeyman — heavy distressed metal cards */
+body[data-look="electric-boogeyman"] .zone-card,
+body[data-look="electric-boogeyman"] .finish-card,
+body[data-look="electric-boogeyman"] .shokk-card {
+    border: 4px solid #ff3300 !important;
+    border-radius: 2px !important; /* brutal square */
+    background: linear-gradient(145deg, #0c0806, #050302) !important;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.6), 0 0 0 2px #661100, 0 6px 25px rgba(0,0,0,0.8) !important;
+}
+body[data-look="electric-boogeyman"] .zone-card:hover,
+body[data-look="electric-boogeyman"] .finish-card:hover,
+body[data-look="electric-boogeyman"] .shokk-card:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 0 0 3px #ff3300, 0 10px 30px rgba(0,0,0,0.9) !important;
+}
+body[data-look="electric-boogeyman"] .zone-card.selected,
+body[data-look="electric-boogeyman"] .finish-card.selected,
+body[data-look="electric-boogeyman"] .shokk-card.selected,
+body[data-look="electric-boogeyman"] .shokk-card.active-choice {
+    border-color: #ff6600 !important;
+    box-shadow: 0 0 0 4px #ff3300, inset 0 0 30px rgba(255,51,0,0.2), 0 8px 35px rgba(0,0,0,0.95) !important;
+    background: linear-gradient(145deg, #140c08, #080402) !important;
+}
+
+/* Neon Cyberpunk — glitchy corrupted data cards */
+body[data-look="neon-cyberpunk"] .zone-card,
+body[data-look="neon-cyberpunk"] .finish-card,
+body[data-look="neon-cyberpunk"] .shokk-card {
+    border: 2px solid #00ff85 !important;
+    border-radius: 0 !important; /* razor sharp */
+    background: linear-gradient(145deg, #0f0a1a, #080612) !important;
+    box-shadow: 0 0 0 1px #c026ff, 0 0 18px rgba(192,38,255,0.25) !important;
+}
+body[data-look="neon-cyberpunk"] .zone-card:hover,
+body[data-look="neon-cyberpunk"] .finish-card:hover,
+body[data-look="neon-cyberpunk"] .shokk-card:hover {
+    transform: translateX(1px) scale(1.015) !important;
+    box-shadow: 0 0 0 2px #00ff85, 0 0 25px rgba(192,38,255,0.4), 0 0 35px rgba(0,255,133,0.25) !important;
+    filter: hue-rotate(8deg) !important;
+}
+body[data-look="neon-cyberpunk"] .zone-card.selected,
+body[data-look="neon-cyberpunk"] .finish-card.selected,
+body[data-look="neon-cyberpunk"] .shokk-card.selected,
+body[data-look="neon-cyberpunk"] .shokk-card.active-choice {
+    border-color: #c026ff !important;
+    box-shadow: 0 0 0 3px #00ff85, 0 0 30px rgba(0,255,133,0.35), 0 0 45px rgba(192,38,255,0.45) !important;
+    background: linear-gradient(145deg, #120c20, #090712) !important;
+}
+
+/* Swamp Thang — rich ornate voodoo cards */
+body[data-look="swamp-thang"] .zone-card,
+body[data-look="swamp-thang"] .finish-card,
+body[data-look="swamp-thang"] .shokk-card {
+    border: 3px solid #c9a227 !important;
+    border-radius: 8px 3px 8px 3px !important; /* ornate rounded */
+    background: linear-gradient(145deg, #0a140f, #050a07) !important;
+    box-shadow: 0 0 0 1px #5e2b8a, 0 6px 22px rgba(94,43,138,0.3) !important;
+}
+body[data-look="swamp-thang"] .zone-card:hover,
+body[data-look="swamp-thang"] .finish-card:hover,
+body[data-look="swamp-thang"] .shokk-card:hover {
+    transform: scale(1.03) !important;
+    box-shadow: 0 0 0 3px #c9a227, 0 0 22px rgba(201,162,39,0.4) !important;
+}
+body[data-look="swamp-thang"] .zone-card.selected,
+body[data-look="swamp-thang"] .finish-card.selected,
+body[data-look="swamp-thang"] .shokk-card.selected,
+body[data-look="swamp-thang"] .shokk-card.active-choice {
+    border-color: #5e2b8a !important;
+    box-shadow: 0 0 0 4px #c9a227, 0 0 28px rgba(94,43,138,0.4) !important;
+    background: linear-gradient(145deg, #0f1c14, #070b08) !important;
+}
+
+/* The Looks Picker cards in Settings — make the choice itself feel shop-specific */
+body[data-look="warped-tour"] #looksGrid .look-card {
+    border: 3px solid #ff1493 !important;
+    background: linear-gradient(180deg, #1a0a14, #0f0812) !important;
+    box-shadow: 0 0 0 2px #ff00aa, 0 8px 25px rgba(255,20,147,0.3) !important;
+}
+body[data-look="electric-boogeyman"] #looksGrid .look-card {
+    border: 4px solid #ff3300 !important;
+    background: linear-gradient(180deg, #140c08, #080402) !important;
+    box-shadow: 0 0 0 3px #661100, 0 10px 30px rgba(0,0,0,0.85) !important;
+}
+body[data-look="neon-cyberpunk"] #looksGrid .look-card {
+    border: 2px solid #00ff85 !important;
+    background: linear-gradient(180deg, #120c20, #090712) !important;
+    box-shadow: 0 0 0 2px #c026ff, 0 0 25px rgba(192,38,255,0.3) !important;
+}
+body[data-look="swamp-thang"] #looksGrid .look-card {
+    border: 3px solid #c9a227 !important;
+    background: linear-gradient(180deg, #0f1c14, #070b08) !important;
+    box-shadow: 0 0 0 2px #5e2b8a, 0 8px 25px rgba(94,43,138,0.3) !important;
+}
+
+/* Extra inner card micro-details for zone numbers and headers */
+body[data-look="warped-tour"] .zone-card .zone-number { border: 2px solid #ff1493 !important; box-shadow: 0 0 10px #ff1493 !important; }
+body[data-look="electric-boogeyman"] .zone-card .zone-number { border: 3px solid #ff3300 !important; box-shadow: 0 0 12px #ff3300 !important; }
+body[data-look="neon-cyberpunk"] .zone-card .zone-number { border: 1px solid #00ff85 !important; box-shadow: 0 0 14px #00ff85, 0 0 22px #c026ff !important; }
+body[data-look="swamp-thang"] .zone-card .zone-number { border: 2px solid #c9a227 !important; box-shadow: 0 0 10px #c9a227 !important; }
+
+/* ===== END CYCLE 14 BLOCK ===== */
+
+/* ===== CYCLE 15: SIGNATURE MICRO-DETAILS + FINAL INTERACTIVE CHROME POLISH ===== */
+/* The identity elements (EKG heartbeat, Grunge Smiley) and all remaining interactive chrome now scream the Look with maximum personality and high-specificity rules. */
+
+body[data-look="warped-tour"] .ekg,
+body[data-look="warped-tour"] .heartbeat,
+body[data-look="warped-tour"] .zone-heartbeat {
+    color: #ff1493 !important;
+    filter: drop-shadow(0 0 6px #ff1493) drop-shadow(0 0 12px #00f0ff) !important;
+    animation-duration: 0.7s !important;
+}
+body[data-look="warped-tour"] .grunge-smiley,
+body[data-look="warped-tour"] .grunge-face {
+    color: #ff1493 !important;
+    filter: drop-shadow(0 0 8px #ff1493) !important;
+    transform: scale(1.05) !important;
+}
+
+body[data-look="electric-boogeyman"] .ekg,
+body[data-look="electric-boogeyman"] .heartbeat,
+body[data-look="electric-boogeyman"] .zone-heartbeat {
+    color: #ff3300 !important;
+    filter: drop-shadow(0 0 8px #ff3300) drop-shadow(0 0 16px #ff0000) !important;
+    animation-duration: 1.1s !important;
+}
+body[data-look="electric-boogeyman"] .grunge-smiley,
+body[data-look="electric-boogeyman"] .grunge-face {
+    color: #ff3300 !important;
+    filter: drop-shadow(0 0 10px #ff3300) !important;
+    transform: scale(0.98) !important;
+}
+
+body[data-look="neon-cyberpunk"] .ekg,
+body[data-look="neon-cyberpunk"] .heartbeat,
+body[data-look="neon-cyberpunk"] .zone-heartbeat {
+    color: #00ff85 !important;
+    filter: drop-shadow(0 0 6px #00ff85) drop-shadow(0 0 14px #c026ff) !important;
+    animation-duration: 0.55s !important;
+}
+body[data-look="neon-cyberpunk"] .grunge-smiley,
+body[data-look="neon-cyberpunk"] .grunge-face {
+    color: #c026ff !important;
+    filter: drop-shadow(0 0 8px #00ff85) drop-shadow(0 0 16px #c026ff) !important;
+    animation: glitch 1.2s infinite !important;
+}
+
+body[data-look="swamp-thang"] .ekg,
+body[data-look="swamp-thang"] .heartbeat,
+body[data-look="swamp-thang"] .zone-heartbeat {
+    color: #c9a227 !important;
+    filter: drop-shadow(0 0 8px #c9a227) drop-shadow(0 0 14px #5e2b8a) !important;
+    animation-duration: 0.95s !important;
+}
+body[data-look="swamp-thang"] .grunge-smiley,
+body[data-look="swamp-thang"] .grunge-face {
+    color: #c9a227 !important;
+    filter: drop-shadow(0 0 10px #c9a227) drop-shadow(0 0 18px #5e2b8a) !important;
+}
+
+/* Remaining render/output/status chrome with shop personality */
+body[data-look="warped-tour"] .render-btn,
+body[data-look="warped-tour"] button[onclick*="render"],
+body[data-look="warped-tour"] .status-bar,
+body[data-look="warped-tour"] .output-path {
+    border-color: #ff1493 !important;
+    background: linear-gradient(180deg, rgba(255,20,147,0.1), transparent) !important;
+    box-shadow: 0 0 0 2px rgba(255,20,147,0.3) !important;
+}
+
+body[data-look="electric-boogeyman"] .render-btn,
+body[data-look="electric-boogeyman"] button[onclick*="render"],
+body[data-look="electric-boogeyman"] .status-bar,
+body[data-look="electric-boogeyman"] .output-path {
+    border-color: #ff3300 !important;
+    background: linear-gradient(180deg, rgba(255,51,0,0.08), transparent) !important;
+    box-shadow: 0 0 0 3px rgba(255,51,0,0.25) !important;
+}
+
+body[data-look="neon-cyberpunk"] .render-btn,
+body[data-look="neon-cyberpunk"] button[onclick*="render"],
+body[data-look="neon-cyberpunk"] .status-bar,
+body[data-look="neon-cyberpunk"] .output-path {
+    border-color: #00ff85 !important;
+    background: linear-gradient(180deg, rgba(0,255,133,0.08), transparent) !important;
+    box-shadow: 0 0 0 2px rgba(0,255,133,0.3), 0 0 12px rgba(192,38,255,0.2) !important;
+}
+
+body[data-look="swamp-thang"] .render-btn,
+body[data-look="swamp-thang"] button[onclick*="render"],
+body[data-look="swamp-thang"] .status-bar,
+body[data-look="swamp-thang"] .output-path {
+    border-color: #c9a227 !important;
+    background: linear-gradient(180deg, rgba(201,162,39,0.1), transparent) !important;
+    box-shadow: 0 0 0 2px rgba(201,162,39,0.3) !important;
+}
+
+/* Canvas viewport signature micro-details reinforcement */
+body[data-look="warped-tour"] #canvasViewport::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: repeating-radial-gradient(circle at 30% 20%, rgba(255,20,147,0.06) 0px, transparent 3px) !important;
+    pointer-events: none !important;
+    mix-blend-mode: screen !important;
+}
+
+body[data-look="electric-boogeyman"] #canvasViewport::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: radial-gradient(ellipse at 40% 30%, rgba(255,51,0,0.12) 0%, transparent 70%) !important;
+    pointer-events: none !important;
+}
+
+body[data-look="neon-cyberpunk"] #canvasViewport::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: linear-gradient(transparent 50%, rgba(0,255,133,0.04) 50%) !important;
+    background-size: 100% 4px !important;
+    pointer-events: none !important;
+    animation: scanline 4s linear infinite !important;
+}
+
+body[data-look="swamp-thang"] #canvasViewport::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: radial-gradient(circle at 60% 40%, rgba(201,162,39,0.08) 0%, transparent 65%) !important;
+    pointer-events: none !important;
+}
+
+/* Final global interactive polish on any missed form elements */
+body[data-look="warped-tour"] input,
+body[data-look="warped-tour"] select,
+body[data-look="warped-tour"] textarea {
+    border-color: #ff1493 !important;
+}
+body[data-look="electric-boogeyman"] input,
+body[data-look="electric-boogeyman"] select,
+body[data-look="electric-boogeyman"] textarea {
+    border-color: #ff3300 !important;
+}
+body[data-look="neon-cyberpunk"] input,
+body[data-look="neon-cyberpunk"] select,
+body[data-look="neon-cyberpunk"] textarea {
+    border-color: #00ff85 !important;
+}
+body[data-look="swamp-thang"] input,
+body[data-look="swamp-thang"] select,
+body[data-look="swamp-thang"] textarea {
+    border-color: #c9a227 !important;
+}
+
+/* ===== END CYCLE 15 BLOCK ===== */

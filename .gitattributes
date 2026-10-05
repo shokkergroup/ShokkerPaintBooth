@@ -1,0 +1,55 @@
+# .gitattributes — repo-weight hygiene (WIN #15)
+#
+# Purpose:
+#   1) Normalize text line endings so the repo stores LF and avoids
+#      noisy CRLF/LF churn across Windows + CI + worktrees.
+#   2) Mark known binary/asset types as binary so Git never tries to
+#      diff/merge them (and never corrupts them with EOL conversion).
+#
+# This file is a config-only hygiene change. It does NOT move anything
+# into Git LFS and does NOT rewrite history. For the LFS migration plan
+# see: docs/GIT_LFS_PLAN.md
+#
+# NOTE: `binary` is shorthand for `-text -diff -merge`. Files marked
+# binary are never EOL-normalized, never diffed, never auto-merged.
+
+# ---------------------------------------------------------------------
+# Default: let Git decide text vs binary and normalize text to LF on
+# commit. Working-tree checkout EOL is left to each user's core.autocrlf
+# / core.eol, except where pinned explicitly below.
+# ---------------------------------------------------------------------
+* text=auto
+
+# ---------------------------------------------------------------------
+# Pin line endings for code that MUST stay LF (shell, Python, JS family).
+# Prevents shebang/CRLF breakage and keeps engine sources byte-stable.
+# ---------------------------------------------------------------------
+*.sh    text eol=lf
+*.bash  text eol=lf
+*.py    text eol=lf
+*.pyi   text eol=lf
+*.js    text eol=lf
+*.jsx   text eol=lf
+*.mjs   text eol=lf
+*.cjs   text eol=lf
+*.ts    text eol=lf
+*.tsx   text eol=lf
+
+# ---------------------------------------------------------------------
+# Binary / asset types — no diff, no merge, no EOL conversion.
+# (Required set per WIN #15.)
+# ---------------------------------------------------------------------
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.tga   binary
+*.psd   binary
+*.zip   binary
+*.exe   binary
+*.dll   binary
+*.pyd   binary
+*.ico   binary
+*.pak   binary
+*.dat   binary
+*.mat   binary
+*.npz   binary

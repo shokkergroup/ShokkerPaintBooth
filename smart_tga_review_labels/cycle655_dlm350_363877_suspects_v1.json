@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 350/car_num_363877.tga",
+  "inspection_records": "_smart_tga_runs/cycle655_dlm_instance_features_batch/inspection_records.json",
+  "review_scope": "Cycle 655 manual source and all-owner sheet review of every emitted suspect bbox.",
+  "component_labels": [
+    {"layer":"numbers","component_index":4,"expected_bbox":[16,708,182,61],"target_layer":"sponsors","label":"sponsor_badge","note":"Schaeffer's Racing Oil sponsor badge, not car number 66."},
+    {"layer":"sponsors","component_index":25,"expected_bbox":[280,830,313,75],"target_layer":"paint","label":"paint_livery_panel","note":"Large flat red lower-side body panel."},
+    {"layer":"sponsors","component_index":10,"expected_bbox":[913,680,111,344],"target_layer":"uncertain","label":"mixed_number_livery_panel","note":"One connected roof/right-edge region combines livery, sponsor art, and true 66 material; requires instance-level decomposition."},
+    {"layer":"sponsors","component_index":12,"expected_bbox":[297,716,174,97],"target_layer":"numbers","label":"true_number","note":"True lower-side 66 decal currently retained as Sponsor."}
+  ]
+}

@@ -1,0 +1,5 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_185296.tga","inspection_records":"_smart_tga_runs/cycle677_dlm_missing_proposal_review/inspection_records.json","review_scope":"Cycle 677 source plus complete owner sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[291,225,174,115],"target_layer":"numbers","label":"true_custom_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[832,802,90,12],"target_layer":"sponsors","label":"wordmark_false_number"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[832,833,95,112],"target_layer":"numbers","label":"true_custom_number"}
+]}

@@ -1,0 +1,146 @@
+{
+  "status": "PASS",
+  "task": "W66 offline help-answer semantic repair candidate",
+  "date": "2026-10-04",
+  "frozenInputs": {
+    "freshOracle": {
+      "path": "_easy_claude_work/ai14h_w66_review/fresh-oracle.json",
+      "sha256": "B5635F27BA42F7EB3C47A5C3A79AFE87826931FC70216BBAEA6398A7193EB5EA",
+      "cases": 12
+    },
+    "helperBaseline": {
+      "path": "_easy_claude_work/ai14h_w66_review/frozen/spb-self-help.js",
+      "sha256": "2E6E631B7FAD10113F3FF2AD98AADD68D26686EEF89488D80D13C093204ED88E"
+    },
+    "candidate": {
+      "path": "_easy_claude_work/ai14h_w66_review/candidate/spb-self-help.js",
+      "sha256": "653B5E26C1F713F2D22E2EEC8AE0AF8676FD37F64C20D0CCAEEDA165FA07D4F9"
+    },
+    "runtime1Controller": {
+      "path": "_easy_claude_work/ai14h_generation3_audit/frozen-runtime1/js/spb-pro-ai.js",
+      "sha256": "3DA5C98B7202288979EFE0F53FE48818F31A6A5B5428BFB178CAEBA5C25E82D6",
+      "actualRouteNotExecuted": true
+    }
+  },
+  "counts": {
+    "freshCases": 12,
+    "passed": 12,
+    "failed": 0,
+    "reproducedBaselineWrongSemantics": 5,
+    "retainedCompatibilitySuites": 4,
+    "providerCalls": 0,
+    "nativeCalls": 0
+  },
+  "freshRows": [
+    {
+      "id": "W66-01",
+      "verdict": "pass"
+    },
+    {
+      "id": "W66-02",
+      "verdict": "pass"
+    },
+    {
+      "id": "W66-03",
+      "verdict": "pass"
+    },
+    {
+      "id": "W66-04",
+      "verdict": "pass"
+    },
+    {
+      "id": "W66-05",
+      "verdict": "pass"
+    },
+    {
+      "id": "W66-06",
+      "verdict": "pass"
+    },
+    {
+      "id": "W66-07",
+      "verdict": "pass"
+    },
+    {
+      "id": "W66-08",
+      "verdict": "pass"
+    },
+    {
+      "id": "W66-09",
+      "verdict": "pass"
+    },
+    {
+      "id": "W66-10",
+      "verdict": "pass"
+    },
+    {
+      "id": "W66-11",
+      "verdict": "pass"
+    },
+    {
+      "id": "W66-12",
+      "verdict": "pass"
+    }
+  ],
+  "knownBaselineWrongAnswers": [
+    {
+      "id": "W66-01",
+      "baseline": "**How do I merge or flatten layers**\n1. You have a flat paint loaded (one picture, no layers), so this needs the layered PSD template: SOURCE PAINT > \"PSD/XCF/ORA\". No PSD? Tell me what to change (\"make the numbers white\") and I find it in the picture.\nDid that get you there, or is there something e"
+    },
+    {
+      "id": "W66-02",
+      "baseline": "**Add a logo or picture**\n1. In the LAYERS panel (right column) press + Layer and pick the image file.\n2. Move / scale it with Move in the tool row (top: Move, Pick, Color, Wand, Lasso, Rect, Brush, Fill, Erase); finishes can then be limited to that layer.\nExact controls: + Layer (Pro > right column"
+    },
+    {
+      "id": "W66-03",
+      "baseline": "**How do I change only one colour of my livery (say all the red)**\n1. Your selected zone is \"Roof\" (zone 1) - click another card in the ZONES list to work on that one instead.\n2. Click \"+ Add Zone\".\n3. In COLOR click \"PICK COLOR FROM CAR\", then click a red spot on the car. Raise the tolerance if red"
+    },
+    {
+      "id": "W66-06",
+      "baseline": "**How do I find one layer in a long PSD**\n1. You have a flat paint loaded (one picture, no layers), so this needs the layered PSD template: SOURCE PAINT > \"PSD/XCF/ORA\". No PSD? Tell me what to change (\"make the numbers white\") and I find it in the picture.\nDid that get you there, or is there someth"
+    },
+    {
+      "id": "W66-07",
+      "baseline": null
+    }
+  ],
+  "retainedCompatibility": [
+    {
+      "name": "W59 lifecycle",
+      "status": "PASS",
+      "output_excerpt": [
+        "PASS source begins loading after action offer",
+        "PASS source still loading when action is offered"
+      ]
+    },
+    {
+      "name": "W3 action lifecycle",
+      "status": "PASS",
+      "output_excerpt": [
+        "PASS independent W3 review cases: 15 passed, 0 failed"
+      ]
+    },
+    {
+      "name": "W4 semantics",
+      "status": "PASS",
+      "output_excerpt": [
+        "PASS W4 independent semantic review: 12/12"
+      ]
+    },
+    {
+      "name": "W4 action ownership",
+      "status": "PASS",
+      "output_excerpt": [
+        "PASS W4 semantic contract: 8 action/entity, view-capability, and command-ownership checks"
+      ]
+    }
+  ],
+  "changes": [
+    "Adds bounded direct explanations for flattened, flatten how-to, clearcoat-only guidance, number-layer location, and offline-helper capability questions.",
+    "Keeps imperative clearcoat point requests outside the help classifier for the material command owner."
+  ],
+  "limits": [
+    "Semantic answer generation was run from the frozen W59 helper and isolated candidate in a VM; no native UI or material dispatcher was exercised.",
+    "Imperative clearcoat by-point commands remain unclaimed by self-help. W66-04/05 assert only that help does not capture them; unit-clarification/edit behavior belongs to the material route.",
+    "Clearcoat guidance names the selected-zone shift input and preview channels without promising that a larger numeric offset means more physical gloss."
+  ]
+}

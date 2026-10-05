@@ -1,0 +1,119 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_splatter_tee",
+  "display_name": "Radical: Splatter Tee",
+  "promise": "Fine teal, purple and pink thrown paint with dry cotton showing between droplets.",
+  "carrier_grammar": "Fine teal, purple and pink thrown paint with dry cotton showing between droplets. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "Matte ivory cotton, satin teal thrown pigment, glossier purple cured ink, pink rubber splats, dry rough pigment edges and cotton fuzz. All remain dielectric; coating and roughness follow each named mark.",
+  "reference_physics": {
+    "mechanism": "Fine teal, purple and pink thrown paint with dry cotton showing between droplets. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_splatter_tee.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "ivory shirt cotton",
+      "role": "Actual shared paint and spec geometry: ivory shirt cotton"
+    },
+    {
+      "name": "teal thrown paint",
+      "role": "Actual shared paint and spec geometry: teal thrown paint"
+    },
+    {
+      "name": "purple paint flicks",
+      "role": "Actual shared paint and spec geometry: purple paint flicks"
+    },
+    {
+      "name": "pink radial splats",
+      "role": "Actual shared paint and spec geometry: pink radial splats"
+    },
+    {
+      "name": "hairline thrown paint threads",
+      "role": "Actual shared paint and spec geometry: hairline thrown paint threads"
+    },
+    {
+      "name": "detached spherical satellite droplets",
+      "role": "Actual shared paint and spec geometry: detached spherical satellite droplets"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "ivory shirt cotton",
+      "teal thrown paint",
+      "purple paint flicks",
+      "pink radial splats",
+      "hairline thrown paint threads",
+      "detached spherical satellite droplets"
+    ],
+    "R": [
+      "ivory shirt cotton",
+      "teal thrown paint",
+      "purple paint flicks",
+      "pink radial splats",
+      "hairline thrown paint threads",
+      "detached spherical satellite droplets"
+    ],
+    "Cc": [
+      "ivory shirt cotton",
+      "teal thrown paint",
+      "purple paint flicks",
+      "pink radial splats",
+      "hairline thrown paint threads",
+      "detached spherical satellite droplets"
+    ]
+  },
+  "material_tiers": [
+    "ivory shirt cotton dielectric material with independent continuous roughness/coating response",
+    "teal thrown paint dielectric material with independent continuous roughness/coating response",
+    "purple paint flicks dielectric material with independent continuous roughness/coating response",
+    "pink radial splats dielectric material with independent continuous roughness/coating response",
+    "hairline thrown paint threads dielectric material with independent continuous roughness/coating response",
+    "detached spherical satellite droplets dielectric material with independent continuous roughness/coating response"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_rad_splatter_deck",
+      "difference": "This finish uses Tiny real thrown fabric-paint marks in teal purple pink on ivory cotton: pin spatters, thin arced flicks, little radial splat stars, hairline drips and dry broken pigment. Dense all-over micro splatter without big blotches; matte fabric and slightly raised paint, no gloss board finish.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "at_airbrush_tee",
+      "difference": "This finish uses Tiny real thrown fabric-paint marks in teal purple pink on ivory cotton: pin spatters, thin arced flicks, little radial splat stars, hairline drips and dry broken pigment. Dense all-over micro splatter without big blotches; matte fabric and slightly raised paint, no gloss board finish.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "ivory shirt cotton is visible in the authored geometry",
+      "teal thrown paint is visible in the authored geometry",
+      "purple paint flicks is visible in the authored geometry",
+      "pink radial splats is visible in the authored geometry",
+      "hairline thrown paint threads is visible in the authored geometry",
+      "detached spherical satellite droplets is visible in the authored geometry"
+    ],
+    "source_sha256": "24a66f85078a104a2d949eb66e3a5a244bc700d14dcede6a2721547b0fc3d5a0",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_splatter_tee-authored-Fine teal, purple and pink thrown paint with dry cotton showing between droplets. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_splatter_tee-dielectric-pigment-on-cotton-v1",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 63.7,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "90f563d7259834de2c1612b347469e8e8f84a058b34be086cf90b14e46731e45"
+}

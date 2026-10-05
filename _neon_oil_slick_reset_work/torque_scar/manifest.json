@@ -1,0 +1,91 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_torque_scar",
+  "display_name": "Torque Scar",
+  "carrier": "clear-coated carbon-black elastomer transfer over a metallic dark microfaceted base",
+  "material_story": {
+    "M": "icy substrate scores, embedded hot grit, and exposed metallic carrier edges",
+    "R": "raw rubber transfers, tread blocks, crumbs, cross-cuts, and smoke-etch whiskers",
+    "Cc": "intact clear and violet glaze islands, interrupted by raw transfer and cuts"
+  },
+  "vetoes": [
+    "complete or mentally completable circles",
+    "rings, donuts, bubbles, radial packet clusters",
+    "tire illustration",
+    "floating smoke ribbon",
+    "generic noise underlay"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 1.668863,
+  "material_stats": {
+    "std": {
+      "M": 82.790024,
+      "R": 83.299133,
+      "Cc": 83.260788
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": -0.210836,
+      "M_Cc": 0.245341,
+      "R_Cc": -0.370277
+    }
+  },
+  "geometry_stats": {
+    "family_count": 12,
+    "families": {
+      "carbon elastomer facets": 10957,
+      "cross-shear cuts": 2800,
+      "embedded hot grit": 1309,
+      "exposed-clear gaps": 2200,
+      "facet shear edges": 7444,
+      "icy substrate scores": 1980,
+      "raw rubber transfers": 8390,
+      "red heat lips": 3901,
+      "rubber crumbs": 8106,
+      "smoke-etch whiskers": 2222,
+      "tread microblocks": 2826,
+      "violet glaze islands": 3201
+    },
+    "width_native_min": 8.0,
+    "width_native_median": 16.949,
+    "width_native_p90": 24.667,
+    "width_native_max": 32.0,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "carbon elastomer facets": 0.459928,
+    "facet shear edges": 0.289916,
+    "raw rubber transfers": 0.438354,
+    "tread microblocks": 0.099843,
+    "red heat lips": 0.209922,
+    "rubber crumbs": 0.091928,
+    "violet glaze islands": 0.137097,
+    "cross-shear cuts": 0.131807,
+    "smoke-etch whiskers": 0.100744,
+    "exposed-clear gaps": 0.068642,
+    "icy substrate scores": 0.098041,
+    "embedded hot grit": 0.016148
+  }
+}

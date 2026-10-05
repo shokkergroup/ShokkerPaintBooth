@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 350/car_num_362831.tga",
+  "inspection_records": "_smart_tga_runs/cycle655_dlm_instance_features_batch/inspection_records.json",
+  "review_scope": "Cycle 655 manual source and all-owner sheet review of every emitted suspect bbox.",
+  "component_labels": [
+    {"layer":"sponsors","component_index":13,"expected_bbox":[1000,117,24,588],"target_layer":"template","label":"template_edge_strip","note":"Fixed right-edge UV/template strip."},
+    {"layer":"sponsors","component_index":93,"expected_bbox":[356,981,18,16],"target_layer":"sponsors","label":"sponsor_logo_fragment","note":"Small FLORACING/contingency logo fragment, correctly Sponsor rather than livery."}
+  ]
+}

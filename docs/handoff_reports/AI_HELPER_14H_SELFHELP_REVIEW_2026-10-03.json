@@ -1,0 +1,158 @@
+{
+  "schema": "spb-self-help-review/1",
+  "date": "2026-10-03",
+  "review_scope": "Independent read-only W1 review of offline self-help intent routing; frozen fixture and production source untouched.",
+  "inputs": [
+    "docs/handoff_reports/AI_HELPER_14H_FRESH_SELFHELP_2026-10-03.json",
+    "docs/handoff_reports/AI_HELPER_14H_FRESH_SELFHELP_BASELINE_2026-10-03.json",
+    "js/spb-self-help.js",
+    "js/spb-ai-knowledge.js",
+    "tests/ai_self_help_intent_contract.cjs"
+  ],
+  "method": "Loaded the real knowledge and helper scripts in a Node VM, ran every frozen H/G prompt, and supplied paint state from each fixture label (none/flat/psd), with Pro mode and zero zones. Also probed broader 3D, fade, advice, and correction wording.",
+  "results": {
+    "frozen_fixture_sha256_unchanged_by_review": true,
+    "strict_help_pass": 13,
+    "strict_help_total": 30,
+    "additional_semantic_passes": [
+      "H01: Save/Open and reopen SHOKK project guidance",
+      "H24: PRO MODE -> switch and work preservation guidance"
+    ],
+    "semantic_help_pass": 15,
+    "delegated_requests_left_unclaimed": 12,
+    "delegated_total": 12,
+    "existing_contract_test": "PASS — 12 guidance checks and 4 routing boundaries",
+    "fixture_sha256": "717c1c32fe214c172e1fb27b2be065e7cd20892cfabe94400e75d3278ccd4e9d"
+  },
+  "findings": [
+    {
+      "id": "W1-3D-BROAD-PHRASES",
+      "severity": "P1",
+      "evidence": [
+        {
+          "prompt": "Is there a 3D preview of this livery?",
+          "result": "null"
+        },
+        {
+          "prompt": "Could I rotate around this car in the preview?",
+          "result": "hdi.preview_bigger; instructions enlarge the flat preview"
+        },
+        {
+          "prompt": "Can I see it in three dimensions?",
+          "result": "manual knowledge hit for hdi.see_spec"
+        },
+        {
+          "prompt": "Can I see the car from all sides?",
+          "result": "hdi.teach_parts; instructions teach Shokker where car parts are"
+        },
+        {
+          "prompt": "Can I see this car as a 3D model here?",
+          "result": "truthful hdi.not_in_shokker limitation"
+        }
+      ],
+      "source": [
+        "js/spb-self-help.js:170",
+        "js/spb-self-help.js:513"
+      ],
+      "assessment": "The limitation works for one literal wording. 'Is there' is absent from can_i intent patterns; other view-around wording falls into preview zoom, pattern rotation, part teaching, or spec-map guidance. The existing contract only checks the literal 3D-model phrase."
+    },
+    {
+      "id": "W1-CORRECTION-FALSE-CAPTURE",
+      "severity": "P1",
+      "evidence": [
+        {
+          "prompt": "The first answer was wrong. Make the sponsors silver instead.",
+          "result": "why_not; diagnoses zone colour mode and tells the user to change BASE COLOR"
+        },
+        {
+          "prompt": "No, I meant silver sponsors, not a red body",
+          "result": "why_not; same unrelated zone-colour diagnosis"
+        },
+        {
+          "prompt": "Make only the roof chrome and keep everything else as it is",
+          "result": "null; correctly left for the action/advisor path"
+        }
+      ],
+      "source": [
+        "js/spb-self-help.js:162-163",
+        "js/spb-self-help.js:181-187",
+        "js/spb-self-help.js:202-204"
+      ],
+      "assessment": "Leading action commands are left alone, but a correction phrased as 'wrong/no/not' is classified as why_not before the claim-hint precedence can preserve its request. With a realistic one-zone state, the helper still emits an unrelated diagnosis instead of returning control to the action handler."
+    },
+    {
+      "id": "W1-FADE-SYMPTOM-COVERAGE",
+      "severity": "P2",
+      "evidence": [
+        {
+          "prompt": "Why does the paint look faded in the sim?",
+          "result": "hdi.look_differs guidance"
+        },
+        {
+          "prompt": "The finish looks faded in iRacing",
+          "result": "null"
+        },
+        {
+          "prompt": "How can I make a fade between red and blue?",
+          "result": "hdi.gradient guidance"
+        }
+      ],
+      "source": [
+        "js/spb-self-help.js:126",
+        "js/spb-self-help.js:146"
+      ],
+      "assessment": "Question-form appearance troubleshooting and an explicit color-fade request route correctly. A common statement-form symptom using 'finish' instead of the narrower paint/car/shades nouns is not claimed."
+    },
+    {
+      "id": "W1-ANSWER-TOPIC-COLLISIONS",
+      "severity": "P2",
+      "evidence": [
+        {
+          "prompt_id": "H07",
+          "prompt": "How can I make my logo half transparent?",
+          "result": "logo import/placement steps, not layer opacity"
+        },
+        {
+          "prompt_id": "H08",
+          "prompt": "What are the steps to squish or enlarge the number artwork?",
+          "result": "number recolouring steps, not resize/transform"
+        },
+        {
+          "prompt_id": "H10",
+          "prompt": "How do I track down Sponsors in a PSD with tons of layers?",
+          "result": "PSD import steps although fixture state is already psd"
+        },
+        {
+          "prompt_id": "H15",
+          "prompt": "Where do I adjust how tiny the carbon weave is?",
+          "result": "finish selection steps, not pattern/base scale"
+        },
+        {
+          "prompt_id": "H17",
+          "prompt": "How would I take the flame pattern off this zone?",
+          "result": "pattern addition steps, not removal"
+        },
+        {
+          "prompt_id": "H25",
+          "prompt": "What does it mean when a paint is flattened instead of layered?",
+          "result": "merge/flatten operation steps, not definition"
+        },
+        {
+          "prompt_id": "H29",
+          "prompt": "How can I make the effect on my number shapes metallic?",
+          "result": "number recolouring steps, not metallic effect"
+        }
+      ],
+      "source": [
+        "js/spb-self-help.js:145-159",
+        "js/spb-self-help.js:207-209",
+        "js/spb-self-help.js:560-571"
+      ],
+      "assessment": "The frozen examples expose retrieval collisions that can send users to unrelated or contradictory steps. These are observed through actual helper answers, not substring-only assertions."
+    }
+  ],
+  "limitations": [
+    "Fixture states encode only none/flat/psd; they do not provide real layer inventories, zones, selection, or Easy/Pro mode. State-conditioned steps can differ under a full app snapshot.",
+    "Manual semantic count accepts H01 and H24 even though H01 lacks the expected hdi.save_project cite and H24 returns hdi.easy_to_pro rather than the fixture's hdi.switch_mode cite. The immutable fixture was not edited."
+  ]
+}

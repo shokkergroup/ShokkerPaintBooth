@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_1003508.tga",
+  "inspection_records": "_smart_tga_runs/cycle137_dirtlatemodel358_1003508_route_fixture_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle137_dirtlatemodel358_1003508_route_fixture_v1/dirtlatemodel_358_car_1003508/component_records.json",
+  "review_scope": "Cycle 137 fresh dirt late model review: current Number layer is a sponsor/logo block; sponsor/logo/textline candidates must stay out of Numbers.",
+  "component_labels": [
+    {
+      "layer": "numbers",
+      "component_index": 0,
+      "expected_bbox": [34, 261, 109, 42],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo_panel_false_number",
+      "note": "The only generated Number component is a sponsor/logo block, not a race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 1,
+      "expected_bbox": [605, 32, 124, 49],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo_panel",
+      "note": "VP Racing-style sponsor logo; should remain Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 6,
+      "expected_bbox": [632, 221, 101, 36],
+      "target_layer": "sponsors",
+      "label": "contingency_or_sponsor_mark",
+      "note": "Small sponsor/contingency mark near body graphics; not a race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 9,
+      "expected_bbox": [617, 243, 134, 57],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo_panel",
+      "note": "Logo/graphic panel with number-like black-white foreground; should remain Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 10,
+      "expected_bbox": [449, 266, 134, 64],
+      "target_layer": "sponsors",
+      "label": "large_sponsor_wordmark",
+      "note": "HORTON EQUIPMENT wordmark; OCR/text-like sponsor, not race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 11,
+      "expected_bbox": [19, 312, 160, 39],
+      "target_layer": "sponsors",
+      "label": "large_sponsor_wordmark",
+      "note": "HINO/Tire Shore-style sponsor wordmark; not race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 14,
+      "expected_bbox": [703, 469, 34, 102],
+      "target_layer": "sponsors",
+      "label": "vertical_sponsor_wordmark",
+      "note": "Vertical sponsor wordmark/mark, not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 15,
+      "expected_bbox": [554, 602, 103, 28],
+      "target_layer": "sponsors",
+      "label": "sponsor_wordmark",
+      "note": "Elements Racing Engines wordmark; should remain Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 16,
+      "expected_bbox": [27, 712, 142, 48],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo_panel",
+      "note": "Gorry Rubber sponsor/logo panel, not race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 17,
+      "expected_bbox": [183, 715, 79, 24],
+      "target_layer": "sponsors",
+      "label": "small_sponsor_wordmark",
+      "note": "Hoosier sponsor wordmark; not race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 18,
+      "expected_bbox": [448, 717, 134, 64],
+      "target_layer": "sponsors",
+      "label": "large_sponsor_wordmark",
+      "note": "Repeated HORTON EQUIPMENT wordmark; should remain Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 19,
+      "expected_bbox": [34, 764, 95, 34],
+      "target_layer": "sponsors",
+      "label": "small_sponsor_wordmark",
+      "note": "Nystroms sponsor wordmark; not race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 26,
+      "expected_bbox": [335, 916, 235, 27],
+      "target_layer": "sponsors",
+      "label": "long_sponsor_textline",
+      "note": "chubfrank.com textline; wide sponsor text, not race number."
+    }
+  ]
+}

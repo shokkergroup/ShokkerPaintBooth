@@ -1,0 +1,100 @@
+{
+  "title": "AI helper car-map pending identity repair",
+  "generated_at": "2026-10-04T04:14:02.394Z",
+  "mode": "actual car-map functions in VM with fake canvas/storage/fetch/chat only; no native, provider, server, or teaching-import calls",
+  "source_sha256": "bb9e05373c11550d59155fc680d3771c8ca31de555726bb1219125159be505ce",
+  "prior_frozen_audit": {
+    "path": "docs/handoff_reports/AI_HELPER_14H_CARMAP_IDENTITY_REVIEW_2026-10-03.json",
+    "source_sha256_before": "4e2d851c7a43b072db10874b52c988f1deab6e0c9dfca0f541db0c6827c955d4",
+    "frozen_case_count": 12,
+    "original_observation": {
+      "sourceASignature": "cm1ubceji",
+      "sourceBSignature": "cm1vtfo00",
+      "resultAfterSwitch": "cm1ubceji",
+      "ensureFalseJoinedDefault": true,
+      "subsequentEnsureSignature": "cm1vtfo00"
+    }
+  },
+  "fixture_cases": [
+    {
+      "id": "fresh-offline-build",
+      "expected": "ensure-false-builds-without-starting-vision",
+      "observed": {
+        "built": true,
+        "fakeVisionCalls": 0
+      }
+    },
+    {
+      "id": "default-pending-source-reload",
+      "expected": "ensure-false-does-not-join-default-pending-for-a-different-source-generation",
+      "observed": {
+        "independentOfflinePromise": true,
+        "chatCalls": 1,
+        "currentMapRemainsInstalled": true
+      }
+    },
+    {
+      "id": "stale-default-resolution",
+      "expected": "old-request-cannot-replace-current-source-cache",
+      "observed": {
+        "oldResultIsCurrentMap": true,
+        "publicMapIsCurrentMap": true
+      }
+    },
+    {
+      "id": "same-path-same-geometry-reload",
+      "expected": "generation-change-invalidates-map-even-when-public-signature-is-stable",
+      "observed": {
+        "signatureStable": true,
+        "rebuilt": true,
+        "unionCalls": 2
+      }
+    },
+    {
+      "id": "same-current-source-cache",
+      "expected": "same-source-repeat-reuses-current-cache",
+      "observed": {
+        "sameObject": true,
+        "unionCalls": 2
+      }
+    },
+    {
+      "id": "stale-rejection",
+      "expected": "rejected-old-request-cannot-return-or-install-stale-cache",
+      "observed": {
+        "currentMapSurvives": true,
+        "rejectionReturnsCurrentMap": true
+      }
+    },
+    {
+      "id": "same-source-mode-isolation",
+      "expected": "offline-request-does-not-consume-default-vision-pending-result",
+      "observed": {
+        "falseDidNotJoinDefault": true,
+        "falseStartedNoModelCall": true
+      }
+    },
+    {
+      "id": "same-current-pending-coalesces",
+      "expected": "duplicate-offline-requests-for-same-current-source-share-work",
+      "observed": {
+        "sharedPromise": true
+      }
+    }
+  ],
+  "source_evidence": {
+    "public_signature": "signature() remains geometry/template identity only: paint dimensions plus layer names and bounding boxes.",
+    "generation": "sourceDescriptor reads lexical _spbSourceLoadGeneration when present, with SPBSourceLoadTransaction.getGeneration fallback; it also captures loaded source path, canvas reference, and dimensions.",
+    "publication": "build cache writes now pass a captured request descriptor through build0/build00/noMask/template/vision paths; stale requests cannot install CACHE. ensure(false) does not join a default labelled pending request and starts an independent unlabelled build.",
+    "teaching": "layoutSig and findTaught behavior were not changed; source identity is a separate cache/pending key."
+  },
+  "result": {
+    "passed": 8,
+    "failed": 0,
+    "chatCallsAcrossFixtures": 2
+  },
+  "limitations": [
+    "The VM supplies the actual loader generation as a lexical global and fake paths/canvas; it proves generation/path/pending behavior, not source file parsing or native UI timing.",
+    "Teaching import compatibility semantics remain outside this repair."
+  ]
+}

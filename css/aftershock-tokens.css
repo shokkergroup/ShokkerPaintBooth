@@ -1,0 +1,324 @@
+/* ============================================================================
+   SHOKKER PAINT BOOTH — AFTERSHOCK DESIGN SYSTEM
+   ----------------------------------------------------------------------------
+   The single source of visual truth. Everything in the Aftershock UI reads from
+   these tokens — no hardcoded pixel values, no one-off colors, no ad-hoc fonts.
+
+   WHY THIS EXISTS (2026-07-23 owner: "the graphics we have now are just lacking
+   all around"): the classic UI grew across 25 stylesheets with exactly ONE CSS
+   custom property. Every panel was hand-styled at a different time, so nothing
+   shared a spacing rhythm, a type ramp, an elevation language or a motion curve.
+   That inconsistency — not the feature set — is what reads as "vibe coded."
+   A real token system fixes the look without touching a single feature.
+
+   RULES
+     1. Never hardcode a value that exists here.
+     2. Space on the 4px grid (--s-*). No 7px, no 13px.
+     3. Type comes from the ramp (--fs-*). Six sizes, not sixteen.
+     4. Depth is elevation (--e-*), not random box-shadows.
+     5. Motion uses the shared durations + easing. Everything that moves, moves
+        the same way.
+   ========================================================================== */
+
+:root {
+  /* ---- SPACE : 4px grid ------------------------------------------------- */
+  --s-0:  0;
+  --s-1:  2px;
+  --s-2:  4px;
+  --s-3:  8px;
+  --s-4:  12px;
+  --s-5:  16px;
+  --s-6:  24px;
+  --s-7:  32px;
+  --s-8:  48px;
+  --s-9:  64px;
+
+  /* ---- TYPE : one ramp, one family ------------------------------------- */
+  --font-ui: "Inter", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", ui-monospace, Consolas, monospace;
+
+  --fs-micro: 10px;   /* dense metadata, badges */
+  --fs-small: 11.5px; /* secondary labels */
+  --fs-body:  13px;   /* default UI text */
+  --fs-lead:  15px;   /* emphasized rows, section leads */
+  --fs-title: 19px;   /* panel + dialog titles */
+  --fs-hero:  28px;   /* screen headlines */
+
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-semi:    600;
+  --fw-bold:    700;
+
+  --lh-tight: 1.15;
+  --lh-snug:  1.35;
+  --lh-body:  1.55;
+
+  --tracking-wide: 0.08em;  /* small caps / eyebrow labels */
+  --tracking-hero: -0.02em; /* large text tightens */
+
+  /* ---- COLOR : roles, not raw hues -------------------------------------
+     Surfaces step UP as they come toward the viewer. Never invent a new grey —
+     pick the next surface. */
+  --bg-void:      #07090f;  /* app backdrop, behind everything */
+  --bg-base:      #0b0e17;  /* main workspace */
+  --bg-surface:   #111524;  /* panels */
+  --bg-raised:    #171c2e;  /* cards, popovers, menus */
+  --bg-overlay:   #1d2238;  /* dialogs, the topmost layer */
+  --bg-inset:     #080a12;  /* wells, canvas letterbox, inputs */
+
+  --line-subtle:  rgba(140, 165, 200, 0.10);
+  --line:         rgba(140, 165, 200, 0.18);
+  --line-strong:  rgba(140, 165, 200, 0.30);
+
+  --text-hi:      #eef2f9;  /* primary */
+  --text:         #c3ccdd;  /* body */
+  --text-dim:     #8794ad;  /* secondary */
+  --text-faint:   #5b667e;  /* tertiary / disabled */
+
+  /* Brand + intent. ONE loud accent (shokk) so emphasis actually means
+     something; everything else is quiet. */
+  --shokk:        #ff7a18;  /* the brand orange — RENDER, primary action */
+  --shokk-hi:     #ff9440;
+  --shokk-dim:    rgba(255, 122, 24, 0.14);
+
+  --cyan:         #37e6ff;  /* interactive / selected / info */
+  --cyan-dim:     rgba(55, 230, 255, 0.12);
+  --green:        #3ddc91;  /* success, applied, live */
+  --green-dim:    rgba(61, 220, 145, 0.12);
+  --amber:        #ffc24b;  /* caution, needs-attention */
+  --amber-dim:    rgba(255, 194, 75, 0.12);
+  --red:          #ff5f6d;  /* destructive, error */
+  --red-dim:      rgba(255, 95, 109, 0.12);
+  --violet:       #a78bfa;  /* layers / spec channel accent */
+  --violet-dim:   rgba(167, 139, 250, 0.12);
+
+  /* ---- RADIUS ----------------------------------------------------------- */
+  --r-xs: 3px;
+  --r-sm: 5px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 18px;
+  --r-pill: 999px;
+
+  /* ---- ELEVATION : depth is a system, not a random shadow ---------------- */
+  --e-0: none;
+  --e-1: 0 1px 2px rgba(0, 0, 0, 0.30);
+  --e-2: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --e-3: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --e-4: 0 18px 48px rgba(0, 0, 0, 0.55);
+  /* focus ring — the SAME ring everywhere, always visible on dark */
+  --ring: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--cyan);
+
+  /* ---- MOTION : everything moves the same way --------------------------- */
+  --t-instant: 80ms;
+  --t-fast:    140ms;
+  --t-base:    220ms;
+  --t-slow:    380ms;
+  --ease:        cubic-bezier(0.2, 0.6, 0.2, 1);    /* standard */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);      /* enter / expand */
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);   /* playful confirm */
+
+  /* ---- LAYOUT ----------------------------------------------------------- */
+  --rail-w:     224px;  /* zone rail */
+  --inspector-w:340px;  /* right inspector */
+  --header-h:   56px;
+  --toolbar-h:  44px;
+  --z-canvas: 1;
+  --z-panel: 10;
+  --z-popover: 100;
+  --z-dialog: 1000;
+  --z-toast: 2000;
+}
+
+/* Respect the OS: users who ask for less motion get none of ours. */
+@media (prefers-reduced-motion: reduce) {
+  :root { --t-instant: 0ms; --t-fast: 0ms; --t-base: 0ms; --t-slow: 0ms; }
+}
+
+/* ============================================================================
+   PRIMITIVES — the small set of classes the whole Aftershock UI is built from.
+   Namespaced .as- so they can NEVER collide with the classic UI's 25 stylesheets
+   (that isolation is what makes the classic/aftershock hot-swap safe).
+   ========================================================================== */
+
+.as-root {
+  font-family: var(--font-ui);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text);
+  background: var(--bg-base);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- surfaces ---- */
+.as-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--r-lg);
+  box-shadow: var(--e-1);
+}
+.as-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--r-md);
+  box-shadow: var(--e-1);
+  transition: border-color var(--t-fast) var(--ease),
+              transform var(--t-fast) var(--ease),
+              box-shadow var(--t-fast) var(--ease);
+}
+.as-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--e-2);
+}
+.as-card[data-selected="true"] {
+  border-color: var(--cyan);
+  box-shadow: var(--e-2), inset 0 0 0 1px var(--cyan-dim);
+}
+
+/* ---- type ---- */
+.as-hero   { font-size: var(--fs-hero);  font-weight: var(--fw-bold); line-height: var(--lh-tight); letter-spacing: var(--tracking-hero); color: var(--text-hi); }
+.as-title  { font-size: var(--fs-title); font-weight: var(--fw-semi); line-height: var(--lh-snug);  color: var(--text-hi); }
+.as-lead   { font-size: var(--fs-lead);  font-weight: var(--fw-medium); color: var(--text-hi); }
+.as-body   { font-size: var(--fs-body);  color: var(--text); }
+.as-small  { font-size: var(--fs-small); color: var(--text-dim); }
+.as-eyebrow {
+  font-size: var(--fs-micro); font-weight: var(--fw-semi);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--text-faint);
+}
+.as-mono { font-family: var(--font-mono); font-size: var(--fs-small); }
+
+/* ---- buttons : one component, intent via data-attr ---- */
+.as-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--s-2);
+  height: 32px; padding: 0 var(--s-4);
+  font-family: inherit; font-size: var(--fs-small); font-weight: var(--fw-semi);
+  color: var(--text); background: transparent;
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  cursor: pointer; white-space: nowrap;
+  transition: background var(--t-fast) var(--ease),
+              border-color var(--t-fast) var(--ease),
+              color var(--t-fast) var(--ease),
+              transform var(--t-instant) var(--ease);
+}
+.as-btn:hover  { background: rgba(255,255,255,0.05); border-color: var(--line-strong); color: var(--text-hi); }
+.as-btn:active { transform: translateY(1px); }
+.as-btn:focus-visible { outline: none; box-shadow: var(--ring); }
+.as-btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+.as-btn[data-intent="primary"] {
+  background: linear-gradient(180deg, var(--shokk-hi), var(--shokk));
+  border-color: transparent; color: #1a0d02; font-weight: var(--fw-bold);
+  box-shadow: var(--e-1);
+}
+.as-btn[data-intent="primary"]:hover { filter: brightness(1.08); box-shadow: var(--e-2); }
+.as-btn[data-intent="ghost"]  { border-color: transparent; color: var(--text-dim); }
+.as-btn[data-intent="ghost"]:hover { background: rgba(255,255,255,0.05); color: var(--text-hi); }
+.as-btn[data-intent="danger"] { border-color: rgba(255,95,109,0.4); color: var(--red); }
+.as-btn[data-intent="danger"]:hover { background: var(--red-dim); }
+.as-btn[data-size="sm"] { height: 26px; padding: 0 var(--s-3); font-size: var(--fs-micro); }
+.as-btn[data-size="lg"] { height: 40px; padding: 0 var(--s-6); font-size: var(--fs-body); }
+
+/* ---- inputs ---- */
+.as-input, .as-select {
+  height: 32px; padding: 0 var(--s-3);
+  font-family: inherit; font-size: var(--fs-small); color: var(--text-hi);
+  background: var(--bg-inset);
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  transition: border-color var(--t-fast) var(--ease);
+}
+.as-input:focus, .as-select:focus { outline: none; border-color: var(--cyan); box-shadow: var(--ring); }
+.as-input::placeholder { color: var(--text-faint); }
+
+/* ---- range : ONE slider look everywhere ---- */
+.as-range { -webkit-appearance: none; appearance: none; height: 18px; background: transparent; cursor: pointer; }
+.as-range::-webkit-slider-runnable-track {
+  height: 4px; border-radius: var(--r-pill);
+  background: linear-gradient(90deg, var(--cyan) var(--_pct, 50%), var(--bg-inset) var(--_pct, 50%));
+  border: 1px solid var(--line-subtle);
+}
+.as-range::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 14px; height: 14px; margin-top: -6px;
+  border-radius: 50%; background: var(--text-hi);
+  border: 2px solid var(--bg-base); box-shadow: var(--e-1);
+  transition: transform var(--t-fast) var(--ease-spring);
+}
+.as-range:hover::-webkit-slider-thumb  { transform: scale(1.15); }
+.as-range:active::-webkit-slider-thumb { transform: scale(0.95); }
+.as-range:focus-visible { outline: none; }
+.as-range:focus-visible::-webkit-slider-thumb { box-shadow: var(--ring); }
+
+/* ---- badges / chips ---- */
+.as-chip {
+  display: inline-flex; align-items: center; gap: var(--s-2);
+  height: 22px; padding: 0 var(--s-3);
+  font-size: var(--fs-micro); font-weight: var(--fw-semi);
+  border-radius: var(--r-pill);
+  background: var(--bg-raised); border: 1px solid var(--line-subtle);
+  color: var(--text-dim);
+}
+.as-chip[data-tone="live"]  { background: var(--green-dim); border-color: rgba(61,220,145,.35); color: var(--green); }
+.as-chip[data-tone="warn"]  { background: var(--amber-dim); border-color: rgba(255,194,75,.35); color: var(--amber); }
+.as-chip[data-tone="info"]  { background: var(--cyan-dim);  border-color: rgba(55,230,255,.35); color: var(--cyan); }
+.as-chip[data-tone="layer"] { background: var(--violet-dim);border-color: rgba(167,139,250,.35);color: var(--violet); }
+
+/* ---- menus / popovers : the dropdown upgrade ---- */
+.as-menu {
+  min-width: 220px; padding: var(--s-2);
+  background: var(--bg-overlay);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--e-3);
+  z-index: var(--z-popover);
+  animation: as-pop var(--t-fast) var(--ease-out);
+}
+@keyframes as-pop { from { opacity: 0; transform: translateY(-4px) scale(0.98); } to { opacity: 1; transform: none; } }
+.as-menu-item {
+  display: flex; align-items: center; gap: var(--s-3);
+  width: 100%; padding: var(--s-3) var(--s-3);
+  font-size: var(--fs-small); color: var(--text);
+  background: transparent; border: 0; border-radius: var(--r-sm);
+  cursor: pointer; text-align: left;
+  transition: background var(--t-instant) var(--ease), color var(--t-instant) var(--ease);
+}
+.as-menu-item:hover { background: var(--cyan-dim); color: var(--text-hi); }
+.as-menu-item[data-disabled="true"] { color: var(--text-faint); cursor: not-allowed; }
+.as-menu-item .as-kbd { margin-left: auto; }
+.as-menu-sep { height: 1px; margin: var(--s-2) var(--s-2); background: var(--line-subtle); }
+.as-menu-label {
+  padding: var(--s-3) var(--s-3) var(--s-2);
+  font-size: var(--fs-micro); font-weight: var(--fw-semi);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--text-faint);
+}
+.as-kbd {
+  font-family: var(--font-mono); font-size: var(--fs-micro);
+  padding: 1px var(--s-2); color: var(--text-faint);
+  background: var(--bg-inset); border: 1px solid var(--line-subtle);
+  border-radius: var(--r-xs);
+}
+
+/* ---- scrollbars : quiet, consistent ---- */
+.as-root ::-webkit-scrollbar { width: 10px; height: 10px; }
+.as-root ::-webkit-scrollbar-track { background: transparent; }
+.as-root ::-webkit-scrollbar-thumb {
+  background: var(--line); border-radius: var(--r-pill);
+  border: 3px solid transparent; background-clip: content-box;
+}
+.as-root ::-webkit-scrollbar-thumb:hover { background: var(--line-strong); background-clip: content-box; }
+
+/* ---- utility ---- */
+.as-stack   { display: flex; flex-direction: column; gap: var(--s-3); }
+.as-row     { display: flex; align-items: center; gap: var(--s-3); }
+.as-spacer  { flex: 1 1 auto; }
+.as-divider { height: 1px; background: var(--line-subtle); }
+.as-skeleton {
+  background: linear-gradient(90deg, var(--bg-raised) 25%, var(--bg-overlay) 50%, var(--bg-raised) 75%);
+  background-size: 200% 100%; animation: as-shimmer 1.4s infinite linear;
+  border-radius: var(--r-sm);
+}
+@keyframes as-shimmer { to { background-position: -200% 0; } }

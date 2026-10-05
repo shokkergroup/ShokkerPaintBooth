@@ -1,0 +1,83 @@
+{
+  "review": "W120 independent MCP bridge and dispatcher audit",
+  "status": "REVIEW_FINDINGS",
+  "dateUTC": "2026-10-04",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_mcp_bridge_review/fresh-oracle.json",
+    "sha256": "9A1A15EE6A323B78AD8E2CEC7271B900EE10737925F71A3691E144BC511B4675",
+    "frozenCases": 15,
+    "supplement": "_easy_claude_work/ai14h_mcp_bridge_review/source-disk-replacement-supplement.json"
+  },
+  "test": {
+    "path": "tests/ai_mcp_bridge_dispatch_review_contract.cjs",
+    "sha256": "0497C3DD2392E7B9F5EA7CC4A8B88E43DD274F9CB4D3E9ACFA55A0F0E6D578E0",
+    "result": "20 checks; 3 confirmed P2 findings; no external calls or paint application"
+  },
+  "pins": {
+    "runtime12Manifest": "_easy_claude_work/ai14h_generation3_runtime12/source-freeze.json",
+    "controller": "FB63F5906E1C9FC9D49150F571D64FDE640E0A4630319C418FE4F9C2E7E5413A",
+    "pageBridge": "687A34025D594DF81EF0A2B95BCA4FAC567B48B646B6653008D0CEBAA75848E6",
+    "mcpServerIndex": "3937E7D63FC0E1F40DFED7988F6ED0520DA2F840405849D1B05A18A01C736860",
+    "bundledToolSchemas": "E6D52D6824D526536CDDBB67DE980C99531A6FD14D3E7712DB2D6D2AC6A103D2",
+    "mcpServerRoute": "B1B469DB429D4F65F36023E4D0AA8F5DF44C9119561D9F1A845BAE50FBBB4E69",
+    "operationModule": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6",
+    "leaseModule": "DE276372A763310EC051DB141FCB1D601E11DBF193843E2B21A405226F782134",
+    "runtime12Canvas": "D02A3DBFC72EDA731D1D1C3A361910248797CC7C4E159AD99763882982C53A15",
+    "flatPreviewRoute": "00BD0EA753D31E53D7CDB38B2BF6BCAB361BF2D872F76DF1AEE8F6DFC49B767",
+    "browserMcpServer": "81609AF312794E79699AA0ABD37BE4762DBD076E3DA82C7F0FB681805F05F567"
+  },
+  "confirmedFindings": [
+    {
+      "id": "hidden-layer-explicit-target-is-editable",
+      "severity": "P2",
+      "evidence": "Actual Runtime12 mcpCall(edit_layer) with layer='Car Paint' and visible=false returns success and queues opacity=80 against that exact layer ID. The fixture made no apply call; the production handler's queue acceptance is confirmed.",
+      "risk": "A caller can change a hidden layer that does not affect the visible result. This conflicts with the frozen review expectation to refuse or ask and can produce an apparently ineffective edit.",
+      "recommendation": "Have edit_layer refuse hidden layers unless the tool contract explicitly supports hidden-layer edits and requires explicit confirmation. Keep exact-layer targeting; never substitute another layer."
+    },
+    {
+      "id": "page-tool-list-schema-drift",
+      "severity": "P2",
+      "evidence": "Actual page list_tools and bundled tools.json both contain 22 names with no missing runtime names, but input schemas differ for spb_edit_zone, spb_add_zone, spb_duplicate_zone and spb_refinish. Page edit_zone lists only selectors (no editable fields); page add_zone lists no properties despite requiring region. The bundle carries these properties. Other mismatches are descriptions. This comparison executes actual page list_tools and actual server allTools; no external MCP client was launched.",
+      "risk": "Consumers that refresh tool descriptions from the page may be told they cannot provide the edit payload. The bundled standalone MCP tool list remains more complete, so this is endpoint disagreement rather than a demonstrated inability to write through the bundled server.",
+      "recommendation": "Generate both public schema lists from the same authoritative makeTools result, or test the generated tools.json against the page list for property-level parity."
+    },
+    {
+      "id": "write-tools-marked-nondestructive",
+      "severity": "P2",
+      "evidence": "Actual mcp/server/index.js allTools marks all 10 write tools with destructiveHint:false, including edit_zone, add_zone, edit_layer, apply_scheme, refinish, mark_elements, undo and request_parts.",
+      "risk": "Clients relying on standard MCP annotations receive a misleading risk classification for mutating or state-changing operations. No evidence here establishes that a client bypassed consent because of the annotation.",
+      "recommendation": "Use destructiveHint:true for actual writes/state changes (or omit the hint when classification is uncertain); preserve readOnlyHint as currently derived."
+    }
+  ],
+  "verifiedControls": [
+    "unknown, duplicate-ID and duplicate-name targets fail closed; stale positional name guard rejects; a valid stable zone ID queues a single target",
+    "locked layer is rejected; exact zone edit cannot queue when source generation changes before dispatch or during validation, and same-path fingerprint replacement is also rejected",
+    "stale caller-supplied scoped owner proof is refused",
+    "read-only get_help goes through the actual page bridge handler and posts one successful result; preview creates no application",
+    "failed applyQueue response reports zero applied and one failed; bridge-disabled action is refused before application",
+    "bundled server alias spb_edit_zone dispatches to actual page mcpCall; all 22 runtime names exist in tools.json"
+  ],
+  "samePathExternalTga": {
+    "result": "For an already committed flat TGA, the browser paints from the decoded response Blob and calculates its fingerprint from that same Blob's arrayBuffer. It writes the pixels into paintCanvas/paintImageData; changing the disk file without a UI reload does not replace the pixels already loaded in the editor.",
+    "basis": "Static source inspection of frozen Runtime12 canvas loadPaintPreviewFromServer: fetch /preview-tga, response.blob(), createObjectURL(blob), stage image decode and fingerprint(blob.arrayBuffer()), then drawImage(stagedImage) and capture canvas image data before committing identity.",
+    "limitation": "Not dynamically tested against a real browser/backend. The source transaction cannot notice external disk changes until another load occurs. On a later load, integrity depends on the pinned backend preview route returning bytes and digest for the same source snapshot; this review did not retest that backend candidate race."
+  },
+  "notCoveredOrNotProven": [
+    "No native UI, live MCP process, external MCP client, provider, server, or real apply/Undo was invoked.",
+    "The 15-case oracle was exercised through 20 actual-function checks with fake document state and an in-memory applyQueue. Muted-part ownership, actual delayed async tool callback replacement, and native saved/applied receipt integration remain unproven in this lane.",
+    "The separate integrations/spb-mcp/spb_mcp_server.py is a browser/UI-control MCP surface; its generic spb_app_script can run arbitrary JavaScript and is explicitly not a security sandbox. It was hash-pinned and inspected only, not invoked."
+  ],
+  "workspaceEffects": {
+    "sharedProductionSourcesEdited": false,
+    "providers": 0,
+    "nativeCalls": 0,
+    "customerFilesReadOrWritten": false
+  },
+  "privateLauncherStaticAudit": {
+    "path": "_easy_claude_work/ai14h_generation3_audit/launch_isolated_frozen_backend.py",
+    "sha256": "D627DD920F93E951656A24272C74383D36DDEFEF9787C31B3CF988EDDEC153C5",
+    "verdict": "Static isolation wiring is coherent: process-only USERPROFILE points beneath the private evidence output; config construction uses SPB_NO_LIVE_LINK and creates only private OUTPUT_DIR; route registration redirects server CONFIG_FILE and project dir to private locations before serving. Startup hashes root shokker_config.json and .server_port for integrity but does not parse or write those paths.",
+    "priorSaveAttempt": "A previous Save was safely denied by V5 because USERPROFILE still resolved to the ordinary Documents project directory. The attempt returned saved=false before writing. This was harness isolation, not a product save failure.",
+    "limitations": "Static review only; no new server was launched by this agent."
+  }
+}

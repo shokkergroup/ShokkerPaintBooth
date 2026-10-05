@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "paint_label": "trucks toyotatundra2022/car_num_612073.tga",
+  "inspection_records": "_smart_tga_runs/cycle146_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle146_route_pressure_v1/trucks_toyotatundra2022_car_num_612073/component_records.json",
+  "review_scope": "Cycle 147 focused cleanup review of current Numbers output on Toyota Tundra 612073: keep the real 14 pieces and reject the mint livery/panel block that landed in Numbers.",
+  "component_labels": [
+    {
+      "layer": "numbers",
+      "component_index": 0,
+      "expected_bbox": [5, 157, 126, 38],
+      "target_layer": "paint",
+      "label": "mint_livery_panel_false_number",
+      "note": "Wide saturated mint/green livery panel block in the Numbers layer; should be Paint/livery design, not a race number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 1,
+      "expected_bbox": [447, 883, 67, 101],
+      "target_layer": "numbers",
+      "label": "true_number_14_left_digit_piece",
+      "note": "True side-number 14 digit/body piece already in Numbers; protect from cleanup demotion."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 2,
+      "expected_bbox": [503, 883, 104, 101],
+      "target_layer": "numbers",
+      "label": "true_number_14_right_digit_piece",
+      "note": "True side-number 14 digit/body piece already in Numbers; protect from cleanup demotion."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 3,
+      "expected_bbox": [180, 903, 129, 121],
+      "target_layer": "numbers",
+      "label": "true_number_14_large_piece",
+      "note": "True larger 14 number body already in Numbers; protect from cleanup demotion."
+    }
+  ]
+}

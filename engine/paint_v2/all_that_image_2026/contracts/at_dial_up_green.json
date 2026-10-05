@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_dial_up_green",
+  "display_name": "Cdrom: Dial-Up Green",
+  "promise": "Black glass with abstract green terminal activity, no letters or numbers",
+  "carrier_grammar": "Black glass with abstract green terminal activity, no letters or numbers; single full-canvas image, no duplicated quadrants. Fine features: smoked terminal glass, dark signal voids, green phosphor strokes, pale connection sparks, etched pulse edges, hairline glass wear",
+  "spec_grammar": "Feature-specific selectors partition smoked terminal glass, dark signal voids, green phosphor strokes, pale connection sparks, etched pulse edges, hairline glass wear. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "smoked terminal glass",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "dark signal voids",
+      "role": "Material feature selected from artwork by g:<:0.30"
+    },
+    {
+      "name": "green phosphor strokes",
+      "role": "Material feature selected from artwork by green:>:0.30&h:<:165"
+    },
+    {
+      "name": "pale connection sparks",
+      "role": "Material feature selected from artwork by g:>:0.82&s:<:0.5"
+    },
+    {
+      "name": "etched pulse edges",
+      "role": "Material feature selected from artwork by edge:>:0.68"
+    },
+    {
+      "name": "hairline glass wear",
+      "role": "Material feature selected from artwork by fine:>:0.84"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "smoked terminal glass",
+      "dark signal voids",
+      "green phosphor strokes",
+      "pale connection sparks",
+      "etched pulse edges",
+      "hairline glass wear"
+    ],
+    "R": [
+      "smoked terminal glass",
+      "dark signal voids",
+      "green phosphor strokes",
+      "pale connection sparks",
+      "etched pulse edges",
+      "hairline glass wear"
+    ],
+    "Cc": [
+      "smoked terminal glass",
+      "dark signal voids",
+      "green phosphor strokes",
+      "pale connection sparks",
+      "etched pulse edges",
+      "hairline glass wear"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "smoked terminal glass",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dark signal voids",
+      "range": [
+        [
+          0,
+          75,
+          70
+        ],
+        [
+          15,
+          190,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "green phosphor strokes",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "pale connection sparks",
+      "range": [
+        [
+          240,
+          0,
+          16
+        ],
+        [
+          255,
+          32,
+          90
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "etched pulse edges",
+      "range": [
+        [
+          0,
+          95,
+          85
+        ],
+        [
+          20,
+          205,
+          220
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "hairline glass wear",
+      "range": [
+        [
+          0,
+          130,
+          110
+        ],
+        [
+          22,
+          235,
+          245
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_beige_box",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_crt_blue_screen",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "smoked terminal glass",
+      "dark signal voids",
+      "green phosphor strokes",
+      "pale connection sparks",
+      "etched pulse edges",
+      "hairline glass wear"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_dial_up_green / Black glass with abstract green terminal activity, no letters or numbers",
+  "spec_key": "at_dial_up_green / smoked terminal glass all; dark signal voids g:<:0.30; green phosphor strokes green:>:0.30&h:<:165; pale connection sparks g:>:0.82&s:<:0.5; etched pulse edges edge:>:0.68; hairline glass wear fine:>:0.84",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

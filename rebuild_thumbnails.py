@@ -52,6 +52,13 @@ def make_zone_for_finish(finish_type, finish_key, default_base="living_matte"):
             "base": finish_key,
             "pattern": "none",
             "intensity": "100",
+            # [SPB ANIME OVERHAUL 2026-08-25] Same source-paint-contract fix the monolithic
+            # branch below got on 2026-08-23: since the contract, an omitted color mode
+            # PRESERVES the neutral #888 source, so every base with a real paint_fn baked to
+            # flat gray (verified: ms_crimson_dragon std 0.0 -> 42.5 with this; M1 had a
+            # 63-member gray clone group). A catalog thumbnail must show the base's own paint.
+            "base_color_mode": "special",
+            "base_color_source": finish_key,
         }
     if finish_type == "pattern":
         return {
@@ -66,6 +73,12 @@ def make_zone_for_finish(finish_type, finish_key, default_base="living_matte"):
             "name": f"Thumb-{finish_key}",
             "color": "remaining",
             "finish": finish_key,
+            # SPB-WILDS tick 4 (2026-08-23). Owner: "Must be VERY UNIQUE"
+            # with Fractured color flipping. Since the source-paint contract,
+            # an omitted mode deliberately preserves the neutral #888 source;
+            # a monolithic catalog thumbnail must instead show its own paint.
+            "base_color_mode": "special",
+            "base_color_source": f"mono:{finish_key}",
             "intensity": "100",
         }
         # So gradient/ghost/mirror/3c/mc thumbnails use accurate colors (not generic)
@@ -231,7 +244,13 @@ def main():
     ap.add_argument("--output", type=str, default=DEFAULT_OUTPUT, help="Output dir for thumbnails (default: V5/thumbnails)")
     ap.add_argument("--type", choices=("base", "pattern", "monolithic", "spec", "all"), default="all", help="Which registry to build (spec = spec overlay patterns)")
     ap.add_argument("--key", type=str, default=None, help="Build only this key (requires --type)")
+    ap.add_argument("--keys", nargs="+", default=None, help="Build these keys in one engine process (requires one --type)")
     ap.add_argument("--quiet", action="store_true", help="Less console output")
+    ap.add_argument(
+        "--wilds-quality-manifest",
+        default="_wilds_rejection_work/release_quality/wilds_110_owner_review_manifest.json",
+        help="Explicit 110-ID owner review manifest required before any Wilds thumbnail write.",
+    )
     args = ap.parse_args()
 
     try:
@@ -284,6 +303,8 @@ def main():
                     tasks.append(("pattern", key))
             for key in sorted(MONOLITHIC_REGISTRY.keys()):
                 tasks.append(("monolithic", key))
+        elif args.type and args.keys:
+            tasks = [(args.type, key) for key in args.keys]
         elif args.type and args.key:
             tasks = [(args.type, args.key)]
         else:
@@ -297,6 +318,16 @@ def main():
         if not tasks:
             print("No keys to build.")
             return
+
+        from scripts.spb_wilds_release_gate import require_wilds_quality_release_for_items
+        try:
+            require_wilds_quality_release_for_items(
+                tasks,
+                manifest_path=args.wilds_quality_manifest,
+                registry=MONOLITHIC_REGISTRY,
+            )
+        except (OSError, TypeError, ValueError) as exc:
+            raise SystemExit(f"Wilds quality release LOCKED: {exc}") from exc
 
         print(f"Building {len(tasks)} thumbnails -> {out_root} (monolithic at 256px, others at {args.size}px)")
         total = len(tasks)

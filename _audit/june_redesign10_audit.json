@@ -1,0 +1,54 @@
+{
+  "category": "redesign10",
+  "entries": {
+    "butterfly_morpho": {
+      "verdict": "keep",
+      "rating": 77,
+      "ai_rating": 54,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781136838255
+    },
+    "fable_comet_parade": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 69,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781137045232
+    },
+    "moth_luna": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 59,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781137051601
+    },
+    "fable_magnetite_flow": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 69,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781137161943
+    },
+    "lfr_freedom_forge": {
+      "verdict": "keep",
+      "rating": 77,
+      "ai_rating": 68,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781137434361
+    },
+    "lfr_rockets_red_glare": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 67,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781137523269
+    }
+  },
+  "updated": 1781137523
+}

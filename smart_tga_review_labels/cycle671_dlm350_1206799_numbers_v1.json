@@ -1,0 +1,4 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_1206799.tga","inspection_records":"_smart_tga_runs/cycle671_dlm_unassigned_assembly_review/inspection_records.json","review_scope":"Cycle 671 source plus complete Number/Sponsor/Template/Paint sheets; visible custom 28 is missed.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[98,314,19,25],"target_layer":"sponsors","label":"wordmark_fragment_false_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[958,948,66,35],"target_layer":"paint","label":"livery_stroke_false_number"}
+]}

@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_terrazzo_chip",
+  "display_name": "Memphis: Candy Terrazzo",
+  "promise": "Fine coral, mint and cobalt stone chips polished into lemon terrazzo.",
+  "carrier_grammar": "Fine coral, mint and cobalt stone chips polished into lemon terrazzo. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for lemon cement binder, coral stone chips, mint mineral grains, cobalt stone fragments, ivory polished faces is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Fine coral, mint and cobalt stone chips polished into lemon terrazzo. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_terrazzo_chip.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "lemon cement binder",
+      "role": "Actual shared paint and spec geometry: lemon cement binder"
+    },
+    {
+      "name": "coral stone chips",
+      "role": "Actual shared paint and spec geometry: coral stone chips"
+    },
+    {
+      "name": "mint mineral grains",
+      "role": "Actual shared paint and spec geometry: mint mineral grains"
+    },
+    {
+      "name": "cobalt stone fragments",
+      "role": "Actual shared paint and spec geometry: cobalt stone fragments"
+    },
+    {
+      "name": "ivory polished faces",
+      "role": "Actual shared paint and spec geometry: ivory polished faces"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "lemon cement binder",
+      "coral stone chips",
+      "mint mineral grains",
+      "cobalt stone fragments",
+      "ivory polished faces"
+    ],
+    "R": [
+      "lemon cement binder",
+      "coral stone chips",
+      "mint mineral grains",
+      "cobalt stone fragments",
+      "ivory polished faces"
+    ],
+    "Cc": [
+      "lemon cement binder",
+      "coral stone chips",
+      "mint mineral grains",
+      "cobalt stone fragments",
+      "ivory polished faces"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_confetti_laminate",
+      "difference": "This finish uses Dense microscopic angular coral mint cobalt and ivory terrazzo chips in lemon yellow binder, tiny polished faces, pin pores and very thin darker chip boundaries. Fine crushed candy-colored mineral aggregate, no big rocks or mosaic tiles, every stone fleck below1percent of width.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_grid_tile",
+      "difference": "This finish uses Dense microscopic angular coral mint cobalt and ivory terrazzo chips in lemon yellow binder, tiny polished faces, pin pores and very thin darker chip boundaries. Fine crushed candy-colored mineral aggregate, no big rocks or mosaic tiles, every stone fleck below1percent of width.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "lemon cement binder is visible in the authored geometry",
+      "coral stone chips is visible in the authored geometry",
+      "mint mineral grains is visible in the authored geometry",
+      "cobalt stone fragments is visible in the authored geometry",
+      "ivory polished faces is visible in the authored geometry"
+    ],
+    "source_sha256": "d273a5e44a1a6b15214956ec706cf9972ce5e1ef5fa9fe0d358923ae3a0d8107",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_terrazzo_chip-authored-Fine coral, mint and cobalt stone chips polished into lemon terrazzo. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_terrazzo_chip-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 80.8,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "3c81e9761157d0cb469a6f579d871432c1948ab2ad32437e74f371f0c32a30ae"
+}

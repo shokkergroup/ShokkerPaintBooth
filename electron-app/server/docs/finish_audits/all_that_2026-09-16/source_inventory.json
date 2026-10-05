@@ -1,0 +1,556 @@
+{
+  "date": "2026-09-16",
+  "scope": "Source inventory and user-supplied screenshot audit; no fresh live render certification",
+  "source_sha256": {
+    "paint-booth-0-finish-data.js": "686a375133955830a9d3dbeb8232da34def5761654b0bd2e79fc374d82159200",
+    "engine/base_registry_data.py": "31696a8b8ecf778443bd1ca8fa0948c3a39a765b53b08f29bf2c826a35ae77f6",
+    "engine/paint_v2/era_1990s_2026.py": "0058ae14cb0e0432acac16d9bbb1637c28de0fb62a1aebb369c3ab2b9baa8033",
+    "engine/paint_v2/era_designs_2026.py": "faa0f80e23590f640a6f187937d8d550513ed2bb5562e962862ad5cc49a4b4c2",
+    "engine/paint_v2/era_base_2026.py": "511907d80725668a7e0409e306f85fdaffddcd687873e918f5e62441c768fdc3",
+    "engine/paint_v2/era_authored_decks_2026.py": "bed5b9f3335828386c85cd8aa32ba1b87f3e39ffa2877d9b25d385c1ac385e8a",
+    "engine/paint_v2/spec_story.py": "88cb61c6d65cc7afa20909a8ce0798b333230fc696b3137e2d01b63955e17a5b"
+  },
+  "finishes": [
+    {
+      "id": "at_beige_box",
+      "name": "Cdrom: Beige Box",
+      "description": "Textured ABS that went yellow within four years of leaving the factory.",
+      "generator": "ek:knurl",
+      "parameters": "dict(pitch=9.0, angle=0.0, wobble=0.3)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_crt_blue_screen",
+      "name": "Cdrom: CRT Blue Screen",
+      "description": "White on blue, hex addresses, and the certainty you had lost the work.",
+      "generator": "ek:scanline",
+      "parameters": "dict(lines=260.0, triad=3.0, bloom=0.8, roll=0.1, jitter=0.1)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_corrupt_jpeg",
+      "name": "Cdrom: Corrupt JPEG",
+      "description": "A download that failed at 74%, saved anyway, opened for years afterwards.",
+      "generator": "ek:glitch",
+      "parameters": "dict(slices=48, shift=36.0, tear=0.35, block=0.4)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_cyber_café",
+      "name": "Cdrom: Cyber Café",
+      "description": "Perforated steel desks, blue LEDs, and an hourly rate.",
+      "generator": "ek:honeycomb",
+      "parameters": "dict()",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_dial_up_green",
+      "name": "Cdrom: Dial-Up Green",
+      "description": "A terminal at 14.4k, with the handshake you could hum from memory.",
+      "generator": "ek:microtext",
+      "parameters": "dict()",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_disc_rainbow",
+      "name": "Cdrom: Disc Rainbow",
+      "description": "Data pits under lacquer, diffracting the room back at you in order.",
+      "generator": "ek:holo",
+      "parameters": "dict(rings=380.0, orders=3.0, warp=40.0, sharp=1.2)",
+      "detail_kind": "flake"
+    },
+    {
+      "id": "at_floppy_black",
+      "name": "Cdrom: Floppy Black",
+      "description": "3.5-inch, high density, with a shutter that never quite closed straight.",
+      "generator": "ek:bands",
+      "parameters": "dict(n=70, shear=0.0, turb=0.03)",
+      "detail_kind": "ridge"
+    },
+    {
+      "id": "at_frosted_shell",
+      "name": "Cdrom: Frosted Shell",
+      "description": "Translucent blueberry polycarbonate — you could see the machine's own guts.",
+      "generator": "ek:craters",
+      "parameters": "dict(n=8000, rmin=0.6, rmax=1.6, rim=0.3)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_holo_sticker",
+      "name": "Cdrom: Holo Sticker",
+      "description": "The authenticity hologram, which everyone peeled off and stuck somewhere else.",
+      "generator": "ek:scales",
+      "parameters": "dict(cell=12.0, keel=0.2)",
+      "detail_kind": "flake"
+    },
+    {
+      "id": "at_iridescent_cd_r",
+      "name": "Cdrom: Iridescent CD-R",
+      "description": "The green-gold underside of a blank, burned at 2x with the drive door taped shut.",
+      "generator": "moire_beat",
+      "parameters": "dict(a=200.0, b=212.0, angle=0.05)",
+      "detail_kind": "flake"
+    },
+    {
+      "id": "at_mouse_ball_grime",
+      "name": "Cdrom: Mouse Ball Grime",
+      "description": "The rollers, and what you scraped off them with a fingernail once a month.",
+      "generator": "ek:percolate",
+      "parameters": "dict(cells=110, p=0.5)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_pipes_screensaver",
+      "name": "Cdrom: Pipes Screensaver",
+      "description": "Chrome pipes assembling themselves forever because nobody hit a key.",
+      "generator": "maze",
+      "parameters": "dict(cells=48)",
+      "detail_kind": "ridge"
+    },
+    {
+      "id": "at_windows_teal",
+      "name": "Cdrom: Windows Teal",
+      "description": "The desktop everyone had, in the teal nobody chose.",
+      "generator": "ek:pixels",
+      "parameters": "dict(cell=24.0, levels=5, dither=0.1)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_y2k_chrome",
+      "name": "Cdrom: Y2K Chrome",
+      "description": "Bubble chrome type, on everything printed between 1998 and 2001.",
+      "generator": "metaball",
+      "parameters": "dict(blobs=400, radius=0.03)",
+      "detail_kind": "flake"
+    },
+    {
+      "id": "at_zip_disk",
+      "name": "Cdrom: Zip Disk",
+      "description": "100 megabytes, and the click of death that took it all with it.",
+      "generator": "ek:worley",
+      "parameters": "dict(cells=64)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_anodised_peg",
+      "name": "Extreme: Anodised Peg",
+      "description": "Purple ano on a chromoly peg, scraped back to silver on the grind side.",
+      "generator": "ek:knurl",
+      "parameters": "dict(pitch=30.0, angle=0.785, wobble=0.0)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_bmx_dirt",
+      "name": "Extreme: BMX Dirt",
+      "description": "A backyard jump packed hard, with a lip built out of whatever was around.",
+      "generator": "ek:worley",
+      "parameters": "dict(cells=160)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_big_dog_print",
+      "name": "Extreme: Big Dog Print",
+      "description": "An oversized tee with a cartoon dog, worn to a waterpark in 1996.",
+      "generator": "ek:tooled",
+      "parameters": "dict(cell=120.0, petals=4, stamp=0.8, bevel=0.5)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_bungee_cord",
+      "name": "Extreme: Bungee Cord",
+      "description": "Woven sheath over rubber core, in colours matched to nothing at all.",
+      "generator": "ek:kh_braid",
+      "parameters": "dict(layers=40, shear=2.4)",
+      "detail_kind": "fibre"
+    },
+    {
+      "id": "at_chain_link",
+      "name": "Extreme: Chain Link",
+      "description": "Galvanised fence around the lot, with the corner everybody bent up.",
+      "generator": "ek:sett",
+      "parameters": "dict(pitch=34.0, twill=1.0)",
+      "detail_kind": "ridge"
+    },
+    {
+      "id": "at_dew_green",
+      "name": "Extreme: Dew Green",
+      "description": "A colour engineered in a lab to be visible from the other end of an aisle.",
+      "generator": "ek:stars",
+      "parameters": "dict()",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_grip_tape",
+      "name": "Extreme: Grip Tape",
+      "description": "Silicon carbide on adhesive, sharp enough to take skin off.",
+      "generator": "ek:facets",
+      "parameters": "dict(stones=2200, table=0.2)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_half_pipe_ply",
+      "name": "Extreme: Half Pipe Ply",
+      "description": "Two layers of masonite over ply, with a seam you learned to jump.",
+      "generator": "ek:bands",
+      "parameters": "dict(n=22, shear=0.0, turb=0.02)",
+      "detail_kind": "ridge"
+    },
+    {
+      "id": "at_mountain_topo",
+      "name": "Extreme: Mountain Topo",
+      "description": "A trail map folded into a pocket until the creases went through the paper.",
+      "generator": "ek:topo",
+      "parameters": "dict(lines=120.0, width=2.2)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_neon_wetsuit",
+      "name": "Extreme: Neon Wetsuit",
+      "description": "Neoprene with fluoro panels, because the eighties had not fully let go.",
+      "generator": "ek:digicam",
+      "parameters": "dict(cell=30.0, patches=3, cluster=3.0)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_roller_blade",
+      "name": "Extreme: Roller Blade",
+      "description": "Vented plastic shell in three colours nobody would choose twice.",
+      "generator": "ek:scales",
+      "parameters": "dict(cell=34.0, keel=0.5)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_skatepark_concrete",
+      "name": "Extreme: Skatepark Concrete",
+      "description": "Poured bowl, waxed coping, and the grey that photographs badly on purpose.",
+      "generator": "ek:craters",
+      "parameters": "dict(n=3000, rmin=1.5, rmax=5.0, rim=0.4)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_snowboard_graphic",
+      "name": "Extreme: Snowboard Graphic",
+      "description": "Sublimated topsheet, scratched to the core by the second season.",
+      "generator": "ek:splatter",
+      "parameters": "dict(blobs=500, rmax=30.0, drips=0.4, spatter=1.0)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_surf_wax",
+      "name": "Extreme: Surf Wax",
+      "description": "Combed into a deck, gone chalky and grey, smelling of coconut regardless.",
+      "generator": "ek:dunes",
+      "parameters": "dict(n=36, crest=2.0)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_windbreaker_block",
+      "name": "Extreme: Windbreaker Block",
+      "description": "Colour-blocked nylon that rustled loudly enough to annoy a whole classroom.",
+      "generator": "ek:polygons",
+      "parameters": "dict(cells=34, width=3.0)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_airbrush_tee",
+      "name": "Fresh: Airbrush Tee",
+      "description": "Boardwalk airbrush, name in bubble letters, drying while you waited.",
+      "generator": "ek:curl",
+      "parameters": "dict(scale=140, steps=26)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_boombox_chrome",
+      "name": "Fresh: Boombox Chrome",
+      "description": "Twin decks, a graphic equaliser, and D cells by the dozen.",
+      "generator": "ek:knurl",
+      "parameters": "dict(pitch=6.0, angle=0.0, wobble=0.0)",
+      "detail_kind": "flake"
+    },
+    {
+      "id": "at_bucket_hat",
+      "name": "Fresh: Bucket Hat",
+      "description": "Reversible cotton twill with a stitched brim that held its shape badly.",
+      "generator": "ek:sett",
+      "parameters": "dict(pitch=18.0, twill=2.0)",
+      "detail_kind": "fibre"
+    },
+    {
+      "id": "at_cross_colour_block",
+      "name": "Fresh: Cross Colour Block",
+      "description": "Primary blocks on baggy denim, cut for a fit that took twenty years to return.",
+      "generator": "ek:polygons",
+      "parameters": "dict(cells=22, width=4.0)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_denim_baggy",
+      "name": "Fresh: Denim Baggy",
+      "description": "Twenty-two inch leg, stonewashed, stacked over the shoe.",
+      "generator": "ek:ikat",
+      "parameters": "dict()",
+      "detail_kind": "fibre"
+    },
+    {
+      "id": "at_fresh_kicks",
+      "name": "Fresh: Fresh Kicks",
+      "description": "Patent toe, mesh panel, and a midsole kept white with a toothbrush.",
+      "generator": "ek:craters",
+      "parameters": "dict(n=1400, rmin=3.0, rmax=6.0, rim=0.7)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_gold_rope",
+      "name": "Fresh: Gold Rope",
+      "description": "Herringbone links, worn outside the shirt, weighed by hand at the counter.",
+      "generator": "imbricate",
+      "parameters": "dict(rows=46, overlap=0.5)",
+      "detail_kind": "flake"
+    },
+    {
+      "id": "at_graffiti_fill",
+      "name": "Fresh: Graffiti Fill",
+      "description": "Two-tone fill with a hard outline, done fast on a rolling shutter.",
+      "generator": "ek:splatter",
+      "parameters": "dict(blobs=900, rmax=30.0, drips=0.9, spatter=0.8)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_grill_chrome",
+      "name": "Fresh: Grill Chrome",
+      "description": "Polished, removable, and photographed more than it was worn.",
+      "generator": "ek:facets",
+      "parameters": "dict(stones=120, table=0.6)",
+      "detail_kind": "flake"
+    },
+    {
+      "id": "at_kangol_felt",
+      "name": "Fresh: Kangol Felt",
+      "description": "Angora felt with a nap you could write on with a finger.",
+      "generator": "ek:threads",
+      "parameters": "dict()",
+      "detail_kind": "fibre"
+    },
+    {
+      "id": "at_nameplate_gold",
+      "name": "Fresh: Nameplate Gold",
+      "description": "Cut from sheet in a mall kiosk while you picked the font.",
+      "generator": "ek:tooled",
+      "parameters": "dict(cell=80.0, petals=6, stamp=0.6, bevel=1.0)",
+      "detail_kind": "flake"
+    },
+    {
+      "id": "at_starter_jacket",
+      "name": "Fresh: Starter Jacket",
+      "description": "Satin shell with a team logo, and a lining that made you sweat instantly.",
+      "generator": "ek:moire",
+      "parameters": "dict()",
+      "detail_kind": "flake"
+    },
+    {
+      "id": "at_velour_rose",
+      "name": "Fresh: Velour Rose",
+      "description": "Crushed nap that shows every fingerprint and every direction you brushed it.",
+      "generator": "ek:crinkle",
+      "parameters": "dict(scale=160, sharp=1.6, folds=2)",
+      "detail_kind": "fibre"
+    },
+    {
+      "id": "at_velour_tracksuit",
+      "name": "Fresh: Velour Tracksuit",
+      "description": "Two pieces, matching, in a purple that reads as a texture more than a colour.",
+      "generator": "ek:shag",
+      "parameters": "dict(strands=8000, length=20, splay=1.3)",
+      "detail_kind": "fibre"
+    },
+    {
+      "id": "at_vinyl_crate",
+      "name": "Fresh: Vinyl Crate",
+      "description": "Twelve-inch sleeves gone soft at the corners from being flipped through.",
+      "generator": "ek:guilloche",
+      "parameters": "dict()",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_band_tee_crack",
+      "name": "Flannel: Band Tee Crack",
+      "description": "Plastisol print cracked into a map by a hundred trips through a dryer.",
+      "generator": "ek:anneal_crack",
+      "parameters": "dict(cells=54, width=2.2)",
+      "detail_kind": "crackle"
+    },
+    {
+      "id": "at_basement_amp",
+      "name": "Flannel: Basement Amp",
+      "description": "Tolex over ply, cigarette-burned on the top, with one corner stove in.",
+      "generator": "ek:craters",
+      "parameters": "dict(n=6000, rmin=0.8, rmax=2.2, rim=0.5)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_cassette_tape",
+      "name": "Flannel: Cassette Tape",
+      "description": "A mixtape with the track list in three different pens.",
+      "generator": "ek:scanline",
+      "parameters": "dict(lines=90.0, triad=1.0, bloom=0.4, roll=0.0, jitter=0.2)",
+      "detail_kind": "ridge"
+    },
+    {
+      "id": "at_chipped_nail",
+      "name": "Flannel: Chipped Nail",
+      "description": "Black polish, three days old, picked at during every single class.",
+      "generator": "ek:camo",
+      "parameters": "dict(patches=3, blob=60.0, roughness=1.8)",
+      "detail_kind": "flake"
+    },
+    {
+      "id": "at_combat_boot_steel",
+      "name": "Flannel: Combat Boot Steel",
+      "description": "A steel toe showing through the leather, which counted as a look.",
+      "generator": "ek:eden",
+      "parameters": "dict(seeds=40, steps=40)",
+      "detail_kind": "flake"
+    },
+    {
+      "id": "at_corduroy_olive",
+      "name": "Flannel: Corduroy Olive",
+      "description": "Narrow wale, olive, from a shop that also sold camping stoves.",
+      "generator": "ek:bands",
+      "parameters": "dict(n=96, shear=0.3, turb=0.15)",
+      "detail_kind": "ridge"
+    },
+    {
+      "id": "at_distressed_denim",
+      "name": "Flannel: Distressed Denim",
+      "description": "Worn through at the knee honestly, over about four years.",
+      "generator": "ek:spall",
+      "parameters": "dict(cells=44, lift=0.55)",
+      "detail_kind": "fibre"
+    },
+    {
+      "id": "at_doc_marten",
+      "name": "Flannel: Doc Marten",
+      "description": "Eight-hole, cherry red, creased across the vamp exactly where the foot bends.",
+      "generator": "ek:wrinkle",
+      "parameters": "dict(k=2.0, steps=24)",
+      "detail_kind": "ridge"
+    },
+    {
+      "id": "at_flannel_forest",
+      "name": "Flannel: Flannel Forest",
+      "description": "Green over black in a windowpane that goes soft after ten washes.",
+      "generator": "ek:knurl",
+      "parameters": "dict(pitch=52.0, angle=0.0, wobble=0.05)",
+      "detail_kind": "fibre"
+    },
+    {
+      "id": "at_flannel_red",
+      "name": "Flannel: Flannel Red",
+      "description": "Buffalo check, brushed cotton, tied round the waist more than worn.",
+      "generator": "ek:sett",
+      "parameters": "dict(pitch=48.0, twill=2.0)",
+      "detail_kind": "fibre"
+    },
+    {
+      "id": "at_moss_sidewalk",
+      "name": "Flannel: Moss Sidewalk",
+      "description": "The green that grows in the cracks where the sun never reaches.",
+      "generator": "ek:percolate",
+      "parameters": "dict(cells=80, p=0.44)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_overcast_grey",
+      "name": "Flannel: Overcast Grey",
+      "description": "Nine months of the same sky, which is a colour and also a mood.",
+      "generator": "ek:dunes",
+      "parameters": "dict(n=10, crest=1.2)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_seattle_rain",
+      "name": "Flannel: Seattle Rain",
+      "description": "Not a downpour — the constant fine one that soaks you over an hour.",
+      "generator": "ek:rt_fingers",
+      "parameters": "dict(n=60)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_sharpie_ink",
+      "name": "Flannel: Sharpie Ink",
+      "description": "Lyrics on a forearm and a rucksack, bleeding slightly into the weave.",
+      "generator": "ek:squiggle",
+      "parameters": "dict(n=700, length=90.0, amp=14.0, confetti=0.2, width=3.0)",
+      "detail_kind": "grain"
+    },
+    {
+      "id": "at_thrift_cardigan",
+      "name": "Flannel: Thrift Cardigan",
+      "description": "Somebody's grandfather's, three sizes too big, with one button gone.",
+      "generator": "ek:scales",
+      "parameters": "dict(cell=20.0, keel=0.3)",
+      "detail_kind": "fibre"
+    }
+  ],
+  "generator_reuse": {
+    "ek:knurl": [
+      "at_beige_box",
+      "at_anodised_peg",
+      "at_boombox_chrome",
+      "at_flannel_forest"
+    ],
+    "ek:scanline": [
+      "at_crt_blue_screen",
+      "at_cassette_tape"
+    ],
+    "ek:bands": [
+      "at_floppy_black",
+      "at_half_pipe_ply",
+      "at_corduroy_olive"
+    ],
+    "ek:craters": [
+      "at_frosted_shell",
+      "at_skatepark_concrete",
+      "at_fresh_kicks",
+      "at_basement_amp"
+    ],
+    "ek:scales": [
+      "at_holo_sticker",
+      "at_roller_blade",
+      "at_thrift_cardigan"
+    ],
+    "ek:percolate": [
+      "at_mouse_ball_grime",
+      "at_moss_sidewalk"
+    ],
+    "ek:worley": [
+      "at_zip_disk",
+      "at_bmx_dirt"
+    ],
+    "ek:tooled": [
+      "at_big_dog_print",
+      "at_nameplate_gold"
+    ],
+    "ek:sett": [
+      "at_chain_link",
+      "at_bucket_hat",
+      "at_flannel_red"
+    ],
+    "ek:facets": [
+      "at_grip_tape",
+      "at_grill_chrome"
+    ],
+    "ek:splatter": [
+      "at_snowboard_graphic",
+      "at_graffiti_fill"
+    ],
+    "ek:dunes": [
+      "at_surf_wax",
+      "at_overcast_grey"
+    ],
+    "ek:polygons": [
+      "at_windbreaker_block",
+      "at_cross_colour_block"
+    ]
+  }
+}

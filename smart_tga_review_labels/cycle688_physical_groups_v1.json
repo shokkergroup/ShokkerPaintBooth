@@ -1,0 +1,10 @@
+{"version":1,"inspection_records":"_smart_tga_runs/cycle688_dlm_candidate_family_review/inspection_records.json","physical_group_audit":"_smart_tga_runs/cycle688_dlm_candidate_family_review/physical_groups/audit.json","review_scope":"Cycle 688 complete owner-neutral physical-group sheets; arrays map exactly to audit group order.","casts_votes":false,"ownership_authority":false,"paint_group_targets":{
+ "dirtlatemodel 350/car_num_1050549.tga":["sponsors"],
+ "dirtlatemodel 350/car_num_1051317.tga":["sponsors","sponsors","sponsors","sponsors","sponsors","template","sponsors","sponsors","numbers","sponsors"],
+ "dirtlatemodel 350/car_num_1063909.tga":["sponsors","sponsors"],
+ "dirtlatemodel 350/car_num_1070087.tga":["sponsors","paint","template","paint","template","template","sponsors","sponsors","sponsors","paint","sponsors","paint","sponsors","sponsors","sponsors","sponsors","sponsors","sponsors","template","template"],
+ "dirtlatemodel 358/car_num_1024962.tga":["sponsors","paint","sponsors","sponsors","sponsors","paint","paint","sponsors","sponsors","paint","template","sponsors","sponsors","sponsors","sponsors","sponsors","sponsors","paint","template"],
+ "dirtlatemodel 358/car_num_1027415.tga":["paint","paint","template","template","paint","template","paint","template","paint","paint"],
+ "dirtlatemodel 358/car_num_1029243.tga":["template","template","paint","paint","template","paint","paint","paint"],
+ "dirtlatemodel 358/car_num_1031902.tga":["paint","paint","sponsors","paint","paint","sponsors","sponsors","sponsors","paint","sponsors","paint","sponsors","sponsors","sponsors","sponsors","paint","sponsors","paint","sponsors","sponsors","sponsors","sponsors"]
+}}

@@ -1,0 +1,427 @@
+/* ============================================================================
+   SHOKKER PAINT BOOTH — NEON GLOW / BLOOM POLISH LAYER
+   File: css/ui-glow-polish-20260613.css
+   Created: 2026-06-13
+   Loads AFTER css/ui-modern-polish-20260613.css (wins the cascade for glow only)
+
+   OWNER BRIEF
+   -----------
+   "subtle glowing elements ... high scale feel and quality so it don't feel
+    boring. This is SHOKKER PAINT BOOTH — it shouldn't feel like a nursing home."
+   Earlier polish read as "not noticeable" -> this layer makes the energy
+   TASTEFULLY NOTICEABLE: premium neon bloom on the hero RENDER CTA, the active
+   right-panel tab, the SHOKKER wordmark, accent/command buttons, focus rings,
+   and a slow animated sheen across the hero preview frame.
+
+   STRICTLY ADDITIVE & SAFE
+   ------------------------
+   - PRESENTATION ONLY. No DOM, no JS, no layout shift, nothing hidden.
+   - Animates ONLY GPU-cheap properties: box-shadow, opacity, transform, filter,
+     background-position / -size. Never width/height/top/left (no reflow).
+   - Verified against the REAL DOM (CDP enumeration). Targets confirmed:
+       #btnRender.btn-render            (hero CTA — already overflow:hidden + has
+                                         ::before[ekgPulseIcon] & ::after[Ctrl+R];
+                                         so we glow it with BOX-SHADOW ONLY, never
+                                         a pseudo, to avoid clobbering the app's).
+       .rp-tab.active                   (right-panel FINISHES/LAYERS active tab;
+                                         ::after is the app's underline — we keep
+                                         it, just bloom the tab via box-shadow).
+       .brand-text / .brand-signature   (SHOKKER wordmark — both pseudos FREE; the
+                                         .header-brand pseudos [:) face + EKG] are
+                                         the app's, so we DO NOT touch them).
+       .btn-accent, .header-command-btn.primary, .batch-render-btn  (accent CTAs).
+       .preview-living-frame            (hero sheen — both pseudos FREE; the frame
+                                         is overflow:hidden so the sweep is clipped
+                                         neatly inside).
+       .zone-card.selected, .vtool-btn.active, .draw-tool-btn.active,
+       .swatch-item.selected            (selected / active states).
+   - Brand-true palette (matches ui-modern-polish tokens):
+       teal #00e5ff, gold #ffb020, orange #ff7a18, hot-pink #ff2d6f.
+   - prefers-reduced-motion: ALL motion stops; the static glow REMAINS so it is
+     still premium and noticeable, just calm.
+
+   TUNING
+   ------
+   --spb-glow-strength scales every animated bloom in one place (0 = static only).
+   ============================================================================ */
+
+:root {
+  --spb-glow-teal:   #00e5ff;
+  --spb-glow-gold:   #ffb020;
+  --spb-glow-orange: #ff7a18;
+  --spb-glow-pink:   #ff2d6f;
+
+  /* Master breathing curve for glows — calm, premium, never strobey. */
+  --spb-glow-ease: cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  --spb-glow-strength: 1;        /* global multiplier hook (kept simple) */
+}
+
+/* ===========================================================================
+   0. KEYFRAMES  (uniquely prefixed spbGlow* to avoid colliding with the app's
+      shokkerRenderHeat / ekgPulseIcon / shokkerFaceIgnite / *EkgRun, etc.)
+   =========================================================================== */
+
+/* Soft outer bloom that breathes in/out — for box-shadow on overflow:hidden CTAs */
+@keyframes spbGlowBreatheTeal {
+  0%, 100% { box-shadow:
+      0 0 0 1px rgba(0, 229, 255, 0.30),
+      0 0 14px 0 rgba(0, 229, 255, 0.22),
+      0 0 34px 2px rgba(0, 229, 255, 0.10); }
+  50%      { box-shadow:
+      0 0 0 1px rgba(0, 229, 255, 0.55),
+      0 0 22px 1px rgba(0, 229, 255, 0.42),
+      0 0 52px 6px rgba(0, 229, 255, 0.20); }
+}
+
+/* Hero RENDER bloom — orange/pink/teal heat halo that breathes with the app's
+   existing shokkerRenderHeat fill (we ADD an outer glow, app keeps the fill). */
+@keyframes spbGlowRenderHalo {
+  0%, 100% { box-shadow:
+      0 0 0 1px rgba(0, 229, 255, 0.28),
+      0 0 22px 1px rgba(255, 122, 24, 0.40),
+      0 0 46px 4px rgba(255, 45, 111, 0.20),
+      0 1px 0 0 rgba(255, 255, 255, 0.26) inset; }
+  50%      { box-shadow:
+      0 0 0 1px rgba(0, 229, 255, 0.55),
+      0 0 34px 3px rgba(255, 122, 24, 0.62),
+      0 0 70px 10px rgba(255, 45, 111, 0.34),
+      0 1px 0 0 rgba(255, 255, 255, 0.30) inset; }
+}
+
+/* Animated neon gradient slide for the SHOKKER wordmark text fill. */
+@keyframes spbGlowBrandSlide {
+  0%   { background-position:   0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* Gentle drop-shadow flicker for the brand text-glow (separate from the slide). */
+@keyframes spbGlowBrandPulse {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(0, 229, 255, 0.30))
+                      drop-shadow(0 0 10px rgba(255, 122, 24, 0.16)); }
+  50%      { filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.55))
+                      drop-shadow(0 0 18px rgba(255, 122, 24, 0.30)); }
+}
+
+/* Slow diagonal light sweep across the hero preview frame. */
+@keyframes spbGlowSheenSweep {
+  0%   { transform: translateX(-130%) rotate(8deg); opacity: 0; }
+  12%  { opacity: 0.9; }
+  40%  { opacity: 0; }
+  100% { transform: translateX(130%) rotate(8deg);  opacity: 0; }
+}
+
+/* Active-tab edge bloom breathing. */
+@keyframes spbGlowTabBreathe {
+  0%, 100% { box-shadow:
+      0 0 0 1px rgba(0, 229, 255, 0.35),
+      0 0 16px 0 rgba(0, 229, 255, 0.22),
+      0 1px 0 0 rgba(255, 255, 255, 0.06) inset; }
+  50%      { box-shadow:
+      0 0 0 1px rgba(0, 229, 255, 0.60),
+      0 0 26px 2px rgba(0, 229, 255, 0.40),
+      0 1px 0 0 rgba(255, 255, 255, 0.08) inset; }
+}
+
+/* One-shot sheen used on hover of accent buttons (subtle "wipe of light"). */
+@keyframes spbGlowBtnSheen {
+  0%   { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+  18%  { opacity: 0.85; }
+  100% { transform: translateX(220%)  skewX(-18deg); opacity: 0; }
+}
+
+/* ===========================================================================
+   1. HERO CTA — #btnRender ("RENDER")
+   The app already animates an internal heat FILL (shokkerRenderHeat) and uses
+   BOTH pseudo-elements (::before = ekg pulse, ::after = "Ctrl+R" label). We must
+   NOT add a pseudo here. Instead we layer an animated outer bloom via box-shadow,
+   which composites on the GPU and reads as a premium energy halo around the most
+   important button in the app.
+   =========================================================================== */
+
+#btnRender,
+#btnRender.btn-render,
+button.btn-render.primary-render-action {
+  animation: spbGlowRenderHalo 2.4s var(--spb-glow-ease) infinite !important;
+  will-change: box-shadow;
+}
+#btnRender:hover,
+button.btn-render.primary-render-action:hover {
+  /* Punch up the bloom on hover; keep it breathing. */
+  animation-duration: 1.5s !important;
+  transform: translateY(-1px);
+}
+#btnRender:active {
+  transform: translateY(0) scale(0.995);
+}
+#btnRender:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(0, 229, 255, 0.70),
+    0 0 30px 4px rgba(255, 122, 24, 0.55),
+    0 0 64px 10px rgba(255, 45, 111, 0.32) !important;
+}
+
+/* ===========================================================================
+   2. PRIMARY ACCENT / COMMAND CTAs
+   Import PSD (header-command-btn.primary), .btn-accent, batch-render buttons.
+   These have FREE pseudo-elements, so a real "wipe of light" sheen is added on
+   hover, plus a richer resting/hover bloom. Position context + clip added safely.
+   =========================================================================== */
+
+.header-command-btn.primary,
+.btn-accent,
+.batch-render-btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.header-command-btn.primary {
+  box-shadow:
+    0 0 18px 0 rgba(255, 122, 24, 0.35),
+    0 0 36px 2px rgba(255, 45, 111, 0.16),
+    0 1px 0 0 rgba(255, 255, 255, 0.18) inset !important;
+}
+.header-command-btn.primary:hover {
+  box-shadow:
+    0 0 26px 1px rgba(255, 122, 24, 0.55),
+    0 0 54px 6px rgba(255, 45, 111, 0.30),
+    0 0 70px 10px rgba(0, 229, 255, 0.16),
+    0 1px 0 0 rgba(255, 255, 255, 0.24) inset !important;
+}
+
+.btn-accent:hover {
+  box-shadow:
+    0 0 0 1px rgba(255, 122, 24, 0.55),
+    0 0 18px 1px rgba(255, 122, 24, 0.45),
+    0 0 40px 6px rgba(0, 229, 255, 0.18),
+    0 1px 0 0 rgba(255, 255, 255, 0.30) inset !important;
+  transform: translateY(-1px);
+}
+
+.batch-render-btn:hover {
+  box-shadow:
+    0 0 20px 1px rgba(255, 122, 24, 0.45),
+    0 0 44px 5px rgba(255, 45, 111, 0.22) !important;
+}
+
+/* Sheen wipe — uses ::before only on buttons we confirmed have it free. */
+.header-command-btn.primary::before,
+.btn-accent::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: 0;
+  width: 38%;
+  height: 180%;
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.55) 50%,
+      rgba(255, 255, 255, 0) 100%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  transform: translateX(-120%) skewX(-18deg);
+}
+.header-command-btn.primary:hover::before,
+.btn-accent:hover::before {
+  animation: spbGlowBtnSheen 0.8s var(--spb-glow-ease) 1;
+}
+
+/* ===========================================================================
+   3. SHOKKER BRAND WORDMARK
+   .brand-text / .brand-signature carry the "SHOKKER PAINT BOOTH" text and have
+   FREE pseudo-elements. We DO NOT touch .header-brand pseudos (the app's :) face
+   + EKG line). Give the wordmark a premium animated neon-gradient fill + a soft
+   text bloom that intensifies on hover — the signature "this is alive" moment.
+   =========================================================================== */
+
+.brand-text,
+.brand-signature .brand-text {
+  background-image: linear-gradient(100deg,
+      #eafdff 0%,
+      var(--spb-glow-teal) 18%,
+      #ffffff 34%,
+      var(--spb-glow-gold) 52%,
+      var(--spb-glow-orange) 66%,
+      #ffffff 82%,
+      var(--spb-glow-teal) 100%) !important;
+  background-size: 200% auto !important;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.5px;
+  animation: spbGlowBrandSlide 9s linear infinite,
+             spbGlowBrandPulse 3.4s var(--spb-glow-ease) infinite !important;
+  will-change: background-position, filter;
+  transition: filter var(--spb-med, 170ms) ease;
+}
+/* Hover the whole brand cluster -> energize the wordmark. */
+.header-brand:hover .brand-text,
+.brand-signature:hover .brand-text,
+.brand-text:hover {
+  animation-duration: 4.5s, 1.6s !important;
+  filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.70))
+          drop-shadow(0 0 22px rgba(255, 122, 24, 0.40)) !important;
+}
+
+/* ===========================================================================
+   4. ACTIVE RIGHT-PANEL TAB  (.rp-tab.active — FINISHES / LAYERS)
+   The app supplies the teal underline via ::after; we keep it and ADD a breathing
+   edge bloom (box-shadow) so the active tab clearly "lights up". Hover on inactive
+   tabs gets a soft teal hint.
+   =========================================================================== */
+
+.rp-tab.active {
+  animation: spbGlowTabBreathe 3s var(--spb-glow-ease) infinite !important;
+  will-change: box-shadow;
+}
+.rp-tab:not(.active):hover {
+  box-shadow:
+    0 0 0 1px rgba(0, 229, 255, 0.28),
+    0 0 14px 0 rgba(0, 229, 255, 0.14) !important;
+  color: #eafdff !important;
+}
+/* Brighten the app's existing underline ::after on the active tab. */
+.rp-tab.active::after {
+  filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.75)) !important;
+}
+
+/* ===========================================================================
+   5. HERO PREVIEW FRAME — animated sheen
+   .preview-living-frame is overflow:hidden with FREE pseudos. A slow diagonal
+   light band sweeps across the frame every ~9s — a high-end "showroom light"
+   pass that makes the canvas feel alive without distracting from the art. A
+   subtle resting teal rim-glow is added too (complements the app's breathing
+   aura + ekg line, which we leave intact).
+   =========================================================================== */
+
+.preview-living-frame {
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 229, 255, 0.22),
+    0 0 26px 0 rgba(0, 229, 255, 0.10) !important;
+}
+.preview-living-frame::before {
+  content: "";
+  position: absolute;
+  top: -25%;
+  left: 0;
+  width: 26%;
+  height: 150%;
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(180, 245, 255, 0.10) 40%,
+      rgba(255, 255, 255, 0.22) 50%,
+      rgba(180, 245, 255, 0.10) 60%,
+      rgba(255, 255, 255, 0) 100%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  animation: spbGlowSheenSweep 9s var(--spb-glow-ease) infinite;
+  will-change: transform, opacity;
+}
+
+/* ===========================================================================
+   6. SELECTED / ACTIVE STATES (zone card, tool buttons, swatch tiles)
+   Make the user's current selection unmistakably "lit". These appear after the
+   user assigns a base / picks a tool, so they intensify the ui-modern-polish
+   selected rings with a calm breathing bloom.
+   =========================================================================== */
+
+.zone-card.selected,
+.zone-card.active {
+  animation: spbGlowTabBreathe 3.4s var(--spb-glow-ease) infinite !important;
+  will-change: box-shadow;
+}
+
+.vtool-btn.active,
+.draw-tool-btn.active,
+.tool-btn.active,
+.tool-btn.selected {
+  box-shadow:
+    0 0 0 1px rgba(0, 229, 255, 0.45),
+    0 0 16px 0 rgba(0, 229, 255, 0.28),
+    0 0 30px 2px rgba(0, 229, 255, 0.12) !important;
+}
+
+.swatch-item.selected,
+.swatch-item.active {
+  box-shadow:
+    0 0 0 2px rgba(0, 229, 255, 0.65),
+    0 0 18px 1px rgba(0, 229, 255, 0.35),
+    0 6px 18px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* ===========================================================================
+   7. GLOWING FOCUS RINGS (keyboard accessibility, premium feel)
+   A consistent teal focus halo for keyboard users across the interactive
+   primitives. Calm, never animated, never clipped.
+   =========================================================================== */
+
+.btn:focus-visible,
+.btn-sm:focus-visible,
+.btn-accent:focus-visible,
+.header-command-btn:focus-visible,
+.header-browse-btn:focus-visible,
+.vtool-btn:focus-visible,
+.draw-tool-btn:focus-visible,
+.rp-tab:focus-visible,
+.gear-btn:focus-visible,
+.zone-card:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(0, 229, 255, 0.75),
+    0 0 16px 1px rgba(0, 229, 255, 0.45) !important;
+}
+
+/* ===========================================================================
+   8. REDUCED MOTION  — kill all animation, KEEP a tasteful static glow so the UI
+      still feels premium and noticeable (per owner: not a nursing home), just calm.
+   =========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  #btnRender,
+  button.btn-render.primary-render-action {
+    animation: none !important;
+    box-shadow:
+      0 0 0 1px rgba(0, 229, 255, 0.40),
+      0 0 26px 2px rgba(255, 122, 24, 0.50),
+      0 0 54px 6px rgba(255, 45, 111, 0.26),
+      0 1px 0 0 rgba(255, 255, 255, 0.28) inset !important;
+  }
+  .brand-text,
+  .brand-signature .brand-text {
+    animation: none !important;
+    background-position: 30% 50% !important;
+    filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.45))
+            drop-shadow(0 0 14px rgba(255, 122, 24, 0.22)) !important;
+  }
+  .rp-tab.active,
+  .zone-card.selected,
+  .zone-card.active {
+    animation: none !important;
+  }
+  .rp-tab.active {
+    box-shadow:
+      0 0 0 1px rgba(0, 229, 255, 0.50),
+      0 0 22px 1px rgba(0, 229, 255, 0.32),
+      0 1px 0 0 rgba(255, 255, 255, 0.07) inset !important;
+  }
+  .preview-living-frame::before {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+  .header-command-btn.primary:hover::before,
+  .btn-accent:hover::before {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
+
+/* ============================================================================
+   END NEON GLOW / BLOOM POLISH LAYER
+   ============================================================================ */

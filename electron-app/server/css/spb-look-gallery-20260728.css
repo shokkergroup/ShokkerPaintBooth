@@ -1,0 +1,1739 @@
+/* ============================================================================
+   SPB LOOK GALLERY — 2026-07-28 (Kimi, owner-commissioned overnight build)
+   ----------------------------------------------------------------------------
+   What this is: a shared "modern base" + 18 switchable LOOKS, all scoped to
+   body.spb-gallery-look / body[data-look="..."]. ZERO functional changes:
+   no DOM moves, no JS behavior, no panel removed. The 5 classic looks and the
+   default ('classic') are untouched.
+
+   How to revert everything: delete this ONE <link> from paint-booth-v2.html
+   (it loads dead-last, right before </head>) and remove the gallery entries
+   from the LOOKS array (marked GALLERY START/END in the inline script).
+
+   Cascade note: this file is loaded after every other stylesheet AND after
+   both inline <style> blocks, so on equal specificity we win. Where older
+   layers use !important, we answer with !important + higher specificity
+   (body.spb-gallery-look prefix). Inline style="" attributes still beat us;
+   those spots are known and listed in _look_gallery_work/NOTES.md.
+
+   Sections:
+     A1  legacy-token aliases -> pro tokens (so one --pro-* repaint reaches all)
+     A2  typography reset (Inter UI, Rajdhani only for brand)
+     A3  header bar modernization
+     A4  toolbar + buttons
+     A5  panels, menus, modals, dropdowns
+     A6  form controls
+     A7  motion diet
+     A8  scrollbars + focus
+     A9  SVG tool icons (replaces emoji glyphs on the 10 primary tool buttons)
+     A10 settings look-cards + gallery divider
+     B   THE 18 LOOKS (appended from _look_gallery_work/fragments/*.css)
+   ========================================================================== */
+
+/* ----- A1: legacy token aliases -> pro set ------------------------------- */
+/* (specificity bumped 2026-07-28 iter-3: look-live-polish overrides tokens at
+   body[data-look]:not(...) = (0,3,1); the doubled-class prefix beats it.) */
+body.spb-gallery-look.spb-gallery-look[data-look] {
+    --bg-dark: var(--pro-app);
+    --bg-primary: var(--pro-app);
+    --bg-secondary: var(--pro-panel);
+    --bg-tertiary: var(--pro-panel-header);
+    --bg-card: var(--pro-panel);
+    --bg-panel: var(--pro-panel);
+    --bg-hover: var(--pro-hover);
+    --bg-tab: var(--pro-titlebar);
+    --surface: var(--pro-panel);
+
+    --text: var(--pro-text-primary);
+    --text-bright: var(--pro-text-primary);
+    --text-primary: var(--pro-text-primary);
+    --text-secondary: var(--pro-text-secondary);
+    --text-dim: var(--pro-text-secondary);
+    --text-muted: var(--pro-text-tertiary);
+    --text-placeholder: var(--pro-text-quaternary);
+    --text-disabled: var(--pro-text-quaternary);
+
+    --border: var(--pro-border-default);
+    --border-color: var(--pro-border-default);
+    --border-subtle: var(--pro-border-subtle);
+    --border-dim: var(--pro-border-subtle);
+    --border-normal: var(--pro-border-default);
+    --border-accent: var(--pro-orange);
+
+    --accent: var(--pro-orange);
+    --accent-dim: var(--pro-orange-dim);
+    --accent-orange: var(--pro-orange);
+    --accent-cyan: var(--pro-teal);
+    --accent-teal: var(--pro-teal);
+
+    --font-display: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* radius DEFAULTS live at low specificity so each look's token block
+   (Section B, same specificity, later) can override them — radius is part
+   of a look's signature now (sharp vs rounded vs pill). */
+body.spb-gallery-look {
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 10px;
+}
+
+/* ----- A2: typography reset ---------------------------------------------- */
+/* paint-booth-v2.css:11423 forces Rajdhani + uppercase + wide tracking on
+   nearly every control with !important. Gallery looks use Inter for chrome,
+   sentence case, and a calm tracking. Brand mark keeps its display face. */
+body.spb-gallery-look label,
+body.spb-gallery-look select,
+body.spb-gallery-look option,
+body.spb-gallery-look input,
+body.spb-gallery-look textarea,
+body.spb-gallery-look button,
+body.spb-gallery-look summary,
+body.spb-gallery-look .btn,
+body.spb-gallery-look .toast,
+body.spb-gallery-look .settings-dropdown,
+body.spb-gallery-look .spb-tb-pop,
+body.spb-gallery-look .spb-tb-summary,
+body.spb-gallery-look .zone-card,
+body.spb-gallery-look .look-card,
+body.spb-gallery-look .modal-box,
+body.spb-gallery-look .menu-label,
+body.spb-gallery-look .section-title {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif !important;
+    text-transform: none !important;
+    letter-spacing: 0.15px !important;
+}
+
+/* Section headers: keep them findable, stop shouting */
+body.spb-gallery-look .settings-section-title,
+body.spb-gallery-look .panel-title,
+body.spb-gallery-look .spb-tb-pop-label {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 11px !important;
+    letter-spacing: 0.4px !important;
+    text-transform: uppercase !important;
+    color: var(--pro-text-tertiary) !important;
+}
+
+/* ----- A3: header bar ----------------------------------------------------- */
+body.spb-gallery-look .header {
+    background: var(--pro-titlebar) !important;
+    border-bottom: 1px solid var(--pro-border-subtle) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.25) !important;
+}
+/* rainbow underline -> quiet two-accent line (EKG heartbeat stays untouched) */
+body.spb-gallery-look .header::after {
+    background: linear-gradient(90deg, transparent, var(--pro-orange) 35%, var(--pro-teal) 65%, transparent) !important;
+    opacity: 0.45 !important;
+}
+body.spb-gallery-look .header h1,
+body.spb-gallery-look .header-title,
+body.spb-gallery-look .brand-title {
+    letter-spacing: 1px !important;
+}
+
+/* ----- A4: top toolbar + buttons ----------------------------------------- */
+body.spb-gallery-look .spb-top-toolbar {
+    background: var(--pro-toolbar) !important;
+    border-bottom: 1px solid var(--pro-border-subtle) !important;
+}
+body.spb-gallery-look .vtool-btn {
+    border-radius: var(--radius-md) !important;
+    border: 1px solid transparent !important;
+    color: var(--pro-text-secondary) !important;
+    background: transparent !important;
+}
+body.spb-gallery-look .vtool-btn:hover {
+    background: var(--pro-hover) !important;
+    color: var(--pro-text-primary) !important;
+}
+body.spb-gallery-look .vtool-btn.active,
+body.spb-gallery-look .vtool-btn[aria-pressed="true"] {
+    background: var(--pro-active) !important;
+    border-color: var(--pro-border-strong) !important;
+    color: var(--pro-orange) !important;
+}
+/* menu icon glyphs: de-colorize emoji, keep meaning */
+body.spb-gallery-look .spb-mi-ico {
+    filter: grayscale(0.9);
+    opacity: 0.75;
+}
+body.spb-gallery-look .spb-tb-summary {
+    color: var(--pro-text-secondary) !important;
+    border-radius: var(--radius-md) !important;
+}
+body.spb-gallery-look .spb-tb-summary:hover {
+    background: var(--pro-hover) !important;
+    color: var(--pro-text-primary) !important;
+}
+
+/* generic buttons: flat, bordered, quiet */
+body.spb-gallery-look .btn {
+    border-radius: var(--radius-md) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    background: var(--pro-panel-header) !important;
+    color: var(--pro-text-primary) !important;
+    box-shadow: none !important;
+}
+body.spb-gallery-look .btn:hover {
+    background: var(--pro-hover) !important;
+    border-color: var(--pro-border-strong) !important;
+}
+
+/* ----- A5: panels, menus, modals ----------------------------------------- */
+body.spb-gallery-look .settings-dropdown,
+body.spb-gallery-look .spb-tb-pop {
+    background: var(--pro-panel) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.45) !important;
+}
+body.spb-gallery-look .zone-card,
+body.spb-gallery-look .zone-item {
+    background: var(--pro-panel) !important;
+    border: 1px solid var(--pro-border-subtle) !important;
+    border-radius: var(--radius-lg) !important;
+}
+body.spb-gallery-look .zone-card:hover,
+body.spb-gallery-look .zone-item:hover {
+    border-color: var(--pro-border-default) !important;
+}
+
+/* ----- A6: form controls --------------------------------------------------- */
+body.spb-gallery-look select,
+body.spb-gallery-look input[type="text"],
+body.spb-gallery-look input[type="number"],
+body.spb-gallery-look input[type="search"] {
+    background: var(--pro-input) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    border-radius: var(--radius-sm) !important;
+    color: var(--pro-text-primary) !important;
+}
+body.spb-gallery-look select:focus,
+body.spb-gallery-look input:focus {
+    border-color: var(--pro-border-focus) !important;
+    outline: none !important;
+}
+
+/* ----- A7: motion diet ------------------------------------------------------ */
+/* Idle shimmer off the render CTA; terminate-mode keeps its alarm pulse. */
+body.spb-gallery-look .btn-render {
+    animation: none !important;
+}
+body.spb-gallery-look .btn-render.terminate-mode {
+    animation: renderShimmer 2s ease infinite !important;
+}
+
+/* ----- A8: focus ------------------------------------------------------------ */
+body.spb-gallery-look :focus-visible {
+    outline: 2px solid var(--focus-ring) !important;
+    outline-offset: 1px !important;
+}
+
+/* ----- A9: SVG tool icons ---------------------------------------------------- */
+/* The 10 primary tool buttons ship emoji/glyph text. Swap to masked SVGs so
+   icons inherit the look's text color (currentColor). Text is hidden via
+   font-size:0 on the button; ::before carries the icon. IDs + handlers are
+   untouched, so active-state logic and shortcuts keep working. */
+body.spb-gallery-look #vtModeLayerMove,
+body.spb-gallery-look #vtModePickItem,
+body.spb-gallery-look #vtModeLayerTransform,
+body.spb-gallery-look #vtModeEyedropper,
+body.spb-gallery-look #vtModeWand,
+body.spb-gallery-look #vtModeLasso,
+body.spb-gallery-look #vtModeRect,
+body.spb-gallery-look #vtModeBrush,
+body.spb-gallery-look #vtModeFill,
+body.spb-gallery-look #vtModeErase {
+    font-size: 0 !important;
+}
+body.spb-gallery-look #vtModeLayerMove::before,
+body.spb-gallery-look #vtModePickItem::before,
+body.spb-gallery-look #vtModeLayerTransform::before,
+body.spb-gallery-look #vtModeEyedropper::before,
+body.spb-gallery-look #vtModeWand::before,
+body.spb-gallery-look #vtModeLasso::before,
+body.spb-gallery-look #vtModeRect::before,
+body.spb-gallery-look #vtModeBrush::before,
+body.spb-gallery-look #vtModeFill::before,
+body.spb-gallery-look #vtModeErase::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    background: currentColor;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+body.spb-gallery-look #vtModeLayerMove::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l-3 3 3 3'/%3E%3Cpath d='M9 5l3-3 3 3'/%3E%3Cpath d='M15 19l-3 3-3-3'/%3E%3Cpath d='M19 9l3 3-3 3'/%3E%3Cpath d='M2 12h20'/%3E%3Cpath d='M12 2v20'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l-3 3 3 3'/%3E%3Cpath d='M9 5l3-3 3 3'/%3E%3Cpath d='M15 19l-3 3-3-3'/%3E%3Cpath d='M19 9l3 3-3 3'/%3E%3Cpath d='M2 12h20'/%3E%3Cpath d='M12 2v20'/%3E%3C/svg%3E");
+}
+body.spb-gallery-look #vtModePickItem::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8'/%3E%3Ccircle cx='12' cy='12' r='2.5'/%3E%3Cpath d='M12 2v3'/%3E%3Cpath d='M12 19v3'/%3E%3Cpath d='M2 12h3'/%3E%3Cpath d='M19 12h3'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8'/%3E%3Ccircle cx='12' cy='12' r='2.5'/%3E%3Cpath d='M12 2v3'/%3E%3Cpath d='M12 19v3'/%3E%3Cpath d='M2 12h3'/%3E%3Cpath d='M19 12h3'/%3E%3C/svg%3E");
+}
+body.spb-gallery-look #vtModeLayerTransform::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7V5a2 2 0 0 1 2-2h2'/%3E%3Cpath d='M17 3h2a2 2 0 0 1 2 2v2'/%3E%3Cpath d='M21 17v2a2 2 0 0 1-2 2h-2'/%3E%3Cpath d='M7 21H5a2 2 0 0 1-2-2v-2'/%3E%3Crect x='8' y='8' width='8' height='8' rx='1'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7V5a2 2 0 0 1 2-2h2'/%3E%3Cpath d='M17 3h2a2 2 0 0 1 2 2v2'/%3E%3Cpath d='M21 17v2a2 2 0 0 1-2 2h-2'/%3E%3Cpath d='M7 21H5a2 2 0 0 1-2-2v-2'/%3E%3Crect x='8' y='8' width='8' height='8' rx='1'/%3E%3C/svg%3E");
+}
+body.spb-gallery-look #vtModeEyedropper::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13.5 3.5l7 7L11 20H7v-4L16.5 6.5'/%3E%3Cpath d='M11 6l7 7'/%3E%3Cpath d='M4.5 19.5L2 22'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13.5 3.5l7 7L11 20H7v-4L16.5 6.5'/%3E%3Cpath d='M11 6l7 7'/%3E%3Cpath d='M4.5 19.5L2 22'/%3E%3C/svg%3E");
+}
+body.spb-gallery-look #vtModeWand::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 4V2'/%3E%3Cpath d='M15 16v-2'/%3E%3Cpath d='M8 9h2'/%3E%3Cpath d='M20 9h2'/%3E%3Cpath d='M17.8 11.2L19 12.4'/%3E%3Cpath d='M17.8 6.8L19 5.6'/%3E%3Cpath d='M12.2 6.8L11 5.6'/%3E%3Cpath d='M3 21L15 9'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 4V2'/%3E%3Cpath d='M15 16v-2'/%3E%3Cpath d='M8 9h2'/%3E%3Cpath d='M20 9h2'/%3E%3Cpath d='M17.8 11.2L19 12.4'/%3E%3Cpath d='M17.8 6.8L19 5.6'/%3E%3Cpath d='M12.2 6.8L11 5.6'/%3E%3Cpath d='M3 21L15 9'/%3E%3C/svg%3E");
+}
+body.spb-gallery-look #vtModeLasso::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 22a5 5 0 0 1-2-4'/%3E%3Cpath d='M3.3 14A6.8 6.8 0 0 1 2 10c0-4.4 4.5-8 10-8s10 3.6 10 8-4.5 8-10 8c-2.3 0-4.4-.7-6-2'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 22a5 5 0 0 1-2-4'/%3E%3Cpath d='M3.3 14A6.8 6.8 0 0 1 2 10c0-4.4 4.5-8 10-8s10 3.6 10 8-4.5 8-10 8c-2.3 0-4.4-.7-6-2'/%3E%3C/svg%3E");
+}
+body.spb-gallery-look #vtModeRect::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='1' stroke-dasharray='4 3'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='1' stroke-dasharray='4 3'/%3E%3C/svg%3E");
+}
+body.spb-gallery-look #vtModeBrush::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.07'/%3E%3Cpath d='M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.07'/%3E%3Cpath d='M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z'/%3E%3C/svg%3E");
+}
+body.spb-gallery-look #vtModeFill::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 11l-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11z'/%3E%3Cpath d='M5 11l7 7'/%3E%3Cpath d='M21.5 16.5s1.5 1.9 1.5 3a1.5 1.5 0 0 1-3 0c0-1.1 1.5-3 1.5-3z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 11l-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11z'/%3E%3Cpath d='M5 11l7 7'/%3E%3Cpath d='M21.5 16.5s1.5 1.9 1.5 3a1.5 1.5 0 0 1-3 0c0-1.1 1.5-3 1.5-3z'/%3E%3C/svg%3E");
+}
+body.spb-gallery-look #vtModeErase::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21'/%3E%3Cpath d='M22 21H7'/%3E%3Cpath d='m5 11 9 9'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21'/%3E%3Cpath d='M22 21H7'/%3E%3Cpath d='m5 11 9 9'/%3E%3C/svg%3E");
+}
+
+/* ----- A10: settings look-cards ------------------------------------------- */
+/* With 23 cards the settings menu outgrows the viewport (it had no
+   max-height/overflow at all — content below the fold was unreachable).
+   !important + inner grid scroll: the LOOKS grid scrolls inside the dropdown,
+   the dropdown itself scrolls as fallback. Applies to every look. */
+.settings-dropdown {
+    max-height: calc(100vh - 64px) !important;
+    overflow-y: auto !important;
+}
+.settings-dropdown .looks-grid {
+    max-height: 300px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+body.spb-gallery-look .look-card {
+    border-radius: var(--radius-lg) !important;
+}
+body.spb-gallery-look .spb-look-divider {
+    grid-column: 1 / -1;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--pro-text-tertiary);
+    border-top: 1px solid var(--pro-border-subtle);
+    padding-top: 7px;
+    margin-top: 3px;
+    text-align: left;
+}
+
+/* ============================================================================
+   A11: COVERAGE PASS — 2026-07-28 (post-screenshot iteration 1)
+   Older layers paint these regions with body[data-look]:not(...) selectors at
+   specificity (0,3,1), so this pass prefixes body.spb-gallery-look[data-look]
+   (also 0,3,1) and wins by loading last. Targets identified via DOM probe:
+   zones rail, zone cards, zone popout panel, preview panes, right panel.
+   ========================================================================== */
+
+/* left zones rail + right panel shells */
+body.spb-gallery-look[data-look] #leftPanel,
+body.spb-gallery-look[data-look] .left-panel,
+body.spb-gallery-look[data-look] #rightPanel,
+body.spb-gallery-look[data-look] .right-panel {
+    background: var(--pro-panel) !important;
+    border-color: var(--pro-border-subtle) !important;
+}
+body.spb-gallery-look[data-look] .zone-studio-header {
+    background: var(--pro-panel-header) !important;
+    border-bottom-color: var(--pro-border-subtle) !important;
+}
+body.spb-gallery-look[data-look] .studio-label {
+    background: none !important;
+    -webkit-text-fill-color: currentColor !important;
+    color: var(--pro-text-secondary) !important;
+}
+body.spb-gallery-look[data-look] .zone-list-wrapper {
+    background: none !important;
+}
+
+/* zone cards: kill the cyan edge-wash, keep selected = accent */
+body.spb-gallery-look[data-look] .zone-card {
+    background: var(--pro-panel) !important;
+    border: 1px solid var(--pro-border-subtle) !important;
+}
+body.spb-gallery-look[data-look] .zone-card:hover {
+    border-color: var(--pro-border-default) !important;
+}
+body.spb-gallery-look[data-look] .zone-card.selected {
+    background: var(--pro-selected) !important;
+    border-color: var(--pro-orange) !important;
+}
+
+/* zone popout panel (COLOR/APPLY AREA/BASE sections) */
+body.spb-gallery-look[data-look] #zoneEditorFloat {
+    background: var(--pro-panel) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.45) !important;
+}
+body.spb-gallery-look[data-look] .spb-zone-popout-title {
+    background: var(--pro-panel-header) !important;
+    border-bottom-color: var(--pro-border-subtle) !important;
+}
+body.spb-gallery-look[data-look] .zone-detail-body {
+    background: none !important;
+}
+body.spb-gallery-look[data-look] .section-collapsible {
+    background: var(--pro-panel-header) !important;
+    border: 1px solid var(--pro-border-subtle) !important;
+    border-radius: var(--radius-lg) !important;
+}
+
+/* preview panes: neutral canvas well, token-driven floating chips */
+body.spb-gallery-look[data-look] #splitPreview,
+body.spb-gallery-look[data-look] .preview-inner {
+    background: var(--pro-canvas-bg) !important;
+}
+body.spb-gallery-look[data-look] #btnPreviewRefresh,
+body.spb-gallery-look[data-look] .pane-fullscreen-btn {
+    background: var(--pro-panel-header) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    color: var(--pro-text-primary) !important;
+}
+
+/* ============================================================================
+   A12: COVERAGE PASS 2 — 2026-07-28 (post-screenshot iteration 2)
+   A11's (0,3,1) prefix TIES the old body[data-look]:not(...) layers and loses
+   wherever they also use an ID (#zoneList, #btnPreviewRefresh). This pass uses
+   the doubled-class prefix body.spb-gallery-look.spb-gallery-look[data-look]
+   (0,4,1 / 1,4,1 with an ID) so we strictly out-rank them, and still load last.
+   Targets identified via dark_offenders.py probe:
+   #zoneList cards, section-header dark gradient, color-selector 3-stop dark
+   gradient, inline-styled gradient buttons, spec channel dock cells.
+   ========================================================================== */
+
+/* zones rail */
+body.spb-gallery-look.spb-gallery-look[data-look] #leftPanel #zoneList {
+    background: none !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #zoneList .zone-card {
+    background: var(--pro-panel) !important;
+    border: 1px solid var(--pro-border-subtle) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #zoneList .zone-card:hover {
+    border-color: var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #zoneList .zone-card.selected {
+    background: var(--pro-selected) !important;
+    border-color: var(--pro-orange) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #zoneList .zone-actions-compact {
+    background: var(--pro-hover) !important;
+}
+
+/* zone popout: section headers + interiors */
+body.spb-gallery-look.spb-gallery-look[data-look] #zoneEditorFloat .section-header {
+    background: var(--pro-panel-header) !important;
+    color: var(--pro-text-primary) !important;
+    border-bottom: 1px solid var(--pro-border-subtle) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #zoneEditorFloat .section-header-label {
+    color: var(--pro-text-primary) !important;
+    background: none !important;
+    -webkit-text-fill-color: currentColor !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #zoneEditorFloat .color-selector,
+body.spb-gallery-look.spb-gallery-look[data-look] #zoneEditorFloat .zone-finish-row {
+    background: var(--pro-panel) !important;
+    border: 1px solid var(--pro-border-subtle) !important;
+    border-radius: var(--radius-lg) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #zoneEditorFloat div[style*="0, 229, 255"] {
+    background: var(--pro-panel-header) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #zoneEditorFloat button[style*="linear-gradient"] {
+    background: var(--pro-panel-header) !important;
+    color: var(--pro-text-primary) !important;
+    border: 1px solid var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #zoneEditorFloat option {
+    background: var(--pro-input) !important;
+    color: var(--pro-text-primary) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #zoneEditorFloat .swatch-trigger {
+    background: var(--pro-input) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    color: var(--pro-text-primary) !important;
+}
+
+/* preview floating chips + spec channel dock */
+body.spb-gallery-look.spb-gallery-look[data-look] #btnPreviewRefresh,
+body.spb-gallery-look.spb-gallery-look[data-look] .pane-fullscreen-btn {
+    background: var(--pro-panel-header) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    color: var(--pro-text-primary) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #specChannelDock .spec-channel-dock-cell {
+    background: var(--pro-panel-header) !important;
+    border-color: var(--pro-border-subtle) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #specChannelDock .spec-channel-dock-label {
+    background: var(--pro-panel-header) !important;
+    color: var(--pro-text-secondary) !important;
+}
+
+/* ============================================================================
+   A13: COVERAGE PASS 3 — 2026-07-28 (full-page offender scan)
+   Big containers still painting classic navy/cyan: app shell, center panel,
+   source/canvas wells, preview strips, render float, command bar, right-panel
+   actions, layer rows/thumbs, quests chip.
+   ========================================================================== */
+body.spb-gallery-look.spb-gallery-look[data-look] .main-container,
+body.spb-gallery-look.spb-gallery-look[data-look] #centerPanel {
+    background: var(--pro-app) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #canvasViewport,
+body.spb-gallery-look.spb-gallery-look[data-look] #splitSource {
+    background: var(--pro-canvas-bg) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #previewTopStrip,
+body.spb-gallery-look.spb-gallery-look[data-look] #previewBottomBar {
+    background: var(--pro-panel-header) !important;
+    border-color: var(--pro-border-subtle) !important;
+    color: var(--pro-text-secondary) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #renderFloat {
+    background: var(--pro-panel) !important;
+    border: 1px solid var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] .workbench-command-bar {
+    background: var(--pro-panel-header) !important;
+    border-color: var(--pro-border-subtle) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] .ui-scale-control {
+    background: var(--pro-panel-header) !important;
+    color: var(--pro-text-primary) !important;
+    border-color: var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #leftPanel .zone-actions-compact {
+    background: var(--pro-panel-header) !important;
+    border-color: var(--pro-border-subtle) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] .right-panel-primary-action,
+body.spb-gallery-look.spb-gallery-look[data-look] .right-panel-secondary-action {
+    background: var(--pro-panel-header) !important;
+    color: var(--pro-text-primary) !important;
+    border: 1px solid var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] .layer-row {
+    background: var(--pro-panel) !important;
+    border: 1px solid var(--pro-border-subtle) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] .layer-thumb {
+    background: var(--pro-input) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #spbQuestChip {
+    background: var(--pro-panel) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    color: var(--pro-text-primary) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look] #spbGuidePanel {
+    background: var(--pro-panel) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    color: var(--pro-text-primary) !important;
+}
+
+/* ============================================================================
+   SECTION B — THE 18 LOOKS
+   Each look = one body[data-look="<slug>"] token block (assembled from
+   _look_gallery_work/fragments/<slug>.css) + any look-specific flourishes.
+   Fragments override BOTH token sets where needed: --pro-* paints the modern
+   shell (body/header/toolbar via paint-booth-pro-theme.css !important rules),
+   aliased legacy vars carry it into older layers. Accent/semantic vars
+   (--accent-green/red/gold/blue, --success, --focus-ring, --ekg-color,
+   --glass-bg) are per-look.
+   ========================================================================== */
+
+/* __LOOKS_BELOW__ */
+
+/* LOOK: Pro Dark — THE REFERENCE: understated Photoshop-flat chrome, pure restraint */
+body[data-look="pro-dark"] {
+    /* surfaces */
+    --pro-app: #1e1e1e; --pro-titlebar: #191919; --pro-toolbar: #232323; --pro-panel: #262626;
+    --pro-panel-header: #2d2d2d; --pro-canvas-bg: #141414; --pro-input: #1a1a1a;
+    --pro-hover: #333333; --pro-active: #3a3a3a; --pro-selected: #3d3d3d;
+    /* borders */
+    --pro-border-subtle: #2e2e2e; --pro-border-default: #3d3d3d; --pro-border-strong: #4d4d4d; --pro-border-focus: #f5761a;
+    /* text */
+    --pro-text-primary: #e8e8e8; --pro-text-secondary: #b8b8b8; --pro-text-tertiary: #8a8a8a; --pro-text-quaternary: #5f5f5f;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #f5761a; --pro-orange-light: #ff9a4d; --pro-orange-dim: #b85a12; --pro-orange-glow: rgba(245,118,26,0.35);
+    --pro-teal: #3aa7a3; --pro-teal-light: #5cc6c2; --pro-teal-dim: #2b7d7a;
+    --pro-ekg-pink: #ff5c8a;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #4cc38a; --accent-red: #e5484d; --accent-gold: #d9a441; --accent-blue: #4a9eff;
+    --success: #4cc38a;
+    --focus-ring: rgba(245,118,26,0.5); --focus-ring-strong: #f5761a;
+    --ekg-color: #ff5c8a;
+    --glass-bg: rgba(38,38,38,0.85);
+    /* radii */
+    --radius-sm: 3px; --radius-md: 6px; --radius-lg: 8px;
+}
+
+/* SIGNATURE: THE REFERENCE — Photoshop-flat: no decorative shadows, hairline 1px
+   borders, plain bottom rules on section headers. Nothing glows, nothing gradients.
+   This is the benchmark look every other look deviates from. */
+
+/* 1. Kill decorative shadows on floating/layered surfaces */
+body.spb-gallery-look.spb-gallery-look[data-look="pro-dark"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="pro-dark"] #zoneEditorFloat,
+body.spb-gallery-look.spb-gallery-look[data-look="pro-dark"] .settings-dropdown,
+body.spb-gallery-look.spb-gallery-look[data-look="pro-dark"] .section-collapsible {
+    box-shadow: none !important;
+}
+
+/* 2. Enforce hairline 1px borders on those same surfaces */
+body.spb-gallery-look.spb-gallery-look[data-look="pro-dark"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="pro-dark"] #zoneEditorFloat,
+body.spb-gallery-look.spb-gallery-look[data-look="pro-dark"] .settings-dropdown,
+body.spb-gallery-look.spb-gallery-look[data-look="pro-dark"] .section-collapsible {
+    border: 1px solid var(--pro-border-subtle) !important;
+}
+
+/* 3. Hover/selected states stay flat too — no lifted shadow */
+body.spb-gallery-look.spb-gallery-look[data-look="pro-dark"] .zone-card:hover,
+body.spb-gallery-look.spb-gallery-look[data-look="pro-dark"] .zone-card.selected {
+    box-shadow: none !important;
+}
+
+/* 4. Section headers get a plain 1px bottom rule instead of a shadow */
+body.spb-gallery-look.spb-gallery-look[data-look="pro-dark"] .section-collapsible .section-header,
+body.spb-gallery-look.spb-gallery-look[data-look="pro-dark"] #zoneEditorFloat .section-header {
+    border-bottom: 1px solid var(--pro-border-subtle) !important;
+    box-shadow: none !important;
+}
+
+/* 5. No glow, no gradient anywhere in the float editor's accent chrome */
+body.spb-gallery-look.spb-gallery-look[data-look="pro-dark"] #zoneEditorFloat button,
+body.spb-gallery-look.spb-gallery-look[data-look="pro-dark"] #zoneEditorFloat .swatch-trigger {
+    background-image: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+
+/* LOOK: Pro Light — clean studio light UI: soft diffuse elevation, airy whites, blue-tinted selection */
+body[data-look="pro-light"] {
+    /* surfaces */
+    --pro-app: #f3f3f4; --pro-titlebar: #e9e9eb; --pro-toolbar: #efeff0; --pro-panel: #ffffff;
+    --pro-panel-header: #f5f5f6; --pro-canvas-bg: #d9d9dc; --pro-input: #ffffff;
+    --pro-hover: #e8e9eb; --pro-active: #dfe1e4; --pro-selected: #dce9fb;
+    /* borders */
+    --pro-border-subtle: #e2e2e5; --pro-border-default: #cfcfd4; --pro-border-strong: #b4b4bb; --pro-border-focus: #0d99ff;
+    /* text */
+    --pro-text-primary: #1f2328; --pro-text-secondary: #4a4f55; --pro-text-tertiary: #757b83; --pro-text-quaternary: #a0a6ad;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #0d99ff; --pro-orange-light: #4db2ff; --pro-orange-dim: #0a78c9; --pro-orange-glow: rgba(13,153,255,0.25);
+    --pro-teal: #0e9f8f; --pro-teal-light: #18b8a6; --pro-teal-dim: #0b7d71;
+    --pro-ekg-pink: #e5484d;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #2e9e5b; --accent-red: #d93036; --accent-gold: #b07d10; --accent-blue: #0d99ff;
+    --success: #2e9e5b;
+    --focus-ring: rgba(13,153,255,0.45); --focus-ring-strong: #0d99ff;
+    --ekg-color: #e5484d;
+    --glass-bg: rgba(255,255,255,0.9);
+    /* radii — slightly softened corners for the clean studio feel */
+    --radius-sm: 4px; --radius-md: 8px; --radius-lg: 10px;
+}
+
+/* SIGNATURE: CLEAN STUDIO (light + air) — soft diffuse elevation on floating surfaces,
+   subtle blue-tinted active/selected surfaces, gentle blue hover tint, soft focus glow. */
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] #zoneEditorFloat,
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] .settings-dropdown {
+    box-shadow: 0 8px 24px rgba(31,35,40,0.10) !important;
+    border-color: #e2e2e5 !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] .active,
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] .selected,
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] .btn.active {
+    background-color: #dce9fb !important;
+    border-color: #b7d4f5 !important;
+    color: #0a5cb8 !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] .btn:hover {
+    background-color: #f0f6fd !important;
+    border-color: #cfe3f8 !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] input:focus,
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] select:focus,
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] textarea:focus {
+    border-color: #0d99ff !important;
+    box-shadow: 0 0 0 3px rgba(13,153,255,0.18) !important;
+}
+
+/* LIGHT LOOK overrides: older cascade layers hardcode dark backgrounds with
+   !important, so force common surfaces light (panel/input bg, dark text,
+   light borders) scoped to this look only. */
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] .btn {
+    background: #ffffff !important;
+    color: #1f2328 !important;
+    border-color: #cfcfd4 !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] .settings-dropdown {
+    background: #ffffff !important;
+    color: #1f2328 !important;
+    border-color: #cfcfd4 !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] .spb-tb-pop {
+    background: #ffffff !important;
+    color: #1f2328 !important;
+    border-color: #cfcfd4 !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] .spb-top-toolbar {
+    background: #efeff0 !important;
+    color: #1f2328 !important;
+    border-color: #e2e2e5 !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] select {
+    background: #ffffff !important;
+    color: #1f2328 !important;
+    border-color: #cfcfd4 !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] input[type=text] {
+    background: #ffffff !important;
+    color: #1f2328 !important;
+    border-color: #cfcfd4 !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] input[type=number] {
+    background: #ffffff !important;
+    color: #1f2328 !important;
+    border-color: #cfcfd4 !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] .modal-box {
+    background: #ffffff !important;
+    color: #1f2328 !important;
+    border-color: #cfcfd4 !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] .zone-card {
+    background: #ffffff !important;
+    color: #1f2328 !important;
+    border-color: #e2e2e5 !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="pro-light"] .toast {
+    background: #ffffff !important;
+    color: #1f2328 !important;
+    border-color: #cfcfd4 !important;
+}
+
+/* LOOK: Linear — near-black surfaces, indigo accent, BORDERLESS: separation by background contrast only */
+body[data-look="linear-dark"] {
+    /* surfaces */
+    --pro-app: #08090a; --pro-titlebar: #0c0d0f; --pro-toolbar: #0f1013; --pro-panel: #141518;
+    --pro-panel-header: #191a1f; --pro-canvas-bg: #050506; --pro-input: #101114;
+    --pro-hover: #1c1d23; --pro-active: #23242c; --pro-selected: #26273a;
+    /* borders */
+    --pro-border-subtle: #1e1f24; --pro-border-default: #2a2b32; --pro-border-strong: #3a3b45; --pro-border-focus: #5e6ad2;
+    /* text */
+    --pro-text-primary: #f2f3f5; --pro-text-secondary: #b7bbc4; --pro-text-tertiary: #7d828c; --pro-text-quaternary: #52565f;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #5e6ad2; --pro-orange-light: #828fff; --pro-orange-dim: #4953a8; --pro-orange-glow: rgba(94,106,210,0.35);
+    --pro-teal: #4cb782; --pro-teal-light: #6fd3a3; --pro-teal-dim: #3a9167;
+    --pro-ekg-pink: #eb5757;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #4cb782; --accent-red: #eb5757; --accent-gold: #f2c94c; --accent-blue: #5e6ad2;
+    --success: #4cb782;
+    --focus-ring: rgba(94,106,210,0.5); --focus-ring-strong: #5e6ad2;
+    --ekg-color: #eb5757;
+    --glass-bg: rgba(20,21,24,0.88);
+    /* radius */
+    --radius-sm: 4px; --radius-md: 8px; --radius-lg: 10px;
+}
+
+/* SIGNATURE: BORDERLESS — no borders anywhere; separation comes from background contrast alone,
+   shadows killed, hover is a pure background shift. The single exception: the selected card's indigo ring. */
+body.spb-gallery-look.spb-gallery-look[data-look="linear-dark"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="linear-dark"] .section-collapsible,
+body.spb-gallery-look.spb-gallery-look[data-look="linear-dark"] .btn,
+body.spb-gallery-look.spb-gallery-look[data-look="linear-dark"] select,
+body.spb-gallery-look.spb-gallery-look[data-look="linear-dark"] input[type=text],
+body.spb-gallery-look.spb-gallery-look[data-look="linear-dark"] input[type=number] {
+    border-color: transparent !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="linear-dark"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="linear-dark"] .section-collapsible,
+body.spb-gallery-look.spb-gallery-look[data-look="linear-dark"] .btn,
+body.spb-gallery-look.spb-gallery-look[data-look="linear-dark"] .modal-box,
+body.spb-gallery-look.spb-gallery-look[data-look="linear-dark"] .settings-dropdown,
+body.spb-gallery-look.spb-gallery-look[data-look="linear-dark"] .spb-tb-pop {
+    box-shadow: none !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="linear-dark"] .zone-card.selected {
+    border-color: var(--pro-orange) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="linear-dark"] .btn:hover {
+    background: var(--pro-hover) !important;
+    border-color: transparent !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="linear-dark"] .zone-card:hover {
+    background: var(--pro-hover) !important;
+}
+
+/* LOOK: Nord — calm polar-night dark; frosted-glass panels with frost-cyan selection glow */
+body[data-look="nord"] {
+    /* surfaces */
+    --pro-app: #2e3440; --pro-titlebar: #2b313c; --pro-toolbar: #333b47; --pro-panel: #3b4252;
+    --pro-panel-header: #414a5a; --pro-canvas-bg: #242933; --pro-input: #323a47;
+    --pro-hover: #434c5e; --pro-active: #4c566a; --pro-selected: #4c5a6e;
+    /* borders */
+    --pro-border-subtle: #3f4756; --pro-border-default: #4c566a; --pro-border-strong: #5c6a82; --pro-border-focus: #88c0d0;
+    /* text */
+    --pro-text-primary: #eceff4; --pro-text-secondary: #d8dee9; --pro-text-tertiary: #a6aebd; --pro-text-quaternary: #7b8494;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #88c0d0; --pro-orange-light: #a3d5e3; --pro-orange-dim: #6a9dad; --pro-orange-glow: rgba(136,192,208,0.3);
+    --pro-teal: #8fbcbb; --pro-teal-light: #a7d0cf; --pro-teal-dim: #739e9d;
+    --pro-ekg-pink: #bf616a;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #a3be8c; --accent-red: #bf616a; --accent-gold: #ebcb8b; --accent-blue: #81a1c1;
+    --success: #a3be8c;
+    --focus-ring: rgba(136,192,208,0.5); --focus-ring-strong: #88c0d0;
+    --ekg-color: #bf616a;
+    --glass-bg: rgba(59,66,82,0.88);
+    /* radii */
+    --radius-sm: 5px; --radius-md: 10px; --radius-lg: 14px;
+}
+
+/* SIGNATURE: FROSTED GLASS — translucent blurred panels, frost top highlight, frost-cyan selected glow */
+body.spb-gallery-look.spb-gallery-look[data-look="nord"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="nord"] #zoneEditorFloat,
+body.spb-gallery-look.spb-gallery-look[data-look="nord"] .section-collapsible,
+body.spb-gallery-look.spb-gallery-look[data-look="nord"] .settings-dropdown {
+    background: color-mix(in srgb, var(--pro-panel) 78%, transparent) !important;
+    backdrop-filter: blur(8px) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="nord"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="nord"] .section-collapsible {
+    box-shadow: inset 0 1px 0 rgba(236,239,244,0.09) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="nord"] .zone-card.selected,
+body.spb-gallery-look.spb-gallery-look[data-look="nord"] .section-collapsible.selected {
+    border-color: var(--pro-orange) !important;
+    box-shadow: inset 0 1px 0 rgba(236,239,244,0.09), 0 0 0 1px var(--pro-orange), 0 0 14px var(--pro-orange-glow) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="nord"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="nord"] .section-collapsible,
+body.spb-gallery-look.spb-gallery-look[data-look="nord"] .settings-dropdown {
+    border-color: color-mix(in srgb, var(--pro-border-default) 70%, transparent) !important;
+}
+
+/* LOOK: Dracula — BUBBLE NEON: big-rounded cards with 2px purple-tinted borders and a pink neon glow on selection */
+body[data-look="dracula"] {
+    /* surfaces */
+    --pro-app: #282a36; --pro-titlebar: #22232d; --pro-toolbar: #2b2d3a; --pro-panel: #2f3141;
+    --pro-panel-header: #363848; --pro-canvas-bg: #1e1f29; --pro-input: #262835;
+    --pro-hover: #3a3d4f; --pro-active: #44475a; --pro-selected: #44475a;
+    /* borders */
+    --pro-border-subtle: #3a3c4c; --pro-border-default: #484b60; --pro-border-strong: #5a5e75; --pro-border-focus: #bd93f9;
+    /* text */
+    --pro-text-primary: #f8f8f2; --pro-text-secondary: #d6d6e0; --pro-text-tertiary: #9fa3b8; --pro-text-quaternary: #6e7390;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #bd93f9; --pro-orange-light: #d2b5ff; --pro-orange-dim: #9a72d6; --pro-orange-glow: rgba(189,147,249,0.3);
+    --pro-teal: #8be9fd; --pro-teal-light: #aef1ff; --pro-teal-dim: #6fc4d8;
+    --pro-ekg-pink: #ff79c6;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #50fa7b; --accent-red: #ff5555; --accent-gold: #f1fa8c; --accent-blue: #82aaff;
+    --success: #50fa7b;
+    --focus-ring: rgba(189,147,249,0.5); --focus-ring-strong: #bd93f9;
+    --ekg-color: #ff79c6;
+    --glass-bg: rgba(40,42,54,0.9);
+    /* radius — bubble */
+    --radius-sm: 10px; --radius-md: 16px; --radius-lg: 22px;
+}
+
+/* SIGNATURE: BUBBLE NEON — pill-rounded surfaces, 2px purple-tinted borders, pink neon glow on the active element */
+body.spb-gallery-look.spb-gallery-look[data-look="dracula"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="dracula"] .section-collapsible {
+    border: 2px solid #484b60 !important;
+    border-radius: var(--radius-lg) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="dracula"] .zone-card.selected,
+body.spb-gallery-look.spb-gallery-look[data-look="dracula"] .vtool-btn.active {
+    box-shadow: 0 0 16px rgba(255,121,198,0.35) !important;
+    border-color: #ff79c6 !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="dracula"] .vtool-btn,
+body.spb-gallery-look.spb-gallery-look[data-look="dracula"] .spb-btn,
+body.spb-gallery-look.spb-gallery-look[data-look="dracula"] .btn {
+    border-radius: var(--radius-lg) !important;
+    border-width: 2px !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="dracula"] .spb-input,
+body.spb-gallery-look.spb-gallery-look[data-look="dracula"] input,
+body.spb-gallery-look.spb-gallery-look[data-look="dracula"] select {
+    border-radius: var(--radius-md) !important;
+    border-width: 2px !important;
+    border-color: #484b60 !important;
+}
+
+/* LOOK: Monokai — sharp terminal: zero radius, hard 1px borders, monospace headers, no shadows */
+body[data-look="monokai"] {
+    /* surfaces */
+    --pro-app: #272822; --pro-titlebar: #21221c; --pro-toolbar: #2b2c25; --pro-panel: #2e2f28;
+    --pro-panel-header: #35362e; --pro-canvas-bg: #1d1e19; --pro-input: #26271f;
+    --pro-hover: #3a3b32; --pro-active: #454639; --pro-selected: #494a35;
+    /* borders */
+    --pro-border-subtle: #383931; --pro-border-default: #494a40; --pro-border-strong: #5b5c50; --pro-border-focus: #a6e22e;
+    /* text */
+    --pro-text-primary: #f8f8f2; --pro-text-secondary: #cfcfc2; --pro-text-tertiary: #9a9b8c; --pro-text-quaternary: #707162;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #a6e22e; --pro-orange-light: #c2f05e; --pro-orange-dim: #84b824; --pro-orange-glow: rgba(166,226,46,0.3);
+    --pro-teal: #66d9e8; --pro-teal-light: #8fe6f1; --pro-teal-dim: #4fb2c0;
+    --pro-ekg-pink: #f92672;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #a6e22e; --accent-red: #f92672; --accent-gold: #e6db74; --accent-blue: #66d9e8;
+    --success: #a6e22e;
+    --focus-ring: rgba(166,226,46,0.45); --focus-ring-strong: #a6e22e;
+    --ekg-color: #f92672;
+    --glass-bg: rgba(39,40,34,0.9);
+    /* signature radii: sharp terminal = hard corners everywhere */
+    --radius-sm: 0px; --radius-md: 0px; --radius-lg: 0px;
+}
+
+/* SIGNATURE: Sharp Terminal — hard 1px strong borders, zero shadow, monospace headers */
+body.spb-gallery-look.spb-gallery-look[data-look="monokai"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="monokai"] .section-collapsible,
+body.spb-gallery-look.spb-gallery-look[data-look="monokai"] .btn {
+    border: 1px solid var(--pro-border-strong) !important;
+    box-shadow: none !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="monokai"] .section-header-label,
+body.spb-gallery-look.spb-gallery-look[data-look="monokai"] .zone-studio-header,
+body.spb-gallery-look.spb-gallery-look[data-look="monokai"] .settings-section-title {
+    font-family: 'Consolas', 'Courier New', monospace !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="monokai"] .section-header-label,
+body.spb-gallery-look.spb-gallery-look[data-look="monokai"] .settings-section-title {
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="monokai"] .zone-card:hover,
+body.spb-gallery-look.spb-gallery-look[data-look="monokai"] .btn:hover {
+    border-color: var(--pro-border-focus) !important;
+}
+
+/* LOOK: Solarized Dark — classic Solarized teal-ink base tones rendered as a PHOSPHOR CRT terminal: scanline-textured panels, hard zero-radius edges, teal glowing focus */
+body[data-look="solarized"] {
+    /* surfaces */
+    --pro-app: #002b36;
+    --pro-titlebar: #002530;
+    --pro-toolbar: #03303d;
+    --pro-panel: #073642;
+    --pro-panel-header: #0a414f;
+    --pro-canvas-bg: #00212b;
+    --pro-input: #06303c;
+    --pro-hover: #0d4655;
+    --pro-active: #115263;
+    --pro-selected: #134a5e;
+    /* borders */
+    --pro-border-subtle: #0e4353;
+    --pro-border-default: #155263;
+    --pro-border-strong: #1f6a7e;
+    --pro-border-focus: #268bd2;
+    /* text */
+    --pro-text-primary: #c2cfcf;
+    --pro-text-secondary: #93a1a1;
+    --pro-text-tertiary: #6d8589;
+    --pro-text-quaternary: #4d6268;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #268bd2;
+    --pro-orange-light: #4ea5e8;
+    --pro-orange-dim: #1e6faa;
+    --pro-orange-glow: rgba(38,139,210,0.35);
+    --pro-teal: #2aa198;
+    --pro-teal-light: #3fbeb4;
+    --pro-teal-dim: #1f7f78;
+    --pro-ekg-pink: #d33682;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #859900;
+    --accent-red: #dc322f;
+    --accent-gold: #b58900;
+    --accent-blue: #268bd2;
+    --success: #859900;
+    --focus-ring: rgba(38,139,210,0.5);
+    --focus-ring-strong: #268bd2;
+    --ekg-color: #d33682;
+    --glass-bg: rgba(7,54,66,0.9);
+    /* hard CRT edges — no rounded corners anywhere */
+    --radius-sm: 0px;
+    --radius-md: 0px;
+    --radius-lg: 0px;
+}
+
+/* SIGNATURE: PHOSPHOR CRT — scanline texture on panels, zero radius, teal glowing focus rings */
+
+/* 1. Scanline texture layered over the flat token background-color */
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] #zoneEditorFloat,
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] .section-collapsible {
+    background-image: repeating-linear-gradient(0deg, rgba(147,161,161,0.05) 0px, rgba(147,161,161,0.05) 1px, transparent 1px, transparent 3px) !important;
+}
+
+/* 2. Scanlines continue across the app's main surfaces so the CRT feel is global */
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] #leftPanel,
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] .spb-titlebar,
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] .spb-toolbar {
+    background-image: repeating-linear-gradient(0deg, rgba(147,161,161,0.05) 0px, rgba(147,161,161,0.05) 1px, transparent 1px, transparent 3px) !important;
+}
+
+/* 3. Hard phosphor edges — every interactive surface stays perfectly square */
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] #zoneEditorFloat,
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] .section-collapsible,
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] .look-card,
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] button,
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] input,
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] select,
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] .swatch-trigger {
+    border-radius: 0px !important;
+}
+
+/* 4. Teal glowing focus rings — a phosphor bloom instead of a plain outline */
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] :focus-visible {
+    border-color: #2aa198 !important;
+    box-shadow: 0 0 0 2px rgba(42,161,152,0.55), 0 0 10px rgba(42,161,152,0.45) !important;
+}
+
+/* 5. Selected zone cards glow like a lit phosphor cell */
+body.spb-gallery-look.spb-gallery-look[data-look="solarized"] #zoneList .zone-card.selected {
+    border-color: #2aa198 !important;
+    box-shadow: inset 0 0 14px rgba(42,161,152,0.18), 0 0 8px rgba(42,161,152,0.35) !important;
+}
+
+/* LOOK: Carbon — IBM Carbon gray-100 palette with a BLUEPRINT GRID signature: zero radius, strong engineering borders, no shadows */
+body[data-look="carbon"] {
+    /* surfaces */
+    --pro-app: #161616; --pro-titlebar: #101010; --pro-toolbar: #1d1d1d; --pro-panel: #262626;
+    --pro-panel-header: #2c2c2c; --pro-canvas-bg: #0d0d0d; --pro-input: #1f1f1f;
+    --pro-hover: #333333; --pro-active: #3d3d3d; --pro-selected: #2b3a55;
+    /* borders */
+    --pro-border-subtle: #2c2c2c; --pro-border-default: #393939; --pro-border-strong: #525252; --pro-border-focus: #4589ff;
+    /* text */
+    --pro-text-primary: #f4f4f4; --pro-text-secondary: #c6c6c6; --pro-text-tertiary: #8d8d8d; --pro-text-quaternary: #6f6f6f;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #4589ff; --pro-orange-light: #6fa4ff; --pro-orange-dim: #3568d4; --pro-orange-glow: rgba(69,137,255,0.35);
+    --pro-teal: #08bdba; --pro-teal-light: #25c8c5; --pro-teal-dim: #069a97;
+    --pro-ekg-pink: #ee5396;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #42be65; --accent-red: #fa4d56; --accent-gold: #f1c21b; --accent-blue: #4589ff;
+    --success: #42be65;
+    --focus-ring: rgba(69,137,255,0.5); --focus-ring-strong: #4589ff;
+    --ekg-color: #ee5396;
+    --glass-bg: rgba(22,22,22,0.9);
+    /* radius — blueprint grid is fully squared */
+    --radius-sm: 0px; --radius-md: 0px; --radius-lg: 0px;
+}
+
+/* SIGNATURE: BLUEPRINT GRID — every card, section, and control reads as an
+   engineering drawing cell: hairline strong borders on all interactive chrome,
+   a blue (orange-slot) 2px callout underline on section headers, zero radius
+   everywhere, and a completely shadowless flat surface. */
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] .section-collapsible,
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] .btn,
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] select,
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] input {
+    border: 1px solid var(--pro-border-strong) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] .section-header {
+    border-bottom: 2px solid var(--pro-orange) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] .btn,
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] .section-collapsible,
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] select,
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] input {
+    border-radius: 0 !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] .section-collapsible,
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] .section-header,
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] .btn,
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] select,
+body.spb-gallery-look.spb-gallery-look[data-look="carbon"] input {
+    box-shadow: none !important;
+}
+
+/* LOOK: OLED Black — true-black power-saving surfaces drawn as dark glass with amber hairline outlines */
+body[data-look="oled"] {
+    /* surfaces */
+    --pro-app: #000000; --pro-titlebar: #000000; --pro-toolbar: #0a0a0a; --pro-panel: #101010;
+    --pro-panel-header: #161616; --pro-canvas-bg: #000000; --pro-input: #0d0d0d;
+    --pro-hover: #1c1c1c; --pro-active: #262626; --pro-selected: #2b2410;
+    /* borders */
+    --pro-border-subtle: #1a1a1a; --pro-border-default: #2a2a2a; --pro-border-strong: #3d3d3d; --pro-border-focus: #ffb000;
+    /* text */
+    --pro-text-primary: #f2f2f2; --pro-text-secondary: #bdbdbd; --pro-text-tertiary: #8a8a8a; --pro-text-quaternary: #5c5c5c;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #ffb000; --pro-orange-light: #ffc94d; --pro-orange-dim: #cc8c00; --pro-orange-glow: rgba(255,176,0,0.3);
+    --pro-teal: #4dd0c4; --pro-teal-light: #79e0d6; --pro-teal-dim: #38a89d;
+    --pro-ekg-pink: #ff5c7a;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #4cc38a; --accent-red: #ff5252; --accent-gold: #ffd54a; --accent-blue: #58a6ff;
+    --success: #4cc38a;
+    --focus-ring: rgba(255,176,0,0.5); --focus-ring-strong: #ffb000;
+    --ekg-color: #ff5c7a;
+    --glass-bg: rgba(8,8,8,0.92);
+    /* radii */
+    --radius-sm: 3px; --radius-md: 6px; --radius-lg: 8px;
+}
+
+/* SIGNATURE: OUTLINED-NOT-FILLED — panels and buttons are dark glass traced by amber
+   hairlines instead of solid fills; selection is a full amber border, not a filled color. */
+body.spb-gallery-look.spb-gallery-look[data-look="oled"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="oled"] .section-collapsible {
+    background: rgba(255,176,0,0.03) !important;
+    border: 1px solid rgba(255,176,0,0.22) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="oled"] .btn {
+    background: transparent !important;
+    border: 1px solid rgba(255,176,0,0.35) !important;
+    color: var(--pro-orange) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="oled"] .btn:hover {
+    background: rgba(255,176,0,0.12) !important;
+    border-color: rgba(255,176,0,0.6) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="oled"] .btn.active,
+body.spb-gallery-look.spb-gallery-look[data-look="oled"] .btn.selected,
+body.spb-gallery-look.spb-gallery-look[data-look="oled"] .zone-card.selected,
+body.spb-gallery-look.spb-gallery-look[data-look="oled"] .look-card.selected {
+    background: rgba(255,176,0,0.06) !important;
+    border: 1px solid var(--pro-orange) !important;
+    color: var(--pro-orange-light) !important;
+    box-shadow: 0 0 8px rgba(255,176,0,0.25) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="oled"] .zone-card:hover,
+body.spb-gallery-look.spb-gallery-look[data-look="oled"] .section-collapsible:hover {
+    border-color: rgba(255,176,0,0.45) !important;
+    background: rgba(255,176,0,0.06) !important;
+}
+
+/* LOOK: Graphite — EDITORIAL MONOCHROME: zero chroma beyond the silver accent, sharp 2-4px radii, uppercase tracked-out headers over strong hairlines, flat (no shadows/glows) */
+body[data-look="graphite"] {
+    /* surfaces */
+    --pro-app: #232628; --pro-titlebar: #1e2123; --pro-toolbar: #272b2d; --pro-panel: #2a2e31;
+    --pro-panel-header: #313639; --pro-canvas-bg: #1a1d1f; --pro-input: #25292b;
+    --pro-hover: #343a3d; --pro-active: #3e4548; --pro-selected: #3d484d;
+    /* borders */
+    --pro-border-subtle: #32373a; --pro-border-default: #41474b; --pro-border-strong: #545b60; --pro-border-focus: #9fb2bd;
+    /* text */
+    --pro-text-primary: #e4e7e9; --pro-text-secondary: #b5bcc0; --pro-text-tertiary: #8a9297; --pro-text-quaternary: #62696e;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #9fb2bd; --pro-orange-light: #bccdd6; --pro-orange-dim: #7e929d; --pro-orange-glow: rgba(159,178,189,0.3);
+    --pro-teal: #7fb5b0; --pro-teal-light: #9ccbc6; --pro-teal-dim: #63928d;
+    --pro-ekg-pink: #c98a9b;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #8fbc8f; --accent-red: #c96a6a; --accent-gold: #c9b06a; --accent-blue: #8fa8bd;
+    --success: #8fbc8f;
+    --focus-ring: rgba(159,178,189,0.45); --focus-ring-strong: #9fb2bd;
+    --ekg-color: #c98a9b;
+    --glass-bg: rgba(42,46,49,0.88);
+    /* radii — sharp, editorial */
+    --radius-sm: 2px; --radius-md: 3px; --radius-lg: 4px;
+}
+
+/* SIGNATURE: EDITORIAL MONOCHROME — typographic hierarchy (uppercase, 2px tracking) + hairline rules; flat: no shadows, no glows, single silver accent */
+body.spb-gallery-look.spb-gallery-look[data-look="graphite"] .section-header-label,
+body.spb-gallery-look.spb-gallery-look[data-look="graphite"] .zone-studio-header {
+    text-transform: uppercase !important;
+    letter-spacing: 2px !important;
+    font-weight: 600 !important;
+    color: var(--pro-text-secondary) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="graphite"] .section-header {
+    border-bottom: 1px solid var(--pro-border-strong) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="graphite"] .section-header,
+body.spb-gallery-look.spb-gallery-look[data-look="graphite"] .zone-studio-header,
+body.spb-gallery-look.spb-gallery-look[data-look="graphite"] .look-card,
+body.spb-gallery-look.spb-gallery-look[data-look="graphite"] .spb-look-card {
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="graphite"] .look-card,
+body.spb-gallery-look.spb-gallery-look[data-look="graphite"] .spb-look-card {
+    border: 1px solid var(--pro-border-subtle) !important;
+    border-radius: 2px !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="graphite"] .zone-studio-header {
+    border-left: 2px solid var(--pro-orange) !important;
+}
+
+/* LOOK: Studio Warm — photography-studio softbox look: warm dark palette, deep soft elevation, pill buttons */
+body[data-look="studio-warm"] {
+    /* surfaces */
+    --pro-app: #211d1a; --pro-titlebar: #1c1916; --pro-toolbar: #25211d; --pro-panel: #292420;
+    --pro-panel-header: #302a25; --pro-canvas-bg: #171412; --pro-input: #241f1b;
+    --pro-hover: #352e28; --pro-active: #40382f; --pro-selected: #453a2b;
+    /* borders */
+    --pro-border-subtle: #332c26; --pro-border-default: #453c33; --pro-border-strong: #5a4e41; --pro-border-focus: #d9a05b;
+    /* text */
+    --pro-text-primary: #efe8df; --pro-text-secondary: #c9beb2; --pro-text-tertiary: #9a8e80; --pro-text-quaternary: #6d6357;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #d9a05b; --pro-orange-light: #e8bb82; --pro-orange-dim: #b07f42; --pro-orange-glow: rgba(217,160,91,0.3);
+    --pro-teal: #7aa89b; --pro-teal-light: #98c2b5; --pro-teal-dim: #5f887c;
+    --pro-ekg-pink: #d97b8f;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #8fb573; --accent-red: #d96a5f; --accent-gold: #d9c05b; --accent-blue: #7a9fc9;
+    --success: #8fb573;
+    --focus-ring: rgba(217,160,91,0.45); --focus-ring-strong: #d9a05b;
+    --ekg-color: #d97b8f;
+    --glass-bg: rgba(41,36,32,0.9);
+    /* radii — soft, generous */
+    --radius-sm: 6px; --radius-md: 12px; --radius-lg: 16px;
+}
+
+/* SIGNATURE: SOFTBOX — photography-studio softness: cards float on deep, wide,
+   diffuse shadows like product shots under a softbox; every button is a full
+   pill; preview wells carry a warm inner vignette like a studio backdrop. */
+body.spb-gallery-look.spb-gallery-look[data-look="studio-warm"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="studio-warm"] #zoneEditorFloat,
+body.spb-gallery-look.spb-gallery-look[data-look="studio-warm"] .settings-dropdown {
+    box-shadow: 0 18px 44px rgba(0,0,0,0.55) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="studio-warm"] .zone-card {
+    border-color: var(--pro-border-strong) !important;
+    border-radius: var(--radius-md) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="studio-warm"] .btn {
+    border-radius: 999px !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="studio-warm"] #splitPreview,
+body.spb-gallery-look.spb-gallery-look[data-look="studio-warm"] .preview-inner {
+    box-shadow: inset 0 0 60px rgba(0,0,0,0.35) !important;
+}
+
+/* LOOK: Paper — riso print on warm stock: chunky ink outlines and hard offset shadows */
+body[data-look="paper"] {
+    /* surfaces */
+    --pro-app: #efe9df; --pro-titlebar: #e7e0d4; --pro-toolbar: #ece5d9; --pro-panel: #f7f3ea;
+    --pro-panel-header: #efe9dc; --pro-canvas-bg: #ddd5c4; --pro-input: #fbf8f1;
+    --pro-hover: #e3dac7; --pro-active: #d8cdb4; --pro-selected: #f0e2cc;
+    /* borders */
+    --pro-border-subtle: #ddd3bf; --pro-border-default: #c9bda3; --pro-border-strong: #ab9e80; --pro-border-focus: #b3541e;
+    /* text */
+    --pro-text-primary: #2b2620; --pro-text-secondary: #554e42; --pro-text-tertiary: #7d7462; --pro-text-quaternary: #a2977f;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #b3541e; --pro-orange-light: #cc6f35; --pro-orange-dim: #8f4317; --pro-orange-glow: rgba(179,84,30,0.25);
+    --pro-teal: #3d7a6e; --pro-teal-light: #52978a; --pro-teal-dim: #2e5f56;
+    --pro-ekg-pink: #c2405a;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #4d7c3a; --accent-red: #b3352c; --accent-gold: #9a7b12; --accent-blue: #2f6f9f;
+    --success: #4d7c3a;
+    --focus-ring: rgba(179,84,30,0.4); --focus-ring-strong: #b3541e;
+    --ekg-color: #c2405a;
+    --glass-bg: rgba(247,243,234,0.92);
+    /* radius — near-square, like a printed plate */
+    --radius-sm: 2px; --radius-md: 2px; --radius-lg: 3px;
+}
+
+/* SIGNATURE: riso print — chunky 2px ink outlines plus hard, blur-free offset
+   shadows, so every card and control reads like an ink layer on paper; the
+   selected card overprints in rust. */
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] .section-collapsible,
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] .settings-dropdown,
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] .btn {
+    border: 2px solid #2b2620 !important;
+    box-shadow: 3px 3px 0 rgba(43,38,32,0.8) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] .zone-card.selected {
+    border-color: #b3541e !important;
+    box-shadow: 4px 4px 0 rgba(179,84,30,0.9) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] .modal-box,
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] .spb-tb-pop {
+    border: 2px solid #2b2620 !important;
+    box-shadow: 3px 3px 0 rgba(43,38,32,0.8) !important;
+}
+
+/* EXTRAS: light-look overrides — older layers hardcode dark surfaces with
+   !important, so force common chrome to paper backgrounds + ink text. */
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] .btn {
+    background: var(--pro-input) !important;
+    color: var(--pro-text-primary) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] .settings-dropdown {
+    background: var(--pro-panel) !important;
+    color: var(--pro-text-primary) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] .spb-tb-pop {
+    background: var(--pro-panel) !important;
+    color: var(--pro-text-primary) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] .spb-top-toolbar {
+    background: var(--pro-toolbar) !important;
+    color: var(--pro-text-primary) !important;
+    border-color: var(--pro-border-subtle) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] select {
+    background: var(--pro-input) !important;
+    color: var(--pro-text-primary) !important;
+    border-color: var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] input[type="text"] {
+    background: var(--pro-input) !important;
+    color: var(--pro-text-primary) !important;
+    border-color: var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] input[type="number"] {
+    background: var(--pro-input) !important;
+    color: var(--pro-text-primary) !important;
+    border-color: var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] .modal-box {
+    background: var(--pro-panel) !important;
+    color: var(--pro-text-primary) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] .zone-card {
+    background: var(--pro-panel) !important;
+    color: var(--pro-text-primary) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="paper"] .toast {
+    background: var(--pro-panel) !important;
+    color: var(--pro-text-primary) !important;
+    border-color: var(--pro-border-default) !important;
+}
+
+/* LOOK: Midnight Navy — LUME: deep-sea navy surfaces that emit a faint luminous cyan aura */
+body[data-look="midnight"] {
+    /* surfaces */
+    --pro-app: #0b1220;
+    --pro-titlebar: #080e1a;
+    --pro-toolbar: #0e1626;
+    --pro-panel: #111b2e;
+    --pro-panel-header: #16233a;
+    --pro-canvas-bg: #060b14;
+    --pro-input: #0d1524;
+    --pro-hover: #1a2740;
+    --pro-active: #213252;
+    --pro-selected: #22395c;
+    /* borders */
+    --pro-border-subtle: #182642;
+    --pro-border-default: #233657;
+    --pro-border-strong: #32497a;
+    --pro-border-focus: #3ba7d9;
+    /* text */
+    --pro-text-primary: #e6edf7;
+    --pro-text-secondary: #b3c2d9;
+    --pro-text-tertiary: #7f92b3;
+    --pro-text-quaternary: #56688c;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #3ba7d9;
+    --pro-orange-light: #66c2ea;
+    --pro-orange-dim: #2c85ad;
+    --pro-orange-glow: rgba(59,167,217,0.35);
+    --pro-teal: #3fd0b8;
+    --pro-teal-light: #6de0cc;
+    --pro-teal-dim: #2fa694;
+    --pro-ekg-pink: #ff6b9a;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #4ac98a;
+    --accent-red: #f0596b;
+    --accent-gold: #e0b64a;
+    --accent-blue: #5b8def;
+    --success: #4ac98a;
+    --focus-ring: rgba(59,167,217,0.5);
+    --focus-ring-strong: #3ba7d9;
+    --ekg-color: #ff6b9a;
+    --glass-bg: rgba(17,27,46,0.9);
+    /* radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 10px;
+}
+
+/* SIGNATURE: LUME — panels emit a faint cyan aura; selected card glows brighter; section labels softly luminesce */
+body.spb-gallery-look.spb-gallery-look[data-look="midnight"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="midnight"] #zoneEditorFloat,
+body.spb-gallery-look.spb-gallery-look[data-look="midnight"] .section-collapsible {
+    box-shadow: 0 0 18px rgba(59,167,217,0.10) !important;
+}
+
+body.spb-gallery-look.spb-gallery-look[data-look="midnight"] .zone-card.selected {
+    box-shadow: 0 0 22px rgba(59,167,217,0.28) !important;
+    border-color: var(--pro-orange) !important;
+}
+
+body.spb-gallery-look.spb-gallery-look[data-look="midnight"] .section-header-label {
+    text-shadow: 0 0 8px rgba(59,167,217,0.5) !important;
+}
+
+/* LOOK: Emerald Pro — deep green-on-charcoal dark theme; every card/section carries a 3px emerald left spine */
+body[data-look="emerald"] {
+    /* surfaces */
+    --pro-app: #101613; --pro-titlebar: #0c110e; --pro-toolbar: #131a16; --pro-panel: #161f1a;
+    --pro-panel-header: #1c2721; --pro-canvas-bg: #0a0e0c; --pro-input: #121a15;
+    --pro-hover: #202b24; --pro-active: #29362d; --pro-selected: #25392c;
+    /* borders */
+    --pro-border-subtle: #1e2b23; --pro-border-default: #2b3c31; --pro-border-strong: #3d5344; --pro-border-focus: #34c77b;
+    /* text */
+    --pro-text-primary: #e6f0ea; --pro-text-secondary: #b4c8bc; --pro-text-tertiary: #7f968a; --pro-text-quaternary: #57695f;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #34c77b; --pro-orange-light: #5fd89a; --pro-orange-dim: #289e60; --pro-orange-glow: rgba(52,199,123,0.3);
+    --pro-teal: #45b8a8; --pro-teal-light: #68d0c1; --pro-teal-dim: #349185;
+    --pro-ekg-pink: #e06c8a;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #34c77b; --accent-red: #e0575f; --accent-gold: #d4af4a; --accent-blue: #5a9fe0;
+    --success: #34c77b;
+    --focus-ring: rgba(52,199,123,0.45); --focus-ring-strong: #34c77b;
+    --ekg-color: #e06c8a;
+    --glass-bg: rgba(22,31,26,0.9);
+    /* radii: tight, crisp corners */
+    --radius-sm: 2px; --radius-md: 4px; --radius-lg: 6px;
+}
+
+/* SIGNATURE: LEFT-BAR SYSTEM — a 3px emerald spine on every card/section/dropdown;
+   other borders stay hairline, selected state swaps the spine to bright green. */
+body.spb-gallery-look.spb-gallery-look[data-look="emerald"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="emerald"] .section-collapsible {
+    border: 1px solid var(--pro-border-default) !important;
+    border-left: 3px solid var(--pro-orange) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="emerald"] .zone-card.selected {
+    border-left-color: #5fd89a !important;
+    background: var(--pro-selected) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="emerald"] .zone-card:hover {
+    border-left-color: var(--pro-orange-light) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="emerald"] .settings-dropdown {
+    border: 1px solid var(--pro-border-default) !important;
+    border-left: 3px solid var(--pro-orange) !important;
+}
+
+/* LOOK: Copper — dark warm pro-app chrome with brushed-metal striations and a warm copper glow on selection */
+body[data-look="copper"] {
+    /* surfaces */
+    --pro-app: #1a1512; --pro-titlebar: #151110; --pro-toolbar: #1e1815; --pro-panel: #221b17;
+    --pro-panel-header: #2a221c; --pro-canvas-bg: #110d0b; --pro-input: #1c1613;
+    --pro-hover: #2d241d; --pro-active: #382d23; --pro-selected: #3d2e1f;
+    /* borders */
+    --pro-border-subtle: #2b2119; --pro-border-default: #3d2f24; --pro-border-strong: #54402f; --pro-border-focus: #c97b4a;
+    /* text */
+    --pro-text-primary: #f0e8e0; --pro-text-secondary: #cbb9a8; --pro-text-tertiary: #99887a; --pro-text-quaternary: #6b5d50;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #c97b4a; --pro-orange-light: #dd9966; --pro-orange-dim: #a35f35; --pro-orange-glow: rgba(201,123,74,0.35);
+    --pro-teal: #5ba8a0; --pro-teal-light: #7cc4bc; --pro-teal-dim: #45817b;
+    --pro-ekg-pink: #e0708a;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #7cb56a; --accent-red: #d95f52; --accent-gold: #d4a94a; --accent-blue: #6b9fd9;
+    --success: #7cb56a;
+    --focus-ring: rgba(201,123,74,0.5); --focus-ring-strong: #c97b4a;
+    --ekg-color: #e0708a;
+    --glass-bg: rgba(34,27,23,0.9);
+    /* radii — tight, machined */
+    --radius-sm: 3px; --radius-md: 6px; --radius-lg: 8px;
+}
+
+/* SIGNATURE: BRUSHED METAL — micro-striation texture on chrome surfaces; selected cards get a warm copper glow */
+body.spb-gallery-look.spb-gallery-look[data-look="copper"] .header,
+body.spb-gallery-look.spb-gallery-look[data-look="copper"] .spb-top-toolbar,
+body.spb-gallery-look.spb-gallery-look[data-look="copper"] .zone-studio-header,
+body.spb-gallery-look.spb-gallery-look[data-look="copper"] .section-header {
+    background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 2px, transparent 2px, transparent 4px) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="copper"] .section-header,
+body.spb-gallery-look.spb-gallery-look[data-look="copper"] .zone-studio-header {
+    border-bottom-color: #54402f !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="copper"] .zone-card.selected {
+    border-color: #c97b4a !important;
+    box-shadow: 0 0 14px rgba(201,123,74,0.4) !important;
+}
+
+/* LOOK: High Contrast — MAX LEGIBILITY: pure-black surfaces, white-on-black text, 2px borders, extra-bold labels, hard square corners, inverted selected state. */
+body[data-look="hi-contrast"] {
+    /* surfaces */
+    --pro-app: #000000; --pro-titlebar: #000000; --pro-toolbar: #000000; --pro-panel: #0d0d0d;
+    --pro-panel-header: #141414; --pro-canvas-bg: #000000; --pro-input: #000000;
+    --pro-hover: #2a2a2a; --pro-active: #383838; --pro-selected: #403a00;
+    /* borders */
+    --pro-border-subtle: #4d4d4d; --pro-border-default: #8a8a8a; --pro-border-strong: #ffffff; --pro-border-focus: #ffd700;
+    /* text */
+    --pro-text-primary: #ffffff; --pro-text-secondary: #f0f0f0; --pro-text-tertiary: #c9c9c9; --pro-text-quaternary: #9a9a9a;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #ffd700; --pro-orange-light: #ffe44d; --pro-orange-dim: #d4b300; --pro-orange-glow: rgba(255,215,0,0.4);
+    --pro-teal: #00e0d0; --pro-teal-light: #4df0e3; --pro-teal-dim: #00b3a6;
+    --pro-ekg-pink: #ff7a9c;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #00e676; --accent-red: #ff5252; --accent-gold: #ffd700; --accent-blue: #66b2ff;
+    --success: #00e676;
+    --focus-ring: rgba(255,215,0,0.7); --focus-ring-strong: #ffd700;
+    --ekg-color: #ff7a9c;
+    --glass-bg: rgba(0,0,0,0.95);
+    /* radius: hard square corners — zero rounding anywhere */
+    --radius-sm: 0px; --radius-md: 0px; --radius-lg: 0px;
+}
+
+/* SIGNATURE: MAX LEGIBILITY — thick 2px borders, extra-bold labels, inverted selected cards */
+body.spb-gallery-look.spb-gallery-look[data-look="hi-contrast"] .btn {
+    border: 2px solid var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="hi-contrast"] .btn:hover {
+    border-color: var(--pro-border-strong) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="hi-contrast"] .zone-card {
+    border: 2px solid var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="hi-contrast"] .zone-card.selected {
+    background: var(--pro-orange) !important;
+    color: #000000 !important;
+    border-color: #ffffff !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="hi-contrast"] input,
+body.spb-gallery-look.spb-gallery-look[data-look="hi-contrast"] select,
+body.spb-gallery-look.spb-gallery-look[data-look="hi-contrast"] textarea {
+    border: 2px solid var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="hi-contrast"] input:focus,
+body.spb-gallery-look.spb-gallery-look[data-look="hi-contrast"] select:focus,
+body.spb-gallery-look.spb-gallery-look[data-look="hi-contrast"] textarea:focus {
+    border-color: var(--pro-border-focus) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="hi-contrast"] .modal-box,
+body.spb-gallery-look.spb-gallery-look[data-look="hi-contrast"] .settings-dropdown,
+body.spb-gallery-look.spb-gallery-look[data-look="hi-contrast"] .spb-tb-pop {
+    border: 2px solid var(--pro-border-strong) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="hi-contrast"] .section-header-label,
+body.spb-gallery-look.spb-gallery-look[data-look="hi-contrast"] .settings-section-title {
+    font-weight: 800 !important;
+}
+
+/* LOOK: Compact Pro — dense power-user chrome: tight 2-4px radii, hairline 1px borders, compressed spacing */
+body[data-look="compact"] {
+    /* surfaces */
+    --pro-app: #1c1c1f;
+    --pro-titlebar: #17171a;
+    --pro-toolbar: #202024;
+    --pro-panel: #232327;
+    --pro-panel-header: #29292e;
+    --pro-canvas-bg: #121214;
+    --pro-input: #18181b;
+    --pro-hover: #2f2f35;
+    --pro-active: #36363d;
+    --pro-selected: #393940;
+    /* borders */
+    --pro-border-subtle: #2b2b30;
+    --pro-border-default: #38383f;
+    --pro-border-strong: #484852;
+    --pro-border-focus: #f5761a;
+    /* text */
+    --pro-text-primary: #e8e8e8;
+    --pro-text-secondary: #b5b5b5;
+    --pro-text-tertiary: #878787;
+    --pro-text-quaternary: #5c5c5c;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #f5761a;
+    --pro-orange-light: #ff9a4d;
+    --pro-orange-dim: #b85a12;
+    --pro-orange-glow: rgba(245,118,26,0.35);
+    --pro-teal: #3aa7a3;
+    --pro-teal-light: #5cc6c2;
+    --pro-teal-dim: #2b7d7a;
+    --pro-ekg-pink: #ff5c8a;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #4cc38a;
+    --accent-red: #e5484d;
+    --accent-gold: #d9a441;
+    --accent-blue: #4a9eff;
+    --success: #4cc38a;
+    --focus-ring: rgba(245,118,26,0.5);
+    --focus-ring-strong: #f5761a;
+    --ekg-color: #ff5c8a;
+    --glass-bg: rgba(35,35,39,0.85);
+    /* signature: tight density radii */
+    --radius-sm: 2px;
+    --radius-md: 3px;
+    --radius-lg: 4px;
+}
+
+/* SIGNATURE: DENSITY — hairline 1px borders and near-square 2-4px corners give
+   this look a crisp, packed, technical-app feel no other look shares */
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .section-collapsible {
+    border-width: 1px !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .zone-card {
+    border-radius: var(--radius-md) !important;
+    border-color: var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .section-collapsible {
+    border-radius: var(--radius-sm) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .btn,
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .vtool-btn {
+    border-radius: var(--radius-sm) !important;
+    border-width: 1px !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .settings-dropdown,
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .spb-tb-pop {
+    border-radius: var(--radius-md) !important;
+    border-width: 1px !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] input,
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] select {
+    border-radius: var(--radius-sm) !important;
+    border-width: 1px !important;
+}
+
+/* EXTRAS: density — tighter padding, smaller type, reduced gaps (paint only;
+   never touches .header height, canvas sizing, position, or display) */
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .zone-card {
+    padding: 6px !important;
+    gap: 4px !important;
+    font-size: 10.5px !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .btn {
+    padding: 3px 8px !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .vtool-btn {
+    padding: 2px !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .settings-section {
+    padding: 6px !important;
+    gap: 4px !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .spb-tb-pop {
+    gap: 4px !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .spb-tb-pop button {
+    padding: 4px 8px !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .settings-dropdown {
+    font-size: 10.5px !important;
+    gap: 4px !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="compact"] .settings-dropdown option {
+    padding: 2px 6px !important;
+}
+
+/* LOOK: Spacious Light — whitespace & softness: generous radii, soft large shadows, breathing room */
+body[data-look="spacious"] {
+    /* surfaces */
+    --pro-app: #f5f5f6; --pro-titlebar: #ebebec; --pro-toolbar: #f0f0f1; --pro-panel: #ffffff;
+    --pro-panel-header: #f6f6f7; --pro-canvas-bg: #dcdcdf; --pro-input: #ffffff;
+    --pro-hover: #eaebee; --pro-active: #e0e2e6; --pro-selected: #dce9fb;
+    /* borders */
+    --pro-border-subtle: #e4e4e7; --pro-border-default: #d0d0d5; --pro-border-strong: #b6b6bd; --pro-border-focus: #0d99ff;
+    /* text */
+    --pro-text-primary: #1f2328; --pro-text-secondary: #4a4f55; --pro-text-tertiary: #757b83; --pro-text-quaternary: #a2a8af;
+    /* primary accent (orange slot) + secondary (teal slot) */
+    --pro-orange: #0d99ff; --pro-orange-light: #4db2ff; --pro-orange-dim: #0a78c9; --pro-orange-glow: rgba(13,153,255,0.25);
+    --pro-teal: #0e9f8f; --pro-teal-light: #18b8a6; --pro-teal-dim: #0b7d71;
+    --pro-ekg-pink: #e5484d;
+    /* semantic + focus + extras (NOT aliased by the base — must be set per look) */
+    --accent-green: #2e9e5b; --accent-red: #d93036; --accent-gold: #b07d10; --accent-blue: #0d99ff;
+    --success: #2e9e5b;
+    --focus-ring: rgba(13,153,255,0.45); --focus-ring-strong: #0d99ff;
+    --ekg-color: #e5484d;
+    --glass-bg: rgba(255,255,255,0.92);
+    /* generous radii (whitespace signature) */
+    --radius-sm: 6px; --radius-md: 12px; --radius-lg: 16px;
+}
+
+/* ----- LIGHT LOOK overrides: older layers hardcode dark backgrounds -------- */
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .btn {
+    background: var(--pro-panel) !important;
+    color: var(--pro-text-primary) !important;
+    border-color: var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .settings-dropdown {
+    background: var(--pro-panel) !important;
+    color: var(--pro-text-primary) !important;
+    border-color: var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .spb-tb-pop {
+    background: var(--pro-panel) !important;
+    color: var(--pro-text-primary) !important;
+    border-color: var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .spb-top-toolbar {
+    background: var(--pro-toolbar) !important;
+    color: var(--pro-text-primary) !important;
+    border-color: var(--pro-border-subtle) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] select,
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] input[type=text],
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] input[type=number] {
+    background: var(--pro-input) !important;
+    color: var(--pro-text-primary) !important;
+    border-color: var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .modal-box {
+    background: var(--pro-panel) !important;
+    color: var(--pro-text-primary) !important;
+    border-color: var(--pro-border-default) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .zone-card {
+    background: var(--pro-panel) !important;
+    color: var(--pro-text-primary) !important;
+    border-color: var(--pro-border-subtle) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .toast {
+    background: var(--pro-panel) !important;
+    color: var(--pro-text-primary) !important;
+    border-color: var(--pro-border-default) !important;
+}
+
+/* ----- WHITESPACE extras (existing): roomier padding ----------------------- */
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .zone-card {
+    padding: 14px !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .btn {
+    padding: 8px 14px !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .settings-section {
+    padding: 12px !important;
+}
+
+/* ----- SIGNATURE: WHITESPACE — generous radii + soft large shadows ---------- */
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] #zoneEditorFloat {
+    box-shadow: 0 12px 32px rgba(31,35,40,0.08) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .zone-card,
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .look-card {
+    border-radius: var(--radius-lg) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .btn,
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .settings-dropdown,
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .modal-box,
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .spb-tb-pop {
+    border-radius: var(--radius-md) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .modal-box,
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .settings-dropdown,
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] .spb-tb-pop {
+    box-shadow: 0 12px 32px rgba(31,35,40,0.08) !important;
+}
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] select,
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] input[type=text],
+body.spb-gallery-look.spb-gallery-look[data-look="spacious"] input[type=number] {
+    border-radius: var(--radius-sm) !important;
+}

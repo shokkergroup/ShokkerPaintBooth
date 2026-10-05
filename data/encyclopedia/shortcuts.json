@@ -1,0 +1,1520 @@
+{
+ "domain": "shortcuts",
+ "version": 1,
+ "articles": [
+  {
+   "id": "shortcuts.table",
+   "title": "Keyboard shortcuts",
+   "domain": "shortcuts",
+   "summary": "Every key the app listens to, grouped by job. The same list opens inside the app.",
+   "what": "Keys listed in the in-app shortcut panel (press ?): Canvas tools: B, E, P, K, M, W, L, V, C, Shift+J, Q, R, J | Editing: Ctrl+Z, Ctrl+Y / Ctrl+Shift+Z, Ctrl+C, Ctrl+X, Ctrl+V, Ctrl+Shift+V, Ctrl+J, Ctrl+Shift+J, Ctrl+E, Ctrl+Shift+E, Ctrl+Shift+N, Ctrl+L, Delete, Shift+Delete, Alt+Bksp, Ctrl+Bksp, Ctrl+D, Ctrl+A, Ctrl+Shift+I | View & navigation: Ctrl+=, Ctrl+-, Ctrl+0, Space+Drag, [ / ], Ctrl+[ / ], Ctrl+Shift+[ / ], 1-9, X, ↺, Shift+V, ? | Zone operations: Ctrl+R, Shift+R, Shift+N, Shift+D, Shift+E, Shift+H, Shift+T, ? / Esc. More keys that work in the canvas: O rectangle select, Y pick item, A select all of one colour, Ctrl+T transform, Ctrl+S save a snapshot, Ctrl+G generate script, F5 refresh the preview. Zones: Alt+1 to Alt+9 pick a zone, Up and Down move through zones, Ctrl+Up and Ctrl+Down change priority, with the Move Selection Border tool armed, Arrow nudges the zone's drawn border 1 pixel and Shift+Arrow 10 pixels. Brush: { and } change hardness by 10. With no paint tool active, 0, 1 and 2 give fit, 100 percent and 200 percent zoom. The mouse wheel always zooms.",
+   "when": [
+    "You want to work faster.",
+    "You forgot which key a tool uses."
+   ],
+   "how": [
+    "Press ? to open the shortcut panel in the app.",
+    "Read the group you need.",
+    "Press ? or Esc to close it."
+   ],
+   "controls": [
+    {
+     "label": "B",
+     "range": "",
+     "default": "",
+     "effect": "Brush.",
+     "inv": "key.b"
+    },
+    {
+     "label": "E",
+     "range": "",
+     "default": "",
+     "effect": "Eraser.",
+     "inv": "key.e"
+    },
+    {
+     "label": "P",
+     "range": "",
+     "default": "",
+     "effect": "Eyedropper.",
+     "inv": "key.p"
+    },
+    {
+     "label": "K",
+     "range": "",
+     "default": "",
+     "effect": "Fill Bucket.",
+     "inv": "key.k"
+    },
+    {
+     "label": "M",
+     "range": "",
+     "default": "",
+     "effect": "Select with the elliptical marquee (the rectangle select is on O).",
+     "inv": "key.m"
+    },
+    {
+     "label": "W",
+     "range": "",
+     "default": "",
+     "effect": "Magic Wand.",
+     "inv": "key.w"
+    },
+    {
+     "label": "L",
+     "range": "",
+     "default": "",
+     "effect": "Lasso.",
+     "inv": "key.l"
+    },
+    {
+     "label": "V",
+     "range": "",
+     "default": "",
+     "effect": "Move.",
+     "inv": "key.v"
+    },
+    {
+     "label": "C",
+     "range": "",
+     "default": "",
+     "effect": "Color Brush.",
+     "inv": "key.c"
+    },
+    {
+     "label": "Shift+J",
+     "range": "",
+     "default": "",
+     "effect": "Healing Brush.",
+     "inv": "key.shift_j"
+    },
+    {
+     "label": "Q",
+     "range": "",
+     "default": "",
+     "effect": "Smudge.",
+     "inv": "key.q"
+    },
+    {
+     "label": "R",
+     "range": "",
+     "default": "",
+     "effect": "Recolor.",
+     "inv": "key.r"
+    },
+    {
+     "label": "J",
+     "range": "",
+     "default": "",
+     "effect": "Burn.",
+     "inv": "key.j"
+    },
+    {
+     "label": "Ctrl+Z",
+     "range": "",
+     "default": "",
+     "effect": "Undo.",
+     "inv": "key.ctrl_z"
+    },
+    {
+     "label": "Ctrl+Y / Ctrl+Shift+Z",
+     "range": "",
+     "default": "",
+     "effect": "Redo.",
+     "inv": "key.ctrl_y_ctrl_shift_z"
+    },
+    {
+     "label": "Ctrl+C",
+     "range": "",
+     "default": "",
+     "effect": "Copy.",
+     "inv": "key.ctrl_c"
+    },
+    {
+     "label": "Ctrl+X",
+     "range": "",
+     "default": "",
+     "effect": "Cut.",
+     "inv": "key.ctrl_x"
+    },
+    {
+     "label": "Ctrl+V",
+     "range": "",
+     "default": "",
+     "effect": "Paste at selection / view center.",
+     "inv": "key.ctrl_v"
+    },
+    {
+     "label": "Ctrl+Shift+V",
+     "range": "",
+     "default": "",
+     "effect": "Paste in Place.",
+     "inv": "key.ctrl_shift_v"
+    },
+    {
+     "label": "Ctrl+J",
+     "range": "",
+     "default": "",
+     "effect": "New Layer via Copy.",
+     "inv": "key.ctrl_j"
+    },
+    {
+     "label": "Ctrl+Shift+J",
+     "range": "",
+     "default": "",
+     "effect": "New Layer via Cut.",
+     "inv": "key.ctrl_shift_j"
+    },
+    {
+     "label": "Ctrl+E",
+     "range": "",
+     "default": "",
+     "effect": "Merge Down.",
+     "inv": "key.ctrl_e"
+    },
+    {
+     "label": "Ctrl+Shift+E",
+     "range": "",
+     "default": "",
+     "effect": "Merge Visible.",
+     "inv": "key.ctrl_shift_e"
+    },
+    {
+     "label": "Ctrl+Shift+N",
+     "range": "",
+     "default": "",
+     "effect": "New Blank Layer.",
+     "inv": "key.ctrl_shift_n"
+    },
+    {
+     "label": "Ctrl+L",
+     "range": "",
+     "default": "",
+     "effect": "Lock Zone to Layer.",
+     "inv": "key.ctrl_l"
+    },
+    {
+     "label": "Delete",
+     "range": "",
+     "default": "",
+     "effect": "Selected Pixels.",
+     "inv": "key.delete"
+    },
+    {
+     "label": "Shift+Delete",
+     "range": "",
+     "default": "",
+     "effect": "Delete Selected Zone.",
+     "inv": "key.shift_delete"
+    },
+    {
+     "label": "Alt+Bksp",
+     "range": "",
+     "default": "",
+     "effect": "Fill FG Color.",
+     "inv": "key.alt_bksp"
+    },
+    {
+     "label": "Ctrl+Bksp",
+     "range": "",
+     "default": "",
+     "effect": "Fill BG Color.",
+     "inv": "key.ctrl_bksp"
+    },
+    {
+     "label": "Ctrl+D",
+     "range": "",
+     "default": "",
+     "effect": "Deselect.",
+     "inv": "key.ctrl_d"
+    },
+    {
+     "label": "Ctrl+A",
+     "range": "",
+     "default": "",
+     "effect": "Select All.",
+     "inv": "key.ctrl_a"
+    },
+    {
+     "label": "Ctrl+Shift+I",
+     "range": "",
+     "default": "",
+     "effect": "Invert Selection.",
+     "inv": "key.ctrl_shift_i"
+    },
+    {
+     "label": "Ctrl+=",
+     "range": "",
+     "default": "",
+     "effect": "Zoom In.",
+     "inv": "key.ctrl"
+    },
+    {
+     "label": "Ctrl+-",
+     "range": "",
+     "default": "",
+     "effect": "Zoom Out.",
+     "inv": "key.ctrl~2"
+    },
+    {
+     "label": "Ctrl+0",
+     "range": "",
+     "default": "",
+     "effect": "Fit to Window.",
+     "inv": "key.ctrl_0"
+    },
+    {
+     "label": "Space+Drag",
+     "range": "",
+     "default": "",
+     "effect": "Pan Canvas.",
+     "inv": "key.space_drag"
+    },
+    {
+     "label": "[ / ]",
+     "range": "",
+     "default": "",
+     "effect": "Make the brush smaller or larger (5 at a time); { and } change hardness.",
+     "inv": "key.x"
+    },
+    {
+     "label": "Ctrl+[ / ]",
+     "range": "",
+     "default": "",
+     "effect": "Layer Down / Up.",
+     "inv": "key.ctrl~3"
+    },
+    {
+     "label": "Ctrl+Shift+[ / ]",
+     "range": "",
+     "default": "",
+     "effect": "Layer Bottom / Top.",
+     "inv": "key.ctrl_shift"
+    },
+    {
+     "label": "1-9",
+     "range": "",
+     "default": "",
+     "effect": "Set the brush or layer opacity to 10 to 90 percent (0 sets 100 percent).",
+     "inv": "key.1_9"
+    },
+    {
+     "label": "X",
+     "range": "",
+     "default": "",
+     "effect": "Swap the foreground and background colours.",
+     "inv": "key.x~2"
+    },
+    {
+     "label": "↺",
+     "range": "",
+     "default": "",
+     "effect": "Reset the foreground and background colours.",
+     "inv": "key.x~3"
+    },
+    {
+     "label": "Shift+V",
+     "range": "",
+     "default": "",
+     "effect": "Split View.",
+     "inv": "key.shift_v"
+    },
+    {
+     "label": "?",
+     "range": "",
+     "default": "",
+     "effect": "Open this shortcut panel.",
+     "inv": "key.x~4"
+    },
+    {
+     "label": "Ctrl+R",
+     "range": "",
+     "default": "",
+     "effect": "Render.",
+     "inv": "key.ctrl_r"
+    },
+    {
+     "label": "Shift+R",
+     "range": "",
+     "default": "",
+     "effect": "Randomize Zone.",
+     "inv": "key.shift_r"
+    },
+    {
+     "label": "Shift+N",
+     "range": "",
+     "default": "",
+     "effect": "New Zone.",
+     "inv": "key.shift_n"
+    },
+    {
+     "label": "Shift+D",
+     "range": "",
+     "default": "",
+     "effect": "Duplicate Zone.",
+     "inv": "key.shift_d"
+    },
+    {
+     "label": "Shift+E",
+     "range": "",
+     "default": "",
+     "effect": "Show or hide the zone popout panel.",
+     "inv": "key.shift_e"
+    },
+    {
+     "label": "Shift+H",
+     "range": "",
+     "default": "",
+     "effect": "History Gallery.",
+     "inv": "key.shift_h"
+    },
+    {
+     "label": "Shift+T",
+     "range": "",
+     "default": "",
+     "effect": "Template Library.",
+     "inv": "key.shift_t"
+    },
+    {
+     "label": "? / Esc",
+     "range": "",
+     "default": "",
+     "effect": "Close the shortcut panel.",
+     "inv": "key.esc"
+    }
+   ],
+   "tips": [
+    "Letter keys do nothing while you are typing in a text box.",
+    "Shift+E shows or hides the zone panel. E alone is the Eraser."
+   ],
+   "pitfalls": [
+    "The panel says Marquee for M. M is the elliptical marquee; use O for a rectangle.",
+    "Ctrl+S saves an autosave snapshot, not a project file. Use Save project for that."
+   ],
+   "related": [
+    "tools.shortcuts_quick",
+    "tools.undo_redo",
+    "tools.zoom_pan",
+    "zones.card_controls",
+    "ui_shell.save_open_projects"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "key.b",
+    "key.e",
+    "key.p",
+    "key.k",
+    "key.m",
+    "key.w",
+    "key.l",
+    "key.v",
+    "key.c",
+    "key.shift_j",
+    "key.q",
+    "key.r",
+    "key.j",
+    "key.ctrl_z",
+    "key.ctrl_y_ctrl_shift_z",
+    "key.ctrl_c",
+    "key.ctrl_x",
+    "key.ctrl_v",
+    "key.ctrl_shift_v",
+    "key.ctrl_j",
+    "key.ctrl_shift_j",
+    "key.ctrl_e",
+    "key.ctrl_shift_e",
+    "key.ctrl_shift_n",
+    "key.ctrl_l",
+    "key.delete",
+    "key.shift_delete",
+    "key.alt_bksp",
+    "key.ctrl_bksp",
+    "key.ctrl_d",
+    "key.ctrl_a",
+    "key.ctrl_shift_i",
+    "key.ctrl",
+    "key.ctrl~2",
+    "key.ctrl_0",
+    "key.space_drag",
+    "key.x",
+    "key.ctrl~3",
+    "key.ctrl_shift",
+    "key.1_9",
+    "key.x~2",
+    "key.x~3",
+    "key.shift_v",
+    "key.x~4",
+    "key.ctrl_r",
+    "key.shift_r",
+    "key.shift_n",
+    "key.shift_d",
+    "key.shift_e",
+    "key.shift_h",
+    "key.shift_t",
+    "key.esc"
+   ],
+   "sources": [
+    "paint-booth-v2.html:4012",
+    "paint-booth-3-canvas.js:12717",
+    "paint-booth-6-ui-boot.js:3825",
+    "paint-booth-v2.html:2235",
+    "paint-booth-3-canvas.js:12501",
+    "paint-booth-3-canvas.js:12478",
+    "paint-booth-3-canvas.js:12751",
+    "paint-booth-3-canvas.js:12801",
+    "paint-booth-3-canvas.js:12809",
+    "paint-booth-v2.html:2857",
+    "paint-booth-v2.html:2913",
+    "paint-booth-6-ui-boot.js:3781",
+    "paint-booth-6-ui-boot.js:3785",
+    "paint-booth-6-ui-boot.js:3797",
+    "paint-booth-6-ui-boot.js:3801",
+    "paint-booth-6-ui-boot.js:3813",
+    "paint-booth-6-ui-boot.js:3842",
+    "paint-booth-6-ui-boot.js:3842",
+    "paint-booth-6-ui-boot.js:3908",
+    "paint-booth-6-ui-boot.js:3819",
+    "paint-booth-2-state-zones.js:4270",
+    "paint-booth-3-canvas.js:34533",
+    "paint-booth-layer-flow.js:1150"
+   ],
+   "aliases": [
+    "key list",
+    "keybindings",
+    "shortcuts",
+    "what key does what",
+    "key bindings",
+    "shortcut list",
+    "keyboard keys"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Number keys do three different jobs",
+     "body": "The keys 1 to 9 set 10 to 90 percent and 0 sets 100 percent, but where that goes depends on what is active. With a paint tool armed (Brush, Eraser, Clone, Healing, Recolor, Smudge, Burn and the like) it sets that tool's own opacity or strength. With a non-paint tool and a layer selected it sets the layer's opacity and shows a Layer opacity message. With neither, 0, 1 and 2 become zoom: fit, 100 percent and 200 percent."
+    },
+    {
+     "heading": "Size and hardness keys",
+     "body": "[ makes the brush 5 smaller and ] makes it 5 larger. The Brush Size slider runs 1 to 300 and starts at 20, so the keys clamp at both ends. { and } change Hardness by 10 on a 0 to 100 slider that starts at 100. Hardness keys only act on tools that use hardness, and only on the Eraser when its mode is Brush. The Eraser's Block mode ignores 1 to 9 and shows a message that it is always 100 percent opaque."
+    },
+    {
+     "heading": "Keys that are not obvious from the panel",
+     "body": "M is the elliptical marquee although the panel calls it Marquee; O is the rectangle. A selects all pixels of one colour, Y picks an item, and Shift+J is the Healing brush while plain J is Burn. F5 refreshes the live preview and aborts a stuck one. Ctrl+Shift+R reloads the last paint and is not in the panel. With the Move Selection Border tool armed, the arrow keys nudge the current zone's drawn border 1 pixel, or 10 with Shift. Alt+arrow also nudges there (1 pixel, 5 with Shift) but only in that tool; with any other tool armed it moves nothing."
+    },
+    {
+     "heading": "Zone keys versus tool keys",
+     "body": "Bare letters are tools, while Shift+letter keys are zone actions: Shift+N new zone, Shift+D duplicate, Shift+R randomise, Shift+E show or hide the zone panel. That is why E alone is the Eraser. Alt+1 to Alt+9 pick a zone, Up and Down walk through zones, and Ctrl+Up and Ctrl+Down change its priority."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Paint a soft edge fast",
+     "goal": "Get a soft 60-pixel brush at half strength without touching a slider.",
+     "settings": {
+      "Tool key": "B",
+      "Brush Size": "20 then press ] ten times for 70, or [ twice for 10",
+      "Hardness": "press { five times to go from 100 to 50",
+      "Opacity key": "5 for 50 percent"
+     },
+     "result": "The Brush is armed, the size and Hardness sliders move as you press, and the brush opacity reads 50 percent."
+    },
+    {
+     "title": "Compare before and after on a layer",
+     "goal": "Dim a selected layer and then check the whole paint.",
+     "settings": {
+      "Tool key": "V",
+      "Layer": "select the layer first",
+      "Number key": "4, then 0 for 100 percent again",
+      "View": "Ctrl+0 to fit"
+     },
+     "result": "Move is not a paint tool, so 4 sets the layer to 40 percent with a Layer opacity message. 0 puts it back to 100 percent."
+    },
+    {
+     "title": "Zone round trip with no mouse",
+     "goal": "Add a zone, shuffle its finish and render.",
+     "settings": {
+      "New zone": "Shift+N",
+      "Randomise": "Shift+R",
+      "Pick another zone": "Alt+1",
+      "Render": "Ctrl+R"
+     },
+     "result": "A new zone appears and is selected, Shift+R gives it a random look, Alt+1 jumps back to Zone 1, and Ctrl+R starts a render."
+    }
+   ],
+   "combos": [
+    {
+     "with": "tools.shortcuts_quick",
+     "why": "A shorter version to learn first: tool keys, then Ctrl+Z, Ctrl+D and Ctrl+R."
+    },
+    {
+     "with": "tools.undo_redo",
+     "why": "Ctrl+Z and Ctrl+Y are in the table; the Undo History menu steps back many actions at once."
+    },
+    {
+     "with": "tools.zoom_pan",
+     "why": "Ctrl+0, Ctrl+= and Ctrl+- and the 0, 1, 2 keys all change zoom."
+    },
+    {
+     "with": "zones.card_controls",
+     "why": "Shift+N, Shift+D and Shift+R do what the zone card buttons do."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does pressing a letter do nothing?",
+     "a": "Keys are ignored while the cursor is in a text box, number box or dropdown. Click on the canvas or empty space, then press the key."
+    },
+    {
+     "q": "Does Ctrl+S save my project?",
+     "a": "No. It only refreshes a local autosave snapshot and shows Autosave snapshot saved locally. To keep a project file use the Save SHOKK button."
+    },
+    {
+     "q": "Why did 5 zoom or change opacity instead of what I expected?",
+     "a": "Number keys change meaning with the active tool. A paint tool gets opacity, a selected layer with a non-paint tool gets layer opacity, and with neither the keys 0, 1 and 2 zoom."
+    },
+    {
+     "q": "What is the key for a rectangle selection?",
+     "a": "O. The panel labels M as Marquee, but M is the elliptical marquee."
+    },
+    {
+     "q": "Is there a key I will not find in the panel?",
+     "a": "Yes. Ctrl+Shift+R reloads the last paint, Ctrl+G generates a script, F5 refreshes the preview, and the arrow keys nudge a zone's border while the Move Selection Border tool is armed."
+    },
+    {
+     "q": "Does the Eraser respond to the opacity keys?",
+     "a": "Soft does. Block Eraser is always 100 percent opaque and the keys show a message instead."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Pressing E hides or shows the zone panel, or you expected it to.",
+     "cause": "E alone is the Eraser. The zone panel toggle is Shift+E.",
+     "fix": "Use Shift+E for the zone panel and E for erasing."
+    },
+    {
+     "symptom": "Pressing [ or { changes nothing.",
+     "cause": "The armed tool has no size or no hardness, such as a selection tool, or the Eraser is in Block or clear-all mode.",
+     "fix": "Arm the Brush or another size tool first. For the Eraser, switch its mode to Brush."
+    },
+    {
+     "symptom": "You pressed Ctrl+S and expected a saved file.",
+     "cause": "Ctrl+S saves only a local autosave snapshot.",
+     "fix": "Click Save SHOKK to write a project file you can reopen."
+    }
+   ],
+   "protips": [
+    "With the Move Selection Border tool armed, Arrow nudges the zone's drawn border by 1 pixel and Shift+Arrow by 10. It is the quickest way to line up an edge without redrawing.",
+    "F5 is the rescue key when the live preview looks stuck: it aborts the stuck refresh and starts a new one."
+   ],
+   "screens": [
+    "ui_shortcuts_dialog"
+   ]
+  },
+  {
+   "id": "shortcuts.control_index",
+   "title": "Control index: where is every control",
+   "domain": "shortcuts",
+   "summary": "Every slider, button, switch and box has its own page. This index shows which area of the app each one lives in.",
+   "what": "Each control page tells you what it does, its range and starting value, and where to find it. Search for the control by its label, or start from the area. Window, top bar, dialogs: 139 controls, start with \"The window tour: header, toolbar, zones, centre, right column, render\". Tools, tool options, selection: 167 controls, start with \"Keyboard shortcuts: the ones worth learning\". Zones: 41 controls, start with \"Zone card controls: mute, lock, reset, duplicate, delete\". layer list: 71 controls, start with \"The layer list\". Finish picker and library: 35 controls, start with \"The finish picker, library and browser\". Base colour and base settings: 17 controls, start with \"Base strength, hue, saturation and brightness\". Patterns: 11 controls, start with \"What a pattern is\". Spec controls: 14 controls, start with \"R, G and B channel sliders\". Preview and render: 30 controls, start with \"The Render button and render size (2048 / 1024)\". Undo History: 3 controls, start with \"Undo History panel\". Spec Sculpt Lab: 232 controls, start with \"Spec Sculpt: the rest of the controls\". Shokk Drop: 60 controls, start with \"shokk_drop.overview\". Settings: 10 controls, start with \"The Settings gear: what is in it\". AI copilot panel: 8 controls, start with \"ai_copilot.overview\".",
+   "when": [
+    "You see a control and want to know what it does.",
+    "You know the job but not where the control is."
+   ],
+   "how": [
+    "Search for the label you see on screen.",
+    "Open the control page for the range, starting value and place.",
+    "Or open the area article first and follow its list."
+   ],
+   "controls": [],
+   "tips": [
+    "A page says where the control is, for example Pro > right column > layer list.",
+    "Controls that the app builds on the fly (such as layer rows) are covered by their area article."
+   ],
+   "pitfalls": [],
+   "related": [
+    "ui_shell.window_tour",
+    "tools.shortcuts_quick",
+    "zones.card_controls",
+    "layers.panel",
+    "finishes.picker_library_browser",
+    "finishes.base_colour_tuning",
+    "patterns.what_is_a_pattern",
+    "spec.channel_sliders",
+    "preview_render.render_button",
+    "history.panel",
+    "spec_sculpt.controls_reference",
+    "settings.overview",
+    "shortcuts.table"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "sources": [
+    "paint-booth-v2.html:2235",
+    "paint-booth-v2.html:2857",
+    "paint-booth-v2.html:2913",
+    "paint-booth-2-state-zones.js:2074",
+    "paint-booth-2-state-zones.js:2098",
+    "paint-booth-2-state-zones.js:2109",
+    "paint-booth-2-state-zones.js:1940"
+   ],
+   "aliases": [
+    "control index",
+    "every control",
+    "find a control",
+    "list of controls",
+    "what does this button do",
+    "where is the slider",
+    "where is a control",
+    "find a button"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "How big the index is",
+     "body": "The app has 838 documented controls, each with its own page: 139 in the window, top bar and dialogs, 167 in tools and tool options, 41 in zones, 71 in layers, 35 in the finish picker, 17 in base colour, 11 in patterns, 14 in spec, 30 in preview and render, 3 in undo history, 232 in Spec Sculpt Lab, 60 in Shokk Drop, 10 in settings and 8 in the AI copilot panel. Spec Sculpt Lab alone is more than a quarter of the list."
+    },
+    {
+     "heading": "What a control page tells you",
+     "body": "Every page states where the control lives, for example in the zone popout panel, the tool options bar or the right column. Sliders also give their range and starting value. Of the 838 pages, 138 list a range and 181 list a starting value, because buttons and switches have neither. Brush Size shows 1 to 300 starting at 20, Hue Shift shows -180 to 180 starting at 0, and Base Strength shows 0 to 100 percent starting at 100 percent."
+    },
+    {
+     "heading": "Same label, different place",
+     "body": "Some labels exist in more than one spot, and each place has its own page. R Metal appears in the spec strip under the preview, in the preview's spec pane, in the full-size preview window and in the zone popout panel's Spec section. Only the zone panel version has the -127 to 127 range in steps of 5. Spec strength in Spec Sculpt Lab runs 0 to 200 while the zone Spec Strength runs 0 to 100 in steps of 5. Always check the where line before trusting a number."
+    },
+    {
+     "heading": "What is not in the index",
+     "body": "Controls that the app builds while you work, such as one row per layer, are covered by the area article instead of by individual pages. Search by the label you see and, if nothing matches, look for the area article."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Find the right Hue Shift",
+     "goal": "Look up the range of a slider you can see on screen.",
+     "settings": {
+      "Search for": "Hue Shift",
+      "Where it says it lives": "zone popout panel (click a zone card)",
+      "Range shown": "-180 to 180, step 1",
+      "Starting value": "0"
+     },
+     "result": "You learn that 0 leaves colours alone and the extremes turn them half way around the colour wheel."
+    },
+    {
+     "title": "Tell two Strength sliders apart",
+     "goal": "Decide which Spec Strength you are looking at.",
+     "settings": {
+      "Search for": "Spec Strength",
+      "Zone popout panel": "0 to 100 percent, starting 100 percent",
+      "Spec Sculpt Lab": "0 to 200, step 1, starting 100"
+     },
+     "result": "The zone slider can only weaken the material, while the Lab slider goes up to 200."
+    },
+    {
+     "title": "Learn the brush limits",
+     "goal": "Know how far the size and hardness keys can go.",
+     "settings": {
+      "Search for": "Brush size in pixels",
+      "Range": "1 to 300",
+      "Starting value": "20",
+      "Hardness slider": "0 to 100, starting 100"
+     },
+     "result": "Pressing [ or ] moves the size 5 at a time and stops at 1 or 300."
+    }
+   ],
+   "combos": [
+    {
+     "with": "shortcuts.table",
+     "why": "Keys are controls too: use the table when the control has a shortcut."
+    },
+    {
+     "with": "zones.card_controls",
+     "why": "The zone card buttons are the 41 zone controls."
+    },
+    {
+     "with": "spec_sculpt.controls_reference",
+     "why": "The biggest area, 232 controls, is covered by this article."
+    },
+    {
+     "with": "ui_shell.window_tour",
+     "why": "If you do not know which area a control is in, tour the window first."
+    }
+   ],
+   "faq": [
+    {
+     "q": "How do I find a control I can see but cannot name?",
+     "a": "Search for the exact words printed on it. Each control page is named after its on-screen label, so the label is the best search word."
+    },
+    {
+     "q": "Why does one control have several pages?",
+     "a": "The same label can exist in more than one place, such as R Metal in the spec strip, the preview's spec pane and the zone popout panel. Each place has its own page and range."
+    },
+    {
+     "q": "Do all controls list a range and a starting value?",
+     "a": "No. Only sliders and number boxes do. Buttons, switches and menus show where they are and what they do."
+    },
+    {
+     "q": "Where is a layer row control documented?",
+     "a": "Layer rows are built while you work, so the Layers area article covers them instead of one page per row."
+    },
+    {
+     "q": "Is the control list the same for every build?",
+     "a": "The pages are generated from the controls in this version of the app, so they follow the version you have."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A number you read for a slider does not match the slider on your screen.",
+     "cause": "The same label lives in more than one place with different ranges, for example Spec Strength 0 to 100 in a zone and 0 to 200 in Spec Sculpt Lab.",
+     "fix": "Open the page whose where line matches the panel you are in."
+    },
+    {
+     "symptom": "You searched for a layer row button and found nothing.",
+     "cause": "Rows the app builds on the fly have no pages of their own.",
+     "fix": "Look at the layer list (right column) article and read its list."
+    }
+   ],
+   "protips": [
+    "The where line starts with the mode and column, so reading it tells you which tab or panel to open before you start hunting through the screen.",
+    "Slider ranges show what the number means. Base Strength steps in 5s from 0 to 100, so you can hit 100 exactly, while Hue Shift steps in 1s."
+   ],
+   "screens_exempt": "Alphabetical index that points at controls described (and pictured) in their own articles; the index itself has no screen."
+  },
+  {
+   "id": "shortcuts.glossary",
+   "title": "Glossary",
+   "domain": "shortcuts",
+   "summary": "Plain-words meaning of the terms the app uses, from spec map and tolerance to PSD and zone order.",
+   "what": "User ID: Your User ID is your iRacing Customer ID, 4 to 7 digits. | Custom Number vs Sim-Stamped: Custom Number saves your paint as car_num_<ID>; Sim-Stamped saves it as car_<ID> and iRacing stamps your number on. | iRacing: iRacing is the sim your paint goes into. | Reload in iRacing (Ctrl+R): After a render, press Ctrl+R in iRacing to reload the car textures; the car flashes white and shows the new paint. | iRacing Car Folder: The Car Folder is the iRacing paint folder for ONE car (a folder, not a file). | Where my files go: Every render copies the paint and the spec file into your iRacing Car Folder. | It does not show in iRacing: When the paint does not show in iRacing it is almost always the User ID, the number setting, the car folder or a missing Ctrl+R. | Spec map: The spec file tells iRacing how shiny each part is: red is metal, green is roughness, blue is clearcoat. | Metallic (red channel): In the spec file the red channel is how metal a part is: 255 is solid metal, 0 is paint or plastic. | Roughness (green channel): In the spec file the green channel is roughness: 0 is a perfect mirror, 255 is rough and dull. | Clearcoat (blue channel): In the spec file the blue channel is the clearcoat: 16 is the shiniest, 255 is dull and 0-15 means none. | The .mip file: iRacing builds a .mip file from your spec the first time it loads it. | Trading Paints: Trading Paints is how other drivers get your files, because iRacing never shares textures between drivers. | Paint size (2048): iRacing paints must be exactly 2048 x 2048 (or 1024 x 1024). | TGA files: iRacing wants a 24-bit TGA. | Template layers: Wire and Mask are guides, not paint. Car_Mandatory is real template art for the headlight and grill mesh. | Zone limit: A render accepts up to 50 zones, but only about 20 zones that have their own painted area fit in memory. | Render time / slow render: A render usually takes seconds to about a minute; more zones and heavy finishes take longer. | Preview vs the real thing: The live preview is a quick design view. | Auto-deploy: The car folder is what puts files into iRacing. | ZIP package: Turn on Export ZIP Package in Settings and each render also builds a ZIP to download. | Helmets and suits: Shokker paints cars in this build, not helmets or suits. | Wheels: Wheels, rims and tyres are not on the car paint sheet: iRacing paints them from a separate wheel texture. | Windows and glass: The windows are not part of the paint on most iRacing cars; the sim draws the glass. | Cockpit and interior: The cockpit, roll bar and pit box are only paintable if your template has a layer for them. | Small car parts: Small parts like lights, grilles and mirrors are usually drawn inside a bigger panel on the paint sheet, not as their own area. | Project file (.spb / .shokk): The Shokker project file holds your whole design so you can reopen and keep editing. | Recipe (sharing a design): A recipe is a block of text (or a .shokkerrecipe file) that rebuilds a design on any car Shokker knows. | Settings: Most settings are in the top bar; the rest (Auto-deploy, ZIP export, Report a Problem, License) are under the Settings gear at the top right. | Report a problem: Report a Problem builds a copy-paste bundle of recent errors and logs. | AI copilot and key: The built-in helper works fully offline and free. | Hue / saturation / brightness: Hue, saturation and brightness are three sliders that shift a finish's colour. | Tolerance: Tolerance is how fuzzy a colour match is: low grabs that exact shade, high grabs the whole neighbourhood. | Hard edge: Hard Edge makes a zone's boundary crisp instead of a soft blend. | Strength / opacity: Strength and opacity control how strongly a finish or pattern shows. | Pattern size / scale: Scale makes a pattern bigger or smaller; on a whole car, fine detail looks richest, so crush the scale down. | Zone order (which wins): When zones overlap, the zone higher in the list wins. | Lock: The lock on the BASE row stops Randomize from changing the base. LOCK ZONE on a layer card is a different lock: it ties a zone to one layer. | Beta / known issues: Shokker is in beta: some finishes are being rebuilt. | What can the helper do: Ask in plain words: change a colour, add a look, fix why something does not show, or ask how any button works. | Spec Sculpt Lab: Spec Sculpt is a full-page workshop that builds a spec map from a paint image on its own, outside the zone flow. | Shokk Drop: Shokk Drop imports your own artwork or a DNA spec and shares finishes as .spbdrop packs. | Finish Viewer: The Finish Viewer lets you window-shop the whole library as thumbnails. | PSD vs TGA: A layered PSD gives each layer its own zone, so finishes never bleed onto sponsors or numbers. | Car number vs User ID: Your User ID (Customer ID) is not your car number. | Make it look expensive: To make a car pop: pair a colour with its opposite on the wheel, keep one hero panel, and let a fine-detail spec do the sparkle. | Foundation finishes: Foundation finishes change only the shine and keep your paint colours exactly as they are. | Make it pop: To make a car pop, add contrast: pair a colour with its opposite and let the shine do the sparkle. | Layer effects (shadow, glow, bevel): Layer effects add a drop shadow, outer glow, stroke, colour overlay or bevel to a layer, like in an image editor. | Selection & masks: A selection or mask limits where a change lands. | Blur, sharpen & adjustments: Image tools like blur, sharpen and brightness work on the pixels of a layer; for finishes use zones instead. | Keyboard shortcuts: Keyboard shortcuts are listed under the Settings gear.",
+   "when": [
+    "A word in the app or in a help answer is new to you."
+   ],
+   "how": [
+    "Find the term in the list.",
+    "Read the short meaning next to it.",
+    "Open the linked article for the full story."
+   ],
+   "controls": [],
+   "tips": [
+    "Ask the AI copilot \"what is <term>\" for the same answer in chat."
+   ],
+   "pitfalls": [],
+   "related": [
+    "spec.what_is_spec_map",
+    "zones.tolerance",
+    "zones.priority",
+    "layers.roles",
+    "preview_render.number_modes",
+    "finishes.foundation_shine_only"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "sources": [
+    "js/spb-encyclopedia-data.js:2",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:10"
+   ],
+   "aliases": [
+    "definitions",
+    "dictionary of terms",
+    "glossary",
+    "terms",
+    "what does this word mean",
+    "words explained",
+    "dictionary",
+    "word meanings"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The four groups of words",
+     "body": "The list above falls into four groups. Getting the paint into iRacing: User ID, Car Folder, Custom Number vs Sim-Stamped, Ctrl+R, Auto-deploy, ZIP package, Trading Paints. How shine works: Spec map, Metallic, Roughness, Clearcoat, the .mip file, Foundation finishes. How you build a look: zone, Tolerance, Hard edge, Strength, Scale, Zone order, Lock, Hue, saturation and brightness. What the car sheet can and cannot paint: paint size, TGA, wheels, windows, cockpit and small parts."
+    },
+    {
+     "heading": "Spec numbers in one line each",
+     "body": "Red is metal: 0 is paint or plastic and 255 is solid metal. Green is roughness: 0 is a perfect mirror and 255 is rough and dull. Blue is clearcoat: 16 is the shiniest, 255 is dull and 0 to 15 means no clearcoat. iRacing builds a .mip file from your spec the first time it loads it. The full table is in the Spec value cheat sheet article."
+    },
+    {
+     "heading": "Words that sound alike but are not the same",
+     "body": "User ID is your iRacing Customer ID (4 to 7 digits) and is not your car number. A Car Folder is the paint folder for one car and is a folder, not a file. Strength is how strongly a finish shows; Tolerance is how wide a colour match is; Scale is how big a pattern is. The lock on the BASE row stops Randomize, while LOCK ZONE on a layer card ties a zone to a single layer."
+    },
+    {
+     "heading": "Limits worth knowing",
+     "body": "A render accepts up to 50 zones, but only about 20 zones that have their own painted area fit in memory. Paints must be exactly 2048 by 2048 (or 1024 by 1024) and a 24-bit TGA. A render usually takes seconds to about a minute, and more zones or heavy finishes take longer. Shokker paints cars in this build, not helmets or suits."
+    }
+   ],
+   "examples": [
+    {
+     "title": "My paint does not show in iRacing",
+     "goal": "Find out why a rendered paint is missing in the sim.",
+     "settings": {
+      "Check 1": "User ID is your Customer ID",
+      "Check 2": "Number setting: Custom Number vs Sim-Stamped",
+      "Check 3": "Car Folder is the folder for that one car",
+      "Check 4": "Press Ctrl+R in iRacing"
+     },
+     "result": "Almost every missing-paint problem is one of these four. After Ctrl+R the car flashes white and then shows the new paint."
+    },
+    {
+     "title": "Choose between Hard edge and Tolerance",
+     "goal": "Make a zone's boundary crisp without grabbing more colours.",
+     "settings": {
+      "Hard Edge": "On",
+      "Tolerance": "unchanged"
+     },
+     "result": "Hard Edge only changes how the boundary blends. Tolerance decides which shades are picked in the first place."
+    }
+   ],
+   "combos": [
+    {
+     "with": "shortcuts.spec_cheat_sheet",
+     "why": "The cheat sheet gives the full spec number table behind the spec words."
+    },
+    {
+     "with": "zones.tolerance",
+     "why": "Tolerance has its own article with the full range."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Is my User ID the same as my car number?",
+     "a": "No. The User ID is your iRacing Customer ID, 4 to 7 digits. The car number is separate."
+    },
+    {
+     "q": "Why does my spec not do anything in Trading Paints?",
+     "a": "Trading Paints takes the spec only as a .mip file, so a TGA is not the spec for Trading Paints."
+    },
+    {
+     "q": "What does Foundation mean?",
+     "a": "Foundation finishes change only the shine and keep your paint colours as they are."
+    },
+    {
+     "q": "Can Shokker paint helmets, wheels or windows?",
+     "a": "Not helmets or suits in this build. Wheels come from a separate iRacing wheel texture and windows are drawn by the sim."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The paint is in the folder but does not show in the sim.",
+     "cause": "The wrong User ID, the wrong number setting, the wrong Car Folder or no Ctrl+R.",
+     "fix": "Check those four in order and press Ctrl+R in iRacing after the render."
+    },
+    {
+     "symptom": "A zone shows no finish.",
+     "cause": "Zone order: a higher zone in the list wins where zones overlap.",
+     "fix": "Drag the zone higher in the list, or narrow the zone above it."
+    }
+   ],
+   "protips": [
+    "Ask the AI copilot what is followed by the word to get the same answer in the chat.",
+    "When a word has two meanings, such as lock, open its linked article before you act."
+   ],
+   "screens_exempt": "Pure reference list of words and what they mean; it describes no single screen or action, so a picture would be decoration."
+  },
+  {
+   "id": "shortcuts.colour_names",
+   "title": "Colour names the app understands",
+   "domain": "shortcuts",
+   "summary": "You can name a colour in words and the app maps it to a real colour. Only the core names set a zone colour; the extra names are for finding looks.",
+   "what": "Core names with their exact colour: white #f4f4f1, off white #ece8dc, cream #f1e6c8, ivory #f2ead3, black #111113, charcoal #34363b, dark grey #45484d, grey #8a8d92, gray #8a8d92, light grey #c4c7cb, silver #c3c7cc, gunmetal #4a4f57, red #c8102e, crimson #a3123a, maroon #6d0f1f, burgundy #6d0f1f, scarlet #e0251b, orange #f26b21, burnt orange #c55a11, amber #ffa000, gold #d7a72b, yellow #ffd200, lemon #fff04a, lime #9bd52b, lime green #9bd52b, neon green #39ff14, green #1f8a3b, forest green #14532d, dark green #14532d, olive #6b7a2a, teal #0f9aa0, turquoise #10b5b0, cyan #00c2e0, aqua #3fd6d0, sky blue #3aa0e0, baby blue #8ec6ee, powder blue #6fb7e9, light blue #7cbcec, blue #1450b4, royal blue #0b3fa8, navy #0b2350, pepsi blue #0b2f8f, cobalt #0047ab, purple #6a1b9a, violet #7a3fc4, lavender #b79ae0, magenta #d6247d, hot pink #ff2f92, pink #ff7eb6, rose #e8587f, brown #6b3a1e, tan #c9a57a, bronze #9b6a2f, copper #b4602c, chocolate #43260f, mint #98e0b3, mint green #98e0b3, seafoam #7fd6b8, peach #ffb38a, coral #ff6f61, salmon #fa8072, beige #d9c9a8, khaki #bdb36b, mustard #d4a017, indigo #3f2a8c, sapphire #0f3b9c, emerald #0f9d58, ruby #9b111e, platinum #d5d8dc, champagne #e9d8b4, sand #d8c08a, rust #a4451f, plum #6a2c5c, wine #5e1224, lilac #c8a2c8, peacock #00798c, jade #00a86b, electric blue #0a84ff, neon pink #ff2fd0, neon blue #1f51ff, neon orange #ff6a00, neon yellow #e6ff00, midnight blue #101a4a, steel blue #4682b4, army green #4b5320, sage #9caf88, baby pink #f4b6c2, light pink #f4b6c2, dark blue #0b2350, light green #8fd18f, dark red #7a0f1f, dark purple #3b1a5a, midnight purple #2e1a47, rose gold #b76e79, toxic green #5fd21e, bubblegum pink #ff7fbf, bubblegum #ff7fbf, gunmetal grey #4a4f57, nardo grey #7d7f7d, chalk grey #c9c7bd, grabber blue #1f6fc5, olive drab #6b6b3a. Only these 102 core names set a zone colour. The extra words below are understood when you search for a look, but they do not set a zone colour: acid yellow, aegean blue, air force blue, alabaster, alice blue, aliceblue, amethyst, anthracite, antique gold, antique rose, antique white, antiquewhite, apple green, apricot, aqua marine, aquamarine, artichoke green, ash gray, ash grey, asparagus green, aubergine, avocado green, azure, azure blue, ballet pink, banana yellow, battleship gray, battleship grey, blackberry, blaze orange, bleu de france, blood red, blue violet, blueviolet, blush pink, bone white, bottle green, boysenberry, brass yellow, brick red, british racing green, buff, burly wood, burlywood, burnt sienna, butterscotch, byzantium, cabernet, cadet blue, cadetblue, cafe au lait, café au lait, camel, canary yellow, candy apple red, cantaloupe, capri blue, caramel, cardinal red, caribbean blue, carmine, carnation pink, carrot orange, cedar brown, celadon, cerise, cerise pink, cerulean, cerulean blue, chalk white, chartreuse, chartreuse green, cherry red, chestnut, chili red, chilli red, cinnamon, claret, cocoa, coffee brown, concrete gray, concrete grey, copper orange, coral pink, coral red, cornflower blue, cornflowerblue, cotton candy pink, cranberry, daffodil yellow, damson, dark cyan, dark goldenrod, dark khaki, dark magenta, dark olive green, dark orange, dark orchid, dark salmon, dark sea green, dark slate blue, dark slate gray, dark slate grey, dark turquoise, dark violet, darkcyan, darkgoldenrod, darkkhaki, darkmagenta, darkolivegreen, darkorange, darkorchid, darksalmon, darkseagreen, darkslateblue, darkslategray, darkslategrey, darkturquoise, darkviolet, deep pink, deep sky blue, deeppink, deepskyblue, denim blue, dim gray, dim grey, dimgray, dimgrey, dodger blue, dodgerblue, duck egg blue, dusty rose, ecru, eggplant, emerald green, espresso, fandango pink, fawn, fern green, ferrari red, fire brick, fire engine red, firebrick, flamingo pink, floral white, floralwhite, fluorescent yellow, french blue, french rose, frost blue, fuchsia, ghost white, ghostwhite, golden yellow, goldenrod, grape, grass green, green yellow, greenyellow, gulf blue, gulf orange, harbor blue, harbour blue, hazelnut, heather, heliotrope, highlighter yellow, hunter green, ice blue, imperial purple, indian red, indianred, indigo blue, ink blue, international orange, jet black, kelly green, lagoon blue, lavender gray, lavender grey, lawn green, lawngreen, leaf green, lemon chiffon, lemon lime, lemon yellow, lemonchiffon, light coral, light cyan, light goldenrod yellow, light salmon, light sea green, light sky blue, light slate gray, light slate grey, light steel blue, light yellow, lightcoral, lightcyan, lightgoldenrodyellow, lightsalmon, lightseagreen, lightskyblue, lightslategray, lightslategrey, lightsteelblue, lightyellow, mahogany, mahogany red, malachite, malva, mandarin, mango, marigold, martini dark blue, martini light blue, martini red, mauve, mclaren papaya, medium aqua marine, medium blue, medium orchid, medium purple, medium sea green, medium slate blue, medium spring green, medium turquoise, medium violet red, mediumaquamarine, mediumblue, mediumorchid, mediumpurple, mediumseagreen, mediumslateblue, mediumspringgreen, mediumturquoise, mediumvioletred, merlot, miami blue, mint cream, mintcream, mocha, moss green, mulberry, oatmeal, old gold, olivedrab, orange red, orangered, oxblood, oxford blue, pale aqua, pale gold, pale goldenrod, pale green, pale turquoise, pale violet red, palegoldenrod, palegreen, paleturquoise, palevioletred, papaya, parakeet green, parchment, peacock blue, peacock green, pear green, pearl white, periwinkle, periwinkle blue, persimmon, petal pink, petrol blue, petrol green, pewter, pistachio, platinum gray, platinum grey, poppy red, porcelain white, porsche chalk, prussian blue, pumpkin, pumpkin orange, punch pink, racing green, racing white, raspberry pink, raspberry red, rebecca purple, rebeccapurple, robin egg blue, robin's egg blue, rose pink, rose quartz, rosewood, rosso corsa, rosso scuderia, rosy brown, rosybrown, ruby red, saddle brown, saddle tan, saddlebrown, safety orange, safety yellow, saffron, sandy brown, sandybrown, school bus yellow, sea glass, sea green, seafoam blue, seafoam green, seaglass green, seagreen, shamrock green, shell pink, signal yellow, slate blue, slate blue gray, slate blue grey, slate gray, slate gray blue, slate grey, slate grey blue, slateblue, slategray, slategrey, smoke gray, smoke grey, spice orange, spring green, springgreen, storm blue, suede tan, sunflower yellow, sunset orange, tangerine, teak brown, teal blue, teal green, terra cotta, terracotta, tiffany blue, titanium gray, titanium grey, tobacco orange, toffee, tropical teal, tyrian purple, ultramarine, umber, vanilla, verdigris, vermilion, vermillion, violet gray, violet grey, viridian, walnut, watermelon pink, white smoke, whitesmoke, wisteria, yale blue, yellow green, yellowgreen.",
+   "when": [
+    "You type a colour into the AI copilot box and want to know which words work.",
+    "You want an exact shade by name."
+   ],
+   "how": [
+    "Type the colour name in your request, for example \"make the hood burgundy\".",
+    "If the shade is not right, add a word such as light, dark or deep.",
+    "Or pick the exact colour with the colour picker."
+   ],
+   "controls": [],
+   "tips": [
+    "Two-word names such as antique gold work.",
+    "For an exact match, use the colour picker or a hex code."
+   ],
+   "pitfalls": [
+    "Some words name a finish, not a colour. Chrome, candy and pearl are finishes.",
+    "An extra name outside the core list will not set a zone colour. Use a core name, the colour picker or a hex code."
+   ],
+   "related": [
+    "finishes.colour_source_modes",
+    "finishes.base_colour_tuning",
+    "zones.add_pick_colour"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "sources": [
+    "js/spb-pro-design.js:23",
+    "js/spb-colours-ext.js:2",
+    "js/spb-pro-design.js:14",
+    "js/spb-pro-design.js:49",
+    "js/spb-pro-design.js:50",
+    "js/spb-pro-design.js:54",
+    "js/spb-pro-advisor.js:87",
+    "js/spb-pro-advisor.js:93",
+    "js/spb-pro-edit.js:266",
+    "js/spb-pro-edit.js:295",
+    "js/spb-pro-edit.js:350",
+    "js/spb-pro-edit.js:351",
+    "js/spb-pro-edit.js:513",
+    "js/spb-pro-edit.js:1065",
+    "js/spb-pro-edit.js:1069",
+    "js/spb-pro-edit.js:1072",
+    "js/spb-pro-edit.js:1078",
+    "js/spb-pro-design.js:276",
+    "js/spb-pro-design.js:283"
+   ],
+   "aliases": [
+    "color names",
+    "colour list",
+    "colour names",
+    "colour words",
+    "named colours",
+    "which colours can i type",
+    "which colour words work",
+    "colour name list"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Two lists, two jobs",
+     "body": "The designer in the AI copilot panel sets zone colours from a core list of 102 names, each tied to one exact colour: burgundy is #6d0f1f, gold #d7a72b, grabber blue #1f6fc5. The finish advisor also reads about 370 extra names such as antique gold, aquamarine or british racing green, so it can recommend finishes for them. A name outside the core list may not paint a zone when you type it; use the nearest core name or a six-digit hex code."
+    },
+    {
+     "heading": "How a typed word becomes a colour",
+     "body": "Your sentence is lowercased and stripped of punctuation. Longer names are tried first, so dark green is read as one colour and not as dark plus green. Colours are used in the order you wrote them, each name once. A name that follows no, not, without, except or instead of is skipped, so red white and blue with no red gives white and blue. A six-digit hex code such as #1f6fc5 is taken as written and counts as an exact colour."
+    },
+    {
+     "heading": "Shade words: dark, deep, light, pale, bright, neon",
+     "body": "If you type one of these directly before a colour that has no entry of its own, the colour is adjusted in lightness. Dark or deep caps the lightness at 30 percent. Light or pale raises it to at least 72 percent and cuts saturation by a fifth. Bright or neon sets lightness to 50 percent and raises saturation. Names that already exist, such as dark red, light blue or neon green, use their own listed colour instead."
+    },
+    {
+     "heading": "Changing a colour that is already there",
+     "body": "When the part already has a coloured paint and you ask for another colour without giving a hex, the app turns the hue and keeps the shading, as in shifted to purple, keeping the shading. That only happens when both colours are clearly coloured; for white, black or grey it paints a flat colour. Words like darker, lighter, brighter and faded adjust the existing colour instead: darker and deeper take brightness down by 35, lighter adds 35 and trims saturation by 10, brighter adds 45 saturation, faded takes off 55."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Name a colour",
+     "goal": "Paint the roof a named colour.",
+     "settings": {
+      "Where you type": "AI copilot panel",
+      "You type": "make the roof burgundy",
+      "Colour used": "burgundy, #6d0f1f"
+     },
+     "result": "The roof zone gets that exact deep red. If the roof already had a coloured, shaded paint, you may instead see a hue shift that keeps the shading."
+    },
+    {
+     "title": "Make a shade with a modifier",
+     "goal": "Get a colour the list does not have.",
+     "settings": {
+      "You type": "make the hood dark orange",
+      "Base colour used": "orange, #f26b21",
+      "Rule applied": "dark: lightness capped at 30 percent"
+     },
+     "result": "You get a deep burnt orange. Dark orange has no entry of its own, so the shade rule builds it."
+    },
+    {
+     "title": "Exact match with a hex code",
+     "goal": "Use a team colour that has no name.",
+     "settings": {
+      "You type": "make the hood #1f6fc5",
+      "Colour used": "#1f6fc5 as written"
+     },
+     "result": "The code is taken exactly and is treated as an exact colour. #1f6fc5 is also the listed value of grabber blue."
+    },
+    {
+     "title": "Leave a colour out",
+     "goal": "Describe a scheme and exclude one colour.",
+     "settings": {
+      "You type": "white car with blue stripes, no red",
+      "Colours read": "white, blue"
+     },
+     "result": "Red follows the word no, so it is skipped and only white and blue are used."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.add_pick_colour",
+     "why": "When the word is not close enough, pick the exact colour with the colour picker."
+    },
+    {
+     "with": "finishes.base_colour_tuning",
+     "why": "After the colour is in, Hue Shift, Saturation and Brightness fine-tune it."
+    },
+    {
+     "with": "finishes.colour_source_modes",
+     "why": "Check which Base Color option decides whether the named colour or the source paint shows."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does grey or gray matter?",
+     "a": "No. Both are the same colour, #8a8d92."
+    },
+    {
+     "q": "Do spelling mistakes still work?",
+     "a": "Often, yes. The designer cleans common typos and text-speak first, for example blak for black, before it looks for colour names."
+    },
+    {
+     "q": "Why did saying gold or silver not give me a metal finish?",
+     "a": "A colour name only chooses the colour. Chrome, candy, pearl and metallic are finishes, picked separately. The advisor also treats gold flake or silver chrome as a finish, not the car colour."
+    },
+    {
+     "q": "Can I use a hex code in my request?",
+     "a": "Yes, as a six-digit code with a leading hash, such as #1f6fc5. It is used exactly as written."
+    },
+    {
+     "q": "What happens when I name two colours?",
+     "a": "They are taken in the order you wrote them and each name is used once,. Order matters when you describe a scheme with several colours."
+    },
+    {
+     "q": "How close will the result look to my word?",
+     "a": "Each name is one fixed colour, so burgundy is always #6d0f1f. If your idea of the shade differs, add dark, light, bright or pale, or use the colour picker."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Your colour word painted nothing, or the wrong colour.",
+     "cause": "It may be outside the core 102 names, or a finish word such as chrome or candy.",
+     "fix": "Use a nearby core name, add a shade word, or type a hex code."
+    },
+    {
+     "symptom": "dark pink gave a different colour than expected.",
+     "cause": "Dark pink is not a listed name, so the shade rule is applied to pink and caps lightness at 30 percent. That gives a very dark pink.",
+     "fix": "Choose a listed name such as wine or maroon, or pick the colour with the picker."
+    },
+    {
+     "symptom": "A colour you wanted left out still appears.",
+     "cause": "The exclusion word must come right before the colour, such as no red, or before a short list joined by or. A word further away does not exclude it.",
+     "fix": "Put no, not or without right before the colour name."
+    }
+   ],
+   "protips": [
+    "A hex code is treated as an exact colour: the app paints it flat instead of turning the hue of the paint already there, so use one when you want the colour to land precisely.",
+    "To make an existing colour darker without choosing a new one, say darker or deeper: it moves the existing colour's brightness down by 35 and keeps the shading."
+   ],
+   "screens_exempt": "Pure reference table of colour names and their hex values; there is no window or control to picture, and a screenshot would only repeat the table."
+  },
+  {
+   "id": "shortcuts.finish_shelves",
+   "title": "Finish shelf index",
+   "domain": "shortcuts",
+   "summary": "The catalogue is arranged in 59 shelves. This index lists each shelf with how many finishes it holds and what it is for.",
+   "what": "About 4,137 finishes sit on these shelves in total. ASTRA (50): the flagship hero paints: luxe multi-material looks (nacre, meteorite, chronograph gold, quasicrystal) built to be the star of a car | FLAW LAB (25): industrial inspection aesthetics: etches, stress bands, cracks, radiographs, penetrant bleed; gritty engineered metal | SHOKK WORKS (89): engineered specials: laser-cut foil webs, charge ropes, lightning/lichtenberg channels, retroreflective beads; technical and sparkly | Foundation (25): the 25 plain body materials (gloss, satin, matte, eggshell, chrome, candy, pearl, metallic, wet look...): they TAKE the zone colour; the... | Foundation EFX (46): plain materials with an effect on top: orange peel, wire-brushed, damascus steel, gold leaf, snow crust, chalked paint, cast iron; take the... | FAR OUT (60): retro character shelves: disco (neon tubes, lit floors, glitter ball), outlaw/western (denim, rodeo dust), 70s | BAD & RAD (60): 80s/90s radical and Memphis-design looks: neon grips, candy glass, wire weaves | ALL THAT (60): 90s nostalgia: CD-ROM/zip-disk plastics, arcade foil, flannel and streetwear (fresh kicks, BMX dirt) | TACTICAL & FIELD (60): camouflage and field gear: break-up bark, brushstroke, chocolate-chip camo, military matte | CYBERPUNK (60): rain-slick neon city: oil interference, acid rain, capillary neon, street glow | Flames (20): flame paint jobs: blue flame, candy flame, cold fire | Sock Hop (20): 1950s diner/soda-shop looks: atomic starbursts, bubblegum dots, charcoal | Groovy Vibes (20): 60s-70s psychedelia: sunbursts, acid swirl, tie-dye | Iridescent Insects (50): beetle and butterfly iridescence: colour-shifting shells and wings; luxe organic shimmer | PRISM FORGE (50): iridescent/prismatic blends and multi-colour crushed-flake looks (PF: ...) | More Bases (449): 449 classic and oddball bases: anodized, clear matte/satin, gel coat, Alubeam liquid mirror, CX colour blends; mixed, mostly own-colour | FRACTURED ELEMENTS (60): nature's forces as surfaces: dry cracked earth, dust, drought, water, weather; textured, natural | FRACTURED COSMOS (60): sci-fi and space: contact/abduction beams, bio-mech chitin, nebula and beacon arrays | FRACTURED NIGHTSHIFT (50): day/night colour-flip finishes: one hue by day, a different one under low light | FRACTURED FLAMES (75): fire and ash: cinder, char scale, ash glaze, ember glow | GRADIENTS (43): ready-made colour fades and radial bursts (electric coral rift, bismuth colourquake) | FRACTURED MINDS (55): woven and knitted textures and strange organic geometry: basketweave, cable knit, basalt columns, octo suckers, gyro cage; colour-shifting | FRACTURED SOULS (30): dark luxury and ghostly: aurora threads, blood marble, carnival night, moire phantoms, guilloche; colour-shifting | FRACTURED FORGE (88): forged and plated metals: golden seams, sulfur plates, basalt colonnade; heavy metal texture | FRACTURED OPALFIRE (50): dark opal and shardglass: abyssal vents, acid circuit, amber shards; glossy metallic fire in black | FRACTURED FOUNDRY (50): industrial foundry metal: anodised, anvil face, arc strike, slag | FRACTURED TESSERA (50): mosaic and tile geometry: basalt columns, basket weave, vault patterns | PARADIGM (50): material studies in Grown / Made / Ruined / Woven / Mineral families (bark chrome, coral glass, wool glass, ash chrome): real materials... | WORLD OF COLOR (100): 100 country-themed palettes and materials (Aotearoa black sand, Peru alpaca weave, Norway arctic light, Philippines jeepney chrome) | MONEY SHOKK (40): finance and currency themes: counterfeit, burn, asset, bullion; engraved-note luxury and trading-floor drama | DARK CITY (50): moody dark-city palettes: Prussian blue, night rain, manhole steam, garnet dark; mostly matte/dark | X LAB (50): experimental hero finishes (Dichroic Skin, Hologram Metal, Luminous Carbon, Serpent Scales, Abyssal Lens); includes PROTECTED gold standards | IMPOSSIBLE FINISHES (10): ten wild one-offs (cinder abyss / aurora / oxblood) | FRACTURED SHOKK (20): rejected/experimental fractured concepts (R1 ...): photon circuits, hex resonance | NEON UNDERGROUND (25): street-racing neon: carbon voltage, street pulse, boost spool | ANIME INSPIRED (15): anime-flavoured: kanji rain, iris gem field, holo idol foil | RISING SUN (52): Japanese-heritage looks: flake fog, velvet, bamboo zen, seigaiha waves; refined | VIVA MEXICO (58): Mexican-heritage looks: adobe sunset, agave pearl, Aztec sunfire; warm and vivid | UNION JACKED (45): British-heritage looks: Aston silver, Belfast harp, beat burst | FORBIDDEN DRAGON (20): Chinese dragon themes: celestial azure, black tortoise, scales | LET FREEDOM RING (10): American patriotic finishes: amber waves, eagle ascendant, freedom forge | FABLE (50): storybook finishes: basilisk stone, beanstalk, breadcrumb trail, ember glass, glacier core | Prizm (40): chameleon colour-shift metals (copper, amethyst, aurora): two or three colours flip with angle | Gradient Directional (34): directional colour fades (fire fade, vortex) with their own direction baked in | Color Clash (25): two-colour clashes: a colour in the centre fading to a contrasting colour at the edges (voltage split, neon bruise, rust vs ice) | Gradient Extended (101): 101 ready-made colour gradients and vortexes: antique gold, emerald crown, cream vortex | SOURCE PATTERN PLATES (24): image-authored pattern plates: carbon mesh, emboss mandala, polygon shatter | GRUNGE & FUN (48): image-authored lacquers with graphic attitude: dot mesh, scuff, static weave, scribble storm; playful and loud | Glass & Surface (10): ten exotic glass/ceramic/wet-void surfaces | Spectrum Shift (60): spectral colour-pair shifts (complementary, dark-light, earth-sky); strongly colour-shifting | Light & Optics (29): glitter, halos and thin-film oil slicks: sparkle starfield, confetti, halo scale gold | Surface & Grain (33): metal grit, reactive matte/ghost metal and grain surfaces; mixed colour behaviour | Depth & Geometry (41): TriZone three-material blends (vanta/chrome/pearl, ceramic/flake/satin), ghost stripes hidden in clearcoat, depth maps; take the zone colour | Materials & Physics (31): weather and physical effects: acid rain, salt spray, fractal liquid fire | Signal (25): glow and light sources: neon sign, tesla coil, aurora, bioluminescence, phosphorescent, sodium lamp | FRACTURED WILDS (110): 110 organic nature micro-worlds: diatoms, moldrings, pollen; soft colourful textures | FRACTURED RELICS (50): ancient and alchemical artefacts: astrolabe plate, athanor slag, apothecary crust | Wave & Flow (10): wave patterns: candy flow, chrome tide, radar, diagonal sweep | More Specials (1158): 1,158 assorted specials: sparkle constellations, celadon raku, fable/impossible extras, everything else not on a named shelf | Note: Foundation mostly keeps your paint colours, but 5 of its 25 finishes (Orchid Shift Pearl, Moonstone, Dragon's Pearl Scale, Sentient Polycarbonate and Black Diamond Candy) bring their own colours.",
+   "when": [
+    "You want to browse by theme rather than search.",
+    "You want to know which shelf holds a look."
+   ],
+   "how": [
+    "Find the shelf that matches your idea.",
+    "Open the finish picker and pick that shelf.",
+    "Click a finish and look at the preview."
+   ],
+   "controls": [],
+   "tips": [
+    "Most Foundation finishes change only the shine and keep your paint colours; 5 of the 25 bring their own colours."
+   ],
+   "pitfalls": [],
+   "related": [
+    "finishes.catalogue_overview",
+    "finishes.picker_library_browser",
+    "finishes.foundation_and_efx",
+    "finishes.astra"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "sources": [
+    "js/spb-ai-atlas-data.js:2",
+    "engine/base_registry_data.py:383",
+    "engine/base_registry_data.py:395",
+    "engine/base_registry_data.py:399",
+    "engine/base_registry_data.py:425",
+    "engine/base_registry_data.py:441",
+    "engine/base_registry_data.py:574",
+    "engine/base_registry_data.py:581",
+    "paint-booth-v2.html:4788"
+   ],
+   "aliases": [
+    "catalogue shelves",
+    "list of finish groups",
+    "shelf list",
+    "which shelf has",
+    "finish shelf list"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "What a shelf tells you and what it does not",
+     "body": "A shelf is a theme, not a material. Two shelves with the same family name can be opposites: in the measured averages, FRACTURED ELEMENTS sits around 57 metal with 22 of its 60 finishes having none, while FRACTURED OPALFIRE sits around 242 metal with all 50 at full metal and a low roughness of about 31. Use the shelf to find an idea and the finish card or See on paint to judge the shine."
+    },
+    {
+     "heading": "Spec character by shelf (measured averages)",
+     "body": "Metal-heavy: FRACTURED OPALFIRE (metal about 242, roughness about 31), FRACTURED SOULS (242 and 55), FRACTURED MINDS (241 and 61), FRACTURED FORGE (233 and 60) and Color Clash (209). Flat and dull: DARK CITY (metal about 43, roughness about 161, 23 of 50 matte), ALL THAT (50 and 128), WORLD OF COLOR (38 and 106, 59 of 100 with no metal) and Sock Hop (roughness about 162). Glossy heritage: RISING SUN has 25 of 52 at high gloss. Big mixed shelves sit in the middle: More Bases about 99 metal and 93 roughness."
+    },
+    {
+     "heading": "Foundation: exact shine values",
+     "body": "The plain Foundation materials are pure shine, listed as metal, roughness and clearcoat: Gloss 0, 30, 16; Wet Look 0, 15, 16; Satin 0, 95, 70; Matte 0, 200, 160; Flat Black 0, 250, 255; Candy 200, 15, 16; Chrome 255, 2, 16. Roughness 2 is close to a mirror and clearcoat 16 is the glossiest. Of the 25 finishes on the shelf, 5 are not plain: Orchid Shift Pearl, Moonstone, Dragon's Pearl Scale, Sentient Polycarbonate and Black Diamond Candy bring their own colours."
+    },
+    {
+     "heading": "Own colours or yours",
+     "body": "Nearly every themed shelf brings its own colours. The ones that mostly take your zone colour are Foundation (20 of 25), Foundation EFX (41 of 46), and the specials shelves Depth and Geometry (about 76 percent), Surface and Grain (about 67 percent) and Light and Optics (about 62 percent). The total of 4,755 counts 4,137 finishes plus 317 patterns and 301 spec patterns; the finishes alone are 4,137 across 59 shelves."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Mirror-dark metal",
+     "goal": "A dark, high-metal look for a hood.",
+     "settings": {
+      "Base Material swatch": "open it, then search for opal",
+      "Shelf to browse": "FRACTURED OPALFIRE",
+      "Then": "click a finish, check the big preview, then click Apply"
+     },
+     "result": "Every finish on this shelf is full metal with low roughness, so the hood reads as a dark polished metal."
+    },
+    {
+     "title": "Flat stealth look",
+     "goal": "A matte dark car with no shine.",
+     "settings": {
+      "Base Material swatch": "open it, then browse the shelf",
+      "Shelf to browse": "DARK CITY",
+      "Check": "See on paint"
+     },
+     "result": "The shelf averages metal about 43 and roughness about 161, and 23 of its 50 finishes are matte, so most choices read dull and dark."
+    },
+    {
+     "title": "Keep my paint, change only the shine",
+     "goal": "Make the existing paint mirror-like.",
+     "settings": {
+      "Base Material swatch": "Chrome on the Foundation Bases shelf",
+      "Base Color": "Use source paint (spec only)"
+     },
+     "result": "Chrome is 255 metal, 2 roughness and 16 clearcoat. With the source paint kept, only the shine changes and your colours stay."
+    }
+   ],
+   "combos": [
+    {
+     "with": "finishes.catalogue_overview",
+     "why": "Explains the counts and the broader categories that cut across shelves."
+    },
+    {
+     "with": "finishes.picker_library_browser",
+     "why": "Shows the search box and chips you use to browse a shelf."
+    },
+    {
+     "with": "finishes.foundation_and_efx",
+     "why": "Goes deeper on the two shelves that take your colour."
+    },
+    {
+     "with": "finishes.astra",
+     "why": "The flagship shelf in the list."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does the list say 4,755 but other pages say 4,137?",
+     "a": "4,755 counts finishes, patterns and spec patterns together. The 4,137 finishes are the ones on the 59 shelves."
+    },
+    {
+     "q": "Which shelf has the most finishes?",
+     "a": "More Specials, with 1,158, then More Bases with 449. They collect finishes that do not belong to a themed shelf, and most of them are not listed in the picker (ask the AI copilot for them by name)."
+    },
+    {
+     "q": "Which shelf should I use if I want a pure shine change?",
+     "a": "Foundation. Its plain materials are only metal, roughness and clearcoat, so they change the shine and let your paint colours show."
+    },
+    {
+     "q": "Do Foundation finishes always keep my colours?",
+     "a": "Not all. 20 of the 25 take your colour. The other 5, such as Moonstone, bring their own."
+    },
+    {
+     "q": "Is a Fractured shelf always glossy metal?",
+     "a": "No. FRACTURED ELEMENTS averages only about 57 metal, while FRACTURED OPALFIRE averages about 242."
+    },
+    {
+     "q": "What are the numbers I see in the list?",
+     "a": "The number in brackets is how many finishes sit on the shelf, such as ASTRA 50 or SHOKK WORKS 89."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You picked a themed finish and your paint colours disappeared.",
+     "cause": "Most shelves bring their own colours. Only Foundation, Foundation EFX and a few specials shelves mostly take yours.",
+     "fix": "Set Base Color to Use source paint, or choose a finish from Foundation or Foundation EFX."
+    },
+    {
+     "symptom": "A shelf named after one theme gave a very different shine than another shelf of the same family.",
+     "cause": "A shelf name is a theme, not a material. Metal averages range from about 38 to 242 across shelves.",
+     "fix": "Read the finish card and use See on paint before you commit."
+    },
+    {
+     "symptom": "The total looks inflated.",
+     "cause": "4,755 includes 317 patterns and 301 spec patterns.",
+     "fix": "Use 4,137 for finishes."
+    }
+   ],
+   "protips": [
+    "Sort your idea by shine first: pick a metal-heavy shelf for mirror looks, a low-metal shelf for flat ones, and only then browse for the pattern or theme you like.",
+    "Candy and Chrome are both Foundation materials with 16 clearcoat; Candy is 200 metal and 15 roughness, Chrome is 255 and 2, so Chrome is the harder mirror."
+   ],
+   "screens": [
+    "ui_finish_picker",
+    "ui_finish_picker_cards"
+   ]
+  },
+  {
+   "id": "shortcuts.spec_cheat_sheet",
+   "title": "Spec value cheat sheet",
+   "domain": "shortcuts",
+   "summary": "The three spec numbers on one page: red is metal, green is roughness, blue is clearcoat.",
+   "what": "Red (metal): 0 is paint or plastic, 255 is full metal. Green (roughness): 0 is a mirror, 255 is rough and dull. Blue (clearcoat): 16 is the shiniest coat, 255 is dull, 0 to 15 means no clearcoat. Chrome: red 255, green near 0, blue 16, with near-white paint under it. Matte paint: red 0, green high, blue 255. Where metal is below 240, keep roughness at 15 or more. Do not use blue values 1 to 15: the app raises them to 16. In the full-car render every clearcoat is lifted to at least 16, except on Shokk Drop finishes you uploaded yourself. Decal kit values (metal, roughness, clearcoat): Flat Vinyl 0, 100, 110. Satin Decal 0, 100, 75. Gloss Decal 0, 42, 22.",
+   "when": [
+    "You are setting metal, roughness or clearcoat and want the numbers at a glance.",
+    "A part looks too dull or too shiny."
+   ],
+   "how": [
+    "Decide the look: mirror, satin, matte or metal.",
+    "Set red for metal, green for roughness and blue for clearcoat using the table above.",
+    "Check the preview, then render."
+   ],
+   "controls": [
+    {
+     "label": "Red (metal)",
+     "range": "0 to 255",
+     "default": "",
+     "effect": "255 is full metal, 0 is paint or plastic."
+    },
+    {
+     "label": "Green (roughness)",
+     "range": "0 to 255",
+     "default": "",
+     "effect": "0 is a perfect mirror, 255 is rough and dull."
+    },
+    {
+     "label": "Blue (clearcoat)",
+     "range": "16 to 255",
+     "default": "",
+     "effect": "16 is the shiniest, 255 is dull, 0 means no clearcoat."
+    }
+   ],
+   "tips": [
+    "Low roughness plus high metal is chrome. High roughness is matte or brushed.",
+    "A chrome part needs near-white paint under it, because iRacing multiplies the paint colour by the metal."
+   ],
+   "pitfalls": [
+    "A clearcoat of 255 makes even a chrome part look dull.",
+    "Without a spec file iRacing keeps the normal material: colours show but shine and chrome do not."
+   ],
+   "related": [
+    "spec.what_is_spec_map",
+    "spec.channel_r_metallic",
+    "spec.channel_g_roughness",
+    "spec.channel_b_clearcoat",
+    "spec.iron_rules",
+    "layers.decal_rescue"
+   ],
+   "actions": [],
+   "figures": [
+    "g01_spec_channels"
+   ],
+   "covers": [],
+   "sources": [
+    "engine/SPEC_MAP_REFERENCE.md:9",
+    "engine/SPEC_MAP_REFERENCE.md:13",
+    "paint-booth-v2.html:4109",
+    "shokker_engine_v2.py:26",
+    "shokker_engine_v2.py:34",
+    "shokker_engine_v2.py:267",
+    "shokker_engine_v2.py:270",
+    "shokker_engine_v2.py:274",
+    "shokker_engine_v2.py:20759",
+    "engine/base_registry_data.py:383",
+    "engine/base_registry_data.py:395",
+    "engine/base_registry_data.py:399",
+    "engine/base_registry_data.py:425",
+    "engine/base_registry_data.py:426",
+    "engine/base_registry_data.py:427",
+    "engine/base_registry_data.py:428",
+    "engine/base_registry_data.py:441",
+    "engine/base_registry_data.py:574",
+    "engine/base_registry_data.py:581",
+    "docs/ai_knowledge/11_finish_advisor.md:25",
+    "docs/ai_knowledge/10_support_troubleshooting.md:29",
+    "paint-booth-v2.html:2400",
+    "paint-booth-v2.html:2398",
+    "paint-booth-v2.html:3990",
+    "paint-booth-v2.html:4124",
+    "paint-booth-v2.html:4129",
+    "paint-booth-v2.html:4134"
+   ],
+   "aliases": [
+    "chrome values",
+    "matte values",
+    "metal rough clearcoat numbers",
+    "rgb spec table",
+    "spec cheat sheet",
+    "spec values",
+    "what numbers for chrome",
+    "spec values list",
+    "spec numbers for chrome",
+    "spec numbers for matte",
+    "good spec values",
+    "spec values for metallic",
+    "spec values for gloss paint",
+    "gloss paint values"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "The three rules that always apply",
+     "body": "Clearcoat (blue) is either exactly 0 or 16 and up; the values 1 to 15 cause blown-out highlights in iRacing, so the app raises them to 16. Where metal (red) is below 240, roughness (green) is held at 15 or more, and only pixels at 240 metal or higher may go below 15 for a true mirror. The final whole-car render also lifts every clearcoat to at least 16, so a plain finish will not leave 0 in the exported map. Only uploaded Shokk Drop finishes keep their own exact clearcoat, including a deliberate 0."
+    },
+    {
+     "heading": "Real values to compare against",
+     "body": "Metal, roughness, clearcoat for the Foundation materials: Chrome 255, 2, 16. Candy 200, 15, 16. Metallic 200, 50, 16. Satin Chrome 250, 45, 40. Pearl 100, 40, 16. Wet Look 0, 15, 16. Gloss 0, 30, 16. Satin 0, 95, 70. Matte 0, 200, 160. Flat Black 0, 250, 255. Read the first number as how metallic, the second as how rough, the third as how dull the coat is (16 is the glossiest)."
+    },
+    {
+     "heading": "Why a metal needs light paint",
+     "body": "iRacing multiplies the paint colour by the metal level in the spec. A fully metallic part painted a normal colour therefore turns dark, and a chrome part has to be painted white or close to it. A clearcoat of 255 also dulls the part: it has no coat reflection, so even chrome looks flat."
+    },
+    {
+     "heading": "Reading the numbers off your own car",
+     "body": "Open MASK > Advanced spec utilities and choose Material Sampler to see the Spec Map, Channels and Values window. Click the map to read M, R, CC and A at that spot. Sample size can be Point, 3 by 3 Median or 5 by 5 Median; the median ignores a single stray flake. Copy M/R/CC/A copies the four numbers, and Apply to Active Zone transfers them to the zone you have selected."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Mirror chrome target",
+     "goal": "Make a part read as a chrome mirror.",
+     "settings": {
+      "Red (metal)": "255",
+      "Green (roughness)": "2",
+      "Blue (clearcoat)": "16",
+      "Paint under it": "white or near white"
+     },
+     "result": "This is the Chrome material exactly. The low roughness is allowed because metal is above 240."
+    },
+    {
+     "title": "Satin versus matte",
+     "goal": "Choose between a soft sheen and a flat finish.",
+     "settings": {
+      "Satin: Red / Green / Blue": "0 / 95 / 70",
+      "Matte: Red / Green / Blue": "0 / 200 / 160",
+      "Flat Black: Red / Green / Blue": "0 / 250 / 255"
+     },
+     "result": "All three are non-metal. Raising green and blue together moves the look from soft sheen to dead flat."
+    },
+    {
+     "title": "Safe spec under numbers and sponsors",
+     "goal": "Keep white numbers readable over chrome or candy.",
+     "settings": {
+      "Flat Vinyl: M / R / CC": "0 / 100 / 110",
+      "Satin Decal: M / R / CC": "0 / 100 / 75",
+      "Gloss Decal: M / R / CC": "0 / 42 / 22",
+      "MASK > Advanced spec utilities": "Decal Rescue Kit"
+     },
+     "result": "The kit changes only the active zone's material, so the stamp sits on a non-metal base. Gloss Decal is the shiniest of the three."
+    },
+    {
+     "title": "Read a value off your car",
+     "goal": "Find the exact numbers of a finish you like.",
+     "settings": {
+      "Sample size": "3x3 Median",
+      "Click": "the spot on the spec map",
+      "MASK > Advanced spec utilities": "Material Sampler"
+     },
+     "result": "The window shows M, R, CC and A for that spot, ready to copy."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.what_is_spec_map",
+     "why": "Explains what the spec map is before you read numbers off it."
+    },
+    {
+     "with": "spec.channel_b_clearcoat",
+     "why": "Goes deeper on why 16 is the glossiest and 255 the dullest."
+    },
+    {
+     "with": "spec.iron_rules",
+     "why": "The full list of floors the app enforces."
+    },
+    {
+     "with": "layers.decal_rescue",
+     "why": "The Decal Rescue Kit values above come from this tool."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why is blue backwards?",
+     "a": "Because it measures how little clearcoat there is. 16 is the strongest coat and glossiest, 255 is no coat reflection and dull."
+    },
+    {
+     "q": "Can I set blue to 5 for a bit of coat?",
+     "a": "No. Values 1 to 15 cause blown-out highlights in iRacing and the app raises them to 16. Use 16 or higher."
+    },
+    {
+     "q": "Why can chrome have roughness 2 but a satin metal cannot go below 15?",
+     "a": "Mirror pixels at 240 metal and above may go below 15. Below 240 metal the app keeps roughness at 15 or more."
+    },
+    {
+     "q": "Why does my chrome look dark?",
+     "a": "The paint under it was a normal colour, which iRacing multiplies by the metal. Paint it white or near white."
+    },
+    {
+     "q": "What happens if I do not make a spec file?",
+     "a": "iRacing keeps the car's normal material. Colours show but chrome and shine do not."
+    },
+    {
+     "q": "Is 0 in blue allowed?",
+     "a": "It means no clearcoat in iRacing, but the usual whole-car render lifts it to 16. Only uploaded Shokk Drop finishes keep a deliberate 0."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A chrome part looks dull and grey.",
+     "cause": "Blue is set high, for example 255, so the coat has no reflection, or the paint underneath is dark.",
+     "fix": "Use blue 16 and paint the part white or near white."
+    },
+    {
+     "symptom": "A value you typed in blue between 1 and 15 comes out as 16.",
+     "cause": "The app raises that range to 16 on purpose because it blows out highlights in iRacing.",
+     "fix": "Pick 16 or more, and expect 16 as the glossiest."
+    },
+    {
+     "symptom": "A rough finish with high metal looks too shiny.",
+     "cause": "Roughness was set too low. Below 240 metal the app holds it at 15 or more, but 15 is still very glossy.",
+     "fix": "Raise green to 60 or more for a satin metal, and 140 or more for matte metallic."
+    }
+   ],
+   "protips": [
+    "Compare against a finish you already like: sample it with the Material Sampler and use the numbers as your target instead of guessing.",
+    "Satin Chrome is 250, 45, 40: nearly full metal but with a rougher surface and a weaker coat than Chrome."
+   ],
+   "screens": [
+    "spec_candy",
+    "spec_chrome",
+    "spec_matte"
+   ]
+  }
+ ]
+}

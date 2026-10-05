@@ -1,0 +1,89 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon_electric_blue",
+  "display_name": "Blue Breakdown",
+  "carrier": "full-surface sintered dark-ceramic facets carrying dense discontinuous 8-32px micro-fuse trees",
+  "material_story": {
+    "M": "fused substrate lips, rupture nodes, corona electrodes, and vitrified repair bridges",
+    "R": "vitrified facet edges, quenched char, ceramic residue, temper shoulders, and secondary rupture texture",
+    "Cc": "sintered facet faces, intact ceramic distance, and healed glass bridges, cut by rupture exposure"
+  },
+  "vetoes": [
+    "no lightning-bolt silhouette",
+    "no connected Voronoi crackle",
+    "no neon tube",
+    "no Oil Slick flow contour",
+    "no unrelated noise/spec underlay"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 1.344075,
+  "material_stats": {
+    "std": {
+      "M": 82.790024,
+      "R": 83.299194,
+      "Cc": 83.260818
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.132737,
+      "M_Cc": -0.192778,
+      "R_Cc": -0.457555
+    }
+  },
+  "geometry_stats": {
+    "family_count": 11,
+    "families": {
+      "sintered_ceramic_facets": 11025,
+      "vitrified_facet_edges": 7997,
+      "primary_fissures": 895,
+      "secondary_forks": 3589,
+      "fused_lips": 5228,
+      "quenched_channels": 4484,
+      "violet_temper_shoulders": 3410,
+      "corona_beads": 1307,
+      "healed_glass_bridges": 628,
+      "residue_flecks": 1821,
+      "rupture_nodes": 122
+    },
+    "width_native_min": 9.0,
+    "width_native_median": 9.0,
+    "width_native_p90": 12.0,
+    "width_native_max": 16.0,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "sintered_ceramic_facets": 0.680604,
+    "vitrified_facet_edges": 0.457942,
+    "primary_fissures": 0.078372,
+    "secondary_forks": 0.154675,
+    "fused_lips": 0.239053,
+    "quenched_channels": 0.20331,
+    "violet_temper_shoulders": 0.137609,
+    "corona_beads": 0.039871,
+    "healed_glass_bridges": 0.040284,
+    "residue_flecks": 0.084062,
+    "rupture_nodes": 0.006447
+  }
+}

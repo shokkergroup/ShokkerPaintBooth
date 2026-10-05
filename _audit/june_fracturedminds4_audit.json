@@ -1,0 +1,38 @@
+{
+  "category": "fracturedminds4",
+  "entries": {
+    "fm_barbed_wire": {
+      "verdict": "replace",
+      "rating": 14,
+      "ai_rating": 45,
+      "reasons": [],
+      "notes": "That is NOT barbed wire - or even CLOSE to barbed wire. WTF? Just make something else. Anything. You and barbed wire are not working well together",
+      "ts": 1781272900255
+    },
+    "fm_croc_hide": {
+      "verdict": "keep",
+      "rating": 68,
+      "ai_rating": 58,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781273283918
+    },
+    "fm_frost_lace": {
+      "verdict": "rebuild",
+      "rating": 63,
+      "ai_rating": 52,
+      "reasons": [],
+      "notes": "It didn't do what I expected but it does give a bit of a different look. Not sure why the blue doesn't just make the underlying color explode through like it does when blue is the accent. The one where the blue did explode through though I THINK was more of a baby blue and this is really dark. Maybe that's the secret. We have the WRONG shade of blue here",
+      "ts": 1781287537995
+    },
+    "fm_geode_slice": {
+      "verdict": "rebuild",
+      "rating": 57,
+      "ai_rating": 59,
+      "reasons": [],
+      "notes": "Needs to be LIGHT PINK and LIGHT blue in the spec ",
+      "ts": 1781288279152
+    }
+  },
+  "updated": 1781288279
+}

@@ -1,0 +1,23 @@
+{
+  "contract": "spb-ai-material-controls/1",
+  "date": "2026-10-03",
+  "scope": "standalone source-only parser and pure existing-zone spec-shift builder",
+  "source": "js/spb-ai-material-controls.js",
+  "api": {
+    "parse(text)": "Returns {kind:'edit', channel, canonical supported part, signed relative delta, amountSpecified, amountUnit:'points', verb}; {kind:'clarify', reason, question}; or {kind:'delegate', reason}.",
+    "buildEdit(zone, parsed)": "Returns an edit carrying the real zone_id, optional expect_name, and full metal/rough/clearcoat shift tuple; returns noop or invalid when it cannot make a safe change."
+  },
+  "rules": [
+    "Only explicit lower/reduce/decrease or raise/increase commands for metalness, roughness, or clearcoat with a complete supported part name produce an edit. The part lexicon is roof, hood/bonnet, left/right side/panel, bumper/front bumper/rear bumper, trunk/boot, bed/truck bed, and spoiler.",
+    "Omitted amounts default to 20 relative points. Explicit amounts require 'by N points'; signed-negative inputs, percentages, absolute targets, dangling quantities, and trailing/unconsumed words clarify rather than silently defaulting.",
+    "Builder adds the signed delta to the selected current zone shift and clamps to [-127,127]. It does not mutate the zone or specify finish, color, pattern, mask, or other material properties.",
+    "A single diagnostic prefix may precede one command. Questions, how-to requests, and negative/prohibitive wording delegate. Unknown/ambiguous scope and mixed edits clarify without producing an edit."
+  ],
+  "verification": {
+    "command": "node tests/ai_material_controls_contract.cjs",
+    "result": "PASS: 11 explicit parser cases, 23 safe non-edit cases, 7 pure builder bounds/immutability cases",
+    "independent_review_gate": "node tests/ai_material_controls_review_contract.cjs: PASS 40/40 fresh/baseline checks and PASS 5/5 supplemental syntax checks",
+    "syntax": "node --check js/spb-ai-material-controls.js passed"
+  },
+  "integration_boundary": "Parent dispatch must route eligible explicit material-only requests to this module, validate unique current helper-owned part-zone ownership and live identity, then pass buildEdit output through the ordinary guarded edit/Undo path. This module intentionally performs no owner lookup, queueing, rendering, or mutation."
+}

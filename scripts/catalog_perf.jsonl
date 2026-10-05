@@ -1,0 +1,1525 @@
+{"id": "acid_rain", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.798}
+{"id": "anime2_cel_shade", "paint": 0.952, "spec": 1.971}
+{"id": "anime2_crystal", "paint": 0.643, "spec": 1.934}
+{"id": "anime2_energy_aura", "paint": 0.532, "spec": 1.83}
+{"id": "anime2_gradient_hair", "paint": 0.779, "spec": 2.398}
+{"id": "anime2_mecha", "paint": 0.402, "spec": 2.197}
+{"id": "anime2_sakura", "paint": 0.341, "spec": 1.784}
+{"id": "anime2_screentone", "paint": 0.767, "spec": 1.645}
+{"id": "anime2_speed_lines", "paint": 0.311, "spec": 1.871}
+{"id": "anime_cel_shade_chrome", "paint": 1.394, "spec": 1.291}
+{"id": "anime_comic_halftone", "paint": 1.457, "spec": 1.293}
+{"id": "anime_crystal_facet", "paint": 1.541, "spec": 1.346}
+{"id": "anime_energy_aura", "paint": 1.262, "spec": 0.871}
+{"id": "anime_gradient_hair", "paint": 0.985, "spec": 1.025}
+{"id": "anime_mecha_plate", "paint": 1.183, "spec": 1.039}
+{"id": "anime_neon_outline", "paint": 1.579, "spec": 1.175}
+{"id": "anime_sakura_scatter", "paint": 1.227, "spec": 1.048}
+{"id": "anime_sparkle_burst", "paint": 1.305, "spec": 1.225}
+{"id": "anime_speed_lines", "paint": 1.525, "spec": 1.503}
+{"id": "aniso_circular_chrome", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.737}
+{"id": "aniso_crosshatch_steel", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.543}
+{"id": "aniso_diagonal_candy", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.703}
+{"id": "aniso_herringbone_gold", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.861}
+{"id": "aniso_horizontal_chrome", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.859}
+{"id": "aniso_radial_metallic", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.091}
+{"id": "aniso_spiral_mercury", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.638}
+{"id": "aniso_turbulence_metal", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.718}
+{"id": "aniso_vertical_pearl", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.095}
+{"id": "aniso_wave_titanium", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.192}
+{"id": "art_nouveau_vine", "paint": 5.913, "spec": 1.725}
+{"id": "aurora", "paint": 3.17, "spec": 2.443}
+{"id": "aurora_borealis_mono", "paint": 2.198, "spec": 1.023}
+{"id": "aurora_glow", "paint": 2.772, "spec": 1.487}
+{"id": "banshee", "paint": 2.96, "spec": 1.635}
+{"id": "baroque_scrollwork", "paint": 4.16, "spec": 1.584}
+{"id": "beetle_jewel", "paint": 2.805, "spec": 1.484}
+{"id": "beetle_rainbow", "paint": 2.369, "spec": 2.134}
+{"id": "beetle_stag", "paint": 1.419, "spec": 1.499}
+{"id": "bioluminescent_wave", "paint": 2.86, "spec": 2.014}
+{"id": "black_ice", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.848}
+{"id": "blackbody", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 4.209}
+{"id": "blacklight_paint", "paint": 2.279, "spec": 1.291}
+{"id": "blizzard", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.253}
+{"id": "blood_oath", "paint": 5.639, "spec": 2.583}
+{"id": "brushed_metal_fine", "paint": 5.758, "spec": 1.025}
+{"id": "butterfly_monarch", "paint": 2.511, "spec": 1.793}
+{"id": "butterfly_morpho", "paint": 2.218, "spec": 1.108}
+{"id": "catacombs", "paint": 4.951, "spec": 3.601}
+{"id": "cc_acid_burn", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 2.358}
+{"id": "cc_blood_orange", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 1.602}
+{"id": "cc_bruised_sky", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 2.774}
+{"id": "cc_candy_poison", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 4.005}
+{"id": "cc_chaos_theory", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 4.493}
+{"id": "cc_chemical_spill", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 5.072}
+{"id": "cc_coral_venom", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 5.324}
+{"id": "cc_deep_friction", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 4.042}
+{"id": "cc_digital_rot", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 3.718}
+{"id": "cc_electric_conflict", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 3.165}
+{"id": "cc_fever_dream", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 3.082}
+{"id": "cc_flash_burn", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 2.961}
+{"id": "cc_magma_freeze", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 2.142}
+{"id": "cc_neon_bruise", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 4.05}
+{"id": "cc_neon_war", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 2.405}
+{"id": "cc_nuclear_dawn", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 2.884}
+{"id": "cc_plasma_edge", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 2.705}
+{"id": "cc_punk_static", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 2.563}
+{"id": "cc_radioactive", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 2.855}
+{"id": "cc_rust_vs_ice", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 2.939}
+{"id": "cc_solar_clash", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 2.791}
+{"id": "cc_toxic_sunset", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 1.981}
+{"id": "cc_ultraviolet_burn", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 2.322}
+{"id": "cc_venom_strike", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 2.104}
+{"id": "cc_voltage_split", "paint_err": "TypeError(\"the resolved dtypes are not compatible with add.reduce. Resolved (dtype('<U7'), dtype('<U7'), dtype('<U14'))\")", "spec": 2.064}
+{"id": "cel_shade", "paint": 1.181, "spec": 0.903}
+{"id": "chameleon_amethyst", "paint": 0.98, "spec": 0.501}
+{"id": "chameleon_arctic", "paint": 0.999, "spec": 0.547}
+{"id": "chameleon_aurora", "paint": 1.344, "spec": 1.203}
+{"id": "chameleon_copper", "paint": 0.898, "spec": 0.465}
+{"id": "chameleon_emerald", "paint": 1.798, "spec": 1.745}
+{"id": "chameleon_fire", "paint": 1.559, "spec": 1.556}
+{"id": "chameleon_frost", "paint": 1.148, "spec": 0.526}
+{"id": "chameleon_galaxy", "paint": 1.55, "spec": 0.824}
+{"id": "chameleon_midnight", "paint": 2.378, "spec": 2.083}
+{"id": "chameleon_neon", "paint": 1.775, "spec": 0.96}
+{"id": "chameleon_obsidian", "paint": 2.271, "spec": 1.081}
+{"id": "chameleon_ocean", "paint": 2.038, "spec": 1.753}
+{"id": "chameleon_phoenix", "paint": 2.16, "spec": 1.301}
+{"id": "chameleon_venom", "paint": 1.959, "spec": 1.098}
+{"id": "chromatic_aberration", "paint": 4.712, "spec": 2.421}
+{"id": "crt_scanline", "paint": 3.243, "spec": 2.371}
+{"id": "crystal_lattice", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 0.368}
+{"id": "crystal_lattice_mono", "paint": 2.624, "spec": 0.77}
+{"id": "cs_amber_indigo", "paint": 1.904, "spec": 2.67}
+{"id": "cs_aqua_maroon", "paint": 1.492, "spec": 2.166}
+{"id": "cs_black_blue", "paint": 1.447, "spec": 2.029}
+{"id": "cs_black_gold", "paint": 1.62, "spec": 2.188}
+{"id": "cs_black_red", "paint": 1.492, "spec": 3.263}
+{"id": "cs_black_silver", "paint": 3.131, "spec": 3.311}
+{"id": "cs_blue_orange", "paint": 2.244, "spec": 3.233}
+{"id": "cs_blush_emerald", "paint": 2.164, "spec": 2.934}
+{"id": "cs_bronze_green", "paint": 2.338, "spec": 3.114}
+{"id": "cs_bronze_navy", "paint": 2.002, "spec": 2.229}
+{"id": "cs_bronze_purple", "paint": 1.726, "spec": 3.154}
+{"id": "cs_bronze_red", "paint": 2.701, "spec": 4.128}
+{"id": "cs_burgundy_gold", "paint": 3.032, "spec": 3.296}
+{"id": "cs_candypaint", "paint": 1.745, "spec": 1.266}
+{"id": "cs_champagne_cobalt", "paint": 2.473, "spec": 3.722}
+{"id": "cs_charcoal_honey", "paint": 2.667, "spec": 3.753}
+{"id": "cs_chocolate_mint", "paint": 2.919, "spec": 4.193}
+{"id": "cs_chrome_shift", "paint": 1.454, "spec": 0.446}
+{"id": "cs_complementary", "paint": 1.181, "spec": 0.551}
+{"id": "cs_cool", "paint": 1.44, "spec": 0.488}
+{"id": "cs_copper_blue", "paint": 2.419, "spec": 3.098}
+{"id": "cs_copper_gold", "paint": 1.819, "spec": 2.233}
+{"id": "cs_copper_lime", "paint": 2.044, "spec": 3.468}
+{"id": "cs_copper_teal", "paint": 2.953, "spec": 3.692}
+{"id": "cs_copper_violet", "paint": 2.589, "spec": 3.456}
+{"id": "cs_coral_cobalt", "paint": 2.599, "spec": 3.667}
+{"id": "cs_crimson_jade", "paint": 2.158, "spec": 2.969}
+{"id": "cs_darkflame", "paint": 1.264, "spec": 0.358}
+{"id": "cs_deepocean", "paint": 1.353, "spec": 0.389}
+{"id": "cs_earth", "paint": 1.327, "spec": 0.378}
+{"id": "cs_emerald", "paint": 1.489, "spec": 0.468}
+{"id": "cs_extreme", "paint": 1.163, "spec": 0.396}
+{"id": "cs_fire_ice", "paint": 1.946, "spec": 2.858}
+{"id": "cs_gold_emerald", "paint": 2.227, "spec": 3.985}
+{"id": "cs_gold_navy", "paint": 4.062, "spec": 3.309}
+{"id": "cs_goldrush", "paint": 1.364, "spec": 0.312}
+{"id": "cs_graphite_coral", "paint": 2.137, "spec": 4.699}
+{"id": "cs_green_blue", "paint": 2.346, "spec": 4.999}
+{"id": "cs_green_gold", "paint": 2.94, "spec": 3.149}
+{"id": "cs_gunmetal_gold", "paint": 2.69, "spec": 4.749}
+{"id": "cs_gunmetal_lime", "paint": 2.371, "spec": 3.649}
+{"id": "cs_gunmetal_orange", "paint": 2.447, "spec": 4.387}
+{"id": "cs_honey_plum", "paint": 2.481, "spec": 3.62}
+{"id": "cs_inferno", "paint": 1.658, "spec": 0.493}
+{"id": "cs_ivory_indigo", "paint": 2.746, "spec": 3.327}
+{"id": "cs_lavender_jade", "paint": 2.3, "spec": 3.364}
+{"id": "cs_lime_blue", "paint": 1.848, "spec": 2.754}
+{"id": "cs_lime_pink", "paint": 2.885, "spec": 3.798}
+{"id": "cs_lime_violet", "paint": 2.457, "spec": 2.664}
+{"id": "cs_magenta_blue", "paint": 1.545, "spec": 2.96}
+{"id": "cs_magenta_gold", "paint": 2.531, "spec": 4.218}
+{"id": "cs_magenta_teal", "paint": 2.42, "spec": 4.684}
+{"id": "cs_mint_maroon", "paint": 2.607, "spec": 3.896}
+{"id": "cs_monochrome", "paint": 1.23, "spec": 0.29}
+{"id": "cs_mystichrome", "paint": 1.273, "spec": 0.48}
+{"id": "cs_navy_gold", "paint": 2.016, "spec": 2.528}
+{"id": "cs_navy_orange", "paint": 1.744, "spec": 2.22}
+{"id": "cs_navy_silver", "paint": 1.679, "spec": 2.243}
+{"id": "cs_nebula", "paint": 0.839, "spec": 0.34}
+{"id": "cs_neon_shift", "paint": 0.799, "spec": 0.33}
+{"id": "cs_ocean_shift", "paint": 0.815, "spec": 0.325}
+{"id": "cs_oilslick", "paint": 0.994, "spec": 0.352}
+{"id": "cs_orange_navy", "paint": 1.738, "spec": 2.48}
+{"id": "cs_orange_purple", "paint": 1.452, "spec": 2.431}
+{"id": "cs_peach_cobalt", "paint": 1.515, "spec": 2.179}
+{"id": "cs_pewter_rose", "paint": 1.568, "spec": 3.114}
+{"id": "cs_pink_gold", "paint": 2.156, "spec": 2.689}
+{"id": "cs_pink_purple", "paint": 2.003, "spec": 3.035}
+{"id": "cs_pink_teal", "paint": 1.871, "spec": 2.579}
+{"id": "cs_prism_shift", "paint": 0.849, "spec": 0.301}
+{"id": "cs_purple_gold", "paint": 1.865, "spec": 2.547}
+{"id": "cs_purple_lime", "paint": 1.72, "spec": 2.967}
+{"id": "cs_rainbow", "paint": 1.17, "spec": 0.35}
+{"id": "cs_red_black", "paint": 1.972, "spec": 1.076}
+{"id": "cs_red_gold", "paint": 2.256, "spec": 2.419}
+{"id": "cs_red_purple", "paint": 1.97, "spec": 2.626}
+{"id": "cs_rose_emerald", "paint": 1.997, "spec": 3.131}
+{"id": "cs_rosegold", "paint": 1.129, "spec": 0.341}
+{"id": "cs_sage_crimson", "paint": 2.391, "spec": 2.866}
+{"id": "cs_silver_purple", "paint": 1.704, "spec": 2.451}
+{"id": "cs_silver_red", "paint": 1.661, "spec": 2.505}
+{"id": "cs_silver_teal", "paint": 1.812, "spec": 2.673}
+{"id": "cs_sky_gold", "paint": 1.818, "spec": 2.659}
+{"id": "cs_slate_amber", "paint": 2.083, "spec": 2.392}
+{"id": "cs_solarflare", "paint": 1.098, "spec": 0.372}
+{"id": "cs_split", "paint": 0.857, "spec": 0.407}
+{"id": "cs_subtle", "paint": 0.9, "spec": 0.28}
+{"id": "cs_sunset_ocean", "paint": 1.647, "spec": 2.349}
+{"id": "cs_supernova", "paint": 1.292, "spec": 0.379}
+{"id": "cs_teal_orange", "paint": 1.804, "spec": 2.395}
+{"id": "cs_teal_pink", "paint": 1.782, "spec": 2.53}
+{"id": "cs_titanium_crimson", "paint": 2.204, "spec": 2.793}
+{"id": "cs_toxic", "paint": 1.003, "spec": 0.366}
+{"id": "cs_triadic", "paint": 1.037, "spec": 0.392}
+{"id": "cs_violet_gold", "paint": 2.377, "spec": 3.619}
+{"id": "cs_violet_teal", "paint": 2.441, "spec": 3.214}
+{"id": "cs_vivid", "paint": 1.074, "spec": 0.323}
+{"id": "cs_warm", "paint": 1.222, "spec": 0.307}
+{"id": "cs_white_blue", "paint": 1.91, "spec": 2.559}
+{"id": "cs_white_green", "paint": 1.8, "spec": 2.381}
+{"id": "cs_white_purple", "paint": 2.128, "spec": 2.75}
+{"id": "cs_white_red", "paint": 1.845, "spec": 2.283}
+{"id": "cs_yellow_blue", "paint": 1.57, "spec": 2.575}
+{"id": "cursed", "paint": 3.616, "spec": 2.76}
+{"id": "cx_autumn_blaze", "paint": 2.378, "spec": 4.152}
+{"id": "cx_black_ice", "paint": 2.686, "spec": 2.978}
+{"id": "cx_blue_teal_cyan", "paint": 1.869, "spec": 2.689}
+{"id": "cx_blue_to_orange", "paint": 2.92, "spec": 0.726}
+{"id": "cx_bronze_age", "paint": 4.085, "spec": 2.633}
+{"id": "cx_burgundy_wine_gold", "paint": 5.938, "spec": 3.095}
+{"id": "cx_champagne_toast", "paint": 2.427, "spec": 3.525}
+{"id": "cx_cherry_blossom", "paint": 2.32, "spec": 3.113}
+{"id": "cx_copper_rose", "paint": 2.321, "spec": 3.025}
+{"id": "cx_cotton_candy", "paint": 1.887, "spec": 2.439}
+{"id": "cx_custom_shift", "paint": 2.271, "spec": 0.461}
+{"id": "cx_deep_sea", "paint": 3.591, "spec": 1.528}
+{"id": "cx_electric_storm", "paint": 0.377, "spec": 2.638}
+{"id": "cx_emerald_city", "paint": 0.338, "spec": 2.554}
+{"id": "cx_emerald_ruby", "paint": 2.367, "spec": 0.58}
+{"id": "cx_forest_fire", "paint": 3.802, "spec": 2.186}
+{"id": "cx_galaxy_dust", "paint": 0.517, "spec": 4.061}
+{"id": "cx_gold_green", "paint": 2.781, "spec": 3.939}
+{"id": "cx_gold_olive_emerald", "paint": 5.957, "spec": 2.479}
+{"id": "cx_gold_purple", "paint": 2.502, "spec": 4.214}
+{"id": "cx_hyperflip_bronze_teal", "paint": 2.079, "spec": 2.709}
+{"id": "cx_hyperflip_crimson_prism", "paint": 0.592, "spec": 3.661}
+{"id": "cx_hyperflip_electric_blue_copper", "paint": 0.473, "spec": 2.807}
+{"id": "cx_hyperflip_lime_purple", "paint": 2.545, "spec": 3.412}
+{"id": "cx_hyperflip_midnight_opal", "paint": 3.499, "spec": 3.043}
+{"id": "cx_hyperflip_orange_cyan", "paint": 2.461, "spec": 3.405}
+{"id": "cx_hyperflip_pink_black", "paint": 2.093, "spec": 2.599}
+{"id": "cx_hyperflip_purple_gold", "paint": 2.446, "spec": 2.762}
+{"id": "cx_hyperflip_red_blue", "paint": 1.661, "spec": 2.914}
+{"id": "cx_hyperflip_silver_violet", "paint": 6.539, "spec": 3.38}
+{"id": "cx_ice_fire", "paint": 3.65, "spec": 1.011}
+{"id": "cx_midnight_aurora", "paint": 2.968, "spec": 4.501}
+{"id": "cx_molten_metal", "paint": 2.304, "spec": 3.153}
+{"id": "cx_neon_dreams", "paint": 0.422, "spec": 2.925}
+{"id": "cx_northern_lights", "paint": 1.743, "spec": 3.776}
+{"id": "cx_oil_slick", "paint": 3.44, "spec": 4.644}
+{"id": "cx_orange_blue_electric", "paint": 3.308, "spec": 4.975}
+{"id": "cx_peacock_fan", "paint": 2.99, "spec": 3.914}
+{"id": "cx_pink_to_gold", "paint": 3.172, "spec": 0.909}
+{"id": "cx_pink_yellow_pop", "paint": 2.346, "spec": 3.37}
+{"id": "cx_purple_gold_majesty", "paint": 2.609, "spec": 3.502}
+{"id": "cx_purple_plum_bronze", "paint": 4.608, "spec": 2.243}
+{"id": "cx_purple_to_green", "paint": 3.069, "spec": 0.821}
+{"id": "cx_rainbow_stealth", "paint": 4.723, "spec": 2.572}
+{"id": "cx_red_green_chaos", "paint": 0.577, "spec": 4.076}
+{"id": "cx_red_to_cyan", "paint": 3.756, "spec": 1.072}
+{"id": "cx_sunset_horizon", "paint": 2.308, "spec": 3.39}
+{"id": "cx_sunset_shift", "paint": 2.224, "spec": 0.514}
+{"id": "cx_teal_blue", "paint": 1.551, "spec": 2.032}
+{"id": "cx_teal_to_magenta", "paint": 2.564, "spec": 0.748}
+{"id": "cx_thunderstorm", "paint": 0.413, "spec": 3.783}
+{"id": "cx_tropical_sunset", "paint": 0.37, "spec": 2.878}
+{"id": "cx_volcanic_glass", "paint": 0.504, "spec": 3.643}
+{"id": "cyber_punk", "paint": 3.821, "spec": 2.59}
+{"id": "daily_driver", "paint": 0.416, "spec": 0.457}
+{"id": "dark_ritual", "paint": 3.977, "spec": 1.682}
+{"id": "dark_sigil", "paint": 1.912, "spec": 0.989}
+{"id": "datamosh", "paint": 1.444, "spec": 0.78}
+{"id": "death_metal", "paint": 5.197, "spec": 1.896}
+{"id": "deep_space_void", "paint": 1.63, "spec": 0.787}
+{"id": "demon_forge", "paint": 2.907, "spec": 1.898}
+{"id": "depth_bubble", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 1.229}
+{"id": "depth_canyon", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 1.619}
+{"id": "depth_crack", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 2.008}
+{"id": "depth_erosion", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 1.459}
+{"id": "depth_honeycomb", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 1.902}
+{"id": "depth_map", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 2.201}
+{"id": "depth_pillow", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 2.532}
+{"id": "depth_ripple", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 1.595}
+{"id": "depth_scale", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 2.765}
+{"id": "depth_vortex", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 1.814}
+{"id": "depth_wave", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 1.312}
+{"id": "desert_mirage", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.916}
+{"id": "dew_drop", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.956}
+{"id": "double_exposure", "paint": 5.972, "spec": 1.724}
+{"id": "dragonfly_wing", "paint": 1.567, "spec": 1.006}
+{"id": "dualshift_blue_to_orange", "paint": 2.397, "spec": 0.609}
+{"id": "dualshift_custom", "paint": 2.709, "spec": 0.576}
+{"id": "dualshift_emerald_ruby", "paint": 2.519, "spec": 0.503}
+{"id": "dualshift_ice_fire", "paint": 3.009, "spec": 0.863}
+{"id": "dualshift_pink_to_gold", "paint": 3.176, "spec": 0.873}
+{"id": "dualshift_purple_to_green", "paint": 3.232, "spec": 1.103}
+{"id": "dualshift_red_to_cyan", "paint": 3.461, "spec": 0.707}
+{"id": "dualshift_sunset", "paint": 2.042, "spec": 0.462}
+{"id": "dualshift_teal_to_magenta", "paint": 3.012, "spec": 0.54}
+{"id": "dust_storm", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.135}
+{"id": "eclipse", "paint": 2.396, "spec": 2.247}
+{"id": "electric_arc", "paint": 2.98, "spec": 1.975}
+{"id": "ember", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.733}
+{"id": "ember_glow", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.836}
+{"id": "embossed", "paint": 4.014, "spec": 1.259}
+{"id": "exotic_anti_metal", "paint": 1.685, "spec": 0.529}
+{"id": "exotic_ceramic_void", "paint": 1.482, "spec": 0.669}
+{"id": "exotic_crystal_clear", "paint": 2.2, "spec": 0.826}
+{"id": "exotic_dark_glass", "paint": 1.978, "spec": 0.691}
+{"id": "exotic_foggy_chrome", "paint": 2.03, "spec": 0.898}
+{"id": "exotic_glass_paint", "paint": 1.977, "spec": 0.668}
+{"id": "exotic_inverted_candy", "paint": 1.787, "spec": 0.657}
+{"id": "exotic_liquid_glass", "paint": 1.537, "spec": 0.495}
+{"id": "exotic_phantom_mirror", "paint": 1.762, "spec": 0.563}
+{"id": "exotic_wet_void", "paint": 1.786, "spec": 0.643}
+{"id": "fable_abyss_lantern", "paint": 2.546, "spec": 0.999}
+{"id": "fable_aurora_travel", "paint": 1.752, "spec": 0.475}
+{"id": "fable_comet_parade", "paint": 1.81, "spec": 0.484}
+{"id": "fable_duomorph", "paint": 1.43, "spec": 1.69}
+{"id": "fable_ember_glass", "paint": 3.033, "spec": 0.998}
+{"id": "fable_emberline_drift", "paint": 2.288, "spec": 0.704}
+{"id": "fable_glacier_core", "paint": 2.657, "spec": 1.295}
+{"id": "fable_magnetite_flow", "paint": 2.57, "spec": 0.609}
+{"id": "fable_nightbloom", "paint": 2.684, "spec": 0.591}
+{"id": "fable_oilforge", "paint": 2.383, "spec": 0.481}
+{"id": "fable_prism_veil", "paint": 1.857, "spec": 0.615}
+{"id": "fable_pulse_alloy", "paint": 1.835, "spec": 1.366}
+{"id": "fable_quicksilver_garden", "paint": 3.451, "spec": 0.778}
+{"id": "fable_saffron_circuit", "paint": 1.938, "spec": 0.856}
+{"id": "fable_sovereign_flip", "paint": 1.906, "spec": 0.584}
+{"id": "fable_stained_aurora", "paint": 2.786, "spec": 0.748}
+{"id": "fable_static_bloom", "paint": 1.446, "spec": 0.54}
+{"id": "fable_tempered_dawn", "paint": 1.297, "spec": 1.265}
+{"id": "fable_velvet_eclipse", "paint": 1.842, "spec": 0.554}
+{"id": "fable_wovenlight", "paint": 1.475, "spec": 0.502}
+{"id": "fc_antler_bone", "paint": 0.999, "spec": 2.084}
+{"id": "fc_bark_camo", "paint": 0.9, "spec": 2.159}
+{"id": "fc_batwing", "paint": 0.839, "spec": 2.243}
+{"id": "fc_bog_murk", "paint": 0.966, "spec": 2.093}
+{"id": "fc_claw_rake", "paint": 0.704, "spec": 1.989}
+{"id": "fc_coarse_hide", "paint": 0.904, "spec": 1.461}
+{"id": "fc_crackle_eyeshine_glass", "paint": 0.707, "spec": 1.347}
+{"id": "fc_dorsal_ridge", "paint": 0.877, "spec": 1.501}
+{"id": "fc_dragon_hex_glass", "paint": 0.566, "spec": 1.395}
+{"id": "fc_eyeshine", "paint": 0.839, "spec": 1.476}
+{"id": "fc_feathered_wing", "paint": 0.921, "spec": 1.387}
+{"id": "fc_gator_hide", "paint": 0.675, "spec": 1.345}
+{"id": "fc_hide_scale_glass", "paint": 0.681, "spec": 1.286}
+{"id": "fc_mossy_stone", "paint": 1.008, "spec": 1.43}
+{"id": "fc_quill_bristle", "paint": 0.737, "spec": 1.463}
+{"id": "fc_sasquatch_fur", "paint": 0.622, "spec": 1.379}
+{"id": "fc_snakeskin", "paint": 0.564, "spec": 1.385}
+{"id": "fc_toad_skin", "paint": 0.755, "spec": 1.343}
+{"id": "fc_webbed_membrane", "paint": 0.797, "spec": 1.538}
+{"id": "fc_will_o_wisp", "paint": 0.79, "spec": 1.454}
+{"id": "fd_abyssal_sea", "paint": 0.424, "spec": 2.073}
+{"id": "fd_abyssalsnow", "paint": 1.06, "spec": 1.896}
+{"id": "fd_anglerfish", "paint": 1.713, "spec": 2.062}
+{"id": "fd_azure_celestial", "paint": 0.322, "spec": 1.567}
+{"id": "fd_bioluminescence", "paint": 0.635, "spec": 1.588}
+{"id": "fd_black_tortoise", "paint": 0.278, "spec": 1.347}
+{"id": "fd_brine_glass", "paint": 0.83, "spec": 1.524}
+{"id": "fd_bronze_relic", "paint": 0.368, "spec": 1.709}
+{"id": "fd_cephalopod", "paint": 0.676, "spec": 2.002}
+{"id": "fd_crane_garden", "paint": 0.379, "spec": 2.412}
+{"id": "fd_dragon_phoenix", "paint": 0.401, "spec": 2.272}
+{"id": "fd_eeldischarge", "paint": 0.998, "spec": 1.864}
+{"id": "fd_frost_emperor", "paint": 0.376, "spec": 1.89}
+{"id": "fd_glasssquid", "paint": 0.654, "spec": 2.268}
+{"id": "fd_golden_toad_jinchan", "paint": 0.441, "spec": 2.203}
+{"id": "fd_guardian_foo_lion", "paint": 0.439, "spec": 2.312}
+{"id": "fd_hadal_glow", "paint": 1.165, "spec": 3.297}
+{"id": "fd_hydrothermal", "paint": 1.259, "spec": 3.033}
+{"id": "fd_imperial_gold", "paint": 0.575, "spec": 3.524}
+{"id": "fd_jade_empress", "paint": 0.52, "spec": 2.241}
+{"id": "fd_jade_qilin", "paint": 0.44, "spec": 2.328}
+{"id": "fd_jellyfall", "paint": 2.472, "spec": 2.481}
+{"id": "fd_kelp_drift", "paint": 0.872, "spec": 2.248}
+{"id": "fd_koi_ascension", "paint": 0.373, "spec": 2.215}
+{"id": "fd_krakenink", "paint": 1.113, "spec": 2.266}
+{"id": "fd_maelstrom", "paint": 2.816, "spec": 2.433}
+{"id": "fd_nacre", "paint": 0.75, "spec": 2.166}
+{"id": "fd_pearl_chaser", "paint": 0.406, "spec": 2.233}
+{"id": "fd_phoenix_fenghuang", "paint": 0.4, "spec": 2.249}
+{"id": "fd_pixiu_fortune", "paint": 0.497, "spec": 2.165}
+{"id": "fd_pressurestrata", "paint": 1.081, "spec": 2.125}
+{"id": "fd_ripple_glass", "paint": 0.72, "spec": 2.204}
+{"id": "fd_siphonophore", "paint": 0.708, "spec": 2.193}
+{"id": "fd_sonar_glass", "paint": 0.761, "spec": 2.457}
+{"id": "fd_storm_black", "paint": 0.392, "spec": 1.925}
+{"id": "fd_trenchfault", "paint": 0.568, "spec": 1.936}
+{"id": "fd_vermilion_bird", "paint": 0.357, "spec": 1.881}
+{"id": "fd_vermilion_fire", "paint": 0.431, "spec": 1.96}
+{"id": "fd_whalefall", "paint": 0.802, "spec": 1.743}
+{"id": "fd_white_tiger_baihu", "paint": 0.397, "spec": 2.063}
+{"id": "ff_abyssal_currents", "paint": 3.246, "spec": 2.079}
+{"id": "ff_apollonia", "paint": 0.873, "spec": 1.627}
+{"id": "ff_argyle_glass", "paint": 0.461, "spec": 1.935}
+{"id": "ff_aurora_loom", "paint": 1.858, "spec": 1.407}
+{"id": "ff_aurora_veil", "paint": 0.575, "spec": 2.043}
+{"id": "ff_banded_agate", "paint": 0.789, "spec": 2.303}
+{"id": "ff_brain_coral", "paint": 0.75, "spec": 2.109}
+{"id": "ff_brickwork_prism", "paint": 0.515, "spec": 2.04}
+{"id": "ff_catacomb_glass", "paint": 0.503, "spec": 2.078}
+{"id": "ff_caustic_lace", "paint": 0.869, "spec": 1.916}
+{"id": "ff_causticline", "paint": 0.879, "spec": 1.773}
+{"id": "ff_cellwave", "paint": 0.932, "spec": 2.246}
+{"id": "ff_conduit", "paint": 0.656, "spec": 2.088}
+{"id": "ff_conformal_lattice", "paint": 2.143, "spec": 2.091}
+{"id": "ff_cubist_prism", "paint": 0.389, "spec": 2.002}
+{"id": "ff_dactyl", "paint": 0.755, "spec": 2.266}
+{"id": "ff_dichroic_drift", "paint": 0.686, "spec": 1.988}
+{"id": "ff_dragonscale", "paint": 0.522, "spec": 1.998}
+{"id": "ff_drift_lattice", "paint": 1.534, "spec": 1.294}
+{"id": "ff_fracture_web", "paint": 0.726, "spec": 2.101}
+{"id": "ff_geode_facet", "paint": 0.825, "spec": 1.902}
+{"id": "ff_ghost_coil", "paint": 1.51, "spec": 1.673}
+{"id": "ff_gyre", "paint": 0.489, "spec": 1.967}
+{"id": "ff_heartwood", "paint": 0.513, "spec": 1.383}
+{"id": "ff_hivewake", "paint": 0.412, "spec": 1.279}
+{"id": "ff_holo_grating", "paint": 0.458, "spec": 1.301}
+{"id": "ff_hyperflora", "paint": 0.775, "spec": 1.872}
+{"id": "ff_ion_bloom", "paint": 1.829, "spec": 2.164}
+{"id": "ff_knurled_steel", "paint": 0.603, "spec": 2.014}
+{"id": "ff_leaf_vein", "paint": 0.999, "spec": 2.317}
+{"id": "ff_leviathan_filaments", "paint": 2.916, "spec": 1.909}
+{"id": "ff_liquid_agate", "paint": 0.669, "spec": 2.014}
+{"id": "ff_loomwork", "paint": 0.691, "spec": 1.973}
+{"id": "ff_magma_current", "paint": 0.574, "spec": 1.838}
+{"id": "ff_marble", "paint": 0.66, "spec": 2.225}
+{"id": "ff_moire_vortex", "paint": 0.724, "spec": 2.179}
+{"id": "ff_mycelinth", "paint": 0.802, "spec": 2.468}
+{"id": "ff_nebula", "paint": 1.166, "spec": 2.065}
+{"id": "ff_oilskin_weave", "paint": 0.64, "spec": 2.154}
+{"id": "ff_parquet_glass", "paint": 0.499, "spec": 1.352}
+{"id": "ff_peacock_optic", "paint": 0.763, "spec": 2.121}
+{"id": "ff_pendulum_veil", "paint": 0.885, "spec": 2.175}
+{"id": "ff_penrose_quartz", "paint": 0.96, "spec": 2.151}
+{"id": "ff_pentangle", "paint": 0.703, "spec": 1.949}
+{"id": "ff_phase_reliquary", "paint": 2.571, "spec": 2.045}
+{"id": "ff_pinwheel_glass", "paint": 0.634, "spec": 2.149}
+{"id": "ff_plasma_arc", "paint": 1.062, "spec": 2.318}
+{"id": "ff_quasicrystal", "paint": 1.376, "spec": 2.128}
+{"id": "ff_quasiflux", "paint": 0.829, "spec": 2.413}
+{"id": "ff_quicksilver", "paint": 0.691, "spec": 2.19}
+{"id": "ff_resonance", "paint": 0.661, "spec": 1.988}
+{"id": "ff_resonant_cells", "paint": 0.848, "spec": 2.028}
+{"id": "ff_resonant_tide", "paint": 0.652, "spec": 1.796}
+{"id": "ff_ridgeline", "paint": 0.488, "spec": 1.732}
+{"id": "ff_riptide", "paint": 1.369, "spec": 1.842}
+{"id": "ff_rosetta_moire", "paint": 0.46, "spec": 2.066}
+{"id": "ff_scale_mail", "paint": 0.761, "spec": 2.263}
+{"id": "ff_scale_prism", "paint": 0.699, "spec": 1.972}
+{"id": "ff_shardfield", "paint": 0.676, "spec": 1.172}
+{"id": "ff_shroud_silk", "paint": 0.523, "spec": 1.895}
+{"id": "ff_soliton_reef", "paint": 3.464, "spec": 2.059}
+{"id": "ff_spectra_wheel", "paint": 0.503, "spec": 1.638}
+{"id": "ff_spectral_hive", "paint": 0.453, "spec": 1.513}
+{"id": "ff_spectral_ridge", "paint": 0.495, "spec": 1.624}
+{"id": "ff_spectral_veil", "paint": 2.783, "spec": 1.879}
+{"id": "ff_spiral_galaxy", "paint": 1.56, "spec": 1.486}
+{"id": "ff_standing_field", "paint": 0.721, "spec": 1.849}
+{"id": "ff_stormfork", "paint": 0.681, "spec": 1.433}
+{"id": "ff_sunwheel", "paint": 0.758, "spec": 1.404}
+{"id": "ff_tideglass_gyre", "paint": 0.424, "spec": 1.291}
+{"id": "ff_tracewerk", "paint": 0.405, "spec": 1.252}
+{"id": "ff_trihedra", "paint": 0.347, "spec": 1.019}
+{"id": "ff_truchet_flow", "paint": 0.585, "spec": 1.86}
+{"id": "ff_truchet_glass", "paint": 0.494, "spec": 1.827}
+{"id": "ff_vortex_choir", "paint": 0.759, "spec": 1.961}
+{"id": "ff_watered_silk", "paint": 0.653, "spec": 1.88}
+{"id": "ff_wovencell", "paint": 0.739, "spec": 1.936}
+{"id": "ff_ziggurat_glass", "paint": 0.485, "spec": 1.947}
+{"id": "film_burn", "paint": 2.083, "spec": 0.854}
+{"id": "firefly", "paint": 3.664, "spec": 1.53}
+{"id": "firefly_glow", "paint": 1.537, "spec": 1.11}
+{"id": "fish_eye", "paint": 4.535, "spec": 2.294}
+{"id": "flm_aurora_drape_dance_green_toxic", "paint": 1.069, "spec": 2.435}
+{"id": "flm_aurora_drape_ignite_green_toxic", "paint": 1.037, "spec": 2.223}
+{"id": "flm_aurora_drape_topo_green_toxic", "paint": 0.984, "spec": 3.292}
+{"id": "flm_backdraft_rings_dance_blue", "paint": 1.073, "spec": 2.38}
+{"id": "flm_backdraft_rings_ignite_green_toxic", "paint": 0.978, "spec": 2.469}
+{"id": "flm_backdraft_rings_topo_white_hot", "paint": 1.176, "spec": 3.208}
+{"id": "flm_basalt_columns_dance_green_toxic", "paint": 0.851, "spec": 2.516}
+{"id": "flm_basalt_columns_ignite_classic", "paint": 0.844, "spec": 2.47}
+{"id": "flm_basalt_columns_topo_classic", "paint": 0.823, "spec": 2.987}
+{"id": "flm_basket_weave_dance_classic", "paint": 1.074, "spec": 2.324}
+{"id": "flm_basket_weave_ignite_classic", "paint": 0.934, "spec": 2.02}
+{"id": "flm_basket_weave_topo_classic", "paint": 0.893, "spec": 2.532}
+{"id": "flm_candle_dance_white_hot", "paint": 0.887, "spec": 2.38}
+{"id": "flm_candle_ignite_white_hot", "paint": 0.968, "spec": 2.455}
+{"id": "flm_candle_topo_white_hot", "paint": 1.054, "spec": 3.117}
+{"id": "flm_caustic_web_dance_white_hot", "paint": 0.811, "spec": 2.431}
+{"id": "flm_caustic_web_ignite_blue", "paint": 0.711, "spec": 1.628}
+{"id": "flm_cellular_embers_dance_classic", "paint": 0.65, "spec": 1.846}
+{"id": "flm_cellular_embers_ignite_classic", "paint": 0.653, "spec": 1.413}
+{"id": "flm_chevron_herringbone_dance_spectral", "paint": 0.714, "spec": 1.748}
+{"id": "flm_chevron_herringbone_ignite_spectral", "paint": 1.072, "spec": 1.985}
+{"id": "flm_chevron_herringbone_topo_spectral", "paint": 1.081, "spec": 2.689}
+{"id": "flm_corona_rays_dance_white_hot", "paint": 0.933, "spec": 2.375}
+{"id": "flm_corona_rays_ignite_white_hot", "paint": 0.796, "spec": 1.753}
+{"id": "flm_crackle_glaze_dance_white_hot", "paint": 0.56, "spec": 1.715}
+{"id": "flm_crackle_glaze_ignite_white_hot", "paint": 0.513, "spec": 1.409}
+{"id": "flm_crackle_glaze_topo_white_hot", "paint": 0.516, "spec": 2.297}
+{"id": "flm_curl_streamers_dance_blue", "paint": 0.591, "spec": 1.577}
+{"id": "flm_curl_streamers_ignite_blue", "paint": 0.539, "spec": 1.395}
+{"id": "flm_curl_streamers_topo_violet", "paint": 0.521, "spec": 1.895}
+{"id": "flm_dragon_jet_dance_classic", "paint": 0.665, "spec": 1.914}
+{"id": "flm_dragon_jet_ignite_classic", "paint": 0.779, "spec": 1.705}
+{"id": "flm_dragon_jet_topo_classic", "paint": 0.786, "spec": 2.553}
+{"id": "flm_dragon_scale_dance_classic", "paint": 1.184, "spec": 2.061}
+{"id": "flm_dragon_scale_ignite_classic", "paint": 0.975, "spec": 1.592}
+{"id": "flm_dragon_scale_topo_violet", "paint": 0.972, "spec": 1.886}
+{"id": "flm_ember_storm_dance_spectral", "paint": 0.632, "spec": 1.649}
+{"id": "flm_ember_storm_ignite_spectral", "paint": 0.721, "spec": 1.436}
+{"id": "flm_ember_storm_topo_spectral", "paint": 0.628, "spec": 2.239}
+{"id": "flm_eruption_column_dance_classic", "paint": 0.873, "spec": 2.243}
+{"id": "flm_eruption_column_ignite_classic", "paint": 0.976, "spec": 2.314}
+{"id": "flm_eruption_column_topo_white_hot", "paint": 0.998, "spec": 2.875}
+{"id": "flm_ferro_spikes_dance_violet", "paint": 1.06, "spec": 1.886}
+{"id": "flm_ferro_spikes_ignite_violet", "paint": 1.043, "spec": 2.16}
+{"id": "flm_ferro_spikes_topo_blue", "paint": 0.998, "spec": 2.906}
+{"id": "flm_fire_rose_dance_classic", "paint": 1.142, "spec": 2.215}
+{"id": "flm_fire_rose_ignite_classic", "paint": 0.828, "spec": 2.077}
+{"id": "flm_fire_rose_topo_classic", "paint": 1.288, "spec": 2.625}
+{"id": "flm_fire_tornado_dance_white_hot", "paint": 0.682, "spec": 1.748}
+{"id": "flm_fire_tornado_ignite_white_hot", "paint": 0.704, "spec": 1.92}
+{"id": "flm_gas_ring_dance_blue", "paint": 0.72, "spec": 1.686}
+{"id": "flm_gas_ring_ignite_blue", "paint": 0.692, "spec": 1.655}
+{"id": "flm_gas_ring_topo_blue", "paint": 0.755, "spec": 2.535}
+{"id": "flm_heat_mirage_dance_spectral", "paint": 0.799, "spec": 1.697}
+{"id": "flm_heat_mirage_ignite_spectral", "paint": 0.823, "spec": 1.87}
+{"id": "flm_interference_wisps_dance_blue", "paint": 0.945, "spec": 2.357}
+{"id": "flm_interference_wisps_ignite_blue", "paint": 0.975, "spec": 2.129}
+{"id": "flm_interference_wisps_topo_blue", "paint": 0.946, "spec": 2.602}
+{"id": "flm_kaleidoscope_dance_violet", "paint": 0.933, "spec": 2.249}
+{"id": "flm_kaleidoscope_ignite_spectral", "paint": 1.117, "spec": 2.202}
+{"id": "flm_kaleidoscope_topo_spectral", "paint": 0.699, "spec": 2.304}
+{"id": "flm_lava_flow_dance_classic", "paint": 0.679, "spec": 2.212}
+{"id": "flm_lava_flow_ignite_classic", "paint": 0.79, "spec": 2.021}
+{"id": "flm_lava_flow_topo_classic", "paint": 0.791, "spec": 3.387}
+{"id": "flm_leopard_rd_dance_spectral", "paint": 1.058, "spec": 2.327}
+{"id": "flm_leopard_rd_ignite_classic", "paint": 1.05, "spec": 1.897}
+{"id": "flm_lightning_storm_dance_blue", "paint": 0.44, "spec": 1.651}
+{"id": "flm_lightning_storm_ignite_blue", "paint": 0.402, "spec": 1.461}
+{"id": "flm_lightning_storm_topo_blue", "paint": 0.509, "spec": 2.195}
+{"id": "flm_mach_cone_dance_spectral", "paint": 0.76, "spec": 1.997}
+{"id": "flm_mach_cone_ignite_spectral", "paint": 0.968, "spec": 2.269}
+{"id": "flm_mach_cone_topo_spectral", "paint": 1.114, "spec": 3.358}
+{"id": "flm_magma_bubbles_ignite_classic", "paint": 0.65, "spec": 1.931}
+{"id": "flm_magma_bubbles_topo_white_hot", "paint": 0.574, "spec": 2.926}
+{"id": "flm_mammatus_dance_white_hot", "paint": 0.964, "spec": 2.134}
+{"id": "flm_mammatus_ignite_white_hot", "paint": 0.802, "spec": 1.787}
+{"id": "flm_mammatus_topo_white_hot", "paint": 0.827, "spec": 2.526}
+{"id": "flm_marble_swirl_dance_blue", "paint": 0.608, "spec": 2.071}
+{"id": "flm_marble_swirl_ignite_blue", "paint": 0.781, "spec": 2.29}
+{"id": "flm_marble_swirl_topo_blue", "paint": 0.678, "spec": 2.575}
+{"id": "flm_metaball_plumes_dance_white_hot", "paint": 1.095, "spec": 1.824}
+{"id": "flm_metaball_plumes_ignite_classic", "paint": 0.843, "spec": 1.35}
+{"id": "flm_metaball_plumes_topo_white_hot", "paint": 0.861, "spec": 2.173}
+{"id": "flm_meteor_shower_dance_white_hot", "paint": 0.483, "spec": 1.726}
+{"id": "flm_meteor_shower_ignite_white_hot", "paint": 0.466, "spec": 1.953}
+{"id": "flm_meteor_shower_topo_spectral", "paint": 0.532, "spec": 3.28}
+{"id": "flm_napalm_drips_dance_classic", "paint": 0.666, "spec": 2.401}
+{"id": "flm_napalm_drips_ignite_classic", "paint": 0.512, "spec": 1.73}
+{"id": "flm_obsidian_fracture_dance_violet", "paint": 0.469, "spec": 1.65}
+{"id": "flm_obsidian_fracture_ignite_white_hot", "paint": 0.398, "spec": 1.473}
+{"id": "flm_pahoehoe_rope_dance_classic", "paint": 0.632, "spec": 1.521}
+{"id": "flm_pahoehoe_rope_ignite_classic", "paint": 0.785, "spec": 1.937}
+{"id": "flm_pele_strands_dance_violet", "paint": 0.868, "spec": 2.415}
+{"id": "flm_pele_strands_ignite_white_hot", "paint": 0.873, "spec": 2.134}
+{"id": "flm_plasma_arc_ignite_white_hot", "paint": 0.755, "spec": 2.304}
+{"id": "flm_plasma_arc_topo_white_hot", "paint": 0.73, "spec": 2.813}
+{"id": "flm_quasicrystal_dance_green_toxic", "paint": 1.059, "spec": 2.197}
+{"id": "flm_quasicrystal_ignite_green_toxic", "paint": 1.234, "spec": 1.785}
+{"id": "flm_quasicrystal_topo_green_toxic", "paint": 1.04, "spec": 2.597}
+{"id": "flm_quilted_diamond_dance_blue", "paint": 0.7, "spec": 1.966}
+{"id": "flm_quilted_diamond_ignite_blue", "paint": 0.919, "spec": 1.866}
+{"id": "flm_radial_dance_spectral", "paint": 0.764, "spec": 2.477}
+{"id": "flm_radial_ignite_spectral", "paint": 0.831, "spec": 2.162}
+{"id": "flm_radial_topo_white_hot", "paint": 0.802, "spec": 2.928}
+{"id": "flm_reaction_diffusion_dance_white_hot", "paint": 0.882, "spec": 2.47}
+{"id": "flm_reaction_diffusion_ignite_green_toxic", "paint": 0.969, "spec": 2.142}
+{"id": "flm_reaction_diffusion_topo_blue", "paint": 0.89, "spec": 2.923}
+{"id": "flm_smoke_billow_dance_violet", "paint": 0.655, "spec": 1.584}
+{"id": "flm_smoke_billow_ignite_blue", "paint": 0.902, "spec": 2.201}
+{"id": "flm_solar_flare_dance_white_hot", "paint": 0.566, "spec": 2.191}
+{"id": "flm_solar_flare_ignite_white_hot", "paint": 0.559, "spec": 2.101}
+{"id": "flm_solar_flare_topo_white_hot", "paint": 0.633, "spec": 2.738}
+{"id": "flm_spark_fountain_dance_white_hot", "paint": 0.635, "spec": 2.072}
+{"id": "flm_spark_fountain_ignite_white_hot", "paint": 0.62, "spec": 1.612}
+{"id": "flm_spider_web_dance_violet", "paint": 0.757, "spec": 1.877}
+{"id": "flm_spider_web_ignite_violet", "paint": 0.848, "spec": 1.686}
+{"id": "flm_spider_web_topo_violet", "paint": 0.768, "spec": 2.164}
+{"id": "flm_spiral_galaxy_dance_blue", "paint": 0.686, "spec": 1.514}
+{"id": "flm_spiral_galaxy_ignite_violet", "paint": 0.639, "spec": 1.309}
+{"id": "flm_spiral_galaxy_topo_violet", "paint": 0.603, "spec": 2.025}
+{"id": "flm_tessellated_triangles_dance_spectral", "paint": 1.081, "spec": 2.051}
+{"id": "flm_tessellated_triangles_ignite_violet", "paint": 1.259, "spec": 1.971}
+{"id": "flm_tongues_dance_classic", "paint": 0.985, "spec": 1.998}
+{"id": "flm_tongues_ignite_classic", "paint": 0.905, "spec": 2.006}
+{"id": "flm_tongues_topo_classic", "paint": 1.133, "spec": 2.752}
+{"id": "flm_vortex_spiral_dance_blue", "paint": 0.736, "spec": 1.643}
+{"id": "flm_vortex_spiral_ignite_blue", "paint": 0.6, "spec": 1.923}
+{"id": "flm_vortex_spiral_topo_blue", "paint": 0.754, "spec": 2.678}
+{"id": "flm_vortex_street_dance_white_hot", "paint": 1.764, "spec": 2.463}
+{"id": "flm_vortex_street_ignite_white_hot", "paint": 1.599, "spec": 1.956}
+{"id": "flm_votive_field_dance_white_hot", "paint": 1.066, "spec": 1.97}
+{"id": "flm_votive_field_ignite_white_hot", "paint": 0.832, "spec": 1.499}
+{"id": "flm_will_o_wisp_dance_violet", "paint": 0.831, "spec": 1.549}
+{"id": "flm_will_o_wisp_ignite_violet", "paint": 0.912, "spec": 1.535}
+{"id": "flm_will_o_wisp_topo_violet", "paint": 1.095, "spec": 1.973}
+{"id": "fluorescent", "paint": 2.193, "spec": 1.095}
+{"id": "fm_basalt", "paint": 0.493, "spec": 1.536}
+{"id": "fm_basketweave", "paint": 0.494, "spec": 1.762}
+{"id": "fm_cable_knit", "paint": 0.537, "spec": 1.949}
+{"id": "fm_carbon_weave", "paint": 0.644, "spec": 2.204}
+{"id": "fm_chainlink", "paint": 0.536, "spec": 1.901}
+{"id": "fm_chainmail", "paint": 0.52, "spec": 1.851}
+{"id": "fm_checkerflash", "paint": 0.542, "spec": 1.866}
+{"id": "fm_circuit_maze", "paint": 0.424, "spec": 1.096}
+{"id": "fm_code_cascade", "paint": 0.54, "spec": 2.019}
+{"id": "fm_croc_hide", "paint": 0.53, "spec": 1.765}
+{"id": "fm_damascus", "paint": 0.495, "spec": 1.763}
+{"id": "fm_diamond_plate", "paint": 0.483, "spec": 1.977}
+{"id": "fm_diamondback", "paint": 0.739, "spec": 1.376}
+{"id": "fm_dragon_scale", "paint": 0.636, "spec": 1.139}
+{"id": "fm_dragonfly", "paint": 0.694, "spec": 0.941}
+{"id": "fm_ebru_marble", "paint": 0.42, "spec": 1.664}
+{"id": "fm_fiber_optic", "paint": 0.608, "spec": 1.478}
+{"id": "fm_flame_helix", "paint": 0.427, "spec": 1.449}
+{"id": "fm_flame_lick", "paint": 0.501, "spec": 0.865}
+{"id": "fm_flame_wall", "paint": 0.387, "spec": 1.328}
+{"id": "fm_frost_feather", "paint": 0.496, "spec": 1.394}
+{"id": "fm_frost_lace", "paint": 0.824, "spec": 1.486}
+{"id": "fm_geode_slice", "paint": 0.482, "spec": 0.991}
+{"id": "fm_gila_bead", "paint": 0.468, "spec": 1.009}
+{"id": "fm_glacier_core", "paint": 0.531, "spec": 1.32}
+{"id": "fm_graphene", "paint": 0.358, "spec": 1.237}
+{"id": "fm_gyro_cage", "paint": 0.51, "spec": 1.291}
+{"id": "fm_gyroid", "paint": 0.459, "spec": 1.812}
+{"id": "fm_herringbone", "paint": 0.676, "spec": 2.151}
+{"id": "fm_hexcore", "paint": 0.515, "spec": 1.479}
+{"id": "fm_honeycomb_burst", "paint": 0.557, "spec": 1.365}
+{"id": "fm_inferno_veins", "paint": 0.594, "spec": 1.541}
+{"id": "fm_ion_drift", "paint": 0.708, "spec": 1.601}
+{"id": "fm_labyrinth", "paint": 1.311, "spec": 2.011}
+{"id": "fm_lattice", "paint": 0.553, "spec": 1.684}
+{"id": "fm_magma", "paint": 0.598, "spec": 1.41}
+{"id": "fm_mudcrack", "paint": 0.521, "spec": 1.438}
+{"id": "fm_nanoweave", "paint": 0.411, "spec": 1.975}
+{"id": "fm_octo_suckers", "paint": 0.591, "spec": 2.058}
+{"id": "fm_penrose", "paint": 0.783, "spec": 1.978}
+{"id": "fm_petal_storm", "paint": 0.768, "spec": 2.289}
+{"id": "fm_python_skin", "paint": 0.484, "spec": 1.209}
+{"id": "fm_riverine", "paint": 0.622, "spec": 1.162}
+{"id": "fm_rivet_array", "paint": 0.401, "spec": 1.353}
+{"id": "fm_rope_coil", "paint": 0.58, "spec": 2.251}
+{"id": "fm_static_burst", "paint": 0.752, "spec": 2.37}
+{"id": "fm_stingray", "paint": 0.775, "spec": 1.424}
+{"id": "fm_tessellate", "paint": 0.504, "spec": 2.113}
+{"id": "fm_thousand_eyes", "paint": 0.729, "spec": 1.384}
+{"id": "fm_tide_glass", "paint": 0.664, "spec": 2.086}
+{"id": "fm_tiger_slash", "paint": 0.615, "spec": 1.223}
+{"id": "fm_topo_lines", "paint": 0.51, "spec": 1.637}
+{"id": "fm_tortoise", "paint": 0.636, "spec": 2.202}
+{"id": "fm_tsunami", "paint": 0.629, "spec": 1.999}
+{"id": "fm_witchlight", "paint": 0.742, "spec": 1.775}
+{"id": "fo_blood_spatter", "paint": 0.592, "spec": 1.695}
+{"id": "fo_bone_branch", "paint": 0.716, "spec": 1.824}
+{"id": "fo_candle_wax", "paint": 0.859, "spec": 2.204}
+{"id": "fo_cobweb_lace", "paint": 0.79, "spec": 2.054}
+{"id": "fo_cracked_tomb", "paint": 0.725, "spec": 1.211}
+{"id": "fo_crimson_cells", "paint": 0.627, "spec": 1.298}
+{"id": "fo_ectoplasm", "paint": 0.582, "spec": 1.396}
+{"id": "fo_glyph_cells", "paint": 0.487, "spec": 1.57}
+{"id": "fo_graveyard_moss", "paint": 0.811, "spec": 1.659}
+{"id": "fo_haunted_fog", "paint": 0.813, "spec": 1.827}
+{"id": "fo_pentagram_seal", "paint": 0.492, "spec": 1.044}
+{"id": "fo_raven_feather", "paint": 0.875, "spec": 1.272}
+{"id": "fo_rune_lattice", "paint": 0.491, "spec": 1.131}
+{"id": "fo_seance_veil", "paint": 0.712, "spec": 1.887}
+{"id": "fo_shadow_mist", "paint": 0.772, "spec": 1.897}
+{"id": "fo_sigil_grid", "paint": 0.496, "spec": 1.365}
+{"id": "fo_spider_lattice", "paint": 0.747, "spec": 1.372}
+{"id": "fo_stained_chapel", "paint": 0.707, "spec": 1.311}
+{"id": "fo_vampire_damask", "paint": 0.782, "spec": 1.027}
+{"id": "fo_witchfire", "paint": 0.644, "spec": 1.142}
+{"id": "fog_bank", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 3.248}
+{"id": "fr_chroma_rings", "paint": 1.062, "spec": 1.716}
+{"id": "fr_chroma_ripple", "paint": 1.094, "spec": 1.87}
+{"id": "fr_dichroic_bands", "paint": 0.492, "spec": 1.423}
+{"id": "fr_hex_hive", "paint": 0.703, "spec": 1.946}
+{"id": "fr_holo_foil", "paint": 0.622, "spec": 2.082}
+{"id": "fr_holo_grating", "paint": 0.656, "spec": 1.315}
+{"id": "fr_iridescent_weave", "paint": 0.487, "spec": 1.393}
+{"id": "fr_kaleidoscope", "paint": 0.453, "spec": 1.274}
+{"id": "fr_oil_slick", "paint": 0.498, "spec": 1.953}
+{"id": "fr_opal_fire", "paint": 0.719, "spec": 2.015}
+{"id": "fr_prism_shatter", "paint": 0.838, "spec": 2.158}
+{"id": "fr_prism_wheel", "paint": 1.014, "spec": 1.199}
+{"id": "fr_quasicrystal", "paint": 0.947, "spec": 1.601}
+{"id": "fr_rainbow_caustics", "paint": 0.656, "spec": 1.286}
+{"id": "fr_rainbow_plasma", "paint": 0.565, "spec": 1.284}
+{"id": "fr_rainbow_truchet", "paint": 0.554, "spec": 1.922}
+{"id": "fr_spectral_curl", "paint": 0.518, "spec": 2.09}
+{"id": "fr_spectral_marble", "paint": 0.665, "spec": 1.297}
+{"id": "fr_spectral_spiral", "paint": 0.739, "spec": 1.319}
+{"id": "fr_spectrum_voronoi", "paint": 0.649, "spec": 1.218}
+{"id": "fractal_candy_chaos", "paint": 1.477, "spec": 0.824}
+{"id": "fractal_chrome_decay", "paint": 1.517, "spec": 1.034}
+{"id": "fractal_cosmic_dust", "paint": 1.819, "spec": 0.988}
+{"id": "fractal_deep_organic", "paint": 1.796, "spec": 0.741}
+{"id": "fractal_electric_noise", "paint": 1.772, "spec": 0.838}
+{"id": "fractal_liquid_fire", "paint": 1.692, "spec": 0.818}
+{"id": "fractal_matte_chrome", "paint": 1.472, "spec": 0.71}
+{"id": "fractal_metallic_storm", "paint": 1.405, "spec": 0.677}
+{"id": "fractal_pearl_cloud", "paint": 1.33, "spec": 0.507}
+{"id": "fractal_warm_cold", "paint": 1.262, "spec": 0.61}
+{"id": "frost_bite", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.269}
+{"id": "frozen_lake", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.598}
+{"id": "fs_aurora_threads", "paint": 0.624, "spec": 1.866}
+{"id": "fs_blood_marble", "paint": 0.69, "spec": 2.209}
+{"id": "fs_carnival_night", "paint": 0.52, "spec": 1.88}
+{"id": "fs_circuit_soul", "paint": 0.601, "spec": 1.821}
+{"id": "fs_core_abyss", "paint": 0.327, "spec": 0.209}
+{"id": "fs_core_aurum", "paint": 0.267, "spec": 0.209}
+{"id": "fs_core_crimson", "paint": 0.314, "spec": 0.231}
+{"id": "fs_core_emerald", "paint": 0.263, "spec": 0.26}
+{"id": "fs_core_violet", "paint": 0.347, "spec": 0.262}
+{"id": "fs_ember_drift", "paint": 0.451, "spec": 1.615}
+{"id": "fs_geode_vein", "paint": 0.583, "spec": 1.715}
+{"id": "fs_ghost_silk", "paint": 0.491, "spec": 1.646}
+{"id": "fs_guilloche_ghost", "paint": 0.55, "spec": 1.887}
+{"id": "fs_hex_hive", "paint": 0.514, "spec": 1.752}
+{"id": "fs_howl", "paint": 0.476, "spec": 1.871}
+{"id": "fs_moire_phantom", "paint": 0.553, "spec": 1.905}
+{"id": "fs_moth_dust", "paint": 0.55, "spec": 1.836}
+{"id": "fs_night_tide", "paint": 0.617, "spec": 1.789}
+{"id": "fs_nova_burst", "paint": 0.578, "spec": 2.038}
+{"id": "fs_oil_serpent", "paint": 0.661, "spec": 1.712}
+{"id": "fs_petrol_halo", "paint": 0.658, "spec": 1.885}
+{"id": "fs_phantom_lattice", "paint": 0.511, "spec": 1.704}
+{"id": "fs_serpent_scale", "paint": 0.427, "spec": 1.634}
+{"id": "fs_shatter_glass", "paint": 0.559, "spec": 1.552}
+{"id": "fs_shattered_prism", "paint": 0.5, "spec": 1.689}
+{"id": "fs_soul_loom", "paint": 0.78, "spec": 0.349}
+{"id": "fs_star_chart", "paint": 0.703, "spec": 1.795}
+{"id": "fs_static_veins", "paint": 0.591, "spec": 0.979}
+{"id": "fs_widow_braid", "paint": 0.615, "spec": 1.633}
+{"id": "fs_wraith_veil", "paint": 0.41, "spec": 1.589}
+{"id": "fu_abduction_shaft", "paint": 1.313, "spec": 1.811}
+{"id": "fu_alien_circuit", "paint": 0.336, "spec": 1.13}
+{"id": "fu_antigrav", "paint": 0.638, "spec": 1.046}
+{"id": "fu_biomech_skin", "paint": 0.736, "spec": 1.932}
+{"id": "fu_crop_circle", "paint": 0.673, "spec": 1.386}
+{"id": "fu_glyph_cells", "paint": 0.61, "spec": 1.139}
+{"id": "fu_glyph_grid", "paint": 0.491, "spec": 1.718}
+{"id": "fu_hex_hull", "paint": 0.602, "spec": 1.892}
+{"id": "fu_hull_cells", "paint": 0.591, "spec": 1.766}
+{"id": "fu_hyperspace", "paint": 1.232, "spec": 2.001}
+{"id": "fu_nebula_portal", "paint": 0.862, "spec": 1.318}
+{"id": "fu_oil_iridescent", "paint": 0.606, "spec": 1.202}
+{"id": "fu_plasma_drive", "paint": 3.121, "spec": 1.081}
+{"id": "fu_portal_rings", "paint": 0.482, "spec": 1.241}
+{"id": "fu_reactor_core", "paint": 0.567, "spec": 1.73}
+{"id": "fu_saucer_alloy", "paint": 0.424, "spec": 1.615}
+{"id": "fu_scanner_sweep", "paint": 1.328, "spec": 1.032}
+{"id": "fu_stargate", "paint": 0.9, "spec": 1.824}
+{"id": "fu_tractor_beam", "paint": 0.972, "spec": 1.926}
+{"id": "fu_wormhole", "paint": 0.971, "spec": 1.912}
+{"id": "galaxy", "paint": 1.992, "spec": 0.902}
+{"id": "galaxy_nebula_base", "paint": 2.413, "spec": 0.86}
+{"id": "gargoyle", "paint": 3.809, "spec": 1.319}
+{"id": "gd_lyons_black_rainbow_holo_x", "paint": 0.584, "spec": 1.672}
+{"id": "gf_magnific_digital_illustration_a_dark_background_", "paint": 0.582, "spec": 2.126}
+{"id": "gf_x_1024293_6391", "paint": 0.541, "spec": 2.292}
+{"id": "gf_x_1024294_6392", "paint": 0.59, "spec": 2.263}
+{"id": "gf_x_1152842_or6ilf0", "paint": 0.684, "spec": 2.385}
+{"id": "gf_x_1195794_6247", "paint": 0.623, "spec": 2.147}
+{"id": "gf_x_1292", "paint": 0.591, "spec": 2.202}
+{"id": "gf_x_13845", "paint": 0.562, "spec": 1.936}
+{"id": "gf_x_1434947_595", "paint": 0.552, "spec": 2.122}
+{"id": "gf_x_16302407_yellow_hexagon_halftone_pattern_backg", "paint": 0.638, "spec": 2.092}
+{"id": "gf_x_18677", "paint": 0.594, "spec": 2.139}
+{"id": "gf_x_18914258_casino_2021_11", "paint": 0.658, "spec": 2.204}
+{"id": "gf_x_19034947_en9y_pjge_210709", "paint": 0.68, "spec": 2.025}
+{"id": "gf_x_19516529_casino_2021_17", "paint": 0.537, "spec": 1.839}
+{"id": "gf_x_20216645_6276400", "paint": 0.64, "spec": 2.142}
+{"id": "gf_x_20771417_v6t9_6fpy_210512", "paint": 0.649, "spec": 2.065}
+{"id": "gf_x_2149635369", "paint": 0.519, "spec": 1.936}
+{"id": "gf_x_22587040_6656535", "paint": 0.565, "spec": 1.709}
+{"id": "gf_x_22587046_6656517", "paint": 0.433, "spec": 1.862}
+{"id": "gf_x_2311", "paint": 0.523, "spec": 1.696}
+{"id": "gf_x_237560942_1f15d9a7_672f_4b74_9792_9a0daae8fbe2", "paint": 0.433, "spec": 1.94}
+{"id": "gf_x_2425", "paint": 0.428, "spec": 1.904}
+{"id": "gf_x_2474", "paint": 0.465, "spec": 1.886}
+{"id": "gf_x_26323837_blue_hexagon_pattern_background", "paint": 0.57, "spec": 1.921}
+{"id": "gf_x_283511752_c9a714fc_a791_4c92_a2af_e3b8537ecaef", "paint": 0.582, "spec": 1.806}
+{"id": "gf_x_29035", "paint": 0.459, "spec": 1.537}
+{"id": "gf_x_30330639_lightabstrback14gradientd", "paint": 0.376, "spec": 1.467}
+{"id": "gf_x_31587230_7837300", "paint": 0.402, "spec": 1.522}
+{"id": "gf_x_3521", "paint": 0.418, "spec": 1.48}
+{"id": "gf_x_391161788_673b312d_2817_44f1_bfa5_bc51bf8df42d", "paint": 0.43, "spec": 1.427}
+{"id": "gf_x_3946420_524", "paint": 0.404, "spec": 1.515}
+{"id": "gf_x_4004", "paint": 0.39, "spec": 1.394}
+{"id": "gf_x_417665166_62a76dd6_56af_4a68_b801_92f5967beda0", "paint": 0.425, "spec": 1.504}
+{"id": "gf_x_420841114_17c7c800_04f4_4c25_8844_09134f10d3a7", "paint": 0.513, "spec": 2.0}
+{"id": "gf_x_426098859_bfe8ddbc_e982_4a17_b396_d362c3e1e12f", "paint": 0.62, "spec": 2.021}
+{"id": "gf_x_426203826_fc914006_6101_4668_8c1d_3322a73a9319", "paint": 0.543, "spec": 2.145}
+{"id": "gf_x_6090", "paint": 0.637, "spec": 2.425}
+{"id": "gf_x_6113", "paint": 0.628, "spec": 2.125}
+{"id": "gf_x_69", "paint": 0.615, "spec": 1.962}
+{"id": "gf_x_819188_26851_nwdlx0", "paint": 0.627, "spec": 2.101}
+{"id": "gf_x_850287_o4yijt0", "paint": 0.594, "spec": 1.614}
+{"id": "gf_x_850288_o4yijy0", "paint": 0.461, "spec": 1.951}
+{"id": "gf_x_8514125_3910277", "paint": 0.598, "spec": 1.797}
+{"id": "gf_x_9121", "paint": 0.477, "spec": 1.784}
+{"id": "gf_x_9169", "paint": 0.534, "spec": 1.889}
+{"id": "gf_x_9338", "paint": 0.635, "spec": 1.954}
+{"id": "gf_x_946728_oe3t1y0", "paint": 0.475, "spec": 1.713}
+{"id": "gf_x_947419_oe46fw0", "paint": 0.486, "spec": 1.644}
+{"id": "gf_x_9819736_12811_1", "paint": 0.548, "spec": 1.511}
+{"id": "ghost_camo", "paint": 1.015, "spec": 0.3}
+{"id": "ghost_circuit", "paint": 1.263, "spec": 0.327}
+{"id": "ghost_diamonds", "paint": 1.561, "spec": 0.434}
+{"id": "ghost_fracture", "paint": 2.113, "spec": 0.464}
+{"id": "ghost_hex", "paint": 2.113, "spec": 0.594}
+{"id": "ghost_panel", "paint": 0.025, "spec": 0.361}
+{"id": "ghost_quilt", "paint": 1.753, "spec": 0.492}
+{"id": "ghost_scales", "paint": 1.806, "spec": 0.465}
+{"id": "ghost_stripes", "paint": 1.49, "spec": 0.513}
+{"id": "ghost_vortex", "paint": 1.784, "spec": 0.479}
+{"id": "ghost_waves", "paint": 1.546, "spec": 0.485}
+{"id": "glass_armor", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 0.602}
+{"id": "glitch", "paint": 1.889, "spec": 1.437}
+{"id": "glow_stick", "paint": 3.315, "spec": 1.89}
+{"id": "grad_amber_night", "paint": 1.195, "spec": 0.568}
+{"id": "grad_amber_vortex", "paint": 1.008, "spec": 0.487}
+{"id": "grad_amethyst_vortex", "paint": 0.996, "spec": 0.456}
+{"id": "grad_antique_gold", "paint": 0.811, "spec": 0.374}
+{"id": "grad_aqua_drift", "paint": 0.801, "spec": 0.361}
+{"id": "grad_aqua_vortex", "paint": 0.844, "spec": 0.38}
+{"id": "grad_arctic_dawn", "paint": 0.747, "spec": 0.362}
+{"id": "grad_black_gold", "paint": 0.969, "spec": 0.492}
+{"id": "grad_black_gold_diag", "paint": 0.924, "spec": 0.543}
+{"id": "grad_black_gold_h", "paint": 1.146, "spec": 0.512}
+{"id": "grad_blue_vortex", "paint": 1.22, "spec": 0.583}
+{"id": "grad_blush_cobalt", "paint": 1.239, "spec": 0.593}
+{"id": "grad_blush_vortex", "paint": 1.085, "spec": 0.581}
+{"id": "grad_bruise", "paint": 1.126, "spec": 0.577}
+{"id": "grad_burgundy_vortex", "paint": 1.236, "spec": 0.575}
+{"id": "grad_candy_cane", "paint": 1.099, "spec": 0.55}
+{"id": "grad_candy_cane_h", "paint": 1.016, "spec": 0.51}
+{"id": "grad_cerulean_vortex", "paint": 0.951, "spec": 0.495}
+{"id": "grad_champagne_navy", "paint": 1.056, "spec": 0.484}
+{"id": "grad_champagne_vortex", "paint": 0.931, "spec": 0.55}
+{"id": "grad_charcoal_gold", "paint": 1.044, "spec": 0.485}
+{"id": "grad_charcoal_vortex", "paint": 1.208, "spec": 0.488}
+{"id": "grad_chartreuse_vortex", "paint": 1.113, "spec": 0.598}
+{"id": "grad_chocolate_gold", "paint": 3.472, "spec": 0.543}
+{"id": "grad_chocolate_vortex", "paint": 1.048, "spec": 0.511}
+{"id": "grad_chrome_wave", "paint": 1.065, "spec": 0.49}
+{"id": "grad_cobalt_vortex", "paint": 1.197, "spec": 0.566}
+{"id": "grad_copper_flame", "paint": 1.266, "spec": 0.625}
+{"id": "grad_copper_patina", "paint": 1.034, "spec": 0.495}
+{"id": "grad_copper_vortex", "paint": 1.035, "spec": 0.448}
+{"id": "grad_coral_sea", "paint": 1.083, "spec": 0.447}
+{"id": "grad_coral_vortex", "paint": 1.008, "spec": 0.479}
+{"id": "grad_cream_crimson", "paint": 0.948, "spec": 0.497}
+{"id": "grad_cream_vortex", "paint": 1.131, "spec": 0.528}
+{"id": "grad_crimson_vortex", "paint": 3.87, "spec": 0.594}
+{"id": "grad_electric_lime", "paint": 1.16, "spec": 0.571}
+{"id": "grad_ember_ash", "paint": 1.148, "spec": 0.595}
+{"id": "grad_emerald_crown", "paint": 1.083, "spec": 0.444}
+{"id": "grad_emerald_crown_diag", "paint": 0.968, "spec": 0.559}
+{"id": "grad_emerald_night", "paint": 1.134, "spec": 0.563}
+{"id": "grad_emerald_vortex", "paint": 0.972, "spec": 0.383}
+{"id": "grad_fire_fade", "paint": 0.835, "spec": 0.425}
+{"id": "grad_fire_fade_diag", "paint": 2.412, "spec": 0.516}
+{"id": "grad_fire_fade_h", "paint": 1.089, "spec": 0.487}
+{"id": "grad_fire_vortex", "paint": 1.055, "spec": 0.589}
+{"id": "grad_forest_canopy", "paint": 1.108, "spec": 0.522}
+{"id": "grad_forest_night", "paint": 1.225, "spec": 0.626}
+{"id": "grad_frostbite", "paint": 1.182, "spec": 0.467}
+{"id": "grad_gold_vortex", "paint": 1.245, "spec": 0.567}
+{"id": "grad_golden_hour", "paint": 1.171, "spec": 0.553}
+{"id": "grad_golden_hour_h", "paint": 1.2, "spec": 0.546}
+{"id": "grad_graphite_amber", "paint": 1.031, "spec": 0.418}
+{"id": "grad_graphite_vortex", "paint": 0.924, "spec": 0.411}
+{"id": "grad_green_vortex", "paint": 0.932, "spec": 0.387}
+{"id": "grad_honey_slate", "paint": 1.012, "spec": 0.514}
+{"id": "grad_honey_vortex", "paint": 1.011, "spec": 0.458}
+{"id": "grad_ice_fire", "paint": 0.959, "spec": 0.488}
+{"id": "grad_indigo_vortex", "paint": 1.038, "spec": 0.526}
+{"id": "grad_iron_blood", "paint": 1.109, "spec": 0.541}
+{"id": "grad_ivory_cobalt", "paint": 1.366, "spec": 0.646}
+{"id": "grad_ivory_vortex", "paint": 1.237, "spec": 0.487}
+{"id": "grad_jade_mist", "paint": 0.976, "spec": 0.487}
+{"id": "grad_jade_vortex", "paint": 0.989, "spec": 0.425}
+{"id": "grad_lava_flow", "paint": 0.915, "spec": 0.397}
+{"id": "grad_lavender_dusk", "paint": 0.812, "spec": 0.403}
+{"id": "grad_lavender_vortex", "paint": 0.84, "spec": 0.326}
+{"id": "grad_magma", "paint": 0.946, "spec": 0.413}
+{"id": "grad_magma_h", "paint": 0.976, "spec": 0.48}
+{"id": "grad_maroon_vortex", "paint": 1.017, "spec": 0.463}
+{"id": "grad_midnight_ember", "paint": 1.548, "spec": 0.516}
+{"id": "grad_midnight_gold", "paint": 1.01, "spec": 0.505}
+{"id": "grad_mint_purple", "paint": 0.996, "spec": 0.463}
+{"id": "grad_mint_vortex", "paint": 1.437, "spec": 0.483}
+{"id": "grad_neon_rush", "paint": 1.033, "spec": 0.521}
+{"id": "grad_neon_rush_h", "paint": 0.942, "spec": 0.528}
+{"id": "grad_neon_violet", "paint": 0.993, "spec": 0.353}
+{"id": "grad_neon_violet_diag", "paint": 0.967, "spec": 0.464}
+{"id": "grad_neon_violet_vortex", "paint": 0.97, "spec": 0.387}
+{"id": "grad_obsidian", "paint": 0.916, "spec": 0.381}
+{"id": "grad_obsidian_vortex", "paint": 0.818, "spec": 0.377}
+{"id": "grad_ocean_depths", "paint": 0.737, "spec": 0.339}
+{"id": "grad_ocean_depths_diag", "paint": 0.828, "spec": 0.324}
+{"id": "grad_ocean_depths_h", "paint": 0.755, "spec": 0.371}
+{"id": "grad_opal_vortex", "paint": 0.811, "spec": 0.394}
+{"id": "grad_patriot", "paint": 0.907, "spec": 0.458}
+{"id": "grad_patriot_h", "paint": 1.028, "spec": 0.436}
+{"id": "grad_patriot_vortex", "paint": 1.168, "spec": 0.539}
+{"id": "grad_peach_vortex", "paint": 1.332, "spec": 0.591}
+{"id": "grad_pewter_rose", "paint": 1.723, "spec": 0.468}
+{"id": "grad_pewter_vortex", "paint": 0.997, "spec": 0.487}
+{"id": "grad_pink_vortex", "paint": 1.043, "spec": 0.44}
+{"id": "grad_plum_dawn", "paint": 0.921, "spec": 0.521}
+{"id": "grad_plum_vortex", "paint": 1.024, "spec": 0.368}
+{"id": "grad_rose_gold", "paint": 0.88, "spec": 0.326}
+{"id": "grad_rose_gold_h", "paint": 0.825, "spec": 0.326}
+{"id": "grad_rose_gold_vortex", "paint": 0.853, "spec": 0.374}
+{"id": "grad_rose_midnight", "paint": 0.852, "spec": 0.46}
+{"id": "grad_rose_vortex", "paint": 0.829, "spec": 0.358}
+{"id": "grad_ruby_vortex", "paint": 0.797, "spec": 0.366}
+{"id": "grad_sage_bronze", "paint": 0.737, "spec": 0.368}
+{"id": "grad_sage_vortex", "paint": 0.785, "spec": 0.408}
+{"id": "grad_sapphire_ice", "paint": 0.9, "spec": 0.455}
+{"id": "grad_sapphire_vortex", "paint": 1.041, "spec": 0.389}
+{"id": "grad_shadow_vortex", "paint": 1.078, "spec": 0.546}
+{"id": "grad_slate_vortex", "paint": 1.075, "spec": 0.54}
+{"id": "grad_solar_flare", "paint": 1.125, "spec": 0.58}
+{"id": "grad_solar_vortex", "paint": 1.081, "spec": 0.548}
+{"id": "grad_steel_forge", "paint": 1.087, "spec": 0.517}
+{"id": "grad_storm_front", "paint": 1.043, "spec": 0.42}
+{"id": "grad_storm_front_diag", "paint": 1.016, "spec": 0.524}
+{"id": "grad_sunset", "paint": 1.047, "spec": 0.403}
+{"id": "grad_sunset_diag", "paint": 1.529, "spec": 0.376}
+{"id": "grad_tan_vortex", "paint": 0.819, "spec": 0.372}
+{"id": "grad_teal_vortex", "paint": 0.776, "spec": 0.353}
+{"id": "grad_titanium_fire", "paint": 0.755, "spec": 0.37}
+{"id": "grad_titanium_vortex", "paint": 0.786, "spec": 0.339}
+{"id": "grad_topaz_vortex", "paint": 0.859, "spec": 0.406}
+{"id": "grad_toxic_waste", "paint": 0.906, "spec": 0.533}
+{"id": "grad_twilight", "paint": 1.132, "spec": 0.554}
+{"id": "grad_twilight_diag", "paint": 1.141, "spec": 0.553}
+{"id": "grad_twilight_h", "paint": 1.072, "spec": 0.493}
+{"id": "grad_ultraviolet", "paint": 1.184, "spec": 0.65}
+{"id": "grad_violet_vortex", "paint": 1.273, "spec": 0.603}
+{"id": "grad_white_vortex", "paint": 1.17, "spec": 0.555}
+{"id": "grad_wine_silk", "paint": 1.123, "spec": 0.51}
+{"id": "gradient_anodized_gloss", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.619}
+{"id": "gradient_candy_frozen", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.607}
+{"id": "gradient_candy_matte", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.771}
+{"id": "gradient_carbon_chrome", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.954}
+{"id": "gradient_chrome_matte", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 7.806}
+{"id": "gradient_ember_ice", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 11.902}
+{"id": "gradient_metallic_satin", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 25.828}
+{"id": "gradient_obsidian_mirror", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 10.543}
+{"id": "gradient_pearl_chrome", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 10.519}
+{"id": "gradient_spectraflame_void", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 6.612}
+{"id": "graveyard", "paint": 36.472, "spec": 1.543}
+{"id": "gravity_well", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.409}
+{"id": "grd_chromatic_aberration", "paint": 0.659, "spec": 1.63}
+{"id": "grd_duotone_grain", "paint": 0.54, "spec": 1.685}
+{"id": "grd_holo_foil", "paint": 0.528, "spec": 1.71}
+{"id": "grd_iridescent", "paint": 0.48, "spec": 1.77}
+{"id": "grd_liquid_marble", "paint": 0.688, "spec": 1.586}
+{"id": "grd_mesh_bleed", "paint": 1.143, "spec": 2.0}
+{"id": "grd_moire_interference", "paint": 0.489, "spec": 1.642}
+{"id": "grd_oklab_flow", "paint": 0.423, "spec": 1.914}
+{"id": "grd_radial_burst", "paint": 0.656, "spec": 2.074}
+{"id": "grd_ridged_contour", "paint": 0.642, "spec": 1.826}
+{"id": "grd_spectral_sweep", "paint": 0.392, "spec": 1.683}
+{"id": "hail_damage", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.361}
+{"id": "halftone", "paint": 4.145, "spec": 1.636}
+{"id": "halo_circle_pearl", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 0.196}
+{"id": "halo_crack_chrome", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 0.246}
+{"id": "halo_diamond_chrome", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 0.221}
+{"id": "halo_grid_pearl", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 0.212}
+{"id": "halo_hex_chrome", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 0.278}
+{"id": "halo_ripple_chrome", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 0.278}
+{"id": "halo_scale_gold", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 0.233}
+{"id": "halo_star_metal", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 0.25}
+{"id": "halo_voronoi_metal", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 0.222}
+{"id": "halo_wave_candy", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 0.213}
+{"id": "haunted", "paint": 24.199, "spec": 1.276}
+{"id": "heat_wave", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.992}
+{"id": "hellhound", "paint": 3.916, "spec": 1.334}
+{"id": "hex_mandala", "paint": 5.019, "spec": 1.423}
+{"id": "holographic_wrap", "paint": 3.398, "spec": 2.078}
+{"id": "honeycomb_organic", "paint": 3.751, "spec": 1.183}
+{"id": "hurricane", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.478}
+{"id": "infrared", "paint": 2.19, "spec": 1.339}
+{"id": "interference_rings", "paint": 3.064, "spec": 0.906}
+{"id": "iron_maiden", "paint": 3.416, "spec": 1.322}
+{"id": "kaleidoscope", "paint": 2.26, "spec": 1.789}
+{"id": "lace_filigree", "paint": 3.073, "spec": 0.92}
+{"id": "laser_grid", "paint": 1.542, "spec": 0.962}
+{"id": "laser_show", "paint": 2.141, "spec": 1.14}
+{"id": "led_matrix", "paint": 2.648, "spec": 1.548}
+{"id": "lfr_amber_waves", "paint": 2.235, "spec": 0.51}
+{"id": "lfr_eagle_ascendant", "paint": 1.47, "spec": 0.331}
+{"id": "lfr_freedom_forge", "paint": 1.53, "spec": 0.528}
+{"id": "lfr_glory_chrome", "paint": 1.504, "spec": 0.341}
+{"id": "lfr_liberty_torch", "paint": 1.225, "spec": 0.46}
+{"id": "lfr_midnight_militia", "paint": 1.405, "spec": 0.427}
+{"id": "lfr_old_glory_flux", "paint": 2.134, "spec": 0.399}
+{"id": "lfr_rockets_red_glare", "paint": 1.424, "spec": 0.527}
+{"id": "lfr_sparkler_dusk", "paint": 2.12, "spec": 0.349}
+{"id": "lfr_we_the_people", "paint": 1.272, "spec": 0.467}
+{"id": "lich_king", "paint": 2.74, "spec": 1.232}
+{"id": "lightning_strike", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.477}
+{"id": "liquid_metal", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.472}
+{"id": "living_chrome", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.017}
+{"id": "living_electric_current", "paint": 1.303, "spec": 1.485}
+{"id": "living_flame_flicker", "paint": 1.867, "spec": 1.897}
+{"id": "living_heat_haze", "paint": 1.861, "spec": 1.931}
+{"id": "living_lake_ripple", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.142}
+{"id": "living_led_chase", "paint": 1.853, "spec": 0.881}
+{"id": "living_neon_equalizer", "paint": 15.226, "spec": 2.462}
+{"id": "living_oil_pulse", "paint": 1.833, "spec": 2.243}
+{"id": "living_twinkle_stars", "paint": 2.768, "spec": 1.64}
+{"id": "living_wave_tide", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.395}
+{"id": "long_exposure", "paint": 4.006, "spec": 1.617}
+{"id": "magma_flow", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.401}
+{"id": "magnesium_burn", "paint": 3.331, "spec": 0.666}
+{"id": "magnetic", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.844}
+{"id": "materials2_carbon", "paint": 0.683, "spec": 0.426}
+{"id": "materials2_crystal", "paint": 1.336, "spec": 0.48}
+{"id": "materials2_damascus", "paint": 0.564, "spec": 0.433}
+{"id": "materials2_engine", "paint": 0.611, "spec": 0.586}
+{"id": "materials2_ferro", "paint": 0.623, "spec": 0.488}
+{"id": "materials2_forged", "paint": 1.15, "spec": 0.511}
+{"id": "materials2_fracture", "paint": 1.155, "spec": 0.53}
+{"id": "materials2_kevlar", "paint": 0.662, "spec": 0.522}
+{"id": "materials2_liquid", "paint": 0.651, "spec": 0.515}
+{"id": "materials2_meteorite", "paint": 1.416, "spec": 0.615}
+{"id": "materials2_titanium", "paint": 0.922, "spec": 0.534}
+{"id": "mercury_pool", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.852}
+{"id": "meteor_shower", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.45}
+{"id": "microshift_blue_teal_cyan", "paint": 1.53, "spec": 2.035}
+{"id": "microshift_burgundy_wine_gold", "paint": 3.017, "spec": 1.839}
+{"id": "microshift_copper_rose", "paint": 2.011, "spec": 2.796}
+{"id": "microshift_gold_green", "paint": 1.998, "spec": 2.684}
+{"id": "microshift_gold_olive_emerald", "paint": 15.444, "spec": 1.535}
+{"id": "microshift_gold_purple", "paint": 1.479, "spec": 2.134}
+{"id": "microshift_molten_metal", "paint": 1.522, "spec": 2.222}
+{"id": "microshift_northern_lights", "paint": 1.448, "spec": 2.198}
+{"id": "microshift_oil_slick", "paint": 1.457, "spec": 2.03}
+{"id": "microshift_orange_blue_electric", "paint": 1.523, "spec": 2.276}
+{"id": "microshift_peacock_fan", "paint": 1.433, "spec": 2.085}
+{"id": "microshift_pink_yellow_pop", "paint": 1.43, "spec": 2.06}
+{"id": "microshift_purple_gold_majesty", "paint": 1.498, "spec": 2.108}
+{"id": "microshift_purple_plum_bronze", "paint": 14.48, "spec": 2.209}
+{"id": "microshift_rainbow_stealth", "paint": 16.861, "spec": 1.244}
+{"id": "microshift_red_green_chaos", "paint": 52.399, "spec": 1.675}
+{"id": "microshift_sunset_horizon", "paint": 1.816, "spec": 3.016}
+{"id": "microshift_teal_blue", "paint": 2.381, "spec": 3.104}
+{"id": "molten_metal", "paint": 4.448, "spec": 1.143}
+{"id": "monsoon", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.615}
+{"id": "moth_luna", "paint": 1.715, "spec": 1.114}
+{"id": "ms_acid_veil_ambush", "paint": 0.506, "spec": 1.052}
+{"id": "ms_blood_empress", "paint": 0.433, "spec": 0.907}
+{"id": "ms_bone_sonata", "paint": 0.476, "spec": 0.744}
+{"id": "ms_chainburst_inferno", "paint": 0.427, "spec": 0.76}
+{"id": "ms_cinder_spiral", "paint": 0.406, "spec": 0.838}
+{"id": "ms_crimson_dragon", "paint": 0.432, "spec": 0.874}
+{"id": "ms_cryo_shard", "paint": 0.487, "spec": 0.761}
+{"id": "ms_crystal_onslaught", "paint": 3.524, "spec": 0.786}
+{"id": "ms_dragon_ascent", "paint": 15.63, "spec": 13.395}
+{"id": "ms_dragon_soul", "paint": 0.551, "spec": 0.944}
+{"id": "ms_emerald_scale_mirage", "paint": 0.431, "spec": 3.05}
+{"id": "ms_fang_cataclysm", "paint": 0.552, "spec": 0.888}
+{"id": "ms_frost_sentinel", "paint": 0.671, "spec": 1.007}
+{"id": "ms_frozen_inferno", "paint": 0.512, "spec": 0.964}
+{"id": "ms_lotus_ascention", "paint": 0.529, "spec": 0.839}
+{"id": "ms_molten_sting", "paint": 0.551, "spec": 0.901}
+{"id": "ms_porcelain_cipher", "paint": 0.577, "spec": 0.768}
+{"id": "ms_serpent_haze_strike", "paint": 0.489, "spec": 0.971}
+{"id": "ms_shadow_wraith", "paint": 0.601, "spec": 0.886}
+{"id": "ms_soul_forge", "paint": 0.622, "spec": 0.94}
+{"id": "ms_tempest_crown", "paint": 0.481, "spec": 0.821}
+{"id": "ms_thunder_mandala", "paint": 0.528, "spec": 0.764}
+{"id": "ms_toxic_labyrinth", "paint": 0.464, "spec": 0.848}
+{"id": "ms_venom_eclipse", "paint": 0.394, "spec": 0.847}
+{"id": "ms_venom_veil", "paint": 0.482, "spec": 0.756}
+{"id": "ms_zero_hour", "paint": 0.535, "spec": 0.715}
+{"id": "multiscale_candy_frost", "paint": 1.586, "spec": 1.088}
+{"id": "multiscale_carbon_micro", "paint": 2.326, "spec": 1.38}
+{"id": "multiscale_chrome_grain", "paint": 1.804, "spec": 0.982}
+{"id": "multiscale_chrome_sand", "paint": 1.805, "spec": 0.987}
+{"id": "multiscale_flake_grain", "paint": 1.712, "spec": 1.038}
+{"id": "multiscale_frost_crystal", "paint": 1.913, "spec": 0.97}
+{"id": "multiscale_matte_silk", "paint": 2.825, "spec": 1.319}
+{"id": "multiscale_metal_grit", "paint": 2.029, "spec": 1.309}
+{"id": "multiscale_pearl_texture", "paint": 2.211, "spec": 1.523}
+{"id": "multiscale_satin_weave", "paint": 2.91, "spec": 1.398}
+{"id": "mystichrome", "paint": 1.69, "spec": 0.94}
+{"id": "necrotic", "paint": 4.27, "spec": 1.469}
+{"id": "negative", "paint": 4.17, "spec": 1.193}
+{"id": "neon2_circuit_city", "paint": 2.312, "spec": 1.564}
+{"id": "neon2_flow_tubes", "paint": 0.485, "spec": 1.755}
+{"id": "neon2_honeycomb", "paint": 0.414, "spec": 1.537}
+{"id": "neon2_laser_web", "paint": 1.021, "spec": 1.708}
+{"id": "neon2_plasma_tubes", "paint": 0.448, "spec": 1.612}
+{"id": "neon2_rain", "paint": 0.339, "spec": 1.589}
+{"id": "neon2_sign_tubes", "paint": 0.965, "spec": 2.16}
+{"id": "neon2_splatter", "paint": 2.12, "spec": 1.943}
+{"id": "neon2_synthwave_sun", "paint": 0.643, "spec": 2.052}
+{"id": "neon2_wireframe", "paint": 0.586, "spec": 2.417}
+{"id": "neon_blacklight", "paint": 3.299, "spec": 2.387}
+{"id": "neon_cyber_yellow", "paint": 3.043, "spec": 2.058}
+{"id": "neon_dual_glow", "paint": 1.698, "spec": 1.843}
+{"id": "neon_electric_blue", "paint": 2.783, "spec": 2.8}
+{"id": "neon_glow", "paint": 4.369, "spec": 1.907}
+{"id": "neon_ice_white", "paint": 1.984, "spec": 1.776}
+{"id": "neon_orange_hazard", "paint": 1.791, "spec": 1.59}
+{"id": "neon_pink_blaze", "paint": 1.031, "spec": 1.053}
+{"id": "neon_rainbow_tube", "paint": 1.509, "spec": 1.018}
+{"id": "neon_red_alert", "paint": 1.307, "spec": 1.194}
+{"id": "neon_sign", "paint": 3.601, "spec": 0.788}
+{"id": "neon_toxic_green", "paint": 1.87, "spec": 1.574}
+{"id": "neon_vegas", "paint": 4.581, "spec": 0.801}
+{"id": "nightmare", "paint": 4.019, "spec": 1.398}
+{"id": "ocean_floor", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.469}
+{"id": "oil_slick", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.994}
+{"id": "oil_slick_base", "paint": 1.996, "spec": 0.786}
+{"id": "optics2_aurora", "paint": 0.898, "spec": 1.608}
+{"id": "optics2_bubbles", "paint": 2.662, "spec": 1.582}
+{"id": "optics2_caustics", "paint": 0.713, "spec": 2.125}
+{"id": "optics2_dvd", "paint": 0.686, "spec": 1.892}
+{"id": "optics2_fiber", "paint": 0.604, "spec": 1.774}
+{"id": "optics2_holo", "paint": 0.725, "spec": 1.767}
+{"id": "optics2_lenticular", "paint": 0.694, "spec": 1.728}
+{"id": "optics2_moire", "paint": 0.867, "spec": 2.305}
+{"id": "optics2_newton", "paint": 1.618, "spec": 1.652}
+{"id": "optics2_prism", "paint": 2.708, "spec": 2.012}
+{"id": "optics2_thinfilm", "paint": 0.697, "spec": 1.887}
+{"id": "oxidized_metal", "paint": 0.435, "spec": 0.359}
+{"id": "p_aurora", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.784}
+{"id": "p_static", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.532}
+{"id": "parallax", "paint": 3.058, "spec": 1.65}
+{"id": "patinated_bronze", "paint": 2.012, "spec": 0.986}
+{"id": "penrose_quasi", "paint": 3.504, "spec": 1.289}
+{"id": "permafrost", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.539}
+{"id": "phantom", "paint": 4.191, "spec": 1.446}
+{"id": "phase_shift", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 0.537}
+{"id": "phosphorescent", "paint": 1.975, "spec": 0.958}
+{"id": "plasma_globe", "paint": 2.619, "spec": 0.656}
+{"id": "polarized", "paint": 3.374, "spec": 2.058}
+{"id": "polished_obsidian_mono", "paint": 1.895, "spec": 0.826}
+{"id": "possessed", "paint": 2.8, "spec": 2.002}
+{"id": "pp_acid_carbon_mesh", "paint": 0.645, "spec": 0.443}
+{"id": "pp_black_emboss_mandala", "paint": 0.543, "spec": 0.431}
+{"id": "pp_blue_polygon_shatter", "paint": 0.489, "spec": 0.41}
+{"id": "pp_burn_hole_mesh", "paint": 0.552, "spec": 0.383}
+{"id": "pp_chrome_oval_chain", "paint": 0.544, "spec": 0.392}
+{"id": "pp_ember_circuit_maze", "paint": 0.553, "spec": 0.457}
+{"id": "pp_graphite_cross_lattice", "paint": 0.518, "spec": 0.424}
+{"id": "pp_green_plasma_vein", "paint": 0.609, "spec": 0.446}
+{"id": "pp_gunmetal_geo_tessellation", "paint": 0.508, "spec": 0.407}
+{"id": "pp_hazard_chevron_weave", "paint": 0.591, "spec": 0.338}
+{"id": "pp_holographic_oil_circuit", "paint": 0.597, "spec": 0.383}
+{"id": "pp_ice_facet_shatter", "paint": 0.565, "spec": 0.389}
+{"id": "pp_lime_pixel_confetti", "paint": 0.557, "spec": 0.42}
+{"id": "pp_marble_flow_pearl", "paint": 0.588, "spec": 0.36}
+{"id": "pp_neon_fracture_net", "paint": 0.551, "spec": 0.38}
+{"id": "pp_noir_houndstooth_star", "paint": 0.596, "spec": 0.43}
+{"id": "pp_pink_checker_carbon", "paint": 0.54, "spec": 0.429}
+{"id": "pp_psychedelic_floral_spin", "paint": 0.597, "spec": 0.395}
+{"id": "pp_red_herringbone_heat", "paint": 0.504, "spec": 0.421}
+{"id": "pp_shadow_diamond_mesh", "paint": 0.563, "spec": 0.332}
+{"id": "pp_talavera_tile_riot", "paint": 0.5, "spec": 0.383}
+{"id": "pp_teal_hex_haze", "paint": 0.539, "spec": 0.339}
+{"id": "pp_terracotta_ceramic_grid", "paint": 0.577, "spec": 0.348}
+{"id": "pp_tokyo_script_textile", "paint": 0.548, "spec": 0.364}
+{"id": "prizm_adaptive", "paint": 1.564, "spec": 0.905}
+{"id": "prizm_alien_skin", "paint": 1.513, "spec": 0.884}
+{"id": "prizm_arctic", "paint": 1.595, "spec": 1.407}
+{"id": "prizm_aurora_shift", "paint": 1.369, "spec": 1.42}
+{"id": "prizm_black_rainbow", "paint": 0.877, "spec": 0.486}
+{"id": "prizm_blood_moon", "paint": 1.248, "spec": 1.597}
+{"id": "prizm_candy_paint", "paint": 1.867, "spec": 1.754}
+{"id": "prizm_chrome_rose", "paint": 1.593, "spec": 1.483}
+{"id": "prizm_copper_flame", "paint": 1.372, "spec": 1.36}
+{"id": "prizm_cosmos", "paint": 1.598, "spec": 0.707}
+{"id": "prizm_dark_matter", "paint": 1.548, "spec": 1.422}
+{"id": "prizm_deep_space", "paint": 1.161, "spec": 1.355}
+{"id": "prizm_duochrome", "paint": 1.236, "spec": 1.611}
+{"id": "prizm_ember", "paint": 1.533, "spec": 1.383}
+{"id": "prizm_fire_ice", "paint": 1.534, "spec": 1.58}
+{"id": "prizm_galaxy_dust", "paint": 1.199, "spec": 1.265}
+{"id": "prizm_holographic", "paint": 1.445, "spec": 1.284}
+{"id": "prizm_iridescent", "paint": 1.223, "spec": 1.331}
+{"id": "prizm_midnight", "paint": 1.873, "spec": 1.292}
+{"id": "prizm_mystichrome", "paint": 1.243, "spec": 1.403}
+{"id": "prizm_neon", "paint": 1.349, "spec": 0.559}
+{"id": "prizm_oceanic", "paint": 1.599, "spec": 1.495}
+{"id": "prizm_phoenix", "paint": 1.372, "spec": 1.44}
+{"id": "prizm_solar", "paint": 1.294, "spec": 1.533}
+{"id": "prizm_spectrum", "paint": 1.638, "spec": 1.408}
+{"id": "prizm_sunset_strip", "paint": 1.347, "spec": 1.39}
+{"id": "prizm_titanium", "paint": 1.122, "spec": 1.457}
+{"id": "prizm_toxic_waste", "paint": 1.418, "spec": 1.557}
+{"id": "prizm_venom", "paint": 1.511, "spec": 1.575}
+{"id": "pulse", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 0.302}
+{"id": "quantum", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.908}
+{"id": "quilt_alternating_duo", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 2.248}
+{"id": "quilt_candy_tiles", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 1.579}
+{"id": "quilt_chrome_mosaic", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 1.594}
+{"id": "quilt_diamond_shimmer", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 1.475}
+{"id": "quilt_gradient_tiles", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 1.839}
+{"id": "quilt_hex_variety", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 2.152}
+{"id": "quilt_metallic_pixels", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 1.812}
+{"id": "quilt_organic_cells", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 1.964}
+{"id": "quilt_pearl_patchwork", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 1.818}
+{"id": "quilt_random_chaos", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 2.128}
+{"id": "race_worn", "paint": 0.572, "spec": 0.513}
+{"id": "radioactive", "paint": 2.324, "spec": 1.675}
+{"id": "rave", "paint": 5.696, "spec": 2.395}
+{"id": "reactive_candy_reveal", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.913}
+{"id": "reactive_chrome_fade", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.648}
+{"id": "reactive_dual_tone", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.779}
+{"id": "reactive_ghost_metal", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.776}
+{"id": "reactive_matte_shine", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.56}
+{"id": "reactive_mirror_shadow", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.383}
+{"id": "reactive_pearl_flash", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.548}
+{"id": "reactive_plasma", "paint": 2.065, "spec": 0.676}
+{"id": "reactive_pulse_metal", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.378}
+{"id": "reactive_stealth_pop", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.484}
+{"id": "reactive_warm_cold", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.588}
+{"id": "reaper", "paint": 2.807, "spec": 0.833}
+{"id": "refraction", "paint": 4.202, "spec": 1.393}
+{"id": "rs_akane_flake_fog", "paint": 0.663, "spec": 2.002}
+{"id": "rs_bakeneko_velvet", "paint": 0.676, "spec": 2.88}
+{"id": "rs_bamboo_zen", "paint": 1.188, "spec": 3.54}
+{"id": "rs_bell_of_damned", "paint": 1.046, "spec": 3.672}
+{"id": "rs_bosozoku_riot", "paint": 1.011, "spec": 3.808}
+{"id": "rs_camellia_glow", "paint": 1.042, "spec": 3.07}
+{"id": "rs_chrysanthemum_sun", "paint": 1.137, "spec": 3.573}
+{"id": "rs_crane_garden", "paint": 0.907, "spec": 2.766}
+{"id": "rs_dekotora_electric_freight", "paint": 0.825, "spec": 2.433}
+{"id": "rs_drift_hanami_oversteer", "paint": 0.72, "spec": 2.044}
+{"id": "rs_fuji_dawn", "paint": 0.638, "spec": 1.964}
+{"id": "rs_gashadokuro_moon", "paint": 1.1, "spec": 1.913}
+{"id": "rs_geisha_whisper", "paint": 0.674, "spec": 1.975}
+{"id": "rs_hakuryu_ice", "paint": 0.711, "spec": 2.337}
+{"id": "rs_hyakki_parade", "paint": 0.691, "spec": 1.846}
+{"id": "rs_hydrangea_mist", "paint": 0.709, "spec": 2.282}
+{"id": "rs_indigo_tsunami", "paint": 0.668, "spec": 2.122}
+{"id": "rs_iris_rain", "paint": 0.769, "spec": 1.983}
+{"id": "rs_jorogumo_silk", "paint": 0.703, "spec": 1.921}
+{"id": "rs_kabuki_inferno", "paint": 0.611, "spec": 1.857}
+{"id": "rs_kaido_chrome_bloom", "paint": 0.66, "spec": 2.105}
+{"id": "rs_kinpaku_blaze", "paint": 1.297, "spec": 1.968}
+{"id": "rs_kintsugi_moon", "paint": 0.637, "spec": 1.946}
+{"id": "rs_kitsune_ember", "paint": 0.688, "spec": 1.9}
+{"id": "rs_koi_ascension", "paint": 0.626, "spec": 2.146}
+{"id": "rs_koi_pond_bloom", "paint": 0.672, "spec": 2.055}
+{"id": "rs_kuro_dragon", "paint": 0.637, "spec": 1.99}
+{"id": "rs_kurogane_rain", "paint": 0.667, "spec": 2.101}
+{"id": "rs_kyoto_lantern", "paint": 0.713, "spec": 2.208}
+{"id": "rs_lotus_reverie", "paint": 0.852, "spec": 3.41}
+{"id": "rs_matcha_ceremony", "paint": 1.066, "spec": 3.458}
+{"id": "rs_mikan_pearl", "paint": 0.859, "spec": 2.504}
+{"id": "rs_nure_onna_tide", "paint": 0.81, "spec": 2.909}
+{"id": "rs_oni_bloodshift", "paint": 0.658, "spec": 2.022}
+{"id": "rs_oni_nocturne", "paint": 0.623, "spec": 2.006}
+{"id": "rs_peony_festival", "paint": 0.644, "spec": 2.127}
+{"id": "rs_plum_blossom_dawn", "paint": 0.691, "spec": 1.922}
+{"id": "rs_rising_sun_flare", "paint": 0.652, "spec": 1.905}
+{"id": "rs_ryokucha_scroll", "paint": 0.629, "spec": 1.814}
+{"id": "rs_sakura_cascade", "paint": 0.632, "spec": 1.804}
+{"id": "rs_sakura_storm", "paint": 0.687, "spec": 1.918}
+{"id": "rs_shibuya_pulse", "paint": 0.625, "spec": 2.073}
+{"id": "rs_sumi_eclipse", "paint": 0.594, "spec": 1.996}
+{"id": "rs_temple_gold", "paint": 0.638, "spec": 1.744}
+{"id": "rs_tengu_storm", "paint": 0.585, "spec": 1.783}
+{"id": "rs_thunder_dragon", "paint": 0.876, "spec": 1.986}
+{"id": "rs_time_attack_grid_shock", "paint": 0.683, "spec": 1.868}
+{"id": "rs_touge_apex", "paint": 0.647, "spec": 2.08}
+{"id": "rs_vermilion_torii", "paint": 0.635, "spec": 1.821}
+{"id": "rs_wangan_midnight_pulse", "paint": 0.6, "spec": 1.931}
+{"id": "rs_wisteria_reverie", "paint": 0.689, "spec": 1.809}
+{"id": "rs_yurei_veil", "paint": 0.603, "spec": 1.985}
+{"id": "rust", "paint": 5.278, "spec": 0.918}
+{"id": "scarab_gold", "paint": 2.015, "spec": 1.44}
+{"id": "scorched", "paint": 2.225, "spec": 1.556}
+{"id": "shadow_realm", "paint": 4.127, "spec": 1.523}
+{"id": "sodium_lamp", "paint": 2.665, "spec": 1.186}
+{"id": "solar_wind", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.644}
+{"id": "solarization", "paint": 3.382, "spec": 1.693}
+{"id": "sparkle_champagne", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 4.033}
+{"id": "sparkle_confetti", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 3.955}
+{"id": "sparkle_constellation", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 2.336}
+{"id": "sparkle_diamond_dust", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 2.685}
+{"id": "sparkle_firefly", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 2.602}
+{"id": "sparkle_galaxy", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 2.111}
+{"id": "sparkle_lightning_bug", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 2.438}
+{"id": "sparkle_meteor", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 1.962}
+{"id": "sparkle_snowfall", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 2.596}
+{"id": "sparkle_starfield", "paint_err": "TypeError(\"can't multiply sequence by non-int of type 'float'\")", "spec": 2.276}
+{"id": "spectral", "paint": 2.606, "spec": 1.63}
+{"id": "spectral_complementary", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.295}
+{"id": "spectral_dark_light", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.187}
+{"id": "spectral_earth_sky", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.409}
+{"id": "spectral_inverse_logic", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.36}
+{"id": "spectral_mono_chrome", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.196}
+{"id": "spectral_neon_reactive", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.453}
+{"id": "spectral_prismatic_flip", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.291}
+{"id": "spectral_rainbow_metal", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.145}
+{"id": "spectral_sat_metal", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.539}
+{"id": "spectral_warm_cool", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.206}
+{"id": "spectrum_aberration_glitch", "paint": 1.348, "spec": 0.333}
+{"id": "spectrum_abrasion_halo", "paint": 1.156, "spec": 0.284}
+{"id": "spectrum_anodine_dunes", "paint": 1.186, "spec": 0.309}
+{"id": "spectrum_beetle_elytra", "paint": 1.04, "spec": 0.253}
+{"id": "spectrum_bismuth_garden", "paint": 1.428, "spec": 0.319}
+{"id": "spectrum_black_opal", "paint": 1.505, "spec": 0.24}
+{"id": "spectrum_borealis_ice", "paint": 1.608, "spec": 0.29}
+{"id": "spectrum_boulder_opal", "paint": 2.026, "spec": 0.276}
+{"id": "spectrum_chromatic_orchid", "paint": 1.471, "spec": 0.311}
+{"id": "spectrum_circuit_awakens", "paint": 1.19, "spec": 0.358}
+{"id": "spectrum_clockwork_dial", "paint": 2.201, "spec": 0.393}
+{"id": "spectrum_contact_bloom", "paint": 2.065, "spec": 0.404}
+{"id": "spectrum_data_etch", "paint": 1.043, "spec": 0.294}
+{"id": "spectrum_diamond_fire", "paint": 2.676, "spec": 0.306}
+{"id": "spectrum_event_horizon", "paint": 1.584, "spec": 0.311}
+{"id": "spectrum_flare_spectra", "paint": 1.174, "spec": 0.326}
+{"id": "spectrum_forge_heat", "paint": 1.103, "spec": 0.34}
+{"id": "spectrum_fracture_polarized", "paint": 1.707, "spec": 0.406}
+{"id": "spectrum_ghost_prism", "paint": 1.539, "spec": 0.495}
+{"id": "spectrum_grating_quilt", "paint": 1.398, "spec": 0.384}
+{"id": "spectrum_interference_weave", "paint": 1.357, "spec": 0.355}
+{"id": "spectrum_jewel_box", "paint": 2.44, "spec": 0.368}
+{"id": "spectrum_lathe_burst", "paint": 2.686, "spec": 0.346}
+{"id": "spectrum_liquid_crystal", "paint": 1.459, "spec": 0.327}
+{"id": "spectrum_magnet_flow", "paint": 2.072, "spec": 0.389}
+{"id": "spectrum_mantis_strike", "paint": 1.495, "spec": 0.324}
+{"id": "spectrum_moire_silk", "paint": 1.152, "spec": 0.437}
+{"id": "spectrum_nacre_tide", "paint": 1.216, "spec": 0.313}
+{"id": "spectrum_oilfilm_rain", "paint": 2.087, "spec": 0.559}
+{"id": "spectrum_opal_core", "paint": 1.739, "spec": 0.478}
+{"id": "spectrum_orbital_engrave", "paint": 1.393, "spec": 0.56}
+{"id": "spectrum_peacock_eye", "paint": 1.929, "spec": 0.556}
+{"id": "spectrum_pressure_map", "paint": 2.605, "spec": 0.679}
+{"id": "spectrum_prism_pool", "paint": 2.013, "spec": 0.455}
+{"id": "spectrum_rainbow_river", "paint": 3.258, "spec": 0.409}
+{"id": "spectrum_redshift_drift", "paint": 1.702, "spec": 0.595}
+{"id": "spectrum_shatter_glass", "paint": 2.433, "spec": 0.362}
+{"id": "spectrum_sin_orchid", "paint": 2.422, "spec": 0.599}
+{"id": "spectrum_singularity_lens", "paint": 1.854, "spec": 0.487}
+{"id": "spectrum_smectic_fan", "paint": 1.229, "spec": 0.365}
+{"id": "spectrum_smoke_chroma", "paint": 3.298, "spec": 0.707}
+{"id": "spectrum_spill_metropolis", "paint": 2.042, "spec": 0.658}
+{"id": "spectrum_star_temperature", "paint": 1.415, "spec": 0.54}
+{"id": "spectrum_stress_storm", "paint": 3.797, "spec": 0.638}
+{"id": "spectrum_swirl_supernova", "paint": 1.643, "spec": 0.913}
+{"id": "spectrum_tempered_ghost", "paint": 2.192, "spec": 0.444}
+{"id": "spectrum_thermo_touch", "paint": 2.202, "spec": 0.849}
+{"id": "spectrum_topo_rainbow", "paint": 1.259, "spec": 0.384}
+{"id": "spectrum_vhs_phantom", "paint": 1.525, "spec": 0.482}
+{"id": "spectrum_vinyl_groove", "paint": 1.866, "spec": 0.456}
+{"id": "spectrum_xray_bloom", "paint": 1.981, "spec": 0.44}
+{"id": "static", "paint": 1.255, "spec": 1.036}
+{"id": "stealth", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.079}
+{"id": "tesla_coil", "paint": 2.858, "spec": 2.475}
+{"id": "thermal_titanium", "paint": 2.692, "spec": 1.039}
+{"id": "thermochromic", "paint": 4.749, "spec": 3.128}
+{"id": "thin_film", "paint_err": "UFuncTypeError(<ufunc 'multiply'>, (dtype('<U7'), dtype('float32'), None))", "spec": 0.771}
+{"id": "tidal_wave", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.409}
+{"id": "topographic_dense", "paint": 5.057, "spec": 1.651}
+{"id": "tornado_alley", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.268}
+{"id": "tracer_round", "paint": 2.05, "spec": 1.936}
+{"id": "trizone_anodized_candy_silk", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.857}
+{"id": "trizone_ceramic_flake_satin", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.712}
+{"id": "trizone_chrome_candy_matte", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.058}
+{"id": "trizone_frozen_ember_chrome", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.677}
+{"id": "trizone_glass_metal_matte", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.698}
+{"id": "trizone_mercury_obsidian_candy", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.644}
+{"id": "trizone_pearl_carbon_gold", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.665}
+{"id": "trizone_stealth_spectra_frozen", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.674}
+{"id": "trizone_titanium_copper_chrome", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.733}
+{"id": "trizone_vanta_chrome_pearl", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 0.605}
+{"id": "ui_bjeans1", "paint": 0.584, "spec": 0.415}
+{"id": "ui_black_rainbow_holo_x2", "paint": 0.645, "spec": 2.025}
+{"id": "ui_chatgpt_image_jun_16_2026_03_01_34_pm", "paint": 0.7, "spec": 2.189}
+{"id": "ui_groovy_waves", "paint": 0.614, "spec": 1.814}
+{"id": "ui_jeans_light_weathered", "paint": 0.496, "spec": 0.36}
+{"id": "ui_jeans_light_weathered_2", "paint": 0.624, "spec": 0.563}
+{"id": "ui_jeans_light_weathered_3", "paint": 0.652, "spec": 0.403}
+{"id": "ui_krak", "paint": 0.698, "spec": 2.261}
+{"id": "ui_mag01", "paint": 0.643, "spec": 2.361}
+{"id": "ui_stw_3c4c676f_02", "paint": 0.778, "spec": 0.939}
+{"id": "uj_aston_strait_silver", "paint": 0.547, "spec": 3.68}
+{"id": "uj_beat_burst", "paint": 0.583, "spec": 2.814}
+{"id": "uj_belfast_harp_storm", "paint": 0.41, "spec": 3.271}
+{"id": "uj_bentley_brooklands_mist", "paint": 0.687, "spec": 2.743}
+{"id": "uj_black_cab_nocturne", "paint": 0.493, "spec": 2.32}
+{"id": "uj_blueblood_beatline", "paint": 0.341, "spec": 2.65}
+{"id": "uj_brick_lane_voltage", "paint": 0.441, "spec": 2.439}
+{"id": "uj_brighton_pier_neon", "paint": 0.423, "spec": 2.747}
+{"id": "uj_camden_signal_riot", "paint": 0.493, "spec": 2.261}
+{"id": "uj_chelsea_razor_parade", "paint": 0.374, "spec": 1.955}
+{"id": "uj_cornwall_sea_spark", "paint": 0.407, "spec": 2.277}
+{"id": "uj_covent_garden_static", "paint": 0.505, "spec": 2.403}
+{"id": "uj_dover_white_cliff_pearl", "paint": 0.487, "spec": 2.255}
+{"id": "uj_edinburgh_castle_frost", "paint": 0.4, "spec": 2.466}
+{"id": "uj_gherkin_twist_metal", "paint": 0.457, "spec": 1.801}
+{"id": "uj_glasgow_granite_soul", "paint": 0.414, "spec": 1.987}
+{"id": "uj_goodwood_heritage_flake", "paint": 0.37, "spec": 1.979}
+{"id": "uj_highland_fling_metal", "paint": 0.377, "spec": 2.008}
+{"id": "uj_highland_heather_haze", "paint": 0.423, "spec": 2.123}
+{"id": "uj_isle_of_man_tt_chrome", "paint": 0.441, "spec": 2.105}
+{"id": "uj_jaguar_etype_silk", "paint": 0.349, "spec": 1.873}
+{"id": "uj_kings_cross_mercury", "paint": 0.375, "spec": 2.091}
+{"id": "uj_liverpool_echo_lace", "paint": 0.342, "spec": 1.878}
+{"id": "uj_loch_ness_deep_void", "paint": 0.331, "spec": 1.819}
+{"id": "uj_lotus_elan_streak", "paint": 0.326, "spec": 1.783}
+{"id": "uj_manchester_acid_union", "paint": 0.334, "spec": 1.92}
+{"id": "uj_mclaren_papaya_strike", "paint": 0.32, "spec": 1.805}
+{"id": "uj_midnight_hearse_baroque", "paint": 0.321, "spec": 1.807}
+{"id": "uj_mini_cooper_flip", "paint": 0.501, "spec": 1.636}
+{"id": "uj_notting_carnival_glass", "paint": 0.352, "spec": 1.887}
+{"id": "uj_oxford_circus_chrome", "paint": 0.349, "spec": 1.972}
+{"id": "uj_piccadilly_rain_stance", "paint": 0.372, "spec": 1.784}
+{"id": "uj_portobello_pearl_riot", "paint": 0.379, "spec": 1.834}
+{"id": "uj_red_bus_velocity", "paint": 0.341, "spec": 1.814}
+{"id": "uj_rolls_phantom_veil", "paint": 0.347, "spec": 1.892}
+{"id": "uj_routemaster_candy", "paint": 0.368, "spec": 1.657}
+{"id": "uj_shard_glass_rain", "paint": 0.417, "spec": 1.79}
+{"id": "uj_silverstone_apex_flare", "paint": 0.463, "spec": 1.962}
+{"id": "uj_southampton_dock_matte", "paint": 0.382, "spec": 1.846}
+{"id": "uj_thames_after_dark", "paint": 0.352, "spec": 1.933}
+{"id": "uj_tudor_rose_filigree", "paint": 0.367, "spec": 2.166}
+{"id": "uj_ulster_rally_tartan", "paint": 0.378, "spec": 2.238}
+{"id": "uj_welsh_dragon_lacquer", "paint": 0.383, "spec": 2.505}
+{"id": "uj_williams_fw_blueblood", "paint": 0.352, "spec": 2.355}
+{"id": "uj_windsor_guard_gloss", "paint": 0.396, "spec": 2.034}
+{"id": "uv_blacklight", "paint": 2.757, "spec": 2.119}
+{"id": "velvet", "paint": 0.161, "spec": 0.309}
+{"id": "vm_adobe_sunset", "paint": 0.635, "spec": 2.14}
+{"id": "vm_agave_pearl", "paint": 0.818, "spec": 2.575}
+{"id": "vm_aztec_sunfire", "paint": 0.803, "spec": 2.144}
+{"id": "vm_azulejo_storm", "paint": 0.597, "spec": 1.901}
+{"id": "vm_baja_cartografia", "paint": 0.618, "spec": 1.937}
+{"id": "vm_baja_horizon", "paint": 0.566, "spec": 1.679}
+{"id": "vm_bajio_gold_calaveras", "paint": 0.607, "spec": 1.942}
+{"id": "vm_cactus_sunset", "paint": 0.563, "spec": 1.766}
+{"id": "vm_calavera_royal", "paint": 0.598, "spec": 1.856}
+{"id": "vm_calavera_violeta", "paint": 0.694, "spec": 1.877}
+{"id": "vm_cantina_neon", "paint": 0.611, "spec": 1.744}
+{"id": "vm_cempasuchil_noir", "paint": 0.684, "spec": 2.229}
+{"id": "vm_cenote_lace", "paint": 0.643, "spec": 2.023}
+{"id": "vm_charro_nocturne", "paint": 0.585, "spec": 1.89}
+{"id": "vm_cinco_spark", "paint": 0.542, "spec": 1.806}
+{"id": "vm_copper_canyon", "paint": 0.563, "spec": 1.778}
+{"id": "vm_desert_marigold", "paint": 0.781, "spec": 2.024}
+{"id": "vm_eclipse_ofrenda", "paint": 0.576, "spec": 1.692}
+{"id": "vm_fiesta_chrome", "paint": 0.603, "spec": 1.761}
+{"id": "vm_guadalupe_lowrider", "paint": 0.612, "spec": 1.849}
+{"id": "vm_huichol_beadwork", "paint": 0.65, "spec": 1.789}
+{"id": "vm_jalisco_flash", "paint": 0.548, "spec": 2.011}
+{"id": "vm_lucha_rosa", "paint": 0.831, "spec": 3.277}
+{"id": "vm_luchador_plata", "paint": 0.677, "spec": 2.063}
+{"id": "vm_luchador_rayo", "paint": 0.643, "spec": 2.419}
+{"id": "vm_maguey_pearl", "paint": 0.825, "spec": 2.356}
+{"id": "vm_mariachi_verde", "paint": 0.746, "spec": 1.933}
+{"id": "vm_mayan_jade", "paint": 0.843, "spec": 2.62}
+{"id": "vm_mezcal_smoke", "paint": 0.593, "spec": 1.715}
+{"id": "vm_milagro_silver", "paint": 0.577, "spec": 2.022}
+{"id": "vm_mole_negro", "paint": 0.678, "spec": 2.188}
+{"id": "vm_mosaic_jaguar", "paint": 0.716, "spec": 1.92}
+{"id": "vm_neon_cantina", "paint": 0.569, "spec": 2.131}
+{"id": "vm_noche_buena", "paint": 0.699, "spec": 2.286}
+{"id": "vm_nopal_bloom", "paint": 0.759, "spec": 2.048}
+{"id": "vm_oaxaca_moonwater", "paint": 0.605, "spec": 2.415}
+{"id": "vm_pacific_coast_dawn", "paint": 0.737, "spec": 1.942}
+{"id": "vm_playa_dorada", "paint": 0.562, "spec": 1.774}
+{"id": "vm_pyramid_shadow", "paint": 0.569, "spec": 2.146}
+{"id": "vm_quetzal_sunset", "paint": 0.705, "spec": 2.245}
+{"id": "vm_riviera_corazon", "paint": 0.752, "spec": 2.329}
+{"id": "vm_riviera_lowrider", "paint": 0.624, "spec": 1.964}
+{"id": "vm_rosa_corazon", "paint": 0.823, "spec": 2.056}
+{"id": "vm_rosario_gold", "paint": 0.656, "spec": 2.082}
+{"id": "vm_sacred_cenote", "paint": 0.831, "spec": 2.033}
+{"id": "vm_sacred_heart_eclipse", "paint": 0.726, "spec": 3.015}
+{"id": "vm_serape_sunburst", "paint": 0.702, "spec": 2.373}
+{"id": "vm_sierra_madre", "paint": 0.917, "spec": 2.526}
+{"id": "vm_sierra_niebla", "paint": 0.916, "spec": 2.796}
+{"id": "vm_sierra_verde", "paint": 0.681, "spec": 2.128}
+{"id": "vm_sonora_blue_calavera", "paint": 0.726, "spec": 2.095}
+{"id": "vm_talavera_azul", "paint": 0.62, "spec": 1.877}
+{"id": "vm_talavera_muertos", "paint": 0.626, "spec": 1.671}
+{"id": "vm_tulum_candelaria", "paint": 0.641, "spec": 1.548}
+{"id": "vm_veracruz_carnival", "paint": 0.583, "spec": 1.575}
+{"id": "vm_xolo_candy_desert", "paint": 0.515, "spec": 1.478}
+{"id": "vm_zapata_jade", "paint": 0.587, "spec": 1.571}
+{"id": "vm_zapotec_thunder", "paint": 0.578, "spec": 1.886}
+{"id": "void", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.412}
+{"id": "volcanic_glass", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.458}
+{"id": "voodoo", "paint": 4.01, "spec": 1.359}
+{"id": "wasp_warning", "paint": 1.484, "spec": 1.219}
+{"id": "wave_candy_flow", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.731}
+{"id": "wave_chrome_tide", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.778}
+{"id": "wave_circular_radar", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.028}
+{"id": "wave_diagonal_sweep", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.036}
+{"id": "wave_dual_frequency", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.418}
+{"id": "wave_metallic_pulse", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.375}
+{"id": "wave_moire_metal", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 4.722}
+{"id": "wave_pearl_current", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.8}
+{"id": "wave_standing_chrome", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.812}
+{"id": "wave_turbulent_flow", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 2.172}
+{"id": "weather_acid_rain", "paint": 4.507, "spec": 1.947}
+{"id": "weather_barn_dust", "paint": 4.197, "spec": 2.284}
+{"id": "weather_desert_blast", "paint": 5.283, "spec": 2.078}
+{"id": "weather_hood_bake", "paint": 4.046, "spec": 2.798}
+{"id": "weather_ice_storm", "paint": 3.829, "spec": 1.922}
+{"id": "weather_ocean_mist", "paint": 4.516, "spec": 2.732}
+{"id": "weather_road_spray", "paint": 4.634, "spec": 2.243}
+{"id": "weather_salt_spray", "paint": 4.584, "spec": 1.871}
+{"id": "weather_sun_fade", "paint": 4.094, "spec": 1.981}
+{"id": "weather_volcanic_ash", "paint": 3.879, "spec": 2.056}
+{"id": "weathered_metal", "paint": 0.293, "spec": 0.41}
+{"id": "weathered_paint", "paint": 1.505, "spec": 0.653}
+{"id": "welding_arc", "paint": 3.224, "spec": 0.721}
+{"id": "wet_gloss", "paint": 0.133, "spec": 0.134}
+{"id": "wormhole", "paint_err": "ValueError(\"could not convert string to float: '#8888aa'\")", "spec": 1.378}
+{"id": "worn_chrome", "paint": 1.558, "spec": 0.679}
+{"id": "wraith", "paint": 2.624, "spec": 1.966}
+{"id": "x_ray", "paint": 3.099, "spec": 1.69}

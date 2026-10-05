@@ -1,0 +1,9 @@
+{
+  "status": "PROTOTYPE_REPAIR_PASS_UNINSTALLED",
+  "utc": "2026-10-04T06:05:28.340411+00:00",
+  "before_sha256": "c2ff9f8ed3fa03e2f0748f51ea21637065fdd2ddabdf466b1c1f5966b1555201",
+  "after_sha256": "6e0d1e1466feca847d3a1c3300f32779ba610f3b6c72c7904a6c8fd97a6b3652",
+  "reason": "Native roof has valid e empty string with no element map; matching empty signature must pass, absent/null must fail",
+  "tests": "5focused checks and W26 unchanged18case contract pass",
+  "limits": "Controlled proof callbacks only; no project persistence or native save/load acceptance"
+}

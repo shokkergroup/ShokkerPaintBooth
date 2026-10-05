@@ -1,0 +1,24 @@
+{
+  "oracle": "independent W9 long-part coverage route review; authored before inspecting the current source",
+  "date": "2026-10-03",
+  "fresh_cases": [
+    {"id":"W9-F01","text":"For my autocross setup, paint just the hood a matte deep blue, and keep the rest of the body paint exactly as it already is.","expect":"one hood zone, blue with matte finish; no body zone"},
+    {"id":"W9-F02","text":"Make the roof a satin teal; every other named panel stays untouched.","expect":"one roof zone, teal with satin finish"},
+    {"id":"W9-F03","text":"Put glossy red on the left side only, with no changes anywhere else.","expect":"one left-side zone, red with gloss finish"},
+    {"id":"W9-F04","text":"Paint the right side pearl white; leave the roof and hood unchanged.","expect":"right-side request asks before any partial mutation because other named parts are protected"},
+    {"id":"W9-F05","text":"Make the hood charcoal and the roof gold, as separate zones, keeping the rest as-is.","expect":"two independent zones: hood charcoal and roof gold; no body zone"},
+    {"id":"W9-F06","text":"Give the roof metallic blue and the hood satin bronze; only these two panels should change.","expect":"two independent named-part zones with requested colors and finishes; no body zone"},
+    {"id":"W9-F07","text":"Recolor only the roof green and keep its current chrome finish; the rest of the car is already right.","expect":"roof color update only, with current chrome finish retained"},
+    {"id":"W9-F08","text":"Make the hood chrome, but keep its current black base color.","expect":"hood finish-only update; retain current black color"},
+    {"id":"W9-F09","text":"After loading my vintage coupe, could you please make the hood matte red and keep every other body panel on its current colors?","expect":"one hood zone, red with matte finish; no body zone"},
+    {"id":"W9-F10","text":"Set the passenger side to gloss green, and do not alter any of the other panels.","expect":"one right/passenger-side zone, green with gloss finish"},
+    {"id":"W9-F11","text":"Make the windshield red and leave every other panel unchanged.","expect":"clarification or no-op; unsupported target must not produce any queue item"},
+    {"id":"W9-F12","text":"Do not recolor the roof; preserve its existing carbon finish.","expect":"nonmutating prohibition/help response; no queue"},
+    {"id":"W9-F13","text":"What finish would pair well with the hood's navy paint while keeping the rest of the car unchanged?","expect":"recommendation/help response; no queue"},
+    {"id":"W9-F14","text":"Paint only the roof green and add a lightning decal.","expect":"clarification or no-op; unknown extra action must not be silently dropped while roof is queued"}
+  ],
+  "supplied_original_frozen_cases": [
+    {"id":"W9-O01","text":"For my next track day, please paint only the hood matte blue. Leave every other panel exactly as it is because I already like the current body color and do not want the rest changed.","expect":"one hood zone, matte blue; no body zone"},
+    {"id":"W9-O02","text":"Please make the roof blue and the hood gold, while leaving all other panels alone. I want those two named parts changed independently and the remaining body paint preserved exactly as it is now.","expect":"two independent zones, roof blue and hood gold; no body zone"}
+  ]
+}

@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_kangol_felt",
+  "display_name": "Fresh: Kangol Felt",
+  "promise": "Soft tawny angora felt with densely packed local nap changes, no hat or logo",
+  "carrier_grammar": "Soft tawny angora felt with densely packed local nap changes, no hat or logo; single full-canvas image, no duplicated quadrants. Fine features: burgundy pressed wool, deep matted fibers, compressed nap ribbons, pale loose wool tips, fine felt crimp edges, needle pore rims",
+  "spec_grammar": "Feature-specific selectors partition burgundy pressed wool, deep matted fibers, compressed nap ribbons, pale loose wool tips, fine felt crimp edges, needle pore rims. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "burgundy pressed wool",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "deep matted fibers",
+      "role": "Material feature selected from artwork by g:<:0.26"
+    },
+    {
+      "name": "compressed nap ribbons",
+      "role": "Material feature selected from artwork by detail:>:0.62"
+    },
+    {
+      "name": "pale loose wool tips",
+      "role": "Material feature selected from artwork by g:>:0.74&s:<:0.4"
+    },
+    {
+      "name": "fine felt crimp edges",
+      "role": "Material feature selected from artwork by edge:>:0.6"
+    },
+    {
+      "name": "needle pore rims",
+      "role": "Material feature selected from artwork by fine:>:0.8"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "burgundy pressed wool",
+      "deep matted fibers",
+      "compressed nap ribbons",
+      "pale loose wool tips",
+      "fine felt crimp edges",
+      "needle pore rims"
+    ],
+    "R": [
+      "burgundy pressed wool",
+      "deep matted fibers",
+      "compressed nap ribbons",
+      "pale loose wool tips",
+      "fine felt crimp edges",
+      "needle pore rims"
+    ],
+    "Cc": [
+      "burgundy pressed wool",
+      "deep matted fibers",
+      "compressed nap ribbons",
+      "pale loose wool tips",
+      "fine felt crimp edges",
+      "needle pore rims"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "burgundy pressed wool",
+      "range": [
+        [
+          0,
+          175,
+          190
+        ],
+        [
+          8,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "deep matted fibers",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "compressed nap ribbons",
+      "range": [
+        [
+          0,
+          100,
+          130
+        ],
+        [
+          12,
+          195,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "pale loose wool tips",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine felt crimp edges",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "needle pore rims",
+      "range": [
+        [
+          0,
+          175,
+          190
+        ],
+        [
+          8,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_airbrush_tee",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_boombox_chrome",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "burgundy pressed wool",
+      "deep matted fibers",
+      "compressed nap ribbons",
+      "pale loose wool tips",
+      "fine felt crimp edges",
+      "needle pore rims"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_kangol_felt / Soft tawny angora felt with densely packed local nap changes, no hat or logo",
+  "spec_key": "at_kangol_felt / burgundy pressed wool all; deep matted fibers g:<:0.26; compressed nap ribbons detail:>:0.62; pale loose wool tips g:>:0.74&s:<:0.4; fine felt crimp edges edge:>:0.6; needle pore rims fine:>:0.8",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

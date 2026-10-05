@@ -1,0 +1,58 @@
+{
+  "review": "W7 parent integration: independent named-part route and queue review",
+  "date": "2026-10-03",
+  "result": "PASS_SOURCE_ROUTE_AND_QUEUE",
+  "review_method": "Actual source-extracted offlineAsk, offlineCanHandle, offlineEditAsk, offlineMaterialPlan, queueEditZones, editKey and related helpers; actual SpbProEdit.plan/compile and SpbProDesign.compoundPlan. Native/canvas application effects and helper-owned existing-zone state were stubbed. No browser, native app, provider, MCP, or external AI calls.",
+  "frozen_oracle": {
+    "path": "docs/handoff_reports/AI_HELPER_14H_W7_ROUTE_ORACLE_2026-10-03.json",
+    "sha256": "D66185D7C132EFF94831617862C568ED89A5270022A8D599C20F28577FD9C7E6",
+    "case_count": 16,
+    "frozen_before_source_inspection": true
+  },
+  "reviewed_hashes": {
+    "js/spb-pro-ai.js": "115F602D49E465B6F49530B07A4C2E4B81E8D6089C2D8204BCAE9D57807690D4",
+    "js/spb-pro-edit.js": "FD2E2365F45A9DD2751C6EB6701BFD78CFD57C3230D8CB999842AA5FADD79AC2",
+    "tests/ai_named_part_route_review_contract.cjs": "7C9F997EC66229A50EE5D5FD3B06F9EE79A217BCC50EA926BFB695C697A0B4A1"
+  },
+  "contract": {
+    "path": "tests/ai_named_part_route_review_contract.cjs",
+    "result": "PASS",
+    "frozen_case_coverage": "16 independent frozen routes; five exactPart command routes and one scoped source-colour correction; direct real compile and queue projection; offlineCanHandle eligibility checked with configured-state flag false and true.",
+    "verified": [
+      "Color-only roof/hood edits reused helper-owned named-part zones without sending a finish replacement; finish-only and relative-finish edits omitted color and retained the existing color.",
+      "The roof hue correction compiled to color='source' and hue=131, and the actual queued edit now carries both fields while retaining the existing finish.",
+      "A compound roof recolor plus flame-graphics request no longer queues a partial roof edit; the real offlineEditAsk coverage guard leaves it unchanged for clarification.",
+      "Protected hood requests ask before mutation; explicit two-part and whole-body-plus-part cases do not claim exactPart or widen to an unrelated area.",
+      "The trailing-courtesy request 'Paint the hood red, please.' parses and routes as an exact named-part edit.",
+      "Post-oracle prohibitions 'Do not make the roof red.', 'Do not paint the hood red.', and 'Never repaint the passenger side gold.' all remain nonmutating in the real route harness."
+    ],
+    "queue_transform_supplements": [
+      {"text":"Change the blue on the roof to pale red.","verified":"source override, hue=131 and brightness=30 survive E.compile -> queueEditZones"},
+      {"text":"Make the blue on the roof lighter.","verified":"source override, saturation=-10 and brightness=35 survive E.compile -> queueEditZones"},
+      {"text":"Make the blue on the roof less saturated.","verified":"source override and saturation=-55 survive E.compile -> queueEditZones"},
+      {"text":"Change the blue on the roof to dark blue.","verified":"numeric hue=0 survives E.compile -> queueEditZones (zero-value forwarding guard)"}
+    ],
+    "previous_finding_and_resolution": {
+      "previous_source_sha256": "BA366FBEBB61C0CF65ECC5E758594769CD4A138EFE1E86F721954AE3CA2F1C21",
+      "previous_finding": "R14 'Change the blue on the roof to red.' compiled color='source' and hue=131, but queueEditZones dropped both transform fields.",
+      "current_resolution": "On current source, queueEditZones copies hue/saturation/brightness and relevant explicit overlay/control fields into the edit args, and forwards color='source' when a hue/shade transform is present. The frozen route test now passes on the current source hash.",
+      "current_source_anchor": "js/spb-pro-ai.js:1124-1129"
+    }
+  },
+  "guard_suites": {
+    "node_check_spb_pro_ai": "PASS",
+    "node_check_spb_pro_edit": "PASS",
+    "ai_named_part_route_review_contract.cjs": "PASS",
+    "ai_request_composition_contract.cjs": "PASS",
+    "ai_stack_scope_contract.cjs": "PASS",
+    "ai_source_colour_scope_contract.cjs": "PASS",
+    "ai_preservation_review_contract.cjs": "PASS",
+    "ai_offline_preservation_contract.cjs": "PASS",
+    "ai_help_router_contract.cjs": "PASS"
+  },
+  "limits": [
+    "This verifies source routing, compilation and queued callback fields, not native/canvas persistence or actual live paint pixels. Parent owns native acceptance.",
+    "SpbMaterialControls was intentionally absent for this W7 route review; dedicated material-control behavior is outside this lane.",
+    "The frozen oracle remained unchanged. Three prohibition probes and four hue/shade projection supplements were added after source inspection and are reported separately from the frozen cases."
+  ]
+}

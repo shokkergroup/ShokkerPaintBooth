@@ -1,0 +1,1260 @@
+[
+ {
+  "id": "beetle_jewel",
+  "name": "Beetle Jewel",
+  "desc": "Jewel-cell elytra mosaic: ONE per-cell random draw both colors the green/magenta/teal panes (OKLab ramp) and designates ~22% of cells as near-black mirror scales; interference shimmer lives in the groove seams, R rides the radial pane depth.",
+  "kind": "finish",
+  "technique": "micro-voronoi + per-cell flip + interference",
+  "category": "insects",
+  "mip": 0.66,
+  "render_s": 1.99,
+  "fineness": {
+   "char_px": 11.34,
+   "blob_fraction": 0.131,
+   "fine_fraction": 0.479
+  },
+  "ai_rating": 67,
+  "ignition": "The exact cells the paint blacks out carry M up to 255 (hot ~8%) \u2014 invisible head-on, the mosaic detonates into white-hot mirror chips when the sun lines up."
+ },
+ {
+  "id": "beetle_rainbow",
+  "name": "Beetle Rainbow",
+  "desc": "Newton-ring micro-ridge clusters over near-black chitin: a quantized 3-order interference rainbow rides exactly the ring crests; R pools glassy in the blurred halo around each cluster, Cc takes alternating film orders of the same thickness field.",
+  "kind": "finish",
+  "technique": "ring swarm + quantized interference",
+  "category": "insects",
+  "mip": 0.64,
+  "render_s": 2.49,
+  "fineness": {
+   "char_px": 11.49,
+   "blob_fraction": 0.136,
+   "fine_fraction": 0.476
+  },
+  "ai_rating": 48,
+  "ignition": "Saffron polarity \u2014 the bright rainbow ring crests in the paint are traced 1:1 as M hot-lines (hot ~10%) against the calm dark shell."
+ },
+ {
+  "id": "butterfly_morpho",
+  "name": "Butterfly Morpho",
+  "desc": "Structural morpho blue: multi-angle micro scale-row gratings ramped electric blue, interleaved at flake scale with ~24% violet-black scales cut from the same flip lattice; R rides the row striations, Cc rides the pooled sheen of those rows.",
+  "kind": "finish",
+  "technique": "flow-grain gratings + flip lattice",
+  "category": "insects",
+  "mip": 0.47,
+  "render_s": 1.13,
+  "fineness": {
+   "char_px": 7.5,
+   "blob_fraction": 0.072,
+   "fine_fraction": 0.671
+  },
+  "ai_rating": 70,
+  "ignition": "The violet-black scale subset \u2014 the same lattice pixels the paint darkens \u2014 detonates in M up to 255 (hot ~22%), striated by the same grating rows: the black gaps explode blue-white at the flash angle."
+ },
+ {
+  "id": "butterfly_monarch",
+  "name": "Butterfly Monarch",
+  "desc": "Monarch stained glass: Beer-Lambert amber candy panes deepening toward each cell center between black vein filigree and white micro-dot dust; ONE per-cell draw double-dips ~28% of panes to near-black candy. R = radial pane gloss + rough veins, Cc = the white dust sparkle.",
+  "kind": "finish",
+  "technique": "voronoi + absorption candy + filament veins",
+  "category": "insects",
+  "mip": 0.68,
+  "render_s": 1.99,
+  "fineness": {
+   "char_px": 13.18,
+   "blob_fraction": 0.167,
+   "fine_fraction": 0.414
+  },
+  "ai_rating": 71,
+  "ignition": "The double-dipped darkest panes hide M~252 mirror flake under the candy (hot ~11%), vein-masked and edge-feathered \u2014 exactly the cells the paint renders deepest flare like foil through stained glass."
+ },
+ {
+  "id": "dragonfly_wing",
+  "name": "Dragonfly Wing",
+  "desc": "Glassy membrane cells under a soft 2-order iridescent film, partitioned by a fine dark vein mesh; R follows the same film-thickness field the colors come from, Cc pools on alternating film orders plus a blurred vein halo.",
+  "kind": "finish",
+  "technique": "filament mesh + interference film",
+  "category": "insects",
+  "mip": 0.64,
+  "render_s": 1.48,
+  "fineness": {
+   "char_px": 10.99,
+   "blob_fraction": 0.128,
+   "fine_fraction": 0.507
+  },
+  "ai_rating": 57,
+  "ignition": "The dark vein filigree itself is the detonator \u2014 M hot-lines (hot ~6%) trace the exact mesh the paint inks near-black, so direct light sparks the vein glints out of a quiet membrane."
+ },
+ {
+  "id": "scarab_gold",
+  "name": "Scarab Gold",
+  "desc": "Polished flow-grain gold packed with micro-glitter dimples, pocked by ~3300 deep sacred-green pits with a soft green halo breathing around each one. Paint and spec share the exact same glitter, pit, halo and brush fields (same seeds), so every channel traces visible paint geometry.",
+  "kind": "finish",
+  "technique": "dense dimple scatter + OKLab gold ramp",
+  "category": "insects",
+  "mip": 0.68,
+  "render_s": 2.63,
+  "fineness": {
+   "char_px": 11.57,
+   "blob_fraction": 0.137,
+   "fine_fraction": 0.475
+  },
+  "ai_rating": 69,
+  "ignition": "The dark sacred-green pits \u2014 near-black holes in the gold at most angles \u2014 detonate to ~254 metallic (M hot 6.4%) while their blurred green halos carry the clearcoat, so the sun turns the quiet pits into a constellation of mirror points ringed in green."
+ },
+ {
+  "id": "moth_luna",
+  "name": "Moth Luna",
+  "desc": "Pale luna-green micro-fur of multi-angle scale streaks drifting through wing dust, stamped with ~3200 dusky silver-blue moon-coins that sit quieter than the fur. M rides the fur anisotropy, R rides the dust drift, Cc rides the coins \u2014 three aspects of the same shared-seed fields the paint shows.",
+  "kind": "finish",
+  "technique": "micro streak fur + sparse star glints",
+  "category": "insects",
+  "mip": 0.66,
+  "render_s": 1.93,
+  "fineness": {
+   "char_px": 10.56,
+   "blob_fraction": 0.118,
+   "fine_fraction": 0.516
+  },
+  "ai_rating": 73,
+  "ignition": "The dusky moon-coins, slightly darker than the pale fur at rest, are the exact pixels where the clearcoat detonates to ~255 with a soft bloom (Cc hot 7.5%) \u2014 raking light makes the moths' moons flash wet across the panel."
+ },
+ {
+  "id": "beetle_stag",
+  "name": "Beetle Stag",
+  "desc": "Near-black pebbled chitin (~27k micro voronoi plates) whose every seam carries bronze rim-light in the paint, with 18% of plates secretly running a faint ember flush in their cores. Same voronoi, same seed feeds paint and all three channels: M = seam cores, R = plate-dome curvature, Cc = the ember cells.",
+  "kind": "finish",
+  "technique": "fine voronoi pebble + edge rim spec",
+  "category": "insects",
+  "mip": 0.56,
+  "render_s": 1.04,
+  "fineness": {
+   "char_px": 9.62,
+   "blob_fraction": 0.109,
+   "fine_fraction": 0.586
+  },
+  "ai_rating": 70,
+  "ignition": "Saffron-style polarity: the bronze seam lines you can already see are traced pixel-for-pixel as ~254 mirror filaments (M hot 29%), so the whole armor lattice goes incandescent at the right sun angle while the ember plates glaze underneath in Cc."
+ },
+ {
+  "id": "wasp_warning",
+  "name": "Wasp Warning",
+  "desc": "Hazard amber/black broken into flake-scale patches by two dueling chevron-stroke swarms, with ~2400 jet-black wet sting needles inked over the top. M owns the needles, R owns the amber/black zoning (amber satin, black matte), Cc owns the blurred chevron energy \u2014 all from the same seeded stroke fields the paint renders.",
+  "kind": "finish",
+  "technique": "dual streak-swarm zoning",
+  "category": "insects",
+  "mip": 0.66,
+  "render_s": 2.19,
+  "fineness": {
+   "char_px": 11.54,
+   "blob_fraction": 0.136,
+   "fine_fraction": 0.479
+  },
+  "ai_rating": 65,
+  "ignition": "The jet-black sting needles \u2014 the darkest marks on the panel \u2014 flip to ~255 full mirror (M hot 6.0%, channel corr ~0.02): a swarm of hidden silver stings that only strikes when the light lines up."
+ },
+ {
+  "id": "firefly_glow",
+  "name": "Firefly Glow",
+  "desc": "Deep night-green field breathing with haze, where ~5200 fireflies live as the faintest moss-green pinpricks in the paint. Cc rides the fly cores plus bloom, M rides the blurred swarm density (the air shimmer where they cluster), R rides the night-haze breath \u2014 all the same seeded fields, fixing the old different-draw spec.",
+  "kind": "finish",
+  "technique": "Cc-led glow scatter, angle-reveal",
+  "category": "insects",
+  "mip": 0.68,
+  "render_s": 1.93,
+  "fineness": {
+   "char_px": 13.12,
+   "blob_fraction": 0.172,
+   "fine_fraction": 0.453
+  },
+  "ai_rating": 47,
+  "ignition": "The near-invisible moss pinpricks ARE the fireflies: the exact same dots detonate the clearcoat to ~255 with a halo bloom (Cc hot 7.3%) \u2014 black panel at most angles, then thousands of fireflies switch on when light rakes it."
+ },
+ {
+  "id": "anime_cel_shade_chrome",
+  "name": "Cel Shade Chrome",
+  "desc": "True cel-shade: micro voronoi toon panels in a 3-step blue anime ramp with near-black ink outlines, per-cell interior pool shading and chrome star-glints. Paint and spec share the exact same cell/ink/glint fields and seeds.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "anime",
+  "mip": 0.65,
+  "render_s": 1.51,
+  "fineness": {
+   "char_px": 11.58,
+   "blob_fraction": 0.141,
+   "fine_fraction": 0.496
+  },
+  "ai_rating": 78,
+  "ignition": "The near-black toon ink outlines detonate in M (~252) \u2014 invisible linework that turns to liquid chrome when the sun rakes it (hot frac ~0.19; max |corr| 0.27; ~1.1s)."
+ },
+ {
+  "id": "anime_speed_lines",
+  "name": "Speed Lines",
+  "desc": "Thousands of micro speed-line streaks at every angle (white pass-lines + cyan slip-streams) over a breathing midnight-blue macro field. Spec reuses the identical streak fields and seeds \u2014 pure omnidirectional motion, no single direction.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "anime",
+  "mip": 0.61,
+  "render_s": 2.33,
+  "fineness": {
+   "char_px": 11.29,
+   "blob_fraction": 0.134,
+   "fine_fraction": 0.499
+  },
+  "ai_rating": 59,
+  "ignition": "Every white pass-line the paint draws relights as a chrome hot-line in M (~253) \u2014 the motion freeze-frame flashes when the light lines up (hot frac ~0.062; max |corr| 0.57; ~1.5s)."
+ },
+ {
+  "id": "anime_sparkle_burst",
+  "name": "Sparkle Burst",
+  "desc": "The shoujo sparkle-eyes panel: pink-white star-glints and gold micro-dots over deep violet, plus a ghost bokeh swarm printed as barely-darker violet rounds. Spec derives from the identical star/dot/ghost fields \u2014 fixes the old independent-random-draw spec.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "anime",
+  "mip": 0.65,
+  "render_s": 1.91,
+  "fineness": {
+   "char_px": 11.97,
+   "blob_fraction": 0.145,
+   "fine_fraction": 0.466
+  },
+  "ai_rating": 49,
+  "ignition": "The ghost bokeh swarm \u2014 near-invisible dark-violet rounds in the paint \u2014 detonates in M (~254): a hidden sparkle field that erupts at the right sun angle (hot frac ~0.057; max |corr| 0.03; ~1.5s)."
+ },
+ {
+  "id": "anime_gradient_hair",
+  "name": "Gradient Hair",
+  "desc": "Silky multi-angle strand-flow with a pink\u2192lavender\u2192teal OKLab drift, satin micro-mottle and lighter crest highlights riding the strand tops. Spec reuses the identical strand/drift/mottle/crest fields and seeds.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "anime",
+  "mip": 0.48,
+  "render_s": 1.15,
+  "fineness": {
+   "char_px": 9.8,
+   "blob_fraction": 0.119,
+   "fine_fraction": 0.602
+  },
+  "ai_rating": 62,
+  "ignition": "Cc detonates (~253) on the exact crest highlights the paint drew \u2014 the anime shine-band flash racing along the strands; the teal end of the same hue field carries the only metal, with crests carved out (hot frac ~0.21; max |corr| 0.64; ~0.5s)."
+ },
+ {
+  "id": "anime_mecha_plate",
+  "name": "Mecha Plate",
+  "desc": "Micro mecha armor: voronoi panel plates in per-panel gunmetal with grime breathing, 3000 rivet studs and dark panel-line seams carrying a faint cyan edge-light. The per-panel value draw, rivets and seam field are shared verbatim between paint and spec.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "anime",
+  "mip": 0.5,
+  "render_s": 1.43,
+  "fineness": {
+   "char_px": 9.1,
+   "blob_fraction": 0.104,
+   "fine_fraction": 0.618
+  },
+  "ai_rating": 68,
+  "ignition": "The cyan-lit seam cores detonate in Cc (~254) with a soft halo \u2014 the armor's energy panel-lines flash wet across calm gunmetal whose M tracks the per-panel paint values and rivet pins (hot frac ~0.30; max |corr| 0.70; ~0.8s)."
+ },
+ {
+  "id": "anime_sakura_scatter",
+  "name": "Sakura Scatter",
+  "desc": "Cream-blush field strewn with micro pink petals plus scattered deep-plum 'moonlit' petal pads; petal drift-wakes polish gloss rivers through the scatter (R), blush petals carry a calm pearl trace (M).",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "anime",
+  "mip": 0.61,
+  "render_s": 1.77,
+  "fineness": {
+   "char_px": 11.66,
+   "blob_fraction": 0.141,
+   "fine_fraction": 0.483
+  },
+  "ai_rating": 72,
+  "ignition": "The dark moonlit petal silhouettes are the EXACT pixels Cc detonates to 255 \u2014 a hidden petal storm that flashes wet-pink only when the sun lines up."
+ },
+ {
+  "id": "anime_energy_aura",
+  "name": "Energy Aura",
+  "desc": "Lit cyan filament aura over near-black with a second smoldering dark-wine web; the shared halo of both energies grades gloss corridors (R) while the lit filaments are traced wet in Cc.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "anime",
+  "mip": 0.61,
+  "render_s": 1.19,
+  "fineness": {
+   "char_px": 12.84,
+   "blob_fraction": 0.17,
+   "fine_fraction": 0.441
+  },
+  "ai_rating": 51,
+  "ignition": "The barely-visible dark web is the M detonator (12 -> 255 on its exact filaments) \u2014 the second aura erupts chrome at angle for the dual-energy reveal."
+ },
+ {
+  "id": "anime_comic_halftone",
+  "name": "Comic Halftone",
+  "desc": "Ink-navy rotated halftone screens on warm paper; the SAME ink dots carry a calm metallic-ink trace (M) and their blurred print-density bands grade roughness (R).",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "anime",
+  "mip": 0.27,
+  "render_s": 1.69,
+  "fineness": {
+   "char_px": 4.77,
+   "blob_fraction": 0.039,
+   "fine_fraction": 0.825
+  },
+  "ai_rating": 73,
+  "ignition": "A second coarser ghost screen prints as a faint 10% watermark in the paper but detonates Cc to 255 \u2014 the hidden screentone flashes like foil stamping at angle."
+ },
+ {
+  "id": "anime_neon_outline",
+  "name": "Neon Outline",
+  "desc": "Micro voronoi cells outlined in powered cyan neon with ~45% of tubes 'dead' as faint dark-magenta lines on black; ONE shared per-cell draw drives both paint colors and spec, lit tubes get the wet glow halo (Cc), cell interiors pool the roughness (R).",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "anime",
+  "mip": 0.63,
+  "render_s": 1.55,
+  "fineness": {
+   "char_px": 12.58,
+   "blob_fraction": 0.164,
+   "fine_fraction": 0.47
+  },
+  "ai_rating": 75,
+  "ignition": "The dead tubes are the M detonator: the exact unlit outline pixels ignite mirror-hot, so half the web looks switched off until the sun strikes it."
+ },
+ {
+  "id": "anime_crystal_facet",
+  "name": "Crystal Facet",
+  "desc": "Cyan-violet-rose dichroic facet mosaic where ONE shared per-cell draw colors the OKLab ramp AND picks the top-22% facets, rendered as deep obsidian-violet glass; gloss walks the same ramp (R) and groove shimmer pools in Cc.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "anime",
+  "mip": 0.64,
+  "render_s": 1.67,
+  "fineness": {
+   "char_px": 11.48,
+   "blob_fraction": 0.135,
+   "fine_fraction": 0.474
+  },
+  "ai_rating": 69,
+  "ignition": "Those exact dark facets detonate M at ~254 with edges killing the flash \u2014 inert black crystals snap to full mirror when the light walks past."
+ },
+ {
+  "id": "neon_pink_blaze",
+  "name": "Pink Blaze",
+  "desc": "Hot-pink neon filament web blazing over mottled charcoal felt. Paint and spec share the exact same 7000-node web: M traces the tube cores, Cc rides the halo-minus-core glow ring, R rides the charcoal felt the tubes sit on.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "neonunderground",
+  "mip": 0.55,
+  "render_s": 1.04,
+  "fineness": {
+   "char_px": 11.98,
+   "blob_fraction": 0.148,
+   "fine_fraction": 0.455
+  },
+  "ai_rating": 57,
+  "ignition": "The exact hot-pink tube cores the paint draws carry M~255 over a calm 20 floor \u2014 the whole web flashes white-hot when the sun lines up (hot ~5.2%, max|corr| 0.52, 0.6s)."
+ },
+ {
+  "id": "neon_toxic_green",
+  "name": "Toxic Green",
+  "desc": "Acid-green ring-bursts bubbling across blacked-out steel, built once and shared: the lum field that paints the brightest acid is exactly what Cc detonates on; M reads the raw steel between the bubbles, R goes slick inside the bubble bodies.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "neonunderground",
+  "mip": 0.73,
+  "render_s": 1.87,
+  "fineness": {
+   "char_px": 13.7,
+   "blob_fraction": 0.17,
+   "fine_fraction": 0.368
+  },
+  "ai_rating": 56,
+  "ignition": "Cc ~255 lands pixel-for-pixel on the acid-bright bubble subset the paint renders \u2014 the toxic glow goes wet-glass nuclear at angle (hot ~5.5%, max|corr| 0.62, 1.2s)."
+ },
+ {
+  "id": "neon_electric_blue",
+  "name": "Electric Blue",
+  "desc": "Electric micro-arc storm over navy black with a second, GHOST set of longer bolts painted at only +0.07 \u2014 nearly invisible head-on. M detonates on those exact ghost bolts, R smooths the visible arcs' ionized channels, Cc pools corona around both.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "neonunderground",
+  "mip": 0.62,
+  "render_s": 2.13,
+  "fineness": {
+   "char_px": 10.92,
+   "blob_fraction": 0.126,
+   "fine_fraction": 0.51
+  },
+  "ai_rating": 49,
+  "ignition": "Wovenlight polarity: hidden lightning \u2014 the faint ghost-bolt traces in the paint carry M~255 and the whole second storm explodes out of the dark at the right sun angle (hot ~5.4%, max|corr| 0.58, 1.8s)."
+ },
+ {
+  "id": "neon_blacklight",
+  "name": "Blacklight",
+  "desc": "Near-black violet felt with a swarm of star-glyphs painted as UV ink at +0.10 \u2014 all but invisible. Cc detonates on the exact uv field the paint hides, M rides the visible lavender flecks, R rides the uneven felt blotch.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "neonunderground",
+  "mip": 0.66,
+  "render_s": 2.39,
+  "fineness": {
+   "char_px": 10.72,
+   "blob_fraction": 0.121,
+   "fine_fraction": 0.508
+  },
+  "ai_rating": 50,
+  "ignition": "The category-defining hide: glyphs that barely exist in albedo carry Cc~255 \u2014 rake the light and the blacklight ink switches ON across the whole panel (hot ~5.3%, max|corr| 0.59, 1.9s)."
+ },
+ {
+  "id": "neon_orange_hazard",
+  "name": "Orange Hazard",
+  "desc": "Hazard amber and black shattered into isotropic flip-lattice territories with an arc-tick swarm: ticks scorch dark on amber and glow as faint deep embers on black. M detonates on exactly that black-territory ember subset; R splits rough-black/smooth-amber; Cc wets the shatter seams.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "neonunderground",
+  "mip": 0.67,
+  "render_s": 1.97,
+  "fineness": {
+   "char_px": 11.15,
+   "blob_fraction": 0.125,
+   "fine_fraction": 0.48
+  },
+  "ai_rating": 73,
+  "ignition": "Territory-gated hide: the ember ticks the paint whispers onto the black shards carry M~255 \u2014 at angle the black half of the shatter lights up with burning warning ticks (hot ~5.2%, max|corr| 0.54, 1.8s)."
+ },
+ {
+  "id": "neon_red_alert",
+  "name": "Red Alert",
+  "desc": "Siren-red pulse rings blazing on scorched charcoal-red, with a second sparse set of 'silent alarm' rings burned DARK into the paint. M gleams along the exact lit siren rings (never hot), R polishes their blurred glow corridors, and the dark scorch rings carry the detonator.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "neonunderground",
+  "mip": 0.65,
+  "render_s": 1.74,
+  "fineness": {
+   "char_px": 10.72,
+   "blob_fraction": 0.121,
+   "fine_fraction": 0.511
+  },
+  "ai_rating": 47,
+  "ignition": "The near-invisible dark scorch rings explode in clearcoat (Cc ~253) when the sun lines up \u2014 a hidden second alarm flashing over the lit sirens."
+ },
+ {
+  "id": "neon_cyber_yellow",
+  "name": "Cyber Yellow",
+  "desc": "Live cyber-yellow circuit traces over graphite, punctuated by matte-black 'dead' solder pads stamped dark into the paint. M traces the exact yellow filament web as metallic gleam, R smooths the blurred service corridors around the traces, and the dark pads hold the charge.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "neonunderground",
+  "mip": 0.61,
+  "render_s": 1.65,
+  "fineness": {
+   "char_px": 11.82,
+   "blob_fraction": 0.149,
+   "fine_fraction": 0.482
+  },
+  "ai_rating": 54,
+  "ignition": "Every dead black solder pad surges to Cc ~255 at the right sun angle \u2014 the whole dormant node grid powers on at once."
+ },
+ {
+  "id": "neon_ice_white",
+  "name": "Ice White",
+  "desc": "Bright blue-white ice with frost-needle streaks, rare star glints, and a faint web of blue-gray shadow cracks frozen into the surface. R rides the needle aspect (glossy streaks in matte frost), Cc pools the soft bloom around each crack and the glints \u2014 calm everywhere.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "neonunderground",
+  "mip": 0.63,
+  "render_s": 2.05,
+  "fineness": {
+   "char_px": 11.2,
+   "blob_fraction": 0.134,
+   "fine_fraction": 0.502
+  },
+  "ai_rating": 63,
+  "ignition": "The faint shadow cracks flip to chrome lightning \u2014 M ~252 on exactly those vein pixels \u2014 so the quiet white shell suddenly fractures into mirror veins when the light walks past."
+ },
+ {
+  "id": "neon_dual_glow",
+  "name": "Dual Glow",
+  "desc": "The true two-tube color flip: a micro flip-lattice splits the shell into bright magenta territory and a deliberately dark, quiet teal minority (~30%), with a faint cyan seam-glow along every lattice boundary. R owns the boundary corridors, Cc wanders wet gloss pools across the magenta side only.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "neonunderground",
+  "mip": 0.5,
+  "render_s": 0.77,
+  "fineness": {
+   "char_px": 7.5,
+   "blob_fraction": 0.071,
+   "fine_fraction": 0.676
+  },
+  "ai_rating": 66,
+  "ignition": "Head-on the car reads magenta; at raking angles the dim teal cells detonate to full mirror (M ~252 on exactly those cells) and the whole lattice flips cyan-chrome."
+ },
+ {
+  "id": "neon_rainbow_tube",
+  "name": "Rainbow Tube",
+  "desc": "Bent glass tube web on near-black, where a shared low-frequency selector splits the SAME web into lit circuits (each glowing its own rainbow hue with a soft bloom) and unplugged tubes left as faint dark glass. M traces exactly the lit tubes as glass highlights, R polishes the halo corridors around every tube.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "neonunderground",
+  "mip": 0.61,
+  "render_s": 1.4,
+  "fineness": {
+   "char_px": 11.82,
+   "blob_fraction": 0.149,
+   "fine_fraction": 0.484
+  },
+  "ai_rating": 49,
+  "ignition": "The unplugged dark-glass tubes are the detonator \u2014 Cc ~255 on precisely those filaments \u2014 so dead circuits blaze to life as the sun sweeps the panel."
+ },
+ {
+  "id": "chameleon_amethyst",
+  "name": "Chameleon Amethyst",
+  "desc": "Violet satin body over a micro flip lattice whose ~26% teal cells are painted near-black teal, with seam corridors and satin grain shared verbatim between paint and spec. Verified: M hot 10.8%, max|corr| 0.50, lum 0.163, 0.15s/0.07s at the 1024 work grid.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "chameleon",
+  "mip": 0.54,
+  "render_s": 0.72,
+  "fineness": {
+   "char_px": 8.89,
+   "blob_fraction": 0.093,
+   "fine_fraction": 0.598
+  },
+  "ai_rating": 61,
+  "ignition": "Dark-hidden wovenlight polarity: the near-black teal cells detonate in M (~254) against a calm violet body, so the car flips amethyst-to-teal only when the sun lines up."
+ },
+ {
+  "id": "chameleon_arctic",
+  "name": "Chameleon Arctic",
+  "desc": "Ice-blue to pale-violet soft flip body threaded with 9500 bright micro frost filaments; paint and spec share the same filament, lattice and drift calls (Cc carries the filament halo bloom). Verified: M hot 6.6%, max|corr| 0.39, lum 0.497, 0.82s/0.74s.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "chameleon",
+  "mip": 0.62,
+  "render_s": 1.92,
+  "fineness": {
+   "char_px": 11.13,
+   "blob_fraction": 0.131,
+   "fine_fraction": 0.504
+  },
+  "ai_rating": 60,
+  "ignition": "Saffron-style bright-traced polarity: the exact icy threads visible in the paint flare white-hot in M (~255) while the flip body stays a quiet gloss swap."
+ },
+ {
+  "id": "chameleon_aurora",
+  "name": "Chameleon Aurora",
+  "desc": "Multi-angle aurora curtain field ramped green-blue-violet with 5200 rippling thread filaments; the same curtain and thread calls drive both paint and spec, with the emission crests shared exactly. Verified: Cc hot 10.3%, max|corr| 0.78, lum 0.206, 0.66s/0.54s.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "chameleon",
+  "mip": 0.3,
+  "render_s": 1.77,
+  "fineness": {
+   "char_px": 7.24,
+   "blob_fraction": 0.083,
+   "fine_fraction": 0.786
+  },
+  "ai_rating": 61,
+  "ignition": "The bright green curtain crests the paint emits are the exact pixels where Cc detonates (~255) - the aurora switches on when the light walks across the curtains."
+ },
+ {
+  "id": "chameleon_copper",
+  "name": "Chameleon Copper",
+  "desc": "Thousands of micro voronoi plates, 72% warm copper and 28% painted near-black emerald via a per-cell draw that the spec re-derives with the SAME rng seed (the exact fix for the jewel-recipe mistake the owner rejected). Verified: M hot 10.5%, max|corr| 0.66, lum 0.227, 0.43s/0.18s.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "chameleon",
+  "mip": 0.66,
+  "render_s": 1.63,
+  "fineness": {
+   "char_px": 11.25,
+   "blob_fraction": 0.129,
+   "fine_fraction": 0.475
+  },
+  "ai_rating": 69,
+  "ignition": "The near-black emerald plates detonate in M (~255) on exactly the cells the paint darkened - the mosaic flips copper-to-emerald plate by plate as the sun sweeps."
+ },
+ {
+  "id": "chameleon_emerald",
+  "name": "Chameleon Emerald",
+  "desc": "Deep emerald four-axis weave whose ~24% lattice cells are painted dim antique bronze; weave field, lattice and grain are shared calls, and the weave bands gate which gold cells reach full mirror. Verified: M hot 10.3%, max|corr| 0.32, lum 0.212, 0.36s/0.29s.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "chameleon",
+  "mip": 0.53,
+  "render_s": 1.11,
+  "fineness": {
+   "char_px": 9.34,
+   "blob_fraction": 0.104,
+   "fine_fraction": 0.585
+  },
+  "ai_rating": 47,
+  "ignition": "The dim bronze cells detonate antique-gold in M, but only where the weave band crosses them - the flash itself reads woven, threaded through calm emerald."
+ },
+ {
+  "id": "chameleon_fire",
+  "name": "Chameleon Fire",
+  "desc": "8000 micro flame petals ramping crimson-orange with molten gold tips plus drifting ember dust; the petal, ember and smoke-grain calls are shared verbatim so the clearcoat lights the exact flames the paint shows. Verified: Cc hot 6.1%, max|corr| 0.65, lum 0.223, 0.82s/0.73s.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "chameleon",
+  "mip": 0.62,
+  "render_s": 1.94,
+  "fineness": {
+   "char_px": 11.38,
+   "blob_fraction": 0.135,
+   "fine_fraction": 0.49
+  },
+  "ai_rating": 50,
+  "ignition": "Cc detonates (~255) on the exact crimson-gold flame bodies the paint ramps - the fire 'lights' wet and molten when the sun rakes it, with ember dust sparking in M."
+ },
+ {
+  "id": "chameleon_frost",
+  "name": "Chameleon Frost",
+  "desc": "Polar blue-white body etched with a 6000-node frost-fern filament web painted as quiet steel-blue veins; fern, grain and drift fields are the same calls in paint and spec. Verified: M hot 5.5%, max|corr| 0.39, lum 0.612, 0.17s/0.09s.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "chameleon",
+  "mip": 0.62,
+  "render_s": 1.0,
+  "fineness": {
+   "char_px": 10.91,
+   "blob_fraction": 0.128,
+   "fine_fraction": 0.508
+  },
+  "ai_rating": 59,
+  "ignition": "Dark-hidden polarity on a bright body: the subdued fern veins flare mirror-silver in M (~255) against soft matte frost - invisible head-on, a lightning fern at angle."
+ },
+ {
+  "id": "chameleon_galaxy",
+  "name": "Chameleon Galaxy",
+  "desc": "Deep-violet nebula with ~24% near-black cyan flip cells breathing under a gas swirl, dusted with 5200 micro stars; stars, lattice, gas and swell are shared calls (Cc rides the star halos and macro breath). Verified: M hot 16.1%, max|corr| 0.01, lum 0.098, 0.35s/0.34s.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "chameleon",
+  "mip": 0.56,
+  "render_s": 1.12,
+  "fineness": {
+   "char_px": 9.53,
+   "blob_fraction": 0.104,
+   "fine_fraction": 0.576
+  },
+  "ai_rating": 56,
+  "ignition": "The dark cyan nebula cells and the star pinpoints detonate together in M (~255) - at the right angle the quiet nebula ignites cyan with stars blazing inside it."
+ },
+ {
+  "id": "chameleon_midnight",
+  "name": "Chameleon Midnight",
+  "desc": "Near-black navy brushed by multi-angle night grain, salted with ~11k deep-blue micro glints that barely register in the albedo. M detonates on the exact same glint constellation, R rides the same brushing field, Cc pools in wet halos ringed around each glint.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "chameleon",
+  "mip": 0.63,
+  "render_s": 1.71,
+  "fineness": {
+   "char_px": 11.54,
+   "blob_fraction": 0.135,
+   "fine_fraction": 0.465
+  },
+  "ai_rating": 47,
+  "ignition": "Dark-hidden polarity: invisible blue glint dots (the same s^2 scatter the paint tints) flare to M~255 (~6% hot) when the sun rakes the panel."
+ },
+ {
+  "id": "chameleon_neon",
+  "name": "Chameleon Neon",
+  "desc": "Hot magenta owns the head-on read; the green clan of the SAME flake lattice is painted deep bottle-dark so it hides until the angle lines up. M detonates on that exact green clan, R rides the magenta/green seam corridors, Cc pools where the green flakes cluster.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "chameleon",
+  "mip": 0.57,
+  "render_s": 1.01,
+  "fineness": {
+   "char_px": 9.34,
+   "blob_fraction": 0.099,
+   "fine_fraction": 0.576
+  },
+  "ai_rating": 63,
+  "ignition": "The loudest flip in the family: the dark 32% green flake clan (same s^1 lattice the paint colors) explodes electric green at M=252 while the magenta stays calm."
+ },
+ {
+  "id": "chameleon_obsidian",
+  "name": "Chameleon Obsidian",
+  "desc": "Black glass micro-plates with dark bronze rim seams painted right into the albedo. M detonates on the exact rim corridors the paint traces bronze, R is each plate's own tilt (same per-label draw the paint shades with), Cc pools at the plate hearts.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "chameleon",
+  "mip": 0.54,
+  "render_s": 0.95,
+  "fineness": {
+   "char_px": 9.52,
+   "blob_fraction": 0.11,
+   "fine_fraction": 0.601
+  },
+  "ai_rating": 53,
+  "ignition": "Traced polarity: the visible bronze seams (rim = edge^2 from the same s^1 voronoi) ignite to molten mirror M~255 (~8-12% hot) around every plate when the sun lines up."
+ },
+ {
+  "id": "chameleon_ocean",
+  "name": "Chameleon Ocean",
+  "desc": "Deep-blue troughs ramp to teal exactly along the swell crests, with spray glints gated onto the same swells (not scattered blind). Cc detonates on the crest corridors the paint turns teal, M sparkles on the same spray dots, R chops rough in the troughs and wipes smooth over each crest.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "chameleon",
+  "mip": 0.56,
+  "render_s": 1.65,
+  "fineness": {
+   "char_px": 9.85,
+   "blob_fraction": 0.111,
+   "fine_fraction": 0.558
+  },
+  "ai_rating": 48,
+  "ignition": "Cc is the detonator here (variety per doctrine 5): the teal breaking-crest lines (same s^1 swell field) flash wet at Cc=255 (~20% hot) as the light rolls across the panel."
+ },
+ {
+  "id": "chameleon_phoenix",
+  "name": "Chameleon Phoenix",
+  "desc": "Two feather-petal clans share one fire: clan A burns visible ember-gold in the paint, clan B is quenched to wine-dark maroon. M detonates on clan B's exact silhouettes (the fire that changes color in the turn), R smooths inside every feather of both clans, Cc halos breathe around the bright ember clan.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "chameleon",
+  "mip": 0.66,
+  "render_s": 2.34,
+  "fineness": {
+   "char_px": 11.33,
+   "blob_fraction": 0.133,
+   "fine_fraction": 0.489
+  },
+  "ai_rating": 52,
+  "ignition": "Dark-hidden clan flip: the maroon feathers (same s^2 petal scatter the paint darkens, halo-widened) erupt magenta-mirror at M=254 (~6% hot) while the ember feathers stay the daytime story."
+ },
+ {
+  "id": "chameleon_venom",
+  "name": "Chameleon Venom",
+  "desc": "Fine snake-scale voronoi with dark borders; one per-scale draw splits the clans for BOTH paint and spec \u2014 venom-green scales carry the body read and the wet Cc bead-domes, while the 32% violet clan is painted blackened-violet and owns the M flare. R rides the leathery border ridges.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "chameleon",
+  "mip": 0.61,
+  "render_s": 1.12,
+  "fineness": {
+   "char_px": 11.43,
+   "blob_fraction": 0.137,
+   "fine_fraction": 0.493
+  },
+  "ai_rating": 59,
+  "ignition": "Dark-hidden clan flip on plate geometry: the blackened-violet scales (same s^2 per-label draw the paint uses) mirror-detonate at M=255 (~19% hot) \u2014 green/violet trade places with the sun."
+ },
+ {
+  "id": "mystichrome",
+  "name": "Mystichrome",
+  "desc": "The legend, reborn married: one tri_partition (same seed in paint and spec) deals cobalt, violet and emerald their micro territories. Cobalt is the satin body read and owns R with the shared grain, emerald runs deep candy and glows on Cc, and the violet third is buried near-black in the albedo so M can detonate it \u2014 three suns, three different cars.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "chameleon",
+  "mip": 0.67,
+  "render_s": 1.76,
+  "fineness": {
+   "char_px": 10.74,
+   "blob_fraction": 0.118,
+   "fine_fraction": 0.498
+  },
+  "ai_rating": 62,
+  "ignition": "Territory trade: the near-black violet third (same s^1 tri_partition mask the paint darkens) mirror-detonates at M=252 (~28% hot); emerald answers with a sub-detonation Cc glow at a second angle."
+ },
+ {
+  "id": "prizm_adaptive",
+  "name": "Prizm Adaptive",
+  "desc": "Voronoi mosaic on a magenta/teal/gold OKLab ramp; cells whose shared per-cell rng draw lands past 0.74 are painted as near-black dead cells. Paint and spec use the same voronoi call AND the same rng(s^2) draw \u2014 the exact decoupling the owner rejected in the jewel recipe, fixed.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.65,
+  "render_s": 1.55,
+  "fineness": {
+   "char_px": 11.26,
+   "blob_fraction": 0.13,
+   "fine_fraction": 0.48
+  },
+  "ai_rating": 72,
+  "ignition": "The dead near-black cells detonate M~255 (10% hot) while live colored cells stay quiet \u2014 the mosaic flips to liquid mirror when the sun lines up."
+ },
+ {
+  "id": "prizm_alien_skin",
+  "name": "Prizm Alien Skin",
+  "desc": "Iridescent green thin-film membrane pocked with dark ring-shaped pores; the gated pore ring-swarm and the film-thickness field are the identical calls in paint and spec (pores darken paint, thickness colors it).",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.58,
+  "render_s": 1.43,
+  "fineness": {
+   "char_px": 11.27,
+   "blob_fraction": 0.134,
+   "fine_fraction": 0.498
+  },
+  "ai_rating": 52,
+  "ignition": "The dark pore rims explode in clearcoat (Cc~255, 5% hot) \u2014 the skin glistens wet exactly where it looks darkest; film-thickness extremes ride M, wrinkle grain rides R."
+ },
+ {
+  "id": "prizm_arctic",
+  "name": "Prizm Arctic",
+  "desc": "Pale blue-white interference film crossed by scattered ice-shard streaks at every angle; the same gated streak field brightens the paint and the same thickness noise drives both the film color and Cc.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.58,
+  "render_s": 2.12,
+  "fineness": {
+   "char_px": 10.74,
+   "blob_fraction": 0.123,
+   "fine_fraction": 0.516
+  },
+  "ai_rating": 69,
+  "ignition": "Every visible ice shard is traced as an M~255 mirror hot-line (8% hot) against the calm satin frost \u2014 saffron-style bright-line ignition."
+ },
+ {
+  "id": "prizm_aurora_shift",
+  "name": "Prizm Aurora Shift",
+  "desc": "Four-angle aurora curtains on a teal/violet OKLab ramp; the curtain crest band (same gate constants in both fns) is painted out as near-black night-sky gaps, with faint streamer streaks shimmering across.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.35,
+  "render_s": 1.65,
+  "fineness": {
+   "char_px": 6.07,
+   "blob_fraction": 0.057,
+   "fine_fraction": 0.753
+  },
+  "ai_rating": 65,
+  "ignition": "The dark night gaps between curtains flare M~254 (13% hot) when the sun lines up \u2014 hidden mirror curtains; the full curtain sweep rides R, streamers ride Cc."
+ },
+ {
+  "id": "prizm_black_rainbow",
+  "name": "Prizm Black Rainbow",
+  "desc": "Near-black body threaded by a fine rainbow filament web; the identical gated web field paints the threads and lights the spec, and the same hue field that dyes the threads pools the clearcoat.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.52,
+  "render_s": 0.99,
+  "fineness": {
+   "char_px": 11.72,
+   "blob_fraction": 0.147,
+   "fine_fraction": 0.481
+  },
+  "ai_rating": 53,
+  "ignition": "The rainbow threads themselves are M~252 hot-lines (5% hot) \u2014 a black car whose wiring catches fire at the right angle; widened thread corridors polish R."
+ },
+ {
+  "id": "prizm_blood_moon",
+  "name": "Prizm Blood Moon",
+  "desc": "Deep crimson body engraved with darker eclipse ring arcs \u2014 the gated ring swarm is the identical call in paint (dark engraving) and spec (hot subset); the blood-pool macro field is shared too.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.65,
+  "render_s": 1.4,
+  "fineness": {
+   "char_px": 11.48,
+   "blob_fraction": 0.136,
+   "fine_fraction": 0.48
+  },
+  "ai_rating": 45,
+  "ignition": "The near-invisible dark eclipse rims ignite Cc~255 (5% hot) \u2014 a wet blood-glow ring flash; macro pools shimmer M, grain owns R."
+ },
+ {
+  "id": "prizm_candy_paint",
+  "name": "Prizm Candy Paint",
+  "desc": "Candy-apple red Beer-Lambert absorption over a silver flake bed; the gated flake field that brightens the metal under the candy is the spec's hot subset, and the same depth noise pools both the paint darkness and Cc.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.57,
+  "render_s": 2.16,
+  "fineness": {
+   "char_px": 9.9,
+   "blob_fraction": 0.109,
+   "fine_fraction": 0.549
+  },
+  "ai_rating": 50,
+  "ignition": "The exact flakes glinting through the candy detonate M~255 (6% hot) while the candy body stays calm \u2014 classic flake-fire, now married pixel-for-pixel."
+ },
+ {
+  "id": "prizm_chrome_rose",
+  "name": "Prizm Chrome Rose",
+  "desc": "Bright satin chrome engraved with dark burgundy rose petals \u2014 the gated petal scatter is the identical call in paint and spec, and the chrome brightness pools (g) ride Cc.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.55,
+  "render_s": 3.56,
+  "fineness": {
+   "char_px": 9.82,
+   "blob_fraction": 0.11,
+   "fine_fraction": 0.561
+  },
+  "ai_rating": 67,
+  "ignition": "The dark roses flare to full mirror M~250 (6% hot) over a ~110 satin-chrome floor \u2014 the engravings turn to fire when the sun walks across them."
+ },
+ {
+  "id": "prizm_copper_flame",
+  "name": "Prizm Copper Flame",
+  "desc": "Charred copper-to-gold flame ramp built from a dense petal scatter; the tip gate (same constants both fns) marks the flame licks the paint renders brightest gold, the surrounding flame body rides M as metallic copper.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.6,
+  "render_s": 2.99,
+  "fineness": {
+   "char_px": 10.54,
+   "blob_fraction": 0.121,
+   "fine_fraction": 0.53
+  },
+  "ai_rating": 51,
+  "ignition": "The flame-lick tips detonate Cc~255 wet-glints (4% hot) exactly where the paint burns brightest \u2014 bright-traced saffron polarity."
+ },
+ {
+  "id": "prizm_cosmos",
+  "name": "Prizm Cosmos",
+  "desc": "Violet candy nebula brightened along coarse galaxy-arm pools and dusted with gated white stars; stars, absorption depth and arm fields are the same three calls in paint and spec.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.56,
+  "render_s": 2.04,
+  "fineness": {
+   "char_px": 9.62,
+   "blob_fraction": 0.101,
+   "fine_fraction": 0.552
+  },
+  "ai_rating": 71,
+  "ignition": "Each painted star is an M~255 point flare (6% hot); the arms that brighten the nebula carry the Cc pools and the candy depth glasses R."
+ },
+ {
+  "id": "prizm_dark_matter",
+  "name": "Prizm Dark Matter",
+  "desc": "Near-black violet space whose voronoi cell-boundary web is only faintly luminous in paint, plus sparse event-horizon glint dots; web, dots and macro field are identical calls across paint and spec.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.64,
+  "render_s": 1.56,
+  "fineness": {
+   "char_px": 10.89,
+   "blob_fraction": 0.127,
+   "fine_fraction": 0.515
+  },
+  "ai_rating": 50,
+  "ignition": "The barely-visible boundary web detonates M~255 (23% hot lattice) \u2014 the invisible structure of the universe appears in direct sun; cell domes shade R, the dots wet Cc."
+ },
+ {
+  "id": "prizm_deep_space",
+  "name": "Prizm Deep Space",
+  "desc": "Ink-blue space with pale visible dust plus a second HIDDEN starfield painted as faint dark void-specks \u2014 the hidden gated field is the identical call in paint (darkening) and spec (hot subset).",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.56,
+  "render_s": 2.48,
+  "fineness": {
+   "char_px": 10.71,
+   "blob_fraction": 0.127,
+   "fine_fraction": 0.533
+  },
+  "ai_rating": 46,
+  "ignition": "The hidden dark starfield explodes M~255 (5% hot): the sky looks empty until the sun lines up, then thousands of stars ignite; visible dust only halos Cc."
+ },
+ {
+  "id": "prizm_duochrome",
+  "name": "Prizm Duochrome",
+  "desc": "Fine teal/deep-wine flip lattice (30% wine flakes) with a shared macro pool field; the same flip_lattice call colors the paint and splits the spec personalities.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.53,
+  "render_s": 0.88,
+  "fineness": {
+   "char_px": 8.51,
+   "blob_fraction": 0.087,
+   "fine_fraction": 0.622
+  },
+  "ai_rating": 63,
+  "ignition": "The dark wine flakes carry M~255 (7% hot): head-on the car reads teal satin, raking light flips it to magenta-wine mirror \u2014 the duochrome flip is the ignition."
+ },
+ {
+  "id": "prizm_ember",
+  "name": "Prizm Ember",
+  "desc": "Charcoal char split by a dark crack web, with glowing orange spark dots and a soft heat-halo around them; sparks, cracks and halo are the same fields in paint and spec.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.61,
+  "render_s": 1.66,
+  "fineness": {
+   "char_px": 12.0,
+   "blob_fraction": 0.143,
+   "fine_fraction": 0.452
+  },
+  "ai_rating": 58,
+  "ignition": "Every painted ember detonates Cc~255 wet sparkle (5% hot); the heat halo shimmers M at mid strength and the char cracks own R as rough seams."
+ },
+ {
+  "id": "prizm_fire_ice",
+  "name": "Prizm Fire & Ice",
+  "desc": "Scattered voronoi tri-territory war: fire-ramp cells vs ice-ramp cells separated by near-black obsidian truce territory \u2014 one shared tri_partition call plus the same fire/ice noise fields in both fns.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.66,
+  "render_s": 1.67,
+  "fineness": {
+   "char_px": 10.88,
+   "blob_fraction": 0.122,
+   "fine_fraction": 0.497
+  },
+  "ai_rating": 75,
+  "ignition": "The dark obsidian territory between fire and ice detonates M~255 (21% hot) \u2014 the boundary war itself ignites; ice glasses R, fire flickers Cc."
+ },
+ {
+  "id": "prizm_galaxy_dust",
+  "name": "Prizm Galaxy Dust",
+  "desc": "Violet-indigo interference nebula with two married dust populations: bright stars that glow in paint and carry the wet Cc halo, plus a second 'dark dust' field of pits that swallow the nebula to near-black. Spec rides the same three fields with the same seeds: M on the dark dust, R on film thickness, Cc on the stars.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.56,
+  "render_s": 1.98,
+  "fineness": {
+   "char_px": 11.06,
+   "blob_fraction": 0.13,
+   "fine_fraction": 0.508
+  },
+  "ai_rating": 48,
+  "ignition": "The dark-dust pits (s^3) that read as black voids in the paint detonate as a hidden M~254 mirror starfield when the sun lines up."
+ },
+ {
+  "id": "prizm_holographic",
+  "name": "Prizm Holographic",
+  "desc": "Silver holo foil whose 5-axis flow field is quantized into six hue bands; one chosen band (the 'ghost band') is pressed down to quiet charcoal-silver in paint. M/R/Cc ride three aspects of the same band system: the ghost band, the band seams, and the white prism glints the paint also shows.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.39,
+  "render_s": 2.29,
+  "fineness": {
+   "char_px": 7.0,
+   "blob_fraction": 0.071,
+   "fine_fraction": 0.714
+  },
+  "ai_rating": 71,
+  "ignition": "The darkened ghost band (band==2 of the same quantized field) flips to M~253 pure mirror at angle while the rainbow bands around it stay calm."
+ },
+ {
+  "id": "prizm_iridescent",
+  "name": "Prizm Iridescent",
+  "desc": "Oil-slick interference film with micro-jittered order boundaries inked as thin dark fringes in the paint. All three channels are aspects of the one thickness field: M on the fringe lines, R stepping per interference order, Cc on within-band phase.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.65,
+  "render_s": 1.5,
+  "fineness": {
+   "char_px": 10.9,
+   "blob_fraction": 0.123,
+   "fine_fraction": 0.502
+  },
+  "ai_rating": 66,
+  "ignition": "The inked fringe lines between color orders \u2014 the exact dark seams visible in the paint \u2014 fire as M~255 hot mirror filaments (saffron-style hot lines)."
+ },
+ {
+  "id": "prizm_midnight",
+  "name": "Prizm Midnight",
+  "desc": "Near-black blue night rain: visible steel-blue streaks plus a second 'ghost rain' streak field pressed into pure black in the paint. Spec marries both: Cc halos the visible rain, M lives only on the blacked-out ghost streaks, R follows the macro night grain.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.62,
+  "render_s": 2.51,
+  "fineness": {
+   "char_px": 10.88,
+   "blob_fraction": 0.126,
+   "fine_fraction": 0.509
+  },
+  "ai_rating": 49,
+  "ignition": "The ghost rain (s^2 streaks, invisible black-on-black) detonates as M~255 chrome rain when raking light hits \u2014 the visible blue rain stays calm."
+ },
+ {
+  "id": "prizm_mystichrome",
+  "name": "Prizm Mystichrome",
+  "desc": "Mystichrome teal-to-grape flowing glass: a flip lattice interleaves the two hue ramps at flake scale (the same lattice drives M, so the grape flakes flare and the color walks), while the flow crests sink to blacked violet in paint. R runs anti-flow on the same field.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.39,
+  "render_s": 1.26,
+  "fineness": {
+   "char_px": 7.09,
+   "blob_fraction": 0.074,
+   "fine_fraction": 0.709
+  },
+  "ai_rating": 52,
+  "ignition": "The blacked flow crests (flow>0.74 of the same flow field) explode as Cc~255 wet pools \u2014 the color-flip lattice shimmers underneath but only the crests detonate."
+ },
+ {
+  "id": "prizm_neon",
+  "name": "Prizm Neon",
+  "desc": "Acid-green neon tube web over wet black asphalt. The exact web the paint lights up carries the spec: M traces the tube cores, Cc is the soft glow halo bleeding past them, and R rides the fine asphalt grit that also textures the paint base.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.58,
+  "render_s": 1.13,
+  "fineness": {
+   "char_px": 12.2,
+   "blob_fraction": 0.157,
+   "fine_fraction": 0.467
+  },
+  "ai_rating": 53,
+  "ignition": "Every glowing green tube line in the paint is itself the hot line \u2014 the s^1 web fires at M~255 so the whole circuit flash-ignites when the sun walks across it (saffron polarity)."
+ },
+ {
+  "id": "prizm_oceanic",
+  "name": "Prizm Oceanic",
+  "desc": "Deep teal sea built from three married fields: a depth ramp (R), aqua caustic webbing the paint glows with (M shimmer), and scattered abyss-current arcs the paint drops to black-teal. Same seeds in paint and spec throughout.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.56,
+  "render_s": 1.45,
+  "fineness": {
+   "char_px": 11.22,
+   "blob_fraction": 0.139,
+   "fine_fraction": 0.512
+  },
+  "ai_rating": 54,
+  "ignition": "The abyss arcs (s^3) that read as dark undertow shadows in the paint flash to Cc~255 wet glass at angle \u2014 black water suddenly gleaming."
+ },
+ {
+  "id": "prizm_phoenix",
+  "name": "Prizm Phoenix",
+  "desc": "Red-orange-magenta fire plumes with a second population of charred feathers burnt to near-black in the paint. Spec marries the same petals: Cc varnishes the living flames, R rides the flicker noise that stirs the ramp, M lives only on the char.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.67,
+  "render_s": 1.89,
+  "fineness": {
+   "char_px": 11.28,
+   "blob_fraction": 0.132,
+   "fine_fraction": 0.489
+  },
+  "ai_rating": 51,
+  "ignition": "The charred feathers (s^2 petals) resurrect \u2014 burnt-black in albedo, they ignite at M~255 chrome when the light comes around: the phoenix rebirth moment."
+ },
+ {
+  "id": "prizm_solar",
+  "name": "Prizm Solar",
+  "desc": "Gold solar granulation (ring-swarm plasma cells) pocked with dark sunspot umbrae. The spec rides the same three fields: Cc glosses the granulation crests, R follows the plasma jitter, M sits only in the sunspots.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.66,
+  "render_s": 1.58,
+  "fineness": {
+   "char_px": 11.17,
+   "blob_fraction": 0.128,
+   "fine_fraction": 0.488
+  },
+  "ai_rating": 57,
+  "ignition": "The dark sunspots (s^2 dots, near-black umbrae in paint) blow out at M~255 \u2014 black holes in the gold that turn into blinding mirrors at the right sun angle."
+ },
+ {
+  "id": "prizm_spectrum",
+  "name": "Prizm Spectrum",
+  "desc": "Five-stop rainbow field cut by bright white prism slashes that the paint renders hot. Three aspects of the same system: M traces the slashes, R steps per hue band, Cc pools lacquer around the spectrum's center band.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.6,
+  "render_s": 1.63,
+  "fineness": {
+   "char_px": 11.94,
+   "blob_fraction": 0.145,
+   "fine_fraction": 0.469
+  },
+  "ai_rating": 57,
+  "ignition": "The white prism slashes visible in the paint (s^2 streaks) are the M~255 hot lines \u2014 the rainbow stays at half-power until a slash catches the sun and detonates."
+ },
+ {
+  "id": "prizm_sunset_strip",
+  "name": "Prizm Sunset Strip",
+  "desc": "Multi-angle sunset bands running orange to hot pink and sinking into after-dark purple-black, strung with warm marquee bulbs. All channels ride the same band field: M on the night end, R peaked at the pink mid-band, Cc on the bulb dots the paint glows with.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.55,
+  "render_s": 1.39,
+  "fineness": {
+   "char_px": 9.98,
+   "blob_fraction": 0.116,
+   "fine_fraction": 0.555
+  },
+  "ai_rating": 53,
+  "ignition": "The after-dark end of the sunset ramp \u2014 painted nearly black \u2014 is one huge hidden mirror (M~252): when the angle lines up the night side of the strip lights up like the Sunset Strip at dusk."
+ },
+ {
+  "id": "prizm_titanium",
+  "name": "Prizm Titanium",
+  "desc": "Heat-tempered titanium: quantized temper zones colored by interference physics over multi-angle brushing. The hottest temper plateau is scorched near-black in paint; M owns exactly that zone, R rides the brush grain, Cc wets the temper seam lines between zones.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.64,
+  "render_s": 1.21,
+  "fineness": {
+   "char_px": 11.59,
+   "blob_fraction": 0.141,
+   "fine_fraction": 0.491
+  },
+  "ai_rating": 53,
+  "ignition": "The burnt top temper zone (temper==3 of the same quantized field) is the detonator \u2014 matte black heat-scar head-on, M~255 polished-titanium mirror when the sun rakes it."
+ },
+ {
+  "id": "prizm_toxic_waste",
+  "name": "Prizm Toxic Waste",
+  "desc": "Acid-green drips over dark sludge with dim rising bubbles. Spec marries the same fields: M traces the glowing drip streaks, Cc gleams the bubbles (plus a faint drip halo), R follows the sludge grain that also modulates the paint base.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.59,
+  "render_s": 2.12,
+  "fineness": {
+   "char_px": 11.78,
+   "blob_fraction": 0.141,
+   "fine_fraction": 0.47
+  },
+  "ai_rating": 54,
+  "ignition": "Every glowing drip line in the paint (s^1 streaks) fires at M~255 \u2014 the spill turns to liquid chrome rivulets when the sun catches it, while the sludge stays dead matte."
+ },
+ {
+  "id": "prizm_venom",
+  "name": "Prizm Venom",
+  "desc": "Micro-voronoi scale skin: acid-green cells against deep venom-violet cells chosen by ONE shared per-cell rng draw (same s^2 in paint and spec \u2014 the exact independent-draw mistake fixed). M lights only the dark venom cells, R hardens the cell membranes, Cc pools droplets at every cell heart.",
+  "kind": "finish",
+  "technique": "recipe_kit",
+  "category": "prizm",
+  "mip": 0.63,
+  "render_s": 1.32,
+  "fineness": {
+   "char_px": 11.89,
+   "blob_fraction": 0.143,
+   "fine_fraction": 0.464
+  },
+  "ai_rating": 65,
+  "ignition": "The deep-violet venom cells \u2014 the darkest scales on the car \u2014 flip to M~255 chrome at angle: the venom literally glints, while the green scales and membranes stay quiet."
+ }
+]

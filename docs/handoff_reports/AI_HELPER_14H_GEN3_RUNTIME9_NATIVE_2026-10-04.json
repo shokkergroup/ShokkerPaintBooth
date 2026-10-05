@@ -1,0 +1,778 @@
+{
+  "status": "PASS_WITH_GUIDANCE_HOLD",
+  "runtime": "Runtime9",
+  "capturedUTC": "2026-10-04T13:14:25.331043+00:00",
+  "installed": false,
+  "sources": {
+    "installed": false,
+    "capturedUTC": "2026-10-04T12:56:32.288381+00:00",
+    "purpose": "Runtime9 final combined AI/offline acceptance; exact sources, private projects, provider blocked. No runtime evidence claimed before native execution.",
+    "hashes": {
+      "js/spb-ai-complete-instruction-guard.js": "ba0af1f9e217695ed733dde81c8dec1a735dd1f052e8c06b3098866d392a551c",
+      "js/spb-ai-instruction-intent-guard.js": "3267dc263cf85bcb34b55588997acba737f4a47e7bdde490face4d9d6271fb60",
+      "js/spb-ai-lease.js": "de276372a763310ec051db141fcb1d601e11dbf193843e2b21a405226f782134",
+      "js/spb-ai-material-controls.js": "8febce88b5e1e1f6e5d571037374a8c5a662b1f3d62c323b73b3ea1e5072544b",
+      "js/spb-ai-operation.js": "47587a1a53a35ce7e58825bac864bd75c2421d26c19791957f57bb199a7000c6",
+      "js/spb-ai-part-memory-project.js": "fff0127a7570c3fa8eaf2ad431f1ce2717763a2cd5b1688b15d18cc4f3c98d17",
+      "js/spb-ai-part-memory.js": "6e0d1e1466feca847d3a1c3300f32779ba610f3b6c72c7904a6c8fd97a6b3652",
+      "js/spb-ai-receipt-explainer.js": "25aba5ee85e9c9fb7efe3603fce22b140ccb09d2cbd09a9303ac6ab00530eac3",
+      "js/spb-pro-ai.js": "1c178d2717d0ed654c1840aa01452f03322cfb9f3ba4716e2fe333f48d079430",
+      "js/spb-pro-design.js": "4648de3231015497cc9ff816612a542097a1ad14038a7210753f6cdbfd88d832",
+      "js/spb-pro-edit.js": "7d063444021f8f4144b96130800badfe62741cdefc9104417f3e99af65270767",
+      "js/spb-pro-zone-kit.js": "ea9e169b909a30a6431f7fd48b87658b8258d480f165d304cb0ca5dac8983af7",
+      "js/spb-self-help.js": "d1a76c2a5b8616133f8226602d43245bfc7dcc2b99b6bbedea68af0641a2d6be",
+      "paint-booth-2-state-zones.js": "710b4d8b1b7f229d334e06d1eb331ff48d9873a7cd139b276d2bab3ebfd591e7",
+      "paint-booth-3-canvas.js": "cb4cc4679f69cbe206e02dd512c7f197f971482b6bdb088e5b78a2f397d3cdc9"
+    },
+    "backend": {
+      "server.py": "a845f7ee1cd96b9f87fe1af85d42a1b86dd2059e2a5893e47006a08d773ac2ce",
+      "server_routes/psd_import_routes.py": "6a0fce336fc5ef54eb80ef92a220abc0d81e5b22107b2bf3a4e3b0872f51a95d"
+    }
+  },
+  "providerAttempts": 0,
+  "firstColdFinish": {
+    "text": "Done \u2014 the roof is now satin \u2014 a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched. (I updated your earlier change to the same colour instead of stacking a new one on top.)\nNEXT: Undo | A bit more | Show me options for the roof | Make the black matte | Make the cyan metallic",
+    "queueLength": 1,
+    "queue": [
+      {
+        "kind": "edit",
+        "zone": 0,
+        "proof": true,
+        "spec": {
+          "finish": "base::f_clear_satin"
+        }
+      }
+    ],
+    "applied": true,
+    "ownerSame": true,
+    "idSame": true,
+    "color": "#1450b4",
+    "finish": "f_clear_satin",
+    "maskSame": true,
+    "pending": false,
+    "freshProof": true,
+    "paint": {
+      "changed": 0,
+      "outside": 0,
+      "channels": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "spec": {
+      "changed": 29873,
+      "outside": 0,
+      "channels": [
+        29873,
+        29873,
+        29873,
+        0
+      ]
+    },
+    "paintExact": true,
+    "specExact": false,
+    "zoneConfigExact": false,
+    "layersExact": true,
+    "entry": [
+      {
+        "lines": [
+          "Roof recoloured red: finish Clear Satin"
+        ],
+        "notes": [],
+        "undoable": true
+      }
+    ],
+    "providerAttempts": 0
+  },
+  "native": {
+    "receiptApplied": {
+      "text": "For this loaded paint, the last verified applied changes were: Roof recoloured red: finish Clear Satin.",
+      "queueLength": 0,
+      "queue": [],
+      "applied": false,
+      "ownerSame": true,
+      "idSame": true,
+      "color": "#1450b4",
+      "finish": "f_clear_satin",
+      "maskSame": true,
+      "pending": false,
+      "freshProof": true,
+      "paint": null,
+      "spec": null,
+      "paintExact": true,
+      "specExact": true,
+      "zoneConfigExact": true,
+      "layersExact": true,
+      "before": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "3f9ac346e82534bf81d6f2fa2f9f382775833d21c6066c3422456a3c8df57685"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "3f9ac346e82534bf81d6f2fa2f9f382775833d21c6066c3422456a3c8df57685"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "entry": null,
+      "providerAttempts": 0
+    },
+    "finishUndo": {
+      "undoResult": true,
+      "restoredPaint": true,
+      "restoredSpec": true,
+      "restoredLayers": true,
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "providerAttempts": 0
+    },
+    "material": {
+      "text": "Adjusting only the roof clearcoat up by 20 points.\nNEXT: Undo",
+      "queueLength": 1,
+      "queue": [
+        {
+          "kind": "edit",
+          "zone": 0,
+          "proof": false,
+          "spec": {
+            "spec_shift": {
+              "metal": 0,
+              "rough": 0,
+              "clearcoat": 20
+            }
+          }
+        }
+      ],
+      "applied": true,
+      "ownerSame": true,
+      "idSame": true,
+      "color": "#1450b4",
+      "finish": "f_chrome",
+      "maskSame": true,
+      "pending": false,
+      "freshProof": true,
+      "paint": {
+        "changed": 0,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "spec": {
+        "changed": 29873,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          29873,
+          0
+        ]
+      },
+      "paintExact": true,
+      "specExact": false,
+      "zoneConfigExact": false,
+      "layersExact": true,
+      "before": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "2ff17b2000af5aedcff36233a555b67f2003dd52ee8c264054e796785d931c7f"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "entry": [
+        {
+          "lines": [
+            "Roof recoloured red: spec shift"
+          ],
+          "notes": [],
+          "undoable": true
+        }
+      ],
+      "providerAttempts": 0
+    },
+    "materialUndo": {
+      "undoResult": true,
+      "restoredPaint": true,
+      "restoredSpec": true,
+      "restoredLayers": true,
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "providerAttempts": 0
+    },
+    "colour": {
+      "text": "Done \u2014 the blue painted by \"Roof recoloured red\" (3% of the car) is now recoloured green.\nNEXT: Undo | Make the black matte | Make the cyan metallic | Make the white pearl | Make the numbers metallic",
+      "queueLength": 1,
+      "queue": [
+        {
+          "kind": "edit",
+          "zone": 0,
+          "proof": true,
+          "spec": {
+            "color": "#1f8a3b"
+          }
+        }
+      ],
+      "applied": true,
+      "ownerSame": true,
+      "idSame": true,
+      "color": "#1f8a3b",
+      "finish": "f_chrome",
+      "maskSame": true,
+      "pending": false,
+      "freshProof": true,
+      "paint": {
+        "changed": 29873,
+        "outside": 0,
+        "channels": [
+          29873,
+          29873,
+          29873,
+          0
+        ]
+      },
+      "spec": {
+        "changed": 0,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "paintExact": false,
+      "specExact": true,
+      "zoneConfigExact": false,
+      "layersExact": true,
+      "before": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "2e91a22aa7cb6274d1c3a5a5ddef9edddb2f81e6b7528de6673431a0bb6206d7"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "entry": [
+        {
+          "lines": [
+            "Roof recoloured red: colour #1f8a3b"
+          ],
+          "notes": [],
+          "undoable": true
+        }
+      ],
+      "providerAttempts": 0
+    },
+    "saveOpen": {
+      "loaded": true,
+      "savedMemories": 1,
+      "reopenedMemories": 1,
+      "pending": true,
+      "freshProof": false,
+      "color": "#1f8a3b",
+      "base": "f_chrome",
+      "paintExact": true,
+      "specExact": true,
+      "layersExact": true,
+      "layers": 11,
+      "providerAttempts": 0
+    },
+    "reopenedColour": {
+      "text": "Done \u2014 the green painted by \"Roof recoloured red\" (3% of the car) is now recoloured blue.\nNEXT: Undo | Make the black matte | Make the cyan metallic | Make the white pearl | Make the numbers metallic",
+      "queueLength": 1,
+      "queue": [
+        {
+          "kind": "edit",
+          "zone": 0,
+          "proof": true,
+          "spec": {
+            "color": "#1450b4"
+          }
+        }
+      ],
+      "applied": true,
+      "ownerSame": true,
+      "idSame": true,
+      "color": "#1450b4",
+      "finish": "f_chrome",
+      "maskSame": true,
+      "pending": false,
+      "freshProof": true,
+      "paint": {
+        "changed": 29873,
+        "outside": 0,
+        "channels": [
+          29873,
+          29873,
+          29873,
+          0
+        ]
+      },
+      "spec": {
+        "changed": 0,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "paintExact": false,
+      "specExact": true,
+      "zoneConfigExact": false,
+      "layersExact": true,
+      "before": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "2e91a22aa7cb6274d1c3a5a5ddef9edddb2f81e6b7528de6673431a0bb6206d7"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "entry": [
+        {
+          "lines": [
+            "Roof recoloured red: colour #1450b4"
+          ],
+          "notes": [],
+          "undoable": true
+        }
+      ],
+      "providerAttempts": 0
+    },
+    "voice": {
+      "rows": [
+        {
+          "id": "how-save-project",
+          "request": "How do I save my paint project and reopen it later",
+          "queueLength": 0,
+          "text": "**How do I save my project and come back later**\n1. In Chat Studio, click \u201cFull editor \u2192\u201d to open these Pro controls, then continue with the steps below.\n2. Click \"Save / Open\" in the top toolbar (SPB Projects). It saves the project zones and layer state plus the source-paint path in one project file. Keep that source available at the saved path to reopen it.\n3. To reopen, click \"Save / Open\" again and load it.\nExact controls: Save / Open (Pro > top toolbar (tool row)); SAVE SHOKK (Pro > left column > ZONES > More (three-dot) menu).\nDid that get you there, or is there something else you are trying to do? The SHOKK project stores its zones and layer state, including current layer pixel payload where available, and records the original source path; it does not bundle the original PSD. Keep that source file available at the saved path."
+        },
+        {
+          "id": "can-i-see-applied",
+          "request": "Can I tell whether my last paint change was actually applied",
+          "queueLength": 0,
+          "text": "I do not see a current verified apply receipt for this loaded paint. Check the applied-change entry for this same paint; a draft or preview alone does not confirm that a change was applied. This question made no changes."
+        },
+        {
+          "id": "what-saved",
+          "request": "What does Save Project keep from my edited paint and layers",
+          "queueLength": 0,
+          "text": "A SHOKK project stores zones and layer state, including current raster pixel payload for layers that have pixels. It does not bundle the original PSD file bytes; it records the source path. Original adjustment-layer semantics are not guaranteed, so keep the PSD available and verify the reopened layers and preview."
+        },
+        {
+          "id": "where-undo",
+          "request": "Where do I find Undo for a change I already applied",
+          "queueLength": 0,
+          "text": "**How do I undo**\n1. In Chat Studio, click \u201cFull editor \u2192\u201d to open these Pro controls, then continue with the steps below.\n2. Press Ctrl+Z, or the Undo button in the top toolbar (HISTORY menu).\n3. To go back several steps open \"Undo History...\".\n4. Under an AI panel answer press Undo to take back that whole answer. In Easy use UNDO at the top.\nExact controls: Undo Ctrl+Z (Pro > top toolbar (tool row)); Undo History\u2026 (Pro > top toolbar (tool row)); Undo (Shokker AI panel).\nDid that get you there, or is there something else you are trying to do?\nNEXT: I\u2019m still stuck"
+        },
+        {
+          "id": "how-keep-paint",
+          "request": "How can I keep the current paint color while changing the roof finish",
+          "queueLength": 0,
+          "text": "\u201cUse source paint (spec only)\u201d uses colors from the original imported paint image; it does not retain an authored solid-color hex. The selected Roof recoloured red zone currently uses \u201cUse solid color\u201d with #1450b4. To keep this current authored color while changing material/finish, leave \u201cUse solid color\u201d selected and leave its hex unchanged. Use source paint only when you want the original imported image colors.\nNEXT: I\u2019m still stuck"
+        },
+        {
+          "id": "what-if-roof-blue",
+          "request": "What would happen if I made only the roof blue",
+          "queueLength": 0,
+          "text": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+        },
+        {
+          "id": "repeat-suggestion",
+          "request": "Show me the design suggestion from your last answer again.",
+          "queueLength": 0,
+          "text": "I cannot determine whether that earlier suggestion was applied without a current, verified apply receipt. The suggestion itself is not proof of a paint change; this question made no changes."
+        },
+        {
+          "id": "voice-howto-current",
+          "request": "How do I check whether the roof chrome suggestion was applied or is still a draft",
+          "queueLength": 0,
+          "text": "A suggestion or preview is not proof that a change was applied. I do not have a current verified receipt matching the requested target and look, so I cannot tell whether it is still a draft or was applied. This question made no changes."
+        }
+      ],
+      "paintExact": true,
+      "specExact": true,
+      "zoneConfigExact": true,
+      "layersExact": true,
+      "providerAttempts": 0
+    },
+    "chatUI": {
+      "entry": {
+        "role": "ai",
+        "text": "A SHOKK project stores zones and layer state, including current raster pixel payload for layers that have pixels. It does not bundle the original PSD file bytes; it records the source path. Original adjustment-layer semantics are not guaranteed, so keep the PSD available and verify the reopened layers and preview.",
+        "lines": [],
+        "undoable": false,
+        "notes": []
+      },
+      "paintExact": true,
+      "specExact": true,
+      "zoneConfigExact": true,
+      "layersExact": true,
+      "providerAttempts": 0
+    }
+  },
+  "guidance": {
+    "rows": [
+      {
+        "id": "flatten-meaning",
+        "request": "What is a flattened livery file?",
+        "category": "definition",
+        "queueLength": 0,
+        "text": "Flattened means the visible layer pixels have been combined into one image. The separate editable layers are no longer available in that flattened result.\nNEXT: I\u2019m still stuck",
+        "model": "built-in"
+      },
+      {
+        "id": "flatten-editability",
+        "request": "Will a flattened PNG let me select the original Photoshop layers?",
+        "category": "definition",
+        "queueLength": 0,
+        "text": "The flattened pixels do not contain enough information to reconstruct the original layer separation. If you saved the layered project or still have the original layered PSD, reopen that; otherwise you can continue editing the composite as one image.\nNEXT: I\u2019m still stuck",
+        "model": "built-in"
+      },
+      {
+        "id": "numbers-layer-location",
+        "request": "Where should I look for the digits layer in this PSD?",
+        "category": "layer_navigation",
+        "queueLength": 0,
+        "text": "**How do I find one layer in a long PSD**\n1. In Chat Studio, click \u201cFull editor \u2192\u201d to open these Pro controls, then continue with the steps below.\n2. Open the LAYERS tab.\n3. Type part of the name in the \"filter...\" box (top right of the list); Escape clears it.\n4. Alt+click an eye icon to see only that layer.\nExact controls: Filter layers box (Pro > LAYERS tab > top right); LAYERS (Pro > right column > tabs).\nWhich part should it go on?\nNEXT: I\u2019m still stuck",
+        "model": "built-in"
+      },
+      {
+        "id": "numbers-layer-how",
+        "request": "My race numbers live on their own layer. How can I locate it?",
+        "category": "layer_navigation",
+        "queueLength": 0,
+        "text": "**Find the number layer**\n1. Open the LAYERS tab and look for a layer named Numbers or a car-specific number layer.\n2. Select that row to make it active; use its eye control only to show or hide it.\nNEXT: I\u2019m still stuck",
+        "model": "built-in"
+      },
+      {
+        "id": "coat-controls",
+        "request": "Which slider changes coat while leaving metal and roughness alone?",
+        "category": "coat_guidance",
+        "queueLength": 0,
+        "text": "**Spec-only changes  without touching the paint**\nUse a FOUNDATION finish (base::f_*) with color \"source\" on a zone that covers the area: it changes the spec map and leaves the paint exactly as it is (measured on real templates: 0% paint change). NEVER base::chrome, base::metallic or base::candy for this: those repaint the car (78-85% of the hood changed in the test). Looks: mirror chrome = base::f_chrome, satin chrome = base::f_satin_chrome, dark chrome = base::f_dark_chrome, polished metal = base::f_metallic, matte metal = base::f_matte_metallic, pearl = base::f_pearl, satin pearl = base::f_satin_pearl, candy = base::f_candy, brushed metal = base::f_brushed,\u2026\n\nThat is from the built-in manual. For a broader design brief, use a connected external assistant, or set up an optional AI provider.",
+        "model": "built-in"
+      },
+      {
+        "id": "coat-only-blue",
+        "request": "How could I change the blue coat channel only?",
+        "category": "coat_guidance",
+        "queueLength": 0,
+        "text": "**How do I change only one colour of my livery (say all the red)**\n1. In Chat Studio, click \u201cFull editor \u2192\u201d to open these Pro controls, then continue with the steps below.\n2. Your selected zone is \"Roof recoloured red\" (zone 1) - click another card in the ZONES list to work on that one instead.\n3. Click \"+ Add Zone\".\n4. In COLOR click \"PICK COLOR FROM CAR\", then click a red spot on the car. Raise the tolerance if red edges are left.\n5. In BASE pick a finish.\n6. To make it a different colour set the BASE COLOR dropdown to \"Use solid color\" and choose the colour.\nExact controls: PICK COLOR FROM CAR (Pro > ZONE POPOUT PANEL > COLOR); BASE COLOR dropdown (Pro > ZONE POPOUT PANEL > BASE > Base Color).\nWhich part should it go on?\nNEXT: I\u2019m still stuck",
+        "model": "built-in"
+      },
+      {
+        "id": "offline-caps",
+        "request": "What can Shokker do for me before I connect any AI provider?",
+        "category": "capabilities",
+        "queueLength": 0,
+        "text": "**Set up an optional AI provider**\nPress the gear in this chat panel and paste an OpenRouter key. The built-in helper works without a key; the connection is optional for broader design requests.\nNEXT: I\u2019m still stuck",
+        "model": "built-in"
+      },
+      {
+        "id": "offline-credits",
+        "request": "Do I need AI credits to change finishes locally?",
+        "category": "capabilities",
+        "queueLength": 0,
+        "text": "**How do I pick or change a finish for a zone**\n1. In Chat Studio, click \u201cFull editor \u2192\u201d to open these Pro controls, then continue with the steps below.\n2. Your selected zone is \"Roof recoloured red\" (zone 1) - click another card in the ZONES list to work on that one instead.\n3. Select the zone, BASE > click the Base Material box.\n4. Search by name or idea (try \"gold chrome\" or #carbon), or tap a #tag chip.\n5. Preview on the On-Car Stage, then press \"USE IT\". \"Surprise me\" rolls a random good one.\nExact controls: Base Material (Pro > ZONE POPOUT PANEL > BASE); Finish picker search box (Pro > zone editor > Base Material picker (popup)); USE IT (Pro > Base Material picker > On-Car Stage).\nWhich part should it go on?\nNEXT: I\u2019m still stuck",
+        "model": "built-in"
+      },
+      {
+        "id": "authored-color-retain",
+        "request": "How do I leave the green roof I just made alone and only change its finish?",
+        "category": "preserve_authored_color",
+        "queueLength": 0,
+        "text": "**How do I pick or change a finish for a zone**\n1. In Chat Studio, click \u201cFull editor \u2192\u201d to open these Pro controls, then continue with the steps below.\n2. Your selected zone is \"Roof recoloured red\" (zone 1) - click another card in the ZONES list to work on that one instead.\n3. Select the zone, BASE > click the Base Material box.\n4. Search by name or idea (try \"gold chrome\" or #carbon), or tap a #tag chip.\n5. Preview on the On-Car Stage, then press \"USE IT\". \"Surprise me\" rolls a random good one.\nExact controls: Base Material (Pro > ZONE POPOUT PANEL > BASE); Finish picker search box (Pro > zone editor > Base Material picker (popup)); USE IT (Pro > Base Material picker > On-Car Stage).\nWhich part should it go on?\nNEXT: I\u2019m still stuck",
+        "model": "built-in"
+      },
+      {
+        "id": "source-dropdown-effect",
+        "request": "Does selecting Use source paint keep my zone solid green?",
+        "category": "source_vs_authored",
+        "queueLength": 0,
+        "text": "\u201cUse source paint (spec only)\u201d uses colors from the original imported paint image; it does not retain an authored solid-color hex. The selected Roof recoloured red zone currently uses \u201cUse solid color\u201d with #1450b4. To keep this current authored color while changing material/finish, leave \u201cUse solid color\u201d selected and leave its hex unchanged. Use source paint only when you want the original imported image colors.\nNEXT: I\u2019m still stuck",
+        "model": "built-in"
+      },
+      {
+        "id": "undo-external",
+        "request": "How can I undo an external assistant edit?",
+        "category": "undo_guidance",
+        "queueLength": 0,
+        "text": "**How do I undo**\n1. In Chat Studio, click \u201cFull editor \u2192\u201d to open these Pro controls, then continue with the steps below.\n2. Press Ctrl+Z, or the Undo button in the top toolbar (HISTORY menu).\n3. To go back several steps open \"Undo History...\".\n4. Under an AI panel answer press Undo to take back that whole answer. In Easy use UNDO at the top.\nExact controls: Undo Ctrl+Z (Pro > top toolbar (tool row)); Undo History\u2026 (Pro > top toolbar (tool row)); Undo (Shokker AI panel).\nDid that get you there, or is there something else you are trying to do?\nNEXT: I\u2019m still stuck",
+        "model": "built-in"
+      },
+      {
+        "id": "undo-later-mask",
+        "request": "How does Undo affect a mask I drew after the AI change?",
+        "category": "manual_undo_guidance",
+        "queueLength": 0,
+        "text": "**Pro: Selection / mask bar**\nUnder the canvas: Include / Exclude brushes, Undo / Redo, Deselect, Invert, Grow / Shrink / Feather / Smooth, Copy / Mirror mask, Zoom to selection. Where: Pro > centre > selection / mask bar under the canvas. - **Include** (button): paint areas to KEEP in zone's color match (green overlay) - **Exclude** (button): paint areas to REMOVE from zone's color match (red overlay) - **Undo** (button): Undo last stroke (Ctrl+Z) - **Redo** (button): Redo last undone action (Ctrl+Y / Ctrl+Shift+Z) - **Deselect** (button): Clear selection for the current zone - **Invert** (button): Invert the current zone selection -\u2026\n\nThat is from the built-in manual. For a broader design brief, use a connected external assistant, or set up an optional AI provider.",
+        "model": "built-in"
+      },
+      {
+        "id": "explain-last",
+        "request": "What changed in my sheet most recently? Please just explain.",
+        "category": "receipt_or_honest_limit",
+        "queueLength": 0,
+        "text": "**Talking it through: follow-ups that point at what you were just shown**\nThe copilot remembers the list it just showed, so you can talk to it like a person: - **Point at one:** \"tell me about the second one\", \"I like the second one but more sparkly\", \"use the third one\". - **Like X but ...:** \"something like Undertow but calmer\", \"like chrome but darker\", \"texture like carbon fiber but finer\". Changes it understands: calmer, bolder, darker, lighter, glossier, flatter, more / less sparkle, more / less metallic, warmer, cooler, more colourful, more muted, simpler, busier, finer, coarser, and a colour (\"... but in blue\"). Say \"more like this\" to page through more of the same. - **Bare\u2026\n\nThat is from the built-in manual. For a broader design brief, use a connected external assistant, or set up an optional AI provider.",
+        "model": "built-in"
+      },
+      {
+        "id": "preview-target",
+        "request": "How can I check which area the helper wants to paint before it applies?",
+        "category": "target_confirmation",
+        "queueLength": 0,
+        "text": "**How do I use Easy mode (paint by numbers)**\n1. Shokker finds the colours and gives each a finish. Tap any part of the car (or a row on the right) to change it.\n2. Pick a finish card, keep your colour or take the finish's colour, adjust Blend / Size / Color.\n3. Choose your car, check the READY TO RACE checklist, then SAVE TO iRACING.\nDid that get you there, or is there something else you are trying to do?\nNEXT: I\u2019m still stuck",
+        "model": "built-in"
+      },
+      {
+        "id": "uncertain-logo",
+        "request": "Can the app reliably identify every logo on an unfamiliar car without me checking?",
+        "category": "uncertainty",
+        "queueLength": 0,
+        "text": "What should I do with the sponsors? Pick a look, or tell me a colour.\nNEXT: Make the sponsors matte | Make the sponsors satin | Make the sponsors gloss | Make the sponsors powder coat | Make the sponsors chrome",
+        "model": "built-in"
+      },
+      {
+        "id": "remembered-numbers",
+        "request": "Is a number location remembered from another paint already confirmed for this paint?",
+        "category": "uncertainty",
+        "queueLength": 0,
+        "text": "I could not turn that request into a safe built-in edit, so nothing was changed. Try naming the part and the change, such as \u201cmake only the hood matte blue\u201d, or ask how to use a tool. A connected external assistant can help with a broader brief; setting up an AI provider is optional.",
+        "model": "built-in"
+      },
+      {
+        "id": "layer-save",
+        "request": "How can I reopen tomorrow with editable layers still separate?",
+        "category": "project_save",
+        "queueLength": 0,
+        "text": "**What are layers**\n1. In Chat Studio, click \u201cFull editor \u2192\u201d to open these Pro controls, then continue with the steps below.\n2. A layered PSD keeps parts of the livery on separate sheets: Car Paint (body colours), Numbers, Sponsors, Tape, Decals.\n3. Layers let you change one thing (just the numbers) without touching the rest.\n4. Template layers (Mask, Wire, Car_Mandatory) only show the car outlines and must be OFF when you render.\n5. A flat TGA has no layers. Load a PSD (\"PSD/XCF/ORA\") to get them; see the LAYERS tab on the right.\nExact controls: LAYERS (Pro > right column > tabs).\nDid that get you there, or is there something else you are trying to do?\nNEXT: How do I turn a layer on or off? | I\u2019m still stuck",
+        "model": "built-in"
+      },
+      {
+        "id": "unknown-tool",
+        "request": "Where is the automatic perfect logo tracing button?",
+        "category": "honest_unsupported",
+        "queueLength": 0,
+        "text": "The app can import an image as a layer and let you move, scale or rotate it. The built-in helper does not guarantee automatic tracing or perfect separation of a logo from a flat image; prepare a transparent/clean image when you need an exact contour.\nNEXT: I\u2019m still stuck",
+        "model": "built-in"
+      },
+      {
+        "id": "quoted-change",
+        "request": "Explain the phrase \"make the roof matte\" without making that change.",
+        "category": "read_only_explanation",
+        "queueLength": 0,
+        "text": "**How do I make something matte (flat, no shine)**\n1. In Chat Studio, click \u201cFull editor \u2192\u201d to open these Pro controls, then continue with the steps below.\n2. Your selected zone is \"Roof recoloured red\" (zone 1) - click another card in the ZONES list to work on that one instead.\n3. Select the zone, BASE > Base Material > Matte (or Flat Black for the deadest look).\n4. Keep your colour: BASE COLOR \"Use source paint (spec only)\".\n5. Or push \"G Rough\" up in Spec Sliders. Satin is the in-between.\nExact controls: Base Material (Pro > ZONE POPOUT PANEL > BASE).\nWhich part should it go on?\nNEXT: I\u2019m still stuck",
+        "model": "built-in"
+      },
+      {
+        "id": "hypothetical-change",
+        "request": "What would happen if I made my roof chrome? Please do not apply it.",
+        "category": "read_only_explanation",
+        "queueLength": 0,
+        "text": "Nothing was changed. A separate direct roof-color instruction would first be checked against the current roof ownership and paint; if that scope cannot be proved, the helper should ask instead of changing a broader area.",
+        "model": "built-in"
+      }
+    ],
+    "paintExact": true,
+    "specExact": true,
+    "zoneConfigExact": true,
+    "layersExact": true,
+    "providerAttempts": 0
+  },
+  "limits": [
+    "Native previews are1024-square; imported11layerpixel buffers are2048-square. No export or arbitrary-car acceptance.",
+    "Fixture contains inactive duplicate slot UUIDs; the tested roof owner is unique. No duplicate-owner permission claimed.",
+    "Old-backend compatibility, final helper card correction, source-less final UI and installation remain pending."
+  ],
+  "hold": "Independent semantic20-case review:8useful7partial5failure, including stale SourcePaint advice. Final controller/helper guidance repair under review."
+}

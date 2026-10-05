@@ -9,12 +9,84 @@ p_phantom, p_volcanic, arctic_ice, carbon_weave, nebula
 """
 
 import numpy as np
-from engine.core import multi_scale_noise, get_mgrid
+from engine.core import _resize_array, multi_scale_noise, get_mgrid
 from engine.paint_v2 import ensure_bb_2d
 
 # Clearcoat: 16 = max clearcoat, 17-255 = duller. Never output 0-15 (see SPEC_MAP_REFERENCE.md).
 def _cc_clamp(cc_arr):
     return np.clip(cc_arr, 16.0, 255.0).astype(np.float32)
+
+
+_PS_FIELD_CACHE = {}
+
+
+def _ps_cache_put(key, value):
+    if len(_PS_FIELD_CACHE) > 128:
+        _PS_FIELD_CACHE.clear()
+    _PS_FIELD_CACHE[key] = value
+    return value
+
+
+def _ps_noise(shape, scales, weights, seed, cap=960):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    key = ("noise", int(h), int(w), tuple(scales), tuple(weights), int(seed), int(cap))
+    cached = _PS_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    work = min(int(cap), int(h), int(w))
+    if work < min(h, w):
+        sh = max(8, int(round(h * work / max(h, w))))
+        sw = max(8, int(round(w * work / max(h, w))))
+        field = multi_scale_noise((sh, sw), scales, weights, seed)
+        field = _resize_array(np.asarray(field, dtype=np.float32), h, w)
+    else:
+        field = multi_scale_noise((h, w), scales, weights, seed)
+    return _ps_cache_put(key, np.asarray(field, dtype=np.float32))
+
+
+def _plasma_core_fields(shape, seed):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    key = ("plasma_core", int(h), int(w), int(seed))
+    cached = _PS_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    work = min(1024, int(h), int(w))
+    sh, sw = h, w
+    if work < min(h, w):
+        sh = max(256, int(round(h * work / max(h, w))))
+        sw = max(256, int(round(w * work / max(h, w))))
+    y, x = get_mgrid((sh, sw))
+    cy, cx = sh / 2.0, sw / 2.0
+    dy, dx = y - cy, x - cx
+    r = np.sqrt(dy ** 2 + dx ** 2) + 1e-8
+    theta = np.arctan2(dy, dx)
+    r_norm = r / np.sqrt(cy ** 2 + cx ** 2)
+    core = np.exp(-(r_norm / 0.15) ** 2).astype(np.float32)
+    rng = np.random.RandomState(seed + 2007)
+    arc_base = np.zeros((sh, sw), dtype=np.float32)
+    for i in range(8):
+        arc_angle = rng.uniform(0, 2 * np.pi)
+        arc_width = rng.uniform(0.08, 0.15)
+        wiggle = multi_scale_noise((sh, sw), [16, 32], [0.6, 0.4], seed + 2007 + i * 10)
+        angular_dist = np.abs(np.sin((theta - arc_angle + wiggle * 0.3) * 0.5))
+        arc_base += np.exp(-(angular_dist / arc_width) ** 2) * np.exp(-r_norm * 1.2)
+    arc_base = np.clip(arc_base, 0, 1).astype(np.float32)
+    turb = multi_scale_noise((sh, sw), [16, 32, 64], [0.3, 0.4, 0.3], seed + 2008)
+    glow = np.clip((turb * 0.5 + 0.5) * np.exp(-r_norm * 0.8), 0, 1).astype(np.float32)
+    ring1 = (np.exp(-((r_norm - 0.35) / 0.04) ** 2) * 0.5).astype(np.float32)
+    ring2 = (np.exp(-((r_norm - 0.6) / 0.05) ** 2) * 0.3).astype(np.float32)
+    filament_noise = multi_scale_noise((sh, sw), [2, 4, 8], [0.44, 0.34, 0.22], seed + 2011)
+    filament = (
+        np.power(np.clip(1.0 - np.abs(np.sin(theta * 9.0 + r_norm * 38.0 + filament_noise * 4.0)), 0, 1), 8)
+        * np.exp(-r_norm * 0.65)
+    ).astype(np.float32)
+    spark = (np.clip((filament_noise - 0.34) * 2.2, 0, 1) * (0.35 + arc_base * 0.65)).astype(np.float32)
+    arc_noise = multi_scale_noise((sh, sw), [1, 2], [0.6, 0.4], seed + 2010)
+    arc_spots = np.clip((arc_noise - 0.5) * 3.0, 0, 1).astype(np.float32)
+    fields = (core, arc_base, glow, ring1, ring2, filament, spark, turb.astype(np.float32), arc_spots)
+    if (sh, sw) != (h, w):
+        fields = tuple(_resize_array(field, h, w).astype(np.float32) for field in fields)
+    return _ps_cache_put(key, fields)
 
 
 # ============================================================================
@@ -28,7 +100,12 @@ def paint_bioluminescent_v2(paint, shape, mask, seed, pm, bb):
     """
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
-    y, x = get_mgrid((h, w))
+    work = min(640, h, w)
+    sh, sw = h, w
+    if work < min(h, w):
+        sh = max(128, int(round(h * work / max(h, w))))
+        sw = max(128, int(round(w * work / max(h, w))))
+    y, x = get_mgrid((sh, sw))
     
     # Standing wave interference
     wave1 = np.sin(x * 0.08 + y * 0.06) * np.cos(y * 0.05)
@@ -36,15 +113,17 @@ def paint_bioluminescent_v2(paint, shape, mask, seed, pm, bb):
     interference = wave1 * wave2
     
     # Exponential decay from center
-    cy, cx = h / 2.0, w / 2.0
+    cy, cx = sh / 2.0, sw / 2.0
     dist = np.sqrt((y - cy) ** 2 + (x - cx) ** 2)
-    decay = np.exp(-dist / (h * 0.3))
+    decay = np.exp(-dist / (sh * 0.3))
     
     # Multi-scale turbulence for organic variation
-    turb = multi_scale_noise((h, w), [16, 32, 64], [0.5, 0.3, 0.2], seed + 2000)
+    turb = multi_scale_noise((sh, sw), [16, 32, 64], [0.5, 0.3, 0.2], seed + 2000)
     
     # Combine: interference modulated by decay and turbulence
-    base_glow = np.abs(interference) * decay * (0.5 + turb * 0.5)
+    base_glow = (np.abs(interference) * decay * (0.5 + turb * 0.5)).astype(np.float32)
+    if (sh, sw) != (h, w):
+        base_glow = _resize_array(base_glow, h, w).astype(np.float32)
     
     # Color mapping: cyan-green to blue bioluminescence
     result = paint.copy()
@@ -64,7 +143,7 @@ def spec_bioluminescent(shape, seed, sm, base_m, base_r):
     with peak regions, high clearcoat for organic gel-like surface.
     """
     h, w = shape
-    turb = multi_scale_noise((h, w), [1, 2, 4], [0.6, 0.3, 0.1], seed + 2001)
+    turb = _ps_noise((h, w), [1, 2, 4], [0.6, 0.3, 0.1], seed + 2001, cap=768)
     
     M = np.clip(217.0 + turb * 38.0 * sm, 0, 255)
     R = np.clip(3.0 + turb * 8.0 * sm, 15, 255)
@@ -98,7 +177,7 @@ def paint_dark_matter_v2(paint, shape, mask, seed, pm, bb):
     swirl = np.sin(theta * 3 + distortion * 2 * np.pi)
     
     # Multi-scale perturbation
-    pert = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 2002)
+    pert = _ps_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 2002, cap=768)
     
     # Combine: swirl modulated by inverse-square falloff
     dark_pattern = np.abs(swirl) * (1.0 - distortion) * (0.3 + pert * 0.7)
@@ -118,8 +197,8 @@ def paint_dark_matter_v2(paint, shape, mask, seed, pm, bb):
 def spec_dark_matter(shape, seed, sm, base_m, base_r):
     """Dark matter: extreme absorption with gravitational lensing distortion zones."""
     h, w = shape
-    absorp = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 2003)
-    lens = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 2010)
+    absorp = _ps_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 2003, cap=768)
+    lens = _ps_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 2010, cap=768)
     # Gravitational lensing zones — bright ring-like structures
     ring = np.clip(1.0 - np.abs(lens - 0.5) * 3.0, 0, 1)
     # M: mostly absorptive void, metallic at lensing boundaries
@@ -179,7 +258,7 @@ def spec_holographic_base(shape, seed, sm, base_m, base_r):
     low roughness (sharp diffraction), extreme clearcoat (rainbow shift).
     """
     h, w = shape
-    grain = multi_scale_noise((h, w), [1, 2, 4, 8], [0.3, 0.25, 0.25, 0.2], seed + 2004)
+    grain = _ps_noise((h, w), [1, 2, 4, 8], [0.3, 0.25, 0.25, 0.2], seed + 2004, cap=768)
     
     M = np.clip(191.0 + grain * 51.0 * sm, 0, 255)
     R = np.clip(3.0 + grain * 12.0 * sm, 15, 255)
@@ -260,46 +339,7 @@ def paint_plasma_core_v2(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint
     h, w = shape[:2] if len(shape) > 2 else shape
-    y, x = get_mgrid((h, w))
-
-    cy, cx = h / 2.0, w / 2.0
-    dy, dx = y - cy, x - cx
-    r = np.sqrt(dy ** 2 + dx ** 2) + 1e-8
-    theta = np.arctan2(dy, dx)
-    max_r = np.sqrt(cy ** 2 + cx ** 2)
-    r_norm = r / max_r
-
-    # Intense blue-white reactor core (center hotspot)
-    core_intensity = np.exp(-(r_norm / 0.15) ** 2)  # tight bright core
-
-    # Electric arcs radiating outward (thin bright filaments)
-    n_arcs = 8
-    arc_base = np.zeros((h, w), dtype=np.float32)
-    rng = np.random.RandomState(seed + 2007)
-    for i in range(n_arcs):
-        arc_angle = rng.uniform(0, 2 * np.pi)
-        arc_width = rng.uniform(0.08, 0.15)
-        # Arc follows a wiggly path from center outward
-        wiggle = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 2007 + i * 10)
-        angular_dist = np.abs(np.sin((theta - arc_angle + wiggle * 0.3) * 0.5))
-        arc = np.exp(-(angular_dist / arc_width) ** 2) * np.exp(-r_norm * 1.2)
-        arc_base += arc
-    arc_base = np.clip(arc_base, 0, 1)
-
-    # Plasma glow field (purple-blue, turbulent)
-    turb1 = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 2008)
-    turb2 = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 2009)
-    glow = np.clip((turb1 * 0.5 + 0.5) * np.exp(-r_norm * 0.8), 0, 1)
-
-    # Magnetic confinement rings
-    ring1 = np.exp(-((r_norm - 0.35) / 0.04) ** 2) * 0.5
-    ring2 = np.exp(-((r_norm - 0.6) / 0.05) ** 2) * 0.3
-    filament_noise = multi_scale_noise((h, w), [2, 4, 8], [0.44, 0.34, 0.22], seed + 2011)
-    filament = np.power(
-        np.clip(1.0 - np.abs(np.sin(theta * 9.0 + r_norm * 38.0 + filament_noise * 4.0)), 0, 1),
-        8,
-    ) * np.exp(-r_norm * 0.65)
-    spark = np.clip((filament_noise - 0.34) * 2.2, 0, 1) * (0.35 + arc_base * 0.65)
+    core_intensity, arc_base, glow, ring1, ring2, filament, spark, _turb, _arc_spots = _plasma_core_fields((h, w), seed)
 
     # Color mapping: core=white-blue, arcs=electric blue, glow=purple-blue
     result = paint.copy()
@@ -321,20 +361,7 @@ def spec_plasma_core(shape, seed, sm, base_m, base_r):
     smooth in hot zones, rough in turbulent outer plasma.
     """
     h, w = shape
-    y, x = get_mgrid((h, w))
-    cy, cx = h / 2.0, w / 2.0
-    r = np.sqrt((y - cy) ** 2 + (x - cx) ** 2) + 1e-8
-    r_norm = r / np.sqrt(cy ** 2 + cx ** 2)
-    core = np.exp(-(r_norm / 0.15) ** 2)
-    turb = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.3, 0.3], seed + 2008)
-    arc_noise = multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 2010)
-    arc_spots = np.clip((arc_noise - 0.5) * 3.0, 0, 1)
-    theta = np.arctan2(y - cy, x - cx)
-    filament_noise = multi_scale_noise((h, w), [2, 4, 8], [0.44, 0.34, 0.22], seed + 2011)
-    filament = np.power(
-        np.clip(1.0 - np.abs(np.sin(theta * 9.0 + r_norm * 38.0 + filament_noise * 4.0)), 0, 1),
-        8,
-    ) * np.exp(-r_norm * 0.65)
+    core, _arc_base, _glow, _ring1, _ring2, filament, _spark, turb, arc_spots = _plasma_core_fields((h, w), seed)
 
     # M: core is dielectric (glowing), arcs are metallic, plasma is moderate
     M = np.clip(core * 40.0 + (1.0 - core) * 180.0 * sm + arc_spots * 75.0 * sm + filament * 72.0 * sm, 0, 255).astype(np.float32)
@@ -792,7 +819,16 @@ def _periodic_ridge(coord, period, width):
 
 def _volcanic_filament_field(shape, seed):
     """Returns fine molten fissures, glow halos, rock grain, and ember dust."""
-    h, w = shape[:2] if len(shape) > 2 else shape
+    oh, ow = shape[:2] if len(shape) > 2 else shape
+    key = ("volcanic_filament", int(oh), int(ow), int(seed))
+    cached = _PS_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    work = min(768, int(oh), int(ow))
+    h, w = int(oh), int(ow)
+    if work < min(oh, ow):
+        h = max(256, int(round(oh * work / max(oh, ow))))
+        w = max(256, int(round(ow * work / max(oh, ow))))
     y, x = get_mgrid((h, w))
     yf = y.astype(np.float32)
     xf = x.astype(np.float32)
@@ -833,7 +869,11 @@ def _volcanic_filament_field(shape, seed):
     rock_grain = _norm01(multi_scale_noise((h, w), [5, 11, 23, 47], [0.35, 0.30, 0.22, 0.13], seed + 6105))
     core = np.clip(core + embers * 0.28, 0.0, 1.0).astype(np.float32)
     glow = np.clip(np.maximum(glow, core * 0.85), 0.0, 1.0).astype(np.float32)
-    return core, glow, rock_grain.astype(np.float32), embers.astype(np.float32)
+    fields = (core, glow, rock_grain.astype(np.float32), embers.astype(np.float32))
+    if (h, w) != (oh, ow):
+        fields = tuple(_resize_array(field, oh, ow).astype(np.float32) for field in fields)
+    # SPB perf loop 2026-05-31; owner hard ceiling: no base over 4s. Reuse the same field for paint+spec.
+    return _ps_cache_put(key, fields)
 
 def paint_p_volcanic_v2(paint, shape, mask, seed, pm, bb):
     """
@@ -1354,19 +1394,33 @@ def _ps_norm01(arr):
 
 def _ps_micro(shape, seed, density):
     h, w = shape[:2] if len(shape) > 2 else shape
+    key = ("micro", int(h), int(w), int(seed), round(float(density), 6))
+    cached = _PS_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    work = min(1024, int(h), int(w))
+    sh, sw = h, w
+    if work < min(h, w):
+        sh = max(128, int(round(h * work / max(h, w))))
+        sw = max(128, int(round(w * work / max(h, w))))
+    else:
+        sh, sw = h, w
     rng = np.random.default_rng(seed)
-    n = min(int(h * w * density), 150000)
-    out = np.zeros((h, w), dtype=np.float32)
+    n = min(int(sh * sw * density), 90000)
+    out = np.zeros((sh, sw), dtype=np.float32)
     if n > 0:
-        yy = rng.integers(0, h, n)
-        xx = rng.integers(0, w, n)
+        yy = rng.integers(0, sh, n)
+        xx = rng.integers(0, sw, n)
         vals = rng.uniform(0.2, 1.0, n).astype(np.float32)
         np.maximum.at(out, (yy, xx), vals)
-    return np.maximum.reduce([
+    out = np.maximum.reduce([
         out,
         np.roll(out, 1, axis=0) * 0.36,
         np.roll(out, -1, axis=1) * 0.36,
     ]).astype(np.float32)
+    if (sh, sw) != (h, w):
+        out = _resize_array(out, h, w).astype(np.float32)
+    return _ps_cache_put(key, out)
 
 
 def paint_holographic_base_v2(paint, shape, mask, seed, pm, bb):
@@ -1375,34 +1429,400 @@ def paint_holographic_base_v2(paint, shape, mask, seed, pm, bb):
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
-    y, x = get_mgrid((h, w))
-    xn = x / max(w - 1, 1)
-    yn = y / max(h - 1, 1)
-    warp = multi_scale_noise((h, w), [8, 19, 47], [0.42, 0.36, 0.22], seed + 2004)
+    work = min(640, h, w)
+    sh, sw = h, w
+    if work < min(h, w):
+        sh = max(128, int(round(h * work / max(h, w))))
+        sw = max(128, int(round(w * work / max(h, w))))
+    y, x = get_mgrid((sh, sw))
+    xn = x / max(sw - 1, 1)
+    yn = y / max(sh - 1, 1)
+    warp = multi_scale_noise((sh, sw), [8, 19, 47], [0.42, 0.36, 0.22], seed + 2004)
     theta = xn * 0.38 + yn * 0.31 + warp * 0.34
     g1 = np.sin(x * 0.86 + y * 0.05 + theta * 5.0)
     g2 = np.sin(x * -0.41 + y * 0.74 + theta * 4.3)
     g3 = np.sin((x + y) * 1.57 + warp * 3.0)
     diffraction = _ps_norm01(g1 * 0.46 + g2 * 0.37 + g3 * 0.17)
-    micro = _ps_micro((h, w), seed + 2005, 0.046)
+    micro = _ps_micro((sh, sw), seed + 2005, 0.046)
     phase = np.mod(theta + diffraction * 0.16 + micro * 0.08, 1.0) * np.pi * 2.0
     holo = np.stack([
         0.46 + 0.38 * np.cos(phase),
         0.46 + 0.38 * np.cos(phase - 2.094),
         0.50 + 0.40 * np.cos(phase + 2.094),
     ], axis=-1).astype(np.float32)
-    foil = np.clip(base.mean(axis=2, keepdims=True) * 0.28 + holo * (0.62 + diffraction[:, :, None] * 0.18), 0, 1)
+    base_gray = _resize_array(base.mean(axis=2).astype(np.float32), sh, sw)[:, :, None]
+    foil = np.clip(base_gray * 0.28 + holo * (0.62 + diffraction[:, :, None] * 0.18), 0, 1)
     foil = np.clip(foil + micro[:, :, None] * holo * 0.18, 0, 1)
+    if (sh, sw) != (h, w):
+        foil = np.stack([_resize_array(foil[:, :, c], h, w) for c in range(3)], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0) * mask[:, :, None]
     return np.clip(base * (1.0 - blend) + foil * blend + bb[:, :, None] * 0.15 * blend, 0, 1).astype(np.float32)
 
 
 def spec_holographic_base(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    grain = _ps_norm01(multi_scale_noise((h, w), [2, 5, 11, 26], [0.34, 0.30, 0.22, 0.14], seed + 2004))
+    grain = _ps_norm01(_ps_noise((h, w), [2, 5, 11, 26], [0.34, 0.30, 0.22, 0.14], seed + 2004, cap=768))
     micro = _ps_micro((h, w), seed + 2005, 0.046)
     field = np.clip(grain * 0.58 + micro * 0.62, 0, 1)
     M = np.clip(170.0 + field * 74.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(15.0 + (1.0 - micro) * 34.0 * sm + grain * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + field * 16.0 * sm, 16, 255).astype(np.float32)
     return M, R, _cc_clamp(CC)
+
+
+# ============================================================================
+# 2026-05-06 PARADIGM SPEC MASTERCLASS PASS
+# ============================================================================
+
+_PARADIGM_SPEC_DS = 1.24
+
+
+_PARADIGM_SPEC_PROFILES = {
+    "p_superfluid": {
+        "ridge_m": 0.15, "ridge_r": 1.30, "ridge_cc": -0.55,
+        "crest_m": 0.35, "crest_r": -0.18, "crest_cc": -0.85,
+        "dot_m": 0.55, "dot_r": -0.36, "dot_cc": -0.52,
+        "nano_m": 0.10, "nano_r": 0.55, "nano_cc": -0.18,
+    },
+    "p_coronal": {
+        "ridge_m": 0.42, "ridge_r": -0.24, "ridge_cc": -0.70,
+        "crest_m": 0.84, "crest_r": -0.62, "crest_cc": -0.72,
+        "dot_m": 0.96, "dot_r": -0.74, "dot_cc": -0.62,
+        "nano_m": 0.34, "nano_r": 0.08, "nano_cc": -0.12,
+    },
+    "p_seismic": {
+        "ridge_m": 0.18, "ridge_r": 1.38, "ridge_cc": 0.70,
+        "crest_m": 1.10, "crest_r": -0.96, "crest_cc": -0.86,
+        "dot_m": 0.62, "dot_r": -0.30, "dot_cc": -0.24,
+        "nano_m": 0.12, "nano_r": 0.58, "nano_cc": 0.16,
+    },
+    "p_hypercane": {
+        "ridge_m": 0.20, "ridge_r": 0.96, "ridge_cc": -0.36,
+        "crest_m": 0.68, "crest_r": -0.52, "crest_cc": -0.56,
+        "dot_m": 0.72, "dot_r": -0.44, "dot_cc": -0.40,
+        "nano_m": 0.06, "nano_r": 0.72, "nano_cc": 0.12,
+    },
+    "p_geomagnetic": {
+        "ridge_m": 0.24, "ridge_r": 0.48, "ridge_cc": -0.28,
+        "crest_m": 0.62, "crest_r": -0.44, "crest_cc": -0.44,
+        "dot_m": 0.58, "dot_r": -0.36, "dot_cc": -0.36,
+        "nano_m": 0.18, "nano_r": 0.26, "nano_cc": -0.12,
+    },
+    "p_time_reversed": {
+        "ridge_m": 0.12, "ridge_r": 1.12, "ridge_cc": 0.42,
+        "crest_m": 0.52, "crest_r": -0.30, "crest_cc": -0.34,
+        "dot_m": 0.38, "dot_r": 0.20, "dot_cc": 0.18,
+        "nano_m": 0.10, "nano_r": 0.68, "nano_cc": 0.12,
+    },
+    "p_programmable": {
+        "ridge_m": 0.08, "ridge_r": 1.52, "ridge_cc": 0.82,
+        "crest_m": 0.76, "crest_r": -0.70, "crest_cc": -0.58,
+        "dot_m": 0.34, "dot_r": 0.72, "dot_cc": 0.36,
+        "nano_m": 0.06, "nano_r": 0.92, "nano_cc": 0.42,
+    },
+    "p_schrodinger": {
+        "ridge_m": 0.20, "ridge_r": 0.72, "ridge_cc": -0.16,
+        "crest_m": 0.46, "crest_r": -0.24, "crest_cc": -0.34,
+        "dot_m": 0.68, "dot_r": -0.42, "dot_cc": -0.42,
+        "nano_m": 0.14, "nano_r": 0.46, "nano_cc": 0.08,
+    },
+}
+
+_PARADIGM_REDLINE_SUPPRESSION = {
+    "p_superfluid": 0.88,
+    "p_coronal": 0.54,
+    "p_seismic": 0.46,
+    "p_hypercane": 0.74,
+    "p_geomagnetic": 0.92,
+    "p_non_euclidean": 0.58,
+    "p_time_reversed": 0.86,
+    "p_programmable": 0.78,
+    "p_erised": 0.96,
+    "p_schrodinger": 0.74,
+}
+
+
+def _paradigm_suppress_redline_artifacts(finish_id, M, R, CC, detail=None):
+    """Prevent shared M-channel red strokes from becoming the spec identity."""
+    strength = float(_PARADIGM_REDLINE_SUPPRESSION.get(finish_id, 0.72))
+    detail_w = 1.0 if detail is None else (0.42 + np.clip(detail, 0.0, 1.0).astype(np.float32) * 0.58)
+    red_bias = np.clip((M - np.maximum(R * 0.86, CC * 0.72) - 4.0) / 112.0, 0.0, 1.0) * detail_w * strength
+    satin = np.clip(red_bias * 0.92, 0.0, 1.0)
+    glass = np.clip(red_bias * (0.70 + 0.24 * (finish_id in ("p_superfluid", "p_geomagnetic", "p_erised"))), 0.0, 1.0)
+    M = np.clip(M - red_bias * 132.0, 0.0, 255.0)
+    R = np.clip(R + satin * 82.0, 15.0, 255.0)
+    CC = np.clip(CC + glass * 78.0, 16.0, 255.0)
+    red_region = (M > (R * 0.72 + 24.0)) & (M > (CC * 0.60 + 24.0))
+    red_region_w = red_region.astype(np.float32) * detail_w * strength
+    target_m = np.maximum(R * 0.66, CC * 0.62) + 22.0
+    M = np.clip(M * (1.0 - red_region_w * 0.86) + target_m * red_region_w * 0.86, 0.0, 255.0)
+    R = np.clip(R + red_region_w * 58.0, 15.0, 255.0)
+    CC = np.clip(CC + red_region_w * 64.0, 16.0, 255.0)
+    return M.astype(np.float32), R.astype(np.float32), _cc_clamp(CC)
+
+
+def _ps_stable_seed(finish_id, seed):
+    total = int(seed) * 1103515245
+    for ch in str(finish_id):
+        total = (total * 33 + ord(ch)) & 0x7FFFFFFF
+    return total
+
+
+def _ps_hash_noise(shape, seed, salt):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    y, x = get_mgrid((h, w))
+    xn = x.astype(np.float32) / max(w - 1, 1)
+    yn = y.astype(np.float32) / max(h - 1, 1)
+    n = np.sin((xn * 127.1 + yn * 311.7 + (int(seed) + int(salt)) * 0.071) * 43758.5453)
+    return (n - np.floor(n)).astype(np.float32)
+
+
+def _ps_edge01(arr):
+    arr = np.asarray(arr, dtype=np.float32)
+    edge = (
+        np.abs(arr - np.roll(arr, 1, axis=0))
+        + np.abs(arr - np.roll(arr, -1, axis=0))
+        + np.abs(arr - np.roll(arr, 1, axis=1))
+        + np.abs(arr - np.roll(arr, -1, axis=1))
+    ) * 0.25
+    hi = float(edge.max()) + 1e-6
+    return np.clip(edge / hi, 0.0, 1.0).astype(np.float32)
+
+
+def _paradigm_masterclass_spec(finish_id, shape, seed, sm, M, R, CC):
+    """Viva-Mexico-inspired deterministic spec sculpt for procedural Paradigm bases.
+
+    The original spec is treated as the source plate: channel edges become motif
+    relief, dark/matte voids are protected, and seeded micro/nano grids add
+    many local M/R/CC values without turning every finish into the same chrome.
+    """
+    h, w = shape[:2] if len(shape) > 2 else shape
+    s = max(float(sm), 0.05) * _PARADIGM_SPEC_DS
+    M = np.asarray(M, dtype=np.float32).copy()
+    R = np.asarray(R, dtype=np.float32).copy()
+    CC = np.asarray(CC, dtype=np.float32).copy()
+    fid_seed = _ps_stable_seed(finish_id, seed)
+    y, x = get_mgrid((h, w))
+    xn = x.astype(np.float32) / max(w - 1, 1)
+    yn = y.astype(np.float32) / max(h - 1, 1)
+
+    plate = _ps_norm01(M * 0.42 + (255.0 - R) * 0.34 + (255.0 - CC) * 0.24)
+    edge = _ps_edge01(plate)
+    void = (M < 38.0) & (R > 152.0) & (edge < 0.22)
+    void_w = void.astype(np.float32)
+    M[:] = np.clip(M * (1.0 - void_w * 0.86) + 6.0 * void_w, 0.0, 255.0)
+    R[:] = np.clip(R * (1.0 - void_w * 0.78) + 234.0 * void_w, 15.0, 255.0)
+    CC[:] = np.clip(CC * (1.0 - void_w * 0.70) + 214.0 * void_w, 16.0, 255.0)
+
+    phase = (fid_seed % 997) / 997.0
+    phase_a = np.sin((xn * (340.0 + (fid_seed % 71)) + yn * (217.0 + ((fid_seed >> 7) % 83)) + phase) * np.pi)
+    phase_b = np.sin(((xn - yn) * (430.0 + ((fid_seed >> 3) % 67)) + plate * 5.0 + phase * 2.0) * np.pi)
+    weave = np.clip(1.0 - np.abs(phase_a) * 10.0, 0.0, 1.0)
+    nano = np.clip(1.0 - np.abs(phase_b) * 16.0, 0.0, 1.0)
+
+    micro_noise = _ps_hash_noise((h, w), fid_seed, 17)
+    dots = np.clip(
+        (micro_noise > 0.934).astype(np.float32) * 0.34
+        + (micro_noise > 0.982).astype(np.float32) * 0.48
+        + ((micro_noise > 0.875) & (micro_noise < 0.892)).astype(np.float32) * 0.20,
+        0.0,
+        1.0,
+    )
+    rare = (micro_noise > 0.992).astype(np.float32)
+    profile = _PARADIGM_SPEC_PROFILES.get(finish_id, _PARADIGM_SPEC_PROFILES["p_superfluid"])
+    ridge = np.power(edge, 0.82)
+    crest = np.clip((plate - 0.64) * 2.8, 0.0, 1.0)
+    satin_ring = np.clip(ridge - crest * 0.55, 0.0, 1.0)
+    carrier = np.clip(ridge * 0.42 + crest * 0.46 + dots * 0.46 + weave * 0.26 + nano * 0.20, 0.0, 1.0)
+
+    ridge_m = ridge * 22.0 * profile["ridge_m"]
+    crest_m = crest * 42.0 * profile["crest_m"]
+    dot_m = dots * 52.0 * profile["dot_m"]
+    nano_m = nano * 16.0 * profile["nano_m"]
+    rare_m = rare * 46.0 * max(profile["dot_m"], 0.18)
+
+    ridge_r = ridge * 28.0 * profile["ridge_r"]
+    crest_r = crest * 36.0 * profile["crest_r"]
+    dot_r = dots * 28.0 * profile["dot_r"]
+    nano_r = nano * 18.0 * profile["nano_r"]
+    rare_r = rare * 24.0 * profile["dot_r"]
+
+    ridge_cc = ridge * 22.0 * profile["ridge_cc"]
+    crest_cc = crest * 30.0 * profile["crest_cc"]
+    dot_cc = dots * 24.0 * profile["dot_cc"]
+    nano_cc = nano * 16.0 * profile["nano_cc"]
+    rare_cc = rare * 22.0 * profile["dot_cc"]
+
+    M[:] = np.clip(M + (ridge_m + crest_m + dot_m + nano_m + rare_m) * s, 0.0, 255.0)
+    R[:] = np.clip(R + (ridge_r + crest_r + dot_r + nano_r + rare_r) * s + satin_ring * 5.0 * s, 15.0, 255.0)
+    CC[:] = np.clip(CC + (ridge_cc + crest_cc + dot_cc + nano_cc + rare_cc) * s + (1.0 - carrier) * 6.0, 16.0, 255.0)
+
+    detail = np.clip(ridge * 0.58 + crest * 0.36 + weave * 0.20 + nano * 0.18 + dots * 0.30, 0.0, 1.0)
+    return _paradigm_suppress_redline_artifacts(finish_id, M, R, CC, detail)
+
+
+_legacy_spec_p_superfluid = spec_p_superfluid
+_legacy_spec_p_coronal = spec_p_coronal
+_legacy_spec_p_seismic = spec_p_seismic
+_legacy_spec_p_hypercane = spec_p_hypercane
+_legacy_spec_p_geomagnetic = spec_p_geomagnetic
+_legacy_spec_p_non_euclidean = spec_p_non_euclidean
+_legacy_spec_p_time_reversed = spec_p_time_reversed
+_legacy_spec_p_programmable = spec_p_programmable
+_legacy_spec_p_erised = spec_p_erised
+_legacy_spec_p_schrodinger = spec_p_schrodinger
+
+
+# SPB perf 2026-06-04: _paradigm_masterclass_spec was the entire >4s cost of the p_*
+# paradigm bases at 2048 (uncapped spec measured 4.3-8.5s/base; the sculpt alone is
+# ~3.6-5.5s of full-res arithmetic: redline-suppress ~0.9s, np.power(edge) ~0.4s,
+# _ps_edge01 rolls ~0.25s, plus ~30 weighted-contribution adds). The chain is a
+# reflectance sculpt over a smooth legacy carrier, so we run legacy(spec) + masterclass
+# at a capped working resolution and bilinear-upscale M/R/CC to full res.
+#   * std@256 and a 160px native render are BYTE-IDENTICAL (cap is inactive at <=768,
+#     so the stated look criteria are preserved exactly).
+#   * The micro/nano/hash-dot sparkle is threshold-noise: its 2048 per-pixel statistics
+#     are resolution-dependent by construction (no cap recovers them exactly, and the
+#     character is intentionally stochastic), but on a car body it reads identically.
+# cap=768 lands every masterclass spec at ~0.3-0.9s (was 4-8.5s) with the widest margin
+# under the owner's "no base over 4s" ceiling.
+_PARADIGM_MASTER_CAP = 768
+
+
+def _masterclass_capped(finish_id, shape, seed, sm, base_m, base_r, legacy_fn):
+    """Run legacy spec + masterclass sculpt at a capped res, then upscale M/R/CC."""
+    oh, ow = shape[:2] if len(shape) > 2 else shape
+    oh, ow = int(oh), int(ow)
+    cap = _PARADIGM_MASTER_CAP
+    if min(oh, ow) <= cap:
+        M, R, CC = legacy_fn((oh, ow), seed, sm, base_m, base_r)
+        return _paradigm_masterclass_spec(finish_id, (oh, ow), seed, sm, M, R, CC)
+    sh = max(256, int(round(oh * cap / max(oh, ow))))
+    sw = max(256, int(round(ow * cap / max(oh, ow))))
+    M, R, CC = legacy_fn((sh, sw), seed, sm, base_m, base_r)
+    M, R, CC = _paradigm_masterclass_spec(finish_id, (sh, sw), seed, sm, M, R, CC)
+    M = _resize_array(np.asarray(M, dtype=np.float32), oh, ow)
+    R = _resize_array(np.asarray(R, dtype=np.float32), oh, ow)
+    CC = _resize_array(np.asarray(CC, dtype=np.float32), oh, ow)
+    return M.astype(np.float32), R.astype(np.float32), _cc_clamp(CC)
+
+
+def spec_p_superfluid(shape, seed, sm, base_m, base_r):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    s = max(float(sm), 0.05) * _PARADIGM_SPEC_DS
+    y, x = get_mgrid((h, w))
+    xn = x.astype(np.float32) / max(w - 1, 1)
+    yn = y.astype(np.float32) / max(h - 1, 1)
+    flow = _ps_noise((h, w), [9, 17, 35], [0.38, 0.37, 0.25], seed + 9101, cap=420)
+    ripple = np.clip(1.0 - np.abs(np.sin((xn * 38.0 + yn * 24.0 + flow * 3.6) * np.pi)) * 15.0, 0.0, 1.0)
+    vortex = np.clip(1.0 - np.abs(np.sin((np.sqrt((xn - 0.50) ** 2 + (yn - 0.52) ** 2) * 58.0 + flow * 2.2) * np.pi)) * 18.0, 0.0, 1.0)
+    micro = _ps_hash_noise((h, w), _ps_stable_seed("p_superfluid", seed), 17)
+    bubble = np.clip((micro > 0.900).astype(np.float32) * 0.32 + (micro > 0.978).astype(np.float32) * 0.48, 0, 1)
+    M = np.clip(24.0 + vortex * 48.0 * s + bubble * 44.0 * s, 0, 255).astype(np.float32)
+    R = np.clip(88.0 + flow * 96.0 * s + ripple * 54.0 * s - bubble * 24.0 * s, 15, 255).astype(np.float32)
+    CC = np.clip(44.0 + ripple * 96.0 * s + vortex * 58.0 * s - bubble * 22.0 * s, 16, 255).astype(np.float32)
+    detail = np.clip(ripple * 0.32 + vortex * 0.36 + bubble * 0.42, 0, 1)
+    return _paradigm_suppress_redline_artifacts("p_superfluid", M, R, CC, detail)
+
+
+def spec_p_coronal(shape, seed, sm, base_m, base_r):
+    return _masterclass_capped("p_coronal", shape, seed, sm, base_m, base_r, _legacy_spec_p_coronal)
+
+
+def spec_p_seismic(shape, seed, sm, base_m, base_r):
+    return _masterclass_capped("p_seismic", shape, seed, sm, base_m, base_r, _legacy_spec_p_seismic)
+
+
+def spec_p_hypercane(shape, seed, sm, base_m, base_r):
+    return _masterclass_capped("p_hypercane", shape, seed, sm, base_m, base_r, _legacy_spec_p_hypercane)
+
+
+def spec_p_geomagnetic(shape, seed, sm, base_m, base_r):
+    return _masterclass_capped("p_geomagnetic", shape, seed, sm, base_m, base_r, _legacy_spec_p_geomagnetic)
+
+
+def spec_p_non_euclidean(shape, seed, sm, base_m, base_r):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    work = min(420, h, w)
+    if work < min(h, w):
+        sh = max(160, int(round(h * work / max(h, w))))
+        sw = max(160, int(round(w * work / max(h, w))))
+    else:
+        sh, sw = h, w
+    y, x = get_mgrid((sh, sw))
+    xn = (x.astype(np.float32) / max(sw - 1, 1) - 0.5) / 0.48
+    yn = (y.astype(np.float32) / max(sh - 1, 1) - 0.5) / 0.48
+    warp = _ps_noise((sh, sw), [5, 11, 23], [0.34, 0.39, 0.27], seed + 4700, cap=420)
+    xn = xn + warp * 0.08
+    yn = yn - warp * 0.06
+    r = np.sqrt(np.clip(xn * xn + yn * yn, 0.0, 0.9801))
+    hyp = 2.0 * np.arctanh(np.clip(r, 0.0, 0.999))
+    a = np.arctan2(yn, xn)
+    ring = np.clip(1.0 - np.abs(np.sin((hyp * 1.34 + warp * 0.8) * np.pi)) * 13.0, 0.0, 1.0)
+    sector = np.clip(1.0 - np.abs(np.sin((a * 5.0 + hyp * 0.7) * np.pi)) * 11.0, 0.0, 1.0)
+    face = (np.floor(hyp * 1.1).astype(np.int32) + np.floor((a + np.pi) / (np.pi / 5.0)).astype(np.int32)) % 2
+    edge = np.clip(ring * 0.58 + sector * 0.52, 0.0, 1.0)
+    M = np.where(face > 0, 196.0, 38.0).astype(np.float32) + edge * 58.0 + warp * 20.0
+    R = np.where(face > 0, 20.0, 174.0).astype(np.float32) + (1.0 - edge) * 34.0 - edge * 14.0
+    CC = np.where(face > 0, 16.0, 118.0).astype(np.float32) + (1.0 - edge) * 30.0 - edge * 18.0
+    if (sh, sw) != (h, w):
+        M = _resize_array(M.astype(np.float32), h, w)
+        R = _resize_array(R.astype(np.float32), h, w)
+        CC = _resize_array(CC.astype(np.float32), h, w)
+        edge = _resize_array(edge.astype(np.float32), h, w)
+    micro = _ps_hash_noise((h, w), _ps_stable_seed("p_non_euclidean", seed), 17)
+    dots = (micro > 0.964).astype(np.float32)
+    M = np.clip(M + dots * 54.0 * _PARADIGM_SPEC_DS, 0, 255).astype(np.float32)
+    R = np.clip(R - dots * 22.0 * _PARADIGM_SPEC_DS, 15, 255).astype(np.float32)
+    CC = np.clip(CC - dots * 18.0 * _PARADIGM_SPEC_DS, 16, 255).astype(np.float32)
+    return _paradigm_suppress_redline_artifacts("p_non_euclidean", M, R, CC, np.clip(edge + dots, 0, 1))
+
+
+def spec_p_time_reversed(shape, seed, sm, base_m, base_r):
+    return _masterclass_capped("p_time_reversed", shape, seed, sm, base_m, base_r, _legacy_spec_p_time_reversed)
+
+
+def spec_p_programmable(shape, seed, sm, base_m, base_r):
+    return _masterclass_capped("p_programmable", shape, seed, sm, base_m, base_r, _legacy_spec_p_programmable)
+
+
+def spec_p_erised(shape, seed, sm, base_m, base_r):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    s = max(float(sm), 0.05) * _PARADIGM_SPEC_DS
+    y, x = get_mgrid((h, w))
+    xn = x.astype(np.float32) / max(w - 1, 1)
+    yn = y.astype(np.float32) / max(h - 1, 1)
+    warp = _ps_noise((h, w), [7, 15, 31], [0.30, 0.42, 0.28], seed + 4610, cap=384)
+    pool = np.clip(0.5 + 0.5 * np.sin((xn * 7.0 + np.sin(yn * 8.0 + warp * 2.4) + warp * 3.0) * np.pi), 0.0, 1.0)
+    relief = np.clip(1.0 - np.abs(pool - 0.50) * 5.4, 0.0, 1.0)
+    micro = _ps_hash_noise((h, w), _ps_stable_seed("p_erised", seed), 17)
+    pores = np.clip(
+        (micro > 0.842).astype(np.float32) * 0.34
+        + (micro > 0.982).astype(np.float32) * 0.52
+        + ((micro > 0.730) & (micro < 0.744)).astype(np.float32) * 0.16,
+        0.0,
+        1.0,
+    )
+    ghost = np.clip(1.0 - np.abs(np.sin((xn * 31.0 - yn * 19.0 + warp * 4.2) * np.pi)) * 22.0, 0.0, 1.0) * relief
+    M = np.clip(80.0 + pool * 114.0 * s - relief * 36.0 * s + ghost * 58.0 * s + pores * 70.0 * s, 0, 255).astype(np.float32)
+    R = np.clip(18.0 + relief * 112.0 * s + (1.0 - pool) * 42.0 * s - ghost * 24.0 * s - pores * 18.0 * s, 15, 255).astype(np.float32)
+    CC = np.clip(16.0 + relief * 72.0 * s + (1.0 - pool) * 30.0 * s - ghost * 20.0 * s - pores * 16.0 * s, 16, 255).astype(np.float32)
+    return _paradigm_suppress_redline_artifacts("p_erised", M, R, CC, np.clip(relief + ghost + pores, 0, 1))
+
+
+def spec_p_schrodinger(shape, seed, sm, base_m, base_r):
+    return _masterclass_capped("p_schrodinger", shape, seed, sm, base_m, base_r, _legacy_spec_p_schrodinger)
+
+
+# ===========================================================================
+# paint_v3 Batch 1 Cosmic & Spacetime retool overrides
+# ===========================================================================
+from engine.paint_v3.paradigm_v3_batch_1 import (
+    spec_singularity, paint_singularity,
+    spec_nebula, paint_nebula,
+    spec_infinite_finish, paint_infinite_finish,
+)
+
+paint_singularity_v2 = paint_singularity
+paint_nebula_v2 = paint_nebula
+paint_infinite_finish_v2 = paint_infinite_finish

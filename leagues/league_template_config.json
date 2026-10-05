@@ -1,5 +1,5 @@
 {
-  "version": "6.2.0",
+  "version": "6.3.0",
   "schema": "spb-league-config-v1",
   "description": "League configuration template for standardizing livery looks across a sim-racing league. Fill in the fields, save, and distribute to drivers along with the league's shared decal pack.",
   "league_name": "Example Racing League",

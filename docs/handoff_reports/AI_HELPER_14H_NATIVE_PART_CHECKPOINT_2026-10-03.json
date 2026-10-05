@@ -1,0 +1,60 @@
+{
+  "schema": "spb-native-followup-checkpoint/1",
+  "session": "a95315f5c001",
+  "case": "N01",
+  "source_sha256": {
+    "js/spb-pro-ai.js": "af03b56a8e2ab1a82a7d43bc429b04aed3df93939264e8cadcc20a0871f52066",
+    "js/spb-pro-zone-kit.js": "6968963fc8d382e3ecda629089a71a73a519270c0b577e98df03d9f7d48d68d0",
+    "js/spb-pro-design.js": "a69d2223bf1162ab94d5b87d152fba7f2a6bf0388f192e4c49523a6ab45ed369",
+    "js/spb-pro-edit.js": "97b9d3d4a86a799159b3dd2721593704d4b5c585cff8fd090978f31bcd3185f1",
+    "js/spb-pro-advisor.js": "e76c44edb5f613b2a6d5faf768c130f31097e58dc8c80c6d7e4c8907b513ec7e"
+  },
+  "outcome": {
+    "done": true,
+    "result": {
+      "busy": false,
+      "zoneCount": 6,
+      "initialCount": 5,
+      "sameOwner": true,
+      "color": "#c8102e",
+      "mode": "solid",
+      "finish": "f_chrome",
+      "paintPreviewExact": true,
+      "specPreviewChanged": true,
+      "mask": {
+        "length": 4194304,
+        "selected": 200869,
+        "outside": 0
+      },
+      "last": [
+        {
+          "id": 2,
+          "text": "Done — the roof is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched. (I updated your earlier change to the same colour instead of stacking a new one on top.)",
+          "lines": [
+            "Roof chrome: finish Chrome"
+          ],
+          "notes": [],
+          "undoable": true
+        }
+      ],
+      "attempts": 0
+    }
+  },
+  "undo": {
+    "done": true,
+    "result": {
+      "done": true,
+      "count": 6,
+      "sameId": true,
+      "color": "#c8102e",
+      "finish": "gloss",
+      "paintExact": true,
+      "specExact": true,
+      "metadataExact": false,
+      "attempts": 0
+    }
+  },
+  "status": "Native paint/spec/scope PASS; metadata identity assignment and next-Undo followup assessed separately; mirror/token promotion pending",
+  "provider_attempts": 0,
+  "paid_calls": 0
+}

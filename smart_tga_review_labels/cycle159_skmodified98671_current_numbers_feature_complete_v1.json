@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "paint_label": "skmodified tour/car_num_98671.tga",
+  "inspection_records": "_smart_tga_runs/cycle129_skmodified_route_feature_complete_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle129_skmodified_route_feature_complete_v1/skmodified_tour_car_num_98671/component_records.json",
+  "review_scope": "Cycle 159 current feature-complete SK Modified Numbers cleanup, refreshed from the Cycle 108 visual labels so staged policy can be scored against current component features.",
+  "component_labels": [
+    {
+      "layer": "numbers",
+      "component_index": 0,
+      "expected_bbox": [13, 6, 351, 117],
+      "target_layer": "sponsors",
+      "label": "sponsor_wordmark",
+      "note": "Large FURY wordmark with small 19 mark; not the car number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 1,
+      "expected_bbox": [495, 150, 57, 15],
+      "target_layer": "sponsors",
+      "label": "small_contingency",
+      "note": "Small contingency/logo strip in sponsor cluster."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 2,
+      "expected_bbox": [348, 169, 144, 106],
+      "target_layer": "numbers",
+      "label": "true_number",
+      "note": "Upper gray/red 61; must stay editable with Numbers."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 3,
+      "expected_bbox": [746, 224, 37, 21],
+      "target_layer": "sponsors",
+      "label": "small_contingency",
+      "note": "Small Nitro/Holley-style sponsor logo."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 4,
+      "expected_bbox": [280, 264, 366, 152],
+      "target_layer": "paint",
+      "label": "paint_livery_panel",
+      "note": "Large gray body/livery panel captured as a number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 5,
+      "expected_bbox": [724, 283, 33, 60],
+      "target_layer": "paint",
+      "label": "paint_livery_panel",
+      "note": "Blank body/panel rectangle, not a number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 6,
+      "expected_bbox": [802, 315, 170, 22],
+      "target_layer": "paint",
+      "label": "paint_livery_stripe",
+      "note": "Thin gray livery stripe."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 7,
+      "expected_bbox": [925, 359, 83, 121],
+      "target_layer": "paint",
+      "label": "paint_livery_graphic",
+      "note": "White monster/livery graphic block at right-side panel; not a race number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 8,
+      "expected_bbox": [925, 374, 8, 9],
+      "target_layer": "sponsors",
+      "label": "tiny_logo_fragment",
+      "note": "Tiny black/white logo fragment embedded in the livery graphic."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 9,
+      "expected_bbox": [632, 396, 128, 95],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo",
+      "note": "Large circular sponsor/logo mark, not a number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 10,
+      "expected_bbox": [614, 419, 61, 61],
+      "target_layer": "sponsors",
+      "label": "sponsor_logo",
+      "note": "Smaller circular sponsor/logo island inside the gray round sponsor area."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 11,
+      "expected_bbox": [780, 469, 223, 45],
+      "target_layer": "paint",
+      "label": "paint_livery_panel",
+      "note": "Long white/gray body panel, not a car number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 12,
+      "expected_bbox": [336, 473, 241, 253],
+      "target_layer": "numbers",
+      "label": "true_number",
+      "note": "Large lower gray/red 61; must stay editable with Numbers."
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "spb-w3-preservation-router-supplement/1",
+  "frozen_after_initial_oracle_and_before_router_retest": true,
+  "reason": "Added after initial observation that a designer compound plan can own a named-panel-preservation utterance before the edit helper runs.",
+  "cases": [
+    { "id": "W3-R01", "ask": "Keep the hood carbon and make only the roof gold.", "expected": "truthful-ask-before-compound-owner", "preserved": ["hood"], "requested": ["roof"] },
+    { "id": "W3-R02", "ask": "Keep the passenger side silver and make only the roof gold.", "expected": "truthful-ask-before-compound-owner", "preserved": ["right side"], "requested": ["roof"] },
+    { "id": "W3-R03", "ask": "Keep the driver-side finish untouched and make only the roof gold.", "expected": "truthful-ask-before-compound-owner", "preserved": ["left side"], "requested": ["roof"] },
+    { "id": "W3-R04", "ask": "Preserve both sides as-is; recolor only the hood blue.", "expected": "truthful-ask-before-compound-owner", "preserved": ["left side", "right side"], "requested": ["hood"] },
+    { "id": "W3-R05", "ask": "Leave the hood carbon and turn only the roof bright gold.", "expected": "truthful-local-clarification", "preserved": ["hood"], "requested": ["roof"], "copy_must_not_claim": "whole-paint change" },
+    { "id": "W3-R06", "ask": "Change the roof from blue to red; keep everything else untouched.", "expected": "completed-part-only-plan-or-truthful-ask", "allowed_regions": ["roof"], "forbidden_regions": ["body", "blue color region"] },
+    { "id": "W3-R07", "ask": "Paint only the roof gold while leaving the hood carbon unchanged.", "expected": "no-mutation-or-truthful-ask", "forbidden_regions": ["hood", "body"] }
+  ]
+}

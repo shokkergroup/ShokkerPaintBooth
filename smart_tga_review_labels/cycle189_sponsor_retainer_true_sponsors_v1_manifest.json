@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "cycle": 189,
+  "source_candidates": "_smart_tga_runs/cycle188_sponsor_retainer_probe_with_vertical_wordmarks_v1/sponsor_retainer_candidates.json",
+  "inspection_records": "_smart_tga_runs/cycle184_sponsor_retainer_crosscar_routes_v1/inspection_records.json",
+  "review_basis": "Cycle 188 sponsor-retainer contact sheet visual review plus Cycle 185-188 offline sponsor-retainer diagnostics.",
+  "runtime_behavior": "unchanged",
+  "total_labels": 37,
+  "by_paint_label": {
+    "1Shokker Paint Car Examples/bloomq0.tga": 14,
+    "1Shokker Paint Car Examples/bpierce.tga": 3,
+    "dirtlatemodel 358/car_1003508.tga": 6,
+    "stockcars2 arcachevy25/car_num_392048.tga": 4,
+    "stockcars2 arcatoyota25/car_1019813.tga": 9,
+    "trucks toyotatundra2022/car_num_612073.tga": 1
+  },
+  "by_rule": {
+    "small_neutral_contingency_fragment": 18,
+    "vertical_sponsor_wordmark": 7,
+    "thin_sponsor_textline_on_number_panel": 1,
+    "high_variance_sponsor_logo_graphic": 1,
+    "high_variance_sponsor_text_panel": 1,
+    "large_saturated_stockcar_sponsor_panel": 5,
+    "large_low_sat_sponsor_wordmark": 4
+  },
+  "label_packs": [
+    {
+      "path": "smart_tga_review_labels/cycle189_bloomq0_sponsor_retainer_true_sponsors_v1.json",
+      "paint_label": "1Shokker Paint Car Examples/bloomq0.tga",
+      "component_records": "_smart_tga_runs/cycle184_sponsor_retainer_crosscar_routes_v1/1Shokker_Paint_Car_Examples_bloomq0/component_records.json",
+      "labels": 14,
+      "by_rule": {
+        "small_neutral_contingency_fragment": 13,
+        "vertical_sponsor_wordmark": 1
+      }
+    },
+    {
+      "path": "smart_tga_review_labels/cycle189_bpierce_sponsor_retainer_true_sponsors_v1.json",
+      "paint_label": "1Shokker Paint Car Examples/bpierce.tga",
+      "component_records": "_smart_tga_runs/cycle184_sponsor_retainer_crosscar_routes_v1/1Shokker_Paint_Car_Examples_bpierce/component_records.json",
+      "labels": 3,
+      "by_rule": {
+        "thin_sponsor_textline_on_number_panel": 1,
+        "high_variance_sponsor_logo_graphic": 1,
+        "high_variance_sponsor_text_panel": 1
+      }
+    },
+    {
+      "path": "smart_tga_review_labels/cycle189_dirtlatemodel358_1003508_sponsor_retainer_true_sponsors_v1.json",
+      "paint_label": "dirtlatemodel 358/car_1003508.tga",
+      "component_records": "_smart_tga_runs/cycle184_sponsor_retainer_crosscar_routes_v1/dirtlatemodel_358_car_1003508/component_records.json",
+      "labels": 6,
+      "by_rule": {
+        "large_saturated_stockcar_sponsor_panel": 1,
+        "large_low_sat_sponsor_wordmark": 4,
+        "vertical_sponsor_wordmark": 1
+      }
+    },
+    {
+      "path": "smart_tga_review_labels/cycle189_arcachevy392048_sponsor_retainer_true_sponsors_v1.json",
+      "paint_label": "stockcars2 arcachevy25/car_num_392048.tga",
+      "component_records": "_smart_tga_runs/cycle184_sponsor_retainer_crosscar_routes_v1/stockcars2_arcachevy25_car_num_392048/component_records.json",
+      "labels": 4,
+      "by_rule": {
+        "vertical_sponsor_wordmark": 3,
+        "large_saturated_stockcar_sponsor_panel": 1
+      }
+    },
+    {
+      "path": "smart_tga_review_labels/cycle189_arcatoyota1019813_sponsor_retainer_true_sponsors_v1.json",
+      "paint_label": "stockcars2 arcatoyota25/car_1019813.tga",
+      "component_records": "_smart_tga_runs/cycle184_sponsor_retainer_crosscar_routes_v1/stockcars2_arcatoyota25_car_1019813/component_records.json",
+      "labels": 9,
+      "by_rule": {
+        "large_saturated_stockcar_sponsor_panel": 3,
+        "small_neutral_contingency_fragment": 4,
+        "vertical_sponsor_wordmark": 2
+      }
+    },
+    {
+      "path": "smart_tga_review_labels/cycle189_tundra612073_sponsor_retainer_true_sponsors_v1.json",
+      "paint_label": "trucks toyotatundra2022/car_num_612073.tga",
+      "component_records": "_smart_tga_runs/cycle184_sponsor_retainer_crosscar_routes_v1/trucks_toyotatundra2022_car_num_612073/component_records.json",
+      "labels": 1,
+      "by_rule": {
+        "small_neutral_contingency_fragment": 1
+      }
+    }
+  ]
+}

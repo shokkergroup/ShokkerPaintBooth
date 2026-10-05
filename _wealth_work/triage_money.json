@@ -1,0 +1,282 @@
+[
+ {
+  "set": "money",
+  "fid": "msh_canary_coffin",
+  "name": "MSH: Canary Coffin",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msh_canary_coffin'"
+ },
+ {
+  "set": "money",
+  "fid": "msh_magenta_widow",
+  "name": "MSH: Magenta Widow",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msh_magenta_widow'"
+ },
+ {
+  "set": "money",
+  "fid": "msh_cerulean_cobra",
+  "name": "MSH: Cerulean Cobra",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msh_cerulean_cobra'"
+ },
+ {
+  "set": "money",
+  "fid": "msh_lime_scorpion",
+  "name": "MSH: Lime Scorpion",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msh_lime_scorpion'"
+ },
+ {
+  "set": "money",
+  "fid": "msh_hyperpink_torii",
+  "name": "MSH: Hyperpink Torii",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msh_hyperpink_torii'"
+ },
+ {
+  "set": "money",
+  "fid": "msh_seafoam_piranha",
+  "name": "MSH: Seafoam Piranha",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msh_seafoam_piranha'"
+ },
+ {
+  "set": "money",
+  "fid": "msh_orchid_kintsugi",
+  "name": "MSH: Orchid Kintsugi",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msh_orchid_kintsugi'"
+ },
+ {
+  "set": "money",
+  "fid": "msh_peach_jellyshock",
+  "name": "MSH: Peach Jellyshock",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msh_peach_jellyshock'"
+ },
+ {
+  "set": "money",
+  "fid": "msh_daffodil_bayou",
+  "name": "MSH: Daffodil Bayou",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msh_daffodil_bayou'"
+ },
+ {
+  "set": "money",
+  "fid": "msh_neonice_rising",
+  "name": "MSH: Neon Ice Rising",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msh_neonice_rising'"
+ },
+ {
+  "set": "money",
+  "fid": "mshc_tigerblood_voltage",
+  "name": "MSHC: Tigerblood Voltage",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshc_tigerblood_voltage'"
+ },
+ {
+  "set": "money",
+  "fid": "mshc_oxblood_seigaiha",
+  "name": "MSHC: Oxblood Seigaiha",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshc_oxblood_seigaiha'"
+ },
+ {
+  "set": "money",
+  "fid": "mshc_emerald_sharkbite",
+  "name": "MSHC: Emerald Sharkbite",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshc_emerald_sharkbite'"
+ },
+ {
+  "set": "money",
+  "fid": "mshc_amber_panther",
+  "name": "MSHC: Amber Panther",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshc_amber_panther'"
+ },
+ {
+  "set": "money",
+  "fid": "mshc_violet_kyoto",
+  "name": "MSHC: Violet Kyoto",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshc_violet_kyoto'"
+ },
+ {
+  "set": "money",
+  "fid": "mshc_acid_hornet",
+  "name": "MSHC: Acid Hornet",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshc_acid_hornet'"
+ },
+ {
+  "set": "money",
+  "fid": "mshc_oni_orchid_glass",
+  "name": "MSHC: Oni Orchid Glass",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshc_oni_orchid_glass'"
+ },
+ {
+  "set": "money",
+  "fid": "mshc_copper_jubilee",
+  "name": "MSHC: Copper Jubilee",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshc_copper_jubilee'"
+ },
+ {
+  "set": "money",
+  "fid": "mshc_canary_widow_redux",
+  "name": "MSHC: Canary Widow Redux",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshc_canary_widow_redux'"
+ },
+ {
+  "set": "money",
+  "fid": "mshc_rosethorn_bonsai",
+  "name": "MSHC: Rosethorn Bonsai",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshc_rosethorn_bonsai'"
+ },
+ {
+  "set": "money",
+  "fid": "msha_canary_gris_gris",
+  "name": "MSHA: Canary Gris-Gris",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msha_canary_gris_gris'"
+ },
+ {
+  "set": "money",
+  "fid": "msha_emerald_brocade",
+  "name": "MSHA: Emerald Brocade",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msha_emerald_brocade'"
+ },
+ {
+  "set": "money",
+  "fid": "msha_fuji_neon_crest",
+  "name": "MSHA: Fuji Neon Crest",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msha_fuji_neon_crest'"
+ },
+ {
+  "set": "money",
+  "fid": "msha_volcanic_croc",
+  "name": "MSHA: Volcanic Croc",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msha_volcanic_croc'"
+ },
+ {
+  "set": "money",
+  "fid": "msha_cherry_blossom_flux",
+  "name": "MSHA: Cherry Blossom Flux",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msha_cherry_blossom_flux'"
+ },
+ {
+  "set": "money",
+  "fid": "msha_waxen_voodoo",
+  "name": "MSHA: Waxen Voodoo",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msha_waxen_voodoo'"
+ },
+ {
+  "set": "money",
+  "fid": "msha_hyperpink_threads",
+  "name": "MSHA: Hyperpink Threads",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msha_hyperpink_threads'"
+ },
+ {
+  "set": "money",
+  "fid": "msha_peach_burlap",
+  "name": "MSHA: Peach Burlap",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msha_peach_burlap'"
+ },
+ {
+  "set": "money",
+  "fid": "msha_seafoam_charm",
+  "name": "MSHA: Seafoam Charm",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msha_seafoam_charm'"
+ },
+ {
+  "set": "money",
+  "fid": "msha_solar_moss",
+  "name": "MSHA: Solar Moss",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'msha_solar_moss'"
+ },
+ {
+  "set": "money",
+  "fid": "mshx_blueprint_jackpot",
+  "name": "MSHX: Blueprint Jackpot V2",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshx_blueprint_jackpot'"
+ },
+ {
+  "set": "money",
+  "fid": "mshx_venom_cashmere",
+  "name": "MSHX: Venom Cashmere V2",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshx_venom_cashmere'"
+ },
+ {
+  "set": "money",
+  "fid": "mshx_glacier_pinkslip",
+  "name": "MSHX: Glacier Pinkslip V2",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshx_glacier_pinkslip'"
+ },
+ {
+  "set": "money",
+  "fid": "mshx_lime_afterburner",
+  "name": "MSHX: Lime Afterburner V2",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshx_lime_afterburner'"
+ },
+ {
+  "set": "money",
+  "fid": "mshx_miami_blacklight",
+  "name": "MSHX: Miami Blacklight V2",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshx_miami_blacklight'"
+ },
+ {
+  "set": "money",
+  "fid": "mshx_royal_sunstroke",
+  "name": "MSHX: Royal Sunstroke V2",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshx_royal_sunstroke'"
+ },
+ {
+  "set": "money",
+  "fid": "mshx_kintsugi_ransom",
+  "name": "MSHX: Kintsugi Ransom",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshx_kintsugi_ransom'"
+ },
+ {
+  "set": "money",
+  "fid": "mshx_coral_sharkskin",
+  "name": "MSHX: Coral Sharkskin V2",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshx_coral_sharkskin'"
+ },
+ {
+  "set": "money",
+  "fid": "mshx_dover_jackpot",
+  "name": "MSHX: Dover Jackpot V2",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshx_dover_jackpot'"
+ },
+ {
+  "set": "money",
+  "fid": "mshx_prism_tipjar",
+  "name": "MSHX: Prism Tipjar",
+  "group": "\u2605 MONEY SHOKK",
+  "err": "KeyError: 'mshx_prism_tipjar'"
+ }
+]

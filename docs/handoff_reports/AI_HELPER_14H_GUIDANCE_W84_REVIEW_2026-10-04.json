@@ -1,0 +1,413 @@
+{
+  "status": "FINDINGS",
+  "task": "W84 offline guidance semantics review",
+  "date": "2026-10-04",
+  "freshOracle": {
+    "path": "_easy_claude_work/ai14h_w84_guidance_fresh_oracle.json",
+    "sha256": "f9ee48e767fc6d2808fa0c9e341fbafc03fe60cf675e515cca315d4491e87436",
+    "cases": 20,
+    "frozenBeforeHelperRegexInspection": true
+  },
+  "pins": {
+    "controller": {
+      "path": "_easy_claude_work/ai14h_generation3_candidate/integration9/js/spb-pro-ai.js",
+      "sha256": "aae99cdd02b00bdd78d1f02fed85c18bc72b82cab9a66ceb7e0e3590ec3e8790"
+    },
+    "helper": {
+      "path": "_easy_claude_work/ai14h_generation3_candidate/integration9/js/spb-self-help.js",
+      "sha256": "a25febd091b6d13ee2b3aaf3713f21a2fa720c0f240a6b042cd6defd023cf783"
+    },
+    "knowledge": {
+      "path": "_easy_claude_work/ai14h_generation3_audit/frozen-runtime1/js/spb-ai-knowledge.js",
+      "sha256": "e2a1647af707d2bfe5ea09ed64adabad1bf3db341df8d7b61dc8c01508774c97"
+    },
+    "projectsSource": {
+      "path": "js/features/spb-projects.js",
+      "sha256": "40520ad3e373b2505cce0ab4ba030f282e9eba2a0a9b1c8f6093a0aa97ec34b3"
+    }
+  },
+  "counts": {
+    "freshCases": 20,
+    "semanticallyMet": 12,
+    "semanticGaps": 8,
+    "passiveHelpClaims": 13,
+    "actionControlsNotCaptured": 3,
+    "helpQueueMutations": 0,
+    "providerCalls": 0,
+    "nativeCalls": 0
+  },
+  "rows": [
+    {
+      "id": "G01",
+      "pass": true,
+      "helperKind": "what_is",
+      "routeClaim": true,
+      "queue": 0,
+      "text": "Flattened means the visible layer pixels have been combined into one image. The separate editable layers are no longer available in that flattened result.",
+      "errors": []
+    },
+    {
+      "id": "G02",
+      "pass": false,
+      "helperKind": "can_i",
+      "routeClaim": true,
+      "queue": 0,
+      "text": "**Load a paint**\n1. Drag your paint file (a .tga or a layered .psd) onto the SOURCE area in the centre, or use Open in the top bar.\n2. For a layered PSD use Open Layered in the LAYERS panel (right column): each layer becomes its own row.\n3. When it shows in SO",
+      "errors": [
+        "missing /edit/i"
+      ]
+    },
+    {
+      "id": "G03",
+      "pass": false,
+      "helperKind": "how_do_i",
+      "routeClaim": true,
+      "queue": 0,
+      "text": "**How do I merge or flatten layers**\n1. LAYERS tab > \"Actions\".\n2. \"Merge visible\" combines the visible layers (hidden ones survive); \"Flatten document\" makes one layer and loses separation.\nExact controls: Actions (Pro > right column > LAYERS tab).\nDid that g",
+      "errors": [
+        "missing /source|layered/i",
+        "missing /cannot|no longer|reopen/i"
+      ]
+    },
+    {
+      "id": "G04",
+      "pass": true,
+      "helperKind": "how_do_i",
+      "routeClaim": true,
+      "queue": 0,
+      "text": "**Find the number layer**\n1. Open the LAYERS tab and look for a layer named Numbers or a car-specific number layer.\n2. Select that row to make it active; use its eye control only to show or hide it.",
+      "errors": []
+    },
+    {
+      "id": "G05",
+      "pass": true,
+      "helperKind": "how_do_i",
+      "routeClaim": true,
+      "queue": 0,
+      "text": "**Find the number layer**\n1. Open the LAYERS tab and look for the layer named Numbers or a car-specific number layer.\n2. Use that layer’s eye control to show or hide it; selecting the row makes it the active layer.",
+      "errors": []
+    },
+    {
+      "id": "G06",
+      "pass": true,
+      "helperKind": "how_do_i",
+      "routeClaim": true,
+      "queue": 0,
+      "text": "**Adjust only clearcoat**\nSelect the target zone and use “Shift the CLEARCOAT channel (-127..+127)”. Check the blue B / COAT preview; leave R / METAL and G / ROUGH unchanged. This is a channel offset, so judge the preview rather than assuming the sign means mo",
+      "errors": []
+    },
+    {
+      "id": "G07",
+      "pass": true,
+      "helperKind": null,
+      "routeClaim": false,
+      "queue": 0,
+      "text": null,
+      "errors": []
+    },
+    {
+      "id": "G08",
+      "pass": true,
+      "helperKind": null,
+      "routeClaim": false,
+      "queue": 0,
+      "text": null,
+      "errors": []
+    },
+    {
+      "id": "G09",
+      "pass": true,
+      "helperKind": "can_i",
+      "routeClaim": true,
+      "queue": 0,
+      "text": "The built-in helper works offline without an API key for supported scoped paint edits, material-channel offsets, app guidance, and Undo. An external AI connection is optional for broader open-ended design help.",
+      "errors": []
+    },
+    {
+      "id": "G10",
+      "pass": true,
+      "helperKind": "can_i",
+      "routeClaim": true,
+      "queue": 0,
+      "text": "The built-in helper works offline without an API key for supported scoped paint edits, material-channel offsets, app guidance, and Undo. An external AI connection is optional for broader open-ended design help.",
+      "errors": []
+    },
+    {
+      "id": "G11",
+      "pass": false,
+      "helperKind": "how_do_i",
+      "routeClaim": true,
+      "queue": 0,
+      "text": "**How do I save my project and come back later**\n1. Click \"Save / Open\" in the top toolbar (SPB Projects). It saves the paint (PSD included), every zone and layer settings in one file.\n2. To reopen, click \"Save / Open\" again and load it.\nExact controls: Save /",
+      "errors": [
+        "claims the source PSD is bundled into the project"
+      ]
+    },
+    {
+      "id": "G12",
+      "pass": false,
+      "helperKind": null,
+      "routeClaim": false,
+      "queue": 0,
+      "text": null,
+      "errors": [
+        "no helper answer",
+        "controller did not claim passive question"
+      ]
+    },
+    {
+      "id": "G13",
+      "pass": false,
+      "helperKind": null,
+      "routeClaim": false,
+      "queue": 0,
+      "text": null,
+      "errors": [
+        "no helper answer",
+        "controller did not claim passive question"
+      ]
+    },
+    {
+      "id": "G14",
+      "pass": true,
+      "helperKind": "how_do_i",
+      "routeClaim": true,
+      "queue": 0,
+      "text": "**How do I put a finish on just one part of the car (the hood, the roof, one side)**\n1. Your selected zone is \"Roof\" (zone 1) - click another card in the ZONES list to work on that one instead.\n2. Click \"+ Add Zone\".\n3. In the ZONE POPOUT PANEL find APPLY AREA",
+      "errors": []
+    },
+    {
+      "id": "G15",
+      "pass": false,
+      "helperKind": null,
+      "routeClaim": false,
+      "queue": 0,
+      "text": null,
+      "errors": [
+        "no helper answer",
+        "controller did not claim passive question"
+      ]
+    },
+    {
+      "id": "G16",
+      "pass": true,
+      "helperKind": "how_do_i",
+      "routeClaim": true,
+      "queue": 0,
+      "text": "**Add a logo or picture**\n1. In the LAYERS panel (right column) press + Layer and pick the image file.\n2. Move / scale it with Move in the tool row (top: Move, Pick, Color, Wand, Lasso, Rect, Brush, Fill, Erase); finishes can then be limited to that layer.\nExa",
+      "errors": []
+    },
+    {
+      "id": "G17",
+      "pass": false,
+      "helperKind": "what_is",
+      "routeClaim": true,
+      "queue": 0,
+      "text": "**What is the difference between Custom Number and Sim-Stamped Number**\n1. Custom Number: the number is part of your paint (files car_num_ID.tga); iRacing adds none. Needs Hide Car Numbers ON in iRacing.\n2. Sim-Stamped Number: iRacing stamps the number in the ",
+      "errors": [
+        "missing /source paint|own color|solid color|green/i"
+      ]
+    },
+    {
+      "id": "G18",
+      "pass": false,
+      "helperKind": null,
+      "routeClaim": false,
+      "queue": 0,
+      "text": null,
+      "errors": [
+        "no helper answer",
+        "controller did not claim passive question"
+      ]
+    },
+    {
+      "id": "G19",
+      "pass": true,
+      "helperKind": "how_do_i",
+      "routeClaim": true,
+      "queue": 0,
+      "text": "**How do I undo**\n1. Press Ctrl+Z, or the Undo button in the top toolbar (HISTORY menu).\n2. To go back several steps open \"Undo History...\".\n3. Under an AI panel answer press Undo to take back that whole answer. In Easy use UNDO at the top.\nExact controls: Und",
+      "errors": []
+    },
+    {
+      "id": "G20",
+      "pass": true,
+      "helperKind": null,
+      "routeClaim": false,
+      "queue": 0,
+      "text": null,
+      "errors": []
+    }
+  ],
+  "findings": [
+    {
+      "id": "G02",
+      "severity": "P2 usefulness",
+      "issue": "“Can I still edit a flattened paint?” routes to generic load-paint instructions."
+    },
+    {
+      "id": "G03",
+      "severity": "P2 usefulness",
+      "issue": "Asking how to get separate layers back after flattening returns instructions for merging/flattening, without saying recovery requires an available layered source."
+    },
+    {
+      "id": "G11",
+      "severity": "P1 factual accuracy",
+      "issue": "Answer says “It saves the paint (PSD included) ... in one file.” The project serializer stores sourcePaintFile as a path, while project-open checks source path availability before applying. The help claim that the PSD is included is contradicted by the project implementation."
+    },
+    {
+      "id": "G12",
+      "severity": "P2 usefulness",
+      "issue": "No answer for whether a saved project can reopen after its source PSD moved."
+    },
+    {
+      "id": "G13",
+      "severity": "P2 usefulness",
+      "issue": "No answer or stated limit for confirming the exact scope before apply; no self-help claim."
+    },
+    {
+      "id": "G15",
+      "severity": "P2 usefulness",
+      "issue": "No answer about automatic logo tracing/import limits."
+    },
+    {
+      "id": "G17",
+      "severity": "P2 semantic routing",
+      "issue": "Authored green-base versus source-paint question is answered with Custom Number versus Sim-Stamped Number guidance."
+    },
+    {
+      "id": "G18",
+      "severity": "P2 usefulness",
+      "issue": "No answer for whether Undo preserves later manual mask edits; existing generic Undo instructions do not address the asked conflict behavior."
+    }
+  ],
+  "retainedKnownFamilies": {
+    "command": "node tests/ai_guidance_w74_route_review_contract.cjs _easy_claude_work/ai14h_generation3_candidate/integration9/js/spb-pro-ai.js _easy_claude_work/ai14h_generation3_candidate/integration9/js/spb-self-help.js",
+    "status": "PASS",
+    "cases": 12,
+    "passed": 12,
+    "failed": 0,
+    "coverage": [
+      "layered project save",
+      "flatten definition",
+      "merge visible",
+      "clearcoat blue B channel",
+      "number layer location",
+      "offline helper/API key",
+      "logo position",
+      "imperative material/edit controls"
+    ]
+  },
+  "evidence": {
+    "projectSaveSource": {
+      "path": "js/features/spb-projects.js",
+      "lines": [
+        202,
+        224
+      ],
+      "fact": "Serialized project records sourcePaintFile as a path; it does not embed the source PSD."
+    },
+    "projectOpenSource": {
+      "path": "js/features/spb-projects.js",
+      "lines": [
+        798,
+        805
+      ],
+      "fact": "Open reads sourcePaintFile then validates source availability before applying project state."
+    }
+  },
+  "tuned_private_candidate": {
+    "status": "TUNED_PRIVATE_CANDIDATE_PASS",
+    "path": "_easy_claude_work/ai14h_w84_review/tuned_candidate/spb-self-help.js",
+    "sha256": "82a17fdfb194b359331adebf96623fd95defd7c52dc01e51473f908323c2c58f",
+    "change": "Added narrow passive guidance tags for flattened editability/recovery, moved PSD source paths, realistic scope confirmation limits, tracing limits, authored base color vs source paint, same-mask Undo conflict, specific clearcoat-only qualifiers, and local no-key help. Corrected layered-save copy to state that the source PSD is not bundled.",
+    "baselineOracleSha256": "f9ee48e767fc6d2808fa0c9e341fbafc03fe60cf675e515cca315d4491e87436",
+    "verification": {
+      "command": "node tests/ai_guidance_w84_tuned_candidate_contract.cjs",
+      "freshOracleCases": "20/20 semantic claims",
+      "additionalFreshCases": "5/5",
+      "actualControllerHooks": "selfHelpClaim/selfHelpResult executed",
+      "passiveQueueItems": 0,
+      "providerCalls": 0,
+      "nativeCalls": 0,
+      "retainedRouteCommand": "node tests/ai_guidance_w74_route_review_contract.cjs _easy_claude_work/ai14h_generation3_candidate/integration9/js/spb-pro-ai.js _easy_claude_work/ai14h_w84_review/tuned_candidate/spb-self-help.js",
+      "retainedOfflineAskCore": "12/12 pass",
+      "actionControls": "3 imperative cases + 2 extra imperatives declined by self-help and left to edit-owner route"
+    },
+    "sourceGrounding": {
+      "projectSerializer": "js/features/spb-projects.js:123, 202-224 records sourcePaintFile as a path and captures current layer pixel data when available; original PSD bytes are not bundled.",
+      "projectOpen": "js/features/spb-projects.js:798-805",
+      "undo": "js/spb-pro-ai.js:3074-3115 restores state touched by the AI edit; unrelated later edits remain, but conflicting same-part/mask edits can be replaced by the before-state."
+    },
+    "limits": [
+      "Private helper candidate only; not merged into integration9 or live app.",
+      "Controller selfHelpClaim/selfHelpResult used actual source with unrelated dependencies stubbed; W74 exercised offlineAskCore with controlled terminal edit stubs.",
+      "No UI/native paint effects or provider calls; parent retains independent native wording evaluation."
+    ]
+  },
+  "limits": [
+    "W84 helper answers and actual controller selfHelpClaim/selfHelpResult hook were exercised with a controlled VM state. Unclaimed requests are reported as self-help gaps, not proof of the final fallback answer.",
+    "W74 is the retained actual offlineAskCore route contract for known guidance/action families; W84 tests do not exercise the full app UI or run paint actions.",
+    "Provider and native calls were zero. The integration9 helper was not modified; only a separate private tuned copy was created."
+  ],
+  "prior_single_string_candidate": {
+    "path": "_easy_claude_work/ai14h_w84_review/tuned_candidate/spb-self-help.js",
+    "sha256": "2d7cbf3a5419b2ead5a9172581204fd08b5576f093ca003cb3a7e09f240f264e",
+    "status": "superseded_by_scoped_W84_tune",
+    "change": "Initial one-string correction only; retained here as history."
+  },
+  "followupW84Corrections": {
+    "status": "PASS_PRIVATE_CANDIDATE",
+    "date": "2026-10-04",
+    "freshOracle": {
+      "path": "_easy_claude_work/ai14h_w84_review/fresh-context-oracle.json",
+      "sha256": "6C020BAEEF37E72A0153437BA6CE66CD399319BF6810A50515462997675EE34A",
+      "cases": 6,
+      "frozenBeforeFollowupSourceInspection": true
+    },
+    "pins": {
+      "controllerBase": {
+        "path": "_easy_claude_work/ai14h_generation3_candidate/integration9/js/spb-pro-ai.js",
+        "sha256": "AAE99CDD02B00BDD78D1F02FED85C18BC72B82CAB9A66CEB7E0E3590EC3E8790"
+      },
+      "controllerCandidate": {
+        "path": "_easy_claude_work/ai14h_w84_review/controller_candidate/spb-pro-ai.js",
+        "sha256": "FAE7C3FE1739EF096B96804897901339D270F6AFB95062944539E2138A07D196"
+      },
+      "helperCandidate": {
+        "path": "_easy_claude_work/ai14h_w84_review/tuned_candidate/spb-self-help.js",
+        "sha256": "D1A76C2A5B8616133F8226602D43245BFC7DCC2B99B6BBEDEA68AF0641A2D6BE"
+      }
+    },
+    "results": {
+      "newSupplementalCases": 6,
+      "actualOfflineAskCoreCases": 6,
+      "actualPublicOfflineAskCases": 6,
+      "baselineW84CasesThatReachedBroadFallbacks": 2,
+      "candidateW84CasesWithNoBroadFallback": 6,
+      "solidSelectedRoof": "#1f8a3b",
+      "sourceModeVariant": true,
+      "imperativesRemainEditOwned": 2,
+      "queueEffects": 0,
+      "providerCalls": 0,
+      "nativeCalls": 0,
+      "w84FrozenTest": "node tests/ai_guidance_w84_tuned_candidate_contract.cjs",
+      "w84FrozenTestResult": "PASS_TUNED_PRIVATE_CANDIDATE_PASS: 20 original cases + 5 earlier tuned fresh cases; 20 semantic help claims; 5 imperatives remain edit-owned",
+      "routeTest": "node tests/ai_guidance_w84_context_route_contract.cjs",
+      "routeTestResult": "PASS_PRIVATE_W84_CONTEXT_AND_ROUTE",
+      "w74Test": "node tests/ai_guidance_w74_route_review_contract.cjs _easy_claude_work/ai14h_w84_review/controller_candidate/spb-pro-ai.js _easy_claude_work/ai14h_w84_review/tuned_candidate/spb-self-help.js",
+      "w74TestResult": "PASS 12/12"
+    },
+    "findings": [
+      "Corrected source-paint guidance: it refers to original imported image colors, not an authored solid hex. For the selected solid Roof fixture it explicitly says retain Use solid color and #1f8a3b. General source-paint/Foundation and keep-paint/pick-finish copy corrected too.",
+      "Corrected AI answer Undo claim: tested later same-zone mask changes are preserved when Undo skips fields no longer equal to the AI recorded after-state. Copy distinguishes this from Ctrl+Z/History and excludes untested layer-pixel/transform guarantees.",
+      "Actual baseline offlineAsk and offlineAskCore only prioritized W66/W74; W84 questions hit advisor/compound fallbacks first. Private controller candidate adds W84 preflight in both routes. Follow-up harness executes the actual extracted controller functions and actual helper classify/handle with controlled native-like globals."
+    ],
+    "limits": [
+      "Only private candidates were edited. Root-owned active integration files were not changed.",
+      "Selected-zone state used VM fixture fields matching helper state() reads; no UI, native apply/Undo, DOM/canvas, or provider calls.",
+      "Original frozen 20-case W84 oracle and historical report rows are preserved; follow-up oracle is separate.",
+      "W74 route 12/12 verifies known W74 answers/edit owners on the private controller/helper candidate."
+    ]
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "smart-tga-direct-anchor-review-v1",
+  "cycle": 738,
+  "purpose": "One direct clean complete Number-glyph anchor per anchorable paint for truth-free frozen inference. No non-anchor candidate outcomes were opened.",
+  "ownership_authority": false,
+  "labels": [
+    {
+      "review_code": "H738-252196-C016",
+      "paint": "dirtlatemodel 358/car_num_252196.tga",
+      "candidate_index": 16,
+      "proposal_id": "number-tiled-palette:f25f1afcef57877d",
+      "bbox_for_review_trace_only": [340, 247, 119, 89],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask_clean_complete_glyph_anchor_only",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "H738-256122-C033",
+      "paint": "dirtlatemodel 358/car_num_256122.tga",
+      "candidate_index": 33,
+      "proposal_id": "number-tiled-palette:eacc62f2debb9540",
+      "bbox_for_review_trace_only": [321, 726, 89, 73],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask_clean_complete_glyph_anchor_only",
+      "ownership_authority": false
+    },
+    {
+      "review_code": "H738-265563-C022",
+      "paint": "dirtlatemodel 358/car_num_265563.tga",
+      "candidate_index": 22,
+      "proposal_id": "number-tiled-palette:fc04fa29f48c732b",
+      "bbox_for_review_trace_only": [338, 237, 138, 86],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask_clean_complete_glyph_anchor_only",
+      "ownership_authority": false
+    }
+  ],
+  "anchor_availability": {
+    "dirtlatemodel 358/car_num_1299737.tga": {
+      "available": false,
+      "reason": "Number 22 face merges with the dominant pink panel; every shortlisted proposal is a fragment or includes panel/sponsor content."
+    },
+    "dirtlatemodel 358/car_num_1322416.tga": {
+      "available": false,
+      "reason": "White number 99 face merges with the white livery; shortlisted proposals are logos or tiny outline fragments."
+    },
+    "dirtlatemodel 358/car_num_231510.tga": {
+      "available": false,
+      "reason": "Whole 11 proposals include the CARTER wordmark and isolated proposals contain only clipped digit fragments."
+    },
+    "dirtlatemodel 358/car_num_252196.tga": {"available": true, "candidate_index": 16},
+    "dirtlatemodel 358/car_num_256122.tga": {"available": true, "candidate_index": 33},
+    "dirtlatemodel 358/car_num_265563.tga": {"available": true, "candidate_index": 22}
+  },
+  "safety": {
+    "non_anchor_candidate_outcomes_opened_before_scoring": false,
+    "filename_car_bbox_model_feature": false,
+    "runtime_integrated": false,
+    "apply_locked": true,
+    "exact_reconstruction_affected": false
+  }
+}

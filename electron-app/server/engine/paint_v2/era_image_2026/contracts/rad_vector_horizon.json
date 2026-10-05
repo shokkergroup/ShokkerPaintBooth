@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_vector_horizon",
+  "display_name": "Grid: Vector Terrain",
+  "promise": "Tiny cyan and pink contour facets etched into violet glass with gold junction sparks.",
+  "carrier_grammar": "Tiny cyan and pink contour facets etched into violet glass with gold junction sparks. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "Cold continuously graded facet basins, separately identified pink/cyan contour ridges, bright gold/white node flashes.",
+  "reference_physics": {
+    "mechanism": "Tiny cyan and pink contour facets etched into violet glass with gold junction sparks. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_vector_horizon.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "violet contour glass",
+      "role": "Actual shared paint and spec geometry: violet contour glass"
+    },
+    {
+      "name": "cyan contour edges",
+      "role": "Actual shared paint and spec geometry: cyan contour edges"
+    },
+    {
+      "name": "pink elevation steps",
+      "role": "Actual shared paint and spec geometry: pink elevation steps"
+    },
+    {
+      "name": "gold node sparks",
+      "role": "Actual shared paint and spec geometry: gold node sparks"
+    },
+    {
+      "name": "deep contour valleys",
+      "role": "Actual shared paint and spec geometry: deep contour valleys"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "violet contour glass",
+      "cyan contour edges",
+      "pink elevation steps",
+      "gold node sparks",
+      "deep contour valleys"
+    ],
+    "R": [
+      "violet contour glass",
+      "cyan contour edges",
+      "pink elevation steps",
+      "gold node sparks",
+      "deep contour valleys"
+    ],
+    "Cc": [
+      "violet contour glass",
+      "cyan contour edges",
+      "pink elevation steps",
+      "gold node sparks",
+      "deep contour valleys"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_vector_glow",
+      "difference": "This finish uses Fine irregular triangular contour fragments: tiny cyan wireframe elevations, pink contour steps, narrow violet facets and minute gold junction points. All flat and multidirectional, no horizon or vanishing point. Unequal open triangular topology, not diamond tile grid or laser X strokes.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_grid_floor",
+      "difference": "This finish uses Fine irregular triangular contour fragments: tiny cyan wireframe elevations, pink contour steps, narrow violet facets and minute gold junction points. All flat and multidirectional, no horizon or vanishing point. Unequal open triangular topology, not diamond tile grid or laser X strokes.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "violet contour glass is visible in the authored geometry",
+      "cyan contour edges is visible in the authored geometry",
+      "pink elevation steps is visible in the authored geometry",
+      "gold node sparks is visible in the authored geometry",
+      "deep contour valleys is visible in the authored geometry"
+    ],
+    "source_sha256": "f4cab3e31902af205907681db2b37a479394fa5374d0c2b5ef7dfe1b0bc45021",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_vector_horizon-authored-Tiny cyan and pink contour facets etched into violet glass with gold junction sparks. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_vector_horizon-named-signal-materials-v1",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 75.3,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "101aebf5123eb61114ff67815bb7c84f194f0d595fbf5b1a10f138e6bbd60203"
+}

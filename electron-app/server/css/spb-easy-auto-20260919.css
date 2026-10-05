@@ -1,0 +1,317 @@
+/* ============================================================================
+   SPB EASY AUTO — tap-the-car layer, popover, layers panel, spec chips
+   (SPB-EASY-AUTO 2026-09-19 · round 2: rail LEFT like Pro, layers RIGHT,
+   SOURCE + LIVE always visible, compact spec chips that pop into LIVE)
+   Loads after css/spb-easy-mode-20260716.css; inherits Easy's tile styling
+   (.spb-easy-finish / .spb-easy-rowlist). Clean-default skin stays the last link.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- overlay */
+.spb-easy-auto-hilite { position: absolute; display: none; z-index: 12; cursor: pointer; image-rendering: auto; outline: none; touch-action: manipulation; }
+.spb-easy-auto-hilite.on { display: block; }
+.spb-easy-auto-hilite:focus-visible { box-shadow: 0 0 0 2px #ff7a18 inset; }
+.spb-easy-auto-specview { position: absolute; inset: 0; width: 100% !important; height: 100% !important; z-index: 11; object-fit: contain; pointer-events: none; background: #05050d; border-radius: inherit; }
+.spb-easy-auto-specview[hidden] { display: none; }
+
+/* --------------------------------------------- AUTO view: the stage layout */
+/* Rail on the LEFT (like Pro's zones panel), car in the middle, layers on the RIGHT. */
+body.spb-easy-on.spb-easy-auto-view .spb-easy-rail { order: -1; }
+body.spb-easy-on .spb-easy-rail { order: -1; }   /* ROUND 4: left column always, even before the first build */
+body.spb-easy-on.spb-easy-auto-view .spb-easy-stage { order: 0; }
+body.spb-easy-on.spb-easy-auto-view #spbEasyAutoLayers { order: 1; }
+/* Horizontal waste: the bench card goes; SOURCE + LIVE stay, side by side, always. */
+body.spb-easy-on.spb-easy-auto-view #spbEasyStageSide,
+body.spb-easy-on.spb-easy-auto-view #spbEasySpecPeek,
+body.spb-easy-on.spb-easy-auto-view .spb-easy-tagline { display: none !important; }
+body.spb-easy-on.spb-easy-auto-view #spbEasyChannelStrip { display: grid !important; }
+body.spb-easy-on.spb-easy-auto-view #spbEasyProof { gap: 10px; }
+/* Spec chips: bigger squares, narrower boxes, centred — no more 4 wide slabs. */
+body.spb-easy-on.spb-easy-auto-view .spb-easy-channel-strip {
+    grid-template-columns: repeat(4, minmax(0, 230px)) !important;
+    justify-content: center; gap: 10px; flex: 0 0 auto !important;
+}
+body.spb-easy-on.spb-easy-auto-view .spb-easy-channel { padding: 6px 8px 8px; gap: 3px; transition: border-color .12s, transform .12s; }
+body.spb-easy-on.spb-easy-auto-view .spb-easy-channel canvas { height: 132px !important; aspect-ratio: 1 / 1; width: auto !important; margin: 0 auto; }
+body.spb-easy-on.spb-easy-auto-view .spb-easy-channel b { font-size: 11px; letter-spacing: .08em; }
+body.spb-easy-on.spb-easy-auto-view .spb-easy-channel i { font-size: 10.5px; opacity: .7; }
+body.spb-easy-on.spb-easy-auto-view .spb-easy-channel:hover,
+body.spb-easy-on.spb-easy-auto-view .spb-easy-channel.spb-easy-auto-hover { border-color: rgba(255,122,24,.7); transform: translateY(-1px); }
+body.spb-easy-on.spb-easy-auto-view .spb-easy-channel.spb-easy-auto-pinned { border-color: #ff7a18; box-shadow: 0 0 0 1px #ff7a18 inset; }
+
+/* ---------------------------------------------------------- layers panel */
+.spb-easy-auto-layers {
+    flex: 0 0 clamp(210px, 17vw, 280px); min-width: 0; display: flex; flex-direction: column; gap: 8px;
+    padding: 12px 10px; border-left: 1px solid rgba(255,255,255,0.08); overflow: auto;
+}
+.spb-easy-auto-layers[hidden] { display: none; }
+.spb-easy-auto-layers-head b { display: block; font-size: 12px; letter-spacing: .12em; color: #ffb36b; margin-bottom: 4px; }
+.spb-easy-auto-layers-head small { display: block; opacity: .72; font-size: 11.5px; line-height: 1.35; }
+.spb-easy-auto-layer-list { display: flex; flex-direction: column; gap: 4px; }
+.spb-easy-auto-layer {
+    display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 8px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10); border-radius: 9px;
+    color: inherit; text-align: left; cursor: pointer; font: inherit;
+}
+.spb-easy-auto-layer:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,122,24,0.55); }
+.spb-easy-auto-layer.on { border-color: #ff7a18; box-shadow: 0 0 0 1px #ff7a18 inset; }
+.spb-easy-auto-layer.off { opacity: .55; }
+.spb-easy-auto-layer-eye { width: 14px; text-align: center; color: #8fe1ff; font-size: 11px; }
+.spb-easy-auto-layer-badge { color: #7dff9a; font-weight: 700; }
+.spb-easy-auto-layer .spb-easy-auto-row-text b { font-size: 12.5px; }
+.spb-easy-auto-layer .spb-easy-auto-row-text small { font-size: 11px; }
+
+/* -------------------------------------------------------- rail: the parts */
+.spb-easy-auto-parts { display: flex; flex-direction: column; gap: 6px; margin: 10px 0 12px; }
+.spb-easy-auto-sub { font-size: 11px; letter-spacing: .1em; opacity: .75; margin: 6px 0 -6px; }
+.spb-easy-auto-sub small { letter-spacing: 0; opacity: .7; margin-left: 6px; }
+.spb-easy-auto-row {
+    display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 10px; color: inherit; text-align: left; cursor: pointer; font: inherit;
+}
+.spb-easy-auto-row:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,122,24,0.55); }
+.spb-easy-auto-row.on { border-color: #ff7a18; box-shadow: 0 0 0 1px #ff7a18 inset; }
+.spb-easy-auto-row-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.spb-easy-auto-row-text b { font-size: 13px; letter-spacing: .02em; }
+.spb-easy-auto-row-text small { opacity: .72; font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.spb-easy-auto-row-go { opacity: .5; font-size: 18px; }
+.spb-easy-auto-sw { width: 22px; height: 22px; border-radius: 6px; flex: 0 0 auto; border: 1px solid rgba(255,255,255,0.35); box-shadow: 0 1px 2px rgba(0,0,0,.5); }
+.spb-easy-auto-sw.big { width: 30px; height: 30px; border-radius: 8px; }
+.spb-easy-auto-actions { display: flex; flex-direction: column; gap: 6px; margin: 4px 0 14px; }
+.spb-easy-auto-act { padding: 7px 10px; border-radius: 8px; font: inherit; font-size: 12px; cursor: pointer; background: transparent; color: inherit; border: 1px dashed rgba(255,255,255,0.22); text-align: left; }
+.spb-easy-auto-act:hover { border-style: solid; border-color: rgba(255,255,255,0.45); }
+#spbEasyAutoRebuild { border-style: solid; }
+.spb-easy-auto-hintbtn { opacity: .8; }
+
+/* --------------------------------------------------------------- popover */
+.spb-easy-auto-pop {
+    position: fixed; z-index: 9000; width: min(440px, calc(100vw - 16px)); max-height: min(84vh, 860px);
+    display: flex; flex-direction: column; background: #14161a; color: #f2f2f2;
+    border: 1px solid rgba(255,255,255,0.14); border-radius: 14px;
+    box-shadow: 0 18px 50px rgba(0,0,0,.65), 0 0 0 1px rgba(255,122,24,.25); overflow: hidden; font-size: 13px;
+}
+.spb-easy-auto-pop[hidden] { display: none; }
+.spb-easy-auto-pop-head { display: flex; align-items: center; gap: 10px; padding: 12px 12px 8px; }
+.spb-easy-auto-pop-title { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.spb-easy-auto-pop-title b { font-size: 15px; letter-spacing: .03em; }
+.spb-easy-auto-pop-title small { opacity: .75; font-size: 12px; }
+.spb-easy-auto-pop-title em { font-style: normal; color: #ffb36b; }
+.spb-easy-auto-x { width: 30px; height: 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18); background: transparent; color: inherit; font-size: 20px; line-height: 1; cursor: pointer; }
+.spb-easy-auto-x:hover { background: rgba(255,255,255,0.08); }
+.spb-easy-auto-reach { display: flex; flex-direction: column; gap: 3px; margin: 0 12px 8px; padding: 8px 10px; border: 1px solid rgba(255,122,24,.35); border-radius: 10px; background: rgba(255,122,24,.06); }
+.spb-easy-auto-reach input[type="range"] { width: 100%; accent-color: #ff7a18; margin: 2px 0; }
+.spb-easy-auto-tabs { display: flex; gap: 6px; padding: 0 12px 8px; border-bottom: 1px solid rgba(255,255,255,0.10); }
+.spb-easy-auto-tabs [role="tab"] { flex: 1; padding: 7px 8px; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 700; letter-spacing: .05em; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: inherit; cursor: pointer; }
+.spb-easy-auto-tabs [role="tab"] small { display: block; font-weight: 400; letter-spacing: 0; opacity: .7; font-size: 10.5px; }
+.spb-easy-auto-tabs [role="tab"].on { background: #ff7a18; border-color: #ff7a18; color: #111; }
+.spb-easy-auto-tabs [role="tab"].on small { opacity: .85; }
+.spb-easy-auto-tab { display: flex; flex-direction: column; min-height: 0; flex: 1; padding: 10px 12px 12px; gap: 8px; overflow: auto; }
+.spb-easy-auto-tab[hidden] { display: none; }
+.spb-easy-auto-scope { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.spb-easy-auto-scope span { font-size: 10.5px; letter-spacing: .1em; opacity: .7; margin-right: 2px; }
+.spb-easy-auto-scope button { padding: 4px 9px; border-radius: 999px; font: inherit; font-size: 11.5px; cursor: pointer; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.16); color: inherit; }
+.spb-easy-auto-scope button.on { background: #ff7a18; border-color: #ff7a18; color: #111; font-weight: 700; }
+.spb-easy-auto-browse { display: flex; gap: 6px; align-items: center; }
+.spb-easy-auto-browse [data-cat] { padding: 6px 9px; border-radius: 8px; font: inherit; font-size: 11.5px; cursor: pointer; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.16); color: inherit; white-space: nowrap; }
+.spb-easy-auto-browse [data-cat].on { background: rgba(255,122,24,.18); border-color: #ff7a18; }
+.spb-easy-auto-search { flex: 1; min-width: 0; box-sizing: border-box; padding: 7px 10px; border-radius: 8px; font: inherit; font-size: 12.5px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.16); color: inherit; }
+.spb-easy-auto-search:focus { outline: none; border-color: #ff7a18; }
+.spb-easy-auto-tiles { flex: 1; min-height: 180px; max-height: 48vh; overflow: auto; border-radius: 8px; }
+.spb-easy-auto-tiles .spb-easy-rowlist { display: flex; flex-direction: column; gap: 4px; }
+.spb-easy-auto-tiles .spb-easy-finish { width: 100%; }
+.spb-easy-auto-none { opacity: .7; padding: 14px 6px; }
+/* categories (the main app's groups) */
+.spb-easy-auto-catrow { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 9px; border-radius: 10px; font: inherit; cursor: pointer; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10); color: inherit; text-align: left; }
+.spb-easy-auto-catrow:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,122,24,0.55); }
+.spb-easy-auto-cat-thumbs { display: grid; grid-template-columns: repeat(2, 24px); gap: 2px; flex: 0 0 auto; }
+.spb-easy-auto-mini { width: 24px; height: 24px; border-radius: 4px; object-fit: cover; background: #222; }
+.spb-easy-auto-back { align-self: flex-start; padding: 5px 9px; border-radius: 8px; font: inherit; font-size: 12px; cursor: pointer; background: transparent; color: #ffb36b; border: 1px solid rgba(255,179,107,0.4); margin-bottom: 6px; }
+.spb-easy-auto-cat-title { font-size: 12px; letter-spacing: .1em; margin: 2px 0 6px; }
+.spb-easy-auto-cat-title small { opacity: .6; letter-spacing: 0; }
+.spb-easy-auto-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.spb-easy-auto-grid .spb-easy-rowli { display: block; min-width: 0; }
+.spb-easy-auto-grid .spb-easy-finish.spb-easy-auto-big { flex-direction: column; align-items: stretch; height: 100%; }
+.spb-easy-auto-grid .spb-easy-finish.spb-easy-auto-big .spb-easy-finish-chip { width: 100%; }
+.spb-easy-auto-grid .spb-easy-finish.spb-easy-auto-big .spb-easy-finish-chip img { width: 100% !important; height: 96px !important; object-fit: cover; }
+/* ROUND 4 (owner 2026-09-19): tiles the size of Pro's catalog cards — a 2:1 COLOR | SHINE split on top, name + one line under. */
+.spb-easy-auto-grid .spb-easy-finish.spb-easy-auto-big { padding: 8px 8px 9px; min-height: 176px; gap: 7px; border-radius: 10px; }
+.spb-easy-auto-grid .spb-easy-finish.spb-easy-auto-big .spb-easy-finish-chip { aspect-ratio: 2 / 1; height: auto !important; border-radius: 7px; }
+.spb-easy-auto-grid .spb-easy-finish.spb-easy-auto-big .spb-easy-finish-chip img { height: 100% !important; aspect-ratio: 2 / 1; }
+.spb-easy-auto-grid .spb-easy-finish.spb-easy-auto-big .spb-easy-finish-name { font-size: 13px; line-height: 1.2; }
+.spb-easy-auto-grid .spb-easy-finish.spb-easy-auto-big .spb-easy-finish-desc { -webkit-line-clamp: 2; font-size: 11px; opacity: .72; }
+.spb-easy-auto-grid .spb-easy-finish.spb-easy-auto-big .spb-easy-swatch-labels i { font-size: 9.5px; letter-spacing: .12em; }
+.spb-easy-auto-grid .spb-easy-finish.spb-easy-auto-big.selected { outline: 2px solid #ff7a18; outline-offset: -2px; }
+.spb-easy-auto-tiles .spb-easy-rowlist > .spb-easy-auto-grid { gap: 7px; }
+/* COLOR row: keep mine / the finish's own / pick */
+.spb-easy-auto-color { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; padding: 7px 9px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); }
+.spb-easy-auto-color > span { font-size: 10.5px; letter-spacing: .1em; opacity: .7; margin-right: 2px; }
+.spb-easy-auto-color button, .spb-easy-auto-pickcol { padding: 4px 9px; border-radius: 999px; font: inherit; font-size: 11.5px; cursor: pointer; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.16); color: inherit; display: inline-flex; align-items: center; gap: 6px; }
+.spb-easy-auto-color button.on, .spb-easy-auto-pickcol.on { background: #ff7a18; border-color: #ff7a18; color: #111; font-weight: 700; }
+.spb-easy-auto-pickcol input[type="color"] { width: 18px; height: 18px; padding: 0; border: 1px solid rgba(0,0,0,.4); border-radius: 50%; background: transparent; cursor: pointer; }
+.spb-easy-auto-pickcol input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+.spb-easy-auto-pickcol input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
+/* "<finish> is on — now ADJUST" hand-off */
+.spb-easy-auto-next { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 10px; background: rgba(255,122,24,.10); border: 1px solid rgba(255,122,24,.45); font-size: 12px; line-height: 1.3; }
+.spb-easy-auto-next[hidden] { display: none; }
+.spb-easy-auto-next span { flex: 1; min-width: 0; }
+.spb-easy-auto-next button { padding: 6px 10px; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 700; letter-spacing: .05em; cursor: pointer; background: #ff7a18; border: 1px solid #ff7a18; color: #111; white-space: nowrap; }
+.spb-easy-auto-grid .spb-easy-finish-desc { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ADJUST tab */
+.spb-easy-auto-group { border: 1px solid rgba(255,255,255,0.10); border-radius: 10px; padding: 8px 10px 6px; }
+.spb-easy-auto-group h4 { margin: 0 0 4px; font-size: 11px; letter-spacing: .12em; opacity: .7; }
+.spb-easy-auto-slider { display: flex; flex-direction: column; gap: 3px; padding: 4px 0 6px; }
+.spb-easy-auto-sl-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.spb-easy-auto-sl-head b { font-size: 12.5px; }
+.spb-easy-auto-sl-head output { color: #ffb36b; font-variant-numeric: tabular-nums; font-size: 12px; text-align: right; }
+.spb-easy-auto-slider input[type="range"] { width: 100%; accent-color: #ff7a18; margin: 2px 0; }
+.spb-easy-auto-hint { opacity: .62; font-size: 11px; line-height: 1.3; }
+body.spb-easy-auto-nohints .spb-easy-auto-hint { display: none; }
+.spb-easy-auto-check { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 2px 0 6px; cursor: pointer; }
+.spb-easy-auto-check input { accent-color: #ff7a18; }
+.spb-easy-auto-reset { align-self: flex-start; padding: 6px 10px; border-radius: 8px; font: inherit; font-size: 12px; cursor: pointer; background: transparent; color: inherit; border: 1px solid rgba(255,255,255,0.2); }
+.spb-easy-auto-reset:hover { background: rgba(255,255,255,0.08); }
+
+@media (max-width: 1280px) {
+    .spb-easy-auto-layers { flex-basis: 190px; }
+    body.spb-easy-on.spb-easy-auto-view .spb-easy-channel canvas { height: 104px !important; }
+}
+@media (max-width: 1100px) {
+    .spb-easy-auto-pop { width: calc(100vw - 16px); max-height: 86vh; }
+}
+
+/* Back into Built-for-you from the whole-car / by-colour flows (Easy top bar) */
+.spb-easy-auto-backchip { background: #ff7a18 !important; border-color: #ff7a18 !important; color: #111 !important; font-weight: 700; letter-spacing: .06em; }
+.spb-easy-auto-backchip[hidden] { display: none !important; }
+
+/* ---- ROUND 3 (owner QA 2026-09-19): editor docked over the left column, LIVE in the light, tidy rail ---- */
+/* Part editor never covers the car: it docks over the rail column. */
+.spb-easy-auto-pop.docked { position: fixed; border-radius: 12px; width: auto; max-height: none; }
+.spb-easy-auto-pop.docked .spb-easy-auto-tiles { max-height: none; }
+.spb-easy-auto-backbtn { padding: 5px 8px; border-radius: 8px; font: inherit; font-size: 11.5px; font-weight: 700; letter-spacing: .06em; cursor: pointer; background: transparent; color: #ffb36b; border: 1px solid rgba(255,179,107,0.45); white-space: nowrap; }
+.spb-easy-auto-backbtn:hover { background: rgba(255,122,24,.12); }
+/* LIVE card: IN THE LIGHT / AS PAINTED */
+.spb-easy-auto-livetog { display: flex; align-items: center; gap: 4px; margin: 2px 0 6px; }
+.spb-easy-auto-livetog button { padding: 4px 9px; border-radius: 999px; font: inherit; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; cursor: pointer; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.16); color: inherit; }
+.spb-easy-auto-livetog button.on { background: #ff7a18; border-color: #ff7a18; color: #111; }
+.spb-easy-auto-lightsel { font: inherit; font-size: 10.5px; padding: 3px 6px; border-radius: 8px; background: rgba(255,255,255,0.06); color: inherit; border: 1px solid rgba(255,255,255,0.16); }
+.spb-easy-auto-lightsel[hidden] { display: none; }
+/* Rail: fit the window — tighter rows, actions in a 2×2 grid, SAVE stays visible */
+body.spb-easy-on.spb-easy-auto-view .spb-easy-auto-row { padding: 6px 9px; gap: 8px; border-radius: 9px; }
+body.spb-easy-on.spb-easy-auto-view .spb-easy-auto-row-text b { font-size: 12.5px; }
+body.spb-easy-on.spb-easy-auto-view .spb-easy-auto-row-text small { font-size: 11px; }
+body.spb-easy-on.spb-easy-auto-view .spb-easy-auto-parts { gap: 4px; margin: 8px 0 10px; }
+body.spb-easy-on.spb-easy-auto-view .spb-easy-auto-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin: 2px 0 10px; }
+body.spb-easy-on.spb-easy-auto-view .spb-easy-auto-act { font-size: 11.5px; padding: 6px 8px; }
+body.spb-easy-on.spb-easy-auto-view .spb-easy-rail-head small { font-size: 11.5px; }
+body.spb-easy-on.spb-easy-auto-view #spbEasySave { position: sticky; bottom: 0; z-index: 3; box-shadow: 0 -10px 18px rgba(8,10,14,.9); }
+/* Toasts live bottom-left in Pro (above + Add Zone); in this view the rail is there — send them bottom-centre. */
+body.spb-easy-on.spb-easy-auto-view .toast { left: 50% !important; right: auto !important; bottom: 12px !important; top: auto !important; transform: translateX(-50%) !important; max-width: 520px; }
+
+/* ---- shine pass (2026-09-19 evening): colour-word labels, finish thumbs in rows, layer thumbs, intro card ---- */
+.spb-easy-auto-fin { width: 34px; height: 22px; border-radius: 5px; object-fit: cover; flex: 0 0 auto; border: 1px solid rgba(255,255,255,0.18); background: #222; }
+.spb-easy-auto-fin.none { display: inline-flex; align-items: center; justify-content: center; font-size: 11px; opacity: .5; }
+.spb-easy-auto-layer-thumb { width: 30px; height: 30px; border-radius: 6px; flex: 0 0 auto; object-fit: cover; background: #1b1e24; border: 1px solid rgba(255,255,255,0.14); }
+.spb-easy-auto-intro { margin: 8px 0 6px; padding: 9px 11px; border-radius: 10px; background: rgba(255,122,24,.09); border: 1px solid rgba(255,122,24,.4); font-size: 12px; }
+.spb-easy-auto-intro > b { display: block; font-size: 11px; letter-spacing: .12em; color: #ffb36b; margin-bottom: 4px; }
+.spb-easy-auto-intro ol { margin: 0 0 6px 16px; padding: 0; line-height: 1.45; }
+.spb-easy-auto-intro button { padding: 4px 10px; border-radius: 8px; font: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer; background: #ff7a18; border: 1px solid #ff7a18; color: #111; }
+
+.spb-easy-auto-livecap { flex: 1 1 auto; min-width: 0; font-size: 10.5px; opacity: .72; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-left: 6px; }
+.spb-easy-auto-livetog[hidden] { display: none !important; }
+
+/* narrow windows: keep the LIVE header on one line */
+.spb-easy-auto-livetog button { white-space: nowrap; }
+@media (max-width: 1400px) {
+    .spb-easy-auto-livecap { display: none; }
+    .spb-easy-auto-livetog button { padding: 3px 7px; font-size: 10px; }
+    .spb-easy-auto-lightsel { font-size: 10px; padding: 2px 4px; }
+}
+
+/* cursor tip on the car: "Orange · Pearl — click to change" */
+.spb-easy-auto-tip { position: fixed; z-index: 21000; pointer-events: none; padding: 4px 8px; border-radius: 7px; font-size: 11.5px; background: rgba(12,14,18,.94); color: #f2f2f2; border: 1px solid rgba(255,122,24,.5); box-shadow: 0 6px 18px rgba(0,0,0,.5); white-space: nowrap; }
+.spb-easy-auto-tip[hidden] { display: none; }
+
+/* flat TGA: numbers & sponsor-text finder (right panel) */
+.spb-easy-auto-detect { padding: 8px 10px; border-radius: 9px; font-size: 12px; line-height: 1.35; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); }
+.spb-easy-auto-detect.running { border-color: rgba(255,122,24,.6); animation: spbEasyAutoPulse 1.4s ease-in-out infinite; }
+.spb-easy-auto-detect.err { opacity: .75; }
+@keyframes spbEasyAutoPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,122,24,.0); } 50% { box-shadow: 0 0 0 3px rgba(255,122,24,.25); } }
+.spb-easy-auto-detect-btn { border-style: solid !important; font-weight: 700; }
+.spb-easy-auto-detect-btn small { display: block; font-weight: 400; opacity: .7; }
+.spb-easy-auto-overlay { width: 100%; border-radius: 8px; border: 1px solid rgba(255,255,255,0.14); background: #111; }
+.spb-easy-auto-propose { display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 9px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10); }
+.spb-easy-auto-use { padding: 5px 10px; border-radius: 8px; font: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer; background: #ff7a18; border: 1px solid #ff7a18; color: #111; white-space: nowrap; }
+
+/* SOURCE and LIVE start at the same top edge (LIVE carries the light toggle row) */
+body.spb-easy-on.spb-easy-auto-view .spb-easy-proof-main { align-items: flex-start; }
+
+/* TRY A LOOK: one-tap recipes over every part */
+.spb-easy-auto-looks { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin: 8px 0 2px; }
+.spb-easy-auto-looks span { font-size: 10.5px; letter-spacing: .1em; opacity: .7; margin-right: 2px; }
+.spb-easy-auto-look { padding: 5px 10px; border-radius: 999px; font: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer; background: rgba(255,122,24,.10); border: 1px solid rgba(255,122,24,.45); color: #ffb36b; }
+.spb-easy-auto-look:hover { background: rgba(255,122,24,.22); }
+.spb-easy-auto-look.on { background: #ff7a18; border-color: #ff7a18; color: #111; }
+
+/* short windows (≤ 1000 px tall): tighter rail so SAVE needs less scrolling */
+@media (max-height: 1000px) {
+    body.spb-easy-on.spb-easy-auto-view .spb-easy-auto-row { padding: 5px 8px; }
+    body.spb-easy-on.spb-easy-auto-view .spb-easy-auto-row-text small { font-size: 10.5px; }
+    body.spb-easy-on.spb-easy-auto-view .spb-easy-auto-parts { gap: 3px; margin: 6px 0 8px; }
+    body.spb-easy-on.spb-easy-auto-view .spb-easy-auto-intro { padding: 7px 10px; font-size: 11.5px; }
+    body.spb-easy-on.spb-easy-auto-view .spb-easy-rail-head small { display: none; }
+}
+
+/* Built-for-you view: the saved-looks list, the teach line and the glossary link belong to the older flows */
+body.spb-easy-on.spb-easy-auto-view #spbEasyMyLooks,
+body.spb-easy-on.spb-easy-auto-view #spbEasyTeach,
+body.spb-easy-on.spb-easy-auto-view #spbEasyGlossOpen { display: none !important; }
+
+/* [SPB-EASY-R5 2026-09-22] template guides card (Wire / Mask / Car Mandatory left on) */
+.spb-easy-auto-guides { display: flex; flex-direction: column; gap: 5px; margin: 2px 0 10px; padding: 9px 11px; border-radius: 10px; border: 1px solid rgba(255, 196, 64, .55); background: rgba(255, 196, 64, .09); font-size: 12px; line-height: 1.35; }
+.spb-easy-auto-guides b { color: #ffc440; letter-spacing: .04em; font-size: 12px; }
+.spb-easy-auto-guides span { opacity: .88; }
+.spb-easy-auto-guides button { align-self: flex-start; margin-top: 2px; padding: 6px 11px; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 700; letter-spacing: .04em; cursor: pointer; background: #ffc440; border: 1px solid #ffc440; color: #111; }
+.spb-easy-auto-guides button:hover { filter: brightness(1.08); }
+
+/* [SPB-EASY-R6 2026-09-22] pick a colour off the car + quick strip */
+.spb-easy-auto-pickbtn { width: 100%; margin: 6px 0 4px; padding: 8px 10px; border-radius: 9px; font: inherit; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; cursor: pointer; text-align: left;
+    background: rgba(80, 200, 255, .08); border: 1px dashed rgba(80, 200, 255, .55); color: #bfe9ff; }
+.spb-easy-auto-pickbtn:hover { background: rgba(80, 200, 255, .16); border-style: solid; }
+.spb-easy-auto-pickbtn.on { background: #50c8ff; color: #06121a; border-style: solid; }
+body.spb-easy-auto-picking .spb-easy-auto-hilite { cursor: crosshair; }
+.spb-easy-auto-pickhead { display: flex; align-items: center; gap: 8px; margin: 0 12px 8px; padding: 6px 9px; border-radius: 9px; background: rgba(80, 200, 255, .08); border: 1px solid rgba(80, 200, 255, .35); font-size: 11.5px; line-height: 1.3; }
+.spb-easy-auto-pickhead span { flex: 1; opacity: .85; }
+.spb-easy-auto-pickhead button { padding: 5px 9px; border-radius: 7px; font: inherit; font-size: 11.5px; cursor: pointer; background: transparent; color: #ffb3b3; border: 1px solid rgba(255, 140, 140, .5); white-space: nowrap; }
+.spb-easy-auto-quick { display: grid; grid-template-columns: 1fr; gap: 3px; padding: 8px 10px 7px; border-radius: 10px; border: 1px solid rgba(255, 122, 24, .35); background: rgba(255, 122, 24, .05); flex: 0 0 auto; }
+.spb-easy-auto-qrow { display: grid; grid-template-columns: 44px 1fr 92px; align-items: center; gap: 8px; font-size: 12px; }
+.spb-easy-auto-qrow span { font-weight: 700; letter-spacing: .04em; opacity: .85; }
+.spb-easy-auto-qrow input[type="range"] { width: 100%; accent-color: #ff7a18; margin: 0; }
+.spb-easy-auto-qrow output { color: #ffb36b; font-variant-numeric: tabular-nums; font-size: 11.5px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.spb-easy-auto-quickmore { justify-self: start; margin-top: 2px; padding: 3px 0; font: inherit; font-size: 11.5px; cursor: pointer; background: transparent; border: 0; color: #ffb36b; text-decoration: underline; text-underline-offset: 2px; }
+
+/* [SPB-EASY-R6b 2026-09-22] editor fits 1100x800: one-line COLOR / PUT IT ON rows, tiles get the room */
+.spb-easy-auto-color, .spb-easy-auto-scope { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+.spb-easy-auto-color::-webkit-scrollbar, .spb-easy-auto-scope::-webkit-scrollbar { display: none; }
+.spb-easy-auto-color button, .spb-easy-auto-pickcol, .spb-easy-auto-scope button { white-space: nowrap; flex: 0 0 auto; }
+@media (max-height: 900px) {
+    .spb-easy-auto-pop .spb-easy-auto-hint { display: none; }
+    .spb-easy-auto-pop-head { padding: 8px 10px 6px; }
+    .spb-easy-auto-reach { margin: 0 10px 6px; padding: 6px 9px; }
+    .spb-easy-auto-tabs { padding: 0 10px 6px; }
+    .spb-easy-auto-tabs [role="tab"] { padding: 5px 8px; }
+    .spb-easy-auto-tab { padding: 8px 10px 10px; gap: 6px; }
+    .spb-easy-auto-color { padding: 5px 7px; }
+    .spb-easy-auto-color > span, .spb-easy-auto-scope > span { display: none; }
+    .spb-easy-auto-next { padding: 5px 8px; font-size: 11.5px; }
+    .spb-easy-auto-tiles { min-height: 150px; }
+    .spb-easy-auto-grid .spb-easy-finish.spb-easy-auto-big { min-height: 150px; }
+    .spb-easy-auto-grid .spb-easy-finish.spb-easy-auto-big .spb-easy-finish-desc { -webkit-line-clamp: 1; }
+    .spb-easy-auto-quick { padding: 6px 8px 5px; gap: 1px; }
+}
+
+/* [SPB-EASY-MERGE 2026-09-22] merge another colour into this part */
+.spb-easy-auto-merge { display: flex; align-items: center; gap: 8px; margin: 0 12px 8px; font-size: 12px; }
+.spb-easy-auto-merge span { opacity: .75; letter-spacing: .04em; white-space: nowrap; }
+.spb-easy-auto-merge select { flex: 1; min-width: 0; padding: 5px 8px; border-radius: 8px; font: inherit; font-size: 12px; background: rgba(255,255,255,0.06); color: inherit; border: 1px solid rgba(255,255,255,0.18); }
+.spb-easy-auto-merge select:focus { outline: none; border-color: #ff7a18; }

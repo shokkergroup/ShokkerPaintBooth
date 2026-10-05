@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_corp_grey",
+  "display_name": "Sprawl: Security Foil",
+  "promise": "Fine vermilion guilloche curls with teal foil teeth and violet embossed dots.",
+  "carrier_grammar": "Fine vermilion guilloche curls with teal foil teeth and violet embossed dots. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for vermilion security lacquer, teal foil teeth, violet embossed dots, gold pin ticks, black lacquer cuts is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Fine vermilion guilloche curls with teal foil teeth and violet embossed dots. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_corp_grey.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "vermilion security lacquer",
+      "role": "Actual shared paint and spec geometry: vermilion security lacquer"
+    },
+    {
+      "name": "teal foil teeth",
+      "role": "Actual shared paint and spec geometry: teal foil teeth"
+    },
+    {
+      "name": "violet embossed dots",
+      "role": "Actual shared paint and spec geometry: violet embossed dots"
+    },
+    {
+      "name": "gold pin ticks",
+      "role": "Actual shared paint and spec geometry: gold pin ticks"
+    },
+    {
+      "name": "black lacquer cuts",
+      "role": "Actual shared paint and spec geometry: black lacquer cuts"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "vermilion security lacquer",
+      "teal foil teeth",
+      "violet embossed dots",
+      "gold pin ticks",
+      "black lacquer cuts"
+    ],
+    "R": [
+      "vermilion security lacquer",
+      "teal foil teeth",
+      "violet embossed dots",
+      "gold pin ticks",
+      "black lacquer cuts"
+    ],
+    "Cc": [
+      "vermilion security lacquer",
+      "teal foil teeth",
+      "violet embossed dots",
+      "gold pin ticks",
+      "black lacquer cuts"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_deep_archive",
+      "difference": "This finish uses Dense microscopic vermilion guilloche curved line bundles, teal foil serrated teeth, violet embossed dot clusters, gold pin ticks and black lacquer cuts. Security laminate material with short engraved curls, no readable text, no money or logos, no big circular rosettes, no gray field.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "at_holo_sticker",
+      "difference": "This finish uses Dense microscopic vermilion guilloche curved line bundles, teal foil serrated teeth, violet embossed dot clusters, gold pin ticks and black lacquer cuts. Security laminate material with short engraved curls, no readable text, no money or logos, no big circular rosettes, no gray field.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "vermilion security lacquer is visible in the authored geometry",
+      "teal foil teeth is visible in the authored geometry",
+      "violet embossed dots is visible in the authored geometry",
+      "gold pin ticks is visible in the authored geometry",
+      "black lacquer cuts is visible in the authored geometry"
+    ],
+    "source_sha256": "32f0a9d48b3962330a32812fc0f8c1b499c9c0f3e1b996833c9ceb5d7e99b2b4",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_corp_grey-authored-Fine vermilion guilloche curls with teal foil teeth and violet embossed dots. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_corp_grey-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 80.9,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "ca3c0d95f9de2f74d8c2c721cdec440b8d1c6472c90d924712879545d43f0571"
+}

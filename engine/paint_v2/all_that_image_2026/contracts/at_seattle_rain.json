@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_seattle_rain",
+  "display_name": "Flannel: Seattle Rain",
+  "promise": "Fine dense clear drizzle beads and tiny winding wet rivulets on blue-gray surface, no scene or single rain direction",
+  "carrier_grammar": "Fine dense clear drizzle beads and tiny winding wet rivulets on blue-gray surface, no scene or single rain direction; single full-canvas image, no duplicated quadrants. Fine features: dark wet film, dry asphalt pinpricks, cyan reflected slivers, amber reflection streaks, micro splash crowns, bright droplet crests",
+  "spec_grammar": "Feature-specific selectors partition dark wet film, dry asphalt pinpricks, cyan reflected slivers, amber reflection streaks, micro splash crowns, bright droplet crests. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "dark wet film",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "dry asphalt pinpricks",
+      "role": "Material feature selected from artwork by g:<:0.2"
+    },
+    {
+      "name": "cyan reflected slivers",
+      "role": "Material feature selected from artwork by h:>:160&h:<:220&s:>:0.35"
+    },
+    {
+      "name": "amber reflection streaks",
+      "role": "Material feature selected from artwork by h:<:65&s:>:0.4"
+    },
+    {
+      "name": "micro splash crowns",
+      "role": "Material feature selected from artwork by edge:>:0.67"
+    },
+    {
+      "name": "bright droplet crests",
+      "role": "Material feature selected from artwork by g:>:0.8&s:<:0.25"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "dark wet film",
+      "dry asphalt pinpricks",
+      "cyan reflected slivers",
+      "amber reflection streaks",
+      "micro splash crowns",
+      "bright droplet crests"
+    ],
+    "R": [
+      "dark wet film",
+      "dry asphalt pinpricks",
+      "cyan reflected slivers",
+      "amber reflection streaks",
+      "micro splash crowns",
+      "bright droplet crests"
+    ],
+    "Cc": [
+      "dark wet film",
+      "dry asphalt pinpricks",
+      "cyan reflected slivers",
+      "amber reflection streaks",
+      "micro splash crowns",
+      "bright droplet crests"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "dark wet film",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          10,
+          55,
+          80
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dry asphalt pinpricks",
+      "range": [
+        [
+          10,
+          145,
+          160
+        ],
+        [
+          90,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cyan reflected slivers",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "amber reflection streaks",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "micro splash crowns",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "bright droplet crests",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          10,
+          55,
+          80
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_band_tee_crack",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_basement_amp",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "dark wet film",
+      "dry asphalt pinpricks",
+      "cyan reflected slivers",
+      "amber reflection streaks",
+      "micro splash crowns",
+      "bright droplet crests"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_seattle_rain / Fine dense clear drizzle beads and tiny winding wet rivulets on blue-gray surface, no scene or single rain direction",
+  "spec_key": "at_seattle_rain / dark wet film all; dry asphalt pinpricks g:<:0.2; cyan reflected slivers h:>:160&h:<:220&s:>:0.35; amber reflection streaks h:<:65&s:>:0.4; micro splash crowns edge:>:0.67; bright droplet crests g:>:0.8&s:<:0.25",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

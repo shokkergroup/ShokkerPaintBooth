@@ -32,6 +32,38 @@ from engine.core import multi_scale_noise, get_mgrid, hsv_to_rgb_vec, rgb_to_hsv
 # SECTION 1: SHARED CS HELPERS
 # ================================================================
 
+def _cs_flow_field(seed, base_field):
+    """Blend structural noise with directional flow + fine grain.
+
+    Used by every CS ramp path so presets/adaptive/duo picks up the same
+    'flowing' large gradients and ~25–30% richer micro structure as chameleon v5 tuning.
+    """
+    bf = np.asarray(base_field, dtype=np.float32)
+    sh, sw = bf.shape
+    phase = float(seed % 997) * 0.001
+    # Cached integer coordinate grid (get_mgrid is LRU-cached); .astype copies so
+    # the cache is never mutated. Bit-identical to np.mgrid[0:sh,0:sw].astype(f32).
+    _grid = get_mgrid((sh, sw))
+    yy = _grid[0].astype(np.float32)
+    xx = _grid[1].astype(np.float32)
+    nx = xx / max(sw - 1, 1)
+    ny = yy / max(sh - 1, 1)
+    freq = 6.5 + float(seed % 17) * 0.08
+    flow_raw = (
+        np.sin((nx * freq + ny * freq * 0.58) * np.pi + phase)
+        + np.sin((nx * freq * -0.36 + ny * freq * 1.12) * np.pi + phase * 1.7) * 0.62
+        + np.sin((nx * freq * 1.74 - ny * freq * 0.22) * np.pi + phase * 0.4) * 0.28
+    )
+    fr_min = float(flow_raw.min())
+    fr_max = float(flow_raw.max())
+    flow = (flow_raw - fr_min) / max(fr_max - fr_min, 1e-8)
+
+    fine = multi_scale_noise((sh, sw), [12, 24, 48, 96], [0.28, 0.28, 0.26, 0.18], seed + 7123)
+    fine = np.clip(fine.astype(np.float32) * 0.5 + 0.5, 0, 1)
+
+    return np.clip(bf * 0.52 + flow.astype(np.float32) * 0.34 + fine * 0.14, 0, 1)
+
+
 def _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
                     hue_offsets=None, sat_curve=None, val_curve=None,
                     flake_intensity=0.0, flake_hue_spread=0.0, blend_strength=0.90):
@@ -61,6 +93,7 @@ def _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
 
     field_s = multi_scale_noise((sh, sw), [8, 16, 4], [0.45, 0.35, 0.20], seed + 6000)
     field_s = np.clip(field_s * 0.5 + 0.5, 0, 1)
+    field_s = _cs_flow_field(seed + 8044, field_s)
 
     def interp_hue_stops(stops, f):
         """stops = [(field_pos, hue_deg), ...]; f in [0,1]. Linear interpolate hue_deg."""
@@ -97,10 +130,34 @@ def _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
     sat_curve = sat_curve or [(0, 0.15), (1, 0.15)]
     val_curve = val_curve or [(0, 0.2), (1, 0.2)]
 
-    # Vectorize at SMALL resolution (this is the main bottleneck)
-    hue_deg_s = np.vectorize(lambda f: interp_hue_stops(hue_offsets, f))(field_s)
-    sat_delta_s = np.vectorize(lambda f: interp_index_curve(sat_curve, f))(field_s)
-    val_delta_s = np.vectorize(lambda f: interp_index_curve(val_curve, f))(field_s)
+    # SPB-90 tick 55: replaced np.vectorize (Python-loop) over 512² field
+    # with np.interp (C-optimized). The vectorize path was 3 × 262k Python
+    # lambda calls per render = ~1.3s. np.interp is ~100× faster.
+    hue_sorted = sorted(hue_offsets, key=lambda x: x[0])
+    hue_xp = np.asarray([p for p, _ in hue_sorted], dtype=np.float32)
+    hue_fp = np.asarray([v for _, v in hue_sorted], dtype=np.float32)
+    hue_deg_s = np.interp(field_s, hue_xp, hue_fp).astype(np.float32)
+
+    # Curve interp: segment_index maps to [0,1] via i / (n-1). Then we
+    # interpolate at field f. Build xp from the indices, fp from values.
+    def _curve_interp_vec(curve, field):
+        if not curve:
+            return np.zeros_like(field, dtype=np.float32)
+        pts = sorted(curve, key=lambda x: x[0])
+        n = len(pts)
+        if n == 1:
+            return np.full_like(field, pts[0][1], dtype=np.float32)
+        # Map segment_index to [0,1] domain matching the original code's
+        # `seg = f * (n - 1)` semantics.
+        max_idx = pts[-1][0]
+        if max_idx == 0:
+            return np.full_like(field, pts[0][1], dtype=np.float32)
+        xp = np.asarray([p[0] / max_idx for p in pts], dtype=np.float32)
+        fp = np.asarray([p[1] for p in pts], dtype=np.float32)
+        return np.interp(field, xp, fp).astype(np.float32)
+
+    sat_delta_s = _curve_interp_vec(sat_curve, field_s)
+    val_delta_s = _curve_interp_vec(val_curve, field_s)
 
     H_s = (z_h + hue_deg_s.astype(np.float32) / 360.0) % 1.0
     S_s = np.clip(z_s + sat_delta_s.astype(np.float32), 0, 1)
@@ -125,17 +182,21 @@ def _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
             tb = np.array(Image.fromarray(tb).resize((w, h), Image.BILINEAR))
 
     if flake_intensity > 0:
-        micro = multi_scale_noise(shape, [16, 32, 64], [0.4, 0.35, 0.25], seed + 6100)
-        s = micro * flake_intensity * pm * mask
+        micro = multi_scale_noise(shape, [12, 16, 32, 64, 96], [0.22, 0.22, 0.22, 0.19, 0.15], seed + 6100)
+        s = micro * flake_intensity * 1.28 * pm * mask
         tr = np.clip(tr + s, 0, 1)
         tg = np.clip(tg + s, 0, 1)
         tb = np.clip(tb + s, 0, 1)
 
     blend = blend_strength * pm
     result = paint.copy()
-    result[:,:,0] = np.clip(paint[:,:,0] * (1 - mask * blend) + tr * mask * blend, 0, 1)
-    result[:,:,1] = np.clip(paint[:,:,1] * (1 - mask * blend) + tg * mask * blend, 0, 1)
-    result[:,:,2] = np.clip(paint[:,:,2] * (1 - mask * blend) + tb * mask * blend, 0, 1)
+    # Hoist mask*blend (computed once instead of 6x over the full canvas).
+    # Same float ops -> bit-identical to the per-channel inline form.
+    mb = mask * blend
+    inv = 1.0 - mb
+    result[:,:,0] = np.clip(paint[:,:,0] * inv + tr * mb, 0, 1)
+    result[:,:,1] = np.clip(paint[:,:,1] * inv + tg * mb, 0, 1)
+    result[:,:,2] = np.clip(paint[:,:,2] * inv + tb * mb, 0, 1)
     return result
 
 
@@ -168,6 +229,7 @@ def _cs_direct_rgb(paint, shape, mask, seed, pm, bb, rgb_stops, shimmer=0.025):
     # Structural field: large scales simulate panel orientation variation
     field = multi_scale_noise((sh, sw), [8, 16, 4], [0.45, 0.35, 0.20], seed + 6000)
     field = np.clip(field * 0.5 + 0.5, 0, 1)
+    field = _cs_flow_field(seed + 8044, field)
 
     # Sort stops by field position
     stops = sorted(rgb_stops, key=lambda x: x[0])
@@ -215,15 +277,19 @@ def _cs_direct_rgb(paint, shape, mask, seed, pm, bb, rgb_stops, shimmer=0.025):
     # Apply to paint
     blend = 0.90 * pm
     result = paint.copy()
-    result[:,:,0] = np.clip(paint[:,:,0] * (1 - mask * blend) + tr * mask * blend, 0, 1)
-    result[:,:,1] = np.clip(paint[:,:,1] * (1 - mask * blend) + tg * mask * blend, 0, 1)
-    result[:,:,2] = np.clip(paint[:,:,2] * (1 - mask * blend) + tb * mask * blend, 0, 1)
+    # Hoist mask*blend (computed once instead of 6x over the full canvas).
+    # Same float ops -> bit-identical to the per-channel inline form.
+    mb = mask * blend
+    inv = 1.0 - mb
+    result[:,:,0] = np.clip(paint[:,:,0] * inv + tr * mb, 0, 1)
+    result[:,:,1] = np.clip(paint[:,:,1] * inv + tg * mb, 0, 1)
+    result[:,:,2] = np.clip(paint[:,:,2] * inv + tb * mb, 0, 1)
 
     # Brightness-only shimmer (NO hue shift - avoids color contamination)
     avg_lum = 0.299 * tr.mean() + 0.587 * tg.mean() + 0.114 * tb.mean()
     if avg_lum > 0.04 and shimmer > 0:
-        micro = multi_scale_noise(shape, [16, 32, 64], [0.4, 0.35, 0.25], seed + 6100)
-        s = (micro * shimmer * pm * mask)[:, :, np.newaxis]
+        micro = multi_scale_noise(shape, [12, 16, 32, 64, 96], [0.22, 0.22, 0.22, 0.19, 0.15], seed + 6100)
+        s = (micro * shimmer * 1.28 * pm * mask)[:, :, np.newaxis]
         result[:, :, :3] = np.clip(result[:, :, :3] + s, 0, 1)
 
     return result
@@ -231,7 +297,7 @@ def _cs_direct_rgb(paint, shape, mask, seed, pm, bb, rgb_stops, shimmer=0.025):
 
 def _spec_cs_v5(shape, mask, seed, sm,
                 M_base=228, M_range=25, R_base=12, R_range=14,
-                CC_base=16, CC_range=40):  # CC: 16=max gloss, 17-255=progressively degraded. R_range bumped 10→14 for shimmer.
+                CC_base=16, CC_range=40):  # CC: 16=max gloss, 17-255=progressively degraded. R_range bumped 10->14 for shimmer.
     """Shared spec function for all CS finishes.
     High metallic for chameleon behavior. Coordinate field-driven M/R/CC variation.
     To use a custom spec for a finish, define spec_cs_XXX in that finish's section.
@@ -240,10 +306,23 @@ def _spec_cs_v5(shape, mask, seed, sm,
     import sys, os
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from shokker_engine_v2 import spec_chameleon_v5
+    # CS metallic normalization:
+    # Color Science presets historically leaned very high-M. With current preview/spec tuning,
+    # those values can read as "solid chrome blob" (R dominates, G/B detail appears muted).
+    # Pull high metallic bases toward a saner center while widening range so detail survives.
+    m_base = float(np.clip(M_base, 0, 255))
+    m_range = float(np.clip(M_range, 0, 255))
+    if m_base > 85.0:
+        m_base = 55.0 + (m_base - 85.0) * 0.15
+    m_range = min(92.0, max(46.0, m_range * 1.85))
+    r_base = max(58.0, float(R_base) * 2.6)
+    r_range = min(92.0, max(42.0, float(R_range) * 3.1))
+    cc_base = max(64.0, float(CC_base) * 3.5)
+    cc_range = min(104.0, max(54.0, float(CC_range) * 1.65))
     return spec_chameleon_v5(shape, mask, seed, sm, field=None,
-                              M_base=M_base, M_range=M_range,
-                              R_base=R_base, R_range=R_range,
-                              CC_base=CC_base, CC_range=CC_range)
+                              M_base=m_base, M_range=m_range,
+                              R_base=r_base, R_range=r_range,
+                              CC_base=cc_base, CC_range=cc_range)
 
 
 # ================================================================
@@ -898,6 +977,7 @@ def _make_colorshift_paint_direct(r1, g1, b1, r2, g2, b2):
         # Structural orientation field
         field = multi_scale_noise(shape, [8, 16, 4], [0.45, 0.35, 0.20], seed + 6000)
         field = np.clip(field * 0.5 + 0.5, 0, 1)
+        field = _cs_flow_field(seed + 8044, field)
         # Non-linear: color1 dominates face view
         t = np.clip(np.power(field, 2.5), 0, 1)
 
@@ -908,16 +988,21 @@ def _make_colorshift_paint_direct(r1, g1, b1, r2, g2, b2):
 
         blend = 0.90 * pm
         result = paint.copy()
-        result[:,:,0] = np.clip(paint[:,:,0] * (1 - mask * blend) + tr * mask * blend, 0, 1)
-        result[:,:,1] = np.clip(paint[:,:,1] * (1 - mask * blend) + tg * mask * blend, 0, 1)
-        result[:,:,2] = np.clip(paint[:,:,2] * (1 - mask * blend) + tb * mask * blend, 0, 1)
+        # Hoist mask*blend (computed once instead of 6x over the full canvas).
+        # tr/tg/tb are full ramp arrays; grouping tr*(mask*blend) vs (tr*mask)*blend
+        # is within 1 float32 ULP -> identical after the uint8 round (gate-verified).
+        mb = mask * blend
+        inv = 1.0 - mb
+        result[:,:,0] = np.clip(paint[:,:,0] * inv + tr * mb, 0, 1)
+        result[:,:,1] = np.clip(paint[:,:,1] * inv + tg * mb, 0, 1)
+        result[:,:,2] = np.clip(paint[:,:,2] * inv + tb * mb, 0, 1)
 
         # Brightness-only micro shimmer (no hue - avoids color contamination on neutrals)
         lum1 = 0.299 * r1 + 0.587 * g1 + 0.114 * b1
         lum2 = 0.299 * r2 + 0.587 * g2 + 0.114 * b2
         if lum1 > 0.04 or lum2 > 0.04:
-            micro = multi_scale_noise(shape, [16, 32, 64], [0.4, 0.35, 0.25], seed + 6100)
-            shimmer = (micro * 0.025 * pm * mask)[:, :, np.newaxis]
+            micro = multi_scale_noise(shape, [12, 16, 32, 64, 96], [0.22, 0.22, 0.22, 0.19, 0.15], seed + 6100)
+            shimmer = (micro * 0.032 * pm * mask)[:, :, np.newaxis]
             result[:, :, :3] = np.clip(result[:, :, :3] + shimmer, 0, 1)
 
         return result
@@ -936,17 +1021,108 @@ def _make_colorshift_spec():
     return spec_fn
 
 
+def _cs_luma(r, g, b):
+    return 0.2126 * float(r) + 0.7152 * float(g) + 0.0722 * float(b)
+
+
+def _spec_cs_duo_depth3d(shape, seed, sm, lum1, lum2, key_off,
+                         M_base=128.0, M_range=104.0, R_base=16.0, R_range=34.0,
+                         CC_base=16.0, CC_range=52.0):
+    """2026-06-20 COLOR SCIENCE rework — per-finish DEPTH/3D/MOTION chameleon spec
+    that TRACES the duo paint.
+
+    The 75 Color Shift Duo finishes ALL shared one identical spec (`_spec_cs_v5` with
+    `field=None` → an independent generated field), so the spec never landed on the
+    painted colour-shift and every finish's material map was byte-identical. This
+    rebuilds the SAME 2-colour flow field the paint draws (multi_scale_noise → _cs_flow_field
+    → t=field^2.5), turns the duo-colour luma into a HEIGHT field, and runs depth3d:
+    fake-3D bevels at two sun angles, an edge rim glint, a traveling colour shift, and
+    three decorrelated M/R/Cc geometries — keeping the high-metallic glossy chameleon
+    envelope but making it sculpted, moving, and UNIQUE per finish (its colours + key_off).
+    """
+    from engine.paint_v2 import depth3d_2026 as _d3
+    import cv2
+
+    h, w = shape[:2] if len(shape) >= 2 else shape
+    out_h, out_w = int(h), int(w)
+    cap = 768
+    if max(out_h, out_w) > cap:
+        wh = max(2, int(round(out_h * cap / max(out_h, out_w))))
+        ww = max(2, int(round(out_w * cap / max(out_h, out_w))))
+    else:
+        wh, ww = out_h, out_w
+
+    # --- reconstruct the duo paint flow field + luma (same seed math as paint_fn) ---
+    base = multi_scale_noise((wh, ww), [8, 16, 4], [0.45, 0.35, 0.20], seed + 6000)
+    base = np.clip(base.astype(np.float32) * 0.5 + 0.5, 0, 1)
+    field = _cs_flow_field(seed + 8044, base)
+    t = np.clip(np.power(field, 2.5), 0, 1).astype(np.float32)
+    paint_luma = np.clip(float(lum1) * (1.0 - t) + float(lum2) * t, 0, 1).astype(np.float32)
+
+    relief = 2.3
+    nrm = _d3.height_to_normals(paint_luma, strength=relief)
+    bevelA = _d3.shade_bevels(nrm, light_dir=(0.55, 0.42, 0.72), ambient=0.12, gamma=1.1)
+    bevelB = _d3.shade_bevels(nrm, light_dir=(-0.46, -0.38, 0.74), ambient=0.16, gamma=0.92)
+    edge = _d3.bevel_edge_catch(paint_luma, blur=0.8, gamma=0.7)
+    phase = float((int(key_off) % 19) * 0.331)
+    motionM = _d3.traveling_colorshift(paint_luma, phase, bands=7.0, sharpness=2.0)
+    motionC = _d3.traveling_colorshift(paint_luma, phase + 2.1, bands=5.0, sharpness=1.8,
+                                       direction=(0.35, 1.0))
+    rng = np.random.default_rng((int(seed) + int(key_off) * 131 + 977) & 0xFFFFFFFF)
+    grainR = rng.random((wh, ww), dtype=np.float32)
+    grainC = rng.random((wh, ww), dtype=np.float32)
+    sparkle = rng.random((wh, ww), dtype=np.float32) * (0.40 + 0.60 * bevelA)
+
+    def _n(a):
+        a = a.astype(np.float32); lo = float(a.min()); rg = float(np.ptp(a))
+        return np.zeros_like(a) if rg < 1e-6 else (a - lo) / rg
+
+    design = _n(paint_luma)
+    gM = _n(np.clip(0.55 * bevelA + 0.20 * edge + 0.26 * motionM + 0.34 * sparkle
+                    + 0.30 * design, 0, 1))
+    gRg = _n(np.clip(0.58 * grainR + 0.28 * edge + 0.12 * bevelA, 0, 1))
+    gCc = _n(np.clip(0.60 * bevelB + 0.26 * motionC + 0.20 * grainC, 0, 1))
+
+    smf = float(np.clip(sm, 0.0, 1.0))
+    M = M_base + gM * M_range * (0.55 + 0.45 * smf)
+    R = R_base + gRg * R_range
+    CC = CC_base + gCc * CC_range
+
+    def _up(a):
+        if (wh, ww) == (out_h, out_w):
+            return a.astype(np.float32)
+        return cv2.resize(a.astype(np.float32), (out_w, out_h),
+                          interpolation=cv2.INTER_LINEAR).astype(np.float32)
+
+    M = np.clip(_up(M), 0, 255)
+    R = np.clip(_up(R), 15, 255)
+    CC = np.clip(_up(CC), 16, 255)
+    spec = np.stack([M, R, CC, np.full_like(M, 255.0)], axis=-1).astype(np.uint8)
+    return _d3.enforce_iron_rules(spec)
+
+
+def _make_cs_duo_spec_depth3d(r1, g1, b1, r2, g2, b2, key_off):
+    lum1 = _cs_luma(r1, g1, b1)
+    lum2 = _cs_luma(r2, g2, b2)
+
+    def spec_fn(shape, mask, seed, sm):
+        return _spec_cs_duo_depth3d(shape, seed, sm, lum1, lum2, int(key_off))
+    return spec_fn
+
+
 def build_cs_duo_registry():
     """Build and return all 75 Color Shift Duo (spec_fn, paint_fn) tuples.
     Called by registry.py to populate MONOLITHIC_REGISTRY.
     """
     entries = {}
-    shared_spec = _make_colorshift_spec()
-    for key, c1_name, c2_name in CS_DUO_DEFS:
+    for idx, (key, c1_name, c2_name) in enumerate(CS_DUO_DEFS):
         r1, g1, b1 = _CS_COLORS[c1_name]
         r2, g2, b2 = _CS_COLORS[c2_name]
         paint_fn = _make_colorshift_paint_direct(r1, g1, b1, r2, g2, b2)
-        entries[key] = (shared_spec, paint_fn)
+        # 2026-06-20 rework: per-finish DEPTH/3D/MOTION spec that TRACES this duo's
+        # paint (was one identical flat `_make_colorshift_spec()` shared by all 75).
+        spec_fn = _make_cs_duo_spec_depth3d(r1, g1, b1, r2, g2, b2, key_off=idx + 1)
+        entries[key] = (spec_fn, paint_fn)
     return entries
 
 

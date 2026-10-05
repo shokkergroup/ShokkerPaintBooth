@@ -1,0 +1,768 @@
+{
+ "domain": "shokk_drop",
+ "version": 1,
+ "articles": [
+  {
+   "id": "shokk_drop.what_is_shokk_drop",
+   "title": "Shokk Drop: turn any picture into a finish",
+   "domain": "shokk_drop",
+   "summary": "Shokk Drop is a separate window where you drop in a picture (PNG, JPG, WebP, TGA or BMP) and it becomes a finish you can use in the booth, with a matching shine built for it.",
+   "what": "Shokk Drop is a side window of the booth, opened from the SHOKK DROP button in the top bar. You give it an image (or a paint plus your own shine maps) and pick what the image should become: a paint finish, a pattern, a shine-only overlay, an exact paint-and-shine set, or a whole-car template. The image is resized to fill the 2048 by 2048 flat car sheet. After you Commit, the result shows up in a SHOKK DROP group inside the booth, ready to put on a zone like any other finish. It is the quickest way to get your own artwork, a photo texture or a brand pattern onto the car with a proper metal and gloss behind it.",
+   "when": [
+    "You have a texture, pattern or artwork and want it as a finish you can reuse on any zone.",
+    "You want several shine variations of one picture to choose from (SHOKK THE WORLD).",
+    "You already have your own metallic, roughness and clearcoat maps and want them used exactly as you made them."
+   ],
+   "how": [
+    "In the booth top bar, click SHOKK DROP. A second window opens (click Guide in it for the built-in welcome steps).",
+    "Pick a Type on the left. If you are unsure, leave it on Paint finish.",
+    "Drop a picture (PNG, JPG, WebP, TGA or BMP) on the window, or choose a file. It is auto-sized to the 2048 square car sheet.",
+    "Look at the preview, then click Commit drop. Or click SHOKK THE WORLD to get 20 shine variations of the same picture and keep the ones you like.",
+    "Go back to the booth. Your drops are in the SHOKK DROP group, ready to put on a zone."
+   ],
+   "controls": [
+    {
+     "label": "Type",
+     "range": "Paint finish | Pattern | Spec overlay | Paint + spec maps (exact) | Car template (whole car)",
+     "default": "Paint finish",
+     "effect": "Decides what your image becomes. Paint finish: the image is the colour and a matching shine is made for it. Pattern: a repeating design that keeps its transparency. Spec overlay: shine only, no colour. Paint + spec maps: both supplied by you, used exactly. Car template: a whole-car paint and shine as one zone.",
+     "inv": "drop.userImportKind"
+    },
+    {
+     "label": "SHOKK THE WORLD",
+     "range": "button",
+     "default": "",
+     "effect": "Turns one picture into 20 shine variations: 8 standard, 7 that mix two styles and 5 extreme four-way blends. Keep your favourites.",
+     "inv": "drop.btnShokkTheWorld"
+    },
+    {
+     "label": "Commit drop",
+     "range": "button",
+     "default": "",
+     "effect": "Saves the previewed drop into your library so it appears in the booth.",
+     "inv": "drop.commit_drop.270"
+    }
+   ],
+   "tips": [
+    "Not sure what to choose? Paint finish with the default shine is the best starting point.",
+    "Shift while dropping an image runs SHOKK THE WORLD straight away.",
+    "No art handy? Use Try a sample in the window to run the real process on a built-in test picture.",
+    "Drops can be shared with friends as .spbdrop files; drag a friend's .spbdrop file onto the gallery to import it."
+   ],
+   "pitfalls": [
+    "The Shokk Drop window is separate from the booth. If your pop-up blocker stops it, the booth itself navigates to Shokk Drop; use the Paint Booth link at its top to come back.",
+    "Drops are finishes, not zones. After importing you still have to put the finish on a zone in the booth.",
+    "The file picker offers PNG, JPG, WebP, TGA and BMP."
+   ],
+   "related": [
+    "shokk_drop.shokk_library_files",
+    "shokk_drop.fracture_this_paint",
+    "spec.what_is_spec_map",
+    "zones.what_is_a_zone"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.header.shokk_drop",
+     "label": "Shokk Drop button"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.header.shokk_drop"
+   ],
+   "sources": [
+    "paint-booth-v2.html:1938",
+    "paint-booth-6-ui-boot.js:5362-5368",
+    "shokk-drop.html:137-175",
+    "shokk-drop.html:286-310",
+    "paint-booth-v2.html:1937",
+    "shokk-drop.html:179",
+    "shokk-drop.html:262"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "shokkdrop",
+    "drop an image",
+    "import an image as a finish",
+    "spbdrop",
+    "import my own texture",
+    "use my own picture as a finish",
+    "sample plate",
+    "turn a picture into a finish",
+    "image to finish",
+    "picture to finish"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Five things an image can become",
+     "body": "The Type list on the left decides it. Paint finish: the image is the colour and a matching shine is made for it. Pattern: a repeating design that keeps its transparency. Spec overlay: shine only, no colour. Paint + spec maps (exact): you supply both and they are used word for word. Car template (whole car): a whole-car paint and shine as one zone. When unsure, leave it on Paint finish with the default shine."
+    },
+    {
+     "heading": "Everything is fitted to the 2048 sheet",
+     "body": "Whatever you drop is auto-sized to the 2048 by 2048 flat car sheet, so you do not resize beforehand. The file picker offers PNG, JPG, WebP, TGA and BMP. After Commit drop the result appears in a SHOKK DROP group in the booth, and you still have to put that finish on a zone yourself: drops are finishes, not zones."
+    },
+    {
+     "heading": "SHOKK THE WORLD: twenty shines from one picture",
+     "body": "This button turns one picture into 20 shine variations: 8 standard ones, 7 that mix two styles and 5 extreme four-way blends. You keep the ones you like. Holding Shift while dropping an image runs it straight away."
+    },
+    {
+     "heading": "Sharing",
+     "body": "Drops can be shared as .spbdrop files. Drag a friend's .spbdrop file onto the gallery to import it."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Your own artwork as a finish",
+     "goal": "Turn a texture into a reusable finish",
+     "settings": {
+      "Type": "Paint finish",
+      "File": "A PNG, JPG, WebP, TGA or BMP",
+      "Next": "Look at the preview, then Commit drop"
+     },
+     "result": "A new entry in the SHOKK DROP group, ready to put on a zone like any other finish."
+    },
+    {
+     "title": "Pick the best shine for one picture",
+     "goal": "See many shine looks and keep a few",
+     "settings": {
+      "Drop the image": "Hold Shift while dropping, or click SHOKK THE WORLD",
+      "Variants": "20: 8 standard, 7 two-style mixes, 5 four-way blends",
+      "Keep": "Your favourites"
+     },
+     "result": "Your kept variants appear in the SHOKK DROP group."
+    },
+    {
+     "title": "Try it with no artwork",
+     "goal": "Learn the window safely",
+     "settings": {
+      "Button": "Try a sample"
+     },
+     "result": "The real process runs on a built-in test picture."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What file types can I drop?",
+     "a": "PNG, JPG, WebP, TGA or BMP."
+    },
+    {
+     "q": "Where do my drops go?",
+     "a": "Into a SHOKK DROP group in the booth, after you click Commit drop."
+    },
+    {
+     "q": "Does a drop paint my car by itself?",
+     "a": "No. A drop is a finish. Put it on a zone to see it on the car."
+    },
+    {
+     "q": "The Shokk Drop window did not open.",
+     "a": "A pop-up blocker may have stopped it. The booth then goes to Shokk Drop itself; use the Paint Booth link at its top to come back."
+    },
+    {
+     "q": "Can I share a drop?",
+     "a": "Yes, as a .spbdrop file. Drag a friend's file onto the gallery to import it."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You committed a drop but the car did not change",
+     "cause": "Drops are finishes, not zones",
+     "fix": "Go back to the booth, open the SHOKK DROP group and apply the finish to a zone."
+    },
+    {
+     "symptom": "The shine looks wrong for a pattern",
+     "cause": "The Type was set to Paint finish when you wanted a repeating stamp",
+     "fix": "Drop it again with Type set to Pattern, which keeps transparency."
+    }
+   ],
+   "protips": [
+    "Paint finish with the default shine is the best starting point. Switch Type only when you know what you want.",
+    "SHOKK THE WORLD is a fast way to learn what a shine does: compare the 20 variants side by side before you decide."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "shokk_drop.import_exact_set",
+   "title": "Importing your own paint and shine maps (exact)",
+   "domain": "shokk_drop",
+   "summary": "If you already made a paint picture and its metallic, roughness and clearcoat maps, Shokk Drop can import them as one exact finish with no automatic shine added.",
+   "what": "Besides turning one picture into a finish, Shokk Drop has an Import a set section for people who author their own shine. You give it the colour art plus a spec: either one combined RGB picture, or three separate black-and-white plates. In the combined picture red is metallic, green is roughness and blue is clearcoat. The set is saved word for word, with no automatic bake, so it renders exactly the way you made it. You can save it as a paint finish or as a pattern, and choose how strong the metal and clearcoat come out.",
+   "when": [
+    "You have your own M/R/CC maps from Photoshop or another tool.",
+    "You want the shine to be exactly yours instead of auto-generated.",
+    "You are matching a shine across several finishes and cannot afford surprises."
+   ],
+   "how": [
+    "In Shokk Drop, scroll to Import a set - exact finish.",
+    "Choose Save as: Paint finish or Pattern.",
+    "Add the colour art, then choose the spec form: No spec (auto-generate), FRACTURE the spec, Combined spec (one RGB image), or separate R, G and B plates.",
+    "Click Import set (exact finish), preview it, then Commit drop.",
+    "Find it in the SHOKK DROP group in the booth and put it on a zone."
+   ],
+   "controls": [
+    {
+     "label": "Save as",
+     "range": "Paint finish | Pattern",
+     "default": "Paint finish",
+     "effect": "Whether the imported art becomes a colour finish or a stamp-on pattern.",
+     "inv": "drop.userImportSetTarget"
+    },
+    {
+     "label": "Combined spec (RGB)",
+     "range": "one picture",
+     "default": "",
+     "effect": "One image where red is metallic, green is roughness and blue is clearcoat.",
+     "inv": "drop.userImportSetSpecCombined"
+    },
+    {
+     "label": "R / G / B plates",
+     "range": "three pictures",
+     "default": "",
+     "effect": "Separate Metallic, Roughness and Clearcoat plates, if you do not have a combined picture.",
+     "inv": "drop.userImportSetSpecR"
+    },
+    {
+     "label": "Import set (exact finish)",
+     "range": "button",
+     "default": "",
+     "effect": "Brings the set in exactly as authored, with no automatic shine bake.",
+     "inv": "drop.btnImportSet"
+    }
+   ],
+   "tips": [
+    "Remember blue is clearcoat: low blue values are a strong clearcoat (16 is maximum gloss in the game) and high blue is dull. Check the clearcoat article before painting the blue plate.",
+    "Leave a plate empty and Shokk fills it for you if the \"any plate left empty\" option is on."
+   ],
+   "pitfalls": [
+    "A combined spec is read as colour channels, so keep it a normal RGB picture; do not save it with a colour profile that shifts values.",
+    "An exact set will not be rescued by auto-shine: if your roughness plate is flat, the car will look flat."
+   ],
+   "related": [
+    "spec.channel_b_clearcoat",
+    "spec.what_is_spec_map",
+    "shokk_drop.what_is_shokk_drop"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "drop.btnImportSet"
+    }
+   ],
+   "figures": [],
+   "covers": [],
+   "sources": [
+    "shokk-drop.html:170-232",
+    "shokk-drop.html:302-311"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "import a set",
+    "exact finish import",
+    "paint plus spec maps",
+    "import my own spec maps",
+    "combined spec rgb",
+    "bring my own shine",
+    "import my own spec map",
+    "load my own spec tga",
+    "exact import",
+    "import paint and spec"
+   ],
+   "level": "pro",
+   "deep": [
+    {
+     "heading": "Two ways to supply the shine",
+     "body": "Give Shokk Drop your colour art plus a spec either as one combined RGB picture or as three separate black-and-white plates. In the combined picture red is metallic, green is roughness and blue is clearcoat. Saved word for word, it renders exactly the way you made it, with no automatic shine added."
+    },
+    {
+     "heading": "Reading the blue plate",
+     "body": "Blue is clearcoat with an inverted feel: low blue values are a strong clearcoat (16 is maximum gloss in the game) and high blue is dull. Check the clearcoat article before painting that plate."
+    },
+    {
+     "heading": "The spec options",
+     "body": "You can choose No spec (auto-generate), FRACTURE the spec, Combined spec (one RGB image), or separate R, G and B plates. If you leave a plate empty, Shokk fills it for you when the \"any plate left empty\" option is on. Save as chooses whether the set becomes a paint finish or a stamp-on pattern, and you can set how strong the metal and clearcoat come out."
+    },
+    {
+     "heading": "No rescue from auto-shine",
+     "body": "An exact set will not be rescued by automatic shine. If your roughness plate is flat, the car will look flat. A combined spec is read as colour channels, so keep it a normal RGB picture and avoid colour profiles that shift values."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Import a combined spec",
+     "goal": "Use your own Photoshop shine map exactly",
+     "settings": {
+      "Save as": "Paint finish",
+      "Colour art": "Your paint PNG",
+      "Spec form": "Combined spec (one RGB image)",
+      "Red": "Metallic",
+      "Green": "Roughness",
+      "Blue": "Clearcoat (16 = max gloss)"
+     },
+     "result": "The set renders exactly as authored. Find it in the SHOKK DROP group and put it on a zone."
+    },
+    {
+     "title": "Three plates, one left empty",
+     "goal": "Supply only metallic and roughness",
+     "settings": {
+      "Spec form": "Separate R, G and B plates",
+      "R plate": "Your metallic plate",
+      "G plate": "Your roughness plate",
+      "B plate": "Left empty with the fill option on"
+     },
+     "result": "Shokk fills the clearcoat plate for you; the other two are used as you drew them."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What do the three channels mean?",
+     "a": "Red is metallic, green is roughness and blue is clearcoat."
+    },
+    {
+     "q": "Why is my blue plate backwards?",
+     "a": "Low blue means strong clearcoat; 16 is maximum gloss and high values are dull."
+    },
+    {
+     "q": "Will Shokk improve my maps?",
+     "a": "No. An exact set is saved word for word."
+    },
+    {
+     "q": "Can I import it as a pattern?",
+     "a": "Yes. Choose Save as: Pattern instead of Paint finish."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The car looks flat after an exact import",
+     "cause": "The roughness plate is flat, and exact sets get no auto shine",
+     "fix": "Add variation to the green plate, or use the auto-generate spec form."
+    },
+    {
+     "symptom": "The shine values are slightly off",
+     "cause": "The combined spec was saved with a colour profile that shifts values",
+     "fix": "Save it as a plain RGB image with no profile conversion."
+    }
+   ],
+   "protips": [
+    "Paint the blue plate last and check it against the clearcoat scale. Mixed up clearcoat is the commonest mistake with hand-made specs."
+   ],
+   "screens": [
+    "spec_candy"
+   ]
+  },
+  {
+   "id": "shokk_drop.shokk_library_files",
+   "title": "The SHOKK library: saving and loading .shokk files",
+   "domain": "shokk_drop",
+   "summary": "A .shokk file saves your whole current set-up (zones and finishes) as a reusable recipe you can load later or share.",
+   "what": "SHOKK Library is the booth's saved-recipes shelf. SAVE SHOKK writes your current session as a .shokk file with a name, author, short description and tags. LOAD SHOKK FILE opens the library window, where you search, select a recipe, and open it. By default the library lives in your Documents folder under Shokker Paint Booth > SHOKK Library. Do not mix this up with Shokk Drop, which makes finishes out of pictures, or with a project file, which is your working session with its layers.",
+   "when": [
+    "You want to keep a finished look as a recipe and reuse it on another car.",
+    "You want to share a look with a friend.",
+    "You want to inspect what a saved recipe is made of as PNG channel files."
+   ],
+   "how": [
+    "Open the Zones panel More menu and click SAVE SHOKK.",
+    "Type a name (required). Add an author, a short description and any tags (for example Pearl, Candy, Neon, Dark, Pattern-Based, Multi-Layer, Full Scheme).",
+    "Leave Include paint on if you want the file to carry the paint picture and open the same on another machine, then click Save.",
+    "To use one later: More > LOAD SHOKK FILE, search by name, author or tag, select a file and click Open Selected (double-click also loads it)."
+   ],
+   "controls": [
+    {
+     "label": "Include paint",
+     "range": "on / off",
+     "default": "on",
+     "effect": "Packs the paint picture into the .shokk file so it is fully portable. The file is larger, but opens the same everywhere.",
+     "inv": "shokkIncludePaint"
+    },
+    {
+     "label": "Search",
+     "range": "text",
+     "default": "",
+     "effect": "Finds saved recipes by name, author or tag.",
+     "inv": "shokkSearchInput"
+    },
+    {
+     "label": "Channel PNG Export",
+     "range": "button",
+     "default": "",
+     "effect": "Extracts a selected recipe's paint and spec to PNG files for looking at in Photoshop. It does not make final iRacing files.",
+     "inv": "shokkPsExportBtn"
+    }
+   ],
+   "tips": [
+    "Put the car and the look in the name, for example \"Gulf stripes on 718 GT3\". You will search for it later.",
+    "Turn Include paint on when sending a file to anyone else."
+   ],
+   "pitfalls": [
+    "Channel PNG Export is for inspection only; it does not produce the iRacing TGA files.",
+    "A .shokk recipe is not your layered work. For layers use Save project."
+   ],
+   "related": [
+    "preview_render.saving_projects",
+    "zones.presets_templates",
+    "ui_shell.zones_more_menu",
+    "shokk_drop.what_is_shokk_drop"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.zones_more.save_shokk",
+     "label": "SAVE SHOKK button"
+    }
+   ],
+   "figures": [],
+   "covers": [],
+   "sources": [
+    "paint-booth-v2.html:2655-2670",
+    "paint-booth-v2.html:5005-5030",
+    "paint-booth-v2.html:5085",
+    "server.py:13778-13791",
+    "config.py:203-205"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "dot shokk",
+    "shokk library",
+    "shokker file",
+    "save a recipe",
+    "saved looks",
+    "save shokk file",
+    "shokk"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "What a .shokk file holds",
+     "body": "SAVE SHOKK writes your current session as a recipe: a name (required), an author, a short description and tags such as Pearl, Candy, Neon, Dark, Pattern-Based, Multi-Layer or Full Scheme. With Include paint on, the file also carries the paint picture, so it opens the same on another machine. The file is larger but fully portable."
+    },
+    {
+     "heading": "Finding and loading",
+     "body": "LOAD SHOKK FILE opens the library window. Search by name, author or tag, select a file and click Open Selected (a double-click also loads it). By default the library lives in your Documents folder under Shokker Paint Booth, then SHOKK Library."
+    },
+    {
+     "heading": "Not the same as a project or a drop",
+     "body": "A project file is your working session with its layers. A .shokk recipe is your zones and finishes, not your layered work: for layers use Save project. Shokk Drop is a different tool that makes finishes from pictures. Channel PNG Export extracts a recipe's paint and spec to PNG for inspection only and does not make the iRacing TGA files."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Save a look for later",
+     "goal": "Keep a finished scheme as a reusable recipe",
+     "settings": {
+      "Where": "Zones panel, More menu, SAVE SHOKK",
+      "Name": "Gulf stripes on 718 GT3",
+      "Tags": "Full Scheme",
+      "Include paint": "On"
+     },
+     "result": "A .shokk file in your SHOKK Library that you can search by name or tag."
+    },
+    {
+     "title": "Send a look to a friend",
+     "goal": "Make a file that opens the same elsewhere",
+     "settings": {
+      "Include paint": "On",
+      "Name": "Car and look in the name"
+     },
+     "result": "Your friend loads it with LOAD SHOKK FILE and sees the same result."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Where are my recipes stored?",
+     "a": "By default in Documents, under Shokker Paint Booth and SHOKK Library."
+    },
+    {
+     "q": "Does a .shokk file keep my layers?",
+     "a": "No. Use Save project for layers."
+    },
+    {
+     "q": "Is a .shokk the same as a Shokk Drop?",
+     "a": "No. A .shokk is a saved recipe of zones; a Shokk Drop is a finish made from a picture."
+    },
+    {
+     "q": "What does Channel PNG Export do?",
+     "a": "It writes a recipe's paint and spec to PNG files so you can look at them in Photoshop. It does not make iRacing files."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Your friend sees a different paint",
+     "cause": "Include paint was off when you saved",
+     "fix": "Save again with Include paint on."
+    },
+    {
+     "symptom": "You cannot find a recipe later",
+     "cause": "It was saved with a vague name and no tags",
+     "fix": "Put the car and look in the name and add tags."
+    }
+   ],
+   "protips": [
+    "Name recipes with the car first. A library of fifty files searches much faster when the car comes first in every name."
+   ],
+   "screens": [
+    "ui_template_library"
+   ]
+  },
+  {
+   "id": "shokk_drop.fracture_this_paint",
+   "title": "FRACTURE THIS PAINT: the one-click fractured look",
+   "domain": "shokk_drop",
+   "summary": "One button swaps the selected zone to the Soul Core Emerald finish, whose shine has the pink-flash fractured look the owner uses as a standard.",
+   "what": "FRACTURE THIS PAINT is a shortcut button in the top bar. It sets the finish of your selected zone (or the first zone, if none is selected) to Soul Core Emerald, which gives the broken-glass style shine with pink flashes. If the zone's colour is locked, the finish changes but your colour is kept, and the on-screen message says so. If there are no zones yet, it asks you to add one first. Think of it as a quick way to see how a fractured finish looks on your car, not a separate tool.",
+   "when": [
+    "You want a fast, striking fractured look on one part.",
+    "You are testing how a zone looks with a heavy fractured finish."
+   ],
+   "how": [
+    "Add a zone (and select the one you want to fracture).",
+    "Click FRACTURE THIS PAINT in the top bar.",
+    "Read the message: it names the zone it changed and says if your colour was kept because the lock is on.",
+    "Not happy? Use Undo (Ctrl+Z)."
+   ],
+   "controls": [
+    {
+     "label": "FRACTURE THIS PAINT",
+     "range": "button",
+     "default": "",
+     "effect": "Applies Soul Core Emerald to the selected zone.",
+     "inv": "btnFractureThisPaint"
+    }
+   ],
+   "tips": [
+    "Lock the colour first if you want to keep your own colour and take only the fractured shine."
+   ],
+   "pitfalls": [
+    "It changes only one zone. It does nothing and warns you if no zone exists.",
+    "It replaces that zone's current finish, so Undo is your way back."
+   ],
+   "related": [
+    "zones.what_is_a_zone",
+    "tools.undo_redo",
+    "finishes.colorshoxx_and_shift",
+    "shokk_drop.what_is_shokk_drop"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "btnFractureThisPaint"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "btnFractureThisPaint"
+   ],
+   "sources": [
+    "paint-booth-v2.html:1937-1940",
+    "paint-booth-2-state-zones.js:7808-7838"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "fractured look",
+    "soul core emerald",
+    "pink flash",
+    "fracture button",
+    "fractured paint",
+    "one click fractured"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "What exactly the button does",
+     "body": "FRACTURE THIS PAINT sets the finish of your selected zone (or the first zone if none is selected) to Soul Core Emerald, which gives the broken-glass style shine with pink flashes. If there are no zones yet it asks you to add one first. It changes only one zone and replaces that zone's current finish."
+    },
+    {
+     "heading": "Colour lock",
+     "body": "If the zone's colour is locked, the finish changes but your colour is kept, and the on-screen message says so. Lock the colour first if you want your own colour with only the fractured shine."
+    },
+    {
+     "heading": "Not a separate tool",
+     "body": "It is a quick way to see how a heavy fractured finish looks on your car, not a different engine. Undo (Ctrl+Z) brings the old finish back."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Fracture the hood only",
+     "goal": "Get a striking fractured hood fast",
+     "settings": {
+      "Select": "The hood zone",
+      "Colour": "Locked, if you want to keep your colour",
+      "Button": "FRACTURE THIS PAINT"
+     },
+     "result": "The hood takes the Soul Core Emerald shine and the message names the zone and says if your colour was kept."
+    },
+    {
+     "title": "Undo it",
+     "goal": "Go back after testing",
+     "settings": {
+      "Key": "Ctrl+Z"
+     },
+     "result": "The zone returns to its earlier finish."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which finish does it apply?",
+     "a": "Soul Core Emerald."
+    },
+    {
+     "q": "Does it change every zone?",
+     "a": "No, only the selected zone, or the first zone if none is selected."
+    },
+    {
+     "q": "Does it change my colour?",
+     "a": "Only if the colour is not locked. With the lock on, your colour is kept."
+    },
+    {
+     "q": "Nothing happened.",
+     "a": "There may be no zones yet. Add a zone first."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Your zone lost its previous finish",
+     "cause": "The button replaces the zone's current finish",
+     "fix": "Press Ctrl+Z to go back."
+    },
+    {
+     "symptom": "The colour changed too",
+     "cause": "The colour was not locked",
+     "fix": "Undo, lock the colour, and press the button again."
+    }
+   ],
+   "protips": [
+    "Use it as a quick preview of what a fractured look does to a panel, then switch to other fractured finishes from the picker if you want a different mood."
+   ],
+   "screens": [
+    "ui_top_bar_buttons"
+   ]
+  },
+  {
+   "id": "shokk_drop.tools_not_in_booth",
+   "title": "Image Forge, Auto Painter and other tools you may hear about",
+   "domain": "shokk_drop",
+   "summary": "A few tools in old notes are not part of the booth you installed: Auto Painter (Shokk Trace) is removed from the top bar, Image Forge is a builder-side guide, and the experimental tab is hidden.",
+   "what": "If you read old posts or notes you may see names that do not match what is on your screen. Auto Painter, also called Shokk Trace, had its top-bar button removed in this build because it was not working well; it is not something you can click. Image Forge is a drop-a-picture-into-a-folder way for the finish authors to replace or add finishes; its guide is a table of finish ids, and it is not a buyer feature. The experimental tab (Design It, Photo to Livery, Shokker-ize) is hidden in this build. What you do have for pictures is Shokk Drop and, in the chat helper, attaching a picture for colours to match.",
+   "when": [
+    "You saw a feature name in a video or old post and cannot find it.",
+    "You are choosing between Shokk Drop and a tool that does not exist in your booth."
+   ],
+   "how": [
+    "For your own picture as a finish, use Shokk Drop.",
+    "For a look similar to a photo, use the chat helper and attach the picture (see the match-a-photo recipe).",
+    "For the exact shine you authored, use Import a set in Shokk Drop."
+   ],
+   "controls": [],
+   "tips": [
+    "If you cannot find a button, check the top bar help and the window tour before assuming something is broken."
+   ],
+   "pitfalls": [
+    "Do not look for a Shokk Trace or Auto Painter button; there is not one in this build.",
+    "The Image Forge guide is for authors, and dropping files into its folder does nothing for a normal installed booth."
+   ],
+   "related": [
+    "shokk_drop.what_is_shokk_drop",
+    "recipes.match_photo",
+    "ui_shell.top_bar_buttons"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "sources": [
+    "paint-booth-v2.html:1979",
+    "paint-booth-v2.html:4727-4731",
+    "IMAGE_FORGE_GUIDE.html:14-19"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "image forge",
+    "shokk trace",
+    "auto painter",
+    "experimental features",
+    "design it",
+    "photo to livery",
+    "shokkerize"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Names you may see in old notes",
+     "body": "Auto Painter (also called Shokk Trace) had its top-bar button removed because it was not working well, so it is not something you can click. The experimental tab (Design It, Photo to Livery, Shokker-ize) is hidden in this build. Image Forge is a guide for finish authors: a table of finish ids for replacing or adding finishes by dropping pictures in a folder, not a buyer feature."
+    },
+    {
+     "heading": "What to use instead",
+     "body": "For your own picture as a finish, use Shokk Drop. For a look similar to a photo, use the chat helper and attach the picture for colours to match (see the match-a-photo recipe). For a shine you authored, use Import a set in Shokk Drop."
+    },
+    {
+     "heading": "If you cannot find a button",
+     "body": "Check the top-bar help and the window tour before assuming something is broken. The feature may simply not be part of this build."
+    }
+   ],
+   "examples": [
+    {
+     "title": "You saw Shokk Trace in a video",
+     "goal": "Get a similar result with what you have",
+     "settings": {
+      "Use": "Chat helper with the picture attached, or Shokk Drop",
+      "Not": "A Shokk Trace or Auto Painter button"
+     },
+     "result": "You get a colour-matched livery or a finish from your picture."
+    },
+    {
+     "title": "Your own exact shine",
+     "goal": "Use maps you built yourself",
+     "settings": {
+      "Tool": "Shokk Drop, Import a set - exact finish"
+     },
+     "result": "Your maps are used as authored."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Where did Auto Painter go?",
+     "a": "Its button was removed from the top bar in this build."
+    },
+    {
+     "q": "Can I use Image Forge?",
+     "a": "It is a guide for authors. Dropping files into its folder does nothing for a normal installed booth."
+    },
+    {
+     "q": "Where are Design It and Photo to Livery?",
+     "a": "The experimental tab is hidden in this build."
+    },
+    {
+     "q": "What is the closest thing for photos?",
+     "a": "Attach the picture in the chat helper and ask for colours to match it, or turn it into a finish with Shokk Drop."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You hunt through menus for a button from a video",
+     "cause": "The video shows an older or different build",
+     "fix": "Look in Shokk Drop or the chat helper for the same job."
+    },
+    {
+     "symptom": "You drop images into the Image Forge folder and nothing changes",
+     "cause": "It is not a buyer feature",
+     "fix": "Use Shokk Drop to bring in pictures."
+    }
+   ],
+   "protips": [
+    "If a tutorial or post names a tool you cannot find, search the Encyclopedia for what it did, not what it was called. The job usually has a current home."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  }
+ ]
+}

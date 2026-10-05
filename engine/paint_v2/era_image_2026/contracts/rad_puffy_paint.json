@@ -1,0 +1,120 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_puffy_paint",
+  "display_name": "Radical: Puffy Paint",
+  "promise": "Tiny raised pink, teal and yellow paint curls on violet cotton.",
+  "carrier_grammar": "Approved pink raised resin curls, teal rubber curls and yellow puffy dots retain their fitted cubic silhouettes and native placement over violet cotton. Fine substrate threads, paint shoulders, convex pigment centers and pinhole pores own distinct physical states.",
+  "spec_grammar": "Cotton-effect substrate is rough matte dielectric; teal rubber-effect curls use satin-to-matte coating roughness; pink/yellow resin profiles use per-component normalized distance for edge-to-center roughness and coat roughness. B0 means no coat; B16 means maximum coat gloss, B255 dull. Pinhole pits raise roughness and remove coat; no chrome is invented to satisfy a metric.",
+  "reference_physics": {
+    "mechanism": "Approved pink raised resin curls, teal rubber curls and yellow puffy dots retain their fitted cubic silhouettes and native placement over violet cotton. Fine substrate threads, paint shoulders, convex pigment centers and pinhole pores own distinct physical states. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_puffy_paint.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "cotton thread",
+      "role": "Actual shared paint and spec geometry: cotton thread"
+    },
+    {
+      "name": "pink resin curl",
+      "role": "Actual shared paint and spec geometry: pink resin curl"
+    },
+    {
+      "name": "teal rubber curl",
+      "role": "Actual shared paint and spec geometry: teal rubber curl"
+    },
+    {
+      "name": "yellow puffy dot",
+      "role": "Actual shared paint and spec geometry: yellow puffy dot"
+    },
+    {
+      "name": "convex pigment center",
+      "role": "Actual shared paint and spec geometry: convex pigment center"
+    },
+    {
+      "name": "pinhole pore",
+      "role": "Actual shared paint and spec geometry: pinhole pore"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "cotton thread",
+      "pink resin curl",
+      "teal rubber curl",
+      "yellow puffy dot",
+      "convex pigment center",
+      "pinhole pore"
+    ],
+    "R": [
+      "cotton thread",
+      "pink resin curl",
+      "teal rubber curl",
+      "yellow puffy dot",
+      "convex pigment center",
+      "pinhole pore"
+    ],
+    "Cc": [
+      "cotton thread",
+      "pink resin curl",
+      "teal rubber curl",
+      "yellow puffy dot",
+      "convex pigment center",
+      "pinhole pore"
+    ]
+  },
+  "material_tiers": [
+    "matte cotton thread",
+    "compressed cotton crossing",
+    "satin rubber center",
+    "rough rubber shoulder",
+    "gloss resin center",
+    "satin resin shoulder",
+    "uncoated pinhole pit"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_bezel_black",
+      "difference": "This finish uses Thousands of minute domed fabric-paint dots, short squeezed comma curls, thin little squiggles in pink teal yellow on violet cotton. Visibly rounded raised rubbery paint with fine bubble pinholes, soft cloth between. All motifs microscopic, no letters, hearts or large cartoon forms.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_trapper_sticker",
+      "difference": "This finish uses Thousands of minute domed fabric-paint dots, short squeezed comma curls, thin little squiggles in pink teal yellow on violet cotton. Visibly rounded raised rubbery paint with fine bubble pinholes, soft cloth between. All motifs microscopic, no letters, hearts or large cartoon forms.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "cotton thread is visible in the authored geometry",
+      "pink resin curl is visible in the authored geometry",
+      "teal rubber curl is visible in the authored geometry",
+      "yellow puffy dot is visible in the authored geometry",
+      "convex pigment center is visible in the authored geometry",
+      "pinhole pore is visible in the authored geometry"
+    ],
+    "source_sha256": "acd4847d29b9ebc928b01d228af3aa500fc4bcc9dde65345770e39b2d4aff3c6",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_puffy_paint-authored-Approved pink raised resin curls, teal rubber curls and yellow puffy dots retain their fitted cubic silhouettes and native placement over violet cotton. Fine substrate threads, paint shoulders, convex pigment centers and pinhole pores own distinct physical states.",
+  "spec_key": "rad_puffy_paint-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 69.8,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "db4effe86bb6028f66a9a97ce950d80981cb39c16d6a44cb7ee790c271b15788"
+}

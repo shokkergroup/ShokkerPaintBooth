@@ -1,0 +1,12 @@
+{
+  "group": "Exotic Metal",
+  "ticks": [
+    {
+      "tick": 1,
+      "started_at": "2026-05-27T01:02:00.000Z",
+      "ended_at": "2026-05-27T01:03:00.000Z",
+      "bases": ["frozen", "anodized_exotic", "chromaflair"],
+      "note": "Owner REBUILD — icy white frozen, metallic anodized_exotic spec, ChromaFlair palette fix"
+    }
+  ]
+}

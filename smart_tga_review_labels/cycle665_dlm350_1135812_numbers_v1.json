@@ -1,0 +1,4 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_1135812.tga","inspection_records":"_smart_tga_runs/cycle665_dlm_semantic_number_coverage/inspection_records.json","review_scope":"Cycle 665 source and complete owner/component/group sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[284,237,169,99],"target_layer":"numbers","label":"true_upper_number","family_id":"number:10"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[274,717,185,97],"target_layer":"numbers","label":"true_lower_number","family_id":"number:10"}
+]}

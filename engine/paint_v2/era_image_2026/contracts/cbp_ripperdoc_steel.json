@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_ripperdoc_steel",
+  "display_name": "Chrome: Laser-Etched Alloy",
+  "promise": "Magenta and teal etched microgrooves with copper oxide dots and bright surgical edges.",
+  "carrier_grammar": "Magenta and teal etched microgrooves with copper oxide dots and bright surgical edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for etched alloy faces, teal microgrooves, copper oxide dots, polished cross cuts, black etched pits, violet heat halos is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Magenta and teal etched microgrooves with copper oxide dots and bright surgical edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_ripperdoc_steel.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "etched alloy faces",
+      "role": "Actual shared paint and spec geometry: etched alloy faces"
+    },
+    {
+      "name": "teal microgrooves",
+      "role": "Actual shared paint and spec geometry: teal microgrooves"
+    },
+    {
+      "name": "copper oxide dots",
+      "role": "Actual shared paint and spec geometry: copper oxide dots"
+    },
+    {
+      "name": "polished cross cuts",
+      "role": "Actual shared paint and spec geometry: polished cross cuts"
+    },
+    {
+      "name": "black etched pits",
+      "role": "Actual shared paint and spec geometry: black etched pits"
+    },
+    {
+      "name": "violet heat halos",
+      "role": "Actual shared paint and spec geometry: violet heat halos"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "etched alloy faces",
+      "teal microgrooves",
+      "copper oxide dots",
+      "polished cross cuts",
+      "black etched pits",
+      "violet heat halos"
+    ],
+    "R": [
+      "etched alloy faces",
+      "teal microgrooves",
+      "copper oxide dots",
+      "polished cross cuts",
+      "black etched pits",
+      "violet heat halos"
+    ],
+    "Cc": [
+      "etched alloy faces",
+      "teal microgrooves",
+      "copper oxide dots",
+      "polished cross cuts",
+      "black etched pits",
+      "violet heat halos"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_scrap_weld",
+      "difference": "This finish uses Dense very short magenta teal laser etched microgroove chevrons in surgical alloy, copper oxide pin dots, pale polished cross cuts, black etched pits and violet heat halos. Colorful thin-film oxide dominates, no gray slabs, no tools or giant circuit board.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_gunmetal_aug",
+      "difference": "This finish uses Dense very short magenta teal laser etched microgroove chevrons in surgical alloy, copper oxide pin dots, pale polished cross cuts, black etched pits and violet heat halos. Colorful thin-film oxide dominates, no gray slabs, no tools or giant circuit board.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "etched alloy faces is visible in the authored geometry",
+      "teal microgrooves is visible in the authored geometry",
+      "copper oxide dots is visible in the authored geometry",
+      "polished cross cuts is visible in the authored geometry",
+      "black etched pits is visible in the authored geometry",
+      "violet heat halos is visible in the authored geometry"
+    ],
+    "source_sha256": "6637ad0873d42dc28efb79fab2aba7c6e6d060e368593a58698577a8e69744de",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_ripperdoc_steel-authored-Magenta and teal etched microgrooves with copper oxide dots and bright surgical edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_ripperdoc_steel-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 81.5,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "a929781ddebcc7b15e254edc5fcc7a2dbdded2d84c07119b8f603b0d87c3a79f"
+}

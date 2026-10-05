@@ -1,0 +1,1206 @@
+{
+"halftone_print": [
+"Legacy collection",
+"Artistic & Abstract"
+],
+"spec_carbon_tow_spread": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_kevlar_blue_hybrid": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_nomex_honeycomb_core": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_prepreg_resin_bleed": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_carbon_2x2_twill": [
+"Legacy collection",
+"Carbon & Composite Weave"
+],
+"spec_carbon_3k_fine": [
+"Legacy collection",
+"Carbon & Composite Weave"
+],
+"spec_carbon_forged": [
+"Legacy collection",
+"Carbon & Composite Weave"
+],
+"spec_carbon_wet_layup": [
+"Legacy collection",
+"Carbon & Composite Weave"
+],
+"spec_expanded_metal": [
+"Legacy collection",
+"Carbon & Composite Weave"
+],
+"spec_fiberglass_chopped": [
+"Legacy collection",
+"Carbon & Composite Weave"
+],
+"spec_kevlar_weave": [
+"Legacy collection",
+"Carbon & Composite Weave"
+],
+"spec_mesh_perforated": [
+"Legacy collection",
+"Carbon & Composite Weave"
+],
+"cc_overspray_halo": [
+"Legacy collection",
+"Clearcoat & Coating"
+],
+"cc_panel_fade": [
+"Legacy collection",
+"Clearcoat & Coating"
+],
+"cc_panel_pool": [
+"Legacy collection",
+"Clearcoat & Coating"
+],
+"cc_wet_zone": [
+"Legacy collection",
+"Clearcoat & Coating"
+],
+"spov2_crazed_porcelain": [
+"Surface library",
+"Crack & Weather"
+],
+"spov2_crystal_front": [
+"Surface library",
+"Crystal & Mineral"
+],
+"spec_abalone_crack_inlay": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"croc_delta_armor": [
+"Legacy collection",
+"Dangerous Animals"
+],
+"hornet_swarm_static": [
+"Legacy collection",
+"Dangerous Animals"
+],
+"jellyshock_drift": [
+"Legacy collection",
+"Dangerous Animals"
+],
+"king_cobra_coil": [
+"Legacy collection",
+"Dangerous Animals"
+],
+"panther_shadow_claw": [
+"Legacy collection",
+"Dangerous Animals"
+],
+"piranha_frenzy_current": [
+"Legacy collection",
+"Dangerous Animals"
+],
+"scorpion_ember_hex": [
+"Legacy collection",
+"Dangerous Animals"
+],
+"sharkbite_riptide": [
+"Legacy collection",
+"Dangerous Animals"
+],
+"tiger_fang_fracture": [
+"Legacy collection",
+"Dangerous Animals"
+],
+"widow_web_venom": [
+"Legacy collection",
+"Dangerous Animals"
+],
+"brushed_cross": [
+"Legacy collection",
+"Directional Metal & Brush"
+],
+"brushed_diagonal": [
+"Legacy collection",
+"Directional Metal & Brush"
+],
+"brushed_linear_cool": [
+"Legacy collection",
+"Directional Metal & Brush"
+],
+"airbrush_gradient_bloom": [
+"Legacy collection",
+"Engine-Turn & Machined"
+],
+"spec_anodized_hex_fade": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_circuit_solder_mask": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_guilloche_watch_dial": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_laser_etched_microbar": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spov2_security_guilloche": [
+"Surface library",
+"Engraved & Ornamental"
+],
+"spec_chameleon_flake": [
+"Legacy collection",
+"Exotic & Kinetic"
+],
+"spec_damascus_steel_spec": [
+"Legacy collection",
+"Exotic & Kinetic"
+],
+"spec_liquid_metal": [
+"Legacy collection",
+"Exotic & Kinetic"
+],
+"spov2_aperiodic_alloy": [
+"Surface library",
+"Experimental Structures"
+],
+"ember_field": [
+"Legacy collection",
+"Fire & Heat"
+],
+"spec_burnt_clutch_dust": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_exhaust_soot_gradient": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_flame_lapped_clearcoat": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_titanium_heat_fishscale": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"diamond_lattice": [
+"Legacy collection",
+"Precision & Guilloché"
+],
+"brushed_sparkle": [
+"Legacy collection",
+"Gothic & Horror"
+],
+"crypt_brick": [
+"Legacy collection",
+"Gothic & Horror"
+],
+"ouija_mystic": [
+"Legacy collection",
+"Gothic & Horror"
+],
+"samhain_ritual": [
+"Legacy collection",
+"Gothic & Horror"
+],
+"holo_prism_shift": [
+"Legacy collection",
+"Holographic & Color-Shift"
+],
+"spec_lfr_anisotropic_drift": [
+"Legacy collection",
+"Let Freedom Ring"
+],
+"spec_lfr_brocade_relief": [
+"Legacy collection",
+"Let Freedom Ring"
+],
+"spec_lfr_canyon_bevel": [
+"Legacy collection",
+"Let Freedom Ring"
+],
+"spec_lfr_capitol_veins": [
+"Legacy collection",
+"Let Freedom Ring"
+],
+"spec_lfr_corridor_sheen": [
+"Legacy collection",
+"Let Freedom Ring"
+],
+"spec_lfr_firework_radial": [
+"Legacy collection",
+"Let Freedom Ring"
+],
+"spec_lfr_liberty_colorflip": [
+"Legacy collection",
+"Let Freedom Ring"
+],
+"spec_lfr_sparkler_embers": [
+"Legacy collection",
+"Let Freedom Ring"
+],
+"spec_lfr_starfield_scatter": [
+"Legacy collection",
+"Let Freedom Ring"
+],
+"spec_lfr_torch_flicker": [
+"Legacy collection",
+"Let Freedom Ring"
+],
+"spec_fuel_stain_evap_ring": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_polished_swirl_compound": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spov2_tidal_meniscus": [
+"Surface library",
+"Liquid & Coating"
+],
+"spov2_toolpath_reversal": [
+"Surface library",
+"Machined & Brushed"
+],
+"spov2_weld_pool_archive": [
+"Surface library",
+"Machined & Brushed"
+],
+"spec_beadlock_bolt_circle": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_ceramic_brake_sinter": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_knurled_socket_grip": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_louvered_aluminum_slot": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_waterjet_cut_edge": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_weld_stack_rainbow": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spov2_acanthus_scrolls": [
+"Surface library",
+"Engraved & Ornamental"
+],
+"spov2_aero_vortex_tabs": [
+"Surface library",
+"Track & Motorsport"
+],
+"spov2_alligator_coat": [
+"Surface library",
+"Crack & Weather"
+],
+"spov2_art_deco_fans": [
+"Surface library",
+"Engraved & Ornamental"
+],
+"spov2_auxetic_hinges": [
+"Surface library",
+"Experimental Structures"
+],
+"spov2_barite_petals": [
+"Surface library",
+"Crystal & Mineral"
+],
+"spov2_barleycorn_cuts": [
+"Surface library",
+"Engraved & Ornamental"
+],
+"spov2_basalt_prisms": [
+"Surface library",
+"Crystal & Mineral"
+],
+"spov2_botryoidal_buds": [
+"Surface library",
+"Crystal & Mineral"
+],
+"spov2_brake_rotor_slots": [
+"Surface library",
+"Track & Motorsport"
+],
+"spov2_capillary_rivulets": [
+"Surface library",
+"Liquid & Coating"
+],
+"spov2_carbon_brake_grain": [
+"Surface library",
+"Track & Motorsport"
+],
+"spov2_catch_fence_clips": [
+"Surface library",
+"Track & Motorsport"
+],
+"spov2_cell_division": [
+"Surface library",
+"Skin & Cellular"
+],
+"spov2_celtic_triskeles": [
+"Surface library",
+"Engraved & Ornamental"
+],
+"spov2_chain_stitch": [
+"Surface library",
+"Weave & Composite"
+],
+"spov2_checkered_microfoil": [
+"Surface library",
+"Track & Motorsport"
+],
+"spov2_chisel_ledger": [
+"Surface library",
+"Machined & Brushed"
+],
+"spov2_chopped_tow": [
+"Surface library",
+"Weave & Composite"
+],
+"spov2_coded_apertures": [
+"Surface library",
+"Optical & Interference"
+],
+"spov2_conchoidal_obsidian": [
+"Surface library",
+"Crystal & Mineral"
+],
+"spov2_coral_polyps": [
+"Surface library",
+"Skin & Cellular"
+],
+"spov2_corrosion_blisters": [
+"Surface library",
+"Crack & Weather"
+],
+"spov2_creased_foil": [
+"Surface library",
+"Crack & Weather"
+],
+"spov2_crocodile_scutes": [
+"Surface library",
+"Skin & Cellular"
+],
+"spov2_crossed_hone": [
+"Surface library",
+"Machined & Brushed"
+],
+"spov2_damascene_inlay": [
+"Surface library",
+"Engraved & Ornamental"
+],
+"spov2_dendrite_fern": [
+"Surface library",
+"Crystal & Mineral"
+],
+"spov2_dew_lenses": [
+"Surface library",
+"Liquid & Coating"
+],
+"spov2_diffractive_hatch": [
+"Surface library",
+"Optical & Interference"
+],
+"spov2_drying_fronts": [
+"Surface library",
+"Liquid & Coating"
+],
+"spov2_engine_turn_medallions": [
+"Surface library",
+"Engraved & Ornamental"
+],
+"spov2_etched_gear": [
+"Surface library",
+"Machined & Brushed"
+],
+"spov2_fan_cut_lathe": [
+"Surface library",
+"Machined & Brushed"
+],
+"spov2_feather_barbules": [
+"Surface library",
+"Skin & Cellular"
+],
+"spov2_fisheye_crater": [
+"Surface library",
+"Liquid & Coating"
+],
+"spov2_florentine_hatch": [
+"Surface library",
+"Engraved & Ornamental"
+],
+"spov2_foam_raft": [
+"Surface library",
+"Liquid & Coating"
+],
+"spov2_foil_scarf": [
+"Surface library",
+"Machined & Brushed"
+],
+"spov2_fractal_seeds": [
+"Surface library",
+"Experimental Structures"
+],
+"spov2_freeze_thaw": [
+"Surface library",
+"Crack & Weather"
+],
+"spov2_fresnel_segments": [
+"Surface library",
+"Optical & Interference"
+],
+"spov2_grid_stencil_mesh": [
+"Surface library",
+"Track & Motorsport"
+],
+"spov2_gyroid_windows": [
+"Surface library",
+"Experimental Structures"
+],
+"spov2_hilbert_relays": [
+"Surface library",
+"Experimental Structures"
+],
+"spov2_hyperbolic_scales": [
+"Surface library",
+"Experimental Structures"
+],
+"spov2_ink_reticulation": [
+"Surface library",
+"Liquid & Coating"
+],
+"spov2_kagome_bridges": [
+"Surface library",
+"Experimental Structures"
+],
+"spov2_knitted_loop": [
+"Surface library",
+"Weave & Composite"
+],
+"spov2_lapped_chevrons": [
+"Surface library",
+"Machined & Brushed"
+],
+"spov2_laurel_links": [
+"Surface library",
+"Engraved & Ornamental"
+],
+"spov2_leaf_stomata": [
+"Surface library",
+"Skin & Cellular"
+],
+"spov2_leno_lock": [
+"Surface library",
+"Weave & Composite"
+],
+"spov2_marangoni_fans": [
+"Surface library",
+"Liquid & Coating"
+],
+"spov2_mica_books": [
+"Surface library",
+"Crystal & Mineral"
+],
+"spov2_micro_broach": [
+"Surface library",
+"Machined & Brushed"
+],
+"spov2_micro_cartouches": [
+"Surface library",
+"Engraved & Ornamental"
+],
+"spov2_micro_chipping": [
+"Surface library",
+"Crack & Weather"
+],
+"spov2_moire_packets": [
+"Surface library",
+"Optical & Interference"
+],
+"spov2_mud_crackle": [
+"Surface library",
+"Crack & Weather"
+],
+"spov2_mushroom_gills": [
+"Surface library",
+"Skin & Cellular"
+],
+"spov2_needle_felt": [
+"Surface library",
+"Weave & Composite"
+],
+"spov2_optic_pinwheels": [
+"Surface library",
+"Optical & Interference"
+],
+"spov2_orange_peel_film": [
+"Surface library",
+"Liquid & Coating"
+],
+"spov2_oxide_pitting": [
+"Surface library",
+"Crack & Weather"
+],
+"spov2_pangolin_shingles": [
+"Surface library",
+"Skin & Cellular"
+],
+"spov2_peen_crater_cluster": [
+"Surface library",
+"Machined & Brushed"
+],
+"spov2_pit_crew_grip": [
+"Surface library",
+"Track & Motorsport"
+],
+"spov2_ply_delamination": [
+"Surface library",
+"Weave & Composite"
+],
+"spov2_polar_starlets": [
+"Surface library",
+"Optical & Interference"
+],
+"spov2_polish_comet": [
+"Surface library",
+"Machined & Brushed"
+],
+"spov2_prism_herringbone": [
+"Surface library",
+"Optical & Interference"
+],
+"spov2_pyrite_cuboids": [
+"Surface library",
+"Crystal & Mineral"
+],
+"spov2_quartz_clusters": [
+"Surface library",
+"Crystal & Mineral"
+],
+"spov2_quasicrystal_fans": [
+"Surface library",
+"Experimental Structures"
+],
+"spov2_reaction_maze": [
+"Surface library",
+"Experimental Structures"
+],
+"spov2_reflector_triplets": [
+"Surface library",
+"Optical & Interference"
+],
+"spov2_resin_fray": [
+"Surface library",
+"Weave & Composite"
+],
+"spov2_retinal_mosaic": [
+"Surface library",
+"Skin & Cellular"
+],
+"spov2_rheology_combs": [
+"Surface library",
+"Liquid & Coating"
+],
+"spov2_rivet_safety_wire": [
+"Surface library",
+"Track & Motorsport"
+],
+"spov2_rope_filigree": [
+"Surface library",
+"Engraved & Ornamental"
+],
+"spov2_rumble_strip_ticks": [
+"Surface library",
+"Track & Motorsport"
+],
+"spov2_salt_hoppers": [
+"Surface library",
+"Crystal & Mineral"
+],
+"spov2_satin_float": [
+"Surface library",
+"Weave & Composite"
+],
+"spov2_scuffed_enamel": [
+"Surface library",
+"Crack & Weather"
+],
+"spov2_seigaiha_etching": [
+"Surface library",
+"Engraved & Ornamental"
+],
+"spov2_slotted_knurl": [
+"Surface library",
+"Machined & Brushed"
+],
+"spov2_spacer_mesh": [
+"Surface library",
+"Weave & Composite"
+],
+"spov2_spall_islands": [
+"Surface library",
+"Crack & Weather"
+],
+"spov2_spherulite_frost": [
+"Surface library",
+"Crystal & Mineral"
+],
+"spov2_split_lenslets": [
+"Surface library",
+"Optical & Interference"
+],
+"spov2_spray_coalescence": [
+"Surface library",
+"Liquid & Coating"
+],
+"spov2_stitched_hex": [
+"Surface library",
+"Weave & Composite"
+],
+"spov2_stress_star_crazing": [
+"Surface library",
+"Crack & Weather"
+],
+"spov2_telemetry_dash": [
+"Surface library",
+"Track & Motorsport"
+],
+"spov2_tensegrity_cells": [
+"Surface library",
+"Experimental Structures"
+],
+"spov2_tire_sipes": [
+"Surface library",
+"Track & Motorsport"
+],
+"spov2_tourmaline_spindles": [
+"Surface library",
+"Crystal & Mineral"
+],
+"spov2_trabecular_pores": [
+"Surface library",
+"Skin & Cellular"
+],
+"spov2_triaxial_basket": [
+"Surface library",
+"Weave & Composite"
+],
+"spov2_truchet_switchyard": [
+"Surface library",
+"Experimental Structures"
+],
+"spov2_varnish_lace": [
+"Surface library",
+"Liquid & Coating"
+],
+"spov2_voronoi_kites": [
+"Surface library",
+"Experimental Structures"
+],
+"spov2_waveguide_meander": [
+"Surface library",
+"Optical & Interference"
+],
+"spov2_wing_scale_sockets": [
+"Surface library",
+"Skin & Cellular"
+],
+"spov2_wrinkled_lacquer": [
+"Surface library",
+"Crack & Weather"
+],
+"spov2_zone_plate_shards": [
+"Surface library",
+"Optical & Interference"
+],
+"galaxy_swirl": [
+"Legacy collection",
+"Sparkle & Micro-Metal"
+],
+"spec_anisotropic_radial": [
+"Legacy collection",
+"Directional Metal & Brush"
+],
+"spec_chromatic_aberration": [
+"Legacy collection",
+"Optical & Interference"
+],
+"spec_diffraction_grating_cd": [
+"Legacy collection",
+"Optical & Interference"
+],
+"spec_fresnel_gradient": [
+"Legacy collection",
+"Optical & Interference"
+],
+"spec_iridescent_film": [
+"Legacy collection",
+"Optical & Interference"
+],
+"spec_retroreflective": [
+"Legacy collection",
+"Optical & Interference"
+],
+"spov2_paired_facet_lattice": [
+"Surface library",
+"Optical & Interference"
+],
+"wave_ripple": [
+"Legacy collection",
+"Optical & Interference"
+],
+"lava_crack": [
+"Legacy collection",
+"Organic & Natural"
+],
+"spec_fish_scales": [
+"Legacy collection",
+"Organic & Natural"
+],
+"spec_snake_scales": [
+"Legacy collection",
+"Organic & Natural"
+],
+"spec_terrain_erosion": [
+"Legacy collection",
+"Organic & Natural"
+],
+"edm_dimple": [
+"Legacy collection",
+"Precision & Guilloché"
+],
+"guilloche_moire_eng": [
+"Legacy collection",
+"Precision & Guilloché"
+],
+"guilloche_sunray": [
+"Legacy collection",
+"Precision & Guilloché"
+],
+"guilloche_waves": [
+"Legacy collection",
+"Precision & Guilloché"
+],
+"knurl_diamond": [
+"Legacy collection",
+"Precision & Guilloché"
+],
+"spec_alligator_scute_plate": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_armadillo_band_armor": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_mantis_shrimp_shell": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_sharkskin_riblet": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"alligator_hide": [
+"Legacy collection",
+"Predator Skins"
+],
+"dragon_scale_macro": [
+"Legacy collection",
+"Predator Skins"
+],
+"jaguar_rosette": [
+"Legacy collection",
+"Predator Skins"
+],
+"pangolin_armor": [
+"Legacy collection",
+"Predator Skins"
+],
+"raptor_feather": [
+"Legacy collection",
+"Predator Skins"
+],
+"shark_denticle": [
+"Legacy collection",
+"Predator Skins"
+],
+"snake_scale_diamond": [
+"Legacy collection",
+"Predator Skins"
+],
+"sparkle_shattered": [
+"Legacy collection",
+"Mechanical & Industrial"
+],
+"viper_pit_hex": [
+"Legacy collection",
+"Predator Skins"
+],
+"spec_braided_hose_sleeve": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_rain_bead_aero": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_rubber_tire_cord": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_tar_snake_sealant": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"checker_flag_subtle": [
+"Legacy collection",
+"Racing & Livery Story"
+],
+"heat_discoloration": [
+"Legacy collection",
+"Racing & Livery Story"
+],
+"salt_spray_corrosion": [
+"Legacy collection",
+"Weather, Wear & Track"
+],
+"vinyl_stretched": [
+"Legacy collection",
+"Racing & Livery Story"
+],
+"bonsai_drift_circuit": [
+"Legacy collection",
+"Rising Sun Spec"
+],
+"fuji_frost_crest": [
+"Legacy collection",
+"Rising Sun Spec"
+],
+"kintsugi_rift": [
+"Legacy collection",
+"Rising Sun Spec"
+],
+"kyoto_lantern_filigree": [
+"Legacy collection",
+"Rising Sun Spec"
+],
+"oni_veil_mosaic": [
+"Legacy collection",
+"Rising Sun Spec"
+],
+"rising_sun_prismwave": [
+"Legacy collection",
+"Rising Sun Spec"
+],
+"sakura_static": [
+"Legacy collection",
+"Rising Sun Spec"
+],
+"seigaiha_chrome": [
+"Legacy collection",
+"Rising Sun Spec"
+],
+"shogun_scale_brocade": [
+"Legacy collection",
+"Rising Sun Spec"
+],
+"spov2_denticle_armor": [
+"Surface library",
+"Skin & Cellular"
+],
+"spov2_diatom_sieve": [
+"Surface library",
+"Skin & Cellular"
+],
+"spec_acid_carbon_mesh": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_black_emboss_mandala": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_blue_polygon_shatter": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_burn_hole_mesh": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_chrome_oval_chain": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_ember_circuit_maze": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_graphite_cross_lattice": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_green_plasma_vein": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_gunmetal_geo_tessellation": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_hazard_chevron_weave": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_holographic_oil_circuit": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_ice_facet_shatter": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_lime_pixel_confetti": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_marble_flow_pearl": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_neon_fracture_net": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_noir_houndstooth_star": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_pink_checker_carbon": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_psychedelic_floral_spin": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_red_herringbone_heat": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_shadow_diamond_mesh": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_talavera_tile_riot": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_teal_hex_haze": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_terracotta_ceramic_grid": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"spec_tokyo_script_textile": [
+"Legacy collection",
+"Source Pattern Plates"
+],
+"anodized_rainbow": [
+"Legacy collection",
+"Optical & Interference"
+],
+"gold_flake": [
+"Legacy collection",
+"Sparkle & Micro-Metal"
+],
+"holographic_flake": [
+"Legacy collection",
+"Sparkle & Micro-Metal"
+],
+"metallic_sand": [
+"Legacy collection",
+"Sparkle & Micro-Metal"
+],
+"mother_of_pearl_inlay": [
+"Legacy collection",
+"Sparkle & Micro-Metal"
+],
+"pearl_micro": [
+"Legacy collection",
+"Sparkle & Micro-Metal"
+],
+"prismatic_shatter": [
+"Legacy collection",
+"Sparkle & Micro-Metal"
+],
+"stardust_fine": [
+"Legacy collection",
+"Sparkle & Micro-Metal"
+],
+"voronoi_fracture": [
+"Legacy collection",
+"Structure & Geometry"
+],
+"banded_rows": [
+"Legacy collection",
+"Structure & Geometry"
+],
+"chevron_bands": [
+"Legacy collection",
+"Structure & Geometry"
+],
+"gradient_bands": [
+"Legacy collection",
+"Structure & Geometry"
+],
+"hex_cells": [
+"Legacy collection",
+"Structure & Geometry"
+],
+"panel_zones": [
+"Legacy collection",
+"Structure & Geometry"
+],
+"spec_architectural_grid": [
+"Legacy collection",
+"Structure & Geometry"
+],
+"spec_brick_mortar": [
+"Legacy collection",
+"Structure & Geometry"
+],
+"spec_hammered_dimple": [
+"Legacy collection",
+"Structure & Geometry"
+],
+"wave_bands": [
+"Legacy collection",
+"Structure & Geometry"
+],
+"pebble_grain": [
+"Legacy collection",
+"Surface & Spray Texture"
+],
+"spec_anodized_texture": [
+"Legacy collection",
+"Surface & Spray Texture"
+],
+"spec_carbon_weave": [
+"Legacy collection",
+"Carbon & Composite Weave"
+],
+"spec_laser_etched": [
+"Legacy collection",
+"Surface & Spray Texture"
+],
+"spec_pvd_coating": [
+"Legacy collection",
+"Surface & Spray Texture"
+],
+"spov2_pit_lane_ghost": [
+"Surface library",
+"Track & Motorsport"
+],
+"bayou_hex_burlap": [
+"Legacy collection",
+"Voodoo Inspired"
+],
+"bayou_smoke_script": [
+"Legacy collection",
+"Voodoo Inspired"
+],
+"candle_wax_veve": [
+"Legacy collection",
+"Voodoo Inspired"
+],
+"coffin_nail_rust": [
+"Legacy collection",
+"Voodoo Inspired"
+],
+"midnight_gris_gris": [
+"Legacy collection",
+"Voodoo Inspired"
+],
+"mojo_bag_grain": [
+"Legacy collection",
+"Voodoo Inspired"
+],
+"pins_and_thread": [
+"Legacy collection",
+"Voodoo Inspired"
+],
+"root_doctor_copper": [
+"Legacy collection",
+"Voodoo Inspired"
+],
+"spanish_moss_static": [
+"Legacy collection",
+"Voodoo Inspired"
+],
+"swamp_charm_patina": [
+"Legacy collection",
+"Voodoo Inspired"
+],
+"spec_ice_frost_feather": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_mud_crackle_dried": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_red_clay_roost": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"spec_sandblasted_mask_edge": [
+"Legacy collection",
+"Definitive Spec Replacements"
+],
+"crackle_network": [
+"Legacy collection",
+"Weather, Wear & Track"
+],
+"morning_dew_fog": [
+"Legacy collection",
+"Weather, Wear & Track"
+],
+"spec_galvanic_corrosion": [
+"Legacy collection",
+"Weather, Wear & Track"
+],
+"spec_sandblast_strip": [
+"Legacy collection",
+"Weather, Wear & Track"
+],
+"spec_stress_fractures": [
+"Legacy collection",
+"Weather, Wear & Track"
+],
+"spov2_braided_junction": [
+"Surface library",
+"Weave & Composite"
+]
+}

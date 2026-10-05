@@ -1834,7 +1834,7 @@ const FINISH_METADATA = {
     "sortPriority": 80,
     "score": 81
   },
-  "ms_acid_scale": {
+  "ms_acid_veil_ambush": {
     "family": "Mortal Shokk",
     "browserGroup": "Specials",
     "browserSection": "Mortal Shokk",
@@ -1843,11 +1843,11 @@ const FINISH_METADATA = {
     "advanced": false,
     "utility": false,
     "readability": 55,
-    "distinctness": 88,
+    "distinctness": 90,
     "sortPriority": 80,
-    "score": 81
+    "score": 82
   },
-  "ms_chrome_cage": {
+  "ms_blood_empress": {
     "family": "Mortal Shokk",
     "browserGroup": "Specials",
     "browserSection": "Mortal Shokk",
@@ -1856,11 +1856,11 @@ const FINISH_METADATA = {
     "advanced": false,
     "utility": false,
     "readability": 55,
-    "distinctness": 88,
+    "distinctness": 90,
     "sortPriority": 80,
-    "score": 81
+    "score": 82
   },
-  "ms_dragon_flame": {
+  "ms_bone_sonata": {
     "family": "Mortal Shokk",
     "browserGroup": "Specials",
     "browserSection": "Mortal Shokk",
@@ -1869,11 +1869,11 @@ const FINISH_METADATA = {
     "advanced": false,
     "utility": false,
     "readability": 55,
-    "distinctness": 88,
+    "distinctness": 90,
     "sortPriority": 80,
-    "score": 81
+    "score": 82
   },
-  "ms_emerald_shadow": {
+  "ms_chainburst_inferno": {
     "family": "Mortal Shokk",
     "browserGroup": "Specials",
     "browserSection": "Mortal Shokk",
@@ -1882,11 +1882,11 @@ const FINISH_METADATA = {
     "advanced": false,
     "utility": false,
     "readability": 55,
-    "distinctness": 88,
+    "distinctness": 90,
     "sortPriority": 80,
-    "score": 81
+    "score": 82
   },
-  "ms_feral_grin": {
+  "ms_cinder_spiral": {
     "family": "Mortal Shokk",
     "browserGroup": "Specials",
     "browserSection": "Mortal Shokk",
@@ -1895,11 +1895,11 @@ const FINISH_METADATA = {
     "advanced": false,
     "utility": false,
     "readability": 55,
-    "distinctness": 88,
+    "distinctness": 90,
     "sortPriority": 80,
-    "score": 81
+    "score": 82
   },
-  "ms_frozen_fury": {
+  "ms_crimson_dragon": {
     "family": "Mortal Shokk",
     "browserGroup": "Specials",
     "browserSection": "Mortal Shokk",
@@ -1908,11 +1908,167 @@ const FINISH_METADATA = {
     "advanced": false,
     "utility": false,
     "readability": 55,
-    "distinctness": 88,
+    "distinctness": 90,
     "sortPriority": 80,
-    "score": 81
+    "score": 82
   },
-  "ms_ghost_vapor": {
+  "ms_cryo_shard": {
+    "family": "Mortal Shokk",
+    "browserGroup": "Specials",
+    "browserSection": "Mortal Shokk",
+    "hero": false,
+    "featured": true,
+    "advanced": false,
+    "utility": false,
+    "readability": 55,
+    "distinctness": 90,
+    "sortPriority": 80,
+    "score": 82
+  },
+  "ms_crystal_onslaught": {
+    "family": "Mortal Shokk",
+    "browserGroup": "Specials",
+    "browserSection": "Mortal Shokk",
+    "hero": false,
+    "featured": true,
+    "advanced": false,
+    "utility": false,
+    "readability": 55,
+    "distinctness": 90,
+    "sortPriority": 80,
+    "score": 82
+  },
+  "ms_dragon_ascent": {
+    "family": "Mortal Shokk",
+    "browserGroup": "Specials",
+    "browserSection": "Mortal Shokk",
+    "hero": false,
+    "featured": true,
+    "advanced": false,
+    "utility": false,
+    "readability": 55,
+    "distinctness": 90,
+    "sortPriority": 80,
+    "score": 82
+  },
+  "ms_dragon_soul": {
+    "family": "Mortal Shokk",
+    "browserGroup": "Specials",
+    "browserSection": "Mortal Shokk",
+    "hero": false,
+    "featured": true,
+    "advanced": false,
+    "utility": false,
+    "readability": 55,
+    "distinctness": 90,
+    "sortPriority": 80,
+    "score": 82
+  },
+  "ms_emerald_scale_mirage": {
+    "family": "Mortal Shokk",
+    "browserGroup": "Specials",
+    "browserSection": "Mortal Shokk",
+    "hero": false,
+    "featured": true,
+    "advanced": false,
+    "utility": false,
+    "readability": 55,
+    "distinctness": 90,
+    "sortPriority": 80,
+    "score": 82
+  },
+  "ms_fang_cataclysm": {
+    "family": "Mortal Shokk",
+    "browserGroup": "Specials",
+    "browserSection": "Mortal Shokk",
+    "hero": false,
+    "featured": true,
+    "advanced": false,
+    "utility": false,
+    "readability": 55,
+    "distinctness": 90,
+    "sortPriority": 80,
+    "score": 82
+  },
+  "ms_frost_sentinel": {
+    "family": "Mortal Shokk",
+    "browserGroup": "Specials",
+    "browserSection": "Mortal Shokk",
+    "hero": false,
+    "featured": true,
+    "advanced": false,
+    "utility": false,
+    "readability": 55,
+    "distinctness": 90,
+    "sortPriority": 80,
+    "score": 82
+  },
+  "ms_frozen_inferno": {
+    "family": "Mortal Shokk",
+    "browserGroup": "Specials",
+    "browserSection": "Mortal Shokk",
+    "hero": false,
+    "featured": true,
+    "advanced": false,
+    "utility": false,
+    "readability": 55,
+    "distinctness": 90,
+    "sortPriority": 80,
+    "score": 82
+  },
+  "ms_lotus_ascention": {
+    "family": "Mortal Shokk",
+    "browserGroup": "Specials",
+    "browserSection": "Mortal Shokk",
+    "hero": false,
+    "featured": true,
+    "advanced": false,
+    "utility": false,
+    "readability": 55,
+    "distinctness": 90,
+    "sortPriority": 80,
+    "score": 82
+  },
+  "ms_molten_sting": {
+    "family": "Mortal Shokk",
+    "browserGroup": "Specials",
+    "browserSection": "Mortal Shokk",
+    "hero": false,
+    "featured": true,
+    "advanced": false,
+    "utility": false,
+    "readability": 55,
+    "distinctness": 90,
+    "sortPriority": 80,
+    "score": 82
+  },
+  "ms_porcelain_cipher": {
+    "family": "Mortal Shokk",
+    "browserGroup": "Specials",
+    "browserSection": "Mortal Shokk",
+    "hero": false,
+    "featured": true,
+    "advanced": false,
+    "utility": false,
+    "readability": 55,
+    "distinctness": 90,
+    "sortPriority": 80,
+    "score": 82
+  },
+  "ms_serpent_haze_strike": {
+    "family": "Mortal Shokk",
+    "browserGroup": "Specials",
+    "browserSection": "Mortal Shokk",
+    "hero": false,
+    "featured": true,
+    "advanced": false,
+    "utility": false,
+    "readability": 55,
+    "distinctness": 90,
+    "sortPriority": 80,
+    "score": 82
+  },
+  "ms_shadow_wraith": {
     "family": "Mortal Shokk",
     "browserGroup": "Specials",
     "browserSection": "Mortal Shokk",
@@ -1921,11 +2077,11 @@ const FINISH_METADATA = {
     "advanced": true,
     "utility": false,
     "readability": 55,
-    "distinctness": 88,
+    "distinctness": 90,
     "sortPriority": 80,
-    "score": 81
+    "score": 82
   },
-  "ms_royal_edge": {
+  "ms_soul_forge": {
     "family": "Mortal Shokk",
     "browserGroup": "Specials",
     "browserSection": "Mortal Shokk",
@@ -1934,11 +2090,11 @@ const FINISH_METADATA = {
     "advanced": false,
     "utility": false,
     "readability": 55,
-    "distinctness": 88,
+    "distinctness": 90,
     "sortPriority": 80,
-    "score": 81
+    "score": 82
   },
-  "ms_shape_shift": {
+  "ms_tempest_crown": {
     "family": "Mortal Shokk",
     "browserGroup": "Specials",
     "browserSection": "Mortal Shokk",
@@ -1947,11 +2103,11 @@ const FINISH_METADATA = {
     "advanced": false,
     "utility": false,
     "readability": 55,
-    "distinctness": 88,
+    "distinctness": 90,
     "sortPriority": 80,
-    "score": 81
+    "score": 82
   },
-  "ms_soul_drain": {
+  "ms_thunder_mandala": {
     "family": "Mortal Shokk",
     "browserGroup": "Specials",
     "browserSection": "Mortal Shokk",
@@ -1960,11 +2116,11 @@ const FINISH_METADATA = {
     "advanced": false,
     "utility": false,
     "readability": 55,
-    "distinctness": 88,
+    "distinctness": 90,
     "sortPriority": 80,
-    "score": 81
+    "score": 82
   },
-  "ms_thunder_lord": {
+  "ms_toxic_labyrinth": {
     "family": "Mortal Shokk",
     "browserGroup": "Specials",
     "browserSection": "Mortal Shokk",
@@ -1973,11 +2129,11 @@ const FINISH_METADATA = {
     "advanced": false,
     "utility": false,
     "readability": 55,
-    "distinctness": 88,
+    "distinctness": 90,
     "sortPriority": 80,
-    "score": 81
+    "score": 82
   },
-  "ms_titan_bronze": {
+  "ms_venom_eclipse": {
     "family": "Mortal Shokk",
     "browserGroup": "Specials",
     "browserSection": "Mortal Shokk",
@@ -1986,11 +2142,11 @@ const FINISH_METADATA = {
     "advanced": false,
     "utility": false,
     "readability": 55,
-    "distinctness": 88,
+    "distinctness": 90,
     "sortPriority": 80,
-    "score": 81
+    "score": 82
   },
-  "ms_venom_strike": {
+  "ms_venom_veil": {
     "family": "Mortal Shokk",
     "browserGroup": "Specials",
     "browserSection": "Mortal Shokk",
@@ -1999,11 +2155,11 @@ const FINISH_METADATA = {
     "advanced": false,
     "utility": false,
     "readability": 55,
-    "distinctness": 88,
+    "distinctness": 90,
     "sortPriority": 80,
-    "score": 81
+    "score": 82
   },
-  "ms_void_walker": {
+  "ms_zero_hour": {
     "family": "Mortal Shokk",
     "browserGroup": "Specials",
     "browserSection": "Mortal Shokk",
@@ -2012,22 +2168,9 @@ const FINISH_METADATA = {
     "advanced": false,
     "utility": false,
     "readability": 55,
-    "distinctness": 88,
+    "distinctness": 90,
     "sortPriority": 80,
-    "score": 81
-  },
-  "ms_war_hammer": {
-    "family": "Mortal Shokk",
-    "browserGroup": "Specials",
-    "browserSection": "Mortal Shokk",
-    "hero": false,
-    "featured": true,
-    "advanced": false,
-    "utility": false,
-    "readability": 55,
-    "distinctness": 88,
-    "sortPriority": 80,
-    "score": 81
+    "score": 82
   },
   "platinum": {
     "family": "Chrome & Mirror",
@@ -3524,6 +3667,552 @@ const FINISH_METADATA = {
     "sortPriority": 50,
     "score": 78
   },
+  "efx_cathedral_veil": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_kintsugi_bloom": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_quicksilver_pool": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_volcanic_obsidian": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_aurora_skin": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_lace_filament": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_tempered_spectrum": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_damascus_fold": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_stardust_coat": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_spectral_edge": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_holo_flake": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_holo_prism_cells": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_holo_scan": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_micro_glitter": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_chunky_flake": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_glass_flake": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_gold_leaf": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_surface_rust": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_rust_through": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_peeling_clear": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_sun_faded": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_galvanized_spangle": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_verdigris": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_soot_wash": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_salt_bloom": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_hammered": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_cast_iron": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_knurled": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_engine_turned": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_sandblasted": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_wire_brushed": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_mill_scale": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_orange_peel": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_crackle_lacquer": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_wrinkle_coat": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_raku_glaze": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_powder_texture": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_terrazzo": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_leather_grain": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_rain_beads": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_snow_crust": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
+  "efx_nacre": {
+    "family": "Foundation",
+    "browserGroup": "Materials",
+    "browserSection": "Foundation EFX",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": false,
+    "readability": 80,
+    "distinctness": 74,
+    "sortPriority": 55,
+    "score": 80
+  },
   "f_metallic": {
     "family": "Foundation",
     "browserGroup": "Utility",
@@ -3534,6 +4223,71 @@ const FINISH_METADATA = {
     "utility": true,
     "readability": 92,
     "distinctness": 58,
+    "sortPriority": 50,
+    "score": 78
+  },
+  "f_candy": {
+    "family": "Foundation",
+    "browserGroup": "Utility",
+    "browserSection": "Foundation",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": true,
+    "readability": 92,
+    "distinctness": 60,
+    "sortPriority": 50,
+    "score": 78
+  },
+  "f_bead_blast": {
+    "family": "Foundation",
+    "browserGroup": "Utility",
+    "browserSection": "Foundation",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": true,
+    "readability": 92,
+    "distinctness": 62,
+    "sortPriority": 50,
+    "score": 78
+  },
+  "f_satin_pearl": {
+    "family": "Foundation",
+    "browserGroup": "Utility",
+    "browserSection": "Foundation",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": true,
+    "readability": 92,
+    "distinctness": 60,
+    "sortPriority": 50,
+    "score": 78
+  },
+  "f_matte_metallic": {
+    "family": "Foundation",
+    "browserGroup": "Utility",
+    "browserSection": "Foundation",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": true,
+    "readability": 92,
+    "distinctness": 63,
+    "sortPriority": 50,
+    "score": 78
+  },
+  "f_dark_chrome": {
+    "family": "Foundation",
+    "browserGroup": "Utility",
+    "browserSection": "Foundation",
+    "hero": false,
+    "featured": false,
+    "advanced": false,
+    "utility": true,
+    "readability": 92,
+    "distinctness": 61,
     "sortPriority": 50,
     "score": 78
   },
@@ -12949,10 +13703,10 @@ const FINISH_METADATA = {
     "sortPriority": 50,
     "score": 77
   },
-  "spec_stone_marble": {
-    "family": "Natural",
+  "adelson_checker_shadow": {
+    "family": "Optical",
     "browserGroup": "Full Library",
-    "browserSection": "Natural",
+    "browserSection": "Optical",
     "hero": false,
     "featured": false,
     "advanced": false,
@@ -18579,8 +19333,8 @@ const FINISH_CATEGORIES = {
     count: 25, tier: "premium"
   },
   "Mortal Shokk": {
-    desc: "Fighting-game-inspired married paint and spec finishes with bold character themes",
-    count: 15, tier: "premium"
+    desc: "Author 4K Mortal Shokk plates with per-finish scratch-built spec maps and Viva-class DNA sculpt (caption strip cropped)",
+    count: 26, tier: "premium"
   },
   "Neon Underground": {
     desc: "Blacklight-reactive neon glow finishes with intense fluorescent energy",
@@ -18658,6 +19412,10 @@ const FINISH_CATEGORIES = {
     desc: "Cutting-edge exotic materials from vantablack to plasma cores and liquid metals",
     count: 17, tier: "advanced"
   },
+  "X LAB": {
+    desc: "Thirty Codex-authored material experiments: outside-the-box optical skins, engineered liquids, impossible ceramics and living light.",
+    count: 30, tier: "premium"
+  },
   "Paint Sheen": {
     desc: "Core paint sheens from dead flat to mirror gloss for everyday builds",
     count: 56, tier: "quick_start"
@@ -18705,8 +19463,8 @@ const TIER_ASSIGNMENTS = {
     "flat_black", "wet_look", "semi_gloss", "primer", "eggshell",
     "factory_basecoat", "gloss_wrap", "matte_wrap", "satin_wrap",
     "brushed_aluminum", "gunmetal", "copper", "frozen",
-    "f_pure_white", "f_pure_black", "f_neutral_grey", "f_soft_gloss",
-    "f_soft_matte"
+    "f_metallic", "f_pearl", "f_chrome", "f_satin_chrome",
+    "f_powder_coat"
   ],
   standard: [
     "ceramic", "pearl", "satin_chrome", "diamond_coat", "powder_coat",
@@ -18716,7 +19474,7 @@ const TIER_ASSIGNMENTS = {
   ],
   premium: [
     "cx_inferno", "cx_arctic", "cx_chrome_void", "cx_aurora_borealis",
-    "ms_frozen_fury", "ms_dragon_flame", "ms_void_walker",
+    "ms_acid_veil_ambush", "ms_dragon_soul", "ms_shadow_wraith",
     "shokk_blood", "shokk_void", "shokk_flux", "shokk_spectrum",
     "neon_pink_blaze", "neon_toxic_green", "neon_electric_blue",
     "anime_cel_shade_chrome", "anime_energy_aura"
@@ -18747,7 +19505,7 @@ const SEARCH_KEYWORDS = {
   "neon": ["neon_pink_blaze", "neon_toxic_green", "neon_electric_blue", "neon_blacklight", "neon_orange_hazard", "neon_red_alert"],
   "gold": ["mirror_gold", "satin_gold", "electroplated_gold", "champagne", "scarab_gold", "champagne_flake"],
   "black": ["flat_black", "blackout", "vantablack", "quantum_black", "piano_black", "submarine_black"],
-  "white": ["ambulance_white", "fleet_white", "pearlescent_white", "f_pure_white", "f_warm_white"],
+  "white": ["ambulance_white", "fleet_white", "pearlescent_white"],
   "pearl": ["pearl", "dealer_pearl", "midnight_pearl", "deep_pearl", "tri_coat_pearl", "pace_car_pearl", "pearlescent_white", "jelly_pearl"],
   "anime": ["anime_cel_shade_chrome", "anime_comic_halftone", "anime_crystal_facet", "anime_energy_aura", "anime_gradient_hair", "anime_mecha_plate"],
   "insect": ["beetle_jewel", "beetle_rainbow", "beetle_stag", "butterfly_monarch", "butterfly_morpho", "dragonfly_wing", "firefly_glow", "moth_luna"],
@@ -18781,30 +19539,31 @@ const BEST_FOR = {
 // CATEGORY_COUNTS - Actual entry counts per family for UI display
 // =============================================================================
 const CATEGORY_COUNTS = {
-  "Carbon & Composite": 10,
+  "Carbon & Composite": 20,
   "ColorShoxx": 25,
   "Mortal Shokk": 15,
   "Neon Underground": 10,
   "Chrome & Mirror": 12,
-  "Candy & Pearl": 17,
+  "Candy & Pearl": 20,
   "Foundation": 34,
   "Enhanced Foundation": 30,
   "Exotic Metal": 16,
-  "Industrial & Tactical": 15,
+  "Tactical & Cyberpunk": 20,
   "Metallic Standard": 22,
   "OEM Automotive": 10,
   "Premium Luxury": 10,
   "Racing Heritage": 11,
   "Satin & Wrap": 10,
   "Weathered & Aged": 17,
-  "Ceramic & Glass": 8,
+  "Ceramic & Glass": 20,
   "PARADIGM": 17,
   "SHOKK Series": 25,
   "Anime Inspired": 10,
   "Iridescent Insects": 10,
   "Extreme & Experimental": 17,
+  "X LAB": 30,
   "Total Bases": 340,
   "Total Patterns": 301,
-  "Total Monolithics": 628,
-  "Total Finishes": 1269
+  "Total Monolithics": 658,
+  "Total Finishes": 1299
 };

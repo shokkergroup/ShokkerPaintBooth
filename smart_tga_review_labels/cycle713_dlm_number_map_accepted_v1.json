@@ -1,0 +1,29 @@
+{
+  "version": "smart-tga-number-map-review-v1",
+  "review_scope": "all 18 frozen-threshold accepted owner-neutral map proposals on the untouched Cycle712 DLM holdout",
+  "active_pool": "_smart_tga_runs/cycle713_exact_number_objects/map_scored_cycle712/active_pool.json",
+  "review_sheet": "_smart_tga_runs/cycle713_exact_number_objects/map_scored_cycle712/accepted_map_review_sheet.png",
+  "proposal_labels": [
+    {"paint_label":"dirtlatemodel 350/car_num_275289.tga","proposal_id":"number-map:4c96e5cb2555a5f2","bbox":[108,748,104,76],"semantic_class":"Paint","target_layer":"paint","label":"livery_graphic_false_number"},
+    {"paint_label":"dirtlatemodel 350/car_num_275289.tga","proposal_id":"number-map:0a06d2ace990fb2d","bbox":[320,236,148,132],"semantic_class":"Sponsor","target_layer":"sponsors","label":"sponsor_wre_false_number"},
+    {"paint_label":"dirtlatemodel 350/car_num_275289.tga","proposal_id":"number-map:fd4ed69c0686afd5","bbox":[816,812,132,184],"semantic_class":"Number","target_layer":"numbers","label":"true_missing_number_30_deck_copy"},
+    {"paint_label":"dirtlatemodel 350/car_num_275289.tga","proposal_id":"number-map:3fbb891c813a4b38","bbox":[828,828,104,156],"semantic_class":"Number","target_layer":"numbers","label":"true_missing_number_30_deck_nested"},
+    {"paint_label":"dirtlatemodel 350/car_num_290060.tga","proposal_id":"number-map:5a5124acac6f0516","bbox":[284,680,180,148],"semantic_class":"Number","target_layer":"numbers","label":"true_number_6_copy"},
+    {"paint_label":"dirtlatemodel 358/car_num_1006305.tga","proposal_id":"number-map:4ee143ead42abe85","bbox":[268,188,240,172],"semantic_class":"Number","target_layer":"numbers","label":"true_number_34_copy"},
+    {"paint_label":"dirtlatemodel 358/car_num_1006305.tga","proposal_id":"number-map:50983a3bcb7f2cea","bbox":[16,280,180,104],"semantic_class":"Sponsor","target_layer":"sponsors","label":"upside_down_wordmark_false_number"},
+    {"paint_label":"dirtlatemodel 358/car_num_1006305.tga","proposal_id":"number-map:ff81d51653796e87","bbox":[12,700,480,164],"semantic_class":"Number","target_layer":"numbers","label":"true_number_34_with_connected_sponsors"},
+    {"paint_label":"dirtlatemodel 358/car_num_1006305.tga","proposal_id":"number-map:ccf6d290c072aa06","bbox":[284,192,212,160],"semantic_class":"Number","target_layer":"numbers","label":"true_number_34_nested"},
+    {"paint_label":"dirtlatemodel 358/car_num_1006305.tga","proposal_id":"number-map:9fba805cecbb66bd","bbox":[28,288,144,88],"semantic_class":"Sponsor","target_layer":"sponsors","label":"upside_down_wordmark_nested_false_number"},
+    {"paint_label":"dirtlatemodel 358/car_num_1006305.tga","proposal_id":"number-map:f35648fb11a10246","bbox":[288,224,184,120],"semantic_class":"Number","target_layer":"numbers","label":"true_number_34_inner_copy"},
+    {"paint_label":"dirtlatemodel 358/car_num_1006305.tga","proposal_id":"number-map:d1aed1efcf37697e","bbox":[56,312,96,56],"semantic_class":"Sponsor","target_layer":"sponsors","label":"upside_down_wordmark_inner_false_number"},
+    {"paint_label":"dirtlatemodel 358/car_num_1135375.tga","proposal_id":"number-map:d1b52d4c4cecbf32","bbox":[684,584,124,92],"semantic_class":"Sponsor","target_layer":"sponsors","label":"sponsor_panel_graphic_false_number"},
+    {"paint_label":"dirtlatemodel 358/car_num_1135375.tga","proposal_id":"number-map:74e5f1d6ff7a7d96","bbox":[836,844,112,128],"semantic_class":"Number","target_layer":"numbers","label":"true_number_44_copy"},
+    {"paint_label":"dirtlatemodel 358/car_num_1157262.tga","proposal_id":"number-map:7089836b40d8247f","bbox":[136,732,368,148],"semantic_class":"Number","target_layer":"numbers","label":"true_number_5_with_connected_sponsors"},
+    {"paint_label":"dirtlatemodel 358/car_num_1157262.tga","proposal_id":"number-map:6b6f4e735d38f457","bbox":[320,204,168,128],"semantic_class":"Number","target_layer":"numbers","label":"true_number_5_copy"},
+    {"paint_label":"dirtlatemodel 358/car_num_1157262.tga","proposal_id":"number-map:94f55712c5a2facf","bbox":[316,748,156,96],"semantic_class":"Number","target_layer":"numbers","label":"true_number_5_nested"},
+    {"paint_label":"dirtlatemodel 358/car_num_1157262.tga","proposal_id":"number-map:284eb54cc4bd57ef","bbox":[336,208,144,112],"semantic_class":"Number","target_layer":"numbers","label":"true_number_5_inner_copy"}
+  ],
+  "reviewed_summary": {"number_proposals":12,"hard_negative_proposals":6,"unique_new_missing_number_instances":1,"coarse_bbox_false_recovery":"upper #30 overlapped WRE sponsor; rejected by visual review"},
+  "casts_votes": false,
+  "ownership_authority": false
+}

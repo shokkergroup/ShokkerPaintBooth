@@ -1,0 +1,9 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_1187237.tga","inspection_records":"_smart_tga_runs/cycle674_dlm_strict_confirmation_review/inspection_records.json","review_scope":"Cycle 674 source plus complete Number/Sponsor/Template/Paint sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[951,504,46,47],"target_layer":"paint","label":"watermark_panel_false_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[724,677,97,25],"target_layer":"paint","label":"watermark_panel_false_number"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[696,704,57,29],"target_layer":"paint","label":"watermark_panel_false_number"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[719,705,132,59],"target_layer":"paint","label":"watermark_panel_false_number"},
+ {"layer":"numbers","component_index":4,"expected_bbox":[222,826,385,191],"target_layer":"sponsors","label":"sanchez_reaper_panel_false_number"},
+ {"layer":"numbers","component_index":5,"expected_bbox":[92,908,103,109],"target_layer":"template","label":"hardware_atlas_false_number"},
+ {"layer":"numbers","component_index":6,"expected_bbox":[0,910,90,99],"target_layer":"template","label":"hardware_atlas_false_number"}
+]}

@@ -1,0 +1,8 @@
+{
+  "runtime": "Runtime6",
+  "dependencyOrder": true,
+  "servedSourceHashes": 15,
+  "allMatch": true,
+  "duplicates": false,
+  "note": "Lease and operation modules are independent; only controller dependency order is required."
+}

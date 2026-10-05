@@ -1,0 +1,242 @@
+{
+  "atp_airbrush_tee_code": {
+    "cold_seconds": 0.185,
+    "warm_seconds": 0.035,
+    "render_budget_pass": true,
+    "mask_and_partial_strength_pass": true,
+    "seams": {
+      "paint": {
+        "boundary_x": 7.268,
+        "boundary_y": 8.107,
+        "interior_x": 7.341,
+        "interior_y": 7.479
+      },
+      "spec": {
+        "boundary_x": 3.02,
+        "boundary_y": 2.809,
+        "interior_x": 2.918,
+        "interior_y": 2.93
+      }
+    },
+    "paint_metrics": {
+      "paint_luma_std": 43.51120376586914,
+      "paint_luma_span": 164.87899780273438,
+      "paint_fine_energy": 0.01301569658167222,
+      "paint_residual_energy": 0.009110987607170553,
+      "paint_block_energy": 0.1410655002967984,
+      "paint_macro_energy": 0.1410655002967984,
+      "paint_micro_macro_ratio": 0.09226704299979448,
+      "paint_color_population": 153,
+      "paint_saturation_mean": 0.34253740310668945
+    },
+    "spec_metrics": {
+      "m_range": 25.0,
+      "r_range": 125.0,
+      "cc_range": 229.0,
+      "m_std": 5.192958354949951,
+      "r_std": 30.572446823120117,
+      "cc_std": 16.30998992919922,
+      "independence": 0.027741221574668445
+    }
+  },
+  "atp_airbrush_tee_image": {
+    "cold_seconds": 0.165,
+    "warm_seconds": 0.04,
+    "render_budget_pass": true,
+    "mask_and_partial_strength_pass": true,
+    "seams": {
+      "paint": {
+        "boundary_x": 16.987,
+        "boundary_y": 16.01,
+        "interior_x": 14.781,
+        "interior_y": 13.839
+      },
+      "spec": {
+        "boundary_x": 26.859,
+        "boundary_y": 24.199,
+        "interior_x": 18.719,
+        "interior_y": 17.803
+      }
+    },
+    "paint_metrics": {
+      "paint_luma_std": 36.972320556640625,
+      "paint_luma_span": 181.10501098632812,
+      "paint_fine_energy": 0.032369568768669574,
+      "paint_residual_energy": 0.0226586981380687,
+      "paint_block_energy": 0.10499739553414139,
+      "paint_macro_energy": 0.10499739553414139,
+      "paint_micro_macro_ratio": 0.30828925426197024,
+      "paint_color_population": 168,
+      "paint_saturation_mean": 0.4882889986038208
+    },
+    "spec_metrics": {
+      "m_range": 37.0,
+      "r_range": 143.0,
+      "cc_range": 248.0,
+      "m_std": 11.46274471282959,
+      "r_std": 44.48213195800781,
+      "cc_std": 99.45723724365234,
+      "independence": 0.09759581514779248
+    }
+  },
+  "atp_flannel_red_code": {
+    "cold_seconds": 0.15,
+    "warm_seconds": 0.04,
+    "render_budget_pass": true,
+    "mask_and_partial_strength_pass": true,
+    "seams": {
+      "paint": {
+        "boundary_x": 32.206,
+        "boundary_y": 31.087,
+        "interior_x": 6.241,
+        "interior_y": 5.113
+      },
+      "spec": {
+        "boundary_x": 19.611,
+        "boundary_y": 19.16,
+        "interior_x": 2.079,
+        "interior_y": 2.474
+      }
+    },
+    "paint_metrics": {
+      "paint_luma_std": 17.812244415283203,
+      "paint_luma_span": 91.61399841308594,
+      "paint_fine_energy": 0.013570426492130055,
+      "paint_residual_energy": 0.009499298544491039,
+      "paint_block_energy": 0.05026901095521216,
+      "paint_macro_energy": 0.05026901095521216,
+      "paint_micro_macro_ratio": 0.2699561068392773,
+      "paint_color_population": 19,
+      "paint_saturation_mean": 0.6621583700180054
+    },
+    "spec_metrics": {
+      "m_range": 29.0,
+      "r_range": 98.0,
+      "cc_range": 201.0,
+      "m_std": 5.887763977050781,
+      "r_std": 16.104814529418945,
+      "cc_std": 41.61123275756836,
+      "independence": 0.29941373667719035
+    }
+  },
+  "atp_flannel_red_image": {
+    "cold_seconds": 0.192,
+    "warm_seconds": 0.043,
+    "render_budget_pass": true,
+    "mask_and_partial_strength_pass": true,
+    "seams": {
+      "paint": {
+        "boundary_x": 0.0,
+        "boundary_y": 0.0,
+        "interior_x": 8.183,
+        "interior_y": 8.12
+      },
+      "spec": {
+        "boundary_x": 0.0,
+        "boundary_y": 0.0,
+        "interior_x": 7.928,
+        "interior_y": 7.86
+      }
+    },
+    "paint_metrics": {
+      "paint_luma_std": 14.718199729919434,
+      "paint_luma_span": 79.86599731445312,
+      "paint_fine_energy": 0.016336212906182982,
+      "paint_residual_energy": 0.011435349034328086,
+      "paint_block_energy": 0.04185378878724341,
+      "paint_macro_energy": 0.04185378878724341,
+      "paint_micro_macro_ratio": 0.3903162265482184,
+      "paint_color_population": 26,
+      "paint_saturation_mean": 0.6262461543083191
+    },
+    "spec_metrics": {
+      "m_range": 30.0,
+      "r_range": 95.0,
+      "cc_range": 213.0,
+      "m_std": 8.252713203430176,
+      "r_std": 25.224689483642578,
+      "cc_std": 81.521484375,
+      "independence": 0.09738506448537494
+    }
+  },
+  "atp_holo_sticker_code": {
+    "cold_seconds": 0.188,
+    "warm_seconds": 0.04,
+    "render_budget_pass": true,
+    "mask_and_partial_strength_pass": true,
+    "seams": {
+      "paint": {
+        "boundary_x": 23.042,
+        "boundary_y": 23.689,
+        "interior_x": 14.944,
+        "interior_y": 15.199
+      },
+      "spec": {
+        "boundary_x": 17.46,
+        "boundary_y": 21.03,
+        "interior_x": 11.915,
+        "interior_y": 12.053
+      }
+    },
+    "paint_metrics": {
+      "paint_luma_std": 33.95895004272461,
+      "paint_luma_span": 160.489990234375,
+      "paint_fine_energy": 0.04080506493063534,
+      "paint_residual_energy": 0.02856354545144474,
+      "paint_block_energy": 0.08765272252699909,
+      "paint_macro_energy": 0.08765272252699909,
+      "paint_micro_macro_ratio": 0.465531061149486,
+      "paint_color_population": 255,
+      "paint_saturation_mean": 0.4604234993457794
+    },
+    "spec_metrics": {
+      "m_range": 215.0,
+      "r_range": 211.0,
+      "cc_range": 184.0,
+      "m_std": 37.71012878417969,
+      "r_std": 38.75367736816406,
+      "cc_std": 31.604082107543945,
+      "independence": 0.04034870796043181
+    }
+  },
+  "atp_holo_sticker_image": {
+    "cold_seconds": 0.2,
+    "warm_seconds": 0.055,
+    "render_budget_pass": true,
+    "mask_and_partial_strength_pass": true,
+    "seams": {
+      "paint": {
+        "boundary_x": 20.035,
+        "boundary_y": 26.583,
+        "interior_x": 31.478,
+        "interior_y": 32.144
+      },
+      "spec": {
+        "boundary_x": 34.677,
+        "boundary_y": 43.595,
+        "interior_x": 43.123,
+        "interior_y": 43.088
+      }
+    },
+    "paint_metrics": {
+      "paint_luma_std": 38.154361724853516,
+      "paint_luma_span": 210.09500122070312,
+      "paint_fine_energy": 0.08830206627939262,
+      "paint_residual_energy": 0.06181144639557483,
+      "paint_block_energy": 0.061027841007008275,
+      "paint_macro_energy": 0.061027841007008275,
+      "paint_micro_macro_ratio": 1.446914470876534,
+      "paint_color_population": 256,
+      "paint_saturation_mean": 0.5037986040115356
+    },
+    "spec_metrics": {
+      "m_range": 226.0,
+      "r_range": 223.0,
+      "cc_range": 192.0,
+      "m_std": 62.8886604309082,
+      "r_std": 59.638614654541016,
+      "cc_std": 48.44997787475586,
+      "independence": 0.016801635120600993
+    }
+  }
+}

@@ -1,0 +1,1907 @@
+/* ============================================================
+   SPB UI Modernization 2026-05-10 Styles
+   Extracted from paint-booth-v2.css for SPB-105 file-budget work.
+   Loaded in original cascade order by paint-booth-v2.html.
+   ============================================================ */
+
+/* ===== SPB UI MODERNIZATION 2026-05-10: Safe Premium Surface Pass ===== */
+:root {
+    --spb-surface-glass: rgba(9, 15, 26, 0.88);
+    --spb-surface-ink: rgba(3, 7, 13, 0.96);
+    --spb-stroke-soft: rgba(132, 162, 205, 0.16);
+    --spb-stroke-hot: rgba(255, 122, 24, 0.34);
+    --spb-stroke-cool: rgba(34, 211, 238, 0.28);
+}
+
+.shokker-workbench-pulse,
+.header-brand::after {
+    position: relative !important;
+    background-image: none !important;
+    background:
+        linear-gradient(90deg,
+            transparent 0 8%,
+            rgba(34, 211, 238, 0.0) 8% 10%,
+            var(--shokk-cyan, #22d3ee) 10% 28%,
+            transparent 28% 32%,
+            var(--shokk-cyan, #22d3ee) 32% 35%,
+            transparent 35% 38%,
+            var(--shokk-orange, #ff7a18) 38% 42%,
+            transparent 42% 46%,
+            var(--shokk-cyan, #22d3ee) 46% 64%,
+            transparent 64% 68%,
+            var(--shokk-orange, #ff7a18) 68% 72%,
+            transparent 72% 76%,
+            var(--shokk-cyan, #22d3ee) 76% 100%) center / 100% 2px no-repeat !important;
+    filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.28)) !important;
+}
+
+.shokker-workbench-pulse::before,
+.header-brand::after {
+    opacity: 0.95 !important;
+}
+
+.center-panel,
+#centerPanel {
+    background:
+        radial-gradient(circle at 52% 8%, rgba(34, 211, 238, 0.045), transparent 36%),
+        linear-gradient(180deg, rgba(9, 14, 27, 0.82), rgba(3, 6, 13, 0.98)) !important;
+}
+
+.split-pane {
+    background:
+        radial-gradient(circle at 50% 35%, rgba(34, 211, 238, 0.035), transparent 38%),
+        linear-gradient(180deg, rgba(2, 6, 14, 0.98), rgba(1, 3, 8, 0.98)) !important;
+}
+
+.split-pane > .preview-inner {
+    border: 1px solid rgba(132, 162, 205, 0.12) !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.018),
+        inset 0 0 44px rgba(34, 211, 238, 0.035) !important;
+}
+
+.preview-inner > #previewPaintPane img,
+.preview-inner > #previewBeforePane img,
+.preview-inner > #previewSpecPane img {
+    border-radius: 10px !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.30) !important;
+}
+
+.preview-inner > #previewSpecPane {
+    border-radius: 11px !important;
+    border-color: rgba(255, 122, 24, 0.78) !important;
+    box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.48),
+        0 0 0 1px rgba(34, 211, 238, 0.22),
+        0 0 24px rgba(255, 122, 24, 0.14) !important;
+}
+
+.preview-dual-label,
+.split-pane-label {
+    border-radius: 999px !important;
+    border-color: rgba(132, 162, 205, 0.22) !important;
+    background: rgba(5, 10, 18, 0.82) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28) !important;
+}
+
+.zone-editor-float,
+.left-panel,
+#rightPanel,
+.vertical-toolbar {
+    background:
+        linear-gradient(180deg, rgba(13, 20, 33, 0.94), rgba(4, 8, 15, 0.98)) !important;
+    border-color: rgba(132, 162, 205, 0.14) !important;
+}
+
+.zone-editor-float .section-collapsible {
+    border-radius: 10px !important;
+    background:
+        linear-gradient(180deg, rgba(18, 27, 43, 0.74), rgba(8, 13, 23, 0.88)) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.026) !important;
+}
+
+.zone-editor-float .section-collapsible > .section-header {
+    background:
+        linear-gradient(90deg, rgba(34, 211, 238, 0.055), transparent 52%, rgba(255, 122, 24, 0.045)) !important;
+    border-bottom-color: rgba(132, 162, 205, 0.10) !important;
+}
+
+.zone-editor-float .section-collapsible > .section-header::before {
+    background:
+        linear-gradient(180deg, var(--shokk-cyan, #22d3ee), var(--shokk-orange, #ff7a18)) !important;
+    opacity: 0.78 !important;
+}
+
+#zoneList .zone-card {
+    background:
+        linear-gradient(180deg, rgba(13, 20, 33, 0.72), rgba(4, 8, 15, 0.92)) !important;
+    border-color: rgba(132, 162, 205, 0.13) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.020) !important;
+}
+
+#zoneList .zone-card.selected {
+    background:
+        linear-gradient(180deg, rgba(255, 122, 24, 0.18), rgba(10, 14, 22, 0.94)) !important;
+    border-color: rgba(255, 122, 24, 0.76) !important;
+    box-shadow:
+        0 0 0 1px rgba(34, 211, 238, 0.34),
+        0 12px 28px rgba(0, 0, 0, 0.30),
+        inset 4px 0 0 var(--shokk-cyan, #22d3ee) !important;
+}
+
+.vtool-group {
+    border: 1px solid rgba(132, 162, 205, 0.10) !important;
+    border-radius: 12px !important;
+    background: rgba(5, 10, 18, 0.54) !important;
+}
+
+.vtool-btn.active {
+    background:
+        radial-gradient(circle at 35% 20%, rgba(255, 255, 255, 0.24), transparent 42%),
+        linear-gradient(180deg, rgba(34, 211, 238, 0.20), rgba(255, 122, 24, 0.14)) !important;
+    border-color: rgba(255, 122, 24, 0.86) !important;
+    box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.36), 0 8px 18px rgba(0, 0, 0, 0.26) !important;
+}
+
+#renderFloat.render-float {
+    border-radius: 13px !important;
+    border: 1px solid rgba(132, 162, 205, 0.18) !important;
+    background:
+        linear-gradient(180deg, rgba(15, 22, 35, 0.82), rgba(4, 7, 13, 0.90)) !important;
+    backdrop-filter: blur(12px) !important;
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.34) !important;
+}
+
+/* ===== SPB UI FIX 2026-05-10: Restore Browser-Safe Heartbeat Motion ===== */
+.header::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 78px !important;
+    right: 36px !important;
+    bottom: 0 !important;
+    height: 12px !important;
+    pointer-events: none !important;
+    opacity: 0.72 !important;
+    background:
+        linear-gradient(90deg,
+            transparent 0 4%,
+            rgba(255, 122, 24, 0.20) 8%,
+            rgba(255, 122, 24, 0.96) 14%,
+            rgba(34, 211, 238, 0.92) 24%,
+            transparent 34% 44%,
+            rgba(255, 51, 102, 0.92) 52%,
+            rgba(34, 211, 238, 0.86) 64%,
+            transparent 78% 100%) !important;
+    background-size: 260px 100% !important;
+    clip-path: polygon(0 58%, 9% 58%, 12% 18%, 15% 91%, 18% 58%, 33% 58%, 36% 36%, 39% 72%, 43% 58%, 58% 58%, 61% 12%, 64% 94%, 68% 58%, 82% 58%, 85% 28%, 88% 76%, 92% 58%, 100% 58%) !important;
+    filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.34)) drop-shadow(0 0 10px rgba(255, 122, 24, 0.18)) !important;
+    animation: shokkerHeaderHeartbeatSweep 4.8s linear infinite !important;
+    will-change: background-position !important;
+}
+
+.shokker-workbench-pulse,
+.header-brand::after {
+    display: inline-block !important;
+    width: 52px !important;
+    height: 12px !important;
+    min-width: 52px !important;
+    position: relative !important;
+    overflow: hidden !important;
+    background: rgba(34, 211, 238, 0.10) !important;
+    border-radius: 999px !important;
+    clip-path: none !important;
+    opacity: 1 !important;
+}
+
+.header-brand::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 40px !important;
+    right: auto !important;
+    bottom: -1px !important;
+}
+
+.shokker-workbench-pulse::before,
+.header-brand::after {
+    content: "" !important;
+}
+
+.shokker-workbench-pulse::before,
+.header-brand::after {
+    background:
+        linear-gradient(90deg,
+            transparent 0 7%,
+            var(--shokk-cyan, #22d3ee) 7% 22%,
+            transparent 22% 27%,
+            var(--shokk-cyan, #22d3ee) 27% 31%,
+            transparent 31% 35%,
+            var(--shokk-orange, #ff7a18) 35% 40%,
+            transparent 40% 45%,
+            var(--shokk-cyan, #22d3ee) 45% 62%,
+            transparent 62% 68%,
+            var(--shokk-orange, #ff7a18) 68% 73%,
+            transparent 73% 78%,
+            var(--shokk-cyan, #22d3ee) 78% 100%) center / 100% 2px no-repeat !important;
+}
+
+.shokker-workbench-pulse::before {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 180% !important;
+    height: 100% !important;
+    clip-path: polygon(0 54%, 12% 54%, 17% 16%, 22% 90%, 27% 54%, 43% 54%, 48% 34%, 53% 72%, 59% 54%, 76% 54%, 81% 18%, 86% 88%, 91% 54%, 100% 54%) !important;
+    filter: drop-shadow(0 0 7px rgba(34, 211, 238, 0.55)) !important;
+    animation: shokkerWorkbenchPulseTravel 1.75s linear infinite, shokkerPulseGlow 1.75s ease-in-out infinite !important;
+    will-change: transform, opacity !important;
+}
+
+.header-brand::after {
+    clip-path: polygon(0 54%, 12% 54%, 17% 16%, 22% 90%, 27% 54%, 43% 54%, 48% 34%, 53% 72%, 59% 54%, 76% 54%, 81% 18%, 86% 88%, 91% 54%, 100% 54%) !important;
+    filter: drop-shadow(0 0 7px rgba(34, 211, 238, 0.45)) !important;
+    animation: shokkerBrandPulseBeat 1.75s ease-in-out infinite !important;
+}
+
+@keyframes shokkerHeaderHeartbeatSweep {
+    0% { background-position: 0 0; }
+    100% { background-position: -260px 0; }
+}
+
+@keyframes shokkerWorkbenchPulseTravel {
+    0% { transform: translateX(-44%); }
+    100% { transform: translateX(8%); }
+}
+
+@keyframes shokkerPulseGlow {
+    0%, 100% { opacity: 0.62; }
+    42%, 52% { opacity: 1; }
+}
+
+@keyframes shokkerBrandPulseBeat {
+    0%, 100% { opacity: 0.62; transform: scaleX(0.96); }
+    42%, 52% { opacity: 1; transform: scaleX(1.03); }
+}
+
+/* ===== SPB UI MODERNIZATION 2026-05-10: Shokker Energy Shock Pass ===== */
+:root {
+    --shokker-electric: #00e5ff;
+    --shokker-heat: #ff7a18;
+    --shokker-pink-hot: #ff2d6f;
+    --shokker-lime: #39ff88;
+    --shokker-deep: #03050b;
+}
+
+body {
+    background:
+        radial-gradient(circle at 16% 12%, rgba(255, 122, 24, 0.16), transparent 24%),
+        radial-gradient(circle at 68% 8%, rgba(0, 229, 255, 0.13), transparent 28%),
+        radial-gradient(circle at 94% 58%, rgba(255, 45, 111, 0.10), transparent 26%),
+        linear-gradient(180deg, #080b14 0%, #03050b 58%, #010208 100%) !important;
+}
+
+body::before {
+    content: "" !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
+    opacity: 0.20 !important;
+    background:
+        linear-gradient(115deg, transparent 0 44%, rgba(0, 229, 255, 0.16) 45%, transparent 47% 61%, rgba(255, 122, 24, 0.12) 62%, transparent 64%),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 5px) !important;
+    mix-blend-mode: screen !important;
+    animation: shokkerAmbientVoltage 8s linear infinite !important;
+}
+
+.app-container,
+.main-layout,
+.center-panel,
+#centerPanel {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.header {
+    border-bottom-color: rgba(255, 122, 24, 0.70) !important;
+    background:
+        radial-gradient(circle at 1% 50%, rgba(255, 122, 24, 0.34), transparent 18%),
+        radial-gradient(circle at 82% 0%, rgba(0, 229, 255, 0.18), transparent 30%),
+        linear-gradient(180deg, rgba(17, 24, 39, 0.98), rgba(3, 5, 12, 0.99)) !important;
+    box-shadow:
+        0 0 0 1px rgba(0, 229, 255, 0.12),
+        0 16px 42px rgba(0, 0, 0, 0.48),
+        inset 0 -2px 0 rgba(255, 122, 24, 0.28) !important;
+}
+
+.header-brand::before {
+    animation: shokkerFaceIgnite 2.2s ease-in-out infinite !important;
+    box-shadow:
+        0 0 0 2px rgba(0, 229, 255, 0.26),
+        0 0 28px rgba(255, 122, 24, 0.42),
+        inset 0 0 18px rgba(255, 122, 24, 0.28) !important;
+}
+
+.header h1,
+.header-brand h1 {
+    color: #fff7ed !important;
+    background: linear-gradient(90deg, #fff7ed 0%, #ffb347 24%, #00e5ff 54%, #ff2d6f 84%, #fff7ed 100%) !important;
+    background-size: 220% 100% !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    text-shadow: 0 0 18px rgba(255, 122, 24, 0.28), 0 0 28px rgba(0, 229, 255, 0.12) !important;
+    animation: shokkerTitleCharge 5.2s ease-in-out infinite !important;
+}
+
+.shokker-workbench-strip {
+    border-bottom: 1px solid rgba(255, 122, 24, 0.34) !important;
+    background:
+        linear-gradient(90deg, rgba(255, 122, 24, 0.20), rgba(0, 229, 255, 0.10) 46%, rgba(255, 45, 111, 0.13)),
+        rgba(4, 7, 14, 0.96) !important;
+    box-shadow: inset 0 -1px 0 rgba(0, 229, 255, 0.22), 0 10px 28px rgba(0, 0, 0, 0.30) !important;
+}
+
+.shokker-workbench-title {
+    color: #fff7ed !important;
+    letter-spacing: 0.18em !important;
+    text-shadow: 0 0 16px rgba(255, 122, 24, 0.46), 0 0 24px rgba(0, 229, 255, 0.18) !important;
+}
+
+.shokker-workbench-chip {
+    border-color: rgba(255, 122, 24, 0.35) !important;
+    background: rgba(255, 122, 24, 0.10) !important;
+    color: #fed7aa !important;
+}
+
+.workbench-command-bar {
+    background:
+        linear-gradient(90deg, rgba(0, 229, 255, 0.10), rgba(255, 122, 24, 0.08), rgba(255, 45, 111, 0.06)),
+        rgba(5, 10, 18, 0.92) !important;
+    border-bottom-color: rgba(0, 229, 255, 0.22) !important;
+}
+
+.workbench-command-label,
+#activeToolLabel,
+#contextScopeChip {
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+.vertical-toolbar,
+.left-panel,
+.zone-editor-float,
+#rightPanel {
+    box-shadow:
+        inset 0 0 0 1px rgba(0, 229, 255, 0.060),
+        0 0 34px rgba(0, 0, 0, 0.30) !important;
+}
+
+.vtool-btn {
+    transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease !important;
+}
+
+.vtool-btn:hover {
+    transform: translateY(-1px) scale(1.04) !important;
+    border-color: rgba(0, 229, 255, 0.45) !important;
+    background: rgba(0, 229, 255, 0.12) !important;
+    box-shadow: 0 0 18px rgba(0, 229, 255, 0.14) !important;
+}
+
+.vtool-btn.active {
+    color: #fff7ed !important;
+    animation: shokkerToolPop 2.6s ease-in-out infinite !important;
+}
+
+#zoneList::before {
+    color: #67e8f9 !important;
+    text-shadow: 0 0 12px rgba(0, 229, 255, 0.38) !important;
+}
+
+#zoneList .zone-card {
+    transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background 140ms ease !important;
+}
+
+#zoneList .zone-card:hover {
+    transform: translateX(2px) !important;
+    border-color: rgba(0, 229, 255, 0.36) !important;
+    box-shadow:
+        0 0 0 1px rgba(0, 229, 255, 0.14),
+        0 12px 28px rgba(0, 0, 0, 0.34) !important;
+}
+
+#zoneList .zone-card.selected {
+    background:
+        linear-gradient(90deg, rgba(0, 229, 255, 0.18), transparent 12%),
+        linear-gradient(180deg, rgba(255, 122, 24, 0.24), rgba(8, 12, 22, 0.96)) !important;
+    box-shadow:
+        0 0 0 1px rgba(255, 122, 24, 0.74),
+        0 0 0 2px rgba(0, 229, 255, 0.20),
+        0 0 28px rgba(255, 122, 24, 0.19),
+        inset 5px 0 0 var(--shokker-electric) !important;
+}
+
+.zone-editor-float .zone-detail-header {
+    background:
+        linear-gradient(90deg, rgba(255, 122, 24, 0.18), rgba(0, 229, 255, 0.09), rgba(255, 45, 111, 0.07)) !important;
+    border-bottom: 1px solid rgba(255, 122, 24, 0.30) !important;
+}
+
+.zone-editor-float .section-collapsible > .section-header {
+    color: #fff7ed !important;
+    border-left: 2px solid rgba(255, 122, 24, 0.68) !important;
+    box-shadow: inset 0 -1px 0 rgba(0, 229, 255, 0.12) !important;
+}
+
+.zone-editor-float .section-collapsible > .section-header:hover {
+    background:
+        linear-gradient(90deg, rgba(255, 122, 24, 0.16), rgba(0, 229, 255, 0.11), rgba(255, 45, 111, 0.08)) !important;
+}
+
+.zone-editor-float .btn,
+.workbench-command-bar .btn,
+#rightPanel button,
+#renderHistoryStrip .btn,
+#renderHistoryStrip button {
+    border-color: rgba(0, 229, 255, 0.20) !important;
+    background:
+        linear-gradient(180deg, rgba(18, 28, 46, 0.94), rgba(7, 11, 20, 0.96)) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035) !important;
+}
+
+.zone-editor-float .btn:hover,
+.workbench-command-bar .btn:hover,
+#rightPanel button:hover {
+    border-color: rgba(255, 122, 24, 0.62) !important;
+    color: #fff7ed !important;
+    box-shadow: 0 0 18px rgba(255, 122, 24, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+.split-view-container {
+    border: 1px solid rgba(0, 229, 255, 0.20) !important;
+    border-radius: 14px !important;
+    background:
+        radial-gradient(circle at 50% 15%, rgba(0, 229, 255, 0.11), transparent 36%),
+        linear-gradient(180deg, rgba(4, 9, 18, 0.98), rgba(1, 3, 8, 0.98)) !important;
+    box-shadow:
+        0 0 0 1px rgba(255, 122, 24, 0.10),
+        0 0 48px rgba(0, 229, 255, 0.08),
+        inset 0 0 80px rgba(255, 122, 24, 0.025) !important;
+}
+
+.split-pane > .preview-inner::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
+    opacity: 0.14 !important;
+    background:
+        linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.18), transparent),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 7px) !important;
+    mix-blend-mode: screen !important;
+}
+
+.preview-inner > #previewPaintPane,
+.preview-inner > #previewBeforePane,
+.preview-inner > #previewSpecPane {
+    z-index: 1 !important;
+}
+
+.preview-inner > #previewPaintPane img,
+.preview-inner > #previewBeforePane img {
+    border: 1px solid rgba(0, 229, 255, 0.16) !important;
+    box-shadow:
+        0 0 0 1px rgba(255, 122, 24, 0.12),
+        0 22px 52px rgba(0, 0, 0, 0.42),
+        0 0 48px rgba(0, 229, 255, 0.08) !important;
+}
+
+.preview-inner > #previewSpecPane {
+    animation: shokkerSpecTileCharge 3.8s ease-in-out infinite !important;
+}
+
+#renderFloat.render-float {
+    border-color: rgba(255, 122, 24, 0.40) !important;
+    box-shadow:
+        0 0 0 1px rgba(0, 229, 255, 0.18),
+        0 22px 54px rgba(0, 0, 0, 0.45),
+        0 0 38px rgba(255, 122, 24, 0.18) !important;
+}
+
+#renderFloat .primary-render-action,
+#renderFloat .btn-render,
+#renderFloat .btn-render.primary-render-action {
+    background:
+        linear-gradient(90deg, #ff6a00, #ff9d18 38%, #ff2d6f 72%, #ff6a00) !important;
+    background-size: 220% 100% !important;
+    border: 1px solid rgba(255, 210, 120, 0.68) !important;
+    color: #fff7ed !important;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35) !important;
+    box-shadow:
+        0 0 0 1px rgba(0, 229, 255, 0.20),
+        0 0 28px rgba(255, 122, 24, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.26) !important;
+    animation: shokkerRenderHeat 2.1s ease-in-out infinite !important;
+}
+
+#rightPanel .rp-tab.active,
+.spec-channel-btn.active,
+.swatch-popup .swatch-catalog-card.selected,
+.spec-pattern-thumb-card.sp-thumb-active {
+    box-shadow:
+        0 0 0 1px rgba(0, 229, 255, 0.32),
+        0 0 24px rgba(255, 122, 24, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+@keyframes shokkerAmbientVoltage {
+    0% { background-position: 0 0, 0 0; }
+    100% { background-position: 160px 0, 0 24px; }
+}
+
+@keyframes shokkerFaceIgnite {
+    0%, 100% { transform: scale(1); filter: saturate(1); }
+    50% { transform: scale(1.06); filter: saturate(1.35); }
+}
+
+@keyframes shokkerTitleCharge {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+@keyframes shokkerToolPop {
+    0%, 100% { box-shadow: 0 0 0 1px rgba(0, 229, 255, 0.36), 0 8px 18px rgba(0, 0, 0, 0.26); }
+    50% { box-shadow: 0 0 0 1px rgba(255, 122, 24, 0.58), 0 0 26px rgba(0, 229, 255, 0.20); }
+}
+
+@keyframes shokkerSpecTileCharge {
+    0%, 100% { box-shadow: 0 14px 34px rgba(0, 0, 0, 0.48), 0 0 0 1px rgba(34, 211, 238, 0.22), 0 0 24px rgba(255, 122, 24, 0.14); }
+    50% { box-shadow: 0 14px 34px rgba(0, 0, 0, 0.48), 0 0 0 1px rgba(0, 229, 255, 0.42), 0 0 34px rgba(255, 122, 24, 0.28); }
+}
+
+@keyframes shokkerRenderHeat {
+    0%, 100% { background-position: 0% 50%; transform: translateY(0); }
+    50% { background-position: 100% 50%; transform: translateY(-1px); }
+}
+
+/* ===== SPB UI MODERNIZATION 2026-05-10: Shokker Nitro Visible Pass ===== */
+body {
+    color: #eef7ff !important;
+    background:
+        radial-gradient(circle at 8% 18%, rgba(255, 122, 24, 0.34), transparent 20%),
+        radial-gradient(circle at 72% 9%, rgba(0, 229, 255, 0.26), transparent 28%),
+        radial-gradient(circle at 92% 78%, rgba(255, 45, 111, 0.20), transparent 24%),
+        linear-gradient(135deg, #050813 0%, #090b19 42%, #03050b 100%) !important;
+}
+
+body::after {
+    content: "" !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
+    opacity: 0.34 !important;
+    background:
+        linear-gradient(112deg, transparent 0 23%, rgba(255, 122, 24, 0.20) 24%, transparent 26% 52%, rgba(0, 229, 255, 0.22) 53%, transparent 55% 100%),
+        linear-gradient(72deg, transparent 0 39%, rgba(255, 45, 111, 0.15) 40%, transparent 42% 100%) !important;
+    mix-blend-mode: screen !important;
+    animation: shokkerNitroSweep 5.5s linear infinite !important;
+}
+
+.header {
+    background:
+        linear-gradient(90deg, rgba(255, 122, 24, 0.42), rgba(5, 8, 15, 0.98) 23%, rgba(0, 229, 255, 0.24) 56%, rgba(255, 45, 111, 0.20)),
+        #050813 !important;
+    border-bottom: 2px solid rgba(255, 122, 24, 0.92) !important;
+    box-shadow:
+        0 0 0 1px rgba(0, 229, 255, 0.28),
+        0 0 34px rgba(255, 122, 24, 0.22),
+        0 18px 46px rgba(0, 0, 0, 0.56),
+        inset 0 -18px 34px rgba(0, 229, 255, 0.055) !important;
+}
+
+.header::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none !important;
+    opacity: 0.42 !important;
+    background:
+        linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.20), transparent),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 18px) !important;
+    mix-blend-mode: screen !important;
+    animation: shokkerNitroScan 3.2s linear infinite !important;
+}
+
+.header-brand h1,
+.header h1 {
+    font-size: 18px !important;
+    color: #fff !important;
+    filter: drop-shadow(0 0 10px rgba(255, 122, 24, 0.55)) drop-shadow(0 0 20px rgba(0, 229, 255, 0.28)) !important;
+}
+
+.header-brand::before {
+    background:
+        radial-gradient(circle at 35% 28%, #fff6d7 0 12%, #ffb347 26%, #ff7a18 48%, #101827 78%) !important;
+    color: #190b02 !important;
+    border-color: #ffb347 !important;
+    transform-origin: center !important;
+}
+
+.main-layout {
+    background:
+        linear-gradient(90deg, rgba(0, 229, 255, 0.10), transparent 11%, transparent 88%, rgba(255, 122, 24, 0.10)),
+        transparent !important;
+}
+
+.left-panel,
+.vertical-toolbar,
+.zone-editor-float,
+#rightPanel {
+    background:
+        linear-gradient(180deg, rgba(17, 24, 39, 0.98), rgba(4, 7, 14, 0.98)) !important;
+    border-color: rgba(0, 229, 255, 0.24) !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 122, 24, 0.10),
+        inset 0 0 38px rgba(0, 229, 255, 0.045),
+        0 0 28px rgba(0, 229, 255, 0.08),
+        0 18px 46px rgba(0, 0, 0, 0.40) !important;
+}
+
+.shokker-workbench-strip {
+    min-height: 32px !important;
+    background:
+        linear-gradient(90deg, rgba(255, 122, 24, 0.36), rgba(0, 229, 255, 0.24), rgba(255, 45, 111, 0.20)),
+        rgba(5, 8, 15, 0.98) !important;
+    border-top: 1px solid rgba(0, 229, 255, 0.40) !important;
+    border-bottom: 1px solid rgba(255, 122, 24, 0.74) !important;
+}
+
+.shokker-workbench-brand {
+    filter: drop-shadow(0 0 12px rgba(255, 122, 24, 0.42)) !important;
+}
+
+.shokker-workbench-chip,
+.workbench-command-label,
+#activeToolLabel,
+#contextScopeChip,
+.split-pane-label,
+.preview-dual-label {
+    border-color: rgba(0, 229, 255, 0.42) !important;
+    background:
+        linear-gradient(90deg, rgba(0, 229, 255, 0.20), rgba(255, 122, 24, 0.12)) !important;
+    color: #ecfeff !important;
+}
+
+.workbench-command-bar {
+    background:
+        linear-gradient(90deg, rgba(0, 229, 255, 0.18), rgba(255, 122, 24, 0.15), rgba(255, 45, 111, 0.10)),
+        rgba(4, 8, 15, 0.96) !important;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.44) !important;
+}
+
+.vtool-group {
+    background:
+        linear-gradient(180deg, rgba(255, 122, 24, 0.08), rgba(0, 229, 255, 0.055)),
+        rgba(5, 10, 18, 0.84) !important;
+    border-color: rgba(0, 229, 255, 0.20) !important;
+}
+
+.vtool-btn {
+    color: #bdefff !important;
+}
+
+.vtool-btn.active,
+.vtool-btn:hover {
+    color: #fff !important;
+    border-color: rgba(255, 122, 24, 0.95) !important;
+    background:
+        radial-gradient(circle at 40% 24%, rgba(255, 255, 255, 0.32), transparent 36%),
+        linear-gradient(180deg, rgba(255, 122, 24, 0.32), rgba(0, 229, 255, 0.20)) !important;
+    box-shadow:
+        0 0 0 1px rgba(0, 229, 255, 0.46),
+        0 0 22px rgba(255, 122, 24, 0.34) !important;
+}
+
+#zoneList {
+    background:
+        linear-gradient(180deg, rgba(0, 229, 255, 0.08), transparent 20%),
+        rgba(4, 8, 15, 0.98) !important;
+}
+
+#zoneList::before {
+    color: #00e5ff !important;
+    font-size: 10px !important;
+    letter-spacing: 0.22em !important;
+    text-shadow: 0 0 14px rgba(0, 229, 255, 0.70), 0 0 22px rgba(255, 122, 24, 0.30) !important;
+}
+
+#zoneList .zone-card {
+    border-color: rgba(0, 229, 255, 0.18) !important;
+    background:
+        linear-gradient(90deg, rgba(0, 229, 255, 0.055), transparent 16%),
+        linear-gradient(180deg, rgba(18, 26, 43, 0.94), rgba(5, 8, 15, 0.98)) !important;
+}
+
+#zoneList .zone-card.selected {
+    border-color: #ff7a18 !important;
+    background:
+        linear-gradient(90deg, rgba(0, 229, 255, 0.38), transparent 18%),
+        linear-gradient(180deg, rgba(255, 122, 24, 0.42), rgba(16, 18, 28, 0.98)) !important;
+    box-shadow:
+        0 0 0 1px #ff7a18,
+        0 0 0 3px rgba(0, 229, 255, 0.22),
+        0 0 34px rgba(255, 122, 24, 0.34),
+        inset 6px 0 0 #00e5ff !important;
+}
+
+#zoneList .zone-card.selected .zone-number,
+.zone-editor-float .zone-number {
+    background:
+        linear-gradient(135deg, #ff7a18, #ff2d6f) !important;
+    color: #fff !important;
+    border-color: rgba(255, 255, 255, 0.28) !important;
+    box-shadow: 0 0 16px rgba(255, 122, 24, 0.42) !important;
+}
+
+.zone-editor-float .zone-detail-header {
+    background:
+        linear-gradient(90deg, rgba(255, 122, 24, 0.34), rgba(0, 229, 255, 0.20), rgba(255, 45, 111, 0.14)),
+        rgba(5, 8, 15, 0.98) !important;
+}
+
+.zone-editor-float .section-collapsible {
+    background:
+        linear-gradient(180deg, rgba(20, 31, 52, 0.94), rgba(5, 9, 17, 0.96)) !important;
+    border-color: rgba(0, 229, 255, 0.20) !important;
+}
+
+.zone-editor-float .section-collapsible > .section-header {
+    min-height: 36px !important;
+    background:
+        linear-gradient(90deg, rgba(0, 229, 255, 0.18), transparent 42%, rgba(255, 122, 24, 0.18)) !important;
+    border-left-color: #ff7a18 !important;
+    color: #fff7ed !important;
+}
+
+.zone-editor-float .section-header-label {
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.30) !important;
+}
+
+.split-view-container {
+    border: 2px solid rgba(0, 229, 255, 0.40) !important;
+    background:
+        radial-gradient(circle at 50% 45%, rgba(0, 229, 255, 0.16), transparent 44%),
+        radial-gradient(circle at 20% 10%, rgba(255, 122, 24, 0.13), transparent 30%),
+        linear-gradient(180deg, rgba(6, 12, 24, 0.99), rgba(1, 3, 8, 0.99)) !important;
+    box-shadow:
+        0 0 0 1px rgba(255, 122, 24, 0.24),
+        0 0 50px rgba(0, 229, 255, 0.18),
+        inset 0 0 90px rgba(255, 122, 24, 0.055) !important;
+}
+
+.split-view-container::before,
+.split-view-container::after {
+    content: "" !important;
+    position: absolute !important;
+    z-index: 3 !important;
+    pointer-events: none !important;
+    width: 160px !important;
+    height: 52px !important;
+    opacity: 0.72 !important;
+    background:
+        linear-gradient(90deg, #00e5ff, transparent 70%),
+        linear-gradient(180deg, #ff7a18, transparent 70%) !important;
+    filter: drop-shadow(0 0 14px rgba(0, 229, 255, 0.45)) !important;
+}
+
+.split-view-container::before {
+    left: 12px !important;
+    top: 12px !important;
+    clip-path: polygon(0 0, 100% 0, 100% 8px, 8px 8px, 8px 100%, 0 100%) !important;
+}
+
+.split-view-container::after {
+    right: 12px !important;
+    bottom: 12px !important;
+    transform: rotate(180deg) !important;
+    clip-path: polygon(0 0, 100% 0, 100% 8px, 8px 8px, 8px 100%, 0 100%) !important;
+}
+
+.preview-inner > #previewPaintPane img,
+.preview-inner > #previewBeforePane img {
+    border: 2px solid rgba(0, 229, 255, 0.22) !important;
+    box-shadow:
+        0 0 0 1px rgba(255, 122, 24, 0.28),
+        0 26px 64px rgba(0, 0, 0, 0.54),
+        0 0 56px rgba(0, 229, 255, 0.16) !important;
+}
+
+.preview-inner > #previewSpecPane {
+    border-width: 3px !important;
+    border-color: #ff7a18 !important;
+}
+
+#renderFloat.render-float {
+    background:
+        linear-gradient(90deg, rgba(255, 122, 24, 0.20), rgba(0, 229, 255, 0.13), rgba(255, 45, 111, 0.10)),
+        rgba(5, 8, 15, 0.92) !important;
+    border-color: rgba(255, 122, 24, 0.70) !important;
+    box-shadow:
+        0 0 0 1px rgba(0, 229, 255, 0.36),
+        0 0 42px rgba(255, 122, 24, 0.32),
+        0 24px 64px rgba(0, 0, 0, 0.52) !important;
+}
+
+#renderFloat .primary-render-action,
+#renderFloat .btn-render,
+#renderFloat .btn-render.primary-render-action {
+    min-height: 48px !important;
+    font-size: 13px !important;
+    letter-spacing: 0.13em !important;
+    background:
+        linear-gradient(90deg, #ff4d00, #ff9a18 30%, #ff2d6f 62%, #00e5ff 100%) !important;
+    background-size: 240% 100% !important;
+}
+
+#rightPanel .rp-tab.active,
+#rightPanel .right-panel-primary-action,
+#rightPanel .right-panel-secondary-action {
+    border-color: rgba(0, 229, 255, 0.45) !important;
+    box-shadow: 0 0 24px rgba(0, 229, 255, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+@keyframes shokkerNitroSweep {
+    0% { background-position: -220px 0, 160px 0; }
+    100% { background-position: 220px 0, -160px 0; }
+}
+
+@keyframes shokkerNitroScan {
+    0% { background-position: -180px 0, 0 0; }
+    100% { background-position: 180px 0, 36px 0; }
+}
+
+/* ===== SPB UI MODERNIZATION 2026-05-10: Shokker Stage Lights Pass ===== */
+.header-brand {
+    position: relative !important;
+    overflow: visible !important;
+    padding-right: 18px !important;
+}
+
+.header-brand::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 6px !important;
+    right: 8px !important;
+    bottom: -9px !important;
+    height: 16px !important;
+    z-index: 5 !important;
+    opacity: 0.96 !important;
+    pointer-events: none !important;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 24' preserveAspectRatio='none'%3E%3Cpath d='M0 14 H38 L46 14 L53 5 L61 22 L70 2 L78 14 H116 L126 14 L134 8 L142 18 L150 14 H180' fill='none' stroke='%2300e5ff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M0 15 H38 L46 15 L53 6 L61 23 L70 3 L78 15 H116 L126 15 L134 9 L142 19 L150 15 H180' fill='none' stroke='%23ff7a18' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round' opacity='.95'/%3E%3C/svg%3E") !important;
+    background-repeat: repeat-x !important;
+    background-size: 180px 16px !important;
+    filter:
+        drop-shadow(0 0 8px rgba(0, 229, 255, 0.72))
+        drop-shadow(0 0 12px rgba(255, 122, 24, 0.50)) !important;
+    animation: shokkerStageEkgRun 2.35s linear infinite !important;
+}
+
+.header-brand h1 {
+    letter-spacing: 0.045em !important;
+    color: #ffffff !important;
+    text-shadow:
+        0 0 8px rgba(255, 122, 24, 0.72),
+        0 0 18px rgba(0, 229, 255, 0.46),
+        0 2px 0 rgba(0, 0, 0, 0.85) !important;
+}
+
+.shokker-workbench-pulse {
+    width: 138px !important;
+    min-width: 138px !important;
+    height: 18px !important;
+    opacity: 1 !important;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 24' preserveAspectRatio='none'%3E%3Cpath d='M0 14 H38 L46 14 L53 5 L61 22 L70 2 L78 14 H116 L126 14 L134 8 L142 18 L150 14 H180' fill='none' stroke='%2300e5ff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M0 15 H38 L46 15 L53 6 L61 23 L70 3 L78 15 H116 L126 15 L134 9 L142 19 L150 15 H180' fill='none' stroke='%23ff7a18' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round' opacity='.95'/%3E%3C/svg%3E") !important;
+    background-repeat: repeat-x !important;
+    background-size: 180px 18px !important;
+    filter:
+        drop-shadow(0 0 8px rgba(0, 229, 255, 0.70))
+        drop-shadow(0 0 14px rgba(255, 122, 24, 0.42)) !important;
+    animation: shokkerStageEkgRun 2.1s linear infinite !important;
+}
+
+.shokker-workbench-face {
+    background:
+        radial-gradient(circle at 35% 32%, #fff8d6 0 10%, transparent 11%),
+        radial-gradient(circle at 68% 31%, #0b1320 0 8%, transparent 9%),
+        radial-gradient(circle at 54% 65%, #0b1320 0 7%, transparent 8%),
+        linear-gradient(135deg, #ffcc32, #ff7a18 48%, #ff2d6f) !important;
+    border: 2px solid rgba(255, 242, 194, 0.72) !important;
+    box-shadow:
+        0 0 0 2px rgba(0, 229, 255, 0.22),
+        0 0 24px rgba(255, 122, 24, 0.66),
+        0 0 36px rgba(0, 229, 255, 0.26) !important;
+    color: transparent !important;
+    animation: shokkerStageFaceKick 1.85s ease-in-out infinite !important;
+}
+
+.left-panel::before,
+#rightPanel::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 4px !important;
+    z-index: 4 !important;
+    pointer-events: none !important;
+    background:
+        linear-gradient(180deg, #ff7a18, #00e5ff 34%, #ff2d6f 68%, #ff7a18) !important;
+    box-shadow:
+        0 0 18px rgba(0, 229, 255, 0.50),
+        0 0 26px rgba(255, 122, 24, 0.42) !important;
+    animation: shokkerStageRailPulse 2.8s ease-in-out infinite !important;
+}
+
+.left-panel::before {
+    right: 0 !important;
+}
+
+#rightPanel::before {
+    left: 0 !important;
+}
+
+.section-collapsible > .section-header,
+.zone-editor-float .section-collapsible > .section-header {
+    text-transform: uppercase !important;
+    letter-spacing: 0.075em !important;
+}
+
+.zone-editor-float .section-collapsible > .section-header::after {
+    content: "" !important;
+    position: absolute !important;
+    right: 38px !important;
+    top: 50% !important;
+    width: 88px !important;
+    height: 8px !important;
+    transform: translateY(-50%) !important;
+    opacity: 0.72 !important;
+    pointer-events: none !important;
+    background:
+        linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.75), rgba(255, 122, 24, 0.86), transparent) !important;
+    filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.52)) !important;
+}
+
+#zoneList .zone-card.selected .zone-name-input {
+    color: #ffffff !important;
+    text-shadow:
+        0 0 9px rgba(255, 122, 24, 0.80),
+        0 0 16px rgba(0, 229, 255, 0.46) !important;
+}
+
+#zoneList .zone-card.selected::before {
+    content: "" !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 7px !important;
+    border-radius: 7px 0 0 7px !important;
+    background:
+        linear-gradient(180deg, #00e5ff, #ff7a18, #ff2d6f) !important;
+    box-shadow:
+        0 0 14px rgba(0, 229, 255, 0.72),
+        0 0 20px rgba(255, 122, 24, 0.42) !important;
+}
+
+.canvas-viewport::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 10px !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+    border-radius: 12px !important;
+    border:
+        1px solid rgba(0, 229, 255, 0.22) !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 122, 24, 0.10),
+        inset 0 0 46px rgba(0, 229, 255, 0.04) !important;
+}
+
+@keyframes shokkerStageEkgRun {
+    0% { background-position: 0 50%; }
+    100% { background-position: 180px 50%; }
+}
+
+@keyframes shokkerStageFaceKick {
+    0%, 100% { transform: scale(1) rotate(0deg); filter: saturate(1.05); }
+    50% { transform: scale(1.08) rotate(-4deg); filter: saturate(1.35); }
+}
+
+@keyframes shokkerStageRailPulse {
+    0%, 100% { opacity: 0.62; filter: saturate(1); }
+    50% { opacity: 1; filter: saturate(1.45); }
+}
+
+/* ===== SPB UI MODERNIZATION 2026-05-10: Pit Wall Visual Upgrade Pass ===== */
+.onboarding-empty {
+    position: relative !important;
+    max-width: min(780px, calc(100% - 72px)) !important;
+    margin: 42px auto !important;
+    padding: 46px 42px 40px !important;
+    border: 1px solid rgba(0, 229, 255, 0.32) !important;
+    border-radius: 16px !important;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(255, 122, 24, 0.22), transparent 34%),
+        radial-gradient(circle at 12% 18%, rgba(0, 229, 255, 0.18), transparent 30%),
+        linear-gradient(150deg, rgba(11, 18, 32, 0.94), rgba(3, 6, 14, 0.90)) !important;
+    box-shadow:
+        0 0 0 1px rgba(255, 122, 24, 0.18),
+        0 28px 90px rgba(0, 0, 0, 0.62),
+        inset 0 0 70px rgba(0, 229, 255, 0.055) !important;
+    overflow: hidden !important;
+}
+
+.onboarding-empty::before {
+    content: ":)" !important;
+    position: absolute !important;
+    right: 36px !important;
+    top: 18px !important;
+    font-size: 92px !important;
+    line-height: 1 !important;
+    font-weight: 950 !important;
+    color: rgba(255, 122, 24, 0.13) !important;
+    text-shadow:
+        0 0 34px rgba(255, 122, 24, 0.26),
+        0 0 52px rgba(0, 229, 255, 0.16) !important;
+    pointer-events: none !important;
+}
+
+.onboarding-empty::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 26px !important;
+    right: 26px !important;
+    bottom: 18px !important;
+    height: 18px !important;
+    pointer-events: none !important;
+    opacity: 0.70 !important;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 24' preserveAspectRatio='none'%3E%3Cpath d='M0 14 H38 L46 14 L53 5 L61 22 L70 2 L78 14 H116 L126 14 L134 8 L142 18 L150 14 H180' fill='none' stroke='%2300e5ff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M0 15 H38 L46 15 L53 6 L61 23 L70 3 L78 15 H116 L126 15 L134 9 L142 19 L150 15 H180' fill='none' stroke='%23ff7a18' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round' opacity='.95'/%3E%3C/svg%3E") !important;
+    background-repeat: repeat-x !important;
+    background-size: 180px 18px !important;
+    filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.45)) !important;
+}
+
+.onboarding-empty h2 {
+    font-size: 28px !important;
+    letter-spacing: 0.035em !important;
+    color: #ffb347 !important;
+    text-shadow:
+        0 0 18px rgba(255, 122, 24, 0.46),
+        0 0 26px rgba(0, 229, 255, 0.20) !important;
+}
+
+.onboarding-step {
+    min-height: 38px !important;
+    padding: 8px 10px !important;
+    margin: 6px 0 !important;
+    border: 1px solid rgba(0, 229, 255, 0.16) !important;
+    border-radius: 10px !important;
+    background:
+        linear-gradient(90deg, rgba(0, 229, 255, 0.10), rgba(255, 122, 24, 0.055)) !important;
+    color: #cfe9f7 !important;
+}
+
+.step-num {
+    background:
+        linear-gradient(135deg, #ff2d6f, #ff7a18 55%, #00e5ff) !important;
+    color: #fff !important;
+    box-shadow: 0 0 18px rgba(255, 122, 24, 0.34) !important;
+}
+
+#rpFinishesContent > .section-header,
+#rpLayersContent .right-panel-actionbar {
+    background:
+        linear-gradient(90deg, rgba(255, 122, 24, 0.20), rgba(0, 229, 255, 0.12), rgba(255, 45, 111, 0.08)) !important;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.34) !important;
+}
+
+#rpFinishesContent > .section-header h3 {
+    color: #ffffff !important;
+    letter-spacing: 0.12em !important;
+    text-shadow: 0 0 12px rgba(255, 122, 24, 0.54) !important;
+}
+
+.finish-search-bar {
+    padding: 8px !important;
+    background:
+        linear-gradient(180deg, rgba(0, 229, 255, 0.075), rgba(255, 122, 24, 0.045)) !important;
+    border-bottom: 1px solid rgba(255, 122, 24, 0.18) !important;
+}
+
+#finishSearch {
+    min-height: 34px !important;
+    border-color: rgba(0, 229, 255, 0.36) !important;
+    background: rgba(2, 6, 13, 0.88) !important;
+    box-shadow: inset 0 0 18px rgba(0, 229, 255, 0.055) !important;
+}
+
+.finish-category-rail {
+    padding: 8px !important;
+    gap: 7px !important;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(255, 122, 24, 0.16), transparent 42%),
+        rgba(4, 8, 15, 0.84) !important;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.26) !important;
+}
+
+.finish-category-rail button,
+.finish-category-rail .finish-category-card,
+.finish-category-rail [role="button"] {
+    border-color: rgba(0, 229, 255, 0.30) !important;
+    background:
+        linear-gradient(135deg, rgba(0, 229, 255, 0.13), rgba(255, 122, 24, 0.075)) !important;
+    box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.018) !important;
+}
+
+.finish-item.finish-catalog-card,
+#rpFinishesContent .finish-item {
+    position: relative !important;
+    margin: 6px 8px !important;
+    padding: 9px 10px 9px 12px !important;
+    border: 1px solid rgba(0, 229, 255, 0.18) !important;
+    border-radius: 10px !important;
+    background:
+        linear-gradient(90deg, rgba(0, 229, 255, 0.10), transparent 18%),
+        linear-gradient(180deg, rgba(17, 25, 43, 0.96), rgba(5, 9, 17, 0.98)) !important;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.24) !important;
+    overflow: hidden !important;
+}
+
+.finish-item.finish-catalog-card::before,
+#rpFinishesContent .finish-item::before {
+    content: "" !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 4px !important;
+    background: linear-gradient(180deg, #00e5ff, #ff7a18, #ff2d6f) !important;
+    opacity: 0.80 !important;
+}
+
+.finish-item.finish-catalog-card:hover,
+#rpFinishesContent .finish-item:hover {
+    transform: translateY(-1px) !important;
+    border-color: rgba(255, 122, 24, 0.55) !important;
+    box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.36),
+        0 0 28px rgba(255, 122, 24, 0.18) !important;
+}
+
+.finish-item-name {
+    color: #f8fbff !important;
+    font-weight: 850 !important;
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.22) !important;
+}
+
+.finish-item-desc {
+    color: #93a9bf !important;
+}
+
+.finish-item-assign {
+    border-color: rgba(255, 122, 24, 0.48) !important;
+    color: #ffd2a8 !important;
+    background: rgba(255, 122, 24, 0.12) !important;
+}
+
+#layerPanelContent .layer-row,
+#rpLayersContent .layer-row {
+    margin: 7px 6px !important;
+    padding: 9px !important;
+    border: 1px solid rgba(0, 229, 255, 0.16) !important;
+    border-radius: 10px !important;
+    background:
+        linear-gradient(90deg, rgba(255, 122, 24, 0.10), transparent 22%),
+        linear-gradient(180deg, rgba(17, 24, 39, 0.95), rgba(5, 8, 15, 0.98)) !important;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.20) !important;
+}
+
+#layerPanelContent .layer-row:hover,
+#rpLayersContent .layer-row:hover {
+    border-color: rgba(0, 229, 255, 0.48) !important;
+    box-shadow:
+        0 0 0 1px rgba(255, 122, 24, 0.18),
+        0 14px 34px rgba(0, 0, 0, 0.34) !important;
+}
+
+.split-pane-label {
+    min-height: 34px !important;
+    border-radius: 999px !important;
+    border-color: rgba(0, 229, 255, 0.34) !important;
+    background:
+        linear-gradient(90deg, rgba(0, 229, 255, 0.18), rgba(255, 122, 24, 0.12)),
+        rgba(5, 8, 15, 0.88) !important;
+    box-shadow: 0 0 26px rgba(0, 229, 255, 0.10) !important;
+}
+
+/* ===== SPB UI MODERNIZATION 2026-05-10: Control Deck Readability Pass ===== */
+.zone-editor-float .zone-detail-body {
+    background:
+        linear-gradient(180deg, rgba(0, 229, 255, 0.035), transparent 22%),
+        rgba(3, 7, 14, 0.98) !important;
+}
+
+.zone-editor-float .color-selector,
+.zone-editor-float .zone-finish-row,
+.zone-editor-float .stack-control-group,
+.zone-editor-float .pattern-stack-section,
+.zone-editor-float .combo-section,
+.zone-editor-float .base-position-controls,
+.zone-editor-float .zone-base-rotate-row,
+.zone-editor-float .spec-pattern-main-controls,
+.zone-editor-float .overlay-spec-pattern-controls,
+.fine-tuning-panel .fine-tuning-options > *,
+.swatch-popup .swatch-catalog-card {
+    border-radius: 10px !important;
+    border: 1px solid rgba(0, 229, 255, 0.18) !important;
+    background:
+        linear-gradient(135deg, rgba(0, 229, 255, 0.075), rgba(255, 122, 24, 0.045)),
+        rgba(8, 13, 24, 0.92) !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.018),
+        0 10px 24px rgba(0, 0, 0, 0.20) !important;
+}
+
+.zone-editor-float .stack-control-group,
+.zone-editor-float .zone-base-rotate-row > div:first-child > .stack-control-group,
+.zone-editor-float .base-position-controls > .stack-control-group,
+.zone-editor-float .spec-pattern-main-controls > .stack-control-group,
+.zone-editor-float .overlay-spec-pattern-controls > .stack-control-group {
+    min-height: 34px !important;
+    padding: 7px 8px !important;
+    gap: 8px !important;
+    align-items: center !important;
+}
+
+.zone-editor-float .stack-label-mini,
+.zone-editor-float .tol-label,
+.zone-editor-float .hex-label,
+.zone-editor-float .color-selector-label,
+.zone-editor-float .pattern-stack-header,
+.fine-tuning-panel label {
+    color: #bfefff !important;
+    font-weight: 850 !important;
+    letter-spacing: 0.045em !important;
+    text-transform: uppercase !important;
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.18) !important;
+}
+
+.zone-editor-float .color-selector-help,
+.zone-editor-float .zone-hint,
+.zone-editor-float .finish-guidance,
+.zone-editor-float .stack-note,
+.zone-editor-float .section-description {
+    color: #8fa6bd !important;
+    line-height: 1.45 !important;
+}
+
+/* [2026-08-06 owner: "still not happy with the sliders on the main part of the
+   app — I like the way they look in EASY MODE within SPEC SCULPT"]
+   The old block here was the reason Pro's zone popout looked different from
+   everything else: 20px glow-pills with an ALWAYS-FULL cyan->orange track (no
+   fill percent — the track showed the same gradient at value 0 and value 100,
+   so the bar itself told the painter nothing). Its `.zone-editor-float` prefix
+   out-specifies the app-wide `spb-slider-polish.css`, so the popout never got
+   the thin fill-track style the rest of the app (and Easy Mode) uses.
+   Now it matches: thin track whose fill length IS the value (via the --_pct
+   variable spb-slider-fill.js maintains), small clean thumb, no glow. */
+/* [2026-08-06 v2 — owner: "INDEPENDENT SPEC slider is off... the box for SPEC
+   SLIDERS ... is all screwed up"] The first pass set the INPUT itself to 4px.
+   That looked right in isolation but collapsed the ROWS: composite rows in the
+   popout (Independent Spec, the Spec Sliders / Auto-Pop block) derive their
+   height from the input element, so a 4px input squashed their layout and made
+   labels wrap oddly — and it also shrank the click target to a sliver.
+   The correct construction keeps the INPUT at a comfortable 18px (row height
+   and hitbox preserved, close to the original 20px) and paints the thin
+   fill-as-value TRACK inside it. Same Easy Mode look, none of the collapse. */
+.zone-editor-float input[type="range"] {
+    height: 18px !important;
+    border-radius: 999px !important;
+    accent-color: #ff6b1a !important;
+    filter: none !important;
+    background: transparent !important;   /* the TRACK paints the fill below */
+}
+
+.zone-editor-float input[type="range"]::-webkit-slider-runnable-track {
+    height: 4px !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: linear-gradient(
+        90deg,
+        var(--spb-slider-fill, #ff6b1a)  var(--_pct, 50%),
+        var(--spb-slider-track, rgba(255,255,255,0.10)) var(--_pct, 50%)
+    ) !important;
+    box-shadow: none !important;
+}
+
+.zone-editor-float input[type="range"]::-webkit-slider-thumb {
+    width: 12px !important;
+    height: 12px !important;
+    margin-top: -4px !important;
+    border-radius: 50% !important;
+    background: var(--spb-slider-thumb, #f2f1ef) !important;
+    border: 1px solid rgba(0,0,0,0.6) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.6) !important;
+}
+
+.zone-editor-float .stack-val,
+.zone-editor-float .slider-val {
+    min-width: 44px !important;
+    min-height: 22px !important;
+    padding: 3px 7px !important;
+    border: 1px solid rgba(0, 229, 255, 0.22) !important;
+    border-radius: 7px !important;
+    background:
+        linear-gradient(135deg, rgba(0, 229, 255, 0.16), rgba(255, 122, 24, 0.09)) !important;
+    color: #eaffff !important;
+    font-weight: 850 !important;
+    text-align: center !important;
+    box-shadow: inset 0 0 14px rgba(0, 229, 255, 0.04) !important;
+}
+
+.zone-editor-float .btn,
+.zone-editor-float button,
+.fine-tuning-panel button,
+.swatch-popup button {
+    min-height: 28px !important;
+    border-radius: 8px !important;
+    border-color: rgba(0, 229, 255, 0.24) !important;
+    background:
+        linear-gradient(180deg, rgba(19, 31, 52, 0.98), rgba(5, 9, 17, 0.98)) !important;
+    color: #d9f7ff !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035) !important;
+}
+
+.zone-editor-float .btn:hover,
+.zone-editor-float button:hover,
+.fine-tuning-panel button:hover,
+.swatch-popup button:hover {
+    border-color: rgba(255, 122, 24, 0.62) !important;
+    color: #ffffff !important;
+    background:
+        linear-gradient(180deg, rgba(255, 122, 24, 0.22), rgba(0, 229, 255, 0.12)),
+        rgba(5, 9, 17, 0.98) !important;
+    box-shadow:
+        0 0 0 1px rgba(0, 229, 255, 0.22),
+        0 0 18px rgba(255, 122, 24, 0.18) !important;
+}
+
+.zone-editor-float select,
+.zone-editor-float input[type="text"],
+.zone-editor-float input[type="number"],
+.fine-tuning-panel select,
+.fine-tuning-panel input[type="text"],
+.swatch-popup input[type="text"] {
+    min-height: 32px !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(0, 229, 255, 0.24) !important;
+    background:
+        linear-gradient(180deg, rgba(6, 11, 22, 0.98), rgba(1, 4, 11, 0.98)) !important;
+    color: #eef7ff !important;
+    box-shadow: inset 0 0 18px rgba(0, 229, 255, 0.05) !important;
+}
+
+.zone-editor-float select:focus,
+.zone-editor-float input[type="text"]:focus,
+.zone-editor-float input[type="number"]:focus,
+.fine-tuning-panel select:focus,
+.fine-tuning-panel input[type="text"]:focus,
+.swatch-popup input[type="text"]:focus {
+    outline: none !important;
+    border-color: rgba(255, 122, 24, 0.72) !important;
+    box-shadow:
+        0 0 0 2px rgba(0, 229, 255, 0.18),
+        0 0 20px rgba(255, 122, 24, 0.16),
+        inset 0 0 18px rgba(0, 229, 255, 0.07) !important;
+}
+
+.zone-editor-float .quick-colors,
+.zone-editor-float .color-text-row,
+.zone-editor-float .color-hex-row,
+.zone-editor-float .color-tol-row {
+    gap: 7px !important;
+}
+
+.zone-editor-float .quick-color-btn {
+    min-height: 28px !important;
+    border-radius: 8px !important;
+}
+
+.zone-editor-float .quick-color-btn.active,
+.zone-editor-float .quick-color-btn:hover {
+    transform: translateY(-1px) !important;
+    box-shadow:
+        0 0 0 1px rgba(255, 122, 24, 0.46),
+        0 10px 24px rgba(0, 0, 0, 0.28),
+        0 0 20px rgba(0, 229, 255, 0.16) !important;
+}
+
+.fine-tuning-panel {
+    border-left: 1px solid rgba(255, 122, 24, 0.34) !important;
+    background:
+        radial-gradient(circle at 0 0, rgba(255, 122, 24, 0.14), transparent 36%),
+        linear-gradient(180deg, rgba(6, 10, 22, 0.98), rgba(1, 4, 10, 0.99)) !important;
+}
+
+.fine-tuning-panel .fine-tuning-header {
+    min-height: 42px !important;
+    background:
+        linear-gradient(90deg, rgba(255, 122, 24, 0.24), rgba(0, 229, 255, 0.15)) !important;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.30) !important;
+}
+
+.swatch-popup .swatch-catalog-card {
+    transform-origin: center !important;
+}
+
+.swatch-popup .swatch-catalog-card:hover {
+    transform: translateY(-2px) !important;
+    border-color: rgba(255, 122, 24, 0.58) !important;
+    box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.42),
+        0 0 32px rgba(0, 229, 255, 0.14) !important;
+}
+
+.swatch-popup .swatch-catalog-card .swatch-label {
+    color: #ffffff !important;
+    font-weight: 850 !important;
+}
+
+/* [SPB 2026-06-04 owner] FULL-SCREEN swatch picker. The BASE / PATTERN (and the
+   multi-color stack base + stack pattern) dropdowns now open the picker CENTERED +
+   near-fullscreen behind a dim backdrop (the "picture 4" layout) instead of a panel
+   pinned to the side of the trigger. JS adds .swatch-popup--fs to #swatchPopup and
+   shows #swatchPopupBackdrop; geometry is set inline by JS. The grid
+   (.swatch-grid-row) is already a responsive auto-fill grid, so the extra width just
+   yields more columns of split swatches. */
+#swatchPopupBackdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 2480;
+    background: rgba(2, 5, 12, 0.84);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    display: none;
+}
+#swatchPopupBackdrop.active { display: block; }
+
+#swatchPopup.swatch-popup--fs {
+    z-index: 2500 !important;
+    border-radius: 14px !important;
+    border-top-width: 3px !important;
+    box-shadow:
+        0 40px 130px rgba(0, 0, 0, 0.74),
+        0 0 0 1px rgba(0, 229, 255, 0.22),
+        0 0 70px rgba(0, 229, 255, 0.14) !important;
+}
+#swatchPopup.swatch-popup--fs .swatch-popup-grid {
+    padding: 14px 16px !important;
+}
+#swatchPopup.swatch-popup--fs .swatch-grid-row {
+    grid-template-columns: repeat(auto-fill, minmax(166px, 1fr)) !important;
+    gap: 12px !important;
+}
+
+/* ===== SPB UI MODERNIZATION 2026-05-10: Gallery Runway Picker Pass ===== */
+.swatch-popup.active,
+.spec-pattern-grid.spec-picker-popout-open {
+    border: 1px solid rgba(0, 229, 255, 0.46) !important;
+    background:
+        radial-gradient(circle at 10% 0%, rgba(255, 122, 24, 0.20), transparent 28%),
+        radial-gradient(circle at 90% 6%, rgba(0, 229, 255, 0.18), transparent 34%),
+        linear-gradient(180deg, rgba(8, 13, 26, 0.98), rgba(2, 5, 12, 0.99)) !important;
+    box-shadow:
+        0 0 0 1px rgba(255, 122, 24, 0.28),
+        0 28px 90px rgba(0, 0, 0, 0.66),
+        0 0 58px rgba(0, 229, 255, 0.20),
+        inset 0 0 80px rgba(255, 122, 24, 0.035) !important;
+}
+
+.swatch-popup.active::after,
+.spec-pattern-grid.spec-picker-popout-open::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 18px !important;
+    right: 18px !important;
+    bottom: 10px !important;
+    height: 3px !important;
+    z-index: 3 !important;
+    pointer-events: none !important;
+    border-radius: 999px !important;
+    background:
+        linear-gradient(90deg, transparent, #00e5ff 18%, #ff7a18 48%, #ff2d6f 72%, transparent) !important;
+    opacity: 0.78 !important;
+    filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.58)) !important;
+}
+
+.swatch-popup-search,
+.spec-picker-toolbar.spec-picker-inline-open,
+.zone-editor-float .spec-picker-toolbar.spec-picker-inline-open {
+    min-height: 46px !important;
+    padding: 8px 10px !important;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.28) !important;
+    background:
+        linear-gradient(90deg, rgba(0, 229, 255, 0.16), rgba(255, 122, 24, 0.10)),
+        rgba(4, 8, 15, 0.92) !important;
+}
+
+.swatch-popup-search input,
+.spec-picker-toolbar.spec-picker-inline-open input,
+.zone-editor-float .spec-picker-toolbar.spec-picker-inline-open input {
+    min-height: 34px !important;
+    border-radius: 9px !important;
+    border: 1px solid rgba(0, 229, 255, 0.36) !important;
+    background:
+        linear-gradient(180deg, rgba(3, 8, 17, 0.98), rgba(1, 3, 9, 0.98)) !important;
+    color: #f2fbff !important;
+    box-shadow:
+        inset 0 0 18px rgba(0, 229, 255, 0.06),
+        0 0 18px rgba(0, 229, 255, 0.06) !important;
+}
+
+.swatch-popup-grid,
+.spec-pattern-grid.spec-picker-popout-open,
+.zone-editor-float .spec-pattern-grid.spec-picker-inline-open {
+    gap: 10px !important;
+    padding: 12px !important;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 18%),
+        repeating-linear-gradient(90deg, rgba(0, 229, 255, 0.028) 0 1px, transparent 1px 86px) !important;
+}
+
+.swatch-popup .swatch-catalog-card,
+.spec-pattern-thumb-card.spec-pattern-catalog-card,
+.zone-editor-float .spec-pattern-grid.spec-picker-inline-open .spec-pattern-thumb-card {
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 229, 255, 0.22) !important;
+    background:
+        linear-gradient(180deg, rgba(19, 29, 48, 0.96), rgba(4, 8, 16, 0.98)) !important;
+    box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.34),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.018) !important;
+}
+
+.swatch-popup .swatch-catalog-card:hover,
+.spec-pattern-thumb-card.spec-pattern-catalog-card:hover,
+.zone-editor-float .spec-pattern-grid.spec-picker-inline-open .spec-pattern-thumb-card:hover {
+    transform: translateY(-3px) !important;
+    border-color: rgba(255, 122, 24, 0.70) !important;
+    box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.46),
+        0 0 0 1px rgba(0, 229, 255, 0.24),
+        0 0 34px rgba(255, 122, 24, 0.20) !important;
+}
+
+.swatch-popup .swatch-catalog-card.selected,
+.spec-pattern-thumb-card.sp-thumb-active,
+.zone-editor-float .spec-pattern-grid.spec-picker-inline-open .spec-pattern-thumb-card.sp-thumb-active {
+    border-color: #ff7a18 !important;
+    background:
+        linear-gradient(135deg, rgba(255, 122, 24, 0.18), rgba(0, 229, 255, 0.10)),
+        rgba(8, 13, 24, 0.98) !important;
+    box-shadow:
+        0 0 0 2px rgba(255, 122, 24, 0.38),
+        0 0 34px rgba(0, 229, 255, 0.24),
+        0 18px 46px rgba(0, 0, 0, 0.48) !important;
+}
+
+.swatch-popup .swatch-square,
+.spec-pattern-thumb-card img,
+.spec-pattern-thumb-card canvas,
+.zone-editor-float .spec-pattern-grid.spec-picker-inline-open .spec-pattern-thumb-card img,
+.zone-editor-float .spec-pattern-grid.spec-picker-inline-open .spec-pattern-thumb-card canvas {
+    border-radius: 8px !important;
+    border: 1px solid rgba(255, 122, 24, 0.25) !important;
+    box-shadow:
+        0 0 0 1px rgba(0, 229, 255, 0.16),
+        0 14px 24px rgba(0, 0, 0, 0.30) !important;
+}
+
+.swatch-popup .swatch-label,
+.spec-pattern-thumb-card .thumb-label,
+.zone-editor-float .spec-pattern-grid.spec-picker-inline-open .thumb-label {
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.01em !important;
+    text-shadow:
+        0 0 10px rgba(0, 229, 255, 0.22),
+        0 1px 0 rgba(0, 0, 0, 0.78) !important;
+}
+
+.swatch-rank-chip,
+.spec-rank-chip,
+.swatch-material-chip {
+    min-height: 17px !important;
+    border-radius: 999px !important;
+    border-color: rgba(0, 229, 255, 0.28) !important;
+    background:
+        linear-gradient(90deg, rgba(0, 229, 255, 0.13), rgba(255, 122, 24, 0.08)) !important;
+    color: #dffbff !important;
+    font-weight: 850 !important;
+}
+
+#renderResultsPanel {
+    border: 1px solid rgba(0, 229, 255, 0.34) !important;
+    background:
+        radial-gradient(circle at 8% 0%, rgba(255, 122, 24, 0.16), transparent 32%),
+        linear-gradient(180deg, rgba(6, 13, 24, 0.98), rgba(2, 5, 12, 0.99)) !important;
+    box-shadow:
+        0 0 0 1px rgba(255, 122, 24, 0.18),
+        0 -18px 58px rgba(0, 229, 255, 0.08),
+        inset 0 0 56px rgba(0, 229, 255, 0.04) !important;
+}
+
+#renderResultsPanel .render-results-header,
+#renderResultsPanel > div:first-child {
+    min-height: 42px !important;
+    background:
+        linear-gradient(90deg, rgba(0, 229, 255, 0.18), rgba(255, 122, 24, 0.11), transparent) !important;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.26) !important;
+}
+
+#renderResultsPanel img,
+#renderResultsPanel canvas {
+    border-radius: 8px !important;
+    border: 1px solid rgba(0, 229, 255, 0.22) !important;
+    box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.40),
+        0 0 32px rgba(0, 229, 255, 0.08) !important;
+}
+
+#renderHistoryStrip {
+    padding: 8px !important;
+    gap: 8px !important;
+    background:
+        linear-gradient(90deg, rgba(255, 122, 24, 0.10), rgba(0, 229, 255, 0.08)) !important;
+    border-top: 1px solid rgba(255, 122, 24, 0.22) !important;
+}
+
+#renderHistoryStrip img,
+#renderHistoryStrip canvas {
+    border-radius: 7px !important;
+    border: 1px solid rgba(0, 229, 255, 0.26) !important;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.34) !important;
+}
+
+/* ===== SPB UI MODERNIZATION 2026-05-10: Command Chrome Ignition Pass ===== */
+.header-fields {
+    gap: 10px !important;
+    align-items: center !important;
+}
+
+.header-field {
+    position: relative !important;
+    min-height: 36px !important;
+    border: 1px solid rgba(0, 229, 255, 0.24) !important;
+    border-radius: 10px !important;
+    background:
+        linear-gradient(135deg, rgba(0, 229, 255, 0.075), rgba(255, 122, 24, 0.045)),
+        rgba(3, 7, 14, 0.92) !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.018),
+        0 10px 26px rgba(0, 0, 0, 0.26) !important;
+    overflow: hidden !important;
+}
+
+.header-field::before {
+    content: "" !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 3px !important;
+    background:
+        linear-gradient(180deg, #00e5ff, #ff7a18, #ff2d6f) !important;
+    opacity: 0.76 !important;
+}
+
+.header-field:focus-within,
+.header-field:hover {
+    border-color: rgba(255, 122, 24, 0.58) !important;
+    box-shadow:
+        0 0 0 1px rgba(0, 229, 255, 0.20),
+        0 0 26px rgba(255, 122, 24, 0.16),
+        inset 0 0 24px rgba(0, 229, 255, 0.05) !important;
+}
+
+.header-field label {
+    color: #8feeff !important;
+    letter-spacing: 0.09em !important;
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.28) !important;
+}
+
+.header-field input[type="text"],
+.header-field input[type="number"] {
+    min-height: 26px !important;
+    border-radius: 7px !important;
+    border-color: rgba(0, 229, 255, 0.24) !important;
+    background:
+        linear-gradient(180deg, rgba(2, 6, 12, 0.96), rgba(0, 2, 8, 0.96)) !important;
+    color: #f8fdff !important;
+}
+
+.header-command-btn,
+.ui-scale-btn,
+.ui-mode-pill {
+    min-height: 28px !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(0, 229, 255, 0.28) !important;
+    background:
+        linear-gradient(135deg, rgba(0, 229, 255, 0.12), rgba(255, 122, 24, 0.075)),
+        rgba(5, 9, 17, 0.92) !important;
+    color: #e8f8ff !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035) !important;
+}
+
+.header-command-btn:hover,
+.ui-scale-btn:hover,
+.ui-mode-pill:hover {
+    transform: translateY(-1px) !important;
+    border-color: rgba(255, 122, 24, 0.70) !important;
+    box-shadow:
+        0 0 0 1px rgba(0, 229, 255, 0.22),
+        0 0 22px rgba(255, 122, 24, 0.20) !important;
+}
+
+.header-command-btn.primary,
+.ui-mode-option.active {
+    background:
+        linear-gradient(90deg, #ff7a18, #ff2d6f 58%, #00e5ff) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.26) !important;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.55) !important;
+    box-shadow:
+        0 0 22px rgba(255, 122, 24, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+}
+
+.vertical-toolbar {
+    background:
+        linear-gradient(180deg, rgba(0, 229, 255, 0.08), transparent 16%, rgba(255, 122, 24, 0.08)),
+        rgba(3, 7, 14, 0.98) !important;
+}
+
+.vtool-group {
+    padding: 7px 5px !important;
+    border: 1px solid rgba(0, 229, 255, 0.14) !important;
+    border-radius: 9px !important;
+    background:
+        linear-gradient(180deg, rgba(11, 18, 31, 0.96), rgba(3, 7, 14, 0.96)) !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.014),
+        0 10px 22px rgba(0, 0, 0, 0.20) !important;
+}
+
+.vtool-group::before {
+    color: #78eaff !important;
+    letter-spacing: 0.16em !important;
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.34) !important;
+}
+
+.vtool-btn {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(0, 229, 255, 0.14) !important;
+    background:
+        linear-gradient(180deg, rgba(15, 24, 42, 0.95), rgba(4, 8, 16, 0.98)) !important;
+    color: #bfefff !important;
+}
+
+.vtool-btn.active {
+    background:
+        radial-gradient(circle at 36% 24%, rgba(255, 255, 255, 0.34), transparent 34%),
+        linear-gradient(135deg, #ff7a18, #ff2d6f 56%, #00e5ff) !important;
+    border-color: rgba(255, 255, 255, 0.38) !important;
+    color: #ffffff !important;
+    box-shadow:
+        0 0 0 2px rgba(0, 229, 255, 0.22),
+        0 0 22px rgba(255, 122, 24, 0.42) !important;
+}
+
+.vtool-btn:hover:not(.active) {
+    transform: translateY(-1px) !important;
+    border-color: rgba(255, 122, 24, 0.52) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 18px rgba(0, 229, 255, 0.14) !important;
+}
+
+#globalStatusBar.global-status-bar {
+    min-height: 24px !important;
+    background:
+        linear-gradient(90deg, rgba(255, 122, 24, 0.14), rgba(0, 229, 255, 0.12), rgba(255, 45, 111, 0.10)),
+        rgba(2, 5, 10, 0.98) !important;
+    border-top: 1px solid rgba(0, 229, 255, 0.32) !important;
+    box-shadow:
+        0 -12px 34px rgba(0, 229, 255, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+#globalStatusBar.global-status-bar::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    height: 1px !important;
+    pointer-events: none !important;
+    background:
+        linear-gradient(90deg, transparent, #00e5ff 18%, #ff7a18 50%, #ff2d6f 78%, transparent) !important;
+    opacity: 0.76 !important;
+}
+
+#globalStatusBar .status-chip {
+    min-height: 18px !important;
+    padding: 2px 7px !important;
+    border: 1px solid rgba(0, 229, 255, 0.22) !important;
+    border-radius: 999px !important;
+    background:
+        linear-gradient(90deg, rgba(0, 229, 255, 0.12), rgba(255, 122, 24, 0.07)) !important;
+    color: #dffbff !important;
+    font-weight: 750 !important;
+}
+
+#globalStatusBar .status-chip-zone,
+#globalStatusBar .status-chip-tool {
+    border-color: rgba(255, 122, 24, 0.42) !important;
+    color: #fff0d6 !important;
+    box-shadow: 0 0 14px rgba(255, 122, 24, 0.12) !important;
+}
+
+#globalStatusBar .status-brand-chip {
+    background:
+        linear-gradient(90deg, #ff7a18, #00e5ff) !important;
+    color: #071018 !important;
+    border-color: rgba(255, 255, 255, 0.34) !important;
+    font-weight: 950 !important;
+}
+
+.btn-zone-action,
+.zone-toolbar .btn,
+#toolbarEditModeGroup .btn,
+.panel-mode-btn {
+    min-height: 30px !important;
+    border-radius: 8px !important;
+    border-color: rgba(0, 229, 255, 0.26) !important;
+    background:
+        linear-gradient(180deg, rgba(15, 24, 42, 0.98), rgba(5, 9, 17, 0.98)) !important;
+    color: #d8f7ff !important;
+}
+
+.btn-zone-action:hover,
+.zone-toolbar .btn:hover,
+#toolbarEditModeGroup .btn:hover,
+.panel-mode-btn:hover,
+.panel-mode-btn.active-spec {
+    border-color: rgba(255, 122, 24, 0.62) !important;
+    background:
+        linear-gradient(180deg, rgba(255, 122, 24, 0.22), rgba(0, 229, 255, 0.11)),
+        rgba(5, 9, 17, 0.98) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 22px rgba(255, 122, 24, 0.16) !important;
+}
+
+
+/* [2026-08-06 owner round 2: "the Auto Pop is still outside the pill"] The
+   stepper-square rule (.zone-base-rotate-row .btn.btn-sm -> 24px !important)
+   was crushing the Auto-Pop TEXT button into an icon-sized pill. Same
+   specificity + later in cascade wins it back. */
+.zone-editor-float .zone-base-rotate-row .btn.btn-sm.spec-autopop-btn {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 24px !important;
+    padding: 0 9px !important;
+    font-size: 10px !important;
+    white-space: nowrap !important;
+}

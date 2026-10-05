@@ -1,0 +1,54 @@
+{
+  "review_id": "W50",
+  "review": "Independent selected-source transaction phase-2 callback review",
+  "date": "2026-10-04",
+  "frozen_candidate": {
+    "path": "_easy_claude_work/ai14h_w44_candidate/phase2/paint-booth-3-canvas.js",
+    "sha256": "e7674f6c7ac16bc4bbda954c4664c0b5fd2333fd55a012625176e5cedfcc859d"
+  },
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w50_review/oracle.json",
+    "sha256": "82eee6835d9d2bfe998db744f5cbc82e1acf28248ab6085041093db783d86644",
+    "fresh_cases": 12
+  },
+  "test": "tests/ai_source_transaction_w50_review_contract.cjs",
+  "coverage": "Real extracted production browsePaintFile reader/image callbacks, loadPaintImageFromPath/loadPaintImageFromFileAsync, openPaintFilePicker onSelect/loadPaintPreviewFromServer, markFlatPaintLiveSource, fingerprint/decode helpers and transaction helpers; deterministic FileReader/Image/fetch/canvas/URL stubs only. No browser, server, native canvas, provider, or paint dispatch executed.",
+  "candidate_results": {
+    "selected_browser_B_path_and_bytes": "PASS: browser-file:B.png and fingerprint of B bytes",
+    "late_browser_A_image_after_B_request": "PASS: A performs no draw; B owns final identity",
+    "late_browser_A_hash_after_B_commit": "PASS: A does not overwrite B path/fingerprint",
+    "failed_B_with_committed_A": "PASS: pending=false; A remains committed at fresh generation per owner definition",
+    "unknown_browser_bytes": "PASS: pending=false; no committed identity is claimed",
+    "actual_picker_url_commit": "PASS: path and blob-byte fingerprint match B; object URL revoked",
+    "late_picker_A_after_B": "PASS: B retained, one draw, both URLs revoked",
+    "picker_decode_failure": "PASS: pending=false; allocated URL revoked",
+    "paintCanvas_missing_in_browsePaintFile": "FAIL / P1: current transaction remains isLoading=true forever; no source commit or error result",
+    "file_read_failure_with_committed_A": "PASS: pending=false; A remains committed at fresh generation"
+  },
+  "finding": {
+    "file": "_easy_claude_work/ai14h_w44_candidate/phase2/paint-booth-3-canvas.js",
+    "line": 613,
+    "exact_code": "if (!canvas) { showToast('Paint canvas element missing — cannot load', true); return; }",
+    "trigger": "browsePaintFile starts a source transaction at line 519, then a successful browser Image.onload reaches this early return when #paintCanvas is absent.",
+    "impact": "_spbSourceLoadPending stays true because this branch never calls _spbSourceLoadResult. The transaction API therefore reports loading indefinitely and isCommitted false, even though the existing document was not changed.",
+    "owner_semantics": "When prior A is retained and B fails, isCommitted correctly means A is ready under the fresh request generation; this finding is solely the missing settlement, not that B failed."
+  },
+  "isolated_alternative": {
+    "path": "_easy_claude_work/ai14h_w50_review/alternative/paint-booth-3-canvas.js",
+    "sha256": "7a6987fa78bfce0698c8ae977653d23685577ee89a23652cbc77fed0c2d9a884",
+    "change": "Call _spbSourceLoadResult(sourceLoad,false,{error:'Paint canvas element missing — cannot load'}) before the existing toast and return.",
+    "same_harness_result": "PASS: missing-canvas request settles isLoading=false; all other assertions unchanged and pass.",
+    "production_modified": false
+  },
+  "limits": [
+    "No loaded-app/native acceptance; parent owns that check.",
+    "The test extracts real function declarations from the frozen source and supplies mocked host APIs; it does not validate browser-specific scheduling or the installed page's event wiring.",
+    "The actual picker callback intentionally returns no result value; assertions use the committed transaction state after its awaited loader resolves."
+  ],
+  "provider_calls": 0,
+  "native_calls": 0,
+  "source_oracle_modified": false,
+  "original_w45_report_modified": false,
+  "programmatic_path_observation": "loadPaintImageFromPath resolves its Promise after image/canvas work but before the File.arrayBuffer fingerprint settles; harness confirmed isLoading remains true until hashing completes, then isCommitted becomes true. No incorrect identity or stale write was observed. Callers that treat promise resolution as source-proof completion must also check SPBSourceLoadTransaction.",
+  "test_sha256": "af806471e185cb208281d4a3c1448d2c9dc8fef17fe9030466a5d5f204c4dc13"
+}

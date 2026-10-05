@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_1003732.tga",
+  "inspection_records": "_smart_tga_runs/cycle657_dlm_crosspaint_embeddings/inspection_records.json",
+  "review_scope": "Cycle 657 manual source and all-owner sheet review of every suspect plus all Number components.",
+  "component_labels": [
+    {"layer":"numbers","component_index":0,"expected_bbox":[959,29,32,39],"target_layer":"template","label":"fixed_upper_hardware"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[991,29,27,42],"target_layer":"template","label":"fixed_upper_hardware"},
+    {"layer":"numbers","component_index":2,"expected_bbox":[343,243,55,90],"target_layer":"numbers","label":"true_number_fragment","family_id":"number:812_baby_shark_style"},
+    {"layer":"numbers","component_index":3,"expected_bbox":[723,497,39,16],"target_layer":"sponsors","label":"sponsor_wordmark_fragment"},
+    {"layer":"numbers","component_index":4,"expected_bbox":[27,747,31,24],"target_layer":"sponsors","label":"sponsor_logo_fragment"},
+    {"layer":"numbers","component_index":5,"expected_bbox":[803,834,150,111],"target_layer":"numbers","label":"true_number","family_id":"number:812_baby_shark_style"},
+    {"layer":"sponsors","component_index":12,"expected_bbox":[988,117,36,587],"target_layer":"template","label":"fixed_right_edge_strip"},
+    {"layer":"paint","component_index":33,"expected_bbox":[886,878,24,24],"target_layer":"numbers","label":"true_number_outline_fragment","family_id":"number:812_baby_shark_style"}
+  ]
+}

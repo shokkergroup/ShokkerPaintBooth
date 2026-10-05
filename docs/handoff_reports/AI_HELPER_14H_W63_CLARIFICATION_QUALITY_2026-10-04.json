@@ -1,0 +1,2871 @@
+{
+  "review": "W63 actual-route clarification quality for unsupported preservation compounds",
+  "date": "2026-10-04",
+  "status": "PASS",
+  "oracle": {
+    "sha256": "29bbd8a3675d87f4645309fc88300ce3c8e1a6ef23f2a18be95df3430c9f73be",
+    "w58Cases": [
+      {
+        "id": "R58-P01-ON",
+        "text": "The hood should be chrome while keeping its red paint.",
+        "configured": true,
+        "expect": "complete"
+      },
+      {
+        "id": "R58-P01-OFF",
+        "text": "The hood should be chrome while keeping its red paint.",
+        "configured": false,
+        "expect": "complete"
+      },
+      {
+        "id": "R58-N06-ON",
+        "text": "The hood should be chrome while keeping its red paint and adding a gold carbon weave.",
+        "configured": true,
+        "expect": "ask",
+        "extra": "gold carbon weave",
+        "part": "hood"
+      },
+      {
+        "id": "R58-N06-OFF",
+        "text": "The hood should be chrome while keeping its red paint and adding a gold carbon weave.",
+        "configured": false,
+        "expect": "ask",
+        "extra": "gold carbon weave",
+        "part": "hood"
+      },
+      {
+        "id": "R58-P02-ON",
+        "text": "Make only the roof satin; keep its current red paint.",
+        "configured": true,
+        "expect": "complete"
+      },
+      {
+        "id": "R58-N07-ON",
+        "text": "The roof should be satin while keeping its current blue paint and adding a gold carbon weave.",
+        "configured": true,
+        "expect": "ask",
+        "extra": "gold carbon weave",
+        "part": "roof"
+      }
+    ],
+    "w63Oracle": [
+      {
+        "id": "W63-N01",
+        "text": "The trunk should be matte, preserving its red paint, then add a pearl flake texture.",
+        "configured": true,
+        "expect": "ask",
+        "extra": "pearl flake texture",
+        "part": "trunk"
+      },
+      {
+        "id": "W63-N02",
+        "text": "Make only the left side satin while keeping its blue paint and add a silver grain texture.",
+        "configured": true,
+        "expect": "ask",
+        "extra": "silver grain",
+        "part": "left side"
+      },
+      {
+        "id": "W63-N03",
+        "text": "Make the roof chrome, keep its red paint, and also apply a violet carbon weave.",
+        "configured": true,
+        "expect": "ask",
+        "extra": "violet carbon weave",
+        "part": "roof"
+      },
+      {
+        "id": "W63-N04",
+        "text": "Please make the roof satin; keep its existing red paint and region mask intact.",
+        "configured": true,
+        "expect": "complete",
+        "extra": null,
+        "part": "roof"
+      },
+      {
+        "id": "W63-N05",
+        "text": "I want the hood to be chrome, but leave its current paint unchanged.",
+        "configured": true,
+        "expect": "complete",
+        "extra": null,
+        "part": "hood"
+      },
+      {
+        "id": "W63-N06",
+        "text": "Would the hood stay red if I made it chrome? Also, could I add a gold weave?",
+        "configured": false,
+        "expect": "ask",
+        "extra": null,
+        "part": "hood"
+      },
+      {
+        "id": "W63-N07",
+        "text": "Do not make the trunk chrome; keep its green paint and add gold carbon weave.",
+        "configured": true,
+        "expect": "ask",
+        "extra": null,
+        "part": "trunk"
+      },
+      {
+        "id": "W63-N08",
+        "text": "Make the hood chrome while leaving the roof's red paint alone, and add a gold carbon weave.",
+        "configured": true,
+        "expect": "ask",
+        "extra": null,
+        "part": "hood"
+      },
+      {
+        "id": "W63-N09",
+        "text": "Make only the roof satin, keep its current paint, and add gold carbon weave to the left side.",
+        "configured": true,
+        "expect": "ask",
+        "extra": null,
+        "part": "roof"
+      },
+      {
+        "id": "W63-N10",
+        "text": "Make the left side satin and keep its blue paint, then add red pinstripe texture on the hood.",
+        "configured": true,
+        "expect": "ask",
+        "extra": "red pinstripe texture",
+        "part": "left side"
+      }
+    ]
+  },
+  "priorW52ParserOracle": {
+    "path": "_easy_claude_work/ai14h_w52_candidate/oracle.json",
+    "sha256": "916b77ee479a4cc9465b0104a9194efdf84b372aa0f500e1b520b87278e3372a",
+    "unchanged": true,
+    "cases": 11,
+    "results": [
+      {
+        "id": "W52-P01",
+        "kind": "ops",
+        "exactPart": true,
+        "zones": 1,
+        "ask": false
+      },
+      {
+        "id": "W52-P02",
+        "kind": "ops",
+        "exactPart": true,
+        "zones": 1,
+        "ask": false
+      },
+      {
+        "id": "W52-P03",
+        "kind": "ops",
+        "exactPart": true,
+        "zones": 1,
+        "ask": false
+      },
+      {
+        "id": "W52-P04",
+        "kind": "ops",
+        "exactPart": true,
+        "zones": 1,
+        "ask": false
+      },
+      {
+        "id": "W52-N01",
+        "kind": null,
+        "exactPart": false,
+        "zones": 0,
+        "ask": false
+      },
+      {
+        "id": "W52-N02",
+        "kind": null,
+        "exactPart": false,
+        "zones": 0,
+        "ask": false
+      },
+      {
+        "id": "W52-N03",
+        "kind": "complaint",
+        "exactPart": false,
+        "zones": 0,
+        "ask": false
+      },
+      {
+        "id": "W52-N04",
+        "kind": "ask",
+        "exactPart": false,
+        "zones": 0,
+        "ask": false
+      },
+      {
+        "id": "W52-N05",
+        "kind": "ask",
+        "exactPart": false,
+        "zones": 0,
+        "ask": false
+      },
+      {
+        "id": "W52-N06",
+        "kind": "ops",
+        "exactPart": false,
+        "zones": 0,
+        "ask": true
+      },
+      {
+        "id": "W52-N07",
+        "kind": null,
+        "exactPart": false,
+        "zones": 0,
+        "ask": false
+      }
+    ]
+  },
+  "priorW58RouteOracle": {
+    "path": "tests/ai_w58_route_atomicity_review_contract.cjs",
+    "sha256": "349ec8cced76dca2f67f843ca26e558c03002db7d8c087775ed0867675aa2b31",
+    "candidateBaseSha256": "c191d049dde8d2f89eec5f62f12fb16053bedd2ba9217a03879a5f4e9f9421e2",
+    "cases": 6,
+    "unchanged": true
+  },
+  "baseHashes": {
+    "parser": "0dcf869f92ca3d33f194113f8bb7115d8461fd6f09aac6b6031d68a5766eac48",
+    "controller": "c191d049dde8d2f89eec5f62f12fb16053bedd2ba9217a03879a5f4e9f9421e2"
+  },
+  "sourceHashes": {
+    "candidate": {
+      "spb-pro-ai.js": "9de25e728583b2d4c0b9854529c3ebfa0e9639d71a4a6e535827c8e3d9a6950b",
+      "spb-pro-design.js": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8",
+      "spb-pro-edit.js": "14dd5696cbb33f2c2a956ded4419637191bb446162ce5a2f96558792f2c5bb87",
+      "spb-ai-complete-instruction-guard.js": "ba0af1f9e217695ed733dde81c8dec1a735dd1f052e8c06b3098866d392a551c"
+    },
+    "w63Oracle": "60bf5b7656be0ed877badaf2d33877b67b89e59919582a05070d85b61d68e7e5",
+    "reviewTest": "b65bce271b5941f0ec8ac4e20733bc5bbc153e54ea3181329f3a94eb50439346"
+  },
+  "counts": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "providerCalls": 0
+  },
+  "results": [
+    {
+      "id": "R58-P01-ON",
+      "text": "The hood should be chrome while keeping its red paint.",
+      "configured": true,
+      "expected": "complete",
+      "extra": null,
+      "quality": true,
+      "editPlan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "hood",
+              "at": 15
+            },
+            "look": {
+              "id": "chrome",
+              "label": "chrome",
+              "words": [
+                "chrome",
+                "mirror",
+                "mirror chrome",
+                "mirror finish",
+                "mirrored"
+              ],
+              "found": "base::f_chrome",
+              "about": "full metal, perfectly smooth: a mirror"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "make only the hood chrome",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "The hood should be chrome while keeping its red paint."
+      },
+      "compile": {
+        "zones": [
+          {
+            "name": "Hood chrome",
+            "finish": "base::f_chrome",
+            "color": "source",
+            "region": {
+              "part": "hood"
+            },
+            "_meta": {
+              "label": "hood",
+              "what": [
+                "chrome"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "chrome",
+              "parts": [
+                "hood"
+              ],
+              "kind": "part",
+              "about": "full metal, perfectly smooth: a mirror"
+            }
+          }
+        ],
+        "ask": null,
+        "missing": []
+      },
+      "offlineCanHandle": true,
+      "direct": {
+        "route": "edit",
+        "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Hood chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "part": "hood"
+              }
+            }
+          }
+        ]
+      },
+      "offlineAsk": {
+        "value": {
+          "route": "edit",
+          "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+          "chips": [
+            "Undo",
+            "A bit more",
+            "Show me options for the hood",
+            "Make the red candy",
+            "Make the black matte"
+          ],
+          "queue": [
+            {
+              "kind": "add",
+              "spec": {
+                "name": "Hood chrome",
+                "finish": "base::f_chrome",
+                "color": "source",
+                "region": {
+                  "part": "hood"
+                }
+              }
+            }
+          ],
+          "tools": [
+            "add_zone"
+          ]
+        },
+        "route": "edit",
+        "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Hood chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "part": "hood"
+              }
+            }
+          }
+        ]
+      },
+      "offlineAskCore": {
+        "value": {
+          "route": "edit",
+          "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+          "chips": [
+            "Undo",
+            "A bit more",
+            "Show me options for the hood",
+            "Make the red candy",
+            "Make the black matte"
+          ],
+          "queue": [
+            {
+              "kind": "add",
+              "spec": {
+                "name": "Hood chrome",
+                "finish": "base::f_chrome",
+                "color": "source",
+                "region": {
+                  "part": "hood"
+                }
+              }
+            }
+          ],
+          "tools": [
+            "add_zone"
+          ]
+        },
+        "route": "edit",
+        "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Hood chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "part": "hood"
+              }
+            }
+          }
+        ]
+      },
+      "ask": {
+        "value": {
+          "route": "edit",
+          "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+          "chips": [
+            "Undo",
+            "A bit more",
+            "Show me options for the hood",
+            "Make the red candy",
+            "Make the black matte"
+          ],
+          "queue": [
+            {
+              "kind": "add",
+              "spec": {
+                "name": "Hood chrome",
+                "finish": "base::f_chrome",
+                "color": "source",
+                "region": {
+                  "part": "hood"
+                }
+              }
+            }
+          ],
+          "tools": [
+            "add_zone"
+          ]
+        },
+        "route": "edit",
+        "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Hood chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "part": "hood"
+              }
+            }
+          }
+        ],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "route": "edit",
+        "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Hood chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "part": "hood"
+              }
+            }
+          }
+        ],
+        "providerCalls": 0
+      },
+      "okay": true
+    },
+    {
+      "id": "R58-P01-OFF",
+      "text": "The hood should be chrome while keeping its red paint.",
+      "configured": false,
+      "expected": "complete",
+      "extra": null,
+      "quality": true,
+      "editPlan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "hood",
+              "at": 15
+            },
+            "look": {
+              "id": "chrome",
+              "label": "chrome",
+              "words": [
+                "chrome",
+                "mirror",
+                "mirror chrome",
+                "mirror finish",
+                "mirrored"
+              ],
+              "found": "base::f_chrome",
+              "about": "full metal, perfectly smooth: a mirror"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "make only the hood chrome",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "The hood should be chrome while keeping its red paint."
+      },
+      "compile": {
+        "zones": [
+          {
+            "name": "Hood chrome",
+            "finish": "base::f_chrome",
+            "color": "source",
+            "region": {
+              "part": "hood"
+            },
+            "_meta": {
+              "label": "hood",
+              "what": [
+                "chrome"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "chrome",
+              "parts": [
+                "hood"
+              ],
+              "kind": "part",
+              "about": "full metal, perfectly smooth: a mirror"
+            }
+          }
+        ],
+        "ask": null,
+        "missing": []
+      },
+      "offlineCanHandle": true,
+      "direct": {
+        "route": "edit",
+        "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Hood chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "part": "hood"
+              }
+            }
+          }
+        ]
+      },
+      "offlineAsk": {
+        "value": {
+          "route": "edit",
+          "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+          "chips": [
+            "Undo",
+            "A bit more",
+            "Show me options for the hood",
+            "Make the red candy",
+            "Make the black matte"
+          ],
+          "queue": [
+            {
+              "kind": "add",
+              "spec": {
+                "name": "Hood chrome",
+                "finish": "base::f_chrome",
+                "color": "source",
+                "region": {
+                  "part": "hood"
+                }
+              }
+            }
+          ],
+          "tools": [
+            "add_zone"
+          ]
+        },
+        "route": "edit",
+        "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Hood chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "part": "hood"
+              }
+            }
+          }
+        ]
+      },
+      "offlineAskCore": {
+        "value": {
+          "route": "edit",
+          "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+          "chips": [
+            "Undo",
+            "A bit more",
+            "Show me options for the hood",
+            "Make the red candy",
+            "Make the black matte"
+          ],
+          "queue": [
+            {
+              "kind": "add",
+              "spec": {
+                "name": "Hood chrome",
+                "finish": "base::f_chrome",
+                "color": "source",
+                "region": {
+                  "part": "hood"
+                }
+              }
+            }
+          ],
+          "tools": [
+            "add_zone"
+          ]
+        },
+        "route": "edit",
+        "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Hood chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "part": "hood"
+              }
+            }
+          }
+        ]
+      },
+      "ask": {
+        "value": {
+          "route": "edit",
+          "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+          "chips": [
+            "Undo",
+            "A bit more",
+            "Show me options for the hood",
+            "Make the red candy",
+            "Make the black matte"
+          ],
+          "queue": [
+            {
+              "kind": "add",
+              "spec": {
+                "name": "Hood chrome",
+                "finish": "base::f_chrome",
+                "color": "source",
+                "region": {
+                  "part": "hood"
+                }
+              }
+            }
+          ],
+          "tools": [
+            "add_zone"
+          ]
+        },
+        "route": "edit",
+        "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Hood chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "part": "hood"
+              }
+            }
+          }
+        ],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "route": "edit",
+        "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Hood chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "part": "hood"
+              }
+            }
+          }
+        ],
+        "providerCalls": 0
+      },
+      "okay": true
+    },
+    {
+      "id": "R58-N06-ON",
+      "text": "The hood should be chrome while keeping its red paint and adding a gold carbon weave.",
+      "configured": true,
+      "expected": "ask",
+      "extra": "gold carbon weave",
+      "quality": true,
+      "editPlan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "hood",
+              "at": 5
+            },
+            "look": {
+              "id": "chrome",
+              "label": "chrome",
+              "words": [
+                "chrome",
+                "mirror",
+                "mirror chrome",
+                "mirror finish",
+                "mirrored"
+              ],
+              "found": "base::f_chrome",
+              "about": "full metal, perfectly smooth: a mirror"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          },
+          {
+            "target": {
+              "kind": "colour",
+              "word": "red",
+              "hex": "#c8102e",
+              "qual": null,
+              "at": 13,
+              "parts": null
+            },
+            "look": null,
+            "colour": {
+              "name": "gold",
+              "hex": "#d7a72b",
+              "at": 10,
+              "qual": null,
+              "exact": false
+            },
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": "keeping"
+          }
+        ],
+        "alt": [],
+        "unknown": [
+          "keeping"
+        ],
+        "text": "the hood should be chrome while keeping its red paint and adding a gold carbon weave",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "raw": "The hood should be chrome while keeping its red paint and adding a gold carbon weave."
+      },
+      "compile": {
+        "zones": [],
+        "ask": {
+          "text": "I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+          "chips": []
+        },
+        "missing": [
+          {
+            "why": "compound-preserve-extra",
+            "action": "adding a gold carbon weave"
+          }
+        ]
+      },
+      "offlineCanHandle": true,
+      "direct": {
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+        "queue": []
+      },
+      "offlineAsk": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+        "queue": []
+      },
+      "offlineAskCore": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+        "queue": []
+      },
+      "ask": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "okay": true
+    },
+    {
+      "id": "R58-N06-OFF",
+      "text": "The hood should be chrome while keeping its red paint and adding a gold carbon weave.",
+      "configured": false,
+      "expected": "ask",
+      "extra": "gold carbon weave",
+      "quality": true,
+      "editPlan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "hood",
+              "at": 5
+            },
+            "look": {
+              "id": "chrome",
+              "label": "chrome",
+              "words": [
+                "chrome",
+                "mirror",
+                "mirror chrome",
+                "mirror finish",
+                "mirrored"
+              ],
+              "found": "base::f_chrome",
+              "about": "full metal, perfectly smooth: a mirror"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          },
+          {
+            "target": {
+              "kind": "colour",
+              "word": "red",
+              "hex": "#c8102e",
+              "qual": null,
+              "at": 13,
+              "parts": null
+            },
+            "look": null,
+            "colour": {
+              "name": "gold",
+              "hex": "#d7a72b",
+              "at": 10,
+              "qual": null,
+              "exact": false
+            },
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": "keeping"
+          }
+        ],
+        "alt": [],
+        "unknown": [
+          "keeping"
+        ],
+        "text": "the hood should be chrome while keeping its red paint and adding a gold carbon weave",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "raw": "The hood should be chrome while keeping its red paint and adding a gold carbon weave."
+      },
+      "compile": {
+        "zones": [],
+        "ask": {
+          "text": "I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+          "chips": []
+        },
+        "missing": [
+          {
+            "why": "compound-preserve-extra",
+            "action": "adding a gold carbon weave"
+          }
+        ]
+      },
+      "offlineCanHandle": true,
+      "direct": {
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+        "queue": []
+      },
+      "offlineAsk": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+        "queue": []
+      },
+      "offlineAskCore": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+        "queue": []
+      },
+      "ask": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the hood chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "okay": true
+    },
+    {
+      "id": "R58-P02-ON",
+      "text": "Make only the roof satin; keep its current red paint.",
+      "configured": true,
+      "expected": "complete",
+      "extra": null,
+      "quality": true,
+      "editPlan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "roof",
+              "at": 15
+            },
+            "look": {
+              "id": "satin",
+              "label": "satin",
+              "words": [
+                "satin",
+                "eggshell",
+                "semi gloss",
+                "semi matte",
+                "low sheen",
+                "silky",
+                "soft sheen"
+              ],
+              "found": "base::f_clear_satin",
+              "about": "a soft sheen between gloss and matte"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "make only the roof satin",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "Make only the roof satin; keep its current red paint."
+      },
+      "compile": {
+        "zones": [
+          {
+            "name": "Roof satin",
+            "finish": "base::f_clear_satin",
+            "color": "source",
+            "region": {
+              "part": "roof"
+            },
+            "_meta": {
+              "label": "roof",
+              "what": [
+                "satin"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "satin",
+              "parts": [
+                "roof"
+              ],
+              "kind": "part",
+              "about": "a soft sheen between gloss and matte"
+            }
+          }
+        ],
+        "ask": null,
+        "missing": []
+      },
+      "offlineCanHandle": true,
+      "direct": {
+        "route": "edit",
+        "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Roof satin",
+              "finish": "base::f_clear_satin",
+              "color": "source",
+              "region": {
+                "part": "roof"
+              }
+            }
+          }
+        ]
+      },
+      "offlineAsk": {
+        "value": {
+          "route": "edit",
+          "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+          "chips": [
+            "Undo",
+            "A bit more",
+            "Show me options for the roof",
+            "Make the red candy",
+            "Make the black matte"
+          ],
+          "queue": [
+            {
+              "kind": "add",
+              "spec": {
+                "name": "Roof satin",
+                "finish": "base::f_clear_satin",
+                "color": "source",
+                "region": {
+                  "part": "roof"
+                }
+              }
+            }
+          ],
+          "tools": [
+            "add_zone"
+          ]
+        },
+        "route": "edit",
+        "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Roof satin",
+              "finish": "base::f_clear_satin",
+              "color": "source",
+              "region": {
+                "part": "roof"
+              }
+            }
+          }
+        ]
+      },
+      "offlineAskCore": {
+        "value": {
+          "route": "edit",
+          "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+          "chips": [
+            "Undo",
+            "A bit more",
+            "Show me options for the roof",
+            "Make the red candy",
+            "Make the black matte"
+          ],
+          "queue": [
+            {
+              "kind": "add",
+              "spec": {
+                "name": "Roof satin",
+                "finish": "base::f_clear_satin",
+                "color": "source",
+                "region": {
+                  "part": "roof"
+                }
+              }
+            }
+          ],
+          "tools": [
+            "add_zone"
+          ]
+        },
+        "route": "edit",
+        "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Roof satin",
+              "finish": "base::f_clear_satin",
+              "color": "source",
+              "region": {
+                "part": "roof"
+              }
+            }
+          }
+        ]
+      },
+      "ask": {
+        "value": {
+          "route": "edit",
+          "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+          "chips": [
+            "Undo",
+            "A bit more",
+            "Show me options for the roof",
+            "Make the red candy",
+            "Make the black matte"
+          ],
+          "queue": [
+            {
+              "kind": "add",
+              "spec": {
+                "name": "Roof satin",
+                "finish": "base::f_clear_satin",
+                "color": "source",
+                "region": {
+                  "part": "roof"
+                }
+              }
+            }
+          ],
+          "tools": [
+            "add_zone"
+          ]
+        },
+        "route": "edit",
+        "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Roof satin",
+              "finish": "base::f_clear_satin",
+              "color": "source",
+              "region": {
+                "part": "roof"
+              }
+            }
+          }
+        ],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "route": "edit",
+        "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Roof satin",
+              "finish": "base::f_clear_satin",
+              "color": "source",
+              "region": {
+                "part": "roof"
+              }
+            }
+          }
+        ],
+        "providerCalls": 0
+      },
+      "okay": true
+    },
+    {
+      "id": "R58-N07-ON",
+      "text": "The roof should be satin while keeping its current blue paint and adding a gold carbon weave.",
+      "configured": true,
+      "expected": "ask",
+      "extra": "gold carbon weave",
+      "quality": true,
+      "editPlan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "roof",
+              "at": 5
+            },
+            "look": {
+              "id": "satin",
+              "label": "satin",
+              "words": [
+                "satin",
+                "eggshell",
+                "semi gloss",
+                "semi matte",
+                "low sheen",
+                "silky",
+                "soft sheen"
+              ],
+              "found": "base::f_clear_satin",
+              "about": "a soft sheen between gloss and matte"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          },
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 21,
+              "parts": null
+            },
+            "look": null,
+            "colour": {
+              "name": "gold",
+              "hex": "#d7a72b",
+              "at": 10,
+              "qual": null,
+              "exact": false
+            },
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": "keeping current"
+          }
+        ],
+        "alt": [],
+        "unknown": [
+          "keeping current"
+        ],
+        "text": "the roof should be satin while keeping its current blue paint and adding a gold carbon weave",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "raw": "The roof should be satin while keeping its current blue paint and adding a gold carbon weave."
+      },
+      "compile": {
+        "zones": [],
+        "ask": {
+          "text": "I could not safely combine “adding a gold carbon weave” with the roof satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+          "chips": []
+        },
+        "missing": [
+          {
+            "why": "compound-preserve-extra",
+            "action": "adding a gold carbon weave"
+          }
+        ]
+      },
+      "offlineCanHandle": true,
+      "direct": {
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the roof satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+        "queue": []
+      },
+      "offlineAsk": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the roof satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the roof satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+        "queue": []
+      },
+      "offlineAskCore": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the roof satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the roof satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+        "queue": []
+      },
+      "ask": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the roof satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the roof satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “adding a gold carbon weave” with the roof satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "okay": true
+    },
+    {
+      "id": "W63-N01",
+      "text": "The trunk should be matte, preserving its red paint, then add a pearl flake texture.",
+      "configured": true,
+      "expected": "ask",
+      "extra": "pearl flake texture",
+      "quality": true,
+      "editPlan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "trunk",
+              "at": 5
+            },
+            "look": {
+              "id": "matte",
+              "label": "matte",
+              "words": [
+                "matte",
+                "flat",
+                "chalky",
+                "chalk",
+                "velvet",
+                "suede",
+                "no shine",
+                "no gloss",
+                "not shiny",
+                "non shiny",
+                "not glossy",
+                "low gloss",
+                "flatten"
+              ],
+              "found": "base::f_soft_matte",
+              "about": "no shine: rough surface, dull clearcoat"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          },
+          {
+            "target": {
+              "kind": "colour",
+              "word": "red",
+              "hex": "#c8102e",
+              "qual": null,
+              "at": 16,
+              "parts": null
+            },
+            "look": {
+              "id": "metallic",
+              "label": "metallic",
+              "words": [
+                "metallic",
+                "metal flake",
+                "metalflake",
+                "flake",
+                "sparkle",
+                "sparkly",
+                "glitter",
+                "shimmer",
+                "shimmery",
+                "metal"
+              ],
+              "found": "base::f_metallic",
+              "about": "bright metal under clearcoat"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": "preserving"
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "the trunk should be matte preserving its red paint then add a pearl flake texture",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "raw": "The trunk should be matte, preserving its red paint, then add a pearl flake texture."
+      },
+      "compile": {
+        "zones": [],
+        "ask": {
+          "text": "I could not safely combine “add a pearl flake texture” with the trunk matte. Which part should get that extra change, and should it layer over the matte or replace it?",
+          "chips": []
+        },
+        "missing": [
+          {
+            "why": "compound-preserve-extra",
+            "action": "add a pearl flake texture"
+          }
+        ]
+      },
+      "offlineCanHandle": true,
+      "direct": {
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “add a pearl flake texture” with the trunk matte. Which part should get that extra change, and should it layer over the matte or replace it?",
+        "queue": []
+      },
+      "offlineAsk": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I could not safely combine “add a pearl flake texture” with the trunk matte. Which part should get that extra change, and should it layer over the matte or replace it?",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “add a pearl flake texture” with the trunk matte. Which part should get that extra change, and should it layer over the matte or replace it?",
+        "queue": []
+      },
+      "offlineAskCore": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I could not safely combine “add a pearl flake texture” with the trunk matte. Which part should get that extra change, and should it layer over the matte or replace it?",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “add a pearl flake texture” with the trunk matte. Which part should get that extra change, and should it layer over the matte or replace it?",
+        "queue": []
+      },
+      "ask": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I could not safely combine “add a pearl flake texture” with the trunk matte. Which part should get that extra change, and should it layer over the matte or replace it?",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “add a pearl flake texture” with the trunk matte. Which part should get that extra change, and should it layer over the matte or replace it?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “add a pearl flake texture” with the trunk matte. Which part should get that extra change, and should it layer over the matte or replace it?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "okay": true
+    },
+    {
+      "id": "W63-N02",
+      "text": "Make only the left side satin while keeping its blue paint and add a silver grain texture.",
+      "configured": true,
+      "expected": "ask",
+      "extra": "silver grain",
+      "quality": true,
+      "editPlan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "left side",
+              "at": 15
+            },
+            "look": {
+              "id": "satin",
+              "label": "satin",
+              "words": [
+                "satin",
+                "eggshell",
+                "semi gloss",
+                "semi matte",
+                "low sheen",
+                "silky",
+                "soft sheen"
+              ],
+              "found": "base::f_clear_satin",
+              "about": "a soft sheen between gloss and matte"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          },
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 13,
+              "parts": null
+            },
+            "look": null,
+            "colour": {
+              "name": "silver",
+              "hex": "#c3c7cc",
+              "at": 7,
+              "qual": null,
+              "exact": false
+            },
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": "keeping"
+          }
+        ],
+        "alt": [],
+        "unknown": [
+          "keeping"
+        ],
+        "text": "make only the left side satin while keeping its blue paint and add a silver grain texture",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "raw": "Make only the left side satin while keeping its blue paint and add a silver grain texture."
+      },
+      "compile": {
+        "zones": [],
+        "ask": {
+          "text": "I could not safely combine “add a silver grain texture” with the left side satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+          "chips": []
+        },
+        "missing": [
+          {
+            "why": "compound-preserve-extra",
+            "action": "add a silver grain texture"
+          }
+        ]
+      },
+      "offlineCanHandle": true,
+      "direct": {
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “add a silver grain texture” with the left side satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+        "queue": []
+      },
+      "offlineAsk": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I could not safely combine “add a silver grain texture” with the left side satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “add a silver grain texture” with the left side satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+        "queue": []
+      },
+      "offlineAskCore": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I could not safely combine “add a silver grain texture” with the left side satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “add a silver grain texture” with the left side satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+        "queue": []
+      },
+      "ask": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I could not safely combine “add a silver grain texture” with the left side satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “add a silver grain texture” with the left side satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “add a silver grain texture” with the left side satin. Which part should get that extra change, and should it layer over the satin or replace it?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "okay": true
+    },
+    {
+      "id": "W63-N03",
+      "text": "Make the roof chrome, keep its red paint, and also apply a violet carbon weave.",
+      "configured": true,
+      "expected": "ask",
+      "extra": "violet carbon weave",
+      "quality": true,
+      "editPlan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "roof",
+              "at": 10
+            },
+            "look": {
+              "id": "chrome",
+              "label": "chrome",
+              "words": [
+                "chrome",
+                "mirror",
+                "mirror chrome",
+                "mirror finish",
+                "mirrored"
+              ],
+              "found": "base::f_chrome",
+              "about": "full metal, perfectly smooth: a mirror"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          },
+          {
+            "target": {
+              "kind": "colour",
+              "word": "red",
+              "hex": "#c8102e",
+              "qual": null,
+              "at": 10,
+              "parts": null
+            },
+            "look": null,
+            "colour": {
+              "name": "violet",
+              "hex": "#7a3fc4",
+              "at": 14,
+              "qual": null,
+              "exact": false
+            },
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": "keep"
+          }
+        ],
+        "alt": [],
+        "unknown": [
+          "keep"
+        ],
+        "text": "make the roof chrome keep its red paint and also apply a violet carbon weave",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "raw": "Make the roof chrome, keep its red paint, and also apply a violet carbon weave."
+      },
+      "compile": {
+        "zones": [],
+        "ask": {
+          "text": "I could not safely combine “apply a violet carbon weave” with the roof chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+          "chips": []
+        },
+        "missing": [
+          {
+            "why": "compound-preserve-extra",
+            "action": "apply a violet carbon weave"
+          }
+        ]
+      },
+      "offlineCanHandle": true,
+      "direct": {
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “apply a violet carbon weave” with the roof chrome. Which part should get that extra change, and should it layer over the chrome or replace it?",
+        "queue": []
+      },
+      "offlineAsk": {
+        "value": {
+          "offline": true,
+          "text": "Nothing was changed. I could not safely combine “apply a violet carbon weave” with the roof chrome. Which part should get that extra request, and should it layer over the chrome finish or replace it?",
+          "queue": [],
+          "usage": {
+            "cost": 0
+          },
+          "calls": 0,
+          "model": "built-in",
+          "tools": [],
+          "instructionGuard": "preserved-paint-with-overlay"
+        },
+        "text": "Nothing was changed. I could not safely combine “apply a violet carbon weave” with the roof chrome. Which part should get that extra request, and should it layer over the chrome finish or replace it?",
+        "queue": []
+      },
+      "offlineAskCore": {
+        "value": {
+          "offline": true,
+          "text": "Nothing was changed. I could not safely combine “apply a violet carbon weave” with the roof chrome. Which part should get that extra request, and should it layer over the chrome finish or replace it?",
+          "queue": [],
+          "usage": {
+            "cost": 0
+          },
+          "calls": 0,
+          "model": "built-in",
+          "tools": [],
+          "instructionGuard": "preserved-paint-with-overlay"
+        },
+        "text": "Nothing was changed. I could not safely combine “apply a violet carbon weave” with the roof chrome. Which part should get that extra request, and should it layer over the chrome finish or replace it?",
+        "queue": []
+      },
+      "ask": {
+        "value": {
+          "offline": true,
+          "text": "Nothing was changed. I could not safely combine “apply a violet carbon weave” with the roof chrome. Which part should get that extra request, and should it layer over the chrome finish or replace it?",
+          "queue": [],
+          "usage": {
+            "cost": 0
+          },
+          "calls": 0,
+          "model": "built-in",
+          "tools": [],
+          "instructionGuard": "preserved-paint-with-overlay"
+        },
+        "text": "Nothing was changed. I could not safely combine “apply a violet carbon weave” with the roof chrome. Which part should get that extra request, and should it layer over the chrome finish or replace it?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "text": "Nothing was changed. I could not safely combine “apply a violet carbon weave” with the roof chrome. Which part should get that extra request, and should it layer over the chrome finish or replace it?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "okay": true
+    },
+    {
+      "id": "W63-N04",
+      "text": "Please make the roof satin; keep its existing red paint and region mask intact.",
+      "configured": true,
+      "expected": "complete",
+      "extra": null,
+      "quality": true,
+      "editPlan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "roof",
+              "at": 17
+            },
+            "look": {
+              "id": "satin",
+              "label": "satin",
+              "words": [
+                "satin",
+                "eggshell",
+                "semi gloss",
+                "semi matte",
+                "low sheen",
+                "silky",
+                "soft sheen"
+              ],
+              "found": "base::f_clear_satin",
+              "about": "a soft sheen between gloss and matte"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "please make the roof satin",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "Please make the roof satin; keep its existing red paint and region mask intact."
+      },
+      "compile": {
+        "zones": [
+          {
+            "name": "Roof satin",
+            "finish": "base::f_clear_satin",
+            "color": "source",
+            "region": {
+              "part": "roof"
+            },
+            "_meta": {
+              "label": "roof",
+              "what": [
+                "satin"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "satin",
+              "parts": [
+                "roof"
+              ],
+              "kind": "part",
+              "about": "a soft sheen between gloss and matte"
+            }
+          }
+        ],
+        "ask": null,
+        "missing": []
+      },
+      "offlineCanHandle": true,
+      "direct": {
+        "route": "edit",
+        "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Roof satin",
+              "finish": "base::f_clear_satin",
+              "color": "source",
+              "region": {
+                "part": "roof"
+              }
+            }
+          }
+        ]
+      },
+      "offlineAsk": {
+        "value": {
+          "route": "edit",
+          "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+          "chips": [
+            "Undo",
+            "A bit more",
+            "Show me options for the roof",
+            "Make the red candy",
+            "Make the black matte"
+          ],
+          "queue": [
+            {
+              "kind": "add",
+              "spec": {
+                "name": "Roof satin",
+                "finish": "base::f_clear_satin",
+                "color": "source",
+                "region": {
+                  "part": "roof"
+                }
+              }
+            }
+          ],
+          "tools": [
+            "add_zone"
+          ]
+        },
+        "route": "edit",
+        "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Roof satin",
+              "finish": "base::f_clear_satin",
+              "color": "source",
+              "region": {
+                "part": "roof"
+              }
+            }
+          }
+        ]
+      },
+      "offlineAskCore": {
+        "value": {
+          "route": "edit",
+          "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+          "chips": [
+            "Undo",
+            "A bit more",
+            "Show me options for the roof",
+            "Make the red candy",
+            "Make the black matte"
+          ],
+          "queue": [
+            {
+              "kind": "add",
+              "spec": {
+                "name": "Roof satin",
+                "finish": "base::f_clear_satin",
+                "color": "source",
+                "region": {
+                  "part": "roof"
+                }
+              }
+            }
+          ],
+          "tools": [
+            "add_zone"
+          ]
+        },
+        "route": "edit",
+        "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Roof satin",
+              "finish": "base::f_clear_satin",
+              "color": "source",
+              "region": {
+                "part": "roof"
+              }
+            }
+          }
+        ]
+      },
+      "ask": {
+        "value": {
+          "route": "edit",
+          "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+          "chips": [
+            "Undo",
+            "A bit more",
+            "Show me options for the roof",
+            "Make the red candy",
+            "Make the black matte"
+          ],
+          "queue": [
+            {
+              "kind": "add",
+              "spec": {
+                "name": "Roof satin",
+                "finish": "base::f_clear_satin",
+                "color": "source",
+                "region": {
+                  "part": "roof"
+                }
+              }
+            }
+          ],
+          "tools": [
+            "add_zone"
+          ]
+        },
+        "route": "edit",
+        "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Roof satin",
+              "finish": "base::f_clear_satin",
+              "color": "source",
+              "region": {
+                "part": "roof"
+              }
+            }
+          }
+        ],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "route": "edit",
+        "text": "Done — the roof is now satin — a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Roof satin",
+              "finish": "base::f_clear_satin",
+              "color": "source",
+              "region": {
+                "part": "roof"
+              }
+            }
+          }
+        ],
+        "providerCalls": 0
+      },
+      "okay": true
+    },
+    {
+      "id": "W63-N05",
+      "text": "I want the hood to be chrome, but leave its current paint unchanged.",
+      "configured": true,
+      "expected": "complete",
+      "extra": null,
+      "quality": true,
+      "editPlan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "hood",
+              "at": 15
+            },
+            "look": {
+              "id": "chrome",
+              "label": "chrome",
+              "words": [
+                "chrome",
+                "mirror",
+                "mirror chrome",
+                "mirror finish",
+                "mirrored"
+              ],
+              "found": "base::f_chrome",
+              "about": "full metal, perfectly smooth: a mirror"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [],
+        "text": "make only the hood chrome",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "exactPart": true,
+        "raw": "I want the hood to be chrome, but leave its current paint unchanged."
+      },
+      "compile": {
+        "zones": [
+          {
+            "name": "Hood chrome",
+            "finish": "base::f_chrome",
+            "color": "source",
+            "region": {
+              "part": "hood"
+            },
+            "_meta": {
+              "label": "hood",
+              "what": [
+                "chrome"
+              ],
+              "share": null,
+              "element": false,
+              "specOnly": true,
+              "finishExplicit": true,
+              "look": "chrome",
+              "parts": [
+                "hood"
+              ],
+              "kind": "part",
+              "about": "full metal, perfectly smooth: a mirror"
+            }
+          }
+        ],
+        "ask": null,
+        "missing": []
+      },
+      "offlineCanHandle": true,
+      "direct": {
+        "route": "edit",
+        "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Hood chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "part": "hood"
+              }
+            }
+          }
+        ]
+      },
+      "offlineAsk": {
+        "value": {
+          "route": "edit",
+          "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+          "chips": [
+            "Undo",
+            "A bit more",
+            "Show me options for the hood",
+            "Make the red candy",
+            "Make the black matte"
+          ],
+          "queue": [
+            {
+              "kind": "add",
+              "spec": {
+                "name": "Hood chrome",
+                "finish": "base::f_chrome",
+                "color": "source",
+                "region": {
+                  "part": "hood"
+                }
+              }
+            }
+          ],
+          "tools": [
+            "add_zone"
+          ]
+        },
+        "route": "edit",
+        "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Hood chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "part": "hood"
+              }
+            }
+          }
+        ]
+      },
+      "offlineAskCore": {
+        "value": {
+          "route": "edit",
+          "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+          "chips": [
+            "Undo",
+            "A bit more",
+            "Show me options for the hood",
+            "Make the red candy",
+            "Make the black matte"
+          ],
+          "queue": [
+            {
+              "kind": "add",
+              "spec": {
+                "name": "Hood chrome",
+                "finish": "base::f_chrome",
+                "color": "source",
+                "region": {
+                  "part": "hood"
+                }
+              }
+            }
+          ],
+          "tools": [
+            "add_zone"
+          ]
+        },
+        "route": "edit",
+        "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Hood chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "part": "hood"
+              }
+            }
+          }
+        ]
+      },
+      "ask": {
+        "value": {
+          "route": "edit",
+          "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+          "chips": [
+            "Undo",
+            "A bit more",
+            "Show me options for the hood",
+            "Make the red candy",
+            "Make the black matte"
+          ],
+          "queue": [
+            {
+              "kind": "add",
+              "spec": {
+                "name": "Hood chrome",
+                "finish": "base::f_chrome",
+                "color": "source",
+                "region": {
+                  "part": "hood"
+                }
+              }
+            }
+          ],
+          "tools": [
+            "add_zone"
+          ]
+        },
+        "route": "edit",
+        "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Hood chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "part": "hood"
+              }
+            }
+          }
+        ],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "route": "edit",
+        "text": "Done — the hood is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched.",
+        "queue": [
+          {
+            "kind": "add",
+            "spec": {
+              "name": "Hood chrome",
+              "finish": "base::f_chrome",
+              "color": "source",
+              "region": {
+                "part": "hood"
+              }
+            }
+          }
+        ],
+        "providerCalls": 0
+      },
+      "okay": true
+    },
+    {
+      "id": "W63-N06",
+      "text": "Would the hood stay red if I made it chrome? Also, could I add a gold weave?",
+      "configured": false,
+      "expected": "ask",
+      "extra": null,
+      "quality": true,
+      "editPlan": {
+        "kind": "ask",
+        "protected_parts": [
+          "hood"
+        ],
+        "requested_parts": [],
+        "text": "Nothing was changed. I can’t yet guarantee this combined request leaves the hood unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "chips": []
+      },
+      "compile": null,
+      "offlineCanHandle": true,
+      "direct": {
+        "route": "ask",
+        "text": "Nothing was changed. I can’t yet guarantee this combined request leaves the hood unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "queue": []
+      },
+      "offlineAsk": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I can’t yet guarantee this combined request leaves the hood unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I can’t yet guarantee this combined request leaves the hood unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "queue": []
+      },
+      "offlineAskCore": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I can’t yet guarantee this combined request leaves the hood unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I can’t yet guarantee this combined request leaves the hood unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "queue": []
+      },
+      "ask": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I can’t yet guarantee this combined request leaves the hood unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I can’t yet guarantee this combined request leaves the hood unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "route": "ask",
+        "text": "Nothing was changed. I can’t yet guarantee this combined request leaves the hood unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "okay": true
+    },
+    {
+      "id": "W63-N07",
+      "text": "Do not make the trunk chrome; keep its green paint and add gold carbon weave.",
+      "configured": true,
+      "expected": "ask",
+      "extra": null,
+      "quality": true,
+      "editPlan": {
+        "kind": "ask",
+        "prohibited_edit": true,
+        "text": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request.",
+        "chips": []
+      },
+      "compile": null,
+      "offlineCanHandle": true,
+      "direct": {
+        "route": "ask",
+        "text": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request.",
+        "queue": []
+      },
+      "offlineAsk": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request.",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request.",
+        "queue": []
+      },
+      "offlineAskCore": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request.",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request.",
+        "queue": []
+      },
+      "ask": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request.",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request.",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "route": "ask",
+        "text": "Nothing was changed. I treated the negative instruction as a request to leave the paint alone. Send any separate change as its own request.",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "okay": true
+    },
+    {
+      "id": "W63-N08",
+      "text": "Make the hood chrome while leaving the roof's red paint alone, and add a gold carbon weave.",
+      "configured": true,
+      "expected": "ask",
+      "extra": null,
+      "quality": true,
+      "editPlan": {
+        "kind": "ask",
+        "protected_parts": [
+          "roof"
+        ],
+        "requested_parts": [
+          "hood"
+        ],
+        "text": "Nothing was changed. I can’t yet guarantee the requested hood change leaves the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "chips": []
+      },
+      "compile": null,
+      "offlineCanHandle": true,
+      "direct": {
+        "route": "ask",
+        "text": "Nothing was changed. I can’t yet guarantee the requested hood change leaves the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "queue": []
+      },
+      "offlineAsk": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I can’t yet guarantee the requested hood change leaves the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I can’t yet guarantee the requested hood change leaves the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "queue": []
+      },
+      "offlineAskCore": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I can’t yet guarantee the requested hood change leaves the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I can’t yet guarantee the requested hood change leaves the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "queue": []
+      },
+      "ask": {
+        "value": {
+          "route": "ask",
+          "text": "Nothing was changed. I can’t yet guarantee the requested hood change leaves the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+          "chips": [],
+          "queue": [],
+          "tools": []
+        },
+        "route": "ask",
+        "text": "Nothing was changed. I can’t yet guarantee the requested hood change leaves the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "route": "ask",
+        "text": "Nothing was changed. I can’t yet guarantee the requested hood change leaves the roof unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "okay": true
+    },
+    {
+      "id": "W63-N09",
+      "text": "Make only the roof satin, keep its current paint, and add gold carbon weave to the left side.",
+      "configured": true,
+      "expected": "ask",
+      "extra": null,
+      "quality": true,
+      "editPlan": null,
+      "compile": null,
+      "offlineCanHandle": false,
+      "direct": {
+        "text": "Nothing was changed. I could not safely combine “add gold carbon weave to the left side” with the rest of your finish request. The extra clause names left side as its destination. Should that be a separate change, or should it layer over the finish you asked for?",
+        "queue": []
+      },
+      "offlineAsk": {
+        "value": {
+          "offline": true,
+          "text": "Nothing was changed. I could not safely combine “add gold carbon weave to the left side” with the rest of your finish request. The extra clause names left side as its destination. Should that be a separate change, or should it layer over the finish you asked for?",
+          "queue": [],
+          "usage": {
+            "cost": 0
+          },
+          "calls": 0,
+          "model": "built-in",
+          "tools": [],
+          "instructionGuard": "preserved-paint-with-overlay"
+        },
+        "text": "Nothing was changed. I could not safely combine “add gold carbon weave to the left side” with the rest of your finish request. The extra clause names left side as its destination. Should that be a separate change, or should it layer over the finish you asked for?",
+        "queue": []
+      },
+      "offlineAskCore": {
+        "value": {
+          "offline": true,
+          "text": "Nothing was changed. I could not safely combine “add gold carbon weave to the left side” with the rest of your finish request. The extra clause names left side as its destination. Should that be a separate change, or should it layer over the finish you asked for?",
+          "queue": [],
+          "usage": {
+            "cost": 0
+          },
+          "calls": 0,
+          "model": "built-in",
+          "tools": [],
+          "instructionGuard": "preserved-paint-with-overlay"
+        },
+        "text": "Nothing was changed. I could not safely combine “add gold carbon weave to the left side” with the rest of your finish request. The extra clause names left side as its destination. Should that be a separate change, or should it layer over the finish you asked for?",
+        "queue": []
+      },
+      "ask": {
+        "value": {
+          "offline": true,
+          "text": "Nothing was changed. I could not safely combine “add gold carbon weave to the left side” with the rest of your finish request. The extra clause names left side as its destination. Should that be a separate change, or should it layer over the finish you asked for?",
+          "queue": [],
+          "usage": {
+            "cost": 0
+          },
+          "calls": 0,
+          "model": "built-in",
+          "tools": [],
+          "instructionGuard": "preserved-paint-with-overlay"
+        },
+        "text": "Nothing was changed. I could not safely combine “add gold carbon weave to the left side” with the rest of your finish request. The extra clause names left side as its destination. Should that be a separate change, or should it layer over the finish you asked for?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "text": "Nothing was changed. I could not safely combine “add gold carbon weave to the left side” with the rest of your finish request. The extra clause names left side as its destination. Should that be a separate change, or should it layer over the finish you asked for?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "okay": true
+    },
+    {
+      "id": "W63-N10",
+      "text": "Make the left side satin and keep its blue paint, then add red pinstripe texture on the hood.",
+      "configured": true,
+      "expected": "ask",
+      "extra": "red pinstripe texture",
+      "quality": true,
+      "editPlan": {
+        "kind": "ops",
+        "ops": [
+          {
+            "target": {
+              "kind": "part",
+              "part": "left side",
+              "at": 10
+            },
+            "look": {
+              "id": "satin",
+              "label": "satin",
+              "words": [
+                "satin",
+                "eggshell",
+                "semi gloss",
+                "semi matte",
+                "low sheen",
+                "silky",
+                "soft sheen"
+              ],
+              "found": "base::f_clear_satin",
+              "about": "a soft sheen between gloss and matte"
+            },
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          },
+          {
+            "target": {
+              "kind": "colour",
+              "word": "blue",
+              "hex": "#1450b4",
+              "qual": null,
+              "at": 10,
+              "parts": null
+            },
+            "look": null,
+            "colour": null,
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": "keep"
+          },
+          {
+            "target": {
+              "kind": "accents",
+              "word": "pinstripe",
+              "at": 9
+            },
+            "look": null,
+            "colour": {
+              "name": "red",
+              "hex": "#c8102e",
+              "at": 5,
+              "qual": null,
+              "exact": false
+            },
+            "rel": null,
+            "soft": false,
+            "strong": false,
+            "shade": null,
+            "keep": false,
+            "pop": false,
+            "recipe": null,
+            "sub": null,
+            "ext": null
+          }
+        ],
+        "alt": [],
+        "unknown": [
+          "keep"
+        ],
+        "text": "make the left side satin and keep its blue paint then add red pinstripe texture on the hood",
+        "usedLast": false,
+        "usedSame": false,
+        "exclude": [],
+        "atomicScope": false,
+        "raw": "Make the left side satin and keep its blue paint, then add red pinstripe texture on the hood."
+      },
+      "compile": {
+        "zones": [],
+        "ask": {
+          "text": "I could not safely combine “add red pinstripe texture on the hood” with the left side satin. The extra clause names hood as its destination. Should that be a separate change, or should it layer over the satin?",
+          "chips": []
+        },
+        "missing": [
+          {
+            "why": "compound-preserve-extra",
+            "action": "add red pinstripe texture on the hood"
+          }
+        ]
+      },
+      "offlineCanHandle": true,
+      "direct": {
+        "route": "ask",
+        "text": "Nothing was changed. I could not safely combine “add red pinstripe texture on the hood” with the left side satin. The extra clause names hood as its destination. Should that be a separate change, or should it layer over the satin?",
+        "queue": []
+      },
+      "offlineAsk": {
+        "value": {
+          "offline": true,
+          "text": "Nothing was changed. I could not safely combine “add red pinstripe texture on the hood” with the left side satin. The extra clause names hood as its destination. Should that be a separate change, or should it layer over the satin finish?",
+          "queue": [],
+          "usage": {
+            "cost": 0
+          },
+          "calls": 0,
+          "model": "built-in",
+          "tools": [],
+          "instructionGuard": "preserved-paint-with-overlay"
+        },
+        "text": "Nothing was changed. I could not safely combine “add red pinstripe texture on the hood” with the left side satin. The extra clause names hood as its destination. Should that be a separate change, or should it layer over the satin finish?",
+        "queue": []
+      },
+      "offlineAskCore": {
+        "value": {
+          "offline": true,
+          "text": "Nothing was changed. I could not safely combine “add red pinstripe texture on the hood” with the left side satin. The extra clause names hood as its destination. Should that be a separate change, or should it layer over the satin finish?",
+          "queue": [],
+          "usage": {
+            "cost": 0
+          },
+          "calls": 0,
+          "model": "built-in",
+          "tools": [],
+          "instructionGuard": "preserved-paint-with-overlay"
+        },
+        "text": "Nothing was changed. I could not safely combine “add red pinstripe texture on the hood” with the left side satin. The extra clause names hood as its destination. Should that be a separate change, or should it layer over the satin finish?",
+        "queue": []
+      },
+      "ask": {
+        "value": {
+          "offline": true,
+          "text": "Nothing was changed. I could not safely combine “add red pinstripe texture on the hood” with the left side satin. The extra clause names hood as its destination. Should that be a separate change, or should it layer over the satin finish?",
+          "queue": [],
+          "usage": {
+            "cost": 0
+          },
+          "calls": 0,
+          "model": "built-in",
+          "tools": [],
+          "instructionGuard": "preserved-paint-with-overlay"
+        },
+        "text": "Nothing was changed. I could not safely combine “add red pinstripe texture on the hood” with the left side satin. The extra clause names hood as its destination. Should that be a separate change, or should it layer over the satin finish?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "send": {
+        "error": null,
+        "text": "Nothing was changed. I could not safely combine “add red pinstripe texture on the hood” with the left side satin. The extra clause names hood as its destination. Should that be a separate change, or should it layer over the satin finish?",
+        "queue": [],
+        "providerCalls": 0
+      },
+      "okay": true
+    }
+  ],
+  "blockers": [],
+  "limits": [
+    "Actual frozen W58 controller and isolated W63 parser/controller candidate functions were executed in a VM; zone batch, operation lifecycle and provider effects were mocked. No provider or native calls occurred.",
+    "This confirms parser/compiler copy and route text/queue behavior only; no live application or canvas paint was exercised.",
+    "The added parser branch only clarifies when preservation wording co-occurs with an unsupported second action and existing parser uncertainty. It does not claim to support or apply texture actions."
+  ]
+}

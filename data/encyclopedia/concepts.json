@@ -1,0 +1,608 @@
+{
+ "domain": "concepts",
+ "version": 1,
+ "articles": [
+  {
+   "id": "concepts.green_is_not_good",
+   "title": "A good score is not the same as a good look",
+   "domain": "concepts",
+   "summary": "Shokker's own checks can say a finish is fine when it looks poor. Always judge a finish at full size on the car with your own eyes; the eye wins over a number.",
+   "what": "Every finish is checked by scripts for sameness, size of detail and spec. These checks are necessary but not enough: a check that cannot see a flaw will certify it, and a score can reward the wrong thing, such as big blobby detail when the house rule is fine detail. A wall of green ticks has also hidden a sheet of confetti. The rule is to look at every finish at 1:1, and when a score and your eye disagree, the eye wins.",
+   "when": [
+    "You are choosing a finish and want to trust your eyes.",
+    "You wonder why a finish with a good rating looks wrong."
+   ],
+   "how": [
+    "Open the finish on your car in Render and look at it at full size.",
+    "Zoom into a patch, not just the whole car.",
+    "Compare with a plain gloss version if unsure.",
+    "Go with what looks right."
+   ],
+   "controls": [],
+   "tips": [
+    "Fine detail of 8 to 32 pixels over the whole sheet is the target look."
+   ],
+   "pitfalls": [
+    "Do not trust a rating over your own eye."
+   ],
+   "related": [
+    "concepts.what_makes_a_finish_good",
+    "concepts.preview_vs_truth",
+    "preview_render.preview_vs_render"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "wiki.lessons.traps_of_the_it_s_green_ship_it_kind"
+   ],
+   "sources": [
+    "SPB_WIKI.html:540-559",
+    "docs/FINISH_LAW.md:1",
+    "scripts/spb_finish_law.py:440",
+    "scripts/spb_finish_law.py:464"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "green check",
+    "ratings and scores",
+    "trust your eyes",
+    "score vs look",
+    "score is good but looks bad",
+    "metric vs look"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "What the automatic checks actually look at",
+     "body": "Every finish in the catalogue is run through scripts that measure five things: how different it is from every other finish (sameness), how fine its detail is (scale), whether the shine map follows the paint (follow), whether the shine map is its own design and not a shared one (story), and whether the paint is not mostly solid black or white (coverage). A finish passes when scale, follow, story and coverage clear their bars; the sameness number is only reported as advice, because it could not tell the owner's approved finishes from his rejected ones. Those bars were fitted to the owner's own yes/no verdicts on 24 finishes and agree with him on 20 of them, which is good but not perfect. A check can only see what it measures."
+    },
+    {
+     "heading": "Why a green tick can still hide a bad look",
+     "body": "A real case: a 60-finish set shipped on only 5 different shine maps, and every check said green, because the sameness check treated a copy shifted sideways as a brand-new design. Another set of three finishes passed every bar while nearly solid black. The lesson baked into the house rules: a test you could never fail honestly is not measuring what you care about, and a score that rewards the wrong thing (big blobby shapes instead of fine detail) drags designs the wrong way."
+    },
+    {
+     "heading": "The order of trust",
+     "body": "Your eye at full size on the car comes first, the spec views second, the automatic scores last. When a score and your eye disagree, the eye wins. The only finishes protected from change at any cost are the five gold standards (Hologram Metal, Dichroic Skin, Truchet Glass, Cinder Pulse, Hologram Noir), because they passed the owner's eye, not just the numbers."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Judge a finish the right way",
+     "goal": "Decide whether a finish is really good before you commit a whole car to it",
+     "settings": {
+      "Zone": "Paint one body panel only",
+      "Finish": "the finish you are testing",
+      "View": "Render, then zoom to 100% (1:1)",
+      "Spec views": "Look at R METAL, G ROUGH and B COAT"
+     },
+     "result": "You see the detail at the size the car will show it. Fine texture across the panel is good. One big blob, a smooth ramp or a flat colour means pick another."
+    },
+    {
+     "title": "Compare against plain gloss",
+     "goal": "Check that a finish is adding something real",
+     "settings": {
+      "Zone 1": "the finish",
+      "Zone 2 (a copy on another panel)": "plain Gloss base in the same colour",
+      "View": "Render at 1:1"
+     },
+     "result": "If you cannot tell the two apart at normal viewing distance, the finish is not earning its place on that car."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does a finish with a great rating look bad to me?",
+     "a": "The rating measures a few things, not taste. Trust what you see at full size. If your eye says no, the answer is no."
+    },
+    {
+     "q": "What is the 1:1 view?",
+     "a": "Looking at the render at 100% zoom so one screen pixel is one paint pixel. It is the only view that shows the true size of the detail."
+    },
+    {
+     "q": "Are some finishes safe from being changed?",
+     "a": "Yes. Five gold-standard finishes (Hologram Metal, Dichroic Skin, Truchet Glass, Cinder Pulse, Hologram Noir) are never changed, because the owner approved them by eye."
+    },
+    {
+     "q": "Does a green check mean a finish is original?",
+     "a": "It means it cleared the scale, follow, story and coverage bars. Originality is checked separately by a whole-catalogue uniqueness check, which treats anything 80 percent or more alike to another finish as a clone. A recolour of an existing finish does not count as new work, and the check ignores colour on purpose."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You pick a finish only because its card shows a high score",
+     "cause": "The score is only a filter that removes obvious failures",
+     "fix": "Put it on your car, render, and look at 1:1 before you decide."
+    },
+    {
+     "symptom": "The finish looks smeared or blobby on the car",
+     "cause": "The detail is large on the sheet, and the sheet covers the whole car",
+     "fix": "Pick a finish with fine detail, or raise the pattern scale so features get smaller."
+    }
+   ],
+   "protips": [
+    "A thumbnail hides how coarse a finish is: the paint sheet covers a whole car, so anything that looks small in a thumbnail is huge on the car.",
+    "Look for a shine map that follows the paint pattern. When the two line up, the finish looks designed; when they ignore each other, it looks pasted on."
+   ],
+   "screens": [
+    "car_ff_truchet_glass"
+   ]
+  },
+  {
+   "id": "concepts.nothing_changed",
+   "title": "When a change seems to do nothing",
+   "domain": "concepts",
+   "summary": "Most often the picture is stale, a zone above is covering the area, or an older copy of the app is running. Check those before assuming the change was wrong.",
+   "what": "The app shows files that it caches, and the preview can lag, so a correct change can be invisible. Another cause is that a finish exists in the engine but is not listed in the picker, or that a restart or update is pending. Work through them in order: press F5 to refresh the preview, check the zone is not muted or covered by a zone above, and check you are on the latest version.",
+   "when": [
+    "You changed something and the car looks the same.",
+    "A finish you read about is not in the picker."
+   ],
+   "how": [
+    "Press F5 to refresh the preview.",
+    "Check the zone is not muted and not covered by a zone above.",
+    "Check the update banner and restart the app.",
+    "If it is still wrong, send a problem report."
+   ],
+   "controls": [],
+   "tips": [],
+   "pitfalls": [
+    "A different finish in the picker than on a friend's computer usually means an older version."
+   ],
+   "related": [
+    "support.zone_no_show",
+    "zones.not_showing",
+    "workflows.install_update",
+    "support.reporting_problem"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "wiki.lessons.traps_of_the_my_change_did_nothing_kind"
+   ],
+   "sources": [
+    "SPB_WIKI.html:560-583"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "change did nothing",
+    "no effect",
+    "stale preview",
+    "nothing happens when i change it",
+    "slider does nothing",
+    "car looks the same after change",
+    "no visible change"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The four reasons, most likely first",
+     "body": "One: the preview picture is stale and has not redrawn (press F5). Two: the zone you edited is muted, or a zone above it covers the same area, so you cannot see your change; zones higher in the list win where they overlap. Three: you are running an older copy of the app than the one that has the change or the finish. Four: the thing you changed only matters in the saved files, not in the preview (a spec tweak on a very fine pattern, for example, can look flat in the small preview)."
+    },
+    {
+     "heading": "Why an older copy shows different finishes",
+     "body": "The finish list on your screen is built from what your installed copy knows. A friend on a newer version can see finishes that yours does not list at all. Updates arrive through the update banner, and the new version only takes effect after a restart."
+    },
+    {
+     "heading": "How to test it in one minute",
+     "body": "Make the change very large on purpose: set a zone to a loud colour or a very different finish and press F5. If even that does nothing, the cause is the zone being hidden or covered. If it appears, your earlier change was simply too small to see at preview size."
+    }
+   ],
+   "examples": [
+    {
+     "title": "A finish seems to do nothing",
+     "goal": "Find out why a finish change is invisible",
+     "settings": {
+      "Step 1": "Press F5",
+      "Step 2": "Open the zone list and check the zone is not muted",
+      "Step 3": "Drag the zone to the top of the list",
+      "Step 4": "Look for the update banner and restart if one is waiting"
+     },
+     "result": "In most cases the change appears at step 1 or 2. If it appears only after moving the zone up, another zone was covering it."
+    },
+    {
+     "title": "A finish a friend has is missing from your picker",
+     "goal": "Get a finish that exists in a newer version",
+     "settings": {
+      "Check": "Compare version numbers with your friend",
+      "Action": "Install the update from the banner and restart"
+     },
+     "result": "After the restart the picker lists the newer finishes."
+    }
+   ],
+   "faq": [
+    {
+     "q": "I changed a colour and the car looks the same. Why?",
+     "a": "Most often the preview has not redrawn or a zone above covers the area. Press F5 and check the zone order."
+    },
+    {
+     "q": "Does a muted zone still count?",
+     "a": "A muted zone is switched off, so it paints nothing until you unmute it."
+    },
+    {
+     "q": "Do I need to restart after an update?",
+     "a": "Yes. A downloaded update only takes effect after the app restarts."
+    },
+    {
+     "q": "What do I send if it is still wrong?",
+     "a": "Use Report a Problem in the Settings gear. It attaches the details a fix needs."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You keep changing settings and nothing moves",
+     "cause": "A zone above yours covers the same area",
+     "fix": "Move your zone to the top of the list or shrink the zone above it."
+    },
+    {
+     "symptom": "You keep reinstalling but the picker is the same",
+     "cause": "The installed copy was never restarted after the update",
+     "fix": "Close the app fully and open it again, then check the version."
+    }
+   ],
+   "protips": [
+    "Make a test change big and obvious first. Only fine-tune once you have proven the zone is really showing."
+   ],
+   "screens": [
+    "pair_zone_added"
+   ]
+  },
+  {
+   "id": "concepts.preview_vs_truth",
+   "title": "The preview can look fine and still not be the result",
+   "domain": "concepts",
+   "summary": "The live preview is smaller than the final paint, so size-based effects can look different, and a preview does not prove the saved file is right. Check the Render and the sim.",
+   "what": "The preview draws smaller than the final 2048 paint, so patterns drawn in fixed pixel sizes can look bigger or smaller than they will. A placement that looks right in the preview is not a guarantee for the saved result: judge the saved file. Rendering at both sizes matters, since some problems only appear at one. Fine effects can also average out and look flat in the preview.",
+   "when": [
+    "The render differs from the preview.",
+    "A pattern looks bigger or smaller in the preview."
+   ],
+   "how": [
+    "Make your last check in Render at full size.",
+    "Look at the spec views.",
+    "Check the result in iRacing with Ctrl+R after a render.",
+    "Report differences with your project attached."
+   ],
+   "controls": [],
+   "tips": [],
+   "pitfalls": [
+    "The preview is a design aid; the saved file is the product."
+   ],
+   "related": [
+    "preview_render.preview_vs_render",
+    "support.preview_render_mismatch",
+    "playbook.preview_cannot_show"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "wiki.lessons.traps_of_the_the_preview_looked_fine_kin"
+   ],
+   "sources": [
+    "SPB_WIKI.html:584-602"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "preview vs result",
+    "preview looked fine",
+    "preview different from render",
+    "preview looks right but ingame is different",
+    "trust the preview",
+    "preview is not the final result",
+    "preview lies"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Preview size versus final size",
+     "body": "The live preview is drawn at 1024 pixels across, while the final paint is 2048. Anything sized in fixed pixels is therefore twice as large in the preview as it will be on the final paint, and fine effects can average out and look flat in the small picture. The Render button draws the real thing at full size."
+    },
+    {
+     "heading": "Preview is a design aid, the saved file is the product",
+     "body": "A preview that looks right does not prove the saved file is right. A past bug lived entirely in the gap between the two: a rotated element looked right in the preview and was cut off when it was applied. The habit that avoids it is to make your last check on the rendered result and, for iRacing, on the car in the sim."
+    },
+    {
+     "heading": "Rendering at both sizes",
+     "body": "Some problems only show at one size. If a pattern looks too big or too small, render once at the final size before you change anything, so you fix the real problem and not a preview difference."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Final check before you save to iRacing",
+     "goal": "Confirm the saved result matches what you designed",
+     "settings": {
+      "Step 1": "Press RENDER at full size",
+      "Step 2": "Zoom to 100% and inspect each panel",
+      "Step 3": "Check the R METAL, G ROUGH and B COAT views",
+      "Step 4": "Save to the iRacing folder, then press Ctrl+R in the sim"
+     },
+     "result": "You have seen the paint, the shine maps and the sim result, so nothing surprises you on track."
+    },
+    {
+     "title": "A pattern looks too large in the preview",
+     "goal": "Decide whether to change the pattern scale",
+     "settings": {
+      "Do first": "Render at full size",
+      "Compare": "Preview versus render at the same panel"
+     },
+     "result": "If the render shows the right size, leave the scale alone; the preview was only drawn smaller."
+    }
+   ],
+   "faq": [
+    {
+     "q": "How big is the preview compared to the final paint?",
+     "a": "The preview is drawn at 1024 pixels across; the final paint is 2048 (or 1024 if your car is a 1024 sheet)."
+    },
+    {
+     "q": "Why does my fine texture look flat in the preview?",
+     "a": "Very fine effects average out when drawn small. Render at full size to see them."
+    },
+    {
+     "q": "Do I need to check in the sim?",
+     "a": "Yes for your last check. Save to the iRacing folder and press Ctrl+R in the sim to reload the car textures."
+    },
+    {
+     "q": "What should I send if the render looks different from the preview?",
+     "a": "Send a problem report from the Settings gear with your project, the car and your number mode."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You tune a pattern until the preview looks perfect, then the render looks wrong",
+     "cause": "The preview is half the size of the final paint",
+     "fix": "Tune against a full-size render and use the preview only for rough placement."
+    },
+    {
+     "symptom": "You skip the sim check",
+     "cause": "A good render still can look different on the car because of the shine map and the track lighting",
+     "fix": "Always look at the car in the sim after a save and press Ctrl+R to reload."
+    }
+   ],
+   "protips": [
+    "If you only have time for one check, make it the full-size render at 100% zoom. It catches most surprises."
+   ],
+   "screens": [
+    "ui_source_and_live"
+   ]
+  },
+  {
+   "id": "concepts.reporting_with_evidence",
+   "title": "Reporting a problem so it can be fixed",
+   "domain": "concepts",
+   "summary": "Change one thing at a time, keep the project, and send the real settings rather than a description. A fix starts from your actual file.",
+   "what": "Problems are found by reproducing them from the real settings of a real render, changing one field at a time, and reading the actual values rather than quoting remembered numbers. For you this means: send the diagnostics from Report a Problem, add your car and number mode, and say which single change made it happen. In one past case the cause turned out to be one value applied twice, which was found only by sweeping one field at a time.",
+   "when": [
+    "You found a bug.",
+    "Support asked what you changed."
+   ],
+   "how": [
+    "Go back to the last good state and change one thing.",
+    "Save your project.",
+    "Press Report a Problem in the Settings gear and paste the report.",
+    "Add what you see in the sim, your User ID and number mode."
+   ],
+   "controls": [],
+   "tips": [],
+   "pitfalls": [
+    "A screenshot alone rarely shows the cause."
+   ],
+   "related": [
+    "support.reporting_problem",
+    "workflows.user_id_and_folder",
+    "ui_shell.save_open_projects"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "wiki.lessons.traps_of_the_reasoning_from_code_kind"
+   ],
+   "sources": [
+    "SPB_WIKI.html:603-624"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "reproduce a problem",
+    "one change at a time",
+    "how to report a bug well",
+    "send a bug report with screenshots",
+    "evidence for a bug",
+    "screenshot for support"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "One change at a time",
+     "body": "The fastest way to find a cause is to go back to the last good state and change one thing, check, then change the next. In one past case, a paint looked far too strong because one setting was being applied twice (once as a zone strength and once after mixing). It was found only by changing one field at a time and comparing the results."
+    },
+    {
+     "heading": "What to send",
+     "body": "A description alone rarely shows the cause. The useful package is: your saved project, the report from Report a Problem in the Settings gear, which car you used, your number mode (Custom Number or Sim-Stamped Number), your User ID, what you see in the sim, and the single change that made it happen."
+    },
+    {
+     "heading": "Why real settings beat memory",
+     "body": "Fixes start from your actual file and your actual values. Quoted numbers from memory are often wrong; the shipped data is the authority. That is why the report carries the real zone settings and not a retelling."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Narrow down a surprising result",
+     "goal": "Find which setting caused a bad look",
+     "settings": {
+      "Step 1": "Save the project now",
+      "Step 2": "Undo back to the last good state",
+      "Step 3": "Change one setting and render",
+      "Step 4": "Repeat for the next setting until the problem returns"
+     },
+     "result": "The last setting you changed before it broke is the cause or a part of it."
+    },
+    {
+     "title": "Send a problem report",
+     "goal": "Give support everything needed in one message",
+     "settings": {
+      "Where": "Settings gear, Report a Problem",
+      "Add": "Car name, number mode, User ID, what you see in the sim",
+      "Attach": "The saved project"
+     },
+     "result": "Support can reproduce the problem from your real file."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Is a screenshot enough?",
+     "a": "Rarely. A screenshot shows the result but not the settings behind it. Send the report and the project."
+    },
+    {
+     "q": "What is my User ID?",
+     "a": "It is your iRacing Customer ID. It decides the file names your paint is saved under."
+    },
+    {
+     "q": "Why do you ask for my number mode?",
+     "a": "Custom Number saves car_num_ID files and Sim-Stamped Number saves car_ID files. A mismatch with the sim setting is a common cause."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You change five things and then report that it broke",
+     "cause": "Nobody can tell which change did it",
+     "fix": "Undo to the last good state and change one thing at a time."
+    },
+    {
+     "symptom": "Support cannot reproduce your problem",
+     "cause": "The report had no project and no car name",
+     "fix": "Save the project and attach it with the report."
+    }
+   ],
+   "protips": [
+    "Write down the one change that made it happen. That sentence is worth more than a page of description."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "concepts.what_makes_a_finish_good",
+   "title": "What makes a finish good",
+   "domain": "concepts",
+   "summary": "A good finish is a fine-grained field across the whole car, not a poster. Each collection has one idea, hidden details are small and turned, and the shine map follows the paint.",
+   "what": "Finishes are fields: 8 to 32 pixel micro-texture across the whole sheet, never a big picture. Each collection should have one arc instead of a grid of colour times pattern, which feels samey. Hidden features should be small (70 to 225 pixels) and turned and mirrored so they do not read as decals. Physics-only ideas read boring or like confetti; effects that fire in the sim have mostly dark cells with a few strong colour states. The shine map should be composed against the rendered paint so the two work together. Spec decks that come in two families, rise and fall in roughness, or drift toward one colour are faults.",
+   "when": [
+    "You are choosing between finishes.",
+    "You wonder why the catalogue is arranged by idea."
+   ],
+   "how": [
+    "Look for fine detail across the whole car, not one big shape.",
+    "Check the spec views: the shine map should follow the paint.",
+    "Prefer collections that feel like a story over colour swaps.",
+    "Trust your eye at full size."
+   ],
+   "controls": [],
+   "tips": [],
+   "pitfalls": [
+    "A colour swap of an existing finish is not a new finish."
+   ],
+   "related": [
+    "concepts.green_is_not_good",
+    "finishes.what_makes_a_finish_pop",
+    "spec.paint_spec_marriage"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "wiki.lessons.design_lessons_what_makes_a_finish_good"
+   ],
+   "sources": [
+    "SPB_WIKI.html:625-642",
+    "docs/FINISH_LAW.md:1",
+    "CLAUDE.md:1"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "what makes a finish good",
+    "finish quality",
+    "finishes are fields",
+    "fine detail",
+    "good finish",
+    "what makes a good finish"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Fields, not posters",
+     "body": "The paint sheet covers a whole car, so a good finish is a fine texture spread across all of it. The target is detail about 8 to 32 pixels across, over every panel. A big picture in the middle of the sheet ends up as a smear on one door. Finishes follow a house rule of full coverage (no dead corners) and fine detail (never a smooth ramp or a fat blob)."
+    },
+    {
+     "heading": "One idea per collection",
+     "body": "A collection should tell one story with one arc, not be a grid of colour times pattern. Grids feel samey, and the automatic checks cannot see it because a recolour scores as well as an original. A collection that grew from five grids into 50 distinct objects in five chapters is the model."
+    },
+    {
+     "heading": "Small, turned hidden details",
+     "body": "Hidden features and motifs should be small (70 to 225 pixels on the sheet) and turned and mirrored in different directions. Larger, upright shapes read as stickers. The best-looking effects keep most cells dark with a few strong colour states, rather than a field of random bright squares."
+    },
+    {
+     "heading": "The shine map follows the paint",
+     "body": "A finish also has a shine map (metal, roughness, clearcoat). It is built against the rendered paint, so a bright pattern edge has a matching shine edge. Faults to look out for: two families of shine settings in one set, roughness that rises and falls for no reason, and a set that drifts to one colour."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Pick between two finishes",
+     "goal": "Choose the better one for a car",
+     "settings": {
+      "Both": "Applied to the same panel",
+      "View": "Render at 100% zoom",
+      "Look for": "Detail all over, not one big shape; shine edges matching paint edges"
+     },
+     "result": "The finish with fine, even detail whose shine follows the paint is the better choice."
+    },
+    {
+     "title": "Place a hidden-detail finish",
+     "goal": "Keep hidden marks from looking like decals",
+     "settings": {
+      "Mark size": "About 70 to 225 px on the sheet",
+      "Direction": "Turned and mirrored",
+      "Spread": "Evenly across the panels"
+     },
+     "result": "The marks read as part of the surface instead of stickers."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What size should the detail be?",
+     "a": "About 8 to 32 pixels on the 2048 sheet, across the whole car."
+    },
+    {
+     "q": "Why does a new colour of the same finish not count as new?",
+     "a": "The sameness check ignores colour, so a recolour is judged the same as the original."
+    },
+    {
+     "q": "What is a shine map?",
+     "a": "The set of metal, roughness and clearcoat values that decide how the paint catches light. See the spec views."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A finish looks like confetti",
+     "cause": "Bright squares everywhere, with no dark ground to rest the eye",
+     "fix": "Prefer finishes where most cells are dark with a few strong accents."
+    },
+    {
+     "symptom": "A finish looks like a sticker on the car",
+     "cause": "Large upright motifs",
+     "fix": "Pick one with small, turned and mirrored motifs."
+    }
+   ],
+   "protips": [
+    "If a collection feels samey, look for its one idea. A good collection has a clear arc; a grid of swaps does not."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  }
+ ]
+}

@@ -14,10 +14,13 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO = join(__dirname, '..', '..');
 const SRC = readFileSync(join(REPO, 'paint-booth-3-canvas.js'), 'utf8');
+const require = createRequire(import.meta.url);
+const MASK_GEOMETRY = require(join(REPO, 'js', 'canvas', 'zone', 'canvas-mask-geometry.js'));
 
 function extractTopLevelFunction(name) {
     const needle = '\nfunction ' + name + '(';
@@ -99,6 +102,11 @@ function makeContext({ psdLayersLoaded, psdLayerCount }) {
         _psdLayers: Array.from({ length: psdLayerCount }, (_, i) => ({ id: 'L' + i })),
 
         zones: [],
+    };
+    ctx.window = ctx;
+    ctx.SPBCanvasMaskGeometry = MASK_GEOMETRY;
+    ctx._transformCanvasZoneMasks = function (operation, oldWidth, oldHeight, newWidth, newHeight) {
+        return MASK_GEOMETRY.transformZones(ctx.zones, operation, oldWidth, oldHeight, newWidth, newHeight);
     };
     ctx._calls = calls;
     return ctx;

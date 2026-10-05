@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "cycle": 193,
+  "source_candidates": "_smart_tga_runs/cycle192_sponsor_retainer_runtime_preflight_broad_v1/sponsor_retainer_candidates.json",
+  "inspection_records": "_smart_tga_runs/cycle142_route_pressure_v1/inspection_records.json",
+  "review_basis": "Cycle 192 broad sponsor-retainer preflight reported one extra candidate outside the Cycle 189 reviewed set; Cycle 193 visually reviewed the exact crop and promoted it into the reviewed fixture bank.",
+  "runtime_behavior": "unchanged",
+  "total_labels": 1,
+  "by_paint_label": {
+    "stockcars2 arcaford25/car_num_293480.tga": 1
+  },
+  "by_rule": {
+    "small_neutral_contingency_fragment": 1
+  },
+  "label_packs": [
+    {
+      "path": "smart_tga_review_labels/cycle193_arcaford293480_sponsor_retainer_true_sponsors_v1.json",
+      "paint_label": "stockcars2 arcaford25/car_num_293480.tga",
+      "component_records": "_smart_tga_runs/cycle142_route_pressure_v1/stockcars2_arcaford25_car_num_293480/component_records.json",
+      "labels": 1,
+      "by_rule": {
+        "small_neutral_contingency_fragment": 1
+      }
+    }
+  ]
+}

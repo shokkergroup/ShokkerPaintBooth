@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_airbrush_portrait",
+  "display_name": "Radical: Airbrush Flare",
+  "promise": "Soft pink, aqua and peach spray crescents with tiny stenciled white highlights on satin cotton.",
+  "carrier_grammar": "Soft pink, aqua and peach spray crescents with tiny stenciled white highlights on satin cotton. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for lavender cotton ground, aqua spray pigment, pink spray crescents, peach mist arcs, white stencil glints is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Soft pink, aqua and peach spray crescents with tiny stenciled white highlights on satin cotton. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_airbrush_portrait.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "lavender cotton ground",
+      "role": "Actual shared paint and spec geometry: lavender cotton ground"
+    },
+    {
+      "name": "aqua spray pigment",
+      "role": "Actual shared paint and spec geometry: aqua spray pigment"
+    },
+    {
+      "name": "pink spray crescents",
+      "role": "Actual shared paint and spec geometry: pink spray crescents"
+    },
+    {
+      "name": "peach mist arcs",
+      "role": "Actual shared paint and spec geometry: peach mist arcs"
+    },
+    {
+      "name": "white stencil glints",
+      "role": "Actual shared paint and spec geometry: white stencil glints"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "lavender cotton ground",
+      "aqua spray pigment",
+      "pink spray crescents",
+      "peach mist arcs",
+      "white stencil glints"
+    ],
+    "R": [
+      "lavender cotton ground",
+      "aqua spray pigment",
+      "pink spray crescents",
+      "peach mist arcs",
+      "white stencil glints"
+    ],
+    "Cc": [
+      "lavender cotton ground",
+      "aqua spray pigment",
+      "pink spray crescents",
+      "peach mist arcs",
+      "white stencil glints"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_airbrush_tee",
+      "difference": "This finish uses Actual airbrush pigment: thousands of very tiny soft fuchsia aqua peach mist crescents, feathered halos, controlled overspray dots, minuscule white stencil glints on pale lavender satin cotton. Distinct soft spray deposition with little sharp highlight accents; no portraits, stars larger than1percent, flat vector blobs or rock texture.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_splatter_tee",
+      "difference": "This finish uses Actual airbrush pigment: thousands of very tiny soft fuchsia aqua peach mist crescents, feathered halos, controlled overspray dots, minuscule white stencil glints on pale lavender satin cotton. Distinct soft spray deposition with little sharp highlight accents; no portraits, stars larger than1percent, flat vector blobs or rock texture.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "lavender cotton ground is visible in the authored geometry",
+      "aqua spray pigment is visible in the authored geometry",
+      "pink spray crescents is visible in the authored geometry",
+      "peach mist arcs is visible in the authored geometry",
+      "white stencil glints is visible in the authored geometry"
+    ],
+    "source_sha256": "40f3278ecd40f124a141d6a07c4af07e30ed23d0ccac55938cec1a802645cb7a",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_airbrush_portrait-authored-Soft pink, aqua and peach spray crescents with tiny stenciled white highlights on satin cotton. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_airbrush_portrait-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 81.7,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "b337f5af3431c1c757b95c7fec2c79ba18bbc7c83ceded7a7cd1455b2a1355b0"
+}

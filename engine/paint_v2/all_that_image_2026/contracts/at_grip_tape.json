@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_grip_tape",
+  "display_name": "Extreme: Grip Tape",
+  "promise": "Dense charcoal silicon-carbide abrasive grit with visible angular cutting faces, no large stones",
+  "carrier_grammar": "Dense charcoal silicon-carbide abrasive grit with visible angular cutting faces, no large stones; single full-canvas image, no duplicated quadrants. Fine features: silicon carbide granules, black adhesive pores, cleaved grit faces, bright crystal points, fine abrasive edges, rubbed powder areas",
+  "spec_grammar": "Feature-specific selectors partition silicon carbide granules, black adhesive pores, cleaved grit faces, bright crystal points, fine abrasive edges, rubbed powder areas. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "silicon carbide granules",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "black adhesive pores",
+      "role": "Material feature selected from artwork by g:<:0.23"
+    },
+    {
+      "name": "cleaved grit faces",
+      "role": "Material feature selected from artwork by detail:>:0.63"
+    },
+    {
+      "name": "bright crystal points",
+      "role": "Material feature selected from artwork by g:>:0.83"
+    },
+    {
+      "name": "fine abrasive edges",
+      "role": "Material feature selected from artwork by edge:>:0.73"
+    },
+    {
+      "name": "rubbed powder areas",
+      "role": "Material feature selected from artwork by fine:>:0.78&g:<:0.5"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "silicon carbide granules",
+      "black adhesive pores",
+      "cleaved grit faces",
+      "bright crystal points",
+      "fine abrasive edges",
+      "rubbed powder areas"
+    ],
+    "R": [
+      "silicon carbide granules",
+      "black adhesive pores",
+      "cleaved grit faces",
+      "bright crystal points",
+      "fine abrasive edges",
+      "rubbed powder areas"
+    ],
+    "Cc": [
+      "silicon carbide granules",
+      "black adhesive pores",
+      "cleaved grit faces",
+      "bright crystal points",
+      "fine abrasive edges",
+      "rubbed powder areas"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "silicon carbide granules",
+      "range": [
+        [
+          10,
+          145,
+          160
+        ],
+        [
+          90,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "black adhesive pores",
+      "range": [
+        [
+          0,
+          75,
+          70
+        ],
+        [
+          15,
+          190,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cleaved grit faces",
+      "range": [
+        [
+          65,
+          110,
+          125
+        ],
+        [
+          185,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "bright crystal points",
+      "range": [
+        [
+          180,
+          30,
+          25
+        ],
+        [
+          240,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine abrasive edges",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "rubbed powder areas",
+      "range": [
+        [
+          0,
+          155,
+          170
+        ],
+        [
+          10,
+          245,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_anodised_peg",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_bmx_dirt",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "silicon carbide granules",
+      "black adhesive pores",
+      "cleaved grit faces",
+      "bright crystal points",
+      "fine abrasive edges",
+      "rubbed powder areas"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_grip_tape / Dense charcoal silicon-carbide abrasive grit with visible angular cutting faces, no large stones",
+  "spec_key": "at_grip_tape / silicon carbide granules all; black adhesive pores g:<:0.23; cleaved grit faces detail:>:0.63; bright crystal points g:>:0.83; fine abrasive edges edge:>:0.73; rubbed powder areas fine:>:0.78&g:<:0.5",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

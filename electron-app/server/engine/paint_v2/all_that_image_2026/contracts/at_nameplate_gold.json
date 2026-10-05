@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_nameplate_gold",
+  "display_name": "Fresh: Neon Sneaker Sole",
+  "promise": "Electric orange, yellow, lime and violet rubber outsole micro-tread, dense multidirectional tread geometry",
+  "carrier_grammar": "Electric orange, yellow, lime and violet rubber outsole micro-tread, dense multidirectional tread geometry; single full-canvas image, no duplicated quadrants. Fine features: orange rubber tread, violet tread inserts, lime traction lugs, deep waffle recesses, rubbed lug shoulders, fine tread cracking",
+  "spec_grammar": "Feature-specific selectors partition orange rubber tread, violet tread inserts, lime traction lugs, deep waffle recesses, rubbed lug shoulders, fine tread cracking. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "orange rubber tread",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "violet tread inserts",
+      "role": "Material feature selected from artwork by h:>:240&s:>:0.4"
+    },
+    {
+      "name": "lime traction lugs",
+      "role": "Material feature selected from artwork by h:>:55&h:<:150&s:>:0.4"
+    },
+    {
+      "name": "deep waffle recesses",
+      "role": "Material feature selected from artwork by g:<:0.24"
+    },
+    {
+      "name": "rubbed lug shoulders",
+      "role": "Material feature selected from artwork by edge:>:0.64"
+    },
+    {
+      "name": "fine tread cracking",
+      "role": "Material feature selected from artwork by detail:<:0.2"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "orange rubber tread",
+      "violet tread inserts",
+      "lime traction lugs",
+      "deep waffle recesses",
+      "rubbed lug shoulders",
+      "fine tread cracking"
+    ],
+    "R": [
+      "orange rubber tread",
+      "violet tread inserts",
+      "lime traction lugs",
+      "deep waffle recesses",
+      "rubbed lug shoulders",
+      "fine tread cracking"
+    ],
+    "Cc": [
+      "orange rubber tread",
+      "violet tread inserts",
+      "lime traction lugs",
+      "deep waffle recesses",
+      "rubbed lug shoulders",
+      "fine tread cracking"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "orange rubber tread",
+      "range": [
+        [
+          0,
+          75,
+          70
+        ],
+        [
+          15,
+          190,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "violet tread inserts",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "lime traction lugs",
+      "range": [
+        [
+          0,
+          45,
+          25
+        ],
+        [
+          15,
+          125,
+          140
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "deep waffle recesses",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "rubbed lug shoulders",
+      "range": [
+        [
+          0,
+          150,
+          140
+        ],
+        [
+          12,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine tread cracking",
+      "range": [
+        [
+          10,
+          145,
+          160
+        ],
+        [
+          90,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_airbrush_tee",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_boombox_chrome",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "orange rubber tread",
+      "violet tread inserts",
+      "lime traction lugs",
+      "deep waffle recesses",
+      "rubbed lug shoulders",
+      "fine tread cracking"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_nameplate_gold / Electric orange, yellow, lime and violet rubber outsole micro-tread, dense multidirectional tread geometry",
+  "spec_key": "at_nameplate_gold / orange rubber tread all; violet tread inserts h:>:240&s:>:0.4; lime traction lugs h:>:55&h:<:150&s:>:0.4; deep waffle recesses g:<:0.24; rubbed lug shoulders edge:>:0.64; fine tread cracking detail:<:0.2",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

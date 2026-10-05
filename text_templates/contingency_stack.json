@@ -2,7 +2,7 @@
   "name": "Contingency Stack",
   "description": "Stacked list of small associate-level sponsors. The row of tiny logos/text names along the rocker panel, rear quarter, or around the wheel arches. Contingency decals are required-size per racing series — keep them legible but compact, stacked vertically or inline horizontally.",
   "category": "Sponsor",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "template": {
     "text": "SPONSOR A\nSPONSOR B\nSPONSOR C\nSPONSOR D",
     "font_family": "Helvetica Neue, Arial, sans-serif",

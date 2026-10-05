@@ -2,7 +2,7 @@
   "name": "Tribute Legends",
   "description": "Period-correct racing heritage tribute — classic Gulf-style blue + orange with white accents, gloss finish, chrome numbers, and subtle weathering for authenticity.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "classic_le_mans, gt40_chassis, porsche_917, any historic endurance body",
   "notes": "Gulf-style requires exact color ratio — keep baseColor #4ba6d9 for upper, orange band for middle third. Light enamel finish reads more period-correct than full modern gloss. Add subtle satin wash over the top for 'just driven' feel.",
   "zones": [

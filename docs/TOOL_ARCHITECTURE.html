@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPB Tool Architecture • Zone vs Layer Contract</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap');
+        
+        :root {
+            --accent: #22c55e;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .mono {
+            font-family: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+        }
+
+        .section-header {
+            font-size: 1.1rem;
+            letter-spacing: -.025em;
+        }
+
+        .architecture-card {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+        }
+        
+        .architecture-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .zone-border {
+            border-color: #22c55e;
+        }
+        
+        .layer-border {
+            border-color: #3b82f6;
+        }
+
+        .flow-arrow {
+            animation: flow 2s infinite ease-in-out;
+        }
+
+        .nav-active {
+            background-color: #14532d;
+            color: #86efac;
+            border-radius: 6px;
+        }
+
+        .diagram-box {
+            transition: all 0.2s ease;
+        }
+
+        .diagram-box:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
+        .rule-card {
+            transition: all 0.2s ease;
+        }
+
+        .rule-card:hover {
+            border-color: #22c55e;
+        }
+
+        .status-pill {
+            font-size: 0.75rem;
+            padding: 1px 10px;
+            border-radius: 9999px;
+        }
+
+        .code {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #111827;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .split-line {
+            background: linear-gradient(to right, #22c55e, #3b82f6);
+            height: 3px;
+            border-radius: 9999px;
+        }
+
+        .visual-learner {
+            background: linear-gradient(135deg, #052e16, #0f172a);
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200">
+    <!-- Top Navigation -->
+    <div class="border-b border-zinc-800 bg-zinc-900">
+        <div class="max-w-screen-2xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-x-4">
+                <div class="flex items-center gap-x-3">
+                    <div class="w-9 h-9 bg-emerald-600 rounded-xl flex items-center justify-center">
+                        <i class="fa-solid fa-paint-brush text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-2xl tracking-tighter">Shokker Paint Booth</span>
+                        <span class="ml-2 text-xs px-2 py-0.5 bg-emerald-900 text-emerald-400 rounded-full font-medium">SPB-93</span>
+                    </div>
+                </div>
+                <div class="text-emerald-400 text-sm font-medium flex items-center gap-x-1.5">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Heenan Family • Foundation Hardening</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-x-2 text-sm">
+                <div class="px-3 py-1 bg-zinc-900 border border-zinc-700 rounded-xl flex items-center gap-x-2 text-xs">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span class="text-emerald-400 font-medium">Autonomous Mode Active</span>
+                </div>
+                <a href="https://linear.app/shokker-poster-engine-gold/issue/SPB-93" target="_blank" 
+                   class="flex items-center gap-x-2 px-4 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-2xl text-sm transition-colors">
+                    <i class="fa-solid fa-link"></i>
+                    <span>SPB-93 on Linear</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-screen-2xl mx-auto px-6 pt-8 pb-16">
+        
+        <!-- Hero -->
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-y-4 mb-8">
+            <div>
+                <div class="flex items-center gap-x-3">
+                    <h1 class="text-5xl font-semibold tracking-tighter">Tool Architecture</h1>
+                    <div class="status-pill bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center gap-x-1.5 px-3">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span class="font-medium">v1.0 — Foundation</span>
+                    </div>
+                </div>
+                <p class="text-xl text-zinc-400 mt-2 max-w-2xl">The single source of truth for Zone vs Layer tool boundaries, dispatch, and how we escape the 19k-line monster.</p>
+            </div>
+            
+            <div class="flex items-center gap-x-2">
+                <div onclick="document.getElementById('contract').scrollIntoView({ behavior: 'smooth' })" 
+                     class="cursor-pointer px-5 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-3xl text-sm flex items-center gap-x-2 transition-colors">
+                    <i class="fa-solid fa-handshake"></i>
+                    <span>Jump to Contract</span>
+                </div>
+                <div onclick="document.getElementById('modules').scrollIntoView({ behavior: 'smooth' })" 
+                     class="cursor-pointer px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-3xl text-sm flex items-center gap-x-2 transition-colors">
+                    <i class="fa-solid fa-sitemap"></i>
+                    <span>Target Structure</span>
+                </div>
+                <a href="DISPATCH_SYSTEM.html" 
+                   class="px-5 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-3xl text-sm flex items-center gap-x-2 transition-colors">
+                    <i class="fa-solid fa-route"></i>
+                    <span>View Dispatch Visual</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Problem Statement -->
+        <div class="bg-zinc-900 border border-red-900/50 rounded-3xl p-6 mb-8">
+            <div class="flex items-start gap-x-4">
+                <div class="text-red-400 mt-1">
+                    <i class="fa-solid fa-exclamation-triangle text-2xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-semibold text-red-300">The Core Disease</h3>
+                    <div class="grid md:grid-cols-2 gap-4 mt-3 text-sm">
+                        <div>
+                            <div class="flex items-center gap-x-2 text-red-400">
+                                <i class="fa-solid fa-file-code"></i>
+                                <span class="font-medium">paint-booth-3-canvas.js</span>
+                            </div>
+                            <div class="text-3xl font-semibold tabular-nums mt-1">19,101 <span class="text-base font-normal text-zinc-500">lines</span></div>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-x-2 text-red-400">
+                                <i class="fa-solid fa-file-code"></i>
+                                <span class="font-medium">paint-booth-2-state-zones.js</span>
+                            </div>
+                            <div class="text-3xl font-semibold tabular-nums mt-1">17,116 <span class="text-base font-normal text-zinc-500">lines</span></div>
+                        </div>
+                    </div>
+                    <p class="mt-3 text-zinc-400">No architectural boundary exists between <span class="font-medium text-emerald-400">Zone tools</span> and <span class="font-medium text-blue-400">Layer/PSD tools</span>. Only a runtime flag + giant closure. This is why tools still feel jinky compared to Photoshop, GIMP, or Trading Paints.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visual Split -->
+        <div id="split" class="mb-10">
+            <h2 class="section-header font-semibold text-zinc-300 mb-3 flex items-center gap-x-2">
+                <i class="fa-solid fa-columns"></i> 
+                <span>The Fundamental Split</span>
+            </h2>
+            
+            <div class="grid md:grid-cols-2 gap-4">
+                <!-- Zone Card -->
+                <div class="architecture-card bg-zinc-900 border-2 zone-border rounded-3xl p-6">
+                    <div class="flex items-center gap-x-3 mb-4">
+                        <div class="w-8 h-8 bg-emerald-600 rounded-2xl flex items-center justify-center">
+                            <i class="fa-solid fa-map-marked text-white"></i>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-xl">Zone System</span>
+                            <span class="ml-2 text-xs bg-emerald-900 text-emerald-400 px-2 py-px rounded">Traditional</span>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex gap-x-2"><i class="fa-solid fa-check text-emerald-400 mt-1 w-4"></i> Operates on <span class="code">zones[i].regionMask</span> + <span class="code">spatialMask</span></li>
+                        <li class="flex gap-x-2"><i class="fa-solid fa-check text-emerald-400 mt-1 w-4"></i> Classic SPB workflow (zones + finishes)</li>
+                        <li class="flex gap-x-2"><i class="fa-solid fa-check text-emerald-400 mt-1 w-4"></i> Tools: Brush, Wand, Rect, Lasso, Spatial, Pen, Selection Move</li>
+                        <li class="flex gap-x-2"><i class="fa-solid fa-check text-emerald-400 mt-1 w-4"></i> Undo via <span class="code">pushZoneUndo</span></li>
+                    </ul>
+                </div>
+
+                <!-- Layer Card -->
+                <div class="architecture-card bg-zinc-900 border-2 layer-border rounded-3xl p-6">
+                    <div class="flex items-center gap-x-3 mb-4">
+                        <div class="w-8 h-8 bg-blue-600 rounded-2xl flex items-center justify-center">
+                            <i class="fa-solid fa-layer-group text-white"></i>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-xl">Layer / PSD System</span>
+                            <span class="ml-2 text-xs bg-blue-900 text-blue-400 px-2 py-px rounded">Newer</span>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex gap-x-2"><i class="fa-solid fa-check text-blue-400 mt-1 w-4"></i> Operates on active PSD layer pixel buffers + transforms</li>
+                        <li class="flex gap-x-2"><i class="fa-solid fa-check text-blue-400 mt-1 w-4"></i> Activated when PSD imported (<code>_psdLayersLoaded</code>)</li>
+                        <li class="flex gap-x-2"><i class="fa-solid fa-check text-blue-400 mt-1 w-4"></i> Tools: Clone, Color Brush, Smudge, History Brush, Dodge, Burn, Text, Shape</li>
+                        <li class="flex gap-x-2"><i class="fa-solid fa-check text-blue-400 mt-1 w-4"></i> Undo via <span class="code">_pushLayerUndo</span> + layer snapshot</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="text-center text-xs text-zinc-500 mt-3">The goal: Make both sides feel equally premium and trustworthy</div>
+        </div>
+
+        <!-- The Contract -->
+        <div id="contract" class="mb-12">
+            <h2 class="section-header font-semibold text-zinc-300 mb-4 flex items-center gap-x-2">
+                <i class="fa-solid fa-file-contract"></i> 
+                <span>The Zone / Layer Contract — Hard Rules</span>
+            </h2>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="rule-card bg-zinc-900 border border-zinc-800 hover:border-emerald-600 rounded-3xl p-5">
+                    <div class="font-semibold flex items-center gap-x-2 text-emerald-400"><i class="fa-solid fa-gavel"></i> <span>1. Ownership is Absolute</span></div>
+                    <p class="mt-2 text-sm text-zinc-400">Zone code only touches zone masks. Layer code only touches PSD layer pixels. No exceptions.</p>
+                </div>
+                
+                <div class="rule-card bg-zinc-900 border border-zinc-800 hover:border-emerald-600 rounded-3xl p-5">
+                    <div class="font-semibold flex items-center gap-x-2 text-emerald-400"><i class="fa-solid fa-route"></i> <span>2. Dispatch is the Single Source of Truth</span></div>
+                    <p class="mt-2 text-sm text-zinc-400">Only <span class="code">dispatch.js</span> (or the dispatch section) decides routing using the two guard maps and <span class="code">isLayerToolbarMode()</span>.</p>
+                </div>
+                
+                <div class="rule-card bg-zinc-900 border border-zinc-800 hover:border-emerald-600 rounded-3xl p-5">
+                    <div class="font-semibold flex items-center gap-x-2 text-emerald-400"><i class="fa-solid fa-ban"></i> <span>3. No Cross-Contamination</span></div>
+                    <p class="mt-2 text-sm text-zinc-400">A Zone-only tool must never write to layer pixels. A Layer-only tool must never write to region/spatial masks.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Target Architecture -->
+        <div id="modules" class="mb-12">
+            <h2 class="section-header font-semibold text-zinc-300 mb-4 flex items-center gap-x-2">
+                <i class="fa-solid fa-project-diagram"></i> 
+                <span>Target Module Structure</span>
+            </h2>
+            
+            <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 font-mono text-xs overflow-x-auto">
+                <pre class="text-emerald-300"><code>js/
+├── core/
+│   ├── state/
+│   │   ├── zones.js          ← regionMask, spatialMask, zone state
+│   │   ├── layers.js         ← _psdLayers, active layer pixels
+│   │   └── canvas-mode.js    ← toolbarEditMode, isLayerToolbarMode
+│   └── utils/
+│       └── masks.js          ← shared mask math + fast overlays
+├── canvas/
+│   ├── dispatch.js           ★ SINGLE SOURCE OF TRUTH for routing
+│   ├── setup.js
+│   └── overlay.js
+├── tools/
+│   ├── shared/               ← smoothing, pressure, spacing, stabilizer
+│   ├── zone/                 ← only zone masks
+│   │   ├── brush.js
+│   │   ├── wand.js
+│   │   ├── spatial-brush.js
+│   │   └── ...
+│   └── layer/                ← only PSD layers
+│       ├── brush.js
+│       ├── clone-stamp.js
+│       ├── transform.js
+│       └── ...
+└── layers/
+    ├── psd-loader.js
+    └── paint-target.js</code></pre>
+            </div>
+            
+            <div class="mt-3 text-xs text-zinc-400 flex items-center gap-x-2">
+                <i class="fa-solid fa-info-circle"></i>
+                <span>During transition we keep the numbered <span class="code">paint-booth-*.js</span> files as thin facades for build compatibility.</span>
+            </div>
+        </div>
+
+        <!-- Agent Rules -->
+        <div class="mb-10">
+            <h2 class="section-header font-semibold text-zinc-300 mb-4 flex items-center gap-x-2">
+                <i class="fa-solid fa-robot"></i> 
+                <span>Rules for Agents &amp; Autonomous Work</span>
+            </h2>
+            
+            <div class="bg-zinc-900 border border-amber-900/40 rounded-3xl p-6">
+                <div class="grid md:grid-cols-2 gap-x-8 gap-y-6 text-sm">
+                    <div>
+                        <div class="font-medium text-amber-400 mb-2">Strict Scoping (Autonomous Mode)</div>
+                        <ul class="space-y-1.5 text-zinc-400">
+                            <li>• When instructed, only target <span class="code">paint-booth-3-canvas.js</span> with <strong>offset + limit</strong> reads</li>
+                            <li>• One smallest safe reversible improvement per cycle</li>
+                            <li>• Never exceed ~120 lines of net diff without Linear approval</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="font-medium text-amber-400 mb-2">Heenan Family Process</div>
+                        <ul class="space-y-1.5 text-zinc-400">
+                            <li>• <strong>Bockwinkel</strong> — Architecture &amp; perfection</li>
+                            <li>• <strong>Nash</strong> — Performance &amp; refactoring</li>
+                            <li>• <strong>Hall</strong> — Implementation &amp; utility</li>
+                            <li>• <strong>Pillman</strong> — Creative UX breakthroughs</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer / Status -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-y-3 text-xs text-zinc-500 border-t border-zinc-800 pt-6">
+            <div>
+                Created as part of <strong>SPB-93 Foundation Hardening Sprint</strong> • Heenan Family Guiding Light
+            </div>
+            <div class="flex items-center gap-x-4">
+                <div>Linear: <a href="https://linear.app/shokker-poster-engine-gold/issue/SPB-93" class="text-emerald-400 hover:underline">SPB-93</a></div>
+                <div>Last updated: <span class="text-emerald-400">2026-05-16</span></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Simple tailwind script
+        function initialize() {
+            console.log('%c[SPB] Tool Architecture visual loaded — ready for teaching & autonomous work', 'color:#4ade80');
+            
+            // Keyboard shortcut hint
+            document.addEventListener('keydown', function(e) {
+                if (e.key === "/" && document.activeElement.tagName === "BODY") {
+                    e.preventDefault();
+                    document.getElementById('contract').scrollIntoView({ behavior: "smooth" });
+                }
+            });
+        }
+        
+        window.onload = initialize;
+    </script>
+</body>
+</html>

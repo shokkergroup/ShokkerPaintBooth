@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_sprite_sheet",
+  "display_name": "Arcade: Sprite Mosaic",
+  "promise": "Arcade power-up enamel: densely scattered tiny abstract pixel stars, stepped diamonds, nested square portals, zigzag energy trails and segmented rings in vermilion cyan yellow violet.",
+  "carrier_grammar": "Arcade power-up enamel: densely scattered tiny abstract pixel stars, stepped diamonds, nested square portals, zigzag energy trails and segmented rings in vermilion cyan yellow violet. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for violet arcade enamel, vermilion pixel stars, cyan portal outlines, yellow energy pixels, pink ring segments, black sprite gaps is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Arcade power-up enamel: densely scattered tiny abstract pixel stars, stepped diamonds, nested square portals, zigzag energy trails and segmented rings in vermilion cyan yellow violet. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_sprite_sheet.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "violet arcade enamel",
+      "role": "Actual shared paint and spec geometry: violet arcade enamel"
+    },
+    {
+      "name": "vermilion pixel stars",
+      "role": "Actual shared paint and spec geometry: vermilion pixel stars"
+    },
+    {
+      "name": "cyan portal outlines",
+      "role": "Actual shared paint and spec geometry: cyan portal outlines"
+    },
+    {
+      "name": "yellow energy pixels",
+      "role": "Actual shared paint and spec geometry: yellow energy pixels"
+    },
+    {
+      "name": "pink ring segments",
+      "role": "Actual shared paint and spec geometry: pink ring segments"
+    },
+    {
+      "name": "black sprite gaps",
+      "role": "Actual shared paint and spec geometry: black sprite gaps"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "violet arcade enamel",
+      "vermilion pixel stars",
+      "cyan portal outlines",
+      "yellow energy pixels",
+      "pink ring segments",
+      "black sprite gaps"
+    ],
+    "R": [
+      "violet arcade enamel",
+      "vermilion pixel stars",
+      "cyan portal outlines",
+      "yellow energy pixels",
+      "pink ring segments",
+      "black sprite gaps"
+    ],
+    "Cc": [
+      "violet arcade enamel",
+      "vermilion pixel stars",
+      "cyan portal outlines",
+      "yellow energy pixels",
+      "pink ring segments",
+      "black sprite gaps"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_attract_mode",
+      "difference": "This finish uses Extremely dense minute disconnected 8-bit mosaics: irregular stair-stepped turquoise, vermilion, yellow and violet clusters separated by thin dark plum notches. Individual 4-to-8 pixel abstract clusters, no characters or objects. Flat crisp pixels without soft glow or curved comets.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_corrupt_memory",
+      "difference": "This finish uses Extremely dense minute disconnected 8-bit mosaics: irregular stair-stepped turquoise, vermilion, yellow and violet clusters separated by thin dark plum notches. Individual 4-to-8 pixel abstract clusters, no characters or objects. Flat crisp pixels without soft glow or curved comets.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "violet arcade enamel is visible in the authored geometry",
+      "vermilion pixel stars is visible in the authored geometry",
+      "cyan portal outlines is visible in the authored geometry",
+      "yellow energy pixels is visible in the authored geometry",
+      "pink ring segments is visible in the authored geometry",
+      "black sprite gaps is visible in the authored geometry"
+    ],
+    "source_sha256": "dd47c9fcfcddefe76e4b61f310c6b03edad46fcf8754bcd2666e9872b0905e54",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_sprite_sheet-authored-Arcade power-up enamel: densely scattered tiny abstract pixel stars, stepped diamonds, nested square portals, zigzag energy trails and segmented rings in vermilion cyan yellow violet. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_sprite_sheet-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 75.3,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "f2fc7f5b5a70a55de4b27b2cdc2bc9849ac5f003e7d91247766aded08c7a015e"
+}

@@ -1,0 +1,31 @@
+{
+  "work_item": "W118 private Runtime11 solid-color modifier candidate",
+  "status": "PASS_PRIVATE_CLASSIFIER_CANDIDATE",
+  "baseline": {
+    "path": "_easy_claude_work/ai14h_generation3_audit/frozen-runtime11/js/spb-pro-design.js",
+    "sha256": "4648DE3231015497CC9FF816612A542097A1AD14038A7210753F6CDBFD88D832",
+    "ai_controller_sha256": "AEA057CB2965B714700304CA598C0E59AB25E02FFFB5575D5D29FC36CCD5FF76"
+  },
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_w118_solid_color_modifier/candidate/spb-pro-design.js",
+    "sha256": "13E8C48134B4E3649D914EA1D1C1AAECC92D1728DA2A8C80C5826386DC14357C",
+    "diff_scope": "Two small E classifier changes: for a named part plus recognized color, 'solid' is no longer offered to look lookup; the strict offlinePartCoverage residual vocabulary accepts 'solid' after its selector/color/finish checks. No planner geometry or controller source changed."
+  },
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w118_solid_color_modifier/fresh-oracle.json",
+    "sha256": "E8D00ACDA0FDCC114B028FF25586EFCBE2D6859F9893E552315DF60C09FB2E8D",
+    "cases": 5,
+    "frozen_before_source_inspection": true
+  },
+  "verification": {
+    "test": "tests/ai_w118_solid_color_modifier_contract.cjs",
+    "result": "PASS_PRIVATE_E_CLASSIFIER, 5/5",
+    "baseline_reproduction": "Before the patch, actual SpbProDesign.lookRequest('Make only the roof solid red.') returned query 'solid'; offlinePartCoverage returned null, while offlinePart produced a red roof plan. This precedence explains the reported unknown-look response and prevents the strict complete-coverage path from handling the instruction.",
+    "candidate_behavior": "After the patch, lookRequest returns null for the explicit part+color modifier; offlinePartCoverage returns a complete red roof part plan. Matte/flat red still use the existing compound matte path; the quoted question stays non-actionable; matte with original source-paint preservation remains the spec-only color:'source' plan."
+  },
+  "limits": [
+    "This is an isolated E classifier candidate tested by loading the exact module's public API in a VM. It does not exercise the full offline ask/controller, apply queue, native pixels, undo, or production install.",
+    "The test proves selector/color coverage and planner interpretation only. Actual current source, exact owner, and scope validation must still gate queue/application; ambiguous or unproven targets must clarify with zero queue.",
+    "No provider, native, renderer, or live runtime actions were used. Root owns final integration and end-to-end validation."
+  ]
+}

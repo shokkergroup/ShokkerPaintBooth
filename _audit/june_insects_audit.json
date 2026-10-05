@@ -1,0 +1,88 @@
+{
+  "category": "insects",
+  "entries": {
+    "beetle_jewel": {
+      "verdict": "keep",
+      "rating": 66,
+      "ai_rating": 67,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781118942999
+    },
+    "butterfly_monarch": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": 71,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781121051332
+    },
+    "butterfly_morpho": {
+      "verdict": "rebuild",
+      "rating": 38,
+      "ai_rating": 70,
+      "reasons": [
+        "Too flat / boring"
+      ],
+      "notes": "It's just VERY BORING with not much spec detail visible on the rendered car. I would think Butterfly Morpho would have a much better/cooler design too",
+      "ts": 1781121281808
+    },
+    "beetle_rainbow": {
+      "verdict": "keep",
+      "rating": 67,
+      "ai_rating": 48,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781121290518
+    },
+    "dragonfly_wing": {
+      "verdict": "keep",
+      "rating": 67,
+      "ai_rating": 57,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781121391181
+    },
+    "scarab_gold": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": 69,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781121473051
+    },
+    "moth_luna": {
+      "verdict": "rebuild",
+      "rating": 54,
+      "ai_rating": 73,
+      "reasons": [],
+      "notes": "Not enough is happeing in the spec to make anything noticeable and make it look stunning - or even anything above average. Needs a lot of rework",
+      "ts": 1781121626435
+    },
+    "beetle_stag": {
+      "verdict": "keep",
+      "rating": 82,
+      "ai_rating": 70,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781121782897
+    },
+    "firefly_glow": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": 47,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781124617835
+    },
+    "wasp_warning": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": 65,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781124622508
+    }
+  },
+  "updated": 1781124622
+}

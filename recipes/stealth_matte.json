@@ -2,7 +2,7 @@
   "name": "Stealth Matte",
   "description": "All-matte-black murdered-out build with a satin accent stripe and tinted numbers. Low reflectivity, high menace.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "any chassis",
   "notes": "Intentionally dark. If you lose detail in night sessions, raise nightBoost on export or swap the Accent Stripe to satin_chrome for a visible ghost line.",
   "zones": [

@@ -1,0 +1,13 @@
+{
+  "date": "2026-09-16",
+  "comparison_url": "http://127.0.0.1:59877/pilot/",
+  "tool": "cua_repl",
+  "actual_picker_group": "ALL THAT — METHOD PILOT (6)",
+  "actual_picker_search": "PILOT",
+  "verified_candidates": ["Airbrush Tee / Code", "Airbrush Tee / Image", "Flannel Red / Code", "Flannel Red / Image", "Holo Sticker / Code", "Holo Sticker / Image"],
+  "search_note": "Seven search results include one unrelated existing Ignition: Pilot Ring. The temporary group contains exactly six.",
+  "car_pair_updates": "Code and image methods applied for all three subjects; neutral-light cloth and foil reviewed. Final refined airbrush image applied at270 degrees with matching spec.",
+  "orientations_exercised": [0, 90, 180, 270],
+  "comparison_status": "Review only. Production gates remain unresolved.",
+  "cleanup": "Temporary full-app validation tab closed; comparison tab marked as deliverable. No finish selected into a production zone and no TGA export requested."
+}

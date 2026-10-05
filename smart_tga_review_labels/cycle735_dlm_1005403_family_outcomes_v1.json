@@ -1,0 +1,48 @@
+{
+  "schema": "smart-tga-frozen-holdout-family-outcomes-v1",
+  "cycle": 735,
+  "paint": "dirtlatemodel 350/car_num_1005403.tga",
+  "purpose": "Direct visual classification of every one of the 70 frozen cross-panel family decisions after semantic predictions were persisted. Indices resolve through the immutable Cycle735 candidate bank and frozen_predictions.json.",
+  "prediction_file_opened_before_outcomes": true,
+  "prediction_tuned_after_outcomes": false,
+  "classification_count": 70,
+  "outcomes": {
+    "Number": [
+      {"candidate_index": 2, "complete_copy": false},
+      {"candidate_index": 3, "complete_copy": false},
+      {"candidate_index": 4, "complete_copy": false},
+      {"candidate_index": 5, "complete_copy": false},
+      {"candidate_index": 6, "complete_copy": false},
+      {"candidate_index": 8, "complete_copy": false},
+      {"candidate_index": 9, "complete_copy": false},
+      {"candidate_index": 12, "complete_copy": false},
+      {"candidate_index": 13, "complete_copy": false},
+      {"candidate_index": 14, "complete_copy": true},
+      {"candidate_index": 15, "complete_copy": true},
+      {"candidate_index": 16, "complete_copy": false},
+      {"candidate_index": 17, "complete_copy": true},
+      {"candidate_index": 18, "complete_copy": false},
+      {"candidate_index": 20, "complete_copy": true},
+      {"candidate_index": 21, "complete_copy": true},
+      {"candidate_index": 22, "complete_copy": false}
+    ],
+    "Sponsor": [30, 31, 32, 38, 42, 43, 44, 46, 48, 49, 51, 53, 54, 55, 57, 59, 61, 63, 64, 65, 67, 68, 75, 77, 78, 82, 83, 84, 92, 93, 94],
+    "Paint": [58, 73, 74, 76, 79, 80, 81],
+    "Template": [60, 62, 66, 69, 70, 71, 72, 85, 86, 87, 88, 89, 90, 91, 95],
+    "uncertain": []
+  },
+  "review_evidence": {
+    "source": "_smart_tga_runs/cycle719_active_uncertainty_routes/dirtlatemodel_350_car_num_1005403/source_1024.png",
+    "number_sheet": "_smart_tga_runs/cycle719_active_uncertainty_routes/dirtlatemodel_350_car_num_1005403/numbers_components.png",
+    "sponsor_sheet": "_smart_tga_runs/cycle719_active_uncertainty_routes/dirtlatemodel_350_car_num_1005403/sponsors_components.png",
+    "template_sheet": "_smart_tga_runs/cycle719_active_uncertainty_routes/dirtlatemodel_350_car_num_1005403/template_components.png",
+    "paint_sheet": "_smart_tga_runs/cycle719_active_uncertainty_routes/dirtlatemodel_350_car_num_1005403/paint_components.png",
+    "exact_mask_pages": "_smart_tga_runs/cycle735_holdout_1005403_frozen_semantic_committee_v1/review_page_00 through review_page_05"
+  },
+  "safety": {
+    "ownership_authority": false,
+    "runtime_integrated": false,
+    "apply_locked": true,
+    "exact_reconstruction_affected": false
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 350/car_num_1008314.tga",
+  "inspection_records": "_smart_tga_runs/cycle658_dlm_palette_roles/inspection_records.json",
+  "review_scope": "Cycle 658 manual source, Number, Sponsor, Template, Paint, all-owner, and suspect-sheet review.",
+  "component_labels": [
+    {"layer":"numbers","component_index":0,"expected_bbox":[875,28,149,293],"target_layer":"template","label":"large_template_panel_false_number"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[802,828,163,109],"target_layer":"numbers","label":"true_detached_rear_number","family_id":"number:43_neises_style"},
+    {"layer":"unassigned","component_index":null,"expected_bbox":[282,240,190,105],"target_layer":"numbers","label":"missed_true_side_number","family_id":"number:43_neises_style"},
+    {"layer":"unassigned","component_index":null,"expected_bbox":[284,716,190,104],"target_layer":"numbers","label":"missed_true_side_number","family_id":"number:43_neises_style"}
+  ]
+}

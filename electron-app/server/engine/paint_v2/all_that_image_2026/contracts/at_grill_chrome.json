@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_grill_chrome",
+  "display_name": "Fresh: Grill Chrome",
+  "promise": "Bright polished chrome with tiny rounded segmented jewel-like forms, no teeth mouths or jewelry object",
+  "carrier_grammar": "Bright polished chrome with tiny rounded segmented jewel-like forms, no teeth mouths or jewelry object; single full-canvas image, no duplicated quadrants. Fine features: polished grille ribs, black grille slots, brushed inner rib faces, sharp raised rib edges, fine trapped oxide, mirror silver tips",
+  "spec_grammar": "Feature-specific selectors partition polished grille ribs, black grille slots, brushed inner rib faces, sharp raised rib edges, fine trapped oxide, mirror silver tips. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "polished grille ribs",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "black grille slots",
+      "role": "Material feature selected from artwork by g:<:0.27"
+    },
+    {
+      "name": "brushed inner rib faces",
+      "role": "Material feature selected from artwork by detail:<:0.33"
+    },
+    {
+      "name": "sharp raised rib edges",
+      "role": "Material feature selected from artwork by edge:>:0.65"
+    },
+    {
+      "name": "fine trapped oxide",
+      "role": "Material feature selected from artwork by fine:>:0.72&g:<:0.5"
+    },
+    {
+      "name": "mirror silver tips",
+      "role": "Material feature selected from artwork by g:>:0.83"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "polished grille ribs",
+      "black grille slots",
+      "brushed inner rib faces",
+      "sharp raised rib edges",
+      "fine trapped oxide",
+      "mirror silver tips"
+    ],
+    "R": [
+      "polished grille ribs",
+      "black grille slots",
+      "brushed inner rib faces",
+      "sharp raised rib edges",
+      "fine trapped oxide",
+      "mirror silver tips"
+    ],
+    "Cc": [
+      "polished grille ribs",
+      "black grille slots",
+      "brushed inner rib faces",
+      "sharp raised rib edges",
+      "fine trapped oxide",
+      "mirror silver tips"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "polished grille ribs",
+      "range": [
+        [
+          240,
+          0,
+          16
+        ],
+        [
+          255,
+          32,
+          90
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "black grille slots",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "brushed inner rib faces",
+      "range": [
+        [
+          180,
+          30,
+          25
+        ],
+        [
+          240,
+          130,
+          155
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "sharp raised rib edges",
+      "range": [
+        [
+          240,
+          0,
+          170
+        ],
+        [
+          255,
+          30,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine trapped oxide",
+      "range": [
+        [
+          65,
+          110,
+          125
+        ],
+        [
+          185,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "mirror silver tips",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_airbrush_tee",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_boombox_chrome",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "polished grille ribs",
+      "black grille slots",
+      "brushed inner rib faces",
+      "sharp raised rib edges",
+      "fine trapped oxide",
+      "mirror silver tips"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_grill_chrome / Bright polished chrome with tiny rounded segmented jewel-like forms, no teeth mouths or jewelry object",
+  "spec_key": "at_grill_chrome / polished grille ribs all; black grille slots g:<:0.27; brushed inner rib faces detail:<:0.33; sharp raised rib edges edge:>:0.65; fine trapped oxide fine:>:0.72&g:<:0.5; mirror silver tips g:>:0.83",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

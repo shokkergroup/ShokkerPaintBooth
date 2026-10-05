@@ -1,0 +1,302 @@
+/* ===========================================================================
+   SPB — FINISH ATLAS styles v2                                     2026-08-01
+   ---------------------------------------------------------------------------
+   Pairs with js/spb-finish-atlas.js (see its header for the full brief).
+   v2 (owner verdict on v1: "won't collapse back down… don't love the layout"):
+   the in-place accordion is GONE. Two levels now —
+     LEVEL 1  uniform banner cards, N-across per section, click = zoom in
+     LEVEL 2  .atlas-zoomed: the grid shows ONLY that category + a back bar
+   Everything is scoped inside #swatchPopup so nothing can leak into the app.
+   Rollback = remove the two include lines in paint-booth-v2.html.
+   =========================================================================== */
+
+/* ---- section shells ---- */
+#swatchPopup .atlas-section { margin: 14px 0 4px; }
+#swatchPopup .atlas-section-head {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  padding: 8px 10px 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+  margin-bottom: 10px;
+}
+#swatchPopup .atlas-section-icon { font-size: 15px; }
+#swatchPopup .atlas-section-name {
+  font-size: 14px; font-weight: 800; letter-spacing: .12em; color: #f2f1ef;
+}
+#swatchPopup .atlas-section-count { font-size: 10px; color: #7d7b78; }
+#swatchPopup .atlas-section-intro {
+  margin-left: auto; text-align: right;
+  font-size: 10.5px; line-height: 1.4; color: #85827e; max-width: 560px;
+}
+
+/* ---- LEVEL 1: the N-across category card grid ---- */
+#swatchPopup .atlas-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--atlas-cols, 4), minmax(0, 1fr));
+  gap: 10px;
+}
+/* Every card is the SAME height — v1's ragged mixed-height rows are the
+   thing the owner rejected. Fixed height + overflow hidden = clean rows. */
+#swatchPopup .atlas-grid > .swatch-group {
+  margin: 0; min-width: 0;
+  display: flex; flex-direction: column; gap: 5px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.028);
+  padding: 7px 9px 8px;
+  cursor: pointer;
+  transition: border-color .12s ease, background .12s ease, transform .1s ease, box-shadow .12s ease;
+}
+#swatchPopup .atlas-grid > .swatch-group:hover {
+  border-color: #ff6b1a;
+  background: rgba(255,107,26,0.07);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,.4);
+}
+
+/* Card label row → banner + title line.
+   The label's stock children are [name text][count][featured rotator][meter].
+   Flex-wrap + order:-1 on the rotator turns it into a full-width BANNER on
+   line 1; the anonymous name text node, count and meter flow on line 2. */
+#swatchPopup .atlas-grid > .swatch-group .swatch-group-label {
+  display: flex; flex-wrap: wrap; align-items: center; column-gap: 6px; row-gap: 5px;
+  font-size: 11.5px; font-weight: 700; line-height: 1.25; min-width: 0;
+  pointer-events: none;             /* the card zooms; the stock toggle never fires */
+}
+#swatchPopup .atlas-grid > .swatch-group .swatch-group-label::before { content: none !important; }
+#swatchPopup .atlas-grid > .swatch-group .swatch-group-count { color: #7d7b78; font-weight: 400; }
+/* Compact media-object thumb (owner 2026-08-01 round 2: full-width banners made
+   cards huge — "4 rows before scrolling"). Fixed 116x58 = TRUE 2:1, so both
+   squares still show their entire 2048 canvas, just small. Text owns the rest. */
+#swatchPopup .atlas-grid > .swatch-group .spb-grp-featured {
+  order: -1; flex: 0 0 auto; width: 116px;
+  display: flex !important; flex-direction: column; align-items: stretch;
+  gap: 2px; margin: 0 !important;
+}
+#swatchPopup .atlas-grid > .swatch-group .spb-grp-feat-img {
+  width: 116px !important; height: 58px !important;
+  object-fit: fill;             /* box is exactly 2:1 = no distortion */
+  border-radius: 6px !important;
+}
+/* rotator's fallback swatch chip (no thumb) gets the same footprint */
+#swatchPopup .atlas-grid > .swatch-group .spb-grp-featured > span[style*="background"] {
+  display: block !important; width: 116px !important; height: 58px !important;
+  border-radius: 6px !important;
+}
+/* rotator caption (the featured finish's name) */
+#swatchPopup .atlas-grid > .swatch-group .spb-grp-featured > span:last-child {
+  max-width: 116px !important; font-size: 7.5px !important;
+  letter-spacing: .04em; text-transform: uppercase; opacity: .7;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+#swatchPopup .atlas-grid > .swatch-group .swatch-group-label {
+  align-items: flex-start;
+  padding: 0 !important; min-height: 0 !important;   /* stock label padding added 27px of dead space */
+  margin: 0 !important;
+}
+#swatchPopup .atlas-grid > .swatch-group .swatch-group-desc {
+  /* NOTE: modern Chrome computes display:-webkit-box + line-clamp as
+     "flow-root" (standardized line-clamp) — that computed value is NOT an
+     override, the clamp works. The owner-reported mid-line cut-offs were the
+     stock label padding + an unclamped box; height gives descender room. */
+  display: -webkit-box !important; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; font-size: 10px; line-height: 1.45; color: #8a8783;
+  margin: 0; height: 31px;       /* 2 clamped lines + 2px descender room */
+}
+/* (row hiding on cards comes from the stock .swatch-group.collapsed rule —
+   organize() force-collapses every category, so no extra rule is needed and
+   zoom/search keep the stock row display value untouched) */
+
+/* ---- LEVEL 2: zoomed into one category ----
+   The grid carries .atlas-zoomed. EVERYTHING in it hides except the back bar
+   and the host section (this also catches strays that live outside sections,
+   like the "(not set)" card and the daily shelf). */
+#swatchPopup .atlas-zoomed > *:not(.atlas-zoom-bar):not(.atlas-zoom-host) { display: none !important; }
+#swatchPopup .atlas-zoomed > .atlas-section.atlas-zoom-host { display: block; }
+#swatchPopup .atlas-zoom-host .atlas-section-head { display: none; }
+#swatchPopup .atlas-zoom-host .atlas-grid { display: block; }
+#swatchPopup .atlas-zoom-host .atlas-grid > .swatch-group { display: none; }
+#swatchPopup .atlas-zoom-host .atlas-grid > .swatch-group.atlas-zoom-target {
+  display: block; height: auto; overflow: visible; cursor: default;
+  border: none; background: none; padding: 0; transform: none; box-shadow: none;
+}
+/* the bar carries the name + description — kill the group's own copies.
+   NOTE: selector must out-rank the card-mode label rule below (which is
+   #swatchPopup .atlas-grid > .swatch-group .swatch-group-label = 1 id + 3
+   classes); anything weaker and the banner/label leak into the zoom view. */
+#swatchPopup .atlas-grid > .swatch-group.atlas-zoom-target > .swatch-group-label,
+#swatchPopup .atlas-grid > .swatch-group.atlas-zoom-target > .swatch-group-desc { display: none !important; }
+
+#swatchPopup .atlas-zoom-bar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 10px 12px;
+  margin: 0 0 10px;
+  background: rgba(13,13,16,0.96);
+  border: 1px solid rgba(255,107,26,0.45);
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+}
+#swatchPopup .atlas-zoom-back {
+  padding: 7px 14px; border-radius: 8px; cursor: pointer;
+  font-size: 11px; font-weight: 800; letter-spacing: .08em;
+  color: #ff8c42; background: rgba(255,107,26,0.12);
+  border: 1px solid #ff6b1a;
+  transition: background .1s ease, transform .1s ease;
+}
+#swatchPopup .atlas-zoom-back:hover { background: rgba(255,107,26,0.28); transform: translateX(-2px); }
+#swatchPopup .atlas-zoom-name {
+  font-size: 15px; font-weight: 800; letter-spacing: .08em; color: #f2f1ef;
+}
+#swatchPopup .atlas-zoom-count { font-size: 10.5px; color: #7d7b78; }
+/* SHOKK WORKS: one category with real chapter rows, not nested categories. */
+#swatchPopup .swatch-group.collapsed .spb-finish-subsection,
+#swatchPopup .spb-finish-subsection.atlas-subsection-hidden,
+#swatchPopup .spb-finish-subsection.atlas-subsection-empty { display: none !important; }
+#swatchPopup .spb-finish-subsection { margin: 12px 0 20px; }
+#swatchPopup .spb-finish-subsection-label { display:flex; align-items:center; gap:12px; font-size:14px; font-weight:800; color:#f4bf8d; padding:9px 0 6px; border-top:1px solid #514030; }
+#swatchPopup .spb-finish-subsection-label span { color:#a5a3a0; font-size:10px; font-weight:500; }
+#swatchPopup .spb-finish-subsection-desc { color:#a5a3a0; font-size:11px; line-height:1.5; margin:0 0 10px; }
+#swatchPopup .atlas-subsection-nav { flex-basis:100%; display:flex; flex-wrap:wrap; gap:6px; }
+#swatchPopup .atlas-subsection-nav button { background:#25242b; color:#c8c6c2; border:1px solid #4b4745; border-radius:7px; padding:7px 9px; font-size:11px; cursor:pointer; }
+#swatchPopup .atlas-subsection-nav button[aria-pressed="true"] { color:#ffd1a8; background:#4d3020; border-color:#ff8c42; }
+#swatchPopup .atlas-zoom-desc {
+  flex-basis: 100%; font-size: 11px; line-height: 1.55; color: #a8a5a0; max-width: 1100px;
+}
+
+/* ---- while searching: flat global results, atlas chrome out of the way ---- */
+#swatchPopup .atlas-searching .atlas-grid { display: block; }
+#swatchPopup .atlas-searching .atlas-grid > .swatch-group {
+  height: auto; overflow: visible; cursor: default; display: block;
+  margin-bottom: 8px; transform: none; box-shadow: none;
+}
+#swatchPopup .atlas-searching .atlas-grid > .swatch-group .swatch-group-label { pointer-events: auto; }
+#swatchPopup .atlas-searching .atlas-grid > .swatch-group .spb-grp-featured { display: none !important; }
+#swatchPopup .atlas-searching .atlas-section-intro,
+#swatchPopup .atlas-searching .atlas-daily { display: none; }
+
+/* ---- per-category explored meter ---- */
+#swatchPopup .atlas-grp-meter {
+  display: inline-flex; align-items: center; gap: 4px; margin-left: auto; flex: 0 0 auto;
+}
+#swatchPopup .atlas-grp-meter-bar {
+  width: 42px; height: 4px; border-radius: 999px; background: rgba(255,255,255,0.10); overflow: hidden;
+}
+#swatchPopup .atlas-grp-meter-fill {
+  display: block; height: 100%; width: 0; border-radius: 999px;
+  background: linear-gradient(90deg, #ff6b1a, #ffd166);
+  transition: width .3s ease;
+}
+#swatchPopup .atlas-grp-meter-txt { font-size: 8.5px; color: #7d7b78; }
+
+/* ---- global progress in the header ---- */
+#swatchPopup .atlas-progress { display: inline-flex; align-items: center; gap: 6px; margin-right: 10px; }
+#swatchPopup .atlas-progress-bar {
+  width: 90px; height: 5px; border-radius: 999px; background: rgba(255,255,255,0.10); overflow: hidden;
+}
+#swatchPopup .atlas-progress-fill {
+  display: block; height: 100%; width: 0; border-radius: 999px;
+  background: linear-gradient(90deg, #ff6b1a, #c8ff2f);
+  transition: width .3s ease;
+}
+#swatchPopup .atlas-progress-txt { font-size: 10px; color: #b9b7b3; white-space: nowrap; }
+
+/* ---- FAVORITES STAR FIX (owner: "almost hidden... covered up") ----
+   The + / * button was absolutely positioned UNDER the split thumbnail.
+   Give it a real chip, pin it to the card's top-right corner, and lift it
+   above the swatch imagery. Hit target grows from ~14px to 22px. */
+#swatchPopup .swatch-catalog-card { position: relative; }
+#swatchPopup .swatch-catalog-card .swatch-fav-btn {
+  position: absolute !important;
+  top: 4px !important; right: 4px !important;
+  left: auto !important; bottom: auto !important;
+  z-index: 6 !important;
+  width: 22px; height: 22px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 6px !important;
+  background: rgba(10,10,12,0.82) !important;
+  border: 1px solid rgba(255,255,255,0.28) !important;
+  color: #e8e6e2 !important;
+  font-size: 13px; line-height: 1;
+  opacity: .92;
+  box-shadow: 0 1px 4px rgba(0,0,0,.55) !important;
+}
+#swatchPopup .swatch-catalog-card .swatch-fav-btn:hover {
+  border-color: #ffd166 !important; color: #ffd166 !important; opacity: 1;
+  transform: scale(1.12);
+}
+#swatchPopup .swatch-catalog-card .swatch-fav-btn.active {
+  color: #ffd166 !important; border-color: #ffd166 !important;
+  background: rgba(60,45,8,0.9) !important; opacity: 1;
+}
+
+/* ---- explored ✓ badge on cards ---- */
+#swatchPopup .swatch-catalog-card.atlas-tried::after {
+  content: '✓';
+  position: absolute; top: 4px; left: 4px; z-index: 5;
+  width: 16px; height: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; color: #0d0d10;
+  background: #c8ff2f; border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+
+/* ---- surprise-landing flash ---- */
+@keyframes atlasFlash {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,26,0); }
+  15%, 55% { box-shadow: 0 0 0 3px #ff6b1a, 0 0 26px rgba(255,107,26,.8); }
+}
+#swatchPopup .swatch-item.atlas-flash {
+  animation: atlasFlash 1.3s ease 2;
+  border-radius: 8px;
+}
+
+/* ---- tag bar ---- */
+#swatchPopup .atlas-tag-bar { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+#swatchPopup .atlas-tag-lead { font-size: 10px; color: #7d7b78; margin-right: 2px; }
+#swatchPopup .atlas-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 9px; border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #b9b7b3; font-size: 10.5px; cursor: pointer;
+  transition: border-color .1s ease, color .1s ease, background .1s ease;
+}
+#swatchPopup .atlas-tag:hover { border-color: #ff6b1a; color: #f2f1ef; }
+#swatchPopup .atlas-tag.active {
+  background: rgba(255,107,26,0.16); border-color: #ff6b1a; color: #ff8c42; font-weight: 700;
+}
+#swatchPopup .atlas-tag-n {
+  font-size: 8.5px; color: #7d7b78; background: rgba(255,255,255,0.07);
+  border-radius: 999px; padding: 1px 5px;
+}
+#swatchPopup .atlas-tag.active .atlas-tag-n { color: #ffb27a; background: rgba(255,107,26,0.18); }
+#swatchPopup .atlas-tag-more { border-style: dashed; }
+#swatchPopup .atlas-tag-drawer { display: inline; }
+#swatchPopup .atlas-tag-lucky {
+  margin-left: auto; font-weight: 800; letter-spacing: .05em;
+  border-color: #ff6b1a; color: #ff8c42;
+  background: rgba(255,107,26,0.10);
+}
+#swatchPopup .atlas-tag-lucky:hover { background: rgba(255,107,26,0.22); transform: scale(1.04); }
+
+/* ---- TODAY'S 5 shelf ---- */
+#swatchPopup .atlas-daily {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 8px 10px; margin: 2px 0 10px;
+  border: 1px dashed rgba(255,209,102,0.35); border-radius: 8px;
+  background: rgba(255,209,102,0.05);
+}
+#swatchPopup .atlas-daily-lead { font-size: 10.5px; font-weight: 800; letter-spacing: .08em; color: #ffd166; }
+#swatchPopup .atlas-daily-lead em { font-weight: 400; font-style: normal; color: #9a9793; letter-spacing: 0; }
+#swatchPopup .atlas-daily-card {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 8px 3px 3px; border-radius: 7px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10);
+  color: #d8d5d0; font-size: 10px; cursor: pointer;
+  transition: border-color .1s ease, transform .1s ease;
+}
+#swatchPopup .atlas-daily-card:hover { border-color: #ffd166; transform: translateY(-1px); }
+#swatchPopup .atlas-daily-thumb { display: inline-flex; width: 44px; height: 22px; overflow: hidden; border-radius: 4px; }
+#swatchPopup .atlas-daily-thumb > * { width: 44px !important; height: 22px !important; min-height: 0 !important; }
+#swatchPopup .atlas-daily-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: capitalize; }

@@ -1,0 +1,18 @@
+{
+  "version":1,
+  "paint_label":"dirtlatemodel 350/car_num_1100313.tga",
+  "inspection_records":"_smart_tga_runs/cycle662_dlm_group_features_holdout/inspection_records.json",
+  "review_scope":"Cycle 662 source plus all owner/combined sheets, suspects, position cues, and physical-group review.",
+  "component_labels":[
+    {"layer":"numbers","component_index":0,"expected_bbox":[355,245,104,95],"target_layer":"numbers","label":"true_upper_number_fragment","family_id":"number:55"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[271,248,103,95],"target_layer":"numbers","label":"true_upper_number_fragment","family_id":"number:55"},
+    {"layer":"numbers","component_index":2,"expected_bbox":[297,731,81,77],"target_layer":"numbers","label":"true_lower_number_fragment","family_id":"number:55"},
+    {"layer":"numbers","component_index":3,"expected_bbox":[379,739,75,69],"target_layer":"numbers","label":"true_lower_number_fragment","family_id":"number:55"},
+    {"layer":"numbers","component_index":4,"expected_bbox":[517,917,64,27],"target_layer":"sponsors","label":"dude_wipes_sponsor_false_number"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[517,917,64,27],"target_layer":"sponsors","label":"position_cue_true_sponsor_wordmark"},
+    {"layer":"candidate_group","component_index":null,"expected_bbox":[271,245,188,98],"target_layer":"numbers","label":"intrinsic_physical_group_true_upper_number","family_id":"number:55","group_id":"pdg:056de5e5734010b5"},
+    {"layer":"candidate_group","component_index":null,"expected_bbox":[297,731,157,77],"target_layer":"numbers","label":"intrinsic_physical_group_true_lower_number","family_id":"number:55","group_id":"pdg:2f6f92e975dfa13c"},
+    {"layer":"candidate_group","component_index":null,"expected_bbox":[884,677,140,298],"target_layer":"uncertain","label":"mixed_livery_panel_and_number_material","family_id":"number:55","group_id":"pdg:ca62c2691ff10c4a"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[800,825,175,130],"target_layer":"numbers","label":"missed_true_rear_number","family_id":"number:55"}
+  ]
+}

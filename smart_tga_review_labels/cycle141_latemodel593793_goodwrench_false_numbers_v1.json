@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "paint_label": "latemodel/car_num_593793.tga",
+  "inspection_records": "_smart_tga_runs/cycle141_bright_gate_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle141_bright_gate_route_pressure_v1/latemodel_car_num_593793/component_records.json",
+  "review_scope": "Cycle 141 fresh Latemodel review: Goodwrench sponsor letters are being treated as Number content in both the current Number layer and subcomponent rescue path. Preserve the true red/white 3s but keep Goodwrench/contingency fragments in Sponsors.",
+  "component_labels": [
+    {
+      "layer": "numbers",
+      "component_index": 0,
+      "expected_bbox": [184, 313, 30, 25],
+      "target_layer": "sponsors",
+      "label": "goodwrench_letter_fragment_false_number",
+      "note": "A sponsor wordmark letter fragment from Goodwrench, not race-number content."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 1,
+      "expected_bbox": [311, 314, 70, 26],
+      "target_layer": "sponsors",
+      "label": "goodwrench_letter_pair_false_number",
+      "note": "Two round Goodwrench wordmark letters; should be Sponsors."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 2,
+      "expected_bbox": [306, 529, 211, 173],
+      "target_layer": "numbers",
+      "label": "true_large_number_3",
+      "note": "Large red/white race-number 3."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 3,
+      "expected_bbox": [448, 888, 157, 104],
+      "target_layer": "numbers",
+      "label": "true_large_number_3",
+      "note": "Large red/white race-number 3."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 4,
+      "expected_bbox": [655, 905, 74, 27],
+      "target_layer": "sponsors",
+      "label": "contingency_panel_false_number",
+      "note": "Contingency sponsor block, not a car number."
+    },
+    {
+      "layer": "numbers",
+      "component_index": 5,
+      "expected_bbox": [611, 908, 43, 11],
+      "target_layer": "sponsors",
+      "label": "small_contingency_fragment_false_number",
+      "note": "Tiny sponsor/contingency strip, not a car number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 17,
+      "expected_bbox": [277, 314, 33, 32],
+      "target_layer": "sponsors",
+      "label": "goodwrench_letter_fragment_false_rescue",
+      "note": "Goodwrench letter accepted by whole-component rescue; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 18,
+      "expected_bbox": [381, 316, 42, 32],
+      "target_layer": "sponsors",
+      "label": "goodwrench_letter_fragment_false_rescue",
+      "note": "Goodwrench letter accepted by whole-component rescue; should stay Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 23,
+      "expected_bbox": [832, 530, 50, 31],
+      "target_layer": "sponsors",
+      "label": "goodwrench_letter_fragment_false_rescue",
+      "note": "Goodwrench sponsor-letter fragment; not a number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 26,
+      "expected_bbox": [812, 658, 69, 113],
+      "target_layer": "sponsors",
+      "label": "goodwrench_vertical_wordmark_false_rescue",
+      "note": "Vertical Goodwrench wordmark chunk; not race-number content."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 29,
+      "expected_bbox": [87, 869, 42, 33],
+      "target_layer": "sponsors",
+      "label": "goodwrench_letter_fragment_false_rescue",
+      "note": "Goodwrench sponsor-letter fragment; not a number."
+    }
+  ]
+}

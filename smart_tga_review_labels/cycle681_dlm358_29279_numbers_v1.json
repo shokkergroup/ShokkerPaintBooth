@@ -1,0 +1,7 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_29279.tga","inspection_records":"_smart_tga_runs/cycle681_dlm_candidate_coverage_review/inspection_records.json","review_scope":"Cycle 681 source plus complete owner sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[727,409,65,210],"target_layer":"sponsors","label":"sponsor_logo_false_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[655,703,166,67],"target_layer":"paint","label":"body_panel_false_number"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[782,704,59,30],"target_layer":"paint","label":"livery_panel_false_number"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[137,904,63,108],"target_layer":"template","label":"hardware_atlas_false_number"},
+ {"layer":"numbers","component_index":4,"expected_bbox":[4,908,93,98],"target_layer":"template","label":"hardware_atlas_false_number"}
+]}

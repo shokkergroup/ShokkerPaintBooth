@@ -1,0 +1,1236 @@
+{
+  "metrics": {
+    "xlab_abyssal_lens": {
+      "name": "Abyssal Lens",
+      "paintStd": 0.1985,
+      "tileEdge": 0.0638,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.1295,
+          "edge_energy": 0.03611,
+          "lit_chroma_fraction": 0.6844
+        },
+        "64": {
+          "luma_std": 0.1273,
+          "edge_energy": 0.0638,
+          "lit_chroma_fraction": 0.6899
+        }
+      },
+      "specStd": [
+        42.86,
+        33.69,
+        59.88
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_afterimage_lacquer": {
+      "name": "Afterimage Lacquer",
+      "paintStd": 0.1044,
+      "tileEdge": 0.0288,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.0512,
+          "edge_energy": 0.04502,
+          "lit_chroma_fraction": 0.178
+        },
+        "64": {
+          "luma_std": 0.0334,
+          "edge_energy": 0.02875,
+          "lit_chroma_fraction": 0.1123
+        }
+      },
+      "specStd": [
+        33.44,
+        24.1,
+        53.33
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_aerogel_fire": {
+      "name": "Aerogel Fire",
+      "paintStd": 0.185,
+      "tileEdge": 0.0703,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.109,
+          "edge_energy": 0.04477,
+          "lit_chroma_fraction": 0.6876
+        },
+        "64": {
+          "luma_std": 0.1056,
+          "edge_energy": 0.07026,
+          "lit_chroma_fraction": 0.6924
+        }
+      },
+      "specStd": [
+        41.15,
+        38.37,
+        51.61
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_anamorphic_pearl": {
+      "name": "Anamorphic Pearl",
+      "paintStd": 0.1919,
+      "tileEdge": 0.1551,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.1687,
+          "edge_energy": 0.09043,
+          "lit_chroma_fraction": 0.4984
+        },
+        "64": {
+          "luma_std": 0.16,
+          "edge_energy": 0.15511,
+          "lit_chroma_fraction": 0.4812
+        }
+      },
+      "specStd": [
+        45.8,
+        35.49,
+        59.96
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_anti_gravity_foil": {
+      "name": "Anti-Gravity Foil",
+      "paintStd": 0.191,
+      "tileEdge": 0.1022,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.1653,
+          "edge_energy": 0.05778,
+          "lit_chroma_fraction": 0.3463
+        },
+        "64": {
+          "luma_std": 0.1566,
+          "edge_energy": 0.10216,
+          "lit_chroma_fraction": 0.3203
+        }
+      },
+      "specStd": [
+        50.91,
+        35.11,
+        49.44
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_arc_weld_velvet": {
+      "name": "Arc-Weld Velvet",
+      "paintStd": 0.1075,
+      "tileEdge": 0.0149,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.0779,
+          "edge_energy": 0.00871,
+          "lit_chroma_fraction": 0.1804
+        },
+        "64": {
+          "luma_std": 0.0771,
+          "edge_energy": 0.01488,
+          "lit_chroma_fraction": 0.1792
+        }
+      },
+      "specStd": [
+        22.98,
+        24.62,
+        31.5
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_black_ice_orbit": {
+      "name": "Black Ice Orbit",
+      "paintStd": 0.1196,
+      "tileEdge": 0.0621,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.0839,
+          "edge_energy": 0.05136,
+          "lit_chroma_fraction": 0.3041
+        },
+        "64": {
+          "luma_std": 0.0726,
+          "edge_energy": 0.06211,
+          "lit_chroma_fraction": 0.3069
+        }
+      },
+      "specStd": [
+        43.22,
+        34.42,
+        68.13
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_bloomglass": {
+      "name": "Bloomglass",
+      "paintStd": 0.1532,
+      "tileEdge": 0.0569,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.1064,
+          "edge_energy": 0.03705,
+          "lit_chroma_fraction": 0.4742
+        },
+        "64": {
+          "luma_std": 0.1036,
+          "edge_energy": 0.05687,
+          "lit_chroma_fraction": 0.4785
+        }
+      },
+      "specStd": [
+        40.61,
+        40.9,
+        55.75
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_brunel_current": {
+      "name": "Brunel Current",
+      "paintStd": 0.0974,
+      "tileEdge": 0.0415,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.0574,
+          "edge_energy": 0.03205,
+          "lit_chroma_fraction": 0.2488
+        },
+        "64": {
+          "luma_std": 0.0516,
+          "edge_energy": 0.04149,
+          "lit_chroma_fraction": 0.2515
+        }
+      },
+      "specStd": [
+        40.15,
+        32.13,
+        59.4
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_caustic_engine": {
+      "name": "Caustic Engine",
+      "paintStd": 0.1799,
+      "tileEdge": 0.0842,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.1136,
+          "edge_energy": 0.04967,
+          "lit_chroma_fraction": 0.572
+        },
+        "64": {
+          "luma_std": 0.1092,
+          "edge_energy": 0.08417,
+          "lit_chroma_fraction": 0.5786
+        }
+      },
+      "specStd": [
+        39.4,
+        34.27,
+        56.85
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_ceramic_storm": {
+      "name": "Ceramic Storm",
+      "paintStd": 0.171,
+      "tileEdge": 0.0638,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.145,
+          "edge_energy": 0.035,
+          "lit_chroma_fraction": 0.4468
+        },
+        "64": {
+          "luma_std": 0.1434,
+          "edge_energy": 0.06375,
+          "lit_chroma_fraction": 0.446
+        }
+      },
+      "specStd": [
+        45.43,
+        29.66,
+        58.41
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_chiral_mercury": {
+      "name": "Chiral Mercury",
+      "paintStd": 0.1662,
+      "tileEdge": 0.0924,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.1539,
+          "edge_energy": 0.06012,
+          "lit_chroma_fraction": 0.0
+        },
+        "64": {
+          "luma_std": 0.1483,
+          "edge_energy": 0.09237,
+          "lit_chroma_fraction": 0.0
+        }
+      },
+      "specStd": [
+        44.94,
+        39.43,
+        60.31
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_chromatophore": {
+      "name": "Chromatophore",
+      "paintStd": 0.1401,
+      "tileEdge": 0.0669,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.0908,
+          "edge_energy": 0.04038,
+          "lit_chroma_fraction": 0.5063
+        },
+        "64": {
+          "luma_std": 0.0871,
+          "edge_energy": 0.0669,
+          "lit_chroma_fraction": 0.5078
+        }
+      },
+      "specStd": [
+        39.96,
+        36.47,
+        57.14
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_cinder_mirror": {
+      "name": "Cinder Mirror",
+      "paintStd": 0.1131,
+      "tileEdge": 0.0416,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.0506,
+          "edge_energy": 0.03725,
+          "lit_chroma_fraction": 0.2178
+        },
+        "64": {
+          "luma_std": 0.0416,
+          "edge_energy": 0.04164,
+          "lit_chroma_fraction": 0.2119
+        }
+      },
+      "specStd": [
+        35.58,
+        22.87,
+        67.72
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_coral_voltage": {
+      "name": "Coral Voltage",
+      "paintStd": 0.1311,
+      "tileEdge": 0.0438,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.0932,
+          "edge_energy": 0.03801,
+          "lit_chroma_fraction": 0.3269
+        },
+        "64": {
+          "luma_std": 0.0872,
+          "edge_energy": 0.04383,
+          "lit_chroma_fraction": 0.3264
+        }
+      },
+      "specStd": [
+        39.05,
+        21.72,
+        59.53
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_cryogenic_sunset": {
+      "name": "Cryogenic Sunset",
+      "paintStd": 0.1782,
+      "tileEdge": 0.0676,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.1357,
+          "edge_energy": 0.03906,
+          "lit_chroma_fraction": 0.5406
+        },
+        "64": {
+          "luma_std": 0.1329,
+          "edge_energy": 0.06759,
+          "lit_chroma_fraction": 0.5483
+        }
+      },
+      "specStd": [
+        41.39,
+        29.18,
+        58.33
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_deep_time": {
+      "name": "Deep Time",
+      "paintStd": 0.1272,
+      "tileEdge": 0.0464,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.0991,
+          "edge_energy": 0.02695,
+          "lit_chroma_fraction": 0.3937
+        },
+        "64": {
+          "luma_std": 0.0974,
+          "edge_energy": 0.04643,
+          "lit_chroma_fraction": 0.3979
+        }
+      },
+      "specStd": [
+        44.37,
+        32.29,
+        58.34
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_dichroic_skin": {
+      "name": "Dichroic Skin",
+      "paintStd": 0.1979,
+      "tileEdge": 0.0648,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.1316,
+          "edge_energy": 0.03721,
+          "lit_chroma_fraction": 0.7104
+        },
+        "64": {
+          "luma_std": 0.1286,
+          "edge_energy": 0.06475,
+          "lit_chroma_fraction": 0.7144
+        }
+      },
+      "specStd": [
+        39.22,
+        36.63,
+        56.51
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_electric_ink": {
+      "name": "Electric Ink",
+      "paintStd": 0.1408,
+      "tileEdge": 0.0446,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.0616,
+          "edge_energy": 0.03258,
+          "lit_chroma_fraction": 0.6279
+        },
+        "64": {
+          "luma_std": 0.0561,
+          "edge_energy": 0.04463,
+          "lit_chroma_fraction": 0.6553
+        }
+      },
+      "specStd": [
+        35.65,
+        28.65,
+        58.19
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_ferrofluid_silk": {
+      "name": "Ferrofluid Silk",
+      "paintStd": 0.1152,
+      "tileEdge": 0.067,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.0891,
+          "edge_energy": 0.04476,
+          "lit_chroma_fraction": 0.2917
+        },
+        "64": {
+          "luma_std": 0.0842,
+          "edge_energy": 0.06704,
+          "lit_chroma_fraction": 0.2686
+        }
+      },
+      "specStd": [
+        39.45,
+        26.81,
+        57.5
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_ghost_transmission": {
+      "name": "Ghost Transmission",
+      "paintStd": 0.1092,
+      "tileEdge": 0.0443,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.0735,
+          "edge_energy": 0.03768,
+          "lit_chroma_fraction": 0.2124
+        },
+        "64": {
+          "luma_std": 0.0679,
+          "edge_energy": 0.04433,
+          "lit_chroma_fraction": 0.21
+        }
+      },
+      "specStd": [
+        35.82,
+        22.9,
+        50.84
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_hologram_metal": {
+      "name": "Hologram Metal",
+      "paintStd": 0.1779,
+      "tileEdge": 0.0704,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.1012,
+          "edge_energy": 0.04098,
+          "lit_chroma_fraction": 0.7997
+        },
+        "64": {
+          "luma_std": 0.0979,
+          "edge_energy": 0.07044,
+          "lit_chroma_fraction": 0.8081
+        }
+      },
+      "specStd": [
+        32.17,
+        33.62,
+        47.47
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_ion_bloom": {
+      "name": "Ion Bloom",
+      "paintStd": 0.1738,
+      "tileEdge": 0.0808,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.1218,
+          "edge_energy": 0.05146,
+          "lit_chroma_fraction": 0.5381
+        },
+        "64": {
+          "luma_std": 0.1166,
+          "edge_energy": 0.0808,
+          "lit_chroma_fraction": 0.551
+        }
+      },
+      "specStd": [
+        45.87,
+        31.99,
+        58.12
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_laminar_magma": {
+      "name": "Laminar Magma",
+      "paintStd": 0.1579,
+      "tileEdge": 0.0462,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.08,
+          "edge_energy": 0.03074,
+          "lit_chroma_fraction": 0.4844
+        },
+        "64": {
+          "luma_std": 0.077,
+          "edge_energy": 0.04617,
+          "lit_chroma_fraction": 0.4922
+        }
+      },
+      "specStd": [
+        40.73,
+        29.73,
+        57.27
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_luminous_carbon": {
+      "name": "Luminous Carbon",
+      "paintStd": 0.138,
+      "tileEdge": 0.0331,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.0679,
+          "edge_energy": 0.07313,
+          "lit_chroma_fraction": 0.1059
+        },
+        "64": {
+          "luma_std": 0.0373,
+          "edge_energy": 0.03305,
+          "lit_chroma_fraction": 0.0
+        }
+      },
+      "specStd": [
+        47.99,
+        35.41,
+        51.93
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_memory_glass": {
+      "name": "Memory Glass",
+      "paintStd": 0.1759,
+      "tileEdge": 0.0898,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.1513,
+          "edge_energy": 0.0532,
+          "lit_chroma_fraction": 0.4662
+        },
+        "64": {
+          "luma_std": 0.1476,
+          "edge_energy": 0.08982,
+          "lit_chroma_fraction": 0.4573
+        }
+      },
+      "specStd": [
+        45.68,
+        27.39,
+        59.18
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_nebula_ceramic": {
+      "name": "Nebula Ceramic",
+      "paintStd": 0.1841,
+      "tileEdge": 0.0616,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.1084,
+          "edge_energy": 0.03617,
+          "lit_chroma_fraction": 0.7417
+        },
+        "64": {
+          "luma_std": 0.1061,
+          "edge_energy": 0.06157,
+          "lit_chroma_fraction": 0.7471
+        }
+      },
+      "specStd": [
+        42.34,
+        36.71,
+        51.9
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_photon_patina": {
+      "name": "Photon Patina",
+      "paintStd": 0.1165,
+      "tileEdge": 0.0433,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.0768,
+          "edge_energy": 0.02646,
+          "lit_chroma_fraction": 0.3922
+        },
+        "64": {
+          "luma_std": 0.0748,
+          "edge_energy": 0.04325,
+          "lit_chroma_fraction": 0.3894
+        }
+      },
+      "specStd": [
+        40.09,
+        26.61,
+        56.66
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_quantum_tide": {
+      "name": "Quantum Tide",
+      "paintStd": 0.1739,
+      "tileEdge": 0.0614,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.1062,
+          "edge_energy": 0.03729,
+          "lit_chroma_fraction": 0.6146
+        },
+        "64": {
+          "luma_std": 0.1034,
+          "edge_energy": 0.06138,
+          "lit_chroma_fraction": 0.6243
+        }
+      },
+      "specStd": [
+        37.94,
+        28.69,
+        56.09
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    },
+    "xlab_sonic_chrome": {
+      "name": "Sonic Chrome",
+      "paintStd": 0.1729,
+      "tileEdge": 0.0843,
+      "tileRead": {
+        "128": {
+          "luma_std": 0.1248,
+          "edge_energy": 0.04965,
+          "lit_chroma_fraction": 0.5091
+        },
+        "64": {
+          "luma_std": 0.1197,
+          "edge_energy": 0.08431,
+          "lit_chroma_fraction": 0.5154
+        }
+      },
+      "specStd": [
+        47.57,
+        37.91,
+        59.26
+      ],
+      "specRange": [
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ],
+        [
+          6,
+          250
+        ]
+      ]
+    }
+  },
+  "nearest_structure_pairs": [
+    {
+      "a": "xlab_arc_weld_velvet",
+      "b": "xlab_coral_voltage",
+      "correlation": 0.4272
+    },
+    {
+      "a": "xlab_ceramic_storm",
+      "b": "xlab_dichroic_skin",
+      "correlation": 0.363
+    },
+    {
+      "a": "xlab_ghost_transmission",
+      "b": "xlab_nebula_ceramic",
+      "correlation": 0.3199
+    },
+    {
+      "a": "xlab_arc_weld_velvet",
+      "b": "xlab_ferrofluid_silk",
+      "correlation": 0.1662
+    },
+    {
+      "a": "xlab_caustic_engine",
+      "b": "xlab_chromatophore",
+      "correlation": 0.1653
+    },
+    {
+      "a": "xlab_aerogel_fire",
+      "b": "xlab_arc_weld_velvet",
+      "correlation": 0.1612
+    },
+    {
+      "a": "xlab_brunel_current",
+      "b": "xlab_hologram_metal",
+      "correlation": 0.1425
+    },
+    {
+      "a": "xlab_abyssal_lens",
+      "b": "xlab_memory_glass",
+      "correlation": 0.1316
+    },
+    {
+      "a": "xlab_arc_weld_velvet",
+      "b": "xlab_photon_patina",
+      "correlation": 0.1124
+    },
+    {
+      "a": "xlab_memory_glass",
+      "b": "xlab_quantum_tide",
+      "correlation": 0.1112
+    },
+    {
+      "a": "xlab_chiral_mercury",
+      "b": "xlab_deep_time",
+      "correlation": 0.1091
+    },
+    {
+      "a": "xlab_coral_voltage",
+      "b": "xlab_ferrofluid_silk",
+      "correlation": 0.109
+    },
+    {
+      "a": "xlab_abyssal_lens",
+      "b": "xlab_dichroic_skin",
+      "correlation": 0.1087
+    },
+    {
+      "a": "xlab_deep_time",
+      "b": "xlab_laminar_magma",
+      "correlation": 0.1057
+    },
+    {
+      "a": "xlab_ferrofluid_silk",
+      "b": "xlab_hologram_metal",
+      "correlation": 0.1015
+    },
+    {
+      "a": "xlab_aerogel_fire",
+      "b": "xlab_dichroic_skin",
+      "correlation": 0.0976
+    },
+    {
+      "a": "xlab_ion_bloom",
+      "b": "xlab_memory_glass",
+      "correlation": 0.0968
+    },
+    {
+      "a": "xlab_chiral_mercury",
+      "b": "xlab_photon_patina",
+      "correlation": 0.0959
+    },
+    {
+      "a": "xlab_caustic_engine",
+      "b": "xlab_sonic_chrome",
+      "correlation": 0.0919
+    },
+    {
+      "a": "xlab_cryogenic_sunset",
+      "b": "xlab_quantum_tide",
+      "correlation": 0.0906
+    },
+    {
+      "a": "xlab_quantum_tide",
+      "b": "xlab_sonic_chrome",
+      "correlation": 0.0899
+    },
+    {
+      "a": "xlab_ceramic_storm",
+      "b": "xlab_nebula_ceramic",
+      "correlation": 0.0859
+    },
+    {
+      "a": "xlab_cryogenic_sunset",
+      "b": "xlab_memory_glass",
+      "correlation": 0.0815
+    },
+    {
+      "a": "xlab_bloomglass",
+      "b": "xlab_sonic_chrome",
+      "correlation": 0.0806
+    },
+    {
+      "a": "xlab_aerogel_fire",
+      "b": "xlab_bloomglass",
+      "correlation": 0.0773
+    },
+    {
+      "a": "xlab_arc_weld_velvet",
+      "b": "xlab_cryogenic_sunset",
+      "correlation": 0.0759
+    },
+    {
+      "a": "xlab_abyssal_lens",
+      "b": "xlab_ceramic_storm",
+      "correlation": 0.0746
+    },
+    {
+      "a": "xlab_arc_weld_velvet",
+      "b": "xlab_ghost_transmission",
+      "correlation": 0.0737
+    },
+    {
+      "a": "xlab_bloomglass",
+      "b": "xlab_laminar_magma",
+      "correlation": 0.0737
+    },
+    {
+      "a": "xlab_deep_time",
+      "b": "xlab_ion_bloom",
+      "correlation": 0.0672
+    }
+  ]
+}

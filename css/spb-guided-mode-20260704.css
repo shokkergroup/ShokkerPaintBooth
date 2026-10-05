@@ -1,0 +1,142 @@
+/* ============================================================================
+   SPB EASY MODE — STEP-BY-STEP GUIDE styles (2026-07-04)
+   Pairs with js/spb-guided-mode.js. OFF by default; zero effect until toggled.
+   ============================================================================ */
+
+/* Toggle — lives in the top toolbar next to MORE (owner 2026-07-04; the old
+   fixed bottom-left pill covered the zone list buttons). Inherits the bar's
+   .spb-tb-summary look; this just adds the gold accent + active state. */
+#spbGuideToggle {
+    color: #ffd166;
+    white-space: nowrap;
+}
+#spbGuideToggle:hover { color: #ffe7ad; }
+#spbGuideToggle.active {
+    background: rgba(255, 179, 0, 0.16) !important;
+    box-shadow: inset 0 -2px 0 #ffd166;
+    color: #fff2cf;
+}
+/* Fallback pill (only if the toolbar button is ever removed from the html). */
+.spb-guide-fallback-pill {
+    position: fixed;
+    right: 12px;
+    top: 110px;
+    z-index: 9000;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 179, 0, 0.45);
+    background: rgba(14, 12, 6, 0.92);
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* Coach panel — floating card, bottom-right, above the bottom bar. */
+#spbGuidePanel {
+    position: fixed;
+    right: 16px;
+    bottom: 60px;
+    width: 330px;
+    z-index: 45000;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 179, 0, 0.4);
+    background: linear-gradient(180deg, rgba(24, 20, 10, 0.97), rgba(14, 12, 6, 0.97));
+    box-shadow: 0 12px 42px rgba(0, 0, 0, 0.55);
+    color: #f0ead8;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    overflow: hidden;
+}
+.spb-guide-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 12px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #ffd166;
+    border-bottom: 1px solid rgba(255, 179, 0, 0.22);
+}
+.spb-guide-x {
+    background: none;
+    border: none;
+    color: #b8a77a;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+}
+.spb-guide-x:hover { color: #ffffff; }
+.spb-guide-body { padding: 12px 14px 14px; }
+.spb-guide-title { font-size: 14px; font-weight: 800; color: #ffffff; margin-bottom: 6px; }
+.spb-guide-done { font-size: 10px; color: #41d39a; font-weight: 800; margin-left: 4px; }
+.spb-guide-sub { font-size: 11.5px; line-height: 1.55; color: #cbbfa0; margin-bottom: 12px; }
+.spb-guide-sub b { color: #ffd166; }
+.spb-guide-row { display: flex; align-items: center; gap: 6px; }
+.spb-guide-show {
+    background: rgba(255, 179, 0, 0.12);
+    border: 1px solid rgba(255, 179, 0, 0.45);
+    color: #ffd166;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 10.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.spb-guide-show:hover { border-color: #ffd166; }
+.spb-guide-nav {
+    background: none;
+    border: 1px solid rgba(180, 170, 140, 0.35);
+    color: #cbbfa0;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 10.5px;
+    cursor: pointer;
+}
+.spb-guide-next {
+    background: linear-gradient(90deg, #ffb300, #ff7a18);
+    border: none;
+    color: #1a1206;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+}
+.spb-guide-next:hover { filter: brightness(1.1); }
+
+/* Choice buttons (TGA vs PSD) */
+.spb-guide-choices { display: flex; flex-direction: column; gap: 8px; }
+.spb-guide-choices button {
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 179, 0, 0.35);
+    background: rgba(255, 179, 0, 0.07);
+    color: #f0ead8;
+    cursor: pointer;
+    font-size: 12px;
+}
+.spb-guide-choices button:hover { border-color: #ffd166; background: rgba(255, 179, 0, 0.13); }
+.spb-guide-choices button b { display: block; color: #ffd166; margin-bottom: 2px; }
+.spb-guide-choices button span { font-size: 10.5px; color: #cbbfa0; }
+
+/* Spotlight ring laid over the real target control. */
+.spb-guide-ring {
+    position: absolute;
+    z-index: 46000;
+    border: 3px solid #ffd166;
+    border-radius: 10px;
+    pointer-events: none;
+    box-shadow: 0 0 0 4px rgba(255, 179, 0, 0.25), 0 0 30px rgba(255, 179, 0, 0.45);
+    animation: spbGuidePulse 1.1s ease-in-out 3;
+}
+@keyframes spbGuidePulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.035); opacity: 0.75; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .spb-guide-ring { animation: none; }
+}

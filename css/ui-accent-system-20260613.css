@@ -1,0 +1,420 @@
+/* ============================================================================
+   SHOKKER PAINT BOOTH — ACCENT COLOR SYSTEM
+   File: css/ui-accent-system-20260613.css
+   Created: 2026-06-13
+   Loaded: LAST in paint-booth-v2.html (after ui-modern-polish-20260613.css) so
+           the accent treatment wins the cascade for the polished default look.
+
+   OWNER BRIEF
+   -----------
+   "Subtle glowing elements... high scale feel and quality so it don't feel
+    boring. This is SHOKKER PAINT BOOTH — it shouldn't feel like a nursing home."
+   Earlier polish was "not noticeable" -> make it TASTEFULLY NOTICEABLE: a
+   cohesive ELECTRIC ACCENT applied to active states / headers / key indicators
+   / progress, plus richer hover affordances. Premium + energetic, NOT garish.
+
+   STRICTLY ADDITIVE & SAFE
+   ------------------------
+   - Presentation only. No DOM changes, no JS, no layout that hides content.
+   - Targets ONLY real, verified element selectors (enumerated live via CDP).
+   - GPU-cheap: animations touch ONLY background-position / opacity / transform /
+     box-shadow (compositor-friendly), never width/height/top/left/layout.
+   - prefers-reduced-motion: ALL motion disabled; the static accent look remains
+     so nothing disappears and the premium feel is preserved.
+
+   ORGANISATION
+   ------------
+   0. Accent tokens (the one electric gradient + glow scale)
+   1. Reusable keyframes (sheen drift + soft breathing glow)
+   2. Active TABS (rp-tabs / tab) — accent underline + sheen
+   3. Vertical TOOLBAR active tool — accent ignite
+   4. SELECTED zone card — accent left-rail glow
+   5. Section headers / panel headers — accent rule
+   6. Buttons — accent hover lift; primary header button; RENDER hero
+   7. Range sliders — accent fill + thumb glow
+   8. Progress bars — animated electric fill
+   9. Status / live badges + workbench title — tasteful accent
+   10. Finish picker swatch/finish cards + spec-channel + look-card selection
+   ============================================================================ */
+
+/* ===========================================================================
+   0. ACCENT TOKENS — one cohesive electric accent used everywhere
+   =========================================================================== */
+:root {
+  /* The signature SHOKKER electric accent: teal -> azure -> brand orange,
+     with a hot-pink kicker. One gradient, reused so the whole app feels
+     of-a-piece instead of a pile of unrelated neon. */
+  --acc-1: #00e5ff;   /* electric teal (primary) */
+  --acc-2: #2bb8ff;   /* azure bridge            */
+  --acc-3: #ff7a18;   /* brand orange            */
+  --acc-4: #ff2d6f;   /* hot-pink kicker         */
+
+  --acc-grad:        linear-gradient(90deg, var(--acc-1), var(--acc-2) 34%, var(--acc-3) 72%, var(--acc-4));
+  --acc-grad-v:      linear-gradient(180deg, var(--acc-1), var(--acc-2) 38%, var(--acc-3) 78%, var(--acc-4));
+  /* wide gradient used as an animated "sheen" (background-size 220%) */
+  --acc-sheen:       linear-gradient(90deg, var(--acc-1) 0%, var(--acc-2) 22%, var(--acc-3) 50%, var(--acc-4) 72%, var(--acc-1) 100%);
+
+  /* glow scale — soft, layered, restrained alpha so it reads premium not neon-blast */
+  --acc-glow-sm:  0 0 0 1px rgba(0, 229, 255, 0.30), 0 0 12px rgba(0, 229, 255, 0.18);
+  --acc-glow-md:  0 0 0 1px rgba(0, 229, 255, 0.34), 0 0 20px rgba(0, 229, 255, 0.22), 0 0 32px rgba(255, 122, 24, 0.10);
+  --acc-glow-hot: 0 0 0 1px rgba(255, 122, 24, 0.40), 0 0 22px rgba(255, 122, 24, 0.26), 0 0 30px rgba(0, 229, 255, 0.14);
+
+  --acc-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ===========================================================================
+   1. REUSABLE KEYFRAMES — compositor-cheap (background-position / opacity only)
+   =========================================================================== */
+@keyframes spbAccSheen {
+  0%   { background-position:   0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+/* slow, subtle "breathing" of a glow — opacity-only so it's nearly free */
+@keyframes spbAccBreathe {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+/* ===========================================================================
+   2. ACTIVE TABS — right-panel tabs (#rpTabFinishes/#rpTabLayers .rp-tab) and
+      any legacy .tab. Give the ACTIVE tab a live electric underline + a faint
+      sheen wash so the current section reads instantly and feels energetic.
+   =========================================================================== */
+.rp-tab,
+.tab {
+  position: relative;
+  transition: color var(--acc-ease) 140ms, background-color var(--acc-ease) 140ms;
+}
+/* live electric underline indicator under the active tab */
+.rp-tab.active::after,
+.tab.active::after,
+.tab[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--acc-sheen);
+  background-size: 200% 100%;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.55), 0 0 14px rgba(255, 122, 24, 0.28);
+  animation: spbAccSheen 6s linear infinite;
+  pointer-events: none;
+}
+.rp-tab.active,
+.tab.active {
+  color: #ffffff !important;
+}
+.rp-tab:not(.active):hover,
+.tab:not(.active):hover {
+  color: #eaf6ff !important;
+}
+
+/* ===========================================================================
+   3. VERTICAL TOOLBAR — the active paint tool gets a tasteful accent ignite
+      (real ids: #vtModeEyedropper etc., class .vtool-btn). Hover gets a
+      lighter accent ring so every tool feels responsive.
+   =========================================================================== */
+.vtool-btn,
+.tool-btn {
+  position: relative;
+  transition: transform 120ms var(--acc-ease), box-shadow 160ms var(--acc-ease),
+              border-color 120ms var(--acc-ease);
+}
+.vtool-btn:hover,
+.tool-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--acc-glow-sm);
+}
+.vtool-btn.active,
+.tool-btn.active,
+.tool-btn.selected {
+  box-shadow: var(--acc-glow-md) !important;
+}
+/* a thin accent bar on the active tool's inner edge — clear "this is selected" cue */
+.vtool-btn.active::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 18%;
+  bottom: 18%;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--acc-grad-v);
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+  animation: spbAccBreathe 3.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ===========================================================================
+   4. SELECTED ZONE CARD — the most important "where am I" cue in the app.
+      Give the selected card a living electric left rail + a soft breathing
+      glow. Hover gets a quieter accent edge.
+   =========================================================================== */
+#zoneList .zone-card {
+  position: relative;
+}
+#zoneList .zone-card:hover:not(.selected) {
+  box-shadow: var(--acc-glow-sm) !important;
+}
+/* the living accent rail — animated sheen, sits over the existing ::before bar */
+#zoneList .zone-card.selected {
+  box-shadow: var(--acc-glow-md), 0 10px 26px rgba(0, 0, 0, 0.42) !important;
+}
+#zoneList .zone-card.selected::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 4px 0 0 4px;
+  background: var(--acc-sheen);
+  background-size: 100% 220%;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.6), 0 0 16px rgba(255, 122, 24, 0.3);
+  animation: spbAccSheen 7s linear infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ===========================================================================
+   5. SECTION / PANEL HEADERS — a short electric accent rule that gives each
+      header a premium "chapter" feel. Real selectors: .section-header-label,
+      .settings-section-title, .panel-header, .swatch-group-label.
+   =========================================================================== */
+.section-header-label,
+.settings-section-title {
+  position: relative;
+}
+/* leading accent tick before section header labels */
+.section-header-label::before {
+  content: "";
+  display: inline-block;
+  width: 3px;
+  height: 0.85em;
+  margin-right: 7px;
+  vertical-align: -0.08em;
+  border-radius: 2px;
+  background: var(--acc-grad-v);
+  box-shadow: 0 0 6px rgba(0, 229, 255, 0.5);
+}
+/* settings section titles keep brand gold text but get a thin underline accent */
+.settings-section-title::after {
+  content: "";
+  display: block;
+  margin-top: 4px;
+  height: 2px;
+  width: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255, 176, 32, 0.85), rgba(255, 122, 24, 0.0) 60%);
+  opacity: 0.85;
+}
+
+/* ===========================================================================
+   6. BUTTONS — accent hover lift everywhere; primary header button + RENDER
+      hero get the full electric treatment.
+   =========================================================================== */
+/* generic accent hover: any neutral button gains an accent ring on hover */
+.btn:hover,
+.btn-sm:hover,
+.header-browse-btn:hover,
+.header-command-btn:hover,
+.header-shortcut-btn:hover {
+  box-shadow: var(--acc-glow-sm) !important;
+}
+
+/* primary header command button ("Finish Viewer") — a confident accent pill */
+.header-command-btn.primary {
+  position: relative;
+  border-color: rgba(0, 229, 255, 0.45) !important;
+  background:
+    linear-gradient(180deg, rgba(0, 229, 255, 0.16), rgba(0, 229, 255, 0.05)) !important;
+  color: #eafdff !important;
+}
+.header-command-btn.primary:hover {
+  box-shadow: var(--acc-glow-md) !important;
+  transform: translateY(-1px);
+}
+
+/* RENDER hero — the single biggest CTA. Living electric sheen across the fill
+   plus a soft breathing halo. Energetic but controlled. */
+#btnRender.btn-render,
+.btn-render.primary-render-action,
+.primary-render-action {
+  position: relative;
+  background: var(--acc-sheen) !important;
+  background-size: 220% 100% !important;
+  border: 1px solid rgba(255, 220, 150, 0.55) !important;
+  color: #07121a !important;
+  font-weight: 800 !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 6px 22px rgba(0, 229, 255, 0.26), 0 2px 10px rgba(255, 122, 24, 0.22),
+              inset 0 1px 0 rgba(255, 255, 255, 0.32) !important;
+  animation: spbAccSheen 8s linear infinite;
+}
+#btnRender.btn-render:hover,
+.btn-render.primary-render-action:hover,
+.primary-render-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 30px rgba(0, 229, 255, 0.38), 0 4px 16px rgba(255, 122, 24, 0.30),
+              inset 0 1px 0 rgba(255, 255, 255, 0.38) !important;
+}
+
+/* ===========================================================================
+   7. RANGE SLIDERS — accent fill (the filled portion reads electric) + a
+      glowing accent thumb on hover/focus. Track left-to-right reuses the accent.
+   =========================================================================== */
+input[type="range"]::-webkit-slider-runnable-track {
+  background: linear-gradient(90deg,
+                rgba(0, 229, 255, 0.75), rgba(43, 184, 255, 0.45) 45%,
+                rgba(255, 255, 255, 0.08)) !important;
+}
+input[type="range"]::-webkit-slider-thumb {
+  background: radial-gradient(circle at 35% 30%, #f2feff, var(--acc-1) 58%, #00aecb) !important;
+  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.18), 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}
+input[type="range"]:hover::-webkit-slider-thumb {
+  box-shadow: 0 0 0 5px rgba(0, 229, 255, 0.26), 0 0 12px rgba(0, 229, 255, 0.35),
+              0 1px 4px rgba(0, 0, 0, 0.55) !important;
+}
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 5px rgba(0, 229, 255, 0.42), 0 0 14px rgba(0, 229, 255, 0.45),
+              0 1px 4px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* ===========================================================================
+   8. PROGRESS BARS — render / batch progress reads as a live electric meter.
+      Real ids: #renderProgressBar (.render-progress-bar), .batch-progress.
+   =========================================================================== */
+#renderProgressBar,
+.render-progress-bar,
+.batch-progress > [class*="bar"],
+.batch-progress > div {
+  background: var(--acc-sheen) !important;
+  background-size: 220% 100% !important;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.4), 0 0 14px rgba(255, 122, 24, 0.18) !important;
+  animation: spbAccSheen 2.4s linear infinite;
+}
+/* the progress track gets a subtle inset so the electric fill pops */
+#renderProgress,
+.render-progress {
+  box-shadow: inset 0 0 0 1px rgba(0, 229, 255, 0.18) !important;
+}
+
+/* ===========================================================================
+   9. STATUS / LIVE BADGES + WORKBENCH TITLE — tasteful accent, not blasted.
+   =========================================================================== */
+/* "ACTIVE" live-link badge — gentle breathing accent so it feels alive */
+#liveLinkBadge.live-link-badge {
+  border: 1px solid rgba(57, 255, 136, 0.45) !important;
+  box-shadow: 0 0 10px rgba(57, 255, 136, 0.25) !important;
+  animation: spbAccBreathe 3.6s ease-in-out infinite;
+}
+/* version / gpu badges — quiet accent border */
+.version-badge {
+  border-color: rgba(0, 229, 255, 0.30) !important;
+}
+/* workbench title gets a clean electric text-accent underline */
+.shokker-workbench-title {
+  position: relative;
+}
+.shokker-workbench-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--acc-sheen);
+  background-size: 200% 100%;
+  opacity: 0.7;
+  animation: spbAccSheen 9s linear infinite;
+  pointer-events: none;
+}
+/* workbench capability chips — subtle accent hover */
+.shokker-workbench-chip {
+  transition: box-shadow 140ms var(--acc-ease), border-color 140ms var(--acc-ease);
+}
+.shokker-workbench-chip:hover {
+  box-shadow: var(--acc-glow-sm) !important;
+}
+
+/* ===========================================================================
+   10. FINISH PICKER + SPEC CHANNEL + LOOK CARDS — accent the SELECTED state so
+       choices read clearly. Real selectors: .spec-channel-btn, .swatch-item,
+       .swatch-catalog-card, .finish-item, .look-card.
+   =========================================================================== */
+/* spec-channel selector — active channel gets the accent ring */
+.spec-channel-btn {
+  transition: box-shadow 140ms var(--acc-ease), color 140ms var(--acc-ease);
+}
+.spec-channel-btn:hover {
+  box-shadow: var(--acc-glow-sm) !important;
+}
+.spec-channel-btn.active {
+  box-shadow: var(--acc-glow-md) !important;
+  color: #ffffff !important;
+}
+
+/* swatch + finish cards — accent ring on hover, stronger on selected */
+.swatch-item:hover,
+.swatch-catalog-card:hover,
+.finish-item:hover,
+.finish-catalog-card:hover {
+  box-shadow: var(--acc-glow-sm), 0 6px 18px rgba(0, 0, 0, 0.45) !important;
+}
+.swatch-item.selected,
+.swatch-item.active,
+.swatch-catalog-card.selected,
+.finish-item.selected,
+.finish-catalog-card.selected,
+.sp-thumb-active {
+  box-shadow: var(--acc-glow-md), 0 6px 18px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* LOOK cards (shop-vibe picker) — accent hover lift; selection ring stays the
+   JS-applied vibe color, we just add a tasteful accent on hover. */
+.look-card {
+  transition: transform 140ms var(--acc-ease), box-shadow 160ms var(--acc-ease);
+}
+.look-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--acc-glow-sm), 0 10px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ===========================================================================
+   PREFERS-REDUCED-MOTION — kill ALL motion, keep the static accent look so
+   nothing vanishes and the premium feel is preserved.
+   =========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .rp-tab.active::after,
+  .tab.active::after,
+  .tab[aria-selected="true"]::after,
+  .vtool-btn.active::before,
+  #zoneList .zone-card.selected::after,
+  #btnRender.btn-render,
+  .btn-render.primary-render-action,
+  .primary-render-action,
+  #renderProgressBar,
+  .render-progress-bar,
+  .batch-progress > [class*="bar"],
+  .batch-progress > div,
+  #liveLinkBadge.live-link-badge,
+  .shokker-workbench-title::after {
+    animation: none !important;
+    background-position: 0% 50% !important;
+  }
+  /* static accent positions still read as electric, just not moving */
+  #btnRender.btn-render,
+  .btn-render.primary-render-action,
+  .primary-render-action {
+    background-position: 30% 50% !important;
+  }
+  #liveLinkBadge.live-link-badge { opacity: 1 !important; }
+}
+
+/* ============================================================================
+   END ACCENT COLOR SYSTEM
+   ============================================================================ */

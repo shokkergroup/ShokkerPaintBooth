@@ -1,0 +1,86 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_wireframe",
+  "display_name": "Live Mesh Delam",
+  "carrier": "black conductive laminate densely loaded with clipped organic 8-32px delaminated interlace packets",
+  "material_story": {
+    "M": "cyan exposed crossings, lifted copper lips, clipped conductive ends, fused beads, and buried overlap",
+    "R": "torn windows, dark adhesive gaps, clipped ends, blister shadows, and fractured junctions",
+    "Cc": "intact conductive laminate, magenta underfilm ghosts, buried strips, and overlaps; low at tears"
+  },
+  "vetoes": [
+    "no literal wireframes, grids, rows, nets, or webs",
+    "no long wires or circuit diagrams",
+    "no triangles or repeated X stamps",
+    "no unrelated noise/spec underlay"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 2.274336,
+  "material_stats": {
+    "std": {
+      "M": 82.790009,
+      "R": 83.299156,
+      "Cc": 83.260796
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.381945,
+      "M_Cc": 0.268341,
+      "R_Cc": -0.194793
+    }
+  },
+  "geometry_stats": {
+    "family_count": 10,
+    "families": {
+      "delaminated_mesh_fragments": 9867,
+      "short_broken_interlace_strips": 5664,
+      "cyan_exposed_crossings": 2832,
+      "magenta_underfilm_ghosts": 2832,
+      "lifted_copper_lips": 2832,
+      "clipped_strand_ends": 2832,
+      "fused_junction_beads": 1517,
+      "torn_windows": 1591,
+      "blister_shadows": 2138,
+      "dark_adhesive_gaps": 2832
+    },
+    "width_native_min": 8.0,
+    "width_native_median": 10.0,
+    "width_native_p90": 28.0,
+    "width_native_max": 28.0,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "delaminated_mesh_fragments": 0.477225,
+    "short_broken_interlace_strips": 0.306019,
+    "cyan_exposed_crossings": 0.155802,
+    "magenta_underfilm_ghosts": 0.205349,
+    "lifted_copper_lips": 0.143562,
+    "clipped_strand_ends": 0.122734,
+    "fused_junction_beads": 0.038445,
+    "torn_windows": 0.03822,
+    "blister_shadows": 0.119687,
+    "dark_adhesive_gaps": 0.131401
+  }
+}

@@ -1,0 +1,117 @@
+{
+ "module": "minds",
+ "finishes": {
+  "fm_barbed_wire": {
+   "band": 0.0,
+   "ac": 0.0,
+   "pk": 0.0,
+   "sf": 1.0,
+   "fine": 0.0,
+   "cov": 64,
+   "hue": 0,
+   "low": 0.0,
+   "t": 0.937,
+   "ok": false
+  },
+  "fm_basketweave": {
+   "band": 0.0,
+   "ac": 0.0,
+   "pk": 0.0,
+   "sf": 1.0,
+   "fine": 0.0,
+   "cov": 64,
+   "hue": 0,
+   "low": 0.0,
+   "t": 0.908,
+   "ok": false
+  },
+  "fm_carbon_weave": {
+   "band": 0.0,
+   "ac": 0.0,
+   "pk": 0.0,
+   "sf": 1.0,
+   "fine": 0.0,
+   "cov": 64,
+   "hue": 0,
+   "low": 0.0,
+   "t": 0.769,
+   "ok": false
+  },
+  "fm_chainmail": {
+   "band": 0.9332,
+   "ac": 0.3194,
+   "pk": 0.8621,
+   "sf": 0.8595,
+   "fine": 6.22,
+   "cov": 0,
+   "hue": 3,
+   "low": 0.005,
+   "t": 0.763,
+   "ok": false
+  },
+  "fm_checkerflash": {
+   "band": 0.9682,
+   "ac": 0.5308,
+   "pk": 0.923,
+   "sf": 0.9055,
+   "fine": 7.42,
+   "cov": 0,
+   "hue": 7,
+   "low": 0.0121,
+   "t": 0.607,
+   "ok": false
+  },
+  "fm_circuit_maze": {
+   "band": 0.1611,
+   "ac": 0.9104,
+   "pk": 0.8327,
+   "sf": 0.9973,
+   "fine": 7.93,
+   "cov": 64,
+   "hue": 14,
+   "low": 0.8361,
+   "t": 0.793,
+   "ok": false
+  },
+  "fm_riverine": {
+   "band": 0.0,
+   "ac": 0.0,
+   "pk": 0.0,
+   "sf": 1.0,
+   "fine": 0.0,
+   "cov": 64,
+   "hue": 0,
+   "low": 0.0,
+   "t": 0.964,
+   "ok": false
+  },
+  "fm_tessellate": {
+   "band": 0.0,
+   "ac": 0.0,
+   "pk": 0.0,
+   "sf": 1.0,
+   "fine": 0.0,
+   "cov": 64,
+   "hue": 0,
+   "low": 0.0,
+   "t": 1.089,
+   "ok": false
+  }
+ },
+ "summary": {
+  "band_median": 0.0,
+  "band_min": 0.0,
+  "ac_min": 0.0,
+  "pk_min": 0.0,
+  "sf_min": 0.8595,
+  "fine_min": 0.0,
+  "t_max": 1.089,
+  "worst_pair": [
+   "fm_checkerflash",
+   "fm_circuit_maze",
+   0.1415
+  ],
+  "n_ok": 0,
+  "n": 8
+ }
+}

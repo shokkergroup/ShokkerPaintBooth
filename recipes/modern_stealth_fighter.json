@@ -2,7 +2,7 @@
   "name": "Modern Stealth Fighter",
   "description": "Inspired by F-22/F-35 stealth liveries — deep matte charcoal body with angular red accents, low-sheen tactical feel. Aggressive, minimalist, and understated.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "any chassis, looks most menacing on wedge / wide-body shapes",
   "notes": "Keep baseSpecStrength LOW (0.3-0.5) on the body zone to preserve the radar-absorbent matte look. Red accents are the only glossy element — that contrast is the point.",
   "zones": [

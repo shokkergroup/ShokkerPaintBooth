@@ -1,0 +1,230 @@
+{
+  "status": "CORE_PASS_WITH_GUIDANCE_AND_CACHE_RACE_GAPS",
+  "installed": false,
+  "session": "7874521216e1",
+  "url": "http://localhost:59882/",
+  "backend": "http://127.0.0.1:59883/",
+  "runtimeManifest": "_easy_claude_work/ai14h_generation3_runtime3/source-freeze.json",
+  "providerAttempts": 0,
+  "sourceIdentity": {
+    "kind": "Full PSD file SHA-256",
+    "committedFingerprint": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf",
+    "matchedIndependentRawDigest": true
+  },
+  "results": {
+    "red": {
+      "done": true,
+      "result": {
+        "queue": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "color": "#c8102e",
+            "scoped": false
+          }
+        ],
+        "cancelled": false,
+        "settled": true,
+        "id": "zone_d4e0947c-c059-4eee-b3c0-89ff79f6b15a",
+        "mask": "4194304:1du129g",
+        "source": {
+          "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+          "fingerprint": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf",
+          "generation": 1,
+          "width": 2048,
+          "height": 2048
+        },
+        "savedRecord": true,
+        "text": "Done \u2014 the roof is now recoloured red. (I updated your earlier change to the same colour instead of stacking a new one on top.)",
+        "undoable": true,
+        "attempts": 0
+      }
+    },
+    "savedReopen": {
+      "operation": "1225bfba85",
+      "done": true,
+      "result": {
+        "imported": {
+          "ok": true,
+          "requestedPath": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+          "committedPath": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\SPB Chevy Truck Starting Example PSD.psd",
+          "generation": 2,
+          "fingerprint": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf",
+          "error": null
+        },
+        "settled": true,
+        "generation": 2,
+        "activeBefore": 0,
+        "activeAfter": 1,
+        "queue": [
+          {
+            "kind": "edit",
+            "zone": 0,
+            "color": "#1f8a3b",
+            "scoped": true
+          }
+        ],
+        "text": "Done \u2014 the red painted by \"Roof recoloured red\" (3% of the car) is now recoloured green.\nNEXT: Undo | Make the black matte | Make the cyan metallic | Make the white pearl | Make the numbers metallic",
+        "cancelled": false,
+        "attempts": 0
+      }
+    },
+    "scopedGreen": {
+      "done": true,
+      "result": {
+        "settled": true,
+        "id": "zone_d4e0947c-c059-4eee-b3c0-89ff79f6b15a",
+        "mask": "4194304:1du129g",
+        "base": "f_chrome",
+        "paintChangedPixels": 29713,
+        "specChangedPixels": 0,
+        "outsideRoofPaintPixels": 0,
+        "layersExact": true,
+        "text": "Done \u2014 the red painted by \"Roof recoloured red\" (3% of the car) is now recoloured green.",
+        "undoable": true,
+        "attempts": 0
+      }
+    },
+    "manualUndo": {
+      "operation": "f84c1e6ab0",
+      "done": true,
+      "result": {
+        "edited": {
+          "ok": true,
+          "applied": [
+            "limited to a box (36-41% across, 35-40% down)"
+          ],
+          "warnings": []
+        },
+        "settled": true,
+        "undoSettled": true,
+        "undone": true,
+        "maskPreserved": true,
+        "useRegion": true,
+        "manualMask": "4194304:1fh6t",
+        "paintExact": true,
+        "specExact": true,
+        "layersExact": true,
+        "bridge": {
+          "enabled": false,
+          "calls": 3,
+          "lastTool": "edit_zone",
+          "connected": false
+        },
+        "attempts": 0
+      }
+    },
+    "guidance": {
+      "operation": "e834835656",
+      "done": true,
+      "result": {
+        "replies": [
+          {
+            "request": "How do I save this as a layered project?",
+            "queue": 0,
+            "text": "**How do I save my project and come back later**\n1. In Chat Studio, click \u201cFull editor \u2192\u201d to open these Pro controls, then continue with the steps below.\n2. Click \"Save / Open\" in the top toolbar (SPB Projects). It saves the paint (PSD included), every zone and layer settings in one file.\n3. To reopen, click \"Save / Open\" again and load it.\nExact controls: Save / Open (Pro > top toolbar (tool row)); SAVE SHOKK (Pro > left column > ZONES > More (three-dot) menu).\nDid that get you there, or is there something else you are trying to do?\nNEXT: I\u2019m still stuck",
+            "cancelled": false
+          },
+          {
+            "request": "What does flattened mean?",
+            "queue": 0,
+            "text": "Flattened means the visible layer pixels have been combined into one image. The separate editable layers are no longer available in that flattened result.\nNEXT: I\u2019m still stuck",
+            "cancelled": false
+          },
+          {
+            "request": "How can I change only the clearcoat?",
+            "queue": 0,
+            "text": "**Adjust only clearcoat**\n1. Select the zone you want to change, then adjust the zone input titled \u201cShift the CLEARCOAT channel (-127..+127)\u201d.\n2. Inspect the blue B / COAT preview to check the result. Leave R / METAL and G / ROUGH unchanged if you want to adjust clearcoat alone.\n3. The control is a channel offset; judge the visible B / COAT result rather than assuming a larger offset always means more physical gloss.\nNEXT: I\u2019m still stuck",
+            "cancelled": false
+          },
+          {
+            "request": "How do I keep the current paint when making the roof chrome?",
+            "queue": 0,
+            "text": "**How do I make something chrome**\n1. In Chat Studio, click \u201cFull editor \u2192\u201d to open these Pro controls, then continue with the steps below.\n2. Your selected zone is \"Roof recoloured red\" (zone 1) - click another card in the ZONES list to work on that one instead.\n3. Select the zone, BASE > Base Material > Chrome (mirror) or Satin Chrome (softer).\n4. Chrome repaints the zone silver. To keep your colours and only get the shine, use a Foundation chrome with \"Use source paint (spec only)\".\n5. In iRacing the paint under a metal part should be near white for chrome to read.\nExact controls: Base Material (Pro > ZONE POPOUT PANEL > BASE); BASE COLOR dropdown (Pro > ZONE POPOUT PANEL > BASE > Base Color).\nWhich part should it go on?\nNEXT: I\u2019m still stuck",
+            "cancelled": false
+          },
+          {
+            "request": "How do I find the number layer?",
+            "queue": 0,
+            "text": "For the numbers: you want clean edges and no glare. Your body is Gloss (high gloss). Avoid chrome, glitter and colour-shifting finishes on numbers: they break up the digit edges at speed. Swatches are shown on your car's colour.\nNEXT: Show me more | Show complete looks that suit my colours | Add a texture on top",
+            "cancelled": false
+          },
+          {
+            "request": "What can the offline helper do without an API key?",
+            "queue": 0,
+            "text": "The built-in helper works offline without an API key for supported scoped paint edits, material-channel offsets, app guidance, and Undo. An external AI connection is optional for broader open-ended design help.\nNEXT: I\u2019m still stuck",
+            "cancelled": false
+          }
+        ],
+        "zonesExact": false,
+        "paintExact": true,
+        "specExact": true,
+        "layersExact": true,
+        "attempts": 0,
+        "bridge": {
+          "enabled": false,
+          "calls": 3,
+          "lastTool": "edit_zone",
+          "connected": false
+        }
+      }
+    }
+  },
+  "chrome": {
+    "paintExact": true,
+    "specChanged": true,
+    "layersExact": true,
+    "ownerID": "zone_d4e0947c-c059-4eee-b3c0-89ff79f6b15a",
+    "mask": "4194304:1du129g",
+    "persistedOwnership": true
+  },
+  "mcp": {
+    "transport": "Actual HTTP /api/mcp/call -> page poll -> real controller -> result on isolated backend",
+    "settingsIsolated": "_easy_claude_work/ai14h_generation3_audit/runtime3-mcp-settings",
+    "toolsListed": true,
+    "editReceipt": "_easy_claude_work/ai14h_generation3_audit/runtime3-mcp-edit.json",
+    "successfulAppliedLines": 1,
+    "failed": 0,
+    "images": 1,
+    "bridgeDisabledAfter": true,
+    "initialStatusRefusal": "Internal lease still held; explicit private off/on released it before valid MCP call"
+  },
+  "guidanceFollowup": {
+    "savedZoneFieldDifferences": 0,
+    "repeatRawZoneExact": true,
+    "repeatPaintExact": true,
+    "repeatSpecExact": true,
+    "queue": 0
+  },
+  "startup": {
+    "swatchWarmerLaunchedByNormalPrivateBackendStartup": true,
+    "completed": "3029/3029 ready; 0 need baking",
+    "futurePrivateStartsDisableBothWarmers": true,
+    "liveServersRestarted": 0
+  },
+  "excludedRuns": [
+    {
+      "operation": "71e17ec21d",
+      "reason": "Wrong importPSD argument; chooser opened without a true source replacement, generation stayed1. No reopen acceptance."
+    }
+  ],
+  "limits": [
+    "Preview pixel comparisons are actual1024x1024 RGBA; mask identity measured actual2048x2048. No full-size export certification.",
+    "Saved reopen uses actual getConfig/loadConfigFromObj plus actual _doPSDImport; no disk SPB Project save/export was performed.",
+    "Native exact number-layer question still returns a finish recommendation; W74 repair active, no promotion yet.",
+    "First guidance pass rehydrated private ownership metadata; actual saved zone fields and pixels/layers unchanged, repeated raw metadata check exact.",
+    "Manual follow-up uses actual ZoneKit.edit controller, not a native drawn gesture.",
+    "PSD cache/race proof is independent W73 real fixtures and injected races, not a live concurrently edited production file.",
+    "Runtime3 backend W71 has a reproduced fixed-mtime A/B/A parsed-cache poisoning race; W78 repair required before promotion. Native unchanged-source success does not certify concurrent file replacement."
+  ],
+  "backendRace": {
+    "status": "REPRODUCED",
+    "report": "AI_HELPER_14H_SOURCE_BYTES_CACHE_REVERT_W78_ROOT_2026-10-04.json",
+    "runtime3CertifiesRaceRepair": false
+  },
+  "newPendingOwnershipGap": {
+    "status": "REPRODUCED_IN_ACTUAL_QUEUE_VM",
+    "report": "AI_HELPER_14H_SOURCE_BYTES_PART_MEMORY_W76_REVIEW_2026-10-04.json",
+    "repair": "W79 private candidate, not Runtime3"
+  }
+}

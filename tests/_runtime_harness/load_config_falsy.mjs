@@ -143,6 +143,12 @@ ctx.cfg = {
     ],
 };
 
+const bindingSource = readFileSync(join(REPO, 'js/canvas/zone/source-layer-links.js'), 'utf8');
+const maskSource = STATE_SRC.slice(STATE_SRC.indexOf('function decodeRegionMaskRLE('), STATE_SRC.indexOf('function _savedMaskCanvasSize('));
+ctx._loadCfgSize = {w:0,h:0};
+ctx.window = {};
+vm.runInContext(bindingSource + maskSource, ctx);
+
 // --- Run the mapping in the sandbox ---
 try {
     vm.runInContext(mapBlock, ctx, { filename: 'zones_map.runtime.js' });
@@ -233,6 +239,9 @@ if (mutatedBlock === mapBlock) {
         console,
     };
     vm.createContext(mutCtx);
+    mutCtx.window = {};
+    mutCtx._loadCfgSize = {w:0,h:0};
+    vm.runInContext(bindingSource + maskSource, mutCtx);
     try {
         vm.runInContext(mutatedBlock, mutCtx, { filename: 'mutated.runtime.js' });
         const mutTol = mutCtx.zones[0].pickerTolerance;

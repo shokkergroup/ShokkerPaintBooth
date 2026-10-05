@@ -1,0 +1,239 @@
+{
+  "work_item": "W116c public offline help scope: files, layers, undo and bridge",
+  "status": "REVIEW_GAPS",
+  "source": {
+    "path": "_easy_claude_work/ai14h_w116_successor/spb-pro-ai.js",
+    "sha256": "AEA057CB2965B714700304CA598C0E59AB25E02FFFB5575D5D29FC36CCD5FF76",
+    "runtime9Base": "_easy_claude_work/ai14h_generation3_runtime9/js/spb-pro-ai.js",
+    "publicAskExport": true
+  },
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w116_help_scope/fresh-oracle.json",
+    "sha256": "AE770A758B813261D52CBF157FBEACA41B33B2A05122FC388974AAF066B8FD8E",
+    "frozenBeforeReplay": true,
+    "cases": 20
+  },
+  "rows": [
+    {
+      "id": "flat-tga-no-sponsor-layer",
+      "topic": "flat-vs-layered",
+      "fixtureState": "flat",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": "restrict_layer",
+      "text": "**How do I load my paint file (a flat TGA, PNG or JPEG)**\n1. Pick your paint file in the window that opens, then confirm.\n2. Wait for the paint to appear in the SOURCE picture in the middle; the LIVE PREVIEW fills in next.\n3. You can also paste the full file path into the Source Paint box and press Enter.\nExact controls: SOURCE PAINT box (Pro > top of the window (header rows)); TGA/PNG/JPEG (Pro > top of the window (header rows)); Load TGA (Pro > centre > empty canvas (no paint loaded yet)).\nWhat would you like to change first - a colour, the shine, or the numbers?\nNEXT: I’m still stuck"
+    },
+    {
+      "id": "choose-layered-psd",
+      "topic": "load-psd",
+      "fixtureState": "empty",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": "load_paint",
+      "text": "**How do I load a layered PSD template (so I get layers)**\n1. Top row, SOURCE PAINT, click the \"PSD/XCF/ORA\" button (or \"Import PSD\" on the empty canvas, or the LAYERS tab > \"Open Layered\").\n2. Choose your PSD (XCF and ORA also work) and confirm.\n3. Wait while the layers load, then open the LAYERS tab on the right to see them.\n4. Before rendering, switch the template layers (Mask, Wire, Car_Mandatory) OFF with their eye icons.\nExact controls: PSD/XCF/ORA (Pro > top of the window (header rows)); Import PSD (Pro > centre > empty canvas (no paint loaded yet)); Open Layered (Pro > right column > LAYERS tab).\nWant to load a paint now?\nNEXT: I’m st"
+    },
+    {
+      "id": "spec-tga-import-destination",
+      "topic": "material-file-vs-source",
+      "fixtureState": "empty",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": null,
+      "text": "“Use source paint (spec only)” uses colors from the original imported paint image; it does not preserve an authored solid-color hex. To retain a current authored color, leave “Use solid color” selected and keep its existing hex unchanged.\nNEXT: I’m still stuck"
+    },
+    {
+      "id": "no-source-current-path",
+      "topic": "missing-source",
+      "fixtureState": "empty",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": "load_paint",
+      "text": "**I loaded my paint and nothing happened. What now**\n1. First load a paint: SOURCE PAINT in the top row (\"TGA/PNG/JPEG\" or \"PSD/XCF/ORA\"), or drop the file on the canvas.\n2. Loading only shows your paint. Nothing changes until you give a zone a finish.\n3. Click \"+ Add Zone\", pick a colour with \"PICK COLOR FROM CAR\", then choose a finish in BASE.\n4. Or switch to EASY or CHAT: Easy finds the colour parts and gives each a finish automatically; Chat lets you just say what you want.\n5. Press RENDER at the end to write the files.\nExact controls: SOURCE PAINT box (Pro > top of the window (header rows)); + Add Zone (Pro > left column > ZONES list); R"
+    },
+    {
+      "id": "no-source-edit-eligibility",
+      "topic": "missing-source",
+      "fixtureState": "empty",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": "load_paint",
+      "text": "**I loaded my paint and nothing happened. What now**\n1. First load a paint: SOURCE PAINT in the top row (\"TGA/PNG/JPEG\" or \"PSD/XCF/ORA\"), or drop the file on the canvas.\n2. Loading only shows your paint. Nothing changes until you give a zone a finish.\n3. Click \"+ Add Zone\", pick a colour with \"PICK COLOR FROM CAR\", then choose a finish in BASE.\n4. Or switch to EASY or CHAT: Easy finds the colour parts and gives each a finish automatically; Chat lets you just say what you want.\n5. Press RENDER at the end to write the files.\nExact controls: SOURCE PAINT box (Pro > top of the window (header rows)); + Add Zone (Pro > left column > ZONES list); R"
+    },
+    {
+      "id": "truck-zone-cross-car",
+      "topic": "cross-car-limits",
+      "fixtureState": "flat",
+      "howto": false,
+      "delegated": 1,
+      "queue": 0,
+      "text": "controlled offline action handoff"
+    },
+    {
+      "id": "import-zones-other-car",
+      "topic": "cross-car-limits",
+      "fixtureState": "flat",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": "keep_paint",
+      "text": "**How do I make a car side different from the other side**\n1. Make one zone per side with APPLY AREA > \"Draw box\" around each side's panel on the flat sheet.\n2. Give each its own finish or colour; both sides are separate rectangles.\n3. Or in Chat say \"make the left side matte black\" if the car's parts are known.\nExact controls: Draw box (Pro > ZONE POPOUT PANEL > APPLY AREA); Zone order (Pro > left column > zone cards (drag the handle)).\nWhat would you like to change first - a colour, the shine, or the numbers?\nNEXT: I’m still stuck"
+    },
+    {
+      "id": "unfamiliar-logo-review",
+      "topic": "logo-review",
+      "fixtureState": "flat",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": "logo_finder_limits",
+      "text": "I cannot guarantee that the finder identifies every logo on an unfamiliar car. It can suggest candidates, but you need to inspect the marked areas and confirm them before relying on the result. Finding a sponsor does not recolor it. This question made no changes."
+    },
+    {
+      "id": "number-location-memory",
+      "topic": "number-review",
+      "fixtureState": "flat",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": "find_numbers",
+      "text": "**How do I use Easy mode (paint by numbers)**\n1. Shokker finds the colours and gives each a finish. Tap any part of the car (or a row on the right) to change it.\n2. Pick a finish card, keep your colour or take the finish's colour, adjust Blend / Size / Color.\n3. Choose your car, check the READY TO RACE checklist, then SAVE TO iRACING.\nWhat would you like to change first - a colour, the shine, or the numbers?\nNEXT: I’m still stuck"
+    },
+    {
+      "id": "hidden-layer-edit",
+      "topic": "layer-state",
+      "fixtureState": "psd",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": "restrict_layer",
+      "text": "I found the likely reason:\n1. You have no zones, and zones are what change the look. Fix: Press + Add Zone (top of the ZONES list), or tell me what you want (\"make the body gloss red\").\nIf that is not it - Why is my zone not showing / doing anything:\n1. Does it have an area (colour, layer, or box) AND a finish? The panel warns \"No color or region set yet\".\n2. Is a zone ABOVE it claiming the same pixels? Drag it higher.\n3. Is the colour tolerance too tight? Raise it.\n4. Is the zone muted (eye icon off) or limited to a hidden layer?\nDid that fix it?\nNEXT: I’m still stuck"
+    },
+    {
+      "id": "uneditable-psd-layer",
+      "topic": "layer-state",
+      "fixtureState": "psd",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": "load_paint",
+      "text": "**How do I load a layered PSD template (so I get layers)**\n1. Choose your PSD (XCF and ORA also work) and confirm.\n2. Wait while the layers load, then open the LAYERS tab on the right to see them.\n3. Before rendering, switch the template layers (Mask, Wire, Car_Mandatory) OFF with their eye icons.\nExact controls: PSD/XCF/ORA (Pro > top of the window (header rows)); Import PSD (Pro > centre > empty canvas (no paint loaded yet)); Open Layered (Pro > right column > LAYERS tab).\nIs it a flat .tga or a layered .psd?\nNEXT: I’m still stuck"
+    },
+    {
+      "id": "save-does-not-overwrite-psd",
+      "topic": "save-vs-source",
+      "fixtureState": "empty",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": "save_project_source_psd",
+      "text": "**How do I save my project and come back later**\n1. First load a paint: SOURCE PAINT in the top row (\"TGA/PNG/JPEG\" or \"PSD/XCF/ORA\"), or drop the file on the canvas.\n2. Click \"Save / Open\" in the top toolbar (SPB Projects). It saves the project zones and layer state plus the source-paint path in one project file. Keep that source available at the saved path to reopen it.\n3. To reopen, click \"Save / Open\" again and load it.\nExact controls: Save / Open (Pro > top toolbar (tool row)); SAVE SHOKK (Pro > left column > ZONES > More (three-dot) menu).\nWant to load a paint now? The SHOKK project stores its zones and layer state, including current la"
+    },
+    {
+      "id": "save-layer-pixels",
+      "topic": "save-vs-source",
+      "fixtureState": "empty",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": "save_project_source_psd",
+      "text": "**How do I save my project and come back later**\n1. First load a paint: SOURCE PAINT in the top row (\"TGA/PNG/JPEG\" or \"PSD/XCF/ORA\"), or drop the file on the canvas.\n2. Click \"Save / Open\" in the top toolbar (SPB Projects). It saves the project zones and layer state plus the source-paint path in one project file. Keep that source available at the saved path to reopen it.\n3. To reopen, click \"Save / Open\" again and load it.\nExact controls: Save / Open (Pro > top toolbar (tool row)); SAVE SHOKK (Pro > left column > ZONES > More (three-dot) menu).\nWant to load a paint now? The SHOKK project stores its zones and layer state, including current la"
+    },
+    {
+      "id": "undo-later-mask",
+      "topic": "undo-redo",
+      "fixtureState": "empty",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": "undo_mask_conflict",
+      "text": "Undo checks whether the mask still matches the state recorded with the AI edit. If you drew or changed the mask afterward, that conflicting manual mask is kept and only safe AI-owned values are restored; if the change cannot be separated safely, Undo refuses it. This is not a whole-PSD restore. This question made no changes."
+    },
+    {
+      "id": "redo-after-manual-edit",
+      "topic": "undo-redo",
+      "fixtureState": "empty",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": "redo_after_manual_edit",
+      "text": "Redo checks the zone settings and layer visibility, opacity and blend values recorded after Undo. A later conflicting change to those values makes Redo unavailable. Redo does not restore layer pixel buffers or transforms. This question changed nothing."
+    },
+    {
+      "id": "claude-bridge-setup",
+      "topic": "bridge-setup",
+      "fixtureState": "empty",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": "mute",
+      "text": "**How do I talk to Claude about my paint through MCP**\n1. First load a paint: SOURCE PAINT in the top row (\"TGA/PNG/JPEG\" or \"PSD/XCF/ORA\"), or drop the file on the canvas.\n2. Open the AI panel, press the gear, switch ON \"Let an AI assistant (Claude or ChatGPT/Codex) control Shokker Paint Booth\".\n3. Press \"Install in Claude Desktop\" and restart Claude Desktop.\n4. With Shokker open, ask Claude: \"Using Shokker Paint Booth, give me a Gulf-style livery\".\n5. Every change shows in the AI panel with an Undo button. No API key needed; your Claude plan is used.\nExact controls: Use Claude Desktop through MCP (Shokker AI panel > gear); Gear (Shokker AI "
+    },
+    {
+      "id": "bridge-disconnected",
+      "topic": "bridge-error",
+      "fixtureState": "empty",
+      "howto": false,
+      "delegated": 1,
+      "queue": 0,
+      "text": "controlled offline action handoff"
+    },
+    {
+      "id": "offline-finishes-no-credits",
+      "topic": "offline-cost",
+      "fixtureState": "empty",
+      "howto": false,
+      "delegated": 1,
+      "queue": 0,
+      "text": "controlled offline action handoff"
+    },
+    {
+      "id": "action-control-finish",
+      "topic": "action-control",
+      "fixtureState": "empty",
+      "howto": false,
+      "delegated": 1,
+      "queue": 0,
+      "text": "controlled offline action handoff"
+    },
+    {
+      "id": "no-execute-control",
+      "topic": "no-execution",
+      "fixtureState": "empty",
+      "howto": true,
+      "delegated": 0,
+      "queue": 0,
+      "topicResult": "wireframe",
+      "text": "**How do I switch off the template lines (Mask, Wire, Car_Mandatory) before exporting**\n1. First load your layered PSD: SOURCE PAINT > \"PSD/XCF/ORA\" (or LAYERS tab > Open Layered).\n2. LAYERS tab: click the eye on Car_Mandatory, Mask and Wire (the group \"Turn Off Before Exporting TGA\").\n3. In Easy click \"Turn off\" on the \"Template guides are on\" warning.\n4. Then render. If lines still show on the car, one of them was left on.\nExact controls: Layer eye icon (Pro > LAYERS tab > layer row).\nWant to load a paint now?\nNEXT: I’m still stuck"
+    }
+  ],
+  "issues": [
+    "flat-tga-no-sponsor-layer: missing grounded topic cue /layer/i",
+    "flat-tga-no-sponsor-layer: missing grounded topic cue /psd|layered/i",
+    "spec-tga-import-destination: confuses Source Paint color mode with a spec-map file-import destination",
+    "truck-zone-cross-car: expected read-only local guidance",
+    "truck-zone-cross-car: missing grounded topic cue /other car|another car|current (?:car|layout|source)|cannot|not (?:safe|confirmed|transfer)/i",
+    "import-zones-other-car: missing grounded topic cue /other car|another car|current (?:car|layout|source)|cannot|not (?:safe|confirmed|transfer)/i",
+    "uneditable-psd-layer: missing grounded topic cue /visible|visibility|select|lock|editable|paint source|panel/i",
+    "bridge-disconnected: expected read-only local guidance",
+    "bridge-disconnected: missing grounded topic cue /bridge|connection|connect|setting|server|assistant/i",
+    "offline-finishes-no-credits: expected read-only local guidance",
+    "offline-finishes-no-credits: missing grounded topic cue /provider|paid|charge|cost/i"
+  ],
+  "counts": {
+    "cases": 20,
+    "readOnlyCases": 19,
+    "actionControls": 1,
+    "failed": 11,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "queueApplications": 0
+  },
+  "limits": [
+    "The harness executes exact extracted public ask(), contextualHelpReply(), offlineInstructionPreflight() bodies and the actual self-help/receipt/intent modules. The desktop IIFE is not booted. No provider, server, browser, native app, save, or paint application is called; action controls are captured by a controlled offline handoff sentinel."
+  ]
+}

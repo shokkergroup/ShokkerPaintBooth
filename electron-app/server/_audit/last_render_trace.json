@@ -1,0 +1,51 @@
+{
+ "paint_file": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\electron-app\\server\\output\\temp\\tmp9lz6fv1f.png",
+ "seed": 42,
+ "preview_mode": true,
+ "n_zones": 1,
+ "zones": [
+  {
+   "i": 0,
+   "name": "CatalogSwatch",
+   "color": [
+    0.4,
+    0.26666666666666666,
+    0.8
+   ],
+   "intensity": 100,
+   "base_strength": 1.0,
+   "base_spec_strength": 1.0,
+   "base_color_mode": "authored_swatch",
+   "base_color": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "base_color_strength": 1.0,
+   "base_color_scale": 1.0,
+   "base_color_rotation": 0,
+   "base_color_fit_zone": false,
+   "base_offset_x": 0.5,
+   "base_offset_y": 0.5,
+   "base_rotation": 0,
+   "base_flip_h": false,
+   "base_flip_v": false,
+   "base_hue_offset": 0,
+   "base_saturation_adjust": 0,
+   "base_brightness_adjust": 0,
+   "pattern_opacity": 1.0,
+   "pattern_offset_x": 0.5,
+   "pattern_offset_y": 0.5,
+   "pattern_flip_h": false,
+   "pattern_flip_v": false,
+   "spec_pattern_stack": [],
+   "overlay_spec_pattern_stack": [],
+   "third_overlay_spec_pattern_stack": [],
+   "fourth_overlay_spec_pattern_stack": [],
+   "fifth_overlay_spec_pattern_stack": [],
+   "finish": "xlab_velvet_meteor",
+   "has_region_mask": true,
+   "apply_area_shape_only": true
+  }
+ ]
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_phantom_mica",
+  "display_name": "Phantom Mica",
+  "carrier": "smoked dark clear densely loaded with asymmetric translucent 8-32px mica overlap stacks",
+  "material_story": {
+    "M": "exposed mica leading lips, fractured tips, cleavage exposure, and buried reflective overlaps",
+    "R": "fractured trailing corners, cleavage steps, attached debris, and occluded overlap edges",
+    "Cc": "intact transparent mica bodies and healed ghost tails, reduced sharply at every break"
+  },
+  "vetoes": [
+    "no fish or scale silhouette",
+    "no closed polygon/confetti wallpaper",
+    "no rows or repeated tiles",
+    "no macro shards",
+    "no unrelated noise/spec underlay"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 2.219489,
+  "material_stats": {
+    "std": {
+      "M": 82.78997,
+      "R": 83.299095,
+      "Cc": 83.260742
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": -0.2211,
+      "M_Cc": 0.494562,
+      "R_Cc": -0.252655
+    }
+  },
+  "geometry_stats": {
+    "family_count": 8,
+    "families": {
+      "translucent_mica_overlaps": 16114,
+      "asymmetric_leading_lips": 2536,
+      "ghost_tails": 2536,
+      "cleavage_steps": 2225,
+      "occlusion_shadows": 2877,
+      "fractured_corners": 553,
+      "buried_overlap_flashes": 16114,
+      "attached_mica_debris": 782
+    },
+    "width_native_min": 9.0,
+    "width_native_median": 12.0,
+    "width_native_p90": 14.0,
+    "width_native_max": 14.0,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "translucent_mica_overlaps": 0.470717,
+    "asymmetric_leading_lips": 0.179962,
+    "ghost_tails": 0.186885,
+    "cleavage_steps": 0.094647,
+    "occlusion_shadows": 0.209204,
+    "fractured_corners": 0.005698,
+    "buried_overlap_flashes": 0.259127,
+    "attached_mica_debris": 0.016929
+  }
+}

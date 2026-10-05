@@ -1,0 +1,102 @@
+{
+  "report_id": "AI_HELPER_14H_PART_MEMORY_DESIGN_2026-10-03",
+  "date_utc": "2026-10-04",
+  "scope": "W26 proposed durable named-part ownership metadata schema and uninstalled prototype",
+  "verdict": "SCHEMA_PROTOTYPE_PASS_NOT_INTEGRATED",
+  "oracle": {
+    "file": "tests/ai_part_memory_contract.cjs",
+    "frozen_before_module_creation": true,
+    "case_count": 18,
+    "cases": [
+      "valid-live-provenance-bound-to-verified-committed-source-and-dimensions",
+      "same-canonical-source-path-and-same-fingerprint-may-rebind-new-runtime-generation",
+      "same-path-with-different-source-fingerprint-is-rejected",
+      "missing-or-unverified-source-fingerprint-is-rejected",
+      "missing-current-runtime-generation-is-rejected",
+      "saved-old-generation-is-never-reused-as-current-generation",
+      "source-dimension-change-is-rejected",
+      "stale-region-mask-hash-is-rejected",
+      "stale-part-mask-hash-is-rejected",
+      "stale-layout-signature-is-rejected",
+      "stale-element-signature-is-rejected",
+      "zone-id-or-material-owner-identity-mismatch-is-rejected",
+      "duplicate-or-ambiguous-owner-is-rejected",
+      "unknown-schema-version-is-rejected",
+      "malformed-or-forged-private-record-is-rejected",
+      "private-record-never-serializes-raw-masks-or-region-vectors",
+      "sanitizer-does-not-mutate-zone-or-live-provenance-input",
+      "absence-of-proof-returns-no-ownership-and-requires-explicit-ask"
+    ],
+    "result": "PASS — the prototype contract exercises all 18 frozen scenarios."
+  },
+  "prototype": {
+    "file": "js/spb-ai-part-memory.js",
+    "sha256": "C2FF9F8ED3FA03E2F0748F51EA21637065FDD2DDABDF466B1C1F5966B1555201",
+    "schema": "spb-ai-part-memory/1",
+    "api": [
+      "saveRecord(zone, currentCommittedSource, proofCallbacks)",
+      "sanitizeRecord(savedValue)",
+      "prepareRestore(savedValue, currentCommittedSource, currentZone, proofCallbacks)"
+    ],
+    "persistence_shape": {
+      "schema": "spb-ai-part-memory/1",
+      "source": [
+        "path",
+        "fingerprint",
+        "width",
+        "height"
+      ],
+      "owner": [
+        "zoneId",
+        "name",
+        "key"
+      ],
+      "provenance": [
+        "r",
+        "z",
+        "p",
+        "l",
+        "e"
+      ]
+    },
+    "generation_policy": "Runtime generation is required in the current source context, never persisted, and returned only as a runtimeBinding rebound from the current verified load.",
+    "mask_policy": "The schema copies the existing compact mask-hash strings; it does not hash, serialize, or reconstruct masks. Selector JSON rejects raw mask/vector/pixel/image/data-like fields, typed arrays, non-JSON objects, malformed selectors, and oversized nested values.",
+    "ownership_policy": "No metadata is returned without injected source-commit, same-path, edit-key, current-owner, current-part-mask, and unique-owner proofs. The module never mutates zone objects or the app registry."
+  },
+  "frozen_source_findings": {
+    "js/spb-pro-ai.js": {
+      "sha256_at_review": "92C247C9ED08617E86D44C48FCBB22DCFB1DB61DE045BB5E98007899E2C7BE51",
+      "evidence": "partOwnerCurrent currently checks editKey(p.r), active zone regionMask hash p.z, useRegion, layout signature p.l, element signature p.e, and exactly one owner. It checks the part mask hash p.p only when CAR.maskFor exists. Its owner identity depends on zone membership/name through _editReg. _editReg is cleared when carSig changes and is in-memory state."
+    },
+    "js/spb-pro-zone-kit.js": {
+      "sha256_at_review": "6968963FC8D382E3ECDA629089A71A73A519270C0B577E98DF03D9F7D48D68D0",
+      "evidence": "rememberPartRegion writes the live private shape {r,z,p,l,e}; r is JSON selector data, z and p are existing FNV-style mask-hash strings, l is layout signature, and e is element signature. No durable source path/fingerprint/dimensions or runtime load generation is present. The test extracts and exercises this file's actual regionMaskHash implementation for mask comparisons."
+    },
+    "paint-booth-3-canvas.js": {
+      "sha256_at_review": "F55880174D7AFF86F44F8EE5B0C28AFF31CDDCDE6491386D558EC16A27B98F56",
+      "evidence": "SPBSourceLoadTransaction exposes current numeric generation, committed path, and committed fingerprint. These must be sampled only after the source commit; old generation is not durable source identity."
+    },
+    "js/features/spb-projects.js": {
+      "sha256_at_review": "40520AD3E373B2505CCE0AB4BA030F282E9EBA2A0A9B1C8F6093A0AA97EC34B3",
+      "evidence": "The project envelope embeds getConfig() output and separately records source path and canvas dimensions. The W18 bounded review found current zone getConfig/loadConfigFromObj projections omit _aiPartProv; project remapping preserves unknown JSON fields but zone materialization is explicit and drops them."
+    }
+  },
+  "required_future_integration": {
+    "getConfig_hook": "In the root zone config serializer only, preserve its existing zone fields/mask codecs and append an optional aiPartMemory field when saveRecord returns a record. Provide actual committed path/fingerprint/generation from SPBSourceLoadTransaction and paintCanvas width/height, plus narrow callbacks bound to the actual editKey, partOwnerCurrent, CAR.maskFor-derived part mask validation, and unique active owner count. Never serialize _aiPartProv wholesale or persist generation.",
+    "load_hook": "Only a successful SPB project restore with server/source fingerprint confirmation and committed source path may attempt rehydration. Wait until zones and saved region/spatial masks are materialized and dimensions are validated; call prepareRestore using the new current generation. Do not hydrate from an unverified autosave/session config or from path-only evidence.",
+    "post_candidate_proof": "The integration must expose a narrow bridge to the real current owner validator. Stage the returned candidate only on its exact stable zone ID, run the real partOwnerCurrent checks plus an explicit current CAR.maskFor part-mask check even when CAR.maskFor would otherwise be skipped, compare current layout/elements/mask hashes, and prove exactly one active owner. Only then retain _aiPartProv and hydrate _editReg under the current car signature. On failure remove the staged candidate and require a fresh explicit part selection.",
+    "identity_policy": "Stable zone ID is saved/restored by existing config. Saved owner name and edit key must match as well because the current registry maps selector keys to zone names; rename, duplicate/ambiguous ownership, mute, or zone replacement must not silently reassign the record. Never infer by name/order/position alone.",
+    "tests_after_integration": "Add an actual config capture → JSON encode → source-verified project restore → mask decode → real partOwnerCurrent/unique-owner check test. Cover same-path changed fingerprint and same-car exact restore, plus rejection after layout, element, zone ID/name, region mask, CAR mask, duplicate owner, or dimensions change. Verify unrelated zone fields and both saved masks remain unchanged."
+  },
+  "verification": {
+    "syntax": "PASS — node --check js/spb-ai-part-memory.js",
+    "contract": "PASS — node tests/ai_part_memory_contract.cjs; 18 frozen scenarios executed; test obtains regionMaskHash from actual ZoneKit source.",
+    "uninstalled": "No script-load or proAI reference to spb-ai-part-memory was found; no serializer/proAI/Wiki/mirror/project hook was edited.",
+    "activity": "No app project, native UI, browser, provider, server, or external I/O was used."
+  },
+  "limits": [
+    "The current-owner proof callbacks in the contract test are deterministic test doubles. The real partOwnerCurrent and CAR.maskFor callbacks are not injected into this uninstalled prototype, so this is not proof of live paint ownership or project roundtrip behavior.",
+    "The current partOwnerCurrent implementation conditionally checks p.p only when CAR.maskFor exists. Future integration must make the part-mask check mandatory before claiming durable reuse.",
+    "The module alone does not persist anything and does not make named-part reuse available after reload. Root-owned serializer/proAI integration and native/project acceptance remain outstanding."
+  ]
+}

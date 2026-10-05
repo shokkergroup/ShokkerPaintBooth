@@ -1,0 +1,122 @@
+{
+ "ffr_blue_serac": {
+  "hue": 0.5863,
+  "fix": 0.0137,
+  "satA": 0.818,
+  "off": 0.112
+ },
+ "ffr_cyan_fissure": {
+  "hue": 0.5314,
+  "fix": 0.0086,
+  "satA": 0.986,
+  "off": 0.011
+ },
+ "ffr_cyan_frond": {
+  "hue": 0.4932,
+  "fix": 0.0368,
+  "satA": 0.997,
+  "off": 0.041
+ },
+ "ffr_cyan_frostbloom": {
+  "hue": 0.491,
+  "fix": 0.029,
+  "satA": 0.996,
+  "off": 0.013
+ },
+ "ffr_cyan_veil": {
+  "hue": 0.4824,
+  "fix": 0.0376,
+  "satA": 0.996,
+  "off": 0.02
+ },
+ "ffr_diamond_dust": {
+  "hue": 0.6361,
+  "fix": -0.0561,
+  "satA": 0.869,
+  "off": 0.076
+ },
+ "ffr_glacier_fern": {
+  "hue": 0.5096,
+  "fix": 0.0404,
+  "satA": 0.99,
+  "off": 0.196
+ },
+ "ffr_hoarfrost_white": {
+  "hue": 0.6022,
+  "fix": -0.0222,
+  "satA": 0.799,
+  "off": 0.009
+ },
+ "ffr_ice_needles": {
+  "hue": 0.5757,
+  "fix": -0.0057,
+  "satA": 0.844,
+  "off": 0.018
+ },
+ "ffr_silver_dendrite": {
+  "hue": 0.6374,
+  "fix": -0.0724,
+  "satA": 0.824,
+  "off": 0.23
+ },
+ "ffr_silver_hoar": {
+  "hue": 0.5857,
+  "fix": -0.0057,
+  "satA": 0.78,
+  "off": 0.015
+ },
+ "ffr_snowdrift_ice": {
+  "hue": 0.5399,
+  "fix": 0.0151,
+  "satA": 0.703,
+  "off": 0.242
+ },
+ "ffr_steel_bubbles": {
+  "hue": 0.5921,
+  "fix": -0.0021,
+  "satA": 0.845,
+  "off": 0.007
+ },
+ "ffr_steel_flurry": {
+  "hue": 0.6075,
+  "fix": -0.0075,
+  "satA": 0.869,
+  "off": 0.012
+ },
+ "ffr_violet_chasm": {
+  "hue": 0.7872,
+  "fix": -0.0622,
+  "satA": 0.996,
+  "off": 0.013
+ },
+ "ffr_violet_rime": {
+  "hue": 0.7748,
+  "fix": -0.0198,
+  "satA": 0.997,
+  "off": 0.015
+ },
+ "ffr_violet_sectored": {
+  "hue": 0.7784,
+  "fix": -0.0134,
+  "satA": 0.996,
+  "off": 0.068
+ },
+ "ffr_violet_trapped": {
+  "hue": 0.7893,
+  "fix": -0.0643,
+  "satA": 0.977,
+  "off": 0.016
+ },
+ "ffr_whiteout_rift": {
+  "hue": 0.5708,
+  "fix": 0.0142,
+  "satA": 0.758,
+  "off": 0.018
+ },
+ "ffr_window_fern": {
+  "hue": 0.5297,
+  "fix": 0.0303,
+  "satA": 0.994,
+  "off": 0.005
+ }
+}

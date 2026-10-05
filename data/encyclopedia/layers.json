@@ -1,0 +1,3153 @@
+{
+ "domain": "layers",
+ "version": 1,
+ "articles": [
+  {
+   "id": "layers.panel",
+   "title": "The layer list",
+   "domain": "layers",
+   "summary": "The layer list in the right column lists every layer of your paint. Use it to show, hide, lock, reorder and adjust layers.",
+   "what": "Open the layer list (right column) at the top of the right column (next to FINISHES). Each layer has a row with an eye, a lock, a thumbnail and a name. Click a name to select that layer and a card of buttons opens under it. The Actions menu holds the bigger jobs: blank layer, merge visible, flatten, Photoshop round trip and thumbnail size.",
+   "when": [
+    "You opened a layered template and need to see what is in it.",
+    "You added a logo or sponsor and want to move, fade or hide it.",
+    "You need to switch the template guide layers off before you render."
+   ],
+   "how": [
+    "Click the layer list at the top of the right column.",
+    "Click the eye on a row to hide or show that layer. Alt+click the eye to see only that layer.",
+    "Click a layer name to select it. Its button card and sliders appear under the row.",
+    "Type in the filter box to find a layer in a long list.",
+    "Click Done on the card, or press Esc, to deselect."
+   ],
+   "controls": [
+    {
+     "label": "LAYERS",
+     "range": "",
+     "default": "",
+     "effect": "Layer list: PSD layer list.",
+     "inv": "rpTabLayers"
+    },
+    {
+     "label": "Layer eye icon",
+     "range": "",
+     "default": "",
+     "effect": "Shows / hides the layer. Alt+click isolates that layer.",
+     "inv": "layer.eye"
+    },
+    {
+     "label": "Layer lock",
+     "range": "",
+     "default": "",
+     "effect": "Locks the layer so it cannot be painted or changed.",
+     "inv": "layer.lock"
+    },
+    {
+     "label": "Layers filter box",
+     "range": "",
+     "default": "",
+     "effect": "Type part of a layer name to show only matching layers.",
+     "inv": "layerSearchInput"
+    },
+    {
+     "label": "Actions",
+     "range": "",
+     "default": "",
+     "effect": "Opens the menu with blank layer, merge visible, flatten, Photoshop round trip and thumbnail size.",
+     "inv": "layerActionsMenuBtn"
+    },
+    {
+     "label": "+ Layer",
+     "range": "",
+     "default": "",
+     "effect": "+ Layer: adds a PNG / JPG / WebP / GIF as a NEW image layer on top (a logo, a sponsor).",
+     "inv": "pro.layers.layer"
+    },
+    {
+     "label": "Thumbnail size",
+     "range": "",
+     "default": "",
+     "effect": "Cycle layer thumbnail size (small / medium / large)",
+     "inv": "pro.layers.thumbnail_size"
+    },
+    {
+     "label": "Collapse arrow (right column)",
+     "range": "",
+     "default": "",
+     "effect": "Collapses or expands the FINISHES / LAYERS column.",
+     "inv": "rightCollapseBtn"
+    }
+   ],
+   "tips": [
+    "Alt+click an eye to isolate one layer. Click the same eye again to bring the rest back.",
+    "Ctrl+click names to pick several layers, then use the Merge button that shows the count.",
+    "Dragging a file onto the canvas replaces the paint. Use + Layer to add art on top instead."
+   ],
+   "pitfalls": [
+    "A locked layer cannot be painted or changed. The AI copilot cannot edit it either, so unlock it first.",
+    "Hidden layers still exist. Hidden layers do not show in the render."
+   ],
+   "related": [
+    "layers.roles",
+    "layers.card_buttons",
+    "layers.opacity_blend",
+    "layers.turn_off_before_export",
+    "layers.open_psd",
+    "ui_shell.template_layer_views"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "rpTabLayers"
+    },
+    {
+     "do": "control",
+     "id": "layer.eye"
+    }
+   ],
+   "figures": [
+    "g07_layer_stack_roles"
+   ],
+   "covers": [
+    "rpTabFinishes",
+    "rpTabLayers",
+    "layer.eye",
+    "layer.lock",
+    "layerSearchInput",
+    "layerActionsMenuBtn",
+    "pro.layers.layer",
+    "pro.layers.thumbnail_size",
+    "rightCollapseBtn"
+   ],
+   "sources": [
+    "paint-booth-3-canvas.js:23329",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:3",
+    "paint-booth-v2.html:3829",
+    "paint-booth-3-canvas.js:30341",
+    "paint-booth-v2.html:3833",
+    "paint-booth-v2.html:3859",
+    "paint-booth-3-canvas.js:23319",
+    "paint-booth-v2.html:3848",
+    "paint-booth-3-canvas.js:23302",
+    "paint-booth-3-canvas.js:23305",
+    "paint-booth-3-canvas.js:23316",
+    "paint-booth-3-canvas.js:23321",
+    "paint-booth-3-canvas.js:23481",
+    "paint-booth-3-canvas.js:23570",
+    "paint-booth-3-canvas.js:23283",
+    "paint-booth-3-canvas.js:23289",
+    "paint-booth-3-canvas.js:23696",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:5"
+   ],
+   "aliases": [
+    "find a layer",
+    "hide a layer",
+    "layer eye",
+    "layer list",
+    "layers panel",
+    "layers tab",
+    "lock a layer",
+    "show hide layer",
+    "where are my layers",
+    "layer panel"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "What each row shows",
+     "body": "Every layer row has an eye to show or hide it, a lock, a thumbnail and the name. Layers that belong to a Photoshop group sit under a group header. Click the header to collapse or expand the group, or click the eye on the header to show or hide the whole group at once. A small yellow tag on a row means one or more zones are restricted to that layer, which is handy when a finish suddenly stops showing."
+    },
+    {
+     "heading": "Eye, solo and lock",
+     "body": "A plain click on the eye hides or shows that layer. Alt+click on the eye solos the layer so everything else disappears, and another click on the same eye restores the rest. The lock stops painting, moving and AI edits on that layer. Hidden layers stay in the file but are left out of the render."
+    },
+    {
+     "heading": "Filter and thumbnails",
+     "body": "The filter box matches both the layer name and its group name, and a filtered list shows matches even inside collapsed groups. Actions includes a thumbnail size button that cycles through three sizes: small 24 pixels, medium 40 pixels and large 64 pixels. The choice is remembered between sessions."
+    },
+    {
+     "heading": "Selecting and bulk work",
+     "body": "Click a name to select a layer and open its card of buttons. Ctrl+click names to pick several layers, then use the Merge button that shows the count. The Actions menu holds the document-wide jobs: blank layer, flatten, merge visible, the Photoshop round trip and thumbnail size. The small note in the menu reminds you that Ctrl+click moves a layer and a double-click opens its effects."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Find one sponsor in a 40-layer file",
+     "goal": "Reach a layer without scrolling",
+     "settings": {
+      "Layers filter box": "type the sponsor name",
+      "Click": "the name, then Alt+click its eye to isolate it",
+      "Layer list": "open it"
+     },
+     "result": "Only matching rows show, and the sponsor displays alone on the canvas."
+    },
+    {
+     "title": "Hide the guide layers together",
+     "goal": "Switch off all template guides in one click",
+     "settings": {
+      "Click": "the eye on the group header",
+      "Layer list": "scroll to the group named Turn Off Before Exporting TGA"
+     },
+     "result": "Mask, Wire and Car_Mandatory disappear together."
+    },
+    {
+     "title": "Bigger thumbnails to find artwork",
+     "goal": "Recognise layers by sight",
+     "settings": {
+      "Actions": "choose thumbnail size until it says large"
+     },
+     "result": "Thumbnails grow from 24 to 64 pixels so detail is visible."
+    },
+    {
+     "title": "Combine three decal layers",
+     "goal": "Merge several layers into one",
+     "settings": {
+      "Selection": "Ctrl+click three names",
+      "Button": "Merge (shows 3)"
+     },
+     "result": "The three become one layer; you can undo with Ctrl+Z."
+    }
+   ],
+   "combos": [
+    {
+     "with": "layers.card_buttons",
+     "why": "The card that opens under a selected layer holds the actions: mirror, merge, make zone and more."
+    },
+    {
+     "with": "layers.turn_off_before_export",
+     "why": "The group eye on the guide group is the quickest way to prepare for a render."
+    },
+    {
+     "with": "layers.lock_zone_to_layer",
+     "why": "A yellow zone tag on a row shows which layers have zones restricted to them."
+    },
+    {
+     "with": "layers.opacity_blend",
+     "why": "Opacity and blend mode sliders appear on the card of the selected layer."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why can I not paint on a layer?",
+     "a": "It is locked, hidden or a template guide. Unlock it by clicking the lock, and select the real artwork layer."
+    },
+    {
+     "q": "What does the yellow tag on a layer mean?",
+     "a": "One or more zones are restricted to that layer. If the layer is hidden, those zones paint nothing."
+    },
+    {
+     "q": "How do I see only one layer?",
+     "a": "Alt+click its eye, or use SOLO on its card. Click again to bring everything back."
+    },
+    {
+     "q": "Do hidden layers go into the render?",
+     "a": "No. Hidden layers are left out, which is why you hide Wire and Mask before export."
+    },
+    {
+     "q": "I dropped a file on the canvas and lost my paint.",
+     "a": "Dropping replaces the source paint. Use the + Layer button to add art on top instead."
+    },
+    {
+     "q": "Can the AI copilot change a locked layer?",
+     "a": "No. Unlock it first. The AI can change visibility, opacity and blend mode, but never delete, merge, rename or reorder layers."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A zone paints nothing",
+     "cause": "It is restricted to a layer that is hidden or gone.",
+     "fix": "Show the layer, or open the zone and clear its layer restriction."
+    },
+    {
+     "symptom": "I cannot find my layer",
+     "cause": "The filter box still has text, or the layer sits in a collapsed group.",
+     "fix": "Clear the filter, or expand the group header."
+    },
+    {
+     "symptom": "The wrong layer got edited",
+     "cause": "The previously selected layer was still active.",
+     "fix": "Click the right name first, check the card shows it, then work. Esc deselects."
+    }
+   ],
+   "protips": [
+    "Alt+click on an eye is the fastest way to inspect a layer on its own.",
+    "The filter also searches group names, so typing a group name pulls up everything inside it.",
+    "Layer thumbnail size and the filter live in the same strip, so a 60-layer file stays manageable."
+   ],
+   "screens": [
+    "pair_layer_hidden",
+    "ui_layer_actions_menu",
+    "ui_layers_column"
+   ]
+  },
+  {
+   "id": "layers.roles",
+   "title": "What each layer is for",
+   "domain": "layers",
+   "summary": "A layered template holds body paint, numbers, sponsors, tape, decals and guide layers. Knowing which is which keeps your export clean.",
+   "what": "A paint template (PSD) carries several kinds of layer. BODY PAINT (Car Paint) holds the livery colours. NUMBERS, SPONSORS and TAPE or stripes hold the art on top. DECALS and LOGOS (Pitbox Colors, Color Change Logos, Car_decal, Windshield Banner) hold the small stamps. TEMPLATE layers (Mask, Wire, Car_Mandatory) are guides for you. They live in the group called Turn Off Before Exporting TGA.",
+   "when": [
+    "You open a new template and want to know what each layer does.",
+    "You want a whole-car look on the body paint only, not on the numbers.",
+    "A number or sponsor changed colour and you need to find out why."
+   ],
+   "how": [
+    "Open the layer list (right column) and read the layer names.",
+    "Hide a layer with its eye to see what it contributes.",
+    "Treat Mask and Wire as guides only. Switch them off before you render.",
+    "Put finishes on the body paint. Leave numbers, sponsors and tape as they are unless you mean to change them."
+   ],
+   "controls": [],
+   "tips": [
+    "Looks applied to the whole car go to the body paint layers. Numbers and sponsors stay untouched.",
+    "If you are unsure which layer holds a part, hide layers one at a time until it disappears."
+   ],
+   "pitfalls": [
+    "The guide layers are not paint. If they are visible when you render, their outlines are baked into the TGA.",
+    "Layer names vary by car. Judge by what the layer shows, not only by its name."
+   ],
+   "related": [
+    "layers.panel",
+    "layers.turn_off_before_export",
+    "layers.wire_mask_mandatory",
+    "layers.paintable_area",
+    "zones.restrict_layers"
+   ],
+   "actions": [],
+   "figures": [
+    "g07_layer_stack_roles"
+   ],
+   "covers": [
+    "layers.roles",
+    "doc.06.psd_layers_and_their_roles"
+   ],
+   "sources": [
+    "js/spb-pro-edit.js:4",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:3",
+    "js/spb-pro-carmap.js:49",
+    "js/spb-pro-carmap.js:50",
+    "js/spb-pro-carmap.js:51",
+    "js/spb-pro-carmap.js:54",
+    "js/spb-pro-carmap.js:55",
+    "js/spb-pro-carmap.js:56",
+    "js/spb-pro-carmap.js:57",
+    "js/spb-pro-carmap.js:65",
+    "docs/ZONE_OWNERSHIP.md:147",
+    "_easy_claude_work/SMARTER_LOG.md:13"
+   ],
+   "aliases": [
+    "body paint layer",
+    "decal layer",
+    "layer roles",
+    "number layer",
+    "psd layers",
+    "sponsor layer",
+    "tape layer",
+    "what are the layers",
+    "what are the layers for",
+    "what is each layer",
+    "what layer does what"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "How the app decides a layer's role",
+     "body": "The app reads the layer name and its group name. The first rule that matches wins, in this order: template guide (group name with turn off, export, template or guide, or a name with mask, wire, wireframe, mandatory, template, guide, outline or uv), then numbers, sponsors, tape or stripes, body paint (car paint, body, base paint, livery, paint, base), then decals or logos (logo, decal, banner, pitbox, windshield, sticker, badge). Anything else is other art. The AI copilot uses these roles to decide what to touch."
+    },
+    {
+     "heading": "A body layer with no name",
+     "body": "If nothing is called body, the app falls back to the bottom-most art layer that covers a big part of the sheet and treats it as the body. This rescues files whose body layer is called something like Layer 16, but a clear name is more reliable than the fallback."
+    },
+    {
+     "heading": "Typical stacking order",
+     "body": "The ARCA test template stacks from the bottom up as: the body base layer, White Accent, Logos, Numbers, Pitbox Colors, Car_Decal, Color Change Logos, Contingency Decals, Tape, and last the guide group holding Car Mandatory, Mask and Wire. Layers higher in the list sit in front. That order is why numbers sit on top of the body paint and tape sits on top of numbers."
+    },
+    {
+     "heading": "Why roles matter for finishes",
+     "body": "A zone that changes the body should be limited to the body paint layer, so numbers, sponsors and tape stay exactly as they are. Whole-car looks the AI applies go to the body paint layers only. Because the role comes from the name, one oddly named layer can end up classed wrongly, so rename it before you ask for a change."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Make the body matte, keep the numbers",
+     "goal": "Change only the body paint",
+     "settings": {
+      "Zone restriction": "limit the zone to the layer named Body or Car Paint",
+      "Finish": "your matte choice"
+     },
+     "result": "Numbers, sponsors and tape stay as they were; only the body takes the finish."
+    },
+    {
+     "title": "Name a mystery layer",
+     "goal": "Let the app understand a layer called Layer 16",
+     "settings": {
+      "Layer card": "RENAME to Body Paint",
+      "Layer list": "select the layer"
+     },
+     "result": "It is classed as body paint, so whole-car requests target it."
+    },
+    {
+     "title": "Find where a part lives",
+     "goal": "Work out which layer holds the hood stripe",
+     "settings": {
+      "Method": "Alt+click each eye in turn, or hide layers one at a time until the stripe disappears"
+     },
+     "result": "You identify the real layer and can rename it for next time."
+    },
+    {
+     "title": "Check the guide group",
+     "goal": "Be sure nothing template-related is visible",
+     "settings": {
+      "Eye": "off",
+      "Layer list": "find the group with Turn Off in its name"
+     },
+     "result": "Mask, Wire and Car_Mandatory are hidden before you render."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.restrict_layers",
+     "why": "Restricting a zone to a role-appropriate layer keeps a finish off numbers and sponsors."
+    },
+    {
+     "with": "layers.panel",
+     "why": "The panel is where you read names, rename and show or hide layers."
+    },
+    {
+     "with": "layers.paintable_area",
+     "why": "Guide layers define the paintable area, so knowing their role explains what the Mask shows."
+    },
+    {
+     "with": "layers.decal_rescue",
+     "why": "Number and sponsor layers are the ones iRacing stamps itself, so the spec under them needs the safe material that Decal Rescue sets."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What are Pitbox Colors?",
+     "a": "A decal layer in many templates. The app classes it with decals and logos because its name contains pitbox."
+    },
+    {
+     "q": "Can I rename layers?",
+     "a": "Yes, press RENAME on the layer card. Renaming changes how the app classes the layer, so use plain words such as Body Paint or Numbers."
+    },
+    {
+     "q": "A layer called Body Number is numbers or body?",
+     "a": "Numbers. The number rule is checked before the body rule, so the first matching word decides."
+    },
+    {
+     "q": "Which layers are template layers?",
+     "a": "Mask, Wire, Car_Mandatory and anything in a group with turn off, export, template or guide in its name. They are guides, not paint."
+    },
+    {
+     "q": "Why did the AI skip one of my layers?",
+     "a": "It may be locked or hidden, or its name put it in a different role than you expect. Unlock it or rename it."
+    },
+    {
+     "q": "What if my template has no body layer?",
+     "a": "The app picks the bottom-most big art layer. Rename it to Body Paint so the choice is certain."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A whole-car look repainted my sponsors",
+     "cause": "The zone covers everything instead of the body layer, or the body layer is misnamed.",
+     "fix": "Restrict the zone to the body paint layer and rename that layer clearly."
+    },
+    {
+     "symptom": "Guide lines show up in the render",
+     "cause": "Mask, Wire or Car_Mandatory was left visible.",
+     "fix": "Hide the guide group before rendering."
+    },
+    {
+     "symptom": "The helper treats a decal as body paint",
+     "cause": "The name contains a body word such as base or paint, which is checked before decal words.",
+     "fix": "Rename the layer so it says decal or logo."
+    }
+   ],
+   "protips": [
+    "Layer names are the app's only clue to a role, so a tidy name like Numbers or Body Paint makes every later request more accurate.",
+    "If you are unsure what a layer holds, solo it with Alt+click on the eye.",
+    "Tape is checked before body words, so a layer named Tape Body is treated as tape."
+   ],
+   "screens": [
+    "pair_layer_hidden",
+    "ui_layers_column"
+   ]
+  },
+  {
+   "id": "layers.card_buttons",
+   "title": "The layer card buttons",
+   "domain": "layers",
+   "summary": "Select a layer and a card of buttons opens. They copy, flip, move, merge, export or delete that layer.",
+   "what": "The card has one button per job. DUPE copies the layer in place. Shift+click on DUPE makes a copy shifted 50 px, handy for repeated sponsors. MIRROR copies the layer and flips it to the opposite side of the car. STROKE FX opens Layer Effects on the Stroke. MERGE down joins the layer into the one below. RENAME renames it. EXPORT saves the layer as a transparent PNG with your Hue, Sat and Bright changes baked in. MAKE ZONE builds a zone limited to the layer. DELETE removes it. SOLO shows only this layer. FLIP H and FLIP V mirror it. ROT 90 turns it 90 degrees clockwise. MOVE drags it. XFORM scales and rotates it (Ctrl+T). PAN and FIT bring it into view. LOCK ZONE ties the active zone to it (Ctrl+L). DONE deselects (Esc).",
+   "when": [
+    "You need the same sponsor on both sides of the car.",
+    "You want to nudge, flip or turn a logo.",
+    "You want only that layer as a PNG to send to someone."
+   ],
+   "how": [
+    "Click the layer name in the list.",
+    "Pick the button on its card.",
+    "For a flipped copy on the other side, click MIRROR and then check where it landed.",
+    "Click DONE when finished."
+   ],
+   "controls": [
+    {
+     "label": "DUPE",
+     "range": "",
+     "default": "",
+     "effect": "Duplicate this Layer in place; Shift-click makes a +50 px offset copy for repeated sponsors/numbers",
+     "inv": "layer.btn.dupe"
+    },
+    {
+     "label": "MIRROR",
+     "range": "",
+     "default": "",
+     "effect": "Mirror Clone — duplicate + flip to opposite side of car (iRacing essential)",
+     "inv": "layer.btn.mirror"
+    },
+    {
+     "label": "STROKE FX",
+     "range": "",
+     "default": "",
+     "effect": "Open non-destructive Stroke in Layer Effects — live preview with Apply / Cancel",
+     "inv": "layer.btn.stroke_fx"
+    },
+    {
+     "label": "MERGE ↓",
+     "range": "",
+     "default": "",
+     "effect": "Merge into layer below",
+     "inv": "layer.btn.merge"
+    },
+    {
+     "label": "RENAME",
+     "range": "",
+     "default": "",
+     "effect": "Rename this layer",
+     "inv": "layer.btn.rename"
+    },
+    {
+     "label": "EXPORT",
+     "range": "",
+     "default": "",
+     "effect": "Save just this layer as a transparent PNG (Hue/Sat/Bright adjustments baked in)",
+     "inv": "layer.btn.export"
+    },
+    {
+     "label": "MAKE ZONE",
+     "range": "",
+     "default": "",
+     "effect": "Makes a new zone limited to this layer. Then give the zone a base material.",
+     "inv": "layer.btn.make_zone"
+    },
+    {
+     "label": "SOLO",
+     "range": "",
+     "default": "",
+     "effect": "Isolate this layer — click again to restore (same as Alt+click the eye)",
+     "inv": "layer.btn.solo"
+    },
+    {
+     "label": "FLIP H",
+     "range": "",
+     "default": "",
+     "effect": "Flip this layer horizontally",
+     "inv": "layer.btn.flip_h"
+    },
+    {
+     "label": "FLIP V",
+     "range": "",
+     "default": "",
+     "effect": "Flip this layer vertically",
+     "inv": "layer.btn.flip_v"
+    },
+    {
+     "label": "ROT 90",
+     "range": "",
+     "default": "",
+     "effect": "Rotate this layer 90° clockwise",
+     "inv": "layer.btn.rot_90"
+    },
+    {
+     "label": "MOVE",
+     "range": "",
+     "default": "",
+     "effect": "Move this layer on the canvas (drag)",
+     "inv": "layer.btn.move"
+    },
+    {
+     "label": "XFORM",
+     "range": "",
+     "default": "",
+     "effect": "Transform the selection or the whole layer (Ctrl+T)",
+     "inv": "layer.btn.xform"
+    },
+    {
+     "label": "PAN",
+     "range": "",
+     "default": "",
+     "effect": "Pan the view to this layer",
+     "inv": "layer.btn.pan"
+    },
+    {
+     "label": "FIT",
+     "range": "",
+     "default": "",
+     "effect": "Fit this layer in the view",
+     "inv": "layer.btn.fit"
+    },
+    {
+     "label": "LOCK ZONE",
+     "range": "",
+     "default": "",
+     "effect": "Lock the active zone to THIS layer's pixels (Ctrl+L)",
+     "inv": "layer.btn.lock_zone"
+    },
+    {
+     "label": "DONE",
+     "range": "",
+     "default": "",
+     "effect": "Done - deselect this layer (Esc)",
+     "inv": "layer.btn.done"
+    },
+    {
+     "label": "MERGE ' + _msel.size + '",
+     "range": "",
+     "default": "",
+     "effect": "Merge the selected layers into one",
+     "inv": "layer.btn.merge_msel_size"
+    },
+    {
+     "label": "X (close effects)",
+     "range": "",
+     "default": "",
+     "effect": "Closes the Layer Effects on this layer card (the X button).",
+     "inv": "layer.btn.u2715"
+    },
+    {
+     "label": "FX &times;",
+     "range": "",
+     "default": "",
+     "effect": "Cycle the global FX intensity (Shift-click = reset to 1.0)",
+     "inv": "layer.btn.fx_times"
+    }
+   ],
+   "tips": [
+    "MIRROR is the quick way to put a sponsor on the other side of the car.",
+    "Shift+click DUPE for an offset copy. Shift+click FX x resets the effect strength to 1.0.",
+    "A locked layer greys out the buttons that would change it."
+   ],
+   "pitfalls": [
+    "MERGE down is hard to undo by hand. Use Ctrl+Z straight away if it was a slip.",
+    "Always look at the preview to check where the mirrored copy landed."
+   ],
+   "related": [
+    "layers.panel",
+    "layers.effects",
+    "layers.merge",
+    "layers.lock_zone_to_layer",
+    "tools.move_transform",
+    "tools.mirror_symmetry"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "layer.make_zone",
+     "label": "Create a zone restricted to this layer button"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "layer.btn.dupe",
+    "layer.btn.mirror",
+    "layer.btn.stroke_fx",
+    "layer.btn.merge",
+    "layer.btn.rename",
+    "layer.btn.export",
+    "layer.btn.make_zone",
+    "layer.btn.solo",
+    "layer.btn.flip_h",
+    "layer.btn.flip_v",
+    "layer.btn.rot_90",
+    "layer.btn.move",
+    "layer.btn.xform",
+    "layer.btn.pan",
+    "layer.btn.fit",
+    "layer.btn.lock_zone",
+    "layer.btn.done",
+    "layer.btn.merge_msel_size",
+    "layer.btn.u2715",
+    "layer.btn.fx_times"
+   ],
+   "sources": [
+    "paint-booth-3-canvas.js:23676-23710",
+    "paint-booth-3-canvas.js:23679",
+    "paint-booth-3-canvas.js:23680",
+    "paint-booth-3-canvas.js:23681",
+    "paint-booth-3-canvas.js:23687",
+    "paint-booth-3-canvas.js:23688",
+    "paint-booth-3-canvas.js:23689",
+    "paint-booth-3-canvas.js:23690",
+    "paint-booth-3-canvas.js:23697",
+    "paint-booth-3-canvas.js:23704",
+    "paint-booth-3-canvas.js:23708",
+    "paint-booth-3-canvas.js:23710",
+    "paint-booth-3-canvas.js:23714",
+    "paint-booth-3-canvas.js:24663",
+    "paint-booth-3-canvas.js:24673",
+    "paint-booth-3-canvas.js:24545"
+   ],
+   "aliases": [
+    "delete a layer",
+    "duplicate a layer",
+    "export one layer",
+    "flip a layer",
+    "layer buttons",
+    "mirror a sponsor",
+    "rotate a layer",
+    "solo a layer",
+    "layer eye button",
+    "layer card"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The card is two rows plus the sliders",
+     "body": "The first row creates things from the layer: DUPE, MIRROR and STROKE FX. The second row manages it: MERGE down, RENAME, EXPORT, MAKE ZONE and DELETE. A third group handles the view and the shape of the layer: SOLO, FLIP H, FLIP V, ROT 90, then MOVE, XFORM, PAN, FIT, LOCK ZONE, FX multiplier and DONE. The Hue, Sat and Bright sliders and the opacity and blend controls sit on the same card. A small hint at the bottom reminds you that drag or Ctrl+[ and Ctrl+] reorder layers."
+    },
+    {
+     "heading": "What DUPE and MIRROR name their copies",
+     "body": "DUPE copies the layer in place and names the copy with the word copy added. Shift+click on DUPE offsets the copy by 50 pixels right and 50 pixels down, which is handy for rows of identical sponsors. MIRROR names its copy with (mirror) added, flips it and places it at the matching spot on the other side of the sheet. Both make a normal new layer that can be moved, restyled or deleted."
+    },
+    {
+     "heading": "The FX multiplier button",
+     "body": "The effect strength button cycles in quarter steps. Each click raises the strength by 0.25 and, once it reaches 1.5 or more, wraps back to 0.25. Shift+click resets it to exactly 1.0. It scales your layer effects (stroke, glow and the like) without opening the effects panel."
+    },
+    {
+     "heading": "Locks and disabled buttons",
+     "body": "A locked layer greys out every button that would change it: STROKE FX, MERGE, FLIP, ROT 90, MOVE, XFORM and others. SOLO, PAN, FIT, LOCK ZONE and DONE still work because they do not alter pixels. Unlock the layer with the lock icon on its row when you need to edit it."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Row of three identical sponsors",
+     "goal": "Repeat a logo with even spacing",
+     "settings": {
+      "Layer card": "select the logo layer",
+      "DUPE": "Shift+click twice",
+      "Then": "drag each copy to its place"
+     },
+     "result": "Two new layers named with copy, each 50 pixels down and to the right of the one before."
+    },
+    {
+     "title": "Same sponsor on both doors",
+     "goal": "Add a matching decal on the other side",
+     "settings": {
+      "Layer card": "MIRROR",
+      "If upside down": "FLIP V or ROT 90"
+     },
+     "result": "A layer named with (mirror) sits on the opposite side panel."
+    },
+    {
+     "title": "Make a finish follow a logo",
+     "goal": "Give a logo its own finish",
+     "settings": {
+      "Layer card": "MAKE ZONE",
+      "Then": "pick a finish for the new zone"
+     },
+     "result": "A zone limited to that layer's footprint, ready for a base material."
+    },
+    {
+     "title": "Save a logo for reuse",
+     "goal": "Export just one layer",
+     "settings": {
+      "Layer card": "EXPORT"
+     },
+     "result": "A transparent PNG of the layer with Hue, Sat and Bright baked in."
+    }
+   ],
+   "combos": [
+    {
+     "with": "layers.panel",
+     "why": "The card opens under the layer you select in the list."
+    },
+    {
+     "with": "layers.lock_zone_to_layer",
+     "why": "LOCK ZONE and MAKE ZONE are the two card shortcuts into zone work."
+    },
+    {
+     "with": "layers.merge",
+     "why": "MERGE down on the card is one of three ways to combine layers."
+    },
+    {
+     "with": "layers.effects",
+     "why": "STROKE FX opens Layer Effects right on the Stroke effect, and the FX button scales the result."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Where did the FX and Flatten buttons go?",
+     "a": "FX is reachable by double-clicking the layer row, and Flatten moved once to the Actions menu because it affects the whole document."
+    },
+    {
+     "q": "What is the difference between DUPE and MIRROR?",
+     "a": "DUPE copies the layer in place. MIRROR copies it and flips it to the opposite side of the sheet."
+    },
+    {
+     "q": "Which way does ROT 90 turn?",
+     "a": "Clockwise, 90 degrees each press."
+    },
+    {
+     "q": "What does MAKE ZONE do?",
+     "a": "It creates a zone limited to this layer's footprint. Give that zone a base material to style the layer."
+    },
+    {
+     "q": "How do I reorder layers?",
+     "a": "Drag the row in the list, or use Ctrl+[ and Ctrl+] to move a layer down or up."
+    },
+    {
+     "q": "Why are some buttons greyed out?",
+     "a": "The layer is locked. Unlock it from its row."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "MERGE joined the wrong layers",
+     "cause": "MERGE down always joins the selected layer into the one below it.",
+     "fix": "Press Ctrl+Z straight away, check the order in the list and merge again."
+    },
+    {
+     "symptom": "The mirrored copy is upside down",
+     "cause": "One side of the car is stored upside down on the sheet.",
+     "fix": "Use FLIP V or ROT 90 on the new layer."
+    },
+    {
+     "symptom": "DUPE seems to do nothing",
+     "cause": "The copy sits exactly on top of the original.",
+     "fix": "Shift+click DUPE for an offset copy, or drag the new layer away."
+    }
+   ],
+   "protips": [
+    "Shift+click DUPE is the quickest way to build rows of identical numbers or sponsors.",
+    "EXPORT bakes in your Hue, Sat and Bright, so you can reuse a recoloured logo in another project.",
+    "DONE and Esc both deselect, which stops stray keys from editing the layer you just finished."
+   ],
+   "screens": [
+    "ui_layer_card_open"
+   ]
+  },
+  {
+   "id": "layers.opacity_blend",
+   "title": "Opacity, blend mode and colour tuning",
+   "domain": "layers",
+   "summary": "Each layer has an opacity slider, a blend mode and Hue, Sat and Bright sliders. None of them damage your art.",
+   "what": "Select a layer to see them under its row. Opacity runs 0 to 100, and you can type a number in the box beside it. The Blend dropdown offers 16 modes: Normal, Multiply, Screen, Overlay, Darken, Lighten, Color Dodge, Color Burn, Hard Light, Soft Light, Difference, Exclusion, Hue, Saturation, Color and Luminosity. Hue runs -180 to 180, Sat -100 to 100 and Bright -100 to 200. These are non-destructive, so you can set them back to 0 at any time. A Color Overlay checkbox tints the layer (start colour pink-red, 50% strength).",
+   "when": [
+    "A sponsor is too loud and you want it softer.",
+    "You want a shadow layer to darken what is under it.",
+    "You want to recolour a logo without repainting it."
+   ],
+   "how": [
+    "Click the layer name.",
+    "Drag Opacity, or type a % in the box.",
+    "Open the Blend dropdown and pick a mode. Use Multiply to darken and Screen to lighten.",
+    "Drag Hue, Sat or Bright to tune the colour. Set them to 0 to go back.",
+    "Tick Color Overlay to flood the layer with one colour."
+   ],
+   "controls": [
+    {
+     "label": "Layer opacity",
+     "range": "",
+     "default": "",
+     "effect": "Fades the layer 0-100% (drag, or type an exact number).",
+     "inv": "layer.opacity"
+    },
+    {
+     "label": "Layer blend mode",
+     "range": "",
+     "default": "",
+     "effect": "How the layer mixes with those below (Normal, Multiply, Screen, Overlay ...).",
+     "inv": "layer.blend"
+    }
+   ],
+   "tips": [
+    "The AI copilot can change visibility, opacity and blend, but not delete, merge, rename or reorder."
+   ],
+   "pitfalls": [
+    "A locked layer cannot be changed. Unlock it first.",
+    "Heavy blend modes can change how a finish reads on the car. Check the preview."
+   ],
+   "related": [
+    "layers.panel",
+    "layers.effects",
+    "layers.card_buttons"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "layer.opacity"
+    },
+    {
+     "do": "control",
+     "id": "layer.blend"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "layer.opacity",
+    "layer.blend"
+   ],
+   "sources": [
+    "paint-booth-3-canvas.js:23400-23660",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:7",
+    "paint-booth-3-canvas.js:23329",
+    "paint-booth-3-canvas.js:23593",
+    "paint-booth-3-canvas.js:23600",
+    "paint-booth-3-canvas.js:23611",
+    "paint-booth-3-canvas.js:23647",
+    "paint-booth-3-canvas.js:23648",
+    "paint-booth-3-canvas.js:23649",
+    "paint-booth-3-canvas.js:22726",
+    "paint-booth-3-canvas.js:22727",
+    "paint-booth-3-canvas.js:22732",
+    "paint-booth-3-canvas.js:24155",
+    "paint-booth-3-canvas.js:24108",
+    "paint-booth-3-canvas.js:24110"
+   ],
+   "aliases": [
+    "blend mode",
+    "color overlay on layer",
+    "layer hue saturation",
+    "layer opacity",
+    "make a layer lighter",
+    "multiply screen overlay",
+    "recolor a logo",
+    "make a layer see through",
+    "layer opacity slider"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "What each slider does",
+     "body": "Opacity goes from 0 to 100 percent and you can type an exact number in the box beside the slider. Press Enter to accept it or Esc to cancel your edit. Hue turns the colours around the colour wheel from -180 to 180 degrees. Sat runs from -100 to 100, where -100 removes all colour and leaves grey. Bright runs from -100 to 200, where -100 is black and 200 makes the layer three times as bright. All three are non-destructive: setting them back to 0 restores the original pixels."
+    },
+    {
+     "heading": "Blend modes in plain words",
+     "body": "The Blend dropdown offers 16 modes: Normal, Multiply, Screen, Overlay, Darken, Lighten, Color Dodge, Color Burn, Hard Light, Soft Light, Difference, Exclusion, Hue, Saturation, Color and Luminosity. Multiply darkens by multiplying with what is beneath, so white disappears and shadow layers sit naturally. Screen does the opposite and lightens, so black disappears. Overlay and Soft Light add contrast over what is below. Color applies only the hue and saturation of your layer, which is the safe way to recolour without losing shading."
+    },
+    {
+     "heading": "Colour Overlay",
+     "body": "The Color Overlay checkbox floods the layer with one colour. It starts as pink-red (ff3366) at 50 percent strength with Normal blend, and you can change the colour and the amount. Because it is an effect, switching it off brings the original colours back."
+    },
+    {
+     "heading": "Where the order of effects matters",
+     "body": "The layer is first shifted by Hue, Sat and Bright, then drawn at its opacity using its blend mode. A low opacity layer with Multiply therefore darkens less than the same layer at 100 percent. Finishes are applied on top of the composited paint, so a heavy blend mode can change how a finish reads on the car. Always check the preview."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Soft shadow under lettering",
+     "goal": "Darken the area behind numbers",
+     "settings": {
+      "Layer": "a black shadow shape",
+      "Blend": "Multiply",
+      "Opacity": "40"
+     },
+     "result": "A natural darkening that follows the paint colour underneath."
+    },
+    {
+     "title": "Recolour a logo, keep its shading",
+     "goal": "Turn a red logo into a blue one",
+     "settings": {
+      "Layer": "the logo layer",
+      "Hue": "-120",
+      "Sat": "0",
+      "Bright": "0"
+     },
+     "result": "The logo takes a blue cast while shapes and detail stay."
+    },
+    {
+     "title": "Ghost a sponsor into the paint",
+     "goal": "Make a sponsor subtle",
+     "settings": {
+      "Layer": "sponsor",
+      "Blend": "Overlay",
+      "Opacity": "60"
+     },
+     "result": "The sponsor blends into the surface and reads as a subtle tone."
+    },
+    {
+     "title": "Mono layer for a stencil look",
+     "goal": "Remove colour from a layer",
+     "settings": {
+      "Layer": "artwork",
+      "Sat": "-100",
+      "Bright": "20"
+     },
+     "result": "A grey version of the art, lightly brightened."
+    }
+   ],
+   "combos": [
+    {
+     "with": "layers.effects",
+     "why": "Colour Overlay, drop shadow, glow, stroke and bevel are layer effects that stack with these sliders."
+    },
+    {
+     "with": "layers.card_buttons",
+     "why": "EXPORT bakes Hue, Sat and Bright into the saved PNG."
+    },
+    {
+     "with": "finishes.base_colour_tuning",
+     "why": "Tune the colour in the layer for artwork and tune the base colour in the zone for finishes; both can shift the final look."
+    },
+    {
+     "with": "layers.panel",
+     "why": "The sliders appear on the card of the selected layer, below its row."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which blend mode darkens?",
+     "a": "Multiply. Screen lightens. Overlay and Soft Light add contrast."
+    },
+    {
+     "q": "Will Hue, Sat or Bright damage my artwork?",
+     "a": "No. They are non-destructive. Set them back to 0 and the original comes back."
+    },
+    {
+     "q": "What are the ranges?",
+     "a": "Opacity 0 to 100, Hue -180 to 180, Sat -100 to 100, Bright -100 to 200."
+    },
+    {
+     "q": "Can the AI copilot change these?",
+     "a": "It can change visibility, opacity and blend mode, but not delete, merge, rename or reorder layers."
+    },
+    {
+     "q": "Can I type an exact opacity?",
+     "a": "Yes. Type in the box beside the slider and press Enter."
+    },
+    {
+     "q": "Why can I not change anything?",
+     "a": "The layer is locked. Unlock it from its row."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A layer vanished after I picked a blend mode",
+     "cause": "Screen hides black and Multiply hides white, so parts of the art can drop out.",
+     "fix": "Switch back to Normal, or change the blend mode to match the art."
+    },
+    {
+     "symptom": "The preview and my layer look different",
+     "cause": "A heavy blend mode shifts what the finish sits on.",
+     "fix": "Judge by the car preview, not the flat sheet."
+    },
+    {
+     "symptom": "Brightness washed everything out",
+     "cause": "Bright goes up to 200 and each step is strong.",
+     "fix": "Pull it back toward 0 and add contrast with Overlay instead."
+    }
+   ],
+   "protips": [
+    "Color blend mode applies only hue and saturation of the layer, so it recolours without flattening shading.",
+    "Hue and Sat are applied before the layer is drawn, so you can tint a flat logo without touching the layer itself.",
+    "Esc in the opacity box cancels the typed number and keeps the previous value."
+   ],
+   "screens": [
+    "ui_layer_card_open",
+    "ui_menu_adjust"
+   ]
+  },
+  {
+   "id": "layers.effects",
+   "title": "Layer Effects",
+   "domain": "layers",
+   "summary": "Layer Effects adds a drop shadow, glow, stroke, colour overlay or bevel to a layer without changing the art itself.",
+   "what": "Open it from STROKE FX on a layer card. Each effect has an on or off box and its own sliders. Drop Shadow: opacity 0 to 100 (starts at 75), angle 0 to 360 (135), distance 0 to 50 (5), size 0 to 50 (5). Outer Glow: opacity 0 to 100 (80), size 1 to 50 (10), spread 0 to 100 (0). Stroke: width 1 to 20 (2), opacity 0 to 100 (100) and a position dropdown. Color Overlay: opacity 0 to 100 (50). Bevel: a direction dropdown, depth 1 to 10 (3), size 1 to 20 (5) and soften 0 to 10 (0). Clear All removes every effect. Apply keeps them. Cancel closes without keeping changes.",
+   "when": [
+    "A number or logo needs an outline so it reads on a busy paint.",
+    "You want a soft shadow under a sponsor.",
+    "You want a bevelled look on lettering."
+   ],
+   "how": [
+    "Select the layer and click STROKE FX on its card.",
+    "Tick the effect you want.",
+    "Set its colour, then drag the sliders and watch the live preview.",
+    "Click Apply to keep it, or Cancel to drop it."
+   ],
+   "controls": [
+    {
+     "label": "Layer Effects: Drop Shadow Enabled",
+     "range": "",
+     "default": "",
+     "effect": "Layer Effects: turns the Drop Shadow effect on or off for the layer.",
+     "inv": "fxDropShadowEnabled"
+    },
+    {
+     "label": "Layer Effects: Drop Shadow Opacity",
+     "range": "0-100",
+     "default": "75",
+     "effect": "Layer Effects > Drop Shadow: opacity setting.",
+     "inv": "fxDropShadowOpacity"
+    },
+    {
+     "label": "Layer Effects: Drop Shadow Angle",
+     "range": "0-360",
+     "default": "135",
+     "effect": "Layer Effects > Drop Shadow: angle setting.",
+     "inv": "fxDropShadowAngle"
+    },
+    {
+     "label": "Layer Effects: Drop Shadow Distance",
+     "range": "0-50",
+     "default": "5",
+     "effect": "Layer Effects > Drop Shadow: distance setting.",
+     "inv": "fxDropShadowDistance"
+    },
+    {
+     "label": "Layer Effects: Drop Shadow Size",
+     "range": "0-50",
+     "default": "5",
+     "effect": "Layer Effects > Drop Shadow: size setting.",
+     "inv": "fxDropShadowSize"
+    },
+    {
+     "label": "Layer Effects: Outer Glow Enabled",
+     "range": "",
+     "default": "",
+     "effect": "Layer Effects: turns the Outer Glow effect on or off for the layer.",
+     "inv": "fxOuterGlowEnabled"
+    },
+    {
+     "label": "Layer Effects: Outer Glow Opacity",
+     "range": "0-100",
+     "default": "80",
+     "effect": "Layer Effects > Outer Glow: opacity setting.",
+     "inv": "fxOuterGlowOpacity"
+    },
+    {
+     "label": "Layer Effects: Outer Glow Size",
+     "range": "1-50",
+     "default": "10",
+     "effect": "Layer Effects > Outer Glow: size setting.",
+     "inv": "fxOuterGlowSize"
+    },
+    {
+     "label": "Layer Effects: Outer Glow Spread",
+     "range": "0-100",
+     "default": "0",
+     "effect": "Layer Effects > Outer Glow: spread setting.",
+     "inv": "fxOuterGlowSpread"
+    },
+    {
+     "label": "Layer Effects: Stroke Enabled",
+     "range": "",
+     "default": "",
+     "effect": "Layer Effects: turns the Stroke effect on or off for the layer.",
+     "inv": "fxStrokeEnabled"
+    },
+    {
+     "label": "Layer Effects: Stroke Width",
+     "range": "1-20",
+     "default": "2",
+     "effect": "Layer Effects > Stroke: width setting.",
+     "inv": "fxStrokeWidth"
+    },
+    {
+     "label": "Layer Effects: Stroke Opacity",
+     "range": "0-100",
+     "default": "100",
+     "effect": "Layer Effects > Stroke: opacity setting.",
+     "inv": "fxStrokeOpacity"
+    },
+    {
+     "label": "Layer Effects: Stroke Position",
+     "range": "",
+     "default": "",
+     "effect": "Layer Effects > Stroke: position setting.",
+     "inv": "fxStrokePosition"
+    },
+    {
+     "label": "Layer Effects: Color Overlay Enabled",
+     "range": "",
+     "default": "",
+     "effect": "Layer Effects: turns the Color Overlay effect on or off for the layer.",
+     "inv": "fxColorOverlayEnabled"
+    },
+    {
+     "label": "Layer Effects: Color Overlay Opacity",
+     "range": "0-100",
+     "default": "50",
+     "effect": "Layer Effects > Color Overlay: opacity setting.",
+     "inv": "fxColorOverlayOpacity"
+    },
+    {
+     "label": "Layer Effects: Bevel Enabled",
+     "range": "",
+     "default": "",
+     "effect": "Layer Effects: turns the Bevel effect on or off for the layer.",
+     "inv": "fxBevelEnabled"
+    },
+    {
+     "label": "Layer Effects: Bevel Direction",
+     "range": "",
+     "default": "",
+     "effect": "Layer Effects > Bevel: direction setting.",
+     "inv": "fxBevelDirection"
+    },
+    {
+     "label": "Layer Effects: Bevel Depth",
+     "range": "1-10",
+     "default": "3",
+     "effect": "Layer Effects > Bevel: depth setting.",
+     "inv": "fxBevelDepth"
+    },
+    {
+     "label": "Layer Effects: Bevel Size",
+     "range": "1-20",
+     "default": "5",
+     "effect": "Layer Effects > Bevel: size setting.",
+     "inv": "fxBevelSize"
+    },
+    {
+     "label": "Layer Effects: Bevel Soften",
+     "range": "0-10",
+     "default": "0",
+     "effect": "Layer Effects > Bevel: soften setting.",
+     "inv": "fxBevelSoften"
+    },
+    {
+     "label": "Clear All",
+     "range": "",
+     "default": "",
+     "effect": "Clears all layer effects (Layer Effects dialog).",
+     "inv": "pro.layers.clear_all"
+    },
+    {
+     "label": "Apply",
+     "range": "",
+     "default": "",
+     "effect": "Applies the layer effects.",
+     "inv": "pro.layers.apply"
+    },
+    {
+     "label": "Cancel layer effects dialog",
+     "range": "",
+     "default": "",
+     "effect": "Cancel (Esc)",
+     "inv": "pro.layers.cancel_layer_effects_dialog"
+    }
+   ],
+   "tips": [
+    "A thin stroke in a contrasting colour is the fastest way to make a number readable.",
+    "Effects are non-destructive. Clear All brings the plain layer back."
+   ],
+   "pitfalls": [
+    "A locked layer greys out STROKE FX. Unlock it first.",
+    "Glow and shadow grow outside the art, so leave room near the edge of a panel."
+   ],
+   "related": [
+    "layers.card_buttons",
+    "layers.opacity_blend",
+    "layers.panel"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "layer.opacity",
+     "label": "Layer opacity slider"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "fxDropShadowColor",
+    "fxOuterGlowColor",
+    "fxStrokeColor",
+    "fxColorOverlayColor",
+    "fxDropShadowEnabled",
+    "fxDropShadowOpacity",
+    "fxDropShadowAngle",
+    "fxDropShadowDistance",
+    "fxDropShadowSize",
+    "fxOuterGlowEnabled",
+    "fxOuterGlowOpacity",
+    "fxOuterGlowSize",
+    "fxOuterGlowSpread",
+    "fxStrokeEnabled",
+    "fxStrokeWidth",
+    "fxStrokeOpacity",
+    "fxStrokePosition",
+    "fxColorOverlayEnabled",
+    "fxColorOverlayOpacity",
+    "fxBevelEnabled",
+    "fxBevelDirection",
+    "fxBevelDepth",
+    "fxBevelSize",
+    "fxBevelSoften",
+    "pro.layers.clear_all",
+    "pro.layers.apply",
+    "pro.layers.cancel_layer_effects_dialog"
+   ],
+   "sources": [
+    "paint-booth-3-canvas.js:23681",
+    "paint-booth-v2.html:5169",
+    "paint-booth-3-canvas.js:33092",
+    "paint-booth-3-canvas.js:33199",
+    "paint-booth-v2.html:5177",
+    "paint-booth-3-canvas.js:33100",
+    "paint-booth-v2.html:5184",
+    "paint-booth-3-canvas.js:33106",
+    "paint-booth-3-canvas.js:33060",
+    "paint-booth-3-canvas.js:33061",
+    "paint-booth-3-canvas.js:33062",
+    "paint-booth-3-canvas.js:33063",
+    "paint-booth-3-canvas.js:33064",
+    "paint-booth-3-canvas.js:33064",
+    "paint-booth-3-canvas.js:22565",
+    "paint-booth-3-canvas.js:22590",
+    "paint-booth-3-canvas.js:22613",
+    "paint-booth-3-canvas.js:22656",
+    "paint-booth-3-canvas.js:22672",
+    "paint-booth-3-canvas.js:33072"
+   ],
+   "aliases": [
+    "bevel",
+    "drop shadow",
+    "layer effects",
+    "outer glow",
+    "outline a number",
+    "stroke around logo",
+    "stroke fx",
+    "outline text",
+    "stroke on a layer",
+    "glow on a layer",
+    "outline",
+    "shadow",
+    "stroke"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Starting colours and defaults",
+     "body": "Each effect starts switched off with a ready colour. Drop Shadow is black at 75 percent, angle 135, distance 5 and size 5. Outer Glow is cyan at 80 percent with size 10 and spread 0. Stroke is white, 2 px wide, 100 percent, positioned Outside. Color Overlay is pink-red at 50 percent. Bevel is Up (Raised) with depth 3, size 5 and soften 0. Ticking an effect box turns it on with these numbers, so you only change what you need."
+    },
+    {
+     "heading": "Order they are drawn in",
+     "body": "The app draws them in a fixed order: Drop Shadow, then Outer Glow, then Stroke, then Color Overlay, then Bevel last. You cannot reorder them, so choose colours with that order in mind."
+    },
+    {
+     "heading": "Stroke position",
+     "body": "The Position dropdown offers Outside, Center and Inside. Outside adds a ring around the art and makes the letter look slightly bolder without moving the original edge. Inside keeps the ring within the original shape, so the art stays the same size. Center straddles the edge. For small numbers Outside with a contrasting colour at 2 to 4 px is the safest choice."
+    },
+    {
+     "heading": "Live preview and what is kept",
+     "body": "While the dialog is open the canvas shows a live preview. Apply keeps the effects, Cancel (or Esc) discards changes made in this session, and Clear All removes every effect from the layer. Opening and closing the dialog without changing anything adds nothing to your undo history. Effects never change the layer's own pixels."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Readable race number",
+     "goal": "Make a number stand out on a busy livery",
+     "settings": {
+      "Layer": "the Numbers layer",
+      "Stroke": "on",
+      "Stroke Color": "black or white, whichever contrasts",
+      "Stroke Width": "3",
+      "Stroke Position": "Outside"
+     },
+     "result": "A clean outline around each digit that reads from far away."
+    },
+    {
+     "title": "Raised sponsor badge",
+     "goal": "Give a logo a pressed-metal look",
+     "settings": {
+      "Bevel": "on",
+      "Bevel Direction": "Up (Raised)",
+      "Bevel Depth": "3",
+      "Bevel Size": "5",
+      "Bevel Soften": "2"
+     },
+     "result": "A soft raised edge on the logo."
+    },
+    {
+     "title": "Soft shadow behind lettering",
+     "goal": "Lift text off the paint",
+     "settings": {
+      "Drop Shadow": "on",
+      "Drop Shadow Opacity": "60",
+      "Drop Shadow Angle": "135",
+      "Drop Shadow Distance": "4",
+      "Drop Shadow Size": "6"
+     },
+     "result": "A shadow falling down and to the right, like a printed decal."
+    },
+    {
+     "title": "Neon edge",
+     "goal": "Make a logo glow",
+     "settings": {
+      "Outer Glow": "on",
+      "Outer Glow Color": "your neon colour",
+      "Outer Glow Opacity": "80",
+      "Outer Glow Size": "12",
+      "Outer Glow Spread": "20"
+     },
+     "result": "A bright halo that grows outside the shape."
+    }
+   ],
+   "combos": [
+    {
+     "with": "layers.card_buttons",
+     "why": "STROKE FX on the layer card opens this dialog straight on the Stroke effect."
+    },
+    {
+     "with": "layers.opacity_blend",
+     "why": "Layer opacity and blend mode still apply to the whole layer including its effects."
+    },
+    {
+     "with": "layers.merge",
+     "why": "Effects are non-destructive; merging a layer bakes the effects into the pixels, so decide before you merge."
+    },
+    {
+     "with": "layers.decal_rescue",
+     "why": "Effects change how a layer looks. Decal Rescue changes only the spec under a stamp, so the two do different jobs and can be used together."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can I stack several effects?",
+     "a": "Yes, each effect has its own box and you can tick all five."
+    },
+    {
+     "q": "Do effects damage the artwork?",
+     "a": "No. They are non-destructive. Clear All brings back the plain layer."
+    },
+    {
+     "q": "What are the stroke positions?",
+     "a": "Outside, Center and Inside."
+    },
+    {
+     "q": "What are the bevel directions?",
+     "a": "Up (Raised) and Down (Sunken)."
+    },
+    {
+     "q": "How do I cancel my changes?",
+     "a": "Press Cancel or Esc. Clear All is different: it removes every effect on the layer."
+    },
+    {
+     "q": "Why is STROKE FX greyed out?",
+     "a": "The layer is locked, and the dialog shows a lock notice. Unlock it from its row."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The glow or shadow is cut off at a panel edge",
+     "cause": "Glow and shadow grow outside the art and can run past the paintable area.",
+     "fix": "Move the layer away from the edge or reduce Size."
+    },
+    {
+     "symptom": "My stroke makes the letters look fatter",
+     "cause": "Stroke Position is Outside, which adds weight around the shape.",
+     "fix": "Use Inside to keep the original size, or lower Stroke Width."
+    },
+    {
+     "symptom": "The effect disappeared after merging",
+     "cause": "Merging bakes the layer, so it is no longer an effect you can change.",
+     "fix": "Press Ctrl+Z and tune the effect before merging."
+    }
+   ],
+   "protips": [
+    "A thin high-contrast stroke is the single fastest way to make a number readable on a busy livery.",
+    "Effects are drawn in a fixed order, so a bevel always sits on top of your overlay colour.",
+    "Double-click a layer row to open Layer Effects directly."
+   ],
+   "screens": [
+    "ui_layer_card_open"
+   ]
+  },
+  {
+   "id": "layers.merge",
+   "title": "Merge, flatten and blank layers",
+   "domain": "layers",
+   "summary": "Merge joins layers, flatten joins them all, and a blank layer gives you clear room to paint.",
+   "what": "MERGE down on a layer card joins it into the layer below. Ctrl+click several names and the merge button shows the count and joins them. In the Actions menu, Merge visible (Ctrl+Shift+E) joins all visible layers into one while hidden layers survive. Flatten document puts the whole document into one layer. It first lists hidden layers and zone links that would be lost. + Blank layer adds a clear layer for the Retouch brushes.",
+   "when": [
+    "The layer list is long and you want to tidy it.",
+    "You need a clear layer to paint on without touching the art.",
+    "You are done editing and want one flat layer."
+   ],
+   "how": [
+    "To merge two layers: select the upper one and click MERGE down.",
+    "To merge many: Ctrl+click names, then click the merge button with the count.",
+    "To merge only what is showing: Actions, then Merge visible (or Ctrl+Shift+E).",
+    "To start fresh on a clear layer: Actions, then + Blank layer."
+   ],
+   "controls": [
+    {
+     "label": "+ Blank layer",
+     "range": "",
+     "default": "",
+     "effect": "Add a blank transparent layer to paint on with the Retouch brushes",
+     "inv": "pro.layers.blank_layer"
+    },
+    {
+     "label": "Merge visible",
+     "range": "",
+     "default": "",
+     "effect": "Ctrl+Shift+E",
+     "inv": "pro.layers.merge_visible"
+    },
+    {
+     "label": "Flatten document",
+     "range": "",
+     "default": "",
+     "effect": "hidden Layers and Zone links are disclosed before removal",
+     "inv": "pro.layers.flatten_document"
+    }
+   ],
+   "tips": [
+    "Merge visible keeps hidden layers, so you can hide what you want to keep separate first.",
+    "Read the list that Flatten shows before you accept it."
+   ],
+   "pitfalls": [
+    "Merged layers cannot be pulled apart again except by undo. Save a project first (see Save and open projects).",
+    "Flatten removes zone links to layers. Zones restricted to a layer lose that tie."
+   ],
+   "related": [
+    "layers.card_buttons",
+    "layers.panel",
+    "tools.undo_redo",
+    "ui_shell.save_open_projects",
+    "zones.restrict_layers"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "pro.layers.blank_layer",
+    "pro.layers.merge_visible",
+    "pro.layers.flatten_document"
+   ],
+   "sources": [
+    "paint-booth-3-canvas.js:23687",
+    "paint-booth-v2.html:3850",
+    "paint-booth-3-canvas.js:26875",
+    "paint-booth-v2.html:3852",
+    "paint-booth-3-canvas.js:24985",
+    "paint-booth-v2.html:3851",
+    "paint-booth-3-canvas.js:24892",
+    "paint-booth-3-canvas.js:24764",
+    "paint-booth-3-canvas.js:24775",
+    "paint-booth-3-canvas.js:24779",
+    "paint-booth-3-canvas.js:24786",
+    "paint-booth-3-canvas.js:24804",
+    "paint-booth-3-canvas.js:24832",
+    "paint-booth-3-canvas.js:24912",
+    "paint-booth-3-canvas.js:25005",
+    "paint-booth-3-canvas.js:12661",
+    "paint-booth-3-canvas.js:12671",
+    "paint-booth-3-canvas.js:24871"
+   ],
+   "aliases": [
+    "blank layer",
+    "combine layers",
+    "flatten",
+    "flatten document",
+    "merge layers",
+    "merge visible",
+    "new empty layer",
+    "flatten layers",
+    "merge down",
+    "flatten image"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "MERGE down has four conditions",
+     "body": "MERGE down joins a layer into the one below it, and it refuses with a message unless four things are true: there is a layer below, the upper layer is visible, neither layer is locked, and both sit in the same PSD group. If you try it across a group boundary the app stops and suggests merging inside one group or flattening. The result keeps the lower layer's place and name."
+    },
+    {
+     "heading": "What gets baked in",
+     "body": "A merge draws both layers into one picture. Opacity, Hue, Sat and Bright changes and any Layer Effects such as strokes and shadows are painted into the pixels. The merged layer then starts clean: opacity back to 100 percent, blend mode Normal, Hue, Sat and Bright at 0, and the result is cropped tight around the art. You can no longer edit the effects separately. Zones that were restricted to the upper layer are moved to the lower one so they keep a layer."
+    },
+    {
+     "heading": "Merge visible versus Flatten",
+     "body": "Merge visible (Ctrl+Shift+E) combines every visible layer into one and keeps hidden layers as they are. It needs at least two visible layers, stops if any of them is locked, and refuses when grouped PSD layers would break apart. Flatten document puts the whole file into one layer. It discards hidden layers, listing their names first, and clears every zone link to a layer. Because of that it shows a confirmation with Flatten Image, and tells you to use Merge Visible if hidden layers must survive."
+    },
+    {
+     "heading": "Blank layers",
+     "body": "+ Blank layer adds an empty, fully transparent layer covering the whole sheet at 100 percent opacity with Normal blend, and selects it for you. It goes on top and is the target for the Color Brush and other retouch tools. It also arrives from the shortcut Ctrl+Shift+N."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Bake a stroked number into one layer",
+     "goal": "Make a number and its outline a single layer",
+     "settings": {
+      "Step 1": "put the stroke layer directly above the number",
+      "Step 2": "select the upper layer, press MERGE down"
+     },
+     "result": "One layer containing both; effects on either are baked in."
+    },
+    {
+     "title": "Combine all the decals but keep the body editable",
+     "goal": "Reduce layer count without touching the body",
+     "settings": {
+      "Step 1": "hide the body and any layer you want to keep apart",
+      "Step 2": "Actions menu, Merge visible (or Ctrl+Shift+E)"
+     },
+     "result": "The visible decals merge together while hidden layers survive untouched."
+    },
+    {
+     "title": "Clean-slate retouch",
+     "goal": "Get a clear layer for the Color Brush",
+     "settings": {
+      "Actions menu": "+ Blank layer",
+      "Then": "Retouch menu, Color Brush"
+     },
+     "result": "You paint on an empty layer without harming the artwork below."
+    },
+    {
+     "title": "Final flatten for a small file",
+     "goal": "Put everything in one layer after the design is done",
+     "settings": {
+      "Actions menu": "Flatten document",
+      "Check": "read the hidden-layer list, then Flatten Image"
+     },
+     "result": "A single layer, hidden layers discarded and zone links cleared."
+    }
+   ],
+   "combos": [
+    {
+     "with": "layers.card_buttons",
+     "why": "MERGE down lives on the layer card and is the quickest way to combine two neighbours."
+    },
+    {
+     "with": "layers.lock_zone_to_layer",
+     "why": "Merging moves a zone's layer link to the lower layer, and flattening removes it, so set locks after merging."
+    },
+    {
+     "with": "ui_shell.save_open_projects",
+     "why": "Save a project before a big merge so you can return to the separate layers."
+    },
+    {
+     "with": "tools.retouch",
+     "why": "The Retouch brushes need a layer to paint on, which + Blank layer gives you."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does MERGE down say no layer below?",
+     "a": "The selected layer is the bottom one. Choose a layer that has another layer under it."
+    },
+    {
+     "q": "Why will it not merge?",
+     "a": "A locked layer, a hidden upper layer, or a PSD group boundary. The message tells you which."
+    },
+    {
+     "q": "Does Merge visible delete my hidden layers?",
+     "a": "No, they survive. Flatten does discard them."
+    },
+    {
+     "q": "What happens to my zone restrictions when I merge?",
+     "a": "A zone tied to the upper layer is moved to the lower one. Flatten clears all zone-to-layer links."
+    },
+    {
+     "q": "Can I undo a merge?",
+     "a": "Yes, press Ctrl+Z straight away. After many steps, the layer undo list is limited, so save a project first."
+    },
+    {
+     "q": "Where is the keyboard shortcut?",
+     "a": "Ctrl+E merges down, Ctrl+Shift+E merges visible and Ctrl+Shift+N adds a blank layer. They work in LAYER mode."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Flatten removed a layer I wanted",
+     "cause": "Hidden layers are discarded by Flatten.",
+     "fix": "Undo, show the layers you need or use Merge visible, then flatten."
+    },
+    {
+     "symptom": "A zone that followed a logo now paints everything",
+     "cause": "Flatten cleared the link between the zone and its layer.",
+     "fix": "Undo and use Merge visible instead, or set up the zone restriction again after flattening."
+    },
+    {
+     "symptom": "Merge down stopped at a group boundary",
+     "cause": "The two layers live in different PSD groups.",
+     "fix": "Merge within one group, or flatten explicitly."
+    }
+   ],
+   "protips": [
+    "Save a project before merging; layer undo keeps a limited number of steps, and a saved project keeps every layer.",
+    "Hide what you want to keep apart before Merge visible. Only the visible layers merge.",
+    "Because merge bakes effects, tune the effect, then merge, never the other way round."
+   ],
+   "screens": [
+    "ui_export_photoshop",
+    "ui_layer_actions_menu"
+   ]
+  },
+  {
+   "id": "layers.open_psd",
+   "title": "Open a layered template",
+   "domain": "layers",
+   "summary": "Open Layered brings in a PSD, XCF or ORA file with its layers intact, so you can paint on the right car.",
+   "what": "Click Open Layered on the layer list, or the PSD/XCF/ORA button next to Source Paint. Pick the template for the same car you drive. The layer tree appears in the layer list with the guide layers inside their group. Use + Layer to add a single PNG, JPG, WebP or GIF as a new layer on top.",
+   "when": [
+    "You start a new livery from the iRacing template.",
+    "You got a layered paint from a friend or a shop.",
+    "You want your sponsors on their own layers."
+   ],
+   "how": [
+    "Click Open Layered.",
+    "Choose your car PSD, XCF or ORA file.",
+    "Wait for the layer list to fill in.",
+    "Switch the guide layers off when you are ready to render."
+   ],
+   "controls": [
+    {
+     "label": "Open Layered",
+     "range": "",
+     "default": "",
+     "effect": "Import a layered PSD / XCF / ORA with its layer tree.",
+     "inv": "pro.layers.open_layered"
+    },
+    {
+     "label": "+ Layer",
+     "range": "",
+     "default": "",
+     "effect": "+ Layer: adds a PNG / JPG / WebP / GIF as a NEW image layer on top (a logo, a sponsor).",
+     "inv": "pro.layers.layer"
+    }
+   ],
+   "tips": [
+    "Use the template for the exact car you drive. Another car has different panels.",
+    "To add a logo, use + Layer, not drag and drop."
+   ],
+   "pitfalls": [
+    "Dropping an image onto the canvas replaces the paint. + Layer adds it on top.",
+    "A flattened TGA has no layers. Ask for the layered file if you need them."
+   ],
+   "related": [
+    "layers.panel",
+    "layers.roles",
+    "layers.turn_off_before_export",
+    "ui_shell.source_paint",
+    "ui_shell.car_folder"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.layers.open_layered"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.layers.open_layered",
+    "pro.layers.layer"
+   ],
+   "sources": [
+    "js/spb-support-answers.js:16",
+    "paint-booth-v2.html:3843",
+    "paint-booth-3-canvas.js:21616",
+    "paint-booth-v2.html:2471",
+    "paint-booth-3-canvas.js:28615",
+    "paint-booth-3-canvas.js:28663",
+    "paint-booth-3-canvas.js:21619",
+    "paint-booth-3-canvas.js:21620",
+    "paint-booth-3-canvas.js:22010",
+    "paint-booth-3-canvas.js:22231",
+    "paint-booth-3-canvas.js:22281",
+    "paint-booth-3-canvas.js:22298",
+    "paint-booth-3-canvas.js:22304",
+    "paint-booth-3-canvas.js:22306",
+    "js/spb-support-answers.js:123",
+    "paint-booth-3-canvas.js:22272",
+    "paint-booth-3-canvas.js:22289"
+   ],
+   "aliases": [
+    "add a logo layer",
+    "import psd",
+    "import template",
+    "load xcf",
+    "open layered template",
+    "open psd",
+    "ora file",
+    "open my psd",
+    "load layered template",
+    "psd template"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Which files work",
+     "body": "The file picker for Open Layered is titled Open Layered File and only offers .psd (Photoshop), .xcf (GIMP) and .ora (GIMP and Krita) files. A TGA, PNG or JPEG opens as a flat paint with no layers, through Source Paint. Use the template for the car you drive at its normal 2048 by 2048 size. A big PSD can take up to a minute to open, and the RENDER button wakes up when the file has finished loading."
+    },
+    {
+     "heading": "What the importer tells you it skipped",
+     "body": "After a layered open the app can show a short note. If a layer uses a blend mode that is not supported here, it is imported as Normal and the note lists up to four names. If a layer is not made of pixels, such as a live text layer or an adjustment layer, it cannot be imported, and the note lists up to four names so you know what is missing. The picture of the whole document is also read from the file and must match its size, otherwise the open stops with an error instead of showing a wrong car."
+    },
+    {
+     "heading": "Settings come back after a crash",
+     "body": "If the app closed unexpectedly while you were working on the same file, reopening it asks whether to restore the layer settings from before (visibility, opacity and similar). If you say yes, a message says how many layers were restored, and Ctrl+Z undoes it. The layer pixels themselves are not restored this way, so save a project when you finish a stretch of work. If the file looks different from the one you had open, the old settings are not applied and the app says so."
+    },
+    {
+     "heading": "Opening starts a fresh edit history",
+     "body": "Opening a new layered file clears the source-pixel undo history, and zone links to layers are re-pointed at the incoming layers. Treat the open as a new starting point. Save your current project first if you want to return to it."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Open your iRacing template",
+     "goal": "Load the PSD for the car you drive",
+     "settings": {
+      "Button": "PSD/XCF/ORA next to Source Paint, or Open Layered on the layer list",
+      "File": "the layered template of the same car"
+     },
+     "result": "The layer tree fills in, with Mask, Wire and Car_Mandatory inside the Turn Off Before Exporting TGA group."
+    },
+    {
+     "title": "Add a logo on top",
+     "goal": "Bring a logo in as its own layer",
+     "settings": {
+      "File": "your PNG, JPG, WebP or GIF",
+      "Layer list": "+ Layer"
+     },
+     "result": "A new layer on top that you can move, restyle or delete."
+    },
+    {
+     "title": "Check what did not import",
+     "goal": "Make sure nothing important is missing",
+     "settings": {
+      "After opening": "read the PSD note at the bottom",
+      "If text layers are listed": "rasterize them in your editor and open again"
+     },
+     "result": "You know which layers need fixing before you rely on the file."
+    },
+    {
+     "title": "Open a flat TGA by mistake",
+     "goal": "Understand the empty layer list",
+     "settings": {
+      "Source Paint": "a TGA or PNG",
+      "Result": "no layers appear"
+     },
+     "result": "A flat file has no layers; open the layered template instead."
+    }
+   ],
+   "combos": [
+    {
+     "with": "ui_shell.source_paint",
+     "why": "The Source Paint box is where a flat TGA, PNG or JPEG is chosen, while Open Layered is for PSD, XCF and ORA."
+    },
+    {
+     "with": "cars.choose_template",
+     "why": "Pick the template for your exact car first; another car has different panels."
+    },
+    {
+     "with": "layers.turn_off_before_export",
+     "why": "The guide group that arrives with the template must be switched off before you render."
+    },
+    {
+     "with": "layers.roles",
+     "why": "Imported layer names decide the role each layer gets."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which file types does Open Layered accept?",
+     "a": "PSD from Photoshop, XCF from GIMP and ORA from GIMP or Krita."
+    },
+    {
+     "q": "Why are there no layers after I opened my paint?",
+     "a": "A TGA, PNG or JPEG is flat. Open the layered template to get layers."
+    },
+    {
+     "q": "How long should a PSD take?",
+     "a": "Usually seconds, but a big one can take up to a minute. Wait for the RENDER button to turn on."
+    },
+    {
+     "q": "My text layers are missing.",
+     "a": "Live text and other non-pixel layers cannot be imported. The note names them. Rasterize them in your editor first."
+    },
+    {
+     "q": "My blend modes look different.",
+     "a": "Modes not supported here are imported as Normal, and the note lists them."
+    },
+    {
+     "q": "Can I use any car's template?",
+     "a": "Use the one for the car you drive. Another car has different panels and will not line up."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The car looks wrong after opening",
+     "cause": "The template is for a different car or is not 2048 by 2048.",
+     "fix": "Open the template for your exact car at its normal size."
+    },
+    {
+     "symptom": "Dropping a logo replaced the whole paint",
+     "cause": "Dropping a file on the canvas loads it as the source paint.",
+     "fix": "Undo, then use + Layer to add the logo on top."
+    },
+    {
+     "symptom": "The render shows panel outlines",
+     "cause": "The guide group was left on after opening the template.",
+     "fix": "Switch off Mask, Wire and Car_Mandatory before rendering."
+    }
+   ],
+   "protips": [
+    "A PNG with transparency makes the best + Layer logo: it arrives as its own movable layer.",
+    "If the open note lists text layers, rasterize them in your editor and reopen. It is faster than redrawing the lettering.",
+    "The app remembers interrupted layer settings per file, so reopening the same PSD after a crash can bring your tweaks back."
+   ],
+   "screens": [
+    "ui_header_rows",
+    "ui_layer_actions_menu",
+    "ui_layers_column"
+   ]
+  },
+  {
+   "id": "layers.turn_off_before_export",
+   "title": "Turn off the guide layers before you render",
+   "domain": "layers",
+   "summary": "Mask and Wire are guides. Switch them off before every render or they end up in your paint.",
+   "what": "Your template comes with guide layers. Wire shows the panel outlines. Mask shows what is paintable. The group Turn Off Before Exporting TGA holds the guide layers, and Car_Mandatory sits with them. Car_Mandatory is in the same group and the support check lists it with the guides, so the group eye hides it too. While it is visible it is drawn like real art (headlight and grill mesh), so zones leave its solid pixels alone. If Wire or Mask are visible at render time, their outlines are baked into your TGA.",
+   "when": [
+    "Right before you press RENDER.",
+    "Your car in iRacing shows green lines.",
+    "You hid them to judge a look and need them back for editing."
+   ],
+   "how": [
+    "Open the layer list (right column).",
+    "Click the eye on Mask, Wire and Car_Mandatory (or on the group Turn Off Before Exporting TGA).",
+    "Check the preview. The outlines should be gone.",
+    "Press RENDER."
+   ],
+   "controls": [
+    {
+     "label": "Layer eye icon",
+     "range": "",
+     "default": "",
+     "effect": "Shows / hides the layer. Alt+click isolates that layer.",
+     "inv": "layer.eye"
+    }
+   ],
+   "tips": [
+    "Ask the AI copilot to hide the template layers. Undo brings them back.",
+    "The preview view buttons can show these layers without changing your export."
+   ],
+   "pitfalls": [
+    "Leaving even one on is enough to mark the TGA.",
+    "If you turn them on to edit, remember to turn them off again."
+   ],
+   "related": [
+    "layers.wire_mask_mandatory",
+    "layers.panel",
+    "layers.roles",
+    "ui_shell.template_layer_views",
+    "ui_shell.render_results_panel"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "layer.eye"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "layers.turnoff",
+    "doc.06.exporting_to_iracing_the_copilot_cannot_do_this_tell_the_buy",
+    "layer.eye"
+   ],
+   "sources": [
+    "js/spb-support-answers.js:16",
+    "paint-booth-3-canvas.js:23490",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:10",
+    "paint-booth-3-canvas.js:23329",
+    "js/spb-support-answers.js:40",
+    "js/spb-support.js:261",
+    "js/spb-support.js:414",
+    "paint-booth-5-api-render.js:3149",
+    "paint-booth-5-api-render.js:3157",
+    "paint-booth-3-canvas.js:23289",
+    "js/spb-pro-carmap.js:49",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:3",
+    "js/spb-support.js:132"
+   ],
+   "aliases": [
+    "hide template layers",
+    "turn off before exporting tga",
+    "wire layer visible",
+    "wireframe on my car ingame",
+    "template lines in iracing",
+    "hide guide layers before render",
+    "guide lines on car",
+    "template lines show ingame"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "What each guide does",
+     "body": "Wire draws the outline of each panel, Mask separates paintable panels from dead space, the number and sponsor stamp blocks inside the Turn Off Before Exporting TGA group show where iRacing places its own elements, and Car_Mandatory (real art for the headlight and grill mesh) sits with them. All of them exist to help you paint. None is paint. A render takes the visible layers as your paint, so anything left on becomes part of the TGA."
+    },
+    {
+     "heading": "Why two numbers appear",
+     "body": "iRacing stamps its own number and sponsors on top of your paint. If the stamp blocks from the template are left visible, they are baked into your file and the car shows two numbers or two sponsors. Wire and Mask left on show panel outlines and masks on the car. Even one guide layer left visible marks the paint."
+    },
+    {
+     "heading": "One group, one click",
+     "body": "The guide layers sit inside one group named Turn Off Before Exporting TGA. Clicking the eye on the group header hides every layer inside it at once, which is faster than hiding Mask, Wire and Car_Mandatory one by one. In the AI copilot chat you can also say hide the template layers; Undo puts them back. The support checker shows a warning card named Template layers are switched ON and offers a one-click switch off."
+    },
+    {
+     "heading": "When hiding the group changes a zone",
+     "body": "A zone restricted to a layer inside that group, or a layer whose parent group is hidden, paints nothing, by design. This protects you from a zone that would otherwise paint the whole car. If a zone suddenly goes blank after you toggled the group, look at which layer it is restricted to."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Standard pre-render check",
+     "goal": "Make sure the paint is clean before RENDER",
+     "settings": {
+      "Eye": "click the group eye so it is off",
+      "Preview": "confirm outlines are gone",
+      "Layer list": "find the group Turn Off Before Exporting TGA"
+     },
+     "result": "Mask, Wire and Car_Mandatory are hidden and the render is clean."
+    },
+    {
+     "title": "Edit with guides, then hide them",
+     "goal": "Use the Wire to line up a stripe, then export",
+     "settings": {
+      "Step 1": "show Wire while you work",
+      "Step 2": "hide the group before pressing RENDER"
+     },
+     "result": "Your stripe lines up with the panels and the exported TGA has no outlines."
+    },
+    {
+     "title": "Ask the helper",
+     "goal": "Hide the template layers hands-free",
+     "settings": {
+      "Shokker AI chat": "type hide the template layers"
+     },
+     "result": "The guides switch off in one undoable step."
+    },
+    {
+     "title": "Find the second number",
+     "goal": "Fix a car that shows two numbers in iRacing",
+     "settings": {
+      "Eye": "off for each",
+      "Layer list": "check the number stamp blocks in the guide group"
+     },
+     "result": "After re-rendering and reloading in iRacing there is one number."
+    }
+   ],
+   "combos": [
+    {
+     "with": "layers.wire_mask_mandatory",
+     "why": "That article explains what each of the three guides draws."
+    },
+    {
+     "with": "ui_shell.template_layer_views",
+     "why": "Preview view buttons can show the guides without changing your export."
+    },
+    {
+     "with": "ui_shell.render_results_panel",
+     "why": "Check the render result for stray outlines before you load it into iRacing."
+    },
+    {
+     "with": "layers.roles",
+     "why": "The app classes any layer in a group with turn off or export in its name as a template guide."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why do I have two numbers on my car?",
+     "a": "The number stamp blocks from the template were left on and iRacing adds its own. Hide the guide group and render again."
+    },
+    {
+     "q": "Which layers do I turn off?",
+     "a": "Mask, Wire and Car_Mandatory, or simply the group Turn Off Before Exporting TGA."
+    },
+    {
+     "q": "Do I need to turn them off every time?",
+     "a": "Yes before every render, because turning them on to edit is easy to forget. Check the preview."
+    },
+    {
+     "q": "Can the helper do this for me?",
+     "a": "Yes. Type hide the template layers and Undo brings them back."
+    },
+    {
+     "q": "Why did a zone stop painting after I hid the group?",
+     "a": "A zone restricted to a layer in a hidden group paints nothing. Choose a visible layer for it."
+    },
+    {
+     "q": "Does the preview view button change my export?",
+     "a": "No. Template view buttons only change what you see, not what is rendered."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Panel outlines appear on the car in iRacing",
+     "cause": "Wire or Mask was visible when you rendered.",
+     "fix": "Hide the guide group, render again and reload the paint in iRacing."
+    },
+    {
+     "symptom": "Two sponsors or numbers",
+     "cause": "The stamp blocks stayed on.",
+     "fix": "Hide every layer inside Turn Off Before Exporting TGA."
+    },
+    {
+     "symptom": "A restricted zone paints nothing",
+     "cause": "Its layer sits in a hidden group.",
+     "fix": "Show the layer, or point the zone at a visible layer."
+    }
+   ],
+   "protips": [
+    "Click the group eye instead of three separate eyes: it is one step and cannot miss a layer.",
+    "Leave Wire visible while you place details, then hide the group as the last step before RENDER.",
+    "The support check flags visible guide layers by name, so a quick Support check after a long session catches a forgotten one."
+   ],
+   "screens": [
+    "pair_wire_mask_visible",
+    "ui_layer_groups",
+    "ui_layers_column"
+   ]
+  },
+  {
+   "id": "layers.paintable_area",
+   "title": "The paintable area",
+   "domain": "layers",
+   "summary": "The Mask layer marks what part of the sheet is really car. Paint outside it never reaches the car.",
+   "what": "The template sheet is mostly dead space between the car panels. The Mask layer marks the paintable panels as clear and the rest as solid. There is no layer group called Paintable Area; the layer is simply named Mask. The app uses the mask to know what counts as car when it reads parts, builds zones and previews.",
+   "when": [
+    "You wonder why paint outside the panels does not show.",
+    "The AI copilot asks about parts and the mask.",
+    "A zone seems to cover less than you expected."
+   ],
+   "how": [
+    "Open the layer list (right column) and find the layer called Mask.",
+    "Turn it on to see which parts are paintable.",
+    "Turn it off again before you render."
+   ],
+   "controls": [],
+   "tips": [
+    "Use the Mask layer view to check how a zone sits in the panels.",
+    "Dead space can look odd on screen. It is not part of the car."
+   ],
+   "pitfalls": [
+    "The mask guide must be off for the export.",
+    "A wrong template for your car gives a wrong mask."
+   ],
+   "related": [
+    "layers.wire_mask_mandatory",
+    "layers.turn_off_before_export",
+    "zones.how_pixels_picked",
+    "ui_shell.template_layer_views"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "layers.paintable"
+   ],
+   "sources": [
+    "js/spb-support-answers.js:40",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:10",
+    "js/spb-pro-carmap.js:136",
+    "js/spb-pro-carmap.js:142",
+    "js/spb-pro-carmap.js:144",
+    "js/spb-pro-carmap.js:148",
+    "js/spb-pro-carmap.js:215",
+    "js/spb-pro-carmap.js:157",
+    "js/spb-pro-carmap.js:333",
+    "js/spb-pro-carmap.js:674",
+    "js/spb-pro-zone-kit.js:599",
+    "docs/ai_knowledge/09_field_playbook.md:36",
+    "docs/ai_knowledge/09_field_playbook.md:10",
+    "paint-booth-3-canvas.js:22413"
+   ],
+   "aliases": [
+    "dead space",
+    "mask layer meaning",
+    "paintable area",
+    "what is paintable",
+    "where can i paint"
+   ],
+   "quick": true,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "How the Mask is read",
+     "body": "On the template Mask layer, clear pixels are paintable panels and solid pixels are dead space. The app reads it that way and accepts it only when the paintable share is between 8 percent and 92 percent of the sheet. If less than 12 percent of the Mask is solid, the app assumes it was drawn the other way round and flips it."
+    },
+    {
+     "heading": "Mask plus Wire gives you separate panels",
+     "body": "The Wire layer draws a green outline around every panel. The app thickens those outlines by one small block, removes them from the paintable area, and counts each remaining clear piece as one panel. That is how it tells the hood, roof and sides apart. If a dense Wire mesh would shatter the panels, so that the split keeps under 70 percent of the paintable area, it separates panels by trimming thin bridges instead."
+    },
+    {
+     "heading": "No Mask layer on the sheet",
+     "body": "A flat paint file with no Mask can still work. If the sheet still shows the template dead-space tone, or transparency, everything else counts as paintable. If it shows neither, the app falls back to the footprint of the body paint layers, which only splits panels that have empty space between them."
+    },
+    {
+     "heading": "What it changes in practice",
+     "body": "Shokker AI looks that cover the whole car, and an Everything zone made by the copilot, use the paintable area as their region, so dead space is left alone. The app also stores a coarse 32 by 32 fingerprint of the paintable area to recognise the same car template again. Mask and Wire are guide layers, so they are ignored when the app works out which zone owns which paint."
+    }
+   ],
+   "examples": [
+    {
+     "title": "See where the car really is",
+     "goal": "Check which parts of the sheet are paintable",
+     "settings": {
+      "Layer eye icon (Mask layer)": "on",
+      "Layer eye icon (Wire layer)": "on"
+     },
+     "result": "Clear areas are panels you can paint, solid areas are dead space, and green lines show each panel edge."
+    },
+    {
+     "title": "Check a zone sits on the car",
+     "goal": "Make sure a stripe or logo lands on a real panel",
+     "settings": {
+      "Layer eye icon (Mask layer)": "on"
+     },
+     "result": "Anything over solid dead space will not appear on the car. Move it into a clear panel."
+    },
+    {
+     "title": "Back to render-ready",
+     "goal": "Finish the check without baking guides into the paint",
+     "settings": {
+      "Layer eye icon (Mask layer)": "off",
+      "Layer eye icon (Wire layer)": "off"
+     },
+     "result": "With Mask off, the dead space between panels shows your base paint colour. That area is not on the car and iRacing never shows it."
+    }
+   ],
+   "combos": [
+    {
+     "with": "layers.wire_mask_mandatory",
+     "why": "Wire gives the panel walls and Mask gives the paintable area. Used together they let the app split the sheet into named parts."
+    },
+    {
+     "with": "layers.turn_off_before_export",
+     "why": "Mask is one of the guide layers that must be off before you render."
+    },
+    {
+     "with": "zones.how_pixels_picked",
+     "why": "Zones pick pixels on your paint layers. The paintable area decides which of those pixels are actually car."
+    },
+    {
+     "with": "ui_shell.template_layer_views",
+     "why": "Shows how to flip the template guides on and off while you work."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why is half of my sheet solid or dark?",
+     "a": "That is dead space between the car panels. It is not part of the car, so nothing you put there reaches iRacing."
+    },
+    {
+     "q": "Does paint in the dead space show on the car?",
+     "a": "No. Only the clear panels on the Mask map onto the car, and with Mask hidden the dead space simply shows your base colour, which iRacing never displays."
+    },
+    {
+     "q": "How does the AI copilot know where the car is?",
+     "a": "It reads the Mask layer first, then splits it by the Wire outlines. Without a Mask it uses the template dead-space tone, then the body paint layers."
+    },
+    {
+     "q": "My Mask looks inverted. Is that a problem?",
+     "a": "No. If under 12 percent of the Mask is solid, the app reads it the other way round automatically."
+    },
+    {
+     "q": "Can I keep Mask on while I paint?",
+     "a": "Yes, it is only a guide. Switch it off before every render, or the mask is baked into your paint."
+    },
+    {
+     "q": "A wrong template gives a wrong result. Why?",
+     "a": "The app maps parts from the template of the car you loaded. If it is not the template for the car you drive, the panels it finds are not your car's panels."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A logo or stripe does not show on the car",
+     "cause": "It was placed on solid dead space instead of a clear panel",
+     "fix": "Turn Mask on, find the clear panel and move the element inside it."
+    },
+    {
+     "symptom": "Panel outlines or a grey mask show on the car",
+     "cause": "Mask or Wire was left visible when you rendered",
+     "fix": "Turn both off, or hide the whole Turn Off Before Exporting TGA group, then render again."
+    },
+    {
+     "symptom": "The app finds the wrong parts or too few",
+     "cause": "The sheet comes from a template for a different car, or the Mask was removed",
+     "fix": "Open the template for the same car you drive and keep its Mask and Wire layers in the file while you work."
+    }
+   ],
+   "protips": [
+    "After the Mask is hidden, a base colour from the AI copilot still only covers the paintable area, so the dead space keeps its old colour. That is harmless in iRacing.",
+    "Both a Mask and a Wire layer give the best part detection, because the Wire outlines separate panels that the Mask alone joins."
+   ],
+   "screens": [
+    "ui_layer_groups",
+    "ui_layers_column"
+   ]
+  },
+  {
+   "id": "layers.wire_mask_mandatory",
+   "title": "Wire, Mask and Car_Mandatory",
+   "domain": "layers",
+   "summary": "These three template layers help you paint. Wire outlines each panel, Mask shows what is paintable, Car_Mandatory shows required items.",
+   "what": "Wire draws green outlines around each panel. Mask separates paintable panels (clear) from dead space (solid). Car_Mandatory is real template art (the headlight and grill mesh), so it is part of the car and is not just a guide. They sit in the group Turn Off Before Exporting TGA. They are not paint. They help you see where things go.",
+   "when": [
+    "You need to see where a panel starts and ends.",
+    "You want to know which area is paintable.",
+    "A leftover guide is spoiling your paint."
+   ],
+   "how": [
+    "Turn Wire on to see panel outlines while you place a logo.",
+    "Turn Mask on to see paintable and dead areas.",
+    "Turn all three off before you render."
+   ],
+   "controls": [
+    {
+     "label": "Layer eye icon",
+     "range": "",
+     "default": "",
+     "effect": "Shows / hides the layer. Alt+click isolates that layer.",
+     "inv": "layer.eye"
+    }
+   ],
+   "tips": [
+    "Use the guides while you work, then switch them off in one go with the group eye.",
+    "The AI copilot uses Wire and Mask to find parts of the car."
+   ],
+   "pitfalls": [
+    "A visible guide bakes its outline into the TGA.",
+    "Car_Mandatory is real art: do not paint over the grill and headlight mesh it holds."
+   ],
+   "related": [
+    "layers.turn_off_before_export",
+    "layers.paintable_area",
+    "layers.roles",
+    "ui_shell.template_layer_views"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "layers.wire",
+    "layer.eye"
+   ],
+   "sources": [
+    "js/spb-support-answers.js:16",
+    "paint-booth-3-canvas.js:23329",
+    "js/spb-pro-carmap.js:51",
+    "js/spb-pro-carmap.js:95",
+    "js/spb-pro-carmap.js:136",
+    "js/spb-pro-carmap.js:215",
+    "js/spb-pro-ai.js:63",
+    "js/spb-pro-ai.js:2689",
+    "js/spb-support.js:261",
+    "js/spb-support-answers.js:40",
+    "docs/ai_knowledge/09_field_playbook.md:10",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:10",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:5",
+    "paint-booth-3-canvas.js:22510",
+    "docs/ZONE_OWNERSHIP.md:69"
+   ],
+   "aliases": [
+    "template guide layers",
+    "what is the wire layer",
+    "wire layer",
+    "what is car mandatory",
+    "wire mask car mandatory"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Three guides, three jobs",
+     "body": "Wire draws each panel outline in bright green, and the lines between them in the mesh are white or grey. Mask is the paintable map: clear is panel, solid is dead space. Car_Mandatory sits in the same group and carries real template artwork such as the headlight and grill mesh, which is why the group is named Turn Off Before Exporting TGA. None of the three is your paint, so all of them go off before you render."
+    },
+    {
+     "heading": "How the app finds them",
+     "body": "The app treats a layer as a template guide when its own name, or the name of its group, contains words such as mask, wire, wireframe, mandatory, template, guide, outline or export. So a renamed layer such as Mask copy is still treated as a guide, and the AI copilot lists it as template, switch off before exporting."
+    },
+    {
+     "heading": "Why the AI copilot wants Wire and Mask",
+     "body": "The Mask says where the car is and the Wire outlines say where one panel ends and the next begins. With both, the AI separates the hood, roof and sides cleanly. Without Wire it has to split panels by trimming thin bridges in the Mask, which is less exact."
+    },
+    {
+     "heading": "Your choice, not the app's",
+     "body": "The AI copilot chat can hide or show the guides for you: say hide the template layers, or show the template layers. It cannot delete or rename layers. Undo puts back what the answer changed."
+    },
+    {
+     "heading": "How zones treat them",
+     "body": "When the app works out which zone owns which paint, a layer whose name starts with Mask or Wire never blocks anything, so a zone can still claim the paint underneath. Car_Mandatory is not exempt. It counts as real art on top, so a zone does not repaint the grill area it covers."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Place a logo inside a panel",
+     "goal": "Put a logo on the door and keep it inside the panel edge",
+     "settings": {
+      "Layer eye icon (Wire layer)": "on",
+      "Layer eye icon (Mask layer)": "off"
+     },
+     "result": "Green outlines show the door edge so you can size the logo to fit. Switch Wire off again when you are done."
+    },
+    {
+     "title": "Check where dead space is",
+     "goal": "Find out which part of the sheet never reaches the car",
+     "settings": {
+      "Layer eye icon (Mask layer)": "on",
+      "Layer eye icon (Wire layer)": "off"
+     },
+     "result": "Clear areas are car panels and solid areas are dead space. Keep important art inside the clear areas."
+    },
+    {
+     "title": "Ready to render",
+     "goal": "Leave no guide visible in the exported paint",
+     "settings": {
+      "Layer eye icon (Turn Off Before Exporting TGA group)": "off"
+     },
+     "result": "Wire, Mask, Car_Mandatory and the stamp blocks all hide together, so none of them is baked into the TGA."
+    }
+   ],
+   "combos": [
+    {
+     "with": "layers.turn_off_before_export",
+     "why": "The exact checklist for hiding every guide before you press RENDER."
+    },
+    {
+     "with": "layers.paintable_area",
+     "why": "Explains how the Mask map is read and what it does for part detection."
+    },
+    {
+     "with": "layers.roles",
+     "why": "Guides are one of the layer roles the AI copilot lists, shown as template, switch off before exporting."
+    },
+    {
+     "with": "ui_shell.template_layer_views",
+     "why": "Shows how to flip the guides on and off."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Are Wire, Mask and Car_Mandatory part of my paint?",
+     "a": "No. They help you see where things go. If they are visible when you render, they are baked in."
+    },
+    {
+     "q": "Which one gives me two numbers on the car?",
+     "a": "The number and sponsor stamp blocks in the Turn Off Before Exporting TGA group. iRacing stamps its own on top, so a visible block doubles them."
+    },
+    {
+     "q": "Can the AI copilot turn them off for me?",
+     "a": "Yes. Say hide the template layers. It switches them off and Undo brings them back. It can also check this in the setup check and offers a one-click switch off."
+    },
+    {
+     "q": "Do I need the Wire layer?",
+     "a": "Not to paint. It helps you place art, and it gives the AI exact panel walls. Without it the app still splits panels from the Mask, just less exactly."
+    },
+    {
+     "q": "I turned the guides off and the sheet looks different. Is something wrong?",
+     "a": "No. With Mask off, the dead space between panels shows your base paint colour. That area is not on the car."
+    },
+    {
+     "q": "Why does a layer I renamed still count as a guide?",
+     "a": "The app goes by words in its name or its group name, such as mask, wire or guide, and not by the layer position."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Green outlines or panel lines show on the car",
+     "cause": "The Wire layer was visible when you rendered",
+     "fix": "Hide Wire, or hide the whole Turn Off Before Exporting TGA group, and render again."
+    },
+    {
+     "symptom": "Two numbers or two sponsors on the car",
+     "cause": "The stamp blocks from the template stayed visible",
+     "fix": "Turn the group off before you render. iRacing adds its own stamps."
+    },
+    {
+     "symptom": "The AI copilot finds too few or wrong parts of the car",
+     "cause": "The Wire or Mask layer is missing from the file, or the template is for another car",
+     "fix": "Open the template for the same car you drive, so both layers are present, and keep them in the file while you design."
+    }
+   ],
+   "protips": [
+    "The AI copilot setup check shows a warning card named Template layers are switched ON, with a one-click switch off, so you do not have to hunt for the guides.",
+    "Keep the guides in the file while you design and hide them only for the render, so the AI keeps its map of the car."
+   ],
+   "screens": [
+    "pair_wire_mask_visible",
+    "ui_layer_groups"
+   ]
+  },
+  {
+   "id": "layers.lock_zone_to_layer",
+   "title": "Lock a zone to a layer",
+   "domain": "layers",
+   "summary": "Make a zone act only on one layer. Its look then stays on that layer and on nothing else.",
+   "what": "Select a layer, then click LOCK ZONE (or press Ctrl+L) to tie the active zone to that layer. The zone then owns pixels only where that layer is solid (alpha 128 or more) and the art above it is not (alpha under 128). MAKE ZONE does the same in one step: it makes a new zone limited to the layer, and you then give it a base material.",
+   "when": [
+    "You want a sponsor or number to have a different finish from the paint.",
+    "A finish bleeds onto art you did not want it on.",
+    "You want one logo in chrome and the rest in gloss."
+   ],
+   "how": [
+    "Select the layer in the layer list.",
+    "Click MAKE ZONE for a new zone, or select an existing zone and click LOCK ZONE.",
+    "Give the zone a base material.",
+    "Check the preview. The finish should sit only on that layer."
+   ],
+   "controls": [
+    {
+     "label": "MAKE ZONE",
+     "range": "",
+     "default": "",
+     "effect": "Makes a new zone limited to this layer. Then give the zone a base material.",
+     "inv": "layer.btn.make_zone"
+    },
+    {
+     "label": "LOCK ZONE",
+     "range": "",
+     "default": "",
+     "effect": "Lock the active zone to THIS layer's pixels (Ctrl+L)",
+     "inv": "layer.btn.lock_zone"
+    },
+    {
+     "label": "Create a zone restricted to this layer",
+     "range": "",
+     "default": "",
+     "effect": "Makes a new zone limited to this layer. Then give the zone a base material.",
+     "inv": "layer.make_zone"
+    },
+    {
+     "label": "Lock the active zone to this layer (Ctrl+L)",
+     "range": "",
+     "default": "",
+     "effect": "Restricts the currently selected zone to this layer.",
+     "inv": "layer.lock_zone"
+    }
+   ],
+   "tips": [
+    "Art that sits above the layer takes priority over it.",
+    "Use it for chrome numbers on a matte car."
+   ],
+   "pitfalls": [
+    "If the layer is hidden or empty the zone owns nothing.",
+    "Merging layers changes which layer the zone is tied to. Lock zones after you finish merging."
+   ],
+   "related": [
+    "zones.restrict_layers",
+    "zones.priority",
+    "layers.card_buttons",
+    "layers.merge"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "layer.make_zone"
+    }
+   ],
+   "figures": [
+    "g05_zone_priority"
+   ],
+   "covers": [
+    "layer.btn.make_zone",
+    "layer.btn.lock_zone",
+    "layer.make_zone",
+    "layer.lock_zone"
+   ],
+   "sources": [
+    "docs/ZONE_OWNERSHIP.md:29",
+    "paint-booth-3-canvas.js:23690",
+    "paint-booth-3-canvas.js:23708",
+    "paint-booth-3-canvas.js:23329",
+    "paint-booth-3-canvas.js:22873",
+    "paint-booth-layer-flow.js:587",
+    "paint-booth-layer-flow.js:1108",
+    "paint-booth-2-state-zones.js:4384",
+    "paint-booth-2-state-zones.js:4357",
+    "docs/ZONE_OWNERSHIP.md:36",
+    "docs/ZONE_OWNERSHIP.md:54",
+    "docs/ZONE_OWNERSHIP.md:75",
+    "docs/ZONE_OWNERSHIP.md:101",
+    "paint-booth-3-canvas.js:22445",
+    "paint-booth-v2.html:5259"
+   ],
+   "aliases": [
+    "chrome number on matte car",
+    "finish only on logo",
+    "layer restricted zone",
+    "lock zone to layer",
+    "zone only on one layer",
+    "zone follows a layer"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Two ways in, one result",
+     "body": "MAKE ZONE on a layer card creates a new zone named after the layer with the word zone added, set to Everything, hard edge, restricted to that layer. It has no base material yet, so it paints nothing until you pick one. LOCK ZONE, or Ctrl+L, takes the zone you already have selected and restricts it to the selected layer. Both are one undo step."
+    },
+    {
+     "heading": "Lock replaces, it does not add",
+     "body": "LOCK ZONE sets the zone to exactly that one layer and drops any earlier layer restriction on the zone. To restrict one zone to several layers, use RESTRICT TO LAYERS in the zone panel, which combines the layers into one area. Without a selected layer you get the toast No layer selected, and without a selected zone you get Select a zone first."
+    },
+    {
+     "heading": "Exactly which pixels the zone owns",
+     "body": "The zone owns a pixel when the layer is at least half opaque there, counting the layer opacity, clipping and visible effects, and the art stacked above it is less than half opaque. There are no fractions and no feathered edge. A fully opaque layer at 40 percent opacity does not count, while one at 50 percent does."
+    },
+    {
+     "heading": "Order, hidden layers and leftovers",
+     "body": "Zones claim pixels in list order, top first. A pixel covered by art above the layer goes to the zone for that art, or to Everything Else when nothing claims it. If every layer a zone is restricted to is hidden, the zone owns nothing and a message tells you why instead of silently painting over hidden art."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Chrome numbers on a matte car",
+     "goal": "Give only the number layer a mirror finish",
+     "settings": {
+      "Layer": "select the numbers layer",
+      "Button": "MAKE ZONE",
+      "Base material": "a chrome base"
+     },
+     "result": "The new zone paints only where the number layer is solid. The matte body zone is untouched."
+    },
+    {
+     "title": "Re-use a zone you already set up",
+     "goal": "Move a finished look onto a different layer",
+     "settings": {
+      "Zone": "select the zone in the left panel",
+      "Layer": "select the new layer",
+      "Button": "LOCK ZONE"
+     },
+     "result": "The zone now acts on the new layer only. The toast reads Zone restricted to layer with the layer name."
+    },
+    {
+     "title": "Keep a decal out of the base finish",
+     "goal": "A sponsor sits on top of the base paint layer",
+     "settings": {
+      "Zone": "base zone locked to the base paint layer",
+      "Layer": "the sponsor layer stays above it"
+     },
+     "result": "Where the sponsor is more than half opaque the base zone steps back, so the base finish does not cover it."
+    }
+   ],
+   "combos": [
+    {
+     "with": "zones.restrict_layers",
+     "why": "Restrict to Layers is the multi-layer version of the same idea and the place to edit the list."
+    },
+    {
+     "with": "zones.priority",
+     "why": "When two zones want the same pixels, the one higher in the list wins."
+    },
+    {
+     "with": "layers.card_buttons",
+     "why": "MAKE ZONE and LOCK ZONE live on the selected layer card."
+    },
+    {
+     "with": "layers.decal_rescue",
+     "why": "Decal Rescue clears a zone layer restriction, so use it on a zone with a drawn footprint and do not lock that zone to the layer afterwards."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What is the difference between MAKE ZONE and LOCK ZONE?",
+     "a": "MAKE ZONE creates a new zone restricted to the layer. LOCK ZONE restricts the zone you already have selected."
+    },
+    {
+     "q": "Is there a shortcut?",
+     "a": "Yes, Ctrl+L locks the selected zone to the selected layer. It does not fire while you are typing in a box."
+    },
+    {
+     "q": "My new zone paints nothing. Why?",
+     "a": "A new zone from MAKE ZONE has no base material. Pick one in the zone panel."
+    },
+    {
+     "q": "Can a zone be locked to two layers?",
+     "a": "Not with LOCK ZONE, which keeps one layer. Use RESTRICT TO LAYERS to pick several."
+    },
+    {
+     "q": "Will the edge be soft?",
+     "a": "No. Layer locked zones use a hard 50 percent line, so the edge is clean with no halo."
+    },
+    {
+     "q": "I hid the layer and the zone stopped. Is that a bug?",
+     "a": "No. When all the zone's layers are hidden it owns nothing, by design. Show the layer again."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The finish does not appear",
+     "cause": "The layer is hidden, empty, or under 50 percent opacity",
+     "fix": "Show the layer and raise its opacity to at least 50 percent, then check the preview."
+    },
+    {
+     "symptom": "Ctrl+L does nothing",
+     "cause": "No layer or no zone is selected, or the cursor is inside a text box",
+     "fix": "Click a layer card and a zone in the left panel, then press Ctrl+L outside a text field."
+    },
+    {
+     "symptom": "The new zone has no effect on the car",
+     "cause": "MAKE ZONE leaves the base material empty",
+     "fix": "Pick a base material for the new zone."
+    }
+   ],
+   "protips": [
+    "Lock changes are an undo step named Set source layer, so Ctrl+Z takes the restriction away if you picked the wrong layer.",
+    "Art stacked above the locked layer is respected without any extra setting, so you can build a base layer, a decal layer and a number layer and give each its own zone."
+   ],
+   "screens": [
+    "ui_layer_card_open"
+   ]
+  },
+  {
+   "id": "layers.export_photoshop",
+   "title": "Photoshop round trip",
+   "domain": "layers",
+   "summary": "Send the finished paint and spec to Photoshop as named TGA files, edit them there, and bring the result back.",
+   "what": "Open the Actions menu and choose Photoshop round-trip. Type a car file name in the first box and choose an export folder in the second. Click Export. The app writes the finished paint as a TGA, a Spec TGA, four separate channel TGAs and a manifest into that folder. It does not write your layers. Edit the files in Photoshop, then bring a TGA back through Settings, Import Spec Map (Merge Mode), Import TGA.",
+   "when": [
+    "You want to finish a detail in Photoshop.",
+    "A friend edits your layers in another tool.",
+    "You need the paint and the spec channels as separate TGA files."
+   ],
+   "how": [
+    "Click Actions in the layer list.",
+    "Pick Photoshop round-trip.",
+    "Type a name such as your car and a number in the file name box.",
+    "Choose or paste the export folder.",
+    "Click Export and open the files in Photoshop."
+   ],
+   "controls": [
+    {
+     "label": "Photoshop round-trip",
+     "range": "",
+     "default": "",
+     "effect": "Export layers for Photoshop editing and bring the TGA back (round trip)",
+     "inv": "pro.layers.photoshop_round_trip"
+    },
+    {
+     "label": "Car file name",
+     "range": "",
+     "default": "",
+     "effect": "Name for the exported car file in the Photoshop round trip.",
+     "inv": "psExportCarFileName"
+    },
+    {
+     "label": "Export folder",
+     "range": "",
+     "default": "",
+     "effect": "Folder shared with Photoshop for the round trip.",
+     "inv": "psExportExchangeFolder"
+    },
+    {
+     "label": "Export",
+     "range": "",
+     "default": "",
+     "effect": "Exports layers to the exchange folder for Photoshop editing; bring the TGA back afterwards.",
+     "inv": "btnDoExportToPs"
+    }
+   ],
+   "tips": [
+    "Use a folder with a short path. It is easier to find again.",
+    "EXPORT on a layer card saves one layer as a transparent PNG instead, which is the way to get a single layer out."
+   ],
+   "pitfalls": [
+    "Trading Paints takes the spec only as a .mip file, so a TGA from here is not the spec for Trading Paints.",
+    "Check the guide layers are off before you export."
+   ],
+   "related": [
+    "layers.card_buttons",
+    "layers.turn_off_before_export",
+    "ui_shell.car_folder",
+    "ui_shell.render_results_panel"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "btnDoExportToPs"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.layers.photoshop_round_trip",
+    "psExportCarFileName",
+    "psExportExchangeFolder",
+    "btnDoExportToPs"
+   ],
+   "sources": [
+    "paint-booth-v2.html:5092-5122",
+    "js/spb-support-answers.js:45",
+    "paint-booth-v2.html:3853",
+    "paint-booth-5-api-render.js:3269",
+    "paint-booth-v2.html:5109",
+    "paint-booth-5-api-render.js:3297",
+    "paint-booth-v2.html:5116",
+    "paint-booth-5-api-render.js:3271",
+    "paint-booth-v2.html:5112",
+    "paint-booth-v2.html:2245",
+    "paint-booth-v2.html:3852",
+    "paint-booth-5-api-render.js:3288",
+    "paint-booth-5-api-render.js:3305",
+    "paint-booth-5-api-render.js:3307",
+    "paint-booth-5-api-render.js:3391",
+    "server_routes/photoshop_export_routes.py:97",
+    "server_routes/photoshop_export_routes.py:237",
+    "server_routes/photoshop_export_routes.py:244",
+    "server.py:6200",
+    "paint-booth-3-canvas.js:22844"
+   ],
+   "aliases": [
+    "edit in photoshop",
+    "export layers as tga",
+    "tga round trip",
+    "send to photoshop",
+    "photoshop export",
+    "back to photoshop"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "pro",
+   "deep": [
+    {
+     "heading": "What it writes",
+     "body": "It does not export your layers. It runs the same work as a render and writes finished files into a folder named after your car file name, inside the export folder you chose: the paint as a TGA named after your car, the spec map as the same name plus Spec, and separate TGAs for the spec channels metallic, roughness, clearcoat and mask, plus a copy of the base paint. A manifest file in the same folder lists them. The app also remembers which export was last."
+    },
+    {
+     "heading": "Name and folder rules",
+     "body": "The Car file name box must not be empty or you get Enter a car file name. Any character other than a letter, digit, dot, underscore, hyphen or space is replaced by an underscore. The Export folder box fills itself with the last folder you used, or otherwise with a PhotoshopExchange folder inside ShokkerPaintBooth in your Documents. Source Paint must be set in the header bar, or a flat image must be open, or you get a message to set it."
+    },
+    {
+     "heading": "What goes into the paint",
+     "body": "Decals with their own spec finish, and spec stamps with their finish, are included. With layers loaded and no decals, the app sends the live canvas as the paint, so your layer work is not dropped. The export needs the engine to be online, otherwise it shows the engine offline message."
+    },
+    {
+     "heading": "Bringing it back",
+     "body": "Open the spec in Photoshop, save, then use Settings, Import Spec Map (Merge Mode), Import TGA. Zones paint on top of the imported spec. Areas no zone covers keep the imported spec. A zone set to Everything or Remaining covers the whole imported spec, so keep those off while you rely on your edits."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Export for a Photoshop spec edit",
+     "goal": "Get the paint and spec as separate TGA files",
+     "settings": {
+      "Actions": "Photoshop round-trip",
+      "Car file name": "DLM438-base-001",
+      "Export folder": "a short folder you will remember",
+      "Export": "click"
+     },
+     "result": "A folder named DLM438-base-001 appears with the paint, the Spec file, the four channel files and the manifest."
+    },
+    {
+     "title": "A name with symbols",
+     "goal": "See how odd characters are handled",
+     "settings": {
+      "Car file name": "My Car #12"
+     },
+     "result": "The folder and files are named My Car _12, with the hash replaced by an underscore."
+    },
+    {
+     "title": "Round trip back in",
+     "goal": "Use your Photoshop spec in the booth",
+     "settings": {
+      "Settings section": "Import Spec Map (Merge Mode)",
+      "Button": "Import TGA",
+      "Zone setup": "no zone set to Everything or Remaining"
+     },
+     "result": "The imported spec stays where no zone paints, and zones paint over it elsewhere."
+    }
+   ],
+   "combos": [
+    {
+     "with": "layers.card_buttons",
+     "why": "EXPORT on a single layer card saves just that layer as a transparent PNG instead."
+    },
+    {
+     "with": "layers.turn_off_before_export",
+     "why": "Hide the guide layers first, the same as before a render, so they do not end up in the files."
+    },
+    {
+     "with": "ui_shell.car_folder",
+     "why": "This is a separate path. The iRacing car folder only receives the RENDER files."
+    },
+    {
+     "with": "ui_shell.render_results_panel",
+     "why": "Use it when you want the normal render output instead of exchange files."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does this send my layers to Photoshop?",
+     "a": "No. It writes the finished paint and spec as TGA files. Use the EXPORT button on a layer card for a single layer as a PNG."
+    },
+    {
+     "q": "Where do the files go?",
+     "a": "Into a folder named after your car file name, inside the Export folder box. The box remembers the last folder."
+    },
+    {
+     "q": "Can I use these TGAs on Trading Paints?",
+     "a": "No. Trading Paints takes the spec only as a .mip file, and the exchange files are for editing, not for upload."
+    },
+    {
+     "q": "Which spec channel does clearcoat use?",
+     "a": "Blue. R is metallic, G is roughness, B is clearcoat (16 is maximum gloss, 255 is dull), and A is the specular mask."
+    },
+    {
+     "q": "I want separate PNG files for checking.",
+     "a": "Use Channel PNG Export. This export writes TGA files."
+    },
+    {
+     "q": "Why do I get Set the Source Paint path first?",
+     "a": "The export needs a source paint. Set it in the header bar, or open a flat image."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Export button says Enter a car file name",
+     "cause": "The Car file name box is empty",
+     "fix": "Type a name such as your car and a number."
+    },
+    {
+     "symptom": "Panel outlines or stamp blocks appear in the exported paint",
+     "cause": "Template guide layers were visible",
+     "fix": "Hide the guides, or the whole Turn Off Before Exporting TGA group, then export again."
+    },
+    {
+     "symptom": "Imported spec is covered completely after you return",
+     "cause": "A zone set to Everything or Remaining paints over the whole imported spec",
+     "fix": "Change that zone, or restrict it, so it leaves the imported areas alone."
+    }
+   ],
+   "protips": [
+    "Channel files let you edit one spec channel on its own, for example only the roughness, without touching metallic or clearcoat.",
+    "The export folder is remembered, so keep one short folder for all your exchange exports."
+   ],
+   "screens": [
+    "ui_export_photoshop",
+    "ui_layer_actions_menu"
+   ]
+  },
+  {
+   "id": "layers.decal_rescue",
+   "title": "Decal Rescue kit",
+   "domain": "layers",
+   "summary": "Decal Rescue makes numbers and sponsors look like real vinyl: flat, satin or gloss, and not shiny like the paint.",
+   "what": "In the Decal Rescue kit you pick a vinyl type. Flat Vinyl uses metal 0, roughness 100, clearcoat 110. Satin Decal uses metal 0, roughness 100, clearcoat 75. Gloss Decal uses metal 0, roughness 42, clearcoat 22. The workflow is to draw the footprint of the number or sponsor, then use Mask, then Grow, so the finish covers the edges.",
+   "when": [
+    "A number looks like it is part of the paint and you want it to look like a sticker.",
+    "The decal edge shows a halo of the base finish.",
+    "You want sponsors to be matte on a gloss car."
+   ],
+   "how": [
+    "Open the Decal Rescue kit.",
+    "Draw over the number or sponsor to mark its footprint.",
+    "Use Mask, then Grow, to cover the edge.",
+    "Pick Flat Vinyl, Satin Decal or Gloss Decal.",
+    "Check the preview."
+   ],
+   "controls": [],
+   "tips": [
+    "Gloss Decal has the lowest roughness, so it looks nearest to the car paint.",
+    "Decal Rescue needs a drawn selection on the active zone, so draw the footprint first."
+   ],
+   "pitfalls": [
+    "A footprint that is too tight leaves a rim of the base finish.",
+    "Decal Rescue replaces the active zone's whole recipe and clears its layer restriction, so use a zone of its own for the decal."
+   ],
+   "related": [
+    "layers.lock_zone_to_layer",
+    "tools.refine_selection",
+    "tools.mask_vs_layer",
+    "layers.roles"
+   ],
+   "actions": [],
+   "figures": [
+    "g01_spec_channels"
+   ],
+   "covers": [
+    "html.spec_tools.2391"
+   ],
+   "sources": [
+    "paint-booth-v2.html:4109-4150",
+    "paint-booth-v2.html:2395",
+    "js/canvas/zone/decal-rescue.js:13",
+    "js/canvas/zone/decal-rescue.js:60",
+    "js/canvas/zone/decal-rescue.js:96",
+    "js/canvas/zone/decal-rescue.js:147",
+    "js/canvas/zone/decal-rescue.js:160",
+    "js/canvas/zone/decal-rescue.js:179",
+    "paint-booth-v2.html:4117",
+    "paint-booth-v2.html:4125",
+    "paint-booth-v2.html:4141",
+    "paint-booth-v2.html:2400",
+    "paint-booth-v2.html:2398"
+   ],
+   "aliases": [
+    "flat vinyl",
+    "gloss decal",
+    "number looks painted on",
+    "satin decal",
+    "sticker look",
+    "vinyl look",
+    "numbers hard to read under chrome",
+    "decals unreadable"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-04",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Why it exists",
+     "body": "Sim-stamped numbers and sponsors take on the spec map underneath them. Over chrome, candy or metallic bodywork a white number can turn into a mirror and become unreadable. Decal Rescue sets a safe, non-metallic spec under the stamp footprint and leaves the paint colours alone. Open it from MASK > Advanced spec utilities, then Decal Rescue Kit."
+    },
+    {
+     "heading": "The three presets in numbers",
+     "body": "Flat Vinyl is metal 0, roughness 100, clearcoat 110. Satin Decal is metal 0, roughness 100, clearcoat 75. Gloss Decal is metal 0, roughness 42, clearcoat 22. The spec alpha is set to 255. On the clearcoat channel 16 is maximum gloss and 255 is dull, so 22 is almost full gloss, 75 is a soft sheen and 110 is flat."
+    },
+    {
+     "heading": "What it does to the zone",
+     "body": "It works on the active zone only and needs a selection in it. It sets the zone base to a flat Foundation material, keeps the source paint colours, and clears every pattern, overlay and extra base on that zone. It also clears any layer restriction so the exact footprint you drew is what reaches the spec. One Undo restores the zone's previous recipe."
+    },
+    {
+     "heading": "What stops it",
+     "body": "With no selection in the active zone you get a message to draw the number or sponsor footprint first. If the zone has its Base, Pattern or Intensity locked, you must unlock them first. If the zone has a layer restriction, the kit shows a note that Rescue will clear it."
+    }
+   ],
+   "examples": [
+    {
+     "title": "White number over a chrome body",
+     "goal": "Keep a stamped number readable",
+     "settings": {
+      "Selection": "draw the number footprint in its own zone",
+      "Mask menu": "Grow",
+      "Preset": "Flat Vinyl",
+      "MASK > Advanced spec utilities": "Decal Rescue Kit"
+     },
+     "result": "The footprint becomes metal 0, roughness 100, clearcoat 110 and the number no longer mirrors the chrome."
+    },
+    {
+     "title": "Sponsor on candy paint with a soft sheen",
+     "goal": "Printed look, not a mirror",
+     "settings": {
+      "Selection": "sponsor footprint",
+      "Preset": "Satin Decal"
+     },
+     "result": "Metal 0, roughness 100, clearcoat 75 under the sponsor while the sponsor colours stay as painted."
+    },
+    {
+     "title": "Glossy printed decal",
+     "goal": "Clean gloss without metallic",
+     "settings": {
+      "Selection": "decal footprint",
+      "Preset": "Gloss Decal"
+     },
+     "result": "Metal 0, roughness 42, clearcoat 22, which is close to full gloss without any metal."
+    }
+   ],
+   "combos": [
+    {
+     "with": "tools.refine_selection",
+     "why": "Grow the footprint a little before you apply, so the vinyl material covers the stamp edges."
+    },
+    {
+     "with": "tools.mask_vs_layer",
+     "why": "Rescue works from a drawn zone selection, not from a layer, so know which one you are in."
+    },
+    {
+     "with": "layers.lock_zone_to_layer",
+     "why": "Decal Rescue clears a zone's layer restriction. Use it on a zone that has a drawn footprint, not on one locked to a layer."
+    },
+    {
+     "with": "layers.roles",
+     "why": "Number and sponsor layers are the ones iRacing stamps itself, which is why their footprint needs this material."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does it change my colours?",
+     "a": "No. The zone keeps the source paint colours and only the spec under the footprint changes."
+    },
+    {
+     "q": "What do M, R and CC mean in the kit?",
+     "a": "Metal, roughness and clearcoat. They are values from 0 to 255 in the spec map."
+    },
+    {
+     "q": "Nothing happens when I open the kit.",
+     "a": "You need an active zone with a drawn selection. Draw the number or sponsor footprint first."
+    },
+    {
+     "q": "It says to unlock my zone.",
+     "a": "The zone has Base, Pattern or Intensity locked. Unlock them, then apply."
+    },
+    {
+     "q": "Can I undo it?",
+     "a": "Yes. One Undo restores the zone's earlier recipe."
+    },
+    {
+     "q": "Does it touch my layers?",
+     "a": "No. It leaves all layer pixels alone. It does clear the zone's layer restriction."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A thin rim of the old finish stays around the number",
+     "cause": "The footprint was drawn too tight",
+     "fix": "Grow the selection with Mask, Grow, then apply the preset again."
+    },
+    {
+     "symptom": "My zone's pattern and extra bases disappeared",
+     "cause": "Decal Rescue replaces the whole recipe of the active zone",
+     "fix": "Use a separate zone just for the stamp footprint, or press Undo."
+    },
+    {
+     "symptom": "The paint colour looks unchanged but the number is still shiny",
+     "cause": "The footprint was drawn on the wrong zone, or another zone above it overrides",
+     "fix": "Check the zone order and make sure the footprint zone sits above the body zone."
+    }
+   ],
+   "protips": [
+    "Give each stamp its own zone with a drawn footprint. The kit rewrites the whole zone, so a dedicated zone keeps the rest of your car safe.",
+    "Use Material Sampler in the same Advanced spec utilities list to read the exact metal, roughness, clearcoat and alpha under the stamp after you apply."
+   ],
+   "screens": [
+    "ui_decal_rescue",
+    "ui_menu_spec_tools"
+   ]
+  }
+ ]
+}

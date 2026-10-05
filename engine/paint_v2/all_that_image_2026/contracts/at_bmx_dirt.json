@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_bmx_dirt",
+  "display_name": "Extreme: BMX Dirt",
+  "promise": "Warm compacted clay and tiny embedded grains, with short interrupted compressed tire-like marks",
+  "carrier_grammar": "Warm compacted clay and tiny embedded grains, with short interrupted compressed tire-like marks; single full-canvas image, no duplicated quadrants. Fine features: compacted orange earth, dark damp clods, fine quartz grains, tiny scraped soil plates, clod seam pores, dry powder dust",
+  "spec_grammar": "Feature-specific selectors partition compacted orange earth, dark damp clods, fine quartz grains, tiny scraped soil plates, clod seam pores, dry powder dust. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "compacted orange earth",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "dark damp clods",
+      "role": "Material feature selected from artwork by g:<:0.29"
+    },
+    {
+      "name": "fine quartz grains",
+      "role": "Material feature selected from artwork by g:>:0.71&s:<:0.27"
+    },
+    {
+      "name": "tiny scraped soil plates",
+      "role": "Material feature selected from artwork by detail:>:0.7"
+    },
+    {
+      "name": "clod seam pores",
+      "role": "Material feature selected from artwork by edge:>:0.74&g:<:0.55"
+    },
+    {
+      "name": "dry powder dust",
+      "role": "Material feature selected from artwork by fine:>:0.84"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "compacted orange earth",
+      "dark damp clods",
+      "fine quartz grains",
+      "tiny scraped soil plates",
+      "clod seam pores",
+      "dry powder dust"
+    ],
+    "R": [
+      "compacted orange earth",
+      "dark damp clods",
+      "fine quartz grains",
+      "tiny scraped soil plates",
+      "clod seam pores",
+      "dry powder dust"
+    ],
+    "Cc": [
+      "compacted orange earth",
+      "dark damp clods",
+      "fine quartz grains",
+      "tiny scraped soil plates",
+      "clod seam pores",
+      "dry powder dust"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "compacted orange earth",
+      "range": [
+        [
+          10,
+          145,
+          160
+        ],
+        [
+          90,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dark damp clods",
+      "range": [
+        [
+          0,
+          55,
+          30
+        ],
+        [
+          20,
+          160,
+          190
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine quartz grains",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "tiny scraped soil plates",
+      "range": [
+        [
+          0,
+          115,
+          140
+        ],
+        [
+          18,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "clod seam pores",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dry powder dust",
+      "range": [
+        [
+          0,
+          155,
+          170
+        ],
+        [
+          10,
+          245,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_anodised_peg",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_big_dog_print",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "compacted orange earth",
+      "dark damp clods",
+      "fine quartz grains",
+      "tiny scraped soil plates",
+      "clod seam pores",
+      "dry powder dust"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_bmx_dirt / Warm compacted clay and tiny embedded grains, with short interrupted compressed tire-like marks",
+  "spec_key": "at_bmx_dirt / compacted orange earth all; dark damp clods g:<:0.29; fine quartz grains g:>:0.71&s:<:0.27; tiny scraped soil plates detail:>:0.7; clod seam pores edge:>:0.74&g:<:0.55; dry powder dust fine:>:0.84",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

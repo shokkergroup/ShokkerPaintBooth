@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_neon_wetsuit",
+  "display_name": "Extreme: Neon Wetsuit",
+  "promise": "Abstract fluoro pink cyan black neoprene with tiny curved inset patches and bonded seams, no wetsuit figure",
+  "carrier_grammar": "Abstract fluoro pink cyan black neoprene with tiny curved inset patches and bonded seams, no wetsuit figure; single full-canvas image, no duplicated quadrants. Fine features: black neoprene faces, cyan rubber inlay, magenta fabric facing, bonded seam shoulders, zigzag stitch ridges, rubber perforation pores",
+  "spec_grammar": "Feature-specific selectors partition black neoprene faces, cyan rubber inlay, magenta fabric facing, bonded seam shoulders, zigzag stitch ridges, rubber perforation pores. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "black neoprene faces",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "cyan rubber inlay",
+      "role": "Material feature selected from artwork by h:>:155&h:<:215&s:>:0.45"
+    },
+    {
+      "name": "magenta fabric facing",
+      "role": "Material feature selected from artwork by h:>:270&s:>:0.38"
+    },
+    {
+      "name": "bonded seam shoulders",
+      "role": "Material feature selected from artwork by edge:>:0.55"
+    },
+    {
+      "name": "zigzag stitch ridges",
+      "role": "Material feature selected from artwork by fine:>:0.72&g:>:0.45"
+    },
+    {
+      "name": "rubber perforation pores",
+      "role": "Material feature selected from artwork by detail:<:0.21&g:<:0.30"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "black neoprene faces",
+      "cyan rubber inlay",
+      "magenta fabric facing",
+      "bonded seam shoulders",
+      "zigzag stitch ridges",
+      "rubber perforation pores"
+    ],
+    "R": [
+      "black neoprene faces",
+      "cyan rubber inlay",
+      "magenta fabric facing",
+      "bonded seam shoulders",
+      "zigzag stitch ridges",
+      "rubber perforation pores"
+    ],
+    "Cc": [
+      "black neoprene faces",
+      "cyan rubber inlay",
+      "magenta fabric facing",
+      "bonded seam shoulders",
+      "zigzag stitch ridges",
+      "rubber perforation pores"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "black neoprene faces",
+      "range": [
+        [
+          0,
+          125,
+          155
+        ],
+        [
+          9,
+          225,
+          245
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cyan rubber inlay",
+      "range": [
+        [
+          0,
+          30,
+          16
+        ],
+        [
+          15,
+          115,
+          115
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "magenta fabric facing",
+      "range": [
+        [
+          0,
+          85,
+          95
+        ],
+        [
+          10,
+          180,
+          210
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "bonded seam shoulders",
+      "range": [
+        [
+          0,
+          50,
+          35
+        ],
+        [
+          18,
+          145,
+          165
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "zigzag stitch ridges",
+      "range": [
+        [
+          0,
+          135,
+          140
+        ],
+        [
+          12,
+          225,
+          240
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "rubber perforation pores",
+      "range": [
+        [
+          0,
+          170,
+          190
+        ],
+        [
+          5,
+          250,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_anodised_peg",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_bmx_dirt",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "black neoprene faces",
+      "cyan rubber inlay",
+      "magenta fabric facing",
+      "bonded seam shoulders",
+      "zigzag stitch ridges",
+      "rubber perforation pores"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_neon_wetsuit / Abstract fluoro pink cyan black neoprene with tiny curved inset patches and bonded seams, no wetsuit figure",
+  "spec_key": "at_neon_wetsuit / black neoprene faces all; cyan rubber inlay h:>:155&h:<:215&s:>:0.45; magenta fabric facing h:>:270&s:>:0.38; bonded seam shoulders edge:>:0.55; zigzag stitch ridges fine:>:0.72&g:>:0.45; rubber perforation pores detail:<:0.21&g:<:0.30",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

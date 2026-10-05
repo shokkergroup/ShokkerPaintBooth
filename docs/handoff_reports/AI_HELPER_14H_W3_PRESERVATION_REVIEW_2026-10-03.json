@@ -1,0 +1,51 @@
+{
+  "schema": "spb-w3-preservation-independent-review/1",
+  "reviewed_at": "2026-10-03",
+  "scope": "Read-only production review; reviewer-owned regression harness and report only. No provider, browser, native app, or external calls.",
+  "frozen_oracles": {
+    "preservation": {
+      "path": "docs/handoff_reports/AI_HELPER_14H_W3_PRESERVATION_ORACLE_2026-10-03.json",
+      "sha256": "7DD0D4C6E7DAAFF32CC2AEDAE57055951E72E8D94875E319BEB9063EB994EA76",
+      "cases": 18
+    },
+    "router_supplement": {
+      "path": "docs/handoff_reports/AI_HELPER_14H_W3_PRESERVATION_ROUTER_SUPPLEMENT_2026-10-03.json",
+      "sha256": "90752583FC83F5CE021FACB61270B97865D8EFEBAB5D754B85D35C4E75A54495",
+      "cases": 7
+    }
+  },
+  "production_sha256_at_review": {
+    "js/spb-pro-edit.js": "810EAE89DF2D8421AB97F83848D097BDDE2FE9E6A7B4271942A29433EA0B03FB",
+    "js/spb-pro-ai.js": "0CB160B5AC0A71FE063B1A754DBD2CE3D2508A56E0B348977D5240EC76E16451",
+    "js/spb-pro-design.js": "A69D2223BF1162AB94D5B87D152FBA7F2A6BF0388F192E4C49523A6AB45ED369"
+  },
+  "review_harness": "tests/ai_preservation_review_contract.cjs",
+  "review_harness_sha256": "A9399E72A32A0222132C44E73C3A3FADCEFDA79048B6C04E67713B76F1662609",
+  "findings": [],
+  "passed_checks": {
+    "protected_whole_paint_requests": "W3-01..07 are returned as explicit E protected_parts asks before designer compound, advisor, and core ownership; no mutation queue.",
+    "compound_router_bypass": "W3-R01..04 still produce compound plans for the challenging phrases where applicable, but actual ask() returns the E ask before those plans; no mutation queue.",
+    "active_compositions": "W3-08 queues body-green plus hood-gold; W3-09 queues body-silver plus roof-carbon using the production curated lookEntry/resolveLook path.",
+    "roof_color_correction": "W3-R06 compiles and queues roof-only; no broad color-region/body target.",
+    "local_copy": "W3-R05 names the requested roof and protected hood in its no-queue clarification.",
+    "local_preservation": "W3-R07 queues no mutation outside the requested roof; current result is a truthful E ask.",
+    "false_positive_guards": "Keep-colors instruction, recipe labels `Keep It Real` and `Preserve the Blue`, hood color-only edit, and how-to question do not trigger unsafe protected-panel mutations.",
+    "provider_boundary": "Actual offlineCanHandle path accepts the protected asks; no provider calls were made."
+  },
+  "counts": {
+    "frozen_preservation_cases": 18,
+    "frozen_router_supplements": 7,
+    "actual_full_router_challenges": 21,
+    "protected_requests_queued": 0,
+    "review_contract_failures": 0,
+    "provider_calls": 0,
+    "browser_or_native_calls": 0
+  },
+  "guard_suite_results": [
+    "node tests/ai_offline_preservation_contract.cjs — PASS (9 parser blocks; actual offlineAsk dispatch)",
+    "node tests/ai_help_router_contract.cjs — PASS (24 helper claims, commands, overrides, ownership guards)",
+    "node tests/ai_request_composition_contract.cjs — PASS (existing composition contract)",
+    "node tests/ai_preservation_review_contract.cjs — PASS (7 frozen preservation asks, 4 compound bypasses, 2 active compositions, 3 scoped/local edits, 5 false-positive/query guards; actual local curated look resolution; no provider calls)"
+  ],
+  "limits": "Reviewer harness stubs browser/app mutation handlers to capture real queued specs and uses production lookEntry/resolveLook with D.LOOK_CURATED and AT=null for local classics. It does not execute a native paint or MCP route. Parent owns native/MCP acceptance."
+}

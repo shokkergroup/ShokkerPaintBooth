@@ -70,6 +70,18 @@ NEW_PATTERN_IDS = [
     "penrose_quasi",        # 5-fold quasicrystal — aperiodic Penrose-like tiling
     "topographic_dense",    # Dense contour lines over multi-scale noise height field
     "interference_rings",   # Newton's-ring multi-source radial interference bands
+
+    # ── LET FREEDOM RING (10 patriotic patterns, 2026-06-09) ─────────────────
+    "lfr_star_lattice",        # Multi-scale random-rotation liberty star scatter
+    "lfr_stripe_drift",        # Tapered red/white bands drifting at many angles
+    "lfr_bunting_scallop",     # Scattered nested-arc bunting swags, random rotations
+    "lfr_distressed_flag",     # All-over weathered cracked patriotic field, no motif
+    "lfr_eagle_crest",         # Omnidirectional wing-fan crest rosette brocade
+    "lfr_firework_radial",     # Multi-center radial spark bursts with sparkle shells
+    "lfr_constellation_field", # Star-glow points + nearest-pair connecting filaments
+    "lfr_ribbon_weave",        # Over/under ribbon interlace on two rotated axes
+    "lfr_stencil_stars",       # Hard stencil-cut stars + isotropic over-spray
+    "lfr_liberty_filigree",    # Rose-curve + log-spiral scrollwork from rotated hubs
 ]
 
 
@@ -106,6 +118,136 @@ def _spb_micro_field(shape, seed, family):
     fine = _spb_norm01(a * 0.44 + b * 0.34 + c * 0.22)
     sparkle = (fine > (0.91 - min(0.05, (family % 8) * 0.006))).astype(np.float32)
     return fine, sparkle
+
+
+def _spb_edge01(field):
+    gy, gx = np.gradient(np.asarray(field, dtype=np.float32))
+    edge = np.sqrt(gx * gx + gy * gy)
+    return _spb_norm01(edge)
+
+
+def _spb_pin_events(shape, seed, coverage=0.006):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    rng = np.random.default_rng(int(seed) & 0xFFFFFFFF)
+    pins = (rng.random((h, w), dtype=np.float32) > (1.0 - coverage)).astype(np.float32)
+    if h > 2 and w > 2:
+        pins[1:, :] = np.maximum(pins[1:, :], pins[:-1, :] * 0.42)
+        pins[:, 1:] = np.maximum(pins[:, 1:], pins[:, :-1] * 0.42)
+    return pins
+
+
+def _spb_reactive_shimmer_channels(pattern_id, shape, seed, pv, detail, fine, sparkle):
+    """Source-owned M/R/CC material recipes for low-DNA shimmer/accent overlays."""
+    h, w = shape[:2] if len(shape) > 2 else shape
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    pv = _spb_norm01(pv)
+    detail = _spb_norm01(detail)
+    fine = _spb_norm01(fine)
+    edge = _spb_edge01(pv)
+    micro_edge = _spb_edge01(detail)
+    pins = np.maximum(sparkle.astype(np.float32), _spb_pin_events((h, w), seed + 941, 0.005))
+    nano = _spb_norm01(
+        np.sin(xx * 1.73 + yy * 0.19 + seed * 0.07)
+        + np.sin(yy * 1.41 - xx * 0.23 + seed * 0.11) * 0.7
+        + np.sin((xx + yy) * 2.17 + seed * 0.03) * 0.45
+    )
+
+    if pattern_id == "shimmer_quantum_shard":
+        facet = np.clip(edge * 0.62 + micro_edge * 0.28 + pins * 0.42, 0, 1)
+        satin_seam = np.clip((1.0 - detail) * 0.38 + fine * 0.26 + nano * 0.20, 0, 1)
+        m_extra = facet * 86 + pins * 88 + nano * 14
+        r_extra = satin_seam * 30 - facet * 86 - pins * 44 - 8
+        cc = 118 - facet * 58 - pins * 48 + detail * 34 + nano * 22
+        pattern_val = np.clip(detail * 0.72 + facet * 0.22 + pins * 0.16, 0, 1)
+    elif pattern_id == "shimmer_matte_halo":
+        halo_lip = np.clip(micro_edge * 0.58 + edge * 0.32 + pins * 0.18, 0, 1)
+        matte_cloud = np.clip((1.0 - pv) * 0.36 + fine * 0.34 + nano * 0.16, 0, 1)
+        m_extra = halo_lip * 46 + pins * 54 + nano * 8
+        r_extra = matte_cloud * 40 - halo_lip * 54 - pins * 26 + 6
+        cc = 70 + halo_lip * 54 - matte_cloud * 46 - pins * 32 + nano * 18
+        pattern_val = np.clip(detail * 0.62 + halo_lip * 0.24 + matte_cloud * 0.18, 0, 1)
+    elif pattern_id == "uv_night_accent":
+        trace = (
+            (np.mod(xx + yy * 0.31 + seed % 37, 29.0) < 1.05)
+            | (np.mod(xx * 0.43 - yy + seed % 41, 37.0) < 0.95)
+        ).astype(np.float32)
+        active = np.clip((pv - 0.58) * 2.8, 0, 1)
+        phosphor = np.clip(active * 0.54 + trace * active * 0.42 + pins * 0.35 + nano * 0.10, 0, 1)
+        m_extra = phosphor * 78 + pins * 78 + trace * active * 34
+        r_extra = (1.0 - active) * 24 + fine * 18 - phosphor * 88 - pins * 38 - 10
+        cc = 118 - phosphor * 74 - pins * 48 + (1.0 - active) * 24 + nano * 18
+        pattern_val = np.clip(detail * 0.58 + phosphor * 0.34 + trace * active * 0.18, 0, 1)
+    else:
+        return None
+
+    return {
+        "pattern_val": pattern_val.astype(np.float32),
+        "M_range": 34.0,
+        "R_range": -126.0,
+        "M_extra": np.clip(m_extra, 0, 130).astype(np.float32),
+        "R_extra": np.clip(r_extra, -98, 46).astype(np.float32),
+        "CC": np.clip(cc, 16, 185).astype(np.float32),
+    }
+
+
+def _spb_uv_night_field(shape, seed):
+    # SPB-105 regular-pattern loop tick 2026-05-23T07:00Z: uv_night_accent score 83.10 -> 90.59; owner says fine 8-32px detail.
+    h, w = shape[:2] if len(shape) > 2 else shape
+    ds = max(1, min(h, w) // 768)
+    ch, cw = max(64, h // ds), max(64, w // ds)
+    yy, xx = np.mgrid[0:ch, 0:cw].astype(np.float32)
+    rng = np.random.default_rng((int(seed) + 7721) & 0xFFFFFFFF)
+    sparkle = ((rng.random((ch, cw), dtype=np.float32) > 0.950).astype(np.float32) * 0.32 + (rng.random((ch, cw), dtype=np.float32) > 0.986).astype(np.float32) * 0.62)
+    trace_a = (np.mod(xx + yy * 0.17 + seed % 43, 19.0) < 0.82).astype(np.float32)
+    trace_b = (np.mod(xx * 0.29 - yy + seed % 53, 23.0) < 0.72).astype(np.float32)
+    trace_gate = (_spb_norm01(np.sin(xx * 0.061 + seed) + np.sin(yy * 0.057 - seed * 0.3)) > 0.44).astype(np.float32)
+    cell = ((np.mod(xx, 9.0) < 0.62) & (np.mod(yy + seed % 17, 11.0) < 0.58)).astype(np.float32)
+    micro = ((np.mod(xx + yy * 0.42 + seed % 19, 6.0) < 0.42) | (np.mod(xx * 0.61 - yy + seed % 23, 7.0) < 0.38)).astype(np.float32)
+    phosphor = np.clip((trace_a + trace_b) * trace_gate * 0.56 + micro * 0.34 + cell * 0.40 + sparkle * 0.78, 0, 1)
+    field = _spb_norm01(phosphor)
+    if (ch, cw) != (h, w):
+        field = np.repeat(np.repeat(field, ds, axis=0), ds, axis=1)[:h, :w]
+    return field.astype(np.float32)
+
+
+def _spb_texture_uv_night_accent(shape, mask, seed, sm):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    pv = _spb_uv_night_field((h, w), seed)
+    edge = _spb_edge01(pv)
+    rng = np.random.default_rng((int(seed) + 8849) & 0xFFFFFFFF)
+    pins = (rng.random((h, w), dtype=np.float32) > 0.994).astype(np.float32)
+    if h > 2 and w > 2:
+        pins[1:, :] = np.maximum(pins[1:, :], pins[:-1, :] * 0.40)
+        pins[:, 1:] = np.maximum(pins[:, 1:], pins[:, :-1] * 0.40)
+    active = np.clip((pv - 0.20) * 2.35, 0, 1)
+    pattern_val = np.clip(active * 0.78 + edge * 0.42 + pins * 0.38 + pv * 0.10, 0, 1)
+    m_extra = active * 78 + edge * 86 + pins * 98
+    r_extra = (1.0 - active) * 20 - edge * 94 - pins * 46 - 12
+    cc = 118 - edge * 82 - active * 64 - pins * 54
+    return {
+        "pattern_val": pattern_val.astype(np.float32),
+        "M_range": 34.0,
+        "R_range": -126.0,
+        "M_extra": np.clip(m_extra, 0, 130).astype(np.float32),
+        "R_extra": np.clip(r_extra, -98, 46).astype(np.float32),
+        "CC": np.clip(cc, 16, 185).astype(np.float32),
+    }
+
+
+def _spb_paint_uv_night_accent(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    h, w = shape[:2] if len(shape) > 2 else shape
+    out = paint[:, :, :3].astype(np.float32)
+    if pm == 0.0:
+        return out
+    field = _spb_uv_night_field((h, w), seed)
+    paint_scale = 255.0 if float(np.nanmax(out)) > 2.0 else 1.0
+    active = np.clip((field - 0.52) * 2.2, 0, 1)[:, :, np.newaxis]
+    uv_tint = np.array([0.10, 0.42, 0.92], dtype=np.float32).reshape(1, 1, 3) * paint_scale
+    out = out * (1.0 - active * 0.045 * pm) + uv_tint * (active * 0.045 * pm)
+    out[:, :, 2] += active[:, :, 0] * paint_scale * 0.025 * pm
+    return np.clip(out, 0, paint_scale).astype(np.float32)
 
 
 def _spb_decade_signature(pattern_id, shape, seed):
@@ -218,6 +360,10 @@ def _wrap_expansion_entry_detail(pattern_id, entry):
         else:
             detail = np.clip(detail * 0.84 + print_carrier * 0.16, 0, 1)
         out = dict(tex)
+        channel_recipe = _spb_reactive_shimmer_channels(pattern_id, shape, seed, pv, detail, fine, sparkle)
+        if channel_recipe is not None:
+            out.update(channel_recipe)
+            return out
         out["pattern_val"] = detail.astype(np.float32)
         out["M_range"] = float(out.get("M_range") or 0.0) * profile["range_boost"]
         out["R_range"] = float(out.get("R_range") or 0.0) * profile["range_boost"]
@@ -236,6 +382,14 @@ def _build_new_patterns():
         # Build entries for all IDs except astro v2 (they have no expansion_patterns variant)
         other_ids = [pid for pid in NEW_PATTERN_IDS if pid not in ASTRO_V2_IDS]
         out = build_expansion_entries(other_ids)
+        # UV Night Accent is a historical UI entry, but it should not be a
+        # generic alias: its hidden low-ambient spec behavior is the identity.
+        out["uv_night_accent"] = {
+            "texture_fn": _spb_texture_uv_night_accent,
+            "paint_fn": _spb_paint_uv_night_accent,
+            "variable_cc": True,
+            "desc": "UV-active hidden night-race trace accent",
+        }
         # Merge astro v2 (scalar-bb wrapped in module)
         try:
             from engine.expansions.astro_cosmic_v2 import ASTRO_COSMIC_PATTERNS
@@ -246,24 +400,16 @@ def _build_new_patterns():
         out = {pid: _wrap_expansion_entry_detail(pid, entry) for pid, entry in out.items()}
         return out
     except Exception as ex:
-        # QUALITY GATE: Log loudly so pattern failures are visible
+        # QUALITY GATE: fail loudly so broken expansion patterns cannot ship as
+        # no-op renderer entries.
         import traceback
         print(f"[PATTERN EXPANSION] CRITICAL: Expansion patterns failed to load!")
         print(f"[PATTERN EXPANSION] Error: {ex}")
         traceback.print_exc()
-        print(f"[PATTERN EXPANSION] WARNING: {len(NEW_PATTERN_IDS)} patterns degraded to generic fallback")
-
-        # Fallback: generic no-op so registry load does not crash
-        def _generic_texture(shape, mask, seed, sm):
-            h, w = shape
-            return {"pattern_val": np.full((h, w), 0.5, dtype=np.float32), "R_range": 0.0, "M_range": 0.0, "CC": None}
-
-        def _generic_paint(paint, shape, mask, seed, pm, bb):
-            if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
-            return np.ascontiguousarray(paint[:, :, :3].astype(np.float32))
-
-        generic = {"texture_fn": _generic_texture, "paint_fn": _generic_paint, "variable_cc": False, "desc": "Pattern (DEGRADED - expansion load failed)"}
-        return {pid: dict(generic) for pid in NEW_PATTERN_IDS}
+        raise RuntimeError(
+            f"Expansion pattern registry failed to load; refusing to degrade "
+            f"{len(NEW_PATTERN_IDS)} patterns to generic no-op fallbacks"
+        ) from ex
 
 
 NEW_PATTERNS = _build_new_patterns()

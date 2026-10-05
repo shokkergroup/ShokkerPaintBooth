@@ -1,5 +1,5 @@
 {
-  "version": "6.2.0",
+  "version": "6.3.0",
   "description": "Contingency decal stacks — the small grids of sponsor logos that line a car's quarter panel, b-pillar, or sidepod. Used by SPB to suggest aligned sponsor block placement.",
   "schema": {
     "id": "string — unique key",

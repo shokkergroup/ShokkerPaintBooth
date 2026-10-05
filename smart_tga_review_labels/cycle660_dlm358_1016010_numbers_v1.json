@@ -1,0 +1,19 @@
+{
+  "version":1,
+  "paint_label":"dirtlatemodel 358/car_num_1016010.tga",
+  "inspection_records":"_smart_tga_runs/cycle660_dlm_template_position_canary/inspection_records.json",
+  "review_scope":"Cycle 660 manual source plus Number/Sponsor/Template/Paint/combined-owner and learned-position review.",
+  "component_labels":[
+    {"layer":"numbers","component_index":0,"expected_bbox":[132,25,39,26],"target_layer":"paint","label":"gold_livery_accent_false_number"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[398,65,42,17],"target_layer":"paint","label":"gold_livery_accent_false_number"},
+    {"layer":"numbers","component_index":2,"expected_bbox":[268,236,199,104],"target_layer":"numbers","label":"true_side_number","family_id":"number:49_nutrien"},
+    {"layer":"numbers","component_index":3,"expected_bbox":[472,303,35,28],"target_layer":"sponsors","label":"sponsor_logo_fragment_false_number"},
+    {"layer":"numbers","component_index":4,"expected_bbox":[292,720,169,92],"target_layer":"numbers","label":"true_side_number","family_id":"number:49_nutrien"},
+    {"layer":"numbers","component_index":5,"expected_bbox":[551,779,34,26],"target_layer":"sponsors","label":"small_sponsor_logo_false_number"},
+    {"layer":"numbers","component_index":6,"expected_bbox":[809,799,149,178],"target_layer":"sponsors","label":"large_trophy_sponsor_graphic_false_number"},
+    {"layer":"numbers","component_index":7,"expected_bbox":[956,802,6,7],"target_layer":"uncertain","label":"tiny_unresolved_fragment"},
+    {"layer":"sponsors","component_index":null,"expected_bbox":[11,770,166,38],"target_layer":"sponsors","label":"bobcat_wordmark_correct_sponsor"},
+    {"layer":"sponsors","component_index":null,"expected_bbox":[468,297,42,5],"target_layer":"sponsors","label":"asc_wordmark_fragment_correct_sponsor"},
+    {"layer":"sponsors","component_index":null,"expected_bbox":[533,296,38,4],"target_layer":"sponsors","label":"asc_wordmark_fragment_correct_sponsor"}
+  ]
+}

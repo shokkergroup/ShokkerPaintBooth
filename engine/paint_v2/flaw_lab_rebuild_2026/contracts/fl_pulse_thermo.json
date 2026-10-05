@@ -1,0 +1,104 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "fl_pulse_thermo",
+  "display_name": "Pulse Thermography \u2014 rebuilt inspection finish",
+  "promise": "nested delayed heat islands with independently diffusing perimeters",
+  "carrier_grammar": "nested delayed heat islands with independently diffusing perimeters; independently rotated, varied sites with edge-wrapped geometry.",
+  "spec_grammar": "Named warm plateaus, cooling halos, delamination cores, depth contours, sound material channels carry independent metallic lips, rough interiors and continuous coat shoulders; no unrelated material overlay.",
+  "reference_physics": {
+    "mechanism": "nested delayed heat islands with independently diffusing perimeters interpreted as a colored inspection visualization, not a literal photograph.",
+    "sources": [
+      "engine/paint_v2/flaw_lab_2026.py",
+      "SPB_WIKI.html#spec_guide",
+      "https://www.nasa.gov/glenn/research/flow-field-diagnostics/"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "composition_span_px": [
+    150,
+    384
+  ],
+  "mark_types": [
+    {
+      "name": "warm plateaus",
+      "role": "Visible warm plateaus geometry with its own local material transition."
+    },
+    {
+      "name": "cooling halos",
+      "role": "Visible cooling halos geometry with its own local material transition."
+    },
+    {
+      "name": "delamination cores",
+      "role": "Visible delamination cores geometry with its own local material transition."
+    },
+    {
+      "name": "depth contours",
+      "role": "Visible depth contours geometry with its own local material transition."
+    },
+    {
+      "name": "sound material channels",
+      "role": "Visible sound material channels geometry with its own local material transition."
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "warm plateaus",
+      "cooling halos",
+      "delamination cores",
+      "depth contours",
+      "sound material channels"
+    ],
+    "R": [
+      "warm plateaus",
+      "cooling halos",
+      "delamination cores",
+      "depth contours",
+      "sound material channels"
+    ],
+    "Cc": [
+      "warm plateaus",
+      "cooling halos",
+      "delamination cores",
+      "depth contours",
+      "sound material channels"
+    ]
+  },
+  "material_tiers": [
+    "recess substrate",
+    "rough interior",
+    "satin shoulder",
+    "polished lip",
+    "fractured edge",
+    "gloss face",
+    "coat transition",
+    "bright inclusion"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "fl_penetrant_bleed",
+      "difference": "nested delayed heat islands with independently diffusing perimeters differs in topology from branched fatigue fissures with capillary dye reservoirs"
+    },
+    {
+      "finish_id": "fl_brittle_lacquer",
+      "difference": "nested delayed heat islands with independently diffusing perimeters differs in topology from ranked tensile crack combs with arrested tips and lifted lacquer lips"
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "warm plateaus is explicitly constructed as part of nested delayed heat islands with independently diffusing perimeters",
+      "cooling halos is explicitly constructed as part of nested delayed heat islands with independently diffusing perimeters",
+      "delamination cores is explicitly constructed as part of nested delayed heat islands with independently diffusing perimeters"
+    ],
+    "review_status": "Rendered paint/spec pairs visually reviewed together at picker scale on 2026-09-18; live output verified against the reviewed assets."
+  },
+  "construction_key": "flaw-r1-pulse_thermo-nested-delayed-heat-islands-with-independently-diffusing-perimeters",
+  "spec_key": "flaw-r1-material-pulse_thermo-warm plateaus-cooling halos-delamination cores-depth contours-sound material channels",
+  "fine_detail_scale_px": [
+    1,
+    32
+  ]
+}

@@ -1,0 +1,300 @@
+{
+  "title": "AI/offline 14-hour sprint — generation2 native checkpoint",
+  "generated_at": "2026-10-04 04:59:23 UTC",
+  "session": "f6e712ef218a",
+  "source_snapshot": "_easy_claude_work/ai14h_generation2_sources",
+  "loaded_tag": "20261003ai14h2",
+  "clearcoat_positive_control": {"operation":"b8eb2f2c9e","done":true,"result":{"baseline":{"sampleCount":50352,"min":[0,29,16],"max":[0,30,16],"mean":[0,29.79,16]},"raised":{"reply":{"text":"Adjusting only the roof clearcoat up by 40 points.\nNEXT: Undo","queue":[{"kind":"edit","zone":0,"spec":{"spec_shift":{"metal":0,"rough":0,"clearcoat":40}}}],"entry":{"text":"Adjusting only the roof clearcoat up by 40 points.","lines":["Roof gloss: spec shift"],"notes":[]}},"settled":true,"stats":{"sampleCount":50352,"min":[0,29,16],"max":[0,30,56],"mean":[0,29.79,39.6]},"paintExact":true,"specChanged":true},"lowered":{"reply":{"text":"Adjusting only the roof clearcoat down by 20 points.\nNEXT: Undo","queue":[{"kind":"edit","zone":0,"spec":{"spec_shift":{"metal":0,"rough":0,"clearcoat":20}}}],"entry":{"text":"Adjusting only the roof clearcoat down by 20 points.","lines":["Roof gloss: spec shift"],"notes":[]}},"settled":true,"stats":{"sampleCount":50352,"min":[0,29,16],"max":[0,30,36],"mean":[0,29.79,27.8]},"paintExact":true,"specChangedFromRaised":true},"undo":{"zonesExact":true,"paintExact":true,"specExact":true},"providerAttempts":0}},
+  "audit_undo_api_error": {"error":"Audit script called nonexistent spbUndo after two successful edits; private fixture recovered with actual _undoLast and successful full repeat.","recovery":{"operation":"5097ec3bfd","done":true,"result":{"before":{"sampleCount":50352,"min":[0,29,16],"max":[0,30,36],"mean":[0,29.79,27.8]},"afterOne":{"sampleCount":50352,"min":[0,29,16],"max":[0,30,56],"mean":[0,29.79,39.6]},"afterTwo":{"sampleCount":50352,"min":[0,29,16],"max":[0,30,16],"mean":[0,29.79,16]},"shift":[[null,null,null]],"providerAttempts":0}}},
+  "fixture": "SPB Chevy Truck Starting Example PSD.psd",
+  "mode": "Actual private SPB app/controller/queue/render/Undo via MCP; providers explicitly blocked; no owner document/export/save.",
+  "source_hashes": {
+    "js/spb-pro-ai.js": "115f602d49e465b6f49530b07a4c2e4b81e8d6089c2d8204bcae9d57807690d4",
+    "js/spb-pro-edit.js": "d4cdd87efc9a0ffab5aa923134c13bcba722e68fb91f1f4899ea16d61b204f0c",
+    "js/spb-pro-design.js": "0f5a99f5ecca374c955df54ae31e6b1e4f4b5ea559284c396c84bf0c38bb2d7b",
+    "js/spb-pro-carmap.js": "bb9e05373c11550d59155fc680d3771c8ca31de555726bb1219125159be505ce",
+    "js/spb-ai-material-controls.js": "1a8ce44bcff196f63404d42b0654833c660b387cc550835081e018d3b8b14f70"
+  },
+  "checks": {
+    "roof_setup": {
+      "operation": "643bb555ba",
+      "done": true,
+      "result": {
+        "car": "Chevrolet Silverado truck",
+        "zoneCount": 7,
+        "roof": {
+          "id": "zone_ea92adf0-9fa1-4789-9bce-a7f896407aa8",
+          "name": "Chrome Cross Colors roof",
+          "base": "chrome",
+          "color": "everything",
+          "colorMode": "special",
+          "specialColor": null,
+          "shift": [
+            null,
+            null,
+            null
+          ]
+        },
+        "sameRoofId": false,
+        "redReply": {
+          "text": "Done — the roof (3% of the car) is now recoloured red.",
+          "lines": [
+            "Roof recoloured red: limited to layer Car Paint; covers everything on that layer; limited to the roof; finish Gloss; colour #c8102e; placed at the top of the stack (wins overlaps)"
+          ],
+          "notes": []
+        },
+        "chromeReply": {
+          "text": "Done — added a layered look (base and texture together on roof) on the roof. Your numbers and sponsors are untouched.",
+          "lines": [
+            "Chrome Cross Colors roof: limited to layer Car Paint; covers everything on that layer; limited to the roof; finish Chrome; keeps the car's own colour; pattern Cross Colors; placed at the top of the stack (wins overlaps)"
+          ],
+          "notes": []
+        },
+        "providerAttempts": 0
+      }
+    },
+    "simple_chrome": {
+      "operation": "2a398eb827",
+      "done": true,
+      "result": {
+        "undoWrongLayer": {
+          "zoneCountAfterUndo": 6,
+          "paintEffect": true,
+          "specEffect": true,
+          "roofId": "zone_83050f49-4629-46f0-bf57-3c9ce8c2b352"
+        },
+        "chromeReply": {
+          "text": "Done — the roof is now chrome — full metal, perfectly smooth: a mirror. Only the finish changed: your paint colours are untouched. (I updated your earlier change to the same colour instead of stacking a new one on top.)",
+          "lines": [
+            "Roof chrome: finish Chrome"
+          ],
+          "notes": []
+        },
+        "zoneCount": 6,
+        "sameRoofId": true,
+        "paintExact": true,
+        "specChanged": true,
+        "roof": {
+          "id": "zone_83050f49-4629-46f0-bf57-3c9ce8c2b352",
+          "name": "Roof chrome",
+          "base": "f_chrome",
+          "pattern": "none",
+          "specialColor": null,
+          "shifts": [
+            0,
+            0,
+            0
+          ]
+        },
+        "providerAttempts": 0
+      }
+    },
+    "clearcoat_default": {
+      "operation": "89910323e9",
+      "done": true,
+      "result": {
+        "changed": {
+          "reply": {
+            "text": "Adjusting only the roof clearcoat down by 20 points (the default step).",
+            "lines": [
+              "Roof chrome: spec shift"
+            ],
+            "notes": []
+          },
+          "queue": [
+            {
+              "kind": "edit",
+              "zone": 0,
+              "spec": {
+                "spec_shift": {
+                  "metal": 0,
+                  "rough": 0,
+                  "clearcoat": -20
+                }
+              }
+            }
+          ],
+          "zoneCount": 6,
+          "id": "zone_83050f49-4629-46f0-bf57-3c9ce8c2b352",
+          "base": "f_chrome",
+          "pattern": "none",
+          "shifts": [
+            0,
+            0,
+            -20
+          ],
+          "paintExact": true,
+          "specChanged": false
+        },
+        "undo": {
+          "zonesExact": true,
+          "paintExact": true,
+          "specExact": true
+        },
+        "providerAttempts": 0
+      }
+    },
+    "roughness_positive": {
+      "operation": "00a8b5c70d",
+      "done": true,
+      "result": {
+        "changed": {
+          "reply": {
+            "text": "Adjusting only the roof roughness up by 20 points.",
+            "lines": [
+              "Roof chrome: spec shift"
+            ],
+            "notes": []
+          },
+          "queue": [
+            {
+              "kind": "edit",
+              "zone": 0,
+              "spec": {
+                "spec_shift": {
+                  "metal": 0,
+                  "rough": 20,
+                  "clearcoat": 0
+                }
+              }
+            }
+          ],
+          "id": "zone_83050f49-4629-46f0-bf57-3c9ce8c2b352",
+          "zoneCount": 6,
+          "shifts": [
+            0,
+            20,
+            0
+          ],
+          "paintExact": true,
+          "specChanged": true
+        },
+        "undo": {
+          "zonesExact": true,
+          "paintExact": true,
+          "specExact": true
+        },
+        "providerAttempts": 0
+      }
+    },
+    "gloss_clearcoat": {
+      "operation": "621b434e2c",
+      "done": true,
+      "result": {
+        "chromeStats": {
+          "sampleCount": 50352,
+          "min": [
+            0,
+            2,
+            16
+          ],
+          "max": [
+            255,
+            30,
+            16
+          ],
+          "mean": [
+            150.48,
+            13.27,
+            16
+          ]
+        },
+        "glossReply": {
+          "text": "Done — the roof is now gloss — a deep, wet-looking gloss. Only the finish changed: your paint colours are untouched. (I updated your earlier change to the same colour instead of stacking a new one on top.)",
+          "lines": [
+            "Roof gloss: finish Soft Gloss"
+          ],
+          "notes": []
+        },
+        "glossBeforeStats": {
+          "sampleCount": 50352,
+          "min": [
+            0,
+            29,
+            16
+          ],
+          "max": [
+            0,
+            30,
+            16
+          ],
+          "mean": [
+            0,
+            29.79,
+            16
+          ]
+        },
+        "changed": {
+          "reply": {
+            "text": "Adjusting only the roof clearcoat down by 20 points (the default step).",
+            "lines": [
+              "Roof gloss: spec shift"
+            ],
+            "notes": []
+          },
+          "queue": [
+            {
+              "kind": "edit",
+              "zone": 0,
+              "spec": {
+                "spec_shift": {
+                  "metal": 0,
+                  "rough": 0,
+                  "clearcoat": -20
+                }
+              }
+            }
+          ],
+          "paintExact": true,
+          "specChanged": false,
+          "stats": {
+            "sampleCount": 50352,
+            "min": [
+              0,
+              29,
+              16
+            ],
+            "max": [
+              0,
+              30,
+              16
+            ],
+            "mean": [
+              0,
+              29.79,
+              16
+            ]
+          }
+        },
+        "undo": {
+          "zonesExact": true,
+          "paintExact": true,
+          "specExact": true
+        },
+        "providerAttempts": 0
+      }
+    },
+    "full_editor_guidance_previous_tag1": {
+      "done": true,
+      "result": {
+        "mode": "fx-off",
+        "reply": {
+          "text": "**How do I use the Chat mode / AI panel**\n1. Click CHAT in the pill (or the AI button bottom right).\n2. Type what you want: \"make the hood matte black\", \"retro red white and blue stripes\", \"numbers gold chrome\". Enter sends.\n3. Each answer has an Undo button; \"Another take\" tries a different idea.\nAlso asked as: how do i use chat; how do i talk to the ai; what can the ai do; do i need an api key It works with no key for common requests; a key makes it smarter.\nExact controls: Shokker AI panel (Pro / Chat > bottom right); Tell me what you want... box (Shokker AI panel).\nDid that get you there, or is there something else you are trying to do?",
+          "lines": []
+        },
+        "zonesExact": true,
+        "paintExact": true,
+        "specExact": true,
+        "layerRevisionExact": true,
+        "providerAttempts": 0
+      }
+    }
+  },
+  "limitations": [
+    "Extended chrome + keep-red-paint wording produced wrong new Cross Colors layer in loaded gen2. W17 candidate awaiting independent review/cold native verification; simple chrome correctly reused owned roof.",
+    "Baseline roof blue material channel was16 at all sampled pixels; negative clearcoat had no preview effect. Positive40 changed max56/mean39.6, then lower20 changed max36/mean27.8, supporting a floor/clipping interpretation. Paint unchanged and two-step Undo exact. No broader physical material claim.",
+    "Full-editor guidance result came from previous tag1 session and leaked Also asked as aliases; no claim of latest source validation.",
+    "Loaded session predates W16/W17 source repairs and concurrent external COPILOT-FIX edits. No claim that current moving sources are installed/fully tested."
+  ],
+  "provider_calls": 0
+}

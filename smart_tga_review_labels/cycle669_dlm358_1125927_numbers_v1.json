@@ -1,0 +1,5 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_1125927.tga","inspection_records":"_smart_tga_runs/cycle669_dlm_proposal_capture_review/inspection_records.json","review_scope":"Cycle 669 source and complete Number/Sponsor/Template/Paint/group sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[926,695,72,58],"target_layer":"template","label":"fixed_2gt_badge"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[857,742,54,30],"target_layer":"paint","label":"gray_livery_block"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[819,832,119,115],"target_layer":"numbers","label":"true_rear_number","family_id":"number:75"}
+]}

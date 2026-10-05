@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "inspection_records": "_smart_tga_runs/cycle666_dlm_exact_false_positive_analysis/inspection_records.json",
+  "physical_group_audit": "_smart_tga_runs/cycle666_dlm_exact_false_positive_analysis/physical_group_review/audit.json",
+  "review_scope": "Cycle 666 manual visual classification of every physical-group sheet bbox; arrays follow immutable audit order and are count-validated by the bank builder.",
+  "casts_votes": false,
+  "ownership_authority": false,
+  "paint_group_targets": {
+    "dirtlatemodel 350/car_num_1136353.tga": ["paint","paint","uncertain","template","paint","paint","uncertain","sponsors"],
+    "dirtlatemodel 350/car_num_1139713.tga": ["sponsors","paint","paint","paint","paint","sponsors","paint","paint","paint","paint","paint","paint","sponsors","template","paint"],
+    "dirtlatemodel 350/car_num_1144819.tga": ["paint","paint","paint","uncertain","sponsors","sponsors","paint","paint","template"],
+    "dirtlatemodel 350/car_num_1149779.tga": ["paint","paint","paint","paint","sponsors","paint","paint","sponsors","paint","paint","paint","paint","paint","numbers","sponsors","paint","paint","template"],
+    "dirtlatemodel 358/car_num_1080505.tga": ["sponsors","uncertain","sponsors","sponsors","sponsors","uncertain"],
+    "dirtlatemodel 358/car_num_1085566.tga": ["paint","uncertain","paint","paint","template","paint","paint","sponsors","paint","paint","uncertain","sponsors","paint","paint","paint","paint","paint","uncertain"],
+    "dirtlatemodel 358/car_num_1089923.tga": ["paint","uncertain","paint","sponsors","paint","uncertain","paint","paint","paint","paint","paint","paint","paint","numbers","paint","sponsors","paint","paint","paint","paint","paint","sponsors","template","paint"],
+    "dirtlatemodel 358/car_num_1091540.tga": ["paint","sponsors","paint"]
+  }
+}

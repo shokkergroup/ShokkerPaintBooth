@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_shutter_tag",
+  "display_name": "Street: Shutter Tag",
+  "promise": "Lime paint-marker hooks and pink spray dots sit on fine violet shutter ribs.",
+  "carrier_grammar": "Lime paint-marker hooks and pink spray dots sit on fine violet shutter ribs. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for violet shutter enamel, lime marker hooks, pink spray dots, silver drybrush scrapes, black cut grooves is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Lime paint-marker hooks and pink spray dots sit on fine violet shutter ribs. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_shutter_tag.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "violet shutter enamel",
+      "role": "Actual shared paint and spec geometry: violet shutter enamel"
+    },
+    {
+      "name": "lime marker hooks",
+      "role": "Actual shared paint and spec geometry: lime marker hooks"
+    },
+    {
+      "name": "pink spray dots",
+      "role": "Actual shared paint and spec geometry: pink spray dots"
+    },
+    {
+      "name": "silver drybrush scrapes",
+      "role": "Actual shared paint and spec geometry: silver drybrush scrapes"
+    },
+    {
+      "name": "black cut grooves",
+      "role": "Actual shared paint and spec geometry: black cut grooves"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "violet shutter enamel",
+      "lime marker hooks",
+      "pink spray dots",
+      "silver drybrush scrapes",
+      "black cut grooves"
+    ],
+    "R": [
+      "violet shutter enamel",
+      "lime marker hooks",
+      "pink spray dots",
+      "silver drybrush scrapes",
+      "black cut grooves"
+    ],
+    "Cc": [
+      "violet shutter enamel",
+      "lime marker hooks",
+      "pink spray dots",
+      "silver drybrush scrapes",
+      "black cut grooves"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_graffiti_fill",
+      "difference": "This finish uses Microscopic broken violet metal shutter rib segments in changing orientations, lime paint-marker hooked strokes, pink spray dots, silver drybrush scrapes and black cut grooves. Dense tiny urban graffiti material, no words, no large shutters, no readable tags.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_kanji_signage",
+      "difference": "This finish uses Microscopic broken violet metal shutter rib segments in changing orientations, lime paint-marker hooked strokes, pink spray dots, silver drybrush scrapes and black cut grooves. Dense tiny urban graffiti material, no words, no large shutters, no readable tags.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "violet shutter enamel is visible in the authored geometry",
+      "lime marker hooks is visible in the authored geometry",
+      "pink spray dots is visible in the authored geometry",
+      "silver drybrush scrapes is visible in the authored geometry",
+      "black cut grooves is visible in the authored geometry"
+    ],
+    "source_sha256": "ff90d307349febb67475c79e1097fe1199f2e2bb7831944ae6a9abfb50c05bd7",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_shutter_tag-authored-Lime paint-marker hooks and pink spray dots sit on fine violet shutter ribs. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_shutter_tag-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 72.7,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "80ad9e4442d06416144aa0f6f99681f241afd1fa183705a5fbd69a78e7de428d"
+}

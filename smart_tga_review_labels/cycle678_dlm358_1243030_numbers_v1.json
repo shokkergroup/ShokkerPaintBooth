@@ -1,0 +1,11 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_1243030.tga","inspection_records":"_smart_tga_runs/cycle678_dlm_cross_copy_review/inspection_records.json","review_scope":"Cycle 678 source plus complete owner sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[0,0,306,364],"target_layer":"paint","label":"large_livery_false_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[959,29,32,39],"target_layer":"template","label":"hardware_shape_false_number"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[991,29,27,42],"target_layer":"template","label":"hardware_shape_false_number"},
+ {"layer":"numbers","component_index":3,"expected_bbox":[319,34,157,82],"target_layer":"template","label":"hardware_shape_false_number"},
+ {"layer":"numbers","component_index":4,"expected_bbox":[173,243,3,10],"target_layer":"sponsors","label":"sponsor_fragment_false_number"},
+ {"layer":"numbers","component_index":5,"expected_bbox":[283,243,162,95],"target_layer":"numbers","label":"true_custom_number"},
+ {"layer":"numbers","component_index":6,"expected_bbox":[286,722,164,88],"target_layer":"numbers","label":"true_custom_number"},
+ {"layer":"numbers","component_index":7,"expected_bbox":[529,731,28,29],"target_layer":"sponsors","label":"sponsor_logo_false_number"},
+ {"layer":"numbers","component_index":8,"expected_bbox":[0,741,182,135],"target_layer":"sponsors","label":"sponsor_panel_false_number"}
+]}

@@ -1,0 +1,579 @@
+{
+  "purpose": "Frozen semantic holdout evidence; fixture authored before source inspection. First-pass results only; parent requested settled-source rerun for kit applyPlan verification.",
+  "fixture_path": "C:\\Users\\RICKY'~1\\AppData\\Local\\Temp\\spb_scope_holdout_luna_20261003.json",
+  "first_pass_observation_path": "C:\\Users\\RICKY'~1\\AppData\\Local\\Temp\\spb_scope_observed_luna_20261003.json",
+  "count": 28,
+  "counts": {
+    "scope-compatible": 9,
+    "unsupported or misdirected; no mutation plan": 6,
+    "out-of-scope body-base proposal": 2,
+    "recommendation only; no stack or mutation plan": 2,
+    "partial; returned part stack omits requested whole-body base": 9
+  },
+  "exact_unsafe_phrases": [
+    {
+      "id": "P04",
+      "phrase": "Put a fine carbon pattern on the roof only, in deep blue."
+    },
+    {
+      "id": "P12",
+      "phrase": "Only the roof gets a pearl gold base and little hex cells."
+    }
+  ],
+  "cases": [
+    {
+      "id": "P01",
+      "phrase": "Paint just the hood gold and add a tight hex weave there; leave the rest of the car unchanged.",
+      "expected_scope": "part-only",
+      "expected_part": "hood",
+      "observed": {
+        "result": "scope-compatible",
+        "advisor_kind": null,
+        "tool_target": "the hood",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "CX Gold-Green Flake"
+          },
+          {
+            "layer": "pattern",
+            "name": "Nanoweave"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P02",
+      "phrase": "Only the roof should get a blue pearl finish with tiny snake scales.",
+      "expected_scope": "part-only",
+      "expected_part": "roof",
+      "observed": {
+        "result": "scope-compatible",
+        "compound_zones": [
+          {
+            "name": "Pearl blue Snake Scales roof",
+            "part": "roof",
+            "finish": "base::pearl",
+            "pattern": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "P03",
+      "phrase": "Exclusively recolor the hood matte black; keep every other panel as it is.",
+      "expected_scope": "part-only",
+      "expected_part": "hood",
+      "observed": {
+        "result": "unsupported or misdirected; no mutation plan",
+        "advisor_kind": null,
+        "tool_target": "the hood",
+        "stack_layers": [],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P04",
+      "phrase": "Put a fine carbon pattern on the roof only, in deep blue.",
+      "expected_scope": "part-only",
+      "expected_part": "roof",
+      "observed": {
+        "result": "out-of-scope body-base proposal",
+        "advisor_kind": "stack",
+        "visible_plan_text": "A layered look: 2 layers on the body + the roof:\n- **Base**: Sapphire Glass [hue -16] — Even deep sapphire-blue glass, high wet gloss, faint faceted sparkle, near-black in shadow. (high gloss); brings its own deep blue colours, so the hue slider turns them blue (hue -16)\n- **Pattern**: Carbon Alt 1 — paint pattern on top: Image-based carbon fiber weave with fine thread spacing and subtle reflection angle A… — x0.66 size, 65% strength; pairs with gloss black, matte grey\nSize: Carbon Alt 1 at \"fine\" = x0.66 (0.6 of its normal x1.1).\nPlacement: the base covers the whole car; the Carbon Alt 1 layer goes only on the roof.\n2 alternative stacks below. **Use this kit** puts every layer on the body + the roof in one step (one Undo); nothing changes until you press it.",
+        "tool_target": "the roof",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "Sapphire Glass"
+          },
+          {
+            "layer": "pattern",
+            "name": "Carbon Alt 1"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P05",
+      "phrase": "Make only my hood pearl white with a small hex texture.",
+      "expected_scope": "part-only",
+      "expected_part": "hood",
+      "observed": {
+        "result": "scope-compatible",
+        "compound_zones": [
+          {
+            "name": "Pearl white hex hood",
+            "part": "hood",
+            "finish": "base::pearl",
+            "pattern": "hex_carbon"
+          }
+        ]
+      }
+    },
+    {
+      "id": "P06",
+      "phrase": "Add gold snake skin to just the roof and preserve all other paint.",
+      "expected_scope": "part-only",
+      "expected_part": "roof",
+      "observed": {
+        "result": "unsupported or misdirected; no mutation plan",
+        "advisor_kind": null,
+        "tool_target": "the roof",
+        "stack_layers": [],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P07",
+      "phrase": "Change the hood to blue and nothing else on the body.",
+      "expected_scope": "part-only",
+      "expected_part": "hood",
+      "observed": {
+        "result": "unsupported or misdirected; no mutation plan",
+        "advisor_kind": null,
+        "tool_target": "the hood",
+        "stack_layers": [],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P08",
+      "phrase": "Give the roof a matte gold carbon look, exclusively on that panel.",
+      "expected_scope": "part-only",
+      "expected_part": "roof",
+      "observed": {
+        "result": "recommendation only; no stack or mutation plan",
+        "advisor_kind": "recommend",
+        "visible_plan_text": "For the roof: a few directions that work on an existing scheme. Your body is Gloss (high gloss). I searched the whole catalogue and picked shine-only options that keep your paint, complete looks whose palette suits your colours. Swatches are shown on gold.",
+        "tool_target": "the roof",
+        "stack_layers": [],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P09",
+      "phrase": "Set the hood to #1247A8 with a subtle pearl sheen; leave the remaining panels alone.",
+      "expected_scope": "part-only",
+      "expected_part": "hood",
+      "observed": {
+        "result": "scope-compatible",
+        "advisor_kind": null,
+        "tool_target": "the hood",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "Forged Blue"
+          },
+          {
+            "layer": "spec",
+            "name": "Pearl Micro"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P10",
+      "phrase": "Just apply #C9A227 and a fine snake pattern to the roof.",
+      "expected_scope": "part-only",
+      "expected_part": "roof",
+      "observed": {
+        "result": "scope-compatible",
+        "advisor_kind": null,
+        "tool_target": "the roof",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "Asset: Leaf Gilding"
+          },
+          {
+            "layer": "pattern",
+            "name": "Snake Skin"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P11",
+      "phrase": "Carbon-fiber the hood in matte blue only; do not touch the roof or sides.",
+      "expected_scope": "part-only",
+      "expected_part": "hood",
+      "observed": {
+        "result": "unsupported or misdirected; no mutation plan",
+        "advisor_kind": null,
+        "tool_target": "the sides",
+        "stack_layers": [],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P12",
+      "phrase": "Only the roof gets a pearl gold base and little hex cells.",
+      "expected_scope": "part-only",
+      "expected_part": "roof",
+      "observed": {
+        "result": "out-of-scope body-base proposal",
+        "advisor_kind": "stack",
+        "visible_plan_text": "A layered look: 3 layers on the body + the roof:\n- **Base**: CF: Champagne Frost [brightness -24] — Pale champagne gold and cream pearl flake, bright and soft like frosted celebration paint. (high gloss, high metal); brightness -24 toward gold\n- **Pattern**: Hex Mesh — paint pattern on top: Dense fine honeycomb mesh with bright glowing cell edges, high contrast, tightly packed… — x0.42 size, 65% strength; pairs with matte black, gunmetal\n- **Shine**: Pearl Micro — shine texture (colours stay): Smooth undulating mother-of-pearl iridescence, soft micro sparkle, no anisotropy; gentle… — x1 size, 70% strength; pairs with gloss, metallic\nSize: Hex Mesh at \"little\" = x0.42 (0.6 of its normal x0.7).\nPlacement: the base covers the whole car; the Hex Mesh + Pearl Micro layer goes only on the roof.\n2 alternative stacks below. **Use this kit** puts every layer on the body + the roof in one step (one Undo); nothing changes until you press it.",
+        "tool_target": "the roof",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "CF: Champagne Frost"
+          },
+          {
+            "layer": "pattern",
+            "name": "Hex Mesh"
+          },
+          {
+            "layer": "spec",
+            "name": "Pearl Micro"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P13",
+      "phrase": "Start with the hood only: make it matte blue with a fine carbon weave.",
+      "expected_scope": "part-only",
+      "expected_part": "hood",
+      "observed": {
+        "result": "scope-compatible",
+        "advisor_kind": "stack",
+        "visible_plan_text": "A layered look: 2 layers in one zone on the hood:\n- **Base**: Jeans Dark Blue — Flat solid deep denim blue, no texture, no sparkle, even semi-matte sheen across the whole… (semi-matte)\n- **Pattern**: Carbon Fiber — paint pattern on top: Fine repeating diamond lattice at near-microscopic scale; low-contrast directional tone… — x0.66 size, 65% strength; pairs with graphite gray, pure white\nSize: Carbon Fiber at \"fine\" = x0.66 (0.6 of its normal x1.1).\n2 alternative stacks below. **Use this kit** puts every layer on the hood in one step (one Undo); nothing changes until you press it.",
+        "tool_target": "the hood",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "Jeans Dark Blue"
+          },
+          {
+            "layer": "pattern",
+            "name": "Carbon Fiber"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P14",
+      "phrase": "Finish everything on the roof in pearl gold, and leave the rest unchanged.",
+      "expected_scope": "part-only",
+      "expected_part": "roof",
+      "observed": {
+        "result": "recommendation only; no stack or mutation plan",
+        "advisor_kind": "recommend",
+        "visible_plan_text": "For the roof: a few directions that work on an existing scheme. Your body is Gloss (high gloss). I searched the whole catalogue and picked shine-only options that keep your paint, complete looks whose palette suits your colours. Swatches are shown on gold.",
+        "tool_target": "the roof",
+        "stack_layers": [],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P15",
+      "phrase": "Make the whole car blue, then layer a gold snake pattern on the hood only.",
+      "expected_scope": "body+part",
+      "expected_part": "hood",
+      "observed": {
+        "result": "scope-compatible",
+        "compound_zones": [
+          {
+            "name": "Blue body base",
+            "part": "BODY",
+            "finish": "base::gloss",
+            "pattern": null
+          },
+          {
+            "name": "Gold snake skin hood",
+            "part": "hood",
+            "finish": "base::gloss",
+            "pattern": "snake_skin"
+          }
+        ]
+      }
+    },
+    {
+      "id": "P16",
+      "phrase": "Set a matte black base across the entire body and put pearl white hexes on just the roof.",
+      "expected_scope": "body+part",
+      "expected_part": "roof",
+      "observed": {
+        "result": "partial; returned part stack omits requested whole-body base",
+        "advisor_kind": null,
+        "tool_target": "the roof",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "Matte"
+          },
+          {
+            "layer": "spec",
+            "name": "Pearl Micro"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P17",
+      "phrase": "Paint the whole car #163A72; exclusively on the hood add a fine gold carbon layer.",
+      "expected_scope": "body+part",
+      "expected_part": "hood",
+      "observed": {
+        "result": "partial; returned part stack omits requested whole-body base",
+        "advisor_kind": null,
+        "tool_target": "the hood",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "Cobalt Night"
+          },
+          {
+            "layer": "pattern",
+            "name": "Carbon Alt 1"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P18",
+      "phrase": "Give every panel a pearl gold base, then add blue snake scales only on the roof.",
+      "expected_scope": "body+part",
+      "expected_part": "roof",
+      "observed": {
+        "result": "partial; returned part stack omits requested whole-body base",
+        "advisor_kind": null,
+        "tool_target": "the roof",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "CF: Champagne Frost"
+          },
+          {
+            "layer": "pattern",
+            "name": "Snake Skin"
+          },
+          {
+            "layer": "spec",
+            "name": "Pearl Micro"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P19",
+      "phrase": "First coat the body in matte blue, then put a gold hex overlay on the hood alone.",
+      "expected_scope": "body+part",
+      "expected_part": "hood",
+      "observed": {
+        "result": "partial; returned part stack omits requested whole-body base",
+        "advisor_kind": null,
+        "tool_target": "the hood",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "Jeans Dark Blue"
+          },
+          {
+            "layer": "pattern",
+            "name": "Chainmail Hex"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P20",
+      "phrase": "Make the full car pearl white and add carbon weave to the roof only, leaving other parts at the base.",
+      "expected_scope": "body+part",
+      "expected_part": "roof",
+      "observed": {
+        "result": "partial; returned part stack omits requested whole-body base",
+        "advisor_kind": null,
+        "tool_target": "the roof",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "Color Clash: Magma Freeze"
+          },
+          {
+            "layer": "pattern",
+            "name": "Carbon Weave (Pattern)"
+          },
+          {
+            "layer": "spec",
+            "name": "Pearl Micro"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P21",
+      "phrase": "Color all body panels matte gold and add a blue pearl layer exclusively to the hood.",
+      "expected_scope": "body+part",
+      "expected_part": "hood",
+      "observed": {
+        "result": "partial; returned part stack omits requested whole-body base",
+        "advisor_kind": null,
+        "tool_target": "the hood",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "Color Clash: Nuclear Dawn"
+          },
+          {
+            "layer": "spec",
+            "name": "Pearl Micro"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P22",
+      "phrase": "Start with a whole-car #C9A227 base; last, place fine snake scales on only the roof.",
+      "expected_scope": "body+part",
+      "expected_part": "roof",
+      "observed": {
+        "result": "scope-compatible",
+        "advisor_kind": "stack",
+        "visible_plan_text": "A layered look: 2 layers on the body + the roof:\n- **Base**: Asset: Leaf Gilding — Bright yellow-gold fine flake, lighter and more yellow than its sibling, even satin sparkle. (satin, medium metal)\n- **Pattern**: Snake Skin — paint pattern on top: Tiny dense overlapping oval scales, very low contrast, reading as a fine uniform reptile… — x0.66 size, 65% strength; pairs with candy red, chrome\nSize: Snake Skin at \"fine\" = x0.66 (0.6 of its normal x1.1).\nPlacement: the base covers the whole car; the Snake Skin layer goes only on the roof.\n2 alternative stacks below. **Use this kit** puts every layer on the body + the roof in one step (one Undo); nothing changes until you press it.",
+        "tool_target": "the roof",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "Asset: Leaf Gilding"
+          },
+          {
+            "layer": "pattern",
+            "name": "Snake Skin"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P23",
+      "phrase": "Apply blue pearl paint over the entire car, then carbon-fiber the hood only.",
+      "expected_scope": "body+part",
+      "expected_part": "hood",
+      "observed": {
+        "result": "scope-compatible",
+        "compound_zones": [
+          {
+            "name": "Pearl blue body base",
+            "part": "BODY",
+            "finish": "base::pearl",
+            "pattern": null
+          },
+          {
+            "name": "Black carbon fiber hood",
+            "part": "hood",
+            "finish": "base::gloss",
+            "pattern": "carbon_fiber"
+          }
+        ]
+      }
+    },
+    {
+      "id": "P24",
+      "phrase": "Paint the whole body matte black and put a gold hex layer on the roof alone.",
+      "expected_scope": "body+part",
+      "expected_part": "roof",
+      "observed": {
+        "result": "partial; returned part stack omits requested whole-body base",
+        "advisor_kind": null,
+        "tool_target": "the roof",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "Matte"
+          },
+          {
+            "layer": "pattern",
+            "name": "Chainmail Hex"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P25",
+      "phrase": "Set the whole-car base to pearl blue; keep that base, then add matte gold to the hood only.",
+      "expected_scope": "body+part",
+      "expected_part": "hood",
+      "observed": {
+        "result": "unsupported or misdirected; no mutation plan",
+        "advisor_kind": null,
+        "tool_target": "the hood",
+        "stack_layers": [],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P26",
+      "phrase": "Make the entire car gold, then put a blue snake pattern exclusively on the roof.",
+      "expected_scope": "body+part",
+      "expected_part": "roof",
+      "observed": {
+        "result": "partial; returned part stack omits requested whole-body base",
+        "advisor_kind": null,
+        "tool_target": "the roof",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "CX Gold-Green Flake"
+          },
+          {
+            "layer": "pattern",
+            "name": "Snake Skin"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P27",
+      "phrase": "Set the whole-car base color to #1247A8, then use the hood layer controls to add a pearl hex effect only there.",
+      "expected_scope": "body+part",
+      "expected_part": "hood",
+      "observed": {
+        "result": "partial; returned part stack omits requested whole-body base",
+        "advisor_kind": null,
+        "tool_target": "the hood",
+        "stack_layers": [
+          {
+            "layer": "base",
+            "name": "Pearl"
+          },
+          {
+            "layer": "pattern",
+            "name": "Hex Carbon"
+          }
+        ],
+        "apply_step_count": 0
+      }
+    },
+    {
+      "id": "P28",
+      "phrase": "Keep a matte gold base on the full vehicle and use the roof layer controls for a blue carbon overlay just on the roof.",
+      "expected_scope": "body+part",
+      "expected_part": "roof",
+      "observed": {
+        "result": "unsupported or misdirected; no mutation plan",
+        "advisor_kind": null,
+        "tool_target": "the roof",
+        "stack_layers": [],
+        "apply_step_count": 0
+      }
+    }
+  ]
+}

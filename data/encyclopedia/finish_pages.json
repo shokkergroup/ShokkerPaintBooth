@@ -1,0 +1,2324 @@
+{
+ "domain": "finish_pages",
+ "version": 1,
+ "articles": [],
+ "generated": true,
+ "note": "One page per base and special (primary shelf = atlas item s[0]; parts of a shelf are sorted by key). Part files live in pages/.",
+ "pageCount": 4137,
+ "bytes": 19150159,
+ "parts": [
+  {
+   "file": "pages/finish_astra_1.json",
+   "domain": "finish_astra_1",
+   "group": "ASTRA",
+   "count": 16,
+   "bytes": 76528,
+   "firstKey": "base::astra_abyssal_lanterns",
+   "lastKey": "base::astra_fermion_foundry"
+  },
+  {
+   "file": "pages/finish_astra_2.json",
+   "domain": "finish_astra_2",
+   "group": "ASTRA",
+   "count": 16,
+   "bytes": 76263,
+   "firstKey": "base::astra_gravity_loom",
+   "lastKey": "base::astra_prism_rebellion"
+  },
+  {
+   "file": "pages/finish_astra_3.json",
+   "domain": "finish_astra_3",
+   "group": "ASTRA",
+   "count": 18,
+   "bytes": 84352,
+   "firstKey": "base::astra_programmable_matter",
+   "lastKey": "base::astra_xenobot_orchard"
+  },
+  {
+   "file": "pages/finish_flaw_lab_1.json",
+   "domain": "finish_flaw_lab_1",
+   "group": "FLAW LAB",
+   "count": 12,
+   "bytes": 55368,
+   "firstKey": "base::fl_a_scan_gate",
+   "lastKey": "base::fl_isoclinic_dark"
+  },
+  {
+   "file": "pages/finish_flaw_lab_2.json",
+   "domain": "finish_flaw_lab_2",
+   "group": "FLAW LAB",
+   "count": 13,
+   "bytes": 60738,
+   "firstKey": "base::fl_macro_etch",
+   "lastKey": "base::fl_tsa_stress"
+  },
+  {
+   "file": "pages/finish_shokk_works_1.json",
+   "domain": "finish_shokk_works_1",
+   "group": "SHOKK WORKS",
+   "count": 17,
+   "bytes": 79006,
+   "firstKey": "base::bth_blush",
+   "lastKey": "base::lsk_arc_weld"
+  },
+  {
+   "file": "pages/finish_shokk_works_2.json",
+   "domain": "finish_shokk_works_2",
+   "group": "SHOKK WORKS",
+   "count": 17,
+   "bytes": 78557,
+   "firstKey": "base::lsk_bead",
+   "lastKey": "base::mul_confusion_blob"
+  },
+  {
+   "file": "pages/finish_shokk_works_3.json",
+   "domain": "finish_shokk_works_3",
+   "group": "SHOKK WORKS",
+   "count": 17,
+   "bytes": 78743,
+   "firstKey": "base::mul_countershade",
+   "lastKey": "base::slt_boa_saddle"
+  },
+  {
+   "file": "pages/finish_shokk_works_4.json",
+   "domain": "finish_shokk_works_4",
+   "group": "SHOKK WORKS",
+   "count": 17,
+   "bytes": 78428,
+   "firstKey": "base::slt_cobra_hood",
+   "lastKey": "base::wrap_craze_net"
+  },
+  {
+   "file": "pages/finish_shokk_works_5.json",
+   "domain": "finish_shokk_works_5",
+   "group": "SHOKK WORKS",
+   "count": 19,
+   "bytes": 88277,
+   "firstKey": "base::wrap_creases",
+   "lastKey": "base::wrap_truchet_knurl"
+  },
+  {
+   "file": "pages/finish_shokk_works_6.json",
+   "domain": "finish_shokk_works_6",
+   "group": "SHOKK WORKS",
+   "count": 2,
+   "bytes": 9069,
+   "firstKey": "base::wrap_twill_film",
+   "lastKey": "base::wrap_wet_apply"
+  },
+  {
+   "file": "pages/finish_foundation_1.json",
+   "domain": "finish_foundation_1",
+   "group": "Foundation",
+   "count": 12,
+   "bytes": 53558,
+   "firstKey": "base::chameleon",
+   "lastKey": "base::f_powder_coat"
+  },
+  {
+   "file": "pages/finish_foundation_2.json",
+   "domain": "finish_foundation_2",
+   "group": "Foundation",
+   "count": 13,
+   "bytes": 58135,
+   "firstKey": "base::f_satin_chrome",
+   "lastKey": "base::wet_look"
+  },
+  {
+   "file": "pages/finish_foundation_efx_1.json",
+   "domain": "finish_foundation_efx_1",
+   "group": "Foundation EFX",
+   "count": 15,
+   "bytes": 68582,
+   "firstKey": "base::chalky_base",
+   "lastKey": "base::efx_holo_flake"
+  },
+  {
+   "file": "pages/finish_foundation_efx_2.json",
+   "domain": "finish_foundation_efx_2",
+   "group": "Foundation EFX",
+   "count": 15,
+   "bytes": 69191,
+   "firstKey": "base::efx_holo_prism_cells",
+   "lastKey": "base::efx_rain_beads"
+  },
+  {
+   "file": "pages/finish_foundation_efx_3.json",
+   "domain": "finish_foundation_efx_3",
+   "group": "Foundation EFX",
+   "count": 16,
+   "bytes": 73195,
+   "firstKey": "base::efx_raku_glaze",
+   "lastKey": "base::efx_wrinkle_coat"
+  },
+  {
+   "file": "pages/finish_far_out_1.json",
+   "domain": "finish_far_out_1",
+   "group": "FAR OUT",
+   "count": 15,
+   "bytes": 66795,
+   "firstKey": "base::fo_airbrush_mural",
+   "lastKey": "base::fo_fondue_copper"
+  },
+  {
+   "file": "pages/finish_far_out_2.json",
+   "domain": "finish_far_out_2",
+   "group": "FAR OUT",
+   "count": 14,
+   "bytes": 62872,
+   "firstKey": "base::fo_formica_boomerang",
+   "lastKey": "base::fo_metalflake_red"
+  },
+  {
+   "file": "pages/finish_far_out_3.json",
+   "domain": "finish_far_out_3",
+   "group": "FAR OUT",
+   "count": 14,
+   "bytes": 63209,
+   "firstKey": "base::fo_mirror_ball",
+   "lastKey": "base::fo_sequin_sheet"
+  },
+  {
+   "file": "pages/finish_far_out_4.json",
+   "domain": "finish_far_out_4",
+   "group": "FAR OUT",
+   "count": 17,
+   "bytes": 76074,
+   "firstKey": "base::fo_shag_avocado",
+   "lastKey": "base::fo_wood_panel"
+  },
+  {
+   "file": "pages/finish_bad_rad_1.json",
+   "domain": "finish_bad_rad_1",
+   "group": "BAD & RAD",
+   "count": 14,
+   "bytes": 65183,
+   "firstKey": "base::rad_aerobics_gym",
+   "lastKey": "base::rad_digital_sunrise"
+  },
+  {
+   "file": "pages/finish_bad_rad_2.json",
+   "domain": "finish_bad_rad_2",
+   "group": "BAD & RAD",
+   "count": 14,
+   "bytes": 64893,
+   "firstKey": "base::rad_dot_matrix",
+   "lastKey": "base::rad_marquee_bulb"
+  },
+  {
+   "file": "pages/finish_bad_rad_3.json",
+   "domain": "finish_bad_rad_3",
+   "group": "BAD & RAD",
+   "count": 15,
+   "bytes": 68518,
+   "firstKey": "base::rad_miami_pastel",
+   "lastKey": "base::rad_skate_deck"
+  },
+  {
+   "file": "pages/finish_bad_rad_4.json",
+   "domain": "finish_bad_rad_4",
+   "group": "BAD & RAD",
+   "count": 17,
+   "bytes": 78260,
+   "firstKey": "base::rad_slap_bracelet",
+   "lastKey": "base::rad_zigzag_runner"
+  },
+  {
+   "file": "pages/finish_all_that_1.json",
+   "domain": "finish_all_that_1",
+   "group": "ALL THAT",
+   "count": 15,
+   "bytes": 67773,
+   "firstKey": "base::at_airbrush_tee",
+   "lastKey": "base::at_corduroy_olive"
+  },
+  {
+   "file": "pages/finish_all_that_2.json",
+   "domain": "finish_all_that_2",
+   "group": "ALL THAT",
+   "count": 14,
+   "bytes": 63341,
+   "firstKey": "base::at_corrupt_jpeg",
+   "lastKey": "base::at_fresh_kicks"
+  },
+  {
+   "file": "pages/finish_all_that_3.json",
+   "domain": "finish_all_that_3",
+   "group": "ALL THAT",
+   "count": 14,
+   "bytes": 64484,
+   "firstKey": "base::at_frosted_shell",
+   "lastKey": "base::at_neon_wetsuit"
+  },
+  {
+   "file": "pages/finish_all_that_4.json",
+   "domain": "finish_all_that_4",
+   "group": "ALL THAT",
+   "count": 17,
+   "bytes": 77333,
+   "firstKey": "base::at_overcast_grey",
+   "lastKey": "base::at_zip_disk"
+  },
+  {
+   "file": "pages/finish_tactical_field_1.json",
+   "domain": "finish_tactical_field_1",
+   "group": "TACTICAL & FIELD",
+   "count": 14,
+   "bytes": 63467,
+   "firstKey": "base::tac_ambush_green",
+   "lastKey": "base::tac_cerakote_grey"
+  },
+  {
+   "file": "pages/finish_tactical_field_2.json",
+   "domain": "finish_tactical_field_2",
+   "group": "TACTICAL & FIELD",
+   "count": 15,
+   "bytes": 67645,
+   "firstKey": "base::tac_chem_light",
+   "lastKey": "base::tac_kydex_sheet"
+  },
+  {
+   "file": "pages/finish_tactical_field_3.json",
+   "domain": "finish_tactical_field_3",
+   "group": "TACTICAL & FIELD",
+   "count": 14,
+   "bytes": 63522,
+   "firstKey": "base::tac_m81_woodland",
+   "lastKey": "base::tac_red_lens"
+  },
+  {
+   "file": "pages/finish_tactical_field_4.json",
+   "domain": "finish_tactical_field_4",
+   "group": "TACTICAL & FIELD",
+   "count": 17,
+   "bytes": 77143,
+   "firstKey": "base::tac_river_stone",
+   "lastKey": "base::tac_wet_waxed_cotton"
+  },
+  {
+   "file": "pages/finish_cyberpunk_1.json",
+   "domain": "finish_cyberpunk_1",
+   "group": "CYBERPUNK",
+   "count": 14,
+   "bytes": 65019,
+   "firstKey": "base::cbp_acid_rain",
+   "lastKey": "base::cbp_datastream"
+  },
+  {
+   "file": "pages/finish_cyberpunk_2.json",
+   "domain": "finish_cyberpunk_2",
+   "group": "CYBERPUNK",
+   "count": 15,
+   "bytes": 69208,
+   "firstKey": "base::cbp_deep_archive",
+   "lastKey": "base::cbp_neural_static"
+  },
+  {
+   "file": "pages/finish_cyberpunk_3.json",
+   "domain": "finish_cyberpunk_3",
+   "group": "CYBERPUNK",
+   "count": 14,
+   "bytes": 65282,
+   "firstKey": "base::cbp_night_market",
+   "lastKey": "base::cbp_scav_rust"
+  },
+  {
+   "file": "pages/finish_cyberpunk_4.json",
+   "domain": "finish_cyberpunk_4",
+   "group": "CYBERPUNK",
+   "count": 17,
+   "bytes": 79023,
+   "firstKey": "base::cbp_scrap_weld",
+   "lastKey": "base::cbp_worm_trail"
+  },
+  {
+   "file": "pages/finish_flames_1.json",
+   "domain": "finish_flames_1",
+   "group": "Flames",
+   "count": 10,
+   "bytes": 44838,
+   "firstKey": "base::flame_blue",
+   "lastKey": "base::flame_lava"
+  },
+  {
+   "file": "pages/finish_flames_2.json",
+   "domain": "finish_flames_2",
+   "group": "Flames",
+   "count": 10,
+   "bytes": 44929,
+   "firstKey": "base::flame_phoenix",
+   "lastKey": "base::flame_white_hot"
+  },
+  {
+   "file": "pages/finish_sock_hop_1.json",
+   "domain": "finish_sock_hop_1",
+   "group": "Sock Hop",
+   "count": 20,
+   "bytes": 88316,
+   "firstKey": "base::argyle_pastel",
+   "lastKey": "base::vinyl_groove"
+  },
+  {
+   "file": "pages/finish_groovy_vibes_1.json",
+   "domain": "finish_groovy_vibes_1",
+   "group": "Groovy Vibes",
+   "count": 20,
+   "bytes": 87690,
+   "firstKey": "base::acid_swirl",
+   "lastKey": "base::warp_op"
+  },
+  {
+   "file": "pages/finish_iridescent_insects_1.json",
+   "domain": "finish_iridescent_insects_1",
+   "group": "Iridescent Insects",
+   "count": 16,
+   "bytes": 75440,
+   "firstKey": "base::ant_velvet",
+   "lastKey": "base::butterfly_glasswing"
+  },
+  {
+   "file": "pages/finish_iridescent_insects_2.json",
+   "domain": "finish_iridescent_insects_2",
+   "group": "Iridescent Insects",
+   "count": 16,
+   "bytes": 75528,
+   "firstKey": "base::butterfly_monarch",
+   "lastKey": "base::jewel_spider"
+  },
+  {
+   "file": "pages/finish_iridescent_insects_3.json",
+   "domain": "finish_iridescent_insects_3",
+   "group": "Iridescent Insects",
+   "count": 18,
+   "bytes": 85311,
+   "firstKey": "base::katydid_leafglass",
+   "lastKey": "base::weevil_opal"
+  },
+  {
+   "file": "pages/finish_prism_forge_1.json",
+   "domain": "finish_prism_forge_1",
+   "group": "PRISM FORGE",
+   "count": 16,
+   "bytes": 75342,
+   "firstKey": "base::pf_apex_spectrum",
+   "lastKey": "base::pf_cluster_bitumen_aurora"
+  },
+  {
+   "file": "pages/finish_prism_forge_2.json",
+   "domain": "finish_prism_forge_2",
+   "group": "PRISM FORGE",
+   "count": 16,
+   "bytes": 76272,
+   "firstKey": "base::pf_cluster_coal_starfield",
+   "lastKey": "base::pf_hyperwave"
+  },
+  {
+   "file": "pages/finish_prism_forge_3.json",
+   "domain": "finish_prism_forge_3",
+   "group": "PRISM FORGE",
+   "count": 18,
+   "bytes": 85337,
+   "firstKey": "base::pf_ion_trap",
+   "lastKey": "base::pf_white_castle_of_fear"
+  },
+  {
+   "file": "pages/finish_more_bases_1.json",
+   "domain": "finish_more_bases_1",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 84785,
+   "firstKey": "base::acid_rain",
+   "lastKey": "base::anime_speed_lines"
+  },
+  {
+   "file": "pages/finish_more_bases_2.json",
+   "domain": "finish_more_bases_2",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 83136,
+   "firstKey": "base::anodized",
+   "lastKey": "base::blackout_ops"
+  },
+  {
+   "file": "pages/finish_more_bases_3.json",
+   "domain": "finish_more_bases_3",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 81731,
+   "firstKey": "base::blue_chrome",
+   "lastKey": "base::candy_lime"
+  },
+  {
+   "file": "pages/finish_more_bases_4.json",
+   "domain": "finish_more_bases_4",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 82756,
+   "firstKey": "base::carbon_3k_fine",
+   "lastKey": "base::chromaflair"
+  },
+  {
+   "file": "pages/finish_more_bases_5.json",
+   "domain": "finish_more_bases_5",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 81993,
+   "firstKey": "base::chrome",
+   "lastKey": "base::cx_blood_mercury"
+  },
+  {
+   "file": "pages/finish_more_bases_6.json",
+   "domain": "finish_more_bases_6",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 84637,
+   "firstKey": "base::cx_chrome_void",
+   "lastKey": "base::cx_toxic_chrome"
+  },
+  {
+   "file": "pages/finish_more_bases_7.json",
+   "domain": "finish_more_bases_7",
+   "group": "More Bases",
+   "count": 19,
+   "bytes": 85747,
+   "firstKey": "base::cx_venom",
+   "lastKey": "base::electric_ice"
+  },
+  {
+   "file": "pages/finish_more_bases_8.json",
+   "domain": "finish_more_bases_8",
+   "group": "More Bases",
+   "count": 19,
+   "bytes": 84085,
+   "firstKey": "base::electroplated_gold",
+   "lastKey": "base::fiberglass"
+  },
+  {
+   "file": "pages/finish_more_bases_9.json",
+   "domain": "finish_more_bases_9",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 81662,
+   "firstKey": "base::fine_silver_flake",
+   "lastKey": "base::gunmetal"
+  },
+  {
+   "file": "pages/finish_more_bases_10.json",
+   "domain": "finish_more_bases_10",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 82376,
+   "firstKey": "base::gunmetal_flake",
+   "lastKey": "base::kryptek_typhon"
+  },
+  {
+   "file": "pages/finish_more_bases_11.json",
+   "domain": "finish_more_bases_11",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 82509,
+   "firstKey": "base::labradorite",
+   "lastKey": "base::marble_rosso"
+  },
+  {
+   "file": "pages/finish_more_bases_12.json",
+   "domain": "finish_more_bases_12",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 82485,
+   "firstKey": "base::marble_statuario",
+   "lastKey": "base::ms_bone_sonata"
+  },
+  {
+   "file": "pages/finish_more_bases_13.json",
+   "domain": "finish_more_bases_13",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 83399,
+   "firstKey": "base::ms_chainburst_inferno",
+   "lastKey": "base::ms_tempest_crown"
+  },
+  {
+   "file": "pages/finish_more_bases_14.json",
+   "domain": "finish_more_bases_14",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 84588,
+   "firstKey": "base::ms_thunder_mandala",
+   "lastKey": "base::msha_emerald_brocade"
+  },
+  {
+   "file": "pages/finish_more_bases_15.json",
+   "domain": "finish_more_bases_15",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 85272,
+   "firstKey": "base::msha_fuji_neon_crest",
+   "lastKey": "base::mshx_blueprint_jackpot"
+  },
+  {
+   "file": "pages/finish_more_bases_16.json",
+   "domain": "finish_more_bases_16",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 85386,
+   "firstKey": "base::mshx_coral_sharkskin",
+   "lastKey": "base::neon_orange_hazard"
+  },
+  {
+   "file": "pages/finish_more_bases_17.json",
+   "domain": "finish_more_bases_17",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 83038,
+   "firstKey": "base::neon_pink_blaze",
+   "lastKey": "base::p_coronal"
+  },
+  {
+   "file": "pages/finish_more_bases_18.json",
+   "domain": "finish_more_bases_18",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 85465,
+   "firstKey": "base::p_erised",
+   "lastKey": "base::pewter"
+  },
+  {
+   "file": "pages/finish_more_bases_19.json",
+   "domain": "finish_more_bases_19",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 81614,
+   "firstKey": "base::piano_black",
+   "lastKey": "base::prismatic"
+  },
+  {
+   "file": "pages/finish_more_bases_20.json",
+   "domain": "finish_more_bases_20",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 81525,
+   "firstKey": "base::quantum_black",
+   "lastKey": "base::satin_wrap"
+  },
+  {
+   "file": "pages/finish_more_bases_21.json",
+   "domain": "finish_more_bases_21",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 82373,
+   "firstKey": "base::scarab_gold",
+   "lastKey": "base::shokk_cipher"
+  },
+  {
+   "file": "pages/finish_more_bases_22.json",
+   "domain": "finish_more_bases_22",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 83111,
+   "firstKey": "base::shokk_dual",
+   "lastKey": "base::shokk_void"
+  },
+  {
+   "file": "pages/finish_more_bases_23.json",
+   "domain": "finish_more_bases_23",
+   "group": "More Bases",
+   "count": 18,
+   "bytes": 82352,
+   "firstKey": "base::shokk_vortex",
+   "lastKey": "base::superconductor"
+  },
+  {
+   "file": "pages/finish_more_bases_24.json",
+   "domain": "finish_more_bases_24",
+   "group": "More Bases",
+   "count": 19,
+   "bytes": 86148,
+   "firstKey": "base::surgical_steel",
+   "lastKey": "base::twoface_gold_emerald"
+  },
+  {
+   "file": "pages/finish_more_bases_25.json",
+   "domain": "finish_more_bases_25",
+   "group": "More Bases",
+   "count": 14,
+   "bytes": 63315,
+   "firstKey": "base::twoface_green_magenta",
+   "lastKey": "base::xirallic"
+  },
+  {
+   "file": "pages/finish_fractured_elements_1.json",
+   "domain": "finish_fractured_elements_1",
+   "group": "FRACTURED ELEMENTS",
+   "count": 15,
+   "bytes": 67815,
+   "firstKey": "monolithic::elm_acid_rain",
+   "lastKey": "monolithic::elm_dust_veil"
+  },
+  {
+   "file": "pages/finish_fractured_elements_2.json",
+   "domain": "finish_fractured_elements_2",
+   "group": "FRACTURED ELEMENTS",
+   "count": 15,
+   "bytes": 68117,
+   "firstKey": "monolithic::elm_flood_line",
+   "lastKey": "monolithic::elm_loess"
+  },
+  {
+   "file": "pages/finish_fractured_elements_3.json",
+   "domain": "finish_fractured_elements_3",
+   "group": "FRACTURED ELEMENTS",
+   "count": 15,
+   "bytes": 67834,
+   "firstKey": "monolithic::elm_mammatus",
+   "lastKey": "monolithic::elm_sleet"
+  },
+  {
+   "file": "pages/finish_fractured_elements_4.json",
+   "domain": "finish_fractured_elements_4",
+   "group": "FRACTURED ELEMENTS",
+   "count": 15,
+   "bytes": 68845,
+   "firstKey": "monolithic::elm_snowdrift",
+   "lastKey": "monolithic::elm_windscreen"
+  },
+  {
+   "file": "pages/finish_fractured_cosmos_1.json",
+   "domain": "finish_fractured_cosmos_1",
+   "group": "FRACTURED COSMOS",
+   "count": 14,
+   "bytes": 64709,
+   "firstKey": "monolithic::cos_abduction_column",
+   "lastKey": "monolithic::cos_deep_field"
+  },
+  {
+   "file": "pages/finish_fractured_cosmos_2.json",
+   "domain": "finish_fractured_cosmos_2",
+   "group": "FRACTURED COSMOS",
+   "count": 14,
+   "bytes": 64691,
+   "firstKey": "monolithic::cos_docking_ring",
+   "lastKey": "monolithic::cos_ice_moon"
+  },
+  {
+   "file": "pages/finish_fractured_cosmos_3.json",
+   "domain": "finish_fractured_cosmos_3",
+   "group": "FRACTURED COSMOS",
+   "count": 15,
+   "bytes": 68049,
+   "firstKey": "monolithic::cos_kilonova",
+   "lastKey": "monolithic::cos_ring_shadow"
+  },
+  {
+   "file": "pages/finish_fractured_cosmos_4.json",
+   "domain": "finish_fractured_cosmos_4",
+   "group": "FRACTURED COSMOS",
+   "count": 17,
+   "bytes": 76859,
+   "firstKey": "monolithic::cos_salt_flat",
+   "lastKey": "monolithic::cos_zodiacal_light"
+  },
+  {
+   "file": "pages/finish_fractured_nightshift_1.json",
+   "domain": "finish_fractured_nightshift_1",
+   "group": "FRACTURED NIGHTSHIFT",
+   "count": 16,
+   "bytes": 74027,
+   "firstKey": "monolithic::nsx_absinthe_night",
+   "lastKey": "monolithic::nsx_deep_water_forge"
+  },
+  {
+   "file": "pages/finish_fractured_nightshift_2.json",
+   "domain": "finish_fractured_nightshift_2",
+   "group": "FRACTURED NIGHTSHIFT",
+   "count": 16,
+   "bytes": 72816,
+   "firstKey": "monolithic::nsx_ember_verdict",
+   "lastKey": "monolithic::nsx_marigold_abyss"
+  },
+  {
+   "file": "pages/finish_fractured_nightshift_3.json",
+   "domain": "finish_fractured_nightshift_3",
+   "group": "FRACTURED NIGHTSHIFT",
+   "count": 18,
+   "bytes": 82797,
+   "firstKey": "monolithic::nsx_ochre_arctic",
+   "lastKey": "monolithic::nsx_wormwood_vigil"
+  },
+  {
+   "file": "pages/finish_fractured_flames_1.json",
+   "domain": "finish_fractured_flames_1",
+   "group": "FRACTURED FLAMES",
+   "count": 18,
+   "bytes": 83158,
+   "firstKey": "monolithic::ffl_arc_filament",
+   "lastKey": "monolithic::ffl_corona_grain"
+  },
+  {
+   "file": "pages/finish_fractured_flames_2.json",
+   "domain": "finish_fractured_flames_2",
+   "group": "FRACTURED FLAMES",
+   "count": 18,
+   "bytes": 83360,
+   "firstKey": "monolithic::ffl_crown_fire",
+   "lastKey": "monolithic::ffl_ignition_delay"
+  },
+  {
+   "file": "pages/finish_fractured_flames_3.json",
+   "domain": "finish_fractured_flames_3",
+   "group": "FRACTURED FLAMES",
+   "count": 18,
+   "bytes": 83323,
+   "firstKey": "monolithic::ffl_ionised_braid",
+   "lastKey": "monolithic::ffl_retained_heat"
+  },
+  {
+   "file": "pages/finish_fractured_flames_4.json",
+   "domain": "finish_fractured_flames_4",
+   "group": "FRACTURED FLAMES",
+   "count": 19,
+   "bytes": 88482,
+   "firstKey": "monolithic::ffl_ropy_flow",
+   "lastKey": "monolithic::ffl_vitrified_glaze"
+  },
+  {
+   "file": "pages/finish_fractured_flames_5.json",
+   "domain": "finish_fractured_flames_5",
+   "group": "FRACTURED FLAMES",
+   "count": 2,
+   "bytes": 9246,
+   "firstKey": "monolithic::ffl_weld_pool",
+   "lastKey": "monolithic::ffl_wrinkled_front"
+  },
+  {
+   "file": "pages/finish_gradients_1.json",
+   "domain": "finish_gradients_1",
+   "group": "GRADIENTS",
+   "count": 14,
+   "bytes": 67951,
+   "firstKey": "monolithic::grd_aurora_reactor",
+   "lastKey": "monolithic::grd_holo_foil"
+  },
+  {
+   "file": "pages/finish_gradients_2.json",
+   "domain": "finish_gradients_2",
+   "group": "GRADIENTS",
+   "count": 14,
+   "bytes": 66853,
+   "firstKey": "monolithic::grd_holographic_maelstrom",
+   "lastKey": "monolithic::grd_plasma_oilspill"
+  },
+  {
+   "file": "pages/finish_gradients_3.json",
+   "domain": "finish_gradients_3",
+   "group": "GRADIENTS",
+   "count": 15,
+   "bytes": 71494,
+   "firstKey": "monolithic::grd_prismatic_thunderhead",
+   "lastKey": "monolithic::grd_viscous_prism_fingers"
+  },
+  {
+   "file": "pages/finish_fractured_minds_1.json",
+   "domain": "finish_fractured_minds_1",
+   "group": "FRACTURED MINDS",
+   "count": 18,
+   "bytes": 85026,
+   "firstKey": "monolithic::fm_basalt",
+   "lastKey": "monolithic::fm_flame_helix"
+  },
+  {
+   "file": "pages/finish_fractured_minds_2.json",
+   "domain": "finish_fractured_minds_2",
+   "group": "FRACTURED MINDS",
+   "count": 18,
+   "bytes": 84199,
+   "firstKey": "monolithic::fm_flame_lick",
+   "lastKey": "monolithic::fm_magma"
+  },
+  {
+   "file": "pages/finish_fractured_minds_3.json",
+   "domain": "finish_fractured_minds_3",
+   "group": "FRACTURED MINDS",
+   "count": 19,
+   "bytes": 89069,
+   "firstKey": "monolithic::fm_mudcrack",
+   "lastKey": "monolithic::fm_witchlight"
+  },
+  {
+   "file": "pages/finish_fractured_souls_1.json",
+   "domain": "finish_fractured_souls_1",
+   "group": "FRACTURED SOULS",
+   "count": 15,
+   "bytes": 70634,
+   "firstKey": "monolithic::fs_aurora_threads",
+   "lastKey": "monolithic::fs_howl"
+  },
+  {
+   "file": "pages/finish_fractured_souls_2.json",
+   "domain": "finish_fractured_souls_2",
+   "group": "FRACTURED SOULS",
+   "count": 15,
+   "bytes": 71432,
+   "firstKey": "monolithic::fs_moire_phantom",
+   "lastKey": "monolithic::fs_wraith_veil"
+  },
+  {
+   "file": "pages/finish_fractured_forge_1.json",
+   "domain": "finish_fractured_forge_1",
+   "group": "FRACTURED FORGE",
+   "count": 17,
+   "bytes": 78696,
+   "firstKey": "monolithic::ff_abyssal_currents",
+   "lastKey": "monolithic::ff_dichroic_drift"
+  },
+  {
+   "file": "pages/finish_fractured_forge_2.json",
+   "domain": "finish_fractured_forge_2",
+   "group": "FRACTURED FORGE",
+   "count": 17,
+   "bytes": 77394,
+   "firstKey": "monolithic::ff_dragonscale",
+   "lastKey": "monolithic::ff_magma_current"
+  },
+  {
+   "file": "pages/finish_fractured_forge_3.json",
+   "domain": "finish_fractured_forge_3",
+   "group": "FRACTURED FORGE",
+   "count": 17,
+   "bytes": 78564,
+   "firstKey": "monolithic::ff_marble",
+   "lastKey": "monolithic::ff_resonance"
+  },
+  {
+   "file": "pages/finish_fractured_forge_4.json",
+   "domain": "finish_fractured_forge_4",
+   "group": "FRACTURED FORGE",
+   "count": 17,
+   "bytes": 77217,
+   "firstKey": "monolithic::ff_resonant_cells",
+   "lastKey": "monolithic::ff_stormfork"
+  },
+  {
+   "file": "pages/finish_fractured_forge_5.json",
+   "domain": "finish_fractured_forge_5",
+   "group": "FRACTURED FORGE",
+   "count": 19,
+   "bytes": 87717,
+   "firstKey": "monolithic::ff_sunwheel",
+   "lastKey": "monolithic::fml_sulfur_web"
+  },
+  {
+   "file": "pages/finish_fractured_forge_6.json",
+   "domain": "finish_fractured_forge_6",
+   "group": "FRACTURED FORGE",
+   "count": 1,
+   "bytes": 4796,
+   "firstKey": "monolithic::fml_whitehot_glass",
+   "lastKey": "monolithic::fml_whitehot_glass"
+  },
+  {
+   "file": "pages/finish_fractured_opalfire_1.json",
+   "domain": "finish_fractured_opalfire_1",
+   "group": "FRACTURED OPALFIRE",
+   "count": 16,
+   "bytes": 74410,
+   "firstKey": "monolithic::fof_abyssal_vents",
+   "lastKey": "monolithic::fof_orchid_kagome"
+  },
+  {
+   "file": "pages/finish_fractured_opalfire_2.json",
+   "domain": "finish_fractured_opalfire_2",
+   "group": "FRACTURED OPALFIRE",
+   "count": 16,
+   "bytes": 74973,
+   "firstKey": "monolithic::fof_patina_guilloche",
+   "lastKey": "monolithic::fsk_croc_hide"
+  },
+  {
+   "file": "pages/finish_fractured_opalfire_3.json",
+   "domain": "finish_fractured_opalfire_3",
+   "group": "FRACTURED OPALFIRE",
+   "count": 18,
+   "bytes": 84672,
+   "firstKey": "monolithic::fsk_damascus",
+   "lastKey": "monolithic::fsk_stingray"
+  },
+  {
+   "file": "pages/finish_fractured_foundry_1.json",
+   "domain": "finish_fractured_foundry_1",
+   "group": "FRACTURED FOUNDRY",
+   "count": 16,
+   "bytes": 72945,
+   "firstKey": "monolithic::ffo_anodised",
+   "lastKey": "monolithic::ffo_drawn_taper"
+  },
+  {
+   "file": "pages/finish_fractured_foundry_2.json",
+   "domain": "finish_fractured_foundry_2",
+   "group": "FRACTURED FOUNDRY",
+   "count": 16,
+   "bytes": 72743,
+   "firstKey": "monolithic::ffo_face_mill",
+   "lastKey": "monolithic::ffo_phosphated"
+  },
+  {
+   "file": "pages/finish_fractured_foundry_3.json",
+   "domain": "finish_fractured_foundry_3",
+   "group": "FRACTURED FOUNDRY",
+   "count": 18,
+   "bytes": 81565,
+   "firstKey": "monolithic::ffo_planished",
+   "lastKey": "monolithic::ffo_zinc_spangle"
+  },
+  {
+   "file": "pages/finish_fractured_tessera_1.json",
+   "domain": "finish_fractured_tessera_1",
+   "group": "FRACTURED TESSERA",
+   "count": 16,
+   "bytes": 74436,
+   "firstKey": "monolithic::ff_truchet_glass",
+   "lastKey": "monolithic::fts_fishscale_roof"
+  },
+  {
+   "file": "pages/finish_fractured_tessera_2.json",
+   "domain": "finish_fractured_tessera_2",
+   "group": "FRACTURED TESSERA",
+   "count": 16,
+   "bytes": 73569,
+   "firstKey": "monolithic::fts_flemish_bond",
+   "lastKey": "monolithic::fts_mudcrack_pan"
+  },
+  {
+   "file": "pages/finish_fractured_tessera_3.json",
+   "domain": "finish_fractured_tessera_3",
+   "group": "FRACTURED TESSERA",
+   "count": 18,
+   "bytes": 83714,
+   "firstKey": "monolithic::fts_muqarnas_vault",
+   "lastKey": "monolithic::fts_zigzag_ribbon"
+  },
+  {
+   "file": "pages/finish_paradigm_1.json",
+   "domain": "finish_paradigm_1",
+   "group": "PARADIGM",
+   "count": 16,
+   "bytes": 72683,
+   "firstKey": "monolithic::pdg_ash_chrome",
+   "lastKey": "monolithic::pdg_corrugate_mercury"
+  },
+  {
+   "file": "pages/finish_paradigm_2.json",
+   "domain": "finish_paradigm_2",
+   "group": "PARADIGM",
+   "count": 16,
+   "bytes": 72667,
+   "firstKey": "monolithic::pdg_decay_pearl",
+   "lastKey": "monolithic::pdg_moss_glass"
+  },
+  {
+   "file": "pages/finish_paradigm_3.json",
+   "domain": "finish_paradigm_3",
+   "group": "PARADIGM",
+   "count": 18,
+   "bytes": 82239,
+   "firstKey": "monolithic::pdg_mould_liquid",
+   "lastKey": "monolithic::pdg_wool_glass"
+  },
+  {
+   "file": "pages/finish_world_of_color_1.json",
+   "domain": "finish_world_of_color_1",
+   "group": "WORLD OF COLOR",
+   "count": 16,
+   "bytes": 73137,
+   "firstKey": "monolithic::woc_abaca_fibre",
+   "lastKey": "monolithic::woc_block_print"
+  },
+  {
+   "file": "pages/finish_world_of_color_2.json",
+   "domain": "finish_world_of_color_2",
+   "group": "WORLD OF COLOR",
+   "count": 16,
+   "bytes": 71993,
+   "firstKey": "monolithic::woc_blue_mountain",
+   "lastKey": "monolithic::woc_connemara_marble"
+  },
+  {
+   "file": "pages/finish_world_of_color_3.json",
+   "domain": "finish_world_of_color_3",
+   "group": "WORLD OF COLOR",
+   "count": 16,
+   "bytes": 72835,
+   "firstKey": "monolithic::woc_cork_bark",
+   "lastKey": "monolithic::woc_havana_facade"
+  },
+  {
+   "file": "pages/finish_world_of_color_4.json",
+   "domain": "finish_world_of_color_4",
+   "group": "WORLD OF COLOR",
+   "count": 16,
+   "bytes": 72489,
+   "firstKey": "monolithic::woc_heather_moor",
+   "lastKey": "monolithic::woc_mayon_ash"
+  },
+  {
+   "file": "pages/finish_world_of_color_5.json",
+   "domain": "finish_world_of_color_5",
+   "group": "WORLD OF COLOR",
+   "count": 16,
+   "bytes": 72737,
+   "firstKey": "monolithic::woc_meerschaum",
+   "lastKey": "monolithic::woc_sandstone_jali"
+  },
+  {
+   "file": "pages/finish_world_of_color_6.json",
+   "domain": "finish_world_of_color_6",
+   "group": "WORLD OF COLOR",
+   "count": 19,
+   "bytes": 86924,
+   "firstKey": "monolithic::woc_sardine_tin",
+   "lastKey": "monolithic::woc_washi_fibre"
+  },
+  {
+   "file": "pages/finish_world_of_color_7.json",
+   "domain": "finish_world_of_color_7",
+   "group": "WORLD OF COLOR",
+   "count": 1,
+   "bytes": 4697,
+   "firstKey": "monolithic::woc_zellij_star",
+   "lastKey": "monolithic::woc_zellij_star"
+  },
+  {
+   "file": "pages/finish_money_shokk_1.json",
+   "domain": "finish_money_shokk_1",
+   "group": "MONEY SHOKK",
+   "count": 13,
+   "bytes": 58980,
+   "firstKey": "monolithic::msk_armoured_glass",
+   "lastKey": "monolithic::msk_deposit_brass"
+  },
+  {
+   "file": "pages/finish_money_shokk_2.json",
+   "domain": "finish_money_shokk_2",
+   "group": "MONEY SHOKK",
+   "count": 13,
+   "bytes": 58977,
+   "firstKey": "monolithic::msk_fresh_sheet",
+   "lastKey": "monolithic::msk_rescreened"
+  },
+  {
+   "file": "pages/finish_money_shokk_3.json",
+   "domain": "finish_money_shokk_3",
+   "group": "MONEY SHOKK",
+   "count": 14,
+   "bytes": 63705,
+   "firstKey": "monolithic::msk_rose_engine",
+   "lastKey": "monolithic::msk_wrong_watermark"
+  },
+  {
+   "file": "pages/finish_dark_city_1.json",
+   "domain": "finish_dark_city_1",
+   "group": "DARK CITY",
+   "count": 16,
+   "bytes": 71321,
+   "firstKey": "monolithic::dkc_abyss_blue",
+   "lastKey": "monolithic::dkc_flashover"
+  },
+  {
+   "file": "pages/finish_dark_city_2.json",
+   "domain": "finish_dark_city_2",
+   "group": "DARK CITY",
+   "count": 16,
+   "bytes": 72219,
+   "firstKey": "monolithic::dkc_galena_cube",
+   "lastKey": "monolithic::dkc_neon_scar"
+  },
+  {
+   "file": "pages/finish_dark_city_3.json",
+   "domain": "finish_dark_city_3",
+   "group": "DARK CITY",
+   "count": 18,
+   "bytes": 80723,
+   "firstKey": "monolithic::dkc_night_rain",
+   "lastKey": "monolithic::dkc_wet_asphalt"
+  },
+  {
+   "file": "pages/finish_x_lab_1.json",
+   "domain": "finish_x_lab_1",
+   "group": "X LAB",
+   "count": 16,
+   "bytes": 73145,
+   "firstKey": "monolithic::xlab_abyssal_lens",
+   "lastKey": "monolithic::xlab_cinder_mirror"
+  },
+  {
+   "file": "pages/finish_x_lab_2.json",
+   "domain": "finish_x_lab_2",
+   "group": "X LAB",
+   "count": 16,
+   "bytes": 72235,
+   "firstKey": "monolithic::xlab_comet_terrace",
+   "lastKey": "monolithic::xlab_luminous_carbon"
+  },
+  {
+   "file": "pages/finish_x_lab_3.json",
+   "domain": "finish_x_lab_3",
+   "group": "X LAB",
+   "count": 18,
+   "bytes": 82364,
+   "firstKey": "monolithic::xlab_medusa_lattice",
+   "lastKey": "monolithic::xlab_velvet_meteor"
+  },
+  {
+   "file": "pages/finish_impossible_finishes_1.json",
+   "domain": "finish_impossible_finishes_1",
+   "group": "IMPOSSIBLE FINISHES",
+   "count": 10,
+   "bytes": 47958,
+   "firstKey": "monolithic::impossible_cinder_abyss",
+   "lastKey": "monolithic::impossible_penrose_reactor"
+  },
+  {
+   "file": "pages/finish_fractured_shokk_1.json",
+   "domain": "finish_fractured_shokk_1",
+   "group": "FRACTURED SHOKK",
+   "count": 9,
+   "bytes": 42753,
+   "firstKey": "monolithic::fsh_bubble_spectrum",
+   "lastKey": "monolithic::fsh_hex_resonance"
+  },
+  {
+   "file": "pages/finish_fractured_shokk_2.json",
+   "domain": "finish_fractured_shokk_2",
+   "group": "FRACTURED SHOKK",
+   "count": 11,
+   "bytes": 51347,
+   "firstKey": "monolithic::fsh_iris_turbine",
+   "lastKey": "monolithic::fsh_spectral_silver"
+  },
+  {
+   "file": "pages/finish_neon_underground_1.json",
+   "domain": "finish_neon_underground_1",
+   "group": "NEON UNDERGROUND",
+   "count": 12,
+   "bytes": 56645,
+   "firstKey": "monolithic::neon2_circuit_city",
+   "lastKey": "monolithic::neon2_splatter"
+  },
+  {
+   "file": "pages/finish_neon_underground_2.json",
+   "domain": "finish_neon_underground_2",
+   "group": "NEON UNDERGROUND",
+   "count": 13,
+   "bytes": 62161,
+   "firstKey": "monolithic::neon2_synthwave_sun",
+   "lastKey": "monolithic::neon_toxic_green"
+  },
+  {
+   "file": "pages/finish_anime_inspired_1.json",
+   "domain": "finish_anime_inspired_1",
+   "group": "ANIME INSPIRED",
+   "count": 15,
+   "bytes": 71847,
+   "firstKey": "monolithic::anime2_blood_moon",
+   "lastKey": "monolithic::anime2_speed_lines"
+  },
+  {
+   "file": "pages/finish_rising_sun_1.json",
+   "domain": "finish_rising_sun_1",
+   "group": "RISING SUN",
+   "count": 17,
+   "bytes": 80040,
+   "firstKey": "monolithic::rs_akane_flake_fog",
+   "lastKey": "monolithic::rs_indigo_tsunami"
+  },
+  {
+   "file": "pages/finish_rising_sun_2.json",
+   "domain": "finish_rising_sun_2",
+   "group": "RISING SUN",
+   "count": 17,
+   "bytes": 80350,
+   "firstKey": "monolithic::rs_iris_rain",
+   "lastKey": "monolithic::rs_oni_bloodshift"
+  },
+  {
+   "file": "pages/finish_rising_sun_3.json",
+   "domain": "finish_rising_sun_3",
+   "group": "RISING SUN",
+   "count": 18,
+   "bytes": 84547,
+   "firstKey": "monolithic::rs_oni_nocturne",
+   "lastKey": "monolithic::rs_yurei_veil"
+  },
+  {
+   "file": "pages/finish_viva_mexico_1.json",
+   "domain": "finish_viva_mexico_1",
+   "group": "VIVA MEXICO",
+   "count": 14,
+   "bytes": 66501,
+   "firstKey": "monolithic::vm_adobe_sunset",
+   "lastKey": "monolithic::vm_charro_nocturne"
+  },
+  {
+   "file": "pages/finish_viva_mexico_2.json",
+   "domain": "finish_viva_mexico_2",
+   "group": "VIVA MEXICO",
+   "count": 14,
+   "bytes": 66217,
+   "firstKey": "monolithic::vm_cinco_spark",
+   "lastKey": "monolithic::vm_mayan_jade"
+  },
+  {
+   "file": "pages/finish_viva_mexico_3.json",
+   "domain": "finish_viva_mexico_3",
+   "group": "VIVA MEXICO",
+   "count": 14,
+   "bytes": 66688,
+   "firstKey": "monolithic::vm_mezcal_smoke",
+   "lastKey": "monolithic::vm_riviera_lowrider"
+  },
+  {
+   "file": "pages/finish_viva_mexico_4.json",
+   "domain": "finish_viva_mexico_4",
+   "group": "VIVA MEXICO",
+   "count": 16,
+   "bytes": 76232,
+   "firstKey": "monolithic::vm_rosa_corazon",
+   "lastKey": "monolithic::vm_zapotec_thunder"
+  },
+  {
+   "file": "pages/finish_union_jacked_1.json",
+   "domain": "finish_union_jacked_1",
+   "group": "UNION JACKED",
+   "count": 15,
+   "bytes": 70931,
+   "firstKey": "monolithic::uj_aston_strait_silver",
+   "lastKey": "monolithic::uj_gherkin_twist_metal"
+  },
+  {
+   "file": "pages/finish_union_jacked_2.json",
+   "domain": "finish_union_jacked_2",
+   "group": "UNION JACKED",
+   "count": 14,
+   "bytes": 67045,
+   "firstKey": "monolithic::uj_glasgow_granite_soul",
+   "lastKey": "monolithic::uj_mini_cooper_flip"
+  },
+  {
+   "file": "pages/finish_union_jacked_3.json",
+   "domain": "finish_union_jacked_3",
+   "group": "UNION JACKED",
+   "count": 16,
+   "bytes": 77176,
+   "firstKey": "monolithic::uj_notting_carnival_glass",
+   "lastKey": "monolithic::uj_windsor_guard_gloss"
+  },
+  {
+   "file": "pages/finish_forbidden_dragon_1.json",
+   "domain": "finish_forbidden_dragon_1",
+   "group": "FORBIDDEN DRAGON",
+   "count": 10,
+   "bytes": 47039,
+   "firstKey": "monolithic::fd_abyssal_sea",
+   "lastKey": "monolithic::fd_imperial_gold"
+  },
+  {
+   "file": "pages/finish_forbidden_dragon_2.json",
+   "domain": "finish_forbidden_dragon_2",
+   "group": "FORBIDDEN DRAGON",
+   "count": 10,
+   "bytes": 47236,
+   "firstKey": "monolithic::fd_jade_empress",
+   "lastKey": "monolithic::fd_white_tiger_baihu"
+  },
+  {
+   "file": "pages/finish_let_freedom_ring_1.json",
+   "domain": "finish_let_freedom_ring_1",
+   "group": "LET FREEDOM RING",
+   "count": 10,
+   "bytes": 47828,
+   "firstKey": "monolithic::lfr_amber_waves",
+   "lastKey": "monolithic::lfr_we_the_people"
+  },
+  {
+   "file": "pages/finish_fable_1.json",
+   "domain": "finish_fable_1",
+   "group": "FABLE",
+   "count": 16,
+   "bytes": 70690,
+   "firstKey": "monolithic::fab_basilisk_stone",
+   "lastKey": "monolithic::fab_glass_slipper"
+  },
+  {
+   "file": "pages/finish_fable_2.json",
+   "domain": "finish_fable_2",
+   "group": "FABLE",
+   "count": 16,
+   "bytes": 71688,
+   "firstKey": "monolithic::fab_griffin_bronze",
+   "lastKey": "monolithic::fab_pumpkin_coach"
+  },
+  {
+   "file": "pages/finish_fable_3.json",
+   "domain": "finish_fable_3",
+   "group": "FABLE",
+   "count": 18,
+   "bytes": 81157,
+   "firstKey": "monolithic::fab_red_hood",
+   "lastKey": "monolithic::fab_woodcut_block"
+  },
+  {
+   "file": "pages/finish_prizm_1.json",
+   "domain": "finish_prizm_1",
+   "group": "Prizm",
+   "count": 13,
+   "bytes": 59941,
+   "firstKey": "monolithic::chameleon_amethyst",
+   "lastKey": "monolithic::chameleon_phoenix"
+  },
+  {
+   "file": "pages/finish_prizm_2.json",
+   "domain": "finish_prizm_2",
+   "group": "Prizm",
+   "count": 13,
+   "bytes": 60030,
+   "firstKey": "monolithic::chameleon_venom",
+   "lastKey": "monolithic::prizm_deep_space"
+  },
+  {
+   "file": "pages/finish_prizm_3.json",
+   "domain": "finish_prizm_3",
+   "group": "Prizm",
+   "count": 14,
+   "bytes": 63949,
+   "firstKey": "monolithic::prizm_duochrome",
+   "lastKey": "monolithic::prizm_venom"
+  },
+  {
+   "file": "pages/finish_gradient_directional_1.json",
+   "domain": "finish_gradient_directional_1",
+   "group": "Gradient Directional",
+   "count": 17,
+   "bytes": 78366,
+   "firstKey": "monolithic::grad_arctic_dawn",
+   "lastKey": "monolithic::grad_midnight_ember"
+  },
+  {
+   "file": "pages/finish_gradient_directional_2.json",
+   "domain": "finish_gradient_directional_2",
+   "group": "Gradient Directional",
+   "count": 17,
+   "bytes": 79202,
+   "firstKey": "monolithic::grad_neon_rush",
+   "lastKey": "monolithic::grad_white_vortex"
+  },
+  {
+   "file": "pages/finish_color_clash_1.json",
+   "domain": "finish_color_clash_1",
+   "group": "Color Clash",
+   "count": 12,
+   "bytes": 56581,
+   "firstKey": "monolithic::cc_acid_burn",
+   "lastKey": "monolithic::cc_flash_burn"
+  },
+  {
+   "file": "pages/finish_color_clash_2.json",
+   "domain": "finish_color_clash_2",
+   "group": "Color Clash",
+   "count": 13,
+   "bytes": 60934,
+   "firstKey": "monolithic::cc_magma_freeze",
+   "lastKey": "monolithic::cc_voltage_split"
+  },
+  {
+   "file": "pages/finish_gradient_extended_1.json",
+   "domain": "finish_gradient_extended_1",
+   "group": "Gradient Extended",
+   "count": 16,
+   "bytes": 74510,
+   "firstKey": "monolithic::grad_amber_night",
+   "lastKey": "monolithic::grad_champagne_navy"
+  },
+  {
+   "file": "pages/finish_gradient_extended_2.json",
+   "domain": "finish_gradient_extended_2",
+   "group": "Gradient Extended",
+   "count": 16,
+   "bytes": 75574,
+   "firstKey": "monolithic::grad_champagne_vortex",
+   "lastKey": "monolithic::grad_ember_ash"
+  },
+  {
+   "file": "pages/finish_gradient_extended_3.json",
+   "domain": "finish_gradient_extended_3",
+   "group": "Gradient Extended",
+   "count": 17,
+   "bytes": 78930,
+   "firstKey": "monolithic::grad_emerald_crown",
+   "lastKey": "monolithic::grad_lavender_dusk"
+  },
+  {
+   "file": "pages/finish_gradient_extended_4.json",
+   "domain": "finish_gradient_extended_4",
+   "group": "Gradient Extended",
+   "count": 16,
+   "bytes": 75663,
+   "firstKey": "monolithic::grad_lavender_vortex",
+   "lastKey": "monolithic::grad_patriot_vortex"
+  },
+  {
+   "file": "pages/finish_gradient_extended_5.json",
+   "domain": "finish_gradient_extended_5",
+   "group": "Gradient Extended",
+   "count": 16,
+   "bytes": 74956,
+   "firstKey": "monolithic::grad_peach_vortex",
+   "lastKey": "monolithic::grad_slate_vortex"
+  },
+  {
+   "file": "pages/finish_gradient_extended_6.json",
+   "domain": "finish_gradient_extended_6",
+   "group": "Gradient Extended",
+   "count": 19,
+   "bytes": 89827,
+   "firstKey": "monolithic::grad_solar_flare",
+   "lastKey": "monolithic::gradient_pearl_chrome"
+  },
+  {
+   "file": "pages/finish_gradient_extended_7.json",
+   "domain": "finish_gradient_extended_7",
+   "group": "Gradient Extended",
+   "count": 1,
+   "bytes": 4859,
+   "firstKey": "monolithic::gradient_spectraflame_void",
+   "lastKey": "monolithic::gradient_spectraflame_void"
+  },
+  {
+   "file": "pages/finish_source_pattern_plates_1.json",
+   "domain": "finish_source_pattern_plates_1",
+   "group": "SOURCE PATTERN PLATES",
+   "count": 11,
+   "bytes": 52250,
+   "firstKey": "monolithic::pp_acid_carbon_mesh",
+   "lastKey": "monolithic::pp_holographic_oil_circuit"
+  },
+  {
+   "file": "pages/finish_source_pattern_plates_2.json",
+   "domain": "finish_source_pattern_plates_2",
+   "group": "SOURCE PATTERN PLATES",
+   "count": 13,
+   "bytes": 61211,
+   "firstKey": "monolithic::pp_ice_facet_shatter",
+   "lastKey": "monolithic::pp_tokyo_script_textile"
+  },
+  {
+   "file": "pages/finish_grunge_fun_1.json",
+   "domain": "finish_grunge_fun_1",
+   "group": "GRUNGE & FUN",
+   "count": 15,
+   "bytes": 73181,
+   "firstKey": "monolithic::gf_magnific_digital_illustration_a_dark_background_",
+   "lastKey": "monolithic::gf_x_20771417_v6t9_6fpy_210512"
+  },
+  {
+   "file": "pages/finish_grunge_fun_2.json",
+   "domain": "finish_grunge_fun_2",
+   "group": "GRUNGE & FUN",
+   "count": 16,
+   "bytes": 77661,
+   "firstKey": "monolithic::gf_x_2149635369",
+   "lastKey": "monolithic::gf_x_4004"
+  },
+  {
+   "file": "pages/finish_grunge_fun_3.json",
+   "domain": "finish_grunge_fun_3",
+   "group": "GRUNGE & FUN",
+   "count": 17,
+   "bytes": 82610,
+   "firstKey": "monolithic::gf_x_417665166_62a76dd6_56af_4a68_b801_92f5967beda0",
+   "lastKey": "monolithic::gf_x_9819736_12811_1"
+  },
+  {
+   "file": "pages/finish_glass_surface_1.json",
+   "domain": "finish_glass_surface_1",
+   "group": "Glass & Surface",
+   "count": 10,
+   "bytes": 46832,
+   "firstKey": "monolithic::exotic_anti_metal",
+   "lastKey": "monolithic::exotic_wet_void"
+  },
+  {
+   "file": "pages/finish_spectrum_shift_1.json",
+   "domain": "finish_spectrum_shift_1",
+   "group": "Spectrum Shift",
+   "count": 14,
+   "bytes": 67536,
+   "firstKey": "monolithic::spectral_complementary",
+   "lastKey": "monolithic::spectrum_beetle_elytra"
+  },
+  {
+   "file": "pages/finish_spectrum_shift_2.json",
+   "domain": "finish_spectrum_shift_2",
+   "group": "Spectrum Shift",
+   "count": 14,
+   "bytes": 67049,
+   "firstKey": "monolithic::spectrum_bismuth_garden",
+   "lastKey": "monolithic::spectrum_fracture_polarized"
+  },
+  {
+   "file": "pages/finish_spectrum_shift_3.json",
+   "domain": "finish_spectrum_shift_3",
+   "group": "Spectrum Shift",
+   "count": 15,
+   "bytes": 71611,
+   "firstKey": "monolithic::spectrum_ghost_prism",
+   "lastKey": "monolithic::spectrum_pressure_map"
+  },
+  {
+   "file": "pages/finish_spectrum_shift_4.json",
+   "domain": "finish_spectrum_shift_4",
+   "group": "Spectrum Shift",
+   "count": 17,
+   "bytes": 80588,
+   "firstKey": "monolithic::spectrum_prism_pool",
+   "lastKey": "monolithic::spectrum_xray_bloom"
+  },
+  {
+   "file": "pages/finish_light_optics_1.json",
+   "domain": "finish_light_optics_1",
+   "group": "Light & Optics",
+   "count": 14,
+   "bytes": 63644,
+   "firstKey": "monolithic::halo_circle_pearl",
+   "lastKey": "monolithic::optics2_dvd"
+  },
+  {
+   "file": "pages/finish_light_optics_2.json",
+   "domain": "finish_light_optics_2",
+   "group": "Light & Optics",
+   "count": 15,
+   "bytes": 69049,
+   "firstKey": "monolithic::optics2_fiber",
+   "lastKey": "monolithic::sparkle_starfield"
+  },
+  {
+   "file": "pages/finish_surface_grain_1.json",
+   "domain": "finish_surface_grain_1",
+   "group": "Surface & Grain",
+   "count": 16,
+   "bytes": 74291,
+   "firstKey": "monolithic::aniso_circular_chrome",
+   "lastKey": "monolithic::multiscale_frost_crystal"
+  },
+  {
+   "file": "pages/finish_surface_grain_2.json",
+   "domain": "finish_surface_grain_2",
+   "group": "Surface & Grain",
+   "count": 17,
+   "bytes": 78777,
+   "firstKey": "monolithic::multiscale_matte_silk",
+   "lastKey": "monolithic::worn_chrome"
+  },
+  {
+   "file": "pages/finish_depth_geometry_1.json",
+   "domain": "finish_depth_geometry_1",
+   "group": "Depth & Geometry",
+   "count": 13,
+   "bytes": 58364,
+   "firstKey": "monolithic::depth_bubble",
+   "lastKey": "monolithic::ghost_circuit"
+  },
+  {
+   "file": "pages/finish_depth_geometry_2.json",
+   "domain": "finish_depth_geometry_2",
+   "group": "Depth & Geometry",
+   "count": 13,
+   "bytes": 58310,
+   "firstKey": "monolithic::ghost_diamonds",
+   "lastKey": "monolithic::quilt_gradient_tiles"
+  },
+  {
+   "file": "pages/finish_depth_geometry_3.json",
+   "domain": "finish_depth_geometry_3",
+   "group": "Depth & Geometry",
+   "count": 15,
+   "bytes": 71869,
+   "firstKey": "monolithic::quilt_hex_variety",
+   "lastKey": "monolithic::trizone_vanta_chrome_pearl"
+  },
+  {
+   "file": "pages/finish_materials_physics_1.json",
+   "domain": "finish_materials_physics_1",
+   "group": "Materials & Physics",
+   "count": 15,
+   "bytes": 69691,
+   "firstKey": "monolithic::fractal_candy_chaos",
+   "lastKey": "monolithic::materials2_ferro"
+  },
+  {
+   "file": "pages/finish_materials_physics_2.json",
+   "domain": "finish_materials_physics_2",
+   "group": "Materials & Physics",
+   "count": 16,
+   "bytes": 74616,
+   "firstKey": "monolithic::materials2_forged",
+   "lastKey": "monolithic::weather_volcanic_ash"
+  },
+  {
+   "file": "pages/finish_signal_1.json",
+   "domain": "finish_signal_1",
+   "group": "Signal",
+   "count": 12,
+   "bytes": 53733,
+   "firstKey": "monolithic::aurora_glow",
+   "lastKey": "monolithic::magnesium_burn"
+  },
+  {
+   "file": "pages/finish_signal_2.json",
+   "domain": "finish_signal_2",
+   "group": "Signal",
+   "count": 13,
+   "bytes": 58218,
+   "firstKey": "monolithic::neon_glow",
+   "lastKey": "monolithic::welding_arc"
+  },
+  {
+   "file": "pages/finish_fractured_wilds_1.json",
+   "domain": "finish_fractured_wilds_1",
+   "group": "FRACTURED WILDS",
+   "count": 18,
+   "bytes": 84633,
+   "firstKey": "monolithic::fbl_blush_rose",
+   "lastKey": "monolithic::fbl_pink_stamen"
+  },
+  {
+   "file": "pages/finish_fractured_wilds_2.json",
+   "domain": "finish_fractured_wilds_2",
+   "group": "FRACTURED WILDS",
+   "count": 18,
+   "bytes": 85564,
+   "firstKey": "monolithic::fbl_white_pollen",
+   "lastKey": "monolithic::fc_sasquatch_fur"
+  },
+  {
+   "file": "pages/finish_fractured_wilds_3.json",
+   "domain": "finish_fractured_wilds_3",
+   "group": "FRACTURED WILDS",
+   "count": 18,
+   "bytes": 84930,
+   "firstKey": "monolithic::fc_snakeskin",
+   "lastKey": "monolithic::fmo_firefly_shell"
+  },
+  {
+   "file": "pages/finish_fractured_wilds_4.json",
+   "domain": "finish_fractured_wilds_4",
+   "group": "FRACTURED WILDS",
+   "count": 18,
+   "bytes": 85556,
+   "firstKey": "monolithic::fmo_foam_film",
+   "lastKey": "monolithic::fmo_oil_slick"
+  },
+  {
+   "file": "pages/finish_fractured_wilds_5.json",
+   "domain": "finish_fractured_wilds_5",
+   "group": "FRACTURED WILDS",
+   "count": 18,
+   "bytes": 84226,
+   "firstKey": "monolithic::fmo_owl_eye",
+   "lastKey": "monolithic::fmo_weevil_pit"
+  },
+  {
+   "file": "pages/finish_fractured_wilds_6.json",
+   "domain": "finish_fractured_wilds_6",
+   "group": "FRACTURED WILDS",
+   "count": 19,
+   "bytes": 89283,
+   "firstKey": "monolithic::fpe_amber_agar",
+   "lastKey": "monolithic::fpe_violet_garden"
+  },
+  {
+   "file": "pages/finish_fractured_wilds_7.json",
+   "domain": "finish_fractured_wilds_7",
+   "group": "FRACTURED WILDS",
+   "count": 1,
+   "bytes": 4747,
+   "firstKey": "monolithic::fpe_violet_membrane",
+   "lastKey": "monolithic::fpe_violet_membrane"
+  },
+  {
+   "file": "pages/finish_fractured_relics_1.json",
+   "domain": "finish_fractured_relics_1",
+   "group": "FRACTURED RELICS",
+   "count": 16,
+   "bytes": 73488,
+   "firstKey": "monolithic::frl_apothecary_crust",
+   "lastKey": "monolithic::frl_coffin_varnish"
+  },
+  {
+   "file": "pages/finish_fractured_relics_2.json",
+   "domain": "finish_fractured_relics_2",
+   "group": "FRACTURED RELICS",
+   "count": 16,
+   "bytes": 73958,
+   "firstKey": "monolithic::frl_corpse_candle",
+   "lastKey": "monolithic::frl_palm_line"
+  },
+  {
+   "file": "pages/finish_fractured_relics_3.json",
+   "domain": "finish_fractured_relics_3",
+   "group": "FRACTURED RELICS",
+   "count": 18,
+   "bytes": 82933,
+   "firstKey": "monolithic::frl_philosopher",
+   "lastKey": "monolithic::frl_witch_bottle"
+  },
+  {
+   "file": "pages/finish_wave_flow_1.json",
+   "domain": "finish_wave_flow_1",
+   "group": "Wave & Flow",
+   "count": 10,
+   "bytes": 47594,
+   "firstKey": "monolithic::wave_candy_flow",
+   "lastKey": "monolithic::wave_turbulent_flow"
+  },
+  {
+   "file": "pages/finish_more_specials_1.json",
+   "domain": "finish_more_specials_1",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 86646,
+   "firstKey": "monolithic::acid_etched_glass",
+   "lastKey": "monolithic::art_nouveau_vine"
+  },
+  {
+   "file": "pages/finish_more_specials_2.json",
+   "domain": "finish_more_specials_2",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 88480,
+   "firstKey": "monolithic::astral",
+   "lastKey": "monolithic::aurora_ice_crystal"
+  },
+  {
+   "file": "pages/finish_more_specials_3.json",
+   "domain": "finish_more_specials_3",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87273,
+   "firstKey": "monolithic::aurora_midnight_silk",
+   "lastKey": "monolithic::baroque_scrollwork"
+  },
+  {
+   "file": "pages/finish_more_specials_4.json",
+   "domain": "finish_more_specials_4",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 85152,
+   "firstKey": "monolithic::beat_up_truck",
+   "lastKey": "monolithic::butterfly_morpho"
+  },
+  {
+   "file": "pages/finish_more_specials_5.json",
+   "domain": "finish_more_specials_5",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 86550,
+   "firstKey": "monolithic::carbon_raw",
+   "lastKey": "monolithic::cf_jungle_venom"
+  },
+  {
+   "file": "pages/finish_more_specials_6.json",
+   "domain": "finish_more_specials_6",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 88103,
+   "firstKey": "monolithic::cf_mermaid_scale",
+   "lastKey": "monolithic::chromatic_aberration"
+  },
+  {
+   "file": "pages/finish_more_specials_7.json",
+   "domain": "finish_more_specials_7",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 85253,
+   "firstKey": "monolithic::chrome_oxidized",
+   "lastKey": "monolithic::cs_bronze_green"
+  },
+  {
+   "file": "pages/finish_more_specials_8.json",
+   "domain": "finish_more_specials_8",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 86725,
+   "firstKey": "monolithic::cs_bronze_navy",
+   "lastKey": "monolithic::cs_crimson_jade"
+  },
+  {
+   "file": "pages/finish_more_specials_9.json",
+   "domain": "finish_more_specials_9",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 86294,
+   "firstKey": "monolithic::cs_dark_flame",
+   "lastKey": "monolithic::cs_inferno"
+  },
+  {
+   "file": "pages/finish_more_specials_10.json",
+   "domain": "finish_more_specials_10",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87298,
+   "firstKey": "monolithic::cs_ivory_indigo",
+   "lastKey": "monolithic::cs_oilslick"
+  },
+  {
+   "file": "pages/finish_more_specials_11.json",
+   "domain": "finish_more_specials_11",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 86684,
+   "firstKey": "monolithic::cs_orange_navy",
+   "lastKey": "monolithic::cs_silver_purple"
+  },
+  {
+   "file": "pages/finish_more_specials_12.json",
+   "domain": "finish_more_specials_12",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 86203,
+   "firstKey": "monolithic::cs_silver_red",
+   "lastKey": "monolithic::cs_warm"
+  },
+  {
+   "file": "pages/finish_more_specials_13.json",
+   "domain": "finish_more_specials_13",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87465,
+   "firstKey": "monolithic::cs_white_blue",
+   "lastKey": "monolithic::cx_electric_storm"
+  },
+  {
+   "file": "pages/finish_more_specials_14.json",
+   "domain": "finish_more_specials_14",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 85342,
+   "firstKey": "monolithic::cx_emerald_city",
+   "lastKey": "monolithic::cx_ice_fire"
+  },
+  {
+   "file": "pages/finish_more_specials_15.json",
+   "domain": "finish_more_specials_15",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 88423,
+   "firstKey": "monolithic::cx_midnight_aurora",
+   "lastKey": "monolithic::cx_teal_to_magenta"
+  },
+  {
+   "file": "pages/finish_more_specials_16.json",
+   "domain": "finish_more_specials_16",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 86441,
+   "firstKey": "monolithic::cx_thunderstorm",
+   "lastKey": "monolithic::drafting"
+  },
+  {
+   "file": "pages/finish_more_specials_17.json",
+   "domain": "finish_more_specials_17",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 85488,
+   "firstKey": "monolithic::drag_chute",
+   "lastKey": "monolithic::embossed"
+  },
+  {
+   "file": "pages/finish_more_specials_18.json",
+   "domain": "finish_more_specials_18",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 85485,
+   "firstKey": "monolithic::enchanted",
+   "lastKey": "monolithic::fable_sovereign_flip"
+  },
+  {
+   "file": "pages/finish_more_specials_19.json",
+   "domain": "finish_more_specials_19",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 85394,
+   "firstKey": "monolithic::fable_stained_aurora",
+   "lastKey": "monolithic::fca_crown_violet"
+  },
+  {
+   "file": "pages/finish_more_specials_20.json",
+   "domain": "finish_more_specials_20",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 85286,
+   "firstKey": "monolithic::fca_emerald_quarry",
+   "lastKey": "monolithic::fcw_copper_scroll"
+  },
+  {
+   "file": "pages/finish_more_specials_21.json",
+   "domain": "finish_more_specials_21",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 89010,
+   "firstKey": "monolithic::fcw_gold_geartrain",
+   "lastKey": "monolithic::fd_hydrothermal"
+  },
+  {
+   "file": "pages/finish_more_specials_22.json",
+   "domain": "finish_more_specials_22",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 88698,
+   "firstKey": "monolithic::fd_jellyfall",
+   "lastKey": "monolithic::ffr_hoarfrost_white"
+  },
+  {
+   "file": "pages/finish_more_specials_23.json",
+   "domain": "finish_more_specials_23",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 85277,
+   "firstKey": "monolithic::ffr_ice_needles",
+   "lastKey": "monolithic::fki_celadon_sweep"
+  },
+  {
+   "file": "pages/finish_more_specials_24.json",
+   "domain": "finish_more_specials_24",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 87730,
+   "firstKey": "monolithic::fki_celadon_vein",
+   "lastKey": "monolithic::flag_wave"
+  },
+  {
+   "file": "pages/finish_more_specials_25.json",
+   "domain": "finish_more_specials_25",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 85415,
+   "firstKey": "monolithic::flm_aurora_drape_dance_green_toxic",
+   "lastKey": "monolithic::flm_cellular_embers_dance_classic"
+  },
+  {
+   "file": "pages/finish_more_specials_26.json",
+   "domain": "finish_more_specials_26",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 87597,
+   "firstKey": "monolithic::flm_cellular_embers_ignite_classic",
+   "lastKey": "monolithic::flm_dragon_scale_topo_violet"
+  },
+  {
+   "file": "pages/finish_more_specials_27.json",
+   "domain": "finish_more_specials_27",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 85225,
+   "firstKey": "monolithic::flm_ember_storm_dance_spectral",
+   "lastKey": "monolithic::flm_heat_mirage_dance_spectral"
+  },
+  {
+   "file": "pages/finish_more_specials_28.json",
+   "domain": "finish_more_specials_28",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 85521,
+   "firstKey": "monolithic::flm_heat_mirage_ignite_spectral",
+   "lastKey": "monolithic::flm_mach_cone_topo_spectral"
+  },
+  {
+   "file": "pages/finish_more_specials_29.json",
+   "domain": "finish_more_specials_29",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 86411,
+   "firstKey": "monolithic::flm_magma_bubbles_ignite_classic",
+   "lastKey": "monolithic::flm_obsidian_fracture_ignite_white_hot"
+  },
+  {
+   "file": "pages/finish_more_specials_30.json",
+   "domain": "finish_more_specials_30",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 86241,
+   "firstKey": "monolithic::flm_pahoehoe_rope_dance_classic",
+   "lastKey": "monolithic::flm_smoke_billow_dance_violet"
+  },
+  {
+   "file": "pages/finish_more_specials_31.json",
+   "domain": "finish_more_specials_31",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 85918,
+   "firstKey": "monolithic::flm_smoke_billow_ignite_blue",
+   "lastKey": "monolithic::flm_vortex_spiral_dance_blue"
+  },
+  {
+   "file": "pages/finish_more_specials_32.json",
+   "domain": "finish_more_specials_32",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 85777,
+   "firstKey": "monolithic::flm_vortex_spiral_ignite_blue",
+   "lastKey": "monolithic::fml_whitehot_rapids"
+  },
+  {
+   "file": "pages/finish_more_specials_33.json",
+   "domain": "finish_more_specials_33",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 85072,
+   "firstKey": "monolithic::fnb_cyan_drift",
+   "lastKey": "monolithic::fnb_violet_billows"
+  },
+  {
+   "file": "pages/finish_more_specials_34.json",
+   "domain": "finish_more_specials_34",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 88212,
+   "firstKey": "monolithic::fnb_violet_galaxy",
+   "lastKey": "monolithic::fo_spider_lattice"
+  },
+  {
+   "file": "pages/finish_more_specials_35.json",
+   "domain": "finish_more_specials_35",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 84549,
+   "firstKey": "monolithic::fo_stained_chapel",
+   "lastKey": "monolithic::fr_prism_shatter"
+  },
+  {
+   "file": "pages/finish_more_specials_36.json",
+   "domain": "finish_more_specials_36",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 84799,
+   "firstKey": "monolithic::fr_prism_wheel",
+   "lastKey": "monolithic::fre_lapis_glyphs"
+  },
+  {
+   "file": "pages/finish_more_specials_37.json",
+   "domain": "finish_more_specials_37",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 88292,
+   "firstKey": "monolithic::fre_lapis_inlay",
+   "lastKey": "monolithic::fte_gustfront_green"
+  },
+  {
+   "file": "pages/finish_more_specials_38.json",
+   "domain": "finish_more_specials_38",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 84882,
+   "firstKey": "monolithic::fte_lichtenberg_crown",
+   "lastKey": "monolithic::fu_antigrav"
+  },
+  {
+   "file": "pages/finish_more_specials_39.json",
+   "domain": "finish_more_specials_39",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87684,
+   "firstKey": "monolithic::fu_biomech_skin",
+   "lastKey": "monolithic::galaxy_nebula_base"
+  },
+  {
+   "file": "pages/finish_more_specials_40.json",
+   "domain": "finish_more_specials_40",
+   "group": "More Specials",
+   "count": 20,
+   "bytes": 88149,
+   "firstKey": "monolithic::gargoyle",
+   "lastKey": "monolithic::heat_haze"
+  },
+  {
+   "file": "pages/finish_more_specials_41.json",
+   "domain": "finish_more_specials_41",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87603,
+   "firstKey": "monolithic::heat_wave",
+   "lastKey": "monolithic::lightning_strike"
+  },
+  {
+   "file": "pages/finish_more_specials_42.json",
+   "domain": "finish_more_specials_42",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87644,
+   "firstKey": "monolithic::linen",
+   "lastKey": "monolithic::mc_blue_camo"
+  },
+  {
+   "file": "pages/finish_more_specials_43.json",
+   "domain": "finish_more_specials_43",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 85127,
+   "firstKey": "monolithic::mc_christmas",
+   "lastKey": "monolithic::mc_usa_flag"
+  },
+  {
+   "file": "pages/finish_more_specials_44.json",
+   "domain": "finish_more_specials_44",
+   "group": "More Specials",
+   "count": 18,
+   "bytes": 84683,
+   "firstKey": "monolithic::mc_vaporwave",
+   "lastKey": "monolithic::microshift_purple_gold_majesty"
+  },
+  {
+   "file": "pages/finish_more_specials_45.json",
+   "domain": "finish_more_specials_45",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87974,
+   "firstKey": "monolithic::microshift_purple_plum_bronze",
+   "lastKey": "monolithic::mo_dune_drift"
+  },
+  {
+   "file": "pages/finish_more_specials_46.json",
+   "domain": "finish_more_specials_46",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 88191,
+   "firstKey": "monolithic::mo_ember_bed",
+   "lastKey": "monolithic::mo_prism_slide"
+  },
+  {
+   "file": "pages/finish_more_specials_47.json",
+   "domain": "finish_more_specials_47",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87937,
+   "firstKey": "monolithic::mo_quicksilver_run",
+   "lastKey": "monolithic::mo_vortex_street"
+  },
+  {
+   "file": "pages/finish_more_specials_48.json",
+   "domain": "finish_more_specials_48",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87692,
+   "firstKey": "monolithic::molten_metal",
+   "lastKey": "monolithic::ms_frozen_inferno"
+  },
+  {
+   "file": "pages/finish_more_specials_49.json",
+   "domain": "finish_more_specials_49",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87930,
+   "firstKey": "monolithic::ms_lotus_ascention",
+   "lastKey": "monolithic::night_race"
+  },
+  {
+   "file": "pages/finish_more_specials_50.json",
+   "domain": "finish_more_specials_50",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87986,
+   "firstKey": "monolithic::nightmare",
+   "lastKey": "monolithic::ns2_dendrite_choir"
+  },
+  {
+   "file": "pages/finish_more_specials_51.json",
+   "domain": "finish_more_specials_51",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87747,
+   "firstKey": "monolithic::ns2_drift_sermon",
+   "lastKey": "monolithic::ns2_hyper_rings"
+  },
+  {
+   "file": "pages/finish_more_specials_52.json",
+   "domain": "finish_more_specials_52",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87663,
+   "firstKey": "monolithic::ns2_ion_river",
+   "lastKey": "monolithic::ns2_overspray_law"
+  },
+  {
+   "file": "pages/finish_more_specials_53.json",
+   "domain": "finish_more_specials_53",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87346,
+   "firstKey": "monolithic::ns2_patchwork_slab",
+   "lastKey": "monolithic::ns2_spiro_seance"
+  },
+  {
+   "file": "pages/finish_more_specials_54.json",
+   "domain": "finish_more_specials_54",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87559,
+   "firstKey": "monolithic::ns2_stair_heresy",
+   "lastKey": "monolithic::ns_dead_channel"
+  },
+  {
+   "file": "pages/finish_more_specials_55.json",
+   "domain": "finish_more_specials_55",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 87153,
+   "firstKey": "monolithic::ns_ember_reversal",
+   "lastKey": "monolithic::parallax"
+  },
+  {
+   "file": "pages/finish_more_specials_56.json",
+   "domain": "finish_more_specials_56",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 84715,
+   "firstKey": "monolithic::parchment",
+   "lastKey": "monolithic::possessed"
+  },
+  {
+   "file": "pages/finish_more_specials_57.json",
+   "domain": "finish_more_specials_57",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 84623,
+   "firstKey": "monolithic::prizm_arctic",
+   "lastKey": "monolithic::scarab_gold"
+  },
+  {
+   "file": "pages/finish_more_specials_58.json",
+   "domain": "finish_more_specials_58",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 85447,
+   "firstKey": "monolithic::sepia",
+   "lastKey": "monolithic::tesseract"
+  },
+  {
+   "file": "pages/finish_more_specials_59.json",
+   "domain": "finish_more_specials_59",
+   "group": "More Specials",
+   "count": 19,
+   "bytes": 85376,
+   "firstKey": "monolithic::thermal_titanium",
+   "lastKey": "monolithic::volcanic_glass"
+  },
+  {
+   "file": "pages/finish_more_specials_60.json",
+   "domain": "finish_more_specials_60",
+   "group": "More Specials",
+   "count": 13,
+   "bytes": 58126,
+   "firstKey": "monolithic::volcanic_rock",
+   "lastKey": "monolithic::zeppelin"
+  }
+ ]
+}

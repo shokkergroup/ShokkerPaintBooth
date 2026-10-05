@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_32776.tga",
+  "inspection_records": "_smart_tga_runs/cycle656_dlm_embedding_batch/inspection_records.json",
+  "review_scope": "Cycle 656 manual source and all-owner sheet review of every emitted suspect bbox.",
+  "component_labels": [
+    {"layer":"numbers","component_index":17,"expected_bbox":[62,709,227,66],"target_layer":"sponsors","label":"sponsor_wordmark","family_id":"logo:tiny_toes","note":"Large Tiny Toes sponsor wordmark, not custom number 77."},
+    {"layer":"sponsors","component_index":56,"expected_bbox":[23,253,29,44],"target_layer":"sponsors","label":"contingency_logo","note":"Small contingency logo, correctly Sponsor rather than red livery."}
+  ]
+}

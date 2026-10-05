@@ -1,0 +1,340 @@
+{
+  "items": [
+    {
+      "id": "fl_penetrant_bleed",
+      "name": "Penetrant Bleed",
+      "idea": "Branched fatigue fissures with capillary dye reservoirs. Colored inspection artwork with developer wash, wicking halos, open fissures, dye reservoirs, satellite indications.",
+      "revision": "FLAW21-6f11319fcec7",
+      "asset_sha256": {
+        "paint": "911af83848061ae5b683b2d66bc502cad3f50c348e3307090355bc1e0785ab14",
+        "spec": "6f11319fcec7080600a92b7a0f0e1d4edbcb80419a1d191b9d571b9e58f4e436"
+      },
+      "material_median": [
+        12,
+        62,
+        120
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_brittle_lacquer",
+      "name": "Brittle Lacquer",
+      "idea": "Ranked tensile crack combs with arrested tips and lifted lacquer lips. Colored inspection artwork with lacquer islands, tension cracks, lifted lips, arrest bars, detached flakes.",
+      "revision": "FLAW21-c14e5ac88a19",
+      "asset_sha256": {
+        "paint": "d03e9a2deae61fb6438b29e186a163b5f58712437f47ab93c6adadcfb49f9edd",
+        "spec": "c14e5ac88a19ed86726211c1047731851e9fda160a74c18fe059ed15e2935c57"
+      },
+      "material_median": [
+        25,
+        62,
+        86
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_macro_etch",
+      "name": "Macro Etch",
+      "idea": "Bent forging grain ribbons flowing around die bosses. Colored inspection artwork with grain ribbons, etched boundaries, die bosses, compressed bands, inclusion strings.",
+      "revision": "FLAW21-6fccbc7cc113",
+      "asset_sha256": {
+        "paint": "f625520402e78a107beeb2afc2d08e771650df335e65fa2bc768c35648a3e37b",
+        "spec": "6fccbc7cc1137a00a7dc6acc6eaa3601177ebf7b1406cb23e630c605bd7d7476"
+      },
+      "material_median": [
+        188,
+        70,
+        125
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_hardness_indent",
+      "name": "Hardness Indent",
+      "idea": "Diamond pyramid impressions with four independently polished faces. Colored inspection artwork with indent wells, pyramid faces, pileup rims, corner cracks, traverse dots.",
+      "revision": "FLAW21-bac99f54e94c",
+      "asset_sha256": {
+        "paint": "30a04c1e30bb12016e0972ff139afa9833f7f0b792d9ba45160c214b2821d8ff",
+        "spec": "bac99f54e94cffc46287dfbb121f5e6e9f933cbe5c8729c3732b9764b7f60b80"
+      },
+      "material_median": [
+        109,
+        70,
+        125
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_crack_tip",
+      "name": "Crack Tip Field",
+      "idea": "Open cracks ending in paired butterfly yield lobes. Colored inspection artwork with crack stems, yield lobes, stress contours, slip fans, arrest tips.",
+      "revision": "FLAW21-bb49aa332260",
+      "asset_sha256": {
+        "paint": "73654dee65d1a127ec90814e7e9257c667b43834cf1ff5a7be5f2c034f2af58f",
+        "spec": "bb49aa332260ec02c11d9e5445b4adffe7ac6229a3ceaf0e5b2e517a3cf9a81c"
+      },
+      "material_median": [
+        12,
+        62,
+        120
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_strain_rosette",
+      "name": "Strain Rosette",
+      "idea": "Three directional serpentine foil gauges with separate solder pads. Colored inspection artwork with polyimide pads, serpentine conductors, return bends, terminal lands, lead wires.",
+      "revision": "FLAW21-6e3b472798f8",
+      "asset_sha256": {
+        "paint": "b3c0bf45d78b16f955bd21f2ef18f3c0407b378e943ccc5a18a41451f58f6b46",
+        "spec": "6e3b472798f8e8d52f2e803d7c6e38af84b577fdb32303a329d17573a8835cd9"
+      },
+      "material_median": [
+        85,
+        70,
+        125
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_chladni",
+      "name": "Chladni Figure",
+      "idea": "Intersecting standing wave nodes with granular ridges and scoured antinodes. Colored inspection artwork with modal ridges, node grains, intersection heaps, scoured bellies, stray powder.",
+      "revision": "FLAW21-c5da857732a5",
+      "asset_sha256": {
+        "paint": "b00469a8ee376343019976e4de1445e643ba0295a599f94e7e252ef95b9b0b2f",
+        "spec": "c5da857732a5a7b2838003be71ff8dd098067faa916fb4d2266c316d9dd771ea"
+      },
+      "material_median": [
+        12,
+        62,
+        120
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_holo_interfero",
+      "name": "Holographic Interferogram",
+      "idea": "Eccentric contour orders surrounding displaced skin blisters. Colored inspection artwork with bulge contours, order shoulders, disbond rims, phase discontinuities, isolated fringe glints.",
+      "revision": "FLAW21-f5635a9c04fe",
+      "asset_sha256": {
+        "paint": "8dff95d09dfcc655252b17f5f7cbdd4814e0f43c04d4533cb36ba9217cbd8c1a",
+        "spec": "f5635a9c04fe6d8b4069c521b8ca4d58f7ca765a8f15c04beb955897a454d2ca"
+      },
+      "material_median": [
+        43,
+        62,
+        120
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_moire_deflect",
+      "name": "Moire Deflectometry",
+      "idea": "Two locally displaced ronchi gratings with beat envelopes. Colored inspection artwork with first ruling, crossed ruling, beat knots, deflection seams, registration slits.",
+      "revision": "FLAW21-be1b275e4254",
+      "asset_sha256": {
+        "paint": "87c8d1484047ba15680108a8951cf71edddec720cbc00330c28580ec8ee747df",
+        "spec": "be1b275e4254e83bcfa25dee970c921d73044b63f04d66203f9f5b0347513db0"
+      },
+      "material_median": [
+        112,
+        62,
+        120
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_shearography",
+      "name": "Shearography",
+      "idea": "Opposed fringe lobes separated by a displacement derivative null. Colored inspection artwork with positive fringes, negative fringes, null seams, coherent grains, disbond edges.",
+      "revision": "FLAW21-b999bdac4280",
+      "asset_sha256": {
+        "paint": "2d919f6700b09c36bf5decab1a67b4117f085157373323ac8e213ad0a0966c00",
+        "spec": "b999bdac428074e10e22dff2cc4c5e5be907f5c7eae023a58e7ad1bcb4c5815e"
+      },
+      "material_median": [
+        12,
+        62,
+        120
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_schlieren",
+      "name": "Schlieren",
+      "idea": "Directional density gradients curling into knife edge flow streaks. Colored inspection artwork with compression ribbons, expansion ribbons, curl cores, shear threads, shock ticks.",
+      "revision": "FLAW21-9e210be198da",
+      "asset_sha256": {
+        "paint": "eb4f41210b11206a6bc4fe73a20c7bd89a6d19a4e087c430d7ba0ca48f109a66",
+        "spec": "9e210be198da09e41c9aa8f8922ec9bde6191f4406b71b4107148740999b2c03"
+      },
+      "material_median": [
+        116,
+        62,
+        120
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_shadowgraph",
+      "name": "Shadowgraph",
+      "idea": "Paired bright and dark shock fronts with refracted crossing wakes. Colored inspection artwork with compression fronts, shadow doubles, shock intersections, wake arcs, fine caustics.",
+      "revision": "FLAW21-1f5dc2b5cddc",
+      "asset_sha256": {
+        "paint": "97fcc0a7236248b3762afbc5c5c05c5071cad4163ed4c77f0e6c5ae4ffeccedf",
+        "spec": "1f5dc2b5cddcb2f9cb07627358f60398f4dfc7066516989f820b934955488b62"
+      },
+      "material_median": [
+        12,
+        62,
+        120
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_barkhausen",
+      "name": "Barkhausen Noise",
+      "idea": "Jagged avalanche domains with pinned walls and burst ladders. Colored inspection artwork with domain plates, jump boundaries, avalanche spikes, pinning inclusions, switching ladders.",
+      "revision": "FLAW21-fee0035add4b",
+      "asset_sha256": {
+        "paint": "444b02d0866be1d4fd3b12e1b058db37b972824711809201c947e4584b6fd546",
+        "spec": "fee0035add4b010854129ba970dcd72a49fb8045f77694b73c32d7e49b17b871"
+      },
+      "material_median": [
+        175,
+        70,
+        160
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_c_scan",
+      "name": "Ultrasonic C-Scan",
+      "idea": "Raster echo cells quantizing irregular defect islands. Colored inspection artwork with sample cells, echo plateaus, defect margins, dropout pixels, probe steps.",
+      "revision": "FLAW21-2bca25f385d7",
+      "asset_sha256": {
+        "paint": "6101c00a7c057706d0104799ce7843f02e06959ab0ad6186fab2eb56fae0006d",
+        "spec": "2bca25f385d78cb49372176c24438d6bd5c93358e5ef0047261eeeffa058eca3"
+      },
+      "material_median": [
+        129,
+        90,
+        165
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_a_scan_gate",
+      "name": "A-Scan Gate",
+      "idea": "Stacked oscilloscope echo trains enclosed by independent gate cursors. Colored inspection artwork with trace baselines, entry pulses, backwall echoes, gate brackets, ringdown ripples.",
+      "revision": "FLAW21-560f03928819",
+      "asset_sha256": {
+        "paint": "774f2bc14f6e392069d9d572c76ba6abbfc1141ee421b2c582061d99e4c19f16",
+        "spec": "560f03928819a340343bc6ea94a978a26f5aaae7811a5009c4fe80cca94213c9"
+      },
+      "material_median": [
+        12,
+        62,
+        120
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_phased_array",
+      "name": "Phased Array",
+      "idea": "Rotated fan sectors divided into angular beams and curved range gates. Colored inspection artwork with sector wedges, range arcs, hot echo cells, dead beams, focus points.",
+      "revision": "FLAW21-4cc0fde4ecec",
+      "asset_sha256": {
+        "paint": "3ad963796233b5bde6fb40e0aa08493aa4f50917bbcb95a8a43978373a4a7200",
+        "spec": "4cc0fde4ecec4c4539ab0e3b1db58968f908f82d5b6b53caf17cbe95b75d4c49"
+      },
+      "material_median": [
+        154,
+        62,
+        181
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_radiograph_weld",
+      "name": "Weld Radiograph",
+      "idea": "Sinuous multipass weld beads showing internal pores and lack of fusion. Colored inspection artwork with bead ribbons, overlap scallops, gas pores, fusion gaps, dense inclusions.",
+      "revision": "FLAW21-0d148a4d65de",
+      "asset_sha256": {
+        "paint": "21b6e0a281a157c9537589c952edb7f0c34094fb72b9de882f7c71bec7f11860",
+        "spec": "0d148a4d65de27d447f8e990a2071d7fb4e278fdf3863767e5122f3e88d6c27c"
+      },
+      "material_median": [
+        155,
+        96,
+        125
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_ct_slice",
+      "name": "CT Slice",
+      "idea": "Asymmetric hollow sections with detector ring artifacts and metal streaks. Colored inspection artwork with section walls, internal cavities, detector rings, metal streaks, density islands.",
+      "revision": "FLAW21-af6581afa854",
+      "asset_sha256": {
+        "paint": "2d01791dbf47ba400651d42b6ae17c425ae9d8c29371f20fefc3556b4043b321",
+        "spec": "af6581afa854fc714084a2e7ffb3e58994523ab78ba6ae463cf6240fef22faab"
+      },
+      "material_median": [
+        44,
+        62,
+        120
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_tsa_stress",
+      "name": "Thermoelastic Stress",
+      "idea": "Opposed thermal stress lobes around loaded perforations sampled on detector pixels. Colored inspection artwork with loaded webs, hot lobes, cool lobes, detector cuts, stress concentration rims.",
+      "revision": "FLAW21-7de20e798a44",
+      "asset_sha256": {
+        "paint": "f10844cc7a048cd77d10391c71e9de352314e25afc388582354dd95559dc92a4",
+        "spec": "7de20e798a44122325e8551a915543f40fd9b97b2e6162e55a5106c3081eeb03"
+      },
+      "material_median": [
+        29,
+        89,
+        120
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_pulse_thermo",
+      "name": "Pulse Thermography",
+      "idea": "Nested delayed heat islands with independently diffusing perimeters. Colored inspection artwork with warm plateaus, cooling halos, delamination cores, depth contours, sound material channels.",
+      "revision": "FLAW21-c66c16ec63c6",
+      "asset_sha256": {
+        "paint": "f0ccdbdf595097e2ad1a9e8a4c92df2e105eccf903f7270439b70a0e593cd3e7",
+        "spec": "c66c16ec63c689644e73e6e06e0463026d74fbe4e7609dffebd75ca6725d086b"
+      },
+      "material_median": [
+        54,
+        90,
+        120
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    },
+    {
+      "id": "fl_acoustic_emission",
+      "name": "Acoustic Emission",
+      "idea": "Intersecting partial arrival rings and triangulated burst sites. Colored inspection artwork with arrival rings, sensor vertices, triangulation chords, burst stars, attenuation dots.",
+      "revision": "FLAW21-d62513e75a17",
+      "asset_sha256": {
+        "paint": "6bf50f4bed25e3cd4a7c600b2afed0911517552a08b59424695627909aa49ed8",
+        "spec": "d62513e75a1760ef62491bcd25678f50eb7aada0910d3a2c07bc26cafd6a094b"
+      },
+      "material_median": [
+        12,
+        62,
+        120
+      ],
+      "authoring": "Procedural inspection geometry; baked runtime maps"
+    }
+  ]
+}

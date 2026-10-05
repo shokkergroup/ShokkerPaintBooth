@@ -1,0 +1,4012 @@
+{
+  "schema": "smart-tga-reviewed-candidate-bank-v1",
+  "probe_count": 5,
+  "reviewed_region_count": 55,
+  "reviewed_candidate_count": 53,
+  "class_counts": {
+    "numbers": 53
+  },
+  "status_counts": {
+    "candidate_fragment_only": 7,
+    "candidate_overbroad": 1,
+    "candidate_present": 45
+  },
+  "owner_path_counts": {
+    "brand_graphics": 9,
+    "brand_graphics+numbers": 1,
+    "brand_graphics+numbers+unassigned": 1,
+    "brand_graphics+unassigned": 7,
+    "numbers+sponsors": 1,
+    "numbers+sponsors+unassigned": 1,
+    "numbers+template": 2,
+    "numbers+unassigned": 4,
+    "unassigned": 27
+  },
+  "source_stage_counts": {
+    "appearance_quantized_raw": 40,
+    "gpu_model_raw": 26,
+    "template_raw": 2
+  },
+  "reviewed_candidates": [
+    {
+      "paint_label": "dirtlatemodel 350/car_num_1007631.tga",
+      "family_id": "number:5",
+      "copy": "upper_side",
+      "instance_id": "di:22013a3b43356c09",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 1.0,
+      "best_candidate_coverage": 0.121354,
+      "best_iou": 0.121354,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.02887058,
+        "aspect_ratio": 4.367089,
+        "bbox_normalized": [
+          0.005859,
+          0.203125,
+          0.673828,
+          0.154297
+        ],
+        "border_distance_fraction": 0.005859,
+        "edge_density": 0.008886,
+        "fill_ratio": 0.277683,
+        "mean_rgb": [
+          245.7672,
+          238.7016,
+          229.9006
+        ],
+        "std_rgb": [
+          2.0355,
+          3.3405,
+          3.0653
+        ],
+        "ocr_alpha_coverage": 0.007234,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.007234,
+        "ocr_token_count": 1,
+        "palette_role": "light_neutral",
+        "perceptual_chroma": 0.02785,
+        "perceptual_hue_degrees": 78.201,
+        "perceptual_lightness": 0.948035,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.0,
+          0.099711,
+          0.64186,
+          0.330233,
+          0.001156,
+          0.0,
+          0.454215,
+          0.344913,
+          0.287832,
+          0.062695,
+          0.124329,
+          0.71616,
+          0.504372,
+          0.177264,
+          0.356589,
+          0.357036
+        ],
+        "strong_gradient_fraction": 0.072342,
+        "texture_entropy": 0.100888
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_1008314.tga",
+      "family_id": "number:45",
+      "copy": "lower_side",
+      "instance_id": "di:ed3be5b632197d25",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.834961,
+      "best_candidate_coverage": 0.584043,
+      "best_iou": 0.523597,
+      "proposed_owners": [
+        "numbers",
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw",
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid",
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.01588821,
+        "aspect_ratio": 3.297872,
+        "bbox_normalized": [
+          0.276367,
+          0.698242,
+          0.302734,
+          0.091797
+        ],
+        "border_distance_fraction": 0.209961,
+        "edge_density": 0.185474,
+        "fill_ratio": 0.571723,
+        "mean_rgb": [
+          173.5759,
+          173.6115,
+          173.663
+        ],
+        "std_rgb": [
+          101.2621,
+          101.2624,
+          101.264
+        ],
+        "ocr_alpha_coverage": 0.00048,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.00048,
+        "ocr_token_count": 1,
+        "palette_role": "mid_neutral",
+        "perceptual_chroma": 0.000172,
+        "perceptual_hue_degrees": 266.8038,
+        "perceptual_lightness": 0.688023,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.741987,
+          0.823718,
+          0.127706,
+          0.0,
+          0.869124,
+          0.810363,
+          0.181818,
+          0.0,
+          0.945373,
+          0.998885,
+          0.670243,
+          0.584416,
+          0.314381,
+          0.783724,
+          0.682665,
+          0.63467
+        ],
+        "strong_gradient_fraction": 0.514166,
+        "texture_entropy": 0.67064
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_1008314.tga",
+      "family_id": "number:45",
+      "copy": "upper_side",
+      "instance_id": "di:077d84ce0dbb709e",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.901786,
+      "best_candidate_coverage": 0.801244,
+      "best_iou": 0.736936,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.01315117,
+        "aspect_ratio": 2.075472,
+        "bbox_normalized": [
+          0.25293,
+          0.234375,
+          0.214844,
+          0.103516
+        ],
+        "border_distance_fraction": 0.234375,
+        "edge_density": 0.135388,
+        "fill_ratio": 0.591338,
+        "mean_rgb": [
+          157.2494,
+          157.2494,
+          157.2494
+        ],
+        "std_rgb": [
+          113.1244,
+          113.1244,
+          113.1244
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "mid_neutral",
+        "perceptual_chroma": 0.0,
+        "perceptual_hue_degrees": 0.0,
+        "perceptual_lightness": 0.621172,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.094276,
+          0.618855,
+          0.657912,
+          0.617508,
+          0.383165,
+          0.641077,
+          0.859933,
+          0.747475,
+          0.556643,
+          0.96993,
+          0.886014,
+          0.290909,
+          0.809091,
+          0.788112,
+          0.544755,
+          0.0
+        ],
+        "strong_gradient_fraction": 0.433358,
+        "texture_entropy": 0.547928
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_1035834.tga",
+      "family_id": "number:6",
+      "copy": "lower_side",
+      "instance_id": "di:d1d2811d54f8b4ac",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.822781,
+      "best_candidate_coverage": 0.94277,
+      "best_iou": 0.783641,
+      "proposed_owners": [
+        "brand_graphics",
+        "numbers"
+      ],
+      "source_stages": [
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.01018429,
+        "aspect_ratio": 1.568627,
+        "bbox_normalized": [
+          0.272461,
+          0.699219,
+          0.15625,
+          0.099609
+        ],
+        "border_distance_fraction": 0.201172,
+        "edge_density": 0.151419,
+        "fill_ratio": 0.65435,
+        "mean_rgb": [
+          188.0825,
+          186.069,
+          186.1426
+        ],
+        "std_rgb": [
+          104.8647,
+          106.0946,
+          106.0196
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "mid_neutral",
+        "perceptual_chroma": 0.004501,
+        "perceptual_hue_degrees": 37.1253,
+        "perceptual_lightness": 0.735842,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.868269,
+          0.961538,
+          0.879808,
+          0.020192,
+          0.599038,
+          1.0,
+          1.0,
+          0.293269,
+          0.263,
+          0.877,
+          0.518,
+          0.609,
+          0.024,
+          0.903,
+          0.741,
+          0.897
+        ],
+        "strong_gradient_fraction": 0.355839,
+        "texture_entropy": 0.398937
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_265439.tga",
+      "family_id": "number:21",
+      "copy": "deck",
+      "instance_id": "di:2f3eeaf19f3cbc96",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 1.0,
+      "best_candidate_coverage": 0.596904,
+      "best_iou": 0.596904,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.03547192,
+        "aspect_ratio": 0.832669,
+        "bbox_normalized": [
+          0.75293,
+          0.749023,
+          0.204102,
+          0.245117
+        ],
+        "border_distance_fraction": 0.005859,
+        "edge_density": 0.019895,
+        "fill_ratio": 0.70903,
+        "mean_rgb": [
+          254.3313,
+          254.3313,
+          254.3313
+        ],
+        "std_rgb": [
+          4.8272,
+          4.8272,
+          4.8272
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "light_neutral",
+        "perceptual_chroma": 0.0,
+        "perceptual_hue_degrees": 0.0,
+        "perceptual_lightness": 0.997695,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.907757,
+          0.881563,
+          0.813187,
+          0.89652,
+          0.815514,
+          0.485043,
+          0.231074,
+          0.583028,
+          0.533992,
+          0.196886,
+          0.519841,
+          0.983211,
+          0.826841,
+          0.855769,
+          0.918734,
+          0.901365
+        ],
+        "strong_gradient_fraction": 0.071569,
+        "texture_entropy": 0.022318
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_265439.tga",
+      "family_id": "number:21",
+      "copy": "lower_side",
+      "instance_id": "di:8672b7b6fbe8501b",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.851852,
+      "best_candidate_coverage": 0.242359,
+      "best_iou": 0.232557,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.02048588,
+        "aspect_ratio": 6.421569,
+        "bbox_normalized": [
+          0.008789,
+          0.689453,
+          0.639648,
+          0.099609
+        ],
+        "border_distance_fraction": 0.008789,
+        "edge_density": 0.102742,
+        "fill_ratio": 0.321524,
+        "mean_rgb": [
+          253.1799,
+          246.2789,
+          231.4857
+        ],
+        "std_rgb": [
+          8.3623,
+          17.565,
+          50.9584
+        ],
+        "ocr_alpha_coverage": 0.171919,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.171919,
+        "ocr_token_count": 1,
+        "palette_role": "light_neutral",
+        "perceptual_chroma": 0.045049,
+        "perceptual_hue_degrees": 84.7591,
+        "perceptual_lightness": 0.972797,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.539165,
+          0.65666,
+          0.551829,
+          0.658093,
+          0.761023,
+          0.345216,
+          0.239447,
+          0.066777,
+          0.440244,
+          0.156829,
+          0.229512,
+          0.373742,
+          0.0,
+          0.052439,
+          0.02122,
+          0.001227
+        ],
+        "strong_gradient_fraction": 0.339835,
+        "texture_entropy": 0.234198
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_265439.tga",
+      "family_id": "number:21",
+      "copy": "upper_side",
+      "instance_id": "di:13ab40bc9742f486",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.946429,
+      "best_candidate_coverage": 0.216467,
+      "best_iou": 0.213847,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.02177906,
+        "aspect_ratio": 5.428571,
+        "bbox_normalized": [
+          0.008789,
+          0.232422,
+          0.667969,
+          0.123047
+        ],
+        "border_distance_fraction": 0.008789,
+        "edge_density": 0.101896,
+        "fill_ratio": 0.26498,
+        "mean_rgb": [
+          253.1822,
+          246.6553,
+          232.6605
+        ],
+        "std_rgb": [
+          8.1906,
+          17.1852,
+          49.805
+        ],
+        "ocr_alpha_coverage": 0.002189,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.002189,
+        "ocr_token_count": 1,
+        "palette_role": "light_neutral",
+        "perceptual_chroma": 0.042624,
+        "perceptual_hue_degrees": 84.7759,
+        "perceptual_lightness": 0.973934,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.0,
+          0.0,
+          0.061769,
+          0.018458,
+          0.166849,
+          0.028692,
+          0.283077,
+          0.194444,
+          0.815884,
+          0.423694,
+          0.253726,
+          0.585173,
+          0.422939,
+          0.493303,
+          0.348613,
+          0.187135
+        ],
+        "strong_gradient_fraction": 0.325524,
+        "texture_entropy": 0.22895
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_265461.tga",
+      "family_id": "number:86",
+      "copy": "deck",
+      "instance_id": "di:b775d060c3f310dc",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 1.0,
+      "best_candidate_coverage": 0.560897,
+      "best_iou": 0.560897,
+      "proposed_owners": [
+        "brand_graphics",
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw",
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid",
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.02568626,
+        "aspect_ratio": 1.359477,
+        "bbox_normalized": [
+          0.754883,
+          0.794922,
+          0.203125,
+          0.149414
+        ],
+        "border_distance_fraction": 0.041992,
+        "edge_density": 0.079156,
+        "fill_ratio": 0.846342,
+        "mean_rgb": [
+          39.9524,
+          35.0137,
+          39.7306
+        ],
+        "std_rgb": [
+          87.6575,
+          77.071,
+          84.6984
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "dark_neutral",
+        "perceptual_chroma": 0.021925,
+        "perceptual_hue_degrees": 349.312,
+        "perceptual_lightness": 0.154297,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.908777,
+          0.912229,
+          0.654832,
+          0.526627,
+          0.910931,
+          0.954453,
+          0.983806,
+          0.968117,
+          0.896255,
+          0.950911,
+          0.964069,
+          0.963563,
+          0.921559,
+          0.882085,
+          0.657389,
+          0.495951
+        ],
+        "strong_gradient_fraction": 0.217755,
+        "texture_entropy": 0.364543
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_265461.tga",
+      "family_id": "number:86",
+      "copy": "lower_side",
+      "instance_id": "di:5deac1cc6fa32120",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.838209,
+      "best_candidate_coverage": 0.989189,
+      "best_iou": 0.8306,
+      "proposed_owners": [
+        "brand_graphics"
+      ],
+      "source_stages": [
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.01356125,
+        "aspect_ratio": 1.989247,
+        "bbox_normalized": [
+          0.273438,
+          0.701172,
+          0.180664,
+          0.09082
+        ],
+        "border_distance_fraction": 0.208008,
+        "edge_density": 0.217581,
+        "fill_ratio": 0.826504,
+        "mean_rgb": [
+          163.1011,
+          147.1102,
+          166.826
+        ],
+        "std_rgb": [
+          111.3437,
+          94.7863,
+          96.8631
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "mid_neutral",
+        "perceptual_chroma": 0.083907,
+        "perceptual_hue_degrees": 343.0138,
+        "perceptual_lightness": 0.637755,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.87766,
+          0.901268,
+          0.949275,
+          0.405797,
+          0.908418,
+          1.0,
+          1.0,
+          0.703214,
+          0.704903,
+          1.0,
+          1.0,
+          0.908318,
+          0.382979,
+          0.8138,
+          0.811909,
+          0.873346
+        ],
+        "strong_gradient_fraction": 0.591913,
+        "texture_entropy": 0.784515
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_265461.tga",
+      "family_id": "number:86",
+      "copy": "upper_side",
+      "instance_id": "di:a152168c07f75b00",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.857143,
+      "best_candidate_coverage": 0.906103,
+      "best_iou": 0.78722,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.00934887,
+        "aspect_ratio": 2.088235,
+        "bbox_normalized": [
+          0.253906,
+          0.234375,
+          0.208008,
+          0.099609
+        ],
+        "border_distance_fraction": 0.234375,
+        "edge_density": 0.14669,
+        "fill_ratio": 0.451211,
+        "mean_rgb": [
+          176.2359,
+          156.4237,
+          175.8653
+        ],
+        "std_rgb": [
+          105.2995,
+          91.3122,
+          93.5576
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "mid_neutral",
+        "perceptual_chroma": 0.087727,
+        "perceptual_hue_degrees": 347.2037,
+        "perceptual_lightness": 0.679257,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.134615,
+          0.208273,
+          0.244557,
+          0.55225,
+          0.452279,
+          0.307692,
+          0.582729,
+          0.620464,
+          0.618519,
+          0.706415,
+          0.575849,
+          0.405283,
+          0.725926,
+          0.550189,
+          0.436226,
+          0.116226
+        ],
+        "strong_gradient_fraction": 0.44772,
+        "texture_entropy": 0.632729
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_268864.tga",
+      "family_id": "number:28",
+      "copy": "deck",
+      "instance_id": "di:6607a914dbc15650",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.702479,
+      "best_candidate_coverage": 0.446375,
+      "best_iou": 0.375404,
+      "proposed_owners": [
+        "brand_graphics"
+      ],
+      "source_stages": [
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.009799,
+        "aspect_ratio": 0.929078,
+        "bbox_normalized": [
+          0.786133,
+          0.795898,
+          0.12793,
+          0.137695
+        ],
+        "border_distance_fraction": 0.066406,
+        "edge_density": 0.258005,
+        "fill_ratio": 0.556277,
+        "mean_rgb": [
+          107.7461,
+          107.7461,
+          107.7461
+        ],
+        "std_rgb": [
+          113.8638,
+          113.8638,
+          113.8638
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "mid_neutral",
+        "perceptual_chroma": 0.0,
+        "perceptual_hue_degrees": 0.0,
+        "perceptual_lightness": 0.426316,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.0,
+          0.06229,
+          0.377946,
+          0.0,
+          0.578355,
+          0.998268,
+          0.848485,
+          0.558036,
+          0.9671,
+          1.0,
+          1.0,
+          0.290179,
+          0.490909,
+          0.969697,
+          0.735065,
+          0.033929
+        ],
+        "strong_gradient_fraction": 0.691776,
+        "texture_entropy": 0.604483
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_268864.tga",
+      "family_id": "number:28",
+      "copy": "upper_side",
+      "instance_id": "di:ef78d91654462fcf",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.681818,
+      "best_candidate_coverage": 1.0,
+      "best_iou": 0.681818,
+      "proposed_owners": [
+        "brand_graphics"
+      ],
+      "source_stages": [
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.00580311,
+        "aspect_ratio": 1.235294,
+        "bbox_normalized": [
+          0.259766,
+          0.25293,
+          0.102539,
+          0.083008
+        ],
+        "border_distance_fraction": 0.25293,
+        "edge_density": 0.09433,
+        "fill_ratio": 0.681793,
+        "mean_rgb": [
+          224.0876,
+          214.8526,
+          177.4304
+        ],
+        "std_rgb": [
+          78.3071,
+          61.8923,
+          44.7341
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "light_neutral",
+        "perceptual_chroma": 0.108805,
+        "perceptual_hue_degrees": 84.5144,
+        "perceptual_lightness": 0.864881,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.011785,
+          0.774476,
+          0.954545,
+          0.935315,
+          0.280423,
+          1.0,
+          1.0,
+          0.628205,
+          0.636684,
+          1.0,
+          0.946886,
+          0.190476,
+          0.920635,
+          0.970696,
+          0.695971,
+          0.0
+        ],
+        "strong_gradient_fraction": 0.340016,
+        "texture_entropy": 0.404171
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_269072.tga",
+      "family_id": "number:83",
+      "copy": "deck",
+      "instance_id": "di:f3b4c74739e064df",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_fragment_only",
+      "best_review_coverage": 0.368056,
+      "best_candidate_coverage": 1.0,
+      "best_iou": 0.368056,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.00344086,
+        "aspect_ratio": 0.660377,
+        "bbox_normalized": [
+          0.802734,
+          0.837891,
+          0.068359,
+          0.103516
+        ],
+        "border_distance_fraction": 0.058594,
+        "edge_density": 0.031042,
+        "fill_ratio": 0.486253,
+        "mean_rgb": [
+          253.8908,
+          253.8908,
+          1.2769
+        ],
+        "std_rgb": [
+          5.4301,
+          5.4301,
+          6.5224
+        ],
+        "ocr_alpha_coverage": 1.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 1.0,
+        "ocr_token_count": 1,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.535432,
+        "perceptual_hue_degrees": 103.0041,
+        "perceptual_lightness": 0.968707,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.160494,
+          0.740741,
+          0.45098,
+          0.0,
+          0.86214,
+          0.5,
+          0.943355,
+          0.285403,
+          0.254274,
+          0.929487,
+          0.373303,
+          0.861991,
+          0.0,
+          0.583333,
+          0.699095,
+          0.124434
+        ],
+        "strong_gradient_fraction": 0.155765,
+        "texture_entropy": 0.092946
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_269072.tga",
+      "family_id": "number:83",
+      "copy": "lower_side",
+      "instance_id": "di:18134b1dee13dc13",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_fragment_only",
+      "best_review_coverage": 0.358225,
+      "best_candidate_coverage": 1.0,
+      "best_iou": 0.358225,
+      "proposed_owners": [
+        "numbers",
+        "sponsors"
+      ],
+      "source_stages": [
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid"
+      ],
+      "merge_reasons": [
+        "mask_overlap"
+      ],
+      "features": {
+        "area_fraction": 0.00562286,
+        "aspect_ratio": 1.39759,
+        "bbox_normalized": [
+          0.429688,
+          0.707031,
+          0.113281,
+          0.081055
+        ],
+        "border_distance_fraction": 0.211914,
+        "edge_density": 0.177917,
+        "fill_ratio": 0.612381,
+        "mean_rgb": [
+          194.3323,
+          132.9333,
+          61.0734
+        ],
+        "std_rgb": [
+          99.9828,
+          118.2641,
+          100.218
+        ],
+        "ocr_alpha_coverage": 0.072083,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.072083,
+        "ocr_token_count": 1,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.261685,
+        "perceptual_hue_degrees": 58.1963,
+        "perceptual_lightness": 0.69527,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.423645,
+          0.756979,
+          0.916256,
+          0.92775,
+          0.847291,
+          1.0,
+          1.0,
+          0.850575,
+          0.901478,
+          0.914614,
+          0.303777,
+          0.018062,
+          0.772414,
+          0.089655,
+          0.0,
+          0.0
+        ],
+        "strong_gradient_fraction": 0.496438,
+        "texture_entropy": 0.691166
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_269333.tga",
+      "family_id": "number:16",
+      "copy": "deck",
+      "instance_id": "di:7fe02e13a7c5052d",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.972296,
+      "best_candidate_coverage": 1.0,
+      "best_iou": 0.972296,
+      "proposed_owners": [
+        "numbers",
+        "template"
+      ],
+      "source_stages": [
+        "gpu_model_raw",
+        "template_raw"
+      ],
+      "sources": [
+        "car_intel_prior",
+        "smart_tga_gpu_hybrid"
+      ],
+      "merge_reasons": [
+        "mask_overlap"
+      ],
+      "features": {
+        "area_fraction": 0.0122633,
+        "aspect_ratio": 0.905556,
+        "bbox_normalized": [
+          0.84082,
+          0.00293,
+          0.15918,
+          0.175781
+        ],
+        "border_distance_fraction": 0.0,
+        "edge_density": 0.172175,
+        "fill_ratio": 0.438275,
+        "mean_rgb": [
+          223.6231,
+          223.6177,
+          223.5478
+        ],
+        "std_rgb": [
+          66.1163,
+          66.1164,
+          66.1349
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "light_neutral",
+        "perceptual_chroma": 0.000202,
+        "perceptual_hue_degrees": 109.3566,
+        "perceptual_lightness": 0.881384,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.251491,
+          0.325745,
+          0.369106,
+          0.612222,
+          0.692141,
+          0.729539,
+          0.63523,
+          0.500556,
+          0.274797,
+          0.504607,
+          0.64336,
+          0.532778,
+          0.0,
+          0.053659,
+          0.771816,
+          0.115556
+        ],
+        "strong_gradient_fraction": 0.386811,
+        "texture_entropy": 0.37419
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_269333.tga",
+      "family_id": "number:16",
+      "copy": "lower_side",
+      "instance_id": "di:9e6a0623ebc33ba1",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.97493,
+      "best_candidate_coverage": 1.0,
+      "best_iou": 0.97493,
+      "proposed_owners": [
+        "numbers",
+        "template"
+      ],
+      "source_stages": [
+        "gpu_model_raw",
+        "template_raw"
+      ],
+      "sources": [
+        "car_intel_prior",
+        "smart_tga_gpu_hybrid"
+      ],
+      "merge_reasons": [
+        "mask_overlap"
+      ],
+      "features": {
+        "area_fraction": 0.02972984,
+        "aspect_ratio": 0.798137,
+        "bbox_normalized": [
+          0.508789,
+          0.000977,
+          0.250977,
+          0.314453
+        ],
+        "border_distance_fraction": 0.000977,
+        "edge_density": 0.109418,
+        "fill_ratio": 0.376707,
+        "mean_rgb": [
+          141.6512,
+          105.55,
+          57.23
+        ],
+        "std_rgb": [
+          84.8136,
+          98.5268,
+          47.8135
+        ],
+        "ocr_alpha_coverage": 0.045936,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.045936,
+        "ocr_token_count": 2,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.135646,
+        "perceptual_hue_degrees": 66.929,
+        "perceptual_lightness": 0.486076,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.330864,
+          0.340664,
+          0.481867,
+          0.126736,
+          0.510351,
+          0.39294,
+          0.539352,
+          0.581597,
+          0.4625,
+          0.440039,
+          0.24082,
+          0.423438,
+          0.101154,
+          0.405664,
+          0.369531,
+          0.277734
+        ],
+        "strong_gradient_fraction": 0.243087,
+        "texture_entropy": 0.57916
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 350/car_num_270422.tga",
+      "family_id": "number:11",
+      "copy": "upper_side",
+      "instance_id": "di:2aebcbef09276590",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_fragment_only",
+      "best_review_coverage": 0.1625,
+      "best_candidate_coverage": 0.149406,
+      "best_iou": 0.084409,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.01114178,
+        "aspect_ratio": 0.044143,
+        "bbox_normalized": [
+          0.974609,
+          0.112305,
+          0.025391,
+          0.575195
+        ],
+        "border_distance_fraction": 0.0,
+        "edge_density": 0.026877,
+        "fill_ratio": 0.762897,
+        "mean_rgb": [
+          0.0973,
+          0.0973,
+          0.1011
+        ],
+        "std_rgb": [
+          0.5173,
+          0.5173,
+          0.5396
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "dark_neutral",
+        "perceptual_chroma": 0.0,
+        "perceptual_hue_degrees": 0.0,
+        "perceptual_lightness": 0.000258,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.598456,
+          0.990347,
+          0.597973,
+          0.043919,
+          0.784257,
+          1.0,
+          0.969388,
+          0.256236,
+          0.493683,
+          1.0,
+          1.0,
+          0.981859,
+          0.458698,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "strong_gradient_fraction": 0.074724,
+        "texture_entropy": -0.0
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1000464.tga",
+      "family_id": "number:47",
+      "copy": "deck",
+      "instance_id": "di:7fe68907236382a9",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.821423,
+      "best_candidate_coverage": 0.892405,
+      "best_iou": 0.747403,
+      "proposed_owners": [
+        "brand_graphics",
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw",
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid",
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment",
+        "mask_overlap"
+      ],
+      "features": {
+        "area_fraction": 0.0099144,
+        "aspect_ratio": 1.053333,
+        "bbox_normalized": [
+          0.805664,
+          0.797852,
+          0.154297,
+          0.146484
+        ],
+        "border_distance_fraction": 0.040039,
+        "edge_density": 0.085995,
+        "fill_ratio": 0.43865,
+        "mean_rgb": [
+          95.5211,
+          38.7371,
+          19.0186
+        ],
+        "std_rgb": [
+          117.7369,
+          56.584,
+          53.851
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.161525,
+        "perceptual_hue_degrees": 45.0481,
+        "perceptual_lightness": 0.243047,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.0,
+          0.353289,
+          0.772605,
+          0.263158,
+          0.0,
+          0.6,
+          0.865047,
+          0.975034,
+          0.0,
+          0.533784,
+          0.758836,
+          0.992377,
+          0.316216,
+          0.34527,
+          0.113652,
+          0.155925
+        ],
+        "strong_gradient_fraction": 0.221816,
+        "texture_entropy": 0.415132
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1000464.tga",
+      "family_id": "number:47",
+      "copy": "lower_side",
+      "instance_id": "di:874a8801217f3c0b",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.855856,
+      "best_candidate_coverage": 0.355497,
+      "best_iou": 0.335415,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.00723648,
+        "aspect_ratio": 4.518868,
+        "bbox_normalized": [
+          0.115234,
+          0.714844,
+          0.467773,
+          0.103516
+        ],
+        "border_distance_fraction": 0.115234,
+        "edge_density": 0.072878,
+        "fill_ratio": 0.149447,
+        "mean_rgb": [
+          7.6363,
+          7.1614,
+          6.8275
+        ],
+        "std_rgb": [
+          8.9311,
+          7.0141,
+          6.9627
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "dark_neutral",
+        "perceptual_chroma": 0.001673,
+        "perceptual_hue_degrees": 55.7984,
+        "perceptual_lightness": 0.023675,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.267901,
+          0.147531,
+          0.0,
+          0.0,
+          0.0,
+          0.04784,
+          0.001852,
+          0.254902,
+          0.0,
+          0.122756,
+          0.133974,
+          0.136716,
+          0.0,
+          0.308333,
+          0.469872,
+          0.520362
+        ],
+        "strong_gradient_fraction": 0.2301,
+        "texture_entropy": 0.085443
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1000464.tga",
+      "family_id": "number:47",
+      "copy": "upper_side",
+      "instance_id": "di:2c1ee83a8489b150",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.973684,
+      "best_candidate_coverage": 0.328936,
+      "best_iou": 0.326037,
+      "proposed_owners": [
+        "brand_graphics",
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw",
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid",
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.02172279,
+        "aspect_ratio": 3.586466,
+        "bbox_normalized": [
+          0.120117,
+          0.203125,
+          0.46582,
+          0.129883
+        ],
+        "border_distance_fraction": 0.120117,
+        "edge_density": 0.111511,
+        "fill_ratio": 0.359042,
+        "mean_rgb": [
+          122.8057,
+          53.0855,
+          28.8103
+        ],
+        "std_rgb": [
+          121.9867,
+          68.6034,
+          69.73
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.198489,
+        "perceptual_hue_degrees": 45.1024,
+        "perceptual_lightness": 0.321113,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.0,
+          0.29214,
+          0.589965,
+          0.495057,
+          0.0,
+          0.555131,
+          0.773364,
+          0.291317,
+          0.032323,
+          0.731602,
+          0.655462,
+          0.06519,
+          0.235859,
+          0.718615,
+          0.320346,
+          0.0
+        ],
+        "strong_gradient_fraction": 0.310168,
+        "texture_entropy": 0.488454
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1000488.tga",
+      "family_id": "number:99",
+      "copy": "deck",
+      "instance_id": "di:297ac986cee80519",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 1.0,
+      "best_candidate_coverage": 0.501,
+      "best_iou": 0.501,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.03578091,
+        "aspect_ratio": 0.73741,
+        "bbox_normalized": [
+          0.754883,
+          0.719727,
+          0.200195,
+          0.271484
+        ],
+        "border_distance_fraction": 0.008789,
+        "edge_density": 0.019004,
+        "fill_ratio": 0.658344,
+        "mean_rgb": [
+          254.5692,
+          254.4189,
+          254.4041
+        ],
+        "std_rgb": [
+          3.3308,
+          4.5658,
+          4.7497
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "light_neutral",
+        "perceptual_chroma": 0.000319,
+        "perceptual_hue_degrees": 27.4927,
+        "perceptual_lightness": 0.99811,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.435989,
+          0.67395,
+          0.821849,
+          0.460504,
+          0.631593,
+          0.633053,
+          0.901401,
+          0.967507,
+          0.459309,
+          0.106849,
+          0.563797,
+          0.726911,
+          0.822742,
+          0.628019,
+          0.812163,
+          0.889741
+        ],
+        "strong_gradient_fraction": 0.063861,
+        "texture_entropy": 0.01977
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1000488.tga",
+      "family_id": "number:99",
+      "copy": "lower_side",
+      "instance_id": "di:22eb290bd361d197",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 1.0,
+      "best_candidate_coverage": 0.627786,
+      "best_iou": 0.627786,
+      "proposed_owners": [
+        "brand_graphics",
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw",
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid",
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.01481819,
+        "aspect_ratio": 2.8,
+        "bbox_normalized": [
+          0.275391,
+          0.695312,
+          0.273438,
+          0.097656
+        ],
+        "border_distance_fraction": 0.207031,
+        "edge_density": 0.101944,
+        "fill_ratio": 0.554929,
+        "mean_rgb": [
+          195.1021,
+          118.3538,
+          122.7562
+        ],
+        "std_rgb": [
+          103.0231,
+          123.1746,
+          119.0685
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.169988,
+        "perceptual_hue_degrees": 38.0512,
+        "perceptual_lightness": 0.624636,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.593143,
+          0.895429,
+          0.464571,
+          0.127429,
+          0.585143,
+          0.760571,
+          0.522286,
+          0.282857,
+          0.417714,
+          0.966286,
+          0.844,
+          0.527429,
+          0.233143,
+          0.831429,
+          0.646857,
+          0.180571
+        ],
+        "strong_gradient_fraction": 0.30242,
+        "texture_entropy": 0.528933
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1002181.tga",
+      "family_id": "number:0",
+      "copy": "deck",
+      "instance_id": "di:a59d6a41176e7171",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.913333,
+      "best_candidate_coverage": 0.619624,
+      "best_iou": 0.585216,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.02128792,
+        "aspect_ratio": 1.127072,
+        "bbox_normalized": [
+          0.754883,
+          0.750977,
+          0.199219,
+          0.176758
+        ],
+        "border_distance_fraction": 0.045898,
+        "edge_density": 0.059717,
+        "fill_ratio": 0.604539,
+        "mean_rgb": [
+          73.1063,
+          31.9329,
+          83.0644
+        ],
+        "std_rgb": [
+          66.8621,
+          51.8737,
+          48.4707
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.187659,
+        "perceptual_hue_degrees": 321.3897,
+        "perceptual_lightness": 0.210273,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.835891,
+          0.860188,
+          0.772805,
+          0.816283,
+          0.891068,
+          0.985185,
+          0.698911,
+          0.760784,
+          0.823529,
+          0.451852,
+          0.017865,
+          0.396514,
+          0.512854,
+          0.356427,
+          0.439651,
+          0.033551
+        ],
+        "strong_gradient_fraction": 0.175074,
+        "texture_entropy": 0.321867
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1002181.tga",
+      "family_id": "number:0",
+      "copy": "lower_side",
+      "instance_id": "di:47a4c6a1c68ad370",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.95614,
+      "best_candidate_coverage": 0.40724,
+      "best_iou": 0.399772,
+      "proposed_owners": [
+        "brand_graphics",
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw",
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid",
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.01212025,
+        "aspect_ratio": 4.055046,
+        "bbox_normalized": [
+          0.170898,
+          0.698242,
+          0.431641,
+          0.106445
+        ],
+        "border_distance_fraction": 0.170898,
+        "edge_density": 0.211425,
+        "fill_ratio": 0.263793,
+        "mean_rgb": [
+          168.8362,
+          68.0338,
+          79.5593
+        ],
+        "std_rgb": [
+          109.878,
+          98.4235,
+          82.9611
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.201152,
+        "perceptual_hue_degrees": 30.2344,
+        "perceptual_lightness": 0.472195,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.440798,
+          0.514479,
+          0.205195,
+          0.065584,
+          0.185185,
+          0.507841,
+          0.275758,
+          0.127946,
+          0.0,
+          0.610277,
+          0.120875,
+          0.0,
+          0.0,
+          0.498165,
+          0.541414,
+          0.114815
+        ],
+        "strong_gradient_fraction": 0.572193,
+        "texture_entropy": 0.688954
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1002181.tga",
+      "family_id": "number:0",
+      "copy": "upper_side",
+      "instance_id": "di:95c014087f0d4ac8",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.98374,
+      "best_candidate_coverage": 0.29489,
+      "best_iou": 0.29346,
+      "proposed_owners": [
+        "brand_graphics",
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw",
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid",
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.01993179,
+        "aspect_ratio": 4.364341,
+        "bbox_normalized": [
+          0.022461,
+          0.216797,
+          0.549805,
+          0.125977
+        ],
+        "border_distance_fraction": 0.022461,
+        "edge_density": 0.239426,
+        "fill_ratio": 0.287772,
+        "mean_rgb": [
+          176.5043,
+          99.05,
+          67.0974
+        ],
+        "std_rgb": [
+          99.2612,
+          97.9156,
+          82.7204
+        ],
+        "ocr_alpha_coverage": 0.002679,
+        "ocr_digit_coverage": 0.000383,
+        "ocr_max_coverage": 0.002679,
+        "ocr_token_count": 2,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.208659,
+        "perceptual_hue_degrees": 54.5312,
+        "perceptual_lightness": 0.534315,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.0,
+          0.0,
+          0.485493,
+          0.336797,
+          0.0,
+          0.052748,
+          0.992465,
+          0.252679,
+          0.066933,
+          0.287456,
+          0.974069,
+          0.072321,
+          0.002881,
+          0.473848,
+          0.613475,
+          0.0
+        ],
+        "strong_gradient_fraction": 0.6311,
+        "texture_entropy": 0.821013
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1003732.tga",
+      "family_id": "number:812",
+      "copy": "lower_side",
+      "instance_id": "di:dd6ff34fe3113aab",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.913043,
+      "best_candidate_coverage": 0.58125,
+      "best_iou": 0.550761,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.01078796,
+        "aspect_ratio": 2.678571,
+        "bbox_normalized": [
+          0.199219,
+          0.69043,
+          0.292969,
+          0.109375
+        ],
+        "border_distance_fraction": 0.199219,
+        "edge_density": 0.095474,
+        "fill_ratio": 0.336667,
+        "mean_rgb": [
+          217.729,
+          217.3858,
+          185.8271
+        ],
+        "std_rgb": [
+          76.4806,
+          76.4052,
+          100.1315
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "light_neutral",
+        "perceptual_chroma": 0.072419,
+        "perceptual_hue_degrees": 102.5786,
+        "perceptual_lightness": 0.852625,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.143333,
+          0.412381,
+          0.359524,
+          0.023333,
+          0.037143,
+          0.819048,
+          0.632857,
+          0.272381,
+          0.004286,
+          0.663333,
+          0.445238,
+          0.277143,
+          0.0,
+          0.523333,
+          0.507619,
+          0.265714
+        ],
+        "strong_gradient_fraction": 0.372967,
+        "texture_entropy": 0.527611
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1003732.tga",
+      "family_id": "number:812",
+      "copy": "upper_side",
+      "instance_id": "di:f6bb3d89d168414f",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.883333,
+      "best_candidate_coverage": 0.569094,
+      "best_iou": 0.52931,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.00144005,
+        "aspect_ratio": 2.420168,
+        "bbox_normalized": [
+          0.213867,
+          0.229492,
+          0.28125,
+          0.116211
+        ],
+        "border_distance_fraction": 0.213867,
+        "edge_density": 0.286755,
+        "fill_ratio": 0.044059,
+        "mean_rgb": [
+          246.2026,
+          244.7272,
+          27.1192
+        ],
+        "std_rgb": [
+          13.9171,
+          14.2638,
+          23.7368
+        ],
+        "ocr_alpha_coverage": 0.074834,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.074834,
+        "ocr_token_count": 1,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.497888,
+        "perceptual_hue_degrees": 102.7499,
+        "perceptual_lightness": 0.938855,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.0,
+          0.068056,
+          0.027778,
+          0.0,
+          0.037963,
+          0.042593,
+          0.0,
+          0.138889,
+          0.027778,
+          0.000463,
+          0.0,
+          0.065741,
+          0.112548,
+          0.112069,
+          0.06705,
+          0.008142
+        ],
+        "strong_gradient_fraction": 0.930464,
+        "texture_entropy": 0.379027
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1008515.tga",
+      "family_id": "number:18",
+      "copy": "lower_side",
+      "instance_id": "di:d2d875a8ac61f7ed",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.9,
+      "best_candidate_coverage": 0.499675,
+      "best_iou": 0.473393,
+      "proposed_owners": [
+        "brand_graphics"
+      ],
+      "source_stages": [
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.00938034,
+        "aspect_ratio": 1.018182,
+        "bbox_normalized": [
+          0.34082,
+          0.700195,
+          0.109375,
+          0.107422
+        ],
+        "border_distance_fraction": 0.192383,
+        "edge_density": 0.328386,
+        "fill_ratio": 0.798377,
+        "mean_rgb": [
+          169.0356,
+          168.2682,
+          114.7077
+        ],
+        "std_rgb": [
+          74.6112,
+          74.4906,
+          90.5236
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.125837,
+        "perceptual_hue_degrees": 102.4465,
+        "perceptual_lightness": 0.670643,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.438776,
+          0.983418,
+          0.924745,
+          0.272959,
+          0.968112,
+          1.0,
+          1.0,
+          0.844388,
+          0.835979,
+          1.0,
+          1.0,
+          0.94709,
+          0.239418,
+          0.910053,
+          0.978836,
+          0.428571
+        ],
+        "strong_gradient_fraction": 0.883591,
+        "texture_entropy": 0.952222
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1008515.tga",
+      "family_id": "number:18",
+      "copy": "upper_side",
+      "instance_id": "di:0890a2d8c4057746",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.75,
+      "best_candidate_coverage": 0.396935,
+      "best_iou": 0.350553,
+      "proposed_owners": [
+        "brand_graphics"
+      ],
+      "source_stages": [
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.00908089,
+        "aspect_ratio": 1.166667,
+        "bbox_normalized": [
+          0.324219,
+          0.234375,
+          0.116211,
+          0.099609
+        ],
+        "border_distance_fraction": 0.234375,
+        "edge_density": 0.329868,
+        "fill_ratio": 0.784478,
+        "mean_rgb": [
+          163.4531,
+          162.648,
+          109.7518
+        ],
+        "std_rgb": [
+          78.925,
+          78.8023,
+          91.1794
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.123464,
+        "perceptual_hue_degrees": 102.3043,
+        "perceptual_lightness": 0.648092,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.279487,
+          0.94359,
+          0.944872,
+          0.437666,
+          0.814103,
+          1.0,
+          1.0,
+          0.937666,
+          0.914667,
+          1.0,
+          1.0,
+          0.76,
+          0.396,
+          0.945333,
+          0.910667,
+          0.238621
+        ],
+        "strong_gradient_fraction": 0.885003,
+        "texture_entropy": 0.962657
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1009267.tga",
+      "family_id": "number:9",
+      "copy": "deck",
+      "instance_id": "di:70e8de2758c40d82",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.550674,
+      "best_candidate_coverage": 1.0,
+      "best_iou": 0.550674,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.00289345,
+        "aspect_ratio": 0.8125,
+        "bbox_normalized": [
+          0.800781,
+          0.80957,
+          0.101562,
+          0.125
+        ],
+        "border_distance_fraction": 0.06543,
+        "edge_density": 0.058009,
+        "fill_ratio": 0.227915,
+        "mean_rgb": [
+          3.8339,
+          3.8339,
+          206.1721
+        ],
+        "std_rgb": [
+          10.964,
+          10.964,
+          86.1541
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.595929,
+        "perceptual_hue_degrees": 306.1767,
+        "perceptual_lightness": 0.266248,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.03125,
+          0.039663,
+          0.039663,
+          0.040865,
+          0.051683,
+          0.0,
+          0.036058,
+          0.075721,
+          0.346154,
+          0.633413,
+          0.786058,
+          0.759615,
+          0.383413,
+          0.265625,
+          0.133413,
+          0.024038
+        ],
+        "strong_gradient_fraction": 0.274555,
+        "texture_entropy": 0.272956
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1009267.tga",
+      "family_id": "number:9",
+      "copy": "lower_side",
+      "instance_id": "di:45864e149e603064",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_fragment_only",
+      "best_review_coverage": 0.45045,
+      "best_candidate_coverage": 0.208436,
+      "best_iou": 0.166178,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.02587891,
+        "aspect_ratio": 2.565891,
+        "bbox_normalized": [
+          0.268555,
+          0.757812,
+          0.323242,
+          0.125977
+        ],
+        "border_distance_fraction": 0.116211,
+        "edge_density": 0.041274,
+        "fill_ratio": 0.635518,
+        "mean_rgb": [
+          242.1652,
+          242.1651,
+          242.1627
+        ],
+        "std_rgb": [
+          11.0517,
+          11.0518,
+          11.0559
+        ],
+        "ocr_alpha_coverage": 0.002616,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.002616,
+        "ocr_token_count": 2,
+        "palette_role": "light_neutral",
+        "perceptual_chroma": 4e-06,
+        "perceptual_hue_degrees": 83.7966,
+        "perceptual_lightness": 0.955764,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.108799,
+          0.032859,
+          0.007302,
+          0.258315,
+          0.627636,
+          0.589985,
+          0.635542,
+          0.703125,
+          0.942395,
+          1.0,
+          1.0,
+          0.889482,
+          0.861069,
+          0.924322,
+          0.90625,
+          0.748476
+        ],
+        "strong_gradient_fraction": 0.10429,
+        "texture_entropy": 0.247811
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1009267.tga",
+      "family_id": "number:9",
+      "copy": "upper_side",
+      "instance_id": "di:7fef21869bcbb50f",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.711199,
+      "best_candidate_coverage": 1.0,
+      "best_iou": 0.711199,
+      "proposed_owners": [
+        "brand_graphics"
+      ],
+      "source_stages": [
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.01009846,
+        "aspect_ratio": 1.435644,
+        "bbox_normalized": [
+          0.288086,
+          0.233398,
+          0.141602,
+          0.098633
+        ],
+        "border_distance_fraction": 0.233398,
+        "edge_density": 0.162716,
+        "fill_ratio": 0.723045,
+        "mean_rgb": [
+          42.7216,
+          42.7257,
+          192.0963
+        ],
+        "std_rgb": [
+          76.8377,
+          76.8399,
+          73.1629
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.449798,
+        "perceptual_hue_degrees": 306.1006,
+        "perceptual_lightness": 0.352981,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.031185,
+          0.883547,
+          0.949786,
+          0.92094,
+          0.312432,
+          1.0,
+          1.0,
+          0.683333,
+          0.699459,
+          1.0,
+          1.0,
+          0.418889,
+          0.745946,
+          0.942222,
+          0.896667,
+          0.12
+        ],
+        "strong_gradient_fraction": 0.422797,
+        "texture_entropy": 0.577835
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1010211.tga",
+      "family_id": "number:225",
+      "copy": "deck",
+      "instance_id": "di:17b47d6a2291a6a9",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 1.0,
+      "best_candidate_coverage": 0.954857,
+      "best_iou": 0.954857,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.01104355,
+        "aspect_ratio": 1.053254,
+        "bbox_normalized": [
+          0.773438,
+          0.787109,
+          0.173828,
+          0.165039
+        ],
+        "border_distance_fraction": 0.047852,
+        "edge_density": 0.070812,
+        "fill_ratio": 0.384948,
+        "mean_rgb": [
+          102.9701,
+          126.782,
+          189.5288
+        ],
+        "std_rgb": [
+          122.8873,
+          100.4374,
+          54.7334
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "mid_neutral",
+        "perceptual_chroma": 0.097852,
+        "perceptual_hue_degrees": 317.5436,
+        "perceptual_lightness": 0.680306,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.275969,
+          0.335917,
+          0.615751,
+          0.550211,
+          0.248677,
+          0.247619,
+          0.440476,
+          0.642857,
+          0.080423,
+          0.180423,
+          0.3171,
+          0.850108,
+          0.143915,
+          0.428042,
+          0.0671,
+          0.75487
+        ],
+        "strong_gradient_fraction": 0.21114,
+        "texture_entropy": 0.328047
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1010211.tga",
+      "family_id": "number:225",
+      "copy": "lower_side",
+      "instance_id": "di:cba8882869b40884",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.799911,
+      "best_candidate_coverage": 0.989189,
+      "best_iou": 0.792978,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.00406456,
+        "aspect_ratio": 1.887755,
+        "bbox_normalized": [
+          0.262695,
+          0.700195,
+          0.180664,
+          0.095703
+        ],
+        "border_distance_fraction": 0.204102,
+        "edge_density": 0.084702,
+        "fill_ratio": 0.23508,
+        "mean_rgb": [
+          10.4298,
+          207.8158,
+          233.8918
+        ],
+        "std_rgb": [
+          37.8488,
+          7.4254,
+          5.0801
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.220503,
+        "perceptual_hue_degrees": 217.6457,
+        "perceptual_lightness": 0.768904,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.283404,
+          0.335652,
+          0.332174,
+          0.14087,
+          0.225532,
+          0.263478,
+          0.233043,
+          0.156522,
+          0.083333,
+          0.213768,
+          0.238225,
+          0.15942,
+          0.143617,
+          0.419384,
+          0.240036,
+          0.293478
+        ],
+        "strong_gradient_fraction": 0.35054,
+        "texture_entropy": 0.157632
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1010211.tga",
+      "family_id": "number:225",
+      "copy": "upper_side",
+      "instance_id": "di:d8de98b031cbe67d",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.727109,
+      "best_candidate_coverage": 1.0,
+      "best_iou": 0.727109,
+      "proposed_owners": [
+        "brand_graphics"
+      ],
+      "source_stages": [
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.01325512,
+        "aspect_ratio": 1.640777,
+        "bbox_normalized": [
+          0.268555,
+          0.229492,
+          0.165039,
+          0.100586
+        ],
+        "border_distance_fraction": 0.229492,
+        "edge_density": 0.164184,
+        "fill_ratio": 0.798472,
+        "mean_rgb": [
+          155.3885,
+          84.932,
+          161.5693
+        ],
+        "std_rgb": [
+          120.7641,
+          98.1023,
+          60.564
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.199634,
+        "perceptual_hue_degrees": 351.5112,
+        "perceptual_lightness": 0.61598,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.363148,
+          0.777473,
+          0.870879,
+          0.930403,
+          0.658318,
+          1.0,
+          1.0,
+          0.832418,
+          0.776386,
+          1.0,
+          1.0,
+          0.644689,
+          0.894884,
+          0.834286,
+          0.820952,
+          0.373333
+        ],
+        "strong_gradient_fraction": 0.370746,
+        "texture_entropy": 0.522391
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1010700.tga",
+      "family_id": "number:86",
+      "copy": "upper_side",
+      "instance_id": "di:bdc7fcc6c79d748c",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.98,
+      "best_candidate_coverage": 0.46617,
+      "best_iou": 0.461777,
+      "proposed_owners": [
+        "brand_graphics",
+        "numbers",
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw",
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid",
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.01302814,
+        "aspect_ratio": 3.121495,
+        "bbox_normalized": [
+          0.249023,
+          0.226562,
+          0.326172,
+          0.104492
+        ],
+        "border_distance_fraction": 0.226562,
+        "edge_density": 0.087402,
+        "fill_ratio": 0.382254,
+        "mean_rgb": [
+          189.9308,
+          207.9473,
+          218.1135
+        ],
+        "std_rgb": [
+          104.9539,
+          86.3096,
+          78.4571
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "light_neutral",
+        "perceptual_chroma": 0.037758,
+        "perceptual_hue_degrees": 261.0339,
+        "perceptual_lightness": 0.815628,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.35097,
+          0.751323,
+          0.255689,
+          0.071843,
+          0.497795,
+          0.973986,
+          0.233824,
+          0.051316,
+          0.637125,
+          0.870811,
+          0.056225,
+          0.0,
+          0.679945,
+          0.647894,
+          0.001854,
+          0.0
+        ],
+        "strong_gradient_fraction": 0.312203,
+        "texture_entropy": 0.440625
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1015229.tga",
+      "family_id": "number:21",
+      "copy": "lower_side",
+      "instance_id": "di:c32d5321b270e6cf",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_fragment_only",
+      "best_review_coverage": 0.457143,
+      "best_candidate_coverage": 1.0,
+      "best_iou": 0.457143,
+      "proposed_owners": [
+        "brand_graphics"
+      ],
+      "source_stages": [
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.00373936,
+        "aspect_ratio": 1.275,
+        "bbox_normalized": [
+          0.282227,
+          0.707031,
+          0.099609,
+          0.078125
+        ],
+        "border_distance_fraction": 0.214844,
+        "edge_density": 0.060189,
+        "fill_ratio": 0.480515,
+        "mean_rgb": [
+          5.1895,
+          5.1895,
+          5.1895
+        ],
+        "std_rgb": [
+          27.0878,
+          27.0878,
+          27.0878
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "dark_neutral",
+        "perceptual_chroma": 0.0,
+        "perceptual_hue_degrees": 0.0,
+        "perceptual_lightness": 0.020789,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.519231,
+          0.767308,
+          0.632,
+          0.0,
+          0.007692,
+          0.528846,
+          0.918,
+          0.006,
+          0.196154,
+          0.973077,
+          0.312,
+          0.148,
+          0.007692,
+          0.869231,
+          0.97,
+          0.832
+        ],
+        "strong_gradient_fraction": 0.144861,
+        "texture_entropy": 0.086903
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1015229.tga",
+      "family_id": "number:21",
+      "copy": "upper_side",
+      "instance_id": "di:3a08bf0f98d0f5be",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_fragment_only",
+      "best_review_coverage": 0.484706,
+      "best_candidate_coverage": 1.0,
+      "best_iou": 0.484706,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.00404358,
+        "aspect_ratio": 1.170455,
+        "bbox_normalized": [
+          0.31543,
+          0.239258,
+          0.100586,
+          0.085938
+        ],
+        "border_distance_fraction": 0.239258,
+        "edge_density": 0.033726,
+        "fill_ratio": 0.467785,
+        "mean_rgb": [
+          0.9108,
+          0.9108,
+          0.9108
+        ],
+        "std_rgb": [
+          4.9497,
+          4.9497,
+          4.9497
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "dark_neutral",
+        "perceptual_chroma": 0.0,
+        "perceptual_hue_degrees": 0.0,
+        "perceptual_lightness": 0.003167,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.0,
+          0.634615,
+          0.921329,
+          0.781818,
+          0.001748,
+          0.358392,
+          0.856643,
+          0.347273,
+          0.381119,
+          0.730769,
+          0.325175,
+          0.0,
+          0.840909,
+          0.753497,
+          0.522727,
+          0.0
+        ],
+        "strong_gradient_fraction": 0.14316,
+        "texture_entropy": 0.034492
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1023169.tga",
+      "family_id": "number:4",
+      "copy": "lower_side",
+      "instance_id": "di:716946073242f7af",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.878261,
+      "best_candidate_coverage": 0.545772,
+      "best_iou": 0.507388,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.01512051,
+        "aspect_ratio": 2.6,
+        "bbox_normalized": [
+          0.178711,
+          0.69043,
+          0.279297,
+          0.107422
+        ],
+        "border_distance_fraction": 0.178711,
+        "edge_density": 0.107222,
+        "fill_ratio": 0.503973,
+        "mean_rgb": [
+          165.0236,
+          66.8196,
+          66.8196
+        ],
+        "std_rgb": [
+          120.8454,
+          110.724,
+          110.724
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.222232,
+        "perceptual_hue_degrees": 39.8124,
+        "perceptual_lightness": 0.466552,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.485615,
+          0.804067,
+          0.762575,
+          0.320926,
+          0.167659,
+          0.674603,
+          0.947686,
+          0.347082,
+          0.0,
+          0.557099,
+          0.983307,
+          0.449139,
+          0.0,
+          0.21142,
+          0.728743,
+          0.621805
+        ],
+        "strong_gradient_fraction": 0.293724,
+        "texture_entropy": 0.438381
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1023169.tga",
+      "family_id": "number:4",
+      "copy": "reference_strip",
+      "instance_id": "di:f283de57dd85a0ec",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_fragment_only",
+      "best_review_coverage": 0.224762,
+      "best_candidate_coverage": 0.145701,
+      "best_iou": 0.09697,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.00617886,
+        "aspect_ratio": 17.947368,
+        "bbox_normalized": [
+          0.246094,
+          0.924805,
+          0.333008,
+          0.018555
+        ],
+        "border_distance_fraction": 0.056641,
+        "edge_density": 0.0,
+        "fill_ratio": 1.0,
+        "mean_rgb": [
+          254.9824,
+          0.0059,
+          0.0059
+        ],
+        "std_rgb": [
+          0.4459,
+          0.1081,
+          0.1081
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.576422,
+        "perceptual_hue_degrees": 39.9459,
+        "perceptual_lightness": 0.533296,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "strong_gradient_fraction": 0.0,
+        "texture_entropy": -0.0
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_1023169.tga",
+      "family_id": "number:4",
+      "copy": "upper_side",
+      "instance_id": "di:a2903f24615b8480",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.96,
+      "best_candidate_coverage": 0.52987,
+      "best_iou": 0.518424,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.01773071,
+        "aspect_ratio": 2.464,
+        "bbox_normalized": [
+          0.199219,
+          0.224609,
+          0.300781,
+          0.12207
+        ],
+        "border_distance_fraction": 0.199219,
+        "edge_density": 0.094019,
+        "fill_ratio": 0.482909,
+        "mean_rgb": [
+          163.9604,
+          73.8597,
+          73.8597
+        ],
+        "std_rgb": [
+          121.0011,
+          114.3113,
+          114.3113
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.20403,
+        "perceptual_hue_degrees": 39.8279,
+        "perceptual_lightness": 0.477387,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.0,
+          0.538555,
+          0.729708,
+          0.0,
+          0.020528,
+          0.947633,
+          0.938416,
+          0.041056,
+          0.403854,
+          0.950566,
+          0.70884,
+          0.083368,
+          0.661919,
+          0.775869,
+          0.600754,
+          0.346879
+        ],
+        "strong_gradient_fraction": 0.286414,
+        "texture_entropy": 0.450546
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_131682.tga",
+      "family_id": "number:12",
+      "copy": "lower_side",
+      "instance_id": "di:6ee5db3f31fccddd",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 1.0,
+      "best_candidate_coverage": 0.377123,
+      "best_iou": 0.377123,
+      "proposed_owners": [
+        "numbers",
+        "sponsors",
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw",
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid",
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.02081108,
+        "aspect_ratio": 1.480769,
+        "bbox_normalized": [
+          0.269531,
+          0.703125,
+          0.225586,
+          0.152344
+        ],
+        "border_distance_fraction": 0.144531,
+        "edge_density": 0.087893,
+        "fill_ratio": 0.605561,
+        "mean_rgb": [
+          86.6991,
+          62.1245,
+          99.4746
+        ],
+        "std_rgb": [
+          102.3156,
+          72.9083,
+          82.7035
+        ],
+        "ocr_alpha_coverage": 0.002154,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.002154,
+        "ocr_token_count": 1,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.150027,
+        "perceptual_hue_degrees": 343.8536,
+        "perceptual_lightness": 0.373721,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.044209,
+          0.875774,
+          0.977011,
+          0.240216,
+          0.210875,
+          0.993369,
+          0.907162,
+          0.616734,
+          0.352785,
+          0.607869,
+          0.623342,
+          0.238417,
+          0.862953,
+          0.909372,
+          0.893899,
+          0.317589
+        ],
+        "strong_gradient_fraction": 0.266062,
+        "texture_entropy": 0.33723
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_133100.tga",
+      "family_id": "number:18",
+      "copy": "lower_side",
+      "instance_id": "di:d016aba687c74a5a",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 1.0,
+      "best_candidate_coverage": 0.175625,
+      "best_iou": 0.175625,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.03676701,
+        "aspect_ratio": 5.022727,
+        "bbox_normalized": [
+          0.003906,
+          0.689453,
+          0.647461,
+          0.128906
+        ],
+        "border_distance_fraction": 0.003906,
+        "edge_density": 0.044562,
+        "fill_ratio": 0.440525,
+        "mean_rgb": [
+          1.2086,
+          0.8567,
+          0.8356
+        ],
+        "std_rgb": [
+          7.0666,
+          4.9284,
+          4.6537
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "dark_neutral",
+        "perceptual_chroma": 0.00098,
+        "perceptual_hue_degrees": 33.5616,
+        "perceptual_lightness": 0.00352,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.311428,
+          0.836802,
+          0.591274,
+          0.646465,
+          0.517342,
+          0.577766,
+          0.220153,
+          0.342332,
+          0.699343,
+          0.285141,
+          0.274005,
+          0.339394,
+          0.565717,
+          0.239503,
+          0.371121,
+          0.229385
+        ],
+        "strong_gradient_fraction": 0.144995,
+        "texture_entropy": 0.042123
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_148935.tga",
+      "family_id": "number:15",
+      "copy": "deck",
+      "instance_id": "di:c24eed763eecbfd7",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 1.0,
+      "best_candidate_coverage": 0.159905,
+      "best_iou": 0.159905,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.03717136,
+        "aspect_ratio": 0.833333,
+        "bbox_normalized": [
+          0.754883,
+          0.750977,
+          0.200195,
+          0.240234
+        ],
+        "border_distance_fraction": 0.008789,
+        "edge_density": 0.047002,
+        "fill_ratio": 0.772893,
+        "mean_rgb": [
+          231.0781,
+          236.8677,
+          235.6849
+        ],
+        "std_rgb": [
+          70.4853,
+          55.7832,
+          58.1814
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "light_neutral",
+        "perceptual_chroma": 0.003797,
+        "perceptual_hue_degrees": 268.2395,
+        "perceptual_lightness": 0.930455,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.884926,
+          0.802657,
+          0.79222,
+          0.882037,
+          0.676179,
+          0.807084,
+          0.874447,
+          0.753004,
+          0.691677,
+          0.522983,
+          0.708132,
+          0.722597,
+          0.813682,
+          0.754098,
+          0.802636,
+          0.873674
+        ],
+        "strong_gradient_fraction": 0.189727,
+        "texture_entropy": 0.232217
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_148935.tga",
+      "family_id": "number:15",
+      "copy": "lower_side",
+      "instance_id": "di:23a81ba26fe110d3",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 1.0,
+      "best_candidate_coverage": 0.89978,
+      "best_iou": 0.89978,
+      "proposed_owners": [
+        "numbers",
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw",
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid",
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.01182365,
+        "aspect_ratio": 2.197802,
+        "bbox_normalized": [
+          0.249023,
+          0.703125,
+          0.195312,
+          0.088867
+        ],
+        "border_distance_fraction": 0.208008,
+        "edge_density": 0.158332,
+        "fill_ratio": 0.681209,
+        "mean_rgb": [
+          105.0436,
+          150.5784,
+          171.0361
+        ],
+        "std_rgb": [
+          114.8414,
+          84.7625,
+          81.1691
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "mid_neutral",
+        "perceptual_chroma": 0.099348,
+        "perceptual_hue_degrees": 282.7561,
+        "perceptual_lightness": 0.607476,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.431304,
+          0.851304,
+          0.861739,
+          0.281739,
+          0.488696,
+          1.0,
+          1.0,
+          0.492174,
+          0.163478,
+          0.992174,
+          1.0,
+          0.795652,
+          0.012727,
+          0.826364,
+          0.915455,
+          0.778182
+        ],
+        "strong_gradient_fraction": 0.479755,
+        "texture_entropy": 0.643776
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_148935.tga",
+      "family_id": "number:15",
+      "copy": "upper_side",
+      "instance_id": "di:99d628e53af36f2f",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 1.0,
+      "best_candidate_coverage": 0.862745,
+      "best_iou": 0.862745,
+      "proposed_owners": [
+        "numbers",
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw",
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid",
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.01279354,
+        "aspect_ratio": 1.882353,
+        "bbox_normalized": [
+          0.25,
+          0.234375,
+          0.1875,
+          0.099609
+        ],
+        "border_distance_fraction": 0.234375,
+        "edge_density": 0.132016,
+        "fill_ratio": 0.684998,
+        "mean_rgb": [
+          103.5096,
+          147.4332,
+          165.6351
+        ],
+        "std_rgb": [
+          115.1013,
+          87.8658,
+          85.9492
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "mid_neutral",
+        "perceptual_chroma": 0.092367,
+        "perceptual_hue_degrees": 282.3581,
+        "perceptual_lightness": 0.593882,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.122596,
+          0.800481,
+          0.878205,
+          0.818109,
+          0.390224,
+          1.0,
+          1.0,
+          0.639423,
+          0.628333,
+          1.0,
+          1.0,
+          0.39,
+          0.754167,
+          0.784167,
+          0.600833,
+          0.146667
+        ],
+        "strong_gradient_fraction": 0.456429,
+        "texture_entropy": 0.641847
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_161708.tga",
+      "family_id": "number:48",
+      "copy": "deck",
+      "instance_id": "di:16530b5f22b5abc8",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.81746,
+      "best_candidate_coverage": 0.87931,
+      "best_iou": 0.734994,
+      "proposed_owners": [
+        "brand_graphics"
+      ],
+      "source_stages": [
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.00791359,
+        "aspect_ratio": 1.68932,
+        "bbox_normalized": [
+          0.774414,
+          0.816406,
+          0.169922,
+          0.100586
+        ],
+        "border_distance_fraction": 0.055664,
+        "edge_density": 0.219209,
+        "fill_ratio": 0.463006,
+        "mean_rgb": [
+          96.8256,
+          76.1897,
+          93.8325
+        ],
+        "std_rgb": [
+          113.365,
+          106.5407,
+          106.4501
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "mid_neutral",
+        "perceptual_chroma": 0.050826,
+        "perceptual_hue_degrees": 343.8726,
+        "perceptual_lightness": 0.356714,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.072552,
+          0.799825,
+          0.9839,
+          0.711986,
+          0.660839,
+          1.0,
+          1.0,
+          0.342576,
+          0.43007,
+          0.567308,
+          0.616279,
+          0.035778,
+          0.120909,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "strong_gradient_fraction": 0.645336,
+        "texture_entropy": 0.634473
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_172929.tga",
+      "family_id": "number:77",
+      "copy": "lower_side",
+      "instance_id": "di:4f4fcce27682e97e",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.952941,
+      "best_candidate_coverage": 0.215992,
+      "best_iou": 0.213713,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.02046299,
+        "aspect_ratio": 4.068966,
+        "bbox_normalized": [
+          0.116211,
+          0.705078,
+          0.460938,
+          0.113281
+        ],
+        "border_distance_fraction": 0.116211,
+        "edge_density": 0.072564,
+        "fill_ratio": 0.391894,
+        "mean_rgb": [
+          107.8941,
+          112.9519,
+          248.8167
+        ],
+        "std_rgb": [
+          124.5751,
+          115.3075,
+          31.6244
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.41344,
+        "perceptual_hue_degrees": 307.0295,
+        "perceptual_lightness": 0.602815,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.362361,
+          0.784337,
+          0.513735,
+          0.008182,
+          0.117183,
+          0.648743,
+          0.692577,
+          0.020748,
+          0.0,
+          0.516072,
+          0.753068,
+          0.135885,
+          0.0,
+          0.407656,
+          0.599942,
+          0.709819
+        ],
+        "strong_gradient_fraction": 0.255022,
+        "texture_entropy": 0.337411
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_186445.tga",
+      "family_id": "number:32",
+      "copy": "deck",
+      "instance_id": "di:e23429b49277e4b9",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 1.0,
+      "best_candidate_coverage": 0.323676,
+      "best_iou": 0.323676,
+      "proposed_owners": [
+        "numbers",
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw",
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid",
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.04613876,
+        "aspect_ratio": 0.826087,
+        "bbox_normalized": [
+          0.75293,
+          0.74707,
+          0.204102,
+          0.24707
+        ],
+        "border_distance_fraction": 0.005859,
+        "edge_density": 0.048388,
+        "fill_ratio": 0.914954,
+        "mean_rgb": [
+          225.2701,
+          92.781,
+          56.7858
+        ],
+        "std_rgb": [
+          68.3022,
+          36.8557,
+          37.8539
+        ],
+        "ocr_alpha_coverage": 0.005271,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.005271,
+        "ocr_token_count": 1,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.368231,
+        "perceptual_hue_degrees": 43.2925,
+        "perceptual_lightness": 0.565845,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.885908,
+          0.862079,
+          0.815805,
+          0.883714,
+          0.882899,
+          0.994811,
+          0.9942,
+          0.97558,
+          0.852052,
+          0.994505,
+          0.997253,
+          0.971001,
+          0.828991,
+          0.88431,
+          0.920635,
+          0.90293
+        ],
+        "strong_gradient_fraction": 0.143241,
+        "texture_entropy": 0.360145
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_63750.tga",
+      "family_id": "number:37",
+      "copy": "lower_side",
+      "instance_id": "di:64cb3ce83e2886ef",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 1.0,
+      "best_candidate_coverage": 0.266468,
+      "best_iou": 0.266468,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.01439571,
+        "aspect_ratio": 3.446809,
+        "bbox_normalized": [
+          0.005859,
+          0.669922,
+          0.474609,
+          0.137695
+        ],
+        "border_distance_fraction": 0.005859,
+        "edge_density": 0.072806,
+        "fill_ratio": 0.220281,
+        "mean_rgb": [
+          226.2904,
+          191.048,
+          101.1095
+        ],
+        "std_rgb": [
+          22.5344,
+          50.6081,
+          122.1716
+        ],
+        "ocr_alpha_coverage": 0.051143,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.051143,
+        "ocr_token_count": 2,
+        "palette_role": "chromatic",
+        "perceptual_chroma": 0.237224,
+        "perceptual_hue_degrees": 80.4014,
+        "perceptual_lightness": 0.793113,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.124089,
+          0.109517,
+          0.046602,
+          0.0,
+          0.18548,
+          0.314052,
+          0.507438,
+          0.243684,
+          0.413817,
+          0.332084,
+          0.639433,
+          0.311688,
+          0.0,
+          0.0,
+          0.1549,
+          0.161275
+        ],
+        "strong_gradient_fraction": 0.236701,
+        "texture_entropy": 0.539379
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_63750.tga",
+      "family_id": "number:37",
+      "copy": "upper_side",
+      "instance_id": "di:6a3e55c0932994b7",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_overbroad",
+      "best_review_coverage": 0.829754,
+      "best_candidate_coverage": 0.068251,
+      "best_iou": 0.067309,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [],
+      "features": {
+        "area_fraction": 0.03518486,
+        "aspect_ratio": 2.252336,
+        "bbox_normalized": [
+          0.293945,
+          0.0,
+          0.706055,
+          0.313477
+        ],
+        "border_distance_fraction": 0.0,
+        "edge_density": 0.180246,
+        "fill_ratio": 0.158969,
+        "mean_rgb": [
+          6.3246,
+          6.0254,
+          5.901
+        ],
+        "std_rgb": [
+          13.0884,
+          12.3114,
+          11.9591
+        ],
+        "ocr_alpha_coverage": 0.097821,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.097821,
+        "ocr_token_count": 1,
+        "palette_role": "dark_neutral",
+        "perceptual_chroma": 0.000983,
+        "perceptual_hue_degrees": 56.7799,
+        "perceptual_lightness": 0.022139,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.251211,
+          0.259123,
+          0.24971,
+          0.716187,
+          0.0,
+          0.0,
+          0.0,
+          0.502431,
+          0.0,
+          0.0,
+          0.0,
+          0.302847,
+          0.0,
+          0.0,
+          0.0,
+          0.257847
+        ],
+        "strong_gradient_fraction": 0.373963,
+        "texture_entropy": 0.201795
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_85142.tga",
+      "family_id": "number:81",
+      "copy": "deck",
+      "instance_id": "di:3833ae75d899fc10",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.870056,
+      "best_candidate_coverage": 0.965517,
+      "best_iou": 0.843836,
+      "proposed_owners": [
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw"
+      ],
+      "sources": [
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.00748539,
+        "aspect_ratio": 1.062069,
+        "bbox_normalized": [
+          0.785156,
+          0.798828,
+          0.150391,
+          0.141602
+        ],
+        "border_distance_fraction": 0.05957,
+        "edge_density": 0.065359,
+        "fill_ratio": 0.3515,
+        "mean_rgb": [
+          158.2649,
+          158.2621,
+          158.2176
+        ],
+        "std_rgb": [
+          121.2276,
+          121.2293,
+          121.2661
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "mid_neutral",
+        "perceptual_chroma": 0.000175,
+        "perceptual_hue_degrees": 89.3084,
+        "perceptual_lightness": 0.621044,
+        "proposal_conflict": false,
+        "shape_occupancy": [
+          0.013167,
+          0.578656,
+          0.665007,
+          0.369132,
+          0.247151,
+          0.782764,
+          0.855263,
+          0.679094,
+          0.333333,
+          0.074786,
+          0.358918,
+          0.060673,
+          0.13604,
+          0.342593,
+          0.129386,
+          0.0
+        ],
+        "strong_gradient_fraction": 0.302459,
+        "texture_entropy": 0.33378
+      }
+    },
+    {
+      "paint_label": "dirtlatemodel 358/car_num_85142.tga",
+      "family_id": "number:81",
+      "copy": "lower_side",
+      "instance_id": "di:406f6b4b99775534",
+      "review_target_layer": "numbers",
+      "candidate_status": "candidate_present",
+      "best_review_coverage": 0.808061,
+      "best_candidate_coverage": 1.0,
+      "best_iou": 0.808061,
+      "proposed_owners": [
+        "brand_graphics",
+        "unassigned"
+      ],
+      "source_stages": [
+        "appearance_quantized_raw",
+        "gpu_model_raw"
+      ],
+      "sources": [
+        "smart_tga_gpu_hybrid",
+        "source_rgb_lab_quantized"
+      ],
+      "merge_reasons": [
+        "bbox_containment"
+      ],
+      "features": {
+        "area_fraction": 0.00797844,
+        "aspect_ratio": 1.62,
+        "bbox_normalized": [
+          0.291992,
+          0.699219,
+          0.158203,
+          0.097656
+        ],
+        "border_distance_fraction": 0.203125,
+        "edge_density": 0.082716,
+        "fill_ratio": 0.51642,
+        "mean_rgb": [
+          166.3838,
+          163.7973,
+          163.5437
+        ],
+        "std_rgb": [
+          115.7175,
+          117.771,
+          117.9067
+        ],
+        "ocr_alpha_coverage": 0.0,
+        "ocr_digit_coverage": 0.0,
+        "ocr_max_coverage": 0.0,
+        "ocr_token_count": 0,
+        "palette_role": "mid_neutral",
+        "perceptual_chroma": 0.006655,
+        "perceptual_hue_degrees": 35.2165,
+        "perceptual_lightness": 0.64762,
+        "proposal_conflict": true,
+        "shape_occupancy": [
+          0.226341,
+          0.582439,
+          0.872,
+          0.215,
+          0.217561,
+          0.378537,
+          1.0,
+          0.5,
+          0.0,
+          0.121951,
+          0.999,
+          0.755,
+          0.327805,
+          0.337561,
+          0.876,
+          0.902
+        ],
+        "strong_gradient_fraction": 0.282692,
+        "texture_entropy": 0.413129
+      }
+    }
+  ],
+  "casts_votes": false,
+  "ownership_authority": false,
+  "adds_pixels": false
+}

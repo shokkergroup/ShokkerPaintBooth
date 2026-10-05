@@ -1,0 +1,4949 @@
+{
+ "domain": "recipes",
+ "version": 1,
+ "articles": [
+  {
+   "id": "recipes.matte_black",
+   "title": "Make the whole car matte black",
+   "domain": "recipes",
+   "summary": "Put one zone over the car paint, give it a Matte base and a solid black colour, and keep it off the numbers and sponsors with Restrict to layers. Check the G ROUGH view: matte should be bright.",
+   "what": "A deadly flat black is the simplest look and a good first test of the colour and finish controls. The key is to set the colour yourself: a plain finish takes the colour you choose under BASE COLOR, while a finish that brings its own colour would ignore it.",
+   "when": [
+    "You want a stealth, flat black car.",
+    "You want a matte base to put bright accents on."
+   ],
+   "how": [
+    "Open your layered template, switch the template layers off, and press + Add Zone.",
+    "Under COLOR choose Remaining (everything no zone above has claimed), or press PICK COLOR FROM CAR and click the body colour. On a layered template also tick Car Paint under RESTRICT TO LAYERS so numbers and sponsors stay untouched.",
+    "Under BASE press Base Material, open the FOUNDATIONS category, then the Foundation Bases shelf, and choose Matte (or Primer, or Flat Black for the deadest look).",
+    "Set BASE COLOR to Use solid color and pick black (a very dark grey like 0a0a0a keeps a little shape).",
+    "Look at the live preview, then open the G ROUGH view under it: matte reads bright (roughness near 200). Open B COAT: it should not be at 16.",
+    "If it looks too dead, switch to Satin for a soft sheen, or keep the matte body and add gloss accents in a zone above it.",
+    "Press RENDER, then Ctrl+R in iRacing."
+   ],
+   "controls": [
+    {
+     "label": "Base Material",
+     "range": "",
+     "default": "",
+     "effect": "Opens the finish picker for the zone.",
+     "inv": "zone.base_material"
+    },
+    {
+     "label": "BASE COLOR",
+     "range": "five choices",
+     "default": "finish",
+     "effect": "Where the colour comes from; pick Use solid color for exact black.",
+     "inv": "zone.base_color_mode"
+    },
+    {
+     "label": "RESTRICT TO LAYERS",
+     "range": "layer names",
+     "default": "none",
+     "effect": "Keeps the zone off numbers and sponsors.",
+     "inv": "zone.restrict_layers"
+    }
+   ],
+   "tips": [
+    "Matte is roughness 200 and coat 160; Flat Black is roughness 250 and coat 255, the deadest.",
+    "To keep your own colours and only make them matte, set BASE COLOR to Use source paint (spec only)."
+   ],
+   "pitfalls": [
+    "Solid black over chrome zones above it does nothing: the higher zone wins.",
+    "Matte black hides paint flaws no more than gloss, but it hides reflections; judge it in the sim."
+   ],
+   "related": [
+    "recipes.chrome_source",
+    "recipes.edit_one_thing",
+    "spec.channel_g_roughness",
+    "zones.restrict_layers",
+    "support.flat_or_shiny"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "base::matte"
+    },
+    {
+     "do": "finish",
+     "id": "base::flat_black"
+    },
+    {
+     "do": "finish",
+     "id": "base::satin"
+    },
+    {
+     "do": "control",
+     "id": "zone.base_color_mode"
+    }
+   ],
+   "figures": [
+    "g14_colour_modes"
+   ],
+   "covers": [
+    "zone.base_material",
+    "zone.base_color_mode",
+    "zone.restrict_layers",
+    "zone.solid_color"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:11870",
+    "scripts/ai_atlas/ui_map.json:11904",
+    "scripts/ai_atlas/ui_map.json:12384",
+    "js/spb-ai-atlas-data.js:1",
+    "paint-booth-2-state-zones.js:1656",
+    "paint-booth-2-state-zones.js:1910",
+    "paint-booth-2-state-zones.js:4357",
+    "paint-booth-0-finish-data.js:5785"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "matte black",
+    "make the car matte black",
+    "flat black car",
+    "stealth black",
+    "blackout",
+    "murdered out",
+    "all black car",
+    "matte finish",
+    "make it matte",
+    "black matte livery",
+    "all matte black",
+    "matte black car",
+    "no gloss"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Why the colour is set by hand",
+     "body": "A plain finish takes the colour you choose under BASE COLOR, while a finish that brings its own colour would ignore it. That is why Matte (a plain foundation with no texture: roughness 200, coat 160) plus Use solid color is the clean way to get an exact black."
+    },
+    {
+     "heading": "Matte in the shine views",
+     "body": "Matte reads bright in G ROUGH (roughness near 200) and the B COAT view should not be at 16, which is the glossiest. If the car looks too dead, Satin gives a soft sheen, or keep the matte body and add gloss accents in a zone above it."
+    },
+    {
+     "heading": "Order of zones",
+     "body": "A solid black zone under a chrome zone does nothing: the higher zone wins. Put the black zone where it is meant to apply."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Deadest flat black",
+     "goal": "The flattest possible black body, numbers untouched",
+     "settings": {
+      "Zone": "+ Add Zone, COLOR: Remaining",
+      "RESTRICT TO LAYERS": "Car Paint",
+      "BASE": "Foundation Bases shelf > Flat Black",
+      "BASE COLOR": "Use solid color, black",
+      "Then": "RENDER, Ctrl+R in iRacing"
+     },
+     "result": "A flat black body with the numbers and sponsors as they were."
+    },
+    {
+     "title": "Matte with a little shape",
+     "goal": "Black that still shows the body lines",
+     "settings": {
+      "BASE": "Matte",
+      "BASE COLOR": "Use solid color, 0a0a0a"
+     },
+     "result": "A very dark grey that keeps a faint coat so it does not look dead."
+    },
+    {
+     "title": "Keep your colours, make them matte",
+     "goal": "Matte version of a livery",
+     "settings": {
+      "BASE": "Matte",
+      "BASE COLOR": "Use source paint (spec only)"
+     },
+     "result": "Colours unchanged, shine gone."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which matte should I pick?",
+     "a": "Matte is the standard flat finish (roughness 200, coat 160), Primer is a touch flatter, and Flat Black (roughness 250, coat 255) is the deadest."
+    },
+    {
+     "q": "How do I check it is matte?",
+     "a": "Open G ROUGH under the preview: matte reads bright, with roughness near 200."
+    },
+    {
+     "q": "Will it paint over my numbers?",
+     "a": "Not if you tick Car Paint under RESTRICT TO LAYERS."
+    },
+    {
+     "q": "Does matte black hide flaws?",
+     "a": "It hides reflections, not flaws. Judge it in the sim."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The black does not show",
+     "cause": "A chrome or other zone above it wins",
+     "fix": "Drag the black zone above it."
+    },
+    {
+     "symptom": "The black is not black",
+     "cause": "The finish brought its own colour",
+     "fix": "Use a plain foundation and set BASE COLOR to Use solid color."
+    }
+   ],
+   "protips": [
+    "A very dark grey such as 0a0a0a often looks better than pure 000000 because the shape of the car still reads."
+   ],
+   "screens": [
+    "look_flat_black"
+   ]
+  },
+  {
+   "id": "recipes.chrome_source",
+   "title": "Chrome with your source colours (spec only)",
+   "domain": "recipes",
+   "summary": "A Foundation chrome with BASE COLOR set to Use source paint changes only the shine map and leaves your paint exactly as it is. Use it when you want your livery to be metallic, not repainted silver.",
+   "what": "The ordinary chrome base repaints the zone silver. A Foundation finish is a pure spec: it writes the metal and roughness and keeps your colours. This is how you make an existing livery chrome, satin chrome or metallic without touching the art, numbers or sponsors.",
+   "when": [
+    "You want your finished livery to be shiny chrome without changing the colours.",
+    "You want satin or brushed metal over your paint."
+   ],
+   "how": [
+    "Open your paint and press + Add Zone. Cover the area you want: Remaining for the whole car, or PICK COLOR FROM CAR on one colour.",
+    "Under BASE press Base Material, open the FOUNDATIONS category, then the Foundation Bases shelf, and choose Chrome or Satin Chrome (softer).",
+    "Set BASE COLOR to Use source paint (spec only).",
+    "Open the preview strip: R METAL should be bright red (about 255) and G ROUGH near black for mirror chrome. The colour preview barely moves; that is correct.",
+    "In iRacing the paint under a metal part should be near white for chrome to read, so dark colours turn dark chrome. Lighten the colour, or choose Satin Chrome or Metallic.",
+    "Press RENDER and Ctrl+R in iRacing."
+   ],
+   "controls": [
+    {
+     "label": "Base Material",
+     "range": "",
+     "default": "",
+     "effect": "Opens the finish picker.",
+     "inv": "zone.base_material"
+    },
+    {
+     "label": "BASE COLOR",
+     "range": "",
+     "default": "finish",
+     "effect": "Set to Use source paint (spec only) to keep your colours.",
+     "inv": "zone.base_color_mode"
+    }
+   ],
+   "tips": [
+    "Chrome reads 255 metal, 2 roughness, 16 coat; Satin Chrome is 250 metal, 45 roughness, 40 coat.",
+    "Other Foundation spec-only finishes include Metallic, Pearl, Brushed and Satin Pearl."
+   ],
+   "pitfalls": [
+    "Never use the plain Chrome, Metallic or Candy base for a spec-only change: they repaint the car.",
+    "Flat chrome on an overcast track looks grey; that is the sky, not a bug."
+   ],
+   "related": [
+    "recipes.matte_black",
+    "support.colours_differ",
+    "support.flat_or_shiny",
+    "spec.channel_r_metallic",
+    "finishes.foundation_shine_only"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "base::f_chrome"
+    },
+    {
+     "do": "finish",
+     "id": "base::f_satin_chrome"
+    },
+    {
+     "do": "finish",
+     "id": "base::f_metallic"
+    },
+    {
+     "do": "finish",
+     "id": "base::f_pearl"
+    },
+    {
+     "do": "finish",
+     "id": "base::f_brushed"
+    }
+   ],
+   "figures": [
+    "g16_foundation_spec_only",
+    "g01_spec_channels"
+   ],
+   "covers": [
+    "zone.base_material",
+    "zone.base_color_mode"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:11851",
+    "scripts/ai_atlas/ui_map.json:11887",
+    "js/spb-ai-atlas-data.js:1",
+    "engine/SPEC_MAP_REFERENCE.md:7",
+    "paint-booth-2-state-zones.js:1910",
+    "paint-booth-0-finish-data.js:5785"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "chrome with source colors",
+    "chrome with my colours",
+    "make my livery chrome",
+    "spec only chrome",
+    "keep my colors make it metallic",
+    "chrome without repainting",
+    "make it shiny without changing color",
+    "foundation chrome",
+    "satin chrome livery",
+    "chrome wrap",
+    "metallic over my paint",
+    "chrome but keep my colours",
+    "chrome with my paint",
+    "metallic without changing colours",
+    "chrome keep my paint"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Spec only",
+     "body": "The ordinary chrome base repaints the zone silver. A Foundation finish is a pure spec: it writes the metal and roughness and keeps your colours, so your art, numbers and sponsors are not touched."
+    },
+    {
+     "heading": "The numbers",
+     "body": "Chrome reads 255 metal, 2 roughness and 16 coat. Satin Chrome is 250 metal, 45 roughness and 40 coat. In the preview strip, R METAL should be bright red (about 255) and G ROUGH near black for mirror chrome. The colour preview barely moves; that is correct."
+    },
+    {
+     "heading": "Dark paint under chrome",
+     "body": "In iRacing the paint under a metal part should be near white for chrome to read, so dark colours turn dark chrome. Lighten the colour, or choose Satin Chrome or Metallic. Flat chrome on an overcast track looks grey; that is the sky."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Mirror-chrome hood, same paint",
+     "goal": "Make one colour area mirror chrome",
+     "settings": {
+      "Zone": "+ Add Zone, PICK COLOR FROM CAR on the hood colour",
+      "BASE": "Foundation Bases shelf > Chrome",
+      "BASE COLOR": "Use source paint (spec only)",
+      "Check": "R METAL about 255, G ROUGH near black"
+     },
+     "result": "Colours identical in the preview; mirror metal in the sim."
+    },
+    {
+     "title": "Softer chrome",
+     "goal": "A satin metallic look over the whole livery",
+     "settings": {
+      "COLOR": "Remaining",
+      "BASE": "Satin Chrome",
+      "BASE COLOR": "Use source paint (spec only)"
+     },
+     "result": "Metal 250, roughness 45, coat 40 over the whole car, colours untouched."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does my chrome look dark in the sim?",
+     "a": "The paint under it is dark. Lighten the colour or use Satin Chrome or Metallic."
+    },
+    {
+     "q": "Is the preview supposed to look unchanged?",
+     "a": "Yes. A spec-only change barely moves the colour preview."
+    },
+    {
+     "q": "Which other spec-only finishes exist?",
+     "a": "Metallic, Pearl, Brushed and Satin Pearl, among the Foundation finishes."
+    },
+    {
+     "q": "Why is chrome grey on an overcast track?",
+     "a": "It mirrors the sky. That is not a bug."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The car became silver",
+     "cause": "The plain Chrome base was used",
+     "fix": "Use the Foundation Chrome with Use source paint."
+    },
+    {
+     "symptom": "Chrome does not read",
+     "cause": "Dark paint underneath",
+     "fix": "Use a lighter colour, or Satin Chrome."
+    }
+   ],
+   "protips": [
+    "Look at R METAL first. If it is bright red where you want chrome, the recipe worked, whatever the colour preview says."
+   ],
+   "screens": [
+    "car_f_chrome"
+   ]
+  },
+  {
+   "id": "recipes.retro_stripes",
+   "title": "Retro stripes and numbers",
+   "domain": "recipes",
+   "summary": "The fastest way is to type it in Chat: \"retro red white and blue stripes, flat with chrome trim\". By hand, build each stripe as a box zone with a solid colour and recolour the numbers that your template already has.",
+   "what": "Shokker is not a drawing program; it paints your template with materials. Stripes come from zones (a coloured area with a finish), from your template's own art, or from artwork you add as a layer. Numbers are not typed in either: they exist in the template or you add them as a picture.",
+   "when": [
+    "You want a classic racing stripe look.",
+    "You want different colours or finishes on stripes and numbers."
+   ],
+   "how": [
+    "Fast way: open CHAT and type the look (for example \"retro red white and blue stripes, flat with chrome trim\"). Refine with \"thinner\", \"make the red orange\", \"matte\". Undo any step.",
+    "By hand: for each stripe press + Add Zone, open APPLY AREA, press Draw box and drag a long rectangle along the hood, roof or side on the flat sheet.",
+    "Give the stripe zone a base (Gloss is a good start) and set BASE COLOR to Use solid color for the stripe colour. Repeat for the white and the blue.",
+    "Add the Pinstripe pattern (thin lengthwise pinstripes) or Chevron under PATTERN for extra detail, and set Paint mode to Blend so it keeps your stripe colour.",
+    "Numbers: if your template has a Numbers layer, press the zone icon on that layer and give it a finish, or recolour it with BASE COLOR set to Use solid color. There is no Text button; to add new lettering, place a transparent PNG with + Layer in the layer list and move it with Move (V).",
+    "Put the stripes above the body zone in the list so they win. Render and check the CAR view."
+   ],
+   "controls": [
+    {
+     "label": "Draw box",
+     "range": "",
+     "default": "",
+     "effect": "Limits a zone to a rectangle you drag on the sheet.",
+     "inv": "zone.draw_box"
+    },
+    {
+     "label": "BASE COLOR",
+     "range": "",
+     "default": "finish",
+     "effect": "Use solid color for an exact stripe colour.",
+     "inv": "zone.base_color_mode"
+    },
+    {
+     "label": "Paint mode",
+     "range": "Overlay or Blend",
+     "default": "Overlay",
+     "effect": "Blend keeps your colour under a pattern.",
+     "inv": "zone.pattern_paint_mode"
+    }
+   ],
+   "tips": [
+    "Three colours in a 60-30-10 split look professional: one dominant colour, one accent, one trim.",
+    "Line the stripes up across the car: the side band continues the bumper colour."
+   ],
+   "pitfalls": [
+    "Boxes work on the flat sheet, where hood, roof and sides are separate rectangles.",
+    "One side of the sheet may be upside down relative to the other."
+   ],
+   "related": [
+    "workflows.one_flat_sheet",
+    "zones.regions",
+    "zones.priority",
+    "ai_copilot.chat_mode",
+    "recipes.two_tone"
+   ],
+   "actions": [
+    {
+     "do": "pattern",
+     "id": "pinstripe"
+    },
+    {
+     "do": "pattern",
+     "id": "chevron"
+    },
+    {
+     "do": "finish",
+     "id": "base::gloss"
+    },
+    {
+     "do": "control",
+     "id": "zone.draw_box"
+    }
+   ],
+   "figures": [
+    "g05_zone_priority",
+    "g06_zone_selectors"
+   ],
+   "covers": [
+    "zone.draw_box",
+    "zone.base_color_mode",
+    "zone.pattern_paint_mode",
+    "pro.layers.layer"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:13120",
+    "scripts/ai_atlas/ui_map.json:11673",
+    "scripts/ai_atlas/ui_map.json:11763",
+    "scripts/ai_atlas/ui_map.json:11780",
+    "scripts/ai_atlas/ui_map.json:13248",
+    "scripts/ai_atlas/ui_map.json:12267",
+    "js/spb-ai-atlas-data.js:1"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "retro stripes",
+    "racing stripes",
+    "add stripes",
+    "how do i add stripes",
+    "hood stripe",
+    "center stripe",
+    "stripes and numbers",
+    "retro livery",
+    "vintage livery",
+    "retro racing stripes",
+    "vintage stripes",
+    "old school stripes",
+    "stripes and numbers retro"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Stripes are zones, not drawings",
+     "body": "Shokker is not a drawing program; it paints your template with materials. Stripes come from zones (a coloured area with a finish), from your template's own art, or from artwork you add as a layer. Numbers are not typed either: they exist in the template or you add them as a picture. There is no Text button; to add new lettering, place a transparent PNG with + Layer and move it with Move (V)."
+    },
+    {
+     "heading": "Fast way, by hand way",
+     "body": "Fast: type the look into Chat, for example \"retro red white and blue stripes, flat with chrome trim\", then refine with \"thinner\", \"make the red orange\" or \"matte\". By hand: one box zone per stripe on the hood, roof or side, a base such as Gloss, BASE COLOR set to Use solid color, then the Pinstripe or Chevron pattern with Paint mode on Blend so it keeps your stripe colour."
+    },
+    {
+     "heading": "Order and direction",
+     "body": "Stripes must be above the body zone in the list so they win. One side of the sheet may be upside down relative to the other, so check the CAR view."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Red, white and blue in Chat",
+     "goal": "Get a retro stripe set in one sentence",
+     "settings": {
+      "Message": "retro red white and blue stripes, flat with chrome trim",
+      "Refine": "thinner, make the red orange, matte"
+     },
+     "result": "A full stripe scheme you can undo step by step."
+    },
+    {
+     "title": "One stripe by hand",
+     "goal": "A red hood stripe",
+     "settings": {
+      "Zone": "+ Add Zone",
+      "APPLY AREA": "Draw box along the hood",
+      "BASE": "Gloss",
+      "BASE COLOR": "Use solid color, red",
+      "List": "Above the body zone"
+     },
+     "result": "A red stripe along the hood."
+    },
+    {
+     "title": "Recolour the template numbers",
+     "goal": "Different number colour",
+     "settings": {
+      "BASE COLOR": "Use solid color",
+      "Layer list": "Zone icon on the Numbers layer"
+     },
+     "result": "The numbers change colour only."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can I type new numbers or text?",
+     "a": "There is no Text button. Place a transparent PNG with + Layer instead."
+    },
+    {
+     "q": "How many colours look good?",
+     "a": "Three in a 60-30-10 split: one dominant, one accent, one trim."
+    },
+    {
+     "q": "Why is my stripe hidden?",
+     "a": "It is below the body zone in the list. Drag it above."
+    },
+    {
+     "q": "Why does the stripe look backwards on one side?",
+     "a": "One side of the sheet may be upside down. Check the CAR view and flip."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The pattern replaced the stripe colour",
+     "cause": "Paint mode was on Overlay",
+     "fix": "Set Paint mode to Blend."
+    },
+    {
+     "symptom": "Stripes do not line up across panels",
+     "cause": "Each panel was drawn separately",
+     "fix": "Line the bands up across the car; the side band continues the bumper colour."
+    }
+   ],
+   "protips": [
+    "Start in Chat to get the layout, then fix details by hand. It is far faster than building every stripe yourself."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.two_tone",
+   "title": "A two-tone livery in six zones",
+   "domain": "recipes",
+   "summary": "Plan the car as six zones: trim, hood, roof, trunk, body, and Everything Else at the bottom as the safety net. Give the body a calm finish and the accents a contrasting one, and keep the strongest finish for one hero area.",
+   "what": "Two-tone works because zones stack. The zone higher in the list wins where two overlap, so accents sit above the body. Matte body with gloss accents, or satin body with chrome trim, are classic pairs because neighbours differ in shine as well as colour.",
+   "when": [
+    "You want a clean, professional two-colour scheme.",
+    "You are not sure how many zones to make."
+   ],
+   "how": [
+    "Open your paint. Layered template if you can.",
+    "Zone 1, trim or stripes: + Add Zone, PICK COLOR FROM CAR on the stripe colour, BASE a contrast finish such as Gloss or Candy.",
+    "Zone 2, hood: APPLY AREA, Draw box over the hood; give it the accent colour and finish.",
+    "Zone 3, roof: Draw box over the roof; a second accent or the same.",
+    "Zone 4, trunk or rear deck: the same.",
+    "Zone 5, body: PICK COLOR FROM CAR on the body colour; BASE Matte or Satin with Use source paint if you want to keep the colour.",
+    "Zone 6, Everything Else: leave it at the bottom as the safety net for everything the others did not catch.",
+    "Check the preview from a distance, then render. Make sure number and sponsor contrast stays strong."
+   ],
+   "controls": [
+    {
+     "label": "+ Add Zone",
+     "range": "",
+     "default": "",
+     "effect": "Adds a zone card.",
+     "inv": "pro.zones.add_zone"
+    },
+    {
+     "label": "PICK COLOR FROM CAR",
+     "range": "",
+     "default": "",
+     "effect": "Claims pixels by colour.",
+     "inv": "zone.pick_color_from_car"
+    },
+    {
+     "label": "Draw box",
+     "range": "",
+     "default": "",
+     "effect": "Claims an area by rectangle.",
+     "inv": "zone.draw_box"
+    }
+   ],
+   "tips": [
+    "One dominant colour (about 60 percent), one accent (30), one trim (10).",
+    "Use matte beside gloss, or chrome beside dark, so adjacent areas differ in shine too."
+   ],
+   "pitfalls": [
+    "Everything Else above other zones steals their pixels; keep it at the bottom.",
+    "More effects is not better; one hero area wins."
+   ],
+   "related": [
+    "zones.recipe_split_car",
+    "zones.priority",
+    "zones.everything_else",
+    "spec.paint_spec_marriage",
+    "recipes.retro_stripes"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "base::matte"
+    },
+    {
+     "do": "finish",
+     "id": "base::gloss"
+    },
+    {
+     "do": "finish",
+     "id": "base::f_candy"
+    },
+    {
+     "do": "control",
+     "id": "zone.pick_color_from_car"
+    }
+   ],
+   "figures": [
+    "g05_zone_priority"
+   ],
+   "covers": [
+    "pro.zones.add_zone",
+    "zone.pick_color_from_car",
+    "zone.draw_box",
+    "zone.remaining",
+    "doc.03.recipe_matte_body_with_gloss_accents_two_tone"
+   ],
+   "sources": [
+    "docs/ai_knowledge/03_recipes.md:20",
+    "docs/ai_knowledge/08_livery_design.md:15",
+    "scripts/ai_atlas/ui_map.json:11673",
+    "paint-booth-2-state-zones.js:1656",
+    "paint-booth-2-state-zones.js:4099"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "two tone livery",
+    "two tone paint",
+    "two color scheme",
+    "matte body with gloss accents",
+    "how many zones should i use",
+    "plan my zones",
+    "livery layout",
+    "accent colours",
+    "body and trim colours",
+    "two colour car",
+    "different roof colour",
+    "two tone"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Six zones from top to bottom",
+     "body": "Zone 1 trim or stripes; Zone 2 hood; Zone 3 roof; Zone 4 trunk or rear deck; Zone 5 body; Zone 6 Everything Else at the bottom as the safety net for everything the others did not catch. Zones stack and the one higher in the list wins, so accents sit above the body."
+    },
+    {
+     "heading": "Shine contrast",
+     "body": "Neighbours should differ in shine as well as colour: matte body with gloss accents, or satin body with chrome trim. Use matte beside gloss, or chrome beside dark. One dominant colour (about 60 percent), one accent (30), one trim (10)."
+    },
+    {
+     "heading": "Everything Else belongs at the bottom",
+     "body": "Everything Else above other zones steals their pixels. And more effects is not better: one hero area wins."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Matte body, gloss accents",
+     "goal": "A classic two-tone",
+     "settings": {
+      "Zone 1 trim": "PICK COLOR FROM CAR on the stripe colour, BASE Gloss",
+      "Zones 2-4": "Draw box over hood, roof, trunk, accent colour and finish",
+      "Zone 5 body": "PICK COLOR FROM CAR on body colour, BASE Matte, Use source paint",
+      "Zone 6": "Everything Else, last"
+     },
+     "result": "A calm matte body with glossy accents."
+    },
+    {
+     "title": "Satin and chrome",
+     "goal": "A premium two-tone",
+     "settings": {
+      "Body": "Satin",
+      "Trim": "Chrome"
+     },
+     "result": "Chrome trim lines pop against the satin body."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why six zones?",
+     "a": "Each part gets its own look and the last one catches everything else."
+    },
+    {
+     "q": "Where does Everything Else go?",
+     "a": "At the very bottom."
+    },
+    {
+     "q": "How do I keep the number readable?",
+     "a": "Keep number and sponsor contrast strong; check the preview from a distance."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Accent zones vanished",
+     "cause": "Everything Else is above them",
+     "fix": "Move it to the bottom."
+    },
+    {
+     "symptom": "The livery looks busy",
+     "cause": "Several hero effects",
+     "fix": "Keep one hero area."
+    }
+   ],
+   "protips": [
+    "Look at the preview from a distance (zoom out) before rendering. Contrast problems hide up close."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.colour_shift",
+   "title": "Colour-shift paint that moves in the sun",
+   "domain": "recipes",
+   "summary": "Choose a Chameleon or other colour-shift finish for the zone: it brings its own colours, which change with the viewing angle in the sim. Recolour it with Hue Shift, not with a solid colour.",
+   "what": "Colour-shift (chameleon) finishes are built from a spec map and a colour field that shift as the light and your view change, like real flip paint. The flat colour preview shows one angle only, so judge the effect in iRacing. There are many to choose from, from Amethyst and Arctic to Phoenix and Galaxy.",
+   "when": [
+    "You want a flip or chameleon paint.",
+    "You want colours that move in the sun."
+   ],
+   "how": [
+    "Make a zone for the body (Remaining, or PICK COLOR FROM CAR on the body colour) and tick Car Paint under RESTRICT TO LAYERS to protect numbers.",
+    "Under BASE press Base Material and search for Chameleon. Pick one, for example Chameleon Amethyst, Chameleon Emerald or Chameleon Phoenix.",
+    "Leave BASE COLOR on Use finish's own color. A solid colour would flatten it to one colour and lose the shift.",
+    "To change the hues, use Hue Shift (-180 to 180) under BASE, plus Saturation and Brightness.",
+    "Render and press Ctrl+R. Look at the car in the sim under different light. The preview cannot show the angle change, so the sim is the only real check.",
+    "Keep neighbouring zones calm (matte or satin, dark) so the shift is the hero."
+   ],
+   "controls": [
+    {
+     "label": "Hue Shift",
+     "range": "-180 to 180",
+     "default": "0",
+     "effect": "Rotates every colour of the finish around the wheel, keeping the structure.",
+     "inv": "zone.hue_shift"
+    },
+    {
+     "label": "BASE COLOR",
+     "range": "",
+     "default": "finish",
+     "effect": "Keep on the finish's own colour for a colour-shift.",
+     "inv": "zone.base_color_mode"
+    }
+   ],
+   "tips": [
+    "Shift equals target hue minus current hue: +150 on green gives purple, not pink.",
+    "Pair with a dark satin or matte body zone nearby for contrast."
+   ],
+   "pitfalls": [
+    "Do not put sparkle, strong patterns or colour shift directly behind numbers.",
+    "The shift cannot be seen in a still colour preview."
+   ],
+   "related": [
+    "spec.angle_reveal",
+    "finishes.colorshoxx_and_shift",
+    "recipes.flake_pearl",
+    "support.colours_differ"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "monolithic::chameleon_amethyst"
+    },
+    {
+     "do": "finish",
+     "id": "monolithic::chameleon_emerald"
+    },
+    {
+     "do": "finish",
+     "id": "monolithic::chameleon_phoenix"
+    },
+    {
+     "do": "finish",
+     "id": "monolithic::chameleon_galaxy"
+    },
+    {
+     "do": "finish",
+     "id": "base::chameleon"
+    }
+   ],
+   "figures": [
+    "g13_four_kinds_of_look"
+   ],
+   "covers": [
+    "zone.base_material",
+    "zone.hue_shift",
+    "zone.base_color_mode"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:11904",
+    "scripts/ai_atlas/ui_map.json:11922",
+    "js/spb-ai-atlas-data.js:1",
+    "paint-booth-2-state-zones.js:1656",
+    "docs/ai_knowledge/05_design_and_taste.md:7"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "color shift paint",
+    "chameleon paint",
+    "flip paint",
+    "paint that changes color",
+    "iridescent paint",
+    "dichroic",
+    "moves in the sun",
+    "shifts color in the light",
+    "chameleon finish",
+    "colour flip paint",
+    "flip flop paint",
+    "colour shift paint"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "The finish brings its own colour",
+     "body": "Colour-shift (chameleon) finishes are built from a spec map and a colour field that shift with the light and your view, like real flip paint. There are many (Amethyst, Arctic, Phoenix, Galaxy and more). Leave BASE COLOR on Use finish's own color; a solid colour flattens it to one colour and loses the shift."
+    },
+    {
+     "heading": "Recolouring",
+     "body": "Use Hue Shift (-180 to 180) plus Saturation and Brightness. The shift equals target hue minus current hue: +150 on green gives purple, not pink."
+    },
+    {
+     "heading": "Judging it",
+     "body": "The flat colour preview shows one angle only. Look at the car in the sim under different light. The preview cannot show the angle change, so the sim is the only real check. Keep neighbouring zones calm (matte or satin, dark) so the shift is the hero."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Amethyst flip body",
+     "goal": "A purple colour-shift body, numbers safe",
+     "settings": {
+      "Zone": "COLOR: Remaining",
+      "RESTRICT TO LAYERS": "Car Paint",
+      "BASE": "Chameleon Amethyst",
+      "BASE COLOR": "Use finish's own color"
+     },
+     "result": "The body changes colour with angle; numbers untouched."
+    },
+    {
+     "title": "Change the family of hues",
+     "goal": "Turn a green flip into purple",
+     "settings": {
+      "Hue Shift": "+150"
+     },
+     "result": "Purple tones; use small steps to land on the hue you want."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does it look like one colour in the preview?",
+     "a": "The preview shows one angle only. Check in the sim."
+    },
+    {
+     "q": "Can I set a solid colour on it?",
+     "a": "You can, but it flattens the shift. Use Hue Shift instead."
+    },
+    {
+     "q": "What goes beside it?",
+     "a": "A dark satin or matte body zone so the shift stands out."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The shift disappeared",
+     "cause": "BASE COLOR was set to a solid colour",
+     "fix": "Return it to the finish's own colour."
+    },
+    {
+     "symptom": "Numbers are hard to read",
+     "cause": "Colour shift or sparkle sits behind them",
+     "fix": "Restrict the zone to Car Paint."
+    }
+   ],
+   "protips": [
+    "The flat preview cannot show an angle change. Judge colour-shift finishes in the sim on a daytime track; the R METAL, G ROUGH and B COAT views show the spec behind the effect."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.carbon_hood",
+   "title": "Carbon fibre hood",
+   "domain": "recipes",
+   "summary": "Draw a box zone over the hood, give it a carbon base or a plain dark base plus the Carbon Fiber pattern, and make the pattern fine (scale below 1.0). The weave is the look.",
+   "what": "Carbon is a texture, so size is everything. On a whole-car sheet a normal weave looks like a fishing net. Go smaller, and put the weave only on the part you want so the rest of the car stays calm.",
+   "when": [
+    "You want a carbon hood, roof or spoiler.",
+    "Your carbon looks huge or blurry."
+   ],
+   "how": [
+    "Press + Add Zone. Under APPLY AREA press Draw box and drag a rectangle around the hood on the flat sheet.",
+    "Under BASE press Base Material and choose Hardware: Carbon Handguard (a glossy twill weave under resin) or Carbon Twill Weave (a semi-matte 2 by 2 twill), or a plain dark base such as Gloss and add the weave as a pattern.",
+    "For a pattern: open PATTERN, choose Carbon Fiber (classic 2 by 2 twill), and set Paint mode to Blend so it keeps the dark base.",
+    "Lower Scale (pattern) until the weave looks fine on the car: try 0.5. Base Scale does the same for a base with its own weave.",
+    "Optional: add a spec overlay such as Carbon Wet Layup under SPEC OVERLAYS for resin depth. It changes shine only.",
+    "Render and compare at 100 percent zoom, not in the small fit-to-window view."
+   ],
+   "controls": [
+    {
+     "label": "Scale (pattern)",
+     "range": "0.10x to 4.0x",
+     "default": "1.0x",
+     "effect": "Smaller means a finer weave.",
+     "inv": "zone.pattern_scale"
+    },
+    {
+     "label": "Base Scale",
+     "range": "0.05x to 5.0x",
+     "default": "1.0x",
+     "effect": "Size of a base finish's own texture.",
+     "inv": "zone.base_scale"
+    },
+    {
+     "label": "Draw box",
+     "range": "",
+     "default": "",
+     "effect": "Limits the zone to the hood rectangle.",
+     "inv": "zone.draw_box"
+    }
+   ],
+   "tips": [
+    "Carbon Twill Weave gives a quieter, semi-matte look; Hardware: Carbon Handguard is glossy under resin.",
+    "Add a gloss accent next to the hood so the weave reads."
+   ],
+   "pitfalls": [
+    "A weave at scale 1.0 looks big on a car.",
+    "The colour preview cannot show clearcoat depth; check the B COAT view."
+   ],
+   "related": [
+    "support.smeared_blobby",
+    "support.tiny_or_huge",
+    "zones.regions",
+    "recipes.camo"
+   ],
+   "actions": [
+    {
+     "do": "pattern",
+     "id": "carbon_fiber"
+    },
+    {
+     "do": "finish",
+     "id": "base::tac_carbon_handguard"
+    },
+    {
+     "do": "finish",
+     "id": "monolithic::materials2_carbon"
+    },
+    {
+     "do": "spec",
+     "id": "spec_carbon_wet_layup"
+    }
+   ],
+   "figures": [
+    "g19_scale_on_car"
+   ],
+   "covers": [
+    "zone.draw_box",
+    "zone.base_material",
+    "zone.pattern_scale",
+    "zone.base_scale",
+    "zone.add_spec_overlay"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:11673",
+    "scripts/ai_atlas/ui_map.json:11993",
+    "docs/ai_knowledge/03_recipes.md:20",
+    "js/spb-ai-atlas-data.js:1",
+    "paint-booth-2-state-zones.js:1656",
+    "paint-booth-2-state-zones.js:2278",
+    "paint-booth-0-finish-data.js:705"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "carbon fiber hood",
+    "carbon fibre hood",
+    "carbon hood",
+    "carbon roof",
+    "add carbon fiber",
+    "how do i make carbon fiber",
+    "carbon spoiler",
+    "carbon weave",
+    "carbon fiber pattern",
+    "carbon looks too big",
+    "carbon fiber look"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Size is everything",
+     "body": "On a whole-car sheet a normal weave looks like a fishing net. Go smaller (pattern scale below 1.0, try 0.5) and put the weave only on the part you want so the rest of the car stays calm."
+    },
+    {
+     "heading": "Two routes",
+     "body": "Hardware: Carbon Handguard is a glossy twill weave under resin and Carbon Twill Weave is semi-matte; the weave is the finish. Or use a plain dark base plus the Carbon Fiber pattern (classic 2 by 2 twill) with Paint mode on Blend so it keeps the dark base. Base Scale does the same job for a base with its own weave."
+    },
+    {
+     "heading": "Depth",
+     "body": "A spec overlay such as Carbon Wet Layup adds resin depth and changes shine only. The colour preview cannot show clearcoat depth; check B COAT."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Fine carbon hood",
+     "goal": "A believable carbon bonnet",
+     "settings": {
+      "APPLY AREA": "Draw box around the hood",
+      "BASE": "Carbon Fiber (the plain base)",
+      "PATTERN": "Carbon Fiber",
+      "Paint mode": "Blend",
+      "Scale (pattern)": "0.5"
+     },
+     "result": "A fine weave on the hood only."
+    },
+    {
+     "title": "Stealth carbon",
+     "goal": "OEM-looking carbon",
+     "settings": {
+      "BASE": "Carbon Twill Weave",
+      "Neighbour": "A gloss accent next to the hood so the weave reads"
+     },
+     "result": "A subtle semi-matte weave."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What scale looks good?",
+     "a": "Try 0.5. At 1.0 the weave looks big on a car."
+    },
+    {
+     "q": "Pattern or base?",
+     "a": "Either: a carbon base such as Carbon Twill Weave carries its own weave; a dark base plus the pattern gives control."
+    },
+    {
+     "q": "How do I check it?",
+     "a": "Render and look at 100 percent zoom, not the fit-to-window view."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The weave looks like a net",
+     "cause": "Scale at 1.0 or higher",
+     "fix": "Lower Scale to about 0.5."
+    },
+    {
+     "symptom": "The base colour vanished",
+     "cause": "Paint mode was Overlay",
+     "fix": "Set it to Blend."
+    }
+   ],
+   "protips": [
+    "Put carbon only on a few panels (hood, roof, splitter). Carbon everywhere reads as a texture, not as a material."
+   ],
+   "screens": [
+    "cat_tactical_field"
+   ]
+  },
+  {
+   "id": "recipes.candy",
+   "title": "Candy colours: how to get depth",
+   "domain": "recipes",
+   "summary": "Candy is a transparent colour over a polished metallic ground. Pick a Candy base, set the colour yourself, then use Color Depth, Color Flip and Underglow to push the richness.",
+   "what": "A candy paint looks deep because light passes through tinted clear and bounces off bright metal underneath. In Shokker the Candy bases give you that ground and the controls under BASE give you the tint depth. Pale or metallic grounds make candy glow; dark flat ones make it look black.",
+   "when": [
+    "You want a deep, wet, hot-rod colour.",
+    "Your candy looks flat or dark."
+   ],
+   "how": [
+    "Make a zone on the area (Remaining or a picked colour) and restrict it to Car Paint if you have a layered template.",
+    "Under BASE press Base Material and choose Candy on the Foundation Bases shelf (a polished metallic under the colour you pick, so gold, lime or aqua candy is just a colour choice; Van: Candy Apple is a ready-made candy over silver).",
+    "Set BASE COLOR to Use solid color and pick a rich colour. Deep red, cobalt and emerald work best.",
+    "Raise Color Depth: 0 is no tint, 15 a glaze, 65 rich (the default), 100 deepest. Color Flip adds a second hue at an angle (90 neighbouring, 180 opposite). Underglow lets the ground coat burn through the brights.",
+    "Add depth with a spec overlay such as Gold Flake or Pearl Micro, or pick a Spec preset such as Wet Candy.",
+    "Check G ROUGH (low is glassy) and B COAT (16 is the deepest coat) in the preview strip, then render."
+   ],
+   "controls": [
+    {
+     "label": "Color Depth",
+     "range": "0 to 100 percent",
+     "default": "65",
+     "effect": "Tint depth of candy finishes.",
+     "inv": "zone.color_depth"
+    },
+    {
+     "label": "Color Flip",
+     "range": "0 to 355 degrees",
+     "default": "off",
+     "effect": "Adds a second hue that appears at an angle.",
+     "inv": "zone.color_flip"
+    },
+    {
+     "label": "Underglow",
+     "range": "0 to 100 percent",
+     "default": "off",
+     "effect": "How much of the ground coat burns through the brights.",
+     "inv": "zone.underglow"
+    }
+   ],
+   "tips": [
+    "Candy over a bright metallic ground glows; over black it looks black.",
+    "Neighbouring areas in complementary colours help a finish read from far away."
+   ],
+   "pitfalls": [
+    "Depth, flip and underglow only show on candy-like finishes.",
+    "Do not put candy next to a busy pattern behind numbers."
+   ],
+   "related": [
+    "recipes.flake_pearl",
+    "spec.channel_b_clearcoat",
+    "support.flat_or_shiny",
+    "finishes.gradients_flip_depth_underglow"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "base::f_candy"
+    },
+    {
+     "do": "spec",
+     "id": "gold_flake"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "zone.base_material",
+    "zone.color_depth",
+    "zone.color_flip",
+    "zone.underglow",
+    "zone.spec_preset"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:1656",
+    "scripts/ai_atlas/ui_map.json:11832",
+    "scripts/ai_atlas/ui_map.json:11904",
+    "js/spb-ai-atlas-data.js:1",
+    "paint-booth-2-state-zones.js:2013",
+    "paint-booth-2-state-zones.js:2031"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "candy colors",
+    "candy apple",
+    "candy red",
+    "deep color",
+    "make color deeper",
+    "hot rod candy",
+    "candy flake",
+    "color depth slider",
+    "candy apple red",
+    "kandy",
+    "deep candy",
+    "candy colours",
+    "candy blue"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Why candy looks deep",
+     "body": "Light passes through tinted clear and bounces off bright metal underneath. Pale or metallic grounds make candy glow; dark flat ones make it look black."
+    },
+    {
+     "heading": "The three controls",
+     "body": "Color Depth: 0 is no tint, 15 a glaze, 65 rich (the default), 100 the deepest. Color Flip (0 to 355 degrees) adds a second hue at an angle (90 neighbouring, 180 opposite). Underglow (0 to 100 percent) lets the ground coat burn through the brights. They only show on candy-like finishes."
+    },
+    {
+     "heading": "Checking",
+     "body": "In the preview strip G ROUGH low means glassy and B COAT at 16 is the deepest coat. For a named candy colour such as gold, lime or aqua, pick Candy and choose that colour yourself."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Deep red candy",
+     "goal": "A rich candy apple body",
+     "settings": {
+      "BASE": "Candy",
+      "BASE COLOR": "Use solid color, deep red",
+      "Color Depth": "65 (or 100 for deepest)",
+      "Spec overlay": "Gold Flake or Pearl Micro"
+     },
+     "result": "A deep, glowing red with sparkle."
+    },
+    {
+     "title": "Two-hue candy",
+     "goal": "A second colour at an angle",
+     "settings": {
+      "Color Flip": "90 for a neighbouring hue, 180 for the opposite"
+     },
+     "result": "The second hue appears at an angle."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which colours work best?",
+     "a": "Deep red, cobalt and emerald."
+    },
+    {
+     "q": "Why does my candy look black?",
+     "a": "A dark flat ground. Use a bright metallic ground."
+    },
+    {
+     "q": "Do depth and flip work on any finish?",
+     "a": "No, only on candy-like finishes."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Candy looks like plain paint",
+     "cause": "Color Depth is near 0",
+     "fix": "Raise it toward 65."
+    },
+    {
+     "symptom": "Candy is hard to read behind numbers",
+     "cause": "It sits next to a busy pattern",
+     "fix": "Keep candy away from busy patterns near the number."
+    }
+   ],
+   "protips": [
+    "Candy and a complementary neighbour read from far away. Pair a deep red candy with a quiet satin cream."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.edit_one_thing",
+   "title": "Edit one thing without touching sponsors",
+   "domain": "recipes",
+   "summary": "To change only the body, give a zone the Car Paint layer under Restrict to layers, or tell Chat \"change the body but leave the numbers alone\". Numbers, sponsors and logos then stay exactly as they were.",
+   "what": "Sponsors and numbers sit on their own layers of a layered template, so a zone that is limited to the body layer never reaches them. Without layers, pick the colour with a low tolerance or draw a box. The AI copilot follows the same rule: it never touches numbers, sponsors or logos unless you name them, and every change has an Undo.",
+   "when": [
+    "You want a new body colour but the same numbers.",
+    "A change painted over a logo."
+   ],
+   "how": [
+    "Open a layered template. In the layer list check which layer holds the body paint (for example Car Paint).",
+    "Press + Add Zone, tick only Car Paint under RESTRICT TO LAYERS, and give the zone the colour and finish.",
+    "Or in Chat say \"change the body but leave the numbers alone\" and check the preview; press Undo under the reply if it is wrong.",
+    "On a flat TGA, use PICK COLOR FROM CAR on the body colour with a tolerance of 30 to 45, or Draw box around the body panels. Use Exclude Region to cut out a logo.",
+    "If a special finish makes numbers sparkle or dull, open MASK > Advanced spec utilities > Decal Rescue Kit and choose Flat Vinyl, Satin Decal or Gloss Decal.",
+    "Render and check the numbers in the CAR view."
+   ],
+   "controls": [
+    {
+     "label": "RESTRICT TO LAYERS",
+     "range": "layer names",
+     "default": "none",
+     "effect": "Aims a zone at one layer only.",
+     "inv": "zone.restrict_layers"
+    },
+    {
+     "label": "Decal Rescue Kit",
+     "range": "",
+     "default": "",
+     "effect": "Plain non-metal spec under stamped numbers and sponsors.",
+     "inv": "pro.toolbar.decal_rescue_kit"
+    }
+   ],
+   "tips": [
+    "A whole-car finish that brings its own colour on a zone without a layer restriction paints over every number and logo.",
+    "Select logos and numbers by layer name for exact edges; use colour for big flat areas."
+   ],
+   "pitfalls": [
+    "Everything and Remaining reach every layer unless restricted.",
+    "Name the decals if you want the AI to change them; otherwise it leaves them."
+   ],
+   "related": [
+    "zones.restrict_layers",
+    "support.numbers_vanished",
+    "ai_copilot.what_ai_sees",
+    "ai_copilot.edit_existing",
+    "recipes.matte_black"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.restrict_layers"
+    },
+    {
+     "do": "control",
+     "id": "pro.toolbar.decal_rescue_kit"
+    }
+   ],
+   "figures": [
+    "g07_layer_stack_roles"
+   ],
+   "covers": [
+    "zone.restrict_layers",
+    "pro.toolbar.decal_rescue_kit"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:12384",
+    "scripts/ai_atlas/ui_map.json:13349",
+    "scripts/ai_atlas/ui_map.json:13357",
+    "docs/ai_knowledge/03_recipes.md:33",
+    "docs/ai_knowledge/01_how_pro_works.md:33"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "edit only the body",
+    "change body color keep numbers",
+    "keep my sponsors",
+    "dont touch my numbers",
+    "leave the numbers alone",
+    "change one thing only",
+    "edit one part",
+    "change only the hood",
+    "change the car but keep logos",
+    "change one part only",
+    "edit without wrecking sponsors",
+    "edit one thing"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Layers keep decals safe",
+     "body": "Sponsors and numbers sit on their own layers of a layered template, so a zone limited to the body layer (for example Car Paint) never reaches them. Chat follows the same rule: it never touches numbers, sponsors or logos unless you name them, and every change has an Undo."
+    },
+    {
+     "heading": "Flat paints",
+     "body": "Without layers, use PICK COLOR FROM CAR on the body colour with a tolerance of 30 to 45, or Draw box around the body panels. Use Exclude Region to cut out a logo."
+    },
+    {
+     "heading": "If numbers look wrong afterwards",
+     "body": "If a special finish makes numbers sparkle or dull, open MASK > Advanced spec utilities > Decal Rescue Kit and choose Flat Vinyl, Satin Decal or Gloss Decal."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Body only",
+     "goal": "Change the body and leave the rest",
+     "settings": {
+      "Zone": "+ Add Zone",
+      "RESTRICT TO LAYERS": "Car Paint only",
+      "BASE / COLOR": "The colour and finish you want"
+     },
+     "result": "Numbers, tape and logos are unchanged."
+    },
+    {
+     "title": "Ask Chat",
+     "goal": "Same job in one sentence",
+     "settings": {
+      "Message": "change the body but leave the numbers alone"
+     },
+     "result": "The helper restricts the change; press Undo under the reply if it is wrong."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which layer is the body?",
+     "a": "Look in the layer list; it is often named Car Paint or Body."
+    },
+    {
+     "q": "What does Everything or Remaining touch?",
+     "a": "Every layer unless you restrict it."
+    },
+    {
+     "q": "Can Chat change the numbers?",
+     "a": "Yes, if you name them."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Numbers got a whole-car finish",
+     "cause": "No layer restriction and a finish with its own colour",
+     "fix": "Tick only the body layer under RESTRICT TO LAYERS."
+    },
+    {
+     "symptom": "Numbers sparkle behind metal",
+     "cause": "Metal spec under stamped numbers",
+     "fix": "Use Decal Rescue Kit."
+    }
+   ],
+   "protips": [
+    "Select logos and numbers by layer name for exact edges; use colour only for large flat areas."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.camo",
+   "title": "Camo with a pattern layer",
+   "domain": "recipes",
+   "summary": "Add the Camo pattern (digital splinter camo) to a matte or blackout base and keep Paint mode on Blend so it keeps your base colour, or choose a ready-made camo finish and recolour it with Hue Shift.",
+   "what": "There are two routes. The pattern route puts a camo design on top of any base you choose and is the most controllable. The finish route uses a camo that brings its own palette (woodland, desert, flecktarn, urban digital and more); it looks right at once but you recolour it with Hue Shift, not a solid colour.",
+   "when": [
+    "You want a military or hunting camo livery.",
+    "Your camo colours are wrong or the blocks are too big."
+   ],
+   "how": [
+    "Make a zone for the body area (Remaining, or a box) and restrict it to Car Paint to protect the numbers.",
+    "Pattern route: BASE Matte (or Flat Black). Open PATTERN, choose Camo, set Paint mode to Blend, and use Opacity to taste.",
+    "Finish route: Base Material, search Camo and pick one such as Flecktarn, M81 Woodland or Multicam Transition. Leave BASE COLOR on Use finish's own color.",
+    "Make the blocks smaller with Scale (pattern), for example 0.5, so the camo breaks up across the whole car.",
+    "Recolour a ready-made camo with Hue Shift, Saturation and Brightness (a solid colour would flatten it).",
+    "Render and check from a distance."
+   ],
+   "controls": [
+    {
+     "label": "Paint mode",
+     "range": "Overlay or Blend",
+     "default": "Overlay",
+     "effect": "Overlay paints the pattern's own colours; Blend keeps your base colour.",
+     "inv": "zone.pattern_paint_mode"
+    },
+    {
+     "label": "Scale (pattern)",
+     "range": "0.10x to 4.0x",
+     "default": "1.0x",
+     "effect": "Smaller means finer camo.",
+     "inv": "zone.pattern_scale"
+    },
+    {
+     "label": "Hue Shift",
+     "range": "-180 to 180",
+     "default": "0",
+     "effect": "Recolours a camo finish.",
+     "inv": "zone.hue_shift"
+    }
+   ],
+   "tips": [
+    "Camo reads best on matte, cerakote or blackout bases.",
+    "Stack a second base from OVERLAYS if you want a sheen difference between the blocks."
+   ],
+   "pitfalls": [
+    "In Overlay mode the pattern's own colours win and your base colour is hidden.",
+    "Solid colour on a camo finish loses the pattern."
+   ],
+   "related": [
+    "support.smeared_blobby",
+    "recipes.carbon_hood",
+    "zones.restrict_layers"
+   ],
+   "actions": [
+    {
+     "do": "pattern",
+     "id": "camo"
+    },
+    {
+     "do": "finish",
+     "id": "base::tac_flecktarn"
+    },
+    {
+     "do": "finish",
+     "id": "base::tac_m81_woodland"
+    },
+    {
+     "do": "finish",
+     "id": "base::tac_multicam_transition"
+    },
+    {
+     "do": "finish",
+     "id": "base::matte"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "zone.pattern_paint_mode",
+    "zone.pattern_scale",
+    "zone.hue_shift",
+    "zone.second_base"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:11993",
+    "scripts/ai_atlas/ui_map.json:11922",
+    "scripts/ai_atlas/ui_map.json:12083",
+    "js/spb-ai-atlas-data.js:1",
+    "paint-booth-2-state-zones.js:1656",
+    "paint-booth-2-state-zones.js:2278",
+    "paint-booth-2-state-zones.js:2074"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "make a camo car",
+    "digital camo",
+    "woodland camo",
+    "military livery",
+    "hunting camo",
+    "camo pattern",
+    "change camo colors",
+    "military camo"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Two routes",
+     "body": "The pattern route puts the Camo design (digital splinter camo) on any base and is the most controllable. The finish route uses a camo finish that brings its own palette (woodland, desert, flecktarn, urban digital, Multicam Transition and more): it looks right at once, but you recolour it with Hue Shift, not a solid colour."
+    },
+    {
+     "heading": "Paint mode matters",
+     "body": "In Overlay mode the pattern's own colours win and your base colour is hidden. Blend keeps your base colour. Use Opacity to taste."
+    },
+    {
+     "heading": "Size",
+     "body": "Make the blocks smaller with Scale (pattern), for example 0.5, so the camo breaks up across the whole car. Camo reads best on matte, cerakote or blackout bases; stack a second base from OVERLAYS for a sheen difference between the blocks."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Blackout camo",
+     "goal": "Subtle dark camo",
+     "settings": {
+      "RESTRICT TO LAYERS": "Car Paint",
+      "BASE": "Matte or Flat Black",
+      "PATTERN": "Camo",
+      "Paint mode": "Blend",
+      "Scale (pattern)": "0.5"
+     },
+     "result": "A quiet camo that breaks up over the whole car."
+    },
+    {
+     "title": "Ready-made woodland",
+     "goal": "Fast and authentic",
+     "settings": {
+      "Base Material": "M81 Woodland",
+      "BASE COLOR": "Use finish's own color",
+      "Recolour": "Hue Shift, Saturation, Brightness"
+     },
+     "result": "A woodland camo you can tint."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why do I lose my base colour?",
+     "a": "Paint mode is Overlay. Switch to Blend."
+    },
+    {
+     "q": "Can I use a solid colour on a camo finish?",
+     "a": "No, it flattens the pattern. Use Hue Shift."
+    },
+    {
+     "q": "What base looks best?",
+     "a": "Matte, cerakote or blackout."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Camo looks huge",
+     "cause": "Scale at 1.0",
+     "fix": "Lower to about 0.5."
+    },
+    {
+     "symptom": "The pattern vanished after recolouring",
+     "cause": "A solid colour was set",
+     "fix": "Go back to the finish's own colour and use Hue Shift."
+    }
+   ],
+   "protips": [
+    "Check camo from a distance. Pattern scale is judged by how it reads at track distance, not up close."
+   ],
+   "screens": [
+    "car_tac_m81_woodland"
+   ]
+  },
+  {
+   "id": "recipes.gradient_roof_rocker",
+   "title": "Gradient from roof to rocker",
+   "domain": "recipes",
+   "summary": "Give a zone BASE COLOR Custom gradient with two or more colour stops and a vertical direction, one zone per side of the car. The gradient runs over the flat sheet, so each side needs its own zone to fade properly.",
+   "what": "A gradient is painted across the whole 2048 square, not along the car. On the side panels the top of the sheet is the roof line and the bottom is the rocker, so a vertical gradient inside a box around a side panel fades roof to rocker. Several islands share the same columns, which is why one zone per side is the safe way.",
+   "when": [
+    "You want a fade from the roof down to the rocker.",
+    "Your gradient is the wrong direction or fades differently on each side."
+   ],
+   "how": [
+    "Press + Add Zone. Under APPLY AREA press Draw box and drag a rectangle around ONE side panel on the flat sheet.",
+    "Under BASE choose a base that takes colour (Gloss, Candy, Pearl or Metallic) and set BASE COLOR to Custom gradient.",
+    "Add stops (2 to 10) and set the direction to vertical (top to bottom of the sheet). Other directions are horizontal, diagonal down, diagonal up, radial and angular.",
+    "Repeat for the other side with its own zone. If that side of the sheet is upside down, reverse the stops or pick the other vertical direction.",
+    "Check the CAR view to confirm the fade follows the body, and use Color Scale and Color Rotation to zoom or rotate the gradient.",
+    "Or ask Chat: \"a gradient from blue to gold to white\" and it sets the stops for you."
+   ],
+   "controls": [
+    {
+     "label": "Custom gradient",
+     "range": "2 to 10 stops; 6 directions",
+     "default": "black to white, horizontal",
+     "effect": "Fades colours across the zone.",
+     "inv": "zone.gradient"
+    },
+    {
+     "label": "Color Scale / Color Rotation",
+     "range": "0.05x to 5x; 0 to 355 degrees",
+     "default": "1.0x / 0",
+     "effect": "Zooms and rotates gradient colour art.",
+     "inv": "zone.color_scale_rotation"
+    }
+   ],
+   "tips": [
+    "Gradient stops use true colours (gold is about d4a017, deep blue 0a3fd6).",
+    "A gradient on a zone that only covers some colours only shows on those colours."
+   ],
+   "pitfalls": [
+    "A horizontal gradient changes with the canvas column, not along the car's length.",
+    "Without a box, the gradient runs over the whole sheet, including roof and hood."
+   ],
+   "related": [
+    "workflows.one_flat_sheet",
+    "zones.regions",
+    "cars.reading_sheet",
+    "tools.mirror_symmetry"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.gradient"
+    },
+    {
+     "do": "control",
+     "id": "zone.draw_box",
+     "label": "Draw box"
+    },
+    {
+     "do": "finish",
+     "id": "base::gloss"
+    }
+   ],
+   "figures": [
+    "g14_colour_modes",
+    "g08_uv_sheet_parts"
+   ],
+   "covers": [
+    "zone.gradient",
+    "zone.draw_box",
+    "zone.base_color_mode",
+    "zone.color_scale_rotation"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:11952",
+    "docs/ai_knowledge/03_recipes.md:5",
+    "docs/ai_knowledge/09_field_playbook.md:18",
+    "docs/ai_knowledge/01_how_pro_works.md:20",
+    "paint-booth-2-state-zones.js:1656",
+    "paint-booth-2-state-zones.js:7941",
+    "paint-booth-2-state-zones.js:7988"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "gradient",
+    "fade",
+    "color fade",
+    "colour fade",
+    "gradient roof to rocker",
+    "fade from top to bottom",
+    "sunset fade",
+    "two color fade",
+    "ombre",
+    "how do i make a gradient",
+    "gradient wrong direction",
+    "gradient looks different on each side",
+    "fade top to bottom",
+    "roof to rocker fade",
+    "vertical fade",
+    "fade down the side"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Roof at the top, rocker at the bottom",
+     "body": "On the side panels the top of the sheet is the roof line and the bottom is the rocker, so a vertical gradient inside a box around a side panel fades roof to rocker. Several islands share the same columns, which is why one zone per side is the safe way."
+    },
+    {
+     "heading": "Directions and stops",
+     "body": "2 to 10 stops. Six directions: horizontal, vertical, diagonal down, diagonal up, radial and angular. Colour Scale (0.05x to 5x) and Colour Rotation (0 to 355 degrees) zoom or rotate the gradient. If a side of the sheet is upside down, reverse the stops or pick the other vertical direction."
+    },
+    {
+     "heading": "Colours",
+     "body": "Gradient stops use true colours (gold is about d4a017, deep blue 0a3fd6). On a zone that only covers some colours, the gradient shows only on those colours."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Blue to gold on the left side",
+     "goal": "A roof-to-rocker fade",
+     "settings": {
+      "APPLY AREA": "Draw box around ONE side panel",
+      "BASE": "Gloss, Candy, Pearl or Metallic",
+      "BASE COLOR": "Custom gradient",
+      "Stops": "Deep blue 0a3fd6 to gold d4a017",
+      "Direction": "Vertical"
+     },
+     "result": "A fade from roof to rocker on that side."
+    },
+    {
+     "title": "Other side",
+     "goal": "Match the right side",
+     "settings": {
+      "Zone": "A second zone with its own box",
+      "If upside down": "Reverse the stops"
+     },
+     "result": "The right side fades the same way."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why one zone per side?",
+     "a": "Islands share columns on the flat sheet; one zone per side fades each properly."
+    },
+    {
+     "q": "Can I ask Chat?",
+     "a": "Yes: \"a gradient from blue to gold to white\" sets the stops."
+    },
+    {
+     "q": "Why does it cover the roof and hood too?",
+     "a": "Without a box the gradient runs over the whole sheet."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The right side fades the wrong way",
+     "cause": "That side of the sheet is upside down",
+     "fix": "Reverse the stops or use the other vertical direction."
+    },
+    {
+     "symptom": "A horizontal fade ignores the car's length",
+     "cause": "It follows sheet columns",
+     "fix": "Use a vertical fade per side."
+    }
+   ],
+   "protips": [
+    "Check the CAR view, not the flat sheet, to judge a gradient. The flat sheet misleads."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.flake_pearl",
+   "title": "Metal flake and pearl",
+   "domain": "recipes",
+   "summary": "Choose a Metal Flake or Pearl base for the zone, then add a flake or pearl spec overlay for extra sparkle that changes shine only. A touch of colour in a dark area means sparkles of that colour, not a fade.",
+   "what": "Flake and pearl are small particles in clear. Flake is bold and sparkly; pearl is a soft colour-shifting sheen. Both depend on fine detail, so keep the particles small on a whole-car sheet and look at the result in the sim, where the sun makes it sparkle.",
+   "when": [
+    "You want a 1960s custom flake, or a soft pearl.",
+    "You want sparkle in a dark paint."
+   ],
+   "how": [
+    "Make a zone on the body and restrict it to Car Paint.",
+    "Under BASE press Base Material and choose Chunky Metalflake (heavy visible flake), Holo Flake (rainbow flake) or Micro Glitter (fine sparkle) from the Foundation EFX shelf, or Pearl (Foundation) for a softer sheen.",
+    "Set BASE COLOR to Use solid color for the base colour, or Use source paint (spec only) to keep your art.",
+    "Open BASE > SPEC OVERLAYS and press + ADD SPEC OVERLAY. Choose Gold Flake, Holographic Flake or Pearl Micro. Opacity 30 to 50 gives subtle depth.",
+    "Lower Scale (pattern or base) so the flake reads fine on the car.",
+    "Render and judge in the sim at an angle to the sun; the colour preview cannot show sparkle."
+   ],
+   "controls": [
+    {
+     "label": "SPEC OVERLAYS",
+     "range": "opacity 0 to 100, scale 0.1 to 4",
+     "default": "empty",
+     "effect": "Adds spec-only textures that never change colour.",
+     "inv": "zone.add_spec_overlay"
+    },
+    {
+     "label": "Base Scale",
+     "range": "0.05x to 5.0x",
+     "default": "1.0x",
+     "effect": "Smaller makes finer flake.",
+     "inv": "zone.base_scale"
+    }
+   ],
+   "tips": [
+    "Blue in the black: for a coloured sparkle in a dark area, choose flecks of that colour, not a gradient.",
+    "Subtle (Strength 30 to 50) flake looks expensive; heavy flake looks loud."
+   ],
+   "pitfalls": [
+    "Spec overlays do not show in the colour preview; check the spec channel views.",
+    "Large flake on a whole car looks like gravel."
+   ],
+   "related": [
+    "recipes.candy",
+    "recipes.colour_shift",
+    "spec.overlays_stack",
+    "support.smeared_blobby"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "base::efx_chunky_flake"
+    },
+    {
+     "do": "finish",
+     "id": "base::f_pearl"
+    },
+    {
+     "do": "spec",
+     "id": "gold_flake"
+    },
+    {
+     "do": "spec",
+     "id": "holographic_flake"
+    },
+    {
+     "do": "spec",
+     "id": "pearl_micro"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "zone.base_material",
+    "zone.add_spec_overlay",
+    "zone.base_scale"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:12066",
+    "docs/ai_knowledge/09_field_playbook.md:21",
+    "paint-booth-2-state-zones.js:1656",
+    "js/spb-ai-atlas-data.js:1",
+    "js/spec-overlays/catalog-data.js:1245",
+    "paint-booth-0-finish-data.js:4925"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "metal flake",
+    "metalflake",
+    "flake paint",
+    "pearl paint",
+    "pearl white",
+    "sparkle paint",
+    "glitter paint",
+    "sparkle in the black",
+    "add sparkle",
+    "add flake",
+    "mica",
+    "pearlescent",
+    "sparkle flake",
+    "pearl",
+    "flake"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Flake versus pearl",
+     "body": "Flake and pearl are small particles in clear. Flake is bold and sparkly; pearl is a soft colour-shifting sheen. Both depend on fine detail, so keep the particles small on a whole-car sheet. Large flake on a whole car looks like gravel."
+    },
+    {
+     "heading": "Choices",
+     "body": "Bases: Chunky Metalflake (heavy visible flake), Holo Flake (rainbow flake) or Micro Glitter (fine sparkle) from the Foundation EFX shelf, or Pearl (Foundation) for a softer sheen. Spec overlays (BASE > SPEC OVERLAYS > + ADD SPEC OVERLAY): Gold Flake, Holographic Flake or Pearl Micro. Opacity 30 to 50 gives subtle depth; heavy flake looks loud."
+    },
+    {
+     "heading": "Blue in the black",
+     "body": "For a coloured sparkle in a dark area, choose flecks of that colour, not a gradient. Spec overlays do not show in the colour preview: check the spec views and the sim."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Subtle gold flake",
+     "goal": "Expensive-looking sparkle",
+     "settings": {
+      "BASE": "Pearl (Foundation)",
+      "BASE COLOR": "Use solid color",
+      "Spec overlay": "Gold Flake, Strength 40",
+      "Scale": "Lowered until fine on the car"
+     },
+     "result": "A fine sparkle that glints at an angle to the sun."
+    },
+    {
+     "title": "Keep the livery, add sparkle",
+     "goal": "Flake over existing art",
+     "settings": {
+      "BASE": "Metal Flake",
+      "BASE COLOR": "Use source paint (spec only)"
+     },
+     "result": "The art stays; the flake rides in the shine."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why can I not see the sparkle in the preview?",
+     "a": "Spec overlays do not show in the colour preview. Check the spec views and the sim."
+    },
+    {
+     "q": "What opacity should I use?",
+     "a": "30 to 50 percent for a subtle, expensive look."
+    },
+    {
+     "q": "Why does the flake look like gravel?",
+     "a": "Scale is too large. Lower it."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Flake is too loud",
+     "cause": "Strength too high",
+     "fix": "Drop to 30 to 50."
+    },
+    {
+     "symptom": "No sparkle in iRacing",
+     "cause": "Judged only in the preview",
+     "fix": "Render and look at an angle to the sun."
+    }
+   ],
+   "protips": [
+    "Judge flake in the sim at an angle to the sun. It is the only honest test."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.flames_graphics",
+   "title": "Flames and graphics",
+   "domain": "recipes",
+   "summary": "Flames come as ready-made finishes (Hot Rod Flames, True Fire, Blue Flame and more) that you limit to the hood and front fenders with a box zone. Lightning and stripes are patterns you add on top.",
+   "what": "Flame finishes bring their own colours and flame shapes, so they are a complete graphic rather than a material. Limit them to the area you want, keep the rest of the car calm, and recolour with Hue Shift if you need another colour.",
+   "when": [
+    "You want flames on the hood and sides.",
+    "You want lightning bolts or other graphic patterns."
+   ],
+   "how": [
+    "Press + Add Zone. Under APPLY AREA press Draw box and drag a box around the hood, or around the front half of each side.",
+    "Under BASE press Base Material and search Flames. Choose Hot Rod Flames (orange and yellow on black), True Fire, Blue Flame, Purple Flame, Green Fire or Ghost Flames (tonal).",
+    "Leave BASE COLOR on Use finish's own color. To change the colour use Hue Shift.",
+    "For lightning: add the Lightning pattern under PATTERN on a chrome, candy or very dark base and lower Scale for finer bolts.",
+    "For the classic flame-lapped edges, add the Flame Lapped Clearcoat spec overlay: it adds glossy edges without changing the colour.",
+    "Put the flame zone above the body zone, render and check the CAR view."
+   ],
+   "controls": [
+    {
+     "label": "Draw box",
+     "range": "",
+     "default": "",
+     "effect": "Limits flames to the hood or fenders.",
+     "inv": "zone.draw_box"
+    },
+    {
+     "label": "Hue Shift",
+     "range": "-180 to 180",
+     "default": "0",
+     "effect": "Recolours a flame finish.",
+     "inv": "zone.hue_shift"
+    }
+   ],
+   "tips": [
+    "Flames read best on a clean dark or solid body with plenty of contrast.",
+    "Keep flames away from the number panels or restrict the zone so numbers stay clear."
+   ],
+   "pitfalls": [
+    "A solid colour on a flame finish makes one flat colour and loses the flames.",
+    "Flames are drawn on the flat sheet; check that they land on the right part."
+   ],
+   "related": [
+    "zones.regions",
+    "recipes.retro_stripes",
+    "support.numbers_vanished"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "base::flame_hotrod"
+    },
+    {
+     "do": "finish",
+     "id": "base::flame_true_fire"
+    },
+    {
+     "do": "finish",
+     "id": "base::flame_blue"
+    },
+    {
+     "do": "pattern",
+     "id": "lightning"
+    },
+    {
+     "do": "spec",
+     "id": "spec_flame_lapped_clearcoat"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "zone.draw_box",
+    "zone.base_material",
+    "zone.hue_shift"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:11673",
+    "scripts/ai_atlas/ui_map.json:11922",
+    "js/spb-ai-atlas-data.js:1",
+    "paint-booth-2-state-zones.js:1656"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "flames",
+    "add flames",
+    "flame livery",
+    "hot rod flames",
+    "flames on hood",
+    "lightning bolts",
+    "graphics",
+    "racing graphics",
+    "fire livery",
+    "blue flames",
+    "how to make flames",
+    "fire graphics",
+    "flame graphics"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "A flame is a finish",
+     "body": "Flame finishes bring their own colours and shapes, so they are a complete graphic rather than a material: Hot Rod Flames (orange and yellow on black), True Fire, Blue Flame, Purple Flame, Green Fire or Ghost Flames (tonal). Limit them to the area you want with a box zone and keep the rest calm."
+    },
+    {
+     "heading": "Recolouring and edges",
+     "body": "Leave BASE COLOR on Use finish's own color; a solid colour makes one flat colour and loses the flames. Use Hue Shift to change the colour. For the classic flame-lapped edges add the Flame Lapped Clearcoat spec overlay, which adds glossy edges without changing the colour."
+    },
+    {
+     "heading": "Lightning and stripes",
+     "body": "They are patterns you add on top: the Lightning pattern on a chrome, candy or very dark base, with a lower Scale for finer bolts. Flames are drawn on the flat sheet; check they land on the right part."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Hot rod hood flames",
+     "goal": "Classic flames on the bonnet",
+     "settings": {
+      "APPLY AREA": "Draw box around the hood",
+      "Base Material": "Hot Rod Flames",
+      "BASE COLOR": "Use finish's own color",
+      "List": "Above the body zone"
+     },
+     "result": "Orange and yellow flames on a black hood."
+    },
+    {
+     "title": "Blue flames",
+     "goal": "A cooler flame",
+     "settings": {
+      "Base Material": "Blue Flame or Hue Shift on Hot Rod Flames"
+     },
+     "result": "Blue flame tones."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why did my flames turn into one flat colour?",
+     "a": "A solid colour was set on the flame finish."
+    },
+    {
+     "q": "Can I keep flames off the numbers?",
+     "a": "Yes, box the zone or restrict it to a layer."
+    },
+    {
+     "q": "How do I get glossy flame edges?",
+     "a": "Add the Flame Lapped Clearcoat spec overlay."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Flames land on the wrong part",
+     "cause": "They are drawn on the flat sheet",
+     "fix": "Check the CAR view and redraw the box."
+    },
+    {
+     "symptom": "Flames hide the number",
+     "cause": "The zone covers the number panel",
+     "fix": "Keep flames away from number panels."
+    }
+   ],
+   "protips": [
+    "Flames read best on a clean dark or solid body with plenty of contrast."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.mirror_side",
+   "title": "Mirror one side to the other",
+   "domain": "recipes",
+   "summary": "Use Mirror on a layer card (then FLIP or ROT 90 if it lands upside down), Mirror Mask for a zone area, or simply make one zone per side. Always check the CAR view, because one side of the sheet may be upside down.",
+   "what": "The two sides of the car sit on the flat sheet as separate panels, and the layout does not always put them the same way up. A mirrored copy therefore sometimes lands rotated, and text may read backwards on one island.",
+   "when": [
+    "You designed the left side and want the right to match.",
+    "Text or a logo is backwards on one side."
+   ],
+   "how": [
+    "For artwork on a layer: in the layer list click MIRROR on the layer card. A flipped copy is made for the opposite side of the car.",
+    "If the copy is upside down, use FLIP or ROT 90 on the copy until it matches.",
+    "For a zone area: select the zone and press Mirror in the selection bar, or Mirror Mask in the toolbar MASK menu, which flips the zone mask horizontally.",
+    "For finishes only: make one zone per side with APPLY AREA > Draw box around each panel and give both the same colour and finish.",
+    "Open the CAR view to confirm the result is on the right side and reads correctly."
+   ],
+   "controls": [
+    {
+     "label": "MIRROR (layer card)",
+     "range": "",
+     "default": "",
+     "effect": "Makes a flipped copy of a layer for the other side."
+    },
+    {
+     "label": "Mirror Mask",
+     "range": "",
+     "default": "",
+     "effect": "Flips the zone area horizontally.",
+     "inv": "pro.toolbar.mirror_mask"
+    }
+   ],
+   "tips": [
+    "If an asymmetric logo must read correctly on both sides, mirror, then FLIP the copy back.",
+    "On a symmetric design a zone-per-side approach is easier to adjust later."
+   ],
+   "pitfalls": [
+    "The left and right panels may not be placed identically on every car.",
+    "Do not trust the flat picture alone; check the CAR view."
+   ],
+   "related": [
+    "tools.mirror_symmetry",
+    "workflows.one_flat_sheet",
+    "cars.reading_sheet",
+    "zones.regions"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.toolbar.mirror_mask"
+    }
+   ],
+   "figures": [
+    "g08_uv_sheet_parts"
+   ],
+   "covers": [
+    "pro.toolbar.mirror_mask"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:13283",
+    "paint-booth-v2.html:2382",
+    "paint-booth-3-canvas.js:8478"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "mirror one side",
+    "copy to other side",
+    "make both sides match",
+    "mirror the design",
+    "flip to the other side",
+    "left side different from right",
+    "make the right side like the left",
+    "logo backwards on one side",
+    "copy one side to the other",
+    "same both sides",
+    "mirror the sides",
+    "mirror side"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Three ways to mirror",
+     "body": "For artwork on a layer, click MIRROR on the layer card: a flipped copy is made for the opposite side. For a zone area, use Mirror in the selection bar, or Mirror Mask in the toolbar MASK menu, which flips the zone mask horizontally. For finishes only, make one zone per side with Draw box around each panel and give both the same colour and finish."
+    },
+    {
+     "heading": "Why it can land wrong",
+     "body": "The two sides sit on the flat sheet as separate panels, and the layout does not always put them the same way up. A mirrored copy can land rotated, and text may read backwards on one island. Use FLIP or ROT 90 on the copy until it matches."
+    },
+    {
+     "heading": "Asymmetric logos",
+     "body": "If an asymmetric logo must read correctly on both sides, mirror, then FLIP the copy back."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Mirror a decal to the other side",
+     "goal": "Sponsor on both doors",
+     "settings": {
+      "If upside down": "FLIP or ROT 90",
+      "Check": "CAR view",
+      "Layer list": "MIRROR on the layer card"
+     },
+     "result": "The decal appears on the opposite side and reads correctly."
+    },
+    {
+     "title": "Same finish on both sides",
+     "goal": "A symmetric stripe finish",
+     "settings": {
+      "Zones": "One per side with Draw box",
+      "Colour and finish": "Identical"
+     },
+     "result": "Both sides match and are easy to adjust later."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why is my mirrored logo upside down?",
+     "a": "The two sides are not placed the same way up. Use FLIP or ROT 90."
+    },
+    {
+     "q": "Do both panels sit the same on every car?",
+     "a": "No. Check the CAR view."
+    },
+    {
+     "q": "Easier for symmetric designs?",
+     "a": "Yes, one zone per side is easier to adjust."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Text reads backwards on one side",
+     "cause": "Mirror flips the text",
+     "fix": "FLIP the copy back."
+    },
+    {
+     "symptom": "You trusted the flat picture",
+     "cause": "The flat picture does not show the 3D car",
+     "fix": "Check the CAR view."
+    }
+   ],
+   "protips": [
+    "For anything with text, mirror first and then flip the text back. It takes seconds and avoids backward sponsors."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.match_photo",
+   "title": "Match a photo or reference livery",
+   "domain": "recipes",
+   "summary": "Sample the exact colours with Pick Color (P), then rebuild the look with zones; or attach the picture in Chat (paper-clip) and ask it to copy the design, which needs an AI key. Always check the result against the picture.",
+   "what": "Shokker cannot trace a photo into paint by itself offline. What it can do is match colours exactly and build zones with real finishes. With an AI key, Chat can look at an attached picture and propose the zones and colours; without a key, you do the matching by eye with the eyedropper.",
+   "when": [
+    "You have a photo of a real car or a livery you like.",
+    "You want the same colours as a reference."
+   ],
+   "how": [
+    "Put the reference next to the preview. Note the main colours and where they sit on the car.",
+    "Pick Color (P) in the toolbar, click a colour on your SOURCE paint to capture a colour; + Add Color adds it to a zone, Set replaces it. For a colour from the photo, type its hex in the zone HEX box.",
+    "Build one zone per colour area, with a base finish that matches the reference (matte, gloss, satin, chrome, candy).",
+    "With an AI key: in Chat press the paper-clip (Attach a picture), choose the livery, logo or flag, and ask it to copy the design or the colours. Check the preview and refine with words.",
+    "Say \"same shade as the hood\" to sample a colour from your own car instead of guessing a named colour.",
+    "Compare the preview with the reference side by side and adjust Hue Shift, Saturation and Brightness."
+   ],
+   "controls": [
+    {
+     "label": "Pick Color (P)",
+     "range": "",
+     "default": "",
+     "effect": "Captures a colour from the paint.",
+     "inv": "vtModeEyedropper"
+    },
+    {
+     "label": "HEX",
+     "range": "six digits",
+     "default": "",
+     "effect": "Type an exact colour.",
+     "inv": "zone.hex"
+    }
+   ],
+   "tips": [
+    "Use a limited palette of two or three colours plus one accent; five colours look cheap.",
+    "The AI never renders or exports for you; press RENDER yourself."
+   ],
+   "pitfalls": [
+    "Copying a picture needs an online AI key or the Claude and ChatGPT connection; offline Chat cannot read pictures.",
+    "A photo shows lighting; match the paint colour, not the shadows."
+   ],
+   "related": [
+    "ai_copilot.picking_colours_in_words",
+    "ai_copilot.gear_key_model",
+    "ai_copilot.mcp_claude_chatgpt",
+    "zones.add_pick_colour"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "vtModeEyedropper"
+    },
+    {
+     "do": "control",
+     "id": "zone.hex"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "vtModeEyedropper",
+    "zone.hex",
+    "zone.hue_shift"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:13137",
+    "scripts/ai_atlas/ui_map.json:13275",
+    "docs/ai_knowledge/09_field_playbook.md:12",
+    "docs/ai_knowledge/04_limits_and_app_map.md:22"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "match a photo",
+    "copy a livery",
+    "copy a picture",
+    "recreate a livery",
+    "match reference colors",
+    "same colors as this car",
+    "copy this paint",
+    "duplicate a livery",
+    "match colour from image",
+    "trace a photo",
+    "use a reference image",
+    "copy a real livery",
+    "recreate a livery from a photo",
+    "match a reference",
+    "reference photo"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "What it can do offline",
+     "body": "Shokker cannot trace a photo into paint by itself offline. It can match colours exactly and build zones with real finishes. Pick Color (P) captures a colour from your SOURCE paint; + Add Color adds it to a zone, Set replaces it. For a colour from the photo, type its hex in the zone HEX box."
+    },
+    {
+     "heading": "With an AI",
+     "body": "In Chat press the paper-clip (Attach a picture), choose the livery, logo or flag, and ask it to copy the design or the colours. This needs an online AI key or the Claude and ChatGPT connection; offline Chat cannot read pictures. Say \"same shade as the hood\" to sample from your own car."
+    },
+    {
+     "heading": "Keep it simple",
+     "body": "Use a limited palette of two or three colours plus one accent; five colours look cheap. A photo shows lighting; match the paint colour, not the shadows."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Eyedropper match",
+     "goal": "Copy a reference livery by hand",
+     "settings": {
+      "Step 1": "Reference next to the preview",
+      "Step 2": "One zone per colour area",
+      "Step 3": "Hex of each colour typed in the HEX box",
+      "Step 4": "Matching finish per zone (matte, gloss, satin, chrome, candy)"
+     },
+     "result": "A close match built from real zones."
+    },
+    {
+     "title": "Let the AI propose it",
+     "goal": "A first draft from a picture",
+     "settings": {
+      "Chat": "Paper-clip, attach the picture",
+      "Ask": "copy the colours of this livery",
+      "Needs": "An AI key or Claude / ChatGPT"
+     },
+     "result": "Zones and colours appear; refine with words."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can offline Chat read pictures?",
+     "a": "No. It needs an online AI key or the Claude / ChatGPT connection."
+    },
+    {
+     "q": "How do I get an exact colour?",
+     "a": "Use Pick Color (P) on your paint or type a hex."
+    },
+    {
+     "q": "Why do my colours look different from the photo?",
+     "a": "Photos show lighting. Match the paint colour, not the shadows."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Too many colours",
+     "cause": "Five or more colours",
+     "fix": "Limit to two or three plus an accent."
+    },
+    {
+     "symptom": "Colours match but the look is wrong",
+     "cause": "The finish is wrong",
+     "fix": "Pick the right shine (matte, gloss, satin, chrome, candy)."
+    }
+   ],
+   "protips": [
+    "Match the finish before the colour. Gloss versus matte changes how a colour reads more than a small hue difference."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.night_day",
+   "title": "Night and day variants",
+   "domain": "recipes",
+   "summary": "iRacing loads one paint per car, so a night or day variant means two versions you render separately. Save the project, make the second version by shifting colours, render it, and keep each render with Save to keep.",
+   "what": "Shokker has no automatic day and night switch because iRacing does not read one. What you can do is keep two looks side by side: one bright for day, one darker or with more reflective finish for night, and choose which one to render before the session.",
+   "when": [
+    "You want a different look for night races.",
+    "You want to keep two versions of one design."
+   ],
+   "how": [
+    "Finish your day design and press Save / Open > Save to store it as a project.",
+    "Render it, then press Save to keep on the render card so this render gets its own folder.",
+    "Make the night version: change colours (Hue Shift, Saturation, Brightness, or new solid colours) and swap to darker bases with brighter accents. Reflective finishes and flake catch light better at night.",
+    "Render again and Save to keep. Name the project separately (for example livery night).",
+    "Before a session, open the project you want, render it, and press Ctrl+R in iRacing.",
+    "If you use Render History, click an old thumbnail to bring that recipe back."
+   ],
+   "controls": [
+    {
+     "label": "Save to keep",
+     "range": "",
+     "default": "",
+     "effect": "Copies a render into its own folder.",
+     "inv": "btnSaveToKeep"
+    },
+    {
+     "label": "Hue Shift",
+     "range": "-180 to 180",
+     "default": "0",
+     "effect": "Quickly shifts every colour of a finish.",
+     "inv": "zone.hue_shift"
+    }
+   ],
+   "tips": [
+    "Save the recipe card or Share Recipe to keep a lightweight copy of each variant.",
+    "Name variants clearly; two renders with the same name will replace each other in the car folder."
+   ],
+   "pitfalls": [
+    "The newest render overwrites the paint in the car folder; the older file is replaced.",
+    "Shokker keeps only the two newest renders in its own folder."
+   ],
+   "related": [
+    "preview_render.saving_projects",
+    "preview_render.render_history_stats",
+    "support.lost_files",
+    "recipes.team_liveries"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "btnSaveToKeep"
+    },
+    {
+     "do": "control",
+     "id": "zone.hue_shift"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "btnSaveToKeep",
+    "zone.hue_shift",
+    "spbProjectsButton"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:12950",
+    "scripts/ai_atlas/ui_map.json:12974",
+    "js/spb-support-answers.js:22",
+    "paint-booth-v2.html:2497"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "night livery",
+    "day and night paint",
+    "night version",
+    "two versions of a paint",
+    "variants",
+    "alternate livery",
+    "different paint for night races",
+    "save a second version",
+    "multiple versions",
+    "switch between liveries",
+    "night race version",
+    "day and night liveries",
+    "night variant"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "iRacing has one paint per car",
+     "body": "Shokker has no automatic day and night switch because iRacing does not read one. Keep two looks side by side, one bright for day and one darker or more reflective for night, and render the one you want before the session."
+    },
+    {
+     "heading": "Naming and keeping",
+     "body": "The newest render overwrites the paint in the car folder, and Shokker keeps only the two newest renders in its own folder. Press Save to keep on the render card so each render gets its own folder, and name the projects separately (for example livery night). Two renders with the same name replace each other."
+    },
+    {
+     "heading": "Making the night version",
+     "body": "Change colours (Hue Shift, Saturation, Brightness, or new solid colours) and swap to darker bases with brighter accents. Reflective finishes and flake catch light better at night."
+    }
+   ],
+   "examples": [
+    {
+     "title": "A day and a night version",
+     "goal": "Two renders from one design",
+     "settings": {
+      "Day": "Save / Open > Save, RENDER, Save to keep",
+      "Night": "Hue Shift or darker bases, RENDER, Save to keep",
+      "Names": "livery day, livery night"
+     },
+     "result": "Two projects and two kept renders."
+    },
+    {
+     "title": "Before a session",
+     "goal": "Load the right one",
+     "settings": {
+      "Do": "Open the project, RENDER, Ctrl+R in iRacing"
+     },
+     "result": "The car shows the version you picked."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can iRacing switch day and night automatically?",
+     "a": "No. It reads one paint per car."
+    },
+    {
+     "q": "How do I bring back an older version?",
+     "a": "Open the project, or click an old thumbnail in Render History."
+    },
+    {
+     "q": "Why did my day paint disappear?",
+     "a": "A newer render replaced the file in the car folder."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Day paint overwritten",
+     "cause": "A new render replaced the file",
+     "fix": "Use Save to keep before the next render."
+    },
+    {
+     "symptom": "Variants overwrite each other",
+     "cause": "Same name",
+     "fix": "Name projects and renders differently."
+    }
+   ],
+   "protips": [
+    "Share Recipe gives you a light copy of each variant, which is easier to store than full projects."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.team_liveries",
+   "title": "Team liveries: one scheme, many cars",
+   "domain": "recipes",
+   "summary": "Save your zone layout as a template and load it on each new car, or share the look as a recipe file. Templates reuse the layout; recipes are matched by zones, so a very different car may need its colour regions picked again.",
+   "what": "Fleet batch rendering (Add Car, Render All Cars) exists in the code but is disabled in this build, so teams work car by car. The fast path is: build once, save the layout as a template, load it on the next car, fix the few places where the cars differ, and render.",
+   "when": [
+    "You run several cars in one team colour scheme.",
+    "You want to hand a teammate your look."
+   ],
+   "how": [
+    "Build the scheme on your first car and make sure it looks right.",
+    "In the left column press More > Save as Template, name it (60 characters at most) and Save.",
+    "Open the next car's template. Choose your layout from the Load Template... dropdown in the same menu.",
+    "Check each zone: colour regions that were picked from the first car may need to be re-picked with PICK COLOR FROM CAR on the new car.",
+    "To share: after RENDER use Share Recipe on the recipe card (a recipe file). A teammate loads it with Import Recipe in the top toolbar.",
+    "Render each car and put each driver's own Customer ID in the ID box before rendering their files."
+   ],
+   "controls": [
+    {
+     "label": "Save as Template",
+     "range": "",
+     "default": "",
+     "effect": "Stores your zone layout for reuse.",
+     "inv": "pro.zones_more.save_as_template"
+    },
+    {
+     "label": "Load Template...",
+     "range": "",
+     "default": "",
+     "effect": "Applies a saved layout to the open car.",
+     "inv": "templateSelect"
+    },
+    {
+     "label": "Import Recipe",
+     "range": "",
+     "default": "",
+     "effect": "Loads a shared recipe file.",
+     "inv": "pro.toolbar.import_recipe"
+    }
+   ],
+   "tips": [
+    "Cars with similar templates share part names, so layouts transfer cleanly.",
+    "Use layer names (Car Paint, Numbers) rather than colours so a template works across cars."
+   ],
+   "pitfalls": [
+    "Each driver needs files named with their own Customer ID.",
+    "A recipe carries the look, not the car template."
+   ],
+   "related": [
+    "zones.presets_templates",
+    "preview_render.saving_projects",
+    "workflows.user_id_and_folder",
+    "recipes.night_day"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.zones_more.save_as_template"
+    },
+    {
+     "do": "control",
+     "id": "templateSelect"
+    },
+    {
+     "do": "control",
+     "id": "pro.toolbar.import_recipe"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.zones_more.save_as_template",
+    "templateSelect",
+    "pro.toolbar.import_recipe"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:12974",
+    "scripts/ai_atlas/ui_map.json:12950",
+    "paint-booth-5-api-render.js:2352",
+    "paint-booth-5-api-render.js:2356"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "team livery",
+    "team liveries",
+    "same paint on multiple cars",
+    "one scheme many cars",
+    "fleet",
+    "multiple cars same livery",
+    "copy design to another car",
+    "reuse my design",
+    "share my livery",
+    "give a teammate my paint",
+    "fleet mode",
+    "team cars",
+    "same scheme many cars",
+    "teammates liveries"
+   ],
+   "level": "pro",
+   "deep": [
+    {
+     "heading": "Build once, reuse",
+     "body": "Build the scheme on your first car. In the left column press More > Save as Template, name it (60 characters at most) and Save. Open the next car's template and choose your layout from Load Template... in the same menu. Fleet batch rendering (Add Car, Render All Cars) exists in the code but is disabled in this build, so teams work car by car."
+    },
+    {
+     "heading": "What transfers",
+     "body": "Cars with similar templates share part names, so layouts transfer cleanly. Use layer names (Car Paint, Numbers) rather than colours. Colour regions picked from the first car may need to be re-picked with PICK COLOR FROM CAR on the new car."
+    },
+    {
+     "heading": "Sharing and IDs",
+     "body": "After RENDER use Share Recipe on the recipe card; a teammate loads it with Import Recipe in the top toolbar. A recipe carries the look, not the car template. Each driver needs files named with their own Customer ID, so put their ID in the box before rendering."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Three cars, one livery",
+     "goal": "Reuse the layout across a team",
+     "settings": {
+      "Car 1": "Build, More > Save as Template",
+      "Car 2 and 3": "Open template, Load Template..., re-pick colours, set the driver's ID",
+      "Each": "RENDER"
+     },
+     "result": "Three cars with the same scheme and each driver's own file names."
+    },
+    {
+     "title": "Share with a teammate",
+     "goal": "Send the look only",
+     "settings": {
+      "You": "Share Recipe",
+      "Teammate": "Import Recipe"
+     },
+     "result": "The look appears on their car; they may need to re-pick colours."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Is there a batch render for a team?",
+     "a": "Not in this build. Teams render car by car."
+    },
+    {
+     "q": "How long can a template name be?",
+     "a": "60 characters."
+    },
+    {
+     "q": "Do I put my ID or the driver's?",
+     "a": "The driver's own Customer ID for their files."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The loaded layout looks wrong",
+     "cause": "Colour regions were picked from the first car",
+     "fix": "Re-pick them with PICK COLOR FROM CAR."
+    },
+    {
+     "symptom": "A teammate's paint does not load in iRacing",
+     "cause": "Files named with the wrong Customer ID",
+     "fix": "Render with their ID in the box."
+    }
+   ],
+   "protips": [
+    "Use layers, not colours, to pick areas. A layer-based template works on every car with the same layer names."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.wet_glass",
+   "title": "Wet look and glass looks",
+   "domain": "recipes",
+   "summary": "Wet Look is a razor-sharp lacquer gloss. For glass looks choose Cathedral Veil, Shag: Smoked Glass or Glass Flake, or put Wet Look over a deep blue, red, green or amber colour, and keep the coat at 16.",
+   "what": "A wet look is about a tight, deep highlight, which comes from low roughness and the glossiest clearcoat. Glass finishes add transparent colour on top. These are paint looks: they do not make the car's windows transparent.",
+   "when": [
+    "You want a showroom wet shine.",
+    "You want a stained-glass or gem look on the body."
+   ],
+   "how": [
+    "Make a zone on the body and restrict it to Car Paint.",
+    "Under BASE press Base Material. For a wet shine pick Wet Look; for glass pick Cathedral Veil (leaded glass panes), Shag: Smoked Glass (bronze-tinted) or Glass Flake (glass shards), or choose Wet Look and set a deep blue, red, green or amber colour for a gem look.",
+    "Set BASE COLOR to Use solid color for plain finishes; glass finishes bring their own colour (recolour with Hue Shift).",
+    "Check the preview strip: G ROUGH should be near black and B COAT at its darkest (16 is the glossiest coat).",
+    "Add a Wet Zone spec overlay (CC Wet Zone) if you want slightly uneven glossy clear patches that read like real wet clear.",
+    "Render and look at the car with a bright sky in the sim."
+   ],
+   "controls": [
+    {
+     "label": "G ROUGH",
+     "range": "-127 to 127",
+     "default": "0",
+     "effect": "Lower means a sharper mirror.",
+     "inv": "zone.g_rough"
+    },
+    {
+     "label": "B COAT",
+     "range": "-127 to 127",
+     "default": "0",
+     "effect": "Moves the clearcoat; 16 is the glossiest.",
+     "inv": "zone.b_coat"
+    }
+   ],
+   "tips": [
+    "Wet Look is metal 0, roughness 15, coat 16: the tightest highlight a non-metal paint can have.",
+    "A glossy car is a mirror for the track: pick a colour that still reads under reflections.",
+    "The named gem-glass finishes (the sapphire, ruby, emerald and amber glasses) are not in the Base Material picker: ask the Shokker AI helper for one by name."
+   ],
+   "pitfalls": [
+    "Do not expect transparent windows; window glass keeps the template's alpha.",
+    "Mirror-level gloss shows every flaw in your art."
+   ],
+   "related": [
+    "spec.channel_b_clearcoat",
+    "support.flat_or_shiny",
+    "recipes.candy",
+    "spec.iron_rules"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "base::wet_look"
+    },
+    {
+     "do": "finish",
+     "id": "base::efx_cathedral_veil"
+    },
+    {
+     "do": "finish",
+     "id": "base::fo_smoked_glass"
+    },
+    {
+     "do": "spec",
+     "id": "cc_wet_zone"
+    }
+   ],
+   "figures": [
+    "g03_clearcoat_scale"
+   ],
+   "covers": [
+    "zone.base_material",
+    "zone.g_rough",
+    "zone.b_coat",
+    "zone.add_spec_overlay"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:13332",
+    "js/spb-ai-atlas-data.js:1",
+    "engine/SPEC_MAP_REFERENCE.md:15",
+    "paint-booth-2-state-zones.js:1656",
+    "paint-booth-0-finish-data.js:1077",
+    "paint-booth-0-finish-data.js:624"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "wet look",
+    "wet paint",
+    "glossy wet look",
+    "showroom shine",
+    "glass finish",
+    "stained glass",
+    "gem look",
+    "sapphire glass",
+    "make it look wet",
+    "high gloss",
+    "liquid look",
+    "super glossy",
+    "wet shiny gloss",
+    "glass look"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Wet look in numbers",
+     "body": "Wet Look is metal 0, roughness 15 and coat 16: the tightest highlight a non-metal paint can have. It comes from low roughness and the glossiest clearcoat."
+    },
+    {
+     "heading": "Glass finishes",
+     "body": "Glass looks put clear colour over the paint: Cathedral Veil lays leaded glass panes in your colour, Shag: Smoked Glass is a bronze tint and Glass Flake suspends glass shards in clear; for a plain gem glass use Wet Look and pick the colour yourself. They are paint looks: the car's windows do not become transparent because window glass keeps the template's alpha."
+    },
+    {
+     "heading": "Extra realism",
+     "body": "A Wet Zone spec overlay (CC Wet Zone) adds slightly uneven glossy clear patches that read like real wet clear. A glossy car is a mirror for the track, and mirror-level gloss shows every flaw in your art."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Wet-look body",
+     "goal": "A razor-sharp lacquer gloss",
+     "settings": {
+      "RESTRICT TO LAYERS": "Car Paint",
+      "Base Material": "Wet Look",
+      "BASE COLOR": "Use solid color",
+      "Check": "G ROUGH near black, B COAT darkest (16)"
+     },
+     "result": "A deep, mirror-like gloss."
+    },
+    {
+     "title": "Gem-blue glass",
+     "goal": "A gem-like blue",
+     "settings": {
+      "Base Material": "Wet Look",
+      "BASE COLOR": "A deep sapphire blue",
+      "Spec overlay": "CC Wet Zone (optional)"
+     },
+     "result": "A deep, wet blue gem gloss."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does glass make windows see-through?",
+     "a": "No. Window glass keeps the template's alpha."
+    },
+    {
+     "q": "What is the best check?",
+     "a": "G ROUGH near black and B COAT at its darkest."
+    },
+    {
+     "q": "Why does gloss show every flaw?",
+     "a": "Mirror-level gloss reflects everything, including flaws in your art."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The wet look is dull",
+     "cause": "Roughness or coat sliders were moved",
+     "fix": "Reset the spec sliders."
+    },
+    {
+     "symptom": "The colour does not read under reflections",
+     "cause": "A very light or very dark colour",
+     "fix": "Pick a colour that still reads under reflections."
+    }
+   ],
+   "protips": [
+    "Look at the car with a bright sky in the sim. Wet looks are judged by their highlight, not their colour."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.weathered",
+   "title": "Weathered and aged paint",
+   "domain": "recipes",
+   "summary": "Pick a worn finish such as Sun Faded, Hardware: Battle Worn or Die-Back Patina, add a chip or orange-peel spec overlay, and lower Base Strength to let your own paint show through. Keep the damage in believable places.",
+   "what": "Weathering is a few fine layers: sun-faded paint, chips at the edges and a rough clearcoat. In Shokker that is a worn base finish for the look plus spec overlays for the shine damage. Fine detail matters, so keep the scale small.",
+   "when": [
+    "You want a barn-find, battle-worn or desert racer look.",
+    "You want a fresh paint to look lived in."
+   ],
+   "how": [
+    "Make a zone on the body (Car Paint only) or on the lower half with APPLY AREA > Draw box.",
+    "Under BASE pick Sun Faded (sun-bleached), Hardware: Battle Worn (worn through to metal at the edges), Die-Back Patina, or a rust or salvage finish.",
+    "Lower Base Strength (0 is your original paint, 100 is the full finish) to let your own colours show through the wear.",
+    "Open BASE > SPEC OVERLAYS and add Micro Chipping or Orange Peel Film for chipped and rough clear.",
+    "Recolour a worn finish that brings its own palette with Hue Shift (not a solid colour).",
+    "Render and check at 100 percent zoom: weathering should read as fine detail, not blotches."
+   ],
+   "controls": [
+    {
+     "label": "Base Strength",
+     "range": "0 to 100 percent",
+     "default": "100",
+     "effect": "How much of the finish replaces your original paint.",
+     "inv": "zone.base_strength"
+    },
+    {
+     "label": "SPEC OVERLAYS",
+     "range": "",
+     "default": "empty",
+     "effect": "Spec-only textures such as chips and orange peel.",
+     "inv": "zone.add_spec_overlay"
+    }
+   ],
+   "tips": [
+    "Wear tends to sit on edges, lower panels and the front; use a box so the roof stays cleaner.",
+    "Matte and low-metal finishes look more weathered than chrome."
+   ],
+   "pitfalls": [
+    "A Wear slider appears in the code but was not seen in the live panel of this build; use the worn finishes and overlays instead.",
+    "Too much damage hides your sponsors."
+   ],
+   "related": [
+    "recipes.flake_pearl",
+    "support.smeared_blobby",
+    "zones.regions"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "base::efx_sun_faded"
+    },
+    {
+     "do": "finish",
+     "id": "base::tac_battle_worn"
+    },
+    {
+     "do": "finish",
+     "id": "base::bth_die_back"
+    },
+    {
+     "do": "spec",
+     "id": "spov2_micro_chipping"
+    },
+    {
+     "do": "spec",
+     "id": "spov2_orange_peel_film"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "zone.base_material",
+    "zone.base_strength",
+    "zone.add_spec_overlay",
+    "zone.wear"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:12066",
+    "paint-booth-2-state-zones.js:1656",
+    "js/spb-ai-atlas-data.js:1",
+    "paint-booth-2-state-zones.js:2098",
+    "js/spec-overlays/catalog-data.js:1245",
+    "js/spec-overlays/catalog-data.js:1020",
+    "shokker_engine_v2.py:23013"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "weathered paint",
+    "aged paint",
+    "rusty look",
+    "barn find",
+    "battle damaged",
+    "distressed",
+    "patina",
+    "sun faded",
+    "chipped paint",
+    "make paint look old",
+    "dirty car",
+    "scratches and chips",
+    "rusty",
+    "rat rod",
+    "dirty paint",
+    "weathered look",
+    "weathered"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Three fine layers",
+     "body": "Weathering is sun-faded paint, chips at the edges and a rough clearcoat: a worn base finish for the look plus spec overlays for the shine damage. Bases: Desert Worn (sun-bleached), Hardware: Battle Worn (worn through to metal at the edges), Die-Back Patina, or a rust or salvage finish. Overlays: Micro Chipping or Orange Peel Film."
+    },
+    {
+     "heading": "Let your paint show through",
+     "body": "Lower Base Strength (0 is your original paint, 100 the full finish) to let your own colours show through the wear. Recolour a worn finish that brings its own palette with Hue Shift, not a solid colour."
+    },
+    {
+     "heading": "Believable places",
+     "body": "Wear tends to sit on edges, lower panels and the front; use a box so the roof stays cleaner. Matte and low-metal finishes look more weathered than chrome. A Wear slider appears in the code but was not seen in the live panel of this build, so use the worn finishes and overlays. Engine wear roughens the surface, takes metal away and dulls the clearcoat; it never makes a matte finish glossy."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Battle-worn lower body",
+     "goal": "A raced-hard look",
+     "settings": {
+      "APPLY AREA": "Draw box on the lower half",
+      "Base Material": "Hardware: Battle Worn",
+      "Base Strength": "60",
+      "Spec overlay": "Micro Chipping"
+     },
+     "result": "Chips and wear on the lower panels with your paint showing through."
+    },
+    {
+     "title": "Sun-faded roof",
+     "goal": "Faded paint",
+     "settings": {
+      "Base Material": "Sun Faded",
+      "Spec overlay": "Orange Peel Film"
+     },
+     "result": "A bleached, rough-clear look."
+    }
+   ],
+   "faq": [
+    {
+     "q": "How do I keep my livery visible?",
+     "a": "Lower Base Strength so your paint shows through."
+    },
+    {
+     "q": "Where should wear go?",
+     "a": "Edges, lower panels and the front."
+    },
+    {
+     "q": "Is there a Wear slider?",
+     "a": "Not in this build's panel. Use worn finishes and overlays."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Sponsors are unreadable",
+     "cause": "Too much damage",
+     "fix": "Lower Base Strength and keep damage off logos."
+    },
+    {
+     "symptom": "Wear looks blotchy",
+     "cause": "Scale too large",
+     "fix": "Lower scale and check at 100 percent zoom."
+    }
+   ],
+   "protips": [
+    "Weathering should read as fine detail. If you see blotches at 100 percent zoom, lower the scale."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.helmet_suit",
+   "title": "Matching helmet and suit",
+   "domain": "recipes",
+   "summary": "Shokker paints cars only: helmet and suit folders are not supported targets in this build. Use Shokker to design the car, then copy the colours and finish names from the recipe card to recreate the look in your helmet tool.",
+   "what": "iRacing reads helmets, suits and cars from different folders and file types. Shokker writes only car paint and car spec files, so it cannot render a helmet or suit. You can still make them match by reusing the same colours.",
+   "when": [
+    "You want your helmet or suit to match your livery.",
+    "You tried to point Shokker at a helmet folder."
+   ],
+   "how": [
+    "Finish and render your car as usual.",
+    "On the recipe card after RENDER, press Copy Card or Save Card PNG to keep the list of colours and finishes.",
+    "Open each zone and note its HEX colour (the zone shows the exact value).",
+    "Recreate the same colours and a matching finish idea (gloss, matte, chrome) in the editor you use for helmets and suits.",
+    "Keep the same colour order and proportions: 60 percent main, 30 percent accent, 10 percent trim.",
+    "Do not select a helmet or suit folder as the iRacing Car Folder: Shokker reports it is not a car."
+   ],
+   "controls": [
+    {
+     "label": "Copy Card",
+     "range": "",
+     "default": "",
+     "effect": "Copies the recipe card as a picture to the clipboard.",
+     "inv": "pro.render.copy_card"
+    },
+    {
+     "label": "iRacing Car Folder",
+     "range": "",
+     "default": "",
+     "effect": "Must be a car folder.",
+     "inv": "outputDir"
+    }
+   ],
+   "tips": [
+    "Use the same hex values for matching colours.",
+    "Gloss differences between helmet and car are normal in the sim."
+   ],
+   "pitfalls": [
+    "Helmet and suit folders are not Shokker targets; the checklist warns when you pick one.",
+    "There is no automatic Trading Paints upload."
+   ],
+   "related": [
+    "support.not_in_iracing",
+    "workflows.user_id_and_folder",
+    "preview_render.output_files"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "outputDir"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "outputDir",
+    "pro.render.copy_card"
+   ],
+   "sources": [
+    "docs/ai_knowledge/10_support_troubleshooting.md:51",
+    "js/spb-support-answers.js:59",
+    "js/spb-support.js:215",
+    "scripts/ai_atlas/ui_map.json:12950",
+    "paint-booth-v2.html:3648"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "matching helmet",
+    "matching suit",
+    "helmet paint",
+    "suit paint",
+    "how do i paint a helmet",
+    "helmet design",
+    "gloves shoes",
+    "match helmet to car",
+    "driver suit",
+    "racing suit livery",
+    "does shokker do helmets",
+    "paint my helmet",
+    "helmet",
+    "suit"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Cars only",
+     "body": "iRacing reads helmets, suits and cars from different folders and file types. Shokker writes only car paint and car spec files, so it cannot render a helmet or suit. Do not pick a helmet or suit folder as the iRacing Car Folder: Shokker reports it is not a car."
+    },
+    {
+     "heading": "Make them match anyway",
+     "body": "After RENDER, press Copy Card or Save Card PNG on the recipe card to keep the list of colours and finishes. Each zone shows its exact HEX colour. Recreate the same colours in the editor you use for helmets and suits, keeping the 60-30-10 proportions."
+    },
+    {
+     "heading": "Expect small differences",
+     "body": "Gloss differences between helmet and car are normal in the sim. There is no automatic Trading Paints upload."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Matching helmet colours",
+     "goal": "Use the same palette",
+     "settings": {
+      "Press": "Copy Card after RENDER",
+      "Note": "HEX of each zone",
+      "Recreate": "In your helmet editor with the same hex values"
+     },
+     "result": "Helmet and car share one palette."
+    },
+    {
+     "title": "Keep proportions",
+     "goal": "Match the balance",
+     "settings": {
+      "Split": "60 percent main, 30 percent accent, 10 percent trim"
+     },
+     "result": "The helmet feels part of the same scheme."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can Shokker paint a helmet?",
+     "a": "No. Cars only."
+    },
+    {
+     "q": "Why does it say my folder is not a car?",
+     "a": "You picked a helmet or suit folder."
+    },
+    {
+     "q": "How do I get the exact colours?",
+     "a": "Open each zone and read its HEX."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Shokker refuses the folder",
+     "cause": "It is a helmet or suit folder",
+     "fix": "Pick a car folder."
+    },
+    {
+     "symptom": "Colours differ slightly in the sim",
+     "cause": "Different gloss on helmet and car",
+     "fix": "This is normal."
+    }
+   ],
+   "protips": [
+    "Copy the card as text and paste it into your notes. It is the easiest way to keep a palette."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.psd_to_iracing",
+   "title": "From PSD template to iRacing in one pass",
+   "domain": "recipes",
+   "summary": "Open the layered template, set the ID and car folder, make a body zone limited to Car Paint, add accents above it, switch the template layers off, render, then Ctrl+R in iRacing. This is the whole job end to end.",
+   "what": "This is the checklist for a complete livery from a car's layered template. It strings together the articles in this section so you can run it as one routine, and it ends with the two steps people forget: template layers off and Ctrl+R.",
+   "when": [
+    "You have a car's PSD template and want a finished, working livery.",
+    "You want a repeatable routine for every new car."
+   ],
+   "how": [
+    "Open: PSD/XCF/ORA button, choose the template. Wait for the layers to load.",
+    "Setup once per car: iRacing User ID (Customer ID), iRacing Car Folder (car menu), Custom Number or Sim-Stamped Number to match Hide Car Numbers.",
+    "Body: + Add Zone, tick Car Paint under RESTRICT TO LAYERS, BASE a finish and colour.",
+    "Accents: zones above the body for stripes, hood, roof, trim (Draw box or PICK COLOR FROM CAR), each with its own finish.",
+    "Numbers and sponsors: leave them alone, or give the Numbers layer its own zone (zone icon on the layer).",
+    "Switch OFF Wire, Mask, Car_Mandatory and the group named Turn Off Before Exporting TGA.",
+    "Check the preview and the R METAL, G ROUGH, B COAT views; use Decal Rescue Kit if numbers look wrong under metal.",
+    "Press RENDER, wait for the Saved bar, Show my files to confirm, then Alt+Tab to iRacing and press Ctrl+R."
+   ],
+   "controls": [
+    {
+     "label": "RENDER",
+     "range": "",
+     "default": "",
+     "effect": "Builds and copies the paint and spec.",
+     "inv": "btnRender"
+    },
+    {
+     "label": "RESTRICT TO LAYERS",
+     "range": "",
+     "default": "none",
+     "effect": "Keeps the body zone off numbers and sponsors.",
+     "inv": "zone.restrict_layers"
+    }
+   ],
+   "tips": [
+    "Save a project as soon as the layout is right.",
+    "Save a template to reuse the layout on teammates' cars."
+   ],
+   "pitfalls": [
+    "Forgetting the template layers off paints guide lines into the render.",
+    "A wrong ID or number mode gives no error in iRacing, just paint-shop colours."
+   ],
+   "related": [
+    "workflows.first_paint",
+    "workflows.loading_paint",
+    "workflows.user_id_and_folder",
+    "recipes.edit_one_thing",
+    "support.not_in_iracing",
+    "preview_render.reload_in_iracing"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "btnRender"
+    },
+    {
+     "do": "control",
+     "id": "pro.header.psd_xcf_ora",
+     "label": "PSD/XCF/ORA button"
+    },
+    {
+     "do": "control",
+     "id": "zone.restrict_layers"
+    }
+   ],
+   "figures": [
+    "g09_render_export_flow",
+    "g07_layer_stack_roles"
+   ],
+   "covers": [
+    "btnRender",
+    "pro.header.psd_xcf_ora",
+    "zone.restrict_layers",
+    "iracingId",
+    "outputDir"
+   ],
+   "sources": [
+    "scripts/ai_atlas/ui_map.json:12384",
+    "scripts/ai_atlas/ui_map.json:11763",
+    "js/spb-quests.js:205",
+    "js/spb-quests.js:246",
+    "js/spb-support-answers.js:116"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "psd to iracing",
+    "from template to iracing",
+    "full workflow",
+    "complete workflow",
+    "end to end",
+    "whole process",
+    "start to finish",
+    "step by step livery",
+    "how to make a livery",
+    "full livery process",
+    "template to iracing",
+    "psd workflow"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The whole job as one routine",
+     "body": "Open the template and wait for the layers to load. Set the ID, car folder and number mode once per car. Make a body zone limited to Car Paint. Add accent zones above it. Leave numbers and sponsors alone, or give the Numbers layer its own zone. Switch OFF Wire, Mask, Car_Mandatory and the group named Turn Off Before Exporting TGA. Check the preview and the R METAL, G ROUGH and B COAT views. RENDER, then Show my files, then Alt+Tab and Ctrl+R in iRacing."
+    },
+    {
+     "heading": "The two steps people forget",
+     "body": "Template layers off and Ctrl+R. Forgetting the layers paints guide lines into the render. A wrong ID or number mode gives no error in iRacing, just paint-shop colours."
+    },
+    {
+     "heading": "Save while you are ahead",
+     "body": "Save a project as soon as the layout is right and save a template to reuse the layout on teammates' cars."
+    }
+   ],
+   "examples": [
+    {
+     "title": "A complete livery",
+     "goal": "From template to track",
+     "settings": {
+      "Open": "PSD/XCF/ORA",
+      "Setup": "User ID, Car Folder, number mode",
+      "Body zone": "RESTRICT TO LAYERS: Car Paint",
+      "Accents": "Draw box or PICK COLOR FROM CAR, above the body",
+      "Guides": "Wire, Mask, Car_Mandatory and the export group off",
+      "Finish": "RENDER, Show my files, Ctrl+R in iRacing"
+     },
+     "result": "The finished livery on the car."
+    },
+    {
+     "title": "Numbers look wrong under metal",
+     "goal": "Rescue stamped numbers",
+     "settings": {
+      "Where": "MASK > Advanced spec utilities > Decal Rescue Kit"
+     },
+     "result": "A plain non-metal spec under the numbers."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What do I do first?",
+     "a": "Open the template of the car you drive."
+    },
+    {
+     "q": "Why are there lines on my car?",
+     "a": "A template guide layer was left on."
+    },
+    {
+     "q": "Why is iRacing showing paint-shop colours?",
+     "a": "ID, folder or number mode is wrong."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Guide lines on the car",
+     "cause": "Template layers on at render",
+     "fix": "Turn all four off."
+    },
+    {
+     "symptom": "Nothing in iRacing",
+     "cause": "Ctrl+R forgotten, or pressed in Shokker",
+     "fix": "Press it in iRacing."
+    }
+   ],
+   "protips": [
+    "Keep this recipe open next to the app the first few times. After three paints it is muscle memory."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.three_colour_gradient",
+   "title": "A gradient from blue to gold to white",
+   "domain": "recipes",
+   "summary": "Put the gradient on the zone that owns the big body area: BASE COLOR, Custom gradient, then three colour stops and a direction. Remember the fade runs across the whole flat sheet, not along the car.",
+   "what": "A zone can fade between 2 to 10 colours. The fade is laid over the entire flat paint sheet in one direction, so left to right on the sheet is not always front to back on the car, and each side of the car sits in its own part of the sheet. If the zone only covers some colours of the paint, the gradient shows only there.",
+   "when": [
+    "You want a fade from one colour through a second into a third, such as blue to gold to white.",
+    "You want a sunset, fade-out or ombre look on the body."
+   ],
+   "how": [
+    "Pick or create the zone that owns the body area, and give it a coating finish such as Gloss, Pearl or Candy under BASE.",
+    "Set BASE COLOR to the custom gradient option.",
+    "Add three stops: deep blue at 0, gold at 50 and white at 100 (the stop positions run from 0 to 100).",
+    "Choose the direction that matches the flat layout: horizontal runs left to right across the sheet, vertical top to bottom, or one of the diagonal and radial options.",
+    "Look at the preview. If one side of the car fades the wrong way, give each side its own zone with its own gradient."
+   ],
+   "controls": [
+    {
+     "label": "Custom gradient",
+     "range": "2 to 10 stops",
+     "default": "",
+     "effect": "Colour stops fading across the zone in a chosen direction.",
+     "inv": "zone.gradient"
+    },
+    {
+     "label": "BASE COLOR",
+     "range": "dropdown",
+     "default": "",
+     "effect": "Chooses where the finish gets its colour: your own paint, one solid colour, or a gradient.",
+     "inv": "zone.base_color_mode"
+    }
+   ],
+   "tips": [
+    "True colours help: deep blue, a warm gold such as #d4a017, and pure white.",
+    "Use a gradient for a deliberate whole-sheet effect. For a touch of colour coming into black, a coloured flake finish works better than a fade."
+   ],
+   "pitfalls": [
+    "The fade does not line up from the side panel over the bumper or onto the other side. That is how a flat unwrapped sheet works, not a fault.",
+    "A finish that brings its own colour (chrome, carbon, holographic) ignores the gradient; use a coating base."
+   ],
+   "related": [
+    "recipes.gradient_roof_rocker",
+    "zones.what_is_a_zone",
+    "playbook.gradients_and_flake",
+    "playbook.colour_modes"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.gradient"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "doc.03.recipe_a_gradient_from_blue_to_gold_to_white"
+   ],
+   "sources": [
+    "docs/ai_knowledge/03_recipes.md:5-7",
+    "docs/ai_knowledge/09_field_playbook.md:18-19",
+    "docs/ai_knowledge/01_how_pro_works.md:18-23",
+    "paint-booth-2-state-zones.js:7941",
+    "paint-booth-2-state-zones.js:1910"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "blue gold white gradient",
+    "three colour gradient",
+    "gradient stops",
+    "fade colours",
+    "three colour fade"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Setting it up",
+     "body": "A zone can fade between 2 to 10 colours. Pick the zone that owns the body area and give it a coating finish such as Gloss, Pearl or Candy. Set BASE COLOR to the custom gradient. Add three stops: deep blue at 0, gold at 50 and white at 100 (positions run from 0 to 100)."
+    },
+    {
+     "heading": "Direction",
+     "body": "Horizontal runs left to right across the sheet, vertical top to bottom, or one of the diagonal and radial options. Left to right on the sheet is not always front to back on the car."
+    },
+    {
+     "heading": "Limits",
+     "body": "The fade does not line up from the side panel over the bumper or onto the other side; that is how a flat unwrapped sheet works. A finish that brings its own colour (chrome, carbon, holographic) ignores the gradient. If the zone only covers some colours of the paint, the gradient shows only there."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Blue, gold, white",
+     "goal": "The classic three-stop fade",
+     "settings": {
+      "BASE": "Gloss",
+      "BASE COLOR": "Custom gradient",
+      "Stops": "0 = deep blue, 50 = gold d4a017, 100 = white",
+      "Direction": "Vertical"
+     },
+     "result": "A fade from blue through gold to white."
+    },
+    {
+     "title": "Ask Chat",
+     "goal": "The same without sliders",
+     "settings": {
+      "Message": "a gradient from blue to gold to white"
+     },
+     "result": "Chat sets the stops."
+    }
+   ],
+   "faq": [
+    {
+     "q": "How many stops can I have?",
+     "a": "2 to 10."
+    },
+    {
+     "q": "Why does one side fade the wrong way?",
+     "a": "Each side of the car sits in its own part of the sheet. Give each side its own zone."
+    },
+    {
+     "q": "Why does chrome ignore it?",
+     "a": "Finishes with their own colour ignore gradients. Use a coating base."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "No gradient appears",
+     "cause": "A finish that brings its own colour",
+     "fix": "Use Gloss, Pearl or Candy."
+    },
+    {
+     "symptom": "The fade breaks at the bumper",
+     "cause": "Unwrapped sheet",
+     "fix": "Use a zone per panel."
+    }
+   ],
+   "protips": [
+    "Use true colours for stops: a warm gold such as d4a017 and a deep blue read better than pure primaries."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.holographic",
+   "title": "A reflective holographic finish",
+   "domain": "recipes",
+   "summary": "Make the base reflective (Pearl, Metallic or Chrome), then add a holographic spec overlay on top. The colour you chose stays; the rainbow shimmer rides in the shine map.",
+   "what": "Holographic here means a rainbow shimmer that changes with the light. It lives in the spec map, so it needs a reflective base underneath. If you also pick a finish that brings its own holographic colour, that finish replaces your colour, so choose base plus spec overlay when you want a specific colour.",
+   "when": [
+    "You want a prism or rainbow shimmer on a body, an accent or a whole car.",
+    "You want to keep your colour and add the shimmer on top."
+   ],
+   "how": [
+    "Open the zone that covers the area, or add one with + Add Zone.",
+    "Under BASE press Base Material and choose a reflective finish: Pearl, Metallic or Chrome.",
+    "Press + ADD SPEC OVERLAY and choose a holographic pattern from the list.",
+    "Set its Strength to about 80 and look at the preview, then the spec views.",
+    "Use Render to judge it at full size, because fine shimmer is hard to see in the small live preview."
+   ],
+   "controls": [
+    {
+     "label": "+ ADD SPEC OVERLAY",
+     "range": "button",
+     "default": "",
+     "effect": "Adds a shine-map pattern on top of the finish.",
+     "inv": "zone.add_spec_overlay"
+    },
+    {
+     "label": "Base Material",
+     "range": "picker",
+     "default": "",
+     "effect": "Chooses the finish under the shimmer.",
+     "inv": "zone.base_material"
+    }
+   ],
+   "tips": [
+    "A monolithic holographic finish is the quick all-in-one option when you do not need a specific colour.",
+    "Check the spec views: the shimmer shows as variation in the red metal view."
+   ],
+   "pitfalls": [
+    "Fine shimmer averages out in the live preview and can look flat. That does not mean it did nothing."
+   ],
+   "related": [
+    "recipes.colour_shift",
+    "recipes.flake_pearl",
+    "spec.what_is_spec_map",
+    "playbook.preview_cannot_show"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.add_spec_overlay"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "doc.03.recipe_reflective_holographic_finish"
+   ],
+   "sources": [
+    "docs/ai_knowledge/03_recipes.md:8-10",
+    "engine/spec_patterns.py:32095"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "holographic",
+    "holographic finish",
+    "hologram",
+    "holo",
+    "rainbow shimmer",
+    "prism",
+    "holo foil",
+    "rainbow foil",
+    "hologram paint"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "It lives in the shine map",
+     "body": "Holographic here means a rainbow shimmer that changes with the light. It needs a reflective base underneath (Pearl, Metallic or Chrome). The colour you chose stays; the shimmer rides in the spec map."
+    },
+    {
+     "heading": "Base plus overlay or a finish",
+     "body": "If you pick a finish that brings its own holographic colour, that finish replaces your colour. Choose base plus spec overlay when you want a specific colour; a monolithic holographic finish is the quick all-in-one when you do not need one."
+    },
+    {
+     "heading": "Judging",
+     "body": "Fine shimmer averages out in the live preview and can look flat; that does not mean it did nothing. The shimmer shows as variation in the red metal view."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Holographic over a chosen colour",
+     "goal": "Rainbow shimmer, your colour",
+     "settings": {
+      "Base Material": "Pearl, Metallic or Chrome",
+      "+ ADD SPEC OVERLAY": "A holographic pattern",
+      "Opacity": "80"
+     },
+     "result": "Your colour with a rainbow shimmer."
+    },
+    {
+     "title": "Quick all-in-one",
+     "goal": "No specific colour needed",
+     "settings": {
+      "Base Material": "A monolithic holographic finish"
+     },
+     "result": "A complete holographic look."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does it look flat in the preview?",
+     "a": "Fine shimmer averages out. Render and check R METAL."
+    },
+    {
+     "q": "Can I choose the colour?",
+     "a": "Yes, with a reflective base plus a holographic spec overlay."
+    },
+    {
+     "q": "Which opacity?",
+     "a": "About 80 to start."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "My colour changed",
+     "cause": "A finish with its own holographic colour replaced it",
+     "fix": "Use a base plus the overlay."
+    },
+    {
+     "symptom": "No shimmer",
+     "cause": "A non-reflective base",
+     "fix": "Use Pearl, Metallic or Chrome."
+    }
+   ],
+   "protips": [
+    "Check R METAL for variation. If you see it vary, the shimmer is there, whatever the colour preview shows."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.rear_accents",
+   "title": "Matching accents on the rear of each side",
+   "domain": "recipes",
+   "summary": "Make a zone that takes the accent colour but only on the rear part of the sides, then give it the chrome-flake look. Read the real accent colour from the front first rather than guessing a blue.",
+   "what": "The front and rear accents share a colour, so a normal colour pick would catch both. You limit the new zone to the rear with a box or a named part, and put it above the zone that already owns the accent so it wins that area.",
+   "when": [
+    "The livery has accent stripes front and rear and only the rear ones should change.",
+    "You want a metal-flake look on part of a shape that has the same colour elsewhere."
+   ],
+   "how": [
+    "Pick the accent colour with PICK COLOR FROM CAR on the front accent so the zone matches it exactly.",
+    "Under APPLY AREA, use Draw box around the rear of the left side. Repeat on the right side, or use a car part if the car is known.",
+    "Choose a chrome or metallic finish under BASE, and keep the BASE COLOR on your own paint or the same blue.",
+    "Add a flake spec overlay with + ADD SPEC OVERLAY, with Strength about 70.",
+    "Move the zone to the top of the list, because the top zone wins overlaps, and check the preview."
+   ],
+   "controls": [
+    {
+     "label": "PICK COLOR FROM CAR",
+     "range": "eyedropper",
+     "default": "",
+     "effect": "Takes the exact accent colour from the paint.",
+     "inv": "zone.pick_color_from_car"
+    },
+    {
+     "label": "Draw box",
+     "range": "tool",
+     "default": "",
+     "effect": "Limits the zone to the rear area.",
+     "inv": "zone.draw_box"
+    }
+   ],
+   "tips": [
+    "Never guess \"the same blue\". Sample the accent that is already on the car.",
+    "Chat can do this too: name the part and the look, then check the preview."
+   ],
+   "pitfalls": [
+    "If the new zone sits below the zone that owns the accent colour, it will not show. Drag it up."
+   ],
+   "related": [
+    "zones.priority",
+    "zones.regions",
+    "zones.named_parts",
+    "recipes.flake_pearl"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.draw_box"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "doc.03.recipe_accents_on_the_rear_of_each_side_the_same_blue_as_the"
+   ],
+   "sources": [
+    "docs/ai_knowledge/03_recipes.md:11-16"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "rear accents",
+    "accents on the rear",
+    "chrome flake accents",
+    "rear stripes only",
+    "accents on the back"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "The idea",
+     "body": "Front and rear accents share a colour, so a normal colour pick catches both. Limit a new zone to the rear with a box or a named part and put it above the zone that already owns the accent so it wins that area."
+    },
+    {
+     "heading": "Sample, do not guess",
+     "body": "Pick the accent colour with PICK COLOR FROM CAR on the front accent so the zone matches exactly. Never guess \"the same blue\"."
+    },
+    {
+     "heading": "The look",
+     "body": "A chrome or metallic finish with BASE COLOR on your own paint, plus a flake spec overlay at Strength about 70."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Rear chrome-flake accent",
+     "goal": "Rear sides only",
+     "settings": {
+      "Pick": "PICK COLOR FROM CAR on the front accent",
+      "APPLY AREA": "Draw box around the rear of the left side, repeat on the right",
+      "BASE": "A chrome or metallic finish",
+      "BASE COLOR": "Your own paint",
+      "Spec overlay": "Flake, Strength 70",
+      "List": "Top"
+     },
+     "result": "The rear accents glitter and match the front colour."
+    },
+    {
+     "title": "Using a named part",
+     "goal": "Skip drawing boxes",
+     "settings": {
+      "Choose": "A car part if the car is known"
+     },
+     "result": "The zone lands exactly on the part."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does the zone not show?",
+     "a": "It sits below the zone that owns the accent. Drag it up."
+    },
+    {
+     "q": "Can Chat do this?",
+     "a": "Yes: name the part and the look, then check the preview."
+    },
+    {
+     "q": "Why sample instead of naming the colour?",
+     "a": "Naming gives a nearby colour; sampling gives the exact one."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The rear stays the old colour",
+     "cause": "The zone is below another",
+     "fix": "Move it to the top."
+    },
+    {
+     "symptom": "The accent colour does not match the front",
+     "cause": "The colour was guessed",
+     "fix": "Use PICK COLOR FROM CAR."
+    }
+   ],
+   "protips": [
+    "If there is a front accent to match, always sample it. It saves a lot of trial and error."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.finish_on_numbers",
+   "title": "Give the numbers, sponsors or stripes their own finish",
+   "domain": "recipes",
+   "summary": "Use the layer that holds them. Make a zone restricted to that layer, then choose the finish; with no layers, select them by their colour with a medium tolerance.",
+   "what": "A layered template keeps numbers, sponsors and stripes on their own layers, so a zone can be told to touch only that layer. A flat paint has no layers, so you select the colour of the numbers instead, with the tolerance wide enough to catch their soft edges.",
+   "when": [
+    "You want the numbers gold chrome, the sponsors satin, or the stripes candy.",
+    "You want sponsors to look like vinyl rather than shiny paint."
+   ],
+   "how": [
+    "In the layer list find the layer, for example Numbers, and press the button that creates a zone restricted to that layer.",
+    "Open the new zone and choose the finish under BASE.",
+    "No layers? Add a zone, use PICK COLOR FROM CAR on the number colour and set the tolerance to about 30 to 45.",
+    "Check the preview. If a nearby colour is also taken, tighten the tolerance."
+   ],
+   "controls": [
+    {
+     "label": "Create a zone restricted to this layer",
+     "range": "button",
+     "default": "",
+     "effect": "One click makes a zone that only covers that layer.",
+     "inv": "layer.make_zone"
+    },
+    {
+     "label": "RESTRICT TO LAYERS",
+     "range": "checkboxes",
+     "default": "",
+     "effect": "Limits a zone to the ticked layers.",
+     "inv": "zone.restrict_layers"
+    }
+   ],
+   "tips": [
+    "In Chat, name them: \"make the numbers gold chrome\". Numbers are only touched when you name them."
+   ],
+   "pitfalls": [
+    "Without a layer limit, a finish that brings its own colour paints over everything under the same colour."
+   ],
+   "related": [
+    "recipes.edit_one_thing",
+    "layers.lock_zone_to_layer",
+    "layers.decal_rescue",
+    "zones.restrict_layers"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "layer.make_zone"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "doc.03.recipe_make_the_numbers_sponsors_stripes_chrome_or_any_finis"
+   ],
+   "sources": [
+    "docs/ai_knowledge/03_recipes.md:17-19"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "chrome numbers",
+    "numbers chrome",
+    "sponsors chrome",
+    "finish on numbers",
+    "stripes chrome",
+    "numbers own finish",
+    "gold numbers",
+    "metallic numbers",
+    "sponsors own finish",
+    "stripes own finish"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Layered templates",
+     "body": "A layered template keeps numbers, sponsors and stripes on their own layers, so a zone can touch only that layer. In the layer list find the layer (for example Numbers) and press the button that creates a zone restricted to it, then choose the finish under BASE."
+    },
+    {
+     "heading": "Flat paints",
+     "body": "A flat paint has no layers, so select the colour of the numbers instead. Use PICK COLOR FROM CAR on the number colour and set the tolerance to about 30 to 45 so soft edges are caught. If a nearby colour is also taken, tighten the tolerance."
+    },
+    {
+     "heading": "Without a layer limit",
+     "body": "A finish that brings its own colour paints over everything under the same colour. In Chat, name them: \"make the numbers gold chrome\". Numbers are only touched when you name them."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Chrome numbers",
+     "goal": "Give the numbers a metal finish",
+     "settings": {
+      "BASE": "A chrome Foundation finish",
+      "BASE COLOR": "Use source paint",
+      "Layer list": "Create a zone restricted to the Numbers layer"
+     },
+     "result": "The numbers shine and keep their colour."
+    },
+    {
+     "title": "Numbers on a flat paint",
+     "goal": "Change number finish without layers",
+     "settings": {
+      "Zone": "PICK COLOR FROM CAR on the number colour",
+      "Tolerance": "30 to 45"
+     },
+     "result": "Only the numbers are picked."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can Chat change numbers?",
+     "a": "Yes, if you name them."
+    },
+    {
+     "q": "What tolerance on a flat paint?",
+     "a": "About 30 to 45 to catch soft edges."
+    },
+    {
+     "q": "Does it also do sponsors and stripes?",
+     "a": "Yes, the same way, using their layers."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Nearby colours also changed",
+     "cause": "Tolerance too wide",
+     "fix": "Tighten it."
+    },
+    {
+     "symptom": "Everything with that colour changed",
+     "cause": "No layer limit",
+     "fix": "Restrict the zone to the layer."
+    }
+   ],
+   "protips": [
+    "Use the layer button first when you have layers. Colour picks are the fallback, not the first choice."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.make_it_pop",
+   "title": "Make it pop",
+   "domain": "recipes",
+   "summary": "Find the biggest flat area and the strongest pair of colours. Push one to a deep glossy candy or pearl of its own colour, keep the other matte, satin or chrome, and add a faint flake.",
+   "what": "A livery pops when neighbouring areas differ in both colour and shine, not when everything gets more saturated. One glossy deep area beside a flat area reads as depth on the car, and a light flake across the body adds sparkle in the sun.",
+   "when": [
+    "The car looks flat or samey.",
+    "You want one clear change that lifts the whole design."
+   ],
+   "how": [
+    "Find the biggest area and the two colours that contrast most.",
+    "Give one of them a deep, glossy candy or pearl of its own colour with BASE COLOR set to use your paint.",
+    "Keep the other area matte or satin, or give it a chrome trim.",
+    "Add a subtle flake overlay on the body with + ADD SPEC OVERLAY, Strength 30 to 50.",
+    "Compare with the SOURCE view and stop when it reads clearly at arm's length."
+   ],
+   "controls": [
+    {
+     "label": "+ ADD SPEC OVERLAY",
+     "range": "button",
+     "default": "",
+     "effect": "A faint flake adds sparkle without changing the colour.",
+     "inv": "zone.add_spec_overlay"
+    }
+   ],
+   "tips": [
+    "Opposite colour and opposite shine beside each other is the strongest contrast.",
+    "Change one thing at a time so you can undo it cleanly."
+   ],
+   "pitfalls": [
+    "Too many glossy areas cancel each other out. Keep one hero area."
+   ],
+   "related": [
+    "recipes.candy",
+    "recipes.two_tone",
+    "recipes.flake_pearl"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [
+    "doc.03.recipe_make_it_pop"
+   ],
+   "sources": [
+    "docs/ai_knowledge/03_recipes.md:23-25",
+    "docs/ai_knowledge/08_livery_design.md:18-20",
+    "js/spec-overlays/picker.js:84"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "pop",
+    "looks flat make it better",
+    "more contrast",
+    "make my livery stand out"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Contrast of colour and shine",
+     "body": "A livery pops when neighbouring areas differ in both colour and shine, not when everything gets more saturated. One glossy deep area beside a flat area reads as depth on the car."
+    },
+    {
+     "heading": "The recipe",
+     "body": "Find the biggest area and the two colours that contrast most. Give one a deep glossy candy or pearl of its own colour (BASE COLOR set to use your paint). Keep the other matte or satin, or give it a chrome trim. Add a subtle flake overlay on the body with Strength 30 to 50."
+    },
+    {
+     "heading": "Stop early",
+     "body": "Compare with the SOURCE view and stop when it reads clearly at arm's length. Too many glossy areas cancel each other out: keep one hero area."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Candy hero beside matte",
+     "goal": "Instant depth",
+     "settings": {
+      "Area A": "Candy or Pearl, BASE COLOR: your paint",
+      "Area B": "Matte or Satin",
+      "Overlay": "Flake on the body, Strength 30 to 50"
+     },
+     "result": "A clear contrast of shine between neighbours."
+    },
+    {
+     "title": "Chrome trim",
+     "goal": "Sharpen the edges",
+     "settings": {
+      "Trim zone": "A chrome Foundation finish with Use source paint"
+     },
+     "result": "Edges look crisp."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Should I boost saturation?",
+     "a": "No. Contrast in colour and shine matters more."
+    },
+    {
+     "q": "How much flake?",
+     "a": "Subtle: Strength 30 to 50."
+    },
+    {
+     "q": "How many glossy areas?",
+     "a": "One hero area."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Everything looks the same",
+     "cause": "All areas glossy",
+     "fix": "Make the neighbour matte or satin."
+    },
+    {
+     "symptom": "Hard to undo",
+     "cause": "Several changes at once",
+     "fix": "Change one thing at a time."
+    }
+   ],
+   "protips": [
+    "View it small (zoomed out). If it still reads, it will read on track."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.undo_start_over",
+   "title": "Undo, go back and start over",
+   "domain": "recipes",
+   "summary": "Ctrl+Z takes back the last step, and every helper change has its own Undo button. To start the whole look over use Reset All Zones, or the Undo History panel to jump back several steps.",
+   "what": "There are three levels. One step back: Ctrl+Z or the Undo button under a helper answer. Several steps: press Undo more than once, with the Undo History list of recent actions to see where you are. A clean slate: Reset All Zones, which returns the list to the default five zones. The helper cannot delete zones itself; it mutes them and tells you where to delete.",
+   "when": [
+    "The last change was wrong.",
+    "You want the base file back and clear zones."
+   ],
+   "how": [
+    "Press Ctrl+Z, or press Undo under the helper's answer, to take back one step.",
+    "Open Undo History to see the list of recent actions.",
+    "To begin again, press Reset All Zones in the zones list.",
+    "Never mute every zone: a render needs at least one zone.",
+    "Save a project first if you might want the current look back."
+   ],
+   "controls": [
+    {
+     "label": "Undo",
+     "range": "Ctrl+Z",
+     "default": "",
+     "effect": "Takes back the last step.",
+     "inv": "pro.history.undo"
+    },
+    {
+     "label": "Reset All Zones",
+     "range": "button",
+     "default": "",
+     "effect": "Back to the default five zones.",
+     "inv": "pro.zones.reset_all_zones"
+    }
+   ],
+   "tips": [
+    "Undo History lists your recent actions."
+   ],
+   "pitfalls": [
+    "Undoing many steps after you reset by hand can bring back an old state. When you want the base file, reset instead."
+   ],
+   "related": [
+    "tools.undo_redo",
+    "history.panel",
+    "workflows.first_paint"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.zones.reset_all_zones"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "doc.03.recipe_undo_go_back",
+    "doc.03.recipe_start_over_reset"
+   ],
+   "sources": [
+    "docs/ai_knowledge/03_recipes.md:29-31",
+    "docs/ai_knowledge/03_recipes.md:35-36"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "reset everything",
+    "begin again",
+    "undo start over"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Three levels",
+     "body": "One step back: Ctrl+Z or the Undo button under a helper answer. Several steps: press Undo more than once, with the Undo History list of recent actions to see where you are. A clean slate: Reset All Zones, which returns the list to the default five zones."
+    },
+    {
+     "heading": "What the helper cannot do",
+     "body": "The helper cannot delete zones itself; it mutes them and tells you where to delete. Never mute every zone: a render needs at least one zone."
+    },
+    {
+     "heading": "Caution",
+     "body": "Undoing many steps after you reset by hand can bring back an old state. When you want the base file, reset instead. Save a project first if you might want the current look back."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Undo one step",
+     "goal": "Take back the last change",
+     "settings": {
+      "Key": "Ctrl+Z",
+      "or": "Undo under the helper's answer"
+     },
+     "result": "The last change is gone."
+    },
+    {
+     "title": "Start over",
+     "goal": "Clean slate",
+     "settings": {
+      "Save": "A project first",
+      "Press": "Reset All Zones"
+     },
+     "result": "The default five zones remain."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Where is Undo History?",
+     "a": "Open it to see the list of recent actions."
+    },
+    {
+     "q": "Can the helper delete a zone?",
+     "a": "No. It mutes it and tells you to delete it."
+    },
+    {
+     "q": "What does Reset All Zones return to?",
+     "a": "The default five zones."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "An old state came back",
+     "cause": "Many undo steps after a hand reset",
+     "fix": "Use Reset All Zones."
+    },
+    {
+     "symptom": "Render refuses",
+     "cause": "Every zone is muted",
+     "fix": "Unmute at least one zone."
+    }
+   ],
+   "protips": [
+    "Save a project before any big experiment. It costs a second and removes the fear of trying things."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.change_body_keep_numbers",
+   "title": "Change the whole car and keep the numbers and sponsors",
+   "domain": "recipes",
+   "summary": "Put the change on the body paint layer only, such as Car Paint, so numbers, tape and logos sit on other layers and stay exactly as they are.",
+   "what": "On a layered template the body and the decals are separate layers. A zone limited to the body layer cannot touch the decals. A whole-car finish that brings its own colour (colour shift, candy, holographic) with no layer limit paints over every number and logo.",
+   "when": [
+    "You want a new body colour or finish with the decals unchanged.",
+    "A previous whole-car look wiped the numbers."
+   ],
+   "how": [
+    "In the layer list find the body layer (named like Car Paint or Body).",
+    "Add or edit the zone that covers the car and tick only that layer under RESTRICT TO LAYERS.",
+    "Give it the colour and finish you want.",
+    "Check the numbers and sponsors are still crisp in the preview. If you actually want them changed too, include their layers."
+   ],
+   "controls": [
+    {
+     "label": "RESTRICT TO LAYERS",
+     "range": "checkboxes",
+     "default": "",
+     "effect": "Limits a zone to the ticked layers.",
+     "inv": "zone.restrict_layers"
+    }
+   ],
+   "tips": [
+    "Chat does this by default and says it kept your numbers and sponsors."
+   ],
+   "pitfalls": [
+    "A flat paint has no layers; use the colour pick instead, and check the numbers after."
+   ],
+   "related": [
+    "recipes.edit_one_thing",
+    "support.numbers_vanished",
+    "layers.lock_zone_to_layer"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.restrict_layers"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "doc.03.recipe_change_the_car_the_body_the_whole_car_keep_the_number"
+   ],
+   "sources": [
+    "docs/ai_knowledge/03_recipes.md:32-34"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "change the body keep numbers",
+    "whole car keep sponsors",
+    "recolour the car keep the numbers",
+    "change body colour keep numbers",
+    "recolour car keep sponsors",
+    "repaint body only",
+    "whole car new colour keep sponsors"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Body layer only",
+     "body": "On a layered template the body and the decals are separate layers. A zone limited to the body layer (named like Car Paint or Body) cannot touch the decals. A whole-car finish that brings its own colour (colour shift, candy, holographic) with no layer limit paints over every number and logo."
+    },
+    {
+     "heading": "Steps",
+     "body": "In the layer list find the body layer. Add or edit the zone that covers the car and tick only that layer under RESTRICT TO LAYERS. Give it the colour and finish. Check the numbers and sponsors are still crisp. If you want them changed too, include their layers."
+    },
+    {
+     "heading": "Chat and flat paints",
+     "body": "Chat does this by default and says it kept your numbers and sponsors. A flat paint has no layers; use the colour pick instead and check the numbers after."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Recolour the body only",
+     "goal": "New body colour, decals untouched",
+     "settings": {
+      "RESTRICT TO LAYERS": "Car Paint only",
+      "Colour / finish": "As wanted"
+     },
+     "result": "The body changes; numbers and sponsors stay crisp."
+    },
+    {
+     "title": "Candy body",
+     "goal": "A whole-car candy without hiding the numbers",
+     "settings": {
+      "BASE": "Candy",
+      "RESTRICT TO LAYERS": "Car Paint only"
+     },
+     "result": "Candy only on the body."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why did my numbers vanish?",
+     "a": "The zone had no layer limit and a finish with its own colour."
+    },
+    {
+     "q": "Can I include the numbers on purpose?",
+     "a": "Yes, tick their layers too."
+    },
+    {
+     "q": "What if there are no layers?",
+     "a": "Use the colour pick and check the numbers afterwards."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Numbers covered",
+     "cause": "No RESTRICT TO LAYERS",
+     "fix": "Tick the body layer only."
+    },
+    {
+     "symptom": "Sponsors changed",
+     "cause": "The zone reaches every layer",
+     "fix": "Restrict it."
+    }
+   ],
+   "protips": [
+    "Always look at the numbers in the CAR view after a body-wide change. It takes five seconds."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "id": "recipes.add_race_number",
+   "title": "Put a race number on your car",
+   "domain": "recipes",
+   "summary": "Shokker has no box to type a car number. Either let iRacing stamp your number (tick Sim-Stamped Number) or put your own number art on the paint as a layer and tick Custom Number.",
+   "what": "A race number reaches the car in one of two ways. Sim-Stamped Number: Shokker writes car_<ID>.tga and iRacing stamps the number (and its sponsors) on top, which is what iRacing does when Hide Car Numbers is OFF. Custom Number: the number is part of your paint, Shokker writes car_num_<ID>.tga, and iRacing uses that file only when Hide Car Numbers is ON. Your own number is a picture: if your template is a layered PSD it may have a Numbers layer you can recolour (not every paint has numbers drawn), and a new number is added as a transparent PNG with + Layer in the layer list. There is no Text button in the main tool row.",
+   "when": [
+    "You want a number on the doors, roof or hood.",
+    "You want iRacing to put your league number on for you.",
+    "You see the number twice or not at all."
+   ],
+   "how": [
+    "1. Decide who draws the number. Let iRacing do it: tick Sim-Stamped Number next to your iRacing User ID at the top. Draw it yourself: tick Custom Number.",
+    "2. Your own number: if your PSD has a Numbers layer, press the zone icon on that layer and give it a colour with BASE COLOR set to Use solid color, or a finish.",
+    "3. A new number: make it as a transparent PNG (or in your PSD), open the layer list in the right column and press + Layer, then place it with Move (V) and size it with Transform (Ctrl+T) in LAYER mode.",
+    "4. In iRacing set Graphics > Hide Car Numbers to match: ON for Custom Number, OFF for Sim-Stamped Number.",
+    "5. Render, then press Ctrl+R in iRacing to reload the paint."
+   ],
+   "controls": [
+    {
+     "label": "Custom Number",
+     "range": "on / off (exclusive with Sim-Stamped)",
+     "default": "on",
+     "effect": "Your paint carries the number; writes car_num_<ID>.tga.",
+     "inv": "useCustomNumberCheckbox"
+    },
+    {
+     "label": "Sim-Stamped Number",
+     "range": "on / off (exclusive with Custom)",
+     "default": "off",
+     "effect": "iRacing stamps the number on top; writes car_<ID>.tga.",
+     "inv": "useSimStampedCheckbox"
+    }
+   ],
+   "tips": [
+    "Only one of the two boxes can be on; clicking the ticked one does nothing.",
+    "Put the number zone above the body zone in the zone list so it wins."
+   ],
+   "pitfalls": [
+    "Seeing the number twice means a number-stamp layer of the template was left visible while iRacing also stamps one.",
+    "Shokker cannot read iRacing's Hide Car Numbers setting; if they disagree iRacing shows your paint-shop colours instead."
+   ],
+   "related": [
+    "preview_render.number_modes",
+    "ui_shell.number_modes",
+    "help_howto_3.recolour_numbers",
+    "recipes.finish_on_numbers",
+    "help_howto_1.add_text",
+    "help_howto_2.move_logo"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "useCustomNumberCheckbox"
+    },
+    {
+     "do": "control",
+     "id": "useSimStampedCheckbox"
+    }
+   ],
+   "figures": [
+    "g10_file_naming"
+   ],
+   "covers": [],
+   "sources": [
+    "paint-booth-v2.html:1797-1804",
+    "server.py:5638",
+    "scripts/ai_atlas/ui_map.json:12267",
+    "scripts/ai_atlas/ui_map.json:11780",
+    "scripts/ai_atlas/ui_map.json:13248",
+    "docs/ai_knowledge/10_support_troubleshooting.md:13"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-05",
+   "level": "beginner",
+   "aliases": [
+    "add a number",
+    "how do i add a number",
+    "put a number on my car",
+    "race number",
+    "car number on the doors",
+    "number on the car",
+    "add numbers to the livery",
+    "door number",
+    "make a number",
+    "add numbers to my car"
+   ],
+   "deep": [
+    {
+     "heading": "Two files, one setting",
+     "body": "The two boxes only choose the file name. Custom Number writes car_num_<ID>.tga and Sim-Stamped Number writes car_<ID>.tga. iRacing picks between them with its own Graphics > Hide Car Numbers switch: ON loads car_num_<ID>.tga, OFF loads car_<ID>.tga. Shokker starts with Custom Number ticked."
+    },
+    {
+     "heading": "Where a number picture comes from",
+     "body": "Shokker paints colours, finishes and spec onto pixels that already exist; it does not type letters. A number is therefore a picture: the Numbers layer of your template, or a transparent PNG you add with + Layer. Once it is a layer you can move, size, recolour it and give it its own finish like any other layer."
+    }
+   ],
+   "examples": [
+    {
+     "title": "League number from iRacing",
+     "goal": "Let iRacing put the session number on",
+     "settings": {
+      "Shokker": "Sim-Stamped Number",
+      "iRacing Graphics": "Hide Car Numbers OFF"
+     },
+     "result": "iRacing loads car_<ID>.tga and stamps the number on top of your paint."
+    },
+    {
+     "title": "Your own gold number",
+     "goal": "A custom number in your own style",
+     "settings": {
+      "Layer list": "+ Layer > number.png",
+      "Zone on that layer": "BASE COLOR = Use solid color (gold)",
+      "Shokker": "Custom Number",
+      "iRacing Graphics": "Hide Car Numbers ON"
+     },
+     "result": "iRacing loads car_num_<ID>.tga with your number painted in."
+    }
+   ],
+   "combos": [
+    {
+     "with": "recipes.finish_on_numbers",
+     "why": "Once the number is its own layer, give it chrome or candy without touching the body."
+    },
+    {
+     "with": "help_howto_2.move_logo",
+     "why": "Move (V) and Transform (Ctrl+T) place and size the number."
+    }
+   ],
+   "faq": [
+    {
+     "q": "How do I put a number on my car?",
+     "a": "Tick Sim-Stamped Number to let iRacing stamp it, or add your own number picture with + Layer in the layer list and tick Custom Number."
+    },
+    {
+     "q": "Where do I type my car number?",
+     "a": "Nowhere in Shokker. The number either comes from iRacing (Sim-Stamped Number) or from number art on your paint (Custom Number)."
+    },
+    {
+     "q": "Can I change the colour of the numbers on my template?",
+     "a": "Yes. Press the zone icon on the Numbers layer and set BASE COLOR to Use solid color, or give it a finish."
+    },
+    {
+     "q": "Why do I see two numbers?",
+     "a": "A number-stamp layer of the template was left visible while iRacing also stamps one. Hide that layer or switch to Custom Number with Hide Car Numbers ON."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "No number at all in iRacing",
+     "cause": "Custom Number is ticked but the paint has no number art.",
+     "fix": "Add a number layer, or tick Sim-Stamped Number and set Hide Car Numbers OFF."
+    },
+    {
+     "symptom": "iRacing shows paint-shop colours, not my paint",
+     "cause": "The Shokker box and iRacing's Hide Car Numbers disagree, so iRacing finds no file.",
+     "fix": "Make them agree (Custom = ON, Sim-Stamped = OFF), restart iRacing if you changed it, render, Ctrl+R."
+    }
+   ],
+   "protips": [
+    "Not sure which file iRacing wants? Render once in each mode: both files stay in the folder and iRacing picks the one it needs."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-05",
+   "controls": [],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "id": "recipes.named_looks",
+   "title": "Tri-coat, forged carbon, anodized, blackout trim and bug splatter: getting those looks",
+   "domain": "recipes",
+   "level": "beginner",
+   "summary": "Tri-Coat Pearl, Forged Carbon Visible, Forged Composite, Anodized, Blackout, Blackout Ops and Rally Mud are real finishes, but none of them is listed in the Base Material picker: ask the AI copilot for them by name. Bug splatter has no finish of its own; Rally Mud and wear are the nearest.",
+   "what": "Shokker's finishes carry names, so a look you know from a real car is often one request away. These particular looks are real finishes but are not listed in the Base Material picker, so you reach them by asking the AI copilot (or Chat) for them by name. Tri-Coat Pearl is a three-stage pearl: a pale pearl white with fine sparkle and a faint colour shift. Forged Carbon Visible is charcoal with broad organic fibre swirls under a wet clearcoat; Forged Composite is its quieter relative, close to plain dark charcoal with faint marbling and a satin sheen. Anodized is a gritty, matte, deep-blue dyed metal. Blackout and Blackout Ops are murdered-out flat blacks, which is what blackout trim is made of. There is no bug-splatter finish: Rally Mud is a dark charcoal-brown coat with dry mud spray and dirt splatter, matte and stage-worn, and wear adds chips and a duller clearcoat. Anything a finish cannot do, such as real bug marks, can be painted as artwork on a layer. If you would rather stay inside the picker, the nearest listed finishes are Pearl and Satin Pearl, Matte and Flat Black (Foundation shelf), and Forged Carbon, Anodised and Anodized Titanium (type the name in the picker search).",
+   "when": [
+    "You know the name of a look from a real car and want it on yours.",
+    "You searched the finish picker for a name such as Tri-Coat Pearl or Blackout Ops and it was not there.",
+    "You want trim, grilles or badges blacked out."
+   ],
+   "how": [
+    "1. Make or pick the zone for the area (whole body, or only the trim or hood). A new zone lands at the bottom of the zone list.",
+    "2. Open the AI panel (the AI button at the bottom right of PRO, or CHAT at the top) and ask for the finish by name, for example \"put Forged Carbon Visible on the hood\" or \"Blackout Ops on the trim\".",
+    "3. Look at the preview and the AI's answer; press Undo under the answer if it is not what you wanted.",
+    "4. For your own colour on Anodized, set that zone's BASE COLOR to Use solid color and pick the colour; the gritty Anodized otherwise keeps its own deep blue.",
+    "5. Render and check it in iRacing; flat blacks and forged carbon read very differently in sunlight than in the preview."
+   ],
+   "tips": [
+    "Blackout trim is a zone, not a finish setting: put Blackout or Blackout Ops on a zone that covers only the trim, then drag that zone's handle (the three-line icon in the ZONES column) above the body zone so it wins."
+   ],
+   "pitfalls": [
+    "Searching the Base Material picker for these names finds nothing, because the picker does not list them; ask the AI panel by name instead.",
+    "The gritty Anodized repaints the area with its own deep blue; set BASE COLOR to Use solid color when you want another colour.",
+    "Rally Mud is a whole-coat look, not single bug marks; for a few splats, paint them on a layer."
+   ],
+   "related": [
+    "finishes.picker_library_browser",
+    "recipes.carbon_hood",
+    "recipes.flake_pearl",
+    "recipes.weathered",
+    "finishes.wear",
+    "recipes.matte_black",
+    "help_howto_1.finish_one_part"
+   ],
+   "sources": [
+    "paint-booth-0-finish-data.js:1070",
+    "paint-booth-0-finish-data.js:1157",
+    "paint-booth-0-finish-data.js:720",
+    "paint-booth-0-finish-data.js:559",
+    "paint-booth-0-finish-data.js:709",
+    "paint-booth-0-finish-data.js:593",
+    "paint-booth-0-finish-data.js:817",
+    "paint-booth-0-finish-data.js:993",
+    "engine/base_registry_data.py:569",
+    "engine/base_registry_data.py:619",
+    "engine/base_registry_data.py:433",
+    "paint-booth-v2.html:4788-4866",
+    "scripts/ai_atlas/enc_picker_hidden.json:1",
+    "engine/base_registry_data.py:1623"
+   ],
+   "aliases": [
+    "tri coat",
+    "tri coat pearl",
+    "three stage pearl",
+    "3 stage paint",
+    "forged carbon",
+    "forged carbon fiber",
+    "lamborghini forged carbon",
+    "chopped carbon",
+    "anodized",
+    "anodised",
+    "anodized aluminium",
+    "dyed metal",
+    "blackout trim",
+    "black out the trim",
+    "chrome delete",
+    "blacked out badges",
+    "bug splatter",
+    "bugs on the front",
+    "bug guts",
+    "mud splatter",
+    "dirty rally car",
+    "named finishes",
+    "factory paint names"
+   ],
+   "deep": [
+    {
+     "heading": "Which name is which finish",
+     "body": "Tri-Coat Pearl: a pale pearl white with fine sparkle and a faint colour shift. Forged Carbon Visible: charcoal with broad organic fibre swirls under a wet clearcoat. Forged Composite: a darker, quieter forged look, almost plain dark charcoal with a satin sheen; its marbling is faint at car scale. Anodized: a deep, matte, gritty dyed-metal blue with no sparkle. Blackout: a flat, near-total-absorption black. Blackout Ops: near-flat black with a fine chalky texture. Rally Mud: dark paint with a dry mud spray, matte and stage-worn."
+    },
+    {
+     "heading": "Why you ask by name",
+     "body": "The Base Material picker lists only part of the finish catalogue. Finishes it does not list can still be applied by name through the AI panel, Chat or the MCP tools. When no finish carries a brand name, search the picker for the material instead (pearl, carbon, anodised, matte), then steer the colour with the zone's hue, saturation and brightness. Effects that are really artwork, such as bug marks, stickers or a hand-drawn graphic, belong on a layer: paint them in your PSD or with the RETOUCH brushes and give that layer its own zone."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Blacked-out trim",
+     "goal": "Satin body, flat black trim",
+     "settings": {
+      "Zone 1 (trim only)": "Blackout Ops, asked for by name",
+      "Zone 2 (body)": "your body finish",
+      "Zone order": "trim zone dragged above the body zone"
+     },
+     "result": "The trim reads as flat black while the body keeps its own shine."
+    },
+    {
+     "title": "Forged carbon hood",
+     "goal": "A forged-carbon hood on a gloss car",
+     "settings": {
+      "Zone over the hood": "Forged Carbon Visible, asked for by name",
+      "Rest of the car": "gloss colour"
+     },
+     "result": "The hood shows broad charcoal swirls under a wet clear."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Is there a tri-coat pearl?",
+     "a": "Yes, Tri-Coat Pearl exists, but it is not listed in the Base Material picker: ask the AI panel for it by name. The nearest listed finishes are Pearl and Satin Pearl on the Foundation shelf."
+    },
+    {
+     "q": "Can I get forged carbon?",
+     "a": "Yes: ask the AI panel for Forged Carbon Visible, or the quieter Forged Composite. The picker itself lists a Forged Carbon finish (type forged in its search)."
+    },
+    {
+     "q": "Is there a bug splatter finish?",
+     "a": "No. Rally Mud and wear are the nearest; real bug marks are artwork on a layer."
+    },
+    {
+     "q": "How do I black out the trim?",
+     "a": "Give a zone that covers only the trim the Blackout or Blackout Ops finish (ask the AI panel by name) and keep it above the body zone."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The picker search finds no Tri-Coat Pearl, Blackout or Rally Mud.",
+     "cause": "Those finishes are not listed in the Base Material picker.",
+     "fix": "Ask the AI panel for the finish by name."
+    },
+    {
+     "symptom": "The anodized area turned blue.",
+     "cause": "The gritty Anodized brings its own deep blue colour.",
+     "fix": "Set BASE COLOR to Use solid color and pick your colour."
+    },
+    {
+     "symptom": "The whole car went black instead of the trim.",
+     "cause": "The Blackout zone covers the body.",
+     "fix": "Draw the zone over the trim only (box, lasso or a trim layer) and drag it above the body zone."
+    }
+   ],
+   "protips": [
+    "Not sure a finish is in the picker? Ask the AI panel for it by name: it can apply finishes the picker does not list."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-05",
+   "controls": [],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "id": "recipes.glow_look",
+   "title": "Glow-in-the-dark and light-up paint: what is possible",
+   "domain": "recipes",
+   "level": "beginner",
+   "summary": "A paint cannot give off light: iRacing has no glow-in-the-dark or emissive paint, and the spec map's lighting mask can only turn lighting down. For a glowing look, put a bright finish such as Arcade: Phosphor Green, Bioluminescent Wave or Firefly Lantern on a dark ground.",
+   "what": "Shokker writes two pictures for iRacing: the paint (colours) and the spec map (metal, roughness, clearcoat and a lighting mask). None of them can make the car light up at night. The lighting mask in the spec's alpha only decides how much of iRacing's own lighting a spot gets: 255 is normal and 0 switches the lighting response off, which makes a spot look flat, not lit. What you can do is fake a glow with colour and contrast: very bright small shapes on a very dark ground read as glowing. Several finishes are built that way, for example Arcade: Phosphor Green (tiny lime phosphor grains with an emerald afterglow), Arcade: Vector Glow (cyan, violet and hot-pink wireframe fragments), Bioluminescent Wave (ocean bioluminescence with electric-blue wave glow) and Firefly Lantern (light-organ modules that glow like a firefly). For artwork, Layer Effects has an Outer Glow that draws a soft halo round a layer.",
+   "when": [
+    "You want a paint that glows in the dark or lights up at night.",
+    "You want neon or UV-looking paint.",
+    "You want a logo or number with a glowing edge."
+   ],
+   "how": [
+    "1. Make a zone for the area (+ Add Zone; use APPLY AREA to draw a box if it is only part of the car).",
+    "2. Under BASE press Base Material and type glow, phosphor or neon in the search box.",
+    "3. Pick a glow finish such as Arcade: Phosphor Green, Arcade: Vector Glow, Bioluminescent Wave or Firefly Lantern and keep BASE COLOR on Use finish's own color.",
+    "4. Keep the rest of the car dark: glow looks only read against black or deep navy.",
+    "5. For a glowing logo or number, select its layer, press STROKE FX on the layer card and tick Outer Glow, then Apply.",
+    "6. Render and check it in iRacing at night and in daylight; it will look painted, not lit."
+   ],
+   "tips": [
+    "Keep the bright parts small; a whole car in neon green looks pastel, not glowing.",
+    "Outer Glow size runs from 1 to 50 and opacity from 0 to 100; a small size reads as a crisp neon edge."
+   ],
+   "pitfalls": [
+    "Setting the lighting mask (alpha) to 0 does not make a spot glow: it removes the lighting response, so the spot looks flat.",
+    "Glow finishes bring their own colours; switching BASE COLOR to a solid colour can lose the glowing contrast."
+   ],
+   "related": [
+    "workflows.platform_and_limits",
+    "layers.effects",
+    "spec.channel_a_mask",
+    "ideas.neon_night",
+    "finishes.picker_library_browser"
+   ],
+   "sources": [
+    "docs/ai_knowledge/05_design_and_taste.md:31",
+    "docs/ai_knowledge/how_do_i.md:793",
+    "paint-booth-0-finish-data.js:312",
+    "paint-booth-0-finish-data.js:317",
+    "paint-booth-0-finish-data.js:591",
+    "paint-booth-0-finish-data.js:690",
+    "paint-booth-v2.html:5179-5209",
+    "paint-booth-2-state-zones.js:1910"
+   ],
+   "aliases": [
+    "glow in the dark",
+    "glow in the dark paint",
+    "glowing paint",
+    "light up paint",
+    "make the car glow",
+    "make my car glow at night",
+    "luminous paint",
+    "emissive paint",
+    "self illuminating paint",
+    "phosphorescent paint",
+    "uv paint",
+    "blacklight paint",
+    "glow at night",
+    "can paint glow"
+   ],
+   "deep": [
+    {
+     "heading": "Why a paint cannot glow",
+     "body": "iRacing lights the car itself: sun, sky and track lights. The paint says what colour each spot is and the spec map says how metal, rough and glossy it is. There is no channel that adds light, so no file Shokker writes can make the car shine on its own in the dark."
+    },
+    {
+     "heading": "How the glow finishes fake it",
+     "body": "Glow finishes put small, very bright shapes on a near-black field. Your eye reads a bright spot next to black as a light source, the same way neon signs look in photos. They look strongest at night and on dark cars, and calmer in bright sun."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Phosphor stripe",
+     "goal": "A glowing green stripe on a black car",
+     "settings": {
+      "Zone 1 (stripe box)": "Arcade: Phosphor Green",
+      "Zone 2 (body)": "a flat black finish",
+      "BASE COLOR (stripe)": "Use finish's own color"
+     },
+     "result": "The stripe reads as glowing lime grain against the black body."
+    },
+    {
+     "title": "Neon number edge",
+     "goal": "A number with a glowing rim",
+     "settings": {
+      "Layer": "your number art",
+      "STROKE FX": "Outer Glow on, small size"
+     },
+     "result": "The number gets a soft coloured halo; it is still painted, so it looks the same day and night."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can I make a glow-in-the-dark paint?",
+     "a": "No. iRacing has no emissive paint. Use a bright glow finish on a dark ground for the look."
+    },
+    {
+     "q": "Does setting the alpha or lighting mask to zero make it glow?",
+     "a": "No. Zero switches iRacing's lighting response off for that spot, so it looks flat and unlit."
+    },
+    {
+     "q": "Which finishes look like they glow?",
+     "a": "Search glow, phosphor or neon in Base Material: for example Arcade: Phosphor Green, Arcade: Vector Glow, Bioluminescent Wave and Firefly Lantern."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The glow finish looks washed out.",
+     "cause": "It sits on a light car or next to bright colours.",
+     "fix": "Keep the surrounding paint black or deep navy and the glowing area small."
+    },
+    {
+     "symptom": "The area turned flat and grey in iRacing.",
+     "cause": "The lighting mask was set to 0 there.",
+     "fix": "Put the alpha back to 255; use a glow finish for the look instead."
+    }
+   ],
+   "protips": [
+    "Pair one glow colour with black and nothing else: cyan or lime on black reads as light from across the track."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-05",
+   "controls": [],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "id": "recipes.number_fonts",
+   "title": "Number fonts and number style",
+   "domain": "recipes",
+   "level": "beginner",
+   "summary": "Shokker has no font or text tool for numbers. With Sim-Stamped Number iRacing draws the number in its own style; for your own font, make the number as a transparent PNG in another editor, add it with + Layer and tick Custom Number.",
+   "what": "A race number reaches the car in one of two ways. Sim-Stamped Number writes car_ID.tga and iRacing stamps the number on top in its own style; Shokker has no setting for that font. Custom Number writes car_num_ID.tga and the number is part of your paint, so it can be any font you like, but you make the number art outside Shokker: there is no Text button in the main tool row. Add the finished number as a transparent PNG with + Layer, place it with Move (V) and Transform (Ctrl+T), and give it an outline or shadow with Layer Effects (STROKE FX on the layer card). iRacing loads car_num_ID.tga only when its Hide Car Numbers option is ON.",
+   "when": [
+    "You want a different font for your race number.",
+    "The stamped number does not match your design.",
+    "You want an outlined or shadowed number."
+   ],
+   "how": [
+    "1. Decide who draws the number: iRacing (Sim-Stamped Number) or you (Custom Number), next to your iRacing User ID at the top.",
+    "2. Your own font: type the number in Photoshop or another editor in the font you want and save it as a transparent PNG.",
+    "3. In Shokker open the layer list, press + Layer and pick the PNG; place it with Move (V) and size it with Transform (Ctrl+T) in LAYER mode.",
+    "4. For an outline or shadow, press STROKE FX on the layer card, tick Stroke or Drop Shadow and Apply.",
+    "5. Tick Custom Number, render, and set Hide Car Numbers ON in iRacing's graphics settings (restart iRacing after changing it)."
+   ],
+   "tips": [
+    "Make the number art large; scaling a small PNG up makes it blurry."
+   ],
+   "pitfalls": [
+    "With Sim-Stamped Number on, iRacing adds its own number; do not also paint one.",
+    "Custom Number with Hide Car Numbers OFF means iRacing finds no file and shows paint-shop colours."
+   ],
+   "related": [
+    "recipes.add_race_number",
+    "preview_render.number_modes",
+    "layers.effects",
+    "help_howto_1.add_text",
+    "help_howto_2.number_type"
+   ],
+   "sources": [
+    "paint-booth-v2.html:1797-1801",
+    "js/spb-support-answers.js:28",
+    "docs/ai_knowledge/10_support_troubleshooting.md:13",
+    "docs/ai_knowledge/10_support_troubleshooting.md:23",
+    "paint-booth-3-canvas.js:21616"
+   ],
+   "aliases": [
+    "number font",
+    "number fonts",
+    "font for numbers",
+    "change the number font",
+    "number style",
+    "racing number font",
+    "font",
+    "fonts",
+    "typeface",
+    "number outline",
+    "custom number font",
+    "stamped number font",
+    "number lettering style"
+   ],
+   "deep": [
+    {
+     "heading": "Two ways, two kinds of font",
+     "body": "Stamped numbers are iRacing's: they follow iRacing's own number style, and Shokker only chooses the file name that tells iRacing to stamp. Custom numbers are artwork in your paint, so any font you can type in a photo editor works, as long as you bring the number in as a picture."
+    },
+    {
+     "heading": "Making number art that looks sharp",
+     "body": "Type the number big, export it as a transparent PNG, and size it down in Shokker rather than up. Outlines and shadows from Layer Effects stay editable, so you can change their colour later without remaking the number."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Retro number",
+     "goal": "A custom font with a black outline",
+     "settings": {
+      "Number art": "transparent PNG in your font",
+      "STROKE FX": "Stroke on, black",
+      "Number switch": "Custom Number"
+     },
+     "result": "Your own number font on the doors, with iRacing's stamp off."
+    },
+    {
+     "title": "Let iRacing do it",
+     "goal": "Standard series number",
+     "settings": {
+      "Number switch": "Sim-Stamped Number",
+      "Paint": "no number drawn"
+     },
+     "result": "iRacing stamps the number in its own style."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can I change the font of my number in Shokker?",
+     "a": "Not with a font menu. Make the number in your font as a transparent PNG and add it with + Layer, then tick Custom Number."
+    },
+    {
+     "q": "Which font does a sim-stamped number use?",
+     "a": "iRacing's own number style; Shokker has no setting for it."
+    },
+    {
+     "q": "Can I outline my number?",
+     "a": "Yes: Layer Effects (STROKE FX) adds a stroke or drop shadow to the number layer."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Two numbers show on the car.",
+     "cause": "You painted a number and Sim-Stamped Number is on.",
+     "fix": "Tick Custom Number and set Hide Car Numbers ON in iRacing, or remove your painted number."
+    },
+    {
+     "symptom": "The number edges look soft.",
+     "cause": "A small PNG was scaled up.",
+     "fix": "Export the number art larger and scale it down in Shokker."
+    }
+   ],
+   "protips": [
+    "Keep the number art on its own layer with its effects; recolouring or moving it later is then one step."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  }
+ ]
+}

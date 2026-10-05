@@ -1,0 +1,301 @@
+{
+  "workItem": "W120 strict source-identity guard v2 plus current-browser-file supplement",
+  "status": "PASS_PRIVATE_CONTRACT",
+  "sourcePins": {
+    "proAI": {
+      "path": "_easy_claude_work/ai14h_final_source_identity_candidate/browser-file-v2/spb-pro-ai.js",
+      "sha256": "FB63F5906E1C9FC9D49150F571D64FDE640E0A4630319C418FE4F9C2E7E5413A",
+      "guard": "durablePartMemorySourceIdentityCurrent(kind, fingerprint)"
+    },
+    "partMemory": {
+      "path": "_easy_claude_work/ai14h_generation3_audit/frozen-runtime11/js/spb-ai-part-memory.js",
+      "sha256": "6E0D1E1466FECA847D3A1C3300F32779BA610F3B6C72C7904A6C8FD97A6B3652"
+    },
+    "partMemoryProject": {
+      "path": "_easy_claude_work/ai14h_generation3_audit/frozen-runtime11/js/spb-ai-part-memory-project.js",
+      "sha256": "FFF0127A7570C3FA8EAF2AD431F1CE2717763A2CD5B1688B15D18CC4F3C98D17"
+    },
+    "canvas": {
+      "path": "_easy_claude_work/ai14h_generation3_audit/frozen-runtime11/paint-booth-3-canvas.js",
+      "sha256": "CB4CC4679F69CBE206E02DD512C7F197F971482B6BDB088E5B78A2F397D3CDC9",
+      "sourceKindGetter": true,
+      "fileByteMarker": true
+    }
+  },
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w120_part_memory_source_identity/fresh-oracle.json",
+    "sha256": "E4ED34FF66A61AF3E31788D9ED69238785955F069A18E791152C0D17BE9AC5C1",
+    "cases": 12,
+    "frozenBeforeDynamicReplay": true
+  },
+  "loaderSupplement": {
+    "path": "_easy_claude_work/ai14h_w120_part_memory_source_identity/loader-supplement.json",
+    "sha256": "5B0D7D1B8300CB840C0D424EAF5BD8CB3B93244992E77474CBABDB4398AA91CE",
+    "cases": 6
+  },
+  "exercise": "Extracted actual Runtime11 durable source gate; executed actual frozen PartMemoryProject.createRuntime + capture/stage/rebindAfterCommit and real part-memory saveRecord/prepareRestore with controlled valid unique-owner/current-mask proof. I/O and app UI were not called.",
+  "summary": {
+    "cases": 17,
+    "captured": 6,
+    "restored": 5,
+    "policyMismatches": 0,
+    "currentSessionEditGateNotExercised": true,
+    "providers": 0,
+    "native": 0,
+    "serverWrites": 0
+  },
+  "rows": [
+    {
+      "id": "layered-psd-file-sha",
+      "kind": "layered",
+      "path": "C:/paint/car.psd",
+      "fingerprintPrefix": "file-sha256:aaaaaaaaaaaa",
+      "expectedPolicy": "allow",
+      "guardAllows": true,
+      "capture": true,
+      "schemaHasOnlyPathFingerprintDims": true,
+      "restore": true,
+      "rejected": 0,
+      "returnedFingerprint": "file-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "id": "layered-psd-composite-only",
+      "kind": "layered",
+      "path": "C:/paint/car.psd",
+      "fingerprintPrefix": "composite-sha256:bbbbbbb",
+      "expectedPolicy": "deny",
+      "guardAllows": false,
+      "capture": false,
+      "schemaHasOnlyPathFingerprintDims": false,
+      "restore": false,
+      "rejected": 0,
+      "returnedFingerprint": null
+    },
+    {
+      "id": "flat-tga-new-header-attested",
+      "kind": "flat",
+      "path": "C:/paint/car.tga",
+      "fingerprintPrefix": "file-sha256:cccccccccccc",
+      "expectedPolicy": "allow",
+      "guardAllows": true,
+      "capture": true,
+      "schemaHasOnlyPathFingerprintDims": true,
+      "restore": true,
+      "rejected": 0,
+      "returnedFingerprint": "file-sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    {
+      "id": "browser-flat-file-attested",
+      "kind": "flat-file",
+      "path": "browser-file:car.tga",
+      "fingerprintPrefix": "file-sha256:dddddddddddd",
+      "expectedPolicy": "allow",
+      "guardAllows": true,
+      "capture": true,
+      "schemaHasOnlyPathFingerprintDims": true,
+      "restore": true,
+      "rejected": 0,
+      "returnedFingerprint": "file-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    {
+      "id": "flat-url-cached-composite",
+      "kind": "flat-url",
+      "path": "https://example.invalid/car.tga",
+      "fingerprintPrefix": "composite-sha256:eeeeeee",
+      "expectedPolicy": "deny",
+      "guardAllows": false,
+      "capture": false,
+      "schemaHasOnlyPathFingerprintDims": false,
+      "restore": false,
+      "rejected": 0,
+      "returnedFingerprint": null
+    },
+    {
+      "id": "bare-png-composite",
+      "kind": "flat",
+      "path": "C:/paint/car.png",
+      "fingerprintPrefix": "composite-sha256:fffffff",
+      "expectedPolicy": "deny",
+      "guardAllows": false,
+      "capture": false,
+      "schemaHasOnlyPathFingerprintDims": false,
+      "restore": false,
+      "rejected": 0,
+      "returnedFingerprint": null
+    },
+    {
+      "id": "legacy-composite-hash-shaped",
+      "kind": "legacy-composite",
+      "path": "C:/paint/car.tga",
+      "fingerprintPrefix": "file-sha256:111111111111",
+      "expectedPolicy": "deny",
+      "guardAllows": false,
+      "capture": false,
+      "schemaHasOnlyPathFingerprintDims": false,
+      "restore": false,
+      "rejected": 0,
+      "returnedFingerprint": null
+    },
+    {
+      "id": "ora-lazy-path-digest",
+      "kind": "layered",
+      "path": "C:/paint/car.ora",
+      "fingerprintPrefix": "file-sha256:222222222222",
+      "expectedPolicy": "deny",
+      "guardAllows": false,
+      "capture": false,
+      "schemaHasOnlyPathFingerprintDims": false,
+      "restore": false,
+      "rejected": 0,
+      "returnedFingerprint": null
+    },
+    {
+      "id": "xcf-lazy-path-digest",
+      "kind": "layered",
+      "path": "C:/paint/car.xcf",
+      "fingerprintPrefix": "file-sha256:333333333333",
+      "expectedPolicy": "deny",
+      "guardAllows": false,
+      "capture": false,
+      "schemaHasOnlyPathFingerprintDims": false,
+      "restore": false,
+      "rejected": 0,
+      "returnedFingerprint": null
+    },
+    {
+      "id": "unknown-kind-digest",
+      "kind": "mystery-format",
+      "path": "C:/paint/car.bin",
+      "fingerprintPrefix": "file-sha256:444444444444",
+      "expectedPolicy": "deny",
+      "guardAllows": false,
+      "capture": false,
+      "schemaHasOnlyPathFingerprintDims": false,
+      "restore": false,
+      "rejected": 0,
+      "returnedFingerprint": null
+    },
+    {
+      "id": "unsupported-psb-digest",
+      "kind": "layered",
+      "path": "C:/paint/car.psb",
+      "fingerprintPrefix": "file-sha256:555555555555",
+      "expectedPolicy": "deny",
+      "guardAllows": false,
+      "capture": false,
+      "schemaHasOnlyPathFingerprintDims": false,
+      "restore": false,
+      "rejected": 0,
+      "returnedFingerprint": null
+    },
+    {
+      "id": "different-bytes-same-path",
+      "kind": "flat-file",
+      "path": "browser-file:car.tga",
+      "fingerprintPrefix": "file-sha256:666666666666",
+      "expectedPolicy": "deny",
+      "guardAllows": true,
+      "capture": true,
+      "schemaHasOnlyPathFingerprintDims": true,
+      "restore": false,
+      "rejected": 1,
+      "returnedFingerprint": "file-sha256:6666666666666666666666666666666666666666666666666666666666666666"
+    },
+    {
+      "id": "actual-browser-file-tga-sha",
+      "kind": "browser-file",
+      "path": "browser-file:car.tga",
+      "fingerprintPrefix": "file-sha256:888888888888",
+      "expectedPolicy": "allow",
+      "guardAllows": true,
+      "capture": true,
+      "schemaHasOnlyPathFingerprintDims": true,
+      "restore": true,
+      "rejected": 0,
+      "returnedFingerprint": "file-sha256:8888888888888888888888888888888888888888888888888888888888888888"
+    },
+    {
+      "id": "actual-browser-file-png-sha",
+      "kind": "browser-file",
+      "path": "browser-file:car.png",
+      "fingerprintPrefix": "file-sha256:999999999999",
+      "expectedPolicy": "allow",
+      "guardAllows": true,
+      "capture": true,
+      "schemaHasOnlyPathFingerprintDims": true,
+      "restore": true,
+      "rejected": 0,
+      "returnedFingerprint": "file-sha256:9999999999999999999999999999999999999999999999999999999999999999"
+    },
+    {
+      "id": "actual-browser-file-composite",
+      "kind": "browser-file",
+      "path": "browser-file:car.tga",
+      "fingerprintPrefix": "composite-sha256:aaaaaaa",
+      "expectedPolicy": "deny",
+      "guardAllows": false,
+      "capture": false,
+      "schemaHasOnlyPathFingerprintDims": false,
+      "restore": false,
+      "rejected": 0,
+      "returnedFingerprint": null
+    },
+    {
+      "id": "actual-browser-file-malformed-sha",
+      "kind": "browser-file",
+      "path": "browser-file:car.tga",
+      "fingerprintPrefix": "file-sha256:ABCDEF",
+      "expectedPolicy": "deny",
+      "guardAllows": false,
+      "capture": false,
+      "schemaHasOnlyPathFingerprintDims": false,
+      "restore": false,
+      "rejected": 0,
+      "returnedFingerprint": null
+    },
+    {
+      "id": "actual-browser-file-unsupported-extension",
+      "kind": "browser-file",
+      "path": "browser-file:car.psb",
+      "fingerprintPrefix": "file-sha256:bbbbbbbbbbbb",
+      "expectedPolicy": "deny",
+      "guardAllows": false,
+      "capture": false,
+      "schemaHasOnlyPathFingerprintDims": false,
+      "restore": false,
+      "rejected": 0,
+      "returnedFingerprint": null
+    }
+  ],
+  "changedSamePathBytesControl": {
+    "id": "different-bytes-same-path",
+    "capturedFingerprint": "file-sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "samePath": true,
+    "result": {
+      "id": "different-bytes-same-path",
+      "kind": "flat-file",
+      "path": "browser-file:car.tga",
+      "fingerprintPrefix": "file-sha256:666666666666",
+      "expectedPolicy": "deny",
+      "guardAllows": true,
+      "capture": true,
+      "schemaHasOnlyPathFingerprintDims": true,
+      "restore": false,
+      "rejected": 1,
+      "returnedFingerprint": "file-sha256:6666666666666666666666666666666666666666666666666666666666666666"
+    },
+    "interpretation": "The actual saved record refuses a changed current fingerprint at the same path; this audits the consumer compare, not whether a production loader recomputes bytes instead of returning a stale cached digest."
+  },
+  "findings": [
+    "The current predicate grants durable eligibility to every non-layered kind and to any file-sha256-shaped fingerprint for layered input; it does not whitelist kind/path pairs.",
+    "The actual saved record contains only path, fingerprint, width and height; it does not persist or independently validate source kind or byte-digest provenance.",
+    "For byte-attested PSD/TGA/browser-file cases, the helper can only be as trustworthy as the producer of fingerprint and committed-kind metadata. Cache/header correctness and raw bytes must be checked by the loader/backend contract.",
+    "ORA/XCF actual W94 adapters preserve a composite identity because they parse from lazy paths; a synthetic layered+file-sha value was accepted here by the generic guard, even though that is not the W94 adapter’s actual output.",
+    "A denial of durable rebind is not a denial of current-session editing; this harness only exercises durable capture/rebind."
+  ],
+  "limitations": [
+    "The real source transaction was read-only inspected, not booted. The capture/rebind harness controls its transaction metadata and CAR proof, so it demonstrates consumer policy, not real TGA import cache freshness.",
+    "The same-path/different-byte case is represented by a different supplied fingerprint; it is not a native modified-TGA replacement trial.",
+    "The test uses a valid synthetic roof-zone fixture and does not claim any specific current vehicle has a current saveable owner."
+  ]
+}

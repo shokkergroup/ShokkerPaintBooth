@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_acid_rain",
+  "display_name": "Street: Acid Rain",
+  "promise": "Lime corrosion pinholes and pink rain beads bite into cobalt enamel.",
+  "carrier_grammar": "Lime corrosion pinholes and pink rain beads bite into cobalt enamel. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for cobalt enamel, lime corrosion rims, pink rain beads, pale salt needles, dark capillary cracks is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Lime corrosion pinholes and pink rain beads bite into cobalt enamel. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_acid_rain.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "cobalt enamel",
+      "role": "Actual shared paint and spec geometry: cobalt enamel"
+    },
+    {
+      "name": "lime corrosion rims",
+      "role": "Actual shared paint and spec geometry: lime corrosion rims"
+    },
+    {
+      "name": "pink rain beads",
+      "role": "Actual shared paint and spec geometry: pink rain beads"
+    },
+    {
+      "name": "pale salt needles",
+      "role": "Actual shared paint and spec geometry: pale salt needles"
+    },
+    {
+      "name": "dark capillary cracks",
+      "role": "Actual shared paint and spec geometry: dark capillary cracks"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "cobalt enamel",
+      "lime corrosion rims",
+      "pink rain beads",
+      "pale salt needles",
+      "dark capillary cracks"
+    ],
+    "R": [
+      "cobalt enamel",
+      "lime corrosion rims",
+      "pink rain beads",
+      "pale salt needles",
+      "dark capillary cracks"
+    ],
+    "Cc": [
+      "cobalt enamel",
+      "lime corrosion rims",
+      "pink rain beads",
+      "pale salt needles",
+      "dark capillary cracks"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_sewer_bloom",
+      "difference": "This finish uses Dense tiny lime etched pinholes with scalloped corrosion rims in cobalt blue enamel, pink wet bead crescents, pale salt needles and dark capillary cracks. Fine chemical rain attack, no whole raindrops or broad rust patches.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_puddle_neon",
+      "difference": "This finish uses Dense tiny lime etched pinholes with scalloped corrosion rims in cobalt blue enamel, pink wet bead crescents, pale salt needles and dark capillary cracks. Fine chemical rain attack, no whole raindrops or broad rust patches.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "cobalt enamel is visible in the authored geometry",
+      "lime corrosion rims is visible in the authored geometry",
+      "pink rain beads is visible in the authored geometry",
+      "pale salt needles is visible in the authored geometry",
+      "dark capillary cracks is visible in the authored geometry"
+    ],
+    "source_sha256": "225d0c99fe9278264d502cc8d3462d66dfffe02d962c23eb3daa713bc016efb7",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_acid_rain-authored-Lime corrosion pinholes and pink rain beads bite into cobalt enamel. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_acid_rain-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 83.5,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "c46b4f2426f9905242b17efdf2df23a79e84d70f8021f384e4806f09d23a0389"
+}

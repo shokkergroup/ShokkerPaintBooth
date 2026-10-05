@@ -1,0 +1,1462 @@
+{
+  "status": "HOLD",
+  "coreNativeAccepted": true,
+  "releaseReady": false,
+  "runtime": "Runtime12",
+  "capturedUTC": "2026-10-04T16:18:11.906646+00:00",
+  "installed": false,
+  "sources": {
+    "installed": false,
+    "capturedUTC": "2026-10-04T15:01:04.055097+00:00",
+    "hashes": {
+      "js/spb-ai-complete-instruction-guard.js": "ba0af1f9e217695ed733dde81c8dec1a735dd1f052e8c06b3098866d392a551c",
+      "js/spb-ai-instruction-intent-guard.js": "3267dc263cf85bcb34b55588997acba737f4a47e7bdde490face4d9d6271fb60",
+      "js/spb-ai-lease.js": "de276372a763310ec051db141fcb1d601e11dbf193843e2b21a405226f782134",
+      "js/spb-ai-material-controls.js": "8febce88b5e1e1f6e5d571037374a8c5a662b1f3d62c323b73b3ea1e5072544b",
+      "js/spb-ai-operation.js": "47587a1a53a35ce7e58825bac864bd75c2421d26c19791957f57bb199a7000c6",
+      "js/spb-ai-part-memory-project.js": "fff0127a7570c3fa8eaf2ad431f1ce2717763a2cd5b1688b15d18cc4f3c98d17",
+      "js/spb-ai-part-memory.js": "6e0d1e1466feca847d3a1c3300f32779ba610f3b6c72c7904a6c8fd97a6b3652",
+      "js/spb-ai-receipt-explainer.js": "25aba5ee85e9c9fb7efe3603fce22b140ccb09d2cbd09a9303ac6ab00530eac3",
+      "js/spb-pro-ai.js": "fb63f5906e1c9fc9d49150f571d64fde640e0a4630319c418fe4f9c2e7e5413a",
+      "js/spb-pro-design.js": "4648de3231015497cc9ff816612a542097a1ad14038a7210753f6cdbfd88d832",
+      "js/spb-pro-edit.js": "7d063444021f8f4144b96130800badfe62741cdefc9104417f3e99af65270767",
+      "js/spb-pro-zone-kit.js": "ea9e169b909a30a6431f7fd48b87658b8258d480f165d304cb0ca5dac8983af7",
+      "js/spb-self-help.js": "e230a121127fc6b32c451c630028d3d2d10461b67819bf50f2b148195db8df4d",
+      "paint-booth-2-state-zones.js": "710b4d8b1b7f229d334e06d1eb331ff48d9873a7cd139b276d2bab3ebfd591e7",
+      "paint-booth-3-canvas.js": "d02a3dbfc72eda731d1d1c3a361910248797cc7c4e159ad99763882982c53a15"
+    },
+    "backend": {
+      "server.py": "a845f7ee1cd96b9f87fe1af85d42a1b86dd2059e2a5893e47006a08d773ac2ce",
+      "server_routes/psd_import_routes.py": "6a0fce336fc5ef54eb80ef92a220abc0d81e5b22107b2bf3a4e3b0872f51a95d",
+      "server_routes/render_file_routes.py": "00bd0ea753d31e53d7cdb38b2bf6bcab361bf2d872f76df1aee8f6dfc49b7675"
+    },
+    "purpose": "Runtime12 contextual help and immutable file-byte identity. Native acceptance pending. Solid-modifier grammar change explicitly held."
+  },
+  "providerAttempts": 0,
+  "tgaByteIdentityNativeAccepted": true,
+  "actualChatGPTBridgeAccepted": true,
+  "core": {
+    "load": {
+      "paint": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+      },
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+      },
+      "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf",
+      "kind": "layered",
+      "layers": 11,
+      "roof": {
+        "id": "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+        "color": "everything",
+        "colorHex": null,
+        "base": "f_chrome",
+        "proof": false,
+        "pending": true,
+        "record": true
+      },
+      "providerAttempts": 0
+    },
+    "firstColdFinish": {
+      "text": "Done \u2014 the roof is now satin \u2014 a soft sheen between gloss and matte. Only the finish changed: your paint colours are untouched. (I updated your earlier change to the same colour instead of stacking a new one on top.)\nNEXT: Undo | A bit more | Show me options for the roof | Make the black matte | Make the cyan metallic",
+      "queueLength": 1,
+      "queue": [
+        {
+          "kind": "edit",
+          "zone": 0,
+          "proof": true,
+          "spec": {
+            "finish": "base::f_clear_satin"
+          }
+        }
+      ],
+      "applied": true,
+      "ownerSame": true,
+      "idSame": true,
+      "color": "#1450b4",
+      "finish": "f_clear_satin",
+      "maskSame": true,
+      "pending": false,
+      "freshProof": true,
+      "paint": {
+        "changed": 0,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "spec": {
+        "changed": 29873,
+        "outside": 0,
+        "channels": [
+          29873,
+          29873,
+          29873,
+          0
+        ]
+      },
+      "paintExact": true,
+      "specExact": false,
+      "zoneConfigExact": false,
+      "layersExact": true,
+      "before": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "3f9ac346e82534bf81d6f2fa2f9f382775833d21c6066c3422456a3c8df57685"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "entry": [
+        {
+          "lines": [
+            "Roof recoloured red: finish Clear Satin"
+          ],
+          "notes": [],
+          "undoable": true
+        }
+      ],
+      "providerAttempts": 0
+    },
+    "receiptApplied": {
+      "text": "For this loaded paint, the last verified applied changes were: Roof recoloured red: finish Clear Satin.",
+      "queueLength": 0,
+      "queue": [],
+      "applied": false,
+      "ownerSame": true,
+      "idSame": true,
+      "color": "#1450b4",
+      "finish": "f_clear_satin",
+      "maskSame": true,
+      "pending": false,
+      "freshProof": true,
+      "paint": null,
+      "spec": null,
+      "paintExact": true,
+      "specExact": true,
+      "zoneConfigExact": true,
+      "layersExact": true,
+      "before": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "3f9ac346e82534bf81d6f2fa2f9f382775833d21c6066c3422456a3c8df57685"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "3f9ac346e82534bf81d6f2fa2f9f382775833d21c6066c3422456a3c8df57685"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "entry": null,
+      "providerAttempts": 0
+    },
+    "finishUndo": {
+      "undoResult": true,
+      "restoredPaint": true,
+      "restoredSpec": true,
+      "restoredLayers": true,
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "providerAttempts": 0
+    },
+    "material": {
+      "text": "Nothing was changed. Name one channel, one exact part, and a relative change in points.",
+      "queueLength": 0,
+      "queue": [],
+      "applied": true,
+      "ownerSame": true,
+      "idSame": true,
+      "color": "#1450b4",
+      "finish": "f_chrome",
+      "maskSame": true,
+      "pending": false,
+      "freshProof": true,
+      "paint": {
+        "changed": 0,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "spec": {
+        "changed": 0,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "paintExact": true,
+      "specExact": true,
+      "zoneConfigExact": true,
+      "layersExact": true,
+      "before": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "entry": [
+        {
+          "lines": [],
+          "notes": [],
+          "undoable": false
+        }
+      ],
+      "providerAttempts": 0
+    },
+    "materialSupported": {
+      "text": "Nothing was changed. Name one channel, one exact part, and a relative change in points.",
+      "queueLength": 0,
+      "queue": [],
+      "applied": true,
+      "ownerSame": true,
+      "idSame": true,
+      "color": "#1450b4",
+      "finish": "f_chrome",
+      "maskSame": true,
+      "pending": false,
+      "freshProof": true,
+      "paint": {
+        "changed": 0,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "spec": {
+        "changed": 0,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "paintExact": true,
+      "specExact": true,
+      "zoneConfigExact": true,
+      "layersExact": true,
+      "before": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "entry": [
+        {
+          "lines": [],
+          "notes": [],
+          "undoable": false
+        }
+      ],
+      "providerAttempts": 0
+    },
+    "materialSupportedShorthand": {
+      "text": "Adjusting only the roof clearcoat up by 20 points.\nNEXT: Undo",
+      "queueLength": 1,
+      "queue": [
+        {
+          "kind": "edit",
+          "zone": 0,
+          "proof": false,
+          "spec": {
+            "spec_shift": {
+              "metal": 0,
+              "rough": 0,
+              "clearcoat": 20
+            }
+          }
+        }
+      ],
+      "applied": true,
+      "ownerSame": true,
+      "idSame": true,
+      "color": "#1450b4",
+      "finish": "f_chrome",
+      "maskSame": true,
+      "pending": false,
+      "freshProof": true,
+      "paint": {
+        "changed": 0,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "spec": {
+        "changed": 29873,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          29873,
+          0
+        ]
+      },
+      "paintExact": true,
+      "specExact": false,
+      "zoneConfigExact": false,
+      "layersExact": true,
+      "before": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "2ff17b2000af5aedcff36233a555b67f2003dd52ee8c264054e796785d931c7f"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "entry": [
+        {
+          "lines": [
+            "Roof recoloured red: spec shift"
+          ],
+          "notes": [],
+          "undoable": true
+        }
+      ],
+      "providerAttempts": 0
+    },
+    "materialUndo": {
+      "undoResult": true,
+      "restoredPaint": true,
+      "restoredSpec": true,
+      "restoredLayers": true,
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "providerAttempts": 0
+    },
+    "colour": {
+      "text": "Done \u2014 the roof is now recoloured green. (I updated your earlier change to the same colour instead of stacking a new one on top.)\nNEXT: Undo | Make the black matte | Make the cyan metallic | Make the white pearl | Make the numbers metallic",
+      "queueLength": 1,
+      "queue": [
+        {
+          "kind": "edit",
+          "zone": 0,
+          "proof": false,
+          "spec": {
+            "name": "Roof recoloured green",
+            "color": "#1f8a3b"
+          }
+        }
+      ],
+      "applied": true,
+      "ownerSame": true,
+      "idSame": true,
+      "color": "#1f8a3b",
+      "finish": "f_chrome",
+      "maskSame": true,
+      "pending": false,
+      "freshProof": true,
+      "paint": {
+        "changed": 29873,
+        "outside": 0,
+        "channels": [
+          29873,
+          29873,
+          29873,
+          0
+        ]
+      },
+      "spec": {
+        "changed": 0,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "paintExact": false,
+      "specExact": true,
+      "zoneConfigExact": false,
+      "layersExact": true,
+      "before": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "2e91a22aa7cb6274d1c3a5a5ddef9edddb2f81e6b7528de6673431a0bb6206d7"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "entry": [
+        {
+          "lines": [
+            "Roof recoloured green: colour #1f8a3b"
+          ],
+          "notes": [],
+          "undoable": true
+        }
+      ],
+      "providerAttempts": 0
+    },
+    "firstSaveStorageRefusal": {
+      "saved": false,
+      "records": 1,
+      "layerCount": 11,
+      "paint": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "2e91a22aa7cb6274d1c3a5a5ddef9edddb2f81e6b7528de6673431a0bb6206d7"
+      },
+      "providerAttempts": 0
+    },
+    "storageRefusalDiagnostic": {
+      "projectRequests": [],
+      "toasts": [
+        "Project save failed: external_write_disabled\u2715"
+      ],
+      "pendingDialog": false
+    },
+    "saveFinish": {
+      "saved": true,
+      "records": 1,
+      "layers": 11,
+      "providerAttempts": 0
+    },
+    "saveOpen": {
+      "paintExact": true,
+      "specExact": true,
+      "sourceExact": true,
+      "pendingMemory": true,
+      "activeProof": false,
+      "records": 1,
+      "layers": 11,
+      "roof": {
+        "id": "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+        "baseColor": "#1f8a3b",
+        "base": "f_chrome",
+        "mask": "4194304:q2srhw"
+      },
+      "providerAttempts": 0
+    },
+    "coldLayerPixels": {
+      "layerPixelsExact": true,
+      "layerCount": 11,
+      "activeProof": false,
+      "pendingMemory": true,
+      "providerAttempts": 0
+    },
+    "reopenedColour": {
+      "text": "Done \u2014 the roof is now recoloured blue. (I updated your earlier change to the same colour instead of stacking a new one on top.)\nNEXT: Undo | Make the black matte | Make the cyan metallic | Make the white pearl | Make the numbers metallic",
+      "queueLength": 1,
+      "queue": [
+        {
+          "kind": "edit",
+          "zone": 0,
+          "proof": false,
+          "spec": {
+            "name": "Roof recoloured blue",
+            "color": "#1450b4"
+          }
+        }
+      ],
+      "applied": true,
+      "ownerSame": true,
+      "idSame": true,
+      "color": "#1450b4",
+      "finish": "f_chrome",
+      "maskSame": true,
+      "pending": false,
+      "freshProof": true,
+      "paint": {
+        "changed": 29873,
+        "outside": 0,
+        "channels": [
+          29873,
+          29873,
+          29873,
+          0
+        ]
+      },
+      "spec": {
+        "changed": 0,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "paintExact": false,
+      "specExact": true,
+      "zoneConfigExact": false,
+      "layersExact": true,
+      "before": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "2e91a22aa7cb6274d1c3a5a5ddef9edddb2f81e6b7528de6673431a0bb6206d7"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "5dcbd423296c46d086acfb1d5c70ddcf22fddebb34a5dedc950f23d1ad2884d8"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "f3fd148d3e95d5c462532274923479438403946a3af42990990ea9bf53e1e5a5"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf"
+      },
+      "entry": [
+        {
+          "lines": [
+            "Roof recoloured blue: colour #1450b4"
+          ],
+          "notes": [],
+          "undoable": true
+        }
+      ],
+      "providerAttempts": 0
+    },
+    "chatUI": {
+      "paintExact": true,
+      "specExact": true,
+      "zoneSnapshotExact": true,
+      "layerPixelsExact": true,
+      "latest": {
+        "text": "A SHOKK project stores zones and layer state, including current raster pixel payload for layers that have pixels. It does not bundle the original PSD file bytes; it records the source path. Original adjustment-layer semantics are not guaranteed, so keep the PSD available and verify the reopened layers and preview.",
+        "lines": [],
+        "notes": [],
+        "undoable": false
+      },
+      "providerAttempts": 0
+    },
+    "mcpEdit": {
+      "paint": {
+        "changed": 29873,
+        "outside": 0,
+        "channels": [
+          29873,
+          29873,
+          29873,
+          0
+        ]
+      },
+      "spec": {
+        "changed": 0,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "idSame": true,
+      "maskSame": true,
+      "baseSame": true,
+      "color": "#1f8a3b",
+      "layersExact": true,
+      "sourceExact": true,
+      "paintRestored": false,
+      "specRestored": true,
+      "providerAttempts": 0
+    },
+    "mcpUndo": {
+      "paint": {
+        "changed": 0,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "spec": {
+        "changed": 0,
+        "outside": 0,
+        "channels": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "idSame": true,
+      "maskSame": true,
+      "baseSame": true,
+      "color": "#1450b4",
+      "layersExact": true,
+      "sourceExact": true,
+      "paintRestored": true,
+      "specRestored": true,
+      "providerAttempts": 0
+    }
+  },
+  "tga": [
+    {
+      "fixture": "Dirt Late Model TGAs",
+      "result": {
+        "ok": true,
+        "requestedPath": "C:\\1Shokker Paint Car Examples\\Dirt Late Model TGAs\\bpierce.tga",
+        "committedPath": "C:\\1Shokker Paint Car Examples\\Dirt Late Model TGAs\\bpierce.tga",
+        "generation": 3,
+        "fingerprint": "file-sha256:0414248e68ea8b1e122b4cd89011db96feac0825d53f70a8671f1f6a2feb9bdc",
+        "error": null
+      },
+      "elapsedMs": 2682,
+      "oldSource": "file-sha256:7a087b9cdc2ddadcbf192488864baa8e67425c86df249d69f45a37edc9c85dcf",
+      "source": "file-sha256:0414248e68ea8b1e122b4cd89011db96feac0825d53f70a8671f1f6a2feb9bdc",
+      "sourceChanged": true,
+      "width": 2048,
+      "height": 2048,
+      "layerCount": 0,
+      "proofs": 1,
+      "pendingMemories": 0,
+      "alpha": {
+        "zeros": 0,
+        "partial": 0,
+        "opaque": 4194304
+      },
+      "paint": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "70a4c2e41dc4ed23e13e5c867d9e77a50c61cff911450461dcdc2af76cf3fb0e"
+      },
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "3c840fd8a4788c7c4bc9a40ad16afb686c76287963dcda5417b5aba084a724dc"
+      },
+      "newProviderAttempts": 0,
+      "totalBlockedSetupAttempts": 0,
+      "expectedSHA": "0414248e68ea8b1e122b4cd89011db96feac0825d53f70a8671f1f6a2feb9bdc"
+    },
+    {
+      "fixture": "NEXT GEN",
+      "result": {
+        "ok": true,
+        "requestedPath": "C:\\1Shokker Paint Car Examples\\NEXT GEN\\ORIGINAL_77-Chilis-SPB.tga",
+        "committedPath": "C:\\1Shokker Paint Car Examples\\NEXT GEN\\ORIGINAL_77-Chilis-SPB.tga",
+        "generation": 4,
+        "fingerprint": "file-sha256:8c24916ccce1c50d1b1d17af68ad19d238d133418581344ec6bc619e6df2d6b4",
+        "error": null
+      },
+      "elapsedMs": 2538,
+      "oldSource": "file-sha256:0414248e68ea8b1e122b4cd89011db96feac0825d53f70a8671f1f6a2feb9bdc",
+      "source": "file-sha256:8c24916ccce1c50d1b1d17af68ad19d238d133418581344ec6bc619e6df2d6b4",
+      "sourceChanged": true,
+      "width": 2048,
+      "height": 2048,
+      "layerCount": 0,
+      "proofs": 1,
+      "pendingMemories": 0,
+      "alpha": {
+        "zeros": 0,
+        "partial": 0,
+        "opaque": 4194304
+      },
+      "paint": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "0e96dd983df7d0bbe752d487e491a17e01be6845e78c63025bced3b7a977425d"
+      },
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "3c840fd8a4788c7c4bc9a40ad16afb686c76287963dcda5417b5aba084a724dc"
+      },
+      "newProviderAttempts": 0,
+      "totalBlockedSetupAttempts": 0,
+      "expectedSHA": "8c24916ccce1c50d1b1d17af68ad19d238d133418581344ec6bc619e6df2d6b4"
+    },
+    {
+      "fixture": "Older Junk",
+      "result": {
+        "ok": true,
+        "requestedPath": "C:\\1Shokker Paint Car Examples\\Older Junk\\HotWheelsARCAChevy.tga",
+        "committedPath": "C:\\1Shokker Paint Car Examples\\Older Junk\\HotWheelsARCAChevy.tga",
+        "generation": 5,
+        "fingerprint": "file-sha256:383d034fa754351fd9b36933a04a4071bce7429cf0892c08587095f36ad296b1",
+        "error": null
+      },
+      "elapsedMs": 2582,
+      "oldSource": "file-sha256:8c24916ccce1c50d1b1d17af68ad19d238d133418581344ec6bc619e6df2d6b4",
+      "source": "file-sha256:383d034fa754351fd9b36933a04a4071bce7429cf0892c08587095f36ad296b1",
+      "sourceChanged": true,
+      "width": 2048,
+      "height": 2048,
+      "layerCount": 0,
+      "proofs": 1,
+      "pendingMemories": 0,
+      "alpha": {
+        "zeros": 22620,
+        "partial": 9124,
+        "opaque": 4162560
+      },
+      "paint": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "c665a435b174256159cb3ac56ff428be63a0b08dfbb0d951c17236c2e797201b"
+      },
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "3c840fd8a4788c7c4bc9a40ad16afb686c76287963dcda5417b5aba084a724dc"
+      },
+      "newProviderAttempts": 0,
+      "totalBlockedSetupAttempts": 0,
+      "expectedSHA": "383d034fa754351fd9b36933a04a4071bce7429cf0892c08587095f36ad296b1"
+    },
+    {
+      "fixture": "(root)",
+      "result": {
+        "ok": true,
+        "requestedPath": "C:\\1Shokker Paint Car Examples\\ORIGINAL_1-baseplain.tga",
+        "committedPath": "C:\\1Shokker Paint Car Examples\\ORIGINAL_1-baseplain.tga",
+        "generation": 6,
+        "fingerprint": "file-sha256:fca18e7178e3644261fc896530cf1883b411ede23a4a9e1ea2483aa35f667b0c",
+        "error": null
+      },
+      "elapsedMs": 2371,
+      "oldSource": "file-sha256:383d034fa754351fd9b36933a04a4071bce7429cf0892c08587095f36ad296b1",
+      "source": "file-sha256:fca18e7178e3644261fc896530cf1883b411ede23a4a9e1ea2483aa35f667b0c",
+      "sourceChanged": true,
+      "width": 2048,
+      "height": 2048,
+      "layerCount": 0,
+      "proofs": 1,
+      "pendingMemories": 0,
+      "alpha": {
+        "zeros": 0,
+        "partial": 0,
+        "opaque": 4194304
+      },
+      "paint": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "d646e769be5df9eb5986aa2aea5fb0f90fffcebd9e18660544f7d30a051ad3ff"
+      },
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "3c840fd8a4788c7c4bc9a40ad16afb686c76287963dcda5417b5aba084a724dc"
+      },
+      "newProviderAttempts": 0,
+      "totalBlockedSetupAttempts": 0,
+      "expectedSHA": "fca18e7178e3644261fc896530cf1883b411ede23a4a9e1ea2483aa35f667b0c"
+    },
+    {
+      "fixture": "dirtlatemodel 358",
+      "result": {
+        "ok": true,
+        "requestedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\dirtlatemodel 358\\car_num_1023169.tga",
+        "committedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\dirtlatemodel 358\\car_num_1023169.tga",
+        "generation": 7,
+        "fingerprint": "file-sha256:faa40433e6dada56fe218640c7e0c2370b93e5be2c58d8b3a56b3c024dbae65c",
+        "error": null
+      },
+      "elapsedMs": 2522,
+      "oldSource": "file-sha256:fca18e7178e3644261fc896530cf1883b411ede23a4a9e1ea2483aa35f667b0c",
+      "source": "file-sha256:faa40433e6dada56fe218640c7e0c2370b93e5be2c58d8b3a56b3c024dbae65c",
+      "sourceChanged": true,
+      "width": 2048,
+      "height": 2048,
+      "layerCount": 0,
+      "proofs": 1,
+      "pendingMemories": 0,
+      "alpha": {
+        "zeros": 0,
+        "partial": 0,
+        "opaque": 4194304
+      },
+      "paint": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "a7a32c353c683ef68b6ccd1483a3ee296bf895ad50d3c22bebf2d76d1b8ff221"
+      },
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "3c840fd8a4788c7c4bc9a40ad16afb686c76287963dcda5417b5aba084a724dc"
+      },
+      "newProviderAttempts": 0,
+      "totalBlockedSetupAttempts": 0,
+      "expectedSHA": "faa40433e6dada56fe218640c7e0c2370b93e5be2c58d8b3a56b3c024dbae65c"
+    },
+    {
+      "fixture": "stockcars2 arcachevy25",
+      "result": {
+        "ok": true,
+        "requestedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\stockcars2 arcachevy25\\car_decal_542493.tga",
+        "committedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\stockcars2 arcachevy25\\car_decal_542493.tga",
+        "generation": 8,
+        "fingerprint": "file-sha256:893cd10d4bfbcfd51f403077c9dd12e80a7717dc9d18f04a003355b926f76b0a",
+        "error": null
+      },
+      "elapsedMs": 2366,
+      "oldSource": "file-sha256:faa40433e6dada56fe218640c7e0c2370b93e5be2c58d8b3a56b3c024dbae65c",
+      "source": "file-sha256:893cd10d4bfbcfd51f403077c9dd12e80a7717dc9d18f04a003355b926f76b0a",
+      "sourceChanged": true,
+      "width": 1479,
+      "height": 1479,
+      "layerCount": 0,
+      "proofs": 1,
+      "pendingMemories": 0,
+      "alpha": {
+        "zeros": 1828687,
+        "partial": 35406,
+        "opaque": 323348
+      },
+      "paint": {
+        "w": 739,
+        "h": 739,
+        "sha": "a1862e6bde85b80fc159d166b0e3d579b11c12b24ebeeab9e5bc399275cadfb4"
+      },
+      "spec": {
+        "w": 739,
+        "h": 739,
+        "sha": "7ef037fb55bc7044f119d7e78a82981c021ccd96687545a21a2e1afb13b5876a"
+      },
+      "newProviderAttempts": 0,
+      "totalBlockedSetupAttempts": 0,
+      "expectedSHA": "893cd10d4bfbcfd51f403077c9dd12e80a7717dc9d18f04a003355b926f76b0a"
+    },
+    {
+      "fixture": "dirtmodified 358",
+      "result": {
+        "ok": true,
+        "requestedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\dirtmodified 358\\car_389371.tga",
+        "committedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\dirtmodified 358\\car_389371.tga",
+        "generation": 9,
+        "fingerprint": "file-sha256:d3b9cd9c9f23ae486a9b5d83879005d1b348e6b5ee3f659be1ee8b6efef76e0b",
+        "error": null
+      },
+      "elapsedMs": 3089,
+      "oldSource": "file-sha256:893cd10d4bfbcfd51f403077c9dd12e80a7717dc9d18f04a003355b926f76b0a",
+      "source": "file-sha256:d3b9cd9c9f23ae486a9b5d83879005d1b348e6b5ee3f659be1ee8b6efef76e0b",
+      "sourceChanged": true,
+      "width": 2048,
+      "height": 2048,
+      "layerCount": 0,
+      "proofs": 1,
+      "pendingMemories": 0,
+      "alpha": {
+        "zeros": 838547,
+        "partial": 89690,
+        "opaque": 3266067
+      },
+      "paint": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "dbe028184c1d4512fdcd83e150f04b6ea9c20f8039b3c3a6544e59d540d7dafb"
+      },
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "36ea40dc295ac589c3f20fb6600d69800aa1ad3858a40738c89e323880ccd477"
+      },
+      "newProviderAttempts": 0,
+      "totalBlockedSetupAttempts": 0,
+      "expectedSHA": "d3b9cd9c9f23ae486a9b5d83879005d1b348e6b5ee3f659be1ee8b6efef76e0b"
+    },
+    {
+      "fixture": "streetstock",
+      "result": {
+        "ok": true,
+        "requestedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\streetstock\\car_408495.tga",
+        "committedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\streetstock\\car_408495.tga",
+        "generation": 10,
+        "fingerprint": "file-sha256:8fbe5a89f978cd3a54dde56a65a2296f81cf138a46144ba82c7e6c825bcaca86",
+        "error": null
+      },
+      "elapsedMs": 2949,
+      "oldSource": "file-sha256:d3b9cd9c9f23ae486a9b5d83879005d1b348e6b5ee3f659be1ee8b6efef76e0b",
+      "source": "file-sha256:8fbe5a89f978cd3a54dde56a65a2296f81cf138a46144ba82c7e6c825bcaca86",
+      "sourceChanged": true,
+      "width": 2048,
+      "height": 2048,
+      "layerCount": 0,
+      "proofs": 1,
+      "pendingMemories": 0,
+      "alpha": {
+        "zeros": 0,
+        "partial": 0,
+        "opaque": 4194304
+      },
+      "paint": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "252680db9b26189c0a7a848688de19744407efa077275e6a12040c749aafc552"
+      },
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "36ea40dc295ac589c3f20fb6600d69800aa1ad3858a40738c89e323880ccd477"
+      },
+      "newProviderAttempts": 0,
+      "totalBlockedSetupAttempts": 0,
+      "expectedSHA": "8fbe5a89f978cd3a54dde56a65a2296f81cf138a46144ba82c7e6c825bcaca86"
+    },
+    {
+      "fixture": "protrucks pro4truck",
+      "result": {
+        "ok": true,
+        "requestedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\protrucks pro4truck\\car_664623.tga",
+        "committedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\protrucks pro4truck\\car_664623.tga",
+        "generation": 11,
+        "fingerprint": "file-sha256:89eb44bd2f20d5f10928432e2ee9cfe4af497a24f5c9717f844c710b7444d57c",
+        "error": null
+      },
+      "elapsedMs": 2508,
+      "oldSource": "file-sha256:8fbe5a89f978cd3a54dde56a65a2296f81cf138a46144ba82c7e6c825bcaca86",
+      "source": "file-sha256:89eb44bd2f20d5f10928432e2ee9cfe4af497a24f5c9717f844c710b7444d57c",
+      "sourceChanged": true,
+      "width": 2048,
+      "height": 2048,
+      "layerCount": 0,
+      "proofs": 1,
+      "pendingMemories": 0,
+      "alpha": {
+        "zeros": 0,
+        "partial": 0,
+        "opaque": 4194304
+      },
+      "paint": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "809ff8d8c798d104983ef27bf870274a50cc7adebbf0f97fd895ce35c37368e1"
+      },
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "36ea40dc295ac589c3f20fb6600d69800aa1ad3858a40738c89e323880ccd477"
+      },
+      "newProviderAttempts": 0,
+      "totalBlockedSetupAttempts": 0,
+      "expectedSHA": "89eb44bd2f20d5f10928432e2ee9cfe4af497a24f5c9717f844c710b7444d57c"
+    },
+    {
+      "fixture": "mercedesamgevogt3",
+      "result": {
+        "ok": true,
+        "requestedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\mercedesamgevogt3\\car_team_355549.tga",
+        "committedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\mercedesamgevogt3\\car_team_355549.tga",
+        "generation": 12,
+        "fingerprint": "file-sha256:d1b29658297301a05501f95bcb33d6081ccc80450d91055fc97f82c0bfc3af55",
+        "error": null
+      },
+      "elapsedMs": 2507,
+      "oldSource": "file-sha256:89eb44bd2f20d5f10928432e2ee9cfe4af497a24f5c9717f844c710b7444d57c",
+      "source": "file-sha256:d1b29658297301a05501f95bcb33d6081ccc80450d91055fc97f82c0bfc3af55",
+      "sourceChanged": true,
+      "width": 2048,
+      "height": 2048,
+      "layerCount": 0,
+      "proofs": 1,
+      "pendingMemories": 0,
+      "alpha": {
+        "zeros": 0,
+        "partial": 0,
+        "opaque": 4194304
+      },
+      "paint": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "8eef5c103de714811d52859a3e906010e4e18670da8d36606ec09f827f1ffc5d"
+      },
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "36ea40dc295ac589c3f20fb6600d69800aa1ad3858a40738c89e323880ccd477"
+      },
+      "newProviderAttempts": 0,
+      "totalBlockedSetupAttempts": 0,
+      "expectedSHA": "d1b29658297301a05501f95bcb33d6081ccc80450d91055fc97f82c0bfc3af55"
+    },
+    {
+      "fixture": "formulair04",
+      "result": {
+        "ok": true,
+        "requestedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\formulair04\\car_1153480.tga",
+        "committedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\formulair04\\car_1153480.tga",
+        "generation": 13,
+        "fingerprint": "file-sha256:dd62e52baa442033d4350c8ad0b245c98181058080ae6b0bf9430fa544fa66b5",
+        "error": null
+      },
+      "elapsedMs": 2430,
+      "oldSource": "file-sha256:d1b29658297301a05501f95bcb33d6081ccc80450d91055fc97f82c0bfc3af55",
+      "source": "file-sha256:dd62e52baa442033d4350c8ad0b245c98181058080ae6b0bf9430fa544fa66b5",
+      "sourceChanged": true,
+      "width": 2048,
+      "height": 2048,
+      "layerCount": 0,
+      "proofs": 1,
+      "pendingMemories": 0,
+      "alpha": {
+        "zeros": 0,
+        "partial": 0,
+        "opaque": 4194304
+      },
+      "paint": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "8d8fd7403ab9fc56fe50fe7d2d25c3423240d9dfaa79212790594ffe437e5988"
+      },
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "36ea40dc295ac589c3f20fb6600d69800aa1ad3858a40738c89e323880ccd477"
+      },
+      "newProviderAttempts": 0,
+      "totalBlockedSetupAttempts": 0,
+      "expectedSHA": "dd62e52baa442033d4350c8ad0b245c98181058080ae6b0bf9430fa544fa66b5"
+    },
+    {
+      "fixture": "stockcars chevymontecarlo87",
+      "result": {
+        "ok": true,
+        "requestedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\stockcars chevymontecarlo87\\car_1012749.tga",
+        "committedPath": "C:\\Users\\Ricky's PC\\Documents\\iRacing\\paint\\stockcars chevymontecarlo87\\car_1012749.tga",
+        "generation": 14,
+        "fingerprint": "file-sha256:591a411927303b24623e14557c3efec2b06eb226335d53e1870e7223195a21df",
+        "error": null
+      },
+      "elapsedMs": 2501,
+      "oldSource": "file-sha256:dd62e52baa442033d4350c8ad0b245c98181058080ae6b0bf9430fa544fa66b5",
+      "source": "file-sha256:591a411927303b24623e14557c3efec2b06eb226335d53e1870e7223195a21df",
+      "sourceChanged": true,
+      "width": 2048,
+      "height": 2048,
+      "layerCount": 0,
+      "proofs": 1,
+      "pendingMemories": 0,
+      "alpha": {
+        "zeros": 0,
+        "partial": 0,
+        "opaque": 4194304
+      },
+      "paint": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "a2dca0f40393e8838b6b88af37967472d6647ab46d61d1360f928a86692b967e"
+      },
+      "spec": {
+        "w": 1024,
+        "h": 1024,
+        "sha": "36ea40dc295ac589c3f20fb6600d69800aa1ad3858a40738c89e323880ccd477"
+      },
+      "newProviderAttempts": 0,
+      "totalBlockedSetupAttempts": 0,
+      "expectedSHA": "591a411927303b24623e14557c3efec2b06eb226335d53e1870e7223195a21df"
+    }
+  ],
+  "tgaCold": {
+    "coldLoad": {
+      "loaded": true,
+      "source": "file-sha256:19a48d6fafe1188046ee72d48789712a1b697027cb6b172b441498045ef4d441",
+      "kind": "flat",
+      "path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_release_evidence\\ai14h-runtime12-native\\output\\source-replacement\\same-path.tga",
+      "layers": 0,
+      "pending": 0,
+      "activeProofs": 0,
+      "durableCaptured": 0,
+      "paintPixelSHA": "bc732309e2034d061097f49dc62ff889b21e2565b80e70c4f659b2d34503942c",
+      "providerAttempts": 0
+    },
+    "coldRoofRefusal": {
+      "text": "I could not verify an existing zone for only the roof. A new finish could restore the source paint, so I have not queued a change. Select the intended zone to change its finish, or name the color to use.",
+      "queueLength": 0,
+      "queue": [],
+      "applied": false,
+      "ownerSame": true,
+      "idSame": true,
+      "color": "#1450b4",
+      "finish": "f_chrome",
+      "maskSame": true,
+      "pending": false,
+      "freshProof": false,
+      "paint": null,
+      "spec": null,
+      "paintExact": true,
+      "specExact": true,
+      "zoneConfigExact": true,
+      "layersExact": true,
+      "before": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "0649ef1ee0ebd1105dd009eb39823f84b87eb126aa9399dd168b486c24140359"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "36ea40dc295ac589c3f20fb6600d69800aa1ad3858a40738c89e323880ccd477"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:19a48d6fafe1188046ee72d48789712a1b697027cb6b172b441498045ef4d441"
+      },
+      "after": {
+        "paint": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "0649ef1ee0ebd1105dd009eb39823f84b87eb126aa9399dd168b486c24140359"
+        },
+        "spec": {
+          "w": 1024,
+          "h": 1024,
+          "sha": "36ea40dc295ac589c3f20fb6600d69800aa1ad3858a40738c89e323880ccd477"
+        },
+        "ids": [
+          "zone_8c3439ef-6359-4238-bb38-bbfd01b38d7a",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_bb04448f-9958-4f1c-8a5a-29637e5cd64b",
+          "zone_0d6f3f7b-5616-4e7d-9c0e-da9fd70cc6b1",
+          "zone_fc6b52ee-c13a-4b02-8d66-a600706d576f",
+          "zone_65d7de2e-e03d-4fc7-90c5-233523a24313",
+          "zone_a2868f83-5fbe-48b4-a753-1d22c84cd636"
+        ],
+        "source": "file-sha256:19a48d6fafe1188046ee72d48789712a1b697027cb6b172b441498045ef4d441"
+      },
+      "entry": null,
+      "providerAttempts": 0
+    }
+  },
+  "holds": [
+    {
+      "priority": "P1",
+      "request": "Make the roof matte and chrome.",
+      "actualQueueLength": 2,
+      "effect": "Unintended chrome body + matte roof plan",
+      "applied": false
+    },
+    {
+      "priority": "P1",
+      "request": "Don't change the roof; explain satin first.",
+      "actualQueueLength": 1,
+      "effect": "History toggle-off plan despite prohibition",
+      "applied": false
+    }
+  ],
+  "limits": [
+    "Scoped core passes do not establish release readiness. Two new actual unsupported scope/prohibition plans hold installation.",
+    "All customer originals read-only; private saved projects and a byte-modified private TGA copy only.",
+    "After direct source replacement the old PSD proof object can remain as inert metadata; current source guard refuses it and durable capture is zero. It is not described as cleared.",
+    "49 native passive questions were retained regressions, not a blind general accuracy score. Fresh wider questions found semantic gaps.",
+    "Three spec-map file-picker imports succeeded; visual spec application not yet accepted.",
+    "Actual paid provider calls zero. Earlier unrelated fixture setup made one blocked optional-vision attempt before HTTP/provider; retained in fixture report.",
+    "No owner59876 restart, installer/package/MCP bundle rebuild, export, or Git commit."
+  ],
+  "evidence": {
+    "core": "_easy_claude_work/ai14h_generation3_audit/runtime12-native-core-records.json",
+    "extra": "_easy_claude_work/ai14h_generation3_audit/runtime12-native-extra-records.json",
+    "legacy": "_easy_claude_work/ai14h_generation3_audit/legacy12-native-records-phase2.json",
+    "isolatedStartup": "_release_evidence/ai14h-runtime12-native/backend-startup.json"
+  }
+}

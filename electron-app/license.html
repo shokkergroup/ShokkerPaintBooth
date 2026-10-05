@@ -107,6 +107,57 @@
   }
   .error { color: #ff4466; }
   .info { color: #66aaff; }
+  .bypass-link {
+    margin-top: 22px;
+    font-size: 11px;
+    color: #555;
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+    text-decoration: underline dotted;
+    user-select: none;
+  }
+  .bypass-link:hover { color: #888; }
+  #bypassPanel {
+    display: none;
+    width: 100%;
+    max-width: 380px;
+    margin-top: 12px;
+    -webkit-app-region: no-drag;
+  }
+  #bypassPanel.visible { display: block; }
+  #bypassInput {
+    width: 100%;
+    padding: 10px 12px;
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    color: #ccc;
+    font-size: 13px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    letter-spacing: 1px;
+    text-align: center;
+    outline: none;
+  }
+  #bypassInput:focus { border-color: #888; }
+  #bypassSubmit {
+    margin-top: 8px;
+    width: 100%;
+    padding: 9px;
+    background: #1a1a1a;
+    color: #aaa;
+    border: 1px solid #333;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  #bypassSubmit:hover { background: #222; color: #ddd; }
+  #bypassStatus {
+    margin-top: 8px;
+    font-size: 12px;
+    min-height: 16px;
+    text-align: center;
+  }
 </style>
 </head>
 <body>
@@ -122,6 +173,12 @@
     <button class="btn-buy" onclick="doBuy()">Buy License</button>
   </div>
   <div id="status"></div>
+  <div class="bypass-link" id="bypassToggle" onclick="toggleBypass()">Have a developer/contributor code?</div>
+  <div id="bypassPanel">
+    <input type="text" id="bypassInput" placeholder="Enter code" spellcheck="false" autocomplete="off" />
+    <button id="bypassSubmit" onclick="doBypass()">Submit</button>
+    <div id="bypassStatus"></div>
+  </div>
   <button class="btn-quit" onclick="doQuit()">Exit</button>
   <script>
     const api = window.electronLicense;
@@ -162,7 +219,43 @@
         document.getElementById('status').className = 'info';
         document.getElementById('status').textContent = msg;
       });
+      api.ipcRenderer.on('bypass-result', (_e, payload) => {
+        const status = document.getElementById('bypassStatus');
+        if (payload && payload.ok) {
+          status.className = 'info';
+          status.textContent = 'Activated.';
+        } else {
+          status.className = 'error';
+          status.textContent = 'Invalid code';
+          document.getElementById('bypassInput').value = '';
+        }
+      });
     }
+
+    function toggleBypass() {
+      const panel = document.getElementById('bypassPanel');
+      panel.classList.toggle('visible');
+      if (panel.classList.contains('visible')) {
+        document.getElementById('bypassInput').focus();
+      }
+    }
+
+    function doBypass() {
+      const code = document.getElementById('bypassInput').value;
+      const status = document.getElementById('bypassStatus');
+      status.className = 'info';
+      status.textContent = 'Checking...';
+      if (api && api.ipcRenderer) {
+        api.ipcRenderer.send('license-bypass-submit', code);
+      } else {
+        status.className = 'error';
+        status.textContent = 'IPC bridge not available';
+      }
+    }
+
+    document.getElementById('bypassInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doBypass();
+    });
   </script>
 </body>
 </html>

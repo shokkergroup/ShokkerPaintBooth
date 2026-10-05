@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_frosted_shell",
+  "display_name": "Cdrom: Frosted Shell",
+  "promise": "Frosted blueberry translucent-polycarbonate-inspired abstract surface, no computer shapes",
+  "carrier_grammar": "Frosted blueberry translucent-polycarbonate-inspired abstract surface, no computer shapes; single full-canvas image, no duplicated quadrants. Fine features: blue frosted polymer, deep blue molded ribs, clear mold flow films, frosted pore clusters, smooth seam lips, recessed mold seams",
+  "spec_grammar": "Feature-specific selectors partition blue frosted polymer, deep blue molded ribs, clear mold flow films, frosted pore clusters, smooth seam lips, recessed mold seams. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "blue frosted polymer",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "deep blue molded ribs",
+      "role": "Material feature selected from artwork by g:<:0.32"
+    },
+    {
+      "name": "clear mold flow films",
+      "role": "Material feature selected from artwork by detail:>:0.62&edge:<:0.3"
+    },
+    {
+      "name": "frosted pore clusters",
+      "role": "Material feature selected from artwork by fine:>:0.65"
+    },
+    {
+      "name": "smooth seam lips",
+      "role": "Material feature selected from artwork by edge:>:0.65&g:>:0.58"
+    },
+    {
+      "name": "recessed mold seams",
+      "role": "Material feature selected from artwork by detail:<:0.19"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "blue frosted polymer",
+      "deep blue molded ribs",
+      "clear mold flow films",
+      "frosted pore clusters",
+      "smooth seam lips",
+      "recessed mold seams"
+    ],
+    "R": [
+      "blue frosted polymer",
+      "deep blue molded ribs",
+      "clear mold flow films",
+      "frosted pore clusters",
+      "smooth seam lips",
+      "recessed mold seams"
+    ],
+    "Cc": [
+      "blue frosted polymer",
+      "deep blue molded ribs",
+      "clear mold flow films",
+      "frosted pore clusters",
+      "smooth seam lips",
+      "recessed mold seams"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "blue frosted polymer",
+      "range": [
+        [
+          0,
+          95,
+          85
+        ],
+        [
+          20,
+          205,
+          220
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "deep blue molded ribs",
+      "range": [
+        [
+          0,
+          45,
+          25
+        ],
+        [
+          15,
+          125,
+          140
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "clear mold flow films",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "frosted pore clusters",
+      "range": [
+        [
+          0,
+          130,
+          110
+        ],
+        [
+          22,
+          235,
+          245
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "smooth seam lips",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "recessed mold seams",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_beige_box",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_crt_blue_screen",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "blue frosted polymer",
+      "deep blue molded ribs",
+      "clear mold flow films",
+      "frosted pore clusters",
+      "smooth seam lips",
+      "recessed mold seams"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_frosted_shell / Frosted blueberry translucent-polycarbonate-inspired abstract surface, no computer shapes",
+  "spec_key": "at_frosted_shell / blue frosted polymer all; deep blue molded ribs g:<:0.32; clear mold flow films detail:>:0.62&edge:<:0.3; frosted pore clusters fine:>:0.65; smooth seam lips edge:>:0.65&g:>:0.58; recessed mold seams detail:<:0.19",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

@@ -1,0 +1,134 @@
+{
+  "work_item": "W116 actual public spbProAI.ask contextual-help route acceptance",
+  "status": "PASS_PRIVATE_PIN",
+  "source": {
+    "path": "_easy_claude_work/ai14h_generation3_candidate/integration18/js/spb-pro-ai.js",
+    "sha256": "F88C962C94887D63C93AB775FE0B5AE3418A97F0AD0CC35A4C95A739719BEF4B",
+    "exportPresence": true
+  },
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w116_review/fresh-oracle.json",
+    "sha256": "41FFE664AB09C9B9B6250C96A910AB6B6E91B78033C7F29CB3D07442C2EA08A0",
+    "frozenBeforeReplay": true,
+    "cases": 12
+  },
+  "rows": [
+    {
+      "id": "source-less-getting-started",
+      "kind": "help",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "model": "built-in",
+      "text": "**How do I load my paint file (a flat TGA, PNG or JPEG)**\n1. Top row, find SOURCE PAINT. Click the \"TGA/PNG/JPEG\" button beside it (or on the empty canvas click \"Load TGA\" / \"Load Paint Image\").\n2. Pick your paint file in the window that opens, then confirm.\n3. Wait for the paint to appear in the SOURCE picture in the middle; the LIVE PREVIEW fills in next.\n4. You can also paste the full file path into the Source Pai"
+    },
+    {
+      "id": "save-project-no-mark",
+      "kind": "help",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "model": "built-in",
+      "text": "**How do I save my project and come back later**\n1. First load a paint: SOURCE PAINT in the top row (\"TGA/PNG/JPEG\" or \"PSD/XCF/ORA\"), or drop the file on the canvas.\n2. Click \"Save / Open\" in the top toolbar (SPB Projects). It saves the project zones and layer state plus the source-paint path in one project file. Keep that source available at the saved path to reopen it.\n3. To reopen, click \"Save / Open\" again and l"
+    },
+    {
+      "id": "applied-receipt-no-mark",
+      "kind": "help",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "model": "built-in",
+      "text": "I do not see a current verified apply receipt for this loaded paint. Check the applied-change entry for this same paint; a draft or preview alone does not confirm that a change was applied. This question made no changes."
+    },
+    {
+      "id": "draft-status-no-mark",
+      "kind": "help",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "model": "built-in",
+      "text": "A suggestion or preview is not proof that a change was applied. I do not have a current verified receipt matching the requested target and look, so I cannot tell whether it is still a draft or was applied. This question made no changes."
+    },
+    {
+      "id": "saved-pixels-no-mark",
+      "kind": "help",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "model": "built-in",
+      "text": "A SHOKK project stores zones and layer state, including current raster pixel payload for layers that have pixels. It does not bundle the original PSD file bytes; it records the source path. Original adjustment-layer semantics are not guaranteed, so keep the PSD available and verify the reopened layers and preview."
+    },
+    {
+      "id": "undo-location-no-mark",
+      "kind": "help",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "model": "built-in",
+      "text": "**How do I undo**\n1. First load a paint: SOURCE PAINT in the top row (\"TGA/PNG/JPEG\" or \"PSD/XCF/ORA\"), or drop the file on the canvas.\n2. Press Ctrl+Z, or the Undo button in the top toolbar (HISTORY menu).\n3. To go back several steps open \"Undo History...\".\n4. Under an AI panel answer press Undo to take back that whole answer. In Easy use UNDO at the top.\nExact controls: Undo Ctrl+Z (Pro > top toolbar (tool row)); U"
+    },
+    {
+      "id": "clearcoat-definition-no-mark",
+      "kind": "help",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "model": "built-in",
+      "text": "Clearcoat is the B channel of the spec map. It controls the clear reflective coating: lower channel values give stronger gloss (16 is maximum gloss; 0–15 means no clearcoat), while higher values are duller. It changes material response, not the paint color."
+    },
+    {
+      "id": "global-no-execution",
+      "kind": "help",
+      "howto": true,
+      "queue": 0,
+      "delegated": 0,
+      "model": "built-in",
+      "text": "Nothing was changed. A separate direct roof-color instruction would first be checked against the current roof ownership and paint; if that scope cannot be proved, the helper should ask instead of changing a broader area."
+    },
+    {
+      "id": "roof-blue-polite",
+      "kind": "action",
+      "howto": false,
+      "queue": 0,
+      "delegated": 1,
+      "text": "controlled offline action handoff"
+    },
+    {
+      "id": "hood-chrome-polite",
+      "kind": "action",
+      "howto": false,
+      "queue": 0,
+      "delegated": 1,
+      "text": "controlled offline action handoff"
+    },
+    {
+      "id": "roof-matte-polite",
+      "kind": "action",
+      "howto": false,
+      "queue": 0,
+      "delegated": 1,
+      "text": "controlled offline action handoff"
+    },
+    {
+      "id": "roof-blue-imperative",
+      "kind": "action",
+      "howto": false,
+      "queue": 0,
+      "delegated": 1,
+      "text": "controlled offline action handoff"
+    }
+  ],
+  "issues": [],
+  "limits": [
+    "Executed the exact extracted ask(), normalizeOfflineInstruction(), offlineInstructionPreflight(), and contextualHelpReply() bodies from the pinned controller. The desktop IIFE/DOM was not booted; for imperative controls askForTicket was a controlled offline-only handoff sentinel, so downstream planners/application were not claimed. No provider, native app, browser, save, or paint apply call occurred."
+  ],
+  "counts": {
+    "cases": 12,
+    "guidanceCases": 8,
+    "actionControls": 4,
+    "failures": 0,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "applyCalls": 0
+  }
+}

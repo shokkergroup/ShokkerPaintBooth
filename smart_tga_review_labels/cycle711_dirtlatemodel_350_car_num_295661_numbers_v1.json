@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 350/car_num_295661.tga",
+  "inspection_records": "_smart_tga_runs/cycle711_fresh_dlm_active_pool/inspection_records.json",
+  "review_scope": "Cycle 711 frozen active-learning selection; source, owner sheets, context crops, and isolated proposal masks reviewed.",
+  "selection_policy": "frozen_cycle711_recovery_disagreement_uncertainty",
+  "component_labels": [
+    {"layer":"sponsors","component_index":8,"expected_bbox":[769,431,69,171],"target_layer":"numbers","label":"true_number_19_rotated_copy"},
+    {"layer":"sponsors","component_index":14,"expected_bbox":[267,712,196,110],"target_layer":"numbers","label":"true_number_19_copy"},
+    {"layer":"sponsors","component_index":5,"expected_bbox":[145,312,49,41],"target_layer":"sponsors","label":"sponsor_harrod_logo_false_number"}
+  ]
+}

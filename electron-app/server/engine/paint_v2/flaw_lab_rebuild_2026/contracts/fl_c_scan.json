@@ -1,0 +1,104 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "fl_c_scan",
+  "display_name": "Ultrasonic C-Scan \u2014 rebuilt inspection finish",
+  "promise": "raster echo cells quantizing irregular defect islands",
+  "carrier_grammar": "raster echo cells quantizing irregular defect islands; independently rotated, varied sites with edge-wrapped geometry.",
+  "spec_grammar": "Named sample cells, echo plateaus, defect margins, dropout pixels, probe steps carry independent metallic lips, rough interiors and continuous coat shoulders; no unrelated material overlay.",
+  "reference_physics": {
+    "mechanism": "raster echo cells quantizing irregular defect islands interpreted as a colored inspection visualization, not a literal photograph.",
+    "sources": [
+      "engine/paint_v2/flaw_lab_2026.py",
+      "SPB_WIKI.html#spec_guide",
+      "https://www.nasa.gov/glenn/research/flow-field-diagnostics/"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "composition_span_px": [
+    150,
+    384
+  ],
+  "mark_types": [
+    {
+      "name": "sample cells",
+      "role": "Visible sample cells geometry with its own local material transition."
+    },
+    {
+      "name": "echo plateaus",
+      "role": "Visible echo plateaus geometry with its own local material transition."
+    },
+    {
+      "name": "defect margins",
+      "role": "Visible defect margins geometry with its own local material transition."
+    },
+    {
+      "name": "dropout pixels",
+      "role": "Visible dropout pixels geometry with its own local material transition."
+    },
+    {
+      "name": "probe steps",
+      "role": "Visible probe steps geometry with its own local material transition."
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "sample cells",
+      "echo plateaus",
+      "defect margins",
+      "dropout pixels",
+      "probe steps"
+    ],
+    "R": [
+      "sample cells",
+      "echo plateaus",
+      "defect margins",
+      "dropout pixels",
+      "probe steps"
+    ],
+    "Cc": [
+      "sample cells",
+      "echo plateaus",
+      "defect margins",
+      "dropout pixels",
+      "probe steps"
+    ]
+  },
+  "material_tiers": [
+    "recess substrate",
+    "rough interior",
+    "satin shoulder",
+    "polished lip",
+    "fractured edge",
+    "gloss face",
+    "coat transition",
+    "bright inclusion"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "fl_penetrant_bleed",
+      "difference": "raster echo cells quantizing irregular defect islands differs in topology from branched fatigue fissures with capillary dye reservoirs"
+    },
+    {
+      "finish_id": "fl_brittle_lacquer",
+      "difference": "raster echo cells quantizing irregular defect islands differs in topology from ranked tensile crack combs with arrested tips and lifted lacquer lips"
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "sample cells is explicitly constructed as part of raster echo cells quantizing irregular defect islands",
+      "echo plateaus is explicitly constructed as part of raster echo cells quantizing irregular defect islands",
+      "defect margins is explicitly constructed as part of raster echo cells quantizing irregular defect islands"
+    ],
+    "review_status": "Rendered paint/spec pairs visually reviewed together at picker scale on 2026-09-18; live output verified against the reviewed assets."
+  },
+  "construction_key": "flaw-r1-c_scan-raster-echo-cells-quantizing-irregular-defect-islands",
+  "spec_key": "flaw-r1-material-c_scan-sample cells-echo plateaus-defect margins-dropout pixels-probe steps",
+  "fine_detail_scale_px": [
+    1,
+    32
+  ]
+}

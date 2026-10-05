@@ -1,0 +1,460 @@
+{
+ "_about": "Hand-checked panel layouts of iRacing paint templates (SPB-AI 2026-09-30). Boxes are [x0,y0,x1,y1] in PERCENT of the 2048 sheet; front = which sheet direction the car's front points (left/right/top/bottom); up = which sheet edge is the ROOF-LINE of a side panel (top/bottom). The layout fingerprint (sig) is filled in by scripts/ai_atlas/build_car_atlas.py from sigs.json (computed by the app itself from the template's paintable area). Vision models cannot read UV sheets, so this is the only way a car's panels are known without asking the buyer. Add a car: label it on a 10% grid, list it here, run build_car_atlas.py.",
+ "cars": [
+  {
+   "id": "nascar-gen6-camaro",
+   "name": "NASCAR Cup Gen 6 (Camaro ZL1 2018)",
+   "folders": [
+    "stockcars camarozl12018"
+   ],
+   "template": "g6",
+   "parts": {
+    "front bumper": {
+     "box": [
+      0,
+      0,
+      47,
+      16
+     ]
+    },
+    "rear bumper": {
+     "box": [
+      48,
+      0,
+      83,
+      18
+     ]
+    },
+    "spoiler": {
+     "box": [
+      91,
+      4,
+      100,
+      23
+     ]
+    },
+    "right side": {
+     "box": [
+      0,
+      19,
+      88,
+      40
+     ],
+     "front": "left",
+     "up": "bottom"
+    },
+    "left side": {
+     "box": [
+      0,
+      80,
+      88,
+      100
+     ],
+     "front": "left",
+     "up": "top"
+    },
+    "hood": {
+     "box": [
+      68,
+      41,
+      99,
+      77
+     ],
+     "front": "right"
+    },
+    "roof": {
+     "box": [
+      22,
+      42,
+      58,
+      76
+     ],
+     "front": "right"
+    },
+    "trunk": {
+     "box": [
+      0,
+      43,
+      12,
+      75
+     ],
+     "front": "right"
+    }
+   }
+  },
+  {
+   "id": "nascar-chevy-ss",
+   "name": "NASCAR Cup Chevrolet SS",
+   "folders": [
+    "stockcars chevyss"
+   ],
+   "template": [
+    "ss",
+    "arca"
+   ],
+   "parts": {
+    "front bumper": {
+     "box": [
+      0,
+      0,
+      48,
+      16
+     ]
+    },
+    "rear bumper": {
+     "box": [
+      50,
+      0,
+      87,
+      16
+     ]
+    },
+    "spoiler": {
+     "box": [
+      88,
+      0,
+      100,
+      34
+     ]
+    },
+    "right side": {
+     "box": [
+      0,
+      16,
+      89,
+      41
+     ],
+     "front": "left",
+     "up": "bottom"
+    },
+    "left side": {
+     "box": [
+      0,
+      78,
+      89,
+      100
+     ],
+     "front": "left",
+     "up": "top"
+    },
+    "hood": {
+     "box": [
+      71,
+      40,
+      99,
+      77
+     ],
+     "front": "right"
+    },
+    "roof": {
+     "box": [
+      24,
+      41,
+      57,
+      76
+     ],
+     "front": "right"
+    },
+    "trunk": {
+     "box": [
+      0,
+      40,
+      13,
+      76
+     ],
+     "front": "right"
+    }
+   }
+  },
+  {
+   "id": "arca-chevy-ss",
+   "name": "ARCA Chevrolet SS",
+   "folders": [
+    "stockcars2 arcachevy25"
+   ],
+   "template": "arca",
+   "parts": {
+    "front bumper": {
+     "box": [
+      0,
+      0,
+      51,
+      15
+     ]
+    },
+    "rear bumper": {
+     "box": [
+      52,
+      0,
+      88,
+      17
+     ]
+    },
+    "spoiler": {
+     "box": [
+      88,
+      1,
+      99,
+      33
+     ]
+    },
+    "right side": {
+     "box": [
+      0,
+      17,
+      87,
+      38
+     ],
+     "front": "left",
+     "up": "bottom"
+    },
+    "left side": {
+     "box": [
+      0,
+      75,
+      88,
+      100
+     ],
+     "front": "left",
+     "up": "top"
+    },
+    "hood": {
+     "box": [
+      70,
+      40,
+      99,
+      76
+     ],
+     "front": "right"
+    },
+    "roof": {
+     "box": [
+      22,
+      42,
+      57,
+      75
+     ],
+     "front": "right"
+    },
+    "trunk": {
+     "box": [
+      0,
+      44,
+      11,
+      70
+     ],
+     "front": "right"
+    }
+   }
+  },
+  {
+   "id": "nascar-next-gen-camaro",
+   "name": "NASCAR Next Gen (Camaro ZL1 2022)",
+   "folders": [
+    "stockcars chevycamarozl12022"
+   ],
+   "template": "ngcity",
+   "parts": {
+    "front bumper": {
+     "box": [
+      0,
+      0,
+      47,
+      18
+     ]
+    },
+    "rear bumper": {
+     "box": [
+      48,
+      0,
+      83,
+      17
+     ]
+    },
+    "spoiler": {
+     "box": [
+      89,
+      0,
+      99,
+      33
+     ]
+    },
+    "right side": {
+     "box": [
+      5,
+      24,
+      85,
+      47
+     ],
+     "front": "left",
+     "up": "bottom"
+    },
+    "left side": {
+     "box": [
+      5,
+      75,
+      85,
+      97
+     ],
+     "front": "left",
+     "up": "top"
+    },
+    "hood": {
+     "box": [
+      63,
+      43,
+      93,
+      78
+     ],
+     "front": "right"
+    },
+    "roof": {
+     "box": [
+      10,
+      49,
+      51,
+      73
+     ],
+     "front": "right"
+    },
+    "trunk": {
+     "box": [
+      0,
+      49,
+      10,
+      74
+     ],
+     "front": "right"
+    }
+   }
+  },
+  {
+   "id": "chevy-silverado-truck",
+   "name": "Chevrolet Silverado truck",
+   "folders": [
+    "trucks silverado2019"
+   ],
+   "template": "truck",
+   "parts": {
+    "front bumper": {
+     "box": [
+      0,
+      0,
+      47,
+      16
+     ]
+    },
+    "right side": {
+     "box": [
+      0,
+      15,
+      89,
+      33
+     ],
+     "front": "left",
+     "up": "bottom"
+    },
+    "left side": {
+     "box": [
+      0,
+      82,
+      90,
+      100
+     ],
+     "front": "left",
+     "up": "top"
+    },
+    "hood": {
+     "box": [
+      63,
+      40,
+      93,
+      75
+     ],
+     "front": "right"
+    },
+    "roof": {
+     "box": [
+      38,
+      43,
+      56,
+      71
+     ]
+    },
+    "bed": {
+     "box": [
+      0,
+      40,
+      37,
+      74
+     ]
+    }
+   }
+  },
+  {
+   "id": "dirt-late-model",
+   "name": "Dirt Late Model (350 / 358 / 438)",
+   "folders": [
+    "dirtlatemodel 350",
+    "dirtlatemodel 358",
+    "dirtlatemodel 438"
+   ],
+   "template": ["dlm", "dlm_app"],
+   "parts": {
+    "left side": {
+     "box": [
+      0,
+      14,
+      67.5,
+      35
+     ],
+     "front": "right",
+     "up": "bottom"
+    },
+    "right side": {
+     "box": [
+      0,
+      68,
+      62.5,
+      88.5
+     ],
+     "front": "right",
+     "up": "top"
+    },
+    "hood": {
+     "box": [
+      1,
+      36,
+      81.5,
+      69
+     ],
+     "front": "right"
+    },
+    "roof": {
+     "box": [
+      75,
+      74.5,
+      96.5,
+      99
+     ]
+    },
+    "front bumper": {
+     "box": [
+      81,
+      35.5,
+      92.5,
+      68
+     ]
+    },
+    "spoiler": {
+     "box": [
+      24,
+      87.5,
+      58,
+      97.5
+     ]
+    }
+   }
+  }
+ ]
+}

@@ -10,6 +10,7 @@ Factory functions generate parametric variants to avoid code explosion.
 """
 
 import numpy as np
+from functools import partial
 import cv2 as _cv2
 from scipy.ndimage import gaussian_filter, uniform_filter
 from engine.spec_paint import (
@@ -243,18 +244,24 @@ _arsenal_noise_cache = {}
 
 def _multi_scale_noise(shape, scales, weights, seed):
     """Multi-octave noise with LRU cache. Returns 0-1 range."""
-    _key = (shape, tuple(scales), tuple(weights), seed)
+    h, w = int(shape[0]), int(shape[1])
+    cap = 1024
+    work_h, work_w = h, w
+    if max(h, w) > cap:
+        scale = cap / float(max(h, w))
+        work_h = max(8, int(round(h * scale)))
+        work_w = max(8, int(round(w * scale)))
+    _key = ((h, w), (work_h, work_w), tuple(scales), tuple(weights), int(seed))
     if _key in _arsenal_noise_cache:
         return _arsenal_noise_cache[_key]
-    h, w = shape
-    result = np.zeros((h, w), dtype=np.float32)
+    result = np.zeros((work_h, work_w), dtype=np.float32)
     rng = np.random.RandomState(seed)
     for scale, weight in zip(scales, weights):
-        sh, sw = max(1, int(h) // scale), max(1, int(w) // scale)
+        sh, sw = max(1, int(work_h) // scale), max(1, int(work_w) // scale)
         small = rng.randn(sh, sw).astype(np.float32)
         s_min, s_max = float(small.min()), float(small.max())
         norm = ((small - s_min) / (s_max - s_min + 1e-8)).astype(np.float32)
-        arr = _cv2.resize(norm, (int(w), int(h)), interpolation=_cv2.INTER_LINEAR)
+        arr = _cv2.resize(norm, (int(work_w), int(work_h)), interpolation=_cv2.INTER_LINEAR)
         arr = arr * (s_max - s_min) + s_min
         result += arr * weight
     # Normalize to [0, 1] range
@@ -263,8 +270,11 @@ def _multi_scale_noise(shape, scales, weights, seed):
         result = (result - r_min) / (r_max - r_min)
     else:
         result = np.full_like(result, 0.5)
+    if (work_h, work_w) != (h, w):
+        result = _cv2.resize(result.astype(np.float32), (w, h), interpolation=_cv2.INTER_LINEAR)
     if len(_arsenal_noise_cache) >= 64:
         _arsenal_noise_cache.pop(next(iter(_arsenal_noise_cache)))
+    result = result.astype(np.float32)
     _arsenal_noise_cache[_key] = result
     return result
 
@@ -704,12 +714,18 @@ def paint_glass_clean(paint, shape, mask, seed, pm, bb):
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
+    if np.isscalar(bb) or (hasattr(bb, "ndim") and bb.ndim == 0):
+        bb3 = np.full((*shape[:2], 1), float(bb), dtype=np.float32)
+    elif hasattr(bb, "ndim") and bb.ndim == 2:
+        bb3 = bb[:, :, np.newaxis]
+    else:
+        bb3 = bb
     blend = np.clip(pm * 0.15, 0, 0.6)
     # Slight green tint
     paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * mask * 0.1), 0, 1)
     paint[:,:,1] = np.clip(paint[:,:,1] + 0.02 * blend * mask, 0, 1)
     paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * mask * 0.05), 0, 1)
-    paint = np.clip(paint + bb * 0.3 * pm * mask[:,:,np.newaxis], 0, 1)
+    paint = np.clip(paint + bb3 * 0.3 * pm * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 def paint_ceramic_flat(paint, shape, mask, seed, pm, bb):
@@ -729,6 +745,12 @@ def paint_ceramic_flat(paint, shape, mask, seed, pm, bb):
 def paint_enamel_coat(paint, shape, mask, seed, pm, bb):
     """Hard baked enamel - vivid color with deep glossy wet look."""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    if np.isscalar(bb) or (hasattr(bb, "ndim") and bb.ndim == 0):
+        bb3 = np.full((*shape[:2], 1), float(bb), dtype=np.float32)
+    elif hasattr(bb, "ndim") and bb.ndim == 2:
+        bb3 = bb[:, :, np.newaxis]
+    else:
+        bb3 = bb
     blend = 0.20 * pm
     # Boost saturation (enamel has vivid deep color)
     gray = paint.mean(axis=2, keepdims=True)
@@ -737,7 +759,7 @@ def paint_enamel_coat(paint, shape, mask, seed, pm, bb):
         paint[:,:,c] = np.clip(paint[:,:,c] + diff * 0.15 * blend * mask, 0, 1)
     # Slight darkening for depth
     paint = np.clip(paint * (1 - 0.05 * blend * mask[:,:,np.newaxis]), 0, 1)
-    paint = np.clip(paint + bb * 0.5 * mask[:,:,np.newaxis], 0, 1)
+    paint = np.clip(paint + bb3 * 0.5 * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 # --- Racing Heritage ---
@@ -11938,9 +11960,10 @@ def integrate_expansion(engine_module):
                 if hasattr(engine_module, "paint_" + pfn):
                     entry["paint_fn"] = getattr(engine_module, "paint_" + pfn)
                 else:
-                    # Last resort: set to paint_none equivalent (no-op)
-                    print(f"[24K] WARNING: Could not resolve paint_fn '{pfn}' for base '{base_id}' - using no-op")
-                    entry["paint_fn"] = _paint_none_fallback
+                    raise RuntimeError(
+                        f"[24K] Could not resolve paint_fn '{pfn}' for base '{base_id}'; "
+                        "refusing to register a no-op fallback"
+                    )
 
     # --- Wrap expansion texture_fn to match engine's 4-arg signature + dict return ---
     #
@@ -12058,14 +12081,18 @@ def integrate_expansion(engine_module):
     # module load time. They use _resolve_paint_fn key with the engine function name.
     resolved_count = 0
     for base_id, base_entry in EXPANSION_BASES.items():
-        resolve_name = base_entry.pop("_resolve_paint_fn", None)
+        resolve_name = base_entry.get("_resolve_paint_fn")
         if resolve_name:
             engine_fn = getattr(engine_module, resolve_name, None)
             if engine_fn is not None:
                 base_entry["paint_fn"] = engine_fn
+                base_entry.pop("_resolve_paint_fn", None)
                 resolved_count += 1
             else:
-                print(f"[24K Arsenal] WARNING: Could not resolve '{resolve_name}' for base '{base_id}'")
+                raise RuntimeError(
+                    f"[24K Arsenal] Could not resolve deferred paint_fn '{resolve_name}' "
+                    f"for base '{base_id}'; refusing to register a no-op fallback"
+                )
     if resolved_count:
         print(f"[24K Arsenal] Resolved {resolved_count} deferred paint_fn references to engine functions")
 
@@ -12073,6 +12100,19 @@ def integrate_expansion(engine_module):
     engine_module.BASE_REGISTRY.update(EXPANSION_BASES)
     engine_module.PATTERN_REGISTRY.update(EXPANSION_PATTERNS)
     engine_module.MONOLITHIC_REGISTRY.update(EXPANSION_MONOLITHICS)
+
+    # Keep Prizm as one coherent category. engine/prizm.py is loaded before this
+    # expansion pack and carries the current owner-review material recipes; do
+    # not let the older 24K gap-fill helpers overwrite a few IDs back to chrome.
+    _prizm_repaired = 0
+    for _pid in [k for k in list(engine_module.MONOLITHIC_REGISTRY) if k.startswith("prizm_")]:
+        _spec_fn = getattr(engine_module, f"spec_{_pid}", None)
+        _paint_fn = getattr(engine_module, f"paint_{_pid}", None)
+        if callable(_spec_fn) and callable(_paint_fn):
+            engine_module.MONOLITHIC_REGISTRY[_pid] = (_spec_fn, _paint_fn)
+            _prizm_repaired += 1
+    if _prizm_repaired:
+        print(f"[24K Arsenal] Reapplied {_prizm_repaired} Prizm functions from engine/prizm.py")
 
     # --- Register Aurora & Chromatic Flow using already-initialized engine module ---
     # CRITICAL: Aurora paint functions live in engine/chameleon.py. That module is loaded
@@ -12115,10 +12155,16 @@ def integrate_expansion(engine_module):
         ("aurora_supernova",       "paint_aurora_supernova"),
     ]
     _aurora_registered = 0
+    _spec_aurora_core = getattr(engine_module, "spec_aurora_flow_core", None)
+    _aurora_prof = getattr(engine_module, "AURORA_FLOW_SPEC_PROFILES", None)
     for _aid, _afn in _aurora_id_map:
         _paint_fn = getattr(engine_module, _afn, None)
         if _paint_fn is not None:
-            engine_module.MONOLITHIC_REGISTRY[_aid] = (_spec_chameleon_24k, _paint_fn)
+            if _spec_aurora_core is not None and isinstance(_aurora_prof, dict) and _aid in _aurora_prof:
+                _spec_fn = partial(_spec_aurora_core, profile=_aurora_prof[_aid])
+            else:
+                _spec_fn = _spec_chameleon_24k
+            engine_module.MONOLITHIC_REGISTRY[_aid] = (_spec_fn, _paint_fn)
             _aurora_registered += 1
         else:
             print(f"[24K Arsenal] WARNING: Aurora paint fn '{_afn}' not found in engine — "
@@ -12222,6 +12268,185 @@ def integrate_expansion(engine_module):
             spec[cmask, 2] = np.clip(base_CC, 16, 255).astype(np.uint8)
 
         # Alpha channel from mask
+        spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+        return spec
+
+    def _cf_v2_norm(a, lo_pct=1.0, hi_pct=99.0):
+        a = np.asarray(a, dtype=np.float32)
+        lo = float(np.percentile(a, lo_pct))
+        hi = float(np.percentile(a, hi_pct))
+        if hi <= lo:
+            return np.zeros_like(a, dtype=np.float32)
+        return np.clip((a - lo) / (hi - lo), 0.0, 1.0).astype(np.float32)
+
+    def _cf_v2_xy(shape):
+        h, w = shape[:2] if len(shape) > 2 else shape
+        y = np.linspace(0.0, 1.0, h, dtype=np.float32).reshape(h, 1)
+        x = np.linspace(0.0, 1.0, w, dtype=np.float32).reshape(1, w)
+        return x, y
+
+    def _cf_v2_ridge(axis, scale, phase, sharp):
+        return np.clip(1.0 - np.abs(np.sin((axis * scale + phase) * np.pi)) * sharp, 0.0, 1.0).astype(np.float32)
+
+    def _cf_v2_noise(shape, seed, cell, nearest=False):
+        h, w = shape[:2] if len(shape) > 2 else shape
+        cell = max(2, int(cell))
+        rng = np.random.default_rng(seed)
+        small = rng.random((max(2, h // cell), max(2, w // cell)), dtype=np.float32)
+        interp = _cv2.INTER_NEAREST if nearest else _cv2.INTER_CUBIC
+        return _cf_v2_norm(_cv2.resize(small, (w, h), interpolation=interp), 0.8, 99.2)
+
+    def _cf_v2_pinfield(shape, seed, threshold, sigma=0.22):
+        h, w = shape[:2] if len(shape) > 2 else shape
+        rng = np.random.default_rng(seed)
+        dots = (rng.random((h, w), dtype=np.float32) > float(threshold)).astype(np.float32)
+        if sigma:
+            dots = _cv2.GaussianBlur(dots, (0, 0), sigma)
+        return _cf_v2_norm(dots, 35.0, 99.985)
+
+    def _cf_v2_palette(colors, finish_id):
+        if finish_id == "cf_carbon_prizm":
+            return np.asarray([
+                (34, 35, 40), (48, 42, 66), (36, 56, 62), (62, 45, 42),
+                (48, 62, 42), (72, 68, 96), (62, 82, 86),
+            ], dtype=np.float32) / 255.0
+        return np.asarray(colors, dtype=np.float32) / 255.0
+
+    def _cf_v2_fields(shape, seed, finish_id, name):
+        h, w = shape[:2] if len(shape) > 2 else shape
+        if max(h, w) > 1024:
+            scale = 1024.0 / float(max(h, w))
+            sh = max(2, int(round(h * scale)))
+            sw = max(2, int(round(w * scale)))
+            small = _cf_v2_fields((sh, sw), seed, finish_id, name)
+            fields = {}
+            for key, value in small.items():
+                interp = _cv2.INTER_NEAREST if key in {"fine", "pin", "micro", "carrier"} else _cv2.INTER_LINEAR
+                fields[key] = np.clip(_cv2.resize(value, (w, h), interpolation=interp), 0.0, 1.0).astype(np.float32)
+            return fields
+        text = f"{finish_id} {name}".lower()
+        x, y = _cf_v2_xy((h, w))
+        phase = ((seed * 37) % 997) / 997.0
+        fine = _cf_v2_noise((h, w), seed + 11, 2, nearest=True)
+        sub = _cf_v2_noise((h, w), seed + 17, 2, nearest=True)
+        cluster = _cf_v2_noise((h, w), seed + 23, 24, nearest=False)
+        flow = _cf_v2_noise((h, w), seed + 29, 160, nearest=False)
+        silk = _cf_v2_ridge(x * (0.72 + (seed % 7) * 0.025) + y * (1.18 + (seed % 5) * 0.03) + flow * 0.12, 96.0 + seed % 31, phase, 42.0)
+        shard = _cf_v2_ridge(x * 1.34 - y * 0.82 + cluster * 0.15, 118.0 + seed % 37, phase * 1.7, 48.0)
+        pin = _cf_v2_pinfield((h, w), seed + 41, 0.9962, 0.16)
+        micro = np.clip(fine * 0.44 + sub * 0.28 + pin * 0.36, 0, 1)
+
+        cx = 0.5 + np.sin(seed * 0.013) * 0.12
+        cy = 0.5 + np.cos(seed * 0.017) * 0.10
+        dx = x - cx
+        dy = y - cy
+        radius = np.sqrt(dx * dx + dy * dy)
+        theta = np.arctan2(dy, dx)
+
+        if any(k in text for k in ("carbon", "prizm")):
+            weave_a = _cf_v2_ridge(x + flow * 0.05, 154.0, phase, 52.0)
+            weave_b = _cf_v2_ridge(y + cluster * 0.05, 142.0, phase * 1.2, 52.0)
+            motif = np.clip(weave_a * 0.34 + weave_b * 0.30 + shard * 0.22 + pin * 0.46, 0, 1)
+            polish = np.clip(shard * 0.36 + pin * 0.50, 0, 1)
+            satin = np.clip(weave_a * 0.30 + weave_b * 0.34 + cluster * 0.16, 0, 1)
+        elif any(k in text for k in ("dragon", "mermaid", "jungle", "venom", "viper", "peacock")):
+            scale = _cf_v2_ridge(radius + np.sin(theta * 9.0 + phase) * 0.012, 34.0 + seed % 11, phase, 40.0)
+            eye = np.exp(-(((x - cx) / 0.070) ** 2 + ((y - cy) / 0.040) ** 2)).astype(np.float32)
+            motif = np.clip(scale * 0.42 + silk * 0.26 + eye * 0.22 + pin * 0.40, 0, 1)
+            polish = np.clip(scale * 0.32 + pin * 0.42, 0, 1)
+            satin = np.clip(cluster * 0.24 + (1.0 - flow) * 0.18, 0, 1)
+        elif any(k in text for k in ("storm", "electric", "titanium", "rain")):
+            bolt = _cf_v2_ridge(x * 1.58 - y * 0.50 + np.sin(y * np.pi * 7.0 + phase) * 0.025, 132.0 + seed % 29, phase, 52.0)
+            scan = _cf_v2_ridge(y + flow * 0.08, 104.0 + seed % 23, phase * 1.4, 44.0)
+            motif = np.clip(bolt * 0.50 + scan * 0.26 + pin * 0.46, 0, 1)
+            polish = np.clip(bolt * 0.42 + pin * 0.34, 0, 1)
+            satin = np.clip(scan * 0.30 + cluster * 0.22, 0, 1)
+        elif any(k in text for k in ("solar", "flare", "phoenix", "ember", "inferno", "volcanic", "blood", "copper", "molten")):
+            ray = _cf_v2_ridge(theta / np.pi + radius * (2.8 + seed % 5), 28.0 + seed % 13, phase, 38.0)
+            heat = _cf_v2_ridge(x * 0.92 + y * 1.20 + flow * 0.20, 88.0 + seed % 19, phase * 1.3, 38.0)
+            motif = np.clip(ray * 0.42 + heat * 0.32 + pin * 0.42, 0, 1)
+            polish = np.clip(ray * 0.36 + pin * 0.36, 0, 1)
+            satin = np.clip((1.0 - heat) * 0.18 + cluster * 0.20, 0, 1)
+        elif any(k in text for k in ("arctic", "frozen", "sapphire", "champagne", "frost")):
+            facet = _cf_v2_ridge(x * 1.20 + y * 0.92 + shard * 0.10, 124.0 + seed % 31, phase, 48.0)
+            frost = _cf_v2_ridge(x * -0.66 + y * 1.44 + cluster * 0.12, 112.0 + seed % 23, phase * 1.6, 48.0)
+            motif = np.clip(facet * 0.36 + frost * 0.32 + pin * 0.42, 0, 1)
+            polish = np.clip(facet * 0.28 + pin * 0.46, 0, 1)
+            satin = np.clip(frost * 0.32 + cluster * 0.18, 0, 1)
+        elif any(k in text for k in ("space", "galaxy", "phantom", "opal", "violet", "nebula", "absinthe")):
+            orbit = _cf_v2_ridge(radius + np.sin(theta * 6.0 + phase) * 0.016, 30.0 + seed % 9, phase, 34.0)
+            star = _cf_v2_pinfield((h, w), seed + 101, 0.9948, 0.18)
+            motif = np.clip(orbit * 0.34 + star * 0.56 + silk * 0.18, 0, 1)
+            polish = np.clip(star * 0.48 + orbit * 0.24, 0, 1)
+            satin = np.clip((1.0 - flow) * 0.24 + cluster * 0.18, 0, 1)
+        else:
+            motif = np.clip(shard * 0.28 + silk * 0.26 + pin * 0.42, 0, 1)
+            polish = np.clip(pin * 0.38 + shard * 0.24, 0, 1)
+            satin = np.clip(cluster * 0.24 + silk * 0.18, 0, 1)
+
+        carrier = _cf_v2_norm(fine * 0.42 + cluster * 0.28 + flow * 0.18 + motif * 0.26 + shard * 0.12, 0.5, 99.5)
+        return {"fine": fine, "cluster": cluster, "flow": flow, "silk": silk, "shard": shard,
+                "pin": pin, "micro": micro, "motif": motif, "polish": polish, "satin": satin, "carrier": carrier}
+
+    def _chromatic_flake_paint_v2(paint, shape, mask, seed, pm, bb, colors, finish_id, name):
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+        if pm < 0.01:
+            return paint
+        h, w = shape[:2] if len(shape) > 2 else shape
+        fields = _cf_v2_fields((h, w), seed, finish_id, name)
+        palette = _cf_v2_palette(colors, finish_id)
+        n_colors = len(palette)
+        color_idx = np.mod((fields["carrier"] * (n_colors * 2.85)).astype(np.int32) + (fields["fine"] * n_colors).astype(np.int32), n_colors)
+        result = palette[color_idx]
+        luma = np.clip(result @ np.array([0.2126, 0.7152, 0.0722], dtype=np.float32), 0.0, 1.0)
+        sparkle = (fields["pin"] * 0.28 + fields["micro"] * 0.10 + fields["polish"] * 0.11)[:, :, None]
+        shadow = (fields["satin"] * 0.10 + (1.0 - fields["flow"]) * 0.035)[:, :, None]
+        result = np.clip(result * (0.90 + fields["cluster"][:, :, None] * 0.16) + sparkle - shadow, 0.0, 1.0)
+        if finish_id == "cf_carbon_prizm":
+            carbon = (fields["satin"] * 0.16 + fields["silk"] * 0.08)[:, :, None]
+            result = np.clip(result * (0.86 - carbon) + fields["polish"][:, :, None] * np.array([0.10, 0.08, 0.15], dtype=np.float32), 0.0, 1.0)
+        else:
+            result = np.clip(result + (luma[:, :, None] - 0.5) * fields["motif"][:, :, None] * 0.08, 0.0, 1.0)
+
+        out = paint.copy()
+        m3 = mask[:, :, np.newaxis] if mask.ndim == 2 else mask
+        bb3 = bb[:, :, np.newaxis] if np.asarray(bb).ndim == 2 else bb
+        blended = paint[:, :, :3] * (1.0 - pm) + result[:, :, :3] * pm
+        out[:, :, :3] = blended * m3 + paint[:, :, :3] * (1.0 - m3)
+        return np.clip(out + bb3 * 0.28 * m3, 0, 1)
+
+    def _chromatic_flake_spec_v2(shape, mask, seed, sm, colors, spec_profiles, finish_id, name):
+        h, w = shape[:2] if len(shape) > 2 else shape
+        fields = _cf_v2_fields((h, w), seed, finish_id, name)
+        combined = fields["carrier"]
+        n_colors = len(colors)
+        color_idx = np.mod((combined * (n_colors * 2.85)).astype(np.int32) + (fields["fine"] * n_colors).astype(np.int32), n_colors)
+        metallic = np.zeros((h, w), dtype=np.float32)
+        rough = np.zeros((h, w), dtype=np.float32)
+        clear = np.zeros((h, w), dtype=np.float32)
+        for i, (base_M, base_R, base_CC) in enumerate(spec_profiles):
+            cmask = (color_idx == i)
+            metallic[cmask] = float(base_M)
+            rough[cmask] = float(base_R)
+            clear[cmask] = float(base_CC)
+
+        flake_hot = np.clip(fields["micro"] * 0.40 + fields["pin"] * 0.92 + fields["motif"] * 0.30, 0, 1)
+        polish = np.clip(fields["polish"] * 0.72 + fields["shard"] * 0.26 + fields["pin"] * 0.48, 0, 1)
+        satin = np.clip(fields["satin"] * 0.62 + (1.0 - fields["flow"]) * 0.20 + fields["cluster"] * 0.12, 0, 1)
+        metallic = np.clip(metallic + flake_hot * 92 * sm + fields["silk"] * 24 + fields["motif"] * 38, 0, 255)
+        rough = np.clip(rough + satin * 92 * sm - polish * 54 * sm + fields["fine"] * 16, 15, 235)
+        clear = np.clip(28 + clear * 0.72 + polish * 148 * sm + fields["motif"] * 72 + fields["pin"] * 82, 16, 255)
+        if finish_id == "cf_carbon_prizm":
+            metallic = np.clip(metallic + fields["polish"] * 88 + fields["pin"] * 70, 0, 255)
+            rough = np.clip(rough + fields["satin"] * 68 - fields["pin"] * 28, 15, 235)
+            clear = np.clip(clear + fields["shard"] * 104 + fields["polish"] * 90, 16, 255)
+        metallic = np.clip(metallic + np.roll(fields["motif"], 1 + seed % 3, axis=1) * 42 + np.roll(fields["pin"], 2, axis=0) * 82, 0, 255)
+        rough = np.clip(rough + np.roll(fields["satin"], 2 + seed % 2, axis=1) * 44 - np.roll(fields["polish"], 1 + seed % 4, axis=0) * 38, 15, 235)
+        clear = np.clip(clear + np.roll(fields["polish"], -(1 + seed % 5), axis=1) * 72 + np.roll(fields["motif"], -2, axis=0) * 46, 16, 255)
+        spec = np.zeros((h, w, 4), dtype=np.uint8)
+        spec[:, :, 0] = metallic.astype(np.uint8)
+        spec[:, :, 1] = rough.astype(np.uint8)
+        spec[:, :, 2] = clear.astype(np.uint8)
         spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
         return spec
 
@@ -12415,17 +12640,17 @@ def integrate_expansion(engine_module):
     _cf_registered = 0
     for _cf_id, _cf_name, _cf_desc, _cf_swatch, _cf_colors, _cf_specs in _CF_PRESETS:
         # Capture loop variables in default args
-        def _make_cf_paint(colors=_cf_colors):
+        def _make_cf_paint(colors=_cf_colors, finish_id=_cf_id, name=_cf_name):
             def _paint(paint, shape, mask, seed, pm, bb):
                 if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
-                return _chromatic_flake_paint(paint, shape, mask, seed, pm, bb, colors)
-            _paint.__name__ = f"paint_{_cf_id}"
+                return _chromatic_flake_paint_v2(paint, shape, mask, seed, pm, bb, colors, finish_id, name)
+            _paint.__name__ = f"paint_{finish_id}"
             return _paint
 
-        def _make_cf_spec(colors=_cf_colors, spec_profiles=_cf_specs):
+        def _make_cf_spec(colors=_cf_colors, spec_profiles=_cf_specs, finish_id=_cf_id, name=_cf_name):
             def _spec(shape, mask, seed, sm):
-                return _chromatic_flake_spec(shape, mask, seed, sm, colors, spec_profiles)
-            _spec.__name__ = f"spec_{_cf_id}"
+                return _chromatic_flake_spec_v2(shape, mask, seed, sm, colors, spec_profiles, finish_id, name)
+            _spec.__name__ = f"spec_{finish_id}"
             return _spec
 
         _pf = _make_cf_paint()

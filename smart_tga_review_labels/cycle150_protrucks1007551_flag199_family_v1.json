@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "paint_label": "protrucks pro4truck/car_num_1007551.tga",
+  "inspection_records": "_smart_tga_runs/cycle146_route_pressure_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle146_route_pressure_v1/protrucks_pro4truck_car_num_1007551/component_records.json",
+  "review_scope": "Cycle 150 Protruck 1007551 focused review: keep all visible flag-filled 199 number bodies/fragments as Numbers while keeping obvious DIXON/Yokohama sponsor panels out of Numbers.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 1,
+      "expected_bbox": [629, 20, 94, 139],
+      "target_layer": "numbers",
+      "label": "true_flag_filled_199_top_body",
+      "note": "Top upside-down flag-filled 199 number body/fragments; should become editable Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 5,
+      "expected_bbox": [460, 66, 89, 90],
+      "target_layer": "numbers",
+      "label": "true_flag_filled_199_top_digit",
+      "note": "Flag-filled top number digit chunk, not a sponsor logo."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 6,
+      "expected_bbox": [546, 67, 85, 90],
+      "target_layer": "numbers",
+      "label": "true_flag_filled_199_top_digit",
+      "note": "Second flag-filled top number digit chunk."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 24,
+      "expected_bbox": [713, 398, 102, 73],
+      "target_layer": "numbers",
+      "label": "true_flag_filled_199_side_upper",
+      "note": "Flag-filled side 199 upper body that Cycle 149 still lost to Sponsors."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 25,
+      "expected_bbox": [683, 463, 130, 78],
+      "target_layer": "numbers",
+      "label": "true_flag_filled_199_side_body",
+      "note": "Flag-filled side 199 body, including outline detail."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 26,
+      "expected_bbox": [713, 543, 118, 59],
+      "target_layer": "numbers",
+      "label": "true_flag_filled_199_side_lower",
+      "note": "Lower portion of the side 199 number graphic; attached CHANNEL tag is part of the number lockup."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 31,
+      "expected_bbox": [454, 842, 76, 140],
+      "target_layer": "numbers",
+      "label": "true_flag_filled_199_lower_one",
+      "note": "Lower placement flag-filled 1 digit with CHANNEL tag; should be editable Numbers."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 32,
+      "expected_bbox": [523, 843, 175, 124],
+      "target_layer": "numbers",
+      "label": "true_flag_filled_199_lower_99",
+      "note": "Lower placement flag-filled 99 number body; already number-like but included for family coverage."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 9,
+      "expected_bbox": [17, 79, 149, 66],
+      "target_layer": "sponsors",
+      "label": "dixxon_sponsor_panel",
+      "note": "DIXON/Dixxon sponsor panel, not a race-number body."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 10,
+      "expected_bbox": [182, 108, 141, 39],
+      "target_layer": "sponsors",
+      "label": "yokohama_sponsor_wordmark",
+      "note": "Yokohama sponsor wordmark."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 17,
+      "expected_bbox": [633, 264, 292, 21],
+      "target_layer": "sponsors",
+      "label": "sponsor_textline_strip",
+      "note": "Thin white sponsor textline strip; should not become a Number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 27,
+      "expected_bbox": [756, 699, 81, 12],
+      "target_layer": "sponsors",
+      "label": "yokohama_sponsor_wordmark",
+      "note": "Small Yokohama sponsor wordmark strip."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 34,
+      "expected_bbox": [9, 859, 150, 65],
+      "target_layer": "sponsors",
+      "label": "dixxon_sponsor_panel",
+      "note": "Lower DIXON/Dixxon sponsor panel, not a race number."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 35,
+      "expected_bbox": [207, 875, 81, 13],
+      "target_layer": "sponsors",
+      "label": "yokohama_sponsor_wordmark",
+      "note": "Lower Yokohama sponsor wordmark strip."
+    }
+  ]
+}

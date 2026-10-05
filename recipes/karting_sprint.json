@@ -2,7 +2,7 @@
   "name": "Karting Sprint",
   "description": "Hi-viz fluorescent sprint-kart livery. Toxic green body with neon yellow accents, hot pink stripe work, and piano black numbers. Built to be SEEN on a short oval under bright lights.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "karting chassis, micro sprint, legends car, small-displacement bodies",
   "notes": "Fluoro bases read HOT — if the green overpowers, drop Body baseStrength to 0.85. Racing stripes sit best on a dark picker tolerance so they don't bleed into fenders.",
   "zones": [

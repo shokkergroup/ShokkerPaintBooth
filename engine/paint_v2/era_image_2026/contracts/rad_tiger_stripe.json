@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_tiger_stripe",
+  "display_name": "Radical: Tiger Stripe",
+  "promise": "Tiny tapered black tiger strokes over hot orange guitar lacquer with yellow airbrush edges.",
+  "carrier_grammar": "Tiny tapered black tiger strokes over hot orange guitar lacquer with yellow airbrush edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for orange guitar lacquer, black tapered stripes, yellow airbrush halos, red lacquer pores, forked black lance tips, detached black teardrop islands is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny tapered black tiger strokes over hot orange guitar lacquer with yellow airbrush edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_tiger_stripe.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "orange guitar lacquer",
+      "role": "Actual shared paint and spec geometry: orange guitar lacquer"
+    },
+    {
+      "name": "black tapered stripes",
+      "role": "Actual shared paint and spec geometry: black tapered stripes"
+    },
+    {
+      "name": "yellow airbrush halos",
+      "role": "Actual shared paint and spec geometry: yellow airbrush halos"
+    },
+    {
+      "name": "red lacquer pores",
+      "role": "Actual shared paint and spec geometry: red lacquer pores"
+    },
+    {
+      "name": "forked black lance tips",
+      "role": "Actual shared paint and spec geometry: forked black lance tips"
+    },
+    {
+      "name": "detached black teardrop islands",
+      "role": "Actual shared paint and spec geometry: detached black teardrop islands"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "orange guitar lacquer",
+      "black tapered stripes",
+      "yellow airbrush halos",
+      "red lacquer pores",
+      "forked black lance tips",
+      "detached black teardrop islands"
+    ],
+    "R": [
+      "orange guitar lacquer",
+      "black tapered stripes",
+      "yellow airbrush halos",
+      "red lacquer pores",
+      "forked black lance tips",
+      "detached black teardrop islands"
+    ],
+    "Cc": [
+      "orange guitar lacquer",
+      "black tapered stripes",
+      "yellow airbrush halos",
+      "red lacquer pores",
+      "forked black lance tips",
+      "detached black teardrop islands"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_zebra_wrap",
+      "difference": "This finish uses Fine tapering black tiger-stripe fragments on hot orange guitar lacquer, narrow yellow airbrush edge halos, tiny red lacquer pores and pale polished pin shoulders. Many short organically hooked taper strokes oriented locally in all directions; no whole animal or broad stripe sweeping canvas.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_outrun_stripe",
+      "difference": "This finish uses Fine tapering black tiger-stripe fragments on hot orange guitar lacquer, narrow yellow airbrush edge halos, tiny red lacquer pores and pale polished pin shoulders. Many short organically hooked taper strokes oriented locally in all directions; no whole animal or broad stripe sweeping canvas.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "orange guitar lacquer is visible in the authored geometry",
+      "black tapered stripes is visible in the authored geometry",
+      "yellow airbrush halos is visible in the authored geometry",
+      "red lacquer pores is visible in the authored geometry",
+      "forked black lance tips is visible in the authored geometry",
+      "detached black teardrop islands is visible in the authored geometry"
+    ],
+    "source_sha256": "229e56f4e76089df266f862eb5064015fb575f542f17c3aed97000a07ec9e28f",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_tiger_stripe-authored-Tiny tapered black tiger strokes over hot orange guitar lacquer with yellow airbrush edges. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_tiger_stripe-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 69.9,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "2d946f300c43b501db9e29e8e30872fb6e786dcdf0014b979931a4ba2b86912f"
+}

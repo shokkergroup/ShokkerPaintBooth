@@ -1,0 +1,194 @@
+{
+  "schema": "spb-neon-oil-slick-pilot-audit/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_rain",
+  "seed": 4075102246,
+  "builder_elapsed_seconds": 2.00408,
+  "native_paint_spec_elapsed_seconds": 2.061141,
+  "repeat_elapsed_seconds": 2.578582,
+  "deterministic": true,
+  "paint_sha256": "3789ae01b4505df53aa95bf259c10285eca8e0362b9ac857f29f8150961e24bd",
+  "spec_sha256": "10731dc35796181162366b5a806ffc361eedeef18f608941df8475977c21cfb4",
+  "material_stats_native": {
+    "std": {
+      "M": 81.833809,
+      "R": 83.298912,
+      "Cc": 83.260757
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.695932,
+      "M_Cc": -0.442278,
+      "R_Cc": -0.182097
+    }
+  },
+  "geometry_stats": {
+    "family_count": 10,
+    "families": {
+      "black optical-clear facets": 5776,
+      "clipped Fresnel lens skins": 4002,
+      "cyan leading ridges": 527,
+      "dark dewetting pits": 625,
+      "dry notches": 704,
+      "overlapping lens seams": 657,
+      "ruptured menisci": 1402,
+      "trapped angular microbeads": 705,
+      "violet trailing skins": 1803,
+      "white caustic chips": 610
+    },
+    "width_native_min": 8.0,
+    "width_native_median": 17.944,
+    "width_native_p90": 25.732,
+    "width_native_max": 29.998,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "black optical-clear facets": 0.355598,
+    "clipped Fresnel lens skins": 0.224911,
+    "cyan leading ridges": 0.017694,
+    "violet trailing skins": 0.063217,
+    "ruptured menisci": 0.043719,
+    "trapped angular microbeads": 0.013077,
+    "dry notches": 0.014878,
+    "overlapping lens seams": 0.029536,
+    "white caustic chips": 0.011621,
+    "dark dewetting pits": 0.016819
+  },
+  "max_unmarked_void_native_px": 22.788,
+  "seam_ratios_vs_local_neighbor_change": {
+    "paint_x_to_local_ratio": 1.134979,
+    "paint_y_to_local_ratio": 1.359201,
+    "M_x_to_local_ratio": 1.238381,
+    "M_y_to_local_ratio": 1.339815,
+    "R_x_to_local_ratio": 1.120391,
+    "R_y_to_local_ratio": 1.324337,
+    "Cc_x_to_local_ratio": 1.064403,
+    "Cc_y_to_local_ratio": 1.055527
+  },
+  "picker_luma_std": {
+    "64": 13.237707,
+    "128": 20.789973
+  },
+  "checks": {
+    "deterministic": true,
+    "native_paint_spec_under_3_seconds": true,
+    "repeat_under_3_seconds": true,
+    "ten_attached_families": true,
+    "all_dimensions_8_32_native": true,
+    "eight_tiers_each_channel": true,
+    "std_at_least_30_each_channel": true,
+    "channels_not_copied_or_inverse": true,
+    "full_canvas_no_void_over_64px": true,
+    "picker_64_survives": true,
+    "picker_128_survives": true,
+    "periodic_seams_below_3x_local_change": true
+  },
+  "all_mechanical_checks_green": true,
+  "catalog_m7": "PENDING isolated official workbook harness",
+  "mapped_car": "PENDING; three-position material light proxy supplied for owner screening",
+  "manifest": {
+    "schema": "spb-neon-oil-slick-pilot/1",
+    "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+    "finish_id": "neon2_rain",
+    "display_name": "Fresnel Rain-Skin",
+    "carrier": "black hydrophobic optical clear carrying collapsed angular water-film lenses",
+    "material_story": {
+      "M": "dry notches, dewetting pits, caustic substrate chips, and ruptured film expose the dark base while intact optics stay low",
+      "R": "ruptured menisci, dry notches, overlapping seams, pits, and caustic fracture rise independently",
+      "Cc": "intact Fresnel film, cyan leading ridges, violet trailing skins, and trapped beads retain optical clear"
+    },
+    "vetoes": [
+      "rain line, falling drop, teardrop, or weather illustration",
+      "bubble, polka dot, round bead, scale, or repeated tile",
+      "ripple, ring, loop, wave, or long curve",
+      "row, grid, lane, or directional rain field",
+      "generic wet noise or unrelated texture underlay"
+    ],
+    "native_size": [
+      2048,
+      2048
+    ],
+    "builder_elapsed_seconds": 2.00408,
+    "material_stats": {
+      "std": {
+        "M": 81.833809,
+        "R": 83.298912,
+        "Cc": 83.260757
+      },
+      "range": {
+        "M": [
+          7,
+          253
+        ],
+        "R": [
+          8,
+          251
+        ],
+        "Cc": [
+          6,
+          254
+        ]
+      },
+      "tier_count": {
+        "M": 8,
+        "R": 8,
+        "Cc": 8
+      },
+      "correlation": {
+        "M_R": 0.695932,
+        "M_Cc": -0.442278,
+        "R_Cc": -0.182097
+      }
+    },
+    "geometry_stats": {
+      "family_count": 10,
+      "families": {
+        "black optical-clear facets": 5776,
+        "clipped Fresnel lens skins": 4002,
+        "cyan leading ridges": 527,
+        "dark dewetting pits": 625,
+        "dry notches": 704,
+        "overlapping lens seams": 657,
+        "ruptured menisci": 1402,
+        "trapped angular microbeads": 705,
+        "violet trailing skins": 1803,
+        "white caustic chips": 610
+      },
+      "width_native_min": 8.0,
+      "width_native_median": 17.944,
+      "width_native_p90": 25.732,
+      "width_native_max": 29.998,
+      "fine_8_32_fraction": 1.0
+    },
+    "causal_mask_coverage": {
+      "black optical-clear facets": 0.355598,
+      "clipped Fresnel lens skins": 0.224911,
+      "cyan leading ridges": 0.017694,
+      "violet trailing skins": 0.063217,
+      "ruptured menisci": 0.043719,
+      "trapped angular microbeads": 0.013077,
+      "dry notches": 0.014878,
+      "overlapping lens seams": 0.029536,
+      "white caustic chips": 0.011621,
+      "dark dewetting pits": 0.016819
+    }
+  }
+}

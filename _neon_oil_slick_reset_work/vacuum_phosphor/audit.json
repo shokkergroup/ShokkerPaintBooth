@@ -1,0 +1,194 @@
+{
+  "schema": "spb-neon-oil-slick-pilot-audit/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_sign_tubes",
+  "seed": 2059411494,
+  "builder_elapsed_seconds": 1.826085,
+  "native_paint_spec_elapsed_seconds": 1.882897,
+  "repeat_elapsed_seconds": 2.140339,
+  "deterministic": true,
+  "paint_sha256": "705af649d6151577f65cba1233eb96f0119020a15b151a33b3f51de9afdebf68",
+  "spec_sha256": "a181604b98c96bbccd54c17bc80aeebf91a607738c68a6c64349e97fb1260233",
+  "material_stats_native": {
+    "std": {
+      "M": 82.586296,
+      "R": 83.297165,
+      "Cc": 83.260811
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.421428,
+      "M_Cc": -0.597939,
+      "R_Cc": -0.33341
+    }
+  },
+  "geometry_stats": {
+    "family_count": 10,
+    "families": {
+      "black evacuated wall facets": 5776,
+      "clipped channel ends": 640,
+      "collapsed neck shards": 640,
+      "cyan phosphor deposits": 666,
+      "dark vacuum pockets": 599,
+      "fractured glass-wall slivers": 4050,
+      "local electrode beads": 363,
+      "magenta getter stains": 668,
+      "sputter freckles": 669,
+      "white-blue excitation lips": 1158
+    },
+    "width_native_min": 8.001,
+    "width_native_median": 18.484,
+    "width_native_p90": 25.222,
+    "width_native_max": 29.5,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "black evacuated wall facets": 0.374509,
+    "fractured glass-wall slivers": 0.229854,
+    "white-blue excitation lips": 0.043482,
+    "cyan phosphor deposits": 0.017809,
+    "magenta getter stains": 0.025805,
+    "clipped channel ends": 0.01355,
+    "collapsed neck shards": 0.016559,
+    "dark vacuum pockets": 0.016128,
+    "sputter freckles": 0.012914,
+    "local electrode beads": 0.006941
+  },
+  "max_unmarked_void_native_px": 23.969,
+  "seam_ratios_vs_local_neighbor_change": {
+    "paint_x_to_local_ratio": 1.60436,
+    "paint_y_to_local_ratio": 1.477941,
+    "M_x_to_local_ratio": 1.388683,
+    "M_y_to_local_ratio": 1.202281,
+    "R_x_to_local_ratio": 1.346254,
+    "R_y_to_local_ratio": 1.214134,
+    "Cc_x_to_local_ratio": 1.180993,
+    "Cc_y_to_local_ratio": 0.944966
+  },
+  "picker_luma_std": {
+    "64": 10.552156,
+    "128": 16.925171
+  },
+  "checks": {
+    "deterministic": true,
+    "native_paint_spec_under_3_seconds": true,
+    "repeat_under_3_seconds": true,
+    "ten_attached_families": true,
+    "all_dimensions_8_32_native": true,
+    "eight_tiers_each_channel": true,
+    "std_at_least_30_each_channel": true,
+    "channels_not_copied_or_inverse": true,
+    "full_canvas_no_void_over_64px": true,
+    "picker_64_survives": true,
+    "picker_128_survives": true,
+    "periodic_seams_below_3x_local_change": true
+  },
+  "all_mechanical_checks_green": true,
+  "catalog_m7": "PENDING isolated official workbook harness",
+  "mapped_car": "PENDING; three-position material light proxy supplied for owner screening",
+  "manifest": {
+    "schema": "spb-neon-oil-slick-pilot/1",
+    "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+    "finish_id": "neon2_sign_tubes",
+    "display_name": "Vacuum Phosphor",
+    "carrier": "black evacuated glass/ceramic composite carrying broken phosphor-channel wall fragments",
+    "material_story": {
+      "M": "local electrode beads, sputter freckles, cyan phosphor deposits, and getter residue lead while intact glass stays low",
+      "R": "clipped ends, collapsed necks, vacuum pockets, sputter, and getter damage rise independently",
+      "Cc": "intact wall slivers, excitation lips, and phosphor shoulders retain clear while breaks and vacuum pockets interrupt it"
+    },
+    "vetoes": [
+      "literal tube, sign, text, waveform, or music UI",
+      "long curve, loop, worm, paired rail, or repeated capsule",
+      "circuitry, macro lane, row, grid, or barcode",
+      "floating confetti or generic glow flakes",
+      "generic noise or unrelated texture underlay"
+    ],
+    "native_size": [
+      2048,
+      2048
+    ],
+    "builder_elapsed_seconds": 1.826085,
+    "material_stats": {
+      "std": {
+        "M": 82.586296,
+        "R": 83.297165,
+        "Cc": 83.260811
+      },
+      "range": {
+        "M": [
+          7,
+          253
+        ],
+        "R": [
+          8,
+          251
+        ],
+        "Cc": [
+          6,
+          254
+        ]
+      },
+      "tier_count": {
+        "M": 8,
+        "R": 8,
+        "Cc": 8
+      },
+      "correlation": {
+        "M_R": 0.421428,
+        "M_Cc": -0.597939,
+        "R_Cc": -0.33341
+      }
+    },
+    "geometry_stats": {
+      "family_count": 10,
+      "families": {
+        "black evacuated wall facets": 5776,
+        "clipped channel ends": 640,
+        "collapsed neck shards": 640,
+        "cyan phosphor deposits": 666,
+        "dark vacuum pockets": 599,
+        "fractured glass-wall slivers": 4050,
+        "local electrode beads": 363,
+        "magenta getter stains": 668,
+        "sputter freckles": 669,
+        "white-blue excitation lips": 1158
+      },
+      "width_native_min": 8.001,
+      "width_native_median": 18.484,
+      "width_native_p90": 25.222,
+      "width_native_max": 29.5,
+      "fine_8_32_fraction": 1.0
+    },
+    "causal_mask_coverage": {
+      "black evacuated wall facets": 0.374509,
+      "fractured glass-wall slivers": 0.229854,
+      "white-blue excitation lips": 0.043482,
+      "cyan phosphor deposits": 0.017809,
+      "magenta getter stains": 0.025805,
+      "clipped channel ends": 0.01355,
+      "collapsed neck shards": 0.016559,
+      "dark vacuum pockets": 0.016128,
+      "sputter freckles": 0.012914,
+      "local electrode beads": 0.006941
+    }
+  }
+}

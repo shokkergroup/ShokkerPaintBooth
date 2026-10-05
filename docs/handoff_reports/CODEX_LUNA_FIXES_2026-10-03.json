@@ -1,0 +1,151 @@
+{
+  "schema": "spb-ai-sprint-review-fixes/1",
+  "date": "2026-10-03",
+  "status": "complete-local-review-and-repairs",
+  "baseline_review": "docs/handoff_reports/CODEX_REVIEW_2026-10-03.json",
+  "orchestration": {
+    "unique_luna_agents": 8,
+    "max_concurrent_subagents": 3,
+    "model": "gpt-6-luna",
+    "terra_available_in_subagent_launcher": false,
+    "method": "Short briefs, separate file lanes, implementation followed by independent review; parent owned shared integration and browser work. Token savings were not measured."
+  },
+  "fixed": [
+    {
+      "priority": 1,
+      "issue": "Part-only stack modified whole body",
+      "files": [
+        "js/spb-pro-advisor.js",
+        "js/spb-pro-design.js"
+      ],
+      "result": "Exclusive part wording binds every layer to the named part regardless of word order; explicit body+part and ordinary non-exclusive split requests remain split. In-app kit and MCP scope copy match apply targets."
+    },
+    {
+      "priority": 2,
+      "issue": "Typed replies missed current element card; stale async actions could use a new paint",
+      "files": [
+        "js/spb-pro-ai.js"
+      ],
+      "result": "Shared typed/button dispatcher uses newest card and paint identity, verifies named element kind, preserves unrelated help. Captured pixels/car/layer identity follows warm, tool handlers, corrections, options, finish and visual repairs. Stale work cancels without restore/apply/undo and releases busy/progress/controller state."
+    },
+    {
+      "priority": 2,
+      "issue": "Facet rebuild restored stale backup",
+      "files": [
+        "scripts/ai_atlas/derive_facets.py"
+      ],
+      "result": "Read current cards; replace only tracked generator-owned additions; preserve manual/deep/unknown fields and new cards. Recovery backup is retained. Production cards were not regenerated."
+    },
+    {
+      "priority": 2,
+      "issue": "Acceptance harness could test zero cases or inspect stale visibility/state",
+      "files": [
+        "_easy_claude_work/adv_fp.js",
+        "_easy_claude_work/pw/msr_verify.py",
+        "_easy_claude_work/pw/aibridge.py",
+        "_easy_claude_work/pw/codex_acceptance_20261003.py"
+      ],
+      "result": "Missing/empty prompt fixtures exit2; Wire/Mask changes publish visibility; isolated acceptance requires real clicks, distinct paints, current reply, native mask containment, unchanged original zone objects and frozen hashes. PSD zones have null IDs, so preservation uses object identity rather than duplicate IDs."
+    }
+  ],
+  "validation": {
+    "browser": "31/31 on final frozen source, including existing policy11/11",
+    "browser_artifact": "docs/handoff_reports/CODEX_BROWSER_ACCEPTANCE_2026-10-03.json",
+    "scope_native_mask": {
+      "selected_pixels": 402144,
+      "outside_roof_pixels": 0,
+      "original_zone_properties_preserved": true
+    },
+    "focused_element": "PASS, including real deferred postCheck/finalVerdict/cancellation functions with inner services stubbed",
+    "focused_stack": "PASS",
+    "pytest": "33 passed:4 facet preservation +29 element routes",
+    "stack": "94/94",
+    "conversation": "52/52",
+    "tool": "15/15",
+    "edit_corpus": "409 phrases,0 mismatches",
+    "edit_requests": "17/17",
+    "compound": "50/50 +22/22 guards",
+    "compound_regression": "581 phrases;45 intended compound changes,0 non-compound changes",
+    "synthetic_elements": "14/14",
+    "deep_accessor": "9/9",
+    "adversarial_fixtures": "10 files,284 prompts,220 claims; diagnostic, not284 successful buyer asks",
+    "empty_fixture_gate": "missing args and empty fixture both exit2",
+    "runtime_mirrors": "29/29 files clean; writes limited to3 AI scripts +HTML",
+    "source_freeze": "29 hashes unchanged through final browser run",
+    "source_changes_from_baseline": [
+      "js/spb-pro-advisor.js",
+      "js/spb-pro-design.js",
+      "js/spb-pro-ai.js",
+      "paint-booth-v2.html"
+    ],
+    "legacy_expectations": "Exactly2 obsolete part-only whole-body expectations changed; no ranking snapshots changed"
+  },
+  "scope_holdout": {
+    "artifact": "docs/handoff_reports/CODEX_SCOPE_HOLDOUT_FINAL_2026-10-03.json",
+    "fixture": "docs/handoff_reports/CODEX_SCOPE_HOLDOUT_2026-10-03.json",
+    "fixture_sha256": "bbe422556fad7edaed2f81b329a16e38139ccddd9ea99ec2ab2333ff242a7867",
+    "counts": {
+      "scope-compatible": 19,
+      "unsupported/no mutation plan": 6,
+      "recommendation-only, scoped": 2,
+      "partial: missing whole-body scope": 1
+    },
+    "unsafe_observed": 0,
+    "interpretation": "Frozen28-case fixture generated before source inspection. P04/P12 informed repairs, so the final rerun is regression evidence, not an untouched blind success rate. Ordinary cards use answer.target; kit items use item.target. Recommendations/unsupported/partial results are separate from completed plans."
+  },
+  "remaining_priorities": [
+    "Improve the clean self-help holdout:16/30 remains the component result; diagnostic exit0 does not mean acceptance.",
+    "Address six unsupported and one partial scope ask; two additional requests produced scoped recommendations rather than completed plans.",
+    "Run a fresh real-paint numbers/sponsors/stripes battery through actual routing, apply, paint and spec output before claiming buyer-level reliability. Reported sponsor IoU/leakage results were not rerun here.",
+    "Curate high-confidence visual tags before more synonym expansion. Legacy untracked synonyms are deliberately retained to protect manual edits.",
+    "Before release, verify Electron packaging, paid-model behavior and an installed real MCP client on the exact build."
+  ],
+  "limits": [
+    "No full blind visual/610-ask battery rerun.",
+    "Offline browser checks plus stubbed-service async tests do not certify paid models.",
+    "Mask containment/state preservation and live paint/spec visual review are not a whole-product pixel-diff certification.",
+    "No live-server restart, installer or .mcpb rebuild, Git staging/commit, catalogue/renderer change or production facet write."
+  ],
+  "source_sha256_final": {
+    "js/spb-ai-atlas-data.js": "bc9736361ed991745828da6bef14b55f8a8cbf6909a52e25b84a005dd94836e8",
+    "js/spb-car-atlas-data.js": "7db4aded317b8fa678fb3a6f800eaf078e146f367062ea0886acfbc40fd29476",
+    "js/spb-car-edge-data.js": "9a6bea3164177b99c8aeda81be0f0dd6066f5f08e2b260f033eac18e49eea358",
+    "js/spb-car-edge.js": "74b895ec0419df17e482b506eb52eb11a9ca4c3d532f7869979a8d856ed39384",
+    "js/spb-car-islands-data.js": "e356dfc616662c3c0bd34132677306339276953386dc37b04a5fc315b948a579",
+    "js/spb-ai-atlas.js": "68aab458fb74fbd70836271ef7ddc93821b7a6bbe67dc53cdd6e054a83d69633",
+    "js/spb-ai-cards-data.js": "134082b15b089c5c4a63134503202c03c84fb3c5ccc9a0e538595a83b0f197f2",
+    "js/spb-ai-cards.js": "96935f47182e8b533a403b6f4f5e61094f61179c8d8c7486bd562cf8dfde77a0",
+    "js/spb-ai-knowledge.js": "e2a1647af707d2bfe5ea09ed64adabad1bf3db341df8d7b61dc8c01508774c97",
+    "js/spb-colours-ext.js": "af642bf2b2f2405aec8ca01438767e6f4981cbe86cd2c1242019a8a8e2ed304d",
+    "js/spb-intent-data.js": "4db3a36743554c7b769e2c2119cc086e8f375a2b1ec5ad8b645d8eca3e7aeacb",
+    "js/spb-intent.js": "bde8b935b71c9e176b559e89df6b36d6edc2444c0efa6edd16fc89251eab91df",
+    "js/spb-lexicon-ext.js": "410df33c7455cdbaaf7f022dcd5fb0fc9e3a7b18344b93338a79d0f7f1e6eb01",
+    "js/spb-lsa-data.js": "1b669a9c779f59d687f29932ab411aeab804e5993c10abdc227e61ce75c3dea3",
+    "js/spb-pro-advisor.js": "e63f01463d349051d57f78a8fc2a1144ce68dfd8b0bcf58774ea3a265cc4f5d8",
+    "js/spb-pro-design.js": "8f74b76b78c05ecc2c6a5811315649cbbb98062b1a55bc9476342cde2c95f80b",
+    "js/spb-pro-edit.js": "78ce952c1501bc1f523b79fb568c3fa35be61d4f2b0425a7e6b8648229a10aa0",
+    "js/spb-elements-model.js": "0bb21484fea028bf495c8559259928911891a5f4533e90a6c2f7088b32b65e18",
+    "js/spb-pro-elements.js": "1d9ab00234211db989dd6251485bb47755560fc65aee3a0cd896460c18f5f8fc",
+    "js/spb-pro-zone-kit.js": "692f8307dd3262816fa6940c70dfadd31bd3f2ea97f8fbdb18447866001c792b",
+    "js/spb-pro-ai.js": "98de2bd733a41275679c1c329d3dc0a1d68c68b4c80bfe9145e0059fc861a5bf",
+    "js/spb-self-help.js": "d5b2011b6ff9941d51ae4d6dbd677cddbb4c1d428a9bb4ac7dd881de73d1e256",
+    "js/spb-pro-rank.js": "255d38adf099818cd5cb64f93af399dc03e8d32115a7f1c2ac3299540e2929cd",
+    "mcp/server/index.js": "3937e7d63fc0e1f40dfed7988f6ed0520da2f840405849d1b05a18a01c736860",
+    "mcp/server/tools.json": "fe5d3de9b88c1c932af8c71b84c808c9c86581941208cdd8ee2288dcab0046ea",
+    "paint-booth-v2.html": "2f88c3c7c6c671b4b92dc35e43d6418c9daec708f45fe3904c8e2e6fbe701350",
+    "paint-booth-3-canvas.js": "f55880174d7aff86f44f8ee5b0c28aff31cddcde6491386d558ec16a27b98f56",
+    "js/spb-pro-carmap.js": "4e2d851c7a43b072db10874b52c988f1deab6e0c9dfca0f541db0c6827c955d4",
+    "server_routes/ai_car_routes.py": "ca6296edd2421936f9e751f84bc9f7863e71fa8269eaf8cfe824fe631f0a1ec5"
+  },
+  "changed_support_file_sha256": {
+    "scripts/ai_atlas/derive_facets.py": "625a76fb2e1faa31d35cb79abe2efb80fd196d63c40e2d48928bc5190a2a0e62",
+    "tests/ai_stack_scope_contract.cjs": "192ae4352c28e342061ba1e8335fa8f5aafb0484a31d86f5d10aed29d7733ec6",
+    "tests/ai_element_reply_contract.cjs": "a61df34c894324fff269245de1c69ce1ebe25e5ed80ea15ac47fb21154dda8ee",
+    "tests/test_ai_facets_preservation.py": "e320c298cceddfa881f30e97e234b3597b2ac4a4f3f54258a4f4f8394d012639",
+    "_easy_claude_work/adv_fp.js": "a5e269e488cdef430f16ce634b18fca90ea7bd56abb11957e10f3c37b1ef59ba",
+    "_easy_claude_work/push2_tests.js": "f3d2ea17bb544a47cade719347b18f9880efbd48540671633ed22957be085649",
+    "_easy_claude_work/pw/codex_acceptance_20261003.py": "491167ad295803f0b4dfc34920ff2c2b0a2aec6b5dd30e63824a9e07a990b978",
+    "_easy_claude_work/pw/msr_verify.py": "d54ba00496e78be6a68caf305dcd1f2bee4a3042721aa25bf29f16d9c7862d4e",
+    "_easy_claude_work/pw/aibridge.py": "2bf724edbc519995fd75d8c66eac539d25f850d08288195444ffb3d2744f11b6"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "work_item": "W115 installed offline AI runtime smoke contract",
+  "date": "2026-10-04",
+  "test": "tests/ai_offline_runtime_smoke.cjs",
+  "testSha256": "199E5440D367D958A272ABC32FC3939FFCC21BC4EB4DEB425AA5B453A5E6384D",
+  "usage": "node tests/ai_offline_runtime_smoke.cjs [--root <frozen-app-dir>]",
+  "defaultRootBaseline": {
+    "appRoot": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum",
+    "result": "EXPECTED_INCOMPLETE_INSTALL",
+    "checks": 35,
+    "failures": 17,
+    "missing": [
+      "js/spb-ai-instruction-intent-guard.js is absent and is not loaded by paint-booth-v2.html",
+      "js/spb-ai-part-memory.js exists and exports the expected factory, but is not loaded by paint-booth-v2.html",
+      "js/spb-ai-part-memory-project.js is absent and not loaded by paint-booth-v2.html",
+      "js/spb-ai-receipt-explainer.js is absent and not loaded by paint-booth-v2.html",
+      "js/spb-ai-complete-instruction-guard.js is absent and not loaded by paint-booth-v2.html",
+      "js/spb-ai-operation.js exists, but is not loaded by paint-booth-v2.html",
+      "part-memory module and project bridge are not ordered because the bridge is not installed"
+    ],
+    "verified": [
+      "material parser accepts roof clearcoat +20 points and preserves other channel values",
+      "material parser refuses percent units and mixed channel requests, and delegates finish-only language",
+      "part-memory module exposes schema, saveRecord, sanitizeRecord, and prepareRestore",
+      "lease, material controls, and pro controller are present in the default HTML"
+    ]
+  },
+  "runtime7AndFinalRootRuns": "Pending root execution against frozen Runtime7 and installed root; this report does not claim those results.",
+  "limits": [
+    "No HTML, runtime source, native app, provider, or server was changed or invoked.",
+    "The test checks the root-level paint-booth-v2.html runtime only; pass --root for a frozen app directory with the same layout."
+  ]
+}

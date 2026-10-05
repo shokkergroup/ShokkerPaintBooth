@@ -1,0 +1,195 @@
+{
+  "version": 2,
+  "metric": "M6 \u2014 Intent-Aware Floor / Ceiling",
+  "generated": "2026-08-28T15:27:28",
+  "profiledCategories": 96,
+  "ownerBrief": "Foundation = spec-channel-driven (paint intentionally flat). Regular patterns = design-only (paint color irrelevant). Updated 2026-05-14.",
+  "surfaceIntents": {
+    "Foundation": "spec_driven",
+    "\u2605 Enhanced Foundation": "spec_driven",
+    "\u2605 Enhanced Foundation Exotic": "spec_driven",
+    "Clearcoat": "spec_driven",
+    "Ghost Geometry": "spec_driven",
+    "\ud83d\udc63 FRACTURED CRYPTID": "fine_structural_color",
+    "\ud83e\udd8b FRACTURED MORPHO": "fine_structural_color",
+    "\ud83c\udf38 FRACTURED BLOOM": "fine_structural_color",
+    "\ud83e\uddeb FRACTURED PETRI": "fine_structural_color",
+    "Neon": "fine_structural_color",
+    "Carbon & Weave": "pattern_design",
+    "Carbon & Composite": "pattern_design",
+    "Geometric": "pattern_design",
+    "Guilloch\u00e9": "pattern_design",
+    "Panel Quilting": "pattern_design",
+    "Optical": "pattern_design",
+    "Op-Art & Visual Illusions": "pattern_design",
+    "\ud83d\udd2e Op-Art & Visual Illusions": "pattern_design",
+    "\ud83c\udf00 Mathematical & Fractal": "pattern_design",
+    "Fractal Chaos": "pattern_design",
+    "SHOKK PATTERNS": "pattern_design",
+    "\u2728 World Geometry": "pattern_design",
+    "\ud83c\udfa8 Art Deco & Geometric": "pattern_design",
+    "\ud83c\udfd7\ufe0f Art Deco & Textile": "pattern_design",
+    "\u2699\ufe0f Tech & Circuit": "pattern_design",
+    "Decades - 50s": "pattern_design",
+    "Decades - 60s": "pattern_design",
+    "Decades - 70s": "pattern_design",
+    "Decades - 80s": "pattern_design",
+    "Decades - 90s": "pattern_design",
+    "Ornamental": "pattern_design",
+    "Artistic & Cultural": "pattern_design",
+    "Cultural": "pattern_image"
+  },
+  "byFinish": {
+    "monolithic:xlab_abyssal_lens": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_afterimage_lacquer": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_aerogel_fire": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_anamorphic_pearl": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_anti_gravity_foil": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_arc_weld_velvet": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_black_ice_orbit": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_bloomglass": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_brunel_current": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_caustic_engine": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_ceramic_storm": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_chiral_mercury": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_chromatophore": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_cinder_mirror": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_coral_voltage": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_cryogenic_sunset": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_deep_time": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_dichroic_skin": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_electric_ink": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_ferrofluid_silk": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_ghost_transmission": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_hologram_metal": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_ion_bloom": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_laminar_magma": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_luminous_carbon": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_memory_glass": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_nebula_ceramic": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_photon_patina": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_quantum_tide": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    },
+    "monolithic:xlab_sonic_chrome": {
+      "score": null,
+      "category": "X LAB",
+      "profile": null
+    }
+  },
+  "byCategory": {}
+}

@@ -739,6 +739,490 @@ def _pack(val, R_range=-80.0, M_range=80.0, cc_scale=None):
     return {"pattern_val": val.astype(np.float32), "R_range": R_range, "M_range": M_range, "CC": cc_arr}
 
 
+# === LET FREEDOM RING PATTERNS (lfr_*) 2026-06-09 START ===
+# 10 patriotic patterns. UV-orientation-agnostic: scattered/radial/multi-angle
+# motifs only, per-instance random rotations, no upright flag geometry.
+# Dispatched from _texture_expansion/_paint_expansion via the lfr_ prefix.
+def _lfr_star_sdf(xx, yy, cx, cy, R, rot, k=5):
+    dx = xx - cx; dy = yy - cy
+    ang = np.arctan2(dy, dx) - rot
+    rad = np.hypot(dx, dy)
+    m = 2.0 * np.pi / k
+    a = np.mod(ang, m); a = np.abs(a - m * 0.5)
+    edge = R * (0.42 + 0.58 * (a / (m * 0.5)))
+    return np.clip(1.0 - rad / (edge + 1e-4), 0.0, 1.0)
+
+# ---- texture ----
+def _tex_lfr_star_lattice(shape, seed):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 4001)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    out = np.zeros((h, w), dtype=np.float32)
+    dim = float(min(h, w))
+    tiers = [
+        (int(rng.integers(7, 11)),  0.085, 0.150, 1.00),
+        (int(rng.integers(20, 30)), 0.040, 0.075, 0.85),
+        (int(rng.integers(60, 90)), 0.014, 0.030, 0.60),
+    ]
+    for count, fmin, fmax, peak in tiers:
+        for _ in range(count):
+            cx = rng.uniform(-0.05, 1.05) * w
+            cy = rng.uniform(-0.05, 1.05) * h
+            R  = rng.uniform(fmin, fmax) * dim
+            rot = rng.uniform(0.0, 2.0 * np.pi)
+            # PERF: star SDF support is exactly rad < edge <= R, so evaluate
+            # only the local window (identical math on the slice).
+            x0 = max(0, int(cx - R) - 2); x1 = min(w, int(cx + R) + 3)
+            y0 = max(0, int(cy - R) - 2); y1 = min(h, int(cy + R) + 3)
+            if x0 >= x1 or y0 >= y1:
+                continue
+            star = _lfr_star_sdf(xx[:, x0:x1], yy[y0:y1, :], cx, cy, R, rot, k=5)
+            star = np.power(star, 0.55) * peak
+            out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], star.astype(np.float32))
+    bg = _multi_scale_noise_fast(shape, [8, 16, 32], int(seed) + 4007) * 0.10 + 0.06
+    return np.clip(out + bg, 0.0, 1.0).astype(np.float32)
+# ---- paint ----
+def _paint_lfr_star_lattice(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None: pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1); s = pm * 0.95
+    core = np.clip((pv - 0.55) * 2.4, 0, 1)
+    halo = np.clip((pv - 0.18) * 1.6, 0, 1) * (1 - core)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + core * 0.85 * s * mask - halo * 0.10 * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + core * 0.85 * s * mask - halo * 0.04 * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + core * 0.92 * s * mask + halo * 0.55 * s * mask, 0, 1)
+    return paint
+
+# ---- texture ----
+def _tex_lfr_stripe_drift(shape, seed):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 4101)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    cx0, cy0 = w * 0.5, h * 0.5
+    dim = float(min(h, w))
+    out = np.zeros((h, w), dtype=np.float32)
+    n = int(rng.integers(16, 26))
+    for _ in range(n):
+        ang = rng.uniform(0.0, np.pi)
+        ca, sa = np.cos(ang), np.sin(ang)
+        proj = (xx - cx0) * sa - (yy - cy0) * ca
+        # PERF: run = (xx-cx0)*ca + (yy-cy0)*sa is affine in x/y, so the two
+        # full-grid sin() fields are computed via sin(U+V) = sinU*cosV +
+        # cosU*sinV with 1-D row/col vectors (error ~1e-6 px, invisible).
+        # Same rng draws in the same order as the original expressions.
+        A = (xx - cx0) * ca          # (1, w)
+        B = (yy - cy0) * sa          # (h, 1)
+        c1 = rng.uniform(0.18, 0.42); p1 = rng.uniform(0, 6.28); a1 = rng.uniform(0.02, 0.06)
+        u = A / (dim * c1); v = B / (dim * c1) + p1
+        amp = np.float32(dim * a1)
+        drift = (np.sin(u) * amp) * np.cos(v) + (np.cos(u) * amp) * np.sin(v)
+        c4 = rng.uniform(0.012, 0.040); c5 = rng.uniform(0.25, 0.6); p2 = rng.uniform(0, 6.28)
+        u2 = A / (dim * c5); v2 = B / (dim * c5) + p2
+        s4 = np.float32(c4 * dim * 0.6)
+        hw = (np.sin(u2) * s4) * np.cos(v2) + (np.cos(u2) * s4) * np.sin(v2)
+        # hw0*(1+0.6*sin) > 0 always (0.6 < 1), so abs() is the identity.
+        band = np.clip(1.0 - np.abs(proj - drift) / (hw + np.float32(c4 * dim + 1e-4)), 0, 1)
+        # PERF: pow only where band > 0 (band is mostly zero; 0**0.8 == 0).
+        bp = np.zeros_like(band, dtype=np.float32)
+        nz = band > 0
+        bp[nz] = np.power(band[nz], 0.8)
+        out = np.maximum(out, bp)
+    bg = _multi_scale_noise_fast(shape, [8, 16], int(seed) + 4109) * 0.08 + 0.05
+    return np.clip(out + bg, 0.0, 1.0).astype(np.float32)
+# ---- paint ----
+def _paint_lfr_stripe_drift(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None: pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1); s = pm * 0.9
+    h, w = shape
+    yy = np.arange(h, dtype=np.float32)[:, None]; xx = np.arange(w, dtype=np.float32)[None, :]
+    phase = (np.sin(xx * 0.012 + yy * 0.009 + (int(seed) % 19)) * 0.5 + 0.5)
+    white_band = pv * phase; red_band = pv * (1.0 - phase)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + white_band * 0.75 * s * mask + red_band * 0.70 * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + white_band * 0.75 * s * mask - red_band * 0.18 * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + white_band * 0.78 * s * mask - red_band * 0.12 * s * mask, 0, 1)
+    return paint
+
+# ---- texture ----
+def _tex_lfr_bunting_scallop(shape, seed):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 4201)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    out = np.zeros((h, w), dtype=np.float32)
+    n = int(rng.integers(10, 16))
+    for _ in range(n):
+        cx = rng.uniform(0.0, 1.0) * w; cy = rng.uniform(0.0, 1.0) * h
+        rot = rng.uniform(0.0, 2.0 * np.pi); span = rng.uniform(0.7, 1.5)
+        base_r = rng.uniform(0.10, 0.22) * dim; rings = int(rng.integers(3, 6))
+        gap = base_r / (rings + 1)
+        # PERF: arcs live strictly inside rad < base_r — local window only.
+        x0 = max(0, int(cx - base_r) - 2); x1 = min(w, int(cx + base_r) + 3)
+        y0 = max(0, int(cy - base_r) - 2); y1 = min(h, int(cy + base_r) + 3)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        dx = xx[:, x0:x1] - cx; dy = yy[y0:y1, :] - cy
+        ang = np.arctan2(dy, dx) - rot
+        ang = np.mod(ang + np.pi, 2 * np.pi) - np.pi
+        rad = np.hypot(dx, dy)
+        keep = (np.abs(ang) < span).astype(np.float32)
+        swag = np.zeros(rad.shape, dtype=np.float32)
+        for k in range(1, rings + 1):
+            rr = k * gap
+            arc = np.clip(1.0 - np.abs(rad - rr) / (gap * 0.42 + 1e-4), 0, 1)
+            swag = np.maximum(swag, arc * (0.55 + 0.45 * (k / rings)))
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], (swag * keep).astype(np.float32))
+    bg = _multi_scale_noise_fast(shape, [8, 16, 32], int(seed) + 4209) * 0.09 + 0.05
+    return np.clip(out + bg, 0.0, 1.0).astype(np.float32)
+# ---- paint ----
+def _paint_lfr_bunting_scallop(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None: pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1); s = pm * 0.9
+    h, w = shape
+    yy = np.arange(h, dtype=np.float32)[:, None]; xx = np.arange(w, dtype=np.float32)[None, :]
+    sel = (np.sin(xx * 0.018 + (int(seed) % 13)) + np.cos(yy * 0.016 - (int(seed) % 7))) * 0.5
+    red = pv * np.clip(0.6 - sel, 0, 1); blue = pv * np.clip(0.6 + sel, 0, 1)
+    white = pv * np.clip(1.0 - np.abs(sel) * 2.0, 0, 1)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + red * 0.72 * s * mask + white * 0.78 * s * mask - blue * 0.08 * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] - red * 0.16 * s * mask + white * 0.78 * s * mask - blue * 0.04 * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] - red * 0.10 * s * mask + white * 0.82 * s * mask + blue * 0.80 * s * mask, 0, 1)
+    return paint
+
+# ---- texture ----
+def _tex_lfr_distressed_flag(shape, seed):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 4301)
+    wear = _multi_scale_noise_fast(shape, [3, 6, 12, 24], int(seed) + 4302)
+    crack = np.zeros((h, w), dtype=np.float32); wsum = 0.0
+    for sc, wt in [(8, 1.0), (16, 0.6), (32, 0.35), (64, 0.2)]:
+        nz = _noise_simple(shape, seed=int(seed) + 4310 + sc, scale=float(sc))
+        ridged = 1.0 - np.abs(2.0 * nz - 1.0)
+        crack += np.power(ridged, 3.0) * wt; wsum += wt
+    crack /= max(wsum, 1e-6)
+    crack = np.clip((crack - 0.55) * 3.2, 0, 1)
+    pin = (rng.random((h, w), dtype=np.float32) > 0.992).astype(np.float32)
+    out = np.clip(wear * 0.72 + crack * 0.55 + pin * 0.6, 0, 1)
+    return out.astype(np.float32)
+# ---- paint ----
+def _paint_lfr_distressed_flag(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None: pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1); s = pm * 0.85
+    h, w = shape
+    yy = np.arange(h, dtype=np.float32)[:, None]; xx = np.arange(w, dtype=np.float32)[None, :]
+    region = np.sin(xx * 0.006 + (int(seed) % 11)) + np.sin(yy * 0.005 - (int(seed) % 5))
+    red = np.clip(0.7 - region, 0, 1); blue = np.clip(0.7 + region, 0, 1)
+    white = np.clip(1.0 - np.abs(region) * 1.4, 0, 1)
+    fade = (0.35 + 0.65 * pv)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (red * 0.34 + white * 0.26 - blue * 0.06) * fade * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + (white * 0.24 - red * 0.10 - blue * 0.02) * fade * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (blue * 0.34 + white * 0.22 - red * 0.08) * fade * s * mask, 0, 1)
+    crack = np.clip((pv - 0.55) * 2.5, 0, 1)
+    for c in range(3):
+        paint[:, :, c] = np.clip(paint[:, :, c] - crack * 0.10 * s * mask, 0, 1)
+    return paint
+
+# ---- texture ----
+def _tex_lfr_eagle_crest(shape, seed):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 4401)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    out = np.zeros((h, w), dtype=np.float32)
+    n = int(rng.integers(9, 14))
+    for _ in range(n):
+        cx = rng.uniform(0.0, 1.0) * w; cy = rng.uniform(0.0, 1.0) * h
+        rot = rng.uniform(0.0, 2.0 * np.pi); R = rng.uniform(0.09, 0.17) * dim
+        rays = int(rng.integers(7, 11)); spread = rng.uniform(1.6, 2.6)
+        # PERF: env support is exactly rad < 1 (dist < R); heart at R is
+        # exp(-30) — local window only.
+        x0 = max(0, int(cx - R) - 2); x1 = min(w, int(cx + R) + 3)
+        y0 = max(0, int(cy - R) - 2); y1 = min(h, int(cy + R) + 3)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        dx = xx[:, x0:x1] - cx; dy = yy[y0:y1, :] - cy
+        ang = np.arctan2(dy, dx) - rot
+        ang = np.mod(ang + np.pi, 2 * np.pi) - np.pi
+        rad = np.hypot(dx, dy) / (R + 1e-4)
+        feathers = np.power(np.clip(np.cos(ang * rays), 0, 1), 3.0)
+        env = np.exp(-((np.abs(ang) - spread) ** 2) * 1.2) + np.exp(-(ang ** 2) * 0.6)
+        env = np.clip(env, 0, 1) * np.clip(1.0 - rad, 0, 1)
+        crest = feathers * env
+        heart = np.exp(-(rad * 5.5) ** 2) * 1.0
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], np.clip(crest * 0.9 + heart, 0, 1).astype(np.float32))
+    bg = _multi_scale_noise_fast(shape, [8, 16, 32], int(seed) + 4409) * 0.09 + 0.05
+    return np.clip(out + bg, 0.0, 1.0).astype(np.float32)
+# ---- paint ----
+def _paint_lfr_eagle_crest(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None: pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1); s = pm * 0.95
+    heart = np.clip((pv - 0.7) * 3.3, 0, 1)
+    feather = np.clip((pv - 0.2) * 1.6, 0, 1) * (1 - heart)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + heart * 0.85 * s * mask + feather * 0.60 * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + heart * 0.80 * s * mask + feather * 0.45 * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + heart * 0.55 * s * mask - feather * 0.06 * s * mask, 0, 1)
+    return paint
+
+# ---- texture ----
+def _tex_lfr_firework_radial(shape, seed):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 4501)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    out = np.zeros((h, w), dtype=np.float32)
+    n = int(rng.integers(6, 10))
+    for _ in range(n):
+        cx = rng.uniform(0.05, 0.95) * w; cy = rng.uniform(0.05, 0.95) * h
+        R  = rng.uniform(0.12, 0.30) * dim; rays = int(rng.integers(18, 34))
+        rot = rng.uniform(0, 2 * np.pi)
+        # PERF: burst support is rn < 1; shell at rn = 1.5 is exp(-9.3)
+        # (~1e-4) — evaluate the local window only. The full-grid spark
+        # noise draw is kept so the rng sequence is unchanged.
+        rr = R * 1.5 + 2.0
+        x0 = max(0, int(cx - rr) - 2); x1 = min(w, int(cx + rr) + 3)
+        y0 = max(0, int(cy - rr) - 2); y1 = min(h, int(cy + rr) + 3)
+        dx = xx[:, x0:x1] - cx; dy = yy[y0:y1, :] - cy
+        ang = np.arctan2(dy, dx); rad = np.hypot(dx, dy); rn = rad / (R + 1e-4)
+        spokes = np.power(np.clip(np.cos((ang - rot) * rays) * 0.5 + 0.5, 0, 1), 4.0)
+        falloff = np.clip(1.0 - rn, 0, 1) * np.exp(-(rn ** 2) * 0.6)
+        burst = spokes * falloff
+        core = np.exp(-(rn * 6.0) ** 2)
+        shell = np.exp(-((rn - 0.85) ** 2) * 22.0)
+        spark = (rng.random((h, w), dtype=np.float32)[y0:y1, x0:x1] > 0.985).astype(np.float32) * shell
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], np.clip(burst * 0.9 + core + spark * 0.8, 0, 1).astype(np.float32))
+    bg = _multi_scale_noise_fast(shape, [8, 16], int(seed) + 4509) * 0.07 + 0.04
+    return np.clip(out + bg, 0.0, 1.0).astype(np.float32)
+# ---- paint ----
+def _paint_lfr_firework_radial(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None: pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1); s = pm * 1.0
+    core = np.clip((pv - 0.72) * 3.6, 0, 1)
+    mid  = np.clip((pv - 0.35) * 2.4, 0, 1) * (1 - core)
+    rim  = np.clip((pv - 0.12) * 1.4, 0, 1) * (1 - core - mid)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + core * 0.9 * s * mask + mid * 0.70 * s * mask - rim * 0.06 * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + core * 0.9 * s * mask + mid * 0.32 * s * mask - rim * 0.02 * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + core * 0.92 * s * mask - mid * 0.10 * s * mask + rim * 0.60 * s * mask, 0, 1)
+    return paint
+
+# ---- texture ----
+def _tex_lfr_constellation_field(shape, seed):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 4601)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    out = np.zeros((h, w), dtype=np.float32)
+    npts = int(rng.integers(70, 110))
+    pts = np.stack([rng.uniform(0, w, npts), rng.uniform(0, h, npts)], axis=1).astype(np.float32)
+    mags = rng.uniform(0.35, 1.0, npts).astype(np.float32)
+    order = np.argsort(pts[:, 0])
+    for i in range(npts - 1):
+        if rng.random() > 0.35: continue
+        a = pts[order[i]]; b = pts[order[i + 1]]
+        if np.hypot(*(a - b)) > 0.22 * dim: continue
+        # PERF: line support is exactly d < dim*0.0035 — local window only.
+        pad = dim * 0.0035 + 3.0
+        x0 = max(0, int(min(a[0], b[0]) - pad)); x1 = min(w, int(max(a[0], b[0]) + pad) + 2)
+        y0 = max(0, int(min(a[1], b[1]) - pad)); y1 = min(h, int(max(a[1], b[1]) + pad) + 2)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        xs = xx[:, x0:x1]; ys = yy[y0:y1, :]
+        ab = b - a; L2 = float(ab[0] ** 2 + ab[1] ** 2) + 1e-6
+        t = np.clip(((xs - a[0]) * ab[0] + (ys - a[1]) * ab[1]) / L2, 0, 1)
+        px = a[0] + t * ab[0]; py = a[1] + t * ab[1]
+        d = np.hypot(xs - px, ys - py)
+        line = np.clip(1.0 - d / (dim * 0.0035), 0, 1) * 0.30
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], line.astype(np.float32))
+    sig = max(1.0, dim * 0.006)
+    for (sx, sy), m in zip(pts, mags):
+        # PERF: glow tail at 4.3 sigma is < 1e-4 — local window only.
+        pad = sig * (0.6 + float(m)) * 4.3 + 2.0
+        x0 = max(0, int(sx - pad)); x1 = min(w, int(sx + pad) + 2)
+        y0 = max(0, int(sy - pad)); y1 = min(h, int(sy + pad) + 2)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        d2 = (xx[:, x0:x1] - sx) ** 2 + (yy[y0:y1, :] - sy) ** 2
+        glow = np.exp(-d2 / (2 * (sig * (0.6 + m)) ** 2)) * m
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], glow.astype(np.float32))
+    bg = _multi_scale_noise_fast(shape, [16, 32], int(seed) + 4609) * 0.05 + 0.03
+    return np.clip(out + bg, 0.0, 1.0).astype(np.float32)
+# ---- paint ----
+def _paint_lfr_constellation_field(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None: pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1); s = pm * 0.9
+    star = np.clip((pv - 0.45) * 2.2, 0, 1)
+    line = np.clip((pv - 0.12) * 2.0, 0, 1) * (1 - star)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + star * 0.80 * s * mask - line * 0.04 * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + star * 0.84 * s * mask + line * 0.18 * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + star * 0.95 * s * mask + line * 0.55 * s * mask, 0, 1)
+    return paint
+
+# ---- texture ----
+def _tex_lfr_ribbon_weave(shape, seed):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 4701)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    g = rng.uniform(0.0, np.pi); skew = rng.uniform(-0.18, 0.18)
+    ca, sa = np.cos(g), np.sin(g)
+    cb, sb = np.cos(g + np.pi / 2 + skew), np.sin(g + np.pi / 2 + skew)
+    u = (xx - w * 0.5) * ca + (yy - h * 0.5) * sa
+    v = (xx - w * 0.5) * cb + (yy - h * 0.5) * sb
+    period = max(18.0, dim * rng.uniform(0.05, 0.09)); ribbon_w = period * 0.62
+    uu = np.abs(np.mod(u, period) - period * 0.5)
+    vv = np.abs(np.mod(v, period) - period * 0.5)
+    rib_u = np.power(np.clip(1.0 - uu / (ribbon_w * 0.5), 0, 1), 0.7)
+    rib_v = np.power(np.clip(1.0 - vv / (ribbon_w * 0.5), 0, 1), 0.7)
+    cu = np.floor(u / period); cv = np.floor(v / period)
+    over_u = (np.mod(cu + cv, 2) < 0.5).astype(np.float32)
+    weave = rib_u * over_u + rib_v * (1.0 - over_u)
+    under = (rib_u * (1.0 - over_u) + rib_v * over_u) * 0.45
+    return np.clip(np.maximum(weave, under), 0, 1).astype(np.float32)
+# ---- paint ----
+def _paint_lfr_ribbon_weave(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None: pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1); s = pm * 0.9
+    h, w = shape
+    yy = np.arange(h, dtype=np.float32)[:, None]; xx = np.arange(w, dtype=np.float32)[None, :]
+    g = (int(seed) % 360) * np.pi / 180.0
+    u = (xx * np.cos(g) + yy * np.sin(g)) * 0.02
+    tri = np.mod(u + (int(seed) % 3), 3.0)
+    red = pv * (np.abs(tri - 0.5) < 0.5).astype(np.float32)
+    white = pv * (np.abs(tri - 1.5) < 0.5).astype(np.float32)
+    blue = pv * (np.abs(tri - 2.5) < 0.5).astype(np.float32)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + red * 0.72 * s * mask + white * 0.78 * s * mask - blue * 0.08 * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] - red * 0.16 * s * mask + white * 0.78 * s * mask - blue * 0.04 * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] - red * 0.10 * s * mask + white * 0.82 * s * mask + blue * 0.82 * s * mask, 0, 1)
+    return paint
+
+# ---- texture (reuses shared _lfr_star_sdf) ----
+def _tex_lfr_stencil_stars(shape, seed):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 4801)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    out = np.zeros((h, w), dtype=np.float32)
+    grain = _noise_simple(shape, seed=int(seed) + 4805, scale=60.0)
+    n = int(rng.integers(22, 36))
+    for _ in range(n):
+        cx = rng.uniform(-0.03, 1.03) * w; cy = rng.uniform(-0.03, 1.03) * h
+        R  = rng.uniform(0.03, 0.10) * dim; rot = rng.uniform(0, 2 * np.pi)
+        # PERF: body support < 0.82R; halo tail at 2.25R is exp(-8.6)*0.5
+        # (~9e-5, invisible) — evaluate the local window only.
+        rr = R * 2.25 + 2.0
+        x0 = max(0, int(cx - rr) - 2); x1 = min(w, int(cx + rr) + 3)
+        y0 = max(0, int(cy - rr) - 2); y1 = min(h, int(cy + rr) + 3)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        xs = xx[:, x0:x1]; ys = yy[y0:y1, :]; gr_w = grain[y0:y1, x0:x1]
+        body = (_lfr_star_sdf(xs, ys, cx, cy, R, rot, k=5) > 0.18).astype(np.float32)
+        rad = np.hypot(xs - cx, ys - cy) / (R + 1e-4)
+        halo = np.exp(-((rad - 1.05) ** 2) * 6.0) * (0.35 + 0.65 * gr_w)
+        spray = np.clip(body * (0.85 + 0.15 * gr_w) + halo * 0.5, 0, 1)
+        spray = np.clip(spray - (gr_w > 0.85).astype(np.float32) * body * 0.25, 0, 1)
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], spray.astype(np.float32))
+    bg = _multi_scale_noise_fast(shape, [8, 16, 32], int(seed) + 4809) * 0.08 + 0.05
+    return np.clip(out + bg, 0.0, 1.0).astype(np.float32)
+# ---- paint ----
+def _paint_lfr_stencil_stars(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None: pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1); s = pm * 0.9
+    body = np.clip((pv - 0.5) * 2.2, 0, 1)
+    bleed = np.clip((pv - 0.18) * 1.6, 0, 1) * (1 - body)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + body * 0.78 * s * mask - bleed * 0.06 * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + body * 0.78 * s * mask - bleed * 0.03 * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + body * 0.82 * s * mask + bleed * 0.45 * s * mask, 0, 1)
+    return paint
+
+# ---- texture ----
+def _tex_lfr_liberty_filigree(shape, seed):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 4901)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    out = np.zeros((h, w), dtype=np.float32)
+    line_w = max(1.0, dim * 0.0030)
+    n = int(rng.integers(8, 13))
+    for _ in range(n):
+        cx = rng.uniform(0.05, 0.95) * w; cy = rng.uniform(0.05, 0.95) * h
+        R  = rng.uniform(0.10, 0.20) * dim; rot = rng.uniform(0, 2 * np.pi)
+        k = int(rng.choice([3, 4, 5, 6]))
+        # PERF: rose support < R + line_w, spiral support < 1.2R — window.
+        rr = max(R * 1.2, R + line_w * 1.3) + 2.0
+        x0 = max(0, int(cx - rr) - 2); x1 = min(w, int(cx + rr) + 3)
+        y0 = max(0, int(cy - rr) - 2); y1 = min(h, int(cy + rr) + 3)
+        dx = xx[:, x0:x1] - cx; dy = yy[y0:y1, :] - cy
+        ang = np.arctan2(dy, dx) - rot; rad = np.hypot(dx, dy)
+        rose_r = R * np.abs(np.cos(k * ang))
+        rose = np.clip(1.0 - np.abs(rad - rose_r) / line_w, 0, 1)
+        a = R * rng.uniform(0.05, 0.12)
+        b = rng.uniform(0.18, 0.30) * (1 if rng.random() > 0.5 else -1)
+        turns = rng.uniform(1.5, 3.0)
+        theta_u = np.mod(ang, 2 * np.pi)
+        spi_r = a * np.exp(b * (theta_u + 2 * np.pi * np.floor(rad / (R + 1e-4) * turns)))
+        spiral = np.clip(1.0 - np.abs(rad - spi_r) / (line_w * 1.3), 0, 1) * np.clip(1.0 - rad / (R * 1.2), 0, 1)
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], np.maximum(rose, spiral).astype(np.float32))
+    bg = _multi_scale_noise_fast(shape, [8, 16, 32], int(seed) + 4909) * 0.07 + 0.05
+    return np.clip(out + bg, 0.0, 1.0).astype(np.float32)
+# ---- paint ----
+def _paint_lfr_liberty_filigree(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None: pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1); s = pm * 0.95
+    line = np.clip((pv - 0.35) * 2.4, 0, 1)
+    fill = np.clip((pv - 0.10) * 1.3, 0, 1) * (1 - line)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + line * 0.72 * s * mask - fill * 0.05 * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + line * 0.58 * s * mask - fill * 0.02 * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + line * 0.20 * s * mask + fill * 0.30 * s * mask, 0, 1)
+    return paint
+
+def _texture_lfr_dispatch(shape, mask, seed, sm, variant):
+    if variant=='lfr_star_lattice':        return _pack(_tex_lfr_star_lattice(shape, seed),        R_range=-118.0, M_range=90.0)
+    if variant=='lfr_stripe_drift':        return _pack(_tex_lfr_stripe_drift(shape, seed),        R_range=-95.0,  M_range=70.0)
+    if variant=='lfr_bunting_scallop':     return _pack(_tex_lfr_bunting_scallop(shape, seed),     R_range=-100.0, M_range=80.0)
+    if variant=='lfr_distressed_flag':     return _pack(_tex_lfr_distressed_flag(shape, seed),     R_range=85.0,   M_range=-45.0)
+    if variant=='lfr_eagle_crest':         return _pack(_tex_lfr_eagle_crest(shape, seed),         R_range=-120.0, M_range=95.0)
+    if variant=='lfr_firework_radial':     return _pack(_tex_lfr_firework_radial(shape, seed),     R_range=-150.0, M_range=120.0)
+    if variant=='lfr_constellation_field': return _pack(_tex_lfr_constellation_field(shape, seed),  R_range=-108.0, M_range=85.0)
+    if variant=='lfr_ribbon_weave':        return _pack(_tex_lfr_ribbon_weave(shape, seed),        R_range=-90.0,  M_range=75.0)
+    if variant=='lfr_stencil_stars':       return _pack(_tex_lfr_stencil_stars(shape, seed),       R_range=70.0,   M_range=-30.0)
+    if variant=='lfr_liberty_filigree':    return _pack(_tex_lfr_liberty_filigree(shape, seed),    R_range=-115.0, M_range=92.0)
+    return _pack(_tex_lfr_star_lattice(shape, seed), R_range=-118.0, M_range=90.0)  # safe default
+
+def _paint_lfr_dispatch(paint, shape, mask, seed, pm, bb, variant):
+    m = {'lfr_star_lattice':_paint_lfr_star_lattice,'lfr_stripe_drift':_paint_lfr_stripe_drift,'lfr_bunting_scallop':_paint_lfr_bunting_scallop,'lfr_distressed_flag':_paint_lfr_distressed_flag,'lfr_eagle_crest':_paint_lfr_eagle_crest,'lfr_firework_radial':_paint_lfr_firework_radial,'lfr_constellation_field':_paint_lfr_constellation_field,'lfr_ribbon_weave':_paint_lfr_ribbon_weave,'lfr_stencil_stars':_paint_lfr_stencil_stars,'lfr_liberty_filigree':_paint_lfr_liberty_filigree}
+    fn = m.get(variant)
+    if fn is None:
+        if paint.ndim==3 and paint.shape[2]>3: paint=paint[:,:,:3].copy()
+        return paint[:,:,:3].astype(np.float32)
+    return fn(paint, shape, mask, seed, pm, bb)
+
+# === LET FREEDOM RING PATTERNS (lfr_*) 2026-06-09 END ===
+
 # ─────────────────────────────────────────────────────────
 # TEXTURE FUNCTIONS
 # ─────────────────────────────────────────────────────────
@@ -751,6 +1235,10 @@ def _texture_expansion(shape, mask, seed, sm, variant):
     # Dispatched below after all flame texture helpers are defined.
     if variant.startswith("flame_"):
         return _texture_flame_dispatch(shape, mask, seed, sm, variant)
+
+    # ── LET FREEDOM RING (10 patriotic patterns, 2026-06-09) ────────────────────
+    if variant.startswith("lfr_"):
+        return _texture_lfr_dispatch(shape, mask, seed, sm, variant)
 
     # ── 50s ─────────────────────────────────────────────
     if "50s_starburst" in variant:
@@ -1245,6 +1733,10 @@ def _paint_expansion(paint, shape, mask, seed, pm, bb, variant):
     # Flames → dedicated flame gradient paint
     if variant.startswith("flame_"):
         return _paint_flame(paint, shape, mask, seed, pm, bb, variant)
+
+    # Let Freedom Ring → dedicated patriotic palette paints
+    if variant.startswith("lfr_"):
+        return _paint_lfr_dispatch(paint, shape, mask, seed, pm, bb, variant)
 
     # Decades
     if variant.startswith("decade_"):
@@ -2429,3 +2921,1275 @@ def build_expansion_entries(pattern_ids):
         out[pid] = _closure(pid)
     return out
 
+
+# === IGNITION REBUILD 2026-06-10 START ===
+# --- IGNITION: lfr_star_lattice ---
+def _ign_starlat_edge(xx, yy, cx, cy, R, rot, inner, k=5):
+    dx = xx - cx
+    dy = yy - cy
+    ang = np.arctan2(dy, dx) - rot
+    rad = np.hypot(dx, dy)
+    m = 2.0 * np.pi / k
+    a = np.abs(np.mod(ang, m) - m * 0.5)
+    edge = R * (inner + (1.0 - inner) * (a / (m * 0.5)))
+    return rad - edge
+
+def _ign_starlat_texture(shape, mask, seed, sm):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 77001)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    px = max(dim / 2048.0, 0.05)
+    out = np.zeros((h, w), dtype=np.float32)
+
+    # band 1: stencil star badges — crisp double-stroke outline + offset solid
+    # inner star + dashed orbit ring; every badge gets its own random rotation.
+    hubs = []
+    n_hub = int(rng.integers(13, 18))
+    for _ in range(n_hub):
+        cx = rng.uniform(0.04, 0.96) * w
+        cy = rng.uniform(0.04, 0.96) * h
+        R = rng.uniform(0.052, 0.112) * dim
+        rot = rng.uniform(0.0, 2.0 * np.pi)
+        ring = rng.random() < 0.6
+        hubs.append((cx, cy, R))
+        pad = R * 1.42 + 8.0 * px
+        x0 = max(0, int(cx - pad)); x1 = min(w, int(cx + pad) + 2)
+        y0 = max(0, int(cy - pad)); y1 = min(h, int(cy + pad) + 2)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        wx = xx[:, x0:x1]; wy = yy[y0:y1, :]
+        d = _ign_starlat_edge(wx, wy, cx, cy, R, rot, 0.40)
+        lw = 4.5 * px + R * 0.024
+        stroke = np.clip(1.0 - np.abs(d) / lw, 0.0, 1.0)
+        d2 = _ign_starlat_edge(wx, wy, cx, cy, R * 0.55, rot + np.pi / 5.0, 0.40)
+        solid = np.clip(0.5 - d2 / (2.0 * px), 0.0, 1.0) * 0.86
+        badge = np.maximum(stroke, solid)
+        if ring:
+            rad = np.hypot(wx - cx, wy - cy)
+            angw = np.arctan2(wy - cy, wx - cx) - rot
+            dash = (np.mod(angw, np.pi / 6.0) < np.pi / 9.0).astype(np.float32)
+            orbit = np.clip(1.0 - np.abs(rad - R * 1.24) / (2.6 * px), 0.0, 1.0) * dash * 0.74
+            badge = np.maximum(badge, orbit)
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], badge.astype(np.float32))
+
+    # band 2: lattice truss chords — each badge links to its 2 nearest peers
+    # with twin pin rails + crossbar ticks, trimmed clear of the star bodies.
+    if len(hubs) >= 3:
+        pts = np.array([(p[0], p[1]) for p in hubs], dtype=np.float32)
+        dmat = np.hypot(pts[:, 0][:, None] - pts[:, 0][None, :],
+                        pts[:, 1][:, None] - pts[:, 1][None, :])
+        np.fill_diagonal(dmat, 1e9)
+        order = np.argsort(dmat, axis=1)
+        done = set()
+        for i in range(len(hubs)):
+            for jj in order[i, :2]:
+                j = int(jj)
+                key = (min(i, j), max(i, j))
+                if key in done:
+                    continue
+                done.add(key)
+                x0p, y0p, r0 = hubs[i]
+                x1p, y1p, r1 = hubs[j]
+                seg_len = float(np.hypot(x1p - x0p, y1p - y0p))
+                if seg_len < (r0 + r1) * 1.1 or seg_len > dim * 0.55:
+                    continue
+                pad = 10.0 * px
+                xa = max(0, int(min(x0p, x1p) - pad)); xb = min(w, int(max(x0p, x1p) + pad) + 2)
+                ya = max(0, int(min(y0p, y1p) - pad)); yb = min(h, int(max(y0p, y1p) + pad) + 2)
+                if xa >= xb or ya >= yb:
+                    continue
+                wx = xx[:, xa:xb]; wy = yy[ya:yb, :]
+                vx = x1p - x0p; vy = y1p - y0p
+                tc = np.clip(((wx - x0p) * vx + (wy - y0p) * vy) / (seg_len * seg_len), 0.0, 1.0)
+                dseg = np.hypot(wx - (x0p + tc * vx), wy - (y0p + tc * vy))
+                trim = (np.clip((tc * seg_len - r0 * 1.18) / (6.0 * px), 0.0, 1.0)
+                        * np.clip(((1.0 - tc) * seg_len - r1 * 1.18) / (6.0 * px), 0.0, 1.0))
+                rail = np.clip(1.0 - np.abs(dseg - 4.2 * px) / (2.0 * px), 0.0, 1.0)
+                bars = ((np.mod(tc * seg_len, 34.0 * px) < 5.0 * px) & (dseg < 4.2 * px)).astype(np.float32)
+                truss = np.maximum(rail * 0.72, bars * 0.62) * trim
+                out[ya:yb, xa:xb] = np.maximum(out[ya:yb, xa:xb], truss.astype(np.float32))
+
+    # band 3: micro spark crosses, random rotation, 8-18px footprint at 2048.
+    n_micro = int(rng.integers(150, 220))
+    for _ in range(n_micro):
+        cx = rng.uniform(0.0, 1.0) * w; cy = rng.uniform(0.0, 1.0) * h
+        s_r = rng.uniform(4.0, 9.0) * px
+        rot = rng.uniform(0.0, np.pi)
+        ca = float(np.cos(rot)); sa = float(np.sin(rot))
+        pad = s_r + 3.0 * px
+        x0 = max(0, int(cx - pad)); x1 = min(w, int(cx + pad) + 2)
+        y0 = max(0, int(cy - pad)); y1 = min(h, int(cy + pad) + 2)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        dx = xx[:, x0:x1] - cx; dy = yy[y0:y1, :] - cy
+        u = dx * ca + dy * sa; v = dx * (-sa) + dy * ca
+        armw = 1.3 * px
+        arm1 = np.clip(1.0 - np.abs(v) / armw, 0.0, 1.0) * np.clip(1.0 - np.abs(u) / s_r, 0.0, 1.0)
+        arm2 = np.clip(1.0 - np.abs(u) / armw, 0.0, 1.0) * np.clip(1.0 - np.abs(v) / s_r, 0.0, 1.0)
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1],
+                                       (np.maximum(arm1, arm2) * 0.58).astype(np.float32))
+
+    g = rng.random(((h + 31) // 32, (w + 31) // 32)).astype(np.float32)
+    bgf = np.repeat(np.repeat(g, 32, axis=0), 32, axis=1)[:h, :w]
+    val = np.clip(out + bgf * 0.05 + 0.02, 0.0, 1.0).astype(np.float32)
+    cc = np.clip(16 * (1 - val * 0.5), 0, 16).astype(np.uint8)
+    return {"pattern_val": val, "R_range": -128.0, "M_range": 98.0, "CC": cc}
+
+def _ign_starlat_paint(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None:
+        pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1)
+    h, w = shape
+    # PERF: the hue field is >=570px wavelength — build it at 1/4 res and
+    # block-upsample (visually identical, ~16x cheaper).
+    ds = 4
+    hs, ws = (h + ds - 1) // ds, (w + ds - 1) // ds
+    yy = (np.arange(hs, dtype=np.float32) * ds)[:, None]
+    xx = (np.arange(ws, dtype=np.float32) * ds)[None, :]
+    rng = np.random.default_rng(int(seed) + 77031)
+    ph = np.zeros((hs, ws), dtype=np.float32)
+    for _ in range(4):
+        cx = rng.uniform(0.0, w); cy = rng.uniform(0.0, h)
+        fr = rng.uniform(0.0045, 0.0105)
+        ph += np.sin(np.hypot(xx - cx, yy - cy) * fr + rng.uniform(0.0, 6.28))
+    ph = np.clip(ph * 0.25 + 0.5, 0.0, 1.0)
+    ph = np.repeat(np.repeat(ph, ds, axis=0), ds, axis=1)[:h, :w]
+    sm_ = (pm * 1.0) * np.asarray(mask, dtype=np.float32)
+    core = np.clip((pv - 0.62) * 3.4, 0, 1)
+    mid = np.clip((pv - 0.33) * 2.6, 0, 1) * (1.0 - core)
+    redz = mid * ph
+    bluz = mid * (1.0 - ph)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (core * 0.94 + redz * 0.85 - bluz * 0.14) * sm_, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + (core * 0.94 - redz * 0.20 + bluz * 0.02) * sm_, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (core * 0.97 - redz * 0.14 + bluz * 0.58) * sm_, 0, 1)
+    return paint
+
+# --- IGNITION: lfr_stripe_drift ---
+def _ign_stripedrift_texture(shape, mask, seed, sm):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 78001)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    px = max(dim / 2048.0, 0.05)
+    out = np.zeros((h, w), dtype=np.float32)
+
+    # bands 1+2: finite chevron-staggered slash packs (3-5 hard-edged tapered
+    # stripes each, heads cut into a V) flanked by thin pin rails. Every pack
+    # has its own center + rotation: no global stripe axis survives UV scatter.
+    n_pack = int(rng.integers(18, 24))
+    for _ in range(n_pack):
+        cx = rng.uniform(0.02, 0.98) * w; cy = rng.uniform(0.02, 0.98) * h
+        ang = rng.uniform(0.0, np.pi)
+        ca = float(np.cos(ang)); sa = float(np.sin(ang))
+        L = rng.uniform(0.14, 0.30) * dim
+        nst = int(rng.integers(3, 6))
+        wb = rng.uniform(8.0, 15.0) * px
+        gap = wb * rng.uniform(2.4, 3.2)
+        offs = (np.arange(nst, dtype=np.float32) - (nst - 1) / 2.0) * gap
+        chev = rng.uniform(0.55, 1.5) * (1.0 if rng.random() < 0.5 else -1.0)
+        omax = float(np.abs(offs).max())
+        Lu = L * 0.62 + abs(chev) * (omax + gap) + 6.0 * px
+        Lv = omax + gap * 1.2 + wb * 2.0 + 6.0 * px
+        hx = abs(ca) * Lu + abs(sa) * Lv
+        hy = abs(sa) * Lu + abs(ca) * Lv
+        x0 = max(0, int(cx - hx)); x1 = min(w, int(cx + hx) + 2)
+        y0 = max(0, int(cy - hy)); y1 = min(h, int(cy + hy) + 2)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        wx = xx[:, x0:x1]; wy = yy[y0:y1, :]
+        u = (wx - cx) * ca + (wy - cy) * sa
+        v = (wx - cx) * (-sa) + (wy - cy) * ca
+        pack = np.zeros(np.broadcast_shapes(u.shape, v.shape), dtype=np.float32)
+        for k in range(nst):
+            off = float(offs[k])
+            uu = u - abs(off) * chev
+            tpos = np.clip((uu + L * 0.5) / L, 0.0, 1.0)
+            wloc = wb * (1.0 - 0.80 * tpos * tpos)
+            edge = (np.clip((wloc - np.abs(v - off)) / (1.4 * px), 0.0, 1.0)
+                    * np.clip((uu + L * 0.5) / (2.5 * px), 0.0, 1.0)
+                    * np.clip((L * 0.5 - uu) / (2.5 * px), 0.0, 1.0))
+            pack = np.maximum(pack, edge * (1.0 if k % 2 == 0 else 0.82))
+        for sgn in (-1.0, 1.0):
+            voff = float(offs[-1] if sgn > 0 else offs[0]) + sgn * gap * 0.85
+            uu = u - abs(voff) * chev
+            rail = (np.clip(1.0 - np.abs(v - voff) / (2.2 * px), 0.0, 1.0)
+                    * np.clip((uu + L * 0.55) / (3.0 * px), 0.0, 1.0)
+                    * np.clip((L * 0.42 - uu) / (3.0 * px), 0.0, 1.0))
+            pack = np.maximum(pack, rail * 0.66)
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], pack)
+
+    # band 3: micro dash ticks at random angles, 8-16px at 2048.
+    n_tick = int(rng.integers(200, 280))
+    for _ in range(n_tick):
+        cx = rng.uniform(0.0, 1.0) * w; cy = rng.uniform(0.0, 1.0) * h
+        ang = rng.uniform(0.0, np.pi)
+        ca = float(np.cos(ang)); sa = float(np.sin(ang))
+        tl = rng.uniform(6.0, 14.0) * px
+        pad = tl + 4.0 * px
+        x0 = max(0, int(cx - pad)); x1 = min(w, int(cx + pad) + 2)
+        y0 = max(0, int(cy - pad)); y1 = min(h, int(cy + pad) + 2)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        dx = xx[:, x0:x1] - cx; dy = yy[y0:y1, :] - cy
+        u = dx * ca + dy * sa; v = dx * (-sa) + dy * ca
+        dash = np.clip(1.0 - np.abs(v) / (1.6 * px), 0.0, 1.0) * np.clip(1.0 - np.abs(u) / tl, 0.0, 1.0)
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], (dash * 0.52).astype(np.float32))
+
+    g = rng.random(((h + 31) // 32, (w + 31) // 32)).astype(np.float32)
+    bgf = np.repeat(np.repeat(g, 32, axis=0), 32, axis=1)[:h, :w]
+    val = np.clip(out + bgf * 0.05 + 0.02, 0.0, 1.0).astype(np.float32)
+    cc = np.clip(16 * (1 - val * 0.5), 0, 16).astype(np.uint8)
+    return {"pattern_val": val, "R_range": -112.0, "M_range": 84.0, "CC": cc}
+
+def _ign_stripedrift_paint(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None:
+        pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1)
+    h, w = shape
+    # PERF: low-frequency hue field at 1/4 res + block-upsample.
+    ds = 4
+    hs, ws = (h + ds - 1) // ds, (w + ds - 1) // ds
+    yy = (np.arange(hs, dtype=np.float32) * ds)[:, None]
+    xx = (np.arange(ws, dtype=np.float32) * ds)[None, :]
+    rng = np.random.default_rng(int(seed) + 78031)
+    ph = np.zeros((hs, ws), dtype=np.float32)
+    for _ in range(3):
+        cx = rng.uniform(0.0, w); cy = rng.uniform(0.0, h)
+        fr = rng.uniform(0.005, 0.011)
+        ph += np.sin(np.hypot(xx - cx, yy - cy) * fr + rng.uniform(0.0, 6.28))
+    ph = np.clip(ph * 0.30 + 0.5, 0.0, 1.0)
+    ph = np.repeat(np.repeat(ph, ds, axis=0), ds, axis=1)[:h, :w]
+    sm_ = (pm * 1.0) * np.asarray(mask, dtype=np.float32)
+    hot = np.clip((pv - 0.68) * 4.0, 0, 1)
+    mid = np.clip((pv - 0.40) * 3.0, 0, 1) * (1.0 - hot)
+    pin = np.clip((pv - 0.24) * 2.6, 0, 1) * (1.0 - hot) * (1.0 - mid)
+    red = mid * ph
+    nvy = mid * (1.0 - ph)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (hot * 0.92 + red * 0.88 - nvy * 0.16 - pin * 0.04) * sm_, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + (hot * 0.92 - red * 0.24 + nvy * 0.03 + pin * 0.10) * sm_, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (hot * 0.95 - red * 0.16 + nvy * 0.60 + pin * 0.30) * sm_, 0, 1)
+    return paint
+
+# --- IGNITION: lfr_bunting_scallop ---
+def _ign_buntfan_grain(shape, seed, waves):
+    # Isotropic micro-grain: summed plane waves at random angles (no axis bias).
+    h, w = shape
+    rng = np.random.default_rng(int(seed) & 0xFFFFFFFF)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    out = np.zeros((h, w), dtype=np.float32)
+    tot = 0.0
+    for wl in waves:
+        for _ in range(2):
+            a = rng.uniform(0.0, np.pi)
+            f = (2.0 * np.pi) / max(float(wl), 2.0)
+            ph = rng.uniform(0.0, 2.0 * np.pi)
+            out += np.sin((xx * np.cos(a) + yy * np.sin(a)) * f + ph).astype(np.float32) * (1.0 / float(wl))
+            tot += 1.0 / float(wl)
+    out /= max(tot, 1e-6)
+    return (out * 0.5 + 0.5).astype(np.float32)
+
+def _ign_buntfan_star(ang, rad, R, k=5):
+    m = 2.0 * np.pi / k
+    a = np.mod(ang, m)
+    a = np.abs(a - m * 0.5)
+    edge = R * (0.45 + 0.55 * (a / (m * 0.5)))
+    return np.clip(1.0 - rad / (edge + 1e-4), 0.0, 1.0)
+
+def _ign_buntfan_texture(shape, mask, seed, sm):
+    """lfr_bunting_scallop rebuild: pleated half-fan bunting rosettes.
+
+    Each rosette = crisp radial pleat rays + a scallop-waved rim with two
+    nested echo arcs + a five-point star hub button. Three size tiers
+    scattered at fully random rotations (UV-orientation-agnostic).
+    Alpha-stamp: transparent field between rosettes, low isotropic grain only.
+    """
+    h, w = shape[:2] if len(shape) > 2 else shape
+    rng = np.random.default_rng(int(seed) + 52601)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    out = np.zeros((h, w), dtype=np.float32)
+    line_w = max(1.5, dim * 0.0040)      # pleat ray width  (~8 px @ 2048)
+    band_w = max(2.0, dim * 0.0055)      # rim piping width (~11 px @ 2048)
+    tiers = [
+        (int(rng.integers(6, 9)),   0.105, 0.165, 1.00),
+        (int(rng.integers(13, 19)), 0.052, 0.090, 0.88),
+        (int(rng.integers(26, 38)), 0.024, 0.044, 0.72),
+    ]
+    for count, rmin, rmax, peak in tiers:
+        for _ in range(count):
+            cx = rng.uniform(-0.04, 1.04) * w
+            cy = rng.uniform(-0.04, 1.04) * h
+            R = rng.uniform(rmin, rmax) * dim
+            rot = rng.uniform(0.0, 2.0 * np.pi)
+            spread = rng.uniform(1.55, 2.45)          # fan half-angle (rad)
+            n_pleat = int(rng.integers(7, 13))
+            hubR = R * rng.uniform(0.16, 0.22)
+            tw = rng.uniform(0.0, 2.0 * np.pi)
+            # PERF: rosette support is strictly rad < R -- local window only.
+            x0 = max(0, int(cx - R) - 2); x1 = min(w, int(cx + R) + 3)
+            y0 = max(0, int(cy - R) - 2); y1 = min(h, int(cy + R) + 3)
+            if x0 >= x1 or y0 >= y1:
+                continue
+            dx = xx[:, x0:x1] - cx
+            dy = yy[y0:y1, :] - cy
+            ang = np.arctan2(dy, dx) - rot
+            ang = np.mod(ang + np.pi, 2.0 * np.pi) - np.pi
+            rad = np.hypot(dx, dy)
+            keep = (np.abs(ang) < spread).astype(np.float32)
+            lw_eff = max(1.2, min(line_w, R * 0.06))
+            bw_eff = max(1.5, min(band_w, R * 0.085))
+            pitch = (2.0 * spread) / n_pleat
+            phase = ang / pitch
+            # pleat rays: angular distance to nearest ray, converted to pixels
+            pa = np.abs(np.mod(phase + 0.5, 1.0) - 0.5) * pitch
+            pleat = np.clip(1.0 - (pa * rad) / lw_eff, 0.0, 1.0)
+            pleat *= np.clip((rad - R * 0.30) / (R * 0.05), 0, 1)
+            pleat *= np.clip((R * 0.94 - rad) / (R * 0.05), 0, 1)
+            # scallop-waved rim piping + two nested echo arcs (scallops keyed
+            # to the pleat pitch so the wave lands between rays)
+            sc = np.cos(phase * 2.0 * np.pi)
+            fan = pleat * 0.80
+            for kk in range(3):
+                off = (0.0, 0.155, 0.30)[kk]
+                wt = (1.0, 0.86, 0.70)[kk]
+                r_edge = R * (0.875 - off) + R * 0.075 * sc
+                arc = np.clip(1.0 - np.abs(rad - r_edge) / (bw_eff * (1.0 - 0.18 * kk)), 0.0, 1.0)
+                fan = np.maximum(fan, arc * wt)
+            fan = fan * keep
+            # star hub button (full disc, proud of the fan) + hub ring
+            star = _ign_buntfan_star(ang + tw, rad, hubR, k=5)
+            starv = np.clip(star * 3.0, 0.0, 1.0) * 0.97
+            ring = np.clip(1.0 - np.abs(rad - hubR * 1.30) / (bw_eff * 0.75), 0.0, 1.0) * 0.88
+            stamp = np.maximum(np.maximum(fan, starv), ring)
+            out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], (stamp * peak).astype(np.float32))
+    bg = _ign_buntfan_grain((h, w), int(seed) + 52609, (9.0, 17.0, 33.0)) * 0.09 + 0.04
+    pv = np.clip(out + bg, 0.0, 1.0).astype(np.float32)
+    cc = np.clip(16.0 * (1.0 - pv * 0.5), 0, 16).astype(np.uint8)
+    return {"pattern_val": pv, "R_range": -112.0, "M_range": 88.0, "CC": cc}
+
+def _ign_buntfan_paint(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None:
+        pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1)
+    s = pm * 0.95
+    h, w = shape[:2] if len(shape) > 2 else shape
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    # two oblique wave axes (seed-rotated, never upright) split red/white/blue
+    a1 = (int(seed) % 89) * 0.0353 + 0.41
+    a2 = a1 + 1.91
+    sel = (np.sin((xx * np.cos(a1) + yy * np.sin(a1)) * 0.0145 + int(seed) % 13)
+           + np.cos((xx * np.cos(a2) + yy * np.sin(a2)) * 0.0118 - int(seed) % 7)) * 0.5
+    core = np.clip((pv - 0.64) * 3.0, 0, 1)                  # piping + star hubs
+    body = np.clip((pv - 0.30) * 2.0, 0, 1) * (1.0 - core)   # pleat rays
+    red = body * np.clip((-sel - 0.08) * 1.6, 0, 1)
+    blue = body * np.clip((sel - 0.08) * 1.6, 0, 1)
+    white = body * np.clip(1.0 - np.abs(sel) * 3.0, 0, 1)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (core * 0.88 + white * 0.62 + red * 0.74 - blue * 0.10) * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + (core * 0.88 + white * 0.62 - red * 0.16 - blue * 0.05) * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (core * 0.92 + white * 0.66 - red * 0.10 + blue * 0.82) * s * mask, 0, 1)
+    return paint
+
+# --- IGNITION: lfr_distressed_flag ---
+def _ign_flagshred_grain(shape, seed, waves):
+    # Isotropic micro-grain: summed plane waves at random angles (no axis bias).
+    h, w = shape
+    rng = np.random.default_rng(int(seed) & 0xFFFFFFFF)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    out = np.zeros((h, w), dtype=np.float32)
+    tot = 0.0
+    for wl in waves:
+        for _ in range(2):
+            a = rng.uniform(0.0, np.pi)
+            f = (2.0 * np.pi) / max(float(wl), 2.0)
+            ph = rng.uniform(0.0, 2.0 * np.pi)
+            out += np.sin((xx * np.cos(a) + yy * np.sin(a)) * f + ph).astype(np.float32) * (1.0 / float(wl))
+            tot += 1.0 / float(wl)
+    out /= max(tot, 1e-6)
+    return (out * 0.5 + 0.5).astype(np.float32)
+
+def _ign_flagshred_texture(shape, mask, seed, sm):
+    """lfr_distressed_flag rebuild: torn banner shreds, not a noise field.
+
+    Scattered rotated shreds with ragged eroded edges; each carries oblique
+    bar art or spangle diamond-dot art plus a bright torn outline. Broken
+    meandering scratch strokes and spark pins distress the field between
+    shreds. Transparent background -- motif strokes only.
+    """
+    h, w = shape[:2] if len(shape) > 2 else shape
+    rng = np.random.default_rng(int(seed) + 52701)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    out = np.zeros((h, w), dtype=np.float32)
+    edge_w = max(1.2, dim * 0.0012)
+    n_shred = int(rng.integers(20, 26))
+    for _ in range(n_shred):
+        cx = np.float32(rng.uniform(0.02, 0.98) * w)
+        cy = np.float32(rng.uniform(0.02, 0.98) * h)
+        rot = rng.uniform(0.0, np.pi)
+        hl = np.float32(rng.uniform(0.055, 0.150) * dim)
+        hwd = np.float32(rng.uniform(0.014, 0.038) * dim)
+        ca, sa = np.float32(np.cos(rot)), np.float32(np.sin(rot))
+        rr = hl + hwd + 4.0
+        x0 = max(0, int(cx - rr) - 2); x1 = min(w, int(cx + rr) + 3)
+        y0 = max(0, int(cy - rr) - 2); y1 = min(h, int(cy + rr) + 3)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        dx = xx[:, x0:x1] - cx
+        dy = yy[y0:y1, :] - cy
+        u = dx * ca + dy * sa
+        v = -dx * sa + dy * ca
+        f1 = np.float32(rng.uniform(0.05, 0.11)); f2 = np.float32(rng.uniform(0.16, 0.30))
+        p1 = np.float32(rng.uniform(0, 6.28)); p2 = np.float32(rng.uniform(0, 6.28)); p3 = np.float32(rng.uniform(0, 6.28))
+        # ragged long edges + torn ends
+        wmod = hwd * (0.64 + 0.24 * np.sin(u * f1 + p1) + 0.12 * np.sin(u * f2 + p2))
+        lmod = hl * (0.80 + 0.20 * np.sin(v * (f2 * 1.7) + p3))
+        body = np.clip((wmod - np.abs(v)) / edge_w, 0, 1) * np.clip((lmod - np.abs(u)) / (edge_w * 2.5), 0, 1)
+        if rng.random() < 0.62:
+            # oblique bar art (off-axis even in local frame)
+            bw = rng.uniform(0.30, 0.55) * (1.0 if rng.random() < 0.5 else -1.0)
+            t = u * np.cos(bw) + v * np.sin(bw)
+            per = rng.uniform(0.011, 0.020) * dim
+            art = np.where(np.mod(t / per, 1.0) < 0.52, 1.0, 0.30).astype(np.float32)
+        else:
+            # spangle diamond-dot art
+            g = rng.uniform(0.016, 0.026) * dim
+            gu = np.abs(np.mod(u / g + 0.5, 1.0) - 0.5)
+            gv = np.abs(np.mod(v / g + 0.5, 1.0) - 0.5)
+            dot = np.clip(1.0 - (gu + gv) / 0.30, 0.0, 1.0)
+            art = np.clip(0.45 + dot * 0.9, 0.0, 1.0)
+        shred = body * art
+        # bright torn outline along the ragged long edges
+        outline = np.clip(1.0 - np.abs(wmod - np.abs(v)) / (edge_w * 1.6), 0, 1)
+        outline *= np.clip((lmod - np.abs(u)) / (edge_w * 2.5), 0, 1)
+        shred = np.maximum(shred, outline)
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], shred.astype(np.float32))
+    # broken meandering scratch strokes
+    n_crack = int(rng.integers(7, 11))
+    lw = np.float32(max(1.4, dim * 0.0020))
+    for _ in range(n_crack):
+        cx = np.float32(rng.uniform(0.05, 0.95) * w)
+        cy = np.float32(rng.uniform(0.05, 0.95) * h)
+        angc = rng.uniform(0.0, np.pi)
+        L = rng.uniform(0.16, 0.34) * dim
+        A1 = rng.uniform(0.008, 0.022) * dim
+        A2 = A1 * rng.uniform(0.25, 0.5)
+        fA = rng.uniform(2.0, 4.5) / L
+        fB = rng.uniform(9.0, 16.0) / L
+        ph1 = rng.uniform(0, 6.28); ph2 = rng.uniform(0, 6.28); phb = rng.uniform(0, 6.28)
+        ca, sa = np.float32(np.cos(angc)), np.float32(np.sin(angc))
+        m = A1 + A2 + lw * 3.0 + 4.0
+        hx = L * abs(ca) + m * abs(sa)
+        hy = L * abs(sa) + m * abs(ca)
+        x0 = max(0, int(cx - hx) - 2); x1 = min(w, int(cx + hx) + 3)
+        y0 = max(0, int(cy - hy) - 2); y1 = min(h, int(cy + hy) + 3)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        dx = xx[:, x0:x1] - cx
+        dy = yy[y0:y1, :] - cy
+        r = dx * ca + dy * sa
+        p = -dx * sa + dy * ca
+        off = A1 * np.sin(r * fA * 6.283 + ph1) + A2 * np.sin(r * fB * 6.283 + ph2)
+        taper = np.clip((1.0 - np.abs(r) / L) * 3.0, 0, 1)
+        broken = (np.sin(r * (fB * 2.6) * 6.283 + phb) > -0.62).astype(np.float32)
+        stroke = np.clip(1.0 - np.abs(p - off) / lw, 0, 1) * taper * broken
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], (stroke * 0.96).astype(np.float32))
+    # spark pins
+    pins = (rng.random((h, w), dtype=np.float32) > 0.9962).astype(np.float32)
+    if h > 2 and w > 2:
+        pins[1:, :] = np.maximum(pins[1:, :], pins[:-1, :] * 0.5)
+        pins[:, 1:] = np.maximum(pins[:, 1:], pins[:, :-1] * 0.5)
+    out = np.maximum(out, pins * 0.85)
+    bg = _ign_flagshred_grain((h, w), int(seed) + 52719, (9.0, 18.0, 35.0)) * 0.08 + 0.035
+    pv = np.clip(out + bg, 0.0, 1.0).astype(np.float32)
+    cc = np.clip(16.0 * (1.0 - pv * 0.5), 0, 16).astype(np.uint8)
+    return {"pattern_val": pv, "R_range": 82.0, "M_range": -42.0, "CC": cc}
+
+def _ign_flagshred_paint(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None:
+        pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1)
+    s = pm * 0.92
+    h, w = shape[:2] if len(shape) > 2 else shape
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    # oblique seed-rotated selector waves: weathered red/cream/blue zoning
+    a1 = (int(seed) % 83) * 0.0379 + 0.53
+    a2 = a1 + 2.09
+    sel = (np.sin((xx * np.cos(a1) + yy * np.sin(a1)) * 0.0052 + int(seed) % 17)
+           + np.sin((xx * np.cos(a2) + yy * np.sin(a2)) * 0.0067 - int(seed) % 11)) * 0.5
+    weather = 0.70 + 0.30 * (np.sin((xx * np.cos(a2) - yy * np.sin(a1)) * 0.0031 + int(seed) % 23) * 0.5 + 0.5)
+    hi = np.clip((pv - 0.74) * 3.4, 0, 1)                    # scratches/spangles/outlines
+    body = np.clip((pv - 0.28) * 1.9, 0, 1) * (1.0 - hi)     # shred bodies
+    red = body * np.clip((-sel - 0.06) * 1.7, 0, 1)
+    blue = body * np.clip((sel - 0.06) * 1.7, 0, 1)
+    cream = body * np.clip(1.0 - np.abs(sel) * 2.8, 0, 1)
+    sw = s * weather
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (hi * 0.80 + red * 0.66 + cream * 0.46 - blue * 0.08) * sw * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + (hi * 0.78 - red * 0.15 + cream * 0.42 - blue * 0.04) * sw * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (hi * 0.72 - red * 0.10 + cream * 0.34 + blue * 0.70) * sw * mask, 0, 1)
+    return paint
+
+# --- IGNITION: lfr_eagle_crest ---
+def _ign_ec_veil(shape, seed):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 60409)
+    out = np.zeros((h, w), dtype=np.float32)
+    tot = 0.0
+    for cyc in (6.0, 13.0, 29.0):
+        wt = 1.0 / cyc
+        fx = cyc * rng.uniform(0.7, 1.4) * 2.0 * np.pi / max(w, 1)
+        fy = cyc * rng.uniform(0.7, 1.4) * 2.0 * np.pi / max(h, 1)
+        px = rng.uniform(0.0, 6.28318)
+        py = rng.uniform(0.0, 6.28318)
+        out += (np.sin(np.arange(w, dtype=np.float32)[None, :] * fx + px)
+                * np.cos(np.arange(h, dtype=np.float32)[:, None] * fy + py)).astype(np.float32) * wt
+        tot += wt
+    out /= max(tot, 1e-6)
+    return (out * 0.5 + 0.5).astype(np.float32)
+
+def _ign_eaglecrest_texture(shape, mask, seed, sm):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 60401)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    out = np.zeros((h, w), dtype=np.float32)
+    dash_px = max(6.0, dim * 0.0075)  # barb-dash period ~15px @2048
+
+    def _stamp(cx, cy, R, rot, quills, spread, lw_px, heart, arc):
+        # PERF: all strokes live inside rad <= R -- local window only.
+        x0 = max(0, int(cx - R) - 2); x1 = min(w, int(cx + R) + 3)
+        y0 = max(0, int(cy - R) - 2); y1 = min(h, int(cy + R) + 3)
+        if x0 >= x1 or y0 >= y1:
+            return
+        dx = xx[:, x0:x1] - cx
+        dy = yy[y0:y1, :] - cy
+        ca, sa = np.cos(rot), np.sin(rot)
+        ang = np.arctan2(dy, dx) - rot
+        ang = np.mod(ang + np.pi, 2.0 * np.pi) - np.pi
+        rad = np.hypot(dx, dy)
+        rn = rad / (R + 1e-4)
+        loc = np.zeros(rad.shape, dtype=np.float32)
+        step = (2.0 * spread) / float(max(quills, 2))
+        ph = rng.uniform(0.0, 6.28318)
+        infan = np.abs(ang) <= spread
+        # staggered double feather tier: sharp tapered quill spines + barb dash
+        for t0, t1, off in ((0.26, 0.72, 0.0), (0.50, 1.0, 0.5)):
+            a = np.mod(ang + spread + step * off, step) - step * 0.5
+            d = np.abs(a) * np.maximum(rad, 1.0)
+            band = np.clip((rn - t0) / max(t1 - t0, 1e-4), 0.0, 1.0)
+            lw = np.float32(lw_px) * (1.0 - 0.66 * band) + 0.55
+            spine = np.clip(1.0 - d / lw, 0.0, 1.0)
+            spine *= ((rn >= t0) & (rn <= t1) & infan).astype(np.float32)
+            barb = 0.60 + 0.40 * np.cos(rad * (2.0 * np.pi / dash_px) + ph + off * 2.1)
+            loc = np.maximum(loc, (spine * barb * 0.80).astype(np.float32))
+        if arc:
+            # thin tip-arc rib binding the fan, feathered at the fan edges
+            aw = np.clip((spread - np.abs(ang)) / max(step * 0.8, 1e-4), 0.0, 1.0)
+            rib = np.clip(1.0 - np.abs(rad - R * 0.985) / (lw_px * 0.62 + 0.5), 0.0, 1.0)
+            loc = np.maximum(loc, (rib * aw * 0.92).astype(np.float32))
+        if heart:
+            # nested heraldic lozenge heart (rotated with the crest)
+            xr = dx * ca + dy * sa
+            yr = -dx * sa + dy * ca
+            L = np.abs(xr) / (0.150 * R + 1e-4) + np.abs(yr) / (0.235 * R + 1e-4)
+            gsc = 0.185 * R
+            for k, amp in ((1.0, 1.0), (1.42, 0.93)):
+                ring = np.clip(1.0 - np.abs(L - k) * gsc / (lw_px * 0.75 + 0.5), 0.0, 1.0)
+                loc = np.maximum(loc, (ring * amp).astype(np.float32))
+            loc = np.maximum(loc, np.clip((0.46 - L) / 0.46, 0.0, 1.0).astype(np.float32))
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], loc)
+
+    for _ in range(int(rng.integers(4, 7))):       # grand crests
+        _stamp(rng.uniform(0.0, 1.0) * w, rng.uniform(0.0, 1.0) * h,
+               rng.uniform(0.110, 0.165) * dim, rng.uniform(0.0, 6.28318),
+               int(rng.integers(11, 16)), rng.uniform(1.5, 2.4),
+               max(2.4, dim * 0.0028), True, True)
+    for _ in range(int(rng.integers(7, 11))):      # field crests
+        _stamp(rng.uniform(0.0, 1.0) * w, rng.uniform(0.0, 1.0) * h,
+               rng.uniform(0.052, 0.085) * dim, rng.uniform(0.0, 6.28318),
+               int(rng.integers(8, 12)), rng.uniform(1.2, 2.0),
+               max(1.9, dim * 0.0021), bool(rng.random() > 0.45), True)
+    for _ in range(int(rng.integers(16, 24))):     # lone quill tufts
+        _stamp(rng.uniform(0.0, 1.0) * w, rng.uniform(0.0, 1.0) * h,
+               rng.uniform(0.018, 0.034) * dim, rng.uniform(0.0, 6.28318),
+               int(rng.integers(3, 6)), rng.uniform(0.7, 1.3),
+               max(1.5, dim * 0.0014), False, False)
+
+    veil = _ign_ec_veil(shape, int(seed) + 60417) * 0.05 + 0.02
+    val = np.clip(np.maximum(out, veil), 0.0, 1.0)
+    cc = np.clip(16.0 * (1.0 - val * 0.5), 0.0, 16.0).astype(np.uint8)
+    return {"pattern_val": val.astype(np.float32), "R_range": -125.0, "M_range": 100.0, "CC": cc}
+
+def _ign_eaglecrest_paint(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None:
+        pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1)
+    s = pm * 1.0
+    core = np.clip((pv - 0.66) * 4.5, 0, 1)                      # hearts, rib peaks
+    crim = np.clip((pv - 0.48) * 3.4, 0, 1) * (1.0 - core)       # barb crests -> crimson
+    gold = np.clip((pv - 0.20) * 2.2, 0, 1) * (1.0 - core) * (1.0 - crim)  # spine bodies
+    veil = np.clip(pv * 1.4, 0, 1) * (1.0 - np.maximum(core, np.maximum(crim, gold)))
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (core * 0.96 + crim * 0.88 + gold * 0.80 - veil * 0.04) * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + (core * 0.93 + crim * 0.10 + gold * 0.58 - veil * 0.02) * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (core * 0.82 - crim * 0.06 + gold * 0.10 + veil * 0.12) * s * mask, 0, 1)
+    return paint
+
+# --- IGNITION: lfr_firework_radial ---
+def _ign_fw_veil(shape, seed):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 61509)
+    out = np.zeros((h, w), dtype=np.float32)
+    tot = 0.0
+    for cyc in (5.0, 11.0, 27.0):
+        wt = 1.0 / cyc
+        fx = cyc * rng.uniform(0.7, 1.4) * 2.0 * np.pi / max(w, 1)
+        fy = cyc * rng.uniform(0.7, 1.4) * 2.0 * np.pi / max(h, 1)
+        px = rng.uniform(0.0, 6.28318)
+        py = rng.uniform(0.0, 6.28318)
+        out += (np.sin(np.arange(w, dtype=np.float32)[None, :] * fx + px)
+                * np.cos(np.arange(h, dtype=np.float32)[:, None] * fy + py)).astype(np.float32) * wt
+        tot += wt
+    out /= max(tot, 1e-6)
+    return (out * 0.5 + 0.5).astype(np.float32)
+
+def _ign_firework_texture(shape, mask, seed, sm):
+    h, w = shape
+    rng = np.random.default_rng(int(seed) + 61501)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    out = np.zeros((h, w), dtype=np.float32)
+
+    def _burst(cx, cy, R, streamers, curl, rot, lw_px, ring, crossed):
+        # PERF: all strokes live inside rad <= R*1.04 -- local window only.
+        rr = R * 1.04 + 2.0
+        x0 = max(0, int(cx - rr) - 2); x1 = min(w, int(cx + rr) + 3)
+        y0 = max(0, int(cy - rr) - 2); y1 = min(h, int(cy + rr) + 3)
+        if x0 >= x1 or y0 >= y1:
+            return
+        dx = xx[:, x0:x1] - cx
+        dy = yy[y0:y1, :] - cy
+        ang = np.arctan2(dy, dx)
+        rad = np.hypot(dx, dy)
+        rn = rad / (R + 1e-4)
+        # curved comet streamers: quadratic curl bends every spoke
+        step = 2.0 * np.pi / float(max(streamers, 3))
+        u = ang - curl * rn * rn - rot
+        a = np.mod(u, step) - step * 0.5
+        d = np.abs(a) * np.maximum(rad, 1.0)
+        lw = np.float32(lw_px) * (1.0 - 0.60 * np.clip(rn, 0.0, 1.0)) + 0.55
+        body = np.clip(1.0 - d / lw, 0.0, 1.0)
+        body *= ((rn >= 0.085) & (rn <= 1.0)).astype(np.float32)
+        # crackle: continuous near the heart, broken spark dashes at the tips
+        per = max(5.0, rng.uniform(0.0058, 0.0102) * dim)
+        ph = rng.uniform(0.0, 6.28318)
+        kk = 0.85 * np.clip((rn - 0.38) / 0.62, 0.0, 1.0)
+        dashm = 1.0 - kk * (0.5 + 0.5 * np.cos(rad * (2.0 * np.pi / per) + ph))
+        stream = body * dashm * (0.95 - 0.20 * np.clip(rn, 0.0, 1.0))
+        tip = body * np.clip((dashm - 0.72) / 0.28, 0.0, 1.0) * np.clip((rn - 0.74) / 0.26, 0.0, 1.0)
+        loc = np.maximum(stream, tip).astype(np.float32)
+        if crossed:
+            # camera-glint core: thin cross spikes
+            spikes = int(rng.integers(4, 7))
+            a2 = np.mod(ang - rot * 1.7, 2.0 * np.pi / spikes) - np.pi / spikes
+            d2 = np.abs(a2) * np.maximum(rad, 1.0)
+            cross = np.clip(1.0 - d2 / (lw_px * 0.85 + 0.5), 0.0, 1.0) * np.clip(1.0 - rn / 0.17, 0.0, 1.0)
+            loc = np.maximum(loc, (cross * 0.97).astype(np.float32))
+        loc = np.maximum(loc, np.exp(-(rn * 13.0) ** 2).astype(np.float32))  # white-hot pin
+        if ring:
+            # dotted pearl ring
+            rho = rng.uniform(0.58, 0.88)
+            K = int(max(10, streamers * rng.uniform(1.4, 2.1)))
+            dot = np.power(0.5 + 0.5 * np.cos(ang * K + ph), 3.0)
+            ringv = np.clip(1.0 - np.abs(rad - rho * R) / (lw_px * 0.80 + 0.5), 0.0, 1.0)
+            loc = np.maximum(loc, (ringv * dot * 0.88).astype(np.float32))
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], loc)
+
+    for _ in range(int(rng.integers(4, 6))):    # grand chrysanthemum breaks
+        _burst(rng.uniform(0.08, 0.92) * w, rng.uniform(0.08, 0.92) * h,
+               rng.uniform(0.15, 0.26) * dim, int(rng.integers(16, 27)),
+               rng.uniform(0.55, 1.25) * (1.0 if rng.random() > 0.5 else -1.0),
+               rng.uniform(0.0, 6.28318), max(2.2, dim * 0.0026), True, True)
+    for _ in range(int(rng.integers(6, 10))):   # mid shells
+        _burst(rng.uniform(0.04, 0.96) * w, rng.uniform(0.04, 0.96) * h,
+               rng.uniform(0.070, 0.120) * dim, int(rng.integers(10, 17)),
+               rng.uniform(0.40, 1.05) * (1.0 if rng.random() > 0.5 else -1.0),
+               rng.uniform(0.0, 6.28318), max(1.8, dim * 0.0019),
+               bool(rng.random() > 0.5), bool(rng.random() > 0.5))
+    for _ in range(int(rng.integers(12, 19))):  # micro pops
+        _burst(rng.uniform(0.0, 1.0) * w, rng.uniform(0.0, 1.0) * h,
+               rng.uniform(0.020, 0.042) * dim, int(rng.integers(5, 9)),
+               rng.uniform(0.30, 0.80) * (1.0 if rng.random() > 0.5 else -1.0),
+               rng.uniform(0.0, 6.28318), max(1.4, dim * 0.0013), False, False)
+
+    veil = _ign_fw_veil(shape, int(seed) + 61517) * 0.05 + 0.015
+    val = np.clip(np.maximum(out, veil), 0.0, 1.0)
+    cc = np.clip(16.0 * (1.0 - val * 0.5), 0.0, 16.0).astype(np.uint8)
+    return {"pattern_val": val.astype(np.float32), "R_range": -150.0, "M_range": 120.0, "CC": cc}
+
+def _ign_firework_paint(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None:
+        pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1)
+    s = pm * 1.0
+    h, w = shape
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    # multi-angle drift selector (never axis-aligned): red / white / blue zones
+    a1 = 0.31 + (int(seed) % 9) * 0.42
+    ca, sa = np.cos(a1), np.sin(a1)
+    sel = np.sin((xx * ca + yy * sa) * 0.0036 + (int(seed) % 13)) \
+        + np.sin((xx * (-sa) + yy * ca) * 0.0049 - (int(seed) % 7))
+    red_z = np.clip(0.55 - sel * 0.75, 0, 1)
+    blu_z = np.clip(0.55 + sel * 0.75, 0, 1)
+    wht_z = np.clip(1.0 - np.abs(sel) * 1.7, 0, 1)
+    zs = red_z + blu_z + wht_z + 1e-4
+    red_z = red_z / zs; blu_z = blu_z / zs; wht_z = wht_z / zs
+    core = np.clip((pv - 0.68) * 4.5, 0, 1)                                  # pins, glints, tip sparks
+    strm = np.clip((pv - 0.26) * 2.4, 0, 1) * (1.0 - core)                   # comet streamers + rings
+    embr = np.clip((pv - 0.07) * 1.6, 0, 1) * (1.0 - core) * (1.0 - strm)    # smoke veil
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (core * 0.95 + strm * (red_z * 0.92 + wht_z * 0.85 - blu_z * 0.05) + embr * 0.05) * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + (core * 0.95 + strm * (wht_z * 0.85 + red_z * 0.06 + blu_z * 0.10) - embr * 0.02) * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (core * 0.97 + strm * (blu_z * 0.94 + wht_z * 0.88 - red_z * 0.08) + embr * 0.14) * s * mask, 0, 1)
+    return paint
+
+# --- IGNITION: lfr_constellation_field ---
+def _ign_constel_texture(shape, mask, seed, sm):
+    h, w = int(shape[0]), int(shape[1])
+    rng = np.random.default_rng((int(seed) + 46101) & 0xFFFFFFFF)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    out = np.zeros((h, w), dtype=np.float32)
+    hubs = int(rng.integers(5, 8))
+    pts_list = []; mag_list = []; anc_list = []
+    for _ in range(hubs):
+        hx = rng.uniform(0.06, 0.94) * w
+        hy = rng.uniform(0.06, 0.94) * h
+        nk = int(rng.integers(9, 15))
+        crad = rng.uniform(0.07, 0.15) * dim
+        aa = rng.uniform(0.0, 2.0 * np.pi, nk)
+        rr = crad * np.sqrt(rng.uniform(0.04, 1.0, nk))
+        mg = rng.uniform(0.40, 0.95, nk)
+        an = np.zeros(nk)
+        ai = int(rng.integers(0, nk)); mg[ai] = 1.0; an[ai] = 1.0
+        pts_list.append(np.stack([hx + rr * np.cos(aa), hy + rr * np.sin(aa)], axis=1))
+        mag_list.append(mg); anc_list.append(an)
+    pts = np.concatenate(pts_list, axis=0).astype(np.float32)
+    mags = np.concatenate(mag_list).astype(np.float32)
+    ancs = np.concatenate(anc_list).astype(np.float32)
+    npts = int(pts.shape[0])
+    d2 = ((pts[:, None, :] - pts[None, :, :]) ** 2).sum(axis=2)
+    np.fill_diagonal(d2, 1e18)
+    near = np.argsort(d2, axis=1)[:, :2]
+    lim2 = (0.14 * dim) ** 2
+    edges = set()
+    for i in range(npts):
+        for jj in range(2):
+            j = int(near[i, jj])
+            if d2[i, j] < lim2:
+                edges.add((min(i, j), max(i, j)))
+    lw = max(1.2, dim * 0.0016)
+    off = max(1.6, dim * 0.0024)
+    dash_p = max(6.0, dim * 0.0070)
+    for (i, j) in sorted(edges):
+        a = pts[i]; b = pts[j]
+        ab = b - a
+        L = float(np.hypot(float(ab[0]), float(ab[1])))
+        if L < 4.0:
+            continue
+        pad = off + lw + 4.0
+        x0 = max(0, int(min(a[0], b[0]) - pad)); x1 = min(w, int(max(a[0], b[0]) + pad) + 2)
+        y0 = max(0, int(min(a[1], b[1]) - pad)); y1 = min(h, int(max(a[1], b[1]) + pad) + 2)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        xs = xx[:, x0:x1]; ys = yy[y0:y1, :]
+        t = np.clip(((xs - a[0]) * ab[0] + (ys - a[1]) * ab[1]) / (L * L), 0.0, 1.0)
+        nx = -float(ab[1]) / L; ny = float(ab[0]) / L
+        dperp = (xs - a[0]) * nx + (ys - a[1]) * ny
+        eg = np.clip(t * L / 6.0, 0, 1) * np.clip((1.0 - t) * L / 6.0, 0, 1)
+        dash = 0.5 + 0.5 * np.cos(t * L * (2.0 * np.pi / dash_p))
+        s1 = np.clip(1.0 - np.abs(dperp - off) / lw, 0, 1)
+        s2 = np.clip(1.0 - np.abs(dperp + off) / lw, 0, 1)
+        modt = np.mod(t * L, dash_p) - dash_p * 0.5
+        bead = np.clip(1.0 - np.sqrt(dperp * dperp + modt * modt) / (lw * 2.1), 0, 1)
+        fil = np.maximum(np.maximum(s1, s2) * (0.46 + 0.22 * dash), bead * 0.70) * eg
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], fil.astype(np.float32))
+    aaw = max(1.0, dim * 0.0011)
+    mm = 2.0 * np.pi / 5.0
+    for idx in range(npts):
+        sx = float(pts[idx, 0]); sy = float(pts[idx, 1])
+        m = float(mags[idx]); is_anchor = ancs[idx] > 0.5
+        R = 0.0145 * dim if is_anchor else (0.0042 + 0.0078 * m) * dim
+        rot = float(rng.uniform(0.0, 2.0 * np.pi))
+        spike_R = R * (2.6 if is_anchor else 2.0)
+        pad = spike_R + 3.0
+        x0 = max(0, int(sx - pad)); x1 = min(w, int(sx + pad) + 2)
+        y0 = max(0, int(sy - pad)); y1 = min(h, int(sy + pad) + 2)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        dx = xx[:, x0:x1] - sx; dy = yy[y0:y1, :] - sy
+        ang = np.arctan2(dy, dx) - rot
+        rad = np.hypot(dx, dy)
+        a5 = np.abs(np.mod(ang, mm) - mm * 0.5)
+        edge = R * (0.40 + 0.60 * (a5 / (mm * 0.5)))
+        body = np.clip((edge - rad) / aaw, 0, 1) * (0.86 + 0.14 * m)
+        spk = np.power(np.abs(np.cos(2.0 * ang)), 64.0) * np.exp(-((rad / spike_R) ** 2))
+        spk = spk * np.clip(rad / (R * 0.6 + 1e-4), 0, 1) * (0.55 if is_anchor else 0.40)
+        val = np.maximum(body, spk)
+        if is_anchor:
+            ring = np.clip(1.0 - np.abs(rad - R * 1.85) / max(1.0, dim * 0.0013), 0, 1) * 0.58
+            val = np.maximum(val, ring)
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], val.astype(np.float32))
+    dust = (rng.random((h, w), dtype=np.float32) > 0.9974).astype(np.float32)
+    if h > 2 and w > 2:
+        dust[1:, :] = np.maximum(dust[1:, :], dust[:-1, :] * 0.6)
+        dust[:, 1:] = np.maximum(dust[:, 1:], dust[:, :-1] * 0.6)
+    out = np.maximum(out, dust * 0.34)
+    s0 = float(int(seed) % 97)
+    bg = np.sin(xx * 0.0061 + yy * 0.0043 + s0) + np.sin(yy * 0.0079 - xx * 0.0036 + s0 * 1.7) + np.sin((xx + yy) * 0.0027 + s0 * 0.6)
+    bg = (bg - bg.min()) / float(bg.max() - bg.min() + 1e-6)
+    out = np.clip(out + bg * 0.045 + 0.02, 0.0, 1.0).astype(np.float32)
+    cc = np.clip(16.0 * (1.0 - out * 0.5), 0, 16).astype(np.uint8)
+    return {'pattern_val': out, 'R_range': -118.0, 'M_range': 92.0, 'CC': cc}
+
+def _ign_constel_paint(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None:
+        pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1)
+    s = pm * 0.95
+    h, w = int(shape[0]), int(shape[1])
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    g1 = (int(seed) % 360) * np.pi / 180.0
+    g2 = g1 + 2.094
+    sel = np.sin((xx * np.cos(g1) + yy * np.sin(g1)) * 0.0046 + (int(seed) % 9)) + 0.6 * np.sin((xx * np.cos(g2) + yy * np.sin(g2)) * 0.0031 - (int(seed) % 7))
+    star = np.clip((pv - 0.70) * 3.4, 0, 1)
+    web = np.clip((pv - 0.28) * 2.6, 0, 1) * (1.0 - star)
+    dust = np.clip((pv - 0.10) * 1.6, 0, 1) * (1.0 - star) * (1.0 - web)
+    red = web * np.clip(-sel * 1.2 - 0.12, 0, 1)
+    blue = web * np.clip(sel * 1.2 - 0.12, 0, 1)
+    wht = web * np.clip(1.0 - np.abs(sel) * 1.6, 0, 1)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + star * 0.95 * s * mask + red * 0.82 * s * mask + wht * 0.70 * s * mask - blue * 0.10 * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + star * 0.93 * s * mask - red * 0.16 * s * mask + wht * 0.70 * s * mask - blue * 0.05 * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + star * 0.88 * s * mask - red * 0.10 * s * mask + wht * 0.74 * s * mask + blue * 0.84 * s * mask + dust * 0.26 * s * mask, 0, 1)
+    return paint
+
+# --- IGNITION: lfr_ribbon_weave ---
+def _ign_ribweave_texture(shape, mask, seed, sm):
+    h, w = int(shape[0]), int(shape[1])
+    rng = np.random.default_rng((int(seed) + 47201) & 0xFFFFFFFF)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    out = np.zeros((h, w), dtype=np.float32)
+    aaw = max(1.0, dim * 0.0016)
+    n = int(rng.integers(14, 20))
+    for _ in range(n):
+        th = rng.uniform(0.0, 2.0 * np.pi)
+        ca = float(np.cos(th)); sa = float(np.sin(th))
+        cx = rng.uniform(0.04, 0.96) * w; cy = rng.uniform(0.04, 0.96) * h
+        L = rng.uniform(0.50, 0.95) * dim
+        hwid = rng.uniform(0.009, 0.017) * dim
+        A1 = rng.uniform(0.025, 0.055) * dim
+        k1 = 2.0 * np.pi * rng.uniform(1.2, 2.4) / L
+        A2 = A1 * rng.uniform(0.20, 0.40)
+        k2 = k1 * rng.uniform(2.2, 3.4)
+        p1 = rng.uniform(0.0, 2.0 * np.pi); p2 = rng.uniform(0.0, 2.0 * np.pi)
+        per = rng.uniform(0.0042, 0.0070) * dim
+        shw = dim * 0.0045
+        wmax = A1 + A2 + hwid + shw + 4.0
+        hx = ca * (L * 0.5 + 4.0); hy = sa * (L * 0.5 + 4.0)
+        ox = -sa * wmax; oy = ca * wmax
+        xs4 = [cx + hx + ox, cx + hx - ox, cx - hx + ox, cx - hx - ox]
+        ys4 = [cy + hy + oy, cy + hy - oy, cy - hy + oy, cy - hy - oy]
+        x0 = max(0, int(min(xs4))); x1 = min(w, int(max(xs4)) + 2)
+        y0 = max(0, int(min(ys4))); y1 = min(h, int(max(ys4)) + 2)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        xs = xx[:, x0:x1]; ys = yy[y0:y1, :]
+        u = (xs - cx) * ca + (ys - cy) * sa
+        v = (ys - cy) * ca - (xs - cx) * sa
+        act = (np.abs(u) < (L * 0.5 + 2.0)) & (np.abs(v) < wmax)
+        if not bool(act.any()):
+            continue
+        u1 = u[act]; v1 = v[act]
+        un = u1 / (L * 0.5)
+        tap = hwid * np.power(np.clip(1.0 - un * un, 0.0, 1.0), 0.35)
+        v0 = A1 * np.sin(k1 * u1 + p1) + A2 * np.sin(k2 * u1 + p2)
+        dvc = np.abs(v1 - v0)
+        body = np.clip((tap - dvc) / aaw, 0.0, 1.0)
+        twill = 0.72 + 0.28 * (np.clip(np.cos(u1 * (2.0 * np.pi / per) + (v1 - v0) * 0.18) * 3.0, -1.0, 1.0) * 0.5 + 0.5)
+        gate = np.clip((tap - aaw * 2.0) / aaw, 0.0, 1.0)
+        pip = np.clip(1.0 - np.abs(dvc - tap * 0.84) / max(1.0, dim * 0.0011), 0.0, 1.0) * gate
+        st = np.clip(1.0 - dvc / max(1.0, dim * 0.0009), 0.0, 1.0) * (np.cos(u1 * (2.0 * np.pi / (per * 2.0))) > 0.25) * gate
+        rib = np.maximum(np.maximum(body * 0.60 * twill, pip * 0.97), st * 0.80)
+        osh = np.clip(1.0 - (dvc - tap) / shw, 0.0, 1.0) * (dvc > tap) * np.clip((tap - aaw) / aaw, 0.0, 1.0)
+        ow = out[y0:y1, x0:x1]
+        sub = ow[act]
+        sub = sub * (1.0 - osh * 0.55)
+        sub = np.where(body > 0.05, rib, sub)
+        ow[act] = sub.astype(np.float32)
+    s0 = float(int(seed) % 89)
+    bg = np.sin(xx * 0.0057 + yy * 0.0049 + s0) + np.sin(yy * 0.0071 - xx * 0.0031 + s0 * 1.9) + np.sin((xx - yy) * 0.0024 + s0 * 0.7)
+    bg = (bg - bg.min()) / float(bg.max() - bg.min() + 1e-6)
+    out = np.clip(out + bg * 0.05 + 0.02, 0.0, 1.0).astype(np.float32)
+    cc = np.clip(16.0 * (1.0 - out * 0.5), 0, 16).astype(np.uint8)
+    return {'pattern_val': out, 'R_range': -102.0, 'M_range': 84.0, 'CC': cc}
+
+def _ign_ribweave_paint(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None:
+        pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1)
+    s = pm * 0.95
+    h, w = int(shape[0]), int(shape[1])
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    g1 = (int(seed) % 360) * np.pi / 180.0
+    g2 = g1 + 1.917
+    sel = np.sin((xx * np.cos(g1) + yy * np.sin(g1)) * 0.0052 + (int(seed) % 11)) + 0.6 * np.sin((xx * np.cos(g2) + yy * np.sin(g2)) * 0.0034 - (int(seed) % 7))
+    pip = np.clip((pv - 0.74) * 3.8, 0, 1)
+    body = np.clip((pv - 0.26) * 2.4, 0, 1) * (1.0 - pip)
+    red = body * np.clip(-sel * 1.2 - 0.12, 0, 1)
+    blue = body * np.clip(sel * 1.2 - 0.12, 0, 1)
+    wht = body * np.clip(1.0 - np.abs(sel) * 1.6, 0, 1)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + pip * 0.90 * s * mask + red * 0.80 * s * mask + wht * 0.72 * s * mask - blue * 0.10 * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + pip * 0.90 * s * mask - red * 0.16 * s * mask + wht * 0.72 * s * mask - blue * 0.05 * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + pip * 0.92 * s * mask - red * 0.10 * s * mask + wht * 0.76 * s * mask + blue * 0.82 * s * mask, 0, 1)
+    return paint
+
+# --- IGNITION: lfr_stencil_stars ---
+def _ign_stenstar_field(xs, ys, cx, cy, R, rot, k=5, rin=0.40):
+    dx = xs - cx
+    dy = ys - cy
+    ang = np.arctan2(dy, dx)
+    rad = np.hypot(dx, dy)
+    m = 2.0 * np.pi / k
+    av = np.abs(np.mod(ang - rot, m) - m * 0.5)
+    edge = R * (rin + (1.0 - rin) * (av / (m * 0.5)))
+    return rad / (edge + 1e-4), ang, rad, av
+
+def _ign_stenstar_texture(shape, mask, seed, sm):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    rng = np.random.default_rng(int(seed) + 52801)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    out = np.zeros((h, w), dtype=np.float32)
+    pin_d = max(1.6, dim * 0.0024)
+
+    # -- HERO tier: stencil-ring stars + valley bridges + pin-line + spray fan --
+    n_hero = int(rng.integers(6, 9))
+    for _ in range(n_hero):
+        cx = rng.uniform(0.04, 0.96) * w
+        cy = rng.uniform(0.04, 0.96) * h
+        R = rng.uniform(0.060, 0.175) * dim
+        rot = rng.uniform(0.0, 2.0 * np.pi)
+        spray_dir = rng.uniform(0.0, 2.0 * np.pi)
+        n_rays = int(rng.integers(9, 15))
+        ray_ph = rng.uniform(0.0, 2.0 * np.pi)
+        rr = R * 2.05 + 2.0
+        x0 = max(0, int(cx - rr) - 2); x1 = min(w, int(cx + rr) + 3)
+        y0 = max(0, int(cy - rr) - 2); y1 = min(h, int(cy + rr) + 3)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        xs = xx[:, x0:x1]; ys = yy[y0:y1, :]
+        d, ang, rad, av = _ign_stenstar_field(xs, ys, cx, cy, R, rot, 5, 0.40)
+        ring = ((d < 1.0) & (d > 0.80)).astype(np.float32)
+        bridges = (av < (0.05 + 18.0 / max(R, 18.0))).astype(np.float32)
+        ring = ring * (1.0 - bridges)
+        core = (d < 0.50).astype(np.float32)
+        pin = np.clip(1.0 - np.abs(d - 0.645) * (R * 0.5) / pin_d, 0.0, 1.0)
+        rel = np.mod(ang - spray_dir + np.pi, 2.0 * np.pi) - np.pi
+        gate = np.exp(-(rel / 0.62) ** 2)
+        rays = np.power(np.clip(np.cos(ang * n_rays + ray_ph), 0.0, 1.0), 7.0)
+        annu = np.exp(-(((rad / (R + 1e-4)) - 1.42) / 0.34) ** 2) * (d > 1.04)
+        spray = gate * rays * annu
+        star = np.maximum(np.maximum(ring * 0.88, core), pin * 0.78)
+        star = np.maximum(star, np.clip(spray, 0.0, 1.0) * 0.50)
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], star.astype(np.float32))
+
+    # -- MID tier: solid stencil stamps with engraved pin ring --
+    n_mid = int(rng.integers(13, 21))
+    for _ in range(n_mid):
+        cx = rng.uniform(-0.02, 1.02) * w
+        cy = rng.uniform(-0.02, 1.02) * h
+        R = rng.uniform(0.030, 0.064) * dim
+        rot = rng.uniform(0.0, 2.0 * np.pi)
+        rr = R + 2.0
+        x0 = max(0, int(cx - rr) - 2); x1 = min(w, int(cx + rr) + 3)
+        y0 = max(0, int(cy - rr) - 2); y1 = min(h, int(cy + rr) + 3)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        d, ang, rad, av = _ign_stenstar_field(xx[:, x0:x1], yy[y0:y1, :], cx, cy, R, rot, 5, 0.42)
+        body = (d < 1.0).astype(np.float32)
+        pinm = np.clip(1.0 - np.abs(d - 0.74) * (R * 0.5) / pin_d, 0.0, 1.0) * body
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1],
+                                       np.maximum(body * 0.84, pinm * 0.95).astype(np.float32))
+
+    # -- MICRO tier: scattered 4/5-point spark ticks (9-26px) --
+    n_mic = int(rng.integers(150, 230))
+    for _ in range(n_mic):
+        cx = rng.uniform(0.0, 1.0) * w
+        cy = rng.uniform(0.0, 1.0) * h
+        R = rng.uniform(0.0022, 0.0062) * dim
+        k = 4 if rng.random() < 0.5 else 5
+        rot = rng.uniform(0.0, 2.0 * np.pi)
+        rr = R + 2.0
+        x0 = max(0, int(cx - rr) - 2); x1 = min(w, int(cx + rr) + 3)
+        y0 = max(0, int(cy - rr) - 2); y1 = min(h, int(cy + rr) + 3)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        d, ang, rad, av = _ign_stenstar_field(xx[:, x0:x1], yy[y0:y1, :], cx, cy, R, rot, k, 0.34)
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], (d < 1.0).astype(np.float32) * 0.82)
+
+    # -- micro grain floor (8px-class spec detail, below all paint thresholds) --
+    grain = (np.sin(xx * 0.83 + yy * 0.29 + (int(seed) % 97)) *
+             np.sin(yy * 0.71 - xx * 0.31 + 1.7) * 0.5 + 0.5)
+    out = np.maximum(out, grain.astype(np.float32) * 0.07)
+
+    val = np.clip(out, 0.0, 1.0).astype(np.float32)
+    cc = np.clip(16.0 * (1.0 - val * 0.55), 0, 16).astype(np.uint8)
+    return {"pattern_val": val, "R_range": -132.0, "M_range": 104.0, "CC": cc}
+
+def _ign_stenstar_paint(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None:
+        pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1)
+    s = pm * 0.95
+    h, w = shape[:2] if len(shape) > 2 else shape
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    g1 = (int(seed) % 360) * np.pi / 180.0
+    g2 = g1 + 2.39996
+    zone = (np.sin((xx * np.cos(g1) + yy * np.sin(g1)) * 0.0040 + (int(seed) % 7))
+            + 0.8 * np.sin((xx * np.cos(g2) + yy * np.sin(g2)) * 0.0061 - (int(seed) % 5)))
+    red = np.clip(-zone * 1.4, 0, 1)
+    blue = np.clip(zone * 1.4, 0, 1)
+    wht = np.clip(1.0 - np.abs(zone) * 1.6, 0, 1)
+    hi = np.clip((pv - 0.62) * 2.8, 0, 1)
+    mid = np.clip((pv - 0.26) * 1.9, 0, 1) * (1.0 - hi)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (hi * (red * 0.88 + wht * 0.86 + blue * 0.10)
+                                               + mid * (red * 0.42 + wht * 0.20 - blue * 0.05)) * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + (hi * (red * 0.16 + wht * 0.88 + blue * 0.16)
+                                               + mid * (wht * 0.18 - red * 0.06 - blue * 0.03)) * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (hi * (blue * 0.92 + wht * 0.92 - red * 0.04)
+                                               + mid * (blue * 0.46 + wht * 0.20 - red * 0.05)) * s * mask, 0, 1)
+    return paint
+
+# --- IGNITION: lfr_liberty_filigree ---
+def _ign_libfil_spiral_d(rad, lograd, ang, a, b):
+    t = ((lograd - np.log(a)) / b - ang) / (2.0 * np.pi)
+    rc = a * np.exp(b * (ang + 2.0 * np.pi * np.round(t)))
+    return np.abs(rad - rc)
+
+def _ign_libfil_star(xs, ys, cx, cy, R, rot, k=5, rin=0.42):
+    dx = xs - cx
+    dy = ys - cy
+    ang = np.arctan2(dy, dx) - rot
+    rad = np.hypot(dx, dy)
+    m = 2.0 * np.pi / k
+    av = np.abs(np.mod(ang, m) - m * 0.5)
+    edge = R * (rin + (1.0 - rin) * (av / (m * 0.5)))
+    return rad / (edge + 1e-4)
+
+def _ign_libfil_texture(shape, mask, seed, sm):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    rng = np.random.default_rng(int(seed) + 52901)
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    dim = float(min(h, w))
+    out = np.zeros((h, w), dtype=np.float32)
+    lw0 = max(1.8, dim * 0.0042)
+
+    # -- HUB tier: S-scroll pair + acanthus fan + pearls + boss + star tips --
+    n_hub = int(rng.integers(7, 10))
+    for _ in range(n_hub):
+        cx = rng.uniform(0.06, 0.94) * w
+        cy = rng.uniform(0.06, 0.94) * h
+        R = rng.uniform(0.115, 0.215) * dim
+        rot = rng.uniform(0.0, 2.0 * np.pi)
+        b = rng.uniform(0.16, 0.24)
+        a0 = R * rng.uniform(0.055, 0.085)
+        rot2 = rot + rng.uniform(1.2, 2.8) * (1.0 if rng.random() > 0.5 else -1.0)
+        kp = int(rng.integers(5, 8))
+        Rb = R * rng.uniform(0.74, 0.88)
+        rr = R * 1.06 + 2.0
+        x0 = max(0, int(cx - rr) - 2); x1 = min(w, int(cx + rr) + 3)
+        y0 = max(0, int(cy - rr) - 2); y1 = min(h, int(cy + rr) + 3)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        dx = xx[:, x0:x1] - cx; dy = yy[y0:y1, :] - cy
+        ang = np.arctan2(dy, dx)
+        rad = np.hypot(dx, dy)
+        lograd = np.log(np.maximum(rad, 1e-3))
+        rn = rad / (R + 1e-4)
+        lw = lw0 * (0.35 + 1.05 * rn)
+        d1 = _ign_libfil_spiral_d(rad, lograd, ang - rot, a0, b)
+        d2 = _ign_libfil_spiral_d(rad, lograd, -(ang - rot), a0, b)
+        arm = np.maximum(np.clip(1.0 - d1 / lw, 0, 1), np.clip(1.0 - d2 / lw, 0, 1))
+        arm = arm * np.power(np.clip(1.18 - rn, 0, 1), 0.35) * (rn < 1.0)
+        relang = np.mod(ang - rot2 + np.pi, 2.0 * np.pi) - np.pi
+        fan_gate = (np.abs(relang) < 1.25)
+        rl = R * 0.62 * np.power(np.abs(np.cos(kp * relang * 0.5)), 0.75)
+        leaf = ((rad < rl) & fan_gate).astype(np.float32)
+        hp = max(6.0, dim * 0.0062)
+        hatch = (np.abs(np.mod(rad + relang * R * 0.05, hp) - hp * 0.5) < max(1.0, hp * 0.16)).astype(np.float32)
+        leaf_v = leaf * 0.50 + leaf * hatch * 0.42
+        nb = max(10, int(2.0 * np.pi * Rb / max(8.0, dim * 0.017)))
+        ringp = np.exp(-((rad - Rb) / max(2.0, dim * 0.0036)) ** 2)
+        beads = np.power(np.clip(np.cos(ang * nb + rot * 3.0), 0, 1), 10.0)
+        pearls = ringp * beads
+        boss = (rad < R * 0.045).astype(np.float32) * 0.94
+        bring = np.clip(1.0 - np.abs(rad - R * 0.085) / max(1.5, lw0 * 0.6), 0, 1) * 0.85
+        hub = np.maximum.reduce([arm, leaf_v, pearls, boss, bring])
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], np.clip(hub, 0, 1).astype(np.float32))
+        # star terminals at both scroll tips
+        the = np.log(0.92 * R / a0) / b
+        for sgn in (1.0, -1.0):
+            ex = cx + 0.92 * R * np.cos(rot + sgn * the)
+            ey = cy + 0.92 * R * np.sin(rot + sgn * the)
+            Rs = max(6.0, R * 0.085)
+            sx0 = max(0, int(ex - Rs) - 2); sx1 = min(w, int(ex + Rs) + 3)
+            sy0 = max(0, int(ey - Rs) - 2); sy1 = min(h, int(ey + Rs) + 3)
+            if sx0 >= sx1 or sy0 >= sy1:
+                continue
+            ds = _ign_libfil_star(xx[:, sx0:sx1], yy[sy0:sy1, :], ex, ey, Rs,
+                                  rng.uniform(0.0, 2.0 * np.pi), 5, 0.42)
+            out[sy0:sy1, sx0:sx1] = np.maximum(out[sy0:sy1, sx0:sx1],
+                                               (ds < 1.0).astype(np.float32) * 0.96)
+
+    # -- MID tier: small comma scrolls scattered between hubs --
+    n_mini = int(rng.integers(18, 28))
+    lwm = max(1.4, dim * 0.0028)
+    for _ in range(n_mini):
+        cx = rng.uniform(0.0, 1.0) * w
+        cy = rng.uniform(0.0, 1.0) * h
+        R = rng.uniform(0.028, 0.052) * dim
+        rot = rng.uniform(0.0, 2.0 * np.pi)
+        b = rng.uniform(0.18, 0.30)
+        rr = R * 1.05 + 2.0
+        x0 = max(0, int(cx - rr) - 2); x1 = min(w, int(cx + rr) + 3)
+        y0 = max(0, int(cy - rr) - 2); y1 = min(h, int(cy + rr) + 3)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        dx = xx[:, x0:x1] - cx; dy = yy[y0:y1, :] - cy
+        ang = np.arctan2(dy, dx)
+        rad = np.hypot(dx, dy)
+        lograd = np.log(np.maximum(rad, 1e-3))
+        rn = rad / (R + 1e-4)
+        dmm = _ign_libfil_spiral_d(rad, lograd, ang - rot, R * 0.10, b)
+        stroke = np.clip(1.0 - dmm / (lwm * (0.4 + rn)), 0, 1) * (rn < 1.0)
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], (stroke * 0.80).astype(np.float32))
+
+    # -- micro grain floor (engraving tooth, below all paint thresholds) --
+    grain = (np.sin(xx * 0.67 + yy * 0.41 + (int(seed) % 89)) *
+             np.sin(yy * 0.59 - xx * 0.37 + 0.9) * 0.5 + 0.5)
+    out = np.maximum(out, grain.astype(np.float32) * 0.06)
+
+    val = np.clip(out, 0.0, 1.0).astype(np.float32)
+    cc = np.clip(16.0 * (1.0 - val * 0.5), 0, 16).astype(np.uint8)
+    return {"pattern_val": val, "R_range": -128.0, "M_range": 108.0, "CC": cc}
+
+def _ign_libfil_paint(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    pv = bb.get('pattern_val') if isinstance(bb, dict) else None
+    if pv is None:
+        pv = mask.astype(np.float32)
+    pv = np.clip(pv, 0, 1)
+    s = pm * 0.95
+    h, w = shape[:2] if len(shape) > 2 else shape
+    yy = np.arange(h, dtype=np.float32)[:, None]
+    xx = np.arange(w, dtype=np.float32)[None, :]
+    g1 = ((int(seed) * 7) % 360) * np.pi / 180.0
+    g2 = g1 + 1.94161
+    zone = (np.sin((xx * np.cos(g1) + yy * np.sin(g1)) * 0.0036 + (int(seed) % 11))
+            + 0.7 * np.sin((xx * np.cos(g2) + yy * np.sin(g2)) * 0.0055 - (int(seed) % 6)))
+    t = np.clip(zone * 0.55 + 0.5, 0, 1)
+    gold = 1.0 - t
+    silv = t
+    hi = np.clip((pv - 0.58) * 3.0, 0, 1)
+    mid = np.clip((pv - 0.22) * 1.7, 0, 1) * (1.0 - hi)
+    pk = np.clip((pv - 0.90) * 9.0, 0, 1)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (hi * (gold * 0.80 + silv * 0.62) + pk * 0.18
+                                               - mid * 0.06) * s * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + (hi * (gold * 0.62 + silv * 0.68) + pk * 0.18
+                                               + mid * 0.02) * s * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (hi * (gold * 0.24 + silv * 0.80) + pk * 0.20
+                                               + mid * 0.34) * s * mask, 0, 1)
+    return paint
+
+_IGN_TEX_ROUTES = {
+    "lfr_star_lattice": _ign_starlat_texture,
+    "lfr_stripe_drift": _ign_stripedrift_texture,
+    "lfr_bunting_scallop": _ign_buntfan_texture,
+    "lfr_distressed_flag": _ign_flagshred_texture,
+    "lfr_eagle_crest": _ign_eaglecrest_texture,
+    "lfr_firework_radial": _ign_firework_texture,
+    "lfr_constellation_field": _ign_constel_texture,
+    "lfr_ribbon_weave": _ign_ribweave_texture,
+    "lfr_stencil_stars": _ign_stenstar_texture,
+    "lfr_liberty_filigree": _ign_libfil_texture,
+}
+_IGN_PAINT_ROUTES = {
+    "lfr_star_lattice": _ign_starlat_paint,
+    "lfr_stripe_drift": _ign_stripedrift_paint,
+    "lfr_bunting_scallop": _ign_buntfan_paint,
+    "lfr_distressed_flag": _ign_flagshred_paint,
+    "lfr_eagle_crest": _ign_eaglecrest_paint,
+    "lfr_firework_radial": _ign_firework_paint,
+    "lfr_constellation_field": _ign_constel_paint,
+    "lfr_ribbon_weave": _ign_ribweave_paint,
+    "lfr_stencil_stars": _ign_stenstar_paint,
+    "lfr_liberty_filigree": _ign_libfil_paint,
+}
+
+def _texture_lfr_dispatch(shape, mask, seed, sm, variant, _old=_texture_lfr_dispatch):
+    fn = _IGN_TEX_ROUTES.get(variant)
+    if fn is not None:
+        return fn(shape, mask, seed, sm)
+    return _old(shape, mask, seed, sm, variant)
+
+def _paint_lfr_dispatch(paint, shape, mask, seed, pm, bb, variant, _old=_paint_lfr_dispatch):
+    fn = _IGN_PAINT_ROUTES.get(variant)
+    if fn is not None:
+        return fn(paint, shape, mask, seed, pm, bb)
+    return _old(paint, shape, mask, seed, pm, bb, variant)
+# === IGNITION REBUILD 2026-06-10 END ===

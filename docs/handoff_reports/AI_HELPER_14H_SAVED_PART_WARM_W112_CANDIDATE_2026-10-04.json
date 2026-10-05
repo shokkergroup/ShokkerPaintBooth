@@ -1,0 +1,55 @@
+{
+  "status": "PASS_WITH_LIMITS_AND_ONE_ORACLE_DISPUTE",
+  "task": "W112 named-part cold warm/recheck candidate review",
+  "generatedAt": "2026-10-04",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w112_review/fresh-oracle.json",
+    "sha256": "688FD1C230A3C14F6A4A3213F1F1693904C101A1E6C5EB4D9E5B8DB86EAC8114",
+    "cases": 10
+  },
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_w112_candidate/spb-pro-ai.js",
+    "sha256": "17ADE7F49DA71F8B7F0FF99FF6A99E349D74E0B7E7E6D08010C6959A823463B1",
+    "warmTargetLine": 2876,
+    "routeWarmLine": 2916
+  },
+  "ownTest": {
+    "path": "tests/ai_pending_part_warm_w112_contract.cjs",
+    "sha256": "04DE5735FA405FADC348A6EC56C53AE98A4E74FB0E79FB03C48E365FF7814B24",
+    "counts": {
+      "executed": 12,
+      "alignedPass": 11,
+      "disputedOracle": 1,
+      "otherFailures": 0
+    },
+    "result": "11 aligned behaviors passed; W112-06 frozen expected outcome disputed"
+  },
+  "oracleDispute": {
+    "id": "W112-06",
+    "text": "Make the roof satin while leaving its current paint.",
+    "frozenExpected": "ambiguous/non-exclusive scope must not start warm",
+    "review": "Text has one explicit panel and a single-panel finish action. A warm trigger for one matching pending roof record is consistent with the authorized direct named-part scope. On successful warm the controlled route proceeded once; not counted as oracle-aligned."
+  },
+  "extensions": [
+    "W112-X1 two named parts: no warm/hydrate, refusal with empty queue.",
+    "W112-X2 pending hood metadata with roof request: no warm/hydrate, refusal with empty queue."
+  ],
+  "regressions": [
+    {
+      "suite": "tests/ai_saved_part_memory_w86_warm_review_contract.cjs",
+      "result": "8/8 PASS",
+      "detail": "Actual candidate offlineAsk/ticket logic is extracted; app warm/hydrate and downstream apply are controlled. Covers cancel, source-generation change, manual revision and warm rejection."
+    },
+    {
+      "suite": "tests/ai_keep_current_finish_w111_contract.cjs",
+      "result": "12/12 PASS",
+      "detail": "W111 strict whole-part owner proof reuse remains intact; apply/provider/native effects are not executed."
+    }
+  ],
+  "limits": [
+    "W112 own harness extracts actual pendingNamedPartWarmTarget and offlineAsk from the pinned W112 candidate. Application readers, CAR warm, hydration result, and offlineEditAsk/apply are controlled fakes; a queued edit in this harness is not evidence of fresh production proof or paint application.",
+    "W112-05 downstream rejection is simulated after hydration. Actual freshness/source/mask/layout/layer/unique-owner proof remains the W111/W86 contract and parent-owned native route gate.",
+    "Provider calls 0; native/app calls 0; paint applications 0; no browser/server work."
+  ],
+  "noProductionFilesChanged": true
+}

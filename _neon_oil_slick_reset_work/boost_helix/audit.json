@@ -1,0 +1,29 @@
+{
+  "schema": "spb-neon-oil-slick-pilot-audit/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_plasma_tubes",
+  "deterministic_4_of_4": true,
+  "paint_sha256": "36d19decc5f3444245e8582601790b1e372d9bb04b1c9905740d3963a2a6d479",
+  "spec_sha256": "171af41d093e9e01fa3d2090e633ff81cec469fda8c920cfcc0f51bbce41f025",
+  "builder_timings_seconds": [
+    2.40573,
+    2.66456,
+    2.680886,
+    2.570506
+  ],
+  "builder_max_seconds": 2.680886,
+  "all_causal_union_coverage": 0.537326,
+  "edge_union_coverage": 0.546069,
+  "interior_union_coverage": 0.536753,
+  "max_abs_material_correlation": 0.461055,
+  "official_m7": "UNAVAILABLE_WHILE_ISOLATED_AND_UNREGISTERED",
+  "visual_contacts": [
+    "paint_2048.png",
+    "detail_1to1_1024.png",
+    "material_contact.png",
+    "light_sweep_contact.png",
+    "causal_masks_contact.png",
+    "paint_128.png",
+    "paint_64.png"
+  ]
+}

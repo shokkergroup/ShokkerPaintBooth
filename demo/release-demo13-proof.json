@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0-demo.13",
+  "date": "2026-09-06",
+  "installer": {
+    "Path": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\electron-demo\\dist\\ShokkerPaintBooth-SHOKK-DEMO-1.0.0-demo.13-Setup.exe",
+    "Bytes": 723916419,
+    "SHA256": "6682286D31B50CA12BE5269F0E917B0995F0CF10A3AB9FB9356A7D29B4883CF7",
+    "Signature": "NotSigned"
+  },
+  "tests_passed": 121,
+  "real_capture_checks_passed": 360,
+  "main_special_max_rgb_error": 0,
+  "packaged_preview_export_exact": true,
+  "published": false,
+  "native_installer_install_tested": false,
+  "details": "docs/DEMO_COLOR_PARITY_2026-09-06.md"
+}

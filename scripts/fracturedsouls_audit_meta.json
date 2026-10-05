@@ -1,0 +1,272 @@
+[
+ {
+  "id": "fs_aurora_threads",
+  "name": "Aurora Threads",
+  "kind": "finish",
+  "desc": "NEW ROUND-3 \u2014 Curtain filaments \u2014 micro threads gated into crisp aurora curtains, hue sweeping green->teal->violet across the car. Many colors live in the paint at once. Ships on the winner physics from your Blood Marble card (M252 / B255-rail / G-lanes).",
+  "ai_rating": 49,
+  "mip": 0.59,
+  "render_s": 1.47
+ },
+ {
+  "id": "fs_blood_marble",
+  "name": "Blood Marble",
+  "kind": "finish",
+  "desc": "Blood Marble \u2014 FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) \u2014 Marbled horror swirls in the aperture channel \u2014 crimson veins flash through near-black marble.",
+  "ai_rating": 43,
+  "mip": 0.56,
+  "render_s": 1.25
+ },
+ {
+  "id": "fs_carnival_night",
+  "name": "Carnival Night",
+  "kind": "finish",
+  "desc": "Carnival Night \u2014 FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) \u2014 Confetti pin swarm in three hidden colors over midnight \u2014 the glitter light show.",
+  "ai_rating": 39,
+  "mip": 0.53,
+  "render_s": 1.57
+ },
+ {
+  "id": "fs_circuit_soul",
+  "name": "Circuit Soul",
+  "kind": "finish",
+  "desc": "NEW ROUND-3 \u2014 Haunted circuitry \u2014 hairline traces walking a seed-rotated grid, via-dots pinned razor; copper vs teal trace families flash separately. Ships on the winner physics from your Blood Marble card (M252 / B255-rail / G-lanes).",
+  "ai_rating": 44,
+  "mip": 0.53,
+  "render_s": 1.21
+ },
+ {
+  "id": "fs_core_abyss",
+  "name": "Soul Core Abyss \u2014 Amber Flash",
+  "kind": "finish",
+  "desc": "ROUND-2 REBUILD per your note \u2014 Soul Core Abyss \u2014 FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) \u2014 Pure pre-crushed abyss blue core \u2014 instant angle-driven color reveal, no setup.",
+  "ai_rating": 24,
+  "mip": 0.01,
+  "render_s": 1.17
+ },
+ {
+  "id": "fs_core_aurum",
+  "name": "Soul Core Aurum \u2014 Purple Flash",
+  "kind": "finish",
+  "desc": "Soul Core Aurum \u2014 FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) \u2014 Pure pre-crushed gold core \u2014 instant angle-driven color reveal, no setup.",
+  "ai_rating": 26,
+  "mip": 0.0,
+  "render_s": 1.06
+ },
+ {
+  "id": "fs_core_crimson",
+  "name": "Soul Core Crimson \u2014 Teal Flash",
+  "kind": "finish",
+  "desc": "ROUND-2 REBUILD per your note \u2014 Soul Core Crimson \u2014 FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) \u2014 Pure pre-crushed crimson core \u2014 instant angle-driven color reveal, no setup.",
+  "ai_rating": 25,
+  "mip": 0.01,
+  "render_s": 0.98
+ },
+ {
+  "id": "fs_core_emerald",
+  "name": "Soul Core Emerald \u2014 Pink Flash",
+  "kind": "finish",
+  "desc": "Soul Core Emerald \u2014 FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) \u2014 Pure pre-crushed emerald core \u2014 instant angle-driven color reveal, no setup.",
+  "ai_rating": 27,
+  "mip": 0.01,
+  "render_s": 1.0
+ },
+ {
+  "id": "fs_core_violet",
+  "name": "Soul Core Violet \u2014 Yellow Gold Flash",
+  "kind": "finish",
+  "desc": "Soul Core Violet \u2014 FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) \u2014 Pure pre-crushed dark violet \u2014 the proven contract, no texture. Drop it on a zone and the color morphs/reveals by sun angle instantly. No sliders needed.",
+  "ai_rating": 24,
+  "mip": 0.01,
+  "render_s": 0.96
+ },
+ {
+  "id": "fs_ember_drift",
+  "name": "Ember Drift",
+  "kind": "finish",
+  "desc": "ROUND-2 REBUILD per your note \u2014 Ember Drift \u2014 FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) \u2014 Drifting ember streaks with spark pins \u2014 burnt orange fire lanes.",
+  "ai_rating": 40,
+  "mip": 0.75,
+  "render_s": 1.31
+ },
+ {
+  "id": "fs_geode_vein",
+  "name": "Geode Vein",
+  "kind": "finish",
+  "desc": "NEW ROUND-3 \u2014 Agate banding \u2014 warped contour bands cycling a five-hue crushed sequence (violet/teal/gold/rose/ice), druzy pin pockets every few bands. Ships on the winner physics from your Blood Marble card (M252 / B255-rail / G-lanes).",
+  "ai_rating": 46,
+  "mip": 0.66,
+  "render_s": 1.57
+ },
+ {
+  "id": "fs_ghost_silk",
+  "name": "Ghost Silk",
+  "kind": "finish",
+  "desc": "NEW ROUND-3 \u2014 WOVENLIGHT TWIST \u2014 the thread striations alone: micro satin threads in crisp curtain panels, third-angle sheen pools decide WHERE the silk ignites; hue slides indigo->teal along the sheen. Ships on the winner physics from your Blood Marble card (M252 / B255-rail / G-lanes).",
+  "ai_rating": 48,
+  "mip": 0.57,
+  "render_s": 1.49
+ },
+ {
+  "id": "fs_guilloche_ghost",
+  "name": "Guilloche Ghost",
+  "kind": "finish",
+  "desc": "NEW ROUND-3 \u2014 Banknote engine-turning \u2014 overlapping hairline harmonograph rosette nets (champagne + teal over crushed bronze); curve crossings pin razor glints. Ships on the winner physics from your Blood Marble card (M252 / B255-rail / G-lanes).",
+  "ai_rating": 45,
+  "mip": 0.58,
+  "render_s": 1.37
+ },
+ {
+  "id": "fs_hex_hive",
+  "name": "Hex Hive",
+  "kind": "finish",
+  "desc": "NEW ROUND-3 \u2014 Dead hive \u2014 fine rotated honeycomb, three crushed hues cycling cell-by-cell (amber / umber / petrol), walls carve the aperture, a razor pore pin in every cell. Ships on the winner physics from your Blood Marble card (M252 / B255-rail / G-lanes).",
+  "ai_rating": 47,
+  "mip": 0.7,
+  "render_s": 1.56
+ },
+ {
+  "id": "fs_howl",
+  "name": "Howl",
+  "kind": "finish",
+  "desc": "Howl \u2014 FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) \u2014 Radial claw-scratch flares (horror) \u2014 ash-violet gashes ignite at angle.",
+  "ai_rating": 37,
+  "mip": 0.77,
+  "render_s": 1.15
+ },
+ {
+  "id": "fs_moire_phantom",
+  "name": "Moire Phantom",
+  "kind": "finish",
+  "desc": "NEW ROUND-3 \u2014 CIRCULAR moire \u2014 two families of fine concentric rings interfere into wandering hyperbolic phantom curves; the beat decides which hue shows (steel-teal vs rose). Ships on the winner physics from your Blood Marble card (M252 / B255-rail / G-lanes).",
+  "ai_rating": 48,
+  "mip": 0.41,
+  "render_s": 1.35
+ },
+ {
+  "id": "fs_moth_dust",
+  "name": "Moth Dust",
+  "kind": "finish",
+  "desc": "Moth Dust \u2014 FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) \u2014 Glitter-pin field: thousands of razor-aperture sparkle points dancing over a gold-dust core.",
+  "ai_rating": 42,
+  "mip": 0.73,
+  "render_s": 1.18
+ },
+ {
+  "id": "fs_night_tide",
+  "name": "Night Tide",
+  "kind": "finish",
+  "desc": "Night Tide \u2014 FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) \u2014 Rolling wave-caustic lanes \u2014 abyss-blue swells reveal in moving bands.",
+  "ai_rating": 41,
+  "mip": 0.86,
+  "render_s": 1.33
+ },
+ {
+  "id": "fs_nova_burst",
+  "name": "Nova Burst",
+  "kind": "finish",
+  "desc": "NEW ROUND-3 \u2014 Scattered micro star-detonations, each with its own crushed hue halo \u2014 a six-color nova field on near-black violet. Ships on the winner physics from your Blood Marble card (M252 / B255-rail / G-lanes).",
+  "ai_rating": 39,
+  "mip": 0.75,
+  "render_s": 1.67
+ },
+ {
+  "id": "fs_oil_serpent",
+  "name": "Oil Serpent",
+  "kind": "finish",
+  "desc": "NEW ROUND-3 \u2014 Advected serpent currents \u2014 the strand hue follows the FLOW DIRECTION, so the same paint flashes different colors depending on which way the current bends around the panel. Ships on the winner physics from your Blood Marble card (M252 / B255-rail / G-lanes).",
+  "ai_rating": 40,
+  "mip": 0.67,
+  "render_s": 1.46
+ },
+ {
+  "id": "fs_petrol_halo",
+  "name": "Petrol Halo",
+  "kind": "finish",
+  "desc": "NEW ROUND-3 \u2014 Newton-ring packets \u2014 scattered interference halos of fine concentric rings whose hue cycles with ring index. Oil-on-water, crushed. Ships on the winner physics from your Blood Marble card (M252 / B255-rail / G-lanes).",
+  "ai_rating": 49,
+  "mip": 0.54,
+  "render_s": 1.36
+ },
+ {
+  "id": "fs_phantom_lattice",
+  "name": "Phantom Lattice",
+  "kind": "finish",
+  "desc": "Phantom Lattice \u2014 FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) \u2014 A faint diamond lattice that only exists at the reveal angle \u2014 gunmetal teal.",
+  "ai_rating": 48,
+  "mip": 0.52,
+  "render_s": 1.44
+ },
+ {
+  "id": "fs_serpent_scale",
+  "name": "Serpent Scale",
+  "kind": "finish",
+  "desc": "NEW ROUND-3 \u2014 Imbricated scale rows \u2014 fine crescent rims + keeled centers, alternating crushed emerald/abyss rows that flash row-by-row. Ships on the winner physics from your Blood Marble card (M252 / B255-rail / G-lanes).",
+  "ai_rating": 51,
+  "mip": 0.55,
+  "render_s": 1.52
+ },
+ {
+  "id": "fs_shatter_glass",
+  "name": "Shatter Glass",
+  "kind": "finish",
+  "desc": "Shatter Glass \u2014 FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) \u2014 Angular shard lanes \u2014 ice-violet fractures flash plate by plate.",
+  "ai_rating": 39,
+  "mip": 0.79,
+  "render_s": 1.59
+ },
+ {
+  "id": "fs_shattered_prism",
+  "name": "Shattered Prism",
+  "kind": "finish",
+  "desc": "NEW ROUND-3 \u2014 Your '47 colors' idea distilled \u2014 a fine crystal mosaic where EVERY cell carries its own crushed hue. Borders + per-cell facet striations carve the aperture; each cell pops its own complement at its own angle. Ships on the winner physics from your Blood Marble card (M252 / B255-rail / G-lanes).",
+  "ai_rating": 43,
+  "mip": 0.77,
+  "render_s": 2.38
+ },
+ {
+  "id": "fs_soul_loom",
+  "name": "Soul Loom",
+  "kind": "finish",
+  "desc": "NEW ROUND-3 \u2014 WOVENLIGHT TWIST \u2014 the loom itself, crushed: two warped ribbon axes weave over/under with grooves + dive shadows + thread striations, but pre-crushed emerald x violet. The weave flashes TWO colors by sun angle (each ribbon family owns one). Ships on the winner physics from your Blood Marble card (M252 / B255-rail / G-lanes).",
+  "ai_rating": 44,
+  "mip": 0.74,
+  "render_s": 1.93
+ },
+ {
+  "id": "fs_star_chart",
+  "name": "Star Chart",
+  "kind": "finish",
+  "desc": "NEW ROUND-3 \u2014 Grave-sky cartography \u2014 razor star pins, hairline constellation chords, three faint nebula hue washes under crushed indigo. Ships on the winner physics from your Blood Marble card (M252 / B255-rail / G-lanes).",
+  "ai_rating": 39,
+  "mip": 0.59,
+  "render_s": 1.42
+ },
+ {
+  "id": "fs_static_veins",
+  "name": "Static Veins",
+  "kind": "finish",
+  "desc": "Static Veins \u2014 FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) \u2014 Electric filaments with razor-pin cores \u2014 emerald lightning crawls through the reveal.",
+  "ai_rating": 40,
+  "mip": 0.71,
+  "render_s": 1.41
+ },
+ {
+  "id": "fs_widow_braid",
+  "name": "Widow Braid",
+  "kind": "finish",
+  "desc": "NEW ROUND-3 \u2014 WOVENLIGHT TWIST \u2014 tri-axial braid: THREE warped strand families 60 degrees apart cycle on top like a braid. Three crushed hues (rose / petrol / amber) = three different flash colors from three sun geometries. Ships on the winner physics from your Blood Marble card (M252 / B255-rail / G-lanes).",
+  "ai_rating": 46,
+  "mip": 0.65,
+  "render_s": 1.61
+ },
+ {
+  "id": "fs_wraith_veil",
+  "name": "Wraith Veil",
+  "kind": "finish",
+  "desc": "Wraith Veil \u2014 FRACTURED SOULS (drag-and-drop color shift, built on the proven Ghost Fracture four-dial physics) \u2014 Smoky flowing veils carved into the reveal aperture \u2014 violet wraiths sweep across the car as the angle changes.",
+  "ai_rating": 41,
+  "mip": 0.81,
+  "render_s": 1.11
+ }
+]

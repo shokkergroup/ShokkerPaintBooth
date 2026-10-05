@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_anodised_trim",
+  "display_name": "Memphis: Anodised Trim",
+  "promise": "Aqua, rose and lemon aluminum trims with brushed faces and fine polished cuts.",
+  "carrier_grammar": "Aqua, rose and lemon aluminum trims with brushed faces and fine polished cuts. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for aqua anodized faces, rose aluminum slivers, lemon anodized ribs, silver cut ends, dark channel seams is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Aqua, rose and lemon aluminum trims with brushed faces and fine polished cuts. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_anodised_trim.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "aqua anodized faces",
+      "role": "Actual shared paint and spec geometry: aqua anodized faces"
+    },
+    {
+      "name": "rose aluminum slivers",
+      "role": "Actual shared paint and spec geometry: rose aluminum slivers"
+    },
+    {
+      "name": "lemon anodized ribs",
+      "role": "Actual shared paint and spec geometry: lemon anodized ribs"
+    },
+    {
+      "name": "silver cut ends",
+      "role": "Actual shared paint and spec geometry: silver cut ends"
+    },
+    {
+      "name": "dark channel seams",
+      "role": "Actual shared paint and spec geometry: dark channel seams"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "aqua anodized faces",
+      "rose aluminum slivers",
+      "lemon anodized ribs",
+      "silver cut ends",
+      "dark channel seams"
+    ],
+    "R": [
+      "aqua anodized faces",
+      "rose aluminum slivers",
+      "lemon anodized ribs",
+      "silver cut ends",
+      "dark channel seams"
+    ],
+    "Cc": [
+      "aqua anodized faces",
+      "rose aluminum slivers",
+      "lemon anodized ribs",
+      "silver cut ends",
+      "dark channel seams"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_anodised_peg",
+      "difference": "This finish uses Dense micro aluminum extrusion slivers: tiny grooved T-ends, clipped L-flanges and double-rib cuts in anodized aqua rose gold and lemon, little silver exposed cut ends. Different small geometric cross-sections, varied orientations, no long rails or large panels.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_chrome_type",
+      "difference": "This finish uses Dense micro aluminum extrusion slivers: tiny grooved T-ends, clipped L-flanges and double-rib cuts in anodized aqua rose gold and lemon, little silver exposed cut ends. Different small geometric cross-sections, varied orientations, no long rails or large panels.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "aqua anodized faces is visible in the authored geometry",
+      "rose aluminum slivers is visible in the authored geometry",
+      "lemon anodized ribs is visible in the authored geometry",
+      "silver cut ends is visible in the authored geometry",
+      "dark channel seams is visible in the authored geometry"
+    ],
+    "source_sha256": "7e7c2c7590e86146503d97b1218654152d9396d31633c097b30d24d6d0d2a9ac",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_anodised_trim-authored-Aqua, rose and lemon aluminum trims with brushed faces and fine polished cuts. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_anodised_trim-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 62.4,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "f0f2895a06b814dda2d32461f167bc79f7c01a081762b689c5af51bf1f0dd1dc"
+}

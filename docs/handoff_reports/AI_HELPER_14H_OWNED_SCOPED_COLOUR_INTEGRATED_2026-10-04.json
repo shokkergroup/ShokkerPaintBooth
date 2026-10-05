@@ -1,0 +1,304 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "task": "Gen3 actual integrated compile/queue/apply replay",
+  "oracle": {
+    "frozenAt": "2026-10-04 before W40 candidate construction/inspection",
+    "candidateGlob": "_easy_claude_work/ai14h_w40_candidate/**",
+    "cases": [
+      {
+        "id": "exact-island-roof-colour-only-retains-existing-finish-and-mask",
+        "invariant": "a current unique owner for the named island roof is edited by colour only; finish and region-mask identity remain unchanged"
+      },
+      {
+        "id": "forged-uuid-clone-is-not-owner",
+        "invariant": "a copied UUID or cloned descriptor cannot establish current ownership without current owner proof"
+      },
+      {
+        "id": "source-generation-change-after-compile",
+        "invariant": "a source reload after plan compilation prevents queue publication and application"
+      },
+      {
+        "id": "same-path-replacement-after-compile",
+        "invariant": "same-path committed-image replacement invalidates a previously compiled operation"
+      },
+      {
+        "id": "manual-mask-edit-after-compile",
+        "invariant": "manual mask revision after compile wins and scoped queue is rejected"
+      },
+      {
+        "id": "layout-change-after-compile",
+        "invariant": "layout/part geometry change after compile invalidates exact-part ownership"
+      },
+      {
+        "id": "element-ownership-change-after-compile",
+        "invariant": "numbers/sponsor/element owner change after compile invalidates the action"
+      },
+      {
+        "id": "layer-restriction-change-after-compile",
+        "invariant": "layer visibility/restriction change after compile prevents broader color application"
+      },
+      {
+        "id": "renamed-owner-revalidated-currently",
+        "invariant": "renaming the exact owner cannot silently redirect the compiled edit to a different zone"
+      },
+      {
+        "id": "duplicate-uuid-owner-ambiguity",
+        "invariant": "multiple current zones claiming one owner identity fail closed"
+      },
+      {
+        "id": "muted-zone-not-current-owner",
+        "invariant": "a muted zone does not qualify as the sole current owner of the target region"
+      },
+      {
+        "id": "shared-body-owner-does-not-satisfy-exact-part",
+        "invariant": "a broad body/shared owner cannot authorize an exact named-part colour edit"
+      }
+    ]
+  },
+  "counts": {
+    "frozenW35Cases": 12,
+    "pass": 12,
+    "fail": 0,
+    "supplementalCases": 6,
+    "supplementalPass": 6,
+    "supplementalFail": 0,
+    "queueOrApplyNoops": 11,
+    "mockedBatchCalls": 1,
+    "providers": 0,
+    "nativeCalls": 0
+  },
+  "cases": [
+    {
+      "id": "exact-island-roof-colour-only-retains-existing-finish-and-mask",
+      "expected": "apply colour to the unique live owner while preserving finish and mask identity",
+      "proofsAfterMutation": 1,
+      "queueOps": 1,
+      "applyBatches": 1,
+      "writes": [
+        {
+          "id": "roof-zone-1",
+          "color": "#00ff00"
+        }
+      ],
+      "zoneColor": "#00ff00",
+      "base": "base::gloss",
+      "maskSame": true,
+      "verdict": "pass"
+    },
+    {
+      "id": "forged-uuid-clone-is-not-owner",
+      "expected": "reject stale proof when a same-selector clone appears",
+      "proofsAfterMutation": 0,
+      "queueOps": 0,
+      "applyBatches": 0,
+      "writes": [],
+      "zoneColor": "#cc0000",
+      "base": "base::gloss",
+      "maskSame": true,
+      "verdict": "pass"
+    },
+    {
+      "id": "source-generation-change-after-compile",
+      "expected": "reject after committed source generation advances",
+      "proofsAfterMutation": 0,
+      "queueOps": 0,
+      "applyBatches": 0,
+      "writes": [],
+      "zoneColor": "#cc0000",
+      "base": "base::gloss",
+      "maskSame": true,
+      "verdict": "pass"
+    },
+    {
+      "id": "same-path-replacement-after-compile",
+      "expected": "reject after same-path source replacement",
+      "proofsAfterMutation": 0,
+      "queueOps": 0,
+      "applyBatches": 0,
+      "writes": [],
+      "zoneColor": "#cc0000",
+      "base": "base::gloss",
+      "maskSame": true,
+      "verdict": "pass"
+    },
+    {
+      "id": "manual-mask-edit-after-compile",
+      "expected": "reject after the owner mask is manually edited",
+      "proofsAfterMutation": 0,
+      "queueOps": 0,
+      "applyBatches": 0,
+      "writes": [],
+      "zoneColor": "#cc0000",
+      "base": "base::gloss",
+      "maskSame": true,
+      "verdict": "pass"
+    },
+    {
+      "id": "layout-change-after-compile",
+      "expected": "reject after part layout changes",
+      "proofsAfterMutation": 0,
+      "queueOps": 0,
+      "applyBatches": 0,
+      "writes": [],
+      "zoneColor": "#cc0000",
+      "base": "base::gloss",
+      "maskSame": true,
+      "verdict": "pass"
+    },
+    {
+      "id": "element-ownership-change-after-compile",
+      "expected": "reject after element map changes",
+      "proofsAfterMutation": 0,
+      "queueOps": 0,
+      "applyBatches": 0,
+      "writes": [],
+      "zoneColor": "#cc0000",
+      "base": "base::gloss",
+      "maskSame": true,
+      "verdict": "pass"
+    },
+    {
+      "id": "layer-restriction-change-after-compile",
+      "expected": "revalidate layer visibility/restriction before queue/apply",
+      "proofsAfterMutation": 0,
+      "queueOps": 0,
+      "applyBatches": 0,
+      "writes": [],
+      "zoneColor": "#cc0000",
+      "base": "base::gloss",
+      "maskSame": true,
+      "verdict": "pass"
+    },
+    {
+      "id": "renamed-owner-revalidated-currently",
+      "expected": "do not silently use stale proof/label after owner rename",
+      "proofsAfterMutation": 0,
+      "queueOps": 0,
+      "applyBatches": 0,
+      "writes": [],
+      "zoneColor": "#cc0000",
+      "base": "base::gloss",
+      "maskSame": true,
+      "verdict": "pass"
+    },
+    {
+      "id": "duplicate-uuid-owner-ambiguity",
+      "expected": "reject ambiguous duplicate-id targets",
+      "proofsAfterMutation": 0,
+      "queueOps": 0,
+      "applyBatches": 0,
+      "writes": [],
+      "zoneColor": "#cc0000",
+      "base": "base::gloss",
+      "maskSame": true,
+      "verdict": "pass"
+    },
+    {
+      "id": "muted-zone-not-current-owner",
+      "expected": "reject muted zone as current owner",
+      "proofsAfterMutation": 0,
+      "queueOps": 0,
+      "applyBatches": 0,
+      "writes": [],
+      "zoneColor": "#cc0000",
+      "base": "base::gloss",
+      "maskSame": true,
+      "verdict": "pass"
+    },
+    {
+      "id": "shared-body-owner-does-not-satisfy-exact-part",
+      "expected": "reject a broad/shared body selector for exact roof scope",
+      "proofsAfterMutation": 0,
+      "queueOps": 0,
+      "applyBatches": 0,
+      "writes": [],
+      "zoneColor": "#cc0000",
+      "base": "base::gloss",
+      "maskSame": true,
+      "verdict": "pass"
+    }
+  ],
+  "supplemental": [
+    {
+      "id": "apply-time-source-generation-race-cancels-whole-queue",
+      "queueLength": 2,
+      "batchCalls": 0,
+      "layerOpsCalls": 0,
+      "zoneColor": "#cc0000",
+      "finish": "base::gloss",
+      "failed": [
+        "scoped part proof is stale; nothing in this queue was applied"
+      ],
+      "verdict": "pass"
+    },
+    {
+      "id": "apply-time-manual-layer-restriction-cancels-whole-queue",
+      "queueLength": 2,
+      "batchCalls": 0,
+      "layerOpsCalls": 0,
+      "zoneColor": "#cc0000",
+      "finish": "base::gloss",
+      "failed": [
+        "scoped part proof is stale; nothing in this queue was applied"
+      ],
+      "verdict": "pass"
+    },
+    {
+      "id": "apply-time-malformed-proof-cancels-whole-queue",
+      "queueLength": 2,
+      "batchCalls": 0,
+      "layerOpsCalls": 0,
+      "zoneColor": "#cc0000",
+      "finish": "base::gloss",
+      "failed": [
+        "scoped part proof is stale; nothing in this queue was applied"
+      ],
+      "verdict": "pass"
+    },
+    {
+      "id": "native-Car-Paint-name-resolves-to-live-layer-UUID",
+      "currentOwners": 1,
+      "compiledZones": 1,
+      "asked": false,
+      "zoneLayerIds": [
+        "body-layer"
+      ],
+      "regionLayerNames": [
+        "Car Paint"
+      ],
+      "verdict": "pass"
+    },
+    {
+      "id": "fresh-restored-provenance-can-be-supplied-without-zone-mutation",
+      "proof": true,
+      "zoneProvenanceUnchanged": true,
+      "verdict": "pass",
+      "legacyHasFiveFields": true
+    },
+    {
+      "id": "missing-committed-source-api-fails-closed-before-planning",
+      "currentOwners": 0,
+      "compiledZones": 0,
+      "asked": true,
+      "zoneColor": "#cc0000",
+      "verdict": "pass"
+    }
+  ],
+  "sourceHashes": {
+    "spb-pro-ai.js": "3DA5C98B7202288979EFE0F53FE48818F31A6A5B5428BFB178CAEBA5C25E82D6",
+    "spb-pro-edit.js": "19CBB899006D625BD2649FDAF8903EDA48D6BF8D9BD22BE0D90DB7C52673937E",
+    "spb-pro-zone-kit.js": "EA9E169B909A30A6431F7FD48B87658B8258D480F165D304CB0CA5DAC8983AF7",
+    "spb-ai-operation.js": "47587A1A53A35CE7E58825BAC864BD75C2421D26C19791957F57BB199A7000C6",
+    "spb-ai-lease.js": "DE276372A763310EC051DB141FCB1D601E11DBF193843E2B21A405226F782134",
+    "spb-ai-part-memory.js": "6E0D1E1466FECA847D3A1C3300F32779BA610F3B6C72C7904A6C8FD97A6B3652",
+    "spb-ai-part-memory-project.js": "763D36ADDCA501256E1346D58B797D339B15666D04273CBF5C4840B15C1C6FC1",
+    "spb-ai-complete-instruction-guard.js": "BA0AF1F9E217695ED733DDE81C8DEC1A735DD1F052E8C06B3098866D392A551C",
+    "spb-pro-design.js": "0533393FF5F2170236F60D4ED489C7AE52F98805E12B0764DA67A967F756F2E8"
+  },
+  "providerCalls": 0,
+  "limits": [
+    "Original W35 desired oracle and W40 six supplements replayed unchanged against actual integrated helpers.",
+    "Zone batch, geometry, canvas, source transaction and Undo snapshot are controlled VM services; this verifies proof propagation and rejection, not native output or Undo.",
+    "No live source, provider, mirror or native effects."
+  ]
+}

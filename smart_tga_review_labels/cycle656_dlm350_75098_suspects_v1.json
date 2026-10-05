@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 350/car_num_75098.tga",
+  "inspection_records": "_smart_tga_runs/cycle656_dlm_embedding_batch/inspection_records.json",
+  "review_scope": "Cycle 656 manual source and all-owner sheet review of every emitted suspect bbox.",
+  "component_labels": [
+    {"layer":"numbers","component_index":2,"expected_bbox":[798,835,165,101],"target_layer":"numbers","label":"true_number","family_id":"number:89","note":"True roof/rear 89 decal."},
+    {"layer":"numbers","component_index":1,"expected_bbox":[297,730,146,91],"target_layer":"numbers","label":"true_number","family_id":"number:89","note":"True lower-side 89 decal."}
+  ]
+}

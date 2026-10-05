@@ -1,0 +1,4 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_25658.tga","inspection_records":"_smart_tga_runs/cycle680_dlm_dominant_member_confirmation/inspection_records.json","review_scope":"Cycle 680 source plus complete owner sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[272,237,105,105],"target_layer":"numbers","family_id":"number:144","label":"true_custom_number_144_fragment"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[554,295,37,33],"target_layer":"sponsors","label":"contingency_logo_false_number"}
+]}

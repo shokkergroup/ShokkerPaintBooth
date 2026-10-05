@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_bacterio_print",
+  "display_name": "Memphis: Bacterio Pop",
+  "promise": "Tiny black bacteria-like squiggles, coral dots and teal commas under cream melamine.",
+  "carrier_grammar": "Tiny black bacteria-like squiggles, coral dots and teal commas under cream melamine. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for cream melamine skin, black bacterio ink, coral printed dots, teal comma ink, isolated black pepper dots, short black crescent strokes is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny black bacteria-like squiggles, coral dots and teal commas under cream melamine. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_bacterio_print.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "cream melamine skin",
+      "role": "Actual shared paint and spec geometry: cream melamine skin"
+    },
+    {
+      "name": "black bacterio ink",
+      "role": "Actual shared paint and spec geometry: black bacterio ink"
+    },
+    {
+      "name": "coral printed dots",
+      "role": "Actual shared paint and spec geometry: coral printed dots"
+    },
+    {
+      "name": "teal comma ink",
+      "role": "Actual shared paint and spec geometry: teal comma ink"
+    },
+    {
+      "name": "isolated black pepper dots",
+      "role": "Actual shared paint and spec geometry: isolated black pepper dots"
+    },
+    {
+      "name": "short black crescent strokes",
+      "role": "Actual shared paint and spec geometry: short black crescent strokes"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "cream melamine skin",
+      "black bacterio ink",
+      "coral printed dots",
+      "teal comma ink",
+      "isolated black pepper dots",
+      "short black crescent strokes"
+    ],
+    "R": [
+      "cream melamine skin",
+      "black bacterio ink",
+      "coral printed dots",
+      "teal comma ink",
+      "isolated black pepper dots",
+      "short black crescent strokes"
+    ],
+    "Cc": [
+      "cream melamine skin",
+      "black bacterio ink",
+      "coral printed dots",
+      "teal comma ink",
+      "isolated black pepper dots",
+      "short black crescent strokes"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_milano_squiggle",
+      "difference": "This finish uses Extremely fine Memphis bacterio print: thousands of tiny black irregular worm squiggles and short double commas, coral pin dots, aqua dash chips on warm lemon-cream laminate. Flat printed markwork not actual bacteria. Delicate sparse microlines densely distributed, no large squiggles or giant cream gaps.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "at_sharpie_ink",
+      "difference": "This finish uses Extremely fine Memphis bacterio print: thousands of tiny black irregular worm squiggles and short double commas, coral pin dots, aqua dash chips on warm lemon-cream laminate. Flat printed markwork not actual bacteria. Delicate sparse microlines densely distributed, no large squiggles or giant cream gaps.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "cream melamine skin is visible in the authored geometry",
+      "black bacterio ink is visible in the authored geometry",
+      "coral printed dots is visible in the authored geometry",
+      "teal comma ink is visible in the authored geometry",
+      "isolated black pepper dots is visible in the authored geometry",
+      "short black crescent strokes is visible in the authored geometry"
+    ],
+    "source_sha256": "f74082119f64cf273fb2a3d2081ca31577c69c8388f93b5ccb998135175a5d22",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_bacterio_print-authored-Tiny black bacteria-like squiggles, coral dots and teal commas under cream melamine. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_bacterio_print-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 68.8,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "fe503245ee9f84b5113d7f9ff1382fdd66745441f26caa2c6da600bc95882307"
+}

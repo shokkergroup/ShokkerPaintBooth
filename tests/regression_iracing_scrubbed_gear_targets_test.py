@@ -78,3 +78,27 @@ def test_deploy_to_iracing_rejects_scrubbed_helmet_and_suit_targets_before_copy(
 
     assert valid_response.status_code == 200
     assert (paint_root / "dallaraarca" / "car_23371.tga").exists()
+    verified = valid_response.get_json()["files"]
+    assert verified == [{
+        "name": "car_23371.tga",
+        "bytes": len(b"fake-paint"),
+        "sha256": __import__("hashlib").sha256(b"fake-paint").hexdigest(),
+    }]
+
+
+def test_iracing_documents_dir_uses_redirected_windows_documents(
+    monkeypatch,
+    server_module,
+    tmp_path,
+):
+    missing_home = tmp_path / "home-without-iracing"
+    redirected = tmp_path / "OneDrive" / "Documents"
+    expected = redirected / "iRacing"
+    expected.mkdir(parents=True, exist_ok=True)
+
+    monkeypatch.setattr(server_module.os.path, "expanduser", lambda value: str(missing_home) if value == "~" else value)
+    monkeypatch.setattr(server_module, "_windows_personal_documents_dir", lambda: str(redirected))
+    for name in ("OneDriveConsumer", "OneDriveCommercial", "OneDrive"):
+        monkeypatch.delenv(name, raising=False)
+
+    assert server_module._iracing_documents_dir() == str(expected)

@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_synth_key",
+  "display_name": "Grid: Synth Sequencer",
+  "promise": "Candy-colored sequencer pads, ivory key slivers and small amber indicator marks.",
+  "carrier_grammar": "Candy-colored sequencer pads, ivory key slivers and small amber indicator marks. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for colored rubber pads, cyan silicone pads, red resin switch caps, ivory key slivers, black separator notches, amber indicator points is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Candy-colored sequencer pads, ivory key slivers and small amber indicator marks. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_synth_key.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "colored rubber pads",
+      "role": "Actual shared paint and spec geometry: colored rubber pads"
+    },
+    {
+      "name": "cyan silicone pads",
+      "role": "Actual shared paint and spec geometry: cyan silicone pads"
+    },
+    {
+      "name": "red resin switch caps",
+      "role": "Actual shared paint and spec geometry: red resin switch caps"
+    },
+    {
+      "name": "ivory key slivers",
+      "role": "Actual shared paint and spec geometry: ivory key slivers"
+    },
+    {
+      "name": "black separator notches",
+      "role": "Actual shared paint and spec geometry: black separator notches"
+    },
+    {
+      "name": "amber indicator points",
+      "role": "Actual shared paint and spec geometry: amber indicator points"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "colored rubber pads",
+      "cyan silicone pads",
+      "red resin switch caps",
+      "ivory key slivers",
+      "black separator notches",
+      "amber indicator points"
+    ],
+    "R": [
+      "colored rubber pads",
+      "cyan silicone pads",
+      "red resin switch caps",
+      "ivory key slivers",
+      "black separator notches",
+      "amber indicator points"
+    ],
+    "Cc": [
+      "colored rubber pads",
+      "cyan silicone pads",
+      "red resin switch caps",
+      "ivory key slivers",
+      "black separator notches",
+      "amber indicator points"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_insert_coin",
+      "difference": "This finish uses Tiny red cyan yellow and purple rubber sequencer-pad fragments, narrow ivory piano-key slivers and black separator notches, amber LED points. Dense flat interlocking short rounded rectangles independently rotated, no whole keyboard or readable controls. Bright color buttons dominate ivory.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "rad_bezel_black",
+      "difference": "This finish uses Tiny red cyan yellow and purple rubber sequencer-pad fragments, narrow ivory piano-key slivers and black separator notches, amber LED points. Dense flat interlocking short rounded rectangles independently rotated, no whole keyboard or readable controls. Bright color buttons dominate ivory.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "colored rubber pads is visible in the authored geometry",
+      "cyan silicone pads is visible in the authored geometry",
+      "red resin switch caps is visible in the authored geometry",
+      "ivory key slivers is visible in the authored geometry",
+      "black separator notches is visible in the authored geometry",
+      "amber indicator points is visible in the authored geometry"
+    ],
+    "source_sha256": "7f9ae2d1f27f31124feeae564a779f411e31a08e82773f425d76566d7a045a4b",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_synth_key-authored-Candy-colored sequencer pads, ivory key slivers and small amber indicator marks. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_synth_key-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 61.4,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "68da711fedd2cbb4304abe1f107a8bc6dadbdc61103c3f542b8f35916cc0c909"
+}

@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_airbrush_tee",
+  "display_name": "Fresh: Airbrush Tee",
+  "promise": "Soft hand-airbrushed cyan, hot-pink and sunset-orange spray hooks on white cotton, with gentle overspray and fine fabric grain.",
+  "carrier_grammar": "Soft hand-airbrushed cyan, hot-pink and sunset-orange spray hooks on white cotton, with gentle overspray and fine fabric grain.; single full-canvas image, no duplicated quadrants. Fine features: white cotton substrate, cyan sprayed pigment, magenta soft spray, orange airbrush accents, fine cap sputter, exposed cotton fiber tips",
+  "spec_grammar": "Feature-specific selectors partition white cotton substrate, cyan sprayed pigment, magenta soft spray, orange airbrush accents, fine cap sputter, exposed cotton fiber tips. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "white cotton substrate",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "cyan sprayed pigment",
+      "role": "Material feature selected from artwork by h:>:155&h:<:225&s:>:0.3"
+    },
+    {
+      "name": "magenta soft spray",
+      "role": "Material feature selected from artwork by h:>:270&s:>:0.3"
+    },
+    {
+      "name": "orange airbrush accents",
+      "role": "Material feature selected from artwork by h:<:55&s:>:0.35"
+    },
+    {
+      "name": "fine cap sputter",
+      "role": "Material feature selected from artwork by fine:>:0.78"
+    },
+    {
+      "name": "exposed cotton fiber tips",
+      "role": "Material feature selected from artwork by g:>:0.82&s:<:0.18"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "white cotton substrate",
+      "cyan sprayed pigment",
+      "magenta soft spray",
+      "orange airbrush accents",
+      "fine cap sputter",
+      "exposed cotton fiber tips"
+    ],
+    "R": [
+      "white cotton substrate",
+      "cyan sprayed pigment",
+      "magenta soft spray",
+      "orange airbrush accents",
+      "fine cap sputter",
+      "exposed cotton fiber tips"
+    ],
+    "Cc": [
+      "white cotton substrate",
+      "cyan sprayed pigment",
+      "magenta soft spray",
+      "orange airbrush accents",
+      "fine cap sputter",
+      "exposed cotton fiber tips"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "white cotton substrate",
+      "range": [
+        [
+          0,
+          150,
+          175
+        ],
+        [
+          10,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cyan sprayed pigment",
+      "range": [
+        [
+          0,
+          130,
+          150
+        ],
+        [
+          22,
+          225,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "magenta soft spray",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "orange airbrush accents",
+      "range": [
+        [
+          0,
+          130,
+          150
+        ],
+        [
+          22,
+          225,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine cap sputter",
+      "range": [
+        [
+          0,
+          75,
+          70
+        ],
+        [
+          15,
+          190,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "exposed cotton fiber tips",
+      "range": [
+        [
+          0,
+          195,
+          205
+        ],
+        [
+          6,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_disc_rainbow",
+      "difference": "Optical continuous grating differs from this named material construction."
+    },
+    {
+      "finish_id": "at_flannel_forest",
+      "difference": "Woven windowpane cotton differs from this named material construction."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "white cotton substrate",
+      "cyan sprayed pigment",
+      "magenta soft spray",
+      "orange airbrush accents",
+      "fine cap sputter",
+      "exposed cotton fiber tips"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_airbrush_tee / Soft hand-airbrushed cyan, hot-pink and sunset-orange spray hooks on white cotton, with gentle overspray and fine fabric grain.",
+  "spec_key": "at_airbrush_tee / white cotton substrate all; cyan sprayed pigment h:>:155&h:<:225&s:>:0.3; magenta soft spray h:>:270&s:>:0.3; orange airbrush accents h:<:55&s:>:0.35; fine cap sputter fine:>:0.78; exposed cotton fiber tips g:>:0.82&s:<:0.18",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

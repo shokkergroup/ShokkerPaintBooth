@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_dew_green",
+  "display_name": "Extreme: Dew Green",
+  "promise": "Acid-lime translucent citrus lacquer densely aerated with tiny abstract carbonation textures, no beverage objects logos or labels",
+  "carrier_grammar": "Acid-lime translucent citrus lacquer densely aerated with tiny abstract carbonation textures, no beverage objects logos or labels; single full-canvas image, no duplicated quadrants. Fine features: lime lacquer ground, deep green liquid cells, clear bead crowns, micro bubble rims, fine citrus mineral flecks, wet film channels",
+  "spec_grammar": "Feature-specific selectors partition lime lacquer ground, deep green liquid cells, clear bead crowns, micro bubble rims, fine citrus mineral flecks, wet film channels. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "lime lacquer ground",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "deep green liquid cells",
+      "role": "Material feature selected from artwork by g:<:0.33"
+    },
+    {
+      "name": "clear bead crowns",
+      "role": "Material feature selected from artwork by g:>:0.72&s:<:0.4"
+    },
+    {
+      "name": "micro bubble rims",
+      "role": "Material feature selected from artwork by edge:>:0.61"
+    },
+    {
+      "name": "fine citrus mineral flecks",
+      "role": "Material feature selected from artwork by fine:>:0.81"
+    },
+    {
+      "name": "wet film channels",
+      "role": "Material feature selected from artwork by detail:<:0.25"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "lime lacquer ground",
+      "deep green liquid cells",
+      "clear bead crowns",
+      "micro bubble rims",
+      "fine citrus mineral flecks",
+      "wet film channels"
+    ],
+    "R": [
+      "lime lacquer ground",
+      "deep green liquid cells",
+      "clear bead crowns",
+      "micro bubble rims",
+      "fine citrus mineral flecks",
+      "wet film channels"
+    ],
+    "Cc": [
+      "lime lacquer ground",
+      "deep green liquid cells",
+      "clear bead crowns",
+      "micro bubble rims",
+      "fine citrus mineral flecks",
+      "wet film channels"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "lime lacquer ground",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "deep green liquid cells",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "clear bead crowns",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          10,
+          55,
+          80
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "micro bubble rims",
+      "range": [
+        [
+          170,
+          15,
+          40
+        ],
+        [
+          245,
+          110,
+          225
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine citrus mineral flecks",
+      "range": [
+        [
+          10,
+          145,
+          160
+        ],
+        [
+          90,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "wet film channels",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          10,
+          55,
+          80
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_anodised_peg",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_bmx_dirt",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "lime lacquer ground",
+      "deep green liquid cells",
+      "clear bead crowns",
+      "micro bubble rims",
+      "fine citrus mineral flecks",
+      "wet film channels"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_dew_green / Acid-lime translucent citrus lacquer densely aerated with tiny abstract carbonation textures, no beverage objects logos or labels",
+  "spec_key": "at_dew_green / lime lacquer ground all; deep green liquid cells g:<:0.33; clear bead crowns g:>:0.72&s:<:0.4; micro bubble rims edge:>:0.61; fine citrus mineral flecks fine:>:0.81; wet film channels detail:<:0.25",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

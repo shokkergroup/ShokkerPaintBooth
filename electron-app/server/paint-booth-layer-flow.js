@@ -1,3 +1,9 @@
+// [SPB-HEADER-SLIM 2026-08-29] shared escape + the prominent EDITING ZONE chip renderer
+function _spbEsc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function _spbZoneChipHtml(zi, zoneName, srcName) {
+    var head = 'EDITING ZONE ' + (zi + 1) + ': <strong>' + _spbEsc(zoneName || ('Zone ' + (zi + 1))) + '</strong>';
+    return srcName ? head + ' <span style="opacity:.8;font-weight:600;">\uD83D\uDD12 ' + _spbEsc(srcName) + '</span>' : head;
+}
 /* ═══════════════════════════════════════════════════════════════════
    SHOKKER PAINT BOOTH — LAYER FLOW MODULE v3
    "Layers must work like a real editor"
@@ -222,7 +228,7 @@
             // cramped, instead of stealing horizontal space and pushing the
             // Done button off-screen.
             '<span style="flex: 1; min-width: 0;"></span>' +
-            '<span id="layerDockZoneStatus" style="font-size: 10px; color: #5a6b7d; white-space: normal;">Tool paints on this layer.</span>' +
+            '<span id="layerDockZoneStatus" style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;border:1px solid rgba(255,215,0,0.45);background:rgba(255,215,0,0.10);color:#ffd700;font-size:12px;font-weight:700;letter-spacing:0.04em;white-space:nowrap;">Tool paints on this layer.</span>' +
             '<button id="layerDockClose" title="Deselect layer — return to normal mode (Esc)" style="background: transparent; border: 1px solid rgba(148, 163, 184, 0.18); color: #8899aa; padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; transition: all 120ms;">× Done</button>';
 
         // CRITICAL: insert INSIDE the center-panel as the FIRST child so it
@@ -604,7 +610,7 @@
                 };
                 var _zname = _esc(zones[selectedZoneIndex].name || ('Zone ' + (selectedZoneIndex + 1)));
                 var _lname = _esc(layer.name || '');
-                statusEl.innerHTML = '🔒 Zone <strong style="color:#ffd700;">' + _zname + '</strong> now restricted to layer <strong style="color:#ffd700;">' + _lname + '</strong>';
+                statusEl.innerHTML = _spbZoneChipHtml(selectedZoneIndex, zones[selectedZoneIndex].name, layer.name || '');   // [SPB-HEADER-SLIM 2026-08-29]
             }
         }
     }
@@ -634,13 +640,16 @@
                     if (layer) {
                         showLayerDock(deriveLayerName(layer));
                         updateStatusBarLayer(deriveLayerName(layer));
+                        if (typeof updateDrawZoneIndicator === 'function') updateDrawZoneIndicator();
                     } else {
                         hideLayerDock();
                         updateStatusBarLayer(null);
+                        if (typeof updateDrawZoneIndicator === 'function') updateDrawZoneIndicator();
                     }
                 } else {
                     hideLayerDock();
                     updateStatusBarLayer(null);
+                    if (typeof updateDrawZoneIndicator === 'function') updateDrawZoneIndicator();
                 }
             }, 60);
         }
@@ -649,15 +658,15 @@
         var statusEl = document.getElementById('layerDockZoneStatus');
         if (statusEl && typeof zones !== 'undefined' && typeof selectedZoneIndex !== 'undefined') {
             var z = zones[selectedZoneIndex];
-            var zoneRestrictKey = (selectedZoneIndex + ':' + (z && z.sourceLayer || ''));
+            var zoneRestrictKey = (selectedZoneIndex + ':' + (z && z.sourceLayer || '')) + ':' + ((typeof z !== 'undefined' && z && z.name) || '');
             if (zoneRestrictKey !== _lastSeenZoneRestriction) {
                 _lastSeenZoneRestriction = zoneRestrictKey;
                 if (z && z.sourceLayer && typeof _psdLayers !== 'undefined') {
                     var srcLayer = _psdLayers.find(function(l) { return l.id === z.sourceLayer; });
                     var srcName = srcLayer ? srcLayer.name : z.sourceLayer;
-                    statusEl.innerHTML = '🔒 Zone <strong style="color:#ffd700;">' + (z.name || ('Zone ' + (selectedZoneIndex + 1))) + '</strong> restricted to layer <strong style="color:#ffd700;">' + srcName + '</strong>';
+                    statusEl.innerHTML = _spbZoneChipHtml(selectedZoneIndex, z.name, srcName);   // [SPB-HEADER-SLIM 2026-08-29] escaped (was raw innerHTML)
                 } else if (z) {
-                    statusEl.innerHTML = '⚠ Zone <strong style="color:#ff9a4a;">' + (z.name || ('Zone ' + (selectedZoneIndex + 1))) + '</strong> applies to ALL pixels — click 🔒 above to restrict to this layer';
+                    statusEl.innerHTML = '⚠ Zone <strong style="color:#ff9a4a;">' + (_spbEsc(z.name) || ('Zone ' + (selectedZoneIndex + 1))) + '</strong> applies to ALL pixels — click 🔒 above to restrict to this layer';
                 } else {
                     statusEl.innerHTML = 'Tip: any tool on the left toolbar paints on this layer.';
                 }
@@ -728,11 +737,20 @@
     }
 
     // ── Layer-pick mode ─────────────────────────────────────────────
+    function isLayerPickHelperLayer(L) {
+        if (!L) return false;
+        var name = String(L.name || '').toLowerCase().trim();
+        var path = String(L.path || '').toLowerCase();
+        return name === 'wire' || name === 'mask' || name === 'car_mandatory'
+            || /(^|\/)(wire|mask|car_mandatory)$/.test(path);
+    }
+
     function findTopmostLayerAt(x, y) {
         if (typeof _psdLayers === 'undefined' || _psdLayers.length === 0) return null;
         for (var i = _psdLayers.length - 1; i >= 0; i--) {
             var L = _psdLayers[i];
             if (!L.visible || !L.img) continue;
+            if (L.locked || isLayerPickHelperLayer(L)) continue;
             var bbox = L.bbox;
             if (!bbox) continue;
             var bx = bbox[0], by = bbox[1];
@@ -763,6 +781,8 @@
         // Layer-pick: click to select
         canvas.addEventListener('click', function(e) {
             if (typeof canvasMode === 'undefined' || canvasMode !== 'layer-pick') return;
+            if (typeof freeTransformState !== 'undefined' && freeTransformState) return;
+            if (typeof window !== 'undefined' && window._spbLayerPickHandledAt && (Date.now() - window._spbLayerPickHandledAt) < 700) return;
             if (typeof getPixelAt !== 'function') return;
             var pos = getPixelAt(e);
             if (!pos) return;
@@ -1288,6 +1308,46 @@
         });
     }
 
+    // Pause purely decorative compositor animations while Paint Booth does not
+    // have keyboard focus. The app is commonly left visible on another monitor
+    // while iRacing is active; keeping every glow, shimmer, pulse, and EKG layer
+    // animating in that state needlessly competes for the GPU compositor.
+    // Functional timers, rendering, autosave, and localhost communication keep
+    // running, and the animations resume immediately when the window regains
+    // focus.
+    function installBackgroundPerformanceMode() {
+        var style = document.createElement('style');
+        style.id = 'spb-background-performance-style';
+        style.textContent = [
+            // [SPB SPEED-TUNEUP 2026-08-30] :not(#spbFxNever) = ID-specificity
+            // booster so this pause beats decorative `animation: ... !important`
+            // class rules (same escape hole as body.fx-off — see
+            // css/spb-iracing-coexistence.css for the measured 104%-core story).
+            'html.spb-window-unfocused *,',
+            'html.spb-window-unfocused *::before,',
+            'html.spb-window-unfocused *::after,',
+            'html.spb-window-unfocused :not(#spbFxNever):not(#spbFxNever2):not(#spbFxNever3),',
+            'html.spb-window-unfocused :not(#spbFxNever):not(#spbFxNever2):not(#spbFxNever3)::before,',
+            'html.spb-window-unfocused :not(#spbFxNever):not(#spbFxNever2):not(#spbFxNever3)::after {',
+            '  animation-play-state: paused !important;',
+            '  will-change: auto !important;',
+            '}'
+        ].join('\n');
+        document.head.appendChild(style);
+
+        function syncFocusState() {
+            document.documentElement.classList.toggle(
+                'spb-window-unfocused',
+                document.hidden || !document.hasFocus()
+            );
+        }
+
+        window.addEventListener('focus', syncFocusState, { passive: true });
+        window.addEventListener('blur', syncFocusState, { passive: true });
+        document.addEventListener('visibilitychange', syncFocusState, { passive: true });
+        syncFocusState();
+    }
+
     // ── Boot ────────────────────────────────────────────────────────
     ready(function() {
         setTimeout(function() {
@@ -1301,8 +1361,21 @@
             installLayerContextMenu();
             installKeyboardHandlers();
             restoreLastSelectedLayer();
+            installBackgroundPerformanceMode();
 
             setInterval(function() {
+                // [SPB SPEED-TUNEUP 2026-08-30] Skip the whole watcher batch while
+                // a full-screen takeover (swatch picker / Finish Library / SHOKK
+                // Library) owns the screen — the layer panel is not even visible,
+                // and with the Finish Atlas open the DOM is ~36k nodes, so these
+                // four scans at 4Hz were live-profiled at up to 240ms/15s of pure
+                // waste during picker browsing.
+                try {
+                    var _sw = document.getElementById('swatchPopup');
+                    if (_sw && _sw.classList.contains('active')) return;
+                    var _fl = document.getElementById('finishLibraryBackdrop');
+                    if (_fl && _fl.style.display && _fl.style.display !== 'none') return;
+                } catch (e) {}
                 watchLayerSelection();
                 watchCanvasModeForCursor();
                 installLayerCommitHook(); // late-bound retry

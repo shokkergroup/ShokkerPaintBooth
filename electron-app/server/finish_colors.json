@@ -1,0 +1,627 @@
+{
+  "grad_fire_fade": {
+    "c1": "racing_red",
+    "c2": "fire_orange"
+  },
+  "grad_sunset": {
+    "c1": "fire_orange",
+    "c2": "sunburst_yellow"
+  },
+  "grad_ocean_depths": {
+    "c1": "sky_blue",
+    "c2": "navy"
+  },
+  "grad_forest_canopy": {
+    "c1": "lime_green",
+    "c2": "forest_green"
+  },
+  "grad_twilight": {
+    "c1": "purple",
+    "c2": "navy"
+  },
+  "grad_lava_flow": {
+    "c1": "racing_red",
+    "c2": "sunburst_yellow"
+  },
+  "grad_arctic_dawn": {
+    "c1": "white",
+    "c2": "sky_blue"
+  },
+  "grad_midnight_ember": {
+    "c1": "black",
+    "c2": "racing_red"
+  },
+  "grad_golden_hour": {
+    "c1": "gold",
+    "c2": "fire_orange"
+  },
+  "grad_steel_forge": {
+    "c1": "silver",
+    "c2": "gunmetal"
+  },
+  "grad_copper_patina": {
+    "c1": "copper",
+    "c2": "teal"
+  },
+  "grad_neon_rush": {
+    "c1": "hot_pink",
+    "c2": "lime_green"
+  },
+  "grad_bruise": {
+    "c1": "purple",
+    "c2": "black"
+  },
+  "grad_ice_fire": {
+    "c1": "sky_blue",
+    "c2": "racing_red"
+  },
+  "grad_toxic_waste": {
+    "c1": "lime_green",
+    "c2": "sunburst_yellow"
+  },
+  "grad_fire_fade_h": {
+    "c1": "racing_red",
+    "c2": "fire_orange"
+  },
+  "grad_ocean_depths_h": {
+    "c1": "sky_blue",
+    "c2": "navy"
+  },
+  "grad_twilight_h": {
+    "c1": "purple",
+    "c2": "navy"
+  },
+  "grad_golden_hour_h": {
+    "c1": "gold",
+    "c2": "fire_orange"
+  },
+  "grad_neon_rush_h": {
+    "c1": "hot_pink",
+    "c2": "lime_green"
+  },
+  "grad_fire_fade_diag": {
+    "c1": "racing_red",
+    "c2": "fire_orange"
+  },
+  "grad_ocean_depths_diag": {
+    "c1": "sky_blue",
+    "c2": "navy"
+  },
+  "grad_sunset_diag": {
+    "c1": "fire_orange",
+    "c2": "sunburst_yellow"
+  },
+  "grad_twilight_diag": {
+    "c1": "purple",
+    "c2": "navy"
+  },
+  "grad_fire_vortex": {
+    "c1": "racing_red",
+    "c2": "sunburst_yellow"
+  },
+  "grad_blue_vortex": {
+    "c1": "sky_blue",
+    "c2": "navy"
+  },
+  "grad_gold_vortex": {
+    "c1": "gold",
+    "c2": "black"
+  },
+  "grad_green_vortex": {
+    "c1": "lime_green",
+    "c2": "forest_green"
+  },
+  "grad_pink_vortex": {
+    "c1": "hot_pink",
+    "c2": "purple"
+  },
+  "grad_white_vortex": {
+    "c1": "white",
+    "c2": "gunmetal"
+  },
+  "grad_shadow_vortex": {
+    "c1": "gunmetal",
+    "c2": "black"
+  },
+  "grad_copper_vortex": {
+    "c1": "copper",
+    "c2": "bronze"
+  },
+  "grad_violet_vortex": {
+    "c1": "violet",
+    "c2": "navy"
+  },
+  "grad_teal_vortex": {
+    "c1": "teal",
+    "c2": "forest_green"
+  },
+  "grad_black_gold": {
+    "c1": "black",
+    "c2": "gold"
+  },
+  "grad_patriot": {
+    "c1": "navy",
+    "c2": "racing_red"
+  },
+  "grad_frostbite": {
+    "c1": "royal_blue",
+    "c2": "white"
+  },
+  "grad_neon_violet": {
+    "c1": "hot_pink",
+    "c2": "purple"
+  },
+  "grad_aqua_drift": {
+    "c1": "teal",
+    "c2": "sky_blue"
+  },
+  "grad_iron_blood": {
+    "c1": "gunmetal",
+    "c2": "racing_red"
+  },
+  "grad_emerald_crown": {
+    "c1": "forest_green",
+    "c2": "gold"
+  },
+  "grad_candy_cane": {
+    "c1": "white",
+    "c2": "racing_red"
+  },
+  "grad_chrome_wave": {
+    "c1": "silver",
+    "c2": "royal_blue"
+  },
+  "grad_copper_flame": {
+    "c1": "copper",
+    "c2": "racing_red"
+  },
+  "grad_storm_front": {
+    "c1": "gunmetal",
+    "c2": "sky_blue"
+  },
+  "grad_ultraviolet": {
+    "c1": "violet",
+    "c2": "hot_pink"
+  },
+  "grad_antique_gold": {
+    "c1": "bronze",
+    "c2": "gold"
+  },
+  "grad_obsidian": {
+    "c1": "black",
+    "c2": "gunmetal"
+  },
+  "grad_electric_lime": {
+    "c1": "lime_green",
+    "c2": "sunburst_yellow"
+  },
+  "grad_magma": {
+    "c1": "racing_red",
+    "c2": "black"
+  },
+  "grad_sapphire_ice": {
+    "c1": "royal_blue",
+    "c2": "sky_blue"
+  },
+  "grad_rose_gold": {
+    "c1": "hot_pink",
+    "c2": "gold"
+  },
+  "grad_forest_night": {
+    "c1": "forest_green",
+    "c2": "black"
+  },
+  "grad_solar_flare": {
+    "c1": "sunburst_yellow",
+    "c2": "racing_red"
+  },
+  "grad_black_gold_h": {
+    "c1": "black",
+    "c2": "gold"
+  },
+  "grad_patriot_h": {
+    "c1": "navy",
+    "c2": "racing_red"
+  },
+  "grad_candy_cane_h": {
+    "c1": "white",
+    "c2": "racing_red"
+  },
+  "grad_magma_h": {
+    "c1": "racing_red",
+    "c2": "black"
+  },
+  "grad_rose_gold_h": {
+    "c1": "hot_pink",
+    "c2": "gold"
+  },
+  "grad_black_gold_diag": {
+    "c1": "black",
+    "c2": "gold"
+  },
+  "grad_neon_violet_diag": {
+    "c1": "hot_pink",
+    "c2": "purple"
+  },
+  "grad_storm_front_diag": {
+    "c1": "gunmetal",
+    "c2": "sky_blue"
+  },
+  "grad_emerald_crown_diag": {
+    "c1": "forest_green",
+    "c2": "gold"
+  },
+  "grad_patriot_vortex": {
+    "c1": "navy",
+    "c2": "racing_red"
+  },
+  "grad_neon_violet_vortex": {
+    "c1": "hot_pink",
+    "c2": "purple"
+  },
+  "grad_obsidian_vortex": {
+    "c1": "black",
+    "c2": "gunmetal"
+  },
+  "grad_rose_gold_vortex": {
+    "c1": "hot_pink",
+    "c2": "gold"
+  },
+  "grad_solar_vortex": {
+    "c1": "sunburst_yellow",
+    "c2": "racing_red"
+  },
+  "grad_wine_silk": {
+    "c1": "burgundy",
+    "c2": "cream"
+  },
+  "grad_midnight_gold": {
+    "c1": "navy",
+    "c2": "gold"
+  },
+  "grad_coral_sea": {
+    "c1": "coral",
+    "c2": "cerulean"
+  },
+  "grad_ember_ash": {
+    "c1": "crimson",
+    "c2": "charcoal"
+  },
+  "grad_jade_mist": {
+    "c1": "jade",
+    "c2": "mint"
+  },
+  "grad_plum_dawn": {
+    "c1": "plum",
+    "c2": "peach"
+  },
+  "grad_amber_night": {
+    "c1": "amber",
+    "c2": "indigo"
+  },
+  "grad_sage_bronze": {
+    "c1": "sage",
+    "c2": "bronze"
+  },
+  "grad_titanium_fire": {
+    "c1": "titanium",
+    "c2": "crimson"
+  },
+  "grad_ivory_cobalt": {
+    "c1": "ivory",
+    "c2": "cobalt"
+  },
+  "grad_honey_slate": {
+    "c1": "honey",
+    "c2": "slate"
+  },
+  "grad_rose_midnight": {
+    "c1": "rose",
+    "c2": "navy"
+  },
+  "grad_charcoal_gold": {
+    "c1": "charcoal",
+    "c2": "gold"
+  },
+  "grad_lavender_dusk": {
+    "c1": "lavender",
+    "c2": "maroon"
+  },
+  "grad_emerald_night": {
+    "c1": "emerald",
+    "c2": "black"
+  },
+  "grad_cream_crimson": {
+    "c1": "cream",
+    "c2": "crimson"
+  },
+  "grad_blush_cobalt": {
+    "c1": "blush",
+    "c2": "cobalt"
+  },
+  "grad_graphite_amber": {
+    "c1": "graphite",
+    "c2": "amber"
+  },
+  "grad_mint_purple": {
+    "c1": "mint",
+    "c2": "purple"
+  },
+  "grad_champagne_navy": {
+    "c1": "champagne",
+    "c2": "navy"
+  },
+  "grad_pewter_rose": {
+    "c1": "pewter",
+    "c2": "rose"
+  },
+  "grad_chocolate_gold": {
+    "c1": "chocolate",
+    "c2": "gold"
+  },
+  "grad_crimson_vortex": {
+    "c1": "crimson",
+    "c2": "black"
+  },
+  "grad_coral_vortex": {
+    "c1": "coral",
+    "c2": "navy"
+  },
+  "grad_amber_vortex": {
+    "c1": "amber",
+    "c2": "charcoal"
+  },
+  "grad_honey_vortex": {
+    "c1": "honey",
+    "c2": "chocolate"
+  },
+  "grad_emerald_vortex": {
+    "c1": "emerald",
+    "c2": "black"
+  },
+  "grad_jade_vortex": {
+    "c1": "jade",
+    "c2": "navy"
+  },
+  "grad_aqua_vortex": {
+    "c1": "aqua",
+    "c2": "indigo"
+  },
+  "grad_cerulean_vortex": {
+    "c1": "cerulean",
+    "c2": "black"
+  },
+  "grad_cobalt_vortex": {
+    "c1": "cobalt",
+    "c2": "silver"
+  },
+  "grad_indigo_vortex": {
+    "c1": "indigo",
+    "c2": "gold"
+  },
+  "grad_lavender_vortex": {
+    "c1": "lavender",
+    "c2": "charcoal"
+  },
+  "grad_plum_vortex": {
+    "c1": "plum",
+    "c2": "gold"
+  },
+  "grad_rose_vortex": {
+    "c1": "rose",
+    "c2": "black"
+  },
+  "grad_blush_vortex": {
+    "c1": "blush",
+    "c2": "navy"
+  },
+  "grad_maroon_vortex": {
+    "c1": "maroon",
+    "c2": "gold"
+  },
+  "grad_burgundy_vortex": {
+    "c1": "burgundy",
+    "c2": "silver"
+  },
+  "grad_chocolate_vortex": {
+    "c1": "chocolate",
+    "c2": "gold"
+  },
+  "grad_tan_vortex": {
+    "c1": "tan",
+    "c2": "charcoal"
+  },
+  "grad_cream_vortex": {
+    "c1": "cream",
+    "c2": "cobalt"
+  },
+  "grad_ivory_vortex": {
+    "c1": "ivory",
+    "c2": "indigo"
+  },
+  "grad_slate_vortex": {
+    "c1": "slate",
+    "c2": "gold"
+  },
+  "grad_charcoal_vortex": {
+    "c1": "charcoal",
+    "c2": "crimson"
+  },
+  "grad_graphite_vortex": {
+    "c1": "graphite",
+    "c2": "amber"
+  },
+  "grad_pewter_vortex": {
+    "c1": "pewter",
+    "c2": "crimson"
+  },
+  "grad_champagne_vortex": {
+    "c1": "champagne",
+    "c2": "indigo"
+  },
+  "grad_titanium_vortex": {
+    "c1": "titanium",
+    "c2": "crimson"
+  },
+  "grad_mint_vortex": {
+    "c1": "mint",
+    "c2": "purple"
+  },
+  "grad_sage_vortex": {
+    "c1": "sage",
+    "c2": "crimson"
+  },
+  "grad_chartreuse_vortex": {
+    "c1": "chartreuse",
+    "c2": "black"
+  },
+  "grad_peach_vortex": {
+    "c1": "peach",
+    "c2": "indigo"
+  },
+  "grad_ruby_vortex": {
+    "c1": "crimson",
+    "c2": "maroon"
+  },
+  "grad_sapphire_vortex": {
+    "c1": "cobalt",
+    "c2": "navy"
+  },
+  "grad_topaz_vortex": {
+    "c1": "amber",
+    "c2": "chocolate"
+  },
+  "grad_amethyst_vortex": {
+    "c1": "lavender",
+    "c2": "indigo"
+  },
+  "grad_opal_vortex": {
+    "c1": "ivory",
+    "c2": "aqua"
+  },
+  "mc_usa_flag": {
+    "c1": "racing_red",
+    "c2": "white",
+    "c3": "royal_blue"
+  },
+  "mc_rasta": {
+    "c1": "racing_red",
+    "c2": "sunburst_yellow",
+    "c3": "forest_green"
+  },
+  "mc_halloween": {
+    "c1": "fire_orange",
+    "c2": "black",
+    "c3": "purple"
+  },
+  "mc_christmas": {
+    "c1": "racing_red",
+    "c2": "forest_green",
+    "c3": "white"
+  },
+  "mc_miami_vice": {
+    "c1": "hot_pink",
+    "c2": "teal",
+    "c3": "white"
+  },
+  "mc_fire_storm": {
+    "c1": "racing_red",
+    "c2": "fire_orange",
+    "c3": "sunburst_yellow"
+  },
+  "mc_deep_space": {
+    "c1": "navy",
+    "c2": "purple",
+    "c3": "white"
+  },
+  "mc_tropical": {
+    "c1": "lime_green",
+    "c2": "sunburst_yellow",
+    "c3": "teal"
+  },
+  "mc_vaporwave": {
+    "c1": "hot_pink",
+    "c2": "purple",
+    "c3": "teal"
+  },
+  "mc_earth_tone": {
+    "c1": "bronze",
+    "c2": "forest_green",
+    "c3": "sunburst_yellow"
+  },
+  "mc_woodland_camo": {
+    "c1": "forest_green",
+    "c2": "bronze",
+    "c3": "black"
+  },
+  "mc_desert_camo": {
+    "c1": "bronze",
+    "c2": "sunburst_yellow",
+    "c3": "gunmetal"
+  },
+  "mc_urban_camo": {
+    "c1": "gunmetal",
+    "c2": "silver",
+    "c3": "black"
+  },
+  "mc_snow_camo": {
+    "c1": "white",
+    "c2": "silver",
+    "c3": "sky_blue"
+  },
+  "mc_neon_camo": {
+    "c1": "lime_green",
+    "c2": "hot_pink",
+    "c3": "sunburst_yellow"
+  },
+  "mc_blue_camo": {
+    "c1": "royal_blue",
+    "c2": "navy",
+    "c3": "sky_blue"
+  },
+  "mc_white_marble": {
+    "c1": "white",
+    "c2": "silver",
+    "c3": "gunmetal"
+  },
+  "mc_black_marble": {
+    "c1": "black",
+    "c2": "gunmetal",
+    "c3": "white"
+  },
+  "mc_green_marble": {
+    "c1": "forest_green",
+    "c2": "lime_green",
+    "c3": "white"
+  },
+  "mc_red_marble": {
+    "c1": "racing_red",
+    "c2": "black",
+    "c3": "white"
+  },
+  "mc_gold_marble": {
+    "c1": "gold",
+    "c2": "bronze",
+    "c3": "black"
+  },
+  "mc_paint_splat": {
+    "c1": "racing_red",
+    "c2": "sunburst_yellow",
+    "c3": "royal_blue"
+  },
+  "mc_ink_splat": {
+    "c1": "black",
+    "c2": "gunmetal",
+    "c3": "white"
+  },
+  "mc_neon_splat": {
+    "c1": "hot_pink",
+    "c2": "lime_green",
+    "c3": "sunburst_yellow"
+  },
+  "mc_blood_splat": {
+    "c1": "racing_red",
+    "c2": "black",
+    "c3": "gunmetal"
+  }
+}

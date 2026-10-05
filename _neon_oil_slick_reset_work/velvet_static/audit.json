@@ -1,0 +1,132 @@
+{
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_synthwave_sun",
+  "display_name": "Velvet Static",
+  "provenance": {
+    "ticket": "SPB-105",
+    "date": "2026-08-27",
+    "tick": "VS-P1",
+    "verdict": "First-pass isolated-review keeper: all screened views retain finite directional conductive nap, distinct charged and compressed consequences, and no synthwave icon, fur/noise carpet, or repeated tuft-stamp failure; no visual repair iteration was needed.",
+    "metric_movement": {
+      "official_baseline_m7": null,
+      "legacy_isolated_metrics": null,
+      "isolated_family_count": 11,
+      "isolated_max_abs_material_correlation": 0.503709,
+      "isolated_picker_64_luma_std": 0.03999,
+      "isolated_picker_64_chroma_std": 0.045372
+    }
+  },
+  "builder_seconds": 1.862254,
+  "under_three_seconds": true,
+  "determinism": {
+    "paint_byte_identical": true,
+    "spec_byte_identical": true,
+    "rerun_seconds": 2.078037,
+    "pass": true
+  },
+  "material_stats_working": {
+    "std": {
+      "M": 82.786644,
+      "R": 83.298874,
+      "Cc": 83.260857
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.503709,
+      "M_Cc": 0.265568,
+      "R_Cc": 0.480654
+    }
+  },
+  "unique_mrc_triples": 498,
+  "geometry": {
+    "family_count": 11,
+    "families": {
+      "asymmetric fused pile knots": 480,
+      "black conductive microvelvet carrier facets": 5365,
+      "blunt clipped fiber ends": 898,
+      "cyan electrostatic discharge pinpoints": 467,
+      "finite local combed shoulders": 531,
+      "hot-coral charged pile tips": 1152,
+      "hot-magenta charged pile tips": 1221,
+      "pressed dark pile gaps": 762,
+      "short asymmetric conductive flock facets": 3152,
+      "tiny embedded metallic lint shards": 1003,
+      "violet pile-laydown shadows": 611
+    },
+    "width_native_min": 8.003,
+    "width_native_median": 17.318,
+    "width_native_p90": 26.055,
+    "width_native_max": 32.0,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "black conductive microvelvet carrier facets": 0.235062,
+    "short asymmetric conductive flock facets": 0.106768,
+    "hot-coral charged pile tips": 0.022423,
+    "hot-magenta charged pile tips": 0.022683,
+    "violet pile-laydown shadows": 0.044661,
+    "cyan electrostatic discharge pinpoints": 0.006681,
+    "blunt clipped fiber ends": 0.01787,
+    "asymmetric fused pile knots": 0.013546,
+    "pressed dark pile gaps": 0.019176,
+    "tiny embedded metallic lint shards": 0.020928,
+    "finite local combed shoulders": 0.027727,
+    "registered charged-nap pools": 0.019912,
+    "intact velvet-nap pools": 0.311016
+  },
+  "visible_family_coverage_count": 11,
+  "edge_continuity": {
+    "edge_to_global_gradient_ratio": 0.943742,
+    "edge_dark_void_fraction": 0.035294,
+    "pass": true
+  },
+  "picker_survival": {
+    "sizes": {
+      "128": {
+        "luma_std": 0.058563,
+        "chroma_std": 0.070607,
+        "luma_p95_minus_p05": 0.163118,
+        "pass": true
+      },
+      "64": {
+        "luma_std": 0.03999,
+        "chroma_std": 0.045372,
+        "luma_p95_minus_p05": 0.116433,
+        "pass": true
+      }
+    },
+    "pass": true
+  },
+  "mechanical_gates": {
+    "eight_plus_anatomy_families": true,
+    "eight_plus_family_masks_above_half_percent": true,
+    "all_geometry_8_to_32_native": true,
+    "eight_tiers_each": true,
+    "material_std_at_least_30": true,
+    "all_abs_correlations_under_0_80": true,
+    "many_material_triples": true,
+    "edge_continuity": true,
+    "picker_survival_128_and_64": true
+  },
+  "mechanical_gates_pass": true,
+  "official_m7": null,
+  "official_m7_note": "Unwired isolated pilot; no registry/workbook record exists, so no composite is fabricated."
+}

@@ -1,0 +1,21 @@
+{
+  "version":1,
+  "paint_label":"dirtlatemodel 358/car_num_1029243.tga",
+  "inspection_records":"_smart_tga_runs/cycle661_dlm_intrinsic_grouping_holdout/inspection_records.json",
+  "review_scope":"Cycle 661 source plus all owner/combined sheets, suspects, position cues, and physical-group review.",
+  "component_labels":[
+    {"layer":"numbers","component_index":0,"expected_bbox":[323,94,283,258],"target_layer":"uncertain","label":"mixed_true_number_sponsor_livery_panel"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[731,204,114,117],"target_layer":"sponsors","label":"nitrocide_wordmark_false_number"},
+    {"layer":"numbers","component_index":2,"expected_bbox":[441,723,199,189],"target_layer":"uncertain","label":"mixed_true_number_sponsor_livery_panel"},
+    {"layer":"numbers","component_index":3,"expected_bbox":[808,807,134,153],"target_layer":"numbers","label":"true_rear_number","family_id":"number:36_pet_rose"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[330,217,155,125],"target_layer":"numbers","label":"true_number_subregion_inside_mixed_panel","family_id":"number:36_pet_rose"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[330,714,160,117],"target_layer":"numbers","label":"true_number_subregion_inside_mixed_panel","family_id":"number:36_pet_rose"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[498,767,6,2],"target_layer":"sponsors","label":"position_cue_sponsor_strip_false_number_proposal"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[493,774,3,3],"target_layer":"sponsors","label":"position_cue_sponsor_strip_false_number_proposal"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[575,774,3,3],"target_layer":"sponsors","label":"position_cue_sponsor_strip_false_number_proposal"},
+    {"layer":"sponsors","component_index":null,"expected_bbox":[385,638,118,37],"target_layer":"sponsors","label":"from_hell_wordmark_correct_sponsor"},
+    {"layer":"paint","component_index":null,"expected_bbox":[588,252,6,14],"target_layer":"sponsors","label":"tiny_logo_fragment_false_paint"},
+    {"layer":"sponsors","component_index":null,"expected_bbox":[579,783,10,10],"target_layer":"sponsors","label":"small_wordmark_fragment_correct_sponsor"},
+    {"layer":"paint","component_index":null,"expected_bbox":[165,262,15,21],"target_layer":"sponsors","label":"pet_rose_logo_fragment_false_paint"}
+  ]
+}

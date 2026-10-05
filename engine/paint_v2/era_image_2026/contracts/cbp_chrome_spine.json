@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_chrome_spine",
+  "display_name": "Chrome: Articulated Chrome",
+  "promise": "Tiny mirror hinges and cobalt sockets interlock with pink ceramic bearing pads.",
+  "carrier_grammar": "Tiny mirror hinges and cobalt sockets interlock with pink ceramic bearing pads. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for chrome hinge crescents, cobalt socket notches, pink bearing pads, gold pivot dots, black hairline joints is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Tiny mirror hinges and cobalt sockets interlock with pink ceramic bearing pads. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_chrome_spine.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "chrome hinge crescents",
+      "role": "Actual shared paint and spec geometry: chrome hinge crescents"
+    },
+    {
+      "name": "cobalt socket notches",
+      "role": "Actual shared paint and spec geometry: cobalt socket notches"
+    },
+    {
+      "name": "pink bearing pads",
+      "role": "Actual shared paint and spec geometry: pink bearing pads"
+    },
+    {
+      "name": "gold pivot dots",
+      "role": "Actual shared paint and spec geometry: gold pivot dots"
+    },
+    {
+      "name": "black hairline joints",
+      "role": "Actual shared paint and spec geometry: black hairline joints"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "chrome hinge crescents",
+      "cobalt socket notches",
+      "pink bearing pads",
+      "gold pivot dots",
+      "black hairline joints"
+    ],
+    "R": [
+      "chrome hinge crescents",
+      "cobalt socket notches",
+      "pink bearing pads",
+      "gold pivot dots",
+      "black hairline joints"
+    ],
+    "Cc": [
+      "chrome hinge crescents",
+      "cobalt socket notches",
+      "pink bearing pads",
+      "gold pivot dots",
+      "black hairline joints"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_titanium_rib",
+      "difference": "This finish uses Dense tiny articulated chrome hinge crescents interlocked with cobalt socket notches, pink ceramic bearing pads, gold pivot dots and black hairline joints. Irregular short mechanical joint fragments, bright silver only on fine rims, no spine anatomy or long skeleton.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_servo_housing",
+      "difference": "This finish uses Dense tiny articulated chrome hinge crescents interlocked with cobalt socket notches, pink ceramic bearing pads, gold pivot dots and black hairline joints. Irregular short mechanical joint fragments, bright silver only on fine rims, no spine anatomy or long skeleton.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "chrome hinge crescents is visible in the authored geometry",
+      "cobalt socket notches is visible in the authored geometry",
+      "pink bearing pads is visible in the authored geometry",
+      "gold pivot dots is visible in the authored geometry",
+      "black hairline joints is visible in the authored geometry"
+    ],
+    "source_sha256": "6b4054a7a7479d14f3acedb1d6b26c1beba58322a97a7ec8816ab73edfee8f69",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_chrome_spine-authored-Tiny mirror hinges and cobalt sockets interlock with pink ceramic bearing pads. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_chrome_spine-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 63.1,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "e613bb6e80903f1ddb6452024e42c3f876cfd14f2ce46dacd3d20a2e8defdb8a"
+}

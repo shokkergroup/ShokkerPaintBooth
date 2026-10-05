@@ -1,0 +1,25 @@
+{
+  "schema": "spb-w7-named-part-command-oracle/1",
+  "frozen_before_source_review": true,
+  "frozen_at": "2026-10-03",
+  "cases": [
+    { "id": "W7-P01", "text": "Now recolour only the roof green.", "expected": "part-plan", "regions": ["part:roof"], "colour": "green" },
+    { "id": "W7-P02", "text": "Make only the roof green.", "expected": "part-plan", "regions": ["part:roof"], "colour": "green" },
+    { "id": "W7-P03", "text": "Could you please make the roof green?", "expected": "part-plan", "regions": ["part:roof"], "colour": "green" },
+    { "id": "W7-P04", "text": "Change the hood to matte black.", "expected": "part-plan", "regions": ["part:hood"], "colour": "black", "finish": "matte" },
+    { "id": "W7-P05", "text": "Recolour only the passenger side dark blue.", "expected": "part-plan", "regions": ["part:right side"], "colour": "blue" },
+    { "id": "W7-P06", "text": "Turn just the driver's side silver.", "expected": "part-plan", "regions": ["part:left side"], "colour": "silver" },
+    { "id": "W7-P07", "text": "Set the roof to glossy red.", "expected": "part-plan", "regions": ["part:roof"], "colour": "red", "finish": "gloss" },
+    { "id": "W7-P08", "text": "Put bright yellow on the hood, please.", "expected": "part-plan", "regions": ["part:hood"], "colour": "yellow" },
+    { "id": "W7-P09", "text": "Make the right side satin navy.", "expected": "part-plan", "regions": ["part:right side"], "colour": "blue", "finish": "satin" },
+    { "id": "W7-P10", "text": "Paint the left side pearl white.", "expected": "part-plan", "regions": ["part:left side"], "colour": "white", "finish": "pearl" },
+    { "id": "W7-P11", "text": "Change the roof from blue to green.", "expected": "part-plan", "regions": ["part:roof"], "colour": "green" },
+    { "id": "W7-P12", "text": "Make only the trunk charcoal.", "expected": "part-plan", "regions": ["part:trunk"], "colour": "charcoal" },
+    { "id": "W7-N01", "text": "How do I recolour only the roof green?", "expected": "not-part-plan" },
+    { "id": "W7-N02", "text": "What green finish would suit the roof?", "expected": "not-part-plan" },
+    { "id": "W7-N03", "text": "Make the roof green and add flame graphics.", "expected": "not-part-plan" },
+    { "id": "W7-N04", "text": "Give the roof a green base with carbon weave on top.", "expected": "not-part-plan" },
+    { "id": "W7-N05", "text": "Make the whole car green.", "expected": "not-part-plan" },
+    { "id": "W7-N06", "text": "Use the finish named 'Roof Green' on the whole car.", "expected": "not-part-plan" }
+  ]
+}

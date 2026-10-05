@@ -1,0 +1,5 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_45196.tga","inspection_records":"_smart_tga_runs/cycle682_dlm_instance_assembly_review/inspection_records.json","review_scope":"Cycle 682 source plus complete Number/Sponsor/Template/Paint sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[312,255,158,81],"target_layer":"numbers","family_id":"number:01","label":"true_custom_number_01"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[174,318,37,31],"target_layer":"sponsors","label":"iracing_logo_fragment_false_number"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[321,724,152,72],"target_layer":"numbers","family_id":"number:01","label":"true_custom_number_01"}
+]}

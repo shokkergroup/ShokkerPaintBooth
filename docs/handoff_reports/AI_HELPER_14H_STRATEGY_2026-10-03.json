@@ -1,0 +1,96 @@
+{
+  "schema": "spb-ai-helper-strategy/1",
+  "date": "2026-10-03",
+  "reviewer": "GPT-6.1 SOL xhigh strategic reviewer",
+  "scope": "Read-only production review; this report is the only write. No app operation, provider call, training, regeneration, runtime sync or subagent dispatch.",
+  "summary": "Spend the sprint on complete offline user journeys and recovery, using fresh controller-level evidence. Parser coverage alone is insufficient. Preserve the existing execution authority, document guards, Layer/Zone ownership and Undo.",
+  "evidence": {
+    "baseline_reports": ["CODEX_LUNA_FIXES_2026-10-03.json", "CODEX_REVIEW_2026-10-03.json", "AI_HELPER_14H_PLAN_2026-10-03.json"],
+    "self_help": "Previous clean holdout16/30. Parent independently froze a fresh42-case set during this sprint: pre-sprint loaded MCP code13/30 strict help,15/30 after2 valid semantic aliases,12/12 delegation,0 provider attempts. Keep strict/alias/delegation definitions fixed and separate. Tuned/in-sample scores must remain separate.",
+    "scope": "28-case repaired regression:19 compatible plans,2 scoped recommendations,6 unsupported,1 partial,0 unsafe. P04/P12 informed repairs, so this is no longer blind.",
+    "sponsors": "Prior report only: IoU0.366,78/202 places,0.479 average body leakage; not rerun in this review.",
+    "safety": "Prior frozen browser31/31 includes original-zone preservation, native roof containment and stale continuation checks. This does not establish whole-product visual reliability.",
+    "model_limit": "docs/ELEMENT_FINDER.md documents truck-heavy data, contaminated shipped-model holdout and unreliable confidence on unfamiliar cars. Learned cross-paint number places are proposals."
+  },
+  "sequence": [
+    {"hours": "0-1", "work": "Freeze a compact baseline and acceptance schema while the first two workers implement. Keep known misses in the development set. Commission a separate untouched test set before the next repair wave, without exposing expected answers to implementers.", "deliverable": "Nonempty fixture counts, source/hash manifest, outcomes rubric, distinct-paint inventory and executable failure thresholds."},
+    {"hours": "1-4", "work": "Integrate and independently review self-help and natural composition. Test actual routing and apply plans, negative clauses, explicit body+part and reversed order. Follow help to real controls in Pro/Easy. Prioritize missing supported journeys over adding synonyms.", "deliverable": "Mode-correct useful help; improved supported-plan coverage;0 unintended mutations; all existing scope safety regressions retained."},
+    {"hours": "4-7", "work": "Repair same-part follow-up preservation and exercise operation recovery. Recolor a part, add finish-only to that part, nudge it, Undo/Redo, put back, then change paint. Review lease release on failure/cancel/disconnect and stale teach/confirmation actions.", "deliverable": "Earlier color retained; intended spec changes; exact pre-action restoration; no hung editing lease or stale apply."},
+    {"hours": "7-10", "work": "Improve the flat-element journey around uncertainty: separate number fill/outline, sponsor whole-logo/lettering and stripe color choices; show the selected pixels; teach/reject/none recovery; carry source provenance. Prefer these useful bounded controls to retraining an uncalibrated model during the sprint.", "deliverable": "Fresh numbers/sponsors/stripes battery on flat and layered paints with discovery, mask quality, final output and recovery scored separately."},
+    {"hours": "10-12.5", "work": "Cross-car and cross-document probes; bounded offline support and result explanation; curate only high-confidence evidence for known ranking failures. Review proposed learned-elements consumption before wiring it. Rotate one implementer into independent review.", "deliverable": "Document-aware guidance and truthful applied/recommendation/partial labels; cross-paint reconfirmation; preserved manual/deep data."},
+    {"hours": "12.5-14", "work": "Freeze integration, sync only claimed changed files, bump loaded script tokens, verify actual live private MCP outcomes, rerun the untouched set once and publish honest counts. Use remaining time to resolve demonstrated failures, not to alter fixtures or start broad new architecture.", "deliverable": "Exact source/runtime/build receipts, real MCP versus in-page evidence labeled, clean regression checks and concise handoff of remaining limitations."}
+  ],
+  "next_wave_tasks": [
+    {
+      "priority": "P1",
+      "task": "Preserve named-part follow-up edits",
+      "evidence": "js/spb-pro-ai.js:935-960 keys regions including part but the merge path explicitly excludes spec.region.part and everything. docs/EDIT_EXISTING_HELPER.md lists the part-bound recolor/spec issue.",
+      "approach": "Use the existing compiler and queue authority. Match the exact helper-owned target and identity, then change only explicitly supplied finish/color fields. Do not merge arbitrary same-name zones, catch-all zones, or differently masked/portion-scoped part edits. If extraction helps, isolate pure merge planning in a small module.",
+      "acceptance": "Hood to purple, hood matte, hood glossier: paint remains purple, spec changes as requested, outside-hood pixels/zone properties stay exact. Repeated no-op and Undo/Redo are correct. Different document, changed source, duplicate zone names, null IDs, different mask and muted/removed old zone do not reuse stale records. Test native actual masks and rendered output."
+    },
+    {
+      "priority": "P1",
+      "task": "Truthful element recovery and provenance",
+      "evidence": "js/spb-pro-elements.js:235-310 mixes remembered boxes into candidates; localStorage/server rows are per-car numbers. Its comment and server_routes/ai_car_routes.py:208 still claim number locations are constant across paints, contradicting docs/ELEMENT_FINDER.md and merge_learned_elements.py.",
+      "approach": "Keep model guess, remembered proposal, buyer-confirmed current-paint selection and AI/viewer observation distinct. Never promote remembered locations or high model confidence to current-paint truth. Retain confirmation and image review. Fix misleading comments/docs when touching this lane.",
+      "acceptance": "Two paints in one car folder with relocated or absent numbers both ask appropriately. Cached proposals do not import taught/found/confidence state from the prior paint; same car at different dimensions/car identity invalidates inappropriate cached masks. Reject/none does not teach a false box. Teach replaces the guess. Bad/empty/oversized/NaN boxes produce usable recovery with0 mutation. App reload, server sync, failed persistence and conflicting local/server records preserve clear source semantics."
+    },
+    {
+      "priority": "P2",
+      "task": "Operation lifecycle and lease recovery",
+      "evidence": "js/spb-ai-lease.js is1.1KB; current() expires ownership only while !active. A lost end() could keep editing blocked. This is an inspection risk, not a reproduced defect.",
+      "approach": "First execute existing lifecycle paths. Give pending work one captured document/target identity and one finalization owner. Release busy/progress/lease in guaranteed completion paths. Cancellation may stop future publication; it must not restore an old snapshot onto a new document. Avoid expiring active ownership while an old operation can still write.",
+      "acceptance": "Resolve/reject/timeout/cancel/disconnect/retry and document replacement all leave a usable controller. Double-click or internal/external competition cannot publish duplicate actions. A late old result cannot write after takeover. Successful action and cancellation use the existing correct Undo authority."
+    },
+    {
+      "priority": "P2",
+      "task": "Useful help actions and explanations",
+      "evidence": "Self-help already returns doIt and control references; the clean holdout is weak. UI data is large and partly generated.",
+      "approach": "Validate exact control availability against mode/document state. Offer one relevant next step and a supported controller action. Explain actual target selection, unresolved clauses, retained colors and material changes using execution receipts. Do not expose entry IDs/internal controls in buyer text or claim a finished action from a recommendation.",
+      "acceptance": "Run a small real click-through matrix for existing select-zone, unmute-zone, refresh-preview and find-numbers actions across Pro/Easy, flat/layered, no-zone/no-paint and locked/unavailable targets. Each permitted action must call the existing controller, produce the advertised observable result and use appropriate Undo; unavailable actions explain the missing prerequisite. Help routes to a visible existing control in correct mode; unrelated help does not consume a pending edit card; unknown action/disabled control yields guidance without mutation. Questions, quoted commands, comparisons and hypothetical examples remain read-only. The explanation agrees with emitted calls and actual output."
+    },
+    {
+      "priority": "P2",
+      "task": "Review learned-atlas consumption before building it",
+      "evidence": "scripts/ai_atlas/merge_learned_elements.py emits proposals_only and explicitly has no client loader. Unknown sources currently default to buyer in SRC_MAP lookup; counts are max per source to support idempotence, not proof of correctness.",
+      "approach": "Keep shipping proposals optional. Validate schema/version, source allowlist, box quality, current geometry/dimensions and bounded counts. Preserve unknown provenance instead of upgrading it to buyer confirmation. Keep repeated imports idempotent and raw evidence unchanged.",
+      "acceptance": "Duplicate/replayed imports do not inflate evidence; unknown source stays unknown; absent/stale/malformed atlas does not break helper startup; cross-car and cross-paint proposals require current confirmation; buyer rejection/forget takes precedence."
+    }
+  ],
+  "adversarial_acceptance": {
+    "sampling": "Use distinct car families and paints, plus flat/layered/no-number/unknown-part/locked-layer/low-contrast cases. Split by paint and car family, not merely alternate prompts from the same paint. Include natural wording, pronouns, quoted orders, negatives, conjunctions and unsupported actions. Hold fixed pre-change labels.",
+    "outcomes": ["correct useful help", "complete correct plan", "complete correct applied result", "necessary clarification", "scoped recommendation", "unsupported", "partial", "unsafe/unintended mutation"],
+    "hard_gates": ["0 unintended scope changes or stale-document writes", "0 mutation from help/questions/unconfirmed guesses", "Exact source/zone/layer preservation outside the target", "Undo/Redo/Cancel parity through the production controller", "Nonempty tests and exit failure on unmet acceptance", "Source/runtime/token identity matches the evaluated build"],
+    "reporting": "Publish per-stage denominators: routed correctly, discovered true places, confirmed/marked correctly, masks usable, final paint correct, spec correct, Undo correct. Necessary clarification is safe workflow progress but not a completed paint. Do not exclude empty/absent targets or failed loads from the denominator silently.",
+    "quality": "Measure target coverage and leakage as well as IoU. Grade sponsor lettering versus whole decal according to the request. For keep-colors/spec-only changes compare paint bytes and each spec channel; color appearance alone cannot certify matte/chrome. Preserve baseline renders and actual final outputs.",
+    "freshness": "Known16/30 self-help and repaired28-case scope sets are regression/development evidence. A fresh set remains independent only until its answers influence tuning. Subsequent reruns must be relabeled regression. Run baseline/final under equivalent loading and masking conditions; do not page-side patch revisions or visibility." 
+  },
+  "architecture_constraints": [
+    "AI helpers plan and call existing controllers; they do not own new pixel, Zone, routing or Undo authority.",
+    "Zone code owns masks/material assignments; Layer code owns active layer pixels/transform. An AI promise about a layer does not authorize a whole-body material edit.",
+    "Capture document identity before asynchronous work; verify immediately before publication and during deferred continuations.",
+    "Prefer bounded pure modules and focused tests to adding more code to spb-pro-ai.js/self-help generated arrays or canvas/state monsters.",
+    "Do not widen synonyms until tag/reference precision is curated. Do not regenerate production cards from backups or overwrite manual/deep/unknown fields.",
+    "No paid-provider certification can be inferred from offline/in-page tools or the private live ChatGPT MCP. Keep installed build, real MCP, in-page mocks and paid tiers separate in evidence."
+  ],
+  "small_file_candidates": [
+    {"file": "js/spb-ai-lease.js", "use": "Executed lifecycle/ownership tests; narrowly scoped recovery if a defect reproduces."},
+    {"file": "scripts/ai_atlas/merge_learned_elements.py", "use": "Provenance, idempotence and proposal-only validation."},
+    {"file": "server_routes/ai_car_routes.py", "use": "Bounded learned-element schema/persistence validation and stale doctrine comments."},
+    {"file": "js/spb-intent.js", "use": "Small offline intent accessor; inspect only if real routing proves classifier conflict."},
+    {"file": "mcp/server/tools.json", "use": "Bounded tool semantics/confirmation/output-status parity, parent-owned MCP integration."},
+    {"file": "tests/ai_element_reply_contract.cjs", "use": "Stale document/card recovery and typed/button parity."},
+    {"file": "tests/test_ai_car_routes_elements.py", "use": "Learned evidence persistence/forget/rejection behavior."},
+    {"file": "tests/ai_stack_scope_contract.cjs", "use": "Named-part and body+part mutation boundaries."},
+    {"file": "docs/SELF_HELP.md", "use": "Compact help routing/actions contract; reconcile with actual changed behavior."}
+  ],
+  "offline_capability_ideas": [
+    "Explain my last change: receipt-derived target, paint retained/recolored, spec change, unresolved part and one supported Undo action.",
+    "Make it more/less: bound follow-up to the last successful current-document target; a recommendation or undone action supplies no mutable context.",
+    "Check my setup: prioritize live observed findings, then one actionable mode-aware manual step; no mutation from diagnosis.",
+    "Show me the target: current selection overlay with fill/outline, logo/lettering and stripe-color options; reject/none is first-class.",
+    "Learn this car: teach real geometry once as car-layout evidence while keeping each paint's artwork placements as proposals.",
+    "Recover what I meant: preserve the failed request and offer two supported interpretations with exact scope, rather than broad fallback suggestions."
+  ],
+  "limits": "Static bounded review only. No new model/visual quality score or confirmed lifecycle failure. The parent owns Wiki logging/lane release and live integration."
+}

@@ -1,0 +1,60 @@
+{
+  "work_item": "W111 explicit keep-current finish guard repair",
+  "date": "2026-10-04",
+  "status": "PASS_PRIVATE_CANDIDATE",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w111_review/fresh-oracle.json",
+    "sha256": "10D0007038371B9630A0DC641F2B59DB5C77521A0B06B7A9E82B90C427CF0545",
+    "cases": 12,
+    "frozen_before_integration16_source_inspection": true
+  },
+  "source_pins": {
+    "candidate": {
+      "path": "_easy_claude_work/ai14h_w111_candidate/spb-pro-ai.js",
+      "sha256": "C479E300EF64EF0EF710CCFE7036795F41682CA73911E6E0BC5352A53923DF35"
+    },
+    "contract": {
+      "path": "tests/ai_keep_current_finish_w111_contract.cjs",
+      "sha256": "9873F565EED5FAAEA0906B3E53324AED085070FB4825E2B532A18D6D9ADCCF69"
+    },
+    "base_controller": {
+      "path": "_easy_claude_work/ai14h_generation3_candidate/integration16/js/spb-pro-ai.js",
+      "sha256": "87AF037611933A108DCEEE1E30ECB28E3CB0608448E278617F3646022948AA18"
+    },
+    "design": {
+      "path": "_easy_claude_work/ai14h_generation3_candidate/integration16/js/spb-pro-design.js",
+      "sha256": "4648DE3231015497CC9FF816612A542097A1AD14038A7210753F6CDBFD88D832"
+    },
+    "edit": {
+      "path": "_easy_claude_work/ai14h_generation3_candidate/integration16/js/spb-pro-edit.js",
+      "sha256": "7D063444021F8F4144B96130800BADFE62741CDEFC9104417F3E99AF65270767"
+    }
+  },
+  "change": "Lifted the existing currentWholePartOwner / requestedPartSelectorMatchesProof validation out of queueEditZones unchanged as shared helpers. currentPartOwnerVerifiedForRegion first retains the exact registered-owner check; only then it accepts a selector via the same fresh whole-part proof and selector-equivalence validator used by queueEditZones. Existing queue-level proof revalidation remains in place.",
+  "verification": {
+    "contract": "node --check candidate and contract; node tests/ai_keep_current_finish_w111_contract.cjs",
+    "result": {
+      "cases": 12,
+      "passed": 12,
+      "failed": 0
+    },
+    "positive": [
+      "Plain whole-roof satin, explicit \u201conly ... keep its current paint\u201d, and hood satin leaving existing navy each compile and queue exactly one edit against the same verified zone ID, with finish only, no color assignment, and a scoped proof carrying source path/generation. The owner zone appearance, identity, source, provenance, and region mask remain unchanged in the mocked queue phase."
+    ],
+    "refusals": [
+      "No owner, stale mask/manual revision, stale source generation, duplicate owner, and pending saved-memory metadata without hydrated current provenance all produce zero edits/adds.",
+      "Partial upper-roof phrase is not planned; lettering-layer selector clarifies; unsupported pearl stack and contradictory repaint/preserve request do not queue."
+    ],
+    "existing_w103_regression": "node tests/ai_part_finish_owner_w103_contract.cjs: frozen W97 cases 11/12 (the pre-existing gloss-without-repainting parse miss) and selector supplements 8/8.",
+    "effects": {
+      "apply_calls": 0,
+      "provider_calls": 0,
+      "native_calls": 0
+    }
+  },
+  "limits": [
+    "Candidate remains uninstalled; parent owns native pixel acceptance.",
+    "Harness executes the actual E.plan/E.compile, extracted candidate proof/guard helpers and queueEditZones against a controlled current-source/layer/mask fixture. It does not invoke the full offlineAskCore/Ask dispatcher or commit/apply paint; it follows the same guard-before-queue seam and captures queue callbacks.",
+    "A first request with saved pending part metadata and no current verified provenance is safely refused/asked with no queue; this candidate does not add a warm/hydration retry before that ask."
+  ]
+}

@@ -1,0 +1,398 @@
+[
+ {
+  "id": "prizm_adaptive",
+  "name": "Prizm Adaptive",
+  "kind": "finish",
+  "desc": "Octopus camouflage: thousands of tiny skin plates that FLIP between two rival palettes by their own grain direction \u2014 the surface re-camouflages as you move. Dense papillae micro-bumps.",
+  "ai_rating": 61,
+  "mip": 0.48,
+  "render_s": 1.23
+ },
+ {
+  "id": "prizm_alien_skin",
+  "name": "Prizm Alien Skin",
+  "kind": "finish",
+  "desc": "Living exo-membrane GROWN by reaction-diffusion: glossy coral-labyrinth ridges over a violet pore-speckled membrane, bioluminescent cyan pulses along every crest.",
+  "ai_rating": 68,
+  "mip": 0.49,
+  "render_s": 1.22
+ },
+ {
+  "id": "prizm_arctic",
+  "name": "Prizm Arctic",
+  "kind": "finish",
+  "desc": "Pack-ice mosaic: ~2600 slim anisotropic ice shards with tight internal striations, frost ferns etched along every seam, trapped-air sparkle throughout.",
+  "ai_rating": 76,
+  "mip": 0.55,
+  "render_s": 1.49
+ },
+ {
+  "id": "prizm_aurora_shift",
+  "name": "Prizm Aurora Shift",
+  "kind": "finish",
+  "desc": "Aurora storm: thousands of sheared light strands with fine ray striations, rippling green-teal-magenta over a star-thick night sky.",
+  "ai_rating": 74,
+  "mip": 0.47,
+  "render_s": 0.93
+ },
+ {
+  "id": "prizm_black_rainbow",
+  "name": "Prizm Black Rainbow",
+  "kind": "finish",
+  "desc": "Obsidian depths cut by razor strange-attractor filigree burning in emissive spectrum colors; dense prismatic micro-flake keeps the black alive.",
+  "ai_rating": 76,
+  "mip": 0.47,
+  "render_s": 1.63
+ },
+ {
+  "id": "prizm_blood_moon",
+  "name": "Prizm Blood Moon",
+  "kind": "finish",
+  "desc": "Eclipsed regolith: a fully-cratered surface with sun-lit rims, fine ejecta dendrites, mineral glass-bead glints, umbral blood gradient crimson-amber.",
+  "ai_rating": 56,
+  "mip": 0.43,
+  "render_s": 0.98
+ },
+ {
+  "id": "prizm_candy_paint",
+  "name": "Prizm Candy Paint",
+  "kind": "finish",
+  "desc": "Kustom candy apple: deep Beer-Lambert crimson poured over a FULL engine-turned silver bed \u2014 scattered jittered guilloche rosettes + dense metal flake.",
+  "ai_rating": 73,
+  "mip": 0.56,
+  "render_s": 1.32
+ },
+ {
+  "id": "prizm_chrome_rose",
+  "name": "Prizm Chrome Rose",
+  "kind": "finish",
+  "desc": "Liquid rose-gold chrome: tight refraction-caustic mesh streaking across hammered poured metal, rose-champagne, hairline polish swirl.",
+  "ai_rating": 66,
+  "mip": 0.55,
+  "render_s": 1.1
+ },
+ {
+  "id": "prizm_copper_flame",
+  "name": "Prizm Copper Flame",
+  "kind": "finish",
+  "desc": "Engraved fire: banknote hatching whose line weight follows licking flame tongues \u2014 polished copper with teal heat-patina pooling in burnt valleys.",
+  "ai_rating": 64,
+  "mip": 0.38,
+  "render_s": 0.88
+ },
+ {
+  "id": "prizm_cosmos",
+  "name": "Prizm Cosmos",
+  "kind": "finish",
+  "desc": "A living galaxy: strange-attractor spiral arms of star-stuff, 30k pin-stars, rose/indigo nebula breathing between the arms.",
+  "ai_rating": 65,
+  "mip": 0.5,
+  "render_s": 1.75
+ },
+ {
+  "id": "prizm_dark_matter",
+  "name": "Prizm Dark Matter",
+  "kind": "finish",
+  "desc": "Gravitational lensing: a brilliant caustic light-web warped around pitch-black void lace, every void rimmed in violet Cherenkov glow.",
+  "ai_rating": 73,
+  "mip": 0.61,
+  "render_s": 0.96
+ },
+ {
+  "id": "prizm_deep_space",
+  "name": "Prizm Deep Space",
+  "kind": "finish",
+  "desc": "Long-exposure sky: 1500 concentric star-trail arcs sweeping around an unseen pole, gold/blue/white trails with hot heads over cosmic dust.",
+  "ai_rating": 73,
+  "mip": 0.43,
+  "render_s": 0.76
+ },
+ {
+  "id": "prizm_duochrome",
+  "name": "Prizm Duochrome",
+  "kind": "finish",
+  "desc": "True duochrome twill: a fine herringbone weave where every warp thread is teal and every weft magenta \u2014 the color flip IS the fabric.",
+  "ai_rating": 72,
+  "mip": 0.56,
+  "render_s": 1.02
+ },
+ {
+  "id": "prizm_ember",
+  "name": "Prizm Ember",
+  "kind": "finish",
+  "desc": "Dying campfire crust: charred plates split by a glowing crack network breathing orange-gold heat, spark streaks drifting off the hottest seams.",
+  "ai_rating": 71,
+  "mip": 0.62,
+  "render_s": 1.36
+ },
+ {
+  "id": "prizm_fire_ice",
+  "name": "Prizm Fire & Ice",
+  "kind": "finish",
+  "desc": "Two rivers interleaved: warm currents flowing one way, glacial the other, woven through alternating bands \u2014 frost sparkle where they touch.",
+  "ai_rating": 76,
+  "mip": 0.53,
+  "render_s": 1.14
+ },
+ {
+  "id": "prizm_galaxy_dust",
+  "name": "Prizm Galaxy Dust",
+  "kind": "finish",
+  "desc": "Golden-angle stardust: phyllotaxis spirals of micro-spangles at three nested scales, violet dust lanes drifting between the seed-spirals.",
+  "ai_rating": 65,
+  "mip": 0.49,
+  "render_s": 0.81
+ },
+ {
+  "id": "prizm_holographic",
+  "name": "Prizm Holographic",
+  "kind": "finish",
+  "desc": "Holo trading-foil: a mosaic of micro-prism tiles, each etched with a hairline diffraction grating at its own angle \u2014 every tile its own rainbow.",
+  "ai_rating": 74,
+  "mip": 0.5,
+  "render_s": 1.36
+ },
+ {
+  "id": "prizm_iridescent",
+  "name": "Prizm Iridescent",
+  "kind": "finish",
+  "desc": "Draining soap film: swirling fine thin-film bands with drain streaks and black film holes on a pale pearl base.",
+  "ai_rating": 63,
+  "mip": 0.5,
+  "render_s": 0.78
+ },
+ {
+  "id": "prizm_midnight",
+  "name": "Prizm Midnight",
+  "kind": "finish",
+  "desc": "Nocturne sea: deep indigo swells crossed by hairline moon-silver engraving that follows the water, rare glints riding the crests.",
+  "ai_rating": 72,
+  "mip": 0.4,
+  "render_s": 0.87
+ },
+ {
+  "id": "prizm_mystichrome",
+  "name": "Prizm Mystichrome",
+  "kind": "finish",
+  "desc": "Liquid color-travel chrome: teal-violet-magenta-gold sweep with molten metal flow-streaks combed along the travel gradient.",
+  "ai_rating": 73,
+  "mip": 0.62,
+  "render_s": 0.88
+ },
+ {
+  "id": "prizm_neon",
+  "name": "Prizm Neon",
+  "kind": "finish",
+  "desc": "Buzzing neon alley: dense glowing glass-tube script loops (white-hot cores, colored halos) over a dark micro-brick wall.",
+  "ai_rating": 69,
+  "mip": 0.65,
+  "render_s": 1.23
+ },
+ {
+  "id": "prizm_oceanic",
+  "name": "Prizm Oceanic",
+  "kind": "finish",
+  "desc": "Sunlit reef floor: true refraction caustics dancing over turquoise-abyss depth, micro-foam flecks riding the bright web.",
+  "ai_rating": 56,
+  "mip": 0.44,
+  "render_s": 1.3
+ },
+ {
+  "id": "prizm_phoenix",
+  "name": "Prizm Phoenix",
+  "kind": "finish",
+  "desc": "Rising firebird plumage: long arcing plume strands with fine barb hatching, ember roots burning to white-gold tips, spark dust.",
+  "ai_rating": 72,
+  "mip": 0.53,
+  "render_s": 0.95
+ },
+ {
+  "id": "prizm_solar",
+  "name": "Prizm Solar",
+  "kind": "finish",
+  "desc": "The photosphere: boiling granulation cells, crisp sunspot pores with penumbrae, white-hot magnetic loop arcs leaping between regions.",
+  "ai_rating": 56,
+  "mip": 0.58,
+  "render_s": 1.15
+ },
+ {
+  "id": "prizm_spectrum",
+  "name": "Prizm Spectrum",
+  "kind": "finish",
+  "desc": "Laser-etched spectrum guilloche: a dense scatter of fine jittered engine-turn rosettes, each refracting its own slice of the rainbow.",
+  "ai_rating": 74,
+  "mip": 0.6,
+  "render_s": 1.52
+ },
+ {
+  "id": "prizm_sunset_strip",
+  "name": "Prizm Sunset Strip",
+  "kind": "finish",
+  "desc": "Retro-chrome dusk: warm gradient sky swept by narrow mirror-chrome bands at scattered angles, micro scanline shimmer \u2014 80s boulevard.",
+  "ai_rating": 71,
+  "mip": 0.58,
+  "render_s": 1.12
+ },
+ {
+  "id": "prizm_titanium",
+  "name": "Prizm Titanium",
+  "kind": "finish",
+  "desc": "Torch-anodized titanium: brushed metal grain blooming through the anodize spectrum (straw-bronze-violet-cobalt), grinder arcs biting in.",
+  "ai_rating": 56,
+  "mip": 0.36,
+  "render_s": 1.06
+ },
+ {
+  "id": "prizm_toxic_waste",
+  "name": "Prizm Toxic Waste",
+  "kind": "finish",
+  "desc": "Bubbling biohazard sludge: reaction-diffusion foam, rim-lit rising bubbles, acid drips cutting the crust \u2014 violent green on black.",
+  "ai_rating": 68,
+  "mip": 0.59,
+  "render_s": 1.8
+ },
+ {
+  "id": "prizm_venom",
+  "name": "Prizm Venom",
+  "kind": "finish",
+  "desc": "Serpent armor: brick-packed keeled diamond scales, iridescent green-black with venom-yellow lattice flashes, every keel catching light.",
+  "ai_rating": 70,
+  "mip": 0.47,
+  "render_s": 1.15
+ },
+ {
+  "id": "lfr_old_glory_flux",
+  "name": "Old Glory Flux",
+  "kind": "finish",
+  "desc": "The flag as pure energy: scarlet and bone current-ribbons streaming through a shared wind, weaving over/under, star-spangled indigo eddies.",
+  "ai_rating": 75,
+  "mip": 0.57,
+  "render_s": 1.39
+ },
+ {
+  "id": "lfr_we_the_people",
+  "name": "We The People",
+  "kind": "finish",
+  "desc": "The parchment itself: dense copperplate engraving flowing like handwriting, iron-gall ink on foxed vellum, gold illumination curls.",
+  "ai_rating": 76,
+  "mip": 0.39,
+  "render_s": 1.31
+ },
+ {
+  "id": "lfr_bunting_scallop",
+  "name": "Bunting Scallop",
+  "kind": "pattern",
+  "desc": "Layered bunting swags: overlapping scallop fans with fine pleat hatching and sagging cords, scattered at several angles.",
+  "ai_rating": 74,
+  "mip": 0.44,
+  "render_s": 0.66
+ },
+ {
+  "id": "lfr_firework_radial",
+  "name": "Firework Radial",
+  "kind": "pattern",
+  "desc": "Dense peony fireworks: full rings of drooping spark rays with dot terminals and strobe rings, sizes nested so the sky is FULL.",
+  "ai_rating": 64,
+  "mip": 0.27,
+  "render_s": 0.79
+ },
+ {
+  "id": "lfr_ribbon_weave",
+  "name": "Ribbon Weave",
+  "kind": "pattern",
+  "desc": "True over-under satin ribbon lattice: two interlaced ribbon families, each striped with a sheen line and edge shading.",
+  "ai_rating": 76,
+  "mip": 0.53,
+  "render_s": 2.65
+ },
+ {
+  "id": "lfr_star_lattice",
+  "name": "Star Lattice",
+  "kind": "pattern",
+  "desc": "Stars made of stars: 5-point outlines whose strokes are strings of micro-stars, at three nested scales \u2014 a constellation lattice.",
+  "ai_rating": 67,
+  "mip": 0.27,
+  "render_s": 0.71
+ },
+ {
+  "id": "lfr_stencil_stars",
+  "name": "Stencil Stars",
+  "kind": "pattern",
+  "desc": "Spray-stencil stars: crisp filled cutouts, overspray halo speckle, paint drips running off random edges.",
+  "ai_rating": 59,
+  "mip": 0.59,
+  "render_s": 0.66
+ },
+ {
+  "id": "lfr_stripe_drift",
+  "name": "Stripe Drift",
+  "kind": "pattern",
+  "desc": "Pinstriper's drift: fine parallel pinstripes flowing around invisible discs (potential flow) \u2014 stripes part and rejoin like water.",
+  "ai_rating": 72,
+  "mip": 0.42,
+  "render_s": 2.16
+ },
+ {
+  "id": "spec_lfr_corridor_sheen",
+  "name": "Corridor Sheen (spec)",
+  "kind": "spec overlay",
+  "desc": "Micro-pleated satin corridors: three independent angle families of FINE pleat banding; cross-grain satin; corridor pooling.",
+  "ai_rating": 69,
+  "mip": 0.36,
+  "render_s": 1.51
+ },
+ {
+  "id": "spec_lfr_firework_radial",
+  "name": "Firework Radial (spec)",
+  "kind": "spec overlay",
+  "desc": "Micro-burst glint field: dense radial spark spokes; signed smoke rings; afterglow pools around burst hearts.",
+  "ai_rating": 50,
+  "mip": 0.39,
+  "render_s": 1.08
+ },
+ {
+  "id": "spec_lfr_sparkler_embers",
+  "name": "Sparkler Embers (spec)",
+  "kind": "spec overlay",
+  "desc": "Sparkler in the dark: thousands of micro-star pins; crackle branch twigs; drifting ember decay pools.",
+  "ai_rating": 45,
+  "mip": 0.48,
+  "render_s": 0.79
+ },
+ {
+  "id": "spec_lfr_starfield_scatter",
+  "name": "Starfield Scatter (spec)",
+  "kind": "spec overlay",
+  "desc": "Deep night starfield, rebuilt FAST (old one hung): multi-magnitude stars with diffraction spikes; nebula grain; constellation corridors.",
+  "ai_rating": 50,
+  "mip": 0.48,
+  "render_s": 0.69
+ },
+ {
+  "id": "spec_lfr_torch_flicker",
+  "name": "Torch Flicker (spec)",
+  "kind": "spec overlay",
+  "desc": "Torch flame anisotropy: fine flame-tongue hatching licking one way; heat-shimmer ripple; torch pool glow.",
+  "ai_rating": 60,
+  "mip": 0.21,
+  "render_s": 1.74
+ },
+ {
+  "id": "crackle_network",
+  "name": "Crackle Network (spec)",
+  "kind": "spec overlay",
+  "desc": "Hierarchical crackle, rebuilt FAST (old one hung for minutes): two nested anisotropic crack webs + micro-twigs.",
+  "ai_rating": 56,
+  "mip": 0.68,
+  "render_s": 2.26
+ },
+ {
+  "id": "spec_abalone_crack_inlay",
+  "name": "Abalone Crack Inlay (spec)",
+  "kind": "spec overlay",
+  "desc": "Nacre shards with interference banding along each shard's grain, dark grout channels \u2014 rebuilt fast.",
+  "ai_rating": 67,
+  "mip": 0.57,
+  "render_s": 1.38
+ }
+]

@@ -1,0 +1,305 @@
+{
+  "work_item": "Independent solid wording successor public-route review",
+  "status": "BASELINE_GAP_REPRODUCED_NOT_SUCCESSOR_REGRESSION",
+  "pins": {
+    "baseDesign": "_easy_claude_work/ai14h_generation3_runtime11/js/spb-pro-design.js",
+    "candidate": "_easy_claude_work/ai14h_solid_wording_successor/candidate/spb-pro-design.js",
+    "candidateSha256": "9a33e06c872dcb3fe54c19d42f78828c6c46537364099868be1d0bf212a2be61",
+    "baseController": "_easy_claude_work/ai14h_generation3_runtime11/js/spb-pro-ai.js",
+    "baseControllerSha256": "aea057cb2965b714700304ca598c0e59ab25e02fffb5575d5d29fc36ccd5ff76",
+    "privateController": "_easy_claude_work/ai14h_solid_wording_successor/candidate/spb-pro-ai.js",
+    "privateControllerSha256": "dabb2ef41e551609cee5379390afc8f4823bf29aafac146f9345a5e94ab9e305",
+    "guard": "_easy_claude_work/ai14h_final_source_identity_candidate/browser-file-v2/spb-pro-ai.js",
+    "freshOracle": "_easy_claude_work/ai14h_w111_independent_review/solid-oracle.json",
+    "w118Oracle": "_easy_claude_work/ai14h_w118_solid_color_modifier_review/fresh-oracle.json"
+  },
+  "baselineComparison": {
+    "path": "_easy_claude_work/ai14h_w111_independent_review/solid-conflict-baseline-result.json",
+    "sameConflictingPlan": true
+  },
+  "freshOracle": {
+    "sha256": "bd0319f32fc013025a40b053ab872460de1f89241bbcc8ebf7811a447d27f93f",
+    "cases": 9
+  },
+  "w118Oracle": {
+    "sha256": "337743318f206f4a9843233b9b45a8d2e5c2bea20295ceb44f99e29ecc988d48",
+    "cases": 8,
+    "replayed": [
+      {
+        "id": "solid-known-part-color",
+        "coverageComplete": true,
+        "zones": [
+          {
+            "part": "hood",
+            "color": "#7a3fc4",
+            "finish": "base::gloss"
+          }
+        ],
+        "look": null,
+        "partZones": [
+          {
+            "part": "hood",
+            "color": "#7a3fc4",
+            "finish": "base::gloss"
+          }
+        ],
+        "spec": null
+      },
+      {
+        "id": "mixed-two-part-different-finishes",
+        "coverageComplete": true,
+        "zones": [
+          {
+            "part": "hood",
+            "color": "#1450b4",
+            "finish": "base::matte"
+          },
+          {
+            "part": "roof",
+            "color": "#c8102e",
+            "finish": "base::gloss"
+          }
+        ],
+        "look": null,
+        "partZones": [
+          {
+            "part": "hood",
+            "color": "#1450b4",
+            "finish": "base::matte"
+          },
+          {
+            "part": "roof",
+            "color": "#c8102e",
+            "finish": "base::gloss"
+          }
+        ],
+        "spec": null
+      },
+      {
+        "id": "solid-unknown-look-token",
+        "coverageComplete": false,
+        "zones": null,
+        "look": "solid ice nebula",
+        "partZones": [
+          {
+            "part": "roof",
+            "color": "#111113",
+            "finish": "base::gloss"
+          }
+        ],
+        "spec": null
+      },
+      {
+        "id": "solid-ambiguous-part-scope",
+        "coverageComplete": false,
+        "zones": null,
+        "look": "or solid",
+        "partZones": [
+          {
+            "part": "hood",
+            "color": "#c8102e",
+            "finish": "base::gloss"
+          },
+          {
+            "part": "roof",
+            "color": "#c8102e",
+            "finish": "base::gloss"
+          }
+        ],
+        "spec": null
+      },
+      {
+        "id": "solid-modifier-quoted-question",
+        "coverageComplete": false,
+        "zones": null,
+        "look": null,
+        "partZones": null,
+        "spec": null
+      },
+      {
+        "id": "matte-flat-preservation-tail",
+        "coverageComplete": true,
+        "zones": [
+          {
+            "part": "hood",
+            "color": "#c8102e",
+            "finish": "base::matte"
+          }
+        ],
+        "look": null,
+        "partZones": null,
+        "spec": null
+      },
+      {
+        "id": "source-paint-color-retain",
+        "coverageComplete": false,
+        "zones": null,
+        "look": "while keeping current source color",
+        "partZones": null,
+        "spec": [
+          {
+            "part": "roof",
+            "color": "source",
+            "finish": "base::f_soft_matte"
+          }
+        ]
+      },
+      {
+        "id": "unknown-solid-word",
+        "coverageComplete": false,
+        "zones": null,
+        "look": "solid iridescent dragon glass",
+        "partZones": null,
+        "spec": null
+      }
+    ]
+  },
+  "rows": [
+    {
+      "id": "roof-chrome-keep-color",
+      "route": "spec",
+      "queue": 0,
+      "howto": false,
+      "zonePlans": [
+        {
+          "part": "roof",
+          "color": "source",
+          "finish": "base::f_chrome"
+        }
+      ],
+      "text": ""
+    },
+    {
+      "id": "roof-color-only-preserve-finish",
+      "route": "look-clarification",
+      "queue": 0,
+      "howto": false,
+      "zonePlans": [],
+      "text": "I could not verify that exact solid-color scope. Please choose one exact part or finish."
+    },
+    {
+      "id": "hood-matte-explicit",
+      "route": "spec",
+      "queue": 0,
+      "howto": false,
+      "zonePlans": [
+        {
+          "part": "hood",
+          "color": "source",
+          "finish": "base::f_soft_matte"
+        }
+      ],
+      "text": ""
+    },
+    {
+      "id": "roof-chrome-hood-matte",
+      "route": "element",
+      "queue": 0,
+      "howto": false,
+      "zonePlans": [
+        {
+          "part": "roof",
+          "color": "source",
+          "finish": "base::f_chrome"
+        },
+        {
+          "part": "hood",
+          "color": "source",
+          "finish": "base::f_soft_matte"
+        }
+      ],
+      "text": ""
+    },
+    {
+      "id": "roof-red-hood-matte",
+      "route": "element",
+      "queue": 0,
+      "howto": false,
+      "zonePlans": [
+        {
+          "part": "roof",
+          "color": "#1450b4",
+          "finish": "base::gloss"
+        },
+        {
+          "part": "hood",
+          "color": "source",
+          "finish": "base::f_soft_matte"
+        }
+      ],
+      "text": ""
+    },
+    {
+      "id": "same-target-conflicting-finish",
+      "route": "element",
+      "queue": 0,
+      "howto": false,
+      "zonePlans": [
+        {
+          "part": "body",
+          "color": "source",
+          "finish": "base::f_chrome"
+        },
+        {
+          "part": "roof",
+          "color": "source",
+          "finish": "base::f_soft_matte"
+        }
+      ],
+      "text": ""
+    },
+    {
+      "id": "whole-body-color-plus-roof-finish",
+      "route": "element",
+      "queue": 0,
+      "howto": false,
+      "zonePlans": [
+        {
+          "part": "body",
+          "color": "#ff7eb6",
+          "finish": "base::gloss"
+        },
+        {
+          "part": "roof",
+          "color": "#ff7eb6",
+          "finish": "base::chrome"
+        }
+      ],
+      "text": ""
+    },
+    {
+      "id": "quoted-finish-name",
+      "route": "scope-ask",
+      "queue": 0,
+      "howto": false,
+      "zonePlans": [],
+      "text": ""
+    },
+    {
+      "id": "question-roof-matte",
+      "route": "guard-or-other",
+      "queue": 0,
+      "howto": true,
+      "zonePlans": [],
+      "text": "Nothing was changed. I can explain the likely workflow or effect as guidance; send a separate direct instruction if you want me to paint it."
+    }
+  ],
+  "issues": [
+    "same-target-conflicting-finish: contradictory roof finishes compiled into executable route [{\"part\":\"body\",\"color\":\"source\",\"finish\":\"base::f_chrome\"},{\"part\":\"roof\",\"color\":\"source\",\"finish\":\"base::f_soft_matte\"}]"
+  ],
+  "counts": {
+    "fresh": 9,
+    "publicAskCases": 9,
+    "routeSinkCases": 7,
+    "consumerMetadataCases": 1,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "applyCalls": 0
+  },
+  "reviewNotes": [
+    "Verified per-clause plan association for roof-chrome/hood-matte and roof-blue/hood-matte in the actual public ask route. The existing consumer contract also passed its explicit finishExplicit metadata and buyer-copy assertion for solid-red roof plus matte-blue hood. The same-target matte-and-chrome phrase was miscompiled as a body-chrome plus roof-matte plan and reached the element action route; it should be clarified/refused atomically. Color-only keep-finish could only be safely clarified in this harness. Color/source plans remain provisional without a real owner/current authored-color fixture."
+  ],
+  "limits": [
+    "Executed the actual exported ask(), askForTicket(), offlineAsk(), offlineAskCore(), Design classifiers, and offlineCoveredPartAsk consumer from pinned source bytes in a VM. Route sinks for covered edits/look clarification and queueEditZones were controlled boundary stubs, so queued/applied pixels, current-zone proof, and native UI behavior are not claimed. The W118 oracle and source files were read-only."
+  ]
+}

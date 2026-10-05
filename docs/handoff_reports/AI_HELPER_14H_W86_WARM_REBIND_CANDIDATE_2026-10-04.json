@@ -1,0 +1,124 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "task": "W86 private offlineAsk warm-before-rehydrate candidate",
+  "source": {
+    "baseline": {
+      "path": "_easy_claude_work/ai14h_w86_review/candidate/spb-pro-ai.base.js",
+      "sha256": "e28770330994ffc04364d0a48e88b98b69d25f9848e23d56cc1cea07165da713"
+    },
+    "candidate": {
+      "path": "_easy_claude_work/ai14h_w86_review/candidate/spb-pro-ai.js",
+      "sha256": "eedf2aa5f17772f72796f722af322ba93665ddc01a43880ab313f57355c5cd17"
+    },
+    "operation": {
+      "path": "js/spb-ai-operation.js",
+      "sha256": "47587a1a53a35ce7e58825bac864bd75c2421d26c19791957f57bb199a7000c6"
+    },
+    "edit": {
+      "path": "_easy_claude_work/ai14h_generation3_runtime4/js/spb-pro-edit.js",
+      "sha256": "99703873013e198857d9aceaa334821098e53dcaa9d55e14dbd1ec50e58604de"
+    },
+    "design": {
+      "path": "_easy_claude_work/ai14h_generation3_runtime4/js/spb-pro-design.js",
+      "sha256": "0533393ff5f2170236f60d4ed489c7ae52f98805e12b0764da67a967f756f2e8"
+    }
+  },
+  "counts": {
+    "cases": 8,
+    "passed": 8,
+    "failed": 0,
+    "providerCalls": 0,
+    "nativeCalls": 0
+  },
+  "rows": [
+    {
+      "id": "W86-01 warm/current rebind then fresh edit plan",
+      "pass": true,
+      "expected": "compiled",
+      "hydrations": 1,
+      "compiles": 1,
+      "proofCalls": 0,
+      "result": "edit",
+      "events": [
+        "warm-start",
+        "rebind",
+        "env-build",
+        "compile"
+      ]
+    },
+    {
+      "id": "W86-02 cancel during delayed CAR warm",
+      "pass": true,
+      "expected": "cancelled",
+      "hydrations": 0,
+      "compiles": 0,
+      "proofCalls": 0,
+      "result": "cancelled",
+      "events": [
+        "warm-start"
+      ]
+    },
+    {
+      "id": "W86-03 same-path/new-generation source switch during warm",
+      "pass": true,
+      "expected": "cancelled",
+      "hydrations": 0,
+      "compiles": 0,
+      "proofCalls": 0,
+      "result": "cancelled",
+      "events": [
+        "warm-start"
+      ]
+    },
+    {
+      "id": "W86-04 manual zone revision during warm",
+      "pass": true,
+      "expected": "cancelled",
+      "hydrations": 0,
+      "compiles": 0,
+      "proofCalls": 0,
+      "result": "cancelled",
+      "events": [
+        "warm-start"
+      ]
+    },
+    {
+      "id": "W86-05 CAR warm rejection stays truthful and queues nothing",
+      "pass": true,
+      "expected": "refusal",
+      "hydrations": 0,
+      "compiles": 0,
+      "proofCalls": 0,
+      "result": "refusal",
+      "events": [
+        "warm-start"
+      ]
+    },
+    {
+      "id": "W86-ASK-external-lease",
+      "pass": true,
+      "expected": "guard before ticketed route",
+      "askCalls": 0,
+      "error": "An external AI is designing. Use Take over in SPB in the bridge settings, then send your request again."
+    },
+    {
+      "id": "W86-ASK-busy",
+      "pass": true,
+      "expected": "guard before ticketed route",
+      "askCalls": 0,
+      "error": "Still working on the last one."
+    },
+    {
+      "id": "W86-ASK-normal",
+      "pass": true,
+      "expected": "current ticket reaches ticketed ask",
+      "askCalls": 1
+    }
+  ],
+  "limits": [
+    "Actual candidate offlineAsk, editEnv, editPlan and E.plan/E.compile run in a VM; app readers, CAR.ensure, successful rebind, and offlineEditAsk application wrapper are controlled fakes.",
+    "Actual SpbAiOperation ticket/current/revision logic is used. Delay races cover cancel, committed source-generation replacement, and manual zone revision before hydration.",
+    "Current E.compile source-identity fallback remains a known W89 gap: its result still selects source #01ff00 and bypasses currentPartZoneOwners when a source-color entry exists. This candidate does not claim the W86 owner edit is fixed end-to-end.",
+    "No native, provider, or server calls; isolated candidate only."
+  ]
+}

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SPB UX LAB — rate the 20 experiences</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!--
+  SPB UX LAB — owner review page (2026-07-29, Claude)
+
+  Loads the REAL app in an iframe and switches experiences live, so what you
+  rate is the working app, not a mockup. Ratings + notes are kept in
+  localStorage and can be exported as JSON for the next build round — the same
+  build -> rate -> fix loop as the June audit pages.
+
+  Nothing here can affect the shipping app: it only calls SPBX.apply() inside
+  the frame, which is the same call the in-app picker makes.
+-->
+<style>
+  :root{
+    --bg:#0a0d13; --panel:#111722; --line:rgba(255,255,255,.10);
+    --ink:#e9eff8; --dim:#8fa1b8; --accent:#7c8cff; --good:#4ade80; --bad:#fb7185;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+    font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+  .wrap{display:flex;height:100vh;min-height:0}
+
+  /* ---- left: the review rail ---- */
+  .rail{flex:0 0 372px;display:flex;flex-direction:column;min-height:0;
+    background:var(--panel);border-right:1px solid var(--line)}
+  .head{padding:16px 18px;border-bottom:1px solid var(--line)}
+  .h1{font-size:15px;font-weight:800;letter-spacing:2px}
+  .sub{margin-top:5px;font-size:11.5px;color:var(--dim)}
+  .bar{display:flex;gap:7px;padding:11px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .btn{padding:7px 12px;border-radius:8px;cursor:pointer;font-size:11.5px;font-weight:650;
+    background:#1a2233;color:var(--ink);border:1px solid var(--line)}
+  .btn:hover{border-color:var(--accent)}
+  .btn.primary{background:var(--accent);color:#0a0d13;border-color:transparent}
+  .list{flex:1 1 auto;overflow-y:auto;padding:10px}
+  .card{padding:11px 12px;margin-bottom:8px;border-radius:11px;cursor:pointer;
+    background:#141b28;border:1px solid var(--line)}
+  .card:hover{border-color:var(--accent)}
+  .card.on{border-color:var(--accent);box-shadow:0 0 0 2px rgba(124,140,255,.28);background:#18213a}
+  .cardtop{display:flex;align-items:baseline;gap:8px}
+  .num{font:700 9.5px/1 ui-monospace,Menlo,monospace;color:#6b7a94;letter-spacing:1.4px}
+  .name{font-size:14.5px;font-weight:750}
+  .para{margin-left:auto;font-size:9.5px;letter-spacing:.7px;text-transform:uppercase;color:var(--accent)}
+  .tag{margin-top:3px;font-size:11.5px;color:var(--dim)}
+  .rate{margin-top:9px;display:flex;align-items:center;gap:9px}
+  .rate input[type=range]{flex:1 1 auto;accent-color:var(--accent)}
+  .score{min-width:46px;text-align:right;font:700 13px/1 ui-monospace,Menlo,monospace}
+  .note{width:100%;margin-top:7px;padding:7px 9px;border-radius:8px;resize:vertical;min-height:36px;
+    background:#0e1420;color:var(--ink);border:1px solid var(--line);font:inherit;font-size:12px}
+  .verdict{display:flex;gap:6px;margin-top:7px}
+  .v{flex:1 1 0;padding:5px;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700;
+    background:transparent;color:var(--dim);border:1px solid var(--line)}
+  .v.keep.on{background:rgba(74,222,128,.16);color:var(--good);border-color:var(--good)}
+  .v.cut.on{background:rgba(251,113,133,.16);color:var(--bad);border-color:var(--bad)}
+
+  /* ---- right: the live app ---- */
+  .stage{flex:1 1 auto;display:flex;flex-direction:column;min-width:0;min-height:0}
+  .stagebar{display:flex;align-items:center;gap:10px;padding:9px 14px;
+    border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap}
+  .now{font-weight:750}
+  .meta{font-size:11px;color:var(--dim)}
+  iframe{flex:1 1 auto;width:100%;border:0;background:#000;min-height:0}
+  .warn{padding:10px 14px;font-size:12px;color:#ffd08a;background:rgba(255,180,60,.10);
+    border-bottom:1px solid var(--line);display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside class="rail">
+    <div class="head">
+      <div class="h1">SPB UX LAB</div>
+      <div class="sub">Rate the 20 experiences in the live app. Same tools, nothing removed.
+        Scores save automatically — Export when you're done.</div>
+    </div>
+    <div class="bar">
+      <button class="btn primary" id="bPrev">‹ Prev</button>
+      <button class="btn primary" id="bNext">Next ›</button>
+      <button class="btn" id="bClassic">Classic</button>
+      <button class="btn" id="bExport">Export ratings</button>
+      <button class="btn" id="bReload">Reload app</button>
+    </div>
+    <div class="list" id="list"></div>
+  </aside>
+
+  <main class="stage">
+    <div class="stagebar">
+      <span class="now" id="now">Classic</span>
+      <span class="meta" id="meta">loading the app…</span>
+      <span class="meta" style="margin-left:auto">
+        <label><input type="checkbox" id="narrow"> simulate 1100×800</label>
+      </span>
+    </div>
+    <div class="warn" id="warn"></div>
+    <iframe id="app" title="Shokker Paint Booth"></iframe>
+  </main>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var KEY = 'shokker_ux_lab_ratings';
+  var frame = document.getElementById('app');
+  var listEl = document.getElementById('list');
+  var nowEl = document.getElementById('now');
+  var metaEl = document.getElementById('meta');
+  var warnEl = document.getElementById('warn');
+
+  // Same-origin so we can drive SPBX inside the frame. Served from the app's
+  // own server, so this resolves to whatever port it is running on.
+  frame.src = 'paint-booth-v2.html';
+
+  var ratings = {};
+  try { ratings = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(ratings)); } catch (e) {} }
+
+  var packs = [], idx = 0, ready = false;
+
+  function win() { try { return frame.contentWindow; } catch (e) { return null; } }
+  function spbx() { var w = win(); return w && w.SPBX ? w.SPBX : null; }
+
+  function poll() {
+    var X = spbx();
+    if (!X || !X.list) { setTimeout(poll, 400); return; }
+    var l = X.list();
+    if (!l.length) { setTimeout(poll, 400); return; }
+    packs = [{ id: 'classic', name: 'Classic', paradigm: 'Today’s app',
+               tagline: 'Exactly what ships now — the control.' }].concat(l);
+    ready = true;
+    metaEl.textContent = packs.length - 1 + ' experiences loaded';
+    render();
+  }
+  frame.addEventListener('load', function () {
+    ready = false; metaEl.textContent = 'app booting…'; setTimeout(poll, 1200);
+  });
+
+  function apply(i) {
+    if (!ready) return;
+    idx = (i + packs.length) % packs.length;
+    var p = packs[idx];
+    var X = spbx();
+    if (X) X.apply(p.id);
+    nowEl.textContent = p.name + (p.paradigm ? ' — ' + p.paradigm : '');
+    render();
+    var card = listEl.querySelector('[data-id="' + p.id + '"]');
+    if (card && card.scrollIntoView) card.scrollIntoView({ block: 'nearest' });
+  }
+
+  function render() {
+    listEl.innerHTML = '';
+    packs.forEach(function (p, i) {
+      var r = ratings[p.id] || { score: 50, note: '', verdict: '' };
+      var card = document.createElement('div');
+      card.className = 'card' + (i === idx ? ' on' : '');
+      card.setAttribute('data-id', p.id);
+
+      var top = document.createElement('div'); top.className = 'cardtop';
+      var n = document.createElement('span'); n.className = 'num';
+      n.textContent = i === 0 ? '00' : String(i).padStart(2, '0');
+      var nm = document.createElement('span'); nm.className = 'name'; nm.textContent = p.name;
+      var pa = document.createElement('span'); pa.className = 'para'; pa.textContent = p.paradigm || '';
+      top.appendChild(n); top.appendChild(nm); top.appendChild(pa);
+
+      var tg = document.createElement('div'); tg.className = 'tag'; tg.textContent = p.tagline || '';
+
+      var rate = document.createElement('div'); rate.className = 'rate';
+      var sl = document.createElement('input');
+      sl.type = 'range'; sl.min = 0; sl.max = 100; sl.value = r.score;
+      var sc = document.createElement('span'); sc.className = 'score'; sc.textContent = r.score;
+      sl.addEventListener('input', function () {
+        sc.textContent = sl.value;
+        ratings[p.id] = Object.assign(ratings[p.id] || {}, { score: +sl.value });
+        save();
+      });
+      sl.addEventListener('click', function (e) { e.stopPropagation(); });
+      rate.appendChild(sl); rate.appendChild(sc);
+
+      var vd = document.createElement('div'); vd.className = 'verdict';
+      [['keep', 'KEEP'], ['cut', 'CUT']].forEach(function (pair) {
+        var b = document.createElement('button');
+        b.className = 'v ' + pair[0] + (r.verdict === pair[0] ? ' on' : '');
+        b.textContent = pair[1];
+        b.addEventListener('click', function (e) {
+          e.stopPropagation();
+          ratings[p.id] = Object.assign(ratings[p.id] || { score: +sl.value },
+                                        { verdict: r.verdict === pair[0] ? '' : pair[0] });
+          save(); render();
+        });
+        vd.appendChild(b);
+      });
+
+      var nt = document.createElement('textarea');
+      nt.className = 'note'; nt.placeholder = 'what works / what doesn’t…'; nt.value = r.note || '';
+      nt.addEventListener('input', function () {
+        ratings[p.id] = Object.assign(ratings[p.id] || { score: +sl.value }, { note: nt.value });
+        save();
+      });
+      nt.addEventListener('click', function (e) { e.stopPropagation(); });
+
+      card.appendChild(top); card.appendChild(tg); card.appendChild(rate);
+      card.appendChild(vd); card.appendChild(nt);
+      card.addEventListener('click', function () { apply(i); });
+      listEl.appendChild(card);
+    });
+  }
+
+  document.getElementById('bPrev').addEventListener('click', function () { apply(idx - 1); });
+  document.getElementById('bNext').addEventListener('click', function () { apply(idx + 1); });
+  document.getElementById('bClassic').addEventListener('click', function () { apply(0); });
+  document.getElementById('bReload').addEventListener('click', function () { frame.src = frame.src; });
+  document.getElementById('bExport').addEventListener('click', function () {
+    var rows = packs.map(function (p, i) {
+      var r = ratings[p.id] || {};
+      return { n: i, id: p.id, name: p.name, paradigm: p.paradigm,
+               score: r.score == null ? null : r.score, verdict: r.verdict || '', note: r.note || '' };
+    }).filter(function (r) { return r.score != null || r.verdict || r.note; });
+    var blob = new Blob([JSON.stringify({ rated: rows }, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'spb_ux_lab_ratings.json';
+    a.click();
+  });
+
+  document.getElementById('narrow').addEventListener('change', function () {
+    // The 1100x800 minimum is where the old layout hurt most (149x149 boxes),
+    // so being able to check it without resizing the window matters.
+    if (this.checked) { frame.style.width = '1100px'; frame.style.height = '800px'; frame.style.flex = '0 0 800px'; }
+    else { frame.style.width = '100%'; frame.style.height = ''; frame.style.flex = '1 1 auto'; }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (/input|textarea/i.test((e.target || {}).tagName || '')) return;
+    if (e.key === '[') { e.preventDefault(); apply(idx - 1); }
+    if (e.key === ']') { e.preventDefault(); apply(idx + 1); }
+  });
+
+  // Cross-origin would break SPBX access; say so plainly rather than failing silently.
+  setTimeout(function () {
+    if (!ready && !win()) {
+      warnEl.style.display = 'block';
+      warnEl.textContent = 'Cannot reach the app frame. Open this page from the same server as ' +
+                           'the app (http://localhost:<port>/SPB_UX_LAB.html), not from the file system.';
+    }
+  }, 9000);
+})();
+</script>
+</body>
+</html>

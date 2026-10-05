@@ -17,17 +17,120 @@
 function _mapSpecPatternEntry(sp) {
     const e = { pattern: sp.pattern, opacity: (sp.opacity ?? 50) / 100 };
     const bm = sp.blendMode || 'normal'; if (bm !== 'normal') e.blend_mode = bm;
-    const ch = sp.channels || 'MR'; if (ch !== 'MR') e.channels = ch;
-    const rng = sp.range || 40; if (rng !== 40) e.range = rng;
+    const ch = sp.channels ?? 'MR'; e.channels = ch;
+    const rng = sp.range ?? 40; if (rng !== 40) e.range = rng;
     if (sp.params && Object.keys(sp.params).length) e.params = sp.params;
-    const ox = sp.offsetX || 0.5; if (ox !== 0.5) e.offset_x = ox;
-    const oy = sp.offsetY || 0.5; if (oy !== 0.5) e.offset_y = oy;
+    const ox = sp.offsetX ?? 0.5; if (ox !== 0.5) e.offset_x = ox;
+    const oy = sp.offsetY ?? 0.5; if (oy !== 0.5) e.offset_y = oy;
     const sc = sp.scale || 1.0; if (sc !== 1.0) e.scale = sc;
     const rot = sp.rotation || 0; if (rot !== 0) e.rotation = rot;
     const bs = sp.boxSize || 100; if (bs !== 100) e.box_size = bs;
+    if (sp.render_version != null) e.render_version = Number(sp.render_version);
+    if (sp.seed != null) e.seed = Number(sp.seed);
+    if (sp.muted) e.muted = true;
+    if (sp.solo) e.solo = true;
     return e;
 }
 if (typeof window !== 'undefined') window._mapSpecPatternEntry = _mapSpecPatternEntry;
+
+/** Encode region/spatial masks for render — shape (useRegion) + optional green refine can coexist. */
+
+// [ULTRACODE 2026-08-22 M7] ONE offline message. The old copy said "start
+// server.py first" in 14 places - a file that does not exist for packaged-app
+// buyers, so the most likely failure ended in an instruction nobody could
+// follow. Paired with the M6 engine auto-restart, this message is also TRUE.
+const SPB_ENGINE_OFFLINE_MSG = 'Paint engine is offline - it restarts automatically in a few seconds. If it stays offline, close and reopen Shokker Paint Booth.';
+// SPB-93 tools 2026-09-07, owner: remove lag after edits. Native preview
+// serialization took97ms, repeatedly callback-scanning the same4096 mask.
+// Share byte-mask presence with the current synchronous render/hash pass.
+// Other mask types and early loading keep their original >0 semantics.
+function _renderMaskHasPixels(mask) {
+    if (!mask) return false;
+    if ((mask instanceof Uint8Array || mask instanceof Uint8ClampedArray) &&
+        typeof window !== 'undefined' && window.SPBMaskStats?.any) {
+        return window.SPBMaskStats.any(mask);
+    }
+    return mask.some(value => value > 0);
+}
+
+function _encodeZoneApplyMasks(zoneObj, z) {
+    const pc = typeof document !== 'undefined' ? document.getElementById('paintCanvas') : null;
+    if (!pc || typeof encodeRegionMaskRLE !== 'function') return;
+    const hasRegion = !!(_renderMaskHasPixels(z.regionMask));
+    const hasSpatial = !!(_renderMaskHasPixels(z.spatialMask));
+    if (hasRegion && z.useRegion) {
+        zoneObj.region_mask = encodeRegionMaskRLE(z.regionMask, pc.width, pc.height);
+    }
+    if (hasSpatial) {
+        zoneObj.spatial_mask = encodeRegionMaskRLE(z.spatialMask, pc.width, pc.height);
+    }
+}
+if (typeof window !== 'undefined') window._encodeZoneApplyMasks = _encodeZoneApplyMasks;
+
+function _attachSourceLayerCacheHints(zoneObj, z, srcLayer, w, h) {
+    // [SPB-MULTILAYER 2026-08-21] the id doubles as a render-cache key, so it
+    // must change when the restricted SET changes - join every id.
+    const _slIds = (typeof window !== 'undefined' && typeof window.zoneSourceLayerIds === 'function')
+        ? window.zoneSourceLayerIds(z)
+        : (z && z.sourceLayer ? [z.sourceLayer] : []);
+    if (!zoneObj || !z || !_slIds.length) return;
+    zoneObj.source_layer_id = _slIds.map(String).join('+');
+    try {
+        zoneObj.source_layer_revision = (typeof _layerCompositeRevision !== 'undefined')
+            ? (Number(_layerCompositeRevision) || 0)
+            : 0;
+    } catch (_) {
+        zoneObj.source_layer_revision = 0;
+    }
+    zoneObj.source_layer_size = [Number(w) || 2048, Number(h) || 2048];
+    if (srcLayer && Array.isArray(srcLayer.bbox)) {
+        zoneObj.source_layer_bbox = srcLayer.bbox.slice(0, 4).map(v => Number(v) || 0);
+    }
+}
+if (typeof window !== 'undefined') window._attachSourceLayerCacheHints = _attachSourceLayerCacheHints;
+
+/** Fit-to-apply-area breaks monolithic finishes (squashes whole-car spec into the box). */
+function _zoneShouldFitIntoApplyArea(z) {
+    if (!z || !z.fitIntoApplyArea) return false;
+    if (z.finish && !z.base) return false;
+    return true;
+}
+if (typeof window !== 'undefined') window._zoneShouldFitIntoApplyArea = _zoneShouldFitIntoApplyArea;
+
+function _spbEscapeRenderHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// 2026-10-04 SHOW MY FILES: the render status banner's button opens Explorer on the folder the last render wrote to,
+// with the paint TGA highlighted (server_routes/support_routes.py /api/support/show-files). The offline helper
+// (js/spb-support.js) calls the same function. Set by the banner code in the render-results handler.
+let _spbLastRenderFiles = null;
+async function spbShowRenderFiles(btn) {
+    const target = _spbLastRenderFiles;
+    const say = (txt) => { if (btn) { btn.textContent = txt; } };
+    if (!target) { say('Render first'); return { ok: false, error: 'no render yet' }; }
+    try {
+        const res = await fetch(ShokkerAPI.baseUrl + '/api/support/show-files', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(target)
+        });
+        const j = await res.json().catch(() => ({ ok: false, error: 'bad reply' }));
+        if (j.ok) say('\u{1F4C2} Opened in File Explorer');
+        else say('Could not open: ' + (j.error || res.status));
+        return j;
+    } catch (e) {
+        say('Could not open the folder');
+        return { ok: false, error: String(e && e.message || e) };
+    }
+}
+if (typeof window !== 'undefined') {
+    window.spbShowRenderFiles = spbShowRenderFiles;
+    window.spbLastRenderFiles = () => _spbLastRenderFiles;
+}
 
 // BOIL THE OCEAN deep core: write the base color/gradient/special branch
 // into zoneObj. Three payload builders (preview / render / export) used
@@ -43,10 +146,20 @@ function _applyBaseColorBranch(zoneObj, z, baseMode) {
             parseInt(hex.slice(5, 7), 16) / 255,
         ];
     } else if (baseMode === 'gradient' && z.gradientStops && z.gradientStops.length >= 2) {
-        zoneObj.gradient_stops = z.gradientStops;
+        const normalizedStops = (typeof normalizeBaseGradientStopsForPayload === 'function')
+            ? normalizeBaseGradientStopsForPayload(z.gradientStops)
+            : z.gradientStops;
+        if (!normalizedStops || normalizedStops.length < 2) return;
+        zoneObj.gradient_stops = normalizedStops;
         zoneObj.gradient_direction = z.gradientDirection || 'horizontal';
     } else if (baseMode === 'special' && z.baseColorSource && z.baseColorSource !== 'undefined') {
         zoneObj.base_color_source = z.baseColorSource;
+    }
+    if ((baseMode === 'special' || baseMode === 'gradient') && z.baseColorScale != null) {
+        zoneObj.base_color_scale = Math.max(0.01, Math.min(5, Number(z.baseColorScale) || 1));
+    }
+    if ((baseMode === 'special' || baseMode === 'gradient') && z.baseColorRotation != null) {
+        zoneObj.base_color_rotation = Math.max(0, Math.min(359, Number(z.baseColorRotation) || 0));
     }
 }
 if (typeof window !== 'undefined') window._applyBaseColorBranch = _applyBaseColorBranch;
@@ -98,6 +211,9 @@ function _mapPatternStackEntry(l) {
         scale: l.scale || 1.0,
         rotation: l.rotation || 0,
         blend_mode: l.blendMode || 'normal',
+        hue_shift: Number(l.hueShift ?? 0),
+        saturation: Number(l.saturation ?? 0),
+        spec_opacity: Math.max(0, Math.min(100, Number(l.specOpacity ?? 0))) / 100,
     };
 }
 function _mapPatternStack(stackArray) {
@@ -109,6 +225,68 @@ function _mapPatternStack(stackArray) {
 if (typeof window !== 'undefined') {
     window._mapPatternStackEntry = _mapPatternStackEntry;
     window._mapPatternStack = _mapPatternStack;
+}
+
+function _normalizeExtraBaseOverlayPatternValue(value) {
+    if (value === '') return '';
+    if (value == null) return '';
+    const raw = String(value).trim();
+    const normalized = raw.toLowerCase().replace(/[\s-]+/g, '_');
+    if (
+        normalized === 'none' ||
+        normalized === '_none_' ||
+        normalized === '__none__' ||
+        normalized === 'none_(base_only)' ||
+        normalized === 'none_(independent)' ||
+        normalized === 'base_only'
+    ) {
+        return '__none__';
+    }
+    return raw;
+}
+if (typeof window !== 'undefined') window._normalizeExtraBaseOverlayPatternValue = _normalizeExtraBaseOverlayPatternValue;
+
+function _extraBaseOverlayInheritsPrimaryPattern(z, reactPattern) {
+    if (!z || !z.pattern || z.pattern === 'none') return false;
+    const normalized = _normalizeExtraBaseOverlayPatternValue(reactPattern);
+    if (normalized === '') return true;
+    if (normalized === '__none__') return false;
+    return String(reactPattern || '') === String(z.pattern || '');
+}
+
+function _extraBaseOverlayBlendModeRequiresPattern(mode) {
+    const normalized = String(mode || '').trim().toLowerCase().replace(/[\s_]+/g, '-');
+    return [
+        'pattern',
+        'pattern-reactive',
+        'pattern-vivid',
+        'pattern-pop',
+        'pattern-edges',
+        'pattern-peaks',
+        'pattern-contour',
+        'pattern-screen',
+        'pattern-stream',
+        'pattern-threshold',
+    ].includes(normalized);
+}
+
+function _extraBaseOverlayNumberOrInherited(z, prefix, suffix, defaultValue, primaryKey, minValue, maxValue, reactPattern) {
+    const raw = z[prefix + suffix];
+    let value = Number(raw ?? defaultValue);
+    if (
+        _extraBaseOverlayInheritsPrimaryPattern(z, reactPattern) &&
+        (raw == null || Math.abs(Number(raw) - defaultValue) < 1e-9) &&
+        z[primaryKey] != null
+    ) {
+        value = Number(z[primaryKey]);
+    }
+    if (!Number.isFinite(value)) value = defaultValue;
+    return Math.max(minValue, Math.min(maxValue, value));
+}
+if (typeof window !== 'undefined') {
+    window._extraBaseOverlayInheritsPrimaryPattern = _extraBaseOverlayInheritsPrimaryPattern;
+    window._extraBaseOverlayBlendModeRequiresPattern = _extraBaseOverlayBlendModeRequiresPattern;
+    window._extraBaseOverlayNumberOrInherited = _extraBaseOverlayNumberOrInherited;
 }
 
 // BOIL THE OCEAN deep core (drift hunt #2): the second/third/fourth/fifth base
@@ -126,10 +304,17 @@ if (typeof window !== 'undefined') {
 function _applyExtraBaseOverlay(zoneObj, z, prefix, key) {
     // prefix: 'secondBase' | 'thirdBase' | 'fourthBase' | 'fifthBase'
     // key:    'second_base' | 'third_base' | 'fourth_base' | 'fifth_base'
+    if (z[prefix + 'Enabled'] === false) return;
     const baseId = z[prefix];
-    const colorSrc = z[prefix + 'ColorSource'];
+    let colorSrc = z[prefix + 'ColorSource'];
+    if (colorSrc && typeof colorSrc === 'string' && !colorSrc.includes(':')) {
+        const ft = (typeof _pickerCatalogItemType === 'function') ? _pickerCatalogItemType(colorSrc) : null;
+        if (ft === 'monolithic') colorSrc = 'mono:' + colorSrc;
+    }
     const strength = z[prefix + 'Strength'] || 0;
-    if (!(baseId || colorSrc) || strength <= 0) return;
+    // [SPB-OVERLAY-PARITY-2 2026-08-20] paint 0 + spec >0 is a spec-only overlay
+    const specStrengthGate = z[prefix + 'SpecStrength'] ?? 1;
+    if (!(baseId || colorSrc) || (strength <= 0 && specStrengthGate <= 0)) return;
     const isSpecialBase = typeof baseId === 'string' && baseId.startsWith('mono:');
     const effectiveColorSrc = (!colorSrc && isSpecialBase) ? 'overlay' : colorSrc;
     const _hexRaw = (z[prefix + 'Color'] || '#ffffff').toString();
@@ -143,34 +328,57 @@ function _applyExtraBaseOverlay(zoneObj, z, prefix, key) {
     zoneObj[key + '_strength'] = strength;
     zoneObj[key + '_spec_strength'] = z[prefix + 'SpecStrength'] ?? 1;
     if (effectiveColorSrc && effectiveColorSrc !== 'undefined') zoneObj[key + '_color_source'] = effectiveColorSrc;
-    zoneObj[key + '_blend_mode'] = z[prefix + 'BlendMode'] || 'noise';
+    const blendMode = z[prefix + 'BlendMode'] || 'noise';
+    zoneObj[key + '_blend_mode'] = blendMode;
     zoneObj[key + '_noise_scale'] = Number(z[prefix + 'NoiseScale'] ?? z[prefix + 'FractalScale'] ?? 24);
     zoneObj[key + '_scale'] = Math.max(0.01, Math.min(5, Number(z[prefix + 'Scale']) || 1));
-    if (z[prefix + 'Pattern']) zoneObj[key + '_pattern'] = z[prefix + 'Pattern'];
-    zoneObj[key + '_pattern_opacity'] = Math.max(0, Math.min(1, Number((z[prefix + 'PatternOpacity'] ?? 100) / 100)));
-    zoneObj[key + '_pattern_scale'] = Math.max(0.1, Math.min(4, Number(z[prefix + 'PatternScale'] ?? 1)));
-    zoneObj[key + '_pattern_rotation'] = Number(z[prefix + 'PatternRotation'] ?? 0);
+    // SPB-2026-05-19 owner: new per-tier Color/Spec scale knobs (parity with primary base)
+    {
+        const _csz = Math.max(0.01, Math.min(5, Number(z[prefix + 'ColorScale']) || 1));
+        const _ssz = Math.max(0.01, Math.min(5, Number(z[prefix + 'SpecScale']) || 1));
+        zoneObj[key + '_color_scale'] = _csz;
+        zoneObj[key + '_spec_scale'] = _ssz;
+        // [SPB-OVERLAY-PARITY-2 2026-08-20] rotation / spec rotation / color strength
+        zoneObj[key + '_rotation'] = Number(z[prefix + 'Rotation']) || 0;
+        zoneObj[key + '_spec_rotation'] = Number(z[prefix + 'SpecRotation']) || 0;
+        zoneObj[key + '_color_strength'] = Math.max(0, Math.min(1, (z[prefix + 'ColorStrength'] ?? 1)));
+    }
+    let reactPattern = _normalizeExtraBaseOverlayPatternValue(z[prefix + 'Pattern']);
+    if (
+        reactPattern === '__none__' &&
+        _extraBaseOverlayBlendModeRequiresPattern(blendMode) &&
+        z.pattern &&
+        z.pattern !== 'none'
+    ) {
+        reactPattern = '';
+    }
+    zoneObj[key + '_pattern'] = reactPattern;
+    zoneObj[key + '_pattern_opacity'] = _extraBaseOverlayNumberOrInherited(z, prefix, 'PatternOpacity', 100, 'patternOpacity', 0, 100, reactPattern) / 100;
+    zoneObj[key + '_pattern_scale'] = _extraBaseOverlayNumberOrInherited(z, prefix, 'PatternScale', 1, 'scale', 0.1, 4, reactPattern);
+    zoneObj[key + '_pattern_rotation'] = _extraBaseOverlayNumberOrInherited(z, prefix, 'PatternRotation', 0, 'rotation', -3600, 3600, reactPattern);
     zoneObj[key + '_pattern_strength'] = Math.max(0, Math.min(2, Number(z[prefix + 'PatternStrength'] ?? 1)));
     if (z[prefix + 'PatternInvert'] != null) zoneObj[key + '_pattern_invert'] = !!z[prefix + 'PatternInvert'];
     if (z[prefix + 'PatternHarden'] != null) zoneObj[key + '_pattern_harden'] = !!z[prefix + 'PatternHarden'];
-    zoneObj[key + '_pattern_offset_x'] = Math.max(0, Math.min(1, Number(z[prefix + 'PatternOffsetX'] ?? 0.5)));
-    zoneObj[key + '_pattern_offset_y'] = Math.max(0, Math.min(1, Number(z[prefix + 'PatternOffsetY'] ?? 0.5)));
+    zoneObj[key + '_pattern_offset_x'] = _extraBaseOverlayNumberOrInherited(z, prefix, 'PatternOffsetX', 0.5, 'patternOffsetX', 0, 1, reactPattern);
+    zoneObj[key + '_pattern_offset_y'] = _extraBaseOverlayNumberOrInherited(z, prefix, 'PatternOffsetY', 0.5, 'patternOffsetY', 0, 1, reactPattern);
     // WIN #19 (Hawk audit): manualPlacementFlipH/V writes secondBasePatternFlipH/V
     // (and Win #19 extension also writes thirdBase/fourthBase/fifthBase variants)
     // but pre-fix none of them were ever serialized to the engine. Painter toggled
     // a 2nd-base flip and saw no change in render. Now mirrors the primary
     // pattern_flip_h/v emit pattern.
-    if (z[prefix + 'PatternFlipH']) zoneObj[key + '_pattern_flip_h'] = !!z[prefix + 'PatternFlipH'];
-    if (z[prefix + 'PatternFlipV']) zoneObj[key + '_pattern_flip_v'] = !!z[prefix + 'PatternFlipV'];
+    if (z[prefix + 'PatternFlipH'] || (_extraBaseOverlayInheritsPrimaryPattern(z, reactPattern) && z.patternFlipH && z[prefix + 'PatternFlipH'] == null)) zoneObj[key + '_pattern_flip_h'] = true;
+    if (z[prefix + 'PatternFlipV'] || (_extraBaseOverlayInheritsPrimaryPattern(z, reactPattern) && z.patternFlipV && z[prefix + 'PatternFlipV'] == null)) zoneObj[key + '_pattern_flip_v'] = true;
     if (z[prefix + 'FitZone']) zoneObj[key + '_fit_zone'] = true;
-    if (z[prefix + 'HueShift']) zoneObj[key + '_hue_shift'] = z[prefix + 'HueShift'];
-    if (z[prefix + 'Saturation']) zoneObj[key + '_saturation'] = z[prefix + 'Saturation'];
-    if (z[prefix + 'Brightness']) zoneObj[key + '_brightness'] = z[prefix + 'Brightness'];
+    // SPB-2026-05-28 owner: always emit overlay-tier HSB when this overlay is active.
+    // Truthy guards silently dropped zero resets and let preview cache serve stale paint.
+    zoneObj[key + '_hue_shift'] = Number(z[prefix + 'HueShift'] ?? 0);
+    zoneObj[key + '_saturation'] = Number(z[prefix + 'Saturation'] ?? 0);
+    zoneObj[key + '_brightness'] = Number(z[prefix + 'Brightness'] ?? 0);
     // Pattern hue/sat/bright currently exists only for second_base in source data,
     // but the helper emits it uniformly when present so future symmetry is free.
-    if (z[prefix + 'PatternHueShift']) zoneObj[key + '_pattern_hue_shift'] = z[prefix + 'PatternHueShift'];
-    if (z[prefix + 'PatternSaturation']) zoneObj[key + '_pattern_saturation'] = z[prefix + 'PatternSaturation'];
-    if (z[prefix + 'PatternBrightness']) zoneObj[key + '_pattern_brightness'] = z[prefix + 'PatternBrightness'];
+    if (z[prefix + 'PatternHueShift'] != null) zoneObj[key + '_pattern_hue_shift'] = Number(z[prefix + 'PatternHueShift'] ?? 0);
+    if (z[prefix + 'PatternSaturation'] != null) zoneObj[key + '_pattern_saturation'] = Number(z[prefix + 'PatternSaturation'] ?? 0);
+    if (z[prefix + 'PatternBrightness'] != null) zoneObj[key + '_pattern_brightness'] = Number(z[prefix + 'PatternBrightness'] ?? 0);
 }
 function _applyAllExtraBaseOverlays(zoneObj, z) {
     if (_zoneShouldPreserveScopedBrushExactColorPayload(z)) return;
@@ -188,6 +396,7 @@ function _zoneHasActiveBaseOverlay(z) {
     if (!z) return false;
     const prefixes = ['secondBase', 'thirdBase', 'fourthBase', 'fifthBase'];
     return prefixes.some(prefix => {
+        if (z[prefix + 'Enabled'] === false) return false;
         const strength = Number(z[prefix + 'Strength'] ?? 0);
         const baseId = z[prefix];
         const colorSrc = z[prefix + 'ColorSource'];
@@ -197,12 +406,84 @@ function _zoneHasActiveBaseOverlay(z) {
     });
 }
 
+// SPB-EASY-WHOLE-MIX-20260721: first-class material-only Whole Car plan.
+// Keep explicit registry identity all the way to Python; raw ids are not safe
+// because a base and monolithic may intentionally share one id.
+function _normalizeZoneMaterialStack(z) {
+    if (!z) return null;
+    const raw = Array.isArray(z.materialStack) ? z.materialStack
+        : (Array.isArray(z.material_stack) ? z.material_stack : null);
+    if (!raw || raw.length === 0) return null;
+    if (raw.length > 4) throw new Error('Whole Car material mix supports at most four finishes.');
+    const rows = raw.map((entry, index) => {
+        if (!entry || typeof entry !== 'object') throw new Error(`Whole Car material ${index + 1} is invalid.`);
+        const id = String(entry.id || entry.finish_id || '').trim();
+        const registryType = String(entry.registryType || entry.registry_type || entry.type || '').trim().toLowerCase();
+        const weight = Number(entry.weight);
+        if (!id) throw new Error(`Whole Car material ${index + 1} is missing its finish id.`);
+        if (registryType !== 'base' && registryType !== 'monolithic') {
+            throw new Error(`Whole Car material '${id}' is missing its exact base/monolithic type.`);
+        }
+        if (!Number.isFinite(weight) || weight <= 0) throw new Error(`Whole Car material '${id}' needs a positive mix share.`);
+        let known = true;
+        try {
+            if (registryType === 'base' && typeof BASES_BY_ID !== 'undefined') known = !!BASES_BY_ID[id];
+            else if (registryType === 'monolithic' && typeof MONOLITHICS_BY_ID !== 'undefined') known = !!MONOLITHICS_BY_ID[id];
+        } catch (_) {}
+        if (!known) throw new Error(`Unknown ${registryType} Whole Car material '${id}'.`);
+        return { id, registry_type: registryType, weight };
+    });
+    const total = rows.reduce((sum, row) => sum + row.weight, 0);
+    return rows.map(row => ({ id: row.id, registry_type: row.registry_type, weight: row.weight / total }));
+}
+
+function _zoneHasMaterialStack(z) {
+    try { return !!_normalizeZoneMaterialStack(z); }
+    catch (error) {
+        try { console.error('[SPB][material_stack]', error.message || error); } catch (_) {}
+        return false;
+    }
+}
+
+function _applyZoneMaterialStack(zoneObj, z) {
+    const stack = _normalizeZoneMaterialStack(z);
+    if (!stack) return null;
+    zoneObj.material_stack = stack;
+    zoneObj.material_stack_mode = 'auto_trace';
+    const raw = Array.isArray(z.materialStack) ? z.materialStack : z.material_stack;
+    const inferredAmount = Math.min(1, raw.reduce((sum, entry) => sum + Math.max(0, Number(entry && entry.weight) || 0), 0) / 100);
+    const requestedAmount = Number(z.materialStackAmount ?? z.material_stack_amount ?? inferredAmount);
+    zoneObj.material_stack_amount = Math.max(0, Math.min(1, Number.isFinite(requestedAmount) ? requestedAmount : inferredAmount));
+    const scale = Number(z.materialScale ?? z.material_scale ?? 1);
+    zoneObj.material_scale = Math.max(0.25, Math.min(1, Number.isFinite(scale) ? scale : 1));
+    return stack;
+}
+
 function _zoneNeedsNeutralBaseAnchor(z) {
-    return !!(z && !z.base && !z.finish && _zoneHasActiveBaseOverlay(z));
+    // 2026-07-22 owner beta blocker: Easy Spec Sculpt's By Color picker must
+    // show an explicitly selected replacement color before a finish is chosen.
+    // Reuse the real render pipeline with a temporary neutral anchor; Save still
+    // requires a real base/finish and Easy clears this marker then. M7 N/A.
+    return !!(z && !z.base && !z.finish && (_zoneHasActiveBaseOverlay(z) || z._easyPendingColorPreview === true));
+}
+
+function _zoneHasImportedSpecSource(z) {
+    return !!(z && typeof z.zoneSpecMapPath === 'string' && z.zoneSpecMapPath.trim());
+}
+
+function _zoneSpecSourceStrength(z) {
+    const pct = Number(z && z.zoneSpecMapStrength != null ? z.zoneSpecMapStrength : 100);
+    return Math.max(0, Math.min(1, (Number.isFinite(pct) ? pct : 100) / 100));
+}
+
+function _applyZoneSpecSource(zoneObj, z) {
+    if (!_zoneHasImportedSpecSource(z)) return;
+    zoneObj.zone_spec_map = z.zoneSpecMapPath.trim();
+    zoneObj.zone_spec_map_strength = _zoneSpecSourceStrength(z);
 }
 
 function _zoneHasRenderableMaterial(z) {
-    return !!(z && (z.base || z.finish || _zoneNeedsNeutralBaseAnchor(z)));
+    return !!(z && (z.base || z.finish || _zoneNeedsNeutralBaseAnchor(z) || _zoneHasImportedSpecSource(z) || _zoneHasMaterialStack(z)));
 }
 
 function _isSuppressedLegacyZone(z, index) {
@@ -212,7 +493,13 @@ function _isSuppressedLegacyZone(z, index) {
 
 if (typeof window !== 'undefined') {
     window._zoneHasActiveBaseOverlay = _zoneHasActiveBaseOverlay;
+    window._normalizeZoneMaterialStackForServer = _normalizeZoneMaterialStack;
+    window._zoneHasMaterialStack = _zoneHasMaterialStack;
+    window._applyZoneMaterialStack = _applyZoneMaterialStack;
     window._zoneNeedsNeutralBaseAnchor = _zoneNeedsNeutralBaseAnchor;
+    window._zoneHasImportedSpecSource = _zoneHasImportedSpecSource;
+    window._zoneSpecSourceStrength = _zoneSpecSourceStrength;
+    window._applyZoneSpecSource = _applyZoneSpecSource;
     window._zoneHasRenderableMaterial = _zoneHasRenderableMaterial;
     window._isSuppressedLegacyZone = _isSuppressedLegacyZone;
 }
@@ -254,8 +541,18 @@ function _applyBaseColorMode(zoneObj, z) {
     if (!_zoneHasRenderableMaterial(z)) return;
     const baseMode = (z.baseColorMode || 'source');
     zoneObj.base_color_mode = baseMode;
+    // SPB base-mode hotfix 2026-09-09: the UI's displayed mode is authoritative.
+    // Untouched Everything Else and loaded source-mode zones are spec-only too.
+    zoneObj.base_color_explicit = true;
     zoneObj.base_color_strength = Math.max(0, Math.min(1, Number(z.baseColorStrength ?? 1)));
-    if (z.baseColorFitZone) zoneObj.base_color_fit_zone = true;
+    // [SPB COLOR LAB 2026-08-27] presence of base_color_depth switches the engine to the
+    // DEPTH/FLIP/UNDERGLOW pipeline; absent = legacy crossfade (old saves render unchanged)
+    if (z.baseColorDepth != null) {
+        zoneObj.base_color_depth = Math.max(0, Math.min(1, Number(z.baseColorDepth)));
+        zoneObj.base_color_flip = Math.max(0, Math.min(355, Number(z.baseColorFlip || 0)));
+        zoneObj.base_color_underglow = Math.max(0, Math.min(1, Number(z.baseColorUnderglow || 0)));
+    }
+    if (z.baseColorFitZone || _zoneShouldFitIntoApplyArea(z)) zoneObj.base_color_fit_zone = true;
     if (z.baseHueOffset) zoneObj.base_hue_offset = Number(z.baseHueOffset);
     if (z.baseSaturationAdjust) zoneObj.base_saturation_adjust = Number(z.baseSaturationAdjust);
     if (z.baseBrightnessAdjust) zoneObj.base_brightness_adjust = Number(z.baseBrightnessAdjust);
@@ -277,7 +574,13 @@ const SPEC_PATTERN_STACK_TIERS = [
 function _applyAllSpecPatternStacks(zoneObj, z) {
     for (const [src, dst] of SPEC_PATTERN_STACK_TIERS) {
         if (z[src] && z[src].length > 0) {
-            zoneObj[dst] = z[src].map(_mapSpecPatternEntry);
+            const activeStack = z[src]
+                .map(_mapSpecPatternEntry)
+                .filter(e => {
+                    const pattern = String(e.pattern || '').trim().toLowerCase();
+                    return pattern && !['none', 'null', 'undefined', '__none__', '_none_'].includes(pattern) && Number(e.opacity ?? 0.5) > 0.001;
+                });
+            if (activeStack.length > 0) zoneObj[dst] = activeStack;
         }
     }
 }
@@ -286,20 +589,72 @@ if (typeof window !== 'undefined') {
     window.SPEC_PATTERN_STACK_TIERS = SPEC_PATTERN_STACK_TIERS;
 }
 
+function _applySpecLightingMask(zoneObj, z) {
+    if (!zoneObj || !z || z.specLightingMask == null || z.specLightingMask === '') return;
+    const alpha = Number(z.specLightingMask);
+    if (!Number.isFinite(alpha)) return;
+    zoneObj.spec_lighting_mask = Math.max(0, Math.min(255, Math.round(alpha)));
+}
+if (typeof window !== 'undefined') window._applySpecLightingMask = _applySpecLightingMask;
+
+function _applySpecMaterialOverride(zoneObj, z) {
+    const sample = z && z.specMaterialOverride;
+    if (!zoneObj || !sample || typeof sample !== 'object') return;
+    const values = {};
+    for (const key of ['m', 'r', 'cc', 'a']) {
+        const value = Number(sample[key]);
+        if (!Number.isFinite(value)) return;
+        values[key] = Math.max(0, Math.min(255, Math.round(value)));
+    }
+    zoneObj.spec_material_override = values;
+}
+if (typeof window !== 'undefined') window._applySpecMaterialOverride = _applySpecMaterialOverride;
+
+function _applySpecMaterialRemap(zoneObj, z) {
+    const remap = z && z.specMaterialRemap;
+    if (!zoneObj || !remap || typeof remap !== 'object') return;
+    const normalized = {};
+    for (const key of ['m', 'r', 'cc']) {
+        const range = remap[key];
+        if (!range || typeof range !== 'object') return;
+        const low = Number(range.low);
+        const high = Number(range.high);
+        if (!Number.isFinite(low) || !Number.isFinite(high) || low > high) return;
+        normalized[key] = {
+            low: Math.max(0, Math.min(255, Math.round(low))),
+            high: Math.max(0, Math.min(255, Math.round(high))),
+        };
+    }
+    zoneObj.spec_material_remap = normalized;
+}
+if (typeof window !== 'undefined') window._applySpecMaterialRemap = _applySpecMaterialRemap;
+
 // BOIL THE OCEAN deep core: fleet render, season render, and the main
 // buildServerZonesForRender bridge were still carrying near-identical
 // finish-stack payload logic. Any future tweak to pattern opacity, offsets,
 // finish colors, spec stacks, or base placement had three chances to drift.
 // This helper centralizes that core while preserving the "compact defaults"
 // behavior used by buildServerZonesForRender for lighter payloads.
+function _applyPatternMaterialControls(zoneObj, z) {
+    // Owner 2026-09-08: active builders bypass the extracted render core.
+    // Keep preview, normal render, Fleet and Season on the same pattern contract.
+    zoneObj.pattern_paint_mode = z.patternPaintMode === 'blend' ? 'blend' : 'overlay';
+    zoneObj.pattern_hue_shift = Number(z.patternHueShift ?? 0);
+    zoneObj.pattern_saturation = Number(z.patternSaturation ?? 0);
+    zoneObj.pattern_spec_opacity = Math.max(0, Math.min(100, Number(z.patternSpecOpacity ?? 0))) / 100;
+}
 function _applyZoneRenderCore(zoneObj, z, options) {
+    _applyPatternMaterialControls(zoneObj, z);
     const compactDefaults = !!(options && options.compactDefaults);
     const hasPattern = !!(z.pattern && z.pattern !== 'none');
     const primaryBaseId = z.base || (_zoneNeedsNeutralBaseAnchor(z) ? 'gloss' : null);
     const hasPrimaryBase = !!primaryBaseId;
-    const hasRenderableMaterial = hasPrimaryBase || !!z.finish;
+    const hasImportedSpecSource = _zoneHasImportedSpecSource(z);
+    const hasMaterialStack = _zoneHasMaterialStack(z);
+    const hasRenderableMaterial = hasPrimaryBase || !!z.finish || hasImportedSpecSource || hasMaterialStack;
 
     _applyCustomIntensity(zoneObj, z);
+    if (hasMaterialStack) _applyZoneMaterialStack(zoneObj, z);
     if ((hasPrimaryBase && hasPattern) || (z.finish && hasPattern)) {
         zoneObj.pattern_intensity = String(z.patternIntensity ?? '100');
     }
@@ -333,10 +688,15 @@ function _applyZoneRenderCore(zoneObj, z, options) {
         if (_ps) zoneObj.pattern_stack = _ps;
     }
 
+    _applyZoneSpecSource(zoneObj, z);
     if (z.baseScale && z.baseScale !== 1.0) zoneObj.base_scale = z.baseScale;
     if (z.baseStrength != null && z.baseStrength !== 1) zoneObj.base_strength = Number(z.baseStrength);
-    if (z.baseSpecStrength != null && z.baseSpecStrength !== 1) zoneObj.base_spec_strength = Number(z.baseSpecStrength);
+    if (z.baseSpecStrength != null) zoneObj.base_spec_strength = Number(z.baseSpecStrength);
     if (z.baseSpecBlendMode && z.baseSpecBlendMode !== 'normal') zoneObj.base_spec_blend_mode = z.baseSpecBlendMode;
+    if (z.specShiftR || z.specShiftG || z.specShiftB) zoneObj.spec_channel_shift = [Number(z.specShiftR) || 0, Number(z.specShiftG) || 0, Number(z.specShiftB) || 0];
+    _applySpecMaterialRemap(zoneObj, z);
+    _applySpecMaterialOverride(zoneObj, z);
+    _applySpecLightingMask(zoneObj, z);
     _applyBaseColorMode(zoneObj, z);
 
     if (hasPrimaryBase || (z.finish && hasPattern)) {
@@ -354,8 +714,8 @@ function _applyZoneRenderCore(zoneObj, z, options) {
         if (!compactDefaults || z.patternFlipH) zoneObj.pattern_flip_h = !!z.patternFlipH;
         if (!compactDefaults || z.patternFlipV) zoneObj.pattern_flip_v = !!z.patternFlipV;
     }
-    if (z.patternPlacement === 'fit' || z.patternFitZone) zoneObj.pattern_fit_zone = true;
-    if (z.hardEdge) zoneObj.hard_edge = true;
+    if (z.patternPlacement === 'fit' || z.patternFitZone || _zoneShouldFitIntoApplyArea(z)) zoneObj.pattern_fit_zone = true;
+    if (z.hardEdge !== false) zoneObj.hard_edge = true;  // [SPB 2026-06-02 owner] hard edge is the DEFAULT; only an explicit uncheck (false) sends soft
     if (z.patternPlacement === 'manual') zoneObj.pattern_manual = true;
 
     if (hasRenderableMaterial) {
@@ -368,6 +728,12 @@ function _applyZoneRenderCore(zoneObj, z, options) {
         if (!compactDefaults || z.baseFlipH) zoneObj.base_flip_h = !!z.baseFlipH;
         if (!compactDefaults || z.baseFlipV) zoneObj.base_flip_v = !!z.baseFlipV;
     }
+
+    const _specRot = Number(z.specRotation ?? 0);
+    const _specScale = (window._spbResolveSpecScale ? window._spbResolveSpecScale(z) : Number(z.specScale ?? z.baseScale ?? 1));
+    if (_specRot !== 0) zoneObj.spec_rotation = _specRot;
+    // [spb-indspec-20260803a] independent spec must SEND 1.0 explicitly: the engine treats a MISSING spec_scale as follow-base, so omitting the 1.0 sentinel silently re-linked spec to base (owner: base 0.10x + spec 1.00x did nothing).
+    if (_specScale !== 1 || (window._spbSpecIndependent && window._spbSpecIndependent(z))) zoneObj.spec_scale = _specScale;
 
     if (z.wear && z.wear > 0) zoneObj.wear_level = z.wear;
     _applyAllSpecPatternStacks(zoneObj, z);
@@ -386,7 +752,11 @@ function _applyZoneRenderCore(zoneObj, z, options) {
 if (typeof window !== 'undefined') window._applyZoneRenderCore = _applyZoneRenderCore;
 
 // ===== NAMED CONSTANTS (replaces magic numbers) ===== // [41-45]
-const API_TIMEOUT_STATUS_MS = 2000;       // Timeout for /status health checks
+const API_TIMEOUT_STATUS_MS = 8000;       // Timeout for /status health checks.
+// [2026-06-12 preview-deadlock fix] Was 2000ms: a CPU-saturated server (boot
+// swatch warm re-bake storm after engine changes) missed the 2s window, the
+// API got marked offline, and doPreviewRender silently no-opped FOREVER (the
+// painter saw a dead live preview that only RENDER could revive).
 const API_TIMEOUT_PORT_SCAN_MS = 800;     // Timeout for port-scan fallback
 const API_TIMEOUT_RENDER_MS = 300000;     // 5 min max for render requests
 const API_TIMEOUT_GENERAL_MS = 15000;     // General API call timeout (config, cleanup, etc.)
@@ -449,10 +819,10 @@ function categorizeError(err, context) {
     if (err.name === 'AbortError') return { code: 'abort', message: `${context} was cancelled.`, retryable: false };
     if (err.name === 'TimeoutError') return { code: 'timeout', message: `${context} timed out — server may be hung.`, retryable: true };
     const m = (err.message || '').toLowerCase();
-    if (m.includes('failed to fetch') || m.includes('networkerror') || m.includes('econnrefused')) return { code: 'network_down', message: 'Server unreachable. Is server.py running?', retryable: true };
+    if (m.includes('failed to fetch') || m.includes('networkerror') || m.includes('econnrefused')) return { code: 'network_down', message: SPB_ENGINE_OFFLINE_MSG, retryable: true };
     if (m.includes('paint file not found') || m.includes('paint_file')) return { code: 'paint_missing', message: 'Paint file not found. Check the Source Paint path.', retryable: false };
     if (m.includes('license')) return { code: 'license', message: 'License issue — open Settings to enter your key.', retryable: false };
-    if (m.includes('json') || m.includes('unexpected token')) return { code: 'bad_json', message: `Server returned invalid data during ${context}. Restart the server.`, retryable: true };
+    if (m.includes('json') || m.includes('unexpected token')) return { code: 'bad_json', message: `SPB returned invalid data during ${context}. Use Restart Server from the SPB tray, then try again.`, retryable: true };
     if (m.includes('http 5')) return { code: 'server_5xx', message: `${context} failed (server error). Try again.`, retryable: true };
     if (m.includes('http 4')) return { code: 'http_4xx', message: `${context} failed (client error). Check inputs.`, retryable: false };
     return { code: 'unknown', message: `${context} failed: ${err.message || 'unknown error'}`, retryable: false };
@@ -514,14 +884,18 @@ const ConnectionStatus = {
 if (typeof window !== 'undefined') window.ConnectionStatus = ConnectionStatus;
 
 // [IMP-13] Server version mismatch detection
-const CLIENT_VERSION = '6.1.1';
+const CLIENT_VERSION = '10.0.3-beta';
 let _serverVersionWarned = false;
 function checkServerVersion(statusData) {
     if (!statusData || !statusData.version || _serverVersionWarned) return;
-    if (statusData.version !== CLIENT_VERSION) {
+    // 2026-06-08: only warn on a real MAJOR.MINOR drift. Patch bumps (7.0.6 vs 7.0.7)
+    // are wire-compatible and must NOT nag the user (this fired every release because
+    // CLIENT_VERSION was a hardcoded string nobody remembered to bump).
+    const mm = v => String(v || '').split('.').slice(0, 2).join('.');
+    if (mm(statusData.version) !== mm(CLIENT_VERSION)) {
         _serverVersionWarned = true;
-        console.warn(`[version] Client v${CLIENT_VERSION} but server v${statusData.version}. Some features may differ.`);
-        if (typeof showToast === 'function') showToast(`Server v${statusData.version} ≠ client v${CLIENT_VERSION}. Restart the server for full compatibility.`, true);
+        console.warn(`[version] Client v${CLIENT_VERSION} but server v${statusData.version}.`);
+        if (typeof showToast === 'function') showToast(`Heads up: app v${statusData.version} vs UI v${CLIENT_VERSION} — if anything looks off, fully close and reopen the app.`, true);
     }
 }
 
@@ -588,12 +962,61 @@ function _zonesFingerprint(zones, extras) {
     } catch (_) { return null; }
 }
 
+// Live iRacing auto-render is intentionally disabled. The owner wants full
+// iRacing renders to run only from the Render button; live preview may update,
+// but it must never queue a full export on edit.
+const LIVE_IRACING_RENDER_KEY = 'spb_live_iracing_render_enabled';
+
+function _setLiveIracingRenderBadge(text, active) {
+    const badge = document.getElementById('liveIracingRenderBadge');
+    if (!badge) return;
+    badge.style.display = active ? 'inline' : 'none';
+    if (text) badge.textContent = text;
+}
+
+function isLiveIracingRenderEnabled() {
+    return false;
+}
+
+function toggleLiveIracingRender() {
+    const cb = document.getElementById('liveIracingRenderCheckbox');
+    if (cb) cb.checked = false;
+    try { localStorage.removeItem(LIVE_IRACING_RENDER_KEY); } catch (_) {}
+    _setLiveIracingRenderBadge('', false);
+    if (typeof showToast === 'function') showToast('Auto-render is off. Use Render to export to iRacing.');
+}
+
+function scheduleLiveIracingRender() {
+    return false;
+}
+
+function initLiveIracingRenderControls() {
+    const cb = document.getElementById('liveIracingRenderCheckbox');
+    if (cb) cb.checked = false;
+    try { localStorage.removeItem(LIVE_IRACING_RENDER_KEY); } catch (_) {}
+    _setLiveIracingRenderBadge('', false);
+}
+
+if (typeof window !== 'undefined') {
+    window.isLiveIracingRenderEnabled = isLiveIracingRenderEnabled;
+    window.toggleLiveIracingRender = toggleLiveIracingRender;
+    window.scheduleLiveIracingRender = scheduleLiveIracingRender;
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLiveIracingRenderControls);
+    } else {
+        setTimeout(initLiveIracingRenderControls, 0);
+    }
+}
+
 // [IMP-17] Pre-render validation — return list of warnings/errors before sending
 function validateRenderPayload(paintFile, zones, extras) {
     const issues = [];
-    if (!paintFile || !paintFile.trim()) issues.push({ severity: 'error', msg: 'Paint file path is empty.' });
-    else if (!paintFile.includes('/') && !paintFile.includes('\\')) issues.push({ severity: 'error', msg: 'Paint file needs a full path, not just a filename.' });
-    else if (!/\.tga$/i.test(paintFile)) issues.push({ severity: 'warn', msg: 'Paint file does not end in .tga — render may fail.' });
+    const hasLivePaintPayload = !!(extras && extras.paint_image_base64);
+    if (!hasLivePaintPayload) {
+        if (!paintFile || !paintFile.trim()) issues.push({ severity: 'error', msg: 'Paint file path is empty.' });
+        else if (!paintFile.includes('/') && !paintFile.includes('\\')) issues.push({ severity: 'error', msg: 'Paint file needs a full path, not just a filename.' });
+        else if (!/\.tga$/i.test(paintFile)) issues.push({ severity: 'warn', msg: 'Paint file does not end in .tga - render may fail.' });
+    }
     if (!zones || zones.length === 0) {
         if (!extras || !extras.import_spec_map) issues.push({ severity: 'error', msg: 'No zones to render and no spec map imported.' });
     }
@@ -608,6 +1031,88 @@ function showRetryableToast(message, retryFn) {
     // Stash last retry function so a global Retry button (if present) can call it
     window._lastRetryFn = retryFn || null;
 }
+
+// [PACK-UX] A render failed because the finish needs an un-bundled Finish Pack
+// the buyer hasn't downloaded (server returns error_code:'pack_missing'). Prompt
+// them to open the in-app Finish Packs downloader rather than blame their paint
+// file path. `result` carries pack_label / pack from engine/asset_packs.
+function promptFinishPackDownload(result) {
+    const label = (result && result.pack_label) ? result.pack_label : 'Finish';
+    const headline = (result && result.pack_label)
+        ? `This finish needs the “${label}” pack.`
+        : 'This finish needs a Finish Pack that isn\'t installed yet.';
+    const openDownloader = function () {
+        if (typeof window !== 'undefined' && typeof window.openFinishPacksModal === 'function') {
+            try { window.openFinishPacksModal(); return true; } catch (_) { /* fall through */ }
+        }
+        return false;
+    };
+
+    // Preferred: a small in-app modal with a Download button.
+    try {
+        if (typeof document !== 'undefined' && document.body) {
+            // Don't stack duplicates if the user re-renders.
+            const existing = document.getElementById('packMissingPrompt');
+            if (existing) existing.remove();
+
+            const overlay = document.createElement('div');
+            overlay.id = 'packMissingPrompt';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:10000;display:flex;align-items:center;justify-content:center;padding:24px;';
+
+            const card = document.createElement('div');
+            card.style.cssText = 'max-width:440px;background:#1c1c22;color:#eee;border:1px solid #3a3a44;border-radius:10px;padding:22px 24px;box-shadow:0 10px 40px rgba(0,0,0,0.55);font-size:14px;line-height:1.45;';
+
+            const title = document.createElement('div');
+            title.style.cssText = 'font-size:16px;font-weight:600;margin-bottom:10px;';
+            title.textContent = 'Finish Pack needed';
+
+            const body = document.createElement('div');
+            body.style.cssText = 'margin-bottom:18px;color:#cfcfd6;';
+            body.textContent = headline + ' Download it from Finish Packs, then restart to use it.';
+
+            const btnRow = document.createElement('div');
+            btnRow.style.cssText = 'display:flex;gap:10px;justify-content:flex-end;';
+
+            const dismiss = document.createElement('button');
+            dismiss.textContent = 'Not now';
+            dismiss.style.cssText = 'padding:8px 14px;background:#2a2a33;color:#ccc;border:1px solid #44444f;border-radius:6px;cursor:pointer;';
+            dismiss.onclick = () => overlay.remove();
+
+            const download = document.createElement('button');
+            download.textContent = 'Download ' + label + ' pack';
+            download.style.cssText = 'padding:8px 16px;background:var(--accent,#e0457b);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;';
+            download.onclick = () => {
+                overlay.remove();
+                if (!openDownloader() && typeof showToast === 'function') {
+                    showToast('Open the gear menu → Finish Packs to download ' + label + '.', true);
+                }
+            };
+
+            btnRow.appendChild(dismiss);
+            btnRow.appendChild(download);
+            card.appendChild(title);
+            card.appendChild(body);
+            card.appendChild(btnRow);
+            overlay.appendChild(card);
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+            document.body.appendChild(overlay);
+            return;
+        }
+    } catch (_) { /* fall through to confirm/toast */ }
+
+    // Fallback: native confirm, then toast.
+    try {
+        if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+            if (window.confirm(headline + '\n\nOpen Finish Packs to download it now?')) {
+                if (openDownloader()) return;
+            }
+        }
+    } catch (_) { /* ignore */ }
+    if (typeof showToast === 'function') {
+        showToast(headline + ' Open Finish Packs (gear menu) to download it, then restart.', true);
+    }
+}
+if (typeof window !== 'undefined') window.promptFinishPackDownload = promptFinishPackDownload;
 
 // [IMP-19] Browser Notification API — notify when render completes if tab is hidden
 let _lastNotifyAt = 0;
@@ -691,10 +1196,10 @@ let _wasHidden = false;
 if (typeof document !== 'undefined') {
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) { _wasHidden = true; return; }
-        if (_wasHidden && typeof ShokkerAPI !== 'undefined' && ShokkerAPI && typeof ShokkerAPI.checkStatus === 'function') {
+        if (_wasHidden && typeof ShokkerAPI !== 'undefined' && ShokkerAPI && typeof ShokkerAPI.checkStatusLight === 'function') {
             _wasHidden = false;
             ConnectionStatus.set('reconnecting');
-            ShokkerAPI.checkStatus().then(d => { ConnectionStatus.set(d ? 'online' : 'offline'); });
+            ShokkerAPI.checkStatusLight().then(d => { ConnectionStatus.set(d ? 'online' : 'offline'); });
         }
     });
 }
@@ -816,7 +1321,7 @@ function classifyFetchError(err, context) {
     if (!err) return `${context} failed: unknown error`;
     if (err.name === 'AbortError') return `${context} was cancelled or timed out.`;
     if (err.name === 'TimeoutError') return `${context} timed out. The server may be overloaded.`;
-    if (err.message && err.message.includes('Failed to fetch')) return `Server unreachable. Is server.py running?`;
+    if (err.message && err.message.includes('Failed to fetch')) return SPB_ENGINE_OFFLINE_MSG;
     if (err.message && err.message.includes('NetworkError')) return `Network error during ${context}. Check your connection.`;
     if (err.message && err.message.includes('JSON')) return `Server returned invalid data during ${context}. Try restarting the server.`;
     return `${context} failed: ${err.message || 'unknown error'}`;
@@ -848,13 +1353,33 @@ function estimateRenderTime(zoneCount) {
 
 // ===== FINISH HOVER POPUP =====
 let finishPopupTimeout = null;
+// [spb-hover-20260803a] owner: "the instant popup is BACK... it's supposed to
+// have the delay and then the larger popup." The finish LIBRARY cards called
+// this instantly on mouseenter — the one hover surface the 2026-08-02 fix
+// missed. Same 2s intent delay as the swatch picker popout; hideFinishPopup
+// cancels a pending intent so scrolling the list never flashes popups.
+let _finishPopupIntentTimer = null;
+const FINISH_POPUP_INTENT_DELAY_MS = 2000;
+
+function showFinishPopup(e, finishId) {
+    if (_finishPopupIntentTimer) clearTimeout(_finishPopupIntentTimer);
+    // e.currentTarget is only valid during dispatch — capture the element NOW;
+    // the rect is measured fresh at fire time (the list may scroll meanwhile).
+    const el = e ? e.currentTarget : null;
+    const ex = e ? e.clientX : 0, ey = e ? e.clientY : 0;
+    _finishPopupIntentTimer = setTimeout(function() {
+        _finishPopupIntentTimer = null;
+        if (!el || !el.isConnected) return;
+        _showFinishPopupNow({ clientX: ex, clientY: ey, currentTarget: el }, finishId);
+    }, FINISH_POPUP_INTENT_DELAY_MS);
+}
 
 /**
  * Show a finish hover popup with preview, name, description, and spec channel info. // [46]
  * @param {MouseEvent} e - Mouse event from the hover trigger
  * @param {string} finishId - ID of the finish to display
  */
-function showFinishPopup(e, finishId) {
+function _showFinishPopupNow(e, finishId) {
     const finish = BASES.find(f => f.id === finishId) || PATTERNS.find(f => f.id === finishId) || MONOLITHICS.find(f => f.id === finishId) || FINISHES.find(f => f.id === finishId);
     if (!finish) return;
     const isBase = !!BASES.find(f => f.id === finishId);
@@ -871,10 +1396,17 @@ function showFinishPopup(e, finishId) {
     const chanEl = document.getElementById('finishPopupChannels');
     if (!popup || !previewCanvas) return; // [51] null check - bail if DOM missing
 
-    // Use server-rendered swatch (240x160) instead of JS canvas
-    const swatchUrl = getSwatchUrl(finishId, '888888');
+    const _fpFt = isBase ? 'base' : (isPattern ? 'pattern' : 'monolithic');
+    const _fpTint = (typeof _normalizeSwatchTintHex === 'function')
+        ? _normalizeSwatchTintHex(null, finish && finish.swatch)
+        : '888888';
+    const _fpKey = (typeof _pickerSwatchFinishKey === 'function')
+        ? _pickerSwatchFinishKey(finishId, _fpFt)
+        : finishId;
+    const swatchW = previewCanvas.width;
+    const swatchH = previewCanvas.height;
+    const swatchUrl = getSwatchUrl(_fpKey, _fpTint, true, swatchW, _fpFt);
     if (swatchUrl) {
-        const swatchW = previewCanvas.width, swatchH = previewCanvas.height;
         const pctx = previewCanvas.getContext('2d');
         pctx.fillStyle = '#1a1a1a';
         pctx.fillRect(0, 0, swatchW, swatchH);
@@ -883,7 +1415,7 @@ function showFinishPopup(e, finishId) {
             pctx.clearRect(0, 0, swatchW, swatchH);
             pctx.drawImage(img, 0, 0, swatchW, swatchH);
         };
-        img.src = swatchUrl.replace('size=48', `size=${swatchW}`);
+        img.src = swatchUrl;
     } else {
         const pctx = previewCanvas.getContext('2d');
         const cacheKey = finishId + '_popup';
@@ -892,6 +1424,9 @@ function showFinishPopup(e, finishId) {
         } else {
             renderPatternPreview(pctx, previewCanvas.width, previewCanvas.height, finishId);
             _previewCache[cacheKey] = pctx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
+            // 2026-06-28 OOM fix: bound the popup-preview cache — drop oldest over 200 entries.
+            var _ppk = Object.keys(_previewCache);
+            if (_ppk.length > 200) delete _previewCache[_ppk[0]];
         }
     }
 
@@ -1052,6 +1587,8 @@ function showFinishPopup(e, finishId) {
 
 /** Hide the finish hover popup after a short delay. */
 function hideFinishPopup() {
+    // [spb-hover-20260803a] cancel a pending 2s intent before it fires
+    if (_finishPopupIntentTimer) { clearTimeout(_finishPopupIntentTimer); _finishPopupIntentTimer = null; }
     finishPopupTimeout = setTimeout(() => {
         const popup = document.getElementById('finishPopup'); // [51] null check
         if (popup) popup.classList.remove('visible');
@@ -1070,6 +1607,7 @@ function showSwatchHoverPopup(el) {
     clearTimeout(_shpTimeout);
     const finishId = el.getAttribute('data-finish-id');
     if (!finishId) return;
+    const finishType = el.getAttribute('data-finish-type') || '';
 
     const popup = document.getElementById('swatchHoverPopup');
     const canvas = document.getElementById('shpCanvas');
@@ -1078,13 +1616,24 @@ function showSwatchHoverPopup(el) {
     const catEl = document.getElementById('shpCat');
     if (!popup || !canvas) return; // [52] null check - bail if DOM missing
 
+    const finish = BASES.find(f => f.id === finishId)
+        || PATTERNS.find(f => f.id === finishId)
+        || MONOLITHICS.find(f => f.id === finishId);
+    const catalogSwatch = finish && finish.swatch ? finish.swatch : null;
+    const tintHex = (typeof _normalizeSwatchTintHex === 'function')
+        ? _normalizeSwatchTintHex(null, catalogSwatch)
+        : '888888';
+    const swatchKey = (typeof _pickerSwatchFinishKey === 'function')
+        ? _pickerSwatchFinishKey(finishId, finishType || null)
+        : finishId;
+
     // Render 140x140 preview via server swatch (async, instant update)
     const pctx = canvas.getContext('2d');
-    const swatchUrl = getSwatchUrl(finishId, '888888');
+    const swatchUrl = getSwatchUrl(swatchKey, tintHex, true, 140, finishType || null);
     if (swatchUrl) {
         pctx.fillStyle = '#1a1a1a';
         pctx.fillRect(0, 0, 140, 140);
-        const cacheKey = finishId + '_shp';
+        const cacheKey = swatchKey + ':' + tintHex + '_shp';
         if (_shpPreviewCache[cacheKey]) {
             pctx.drawImage(_shpPreviewCache[cacheKey], 0, 0, 140, 140);
         } else {
@@ -1094,7 +1643,7 @@ function showSwatchHoverPopup(el) {
                 pctx.drawImage(img, 0, 0, 140, 140);
                 _shpPreviewCache[cacheKey] = img;
             };
-            img.src = swatchUrl.replace('size=48', 'size=140');
+            img.src = swatchUrl;
         }
     } else {
         const cacheKey = finishId + '_shp';
@@ -1105,11 +1654,6 @@ function showSwatchHoverPopup(el) {
             _shpPreviewCache[cacheKey] = pctx.getImageData(0, 0, 140, 140);
         }
     }
-
-    // Lookup finish info
-    const finish = BASES.find(f => f.id === finishId)
-        || PATTERNS.find(f => f.id === finishId)
-        || MONOLITHICS.find(f => f.id === finishId);
 
     nameEl.textContent = finish ? finish.name : finishId;
     descEl.textContent = el.getAttribute('data-desc') || (finish ? finish.desc : '');
@@ -1151,7 +1695,12 @@ document.addEventListener('mouseenter', function (e) {
     if (!e.target || typeof e.target.closest !== 'function') return;
     const item = e.target.closest('.swatch-item[data-finish-id]');
     if (item && item.closest('#swatchPopupGrid')) {
-        showSwatchHoverPopup(item);
+        // [2026-08-06 owner: "there's STILL that instant little popup"] This
+        // 140x140 popup fired with NO delay on every card mouseenter — the
+        // second hover surface (the 2026-08-03 note flagged the same recurring
+        // class). The finish grid is click-to-enlarge now: NO hover popups.
+        // The live-mode on-car Stage paint below stays — it is not a popup.
+        if (typeof previewFinishOnStage === 'function') previewFinishOnStage(item);
     }
 }, true);
 
@@ -1159,7 +1708,12 @@ document.addEventListener('mouseleave', function (e) {
     if (!e.target || typeof e.target.closest !== 'function') return;
     const item = e.target.closest('.swatch-item[data-finish-id]');
     if (item && item.closest('#swatchPopupGrid')) {
-        hideSwatchHoverPopup();
+        // SPB live-picker: revert the Stage to the committed zone when the cursor leaves
+        // a card (live mode only). Cheap no-op when not in live mode.
+        if (typeof window.isPickerLiveMode === 'function' && window.isPickerLiveMode()
+            && typeof revertSwatchStage === 'function') {
+            revertSwatchStage();
+        }
     }
 }, true);
 
@@ -1192,8 +1746,10 @@ const ShokkerAPI = {
                 return null;
             }
         }
-        // Fallback: file:// or dev mode - scan ports
-        for (let p = 5000; p <= 5010; p++) {
+        // Fallback: file:// or dev mode - scan the SPB ports first, then old dev ports.
+        const fallbackPorts = [59876, 59877, 59878, 59879, 60876, 60877, 60878, 60879, 61876];
+        for (let p = 5000; p <= 5010; p++) fallbackPorts.push(p);
+        for (const p of fallbackPorts) {
             try { // [2] try/catch around fetch
                 const url = `http://localhost:${p}/status`;
                 const res = await fetch(url, { signal: AbortSignal.timeout(API_TIMEOUT_PORT_SCAN_MS) }); // [44] named constant
@@ -1240,7 +1796,14 @@ const ShokkerAPI = {
             }
             const res = await fetch(this.baseUrl + '/status', { signal: AbortSignal.timeout(API_TIMEOUT_STATUS_MS) }); // [6] timeout
             const data = await safeParseJSON(res, 'status check'); // [14] safe JSON parse
+            const _wasOffline = !this.online;
             this.online = data.status === 'online';
+            // [2026-06-12 preview-deadlock fix] offline->online transition: the
+            // live preview was silently skipping while offline, so kick one
+            // fresh preview now that the server is reachable again.
+            if (_wasOffline && this.online && typeof window.spbKickLivePreview === 'function') {
+                try { window.spbKickLivePreview(); } catch (_) { /* never break status */ }
+            }
             this.config = data.config || null;
             this._lastStatusData = data;
             // Sync license state from server status
@@ -1257,6 +1820,41 @@ const ShokkerAPI = {
             this.online = false;
             this.config = null;
             this._portDiscovered = false; // Re-discover on next check
+            ConnectionStatus.set('reconnecting');
+            this.updateUI();
+            return null;
+        }
+    },
+
+    /**
+     * Cheap steady-state liveness probe. The full /status payload includes the
+     * entire finish/pattern catalog and is only needed for initial discovery or
+     * reconnect. Keeping background polls on /health avoids repeatedly parsing
+     * that catalog while the owner is driving in iRacing.
+     * @returns {Promise<Object|null>} Small health payload, or null if offline
+     */
+    async checkStatusLight() {
+        try {
+            if (!this._portDiscovered) return this.checkStatus();
+            const res = await fetch(this.baseUrl + '/health', {
+                signal: AbortSignal.timeout(API_TIMEOUT_LIGHT_MS),
+                cache: 'no-store'
+            });
+            const data = await safeParseJSON(res, 'health check');
+            const wasOffline = !this.online;
+            this.online = !!(res.ok && data && (data.ok || data.status === 'ok'));
+
+            // A successful reconnect needs one full refresh so config, license,
+            // version, and live-link state cannot remain stale.
+            if (wasOffline && this.online) return this.checkStatus();
+
+            ConnectionStatus.set(this.online ? 'online' : 'offline');
+            if (this.online) checkServerVersion(data);
+            this.updateUI();
+            return this.online ? data : null;
+        } catch (e) {
+            this.online = false;
+            this._portDiscovered = false;
             ConnectionStatus.set('reconnecting');
             this.updateUI();
             return null;
@@ -1320,7 +1918,18 @@ const ShokkerAPI = {
             if (extras.import_spec_map) body.import_spec_map = extras.import_spec_map;
             if (extras.paint_image_base64) body.paint_image_base64 = extras.paint_image_base64;
             if (extras.decal_mask_base64) body.decal_mask_base64 = extras.decal_mask_base64;
+            // SmartSep (flat-image protect, 2026-06-26): keep numbers & sponsors on render
+            // when the user enabled protection in the Layers-column Smart Separate panel.
+            // Only fills in when nothing else already set a decal mask (won't clobber fleet/season).
+            try {
+                if (!body.decal_mask_base64 && window.SmartSep && typeof window.SmartSep.renderPayload === 'function') {
+                    var _ssp = window.SmartSep.renderPayload();
+                    if (_ssp && _ssp.decal_mask_base64) body.decal_mask_base64 = _ssp.decal_mask_base64;
+                }
+            } catch (_ssErr) {}
             if (extras.decal_spec_finishes && extras.decal_spec_finishes.length) body.decal_spec_finishes = extras.decal_spec_finishes;
+            if (extras.stamp_image_base64) body.stamp_image_base64 = extras.stamp_image_base64;
+            if (extras.stamp_spec_finish) body.stamp_spec_finish = extras.stamp_spec_finish;
         }
         this.resetStatusInterval(); // Reset polling backoff on every render
         let renderSignal = this._renderAbort ? this._renderAbort.signal : undefined;
@@ -1363,6 +1972,27 @@ const ShokkerAPI = {
     },
 
     /**
+     * SHOKKE Spec Sculpt — JSON ``paint_file`` path (same as Source Paint on desktop).
+     * @param {Object} body — paint_file, seed, chromatic_shift, iracing_id, use_custom_number,
+     *   output_dir, live_link, deploy_car_folder (optional iRacing car folder basename).
+     */
+    async specSculptGenerate(body) {
+        const res = await fetch(this.baseUrl + '/api/spec-sculpt/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body || {}),
+            signal: typeof AbortSignal !== 'undefined' && AbortSignal.timeout
+                ? AbortSignal.timeout(API_TIMEOUT_GENERAL_MS)
+                : undefined,
+        });
+        const data = await safeParseJSON(res, 'spec-sculpt');
+        if (!res.ok && !data.error) {
+            data.error = `Server returned HTTP ${res.status}: ${res.statusText || 'unknown'}`;
+        }
+        return data;
+    },
+
+    /**
      * Export current design to Photoshop exchange format. // [50]
      * @param {string} carFileName - Name for the exported car file
      * @param {string} exchangeFolder - Path to the exchange directory
@@ -1385,7 +2015,18 @@ const ShokkerAPI = {
             if (extras.import_spec_map) body.import_spec_map = extras.import_spec_map;
             if (extras.paint_image_base64) body.paint_image_base64 = extras.paint_image_base64;
             if (extras.decal_mask_base64) body.decal_mask_base64 = extras.decal_mask_base64;
+            // SmartSep (flat-image protect, 2026-06-26): keep numbers & sponsors on render
+            // when the user enabled protection in the Layers-column Smart Separate panel.
+            // Only fills in when nothing else already set a decal mask (won't clobber fleet/season).
+            try {
+                if (!body.decal_mask_base64 && window.SmartSep && typeof window.SmartSep.renderPayload === 'function') {
+                    var _ssp = window.SmartSep.renderPayload();
+                    if (_ssp && _ssp.decal_mask_base64) body.decal_mask_base64 = _ssp.decal_mask_base64;
+                }
+            } catch (_ssErr) {}
             if (extras.decal_spec_finishes && extras.decal_spec_finishes.length) body.decal_spec_finishes = extras.decal_spec_finishes;
+            if (extras.stamp_image_base64) body.stamp_image_base64 = extras.stamp_image_base64;
+            if (extras.stamp_spec_finish) body.stamp_spec_finish = extras.stamp_spec_finish;
         }
         try { // [5] try/catch around fetch
             const res = await fetch(this.baseUrl + '/api/export-to-photoshop', {
@@ -1468,7 +2109,7 @@ const ShokkerAPI = {
         const llRow = document.getElementById('liveLinkRow');
         if (dot) {
             dot.className = 'server-status ' + (this.online ? 'online' : 'offline');
-            dot.title = this.online ? 'Server online' : 'Server offline - start server.py';
+            dot.title = this.online ? 'Server online' : 'Engine offline - restarting automatically';
         }
         if (btn) {
             btn.textContent = this.online ? 'RENDER' : 'RENDER (Offline)';
@@ -1486,7 +2127,10 @@ const ShokkerAPI = {
         // Sync car file naming checkbox from saved config (only on first load, not every poll)
         if (this.config && !this._customNumberSynced) {
             const cnCb = document.getElementById('useCustomNumberCheckbox');
-            if (cnCb) { cnCb.checked = this.config.use_custom_number !== false; this._customNumberSynced = true; }
+            if (cnCb && typeof this.config.use_custom_number === 'boolean') { cnCb.checked = this.config.use_custom_number; this._customNumberSynced = true; } // 2026-10-02: an older server never sent the field, and `undefined !== false` forced Custom Number ON at every launch (sim-stamped users silently rendered car_num_<id>.tga)
+            // SPB-SIMPLIFY-2026-07-18: the header's mutually-exclusive twin (Sim-Stamped Number)
+            const simCb = document.getElementById('useSimStampedCheckbox');
+            if (simCb && cnCb) simCb.checked = !cnCb.checked;
         }
     },
 
@@ -1495,7 +2139,7 @@ const ShokkerAPI = {
         this._statusInterval = POLL_INITIAL_INTERVAL_MS; // [45] named constant
         this.checkStatus();
         const statusPoll = () => {
-            this.checkStatus().then(() => {
+            this.checkStatusLight().then(() => {
                 // Slow down polling when idle (no recent renders)
                 this._statusInterval = Math.min(this._statusInterval * POLL_BACKOFF_FACTOR, POLL_MAX_INTERVAL_MS); // [45] named constants
                 setTimeout(statusPoll, this._statusInterval);
@@ -1518,7 +2162,7 @@ const ShokkerAPI = {
  * Shows confirmation dialog before proceeding.
  */
 async function cleanupOldRenders() {
-    if (!ShokkerAPI.online) { showToast('Server is offline! Start server.py first.', true); return; } // [38] specific error
+    if (!ShokkerAPI.online) { showToast(SPB_ENGINE_OFFLINE_MSG, true); return; } // [38] specific error
     if (!confirm('Delete ALL old render job folders from output/? This frees disk space but removes cached render results.')) return;
     try {
         const res = await fetch(ShokkerAPI.baseUrl + '/cleanup', {
@@ -1713,7 +2357,10 @@ function toggleFleetMode() {
     fleetModeActive = false;
     const panel = document.getElementById('fleetPanel');
     const btn = document.getElementById('btnFleetToggle');
-    if (panel) panel.style.display = 'none';
+    if (panel) {
+        panel.style.display = 'none';
+        panel.style.marginBottom = '';
+    }
     if (btn) {
         btn.style.background = 'transparent';
         btn.textContent = 'Fleet Mode';
@@ -1764,7 +2411,7 @@ function renderFleetList() {
 async function doFleetRender() {
     _showRetiredBatchModeToast('Fleet mode');
     return;
-    if (!ShokkerAPI.online) { showToast('Server offline! Start server.py first.', true); return; } // [38] specific
+    if (!ShokkerAPI.online) { showToast(SPB_ENGINE_OFFLINE_MSG, true); return; } // [38] specific
     if (fleetCars.length === 0) { showToast('Add at least one car to the fleet!', true); return; }
 
     // BUG #66 (Neidhart, HIGH): pre-fix, fleet loop called ShokkerAPI.render
@@ -1804,30 +2451,38 @@ async function doFleetRender() {
     if (progress) progress.style.display = 'block'; // [55] null check
     if (results) results.innerHTML = ''; // [55] null check
 
-    const validZones = zones.filter((z, i) => !(typeof _isSuppressedLegacyZone === 'function' && _isSuppressedLegacyZone(z, i)) && !z.muted && _zoneHasRenderableMaterial(z) && (z.color !== null || z.colorMode === 'multi' || (z.regionMask && z.regionMask.some(v => v > 0))));
+    const validZones = zones.filter((z, i) => !(typeof _isSuppressedLegacyZone === 'function' && _isSuppressedLegacyZone(z, i)) && !z.muted && _zoneHasRenderableMaterial(z) && (z.color !== null || z.colorMode === 'multi' || (_renderMaskHasPixels(z.regionMask))));
     if (validZones.length === 0) { showToast('Set up zones first!', true); btn.disabled = false; progress.style.display = 'none'; return; }
 
     const serverZones = validZones.map(z => {
         const zoneObj = { name: z.name, color: formatColorForServer(z.color, z), intensity: z.intensity };
+        _applyPatternMaterialControls(zoneObj, z);
         _applyCustomIntensity(zoneObj, z);
+        _applyZoneMaterialStack(zoneObj, z);
         if ((z.base && z.pattern && z.pattern !== 'none') || (z.finish && z.pattern && z.pattern !== 'none')) zoneObj.pattern_intensity = String(z.patternIntensity ?? '100');
         if (z.base) { zoneObj.base = z.base; zoneObj.pattern = z.pattern || 'none'; if (z.scale && z.scale !== 1.0) zoneObj.scale = z.scale; if (z.rotation && z.rotation !== 0) zoneObj.rotation = z.rotation; if (z.baseRotation && z.baseRotation !== 0) zoneObj.base_rotation = z.baseRotation; zoneObj.pattern_opacity = (z.patternOpacity ?? 100) / 100; { const _ps = _mapPatternStack(z.patternStack); if (_ps) zoneObj.pattern_stack = _ps; } } else if (z.finish) { zoneObj.finish = z.finish; const _fr = z.baseRotation || z.rotation || 0; if (_fr && _fr !== 0) zoneObj.rotation = _fr; const _fc = _resolveFinishColors(z.finish); if (_fc) zoneObj.finish_colors = _fc; if (z.pattern && z.pattern !== 'none') { zoneObj.pattern = z.pattern; if (z.scale && z.scale !== 1.0) zoneObj.scale = z.scale; zoneObj.pattern_opacity = (z.patternOpacity ?? 100) / 100; } { const _ps = _mapPatternStack(z.patternStack); if (_ps) zoneObj.pattern_stack = _ps; } }
         if (z.baseScale && z.baseScale !== 1.0) zoneObj.base_scale = z.baseScale;
         if (z.baseStrength != null && z.baseStrength !== 1) zoneObj.base_strength = Number(z.baseStrength);
-        if (z.baseSpecStrength != null && z.baseSpecStrength !== 1) zoneObj.base_spec_strength = Number(z.baseSpecStrength);
+        if (z.baseSpecStrength != null) zoneObj.base_spec_strength = Number(z.baseSpecStrength);
         if (z.baseSpecBlendMode && z.baseSpecBlendMode !== 'normal') zoneObj.base_spec_blend_mode = z.baseSpecBlendMode;
+        if (z.specShiftR || z.specShiftG || z.specShiftB) zoneObj.spec_channel_shift = [Number(z.specShiftR) || 0, Number(z.specShiftG) || 0, Number(z.specShiftB) || 0];
+        _applySpecMaterialRemap(zoneObj, z);
+        _applySpecMaterialOverride(zoneObj, z);
+        _applySpecLightingMask(zoneObj, z);
         // BOIL THE OCEAN drift hunt #4: base color mode header → single helper.
         _applyBaseColorMode(zoneObj, z);
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) zoneObj.pattern_spec_mult = Number(z.patternSpecMult ?? 1);
         if (z.patternStrengthMapEnabled && z.patternStrengthMap && typeof encodeStrengthMapRLE === 'function') { zoneObj.pattern_strength_map = encodeStrengthMapRLE(z.patternStrengthMap); }
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) { zoneObj.pattern_offset_x = Math.max(0, Math.min(1, Number(z.patternOffsetX ?? 0.5))); zoneObj.pattern_offset_y = Math.max(0, Math.min(1, Number(z.patternOffsetY ?? 0.5))); zoneObj.pattern_flip_h = !!z.patternFlipH; zoneObj.pattern_flip_v = !!z.patternFlipV; }
-        if (z.patternPlacement === 'fit' || z.patternFitZone) zoneObj.pattern_fit_zone = true;
-        if (z.hardEdge) zoneObj.hard_edge = true;
+        if (z.patternPlacement === 'fit' || z.patternFitZone || _zoneShouldFitIntoApplyArea(z)) zoneObj.pattern_fit_zone = true;
+        if (z.hardEdge !== false) zoneObj.hard_edge = true;  // [SPB 2026-06-02 owner] hard edge is the DEFAULT; only an explicit uncheck (false) sends soft
         if (z.patternPlacement === 'manual') zoneObj.pattern_manual = true;
         if (z.base || z.finish) { zoneObj.base_offset_x = Math.max(0, Math.min(1, Number(z.baseOffsetX ?? 0.5))); zoneObj.base_offset_y = Math.max(0, Math.min(1, Number(z.baseOffsetY ?? 0.5))); zoneObj.base_rotation = Number(z.baseRotation ?? 0); zoneObj.base_flip_h = !!z.baseFlipH; zoneObj.base_flip_v = !!z.baseFlipV; }
+        { const _sr = Number(z.specRotation ?? 0); const _ss = (window._spbResolveSpecScale ? window._spbResolveSpecScale(z) : Number(z.specScale ?? z.baseScale ?? 1)); if (_sr !== 0) zoneObj.spec_rotation = _sr; if (_ss !== 1 || (window._spbSpecIndependent && window._spbSpecIndependent(z))) zoneObj.spec_scale = _ss; }
         if (z.wear && z.wear > 0) zoneObj.wear_level = z.wear;
         // BOIL THE OCEAN drift hunt #5: 5-tier spec_pattern_stack loop → single helper.
         _applyAllSpecPatternStacks(zoneObj, z);
+        window.SPBZoneMaterialInstancePayload?.apply(zoneObj, z);
         // v6.0 advanced finish params
         if ((z.ccQuality ?? 100) !== 100) zoneObj.cc_quality = (z.ccQuality ?? 100) / 100;
         _applyBlendBaseOverlay(zoneObj, z);
@@ -1845,35 +2500,43 @@ async function doFleetRender() {
         // dangling source → empty all-zero mask + console.warn + throttled
         // toast keyed on zone name). Pinned by
         // tests/test_regression_fleet_render_restriction_mask_parity.py.
-        const hasSpatialRefinement = z.spatialMask && z.spatialMask.some(v => v > 0);
+        _encodeZoneApplyMasks(zoneObj, z);
+        const hasSpatialRefinement = _renderMaskHasPixels(z.spatialMask);
         const shouldPriorityOverride = !!(
             hasSpatialRefinement &&
             typeof window !== 'undefined' &&
             typeof window._zoneShouldRequestPriorityOverride === 'function' &&
             window._zoneShouldRequestPriorityOverride(z)
         );
-        if (!hasSpatialRefinement && z.regionMask && z.regionMask.some(v => v > 0)) {
-            const pc = document.getElementById('paintCanvas');
-            if (pc && typeof encodeRegionMaskRLE === 'function') {
-                zoneObj.region_mask = encodeRegionMaskRLE(z.regionMask, pc.width, pc.height);
-            }
-        }
-        if (hasSpatialRefinement) {
-            const pc = document.getElementById('paintCanvas');
-            if (pc && typeof encodeRegionMaskRLE === 'function') {
-                zoneObj.spatial_mask = encodeRegionMaskRLE(z.spatialMask, pc.width, pc.height);
-            }
-        }
         if (shouldPriorityOverride) zoneObj.priority_override = true;
         // Source-layer restriction (same fail-closed contract as doRender,
         // doSeasonRender, and PS export: empty all-zero mask + console.warn
         // + one-shot user toast keyed on zone name).
-        if (z.sourceLayer && typeof _psdLayers !== 'undefined' && typeof encodeRegionMaskRLE === 'function') {
-            const srcLayer = _psdLayers.find(l => l.id === z.sourceLayer);
+        if ((z.sourceLayer || (Array.isArray(z.sourceLayers) && z.sourceLayers.length)) && typeof _psdLayers !== 'undefined' && typeof encodeRegionMaskRLE === 'function') {
+            // [SPB-MULTILAYER 2026-08-21] fail-closed union across the restricted set.
+            const _slu = (typeof window.getZoneSourceLayersUnionMask === 'function')
+                ? window.getZoneSourceLayersUnionMask(z, (document.getElementById('paintCanvas')?.width || 2048), (document.getElementById('paintCanvas')?.height || 2048))
+                : null;
+            const srcLayer = _slu ? _slu.firstLayer : _psdLayers.find(l => l.id === z.sourceLayer);
             const pc = document.getElementById('paintCanvas');
             const w = pc?.width || 2048;
             const h = pc?.height || 2048;
-            if (!srcLayer) {
+            _attachSourceLayerCacheHints(zoneObj, z, srcLayer, w, h);
+            // [ULTRACODE 2026-08-22 synthesis #1+#6] union first (a dangling
+            // ids[0] must not swallow a SURVIVING union of sibling layers —
+            // doRender's structure is the reference), then fail CLOSED on any
+            // unresolvable restriction (the old hiddenCount>0 gate let a
+            // hidden PARENT GROUP / img-less layer / boot race ship NO mask =
+            // the zone painted the whole car). Legacy single-layer fallback
+            // only when no union machinery was involved at all.
+            if (_slu && _slu.union) {
+                zoneObj.source_layer_mask = encodeRegionMaskRLE(_slu.union, w, h);
+            } else if (_slu && _slu.requested > 0) {
+                zoneObj.source_layer_mask = encodeRegionMaskRLE(new Uint8Array(w * h), w, h);
+                if (_slu.hiddenCount > 0) {
+                    try { if (typeof window._spbHiddenSourceToast === 'function') window._spbHiddenSourceToast(z, _slu); } catch (_) {}
+                }
+            } else if (!srcLayer) {
                 try {
                     console.warn('[SPB][source_layer] zone "%s" references missing layer "%s" — emitting empty mask (zone will paint nothing until source is restored or sourceLayer is cleared)',
                         z.name || '?', z.sourceLayer);
@@ -1986,7 +2649,10 @@ function toggleSeasonMode() {
     seasonModeActive = false;
     const panel = document.getElementById('seasonPanel');
     const btn = document.getElementById('btnSeasonToggle');
-    if (panel) panel.style.display = 'none';
+    if (panel) {
+        panel.style.display = 'none';
+        panel.style.marginBottom = '';
+    }
     if (btn) {
         btn.style.background = 'transparent';
         btn.textContent = 'Season Mode';
@@ -2040,7 +2706,7 @@ function quickFillSeasonWear() {
 async function doSeasonRender() {
     _showRetiredBatchModeToast('Season mode');
     return;
-    if (!ShokkerAPI.online) { showToast('Server offline! Start server.py first.', true); return; } // [38] specific
+    if (!ShokkerAPI.online) { showToast(SPB_ENGINE_OFFLINE_MSG, true); return; } // [38] specific
     if (seasonJobs.length === 0) { showToast('Add at least one race!', true); return; }
 
     const paintFile = document.getElementById('paintFile')?.value.trim();
@@ -2054,30 +2720,38 @@ async function doSeasonRender() {
     if (progress) progress.style.display = 'block'; // [55] null check
     if (results) results.innerHTML = ''; // [55] null check
 
-    const validZones = zones.filter((z, i) => !(typeof _isSuppressedLegacyZone === 'function' && _isSuppressedLegacyZone(z, i)) && !z.muted && _zoneHasRenderableMaterial(z) && (z.color !== null || z.colorMode === 'multi' || (z.regionMask && z.regionMask.some(v => v > 0))));
+    const validZones = zones.filter((z, i) => !(typeof _isSuppressedLegacyZone === 'function' && _isSuppressedLegacyZone(z, i)) && !z.muted && _zoneHasRenderableMaterial(z) && (z.color !== null || z.colorMode === 'multi' || (_renderMaskHasPixels(z.regionMask))));
     if (validZones.length === 0) { showToast('Set up zones first!', true); if (btn) btn.disabled = false; if (progress) progress.style.display = 'none'; return; } // [55] null checks
 
     const serverZones = validZones.map(z => {
         const zoneObj = { name: z.name, color: formatColorForServer(z.color, z), intensity: z.intensity };
+        _applyPatternMaterialControls(zoneObj, z);
         _applyCustomIntensity(zoneObj, z);
+        _applyZoneMaterialStack(zoneObj, z);
         if ((z.base && z.pattern && z.pattern !== 'none') || (z.finish && z.pattern && z.pattern !== 'none')) zoneObj.pattern_intensity = String(z.patternIntensity ?? '100');
         if (z.base) { zoneObj.base = z.base; zoneObj.pattern = z.pattern || 'none'; if (z.scale && z.scale !== 1.0) zoneObj.scale = z.scale; if (z.rotation && z.rotation !== 0) zoneObj.rotation = z.rotation; if (z.baseRotation && z.baseRotation !== 0) zoneObj.base_rotation = z.baseRotation; zoneObj.pattern_opacity = (z.patternOpacity ?? 100) / 100; { const _ps = _mapPatternStack(z.patternStack); if (_ps) zoneObj.pattern_stack = _ps; } } else if (z.finish) { zoneObj.finish = z.finish; const _fr = z.baseRotation || z.rotation || 0; if (_fr && _fr !== 0) zoneObj.rotation = _fr; const _fc = _resolveFinishColors(z.finish); if (_fc) zoneObj.finish_colors = _fc; if (z.pattern && z.pattern !== 'none') { zoneObj.pattern = z.pattern; if (z.scale && z.scale !== 1.0) zoneObj.scale = z.scale; zoneObj.pattern_opacity = (z.patternOpacity ?? 100) / 100; } { const _ps = _mapPatternStack(z.patternStack); if (_ps) zoneObj.pattern_stack = _ps; } }
         if (z.baseScale && z.baseScale !== 1.0) zoneObj.base_scale = z.baseScale;
         if (z.baseStrength != null && z.baseStrength !== 1) zoneObj.base_strength = Number(z.baseStrength);
-        if (z.baseSpecStrength != null && z.baseSpecStrength !== 1) zoneObj.base_spec_strength = Number(z.baseSpecStrength);
+        if (z.baseSpecStrength != null) zoneObj.base_spec_strength = Number(z.baseSpecStrength);
         if (z.baseSpecBlendMode && z.baseSpecBlendMode !== 'normal') zoneObj.base_spec_blend_mode = z.baseSpecBlendMode;
+        if (z.specShiftR || z.specShiftG || z.specShiftB) zoneObj.spec_channel_shift = [Number(z.specShiftR) || 0, Number(z.specShiftG) || 0, Number(z.specShiftB) || 0];
+        _applySpecMaterialRemap(zoneObj, z);
+        _applySpecMaterialOverride(zoneObj, z);
+        _applySpecLightingMask(zoneObj, z);
         // BOIL THE OCEAN drift hunt #4: base color mode header → single helper.
         _applyBaseColorMode(zoneObj, z);
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) zoneObj.pattern_spec_mult = Number(z.patternSpecMult ?? 1);
         if (z.patternStrengthMapEnabled && z.patternStrengthMap && typeof encodeStrengthMapRLE === 'function') { zoneObj.pattern_strength_map = encodeStrengthMapRLE(z.patternStrengthMap); }
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) { zoneObj.pattern_offset_x = Math.max(0, Math.min(1, Number(z.patternOffsetX ?? 0.5))); zoneObj.pattern_offset_y = Math.max(0, Math.min(1, Number(z.patternOffsetY ?? 0.5))); zoneObj.pattern_flip_h = !!z.patternFlipH; zoneObj.pattern_flip_v = !!z.patternFlipV; }
-        if (z.patternPlacement === 'fit' || z.patternFitZone) zoneObj.pattern_fit_zone = true;
-        if (z.hardEdge) zoneObj.hard_edge = true;
+        if (z.patternPlacement === 'fit' || z.patternFitZone || _zoneShouldFitIntoApplyArea(z)) zoneObj.pattern_fit_zone = true;
+        if (z.hardEdge !== false) zoneObj.hard_edge = true;  // [SPB 2026-06-02 owner] hard edge is the DEFAULT; only an explicit uncheck (false) sends soft
         if (z.patternPlacement === 'manual') zoneObj.pattern_manual = true;
         if (z.base || z.finish) { zoneObj.base_offset_x = Math.max(0, Math.min(1, Number(z.baseOffsetX ?? 0.5))); zoneObj.base_offset_y = Math.max(0, Math.min(1, Number(z.baseOffsetY ?? 0.5))); zoneObj.base_rotation = Number(z.baseRotation ?? 0); zoneObj.base_flip_h = !!z.baseFlipH; zoneObj.base_flip_v = !!z.baseFlipV; }
+        { const _sr = Number(z.specRotation ?? 0); const _ss = (window._spbResolveSpecScale ? window._spbResolveSpecScale(z) : Number(z.specScale ?? z.baseScale ?? 1)); if (_sr !== 0) zoneObj.spec_rotation = _sr; if (_ss !== 1 || (window._spbSpecIndependent && window._spbSpecIndependent(z))) zoneObj.spec_scale = _ss; }
         if (z.wear && z.wear > 0) zoneObj.wear_level = z.wear;
         // BOIL THE OCEAN drift hunt #5: 5-tier spec_pattern_stack loop → single helper.
         _applyAllSpecPatternStacks(zoneObj, z);
+        window.SPBZoneMaterialInstancePayload?.apply(zoneObj, z);
         // v6.0 advanced finish params
         if ((z.ccQuality ?? 100) !== 100) zoneObj.cc_quality = (z.ccQuality ?? 100) / 100;
         _applyBlendBaseOverlay(zoneObj, z);
@@ -2090,35 +2764,31 @@ async function doSeasonRender() {
         // finish across the WHOLE car body instead of restricting to the
         // mask. The other 2 builders (doRender + PS export) emit these;
         // this was the asymmetric drop. Now mirrors their behavior.
-        const hasSpatialRefinement = z.spatialMask && z.spatialMask.some(v => v > 0);
+        _encodeZoneApplyMasks(zoneObj, z);
+        const hasSpatialRefinement = _renderMaskHasPixels(z.spatialMask);
         const shouldPriorityOverride = !!(
             hasSpatialRefinement &&
             typeof window !== 'undefined' &&
             typeof window._zoneShouldRequestPriorityOverride === 'function' &&
             window._zoneShouldRequestPriorityOverride(z)
         );
-        if (!hasSpatialRefinement && z.regionMask && z.regionMask.some(v => v > 0)) {
-            const pc = document.getElementById('paintCanvas');
-            if (pc && typeof encodeRegionMaskRLE === 'function') {
-                zoneObj.region_mask = encodeRegionMaskRLE(z.regionMask, pc.width, pc.height);
-            }
-        }
-        if (hasSpatialRefinement) {
-            const pc = document.getElementById('paintCanvas');
-            if (pc && typeof encodeRegionMaskRLE === 'function') {
-                zoneObj.spatial_mask = encodeRegionMaskRLE(z.spatialMask, pc.width, pc.height);
-            }
-        }
         if (shouldPriorityOverride) zoneObj.priority_override = true;
         // Source-layer restriction (same fail-closed contract as doRender
         // and PS export: empty all-zero mask + console.warn + one-shot
         // user toast keyed on zone name).
-        if (z.sourceLayer && typeof _psdLayers !== 'undefined' && typeof encodeRegionMaskRLE === 'function') {
-            const srcLayer = _psdLayers.find(l => l.id === z.sourceLayer);
+        if ((z.sourceLayer || (Array.isArray(z.sourceLayers) && z.sourceLayers.length)) && typeof _psdLayers !== 'undefined' && typeof encodeRegionMaskRLE === 'function') {
+            // [SPB-MULTILAYER 2026-08-21] fail-closed union across the restricted set.
+            const _slu = (typeof window.getZoneSourceLayersUnionMask === 'function')
+                ? window.getZoneSourceLayersUnionMask(z, (document.getElementById('paintCanvas')?.width || 2048), (document.getElementById('paintCanvas')?.height || 2048))
+                : null;
+            const srcLayer = _slu ? _slu.firstLayer : _psdLayers.find(l => l.id === z.sourceLayer);
             const pc = document.getElementById('paintCanvas');
             const w = pc?.width || 2048;
             const h = pc?.height || 2048;
-            if (!srcLayer) {
+            _attachSourceLayerCacheHints(zoneObj, z, srcLayer, w, h);
+            // [ULTRACODE 2026-08-22 synthesis #6] a dangling ids[0] must not
+            // swallow a SURVIVING union of sibling layers.
+            if (!srcLayer && !(_slu && _slu.union)) {
                 try {
                     console.warn('[SPB][source_layer] zone "%s" references missing layer "%s" — emitting empty mask (zone will paint nothing until source is restored or sourceLayer is cleared)',
                         z.name || '?', z.sourceLayer);
@@ -2135,6 +2805,16 @@ async function doSeasonRender() {
                 } catch (_) {}
                 const _emptyMask = new Uint8Array(w * h);
                 zoneObj.source_layer_mask = encodeRegionMaskRLE(_emptyMask, w, h);
+            } else if (_slu && _slu.union) {
+                zoneObj.source_layer_mask = encodeRegionMaskRLE(_slu.union, w, h);
+            } else if (_slu && _slu.requested > 0) {
+                // [ULTRACODE 2026-08-22 synthesis #1] fail CLOSED on ANY
+                // unresolvable restriction (hidden group / img-less / boot
+                // race) — the hiddenCount>0 gate let those ship NO mask.
+                zoneObj.source_layer_mask = encodeRegionMaskRLE(new Uint8Array(w * h), w, h);
+                if (_slu.hiddenCount > 0) {
+                    try { if (typeof window._spbHiddenSourceToast === 'function') window._spbHiddenSourceToast(z, _slu); } catch (_) {}
+                }
             } else if (typeof window.getLayerVisibleContributionMask === 'function') {
                 const visibleMask = window.getLayerVisibleContributionMask(srcLayer, w, h);
                 if (visibleMask) zoneObj.source_layer_mask = encodeRegionMaskRLE(visibleMask, w, h);
@@ -2231,7 +2911,7 @@ async function doSeasonRender() {
  */
 async function setOutputToIracingFolder() {
     if (!ShokkerAPI.online) {
-        showToast('Server offline - start server.py to use iRacing folder lookup', true);
+        showToast(SPB_ENGINE_OFFLINE_MSG, true);
         return;
     }
     try {
@@ -2283,7 +2963,7 @@ function safeDoRender() {
                     showToast('Server is back! Starting render...');
                     doRender();
                 } else {
-                    showToast('Server is offline. Start server.py first!', true);
+                    showToast(SPB_ENGINE_OFFLINE_MSG, true);
                 }
             });
             return;
@@ -2302,17 +2982,33 @@ function safeDoRender() {
  * @returns {Array} Array of server-compatible zone configuration objects
  */
 function buildServerZonesForRender(zones) {
-    const validZones = zones.filter((z, i) => !(typeof _isSuppressedLegacyZone === 'function' && _isSuppressedLegacyZone(z, i)) && !z.muted && _zoneHasRenderableMaterial(z) && (z.color !== null || z.colorMode === 'multi' || (z.regionMask && z.regionMask.some(v => v > 0))));
+    const validZones = (window.SPBStableZoneSeeds && Array.isArray(zones))
+        ? window.SPBStableZoneSeeds.prepare(zones, _isSuppressedLegacyZone, _zoneHasRenderableMaterial, _renderMaskHasPixels)
+        : zones.filter((z, i) => !(typeof _isSuppressedLegacyZone === 'function' && _isSuppressedLegacyZone(z, i)) && !z.muted && _zoneHasRenderableMaterial(z) && (z.color !== null || z.colorMode === 'multi' || (_renderMaskHasPixels(z.regionMask))));
+    // [RENDER-BUDGET 2026-10-04] one build = one layer state (this runs synchronously), so
+    // zones restricted to the SAME layer set get the same union mask, RLE and layer RGB.
+    // They used to be recomputed per zone: the owner's ARCA design ran toDataURL on the
+    // same 2048 canvas 3x (Spray Can left/right + hood) and the AI's per-part splits
+    // multiply that. Memoised per build, keyed by the exact ordered id list + canvas size;
+    // nothing outlives this call, so it can never serve stale layer pixels.
+    const _slBuildMemo = new Map();
     return validZones.map(z => {
         const zoneObj = {
             name: z.name,
             color: formatColorForServer(z.color, z),
             intensity: z.intensity,
         };
+        if (window.SPBStableZoneSeeds && window.SPBStableZoneSeeds.validIndex(z.renderSeedIndex)) {
+            zoneObj.render_seed_index = z.renderSeedIndex;
+        }
+        _applyPatternMaterialControls(zoneObj, z);
         const _primaryBaseId = z.base || (_zoneNeedsNeutralBaseAnchor(z) ? 'gloss' : null);
         const _hasPrimaryBase = !!_primaryBaseId;
-        const _hasRenderableMaterial = _hasPrimaryBase || !!z.finish;
+        const _hasImportedSpecSource = _zoneHasImportedSpecSource(z);
+        const _hasMaterialStack = _zoneHasMaterialStack(z);
+        const _hasRenderableMaterial = _hasPrimaryBase || !!z.finish || _hasImportedSpecSource || _hasMaterialStack;
         _applyCustomIntensity(zoneObj, z);
+        if (_hasMaterialStack) _applyZoneMaterialStack(zoneObj, z);
         if ((_hasPrimaryBase && z.pattern && z.pattern !== 'none') || (z.finish && z.pattern && z.pattern !== 'none')) {
             zoneObj.pattern_intensity = String(z.patternIntensity ?? '100');
         }
@@ -2348,10 +3044,15 @@ function buildServerZonesForRender(zones) {
             // Same drift fix in the finish branch.
             { const _ps = _mapPatternStack(z.patternStack); if (_ps) zoneObj.pattern_stack = _ps; }
         }
+        _applyZoneSpecSource(zoneObj, z);
         if (z.baseScale && z.baseScale !== 1.0) zoneObj.base_scale = z.baseScale;
         if (z.baseStrength != null && z.baseStrength !== 1) zoneObj.base_strength = Number(z.baseStrength);
-        if (z.baseSpecStrength != null && z.baseSpecStrength !== 1) zoneObj.base_spec_strength = Number(z.baseSpecStrength);
+        if (z.baseSpecStrength != null) zoneObj.base_spec_strength = Number(z.baseSpecStrength);
         if (z.baseSpecBlendMode && z.baseSpecBlendMode !== 'normal') zoneObj.base_spec_blend_mode = z.baseSpecBlendMode;
+        if (z.specShiftR || z.specShiftG || z.specShiftB) zoneObj.spec_channel_shift = [Number(z.specShiftR) || 0, Number(z.specShiftG) || 0, Number(z.specShiftB) || 0];
+        _applySpecMaterialRemap(zoneObj, z);
+        _applySpecMaterialOverride(zoneObj, z);
+        _applySpecLightingMask(zoneObj, z);
         // BOIL THE OCEAN drift hunt #4: base color mode header → single helper.
         _applyBaseColorMode(zoneObj, z);
         // [PERF] Only send non-default values to reduce JSON payload size
@@ -2368,11 +3069,25 @@ function buildServerZonesForRender(zones) {
             if (z.patternFlipH) zoneObj.pattern_flip_h = true;
             if (z.patternFlipV) zoneObj.pattern_flip_v = true;
         }
-        if (z.patternPlacement === 'fit' || z.patternFitZone) zoneObj.pattern_fit_zone = true;
-        if (z.hardEdge) zoneObj.hard_edge = true;
+        if (z.patternPlacement === 'fit' || z.patternFitZone || _zoneShouldFitIntoApplyArea(z)) zoneObj.pattern_fit_zone = true;
+        if (z.hardEdge !== false) zoneObj.hard_edge = true;  // [SPB 2026-06-02 owner] hard edge is the DEFAULT; only an explicit uncheck (false) sends soft
         if (z.patternPlacement === 'manual') zoneObj.pattern_manual = true;
-        if (z.sourceLayer && typeof _psdLayers !== 'undefined' && typeof encodeRegionMaskRLE === 'function') {
-            const srcLayer = _psdLayers.find(l => l.id === z.sourceLayer);
+        if ((z.sourceLayer || (Array.isArray(z.sourceLayers) && z.sourceLayers.length)) && typeof _psdLayers !== 'undefined' && typeof encodeRegionMaskRLE === 'function') {
+            // [SPB-MULTILAYER 2026-08-21] union of every restricted layer; the
+            // engine consumes only the mask, so it needs zero changes.
+            const _sluW = (document.getElementById('paintCanvas')?.width || 2048);
+            const _sluH = (document.getElementById('paintCanvas')?.height || 2048);
+            const _sluKey = (typeof window.zoneSourceLayerIds === 'function')
+                ? ('u|' + _sluW + 'x' + _sluH + '|' + window.zoneSourceLayerIds(z).map(String).join('\u0001'))
+                : null;
+            let _sluC = _sluKey ? _slBuildMemo.get(_sluKey) : undefined;
+            if (_sluC === undefined) {
+                _sluC = (typeof window.getZoneSourceLayersUnionMask === 'function')
+                    ? window.getZoneSourceLayersUnionMask(z, _sluW, _sluH)
+                    : null;
+                if (_sluKey) _slBuildMemo.set(_sluKey, _sluC);
+            }
+            const srcLayer = _sluC ? _sluC.firstLayer : _psdLayers.find(l => l.id === z.sourceLayer);
             // Codex HIGH (Workstream 12 #235 + Workstream 24 chaos #471) —
             // dangling source-layer reference. The user explicitly RESTRICTED
             // this zone to a layer; if the layer is gone, falling back to
@@ -2382,22 +3097,32 @@ function buildServerZonesForRender(zones) {
             const pc = document.getElementById('paintCanvas');
             const w = pc?.width || 2048;
             const h = pc?.height || 2048;
+            _attachSourceLayerCacheHints(zoneObj, z, srcLayer, w, h);
             if (!srcLayer) {
-                try {
-                    console.warn('[SPB][source_layer] zone "%s" references missing layer "%s" — emitting empty mask (zone will paint nothing until source is restored or sourceLayer is cleared)',
-                        z.name || '?', z.sourceLayer);
-                } catch (_) {}
-                // User-visible toast (throttled per zone via window state).
-                try {
-                    if (typeof window !== 'undefined') {
-                        window._SPB_DANGLING_SOURCE_TOASTED = window._SPB_DANGLING_SOURCE_TOASTED || {};
-                        const _key = (z.name || '?') + '|' + z.sourceLayer;
-                        if (!window._SPB_DANGLING_SOURCE_TOASTED[_key] && typeof showToast === 'function') {
-                            window._SPB_DANGLING_SOURCE_TOASTED[_key] = true;
-                            showToast(`Zone "${z.name || ''}" source layer is missing — painting nothing. Re-restrict or clear source.`, 'warn');
+                // Distinguish a GENUINE dangling reference from the PSD simply not having finished
+                // loading yet. On the example-car / PSD boot the first preview render can fire before
+                // _psdLayers is populated — the layer isn't "missing", it just isn't loaded yet, and the
+                // post-load re-render resolves it (verified 2026-06-01: all 5 example zones resolve once
+                // loaded, danglingCount=0). Only warn (+ toast) when the PSD IS loaded and the layer is
+                // still genuinely gone, so we keep the real dangling-ref diagnostic without boot spam.
+                const _psdReady = (typeof _psdLayersLoaded !== 'undefined' && _psdLayersLoaded) && _psdLayers.length > 0;
+                if (_psdReady) {
+                    try {
+                        console.warn('[SPB][source_layer] zone "%s" references missing layer "%s" — emitting empty mask (zone will paint nothing until source is restored or sourceLayer is cleared)',
+                            z.name || '?', z.sourceLayer);
+                    } catch (_) {}
+                    // User-visible toast (throttled per zone via window state).
+                    try {
+                        if (typeof window !== 'undefined') {
+                            window._SPB_DANGLING_SOURCE_TOASTED = window._SPB_DANGLING_SOURCE_TOASTED || {};
+                            const _key = (z.name || '?') + '|' + z.sourceLayer;
+                            if (!window._SPB_DANGLING_SOURCE_TOASTED[_key] && typeof showToast === 'function') {
+                                window._SPB_DANGLING_SOURCE_TOASTED[_key] = true;
+                                showToast(`Zone "${z.name || ''}" source layer is missing — painting nothing. Re-restrict or clear source.`, 'warn');
+                            }
                         }
-                    }
-                } catch (_) {}
+                    } catch (_) {}
+                }
                 // Empty all-zero mask = engine intersects to nothing = zone produces no pixels.
                 // Far safer than silently broadening the restriction.
                 const _emptyMask = new Uint8Array(w * h);
@@ -2405,11 +3130,36 @@ function buildServerZonesForRender(zones) {
                 // Do NOT send source_layer_rgb_png either — without a layer there's nothing to match against.
                 // Fall through past the RGB encoding block (next).
             }
-            const visibleMask = (srcLayer && typeof window.getLayerVisibleContributionMask === 'function')
-                ? window.getLayerVisibleContributionMask(srcLayer, w, h)
-                : null;
+            const visibleMask = (_sluC && _sluC.union)
+                ? _sluC.union
+                : ((_sluC && _sluC.requested > 0)
+                    ? null   // [A3] union path is authoritative; no single-layer fallback that would ignore visibility
+                    : ((srcLayer && typeof window.getLayerVisibleContributionMask === 'function')
+                        ? window.getLayerVisibleContributionMask(srcLayer, w, h)
+                        : null));
             if (visibleMask) {
-                zoneObj.source_layer_mask = encodeRegionMaskRLE(visibleMask, w, h);
+                // [RENDER-BUDGET 2026-10-04] same union array (memoised above) -> same RLE.
+                const _rleKey = (_sluC && _sluC.union === visibleMask && _sluKey) ? ('m|' + w + 'x' + h + '|' + _sluKey) : null;
+                let _rle = _rleKey ? _slBuildMemo.get(_rleKey) : undefined;
+                if (_rle === undefined) {
+                    _rle = encodeRegionMaskRLE(visibleMask, w, h);
+                    if (_rleKey) _slBuildMemo.set(_rleKey, _rle);
+                }
+                zoneObj.source_layer_mask = _rle;
+            } else if (_sluC && _sluC.requested > 0) {
+                // [ULTRACODE 2026-08-22 synthesis #1] FAIL CLOSED on ANY
+                // unresolvable restriction — the old condition required
+                // hiddenCount>0, so a restricted layer whose PARENT GROUP was
+                // hidden (canComposite false, l.visible still true), an
+                // img-less layer, or a pre-load boot race attached NO mask at
+                // all and the zone painted the ENTIRE CAR while the highlight
+                // showed nothing (render/UI inverted). Owner hit this by
+                // toggling "Turn Off Before Exporting TGA". Restricted +
+                // unresolvable = paint nothing, loudly.
+                zoneObj.source_layer_mask = encodeRegionMaskRLE(new Uint8Array(w * h), w, h);
+                if (_sluC.hiddenCount > 0) {
+                    try { if (typeof window._spbHiddenSourceToast === 'function') window._spbHiddenSourceToast(z, _sluC); } catch (_) {}
+                }
             }
             // TRUE layer-local color match: send the layer's own RGB so the
             // engine matches colors against the layer's unblended pixels
@@ -2417,14 +3167,29 @@ function buildServerZonesForRender(zones) {
             // composite-based matching if encoding fails or layer has no img.
             if (srcLayer && srcLayer.img) {
                 try {
-                    const lc = document.createElement('canvas');
-                    lc.width = w; lc.height = h;
-                    const lctx = lc.getContext('2d');
-                    const bx = Array.isArray(srcLayer.bbox) ? (srcLayer.bbox[0] || 0) : 0;
-                    const by = Array.isArray(srcLayer.bbox) ? (srcLayer.bbox[1] || 0) : 0;
-                    lctx.clearRect(0, 0, w, h);
-                    lctx.drawImage(srcLayer.img, bx, by);
-                    zoneObj.source_layer_rgb_png = lc.toDataURL('image/png').split(',', 2)[1];
+                    // [SPB-MULTILAYER 2026-08-21] colour-match against ALL restricted
+                    // layers' unblended pixels, drawn bottom-to-top at their bboxes.
+                    const _rgbIds = (_sluC && _sluC.ids && _sluC.ids.length) ? _sluC.ids : [z.sourceLayer];
+                    // [ULTRACODE 2026-08-22 synthesis #6] hidden restricted
+                    // layers must not contribute colour-match pixels either.
+                    const _rgbLayers = _psdLayers.filter(l => l && _rgbIds.indexOf(l.id) > -1 && l.img && l.visible !== false);
+                    // [RENDER-BUDGET 2026-10-04] identical drawn layer list -> identical PNG: encode once per build.
+                    const _rgbKey = 'r|' + w + 'x' + h + '|' + _rgbLayers.map(l => String(l.id)).join('\u0001');
+                    let _rgbPng = _slBuildMemo.get(_rgbKey);
+                    if (_rgbPng === undefined) {
+                        const lc = document.createElement('canvas');
+                        lc.width = w; lc.height = h;
+                        const lctx = lc.getContext('2d');
+                        lctx.clearRect(0, 0, w, h);
+                        for (const _rl of _rgbLayers) {
+                            const bx = Array.isArray(_rl.bbox) ? (_rl.bbox[0] || 0) : 0;
+                            const by = Array.isArray(_rl.bbox) ? (_rl.bbox[1] || 0) : 0;
+                            lctx.drawImage(_rl.img, bx, by);
+                        }
+                        _rgbPng = lc.toDataURL('image/png').split(',', 2)[1];
+                        _slBuildMemo.set(_rgbKey, _rgbPng);
+                    }
+                    zoneObj.source_layer_rgb_png = _rgbPng;
                 } catch (_lrErr) { /* fall back to composite matching */ }
             }
             // Workstream 8 task #159: opt-in diagnostic for source-layer payload.
@@ -2463,9 +3228,14 @@ function buildServerZonesForRender(zones) {
             if (z.baseFlipH) zoneObj.base_flip_h = true;
             if (z.baseFlipV) zoneObj.base_flip_v = true;
         }
+        const _specRot = Number(z.specRotation ?? 0);
+        const _specScale = (window._spbResolveSpecScale ? window._spbResolveSpecScale(z) : Number(z.specScale ?? z.baseScale ?? 1));
+        if (_specRot !== 0) zoneObj.spec_rotation = _specRot;
+        if (_specScale !== 1 || (window._spbSpecIndependent && window._spbSpecIndependent(z))) zoneObj.spec_scale = _specScale;
         if (z.wear && z.wear > 0) zoneObj.wear_level = z.wear;
         // BOIL THE OCEAN drift hunt #5: 5-tier spec_pattern_stack loop → single helper.
         _applyAllSpecPatternStacks(zoneObj, z);
+        window.SPBZoneMaterialInstancePayload?.apply(zoneObj, z);
         if ((z.ccQuality ?? 100) !== 100) zoneObj.cc_quality = (z.ccQuality ?? 100) / 100;
         _applyBlendBaseOverlay(zoneObj, z);
         if (z.usePaintReactive && z.paintReactiveColor) {
@@ -2479,21 +3249,14 @@ function buildServerZonesForRender(zones) {
         // payloads to /export-to-photoshop than to /render. Helper enforces
         // single contract.
         _applyAllExtraBaseOverlays(zoneObj, z);
-        const hasSpatialRefinement = z.spatialMask && z.spatialMask.some(v => v > 0);
+        _encodeZoneApplyMasks(zoneObj, z);
+        const hasSpatialRefinement = _renderMaskHasPixels(z.spatialMask);
         const shouldPriorityOverride = !!(
             hasSpatialRefinement &&
             typeof window !== 'undefined' &&
             typeof window._zoneShouldRequestPriorityOverride === 'function' &&
             window._zoneShouldRequestPriorityOverride(z)
         );
-        if (!hasSpatialRefinement && z.regionMask && z.regionMask.some(v => v > 0)) {
-            const pc = document.getElementById('paintCanvas');
-            if (pc) zoneObj.region_mask = encodeRegionMaskRLE(z.regionMask, pc.width, pc.height);
-        }
-        if (hasSpatialRefinement) {
-            const pc = document.getElementById('paintCanvas');
-            if (pc) zoneObj.spatial_mask = encodeRegionMaskRLE(z.spatialMask, pc.width, pc.height);
-        }
         if (shouldPriorityOverride) zoneObj.priority_override = true;
         return zoneObj;
     });
@@ -2530,12 +3293,13 @@ function closeExportToPhotoshopModal() {
  * Sends zone data + optional decal/stamp overlays to the server.
  */
 async function doExportToPhotoshop() {
-    if (!ShokkerAPI.online) { showToast('Server is offline. Start server.py first.', true); return; }
+    if (!ShokkerAPI.online) { showToast(SPB_ENGINE_OFFLINE_MSG, true); return; }
     const carFileName = (document.getElementById('psExportCarFileName') || {}).value.trim();
     if (!carFileName) { showToast('Enter a car file name (e.g. DLM438-base-001).', true); return; }
     const exchangeFolder = (document.getElementById('psExportExchangeFolder') || {}).value.trim();
     const paintFile = (document.getElementById('paintFile') || {}).value.trim();
-    if (!paintFile) { showToast('Set the Source Paint path in the header bar first.', true); return; }
+    const hasLiveFlatSource = !!(typeof window !== 'undefined' && window._spbFlatPaintLiveSource);
+    if (!paintFile && !hasLiveFlatSource) { showToast('Set the Source Paint path in the header bar first.', true); return; }
 
     const serverZones = buildServerZonesForRender(typeof zones !== 'undefined' ? zones : []);
     const extras = {};
@@ -2565,6 +3329,19 @@ async function doExportToPhotoshop() {
         if (stampCanvas) {
             extras.stamp_image_base64 = await canvasToBase64Async(stampCanvas);
             extras.stamp_spec_finish = window.stampSpecFinish || 'gloss';
+        }
+    }
+
+    // Match Full Render: Change File/browser-selected flat images are live
+    // canvas sources, not trusted local paths. Export the visible canvas.
+    if (hasLiveFlatSource && !extras.paint_image_base64) {
+        const _flatPcExp = (typeof window !== 'undefined' && typeof window.buildLivePaintCompositeCanvas === 'function')
+            ? window.buildLivePaintCompositeCanvas()
+            : document.getElementById('paintCanvas');
+        if (_flatPcExp) {
+            extras.paint_image_base64 = await canvasToBase64Async(_flatPcExp);
+            extras.source_mode = 'live_flat_canvas';
+            console.log('[doExportToPhotoshop] Live flat image source: sending visible canvas as base64 paint', window._spbFlatPaintLiveSource);
         }
     }
 
@@ -2611,7 +3388,7 @@ async function doExportToPhotoshop() {
  * Loads the spec map from the exchange folder and triggers a preview render.
  */
 async function importSpecFromLastExport() {
-    if (!ShokkerAPI.online) { showToast('Server is offline. Start server.py first.', true); return; }
+    if (!ShokkerAPI.online) { showToast(SPB_ENGINE_OFFLINE_MSG, true); return; }
     var folder = (typeof localStorage !== 'undefined' && localStorage.getItem(PS_EXPORT_FOLDER_KEY)) || '';
     showToast('Loading spec from last PS export...');
     try {
@@ -2623,7 +3400,7 @@ async function importSpecFromLastExport() {
         });
         var data;
         try { data = await res.json(); } catch (e) {
-            showToast('Server returned invalid response. Restart the server after code changes.', true);
+            showToast('SPB returned an invalid response. Use Restart Server from the SPB tray after code changes.', true);
             return;
         }
         if (data.error) {
@@ -2632,6 +3409,7 @@ async function importSpecFromLastExport() {
             return;
         }
         if (typeof importedSpecMapPath !== 'undefined') importedSpecMapPath = data.temp_path;
+        try { if (typeof window !== 'undefined') window.importedSpecMapPath = data.temp_path; } catch (e) {}
         var status = document.getElementById('importSpecMapStatus');
         var label = data.source_file || 'spec from PS export';
         if (status && data.resolution) status.innerHTML = '<span style="color:var(--accent-green);font-weight:700;">&#10003; Spec active · Layer 0</span> — ' + label + ' (' + data.resolution[0] + '×' + data.resolution[1] + ')';
@@ -2649,8 +3427,29 @@ async function importSpecFromLastExport() {
  * displays results, and updates render history. Called by safeDoRender().
  */
 async function doRender() {
+    // SPB-93 09-08: keyboard/direct calls must also reject an unpublished source.
+    if (window.SPBRenderReadiness && !window.SPBRenderReadiness.allowRender()) return;
+    // [SPB DOUBLE-RENDER 2026-08-17] Front-door guard: a second click while a render is in
+    // flight used to run this whole function again — double timer start (the leaked-interval
+    // "RENDERING... 1786xxxxxx s" bug), double canvas serialization, and a second POST that
+    // ShokkerAPI's dedup rejected AFTER the damage. The visibly-busy button is now the truth:
+    // one render at a time, second click gets a toast instead of a broken session.
+    if (ShokkerAPI._renderInProgress) {
+        showToast('A render is already running — hang tight, it will finish on its own.', true);
+        return;
+    }
+    // Fast-double-click debounce: _renderInProgress is only set once the API call actually
+    // fires, and the canvas serialization before it can take a second or two — a rapid second
+    // click lands in that window. Time-based, so it can never stick "busy" after an early
+    // return the way a boolean flag could.
+    const _drNow = Date.now();
+    if (window._spbLastDoRenderAt && (_drNow - window._spbLastDoRenderAt) < 1500) {
+        return;
+    }
+    window._spbLastDoRenderAt = _drNow;
     console.log('[doRender] Starting render... baseUrl=' + ShokkerAPI.baseUrl + ' origin=' + window.location.origin + ' online=' + ShokkerAPI.online);
-    if (!ShokkerAPI.online) { showToast('Server is offline! Start server.py first.', true); return; }
+    _ensureRenderFloatVisible();
+    if (!ShokkerAPI.online) { showToast(SPB_ENGINE_OFFLINE_MSG, true); return; }
 
     // License gate - disabled for Alpha testing
     // if (!licenseActive) {
@@ -2664,17 +3463,61 @@ async function doRender() {
 
     const paintFile = document.getElementById('paintFile').value.trim();
     const iracingId = document.getElementById('iracingId').value.trim();
-    if (!paintFile) { showToast('Set the Source Paint path in the header bar!', true); return; }
+    let hasLiveFlatSource = !!(typeof window !== 'undefined' && window._spbFlatPaintLiveSource);
+    // Flat loads set _spbFlatPaintLiveSource so doRender ships canvas→base64. That is correct for
+    // browser-only picks, but when Source Paint is a real disk path and there are no PSD layers,
+    // full render must re-read paint_file on the server — otherwise external saves (Photoshop, etc.)
+    // update the TGA on disk while the canvas stays stale and iRacing gets old pixels.
+    const _diskPaintPath = paintFile && (paintFile.includes('/') || paintFile.includes('\\') || /^[a-zA-Z]:/.test(paintFile));
+    const _liveFlatSourceKind = (hasLiveFlatSource && typeof window !== 'undefined' && window._spbFlatPaintLiveSource)
+        ? String(window._spbFlatPaintLiveSource.source || '')
+        : '';
+    const _hasPsdLayers = (typeof _psdLayersLoaded !== 'undefined' && _psdLayersLoaded &&
+        typeof _psdLayers !== 'undefined' && _psdLayers.length > 0);
+    // If we have a real Source Paint path, prefer a fresh server disk read over stale in-memory
+    // flat canvas payloads (common after external Photoshop/TGA saves).
+    if (_diskPaintPath && /^(change-file|programmatic|shokk)/.test(_liveFlatSourceKind) && typeof window.clearFlatPaintLiveSource === 'function') {
+        window.clearFlatPaintLiveSource('full render prefers fresh disk paint_file');
+        hasLiveFlatSource = !!(typeof window !== 'undefined' && window._spbFlatPaintLiveSource);
+    }
+    if (!paintFile && !hasLiveFlatSource) { showToast('Set the Source Paint path in the header bar!', true); return; }
     // Quick check: warn if path looks like just a filename (no directory)
-    if (!paintFile.includes('/') && !paintFile.includes('\\')) {
+    if (paintFile && !hasLiveFlatSource && !paintFile.includes('/') && !paintFile.includes('\\')) {
         showToast('Source Paint needs a FULL path (e.g. C:\\Users\\You\\Documents\\iRacing\\paint\\carname\\car_num_12345.tga), not just a filename!', true);
+        return;
+    }
+    // [SPB-ALPHA-GUARD 2026-06-06] Block render when the iRacing User ID is blank/invalid. Every
+    // render output is named car_num_<ID>.tga / car_spec_<ID>.tga; with no ID the server writes
+    // car_num_.tga (no number), which iRacing CANNOT load — so a new buyer's first car silently
+    // never appears in-sim and the app reads as broken on day one. The header field is
+    // aria-required (pattern=\d{4,7}) but nothing enforced it. Pure client guard.
+    if (!/^\d{4,7}$/.test(iracingId)) {
+        showToast('Enter your iRacing User ID (4–7 digits) in the header bar — it names the car_num_/car_spec_ files iRacing loads.', true);
+        const _idEl = document.getElementById('iracingId');
+        if (_idEl) { _idEl.focus(); try { _idEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {} }
         return;
     }
 
     // Build zone configs for the server (same builder used by live preview so paint file matches)
     const serverZones = buildServerZonesForRender(zones);
     console.log('[doRender] Valid zones:', serverZones.length, '/', zones.length, 'total');
-    if (serverZones.length === 0 && !importedSpecMapPath) {
+    const activeSpecPath = (typeof importedSpecMapPath !== 'undefined' && importedSpecMapPath)
+        ? importedSpecMapPath
+        : ((typeof window !== 'undefined' && window.importedSpecMapPath) ? window.importedSpecMapPath : null);
+    const easySculptLock = (typeof window !== 'undefined') ? window._spbEasySculptSpecOverride : null;
+    const easySculptLockPath = (easySculptLock && easySculptLock.path) ||
+        ((typeof document !== 'undefined' && document.body) ? document.body.dataset.spbEasySculptSpecPath : '');
+    const easySculptSpecOnly = !!(easySculptLockPath && activeSpecPath &&
+        String(easySculptLockPath).replace(/\\/g, '/') === String(activeSpecPath).replace(/\\/g, '/'));
+    if (easySculptSpecOnly && serverZones.length) {
+        // Owner 2026-07-19: a normal Main Render 36 seconds after Spec Sculpt
+        // silently replaced the chosen material with the pre-existing whole-car
+        // zone. Preserve the explicit Sculpt result as the authoritative spec
+        // payload without mutating any Zone mask, Zone config, or Layer pixels.
+        console.log('[doRender] Spec Sculpt lock active: preserving imported spec and omitting', serverZones.length, 'zone override(s) from this render');
+        serverZones.splice(0, serverZones.length);
+    }
+    if (serverZones.length === 0 && !activeSpecPath) {
         const debugInfo = zones.map((z, i) => `Zone${i + 1}[${z.name}]: base=${z.base} finish=${z.finish} color=${z.color} colorMode=${z.colorMode}`).join('\n');
         console.warn('[doRender] No valid zones! Zone details:\n' + debugInfo);
         showToast('To render: pick a color on the paint (Pick + Add), then assign a Finish from the library to each zone. Both are required.', true);
@@ -2684,7 +3527,7 @@ async function doRender() {
         const skipped = zones.length - serverZones.length;
         showToast(`Rendering ${serverZones.length} zones. ${skipped} skipped — assign a Finish + color to include them.`, false);
     }
-    if (serverZones.length === 0 && importedSpecMapPath) {
+    if (serverZones.length === 0 && activeSpecPath) {
         console.log('[doRender] No user zones, but imported spec canvas exists - rendering with spec canvas only');
         showToast('Rendering with Spec Canvas only (no zone overrides)...');
     }
@@ -2705,8 +3548,21 @@ async function doRender() {
         extras.night_boost = parseFloat(document.getElementById('nightBoostSlider')?.value || '0.7');
     }
 
+    // Change File/browser-selected flat images can use visible-canvas payloads when
+    // no usable disk path exists. If a full Source Paint path is present, prefer server disk
+    // reads so external edits are never masked by stale in-memory canvas bytes.
+    if (hasLiveFlatSource && !extras.paint_image_base64) {
+        const flatCanvas = (typeof window !== 'undefined' && typeof window.buildLivePaintCompositeCanvas === 'function')
+            ? window.buildLivePaintCompositeCanvas()
+            : document.getElementById('paintCanvas');
+        if (flatCanvas) {
+            extras.paint_image_base64 = await canvasToBase64Async(flatCanvas);
+            extras.source_mode = 'live_flat_canvas';
+            console.log('[doRender] Live flat image source: sending visible canvas as base64 paint', window._spbFlatPaintLiveSource);
+        }
+    }
+
     // Import spec map (merge mode) — from SHOKK or manual import; use window fallback so SHOKK-loaded spec is never missed
-    const activeSpecPath = (typeof importedSpecMapPath !== 'undefined' && importedSpecMapPath) ? importedSpecMapPath : (window.importedSpecMapPath || null);
     if (activeSpecPath) {
         extras.import_spec_map = activeSpecPath;
         console.log('[doRender] Merge mode: imported spec map =', activeSpecPath);
@@ -2748,6 +3604,7 @@ async function doRender() {
         }
     }
 
+
     // Spec Stamps: composite stamp images and send to server
     // [PERF] Use async canvasToBase64Async
     if (typeof compositeStampsForRender === 'function' && typeof window.stampLayers !== 'undefined' && window.stampLayers.length > 0) {
@@ -2757,6 +3614,22 @@ async function doRender() {
             extras.stamp_spec_finish = window.stampSpecFinish || 'gloss';
             console.log('[doRender] Stamp overlay included:', window.stampLayers.filter(function(s) { return s.visible; }).length, 'visible stamps, finish=' + (window.stampSpecFinish || 'gloss'));
         }
+    }
+
+    // Final source-of-truth sync: render exactly what the painter currently sees.
+    // This avoids disk-path vs live-canvas drift for Change File / flat workflows.
+    try {
+        if (!extras.paint_image_base64) {
+            const _pcFinal = (typeof window !== 'undefined' && typeof window.buildLivePaintCompositeCanvas === 'function')
+                ? window.buildLivePaintCompositeCanvas()
+                : document.getElementById('paintCanvas');
+            if (_pcFinal && _pcFinal.width > 0 && _pcFinal.height > 0) {
+                extras.paint_image_base64 = await canvasToBase64Async(_pcFinal);
+                extras.source_mode = hasLiveFlatSource ? 'live_flat_canvas' : (_diskPaintPath ? 'canvas_sync_from_disk_path' : 'canvas_sync');
+            }
+        }
+    } catch (e) {
+        console.warn('[doRender] final canvas sync skipped:', e);
     }
 
     // [IMP-27] Pre-render validation — warn or abort on obviously-bad config
@@ -2781,12 +3654,14 @@ async function doRender() {
     const zoneCount = serverZones.length;
     const timeEst = smartEstimateRenderTime(zoneCount); // [IMP-29] use smart estimator that learns from history
     if (btn) { // [53] null check
-        btn.textContent = `RENDERING ${zoneCount} ZONE${zoneCount > 1 ? 'S' : ''}...`;
+        btn.textContent = easySculptSpecOnly ? 'RENDERING SPEC SCULPT...' : `RENDERING ${zoneCount} ZONE${zoneCount > 1 ? 'S' : ''}...`;
         btn.style.opacity = '0.5';
         btn.style.pointerEvents = 'none';
         btn.disabled = true; // [26] disable button during render
     }
-    showToast(`Rendering ${zoneCount} zone${zoneCount > 1 ? 's' : ''}. Estimated: ${timeEst}`, false); // [32] show estimate in toast
+    showToast(easySculptSpecOnly
+        ? `Rendering the active Spec Sculpt material. Estimated: ${timeEst}`
+        : `Rendering ${zoneCount} zone${zoneCount > 1 ? 's' : ''}. Estimated: ${timeEst}`, false); // [32] show estimate in toast
     if (bar) bar.classList.add('active'); // [54] null check
     if (barInner) barInner.style.width = '5%'; // [54] null check
     if (barText) barText.textContent = `Preparing render... (Estimated: ${timeEst})`; // [33] show estimate in progress bar
@@ -2838,7 +3713,7 @@ async function doRender() {
         const result = await ShokkerAPI.render(paintFile, serverZones, iracingId, 51, liveLink, extras);
         clearInterval(_progressPoll);
         stopRenderTimer();
-        barInner.style.width = '100%';
+        if (barInner) barInner.style.width = '100%';
         if (barText) barText.textContent = 'Complete!';
 
         if (result.success) {
@@ -2852,7 +3727,9 @@ async function doRender() {
                 showToast('Render succeeded but no preview files were returned. Check server logs.', true);
             }
 
-            let msg = `Rendered ${result.zone_count} zones in ${result.elapsed_seconds}s`;
+            let msg = easySculptSpecOnly
+                ? `Rendered the active Spec Sculpt material in ${result.elapsed_seconds}s`
+                : `Rendered ${result.zone_count} zones in ${result.elapsed_seconds}s`;
             if (result.includes?.helmet) msg += ' + helmet';
             if (result.includes?.suit) msg += ' + suit';
             if (result.includes?.wear) msg += ` (wear ${result.wear_level})`;
@@ -2872,6 +3749,14 @@ async function doRender() {
 
             // Show both previews in the results panel (NOT on the source canvas)
             showRenderResults(result);
+        } else if (result.error_code === 'pack_missing') {
+            // This finish depends on an un-bundled reference_textures Finish Pack
+            // the buyer hasn't downloaded. Steer them to the in-app downloader
+            // instead of surfacing a misleading "paint file path" error.
+            promptFinishPackDownload(result);
+            RenderNotify.onRenderComplete(false, 0, 0);
+            notifyRenderComplete(false, 0, 0);
+            playRenderDing(false);
         } else if (result.license_required) {
             showToast('License required for full renders. Open Settings to enter your key.', true);
             licenseActive = false;
@@ -2886,7 +3771,7 @@ async function doRender() {
                     : (err.includes('License') || err.includes('license'))
                         ? 'License required. Open Settings to enter your key.'
                         : (err.includes('hung') || err.includes('timeout'))
-                            ? 'Server appears hung. Try restarting server.py.'
+                            ? 'Engine appears hung - it recovers automatically; if not, close and reopen Shokker Paint Booth.'
                             : (err.includes('memory') || err.includes('OOM'))
                                 ? 'Out of memory. Try fewer zones or simpler patterns.'
                                 : err;
@@ -2903,9 +3788,9 @@ async function doRender() {
         } else if (e.name === 'TimeoutError') { // [40] specific timeout error
             showToast('Render timed out after 5 minutes. Try fewer zones or simpler finishes.', true);
         } else if (e.message && (e.message.includes('Failed to fetch') || e.message.includes('NetworkError'))) { // [38] specific
-            showToast('Server unreachable. Is server.py running? Check firewall settings.', true);
+            showToast(SPB_ENGINE_OFFLINE_MSG, true);
         } else if (e.message && e.message.includes('JSON')) { // [39] JSON parse error
-            showToast('Server returned invalid response. Try restarting server.py.', true);
+            showToast('Engine returned an invalid response - if it keeps happening, close and reopen Shokker Paint Booth.', true);
         } else {
             showToast(classifyFetchError(e, 'Render'), true); // [12] user-friendly error
         }
@@ -2916,8 +3801,9 @@ async function doRender() {
         ShokkerAPI._renderAbort = null;
         ShokkerAPI._renderInProgress = false; // [20] clear dedup flag
         setTimeout(() => {
+            _ensureRenderFloatVisible();
             if (btn) { // [53] null check
-                btn.textContent = 'RENDER';
+                btn.textContent = 'RENDER'; try { var _rs = document.getElementById('spbRenderStatus'); if (_rs) _rs.textContent = 'last render ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); } catch (_e) {}
                 btn.classList.remove('terminate-mode');
                 btn.style.opacity = '1';
                 btn.style.pointerEvents = '';
@@ -2954,6 +3840,54 @@ function formatColorForServer(color, zone) {
     return 'everything';
 }
 
+
+function _ensureRenderFloatVisible() {
+    try {
+        const renderFloat = document.getElementById('renderFloat');
+        if (!renderFloat) return;
+        const bar = document.getElementById('previewBottomBar');
+        if (bar) {
+            // [SPB QoL 2026-06-02 owner v2] Dock RENDER/Shortcuts INTO the bottom command bar, to the
+            // RIGHT of the +Add/Exclude/Set/Use-Region note (in the empty space at that row) — NOT
+            // floated at the bottom-right corner. In-flow = correct height, responsive, never covers
+            // the zone controls. Owner: "go BESIDE that note where the empty space is."
+            if (renderFloat.parentElement !== bar) bar.appendChild(renderFloat);
+            // [SPB-HEADER-SLIM 2026-08-29] owner: "RENDER moves when you click it the first time".
+            // The 2026-06-02 dock-right re-parent + inline shrink fought the 2026-07-18b bar
+            // rebuild (renderFloat is built FIRST in the bar); the fight fired on first click.
+            // The float now stays where the builder put it; CSS owns the button size.
+            ['position', 'left', 'right', 'top', 'bottom', 'transform', 'width', 'max-width', 'max-height', 'z-index']
+                .forEach(p => renderFloat.style.removeProperty(p));
+            renderFloat.style.setProperty('display', 'flex', 'important');
+            renderFloat.style.setProperty('visibility', 'visible', 'important');
+            renderFloat.style.setProperty('opacity', '1', 'important');
+            renderFloat.style.setProperty('flex', '0 0 auto', 'important');
+ // push to the far right
+            renderFloat.style.setProperty('pointer-events', 'auto', 'important');
+        } else {
+            // Fallback (unified bottom bar absent): right-aligned fixed, NOT dead-center.
+            if (document.body && renderFloat.parentElement !== document.body) document.body.appendChild(renderFloat);
+            renderFloat.style.setProperty('display', 'flex', 'important');
+            renderFloat.style.setProperty('visibility', 'visible', 'important');
+            renderFloat.style.setProperty('opacity', '1', 'important');
+            renderFloat.style.setProperty('position', 'fixed', 'important');
+            renderFloat.style.setProperty('left', 'auto', 'important');
+            renderFloat.style.setProperty('right', '14px', 'important');
+            renderFloat.style.setProperty('transform', 'none', 'important');
+            renderFloat.style.setProperty('bottom', '8px', 'important');
+            renderFloat.style.setProperty('z-index', '1500', 'important');
+            renderFloat.style.setProperty('pointer-events', 'auto', 'important');
+            renderFloat.style.setProperty('width', 'min(280px, calc(100vw - 14px))', 'important');
+        }
+
+        const mainBtn = renderFloat.querySelector('#btnRender');
+        if (mainBtn && mainBtn.style) {
+        }
+    } catch (err) {
+        console.warn('[renderFloat] visibility guard failed:', err);
+    }
+}
+
 /**
  * Display render results in the results panel. // [48]
  * Shows paint/spec previews, helmet/suit extras, live link status, and updates history.
@@ -2964,22 +3898,30 @@ function showRenderResults(result) {
     hasRenderedOnce = true;
     const renderBtn = document.getElementById('btnRender');
     if (renderBtn) renderBtn.classList.remove('pulse');
+    _ensureRenderFloatVisible();
 
     // Track job ID for one-click deploy
     lastRenderedJobId = result.job_id || null;
     // Show deploy row and load car list
-    // Deploy row removed - render button handles everything
-    // const deployRow = document.getElementById('renderDeployRow');
-    // if (deployRow && lastRenderedJobId) {
-    //     deployRow.style.display = 'block';
-    //     document.getElementById('deployStatus').textContent = '';
-    //     loadIracingCars();
-    // }
+    const deployRow = document.getElementById('renderDeployRow');
+    const deployStatus = document.getElementById('deployStatus');
+    if (deployRow) {
+        if (lastRenderedJobId) {
+            deployRow.style.display = 'block';
+            if (deployStatus) deployStatus.textContent = '';
+            loadIracingCars();
+        } else {
+            deployRow.style.display = 'none';
+            if (deployStatus) deployStatus.textContent = '';
+        }
+    }
 
     // Show paint + spec previews in the results panel WITHOUT touching the source canvas
     const panel = document.getElementById('renderResultsPanel');
     const paintImg = document.getElementById('renderPaintPreview');
     const specImg = document.getElementById('renderSpecPreview');
+    const paintLabel = document.getElementById('renderPaintPreviewLabel');
+    const specLabel = document.getElementById('renderSpecPreviewLabel');
     const elapsed = document.getElementById('renderElapsed');
     const llMsg = document.getElementById('renderLiveLinkMsg');
 
@@ -2990,6 +3932,12 @@ function showRenderResults(result) {
     const paintUrl = Object.entries(urls).find(([k]) => k === 'RENDER_paint.png')
         || Object.entries(urls).find(([k]) => k.includes('paint') && !k.includes('helmet') && !k.includes('suit'));
     const specUrl = Object.entries(urls).find(([k]) => k.includes('spec') && !k.includes('helmet') && !k.includes('suit'));
+    const downloadKeys = Object.keys(result.download_urls || {});
+    const paintDownloadKey = downloadKeys.find(k => /^car_num_\d+$/.test(k))
+        || downloadKeys.find(k => /^car_\d+$/.test(k));
+    const specDownloadKey = downloadKeys.find(k => /^car_spec_\d+$/.test(k));
+    if (paintLabel) paintLabel.textContent = paintDownloadKey ? `PAINT (${paintDownloadKey}.tga)` : 'PAINT';
+    if (specLabel) specLabel.textContent = specDownloadKey ? `SPEC MAP (${specDownloadKey}.tga)` : 'SPEC MAP';
 
     const cacheBust = '?v=' + (window.APP_SESSION_ID || Date.now());
     if (paintImg && paintUrl) paintImg.src = ShokkerAPI.baseUrl + paintUrl[1] + cacheBust;
@@ -3003,6 +3951,28 @@ function showRenderResults(result) {
     if (paintUrl) {
         loadRenderedImageForCompare(ShokkerAPI.baseUrl + paintUrl[1] + cacheBust);
     }
+
+    // [SPB LIVE-PANE SYNC 2026-08-16 — owner: "the LIVE PREVIEW starts to DEGRADE as we go"]
+    // Diagnosis from the owner's console log: across ~11 full renders the live pane updated
+    // ONCE. Full renders only ever touched THIS results panel; the live pane refreshes solely
+    // through doPreviewRender, whose dedupe keys on the ZONE CONFIG hash — and LAYER-content
+    // edits (mask painting, PSD layer moves) never change that hash, so in Layer mode the pane
+    // drifted further behind the design with every iteration ("degradation" = staleness; page
+    // reload rebuilt everything = the "heal"). A completed full render is the freshest truth
+    // available at 2048 — push it into the live pane every time. The per-render job id makes
+    // the URL unique, so no stale-cache concerns.
+    try {
+        const _lpImg = document.getElementById('livePreviewImg');
+        const _lpSpec = document.getElementById('livePreviewSpecImg');
+        if (_lpImg && paintUrl) {
+            _lpImg.src = ShokkerAPI.baseUrl + paintUrl[1] + cacheBust;
+            const _pPane = document.getElementById('previewPaintPane');
+            if (_pPane) _pPane.style.display = '';
+            const _pEmpty = document.getElementById('previewEmpty');
+            if (_pEmpty) _pEmpty.style.display = 'none';
+        }
+        if (_lpSpec && specUrl) _lpSpec.src = ShokkerAPI.baseUrl + specUrl[1] + cacheBust;
+    } catch (_) { /* live-pane sync must never break the render flow */ }
 
     // Elapsed + zone info
     let elapsedText = `${result.elapsed_seconds}s | ${result.zone_count} zones`;
@@ -3060,41 +4030,127 @@ function showRenderResults(result) {
     // Output directory + live link combined status
     if (llMsg) {
         let msgParts = [];
+        const requestedLiveLink = !!(result.live_link || document.getElementById('liveLinkCheckbox')?.checked);
         // Show output_dir status (primary output)
         if (result.output_dir?.success) {
             const fileCount = result.output_dir.pushed_files?.length || 0;
-            msgParts.push(`<span style="color:var(--accent-green)"><strong>&#10003; Saved ${fileCount} files</strong> to <code>${result.output_dir.path}</code></span>`);
+            msgParts.push(`<span style="color:var(--accent-green)"><strong>&#10003; Saved ${fileCount} files</strong> to <code>${_spbEscapeRenderHtml(result.output_dir.path)}</code></span>`);
         } else if (result.output_dir?.error) {
-            msgParts.push(`<span style="color:#ff4444"><strong>&#10007; Output Error:</strong> ${result.output_dir.error}</span>`);
+            msgParts.push(`<span style="color:#ff4444"><strong>&#10007; Output Error:</strong> ${_spbEscapeRenderHtml(result.output_dir.error)}</span>`);
+        }
+        if (result.live_link?.success) {
+            const liveCount = result.live_link.pushed_files?.length || 0;
+            const livePath = result.live_link.path || result.live_link.active_car_path || result.live_link.destination || 'Live Link destination';
+            msgParts.push(`<span style="color:var(--accent-green)"><strong>&#10003; Live Link pushed ${liveCount} files</strong> to <code>${_spbEscapeRenderHtml(livePath)}</code></span>`);
+        } else if (result.live_link?.error) {
+            msgParts.push(`<span style="color:#ff4444"><strong>&#10007; Live Link Error:</strong> ${_spbEscapeRenderHtml(result.live_link.error)}</span>`);
+        } else if (requestedLiveLink) {
+            msgParts.push(`<span style="color:var(--text-dim)"><strong>Live Link:</strong> no deployment status returned. Verify the destination folder timestamp before blaming iRacing.</span>`);
         }
         // Show iRacing reload instruction (if live link or output_dir succeeded)
         if (result.live_link?.success || result.output_dir?.success) {
             msgParts.push(`<span style="color:var(--accent-gold); font-size:10px;">💡 <strong>Alt+Tab</strong> to iRacing and press <strong>Ctrl+R</strong> to see your new render!</span>`);
         }
-        // Show live link error only if output_dir also failed
-        if (result.live_link?.error && !result.live_link?.success && !result.output_dir?.success) {
-            msgParts.push(`<span style="color:var(--text-dim)">Live Link: ${result.live_link.error}</span>`);
-        }
         if (msgParts.length > 0) {
             llMsg.style.display = 'block';
-            llMsg.style.borderColor = result.output_dir?.success ? 'var(--accent-green)' : 'var(--accent)';
+            llMsg.style.borderColor = (result.output_dir?.error || result.live_link?.error) ? '#ff4444' : (result.output_dir?.success || result.live_link?.success ? 'var(--accent-green)' : 'var(--accent)');
             llMsg.innerHTML = msgParts.join('<br>');
         } else {
             // No output_dir and no live_link - warn user
             llMsg.style.display = 'block';
             llMsg.style.borderColor = 'var(--accent-gold)';
             llMsg.style.color = 'var(--accent-gold)';
-            llMsg.innerHTML = '<strong>&#9888; No output folder set!</strong> Set the "iRacing Folder" path in Car Info to save files. Previews are still available below.';
+            llMsg.innerHTML = '<strong>&#9888; No output folder set!</strong> Set the "iRacing Car Folder" path in the header to save files. Previews are still available below.';
         }
     }
 
+    // 2026-06-07 render status banner (owner: keep card + show status)
+    // The recipe card pops full-screen over #renderLiveLinkMsg, so testers couldn't see whether
+    // the render actually saved. Surface a prominent, always-visible banner PINNED at the top of
+    // the modal (above the card image) using the SAME result fields the #renderLiveLinkMsg logic
+    // above checks: a save SUCCEEDED iff result.output_dir?.success OR result.live_link?.success;
+    // otherwise (neither set, the "No output folder set!" path) we show the amber folder warning.
+    const _statusBanner = document.getElementById('renderStatusBanner');
+    if (_statusBanner) {
+        const _saveSucceeded = !!(result.output_dir?.success || result.live_link?.success);
+        const _saveErrored = !!(result.output_dir?.error || result.live_link?.error);
+        const _savedPath = result.output_dir?.path
+            || result.live_link?.path
+            || result.live_link?.active_car_path
+            || result.live_link?.destination
+            || '';
+        _statusBanner.style.display = 'block';
+        // 2026-10-04 SHOW MY FILES (owner: a buyer kept looking in the wrong folder for his car_num/car_spec files and
+        // tried uploading the .shokker project to Trading Paints). Name the exact files and open Explorer ON them.
+        const _pushed = (result.output_dir?.success && result.output_dir.pushed_files) || (result.live_link?.success && result.live_link.pushed_files) || [];
+        const _paintName = _pushed.find(n => /^car_(num_)?\d+\.tga$/i.test(n)) || '';
+        const _specName = _pushed.find(n => /^car_spec_\d+\.tga$/i.test(n)) || '';
+        const _jobPaintKey = Object.keys(result.download_urls || {}).find(k => /^car_(num_)?\d+$/i.test(k));
+        _spbLastRenderFiles = _saveSucceeded
+            ? { folder: _savedPath, select: _paintName }
+            : (!_saveErrored && result.job_id ? { job_id: result.job_id, select: _jobPaintKey ? _jobPaintKey + '.tga' : '' } : null);
+        const _showBtn = (label) => ` <button type="button" class="spb-show-files-btn" style="margin-left:6px; padding:3px 10px; font-weight:700; cursor:pointer; border-radius:4px; border:1px solid currentColor; background:transparent; color:inherit;">&#128194; ${label}</button>`;
+        if (_saveSucceeded) {
+            // Green success line — reuse the existing "Alt+Tab → Ctrl+R" hint + show the saved path.
+            _statusBanner.style.background = 'rgba(0,255,136,0.14)';
+            _statusBanner.style.border = '2px solid var(--accent-green, #00ff88)';
+            _statusBanner.style.color = 'var(--accent-green, #00ff88)';
+            const _pathHtml = _savedPath
+                ? ` <span style="color:var(--text-dim); font-weight:600;">&rarr; <code>${_spbEscapeRenderHtml(_savedPath)}</code></span>`
+                : '';
+            const _filesHtml = _paintName
+                ? '<div style="margin-top:5px; font-size:12px; color:var(--text, #ddd); font-weight:600;">Your iRacing files: <code>' + _spbEscapeRenderHtml(_paintName) + '</code>' +
+                  (_specName ? ' + <code>' + _spbEscapeRenderHtml(_specName) + '</code>' : '') +
+                  '. <b>Trading Paints:</b> upload <code>' + _spbEscapeRenderHtml(_paintName) + '</code> as the paint (never the .spb / .shokk file you save, that is your Shokker project). ' +
+                  'The spec must be the <code>.mip</code> iRacing makes next to it the first time you drive the car.</div>'
+                : '';
+            _statusBanner.innerHTML =
+                '<strong style="font-size:14px;">&#10003; Saved!</strong> ' +
+                '<strong>Alt+Tab</strong> to iRacing and press <strong>Ctrl+R</strong> to load it on your car.' +
+                _pathHtml + _showBtn('Show my files') + _filesHtml;
+        } else if (_saveErrored) {
+            // A save was attempted but the folder errored — surface it clearly (red).
+            const _errMsg = result.output_dir?.error || result.live_link?.error || 'Unknown save error.';
+            _statusBanner.style.background = 'rgba(255,68,68,0.14)';
+            _statusBanner.style.border = '2px solid #ff4444';
+            _statusBanner.style.color = '#ff6b6b';
+            _statusBanner.innerHTML =
+                '<strong style="font-size:14px;">&#10007; Save failed</strong> &mdash; ' +
+                _spbEscapeRenderHtml(_errMsg) +
+                ' Check your iRacing Car Folder in the header.';
+        } else {
+            // No output folder set — amber warning (matches the #renderLiveLinkMsg "No output folder set!" path).
+            _statusBanner.style.background = 'rgba(255,176,0,0.14)';
+            _statusBanner.style.border = '2px solid var(--accent-gold, #ffb000)';
+            _statusBanner.style.color = 'var(--accent-gold, #ffb000)';
+            _statusBanner.innerHTML =
+                '<strong style="font-size:14px;">&#9888; No iRacing folder set</strong> &mdash; ' +
+                'set your <strong>iRacing Car Folder</strong> in the header or the paint won\'t appear on your car.' +
+                (_spbLastRenderFiles ? '<div style="margin-top:5px; font-size:11px; font-weight:600;">This render is only in Shokker\'s own render folder (iRacing never looks there, and only the two newest renders are kept).' + _showBtn('Show where it was saved') + '</div>' : '');
+        }
+        const _showFilesBtn = _statusBanner.querySelector('.spb-show-files-btn');
+        if (_showFilesBtn) _showFilesBtn.addEventListener('click', () => spbShowRenderFiles(_showFilesBtn));
+    }
+
+    // [SPB-RECIPE-CARD-001] Show as a FLOATING modal (NOT inline) so it can never shove the
+    // center column down. The card is dismissed manually (X / ESC / backdrop click).
     panel.style.display = 'block';
-    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    panel.style.marginBottom = '';
+    panel.scrollTop = 0;
+    const _recipeBackdrop = document.getElementById('renderResultsBackdrop');
+    if (_recipeBackdrop) _recipeBackdrop.style.display = 'block';
+    try { document.addEventListener('keydown', _renderRecipeEscHandler); } catch (_) {}
+    // [SPB-RECIPE-CARD-002] Render the designed, shareable recipe card (logo + hero snapshots +
+    // FULL per-zone recipe) onto a canvas. Falls back to the simple HTML table if anything throws.
+    try { renderRecipeCardUI(result); } catch (e) { console.warn('[recipe] card render failed:', e); try { buildRenderRecipeZones(); } catch (_) {} }
 
     // Push to render history
     try {
-        const paintUrlFull = paintUrl ? (ShokkerAPI.baseUrl + paintUrl[1]) : '';
-        const specUrlFull = specUrl ? (ShokkerAPI.baseUrl + specUrl[1]) : '';
+        // [ULTRACODE 2026-08-22 M8b] SAME cacheBust as the results panel —
+        // '?v=' vs bare URL are distinct HTTP cache keys, so history-thumb
+        // baking re-downloaded the full PNG even with the immutable header.
+        const paintUrlFull = paintUrl ? (ShokkerAPI.baseUrl + paintUrl[1] + cacheBust) : '';
+        const specUrlFull = specUrl ? (ShokkerAPI.baseUrl + specUrl[1] + cacheBust) : '';
         const summary = zones.map(z => {
             if (z.finish) return `${z.name}: ${z.finish}`;
             if (z.base) return `${z.name}: ${z.base}${z.pattern && z.pattern !== 'none' ? '+' + z.pattern : ''}`;
@@ -3103,7 +4159,7 @@ function showRenderResults(result) {
         // [IMP-36] Descriptive filename with zone summary (clamped to safe length)
         const _safeName = (summary || 'render').replace(/[^a-z0-9_-]+/gi, '_').slice(0, 80);
         const _descFilename = `spb_${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}_${result.zone_count || 0}z_${_safeName}.png`;
-        renderHistory.unshift({
+        const _histEntry = {
             job_id: result.job_id || '',
             timestamp: Date.now(),
             elapsed_seconds: result.elapsed_seconds || 0,
@@ -3119,19 +4175,58 @@ function showRenderResults(result) {
             filename: _descFilename,
             // [IMP-39] Bake metadata snapshot for download/permalink
             metadata: { wear: result.wear_level || 0, includes: result.includes || {}, ccVersion: CLIENT_VERSION },
-            zoneSnapshot: JSON.parse(JSON.stringify(zones.map(z => ({
-                name: z.name, base: z.base, pattern: z.pattern, finish: z.finish,
-                intensity: z.intensity, customSpec: z.customSpec, customPaint: z.customPaint,
-                customBright: z.customBright, color: z.color, colorMode: z.colorMode,
-                pickerColor: z.pickerColor, pickerTolerance: z.pickerTolerance,
-                colors: z.colors, scale: z.scale, patternOpacity: z.patternOpacity,
-                patternStack: z.patternStack, wear: z.wear, muted: z.muted,
-                ccQuality: z.ccQuality, blendBase: z.blendBase, blendDir: z.blendDir,
-                blendAmount: z.blendAmount, usePaintReactive: z.usePaintReactive, paintReactiveColor: z.paintReactiveColor,
-            }))))
-        });
+            // [2026-06-12 owner: "EXACTLY REPLICATE THIS"] FULL-FIDELITY zone
+            // snapshot. The old whitelist silently dropped every field it
+            // didn't know about (spec sliders, base HSB, overlay tiers, blend
+            // modes...), so a saved recipe could never round-trip new dials.
+            // Now: every serializable zone field rides along automatically;
+            // only heavy/transient buffers are skipped.
+            zoneSnapshot: JSON.parse(JSON.stringify(zones.map(z => {
+                const o = {};
+                for (const k of Object.keys(z)) {
+                    if (k === 'regionMask' || k === 'spatialMask' || k === 'sourceLayerMask' ||
+                        k === 'sourceLayerRgb' || k === 'pattern_strength_map' || k.startsWith('_')) continue;
+                    const v = z[k];
+                    if (typeof v === 'function' || v === undefined) continue;
+                    o[k] = v;
+                }
+                return o;
+            })))
+        };
+        renderHistory.unshift(_histEntry);
         if (renderHistory.length > MAX_RENDER_HISTORY) renderHistory.pop();
         updateHistoryStrip();
+        persistRenderHistory();
+        // [SPB HISTORY-THUMBS 2026-08-16] The strip's <img src> pointed at /preview/<job>/ URLs,
+        // but the server keeps only the last ~2 job dirs — every strip rebuild refetched every
+        // dead job (the owner's log: the SAME stale id 404ing after EVERY render) and old thumbs
+        // went blank. Bake a small data-URL thumbnail while the job is still alive; the strip
+        // prefers it and it survives job rotation AND app restarts (persisted with the entry).
+        if (paintUrlFull) {
+            try {
+                const _tImg = new Image();
+                _tImg.crossOrigin = 'anonymous';
+                _tImg.onload = () => {
+                    try {
+                        const _tc = document.createElement('canvas');
+                        const _ts = Math.min(1, 96 / Math.max(_tImg.naturalWidth, _tImg.naturalHeight));
+                        _tc.width = Math.max(1, Math.round(_tImg.naturalWidth * _ts));
+                        _tc.height = Math.max(1, Math.round(_tImg.naturalHeight * _ts));
+                        _tc.getContext('2d').drawImage(_tImg, 0, 0, _tc.width, _tc.height);
+                        _histEntry.thumb = _tc.toDataURL('image/jpeg', 0.7);
+                        updateHistoryStrip();
+                        // The thumbnail arrives asynchronously after the entry
+                        // was first saved. Persist again so restart history owns
+                        // the durable 96px asset instead of a rotating job URL.
+                        persistRenderHistory();
+                    } catch (_) { /* tainted canvas or encode failure: strip falls back to the URL */ }
+                };
+                _tImg.src = paintUrlFull;
+            } catch (_) { /* thumbnail is best-effort */ }
+        }
+        // [SPB-RECENTS-001] persist this render to the rotating last-10 on disk so it can be
+        // recalled (full recipe restored) even after an app restart. Fire-and-forget.
+        try { saveRecentRenderToDisk(_histEntry); } catch (_) {}
         // [IMP-40] Auto-export hook — write rendered PNG to Documents/SPB_Exports if checkbox set
         if (typeof localStorage !== 'undefined' && localStorage.getItem('shokker_auto_export') === '1' && paintUrlFull) {
             console.log('[auto-export] Render saved; manual download will be triggered by Auto-Export panel.');
@@ -3350,6 +4445,7 @@ function deleteHistoryItem(idx) {
     if (!confirm(`Delete render #${idx + 1} from history?`)) return;
     renderHistory.splice(idx, 1);
     updateHistoryStrip();
+    persistRenderHistory();
     showToast('Render removed from history');
     const overlay = document.getElementById('historyGalleryOverlay');
     if (overlay) overlay.innerHTML = buildGalleryHTML();
@@ -3362,6 +4458,7 @@ function toggleHistoryFavorite(idx) {
     if (!e) return;
     e.favorite = !e.favorite;
     updateHistoryStrip();
+    persistRenderHistory();
     const overlay = document.getElementById('historyGalleryOverlay');
     if (overlay) overlay.innerHTML = buildGalleryHTML();
 }
@@ -3385,6 +4482,7 @@ function editHistoryNotes(idx) {
     const v = prompt('Notes for render #' + (idx + 1) + ':', e.notes || '');
     if (v == null) return;
     e.notes = v.slice(0, 500);
+    persistRenderHistory();
     const overlay = document.getElementById('historyGalleryOverlay');
     if (overlay) overlay.innerHTML = buildGalleryHTML();
 }
@@ -3397,6 +4495,7 @@ function editHistoryTags(idx) {
     const v = prompt('Tags (comma-separated):', (e.tags || []).join(', '));
     if (v == null) return;
     e.tags = v.split(',').map(t => t.trim()).filter(Boolean).slice(0, 12);
+    persistRenderHistory();
     const overlay = document.getElementById('historyGalleryOverlay');
     if (overlay) overlay.innerHTML = buildGalleryHTML();
 }
@@ -3628,7 +4727,819 @@ if (typeof window !== 'undefined') {
 
 function closeRenderResults() {
     const panel = document.getElementById('renderResultsPanel');
-    if (panel) panel.style.display = 'none';
+    if (panel) {
+        panel.style.display = 'none';
+        panel.style.marginBottom = '';
+    }
+    // [SPB-RECIPE-CARD-001] tear down the floating-modal chrome too.
+    const backdrop = document.getElementById('renderResultsBackdrop');
+    if (backdrop) backdrop.style.display = 'none';
+    try { document.removeEventListener('keydown', _renderRecipeEscHandler); } catch (_) {}
+}
+
+/** [SPB-RECIPE-CARD-001] ESC closes the render recipe card. */
+function _renderRecipeEscHandler(e) {
+    if (e && (e.key === 'Escape' || e.key === 'Esc')) {
+        e.preventDefault();
+        closeRenderResults();
+    }
+}
+
+/**
+ * [SPB-RECIPE-CARD preview-crush PERMANENT FIX — 2026-06-01, per docs/TOOL_QA_PROGRESS.md]
+ * Move the recipe modal + its backdrop OUT of #centerPanel to be direct children of <body>.
+ *
+ * Why: a sibling chat found the recipe modal was crushing the SOURCE + LIVE PREVIEW squares.
+ * Two bugs conspired — (1) a forced `display` on `.spb-render-modal` overrode the inline
+ * `display:none` (fixed separately: base rule is `display:none`, shown only via inline display),
+ * and (2) `#centerPanel > * { position: relative !important }` (ID specificity) beat the modal's
+ * `position: fixed`, forcing it IN-FLOW where it squeezed #canvasViewport to ~96px. As a direct
+ * child of <body> the modal can NEVER be pinned in-flow by that `#centerPanel > *` rule, so it
+ * always floats — this removes the dependency on the CSS specificity battle entirely.
+ *
+ * Idempotent + defensive; all show/hide + selectors are parent-agnostic so this is purely additive.
+ * IMPORTANT for future edits: do NOT put `display: flex !important` (or any forced display) on the
+ * base `.spb-render-modal` rule — show/hide runs off inline `display` (block/none).
+ */
+function _spbDetachRecipeModalToBody() {
+    try {
+        if (typeof document === 'undefined' || !document.body) return;
+        const backdrop = document.getElementById('renderResultsBackdrop');
+        const panel = document.getElementById('renderResultsPanel');
+        // Move backdrop first, then the panel, so the panel ends up after it in the body.
+        if (backdrop && backdrop.parentElement !== document.body) document.body.appendChild(backdrop);
+        if (panel && panel.parentElement !== document.body) document.body.appendChild(panel);
+    } catch (_) {}
+}
+if (typeof window !== 'undefined') window._spbDetachRecipeModalToBody = _spbDetachRecipeModalToBody;
+if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(_spbDetachRecipeModalToBody, 0));
+    else setTimeout(_spbDetachRecipeModalToBody, 0);
+}
+
+/**
+ * [SPB-RECIPE-CARD-001] Build the per-zone recipe breakdown on the render card:
+ * for EACH zone, what base color / pattern / finish / spec-pattern overlays /
+ * intensity were applied. Reads the LIVE zone state (current at render time) so it
+ * always reflects exactly what was just rendered. Owner ask: "a RECIPE CARD that
+ * shows what is done to EACH ZONE, any SPEC PATTERNS, OVERLAYS, ETC."
+ */
+function buildRenderRecipeZones() {
+    const host = document.getElementById('renderRecipeZones');
+    if (!host) return;
+    const zs = (typeof zones !== 'undefined' && Array.isArray(zones)) ? zones : [];
+    const esc = (typeof _spbEscapeRenderHtml === 'function') ? _spbEscapeRenderHtml : (s => String(s == null ? '' : s));
+    if (!zs.length) {
+        host.innerHTML = '<div class="render-recipe-empty">No zones configured for this render.</div>';
+        return;
+    }
+    const swatch = (z) => {
+        const c = z.color || (Array.isArray(z.colors) && z.colors.length ? z.colors[0] : null) || z.pickerColor || '#222';
+        return `<span class="render-recipe-swatch" style="background:${esc(c)}"></span>`;
+    };
+    const specSummary = (z) => {
+        const stack = Array.isArray(z.specPatternStack) ? z.specPatternStack.filter(sp => sp && sp.pattern && sp.pattern !== 'none') : [];
+        if (!stack.length) return '<span class="muted">—</span>';
+        return stack.map(sp => esc(sp.pattern)).join(', ');
+    };
+    const patSummary = (z) => {
+        const base = (z.pattern && z.pattern !== 'none') ? esc(z.pattern) : '';
+        const extra = Array.isArray(z.patternStack) ? z.patternStack.filter(p => p && p.pattern && p.pattern !== 'none').length : 0;
+        if (!base && !extra) return '<span class="muted">—</span>';
+        return base + (extra ? ` <span class="muted">(+${extra})</span>` : '');
+    };
+    let html = '<div class="render-recipe-zone-row header">' +
+        '<span></span><span>Zone</span><span>Base / Finish</span><span>Pattern</span><span>Spec / Overlay</span><span>Int.</span></div>';
+    zs.forEach(z => {
+        const finish = (z.finish && z.finish !== 'none') ? esc(z.finish) : '';
+        const baseTxt = finish
+            ? `<span class="render-recipe-spec">${finish}</span>`
+            : (z.base ? esc(z.base) : '<span class="muted">—</span>');
+        const intensity = (z.intensity != null && z.intensity !== '') ? esc(z.intensity) + '%' : '—';
+        html += '<div class="render-recipe-zone-row">' +
+            swatch(z) +
+            `<span class="render-recipe-zone-name" title="${esc(z.name || 'Zone')}">${esc(z.name || 'Zone')}</span>` +
+            `<span class="render-recipe-cell" title="${finish || esc(z.base || '')}">${baseTxt}</span>` +
+            `<span class="render-recipe-cell">${patSummary(z)}</span>` +
+            `<span class="render-recipe-cell render-recipe-spec" title="spec pattern overlays">${specSummary(z)}</span>` +
+            `<span class="render-recipe-cell">${intensity}</span>` +
+            '</div>';
+    });
+    host.innerHTML = html;
+}
+if (typeof window !== 'undefined') {
+    window.closeRenderResults = closeRenderResults;
+    window.buildRenderRecipeZones = buildRenderRecipeZones;
+}
+
+// ============================================================================
+// [SPB-RECIPE-CARD-002 — 2026-06-01 owner] DESIGNED, SHAREABLE RECIPE CARD.
+// Owner: "near-full-screen ... MORE information (opacity, sliders, BASE OVERLAY
+// LAYERS) ... a COOL graphical element ... SNAPSHOTS of paint AND combined spec
+// ... SHOKKER PAINT BOOTH logo stamped ... look like an actual RECIPE CARD with
+// pizzazz ... so people could share RECIPE CARDS." Rendered on a <canvas> (offline
+// reliable, full design control, WYSIWYG) so it exports cleanly to PNG / clipboard.
+// ============================================================================
+const _RC = {
+    // [SPB-RECIPE-CARD-005 2026-08-26] gold/black theme matching the Abbey-Road logo banner
+    W: 1480, PAD: 46, GAP: 22,
+    bg0: '#0b0905', bg1: '#161006',
+    panel: 'rgba(26,20,10,0.94)', panelEdge: 'rgba(255,200,80,0.24)',
+    ink: '#f6efdc', dim: '#c9b98d', faint: '#8d7f5b',
+    blue: '#3b82ff', cyan: '#63d8ff', gold: '#ffd142', goldDeep: '#b8871f', green: '#00e08a',
+    mono: "12px 'Consolas','SF Mono','Courier New',monospace",
+};
+function _rcRoundRect(ctx, x, y, w, h, r) {
+    r = Math.max(0, Math.min(r, w / 2, h / 2));
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+}
+function _rcChip(ctx, text, x, y, opts) {
+    opts = opts || {};
+    const padX = 9, h = opts.h || 20;
+    ctx.font = opts.font || "700 12px 'Segoe UI',Arial,sans-serif";
+    const w = Math.ceil(ctx.measureText(text).width) + padX * 2;
+    _rcRoundRect(ctx, x, y, w, h, h / 2);
+    ctx.fillStyle = opts.bg || 'rgba(59,130,255,0.18)';
+    ctx.fill();
+    ctx.fillStyle = opts.color || _RC.cyan;
+    ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+    ctx.fillText(text, x + padX, y + h / 2 + 0.5);
+    ctx.textBaseline = 'alphabetic';
+    return w;
+}
+function _rcWrap(ctx, text, x, y, maxW, lineH) {
+    const words = String(text).split(/\s+/);
+    let line = '', yy = y;
+    for (const wd of words) {
+        const test = line ? line + ' ' + wd : wd;
+        if (ctx.measureText(test).width > maxW && line) { ctx.fillText(line, x, yy); yy += lineH; line = wd; }
+        else line = test;
+    }
+    if (line) { ctx.fillText(line, x, yy); yy += lineH; }
+    return yy;
+}
+function _rcWrapCount(ctx, text, maxW) {
+    const words = String(text).split(/\s+/);
+    let line = '', n = 0;
+    for (const wd of words) {
+        const test = line ? line + ' ' + wd : wd;
+        if (ctx.measureText(test).width > maxW && line) { n++; line = wd; } else line = test;
+    }
+    if (line) n++;
+    return Math.max(1, n);
+}
+function _rcContain(ctx, img, x, y, w, h) {
+    if (!img || !img.width) return;
+    const s = Math.min(w / img.width, h / img.height);
+    const dw = img.width * s, dh = img.height * s;
+    ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+}
+const _rcOp = (v) => (v != null && +v !== 100) ? ` ${v}%` : '';
+const _rcSc = (v) => (v != null && Number(v) !== 1) ? ` ${(+v).toFixed(2)}x` : '';
+const _rcBl = (b) => (b && b !== 'normal') ? ` ${b}` : '';
+
+/**
+ * [SPB-RECIPE-CARD-002] Extract the FULL recipe from the live zone objects:
+ * base/finish, pattern (+stack), spec-pattern overlays (all layers), the 2nd–5th
+ * base OVERLAY LAYERS (base/pattern/opacity/strength/blend/scale/color), base color
+ * HSB, intensity, multi-colors, blend / cc-quality / wear / paint-reactive / zone
+ * spec map. Only active / non-default items are kept so the card stays readable.
+ */
+// [SPB-RECIPE-CARD-005] resolve catalog ids to the names the owner actually sees in the picker.
+function _spbPrettyId(id) {
+    return String(id || '').replace(/^mono:/, '').replace(/[_\-]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+function _spbResolveFinishName(id) {
+    if (!id) return '';
+    const raw = String(id).replace(/^mono:/, '');
+    try { if (typeof MONOLITHICS !== 'undefined' && Array.isArray(MONOLITHICS)) { const m = MONOLITHICS.find(m => m && m.id === raw); if (m && m.name) return m.name; } } catch (_) {}
+    try { if (typeof BASES !== 'undefined' && Array.isArray(BASES)) { const b = BASES.find(b => b && b.id === raw); if (b && b.name) return b.name; } } catch (_) {}
+    try { if (typeof getOverlayBaseDisplay === 'function') { const d = getOverlayBaseDisplay(raw); if (d && d.name) return d.name; } } catch (_) {}
+    try { if (typeof PATTERNS !== 'undefined' && Array.isArray(PATTERNS)) { const p = PATTERNS.find(p => p && p.id === raw); if (p && p.name) return p.name; } } catch (_) {}
+    return _spbPrettyId(raw);
+}
+function _spbIsMonolithicId(id) {
+    const raw = String(id || '').replace(/^mono:/, '');
+    try { return typeof MONOLITHICS !== 'undefined' && Array.isArray(MONOLITHICS) && MONOLITHICS.some(m => m && m.id === raw); } catch (_) { return false; }
+}
+function _spbLayerNames(ids) {
+    const arr = Array.isArray(ids) ? ids : (ids != null ? [ids] : []);
+    return arr.map(id => {
+        try { const l = (window._psdLayers || []).find(l => l && l.id === id); if (l && l.name) return l.name; } catch (_) {}
+        return 'Layer ' + id;
+    });
+}
+function _spbCatalogCount() {
+    let n = 0;
+    try { if (typeof BASES !== 'undefined' && Array.isArray(BASES)) n += BASES.length; } catch (_) {}
+    try { if (typeof MONOLITHICS !== 'undefined' && Array.isArray(MONOLITHICS)) n += MONOLITHICS.length; } catch (_) {}
+    return n;
+}
+
+function buildRecipeModel(zonesArr, result) {
+    const tiers = [
+        { k: 'second', label: '2nd' }, { k: 'third', label: '3rd' },
+        { k: 'fourth', label: '4th' }, { k: 'fifth', label: '5th' },
+    ];
+    const specGroups = [
+        ['specPatternStack', 'spec'], ['overlaySpecPatternStack', '2nd-spec'],
+        ['thirdOverlaySpecPatternStack', '3rd-spec'], ['fourthOverlaySpecPatternStack', '4th-spec'],
+        ['fifthOverlaySpecPatternStack', '5th-spec'],
+    ];
+    const zoneModels = (zonesArr || []).map((z, i) => {
+        const swatch = z.color || (Array.isArray(z.colors) && z.colors.length ? z.colors[0] : null) || z.pickerColor || null;
+        const baseOrFinish = (z.finish && z.finish !== 'none') ? { type: 'finish', val: z.finish }
+            : (z.base ? { type: 'base', val: z.base } : null);
+        const pattern = (z.pattern && z.pattern !== 'none')
+            ? { id: z.pattern, opacity: z.patternOpacity, scale: z.scale } : null;
+        const patternStack = (Array.isArray(z.patternStack) ? z.patternStack : [])
+            .filter(p => p && p.pattern && p.pattern !== 'none')
+            .map(p => ({ id: p.pattern, opacity: p.opacity, blend: p.blendMode, scale: p.scale }));
+        const specStacks = [];
+        specGroups.forEach(([key]) => {
+            (Array.isArray(z[key]) ? z[key] : []).filter(sp => sp && sp.pattern && sp.pattern !== 'none')
+                .forEach(sp => specStacks.push({ id: sp.pattern, opacity: sp.opacity, blend: sp.blendMode }));
+        });
+        const baseLayers = [];
+        tiers.forEach(t => {
+            const base = z[t.k + 'Base'], pat = z[t.k + 'BasePattern'], enabled = z[t.k + 'BaseEnabled'];
+            const active = (base && base !== 'none') || (pat && pat !== 'none') || enabled;
+            if (!active) return;
+            baseLayers.push({
+                tier: t.label,
+                base: (base && base !== 'none') ? base : null,
+                pattern: (pat && pat !== 'none') ? pat : null,
+                opacity: z[t.k + 'BasePatternOpacity'],
+                strength: (z[t.k + 'BaseStrength'] != null ? z[t.k + 'BaseStrength'] : z[t.k + 'BasePatternStrength']),
+                blend: z[t.k + 'BaseBlendMode'],
+                scale: (z[t.k + 'BaseScale'] != null ? z[t.k + 'BaseScale'] : z[t.k + 'BasePatternScale']),
+                color: z[t.k + 'BaseColor'],
+            });
+        });
+        const hsb = [];
+        if (z.baseHueOffset) hsb.push('H' + (z.baseHueOffset > 0 ? '+' : '') + z.baseHueOffset);
+        if (z.baseSaturationAdjust) hsb.push('S' + (z.baseSaturationAdjust > 0 ? '+' : '') + z.baseSaturationAdjust);
+        if (z.baseBrightnessAdjust) hsb.push('B' + (z.baseBrightnessAdjust > 0 ? '+' : '') + z.baseBrightnessAdjust);
+        const flags = [];
+        if (z.wear) flags.push('Wear ' + z.wear + '%');
+        if (z.muted) flags.push('Muted');
+        if (z.ccQuality) flags.push('CC ' + z.ccQuality);
+        if (z.usePaintReactive) flags.push('Paint-reactive');
+        if (z.blendBase) flags.push('Blend ' + z.blendBase + (z.blendAmount != null ? ' ' + z.blendAmount : ''));
+        if (z.zoneSpecMapName) flags.push('SpecMap ' + z.zoneSpecMapName + ' ' + (z.zoneSpecMapStrength != null ? z.zoneSpecMapStrength : 100) + '%');
+        const colors = Array.isArray(z.colors) ? z.colors.filter(Boolean) : [];
+        // ---- [SPB-RECIPE-CARD-005] deep facts the owner flagged as missing/inaccurate ----
+        if (baseOrFinish) { baseOrFinish.name = _spbResolveFinishName(baseOrFinish.val) + (baseOrFinish.type === 'finish' && _spbIsMonolithicId(baseOrFinish.val) ? '' : ''); }
+        if (pattern) pattern.name = _spbResolveFinishName(pattern.id);
+        patternStack.forEach(pp => { pp.name = _spbResolveFinishName(pp.id); });
+        specStacks.forEach(sp => { sp.name = _spbResolveFinishName(sp.id); });
+        baseLayers.forEach(b => { if (b.base) b.baseName = _spbResolveFinishName(b.base); if (b.pattern) b.patternName = _spbResolveFinishName(b.pattern); });
+        const colorInfo = [];
+        const src = z.baseColorSource;
+        if (z.color === 'remaining') colorInfo.push('Remaining — keeps the source paint');
+        else if (typeof src === 'string' && src && src !== 'undefined') colorInfo.push('From special: ' + _spbResolveFinishName(src));
+        else if ((z.colorMode === 'multi' || colors.length > 1) && colors.length) colorInfo.push(colors.length + ' colors  ' + colors.slice(0, 6).join('  '));
+        else if (typeof z.color === 'string' && z.color.charAt(0) === '#') colorInfo.push('Solid ' + z.color.toUpperCase());
+        else if (typeof z.color === 'string' && z.color && z.color !== 'remaining') colorInfo.push('Special: ' + _spbResolveFinishName(z.color));
+        if (Array.isArray(z.gradientStops) && z.gradientStops.length) colorInfo.push('Gradient · ' + z.gradientStops.length + ' stops · ' + (z.gradientDirection || 'horizontal'));
+        if (z.lockBaseColor) colorInfo.push('color locked');
+        const restriction = (Array.isArray(z.sourceLayers) && z.sourceLayers.length)
+            ? { layers: _spbLayerNames(z.sourceLayers), hard: z.hardEdge !== false }
+            : (z.sourceLayer != null ? { layers: _spbLayerNames(z.sourceLayer), hard: z.hardEdge !== false } : null);
+        const pctOf = v => Math.round(Number(v) * 100) + '%';
+        const dials = [];
+        if (z.baseStrength != null && Number(z.baseStrength) !== 1) dials.push('Base ' + pctOf(z.baseStrength));
+        if (z.baseColorDepth != null) {
+            if (Math.round(Number(z.baseColorDepth) * 100) !== 65) dials.push('Depth ' + pctOf(z.baseColorDepth));
+            if (Number(z.baseColorFlip)) dials.push('Flip ' + Math.round(Number(z.baseColorFlip)) + '\u00b0');
+            if (Number(z.baseColorUnderglow)) dials.push('Under ' + pctOf(z.baseColorUnderglow));
+        } else if (z.baseColorStrength != null && Number(z.baseColorStrength) !== 1) dials.push('Color ' + pctOf(z.baseColorStrength));
+        if (z.baseSpecStrength != null && Number(z.baseSpecStrength) !== 1) dials.push('Spec ' + pctOf(z.baseSpecStrength));
+        if (z.baseScale != null && Number(z.baseScale) !== 1) dials.push('Scale ' + Number(z.baseScale).toFixed(2) + 'x');
+        if (z.baseRotation) dials.push('Rot ' + z.baseRotation + '\u00b0');
+        if (z.specScale != null && Number(z.specScale) !== 1 && z.specScaleMode === 'independent') dials.push('SpecScale ' + Number(z.specScale).toFixed(2) + 'x');
+        if (z.specRotation) dials.push('SpecRot ' + z.specRotation + '\u00b0');
+        const sgn = v => (v > 0 ? '+' : '') + v;
+        const specShift = (z.specShiftR || z.specShiftG || z.specShiftB)
+            ? ('Metal ' + sgn(z.specShiftR || 0) + '   Rough ' + sgn(z.specShiftG || 0) + '   Coat ' + sgn(z.specShiftB || 0)) : null;
+        return {
+            idx: i + 1, name: z.name || ('Zone ' + (i + 1)), swatch, baseOrFinish, pattern,
+            patternStack, specStacks, baseLayers, hsb, flags, colors,
+            intensity: z.intensity, colorMode: z.colorMode,
+            colorInfo, restriction, dials, specShift,
+        };
+    });
+    let paintFile = '';
+    try { paintFile = (document.getElementById('paintFile') || {}).value || ''; } catch (_) {}
+    paintFile = String(paintFile).split(/[\\/]/).pop() || '';
+    return {
+        title: 'RENDER RECIPE',
+        elapsed: result && result.elapsed_seconds,
+        zoneCount: (result && result.zone_count) || zoneModels.length,
+        timestamp: Date.now(),
+        paintFile,
+        zones: zoneModels,
+    };
+}
+
+/** Detail rows shown under each zone header. */
+function _recipeZoneRows(z) {
+    // [SPB-RECIPE-CARD-005] every row now speaks picker display names + the full zone truth
+    const rows = [];
+    if (z.colorInfo && z.colorInfo.length) rows.push({ label: 'Color', value: z.colorInfo.join('   \u00b7   '), color: _RC.ink });
+    if (z.restriction) rows.push({
+        label: 'Layer lock', color: '#ffcf6e',
+        value: 'Restricted to: ' + z.restriction.layers.join('  +  ') + (z.restriction.hard ? '   (hard edge)' : '   (soft edge)'),
+    });
+    const patParts = [];
+    if (z.pattern) patParts.push(`${z.pattern.name || z.pattern.id}${_rcOp(z.pattern.opacity)}${_rcSc(z.pattern.scale)}`);
+    z.patternStack.forEach(p => patParts.push(`${p.name || p.id}${_rcOp(p.opacity)}${_rcBl(p.blend)}${_rcSc(p.scale)}`));
+    if (patParts.length) rows.push({ label: 'Pattern', value: patParts.join('   \u00b7   '), color: _RC.cyan });
+    if (z.specStacks.length) rows.push({ label: 'Spec overlays', value: z.specStacks.map(s => `${s.name || s.id}${_rcOp(s.opacity)}${_rcBl(s.blend)}`).join('   \u00b7   '), color: '#9be7ff' });
+    if (z.baseLayers.length) {
+        rows.push({
+            label: 'Overlay bases', color: _RC.gold,
+            value: z.baseLayers.map(b => {
+                let t = b.tier + ': ' + ([b.baseName || b.base, b.patternName || b.pattern].filter(Boolean).join(' / ') || '\u2014');
+                const extra = [];
+                if (b.blend) extra.push(b.blend);
+                if (b.strength != null) extra.push(Math.round(Number(b.strength) * 100) + '%');
+                if (b.opacity != null && +b.opacity !== 100) extra.push('op ' + b.opacity + '%');
+                if (b.scale != null && Number(b.scale) !== 1) extra.push((+b.scale).toFixed(2) + 'x');
+                if (extra.length) t += '  (' + extra.join(' \u00b7 ') + ')';
+                return t;
+            }).join('      '),
+        });
+    }
+    if (z.dials && z.dials.length) rows.push({ label: 'Dials', value: z.dials.join('   \u00b7   '), color: _RC.dim });
+    if (z.specShift) rows.push({ label: 'Spec shift', value: z.specShift, color: '#9be7ff' });
+    const fin = [];
+    if (z.intensity != null && z.intensity !== '' && z.intensity !== '100') fin.push('Intensity ' + z.intensity + '%');
+    if (z.hsb.length) fin.push('HSB ' + z.hsb.join('/'));
+    z.flags.forEach(f => fin.push(f));
+    if (fin.length) rows.push({ label: 'Extras', value: fin.join('   \u00b7   '), color: _RC.dim });
+    return rows;
+}
+
+/** Draw (or measure, when draw=false) one zone panel; returns its height. */
+function _recipeZonePanel(ctx, z, x, y, w, draw) {
+    const P = 14, lineH = 18, headH = 30, labelColW = 104;
+    const rows = _recipeZoneRows(z);
+    const valX = x + P + labelColW, valMaxW = w - P * 2 - labelColW;
+    ctx.font = _RC.mono;
+    const rowHeights = rows.map(r => Math.max(lineH, _rcWrapCount(ctx, r.value, valMaxW) * lineH));
+    const rowsH = rowHeights.reduce((a, b) => a + b + 5, 0);
+    const panelH = headH + 10 + (rows.length ? rowsH : 6) + 8;
+    if (draw) {
+        _rcRoundRect(ctx, x, y, w, panelH, 12); ctx.fillStyle = _RC.panel; ctx.fill();
+        ctx.strokeStyle = _RC.panelEdge; ctx.lineWidth = 1; ctx.stroke();
+        // accent bar down the left edge in the zone's swatch color
+        _rcRoundRect(ctx, x, y, 6, panelH, 3);
+        ctx.fillStyle = z.swatch || '#445'; ctx.fill();
+        const hy = y + 8;
+        ctx.fillStyle = z.swatch || '#334'; _rcRoundRect(ctx, x + P, hy, 22, 22, 5); ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.28)'; ctx.lineWidth = 1; _rcRoundRect(ctx, x + P, hy, 22, 22, 5); ctx.stroke();
+        ctx.fillStyle = _RC.ink; ctx.font = "800 16px 'Segoe UI',Arial,sans-serif"; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+        ctx.fillText(`Z${z.idx}  ${z.name}`, x + P + 32, hy + 12);
+        ctx.textBaseline = 'alphabetic';
+        if (z.baseOrFinish) {
+            const isFin = z.baseOrFinish.type === 'finish';
+            const chipTxt = z.baseOrFinish.name || z.baseOrFinish.val;   // picker display name, not the raw id
+            ctx.font = "700 12px 'Segoe UI',Arial,sans-serif";
+            const cw = Math.ceil(ctx.measureText(chipTxt).width) + 18;
+            _rcChip(ctx, chipTxt, x + w - P - cw, hy + 1, { color: isFin ? '#171106' : _RC.ink, bg: isFin ? _RC.gold : 'rgba(255,200,80,0.16)', h: 20 });
+        }
+        let ry = y + headH + 12;
+        rows.forEach((r, i) => {
+            ctx.font = "700 10px 'Segoe UI',Arial,sans-serif"; ctx.fillStyle = _RC.faint; ctx.textAlign = 'left';
+            ctx.fillText(r.label.toUpperCase(), x + P, ry + 11);
+            ctx.font = _RC.mono; ctx.fillStyle = r.color || _RC.ink;
+            _rcWrap(ctx, r.value, valX, ry + 11, valMaxW, lineH);
+            ry += rowHeights[i] + 5;
+        });
+    }
+    return panelH;
+}
+
+function _drawRecipeBg(ctx, W, H) {
+    // [SPB-RECIPE-CARD-005] black-gold stage with the brand's EKG heartbeat echoed faintly
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, _RC.bg0); g.addColorStop(0.5, _RC.bg1); g.addColorStop(1, _RC.bg0);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    let gl = ctx.createRadialGradient(W * 0.10, 0, 0, W * 0.10, 0, W * 0.55);
+    gl.addColorStop(0, 'rgba(255,190,60,0.10)'); gl.addColorStop(1, 'rgba(255,190,60,0)');
+    ctx.fillStyle = gl; ctx.fillRect(0, 0, W, H);
+    gl = ctx.createRadialGradient(W * 0.92, H, 0, W * 0.92, H, W * 0.60);
+    gl.addColorStop(0, 'rgba(255,160,30,0.08)'); gl.addColorStop(1, 'rgba(255,160,30,0)');
+    ctx.fillStyle = gl; ctx.fillRect(0, 0, W, H);
+    // fine diagonal pinstripes
+    ctx.save(); ctx.globalAlpha = 0.045; ctx.strokeStyle = '#ffd142'; ctx.lineWidth = 1;
+    for (let x = -H; x < W; x += 28) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + H, H); ctx.stroke(); }
+    ctx.restore();
+    // EKG heartbeat lines (the logo motif) drifting behind the panels
+    const ekg = (yB, amp, alpha) => {
+        ctx.save(); ctx.globalAlpha = alpha; ctx.strokeStyle = '#ffd142'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, yB);
+        for (let x = 0; x < W; x += 340) {
+            ctx.lineTo(x + 150, yB);
+            ctx.lineTo(x + 168, yB + amp * 0.28);
+            ctx.lineTo(x + 190, yB - amp);
+            ctx.lineTo(x + 212, yB + amp * 0.72);
+            ctx.lineTo(x + 230, yB - amp * 0.18);
+            ctx.lineTo(x + 250, yB);
+        }
+        ctx.lineTo(W, yB); ctx.stroke(); ctx.restore();
+    };
+    for (let yy = 300; yy < H - 140; yy += 760) ekg(yy, 46, 0.055);
+    // gold double border
+    const bd = ctx.createLinearGradient(0, 0, W, H);
+    bd.addColorStop(0, 'rgba(255,209,66,0.60)'); bd.addColorStop(0.5, 'rgba(184,135,31,0.35)'); bd.addColorStop(1, 'rgba(255,209,66,0.60)');
+    ctx.strokeStyle = bd; ctx.lineWidth = 3;
+    _rcRoundRect(ctx, 5, 5, W - 10, H - 10, 20); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,209,66,0.14)'; ctx.lineWidth = 1;
+    _rcRoundRect(ctx, 11, 11, W - 22, H - 22, 16); ctx.stroke();
+}
+
+/** Lay out the whole card; draw=false returns total height for the 2-pass sizing. */
+function _layoutRecipeCard(ctx, model, imgs, draw) {
+    const W = _RC.W, P = _RC.PAD;
+    let y = P;
+    // ---------- TOP QR BANNER (SPB-RECIPE-CARD-003) — branding + scannable QR ----------
+    if (imgs.qr) {
+        const bw = Math.min(W - 2 * P, 700);
+        const bh = Math.round(bw * imgs.qr.height / imgs.qr.width);
+        if (draw) {
+            const bx = (W - bw) / 2;
+            _rcRoundRect(ctx, bx, y, bw, bh, 12); ctx.save(); ctx.clip();
+            ctx.drawImage(imgs.qr, bx, y, bw, bh); ctx.restore();
+            ctx.strokeStyle = _RC.panelEdge; ctx.lineWidth = 1; _rcRoundRect(ctx, bx, y, bw, bh, 12); ctx.stroke();
+        }
+        y += bh + 18;
+    }
+    // ---------- HEADER ----------
+    const headH = 132;
+    if (draw) {
+        _rcRoundRect(ctx, P, y, W - 2 * P, headH, 16);
+        const g = ctx.createLinearGradient(P, y, W - P, y);
+        g.addColorStop(0, 'rgba(255,190,60,0.16)'); g.addColorStop(1, 'rgba(255,120,0,0.04)');
+        ctx.fillStyle = g; ctx.fill();
+        ctx.strokeStyle = _RC.panelEdge; ctx.lineWidth = 1; ctx.stroke();
+        const tx = P + 24;
+        ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+        const tg = ctx.createLinearGradient(0, y + 28, 0, y + 62);
+        tg.addColorStop(0, '#ffe9a8'); tg.addColorStop(1, '#ffb000');
+        ctx.fillStyle = tg; ctx.font = "800 34px 'Segoe UI',Arial,sans-serif";
+        ctx.fillText(model.title || 'RENDER RECIPE', tx, y + 60);
+        ctx.fillStyle = _RC.dim; ctx.font = "600 13px 'Segoe UI',Arial,sans-serif";
+        ctx.fillText('SHOKKER PAINT BOOTH   ·   ' + new Date(model.timestamp).toLocaleDateString(), tx, y + 86);
+        const sx = W - P - 24;
+        ctx.textAlign = 'right';
+        ctx.fillStyle = _RC.gold; ctx.font = "800 30px 'Segoe UI',Arial,sans-serif";
+        ctx.fillText((model.elapsed != null ? model.elapsed : '?') + 's', sx, y + 50);
+        ctx.fillStyle = _RC.dim; ctx.font = "600 13px 'Segoe UI',Arial,sans-serif";
+        ctx.fillText(`${model.zoneCount} zones   ·   2048²`, sx, y + 74);
+        if (model.paintFile) { ctx.fillStyle = _RC.faint; ctx.font = _RC.mono; ctx.fillText(model.paintFile, sx, y + 98); }
+        ctx.textAlign = 'left';
+    }
+    y += headH + 26;
+    // ---------- HERO SNAPSHOTS ----------
+    const heroLabelH = 22;
+    const heroBoxW = (W - 2 * P - _RC.GAP) / 2;
+    const heroBoxH = Math.min(heroBoxW, 470);
+    if (draw) {
+        [['PAINT — car file', imgs.paint, P], ['COMBINED SPEC — surface map', imgs.spec, P + heroBoxW + _RC.GAP]].forEach(([lbl, img, bx]) => {
+            ctx.font = "700 13px 'Segoe UI',Arial,sans-serif"; ctx.fillStyle = _RC.dim; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+            ctx.fillText(lbl, bx + 2, y + 14);
+            const iy = y + heroLabelH;
+            _rcRoundRect(ctx, bx, iy, heroBoxW, heroBoxH, 12); ctx.fillStyle = '#05070e'; ctx.fill();
+            ctx.save(); _rcRoundRect(ctx, bx, iy, heroBoxW, heroBoxH, 12); ctx.clip();
+            if (img) _rcContain(ctx, img, bx, iy, heroBoxW, heroBoxH);
+            else { ctx.fillStyle = _RC.faint; ctx.font = "14px 'Segoe UI',Arial"; ctx.textAlign = 'center'; ctx.fillText('no image', bx + heroBoxW / 2, iy + heroBoxH / 2); ctx.textAlign = 'left'; }
+            ctx.restore();
+            ctx.strokeStyle = _RC.panelEdge; ctx.lineWidth = 1.5; _rcRoundRect(ctx, bx, iy, heroBoxW, heroBoxH, 12); ctx.stroke();
+        });
+    }
+    y += heroLabelH + heroBoxH + 30;
+    // ---------- PER-ZONE RECIPE ----------
+    if (draw) {
+        ctx.fillStyle = _RC.gold; ctx.font = "800 18px 'Segoe UI',Arial,sans-serif"; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+        ctx.fillText('PER-ZONE RECIPE', P, y + 14);
+        ctx.strokeStyle = 'rgba(255,200,80,0.22)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(P + 175, y + 10); ctx.lineTo(W - P, y + 10); ctx.stroke();
+    }
+    y += 30;
+    if (!model.zones.length) {
+        if (draw) { ctx.fillStyle = _RC.dim; ctx.font = "14px 'Segoe UI',Arial"; ctx.fillText('No zones configured for this render.', P, y + 18); }
+        y += 40;
+    } else {
+        model.zones.forEach(z => { y += _recipeZonePanel(ctx, z, P, y, W - 2 * P, draw) + 12; });
+    }
+    // ---------- BOTTOM QR BANNER (SPB-RECIPE-CARD-003) — bigger, primary scannable copy ----------
+    if (imgs.qr) {
+        const bw = Math.min(W - 2 * P, 900);
+        const bh = Math.round(bw * imgs.qr.height / imgs.qr.width);
+        if (draw) {
+            const bx = (W - bw) / 2;
+            ctx.fillStyle = _RC.gold; ctx.font = "800 14px 'Segoe UI',Arial,sans-serif"; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+            ctx.fillText('SCAN  \u2014  JOIN THE DISCORD   \u00b7   GET THE APP', W / 2, y + 12);
+            const iy = y + 22;
+            _rcRoundRect(ctx, bx, iy, bw, bh, 12); ctx.save(); ctx.clip();
+            ctx.drawImage(imgs.qr, bx, iy, bw, bh); ctx.restore();
+            ctx.strokeStyle = _RC.panelEdge; ctx.lineWidth = 1.5; _rcRoundRect(ctx, bx, iy, bw, bh, 12); ctx.stroke();
+            ctx.textAlign = 'left';
+        }
+        y += 22 + bh + 22;
+    }
+    // ---------- FOOTER ----------
+    const footH = 44;
+    if (draw) {
+        ctx.strokeStyle = 'rgba(255,200,80,0.20)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(P, y + 6); ctx.lineTo(W - P, y + 6); ctx.stroke();
+        ctx.fillStyle = _RC.dim; ctx.font = "600 12px 'Segoe UI',Arial,sans-serif"; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('Made with SHOKKER PAINT BOOTH   \u00b7   payhip.com/b/AhgpV   \u00b7   discord.gg/GwXxyhwtDu', W / 2, y + 26);
+        ctx.textAlign = 'right'; ctx.fillStyle = _RC.faint;
+        ctx.fillText(new Date(model.timestamp).toLocaleString(), W - P, y + 26);
+        ctx.textAlign = 'left';
+    }
+    y += footH + P;
+    return y;
+}
+
+/** Build the high-res card canvas (2-pass: measure height, then draw). */
+function renderRecipeCardToCanvas(model, imgs) {
+    const canvas = document.createElement('canvas');
+    canvas.width = _RC.W;
+    canvas.height = 200;
+    const H = Math.ceil(_layoutRecipeCard(canvas.getContext('2d'), model, imgs, false));
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    _drawRecipeBg(ctx, _RC.W, H);
+    if (imgs.logo) {
+        ctx.save(); ctx.globalAlpha = 0.04;
+        const ww = _RC.W * 0.62, hh = imgs.logo.height * (ww / imgs.logo.width);
+        ctx.drawImage(imgs.logo, (_RC.W - ww) / 2, (H - hh) / 2, ww, hh);
+        ctx.restore();
+    }
+    _layoutRecipeCard(ctx, model, imgs, true);
+    return canvas;
+}
+
+function _rcLoadImg(src, allowCorsRetry) {
+    return new Promise(res => {
+        if (!src) { res(null); return; }
+        const isHttp = !/^data:/i.test(src);
+        const img = new Image();
+        let done = false; const fin = (v) => { if (!done) { done = true; res(v); } };
+        // Request CORS-clean (server has CORS enabled) so the exported canvas isn't tainted
+        // and Save-PNG / Copy work. If that errors (cache/CORS hiccup), retry once WITHOUT
+        // crossOrigin so the snapshot still shows (export may taint then — handled with a toast).
+        if (isHttp) { try { img.crossOrigin = 'anonymous'; } catch (_) {} }
+        img.onload = () => fin(img);
+        img.onerror = () => { if (isHttp && allowCorsRetry !== false) { _rcLoadImg(src, false).then(fin); } else fin(null); };
+        setTimeout(() => fin(null), 6000);
+        try { img.src = src; } catch (_) { fin(null); }
+    });
+}
+
+/** Build the recipe model, load the snapshots + logo, draw the card into the modal stage. */
+async function renderRecipeCardUI(result) {
+    const stage = document.getElementById('recipeCardStage');
+    if (!stage) { try { buildRenderRecipeZones(); } catch (_) {} return; }
+    stage.innerHTML = '<div class="recipe-card-loading">Building recipe card…</div>';
+    const model = buildRecipeModel((typeof zones !== 'undefined' && Array.isArray(zones)) ? zones : [], result);
+    const paintSrc = (document.getElementById('renderPaintPreview') || {}).src || '';
+    const specSrc = (document.getElementById('renderSpecPreview') || {}).src || '';
+    const [paintImg, specImg, logoImg, qrImg] = await Promise.all([
+        _rcLoadImg(paintSrc), _rcLoadImg(specSrc),
+        _rcLoadImg((typeof window !== 'undefined' && window.SPB_LOGO_DATAURL) || ''),
+        _rcLoadImg((typeof window !== 'undefined' && window.SPB_QR_LOGO_DATAURL) || ''),
+    ]);
+    let canvas;
+    try { canvas = renderRecipeCardToCanvas(model, { paint: paintImg, spec: specImg, logo: logoImg, qr: qrImg }); }
+    catch (e) {
+        // Fallback: never leave the stage stuck on "Building…". Show the simple HTML table instead.
+        console.warn('[recipe-card] draw failed:', e);
+        stage.innerHTML = '';
+        const tbl = document.getElementById('renderRecipeZones');
+        if (tbl) { tbl.style.display = 'block'; stage.appendChild(tbl); }
+        try { buildRenderRecipeZones(); } catch (_) {}
+        return;
+    }
+    window._recipeCardCanvas = canvas;
+    window._recipeCardModel = model;
+    canvas.className = 'recipe-card-canvas';
+    canvas.setAttribute('role', 'img');
+    canvas.setAttribute('aria-label', 'Render recipe card — ' + model.zoneCount + ' zones');
+    stage.innerHTML = '';
+    stage.appendChild(canvas);
+}
+
+/** [SPB-RECIPE-CARD-002] Download the recipe card as a PNG (Discord-shareable). */
+function exportRecipeCardPNG() {
+    const canvas = window._recipeCardCanvas;
+    if (!canvas) { showToast('No recipe card to save yet', true); return; }
+    const model = window._recipeCardModel || {};
+    const stamp = new Date(model.timestamp || Date.now()).toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const name = `shokker-recipe-${stamp}.png`;
+    try {
+        canvas.toBlob(blob => {
+            if (!blob) { showToast('Could not export card image', true); return; }
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = name;
+            document.body.appendChild(a); a.click();
+            setTimeout(() => { try { URL.revokeObjectURL(url); a.remove(); } catch (_) {} }, 1500);
+            showToast('Recipe card saved: ' + name);
+        }, 'image/png');
+    } catch (e) { showToast('Export failed (canvas may be tainted): ' + (e && e.message || e), true); }
+}
+
+/** [SPB-RECIPE-CARD-002] Copy the recipe card image to the clipboard (paste into Discord). */
+async function copyRecipeCardToClipboard() {
+    const canvas = window._recipeCardCanvas;
+    if (!canvas) { showToast('No recipe card to copy yet', true); return; }
+    try {
+        if (!navigator.clipboard || typeof window.ClipboardItem === 'undefined') {
+            showToast('Image clipboard not supported here — use Save PNG instead', true); return;
+        }
+        const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+        if (!blob) { showToast('Could not render card image', true); return; }
+        await navigator.clipboard.write([new window.ClipboardItem({ 'image/png': blob })]);
+        showToast('Recipe card copied — paste it into Discord!');
+    } catch (e) { showToast('Copy failed: ' + (e && e.message || e) + ' — try Save PNG', true); }
+}
+
+if (typeof window !== 'undefined') {
+    window.buildRecipeModel = buildRecipeModel;
+    window.buildTPDescription = buildTPDescription;   // [SPB-RECIPE-CARD-005]
+    window.renderRecipeCardUI = renderRecipeCardUI;
+    window.renderRecipeCardToCanvas = renderRecipeCardToCanvas;
+    window.exportRecipeCardPNG = exportRecipeCardPNG;
+    window.copyRecipeCardToClipboard = copyRecipeCardToClipboard;
+}
+
+// ============================================================================
+// [SPB-RECIPE-SHARE-001 — 2026-06-01 owner] Save-as-PDF + portable recipe file
+// (Save Recipe Style / Share Recipe / Import). The full per-zone snapshot is
+// already captured each render (renderHistory[].zoneSnapshot) and restored by
+// _recipeSnapshotToZones() — so save/share = write that snapshot to a tiny
+// `.shokkerrecipe` JSON; import = read it back + restore. No server, no library.
+// ============================================================================
+
+/** One-page PDF embedding the card canvas as a JPEG (DCTDecode) — no dependency. */
+function _canvasToPdfBlob(canvas, opts) {
+    opts = opts || {};
+    const q = opts.quality || 0.9;
+    const jpeg = atob(canvas.toDataURL('image/jpeg', q).split(',')[1]); // binary string, chars 0-255
+    const iw = canvas.width, ih = canvas.height;
+    const pw = Math.min(iw, opts.maxW || 1200);
+    const ph = Math.round(pw * ih / iw);
+    let pdf = '';
+    const off = [];
+    const obj = (n, body) => { off[n] = pdf.length; pdf += n + ' 0 obj\n' + body + '\nendobj\n'; };
+    pdf += '%PDF-1.3\n';
+    obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+    obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+    obj(3, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + pw + ' ' + ph + '] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>');
+    off[4] = pdf.length;
+    pdf += '4 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + iw + ' /Height ' + ih +
+        ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + jpeg.length + ' >>\nstream\n';
+    pdf += jpeg;
+    pdf += '\nendstream\nendobj\n';
+    const content = 'q\n' + pw + ' 0 0 ' + ph + ' 0 0 cm\n/Im0 Do\nQ\n';
+    obj(5, '<< /Length ' + content.length + ' >>\nstream\n' + content + 'endstream');
+    const xrefPos = pdf.length;
+    let xref = 'xref\n0 6\n0000000000 65535 f \n';
+    for (let i = 1; i <= 5; i++) xref += String(off[i]).padStart(10, '0') + ' 00000 n \n';
+    pdf += xref + 'trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xrefPos + '\n%%EOF';
+    return new Blob([Uint8Array.from(pdf, c => c.charCodeAt(0) & 0xff)], { type: 'application/pdf' });
+}
+
+function exportRecipeCardPDF() {
+    const canvas = window._recipeCardCanvas;
+    if (!canvas) { showToast('No recipe card to save yet', true); return; }
+    const model = window._recipeCardModel || {};
+    const stamp = new Date(model.timestamp || Date.now()).toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    try {
+        const blob = _canvasToPdfBlob(canvas, { quality: 0.9, maxW: 1200 });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = `shokker-recipe-${stamp}.pdf`;
+        document.body.appendChild(a); a.click();
+        setTimeout(() => { try { URL.revokeObjectURL(url); a.remove(); } catch (_) {} }, 1500);
+        showToast('Recipe card saved as PDF');
+    } catch (e) { showToast('PDF export failed (canvas may be tainted): ' + (e && e.message || e), true); }
+}
+
+function _hasRecipeToExport() {
+    return !!(window._recipeCardModel || (typeof renderHistory !== 'undefined' && renderHistory[0]));
+}
+
+/** The portable recipe object that SAVE/SHARE write and IMPORT reads. */
+function _buildRecipeFileObject(includeThumb) {
+    const model = window._recipeCardModel || {};
+    const snap = (typeof renderHistory !== 'undefined' && renderHistory[0] && renderHistory[0].zoneSnapshot)
+        ? renderHistory[0].zoneSnapshot
+        : (typeof zones !== 'undefined' && Array.isArray(zones) ? zones : []);
+    const out = {
+        format: 'shokker-recipe',
+        version: 1,
+        app: 'Shokker Paint Booth',
+        savedAt: new Date().toISOString(),
+        meta: {
+            zoneCount: model.zoneCount || (snap ? snap.length : 0),
+            elapsed_seconds: model.elapsed,
+            paintFile: model.paintFile || '',
+        },
+        zoneSnapshot: snap,
+    };
+    if (includeThumb) {
+        try {
+            const src = document.getElementById('renderPaintPreview');
+            if (src && src.naturalWidth) {
+                const c = document.createElement('canvas');
+                const tw = 360, th = Math.max(1, Math.round(tw * (src.naturalHeight / src.naturalWidth)));
+                c.width = tw; c.height = th;
+                c.getContext('2d').drawImage(src, 0, 0, tw, th);
+                out.thumbnail = c.toDataURL('image/jpeg', 0.7);
+            }
+        } catch (_) {}
+    }
+    return out;
+}
+
+function _downloadRecipeFile(obj, label) {
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const base = ((obj.meta && obj.meta.paintFile) ? obj.meta.paintFile.replace(/\.[^.]+$/, '') : 'recipe')
+        .replace(/[^a-z0-9_-]+/gi, '_').slice(0, 40) || 'recipe';
+    const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `${base}-${stamp}.shokkerrecipe`;
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { try { URL.revokeObjectURL(url); a.remove(); } catch (_) {} }, 1500);
+    showToast(label);
+}
+
+/** SAVE RECIPE STYLE — download a compact recipe file you can re-import any time. */
+function saveRecipeStyleFile() {
+    if (!_hasRecipeToExport()) { showToast('Render first, then save the recipe style', true); return; }
+    _downloadRecipeFile(_buildRecipeFileObject(false), 'Recipe style saved (.shokkerrecipe) — re-import it any time with Import Recipe');
+}
+
+/** SHARE RECIPE — download a portable recipe file (with preview) to send to others. */
+function shareRecipeFile() {
+    if (!_hasRecipeToExport()) { showToast('Render first, then share the recipe', true); return; }
+    _downloadRecipeFile(_buildRecipeFileObject(true), 'Shareable recipe saved — send the .shokkerrecipe file to anyone; they open it via Import Recipe');
+}
+
+/** IMPORT — open the OS file picker for a .shokkerrecipe (or .json) and restore the full recipe. */
+function importRecipeFile() {
+    let inp = document.getElementById('recipeImportInput');
+    if (!inp) {
+        inp = document.createElement('input');
+        inp.type = 'file'; inp.id = 'recipeImportInput';
+        inp.accept = '.shokkerrecipe,.json,application/json';
+        inp.style.display = 'none';
+        inp.addEventListener('change', (e) => {
+            const f = e.target.files && e.target.files[0];
+            if (f) _applyImportedRecipeFile(f);
+            e.target.value = '';
+        });
+        document.body.appendChild(inp);
+    }
+    inp.click();
+}
+
+function _applyImportedRecipeFile(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+        let data;
+        try { data = JSON.parse(reader.result); } catch (_) { showToast('That file is not a valid Shokker recipe', true); return; }
+        const snap = data && (data.zoneSnapshot || data.zones);
+        if (!Array.isArray(snap) || !snap.length) { showToast('No recipe data found in that file', true); return; }
+        if (!confirm(`Import this recipe (${snap.length} zones)? Your current zones will be replaced.`)) return;
+        try {
+            zones = _recipeSnapshotToZones(snap);
+            selectedZoneIndex = 0;
+            renderZones();
+            triggerPreviewRender();
+            autoSave();
+            if (typeof closeRecentRendersPanel === 'function') closeRecentRendersPanel();
+            if (typeof closeRenderResults === 'function') closeRenderResults();
+            showToast('Recipe imported — ' + snap.length + ' zones restored');
+        } catch (e) { showToast('Import failed: ' + (e && e.message || e), true); }
+    };
+    reader.onerror = () => showToast('Could not read that file', true);
+    reader.readAsText(file);
+}
+
+if (typeof window !== 'undefined') {
+    window.exportRecipeCardPDF = exportRecipeCardPDF;
+    window.saveRecipeStyleFile = saveRecipeStyleFile;
+    window.shareRecipeFile = shareRecipeFile;
+    window.importRecipeFile = importRecipeFile;
 }
 
 // ===== SAVE TO SHOKKER PAINT BOOTH FOLDER (keep; not overwritten) =====
@@ -3685,7 +5596,10 @@ async function loadIracingCars() {
         if (!sel || !data.cars) return;
         let html = '<option value="">Select car folder...</option>';
         data.cars.forEach(c => {
-            html += `<option value="${c.name}" title="${c.path}">${c.name} (${c.tga_count} files)</option>`;
+            const name = _spbEscapeRenderHtml(c.name || '');
+            const path = _spbEscapeRenderHtml(c.path || '');
+            const count = _spbEscapeRenderHtml(c.tga_count ?? 0);
+            html += `<option value="${name}" title="${path}">${name} (${count} files)</option>`;
         });
         sel.innerHTML = html;
         // Try to auto-select based on current paint file path
@@ -3730,11 +5644,12 @@ async function deployToIracing() {
         });
         const data = await safeParseJSON(res, 'deploy'); // [15] safe parse
         if (data.success) {
+            const deployedCount = Array.isArray(data.deployed) ? data.deployed.length : 0;
             if (status) {
-                status.textContent = `Deployed ${data.deployed.length} files to ${carFolder}. Alt+Tab to iRacing, press Ctrl+R!`;
+                status.textContent = `Deployed ${deployedCount} files to ${carFolder}. Alt+Tab to iRacing, press Ctrl+R!`;
                 status.style.color = 'var(--success)';
             }
-            showToast(`Deployed to iRacing! ${data.deployed.length} files → ${carFolder}`);
+            showToast(`Deployed to iRacing! ${deployedCount} files → ${carFolder}`);
         } else {
             if (status) { status.textContent = data.error || 'Deploy failed'; status.style.color = 'var(--error)'; }
             showToast('Deploy failed: ' + (data.error || 'Unknown server error'), true); // [40] specific
@@ -3746,43 +5661,63 @@ async function deployToIracing() {
     }
 }
 
-/** Copy a Trading Paints-formatted description of the current zone setup to clipboard. // [48] */
-function copyTPDescription() {
-    const lines = ['═══ Made with Shokker Paint Booth ═══', ''];
+/** Build the Trading Paints description — the full, ACCURATE recipe. // [48] [SPB-RECIPE-CARD-005]
+    Owner 2026-08-26: the old one listed raw finish lines, padded "No finish" zones, and printed a
+    FALSE domain (shokkerpaints.com). This one reuses buildRecipeModel's deep facts (display names,
+    colors, layer locks, overlay bases, dials) and signs off with the real Payhip + Discord links. */
+function buildTPDescription() {
+    const model = buildRecipeModel((typeof zones !== 'undefined' && Array.isArray(zones)) ? zones : [], null);
+    const lines = ['\u2550\u2550\u2550 MADE WITH SHOKKER PAINT BOOTH \u2550\u2550\u2550', ''];
     const wearSlider = document.getElementById('wearSlider');
     const globalWear = wearSlider ? parseInt(wearSlider.value) : 0;
-
-    for (const z of zones) {
-        let finishName = '';
-        if (z.finish) {
-            const mono = MONOLITHICS.find(m => m.id === z.finish);
-            finishName = mono ? mono.name + ' (Monolithic)' : z.finish;
-        } else if (z.base) {
-            const baseObj = BASES.find(b => b.id === z.base);
-            const patObj = z.pattern && z.pattern !== 'none' ? PATTERNS.find(p => p.id === z.pattern) : null;
-            finishName = baseObj ? baseObj.name : z.base;
-            if (patObj) finishName += ' + ' + patObj.name;
-        }
-        if (!finishName) finishName = 'No finish';
-
-        let line = `▸ ${z.name}: ${finishName}`;
-        if (z.intensity && z.intensity !== '100') line += ` [${z.intensity}%]`;
-        if (z.scale && z.scale !== 1.0) line += ` (scale ${z.scale}x)`;
-        const zoneWear = z.wear || 0;
-        if (zoneWear > 0) line += ` | Wear: ${zoneWear}%`;
+    let skipped = 0;
+    for (const z of model.zones) {
+        const finishName = z.baseOrFinish
+            ? (z.baseOrFinish.name || z.baseOrFinish.val) + (z.baseOrFinish.type === 'finish' ? ' (Monolithic)' : '')
+            : null;
+        const hasContent = finishName || (z.colorInfo && z.colorInfo.length) || z.pattern ||
+            (z.patternStack && z.patternStack.length) || (z.baseLayers && z.baseLayers.length);
+        if (!hasContent) { skipped++; continue; }
+        let line = '\u25b8 ' + z.name + ' \u2014 ' + (finishName || 'source paint');
+        if (z.pattern) line += ' + ' + (z.pattern.name || z.pattern.id);
+        if (z.intensity && z.intensity !== '' && z.intensity !== '100') line += ' [' + z.intensity + '%]';
         lines.push(line);
+        const sub1 = [];
+        if (z.colorInfo && z.colorInfo.length) sub1.push(z.colorInfo.join(' \u00b7 '));
+        if (z.restriction) sub1.push('Locked to ' + z.restriction.layers.join(' + ') + (z.restriction.hard ? ' (hard edge)' : ''));
+        if (sub1.length) lines.push('    ' + sub1.join('  \u00b7  '));
+        if (z.baseLayers && z.baseLayers.length) {
+            lines.push('    ' + z.baseLayers.map(b => {
+                let t = b.tier + ' base: ' + ([b.baseName || b.base, b.patternName || b.pattern].filter(Boolean).join(' / ') || '\u2014');
+                const ex = [];
+                if (b.blend) ex.push(b.blend);
+                if (b.strength != null) ex.push(Math.round(Number(b.strength) * 100) + '%');
+                if (ex.length) t += ' (' + ex.join(' ') + ')';
+                return t;
+            }).join('  \u00b7  '));
+        }
+        const sub3 = [];
+        if (z.patternStack && z.patternStack.length) sub3.push('Patterns: ' + z.patternStack.map(pp => pp.name || pp.id).join(', '));
+        if (z.specStacks && z.specStacks.length) sub3.push('Spec: ' + z.specStacks.map(sp => sp.name || sp.id).join(', '));
+        if (z.dials && z.dials.length) sub3.push(z.dials.join(' \u00b7 '));
+        if (z.specShift) sub3.push('Spec shift ' + z.specShift.replace(/\s+/g, ' '));
+        if (z.hsb && z.hsb.length) sub3.push('HSB ' + z.hsb.join('/'));
+        if (z.flags && z.flags.length) sub3.push(z.flags.join(' \u00b7 '));
+        if (sub3.length) lines.push('    ' + sub3.join('  \u00b7  '));
     }
-
-    if (globalWear > 0) {
-        lines.push('');
-        lines.push(`Global Wear: ${globalWear}%`);
-    }
-
+    if (globalWear > 0) { lines.push(''); lines.push('Global Wear: ' + globalWear + '%'); }
     lines.push('');
-    lines.push('───────────────────────');
-    lines.push('2,525 finishes | shokkerpaints.com');
+    lines.push('\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500');
+    const cnt = _spbCatalogCount();
+    lines.push((cnt ? cnt.toLocaleString() + ' finishes \u00b7 ' : '') + 'SHOKKER PAINT BOOTH');
+    lines.push('Get the app \u2192 payhip.com/b/AhgpV');
+    lines.push('Discord \u2192 discord.gg/GwXxyhwtDu');
+    return lines.join('\n');
+}
 
-    const text = lines.join('\n');
+/** Copy the Trading Paints description to the clipboard. */
+function copyTPDescription() {
+    const text = buildTPDescription();
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(() => {
@@ -3812,32 +5747,107 @@ function fallbackCopyTP(text) {
 }
 
 // ===== RENDER HISTORY =====
+const RENDER_HISTORY_STORAGE_KEY = 'spb_render_history_v1';
+const RENDER_HISTORY_STORAGE_LIMIT = 1500000;
+
+function _persistableRenderHistoryEntry(entry) {
+    entry = entry && typeof entry === 'object' ? entry : {};
+    const thumb = String(entry.thumb || '');
+    return {
+        job_id: String(entry.job_id || '').slice(0, 160),
+        timestamp: Number(entry.timestamp) || Date.now(),
+        elapsed_seconds: Number(entry.elapsed_seconds) || 0,
+        zone_count: Number(entry.zone_count) || 0,
+        paint_url: String(entry.paint_url || '').slice(0, 2048),
+        spec_url: String(entry.spec_url || '').slice(0, 2048),
+        zones_summary: String(entry.zones_summary || '').slice(0, 4000),
+        notes: String(entry.notes || '').slice(0, 500),
+        tags: Array.isArray(entry.tags) ? entry.tags.map(t => String(t).slice(0, 80)).slice(0, 12) : [],
+        favorite: !!entry.favorite,
+        filename: String(entry.filename || 'render.png').slice(0, 240),
+        metadata: entry.metadata && typeof entry.metadata === 'object' ? entry.metadata : {},
+        zoneSnapshot: Array.isArray(entry.zoneSnapshot) ? entry.zoneSnapshot : [],
+        thumb: thumb.length <= 250000 && /^data:image\/(?:jpeg|png|webp);base64,/i.test(thumb)
+            ? thumb : ''
+    };
+}
+
+function persistRenderHistory() {
+    if (typeof localStorage === 'undefined') return false;
+    try {
+        const entries = renderHistory.slice(0, MAX_RENDER_HISTORY).map(_persistableRenderHistoryEntry);
+        let encoded = JSON.stringify(entries);
+        while (entries.length > 1 && encoded.length > RENDER_HISTORY_STORAGE_LIMIT) {
+            entries.pop();
+            encoded = JSON.stringify(entries);
+        }
+        if (encoded.length > RENDER_HISTORY_STORAGE_LIMIT && entries.length) {
+            // Preserve the durable thumbnail/metadata even when one unusually
+            // large zone recipe would otherwise make the entire write fail.
+            entries[0].zoneSnapshot = [];
+            entries[0].metadata = {};
+            encoded = JSON.stringify(entries);
+        }
+        if (encoded.length > RENDER_HISTORY_STORAGE_LIMIT) return false;
+        localStorage.setItem(RENDER_HISTORY_STORAGE_KEY, encoded);
+        return true;
+    } catch (_) {
+        return false;
+    }
+}
+
+function restorePersistedRenderHistory() {
+    if (typeof localStorage === 'undefined') return false;
+    try {
+        const parsed = JSON.parse(localStorage.getItem(RENDER_HISTORY_STORAGE_KEY) || '[]');
+        if (!Array.isArray(parsed)) return false;
+        const restored = parsed.slice(0, MAX_RENDER_HISTORY).map(_persistableRenderHistoryEntry);
+        renderHistory.splice(0, renderHistory.length, ...restored);
+        return restored.length > 0;
+    } catch (_) {
+        return false;
+    }
+}
+
 /** Update the thumbnail strip at the top showing recent render results. // [47] */
 function updateHistoryStrip() {
-    const strip = document.getElementById('renderHistoryStrip');
+    // [SPB-HEADER-SLIM 2026-08-29] filmstrip -> RENDER HISTORY toolbar dropdown. Same thumbs
+    // container id; the <details> menu needs no show/hide toggling.
     const container = document.getElementById('renderHistoryThumbs');
-    if (!strip || !container) return;
+    if (!container) return;
 
     if (renderHistory.length === 0) {
-        strip.style.display = 'none';
+        container.innerHTML = '<div style="grid-column:1/-1;font-size:10px;color:var(--text-dim);padding:10px;text-align:center;">No renders yet — hit RENDER and your last 20 land here.</div>';
         return;
     }
-    strip.style.display = 'block';
 
+    const _escHistory = (typeof escapeHtml === 'function') ? escapeHtml : (s => String(s == null ? '' : s)
+        .replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])));
     let html = '';
     renderHistory.forEach((entry, idx) => {
         const age = Math.round((Date.now() - entry.timestamp) / 1000);
         const ageLabel = age < 60 ? `${age}s ago` : age < 3600 ? `${Math.round(age / 60)}m ago` : `${Math.round(age / 3600)}h ago`;
         const border = entry.favorite ? 'var(--accent-gold)' : (idx === 0 ? 'var(--success)' : 'var(--border)');
         const favStar = entry.favorite ? '<span style="position:absolute;top:1px;right:2px;color:var(--accent-gold);font-size:10px;text-shadow:0 0 3px #000;">&#9733;</span>' : '';
-        html += `<div onclick="showHistoryItem(${idx})" ondblclick="restoreHistoryItem(${idx})" title="${(entry.zones_summary || '').replace(/"/g, '&quot;')}\n${ageLabel} | ${entry.elapsed_seconds}s | ${entry.zone_count} zones${entry.notes ? '\nNote: ' + entry.notes : ''}\nDouble-click to restore zone config"
-            style="cursor:pointer; position:relative; border:1px solid ${border}; border-radius:3px; overflow:hidden; flex-shrink:0; width:48px; height:48px; transition:border-color 0.15s;">
-            <img src="${entry.paint_url}" style="width:100%; height:100%; object-fit:cover;" loading="lazy" onerror="this.style.display='none'">
+        const _stripTitle = _escHistory((entry.zones_summary || '') + '\n' + ageLabel + ' | ' + entry.elapsed_seconds + 's | ' + entry.zone_count + ' zones' + (entry.notes ? '\nNote: ' + entry.notes : '') + '\nClick to rebuild this render');
+        const _stripThumb = _escHistory(entry.thumb || entry.paint_url || '');
+        html += `<div onclick="restoreHistoryItem(${idx})" title="${_stripTitle}"
+            style="cursor:pointer; position:relative; border:1px solid ${border}; border-radius:3px; overflow:hidden; flex-shrink:0; width:56px; height:56px; transition:border-color 0.15s;">
+            <img src="${_stripThumb}" style="width:100%; height:100%; object-fit:cover;" loading="lazy" onerror="this.style.display='none'">
             ${favStar}
             <div style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.7); font-size:7px; color:#aaa; text-align:center; padding:1px;">${ageLabel}</div>
         </div>`;
     });
     container.innerHTML = html;
+}
+
+// Scripts load after the UI shell; hydrate once and immediately paint the
+// strip. Corrupt/quota-hostile storage is ignored by the bounded parser above.
+restorePersistedRenderHistory();
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateHistoryStrip, { once: true });
+} else {
+    updateHistoryStrip();
 }
 
 /** Show a specific history item's preview in the results panel. // [48]
@@ -3895,6 +5905,31 @@ function toggleCustomNumber(enabled) {
 let historyCompareA = -1;
 let historyCompareB = -1;
 
+// Inline handlers receive only a numeric history index. Entry strings never
+// enter JavaScript-in-HTML contexts; helpers resolve the trusted object here.
+function historyShareRender(idx) {
+    const entry = renderHistory[idx];
+    if (entry) copyRenderShareLink(entry.job_id || '');
+}
+function historyDownloadPaint(idx) {
+    const entry = renderHistory[idx];
+    if (entry) downloadRenderFile(entry.paint_url || '', entry.filename || 'render.png');
+}
+function historyShowChannels(idx) {
+    const entry = renderHistory[idx];
+    if (entry) showSpecChannels(entry.spec_url || '');
+}
+function historyShowHistogram(idx) {
+    const entry = renderHistory[idx];
+    if (entry) showRenderHistogram(entry.paint_url || '');
+}
+if (typeof window !== 'undefined') {
+    window.historyShareRender = historyShareRender;
+    window.historyDownloadPaint = historyDownloadPaint;
+    window.historyShowChannels = historyShowChannels;
+    window.historyShowHistogram = historyShowHistogram;
+}
+
 /** Open the full-screen render history gallery with compare support. // [50] */
 function openHistoryGallery() {
     if (renderHistory.length === 0) { showToast('No render history yet', true); return; }
@@ -3920,6 +5955,8 @@ function buildGalleryHTML() {
     const start = _historyPage * HISTORY_PAGE_SIZE;
     const slice = visibleIdx.slice(start, start + HISTORY_PAGE_SIZE);
     const totalPages = Math.max(1, Math.ceil(visibleIdx.length / HISTORY_PAGE_SIZE));
+    const _esc = (typeof escapeHtml === 'function') ? escapeHtml : (s => String(s || '')
+        .replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])));
 
     let cards = '';
     slice.forEach((idx) => {
@@ -3936,13 +5973,15 @@ function buildGalleryHTML() {
         // and were being interpolated RAW into innerHTML. A note like
         // `<img src=x onerror=alert(1)>` executed on every gallery re-render.
         // Escape EVERY user-originated string before it lands in this template.
-        const _esc = (typeof escapeHtml === 'function') ? escapeHtml : (s => String(s || ''));
         const tags = (entry.tags || []).slice(0, 3).map(t => `<span style="background:rgba(255,170,0,0.15);color:var(--accent-gold);padding:0 4px;border-radius:2px;font-size:9px;margin-right:2px;">${_esc(t)}</span>`).join('');
         const _summary = _esc(entry.zones_summary || '');
         const _notesShort = entry.notes ? _esc(String(entry.notes).slice(0, 60)) : '';
+        // Use the already-persisted 96px data thumbnail for the grid. The full
+        // 2048 image remains available for compare/lightbox actions on demand.
+        const _gridThumb = _esc(entry.thumb || entry.paint_url || '');
         cards += `<div class="history-card${selA}${selB}" onclick="gallerySelectItem(${idx})" ondblclick="restoreHistoryItem(${idx})">
             ${badge}
-            <img src="${entry.paint_url}" alt="Render #${idx + 1}" loading="lazy" onerror="this.style.background='#222'">
+            <img src="${_gridThumb}" alt="Render #${idx + 1}" loading="lazy" onerror="this.style.background='#222'">
             <div class="history-card-info">
                 <div class="hc-time">${ageLabel} &middot; ${entry.elapsed_seconds}s &middot; ${entry.zone_count} zones</div>
                 <div class="hc-summary" title="${_summary}">${_summary}</div>
@@ -3952,10 +5991,10 @@ function buildGalleryHTML() {
                     <button class="btn btn-sm" title="Favorite" onclick="toggleHistoryFavorite(${idx})" style="font-size:11px;padding:1px 5px;">${favIcon}</button>
                     <button class="btn btn-sm" title="Notes" onclick="editHistoryNotes(${idx})" style="font-size:9px;padding:1px 5px;">Note</button>
                     <button class="btn btn-sm" title="Tags" onclick="editHistoryTags(${idx})" style="font-size:9px;padding:1px 5px;">Tags</button>
-                    <button class="btn btn-sm" title="Share link" onclick="copyRenderShareLink('${entry.job_id || ''}')" style="font-size:9px;padding:1px 5px;">Share</button>
-                    <button class="btn btn-sm" title="Download paint" onclick="downloadRenderFile('${entry.paint_url}','${entry.filename || 'render.png'}')" style="font-size:9px;padding:1px 5px;">DL</button>
-                    <button class="btn btn-sm" title="Channels" onclick="showSpecChannels('${entry.spec_url || ''}')" style="font-size:9px;padding:1px 5px;">Ch</button>
-                    <button class="btn btn-sm" title="Histogram" onclick="showRenderHistogram('${entry.paint_url}')" style="font-size:9px;padding:1px 5px;">Hist</button>
+                    <button class="btn btn-sm" title="Share link" onclick="historyShareRender(${idx})" style="font-size:9px;padding:1px 5px;">Share</button>
+                    <button class="btn btn-sm" title="Download paint" onclick="historyDownloadPaint(${idx})" style="font-size:9px;padding:1px 5px;">DL</button>
+                    <button class="btn btn-sm" title="Channels" onclick="historyShowChannels(${idx})" style="font-size:9px;padding:1px 5px;">Ch</button>
+                    <button class="btn btn-sm" title="Histogram" onclick="historyShowHistogram(${idx})" style="font-size:9px;padding:1px 5px;">Hist</button>
                     <button class="btn btn-sm" title="Delete" onclick="deleteHistoryItem(${idx})" style="font-size:9px;padding:1px 5px;color:#ff6666;">&times;</button>
                 </div>
             </div>
@@ -3969,7 +6008,13 @@ function buildGalleryHTML() {
            </div>`
         : '';
 
-    const compareBar = (historyCompareA >= 0 && historyCompareB >= 0)
+    const _compareA = historyCompareA >= 0 ? renderHistory[historyCompareA] : null;
+    const _compareB = historyCompareB >= 0 ? renderHistory[historyCompareB] : null;
+    const _compareASummary = _esc((_compareA && _compareA.zones_summary) || '');
+    const _compareBSummary = _esc((_compareB && _compareB.zones_summary) || '');
+    const _compareAUrl = _esc((_compareA && _compareA.paint_url) || '');
+    const _compareBUrl = _esc((_compareB && _compareB.paint_url) || '');
+    const compareBar = (_compareA && _compareB)
         ? `<div class="history-compare-bar">
             <span>Comparing #${historyCompareA + 1} vs #${historyCompareB + 1}</span>
             <button class="btn btn-sm" onclick="showRenderDiff(${historyCompareA}, ${historyCompareB})" style="font-size:9px;">Diff</button>
@@ -3978,13 +6023,13 @@ function buildGalleryHTML() {
            <div class="history-compare-view">
             <div class="history-compare-pane">
                 <div class="compare-label">Render #${historyCompareA + 1}</div>
-                <img src="${renderHistory[historyCompareA]?.paint_url}" alt="A">
-                <div style="font-size:9px;color:var(--text-dim);margin-top:4px;">${renderHistory[historyCompareA]?.zones_summary || ''}</div>
+                <img src="${_compareAUrl}" alt="A">
+                <div style="font-size:9px;color:var(--text-dim);margin-top:4px;">${_compareASummary}</div>
             </div>
             <div class="history-compare-pane">
                 <div class="compare-label">Render #${historyCompareB + 1}</div>
-                <img src="${renderHistory[historyCompareB]?.paint_url}" alt="B">
-                <div style="font-size:9px;color:var(--text-dim);margin-top:4px;">${renderHistory[historyCompareB]?.zones_summary || ''}</div>
+                <img src="${_compareBUrl}" alt="B">
+                <div style="font-size:9px;color:var(--text-dim);margin-top:4px;">${_compareBSummary}</div>
             </div>
            </div>`
         : '';
@@ -3997,7 +6042,7 @@ function buildGalleryHTML() {
     const favOnly = window._historyFavOnly ? 'checked' : '';
     return `<div class="history-gallery-header">
         <h3>RENDER HISTORY GALLERY (${renderHistory.length})</h3>
-        <input id="historySearchInput" type="text" placeholder="Search zones / notes / tags..." value="${(query || '').replace(/"/g, '&quot;')}"
+        <input id="historySearchInput" type="text" placeholder="Search zones / notes / tags..." value="${_esc(query || '')}"
                oninput="window._historySearchQuery=this.value; setHistoryPage(0);"
                style="flex:1;max-width:240px;padding:3px 6px;font-size:11px;background:#222;border:1px solid var(--border);color:#eee;border-radius:3px;">
         <label style="font-size:10px;color:var(--text-dim);cursor:pointer;"><input type="checkbox" ${favOnly} onchange="window._historyFavOnly=this.checked; setHistoryPage(0);"> Favorites only</label>
@@ -4042,33 +6087,197 @@ function restoreHistoryItem(idx) {
     }
     if (!confirm(`Restore zone config from render #${idx + 1}? Your current zones will be replaced.`)) return;
 
-    zones = entry.zoneSnapshot.map(z => ({
-        name: z.name || 'Zone',
-        color: z.color, base: z.base || null, pattern: z.pattern || 'none',
-        finish: z.finish || null, intensity: z.intensity || '100',
-        customSpec: z.customSpec != null ? z.customSpec : null,
-        customPaint: z.customPaint != null ? z.customPaint : null,
-        customBright: z.customBright != null ? z.customBright : null,
-        colorMode: z.colorMode || 'none',
-        pickerColor: z.pickerColor || '#3366ff',
-        pickerTolerance: z.pickerTolerance || 40,
-        colors: z.colors || [],
-        regionMask: null,
-        lockBase: false, lockPattern: false, lockIntensity: false, lockColor: false,
-        scale: z.scale || 1.0, patternOpacity: z.patternOpacity ?? 100,
-        patternStack: z.patternStack || [],
-        wear: z.wear || 0, muted: z.muted || false,
-    }));
+    zones = _recipeSnapshotToZones(entry.zoneSnapshot);
     selectedZoneIndex = 0;
     renderZones();
     triggerPreviewRender();
     autoSave();
     closeHistoryGallery();
+    // [SPB-HEADER-SLIM 2026-08-29] the toolbar glue only auto-closes .vtool-btn clicks
+    var _rhMenu = document.getElementById('spbRenderHistMenu');
+    if (_rhMenu) _rhMenu.removeAttribute('open');
     showToast(`Restored zone config from render #${idx + 1}`);
+    // owner: "Fully rebuilt if you click on any of them" — fire the full render, not just the preview
+    if (typeof safeDoRender === 'function') safeDoRender();
 }
 
 function closeHistoryGallery() {
     const overlay = document.getElementById('historyGalleryOverlay');
     if (overlay) overlay.remove();
+}
+
+/**
+ * [SPB-RECENTS-001] Map a saved zone snapshot back to full live zone objects.
+ * Restores the FULL recipe — base/pattern/finish + colors AND the spec-pattern
+ * overlays + blend / cc-quality / paint-reactive fields that the old restore
+ * dropped. Owner ask: recall must "restore the FULL recipe".
+ */
+function _recipeSnapshotToZones(snapshot) {
+    if (!Array.isArray(snapshot)) return [];
+    // [2026-06-12 owner: "EXACTLY REPLICATE THIS"] full-fidelity restore —
+    // spread EVERY saved field (spec sliders, base HSB, overlay tiers, blend
+    // modes, future dials), then normalize the required ones and reset
+    // transient state. The old whitelist dropped unknown fields on restore.
+    return snapshot.map(z => {
+        const o = Object.assign({}, z);
+        o.name = z.name || 'Zone';
+        o.base = z.base || null;
+        o.pattern = z.pattern || 'none';
+        o.finish = z.finish || null;
+        o.intensity = z.intensity || '100';
+        o.customSpec = z.customSpec != null ? z.customSpec : null;
+        o.customPaint = z.customPaint != null ? z.customPaint : null;
+        o.customBright = z.customBright != null ? z.customBright : null;
+        o.colorMode = z.colorMode || 'none';
+        o.pickerColor = z.pickerColor || '#3366ff';
+        o.pickerTolerance = z.pickerTolerance || 40;
+        o.colors = Array.isArray(z.colors) ? z.colors : [];
+        o.scale = z.scale || 1.0;
+        o.patternOpacity = z.patternOpacity ?? 100;
+        o.patternStack = Array.isArray(z.patternStack) ? z.patternStack : [];
+        o.specPatternStack = Array.isArray(z.specPatternStack) ? z.specPatternStack : [];
+        o.overlaySpecPatternStack = Array.isArray(z.overlaySpecPatternStack) ? z.overlaySpecPatternStack : [];
+        o.wear = z.wear || 0;
+        o.muted = z.muted || false;
+        o.regionMask = null;
+        o.lockBase = false; o.lockPattern = false; o.lockIntensity = false; o.lockColor = false;
+        return o;
+    });
+}
+
+/** [SPB-LIVERY-APPLY-001] Canonical in-scope zone installer used by the Prompt-to-Livery
+ *  and Photo->Livery experimental panels (js/features/*). Runs in the bundle scope so it CAN
+ *  reassign the top-level `let zones` binding (a separate feature <script> cannot reach it).
+ *  Mirrors restoreRecipeFromRecent(). Returns true on success, false (non-destructive) on miss. */
+function spbApplyZones(rawZones) {
+    if (!Array.isArray(rawZones) || !rawZones.length) return false;
+    try {
+        zones = _recipeSnapshotToZones(rawZones);   // normalize + full-fidelity restore
+        selectedZoneIndex = 0;
+        renderZones();                              // rebuild the zone-list UI
+        if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+        else if (typeof window.spbKickLivePreview === 'function') window.spbKickLivePreview();
+        if (typeof autoSave === 'function') autoSave();
+        if (typeof showToast === 'function') showToast('Livery applied — ' + zones.length + ' zones');
+        return true;
+    } catch (e) {
+        console.error('[spbApplyZones] failed:', e);
+        if (typeof showToast === 'function') showToast('Could not apply livery: ' + (e && e.message || e), true);
+        return false;
+    }
+}
+if (typeof window !== 'undefined') { window.spbApplyZones = spbApplyZones; }
+
+/** [SPB-RECENTS-001] Persist a render-history entry to the rotating last-10 on disk. */
+async function saveRecentRenderToDisk(entry) {
+    if (!entry) return;
+    try {
+        await fetch(ShokkerAPI.baseUrl + '/recent-renders/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                job_id: entry.job_id || '',
+                recipe: {
+                    timestamp: entry.timestamp,
+                    elapsed_seconds: entry.elapsed_seconds,
+                    zone_count: entry.zone_count,
+                    zones_summary: entry.zones_summary,
+                    filename: entry.filename,
+                    metadata: entry.metadata,
+                    zoneSnapshot: entry.zoneSnapshot,
+                },
+            }),
+            signal: AbortSignal.timeout(API_TIMEOUT_GENERAL_MS),
+        });
+    } catch (e) {
+        console.warn('[recent-renders] disk save failed:', e);
+    }
+}
+
+/** [SPB-RECENTS-001] Open the recall panel listing the last 10 disk-saved renders. */
+async function openRecentRendersPanel() {
+    let overlay = document.getElementById('recentRendersOverlay');
+    if (overlay) overlay.remove();
+    overlay = document.createElement('div');
+    overlay.id = 'recentRendersOverlay';
+    overlay.className = 'recent-renders-overlay';
+    overlay.innerHTML =
+        '<div class="recent-renders-card" role="dialog" aria-label="Recent renders">' +
+        '<div class="recent-renders-header"><h3>📁 RECENT RENDERS — last 10 (auto-saved)</h3>' +
+        '<span style="flex:1 1 auto;"></span>' +
+        '<button class="btn btn-sm" onclick="importRecipeFile()" style="border-color:var(--accent-gold);color:var(--accent-gold);" title="Import a .shokkerrecipe file (yours or shared by someone) and restore the full recipe">📥 Import Recipe</button>' +
+        '<button class="btn btn-sm" onclick="closeRecentRendersPanel()" aria-label="Close recent renders">&times; Close</button></div>' +
+        '<div class="recent-renders-body" id="recentRendersBody"><div style="padding:20px;color:var(--text-dim);">Loading…</div></div></div>';
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeRecentRendersPanel(); });
+    document.body.appendChild(overlay);
+    try {
+        const res = await fetch(ShokkerAPI.baseUrl + '/recent-renders/list', { signal: AbortSignal.timeout(API_TIMEOUT_GENERAL_MS) });
+        const data = await safeParseJSON(res, 'recent renders');
+        const body = document.getElementById('recentRendersBody');
+        if (!body) return;
+        const renders = (data && data.renders) || [];
+        if (!renders.length) {
+            body.innerHTML = '<div style="padding:20px;color:var(--text-dim);">No saved renders yet. Render a car and it gets saved here automatically (last 10 kept).</div>';
+            return;
+        }
+        window._recentRendersCache = renders;
+        const esc = (typeof _spbEscapeRenderHtml === 'function') ? _spbEscapeRenderHtml : (s => String(s == null ? '' : s));
+        body.innerHTML = renders.map((r, i) => {
+            const rec = r.recipe || {};
+            const when = rec.timestamp ? new Date(rec.timestamp).toLocaleString() : '';
+            const secs = rec.elapsed_seconds != null ? `${rec.elapsed_seconds}s` : '';
+            const zc = rec.zone_count != null ? `${rec.zone_count} zones` : '';
+            const summary = esc(rec.zones_summary || '');
+            const paint = r.has_paint ? `${ShokkerAPI.baseUrl}${r.paint_url}` : '';
+            const spec = r.has_spec ? `${ShokkerAPI.baseUrl}${r.spec_url}` : '';
+            const canLoad = !!(rec.zoneSnapshot && rec.zoneSnapshot.length);
+            return `<div class="recent-render-card">
+                <div class="recent-render-thumbs">
+                    ${paint ? `<img src="${paint}" alt="Rendered car" title="Rendered car">` : '<div class="recent-render-noimg">no paint</div>'}
+                    ${spec ? `<img src="${spec}" alt="Spec map" title="Spec map">` : '<div class="recent-render-noimg">no spec</div>'}
+                </div>
+                <div class="recent-render-meta">
+                    <div class="recent-render-time">${secs}${secs && zc ? ' · ' : ''}${zc}</div>
+                    <div class="recent-render-when">${esc(when)}</div>
+                    <div class="recent-render-summary" title="${summary}">${summary || '—'}</div>
+                </div>
+                <button class="btn btn-sm recent-render-load" ${canLoad ? '' : 'disabled'} onclick="restoreRecipeFromRecent(${i})"
+                    title="${canLoad ? 'Restore this full recipe (all zones, patterns, spec overlays)' : 'No recipe data saved for this render'}">↺ Load recipe</button>
+            </div>`;
+        }).join('');
+    } catch (e) {
+        const body = document.getElementById('recentRendersBody');
+        const msg = (typeof classifyFetchError === 'function') ? classifyFetchError(e, 'recent renders') : String(e);
+        if (body) body.innerHTML = `<div style="padding:20px;color:#ff6b6b;">Could not load recent renders: ${msg}</div>`;
+    }
+}
+
+function closeRecentRendersPanel() {
+    const overlay = document.getElementById('recentRendersOverlay');
+    if (overlay) overlay.remove();
+}
+
+/** [SPB-RECENTS-001] Restore the full recipe from a recalled disk-saved render. */
+function restoreRecipeFromRecent(i) {
+    const renders = window._recentRendersCache || [];
+    const r = renders[i];
+    const snap = r && r.recipe && r.recipe.zoneSnapshot;
+    if (!snap || !Array.isArray(snap) || !snap.length) { showToast('No recipe data for this render', true); return; }
+    if (!confirm('Restore this full recipe? Your current zones will be replaced.')) return;
+    zones = _recipeSnapshotToZones(snap);
+    selectedZoneIndex = 0;
+    renderZones();
+    triggerPreviewRender();
+    autoSave();
+    closeRecentRendersPanel();
+    closeRenderResults();
+    showToast('Recipe restored from saved render');
+}
+
+if (typeof window !== 'undefined') {
+    window.openRecentRendersPanel = openRecentRendersPanel;
+    window.closeRecentRendersPanel = closeRecentRendersPanel;
+    window.restoreRecipeFromRecent = restoreRecipeFromRecent;
+    window.saveRecentRenderToDisk = saveRecentRenderToDisk;
 }
 

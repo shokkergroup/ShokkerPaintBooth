@@ -1,0 +1,50 @@
+{
+  "review_id": "W53",
+  "status": "ISOLATED_CANDIDATE_PASS",
+  "date": "2026-10-04",
+  "base": {
+    "path": "_easy_claude_work/ai14h_w44_candidate/phase2/paint-booth-3-canvas.js",
+    "sha256": "e7674f6c7ac16bc4bbda954c4664c0b5fd2333fd55a012625176e5cedfcc859d"
+  },
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_w53_candidate/candidate/paint-booth-3-canvas.js",
+    "sha256": "159716b3150c785517bec3a1cf1b00a7318121885e7640276b5ffaf14fc91d9a",
+    "installed": false
+  },
+  "changes": [
+    "Integrated W50's missing-paintCanvas transaction settlement before the existing user-facing toast/return; prior A remains committed when still intact.",
+    "loadPaintImageFromFileAsync now keeps its raster-image Promise pending until markFlatPaintLiveSource completes the current file-byte fingerprint. It resolves only on successful current proof; failed proof or supersession rejects.",
+    "No renderer, pixel commit order, tool dispatch, or source-kind selection changed."
+  ],
+  "w50_oracle": {
+    "path": "_easy_claude_work/ai14h_w50_review/oracle.json",
+    "sha256": "82eee6835d9d2bfe998db744f5cbc82e1acf28248ab6085041093db783d86644",
+    "case_count": 12,
+    "cases_replayed": "All W50 source callback scenarios in tests/ai_source_transaction_w53_completion_contract.cjs passed. The missing-canvas expectation follows the unchanged oracle: request settles, no false B commit, and prior A remains committed if present."
+  },
+  "fresh_completion_cases": [
+    {"id":"url-success-waits-for-selected-byte-proof","result":"pass"},
+    {"id":"stale-url-A-rejects-without-touching-B","result":"pass"},
+    {"id":"url-hash-failure-settles-and-rejects","result":"pass"},
+    {"id":"url-read-failure-settles-and-retains-A","result":"pass"}
+  ],
+  "validation": {
+    "syntax": ["node --check isolated canvas candidate", "node --check W53 contract"],
+    "contract": "node tests/ai_source_transaction_w53_completion_contract.cjs passed; actual production transaction, marker, browser callbacks, programmatic URL loader, and file-loader declarations executed with deterministic FileReader/Image/fetch/canvas/URL stubs.",
+    "observed": {
+      "missing_canvas_loading": false,
+      "missing_canvas_retained_A": "A.tga ready at fresh generation",
+      "programmatic_success_resolved_before_proof": false,
+      "programmatic_hash_failure": "rejected; loading false; not committed",
+      "stale_programmatic_A": "rejected; B path/fingerprint retained",
+      "programmatic_read_failure": "rejected; loading false; prior A retained and committed",
+      "provider_calls": 0,
+      "native_calls": 0
+    }
+  },
+  "limits": [
+    "All execution used the review harness's controlled host APIs; no browser scheduling, native canvas, live paint import, server, provider, or production dispatch ran.",
+    "On a byte-hash failure after raster pixels are already committed to the canvas, the candidate rejects and leaves the source transaction uncommitted; rolling the displayed pixels back is outside this scoped repair.",
+    "No live/runtime files were changed."
+  ]
+}

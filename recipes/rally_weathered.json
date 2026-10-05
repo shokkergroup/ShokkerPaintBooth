@@ -2,7 +2,7 @@
   "name": "Rally Weathered",
   "description": "Real-deal rally car finish: mud splatter, battle scars, and patina worn into the edges. Earned-not-given.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "any chassis, optimized for rally / rallycross / off-road",
   "notes": "Use the global wearLevel slider on import to dial weathering up (70-100) or down (20-40). Mud splatter reads best on light body colors.",
   "zones": [

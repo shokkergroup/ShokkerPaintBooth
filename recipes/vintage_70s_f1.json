@@ -2,7 +2,7 @@
   "name": "Vintage 70s F1",
   "description": "Gulf-style powder blue paired with marigold orange racing stripe, old-school matte clear, and an honest layer of weathered patina.",
   "author": "Shokker Paint Booth",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "compatible_with": "any formula / open-wheel chassis, vintage prototypes",
   "notes": "The iconic Gulf palette. Orange stripe width depends on car geometry - nudge pickerColor and tolerance on the Orange Stripe zone if it bleeds into other surfaces.",
   "zones": [

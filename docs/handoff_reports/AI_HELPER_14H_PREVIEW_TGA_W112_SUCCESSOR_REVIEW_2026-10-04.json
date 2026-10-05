@@ -1,0 +1,40 @@
+{
+  "review": "W112 synchronized-cache successor review, private candidate only",
+  "decision": "PASS_WITH_LIMITS_FOR_BACKEND_ROUTE",
+  "candidate": {
+    "path": "_easy_claude_work/ai14h_tga_cache_concurrency_candidate/server_routes/render_file_routes.py",
+    "sha256": "00BD0EA753D31E53D7CDB38B2BF6BCAB361BF2D872F76DF1AEE8F6DFC49B7675"
+  },
+  "priorBaseline": {
+    "candidatePath": "_easy_claude_work/ai14h_customer_psd_tga_inventory/private_route_candidate/server_routes/render_file_routes.py",
+    "sha256": "9E753DA227AE4C7E5FCE94D748D863E0E83C0A94E255CC212F69E694D1E40BBA",
+    "preservedFinding": "The unchanged reviewer oracle confirmed two simultaneous unique misses could grow a 7-entry cache to 9 entries. This successor adds a lock and addresses that finding; the original report remains intact."
+  },
+  "tests": [
+    {
+      "path": "_easy_claude_work/ai14h_tga_cache_concurrency_candidate/test_preview_tga_cache_content_replay.py",
+      "sha256": "560BB9452BEEC81457AC359EEF3E381B1C729D1C8490B927E60E1E4D8A43B1DA",
+      "result": "10/10 unchanged producer cases passed against successor"
+    },
+    {
+      "path": "tests/ai_preview_tga_route_w112_successor_review_contract.py",
+      "sha256": "2F71A0726EDB37F2AF56A211087D8DD16753F0102113DBAEBC2A5F6AB7B0056E",
+      "result": "5/5 fresh reviewer cases passed"
+    }
+  ],
+  "freshReviewerCases": [
+    "same-size/same-mtime source replacement returns pixels and digest for replacement bytes",
+    "alpha-bearing source preserves [0,64,192,255] alpha and header digest",
+    "two concurrent distinct misses scheduled before insertion both succeed and leave exactly eight cache entries",
+    "two concurrent same-key misses succeed and leave one entry",
+    "source replacement after snapshot returns 409 and does not cache stale bytes"
+  ],
+  "reviewedChange": "A threading.Lock now protects cache lookup and insertion/eviction; image decode and final source hash remain outside the lock. Insertion evicts under lock until there is room and avoids needless eviction when another request already inserted the same key.",
+  "limits": [
+    "The eight-entry bound is an item-count bound, not a byte budget. PNG entry sizes and per-request source snapshots can be large.",
+    "A request still reads the entire source into memory, then streams the path again for race verification. Prior reviewer measured two source-length reads per hit and miss; the successor changes only synchronization and retains that cost.",
+    "Route-level candidate validation only. Client acceptance of the digest header, launcher startup, and live server integration are not claimed.",
+    "Synthetic temporary fixtures only; no customer data, provider, native app, live server, or external endpoint used."
+  ],
+  "counts": {"producerCases": 10, "freshReviewCases": 5, "passed": 15, "findings": 0, "providerCalls": 0, "nativeCalls": 0, "customerFilesTouched": false}
+}

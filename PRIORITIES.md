@@ -2,20 +2,66 @@
 
 This file is how Ricky steers the agent. The agent reads this BEFORE choosing what to work on each heartbeat.
 
-**Last updated by Ricky:** 2026-03-29
+**Last owner-authored steering captured here:** 2026-03-29  
+**Current operational overlay:** 2026-08-22 stabilization (Codex review remediation)
 
 ---
 
+## FRACTURED RELICS rebuilt 100 → 50 (2026-08-30) — AWAITING OWNER AUDIT
+
+The category was five combinatorial grids; it is now 50 occult / cryptozoology OBJECTS in five
+chapters ("the cabinet of cursed things"). 50/50 gates green, whole-catalog uniqueness 50/50,
+spec maps rebuilt with material-state carving (σ 36–63 vs the old shelf's 6/18/2).
+**Owner action:** rate `/SPB_AUDIT_relics.html`. Then I act on the verdicts (rebuild/replace come
+back for another round). Ledger: `docs/FRACTURED_RELICS_REBUILD_2026-08-30.md`.
+
+
 ## Current Focus
 
-MAJOR EXPANSION PUSH — Work these in order, one heartbeat at a time:
+### STOP-SHIP STABILIZATION — 10.0.1 candidate (owner authorized 2026-08-22)
+
+Until the release gates pass, this outranks the historical expansion list below:
+
+- Freeze new finishes, tools, and catalog expansion.
+- Close the Project/source transaction, ownership, preview, local-API,
+  layer-transaction, recovery, stable-origin, and PSD-fidelity trust lanes tracked
+  in `CODEX_REVIEW_FINDINGS_2026-08-22.md` and `docs/SPB_RELEASE_GAUNTLET.md` W6–W10.
+- Prove the candidate with a fresh isolated backend/browser profile, a dated
+  five-zone owner fixture gauntlet, and a packaged clean-machine smoke.
+- Do not build while file-budget/generated-drift gates or the version-bound
+  release-evidence gate are red.
+- The runtime has **two copies only**: root source plus `electron-app/server/`.
+  Any older instruction below saying three copies or `pyserver/_internal` is
+  archived history and must not be executed.
+
+The Living Wiki coordination board and `SPB_LINEAR_HANDOFF.md` are the live
+status spine; this file preserves older owner priorities for context.
+
+### ⚠️ #1 PRIORITY (owner, 2026-08-19): MAKE EASY MODE TRULY EASY
+
+Owner's words: *"It's still very complicated and it's frustrating my buyers immensely. We need
+to make sure that Easy Mode makes it truly easy."* This outranks everything below.
+
+- Full context + design law + traps: memory `project_easy_mode_2026-07.md` (updated 2026-08-19
+  with this mandate). Non-negotiables from prior owner corrections: Easy = the REAL workflow
+  with a walkthrough (never a reinvented parallel product — v1 storefront was rejected), drives
+  real `zones` state, finish descriptions visible.
+- Success metric: a first-time buyer gets a gorgeous car in their first 60 seconds without
+  reading anything. Judge every screen by decision count, not feature count.
+- Code: `js/spb-easy-mode.js` (+ `css/spb-easy-mode-20260716.css`); Easy Sculpt lives in
+  `js/features/spb-easy-sculpt.js`. NOT in git as of 2026-08-09 memory — verify before any
+  wholesale rewrite; never overwrite blind.
+
+---
+
+MAJOR EXPANSION PUSH (archived; superseded — do not execute during stabilization):
 
 ### Priority 5: Full Category Base Audit + Improvements ✅ COMPLETE (2026-03-30)
 
 **COMPLETED 2026-03-30 in a direct Claude Code session.** All 16 categories audited. 18 registry fixes + ~100 code-level GGX floor fixes. See CHANGELOG.md SESSION SUMMARY.
 
-**QA Agent:** Verify the fixes. Check 3-copy sync. Flag any remaining issues to `QA_REPORT.md`.
-**Dev Agent:** After QA flags issues, implement all improvements. Three-copy sync required on every file touched.
+**Historical note:** the March workflow used three copies. The current rule is
+root → `electron-app/server/` only; never recreate the deleted third copy.
 
 #### Categories to Audit (in order):
 

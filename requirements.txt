@@ -1,11 +1,61 @@
-# Shokker Paint Booth V5 — Python dependencies
-# Install: pip install -r requirements.txt
+# =============================================================================
+# Shokker Paint Booth - Python runtime dependencies
+# Install (supported):  pip install -r requirements.txt
+# =============================================================================
+#
+# WHY EXACT PINS (== not >=):
+#   The render engine performs deterministic floating-point math (procedural
+#   noise fields, scipy filters, numpy array ops) whose output is part of the
+#   SHIPPED PRODUCT. A silent transitive bump of numpy or scipy can shift
+#   rounding, change filter kernels, or alter RNG behavior and thereby change
+#   finish output pixel-for-pixel. Pinning the EXACT versions validated on the
+#   known-good build machine protects the engine math from this kind of
+#   invisible drift between fresh clones and CI runs.
+#
+#   These versions are the ones ACTUALLY INSTALLED & validated in the known-good
+#   environment (captured via `pip freeze`; Python 3.13.5, pip 25.1.1). The full
+#   resolved environment - including every transitive dep - is recorded in
+#   requirements.lock alongside this file.
+#
+# This file is a runnable SUPERSET of pyproject.toml [project].dependencies:
+# it is the curated set of DIRECT project deps needed to run the engine + the
+# Flask server from a clean clone. (Historically this file was missing
+# noise/opencv/requests/colorama, which produced a non-runnable engine -
+# ImportError on `noise`.)
+#
+# BUMP PROCEDURE: change a pin here intentionally, re-run the engine test
+# suite + visual-diff harness, then regenerate the lock:
+#   python -m pip freeze > requirements.lock
+# -----------------------------------------------------------------------------
 
-Flask>=2.0
-flask-cors
-numpy
-Pillow
-scipy
+# --- Web server / API layer ---
+Flask==3.1.2
+flask-cors==6.0.2
+requests==2.32.5
 
-# Optional — Union Jacked footer OCR (pip install pytesseract + install Tesseract OCR for your OS):
-# pytesseract>=0.3.10
+# --- Engine math (DRIFT-SENSITIVE - keep pinned to validated versions) ---
+numpy==2.4.2
+scipy==1.17.0
+
+# --- Imaging ---
+Pillow==12.1.0
+opencv-python-headless==4.13.0.92
+
+# --- Terminal / misc ---
+colorama==0.4.6
+
+# --- Procedural noise (engine dependency) ---
+# NOTE: `noise` (Casey Duncan's Perlin/simplex lib) was NOT present in the
+# environment that was frozen, so there is no validated installed version to
+# pin to an exact ==. It IS a real engine import (declared in pyproject.toml
+# and imported by engine code). Pinned to the last-published release as a floor;
+# on the build machine: install it, run the engine + visual-diff suite, then
+# convert this to `noise==<installed-version>` and re-freeze requirements.lock.
+noise==1.2.2
+
+# --- Optional: Union Jacked footer OCR ---
+# Also requires the Tesseract OCR binary installed for your OS.
+# pytesseract==0.3.13
+
+# GIMP native .xcf import (server_routes/xcf_import.py) — optional at runtime, required for .xcf; 2026-07-04
+gimpformats

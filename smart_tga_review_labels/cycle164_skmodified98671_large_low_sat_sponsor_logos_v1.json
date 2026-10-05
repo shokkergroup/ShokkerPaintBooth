@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "paint_label": "skmodified tour/car_num_98671.tga",
+  "inspection_records": "_smart_tga_runs/cycle129_skmodified_route_feature_complete_v1/inspection_records.json",
+  "component_records": "_smart_tga_runs/cycle129_skmodified_route_feature_complete_v1/skmodified_tour_car_num_98671/component_records.json",
+  "review_scope": "Cycle 164 SK Modified large low-saturation sponsor/logo hard negatives from the full-policy Sponsors-to-Template gap.",
+  "component_labels": [
+    {
+      "layer": "sponsors",
+      "component_index": 18,
+      "expected_bbox": [
+        33,
+        542,
+        106,
+        130
+      ],
+      "target_layer": "sponsors",
+      "label": "large_low_sat_sponsor_logo",
+      "note": "Large round Justin Williams sponsor/logo block; should stay Sponsors, not Template."
+    },
+    {
+      "layer": "sponsors",
+      "component_index": 33,
+      "expected_bbox": [
+        396,
+        891,
+        105,
+        101
+      ],
+      "target_layer": "sponsors",
+      "label": "large_low_sat_sponsor_logo",
+      "note": "Large gray/black sponsor logo panel beside the side number; should stay Sponsors, not Template."
+    }
+  ]
+}

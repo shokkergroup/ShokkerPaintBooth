@@ -1,0 +1,121 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_neural_port",
+  "display_name": "Chrome: Neural Port",
+  "promise": "Neural connector rosettes: intricate concentric copper and cobalt segmented socket rings with tiny pink contact pins, turquoise branching fiber roots, violet triangular insulator petals, black central slots and bright silver microbevels.",
+  "carrier_grammar": "Neural connector rosettes: intricate concentric copper and cobalt segmented socket rings with tiny pink contact pins, turquoise branching fiber roots, violet triangular insulator petals, black central slots and bright silver microbevels. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for copper socket rings, cobalt ring segments, pink contact pins, turquoise fiber roots, violet insulator petals, black central bores is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Neural connector rosettes: intricate concentric copper and cobalt segmented socket rings with tiny pink contact pins, turquoise branching fiber roots, violet triangular insulator petals, black central slots and bright silver microbevels. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_neural_port.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "copper socket rings",
+      "role": "Actual shared paint and spec geometry: copper socket rings"
+    },
+    {
+      "name": "cobalt ring segments",
+      "role": "Actual shared paint and spec geometry: cobalt ring segments"
+    },
+    {
+      "name": "pink contact pins",
+      "role": "Actual shared paint and spec geometry: pink contact pins"
+    },
+    {
+      "name": "turquoise fiber roots",
+      "role": "Actual shared paint and spec geometry: turquoise fiber roots"
+    },
+    {
+      "name": "violet insulator petals",
+      "role": "Actual shared paint and spec geometry: violet insulator petals"
+    },
+    {
+      "name": "black central bores",
+      "role": "Actual shared paint and spec geometry: black central bores"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "copper socket rings",
+      "cobalt ring segments",
+      "pink contact pins",
+      "turquoise fiber roots",
+      "violet insulator petals",
+      "black central bores"
+    ],
+    "R": [
+      "copper socket rings",
+      "cobalt ring segments",
+      "pink contact pins",
+      "turquoise fiber roots",
+      "violet insulator petals",
+      "black central bores"
+    ],
+    "Cc": [
+      "copper socket rings",
+      "cobalt ring segments",
+      "pink contact pins",
+      "turquoise fiber roots",
+      "violet insulator petals",
+      "black central bores"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_gold_contact",
+      "difference": "This finish uses Dense tiny six-notched irregular gold socket petals, turquoise gel pin cores, plum ceramic separators, pink contact dashes and black socket wells. Microscopic disconnected radial port cross-sections at varying rotations, no big circles or circuit traces.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_optic_implant",
+      "difference": "This finish uses Dense tiny six-notched irregular gold socket petals, turquoise gel pin cores, plum ceramic separators, pink contact dashes and black socket wells. Microscopic disconnected radial port cross-sections at varying rotations, no big circles or circuit traces.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "copper socket rings is visible in the authored geometry",
+      "cobalt ring segments is visible in the authored geometry",
+      "pink contact pins is visible in the authored geometry",
+      "turquoise fiber roots is visible in the authored geometry",
+      "violet insulator petals is visible in the authored geometry",
+      "black central bores is visible in the authored geometry"
+    ],
+    "source_sha256": "a6da794eb40ebc7806e3c70672bff5eed608439fccb3bf9a2eb6aace59a1da97",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_neural_port-authored-Neural connector rosettes: intricate concentric copper and cobalt segmented socket rings with tiny pink contact pins, turquoise branching fiber roots, violet triangular insulator petals, black central slots and bright silver microbevels. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_neural_port-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 79.0,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "48d6f68b84ea82506d61ea610c3a9c1289b1e07bce92550436c68c8983c50c35"
+}

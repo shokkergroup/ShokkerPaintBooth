@@ -1,0 +1,113 @@
+/* ===========================================================================
+   SPB — SLIDER POLISH                                             2026-07-25
+   ---------------------------------------------------------------------------
+   The one piece of the Aftershock experiment the owner wanted to keep:
+   *"the ONLY thing I like better about the AFTERSHOCK LOOK is the slider bars
+   themselves. They look better."*
+
+   So this is that, and ONLY that, promoted out of the discarded skin and into
+   the app permanently. **No body-class gate — these apply always.** Everything
+   else Aftershock did (surfaces, type, spacing, section outlines) is gone;
+   the owner explicitly likes the classic section outlines because they help
+   separate regions at a glance, and the skin was removing them.
+
+   WHY THE SLIDERS NEEDED THIS — measured on the live app before the change:
+   the track height was declared EIGHT different ways across the stylesheets —
+
+       input[type=range]                        6px !important   (twice)
+       #toolOptionsBar input[type=range]        6px !important
+       .zone-editor-float .tolerance-slider     5px !important
+       .settings-row  input[type=range]         4px
+       .zone-card     input[type=range]         4px
+       .intensity-slider-row input[type=range]  4px
+       .pbr-slider-row input[type=range]        4px
+
+   — so no two sliders in the app looked alike. All 31 now share one 4px track,
+   one 12px thumb, and an orange fill that shows the value at a glance.
+
+   ON !important: four of the rules above are already !important, so ordinary
+   cascade order cannot reach them. Matching that priority is required, not an
+   escalation. 4px is the modal value, so nothing reflows.
+
+   --_pct is written per-slider by js/spb-slider-fill.js. If that file fails to
+   load the fallback 50% still paints a valid two-tone track — degraded, never
+   broken.
+   ========================================================================= */
+
+:root {
+  --spb-slider-fill:  #ff6b1a;   /* Shokker orange */
+  --spb-slider-track: rgba(255,255,255,0.10);
+  --spb-slider-thumb: #f2f1ef;
+  --spb-slider-ring:  rgba(255,107,26,0.45);
+}
+
+input[type="range"] {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  height: 4px !important;
+  border: 0 !important;
+  padding: 0 !important;
+  outline: none;
+  cursor: pointer;
+  border-radius: 999px !important;
+  background: linear-gradient(
+    90deg,
+    var(--spb-slider-fill)  var(--_pct, 50%),
+    var(--spb-slider-track) var(--_pct, 50%)
+  ) !important;
+}
+
+/* The tool-options bar scopes its sliders by ID, which beats a bare element
+   selector no matter what — so it needs naming explicitly. It accounts for the
+   14 brush/tool sliders (#brushSize, #brushFlow, #wandTolerance, …). */
+#toolOptionsBar input[type="range"] { height: 4px !important; }
+
+/* ---- WebKit / Chromium (the path Electron ships) ---- */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border: 0;
+  background: transparent;   /* the input carries the fill; don't draw twice */
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 12px !important;
+  height: 12px !important;
+  margin-top: -4px !important;
+  border-radius: 50% !important;
+  background: var(--spb-slider-thumb) !important;
+  border: 1px solid rgba(0,0,0,0.6) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.6) !important;
+  transition: transform .12s cubic-bezier(.22,.61,.36,1),
+              background .12s cubic-bezier(.22,.61,.36,1);
+}
+input[type="range"]:hover::-webkit-slider-thumb  { transform: scale(1.18); background: #fff !important; }
+input[type="range"]:active::-webkit-slider-thumb { transform: scale(0.94); }
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 2px var(--spb-slider-ring) !important;
+}
+input[type="range"]:disabled {
+  background: var(--spb-slider-track) !important;
+  cursor: default;
+}
+input[type="range"]:disabled::-webkit-slider-thumb {
+  background: #56544f !important;
+  box-shadow: none !important;
+}
+
+/* ---- Gecko, so browser testing matches what Electron shows ---- */
+input[type="range"]::-moz-range-track {
+  height: 4px; border: 0; background: transparent;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--spb-slider-thumb);
+  border: 1px solid rgba(0,0,0,0.6);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  input[type="range"]::-webkit-slider-thumb { transition: none; }
+  input[type="range"]:hover::-webkit-slider-thumb { transform: none; }
+}

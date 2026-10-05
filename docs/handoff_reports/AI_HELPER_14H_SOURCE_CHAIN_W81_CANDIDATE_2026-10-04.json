@@ -1,0 +1,84 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "cases": 7,
+  "source": "_easy_claude_work/ai14h_generation3_candidate/w81_source_chain/paint-booth-3-canvas.js",
+  "sha256": "1ba0e400325dc93a35d7769e1d41a831b8c892f092b979f31727464ca573649c",
+  "rows": [
+    {
+      "id": "matching-strong-receipt-positive",
+      "result": "PASS",
+      "strong": true,
+      "expectedDigestSent": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "layerPixelStageReached": true,
+      "priorSourceRetained": true,
+      "error": "CONTROL: reached layer pixel staging"
+    },
+    {
+      "id": "missing-receipt-refused",
+      "result": "PASS",
+      "strong": true,
+      "expectedDigestSent": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "layerPixelStageReached": false,
+      "priorSourceRetained": true,
+      "error": "layer pixels did not match the source byte fingerprint"
+    },
+    {
+      "id": "different-receipt-refused",
+      "result": "PASS",
+      "strong": true,
+      "expectedDigestSent": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "layerPixelStageReached": false,
+      "priorSourceRetained": true,
+      "error": "layer pixels did not match the source byte fingerprint"
+    },
+    {
+      "id": "empty-receipt-refused",
+      "result": "PASS",
+      "strong": true,
+      "expectedDigestSent": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "layerPixelStageReached": false,
+      "priorSourceRetained": true,
+      "error": "layer pixels did not match the source byte fingerprint"
+    },
+    {
+      "id": "uppercase-receipt-refused",
+      "result": "PASS",
+      "strong": true,
+      "expectedDigestSent": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "layerPixelStageReached": false,
+      "priorSourceRetained": true,
+      "error": "layer pixels did not match the source byte fingerprint"
+    },
+    {
+      "id": "backend-conflict-refused",
+      "result": "PASS",
+      "strong": true,
+      "expectedDigestSent": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "layerPixelStageReached": false,
+      "priorSourceRetained": true,
+      "error": "layer rasterization failed: HTTP 409"
+    },
+    {
+      "id": "legacy-weak-backend-load-path-remains",
+      "result": "PASS",
+      "strong": false,
+      "expectedDigestSent": null,
+      "layerPixelStageReached": true,
+      "priorSourceRetained": true,
+      "error": "CONTROL: reached layer pixel staging"
+    }
+  ],
+  "limits": [
+    "Actual _doPSDImport and source transaction closures against controlled response/decode stubs.",
+    "Positive controls stop at layer pixel staging; not a completed import or native output claim.",
+    "No file/paint/provider writes."
+  ],
+  "installed": false,
+  "scope": "Client source digest request/response metadata only; no painting dispatch/kernel changes",
+  "candidate": "_easy_claude_work/ai14h_generation3_candidate/w81_source_chain/paint-booth-3-canvas.js",
+  "backend": "W78 digest-bound rasterization candidate required",
+  "acceptance": "Independent replay and actual matched-digest cold native import pending",
+  "supersededInitialCandidate": "1ba0e400325dc93a35d7769e1d41a831b8c892f092b979f31727464ca573649c used expectedSourceBytesSha256, which mismatched the independent backend field. Corrected before installation/native acceptance.",
+  "currentCandidateSHA256": "ef180b9b67b7e95c7c0a00b3932259fbb35752a4ebfd8087e5bbf592d12e5a01",
+  "requestField": "sourceBytesSha256"
+}

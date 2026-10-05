@@ -20,6 +20,8 @@ Environment overrides (highest priority)
 * ``SHOKKER_NO_CLEAN=1``    -- skip clean boot (do not kill port / other server);
                               use for a second instance
 * ``SHOKKER_EXE_DIR``       -- (frozen builds only) path beside packaged .exe
+* ``SPB_ISOLATED_OUTPUT_DIR`` -- verification-only output/log directory; must be
+                                 below ``<root>/_release_evidence``
 
 Cross-module dependencies
 -------------------------
@@ -59,7 +61,7 @@ __all__ = [
 # ---------------------------------------------------------------------------
 
 #: Schema/semantic version for this config module itself (bumped on breaking changes).
-CONFIG_MODULE_VERSION: str = "1.2.0"
+CONFIG_MODULE_VERSION: str = "1.3.0"
 
 #: Default port for the primary Flask server instance.
 DEFAULT_PORT: int = 59876
@@ -67,8 +69,8 @@ DEFAULT_PORT: int = 59876
 #: Default secondary port reserved for dev/second-instance usage.
 DEFAULT_SECONDARY_PORT: int = 59877
 
-#: Flask host -- ``0.0.0.0`` binds to all interfaces (LAN accessible).
-DEFAULT_HOST: str = "0.0.0.0"
+#: SPB is a desktop-local backend. Never expose it to the LAN by default.
+DEFAULT_HOST: str = "127.0.0.1"
 
 #: Minimum acceptable TCP port for user-overrides.
 _MIN_PORT: int = 1024
@@ -82,6 +84,8 @@ _ENV_DEV: str = "SHOKKER_DEV"
 _ENV_LOG: str = "SHOKKER_LOG"
 _ENV_NO_CLEAN: str = "SHOKKER_NO_CLEAN"
 _ENV_EXE_DIR: str = "SHOKKER_EXE_DIR"
+_ENV_NO_LIVE_LINK: str = "SPB_NO_LIVE_LINK"
+_ENV_ISOLATED_OUTPUT: str = "SPB_ISOLATED_OUTPUT_DIR"
 
 _TRUTHY: Tuple[str, ...] = ("1", "true", "yes", "on", "y", "t")
 
@@ -210,9 +214,19 @@ class _Config:
     ENABLE_THIRD_BASE_OVERLAY: bool = True   # 3rd Base Overlay layer + per-layer pattern
 
     # ------- BUILD ---------------------------------------------------------
-    VERSION: str = "6.2.0-alpha"
-    BUILD_TAG: str = "Boil the Ocean"
-    APP_NAME: str = "Shokker Paint Booth V6 Alpha"
+    # [10.0.0 BETA BUMP 2026-08-09] VERSION is the ONLY source of the version the
+    # app displays (server /build-info -> SPB.applyBuildInfo -> title bar). It was
+    # left at 8.0.4-beta through the entire 8.0.5 release, so the app under-reported
+    # its own version to every user. Bump it here on EVERY release.
+    VERSION: str = "10.0.3-beta"
+    # BUILD_TAG feeds server logs, /build-info and the observability startup line
+    # (server_v5.py falls back to it when APP_VERSION is absent). It is no longer
+    # shown in the title bar — the seasonal codename ("Spring Catalogue") was stale
+    # and rendered as "BSpring Catalogue" because the title builder prefixes a "B"
+    # for numeric build ids. Owner 2026-08-09: drop the codename; carry the version
+    # so logs and the build-change toast track something real.
+    BUILD_TAG: str = "10.0.3"
+    APP_NAME: str = "Shokker Paint Booth V10"
 
     # Internal lock for any future thread-safe mutation (e.g. live config reload).
     _lock: threading.RLock
@@ -256,6 +270,28 @@ class _Config:
             self.VERBOSE = True
             logger.info("[config] DEV MODE - hot reload enabled")
 
+        # Verification must not share the standing server's output tree: render
+        # cleanup intentionally rotates job_* directories and would otherwise
+        # delete an owner's live jobs. Keep both jobs and the Python log inside
+        # the version-bound release-evidence area, and fail closed on traversal,
+        # symlink/junction escape, or an attempt to use the evidence root itself.
+        if os.environ.get(_ENV_NO_LIVE_LINK):
+            evidence_root = os.path.realpath(os.path.join(self.ROOT_DIR, "_release_evidence"))
+            requested = os.environ.get(_ENV_ISOLATED_OUTPUT) or os.path.join(
+                evidence_root, "isolated_output"
+            )
+            isolated = os.path.realpath(normalize_path(requested))
+            try:
+                contained = os.path.normcase(os.path.commonpath((evidence_root, isolated))) == os.path.normcase(evidence_root)
+            except (OSError, ValueError):
+                contained = False
+            if not contained or os.path.normcase(isolated) == os.path.normcase(evidence_root):
+                raise RuntimeError(
+                    f"{_ENV_ISOLATED_OUTPUT} must be a strict descendant of {evidence_root}"
+                )
+            self.OUTPUT_DIR = isolated
+            self.LOG_FILE = os.path.join(isolated, "server.log")
+
         log_level = os.environ.get(_ENV_LOG, "").upper().strip()
         if log_level == "DEBUG":
             self.VERBOSE = True
@@ -266,8 +302,11 @@ class _Config:
         We swallow :class:`OSError` with a warning -- callers will surface real
         write-failures later (and a readonly FS shouldn't brick startup).
         """
-        for key in ("OUTPUT_DIR", "SHOKK_LIBRARY_DIR", "SHOKK_FACTORY_DIR",
-                    "PATTERN_FOR_REVIEW_DIR"):
+        keys = ("OUTPUT_DIR",) if os.environ.get(_ENV_NO_LIVE_LINK) else (
+            "OUTPUT_DIR", "SHOKK_LIBRARY_DIR", "SHOKK_FACTORY_DIR",
+            "PATTERN_FOR_REVIEW_DIR",
+        )
+        for key in keys:
             path = getattr(self, key)
             try:
                 os.makedirs(path, exist_ok=True)

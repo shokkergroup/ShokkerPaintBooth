@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "cbp_daemon_red",
+  "display_name": "Netrun: Daemon Red",
+  "promise": "Crimson forked microglyphs with orange cores and violet etched tails.",
+  "carrier_grammar": "Crimson forked microglyphs with orange cores and violet etched tails. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for crimson glyph enamel, orange core dashes, violet etched tails, black enamel troughs, silver pin sparks is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Crimson forked microglyphs with orange cores and violet etched tails. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/cbp_daemon_red.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "crimson glyph enamel",
+      "role": "Actual shared paint and spec geometry: crimson glyph enamel"
+    },
+    {
+      "name": "orange core dashes",
+      "role": "Actual shared paint and spec geometry: orange core dashes"
+    },
+    {
+      "name": "violet etched tails",
+      "role": "Actual shared paint and spec geometry: violet etched tails"
+    },
+    {
+      "name": "black enamel troughs",
+      "role": "Actual shared paint and spec geometry: black enamel troughs"
+    },
+    {
+      "name": "silver pin sparks",
+      "role": "Actual shared paint and spec geometry: silver pin sparks"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "crimson glyph enamel",
+      "orange core dashes",
+      "violet etched tails",
+      "black enamel troughs",
+      "silver pin sparks"
+    ],
+    "R": [
+      "crimson glyph enamel",
+      "orange core dashes",
+      "violet etched tails",
+      "black enamel troughs",
+      "silver pin sparks"
+    ],
+    "Cc": [
+      "crimson glyph enamel",
+      "orange core dashes",
+      "violet etched tails",
+      "black enamel troughs",
+      "silver pin sparks"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "cbp_worm_trail",
+      "difference": "This finish uses Tiny dense crimson forked trident-like abstract microglyph fragments, orange core dash clusters, violet etched hook tails, black enamel troughs and silver pin sparks. No readable symbols or demons, no long branches, sharp hooked three-prong construction unlike pixel blocks.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_firewall_grid",
+      "difference": "This finish uses Tiny dense crimson forked trident-like abstract microglyph fragments, orange core dash clusters, violet etched hook tails, black enamel troughs and silver pin sparks. No readable symbols or demons, no long branches, sharp hooked three-prong construction unlike pixel blocks.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "crimson glyph enamel is visible in the authored geometry",
+      "orange core dashes is visible in the authored geometry",
+      "violet etched tails is visible in the authored geometry",
+      "black enamel troughs is visible in the authored geometry",
+      "silver pin sparks is visible in the authored geometry"
+    ],
+    "source_sha256": "026711636bcfe4946ca1443eaa067494925e30b1050096bcdee5bb18166a5d5a",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "cbp_daemon_red-authored-Crimson forked microglyphs with orange cores and violet etched tails. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "cbp_daemon_red-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 81.3,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "e050d273859ccbf53d65e4bc506276839629f9fda3afd193ab4560315639b998"
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_sign_tubes",
+  "display_name": "Vacuum Phosphor",
+  "carrier": "black evacuated glass/ceramic composite carrying broken phosphor-channel wall fragments",
+  "material_story": {
+    "M": "local electrode beads, sputter freckles, cyan phosphor deposits, and getter residue lead while intact glass stays low",
+    "R": "clipped ends, collapsed necks, vacuum pockets, sputter, and getter damage rise independently",
+    "Cc": "intact wall slivers, excitation lips, and phosphor shoulders retain clear while breaks and vacuum pockets interrupt it"
+  },
+  "vetoes": [
+    "literal tube, sign, text, waveform, or music UI",
+    "long curve, loop, worm, paired rail, or repeated capsule",
+    "circuitry, macro lane, row, grid, or barcode",
+    "floating confetti or generic glow flakes",
+    "generic noise or unrelated texture underlay"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 1.826085,
+  "material_stats": {
+    "std": {
+      "M": 82.586296,
+      "R": 83.297165,
+      "Cc": 83.260811
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": 0.421428,
+      "M_Cc": -0.597939,
+      "R_Cc": -0.33341
+    }
+  },
+  "geometry_stats": {
+    "family_count": 10,
+    "families": {
+      "black evacuated wall facets": 5776,
+      "clipped channel ends": 640,
+      "collapsed neck shards": 640,
+      "cyan phosphor deposits": 666,
+      "dark vacuum pockets": 599,
+      "fractured glass-wall slivers": 4050,
+      "local electrode beads": 363,
+      "magenta getter stains": 668,
+      "sputter freckles": 669,
+      "white-blue excitation lips": 1158
+    },
+    "width_native_min": 8.001,
+    "width_native_median": 18.484,
+    "width_native_p90": 25.222,
+    "width_native_max": 29.5,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "black evacuated wall facets": 0.374509,
+    "fractured glass-wall slivers": 0.229854,
+    "white-blue excitation lips": 0.043482,
+    "cyan phosphor deposits": 0.017809,
+    "magenta getter stains": 0.025805,
+    "clipped channel ends": 0.01355,
+    "collapsed neck shards": 0.016559,
+    "dark vacuum pockets": 0.016128,
+    "sputter freckles": 0.012914,
+    "local electrode beads": 0.006941
+  }
+}

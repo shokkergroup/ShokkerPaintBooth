@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_windows_teal",
+  "display_name": "Cdrom: LAN Party Circuit",
+  "promise": "Fine intricate cyan, lime and violet electronic routes in black resin with exposed silver solder",
+  "carrier_grammar": "Fine intricate cyan, lime and violet electronic routes in black resin with exposed silver solder; single full-canvas image, no duplicated quadrants. Fine features: black circuit resin, cyan trace enamel, lime conductor tracks, violet soldermask, silver solder pads, etched pad rims",
+  "spec_grammar": "Feature-specific selectors partition black circuit resin, cyan trace enamel, lime conductor tracks, violet soldermask, silver solder pads, etched pad rims. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "black circuit resin",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "cyan trace enamel",
+      "role": "Material feature selected from artwork by h:>:160&h:<:215&s:>:0.4"
+    },
+    {
+      "name": "lime conductor tracks",
+      "role": "Material feature selected from artwork by h:>:55&h:<:155&s:>:0.4"
+    },
+    {
+      "name": "violet soldermask",
+      "role": "Material feature selected from artwork by h:>:260&s:>:0.4"
+    },
+    {
+      "name": "silver solder pads",
+      "role": "Material feature selected from artwork by s:<:0.25&g:>:0.62"
+    },
+    {
+      "name": "etched pad rims",
+      "role": "Material feature selected from artwork by edge:>:0.73"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "black circuit resin",
+      "cyan trace enamel",
+      "lime conductor tracks",
+      "violet soldermask",
+      "silver solder pads",
+      "etched pad rims"
+    ],
+    "R": [
+      "black circuit resin",
+      "cyan trace enamel",
+      "lime conductor tracks",
+      "violet soldermask",
+      "silver solder pads",
+      "etched pad rims"
+    ],
+    "Cc": [
+      "black circuit resin",
+      "cyan trace enamel",
+      "lime conductor tracks",
+      "violet soldermask",
+      "silver solder pads",
+      "etched pad rims"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "black circuit resin",
+      "range": [
+        [
+          0,
+          75,
+          70
+        ],
+        [
+          15,
+          190,
+          230
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "cyan trace enamel",
+      "range": [
+        [
+          0,
+          40,
+          16
+        ],
+        [
+          35,
+          130,
+          145
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "lime conductor tracks",
+      "range": [
+        [
+          110,
+          45,
+          40
+        ],
+        [
+          230,
+          155,
+          180
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "violet soldermask",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "silver solder pads",
+      "range": [
+        [
+          240,
+          0,
+          16
+        ],
+        [
+          255,
+          32,
+          90
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "etched pad rims",
+      "range": [
+        [
+          240,
+          0,
+          170
+        ],
+        [
+          255,
+          30,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_beige_box",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_crt_blue_screen",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "black circuit resin",
+      "cyan trace enamel",
+      "lime conductor tracks",
+      "violet soldermask",
+      "silver solder pads",
+      "etched pad rims"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_windows_teal / Fine intricate cyan, lime and violet electronic routes in black resin with exposed silver solder",
+  "spec_key": "at_windows_teal / black circuit resin all; cyan trace enamel h:>:160&h:<:215&s:>:0.4; lime conductor tracks h:>:55&h:<:155&s:>:0.4; violet soldermask h:>:260&s:>:0.4; silver solder pads s:<:0.25&g:>:0.62; etched pad rims edge:>:0.73",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

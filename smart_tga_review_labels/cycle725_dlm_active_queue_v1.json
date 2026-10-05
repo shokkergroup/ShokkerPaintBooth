@@ -1,0 +1,2687 @@
+{
+  "schema": "smart-tga-masked-glyph-active-review-queue-v1",
+  "cycle": 725,
+  "selection_method": "real model entropy + scorer disagreement + text-family support + block/palette diversity",
+  "candidate_count_before_exclusion": 1725,
+  "excluded_existing_label_count": 99,
+  "selected_count": 96,
+  "paint_counts": {
+    "dirtlatemodel 350/car_num_1000912.tga": 5,
+    "dirtlatemodel 350/car_num_1006305.tga": 5,
+    "dirtlatemodel 350/car_num_1007631.tga": 5,
+    "dirtlatemodel 350/car_num_1008063.tga": 5,
+    "dirtlatemodel 350/car_num_308339.tga": 5,
+    "dirtlatemodel 350/car_num_321255.tga": 5,
+    "dirtlatemodel 350/car_num_327705.tga": 6,
+    "dirtlatemodel 350/car_num_331993.tga": 5,
+    "dirtlatemodel 350/car_num_336528.tga": 5,
+    "dirtlatemodel 350/car_num_343044.tga": 5,
+    "dirtlatemodel 358/car_num_1003732.tga": 5,
+    "dirtlatemodel 358/car_num_1006305.tga": 5,
+    "dirtlatemodel 358/car_num_1008515.tga": 5,
+    "dirtlatemodel 358/car_num_1321255.tga": 5,
+    "dirtlatemodel 358/car_num_1328151.tga": 5,
+    "dirtlatemodel 358/car_num_197595.tga": 5,
+    "dirtlatemodel 358/car_num_233946.tga": 5,
+    "dirtlatemodel 358/car_num_247671.tga": 5,
+    "dirtlatemodel 358/car_num_258767.tga": 5
+  },
+  "casts_votes": false,
+  "ownership_authority": false,
+  "labels": [
+    {
+      "paint": "dirtlatemodel 350/car_num_1000912.tga",
+      "candidate_index": 78,
+      "proposal_id": "number-tiled-palette:6d310a68f93fbbeb",
+      "bbox": [
+        320,
+        729,
+        273,
+        267
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.9073395,
+      "image_complete": 0.7167681,
+      "text_semantic": 0.5375026,
+      "text_complete": 0.2097463,
+      "text_family_support": 0.973294,
+      "entropy": 0.7605103,
+      "disagreement": 0.5376128,
+      "priority": 0.6712916,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A000"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1000912.tga",
+      "candidate_index": 66,
+      "proposal_id": "number-tiled-palette:a8a9842319cdc913",
+      "bbox": [
+        160,
+        704,
+        320,
+        307
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.5365978,
+      "image_complete": 0.099503,
+      "text_semantic": 0.8723187,
+      "text_complete": 0.6939166,
+      "text_family_support": 0.9898394,
+      "entropy": 0.7257988,
+      "disagreement": 0.5519234,
+      "priority": 0.6625582,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A001"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1000912.tga",
+      "candidate_index": 10,
+      "proposal_id": "number-tiled-palette:8377a4ce3e1f3a2b",
+      "bbox": [
+        346,
+        288,
+        23,
+        36
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.3971092,
+      "image_complete": 0.0698103,
+      "text_semantic": 0.8823983,
+      "text_complete": 0.7129612,
+      "text_family_support": 0.9975264,
+      "entropy": 0.6804357,
+      "disagreement": 0.6013935,
+      "priority": 0.6560497,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A002"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1000912.tga",
+      "candidate_index": 79,
+      "proposal_id": "number-tiled-companion:d19605c197ab32e4",
+      "bbox": [
+        0,
+        729,
+        480,
+        267
+      ],
+      "dominant_number_block": "none",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.8778505,
+      "image_complete": 0.5156293,
+      "text_semantic": 0.3796105,
+      "text_complete": 0.1857512,
+      "text_family_support": 0.9847033,
+      "entropy": 0.7962669,
+      "disagreement": 0.3821323,
+      "priority": 0.6507939,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A003"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1000912.tga",
+      "candidate_index": 64,
+      "proposal_id": "number-tiled-palette:4ded557a0a68bc3a",
+      "bbox": [
+        640,
+        704,
+        320,
+        318
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "dark_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.7221749,
+      "image_complete": 0.2058193,
+      "text_semantic": 0.8393572,
+      "text_complete": 0.593204,
+      "text_family_support": 0.9919437,
+      "entropy": 0.7991295,
+      "disagreement": 0.3492725,
+      "priority": 0.6453152,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A004"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1006305.tga",
+      "candidate_index": 81,
+      "proposal_id": "number-tiled-palette:e8260d106a7c20ae",
+      "bbox": [
+        3,
+        160,
+        317,
+        203
+      ],
+      "dominant_number_block": "none",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.8773133,
+      "image_complete": 0.8894556,
+      "text_semantic": 0.4564144,
+      "text_complete": 0.1604377,
+      "text_family_support": 0.9815007,
+      "entropy": 0.6671145,
+      "disagreement": 0.7071051,
+      "priority": 0.6732779,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A005"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1006305.tga",
+      "candidate_index": 2,
+      "proposal_id": "number-tiled-palette:653ab666e65be925",
+      "bbox": [
+        297,
+        787,
+        23,
+        24
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.8936898,
+      "image_complete": 0.7389001,
+      "text_semantic": 0.4777586,
+      "text_complete": 0.1552419,
+      "text_family_support": 0.9786733,
+      "entropy": 0.7346158,
+      "disagreement": 0.5861794,
+      "priority": 0.6728566,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A006"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1006305.tga",
+      "candidate_index": 88,
+      "proposal_id": "number-tiled-companion:de6809973ffd08b6",
+      "bbox": [
+        192,
+        768,
+        384,
+        133
+      ],
+      "dominant_number_block": "none",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.6458291,
+      "image_complete": 0.8510803,
+      "text_semantic": 0.3463747,
+      "text_complete": 0.1604794,
+      "text_family_support": 0.9765911,
+      "entropy": 0.777778,
+      "disagreement": 0.4940664,
+      "priority": 0.6688349,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A007"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1006305.tga",
+      "candidate_index": 36,
+      "proposal_id": "number-tiled-companion:527e55cbaf0a1a20",
+      "bbox": [
+        96,
+        192,
+        384,
+        168
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.8630526,
+      "image_complete": 0.8954454,
+      "text_semantic": 0.3052323,
+      "text_complete": 0.1528074,
+      "text_family_support": 0.9867125,
+      "entropy": 0.640968,
+      "disagreement": 0.7261747,
+      "priority": 0.6673218,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A008"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1006305.tga",
+      "candidate_index": 75,
+      "proposal_id": "number-tiled-companion:a9187da4b9c2556e",
+      "bbox": [
+        0,
+        640,
+        480,
+        320
+      ],
+      "dominant_number_block": "none",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.6327812,
+      "image_complete": 0.1497778,
+      "text_semantic": 0.8848192,
+      "text_complete": 0.7691901,
+      "text_family_support": 0.9906836,
+      "entropy": 0.7131413,
+      "disagreement": 0.5858175,
+      "priority": 0.6655047,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A009"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1007631.tga",
+      "candidate_index": 63,
+      "proposal_id": "number-tiled-palette:1a862d3560d6b5be",
+      "bbox": [
+        320,
+        715,
+        320,
+        110
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.7429181,
+      "image_complete": 0.8853921,
+      "text_semantic": 0.4699861,
+      "text_complete": 0.185074,
+      "text_family_support": 0.9729593,
+      "entropy": 0.7561055,
+      "disagreement": 0.5707917,
+      "priority": 0.7775373,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A010"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1007631.tga",
+      "candidate_index": 71,
+      "proposal_id": "number-tiled-companion:ce3cd75c9a223c4f",
+      "bbox": [
+        96,
+        707,
+        292,
+        152
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.5036533,
+      "image_complete": 0.1031397,
+      "text_semantic": 0.8796896,
+      "text_complete": 0.7367564,
+      "text_family_support": 0.9954149,
+      "entropy": 0.7101713,
+      "disagreement": 0.5961703,
+      "priority": 0.7677027,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A011"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1007631.tga",
+      "candidate_index": 42,
+      "proposal_id": "number-tiled-palette:40b855eb1a463deb",
+      "bbox": [
+        288,
+        211,
+        192,
+        142
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.6025342,
+      "image_complete": 0.1465447,
+      "text_semantic": 0.8953293,
+      "text_complete": 0.7747626,
+      "text_family_support": 0.9814008,
+      "entropy": 0.7059549,
+      "disagreement": 0.6053694,
+      "priority": 0.7653022,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A012"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1007631.tga",
+      "candidate_index": 74,
+      "proposal_id": "number-tiled-companion:3ce079495c112ca1",
+      "bbox": [
+        192,
+        104,
+        192,
+        249
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.1409794,
+      "image_complete": 0.2344355,
+      "text_semantic": 0.8865385,
+      "text_complete": 0.7532925,
+      "text_family_support": 0.9954149,
+      "entropy": 0.6721872,
+      "disagreement": 0.6347722,
+      "priority": 0.7602603,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A013"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1007631.tga",
+      "candidate_index": 56,
+      "proposal_id": "number-tiled-palette:3576e52c0bd66a30",
+      "bbox": [
+        396,
+        722,
+        143,
+        29
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Sponsor"
+      ],
+      "image_semantic": 0.3892143,
+      "image_complete": 0.7239307,
+      "text_semantic": 0.3115312,
+      "text_complete": 0.1293941,
+      "text_family_support": 0.9725676,
+      "entropy": 0.8162594,
+      "disagreement": 0.2414539,
+      "priority": 0.7221937,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A014"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1008063.tga",
+      "candidate_index": 86,
+      "proposal_id": "number-tiled-palette:39ff754c7e220705",
+      "bbox": [
+        160,
+        713,
+        320,
+        235
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.1841882,
+      "image_complete": 0.390436,
+      "text_semantic": 0.8809985,
+      "text_complete": 0.7591746,
+      "text_family_support": 0.9726326,
+      "entropy": 0.7442821,
+      "disagreement": 0.596918,
+      "priority": 0.6786829,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A015"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1008063.tga",
+      "candidate_index": 28,
+      "proposal_id": "number-tiled-palette:6b66d844f2ab7249",
+      "bbox": [
+        307,
+        257,
+        73,
+        31
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.6492932,
+      "image_complete": 0.1724354,
+      "text_semantic": 0.8918524,
+      "text_complete": 0.8161098,
+      "text_family_support": 0.9905505,
+      "entropy": 0.69519,
+      "disagreement": 0.6158883,
+      "priority": 0.6649177,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A016"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1008063.tga",
+      "candidate_index": 77,
+      "proposal_id": "number-tiled-companion:f716dbff56bf5f7c",
+      "bbox": [
+        239,
+        257,
+        139,
+        43
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.9100147,
+      "image_complete": 0.7237136,
+      "text_semantic": 0.1729854,
+      "text_complete": 0.1201632,
+      "text_family_support": 0.9411819,
+      "entropy": 0.6202701,
+      "disagreement": 0.6378036,
+      "priority": 0.6268088,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A017"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1008063.tga",
+      "candidate_index": 12,
+      "proposal_id": "number-tiled-palette:754ce7c2cfc617b4",
+      "bbox": [
+        358,
+        259,
+        27,
+        10
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.9124206,
+      "image_complete": 0.7659949,
+      "text_semantic": 0.1117605,
+      "text_complete": 0.0836977,
+      "text_family_support": 0.9945648,
+      "entropy": 0.5333863,
+      "disagreement": 0.6895555,
+      "priority": 0.6113257,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A018"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_1008063.tga",
+      "candidate_index": 33,
+      "proposal_id": "number-tiled-palette:64f85e10d963b603",
+      "bbox": [
+        387,
+        791,
+        34,
+        14
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.9094014,
+      "image_complete": 0.7183701,
+      "text_semantic": 0.0954562,
+      "text_complete": 0.0896487,
+      "text_family_support": 0.9982298,
+      "entropy": 0.5464618,
+      "disagreement": 0.6447293,
+      "priority": 0.6067361,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A019"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_308339.tga",
+      "candidate_index": 4,
+      "proposal_id": "number-tiled-palette:94afa257094667c0",
+      "bbox": [
+        314,
+        251,
+        51,
+        37
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.6265225,
+      "image_complete": 0.1285431,
+      "text_semantic": 0.8872938,
+      "text_complete": 0.7217948,
+      "text_family_support": 0.9953541,
+      "entropy": 0.7169382,
+      "disagreement": 0.5599089,
+      "priority": 0.6616702,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A020"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_308339.tga",
+      "candidate_index": 32,
+      "proposal_id": "number-tiled-palette:d9dcf2a689786b5b",
+      "bbox": [
+        401,
+        768,
+        49,
+        31
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.4807816,
+      "image_complete": 0.0819176,
+      "text_semantic": 0.87857,
+      "text_complete": 0.6900033,
+      "text_family_support": 0.9953541,
+      "entropy": 0.7086153,
+      "disagreement": 0.5668317,
+      "priority": 0.6596556,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A021"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_308339.tga",
+      "candidate_index": 6,
+      "proposal_id": "number-tiled-palette:9a2b1275aa9c0fab",
+      "bbox": [
+        402,
+        768,
+        47,
+        30
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.4566336,
+      "image_complete": 0.0772387,
+      "text_semantic": 0.8994601,
+      "text_complete": 0.806793,
+      "text_family_support": 0.98891,
+      "entropy": 0.6414444,
+      "disagreement": 0.6904083,
+      "priority": 0.6590341,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A022"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_308339.tga",
+      "candidate_index": 80,
+      "proposal_id": "number-tiled-companion:80fb378ac74471e1",
+      "bbox": [
+        313,
+        246,
+        149,
+        74
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.7908218,
+      "image_complete": 0.2599963,
+      "text_semantic": 0.8790423,
+      "text_complete": 0.7676837,
+      "text_family_support": 0.9798601,
+      "entropy": 0.7201961,
+      "disagreement": 0.4692157,
+      "priority": 0.6373642,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A023"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_308339.tga",
+      "candidate_index": 38,
+      "proposal_id": "number-tiled-companion:cd12f4f62c1468b6",
+      "bbox": [
+        320,
+        719,
+        66,
+        81
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.6425285,
+      "image_complete": 0.1323835,
+      "text_semantic": 0.8455942,
+      "text_complete": 0.5639722,
+      "text_family_support": 0.9433303,
+      "entropy": 0.7783549,
+      "disagreement": 0.3918315,
+      "priority": 0.6368836,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A024"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_321255.tga",
+      "candidate_index": 90,
+      "proposal_id": "number-tiled-companion:f38a6d154c0335d9",
+      "bbox": [
+        480,
+        704,
+        480,
+        296
+      ],
+      "dominant_number_block": "none",
+      "palette_role": "dark_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.2407803,
+      "image_complete": 0.0932005,
+      "text_semantic": 0.8751304,
+      "text_complete": 0.8384218,
+      "text_family_support": 0.9735819,
+      "entropy": 0.6061671,
+      "disagreement": 0.7112876,
+      "priority": 0.7453135,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A025"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_321255.tga",
+      "candidate_index": 86,
+      "proposal_id": "number-tiled-palette:c30952c06c2667aa",
+      "bbox": [
+        672,
+        832,
+        192,
+        190
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "dark_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.2426408,
+      "image_complete": 0.0558273,
+      "text_semantic": 0.8883445,
+      "text_complete": 0.7817533,
+      "text_family_support": 0.9967547,
+      "entropy": 0.592975,
+      "disagreement": 0.6809203,
+      "priority": 0.7364197,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A026"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_321255.tga",
+      "candidate_index": 69,
+      "proposal_id": "number-tiled-palette:4881547048879268",
+      "bbox": [
+        192,
+        192,
+        192,
+        192
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "dark_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.208158,
+      "image_complete": 0.0552546,
+      "text_semantic": 0.8864401,
+      "text_complete": 0.7484898,
+      "text_family_support": 0.9978258,
+      "entropy": 0.5926208,
+      "disagreement": 0.6519897,
+      "priority": 0.729242,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A027"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_321255.tga",
+      "candidate_index": 80,
+      "proposal_id": "number-tiled-palette:67250c831585e0e8",
+      "bbox": [
+        320,
+        166,
+        320,
+        184
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.1136134,
+      "image_complete": 0.0952114,
+      "text_semantic": 0.8831331,
+      "text_complete": 0.748584,
+      "text_family_support": 0.9983463,
+      "entropy": 0.5745379,
+      "disagreement": 0.650282,
+      "priority": 0.7207818,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A028"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_321255.tga",
+      "candidate_index": 62,
+      "proposal_id": "number-tiled-palette:2055f39d71d548d2",
+      "bbox": [
+        288,
+        672,
+        192,
+        192
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "dark_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.144345,
+      "image_complete": 0.0648421,
+      "text_semantic": 0.8844095,
+      "text_complete": 0.7583194,
+      "text_family_support": 0.9965901,
+      "entropy": 0.5640638,
+      "disagreement": 0.6613053,
+      "priority": 0.718473,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A029"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_327705.tga",
+      "candidate_index": 51,
+      "proposal_id": "number-tiled-palette:a705991c32af1e97",
+      "bbox": [
+        768,
+        845,
+        181,
+        112
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "dark_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.2987393,
+      "image_complete": 0.4841628,
+      "text_semantic": 0.8888733,
+      "text_complete": 0.7557555,
+      "text_family_support": 0.9992678,
+      "entropy": 0.7960883,
+      "disagreement": 0.5271324,
+      "priority": 0.7898764,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A030"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_327705.tga",
+      "candidate_index": 59,
+      "proposal_id": "number-tiled-companion:511be1891d7876d6",
+      "bbox": [
+        778,
+        782,
+        182,
+        125
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.2546502,
+      "image_complete": 0.4166339,
+      "text_semantic": 0.8732123,
+      "text_complete": 0.7047169,
+      "text_family_support": 0.9966241,
+      "entropy": 0.8056073,
+      "disagreement": 0.5092716,
+      "priority": 0.789166,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A031"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_327705.tga",
+      "candidate_index": 62,
+      "proposal_id": "number-tiled-companion:1815bd0aad5740dd",
+      "bbox": [
+        778,
+        782,
+        182,
+        125
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.2532316,
+      "image_complete": 0.3229997,
+      "text_semantic": 0.8848867,
+      "text_complete": 0.7464333,
+      "text_family_support": 0.9963034,
+      "entropy": 0.7640014,
+      "disagreement": 0.5787151,
+      "priority": 0.7877401,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A032"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_327705.tga",
+      "candidate_index": 95,
+      "proposal_id": "number-tiled-palette:021531e236a4d80c",
+      "bbox": [
+        172,
+        718,
+        308,
+        183
+      ],
+      "dominant_number_block": "none",
+      "palette_role": "dark_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.1368459,
+      "image_complete": 0.233177,
+      "text_semantic": 0.8725216,
+      "text_complete": 0.726974,
+      "text_family_support": 0.9991658,
+      "entropy": 0.6889206,
+      "disagreement": 0.6023912,
+      "priority": 0.7604452,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A033"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_327705.tga",
+      "candidate_index": 50,
+      "proposal_id": "number-tiled-companion:66e464faff1bc8a4",
+      "bbox": [
+        323,
+        276,
+        148,
+        63
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "dark_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.3721403,
+      "image_complete": 0.6988436,
+      "text_semantic": 0.7994179,
+      "text_complete": 0.5464766,
+      "text_family_support": 0.9896999,
+      "entropy": 0.8879626,
+      "disagreement": 0.1767953,
+      "priority": 0.741722,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A034"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_327705.tga",
+      "candidate_index": 81,
+      "proposal_id": "number-tiled-companion:865cd3e4446ff338",
+      "bbox": [
+        160,
+        704,
+        320,
+        255
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.2465132,
+      "image_complete": 0.0621769,
+      "text_semantic": 0.8732442,
+      "text_complete": 0.7237393,
+      "text_family_support": 0.9991658,
+      "entropy": 0.6351275,
+      "disagreement": 0.6166738,
+      "priority": 0.739809,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A035"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_331993.tga",
+      "candidate_index": 5,
+      "proposal_id": "number-tiled-palette:d52e71d9dd06e3f4",
+      "bbox": [
+        334,
+        768,
+        25,
+        16
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.5876688,
+      "image_complete": 0.1103011,
+      "text_semantic": 0.8302619,
+      "text_complete": 0.5139082,
+      "text_family_support": 0.9865369,
+      "entropy": 0.7837698,
+      "disagreement": 0.3618579,
+      "priority": 0.7404682,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A036"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_331993.tga",
+      "candidate_index": 26,
+      "proposal_id": "number-tiled-palette:4bb59712edc98832",
+      "bbox": [
+        910,
+        852,
+        18,
+        12
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.339076,
+      "image_complete": 0.0594921,
+      "text_semantic": 0.8310534,
+      "text_complete": 0.5614921,
+      "text_family_support": 0.9740006,
+      "entropy": 0.7234272,
+      "disagreement": 0.4464575,
+      "priority": 0.7319567,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A037"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_331993.tga",
+      "candidate_index": 49,
+      "proposal_id": "number-tiled-palette:362136a03013cf0e",
+      "bbox": [
+        288,
+        218,
+        192,
+        123
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "dark_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.1320894,
+      "image_complete": 0.1052085,
+      "text_semantic": 0.8768436,
+      "text_complete": 0.7017212,
+      "text_family_support": 0.9991564,
+      "entropy": 0.6164939,
+      "disagreement": 0.6014028,
+      "priority": 0.7276042,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A038"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_331993.tga",
+      "candidate_index": 40,
+      "proposal_id": "number-tiled-palette:34bfe5a306e2901d",
+      "bbox": [
+        805,
+        832,
+        138,
+        139
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "dark_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.1219653,
+      "image_complete": 0.103114,
+      "text_semantic": 0.8795867,
+      "text_complete": 0.7098042,
+      "text_family_support": 0.9991564,
+      "entropy": 0.6033237,
+      "disagreement": 0.611758,
+      "priority": 0.7242664,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A039"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_331993.tga",
+      "candidate_index": 54,
+      "proposal_id": "number-tiled-palette:369945de3df2e5c7",
+      "bbox": [
+        192,
+        220,
+        192,
+        128
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.1161349,
+      "image_complete": 0.0804184,
+      "text_semantic": 0.8877717,
+      "text_complete": 0.7676829,
+      "text_family_support": 0.9984565,
+      "entropy": 0.5526072,
+      "disagreement": 0.6721877,
+      "priority": 0.7164115,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A040"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_336528.tga",
+      "candidate_index": 75,
+      "proposal_id": "number-tiled-palette:744072936ad58482",
+      "bbox": [
+        178,
+        137,
+        302,
+        183
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.6305596,
+      "image_complete": 0.5660423,
+      "text_semantic": 0.522297,
+      "text_complete": 0.1960873,
+      "text_family_support": 0.9717247,
+      "entropy": 0.9125545,
+      "disagreement": 0.2545076,
+      "priority": 0.7686214,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A041"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_336528.tga",
+      "candidate_index": 76,
+      "proposal_id": "number-tiled-palette:5d0960d1692e695e",
+      "bbox": [
+        704,
+        704,
+        316,
+        320
+      ],
+      "dominant_number_block": "none",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.3018549,
+      "image_complete": 0.0573774,
+      "text_semantic": 0.8840247,
+      "text_complete": 0.7368289,
+      "text_family_support": 0.9982408,
+      "entropy": 0.6374164,
+      "disagreement": 0.6340553,
+      "priority": 0.7449994,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A042"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_336528.tga",
+      "candidate_index": 64,
+      "proposal_id": "number-tiled-palette:74df0f3e64ac337a",
+      "bbox": [
+        640,
+        728,
+        320,
+        232
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.2198032,
+      "image_complete": 0.0521003,
+      "text_semantic": 0.8707447,
+      "text_complete": 0.7053742,
+      "text_family_support": 0.9910854,
+      "entropy": 0.6212687,
+      "disagreement": 0.602749,
+      "priority": 0.7284753,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A043"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_336528.tga",
+      "candidate_index": 67,
+      "proposal_id": "number-tiled-palette:e886d820e4c50a5f",
+      "bbox": [
+        424,
+        218,
+        23,
+        15
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.2367636,
+      "image_complete": 0.0514891,
+      "text_semantic": 0.8922396,
+      "text_complete": 0.849254,
+      "text_family_support": 0.9757124,
+      "entropy": 0.5467834,
+      "disagreement": 0.7455472,
+      "priority": 0.7275818,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A044"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_336528.tga",
+      "candidate_index": 82,
+      "proposal_id": "number-tiled-companion:791e4b7979991631",
+      "bbox": [
+        252,
+        724,
+        340,
+        236
+      ],
+      "dominant_number_block": "none",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.1553392,
+      "image_complete": 0.1387075,
+      "text_semantic": 0.8108133,
+      "text_complete": 0.5281982,
+      "text_family_support": 0.9894787,
+      "entropy": 0.7253393,
+      "disagreement": 0.4067234,
+      "priority": 0.7259793,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A045"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_343044.tga",
+      "candidate_index": 78,
+      "proposal_id": "number-tiled-palette:903fbef743951659",
+      "bbox": [
+        833,
+        835,
+        182,
+        42
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.9072425,
+      "image_complete": 0.8499537,
+      "text_semantic": 0.586094,
+      "text_complete": 0.2648263,
+      "text_family_support": 0.9031811,
+      "entropy": 0.7170031,
+      "disagreement": 0.615901,
+      "priority": 0.6572629,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A046"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_343044.tga",
+      "candidate_index": 92,
+      "proposal_id": "number-tiled-palette:b876d40894438cf9",
+      "bbox": [
+        265,
+        918,
+        119,
+        23
+      ],
+      "dominant_number_block": "nose_number_small",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.9116996,
+      "image_complete": 0.7783262,
+      "text_semantic": 0.2444896,
+      "text_complete": 0.1246428,
+      "text_family_support": 0.9242336,
+      "entropy": 0.6347429,
+      "disagreement": 0.6791257,
+      "priority": 0.6402624,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A047"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_343044.tga",
+      "candidate_index": 59,
+      "proposal_id": "number-tiled-palette:f4e4a8b3d3e8ac87",
+      "bbox": [
+        770,
+        842,
+        94,
+        88
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.818478,
+      "image_complete": 0.5213391,
+      "text_semantic": 0.365456,
+      "text_complete": 0.1256101,
+      "text_family_support": 0.9147696,
+      "entropy": 0.7936187,
+      "disagreement": 0.3807996,
+      "priority": 0.6352822,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A048"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_343044.tga",
+      "candidate_index": 66,
+      "proposal_id": "number-tiled-companion:023ccb39d7476605",
+      "bbox": [
+        331,
+        720,
+        149,
+        80
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.8072982,
+      "image_complete": 0.8961509,
+      "text_semantic": 0.7755111,
+      "text_complete": 0.4456421,
+      "text_family_support": 0.9689615,
+      "entropy": 0.7369765,
+      "disagreement": 0.3778606,
+      "priority": 0.6198969,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A049"
+    },
+    {
+      "paint": "dirtlatemodel 350/car_num_343044.tga",
+      "candidate_index": 82,
+      "proposal_id": "number-tiled-palette:813b3e8d46b8225e",
+      "bbox": [
+        333,
+        241,
+        143,
+        20
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.8984112,
+      "image_complete": 0.8731219,
+      "text_semantic": 0.1063386,
+      "text_complete": 0.0847165,
+      "text_family_support": 0.9924374,
+      "entropy": 0.4825454,
+      "disagreement": 0.7754138,
+      "priority": 0.6094864,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A050"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1003732.tga",
+      "candidate_index": 73,
+      "proposal_id": "number-tiled-palette:e171797664fe92c8",
+      "bbox": [
+        295,
+        782,
+        185,
+        51
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.905524,
+      "image_complete": 0.7681683,
+      "text_semantic": 0.4993126,
+      "text_complete": 0.1828233,
+      "text_family_support": 0.9611157,
+      "entropy": 0.7296601,
+      "disagreement": 0.6043088,
+      "priority": 0.7716474,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A051"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1003732.tga",
+      "candidate_index": 51,
+      "proposal_id": "number-tiled-companion:9e12beb06d50c300",
+      "bbox": [
+        279,
+        244,
+        105,
+        90
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.5473526,
+      "image_complete": 0.1137629,
+      "text_semantic": 0.8942863,
+      "text_complete": 0.7776867,
+      "text_family_support": 0.9748617,
+      "entropy": 0.6889757,
+      "disagreement": 0.6332061,
+      "priority": 0.7633129,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A052"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1003732.tga",
+      "candidate_index": 91,
+      "proposal_id": "number-tiled-palette:1cb18baa00bc1b36",
+      "bbox": [
+        704,
+        769,
+        272,
+        183
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.2843781,
+      "image_complete": 0.0912186,
+      "text_semantic": 0.884919,
+      "text_complete": 0.7749215,
+      "text_family_support": 0.990517,
+      "entropy": 0.6465648,
+      "disagreement": 0.6598022,
+      "priority": 0.7540081,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A053"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1003732.tga",
+      "candidate_index": 39,
+      "proposal_id": "number-tiled-palette:0cd1ec9187be6d4b",
+      "bbox": [
+        382,
+        761,
+        21,
+        14
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.8938825,
+      "image_complete": 0.5844465,
+      "text_semantic": 0.3856928,
+      "text_complete": 0.130673,
+      "text_family_support": 0.9882478,
+      "entropy": 0.7471656,
+      "disagreement": 0.4720269,
+      "priority": 0.7518808,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A054"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1003732.tga",
+      "candidate_index": 87,
+      "proposal_id": "number-tiled-palette:b1d672d40ca8d556",
+      "bbox": [
+        288,
+        210,
+        192,
+        146
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "dark_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.4285105,
+      "image_complete": 0.7295726,
+      "text_semantic": 0.8940241,
+      "text_complete": 0.8002996,
+      "text_family_support": 0.9888363,
+      "entropy": 0.7590665,
+      "disagreement": 0.4028576,
+      "priority": 0.7400616,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A055"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1006305.tga",
+      "candidate_index": 81,
+      "proposal_id": "number-tiled-palette:e8260d106a7c20ae",
+      "bbox": [
+        3,
+        160,
+        317,
+        203
+      ],
+      "dominant_number_block": "none",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.8773133,
+      "image_complete": 0.8894556,
+      "text_semantic": 0.4564144,
+      "text_complete": 0.1604377,
+      "text_family_support": 0.9815007,
+      "entropy": 0.6671145,
+      "disagreement": 0.7071051,
+      "priority": 0.7732779,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A056"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1006305.tga",
+      "candidate_index": 2,
+      "proposal_id": "number-tiled-palette:653ab666e65be925",
+      "bbox": [
+        297,
+        787,
+        23,
+        24
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.8936898,
+      "image_complete": 0.7389001,
+      "text_semantic": 0.4777586,
+      "text_complete": 0.1552419,
+      "text_family_support": 0.9786733,
+      "entropy": 0.7346158,
+      "disagreement": 0.5861794,
+      "priority": 0.7728566,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A057"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1006305.tga",
+      "candidate_index": 88,
+      "proposal_id": "number-tiled-companion:de6809973ffd08b6",
+      "bbox": [
+        192,
+        768,
+        384,
+        133
+      ],
+      "dominant_number_block": "none",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.6458291,
+      "image_complete": 0.8510803,
+      "text_semantic": 0.3463747,
+      "text_complete": 0.1604794,
+      "text_family_support": 0.9765911,
+      "entropy": 0.777778,
+      "disagreement": 0.4940664,
+      "priority": 0.7688349,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A058"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1006305.tga",
+      "candidate_index": 36,
+      "proposal_id": "number-tiled-companion:527e55cbaf0a1a20",
+      "bbox": [
+        96,
+        192,
+        384,
+        168
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.8630526,
+      "image_complete": 0.8954454,
+      "text_semantic": 0.3052323,
+      "text_complete": 0.1528074,
+      "text_family_support": 0.9867125,
+      "entropy": 0.640968,
+      "disagreement": 0.7261747,
+      "priority": 0.7673218,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A059"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1006305.tga",
+      "candidate_index": 75,
+      "proposal_id": "number-tiled-companion:a9187da4b9c2556e",
+      "bbox": [
+        0,
+        640,
+        480,
+        320
+      ],
+      "dominant_number_block": "none",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.6327812,
+      "image_complete": 0.1497778,
+      "text_semantic": 0.8848192,
+      "text_complete": 0.7691901,
+      "text_family_support": 0.9906836,
+      "entropy": 0.7131413,
+      "disagreement": 0.5858175,
+      "priority": 0.7655047,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A060"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1008515.tga",
+      "candidate_index": 35,
+      "proposal_id": "number-tiled-companion:0b1de1779be4085a",
+      "bbox": [
+        278,
+        718,
+        103,
+        102
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.5536869,
+      "image_complete": 0.2891103,
+      "text_semantic": 0.8714333,
+      "text_complete": 0.6712018,
+      "text_family_support": 0.9863688,
+      "entropy": 0.8316061,
+      "disagreement": 0.424831,
+      "priority": 0.7777043,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A061"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1008515.tga",
+      "candidate_index": 76,
+      "proposal_id": "number-tiled-palette:afd5b74108a5e0b7",
+      "bbox": [
+        828,
+        839,
+        105,
+        104
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.9005438,
+      "image_complete": 0.6436517,
+      "text_semantic": 0.6284812,
+      "text_complete": 0.2473875,
+      "text_family_support": 0.9637284,
+      "entropy": 0.7914554,
+      "disagreement": 0.4241582,
+      "priority": 0.7549402,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A062"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1008515.tga",
+      "candidate_index": 91,
+      "proposal_id": "number-tiled-companion:abb269b9642d01e1",
+      "bbox": [
+        258,
+        259,
+        109,
+        86
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.284885,
+      "image_complete": 0.0928243,
+      "text_semantic": 0.8504183,
+      "text_complete": 0.5904819,
+      "text_family_support": 0.9898612,
+      "entropy": 0.7232221,
+      "disagreement": 0.4757124,
+      "priority": 0.7423503,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A063"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1008515.tga",
+      "candidate_index": 52,
+      "proposal_id": "number-tiled-palette:4d5d597640465cd3",
+      "bbox": [
+        384,
+        305,
+        23,
+        20
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.4151509,
+      "image_complete": 0.0709237,
+      "text_semantic": 0.7349178,
+      "text_complete": 0.3752147,
+      "text_family_support": 0.9827375,
+      "entropy": 0.7843496,
+      "disagreement": 0.246308,
+      "priority": 0.7110818,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A064"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1008515.tga",
+      "candidate_index": 87,
+      "proposal_id": "number-tiled-companion:a195c71c1f207bbf",
+      "bbox": [
+        290,
+        785,
+        35,
+        43
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.1537744,
+      "image_complete": 0.0548144,
+      "text_semantic": 0.8692637,
+      "text_complete": 0.6824747,
+      "text_family_support": 0.9804909,
+      "entropy": 0.596709,
+      "disagreement": 0.5848215,
+      "priority": 0.7108226,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A065"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1321255.tga",
+      "candidate_index": 34,
+      "proposal_id": "number-tiled-palette:8c325f311e3f330c",
+      "bbox": [
+        384,
+        710,
+        192,
+        112
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.5233361,
+      "image_complete": 0.2817782,
+      "text_semantic": 0.8662826,
+      "text_complete": 0.713149,
+      "text_family_support": 0.9813522,
+      "entropy": 0.8221138,
+      "disagreement": 0.4703238,
+      "priority": 0.6838026,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A066"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1321255.tga",
+      "candidate_index": 37,
+      "proposal_id": "number-tiled-palette:ab099e2347d935c3",
+      "bbox": [
+        686,
+        769,
+        274,
+        191
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.6558538,
+      "image_complete": 0.1940244,
+      "text_semantic": 0.8914664,
+      "text_complete": 0.7709652,
+      "text_family_support": 0.9920656,
+      "entropy": 0.7275869,
+      "disagreement": 0.5600379,
+      "priority": 0.6658367,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A067"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1321255.tga",
+      "candidate_index": 80,
+      "proposal_id": "number-tiled-palette:459af80efcd8b1c6",
+      "bbox": [
+        320,
+        215,
+        320,
+        265
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.5866935,
+      "image_complete": 0.1211441,
+      "text_semantic": 0.8970132,
+      "text_complete": 0.8325922,
+      "text_family_support": 0.9950417,
+      "entropy": 0.6602445,
+      "disagreement": 0.6757718,
+      "priority": 0.6650613,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A068"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1321255.tga",
+      "candidate_index": 67,
+      "proposal_id": "number-tiled-companion:cc686eb66f78bb59",
+      "bbox": [
+        320,
+        640,
+        297,
+        359
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.4872792,
+      "image_complete": 0.0902874,
+      "text_semantic": 0.8832951,
+      "text_complete": 0.7357665,
+      "text_family_support": 0.9909197,
+      "entropy": 0.6974609,
+      "disagreement": 0.6059037,
+      "priority": 0.6635173,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A069"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1321255.tga",
+      "candidate_index": 91,
+      "proposal_id": "number-tiled-companion:6a3d0423278a5071",
+      "bbox": [
+        192,
+        672,
+        192,
+        327
+      ],
+      "dominant_number_block": "none",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.6375056,
+      "image_complete": 0.1392466,
+      "text_semantic": 0.8957129,
+      "text_complete": 0.8396354,
+      "text_family_support": 0.9962559,
+      "entropy": 0.6611544,
+      "disagreement": 0.6633018,
+      "priority": 0.6625961,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A070"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1328151.tga",
+      "candidate_index": 42,
+      "proposal_id": "number-tiled-palette:c325e7648edfded1",
+      "bbox": [
+        320,
+        715,
+        273,
+        105
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.9112946,
+      "image_complete": 0.7719695,
+      "text_semantic": 0.3726479,
+      "text_complete": 0.1668655,
+      "text_family_support": 0.9558692,
+      "entropy": 0.7024658,
+      "disagreement": 0.6413096,
+      "priority": 0.7676109,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A071"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1328151.tga",
+      "candidate_index": 62,
+      "proposal_id": "number-tiled-palette:9aaf6dc4eb1ae22a",
+      "bbox": [
+        7,
+        717,
+        313,
+        89
+      ],
+      "dominant_number_block": "none",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.9097913,
+      "image_complete": 0.8461501,
+      "text_semantic": 0.6659136,
+      "text_complete": 0.3373683,
+      "text_family_support": 0.9731961,
+      "entropy": 0.7244707,
+      "disagreement": 0.5451618,
+      "priority": 0.7569415,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A072"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1328151.tga",
+      "candidate_index": 95,
+      "proposal_id": "number-tiled-companion:8601c24ef18252da",
+      "bbox": [
+        740,
+        585,
+        34,
+        46
+      ],
+      "dominant_number_block": "none",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.603744,
+      "image_complete": 0.1161837,
+      "text_semantic": 0.8954313,
+      "text_complete": 0.84609,
+      "text_family_support": 0.9675378,
+      "entropy": 0.6474653,
+      "disagreement": 0.6874702,
+      "priority": 0.7567345,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A073"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1328151.tga",
+      "candidate_index": 66,
+      "proposal_id": "number-tiled-companion:be8fe09539db2783",
+      "bbox": [
+        24,
+        715,
+        72,
+        34
+      ],
+      "dominant_number_block": "none",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.5714047,
+      "image_complete": 0.105276,
+      "text_semantic": 0.8721244,
+      "text_complete": 0.8384575,
+      "text_family_support": 0.9434939,
+      "entropy": 0.6650771,
+      "disagreement": 0.6710841,
+      "priority": 0.7557545,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A074"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_1328151.tga",
+      "candidate_index": 39,
+      "proposal_id": "number-tiled-companion:48a951202e66d549",
+      "bbox": [
+        7,
+        718,
+        473,
+        98
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.9128351,
+      "image_complete": 0.7926663,
+      "text_semantic": 0.1827227,
+      "text_complete": 0.1233566,
+      "text_family_support": 0.9778371,
+      "entropy": 0.5970552,
+      "disagreement": 0.7010335,
+      "priority": 0.7395007,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A075"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_197595.tga",
+      "candidate_index": 67,
+      "proposal_id": "number-tiled-companion:d146cc78f96ce0f8",
+      "bbox": [
+        273,
+        919,
+        105,
+        77
+      ],
+      "dominant_number_block": "nose_number_small",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.4136164,
+      "image_complete": 0.093543,
+      "text_semantic": 0.8822305,
+      "text_complete": 0.7760273,
+      "text_family_support": 0.991393,
+      "entropy": 0.6792045,
+      "disagreement": 0.6459441,
+      "priority": 0.6654066,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A076"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_197595.tga",
+      "candidate_index": 52,
+      "proposal_id": "number-tiled-companion:3d1f926516fddc52",
+      "bbox": [
+        288,
+        722,
+        192,
+        220
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.8913622,
+      "image_complete": 0.8148018,
+      "text_semantic": 0.6654035,
+      "text_complete": 0.2995266,
+      "text_family_support": 0.9877381,
+      "entropy": 0.7468442,
+      "disagreement": 0.5269775,
+      "priority": 0.6653719,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A077"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_197595.tga",
+      "candidate_index": 56,
+      "proposal_id": "number-tiled-companion:4a24ec73447b6dd8",
+      "bbox": [
+        379,
+        723,
+        202,
+        87
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.5474016,
+      "image_complete": 0.102304,
+      "text_semantic": 0.8469061,
+      "text_complete": 0.695118,
+      "text_family_support": 0.9515359,
+      "entropy": 0.7436174,
+      "disagreement": 0.5326983,
+      "priority": 0.6581096,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A078"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_197595.tga",
+      "candidate_index": 39,
+      "proposal_id": "number-tiled-palette:12bde22fff712263",
+      "bbox": [
+        797,
+        843,
+        102,
+        133
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.9135576,
+      "image_complete": 0.7819252,
+      "text_semantic": 0.1789854,
+      "text_complete": 0.4262529,
+      "text_family_support": 0.8894333,
+      "entropy": 0.7108053,
+      "disagreement": 0.6380407,
+      "priority": 0.6572592,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A079"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_197595.tga",
+      "candidate_index": 84,
+      "proposal_id": "number-tiled-palette:dc1799fab061d70e",
+      "bbox": [
+        320,
+        719,
+        273,
+        119
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.6057293,
+      "image_complete": 0.8269288,
+      "text_semantic": 0.3094677,
+      "text_complete": 0.1173655,
+      "text_family_support": 0.9614661,
+      "entropy": 0.7616203,
+      "disagreement": 0.4645741,
+      "priority": 0.6511659,
+      "missing_positive_pair_paint": false,
+      "ownership_authority": false,
+      "review_code": "A080"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_233946.tga",
+      "candidate_index": 89,
+      "proposal_id": "number-tiled-companion:5839cefafcc8c8da",
+      "bbox": [
+        160,
+        716,
+        320,
+        190
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.8858138,
+      "image_complete": 0.8151528,
+      "text_semantic": 0.5683375,
+      "text_complete": 0.2260591,
+      "text_family_support": 0.9642658,
+      "entropy": 0.7401357,
+      "disagreement": 0.5935958,
+      "priority": 0.7743132,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A081"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_233946.tga",
+      "candidate_index": 71,
+      "proposal_id": "number-tiled-companion:6a1cbca5331802d2",
+      "bbox": [
+        288,
+        715,
+        306,
+        149
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "dark_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.1779491,
+      "image_complete": 0.3315663,
+      "text_semantic": 0.8304985,
+      "text_complete": 0.898674,
+      "text_family_support": 0.931657,
+      "entropy": 0.6804591,
+      "disagreement": 0.6873455,
+      "priority": 0.7643744,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A082"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_233946.tga",
+      "candidate_index": 20,
+      "proposal_id": "number-tiled-palette:3af292d251583239",
+      "bbox": [
+        342,
+        315,
+        11,
+        19
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.2021457,
+      "image_complete": 0.0511628,
+      "text_semantic": 0.8905393,
+      "text_complete": 0.8673283,
+      "text_family_support": 0.9970592,
+      "entropy": 0.5201305,
+      "disagreement": 0.7620476,
+      "priority": 0.7239825,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A083"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_233946.tga",
+      "candidate_index": 66,
+      "proposal_id": "number-tiled-palette:9e0d35750e7e58c9",
+      "bbox": [
+        288,
+        181,
+        192,
+        107
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "dark_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.1213483,
+      "image_complete": 0.0978217,
+      "text_semantic": 0.8688515,
+      "text_complete": 0.8725088,
+      "text_family_support": 0.9710644,
+      "entropy": 0.5265934,
+      "disagreement": 0.7462101,
+      "priority": 0.7177324,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A084"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_233946.tga",
+      "candidate_index": 28,
+      "proposal_id": "number-tiled-palette:b89c3015c13536c8",
+      "bbox": [
+        872,
+        886,
+        7,
+        21
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.886864,
+      "image_complete": 0.5902643,
+      "text_semantic": 0.179353,
+      "text_complete": 0.0913124,
+      "text_family_support": 0.9835397,
+      "entropy": 0.6512899,
+      "disagreement": 0.507107,
+      "priority": 0.7165651,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A085"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_247671.tga",
+      "candidate_index": 1,
+      "proposal_id": "number-tiled-companion:2e918316e6d79618",
+      "bbox": [
+        820,
+        845,
+        44,
+        53
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.8328992,
+      "image_complete": 0.8846686,
+      "text_semantic": 0.4975699,
+      "text_complete": 0.1709455,
+      "text_family_support": 0.9517819,
+      "entropy": 0.7066665,
+      "disagreement": 0.6517824,
+      "priority": 0.7713019,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A086"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_247671.tga",
+      "candidate_index": 68,
+      "proposal_id": "number-tiled-palette:d59a798ed3d1cfbc",
+      "bbox": [
+        274,
+        918,
+        110,
+        25
+      ],
+      "dominant_number_block": "nose_number_small",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.8940706,
+      "image_complete": 0.8800519,
+      "text_semantic": 0.4089895,
+      "text_complete": 0.1921738,
+      "text_family_support": 0.9354113,
+      "entropy": 0.6746725,
+      "disagreement": 0.7082314,
+      "priority": 0.7677427,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A087"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_247671.tga",
+      "candidate_index": 23,
+      "proposal_id": "number-tiled-palette:5126a028694fe9dc",
+      "bbox": [
+        297,
+        734,
+        6,
+        10
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.5933639,
+      "image_complete": 0.1169446,
+      "text_semantic": 0.8863978,
+      "text_complete": 0.7407889,
+      "text_family_support": 0.994553,
+      "entropy": 0.7078637,
+      "disagreement": 0.587243,
+      "priority": 0.76426,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A088"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_247671.tga",
+      "candidate_index": 47,
+      "proposal_id": "number-tiled-palette:ab0a12eae8a305e4",
+      "bbox": [
+        857,
+        834,
+        73,
+        30
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.3297787,
+      "image_complete": 0.0693147,
+      "text_semantic": 0.8072829,
+      "text_complete": 0.5594707,
+      "text_family_support": 0.9517857,
+      "entropy": 0.7437382,
+      "disagreement": 0.4287926,
+      "priority": 0.7322375,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A089"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_247671.tga",
+      "candidate_index": 93,
+      "proposal_id": "number-tiled-palette:af608539b820baea",
+      "bbox": [
+        704,
+        773,
+        136,
+        106
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.1230987,
+      "image_complete": 0.0921836,
+      "text_semantic": 0.8797878,
+      "text_complete": 0.7649198,
+      "text_family_support": 0.9892307,
+      "entropy": 0.5746633,
+      "disagreement": 0.6616194,
+      "priority": 0.7218495,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A090"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_258767.tga",
+      "candidate_index": 59,
+      "proposal_id": "number-tiled-companion:83f94bbeea58ca98",
+      "bbox": [
+        287,
+        717,
+        193,
+        114
+      ],
+      "dominant_number_block": "door_number_lower_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.344886,
+      "image_complete": 0.6598539,
+      "text_semantic": 0.8769161,
+      "text_complete": 0.7695853,
+      "text_family_support": 0.9767525,
+      "entropy": 0.7928177,
+      "disagreement": 0.4472873,
+      "priority": 0.7639403,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A091"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_258767.tga",
+      "candidate_index": 21,
+      "proposal_id": "number-tiled-palette:a7dfb39ad56d533a",
+      "bbox": [
+        343,
+        292,
+        18,
+        8
+      ],
+      "dominant_number_block": "door_number_upper_side",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.3620366,
+      "image_complete": 0.0643053,
+      "text_semantic": 0.7981798,
+      "text_complete": 0.4918059,
+      "text_family_support": 0.9810205,
+      "entropy": 0.7535061,
+      "disagreement": 0.3692687,
+      "priority": 0.727599,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A092"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_258767.tga",
+      "candidate_index": 44,
+      "proposal_id": "number-tiled-palette:a5cbf3f9522fd02f",
+      "bbox": [
+        265,
+        921,
+        36,
+        18
+      ],
+      "dominant_number_block": "nose_number_small",
+      "palette_role": "minority_contrast",
+      "suggested_semantics": [
+        "Number"
+      ],
+      "image_semantic": 0.8156897,
+      "image_complete": 0.3143004,
+      "text_semantic": 0.8827232,
+      "text_complete": 0.8781143,
+      "text_family_support": 0.9899172,
+      "entropy": 0.6609327,
+      "disagreement": 0.5187603,
+      "priority": 0.7250932,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A093"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_258767.tga",
+      "candidate_index": 16,
+      "proposal_id": "number-tiled-palette:d93bd0edf0de47f6",
+      "bbox": [
+        916,
+        882,
+        9,
+        7
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "chromatic_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.1371684,
+      "image_complete": 0.0591636,
+      "text_semantic": 0.8879196,
+      "text_complete": 0.7555751,
+      "text_family_support": 0.9894005,
+      "entropy": 0.5523429,
+      "disagreement": 0.6627746,
+      "priority": 0.7121281,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A094"
+    },
+    {
+      "paint": "dirtlatemodel 358/car_num_258767.tga",
+      "candidate_index": 10,
+      "proposal_id": "number-tiled-palette:752f765803ccc714",
+      "bbox": [
+        806,
+        883,
+        36,
+        58
+      ],
+      "dominant_number_block": "roof_number",
+      "palette_role": "light_ink",
+      "suggested_semantics": [
+        "Number",
+        "Sponsor"
+      ],
+      "image_semantic": 0.1394586,
+      "image_complete": 0.0586381,
+      "text_semantic": 0.8647705,
+      "text_complete": 0.6104418,
+      "text_family_support": 0.9890047,
+      "entropy": 0.6102388,
+      "disagreement": 0.5197145,
+      "priority": 0.702337,
+      "missing_positive_pair_paint": true,
+      "ownership_authority": false,
+      "review_code": "A095"
+    }
+  ],
+  "checker_review_pages": [
+    "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_smart_tga_runs\\cycle725_active_review\\direct_review_checker_00.png",
+    "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_smart_tga_runs\\cycle725_active_review\\direct_review_checker_01.png",
+    "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_smart_tga_runs\\cycle725_active_review\\direct_review_checker_02.png",
+    "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\_smart_tga_runs\\cycle725_active_review\\direct_review_checker_03.png"
+  ],
+  "review_background": "8px gray checker; source pixels shown exactly on support"
+}

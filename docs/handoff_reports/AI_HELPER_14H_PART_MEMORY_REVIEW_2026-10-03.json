@@ -1,0 +1,173 @@
+{
+  "status": "FINDINGS",
+  "task": "W30 independent part-memory prototype review",
+  "date": "2026-10-04",
+  "oracle": {
+    "sha256": "93989A0FF27AFE49855E585E40D99DA9B4C9E29BF6397B066D7476509E4E8F77",
+    "count": 12,
+    "cases": [
+      {
+        "id": "same-path-replacement-generation",
+        "expect": "A replacement source with the same path but a new generation invalidates old part provenance."
+      },
+      {
+        "id": "fingerprint-mismatch",
+        "expect": "A different committed fingerprint cannot restore old part ownership."
+      },
+      {
+        "id": "dimensions-layout-mismatch",
+        "expect": "Canvas dimensions or part-layout identity mismatch rejects restoration."
+      },
+      {
+        "id": "duplicate-uuid",
+        "expect": "Duplicate zone UUIDs are ambiguous and cannot be rebound to saved ownership."
+      },
+      {
+        "id": "duplicate-edit-key",
+        "expect": "Duplicate edit keys cannot cause one saved owner to bind to multiple live zones."
+      },
+      {
+        "id": "renamed-hidden-muted-expired",
+        "expect": "Renamed, hidden, muted, or expired provenance is not trusted as current editable ownership."
+      },
+      {
+        "id": "changed-mask-forged-p",
+        "expect": "A changed region mask rejects restoration even if the old provenance field is forged/preserved."
+      },
+      {
+        "id": "foreign-commit",
+        "expect": "A commit from another operation/document cannot consume the saved owner."
+      },
+      {
+        "id": "no-maskFor-or-proof-callback",
+        "expect": "Without CAR.maskFor and explicit proof callback, restoration fails closed."
+      },
+      {
+        "id": "valid-exact-owner-restored",
+        "expect": "Matching document/layout/mask and unique exact owner restores only the intended owner."
+      },
+      {
+        "id": "finish-only-update-after-restore",
+        "expect": "After valid restore, finish-only mutation updates the same owner and leaves color/mask intact."
+      },
+      {
+        "id": "immutable-snapshot-trusted-callbacks",
+        "expect": "Stored snapshot cannot be mutated by caller; trusted proof callbacks are invoked under documented constraints."
+      }
+    ]
+  },
+  "prototype": {
+    "path": "js/spb-ai-part-memory.js",
+    "sha256": "6E0D1E1466FECA847D3A1C3300F32779BA610F3B6C72C7904A6C8FD97A6B3652"
+  },
+  "context": {
+    "w18Report": "docs/handoff_reports/AI_HELPER_14H_PART_MEMORY_DESIGN_2026-10-03.json",
+    "zoneKitSha256": "6968963FC8D382E3ECDA629089A71A73A519270C0B577E98DF03D9F7D48D68D0",
+    "currentProAiSha256": "B43D5F6CD4902DB8872D862395B4D9AC8BE77B22C0B883D01ABADA507F978DCD",
+    "stateZonesSha256": "E1EFA310757FBBDBF5EA5CB030DDC651BDAC1A6618A8388DA1535D00D8F3BC95",
+    "projectsSha256": "40520AD3E373B2505CCE0AB4BA030F282E9EBA2A0A9B1C8F6093A0AA97EC34B3"
+  },
+  "counts": {
+    "oracleCases": 12,
+    "checks": 12,
+    "assertionFailures": 0,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "browserCalls": 0
+  },
+  "results": [
+    {
+      "id": "same-path-replacement-generation",
+      "actual": "accepts a new runtime generation for identical canonical path/fingerprint/dimensions with current proofs",
+      "oracleConflict": "W30 expected unconditional invalidation; this conflicts with W18 documented same-content rebind policy."
+    },
+    {
+      "id": "fingerprint-mismatch",
+      "rejected": true
+    },
+    {
+      "id": "dimensions-layout-mismatch",
+      "dimensionRejected": true,
+      "layoutRejected": true
+    },
+    {
+      "id": "duplicate-uuid",
+      "rejectedWhenTrustedUniqueOwnerCallbackReportsTwo": true
+    },
+    {
+      "id": "duplicate-edit-key",
+      "rejectedWhenCallbackCountsTwoOwners": true
+    },
+    {
+      "id": "renamed-hidden-muted-expired",
+      "renamedRejected": true,
+      "mutedRejected": true,
+      "hiddenAccepted": true,
+      "expired_or_stale_rejected_only_via_callback": true
+    },
+    {
+      "id": "changed-mask-forged-p",
+      "regionHashCanBeRecomputed_but_oldPartProofRejects": true
+    },
+    {
+      "id": "foreign-commit",
+      "rejected": true
+    },
+    {
+      "id": "no-maskFor-or-proof-callback",
+      "missingProofRejected": true,
+      "maskForMustBeRepresentedByTrustedCallback": true
+    },
+    {
+      "id": "valid-exact-owner-restored",
+      "authorized": true,
+      "zoneId": "z-roof-1",
+      "generation": 51
+    },
+    {
+      "id": "finish-only-update-after-restore",
+      "metadataAndMaskPreserved": true,
+      "executionLimit": "prototype has no proAI finish-only route; modeled object update only"
+    },
+    {
+      "id": "immutable-snapshot-trusted-callbacks",
+      "inputsUnchanged": true,
+      "outputDeepCopied": true,
+      "returnedRecordMutable": true,
+      "callbacksTrustedByContract": true
+    }
+  ],
+  "reviewFindings": [
+    {
+      "severity": "P1 integration blocker",
+      "where": "js/spb-ai-part-memory.js: prepareRestore around lines 88-113; js/spb-pro-ai.js:651-666",
+      "issue": "Prototype requires a proof.partMaskCurrent callback, but the existing production partOwnerCurrent checks p.p only conditionally when CAR.maskFor exists. Integration must provide an explicit unconditional CAR.maskFor-backed check and post-stage full owner proof; callbacks in this test are deterministic doubles, not production validators."
+    },
+    {
+      "severity": "P1 integration blocker",
+      "where": "paint-booth-2-state-zones.js: getConfig around 16033-16278 and loadConfigFromObj around 16303-16356; js/features/spb-projects.js:193-216, 450-485",
+      "issue": "Durable state is not wired: getConfig serializes explicit fields and masks but omits _aiPartProv/aiPartMemory; load materializes zones with regionMask:null and omits provenance; project capture stores this config. Prototype cannot provide persistence until the staged decode/verified-source hook is added."
+    },
+    {
+      "severity": "P2 prototype contract gap",
+      "where": "js/spb-ai-part-memory.js: saveRecord/prepareRestore",
+      "issue": "The module rejects muted/renamed but does not inspect a hidden/visible flag or encode expiry. It delegates current validity to trusted callbacks; integration must make those callbacks reject every actual inactive-owner state and define whether proof freshness is source/content-bound rather than time-bound."
+    },
+    {
+      "severity": "P2 adapter proof requirement",
+      "where": "js/spb-ai-part-memory.js: currentProof and prepareRestore calls to countOwners",
+      "issue": "UUID uniqueness is not internally checked; countOwners(key, zone.id) is trusted to enforce unique selector owner and stable-ID uniqueness. Integration callback must count both ID and key ambiguities, not only matching-key owners."
+    },
+    {
+      "severity": "P3 usability",
+      "where": "js/spb-ai-part-memory.js: saveRecord/recordShape return values",
+      "issue": "Records are detached copies and input objects remain unchanged, but returned record/provenance objects are mutable plain JSON. Treat as caller-owned serialization values; freeze/deep-freeze if API promises immutable snapshots."
+    }
+  ],
+  "limits": [
+    "Controlled proof callbacks implement source/owner/mask semantics for unit tests only; they do not validate actual CAR.maskFor or partOwnerCurrent integration.",
+    "The finish-only mutation check is metadata/mask preservation only; the module is uninstalled and has no production finish route.",
+    "W18 serialization report was used as the source-context guide; current source hashes recorded separately, with no serializer/project file edits.",
+    "No native application, renderer, provider, browser, project save/load, or external I/O was exercised."
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "schema": "spb-native-helper-followup-acceptance/1",
+  "frozen_utc": "2026-10-04T01:55:00Z",
+  "backend_policy": "isolated audit backend; private documents; provider guards; no iRacing exports or learned atlas writes",
+  "cases": [
+    {
+      "id": "N01",
+      "steps": [
+        "Make only the roof bright red.",
+        "Now make only the roof chrome, keep its red colour."
+      ],
+      "expect": [
+        "One helper roof owner remains",
+        "Original zones unchanged",
+        "Current rendered paint preview exactly preserved on finish-only step",
+        "Rendered spec changes",
+        "Native 2048² mask nonempty and roof-contained"
+      ]
+    },
+    {
+      "id": "N02",
+      "steps": [
+        "Paint only the hood cobalt blue.",
+        "Make the hood satin without changing its colour."
+      ],
+      "expect": [
+        "Same hood owner reused",
+        "Current paint preserved",
+        "No non-hood target"
+      ]
+    },
+    {
+      "id": "N03",
+      "steps": [
+        "Make the roof chrome.",
+        "Now recolour only the roof green."
+      ],
+      "expect": [
+        "Color-only follow-up keeps chrome material",
+        "One owned roof zone"
+      ]
+    },
+    {
+      "id": "N04",
+      "steps": [
+        "Only the hood blue and only the roof orange.",
+        "Now make only the hood metallic and keep its blue."
+      ],
+      "expect": [
+        "Hood owner updated; roof untouched",
+        "No new source-color overlay"
+      ]
+    },
+    {
+      "id": "N05",
+      "steps": [
+        "Make only the left side red.",
+        "Now make only the right side chrome."
+      ],
+      "expect": [
+        "Directional regions separate",
+        "Left owner unchanged; right separately scoped"
+      ]
+    },
+    {
+      "id": "N06",
+      "steps": [
+        "Make only the roof red.",
+        "Make only the roof chrome.",
+        "Undo"
+      ],
+      "expect": [
+        "Undo restores exact prior paint/spec and metadata",
+        "Reordering/cloned objects does not poison next follow-up ownership"
+      ]
+    },
+    {
+      "id": "N07",
+      "steps": [
+        "Make a silver flake layer with candy red over it on the roof only.",
+        "Now make only the roof chrome, keep the current colours."
+      ],
+      "expect": [
+        "Purposeful layered stack retained",
+        "Ambiguous reuse gives truthful clarification or equivalent safe material-only edit",
+        "No source-paint reset"
+      ]
+    },
+    {
+      "id": "N08",
+      "steps": [
+        "Why is my zone not changing colour?",
+        "Move the intended muted zone through the actual controller",
+        "Use the offered Do it chip"
+      ],
+      "expect": [
+        "Resolves original intended target or refuses truthfully",
+        "Never toggles a replacement at the old index"
+      ]
+    },
+    {
+      "id": "N09",
+      "steps": [
+        "Ask for a Do it action",
+        "Load a different paint through the real loader",
+        "Use the old action label"
+      ],
+      "expect": [
+        "No stale document mutation",
+        "No false Done success"
+      ]
+    },
+    {
+      "id": "N10",
+      "steps": [
+        "Make the entire car teal metallic except the hood, leave that unchanged."
+      ],
+      "expect": [
+        "Complete precise exclusion plan or truthful local clarification",
+        "Zero preserved-hood mutation"
+      ]
+    },
+    {
+      "id": "N11",
+      "steps": [
+        "Leave the hood carbon and turn only the roof bright gold."
+      ],
+      "expect": [
+        "Complete roof-only plan preserving hood or truthful clarification",
+        "No color/look crossed into preserved clause"
+      ]
+    },
+    {
+      "id": "N12",
+      "steps": [
+        "Ask layer-edit help in Chat studio",
+        "Follow Full editor guidance",
+        "Ask teaching help in Chat studio"
+      ],
+      "expect": [
+        "Visible and correct mode handoff for Pro-only tools",
+        "Chat teaching remains available without forced mode change"
+      ]
+    }
+  ],
+  "checks_policy": "Validate actual rendered output and real controllers, not speculative plans alone. Label pass limits honestly; screenshots supplement pixel/mask/metadata evidence."
+}

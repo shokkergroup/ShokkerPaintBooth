@@ -1,0 +1,113 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "rad_attract_mode",
+  "display_name": "Arcade: Attract Mode",
+  "promise": "Electric pixel comets and collision bursts on deep ultraviolet arcade glass.",
+  "carrier_grammar": "Electric pixel comets and collision bursts on deep ultraviolet arcade glass. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_grammar": "The approved aligned material anatomy for ultraviolet glass field, cyan pixel heads, pink animation trails, yellow collision sparks, dark frame gaps is reconstructed with cubic boundary curves and continuous bounded M/R/Cc polynomial fields. Metallic shoulders, rough valleys and coat transitions retain their source-feature locations; no unrelated house carrier is introduced.",
+  "reference_physics": {
+    "mechanism": "Electric pixel comets and collision bursts on deep ultraviolet arcade glass. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology. These named surfaces bind the packed metallic, roughness and clearcoat states; painted highlights are not an emissive shader.",
+    "sources": [
+      "SPB_WIKI.html#spec_guide",
+      "_era120_work/concept_review/briefs/rad_attract_mode.json",
+      "_era120_work/implementation/owner_decisions_active.json"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    420
+  ],
+  "mark_types": [
+    {
+      "name": "ultraviolet glass field",
+      "role": "Actual shared paint and spec geometry: ultraviolet glass field"
+    },
+    {
+      "name": "cyan pixel heads",
+      "role": "Actual shared paint and spec geometry: cyan pixel heads"
+    },
+    {
+      "name": "pink animation trails",
+      "role": "Actual shared paint and spec geometry: pink animation trails"
+    },
+    {
+      "name": "yellow collision sparks",
+      "role": "Actual shared paint and spec geometry: yellow collision sparks"
+    },
+    {
+      "name": "dark frame gaps",
+      "role": "Actual shared paint and spec geometry: dark frame gaps"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "ultraviolet glass field",
+      "cyan pixel heads",
+      "pink animation trails",
+      "yellow collision sparks",
+      "dark frame gaps"
+    ],
+    "R": [
+      "ultraviolet glass field",
+      "cyan pixel heads",
+      "pink animation trails",
+      "yellow collision sparks",
+      "dark frame gaps"
+    ],
+    "Cc": [
+      "ultraviolet glass field",
+      "cyan pixel heads",
+      "pink animation trails",
+      "yellow collision sparks",
+      "dark frame gaps"
+    ]
+  },
+  "material_tiers": [
+    "matte cut or sleeve",
+    "satin substrate",
+    "glossy pigment face",
+    "pink polished foil rim",
+    "red chrome shoulder",
+    "green rough undercut",
+    "cool smooth inset",
+    "fine silver glint"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "rad_sprite_sheet",
+      "difference": "This finish uses Dense minuscule four-color arcade animation fragments: stepped cyan comet heads, pink pixel trails, yellow collision crosses, cobalt stair-step particles and tiny dark square pauses. Every tiny cluster faces a different direction; no game characters, icons or text.; compare boundaries and relief independently of color."
+    },
+    {
+      "finish_id": "cbp_packet_loss",
+      "difference": "This finish uses Dense minuscule four-color arcade animation fragments: stepped cyan comet heads, pink pixel trails, yellow collision crosses, cobalt stair-step particles and tiny dark square pauses. Every tiny cluster faces a different direction; no game characters, icons or text.; compare boundaries and relief independently of color."
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "ultraviolet glass field is visible in the authored geometry",
+      "cyan pixel heads is visible in the authored geometry",
+      "pink animation trails is visible in the authored geometry",
+      "yellow collision sparks is visible in the authored geometry",
+      "dark frame gaps is visible in the authored geometry"
+    ],
+    "source_sha256": "6f3f0ab162ba3b054fedcf42a38839b7ed97e14cd117653d2f75675184f46b3b",
+    "evidence_scope": "Internal visual review of staged paired geometry; owner approved the source concept, not a second review of this reconstruction."
+  },
+  "construction_key": "rad_attract_mode-authored-Electric pixel comets and collision bursts on deep ultraviolet arcade glass. The approved composition and native form scale are preserved as unique fitted cubic paths and bounded polynomial color fields; small source speckle is removed from topology.",
+  "spec_key": "rad_attract_mode-feature-bound-vector-material-states",
+  "live_evidence": {
+    "report": "docs/finish_audits/era120_2026-09-17/LIVE_REPORT.md",
+    "structural_threshold_flags": 0,
+    "native_scale_certified": false,
+    "M7": 81.4,
+    "M7_ship_bar_pass": false,
+    "owner_verdict": "pending"
+  },
+  "fine_detail_scale_px": [
+    1,
+    16
+  ],
+  "owner_scale_authorization": "ERA120-20260917-reviewed-concepts",
+  "owner_approved_concept_version": "c099aa53ac91dc516d5a4bb9265b765a771ad49b236282bb6140db32da327fee"
+}

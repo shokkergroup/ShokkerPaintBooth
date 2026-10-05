@@ -5,7 +5,7 @@ Implements 9 unique metallic finishes using real physics models and procedural t
 """
 
 import numpy as np
-from engine.core import multi_scale_noise, get_mgrid
+from engine.core import _resize_array, multi_scale_noise, get_mgrid
 from engine.paint_v2 import ensure_bb_2d
 
 
@@ -17,8 +17,41 @@ def _norm01(arr):
     return ((arr - float(arr.min())) / span).astype(np.float32)
 
 
+_EX_FIELD_CACHE = {}
+# SPB paint-finish perf loop tick 2026-05-31 05:23; owner: "Speed is king in this app."
+# Exact shared-field reuse only: candy_cobalt 5281.7->5149.8 ms; std drift 0.
+
+
+def _ex_cache_put(key, value):
+    if len(_EX_FIELD_CACHE) > 96:
+        _EX_FIELD_CACHE.clear()
+    _EX_FIELD_CACHE[key] = value
+    return value
+
+
+def _ex_noise(shape, scales, weights, seed, cap=768):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    key = ("noise", int(h), int(w), tuple(scales), tuple(weights), int(seed), int(cap))
+    cached = _EX_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    work = min(int(cap), int(h), int(w))
+    if work < min(h, w):
+        sh = max(8, int(round(h * work / max(h, w))))
+        sw = max(8, int(round(w * work / max(h, w))))
+        field = multi_scale_noise((sh, sw), scales, weights, seed)
+        field = _resize_array(np.asarray(field, dtype=np.float32), h, w)
+    else:
+        field = multi_scale_noise((h, w), scales, weights, seed)
+    return _ex_cache_put(key, np.asarray(field, dtype=np.float32))
+
+
 def _micro_speckle(shape, seed, density=0.035):
     h, w = shape[:2] if len(shape) > 2 else shape
+    key = ("micro", int(h), int(w), int(seed), round(float(density), 5))
+    cached = _EX_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
     rng = np.random.default_rng(seed)
     n = min(int(h * w * density), 160000)
     out = np.zeros((h, w), dtype=np.float32)
@@ -27,11 +60,28 @@ def _micro_speckle(shape, seed, density=0.035):
         xx = rng.integers(0, w, n)
         vals = rng.uniform(0.15, 1.0, n).astype(np.float32)
         np.maximum.at(out, (yy, xx), vals)
-    return np.maximum.reduce([
+    field = np.maximum.reduce([
         out,
         np.roll(out, 1, axis=0) * 0.35,
         np.roll(out, -1, axis=1) * 0.35,
     ]).astype(np.float32)
+    return _ex_cache_put(key, field)
+
+
+def _candy_cobalt_fields(shape, seed):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    key = ("candy_cobalt_fields", int(h), int(w), int(seed))
+    cached = _EX_FIELD_CACHE.get(key)
+    if cached is not None:
+        return cached
+    y, x = get_mgrid((h, w))
+    depth = _norm01(_ex_noise((h, w), [5, 12, 28], [0.42, 0.34, 0.24], seed + 1401, cap=768))
+    pressure = _norm01(y / max(h - 1, 1) * 0.58 + depth * 0.42)
+    currents = np.exp(-np.abs(np.sin((x * 0.019 - y * 0.013 + depth * 2.2) * np.pi)) * 8.0).astype(np.float32)
+    crystals = _micro_speckle((h, w), seed + 1405, 0.060)
+    dust = _micro_speckle((h, w), seed + 1406, 0.042)
+    ridge = _norm01(np.abs(np.gradient(depth)[0]) + np.abs(np.gradient(depth)[1]))
+    return _ex_cache_put(key, (depth, pressure, currents, crystals, dust, ridge))
 
 
 # ============================================================================
@@ -224,7 +274,7 @@ def paint_mercury_v2(paint, shape, mask, seed, pm, bb):
     base = paint.copy()
 
     # Pool centres shift horizontally via low-freq noise (mercury sloshing)
-    pool_noise = multi_scale_noise((h, w), [16, 32, 64], [0.5, 0.3, 0.2], seed + 1452)
+    pool_noise = _ex_noise((h, w), [16, 32, 64], [0.5, 0.3, 0.2], seed + 1452, cap=384)
     # Pool centre y-positions: noise maps to 0.15–0.85 of canvas height
     pool_center_y = pool_noise * 0.70 + 0.15   # (h, w), float in [0.15, 0.85]
 
@@ -234,7 +284,7 @@ def paint_mercury_v2(paint, shape, mask, seed, pm, bb):
     pool_field = np.exp(-((yy_norm - pool_center_y) ** 2) / (2.0 * sigma ** 2))
 
     # Fine surface ripple modulates pool edges for organic look
-    ripple = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 1404)
+    ripple = _ex_noise((h, w), [16, 32], [0.6, 0.4], seed + 1404, cap=384)
     convection = np.clip(pool_field * 0.70 + ripple * 0.30, 0, 1)
 
     # Mercury's characteristic high reflectivity in pooled zones
@@ -253,7 +303,7 @@ def spec_mercury(shape, seed, sm, base_m, base_r):
     """Mercury Marangoni cells. MARRIED to paint seed+1452/1404."""
     h, w = shape[:2] if len(shape) > 2 else shape
     # MARRIED: use paint's pool_noise seed+1452 and ripple seed+1404
-    cell = multi_scale_noise((h, w), [16, 32, 64], [0.5, 0.3, 0.2], seed + 1452)  # Match paint scales
+    cell = _ex_noise((h, w), [16, 32, 64], [0.5, 0.3, 0.2], seed + 1452, cap=384)  # Match paint scales
     edge = np.minimum((1.0 - np.abs(cell * 2.0 - 1.0)) * 1.6, 1.0)
     # base_m is 0-255 — direct computation (was double-scaling)
     # Mercury M is near-max, slight dip at cell boundaries
@@ -572,42 +622,41 @@ def spec_titanium_raw(shape, seed, sm, base_m, base_r):
 
 
 def paint_chromaflair_v2(paint, shape, mask, seed, pm, bb):
-    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    """ChromaFlair — automotive cyan→violet→copper→magenta flip (SPB owner REBUILD 2026-05-27)."""
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
     xn = x / max(w - 1, 1)
     yn = y / max(h - 1, 1)
-    angle = _norm01(
-        xn * 0.42 + yn * 0.28 +
-        multi_scale_noise((h, w), [10, 22, 48], [0.40, 0.36, 0.24], seed + 1510) * 0.35
-    )
+    warp = _norm01(multi_scale_noise((h, w), [6, 14, 32], [0.38, 0.34, 0.28], seed + 1510))
+    view = _norm01(xn * 0.55 + yn * 0.22 + warp * 0.38)
     foil = _norm01(
-        np.sin((x * 0.52 + y * 0.09) + angle * 4.0) +
-        np.sin((x * -0.18 + y * 0.61) + angle * 3.5) * 0.65 +
-        np.sin((x * 1.33 - y * 0.21) + seed * 0.01) * 0.25
+        np.sin((x * 0.44 + y * 0.11 + warp * 2.8) * np.pi)
+        + np.sin((x * -0.21 + y * 0.58 - warp * 2.2) * np.pi) * 0.72
     )
-    dust = _micro_speckle((h, w), seed + 1511, 0.042)
-    magenta = np.array([0.86, 0.06, 0.72], dtype=np.float32)
-    emerald = np.array([0.06, 0.78, 0.38], dtype=np.float32)
-    amber = np.array([0.96, 0.58, 0.10], dtype=np.float32)
-    blue = np.array([0.05, 0.30, 0.95], dtype=np.float32)
-    w1 = np.clip(1.0 - np.abs(angle - 0.18) * 3.2, 0, 1)
-    w2 = np.clip(1.0 - np.abs(angle - 0.48) * 3.0, 0, 1)
-    w3 = np.clip(1.0 - np.abs(angle - 0.72) * 3.1, 0, 1)
-    w4 = np.clip(1.0 - np.abs(angle - 0.94) * 3.6, 0, 1)
+    dust = _micro_speckle((h, w), seed + 1511, 0.048)
+    cyan = np.array([0.08, 0.78, 0.92], dtype=np.float32)
+    violet = np.array([0.42, 0.12, 0.88], dtype=np.float32)
+    copper = np.array([0.92, 0.48, 0.18], dtype=np.float32)
+    magenta = np.array([0.88, 0.14, 0.62], dtype=np.float32)
+    w1 = np.clip(1.0 - np.abs(view - 0.12) * 3.4, 0, 1)
+    w2 = np.clip(1.0 - np.abs(view - 0.38) * 3.2, 0, 1)
+    w3 = np.clip(1.0 - np.abs(view - 0.62) * 3.0, 0, 1)
+    w4 = np.clip(1.0 - np.abs(view - 0.86) * 3.5, 0, 1)
     weights = w1 + w2 + w3 + w4 + 1e-5
     chroma = (
-        magenta[None, None, :] * w1[:, :, None] +
-        emerald[None, None, :] * w2[:, :, None] +
-        amber[None, None, :] * w3[:, :, None] +
-        blue[None, None, :] * w4[:, :, None]
+        cyan[None, None, :] * w1[:, :, None]
+        + violet[None, None, :] * w2[:, :, None]
+        + copper[None, None, :] * w3[:, :, None]
+        + magenta[None, None, :] * w4[:, :, None]
     ) / weights[:, :, None]
-    pigment = np.clip(chroma * (0.62 + foil[:, :, None] * 0.30) + dust[:, :, None] * chroma * 0.28, 0, 1)
-    carrier = np.clip(base * 0.36 + pigment * 0.78, 0, 1)
+    pigment = np.clip(chroma * (0.58 + foil[:, :, None] * 0.34) + dust[:, :, None] * chroma * 0.22, 0, 1)
+    carrier = np.clip(base * 0.52 + pigment * 0.62 + foil[:, :, None] * pigment * 0.08, 0, 1)
     blend = np.clip(pm, 0.0, 1.0) * mask[:, :, None]
-    return np.clip(base * (1 - blend) + carrier * blend + bb[:, :, None] * 0.18 * blend, 0, 1).astype(np.float32)
+    return np.clip(base * (1 - blend) + carrier * blend + bb[:, :, None] * 0.14 * blend, 0, 1).astype(np.float32)
 
 
 def spec_chromaflair(shape, seed, sm, base_m, base_r):
@@ -653,3 +702,36 @@ def spec_xirallic(shape, seed, sm, base_m, base_r):
     R = np.clip(18.0 + (1 - flakes) * 44.0 * sm + facet * 12.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + crystal * 28.0 * sm, 16, 255).astype(np.float32)
     return M, R, CC
+
+
+# SPB-67 Candy & Pearl truth-standard override: Mariana Trench Resin must read
+# as deep blue resin with pressure-depth gloss and suspended cobalt crystal dust.
+def paint_candy_cobalt_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    bb = ensure_bb_2d(bb, shape)
+    h, w = shape[:2] if len(shape) > 2 else shape
+    base = paint.copy()
+    _depth, pressure, currents, crystals, dust, _ridge = _candy_cobalt_fields((h, w), seed)
+    resin = np.array([0.012, 0.055, 0.22], dtype=np.float32)
+    abyss = np.array([0.002, 0.012, 0.048], dtype=np.float32)
+    glow = np.array([0.040, 0.22, 0.72], dtype=np.float32)
+    carrier = np.clip(
+        abyss[None, None, :] * (0.45 + pressure[:, :, None] * 0.45)
+        + resin[None, None, :] * (0.72 - pressure[:, :, None] * 0.20)
+        + glow[None, None, :] * (currents[:, :, None] * 0.15 + crystals[:, :, None] * 0.48 + dust[:, :, None] * 0.28),
+        0,
+        1,
+    )
+    effect = np.clip(base * 0.22 + carrier * 0.90 + bb[:, :, None] * 0.10, 0, 1)
+    blend = np.clip(pm, 0.0, 1.0) * mask[:, :, None]
+    return np.clip(base * (1.0 - blend) + effect * blend, 0, 1).astype(np.float32)
+
+
+def spec_candy_cobalt(shape, seed, sm, base_m, base_r):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    depth, pressure, currents, crystals, dust, ridge = _candy_cobalt_fields((h, w), seed)
+    M = np.clip(base_m * 0.46 + crystals * 116.0 * sm + dust * 92.0 * sm + ridge * 58.0 * sm + currents * 28.0 * sm, 0, 255)
+    R = np.clip(max(base_r * 0.62, 15.0) + pressure * 34.0 * sm + depth * 20.0 * sm - crystals * 10.0 * sm - dust * 7.0 * sm, 15, 255)
+    CC = np.clip(24.0 + (1.0 - pressure) * 48.0 * sm + currents * 58.0 * sm + crystals * 30.0 * sm + dust * 26.0 * sm, 16, 255)
+    return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)

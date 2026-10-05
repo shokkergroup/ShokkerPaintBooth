@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_29279.tga",
+  "inspection_records": "_smart_tga_runs/cycle656_dlm_embedding_batch/inspection_records.json",
+  "review_scope": "Cycle 656 manual source and all-owner sheet review of every emitted suspect bbox.",
+  "component_labels": [
+    {"layer":"numbers","component_index":1,"expected_bbox":[727,409,65,210],"target_layer":"sponsors","label":"sponsor_badge","family_id":"logo:cuddy_speed_shop","note":"Vertical Cuddy Speed Shop badge, not custom number 1."},
+    {"layer":"paint","component_index":70,"expected_bbox":[702,998,56,26],"target_layer":"template","label":"template_hardware","note":"Fixed lower template bars."},
+    {"layer":"paint","component_index":58,"expected_bbox":[646,976,34,26],"target_layer":"template","label":"template_hardware","note":"Fixed lower template/hardware block."},
+    {"layer":"sponsors","component_index":12,"expected_bbox":[464,240,52,21],"target_layer":"sponsors","label":"sponsor_text","note":"Small contingency/sponsor text within side decal cluster, not livery."},
+    {"layer":"paint","component_index":19,"expected_bbox":[467,313,7,6],"target_layer":"sponsors","label":"sponsor_wordmark_fragment","note":"Tiny sponsor fragment embedded in side decal cluster."},
+    {"layer":"paint","component_index":20,"expected_bbox":[487,312,7,6],"target_layer":"sponsors","label":"sponsor_wordmark_fragment","note":"Tiny sponsor fragment embedded in side decal cluster."}
+  ]
+}

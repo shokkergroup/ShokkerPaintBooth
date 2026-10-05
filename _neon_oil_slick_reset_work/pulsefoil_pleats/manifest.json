@@ -1,0 +1,87 @@
+{
+  "schema": "spb-neon-oil-slick-pilot/1",
+  "status": "ISOLATED-OWNER-REVIEW-NOT-WIRED",
+  "finish_id": "neon2_flow_tubes",
+  "display_name": "Pulsefoil Pleats",
+  "carrier": "black flexible metallic laminate crushed into tiny asymmetric foil pleats",
+  "material_story": {
+    "M": "intact foil faces, silver lips, bridge welds, cyan creases, and oxide deposits lead while gaps and underfaces stay low",
+    "R": "clipped ends, delaminated underfaces, oxide beads, compression gaps, and weld disturbance rise independently",
+    "Cc": "intact black laminate and rebound skins retain clear while delamination, gaps, ends, and welds interrupt it"
+  },
+  "vetoes": [
+    "flow line, tube, waveform, wave, or ribbon",
+    "chevron, repeated V, long fold, or directional lane",
+    "grid, row, fish scale, or repeated folded tile",
+    "floating confetti or unrelated metallic chips",
+    "generic noise or unrelated texture underlay"
+  ],
+  "native_size": [
+    2048,
+    2048
+  ],
+  "builder_elapsed_seconds": 2.331222,
+  "material_stats": {
+    "std": {
+      "M": 82.790024,
+      "R": 83.299019,
+      "Cc": 83.260735
+    },
+    "range": {
+      "M": [
+        7,
+        253
+      ],
+      "R": [
+        8,
+        251
+      ],
+      "Cc": [
+        6,
+        254
+      ]
+    },
+    "tier_count": {
+      "M": 8,
+      "R": 8,
+      "Cc": 8
+    },
+    "correlation": {
+      "M_R": -0.394679,
+      "M_Cc": 0.395227,
+      "R_Cc": -0.282997
+    }
+  },
+  "geometry_stats": {
+    "family_count": 10,
+    "families": {
+      "angular oxide beads": 937,
+      "asymmetric folded foil faces": 4512,
+      "black flexible-laminate facets": 5776,
+      "clipped fold ends": 926,
+      "cyan leading creases": 2117,
+      "dark compression gaps": 854,
+      "delaminated underfaces": 898,
+      "exposed silver lips": 1536,
+      "local bridge welds": 897,
+      "magenta rebound shadows": 2347
+    },
+    "width_native_min": 8.0,
+    "width_native_median": 18.154,
+    "width_native_p90": 26.635,
+    "width_native_max": 31.499,
+    "fine_8_32_fraction": 1.0
+  },
+  "causal_mask_coverage": {
+    "black flexible-laminate facets": 0.366869,
+    "asymmetric folded foil faces": 0.320478,
+    "cyan leading creases": 0.078905,
+    "magenta rebound shadows": 0.091026,
+    "exposed silver lips": 0.055351,
+    "clipped fold ends": 0.019771,
+    "local bridge welds": 0.016151,
+    "delaminated underfaces": 0.03449,
+    "angular oxide beads": 0.01757,
+    "dark compression gaps": 0.023727
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "task": "W112 polite imperative first-cold hydration successor review",
+  "date": "2026-10-04",
+  "frozenOracle": {
+    "path": "_easy_claude_work/ai14h_w112_polite_review/fresh-oracle.json",
+    "sha256": "7577C73D70A0788383021C4AB6CD2C008DA7656D2A4FAC61C78B5880DB7EA78B",
+    "cases": 8
+  },
+  "baseline": {
+    "path": "_easy_claude_work/ai14h_w112_candidate/spb-pro-ai.js",
+    "sha256": "17ADE7F49DA71F8B7F0FF99FF6A99E349D74E0B7E7E6D08010C6959A823463B1",
+    "result": "4/4 recognized polite single-part mutations stranded: 0 warm, then downstream no-proof refusal; informational/multi/partial/no-target remained no-queue."
+  },
+  "successor": {
+    "path": "_easy_claude_work/ai14h_w112_polite_candidate/spb-pro-ai.js",
+    "sha256": "0597E031C3460CAE65F114243687B9A204DD4A0D170A3570D4A5F7D85E4EACFA",
+    "change": "Anchored polite-action support plus exclusion of guidance/list noun requests; all other exact-part and pending-record checks unchanged."
+  },
+  "test": {
+    "path": "tests/ai_pending_part_polite_w112_review_contract.cjs",
+    "sha256": "6E9FFC81C78E88B7B6BFADB99E497D230BA768EA774EC59DA281B5DEE2B6827A",
+    "result": "9/9 PASS including post-freeze informational “Could you make a list...” no-warm supplement."
+  },
+  "rows": [
+    "POL-01 Could you make only the roof satin? — one warm, hydrate, controlled exact edit route.",
+    "POL-02 Would you make the roof chrome? — one warm, hydrate, controlled exact edit route.",
+    "POL-03 Can you make the roof satin? — one warm, hydrate, controlled exact edit route.",
+    "POL-04 Could you make only the roof satin while leaving its current paint? — one warm, hydrate, controlled exact edit route.",
+    "POL-05 Could you explain what satin is? — no warm, no queue.",
+    "POL-06 Could you make the roof and hood satin? — no warm, no queue.",
+    "POL-07 Could you make the upper roof satin? — no warm, no queue.",
+    "POL-08 Could you make it satin? — no warm, no queue."
+  ],
+  "limits": [
+    "E.plan/editPlan and downstream current-owner proof/apply are controlled stubs in this route harness. Successful route means only that candidate warm/hydrate dispatch resumes; it does not establish fresh production owner proof or paint application.",
+    "No provider/native/server calls. No shared runtime, wiki, or production-source writes; only isolated successor candidate and private review artifacts."
+  ],
+  "effects": {
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "paintApplications": 0
+  },
+  "regressionReplays": [
+    {
+      "suite": "W112 frozen scope oracle on successor",
+      "path": "tests/ai_pending_part_warm_w112_successor_review_contract.cjs",
+      "sha256": "86E2F92F0CA67FE2B38F64D1545BB7B4128D385F8A2382FFC729DF4F76637802",
+      "result": "11 aligned pass; 1 disputed oracle W112-06; 0 other failures"
+    },
+    {
+      "suite": "W111 proof contract on successor",
+      "path": "tests/ai_keep_current_finish_w112_successor_review_contract.cjs",
+      "sha256": "3B9C2D076DD3EADA12E8740D8702603A93B1F2BA383DC7ABEC929B2A96BFCE38",
+      "result": "12/12 PASS"
+    },
+    {
+      "suite": "W86 warm/race contract on successor",
+      "path": "tests/ai_saved_part_memory_w86_on_w112_successor_review_contract.cjs",
+      "sha256": "2E7C6F32864340EA4757E8F512E4009A08CF9CC44AB6DF892276E9B60BB34335",
+      "result": "8/8 PASS; only harness dependency added was the successor helper and normalize/relative-scope stubs"
+    },
+    {
+      "suite": "W86 replay report",
+      "path": "docs/handoff_reports/AI_HELPER_14H_W86_ON_W112_SUCCESSOR_REVIEW_2026-10-04.json",
+      "sha256": "3722C4AEB54957A270A910F1C619AC21027718A78FA7D15913B029DC1814B28F",
+      "result": "candidate hash records successor 0597"
+    }
+  ]
+}

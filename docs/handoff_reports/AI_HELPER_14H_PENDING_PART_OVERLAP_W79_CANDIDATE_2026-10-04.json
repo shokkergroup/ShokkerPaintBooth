@@ -1,0 +1,89 @@
+{
+  "status": "PASS_WITH_LIMITS",
+  "cases": 12,
+  "candidatePath": "_easy_claude_work/ai14h_generation3_candidate/w79_overlap/js/spb-pro-ai.js",
+  "candidateSha256": "b4a519d02419f6e5b21a9bc0de6488c3124d7f3fc1bb2b52738f27b2f0617d1e",
+  "rows": [
+    {
+      "id": "saved-upper-request-whole",
+      "baselineQueued": 1,
+      "candidateQueued": 0,
+      "verdict": "PASS"
+    },
+    {
+      "id": "saved-whole-request-upper",
+      "baselineQueued": 1,
+      "candidateQueued": 0,
+      "verdict": "PASS"
+    },
+    {
+      "id": "different-band-unproved",
+      "baselineQueued": 1,
+      "candidateQueued": 0,
+      "verdict": "PASS"
+    },
+    {
+      "id": "different-color-unproved",
+      "baselineQueued": 1,
+      "candidateQueued": 0,
+      "verdict": "PASS"
+    },
+    {
+      "id": "different-layer-unproved",
+      "baselineQueued": 1,
+      "candidateQueued": 0,
+      "verdict": "PASS"
+    },
+    {
+      "id": "array-part-intersection",
+      "baselineQueued": 1,
+      "candidateQueued": 0,
+      "verdict": "PASS"
+    },
+    {
+      "id": "island-part-alias",
+      "baselineQueued": 1,
+      "candidateQueued": 0,
+      "verdict": "PASS"
+    },
+    {
+      "id": "sides-left-intersection",
+      "baselineQueued": 1,
+      "candidateQueued": 0,
+      "verdict": "PASS"
+    },
+    {
+      "id": "normalized-spaces-intersection",
+      "baselineQueued": 1,
+      "candidateQueued": 0,
+      "verdict": "PASS"
+    },
+    {
+      "id": "unrelated-part-allowed",
+      "baselineQueued": 1,
+      "candidateQueued": 1,
+      "verdict": "PASS"
+    },
+    {
+      "id": "opposite-side-allowed",
+      "baselineQueued": 1,
+      "candidateQueued": 1,
+      "verdict": "PASS"
+    },
+    {
+      "id": "explicit-color-command-allowed",
+      "baselineQueued": 1,
+      "candidateQueued": 1,
+      "verdict": "PASS"
+    }
+  ],
+  "limitation": "Actual queue function with controlled handlers, no renderer/mask overlap proof/native/provider",
+  "installed": false,
+  "finding": "W76 unproved overlapping part scopes can reintroduce original source paint over a saved part",
+  "repair": "Conservative same-named-part overlap refusal for source-color additions; exact proven reuses remain on existing route",
+  "limits": [
+    "Different portions/bands/colors/layers are not treated as disjoint without live mask proof.",
+    "Explicit recolor and unrelated parts remain allowed.",
+    "Independent review and final integrated native acceptance pending."
+  ]
+}

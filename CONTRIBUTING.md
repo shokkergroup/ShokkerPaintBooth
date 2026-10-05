@@ -4,6 +4,8 @@ Thanks for your interest in SPB. This project runs on a small core team plus a g
 
 Before you submit anything substantial, please skim this document — SPB has a couple of non-obvious conventions (especially the **3-copy sync rule**) that will save you a rejected PR.
 
+> **📖 Start at the Wiki.** [`SPB_WIKI.html`](SPB_WIKI.html) is the **living source of truth** — open it in a browser. Every agent reads it *first* and updates it as work happens (Agent Board, Daily Work Log, Architecture, Testing & Quality Gates, Working Conventions). This file covers contribution mechanics; the Wiki covers the live state of the project.
+
 ---
 
 ## Table of Contents
@@ -41,8 +43,8 @@ By participating you agree to the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). TL;D
 ## Getting the Code
 
 ```bash
-git clone https://github.com/shokkergroup/shokker-paint-booth.git
-cd shokker-paint-booth
+git clone https://github.com/shokkergroup/ShokkerPaintBooth.git
+cd ShokkerPaintBooth
 cd electron-app && npm install && npm run start
 ```
 
@@ -50,19 +52,20 @@ See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for full onboarding.
 
 ---
 
-## The 3-Copy Sync Rule
+## The 2-Copy Sync Rule (was 3-copy until 2026-06-09)
 
-**READ THIS TWICE.** SPB ships an embedded Python server that is packaged three ways:
+**READ THIS TWICE.** SPB ships an embedded Python server packaged from TWO trees:
 
 1. Root level (for local dev runs) — e.g. `engine/base_registry_data.py`
-2. `electron-app/server/` (copied at build time) — e.g. `electron-app/server/engine/base_registry_data.py`
-3. `electron-app/server/pyserver/_internal/` (PyInstaller bundle) — e.g. `electron-app/server/pyserver/_internal/engine/base_registry_data.py`
+2. `electron-app/server/` (copied at build time, packaged into the installer) — e.g. `electron-app/server/engine/base_registry_data.py`
 
-Any change to a server-side Python file in `engine/`, `engine/paint_v2/`, `engine/expansions/`, `config.py`, or `server.py` **MUST be applied to all three copies**. The same rule applies to `paint-booth-*.js` static assets: all three copies exist.
+**2026-06-09 — the third copy is GONE.** There used to be a third tree, `electron-app/server/pyserver/_internal/` (a PyInstaller bundle), but it was EXCLUDED from the installer (`!pyserver/**` in `electron-app/package.json`) so it shipped to nobody and only created 3-way drift. It was deleted (~585 MB) and removed from `scripts/runtime-sync-manifest.json`. **Do NOT recreate it.**
 
-**If you only edit the root copy, your change will not appear in a built Setup.exe.**
+Any change to a server-side Python file in `engine/`, `engine/paint_v2/`, `engine/expansions/`, `config.py`, or `server.py` **MUST be applied to both copies** (edit root, then `node scripts/sync-runtime-copies.js --write`). Same for `paint-booth-*.js` static assets.
 
-Use the `copy-server-assets.js` script (run as part of `npm run build`) to verify sync. When in doubt, run `diff` across the three trees before pushing.
+**If you only edit the root copy, your change won't appear in a built Setup.exe** — but the build now HARD-FAILS if the two copies drift, so you can't silently ship a stale mirror.
+
+`copy-server-assets.js` (run by `npm run build`) auto-syncs and verifies. When in doubt: `node scripts/sync-runtime-copies.js --check`.
 
 ---
 
@@ -139,6 +142,20 @@ Tag-ship versions get a separate style — see `CHANGELOG.md` history.
 5. Open a PR against `main`. Fill in the PR template (summary + test plan).
 6. A maintainer will review. Expect ~48h turnaround.
 7. Squash-merge is default. Keep your commit messages clean.
+
+---
+
+## Verify before you PR
+
+Before opening a PR, run the verification stack. The full step-by-step (commands, expected output, troubleshooting) lives in [docs/HOW_TO_VERIFY.md](docs/HOW_TO_VERIFY.md). In short:
+
+- **`scripts/spb_doctor.py`** — one-shot environment + repo health check (imports, registries, config).
+- **`tests_v2/`** — the ground-up test suite: `python -m pytest tests_v2/`.
+- **`scripts/spb_catalog_report.py`** — catalog integrity report (duplicate ids, ungrouped/Misc, JS-only ids).
+- **`check-js-lint.mjs`** — `node` syntax/lint check on the `paint-booth-*.js` modules.
+- **`node scripts/sync-runtime-copies.js --check`** — confirms the 3-copy mirrors have no drift (exits 0 = clean).
+
+See [docs/HOW_TO_VERIFY.md](docs/HOW_TO_VERIFY.md) for the authoritative checklist.
 
 ---
 

@@ -1,0 +1,295 @@
+{
+  "version": 3,
+  "metric": "M2 \u2014 Intent-Fit Proxy",
+  "generated": "2026-08-28T15:27:26",
+  "vocabularySize": 156,
+  "categoryTokenPolicy": {
+    "X LAB": "all matched VOCAB tokens non-applicable; explicit recipe contract",
+    "\ud83c\udf38 FRACTURED BLOOM": "all matched VOCAB tokens non-applicable; explicit recipe contract",
+    "\ud83d\udc63 FRACTURED CRYPTID": "all matched VOCAB tokens non-applicable; explicit recipe contract",
+    "\ud83e\udd8b FRACTURED MORPHO": "all matched VOCAB tokens non-applicable; explicit recipe contract",
+    "\ud83e\uddeb FRACTURED PETRI": "all matched VOCAB tokens non-applicable; explicit recipe contract"
+  },
+  "axesUsed": [
+    "paintFineEnergy",
+    "paintResidualEnergy",
+    "paintBlockEnergy",
+    "paintColorPopulation",
+    "paintSaturationMean",
+    "specMRange",
+    "specRRange",
+    "specCcRange",
+    "specChannelIndependence"
+  ],
+  "byFinish": {
+    "monolithic:xlab_abyssal_lens": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_afterimage_lacquer": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_aerogel_fire": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [
+        "fire"
+      ],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_anamorphic_pearl": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [
+        "pearl"
+      ],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_anti_gravity_foil": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_arc_weld_velvet": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_black_ice_orbit": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [
+        "black",
+        "ice"
+      ],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_bloomglass": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_brunel_current": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_caustic_engine": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_ceramic_storm": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [
+        "ceramic",
+        "storm"
+      ],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_chiral_mercury": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_chromatophore": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_cinder_mirror": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [
+        "mirror"
+      ],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_coral_voltage": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_cryogenic_sunset": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_deep_time": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [
+        "deep"
+      ],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_dichroic_skin": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_electric_ink": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [
+        "electric"
+      ],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_ferrofluid_silk": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_ghost_transmission": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [
+        "ghost"
+      ],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_hologram_metal": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [
+        "metal"
+      ],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_ion_bloom": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_laminar_magma": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_luminous_carbon": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [
+        "carbon"
+      ],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_memory_glass": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [
+        "glass"
+      ],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_nebula_ceramic": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [
+        "ceramic"
+      ],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_photon_patina": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_quantum_tide": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    },
+    "monolithic:xlab_sonic_chrome": {
+      "score": null,
+      "tokensMatched": [],
+      "tokensIgnored": [
+        "chrome"
+      ],
+      "expectationsTested": 0,
+      "hits": 0,
+      "reason": "no vocab tokens matched"
+    }
+  },
+  "byCategory": {}
+}

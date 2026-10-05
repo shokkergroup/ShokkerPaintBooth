@@ -39,8 +39,16 @@ FIX GUIDE:
 
 import numpy as np
 import colorsys
+import cv2
+from collections import OrderedDict
 
 _engine = None  # Injected by shokker_engine_v2 after import
+
+# SPB-90 tick 56: was a single-entry cache (_PRIZM_CACHE_KEY/_VALUE) — every
+# panel switch between any two Prizm finishes invalidated. Replaced with
+# LRU OrderedDict sized to comfortably cover all 23 Prizm finishes.
+_PRIZM_FIELD_CACHE: "OrderedDict" = OrderedDict()
+_PRIZM_FIELD_CACHE_MAX = 32
 
 
 def integrate_prizm(engine_module):
@@ -94,7 +102,7 @@ def _sample_zone_color_local(paint, mask):
 # ================================================================
 # SHOKKER PRIZM v4 - Panel-Aware Color Shift System
 #
-# THE NEONIZM BREAKTHROUGH DECODED:
+# Panel-aware color-shift (reference technique decoded):
 # Real color-shift illusion comes from painting DIFFERENT COLORS
 # on DIFFERENT BODY PANELS based on their 3D orientation.
 # When the camera orbits the car, different panels face the viewer,
@@ -285,41 +293,520 @@ def _add_micro_flake(paint_r, paint_g, paint_b, shape, seed, flake_intensity=0.0
     return paint_r, paint_g, paint_b
 
 
+_PRIZM_MATERIAL_PROFILES = {
+    "adaptive":       {"m": 150, "mr": 72, "r": 34, "rr": 54, "cc": 42, "cr": 58, "motif": "sensor", "paint": "adaptive", "bright": 0.03},
+    "alien_skin":     {"m": 118, "mr": 68, "r": 48, "rr": 64, "cc": 30, "cr": 72, "motif": "cell", "paint": "skin", "bright": 0.00},
+    "arctic":         {"m": 92,  "mr": 54, "r": 72, "rr": 70, "cc": 20, "cr": 50, "motif": "ice", "paint": "frozen", "bright": 0.02},
+    "aurora_shift":   {"m": 128, "mr": 78, "r": 28, "rr": 62, "cc": 46, "cr": 72, "motif": "curtain", "paint": "veil", "bright": 0.04},
+    "black_rainbow":  {"m": 72,  "mr": 96, "r": 64, "rr": 88, "cc": 18, "cr": 80, "motif": "hidden_rainbow", "paint": "blackout", "bright": -0.12},
+    "blood_moon":     {"m": 88,  "mr": 86, "r": 58, "rr": 82, "cc": 22, "cr": 68, "motif": "lunar", "paint": "eclipse", "bright": -0.06},
+    "candy_paint":    {"m": 95,  "mr": 72, "r": 18, "rr": 44, "cc": 66, "cr": 84, "motif": "candy_drip", "paint": "candy", "bright": 0.05},
+    "chrome_rose":    {"m": 188, "mr": 58, "r": 22, "rr": 46, "cc": 34, "cr": 60, "motif": "rose_vine", "paint": "rose_chrome", "bright": 0.03},
+    "copper_flame":   {"m": 168, "mr": 62, "r": 38, "rr": 62, "cc": 26, "cr": 56, "motif": "flame", "paint": "oxide_heat", "bright": 0.01},
+    "cosmos":         {"m": 82,  "mr": 84, "r": 42, "rr": 80, "cc": 24, "cr": 70, "motif": "orbit", "paint": "nebula", "bright": -0.03},
+    "dark_matter":    {"m": 36,  "mr": 70, "r": 112, "rr": 84, "cc": 16, "cr": 50, "motif": "void", "paint": "void", "bright": -0.16},
+    "deep_space":     {"m": 66,  "mr": 86, "r": 44, "rr": 78, "cc": 24, "cr": 78, "motif": "starfield", "paint": "deep_space", "bright": -0.04},
+    "duochrome":      {"m": 132, "mr": 58, "r": 30, "rr": 42, "cc": 46, "cr": 54, "motif": "split_edge", "paint": "duo", "bright": 0.01},
+    "ember":          {"m": 148, "mr": 62, "r": 42, "rr": 64, "cc": 22, "cr": 58, "motif": "ember", "paint": "molten", "bright": 0.02},
+    "fire_ice":       {"m": 112, "mr": 88, "r": 32, "rr": 74, "cc": 36, "cr": 76, "motif": "thermal_crack", "paint": "fire_ice", "bright": 0.03},
+    "galaxy_dust":    {"m": 92,  "mr": 88, "r": 52, "rr": 86, "cc": 26, "cr": 76, "motif": "starfield", "paint": "dust", "bright": 0.00},
+    "holographic":    {"m": 138, "mr": 94, "r": 20, "rr": 56, "cc": 58, "cr": 88, "motif": "holo_glyph", "paint": "hologram", "bright": 0.05},
+    "iridescent":     {"m": 56,  "mr": 48, "r": 24, "rr": 34, "cc": 74, "cr": 70, "motif": "pearl_shell", "paint": "pearl", "bright": 0.04},
+    "midnight":       {"m": 92,  "mr": 76, "r": 36, "rr": 68, "cc": 34, "cr": 74, "motif": "city_glint", "paint": "midnight", "bright": -0.02},
+    "mystichrome":    {"m": 118, "mr": 70, "r": 28, "rr": 52, "cc": 42, "cr": 64, "motif": "muscle_curve", "paint": "mystic", "bright": 0.02},
+    "neon":           {"m": 84,  "mr": 64, "r": 18, "rr": 54, "cc": 68, "cr": 76, "motif": "neon_trace", "paint": "neon", "bright": 0.06},
+    "oceanic":        {"m": 72,  "mr": 76, "r": 32, "rr": 72, "cc": 42, "cr": 76, "motif": "wave", "paint": "water", "bright": 0.02},
+    "phoenix":        {"m": 126, "mr": 74, "r": 36, "rr": 68, "cc": 34, "cr": 70, "motif": "feather_flame", "paint": "phoenix", "bright": 0.03},
+    "solar":          {"m": 132, "mr": 68, "r": 34, "rr": 64, "cc": 38, "cr": 66, "motif": "sun_ray", "paint": "solar", "bright": 0.04},
+    "spectrum":       {"m": 104, "mr": 82, "r": 22, "rr": 62, "cc": 54, "cr": 82, "motif": "scan_prism", "paint": "spectrum", "bright": 0.05},
+    "sunset_strip":   {"m": 94,  "mr": 72, "r": 40, "rr": 72, "cc": 32, "cr": 68, "motif": "street_glass", "paint": "sunset", "bright": 0.01},
+    "titanium":       {"m": 176, "mr": 46, "r": 70, "rr": 70, "cc": 18, "cr": 44, "motif": "brushed_titanium", "paint": "titanium", "bright": -0.01},
+    "toxic_waste":    {"m": 80,  "mr": 78, "r": 48, "rr": 76, "cc": 28, "cr": 72, "motif": "toxic_bubble", "paint": "toxic", "bright": 0.02},
+    "venom":          {"m": 86,  "mr": 76, "r": 42, "rr": 74, "cc": 30, "cr": 72, "motif": "fang_edge", "paint": "venom", "bright": 0.02},
+    "default":        {"m": 118, "mr": 66, "r": 34, "rr": 60, "cc": 38, "cr": 62, "motif": "microflake", "paint": "faceted", "bright": 0.02},
+}
+
+
+def _profile_from_spec_params(metallic, roughness, clearcoat):
+    key = (int(metallic), int(roughness), int(clearcoat))
+    return {
+        (228, 12, 40): "holographic",
+        (230, 14, 35): "midnight",
+        (225, 14, 38): "phoenix",
+        (228, 12, 32): "oceanic",
+        (225, 16, 55): "ember",
+        (235, 10, 22): "arctic",
+        (222, 16, 45): "solar",
+        (228, 14, 48): "venom",
+        (230, 12, 30): "mystichrome",
+        (232, 12, 50): "black_rainbow",
+        (230, 14, 28): "duochrome",
+        (235, 10, 25): "iridescent",
+        (228, 14, 35): "adaptive",
+        (240, 15, 22): "galaxy_dust",
+        (230, 16, 28): "sunset_strip",
+        (225, 18, 30): "toxic_waste",
+        (248, 15, 20): "chrome_rose",
+        (235, 15, 25): "deep_space",
+        (220, 20, 30): "copper_flame",
+        (215, 22, 32): "alien_skin",
+        (210, 25, 35): "titanium",
+        (232, 15, 24): "aurora_shift",
+        (225, 16, 26): "candy_paint",
+        (232, 10, 18): "neon",
+        (228, 16, 14): "blood_moon",
+        (225, 14, 18): "cosmos",
+        (230, 18, 14): "dark_matter",
+        (228, 12, 18): "fire_ice",
+        (230, 11, 18): "spectrum",
+    }.get(key, "default")
+
+
+def _profile_from_stops(stops, flake_intensity, blend_strength):
+    sig = (
+        len(stops),
+        int(round(stops[0][1])),
+        int(round(stops[-1][1])),
+        int(round(flake_intensity * 1000)),
+        int(round(blend_strength * 100)),
+    )
+    return {
+        (6, 350, 310, 40, 92): "holographic",
+        (4, 275, 48, 25, 92): "midnight",
+        (5, 5, 140, 30, 92): "phoenix",
+        (4, 175, 320, 25, 92): "oceanic",
+        (4, 25, 270, 30, 92): "ember",
+        (4, 210, 178, 20, 92): "arctic",
+        (5, 50, 340, 30, 92): "solar",
+        (4, 130, 280, 25, 92): "venom",
+        (5, 140, 290, 25, 92): "mystichrome",
+        (7, 350, 340, 35, 95): "black_rainbow",
+        (2, 175, 280, 20, 92): "duochrome",
+        (5, 200, 170, 15, 85): "iridescent",
+        (4, 270, 170, 35, 92): "galaxy_dust",
+        (4, 25, 225, 30, 92): "sunset_strip",
+        (4, 110, 275, 40, 92): "toxic_waste",
+        (4, 0, 0, 20, 92): "chrome_rose",
+        (4, 0, 0, 50, 92): "deep_space",
+        (4, 25, 30, 40, 92): "copper_flame",
+        (4, 90, 48, 30, 92): "alien_skin",
+        (4, 215, 195, 20, 88): "titanium",
+        (5, 145, 325, 35, 92): "aurora_shift",
+        (4, 335, 178, 40, 92): "candy_paint",
+        (5, 310, 75, 25, 92): "neon",
+        (5, 355, 35, 35, 92): "blood_moon",
+        (5, 270, 330, 30, 92): "cosmos",
+        (4, 270, 280, 20, 92): "dark_matter",
+        (5, 5, 220, 28, 92): "fire_ice",
+        (7, 0, 290, 25, 92): "spectrum",
+    }.get(sig, "default")
+
+
+def _prizm_profile(profile):
+    return _PRIZM_MATERIAL_PROFILES.get(profile or "default", _PRIZM_MATERIAL_PROFILES["default"])
+
+
+def _cached_prizm_field_details(shape, seed, profile_name, flow_complexity):
+    """LRU render cache (SPB-90 tick 56): covers cycling through all 23
+    Prizm finishes without thrashing. Paint and spec are called back-to-back
+    per finish, then user may switch finishes — keep recent entries warm.
+    """
+    key = (int(shape[0]), int(shape[1]), int(seed), str(profile_name), int(flow_complexity))
+    cached = _PRIZM_FIELD_CACHE.get(key)
+    if cached is not None:
+        _PRIZM_FIELD_CACHE.move_to_end(key)
+        return cached
+    h, w = shape
+    # SPB paint-finish perf loop 2026-05-31: these two dense motif profiles were just over 4s
+    # at 2K. Their full-res nano/pin layer remains native; only the shared carrier drops.
+    carrier_limit = 640 if str(profile_name) in {"galaxy_dust", "toxic_waste"} else 1024
+    carrier_scale = min(1.0, float(carrier_limit) / float(max(h, w)))
+    carrier_shape = (
+        max(1, int(round(h * carrier_scale))),
+        max(1, int(round(w * carrier_scale))),
+    )
+    field_small = _generate_panel_direction_field(carrier_shape, seed, flow_complexity).astype(np.float32)
+    details_small = _material_detail_fields(carrier_shape, seed + 33, profile_name, field_small)
+    field = _upsample_to_shape(field_small, shape)
+    details = {name: _upsample_to_shape(value, shape) for name, value in details_small.items()}
+    if carrier_scale < 1.0:
+        rng = np.random.RandomState(seed + 9917)
+        native = rng.rand(h, w).astype(np.float32)
+        details["nano"] = native
+        details["pin"] = np.maximum(details["pin"], (native > 0.994).astype(np.float32))
+        details["fine"] = _normalize01(details["fine"] * 0.70 + native * 0.30)
+        details["motif"] = np.clip(details["motif"] + details["pin"] * 0.34, 0.0, 1.0)
+        details["facet"] = np.clip(details["facet"] + details["pin"] * 0.65, 0.0, 1.0)
+    value = (field, details)
+    _PRIZM_FIELD_CACHE[key] = value
+    _PRIZM_FIELD_CACHE.move_to_end(key)
+    while len(_PRIZM_FIELD_CACHE) > _PRIZM_FIELD_CACHE_MAX:
+        _PRIZM_FIELD_CACHE.popitem(last=False)
+    return value
+
+
+def _ring_field(xn, yn, cx, cy, freq):
+    dist = np.sqrt((xn - cx) ** 2 + (yn - cy) ** 2)
+    return 1.0 - np.clip(np.abs(np.sin(dist * freq * np.pi)), 0.0, 1.0)
+
+
+def _normalize01(arr):
+    arr = arr.astype(np.float32, copy=False)
+    amin = float(arr.min())
+    amax = float(arr.max())
+    return (arr - amin) / (amax - amin + 1e-8)
+
+
+def _cell_noise(shape, rng, cell):
+    h, w = shape
+    cy = max(1, int(np.ceil(h / float(cell))))
+    cx = max(1, int(np.ceil(w / float(cell))))
+    vals = rng.rand(cy, cx).astype(np.float32)
+    return np.repeat(np.repeat(vals, cell, axis=0), cell, axis=1)[:h, :w]
+
+
+def _upsample_to_shape(arr, shape):
+    h, w = shape
+    ay, ax = arr.shape[:2]
+    if (ay, ax) == (h, w):
+        return arr.astype(np.float32, copy=False)
+    return cv2.resize(
+        np.asarray(arr, dtype=np.float32),
+        (int(w), int(h)),
+        interpolation=cv2.INTER_NEAREST,
+    ).astype(np.float32, copy=False)
+
+
+def _material_detail_fields(shape, seed, profile_name, field):
+    h, w = shape
+    y, x = get_mgrid(shape)
+    yn = y.astype(np.float32) / max(h - 1, 1)
+    xn = x.astype(np.float32) / max(w - 1, 1)
+    rng = np.random.RandomState(seed + 8123)
+
+    nano = rng.rand(h, w).astype(np.float32)
+    cell3 = _cell_noise(shape, rng, 3)
+    cell7 = _cell_noise(shape, rng, 7)
+    cell15 = _cell_noise(shape, rng, 15)
+    cell31 = _cell_noise(shape, rng, 31)
+    fine = _normalize01(nano * 0.46 + cell3 * 0.30 + cell7 * 0.17 + cell15 * 0.07)
+    grain = _normalize01(cell7 * 0.28 + cell15 * 0.40 + cell31 * 0.24 + nano * 0.08)
+
+    # Not a generic stripe layer: these are material cues, mixed differently by profile.
+    weave = (np.sin((xn * 92.0 + grain * 1.8) * np.pi) * np.sin((yn * 86.0 - fine * 1.4) * np.pi))
+    weave = np.clip((weave + 1.0) * 0.5, 0.0, 1.0)
+    shard = np.maximum(
+        1.0 - np.abs(np.sin((xn * 13.0 + yn * 17.0 + fine * 1.5) * np.pi)) * 5.0,
+        1.0 - np.abs(np.sin((xn * -19.0 + yn * 11.0 + grain) * np.pi)) * 4.5,
+    )
+    shard = np.clip(shard, 0.0, 1.0)
+    ring_a = ((xn - (0.35 + rng.uniform(-0.15, 0.15))) ** 2 + (yn - (0.48 + rng.uniform(-0.16, 0.16))) ** 2)
+    ring_b = ((xn - (0.70 + rng.uniform(-0.12, 0.12))) ** 2 + (yn - (0.58 + rng.uniform(-0.12, 0.12))) ** 2)
+    rings = np.maximum(
+        1.0 - np.clip(np.abs(np.sin(ring_a * 58.0 * np.pi)) * 3.8, 0.0, 1.0),
+        1.0 - np.clip(np.abs(np.sin(ring_b * 46.0 * np.pi)) * 3.8, 0.0, 1.0),
+    )
+    waves = 1.0 - np.clip(np.abs(np.sin((yn * 22.0 + np.sin(xn * 9.0 + fine * 2.0)) * np.pi)) * 3.6, 0.0, 1.0)
+    # SPB overnight 2026-05-27 tick 2 — denser pin/dots for car-scale optical punch
+    dots = (nano > 0.972).astype(np.float32)
+    bubbles = np.clip(
+        (fine > 0.66).astype(np.float32) * 0.48
+        + (grain > 0.64).astype(np.float32) * 0.30
+        + rings * 0.22
+        + dots * 0.85,
+        0.0,
+        1.0,
+    )
+    rays = 1.0 - np.clip(np.abs(np.sin((xn * 7.0 - yn * 5.0 + field * 2.0) * np.pi)) * 3.2, 0.0, 1.0)
+    trace = np.clip((field > 0.46).astype(np.float32) * (field < 0.53).astype(np.float32) * (0.55 + fine), 0.0, 1.0)
+    polish_a = rng.uniform(0.0, np.pi)
+    polish = 1.0 - np.clip(
+        np.abs(np.sin((xn * np.cos(polish_a) + yn * np.sin(polish_a) + fine * 0.16) * 142.0 * np.pi)) * 4.8,
+        0.0,
+        1.0,
+    )
+    hair = np.clip(polish * (0.45 + grain * 0.55), 0.0, 1.0)
+    pin = ((nano > 0.988) | ((fine > 0.84) & (grain > 0.68))).astype(np.float32)
+    facet = np.clip(shard * 0.45 + hair * 0.30 + pin * 0.85, 0.0, 1.0)
+
+    motif = {
+        "sensor": trace * 0.65 + dots,
+        "cell": bubbles * 0.55 + weave * 0.25,
+        "ice": shard * 0.68 + hair * 0.22 + pin * 0.70,
+        "curtain": waves * 0.65 + trace * 0.45,
+        "hidden_rainbow": trace * 0.7 + dots * 0.8,
+        "lunar": rings * 0.8 + (fine > 0.50).astype(np.float32) * 0.25,
+        "candy_drip": waves * 0.45 + bubbles * 0.35,
+        "rose_vine": rings * 0.30 + trace * 0.42 + hair * 0.36 + pin * 0.60,
+        "flame": waves * 0.58 + shard * 0.28 + pin * 0.85,
+        "orbit": rings * 0.65 + dots * 1.0,
+        "void": np.clip(1.0 - rings * 0.65 - fine * 0.35, 0.0, 1.0),
+        "starfield": dots * 1.0 + rings * 0.35,
+        "split_edge": trace * 0.8 + shard * 0.25,
+        "ember": rays * 0.45 + shard * 0.35 + dots * 0.4,
+        "thermal_crack": shard * 0.64 + waves * 0.22 + hair * 0.30 + pin * 0.72,
+        "holo_glyph": trace * 0.55 + weave * 0.25 + dots,
+        "pearl_shell": rings * 0.35 + waves * 0.45 + fine * 0.18,
+        "city_glint": trace * 0.45 + dots * 0.9,
+        "muscle_curve": waves * 0.4 + trace * 0.35 + dots * 0.5,
+        "neon_trace": trace * 0.9 + dots,
+        "wave": waves * 0.75 + rings * 0.25,
+        "feather_flame": rays * 0.45 + waves * 0.35 + shard * 0.25,
+        "sun_ray": rays * 0.75 + dots * 0.45,
+        "scan_prism": trace * 0.55 + rays * 0.4 + dots * 0.8,
+        "street_glass": shard * 0.45 + dots * 0.8,
+        "brushed_titanium": weave * 0.55 + shard * 0.35,
+        "toxic_bubble": bubbles * 0.70 + dots * 0.75,
+        "fang_edge": shard * 0.55 + trace * 0.35,
+        "microflake": fine * 0.35 + dots,
+    }.get(_prizm_profile(profile_name)["motif"], fine * 0.35 + dots)
+
+    motif = np.clip(motif, 0.0, 1.0)
+    return {
+        "fine": fine,
+        "grain": grain,
+        "nano": nano,
+        "dots": dots,
+        "pin": pin,
+        "hair": hair,
+        "facet": facet,
+        "weave": weave,
+        "shard": shard,
+        "rings": rings,
+        "waves": waves,
+        "bubbles": bubbles,
+        "rays": rays,
+        "trace": trace,
+        "motif": motif,
+    }
+
+
+def _apply_prizm_material_paint(shift_rgb, field, details, shape, seed, profile_name):
+    p = _prizm_profile(profile_name)
+    d = details
+    motif = d["motif"][:, :, np.newaxis]
+    fine = d["fine"][:, :, np.newaxis]
+    nano = d["nano"][:, :, np.newaxis]
+    dots = d["dots"][:, :, np.newaxis]
+    hair = d["hair"][:, :, np.newaxis]
+    pin = d["pin"][:, :, np.newaxis]
+    facet = d["facet"][:, :, np.newaxis]
+    shard = d["shard"][:, :, np.newaxis]
+    rings = d["rings"][:, :, np.newaxis]
+    waves = d["waves"][:, :, np.newaxis]
+    bubbles = d["bubbles"][:, :, np.newaxis]
+    trace = d["trace"][:, :, np.newaxis]
+    paint_style = p["paint"]
+
+    out = shift_rgb.astype(np.float32)
+    out = np.clip(out + float(p["bright"]), 0.0, 1.0)
+
+    if paint_style in {"blackout", "void", "eclipse", "deep_space"}:
+        darken = {"blackout": 0.38, "void": 0.48, "eclipse": 0.30, "deep_space": 0.22}[paint_style]
+        dust_lane = np.clip((1.0 - field[:, :, np.newaxis]) * motif * 0.55 + rings * 0.20 + hair * 0.18, 0.0, 1.0)
+        star_pin = np.clip(pin * 1.15 + dots * 0.60 + facet * 0.20, 0.0, 1.0)
+        out = out * (1.0 - darken * (0.58 + fine * 0.34) - rings * 0.035)
+        if profile_name == "black_rainbow":
+            out = np.clip(out + dust_lane * np.array([0.09, 0.035, 0.18], dtype=np.float32) + star_pin * np.array([0.12, 0.14, 0.24], dtype=np.float32), 0.0, 1.0)
+        elif profile_name == "blood_moon":
+            out = np.clip(out + dust_lane * np.array([0.13, 0.015, 0.035], dtype=np.float32) + star_pin * np.array([0.16, 0.06, 0.035], dtype=np.float32), 0.0, 1.0)
+        else:
+            out = np.clip(out + dust_lane * np.array([0.055, 0.035, 0.15], dtype=np.float32) + star_pin * np.array([0.14, 0.17, 0.26], dtype=np.float32), 0.0, 1.0)
+    elif paint_style in {"frozen", "titanium"}:
+        frost = shard if paint_style == "frozen" else d["weave"][:, :, np.newaxis]
+        brushed = np.clip(hair * 0.60 + trace * 0.35 + pin * 0.25, 0.0, 1.0)
+        out = np.clip(out * (0.86 + frost * 0.13) + frost * np.array([0.045, 0.070, 0.095], dtype=np.float32) + brushed * np.array([0.020, 0.035, 0.055], dtype=np.float32), 0.0, 1.0)
+    elif paint_style in {"molten", "phoenix", "oxide_heat", "fire_ice", "solar"}:
+        heat = np.maximum(d["rays"], np.maximum(d["waves"], d["shard"]))[:, :, np.newaxis]
+        ember = np.clip(pin * 1.05 + dots * 0.55 + facet * 0.28, 0.0, 1.0)
+        filament = np.clip(hair * 0.70 + trace * 0.30 + waves * 0.18, 0.0, 1.0)
+        if profile_name == "fire_ice":
+            cold = np.clip(shard * 0.70 + hair * 0.35 + (1.0 - field[:, :, np.newaxis]) * 0.18, 0.0, 1.0)
+            hot = np.clip(heat * 0.65 + ember * 0.45 + field[:, :, np.newaxis] * 0.18, 0.0, 1.0)
+            out = np.clip(out * 0.84 + hot * np.array([0.24, 0.070, 0.000], dtype=np.float32) + cold * np.array([0.065, 0.105, 0.145], dtype=np.float32) + filament * np.array([0.055, 0.025, 0.010], dtype=np.float32), 0.0, 1.0)
+        elif profile_name == "solar":
+            corona = np.clip(heat * 0.65 + rings * 0.22 + ember * 0.45, 0.0, 1.0)
+            out = np.clip(out + corona * np.array([0.16, 0.105, 0.015], dtype=np.float32) + filament * np.array([0.055, 0.040, 0.000], dtype=np.float32), 0.0, 1.0)
+        elif profile_name == "phoenix":
+            feather = np.clip(waves * 0.45 + hair * 0.42 + facet * 0.30, 0.0, 1.0)
+            out = np.clip(out + feather * np.array([0.14, 0.060, 0.005], dtype=np.float32) + ember * np.array([0.18, 0.075, 0.000], dtype=np.float32), 0.0, 1.0)
+        elif profile_name == "copper_flame":
+            scale = np.clip(facet * 0.52 + rings * 0.35 + trace * 0.26, 0.0, 1.0)
+            out = np.clip(out + scale * np.array([0.15, 0.060, 0.015], dtype=np.float32) + ember * np.array([0.13, 0.045, 0.000], dtype=np.float32), 0.0, 1.0)
+        else:
+            out = np.clip(out + heat * np.array([0.11, 0.050, 0.000], dtype=np.float32) + ember * np.array([0.13, 0.055, 0.000], dtype=np.float32), 0.0, 1.0)
+    elif paint_style in {"water", "veil"}:
+        current = np.clip(waves * 0.70 + hair * 0.22 + pin * 0.24, 0.0, 1.0)
+        out = np.clip(out + current * np.array([0.000, 0.050, 0.080], dtype=np.float32), 0.0, 1.0)
+    elif paint_style in {"candy", "neon", "spectrum", "hologram"}:
+        gloss_trace = np.clip(motif * 0.55 + trace * 0.25 + pin * 0.35, 0.0, 1.0)
+        out = np.clip(out * (0.95 + motif * 0.08) + gloss_trace * np.array([0.065, 0.055, 0.080], dtype=np.float32) + dots * 0.075, 0.0, 1.0)
+    elif paint_style in {"skin", "toxic", "venom"}:
+        cell = np.clip(bubbles * 0.48 + rings * 0.22 + facet * 0.26 + hair * 0.12, 0.0, 1.0)
+        pits = np.clip((1.0 - fine) * bubbles * 0.45 + pin * 0.38, 0.0, 1.0)
+        if profile_name == "alien_skin":
+            out = np.clip(out * (0.82 + cell * 0.18) + cell * np.array([0.035, 0.105, 0.035], dtype=np.float32) + pits * np.array([0.070, 0.050, 0.015], dtype=np.float32), 0.0, 1.0)
+        elif profile_name == "toxic_waste":
+            out = np.clip(out * (0.80 + cell * 0.16) + cell * np.array([0.015, 0.140, 0.010], dtype=np.float32) + pits * np.array([0.095, 0.105, 0.000], dtype=np.float32), 0.0, 1.0)
+        else:
+            out = np.clip(out * (0.84 + cell * 0.17) + cell * np.array([0.025, 0.080, 0.040], dtype=np.float32) + pits * np.array([0.075, 0.050, 0.010], dtype=np.float32), 0.0, 1.0)
+    elif paint_style in {"nebula", "dust"}:
+        starfield = np.clip(pin * 1.10 + dots * 0.72 + facet * 0.22, 0.0, 1.0)
+        dust_lane = np.clip(motif * 0.45 + rings * 0.22 + hair * 0.24, 0.0, 1.0)
+        out = np.clip(out * (0.84 + fine * 0.12) + dust_lane * np.array([0.060, 0.040, 0.125], dtype=np.float32) + starfield * np.array([0.21, 0.20, 0.27], dtype=np.float32), 0.0, 1.0)
+    elif paint_style == "rose_chrome":
+        out = np.clip(out + motif * np.array([0.08, 0.025, 0.04], dtype=np.float32), 0.0, 1.0)
+    else:
+        out = np.clip(out + motif * 0.035 + dots * 0.09, 0.0, 1.0)
+
+    relief = (fine - 0.5) * 0.072 + (nano - 0.5) * 0.038 + (hair - 0.5) * 0.030
+    if profile_name in {"galaxy_dust", "deep_space", "cosmos", "dark_matter"}:
+        relief += pin * 0.16 + dots * 0.11 + rings * 0.030
+        out = np.clip(out + pin * np.array([0.20, 0.20, 0.26], dtype=np.float32) + dots * np.array([0.13, 0.11, 0.18], dtype=np.float32), 0.0, 1.0)
+    elif profile_name in {"fire_ice", "arctic"}:
+        relief += shard * 0.075 + hair * 0.055 + pin * 0.080
+        out = np.clip(out + shard * np.array([0.055, 0.075, 0.110], dtype=np.float32) + hair * np.array([0.030, 0.052, 0.085], dtype=np.float32), 0.0, 1.0)
+    elif profile_name in {"solar", "phoenix", "copper_flame", "ember"}:
+        relief += hair * 0.070 + pin * 0.095 + facet * 0.045
+        out = np.clip(out + pin * np.array([0.20, 0.080, 0.000], dtype=np.float32) + hair * np.array([0.050, 0.030, 0.000], dtype=np.float32), 0.0, 1.0)
+    elif profile_name in {"alien_skin", "toxic_waste", "venom"}:
+        relief += bubbles * 0.070 + rings * 0.035 + pin * 0.070
+        out = np.clip(out + bubbles * np.array([0.025, 0.085, 0.020], dtype=np.float32) + pin * np.array([0.095, 0.120, 0.018], dtype=np.float32), 0.0, 1.0)
+
+    micro_carrier = relief + ((fine - 0.5) * 0.040 + (nano - 0.5) * 0.018)
+    material_glint = (
+        pin * np.array([0.11, 0.10, 0.12], dtype=np.float32)
+        + hair * np.array([0.030, 0.026, 0.036], dtype=np.float32)
+        + facet * np.array([0.026, 0.020, 0.030], dtype=np.float32)
+    )
+    if paint_style in {"frozen", "titanium"}:
+        material_glint += hair * np.array([0.020, 0.034, 0.052], dtype=np.float32)
+    elif paint_style in {"molten", "phoenix", "oxide_heat", "fire_ice", "solar"}:
+        material_glint += pin * np.array([0.075, 0.030, 0.000], dtype=np.float32)
+    elif paint_style in {"blackout", "void", "eclipse", "deep_space"}:
+        material_glint += pin * np.array([0.040, 0.025, 0.080], dtype=np.float32)
+    out = np.clip(
+        out + micro_carrier * np.array([1.00, 0.92, 1.08], dtype=np.float32) + material_glint,
+        0.0,
+        1.0,
+    )
+
+    return out
+
+
 # ================================================================
 # PRIZM v4 CORE FUNCTIONS
 # ================================================================
 
-def spec_prizm(shape, mask, seed, sm, metallic=225, roughness=14, clearcoat=30):
-    """Prizm v4 spec map - uniform high-metallic with subtle variation.
+def spec_prizm(shape, mask, seed, sm, metallic=225, roughness=14, clearcoat=30, profile=None, flow_complexity=3):
+    """Prizm v4 spec map — panel-aware and range-widened for stronger living flash.
 
-    CC SCALE: 16=max gloss, 17-255=progressively degraded.
-    Default clearcoat=30: good coat with slight character (not showroom-perfect).
-    Each preset overrides this to give its own coat personality.
-
-    Metallic: High (220-235) - amplifies paint color through PBR Fresnel
-    Roughness: Low (10-20) - smooth reflections for vivid color
-    Clearcoat: 16-60 range across presets - variety of coat depth
+    Compared to the old nearly-uniform coat, this version coordinates M/R/Cc to
+    the same panel direction field used by paint, plus independent micro-octaves.
     """
+    # SPB-90 tick 56: stale global declaration kept for backward compat; the
+    # cache itself is now the LRU OrderedDict `_PRIZM_FIELD_CACHE`.
     h, w = shape
     spec = np.zeros((h, w, 4), dtype=np.uint8)
+    m = np.clip(mask.astype(np.float32), 0.0, 1.0)
+    try:
+        from engine import overnight_boost as _ob
+    except Exception:
+        class _ob:  # noqa: N801
+            @staticmethod
+            def wave_mult(b, k="spec"):
+                return b
 
-    # Independent noise fields for M and R — different seeds create viewing-angle shimmer
-    noise_m = _msn(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7200)
-    noise_r = _msn(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + 7300)  # Different seed + finer scale
-    M_arr = metallic + noise_m * 14 * sm
-    R_arr = roughness + noise_r * 12 * sm  # Wider R variation for shimmer effect
+    profile_name = profile or _profile_from_spec_params(metallic, roughness, clearcoat)
+    p = _prizm_profile(profile_name)
 
-    # Apply mask
-    spec[:, :, 0] = np.clip(M_arr * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.where(mask > 0.01, np.clip(R_arr, 15, 255), 0).astype(np.uint8)  # R≥15 in zone
-    spec[:, :, 2] = np.where(mask > 0.5, np.clip(clearcoat, 16, 255), 0).astype(np.uint8)  # CC≥16 in zone
-    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    # Reuse the panel direction field so spec follows the same macro flow as paint.
+    field, details = _cached_prizm_field_details(shape, seed, profile_name, flow_complexity)
+    f_center = np.clip(np.abs(field - 0.5) * 2.0, 0.0, 1.0)  # 0 near mid-panels, 1 near extremes
+    motif = details["motif"]
+    dots = details["dots"]
+    hair = details["hair"]
+    pin = details["pin"]
+    facet = details["facet"]
+
+    # Reuse paint-detail carriers instead of generating three more 2048 fields.
+    noise_m = (details["fine"] - 0.5) * 2.0
+    noise_r = (details["grain"] - 0.5) * 2.0
+    noise_c = (details["nano"] - 0.5) * 2.0
+
+    # Material-specific spec: not every Prizm finish is full chrome.
+    M_arr = (
+        float(p["m"])
+        + (field - 0.5) * float(p["mr"]) * 0.75 * sm
+        + noise_m * float(p["mr"]) * 0.22 * sm
+        + motif * float(p["mr"]) * 0.42 * sm
+        + facet * float(p["mr"]) * 0.20 * sm
+        + hair * float(p["mr"]) * 0.16 * sm
+        + dots * 38.0 * sm * _ob.wave_mult(1.0, "sparkle")
+        + pin * 62.0 * sm * _ob.wave_mult(1.0, "glint")
+    )
+
+    # Roughness: opposing metallic trend with its own octave profile.
+    R_arr = (
+        float(p["r"])
+        + (0.5 - field) * float(p["rr"]) * 0.42 * sm
+        + noise_r * float(p["rr"]) * 0.24 * sm
+        + (1.0 - motif) * float(p["rr"]) * 0.18 * sm
+        + hair * float(p["rr"]) * 0.12 * sm
+        - pin * 18.0 * sm
+    )
+
+    # Clearcoat pockets and satin valleys give angle-change discovery without a generic overlay.
+    Cc_arr = (
+        float(p["cc"])
+        + noise_c * float(p["cr"]) * 0.20 * sm
+        + motif * float(p["cr"]) * 0.55 * sm
+        + facet * float(p["cr"]) * 0.18 * sm
+        + hair * float(p["cr"]) * 0.22 * sm
+        - f_center * float(p["cr"]) * 0.16 * sm
+    )
+
+    paint_style = p["paint"]
+    if paint_style in {"candy", "neon", "spectrum", "hologram", "pearl"}:
+        M_arr = M_arr * 0.70 + (pin + facet) * 24.0
+        R_arr = R_arr * 0.88 + hair * 16.0
+        Cc_arr = Cc_arr + 34.0 + motif * 18.0
+    elif paint_style in {"frozen", "titanium"}:
+        M_arr = M_arr * 0.64 + facet * 32.0 + pin * 34.0
+        R_arr = R_arr + hair * 38.0 + details["shard"] * 18.0
+        Cc_arr = Cc_arr + hair * 34.0 + pin * 26.0
+    elif paint_style in {"skin", "toxic", "venom", "water", "veil"}:
+        M_arr = M_arr * 0.72 + pin * 42.0
+        R_arr = R_arr + details["bubbles"] * 28.0 + hair * 14.0
+        Cc_arr = Cc_arr + motif * 30.0 + pin * 22.0
+    elif paint_style in {"blackout", "void", "eclipse", "deep_space", "nebula", "dust"}:
+        M_arr = M_arr * 0.62 + pin * 58.0 + facet * 18.0
+        R_arr = R_arr + (1.0 - motif) * 24.0
+        Cc_arr = Cc_arr + pin * 34.0 + hair * 20.0
+    elif paint_style in {"rose_chrome", "oxide_heat", "molten", "phoenix", "fire_ice", "solar"}:
+        Cc_arr = Cc_arr + hair * 18.0 + pin * 18.0
+
+    sparkle = ((pin > 0.5) | ((noise_m > 0.54) & (motif > 0.55))) & (m > 0.4)
+    M_arr = np.where(sparkle, M_arr + 24.0 * sm, M_arr)
+    R_arr = np.where(sparkle, R_arr * 0.80 + 12.0, R_arr)
+    Cc_arr = np.where(sparkle, Cc_arr + 22.0 * sm, Cc_arr)
+
+    # Apply mask + legal packing constraints.
+    spec[:, :, 0] = np.clip(M_arr * m, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.where(m > 0.01, np.clip(R_arr, 15, 255), 0).astype(np.uint8)
+    spec[:, :, 2] = np.where(m > 0.5, np.clip(Cc_arr, 16, 255), 0).astype(np.uint8)
+    spec[:, :, 3] = np.clip(m * 255, 0, 255).astype(np.uint8)
+    # SPB-90 tick 56: removed the explicit cache wipe-after-render here.
+    # Original code cleared the single-entry cache to "release memory";
+    # with the new LRU cache (max=32 entries) memory is bounded and
+    # keeping entries warm yields ~25-100× warm-render speedup when the
+    # same finish renders again later.
     return spec
 
 
 def paint_prizm_core(paint, shape, mask, seed, pm, bb,
                      color_stops, flow_complexity=3, flake_intensity=0.03,
-                     blend_strength=0.92):
+                     blend_strength=0.92, profile=None):
     """Prizm v4 CORE paint function - panel-aware multi-color ramp.
 
     This is the heart of the v4 system. It:
@@ -341,9 +828,10 @@ def paint_prizm_core(paint, shape, mask, seed, pm, bb,
     """
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
+    profile_name = profile or _profile_from_stops(color_stops, flake_intensity, blend_strength)
 
     # Step 1: Generate panel direction field
-    field = _generate_panel_direction_field(shape, seed, flow_complexity)
+    field, details = _cached_prizm_field_details(shape, seed, profile_name, flow_complexity)
 
     # Step 2: Map colors through the direction field
     ramp_r, ramp_g, ramp_b = _apply_color_ramp(field, color_stops)
@@ -351,20 +839,20 @@ def paint_prizm_core(paint, shape, mask, seed, pm, bb,
     # Step 3: Add micro-flake noise
     ramp_r, ramp_g, ramp_b = _add_micro_flake(ramp_r, ramp_g, ramp_b, shape, seed, flake_intensity)
 
-    # Step 4: Compensate for iRacing metallic darkening
-    # Metallic surfaces appear darker because PBR uses albedo as F0.
-    # Brighten paint colors to compensate (same as Neonizm does).
-    metallic_brighten = 0.10
+    # Step 4: Compensate for material recipes without forcing every finish into chrome.
+    metallic_brighten = 0.06
     ramp_r = np.clip(ramp_r + metallic_brighten, 0, 1)
     ramp_g = np.clip(ramp_g + metallic_brighten, 0, 1)
     ramp_b = np.clip(ramp_b + metallic_brighten, 0, 1)
+
+    shift_rgb = np.stack([ramp_r, ramp_g, ramp_b], axis=2)
+    shift_rgb = _apply_prizm_material_paint(shift_rgb, field, details, shape, seed, profile_name)
 
     # Step 5: Blend with original paint using mask
     blend = blend_strength * pm
     mask3 = mask[:, :, np.newaxis]
 
     # Paint is always 3-channel RGB - blend only the 3 channels
-    shift_rgb = np.stack([ramp_r, ramp_g, ramp_b], axis=2)
     paint = paint * (1.0 - blend * mask3) + shift_rgb * blend * mask3
 
     # Brightness boost for dark source paints
@@ -415,7 +903,7 @@ def paint_prizm_midnight(paint, shape, mask, seed, pm, bb):
         (1.00, 48,  0.78, 0.80),  # Gold
     ]
     return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops,
-                            flow_complexity=3, flake_intensity=0.025)
+                            flow_complexity=3, flake_intensity=0.025, profile="adaptive")
 
 def spec_prizm_midnight(shape, mask, seed, sm):
     return spec_prizm(shape, mask, seed, sm, metallic=230, roughness=14, clearcoat=35)  # Midnight: luxury depth coat
@@ -483,7 +971,7 @@ def paint_prizm_arctic(paint, shape, mask, seed, pm, bb):
                             flow_complexity=2, flake_intensity=0.02)
 
 def spec_prizm_arctic(shape, mask, seed, sm):
-    return spec_prizm(shape, mask, seed, sm, metallic=235, roughness=10, clearcoat=22)  # Arctic: crisp near-perfect frozen coat
+    return spec_prizm(shape, mask, seed, sm, metallic=235, roughness=10, clearcoat=22, flow_complexity=2)  # Arctic: crisp near-perfect frozen coat
 
 # --- Prizm: Solar (Gold → Orange → Red → Crimson - sunset) ---
 def paint_prizm_solar(paint, shape, mask, seed, pm, bb):
@@ -535,7 +1023,7 @@ def paint_prizm_mystichrome(paint, shape, mask, seed, pm, bb):
 def spec_prizm_mystichrome(shape, mask, seed, sm):
     return spec_prizm(shape, mask, seed, sm, metallic=230, roughness=12, clearcoat=30)  # Mystichrome: premium swept coat
 
-# --- Prizm: Black Rainbow (Dark base with rainbow highlights - Neonizm's signature product) ---
+# --- Prizm: Black Rainbow (dark base with rainbow highlights) ---
 def paint_prizm_black_rainbow(paint, shape, mask, seed, pm, bb):
     """Black Rainbow - Dark base with vivid rainbow color shift"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
@@ -567,7 +1055,7 @@ def paint_prizm_duochrome(paint, shape, mask, seed, pm, bb):
                             flow_complexity=2, flake_intensity=0.02)
 
 def spec_prizm_duochrome(shape, mask, seed, sm):
-    return spec_prizm(shape, mask, seed, sm, metallic=230, roughness=14, clearcoat=28)  # Duochrome: clean minimal coat - just enough
+    return spec_prizm(shape, mask, seed, sm, metallic=230, roughness=14, clearcoat=28, flow_complexity=2)  # Duochrome: clean minimal coat - just enough
 
 # --- Prizm: Iridescent (Subtle pearlescent - low saturation, high metallic) ---
 def paint_prizm_iridescent(paint, shape, mask, seed, pm, bb):
@@ -609,7 +1097,7 @@ def paint_prizm_adaptive(paint, shape, mask, seed, pm, bb):
         (1.00, (h_deg + 216) % 360, min(zone_sat + 0.08, 1.0), min(zone_val * 0.85 + 0.18, 0.88)),
     ]
     return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops,
-                            flow_complexity=3, flake_intensity=0.025)
+                            flow_complexity=3, flake_intensity=0.025, profile="adaptive")
 
 def spec_prizm_adaptive(shape, mask, seed, sm):
     return spec_prizm(shape, mask, seed, sm, metallic=228, roughness=14, clearcoat=35)  # Adaptive: mid coat - works with any zone color
@@ -622,8 +1110,21 @@ def spec_prizm_adaptive(shape, mask, seed, sm):
 def paint_prizm_galaxy_dust(paint, shape, mask, seed, pm, bb):
     """Galaxy Dust — Purple → pink → white → teal angular sweep"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
-    stops = [(0.00, 270, 0.80, 0.55), (0.35, 320, 0.65, 0.70), (0.65, 0, 0.05, 0.93), (1.00, 170, 0.70, 0.68)]
-    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=3, flake_intensity=0.035)
+    stops = [(0.00, 270, 0.78, 0.50), (0.30, 315, 0.62, 0.62), (0.58, 330, 0.18, 0.72), (0.78, 195, 0.54, 0.58), (1.00, 170, 0.62, 0.56)]
+    paint = paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=3, flake_intensity=0.04, profile="galaxy_dust", blend_strength=0.88)
+    if max(shape) > 1024:
+        # SPB paint-finish perf loop 2026-05-31: core dust profile already adds starfield/dust at 2K.
+        return paint
+    field, details = _cached_prizm_field_details(shape, seed, "galaxy_dust", 3)
+    dust = np.clip(details["motif"] * 0.45 + details["rings"] * 0.22 + details["hair"] * 0.32, 0.0, 1.0)
+    stars = np.clip(details["pin"] * 1.15 + details["dots"] * 0.80 + details["facet"] * 0.18, 0.0, 1.0)
+    veil = np.clip((details["fine"] - 0.45) * 0.10 + dust * 0.08 + stars * 0.18, -0.06, 0.32)
+    overlay = (
+        veil[:, :, np.newaxis] * np.array([0.95, 0.86, 1.10], dtype=np.float32)
+        + stars[:, :, np.newaxis] * np.array([0.16, 0.14, 0.22], dtype=np.float32)
+        + dust[:, :, np.newaxis] * np.array([0.035, 0.020, 0.085], dtype=np.float32)
+    )
+    return np.clip(paint + overlay * mask[:, :, np.newaxis] * pm, 0.0, 1.0)
 
 def spec_prizm_galaxy_dust(shape, mask, seed, sm):
     return spec_prizm(shape, mask, seed, sm, metallic=240, roughness=15, clearcoat=22)
@@ -640,11 +1141,24 @@ def spec_prizm_sunset_strip(shape, mask, seed, sm):
 def paint_prizm_toxic_waste(paint, shape, mask, seed, pm, bb):
     """Toxic Waste — Acid green → black → neon yellow → purple faceted shift"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
-    stops = [(0.00, 110, 0.92, 0.85), (0.30, 0, 0.0, 0.08), (0.65, 65, 0.90, 0.90), (1.00, 275, 0.80, 0.55)]
-    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=2, flake_intensity=0.04)
+    stops = [(0.00, 112, 0.88, 0.72), (0.26, 92, 0.74, 0.42), (0.48, 0, 0.0, 0.10), (0.72, 64, 0.86, 0.78), (1.00, 274, 0.72, 0.48)]
+    paint = paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=2, flake_intensity=0.035, profile="toxic_waste", blend_strength=0.88)
+    if max(shape) > 1024:
+        # SPB paint-finish perf loop 2026-05-31: core toxic profile already carries bubbles/pits/pin detail at 2K.
+        return paint
+    field, details = _cached_prizm_field_details(shape, seed, "toxic_waste", 2)
+    cells = np.clip(details["bubbles"] * 0.55 + details["rings"] * 0.28 + details["facet"] * 0.20, 0.0, 1.0)
+    pits = np.clip((1.0 - details["fine"]) * details["bubbles"] * 0.55 + details["pin"] * 0.45, 0.0, 1.0)
+    acid = np.clip(details["hair"] * 0.40 + details["pin"] * 0.70 + cells * 0.35, 0.0, 1.0)
+    overlay = (
+        cells[:, :, np.newaxis] * np.array([0.020, 0.105, 0.010], dtype=np.float32)
+        + acid[:, :, np.newaxis] * np.array([0.105, 0.150, 0.000], dtype=np.float32)
+        - pits[:, :, np.newaxis] * np.array([0.075, 0.050, 0.025], dtype=np.float32)
+    )
+    return np.clip(paint + overlay * mask[:, :, np.newaxis] * pm, 0.0, 1.0)
 
 def spec_prizm_toxic_waste(shape, mask, seed, sm):
-    return spec_prizm(shape, mask, seed, sm, metallic=225, roughness=18, clearcoat=30)
+    return spec_prizm(shape, mask, seed, sm, metallic=225, roughness=18, clearcoat=30, flow_complexity=2)
 
 def paint_prizm_chrome_rose(paint, shape, mask, seed, pm, bb):
     """Chrome Rose — Chrome silver → rose → pink → platinum faceted"""
@@ -653,13 +1167,23 @@ def paint_prizm_chrome_rose(paint, shape, mask, seed, pm, bb):
     return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=2, flake_intensity=0.02)
 
 def spec_prizm_chrome_rose(shape, mask, seed, sm):
-    return spec_prizm(shape, mask, seed, sm, metallic=248, roughness=15, clearcoat=20)
+    return spec_prizm(shape, mask, seed, sm, metallic=248, roughness=15, clearcoat=20, flow_complexity=2)
 
 def paint_prizm_deep_space(paint, shape, mask, seed, pm, bb):
     """Deep Space — Black → deep blue → purple → white flash angular"""
     if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
-    stops = [(0.00, 0, 0.0, 0.07), (0.35, 230, 0.85, 0.45), (0.65, 270, 0.75, 0.55), (1.00, 0, 0.0, 0.92)]
-    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=3, flake_intensity=0.05)
+    stops = [(0.00, 0, 0.0, 0.045), (0.30, 224, 0.82, 0.28), (0.58, 266, 0.72, 0.36), (0.82, 285, 0.45, 0.30), (1.00, 205, 0.28, 0.44)]
+    paint = paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=3, flake_intensity=0.045, profile="deep_space", blend_strength=0.90)
+    field, details = _cached_prizm_field_details(shape, seed, "deep_space", 3)
+    stars = np.clip(details["pin"] * 1.35 + details["dots"] * 0.90 + details["facet"] * 0.15, 0.0, 1.0)
+    dust = np.clip(details["motif"] * 0.38 + details["rings"] * 0.20 + details["hair"] * 0.25, 0.0, 1.0)
+    void_mottle = np.clip((details["fine"] - 0.55) * 0.12 + dust * 0.06, -0.08, 0.18)
+    overlay = (
+        void_mottle[:, :, np.newaxis] * np.array([0.65, 0.80, 1.18], dtype=np.float32)
+        + stars[:, :, np.newaxis] * np.array([0.13, 0.17, 0.25], dtype=np.float32)
+        + dust[:, :, np.newaxis] * np.array([0.030, 0.018, 0.090], dtype=np.float32)
+    )
+    return np.clip(paint + overlay * mask[:, :, np.newaxis] * pm, 0.0, 1.0)
 
 def spec_prizm_deep_space(shape, mask, seed, sm):
     return spec_prizm(shape, mask, seed, sm, metallic=235, roughness=15, clearcoat=25)
@@ -671,7 +1195,7 @@ def paint_prizm_copper_flame(paint, shape, mask, seed, pm, bb):
     return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=2, flake_intensity=0.04)
 
 def spec_prizm_copper_flame(shape, mask, seed, sm):
-    return spec_prizm(shape, mask, seed, sm, metallic=220, roughness=20, clearcoat=30)
+    return spec_prizm(shape, mask, seed, sm, metallic=220, roughness=20, clearcoat=30, flow_complexity=2)
 
 def paint_prizm_alien_skin(paint, shape, mask, seed, pm, bb):
     """Alien Skin — Lime → teal → dark green → gold faceted shift"""
@@ -680,7 +1204,7 @@ def paint_prizm_alien_skin(paint, shape, mask, seed, pm, bb):
     return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=2, flake_intensity=0.03)
 
 def spec_prizm_alien_skin(shape, mask, seed, sm):
-    return spec_prizm(shape, mask, seed, sm, metallic=215, roughness=22, clearcoat=32)
+    return spec_prizm(shape, mask, seed, sm, metallic=215, roughness=22, clearcoat=32, flow_complexity=2)
 
 def paint_prizm_titanium(paint, shape, mask, seed, pm, bb):
     """Titanium — Blue-grey → purple-grey → gold-grey → steel flowing"""
@@ -707,7 +1231,194 @@ def paint_prizm_candy_paint(paint, shape, mask, seed, pm, bb):
     return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=2, flake_intensity=0.04)
 
 def spec_prizm_candy_paint(shape, mask, seed, sm):
-    return spec_prizm(shape, mask, seed, sm, metallic=225, roughness=16, clearcoat=26)
+    return spec_prizm(shape, mask, seed, sm, metallic=225, roughness=16, clearcoat=26, flow_complexity=2)
+
+
+# --- Prizm expansion gap-fill IDs. Kept here so the whole picker category uses one source of truth. ---
+def paint_prizm_neon(paint, shape, mask, seed, pm, bb):
+    """Neon - fluorescent candy gloss with spec-only tube traces and hot pin sparks."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    stops = [
+        (0.00, 310, 0.92, 0.85),
+        (0.30, 350, 0.88, 0.82),
+        (0.55, 175, 0.90, 0.84),
+        (0.80, 130, 0.88, 0.82),
+        (1.00, 75,  0.85, 0.86),
+    ]
+    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops,
+                            flow_complexity=3, flake_intensity=0.025, profile="neon")
+
+def spec_prizm_neon(shape, mask, seed, sm):
+    return spec_prizm(shape, mask, seed, sm, metallic=232, roughness=10, clearcoat=18, profile="neon")
+
+
+def paint_prizm_blood_moon(paint, shape, mask, seed, pm, bb):
+    """Blood Moon - dark eclipse enamel with lunar spec rings and red glass pockets."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    stops = [
+        (0.00, 355, 0.90, 0.65),
+        (0.30, 10,  0.85, 0.55),
+        (0.55, 0,   0.70, 0.30),
+        (0.80, 20,  0.80, 0.50),
+        (1.00, 35,  0.75, 0.60),
+    ]
+    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops,
+                            flow_complexity=3, flake_intensity=0.035, profile="blood_moon")
+
+def spec_prizm_blood_moon(shape, mask, seed, sm):
+    return spec_prizm(shape, mask, seed, sm, metallic=228, roughness=16, clearcoat=14, profile="blood_moon")
+
+
+def paint_prizm_cosmos(paint, shape, mask, seed, pm, bb):
+    """Cosmos - nebula pearl with buried orbit rings and star-dust spec events."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    stops = [
+        (0.00, 270, 0.80, 0.55),
+        (0.30, 240, 0.82, 0.50),
+        (0.55, 195, 0.78, 0.58),
+        (0.80, 290, 0.72, 0.62),
+        (1.00, 330, 0.65, 0.65),
+    ]
+    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops,
+                            flow_complexity=3, flake_intensity=0.030, profile="cosmos")
+
+def spec_prizm_cosmos(shape, mask, seed, sm):
+    return spec_prizm(shape, mask, seed, sm, metallic=225, roughness=14, clearcoat=18, profile="cosmos")
+
+
+def paint_prizm_dark_matter(paint, shape, mask, seed, pm, bb):
+    """Dark Matter - matte void shift with tiny chrome singularity flecks."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    stops = [
+        (0.00, 270, 0.60, 0.20),
+        (0.35, 250, 0.55, 0.18),
+        (0.65, 220, 0.50, 0.22),
+        (1.00, 280, 0.45, 0.25),
+    ]
+    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops,
+                            flow_complexity=3, flake_intensity=0.020, profile="dark_matter")
+
+def spec_prizm_dark_matter(shape, mask, seed, sm):
+    return spec_prizm(shape, mask, seed, sm, metallic=230, roughness=18, clearcoat=14, profile="dark_matter")
+
+
+def paint_prizm_fire_ice(paint, shape, mask, seed, pm, bb):
+    """Fire & Ice - hot enamel cracking into frozen satin glass."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    field, details = _cached_prizm_field_details(shape, seed, "fire_ice", 3)
+    h, w = shape
+    y, x = get_mgrid(shape)
+    yn = y.astype(np.float32) / max(h - 1, 1)
+    xn = x.astype(np.float32) / max(w - 1, 1)
+
+    split = np.clip((field + (xn - yn) * 0.07 + details["hair"] * 0.035 - 0.46) / 0.34, 0.0, 1.0)
+    split = split * split * (3.0 - 2.0 * split)
+    crack = np.clip(details["shard"] * 1.05 + details["hair"] * 0.55 + details["pin"] * 0.95, 0.0, 1.0)
+    frost = np.clip(details["shard"] * 0.66 + details["waves"] * 0.22 + details["hair"] * 0.45 + details["pin"] * 0.96, 0.0, 1.0)
+    ember = np.clip(details["waves"] * 0.42 + details["pin"] * 1.05 + details["fine"] * 0.40, 0.0, 1.0)
+
+    fire = np.zeros((h, w, 3), dtype=np.float32)
+    fire[:, :, 0] = np.clip(0.78 + ember * 0.22, 0.0, 1.0)
+    fire[:, :, 1] = np.clip(0.08 + field * 0.28 + ember * 0.26, 0.0, 0.82)
+    fire[:, :, 2] = np.clip(0.015 + crack * 0.035, 0.0, 0.18)
+
+    ice = np.zeros((h, w, 3), dtype=np.float32)
+    ice[:, :, 0] = np.clip(0.76 + frost * 0.22, 0.0, 1.0)
+    ice[:, :, 1] = np.clip(0.90 + frost * 0.09, 0.0, 1.0)
+    ice[:, :, 2] = np.clip(0.98 + details["dots"] * 0.02, 0.0, 1.0)
+    ice = np.clip(ice + crack[:, :, np.newaxis] * np.array([0.02, 0.06, 0.12], dtype=np.float32), 0.0, 1.0)
+
+    seam_glow = np.clip(1.0 - np.abs(split - 0.50) * 8.0, 0.0, 1.0)
+    shift_rgb = fire * (1.0 - split[:, :, np.newaxis]) + ice * split[:, :, np.newaxis]
+    shift_rgb = np.clip(
+        shift_rgb
+        + seam_glow[:, :, np.newaxis] * np.array([0.12, 0.09, 0.04], dtype=np.float32)
+        + details["dots"][:, :, np.newaxis] * np.array([0.10, 0.12, 0.16], dtype=np.float32),
+        0.0,
+        1.0,
+    )
+    micro = (
+        (details["fine"] - 0.5) * 0.090
+        + (details["nano"] - 0.5) * 0.044
+        + details["hair"] * 0.050
+        + details["pin"] * 0.085
+    )[:, :, np.newaxis]
+    hot_mask = (1.0 - split)[:, :, np.newaxis]
+    ice_mask = split[:, :, np.newaxis]
+    shift_rgb = np.clip(
+        shift_rgb
+        + micro * np.array([1.00, 0.92, 1.08], dtype=np.float32)
+        + crack[:, :, np.newaxis] * hot_mask * np.array([0.105, 0.060, 0.000], dtype=np.float32)
+        + crack[:, :, np.newaxis] * ice_mask * np.array([0.035, 0.090, 0.155], dtype=np.float32)
+        + details["hair"][:, :, np.newaxis] * ice_mask * np.array([0.020, 0.040, 0.075], dtype=np.float32),
+        0.0,
+        1.0,
+    )
+    dark_crackle = np.clip(crack * 0.35 + details["fine"] * 0.16, 0.0, 1.0)[:, :, np.newaxis]
+    shift_rgb = np.clip(
+        shift_rgb
+        - dark_crackle * hot_mask * np.array([0.070, 0.030, 0.010], dtype=np.float32)
+        - dark_crackle * ice_mask * np.array([0.018, 0.030, 0.045], dtype=np.float32)
+        + details["pin"][:, :, np.newaxis] * np.array([0.105, 0.075, 0.080], dtype=np.float32),
+        0.0,
+        1.0,
+    )
+
+    mask3 = mask[:, :, np.newaxis]
+    blend = 0.96 * pm
+    paint = paint * (1.0 - blend * mask3) + shift_rgb * blend * mask3
+    bb_2d = np.mean(bb[:,:,:3], axis=2) if hasattr(bb, 'ndim') and bb.ndim == 3 else (bb if hasattr(bb, 'ndim') and bb.ndim == 2 else np.full(paint.shape[:2], float(np.mean(bb)), dtype=np.float32))
+    return np.clip(paint + bb_2d[:, :, np.newaxis] * 0.45 * mask3, 0, 1)
+
+def spec_prizm_fire_ice(shape, mask, seed, sm):
+    field, details = _cached_prizm_field_details(shape, seed, "fire_ice", 3)
+    h, w = shape
+    y, x = get_mgrid(shape)
+    yn = y.astype(np.float32) / max(h - 1, 1)
+    xn = x.astype(np.float32) / max(w - 1, 1)
+    m = np.clip(mask.astype(np.float32), 0.0, 1.0)
+
+    split = np.clip((field + (xn - yn) * 0.07 + details["hair"] * 0.035 - 0.46) / 0.34, 0.0, 1.0)
+    split = split * split * (3.0 - 2.0 * split)
+    seam = np.clip(1.0 - np.abs(split - 0.50) * 7.0, 0.0, 1.0)
+    hot = (1.0 - split)
+    ice = split
+    crack = np.clip(details["shard"] * 0.92 + details["hair"] * 0.44 + details["pin"] * 0.90, 0.0, 1.0)
+    frost = np.clip(details["shard"] * 0.46 + details["waves"] * 0.20 + details["hair"] * 0.42 + details["pin"] * 0.90, 0.0, 1.0)
+    ember = np.clip(details["waves"] * 0.40 + details["pin"] * 0.90 + details["fine"] * 0.28, 0.0, 1.0)
+
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    M_arr = 58.0 + hot * (94.0 + ember * 78.0) + ice * (34.0 + frost * 82.0) + seam * 82.0
+    R_arr = 24.0 + hot * (18.0 - ember * 10.0) + ice * (62.0 + frost * 70.0) + crack * 18.0
+    Cc_arr = 30.0 + hot * (22.0 + ember * 20.0) + ice * (36.0 + frost * 58.0) + seam * 38.0
+    sparkle = ((details["dots"] > 0.5) | (crack > 0.62)) & (m > 0.4)
+    M_arr = np.where(sparkle, M_arr + 36.0, M_arr)
+    Cc_arr = np.where(sparkle, Cc_arr * 0.42 + 16.0 * 0.58, Cc_arr)
+
+    spec[:, :, 0] = np.clip(M_arr * m * sm, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.where(m > 0.01, np.clip(R_arr * sm, 15, 255), 0).astype(np.uint8)
+    spec[:, :, 2] = np.where(m > 0.5, np.clip(Cc_arr * sm, 16, 255), 0).astype(np.uint8)
+    spec[:, :, 3] = np.clip(m * 255, 0, 255).astype(np.uint8)
+    return spec
+
+
+def paint_prizm_spectrum(paint, shape, mask, seed, pm, bb):
+    """Spectrum - full rainbow wrap with scan-prism spec traces instead of flat chrome."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    stops = [
+        (0.00, 0,   0.85, 0.82),
+        (0.16, 30,  0.82, 0.84),
+        (0.32, 55,  0.80, 0.86),
+        (0.48, 120, 0.82, 0.78),
+        (0.64, 200, 0.85, 0.76),
+        (0.82, 260, 0.80, 0.74),
+        (1.00, 290, 0.78, 0.76),
+    ]
+    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops,
+                            flow_complexity=3, flake_intensity=0.025, profile="spectrum")
+
+def spec_prizm_spectrum(shape, mask, seed, sm):
+    return spec_prizm(shape, mask, seed, sm, metallic=230, roughness=11, clearcoat=18, profile="spectrum")
 
 
 # ================================================================

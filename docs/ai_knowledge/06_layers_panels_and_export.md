@@ -1,0 +1,14 @@
+# Layers, car panels and exporting (AI knowledge card)
+
+## PSD layers and their roles
+A layered paint template (PSD) carries: BODY PAINT (Car Paint: the livery colours), NUMBERS, SPONSORS, TAPE / stripes, DECALS / LOGOS (Pitbox Colors, Color Change Logos, Car_decal, Windshield Banner) and TEMPLATE layers (Mask, Wire, Car_Mandatory) in a group called "Turn Off Before Exporting TGA". Template layers show the car's UV outlines and mandatory elements for the painter; they must be OFF in the exported paint. A zone can be limited to a layer (region layers) so a finish lands only on that art, and a zone that changes "the body" should be limited to the body layer so numbers and sponsors stay as they are.
+Layer controls the copilot can change: visible, opacity (0-100), blend mode (normal = source-over, multiply, screen, overlay, darken, lighten, color-dodge, color-burn, hard-light, soft-light, difference, exclusion, hue, saturation, color, luminosity). It cannot delete, merge, rename, reorder, or paint on layers. Locked layers must be unlocked by the buyer.
+
+## The car's panels (UV islands)
+The 2048 x 2048 sheet is the car unwrapped: two long body sides (one may be upside down), hood, roof, trunk or truck bed, front and rear fascia, bumpers, small strips (rockers, splitters, mirrors, spoilers) and wheels. The template Mask layer separates paintable panels (transparent) from dead space (opaque); the Wire layer outlines each panel in green. The copilot finds the panels by geometry but cannot reliably NAME them from the picture, so when a request depends on which panel is the hood, the roof, the left or right side, it shows the car and the buyer taps the panel once; the name (and which end is the front, for sides) is remembered for this car. Then "the rear half of the left side" is exact.
+
+## Exporting to iRacing (the copilot cannot do this; tell the buyer)
+Switch the template layers (Mask, Wire, Car_Mandatory) OFF, then press **RENDER**. With the **IRACING CAR FOLDER** set (that alone does it; "Auto-deploy after render" in Settings only matters when the car folder is empty) the paint TGA (car_num_<ID>.tga for Custom Number, car_<ID>.tga for Sim-Stamped Number) and car_spec_<ID>.tga are copied into the iRacing car folder after every render (iRacing loads car_num_ only with Settings > Graphics > Hide Car Numbers ON; see the Support cards); in iRacing press Alt+Tab, then Ctrl+R to reload the paint. The top of the window holds the IRACING USER ID, the SOURCE PAINT path and the IRACING CAR FOLDER. "Deploy to a different car" copies a render into another car's folder. "Export ZIP Package" (Settings) bundles paint + spec + preview into a .zip on every render.
+
+## Undo
+Every copilot answer is one undo step for the zones it changed, plus one step per layer it changed; the Undo button under the answer takes all of them back. Ctrl+Z also works.

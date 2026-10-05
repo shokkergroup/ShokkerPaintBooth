@@ -1,0 +1,771 @@
+{
+  "category": "fractured_rebuild",
+  "entries": {
+    "fm_magma": {
+      "verdict": "rebuild",
+      "rating": 75,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big"
+      ],
+      "notes": "Crush the pattern down about 25% and we're there",
+      "ts": 1781709163
+    },
+    "fm_inferno_veins": {
+      "verdict": "keep",
+      "rating": 76,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781709218
+    },
+    "fm_flame_helix": {
+      "verdict": "keep",
+      "rating": 77,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781709274
+    },
+    "fm_flame_lick": {
+      "verdict": "rebuild",
+      "rating": 65,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big"
+      ],
+      "notes": "Needs to be crushed about 50%",
+      "ts": 1781709350
+    },
+    "fm_flame_wall": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781709448
+    },
+    "fm_honeycomb_burst": {
+      "verdict": "keep",
+      "rating": 78,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781709517
+    },
+    "fm_hexcore": {
+      "verdict": null,
+      "rating": 85,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781710300
+    },
+    "fm_graphene": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781710604
+    },
+    "fm_herringbone": {
+      "verdict": "keep",
+      "rating": 75,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781710793
+    },
+    "fm_basketweave": {
+      "verdict": "keep",
+      "rating": 91,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781711205
+    },
+    "fm_carbon_weave": {
+      "verdict": "keep",
+      "rating": 77,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781711281
+    },
+    "fm_nanoweave": {
+      "verdict": "keep",
+      "rating": 84,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781711405
+    },
+    "fm_cable_knit": {
+      "verdict": "keep",
+      "rating": 82,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781711470
+    },
+    "fm_chainmail": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781715581
+    },
+    "fm_chainlink": {
+      "verdict": "rebuild",
+      "rating": 75,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big"
+      ],
+      "notes": "It needs to be about 50% crushed. Its just the way it renders is too big",
+      "ts": 1781715704
+    },
+    "fm_diamond_plate": {
+      "verdict": "rebuild",
+      "rating": 49,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big"
+      ],
+      "notes": "Crush down 50%",
+      "ts": 1781716081
+    },
+    "fm_croc_hide": {
+      "verdict": "rebuild",
+      "rating": 75,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big"
+      ],
+      "notes": "Crush down 50 percent pattern too big",
+      "ts": 1781716151
+    },
+    "fm_python_skin": {
+      "verdict": "keep",
+      "rating": 79,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781716225
+    },
+    "fm_diamondback": {
+      "verdict": "rebuild",
+      "rating": 73,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big"
+      ],
+      "notes": "This needs to be crushed down about 75% its way too big. Maybe some texture between the diamondback pattern in the background too",
+      "ts": 1781716291
+    },
+    "fm_stingray": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781716359
+    },
+    "fm_tortoise": {
+      "verdict": "rebuild",
+      "rating": 65,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big"
+      ],
+      "notes": "",
+      "ts": 1781716368
+    },
+    "fm_gila_bead": {
+      "verdict": "rebuild",
+      "rating": 74,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big"
+      ],
+      "notes": "",
+      "ts": 1781716419
+    },
+    "fm_tiger_slash": {
+      "verdict": "keep",
+      "rating": 77,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781716467
+    },
+    "fm_circuit_maze": {
+      "verdict": "rebuild",
+      "rating": 74,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big"
+      ],
+      "notes": "Make 50% more circuits to make them smaller. Pattern too big",
+      "ts": 1781716536
+    },
+    "fm_code_cascade": {
+      "verdict": "rebuild",
+      "rating": 78,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Pattern too big"
+      ],
+      "notes": "Should be 1's and 0's not just 0's..........and about 50% crushed for more of them ",
+      "ts": 1781716615
+    },
+    "fm_fiber_optic": {
+      "verdict": "keep",
+      "rating": 80,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781716677
+    },
+    "fm_rivet_array": {
+      "verdict": "rebuild",
+      "rating": 72,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "This one needs to be crushed about 75%\n",
+      "ts": 1781716742
+    },
+    "fm_lattice": {
+      "verdict": "keep",
+      "rating": 77,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781716874
+    },
+    "fm_checkerflash": {
+      "verdict": "rebuild",
+      "rating": 75,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big"
+      ],
+      "notes": "Crush flags down about 75%. So just to be clear add 75% MORE than we had before ",
+      "ts": 1781717003
+    },
+    "fm_static_burst": {
+      "verdict": "keep",
+      "rating": 85,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781717087
+    },
+    "fm_basalt": {
+      "verdict": "keep",
+      "rating": 69,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781717103
+    },
+    "fm_frost_feather": {
+      "verdict": "rebuild",
+      "rating": 54,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Too flat / boring"
+      ],
+      "notes": "",
+      "ts": 1781717176
+    },
+    "fm_frost_lace": {
+      "verdict": "rebuild",
+      "rating": 53,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "No depth",
+        "Too flat / boring",
+        "Low effort / lazy"
+      ],
+      "notes": "",
+      "ts": 1781717190
+    },
+    "fm_glacier_core": {
+      "verdict": "rebuild",
+      "rating": 60,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big"
+      ],
+      "notes": "",
+      "ts": 1781717198
+    },
+    "fm_geode_slice": {
+      "verdict": "keep",
+      "rating": 72,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781717271
+    },
+    "fm_ebru_marble": {
+      "verdict": "keep",
+      "rating": 80,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781717423
+    },
+    "fm_mudcrack": {
+      "verdict": "rebuild",
+      "rating": 60,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Too similar to another",
+        "Too blobby / macro"
+      ],
+      "notes": "",
+      "ts": 1781717443
+    },
+    "fm_damascus": {
+      "verdict": "keep",
+      "rating": 83,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781717506
+    },
+    "fm_topo_lines": {
+      "verdict": "keep",
+      "rating": 78,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781717632
+    },
+    "fm_riverine": {
+      "verdict": "rebuild",
+      "rating": 34,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Not unique enough",
+        "No depth",
+        "Too flat / boring",
+        "Low effort / lazy"
+      ],
+      "notes": "",
+      "ts": 1781717652
+    },
+    "fm_tide_glass": {
+      "verdict": "keep",
+      "rating": 87,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781717704
+    },
+    "fm_tsunami": {
+      "verdict": "rebuild",
+      "rating": 70,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781717788
+    },
+    "fm_petal_storm": {
+      "verdict": "replace",
+      "rating": 25,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781717798
+    },
+    "fm_dragonfly": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781717847
+    },
+    "fm_octo_suckers": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Pattern too big",
+        "Not unique enough",
+        "Too blobby / macro",
+        "Too flat / boring",
+        "Low effort / lazy"
+      ],
+      "notes": "",
+      "ts": 1781717871
+    },
+    "fm_thousand_eyes": {
+      "verdict": "rebuild",
+      "rating": 28,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Pattern too big",
+        "Not unique enough",
+        "Weak spec colors",
+        "No depth",
+        "Too flat / boring",
+        "Not enough fine detail",
+        "Palette boring"
+      ],
+      "notes": "",
+      "ts": 1781717897
+    },
+    "fm_witchlight": {
+      "verdict": "rebuild",
+      "rating": 57,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Pattern too big",
+        "Too blobby / macro"
+      ],
+      "notes": "",
+      "ts": 1781717913
+    },
+    "fm_rope_coil": {
+      "verdict": "keep",
+      "rating": 74,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781717962
+    },
+    "fm_tessellate": {
+      "verdict": "keep",
+      "rating": 71,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781718023
+    },
+    "fm_labyrinth": {
+      "verdict": "keep",
+      "rating": 81,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781718068
+    },
+    "fm_gyro_cage": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Pattern too big",
+        "Too similar to another",
+        "Too blobby / macro"
+      ],
+      "notes": "",
+      "ts": 1781718087
+    },
+    "fm_dragon_scale": {
+      "verdict": "rebuild",
+      "rating": 61,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Too blobby / macro"
+      ],
+      "notes": "",
+      "ts": 1781718104
+    },
+    "fm_gyroid": {
+      "verdict": "rebuild",
+      "rating": 58,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Not unique enough",
+        "Too blobby / macro"
+      ],
+      "notes": "",
+      "ts": 1781718124
+    },
+    "fm_penrose": {
+      "verdict": "keep",
+      "rating": 73,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781718185
+    },
+    "fm_ion_drift": {
+      "verdict": "keep",
+      "rating": 85,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781718271
+    },
+    "fs_moth_dust": {
+      "verdict": "rebuild",
+      "rating": 71,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Too blobby / macro"
+      ],
+      "notes": "Instead of two giant circles and the background we need about 100 tiny circles with that background. Has to be more abstract for canvas size",
+      "ts": 1781718473
+    },
+    "fs_wraith_veil": {
+      "verdict": "keep",
+      "rating": 78,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781718505
+    },
+    "fs_blood_marble": {
+      "verdict": "keep",
+      "rating": 75,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781718511
+    },
+    "fs_night_tide": {
+      "verdict": "rebuild",
+      "rating": 39,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Pattern too big",
+        "Not unique enough",
+        "Too blobby / macro",
+        "Too flat / boring",
+        "Low effort / lazy"
+      ],
+      "notes": "",
+      "ts": 1781718538
+    },
+    "fs_static_veins": {
+      "verdict": "rebuild",
+      "rating": 38,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Too similar to another"
+      ],
+      "notes": "",
+      "ts": 1781718549
+    },
+    "fs_shatter_glass": {
+      "verdict": "keep",
+      "rating": 71,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781718556
+    },
+    "fs_howl": {
+      "verdict": "keep",
+      "rating": 84,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781718615
+    },
+    "fs_ember_drift": {
+      "verdict": "rebuild",
+      "rating": 40,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Pattern too big",
+        "Too blobby / macro",
+        "Too flat / boring",
+        "Not enough fine detail",
+        "Low effort / lazy",
+        "Palette boring"
+      ],
+      "notes": "",
+      "ts": 1781718657
+    },
+    "fs_carnival_night": {
+      "verdict": "rebuild",
+      "rating": 39,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern doesn't match name",
+        "Pattern too big",
+        "Not unique enough",
+        "Too blobby / macro",
+        "Palette boring"
+      ],
+      "notes": "",
+      "ts": 1781718687
+    },
+    "fs_widow_braid": {
+      "verdict": "rebuild",
+      "rating": 45,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Not unique enough",
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781718719
+    },
+    "fs_phantom_lattice": {
+      "verdict": "keep",
+      "rating": 77,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781718742
+    },
+    "fs_ghost_silk": {
+      "verdict": "keep",
+      "rating": 79,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781718749
+    },
+    "fs_shattered_prism": {
+      "verdict": "replace",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Too similar to another"
+      ],
+      "notes": "We have way too many patterns that look like this",
+      "ts": 1781718769
+    },
+    "fs_oil_serpent": {
+      "verdict": "keep",
+      "rating": 80,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781719069
+    },
+    "fs_guilloche_ghost": {
+      "verdict": "rebuild",
+      "rating": 40,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Spec wrong for paint",
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781719085
+    },
+    "fs_hex_hive": {
+      "verdict": "rebuild",
+      "rating": 62,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781719164
+    },
+    "fs_petrol_halo": {
+      "verdict": "keep",
+      "rating": 75,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781719235
+    },
+    "fs_star_chart": {
+      "verdict": "rebuild",
+      "rating": 54,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern too big",
+        "Not enough fine detail"
+      ],
+      "notes": "Need about 5x the amount of stars",
+      "ts": 1781719258
+    },
+    "fs_serpent_scale": {
+      "verdict": "keep",
+      "rating": 76,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781719426
+    },
+    "fs_nova_burst": {
+      "verdict": "keep",
+      "rating": 75,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781720527
+    },
+    "fs_circuit_soul": {
+      "verdict": "rebuild",
+      "rating": 65,
+      "ai_rating": null,
+      "reasons": [
+        "Not full coverage (blank spots)",
+        "Pattern too big",
+        "Too blobby / macro",
+        "Not enough fine detail"
+      ],
+      "notes": "",
+      "ts": 1781720583
+    },
+    "fs_geode_vein": {
+      "verdict": "rebuild",
+      "rating": 50,
+      "ai_rating": null,
+      "reasons": [
+        "Pattern doesn't match name",
+        "Too similar to another"
+      ],
+      "notes": "",
+      "ts": 1781720598
+    },
+    "fs_moire_phantom": {
+      "verdict": "keep",
+      "rating": 80,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781720605
+    },
+    "fs_aurora_threads": {
+      "verdict": "keep",
+      "rating": 78,
+      "ai_rating": null,
+      "reasons": [],
+      "notes": "",
+      "ts": 1781720610
+    }
+  },
+  "updated": 1781720610
+}

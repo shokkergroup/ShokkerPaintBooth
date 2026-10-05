@@ -1,0 +1,314 @@
+{
+  "schema": "spb-demo-product/1",
+  "product": {
+    "id": "shokk-demo",
+    "name": "SHOKK DEMO",
+    "display_name": "Shokker Paint Booth \u2014 SHOKK DEMO",
+    "version": "1.0.0-demo.13",
+    "build_id": "shokk-demo-exclude-20260904a",
+    "server_port": 59886
+  },
+  "branding": {
+    "unlock_label": "UNLOCK FULL VERSION",
+    "payhip_url": "https://payhip.com/b/AHgpV",
+    "discord_url": "https://discord.gg/GwXxyhwtDu",
+    "render_credit": "Made with SHOKKER PAINT BOOTH \u2014 SHOKK DEMO",
+    "logo_url": "/assets/branding/shokker-paint-booth.png",
+    "startup_logos": [
+      "/assets/branding/shokk-handmark.png",
+      "/assets/branding/shokker-paint-booth.png",
+      "/assets/branding/shokker-road.png"
+    ]
+  },
+  "starter": {
+    "id": "arca-chevy-v6",
+    "filename": "SPB ARCA Chevy V6.psd",
+    "relative_path": "assets/starter/SPB ARCA Chevy V6.psd",
+    "uri": "starter://arca-chevy-v6"
+  },
+  "assets": {
+    "finish_thumbnail_template": "/demo-assets/thumbnails/{id}.png",
+    "finish_thumbnail_size": 384
+  },
+  "capabilities": {
+    "finish_picker": true,
+    "visible_finish_count": 29,
+    "renderable_finish_count": 30,
+    "zones": true,
+    "psd_import": true,
+    "psd_layer_editing": true,
+    "source_file": true,
+    "source_data_url": true,
+    "iracing_output": true,
+    "preview_render": true,
+    "full_render": true,
+    "tools": [
+      "pick",
+      "exclude"
+    ],
+    "patterns": false,
+    "pattern_stacks": false,
+    "spec_patterns": false,
+    "spec_pattern_stacks": false,
+    "extra_base_overlays": 0,
+    "finish_authoring": false,
+    "finish_import": false
+  },
+  "runtime": {
+    "snapshot_schema": "spb-demo-material-snapshot/1",
+    "snapshot_directory": "assets/snapshots",
+    "starter_aliases": [
+      "starter://arca-chevy-v6",
+      "demo://starter"
+    ],
+    "forbidden_imports": [
+      "server",
+      "server_v5",
+      "engine.registry",
+      "shokker_engine_v2"
+    ]
+  },
+  "finishes": [
+    {
+      "id": "f_chrome",
+      "name": "Chrome (Foundation)",
+      "category": "Foundation",
+      "kind": "base",
+      "swatch": "#e8e8ee",
+      "visible": true
+    },
+    {
+      "id": "gloss",
+      "name": "Gloss",
+      "category": "Foundation",
+      "kind": "base",
+      "swatch": "#44aa44",
+      "visible": true
+    },
+    {
+      "id": "f_frozen",
+      "name": "Frozen (Foundation)",
+      "category": "Foundation",
+      "kind": "base",
+      "swatch": "#99bbcc",
+      "visible": true
+    },
+    {
+      "id": "f_powder_coat",
+      "name": "Powder Coat (Foundation)",
+      "category": "Foundation",
+      "kind": "base",
+      "swatch": "#667755",
+      "visible": true
+    },
+    {
+      "id": "f_metallic",
+      "name": "Metallic (Foundation)",
+      "category": "Foundation",
+      "kind": "base",
+      "swatch": "#99aacc",
+      "visible": true
+    },
+    {
+      "id": "efx_holographic_drift",
+      "name": "EFX Holographic Drift",
+      "category": "EFX Enhanced Foundation Exotic",
+      "kind": "base",
+      "swatch": "#d8ccff",
+      "visible": true
+    },
+    {
+      "id": "fo_lava_lamp",
+      "name": "Shag: Lava Lamp",
+      "category": "Far Out",
+      "kind": "base",
+      "swatch": "#c15b1e",
+      "visible": true
+    },
+    {
+      "id": "cherry_polka",
+      "name": "Cherry Polka",
+      "category": "Novelty & Retro",
+      "kind": "base",
+      "swatch": "#c81824",
+      "visible": true
+    },
+    {
+      "id": "tac_frozen_bank",
+      "name": "Field: Frozen Bank",
+      "category": "Tactical & Field",
+      "kind": "base",
+      "swatch": "#ccd3db",
+      "visible": true
+    },
+    {
+      "id": "elm_tsunami",
+      "name": "Water: Tsunami",
+      "category": "Fractured Elements",
+      "kind": "monolithic",
+      "swatch": "#25577b",
+      "visible": true
+    },
+    {
+      "id": "elm_black_ice",
+      "name": "Frozen: Black Ice",
+      "category": "Fractured Elements",
+      "kind": "monolithic",
+      "swatch": "#324155",
+      "visible": true
+    },
+    {
+      "id": "ffo_haz_bloom",
+      "name": "HAZ Bloom",
+      "category": "Fractured Foundry",
+      "kind": "monolithic",
+      "swatch": "#b3aaa9",
+      "visible": true
+    },
+    {
+      "id": "fmo_chrysina_gold",
+      "name": "Chrysina Gold",
+      "category": "Fractured Morpho",
+      "kind": "monolithic",
+      "swatch": "#7a9b76",
+      "visible": true
+    },
+    {
+      "id": "dkc_hematite",
+      "name": "Hematite",
+      "category": "Dark City",
+      "kind": "monolithic",
+      "swatch": "#6d3b42",
+      "visible": true
+    },
+    {
+      "id": "fab_glass_slipper",
+      "name": "Glass Slipper",
+      "category": "Fable",
+      "kind": "monolithic",
+      "swatch": "#cdefff",
+      "visible": true
+    },
+    {
+      "id": "fab_woodcut_block",
+      "name": "Woodcut Block",
+      "category": "Fable",
+      "kind": "monolithic",
+      "swatch": "#704326",
+      "visible": true
+    },
+    {
+      "id": "beetle_ground",
+      "name": "Ground Beetle Obsidian",
+      "category": "Iridescent Insects",
+      "kind": "base",
+      "swatch": "#0b3150",
+      "visible": true
+    },
+    {
+      "id": "butterfly_swallowtail",
+      "name": "Swallowtail Prism",
+      "category": "Iridescent Insects",
+      "kind": "base",
+      "swatch": "#18c8a2",
+      "visible": true
+    },
+    {
+      "id": "cs_chocolate_mint",
+      "name": "Chocolate Mint",
+      "category": "Color-Shift Duos",
+      "kind": "monolithic",
+      "swatch": "#69c9aa",
+      "visible": true
+    },
+    {
+      "id": "xlab_shatter_royale",
+      "name": "Shatter Royale",
+      "category": "X Lab",
+      "kind": "monolithic",
+      "swatch": "#b44bff",
+      "visible": true
+    },
+    {
+      "id": "xlab_stained_circuit",
+      "name": "Stained Circuit",
+      "category": "X Lab",
+      "kind": "monolithic",
+      "swatch": "#3d6bff",
+      "visible": true
+    },
+    {
+      "id": "grad_neon_rush",
+      "name": "Neon Rush",
+      "category": "Gradient Directional",
+      "kind": "monolithic",
+      "swatch": "#ff2d9f",
+      "visible": true
+    },
+    {
+      "id": "grad_fire_fade_h",
+      "name": "Fire Fade H",
+      "category": "Gradient Directional",
+      "kind": "monolithic",
+      "swatch": "#ff5a20",
+      "visible": true
+    },
+    {
+      "id": "aurora_black_rainbow",
+      "name": "Aurora Black Rainbow",
+      "category": "Aurora & Chromatic Flow",
+      "kind": "monolithic",
+      "swatch": "#332266",
+      "visible": true
+    },
+    {
+      "id": "fm_herringbone",
+      "name": "Herringbone",
+      "category": "Fractured Minds",
+      "kind": "monolithic",
+      "swatch": "#5e4a44",
+      "visible": true
+    },
+    {
+      "id": "ff_wovencell",
+      "name": "Wovencell",
+      "category": "Fractured Forge",
+      "kind": "monolithic",
+      "swatch": "#b48c5a",
+      "visible": true
+    },
+    {
+      "id": "ffl_foundry_spatter",
+      "name": "Molten: Foundry Spatter",
+      "category": "Fractured Flames",
+      "kind": "monolithic",
+      "swatch": "#A05F3D",
+      "visible": true
+    },
+    {
+      "id": "ff_truchet_glass",
+      "name": "Truchet Glass",
+      "category": "Fractured Tessera",
+      "kind": "monolithic",
+      "swatch": "#1e96aa",
+      "visible": true
+    },
+    {
+      "id": "impossible_cinder_pulse",
+      "name": "Cinder Pulse",
+      "category": "Impossible Finishes",
+      "kind": "monolithic",
+      "swatch": "#2B1833",
+      "visible": true
+    },
+    {
+      "id": "fs_core_emerald",
+      "name": "Soul Core Emerald \u2014 Pink Flash",
+      "category": "Fractured Souls",
+      "kind": "monolithic",
+      "swatch": "#0a2917",
+      "visible": false,
+      "access": "fracture-shortcut-only"
+    }
+  ]
+}

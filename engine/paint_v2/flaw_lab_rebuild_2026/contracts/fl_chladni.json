@@ -1,0 +1,104 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "fl_chladni",
+  "display_name": "Chladni Figure \u2014 rebuilt inspection finish",
+  "promise": "intersecting standing wave nodes with granular ridges and scoured antinodes",
+  "carrier_grammar": "intersecting standing wave nodes with granular ridges and scoured antinodes; independently rotated, varied sites with edge-wrapped geometry.",
+  "spec_grammar": "Named modal ridges, node grains, intersection heaps, scoured bellies, stray powder carry independent metallic lips, rough interiors and continuous coat shoulders; no unrelated material overlay.",
+  "reference_physics": {
+    "mechanism": "intersecting standing wave nodes with granular ridges and scoured antinodes interpreted as a colored inspection visualization, not a literal photograph.",
+    "sources": [
+      "engine/paint_v2/flaw_lab_2026.py",
+      "SPB_WIKI.html#spec_guide",
+      "https://www.nasa.gov/glenn/research/flow-field-diagnostics/"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "composition_span_px": [
+    150,
+    384
+  ],
+  "mark_types": [
+    {
+      "name": "modal ridges",
+      "role": "Visible modal ridges geometry with its own local material transition."
+    },
+    {
+      "name": "node grains",
+      "role": "Visible node grains geometry with its own local material transition."
+    },
+    {
+      "name": "intersection heaps",
+      "role": "Visible intersection heaps geometry with its own local material transition."
+    },
+    {
+      "name": "scoured bellies",
+      "role": "Visible scoured bellies geometry with its own local material transition."
+    },
+    {
+      "name": "stray powder",
+      "role": "Visible stray powder geometry with its own local material transition."
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "modal ridges",
+      "node grains",
+      "intersection heaps",
+      "scoured bellies",
+      "stray powder"
+    ],
+    "R": [
+      "modal ridges",
+      "node grains",
+      "intersection heaps",
+      "scoured bellies",
+      "stray powder"
+    ],
+    "Cc": [
+      "modal ridges",
+      "node grains",
+      "intersection heaps",
+      "scoured bellies",
+      "stray powder"
+    ]
+  },
+  "material_tiers": [
+    "recess substrate",
+    "rough interior",
+    "satin shoulder",
+    "polished lip",
+    "fractured edge",
+    "gloss face",
+    "coat transition",
+    "bright inclusion"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "fl_penetrant_bleed",
+      "difference": "intersecting standing wave nodes with granular ridges and scoured antinodes differs in topology from branched fatigue fissures with capillary dye reservoirs"
+    },
+    {
+      "finish_id": "fl_brittle_lacquer",
+      "difference": "intersecting standing wave nodes with granular ridges and scoured antinodes differs in topology from ranked tensile crack combs with arrested tips and lifted lacquer lips"
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "modal ridges is explicitly constructed as part of intersecting standing wave nodes with granular ridges and scoured antinodes",
+      "node grains is explicitly constructed as part of intersecting standing wave nodes with granular ridges and scoured antinodes",
+      "intersection heaps is explicitly constructed as part of intersecting standing wave nodes with granular ridges and scoured antinodes"
+    ],
+    "review_status": "Rendered paint/spec pairs visually reviewed together at picker scale on 2026-09-18; live output verified against the reviewed assets."
+  },
+  "construction_key": "flaw-r1-chladni-intersecting-standing-wave-nodes-with-granular-ridges-and-scoured-antinodes",
+  "spec_key": "flaw-r1-material-chladni-modal ridges-node grains-intersection heaps-scoured bellies-stray powder",
+  "fine_detail_scale_px": [
+    1,
+    32
+  ]
+}

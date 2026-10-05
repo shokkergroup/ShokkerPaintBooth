@@ -1,0 +1,4 @@
+{"version":1,"paint_label":"dirtlatemodel 350/car_num_199237.tga","inspection_records":"_smart_tga_runs/cycle678_dlm_cross_copy_review/inspection_records.json","review_scope":"Cycle 678 source plus complete owner sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[482,271,48,18],"target_layer":"sponsors","label":"sponsor_wordmark_false_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[794,841,179,93],"target_layer":"numbers","label":"true_custom_number"}
+]}

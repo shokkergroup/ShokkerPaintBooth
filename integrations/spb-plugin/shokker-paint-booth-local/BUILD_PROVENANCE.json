@@ -1,0 +1,29 @@
+{
+  "package": "shokker-paint-booth-local",
+  "version": "0.1.0",
+  "built_at_utc": "2026-10-04T17:17:05.953913+00:00",
+  "scope": "private local pilot; no public submission or hosted UI",
+  "sources": {
+    "mcp/server/index.js": {
+      "sha256": "3937e7d63fc0e1f40dfed7988f6ed0520da2f840405849d1b05a18a01c736860",
+      "bytes": 21385
+    },
+    "mcp/server/tools.json": {
+      "sha256": "e6d52d6824d526536cddbb67de980c99531a6fd14d3e7712db2d6d2ac6a103d2",
+      "bytes": 44986
+    }
+  },
+  "icon_sha256": "16ca3fa2a1fae365a61838a379bc5b4f8add7c4fe1dcc6c148ab14eda73f2f96",
+  "official_schema_validation": [
+    {
+      "url": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+      "schema_sha256": "0a4aad95ce337878ad38802ebf0daa3fde76abe3f65400c86bcbb1ec0b3ab883",
+      "result": "pass"
+    },
+    {
+      "url": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+      "schema_sha256": "6539175bfcdf43085855183e86da40ea94b166547a72b47ae9a0a390516d3acb",
+      "result": "pass"
+    }
+  ]
+}

@@ -1,0 +1,247 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "at_half_pipe_ply",
+  "display_name": "Extreme: Half Pipe Ply",
+  "promise": "Fine warm plywood/masonite laminate with short interwoven grain segments and small wear marks, no large plank seams",
+  "carrier_grammar": "Fine warm plywood/masonite laminate with short interwoven grain segments and small wear marks, no large plank seams; single full-canvas image, no duplicated quadrants. Fine features: warm plywood fibers, dark grain troughs, rubbed deck resin, fine exposed splinters, charred grain points, worn lacquer streaks",
+  "spec_grammar": "Feature-specific selectors partition warm plywood fibers, dark grain troughs, rubbed deck resin, fine exposed splinters, charred grain points, worn lacquer streaks. Continuous local surface response plus8 component tiers; separate M/R/Cc axes, no coordinate-wave overlay.",
+  "reference_physics": {
+    "mechanism": "Surface finish follows the named substrate and its wear, recesses, fibers or metallic edges using the canonical packed metallic, roughness and inverse-clearcoat rules.",
+    "sources": [
+      "SPB_WIKI.html — Spec Map Bible §§2–4",
+      "docs/finish_audits/all_that_2026-09-16/OWNER_AUDIT_R2.md"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "mark_types": [
+    {
+      "name": "warm plywood fibers",
+      "role": "Material feature selected from artwork by all"
+    },
+    {
+      "name": "dark grain troughs",
+      "role": "Material feature selected from artwork by g:<:0.31"
+    },
+    {
+      "name": "rubbed deck resin",
+      "role": "Material feature selected from artwork by detail:>:0.57&edge:<:0.4"
+    },
+    {
+      "name": "fine exposed splinters",
+      "role": "Material feature selected from artwork by x:>:0.66"
+    },
+    {
+      "name": "charred grain points",
+      "role": "Material feature selected from artwork by g:<:0.16&fine:>:0.5"
+    },
+    {
+      "name": "worn lacquer streaks",
+      "role": "Material feature selected from artwork by g:>:0.74"
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "warm plywood fibers",
+      "dark grain troughs",
+      "rubbed deck resin",
+      "fine exposed splinters",
+      "charred grain points",
+      "worn lacquer streaks"
+    ],
+    "R": [
+      "warm plywood fibers",
+      "dark grain troughs",
+      "rubbed deck resin",
+      "fine exposed splinters",
+      "charred grain points",
+      "worn lacquer streaks"
+    ],
+    "Cc": [
+      "warm plywood fibers",
+      "dark grain troughs",
+      "rubbed deck resin",
+      "fine exposed splinters",
+      "charred grain points",
+      "worn lacquer streaks"
+    ]
+  },
+  "material_tiers": [
+    {
+      "feature": "warm plywood fibers",
+      "range": [
+        [
+          0,
+          115,
+          140
+        ],
+        [
+          18,
+          235,
+          250
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "dark grain troughs",
+      "range": [
+        [
+          0,
+          175,
+          165
+        ],
+        [
+          18,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "rubbed deck resin",
+      "range": [
+        [
+          0,
+          65,
+          55
+        ],
+        [
+          15,
+          180,
+          210
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "fine exposed splinters",
+      "range": [
+        [
+          0,
+          155,
+          170
+        ],
+        [
+          10,
+          245,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "charred grain points",
+      "range": [
+        [
+          10,
+          145,
+          160
+        ],
+        [
+          90,
+          255,
+          255
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    },
+    {
+      "feature": "worn lacquer streaks",
+      "range": [
+        [
+          0,
+          15,
+          16
+        ],
+        [
+          18,
+          60,
+          75
+        ]
+      ],
+      "component_tiers": [
+        0.18,
+        0.28,
+        0.38,
+        0.48,
+        0.58,
+        0.68,
+        0.78,
+        0.92
+      ]
+    }
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "at_anodised_peg",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    },
+    {
+      "finish_id": "at_bmx_dirt",
+      "difference": "Must differ by carrier grammar and feature-aligned spec, not palette; cross-card visual proof pending."
+    }
+  ],
+  "name_truth": {
+    "visible_evidence": [
+      "warm plywood fibers",
+      "dark grain troughs",
+      "rubbed deck resin",
+      "fine exposed splinters",
+      "charred grain points",
+      "worn lacquer streaks"
+    ],
+    "hidden_title_verdict": "pending"
+  },
+  "construction_key": "at_half_pipe_ply / Fine warm plywood/masonite laminate with short interwoven grain segments and small wear marks, no large plank seams",
+  "spec_key": "at_half_pipe_ply / warm plywood fibers all; dark grain troughs g:<:0.31; rubbed deck resin detail:>:0.57&edge:<:0.4; fine exposed splinters x:>:0.66; charred grain points g:<:0.16&fine:>:0.5; worn lacquer streaks g:>:0.74",
+  "review_status": "Owner-authorized LOCAL LIVE iteration; no production acceptance implied."
+}

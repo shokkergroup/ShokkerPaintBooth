@@ -1,0 +1,104 @@
+/* SPB-93 / 2026-08-09 — Photoshop-style active-tool options rail.
+   The center workspace is intentionally docked at a constant height. The old
+   wrap rules let option-heavy tools grow past that dock, so later rows looked
+   visible in the DOM while #drawZoneName physically covered their hit area.
+   Keep one stable row and expose the complete tool surface by horizontal scroll. */
+
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom {
+    display: flex !important;
+    align-items: center !important;
+    height: 78px !important;
+    min-height: 78px !important;
+    max-height: 78px !important;
+    flex: 0 0 78px !important;
+    overflow: hidden !important;
+    padding: 5px 10px !important;
+}
+
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #paintPreviewLoaded {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+}
+
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolOptionsBar.tool-options-bar {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    align-content: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 52px !important;
+    max-height: 58px !important;
+    margin: 0 !important;
+    padding: 4px 7px 8px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: 8px;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(34, 211, 238, 0.72) rgba(255, 255, 255, 0.04);
+}
+
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolOptionsBar > *,
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolSpecificOptions > *,
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #contextActionsBar > * {
+    flex-shrink: 0 !important;
+}
+
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolOptionsBar > #toolSpecificOptions,
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolOptionsBar > #contextActionsBar {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    min-width: max-content !important;
+    row-gap: 0 !important;
+}
+
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #activeToolLabel {
+    order: 0;
+}
+
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #contextScopeChip {
+    order: 1;
+}
+
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolOptionsBar > #toolSpecificOptions {
+    order: 2;
+}
+
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolOptionsBar > #contextActionsBar {
+    order: 3;
+}
+
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolModifierHint,
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #contextActionHint,
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolOptionsBar > span:not([id]) {
+    order: 4;
+}
+
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolOptionsBar::-webkit-scrollbar {
+    height: 7px;
+}
+
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolOptionsBar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 999px;
+}
+
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolOptionsBar::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #22d3ee, #ff7a18);
+    border-radius: 999px;
+}
+
+/* [SPB-HEADER-SLIM 2026-08-29] empty contextual strip collapses to nothing */
+#centerPanel > .workbench-command-bar.spb-cmdbar-bottom.spb-ctx-empty {
+  height: 0 !important; min-height: 0 !important; max-height: 0 !important;
+  flex: 0 0 0 !important; padding: 0 !important; border: 0 !important; overflow: hidden !important;
+}

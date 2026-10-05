@@ -1,0 +1,2420 @@
+{
+ "domain": "workflows",
+ "version": 1,
+ "articles": [
+  {
+   "id": "workflows.what_is_shokker",
+   "title": "What Shokker Paint Booth is",
+   "domain": "workflows",
+   "summary": "Shokker Paint Booth designs iRacing car paints. You open your car's template, say or click what you want, watch a live preview, then render the paint file and the spec (shine) file straight into your iRacing car folder.",
+   "what": "iRacing reads two pictures for every car: the paint (the colours) and the spec map (how metallic, rough and glossy each pixel is). Shokker builds both for you. You describe the look with zones, finishes and patterns, or with plain words in Chat, and Shokker paints the car's template with real materials: chrome, candy, carbon, flake, pearl, colour-shift and thousands more. It works on your PC without internet; only the optional online AI chat needs a connection.",
+   "when": [
+    "You want a custom iRacing livery and do not want to paint every pixel by hand.",
+    "You want metal, chrome or candy finishes that need a spec map.",
+    "You are deciding where to start."
+   ],
+   "how": [
+    "Open Shokker and open your car's template with the PSD/XCF/ORA button (or TGA/PNG/JPEG for a flat paint).",
+    "Tell Chat what you want, or pick a colour on the car and give it a finish in PRO.",
+    "Check the live preview, then press RENDER. Shokker writes the paint and the spec into your iRacing car folder.",
+    "In iRacing, press Ctrl+R to reload the car and see it."
+   ],
+   "controls": [
+    {
+     "label": "PSD/XCF/ORA",
+     "range": ".psd .xcf .ora",
+     "default": "",
+     "effect": "Opens your car's layered template.",
+     "inv": "pro.header.psd_xcf_ora"
+    },
+    {
+     "label": "RENDER",
+     "range": "",
+     "default": "",
+     "effect": "Builds the final paint and spec and copies them into the car folder.",
+     "inv": "btnRender"
+    }
+   ],
+   "tips": [
+    "The whole thing runs offline: design library, rendering and the built-in helper need no internet.",
+    "Everything the AI does can be undone in one click."
+   ],
+   "pitfalls": [
+    "Shokker does not upload to Trading Paints or drive iRacing for you; you press RENDER and Ctrl+R yourself.",
+    "It paints cars only; helmets and suits are not supported targets."
+   ],
+   "related": [
+    "workflows.how_paint_gets_on_car",
+    "workflows.first_paint",
+    "workflows.pro_or_chat",
+    "workflows.six_words"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "btnRender"
+    },
+    {
+     "do": "control",
+     "id": "pro.header.psd_xcf_ora"
+    }
+   ],
+   "figures": [
+    "g12_window_tour",
+    "g09_render_export_flow"
+   ],
+   "covers": [
+    "btnRender",
+    "pro.header.psd_xcf_ora",
+    "doc.10.support_limits_and_things_shokker_does_not_do"
+   ],
+   "sources": [
+    "js/spb-support-answers.js:119",
+    "js/spb-support-answers.js:99",
+    "js/spb-support-answers.js:59",
+    "docs/ai_knowledge/01_how_pro_works.md:3",
+    "paint-booth-v2.html:1925"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "what is shokker",
+    "what is shokker paint booth",
+    "what does this app do",
+    "what is spb",
+    "what can shokker do",
+    "what is this program",
+    "about shokker",
+    "overview",
+    "introduction",
+    "what is paint booth",
+    "is it free",
+    "does it work offline",
+    "what does shokker do",
+    "what is this app"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Two pictures for every car",
+     "body": "iRacing reads two pictures for every car: the paint (the colours) and the spec map (how metallic, rough and glossy each pixel is). Shokker builds both. You describe the look with zones, finishes and patterns, or with plain words in Chat, and Shokker paints the car's template with real materials: chrome, candy, carbon, flake, pearl, colour-shift and thousands more."
+    },
+    {
+     "heading": "Works offline",
+     "body": "The design library, rendering and the built-in helper need no internet. Only the optional online AI chat needs a connection. Everything the AI does can be undone in one click."
+    },
+    {
+     "heading": "What it does not do",
+     "body": "Shokker does not upload to Trading Paints and does not drive iRacing for you; you press RENDER and Ctrl+R yourself. It paints cars only: helmets and suits are not supported targets."
+    }
+   ],
+   "examples": [
+    {
+     "title": "The shortest loop",
+     "goal": "See your own design in the sim",
+     "settings": {
+      "Open": "Your car's template with PSD/XCF/ORA",
+      "Design": "Tell Chat or pick a colour and a finish in PRO",
+      "Render": "RENDER",
+      "Sim": "Alt+Tab, then Ctrl+R in iRacing"
+     },
+     "result": "The car reloads with your paint and shine."
+    },
+    {
+     "title": "A flat paint for a quick change",
+     "goal": "Recolour a finished paint",
+     "settings": {
+      "Open": "TGA/PNG/JPEG button",
+      "Do": "Ask Chat: make the black matte"
+     },
+     "result": "The black becomes matte and the rest of the paint stays."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does Shokker need internet?",
+     "a": "No, except for the optional online AI chat."
+    },
+    {
+     "q": "Does it upload my paint?",
+     "a": "No. You press RENDER and Ctrl+R yourself; there is no upload to Trading Paints."
+    },
+    {
+     "q": "Can I paint a helmet?",
+     "a": "No. It paints cars only."
+    },
+    {
+     "q": "What is a spec map?",
+     "a": "The second picture iRacing reads for metal, roughness and clearcoat."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Nothing appears in iRacing",
+     "cause": "RENDER was never pressed, or Ctrl+R was pressed in the wrong window",
+     "fix": "Press RENDER in Shokker, Alt+Tab to iRacing, then press Ctrl+R there."
+    },
+    {
+     "symptom": "You expect the helper to upload",
+     "cause": "Shokker does not upload anywhere",
+     "fix": "Use the rendered files in your car folder."
+    }
+   ],
+   "protips": [
+    "Do one test render with no changes the very first time. Seeing your own paint in iRacing proves the whole chain before you design anything."
+   ],
+   "screens": [
+    "ui_window_tour",
+    "flow_step1_loaded",
+    "flow_step2_zone_added"
+   ]
+  },
+  {
+   "id": "workflows.how_paint_gets_on_car",
+   "title": "How a paint gets onto your iRacing car",
+   "domain": "workflows",
+   "summary": "You build the look in Shokker, press RENDER, and Shokker copies a paint file and a spec file into your iRacing car folder. Then you press Ctrl+R in iRacing to load them.",
+   "what": "There are only five steps between your design and the sim, and each one has one job. Shokker never touches iRacing itself; it only writes two files to the folder where iRacing looks for your car's custom paint, and iRacing reads them when the car loads or when you reload textures.",
+   "when": [
+    "You are not sure what happens after you press RENDER.",
+    "You are explaining the workflow to a teammate.",
+    "Your paint does not show and you want to check the chain."
+   ],
+   "how": [
+    "Design: zones, finishes and patterns make the look in the live preview. Nothing is written yet.",
+    "RENDER: Shokker builds the full paint and the spec file at the size of your template (2048 or 1024 square).",
+    "Copy: the files are written into the iRacing Car Folder from the top bar: car_num_<ID>.tga or car_<ID>.tga for the paint, and car_spec_<ID>.tga for the shine. <ID> is your iRacing Customer ID.",
+    "Switch to iRacing (Alt+Tab) and be in a session with your car.",
+    "Press Ctrl+R (Reload Car Textures). The car flashes white and then shows the files on disk."
+   ],
+   "controls": [
+    {
+     "label": "iRacing User ID",
+     "range": "4 to 7 digits",
+     "default": "empty",
+     "effect": "Your Customer ID, used in every file name.",
+     "inv": "iracingId"
+    },
+    {
+     "label": "iRacing Car Folder",
+     "range": "a car folder",
+     "default": "empty",
+     "effect": "Where the files are copied.",
+     "inv": "outputDir"
+    }
+   ],
+   "tips": [
+    "If no car folder is set, the files stay in Shokker's own render folder and iRacing cannot see them.",
+    "Only RENDER writes into iRacing; the preview never does."
+   ],
+   "pitfalls": [
+    "Ctrl+R in Shokker starts a render; Ctrl+R in iRacing reloads textures. Press each in its own window.",
+    "A wrong Customer ID or number mode gives files iRacing never loads, with no error."
+   ],
+   "related": [
+    "preview_render.reload_in_iracing",
+    "preview_render.output_files",
+    "workflows.user_id_and_folder",
+    "support.not_in_iracing"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "btnRender",
+     "label": "RENDER button"
+    },
+    {
+     "do": "control",
+     "id": "outputDir"
+    }
+   ],
+   "figures": [
+    "g09_render_export_flow",
+    "g10_file_naming"
+   ],
+   "covers": [
+    "iracingId",
+    "outputDir",
+    "btnRender"
+   ],
+   "sources": [
+    "js/spb-support-answers.js:15",
+    "js/spb-support-answers.js:18",
+    "js/spb-support-answers.js:22",
+    "docs/ai_knowledge/10_support_troubleshooting.md:20",
+    "docs/ai_knowledge/10_support_troubleshooting.md:23"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "how does a paint get into iracing",
+    "how do i get my paint into iracing",
+    "how do i export to iracing",
+    "workflow overview",
+    "how does it work",
+    "from design to iracing",
+    "how do i use my paint in iracing",
+    "how to get paint in sim",
+    "steps to get paint on car",
+    "put my paint on my car",
+    "get the livery ingame",
+    "get it on the car in the sim",
+    "paint onto car"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Five steps, one job each",
+     "body": "Design makes the look in the live preview; nothing is written yet. RENDER builds the full paint and spec at the size of your template (2048 or 1024 square). Copy writes the files into the iRacing Car Folder: car_num_ID.tga or car_ID.tga for the paint and car_spec_ID.tga for the shine, where ID is your iRacing Customer ID. Switch to iRacing in a session with your car. Press Ctrl+R (Reload Car Textures); the car flashes white and then shows the files on disk."
+    },
+    {
+     "heading": "Shokker never touches iRacing",
+     "body": "It only writes two files to the folder where iRacing looks for your custom paint. Only RENDER writes into iRacing; the preview never does. If no car folder is set, the files stay in Shokker's own render folder and iRacing cannot see them."
+    },
+    {
+     "heading": "Two different Ctrl+R",
+     "body": "In Shokker, Ctrl+R starts a render; in iRacing it reloads textures. Press each in its own window."
+    }
+   ],
+   "examples": [
+    {
+     "title": "A render that reaches the sim",
+     "goal": "Get your paint on the car",
+     "settings": {
+      "iRacing User ID": "Your Customer ID",
+      "iRacing Car Folder": "Your car",
+      "Press": "RENDER, wait for the green Saved bar",
+      "In iRacing": "Ctrl+R"
+     },
+     "result": "The car flashes white and shows your paint and shine."
+    },
+    {
+     "title": "Check the files exist",
+     "goal": "Make sure the render landed in the folder",
+     "settings": {
+      "Button": "Show my files on the Saved bar"
+     },
+     "result": "The folder opens with the paint and spec files."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which files does iRacing read?",
+     "a": "The paint (car_num_ID.tga or car_ID.tga) and the spec (car_spec_ID.tga)."
+    },
+    {
+     "q": "What is the ID in the file name?",
+     "a": "Your iRacing Customer ID."
+    },
+    {
+     "q": "The car flashed white and nothing changed.",
+     "a": "The files on disk are not the new ones, or the ID or number mode is wrong. Check Show my files."
+    },
+    {
+     "q": "Does the preview write files?",
+     "a": "No. Only RENDER does."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "iRacing shows paint-shop colours",
+     "cause": "A wrong Customer ID or number mode gives files iRacing never loads, with no error",
+     "fix": "Check the ID and the number mode, then render and press Ctrl+R again."
+    },
+    {
+     "symptom": "Nothing reloads",
+     "cause": "Ctrl+R was pressed while Shokker was in front",
+     "fix": "Alt+Tab to iRacing, be in a session with your car, then press Ctrl+R."
+    }
+   ],
+   "protips": [
+    "After the first successful render, you only need three actions each time: RENDER, Alt+Tab, Ctrl+R."
+   ],
+   "screens": [
+    "ui_header_rows"
+   ]
+  },
+  {
+   "id": "workflows.six_words",
+   "title": "Zones, bases, patterns, spec and finishes: the six words you need",
+   "domain": "workflows",
+   "summary": "A zone is where a look goes; a base is a material; a pattern is a visible design; a spec pattern changes only the shine; a monolithic is a complete finish with its own colour; and the spec map is the shine picture iRacing reads.",
+   "what": "Almost every Shokker screen uses six words. Learn them once and the rest reads easily. They are layers of the same idea: choose where (zone), choose what material (base or monolithic), add a design (pattern), add shine texture (spec pattern), and Shokker builds the spec map for iRacing.",
+   "when": [
+    "A menu or helper message uses a word you do not know.",
+    "You are about to start your first design."
+   ],
+   "how": [
+    "ZONE: a set of pixels plus a look. You choose the pixels by colour, by layer, by a box or a named part. Zones stack, and the zone higher in the list wins when two want the same pixel.",
+    "BASE: a plain material such as gloss, matte, satin, chrome, candy or pearl. A base changes colour and shine.",
+    "MONOLITHIC: a complete finish that brings its own colour and texture, for example a colour-shift or a carbon look. Choose it when you want the whole effect.",
+    "PATTERN: a visible design on top, such as carbon weave, stripes, camo or flames. It changes colour and only a little shine.",
+    "SPEC PATTERN: a texture for the shine only (metal flake, holographic flecks). It never changes the colour.",
+    "SPEC MAP: the second picture iRacing reads. Red is metal, green is roughness (0 is a mirror), blue is clearcoat (16 is the glossiest) and alpha is a lighting mask. Shokker builds it from your zones."
+   ],
+   "controls": [],
+   "tips": [
+    "Foundation finishes with Source colours change only the spec map and leave your paint exactly as it is.",
+    "Up to five bases can be stacked in one zone as overlays (second to fifth base)."
+   ],
+   "pitfalls": [
+    "A zone with a finish but no pixels shows nothing.",
+    "Do not mix up pattern (visible design) with spec pattern (shine only)."
+   ],
+   "related": [
+    "zones.what_is_a_zone",
+    "spec.what_is_spec_map",
+    "finishes.four_kinds",
+    "workflows.one_flat_sheet",
+    "zones.priority"
+   ],
+   "actions": [],
+   "figures": [
+    "g13_four_kinds_of_look",
+    "g01_spec_channels",
+    "g05_zone_priority"
+   ],
+   "covers": [],
+   "sources": [
+    "docs/ai_knowledge/01_how_pro_works.md:6",
+    "docs/ai_knowledge/01_how_pro_works.md:7",
+    "docs/ai_knowledge/01_how_pro_works.md:20",
+    "engine/SPEC_MAP_REFERENCE.md:7",
+    "data/encyclopedia/figures.json:3"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "what is a spec pattern",
+    "what is a finish",
+    "basic terms",
+    "terminology",
+    "bases vs patterns",
+    "what do these words mean",
+    "zones bases patterns spec finishes",
+    "six words",
+    "key words"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Where, what, design, shine",
+     "body": "Choose where (zone), choose what material (base or monolithic), add a design (pattern), add shine texture (spec pattern), and Shokker builds the spec map for iRacing. A zone is a set of pixels plus a look, chosen by colour, layer, box or named part. Zones stack and the zone higher in the list wins when two want the same pixel."
+    },
+    {
+     "heading": "Base versus monolithic",
+     "body": "A base is a plain material such as gloss, matte, satin, chrome, candy or pearl that changes colour and shine. A monolithic is a complete finish that brings its own colour and texture, such as a colour-shift or a carbon look. Pick it when you want the whole effect."
+    },
+    {
+     "heading": "Pattern versus spec pattern",
+     "body": "A pattern is a visible design on top (carbon weave, stripes, camo, flames) that changes colour and only a little shine. A spec pattern is a texture for the shine only (metal flake, holographic flecks) and never changes the colour."
+    },
+    {
+     "heading": "The spec map",
+     "body": "Red is metal, green is roughness (0 is a mirror), blue is clearcoat (16 is the glossiest) and alpha is a lighting mask. Shokker builds it from your zones."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Name the parts of a look",
+     "goal": "Describe a chrome car with carbon stripes",
+     "settings": {
+      "Zone": "Body pixels",
+      "Base": "Chrome",
+      "Pattern": "Carbon weave on a stripe zone",
+      "Spec pattern": "Metal flake on the hood"
+     },
+     "result": "You can name each layer of the look and know where to change it."
+    },
+    {
+     "title": "Change only the shine",
+     "goal": "Leave your paint colours alone",
+     "settings": {
+      "Finish": "A Foundation finish",
+      "Colour": "Source colours"
+     },
+     "result": "Only the spec map changes; your paint stays exactly as it is."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What is the difference between a pattern and a spec pattern?",
+     "a": "A pattern is visible; a spec pattern changes only the shine."
+    },
+    {
+     "q": "How many bases can one zone hold?",
+     "a": "Up to five stacked as overlays (second to fifth base)."
+    },
+    {
+     "q": "Which zone wins when two overlap?",
+     "a": "The one higher in the list."
+    },
+    {
+     "q": "What does blue mean in the spec map?",
+     "a": "Clearcoat. 16 is the glossiest."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A zone with a finish shows nothing",
+     "cause": "It has no pixels",
+     "fix": "Pick colours, a layer, a box or a named part for the zone."
+    },
+    {
+     "symptom": "You expect a spec pattern to add colour",
+     "cause": "Spec patterns affect shine only",
+     "fix": "Use a pattern for visible design."
+    }
+   ],
+   "protips": [
+    "Think of a look as four questions: where, what material, what design, what shine texture. Answer them in that order."
+   ],
+   "screens": [
+    "ui_zones_column"
+   ]
+  },
+  {
+   "id": "workflows.pro_or_chat",
+   "title": "PRO or CHAT: which door to use",
+   "domain": "workflows",
+   "summary": "PRO is the full paint shop and CHAT lets you type what you want; both edit the same car, so you can switch any time.",
+   "what": "The mode switch at the top has two entries: PRO and CHAT. Use PRO when you know what you want and want every control. Use CHAT when you would rather describe it. Both change the same zones and layer settings.",
+   "when": [
+    "You are new and unsure which mode to use.",
+    "You want to say \"retro red white and blue stripes\" instead of hunting for controls.",
+    "Chat cannot do something and you need exact control."
+   ],
+   "how": [
+    "PRO is the default. Everything starts here: open your template, set ID and car folder, and render.",
+    "Click CHAT in the mode switch to open the chat studio. Type what you want; your car changes and each change has an Undo.",
+    "Click PRO any time to return. Your paint and zones stay as they are; nothing is lost.",
+    "Use PRO for importing a paint, exporting to iRacing and hand painting; Chat changes zones and layer settings only."
+   ],
+   "controls": [
+    {
+     "label": "PRO",
+     "range": "",
+     "default": "on",
+     "effect": "The full paint shop.",
+     "inv": "spbModeProBtn"
+    },
+    {
+     "label": "CHAT",
+     "range": "",
+     "default": "off",
+     "effect": "Opens the chat studio.",
+     "inv": "spbModeChatBtn"
+    }
+   ],
+   "tips": [
+    "Chat works without any key: a built-in designer does a lot for free, and an online AI key only adds open-ended requests.",
+    "Say places and parts in plain words; the app names parts of the car for you."
+   ],
+   "pitfalls": [
+    "Chat cannot render, save or export for you. Press RENDER yourself."
+   ],
+   "related": [
+    "ai_copilot.chat_mode",
+    "ai_copilot.offline_vs_ai",
+    "ui_shell.mode_pill",
+    "workflows.first_paint"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "spbModeProBtn"
+    }
+   ],
+   "figures": [
+    "g17_pick_a_door"
+   ],
+   "covers": [
+    "spbModeProBtn",
+    "spbModeChatBtn"
+   ],
+   "sources": [
+    "paint-booth-v2.html:1925",
+    "paint-booth-v2.html:1928",
+    "paint-booth-v2.html:1933",
+    "css/spb-chat-studio-20261001.css:35",
+    "docs/ai_knowledge/04_limits_and_app_map.md:25"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "pro or chat",
+    "which mode should i use",
+    "pro vs chat",
+    "chat vs pro",
+    "which door",
+    "switch modes",
+    "mode switch",
+    "beginner mode",
+    "chat mode or pro"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "One car, two doors",
+     "body": "PRO is the default and the full paint shop: open your template, set ID and car folder, and render. Click CHAT in the mode switch to open the chat studio, type what you want and each change has an Undo. Both change the same zones and layer settings, and your paint and zones stay as they are when you switch."
+    },
+    {
+     "heading": "What only PRO does",
+     "body": "Importing a paint, exporting to iRacing and hand painting. Chat changes zones and layer settings only, and cannot render, save or export for you."
+    },
+    {
+     "heading": "Chat needs no key",
+     "body": "A built-in designer does a lot for free. An online AI key only adds open-ended requests."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Start in PRO, finish in Chat",
+     "goal": "Use each door for what it does best",
+     "settings": {
+      "1. PRO": "Open the template, set ID and car folder",
+      "2. CHAT": "Describe the colours and finishes",
+      "3. PRO again": "RENDER"
+     },
+     "result": "The file jobs are done in PRO and the design in Chat, on the same car."
+    },
+    {
+     "title": "Go back and forth",
+     "goal": "Switch without losing anything",
+     "settings": {
+      "Click": "PRO or CHAT in the mode switch"
+     },
+     "result": "Nothing is lost by switching."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which should I start with?",
+     "a": "PRO is the default. New to Shokker? Try CHAT for your first look."
+    },
+    {
+     "q": "Does switching lose my work?",
+     "a": "No. Your paint and zones stay as they are."
+    },
+    {
+     "q": "Can Chat render for me?",
+     "a": "No. Press RENDER yourself."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You ask Chat to export and nothing happens",
+     "cause": "Chat does not do file jobs",
+     "fix": "Switch to PRO and press RENDER."
+    },
+    {
+     "symptom": "You expect hand tools in Chat",
+     "cause": "Hand painting is a PRO tool",
+     "fix": "Use the PRO toolbar."
+    }
+   ],
+   "protips": [
+    "Say places and parts in plain words in Chat; the app names parts of the car for you."
+   ],
+   "screens": [
+    "ui_mode_pill",
+    "ui_chat_mode"
+   ]
+  },
+  {
+   "id": "workflows.one_flat_sheet",
+   "title": "The paint is ONE flat sheet of the whole car",
+   "domain": "workflows",
+   "summary": "Your paint is a single flat 2048 by 2048 picture of the car cut open: sides, hood, roof, trunk, bumpers and spoiler lie side by side. Left, right, top and bottom mean the flat picture, not the car.",
+   "what": "iRacing wraps that one picture over the 3D car. That is why texture size is set per zone, why the same colour can appear on several islands, and why numbers and text are often mirrored or rotated on some islands. Every template lays the parts out differently, so always open the template of the car you drive.",
+   "when": [
+    "A change appears on a part you did not expect.",
+    "Text looks backwards on one side.",
+    "You want to place something on the left door, not the left of the picture."
+   ],
+   "how": [
+    "Open the template for your car and look at the SOURCE view: the islands are the parts of the car laid flat.",
+    "Use named parts when you can: a zone can choose Left side, Roof or Hood by name, so you do not have to find them on the sheet.",
+    "Check the CAR view to see where a change lands on the real car shape.",
+    "To copy a design to the other side of the car use Mirror (layer MIRROR with FLIP or ROT 90, or Mirror Mask for a zone area), then check the CAR view.",
+    "Remember a horizontal gradient runs across the whole sheet, so several islands share the same colour at the same column. Use one zone per side to fade each side separately."
+   ],
+   "controls": [],
+   "tips": [
+    "The size of a texture feature on the sheet is its size on the car: a 64 pixel feature is the size of a mirror.",
+    "The helper talks about places with a grid: columns A to H left to right, rows 1 to 8 top to bottom."
+   ],
+   "pitfalls": [
+    "One side of the sheet may be upside down, so a copied design can land flipped; use FLIP or ROT 90.",
+    "Do not resize the canvas: iRacing needs 2048 by 2048 or 1024 by 1024."
+   ],
+   "related": [
+    "cars.reading_sheet",
+    "cars.supported_cars",
+    "zones.named_parts",
+    "tools.mirror_symmetry",
+    "support.tiny_or_huge"
+   ],
+   "actions": [],
+   "figures": [
+    "g08_uv_sheet_parts"
+   ],
+   "covers": [],
+   "sources": [
+    "docs/ai_knowledge/01_how_pro_works.md:3",
+    "docs/ai_knowledge/01_how_pro_works.md:33",
+    "docs/ai_knowledge/01_how_pro_works.md:20",
+    "js/spb-car-atlas-data.js:1"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "flat sheet",
+    "uv sheet",
+    "unwrapped car",
+    "why is the paint flat",
+    "what is the template layout",
+    "left and right confusing",
+    "which side is which",
+    "text is mirrored",
+    "text backwards",
+    "islands",
+    "uv map",
+    "unwrap",
+    "why is the car flat",
+    "one flat sheet"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "One picture wrapped over a 3D car",
+     "body": "Your paint is a single flat 2048 by 2048 picture of the car cut open: sides, hood, roof, trunk, bumpers and spoiler lie side by side. iRacing wraps it over the 3D car. That is why the same colour can appear on several islands and why numbers and text are often mirrored or rotated on some islands."
+    },
+    {
+     "heading": "Size on the sheet is size on the car",
+     "body": "A 64 pixel feature on the sheet is about the size of a mirror on the car. Left, right, top and bottom mean the flat picture, not the car. The helper talks about places with a grid: columns A to H left to right, rows 1 to 8 top to bottom."
+    },
+    {
+     "heading": "Gradients and copies",
+     "body": "A horizontal gradient runs across the whole sheet, so several islands share the same colour at the same column. Use one zone per side to fade each side separately. To copy a design to the other side use Mirror (layer MIRROR with FLIP or ROT 90, or Mirror Mask for a zone area) and check the CAR view."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Fade each side separately",
+     "goal": "Avoid one gradient running across all islands",
+     "settings": {
+      "Zone 1": "Left side, gradient",
+      "Zone 2": "Right side, gradient",
+      "Check": "CAR view"
+     },
+     "result": "Each side fades on its own."
+    },
+    {
+     "title": "Copy a design to the other side",
+     "goal": "Mirror a decal",
+     "settings": {
+      "Layer": "MIRROR",
+      "Option": "FLIP or ROT 90",
+      "Check": "CAR view"
+     },
+     "result": "The design lands the right way round on the other side."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why is text mirrored on the car?",
+     "a": "Some islands are drawn mirrored or rotated on the sheet. Flip or rotate your placement."
+    },
+    {
+     "q": "How big is a 64 pixel feature on the car?",
+     "a": "About the size of a side mirror."
+    },
+    {
+     "q": "Can I resize the canvas?",
+     "a": "No. iRacing needs 2048 by 2048 or 1024 by 1024."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A copied design lands flipped",
+     "cause": "One side of the sheet may be upside down",
+     "fix": "Use FLIP or ROT 90 and check the CAR view."
+    },
+    {
+     "symptom": "Two sides show the same gradient colour",
+     "cause": "One zone spans several islands at the same columns",
+     "fix": "Use one zone per side."
+    }
+   ],
+   "protips": [
+    "Use named parts instead of hunting for islands: a zone can choose Left side, Roof or Hood by name."
+   ],
+   "screens": [
+    "ui_window_tour",
+    "flow_step1_loaded",
+    "flow_step2_zone_added"
+   ]
+  },
+  {
+   "id": "workflows.first_paint",
+   "title": "Your first paint in ten minutes",
+   "domain": "workflows",
+   "summary": "Open your car's template, give your iRacing ID and car folder once, claim an area with a colour, drop a finish on it, then RENDER and press Ctrl+R in iRacing. The built-in Tutorial walks you through exactly this.",
+   "what": "This is the shortest path from nothing to a paint on your car. It uses the five core steps that the Tutorial also teaches. You do not need patterns, layers or spec knowledge for a first result.",
+   "when": [
+    "You have never used Shokker.",
+    "You want proof that the whole chain works before you design."
+   ],
+   "how": [
+    "Open your car's template: press PSD/XCF/ORA in the top bar (layered) or TGA/PNG/JPEG (flat paint). Wait until your paint appears under SOURCE.",
+    "Type your iRacing User ID (Customer ID) and pick your car in iRacing Car Folder. These are one-time settings.",
+    "Make a zone: press Pick Color From Car in the Zone panel and click a colour on SOURCE. Click more colours to add them.",
+    "Give the zone a finish: click the BASE swatch, open Foundations > Foundation Bases, choose a base (the Tutorial suggests Chrome) and press Apply in its preview card.",
+    "Switch the template layers (Wire, Mask, Car_Mandatory) off in the Layers panel.",
+    "Press RENDER. Wait for the green Saved bar.",
+    "Alt+Tab to iRacing and press Ctrl+R in a session with your car."
+   ],
+   "controls": [
+    {
+     "label": "PICK COLOR FROM CAR",
+     "range": "",
+     "default": "",
+     "effect": "Starts a zone from colours you click on the paint."
+    },
+    {
+     "label": "BASE swatch",
+     "range": "",
+     "default": "",
+     "effect": "Opens the finish library."
+    },
+    {
+     "label": "RENDER",
+     "range": "",
+     "default": "",
+     "effect": "Builds and copies the paint and spec.",
+     "inv": "btnRender"
+    }
+   ],
+   "tips": [
+    "Press the Tutorial button in the header any time: it shows the next step as a small chip and checks it off when you do it.",
+    "If you are not sure the chain works, render once with no changes first: you should see your own paint in iRacing."
+   ],
+   "pitfalls": [
+    "Chrome over a dark colour looks dark in the sim; use a light colour under metal.",
+    "If nothing shows in iRacing, work through the not-in-iRacing article before redesigning."
+   ],
+   "related": [
+    "workflows.tutorial_quests",
+    "workflows.loading_paint",
+    "workflows.user_id_and_folder",
+    "support.not_in_iracing",
+    "preview_render.render_button"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "btnRender"
+    },
+    {
+     "do": "control",
+     "id": "iracingId",
+     "label": "IRACING USER ID box"
+    },
+    {
+     "do": "control",
+     "id": "outputDir",
+     "label": "IRACING CAR FOLDER box"
+    }
+   ],
+   "figures": [
+    "g09_render_export_flow"
+   ],
+   "covers": [
+    "btnRender",
+    "iracingId",
+    "outputDir",
+    "pro.header.psd_xcf_ora"
+   ],
+   "sources": [
+    "js/spb-quests.js:205",
+    "js/spb-quests.js:213",
+    "js/spb-quests.js:221",
+    "js/spb-quests.js:231",
+    "js/spb-quests.js:246",
+    "js/spb-support-answers.js:116"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "first paint",
+    "first time using shokker",
+    "how do i start",
+    "getting started",
+    "quick start",
+    "beginner guide",
+    "make my first livery",
+    "ten minute start",
+    "i am new",
+    "new user",
+    "where do i start",
+    "tutorial for beginners",
+    "make a paint step by step",
+    "my first paint",
+    "first livery"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Seven moves",
+     "body": "Open the template and wait for your paint under SOURCE. Type your iRacing User ID and pick your car in iRacing Car Folder (one-time settings). Press Pick Color From Car in the Zone panel and click a colour on SOURCE. Click the BASE swatch, open Foundations > Foundation Bases, choose a base and press Apply. Switch the template layers (Wire, Mask, Car_Mandatory) off. Press RENDER and wait for the green Saved bar. Alt+Tab to iRacing and press Ctrl+R."
+    },
+    {
+     "heading": "The Tutorial does this with you",
+     "body": "Press Tutorial in the header any time. It shows the next step as a small chip and checks it off when you do it."
+    },
+    {
+     "heading": "Why metal can look dark",
+     "body": "Chrome over a dark colour looks dark in the sim. Use a light colour under metal."
+    }
+   ],
+   "examples": [
+    {
+     "title": "A chrome hood in ten minutes",
+     "goal": "Your first visible result",
+     "settings": {
+      "Open": "The template for your car",
+      "Zone": "Pick Color From Car, click the colour of the hood",
+      "Base": "Foundations > Foundation Bases > Chrome, Apply",
+      "Layers": "Wire, Mask, Car_Mandatory off",
+      "Then": "RENDER, Ctrl+R in iRacing"
+     },
+     "result": "Your hood is chrome in the sim."
+    },
+    {
+     "title": "Prove the chain first",
+     "goal": "Check everything is set up before designing",
+     "settings": {
+      "Do": "Render once with no changes"
+     },
+     "result": "You should see your own paint in iRacing. If not, fix IDs and folders before redesigning."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Do I need patterns or layers for my first paint?",
+     "a": "No. A zone with a base finish is enough."
+    },
+    {
+     "q": "Where do I find the Tutorial?",
+     "a": "The Tutorial button in the header."
+    },
+    {
+     "q": "Nothing shows in iRacing.",
+     "a": "Work through the not-in-iRacing article before redesigning."
+    },
+    {
+     "q": "Do I set the ID every time?",
+     "a": "No. The ID and car folder are one-time settings."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The chrome looks nearly black",
+     "cause": "Chrome reflects dark colour under it",
+     "fix": "Use a light colour under metal."
+    },
+    {
+     "symptom": "Lines appear on the car",
+     "cause": "Wire, Mask or Car_Mandatory was left on",
+     "fix": "Turn them off in Layers, render again."
+    }
+   ],
+   "protips": [
+    "If you only follow one habit, make it this: render once with no changes the first time, then design."
+   ],
+   "screens": [
+    "ui_window_tour",
+    "flow_step1_loaded",
+    "flow_step2_zone_added"
+   ]
+  },
+  {
+   "id": "workflows.loading_paint",
+   "title": "Loading a paint: flat TGA / PNG / JPEG vs a layered PSD",
+   "domain": "workflows",
+   "summary": "PSD/XCF/ORA opens a layered template that keeps numbers, logos and body paint apart. TGA/PNG/JPEG opens one flat picture with no layers.",
+   "what": "Source Paint is the file Shokker paints over. A layered template lets zones target the body only, keep sponsors safe and hide template guide layers. A flat file is fine for a quick colour change but you cannot separate the number from the body except by colour. Either way the file must be 2048 by 2048 (or 1024 by 1024).",
+   "when": [
+    "You have a PSD from the car's template pack.",
+    "You only have a TGA or PNG of a finished paint.",
+    "You are not sure which button to press."
+   ],
+   "how": [
+    "PSD/XCF/ORA next to Source Paint opens a layered Photoshop (.psd), GIMP (.xcf) or OpenRaster (.ora) file with every layer editable. Only those three types work on this button.",
+    "TGA/PNG/JPEG opens a flat paint instead.",
+    "Wait for the paint to appear under SOURCE. A big PSD can take up to a minute; a message at the bottom shows progress and, at the end, how many layers loaded.",
+    "Open the template of the car you drive, at its normal 2048 by 2048 size. Do not resize it.",
+    "Switch the template layers (Wire, Mask, Car_Mandatory and the group named Turn Off Before Exporting TGA) off before you render."
+   ],
+   "controls": [
+    {
+     "label": "PSD/XCF/ORA",
+     "range": ".psd .xcf .ora",
+     "default": "",
+     "effect": "Opens a layered template.",
+     "inv": "pro.header.psd_xcf_ora"
+    },
+    {
+     "label": "TGA/PNG/JPEG",
+     "range": "",
+     "default": "",
+     "effect": "Opens a flat paint without layers.",
+     "inv": "pro.header.tga_png_jpeg"
+    }
+   ],
+   "tips": [
+    "Layer names such as Car Paint, Numbers and Sponsors let you target exactly one part.",
+    "GIMP: export as .ora or .psd, or use the .xcf directly. Krita: .ora."
+   ],
+   "pitfalls": [
+    "Only pixel layers import from a PSD; rasterize text and shapes first.",
+    "A file name alone in Source Paint is not enough; use the buttons so Shokker has the full path."
+   ],
+   "related": [
+    "support.psd_wont_open",
+    "cars.choose_template",
+    "ui_shell.source_paint",
+    "workflows.first_paint"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "pro.header.psd_xcf_ora"
+    },
+    {
+     "do": "control",
+     "id": "pro.header.tga_png_jpeg"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "pro.header.psd_xcf_ora",
+    "pro.header.tga_png_jpeg"
+   ],
+   "sources": [
+    "js/spb-support-answers.js:122",
+    "paint-booth-3-canvas.js:21616",
+    "js/spb-quests.js:205",
+    "docs/ai_knowledge/06_layers_panels_and_export.md:4"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "load a paint",
+    "open a psd",
+    "open my template",
+    "tga or psd",
+    "psd vs tga",
+    "which file do i open",
+    "open my paint file",
+    "flat paint",
+    "layered template",
+    "xcf",
+    "gimp template",
+    "load png",
+    "load my paint file",
+    "loading paint",
+    "psd or tga"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Layered or flat",
+     "body": "PSD/XCF/ORA opens a layered template where every layer is editable, so zones can target the body only, keep sponsors safe and hide template guide layers. TGA/PNG/JPEG opens one flat picture: fine for a quick colour change, but you cannot separate the number from the body except by colour. Either way the file must be 2048 by 2048 (or 1024 by 1024)."
+    },
+    {
+     "heading": "Loading time and layers",
+     "body": "A big PSD can take up to a minute. A message at the bottom shows progress and, at the end, how many layers loaded. Only pixel layers import from a PSD, so rasterize text and shapes first."
+    },
+    {
+     "heading": "Other programs",
+     "body": "GIMP: export as .ora or .psd, or use the .xcf directly. Krita: .ora. Use the buttons so Shokker has the full path; a file name alone in Source Paint is not enough."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Layered template",
+     "goal": "Keep numbers and sponsors apart from the body",
+     "settings": {
+      "Button": "PSD/XCF/ORA",
+      "Layer names": "Car Paint, Numbers, Sponsors",
+      "Before render": "Wire, Mask, Car_Mandatory, Turn Off Before Exporting TGA group off"
+     },
+     "result": "Zones can target the body only."
+    },
+    {
+     "title": "Quick flat change",
+     "goal": "Recolour a finished TGA",
+     "settings": {
+      "Button": "TGA/PNG/JPEG"
+     },
+     "result": "You get one flat picture with no layers."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which files open with the PSD/XCF/ORA button?",
+     "a": "Only .psd, .xcf and .ora."
+    },
+    {
+     "q": "My PSD text is missing.",
+     "a": "Only pixel layers import. Rasterize text and shape layers first."
+    },
+    {
+     "q": "Does the size matter?",
+     "a": "Yes. It must be 2048 by 2048 or 1024 by 1024. Do not resize."
+    },
+    {
+     "q": "Can Krita files be used?",
+     "a": "Yes, as .ora."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The load seems stuck",
+     "cause": "A big PSD takes up to a minute",
+     "fix": "Wait for the message at the bottom to say how many layers loaded."
+    },
+    {
+     "symptom": "Source Paint will not load a typed name",
+     "cause": "A name alone has no full path",
+     "fix": "Use the buttons to pick the file."
+    }
+   ],
+   "protips": [
+    "Name your layers (Car Paint, Numbers, Sponsors). Clear names let you and the helper target exactly one part."
+   ],
+   "screens": [
+    "ui_header_rows",
+    "flow_step1_loaded"
+   ]
+  },
+  {
+   "id": "workflows.user_id_and_folder",
+   "title": "Your iRacing User ID and car folder",
+   "domain": "workflows",
+   "summary": "Type your iRacing Customer ID (not your car number) in iRacing User ID, and pick your car's folder in iRacing Car Folder. Set both once and every render goes to the right place.",
+   "what": "Shokker names every file with your Customer ID and copies them into your car's paint folder. If either is wrong, iRacing silently shows paint-shop colours instead of your paint, so these two boxes are the most important settings in the program.",
+   "when": [
+    "You are setting Shokker up for the first time.",
+    "You switched to another car.",
+    "iRacing does not show your paint."
+   ],
+   "how": [
+    "In iRacing click the helmet icon (top right), then Profile. The number at the top is your Customer ID, 4 to 7 digits. Type it in iRacing User ID at the top of Shokker.",
+    "Run your car once in iRacing (a test session is enough) so iRacing creates the car's paint folder under Documents, then iRacing, then paint.",
+    "In Shokker open the car menu next to iRacing Car Folder and pick your car (read the folder name; newest is not always yours), or use the folder button to browse.",
+    "Choose Custom Number or Sim-Stamped Number to match iRacing's Hide Car Numbers setting: ON means Custom Number.",
+    "Render once and press Show my files on the Saved bar to confirm your files are in the folder."
+   ],
+   "controls": [
+    {
+     "label": "iRacing User ID",
+     "range": "4 to 7 digits",
+     "default": "empty",
+     "effect": "Your iRacing Customer ID.",
+     "inv": "iracingId"
+    },
+    {
+     "label": "iRacing Car Folder",
+     "range": "a car folder",
+     "default": "empty",
+     "effect": "The folder of the car you drive.",
+     "inv": "outputDir"
+    },
+    {
+     "label": "Custom Number / Sim-Stamped Number",
+     "range": "",
+     "default": "",
+     "effect": "Chooses the file name only.",
+     "inv": "useCustomNumberCheckbox"
+    }
+   ],
+   "tips": [
+    "Shokker can often fill the ID itself from files already in your paint folders.",
+    "A paint for car A in the folder of car B is ignored by iRacing."
+   ],
+   "pitfalls": [
+    "Do not type your car number; there is no car-number field in Shokker.",
+    "Loading a project file from someone else can overwrite your ID and folder."
+   ],
+   "related": [
+    "preview_render.number_modes",
+    "preview_render.where_files_go",
+    "support.not_in_iracing",
+    "ui_shell.car_folder",
+    "ui_shell.number_modes"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "iracingId"
+    },
+    {
+     "do": "control",
+     "id": "outputDir"
+    },
+    {
+     "do": "control",
+     "id": "carPickBtn",
+     "label": "Pick detected iRacing car button"
+    }
+   ],
+   "figures": [
+    "g10_file_naming"
+   ],
+   "covers": [
+    "iracingId",
+    "outputDir",
+    "carPickBtn",
+    "useCustomNumberCheckbox",
+    "useSimStampedCheckbox",
+    "doc.10.support_the_iracing_user_id_customer_id_and_why_a_wrong_one_"
+   ],
+   "sources": [
+    "js/spb-support-answers.js:24",
+    "docs/ai_knowledge/10_support_troubleshooting.md:11",
+    "docs/ai_knowledge/10_support_troubleshooting.md:17",
+    "js/spb-quests.js:231",
+    "js/spb-support.js:190"
+   ],
+   "quick": true,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "iracing id",
+    "where is my iracing id",
+    "find my customer id",
+    "car folder setup",
+    "set the car folder",
+    "set up iracing folder",
+    "which folder",
+    "first time setup",
+    "one time setup",
+    "iracing setup",
+    "iracing user id",
+    "member id",
+    "my id number"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The two boxes that matter most",
+     "body": "Shokker names every file with your Customer ID and copies it into your car's paint folder. If either is wrong, iRacing silently shows paint-shop colours instead of your paint."
+    },
+    {
+     "heading": "Finding the ID",
+     "body": "In iRacing click the helmet icon (top right), then Profile. The number at the top is your Customer ID, 4 to 7 digits. It is not your car number: Shokker has no car-number field. Shokker can often fill it from files already in your paint folders."
+    },
+    {
+     "heading": "Finding the folder",
+     "body": "Run your car once in iRacing so it creates the paint folder under Documents, then iRacing, then paint. In Shokker open the car menu next to iRacing Car Folder and pick your car (read the folder name; newest is not always yours) or use the folder button."
+    },
+    {
+     "heading": "Number mode",
+     "body": "Custom Number or Sim-Stamped Number only chooses the file name: car_num_ID.tga or car_ID.tga. Match iRacing's Hide Car Numbers setting: ON means Custom Number."
+    }
+   ],
+   "examples": [
+    {
+     "title": "One-time setup",
+     "goal": "Make renders land where iRacing looks",
+     "settings": {
+      "iRacing User ID": "Customer ID from Profile (4 to 7 digits)",
+      "iRacing Car Folder": "Car menu, your car",
+      "Number mode": "Custom Number if Hide Car Numbers is ON",
+      "Check": "Render once and press Show my files"
+     },
+     "result": "Your files are in the right folder with the right names."
+    },
+    {
+     "title": "Fix a paint that iRacing ignores",
+     "goal": "Find out what is wrong",
+     "settings": {
+      "Check 1": "ID has 4 to 7 digits",
+      "Check 2": "Folder matches the car you drive",
+      "Check 3": "Number mode matches Hide Car Numbers"
+     },
+     "result": "The mismatch shows up, usually the folder or the number mode."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Where do I find my Customer ID?",
+     "a": "In iRacing, click the helmet icon, then Profile. It is at the top."
+    },
+    {
+     "q": "Is it my car number?",
+     "a": "No. Shokker has no car-number field."
+    },
+    {
+     "q": "My paint for car A is ignored.",
+     "a": "It is in the folder of car B. iRacing ignores a paint in the wrong car's folder."
+    },
+    {
+     "q": "Why is a project from a friend changing my settings?",
+     "a": "Loading someone else's project can overwrite your ID and folder. Check them after loading."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "iRacing shows paint-shop colours",
+     "cause": "Wrong ID, folder or number mode",
+     "fix": "Fix the three settings and render again."
+    },
+    {
+     "symptom": "The car menu has no folder for your car",
+     "cause": "iRacing has not created it yet",
+     "fix": "Run the car once in a test session."
+    }
+   ],
+   "protips": [
+    "Press Show my files on the Saved bar after your first render. Seeing the three expected files proves the setup."
+   ],
+   "screens": [
+    "ui_header_rows",
+    "flow_step1_loaded"
+   ]
+  },
+  {
+   "id": "workflows.install_update",
+   "title": "Installing, updating and the update banner",
+   "domain": "workflows",
+   "summary": "Shokker installs with one click and updates from a banner under the title bar: Download Update, then Install & Restart. Save your work first, because installing restarts the app.",
+   "what": "The installer is a small web setup that installs for you without asking where; it adds a desktop shortcut and keeps your settings and projects when you uninstall. When a newer version exists, a banner appears. You choose when to download; nothing is forced.",
+   "when": [
+    "A banner says a new version is ready.",
+    "You are moving to a new PC.",
+    "The app acts strangely after an update."
+   ],
+   "how": [
+    "Run the Shokker Paint Booth setup. It installs in one click and creates a desktop shortcut.",
+    "Open Shokker. If it asks for a licence key, type the key in the Activate window (see the activation article).",
+    "When the banner shows Version N is ready to install, save your work (Save / Open) first.",
+    "Click Download Update. The button shows the progress and then changes to Install & Restart.",
+    "Click Install & Restart, or just quit later: the downloaded update also installs when you close the app.",
+    "After an update, close Shokker fully and open it once more if anything looks off.",
+    "Remind Me Later hides the banner for 24 hours."
+   ],
+   "controls": [
+    {
+     "label": "Download Update",
+     "range": "",
+     "default": "",
+     "effect": "Downloads the new version, then offers Install & Restart.",
+     "inv": "spbUpdateBannerDownload"
+    },
+    {
+     "label": "Remind Me Later",
+     "range": "24 hours",
+     "default": "",
+     "effect": "Hides the banner for a day.",
+     "inv": "spbUpdateBannerSnooze"
+    }
+   ],
+   "tips": [
+    "Uninstalling keeps your app data, so a reinstall brings your settings back.",
+    "The banner appears only when a newer version exists."
+   ],
+   "pitfalls": [
+    "Installing restarts the app and unsaved work is lost: save first.",
+    "A message saying the app and screen versions differ means a restart is needed."
+   ],
+   "related": [
+    "ui_shell.update_banner",
+    "settings.activation_license",
+    "support.wont_start_or_update"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "spbUpdateBannerDownload"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "spbUpdateBannerDownload",
+    "spbUpdateBannerSnooze"
+   ],
+   "sources": [
+    "electron-app/package.json:25",
+    "electron-app/package.json:39",
+    "electron-app/package.json:44",
+    "electron-app/main.js:3411",
+    "electron-app/main.js:3443",
+    "paint-booth-v2.html:1568",
+    "paint-booth-v2.html:1578"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "install shokker",
+    "how do i install",
+    "installer",
+    "update shokker",
+    "how to update",
+    "new version available",
+    "install and restart",
+    "reinstall",
+    "uninstall",
+    "move to new pc",
+    "where do i download",
+    "latest version",
+    "installing"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Installing",
+     "body": "The installer is a small web setup that installs in one click, adds a desktop shortcut and keeps your settings and projects when you uninstall. If it asks for a licence key, type it in the Activate window."
+    },
+    {
+     "heading": "The update banner",
+     "body": "When a newer version exists, a banner appears under the title bar. Download Update downloads it, then the button changes to Install & Restart. Remind Me Later hides the banner for 24 hours. A downloaded update also installs when you close the app."
+    },
+    {
+     "heading": "Save first",
+     "body": "Installing restarts the app and unsaved work is lost, so use Save / Open first. If a message says the app and screen versions differ, a restart is needed."
+    }
+   ],
+   "examples": [
+    {
+     "title": "A safe update",
+     "goal": "Update without losing work",
+     "settings": {
+      "Step 1": "Save your project",
+      "Step 2": "Download Update",
+      "Step 3": "Install & Restart"
+     },
+     "result": "The new version opens and your settings are kept."
+    },
+    {
+     "title": "Not now",
+     "goal": "Finish a design before updating",
+     "settings": {
+      "Button": "Remind Me Later"
+     },
+     "result": "The banner hides for 24 hours."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does uninstalling delete my settings?",
+     "a": "No. Uninstalling keeps your app data."
+    },
+    {
+     "q": "Do I have to update right away?",
+     "a": "No. You choose when to download. Nothing is forced."
+    },
+    {
+     "q": "Something looks off after an update.",
+     "a": "Close Shokker fully and open it once more."
+    },
+    {
+     "q": "Why is a finish missing that a friend has?",
+     "a": "You are on an older version. Update."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You lost unsaved work",
+     "cause": "Install & Restart closes the app",
+     "fix": "Save your project before installing."
+    },
+    {
+     "symptom": "The banner never shows",
+     "cause": "It appears only when a newer version exists",
+     "fix": "You are up to date."
+    }
+   ],
+   "protips": [
+    "Update between projects, not during one. A restart is harmless when everything is saved."
+   ],
+   "screens": [
+    "ui_toolbar_right",
+    "ui_update_banner"
+   ]
+  },
+  {
+   "id": "workflows.tutorial_quests",
+   "title": "The Tutorial and quests",
+   "domain": "workflows",
+   "summary": "The Tutorial button in the header turns on Training Wheels: eleven small quests, five core and six further, that teach the app while you use it. It never clicks for you, and hints retire as you learn.",
+   "what": "Training Wheels shows a next-move chip and a checklist. Each quest highlights the real control to use and checks itself off when you do the thing. Finish the five core quests (load, claim pixels, drop a finish, point at iRacing, render) and the six further quests open: patterns, spec, overlays, restrict, brush touch-up and saving a recipe.",
+   "when": [
+    "You are learning Shokker by doing.",
+    "You want to know what each button is for.",
+    "The hint chip is in your way."
+   ],
+   "how": [
+    "Press Tutorial in the header (the graduation-cap button) to toggle the guide on or off.",
+    "Follow the chip. Core quests: Get your car in here, Claim your pixels, Drop a finish, Point SPB at iRacing, Send it to the track.",
+    "Further quests: Break up the surface (pattern), Feel the material (spec channels), Stack a second material (overlays), Paint inside the lines (restrict a zone), Fix it by hand (brush) and Keep it forever (Save SHOKK).",
+    "While the wheels are on and you are at level 1, advanced zone sections start collapsed. Click a section header to peek; everything opens for good after your first render.",
+    "Turn the guide off from the same button any time. A skill's hint retires after you have done it three times."
+   ],
+   "controls": [
+    {
+     "label": "Tutorial",
+     "range": "on or off",
+     "default": "",
+     "effect": "Toggles the quest guide.",
+     "inv": "spbGuideToggle"
+    }
+   ],
+   "tips": [
+    "The quests use the real app, so what you learn carries over to every other job.",
+    "The first-run checklist opens once on a fresh profile."
+   ],
+   "pitfalls": [
+    "The old step-by-step tutorial overlay was removed; the Tutorial button is the current guide.",
+    "Some older guides still say ten quests; the current count is eleven."
+   ],
+   "related": [
+    "workflows.first_paint",
+    "workflows.pro_or_chat",
+    "ui_shell.top_bar_buttons"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "spbGuideToggle"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "spbGuideToggle"
+   ],
+   "sources": [
+    "js/spb-quests.js:2",
+    "js/spb-quests.js:205",
+    "js/spb-quests.js:254",
+    "js/spb-quests.js:294",
+    "paint-booth-v2.html:1972"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-04",
+   "aliases": [
+    "quests",
+    "guide me",
+    "walkthrough",
+    "how do i turn off the tutorial",
+    "hint chip",
+    "learn shokker",
+    "onboarding",
+    "checklist",
+    "step by step guide",
+    "tutorial button",
+    "quest"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Eleven quests",
+     "body": "Five core quests: Get your car in here, Claim your pixels, Drop a finish, Point SPB at iRacing, Send it to the track. Six further quests open after the core five: Break up the surface (pattern), Feel the material (spec channels), Stack a second material (overlays), Paint inside the lines (restrict a zone), Fix it by hand (brush) and Keep it forever (Save SHOKK)."
+    },
+    {
+     "heading": "How it guides",
+     "body": "A next-move chip and a checklist highlight the real control and check themselves off when you do the thing. It never clicks for you. A skill's hint retires after you have done it three times."
+    },
+    {
+     "heading": "Collapsed sections",
+     "body": "While the wheels are on and you are at level 1, advanced zone sections start collapsed. Click a section header to peek; everything opens for good after your first render."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Follow the core five",
+     "goal": "Learn the basic loop",
+     "settings": {
+      "Press": "Tutorial in the header",
+      "Follow": "The chip through all five core quests"
+     },
+     "result": "You have rendered your first paint and the six further quests open."
+    },
+    {
+     "title": "Turn it off",
+     "goal": "Remove the guide",
+     "settings": {
+      "Press": "The same Tutorial button"
+     },
+     "result": "The chip and checklist disappear."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does the Tutorial click for me?",
+     "a": "No. It highlights the control and checks the step off when you do it."
+    },
+    {
+     "q": "How many quests are there?",
+     "a": "Eleven: five core and six further."
+    },
+    {
+     "q": "Why are some sections collapsed?",
+     "a": "At level 1 advanced zone sections start collapsed. They all open after your first render."
+    },
+    {
+     "q": "Can I turn it back on?",
+     "a": "Yes. Press Tutorial again."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "You cannot find a control",
+     "cause": "The section is collapsed while the wheels are on",
+     "fix": "Click the section header to peek."
+    },
+    {
+     "symptom": "An old guide says ten quests",
+     "cause": "The count changed to eleven",
+     "fix": "Follow the chip in the app."
+    }
+   ],
+   "protips": [
+    "Finish the core five even if you plan to turn the guide off. They teach the exact loop you will repeat for every paint."
+   ],
+   "screens": [
+    "ui_toolbar_right"
+   ]
+  },
+  {
+   "id": "workflows.platform_and_limits",
+   "title": "Windows, iRacing, price and what Shokker does not do",
+   "domain": "workflows",
+   "summary": "Shokker installs on Windows and writes iRacing paint and spec files. It has no Mac version, no other sims, no animated or glow-in-the-dark paint, and the licence is bought from the Buy License button (it opens the online store page).",
+   "what": "Shokker Paint Booth is a Windows app: the installer is a Windows setup and there is no Mac or Linux build. It makes iRacing files only: car_<ID>.tga or car_num_<ID>.tga for the paint and car_spec_<ID>.tga for the shine. Other sims use other files and Shokker has no settings for them. A paint is a flat picture, so it cannot move, glow in the dark or change the car's shape. The licence is bought through Buy License on the licence screen, which opens the online store page (Payhip); the app itself does not show or state a price, so look at the store page. The built-in helper is free and works offline; only the optional AI uses your own key.",
+   "when": [
+    "Before you buy or install.",
+    "You ask whether Shokker works on a Mac or with another sim.",
+    "You want an effect a flat paint cannot do."
+   ],
+   "how": [
+    "1. Install on a Windows PC with the Shokker setup file.",
+    "2. Activate on the licence screen. No licence yet? Press Buy License: it opens the store page; the app does not list a price itself.",
+    "3. Paint, render and drive it in iRacing. For anything not in the app, ask the helper for the nearest thing it can do."
+   ],
+   "controls": [],
+   "tips": [
+    "The built-in helper and design library are free; only the optional AI costs money, on your own key, with a daily cap."
+   ],
+   "pitfalls": [
+    "Shokker cannot paint emissive light: iRacing has no glow-in-the-dark paint. Use a phosphorescent-looking finish instead.",
+    "Wheels and windows only change where the car's own sheet paints them."
+   ],
+   "related": [
+    "workflows.what_is_shokker",
+    "settings.activation_license",
+    "help_support_1.ai_cost",
+    "workflows.install_update",
+    "preview_render.output_files",
+    "recipes.helmet_suit"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "sources": [
+    "electron-app/package.json:34-37",
+    "js/spb-self-help.js:98",
+    "docs/ai_knowledge/how_do_i.md:791",
+    "docs/ai_knowledge/05_design_and_taste.md:31",
+    "electron-app/license.html:173",
+    "electron-app/main.js:754-756",
+    "js/spb-support-answers.js:78",
+    "server.py:5638"
+   ],
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-05",
+   "level": "beginner",
+   "aliases": [
+    "is there a mac version",
+    "does it work on mac",
+    "macbook",
+    "other sims",
+    "assetto corsa",
+    "rfactor",
+    "does it work with other games",
+    "how much does shokker cost",
+    "price of shokker",
+    "buy shokker",
+    "buy a license",
+    "system requirements",
+    "what pc do i need",
+    "windows only",
+    "animated paint",
+    "linux",
+    "linux version",
+    "free trial",
+    "nascar heat",
+    "iracing only",
+    "other racing games",
+    "acc",
+    "acc paints",
+    "assetto corsa competizione",
+    "automobilista",
+    "ams2",
+    "rfactor 2",
+    "le mans ultimate",
+    "gran turismo",
+    "forza",
+    "other sim paints"
+   ],
+   "deep": [
+    {
+     "heading": "Why iRacing only",
+     "body": "Every render ends in iRacing's own file names: car_<ID>.tga or car_num_<ID>.tga for the paint and car_spec_<ID>.tga for the spec map, copied into the iRacing paint folder for your car. Other sims expect different files, folders and spec rules, so Shokker has no export for them. You can still open a rendered TGA as a picture in another tool."
+    },
+    {
+     "heading": "What a flat paint cannot do",
+     "body": "The paint is one flat 2048 x 2048 picture of the car cut open. It cannot animate, glow, show a 3D shape or change wheels and windows beyond what the sheet already paints. iRacing's lighting decides how chrome and flake look on track. The helper says so plainly and offers the closest real thing."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Mac owner",
+     "goal": "Run Shokker on a Mac",
+     "settings": {
+      "Mac": "not supported",
+      "Windows PC": "install the Shokker setup"
+     },
+     "result": "Shokker runs on the Windows PC; drive the paint in iRacing as usual."
+    },
+    {
+     "title": "Glow-in-the-dark request",
+     "goal": "A paint that glows at night",
+     "settings": {
+      "Glow": "not possible in iRacing",
+      "Nearest": "a bright phosphorescent-looking finish"
+     },
+     "result": "A paint that reads bright, without real light."
+    }
+   ],
+   "combos": [
+    {
+     "with": "settings.activation_license",
+     "why": "Activating, moving to a new PC and offline use."
+    },
+    {
+     "with": "help_support_1.ai_cost",
+     "why": "What the optional AI costs."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Is there a Mac version?",
+     "a": "No. Shokker installs on Windows only."
+    },
+    {
+     "q": "Does Shokker work with Assetto Corsa, rFactor or other sims?",
+     "a": "No. It writes iRacing paint and spec files only."
+    },
+    {
+     "q": "How much does Shokker cost?",
+     "a": "The app does not list or state a price. Press Buy License on the licence screen: it opens the online store page, which is where to look."
+    },
+    {
+     "q": "What PC do I need?",
+     "a": "A Windows PC that runs the Shokker setup. The app lists no other minimum; big renders with many zones simply take longer."
+    },
+    {
+     "q": "Can I paint my wheels or rims?",
+     "a": "Only where your car's template sheet includes them; Shokker writes no separate rim files."
+    },
+    {
+     "q": "Can I make an animated or glow-in-the-dark paint?",
+     "a": "No. A paint is a still picture and iRacing has no emissive paint. Pick a bright finish for a glowing look."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Looking for an export for another sim",
+     "cause": "Shokker only makes iRacing files.",
+     "fix": "Use the rendered TGA as a picture in that sim's own tools."
+    },
+    {
+     "symptom": "Expecting the price inside the app",
+     "cause": "The app states no price; only the online store page can.",
+     "fix": "Press Buy License on the licence screen."
+    }
+   ],
+   "protips": [
+    "The free built-in helper answers most how-to questions offline; an AI key is optional."
+   ],
+   "screens": [],
+   "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+  },
+  {
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-05",
+   "controls": [],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "id": "workflows.business_and_sharing",
+   "title": "Refunds, beta, PC and graphics card, selling paints, two PCs and working with a friend",
+   "domain": "workflows",
+   "level": "beginner",
+   "summary": "The render engine runs on the processor by default, so a gaming graphics card is not required; refunds, beta, PC specs and selling rights are not stated in the app, so ask support (Settings gear > Report a Problem). Work moves between PCs and people as files: there is no cloud sync or live co-editing.",
+   "what": "Some questions are about the product rather than the paint. Graphics card: the render engine uses the processor (numpy) and only uses a graphics card when the optional CuPy library is installed for an NVIDIA (CUDA) or AMD (ROCm) card, otherwise it falls back to the processor, so a gaming GPU is not required. The app does not publish minimum PC specs, refund terms, a beta sign-up or rules about selling paints you make; for those, contact Shokker support through Settings gear > Report a Problem, which gathers the details to send. Shokker has no shop or marketplace for selling paints. Your work is saved as files: Save / Open stores a whole project, SHOKK files and .shokkerrecipe files carry a look, and Export ZIP Package bundles the paint, spec and preview on every render (a Download ZIP Package link appears under the render; Shokker keeps only the two newest renders, so download it right away). To use two PCs or work with a friend, copy or send those files; there is no cloud sync and no two-people-at-once editing.",
+   "when": [
+    "Before buying, or when something about the licence is unclear.",
+    "You want to work on the same paint from two PCs.",
+    "A friend or teammate wants your design."
+   ],
+   "how": [
+    "1. Product questions (refund, beta, PC specs, selling): open the Settings gear at the top right, choose Report a Problem and send it to Shokker support.",
+    "2. Moving work to another PC: Save / Open your project to a file, copy it (USB, cloud folder or email) and open it there; the licence asks to be activated again on the new PC.",
+    "3. Sharing a look: after Render use Share Recipe (.shokkerrecipe) or save a SHOKK file and send it.",
+    "4. Sharing the finished paint: tick Export ZIP Package under the Settings gear so every render also writes a ZIP with paint, spec and preview.",
+    "5. Working as a team: agree who edits; the other person opens the newest file you send. There is no live co-editing."
+   ],
+   "tips": [
+    "A cloud folder you sync yourself can carry the project file between two PCs as long as only one copy of Shokker has the project open at a time; Shokker itself has no sync."
+   ],
+   "pitfalls": [
+    "The helper cannot see or change your licence; licence, refund and beta questions go to support.",
+    "Opening the same project on two PCs at once and saving both will overwrite one person's changes."
+   ],
+   "related": [
+    "workflows.platform_and_limits",
+    "settings.activation_license",
+    "preview_render.saving_projects",
+    "help_howto_3.share_recipe",
+    "workflows.install_update",
+    "help_support_1.ai_cost"
+   ],
+   "sources": [
+    "engine/gpu.py:2-13",
+    "js/spb-support-answers.js:94",
+    "js/spb-support-answers.js:132",
+    "docs/ai_knowledge/how_do_i.md:793",
+    "paint-booth-v2.html:2197",
+    "paint-booth-v2.html:2669-2670",
+    "shokker_engine_v2.py:23325",
+    "electron-app/license.html:164-209",
+    "scripts/ai_atlas/ui_map.json:12950"
+   ],
+   "aliases": [
+    "refund",
+    "do i get a refund",
+    "money back",
+    "is there a beta",
+    "beta version",
+    "beta tester",
+    "early access",
+    "does it need a good gpu",
+    "graphics card",
+    "minimum pc specs",
+    "will my pc run it",
+    "can i sell my paints",
+    "sell liveries",
+    "commercial use",
+    "sync projects across two pcs",
+    "two computers",
+    "cloud sync",
+    "laptop and desktop",
+    "two people working on one paint",
+    "collaborate",
+    "team painting",
+    "share project with a friend",
+    "send my project",
+    "gpu",
+    "minimum specs",
+    "pc specs"
+   ],
+   "deep": [
+    {
+     "heading": "What the app says and what it leaves to support",
+     "body": "The app documents what it does: Windows only, iRacing only, licence entered at start-up and moved to a new PC by activating again, a free offline helper and an optional AI on your own key. It does not publish refund terms, minimum hardware, a beta programme or selling rights, so the helper will not guess at them. Report a Problem under the Settings gear builds the details support needs, so ask there."
+    },
+    {
+     "heading": "Files are how work travels",
+     "body": "Everything is a file on your PC. A project (Save / Open) holds the paint, every zone and the layer settings. A SHOKK file or a .shokkerrecipe holds a look to reuse or share. Export ZIP Package adds a ZIP of the paint, spec and preview to every render. Copy these between PCs or send them to a teammate; Shokker has no account-based cloud storage."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Laptop at the track, desktop at home",
+     "goal": "Keep one project on two PCs",
+     "settings": {
+      "Save": "Save / Open to a file in a cloud folder",
+      "Rule": "open it on one PC at a time"
+     },
+     "result": "Both PCs work on the newest copy."
+    },
+    {
+     "title": "Send a teammate your look",
+     "goal": "Same finish on a teammate's car",
+     "settings": {
+      "After Render": "Share Recipe (.shokkerrecipe)",
+      "Teammate": "imports the recipe on their car"
+     },
+     "result": "The teammate gets the same finishes on their own template; recipes are matched by zones, so a very different car may need its colour regions picked again."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Do I need a good graphics card?",
+     "a": "No. The engine renders on the processor and only uses a graphics card if the optional CuPy library is installed. The app lists no minimum PC specs."
+    },
+    {
+     "q": "Can I get a refund or join a beta?",
+     "a": "The app does not state terms. Ask Shokker support: Settings gear > Report a Problem."
+    },
+    {
+     "q": "Can I sell paints I make?",
+     "a": "Shokker has no shop and does not state selling rules; ask support before selling."
+    },
+    {
+     "q": "Can two people work on one paint?",
+     "a": "Not at the same time. Send the project or a recipe and take turns."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Changes from one PC disappeared.",
+     "cause": "The project was open and saved on two PCs at once.",
+     "fix": "Open it on one PC at a time and always open the newest file."
+    },
+    {
+     "symptom": "The licence asks again on the new PC.",
+     "cause": "The licence is saved per PC and Windows account.",
+     "fix": "Activate it again on the new PC; ask support if it refuses."
+    }
+   ],
+   "protips": [
+    "Send teammates a .shokkerrecipe instead of the whole project: it is small and restores your look on their own car's template (a very different car may need the colour regions picked again)."
+   ],
+   "screens": [
+    "ui_settings_menu",
+    "ui_toolbar_right"
+   ]
+  },
+  {
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-05",
+   "controls": [],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "id": "workflows.iracing_side",
+   "title": "iRacing side questions: owning the car, pit stall banners and iRacing's own shop",
+   "domain": "workflows",
+   "level": "beginner",
+   "summary": "Shokker writes car paint and spec files, and iRacing only reads them once it has made the car's paint folder, which happens the first time you run that car in a session. Pit stall banners, interiors and iRacing's own store are outside what Shokker writes.",
+   "what": "Shokker can open any car template you have, but iRacing reads a paint from the car's folder inside the iRacing paint folder in Documents, and iRacing creates that folder the first time you run the car in a race or test session. So to see your paint on the car you need to run it in iRacing at least once (what iRacing lets you run is up to iRacing). Shokker writes the car's paint (car_<ID>.tga or car_num_<ID>.tga) and spec (car_spec_<ID>.tga) only; helmet and suit folders, pit stall banners, interiors and other iRacing items are not Shokker targets. Shokker has no shop, and submitting a paint to iRacing's own store is not something the app does. Other drivers see your paint through the Trading Paints service.",
+   "when": [
+    "You want to paint a car you have not run in iRacing yet.",
+    "You want a pit stall banner or another non-car item.",
+    "You want to sell or submit a paint through iRacing."
+   ],
+   "how": [
+    "1. Run the car once in an iRacing test session so iRacing creates its paint folder.",
+    "2. In Shokker, set iRacing Car Folder to that folder and your iRacing User ID at the top.",
+    "3. Paint, render, then press Ctrl+R in iRacing to reload.",
+    "4. To let others see it, upload it to Trading Paints (paint as TGA or PNG, spec as the .mip iRacing builds).",
+    "5. For items Shokker does not write (pit stall, interior), use iRacing's own paint shop or another editor."
+   ],
+   "tips": [
+    "The car folder name is the car's path with a space instead of the slash, for example stockcars chevyss; iRacing's paint shop tool-tip shows it."
+   ],
+   "pitfalls": [
+    "Painting a car whose folder iRacing has not created yet means the render has no iRacing folder to be copied into, and a mistyped car folder can end up saving into its parent folder where iRacing never looks.",
+    "Helmet and suit paints use their own iRacing folders; Shokker's render does not write them."
+   ],
+   "related": [
+    "workflows.user_id_and_folder",
+    "ui_shell.car_folder",
+    "preview_render.trading_paints_mip",
+    "recipes.helmet_suit",
+    "workflows.platform_and_limits",
+    "support.not_in_iracing"
+   ],
+   "sources": [
+    "docs/ai_knowledge/10_support_troubleshooting.md:17",
+    "docs/ai_knowledge/10_support_troubleshooting.md:23",
+    "docs/ai_knowledge/10_support_troubleshooting.md:45",
+    "docs/ai_knowledge/how_do_i.md:793",
+    "js/spb-support-answers.js:22",
+    "docs/ai_knowledge/10_support_troubleshooting.md:51"
+   ],
+   "aliases": [
+    "do i need to own the car",
+    "paint a car i dont own",
+    "car i havent driven",
+    "pit stall banner",
+    "pit box banner",
+    "pit wall banner",
+    "iracing shop",
+    "submit paint to iracing",
+    "sell on iracing",
+    "report my paint to iracing",
+    "iracing store",
+    "official paint",
+    "iracing paint shop vs shokker"
+   ],
+   "deep": [
+    {
+     "heading": "Why you need the car in iRacing",
+     "body": "iRacing looks for paints in a folder named after the car, inside the iRacing paint folder in your Documents. It creates that folder the first time you run the car in a race or test session. Shokker copies its render into the folder you set as iRacing Car Folder, so without the car's folder there is nowhere for iRacing to read the paint from."
+    },
+    {
+     "heading": "What Shokker writes and what it does not",
+     "body": "A render writes the car paint and the spec map for your iRacing User ID, nothing else. Pit stall banners, interiors, helmets and suits, and iRacing's own store all live outside that. iRacing never sends paint files between drivers; other people see your paint only through Trading Paints."
+    }
+   ],
+   "examples": [
+    {
+     "title": "New car for next season",
+     "goal": "Paint a car you just bought",
+     "settings": {
+      "iRacing": "run one test session in it",
+      "Shokker": "iRacing Car Folder = the new folder"
+     },
+     "result": "The render lands where iRacing reads it."
+    },
+    {
+     "title": "Show the league your paint",
+     "goal": "Others see it on the grid",
+     "settings": {
+      "Trading Paints": "upload paint TGA/PNG and the spec .mip"
+     },
+     "result": "Other Trading Paints users see your car."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Do I need to own the car?",
+     "a": "Shokker does not check ownership. To see the paint in iRacing you must run the car once so iRacing creates its paint folder; whether you can run a car you do not own is up to iRacing, so ask iRacing support."
+    },
+    {
+     "q": "Can Shokker paint a pit stall banner?",
+     "a": "No. Shokker writes the car's paint and spec only."
+    },
+    {
+     "q": "Can I submit my paint to iRacing's shop?",
+     "a": "Shokker has no shop and does not submit paints anywhere."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "There is no folder for the car to pick.",
+     "cause": "iRacing has not created it yet.",
+     "fix": "Run the car once in a test session, then pick its folder."
+    },
+    {
+     "symptom": "Friends do not see the paint.",
+     "cause": "iRacing does not share paint files.",
+     "fix": "Upload it to Trading Paints."
+    }
+   ],
+   "protips": [
+    "Run a quick test session in any new car before painting it, so the folder exists when you first render."
+   ],
+   "screens": [
+    "ui_header_rows"
+   ]
+  },
+  {
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-05",
+   "controls": [],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "id": "workflows.rain_and_wet_track",
+   "title": "Rain and wet tracks: what your paint and spec do",
+   "domain": "workflows",
+   "level": "beginner",
+   "summary": "Shokker writes one paint and one spec map, with no rain or wet-weather version, and its preview cannot show rain. For a car that always looks wet, use the Wet Look finish or the CC Wet Zone spec overlay.",
+   "what": "A render writes the paint (car_num_ID.tga or car_ID.tga) and one spec map (car_spec_ID.tga). There is no second spec for wet weather and no rain setting in Shokker, so iRacing uses the same two files in every session. How water, spray and wet light look on the car is up to iRacing, and Shokker's live preview cannot show it. What you can control is how glossy the car is all the time: a low roughness and the glossiest clearcoat (16) give the tightest, wettest highlight.",
+   "when": [
+    "You race in the rain and wonder whether you need a different spec.",
+    "You want the car to look wet or freshly washed.",
+    "Your car looks different on a wet track than in Shokker."
+   ],
+   "how": [
+    "1. For a permanently wet shine, make a zone on the body and pick Wet Look under Base Material.",
+    "2. For uneven wet-looking clear patches, add the CC Wet Zone spec overlay to that zone.",
+    "3. In the spec, keep roughness (G) low and the clearcoat (B) at 16, the glossiest value.",
+    "4. Press RENDER, then Ctrl+R in iRacing; judge it in a dry and a wet session, because Shokker cannot show rain."
+   ],
+   "tips": [
+    "Gloss reads stronger when the colour underneath is deep; very light colours hide a wet highlight."
+   ],
+   "pitfalls": [
+    "There is no wet-weather spec file to make: renaming a copy of the spec does nothing.",
+    "The preview is a flat picture of the sheet; weather never shows there."
+   ],
+   "related": [
+    "recipes.wet_glass",
+    "preview_render.output_files",
+    "playbook.preview_cannot_show",
+    "help_howto_1.gloss_level",
+    "preview_render.reload_in_iracing"
+   ],
+   "sources": [
+    "docs/ai_knowledge/10_support_troubleshooting.md:19",
+    "js/spb-support-answers.js:22",
+    "paint-booth-0-finish-data.js:1077",
+    "paint-booth-0-finish-data.js:4961",
+    "docs/ai_knowledge/how_do_i.md:793",
+    "docs/ai_knowledge/10_support_troubleshooting.md:23"
+   ],
+   "aliases": [
+    "rain",
+    "rain spec",
+    "wet weather",
+    "wet weather spec",
+    "wet track",
+    "wet race",
+    "rain in iracing",
+    "spec in the rain",
+    "rainy",
+    "puddles",
+    "does my paint change in the rain",
+    "rain mode",
+    "wet conditions"
+   ],
+   "deep": [
+    {
+     "heading": "One spec for every weather",
+     "body": "Shokker writes exactly two files per render: the paint and the spec map. iRacing loads them whatever the weather, so there is nothing extra to make for a wet race. Weather effects on the car come from iRacing, not from the paint files."
+    },
+    {
+     "heading": "Making the car look wet",
+     "body": "A wet look is a tight, deep highlight, which comes from low roughness and the glossiest clearcoat. The Wet Look finish is built for that. The CC Wet Zone overlay adds slightly uneven glossy clear patches that read like real water on the clear."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Show-car wet shine",
+     "goal": "Looks freshly washed in every session",
+     "settings": {
+      "Base Material": "Wet Look",
+      "Spec overlay": "none"
+     },
+     "result": "A razor-sharp gloss highlight on the whole body."
+    },
+    {
+     "title": "Patchy wet clear",
+     "goal": "Uneven water-on-clear look",
+     "settings": {
+      "Base Material": "your colour finish",
+      "Spec overlay": "CC Wet Zone"
+     },
+     "result": "Glossier patches across the clear, visible in the reflections."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Do I need a different spec map for rain?",
+     "a": "No. Shokker writes one spec map and iRacing uses it in every session."
+    },
+    {
+     "q": "Can Shokker show how my car looks in the rain?",
+     "a": "No. The preview cannot show weather; check it in iRacing."
+    },
+    {
+     "q": "How do I make the car look wet all the time?",
+     "a": "Use the Wet Look finish, or add the CC Wet Zone spec overlay to a glossy finish."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The car looks dull on a wet track.",
+     "cause": "A rough or satin finish stays rough in every weather.",
+     "fix": "Lower the roughness or use Wet Look for a glossier car."
+    },
+    {
+     "symptom": "A second spec file made for rain does nothing.",
+     "cause": "iRacing reads only car_spec with your ID.",
+     "fix": "Keep one spec map; change its gloss instead."
+    }
+   ],
+   "protips": [
+    "Judge gloss in a dry session first; if it reads wet in the sun it will still read glossy in the rain."
+   ],
+   "screens": [
+    "ui_spec_strip"
+   ]
+  },
+  {
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-05",
+   "controls": [],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "id": "workflows.crash_damage",
+   "title": "Crash damage and your paint",
+   "domain": "workflows",
+   "level": "beginner",
+   "summary": "Shokker has no crash-damage paint and writes no damage files: a render is one paint and one spec map, and what a crash does to the car is up to iRacing. For a car that already looks battle-worn, use a worn finish such as Hardware: Battle Worn, Sun Faded, Die-Back Patina or Extreme: BMX Dirt.",
+   "what": "Every render writes the same two files, the paint and the spec map, and iRacing loads them as they are. Shokker has no setting for dents, scrapes or broken parts and cannot make the paint change after contact. What it can do is make the paint look used from the start: worn finishes bake chips, fading and rough clear into the look, and spec overlays add uneven clearcoat. That look is the same in every lap of every session.",
+   "when": [
+    "You want visible damage or scrapes on the car.",
+    "You want a battle-worn or rat-rod look.",
+    "You wonder whether your paint changes after a crash."
+   ],
+   "how": [
+    "1. Make a zone on the body (or only the panels you want worn).",
+    "2. Under BASE press Base Material and search worn, patina or dirt; pick Hardware: Battle Worn, Sun Faded, Die-Back Patina or Extreme: BMX Dirt.",
+    "3. Lower Base Strength to let some of your own paint show through.",
+    "4. Keep sponsors and numbers clear of the heaviest wear, then RENDER."
+   ],
+   "tips": [
+    "Wear looks real at edges and lower panels; keep the roof and hood cleaner."
+   ],
+   "pitfalls": [
+    "Too much wear hides your sponsors and numbers.",
+    "A worn finish is permanent in the file; it does not appear or grow during a race."
+   ],
+   "related": [
+    "recipes.weathered",
+    "recipes.named_looks",
+    "preview_render.output_files",
+    "workflows.platform_and_limits"
+   ],
+   "sources": [
+    "docs/ai_knowledge/10_support_troubleshooting.md:19",
+    "js/spb-support-answers.js:22",
+    "paint-booth-0-finish-data.js:152",
+    "paint-booth-0-finish-data.js:441",
+    "paint-booth-0-finish-data.js:650",
+    "paint-booth-0-finish-data.js:993",
+    "paint-booth-2-state-zones.js:2098",
+    "docs/ai_knowledge/05_design_and_taste.md:31"
+   ],
+   "aliases": [
+    "crash damage",
+    "damage",
+    "damaged paint",
+    "dents",
+    "damage texture",
+    "damage map",
+    "scrapes after a crash",
+    "wrecked look",
+    "crashed car look",
+    "paint after a crash",
+    "contact damage",
+    "does the paint get damaged"
+   ],
+   "deep": [
+    {
+     "heading": "What the files can and cannot do",
+     "body": "The paint and spec map are still pictures. They decide the colours and the shine, not how the car reacts to a crash. Anything that changes during a session comes from iRacing, so there is nothing in Shokker to switch on for damage."
+    },
+    {
+     "heading": "Faking a hard season",
+     "body": "Worn finishes give chipped edges, faded colour and a duller clear. Pair them with a strong base colour at reduced Base Strength so the livery still reads, and keep the wear off logos so sponsors stay legible."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Short-track veteran",
+     "goal": "A car that looks like it has seen contact",
+     "settings": {
+      "Base Material": "Hardware: Battle Worn",
+      "Base Strength": "lowered so the livery shows"
+     },
+     "result": "Worn-through edges over your colours."
+    },
+    {
+     "title": "Rally stage look",
+     "goal": "Dirty lower body",
+     "settings": {
+      "Zone": "box over the lower sides",
+      "Base Material": "Extreme: BMX Dirt"
+     },
+     "result": "Dirt on the lower body, clean above."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can I paint crash damage?",
+     "a": "Not as damage: Shokker writes no damage files. You can paint a worn look that is always there."
+    },
+    {
+     "q": "Does my paint change when I crash?",
+     "a": "Not from anything Shokker writes; any damage you see in a session is iRacing's."
+    },
+    {
+     "q": "Which finishes look battle-worn?",
+     "a": "Hardware: Battle Worn, Sun Faded, Die-Back Patina and Extreme: BMX Dirt."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The sponsors disappeared under the wear.",
+     "cause": "The worn finish covers the logo areas.",
+     "fix": "Lower Base Strength or keep the worn zone off the logos."
+    },
+    {
+     "symptom": "The whole car looks dirty.",
+     "cause": "Extreme: BMX Dirt is on the body zone.",
+     "fix": "Put it on a zone over the lower sides only."
+    }
+   ],
+   "protips": [
+    "Wear reads best on a few edges and lower panels; a fully worn car just looks dirty."
+   ],
+   "screens": [
+    "spec_wear"
+   ]
+  },
+  {
+   "quick": false,
+   "lane": "C",
+   "updated": "2026-10-05",
+   "controls": [],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "id": "workflows.view_in_3d",
+   "title": "Seeing the car in 3D, and 3D model export",
+   "domain": "workflows",
+   "level": "beginner",
+   "summary": "Shokker has no 3D car view and cannot export a 3D model; its live preview shows the flat sheet. To see the car in 3D, render and look at it in iRacing: the 3D Car Viewer in My Content reloads a saved paint by itself.",
+   "what": "Shokker edits the flat 2048 by 2048 sheet and shows it flat in the LIVE PREVIEW. There is no 3D view, no painting on a 3D model and no 3D model export (no OBJ, FBX or GLB). What Shokker can export are pictures: the paint and spec TGA files, a PNG, and the Photoshop round trip. To see your design on the car, press RENDER, then use iRacing: its 3D Car Viewer in My Content reloads a saved paint by itself, and in a session Ctrl+R reloads the car textures.",
+   "when": [
+    "You want to check the paint on the car before racing.",
+    "You want a 3D file of the car for Blender or a render.",
+    "You want to paint directly on a 3D car."
+   ],
+   "how": [
+    "1. Set your iRacing User ID and the car folder at the top, then press RENDER.",
+    "2. In iRacing open My Content and the 3D Car Viewer: it reloads the saved paint by itself.",
+    "3. Or join a test session in the car and press Ctrl+R to reload the textures.",
+    "4. Change the design in Shokker, render again and look again; the viewer shows whatever files are in the folder."
+   ],
+   "tips": [
+    "Turn the car in iRacing's viewer to check the seams where the sides meet the hood and bumpers; the flat sheet hides them."
+   ],
+   "pitfalls": [
+    "The live preview is flat: patterns that change the spec are subtle there and show properly only on the 3D car in iRacing.",
+    "In a replay iRacing does not reload cars sitting in their pit stalls; move to a moment when your car is on track."
+   ],
+   "related": [
+    "preview_render.reload_in_iracing",
+    "workflows.one_flat_sheet",
+    "support.image_files",
+    "preview_render.export_psd_photoshop",
+    "workflows.platform_and_limits"
+   ],
+   "sources": [
+    "js/spb-self-help.js:579",
+    "docs/ai_knowledge/how_do_i.md:790-794",
+    "docs/ai_knowledge/10_support_troubleshooting.md:23",
+    "paint-booth-v2.html:3531-3532",
+    "docs/ai_knowledge/10_support_troubleshooting.md:19"
+   ],
+   "aliases": [
+    "3d",
+    "3d view",
+    "3d preview",
+    "3d model",
+    "see my car in 3d",
+    "view the car in 3d",
+    "export 3d model",
+    "export the car model",
+    "obj file",
+    "fbx",
+    "glb",
+    "blender",
+    "3d render",
+    "turntable",
+    "rotate the car",
+    "3d car viewer",
+    "paint on the 3d model"
+   ],
+   "deep": [
+    {
+     "heading": "Why the preview is flat",
+     "body": "The iRacing paint is a flat sheet that iRacing wraps onto its own 3D car. Shokker works on that sheet directly, so its preview is the sheet. The 3D model belongs to iRacing and is not something Shokker has or exports."
+    },
+    {
+     "heading": "The quickest 3D check",
+     "body": "Render, then keep iRacing's 3D Car Viewer open in My Content: it reloads the saved paint by itself, so each new render shows up without restarting. In a session, Ctrl+R does the same; the car flashes white and then shows the new files."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Check seams before a race",
+     "goal": "See the stripe line up across hood and roof",
+     "settings": {
+      "Shokker": "RENDER",
+      "iRacing": "3D Car Viewer in My Content"
+     },
+     "result": "You see the paint on the real car shape and can fix any mismatch."
+    },
+    {
+     "title": "Show the design to a team mate",
+     "goal": "Share a picture, not a model",
+     "settings": {
+      "Shokker": "Export PNG or the Photoshop round trip",
+      "iRacing": "a screenshot from the 3D viewer"
+     },
+     "result": "A flat picture and a 3D screenshot of the car."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can I see my car in 3D in Shokker?",
+     "a": "No. Render and look at it in iRacing's 3D Car Viewer, or press Ctrl+R in a session."
+    },
+    {
+     "q": "Can I export a 3D model of the car?",
+     "a": "No. Shokker exports pictures (TGA, PNG and the Photoshop round trip), not 3D files."
+    },
+    {
+     "q": "Can I paint directly on a 3D car?",
+     "a": "No. You paint the flat sheet; iRacing wraps it onto the car."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The 3D viewer shows the old paint.",
+     "cause": "The render did not reach the car folder, or the folder is for another car.",
+     "fix": "Check the car folder and User ID at the top and render again."
+    },
+    {
+     "symptom": "A spec pattern looks invisible.",
+     "cause": "Spec patterns are subtle in the flat preview.",
+     "fix": "Judge them on the 3D car in iRacing."
+    }
+   ],
+   "protips": [
+    "Keep iRacing's 3D Car Viewer open next to Shokker while you design; every render is one glance away."
+   ],
+   "screens": [
+    "ui_source_and_live"
+   ]
+  }
+ ]
+}

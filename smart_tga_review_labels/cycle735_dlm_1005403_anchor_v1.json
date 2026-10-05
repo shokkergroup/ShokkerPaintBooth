@@ -1,0 +1,25 @@
+{
+  "schema": "smart-tga-direct-anchor-review-v1",
+  "cycle": 735,
+  "purpose": "One direct complete Number anchor for frozen untouched-holdout family inference after the Cycle735 development gate passed. No other holdout candidate truth was opened before scoring.",
+  "ownership_authority": false,
+  "labels": [
+    {
+      "review_code": "H735-A000",
+      "paint": "dirtlatemodel 350/car_num_1005403.tga",
+      "candidate_index": 7,
+      "proposal_id": "number-tiled-palette:0ebe9a3ecd21c768",
+      "bbox_for_review_trace_only": [297, 727, 145, 80],
+      "semantic": "Number",
+      "complete_copy": true,
+      "review_status": "direct_visual_exact_mask_anchor_only",
+      "ownership_authority": false
+    }
+  ],
+  "safety": {
+    "non_anchor_truth_opened_before_scoring": false,
+    "runtime_integrated": false,
+    "apply_locked": true,
+    "exact_reconstruction_affected": false
+  }
+}

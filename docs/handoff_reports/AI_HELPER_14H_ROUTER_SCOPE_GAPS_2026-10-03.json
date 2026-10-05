@@ -1,0 +1,153 @@
+{
+  "schema": "spb-full-router-scope-gap/1",
+  "observed_utc": "2026-10-04T01:30:30Z",
+  "session": "6b4fae0aab57",
+  "provider_attempts": 0,
+  "applied": false,
+  "rows": [
+    {
+      "id": "S07",
+      "kind": null,
+      "reply": "Done — the roof is now copper pearl. Your numbers and sponsors are untouched.\nNEXT: Make it a different colour | Do the roof too | Undo",
+      "queue": [
+        {
+          "kind": "add",
+          "spec": {
+            "finish": "base::pearl",
+            "color": "#b4602c",
+            "name": "Pearl roof",
+            "region": {
+              "layers": [
+                "Car Paint"
+              ],
+              "island": "roof"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "S10",
+      "kind": null,
+      "reply": "Done — the left side (9% of the car) is now ghosted: the body colour with a different sheen.\nNEXT: Undo | Make the black matte | Make the cyan metallic | Make the white pearl | Make the numbers metallic",
+      "queue": [
+        {
+          "kind": "add",
+          "spec": {
+            "name": "Left side ghosted",
+            "finish": "base::f_soft_matte",
+            "color": "#000000",
+            "region": {
+              "layers": [
+                "Car Paint"
+              ],
+              "island": "left side"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "S14",
+      "kind": null,
+      "reply": "Done — the hood is now teal metallic. Your numbers and sponsors are untouched.\nNEXT: Make it a different colour | Do the roof too | Undo",
+      "queue": [
+        {
+          "kind": "add",
+          "spec": {
+            "finish": "base::metallic",
+            "color": "#0f9aa0",
+            "name": "Metallic hood",
+            "region": {
+              "layers": [
+                "Car Paint"
+              ],
+              "island": "hood"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "S18",
+      "kind": null,
+      "reply": "Done — the hood and the roof are now gold carbon fiber. Your numbers and sponsors are untouched.\nNEXT: Make it a different colour | Do the roof too | Undo",
+      "queue": [
+        {
+          "kind": "add",
+          "spec": {
+            "finish": "base::gloss",
+            "pattern": {
+              "id": "carbon_fiber",
+              "opacity": 45,
+              "scale": 1.4
+            },
+            "color": "#d7a72b",
+            "name": "Carbon fiber hood",
+            "region": {
+              "layers": [
+                "Car Paint"
+              ],
+              "island": "hood"
+            }
+          }
+        },
+        {
+          "kind": "add",
+          "spec": {
+            "finish": "base::gloss",
+            "pattern": {
+              "id": "carbon_fiber",
+              "opacity": 45,
+              "scale": 1.4
+            },
+            "color": "#d7a72b",
+            "name": "Carbon fiber roof",
+            "region": {
+              "layers": [
+                "Car Paint"
+              ],
+              "island": "roof"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "S23",
+      "kind": null,
+      "reply": "Done — added a layered look (bottom to top: blue hood, then orange roof) on the hood and the roof. Your numbers and sponsors are untouched.\nNEXT: Make it thinner | Make it a different colour | Undo",
+      "queue": [
+        {
+          "kind": "add",
+          "spec": {
+            "name": "Blue hood",
+            "finish": "base::gloss",
+            "color": "#1450b4",
+            "region": {
+              "layers": [
+                "Car Paint"
+              ],
+              "island": "hood"
+            }
+          }
+        },
+        {
+          "kind": "add",
+          "spec": {
+            "name": "Orange roof",
+            "finish": "base::gloss",
+            "color": "#f26b21",
+            "region": {
+              "layers": [
+                "Car Paint"
+              ],
+              "island": "roof"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "interpretation": "S14 preservation violated: hood targeted. S18 hood preservation violated and color/look attribution crossed clauses. S10 retains scope but drops requested texture and color; must not claim complete."
+}

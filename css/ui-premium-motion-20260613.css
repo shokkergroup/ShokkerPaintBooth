@@ -1,0 +1,340 @@
+/* ============================================================================
+   SHOKKER PAINT BOOTH — PREMIUM MICRO-INTERACTIONS / MOTION LAYER
+   File: css/ui-premium-motion-20260613.css
+   Created: 2026-06-13
+   Lane: UI/UX micro-interactions (additive, self-contained).
+
+   OWNER BRIEF
+   -----------
+   "Subtle glowing elements... high scale feel and quality so it don't feel
+   boring. This is SHOKKER PAINT BOOTH — it shouldn't feel like a nursing home."
+   Earlier polish was "not noticeable" -> this layer makes the motion TASTEFULLY
+   NOTICEABLE: premium, energetic, GPU-cheap, and reduced-motion safe.
+
+   WHAT THIS LAYER DOES (and what it deliberately does NOT)
+   --------------------------------------------------------
+   FOCUS = MOTION & TACTILITY only:
+     - Smooth, consistent 120-180ms transitions on the real interactive elements.
+     - A springy, sliding-feel tab indicator on the right-panel tabs (.rp-tab).
+     - Tactile press / active "squish" + spring-back on every button & tool.
+     - Refined, animated custom scrollbars (thumb grows + warms on hover/drag).
+     - Polished range slider thumbs/tracks: a satisfying grab + spring on press.
+     - A gentle, looping "alive" breath on the hero RENDER button so the booth
+       reads energetic at rest (not a nursing home), without being distracting.
+   It complements — does NOT duplicate — the COLOR/SURFACE polish in
+   ui-modern-polish-20260613.css (borders, gradients, shadows, palette) and the
+   GLOW lane. Where the polish layer already sets a property, we only add the
+   MOTION dimension (transform / will-change / keyframes / transition timing),
+   layering on top because this file loads LAST.
+
+   SAFETY
+   ------
+   - 100% presentation. No DOM, no layout shift (only transforms + box-shadow +
+     scrollbar chrome). Transforms are composited (GPU-cheap), never animate
+     `width/height/top/left` of flowing content.
+   - Real selectors verified live via CDP against the running app
+     (.rp-tab / .vtool-btn / .draw-tool-btn / .zoom-btn / .spec-channel-btn /
+      .web-command-item / .ui-scale-btn / .zone-action-slim / .btn / .btn-render /
+      header buttons / input[type=range]).
+   - Fully neutralised under prefers-reduced-motion (no transforms, no loops).
+   ============================================================================ */
+
+:root {
+  /* Motion tokens for THIS layer (namespaced -pm- so they never collide with
+     the polish layer's --spb-* tokens). The spring easing matches the app's
+     own native ease family (cubic-bezier(0.16,1,0.3,1)) so our motion feels
+     native, just more alive. */
+  --pm-spring: cubic-bezier(0.16, 1, 0.3, 1);          /* lively ease-out */
+  --pm-spring-back: cubic-bezier(0.34, 1.56, 0.64, 1);  /* gentle overshoot */
+  --pm-snappy: cubic-bezier(0.4, 0, 0.2, 1);
+  --pm-t-fast: 120ms;
+  --pm-t-med: 160ms;
+  --pm-t-slow: 220ms;
+
+  /* Brand accent reused for motion glints (kept in sync with polish layer). */
+  --pm-teal: #00e5ff;
+  --pm-gold: #ffb020;
+  --pm-orange: #ff7a18;
+}
+
+/* ===========================================================================
+   0. GLOBAL: give the real interactive primitives a consistent, premium
+   transform+shadow transition timing. We append `transform` (the polish layer
+   mostly tuned color/shadow) so press/hover lift feels intentional everywhere.
+   Scoped to concrete element lists (never `*`) to stay GPU-cheap.
+   =========================================================================== */
+.btn, .btn-sm, .btn-accent, .btn-render,
+.vtool-btn, .draw-tool-btn, .zoom-btn, .spec-channel-btn,
+.web-command-item, .ui-scale-btn, .modal-close, .batch-add-btn,
+.zone-action-slim, .rp-tab,
+.header-command-btn, .header-browse-btn, .header-shortcut-btn, .gear-btn,
+.swatch-item, .swatch-trigger, .zone-card, .look-card {
+  /* Earlier layers set `transition: all 0.15s` (and some use !important). To make
+     the premium SPRING timing win on the elements this lane owns, set the
+     properties + duration + easing with !important. We deliberately do NOT touch
+     `animation` here, so any existing brand animation (e.g. the RENDER button's
+     shokkerRenderHeat heat-shimmer) keeps playing untouched. */
+  transition-property: transform, box-shadow, background-color, border-color,
+                       color, filter, background-image !important;
+  transition-duration: var(--pm-t-med) !important;
+  transition-timing-function: var(--pm-spring) !important;
+  will-change: transform;
+}
+
+/* ===========================================================================
+   1. BUTTONS — tactile press "squish" + confident hover lift + spring-back.
+   The hover LIFT (translateY) and the active PRESS (scale down) read as a
+   physical, premium control. Spring-back easing gives it life.
+   =========================================================================== */
+
+/* Standard + small buttons */
+.btn:hover, .btn-sm:hover {
+  transform: translateY(-1px);
+}
+.btn:active, .btn-sm:active {
+  transform: translateY(0) scale(0.97);
+  transition-duration: var(--pm-t-fast);
+}
+
+/* Accent button — a touch more energy on the spring-back. */
+.btn-accent:hover { transform: translateY(-1px) scale(1.015); }
+.btn-accent:active {
+  transform: translateY(0) scale(0.96);
+  transition-duration: var(--pm-t-fast);
+}
+
+/* Tool buttons (top vertical rail, draw rail, zoom, spec-channel dock, web
+   command palette, ui-scale, zone-action). Quiet at rest, springy on press. */
+.vtool-btn:hover, .draw-tool-btn:hover, .zoom-btn:hover,
+.spec-channel-btn:hover, .web-command-item:hover, .ui-scale-btn:hover,
+.zone-action-slim:hover, .modal-close:hover, .batch-add-btn:hover {
+  transform: translateY(-1px);
+}
+.vtool-btn:active, .draw-tool-btn:active, .zoom-btn:active,
+.spec-channel-btn:active, .web-command-item:active, .ui-scale-btn:active,
+.zone-action-slim:active, .modal-close:active, .batch-add-btn:active {
+  transform: scale(0.9);
+  transition-duration: var(--pm-t-fast);
+  transition-timing-function: var(--pm-snappy);
+}
+
+/* When a tool becomes active/selected it should "pop" in with a spring so the
+   selection feels responsive (energetic, not a dead state change). */
+.vtool-btn.active, .draw-tool-btn.active, .spec-channel-btn.active,
+.web-command-item.active, .web-command-item.primary {
+  animation: pm-pop var(--pm-t-med) var(--pm-spring-back);
+}
+@keyframes pm-pop {
+  0%   { transform: scale(0.86); }
+  60%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+/* Gear/settings + header shortcut buttons — a small, satisfying spin nudge on
+   the gear (rotation is cheap + reads as "settings"). */
+.gear-btn:hover { transform: rotate(28deg) scale(1.04); }
+.gear-btn:active { transform: rotate(28deg) scale(0.92); }
+.header-command-btn:hover, .header-browse-btn:hover, .header-shortcut-btn:hover {
+  transform: translateY(-1px);
+}
+.header-command-btn:active, .header-browse-btn:active, .header-shortcut-btn:active {
+  transform: translateY(0) scale(0.97);
+  transition-duration: var(--pm-t-fast);
+}
+
+/* ===========================================================================
+   2. HERO RENDER BUTTON — tactile hover/press on top of the EXISTING brand
+   heat-shimmer. The app already gives .btn-render a `shokkerRenderHeat`
+   breathing animation (ui-modernization-20260510.css, !important) — that's the
+   booth's heartbeat and we leave it alone. We ONLY add interaction tactility:
+   an eager lift on hover and a firm spring press. (No `animation` override, so
+   the heat-shimmer keeps playing; on hover/press the transform composites over
+   it.)
+   =========================================================================== */
+.btn-render:hover {
+  transform: translateY(-1.5px) scale(1.02);
+}
+.btn-render:active {
+  transform: translateY(0) scale(0.98);
+  transition-duration: var(--pm-t-fast);
+}
+
+/* ===========================================================================
+   3. SPRINGY TAB INDICATOR — right-panel tabs (.rp-tab inside .rp-tabs).
+   The active tab gets an animated underline that scales in from the centre
+   with a spring; switching tabs reads as a lively slide/grow rather than a
+   hard swap. .rp-tab is position:relative (verified), so ::after anchors to it.
+   =========================================================================== */
+.rp-tab {
+  position: relative;
+}
+.rp-tab::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg,
+              rgba(0, 229, 255, 0.0) 0%,
+              var(--pm-teal) 50%,
+              rgba(0, 229, 255, 0.0) 100%);
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.55);
+  transform: scaleX(0);
+  transform-origin: 50% 50%;
+  opacity: 0;
+  transition: transform var(--pm-t-slow) var(--pm-spring-back),
+              opacity var(--pm-t-fast) var(--pm-spring);
+  pointer-events: none;
+}
+.rp-tab:hover::after {
+  transform: scaleX(0.55);
+  opacity: 0.55;
+}
+.rp-tab.active::after,
+.rp-tab[aria-selected="true"]::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+/* The active tab label itself rises a hair to feel "selected". */
+.rp-tab.active { transform: translateY(-0.5px); }
+
+/* ===========================================================================
+   4. CARDS — zone cards, look (style) cards, swatch tiles.
+   Add the MOTION dimension on top of the polish layer's surface treatment:
+   a smooth lift in/out with the spring, and a subtle press acknowledgement.
+   =========================================================================== */
+.zone-card:active { transform: translateY(0) scale(0.992); transition-duration: var(--pm-t-fast); }
+.look-card:active { transform: translateY(0) scale(0.985); transition-duration: var(--pm-t-fast); }
+
+.swatch-item:hover { transform: translateY(-2px) scale(1.03); }
+.swatch-item:active { transform: translateY(0) scale(0.97); transition-duration: var(--pm-t-fast); }
+/* Newly-selected swatch pops so picking a finish feels rewarding. */
+.swatch-item.selected, .swatch-item.active {
+  animation: pm-pop var(--pm-t-med) var(--pm-spring-back);
+}
+
+/* Little circular swatch triggers inside zone cards. */
+.swatch-trigger:active { transform: scale(0.92); transition-duration: var(--pm-t-fast); }
+
+/* ===========================================================================
+   5. RANGE SLIDERS — a satisfying, premium grab.
+   The polish layer styles the track + thumb look; here we add the TACTILE
+   motion: the thumb grows + glows on hover, springs bigger on grab (active),
+   and the whole control gets a focus ring pulse. WebKit + Firefox covered.
+   =========================================================================== */
+input[type="range"]::-webkit-slider-thumb {
+  transition: transform var(--pm-t-fast) var(--pm-spring-back),
+              box-shadow var(--pm-t-med) var(--pm-spring);
+}
+input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.18);
+}
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.34);
+  box-shadow: 0 0 0 6px rgba(0, 229, 255, 0.26),
+              0 2px 6px rgba(0, 0, 0, 0.55);
+}
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 6px rgba(0, 229, 255, 0.42),
+              0 2px 6px rgba(0, 0, 0, 0.55);
+}
+
+/* Firefox */
+input[type="range"]::-moz-range-thumb {
+  transition: transform var(--pm-t-fast) var(--pm-spring-back),
+              box-shadow var(--pm-t-med) var(--pm-spring);
+}
+input[type="range"]:hover::-moz-range-thumb { transform: scale(1.18); }
+input[type="range"]:active::-moz-range-thumb {
+  transform: scale(1.34);
+  box-shadow: 0 0 0 6px rgba(0, 229, 255, 0.26), 0 2px 6px rgba(0, 0, 0, 0.55);
+}
+
+/* ===========================================================================
+   6. REFINED CUSTOM SCROLLBARS — modern, on-brand, ANIMATED.
+   The polish layer set a slim grey thumb; here we make it feel alive: the
+   thumb is subtle at rest, grows + warms toward teal on hover of its
+   scroller, and brightens while actively dragged. Width transition gives the
+   "it noticed me" feel. (WebKit; Firefox keeps the polish layer's thin style.)
+   =========================================================================== */
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  transition: background-color var(--pm-t-med) var(--pm-spring),
+              border-width var(--pm-t-med) var(--pm-spring);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(0, 229, 255, 0.55), rgba(0, 188, 217, 0.45));
+  border-width: 2px;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, var(--pm-teal), #00bcd9);
+  border-width: 2px;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* ===========================================================================
+   7. FOCUS-VISIBLE — a premium, accessible keyboard ring that animates in.
+   Quietly improves the "high scale feel" for power users tabbing around.
+   Only on :focus-visible so mouse users never see a ring.
+   =========================================================================== */
+.btn:focus-visible, .btn-sm:focus-visible, .btn-accent:focus-visible,
+.vtool-btn:focus-visible, .draw-tool-btn:focus-visible, .zoom-btn:focus-visible,
+.spec-channel-btn:focus-visible, .web-command-item:focus-visible,
+.rp-tab:focus-visible, .header-command-btn:focus-visible,
+.header-browse-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.55),
+              0 0 14px rgba(0, 229, 255, 0.30);
+}
+
+/* ===========================================================================
+   8. REDUCED MOTION — full neutralisation.
+   Kill every loop + transform-based motion; keep instant, non-animated states
+   so nothing is hidden or broken. Color/shadow polish remains from the other
+   layer; this only removes MOVEMENT.
+   =========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  :root { --pm-t-fast: 1ms; --pm-t-med: 1ms; --pm-t-slow: 1ms; }
+
+  .btn-render { animation: none !important; }
+  .vtool-btn.active, .draw-tool-btn.active, .spec-channel-btn.active,
+  .web-command-item.active, .web-command-item.primary,
+  .swatch-item.selected, .swatch-item.active { animation: none !important; }
+
+  .btn, .btn-sm, .btn-accent, .btn-render,
+  .vtool-btn, .draw-tool-btn, .zoom-btn, .spec-channel-btn,
+  .web-command-item, .ui-scale-btn, .modal-close, .batch-add-btn,
+  .zone-action-slim, .gear-btn,
+  .header-command-btn, .header-browse-btn, .header-shortcut-btn,
+  .swatch-item, .swatch-trigger, .zone-card, .look-card, .rp-tab {
+    transform: none !important;
+  }
+  .btn:hover, .btn-sm:hover, .btn:active, .btn-sm:active,
+  .btn-accent:hover, .btn-accent:active,
+  .vtool-btn:hover, .vtool-btn:active, .draw-tool-btn:hover, .draw-tool-btn:active,
+  .zoom-btn:hover, .zoom-btn:active, .spec-channel-btn:hover, .spec-channel-btn:active,
+  .web-command-item:hover, .web-command-item:active,
+  .gear-btn:hover, .gear-btn:active,
+  .swatch-item:hover, .swatch-item:active,
+  .btn-render:hover, .btn-render:active {
+    transform: none !important;
+  }
+  input[type="range"]:hover::-webkit-slider-thumb,
+  input[type="range"]:active::-webkit-slider-thumb,
+  input[type="range"]:hover::-moz-range-thumb,
+  input[type="range"]:active::-moz-range-thumb { transform: none !important; }
+
+  .rp-tab::after { transition: none !important; }
+}
+
+/* ============================================================================
+   END PREMIUM MICRO-INTERACTIONS / MOTION LAYER
+   ============================================================================ */

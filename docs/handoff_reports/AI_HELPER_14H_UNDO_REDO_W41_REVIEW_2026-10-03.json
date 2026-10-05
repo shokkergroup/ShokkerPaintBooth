@@ -1,0 +1,77 @@
+{
+  "status": "FINDINGS",
+  "task": "W41 independent review of frozen AI Undo/Redo implementation",
+  "date": "2026-10-04",
+  "source": {
+    "path": "_easy_claude_work/ai14h_w10_candidate/js/spb-pro-ai.before.js",
+    "sha256": "7986424F203A303172B19EABC1D4F5FD52DBC2E25DE6D87C444BADD1434261B2",
+    "hashVerified": "7986424F203A303172B19EABC1D4F5FD52DBC2E25DE6D87C444BADD1434261B2"
+  },
+  "oracle": {
+    "path": "tests/ai_undo_redo_w41_review_contract.cjs",
+    "count": 12,
+    "sha256": "8AF7C178CEB4A8A8F4E781E7F87356DAE7E05BC5DE168B2C889B243373CEE0C9"
+  },
+  "verification": {
+    "command": "node tests/ai_undo_redo_w41_review_contract.cjs",
+    "result": "PASS harness; findings returned",
+    "actualExtractedFunctions": [
+      "applyLayerOps",
+      "undoSnapTake",
+      "undoSigNow",
+      "undoSeal",
+      "undoSameZones",
+      "undoZoneFrom",
+      "undoDropPushed",
+      "undoSameLayers",
+      "undoApply",
+      "undoRestore",
+      "redoLast",
+      "doUndo"
+    ],
+    "mockedApplicationEffects": true,
+    "providerCalls": 0,
+    "nativeCalls": 0,
+    "browserCalls": 0
+  },
+  "observations": {
+    "passed": [
+      "Undo works with a full 15-entry app zone-undo stack and restores its own snapshot even though depth stays 15.",
+      "Undo restores zone identity/order, selected-zone identity, region mask and spatial mask.",
+      "Later unrelated zone additions and layer visibility edits survive selective Undo.",
+      "Redo refuses a subsequent zone edit because the zone signature guard changes.",
+      "Non-undoable/no-op entry is ignored.",
+      "Two sequential AI snapshots undo in LIFO order.",
+      "Current AI edit_layer metadata operation (visibility/opacity) is undone through the exact snapshot and its app stack entries are dropped."
+    ],
+    "findings": [
+      {
+        "severity": "P1",
+        "area": "same-zone post-AI manual edits",
+        "proof": "AI changes zone color blue→red and seals after-state; a later manual finish edit is made on that same zone; doUndo restores the whole before-zone, reverting color and also erasing the later manual finish.",
+        "source": "undoApply selective zone branch; undoRestore compares zoneSig and replaces changed touched zone with undoZoneFrom(snapshot).",
+        "result": "Undo is not conflict-aware at field granularity and does not refuse."
+      },
+      {
+        "severity": "P1",
+        "area": "source/document identity for Undo and Redo",
+        "proof": "Source identity is changed while the zone object/ID remains; doUndo still restores the earlier zone snapshot into the current source. redoLast also succeeds after source-only identity change when zone/layer signatures are unchanged.",
+        "source": "undoSnapTake stores zones/selection/layer metadata only; redoGuard is undoSigNow() (zones and layer presentation); doUndo/redoLast contain no source identity check.",
+        "result": "Must be guarded by parent integration before promotion."
+      },
+      {
+        "severity": "conditional limitation, not confirmed current route defect",
+        "area": "layer pixel buffers and exact=true",
+        "proof": "A mocked pixel-buffer edit remains changed after exact snapshot Undo; undoDropPushed removes the layer undo record and doUndo skips legacy undoLayerEdit when undoRestore returns true. However frozen applyLayerOps only calls visibility/opacity/blend setters; no direct layer.data/pixel mutation was found in this source, and the public edit_layer tool exposes those metadata fields only.",
+        "source": "applyLayerOps lines around 520-535; layerState snapshots only id/visible/opacity/blend; undoApply restores only those values.",
+        "result": "Current supported metadata edits pass. If any queue path adds layer-pixel mutation, snapshot must include pixel inverse or explicitly use a matching layer inverse; test case is marked counterfactual."
+      }
+    ],
+    "limits": [
+      "The harness evaluates actual extracted undo helpers, doUndo, redoLast and applyLayerOps with deterministic mocked app effects; it does not boot the whole application or execute the complete production applyQueue pipeline.",
+      "The source-switch case uses a test identity marker because source identity is not captured or read by these undo functions; a native source reload and same-zone continuity were not exercised.",
+      "The raw layer pixel mutation is counterfactual; no current pixel-writing edit_layer/applyLayerOps route was found in the frozen source.",
+      "No live source, W10 candidate, Wiki, mirror, provider, browser, native app or server was modified or invoked."
+    ]
+  }
+}

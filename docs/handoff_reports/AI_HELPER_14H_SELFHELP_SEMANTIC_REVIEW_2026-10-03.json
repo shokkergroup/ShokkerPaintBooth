@@ -1,0 +1,130 @@
+{
+  "schema": "spb-self-help-semantic-review/1",
+  "date": "2026-10-03",
+  "review_scope": "Independent semantic re-review of W2 offline self-help; read-only production source; no provider, browser, app, or production fixture writes.",
+  "loaded_source_sha256": {
+    "js/spb-self-help.js": "f7f444e7ae1be783f67f7263bd6bee87e3a6f74574d3a5f8a61486f3190edf85",
+    "js/spb-ai-knowledge.js": "e2a1647af707d2bfe5ea09ed64adabad1bf3db341df8d7b61dc8c01508774c97",
+    "js/spb-pro-ai.js_inspected_router_slice": "61b05df3e7062611bdbaf2bd4085f56d2a60b08277fd4484799c0287de19f812"
+  },
+  "fixture_reconciliation": {
+    "fixture": "docs/handoff_reports/AI_HELPER_14H_FRESH_SELFHELP_2026-10-03.json",
+    "fixture_sha256": "717c1c32fe214c172e1fb27b2be065e7cd20892cfabe94400e75d3278ccd4e9d",
+    "baseline_fixture_sha256": "717c1c32fe214c172e1fb27b2be065e7cd20892cfabe94400e75d3278ccd4e9d",
+    "baseline_artifact_strict_help": "13/30",
+    "baseline_artifact_delegation": "12/12",
+    "W1_independent_report": "13/30 strict; 15/30 manually semantic after accepting H01 save alias and H24 Easy-to-Pro alias; 12/12 delegated requests left alone.",
+    "W2_current_same_fixture": "28/30 strict expected-citation hits; 12/12 delegated requests left alone. The only strict misses are H01 (correct Save/Open/reopen guidance with alias cite) and H24 (correct Pro switch guidance with a different mode cite).",
+    "discrepancy": "The producer statement that W1 was 24/30 does not match the immutable baseline artifact (13/30 strict) or the independent W1 report (13/30 strict, 15/30 semantic). No W1 source SHA is recorded in that report, so the 24 figure cannot be tied to a reproducible W1 module snapshot or comparable scoring rule."
+  },
+  "fresh_semantic_review": {
+    "test": "tests/ai_self_help_semantic_review.cjs",
+    "cases": 24,
+    "ownership": "15 contextual-help prompts and 9 action/correction prompts. The polite “Could you lower ...?” prompt was reclassified from help to action after its first execution because it requests a change; wording was retained.",
+    "result": "FAIL — 6/24 cases fail: H02, H07, H10, H11, H12, C07. The harness checks relevant answer text/citations, rejects neighboring-topic instructions, deep-freezes realistic supplied state, and spies on fetch/XHR.",
+    "offline_and_no_mutation": "PASS across all 24 cases: no fetch/XHR calls and no supplied-state mutation."
+  },
+  "other_test_results": {
+    "tests/ai_self_help_semantic_contract.cjs": "PASS — 13 intent checks and 6 command/help boundaries.",
+    "tests/ai_self_help_intent_contract.cjs": "PASS — 12 guidance checks and 4 routing boundaries.",
+    "tests/ai_self_help_mode_contract.cjs": "FAIL — 11/13; Chat Studio is reported as Pro and layer-only instructions omit the visible Full editor handoff.",
+    "tests/ai_self_help_action_lifecycle_contract.cjs": "FAIL — 4 stale-action cases: document replacement, target removal, zone reorder, and paint disappearance."
+  },
+  "findings": [
+    {
+      "id": "W2-PARAPHRASE-RESIZE",
+      "severity": "P1",
+      "prompt": "How do I make the race number art taller and wider?",
+      "actual": "Cites hdi.recolour_numbers and tells the user to recolour the numbers purple or use Color Replace; it never explains resizing or transforming artwork.",
+      "expected": "hdi.move_logo guidance for resize/transform of the number layer.",
+      "source": [
+        "js/spb-self-help.js:356",
+        "js/spb-self-help.js:378-385",
+        "js/spb-self-help.js:598-600"
+      ],
+      "note": "The supplied exact wording “scale number artwork” passes; this fresh height/width paraphrase still loses to number-recolour retrieval."
+    },
+    {
+      "id": "W2-3D-VIEW-AND-FLAT-ZOOM",
+      "severity": "P1",
+      "evidence": [
+        {
+          "prompt": "Can I turn the car around in this preview and look at its side panels?",
+          "actual": "hdi.left_vs_right; instructs drawing separate zones on the flat sheet."
+        },
+        {
+          "prompt": "Does Shokker have a 3D car viewer where I can orbit the livery?",
+          "actual": "Truthfully says the 3D view is unavailable and points to iRacing; passes."
+        },
+        {
+          "prompt": "Can I inspect the whole car in 3D here, or is this only a flat paint view?",
+          "actual": "hdi.load_flat; tells the user to load a TGA/PNG/JPEG."
+        },
+        {
+          "prompt": "Where do I make the flat paint preview larger without changing the artwork?",
+          "actual": "hdi.load_flat; tells the user to load a paint instead of enlarging the preview."
+        },
+        {
+          "prompt": "Can I rotate the pattern so it runs vertically?",
+          "actual": "Correct hdi.rotate_pattern guidance; confirms pattern rotation is distinguishable when explicitly named."
+        }
+      ],
+      "source": [
+        "js/spb-self-help.js:98",
+        "js/spb-self-help.js:159",
+        "js/spb-self-help.js:170",
+        "js/spb-self-help.js:354-374",
+        "js/spb-self-help.js:548-551",
+        "js/spb-self-help.js:378-385"
+      ],
+      "assessment": "The limitation is reliable for one orbit/viewer wording. Natural view-around wording can be mistaken for part zoning, and a mixed 3D/flat-view question or a flat-preview-size question is retrieved as paint loading. The explicit 3D detector has narrower verbs/entities than these paraphrases and general HOWTO overlap supplies the wrong topic."
+    },
+    {
+      "id": "W2-SAVED-FINISH-WEAK-IN-SIM",
+      "severity": "P2",
+      "prompt": "The finish looks weak after I save and view it in iRacing. What should I check?",
+      "actual": "null; no offline guidance.",
+      "contrast": "“Why do my paint colors look washed out once the car loads in the sim?” cites hdi.look_differs and gives render/sim troubleshooting.",
+      "source": [
+        "js/spb-self-help.js:119",
+        "js/spb-self-help.js:125-126",
+        "js/spb-self-help.js:175-184"
+      ],
+      "assessment": "The supported symptom vocabulary omits “weak” and the claim patterns require paint/car/shades or a narrow flat/dull construction; “finish ... weak” is missed."
+    },
+    {
+      "id": "W2-SECONDARY-REDUCE-COMMAND",
+      "severity": "P1",
+      "prompt": "Everything is too shiny; lower clearcoat on the roof only.",
+      "actual": "Self-help returns generic “what now” stuck guidance instead of null/action ownership.",
+      "source": [
+        "js/spb-self-help.js:162",
+        "js/spb-self-help.js:175-182",
+        "js/spb-self-help.js:194-212"
+      ],
+      "assessment": "Secondary-command detection only tests each later clause against ORDER_RE. “lower” is not in that verb list, so “too shiny” claims the message as stuck. The protected-exception command “Full vehicle chrome, but do not touch the left side.” correctly remains unclaimed."
+    },
+    {
+      "id": "W2-CHAT-STUDIO-STATE",
+      "severity": "P2",
+      "test": "tests/ai_self_help_mode_contract.cjs",
+      "actual": "2/13 failures. state() recognizes body.spb-easy-on but not body.spb-chat-studio; with Chat Studio open a PSD layer question gets direct Pro LAYERS steps and omits the visible Full editor transition.",
+      "source": [
+        "js/spb-self-help.js:41-67"
+      ]
+    },
+    {
+      "id": "W2-PENDING-ACTION-IDENTITY",
+      "severity": "P1",
+      "test": "tests/ai_self_help_action_lifecycle_contract.cjs",
+      "actual": "4/5 stale-action checks fail. Pending zone actions preserve numeric indices without a paint/zone identity; an old label can act on a replacement or reordered zone, a removed target can still be reported as done, and refresh can be reported after paint disappears.",
+      "source": [
+        "js/spb-self-help.js:676-686"
+      ]
+    }
+  ],
+  "scope_limits": [
+    "The immutable 42-case fixture has only none/flat/psd state labels. The 24-case review supplied realistic Pro state with a flat paint or three-layer PSD and one selected zone, but it did not load the live app.",
+    "No production helper, manual, HTML, mirror, frozen fixture, or Wiki file was edited. Only the allowed review test and report were written."
+  ]
+}

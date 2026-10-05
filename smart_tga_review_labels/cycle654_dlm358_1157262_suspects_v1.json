@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paint_label": "dirtlatemodel 358/car_num_1157262.tga",
+  "inspection_records": "_smart_tga_runs/cycle654_dlm_batch_unique/inspection_records.json",
+  "review_scope": "Cycle 654 manual source and all-owner sheet review of every emitted suspect bbox.",
+  "component_labels": [
+    {"layer":"numbers","component_index":6,"expected_bbox":[692,506,96,138],"target_layer":"paint","label":"paint_livery_graphic","note":"Angular red/blue/white body graphic, not the stylized 5."},
+    {"layer":"numbers","component_index":5,"expected_bbox":[450,270,118,62],"target_layer":"sponsors","label":"sponsor_wordmark","note":"Reflected SPRR/branding sponsor panel."},
+    {"layer":"sponsors","component_index":16,"expected_bbox":[540,357,122,20],"target_layer":"paint","label":"paint_livery_panel","note":"Flat red livery bar."},
+    {"layer":"sponsors","component_index":32,"expected_bbox":[263,740,36,32],"target_layer":"paint","label":"paint_livery_panel","note":"Small flat red livery block."}
+  ]
+}

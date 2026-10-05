@@ -1,0 +1,33 @@
+{
+  "schema": "spb-part-followup-native/1",
+  "backend": "http://localhost:59879/",
+  "session": "0b020fbdf3b3",
+  "source_generation": "W5 before W6 commit-only repair and W7 named-part commands",
+  "provider_attempts": 0,
+  "N01": {
+    "pass": true,
+    "same_owner_id": "zone_c036642b-4f54-4bf0-910f-1e71905eb97a",
+    "zone_count": 6,
+    "paint_preview_896_exact": true,
+    "spec_preview_640_changed": true,
+    "native_mask_pixels": 4194304,
+    "selected_pixels": 200869,
+    "outside_roof": 0
+  },
+  "N06": {
+    "undo_paint_exact": true,
+    "undo_spec_exact": true,
+    "undo_zone_count": 6,
+    "retry_chrome_pass": true,
+    "retry_same_id": true,
+    "retry_red_colour_preserved": true,
+    "metadata_comparison_limitation": "Initial default zones had string undefined IDs before E assigned stable IDs. The JSON model comparison is false; default UUID assignment is the observed extra difference. Fresh final proof must initialize IDs before baseline."
+  },
+  "N03": {
+    "pass": false,
+    "request": "Now recolour only the roof green.",
+    "observed": "No color change; generic manual answer. Same chrome red roof remains. SH.classify/E.plan/D.offlinePart all null in loaded source.",
+    "repair_lane": "W7 exact named-part E ownership and parent full-route/native acceptance"
+  },
+  "native_limitation": "Preview comparisons at stated sizes; full-size selectors read. No export or packaged Electron acceptance."
+}

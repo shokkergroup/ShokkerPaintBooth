@@ -1,0 +1,19 @@
+name = "spb-license"
+main = "src/worker.js"
+compatibility_date = "2024-11-01"
+
+# KV namespace that stores  lic:<KEY> -> { devices:[...], disabled, unlimited, ... }
+# Create it once:  wrangler kv namespace create LICENSES
+# then paste the returned id below.
+kv_namespaces = [
+  { binding = "LICENSES", id = "PASTE_KV_NAMESPACE_ID_HERE" }
+]
+
+[vars]
+DEVICE_CAP = "2"
+
+# Secrets (NOT stored here — set via `wrangler secret put <NAME>`):
+#   PAYHIP_SECRET   the Payhip product API secret (same value as spb-license-secrets.json -> payhipProductSecret)
+#   TOKEN_SECRET    random 32+ char string (HMAC for the offline activation token)
+#   ADMIN_SECRET    random 32+ char string (Bearer for /admin endpoints)
+#   OWNER_KEYS      comma-separated license keys to treat as UNLIMITED (your test keys)

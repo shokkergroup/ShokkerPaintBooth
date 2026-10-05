@@ -1,0 +1,3771 @@
+{
+ "domain": "spec",
+ "version": 1,
+ "articles": [
+  {
+   "id": "spec.what_is_spec_map",
+   "title": "What the spec map is",
+   "domain": "spec",
+   "summary": "Every paint file comes with a second picture, the spec map. It tells iRacing how shiny, how metallic and how rough each spot of the car is.",
+   "what": "The colour file says what colour each spot is. The spec map says what each spot is made of. Four values per pixel carry that: R for metallic, G for roughness, B for clearcoat and A for the lighting mask. The paint can be a perfect red and still look like cheap plastic if the spec map is wrong, and the reverse is just as true. Shokker Paint Booth builds both files for you, one pair per car, at 2048 by 2048 pixels covering the whole car laid flat.",
+   "when": [
+    "You wonder why two paints with the same colour look different on track",
+    "You want a chrome, a matte or a candy look and need to know what is really changing",
+    "You are about to touch any SPEC slider and want to know what it does"
+   ],
+   "how": [
+    "Pick a finish for a zone. The finish already carries its own spec values.",
+    "Look at the finish card or use the Spec Map Inspector to see its R, G and B numbers.",
+    "Move SPEC STRENGTH or the R METAL, G ROUGH and B COAT sliders to push the look.",
+    "Render. The paint and the spec map are written together."
+   ],
+   "controls": [
+    {
+     "label": "SPEC STRENGTH",
+     "range": "0-100%",
+     "default": "100%",
+     "effect": "Fades the finish spec toward neutral.",
+     "inv": "zone.spec_strength"
+    }
+   ],
+   "tips": [
+    "Think in two layers: colour is what you see head on, spec is how light plays across it.",
+    "A small spec change often moves the look more than a big colour change."
+   ],
+   "pitfalls": [
+    "A spec map is not a second colour image. Do not expect it to show colour on the car.",
+    "Strong specs on dark paint can look nearly the same as strong specs on light paint. Metal takes its colour from the paint."
+   ],
+   "related": [
+    "spec.reading_by_colour",
+    "spec.channel_r_metallic",
+    "spec.paint_spec_marriage"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "base::f_chrome"
+    },
+    {
+     "do": "finish",
+     "id": "base::matte"
+    },
+    {
+     "do": "control",
+     "id": "zone.spec_strength"
+    }
+   ],
+   "figures": [
+    "g01_spec_channels",
+    "r13_spec_channel_views"
+   ],
+   "covers": [
+    "doc.02.the_spec_map_in_iracing_what_spec_means",
+    "wiki.start_here.what_spb_actually_is_in_one_paragraph",
+    "wiki.spec_guide.1_the_coordinate_system_every_possible_c",
+    "wiki.start_here.spec_map_channels_memorise_the_inversion"
+   ],
+   "sources": [
+    "shokker_engine_v2.py:20-45",
+    "SPB_WIKI.html#spec_guide",
+    "docs/ai_knowledge/02_spec_and_finishes.md:1",
+    "SPB_WIKI.html:3566-3573",
+    "SPB_WIKI.html:3796-3797",
+    "js/spb-support-answers.js:37",
+    "shokker_engine_v2.py:267",
+    "shokker_engine_v2.py:20755-20764"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "spec map",
+    "what is a spec map",
+    "what is spec",
+    "specular map",
+    "spec file",
+    "spec tga",
+    "car spec",
+    "how specs work",
+    "how do specs work",
+    "spec explained",
+    "what does spec mean",
+    "spec maps"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "How iRacing reads the two pictures",
+     "body": "iRacing gets two pictures for your car. The paint picture is the colour you see. The spec picture is four numbers per pixel that tell the lighting engine what the surface is made of: red is metal, green is roughness, blue is the clear layer on top, alpha is a lighting mask. The sim lights every pixel from those four numbers, using its sun, sky and your view angle. That is why the same paint can look like wet enamel, brushed steel or flat vinyl without a single colour changing."
+    },
+    {
+     "heading": "Why paint and spec are never judged apart",
+     "body": "Metal reflection is tinted by the paint colour, while clear-coat highlights are close to white. So a metal value of 255 on a near-white paint gives silver, the same value on a dark red gives dark tinted metal, and on near-black it can vanish. The spec only decides how much of each effect you get. The colour you painted decides what that effect looks like. Judge the two together, on the car, never one without the other."
+    },
+    {
+     "heading": "What Shokker Paint Booth does for you",
+     "body": "You never paint these four numbers by hand. Every zone has a base finish that sets a starting metal, roughness and coat, then pattern, overlays and sliders move them. At the very end the app raises any coat value below 16 to 16 and any roughness below 15 to 15 unless the pixel is chrome tier (metal 240 or more), so a render cannot hand iRacing a value that whitewashes. The paint goes out as a 24-bit picture and the spec as a 32-bit picture with alpha, both for the same car."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Same red, three materials",
+     "goal": "See that one colour becomes three looks through spec alone.",
+     "settings": {
+      "BASE COLOR": "Use source paint (spec only)",
+      "Gloss body": "Wet Look (metal 0, roughness 15, coat 16)",
+      "Satin body": "Satin (metal 0, roughness 95, coat 70)",
+      "Chrome body": "Chrome (metal 255, roughness 2, coat 16)"
+     },
+     "result": "Wet Look is a wet-looking red, Satin is a soft low-sheen red, and Chrome turns the red into tinted mirror metal. The paint picture is identical in all three."
+    },
+    {
+     "title": "Read a spec colour at a glance",
+     "goal": "Tell what a spec picture colour means before opening any tool.",
+     "settings": {
+      "Dark green-black 0,30,16": "normal glossy paint",
+      "Bright red 255,2,16": "mirror chrome",
+      "Bright green": "very rough, matte",
+      "White": "rough metal with the coat off, not chrome"
+     },
+     "result": "You can sort a whole spec picture into gloss, chrome, matte and rough metal just by its colour families."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.reading_by_colour",
+     "why": "Teaches the colour code of a spec picture so you can read any export."
+    },
+    {
+     "with": "spec.iron_rules",
+     "why": "The three limits applied to every render, and why they exist."
+    },
+    {
+     "with": "spec.paint_spec_marriage",
+     "why": "How to choose paint and spec so they help each other."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Do I have to understand the spec map to use the app?",
+     "a": "No. Pick a finish and the app sets all four numbers. Read this when you want to tune a shine, fix a washed-out look or build your own material."
+    },
+    {
+     "q": "Does the spec map change how the car drives?",
+     "a": "No. Spec only changes how the car looks, never how it handles."
+    },
+    {
+     "q": "What happens if there is no spec file?",
+     "a": "iRacing falls back to the car's normal material and your colours still show. You just lose your custom shine."
+    },
+    {
+     "q": "Why does iRacing look different from the preview?",
+     "a": "The preview is a quick design view. iRacing lights the real render with its own sun, shadows and materials, and it reads the spec file separately, so shine only shows in the sim."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The finish looks washed out and white in the sim.",
+     "cause": "A clear-coat value between 1 and 15 reached iRacing. That band is treated as no coat or a legacy value.",
+     "fix": "Re-render from the app instead of editing the file by hand. The app raises every coat value to at least 16."
+    },
+    {
+     "symptom": "Silver chrome comes out black or grey.",
+     "cause": "Metal reflection takes the paint colour, and the paint under it was dark or mid grey.",
+     "fix": "Paint the zone near-white, or use a Foundation chrome with Use source paint if you want to keep your colours and accept tinted chrome."
+    },
+    {
+     "symptom": "I changed a spec value and nothing happened.",
+     "cause": "The old compiled copy of the spec is still loaded by the sim.",
+     "fix": "Render again, then press Ctrl+R in iRacing. If it still looks old, move the compiled spec copy for that car out of the folder and reload."
+    }
+   ],
+   "protips": [
+    "The preview shows the same colours as the render but not the same shine, so judge shine on the spec views (R METAL, G ROUGH, B COAT) and in the sim.",
+    "A dark paint under high metal is buried: nearly black until the right reflection arrives. Colour first, then metal."
+   ],
+   "screens": [
+    "spec_astra",
+    "spec_candy",
+    "spec_carbon",
+    "spec_chrome",
+    "spec_fractured_forge",
+    "spec_matte",
+    "spec_viewer_buttons",
+    "ui_finish_picker_cards",
+    "ui_spec_strip"
+   ]
+  },
+  {
+   "id": "spec.channel_r_metallic",
+   "title": "R channel: metallic",
+   "domain": "spec",
+   "summary": "Red is how metal a spot is. 0 is plain paint, plastic or glass, and 255 is solid mirror metal.",
+   "what": "Metal reflects light with the colour of the paint under it. Plain paint reflects a white highlight on top of its colour. Turn red up and the surface takes more of the first behaviour: richer colour in the highlights, no flat white sheen. A real chrome needs a very light paint colour under it, because metal shows the paint colour. A dark paint with high metal reads as a deliberate dark mirror.",
+   "when": [
+    "You want to move a finish toward or away from metal",
+    "You are choosing between pearl, metallic and chrome"
+   ],
+   "how": [
+    "Open the zone editor, go to the BASE section and find Spec Sliders.",
+    "Move R METAL right to add metal or left to remove it. Each tick is 5.",
+    "Check the Spec Map Inspector to see the resulting number."
+   ],
+   "controls": [
+    {
+     "label": "R METAL",
+     "range": "-127 to 127",
+     "default": "0",
+     "effect": "Adds or removes metallic on top of the finish.",
+     "inv": "zone.r_metal"
+    }
+   ],
+   "tips": [
+    "Rough bands for metal: 0-15 plain paint, 16-63 carbon or subtle flake, 64-127 pearl, 128-175 strong pearl or anodized, 176-239 metallic, 240-255 chrome tier.",
+    "Foundation values to remember: Pearl 100, Metallic 200, Chrome 255."
+   ],
+   "pitfalls": [
+    "High metal on a dark paint hides the colour. That is by design, but surprises people.",
+    "Chrome tier (240-255) is the only band allowed to use roughness below 15."
+   ],
+   "related": [
+    "spec.channel_g_roughness",
+    "spec.metal_rough_grid",
+    "spec.iron_rules"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "base::f_pearl"
+    },
+    {
+     "do": "finish",
+     "id": "base::f_metallic"
+    },
+    {
+     "do": "finish",
+     "id": "base::f_chrome"
+    }
+   ],
+   "figures": [
+    "g01_spec_channels",
+    "g04_metal_rough_grid"
+   ],
+   "covers": [
+    "spec.ch_r",
+    "wiki.spec_guide.3_the_four_channels_byte_by_byte",
+    "zone.r_metal"
+   ],
+   "sources": [
+    "shokker_engine_v2.py:20-45",
+    "SPB_WIKI.html#spec_guide",
+    "paint-booth-2-state-zones.js:2143",
+    "SPB_WIKI.html:3843-3850",
+    "shokker_engine_v2.py:20245-20270",
+    "engine/compose.py:428-438",
+    "engine/base_registry_data.py:425-430"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "r channel",
+    "red channel",
+    "metallic channel",
+    "what is metallic",
+    "metal value",
+    "m value",
+    "make it more metallic",
+    "metallic value",
+    "metal channel",
+    "red channel spec",
+    "metalness"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The six metal bands",
+     "body": "0 to 15 is plain non-metal: enamel, lacquer, rubber, glass. 16 to 63 is low metal such as carbon, mineral loading or subtle flake. 64 to 127 is pearl, mica and patina. 128 to 175 is strong pearl or anodized metal. 176 to 239 is true metallic: aluminium, gunmetal, brushed titanium, metallic candy. 240 to 255 is chrome tier, the only band allowed to push roughness below 15. Foundation anchors: Pearl 100, Metallic 200, Candy 200, Satin Chrome 250, Chrome 255."
+    },
+    {
+     "heading": "Metal eats the paint colour",
+     "body": "As metal goes up, the surface shows less of its own diffuse colour and more of a tinted reflection. Past about 240 almost everything you see is reflection, tinted by the paint colour. That is why silver chrome needs near-white paint and why a fully metallic dark red looks nearly black. Partial-metal finishes such as pearl, metallic and satin chrome keep their colour much better than full chrome."
+    },
+    {
+     "heading": "What moves metal after the base",
+     "body": "Spec Strength pulls metal toward zero: metal becomes metal times strength, so 50 percent of Chrome is about 128. The R METAL slider adds a value from minus 127 to plus 127 under the zone mask and clips at 0 and 255. Spec patterns add their pattern to metal when the M tick is on. After those, the Material Remap tool squeezes metal into a new low-to-high range and the Material Override tool can set it flat, so those two can overrule the slider."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Pearl that shimmers but keeps its colour",
+     "goal": "Get depth without losing the paint colour.",
+     "settings": {
+      "Base Material": "Pearl (Foundation)",
+      "BASE COLOR": "Use source paint (spec only)",
+      "Spec values": "metal 100, roughness 40, coat 16"
+     },
+     "result": "A soft pearl shimmer that sits on your own colours, about a third of full metal."
+    },
+    {
+     "title": "Gunmetal sheen on a dark car",
+     "goal": "Make a dark car read as metal, not as black paint.",
+     "settings": {
+      "Base Material": "Metallic (Foundation)",
+      "R METAL": "+20",
+      "Spec values": "metal 200 to 220, roughness 40 to 50"
+     },
+     "result": "Dark paint with a real metallic sparkle in sun. Going all the way to 255 would bury the colour instead."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.channel_g_roughness",
+     "why": "Metal says what it is, roughness says how sharp it reflects. Always set them as a pair."
+    },
+    {
+     "with": "spec.metal_rough_grid",
+     "why": "Shows where every metal and roughness pair lands as a material."
+    },
+    {
+     "with": "spec.channel_sliders",
+     "why": "Where the R METAL nudge fits in the order of operations."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What is the best metal value for chrome?",
+     "a": "255. The Foundation Chrome uses metal 255, roughness 2, coat 16. Anything from 240 up is chrome tier."
+    },
+    {
+     "q": "Why is my metallic car dark?",
+     "a": "Metal reflection inherits the paint colour. Dark paint plus high metal is buried until light hits it. Lower metal to around 180 to 200, or lighten the paint."
+    },
+    {
+     "q": "Is more metal always shinier?",
+     "a": "No. Shine is mostly roughness. Metal controls what the reflection is made of. A rough, metallic surface is satin or brushed, not shiny."
+    },
+    {
+     "q": "What metal do pearl and candy use?",
+     "a": "Pearl is 100. Candy is 200 in the current registry, with a low roughness of 15 so the tinted coat reads deep."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Gloss black turned into dark metal.",
+     "cause": "Metal was raised, by a slider, a metallic overlay or a wrong base.",
+     "fix": "Keep metal at 0 with a wet-look gloss such as Wet Look 0, 15, 16 or Gloss 0, 30, 16."
+    },
+    {
+     "symptom": "Coloured chrome looks muddy.",
+     "cause": "A dark, over-saturated paint is under the metal and buries the reflection.",
+     "fix": "Use a bright, controlled colour of the same hue under chrome or candy."
+    },
+    {
+     "symptom": "Metal slider seems to stop working.",
+     "cause": "It was already at 0 or 255, where the result is clipped.",
+     "fix": "Move the other way, or change the base so there is room above or below."
+    }
+   ],
+   "protips": [
+    "Metal bands decide the legal roughness: only metal 240 or more may have roughness under 15. A chrome-tier pixel is the one place a mirror is allowed.",
+    "Spec Strength is the quick way to get half-metal: 50 percent strength on Chrome gives about 128, a pearl-level metal, without picking another finish."
+   ],
+   "screens": [
+    "spec_astra",
+    "spec_candy",
+    "spec_carbon",
+    "spec_chrome",
+    "spec_fractured_forge",
+    "spec_matte",
+    "ui_spec_strip",
+    "ui_zone_rgb_sliders"
+   ]
+  },
+  {
+   "id": "spec.channel_g_roughness",
+   "title": "G channel: roughness",
+   "domain": "spec",
+   "summary": "Green is how rough a spot is. 0 is a perfect mirror and 255 is dead flat.",
+   "what": "Roughness decides how sharp or how smeared a highlight is. Low green gives a tight, bright reflection like wet paint. High green spreads the reflection into a soft glow, which reads as satin, matte or flat. Roughness is the biggest single lever for how a finish feels.",
+   "when": [
+    "You want sharper or softer reflections",
+    "You want to go from gloss to satin to matte"
+   ],
+   "how": [
+    "Open the zone editor, go to the BASE section and find Spec Sliders.",
+    "Move G ROUGH left for glossier, right for rougher.",
+    "Render and look at the highlights on the car, not on the flat template."
+   ],
+   "controls": [
+    {
+     "label": "G ROUGH",
+     "range": "-127 to 127",
+     "default": "0",
+     "effect": "Adds or removes roughness on top of the finish.",
+     "inv": "zone.g_rough"
+    }
+   ],
+   "tips": [
+    "Roughness bands: 0-14 mirror (chrome only), 15-29 wet gloss, 30-59 high gloss, 60-99 satin gloss, 100-129 satin or eggshell, 130-159 semi-matte, 160-199 matte, 200-229 flat, 230-255 dead flat.",
+    "Foundation values to remember: Gloss 30, Satin Chrome 45, Brushed 75, Matte 200."
+   ],
+   "pitfalls": [
+    "Smooth gradients in roughness tend to smear highlights across the car. Steps between a few roughness levels give crisper, more controlled reflections.",
+    "Roughness under 15 is floored on anything that is not chrome-tier metal."
+   ],
+   "related": [
+    "spec.channel_r_metallic",
+    "spec.metal_rough_grid",
+    "spec.iron_rules"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "base::gloss"
+    },
+    {
+     "do": "finish",
+     "id": "base::f_brushed"
+    },
+    {
+     "do": "finish",
+     "id": "base::matte"
+    }
+   ],
+   "figures": [
+    "g02_roughness_scale",
+    "r03_roughness_sweep"
+   ],
+   "covers": [
+    "spec.ch_g",
+    "zone.g_rough"
+   ],
+   "sources": [
+    "shokker_engine_v2.py:20-45",
+    "SPB_WIKI.html#spec_guide",
+    "paint-booth-2-state-zones.js:2143",
+    "SPB_WIKI.html:3858-3868",
+    "shokker_engine_v2.py:270",
+    "shokker_engine_v2.py:20755-20757",
+    "engine/compose.py:428-438",
+    "docs/ai_knowledge/sliders_and_controls.md:18"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "g channel",
+    "green channel",
+    "roughness channel",
+    "what is roughness",
+    "rough value",
+    "make it glossier",
+    "make it more matte",
+    "roughness value",
+    "rough channel",
+    "green channel spec",
+    "blurry reflections"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Nine roughness bands",
+     "body": "0 to 14 razor mirror, reserved for chrome-tier pixels. 15 to 29 wet gloss. 30 to 59 high gloss. 60 to 99 satin gloss. 100 to 129 satin or eggshell. 130 to 159 semi-matte. 160 to 199 matte or blasted. 200 to 229 flat. 230 to 255 dead or porous. Anchors: Wet Look 15, Gloss 30, Semi Gloss 55, Satin 95, Eggshell 140, Matte 200, Primer 215, Flat Black 250."
+    },
+    {
+     "heading": "The floor of 15 and the chrome exception",
+     "body": "Roughness below 15 is reserved for mirror metal, so every render lifts it to 15 wherever metal is under 240. Chrome-tier pixels, metal 240 or more, keep their low values: Foundation Chrome is roughness 2. Pixels that come from a pattern whose own spec amount is on are exempt from this floor."
+    },
+    {
+     "heading": "Smooth ramps smear, steps travel",
+     "body": "A continuous high-roughness gradient makes the highlight smear across the panel. Quantised roughness steps make the highlight jump in controlled stages as the camera moves, which is how engineered finishes get a sparkle that travels. Spec Strength pivots roughness around 128: roughness becomes 128 plus (roughness minus 128) times strength, so strength 0 gives a neutral 128."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Make a car less shiny without changing colour",
+     "goal": "Tame a too-glossy zone.",
+     "settings": {
+      "G ROUGH": "+40",
+      "SPEC STRENGTH": "70%"
+     },
+     "result": "Roughness rises by 40 so reflections soften. Either control works; the slider adds, the strength pulls toward 128."
+    },
+    {
+     "title": "Satin from gloss",
+     "goal": "Move from a wet look to a quiet satin.",
+     "settings": {
+      "Base Material": "Satin (Foundation)",
+      "BASE COLOR": "Use source paint (spec only)",
+      "Spec values": "metal 0, roughness 95, coat 70"
+     },
+     "result": "The same colours with a low sheen that hides small flaws."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.channel_b_clearcoat",
+     "why": "Roughness and coat together make satin versus matte. Raising roughness alone leaves a glossy halo."
+    },
+    {
+     "with": "spec.channel_sliders",
+     "why": "G ROUGH is added after patterns and before remap, and is clipped at 15."
+    },
+    {
+     "with": "spec.iron_rules",
+     "why": "The floor of 15 and the chrome exception in one place."
+    }
+   ],
+   "faq": [
+    {
+     "q": "What roughness is a mirror?",
+     "a": "0 on paper, but only chrome-tier pixels (metal 240 or more) may go under 15. Foundation Chrome uses 2."
+    },
+    {
+     "q": "Why can I not go below 15 on a gloss car?",
+     "a": "The app lifts non-chrome roughness to 15 on every render because lower values flare badly in the sim."
+    },
+    {
+     "q": "Which is better for matte, roughness or coat?",
+     "a": "Both. Matte colour is roughly roughness 200 and coat 160, for example. Do not use alpha to fake matte."
+    },
+    {
+     "q": "Does roughness change the colour?",
+     "a": "Not directly. It changes how wide and bright the reflection is, which can make a colour look lighter or deeper."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Matte paint still has a glossy halo.",
+     "cause": "Roughness was raised but the clearcoat byte was left at 16, so a sharp coat layer sits over a rough base.",
+     "fix": "Raise coat to around 160 as well, or start from Matte (0, 200, 160)."
+    },
+    {
+     "symptom": "Highlight smears into one large blur.",
+     "cause": "A smooth roughness gradient across the panel.",
+     "fix": "Use a few distinct roughness steps, or a spec pattern, so the highlight moves in controlled jumps."
+    },
+    {
+     "symptom": "Mirror finish looks dull.",
+     "cause": "Roughness above 15 on a metal 255 surface, or coat byte high.",
+     "fix": "Start from Chrome (255, 2, 16) and check the B COAT view is dark green-blue, not bright."
+    }
+   ],
+   "protips": [
+    "Satin is not one number. Eggshell sits at roughness 140, Satin at 95 and Semi Gloss at 55. Pick the base that matches the look instead of dialling roughness blind.",
+    "Wet droplets look: base 0, 22, 16 with rims at roughness 15 and the lens at 35 to 70, in 8 to 24 pixel drops."
+   ],
+   "screens": [
+    "spec_astra",
+    "spec_candy",
+    "spec_carbon",
+    "spec_chrome",
+    "spec_fractured_forge",
+    "spec_matte",
+    "ui_zone_rgb_sliders"
+   ]
+  },
+  {
+   "id": "spec.channel_b_clearcoat",
+   "title": "B channel: clearcoat (it runs backwards)",
+   "domain": "spec",
+   "summary": "Blue is the clear layer on top of the paint, and it is backwards. 16 is the strongest, shiniest coat and bigger numbers make it duller.",
+   "what": "Most people expect a bigger number to mean more clearcoat. In an iRacing spec map the opposite is true. Values 0 to 15 mean no clearcoat. 16 is full clearcoat reflectivity, the wettest look. From 16 up to 255 the coat fades toward nothing. In a normal render Shokker Paint Booth raises every blue value to at least 16, so the coat is never in the 1 to 15 dead band that whitewashes in the iRacing shader. Only a spec you imported yourself, or a pattern whose own spec amount is on, may keep an exact 0.",
+   "when": [
+    "You want a wetter or a drier top layer",
+    "A finish looks washed out and you suspect the coat value"
+   ],
+   "how": [
+    "Open the zone editor, go to the BASE section and find Spec Sliders.",
+    "Move B COAT left (a negative number) for a glossier coat, right for a duller one. The number is added straight to the coat value, and 16 is the glossiest.",
+    "A coat that is already at 16 cannot get glossier, so only the right side does anything there."
+   ],
+   "controls": [
+    {
+     "label": "B COAT",
+     "range": "-127 to 127",
+     "default": "0",
+     "effect": "Added straight to the coat value: left is glossier, right is duller. Cannot go below 16.",
+     "inv": "zone.b_coat"
+    }
+   ],
+   "tips": [
+    "Coat bands: 16 maximum, 17-31 very strong, 32-63 strong to medium, 64-127 satin, 128-191 dull, 192-254 almost none, 255 none.",
+    "Foundation values to remember: Gloss 16, Candy 16, Brushed 65, Matte 160."
+   ],
+   "pitfalls": [
+    "Old notes that call 255 the maximum coat are wrong. 255 is the raw maximum but the coat-effect minimum.",
+    "Never author values 1 to 15. Resizing a file can create them by accident, and the app raises them to 16."
+   ],
+   "related": [
+    "spec.iron_rules",
+    "spec.channel_g_roughness",
+    "spec.reading_by_colour"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "base::wet_look"
+    },
+    {
+     "do": "finish",
+     "id": "base::f_candy"
+    },
+    {
+     "do": "finish",
+     "id": "base::matte"
+    }
+   ],
+   "figures": [
+    "g03_clearcoat_scale",
+    "r02_clearcoat_sweep"
+   ],
+   "covers": [
+    "spec.ch_b",
+    "zone.b_coat",
+    "ctl.zone_cc_quality",
+    "spec.cc_floor"
+   ],
+   "sources": [
+    "shokker_engine_v2.py:20-45",
+    "shokker_engine_v2.py:267",
+    "SPB_WIKI.html#spec_guide",
+    "paint-booth-2-state-zones.js:2143",
+    "SPB_WIKI.html:3873-3891",
+    "shokker_engine_v2.py:20759-20765",
+    "SPB_WIKI.html:4268-4274",
+    "SPB_WIKI.html:4178"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "b channel",
+    "blue channel",
+    "clearcoat channel",
+    "clear coat channel",
+    "clearcoat backwards",
+    "why is clearcoat inverted",
+    "cc value",
+    "what is cc",
+    "clearcoat 16",
+    "clearcoat value",
+    "blue channel spec",
+    "clear coat value",
+    "clear coat"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "The backwards channel in full",
+     "body": "Blue 16 is the strongest active coat. Values rise toward 255 as the coat fades: 17 to 31 very strong, 32 to 63 strong to medium, 64 to 127 satin, 128 to 191 dull, 192 to 254 almost none, 255 none. Values 0 to 15 are treated by the sim as no coat or a legacy value. 255 is the raw maximum byte but the weakest clearcoat. Old notes that call it maximum are wrong."
+    },
+    {
+     "heading": "The floor of 16 and its two exceptions",
+     "body": "In a normal render every coat value is raised to at least 16, including matte, so no pixel lands in the 1 to 15 band that whitewashes. The two exceptions are pixels from an imported spec (including the SHOKK DROP authored sets) and pixels where a pattern spec amount is on; those keep their exact values, 0 included. Resizing or smoothing a spec picture can create 1 to 15 values by accident, which is another reason to re-render instead of resizing."
+    },
+    {
+     "heading": "Clearcoat quality and strength",
+     "body": "The quality control maps straight onto the byte: coat = 16 + (1 minus quality) times 239. Quality 1.0 is coat 16, quality 0.5 is about 135, quality 0 is 255. Spec Strength pulls coat toward 16: coat becomes 16 + (coat minus 16) times strength, so strength 0 gives the full glossy 16. Never blend a coat value from 0 to 16 across an edge; the blend passes through the dead 1 to 15 band. Use a hard edge or blend from 16 upward."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Candy depth",
+     "goal": "A deep wet colour on a metallic body.",
+     "settings": {
+      "Base Material": "Candy",
+      "Spec values": "metal 200, roughness 15, coat 16",
+      "B COAT": "0"
+     },
+     "result": "Maximum coat on a tinted base, which is what makes candy look bottomless."
+    },
+    {
+     "title": "Soft matte without glare",
+     "goal": "A flat stealth finish that does not shine at an angle.",
+     "settings": {
+      "Base Material": "Matte (Foundation)",
+      "Spec values": "metal 0, roughness 200, coat 160",
+      "B COAT": "+20"
+     },
+     "result": "Roughness and coat are both high so no wet halo appears. Pushing coat up further removes the last bit of sheen."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.channel_g_roughness",
+     "why": "The pair that separates satin from matte."
+    },
+    {
+     "with": "spec.iron_rules",
+     "why": "Why the coat floor is 16 and where the exceptions are."
+    },
+    {
+     "with": "spec_sculpt.iron_safe_export",
+     "why": "The Spec Sculpt Lab applies the same floor to every file it writes."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Is a bigger blue number more clearcoat?",
+     "a": "No. It is the reverse. 16 is the strongest coat and 255 is none."
+    },
+    {
+     "q": "Why does the app raise my coat 0 to 16?",
+     "a": "Values 1 to 15 whitewash in the sim and exact 0 means coat disabled, which in normal renders is also raised to 16. Only imported specs and pattern-driven pixels may keep 0."
+    },
+    {
+     "q": "What coat do Foundation finishes use?",
+     "a": "Gloss and Wet Look 16, Pearl 16, Metallic 16, Chrome 16, Candy 16, Satin Chrome 40, Satin 70, Brushed 65, Matte 160."
+    },
+    {
+     "q": "Can I make blue 255 for a matte look?",
+     "a": "Only with an imported or authored spec. In normal zones values from 192 to 254 give almost-no coat and are the usual matte territory."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Chrome is dull even on white paint.",
+     "cause": "The coat byte is high, for example 255, which removes the coat reflectivity.",
+     "fix": "Use coat 16 on chrome. Check the B COAT view is dark."
+    },
+    {
+     "symptom": "A fade between a clear zone and a bare zone looks whitewashed in the middle.",
+     "cause": "The blend passed through coat 1 to 15.",
+     "fix": "Use a hard edge, or keep both sides at 16 or more."
+    },
+    {
+     "symptom": "A slider made the coat go the wrong way.",
+     "cause": "B COAT is added straight to the value, so plus means duller.",
+     "fix": "Move B COAT left for glossier, right for duller. Nothing goes under 16."
+    }
+   ],
+   "protips": [
+    "Offsetting the coat structure a little from the metal and roughness structure gives a depth cue, because the two highlight lobes peak at different angles.",
+    "Satin is only 70 on blue but 95 on green. Many satin looks are about roughness. Coat is what makes the edge of a highlight crisp or soft."
+   ],
+   "screens": [
+    "spec_astra",
+    "spec_candy",
+    "spec_carbon",
+    "spec_chrome",
+    "spec_fractured_forge",
+    "spec_matte",
+    "ui_zone_rgb_sliders"
+   ]
+  },
+  {
+   "id": "spec.channel_a_mask",
+   "title": "A channel: the lighting mask",
+   "domain": "spec",
+   "summary": "Alpha switches iRacing lighting on or off for each spot. 255 is normal, 128 is reduced and 0 is lighting killed.",
+   "what": "Alpha is not transparency of the paint. It controls how much of the sky reflection and sun glint iRacing applies. At 255 the spot behaves normally. At 128 the shine is weaker, which can fake shadow or depth. At 0 there is no lighting response at all, which is useful for fake holes or unlit shapes and risky as a normal material tool.",
+   "when": [
+    "You are making an unlit shape such as a fake hole or a glowing decal",
+    "You want to flatten shine over a sponsor area"
+   ],
+   "how": [
+    "Open MASK > Advanced spec utilities and choose Lighting Mask.",
+    "Pick Use Source Alpha, Full Lighting A255, Reduced Lighting A128 or Kill Lighting A0.",
+    "Apply it to the zone and render."
+   ],
+   "controls": [],
+   "tips": [
+    "Keep normal body paint at 255.",
+    "The edge between zones blends alpha as well as colour, so a soft edge gives a soft lighting fade."
+   ],
+   "pitfalls": [
+    "Alpha 0 over a big area makes the car look like a flat sticker on track.",
+    "Alpha stays at 255 unless you set a lighting mask or override, so do not expect holes you did not make."
+   ],
+   "related": [
+    "spec.material_override_remap_lighting",
+    "spec.iron_rules",
+    "spec.reading_by_colour"
+   ],
+   "actions": [],
+   "figures": [
+    "g01_spec_channels"
+   ],
+   "covers": [
+    "spec.ch_a",
+    "pro.spec_tools.a_mask"
+   ],
+   "sources": [
+    "shokker_engine_v2.py:20-45",
+    "paint-booth-v2.html:4152",
+    "SPB_WIKI.html#spec_guide",
+    "SPB_WIKI.html:3892-3898",
+    "SPB_WIKI.html:4385",
+    "shokker_engine_v2.py:20273-20275",
+    "shokker_engine_v2.py:20755-20767"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "a channel",
+    "alpha channel",
+    "specular mask",
+    "alpha 255",
+    "kill lighting",
+    "spec alpha",
+    "alpha channel spec"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "What alpha really does",
+     "body": "Alpha is a lighting and specular mask, not opacity and not a matte switch. 255 means full normal lighting, which is the production default and what every normal zone has. 128 reduces the response and is only meant for specialised fake-depth or shadow tricks. 0 kills lighting and specular response completely, useful for faked vents or unlit holes, but a flat sticker look if overused."
+    },
+    {
+     "heading": "Where alpha comes from in a render",
+     "body": "The spec starts with alpha 255 everywhere. The only things that change it are the Lighting Mask tool, the Material Override tool (when it sets alpha) and an imported spec map. Soft zone edges also blend alpha across the border, so a soft edge gives a soft lighting fade. The Lighting Mask runs together with the other spec tools after the sliders and before the final coat and roughness floors."
+    },
+    {
+     "heading": "Matte is not alpha",
+     "body": "A common mistake is lowering alpha to get a matte colour. Matte comes from higher roughness and higher clearcoat bytes (for example 0, 200, 160). Reducing alpha only mutes lighting and makes the area look dead and flat, as if it were printed on."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Fake grille holes",
+     "goal": "Make a printed grille look like dark openings.",
+     "settings": {
+      "Mode": "Kill Lighting A0",
+      "Zone": "The grille zone only",
+      "MASK > Advanced spec utilities": "Lighting Mask"
+     },
+     "result": "The grille loses all reflection and reads as a dark gap. Use it on small areas only."
+    },
+    {
+     "title": "Subtle depth in a recessed panel",
+     "goal": "Reduce highlights in a recess without going fully dark.",
+     "settings": {
+      "Mode": "Reduced Lighting A128",
+      "MASK > Advanced spec utilities": "Lighting Mask"
+     },
+     "result": "Lighting response is reduced there, so the panel reads as recessed."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.material_override_remap_lighting",
+     "why": "The three power tools, with Lighting Mask as the one that touches alpha."
+    },
+    {
+     "with": "spec.iron_rules",
+     "why": "Alpha is the one channel the floors do not touch."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Should I touch alpha for a normal car?",
+     "a": "No. Keep it at 255. The app does that for you."
+    },
+    {
+     "q": "Can alpha make a hole in the car?",
+     "a": "It can fake one for lighting, but it does not change the car shape or the paint."
+    },
+    {
+     "q": "Why does my matte look flat and dead?",
+     "a": "If alpha was lowered, the lighting response is gone. Reset to 255 and use roughness and coat for matte."
+    },
+    {
+     "q": "Does soft edge affect alpha?",
+     "a": "Yes. Soft edges blend alpha as well as colour, so a lighting mask fades softly at its border."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A zone looks like a flat sticker on track.",
+     "cause": "Alpha is at or near 0 over a large area.",
+     "fix": "Set the Lighting Mask back to Full Lighting A255, or Use Source Alpha."
+    },
+    {
+     "symptom": "Matte colour is not matte.",
+     "cause": "Reduced alpha was used as the matte control.",
+     "fix": "Raise roughness and coat bytes instead, for example start from Matte."
+    }
+   ],
+   "protips": [
+    "Use Source Alpha in the Lighting Mask tool keeps whatever alpha the zone already has, so it is the no-change choice.",
+    "Set a lighting mask only after you are happy with metal, roughness and coat, because it hides their effect where it applies."
+   ],
+   "screens": [
+    "ui_menu_spec_tools",
+    "ui_spec_lighting_mask"
+   ]
+  },
+  {
+   "id": "spec.reading_by_colour",
+   "title": "Reading a spec picture by colour",
+   "domain": "spec",
+   "summary": "If you open a spec map as a normal picture the colours tell you the material. Red is metal, green is roughness and blue is the clear layer, mixed together.",
+   "what": "The spec map holds R, G and B in one picture, so you can read a material by its colour. A pixel that is red with no green means pure mirror-like metal. A green pixel is a very rough non-metal. White is a rough metal with no coat. Nearly black is smooth plain paint. Blue is the strange one because its meaning is backwards, so a blue-heavy pixel is a dull coat, not a glossy one.",
+   "when": [
+    "You open a spec file in an image viewer and want to make sense of it",
+    "You compare two finishes and want to see what differs"
+   ],
+   "how": [
+    "Open MASK > Advanced spec utilities and choose Material Sampler, which opens the Spec Map Inspector.",
+    "Click ALL to see the combined map, or R, G, B and A to see one channel alone.",
+    "Use the Sample point to read exact numbers."
+   ],
+   "controls": [],
+   "tips": [
+    "Anchors to learn: plain gloss is 0, 30, 16. Chrome is 255, 2, 16. Pure red is uncoated mirror metal. Pure green is maximally rough plain paint. Magenta is mirror metal with the coat suppressed.",
+    "Black does not mean empty. It means smooth, non-metal, glossy coat."
+   ],
+   "pitfalls": [
+    "A very dark spec map is not a dull car. Glossy plain paint is nearly black in R, low in G and low in B.",
+    "Do not read the blue channel like brightness."
+   ],
+   "related": [
+    "spec.what_is_spec_map",
+    "spec.inspector",
+    "spec.metal_rough_grid"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "base::gloss"
+    },
+    {
+     "do": "finish",
+     "id": "base::f_chrome"
+    }
+   ],
+   "figures": [
+    "g01_spec_channels",
+    "r13_spec_channel_views"
+   ],
+   "covers": [
+    "wiki.spec_guide.2_read_the_literal_combined_map_color_co",
+    "wiki.spec_guide.4_fast_navigator_name_any_part_of_the_ma",
+    "wiki.spec_guide.the_owner_s_shorthand_confirmed_with_the"
+   ],
+   "sources": [
+    "SPB_WIKI.html#spec_guide",
+    "shokker_engine_v2.py:20-45",
+    "paint-booth-v2.html:3979",
+    "SPB_WIKI.html:3808-3816",
+    "SPB_WIKI.html:3733-3745",
+    "SPB_WIKI.html:3825-3831",
+    "shokker_engine_v2.py:24-28"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "read spec map",
+    "spec map colors",
+    "spec map colours",
+    "spec colours",
+    "what do the spec colors mean",
+    "spec map colour chart",
+    "rgb spec",
+    "read a spec map",
+    "what do spec colours mean"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "Why spec pictures use odd colours",
+     "body": "The spec picture is data, not paint. Red holds metal, green holds roughness, blue holds the clear coat, so every colour is a code. Bright green does not mean glossy, it means very rough and matte. Bright blue means a weak clear coat, not the strongest one. Red alone means metal. Yellow, red plus green, is rough metal. White is rough metal with the coat off, which is not chrome and not gloss."
+    },
+    {
+     "heading": "The neighbourhoods worth memorising",
+     "body": "A dark green-black such as 0, 30, 16 is the normal gloss neighbourhood. Bright red such as 255, 2, 16 is the chrome neighbourhood. Pure green 0, 255, 0 is dead matte. 255, 255, 0 is chalky or oxidised raw metal. Magenta, 255, 0, 255, is mirror metal with the coat suppressed, an extreme corner used by Fractured night carriers, not ordinary gloss."
+    },
+    {
+     "heading": "A trap in the preview",
+     "body": "The colour views under the live preview show bytes, not a paint job. A hot-pink spec region is just the way high metal, a high coat byte and low roughness pack into colour. On its own it does nothing; the effect needs spatial pattern, crushed dark paint and lighting around it."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Reading a gloss car",
+     "goal": "Confirm a gloss body is healthy.",
+     "settings": {
+      "COMBINED view": "Mostly very dark green-black",
+      "R METAL view": "Near black",
+      "G ROUGH view": "Dark grey",
+      "B COAT view": "Dark"
+     },
+     "result": "Metal 0, roughness about 30, coat 16: wet-looking paint with no metal."
+    },
+    {
+     "title": "Reading chrome trim",
+     "goal": "Confirm chrome parts are set up for a mirror.",
+     "settings": {
+      "COMBINED view": "Bright red",
+      "R METAL view": "Near white",
+      "G ROUGH view": "Near black",
+      "B COAT view": "Dark"
+     },
+     "result": "Metal 255, roughness 2, coat 16: a mirror."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.inspector",
+     "why": "Click a spot and read the exact bytes instead of guessing from colour."
+    },
+    {
+     "with": "spec.channel_b_clearcoat",
+     "why": "Blue is backwards; the most common mis-reading."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why is my gloss car green in the spec view?",
+     "a": "Dark green-black is the code for normal gloss. The green is the roughness byte, around 30."
+    },
+    {
+     "q": "What colour is chrome in a spec picture?",
+     "a": "Bright red, because metal is 255 and the green and blue bytes are low."
+    },
+    {
+     "q": "What does white mean?",
+     "a": "Rough metal with the coat off. It is not chrome."
+    },
+    {
+     "q": "Is the spec picture what iRacing shows?",
+     "a": "No. iRacing reads the numbers and lights the car with them. The picture is only for you."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "I thought bright green meant glossy.",
+     "cause": "Green is roughness, so bright green is very rough.",
+     "fix": "Look for dark green or black for gloss. Use the G ROUGH view to confirm."
+    },
+    {
+     "symptom": "I thought bright blue meant maximum coat.",
+     "cause": "Blue is backwards: 16 is the strongest coat and bright blue is a weak coat.",
+     "fix": "The strongest coat is a dark blue channel. Check B COAT."
+    }
+   ],
+   "protips": [
+    "Switch to the single-channel views (R METAL, G ROUGH, B COAT) when something looks wrong. The mixed colour hides which channel is off.",
+    "Use the Channels readout to see exact numbers before changing any slider."
+   ],
+   "screens": [
+    "sculpt_diagnostics",
+    "spec_astra",
+    "spec_candy",
+    "spec_carbon",
+    "spec_chrome",
+    "spec_fractured_forge",
+    "spec_matte",
+    "spec_viewer_buttons",
+    "ui_spec_inspector",
+    "ui_spec_strip"
+   ]
+  },
+  {
+   "id": "spec.metal_rough_grid",
+   "title": "The metal and roughness grid",
+   "domain": "spec",
+   "summary": "Plot metal across and roughness down and every finish has a home. Chrome sits at high metal and low roughness, matte at low metal and high roughness.",
+   "what": "Most looks come from just two numbers. Metal says what the surface is. Roughness says how sharp it reflects. The four corners are easy: low metal and low roughness is wet paint, high metal and low roughness is chrome, low metal and high roughness is flat paint, and high metal and high roughness is chalky raw metal. Everything else, pearl, satin chrome, brushed metal, is a point between them. The clear layer then adds or removes gloss on top.",
+   "when": [
+    "You want to place a finish on a map of looks",
+    "You are building a custom look and need target numbers"
+   ],
+   "how": [
+    "Choose the corner closest to the look you want.",
+    "Pick a Foundation finish near that corner.",
+    "Nudge R METAL and G ROUGH in steps of 5 and compare."
+   ],
+   "controls": [
+    {
+     "label": "R METAL",
+     "range": "-127 to 127",
+     "default": "0",
+     "effect": "Moves the finish along the metal axis.",
+     "inv": "zone.r_metal"
+    },
+    {
+     "label": "G ROUGH",
+     "range": "-127 to 127",
+     "default": "0",
+     "effect": "Moves the finish along the roughness axis.",
+     "inv": "zone.g_rough"
+    }
+   ],
+   "tips": [
+    "Foundation points (metal, roughness, coat): Gloss 0, 30, 16. Wet Look 0, 15, 16. Pearl 100, 40, 16. Metallic 200, 50, 16. Brushed 180, 75, 65. Satin Chrome 250, 45, 40. Chrome 255, 2, 16. Matte 0, 200, 160."
+   ],
+   "pitfalls": [
+    "High metal with high roughness gives a chalky look, not a silver one.",
+    "Metal below 240 cannot go under roughness 15."
+   ],
+   "related": [
+    "spec.channel_r_metallic",
+    "spec.channel_g_roughness",
+    "spec.iron_rules"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "base::f_pearl"
+    },
+    {
+     "do": "finish",
+     "id": "base::f_metallic"
+    },
+    {
+     "do": "finish",
+     "id": "base::f_satin_chrome"
+    },
+    {
+     "do": "finish",
+     "id": "base::f_brushed"
+    }
+   ],
+   "figures": [
+    "g04_metal_rough_grid",
+    "r01_spec_sweep_RxG"
+   ],
+   "covers": [
+    "wiki.spec_guide.5_exact_production_paint_cards",
+    "wiki.spec_guide.10_car_integration_guide_choose_paint_an"
+   ],
+   "sources": [
+    "SPB_WIKI.html#spec_guide",
+    "shokker_engine_v2.py:20-45",
+    "SPB_WIKI.html:3940-3987",
+    "SPB_WIKI.html:3995-4001",
+    "engine/base_registry_data.py:421-461",
+    "shokker_engine_v2.py:20755-20767"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "metal roughness grid",
+    "metallic roughness chart",
+    "spec cube",
+    "material cube",
+    "finish map",
+    "where does chrome sit",
+    "metal and roughness combos",
+    "metallic roughness table",
+    "metal rough grid"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Every finish has a home on the grid",
+     "body": "Put metal across and roughness down. Low metal with low roughness (0 and 15 to 30) is wet paint and gel coat. Low metal with high roughness (0 and 200 or more) is matte and flat. High metal with low roughness (250 or more and 2 to 15) is chrome. High metal with high roughness (180 and 160) is bead blast and sandblasted metal. The middle band is where brushed, pearl and satin chrome live. The coat then adds the polish on top."
+    },
+    {
+     "heading": "Anchor cards with exact values",
+     "body": "Liquid glaze 0, 15, 16. Wet look 0, 15, 16. Gloss 0, 30, 16. Semi gloss 0, 55, 40. Satin 0, 95, 70. Eggshell 0, 140, 100. Matte 0, 200, 160. Flat black 0, 250, 255. Pearl 100, 40, 16. Metallic 200, 50, 16. Gunmetal 220, 40, 16. Brushed titanium 180, 70, 16. Antique chrome 220, 18, 50. Dark chrome 250, 15, 40. Chrome 255, 2, 16. Satin chrome 250, 45, 40. Candy 200, 15, 16. Carbon fiber 55, 30, 16."
+    },
+    {
+     "heading": "Live finishes move around their anchor",
+     "body": "Real finishes are not one point. Chrome is 245 plus 10 times a displacement for metal and 2 plus 8 times it for roughness. Dark chrome is 230 plus 20 times a field. Metallic flake is 168 plus up to 24 from the body and 14 from the polish. Pearl layers sit at metal 90 plus 55 times a layer. Quantised steps are what make highlights jump instead of smearing."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Pick a point, then pick the finish",
+     "goal": "Choose a Foundation finish from where you want it on the grid.",
+     "settings": {
+      "Wet and glossy": "Wet Look 0, 15, 16",
+      "Soft satin": "Satin 0, 95, 70",
+      "Brushed steel": "Brushed 180, 75, 65",
+      "Mirror": "Chrome 255, 2, 16"
+     },
+     "result": "Four corners of the grid in four clicks, all keeping your paint colours."
+    },
+    {
+     "title": "Mix two corners on one car",
+     "goal": "Get the matte-beside-metal contrast that makes a livery pop.",
+     "settings": {
+      "Body zone": "Matte 0, 200, 160",
+      "Stripe zone": "Satin Chrome 250, 45, 40"
+     },
+     "result": "Two materials from opposite sides of the grid, with a clean edge between them."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.paint_spec_marriage",
+     "why": "Which corner of the grid suits which paint colour."
+    },
+    {
+     "with": "finishes.foundation_shine_only",
+     "why": "The Foundation Bases shelf is the grid, one finish per useful point."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Where does satin chrome sit?",
+     "a": "Near metal 250, roughness 45, coat 40: metal like chrome but with soft reflections."
+    },
+    {
+     "q": "What separates pearl from metallic?",
+     "a": "Metal. Pearl is about 100, metallic about 200."
+    },
+    {
+     "q": "Where is carbon?",
+     "a": "Low metal, 55, with a gloss roughness of 30. The weave itself comes from a pattern."
+    },
+    {
+     "q": "Why are there matte metals?",
+     "a": "Metal and roughness are independent. Matte metallic is 225, 140, 100 and bead blast is 180, 160, 140."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "My brushed look is just a flat grey metal.",
+     "cause": "Only the average values were set. Brushed needs variation in the spec.",
+     "fix": "Add a brushed spec overlay on top of Brushed 180, 75, 65."
+    },
+    {
+     "symptom": "A roughness under 15 was changed back.",
+     "cause": "It was a non-chrome pixel, so the floor lifted it.",
+     "fix": "Raise metal to 240 or more if you want a true mirror."
+    }
+   ],
+   "protips": [
+    "The grid is two-dimensional but a good finish uses a third dimension: variation. Flat points look like paint swatches, varied points look like materials.",
+    "Dark chrome (250, 15, 40) is the quickest way to a black mirror finish; the extra coat makes it less sharp than chrome."
+   ],
+   "screens": [
+    "spec_candy",
+    "spec_chrome",
+    "spec_matte"
+   ]
+  },
+  {
+   "id": "spec.iron_rules",
+   "title": "The three iron rules",
+   "domain": "spec",
+   "summary": "Three rules are always enforced so the spec map never breaks in iRacing: coat never below 16, roughness at 15 or more unless chrome, and alpha at full lighting unless you change it.",
+   "what": "These guard rails run on every render. Rule one: the coat value is raised to at least 16 everywhere, so it never sits in the 1 to 15 band that whitewashes in iRacing. Only imported or pattern-driven specs may keep an exact 0. Rule two: roughness is at least 15 wherever metal is under 240. Only mirror chrome, with metal 240 or more, may go lower. Rule three: alpha starts at 255 everywhere, full lighting, and only a lighting mask, a material override or an imported spec changes it. You never have to apply them yourself, but they explain why a slider seems to stop.",
+   "when": [
+    "A slider will not go further than you expect",
+    "You edit a spec outside the app and need the safe limits"
+   ],
+   "how": [
+    "Stay inside the limits when you hand edit a spec map: blue at 16 or more.",
+    "Keep roughness at 15 or more unless metal is 240 or more.",
+    "Let the app handle alpha."
+   ],
+   "controls": [],
+   "tips": [
+    "The Spec Sculpt Lab always exports iron-safe maps."
+   ],
+   "pitfalls": [
+    "A hand-edited blue value of 1 to 15 will look washed out in the sim.",
+    "Resizing a spec picture can create forbidden values. Re-render instead of resizing."
+   ],
+   "related": [
+    "spec.channel_b_clearcoat",
+    "spec.channel_g_roughness",
+    "spec.channel_a_mask"
+   ],
+   "actions": [],
+   "figures": [
+    "g18_iron_rules"
+   ],
+   "covers": [
+    "spec.iron1",
+    "spec.iron2",
+    "spec.iron3",
+    "spec.cc_floor"
+   ],
+   "sources": [
+    "shokker_engine_v2.py:267",
+    "shokker_engine_v2.py:301",
+    "SPB_WIKI.html#spec_guide",
+    "shokker_engine_v2.py:270",
+    "shokker_engine_v2.py:274",
+    "shokker_engine_v2.py:20755-20767",
+    "SPB_WIKI.html:4278-4286",
+    "SPB_WIKI.html:4766",
+    "engine/SPEC_MAP_REFERENCE.md:15-35"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "iron rules",
+    "iron rule",
+    "spec rules",
+    "clearcoat floor",
+    "why cant i go lower",
+    "cc 16 rule",
+    "whitewash",
+    "clearcoat below 16",
+    "why does shokker change my spec values",
+    "shokker changed my spec",
+    "spec values changed"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "The exact rules and the numbers behind them",
+     "body": "Rule one, coat: every coat value is raised to at least 16 (the app calls this the clearcoat floor). Rule two, roughness: wherever metal is under 240, roughness is raised to at least 15. Metal of 240 or more is chrome tier and may keep roughness down to 0. Rule three, alpha: it starts at 255 everywhere and only a lighting mask, an override or an imported spec changes it. After the rules, values are clipped to 0 to 255 and any invalid number becomes a safe value. These run at the very end of a render, so no slider, overlay or tool can slip past them."
+    },
+    {
+     "heading": "Why each rule exists",
+     "body": "Coat values 1 to 15 sit in the band the sim reads as no coat or legacy, and they whitewash the paint; resizing or smoothing a spec file creates them by accident, so the app removes the whole band. Roughness under 15 is reserved for mirror metal, so a gloss or satin zone is held at 15 and only a chrome-tier pixel can be a true mirror. Alpha stays at full lighting because it is a mask for the lighting response, not a gloss control; dropping it makes an area look dead."
+    },
+    {
+     "heading": "The two places a value may stay below the floor",
+     "body": "Pixels from an imported or authored spec (the SHOKK DROP sets) keep their exact coat. Pixels from a pattern whose own spec amount is switched on are also left alone, because the pattern carries its own material. Everything else is lifted. If a design truly needs exact no-coat, check the exported file with the Inspector instead of trusting the preview."
+    }
+   ],
+   "examples": [
+    {
+     "title": "The slider that stops",
+     "goal": "Understand why B COAT will not go glossier than 16.",
+     "settings": {
+      "Base": "Wet Look (coat 16)",
+      "B COAT": "-40"
+     },
+     "result": "The result is clipped at 16. Nothing changes, because 16 is already the glossiest coat the app allows."
+    },
+    {
+     "title": "Roughness cannot go under 15",
+     "goal": "See the roughness floor on a non-metal finish.",
+     "settings": {
+      "Base": "Wet Look",
+      "Spec values": "metal 0, roughness 15, coat 16",
+      "G ROUGH": "-40"
+     },
+     "result": "Roughness stays at 15 because the pixel is not chrome tier. Only metal of 240 or more may go lower."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.channel_b_clearcoat",
+     "why": "The blue channel details behind rule one."
+    },
+    {
+     "with": "spec_sculpt.iron_safe_export",
+     "why": "The Spec Sculpt Lab applies the same rules before it writes a file."
+    },
+    {
+     "with": "spec.channel_sliders",
+     "why": "Slider shifts are clipped at 0, 15 and 16 before the final rules run."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can I turn the iron rules off?",
+     "a": "No. They protect every file from values that look wrong in the sim."
+    },
+    {
+     "q": "Why is my chrome allowed roughness 2 but my gloss is not?",
+     "a": "Only pixels with metal of 240 or more may go below 15. Gloss has metal 0, so it is held at 15."
+    },
+    {
+     "q": "Does a hand-edited spec file get checked?",
+     "a": "Only if you bring it back into the app as an imported spec. Files you edit elsewhere are your responsibility."
+    },
+    {
+     "q": "Does the preview follow the same rules?",
+     "a": "Yes. The preview runs the same final rules as the export."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "My exact coat of 0 became 16.",
+     "cause": "Normal zones are floored at 16. Only imported specs and pattern-driven pixels keep 0.",
+     "fix": "Use coat 16 for the shiniest look, or import an authored spec if you really need coat off."
+    },
+    {
+     "symptom": "A blend between a clear zone and a bare zone looks whitewashed.",
+     "cause": "The blend crossed coat 1 to 15.",
+     "fix": "Hard-edge the zone, or keep both sides at 16 or more."
+    },
+    {
+     "symptom": "A roughness below 15 got lifted.",
+     "cause": "The pixel is not chrome tier.",
+     "fix": "Raise metal to 240 or more if you want a mirror there."
+    }
+   ],
+   "protips": [
+    "The iron rules are a safety net, not a design tool. If a slider hits one, the look is telling you to change the base finish instead.",
+    "Resizing a spec picture in an editor can reintroduce illegal values. Re-render at 2048 instead."
+   ],
+   "screens": [
+    "sculpt_iron_safe_export"
+   ]
+  },
+  {
+   "id": "spec.paint_spec_marriage",
+   "title": "Paint and spec work together",
+   "domain": "spec",
+   "summary": "A finish looks good when the paint and the spec disagree in the right way. Pair a warm matte with a cool metal, and give neighbours contrast.",
+   "what": "Paint is colour and spec is surface. The finishes that pop most are the ones where they pull against each other. Put a warm, matte area next to a cool, shiny one, and the eye reads two materials even if both are similar in brightness. A spec that is the colour-opposite of the paint also works. And since iRacing shows the car small and moving, one loud hero area plus fine texture beats a dozen competing effects. Keep numbers and sponsors on calm, readable areas.",
+   "when": [
+    "Your car looks flat even though the colours are right",
+    "You want to choose finishes for neighbouring zones"
+   ],
+   "how": [
+    "Choose a hero zone and give it your boldest finish.",
+    "Give the neighbouring zones a finish with the opposite character: matte beside gloss, warm beside cool.",
+    "Render and judge the car at a distance, not the flat template."
+   ],
+   "controls": [],
+   "tips": [
+    "Complementary contrast between neighbouring zones beats raw saturation.",
+    "Fine texture of 8 to 32 pixels on the 2048 canvas looks rich at speed. Large blobs look like smeared paint."
+   ],
+   "pitfalls": [
+    "A spec that matches the paint character everywhere reads as a plain car.",
+    "More effects is not better. One hero area wins."
+   ],
+   "related": [
+    "spec.what_is_spec_map",
+    "spec.metal_rough_grid",
+    "spec.how_layers_combine"
+   ],
+   "actions": [
+    {
+     "do": "finish",
+     "id": "base::f_chrome"
+    },
+    {
+     "do": "finish",
+     "id": "base::matte"
+    }
+   ],
+   "figures": [
+    "r04_foundation_before_after"
+   ],
+   "covers": [
+    "doc.05.what_makes_a_finish_pop_owner_s_proven_winners",
+    "wiki.finish_doctrine.paint_spec_marriage",
+    "doc.05.readability_first_iracing_is_seen_at_speed_and_at_distance",
+    "wiki.finish_doctrine.2048_car_canvas_scale_law"
+   ],
+   "sources": [
+    "docs/ai_knowledge/05_design_and_taste.md:1",
+    "SPB_WIKI.html#finish_doctrine",
+    "SPB_WIKI.html#spec_guide",
+    "docs/ai_knowledge/05_design_and_taste.md:4",
+    "docs/ai_knowledge/02_spec_and_finishes.md:15",
+    "docs/ai_knowledge/08_livery_design.md:16",
+    "SPB_WIKI.html:3796-3797",
+    "SPB_WIKI.html:4236-4246",
+    "docs/ai_knowledge/11_finish_advisor.md:25"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "what makes a finish pop",
+    "make it pop",
+    "finish pop",
+    "paint spec contrast",
+    "complementary contrast",
+    "why does my car look flat",
+    "make car look better",
+    "paint and spec together",
+    "spec follows paint",
+    "spec and paint"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "What actually makes a finish pop",
+     "body": "Saturation alone does not pop. Complementary neighbour contrast does: deep blue beside warm gold, black beside hot pink, white beside red. Then make the spec the colour-opposite of the paint: a warm paint on matte next to a cool colour on metal reads richer than one shine everywhere. Adjacent areas should differ in colour or in shine, ideally both. One loud hero area (hood or a big panel), calm neighbours, and fine texture for depth, not big blobs."
+    },
+    {
+     "heading": "Paint guidance by material",
+     "body": "Silver chrome: near-white neutral paint. Coloured chrome or candy: a bright, controlled colour, since an over-saturated dark paint buries the mirror. Pearl: body hue plus lighter and darker flake colours, because a uniform paint makes the spec look pasted on. Gloss black: near-black paint with metal kept at 0. Matte colour: a normal body hue with roughness and coat raised, never reduced alpha. Weathering: oxide colours lined up with the worn spec."
+    },
+    {
+     "heading": "A palette that reads as expensive",
+     "body": "Two or three colours plus one accent looks expensive; five looks cheap. A good split is about 60 percent dominant, 30 percent accent, 10 percent trim. Candy, pearl, metallic, satin or gloss in the livery colour read premium on big areas; chrome on a large area is loud and shows every flaw, so use it on accents, trim and thin lines. A chrome pinstripe on a matte car reads as real chrome."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Two-material hood",
+     "goal": "Make the hood the hero without a new colour.",
+     "settings": {
+      "Hood zone": "Candy",
+      "Hood colour": "Deep red, bright and controlled",
+      "Roof and sides": "Matte, same family",
+      "Stripe": "Satin Chrome"
+     },
+     "result": "Glossy candy hood, flat neighbours and a bright satin accent: three surfaces, one palette."
+    },
+    {
+     "title": "Stealth with one accent",
+     "goal": "A dark car that still has life.",
+     "settings": {
+      "Body": "Matte black-grey at metal 0, roughness 200",
+      "Accent": "Satin at metal 0, roughness 100",
+      "Numbers": "Light grey, high contrast"
+     },
+     "result": "The matte body hides panel lines, the satin accent gives a quiet edge, and the numbers stay readable."
+    }
+   ],
+   "combos": [
+    {
+     "with": "finishes.what_makes_a_finish_pop",
+     "why": "The livery view of the same idea, with zone roles."
+    },
+    {
+     "with": "spec.metal_rough_grid",
+     "why": "Pick the two opposite corners for your neighbouring zones."
+    },
+    {
+     "with": "zones.priority",
+     "why": "Neighbouring zones only show contrast if the right zone owns the shared edge."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does my bright colour look flat?",
+     "a": "Probably the shine is the same everywhere. Add a neighbour with the opposite shine."
+    },
+    {
+     "q": "Does more saturation help?",
+     "a": "No. Contrast between neighbours helps. More saturation mostly muddies a spec."
+    },
+    {
+     "q": "What goes behind numbers?",
+     "a": "A calm gloss, satin or matte with strong colour contrast. Avoid sparkle, strong patterns and colour-shifting finishes there."
+    },
+    {
+     "q": "Chrome on the whole car?",
+     "a": "It is loud and shows every flaw. It works as a show-car statement, but accents and trim usually look better."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Everything is metallic and nothing stands out.",
+     "cause": "One shine used all over.",
+     "fix": "Choose a hero zone, then give the neighbours matte or satin."
+    },
+    {
+     "symptom": "Black chrome looks like a black hole.",
+     "cause": "Very dark paint under high metal.",
+     "fix": "Use Dark Chrome 250, 15, 40, or lighten the paint a little."
+    },
+    {
+     "symptom": "It looked great as a thumbnail and muddy on the car.",
+     "cause": "Mid-tone mud at thumbnail size stays mud on the car.",
+     "fix": "Judge on the car at a distance and on a sunny track."
+    }
+   ],
+   "protips": [
+    "Test the contrast with the spec views off: if two zones are only different in shine, they will read the same in a dull photo and different in the sim.",
+    "Flat paint with chrome trim lines is the modern retro look; gloss everywhere is the showroom look."
+   ],
+   "screens": [
+    "pair_base_vs_foundation",
+    "pair_colour_source"
+   ]
+  },
+  {
+   "id": "spec.how_layers_combine",
+   "title": "How base, pattern and spec combine in a zone",
+   "domain": "spec",
+   "summary": "In every zone the base finish gives the starting paint and spec, the pattern adds shape on top, and the spec overlays add surface detail last.",
+   "what": "Think of a zone as a short stack. First the base finish sets colour and spec. Then a pattern, up to five per zone, is laid over the paint. Pattern spec amount, if set, also carries the pattern into the spec map. Then up to five spec overlays add surface detail only to the spec, with no colour change. Finally the spec sliders, strength and blends tune the end result. Zones with lower numbers win where they overlap.",
+   "when": [
+    "You are not sure which control changes colour and which changes shine",
+    "Two settings seem to fight each other"
+   ],
+   "how": [
+    "Set the base finish and its colour first.",
+    "Add a pattern and set its paint mode, opacity and scale.",
+    "Add a spec overlay if you want texture without colour.",
+    "Finish with SPEC STRENGTH and the R, G and B sliders."
+   ],
+   "controls": [
+    {
+     "label": "SPEC STRENGTH",
+     "range": "0-100%",
+     "default": "100%",
+     "effect": "Fades the base spec toward neutral.",
+     "inv": "zone.spec_strength"
+    }
+   ],
+   "tips": [
+    "Overlay mode for a pattern hides the base colour with the pattern own colours. Use Blend to keep the paint colour.",
+    "Spec overlays never change the colour, so they are the safe way to add texture to a colour you like."
+   ],
+   "pitfalls": [
+    "A pattern with spec amount at 0 does not touch the spec map. This is on purpose.",
+    "The lower-numbered zone wins an overlap."
+   ],
+   "related": [
+    "spec.overlays_stack",
+    "spec.strength_and_independent",
+    "spec.blend_modes"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.pattern_spec_amount",
+     "label": "Spec amount (pattern) slider"
+    },
+    {
+     "do": "control",
+     "id": "zone.add_spec_overlay",
+     "label": "ADD SPEC OVERLAY button"
+    }
+   ],
+   "figures": [
+    "g13_four_kinds_of_look",
+    "g16_foundation_spec_only"
+   ],
+   "covers": [
+    "doc.02.four_kinds_of_finish_in_shokker",
+    "wiki.spec_guide.7_construction_grammar_how_fine_patterns",
+    "zone.pattern_spec_amount"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:1851",
+    "paint-booth-2-state-zones.js:2258-2335",
+    "js/spec-overlays/picker.js:60-85",
+    "SPB_WIKI.html#spec_guide",
+    "shokker_engine_v2.py:18352-18356",
+    "shokker_engine_v2.py:18369-18388",
+    "shokker_engine_v2.py:18583",
+    "shokker_engine_v2.py:20245-20275",
+    "shokker_engine_v2.py:20337-20386",
+    "shokker_engine_v2.py:20407-20452",
+    "shokker_engine_v2.py:20755-20767",
+    "engine/compose.py:2967-2970",
+    "engine/compose.py:5287-5291",
+    "engine/compose.py:3944",
+    "paint-booth-2-state-zones.js:5102",
+    "shokker_engine_v2.py:18380",
+    "paint-booth-2-state-zones.js:4269"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "layer order",
+    "how layers combine",
+    "base pattern spec",
+    "what is on top",
+    "stacking order",
+    "how zones combine",
+    "base pattern spec combine"
+   ],
+   "level": "pro",
+   "deep": [
+    {
+     "heading": "Step 1: which zone owns each pixel",
+     "body": "Every zone builds a mask from its colour match or drawn area, softened with a small blur (about 2 pixels) unless the zone has Hard Edge on, and Hard Edge is on by default in every zone. Zones are processed in list order and an earlier zone claims first: where two overlap, the lower number wins and the later one is cut back. A soft mask above 0.15 is hardened to full ownership. At the end a zone replaces the spec fully where its mask is above 0.5, blends linearly between 0.05 and 0.5, and leaves the spot alone below that. Paint is blended by the mask in the paint stack."
+    },
+    {
+     "heading": "Step 2: the paint stack inside a zone",
+     "body": "In order: the base finish paint (skipped when the colour mode is Use source paint, so only the spec changes); the base colour mode (solid, gradient, finish colours); hue, saturation and brightness inside the mask (hue up to 180 degrees either way, skipped if all three are under half a percent); base scale placement; then BASE STRENGTH, which mixes the result over your original paint. Patterns come after Base Strength, so lowering it never dims a pattern. Last come the second to fifth base overlays."
+    },
+    {
+     "heading": "Step 3: the spec stack inside a zone",
+     "body": "In order: the base finish spec; SPEC STRENGTH pulling metal toward 0, roughness toward 128 and coat toward 16; base scale, rotation and clear-coat quality; a second base blended through its gradient; spec patterns (metal, roughness and coat ticks); pattern spec amount; second to fifth base overlays; then the versioned spec overlays, applied last on the finished material as a mix toward their target. After the finish is built: an imported spec map if present, spec placement, then the three SPEC sliders (R, G, B), then Material Remap, Material Override and Lighting Mask, in that order."
+    },
+    {
+     "heading": "Step 4: after every zone is done",
+     "body": "The app protects numbers and sponsors: wherever the decal mask is on, the original colour is restored so no overlay can repaint them. Wear is applied in one pass, scaled per zone. Decal spec finishes and spec stamps are blended in by their own alpha. Then the final floors run (coat at least 16, roughness at least 15 under metal 240) and the paint and spec files are written. Preview runs exactly the same steps at a smaller size."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Pearl body with carbon hood stripes",
+     "goal": "Build a layered finish and predict each layer.",
+     "settings": {
+      "Base Material": "Gloss (metal 0, roughness 30, coat 16)",
+      "Second base": "Pearl at 40%",
+      "Pattern 1": "Carbon fibre, Blend",
+      "Spec overlay": "Brushed grain, M and R ticked, Strength 50",
+      "G ROUGH": "+10"
+     },
+     "result": "Pearl shimmer on gloss, a carbon weave that keeps the body colour, grain only in the shine, and a slightly softer gloss from the slider at the end."
+    },
+    {
+     "title": "Overlap on purpose",
+     "goal": "Make a stripe beat the body where they overlap.",
+     "settings": {
+      "Zone 1": "Stripe",
+      "Zone 2": "Body"
+     },
+     "result": "The stripe is higher in the list, so it keeps the overlap. Swap the order and the body wins."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.channel_sliders",
+     "why": "Step 3 ends with these three sliders."
+    },
+    {
+     "with": "spec.strength_and_independent",
+     "why": "Spec Strength sits at the start of Step 3 and Base Strength at the end of Step 2. They never touch each other."
+    },
+    {
+     "with": "patterns.layers_and_stacking",
+     "why": "The pattern layers that sit between the base and the overlays."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does Base Strength change the shine?",
+     "a": "No. Base Strength only blends the paint toward your original colours. SPEC STRENGTH changes the shine."
+    },
+    {
+     "q": "Which zone wins when two overlap?",
+     "a": "The one higher in the list (lower number). + Add Zone puts the new zone at the bottom, so it loses overlaps until you drag it up; Chat and presets place new zones at the top."
+    },
+    {
+     "q": "What runs last, my slider or my overlay?",
+     "a": "The overlays run first as part of the finish, then the R, G and B sliders, then Remap, Override and Lighting Mask."
+    },
+    {
+     "q": "Does the preview match the export?",
+     "a": "It runs the same steps and floors at a smaller size, so very fine detail can look different from the full render."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "My pattern is not dimmed when I lower Base Strength.",
+     "cause": "Patterns are added after Base Strength.",
+     "fix": "Lower the pattern opacity instead."
+    },
+    {
+     "symptom": "A zone changes nothing.",
+     "cause": "A higher zone covers it, the colour match selects nothing, or Base Strength or intensity is low.",
+     "fix": "Check the list order, then the zone mask, then the strength sliders."
+    },
+    {
+     "symptom": "Sponsors got a chrome look.",
+     "cause": "The body zone also grabbed the sponsor layer, and decals take the material under them.",
+     "fix": "Limit the body zone to the car paint layer and use a decal spec finish for the sponsors."
+    }
+   ],
+   "protips": [
+    "Quick triage order for any odd look: zone owner, then base colour mode, then Base Strength, then SPEC STRENGTH, then the sliders.",
+    "There are at most five pattern layers and five spec overlays per zone, and each zone renders with its own random seed, so two zones with the same finish never repeat exactly."
+   ],
+   "screens": [
+    "spec_ghost_hex",
+    "ui_zone_sections_overview"
+   ]
+  },
+  {
+   "id": "spec.colour_space_and_files",
+   "title": "Colour space, files and preview truth",
+   "domain": "spec",
+   "summary": "The paint file is an ordinary colour picture and the spec file is raw data. iRacing builds its own version from them, so a stale build can hide your newest file.",
+   "what": "Shokker Paint Booth writes two files per car: a 24-bit paint TGA and a 32-bit spec TGA with an alpha channel, both 2048 by 2048. The paint is read as normal screen colour. The spec is read as straight numbers, with no colour correction. That is why a pretty spec picture on screen only matters as data. iRacing then compiles the TGAs into a faster .mip file, and an old .mip can show instead of your new TGA until it is rebuilt.",
+   "when": [
+    "Your car looks old in the sim after a fresh export",
+    "You open the spec TGA in an image editor"
+   ],
+   "how": [
+    "Export or deploy the car.",
+    "If the sim shows an old look, delete the stale .mip for that car so iRacing rebuilds it.",
+    "Never apply colour management or sharpening to a spec file."
+   ],
+   "controls": [],
+   "tips": [
+    "Judge finishes on the car preview or in the sim, not on the flat template.",
+    "The preview is a close guide, not a perfect copy of the sim shader."
+   ],
+   "pitfalls": [
+    "Saving the spec through a photo editor can shift values and break the iron rules.",
+    "Wireframe and mask overlays in the preview can hide the real finish. Turn them off before judging."
+   ],
+   "related": [
+    "spec.what_is_spec_map",
+    "spec.iron_rules",
+    "spec.inspector"
+   ],
+   "actions": [],
+   "figures": [
+    "g01_spec_channels"
+   ],
+   "covers": [
+    "spec.colorspace",
+    "spec.reference",
+    "wiki.spec_guide.12_export_and_preview_truth",
+    "wiki.finish_doctrine.iracing_spec_map_truth"
+   ],
+   "sources": [
+    "SPB_WIKI.html#spec_guide",
+    "engine/SPEC_MAP_REFERENCE.md:1",
+    "shokker_engine_v2.py:20-45",
+    "js/spb-support-answers.js:63",
+    "js/spb-support-answers.js:66",
+    "js/spb-support-answers.js:69",
+    "js/spb-support-answers.js:72",
+    "SPB_WIKI.html:4307-4308",
+    "shokker_engine_v2.py:20792-20848",
+    "docs/ai_knowledge/10_support_troubleshooting.md:30"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "colour space",
+    "color space",
+    "srgb linear",
+    "tga export",
+    "mip file",
+    "stale mip",
+    "car not updating",
+    "old paint showing in sim",
+    "preview vs sim",
+    "srgb",
+    "file format for iracing",
+    "colour space files"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Two files, two kinds of data",
+     "body": "The paint file is 24-bit colour, read as normal screen colour. The spec file is 32-bit with alpha and is read as raw numbers, with no colour correction. Both are 2048 by 2048 for a standard car, and the size must match the car template exactly, or iRacing shows the paint shop colours instead. An optional normal map can be written from the metal channel."
+    },
+    {
+     "heading": "The compiled copy trap",
+     "body": "The first time iRacing loads your files it compiles the spec into a faster copy next to it. If you render again and the look does not change, that compiled copy is stale. Press Ctrl+R in the sim to reload the car textures. If the old shine still shows, move that car's compiled spec copy out of the folder and reload. Other drivers only see your spec if the compiled copy is shared too; Trading Paints shares it."
+    },
+    {
+     "heading": "Byte order and tools",
+     "body": "The spec file stores its bytes as blue, green, red, alpha, while tools show red, green, blue, alpha. That is normal, so never swap channels by hand. Saving the spec through a photo editor can shift values, apply colour management or sharpen edges, all of which break the iron rules."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Spec change not visible",
+     "goal": "Make a new render show up in the sim.",
+     "settings": {
+      "After the render": "Ctrl+R in iRacing",
+      "If still old": "Move the compiled spec copy for that car out of the folder, then Ctrl+R again"
+     },
+     "result": "iRacing rebuilds the compiled copy from the new spec and shows the new shine."
+    },
+    {
+     "title": "Paint all black",
+     "goal": "Fix a paint file that loads wrong.",
+     "settings": {
+      "Paint file": "24-bit, no template alpha",
+      "Size": "2048 by 2048",
+      "iRacing option": "2048 paint textures on"
+     },
+     "result": "The paint loads with its real colours."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.channel_a_mask",
+     "why": "The 32-bit spec file is the one with alpha."
+    },
+    {
+     "with": "spec.iron_rules",
+     "why": "Editing the file elsewhere can break the rules the app enforces."
+    }
+   ],
+   "faq": [
+    {
+     "q": "How big must the paint be?",
+     "a": "Exactly 2048 by 2048 (or 1024 by 1024), 24-bit."
+    },
+    {
+     "q": "Why do other drivers not see my shine?",
+     "a": "iRacing never shares textures. Files must be in their folder; Trading Paints does that, and its spec needs the compiled copy."
+    },
+    {
+     "q": "Why is my paint all black?",
+     "a": "It was saved with the template alpha channel instead of 24-bit, or 2048 paint textures is off in the sim."
+    },
+    {
+     "q": "Do I need the spec file at all?",
+     "a": "No. Without it iRacing uses the car normal material. Your colours still show."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "New shine does not show after a render.",
+     "cause": "A stale compiled copy.",
+     "fix": "Ctrl+R in the sim, or move the compiled copy out and reload."
+    },
+    {
+     "symptom": "iRacing shows paint shop colours.",
+     "cause": "Wrong size.",
+     "fix": "Use the car template size exactly and never resize."
+    }
+   ],
+   "protips": [
+    "In a replay, reload textures at a moment when the car is not in the pit stall.",
+    "A render takes seconds to about a minute. If it takes much longer, check how many zones have their own painted area."
+   ],
+   "screens": [
+    "flow_step6_recipe_card"
+   ]
+  },
+  {
+   "id": "spec.strength_and_independent",
+   "title": "Spec strength and independent spec",
+   "domain": "spec",
+   "summary": "SPEC STRENGTH fades a finish spec toward neutral. INDEPENDENT SPEC lets the spec have its own scale instead of following the base, and SPEC ROTATION turns the spec at any time.",
+   "what": "SPEC STRENGTH runs from 0 to 100 percent. At 100 you get the finish as designed. Lower it and metal drifts toward 0, roughness toward 128 and coat toward 16, so the look softens without changing colour. INDEPENDENT SPEC (the tick box in the Spec Scale row) unlocks SPEC SCALE so the spec texture can be bigger or smaller than the base. SPEC ROTATION is always available.",
+   "when": [
+    "A finish is too loud and you want it calmer",
+    "You want the shine texture to run in a different direction from the paint"
+   ],
+   "how": [
+    "Open the zone and find SPEC STRENGTH. Drag it in steps of 5.",
+    "Tick the INDEPENDENT SPEC box in the Spec Scale row to unlock SPEC SCALE. SPEC ROTATION is always live.",
+    "Render and compare."
+   ],
+   "controls": [
+    {
+     "label": "SPEC STRENGTH",
+     "range": "0-100%, step 5",
+     "default": "100%",
+     "effect": "Scales metal, roughness and coat toward neutral.",
+     "inv": "zone.spec_strength"
+    },
+    {
+     "label": "INDEPENDENT SPEC",
+     "range": "on or off",
+     "default": "off",
+     "effect": "Frees spec scale and rotation from the base.",
+     "inv": "zone.independent_spec"
+    }
+   ],
+   "tips": [
+    "Behind the slider: metal times strength, roughness moves toward 128 and coat toward 16."
+   ],
+   "pitfalls": [
+    "Strength 0 is neutral, not dull: coat goes to 16, the glossiest value.",
+    "Spec strength does not change colour."
+   ],
+   "related": [
+    "spec.scale_rotation",
+    "spec.channel_sliders",
+    "spec.blend_modes"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.spec_strength"
+    },
+    {
+     "do": "control",
+     "id": "zone.independent_spec"
+    }
+   ],
+   "figures": [
+    "r01_spec_sweep_RxG"
+   ],
+   "covers": [
+    "zone.spec_strength",
+    "zone.independent_spec",
+    "wiki.spec_guide.11_spb_controls_that_mutate_a_paint_card"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:2111-2115",
+    "SPB_WIKI.html#spec_guide",
+    "engine/compose.py:428-438",
+    "engine/compose.py:2967-2970",
+    "engine/compose.py:2902",
+    "engine/compose.py:4966-4979",
+    "docs/ai_knowledge/sliders_and_controls.md:9",
+    "SPB_WIKI.html:4262-4267",
+    "docs/ai_knowledge/09_field_playbook.md:13"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "spec strength",
+    "spec intensity",
+    "independent spec",
+    "spec too strong",
+    "reduce shine",
+    "soften spec"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The exact maths of SPEC STRENGTH",
+     "body": "Strength pulls the base finish toward a neutral plate: metal becomes metal times strength, roughness becomes 128 plus (roughness minus 128) times strength, coat becomes 16 plus (coat minus 16) times strength. At 100 percent nothing changes. At 50 percent Chrome (255, 2, 16) becomes about (128, 65, 16). At 0 you get metal 0, roughness 128, coat 16, a neutral gloss. It runs on the base spec before patterns and overlays, so those keep their own strength."
+    },
+    {
+     "heading": "Three strengths that are easy to mix up",
+     "body": "SPEC STRENGTH changes the shine and leaves colour alone. BASE STRENGTH blends the base paint over your original paint and leaves the spec alone. INTENSITY scales how strong a base texture generator is. Use the right one: less shiny means SPEC STRENGTH, more subtle colour means BASE STRENGTH or intensity, smaller pattern means scale, not strength."
+    },
+    {
+     "heading": "Independent spec",
+     "body": "By default the spec texture follows the base scale and rotation, so a brushed grain turns with the brushed paint. Tick the INDEPENDENT SPEC box in the Spec Scale row to unlock SPEC SCALE so the shine texture can be finer or larger than the paint. SPEC ROTATION turns the spec at any time. Only the spec moves; the colour stays put."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Half-chrome",
+     "goal": "A softer chrome look without changing finish.",
+     "settings": {
+      "Base Material": "Chrome (Foundation)",
+      "SPEC STRENGTH": "50%"
+     },
+     "result": "Metal about 128 and roughness about 65: a bright metallic with soft reflections instead of a mirror."
+    },
+    {
+     "title": "Grain across the paint grain",
+     "goal": "Turn the shine texture 45 degrees from the paint texture.",
+     "settings": {
+      "INDEPENDENT SPEC": "On",
+      "SPEC ROTATION": "45",
+      "SPEC SCALE": "0.60x"
+     },
+     "result": "The spec grain is finer and diagonal to the base texture."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.scale_rotation",
+     "why": "The two controls that Independent Spec unlocks."
+    },
+    {
+     "with": "spec.how_layers_combine",
+     "why": "Where Spec Strength sits in the order of operations."
+    },
+    {
+     "with": "spec.channel_sliders",
+     "why": "Sliders add after strength; use strength for overall, sliders for one channel."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Does strength 0 mean dull?",
+     "a": "No. It is neutral: metal 0, roughness 128, coat 16, a plain gloss. Coat 16 is the glossiest coat."
+    },
+    {
+     "q": "Which slider makes the car less shiny?",
+     "a": "SPEC STRENGTH, or G ROUGH plus 40."
+    },
+    {
+     "q": "Does strength change colour?",
+     "a": "No. Only the spec."
+    },
+    {
+     "q": "Why can I not change SPEC SCALE?",
+     "a": "It is locked until INDEPENDENT SPEC is ticked."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Lowering strength made the car look like plain gloss.",
+     "cause": "Strength pulls toward a neutral plate, so every finish converges on plain gloss at 0.",
+     "fix": "Lower in small steps, or change the base finish."
+    },
+    {
+     "symptom": "I used strength to shrink a pattern.",
+     "cause": "Strength is not size.",
+     "fix": "Use scale. Smaller number means finer and more repeats."
+    }
+   ],
+   "protips": [
+    "Authored imports (SHOKK DROP sets) ignore SPEC STRENGTH on purpose, so their hand-tuned numbers stay exact.",
+    "The same slider also scales the noise in noisy bases, so on those the effect is a bit stronger than the plain formula."
+   ],
+   "screens": [
+    "ui_zone_spec_strength"
+   ]
+  },
+  {
+   "id": "spec.scale_rotation",
+   "title": "Spec scale and rotation",
+   "domain": "spec",
+   "summary": "SPEC SCALE resizes the texture in the spec map and SPEC ROTATION turns it. Both work on the spec only.",
+   "what": "Where a finish has a texture in its spec, such as brushed grain or a weave, scale makes it bigger or smaller and rotation turns it. Scale runs from 0.05 to 5 times, with 1.00 as the finish default. Rotation goes from 0 to 355 degrees in steps of 5. Because the canvas covers a whole car, a small scale usually looks richer than the default.",
+   "when": [
+    "Brushed grain looks too coarse or runs the wrong way",
+    "A weave or flake needs to be finer"
+   ],
+   "how": [
+    "Tick the INDEPENDENT SPEC box in the Spec Scale row to unlock SPEC SCALE.",
+    "Drag SPEC SCALE below 1.00 for finer detail.",
+    "Drag SPEC ROTATION to turn the grain."
+   ],
+   "controls": [
+    {
+     "label": "SPEC SCALE",
+     "range": "0.05x-5x",
+     "default": "1.00x",
+     "effect": "Resizes spec texture.",
+     "inv": "zone.spec_scale"
+    },
+    {
+     "label": "SPEC ROTATION",
+     "range": "0-355 degrees, step 5",
+     "default": "0",
+     "effect": "Turns spec texture.",
+     "inv": "zone.spec_rotation"
+    }
+   ],
+   "tips": [
+    "Features of 8 to 32 pixels read as fine detail on the car."
+   ],
+   "pitfalls": [
+    "SPEC SCALE stays locked until INDEPENDENT SPEC is ticked. SPEC ROTATION is always live.",
+    "Large scale on a whole car looks like big smears."
+   ],
+   "related": [
+    "spec.strength_and_independent",
+    "spec.overlays_stack",
+    "spec.paint_spec_marriage"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.spec_scale"
+    },
+    {
+     "do": "control",
+     "id": "zone.spec_rotation"
+    }
+   ],
+   "figures": [
+    "g19_scale_on_car"
+   ],
+   "covers": [
+    "zone.spec_scale",
+    "zone.spec_rotation"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:2111-2115",
+    "SPB_WIKI.html#spec_guide",
+    "docs/ai_knowledge/how_do_i.md:176-181",
+    "SPB_WIKI.html:3492-3503",
+    "SPB_WIKI.html:3521-3533",
+    "shokker_engine_v2.py:21819-21832",
+    "engine/core.py:1498-1527"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "spec scale",
+    "spec rotation",
+    "spec size",
+    "rotate brushed grain",
+    "finer spec",
+    "brushed direction"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "What scale really does on a whole car",
+     "body": "The canvas is 2048 by 2048 and covers the entire car. A feature of 8 to 32 pixels reads as texture; 64 pixels is the size of a side mirror. Scale runs from 0.05 to 5 times with 1.00 as the finish default, and smaller means more repeats, so 0.30 to 0.60 is typical for fine detail. The app also auto-scales a pattern to the zone size: 1.0 if the zone's bounding box covers more than 60 percent of the canvas, otherwise about the square root of that area share, between 0.15 and 1."
+    },
+    {
+     "heading": "Spec placement is its own pass",
+     "body": "After the zone finish is built, a separate placement pass moves, turns, scales and flips only the spec. That is why independent spec scale and rotation never recolour anything. Rotation goes 0 to 355 degrees in steps of 5."
+    },
+    {
+     "heading": "The fine-detail rule",
+     "body": "Fine is 4 to 8 pixels, micro is 1 to 2 pixels (car-scale sparkle), and 8 to 32 pixels is the sweet spot for a finish that reads as material. When detail seems enough, make it 25 to 40 percent finer. If a finish does not show up, add more small events and more channel contrast; do not make the marks bigger."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Brushed grain that reads as steel",
+     "goal": "Fine, horizontal brushing on a hood.",
+     "settings": {
+      "Base Material": "Brushed (Foundation)",
+      "INDEPENDENT SPEC": "On",
+      "SPEC SCALE": "0.50x",
+      "SPEC ROTATION": "0"
+     },
+     "result": "Twice as many grain lines across the hood, the size of real brushing at distance."
+    },
+    {
+     "title": "Carbon on the diagonal",
+     "goal": "Turn a weave without turning the paint.",
+     "settings": {
+      "INDEPENDENT SPEC": "On",
+      "SPEC ROTATION": "45"
+     },
+     "result": "The weave in the spec runs diagonally while any painted pattern stays put."
+    }
+   ],
+   "combos": [
+    {
+     "with": "patterns.scale_rotation_opacity",
+     "why": "The paint version of the same idea. Pattern scale is a separate control."
+    },
+    {
+     "with": "spec.strength_and_independent",
+     "why": "Independent spec must be ticked first."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why is my texture huge?",
+     "a": "Scale 1.00 on a whole-car canvas is often too big. Go to 0.3 to 0.6."
+    },
+    {
+     "q": "Does spec scale change the paint?",
+     "a": "No. Spec only."
+    },
+    {
+     "q": "What is the best size?",
+     "a": "Features of 8 to 32 pixels at 2048."
+    },
+    {
+     "q": "Does rotation work on flat finishes?",
+     "a": "There is nothing to turn on a flat spec. It needs a texture, such as brushed grain or a weave."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Scale is greyed out.",
+     "cause": "INDEPENDENT SPEC is not ticked.",
+     "fix": "Tick it first."
+    },
+    {
+     "symptom": "Fine detail disappears in the preview.",
+     "cause": "The preview is smaller than the 2048 export.",
+     "fix": "Zoom in or read the spec views before deciding it did nothing."
+    }
+   ],
+   "protips": [
+    "Preview is about 768 pixels for a 2048 sheet. Micro flake and holographic grating at small scale average out and look flat there.",
+    "Rotation of 45 degrees on a weave is the quickest way to a different carbon look."
+   ],
+   "screens": [
+    "pair_base_scale",
+    "ui_zone_base_more",
+    "ui_zone_spec_strength"
+   ]
+  },
+  {
+   "id": "spec.channel_sliders",
+   "title": "R, G and B channel sliders",
+   "domain": "spec",
+   "summary": "The R METAL, G ROUGH and B COAT sliders nudge the finish spec. They add or subtract under the zone and then the app clips to safe limits.",
+   "what": "These three sliders shift each channel by up to 127 either way, in steps of 5. The shift is added to the finish spec under the zone shape, then clipped at the floors: 0 for metal, 15 for roughness and 16 for coat. They are the fine-tuning tool after you pick a finish. The built-in Feels set them in one click.",
+   "when": [
+    "A finish is almost right but a touch too dull or too rough",
+    "You want a consistent tweak across several zones"
+   ],
+   "how": [
+    "Open the zone editor, go to the BASE section and find Spec Sliders.",
+    "Move R METAL, G ROUGH and B COAT.",
+    "Use the Feel picker or the save icon for presets."
+   ],
+   "controls": [
+    {
+     "label": "R METAL",
+     "range": "-127 to 127, step 5",
+     "default": "0",
+     "effect": "Metal shift.",
+     "inv": "zone.r_metal"
+    },
+    {
+     "label": "G ROUGH",
+     "range": "-127 to 127, step 5",
+     "default": "0",
+     "effect": "Roughness shift.",
+     "inv": "zone.g_rough"
+    },
+    {
+     "label": "B COAT",
+     "range": "-127 to 127, step 5",
+     "default": "0",
+     "effect": "Coat shift, added to the coat value. Left is glossier, right is duller.",
+     "inv": "zone.b_coat"
+    }
+   ],
+   "tips": [
+    "For a wetter look, lower G ROUGH, and lower B COAT if the finish coat is above 16.",
+    "The B COAT slider tooltip in the app says higher is a stronger mirror. The number is really added to the coat value, where bigger means duller, so judge by eye in the preview."
+   ],
+   "pitfalls": [
+    "Shifts that reach a floor stop having an effect.",
+    "Large shifts can cancel the finish character."
+   ],
+   "related": [
+    "spec.presets_feels",
+    "spec.auto_pop",
+    "spec.iron_rules"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.spec_sliders",
+     "label": "Spec Sliders (R Metal, G Rough, B Coat)"
+    }
+   ],
+   "figures": [
+    "r01_spec_sweep_RxG",
+    "r02_clearcoat_sweep"
+   ],
+   "covers": [
+    "zone.spec_sliders",
+    "wiki.spec_guide.8_mixing_and_gradients_without_destroyin"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:2143",
+    "shokker_engine_v2.py:20251",
+    "SPB_WIKI.html#spec_guide",
+    "shokker_engine_v2.py:20245-20270",
+    "shokker_engine_v2.py:20273-20275",
+    "docs/ai_knowledge/sliders_and_controls.md:18",
+    "docs/ai_knowledge/how_do_i.md:123-129",
+    "shokker_engine_v2.py:20755-20767"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "spec sliders",
+    "rgb sliders",
+    "metal rough coat sliders",
+    "channel shift",
+    "tweak spec",
+    "metallic slider",
+    "roughness slider",
+    "clearcoat slider",
+    "channel sliders"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Exactly what a slider does",
+     "body": "Each slider adds its value, from minus 127 to plus 127, to that channel under the zone mask. The result is clipped at 0 to 255, with floors of 0 for metal, 15 for roughness and 16 for coat. Sliders at 0 (or all under half a point) are ignored. The sliders run after patterns, overlays and blend modes, so they are the last creative step; only Remap, Override and Lighting Mask come after."
+    },
+    {
+     "heading": "Which way each one goes",
+     "body": "Metal plus means more metal. Roughness plus means duller, minus means glossier. Coat plus means duller, because blue is backwards, minus means glossier and stops at 16. Rough recipes: satin from gloss is G ROUGH plus 40 to plus 80 with B COAT plus 30 to plus 60. Wetter is G ROUGH minus and B COAT minus."
+    },
+    {
+     "heading": "Sliders versus other tools",
+     "body": "Sliders shift a whole zone evenly. Material Remap squeezes a channel into a new low to high range and keeps variation. Material Override sets flat values. Spec Strength pulls everything toward neutral. A shift of 20 is subtle, 50 is a clear style change, and anything near 100 usually cancels the finish character."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Satin from gloss",
+     "goal": "Take a gloss body to satin without changing the base.",
+     "settings": {
+      "Base Material": "Gloss",
+      "G ROUGH": "+60",
+      "B COAT": "+45"
+     },
+     "result": "Roughness around 90 and coat around 61: a quiet satin."
+    },
+    {
+     "title": "Duller candy",
+     "goal": "Take some wet depth out of a candy zone.",
+     "settings": {
+      "Base Material": "Candy (metal 200, roughness 15, coat 16)",
+      "G ROUGH": "+30",
+      "B COAT": "+20"
+     },
+     "result": "Roughness 45 and coat 36: the candy colour stays but the glassy look relaxes into a satin candy."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.presets_feels",
+     "why": "Feels are slider combinations saved as one click."
+    },
+    {
+     "with": "spec.material_override_remap_lighting",
+     "why": "The tools that run right after the sliders."
+    },
+    {
+     "with": "spec.iron_rules",
+     "why": "The floors that clip slider results."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does B COAT plus make it duller?",
+     "a": "Because blue is backwards. The number is added to the coat value, where bigger means less coat."
+    },
+    {
+     "q": "Why did my slider stop working?",
+     "a": "The channel reached its floor or ceiling."
+    },
+    {
+     "q": "Can sliders recolour?",
+     "a": "No. They only change metal, roughness and coat."
+    },
+    {
+     "q": "Slider or SPEC STRENGTH?",
+     "a": "Use the slider to move one channel. Use strength to scale the whole finish."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Large shifts make the finish look generic.",
+     "cause": "A shift near 100 overwhelms the base values.",
+     "fix": "Choose a different base finish and nudge by 20 to 40."
+    },
+    {
+     "symptom": "Wetter did not work on a gel coat.",
+     "cause": "It is already at the floor of 15 and 16.",
+     "fix": "Nothing more to gain. Change the pattern or the paint."
+    }
+   ],
+   "protips": [
+    "The B COAT slider tooltip in the app says higher is a stronger mirror. The number is really added to the coat value where bigger means duller, so judge by eye.",
+    "Save a good slider set as a Feel so it can be reused on other zones."
+   ],
+   "screens": [
+    "ui_spec_remap",
+    "ui_zone_rgb_sliders",
+    "ui_zone_spec_row"
+   ]
+  },
+  {
+   "id": "spec.material_override_remap_lighting",
+   "title": "Material override, remap and lighting mask",
+   "domain": "spec",
+   "summary": "MASK > Advanced spec utilities has power tools: copy a material onto a zone, squeeze a channel into a new range, and set how much lighting each area gets.",
+   "what": "Material Sampler lets you sample a spot on an existing spec and apply that material to a zone. Material Range Remapper re-maps each channel into a low and high range. A source value of 0 goes to Low and 255 goes to High, so you can calm or intensify a whole spec. Lighting Mask sets alpha: use the source, full lighting, reduced lighting or kill lighting. A Decal Rescue Kit also fixes decals that came in shiny.",
+   "when": [
+    "You like the shine of one part of a spec and want it elsewhere",
+    "You need a quick overall change to an imported spec",
+    "Decals look glassy and need to go flat"
+   ],
+   "how": [
+    "Open the MASK menu in the top bar, then Advanced spec utilities.",
+    "Choose Material Range Remapper, set Low and High for M, R and CC, then apply. Restore Original puts it back.",
+    "Choose Lighting Mask and pick a mode.",
+    "Choose Decal Rescue Kit for Flat Vinyl and similar fixes."
+   ],
+   "controls": [
+    {
+     "label": "Remap Low and High",
+     "range": "0-255 per channel",
+     "default": "Original",
+     "effect": "Squeezes a channel into a new range.",
+     "inv": "ctl.zone_spec_material_override_remap_lightingmask"
+    }
+   ],
+   "tips": [
+    "Remap presets: Original, Metallic Texture, Printed Vinyl, Matte Texture, Gloss Texture."
+   ],
+   "pitfalls": [
+    "Remapping can push the coat into the forbidden 1 to 15 band; the app raises it back to 16."
+   ],
+   "related": [
+    "spec.inspector",
+    "spec.channel_a_mask",
+    "spec.iron_rules"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "ctl.zone_spec_material_override_remap_lightingmask"
+    }
+   ],
+   "figures": [
+    "r13_spec_channel_views"
+   ],
+   "covers": [
+    "ctl.zone_spec_material_override_remap_lightingmask",
+    "specRemapMLow",
+    "specRemapMHigh",
+    "specRemapRLow",
+    "specRemapRHigh",
+    "specRemapCCLow",
+    "specRemapCCHigh",
+    "pro.spec_tools.decal_flat_vinyl",
+    "pro.spec_tools.decal_satin"
+   ],
+   "sources": [
+    "paint-booth-v2.html:2395",
+    "paint-booth-v2.html:4200",
+    "paint-booth-v2.html:4109",
+    "shokker_engine_v2.py:20251",
+    "shokker_engine_v2.py:331-355",
+    "shokker_engine_v2.py:367-394",
+    "shokker_engine_v2.py:397-421",
+    "shokker_engine_v2.py:20273-20275",
+    "shokker_engine_v2.py:20755-20767",
+    "docs/ai_knowledge/how_do_i.md:436-452",
+    "SPB_WIKI.html:4276-4286"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "material remap",
+    "decal rescue",
+    "spec tools",
+    "flat vinyl decals",
+    "decals too shiny",
+    "material override",
+    "remap"
+   ],
+   "level": "pro",
+   "deep": [
+    {
+     "heading": "The order the three tools run",
+     "body": "After the sliders, the zone spec goes through Material Remap first, then Material Override, then Lighting Mask. All three run before the final floors, so a flat override of roughness 5 on a non-chrome pixel is lifted to 15 and a coat of 1 to 15 is lifted to 16. Remap and Override work per channel (metal, roughness, coat); Lighting Mask only touches alpha."
+    },
+    {
+     "heading": "Remap in numbers",
+     "body": "Remap squeezes a channel into a new low and high range: result = low + source / 255 times (high minus low). A source 0 goes to Low and a source 255 goes to High. A metal range of 0 to 100 turns a chrome (255) into metal 100 but keeps every bit of variation, so a brushed grain stays brushed while the whole thing calms down. Override is blunt: it sets one flat value for the channel across the zone and loses all variation."
+    },
+    {
+     "heading": "Sampler and decal rescue",
+     "body": "The Material Sampler reads the exact metal, roughness and coat at a spot (Point, 3 by 3 median or 5 by 5 median) and can copy them onto the active zone. Decal Rescue Kit puts a plain non-metal spec under stamped numbers and sponsors: Flat Vinyl, Satin Decal or Gloss Decal, so they do not take the sparkle of whatever spec is below."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Calm a too-sparkly metallic",
+     "goal": "Keep the texture, lower the metal.",
+     "settings": {
+      "Metal Low": "0",
+      "Metal High": "120",
+      "Roughness": "Original",
+      "Coat": "Original",
+      "MASK > Advanced spec utilities": "Material Range Remapper"
+     },
+     "result": "The brightest flakes now peak at metal 120 and every pattern shape is still there."
+    },
+    {
+     "title": "Rescue sponsor logos",
+     "goal": "Stop numbers and sponsors from going sparkly under chrome.",
+     "settings": {
+      "Finish": "Flat Vinyl",
+      "Body zone": "Limited to the car paint layer",
+      "MASK > Advanced spec utilities": "Decal Rescue Kit"
+     },
+     "result": "Decals keep a plain non-metal look while the body stays chrome."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.channel_sliders",
+     "why": "Sliders run just before these tools, so a remap or override can overrule a slider."
+    },
+    {
+     "with": "spec.channel_a_mask",
+     "why": "Lighting Mask is the tool that changes alpha."
+    },
+    {
+     "with": "spec.iron_rules",
+     "why": "The floors run after all three tools."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Remap or slider?",
+     "a": "Sliders move the whole zone evenly. Remap rescales the range and keeps the variation."
+    },
+    {
+     "q": "Can I undo a remap?",
+     "a": "Yes. Restore Original puts the zone back."
+    },
+    {
+     "q": "What does Override do to texture?",
+     "a": "It flattens the channel to one value, so texture in that channel is lost."
+    },
+    {
+     "q": "Do these tools change colour?",
+     "a": "No. They only change spec channels and alpha."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "My override of coat 5 became 16.",
+     "cause": "The floors run after the tools.",
+     "fix": "Use 16 or more."
+    },
+    {
+     "symptom": "Override removed my brushed grain.",
+     "cause": "A flat value replaces the channel.",
+     "fix": "Use Remap, which keeps variation."
+    },
+    {
+     "symptom": "Numbers look sparkly or dull.",
+     "cause": "Stamped items take the spec of whatever is under them.",
+     "fix": "Use Decal Rescue Kit and limit the body zone to the car paint layer."
+    }
+   ],
+   "protips": [
+    "Remap presets are a fast start: Original, Metallic Texture, Printed Vinyl, Matte Texture and Gloss Texture. Then fine tune Low and High.",
+    "Use the Material Sampler first. Copying exact numbers from a part you like is quicker than guessing."
+   ],
+   "screens": [
+    "ui_menu_spec_tools",
+    "ui_spec_inspector",
+    "ui_spec_lighting_mask",
+    "ui_spec_remap"
+   ]
+  },
+  {
+   "id": "spec.blend_modes",
+   "title": "Spec blend modes",
+   "domain": "spec",
+   "summary": "SPEC BLEND decides how a spec overlay mixes with the base spec. The named modes, Ghost Carve and friends, are made for racing finishes.",
+   "what": "The dropdown offers Normal, Ghost Carve, Chrome Inlay, Frost Etch, Angle Flip, Ember Gate and Depth Press, plus the classic Multiply, Screen, Overlay, Hard Light and Soft Light. Each named mode has a one-line help text in the dropdown. Use Normal while learning. Try Chrome Inlay when you want an overlay to cut a mirror shape into the surface.",
+   "when": [
+    "An overlay hides the base spec instead of working with it",
+    "You want the texture to cut in, glow or flip at angles"
+   ],
+   "how": [
+    "Open the zone and find SPEC BLEND.",
+    "Pick a mode and read its help line.",
+    "Render and judge at car scale."
+   ],
+   "controls": [
+    {
+     "label": "SPEC BLEND",
+     "range": "Normal, Ghost Carve, Chrome Inlay, Frost Etch, Angle Flip, Ember Gate, Depth Press, Multiply, Screen, Overlay, Hard Light, Soft Light",
+     "default": "Normal",
+     "effect": "Chooses how the overlay mixes with the base spec.",
+     "inv": "zone.spec_blend"
+    }
+   ],
+   "tips": [
+    "Compare Normal and the named mode side by side before you commit."
+   ],
+   "pitfalls": [
+    "A strong overlay with a classic blend can wash out a finish."
+   ],
+   "related": [
+    "spec.overlays_stack",
+    "spec.strength_and_independent",
+    "spec.how_layers_combine"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.spec_blend"
+    }
+   ],
+   "figures": [
+    "r13_spec_channel_views"
+   ],
+   "covers": [
+    "zone.spec_blend"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:2118-2140",
+    "SPB_WIKI.html#spec_guide",
+    "engine/compose.py:2619-2622",
+    "engine/compose.py:2625-2712",
+    "paint-booth-2-state-zones.js:2137",
+    "shokker_engine_v2.py:20190-20239"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "spec blend",
+    "ghost carve",
+    "chrome inlay",
+    "frost etch",
+    "angle flip",
+    "ember gate",
+    "depth press"
+   ],
+   "level": "pro",
+   "deep": [
+    {
+     "heading": "The six named modes rewrite three channels",
+     "body": "Ghost Carve pulls the coat value toward 64 plus 176 times the pattern, so pattern lows and highs land at very different coat values and form carved cells, and lowers roughness by up to 25. It leaves the metal alone, so any base keeps its tinted flash. Chrome Inlay lowers metal (by up to 85 percent) and roughness (by up to 65 percent) where the pattern is hot and pushes the coat value toward 245: a mirror inlay in a metal surround. Frost Etch lowers metal by up to 45, raises roughness by up to 150 and lowers the coat value by up to 35: sandblasted, milky areas. Angle Flip adds up to plus or minus 85 metal and moves the coat value by the opposite sign, up to 135, so the pattern shows at one angle and inverts at another. Ember Gate lights only the top ridges: above a pattern value of 0.80 the coat value goes to 252 and roughness to 34. Depth Press embosses: a lit rim (metal plus 110, coat plus 90) and a shadow rim (metal minus 70)."
+    },
+    {
+     "heading": "Without a pattern the zone itself is the field",
+     "body": "These modes work with or without a pattern. With a pattern the pattern drives the effect. Without one, the zone's own paint structure drives it, so your livery becomes the carve: the field is the paint brightness first, the base spec shape second, a flat 0.5 last. Flat solid zones with a featureless base respond only subtly, so give the mode some structure to work with."
+    },
+    {
+     "heading": "The legacy five",
+     "body": "Multiply, Screen, Overlay, Hard Light and Soft Light are the older blend modes that mix the overlay values with the base. They keep working but can wash out a finish, and a strong overlay under a classic mode may flatten it. The named modes are physical: they change how metal, gloss and coat behave, not just brightness. All modes honour the iron floors afterward."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Carve a livery into chrome",
+     "goal": "Make the livery shapes read as mirror cuts.",
+     "settings": {
+      "Base Material": "Chrome Foundation",
+      "SPEC BLEND": "Chrome Inlay",
+      "Pattern": "Any bold geometric pattern",
+      "Pattern spec amount": "Raised above 0"
+     },
+     "result": "Hot parts of the pattern become mirror-like inlays while the surround loses most of its metal."
+    },
+    {
+     "title": "Colour-flip from any base",
+     "goal": "Get angle-dependent flashes on a dark colour.",
+     "settings": {
+      "SPEC BLEND": "Ghost Carve",
+      "Colour": "Deep dark red or purple",
+      "Brightness": "Dragged way down",
+      "Track": "A daytime one"
+     },
+     "result": "Cells with different coat values flash sky or sun colour as the car turns, while the metal stays tinted and dark."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.angle_reveal",
+     "why": "Ghost Carve is the recipe behind most angle-reveal finishes."
+    },
+    {
+     "with": "spec.overlays_stack",
+     "why": "Blend decides how an overlay meets the base; the stack decides the order."
+    },
+    {
+     "with": "spec.how_layers_combine",
+     "why": "See where the blend sits in the order of operations."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which mode for sparkle that ignites on edges?",
+     "a": "Ember Gate. Only the brightest ridges light up."
+    },
+    {
+     "q": "Which mode for a stamped look?",
+     "a": "Depth Press. Every element gets a lit rim and a shadow rim."
+    },
+    {
+     "q": "Why does nothing change on my plain zone?",
+     "a": "Flat solid zones with featureless bases respond subtly. Add a pattern or a structured base."
+    },
+    {
+     "q": "Do the modes change the colour?",
+     "a": "No. They change metal, roughness and coat only."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "The effect is too strong and everything is chrome.",
+     "cause": "Strength and pattern spec amount both high with Chrome Inlay.",
+     "fix": "Lower strength before the next layer."
+    },
+    {
+     "symptom": "Ghost Carve shows nothing.",
+     "cause": "The base colour is too bright, so diffuse colour hides the flashes.",
+     "fix": "Crush the colour near black and judge on a daytime track."
+    },
+    {
+     "symptom": "A classic blend washed out my finish.",
+     "cause": "Legacy modes mix values directly.",
+     "fix": "Switch to a named mode or lower strength."
+    }
+   ],
+   "protips": [
+    "Compare Normal and the named mode side by side before you commit.",
+    "Angle Flip is the one to try for a finish that changes between camera angles in replays."
+   ],
+   "screens": [
+    "ui_zone_base_more"
+   ]
+  },
+  {
+   "id": "spec.overlays_stack",
+   "title": "Spec patterns and overlay stacks",
+   "domain": "spec",
+   "summary": "Spec patterns add texture to the shine only. Stack up to five per zone and tune each one.",
+   "what": "A spec pattern is a texture for the spec map, such as brushed grain, carbon weave, hex cells or micro sparkle. It changes how light plays, never the colour. The catalogue has 301 of them in 34 groups. In a zone, expand the SPEC OVERLAYS section and click Add Spec Overlay. You can stack up to five. Each layer has move up and down, Duplicate, Mute, Solo and Inspect, plus its own Strength, M, R and C channel ticks, Size, Rotation, X and Y position, Blend and a Coverage box.",
+   "when": [
+    "You want carbon, brushed or sparkle texture without touching the colour",
+    "You want a unique surface on one part of the car"
+   ],
+   "how": [
+    "Open the zone and expand SPEC OVERLAYS.",
+    "Click Add Spec Overlay and pick a pattern.",
+    "Set Strength (default 50) and the channels M, R and C that it should touch.",
+    "Use Mute and Solo to compare layers."
+   ],
+   "controls": [
+    {
+     "label": "Add Spec Overlay",
+     "range": "up to 5 per zone",
+     "default": "none",
+     "effect": "Adds a spec texture layer.",
+     "inv": "zone.add_spec_overlay"
+    },
+    {
+     "label": "SPEC OVERLAYS section",
+     "range": "Strength 0-100, Size 0.25-1, Rotation 0-359",
+     "default": "Strength 50",
+     "effect": "Per layer tuning.",
+     "inv": "zone.section_spec_overlays"
+    }
+   ],
+   "tips": [
+    "Solo one layer at a time when you debug a busy look.",
+    "Pick M, R or C on purpose: texture on roughness only is the safest."
+   ],
+   "pitfalls": [
+    "Five layers at full strength fight each other.",
+    "Spec overlays change shine only. If you want visible shapes on the paint, use a pattern."
+   ],
+   "related": [
+    "spec.blend_modes",
+    "spec.scale_rotation",
+    "spec.how_layers_combine"
+   ],
+   "actions": [
+    {
+     "do": "spec",
+     "id": "metallic_sand"
+    },
+    {
+     "do": "spec",
+     "id": "holographic_flake"
+    },
+    {
+     "do": "spec",
+     "id": "spec_carbon_weave"
+    },
+    {
+     "do": "control",
+     "id": "zone.add_spec_overlay"
+    }
+   ],
+   "figures": [
+    "r13_spec_channel_views"
+   ],
+   "covers": [
+    "zone.add_spec_overlay",
+    "zone.section_spec_overlays",
+    "catalog.spec_patterns"
+   ],
+   "sources": [
+    "js/spec-overlays/picker.js:60-85",
+    "paint-booth-2-state-zones.js:12294",
+    "docs/ai_knowledge/02_spec_and_finishes.md:1",
+    "engine/compose.py:3944",
+    "engine/compose.py:2551-2600",
+    "docs/ai_knowledge/sliders_and_controls.md:15",
+    "docs/ai_knowledge/02_spec_and_finishes.md:10"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "spec overlay",
+    "spec overlays",
+    "spec patterns",
+    "spec pattern",
+    "add spec overlay",
+    "spec texture",
+    "stack spec patterns",
+    "spec pattern stack",
+    "overlay stack"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "How an overlay changes the spec",
+     "body": "Each spec overlay moves the finished material toward its own target on the channels you tick (M, R, C): result = current + (target minus current) times coverage times strength. Strength defaults to 50 percent. Overlays are applied last on the finished material, so the base cannot undo them, and the later sliders and floors still apply afterward."
+    },
+    {
+     "heading": "Order and channels",
+     "body": "The stack runs from the first layer to the fifth, each mixing onto the result of the one before. Texture on roughness only is the safest: it changes how light spreads without touching metal or the coat. M-only overlays add sparkle on metal. C-only overlays vary the clearcoat and tend to be the most visible in direct sun. Five layers at full strength fight each other, so build with two or three and balance their strengths."
+    },
+    {
+     "heading": "Debugging a busy look",
+     "body": "Mute turns a layer off without deleting it and Solo shows only that layer. Inspect reads the numbers at a spot. Because spec overlays never change colour, a flat colour preview looks identical with and without them. Use the spec views (R METAL, G ROUGH, B COAT) or the Channels readout to confirm they did anything."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Brushed steel hood",
+     "goal": "Real brushed texture on a metallic base.",
+     "settings": {
+      "Base Material": "Brushed (Foundation)",
+      "Spec overlay 1": "A brushed metal pattern",
+      "Channels": "M and R",
+      "Strength": "50",
+      "Size": "0.5"
+     },
+     "result": "Fine directional grain with occasional bright glints."
+    },
+    {
+     "title": "Carbon under gloss",
+     "goal": "Visible weave only in the shine.",
+     "settings": {
+      "Base Material": "Gloss Carbon (metal 55, roughness 30, coat 16)",
+      "Spec overlay 1": "A carbon weave pattern",
+      "Channels": "R",
+      "Strength": "40"
+     },
+     "result": "A weave that moves with the light while the paint stays a plain colour."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.blend_modes",
+     "why": "The blend mode changes how each overlay meets the base spec."
+    },
+    {
+     "with": "spec.pattern_groups",
+     "why": "Where to find each kind of overlay."
+    },
+    {
+     "with": "patterns.layers_and_stacking",
+     "why": "Paint patterns and spec overlays both stack to five, but only patterns change colour."
+    }
+   ],
+   "faq": [
+    {
+     "q": "How many overlays can I stack?",
+     "a": "Up to five per zone."
+    },
+    {
+     "q": "Why does my overlay do nothing in the preview?",
+     "a": "Overlays change shine only. Check the spec views."
+    },
+    {
+     "q": "What strength should I use?",
+     "a": "Start at 50, the default, and go lower if the look is loud. 30 to 50 reads as subtle flake."
+    },
+    {
+     "q": "Can I mute a layer?",
+     "a": "Yes. Mute, Solo and Duplicate are on each layer."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Everything looks noisy.",
+     "cause": "Several overlays at high strength on all three channels.",
+     "fix": "Solo each layer, tick fewer channels, lower strength."
+    },
+    {
+     "symptom": "The old stack disappeared.",
+     "cause": "Setting overlays through an apply command replaces the stack.",
+     "fix": "Add layers one at a time with Add Spec Overlay."
+    }
+   ],
+   "protips": [
+    "A subtle flake overlay at strength 30 to 50 adds depth to almost any finish.",
+    "Pick the channel on purpose. The same pattern on R, on M and on C gives three different looks."
+   ],
+   "screens": [
+    "ui_zone_sections_overview",
+    "ui_zone_spec_overlays"
+   ]
+  },
+  {
+   "id": "spec.presets_feels",
+   "title": "Spec presets and Feels",
+   "domain": "spec",
+   "summary": "Feels are one-click spec tweaks. Wet Candy, Track Flash, Chrome Mirror, Deep Gloss, Soft Pearl and Satin Matte are built in.",
+   "what": "A Feel sets the three channel sliders at once. The built-in Feels are, as metal, rough and coat shifts: Wet Candy 30, -55, -45. Track Flash 55, -35, -60. Chrome Mirror 80, -80, -70. Deep Gloss 25, -45, -85. Soft Pearl 15, 25, 10. Satin Matte -25, 65, 40. The disk icon saves your own Feel on this computer.",
+   "when": [
+    "You want a quick consistent shine change across zones",
+    "You found a combination you want to reuse"
+   ],
+   "how": [
+    "Open the zone editor, go to the BASE section and find Spec Sliders.",
+    "Pick a Feel from the preset list.",
+    "To keep your own, set the sliders and click the save icon."
+   ],
+   "controls": [
+    {
+     "label": "Spec preset",
+     "range": "6 built in plus saved",
+     "default": "none",
+     "effect": "Applies metal, rough and coat shifts at once.",
+     "inv": "zone.spec_preset"
+    },
+    {
+     "label": "Save preset",
+     "range": "one click",
+     "default": "",
+     "effect": "Saves your slider settings as a Feel.",
+     "inv": "zone.save_spec_preset"
+    }
+   ],
+   "tips": [
+    "Apply a Feel, then fine tune by 5."
+   ],
+   "pitfalls": [
+    "Feels stack on top of the finish, so a Feel on a matte finish will not make it chrome.",
+    "The coat part of a Feel follows the backwards coat scale: the four gloss Feels use minus numbers (glossier) and Soft Pearl and Satin Matte use plus numbers (duller). Judge the result by eye."
+   ],
+   "related": [
+    "spec.channel_sliders",
+    "spec.auto_pop",
+    "spec.strength_and_independent"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.spec_preset"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "zone.spec_preset",
+    "zone.save_spec_preset"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:9972-9978",
+    "shokker_engine_v2.py:20245-20270",
+    "docs/ai_knowledge/sliders_and_controls.md:18"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "spec presets",
+    "feels",
+    "wet candy",
+    "track flash",
+    "chrome mirror feel",
+    "deep gloss",
+    "soft pearl",
+    "satin matte feel",
+    "save spec preset",
+    "spec feel",
+    "spec feels"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "What each Feel really does",
+     "body": "A Feel is three slider values applied at once, each between minus 127 and plus 127. Wet Candy is metal plus 30, roughness minus 55, coat minus 45. Track Flash is 55, minus 35, minus 60. Chrome Mirror is 80, minus 80, minus 70. Deep Gloss is 25, minus 45, minus 85. Soft Pearl is 15, 25, 10. Satin Matte is minus 25, plus 65, plus 40. Roughness minus always means glossier. The coat byte is backwards, so a minus coat number makes the coat glossier (it stops at 16) and a plus number makes it duller. The four gloss Feels use minus coat numbers; Soft Pearl and Satin Matte use plus numbers to soften the coat."
+    },
+    {
+     "heading": "Feels sit on top of the finish",
+     "body": "They are added to whatever the finish already is, then clipped at 0 for metal, 15 for roughness and 16 for coat. So Chrome Mirror on a matte finish will not make it chrome: metal 0 plus 80 and roughness 200 minus 80 is a satin metal. On a gloss finish the same Feel makes a real step toward chrome."
+    },
+    {
+     "heading": "Your own Feels",
+     "body": "Set the three sliders, click the save icon, and the Feel is kept on this computer next to the built-in ones. They are not shared with other computers or other drivers."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Candy glow",
+     "goal": "More wet depth on a coloured gloss.",
+     "settings": {
+      "Base Material": "Candy",
+      "Spec preset": "Wet Candy"
+     },
+     "result": "Roughness drops and metal rises a little for a deeper, glassier colour."
+    },
+    {
+     "title": "Quick stealth",
+     "goal": "Turn a gloss zone into a flat one.",
+     "settings": {
+      "Base Material": "Gloss",
+      "Spec preset": "Satin Matte"
+     },
+     "result": "Roughness 30 plus 65 is 95 and coat 16 plus 40 is 56: a satin from gloss in one click."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.channel_sliders",
+     "why": "A Feel is just three slider values; fine tune them by hand afterward."
+    },
+    {
+     "with": "spec.auto_pop",
+     "why": "Auto-Pop is the automatic version of a Feel."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Do Feels change colour?",
+     "a": "No."
+    },
+    {
+     "q": "Can I stack two Feels?",
+     "a": "A Feel sets the sliders, so a second one replaces the first."
+    },
+    {
+     "q": "Where are saved Feels kept?",
+     "a": "On this computer only."
+    },
+    {
+     "q": "Which Feel for chrome?",
+     "a": "Chrome Mirror, but start from a gloss or metallic base. On a matte base it will only reach satin metal."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A Feel did nothing on chrome.",
+     "cause": "The finish was already at the limit of the channels the Feel pushes.",
+     "fix": "Pick a Feel that pushes the other way."
+    },
+    {
+     "symptom": "The coat looks duller with Satin Matte.",
+     "cause": "Its coat number is plus 40 and the coat scale is backwards, so a plus number softens the coat on purpose.",
+     "fix": "That is the satin look. Lower B COAT by 5s if you want a wetter edge."
+    }
+   ],
+   "protips": [
+    "Apply a Feel, then fine tune in steps of 5.",
+    "Feels are a good way to learn the sliders: apply one and look at what the R, G and B values became."
+   ],
+   "screens": [
+    "ui_zone_spec_row"
+   ]
+  },
+  {
+   "id": "spec.auto_pop",
+   "title": "Auto-Pop",
+   "domain": "spec",
+   "summary": "Auto-Pop gives a zone a small, safe boost of shine in one click and can be undone in a single step.",
+   "what": "Auto-Pop looks at the zone average and nudges only what is weak. It adds up to 15 metal if the zone metal averages under 70. It lowers roughness by up to 45 if the roughness averages above 70. It lowers the coat value by up to 45 if the coat averages above 55, which makes it glossier. All steps are multiples of 5. If the zone is already glossy it says so and changes nothing.",
+   "when": [
+    "A zone looks dull and you want a quick lift",
+    "You want a safe starting point before hand tuning"
+   ],
+   "how": [
+    "Open the zone editor, go to the BASE section and find Spec Sliders.",
+    "Click Auto-Pop.",
+    "Press Undo if you do not like it. It is a single step."
+   ],
+   "controls": [
+    {
+     "label": "Auto-Pop",
+     "range": "one click",
+     "default": "",
+     "effect": "Adds a small shine boost to weak channels.",
+     "inv": "zone.auto_pop"
+    }
+   ],
+   "tips": [
+    "Repeat clicks keep boosting until the limits are reached."
+   ],
+   "pitfalls": [
+    "It will not turn a matte finish into chrome."
+   ],
+   "related": [
+    "spec.presets_feels",
+    "spec.channel_sliders",
+    "spec.paint_spec_marriage"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.auto_pop"
+    }
+   ],
+   "figures": [],
+   "covers": [
+    "zone.auto_pop"
+   ],
+   "sources": [
+    "paint-booth-2-state-zones.js:9922",
+    "paint-booth-2-state-zones.js:9948",
+    "shokker_engine_v2.py:20245-20270"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "auto pop",
+    "autopop",
+    "make it shinier",
+    "auto shine",
+    "quick shine boost",
+    "auto pop button"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "The exact thresholds",
+     "body": "Auto-Pop reads the zone average from the spec preview. If the metal average is under 70 it adds up to 15 metal, 30 percent of the gap to 70. If roughness averages over 70 it lowers roughness by the excess, up to 45. If the coat averages over 55 it lowers the coat value by the excess, up to 45, which is glossier. Every step is a multiple of 5 and it only moves in the direction of gloss. A zone that is already glossy gets a note and no change."
+    },
+    {
+     "heading": "What it needs and what it does not do",
+     "body": "It needs a spec preview to have been rendered first, because it measures the real zone spec. It adds to the three sliders, so it can be undone in one step. It will not turn matte into chrome, because the metal boost is capped at 15 and roughness and coat drop by at most 45 per click. Repeated clicks keep boosting until the limits are reached."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Rescue a dull zone",
+     "goal": "Add life to a zone that renders flat.",
+     "settings": {
+      "Step 1": "Render a preview",
+      "Step 2": "Open the zone SPEC sliders",
+      "Step 3": "Click Auto-Pop"
+     },
+     "result": "The sliders move by a few steps toward more metal and less roughness. Check the car and press Undo if it is not right."
+    },
+    {
+     "title": "Already glossy",
+     "goal": "See that Auto-Pop respects a good zone.",
+     "settings": {
+      "Zone": "Wet Look or Gloss body",
+      "Action": "Auto-Pop"
+     },
+     "result": "It says the zone is already glossy and changes nothing."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.channel_sliders",
+     "why": "Auto-Pop moves these three sliders."
+    },
+    {
+     "with": "spec.presets_feels",
+     "why": "For a bigger, deliberate move use a Feel."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Will Auto-Pop wreck my finish?",
+     "a": "No. It is small, conservative, and one Undo step."
+    },
+    {
+     "q": "Why does it ask me to render first?",
+     "a": "It measures the real spec preview of the zone."
+    },
+    {
+     "q": "Does it add colour?",
+     "a": "No. Spec only."
+    },
+    {
+     "q": "Can I use it twice?",
+     "a": "Yes, each click boosts again until the limits."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Nothing happened.",
+     "cause": "The zone is already glossy, or no spec preview was rendered.",
+     "fix": "Render a preview first and read the message."
+    },
+    {
+     "symptom": "I wanted a matte car shiny.",
+     "cause": "Auto-Pop is capped at gentle steps.",
+     "fix": "Use a Feel or choose a different base finish."
+    }
+   ],
+   "protips": [
+    "Auto-Pop is a safe first move when a zone looks dull and you do not know why.",
+    "After Auto-Pop the sliders hold real numbers, so you can read them to learn what the zone needed."
+   ],
+   "screens": [
+    "ui_zone_spec_row"
+   ]
+  },
+  {
+   "id": "spec.inspector",
+   "title": "The Spec Map Inspector",
+   "domain": "spec",
+   "summary": "The Inspector lets you look at the spec channels one at a time and read exact values from any spot.",
+   "what": "Open MASK > Advanced spec utilities and choose Material Sampler. The channel buttons ALL, R, G, B and A switch the view. The Sample area menu offers Point, 3 by 3 Median and 5 by 5 Median. A table shows the minimum, maximum and mean of each channel. Copy M, R, CC and A copy the sampled numbers. Select Connected and Select All Similar find matching areas, using a Material tolerance from 0 to 64 (default 12). Apply to Active Zone and Clear Zone Override finish the job.",
+   "when": [
+    "You want to read exactly what a finish is doing",
+    "You want to copy a material from one place to another"
+   ],
+   "how": [
+    "Open MASK > Advanced spec utilities, then Material Sampler.",
+    "Pick a channel view and a sample size.",
+    "Click the car or the template to sample.",
+    "Use Select Connected or Select All Similar, then Apply to Active Zone."
+   ],
+   "controls": [
+    {
+     "label": "Material tolerance",
+     "range": "0-64",
+     "default": "12",
+     "effect": "How close a match must be.",
+     "inv": "specMaterialSelectTolerance"
+    },
+    {
+     "label": "Sample size",
+     "range": "Point, 3x3 Median, 5x5 Median",
+     "default": "Point",
+     "effect": "Averages around the click.",
+     "inv": "specMaterialSampleSize"
+    }
+   ],
+   "tips": [
+    "Use Median sampling on noisy textures."
+   ],
+   "pitfalls": [
+    "Point sampling on grain gives a random value. Use the median."
+   ],
+   "related": [
+    "spec.reading_by_colour",
+    "spec.material_override_remap_lighting",
+    "spec.what_is_spec_map"
+   ],
+   "actions": [],
+   "figures": [
+    "r13_spec_channel_views"
+   ],
+   "covers": [
+    "pro.spec_tools.all",
+    "pro.spec_tools.r_metallic",
+    "pro.spec_tools.g_roughness",
+    "pro.spec_tools.b_clearcoat",
+    "pro.spec_tools.a_mask",
+    "btnCopySpecSample",
+    "btnSelectConnectedMaterial",
+    "btnSelectAllMaterial",
+    "btnApplySpecSample",
+    "pro.spec_tools.clear_zone_override",
+    "specMaterialSelectTolerance",
+    "specMaterialSampleSize"
+   ],
+   "sources": [
+    "paint-booth-v2.html:3979",
+    "paint-booth-v2.html:2395",
+    "docs/ai_knowledge/how_do_i.md:430-440",
+    "SPB_WIKI.html:4787"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "material sampler",
+    "inspect spec",
+    "sample spec",
+    "copy material",
+    "select similar material",
+    "spec inspector",
+    "check spec values",
+    "inspector"
+   ],
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "Seeing the real numbers",
+     "body": "The Material Sampler shows exact metal, roughness, coat and alpha at a clicked spot. The channel buttons ALL, R, G, B and A switch the preview between the channels. The Sample area menu offers Point, 3 by 3 Median and 5 by 5 Median, and a table lists the minimum, maximum and mean of each channel. Use Median on any textured area, because a single point on grain gives a random value."
+    },
+    {
+     "heading": "Finding and copying a material",
+     "body": "Select Connected grows from the clicked pixel across touching similar pixels; Select All Similar finds every matching pixel on the car. Material tolerance runs from 0 to 64 with a default of 12. Copy M, R, CC and A copy the numbers, and Apply to Active Zone writes them as an override for the zone. Clear Zone Override undoes it."
+    },
+    {
+     "heading": "The material readout",
+     "body": "After a preview renders, the app also reports the material mix of the whole spec as a bar: percent glossy, metallic and matte, with plain warnings for flat or whitewashed settings, such as coat in the 1 to 15 dead band or a metal floor too low. Treat it as a quick check before you export."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Copy the exact chrome from one part",
+     "goal": "Match the chrome on a bumper to the hood.",
+     "settings": {
+      "Action": "Copy M, R, CC, then Apply to Active Zone",
+      "MASK > Advanced spec utilities": "Material Sampler",
+      "Sample area": "3 by 3 Median",
+      "Material tolerance": "12"
+     },
+     "result": "The hood zone gets the same metal, roughness and coat as the bumper."
+    },
+    {
+     "title": "Verify a matte",
+     "goal": "Check a matte finish is truly matte.",
+     "settings": {
+      "Channel view": "G",
+      "Sample area": "5 by 5 Median"
+     },
+     "result": "The roughness reads around 200 or more and the readout shows mostly matte."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.reading_by_colour",
+     "why": "Colour tells you the family; the Sampler tells you the number."
+    },
+    {
+     "with": "spec.material_override_remap_lighting",
+     "why": "Apply to Active Zone is an override."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Why does the same finish read different values?",
+     "a": "Textured finishes vary. Use Median sampling and compare means."
+    },
+    {
+     "q": "Is the Sampler changing my car?",
+     "a": "Not until you press Apply to Active Zone."
+    },
+    {
+     "q": "What tolerance should I use?",
+     "a": "12 is the default. Raise it to find broader areas."
+    },
+    {
+     "q": "Does it show the preview or the export?",
+     "a": "The preview spec. The export runs the same steps at full size."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Values jump between clicks.",
+     "cause": "Point sampling on a textured area.",
+     "fix": "Switch to a Median size."
+    },
+    {
+     "symptom": "Select All Similar grabbed too much.",
+     "cause": "Tolerance too high.",
+     "fix": "Lower it toward 12 or less."
+    }
+   ],
+   "protips": [
+    "Sample the spot you like, copy the numbers, then recreate it with a base and sliders. You learn what makes it.",
+    "Bright green in the spec colour views means rough, not shiny."
+   ],
+   "screens": [
+    "ui_menu_spec_tools",
+    "ui_spec_inspector"
+   ]
+  },
+  {
+   "id": "spec.angle_reveal",
+   "title": "Colour shift and angle reveal",
+   "domain": "spec",
+   "summary": "iRacing cannot truly change hue with the viewing angle, so colour shift looks are built by hiding colour in dark paint and revealing it with fine spec detail.",
+   "what": "A true colour-flip paint is not possible with the sim shader. The trick is to bury the colours in a near-black base and add fine spec pins, 8 to 32 pixels wide, that catch the light at certain angles. As the car turns, those pins flash and the colour appears to move. Foundation EFX, Prizm, Spectrum Shift and the Fractured shelves use this idea. It needs very fine detail to work, and it needs a deep, dark base.",
+   "when": [
+    "You want a chameleon or flip look",
+    "A shift finish looks flat head on"
+   ],
+   "how": [
+    "Pick a Prizm, Spectrum Shift or Fractured Nightshift finish.",
+    "Keep the base dark.",
+    "Do not scale the pattern up. Fine detail is the point."
+   ],
+   "controls": [
+    {
+     "label": "COLOR FLIP",
+     "range": "0-355",
+     "default": "0",
+     "effect": "Rotates the flip colour: 90 is the neighbour hue and 180 the opposite.",
+     "inv": "zone.color_flip"
+    }
+   ],
+   "tips": [
+    "Check the look at a distance and turned on the car."
+   ],
+   "pitfalls": [
+    "A bright base kills the effect.",
+    "Large pins read as sparkle, not shift."
+   ],
+   "related": [
+    "spec.paint_spec_marriage",
+    "spec.overlays_stack",
+    "spec.metal_rough_grid"
+   ],
+   "actions": [
+    {
+     "do": "control",
+     "id": "zone.color_flip"
+    }
+   ],
+   "figures": [
+    "g13_four_kinds_of_look"
+   ],
+   "covers": [
+    "wiki.finish_doctrine.color_shift_angle_reveal_doctrine",
+    "wiki.spec_guide.6_advanced_cards_fractured_night_flip_an",
+    "wiki.spec_guide.9_worked_master_recipe_fractured_gradien"
+   ],
+   "sources": [
+    "docs/COLORSHOXX_ANGLE_REVEAL.md:1",
+    "SPB_WIKI.html#finish_doctrine",
+    "SPB_WIKI.html#spec_guide",
+    "SPB_WIKI.html:3444-3466",
+    "SPB_WIKI.html:3591-3631",
+    "SPB_WIKI.html:4223",
+    "engine/compose.py:2625-2712"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "angle reveal",
+    "colour shift",
+    "color shift",
+    "chameleon",
+    "hue shift with angle",
+    "colorshoxx",
+    "hidden art in the light",
+    "colour shift spec"
+   ],
+   "level": "pro",
+   "deep": [
+    {
+     "heading": "The mechanism in three lobes",
+     "body": "There is no true colour rotation in the sim. What exists is paint-tinted metal, environment-coloured clear coat and roughness gating. Metal at 176 to 255 keeps the reflection tinted with the paint hue even when the paint is nearly black. The clear coat is a separate, nearly white lobe that mirrors the environment: teal sky at one angle, gold sun or tarmac at another. Crushing the base colour removes the diffuse light, so only the two lobes remain and cells flip between dark and flash as the car turns."
+    },
+    {
+     "heading": "What it needs to read",
+     "body": "Two cell styles work: large coherent cells (the Ghost Shift recipe) and fine cells of 8 to 32 pixels whose channels disagree (the Fractured and ColorShoxx style). For the fine style use 6 to 8 crushed near-black shades (about 10 to 18 percent lightness) so metal cells cross lighting thresholds at different times. A single flat magenta carrier looks dead. Two routes work: a dark buried palette (any hue, best for warm, green and copper) or a bright cool base (blue, violet, magenta). Warm bright bases blend into warm sun and lose the second colour."
+    },
+    {
+     "heading": "Where to judge it",
+     "body": "Flash colours come from the track's sky and sun, so daytime tracks show them best and night or indoor lighting mutes them. Judge on the curved hood, roof and fenders, because a flat door can hold the base look longer. A good one reveals panel by panel, not the whole car at once, and survives shade, glare and replay distance."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Ghost Shift recipe",
+     "goal": "A dark red that flashes teal.",
+     "settings": {
+      "Base Material": "A Ghost Geometry finish",
+      "Colour": "Deep red",
+      "Brightness": "Dragged far down",
+      "Track": "Daytime"
+     },
+     "result": "The body reads near black and flashes teal and gold as it turns."
+    },
+    {
+     "title": "Any base, same trick",
+     "goal": "Add the effect to a base you already like.",
+     "settings": {
+      "SPEC BLEND": "Ghost Carve",
+      "Pattern": "A coherent cell pattern",
+      "Colour": "Crushed near black"
+     },
+     "result": "Coat cells carve in on any finish while the metal keeps its tinted flash."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.blend_modes",
+     "why": "Ghost Carve and Angle Flip are the blend modes that build this effect."
+    },
+    {
+     "with": "finishes.colorshoxx_and_shift",
+     "why": "The finish families built on this idea."
+    },
+    {
+     "with": "spec.metal_rough_grid",
+     "why": "Fractured carriers sit in a corner of the grid with metal 242 to 255."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Can paint really change colour with the angle?",
+     "a": "Not with a true shader. Colour-shift finishes fake it with paint plus spec."
+    },
+    {
+     "q": "Why does the effect disappear at night?",
+     "a": "The flash colours come from the sky and sun; night mutes them."
+    },
+    {
+     "q": "Why dark colours?",
+     "a": "A bright paint adds diffuse light that hides the two specular lobes."
+    },
+    {
+     "q": "Does the preview show it?",
+     "a": "The flat preview cannot show angle changes. Judge it in the sim on a daytime track."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "It reads as sparkle, not a shift.",
+     "cause": "Pins or cells too large or all one shade.",
+     "fix": "Use finer cells and 6 to 8 dark shades."
+    },
+    {
+     "symptom": "The second colour never shows.",
+     "cause": "A warm bright base blended into warm sun.",
+     "fix": "Use a dark buried palette, or a cool bright base."
+    },
+    {
+     "symptom": "Hot pink spec did not flip.",
+     "cause": "Pink is only how the bytes pack. The effect needs spatial pattern, dark paint and lighting.",
+     "fix": "Add the pattern and crush the paint."
+    }
+   ],
+   "protips": [
+    "Offset the clear-coat structure from the metal structure so the two lobes peak at different angles.",
+    "Judge on a daytime track and on the hood and fenders, not on a flat door."
+   ],
+   "screens": [
+    "cat_spectrum_shift"
+   ]
+  },
+  {
+   "id": "spec.pattern_groups",
+   "title": "The spec pattern groups",
+   "domain": "spec",
+   "summary": "The 301 spec patterns are sorted into groups such as sparkle, brushed metal, carbon weave, clearcoat, weather and wear, and animal skins.",
+   "what": "The original 181 sit in 25 groups: Sparkle and Micro-Metal 8, Optical and Interference 7, Directional Metal and Brush 4, Carbon and Composite Weave 9, Clearcoat and Coating 4, Structure and Geometry 10, Surface and Spray Texture 4, Organic and Natural 4, Weather, Wear and Track 6, Racing and Livery Story 3, Mechanical and Industrial 1, Exotic and Kinetic 3, Precision and Guilloche 6, Artistic and Abstract 1, Predator Skins 8, Dangerous Animals 10, Gothic and Horror 4, Voodoo Inspired 10, Rising Sun Spec 9, Engine-Turn and Machined 1, Fire and Heat 1, Holographic and Color-Shift 1, Source Pattern Plates 24, Definitive Spec Replacements 33 and Let Freedom Ring 10. A newer set of 120 overlays adds more machined, crystal and surface textures. Every spec pattern changes the shine only.",
+   "when": [
+    "You want a texture family, such as carbon weave or brushed metal",
+    "You want a themed surface, such as predator skin or gothic"
+   ],
+   "how": [
+    "Open SPEC OVERLAYS in a zone and click Add Spec Overlay.",
+    "Pick a group.",
+    "Click a pattern, then set Strength and the M, R and C channels."
+   ],
+   "controls": [],
+   "tips": [
+    "Sparkle and Micro-Metal and Carbon and Composite Weave are the safest first picks.",
+    "Source Pattern Plates match the plate finishes of the same name."
+   ],
+   "pitfalls": [
+    "A themed group may be loud. Lower Strength before you stack a second layer."
+   ],
+   "related": [
+    "spec.overlays_stack",
+    "spec.blend_modes",
+    "spec.scale_rotation"
+   ],
+   "actions": [
+    {
+     "do": "spec",
+     "id": "metallic_sand"
+    },
+    {
+     "do": "spec",
+     "id": "spec_carbon_weave"
+    },
+    {
+     "do": "spec",
+     "id": "holographic_flake"
+    }
+   ],
+   "figures": [
+    "r13_spec_channel_views"
+   ],
+   "covers": [
+    "spec_pattern_group.sparkle_micro_metal",
+    "spec_pattern_group.optical_interference",
+    "spec_pattern_group.directional_metal_brush",
+    "spec_pattern_group.carbon_composite_weave",
+    "spec_pattern_group.clearcoat_coating",
+    "spec_pattern_group.structure_geometry",
+    "spec_pattern_group.surface_spray_texture",
+    "spec_pattern_group.organic_natural",
+    "spec_pattern_group.weather_wear_track",
+    "spec_pattern_group.racing_livery_story",
+    "spec_pattern_group.mechanical_industrial",
+    "spec_pattern_group.exotic_kinetic",
+    "spec_pattern_group.precision_guilloch",
+    "spec_pattern_group.artistic_abstract",
+    "spec_pattern_group.predator_skins",
+    "spec_pattern_group.dangerous_animals",
+    "spec_pattern_group.gothic_horror",
+    "spec_pattern_group.voodoo_inspired",
+    "spec_pattern_group.rising_sun_spec",
+    "spec_pattern_group.engine_turn_machined",
+    "spec_pattern_group.fire_heat",
+    "spec_pattern_group.holographic_color_shift",
+    "spec_pattern_group.source_pattern_plates",
+    "spec_pattern_group.definitive_spec_replacements",
+    "spec_pattern_group.let_freedom_ring"
+   ],
+   "sources": [
+    "js/spb-ai-atlas-data.js:2",
+    "js/spec-overlays/picker.js:60-85",
+    "docs/ai_knowledge/02_spec_and_finishes.md:17"
+   ],
+   "quick": false,
+   "lane": "B",
+   "updated": "2026-10-04",
+   "aliases": [
+    "spec pattern groups",
+    "spec pattern categories",
+    "types of spec patterns",
+    "carbon weave spec",
+    "brushed metal spec",
+    "spec pattern list"
+   ],
+   "level": "beginner",
+   "deep": [
+    {
+     "heading": "How the 301 are organised",
+     "body": "The picker sorts spec patterns into groups by what the texture does: sparkle and micro-metal, optical and interference, directional metal and brush, carbon and composite weave, clearcoat and coating, structure and geometry, surface and spray texture, weather and wear, machined hardware, and themed sets such as predator skins, voodoo, rising sun and let freedom ring. Definitive Spec Replacements is the largest group with 33; Source Pattern Plates has 24 and matches the plate finishes of the same name."
+    },
+    {
+     "heading": "Choosing by job",
+     "body": "Want sparkle or flake: the Sparkle and Micro-Metal group. Want weave: Carbon and Composite Weave. Want brushed or machined: Directional Metal and Brush, Machined and Race Hardware. Want rainbow or oil film: Optical and Interference, or a holographic overlay over a pearl, metallic or chrome base. Want worn or weathered: Weather, Wear and Track plus a rougher base. Themed groups are loud, so lower strength before stacking another layer."
+    },
+    {
+     "heading": "Every one changes shine only",
+     "body": "Each spec pattern lists which channels it touches by default (M, R or C) and you can tick or untick them. Roughness only is the safest choice for subtle texture."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Fine flake on anything",
+     "goal": "Add depth to a plain colour.",
+     "settings": {
+      "Spec overlay": "A micro-metal sparkle pattern",
+      "Strength": "30 to 50",
+      "Channels": "M and R"
+     },
+     "result": "Depth in sun, no change to colour."
+    },
+    {
+     "title": "Holo effect",
+     "goal": "Rainbow oil film on a reflective base.",
+     "settings": {
+      "Base Material": "Pearl, Metallic or Chrome",
+      "Spec overlay": "A holographic spec pattern from the Optical group"
+     },
+     "result": "Shifting prismatic highlights on top of a reflective base."
+    }
+   ],
+   "combos": [
+    {
+     "with": "spec.overlays_stack",
+     "why": "How to add and stack the patterns you find here."
+    },
+    {
+     "with": "finishes.what_makes_a_finish_pop",
+     "why": "A subtle flake at strength 30 to 50 is part of the make-it-pop recipe."
+    }
+   ],
+   "faq": [
+    {
+     "q": "Which group first?",
+     "a": "Sparkle and Micro-Metal and Carbon and Composite Weave are the safest first picks."
+    },
+    {
+     "q": "Why do some groups look the same?",
+     "a": "They are different names for related textures; compare them on the spec views."
+    },
+    {
+     "q": "Can I search instead?",
+     "a": "Yes. The picker has search."
+    },
+    {
+     "q": "Do spec patterns match the paint patterns?",
+     "a": "Source Pattern Plates match the plate finishes of the same name."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "A themed group looks too loud.",
+     "cause": "Strength 50 is strong for a bold texture.",
+     "fix": "Lower strength before adding a second layer."
+    },
+    {
+     "symptom": "I cannot see the pattern.",
+     "cause": "Spec patterns change shine only.",
+     "fix": "Check the spec views and the sim."
+    }
+   ],
+   "protips": [
+    "A holographic overlay needs a reflective base. On matte paint it has nothing to shimmer.",
+    "Try the same pattern on R only, then on C only. The look changes more than the pattern does."
+   ],
+   "screens": [
+    "ui_zone_spec_overlays"
+   ]
+  }
+ ]
+}

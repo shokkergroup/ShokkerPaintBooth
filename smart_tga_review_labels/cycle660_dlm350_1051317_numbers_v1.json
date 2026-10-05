@@ -1,0 +1,13 @@
+{
+  "version":1,
+  "paint_label":"dirtlatemodel 350/car_num_1051317.tga",
+  "inspection_records":"_smart_tga_runs/cycle660_dlm_template_position_canary/inspection_records.json",
+  "review_scope":"Cycle 660 manual source plus Number/Sponsor/Template/Paint/combined-owner and learned-position review.",
+  "component_labels":[
+    {"layer":"numbers","component_index":0,"expected_bbox":[875,28,149,293],"target_layer":"template","label":"fixed_white_template_block_false_number"},
+    {"layer":"numbers","component_index":1,"expected_bbox":[283,720,162,114],"target_layer":"numbers","label":"true_side_number","family_id":"number:99_corey_wright"},
+    {"layer":"numbers","component_index":2,"expected_bbox":[825,814,118,145],"target_layer":"numbers","label":"true_rear_number","family_id":"number:99_corey_wright"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[825,814,117,143],"target_layer":"numbers","label":"position_cue_true_number_with_sponsor_proposal","family_id":"number:99_corey_wright","instance_id":"di:a4c4069472533972"},
+    {"layer":"candidate","component_index":null,"expected_bbox":[276,220,177,113],"target_layer":"numbers","label":"missed_true_side_number","family_id":"number:99_corey_wright"}
+  ]
+}

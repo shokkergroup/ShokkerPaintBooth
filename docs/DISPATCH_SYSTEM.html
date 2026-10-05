@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPB Dispatch System • The Router</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', system_ui, sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .flow-box {
+            transition: all 0.2s ease;
+        }
+        .flow-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px -10px rgb(0 0 0 / 0.2);
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200">
+    <div class="max-w-screen-xl mx-auto px-6 py-8">
+        
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <div class="flex items-center gap-x-3">
+                    <i class="fa-solid fa-route text-3xl text-emerald-400"></i>
+                    <h1 class="text-4xl font-semibold tracking-tight">Dispatch System</h1>
+                </div>
+                <p class="text-zinc-400 mt-1">The single source of truth for Zone ↔ Layer routing</p>
+            </div>
+            <a href="TOOL_ARCHITECTURE.html" class="text-sm px-4 py-2 bg-zinc-900 border border-zinc-700 rounded-2xl hover:bg-zinc-800 flex items-center gap-x-2">
+                <i class="fa-solid fa-arrow-left"></i> Back to Architecture
+            </a>
+        </div>
+
+        <!-- Flow Diagram -->
+        <div class="mb-10">
+            <h2 class="font-semibold mb-4 text-emerald-400 flex items-center gap-x-2">
+                <i class="fa-solid fa-project-diagram"></i> How a Tool Click Flows
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-3 items-center">
+                <!-- Step 1 -->
+                <div class="flow-box bg-zinc-900 border border-zinc-700 rounded-2xl p-4 text-center">
+                    <div class="text-xs text-zinc-400">1. USER ACTION</div>
+                    <div class="font-semibold mt-1">Mouse Down / Tool Button</div>
+                    <div class="text-[10px] mt-1 text-zinc-500">onmousedown or toolbar click</div>
+                </div>
+                
+                <div class="hidden md:flex justify-center text-emerald-500"><i class="fa-solid fa-arrow-right text-xl"></i></div>
+                
+                <!-- Step 2 -->
+                <div class="flow-box bg-zinc-900 border border-zinc-700 rounded-2xl p-4 text-center">
+                    <div class="text-xs text-zinc-400">2. DISPATCH</div>
+                    <div class="font-semibold mt-1 text-emerald-400">dispatch.js</div>
+                    <div class="text-xs mt-1">Checks <span class="font-mono bg-zinc-800 px-1">toolbarEditMode</span></div>
+                </div>
+                
+                <div class="hidden md:flex justify-center text-emerald-500"><i class="fa-solid fa-arrow-right text-xl"></i></div>
+                
+                <!-- Step 3 -->
+                <div class="flow-box bg-zinc-900 border border-emerald-700 rounded-2xl p-4 text-center">
+                    <div class="text-xs text-emerald-400">3. DECISION</div>
+                    <div class="font-semibold mt-1">Zone or Layer Guard?</div>
+                    <div class="mt-2 text-xs space-y-1">
+                        <div class="bg-emerald-900/60 text-emerald-300 px-2 py-0.5 rounded">zoneOnlyToolNames</div>
+                        <div class="bg-blue-900/60 text-blue-300 px-2 py-0.5 rounded">layerOnlyToolNames</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            
+            <!-- Zone Path -->
+            <div class="bg-zinc-900 border border-emerald-700 rounded-3xl p-6">
+                <div class="font-semibold text-emerald-400 flex items-center gap-x-2 mb-3">
+                    <i class="fa-solid fa-map-marked"></i> ZONE PATH
+                </div>
+                <div class="text-sm space-y-2 text-zinc-300">
+                    <div>→ <span class="font-medium">requireZoneToolbarMode(toolName)</span></div>
+                    <div>→ Tool operates on <span class="font-mono text-xs bg-zinc-950 px-1">zones[selected].regionMask</span></div>
+                    <div>→ Uses <span class="font-mono text-xs">paintRegionCircle</span>, spatial brushes, etc.</div>
+                    <div>→ Undo: <span class="font-mono text-xs">pushZoneUndo</span></div>
+                </div>
+            </div>
+            
+            <!-- Layer Path -->
+            <div class="bg-zinc-900 border border-blue-700 rounded-3xl p-6">
+                <div class="font-semibold text-blue-400 flex items-center gap-x-2 mb-3">
+                    <i class="fa-solid fa-layer-group"></i> LAYER PATH
+                </div>
+                <div class="text-sm space-y-2 text-zinc-300">
+                    <div>→ <span class="font-medium">requireLayerToolbarTarget(toolName)</span></div>
+                    <div>→ Tool operates on active PSD layer pixels</div>
+                    <div>→ Uses <span class="font-mono text-xs">_initLayerPaintCanvas</span>, layer undo</div>
+                    <div>→ Undo: <span class="font-mono text-xs">_pushLayerUndo</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 p-5 bg-zinc-900 border border-zinc-800 rounded-2xl text-xs text-zinc-400">
+            <strong class="text-emerald-400">Autonomous Rule:</strong> Any change to routing logic must live in <span class="font-mono text-emerald-300">js/canvas/dispatch.js</span>. 
+            Never add new <code>if (isLayerToolbarMode())</code> checks anywhere else in the codebase.
+        </div>
+
+    </div>
+</body>
+</html>

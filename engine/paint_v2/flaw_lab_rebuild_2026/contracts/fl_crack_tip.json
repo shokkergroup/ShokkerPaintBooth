@@ -1,0 +1,104 @@
+{
+  "schema": "spb-finish-identity/1",
+  "finish_id": "fl_crack_tip",
+  "display_name": "Crack Tip Field \u2014 rebuilt inspection finish",
+  "promise": "open cracks ending in paired butterfly yield lobes",
+  "carrier_grammar": "open cracks ending in paired butterfly yield lobes; independently rotated, varied sites with edge-wrapped geometry.",
+  "spec_grammar": "Named crack stems, yield lobes, stress contours, slip fans, arrest tips carry independent metallic lips, rough interiors and continuous coat shoulders; no unrelated material overlay.",
+  "reference_physics": {
+    "mechanism": "open cracks ending in paired butterfly yield lobes interpreted as a colored inspection visualization, not a literal photograph.",
+    "sources": [
+      "engine/paint_v2/flaw_lab_2026.py",
+      "SPB_WIKI.html#spec_guide",
+      "https://www.nasa.gov/glenn/research/flow-field-diagnostics/"
+    ]
+  },
+  "native_scale_px": [
+    8,
+    32
+  ],
+  "composition_span_px": [
+    150,
+    384
+  ],
+  "mark_types": [
+    {
+      "name": "crack stems",
+      "role": "Visible crack stems geometry with its own local material transition."
+    },
+    {
+      "name": "yield lobes",
+      "role": "Visible yield lobes geometry with its own local material transition."
+    },
+    {
+      "name": "stress contours",
+      "role": "Visible stress contours geometry with its own local material transition."
+    },
+    {
+      "name": "slip fans",
+      "role": "Visible slip fans geometry with its own local material transition."
+    },
+    {
+      "name": "arrest tips",
+      "role": "Visible arrest tips geometry with its own local material transition."
+    }
+  ],
+  "material_binding": {
+    "M": [
+      "crack stems",
+      "yield lobes",
+      "stress contours",
+      "slip fans",
+      "arrest tips"
+    ],
+    "R": [
+      "crack stems",
+      "yield lobes",
+      "stress contours",
+      "slip fans",
+      "arrest tips"
+    ],
+    "Cc": [
+      "crack stems",
+      "yield lobes",
+      "stress contours",
+      "slip fans",
+      "arrest tips"
+    ]
+  },
+  "material_tiers": [
+    "recess substrate",
+    "rough interior",
+    "satin shoulder",
+    "polished lip",
+    "fractured edge",
+    "gloss face",
+    "coat transition",
+    "bright inclusion"
+  ],
+  "nearest_neighbors": [
+    {
+      "finish_id": "fl_penetrant_bleed",
+      "difference": "open cracks ending in paired butterfly yield lobes differs in topology from branched fatigue fissures with capillary dye reservoirs"
+    },
+    {
+      "finish_id": "fl_brittle_lacquer",
+      "difference": "open cracks ending in paired butterfly yield lobes differs in topology from ranked tensile crack combs with arrested tips and lifted lacquer lips"
+    }
+  ],
+  "name_truth": {
+    "hidden_title_verdict": "pass",
+    "visible_evidence": [
+      "crack stems is explicitly constructed as part of open cracks ending in paired butterfly yield lobes",
+      "yield lobes is explicitly constructed as part of open cracks ending in paired butterfly yield lobes",
+      "stress contours is explicitly constructed as part of open cracks ending in paired butterfly yield lobes"
+    ],
+    "review_status": "Rendered paint/spec pairs visually reviewed together at picker scale on 2026-09-18; live output verified against the reviewed assets."
+  },
+  "construction_key": "flaw-r1-crack_tip-open-cracks-ending-in-paired-butterfly-yield-lobes",
+  "spec_key": "flaw-r1-material-crack_tip-crack stems-yield lobes-stress contours-slip fans-arrest tips",
+  "fine_detail_scale_px": [
+    1,
+    32
+  ]
+}

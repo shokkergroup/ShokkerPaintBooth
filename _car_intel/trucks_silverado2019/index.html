@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>trucks silverado2019 — Car Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080818; --cyan:#00e5ff; --gold:#ffaa00; --text:#d8d8e8;
+  --panel:#11112a; --muted:#8a8aa8;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:'Inter',system-ui,sans-serif; line-height:1.5;
+  padding:28px clamp(16px,4vw,48px);
+}
+h1,h2,h3 { font-family:'Rajdhani',sans-serif; letter-spacing:.5px; margin:0 0 .2em; }
+h1 { font-size:clamp(26px,4vw,40px); color:var(--cyan); text-transform:uppercase; }
+h2 { font-size:22px; color:var(--gold); margin-top:1.4em; }
+h3 { font-size:16px; color:var(--cyan); }
+a { color:var(--cyan); text-decoration:none; }
+a:hover { text-decoration:underline; }
+.muted { color:var(--muted); }
+.stat { color:var(--gold); font-weight:600; font-family:'Rajdhani',sans-serif; }
+.crumb { font-family:'Rajdhani',sans-serif; font-size:14px; margin-bottom:14px;
+  text-transform:uppercase; letter-spacing:1px; }
+.subtitle { color:var(--muted); font-size:15px; margin:.2em 0 1.4em; }
+.chips { display:flex; gap:10px; flex-wrap:wrap; margin:.4em 0 1.2em; }
+.chip { background:var(--panel); border:1px solid #26264a; border-radius:999px;
+  padding:6px 14px; font-size:13px; font-family:'Rajdhani',sans-serif;
+  letter-spacing:.5px; }
+.chip b { color:var(--gold); }
+.panel { background:var(--panel); border:1px solid #20203e; border-radius:14px;
+  padding:18px; margin:14px 0; }
+img { display:block; max-width:100%; }
+.maps { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px; margin:10px 0; }
+.mapcard { background:var(--panel); border:1px solid #20203e; border-radius:12px;
+  overflow:hidden; }
+.mapcard img { width:100%; aspect-ratio:1/1; object-fit:cover;
+  background:#000; border-bottom:1px solid #20203e; }
+.mapcard .cap { padding:12px 14px; }
+.mapcard .cap b { color:var(--cyan); font-family:'Rajdhani',sans-serif;
+  font-size:15px; letter-spacing:.5px; }
+.mapcard .cap p { margin:.35em 0 0; font-size:13px; color:var(--muted); }
+.gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:14px; margin:10px 0; }
+.shot { background:var(--panel); border:1px solid #20203e; border-radius:10px;
+  overflow:hidden; }
+.shot img { width:100%; aspect-ratio:1/1; object-fit:cover; background:#000; }
+.shot .name { padding:8px 10px; font-size:12px; color:var(--muted);
+  font-family:'Rajdhani',sans-serif; letter-spacing:.5px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.notes { font-size:15px; }
+.notes li { margin:.35em 0; }
+.cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:16px; margin:10px 0; }
+.car { display:block; background:var(--panel); border:1px solid #20203e;
+  border-radius:12px; overflow:hidden; transition:border-color .15s,transform .15s; }
+.car:hover { border-color:var(--cyan); transform:translateY(-3px); text-decoration:none; }
+.car img { width:100%; aspect-ratio:1/1; object-fit:cover; background:#000;
+  border-bottom:1px solid #20203e; }
+.car .meta { padding:12px 14px; }
+.car .meta b { color:var(--cyan); font-family:'Rajdhani',sans-serif; font-size:17px;
+  display:block; letter-spacing:.5px; }
+.car .meta span { color:var(--muted); font-size:13px; }
+.car .meta .tf { color:var(--gold); }
+.footer { margin-top:40px; padding-top:18px; border-top:1px solid #20203e;
+  color:var(--muted); font-size:13px; }
+</style>
+</head><body>
+<div class="crumb"><a href="../index.html">&larr; Car Intelligence Library</a></div>
+<h1>trucks silverado2019</h1>
+<div class="chips">
+  <span class="chip">Liveries learned <b>27</b></span>
+  <span class="chip">Sampled <b>27</b></span>
+  <span class="chip">Template <b>32%</b></span>
+  <span class="chip">Analysis res <b>512px</b></span>
+</div>
+
+<h2>Learned maps</h2>
+<p class="subtitle">Four unsupervised maps separating this car's fixed template from its open canvas.</p>
+<div class="maps">
+<div class="mapcard"><img src="median.png" alt="Median (consensus look)" loading="lazy"><div class="cap"><b>Median (consensus look)</b><p>The per-pixel median across all liveries — the surface that survives no matter what people paint. This is the car's underlying shape and shared template baked into an image.</p></div></div>
+<div class="mapcard"><img src="stdev.png" alt="Variance heatmap" loading="lazy"><div class="cap"><b>Variance heatmap</b><p>Per-pixel standard deviation across liveries (bright = high variance). Bright zones are where painters disagree the most — the expressive panels; dark zones barely change.</p></div></div>
+<div class="mapcard"><img src="template_mask.png" alt="Template mask (reserved)" loading="lazy"><div class="cap"><b>Template mask (reserved)</b><p>White = low-variance / reserved regions that stay consistent across liveries: lights, grills, windows, numbers' guide marks and UV areas painters leave alone.</p></div></div>
+<div class="mapcard"><img src="paintability.png" alt="Paintability map" loading="lazy"><div class="cap"><b>Paintability map</b><p>White = high-variance regions — where painters actually express. This is the practical canvas for a design; concentrate flow and detail here.</p></div></div>
+</div>
+
+<!--LAYERS_SECTION-->
+<style>.lyr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin:10px 0;}.lyr-card{background:var(--panel);border:1px solid #20203e;border-radius:12px;overflow:hidden;}.lyr-card img{width:100%;display:block;background:#000;border-bottom:1px solid #20203e;}.lyr-card .cap{padding:11px 13px;font-size:12.5px;color:var(--muted);}.lyr-card .cap b{color:var(--cyan);font-family:'Rajdhani',sans-serif;font-size:14px;letter-spacing:.4px;display:block;margin-bottom:3px;}.lyr-legend{display:flex;gap:14px;flex-wrap:wrap;margin:.2em 0 1em;font-size:13px;}.lyr-legend span{display:inline-flex;align-items:center;gap:6px;}.lyr-sw{width:13px;height:13px;border-radius:3px;display:inline-block;}.lyr-frac{color:var(--gold);}</style>
+<h2>🧩 4-Layer Auto-Separation (live engine)</h2>
+<p class="subtitle">The engine loads each flat livery and self-builds four layers — numbers, sponsors, the car's fixed template (glass / grills / lights), and the open paint design. Left: the source livery. Right: the layers tinted in. Fractions and the detected car family are exactly what the engine produced (no hand-tuning), so the known limits show honestly.</p>
+<div class="lyr-legend"><span><i class="lyr-sw" style="background:rgb(255,40,40)"></i>numbers</span><span><i class="lyr-sw" style="background:rgb(45,110,255)"></i>sponsors</span><span><i class="lyr-sw" style="background:rgb(40,230,90)"></i>template</span><span><i class="lyr-sw" style="background:#444;border:1px solid #666"></i>paint (untinted)</span></div>
+<div class="lyr-grid">
+<div class="lyr-card"><img src="layers/car_1002478.png" alt="car_1002478" loading="lazy"><div class="cap"><b>car_1002478</b>detected: <b style="display:inline;color:var(--gold)">truck</b> (score 0.22)<br><span class="lyr-frac">0% numbers · 5% sponsors · 0% template · 95% paint</span></div></div>
+<div class="lyr-card"><img src="layers/car_782957.png" alt="car_782957" loading="lazy"><div class="cap"><b>car_782957</b>detected: <b style="display:inline;color:var(--gold)">truck</b> (score 0.29)<br><span class="lyr-frac">1% numbers · 2% sponsors · 0% template · 96% paint</span></div></div>
+<div class="lyr-card"><img src="layers/car_num_466592.png" alt="car_num_466592" loading="lazy"><div class="cap"><b>car_num_466592</b>detected: <b style="display:inline;color:var(--gold)">truck</b> (score 0.46)<br><span class="lyr-frac">6% numbers · 3% sponsors · 0% template · 91% paint</span></div></div>
+<div class="lyr-card"><img src="layers/car_num_960181.png" alt="car_num_960181" loading="lazy"><div class="cap"><b>car_num_960181</b>detected: <b style="display:inline;color:var(--gold)">truck</b> (score 0.41)<br><span class="lyr-frac">2% numbers · 6% sponsors · 0% template · 92% paint</span></div></div>
+</div>
+<!--/LAYERS_SECTION-->
+
+
+
+<h2>Example liveries</h2>
+<p class="subtitle">12 real liveries, evenly sampled across this car's library.</p>
+<div class="gallery">
+<div class="shot"><img src="examples/car_1002478.png" alt="car_1002478" loading="lazy"><div class="name">car_1002478</div></div>
+<div class="shot"><img src="examples/car_23371.png" alt="car_23371" loading="lazy"><div class="name">car_23371</div></div>
+<div class="shot"><img src="examples/car_475858.png" alt="car_475858" loading="lazy"><div class="name">car_475858</div></div>
+<div class="shot"><img src="examples/car_673967.png" alt="car_673967" loading="lazy"><div class="name">car_673967</div></div>
+<div class="shot"><img src="examples/car_936246.png" alt="car_936246" loading="lazy"><div class="name">car_936246</div></div>
+<div class="shot"><img src="examples/car_num_.png" alt="car_num_" loading="lazy"><div class="name">car_num_</div></div>
+<div class="shot"><img src="examples/car_num_271955.png" alt="car_num_271955" loading="lazy"><div class="name">car_num_271955</div></div>
+<div class="shot"><img src="examples/car_num_421907.png" alt="car_num_421907" loading="lazy"><div class="name">car_num_421907</div></div>
+<div class="shot"><img src="examples/car_num_471636.png" alt="car_num_471636" loading="lazy"><div class="name">car_num_471636</div></div>
+<div class="shot"><img src="examples/car_num_596789.png" alt="car_num_596789" loading="lazy"><div class="name">car_num_596789</div></div>
+<div class="shot"><img src="examples/car_num_782957.png" alt="car_num_782957" loading="lazy"><div class="name">car_num_782957</div></div>
+<div class="shot"><img src="examples/car_num_960181.png" alt="car_num_960181" loading="lazy"><div class="name">car_num_960181</div></div>
+</div>
+
+<h2>What this car teaches us</h2>
+<div class="panel notes"><ul>
+<li>Learned unsupervised from <span class='stat'>27</span> liveries of this car (out of 27 sampled). Where many painters agree, the surface is template; where they diverge, it's open canvas.</li>
+<li>About <span class='stat'>32%</span> of the UV is reserved / template (low-variance regions: lights, grills, windows, guide marks painters leave alone), leaving roughly <span class='stat'>68%</span> as the paintable canvas.</li>
+<li>A <b>balanced</b> body — meaningful template structure plus generous open panels; lay out designs around the reserved zones.</li>
+<li>The example gallery below shows <span class='stat'>12</span> real liveries evenly sampled across this car's library, so the consensus maps can be read against actual paint.</li>
+</ul></div>
+
+<div class="footer">Shokker Paint Booth · Car Intelligence · generated by _car_intel_html.py</div>
+</body></html>

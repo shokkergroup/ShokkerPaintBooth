@@ -1,0 +1,5 @@
+{"version":1,"paint_label":"dirtlatemodel 358/car_num_1180100.tga","inspection_records":"_smart_tga_runs/cycle673_dlm_abstention_review/inspection_records.json","review_scope":"Cycle 673 source plus complete Number/Sponsor/Template/Paint sheets.","component_labels":[
+ {"layer":"numbers","component_index":0,"expected_bbox":[32,403,51,162],"target_layer":"sponsors","label":"cfr_wordmark_false_number"},
+ {"layer":"numbers","component_index":1,"expected_bbox":[442,424,20,72],"target_layer":"sponsors","label":"richards_wordmark_false_number"},
+ {"layer":"numbers","component_index":2,"expected_bbox":[558,454,263,129],"target_layer":"sponsors","label":"valvoline_pease_panel_false_number"}
+]}

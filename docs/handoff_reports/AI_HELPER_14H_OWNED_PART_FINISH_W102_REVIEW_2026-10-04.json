@@ -1,0 +1,70 @@
+{
+  "work_item": "W102 independent review of W97 current-owner part finish alias candidate",
+  "date": "2026-10-04",
+  "status": "BLOCKED_PRIVATE_CANDIDATE",
+  "oracle": {
+    "path": "_easy_claude_work/ai14h_w102_review/fresh-oracle.json",
+    "sha256": "7d4d2910ad8196e62b2b355b6217ea3883e6a24eb7621f50e8cdc8b86b680b84",
+    "cases": 11,
+    "frozen_before_w97_report_or_source": true
+  },
+  "pins": {
+    "w97_candidate": {
+      "path": "_easy_claude_work/ai14h_w97_review/candidate-spb-pro-ai.js",
+      "sha256": "e6840fc79cdcd7e0e11ccad677a34eb7ab86cd903bbe0652089769187da19909"
+    },
+    "design": "4648de3231015497cc9ff816612a542097a1ad14038a7210753f6cdbfd88d832",
+    "edit": "3696cf6c9bdf9a28a056ebf90a9ddd23cfe290134943c11beb4c7ec5485a173a",
+    "w98_compat_edit_candidate": {
+      "path": "_easy_claude_work/ai14h_w98_review/candidate/spb-pro-edit.js",
+      "sha256": "7d063444021f8f4144b96130800badfe62741cdefc9104417f3e99af65270767"
+    }
+  },
+  "findings": [
+    {
+      "priority": "P1",
+      "title": "W97 alias path rejects W98 current-session composite fingerprints",
+      "evidence": "The W97 owner validator at candidate line 1600 requires /^file-sha256:[0-9a-f]{64}$/i, despite the exact same proof's committed fingerprint being checked against both stored owner source and current source. With only the fingerprint changed on the controlled current-owner fixture, the W97 contract is 11/12 for file SHA (the unrelated known gloss parser case is the sole failure), and 7/12 for composite-sha256 and 7/12 for composite-fnv1a32. The four valid owner alias operations—roof chrome, roof satin, ordinary roof chrome, and same-roof hood alias—become zero-edit refusals. Partial, stale, duplicate, manual, hidden, and mixed proof refusal controls continue to pass.",
+      "recommended_boundary": "Allow the current-session proof path to accept the same three exact tagged fingerprint forms already validated by W98 (file-sha256, composite-sha256, composite-fnv1a32), while retaining exact current/stored source equality and every other freshness/uniqueness/mask/layer/appearance check. Keep durable saved-memory identity file-SHA-only."
+    },
+    {
+      "priority": "P1",
+      "title": "Requested layer selector is overwritten without an equivalence check",
+      "evidence": "The W97 candidate line 1622 assigns planned.region = JSON.parse(JSON.stringify(reuse.selector)) after checking only the semantic part and owner proof. The candidate does not compare the planned request's pre-rewrite layer selector/layer IDs with reuse.proof.layers.ids or the owner selector before replacement. A source-layer request that parses to a part + different layer could therefore be silently redirected to the saved owner's layer. The W97 fixture uses a single Car Paint layer and does not exercise an explicitly different requested layer, so this is a source-level route gap, not a claimed dynamic reproduction.",
+      "recommended_boundary": "Before rewriting, resolve the planned selector's explicitly requested layer IDs uniquely; if explicit IDs differ from the proof's exact owner IDs, return a truthful zero-queue refusal. Only canonicalize aliases when the requested layer is absent or exactly matches the proved layer set."
+    }
+  ],
+  "verified": {
+    "file_sha_current_owner_route": "11/12 producer W97 cases; sole miss is the explicitly deferred E.plan gloss phrasing case.",
+    "composite_sha_current_owner_route": "7/12; four intended positive owner aliases fail closed.",
+    "composite_fnv_current_owner_route": "7/12; same four intended positive owner aliases fail closed.",
+    "negative_proof_controls": "The producer harness continues to refuse its partial, stale-source, duplicate, manual, stale-layout, hidden-body-layer, and mixed-paint fixtures under all three fingerprint forms.",
+    "proof_carry": "W97 queueEditZones places the fresh proof on the edit request at line 1682. Candidate makeTools strips internal fields from user-facing edit args but validates the proof/current owner before queue insertion at lines 370-371; the apply queue rechecks current proof/owner at lines 640-648. This was source-reviewed, not executed through applyQueue."
+  },
+  "w98_regex_audit": {
+    "result": "W98 compatibility regex is narrowly tagged and its test passed 10 oracle cases with limits.",
+    "accepted_current_session_forms": [
+      "^file-sha256:[0-9a-f]{64}$",
+      "^composite-sha256:[0-9a-f]{64}$",
+      "^composite-fnv1a32:fnv1a32-[0-9a-f]{8}-[0-9]+$"
+    ],
+    "durable_gate": "The W89 durable layered identity gate still rejects both composite forms and accepts file SHA; W97's extra strong-hash restriction is the compatibility gap."
+  },
+  "tests": [
+    "node --check tests/ai_owned_part_finish_w102_review_contract.cjs",
+    "node tests/ai_owned_part_finish_w102_review_contract.cjs — reproduced 12-case controlled route at file SHA, composite SHA, and composite FNV",
+    "node tests/ai_part_finish_owner_w97_contract.cjs — 11/12 candidate; 1 parser case outside this ownership scope",
+    "node tests/ai_owned_scoped_colour_w98_compat_contract.cjs — PASS_WITH_LIMITS_PRIVATE_W98_COMPATIBILITY, 10 cases"
+  ],
+  "limits": [
+    "The W97 fixture controls CAR/Z/source callbacks and the edit callback. No native currentPartZoneOwners lifecycle, actual applyQueue execution, native app, provider, browser, or server call occurred.",
+    "The different-explicit-layer selector case is an actionable source-path gap identified at the unconditional selector rewrite, but was not dynamically exercised because the W97 fixture uses one body layer and its frozen route cases do not contain explicit alternate-layer syntax.",
+    "The unchanged 'Change the roof finish to gloss without repainting it' E.plan miss remains the disclosed W97 parser limitation and is outside this alias ownership lane."
+  ],
+  "effects": {
+    "production_files_changed": 0,
+    "native_calls": 0,
+    "provider_calls": 0,
+    "apply_calls": 0
+  }
+}
